@@ -53,5 +53,9 @@
     "or": "eller",
     "pasteLabel": "Klistra in menytext",
     "pastePlaceholder": "Klistra in din meny här — namn på rätter, beskrivningar, priser…"
-  }
+  },
+  "emailLabel": "Din e-postadress",
+  "emailNote": "Vi mejlar dig en länk till din demo och kan komma att kontakta dig om att sätta upp HatchGrab. <link>Integritetspolicy</link>",
+  "marketing": "Skicka mig tips och nyheter från HatchGrab då och då",
+  "emailInvalid": "Ange en giltig e-postadress."
 }

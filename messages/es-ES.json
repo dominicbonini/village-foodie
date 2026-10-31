@@ -1482,7 +1482,8 @@
       "heading": "Regístrate ya y consigue tu mes gratis",
       "sub": "El mes no empieza a contar hasta que decidas publicarte."
     },
-    "cashIcon": "💶"
+    "cashIcon": "💶",
+    "walkBanner": "Demo · esta es tu carta, tal como la verán tus clientes. No se cobra nada y no se envía ningún correo."
   },
   "userMenu": {
     "menuLabel": "Menú de usuario",
@@ -2264,7 +2265,11 @@
       "or": "o",
       "pasteLabel": "Pegar el texto de la carta",
       "pastePlaceholder": "Pega aquí tu carta: nombres de los productos, descripciones, precios…"
-    }
+    },
+    "emailLabel": "Tu correo",
+    "emailNote": "Te enviaremos por correo un enlace a tu demo y puede que nos pongamos en contacto contigo para configurar HatchGrab. <link>Política de privacidad</link>",
+    "marketing": "Quiero recibir de vez en cuando consejos y novedades de HatchGrab",
+    "emailInvalid": "Introduce una dirección de correo válida."
   },
   "provisionContent": {
     "firstVanName": "Food truck 1",
@@ -6269,5 +6274,57 @@
     "customersSee": "Los clientes ven:",
     "postalWarning": "No parece {article}; por ejemplo, {example}. Puedes guardarlo igualmente.",
     "regionChoose": "Elige…"
+  },
+  "demoLinkEmail": {
+    "subject": "Tu demo de HatchGrab: aquí tienes tu enlace",
+    "heading": "Tu demo está lista",
+    "intro": "Aquí tienes el enlace a la demo que hemos creado con tu carta. Haz un pedido como uno de tus clientes y mira cómo llega a tu pantalla de cocina (KDS). No hace falta iniciar sesión: solo tienes que tocarlo.",
+    "button": "Abrir mi demo",
+    "deletion": "Esto es una demo, así que no la guardamos: la eliminaremos, junto con la carta que subiste, el {date}. Si quieres más tiempo, pulsa “Guardar mi carta” en la demo y la guardaremos durante 14 días.",
+    "deletionSoon": "Esto es una demo, así que no la guardamos: la eliminaremos, junto con la carta que subiste, pasadas 24 horas. Si quieres más tiempo, pulsa “Guardar mi carta” en la demo y la guardaremos durante 14 días."
+  },
+  "demoWalk": {
+    "step1": "Paso 1 de 3 · Pide como uno de tus clientes",
+    "paymentTitle": "Pago",
+    "paymentPanel": "Aquí tu cliente paga con tarjeta, Apple Pay o Google Pay, o elige pagar al recoger. En la demo no se cobra nada.",
+    "defaultName": "Alex",
+    "step2": "Paso 2 de 3",
+    "bubbleTitle": "Esta es tu pantalla de cocina (KDS)",
+    "bubbleArrived": "El pedido que acabas de hacer ha llegado aquí al instante, con la hora de recogida. Pulsa Cocinar.",
+    "bubbleReady": "Cuando la comida esté lista, pulsa Listo. Tu cliente recibe el aviso al momento.",
+    "step3": "Paso 3 de 3 · hecho",
+    "told": "Acabamos de avisar a {name} de que su comida está lista.",
+    "thatsIt": "Eso es HatchGrab: tus clientes piden desde el móvil, tú lo ves aquí y ellos recogen sin hacer cola. Tu carta ya está configurada.",
+    "startFree": "{months, plural, =0 {Empezar gratis y conservar mi carta} one {Empezar gratis durante # mes y conservar mi carta} many {Empezar gratis durante # de meses y conservar mi carta} other {Empezar gratis durante # meses y conservar mi carta}}",
+    "tryAnother": "Probar otro pedido",
+    "barOrder": "Pide como un cliente",
+    "barArrives": "Llega a tu cocina",
+    "barReady": "Márcalo como listo",
+    "phoneLabel": "El móvil de tu cliente",
+    "kitchenLabel": "Tu pantalla de cocina (KDS)",
+    "waitingTitle": "Esperando pedidos",
+    "waitingBody": "Pide algo en el móvil. Aparece aquí en cuanto tu cliente pulsa Pedir.",
+    "startCooking": "Cocinar",
+    "ready": "Listo",
+    "readyForCollection": "Listo para recoger",
+    "cooking": "Cocinando",
+    "readyBadge": "Listo",
+    "newBadge": "Pedido nuevo",
+    "orderNumber": "Pedido #{number}",
+    "collectAt": "Recoger a las {time}",
+    "collectAsap": "Recoger cuanto antes",
+    "phoneReadyTitle": "Tu pedido está listo",
+    "phoneReadyBody": "Recógelo en el food truck.",
+    "bandTitle": "Eso es HatchGrab. Tu carta ya está configurada.",
+    "bandStart": "Empezar gratis y conservar mi carta",
+    "orderAgain": "Pedir otra vez",
+    "loading": "Preparando tu demo…",
+    "goneTitle": "Esta demo ha terminado",
+    "goneBody": "Las demos se eliminan al cabo de un día. Puedes crear una nueva con tu carta en menos de un minuto.",
+    "goneButton": "Crear una demo nueva",
+    "failed": "No ha funcionado. Inténtalo de nuevo.",
+    "backToMenu": "Volver a la carta",
+    "formNote": "Esto es una demo: no se cobra a nadie y no se envía nada, así que no hace falta que des un correo.",
+    "namePlaceholder": "Alex"
   }
 }

@@ -53,5 +53,9 @@
     "or": "ali",
     "pasteLabel": "Prilepite besedilo jedilnika",
     "pastePlaceholder": "Sem prilepite jedilnik — imena artiklov, opise, cene …"
-  }
+  },
+  "emailLabel": "Vaš e-naslov",
+  "emailNote": "Po e-pošti vam bomo poslali povezavo do vaše predstavitve in se vam morda oglasili glede nastavitve HatchGrab. <link>Pravilnik o zasebnosti</link>",
+  "marketing": "Občasno mi pošljite nasvete in novice HatchGrab",
+  "emailInvalid": "Vnesite veljaven e-poštni naslov."
 }

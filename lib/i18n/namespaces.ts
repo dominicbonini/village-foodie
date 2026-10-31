@@ -16,7 +16,11 @@ export const NAMESPACES = {
     // address-formats-2 (21 Oct 2026): the town/address words by the country's address format (WhereBasedStep, AddressFields).
     'address',
     // languages-1 (22 October 2026): the where-you-trade step's heading and button (components/DemoGetStarted.tsx, app/setup/page.tsx).
-    'whereYouTrade'],
+    'whereYouTrade',
+    // demo-2 (30 Oct 2026): the demo walkthrough's step label and payment panel on the order page.
+    'demoWalk'],
+  // demo-2 (30 Oct 2026): the demo walkthrough (/try/<slug>) — the kitchen screen, the steps and the sign-up it opens.
+  walkthrough: ['demoWalk', 'demo', 'demoGetStarted', 'cuisinePicker', 'whereBased', 'tradeArea', 'errorsOnboarding', 'address', 'whereYouTrade'],
   // The status / manage page.
   confirmation: ['orderStatus', 'errorsCustomer'],
   // Language Phase 1b: the kitchen surfaces and every shared piece they render (scripts/messages-split.cjs walks each

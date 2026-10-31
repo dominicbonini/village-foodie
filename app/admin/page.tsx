@@ -30,6 +30,7 @@ import TemplatesPanel from '@/components/admin/TemplatesPanel' // outreach messa
 import ScreenshotsPanel from '@/components/admin/ScreenshotsPanel' // the screenshot uploader, rendered as a tab
 import CountriesTab from '@/components/admin/CountriesTab'           // per-country prices, fees and formats
 import PricingCheckTab from '@/components/admin/PricingCheckTab'     // competitor prices vs ours, per country (admin only)
+import DemosTab from '@/components/admin/DemosTab'                   // demo-2: the demos, their menus and the funnel
 import { useSignupCountries } from '@/components/setup/WhereBasedStep'  // switched-on countries (create-truck)
 
 interface AdminTruck {
@@ -233,6 +234,8 @@ const ADMIN_TABS = {
   countries:   { icon: '🌍', label: 'Countries' },
   // Competitor prices, features and benchmarks vs our plan_prices — components/admin/PricingCheckTab.tsx (pricing-check-1).
   pricing:     { icon: '⚖️', label: 'Pricing check' },
+  // Every demo still alive, what its visitor did, and the funnel counts — components/admin/DemosTab.tsx (demo-2).
+  demos:       { icon: '🧪', label: 'Demos' },
 } as const
 type AdminTab = keyof typeof ADMIN_TABS
 
@@ -909,7 +912,7 @@ export default function AdminPage() {
           max-w-6xl (1152px) until admin-countries-1 (23 October 2026); every admin body is now full width with
           32px side padding (px-8), and a text-heavy panel keeps its own readable width (the screenshot uploader's
           max-w-3xl). The wrapper is HIDDEN rather than unmounted so the tab blocks inside keep their state. */}
-      <div className={(adminTab === 'outreach' || adminTab === 'events' || adminTab === 'pricing') ? 'hidden' : "w-full px-8 py-6"}>
+      <div className={(adminTab === 'outreach' || adminTab === 'events' || adminTab === 'pricing' || adminTab === 'demos') ? 'hidden' : "w-full px-8 py-6"}>
 
         {/* ── EVENT SCREENSHOTS ─────────────────────────────────────────────────────────────────
             🔎 INSIDE this wrapper, unlike Outreach. Outreach is out there because its table needs
@@ -1418,6 +1421,13 @@ export default function AdminPage() {
       {pricingSeen && (
         <div className={adminTab === 'pricing' ? 'w-full px-8 py-6' : 'hidden'}>
           <PricingCheckTab />
+        </div>
+      )}
+
+      {/* demo-2: Admin › Demos — the full width, like Pricing check (a 13-column table); a card list on a phone. */}
+      {adminTab === 'demos' && (
+        <div className="w-full px-3 sm:px-6 lg:px-8 py-6">
+          <DemosTab />
         </div>
       )}
 

@@ -1,0 +1,8 @@
+{
+  "subject": "Demo-ul dumneavoastră HatchGrab — iată linkul",
+  "heading": "Demo-ul este gata",
+  "intro": "Iată linkul către demo-ul pe care l-am construit din meniul dumneavoastră. Comandați din el ca unul dintre clienți, apoi urmăriți cum sosește comanda pe ecranul de bucătărie. Nu este nevoie de autentificare — doar atingeți linkul.",
+  "button": "Deschideți demo-ul",
+  "deletion": "Acesta este un demo, așa că nu îl păstrăm: îl vom șterge, împreună cu meniul încărcat, pe {date}. Dacă doriți să-l păstrați mai mult, apăsați „Salvați meniul” în demo și îl vom păstra 14 zile.",
+  "deletionSoon": "Acesta este un demo, așa că nu îl păstrăm: îl vom șterge, împreună cu meniul încărcat, după 24 de ore. Dacă doriți să-l păstrați mai mult, apăsați „Salvați meniul” în demo și îl vom păstra 14 zile."
+}

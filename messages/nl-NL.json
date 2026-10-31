@@ -1482,7 +1482,8 @@
       "heading": "Meld je nu aan voor je gratis maand",
       "sub": "De klok gaat pas lopen als jij besluit live te gaan."
     },
-    "cashIcon": "💶"
+    "cashIcon": "💶",
+    "walkBanner": "Demo · dit is je menukaart, zoals je klanten hem zullen zien. Er wordt niets afgerekend en er worden geen e-mails verstuurd."
   },
   "userMenu": {
     "menuLabel": "Gebruikersmenu",
@@ -2264,7 +2265,11 @@
       "or": "of",
       "pasteLabel": "Tekst van menukaart plakken",
       "pastePlaceholder": "Plak je menukaart hier — namen van gerechten, beschrijvingen, prijzen…"
-    }
+    },
+    "emailLabel": "Je e-mailadres",
+    "emailNote": "We mailen je een link naar je demo en nemen mogelijk contact met je op over het instellen van HatchGrab. <link>Privacybeleid</link>",
+    "marketing": "Stuur me af en toe tips en nieuws van HatchGrab",
+    "emailInvalid": "Voer een geldig e-mailadres in."
   },
   "provisionContent": {
     "firstVanName": "Foodtruck 1",
@@ -6269,5 +6274,57 @@
     "customersSee": "Klanten zien:",
     "postalWarning": "Dat lijkt niet op {article} — bijvoorbeeld {example}. Je kunt het toch opslaan.",
     "regionChoose": "Kies…"
+  },
+  "demoLinkEmail": {
+    "subject": "Je HatchGrab-demo — hier is je link",
+    "heading": "Je demo staat klaar",
+    "intro": "Hier is de link naar de demo die we van je menukaart hebben gemaakt. Bestel zoals een van je klanten en kijk dan hoe de bestelling op je keukenscherm binnenkomt. Inloggen is niet nodig — tik er gewoon op.",
+    "button": "Mijn demo openen",
+    "deletion": "Dit is een demo, dus we bewaren hem niet: we verwijderen hem, samen met de menukaart die je hebt geüpload, op {date}. Wil je hem langer houden? Tik dan in de demo op ‘Mijn menukaart opslaan’ en we bewaren hem 14 dagen.",
+    "deletionSoon": "Dit is een demo, dus we bewaren hem niet: we verwijderen hem, samen met de menukaart die je hebt geüpload, na 24 uur. Wil je hem langer houden? Tik dan in de demo op ‘Mijn menukaart opslaan’ en we bewaren hem 14 dagen."
+  },
+  "demoWalk": {
+    "step1": "Stap 1 van 3 · Bestel zoals een van je klanten",
+    "paymentTitle": "Betaling",
+    "paymentPanel": "Hier betaalt je klant met kaart, Apple Pay of Google Pay, of kiest hij ervoor om bij de truck te betalen. In de demo wordt er niets afgerekend.",
+    "defaultName": "Alex",
+    "step2": "Stap 2 van 3",
+    "bubbleTitle": "Dit is je keukenscherm",
+    "bubbleArrived": "De bestelling die je net hebt geplaatst, kwam hier meteen binnen, met de afhaaltijd. Tik op Start bereiding.",
+    "bubbleReady": "Is het eten klaar? Tik dan op Klaar. Je klant krijgt direct bericht.",
+    "step3": "Stap 3 van 3 · afgerond",
+    "told": "{name} heeft net bericht gekregen dat het eten klaar is.",
+    "thatsIt": "Dat is HatchGrab: klanten bestellen op hun telefoon, jij ziet het hier en zij halen af zonder in de rij te staan. Je menukaart is al ingesteld.",
+    "startFree": "{months, plural, =0 {Begin gratis, behoud mijn menukaart} one {Begin # maand gratis, behoud mijn menukaart} other {Begin # maanden gratis, behoud mijn menukaart}}",
+    "tryAnother": "Nog een bestelling proberen",
+    "barOrder": "Bestel als klant",
+    "barArrives": "Het komt binnen in je keuken",
+    "barReady": "Zet het op klaar",
+    "phoneLabel": "De telefoon van je klant",
+    "kitchenLabel": "Je keukenscherm",
+    "waitingTitle": "Wachten op bestellingen",
+    "waitingBody": "Bestel iets op de telefoon. Het verschijnt hier zodra je klant op Bestellen tikt.",
+    "startCooking": "Start bereiding",
+    "ready": "Klaar",
+    "readyForCollection": "Klaar om af te halen",
+    "cooking": "In bereiding",
+    "readyBadge": "Klaar",
+    "newBadge": "Nieuwe bestelling",
+    "orderNumber": "Bestelling #{number}",
+    "collectAt": "Afhalen om {time}",
+    "collectAsap": "Zo snel mogelijk afhalen",
+    "phoneReadyTitle": "Je bestelling is klaar",
+    "phoneReadyBody": "Haal je bestelling op bij de foodtruck.",
+    "bandTitle": "Dat is HatchGrab. Je menukaart is al ingesteld.",
+    "bandStart": "Begin gratis, behoud mijn menukaart",
+    "orderAgain": "Opnieuw bestellen",
+    "loading": "Je demo wordt klaargezet…",
+    "goneTitle": "Deze demo is afgelopen",
+    "goneBody": "Demo’s worden na een dag verwijderd. Je maakt in minder dan een minuut een nieuwe van je menukaart.",
+    "goneButton": "Nieuwe demo maken",
+    "failed": "Dat werkte niet — probeer het opnieuw.",
+    "backToMenu": "Terug naar de menukaart",
+    "formNote": "Dit is een demo: er wordt niemand iets afgerekend en er wordt niets verstuurd, dus je hoeft geen e-mailadres op te geven.",
+    "namePlaceholder": "Alex"
   }
 }

@@ -54,25 +54,41 @@ Never record a plan, price or feature of another country.`
 /** competitor-check-5: how many features one record_findings call carries — so no single answer has to hold everything
  *  (the 30 Oct deep check of 45 features was cut off at max_tokens). */
 export const FEATURE_GROUP_SIZE = 12
-/** The groups a deep or routine check records in, in order: prices and terms first, then the features a dozen at a time. */
-export function findingGroups(features: readonly Pick<CheckFeature, 'key'>[]): string[] {
-  const terms = features.filter(f => f.key === 'term' || f.key === 'trial').map(f => f.key)
+/** The features recorded with the prices (group 1), not in a features group. */
+export const TERMS_KEYS = ['term', 'trial'] as const
+/** competitor-check-8: the groups as KEYS — group 1's terms keys (with the prices), then each features group's keys. */
+export function groupKeys(features: readonly Pick<CheckFeature, 'key'>[]): { terms: string[]; groups: string[][] } {
+  const terms = features.filter(f => (TERMS_KEYS as readonly string[]).includes(f.key)).map(f => f.key)
   const rest = features.map(f => f.key).filter(k => !terms.includes(k))
-  const groups = [`Prices and terms: every plan's price and fees, the card rate, new and gone plans${terms.length ? `, the features ${terms.join(', ')}` : ''}, and any availability, classification, new URL, blocked or gone page.`]
-  for (let i = 0; i < rest.length; i += FEATURE_GROUP_SIZE) groups.push(`Features: ${rest.slice(i, i + FEATURE_GROUP_SIZE).join(', ')}.`)
+  const groups: string[][] = []
+  for (let i = 0; i < rest.length; i += FEATURE_GROUP_SIZE) groups.push(rest.slice(i, i + FEATURE_GROUP_SIZE))
+  return { terms, groups }
+}
+/** The groups a deep or routine check records in, in order: prices and terms first, then the features a dozen at a time.
+ *  competitor-check-8: `skipPrices` — a resumed check whose prices and terms an earlier run already recorded. */
+export function findingGroups(features: readonly Pick<CheckFeature, 'key'>[], o: { skipPrices?: boolean } = {}): string[] {
+  const { terms, groups: rest } = groupKeys(features)
+  const groups = o.skipPrices ? [] : [`Prices and terms: every plan's price and fees, the card rate, new and gone plans${terms.length ? `, the features ${terms.join(', ')}` : ''}, and any availability, classification, new URL, blocked or gone page.`]
+  for (const g of rest) groups.push(`Features: ${g.join(', ')}.`)
   return groups
 }
 
 /** The user message: the mode's task, today's date, the URLs (fetchable because they are here) and the stored data. */
-export function extractorMessage(c: StoredCompetitorForPrompt, mode: 'deep' | 'routine', today: string, country?: { code: string; maxFetches: number }, features: readonly CheckFeature[] = []): string {
+export function extractorMessage(c: StoredCompetitorForPrompt, mode: 'deep' | 'routine', today: string, country?: { code: string; maxFetches: number }, features: readonly CheckFeature[] = [],
+  resume?: { pricesDone: boolean; doneFeatures: number }): string {
   if (country) c = { ...c, plans: c.plans.filter(p => p.country_code === country.code) }
   const deepTask = mode === 'deep'
     ? `FULL DEEP CHECK. Read the pricing page(s), the features page(s), the food-truck page if there is one, the terms (for the minimum term) and the payment page. Return a finding for EVERY feature in the list and every stored plan — changed or unchanged — plus any new plans, plans that have gone, and new URLs worth reading next time.${c.lifecycle === 'candidate' ? ' This company is a CANDIDATE: also record one "classification" finding (what it sells) with its quote.' : ''}`
     : 'ROUTINE CHECK. Check the prices, fees, card rate and the features in the list, and whether plans were added or removed. Return a finding for each stored value that CHANGED, and for each feature whose stored answer is unknown that the site now states, plus new and gone plans.'
   const task = country ? `${countryTask(country.code, country.maxFetches)}\n\n${deepTask}` : deepTask
   const urls = c.check_urls.length ? c.check_urls : c.website ? [c.website] : []
-  const groups = findingGroups(features)
+  const groups = findingGroups(features, { skipPrices: resume?.pricesDone })
+  // competitor-check-8: a check that ran out of time last run goes on from where it stopped — only the groups not yet recorded.
+  const resumed = resume && (resume.pricesDone || resume.doneFeatures)
+    ? `RESUMED CHECK: an earlier run of this check ran out of time after recording ${[resume.pricesDone ? 'the prices and terms (plans, fees, the card rate, term, trial, availability)' : '', resume.doneFeatures ? `${resume.doneFeatures} feature${resume.doneFeatures === 1 ? '' : 's'}` : ''].filter(Boolean).join(' and ')}. Record ONLY the groups below${resume.pricesDone ? ' — no plan, price, fee, card rate, term, trial or availability finding again' : ''}; the features listed are the ones still to check.`
+    : null
   return [
+    ...(resumed ? [resumed] : []),
     `${task}`,
     `Record in ${groups.length} group${groups.length === 1 ? '' : 's'}, in this order — one record_findings call per group, each with only that group's findings ("more": true on every call except the last; a group with nothing to record still gets its call with an empty list):\n${groups.map((g, i) => `Group ${i + 1}. ${g}`).join('\n')}`,
     `Today is ${today}. Competitor: ${c.name}.`,

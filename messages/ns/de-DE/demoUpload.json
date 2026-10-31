@@ -53,5 +53,9 @@
     "or": "oder",
     "pasteLabel": "Speisekarte als Text einfügen",
     "pastePlaceholder": "Fügen Sie Ihre Speisekarte hier ein – Artikelnamen, Beschreibungen, Preise…"
-  }
+  },
+  "emailLabel": "Ihre E-Mail",
+  "emailNote": "Wir senden Ihnen per E-Mail einen Link zu Ihrer Demo und kontaktieren Sie eventuell zur Einrichtung von HatchGrab. <link>Datenschutzerklärung</link>",
+  "marketing": "Senden Sie mir gelegentlich Tipps und Neuigkeiten von HatchGrab",
+  "emailInvalid": "Bitte geben Sie eine gültige E-Mail-Adresse ein."
 }

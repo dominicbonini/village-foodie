@@ -1482,7 +1482,8 @@
       "heading": "Prijavite se sada za besplatni mjesec",
       "sub": "Odbrojavanje ne počinje dok ne odlučite krenuti uživo."
     },
-    "cashIcon": "💶"
+    "cashIcon": "💶",
+    "walkBanner": "Demo · ovo je vaš jelovnik, onakav kakvim će ga vidjeti vaši kupci. Ništa se ne naplaćuje i ne šalju se e-poruke."
   },
   "userMenu": {
     "menuLabel": "Korisnički izbornik",
@@ -2264,7 +2265,11 @@
       "or": "ili",
       "pasteLabel": "Zalijepite tekst jelovnika",
       "pastePlaceholder": "Zalijepite jelovnik ovdje – nazive artikala, opise, cijene..."
-    }
+    },
+    "emailLabel": "Vaša e-pošta",
+    "emailNote": "Poslat ćemo vam e-poštom poveznicu na vaš demo i možda vam se javiti u vezi s postavljanjem sustava HatchGrab. <link>Pravila privatnosti</link>",
+    "marketing": "Šaljite mi povremeno savjete i novosti tvrtke HatchGrab",
+    "emailInvalid": "Unesite valjanu adresu e-pošte."
   },
   "provisionContent": {
     "firstVanName": "Food truck 1",
@@ -6269,5 +6274,57 @@
     "customersSee": "Kupci vide:",
     "postalWarning": "To ne izgleda kao {article} – na primjer {example}. Svejedno ga možete spremiti.",
     "regionChoose": "Odaberite…"
+  },
+  "demoLinkEmail": {
+    "subject": "Vaš HatchGrab demo – evo vaše poveznice",
+    "heading": "Vaš demo je spreman",
+    "intro": "Evo poveznice na demo koji smo izradili od vašeg jelovnika. Naručite iz njega kao jedan od vaših kupaca, a zatim gledajte kako narudžba stiže na vaš kuhinjski zaslon. Prijava nije potrebna – samo je dodirnite.",
+    "button": "Otvori moj demo",
+    "deletion": "Ovo je demo pa ga ne čuvamo: izbrisat ćemo ga, zajedno s jelovnikom koji ste učitali, dana {date}. Ako ga želite dulje, u demo verziji pritisnite „Spremi moj jelovnik” i čuvat ćemo ga 14 dana.",
+    "deletionSoon": "Ovo je demo pa ga ne čuvamo: izbrisat ćemo ga, zajedno s jelovnikom koji ste učitali, nakon 24 sata. Ako ga želite dulje, u demo verziji pritisnite „Spremi moj jelovnik” i čuvat ćemo ga 14 dana."
+  },
+  "demoWalk": {
+    "step1": "Korak 1 od 3 · Naručite kao jedan od vaših kupaca",
+    "paymentTitle": "Plaćanje",
+    "paymentPanel": "Ovdje vaš kupac plaća karticom, putem Apple Pay ili Google Pay, ili odabire plaćanje pri preuzimanju. U demo verziji ništa se ne naplaćuje.",
+    "defaultName": "Alex",
+    "step2": "Korak 2 od 3",
+    "bubbleTitle": "Ovo je vaš kuhinjski zaslon",
+    "bubbleArrived": "Narudžba koju ste upravo poslali odmah je stigla ovamo i prikazuje vrijeme preuzimanja. Dodirnite „Počni pripremu”.",
+    "bubbleReady": "Kad je hrana gotova, dodirnite „Spremno”. Vaš kupac odmah dobiva obavijest.",
+    "step3": "Korak 3 od 3 · gotovo",
+    "told": "{name} upravo prima obavijest da je hrana spremna.",
+    "thatsIt": "To je HatchGrab: kupci naručuju na mobitelu, vi to vidite ovdje, a oni preuzimaju bez čekanja u redu. Vaš jelovnik je već postavljen.",
+    "startFree": "{months, plural, =0 {Počnite besplatno, jelovnik ostaje} one {Počnite besplatno na # mjesec, jelovnik ostaje} few {Počnite besplatno na # mjeseca, jelovnik ostaje} other {Počnite besplatno na # mjeseci, jelovnik ostaje}}",
+    "tryAnother": "Isprobajte novu narudžbu",
+    "barOrder": "Naručite kao kupac",
+    "barArrives": "Stiže u vašu kuhinju",
+    "barReady": "Označite kao spremnu",
+    "phoneLabel": "Mobitel vašeg kupca",
+    "kitchenLabel": "Vaš kuhinjski zaslon",
+    "waitingTitle": "Čekamo narudžbe",
+    "waitingBody": "Naručite nešto na mobitelu. Narudžba se ovdje pojavljuje čim je vaš kupac pošalje.",
+    "startCooking": "Počni pripremu",
+    "ready": "Spremno",
+    "readyForCollection": "Spremno za preuzimanje",
+    "cooking": "U pripremi",
+    "readyBadge": "Spremno",
+    "newBadge": "Nova narudžba",
+    "orderNumber": "Narudžba #{number}",
+    "collectAt": "Preuzmite u {time}",
+    "collectAsap": "Preuzmite što prije",
+    "phoneReadyTitle": "Vaša narudžba je spremna",
+    "phoneReadyBody": "Preuzmite je kod food trucka.",
+    "bandTitle": "To je HatchGrab. Vaš jelovnik je već postavljen.",
+    "bandStart": "Počnite besplatno, jelovnik ostaje",
+    "orderAgain": "Naruči ponovno",
+    "loading": "Postavljamo vaš demo…",
+    "goneTitle": "Ovaj demo je završio",
+    "goneBody": "Demo verzije brišu se nakon jednog dana. Novu možete izraditi od svog jelovnika za manje od minute.",
+    "goneButton": "Izradi novi demo",
+    "failed": "Nije uspjelo – pokušajte ponovno.",
+    "backToMenu": "Natrag na jelovnik",
+    "formNote": "Ovo je demo: nikome se ništa ne naplaćuje i ništa se ne šalje, pa ne morate unositi e-poštu.",
+    "namePlaceholder": "Alex"
   }
 }

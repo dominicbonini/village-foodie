@@ -53,5 +53,9 @@
     "or": "ili",
     "pasteLabel": "Zalijepite tekst jelovnika",
     "pastePlaceholder": "Zalijepite jelovnik ovdje – nazive artikala, opise, cijene..."
-  }
+  },
+  "emailLabel": "Vaša e-pošta",
+  "emailNote": "Poslat ćemo vam e-poštom poveznicu na vaš demo i možda vam se javiti u vezi s postavljanjem sustava HatchGrab. <link>Pravila privatnosti</link>",
+  "marketing": "Šaljite mi povremeno savjete i novosti tvrtke HatchGrab",
+  "emailInvalid": "Unesite valjanu adresu e-pošte."
 }

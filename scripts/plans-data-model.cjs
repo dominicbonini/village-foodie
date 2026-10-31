@@ -559,7 +559,11 @@ if (RENDER) {
   // (scripts/_lp-anz-terms.cjs).
   // eslint-disable-next-line @typescript-eslint/no-require-imports -- CommonJS harness module (anz-terms)
   const ANZT = require('./_lp-anz-terms.cjs')
-  const LEGAL_LASTMOD_OF = { privacy: LEGAL_LASTMOD, terms: '2026-10-20T00:00:00.000Z', 'country-terms': ANZT.LANDED ? ANZT.COUNTRY_TERMS_LASTMOD_NEW : IE3.LANDED ? IE3.COUNTRY_TERMS_LASTMOD_NEW : LEGAL_LASTMOD }
+  // ⚠️ RE-PINNED (demo-2b, 31 October 2026): the Privacy Policy gained the demo section and was re-dated 31 October 2026
+  // (scripts/_lp-demo2b.cjs).
+  // eslint-disable-next-line @typescript-eslint/no-require-imports -- CommonJS harness module (demo-2b)
+  const D2B = require('./_lp-demo2b.cjs')
+  const LEGAL_LASTMOD_OF = { privacy: D2B.LANDED ? D2B.PRIVACY_LASTMOD_NEW : LEGAL_LASTMOD, terms: '2026-10-20T00:00:00.000Z', 'country-terms': ANZT.LANDED ? ANZT.COUNTRY_TERMS_LASTMOD_NEW : IE3.LANDED ? IE3.COUNTRY_TERMS_LASTMOD_NEW : LEGAL_LASTMOD }
   /** The seo-fixes named change a view key falls under, as [name, (after, before) → [after', before'] | null]. */
   const seoFixes = (k) => {
     if (/^(landing|features|compare)\|[A-Z]+\|html(-usOn|-cookieUS)?$/.test(k)) return ['SEO-menu + SEO-badges' + (/^landing/.test(k) ? ' + SEO-ld' : '') + ': the country menus\' <ul> + <a role="menuitemradio"> options, the badges\' loading="lazy" (no image preload hints)' + (/^landing/.test(k) ? ', the one @graph JSON-LD' : ''),

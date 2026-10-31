@@ -1482,7 +1482,8 @@
       "heading": "Iscriviti ora per il tuo mese gratuito",
       "sub": "Il conteggio parte solo quando decidi di andare online."
     },
-    "cashIcon": "💶"
+    "cashIcon": "💶",
+    "walkBanner": "Demo · questo è il tuo menu, come lo vedranno i tuoi clienti. Non viene addebitato nulla e non viene inviata nessuna email."
   },
   "userMenu": {
     "menuLabel": "Menu utente",
@@ -2264,7 +2265,11 @@
       "or": "oppure",
       "pasteLabel": "Incolla il testo del menu",
       "pastePlaceholder": "Incolla qui il tuo menu — nomi dei piatti, descrizioni, prezzi..."
-    }
+    },
+    "emailLabel": "La tua email",
+    "emailNote": "Ti invieremo via email un link alla tua demo e potremmo contattarti per configurare HatchGrab. <link>Informativa sulla privacy</link>",
+    "marketing": "Inviatemi ogni tanto consigli e novità di HatchGrab",
+    "emailInvalid": "Inserisci un indirizzo email valido."
   },
   "provisionContent": {
     "firstVanName": "Food truck 1",
@@ -6269,5 +6274,57 @@
     "customersSee": "I clienti vedono:",
     "postalWarning": "Non sembra {article} — per esempio {example}. Puoi salvarlo comunque.",
     "regionChoose": "Scegli…"
+  },
+  "demoLinkEmail": {
+    "subject": "La tua demo HatchGrab — ecco il tuo link",
+    "heading": "La tua demo è pronta",
+    "intro": "Ecco il link alla demo che abbiamo creato dal tuo menu. Ordina come uno dei tuoi clienti, poi guarda l’ordine arrivare sul tuo monitor cucina. Nessun accesso richiesto — basta toccarlo.",
+    "button": "Apri la mia demo",
+    "deletion": "Questa è una demo, quindi non la conserviamo: la elimineremo, insieme al menu che hai caricato, il {date}. Se vuoi più tempo, premi «Salva il mio menu» nella demo e la conserveremo per 14 giorni.",
+    "deletionSoon": "Questa è una demo, quindi non la conserviamo: la elimineremo, insieme al menu che hai caricato, dopo 24 ore. Se vuoi più tempo, premi «Salva il mio menu» nella demo e la conserveremo per 14 giorni."
+  },
+  "demoWalk": {
+    "step1": "Passo 1 di 3 · Ordina come uno dei tuoi clienti",
+    "paymentTitle": "Pagamento",
+    "paymentPanel": "Qui il tuo cliente paga con carta, Apple Pay o Google Pay, oppure sceglie di pagare al ritiro. Nella demo non viene addebitato nulla.",
+    "defaultName": "Alex",
+    "step2": "Passo 2 di 3",
+    "bubbleTitle": "Questo è il tuo monitor cucina",
+    "bubbleArrived": "L’ordine che hai appena fatto è arrivato qui all’istante, con l’orario di ritiro. Tocca Inizia cottura.",
+    "bubbleReady": "Quando il cibo è pronto, tocca Pronto. Il tuo cliente viene avvisato subito.",
+    "step3": "Passo 3 di 3 · fatto",
+    "told": "Abbiamo appena avvisato {name} che il cibo è pronto.",
+    "thatsIt": "Questo è HatchGrab: i clienti ordinano dal telefono, tu lo vedi qui e loro ritirano senza fare la fila. Il tuo menu è già configurato.",
+    "startFree": "{months, plural, =0 {Inizia gratis e conserva il mio menu} one {Inizia gratis per # mese e conserva il mio menu} many {Inizia gratis per # di mesi e conserva il mio menu} other {Inizia gratis per # mesi e conserva il mio menu}}",
+    "tryAnother": "Prova un altro ordine",
+    "barOrder": "Ordina come un cliente",
+    "barArrives": "Arriva nella tua cucina",
+    "barReady": "Segnalo come pronto",
+    "phoneLabel": "Il telefono del tuo cliente",
+    "kitchenLabel": "Il tuo monitor cucina",
+    "waitingTitle": "In attesa di ordini",
+    "waitingBody": "Ordina qualcosa sul telefono. Appare qui nel momento in cui il tuo cliente preme Ordina.",
+    "startCooking": "Inizia cottura",
+    "ready": "Pronto",
+    "readyForCollection": "Pronto per il ritiro",
+    "cooking": "In cottura",
+    "readyBadge": "Pronto",
+    "newBadge": "Nuovo ordine",
+    "orderNumber": "Ordine #{number}",
+    "collectAt": "Ritiro alle {time}",
+    "collectAsap": "Ritiro al più presto",
+    "phoneReadyTitle": "Il tuo ordine è pronto",
+    "phoneReadyBody": "Ritiralo al food truck.",
+    "bandTitle": "Questo è HatchGrab. Il tuo menu è già configurato.",
+    "bandStart": "Inizia gratis e conserva il mio menu",
+    "orderAgain": "Ordina di nuovo",
+    "loading": "Stiamo preparando la tua demo…",
+    "goneTitle": "Questa demo è terminata",
+    "goneBody": "Le demo vengono eliminate dopo un giorno. Puoi crearne una nuova dal tuo menu in meno di un minuto.",
+    "goneButton": "Crea una nuova demo",
+    "failed": "Non ha funzionato — riprova.",
+    "backToMenu": "Torna al menu",
+    "formNote": "Questa è una demo: non viene addebitato nulla a nessuno e non viene inviato niente, quindi non serve indicare un’email.",
+    "namePlaceholder": "Alex"
   }
 }

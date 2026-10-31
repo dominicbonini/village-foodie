@@ -27,16 +27,23 @@
 // competitor-check-5: max_tokens is each model's maximum (a setting); the extractor records in GROUPS (prices and terms, then
 // the features a dozen at a time); an answer cut off at max_tokens is continued, and if it still can't finish its complete
 // findings are kept and the competitor reported as failed; EVERY response's usage (a failed check's too) is in the run's cost.
+// competitor-check-8 (31 October 2026, docs/competitor-check-8-report.md): 🔴 A TIME LIMIT IS A DEADLINE, NOT A RACE. Before,
+// a promise race rejected at 600 s while the check went on unseen: every finding was lost, and each verification still
+// queued failed and was logged one by one. Now the check stops itself at its deadline (deep_time_limit_seconds, 1800 s by
+// default, and never past the job's own time): the findings of every feature GROUP that finished are kept, the check is
+// INCOMPLETE, the groups done are saved (competitors.deep_progress) and the next run asks only for the rest; verifications
+// not reached are not_run, in one line. A stray field on a finding is dropped, not the call (lib/competitor-check/model.ts).
+// Only a whole stage failing (every competitor failing outright, a batch all errored, a failed login) exits non-zero.
 import type Anthropic from '@anthropic-ai/sdk'
 import {
   RECORD_FINDINGS_TOOL, RECORD_VERDICT_TOOL, QUOTED_OUTCOMES, PLAN_FIELDS, hostOf, onOwnSite, APP_STORE_HOSTS,
-  validateRecordFindings, validateRecordVerdict, maxOutputTokensFor, mergeRecorded, type RawFinding, type Field, type RecordFindingsInput,
+  validateRecordFindings, validateRecordVerdict, maxOutputTokensFor, mergeRecorded, type RawFinding, type Field, type RecordFindingsInput, type Ignored,
 } from './model'
 import {
   quoteInPages, normaliseForQuote, fetchedPages, costOf, addSpend, ZERO_SPEND, budgetStop, routineQuota, spreadFirstDates, selectRoutine, selectDeep,
   afterCheck, deepQueueOf, deepTargets, nextDeepCountry, isMultiCountry, scaleTokens, type Prices, type Spend, type SchedRow, type Lifecycle, type QueueCountry,
 } from './core'
-import { EXTRACTOR_SYSTEM, VERIFIER_SYSTEM, extractorMessage, verifierMessage, findingGroups, type StoredPlanForPrompt, type CheckFeature } from './prompts'
+import { EXTRACTOR_SYSTEM, VERIFIER_SYSTEM, extractorMessage, verifierMessage, findingGroups, groupKeys, TERMS_KEYS, type StoredPlanForPrompt, type CheckFeature } from './prompts'
 import { effectiveValue, type FeatureValueRow } from '@/lib/comparison-features'
 import { runPass, type BatchApi, type PassBatch, type PassSettings } from './pass'
 
@@ -55,11 +62,29 @@ export interface CheckSettings {
   /** competitor-check-5 (20261050): max_tokens per model (competitor_check_settings.max_output_tokens); a model not in it
    *  gets DEFAULT_MAX_OUTPUT_TOKENS (lib/competitor-check/model.ts). */
   maxOutputTokens?: Record<string, number>
+  /** competitor-check-8 (20261053): a deep (or single) check's time limit, seconds; DEFAULT_DEEP_TIME_LIMIT_S before it runs. */
+  deepTimeLimitSeconds?: number
 }
+/** competitor-check-8: a deep check's limit before the setting exists (was 600 s, in code). */
+export const DEFAULT_DEEP_TIME_LIMIT_S = 1800
+/** competitor-check-8: a routine check's limit (unchanged). */
+export const ROUTINE_TIME_LIMIT_S = 300
+/** competitor-check-8: a check is not started with less of the job's time than this left; and it ends this long before the job
+ *  does (its findings and the run row are written first). */
+export const MIN_CHECK_MS = 10 * 60_000
+export const JOB_MARGIN_MS = 5 * 60_000
+/** competitor-check-8: an API call still running this long after the deadline is aborted (its findings so far are kept). */
+export const ABORT_GRACE_MS = 3 * 60_000
+/** competitor-check-8: what a deep check that ran out of time had finished, per country ('*' for a check of every country) —
+ *  competitors.deep_progress. Valid only for the same deep request (deep_requested_at) and for PROGRESS_DAYS. */
+export interface DeepProgress { requestedAt: string | null; at: string; pricesDone: boolean; keys: string[] }
+export const PROGRESS_DAYS = 14
 export interface CompetitorForCheck extends SchedRow {
   website: string | null; focus: string | null; checkUrls: string[]
   /** comparison-features-1: its current answers (competitor_feature_values), every country's and each country's own. */
   featureValues: FeatureValueRow[]; plans: StoredPlanForPrompt[]
+  /** competitor-check-8 (20261053): the groups an earlier, timed-out deep check finished (by country). */
+  deepProgress?: Record<string, DeepProgress>
 }
 export interface FindingRow {
   run_id: string; competitor_id: string; plan_id: string | null; country_code: string | null; field: Field
@@ -79,7 +104,7 @@ export function secondVerdict(v: { verdict: string; value: string | null; quote:
   return v.verdict === 'disagreed' && differs && quoted ? 'disagreed' : 'unclear'
 }
 /** The scheduling columns — the ONLY competitor columns the checker may write. */
-export const SCHEDULE_COLUMNS = ['next_check_at', 'last_checked_at', 'deep_checked_at', 'check_requested_at', 'deep_checked_in', 'pass_state'] as const
+export const SCHEDULE_COLUMNS = ['next_check_at', 'last_checked_at', 'deep_checked_at', 'check_requested_at', 'deep_checked_in', 'pass_state', 'deep_progress'] as const
 /** global-players-1: a country check reads at most this many pages (and half as many searches) — its cost stays bounded. */
 export const COUNTRY_MAX_FETCHES = 8
 
@@ -100,24 +125,34 @@ export interface CheckerStore {
   features?(): Promise<CheckFeature[]>
   /** competitor-check-3: records the quick pass's Message Batch in flight (null once collected) — settings.pass_batch only. */
   setPassBatch?(batch: PassBatch | null): Promise<void>
+  /** competitor-check-8: the failed batches whose errors have been logged — settings.pass_batches_reread only. */
+  setPassReread?(ids: string[]): Promise<void>
 }
 export interface CheckerDeps {
-  /** One Messages API call (the SDK's client.beta.messages.create, or a harness's recorded fixtures). */
-  api(params: Row): Promise<Anthropic.Beta.BetaMessage>
+  /** One Messages API call (the SDK's client.beta.messages.create, or a harness's recorded fixtures). competitor-check-8: with
+   *  the check's abort signal (fired ABORT_GRACE_MS after its deadline). */
+  api(params: Row, opts?: { signal?: AbortSignal }): Promise<Anthropic.Beta.BetaMessage>
   store: CheckerStore
   now(): Date
   log(line: string): void
   dryRun: boolean
-  /** Per-competitor time limit (ms). */
+  /** Per-competitor time limit (ms) — overrides the settings (harnesses). */
   timeLimitMs?: number
+  /** competitor-check-8: when the job must be finished (epoch ms, from --job-minutes): no check starts with less than
+   *  MIN_CHECK_MS left, and none runs past it. */
+  jobDeadlineMs?: number
   /** competitor-check-3: the Message Batches API (the SDK's client.beta.messages.batches, or fixtures) — the quick pass uses it. */
   batch?: BatchApi
   /** competitor-check-5: the current check's meter (set per competitor by runOne, per item by the pass). */
   meter?: Meter
 }
+/** competitor-check-8: 'incomplete' — the check ran (out of time, malformed, cut off) and kept what it finished; it is tried
+ *  again and is NOT a run error. 'error' — it failed outright. */
+export interface FailedCheck { name: string; error: string; kind?: 'incomplete' | 'error' }
 export interface RunReport {
-  runId: string | null; mode: Mode; checked: number; failed: { name: string; error: string }[]; spend: Spend
-  stoppedReason: 'done' | 'daily_cap' | 'monthly_cap' | 'paused' | 'error'; findings: FindingRow[]
+  runId: string | null; mode: Mode; checked: number; failed: FailedCheck[]; spend: Spend
+  /** competitor-check-8: 'time_up' — the job's time ran out before the list did (the rest is checked next run). */
+  stoppedReason: 'done' | 'daily_cap' | 'monthly_cap' | 'paused' | 'error' | 'time_up'; findings: FindingRow[]
   /** competitor-check-2: why a run stopped with 'error' (a failed login, or every competitor failed). */
   error?: string
   /** competitor-check-2: the ids checked successfully (the deep check's country progress). */
@@ -136,8 +171,12 @@ export function loginFailure(e: unknown): string | null {
     return `The Claude API login failed (${kind || `status ${status}`}): ${text}`
   return null
 }
-/** competitor-check-2: the script's exit code — non-zero when any run stopped with 'error'. */
+/** competitor-check-2: the script's exit code — non-zero when any run stopped with 'error'. competitor-check-8: a run stops
+ *  with 'error' only when a STAGE fails as a whole (a failed login, a batch all errored, every competitor failing outright) —
+ *  never for a timed-out or incomplete check, which the run reports instead. */
 export const exitCodeOf = (reports: readonly RunReport[]) => (reports.some(r => r.stoppedReason === 'error') ? 1 : 0)
+/** competitor-check-8: did every check of a run fail OUTRIGHT (none passed, none incomplete)? */
+export const allFailedOutright = (r: Pick<RunReport, 'checked' | 'failed'>) => r.checked === 0 && r.failed.length > 0 && r.failed.every(f => f.kind !== 'incomplete')
 
 const ymd = (d: Date) => d.toISOString().slice(0, 10)
 const minor = (n: number | null, cur: string) => (n === null ? 'not stated' : `${(n / 100).toFixed(2)} ${cur}`)
@@ -191,17 +230,23 @@ function matchPlan(c: CompetitorForCheck, f: RawFinding): StoredPlanForPrompt | 
   return same.find(p => !f.country_code || p.country_code === f.country_code) ?? null
 }
 
-const withTimeout = <T>(p: Promise<T>, ms: number, what: string) => new Promise<T>((resolve, reject) => {
-  const timer = setTimeout(() => reject(new Error(`${what} took longer than ${Math.round(ms / 1000)} s`)), ms)
-  p.then(v => { clearTimeout(timer); resolve(v) }, e => { clearTimeout(timer); reject(e) })
-})
-
 /** competitor-check-5: how many times a response cut off at max_tokens is continued before the conversation gives up. */
 export const MAX_CONTINUATIONS = 2
 /** competitor-check-5: what one competitor's (or one pass item's) calls have cost so far — EVERY response's usage, including
  *  the calls of a check that then fails — so a failed check still counts towards the run's cost and the caps. Closed when
  *  the check is over (its time limit passed): no further call is sent. */
-export interface Meter { spend: Spend; closed?: boolean }
+export interface Meter {
+  spend: Spend; closed?: boolean
+  /** competitor-check-8: the check's deadline (epoch ms, on deps.now()) — no call is started after it. */
+  deadline?: number
+  /** competitor-check-8: aborts the call in flight ABORT_GRACE_MS after the deadline. */
+  abort?: AbortController
+}
+/** competitor-check-8: a check that reached its deadline. Carries `partial` (the complete calls) like any other failure. */
+export class OutOfTimeError extends Error { constructor() { super('the check ran out of time') } }
+/** competitor-check-8: is the current check past its deadline (or closed)? */
+export const outOfTime = (deps: Pick<CheckerDeps, 'meter' | 'now'>) =>
+  !!deps.meter && (!!deps.meter.closed || (deps.meter.deadline !== undefined && deps.now().getTime() >= deps.meter.deadline))
 /** competitor-check-5: what a conversation had recorded when it failed (record_findings in groups: the complete calls). */
 export interface Recorded<T> { value: T; contents: unknown[][] }
 
@@ -235,13 +280,16 @@ export async function converse<T>(deps: CheckerDeps, a: {
   try {
     for (let turn = 0; turn < a.maxTurns; turn++) {
       const seeded = turn === 0 && !!a.seed
-      if (!seeded && deps.meter?.closed) throw new Error('stopped: the check ran out of time')
-      const res = seeded ? a.seed! : await deps.api({
+      if (!seeded && outOfTime(deps)) throw new OutOfTimeError()
+      const params = {
         model: a.model, max_tokens: a.maxTokens ?? maxOutputTokensFor(a.model), system: a.system, messages, tools: a.tools,
         output_config: { effort: a.effort },
         // The skill's default for this model family: on a policy decline the API re-runs the request on a fallback model.
         ...(fallback ? { betas: ['server-side-fallback-2026-07-01'], fallbacks: 'default' } : {}),
-      })
+      }
+      // competitor-check-8: an aborted call (the check's deadline long past) is the time running out.
+      const res = seeded ? a.seed! : await (deps.meter?.abort ? deps.api(params, { signal: deps.meter.abort.signal }) : deps.api(params))
+        .catch(e => { if (deps.meter?.abort?.signal.aborted) { deps.meter.closed = true; throw new OutOfTimeError() } throw e })
       const priced = a.prices.models[res.model] ? res.model : a.model
       const raw = costOf(res.usage as never, priced, a.prices)
       const cost = seeded && a.seedScale !== undefined ? scaleTokens(raw, a.seedScale, a.prices) : raw
@@ -301,26 +349,57 @@ export async function converse<T>(deps: CheckerDeps, a: {
 /** competitor-check-5: record_findings in groups — merged, the repeats left out; `more` says another group follows. */
 export const FINDING_GROUPS = { merge: mergeRecorded, more: (v: RecordFindingsInput) => v.more === true }
 
+/** competitor-check-8: which groups a timed-out deep check FINISHED, from what its complete calls recorded. A features group is
+ *  finished when every one of its keys has a finding; the prices-and-terms group when the model has moved on to a features
+ *  group (they are recorded in order). `before` — what an earlier run had finished (a resumed check). */
+export function finishedGroups(features: readonly Pick<CheckFeature, 'key'>[], findings: readonly Pick<RawFinding, 'field' | 'feature_key'>[], before?: Pick<DeepProgress, 'pricesDone' | 'keys'>):
+  { pricesDone: boolean; keys: string[]; groupsDone: number; groupsAsked: number } {
+  const { terms, groups } = groupKeys(features)
+  const recorded = new Set(findings.filter(f => f.field === 'feature' && f.feature_key).map(f => f.feature_key!))
+  const later = groups.flat()
+  const pricesDone = !!before?.pricesDone || [...recorded].some(k => later.includes(k))
+  const done = groups.filter(g => g.every(k => recorded.has(k)))
+  const keys = [...new Set([...(before?.keys ?? []), ...(pricesDone ? terms : []), ...done.flat()])]
+  const asked = groups.length + (before?.pricesDone ? 0 : 1)
+  return { pricesDone, keys, groupsDone: done.length + (pricesDone && !before?.pricesDone ? 1 : 0), groupsAsked: asked }
+}
+/** competitor-check-8: the saved progress of an earlier timed-out deep check, if it still applies (the same deep request,
+ *  recent). */
+export function progressFor(c: Pick<CompetitorForCheck, 'deepProgress'>, country: string | null, deepRequestedAt: string | null, now: Date): DeepProgress | null {
+  const p = c.deepProgress?.[country ?? '*']
+  if (!p || p.requestedAt !== deepRequestedAt) return null
+  return now.getTime() - Date.parse(p.at) <= PROGRESS_DAYS * 86_400_000 ? p : null
+}
+
 /** Checks ONE competitor: extractor, quote check, verifier. Returns its findings (not yet written) and what it cost.
  *  competitor-check-5: the extractor records in groups; if it still cannot finish, the findings of its complete calls are
- *  kept (quote-checked and verified as usual) and `incomplete` says why the rest is missing. */
-export async function checkCompetitor(deps: CheckerDeps, settings: CheckSettings, c: CompetitorForCheck, depth: 'deep' | 'routine', runId: string, country: string | null = null):
-  Promise<{ findings: FindingRow[]; spend: Spend; dropped: number; incomplete: string | null }> {
+ *  kept (quote-checked and verified as usual) and `incomplete` says why the rest is missing.
+ *  competitor-check-8: a DEEP check that runs out of time keeps the findings of the groups it finished (`progress` says which,
+ *  for the next run, which asks only for the rest — `resume`); its verifications not reached stay not_run. */
+export async function checkCompetitor(deps: CheckerDeps, settings: CheckSettings, c: CompetitorForCheck, depth: 'deep' | 'routine', runId: string, country: string | null = null,
+  resume: DeepProgress | null = null):
+  Promise<{ findings: FindingRow[]; spend: Spend; dropped: number; incomplete: string | null; timedOut: boolean; progress: DeepProgress | null; ignored?: Ignored }> {
   const domains = domainsOf(c)
   const allowed = [...domains, ...APP_STORE_HOSTS]
   const today = ymd(deps.now())
-  const keys = (settings.features ?? []).map(f => f.key)
+  const all = settings.features ?? []
+  // competitor-check-8: a resumed deep check asks only for the features not yet recorded (and not the prices, once done).
+  const before = depth === 'deep' ? resume : null
+  const features = before ? all.filter(f => !before.keys.includes(f.key)) : all
+  const keys = features.map(f => f.key)
   const fetches = country ? COUNTRY_MAX_FETCHES : depth === 'deep' ? 12 : 6
   const searches = country ? Math.ceil(COUNTRY_MAX_FETCHES / 2) : depth === 'deep' ? 6 : 3
-  const groups = findingGroups(settings.features ?? []).length
-  let ex: { value: RecordFindingsInput; contents: unknown[][]; spend: Spend }, incomplete: string | null = null
+  const groups = findingGroups(features, { skipPrices: before?.pricesDone }).length
+  if (before && !groups) return { findings: [], spend: ZERO_SPEND, dropped: 0, incomplete: null, timedOut: false, progress: null }
+  let ex: { value: RecordFindingsInput; contents: unknown[][]; spend: Spend }, incomplete: string | null = null, timedOut = false, progress: DeepProgress | null = null
   try { ex = await converse(deps, {
     model: settings.extractorModel, system: EXTRACTOR_SYSTEM, toolName: RECORD_FINDINGS_TOOL.name, prices: settings.prices,
     effort: depth === 'deep' ? 'medium' : 'low', maxTurns: (depth === 'deep' ? 12 : 8) + groups + MAX_CONTINUATIONS, validate: validateRecordFindings,
     maxTokens: maxOutputTokensFor(settings.extractorModel, settings.maxOutputTokens), groups: FINDING_GROUPS,
     user: extractorMessage({ name: c.name, website: c.website, lifecycle: c.lifecycle, focus: c.focus, check_urls: c.checkUrls,
       features: answersFor(c, keys, country), plans: c.plans }, depth, today,
-      country ? { code: country, maxFetches: COUNTRY_MAX_FETCHES } : undefined, settings.features ?? []),
+      country ? { code: country, maxFetches: COUNTRY_MAX_FETCHES } : undefined, features,
+      before ? { pricesDone: before.pricesDone, doneFeatures: before.keys.filter(k => !(TERMS_KEYS as readonly string[]).includes(k)).length } : undefined),
     tools: [
       { type: 'web_fetch_20260318', name: 'web_fetch', max_uses: fetches, max_content_tokens: 12000, allowed_domains: allowed },
       { type: 'web_search_20260318', name: 'web_search', max_uses: searches, allowed_domains: allowed },
@@ -328,9 +407,27 @@ export async function checkCompetitor(deps: CheckerDeps, settings: CheckSettings
     ],
   }) } catch (e) {
     const partial = (e as { partial?: Recorded<RecordFindingsInput> }).partial
-    if (!partial || loginFailure(e)) throw e
-    ex = { ...partial, spend: ZERO_SPEND }
-    incomplete = `${e instanceof Error ? e.message : String(e)} — ${partial.value.findings.length} finding(s) from its complete calls kept; the rest was not recorded`
+    timedOut = e instanceof OutOfTimeError
+    if (loginFailure(e) || (!partial && !(timedOut && depth === 'deep'))) throw e
+    const got = partial ?? { value: { findings: [], pages_read: [], notes: null } as RecordFindingsInput, contents: [] }
+    ex = { ...got, spend: ZERO_SPEND }
+    if (timedOut && depth === 'deep') {
+      // Only the groups it finished: the unfinished group's findings are asked again next run (so nothing is recorded twice).
+      const fin = finishedGroups(features, got.value.findings, before ?? undefined)
+      const inFinished = (f: RawFinding) => f.field === 'feature' ? !!f.feature_key && fin.keys.includes(f.feature_key) : fin.pricesDone && !before?.pricesDone
+      const kept = got.value.findings.filter(inFinished)
+      const left = got.value.findings.length - kept.length
+      ex = { ...ex, value: { ...got.value, findings: kept } }
+      progress = { requestedAt: settings.deepRequestedAt, at: deps.now().toISOString(), pricesDone: fin.pricesDone, keys: fin.keys }
+      incomplete = `ran out of time after ${fin.groupsDone} of ${fin.groupsAsked} group${fin.groupsAsked === 1 ? '' : 's'} — ${kept.length} finding(s) from the finished groups kept${left ? `, ${left} from the unfinished group left` : ''}; the next run asks only for the rest`
+    } else incomplete = `${e instanceof Error ? e.message : String(e)} — ${got.value.findings.length} finding(s) from its complete calls kept; the rest was not recorded`
+  }
+  // competitor-check-8: a resumed check never records again what the earlier run kept.
+  let repeats = 0
+  if (before) {
+    const fresh = ex.value.findings.filter(f => f.field === 'feature' ? !before.keys.includes(f.feature_key ?? '') : !before.pricesDone)
+    repeats = ex.value.findings.length - fresh.length
+    ex = { ...ex, value: { ...ex.value, findings: fresh } }
   }
   const { findings, dropped } = rowsFrom(c, ex, { runId, country, keys, domains })
   // The second check, on its own fresh conversation per claim. Deep: every quoted finding; routine: every change and every
@@ -338,7 +435,7 @@ export async function checkCompetitor(deps: CheckerDeps, settings: CheckSettings
   const spend = addSpend(ex.spend, await secondCheck(deps, { model: settings.verifierModel, prices: settings.prices, pageTokens: 12000, allowed,
     maxTokens: maxOutputTokensFor(settings.verifierModel, settings.maxOutputTokens) }, c, findings,
     row => depth === 'deep' || row.outcome !== 'unchanged' || !row.quote_in_page))
-  return { findings, spend, dropped, incomplete }
+  return { findings, spend, dropped: dropped + repeats, incomplete, timedOut, progress, ignored: ex.value.ignored }
 }
 
 /** The extractor's findings as rows, after the rules: a finding about another website, another country, an availability
@@ -379,9 +476,13 @@ export function rowsFrom(c: CompetitorForCheck, ex: { value: { findings: RawFind
 export async function secondCheck(deps: CheckerDeps, v: { model: string; prices: Prices; pageTokens: number; allowed: string[]; maxInputTokens?: number; maxTokens?: number },
   c: Pick<CompetitorForCheck, 'name'>, rows: FindingRow[], wanted: (row: FindingRow) => boolean): Promise<Spend> {
   let spend = ZERO_SPEND
+  // competitor-check-8: once the check is out of time, the verifications not yet run are not started and not logged one by
+  // one — they stay not_run, and ONE line says how many.
+  let skipped = 0
   for (const row of rows) {
     const quoted = (QUOTED_OUTCOMES as readonly string[]).includes(row.outcome) && !!row.source_url
     if (!quoted || !wanted(row)) continue
+    if (skipped || outOfTime(deps)) { skipped++; continue }
     try {
       const r = await converse(deps, {
         model: v.model, system: VERIFIER_SYSTEM, toolName: RECORD_VERDICT_TOOL.name, prices: v.prices, effort: 'low', maxTurns: 4 + MAX_CONTINUATIONS, maxInputTokens: v.maxInputTokens, maxTokens: v.maxTokens,
@@ -396,10 +497,12 @@ export async function secondCheck(deps: CheckerDeps, v: { model: string; prices:
       row.second_quote = r.value.quote
     } catch (e) {
       if (loginFailure(e)) throw e   // a failed login is never just one claim's problem
+      if (e instanceof OutOfTimeError) { skipped++; continue }   // competitor-check-8: not_run, counted in the one line
       row.second_check = 'unclear'   // competitor-check-7: it ran and could not confirm — never a disagreement
       deps.log(`  verifier failed for ${c.name} · ${row.field}: ${e instanceof Error ? e.message : e}`)
     }
   }
+  if (skipped) deps.log(`  ${c.name}: ${skipped} verification${skipped === 1 ? '' : 's'} skipped (out of time)`)
   return spend
 }
 
@@ -425,24 +528,47 @@ async function runOne(deps: CheckerDeps, settings: CheckSettings, mode: Mode, tr
       runUsd: report.spend.usd, runChecked: report.checked + report.failed.length, priorAvgUsd: spentBefore.priorAvgUsd,
       caps: { dailyUsd: live.dailyCapUsd, monthlyUsd: live.monthlyCapUsd } })
     if (guard.stop) { report.stoppedReason = guard.reason; deps.log(`  stopped before ${c.name}: ${guard.reason} (next one estimated at $${guard.estimateUsd.toFixed(2)})`); break }
+    // competitor-check-8: the job's own time — a check is not started without MIN_CHECK_MS left; the rest goes to the next run.
+    const startMs = deps.now().getTime()
+    if (deps.jobDeadlineMs !== undefined && deps.jobDeadlineMs - startMs < MIN_CHECK_MS) {
+      report.stoppedReason = 'time_up'
+      deps.log(`  stopped before ${c.name}: the job has ${Math.max(0, Math.round((deps.jobDeadlineMs - startMs) / 60_000))} min left — the rest is checked next run`)
+      break
+    }
     // competitor-check-5: every response's usage — a failed check's too — goes on the meter and into the run's cost.
-    const meter: Meter = { spend: ZERO_SPEND }
+    // competitor-check-8: and the check's DEADLINE (its limit, never past the job's own end); a call still running
+    // ABORT_GRACE_MS after it is aborted (real time — the timer is unref'd so it never holds the process open).
+    const limitMs = deps.timeLimitMs ?? (depth === 'deep' ? (live.deepTimeLimitSeconds ?? DEFAULT_DEEP_TIME_LIMIT_S) : ROUTINE_TIME_LIMIT_S) * 1000
+    const deadline = Math.min(startMs + limitMs, deps.jobDeadlineMs !== undefined ? deps.jobDeadlineMs - JOB_MARGIN_MS : Infinity)
+    const meter: Meter = { spend: ZERO_SPEND, deadline, abort: new AbortController() }
+    const hard = setTimeout(() => meter.abort!.abort(), deadline - startMs + ABORT_GRACE_MS)
+    ;(hard as { unref?: () => void }).unref?.()
+    // global-players-1: a competitor in several countries, picked for a country, is checked for that country only.
+    const country = depth === 'deep' && isMultiCountry(c) ? countryOf.get(c.id) ?? null : null
+    const pkey = country ?? '*'
     try {
-      // global-players-1: a competitor in several countries, picked for a country, is checked for that country only.
-      const country = depth === 'deep' && isMultiCountry(c) ? countryOf.get(c.id) ?? null : null
-      const r = await withTimeout(checkCompetitor({ ...deps, meter }, live, c, depth, runId, country), deps.timeLimitMs ?? (depth === 'deep' ? 600_000 : 300_000), country ? `${c.name} (${country})` : c.name)
+      // competitor-check-8: a deep check that ran out of time last run goes on from the groups it finished.
+      const resume = depth === 'deep' ? progressFor(c, country, live.deepRequestedAt, deps.now()) : null
+      if (resume) deps.log(`  ${c.name}${country ? ` · ${country}` : ''}: resuming — ${resume.pricesDone ? 'prices and terms' : 'nothing'} and ${resume.keys.length} feature(s) already recorded`)
+      const r = await checkCompetitor({ ...deps, meter }, live, c, depth, runId, country, resume)
       meter.closed = true
       report.spend = addSpend(report.spend, meter.spend)
       report.findings.push(...r.findings)
       // competitor-check-5: a check that could not finish keeps its complete findings but is not marked checked (it is tried again).
-      if (r.incomplete) report.failed.push({ name: c.name, error: r.incomplete })
+      if (r.incomplete) report.failed.push({ name: c.name, error: r.incomplete, kind: 'incomplete' })
       else { report.checked++; report.checkedIds!.push(c.id) }
-      deps.log(`  ${c.name}${country ? ` · ${country}` : ''}: ${r.incomplete ? `INCOMPLETE — ${r.incomplete}; ` : ''}${r.findings.length} finding(s)${r.dropped ? `, ${r.dropped} dropped (another website)` : ''} · $${meter.spend.usd.toFixed(3)}`)
+      const ign = r.ignored
+      deps.log(`  ${c.name}${country ? ` · ${country}` : ''}: ${r.incomplete ? `INCOMPLETE — ${r.incomplete}; ` : ''}${r.findings.length} finding(s)${r.dropped ? `, ${r.dropped} dropped (another website, country or a repeat)` : ''}`
+        + `${ign?.strayFields ? `, ${ign.strayFields} stray field${ign.strayFields === 1 ? '' : 's'} ignored` : ''}${ign?.unusable.length ? `, ${ign.unusable.length} unusable finding${ign.unusable.length === 1 ? '' : 's'} left out (${ign.unusable[0].slice(0, 160)})` : ''} · $${meter.spend.usd.toFixed(3)}`)
       if (deps.dryRun) deps.log(JSON.stringify(r.findings, null, 1))
       else {
         if (r.findings.length) await deps.store.insertFindings(r.findings)
         const now = deps.now()
-        if (!r.incomplete) await deps.store.setSchedule(c.id, afterCheck({ checkIntervalDays: c.checkIntervalDays || live.checkIntervalDays, deepCheckedIn: c.deepCheckedIn }, ymd(now), now.toISOString(), depth === 'deep', country))
+        // competitor-check-8: a timed-out deep check saves the groups it finished; a finished one clears what was saved.
+        const rest = (): Record<string, DeepProgress> => { const x = { ...(c.deepProgress ?? {}) }; delete x[pkey]; return x }
+        if (r.progress) { c.deepProgress = { ...(c.deepProgress ?? {}), [pkey]: r.progress }; await deps.store.setSchedule(c.id, { deep_progress: c.deepProgress as unknown as Record<string, unknown> }) }
+        if (!r.incomplete) await deps.store.setSchedule(c.id, { ...afterCheck({ checkIntervalDays: c.checkIntervalDays || live.checkIntervalDays, deepCheckedIn: c.deepCheckedIn }, ymd(now), now.toISOString(), depth === 'deep', country),
+          ...(depth === 'deep' && c.deepProgress?.[pkey] ? { deep_progress: rest() as unknown as Record<string, unknown> } : {}) })
       }
     } catch (e) {
       meter.closed = true
@@ -456,12 +582,14 @@ async function runOne(deps: CheckerDeps, settings: CheckSettings, mode: Mode, tr
         await save()
         break
       }
-      report.failed.push({ name: c.name, error })
-      deps.log(`  ${c.name}: FAILED — ${error} · $${meter.spend.usd.toFixed(3)}`)
-    }
+      // competitor-check-8: running out of time is never an outright failure (it is tried again, and the run is not an error).
+      const timedOut = e instanceof OutOfTimeError
+      report.failed.push({ name: c.name, error, kind: timedOut ? 'incomplete' : 'error' })
+      deps.log(`  ${c.name}${country ? ` · ${country}` : ''}: ${timedOut ? 'INCOMPLETE' : 'FAILED'} — ${error} · $${meter.spend.usd.toFixed(3)}`)
+    } finally { clearTimeout(hard) }
     await save()
   }
-  if (report.stoppedReason === 'done' && report.checked === 0 && report.failed.length > 0) {
+  if (report.stoppedReason === 'done' && allFailedOutright(report)) {
     report.stoppedReason = 'error'; report.error = `Every competitor in this run failed (${report.failed.length}).`
     deps.log(`  ${report.error}`)
   }

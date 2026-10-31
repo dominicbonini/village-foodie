@@ -1,0 +1,8 @@
+{
+  "subject": "HatchGrab-demoen din – her er lenken",
+  "heading": "Demoen din er klar",
+  "intro": "Her er lenken til demoen vi lagde av menyen din. Bestill fra den som en av kundene dine, og se bestillingen komme inn på kjøkkenskjermen din. Ingen innlogging nødvendig – bare trykk på den.",
+  "button": "Åpne demoen min",
+  "deletion": "Dette er en demo, så vi tar ikke vare på den: Vi sletter den, og menyen du lastet opp, den {date}. Vil du ha den lenger, trykker du på «Lagre menyen min» i demoen, så tar vi vare på den i 14 dager.",
+  "deletionSoon": "Dette er en demo, så vi tar ikke vare på den: Vi sletter den, og menyen du lastet opp, etter 24 timer. Vil du ha den lenger, trykker du på «Lagre menyen min» i demoen, så tar vi vare på den i 14 dager."
+}

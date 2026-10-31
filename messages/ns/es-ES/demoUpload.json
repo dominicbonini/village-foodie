@@ -53,5 +53,9 @@
     "or": "o",
     "pasteLabel": "Pegar el texto de la carta",
     "pastePlaceholder": "Pega aquí tu carta: nombres de los productos, descripciones, precios…"
-  }
+  },
+  "emailLabel": "Tu correo",
+  "emailNote": "Te enviaremos por correo un enlace a tu demo y puede que nos pongamos en contacto contigo para configurar HatchGrab. <link>Política de privacidad</link>",
+  "marketing": "Quiero recibir de vez en cuando consejos y novedades de HatchGrab",
+  "emailInvalid": "Introduce una dirección de correo válida."
 }

@@ -24,6 +24,15 @@ import { demoRatelimit } from '@/lib/ratelimit'
 import { onboardingErrorBody } from '@/lib/i18n/onboarding-errors'
 import { DEFAULT_LOCALE } from '@/lib/i18n/locales'
 import { visitorCountryCodeOf } from '@/lib/visitor-country'
+// demo-2 (30 Oct 2026, docs/demo-2-report.md): the email asked before the build, the menu kept for Admin, the counts,
+// and the link sent once the build is done. The visitor is sent to the walkthrough (/try/<slug>), never to a URL that
+// carries the dashboard token.
+import { isDemoEmail, recordDemoVisitorEmail } from '@/lib/demo-session'
+import { saveDemoMenuFiles } from '@/lib/demo-menu-files'
+import { recordDemoEvent } from '@/lib/demo-events'
+import { sendDemoLinkEmail } from '@/lib/demo-link-email'
+import { localeForTruck } from '@/lib/i18n/server-locale'
+import { truckTimeSettings } from '@/lib/truck-time'
 
 // 🔴 THIS ROUTE BLOCKS FOR THE WHOLE PROVISION (Gemini extract + ~85-round-trip commit + event + seed +
 // rebuild) — ~40-80s. It had NO maxDuration, so it inherited the PLATFORM DEFAULT (10s on Hobby / 15s on
@@ -56,6 +65,8 @@ export async function POST(req: NextRequest) {
   let file: File | null = null
   let text: string | null = null
   let templateId: string | null = null
+  let email = ''
+  let marketingOptIn = false
 
   try {
     const form = await req.formData()
@@ -65,6 +76,9 @@ export async function POST(req: NextRequest) {
     text = typeof t === 'string' && t.trim() ? t.trim() : null
     const tpl = form.get('template')
     templateId = typeof tpl === 'string' && tpl.trim() ? tpl.trim() : null
+    const em = form.get('email')
+    email = typeof em === 'string' ? em.trim() : ''
+    marketingOptIn = form.get('marketing') === 'true'
   } catch {
     return NextResponse.json(onboardingErrorBody(DEFAULT_LOCALE, 'upload_unreadable'), { status: 400 })
   }
@@ -96,6 +110,11 @@ export async function POST(req: NextRequest) {
   if (!file && !text && !template) {
     return NextResponse.json(onboardingErrorBody(DEFAULT_LOCALE, 'menu_missing'), { status: 400 })
   }
+  // 🔴 demo-2: THE EMAIL IS REQUIRED, and checked BEFORE the rate limit — a typo must not spend one of the visitor's
+  // five hourly builds. (Outreach demos are built by /api/admin/provision-demo and never come through here.)
+  if (!isDemoEmail(email)) {
+    return NextResponse.json(onboardingErrorBody(DEFAULT_LOCALE, 'email_not_valid'), { status: 400 })
+  }
 
   // ── 3. Rate limit ─────────────────────────────────────────────────────────────────────────────────
   // Mirrors proxy.ts's bypasses so local development and loopback aren't throttled (dev has no
@@ -120,12 +139,20 @@ export async function POST(req: NextRequest) {
   }
 
   // ── 4. Provision ──────────────────────────────────────────────────────────────────────────────────
+  // The count of a started build has no demo yet — its truck is created inside provisionDemo — so it is filed unnamed.
+  await recordDemoEvent(supabase, { demoId: null, event: 'build_started', source: 'landing' })
   try {
     // 🔴 THE DEMO IS BUILT IN THE VISITOR'S COUNTRY (Language Phase 2) — the marketing pages' rule (?country → the
     // hg_country cookie → where the request comes from), switched-on countries only, else GB. While the US is
     // switched off this is always GB. provisionDemo falls back to GB again for anything it cannot use.
     const country = await visitorCountryCodeOf(req)
     const result = await provisionDemo(supabase, { file, text, template, country })
+
+    // demo-2: whatever the outcome, the demo's session exists now — file the email, the menu and the counts on it.
+    await recordDemoVisitorEmail(supabase, result.truckId, email, marketingOptIn)
+    if (file || text) await saveDemoMenuFiles(supabase, result.truckId, { file, text })
+    if (template) await recordDemoEvent(supabase, { demoId: result.truckId, event: 'sample_used', source: 'landing' })
+    await recordDemoEvent(supabase, { demoId: result.truckId, event: result.menu.kind === 'failed' ? 'build_failed' : 'build_ok', source: 'landing' })
 
     // The honest-failure path (§11) is NOT an error — it is the product working correctly. 200 with a
     // machine-readable outcome so the client can offer templates / retry / build-for-me.
@@ -145,9 +172,17 @@ export async function POST(req: NextRequest) {
       })
     }
 
+    // demo-2: the visitor's link, emailed once the build is done. Awaited so the answer can say whether it went, but a
+    // failure never fails the demo.
+    const emailed = await emailDemoLink(req, result.truckId, result.slug, email)
+
     return NextResponse.json({
       ok: true,
       outcome: result.menu.kind,          // 'imported' | 'template'
+      // demo-2: the slug is the walkthrough's identifier (it is already public on the order page's URL); the dashboard
+      // token is NOT sent back any more — the walkthrough never needs it.
+      slug: result.slug,
+      emailSent: emailed,
       itemsImported: result.menu.inserted,
       partial: result.menu.kind === 'imported' ? result.menu.partial : false,
       // No `?welcome=sample` here any more. It used to carry the outcome to the welcome popup because a
@@ -157,9 +192,10 @@ export async function POST(req: NextRequest) {
       // demo_sessions.extraction_source in its `demo` block, which survives reloads, tabs and devices.
       // The param had zero readers repo-wide once that landed, and a param nothing consumes is a trap for
       // whoever reads this next.
-      redirectTo: `/dashboard/${result.dashboardToken}`,
+      redirectTo: `/try/${encodeURIComponent(result.slug)}`,
     })
   } catch (err) {
+    await recordDemoEvent(supabase, { demoId: err instanceof ProvisionDemoError && err.truckId ? err.truckId : null, event: 'build_failed', source: 'landing' })
     if (err instanceof ProvisionDemoError) {
       console.error(`[demo] provisioning failed${err.truckId ? ` (truck ${err.truckId})` : ''}:`, err.message)
     } else {
@@ -170,5 +206,25 @@ export async function POST(req: NextRequest) {
       { ok: false, outcome: 'error', ...onboardingErrorBody(DEFAULT_LOCALE, 'demo_build_failed') },
       { status: 500 },
     )
+  }
+}
+
+/** demo-2: emails the walkthrough link to the visitor. The link's base is the public site (NEXT_PUBLIC_HATCHGRAB_URL),
+ *  else this request's own origin (local testing). Returns whether it went. */
+async function emailDemoLink(req: NextRequest, truckId: string, slug: string, to: string): Promise<boolean> {
+  try {
+    const [{ data: truck }, { data: session }] = await Promise.all([
+      supabase.from('trucks').select('id, country, timezone').eq('id', truckId).maybeSingle(),
+      supabase.from('demo_sessions').select('expires_at').eq('truck_id', truckId).maybeSingle(),
+    ])
+    const locale = truck ? await localeForTruck(truck) : DEFAULT_LOCALE
+    const time = truck ? await truckTimeSettings(truck).catch(() => null) : null
+    const base = process.env.NEXT_PUBLIC_HATCHGRAB_URL || new URL(req.url).origin
+    const r = await sendDemoLinkEmail({ to, slug, expiresAt: (session?.expires_at as string | null) ?? null, locale, time, base })
+    if (!r.sent) console.warn(`[demo] link email not sent for ${truckId}: ${r.reason}`)
+    return r.sent
+  } catch (err) {
+    console.warn(`[demo] link email failed for ${truckId}:`, err)
+    return false
   }
 }

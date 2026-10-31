@@ -1,4 +1,7 @@
 // lib/seed-demo-orders.ts
+// ⛔ NO LONGER CALLED (demo-2, 30 October 2026, docs/demo-2-report.md): a demo now opens with NO seeded orders, on the
+// build and on every restart — the visitor's own order is the only one on the board. Kept, with its harnesses
+// (seed-demo-grid, demo-seed-parameters), as the tested way back should a pre-filled board be wanted again.
 // Seeds the demo board (spec §6) so a prospect lands on a service already in progress rather than an
 // empty screen.
 //

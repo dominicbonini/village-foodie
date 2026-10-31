@@ -1,0 +1,8 @@
+{
+  "subject": "Vaše demo HatchGrab — tady je odkaz",
+  "heading": "Vaše demo je připravené",
+  "intro": "Tady je odkaz na demo, které jsme vytvořili z vašeho jídelního lístku. Objednejte si z něj jako jeden z vašich zákazníků a pak sledujte, jak objednávka dorazí na vaši kuchyňskou obrazovku. Není potřeba se přihlašovat — stačí klepnout.",
+  "button": "Otevřít moje demo",
+  "deletion": "Je to jen demo, takže ho neuchováváme: smažeme ho i nahraný jídelní lístek dne {date}. Pokud ho chcete mít déle, stiskněte v demu „Uložit jídelní lístek“ a uchováme ho 14 dní.",
+  "deletionSoon": "Je to jen demo, takže ho neuchováváme: smažeme ho i nahraný jídelní lístek po 24 hodinách. Pokud ho chcete mít déle, stiskněte v demu „Uložit jídelní lístek“ a uchováme ho 14 dní."
+}

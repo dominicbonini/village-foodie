@@ -1,0 +1,8 @@
+{
+  "subject": "Sinu HatchGrabi demo — siin on sinu link",
+  "heading": "Sinu demo on valmis",
+  "intro": "Siin on link demole, mille sinu menüü põhjal tegime. Telli sealt nagu üks sinu klientidest ja vaata, kuidas tellimus sinu köögiekraanile jõuab. Sisselogimist pole vaja — lihtsalt puuduta linki.",
+  "button": "Ava minu demo",
+  "deletion": "See on demo, seega me seda alles ei hoia: kustutame selle koos sinu üles laaditud menüüga kuupäeval {date}. Kui soovid seda kauem, vajuta demos „Salvesta mu menüü“ ja hoiame seda 14 päeva.",
+  "deletionSoon": "See on demo, seega me seda alles ei hoia: kustutame selle koos sinu üles laaditud menüüga 24 tunni pärast. Kui soovid seda kauem, vajuta demos „Salvesta mu menüü“ ja hoiame seda 14 päeva."
+}

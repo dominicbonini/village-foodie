@@ -29,7 +29,7 @@
 import { useT } from '@/lib/i18n/use-t'
 import '@/lib/i18n/catalog/demo'
 
-export function DemoModeBanner({ className = '', action, innerRef }: {
+export function DemoModeBanner({ className = '', action, innerRef, message }: {
   /** Positioning for the host surface. Defaults to the app-shell strip treatment (dashboard + KDS, which
    *  are h-dvh flex columns and need `shrink-0`). The customer order page passes its own sticky offset
    *  because it sits under a 60px sticky header rather than in a flex shell. */
@@ -40,16 +40,29 @@ export function DemoModeBanner({ className = '', action, innerRef }: {
    *  rendered height to offset the sticky bars that stack beneath this one — see the sticky-stack note in
    *  app/trucks/[slug]/order/page.tsx. Purely additive: the dashboard and KDS pass nothing. */
   innerRef?: React.Ref<HTMLDivElement>
+  /** demo-2 (30 Oct 2026): a sentence shown INSTEAD of the "DEMO MODE" label — the walkthrough's "Demo · this is your
+   *  menu, the way your customers will see it…". Still this one component on every surface; absent, it is exactly as
+   *  before. */
+  message?: string
 }) {
   const t = useT('demo')
   return (
     <div ref={innerRef} className={`w-full bg-orange-50 px-4 py-2 shrink-0 border-b-2 border-slate-900 ${className}`}>
-      <div className="relative w-full min-[1400px]:max-w-5xl min-[1400px]:mx-auto flex items-center justify-center min-h-[1.75rem]">
-        <span className="text-base font-black text-orange-600">{t('demoMode')}</span>
-        {action && (
-          <div className="absolute right-0 top-1/2 -translate-y-1/2">{action}</div>
-        )}
-      </div>
+      {message ? (
+        // A sentence wraps, so it cannot sit centred under an absolutely placed CTA (the text ran beneath the button at
+        // 390px): with a message the strip is a row — the sentence takes the room left, the CTA keeps its own width.
+        <div className={`w-full min-[1400px]:max-w-5xl min-[1400px]:mx-auto flex items-center gap-3 min-h-[1.75rem] ${action ? 'justify-between' : 'justify-center'}`}>
+          <span data-demo-banner-message className={`text-sm font-bold text-orange-700 leading-snug ${action ? 'flex-1 min-w-0 text-left' : 'text-center'}`}>{message}</span>
+          {action && <div className="shrink-0">{action}</div>}
+        </div>
+      ) : (
+        <div className="relative w-full min-[1400px]:max-w-5xl min-[1400px]:mx-auto flex items-center justify-center min-h-[1.75rem]">
+          <span className="text-base font-black text-orange-600">{t('demoMode')}</span>
+          {action && (
+            <div className="absolute right-0 top-1/2 -translate-y-1/2">{action}</div>
+          )}
+        </div>
+      )}
     </div>
   )
 }

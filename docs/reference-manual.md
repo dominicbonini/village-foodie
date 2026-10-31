@@ -1,4 +1,4 @@
-HatchGrab Engineering Reference Manual · V16.7
+HatchGrab Engineering Reference Manual · V16.8
 
 **HatchGrab**
 
@@ -6,7 +6,7 @@ Engineering Reference Manual
 
 *Village Foodie · Food Truck Ordering Platform*
 
-**Version 16.7**
+**Version 16.8**
 
 October 2026
 
@@ -49,6 +49,122 @@ form — including key names and set/missing checks. It may run the project's ow
 internally (`next build`, the sweep, `tsc`). Configuration is worked out from code.
 
 # Changelog
+
+## V16.8 — 29 October 2026 — **AUTOMATIC DATA IMPORTS, A RED CROSS FOR A FAILED LOGIN, DEEP CHECKS COUNTRY BY COUNTRY, THE BIG POS PLAYERS IN EVERY COUNTRY, ONE MASTER LIST OF COMPARISON FEATURES, A COST BLOCK PEOPLE CAN READ, AND A QUICK PASS OF EVERY COUNTRY FOR A FEW DOLLARS**
+
+- Applies `docs/competitor-check-2-report.md`, `docs/global-players-1-report.md`, `docs/comparison-features-1-report.md`
+  and `docs/competitor-check-3-report.md`. Facts were checked read-only on 30 Oct (live database, git, curl).
+- **German import fixed:** five price-on-request plans were marked "counted", which a CHECK forbids.
+  - Imports are now automatic (no button).
+  - Each file is checked row by row before anything is written.
+  - Each import is recorded in `public.data_imports`.
+- **A failed Claude API login now fails the GitHub run** (red cross).
+- **Deep checks go one country at a time,** in a queue Dominic sets; GB first (stated).
+- **Square, SumUp, Zettle, Lightspeed, Toast and Clover** are competitors in every country where they sell, decided per
+  country by the checker (stated decision, 29 Oct).
+- **One master list of 45 comparison features:**
+  - per-feature answers, with sources and optional per-country rows;
+  - each feature checked and/or shown on websites by choice;
+  - honest "No" rows for HatchGrab.
+- **The cost block** (admin Customer preview only) shows monthly sales, the software fee against card fees, and its
+  assumptions.
+- **A quick pass** checks every active competitor in every country, on Haiku through the Batch API: about $3.50 now, about
+  $8.40 with the POS players.
+- **Off-site:**
+  - Google Search Console and Bing Webmaster Tools verified;
+  - Vercel's firewall confirmed not blocking AI bots.
+
+| What | Where |
+|---|---|
+| **NEW — imports, the failed login, the deep check by country, the POS players, the feature list and cost block, the quick pass, measured costs, Search Console / Bing / the firewall** | **§86.6–§86.13** (new, at the end of §86) |
+| The German research "not imported" and its button | §86.3 (corrected in place); §27 (struck as done) |
+| The failed login's green tick | §86.4 (corrected in place); §27 (struck as done) |
+| The deep check's "every competitor" mode and the all-at-once estimate | §86.4 (corrected in place) |
+| What the checker writes | §86.4 (corrected in place) |
+| The second check's labels (OBSERVED, competitor-check-7, 30 Oct) | §86.4 (corrected in place) |
+| The retired feature columns | §85.3, §86.3 (corrected in place) |
+| The benchmarks' app columns | §85.3, §85.6 (corrected in place) |
+| HatchGrab's claims: offline protection, printed tickets | §21, §86.2 (corrected in place) |
+| The POS-giants exclusion | §85.2 (a pointer; the research-era exclusion stays as history) |
+| Invariants | §35.an-10 … 35.an-16 (appended) |
+| Backlog | §27 (new "Added V16.8" block; six V16.7 items struck as done) |
+| Deploy posture | §49 (new current block; V16.7's stays as dated history) |
+| Tooling: folders, the SQL editor, checker costs | §79 (added at its end) |
+
+**SWEEP STATUS (applied 30 October 2026):** _pattern hits: 219 — stale and corrected in place: 5; left as history: 5; not
+stale (true, a different meaning, or a stated goal): 209; outstanding: 0. Found outside the patterns and corrected: 9
+(14 corrections in all)._
+- **Pattern 1** (`Import German comparison research`): 2 found.
+  - 1 corrected: §27's backlog line, struck as done.
+  - 1 left as history: the V16.7 changelog's OBSERVED line.
+- **Pattern 2** (`green tick`): 2 found, both about Meta's webhooks (a different meaning), so not stale. The checker's
+  "green GitHub tick" lines are out-of-pattern finds (below).
+- **Pattern 3** (`pre_orders|capacity_slots|multi_location_schedule|own_domain`): 2 found, 2 corrected (§85.3, §86.3).
+- **Pattern 4** (`country_benchmarks.*(ios|android)_app`): 0 found. Its facts in other forms are out-of-pattern finds
+  (§85.3, §85.6).
+- **Pattern 5** (`iPhone and iPad app|iPhone-/iPad-App`): 0 found.
+- **Pattern 6** (`full deep check`): 3 found.
+  - 1 corrected: §86.4's all-at-once estimate.
+  - 1 left as history: the V16.7 changelog.
+  - 1 not stale: §86.4's "Why", Dominic's stated goal, now reached country by country.
+- **Pattern 7** (POS giants excluded): 3 found, all the pricing research's scope, left as history (the V16.6 changelog,
+  §84.10, §85.2). §85.2 gets a pointer to §86.9.
+- **Pattern 8** (`offline protection` / `buzzer` / `QR` / `table ordering`): 33 + 88 + 86 + 0 = 207 found.
+  - 1 corrected: §21's "Real differentiators", which had offline protection without the apps-only qualifier.
+  - The other 206 document the operator features as built: a van's offline protection, buzzer numbers recorded by staff,
+    and QR codes that open the order page. None says HatchGrab triggers a buzzer or offers table ordering.
+- **Found outside the patterns, corrected (9):**
+  - §86.3: the research "not imported" and its failing button;
+  - §86.4: the green-tick known defect;
+  - §27: the green-tick backlog line;
+  - §85.3: the benchmarks' app columns;
+  - §85.6: the benchmarks' app columns;
+  - §86.4: the `deep` mode as "every competitor";
+  - §86.4: what the checker writes;
+  - §86.4: "Disagreements show as Couldn't confirm" (OBSERVED, competitor-check-7);
+  - §86.2: printed tickets without the qualifier.
+
+**OBSERVED WHEN APPLYING (30 October 2026, about 20:30 UTC — where the live system differs from the delta or adds to it):**
+- **The three data files were imported on 30 Oct at 08:32 UTC**, by the first step of the nightly run (`data_imports`,
+  all `ok`):
+  - German research: 9 competitors matched, 14 plans added (5 already there) and 8 entries, exactly as
+    competitor-check-2 predicted; sha256 `1ce255d7edd7a24a…`;
+  - Global POS players: 5 added, 1 updated (Square);
+  - the feature list: 45 features added; 5,721 placeholder answers marked due.
+  - DE now has 21 current plans and 8 comparison entries, none verified.
+- **Competitors:** 207 in all.
+  - 132 active: 59 `food_truck`, 64 `nearest_local`, 5 `street_food_markets`, 1 `pop_up` and 3 with no focus.
+  - 75 candidates, of which 6 are `pos`. No POS player is active yet.
+  - No competitor has a `not_in_countries` entry yet.
+- **The feature list:**
+  - 45 features, all checked: 28 shown everywhere, 4 in some countries and 13 hidden;
+  - 5,940 current answers (the 219 moved by 20261048, plus the 5,721 placeholders), none verified.
+- **Settings:**
+  - all four models are `claude-haiku-5-5`, as stated;
+  - the stored `deep_queue` is exactly the stated order (GB first, US last; 36 codes);
+  - **`deep_country` is DE, not GB**, with `deep_requested_at` 29 Oct 13:32 UTC. That fits Germany having been picked in
+    "Start deep check", but the data does not record what was pressed: UNVERIFIED.
+- **The first nightly run after this work failed:**
+  - On 30 Oct at 08:33 UTC, the deep run on DE had all 15 checks refused with a 400: `record_findings` had 17
+    union-typed parameters, and the API allows 16. It recorded $0.
+  - The same run submitted quick-pass batch `msgbatch_01Jb6Zv1SGfDfDEsQPh49oqp` (40 checks, estimated $1.80). It is
+    still recorded as in flight. No `pass` run exists yet, and no competitor has a `pass_state`.
+- **After this delta's period (30 Oct), three more workstreams were committed and pushed.** Their reports are in `docs/`,
+  and this version records them only here and in §49:
+  - competitor-check-4: the schemas under the API's union limit, and errored batch items sent again (`e188faf2`);
+  - competitor-check-5: `max_tokens` per model (128K), findings recorded in groups, and the cost of failed calls
+    (`18681218`; migration 20261050, OBSERVED run);
+  - competitor-check-7: accented quotes, and an `unclear` second check shown as "Couldn't confirm" (`c7242ad8`; migration
+    20261051, OBSERVED run). §86.4's second-check line is corrected to match.
+- **The checker's runs:** 5 in all; $1.1381 this month; 39 findings, all pending, none new since 29 Oct.
+- **A cost figure, where the report wins:**
+  - The delta gives "about $1.80 a competitor" for a 45-feature deep check on Sonnet.
+  - comparison-features-1 §6 estimates +$0.93 on top of the $0.72 deep check, about $1.65, or about $2 with the measured
+    20% overrun. §86.12 says that.
+- **Public (curl):**
+  - `/de/vergleich/foodtruck-bestellsystem`, `.md` and `.json`: 404, with `noindex, nofollow` and a private `Cache-Control`;
+  - the sitemap (77 URLs) and `/llms.txt` name no comparison page.
+- **Git:** `origin/main` = HEAD = `c7242ad8`, with a clean tree.
 
 ## V16.7 — 24–27 October 2026 — **SEO AND AI-SEARCH RESEARCH, THE GERMAN COMPARISON PAGE (ADMIN-ONLY), AND AN AUTOMATIC COMPETITOR CHECKER ON THE CLAUDE API WITH A KEYLESS LOGIN**
 
@@ -14875,7 +14991,7 @@ weight rather than a feature to preserve.
 
 ## Real differentiators
 
-Offline protection; smart queue-aware pacing; social/WhatsApp auto-responses; ticket printing ~~(Max)~~; multi-device sync ~~(Max)~~; time slot selection; auto-accept; village-specific hyperlocal discovery. Digital loyalty stamp cards (~~Max,~~ coming soon). ⛔ **Corrected V16.2 — see §81.1:** ticket printing, multi-device sync and loyalty (coming soon) are on every plan; only WhatsApp auto-replies, social media posts, Messenger & Instagram (coming soon) and custom event types are Pro and Unlimited only.
+~~Offline protection~~ ⛔ Corrected V16.8 — offline protection in the iPad and Android app (the web dashboard tells staff to switch to paper; §86.10); smart queue-aware pacing; social/WhatsApp auto-responses; ticket printing ~~(Max)~~ (⛔ V16.8: in the iPad and Android app; printer not supplied); multi-device sync ~~(Max)~~; time slot selection; auto-accept; village-specific hyperlocal discovery. Digital loyalty stamp cards (~~Max,~~ coming soon). ⛔ **Corrected V16.2 — see §81.1:** ticket printing, multi-device sync and loyalty (coming soon) are on every plan; only WhatsApp auto-replies, social media posts, Messenger & Instagram (coming soon) and custom event types are Pro and Unlimited only.
 
 ## Honest comparison rule
 
@@ -17964,12 +18080,12 @@ question; the US storefronts; a US testimonial; SMS opt-in. New:
 ## Added V16.7 — comparison pages, search research and the checker (27 October 2026)
 
 **Checker and Pricing check**
-- **"Import German comparison research" fails** ("That could not be done just now. Nothing was changed"; observed by
+- ~~**"Import German comparison research" fails** ("That could not be done just now. Nothing was changed"; observed by
   Dominic, 27 Oct). Investigate, then **replace the button with an automatic import** (stated). OBSERVED 29 Oct: DE has
-  7 plans and `comparison_entries` is empty, so the research is still not in.
-- **A failed Claude API login produced a green GitHub tick** (27 Oct). Make it fail the run.
-- **Deep check one country at a time,** then lighter periodic checks, within the $100 monthly allowance (stated, 27 Oct):
-  pick a country in Admin, finish it, and move on as the budget allows.
+  7 plans and `comparison_entries` is empty, so the research is still not in.~~ ✅ Done V16.8 (§86.6; imported 30 Oct).
+- ~~**A failed Claude API login produced a green GitHub tick** (27 Oct). Make it fail the run.~~ ✅ Done V16.8 (§86.7).
+- ~~**Deep check one country at a time,** then lighter periodic checks, within the $100 monthly allowance (stated, 27 Oct):
+  pick a country in Admin, finish it, and move on as the budget allows.~~ ✅ Done V16.8 (§86.8; the quick pass, §86.11).
 - **Token renewal:** confirm on the first long run that it keeps the login alive past 10 minutes. If not, move the
   refresh loop into the checker step. (No run so far has lasted over 4 minutes.)
 - **Measure a `deep` run** with limit 3, then decide: the verifier on Haiku, or a first deep check over two months.
@@ -17977,10 +18093,12 @@ question; the US storefronts; a US testimonial; SMS opt-in. New:
 - **Review the 39 pending findings** from the 28 and 29 Oct runs.
 - **Scheduled runs fire about 6 hours late** (02:10 UTC cron; they ran at 08:21 and 08:23). GitHub delays scheduled
   workflows; fine as long as it runs daily.
-- **Re-pin `scripts/competitor-check-1.cjs`:** it still expects `secrets.ANTHROPIC_API_KEY`. Re-pin it to the federation
-  variables.
-- **`docs/competitor-check-1-report.md`** still tells Dominic to add an API key (superseded by the 1c report).
-- **Register `scripts/pricing-check-1.cjs`** in `scripts/harnesses.json` (carried from V16.6).
+- ~~**Re-pin `scripts/competitor-check-1.cjs`:** it still expects `secrets.ANTHROPIC_API_KEY`. Re-pin it to the federation
+  variables.~~ ✅ Done V16.8 (competitor-check-2 §5).
+- ~~**`docs/competitor-check-1-report.md`** still tells Dominic to add an API key (superseded by the 1c report).~~ ✅ Done
+  V16.8 (a note at its top points to the 1c report).
+- ~~**Register `scripts/pricing-check-1.cjs`** in `scripts/harnesses.json` (carried from V16.6).~~ ✅ Done V16.8
+  (competitor-check-2 §5).
 - **Add web addresses** for Hatches Up, EasyEats, Eventifood and RapidOrderz, or they are never checked.
 - **The optional summary email** needs `BREVO_API_KEY` and `EMAIL_FROM_ADDRESS` as Actions secrets.
 - **The Automatic checks tab** was built without the mockup; compare the two.
@@ -18026,6 +18144,41 @@ question; the US storefronts; a US testimonial; SMS opt-in. New:
 - **Lint** reports 16 existing `<a href="/login">`-style errors twice since the new three-segment route (no new problem).
 - **Load flakes:** `add-order-refresh`, `add-order-refresh-inputs` and `us-polish-batch` time out under full-sweep load
   and pass alone; `add-order-refresh-inputs` failed different checks on each of three runs alone (§79; watch).
+
+## Added V16.8 — imports, the deep check by country, the POS players, the feature list and the quick pass (29 October 2026)
+
+*Also done at V16.8, with no V16.7 backlog line of its own: the app rows' single source (`country_settings`; §85.6
+corrected).*
+
+**Checker**
+- **Confirm token renewal** on the first run longer than 10 minutes: the refresh log's count should grow.
+- **Extra web addresses per competitor,** editable in Admin, so country sites on other domains can be read. Lightspeed's
+  national domains are the main case.
+- **Verify the former non-POS candidates** that have no comparison entry. They can't be verified from the pricing check
+  today.
+- **Competitors with no plan and no recorded country** never reach a country check.
+- **Deep dive model:** switch the deep check's reader back to Sonnet before the Germany deep dive for the public page.
+- **OBSERVED 30 Oct, the first nightly run after this work:**
+  - the deep run's 15 checks and the quick pass's first batch (40) were refused by the API, for 17 union-typed
+    parameters;
+  - competitor-check-4 fixed the schema the same day, and the batch's items are sent again when it is collected;
+  - check the next nightly run: one red cross is expected while the old batch is collected.
+- **`deep_country` is DE, not GB** as stated (OBSERVED 30 Oct). Pick GB in "Start deep check" if GB should go first.
+
+**Comparison pages**
+- **The cost block on public pages:** Dominic's decision.
+- **Comparison words in other languages:** the `comparison` namespace exists in en-GB and de-DE only. Translate it before
+  any other country's page goes live.
+- **/features says "Advanced reporting" is coming soon,** but `advanced_reporting` is on for every plan in the code.
+  Correct the copy or the switch (not part of comparisons; stated).
+
+**Search**
+- **Search Console:** submit `https://www.hatchgrab.com/sitemap.xml` in the Domain property, if not done. Look at the one
+  404 and the three "Crawled – currently not indexed" pages.
+- **Bing:** submit the same sitemap, if not done.
+
+**Accounts**
+- **Google accounts:** Dominic has three. Consolidate the business tools under one (stated: he wants to tidy up later).
 
 # 28. Anti-scraping and rate limiting (V6.3)
 
@@ -21405,6 +21558,18 @@ of this manual).
 - **35.an-8 Web research is sequential and polite:** one request at a time, with pauses between; no workaround for a
   block; never parallel agents against one search engine.
 - **35.an-9 Imports run automatically.** An admin "import" button is not an acceptable delivery.
+- **35.an-10 Imports are validated before writing and recorded once per file hash (V16.8).** A bad row writes nothing and
+  names itself.
+- **35.an-11 An authentication failure ends the run with a non-zero exit (V16.8).** Silent green runs are a defect.
+- **35.an-12 A competitor's availability is decided per country, from that country's own site (V16.8),** and recorded
+  (`not_in_countries`). It is never assumed from another country.
+- **35.an-13 Comparison cells use a fixed vocabulary (V16.8):** yes / no / partial / unknown and their translations, plus
+  a note. Free text never replaces the value.
+- **35.an-14 HatchGrab's comparison answers come from their source (V16.8):** a plan switch, a country flag, plan data, or
+  a code-confirmed fixed answer. A fixed answer that the code contradicts is a defect.
+- **35.an-15 The quick pass reads only what the public page shows (V16.8).** Hidden features are for deep checks.
+- **35.an-16 Every API request stays under the model's long-context price threshold (V16.8),** where the pass sets it:
+  100,000 input tokens for Haiku 5.5.
 
 ## 🔴 iOS PUSH ENTITLEMENT — the §36 audit CONFIRMED, then fixed (V11.4)
 
@@ -28267,7 +28432,78 @@ Recorded so they are not briefed again.
 - **Hero images** exist for /de, /at and /ch (from fixtures).
 - **Fonts:** Greek and Cyrillic pages load Noto Sans; Latin pages never request it (§84.7).
 
-# 49. Deploy posture (current at V16.7; earlier postures below, each dated)
+# 49. Deploy posture (current at V16.8; earlier postures below, each dated)
+
+### 🔴 DEPLOY POSTURE AT V16.8 — EVERYTHING PUSHED; MIGRATIONS 20261045–20261051 RUN; DATA IMPORTED; THE FIRST NIGHTLY RUN REFUSED BY THE API (30 October 2026)
+
+*Replaces the V16.7 posture below as the current one. It and the earlier postures stay as dated history. Every line is
+OBSERVED on 30 Oct 2026, about 20:30 UTC, unless marked STATED.*
+
+- **Git (after `git fetch`):**
+  - `git log origin/main -1` = HEAD = `c7242ad8` "comp" (30 Oct 14:18 UTC);
+  - `git status` is clean.
+  - **Commits since V16.7, all pushed:**
+    - `8fd3ba83` "competitor fixes" (29 Oct 12:33 UTC): competitor-check-2, with the V16.7 manual;
+    - `2c78c934` "competitor updates" (13:29): global-players-1;
+    - `a21e868a` "competitor updates" (15:02): comparison-features-1, including the CTE form of 20261048;
+    - `d6237c17` "competitor quick check" (16:27): competitor-check-3;
+    - `e188faf2` "competitor fix" (30 Oct 10:34): competitor-check-4;
+    - `18681218` "competitor 5" (10:58): competitor-check-5;
+    - `c7242ad8` "comp" (14:18): competitor-check-7.
+  - **Live deploys:**
+    - STATED: competitor-check-2 and global-players-1 were deployed on 29 Oct.
+    - Vercel's deploy record was not read, so which commit the site serves is UNVERIFIED.
+    - The nightly GitHub run on 30 Oct at 08:32 UTC ran the automatic imports and the quick pass, so the workflow on
+      `main` had competitor-check-2 to -3 by then.
+- **Migrations:** 20261045–20261051 all present.
+  - `data_imports`;
+  - `deep_country` / `deep_queue`;
+  - focus `pos`;
+  - `not_in_countries`, `deep_checked_in` and `pass_state`;
+  - the `availability` outcomes;
+  - `comparison_entries.group_label`;
+  - `comparison_features` and `competitor_feature_values`;
+  - the `pass_*` settings, and mode `pass`;
+  - `max_output_tokens` (20261050);
+  - `second_check` allowing `unclear` (20261051).
+- **`data_imports`:** three `ok` rows, all on 30 Oct at 08:32 UTC:
+  - the German research (sha256 `1ce255d7…`; 9 competitors matched, 14 plans added, 8 entries);
+  - the global POS players (`7488e87d…`; 5 added, 1 updated);
+  - the feature list (`b8ccbd51…`; 45 features, 5,721 answers marked due).
+- **Counts:**
+  - **Competitors:** 207. 132 active (59 `food_truck`, 64 `nearest_local`, 5 `street_food_markets`, 1 `pop_up`, 3 no
+    focus); 75 candidates (69 + 6 `pos`); none with `not_in_countries`.
+  - **`comparison_features`:** 45, all checked; 28 shown everywhere, 4 in some countries, 13 hidden.
+  - **`competitor_feature_values`:** 5,940 current answers, none verified.
+  - **DE:** 21 current plans, 8 `comparison_entries`, 0 verified.
+- **`country_settings`:**
+  - 36 rows, all enabled;
+  - DE `comparison_status = 'admin'`, with app flags false;
+  - GB `off`, with app flags true.
+- **`competitor_check_settings`:**
+  - not paused; $8 a day, $90 a month; 15 deep a day; a 90-day interval;
+  - **all four models `claude-haiku-5-5`**;
+  - `deep_queue` exactly the stated order (GB … US, 36 codes);
+  - **`deep_country` DE**; `deep_requested_at` 29 Oct 13:32 UTC;
+  - `pass_requested_at` 29 Oct 21:13 UTC; `pass_country` null;
+  - `pass_batch` `msgbatch_01Jb6Zv1SGfDfDEsQPh49oqp` (40 items, submitted 30 Oct 08:33 UTC), still in flight;
+  - `max_output_tokens` 128,000 for both models.
+- **`competitor_check_runs`:** 5 in all, $1.1381 this month.
+  - 2 manual routine runs (27 Oct), 0 checked;
+  - 2 scheduled routine runs (28 and 29 Oct), 6 checked, $1.14;
+  - 1 scheduled deep run (30 Oct 08:33), `error`: 15 refused for the 17-union schema, $0.
+  - No `pass` run yet.
+- **Findings:** 39, all pending.
+- **Public (curl):**
+  - `/de/vergleich/foodtruck-bestellsystem`, `.md` and `.json`: 404, `X-Robots-Tag: noindex, nofollow`, private
+    `Cache-Control`;
+  - `/sitemap.xml` 200 (77 URLs, no comparison page);
+  - `/llms.txt` 200 (no "Comparisons").
+- **STATED only, not observable from here:**
+  - the Search Console and Bing verification;
+  - DNS at Namecheap;
+  - the Vercel firewall settings;
+  - the Workload Identity Federation rule and the four repository variables.
 
 ### 🔴 DEPLOY POSTURE AT V16.7 — EVERYTHING PUSHED; COMPARISON TABLES, CHECKER AND CANDIDATES RUN; THE GERMAN PAGE ADMIN-ONLY (29 October 2026)
 
@@ -33514,6 +33750,17 @@ correction note in its history; the hidden Smash and Grab prospect filled.
     doesn't reveal the hypothesis. ChatGPT's output on 24 Oct was not usable. Ask the spot-check questions in fresh chats
     with no context.
   - **Mockups live as Claude artifacts,** not in the repo. A brief built from one must describe the layout in words.
+
+- **The planning chat and the checker (V16.8, 29 October 2026):**
+  - **The planning chat can read `docs/` and write to `~/Downloads` directly** (folders connected on 29 Oct). Reports no
+    longer need attaching, and deltas land in Downloads.
+  - **Supabase SQL editor:** don't use temporary tables across statements (confirmed again with 20261048). Use one
+    statement per step with its own CTE, or a single DO block.
+  - **Checker costs to remember:**
+    - the quick pass ≈ $0.02 per competitor-country, on Haiku with batches;
+    - a routine check ≈ $0.19, on the earlier Sonnet settings;
+    - a 45-feature Sonnet deep check: about $1.80 by the delta, about $1.65 by comparison-features-1 §6 (estimates;
+      §86.12).
 ---
 
 # 80. Security (V16.1 — 19 October 2026)
@@ -34460,7 +34707,8 @@ verified it. No proposed price is recorded here as decided.
   - **Countries:** 46, in tiers. Deep: US, GB, CA, AU, DE, FR, ES, IT, NL, BR, MX, JP. Standard: IE, NZ, AT, CH, BE, PT,
     SE, DK, NO, FI, PL, CZ, RO, GR, SG, HK, MY, AE, TH. Light: the rest, plus IN and ID.
   - **Excluded (Dominic's decision):** general POS and payment giants, and delivery marketplaces. Marketplace commission
-    is listed per country as context only.
+    is listed per country as context only. (The research's scope, kept as history. V16.8: comparison pages now include
+    the big POS players in every country where they sell, §86.9; delivery marketplaces stay out.)
   - **No food-truck tool in a country:** the nearest small-local tool is used, marked `nearest_local`.
 - **Method:**
   - **Truck sizes:** 150 / 600 / 2,000 online orders a month.
@@ -34515,8 +34763,9 @@ verified it. No proposed price is recorded here as decided.
   - website;
   - `focus`: `food_truck`, `street_food_markets`, `nearest_local` or `pop_up`, or NULL = not recorded;
   - `payment_providers`;
-  - six key features (`pre_orders`, `whatsapp`, `social_posts`, `own_domain`, `ios_app`, `android_app`), each
-    `yes` / `no` / `unknown`;
+  - ~~six key features (`pre_orders`, `whatsapp`, `social_posts`, `own_domain`, `ios_app`, `android_app`), each
+    `yes` / `no` / `unknown`;~~ ⛔ Corrected V16.8 — retired (comments only, 20261048). The answers live in
+    `competitor_feature_values` (§86.10);
   - `features_checked_on`, `features_verified_at`, `notes`.
 - **`competitor_plans`:** one plan in one country.
   - `country_code` has **no FK**, because planned countries have no row.
@@ -34540,7 +34789,8 @@ verified it. No proposed price is recorded here as decided.
   - `eur_rate` and its date;
   - our card rate (used only when the country has no row);
   - `planned_pro_minor`, `planned_pro_included_minor`, `planned_unlimited_minor` (always shown as "proposed, not live");
-  - `ios_app_available`, `android_app_available` (NULL = unknown);
+  - ~~`ios_app_available`, `android_app_available` (NULL = unknown);~~ ⛔ Corrected V16.8 — retired (comments only,
+    20261048). The pricing check reads `country_settings`' app flags, as the comparison page does (§86.10);
   - `notes`.
   - **At most one current row per country** (a partial unique index).
 - **Security** mirrors `country_settings`: service role only, read and written by `app/api/admin/pricing-check` behind
@@ -34618,7 +34868,8 @@ verified it. No proposed price is recorded here as decided.
 - **App availability:** the benchmarks say Android = GB only (Google Play availability is the United Kingdom only, §36).
   ~~Where the iPhone app is sold is **not recorded** (NULL everywhere). Set it per country in Edit country data.~~ ⛔ Corrected V16.7 —
   known: the UK App Store only (Apple lookup for id 6803543106, 24 Oct; §86.2). The benchmarks' column is still NULL; the
-  per-country flags are now `country_settings.ios_app_available` / `android_app_available` (GB true only, §86.3).
+  per-country flags are now `country_settings.ios_app_available` / `android_app_available` (GB true only, §86.3). ⛔ Corrected V16.8 — the benchmarks' app columns are retired; `country_settings` is the one
+  source (§86.10).
 - ~~**France** stays in Planned until its row (`20261034`, block B) is run (§84.1).~~ ⛔ Corrected V16.7 — France's row exists and is switched on (OBSERVED 29 Oct: written 23 Oct 21:21 UTC by dominic@hatchgrab.com, fr-FR, EUR, 3 `plan_prices` rows; `/fr` answers 200 and is in the sitemap).
 
 
@@ -34644,7 +34895,7 @@ verified it. No proposed price is recorded here as decided.
 
 ---
 
-# 86. Comparison pages, search research and the automatic competitor checker (V16.7 — 24–27 October 2026)
+# 86. Comparison pages, search research and the automatic competitor checker (V16.7 — 24–27 October 2026; V16.8 — 29 October 2026, §86.6–§86.13)
 
 🔴 **THE RULES OF THIS SECTION**
 - **Competitor facts are data** with a source URL and a checked date, never prose in code.
@@ -34699,7 +34950,8 @@ verified it. No proposed price is recorded here as decided.
     - collection time slots (5/10/15/20/30 min per van);
     - kitchen capacity;
     - a weekly multi-location schedule;
-    - KDS and printed tickets;
+    - KDS and printed tickets (⛔ Corrected V16.8 — printed tickets in the iPad and Android app; printer not supplied,
+      §86.10);
     - pay at the truck;
     - allergens;
     - menu import from a photo;
@@ -34769,8 +35021,9 @@ verified it. No proposed price is recorded here as decided.
     says "Nicht in Deutschland".
 - **Data (migration 20261042):**
   - `country_settings`: `comparison_status` (off/admin/live), `ios_app_available` and `android_app_available` (GB true).
-  - Competitor columns: `capacity_slots`, `multi_location_schedule`, `kds` and `pay_at_truck` (yes/no/unknown), plus
-    `payment_methods` and `min_term`.
+  - ~~Competitor columns: `capacity_slots`, `multi_location_schedule`, `kds` and `pay_at_truck` (yes/no/unknown), plus
+    `payment_methods` and `min_term`.~~ ⛔ Corrected V16.8 — retired (comments only, 20261048). Every feature answer is a
+    row in `competitor_feature_values`, and `payment_methods` became the hidden feature `paymethods` (§86.10).
   - `public.comparison_entries`: country, competitor, primary plan, the honest "passt, wenn …" line, order and
     verification.
 - **Code:**
@@ -34785,8 +35038,10 @@ verified it. No proposed price is recorded here as decided.
   - **None of the ten states a weekly schedule with changing locations.** Only FoodsHero offers WhatsApp replies and
     social posts, as paid agency extras. These are HatchGrab's clearest German selling points.
   - The tills (SumUp, Zettle, orderbird, ready2order) are TSE-certified. Uber Eats Germany: 14% pickup / 30% delivery.
-  - ⚠️ **OBSERVED 29 Oct:** these facts are in `data/compare-de-1/competitors.json` but **not imported** (DE 7 plans,
-    0 entries). The import button fails (§27).
+  - ~~⚠️ **OBSERVED 29 Oct:** these facts are in `data/compare-de-1/competitors.json` but **not imported** (DE 7 plans,
+    0 entries). The import button fails (§27).~~ ⛔ Corrected V16.8 — the button is gone; imports are automatic (§86.6).
+    OBSERVED 30 Oct: imported at 08:32 UTC by the nightly run (9 competitors matched, 14 plans added, 8 entries). DE now
+    has 21 current plans and 8 entries, none verified yet.
 - **Decisions (stated):**
   - Germany first (24 Oct).
   - The iPad and Android apps will be made available in Germany before the page goes public, so their rows can say
@@ -34805,7 +35060,9 @@ verified it. No proposed price is recorded here as decided.
   re-checked every 3 months, staggered, after one full deep check of every site "to ensure not making mistakes"
   (stated).
 - **Modes:**
-  - `deep`: every stored field of every competitor, up to `deep_per_day` a day.
+  - ~~`deep`: every stored field of every competitor, up to `deep_per_day` a day.~~ ⛔ Corrected V16.8 — the scheduled
+    deep check works one country at a time through a queue (§86.8). A manual `deep` run with no country still takes
+    everyone by name.
   - `routine`: each competitor every 90 days, spread evenly, about 1–2 a day.
   - `single`: one competitor, run manually.
 - **How a check avoids mistakes:**
@@ -34813,10 +35070,14 @@ verified it. No proposed price is recorded here as decided.
      findings through one strict `record_findings` tool, each with a verbatim quote, an English translation and the URL.
   2. **Code checks that every quote appears in the text of a page actually fetched.** A made-up quote fails.
   3. A separate verifier call, seeing only the claim and the URL, re-reads the page. Deep mode: every finding; routine:
-     every change. Disagreements show as "Couldn't confirm".
+     every change. ~~Disagreements show as "Couldn't confirm".~~ ⛔ Corrected V16.8 (OBSERVED, competitor-check-7, 30
+     Oct) — a real disagreement (a different value with its own quote) shows as "Disagrees". "Couldn't confirm" is for a
+     quote not found on the page, or a second check that could not settle it (`second_check = 'unclear'`).
   4. Page text is data, never instructions; the only write path is the findings schema.
 - **It writes only** `competitor_check_runs`, `competitor_check_findings` and the competitors' scheduling columns
-  (`next_check_at`, `last_checked_at`, `deep_checked_at`, `check_requested_at`).
+  (`next_check_at`, `last_checked_at`, `deep_checked_at`, `check_requested_at`). ⛔ Corrected V16.8 — plus
+  `deep_checked_in` and `pass_state` on competitors, and in its settings only `deep_country` and `pass_batch` (§86.8,
+  §86.11).
   - It never edits plans, prices, features or verification.
   - Dominic accepts or rejects each finding in **Admin › Pricing check › Automatic checks**. Accepting saves a new
     version and clears verification.
@@ -34834,7 +35095,9 @@ verified it. No proposed price is recorded here as decided.
     it is set is UNVERIFIED).
 - **Estimates (from guessed token counts):**
   - deep ≈ $0.72 a competitor, ≈ $142 for the first full deep check. That is over the monthly cap: either let it run over
-    two months, or move the verifier to Haiku (≈ $48);
+    two months, or move the verifier to Haiku (≈ $48); ⛔ Corrected V16.8 — this all-at-once total is history. The deep
+    check now goes country by country (§86.8), all four models are Haiku (OBSERVED 30 Oct), and the 45-feature list adds
+    about $0.93 a competitor on Sonnet (§86.12);
   - routine ≈ $7 a month.
   - **Measured (OBSERVED 29 Oct):** two scheduled routine runs checked 6 competitors for $1.14, ≈ $0.19 each.
 - **Candidates:** 70 tools from Gemini's research (migration 20261044), with `lifecycle = 'candidate'`. They are never
@@ -34865,8 +35128,8 @@ verified it. No proposed price is recorded here as decided.
     `repository_owner = dominicbonini`.
   - **Validated by Dominic, 27 Oct:** a `single` dry run on gastro25 succeeded (about 3 minutes). Token renewal past
     10 minutes is not yet proven.
-- **Known defect:** the failed login on 27 Oct still produced a green GitHub tick. A login failure must fail the run
-  (§27).
+- ~~**Known defect:** the failed login on 27 Oct still produced a green GitHub tick. A login failure must fail the run
+  (§27).~~ ⛔ Corrected V16.8 — fixed: a failed login stops the run and exits non-zero, a red cross (§86.7).
 - **More detail:** the exact tables, settings and harness are in `docs/competitor-check-1-report.md`; the federation
   change is in `docs/competitor-check-1c-report.md`.
 
@@ -34874,6 +35137,210 @@ verified it. No proposed price is recorded here as decided.
 
 The approved mockups (Admin › Pricing check, Automatic checks, the German page and its footer) are Claude artifacts, not
 repo files. compare-de-1 and competitor-check-1 were built from the briefs' words.
+
+## 86.6 Imports (competitor-check-2, 29 October 2026)
+
+- **Why the German import failed:**
+  - In `data/compare-de-1/competitors.json`, five plans had `price_hidden: true`, no price, and `status: 'counted'`:
+    - OrderFront Starter, Premium and Multi;
+    - gastro25 "Business & Ketten";
+    - Jamezz "Webshop (Abonnement pro Standort)".
+  - The CHECK `competitor_plans_counted_has_price` refuses that, so the batch insert failed as a whole, and the route
+    showed a generic message.
+  - **"Nothing was changed" was untrue:** the first press (25 Oct) had added four competitors with no plans.
+  - **The fix:** those plans are `status: "hidden"` (price on request).
+- **Automatic imports:**
+  - **`public.data_imports`** records each attempt: file path, sha256, `imported_at`, result, counts and message. There is
+    one `ok` row per path and hash.
+  - **A registered data file is imported once per hash,** as the first step of every competitor-check run, before any API
+    call.
+  - **Every row is validated against the database's own rules before anything is written,** and a re-run finishes a
+    half-done import.
+  - **Registered files:** `data/compare-de-1/competitors.json`, `data/global-players/competitors.json` and
+    `data/comparison-features/features.json`.
+  - **Admin** shows a read-only "… imported <date>: …" line instead of a button.
+  - **OBSERVED 30 Oct:** all three were imported at 08:32 UTC by the nightly run's first step:
+    - German research: 9 matched, 14 plans added, 8 entries;
+    - POS players: 5 added, Square updated;
+    - the feature list: 45 features.
+- **Errors say what failed:** "That failed — <step>: <the database's reason>. Reload to see what was saved."
+
+## 86.7 The login fails loudly (competitor-check-2)
+
+- **An authentication or permission failure stops the whole run,** records `stopped_reason = 'error'`, and exits non-zero:
+  a red cross in Actions.
+  - **What counts as one:** the SDK's `WorkloadIdentityError`, `AuthenticationError` or `PermissionDeniedError`, or any
+    401 or 403. A rate limit, a timeout or a refusal is not one.
+- **A run in which every competitor failed** also exits non-zero. One competitor failing still lets the run continue.
+- **The token-refresh loop** logs each refresh with a time and a count, so a long run proves renewal past 10 minutes.
+  Still UNVERIFIED: no run has lasted that long.
+
+## 86.8 Deep checks country by country (competitor-check-2)
+
+- **Settings:** `deep_country` and `deep_queue`.
+- **A competitor's countries** are its current plans' countries, plus a candidate's recorded countries, minus
+  `not_in_countries`.
+- **Deep mode** checks the current country's competitors that have not been deep-checked since `deep_requested_at`, up to
+  `deep_per_day`, then moves on through the queue.
+  - A competitor in several countries is checked once **per country** (global-players-1, §86.9).
+  - A manual `deep` run with no country set still takes everyone by name.
+- **Dominic's queue (stated, 29 Oct):** GB first, then the least-competition order: DE, CZ, AT, CH, BE, ES, HU, RO, PL,
+  DK, SE, NO, IT, SK, PT, FI, HR, SI, BG, EE, LV, LT, GR, CY, LU, MT, LI, GI, NL, FR, IE, CA, NZ, AU, US.
+  - **OBSERVED 30 Oct:** the stored `deep_queue` is exactly this order.
+  - `deep_country` is **DE**, with `deep_requested_at` 29 Oct 13:32 UTC. Why it is not GB is not recorded (UNVERIFIED).
+- **Admin › Automatic checks:**
+  - a "Deep check" country picker, with "(has a comparison page)" marked, and "Start deep check";
+  - the tile shows "Deep check · <country>", "N of M", and the next countries;
+  - Settings has an editable "Deep check order".
+- **Limits:**
+  - A competitor with no current plan and no recorded country is in no country, so a country deep check never reaches
+    it.
+  - A competitor that fails every day keeps its country "current".
+
+## 86.9 The big POS players (global-players-1)
+
+- **Decision (stated, 29 Oct):** big restaurant-focused players are compared in every country where they sell, so the
+  comparison is the same across countries except for availability and price. Delivery marketplaces stay out of the table.
+- **`competitors.focus` gains `pos`.** Six players come from `data/global-players/competitors.json`. Square already existed
+  as a GB candidate and was upgraded.
+  - OBSERVED 30 Oct: 6 `pos` candidates, none active yet.
+- **Reading one country at a time:** for a multi-country competitor, a deep check of country X:
+  - reads X's own site only, with at most 8 pages and 4 searches;
+  - returns "sold here" or "not sold here" (`in_country` / `not_in_country`; accepting the latter records
+    `not_in_countries`), X's plans and X's offer;
+  - stamps `deep_checked_in.<X>`.
+- **Accepting the first plan of a `pos` player** in a country with a comparison page adds it to that page's entries,
+  unverified.
+- **Comparison pages show a group label under each tool:**
+  - chosen by focus: Bestellsystem für Foodtrucks, Bestellsystem or Kassensystem;
+  - an entry can override it with `comparison_entries.group_label`;
+  - the twins carry it too;
+  - the tills card names only the `pos` players that are public in that country's table.
+- **Pricing check:** `pos` competitors carry a POS badge; "Food-truck tools only" leaves them out.
+- **Limits:**
+  - **Country sites on other domains can't be read yet.** The web tools are limited to the competitor's own domain and
+    subdomains, plus the app stores. Lightspeed's national domains are the main case.
+  - **Routine checks** still read a multi-country competitor as a whole.
+
+## 86.10 The master comparison feature list (comparison-features-1)
+
+- **The tables:**
+  - **`public.comparison_features`:** key, group, order, `checked`, `show_scope` (all / some / hidden), `show_countries`,
+    `hatchgrab_source`, and per-locale `labels` and `explanations` (jsonb) for Admin-added features.
+  - **`public.competitor_feature_values`:**
+    - competitor, feature, an optional country, a value of yes / no / partial / unknown, a note, a quote and a source
+      URL, the checked date and the verification;
+    - history by `superseded_at`, with at most one current row per competitor, feature and country;
+    - a country's own row wins over the every-country row.
+  - **45 features are seeded through the importer.** OBSERVED 30 Oct: 45, all checked; 28 shown everywhere, 4 in some
+    countries, 13 hidden.
+- **Decisions (stated, 29 Oct):**
+  - seeded features' words live in messages, so they go through the translation pipeline;
+  - Admin-added features keep their words per locale in the database, falling back to en-GB;
+  - `payment_methods` became a hidden, checked feature `paymethods`, with the old text kept as the note;
+  - every feature starts checked;
+  - only the key features are compared publicly; advanced reporting is not compared.
+- **The twelve old feature columns** moved into `competitor_feature_values` with their verification (migration 20261048,
+  219 answers).
+  - It ran in a no-temporary-table form, because Supabase's SQL editor drops temporary tables between statements.
+  - The old columns and `country_benchmarks`' app columns are retired (comments only).
+  - OBSERVED 30 Oct: 5,940 current answers (the 219 moved, plus 5,721 placeholders), none verified.
+- **HatchGrab's answers, confirmed from the code (29 Oct):**
+  - **asap:** Yes.
+  - **offline:** **Partly**. The iPad and Android apps queue orders; the web dashboard tells staff to use paper.
+  - **set-up fee:** none.
+  - **delivery:** No (collection only).
+  - **QR:** **No**, for seats. A QR code opens the order page; there are no table numbers.
+  - **customer fee and tips:** by country (`lib/order-charge-rules.ts`).
+  - **buzzers:** **Partly**. A buzzer number is recorded with each order, but HatchGrab never triggers a buzzer, and
+    buzzers are not supplied.
+  - **private events:** **Partly**. A secret order link; no booking requests.
+  - **deals:** Yes, as meal deals and bundles (no discount codes).
+  - **printed tickets:** "in the iPad and Android app; printer not supplied".
+  - **several vans:** "for an added monthly fee".
+  - **payments:** cards only.
+  - **hardware, card reader and certified till:** No.
+  - **Instagram / Messenger and loyalty:** "Coming soon".
+- **The comparison page (AI-readable rules):**
+  - the rows are the features shown in that country, grouped under real heading rows;
+  - cell words come from a fixed set (Ja / Nein / Teilweise / Nicht angegeben; Yes / No / Partly / Not stated), plus a
+    short note;
+  - there is a "Begriffe erklärt" section;
+  - every amount has its unit and period, and says what it includes;
+  - the JSON twin carries machine values, notes, sources and dates per cell.
+- **The cost block** (`components/comparison/CostBlock.tsx`, `lib/cost-block.ts`), in Admin › Customer preview only:
+  - monthly online sales (orders × order value), with "about N orders";
+  - each bar split into the software fee and card fees;
+  - totals "per month including card fees", and as a share of sales;
+  - assumed card rates labelled, and customer-paid fees as a separate note;
+  - a summary that names the software-fee difference;
+  - a footnote with the assumptions, and a calculator link.
+
+  Whether it goes on a public page is Dominic's decision, not yet taken.
+- **App rows:** one source, `country_settings.ios_app_available` / `android_app_available`. "iPhone and iPad app" is now
+  "iPad app" everywhere.
+- **Admin › Pricing check › Feature list:**
+  - the features in groups, with HatchGrab's badge, the Check tick and Show on website;
+  - "Add feature" takes the words in English and German;
+  - the country view's matrix sets each competitor's answers and "Mark verified".
+- **Limits:**
+  - verifying a competitor's features for one country also stamps its every-country rows;
+  - routine checks report changes only;
+  - the comparison words exist in en-GB and de-DE only; other languages fall back to English until translated.
+
+## 86.11 The quick pass (competitor-check-3)
+
+- **Goal (stated, 29 Oct):** check every country in one pass within the $100 monthly allowance, then go deeper over time.
+- **Mode `pass`:** every active competitor × each of its countries.
+  - A candidate first gets one classification read: one page, no search, no features.
+  - A check reads prices, fees, the card rate, the term, the set-up fee, the trial, and **only the features shown on that
+    country's page**.
+- **Settings:** `pass_extractor_model` / `pass_verifier_model` (Haiku), `pass_per_day` (40), `pass_max_fetches` (3),
+  `pass_max_searches` (1) and `pass_max_page_tokens` (6000).
+- **How it runs:**
+  - every request is kept under 100,000 input tokens;
+  - prompt caching works within a competitor's requests;
+  - it **runs through the Message Batches API** (server tools are supported; half price);
+  - a batch is collected on the run after it is submitted;
+  - it resumes where it stopped (`competitors.pass_state`).
+- **The verifier** runs only on price, fee, term, set-up and trial findings, and on changed feature answers. The quote
+  check runs on all of them.
+- **Estimate (competitor-check-3 §5):**
+  - about $3.50 for a full pass today: 155 checks + 70 classification reads, ≈ $3.52;
+  - about $8.40 with the six POS players;
+  - about 7 nights at 40 a day.
+- **Models (stated, 29 Oct):** Dominic set the deep / routine extractor and verifier to `claude-haiku-5-5` as well
+  (OBSERVED 30 Oct: all four are Haiku).
+  - **Recommendation recorded:** use Sonnet as the deep check's reader for countries with a public comparison page.
+- **OBSERVED 30 Oct:**
+  - The first batch, `msgbatch_01Jb6Zv1SGfDfDEsQPh49oqp` (40 checks, estimated $1.80), went in at 08:33 UTC with the
+    17-union schema, so the API refused its items.
+  - competitor-check-4 (30 Oct) collects such items as failed, at $0, and sends them again in the next share.
+  - No `pass` run is recorded yet.
+
+## 86.12 Measured so far
+
+- **Routine checks:** about $0.19 a competitor (the estimate was $0.16), measured on 6 competitors for $1.14.
+- **Scheduled runs** start around 08:20 UTC (GitHub's cron delay).
+- **A deep check with the 45-feature list on Sonnet:** the delta's figure is about $1.80 a competitor; the report wins.
+  - comparison-features-1 §6 estimates **+$0.93** a competitor on top of the $0.72 deep check, about $1.65, or about $2
+    with the measured 20% overrun.
+  - This cost is why the quick pass exists. These are estimates, not measured.
+
+## 86.13 Search Console, Bing and the firewall (stated, 29 Oct)
+
+- **Google Search Console:**
+  - a Domain property, `hatchgrab.com` (Dominic is the verified owner, via a DNS TXT record);
+  - a URL-prefix property, `https://www.hatchgrab.com`.
+  - **On 29 Oct the Domain property showed 3 pages indexed and 7 not:** 3 "Crawled – currently not indexed", 1 "Not found
+    (404)" and 3 "Page with redirect".
+  - No sitemap had been submitted. Whether it has been since is UNVERIFIED.
+- **Bing Webmaster Tools:**
+  - the import from Search Console found no sites;
+  - `https://www.hatchgrab.com` was added by hand and verified with a CNAME record;
+  - the sitemap submission is UNVERIFIED.
+- **DNS** is managed at Namecheap; both verification records were added there.
+- **Vercel Firewall:** Bot Protection off, the AI Bots ruleset on Allow, no custom rules, Attack Challenge Mode off.
 
 ---
 

@@ -1482,7 +1482,8 @@
       "heading": "Reģistrējieties bezmaksas mēnesim jau tagad",
       "sub": "Laiks sāk skaitīties tikai tad, kad nolemjat sākt darbu."
     },
-    "cashIcon": "💶"
+    "cashIcon": "💶",
+    "walkBanner": "Demo · šī ir jūsu ēdienkarte tieši tāda, kādu to redzēs jūsu klienti. Nauda netiek iekasēta, un e-pasti netiek sūtīti."
   },
   "userMenu": {
     "menuLabel": "Lietotāja izvēlne",
@@ -2264,7 +2265,11 @@
       "or": "vai",
       "pasteLabel": "Ielīmēt ēdienkartes tekstu",
       "pastePlaceholder": "Ielīmējiet ēdienkarti šeit — pozīciju nosaukumus, aprakstus, cenas..."
-    }
+    },
+    "emailLabel": "Jūsu e-pasts",
+    "emailNote": "Mēs jums nosūtīsim saiti uz jūsu demo un, iespējams, sazināsimies ar jums par HatchGrab iestatīšanu. <link>Privātuma politika</link>",
+    "marketing": "Laiku pa laikam sūtiet man HatchGrab padomus un jaunumus",
+    "emailInvalid": "Lūdzu, ievadiet derīgu e-pasta adresi."
   },
   "provisionContent": {
     "firstVanName": "Busiņš 1",
@@ -6269,5 +6274,57 @@
     "customersSee": "Klienti redz:",
     "postalWarning": "Tas neizskatās pareizi (gaidīts: {article}, piemēram, {example}). Jūs to tomēr varat saglabāt.",
     "regionChoose": "Izvēlieties…"
+  },
+  "demoLinkEmail": {
+    "subject": "Jūsu HatchGrab demo — lūk, jūsu saite",
+    "heading": "Jūsu demo versija ir gatava",
+    "intro": "Lūk, saite uz demo, ko izveidojām no jūsu ēdienkartes. Pasūtiet tajā kā viens no jūsu klientiem un vērojiet, kā pasūtījums pienāk jūsu virtuves ekrānā. Pieteikšanās nav vajadzīga — vienkārši pieskarieties saitei.",
+    "button": "Atvērt manu demo",
+    "deletion": "Šī ir demo versija, tāpēc mēs to neglabājam: mēs to dzēsīsim kopā ar jūsu augšupielādēto ēdienkarti šajā datumā: {date}. Ja vēlaties to saglabāt ilgāk, demo versijā nospiediet “Saglabāt manu ēdienkarti”, un mēs to glabāsim 14 dienas.",
+    "deletionSoon": "Šī ir demo versija, tāpēc mēs to neglabājam: mēs to dzēsīsim kopā ar jūsu augšupielādēto ēdienkarti pēc 24 stundām. Ja vēlaties to saglabāt ilgāk, demo versijā nospiediet “Saglabāt manu ēdienkarti”, un mēs to glabāsim 14 dienas."
+  },
+  "demoWalk": {
+    "step1": "1. solis no 3 · Pasūtiet kā viens no jūsu klientiem",
+    "paymentTitle": "Maksājums",
+    "paymentPanel": "Šeit jūsu klients maksā ar karti, Apple Pay vai Google Pay vai izvēlas maksāt saņemot. Demo versijā nauda netiek iekasēta.",
+    "defaultName": "Alex",
+    "step2": "2. solis no 3",
+    "bubbleTitle": "Šis ir jūsu virtuves ekrāns",
+    "bubbleArrived": "Pasūtījums, ko tikko veicāt, uzreiz pienāca šeit kopā ar saņemšanas laiku. Pieskarieties “Sākt gatavot”.",
+    "bubbleReady": "Kad ēdiens ir gatavs, pieskarieties “Gatavs”. Jūsu klients to uzzina uzreiz.",
+    "step3": "3. solis no 3 · gatavs",
+    "told": "{name} tikko uzzināja, ka ēdiens ir gatavs.",
+    "thatsIt": "Tas ir HatchGrab: klienti pasūta savā tālrunī, jūs to redzat šeit, un viņi to saņem bez rindas. Jūsu ēdienkarte jau ir iestatīta.",
+    "startFree": "{months, plural, =0 {Sākt bez maksas, saglabāt ēdienkarti} zero {Sākt ar # bezmaksas mēnešiem, saglabāt ēdienkarti} one {Sākt ar # bezmaksas mēnesi, saglabāt ēdienkarti} other {Sākt ar # bezmaksas mēnešiem, saglabāt ēdienkarti}}",
+    "tryAnother": "Izmēģināt citu pasūtījumu",
+    "barOrder": "Pasūtiet kā klients",
+    "barArrives": "Tas pienāk jūsu virtuvē",
+    "barReady": "Atzīmējiet kā gatavu",
+    "phoneLabel": "Jūsu klienta tālrunis",
+    "kitchenLabel": "Jūsu virtuves ekrāns",
+    "waitingTitle": "Gaida pasūtījumus",
+    "waitingBody": "Pasūtiet kaut ko tālrunī. Tas parādās šeit tajā brīdī, kad jūsu klients noformē pasūtījumu.",
+    "startCooking": "Sākt gatavot",
+    "ready": "Gatavs",
+    "readyForCollection": "Gatavs saņemšanai",
+    "cooking": "Gatavo",
+    "readyBadge": "Gatavs",
+    "newBadge": "Jauns pasūtījums",
+    "orderNumber": "Pasūtījums Nr. {number}",
+    "collectAt": "Saņemiet plkst. {time}",
+    "collectAsap": "Saņemiet pēc iespējas ātrāk",
+    "phoneReadyTitle": "Jūsu pasūtījums ir gatavs",
+    "phoneReadyBody": "Saņemiet to pie busiņa.",
+    "bandTitle": "Tas ir HatchGrab. Jūsu ēdienkarte jau ir iestatīta.",
+    "bandStart": "Sākt bez maksas, saglabāt ēdienkarti",
+    "orderAgain": "Pasūtīt vēlreiz",
+    "loading": "Iestatām jūsu demo…",
+    "goneTitle": "Šī demo versija ir beigusies",
+    "goneBody": "Demo versijas tiek dzēstas pēc vienas dienas. Jaunu varat izveidot no savas ēdienkartes mazāk nekā minūtē.",
+    "goneButton": "Izveidot jaunu demo",
+    "failed": "Neizdevās — lūdzu, mēģiniet vēlreiz.",
+    "backToMenu": "Atpakaļ uz ēdienkarti",
+    "formNote": "Šī ir demo versija: nevienam netiek iekasēta nauda un nekas netiek nosūtīts, tāpēc e-pasts nav jānorāda.",
+    "namePlaceholder": "Alex"
   }
 }

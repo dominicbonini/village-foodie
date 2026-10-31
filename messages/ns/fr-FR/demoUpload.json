@@ -53,5 +53,9 @@
     "or": "ou",
     "pasteLabel": "Coller le texte de la carte",
     "pastePlaceholder": "Collez votre carte ici — noms des articles, descriptions, prix…"
-  }
+  },
+  "emailLabel": "Votre e-mail",
+  "emailNote": "Nous vous enverrons par e-mail un lien vers votre démo et pourrons vous contacter au sujet de la mise en place de HatchGrab. <link>Politique de confidentialité</link>",
+  "marketing": "Envoyez-moi de temps en temps des conseils et des nouvelles de HatchGrab",
+  "emailInvalid": "Veuillez saisir une adresse e-mail valide."
 }

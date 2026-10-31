@@ -1482,7 +1482,8 @@
       "heading": "Regisztráljon most az ingyenes hónapért",
       "sub": "Az idő csak akkor kezd telni, amikor úgy dönt, hogy élesben indul."
     },
-    "cashIcon": "💵"
+    "cashIcon": "💵",
+    "walkBanner": "Demó · ez az Ön étlapja, ahogyan a vásárlói látni fogják. Semmit nem terhelünk, és nem küldünk e-mailt."
   },
   "userMenu": {
     "menuLabel": "Felhasználói menü",
@@ -2264,7 +2265,11 @@
       "or": "vagy",
       "pasteLabel": "Étlap szövegének beillesztése",
       "pastePlaceholder": "Illessze be ide az étlapját — tételnevek, leírások, árak..."
-    }
+    },
+    "emailLabel": "Az Ön e-mail-címe",
+    "emailNote": "E-mailben elküldjük a demója linkjét, és felvehetjük Önnel a kapcsolatot a HatchGrab beállításával kapcsolatban. <link>Adatvédelmi tájékoztató</link>",
+    "marketing": "Időnként tippeket és híreket kérek a HatchGrabtől",
+    "emailInvalid": "Adjon meg egy érvényes e-mail-címet."
   },
   "provisionContent": {
     "firstVanName": "Food truck 1",
@@ -6269,5 +6274,57 @@
     "customersSee": "A vevők ezt látják:",
     "postalWarning": "Ez nem úgy néz ki, mint {article} — például {example}. Ettől még elmentheti.",
     "regionChoose": "Válasszon…"
+  },
+  "demoLinkEmail": {
+    "subject": "Az Ön HatchGrab demója — itt a link",
+    "heading": "Elkészült a demója",
+    "intro": "Itt a link a demóhoz, amelyet az Ön étlapjából készítettünk. Rendeljen róla úgy, mint az egyik vásárlója, aztán nézze, ahogy a rendelés megérkezik a konyhai kijelzőjére. Bejelentkezés nem kell — csak koppintson rá.",
+    "button": "Demóm megnyitása",
+    "deletion": "Ez egy demó, ezért nem őrizzük meg: a feltöltött étlappal együtt töröljük, a törlés napja: {date}. Ha tovább szeretné megtartani, nyomja meg a demóban az „Étlapom mentése” gombot, és 14 napig megőrizzük.",
+    "deletionSoon": "Ez egy demó, ezért nem őrizzük meg: 24 óra elteltével töröljük, a feltöltött étlappal együtt. Ha tovább szeretné megtartani, nyomja meg a demóban az „Étlapom mentése” gombot, és 14 napig megőrizzük."
+  },
+  "demoWalk": {
+    "step1": "1. lépés (3-ból) · Rendeljen úgy, mint az egyik vásárlója",
+    "paymentTitle": "Fizetés",
+    "paymentPanel": "A vásárló itt fizet kártyával, Apple Pay vagy Google Pay használatával, vagy az átvételkori fizetést választja. A demóban semmit nem terhelünk.",
+    "defaultName": "Alex",
+    "step2": "2. lépés (3-ból)",
+    "bubbleTitle": "Ez az Ön konyhai kijelzője",
+    "bubbleArrived": "Az imént leadott rendelés azonnal megérkezett ide, az átvételi idővel együtt. Koppintson a „Főzés indítása” gombra.",
+    "bubbleReady": "Ha elkészült az étel, koppintson a „Kész” gombra. A vásárló azonnal értesítést kap.",
+    "step3": "3. lépés (3-ból) · kész",
+    "told": "{name} épp most kapott értesítést, hogy kész az étele.",
+    "thatsIt": "Ez a HatchGrab: a vásárlók telefonon rendelnek, Ön itt látja, ők pedig sorban állás nélkül veszik át. Az étlapja már be van állítva.",
+    "startFree": "{months, plural, =0 {Ingyenes kezdés, az étlapom marad} one {Ingyenes kezdés # hónapra, az étlapom marad} other {Ingyenes kezdés # hónapra, az étlapom marad}}",
+    "tryAnother": "Újabb rendelés kipróbálása",
+    "barOrder": "Rendeljen vásárlóként",
+    "barArrives": "Megérkezik a konyhába",
+    "barReady": "Jelölje késznek",
+    "phoneLabel": "A vásárló telefonja",
+    "kitchenLabel": "Az Ön konyhai kijelzője",
+    "waitingTitle": "Rendelésekre várunk",
+    "waitingBody": "Rendeljen valamit a telefonon. Abban a pillanatban megjelenik itt, amikor a vásárló leadja a rendelést.",
+    "startCooking": "Főzés indítása",
+    "ready": "Kész",
+    "readyForCollection": "Átvételre kész",
+    "cooking": "Főzés alatt",
+    "readyBadge": "Kész",
+    "newBadge": "Új rendelés",
+    "orderNumber": "#{number} rendelés",
+    "collectAt": "Vegye át ekkor: {time}",
+    "collectAsap": "Vegye át, amint lehet",
+    "phoneReadyTitle": "Elkészült a rendelése",
+    "phoneReadyBody": "Vegye át a food trucknál.",
+    "bandTitle": "Ez a HatchGrab. Az étlapja már be van állítva.",
+    "bandStart": "Ingyenes kezdés, az étlapom marad",
+    "orderAgain": "Rendelés újra",
+    "loading": "Beállítjuk a demóját…",
+    "goneTitle": "Ez a demó véget ért",
+    "goneBody": "A demókat egy nap után töröljük. Az étlapjából egy percen belül készíthet újat.",
+    "goneButton": "Új demó készítése",
+    "failed": "Ez nem sikerült — kérjük, próbálja újra.",
+    "backToMenu": "Vissza az étlaphoz",
+    "formNote": "Ez egy demó: senkit nem terhelünk, és semmit nem küldünk el, így e-mail-címet sem kell megadnia.",
+    "namePlaceholder": "Alex"
   }
 }

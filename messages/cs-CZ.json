@@ -1482,7 +1482,8 @@
       "heading": "Zaregistrujte se teď na měsíc zdarma",
       "sub": "Čas začne běžet až ve chvíli, kdy se rozhodnete spustit ostrý provoz."
     },
-    "cashIcon": "💵"
+    "cashIcon": "💵",
+    "walkBanner": "Ukázka · toto je váš jídelní lístek tak, jak ho uvidí vaši zákazníci. Nic se neúčtuje a neposílají se žádné e-maily."
   },
   "userMenu": {
     "menuLabel": "Uživatelská nabídka",
@@ -2264,7 +2265,11 @@
       "or": "nebo",
       "pasteLabel": "Vložit text jídelního lístku",
       "pastePlaceholder": "Sem vložte jídelní lístek — názvy položek, popisy, ceny..."
-    }
+    },
+    "emailLabel": "Váš e-mail",
+    "emailNote": "Pošleme vám e-mailem odkaz na vaše demo a můžeme vás kontaktovat ohledně nastavení HatchGrab. <link>Zásady ochrany osobních údajů</link>",
+    "marketing": "Občas mi posílejte tipy a novinky od HatchGrab",
+    "emailInvalid": "Zadejte prosím platnou e-mailovou adresu."
   },
   "provisionContent": {
     "firstVanName": "Food truck 1",
@@ -6269,5 +6274,57 @@
     "customersSee": "Zákazníci uvidí:",
     "postalWarning": "Tohle nevypadá jako {article} — například {example}. Přesto to můžete uložit.",
     "regionChoose": "Vyberte…"
+  },
+  "demoLinkEmail": {
+    "subject": "Vaše demo HatchGrab — tady je odkaz",
+    "heading": "Vaše demo je připravené",
+    "intro": "Tady je odkaz na demo, které jsme vytvořili z vašeho jídelního lístku. Objednejte si z něj jako jeden z vašich zákazníků a pak sledujte, jak objednávka dorazí na vaši kuchyňskou obrazovku. Není potřeba se přihlašovat — stačí klepnout.",
+    "button": "Otevřít moje demo",
+    "deletion": "Je to jen demo, takže ho neuchováváme: smažeme ho i nahraný jídelní lístek dne {date}. Pokud ho chcete mít déle, stiskněte v demu „Uložit jídelní lístek“ a uchováme ho 14 dní.",
+    "deletionSoon": "Je to jen demo, takže ho neuchováváme: smažeme ho i nahraný jídelní lístek po 24 hodinách. Pokud ho chcete mít déle, stiskněte v demu „Uložit jídelní lístek“ a uchováme ho 14 dní."
+  },
+  "demoWalk": {
+    "step1": "Krok 1 ze 3 · Objednejte si jako jeden z vašich zákazníků",
+    "paymentTitle": "Platba",
+    "paymentPanel": "Tady váš zákazník zaplatí kartou, přes Apple Pay nebo Google Pay, případně si zvolí platbu při vyzvednutí. V ukázce se nic neúčtuje.",
+    "defaultName": "Alex",
+    "step2": "Krok 2 ze 3",
+    "bubbleTitle": "Tohle je vaše kuchyňská obrazovka",
+    "bubbleArrived": "Objednávka, kterou jste právě zadali, sem dorazila okamžitě a ukazuje čas vyzvednutí. Klepněte na „Začít vařit“.",
+    "bubbleReady": "Až bude jídlo hotové, klepněte na „Připraveno“. Váš zákazník hned dostane zprávu.",
+    "step3": "Krok 3 ze 3 · hotovo",
+    "told": "{name} právě dostává zprávu, že jídlo je hotové.",
+    "thatsIt": "To je HatchGrab: zákazníci objednávají v telefonu, vy to vidíte tady a oni si jídlo vyzvednou bez fronty. Váš jídelní lístek je už nastavený.",
+    "startFree": "{months, plural, =0 {Začít zdarma, lístek zůstane} one {Začít zdarma na # měsíc, lístek zůstane} few {Začít zdarma na # měsíce, lístek zůstane} many {Začít zdarma na # měsíce, lístek zůstane} other {Začít zdarma na # měsíců, lístek zůstane}}",
+    "tryAnother": "Zkusit další objednávku",
+    "barOrder": "Objednejte jako zákazník",
+    "barArrives": "Dorazí do vaší kuchyně",
+    "barReady": "Označte jako hotovou",
+    "phoneLabel": "Telefon vašeho zákazníka",
+    "kitchenLabel": "Vaše kuchyňská obrazovka",
+    "waitingTitle": "Čekáme na objednávky",
+    "waitingBody": "Objednejte něco v telefonu. Objeví se tady ve chvíli, kdy zákazník odešle objednávku.",
+    "startCooking": "Začít vařit",
+    "ready": "Připraveno",
+    "readyForCollection": "Připraveno k vyzvednutí",
+    "cooking": "Vaří se",
+    "readyBadge": "Připraveno",
+    "newBadge": "Nová objednávka",
+    "orderNumber": "Objednávka #{number}",
+    "collectAt": "Vyzvedněte si v {time}",
+    "collectAsap": "Vyzvedněte si co nejdříve",
+    "phoneReadyTitle": "Vaše objednávka je připravená",
+    "phoneReadyBody": "Vyzvedněte si ji u food trucku.",
+    "bandTitle": "To je HatchGrab. Váš jídelní lístek je už nastavený.",
+    "bandStart": "Začít zdarma, lístek zůstane",
+    "orderAgain": "Objednat znovu",
+    "loading": "Nastavujeme vaše demo…",
+    "goneTitle": "Toto demo skončilo",
+    "goneBody": "Dema se po jednom dni mažou. Nové si můžete ze svého jídelního lístku vytvořit za necelou minutu.",
+    "goneButton": "Vytvořit nové demo",
+    "failed": "Nepovedlo se — zkuste to prosím znovu.",
+    "backToMenu": "Zpět na jídelní lístek",
+    "formNote": "Tohle je ukázka: nikomu se nic neúčtuje a nic se neodesílá, takže nemusíte zadávat e-mail.",
+    "namePlaceholder": "Alex"
   }
 }

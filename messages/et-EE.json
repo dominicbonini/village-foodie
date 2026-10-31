@@ -1482,7 +1482,8 @@
       "heading": "Registreeru kohe ja saa tasuta kuu",
       "sub": "Aeg hakkab jooksma alles siis, kui otsustad avalikuks minna."
     },
-    "cashIcon": "💶"
+    "cashIcon": "💶",
+    "walkBanner": "Demo · see on sinu menüü just nii, nagu sinu kliendid seda näevad. Raha ei võeta ja e-kirju ei saadeta."
   },
   "userMenu": {
     "menuLabel": "Kasutajamenüü",
@@ -2264,7 +2265,11 @@
       "or": "või",
       "pasteLabel": "Kleebi menüü tekst",
       "pastePlaceholder": "Kleebi oma menüü siia — toodete nimed, kirjeldused, hinnad…"
-    }
+    },
+    "emailLabel": "Sinu e-post",
+    "emailNote": "Saadame sulle e-kirjaga lingi sinu demole ja võime sinuga ühendust võtta, et HatchGrabi seadistada. <link>Privaatsuspoliitika</link>",
+    "marketing": "Saada mulle aeg-ajalt HatchGrabi nõuandeid ja uudiseid",
+    "emailInvalid": "Palun sisesta kehtiv e-posti aadress."
   },
   "provisionContent": {
     "firstVanName": "Toiduauto 1",
@@ -6269,5 +6274,57 @@
     "customersSee": "Kliendid näevad:",
     "postalWarning": "See ei tundu olevat {article} — näiteks {example}. Saad selle siiski salvestada.",
     "regionChoose": "Vali…"
+  },
+  "demoLinkEmail": {
+    "subject": "Sinu HatchGrabi demo — siin on sinu link",
+    "heading": "Sinu demo on valmis",
+    "intro": "Siin on link demole, mille sinu menüü põhjal tegime. Telli sealt nagu üks sinu klientidest ja vaata, kuidas tellimus sinu köögiekraanile jõuab. Sisselogimist pole vaja — lihtsalt puuduta linki.",
+    "button": "Ava minu demo",
+    "deletion": "See on demo, seega me seda alles ei hoia: kustutame selle koos sinu üles laaditud menüüga kuupäeval {date}. Kui soovid seda kauem, vajuta demos „Salvesta mu menüü“ ja hoiame seda 14 päeva.",
+    "deletionSoon": "See on demo, seega me seda alles ei hoia: kustutame selle koos sinu üles laaditud menüüga 24 tunni pärast. Kui soovid seda kauem, vajuta demos „Salvesta mu menüü“ ja hoiame seda 14 päeva."
+  },
+  "demoWalk": {
+    "step1": "1. samm 3-st · Telli nagu üks sinu klientidest",
+    "paymentTitle": "Makse",
+    "paymentPanel": "Siin maksab sinu klient kaardi, Apple Pay või Google Payga või valib tasumise kättesaamisel. Demos raha ei võeta.",
+    "defaultName": "Alex",
+    "step2": "2. samm 3-st",
+    "bubbleTitle": "See on sinu köögiekraan",
+    "bubbleArrived": "Tellimus, mille just esitasid, jõudis siia kohe ja kättesaamise aeg on juures. Puuduta „Alusta valmistamist“.",
+    "bubbleReady": "Kui toit on valmis, puuduta „Valmis“. Sinu klient saab sellest kohe teada.",
+    "step3": "3. samm 3-st · valmis",
+    "told": "{name} sai just teada, et toit on valmis.",
+    "thatsIt": "See ongi HatchGrab: kliendid tellivad telefonist, sina näed tellimust siin ja nad saavad selle kätte ilma järjekorras seismata. Sinu menüü on juba seadistatud.",
+    "startFree": "{months, plural, =0 {Alusta tasuta, hoia mu menüü alles} one {Alusta tasuta # kuuks, hoia mu menüü alles} other {Alusta tasuta # kuuks, hoia mu menüü alles}}",
+    "tryAnother": "Proovi veel üht tellimust",
+    "barOrder": "Telli nagu klient",
+    "barArrives": "See jõuab sinu kööki",
+    "barReady": "Märgi valmis",
+    "phoneLabel": "Sinu kliendi telefon",
+    "kitchenLabel": "Sinu köögiekraan",
+    "waitingTitle": "Ootame tellimusi",
+    "waitingBody": "Telli telefonis midagi. See ilmub siia hetkel, kui sinu klient tellimuse esitab.",
+    "startCooking": "Alusta valmistamist",
+    "ready": "Valmis",
+    "readyForCollection": "Valmis kättesaamiseks",
+    "cooking": "Valmib",
+    "readyBadge": "Valmis",
+    "newBadge": "Uus tellimus",
+    "orderNumber": "Tellimus #{number}",
+    "collectAt": "Tule järele kell {time}",
+    "collectAsap": "Tule järele niipea kui võimalik",
+    "phoneReadyTitle": "Sinu tellimus on valmis",
+    "phoneReadyBody": "Tule toiduauto juurde järele.",
+    "bandTitle": "See ongi HatchGrab. Sinu menüü on juba seadistatud.",
+    "bandStart": "Alusta tasuta, hoia mu menüü alles",
+    "orderAgain": "Telli uuesti",
+    "loading": "Seadistame sinu demot…",
+    "goneTitle": "See demo on lõppenud",
+    "goneBody": "Demod kustutatakse päeva pärast. Uue saad oma menüüst luua vähem kui minutiga.",
+    "goneButton": "Loo uus demo",
+    "failed": "See ei õnnestunud — palun proovi uuesti.",
+    "backToMenu": "Tagasi menüüsse",
+    "formNote": "See on demo: kelleltki ei võeta raha ja midagi ei saadeta, seega e-posti pole vaja sisestada.",
+    "namePlaceholder": "Alex"
   }
 }

@@ -1482,7 +1482,8 @@
       "heading": "Registrera dig för din gratismånad nu",
       "sub": "Klockan börjar inte ticka förrän du bestämmer dig för att gå live."
     },
-    "cashIcon": "💵"
+    "cashIcon": "💵",
+    "walkBanner": "Demo · det här är din meny, så som dina kunder kommer att se den. Inget debiteras och inga mejl skickas."
   },
   "userMenu": {
     "menuLabel": "Användarmeny",
@@ -2264,7 +2265,11 @@
       "or": "eller",
       "pasteLabel": "Klistra in menytext",
       "pastePlaceholder": "Klistra in din meny här — namn på rätter, beskrivningar, priser…"
-    }
+    },
+    "emailLabel": "Din e-postadress",
+    "emailNote": "Vi mejlar dig en länk till din demo och kan komma att kontakta dig om att sätta upp HatchGrab. <link>Integritetspolicy</link>",
+    "marketing": "Skicka mig tips och nyheter från HatchGrab då och då",
+    "emailInvalid": "Ange en giltig e-postadress."
   },
   "provisionContent": {
     "firstVanName": "Foodtruck 1",
@@ -6269,5 +6274,57 @@
     "customersSee": "Kunderna ser:",
     "postalWarning": "Det ser inte ut som {article} – till exempel {example}. Du kan spara ändå.",
     "regionChoose": "Välj …"
+  },
+  "demoLinkEmail": {
+    "subject": "Din HatchGrab-demo – här är din länk",
+    "heading": "Din demo är klar",
+    "intro": "Här är länken till demon vi byggde utifrån din meny. Beställ från den som en av dina kunder och se sedan beställningen komma in på din köksskärm. Ingen inloggning behövs – tryck bara på den.",
+    "button": "Öppna min demo",
+    "deletion": "Det här är en demo, så vi sparar den inte: vi raderar den, och menyn du laddade upp, den {date}. Vill du ha mer tid trycker du på ”Spara min meny” i demon, så sparar vi den i 14 dagar.",
+    "deletionSoon": "Det här är en demo, så vi sparar den inte: vi raderar den, och menyn du laddade upp, efter 24 timmar. Vill du ha mer tid trycker du på ”Spara min meny” i demon, så sparar vi den i 14 dagar."
+  },
+  "demoWalk": {
+    "step1": "Steg 1 av 3 · Beställ som en av dina kunder",
+    "paymentTitle": "Betalning",
+    "paymentPanel": "Här betalar din kund med kort, Apple Pay eller Google Pay, eller väljer att betala vid foodtrucken. I demon debiteras ingenting.",
+    "defaultName": "Alex",
+    "step2": "Steg 2 av 3",
+    "bubbleTitle": "Det här är din köksskärm",
+    "bubbleArrived": "Beställningen du just gjorde kom in här direkt, med upphämtningstiden. Tryck på ”Börja laga”.",
+    "bubbleReady": "När maten är klar trycker du på ”Klar”. Din kund får besked direkt.",
+    "step3": "Steg 3 av 3 · klart",
+    "told": "{name} har just fått besked om att maten är klar.",
+    "thatsIt": "Det är HatchGrab: kunderna beställer i mobilen, du ser det här och de hämtar utan att köa. Din meny är redan upplagd.",
+    "startFree": "{months, plural, =0 {Börja gratis, behåll min meny} one {Börja gratis i # månad, behåll min meny} other {Börja gratis i # månader, behåll min meny}}",
+    "tryAnother": "Testa en beställning till",
+    "barOrder": "Beställ som en kund",
+    "barArrives": "Den kommer in i ditt kök",
+    "barReady": "Markera som klar",
+    "phoneLabel": "Din kunds mobil",
+    "kitchenLabel": "Din köksskärm",
+    "waitingTitle": "Väntar på beställningar",
+    "waitingBody": "Beställ något i mobilen. Det dyker upp här så fort din kund trycker på Beställ.",
+    "startCooking": "Börja laga",
+    "ready": "Klar",
+    "readyForCollection": "Klar för upphämtning",
+    "cooking": "Lagas",
+    "readyBadge": "Klar",
+    "newBadge": "Ny beställning",
+    "orderNumber": "Beställning #{number}",
+    "collectAt": "Hämtas kl. {time}",
+    "collectAsap": "Hämtas så snart som möjligt",
+    "phoneReadyTitle": "Din beställning är klar",
+    "phoneReadyBody": "Hämta den vid foodtrucken.",
+    "bandTitle": "Det är HatchGrab. Din meny är redan upplagd.",
+    "bandStart": "Börja gratis, behåll min meny",
+    "orderAgain": "Beställ igen",
+    "loading": "Förbereder din demo…",
+    "goneTitle": "Den här demon har avslutats",
+    "goneBody": "Demor raderas efter ett dygn. Du kan bygga en ny utifrån din meny på under en minut.",
+    "goneButton": "Bygg en ny demo",
+    "failed": "Det fungerade inte – försök igen.",
+    "backToMenu": "Tillbaka till menyn",
+    "formNote": "Det här är en demo: ingen debiteras och inget skickas, så du behöver inte ange någon e-postadress.",
+    "namePlaceholder": "Alex"
   }
 }

@@ -1482,7 +1482,8 @@
       "heading": "Jetzt für Ihren kostenlosen Monat registrieren",
       "sub": "Die Uhr läuft erst, wenn Sie sich entscheiden, live zu gehen."
     },
-    "cashIcon": "💶"
+    "cashIcon": "💶",
+    "walkBanner": "Demo · Das ist Ihre Speisekarte, so wie Ihre Kunden sie sehen werden. Es wird nichts abgebucht und es werden keine E-Mails verschickt."
   },
   "userMenu": {
     "menuLabel": "Benutzermenü",
@@ -2264,7 +2265,11 @@
       "or": "oder",
       "pasteLabel": "Speisekarte als Text einfügen",
       "pastePlaceholder": "Fügen Sie Ihre Speisekarte hier ein – Artikelnamen, Beschreibungen, Preise…"
-    }
+    },
+    "emailLabel": "Ihre E-Mail",
+    "emailNote": "Wir senden Ihnen per E-Mail einen Link zu Ihrer Demo und kontaktieren Sie eventuell zur Einrichtung von HatchGrab. <link>Datenschutzerklärung</link>",
+    "marketing": "Senden Sie mir gelegentlich Tipps und Neuigkeiten von HatchGrab",
+    "emailInvalid": "Bitte geben Sie eine gültige E-Mail-Adresse ein."
   },
   "provisionContent": {
     "firstVanName": "Foodtruck 1",
@@ -6648,5 +6653,57 @@
         "explain": "Zeit, das System kostenlos zu nutzen, bevor etwas fällig wird."
       }
     }
+  },
+  "demoLinkEmail": {
+    "subject": "Ihre HatchGrab-Demo – hier ist Ihr Link",
+    "heading": "Ihre Demo ist fertig",
+    "intro": "Hier ist der Link zu der Demo, die wir aus Ihrer Speisekarte erstellt haben. Bestellen Sie darüber wie einer Ihrer Kunden und sehen Sie dann zu, wie die Bestellung auf Ihrem Küchenmonitor eingeht. Keine Anmeldung nötig – einfach antippen.",
+    "button": "Meine Demo öffnen",
+    "deletion": "Das ist eine Demo, deshalb bewahren wir sie nicht auf: Wir löschen sie – und die Speisekarte, die Sie hochgeladen haben – am {date}. Wenn Sie mehr Zeit möchten, tippen Sie in der Demo auf „Speisekarte speichern“, dann bewahren wir sie 14 Tage lang auf.",
+    "deletionSoon": "Das ist eine Demo, deshalb bewahren wir sie nicht auf: Wir löschen sie – und die Speisekarte, die Sie hochgeladen haben – nach 24 Stunden. Wenn Sie mehr Zeit möchten, tippen Sie in der Demo auf „Speisekarte speichern“, dann bewahren wir sie 14 Tage lang auf."
+  },
+  "demoWalk": {
+    "step1": "Schritt 1 von 3 · Bestellen Sie wie einer Ihrer Kunden",
+    "paymentTitle": "Bezahlung",
+    "paymentPanel": "Hier bezahlt Ihr Kunde per Karte, Apple Pay oder Google Pay – oder er entscheidet sich, am Foodtruck zu bezahlen. In der Demo wird nichts abgebucht.",
+    "defaultName": "Alex",
+    "step2": "Schritt 2 von 3",
+    "bubbleTitle": "Das ist Ihr Küchenmonitor",
+    "bubbleArrived": "Die Bestellung, die Sie gerade aufgegeben haben, ist sofort hier eingegangen – mit der Abholzeit. Tippen Sie auf „Zubereiten“.",
+    "bubbleReady": "Wenn das Essen fertig ist, tippen Sie auf „Fertig“. Ihr Kunde wird sofort benachrichtigt.",
+    "step3": "Schritt 3 von 3 · fertig",
+    "told": "{name} wurde gerade benachrichtigt, dass das Essen fertig ist.",
+    "thatsIt": "Das ist HatchGrab: Kunden bestellen auf ihrem Handy, Sie sehen es hier, und sie holen ab, ohne anzustehen. Ihre Speisekarte ist schon eingerichtet.",
+    "startFree": "{months, plural, =0 {Kostenlos starten, Speisekarte behalten} one {# Monat kostenlos starten, Speisekarte behalten} other {# Monate kostenlos starten, Speisekarte behalten}}",
+    "tryAnother": "Weitere Bestellung ausprobieren",
+    "barOrder": "Wie ein Kunde bestellen",
+    "barArrives": "Sie geht in Ihrer Küche ein",
+    "barReady": "Als fertig markieren",
+    "phoneLabel": "Das Handy Ihres Kunden",
+    "kitchenLabel": "Ihr Küchenmonitor",
+    "waitingTitle": "Warten auf Bestellungen",
+    "waitingBody": "Bestellen Sie etwas auf dem Handy. Es erscheint hier, sobald Ihr Kunde auf „Bestellen“ tippt.",
+    "startCooking": "Zubereiten",
+    "ready": "Fertig",
+    "readyForCollection": "Abholbereit",
+    "cooking": "In Zubereitung",
+    "readyBadge": "Fertig",
+    "newBadge": "Neue Bestellung",
+    "orderNumber": "Bestellung #{number}",
+    "collectAt": "Abholen um {time}",
+    "collectAsap": "Abholung so bald wie möglich",
+    "phoneReadyTitle": "Ihre Bestellung ist fertig",
+    "phoneReadyBody": "Holen Sie sie am Foodtruck ab.",
+    "bandTitle": "Das ist HatchGrab. Ihre Speisekarte ist schon eingerichtet.",
+    "bandStart": "Kostenlos starten, Speisekarte behalten",
+    "orderAgain": "Erneut bestellen",
+    "loading": "Ihre Demo wird eingerichtet…",
+    "goneTitle": "Diese Demo ist beendet",
+    "goneBody": "Demos werden nach einem Tag gelöscht. Sie können in unter einer Minute eine neue aus Ihrer Speisekarte erstellen.",
+    "goneButton": "Neue Demo erstellen",
+    "failed": "Das hat nicht geklappt – bitte versuchen Sie es erneut.",
+    "backToMenu": "Zurück zur Speisekarte",
+    "formNote": "Das ist eine Demo: Niemandem wird etwas berechnet und nichts wird verschickt – Sie müssen also keine E-Mail-Adresse angeben.",
+    "namePlaceholder": "Alex"
   }
 }

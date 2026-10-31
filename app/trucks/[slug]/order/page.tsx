@@ -8,6 +8,9 @@ import { phoneErrorMessage } from '@/lib/phone-message'
 import { isDemoIdentifier, displayTruckName } from '@/lib/demo'
 import { DemoModeBanner } from '@/components/DemoModeBanner'
 import { DemoGetStarted } from '@/components/DemoGetStarted'
+import { addDemoWalkOrder } from '@/lib/demo-board-build'
+import '@/lib/i18n/catalog/demoWalk'
+import '@/lib/i18n/catalog/demo'
 import { getBundleSlotCategories as getSlotCats, calculateDealOriginalPrice as calcOrigPrice } from '@/lib/deal-utils'
 import { DealsModal } from '@/components/dashboard/DealsModal'
 import Link from 'next/link';
@@ -752,6 +755,7 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
   useTruckLocale(pageTs.locale)
   // 🔴 THE WORDS (Language Phase 1a): messages/en-GB.json `order`, and `errorsCustomer` for a server refusal's code.
   const tOrder = useT('order')
+  const tWalk = useT('demoWalk')   // demo-2: the walkthrough's words on a demo truck
   const tErr = useT('errorsCustomer')
   const pageLocale = useAppLocale()
   // ⚠️ A STATE SET INSIDE AN EFFECT HOLDS A CODE (`order.state.*`), not a sentence, so no effect has to list the
@@ -2243,9 +2247,11 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
   }
 
   const submitOrder = async (extra: { upsellEvents?: any[] } = {}) => {
-    if (!truck || !menu || !name || !email || !hasItems || !event) return
+    // demo-2: a DEMO order needs neither a name nor an email — "Alex" stands in for a blank name, and /api/orders/submit
+    // accepts a demo order with no email (it never sends one). Every other truck is checked exactly as before.
+    if (!truck || !menu || (!isDemo && (!name || !email)) || !hasItems || !event) return
     // Block a clearly-invalid email or (if provided) phone — permissive format guard (Part B).
-    if (!emailValid || !phoneValid) return
+    if ((!isDemo && !emailValid) || !phoneValid) return
     // ASAP (asapChosen) is a genuine active choice — it submits slot=null and the
     // server resolves the earliest ready window. A specific time requires selectedSlot.
     if (truck.mode === 'village' && !selectedSlot && !asapChosen) return
@@ -2269,7 +2275,7 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
       const res = await fetch('/api/orders/submit', {
         method: 'POST', headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          truckId: slug, customerName: name, customerEmail: email, customerPhone: phone,
+          truckId: slug, customerName: isDemo ? (name.trim() || tWalk('defaultName')) : name, customerEmail: isDemo ? '' : email, customerPhone: phone,
           slot: asapChosen ? null : (selectedSlot || null), eventDate: eventDateIso, eventId: event?.id ?? null,
           /* 🔴 THE PRIVATE LINK'S TOKEN, OR null ON EVERY PUBLIC ORDER (20261014). The submit route
            * only consults it when the event is actually private, so sending null is the normal case
@@ -2437,6 +2443,20 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
       // ASAP only: capture the on-screen estimate (same precedence as the ASAP button) so the
       // confirmation can flag a silent bump (server has no "requested" slot for ASAP → slotChanged=false).
       setSubmittedAsapEstimate(asapChosen ? (backwardAsap || asapSlot || customerAsapTime || null) : null)
+      // ── demo-2: STEP 2 OF THE WALKTHROUGH — the order goes to the kitchen screen ─────────────────────────────────
+      // The order key is remembered in THIS tab (lib/demo-board-build), which is what the walkthrough's kitchen reads —
+      // it shows this visitor's orders and nothing else. Inside the walkthrough's laptop layout (this page in its phone
+      // frame) the parent is told and this page shows its confirmation; on its own (a phone) it goes straight to the
+      // kitchen screen. Same origin only; no token is involved anywhere.
+      if (isDemo && typeof data.orderKey === 'string') {
+        addDemoWalkOrder(slug, data.orderKey)
+        if (typeof window !== 'undefined' && window.self !== window.top) {
+          try { window.parent.postMessage({ type: 'hg-demo-order', orderKey: data.orderKey }, window.location.origin) } catch { /* the parent reads the stored key on its next poll */ }
+        } else {
+          window.location.assign(`/try/${encodeURIComponent(slug)}?view=kitchen`)
+          return
+        }
+      }
       setSubmitted(true)
     } catch (err: any) {
       setError(err.message || tOrder('somethingWrong'))
@@ -2688,6 +2708,10 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
     // leaves (OrderLineItem, DealsModal) read it from this provider.
     <MoneyProvider fmt={truck?.money}><Shell>
       <Hdr slug={slug} truck={truck} scrolled={isScrolled} bannerRef={demoBannerRef} />
+      {/* demo-2: the walkthrough's first step, named. */}
+      {isDemo && (
+        <div data-demo-step className="bg-slate-900 text-white text-center text-xs sm:text-sm font-bold px-4 py-2">{tWalk('step1')}</div>
+      )}
 
       {/* Time-not-set banner — a null-time event can't be ordered against (engine needs the times). Shown
           INSTEAD of treating it as orderable; intentional + reassuring, never a broken/crash screen. */}
@@ -3919,11 +3943,12 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
                 letting someone hesitate over handing us their address. */}
             {isDemo && (
               <p className="text-xs font-semibold text-slate-700 bg-slate-100 border border-slate-200 rounded-xl px-3 py-2">
-                {tOrder('demoFormNote')}
+                {tWalk('formNote')}
               </p>
             )}
-            <Fld label={tOrder('nameLabel')} required><input type="text" value={name} onChange={e => setName(e.target.value)} placeholder={tOrder('namePlaceholder')} className="w-full border border-slate-200 rounded-xl px-3 py-2.5 text-sm font-medium text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-orange-400 bg-white" /></Fld>
-            <Fld label={tOrder('emailLabel')} required note={isDemo ? tOrder('emailNoteDemo') : tOrder('emailNote')}><input type="email" value={email} onChange={e => setEmail(e.target.value)} placeholder={tOrder('emailPlaceholder')} className={`w-full border rounded-xl px-3 py-2.5 text-sm font-medium text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 bg-white ${emailError ? 'border-red-300 focus:ring-red-400' : 'border-slate-200 focus:ring-orange-400'}`} />{emailError && <p className="text-red-500 text-xs mt-1">{tOrder('emailInvalid')}</p>}</Fld>
+            <Fld label={tOrder('nameLabel')} required={!isDemo}><input type="text" value={name} onChange={e => setName(e.target.value)} placeholder={isDemo ? tWalk('namePlaceholder') : tOrder('namePlaceholder')} className="w-full border border-slate-200 rounded-xl px-3 py-2.5 text-sm font-medium text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-orange-400 bg-white" /></Fld>
+            {/* demo-2: no email on a demo order — nothing is ever sent, so asking would be friction for nothing. */}
+            {!isDemo && <Fld label={tOrder('emailLabel')} required note={tOrder('emailNote')}><input type="email" value={email} onChange={e => setEmail(e.target.value)} placeholder={tOrder('emailPlaceholder')} className={`w-full border rounded-xl px-3 py-2.5 text-sm font-medium text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 bg-white ${emailError ? 'border-red-300 focus:ring-red-400' : 'border-slate-200 focus:ring-orange-400'}`} />{emailError && <p className="text-red-500 text-xs mt-1">{tOrder('emailInvalid')}</p>}</Fld>}
             <Fld label={tOrder('phoneLabel')} note={tOrder('optional')}><input type="tel" value={phone} onChange={e => setPhone(e.target.value)} placeholder={phonePlaceholder(pagePhone) && tOrder('phonePlaceholder', { example: phonePlaceholder(pagePhone) })} className={`w-full border rounded-xl px-3 py-2.5 text-sm font-medium text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 bg-white ${phoneError ? 'border-red-300 focus:ring-red-400' : 'border-slate-200 focus:ring-orange-400'}`} />{phoneError && <p className="text-red-500 text-xs mt-1">{phoneErrorMessage('mobile', pagePhone, pageLocale)}</p>}</Fld>
             <Fld label={tOrder('notesLabel')} note={tOrder('optional')}><textarea
                 value={notes}
@@ -3975,6 +4000,14 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
                   then sees the totals, then places the order — so the button's last word is the amount it
                   will charge. 🔴 A UK TRUCK HAS NO `checkout` and takes the second branch: the button,
                   then the choice, exactly as before, byte for byte. */}
+              {/* demo-2: IN PLACE OF THE CARD STEP — a demo truck has no card payments, so the customer's payment is
+                  described rather than taken: clearly marked, and nothing is charged. */}
+              {isDemo && (
+                <div data-demo-payment className="mt-4 rounded-xl border-2 border-dashed border-orange-300 bg-orange-50 px-4 py-3">
+                  <p className="text-xs font-black uppercase tracking-wide text-orange-700">{tWalk('paymentTitle')}</p>
+                  <p className="text-sm text-slate-700 mt-1">{tWalk('paymentPanel')}</p>
+                </div>
+              )}
               {checkout ? (<>
               {/* ── 🔴 THE CARD CHOICE. RENDERED ONLY WHEN THE TRUCK'S OPERATOR IS ACTUALLY READY. ──
                   `card_payments_ready` is false for every truck whose operator has not completed Stripe
@@ -4024,7 +4057,7 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
                   <span>{tOrder('total')}</span><span>{amount(grandTotal)}</span>
                 </div>
                 <button onClick={e => { e.preventDefault(); if (payByCard && truck?.card_payments_ready) openCardPayment(); else handleSubmitClick() }}
-                disabled={submitting || isOrderingBlocked || !hasItems || !name || !emailValid || !phoneValid || (truck?.mode === 'village' && !selectedSlot && !asapChosen) || (!eventLoading && !event)}
+                disabled={submitting || isOrderingBlocked || !hasItems || (!isDemo && (!name || !emailValid)) || !phoneValid || (truck?.mode === 'village' && !selectedSlot && !asapChosen) || (!eventLoading && !event)}
                 className="w-full bg-orange-600 text-white font-black py-3.5 px-6 rounded-xl text-base hover:bg-orange-700 transition-colors active:scale-[0.98] disabled:opacity-40 disabled:cursor-not-allowed shadow-sm mt-2">
                 {submitting ? tOrder('placingOrder') : isClosed ? tOrder('orderingHasClosed') : isPaused ? tOrder('orderingPaused') : orderingTimeNotSet ? tOrder('setupPending') : !eventLoading && !event ? tOrder('noEvent') : tOrder('placeOrder')}
               </button>
@@ -4037,7 +4070,7 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
               </div>
               ) : (<>
                             <button onClick={e => { e.preventDefault(); if (payByCard && truck?.card_payments_ready) openCardPayment(); else handleSubmitClick() }}
-                disabled={submitting || isOrderingBlocked || !hasItems || !name || !emailValid || !phoneValid || (truck?.mode === 'village' && !selectedSlot && !asapChosen) || (!eventLoading && !event)}
+                disabled={submitting || isOrderingBlocked || !hasItems || (!isDemo && (!name || !emailValid)) || !phoneValid || (truck?.mode === 'village' && !selectedSlot && !asapChosen) || (!eventLoading && !event)}
                 className="w-full bg-orange-600 text-white font-black py-3.5 px-6 rounded-xl text-base hover:bg-orange-700 transition-colors active:scale-[0.98] disabled:opacity-40 disabled:cursor-not-allowed shadow-sm mt-5">
                 {submitting ? tOrder('placingOrder') : isClosed ? tOrder('orderingHasClosed') : isPaused ? tOrder('orderingPaused') : orderingTimeNotSet ? tOrder('setupPending') : !eventLoading && !event ? tOrder('noEvent') : tOrder('placeOrder')}
               </button>
@@ -4055,7 +4088,7 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
 
               </>) : (<>
                             <button onClick={e => { e.preventDefault(); if (payByCard && truck?.card_payments_ready) openCardPayment(); else handleSubmitClick() }}
-                disabled={submitting || isOrderingBlocked || !hasItems || !name || !emailValid || !phoneValid || (truck?.mode === 'village' && !selectedSlot && !asapChosen) || (!eventLoading && !event)}
+                disabled={submitting || isOrderingBlocked || !hasItems || (!isDemo && (!name || !emailValid)) || !phoneValid || (truck?.mode === 'village' && !selectedSlot && !asapChosen) || (!eventLoading && !event)}
                 className="w-full bg-orange-600 text-white font-black py-3.5 px-6 rounded-xl text-base hover:bg-orange-700 transition-colors active:scale-[0.98] disabled:opacity-40 disabled:cursor-not-allowed shadow-sm mt-5">
                 {submitting ? tOrder('placingOrder') : isClosed ? tOrder('orderingHasClosed') : isPaused ? tOrder('orderingPaused') : orderingTimeNotSet ? tOrder('setupPending') : !eventLoading && !event ? tOrder('noEvent') : tOrder('placeOrder')}
               </button>
@@ -4672,6 +4705,18 @@ function Hdr({ slug, truck, scrolled, showBack = true, bannerRef }: { slug: stri
   // a long menu — a demo indicator that scrolls away isn't doing its job. Calm, matching the dashboard.
   const isDemo = isDemoIdentifier(slug)
   const t = useT('order')   // Language Phase 1a
+  const tDemo = useT('demo')   // demo-2: the walkthrough's banner sentence
+  // G11 (demo-2b, 31 October 2026): the demo's extraction source, asked once, so the banner's signup button shows the
+  // variant the dashboard and kitchen screen show (a SAMPLE demo never reads "your menu"). Demo only — a real truck's
+  // order page fetches nothing new.
+  const [demoExtractionSource, setDemoExtractionSource] = useState<string | null>(null)
+  useEffect(() => {
+    if (!isDemo) return
+    let cancelled = false
+    fetch(`/api/demo/walkthrough?slug=${encodeURIComponent(slug)}&info=1`).then(r => r.json())
+      .then(d => { if (!cancelled && d?.ok) setDemoExtractionSource(d.extractionSource ?? null) }).catch(() => null)
+    return () => { cancelled = true }
+  }, [isDemo, slug])
   // Customer-facing name — trailing "(code)" stripped for display only. See lib/demo.ts.
   const truckName = displayTruckName(truck?.name)
   return (
@@ -4727,7 +4772,7 @@ function Hdr({ slug, truck, scrolled, showBack = true, bannerRef }: { slug: stri
     </header>
     {/* Shared with the dashboard and the KDS — components/DemoModeBanner.tsx. Sticky under the 60px header
         (this page isn't a flex shell), so it stays visible while scrolling a long menu. */}
-    {isDemo && <DemoModeBanner innerRef={bannerRef} className="sticky top-[60px] z-40 shadow-sm" action={<DemoGetStarted slug={slug} phone={truck?.phone ?? null} />} />}
+    {isDemo && <DemoModeBanner innerRef={bannerRef} className="sticky top-[60px] z-40 shadow-sm" message={tDemo('walkBanner')} action={<DemoGetStarted slug={slug} extractionSource={demoExtractionSource} phone={truck?.phone ?? null} />} />}
     </>
   )
 }

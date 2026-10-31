@@ -2,7 +2,9 @@
 // docs/competitor-check-1-report.md). Run by .github/workflows/competitor-check.yml through scripts/competitor-check/run.mjs
 // (which bundles this file with esbuild so the "@/" imports resolve).
 //
-//   node scripts/competitor-check/run.mjs --mode scheduled|routine|deep|single|pass [--competitor <id or name>] [--limit N] [--dry-run]
+//   node scripts/competitor-check/run.mjs --mode scheduled|routine|deep|single|pass [--competitor <id or name>] [--limit N] [--dry-run] [--job-minutes N]
+// competitor-check-8: --job-minutes — the time this job may use (the workflow passes its own timeout less a margin): no check
+// starts without 10 minutes left, and none runs past it, so Actions never kills a check mid-way and loses its findings.
 // competitor-check-3: mode pass runs the quick pass's share (collect the batch in flight, submit the next); the nightly
 // 'scheduled' job runs it first, then the deep and routine shares.
 //
@@ -34,6 +36,10 @@ async function main() {
   const limit = limitArg ? Number(limitArg) : null
   if (limit !== null && !(Number.isInteger(limit) && limit > 0 && limit <= 500)) throw new Error('--limit must be a whole number from 1 to 500')
   const dryRun = has('dry-run')
+  const jobArg = arg('job-minutes')
+  const jobMinutes = jobArg ? Number(jobArg) : null
+  if (jobMinutes !== null && !(Number.isInteger(jobMinutes) && jobMinutes >= 15 && jobMinutes <= 360)) throw new Error('--job-minutes must be a whole number from 15 to 360')
+  const startedMs = Date.now()
   const trigger = has('manual') || mode !== 'scheduled' ? 'manual' : 'schedule'
   // Before any API call: the federation login needs all four variables, and an API key would outrank it in the SDK.
   for (const name of ['ANTHROPIC_FEDERATION_RULE_ID', 'ANTHROPIC_ORGANIZATION_ID', 'ANTHROPIC_SERVICE_ACCOUNT_ID', 'ANTHROPIC_WORKSPACE_ID'])
@@ -47,19 +53,23 @@ async function main() {
   const deps: CheckerDeps = {
     // competitor-check-5: STREAMED — max_tokens is now each model's maximum (128K), and the SDK refuses a non-streamed request
     // that could run past 10 minutes; finalMessage() gives the same message create() did.
-    api: params => anthropic.beta.messages.stream(params as never).finalMessage() as never,
+    // competitor-check-8: with the check's abort signal — a call still running well past its check's deadline is cut off.
+    api: (params, opts) => anthropic.beta.messages.stream(params as never, opts?.signal ? { signal: opts.signal } : undefined).finalMessage() as never,
     // competitor-check-3: the Message Batches API — the quick pass submits its share as one batch (50% off tokens).
     batch: {
       create: requests => anthropic.beta.messages.batches.create({ requests } as never) as never,
       retrieve: id => anthropic.beta.messages.batches.retrieve(id) as never,
       results: id => anthropic.beta.messages.batches.results(id) as never,
+      // competitor-check-8: newest first, to re-read a failed batch collected before its errors were logged.
+      list: () => anthropic.beta.messages.batches.list({ limit: 20 }) as never,
     },
+    ...(jobMinutes ? { jobDeadlineMs: startedMs + jobMinutes * 60_000 } : {}),
     store: supabaseCheckerStore(db),
     now: () => new Date(),
     log: line => console.log(line),
     dryRun,
   }
-  console.log(`competitor-check · mode ${mode}${competitor ? ` · ${competitor}` : ''}${limit ? ` · limit ${limit}` : ''}${dryRun ? ' · DRY RUN (writes nothing)' : ''}`)
+  console.log(`competitor-check · mode ${mode}${competitor ? ` · ${competitor}` : ''}${limit ? ` · limit ${limit}` : ''}${jobMinutes ? ` · ${jobMinutes} min` : ''}${dryRun ? ' · DRY RUN (writes nothing)' : ''}`)
   const reports = await runChecker(deps, { mode: mode === 'scheduled' ? 'scheduled' : mode, trigger, competitor, limit })
   for (const r of reports) console.log(`${r.mode}: ${r.checked} checked, ${r.failed.length} failed, ${r.findings.length} findings, $${r.spend.usd.toFixed(3)} — ${r.stoppedReason}${r.error ? ` (${r.error})` : ''}`)
   if (!dryRun) {
@@ -67,6 +77,7 @@ async function main() {
     if (mail) await sendConfirmationEmail({ to: ADMIN_ALERT_TO, subject: mail.subject, html: mail.html, text: mail.text, senderName: 'HatchGrab' })
   }
   // competitor-check-2: a failed login, or a run in which every competitor failed, is a red cross in Actions.
+  // competitor-check-8: …and only a stage that failed as a whole — never a timed-out or incomplete check (listed above).
   process.exitCode = exitCodeOf(reports)
   if (process.exitCode) console.error('competitor-check: a run stopped with an error (above) — exiting non-zero.')
 }

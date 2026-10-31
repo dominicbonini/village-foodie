@@ -10,7 +10,7 @@ import type { SupabaseClient } from '@supabase/supabase-js'
 import { valueOut, featureWords, type FeatureValueRow } from '@/lib/comparison-features'
 import { featuresOrFile } from '@/lib/comparison-features-file'
 import comparisonEn from '@/messages/ns/en-GB/comparison.json'
-import { SCHEDULE_COLUMNS, type CheckerStore, type CheckSettings, type CompetitorForCheck } from './checker'
+import { SCHEDULE_COLUMNS, DEFAULT_DEEP_TIME_LIMIT_S, type CheckerStore, type CheckSettings, type CompetitorForCheck, type DeepProgress } from './checker'
 import { countriesOf, type PassState, type Prices, type QueueCountry } from './core'
 import { DEFAULT_PASS, type PassSettings, type PassBatch } from './pass'
 import type { StoredPlanForPrompt } from './prompts'
@@ -21,6 +21,10 @@ const COMPETITOR_COLS = ['id', 'name', 'website', 'focus', 'lifecycle', 'check_u
 const VALUE_COLS = 'id, competitor_id, feature_key, country_code, value, note, quote, source_url, checked_on, verified_at, verified_by, superseded_at, created_at'
 /** global-players-1 (20261046), read tolerantly: the select falls back to COMPETITOR_COLS before it runs. */
 const GLOBAL_COLS = 'not_in_countries, deep_checked_in, pass_state'
+/** competitor-check-8 (20261053), read tolerantly: a timed-out deep check's finished groups. */
+const PROGRESS_COLS = 'deep_progress'
+/** competitor-check-8: the run's stopped_reason CHECK refused 'time_up' (before 20261053). */
+export const timeUpRefused = (e: { message: string; code?: string } | null) => !!e && e.code === '23514' && /stopped_reason/.test(e.message)
 /** competitor-check-7: the findings table refused 'unclear' (its second_check CHECK, before 20261051). */
 export const unclearRefused = (e: { message: string; code?: string } | null) => !!e && e.code === '23514' && /second_check/.test(e.message)
 const missingColumn = (e: { message: string; code?: string } | null) => !!e && (e.code === '42703' || /column .* does not exist/i.test(e.message))
@@ -38,6 +42,8 @@ export function passSettingsOut(r: Row): PassSettings {
     country: typeof r.pass_country === 'string' && /^[A-Z]{2}$/.test(r.pass_country) ? r.pass_country : null,
     maxFetches: n(r.pass_max_fetches, DEFAULT_PASS.maxFetches), maxSearches: n(r.pass_max_searches, DEFAULT_PASS.maxSearches),
     maxPageTokens: n(r.pass_max_page_tokens, DEFAULT_PASS.maxPageTokens), batch: b && typeof b.id === 'string' ? b : null,
+    // competitor-check-8 (20261053): null while the column is missing (the failed-batch re-read then says so and waits).
+    reread: Array.isArray(r.pass_batches_reread) ? (r.pass_batches_reread as unknown[]).filter((x): x is string => typeof x === 'string') : null,
   }
 }
 /** competitor-check-5: max_output_tokens ({"claude-sonnet-5-5": 128000, …}) — only whole numbers of at least 1,024 are kept. */
@@ -57,7 +63,17 @@ export function settingsOut(r: Row): CheckSettings {
     pass: passSettingsOut(r),
     // competitor-check-5 (20261050), read tolerantly: before it runs (or for a model it does not name), each model's maximum.
     maxOutputTokens: maxOutputTokensOut(r.max_output_tokens),
+    // competitor-check-8 (20261053), read tolerantly: before it runs (or out of range), 1800 s.
+    deepTimeLimitSeconds: typeof r.deep_time_limit_seconds === 'number' && Number.isInteger(r.deep_time_limit_seconds) && r.deep_time_limit_seconds >= 60 && r.deep_time_limit_seconds <= 3600
+      ? r.deep_time_limit_seconds : DEFAULT_DEEP_TIME_LIMIT_S,
   }
+}
+/** competitor-check-8: competitors.deep_progress — only well-formed entries ({requestedAt, at, pricesDone, keys}) are kept. */
+export function deepProgressOut(v: unknown): Record<string, DeepProgress> {
+  if (!v || typeof v !== 'object' || Array.isArray(v)) return {}
+  const ok = (p: Row): p is Row & DeepProgress => (p.requestedAt === null || typeof p.requestedAt === 'string') && typeof p.at === 'string'
+    && typeof p.pricesDone === 'boolean' && Array.isArray(p.keys) && (p.keys as unknown[]).every(k => typeof k === 'string')
+  return Object.fromEntries(Object.entries(v as Row).filter((e): e is [string, DeepProgress] => !!e[1] && typeof e[1] === 'object' && ok(e[1] as Row)))
 }
 export function competitorForCheck(r: Row, plans: Row[], allCodes: readonly string[] = [], values: readonly FeatureValueRow[] = []): CompetitorForCheck {
   const own = plans.filter(p => p.competitor_id === r.id)
@@ -73,6 +89,7 @@ export function competitorForCheck(r: Row, plans: Row[], allCodes: readonly stri
     countries: countriesOf(String(r.lifecycle), own.map(p => String(p.country_code)), r.notes, { focus: (r.focus as string | null) ?? null, notIn, allCodes }),
     deepCheckedIn: r.deep_checked_in && typeof r.deep_checked_in === 'object' && !Array.isArray(r.deep_checked_in) ? r.deep_checked_in as Record<string, string> : {},
     passState: r.pass_state && typeof r.pass_state === 'object' && !Array.isArray(r.pass_state) ? r.pass_state as PassState : {},   // competitor-check-3
+    deepProgress: deepProgressOut(r.deep_progress),   // competitor-check-8
   }
 }
 
@@ -85,12 +102,14 @@ export function supabaseCheckerStore(db: SupabaseClient): CheckerStore {
       return settingsOut(data as Row)
     },
     async competitors() {
-      const [c0, p, k] = await Promise.all([
-        db.from('competitors').select(`${COMPETITOR_COLS}, ${GLOBAL_COLS}`).order('name'),
+      const [cP, p, k] = await Promise.all([
+        db.from('competitors').select(`${COMPETITOR_COLS}, ${GLOBAL_COLS}, ${PROGRESS_COLS}`).order('name'),
         db.from('competitor_plans').select(PLAN_COLS).is('superseded_at', null),
         db.from('country_settings').select('country_code').eq('enabled', true),
       ])
-      // Before 20261049 there is no pass_state; before 20261046 neither not_in_countries nor deep_checked_in.
+      // Before 20261053 there is no deep_progress; before 20261049 no pass_state; before 20261046 neither not_in_countries
+      // nor deep_checked_in.
+      const c0 = missingColumn(cP.error) ? await db.from('competitors').select(`${COMPETITOR_COLS}, ${GLOBAL_COLS}`).order('name') : cP
       const c1 = missingColumn(c0.error) ? await db.from('competitors').select(`${COMPETITOR_COLS}, not_in_countries, deep_checked_in`).order('name') : c0
       const c = missingColumn(c1.error) ? await db.from('competitors').select(COMPETITOR_COLS).order('name') : c1
       if (c.error) fail('read competitors', c.error)
@@ -135,7 +154,10 @@ export function supabaseCheckerStore(db: SupabaseClient): CheckerStore {
       return String((data as Row).id)
     },
     async updateRun(id, cols) {
-      const { error } = await db.from('competitor_check_runs').update(cols).eq('id', id)
+      let { error } = await db.from('competitor_check_runs').update(cols).eq('id', id)
+      // competitor-check-8: before 20261053 the CHECK has no 'time_up' — the run is recorded 'done', with the reason in notes.
+      if (timeUpRefused(error) && cols.stopped_reason === 'time_up')
+        ({ error } = await db.from('competitor_check_runs').update({ ...cols, stopped_reason: 'done' }).eq('id', id))
       if (error) fail('update run', error)
     },
     async insertFindings(rows) {
@@ -152,8 +174,9 @@ export function supabaseCheckerStore(db: SupabaseClient): CheckerStore {
       let { error } = await db.from('competitors').update(cols).eq('id', id)
       // Before 20261046 runs there is no deep_checked_in: the rest of the schedule is still written.
       // Before 20261046 / 20261049 there is no deep_checked_in / pass_state: the rest of the schedule is still written.
-      if (missingColumn(error) && ('deep_checked_in' in cols || 'pass_state' in cols)) {
-        const { deep_checked_in: _x, pass_state: _y, ...rest } = cols; void _x; void _y
+      // Before 20261053 there is no deep_progress either: the progress is not saved (the next run checks every group again).
+      if (missingColumn(error) && ('deep_checked_in' in cols || 'pass_state' in cols || 'deep_progress' in cols)) {
+        const { deep_checked_in: _x, pass_state: _y, deep_progress: _z, ...rest } = cols; void _x; void _y; void _z
         ;({ error } = Object.keys(rest).length ? await db.from('competitors').update(rest).eq('id', id) : { error: null })
       }
       if (error) fail('write schedule', error)
@@ -162,6 +185,10 @@ export function supabaseCheckerStore(db: SupabaseClient): CheckerStore {
       const { data, error } = await db.from('country_settings').select('country_code, enabled, comparison_status')
       if (error) fail('read countries', error)
       return ((data ?? []) as Row[]).map(r => ({ code: String(r.country_code), enabled: r.enabled === true, comparisonStatus: (r.comparison_status as string | null) ?? null })) as QueueCountry[]
+    },
+    async setPassReread(ids) {
+      const { error } = await db.from('competitor_check_settings').update({ pass_batches_reread: ids }).eq('id', true)
+      if (error && !missingColumn(error)) fail('record the re-read batches', error)
     },
     async setPassBatch(batch) {
       const { error } = await db.from('competitor_check_settings').update({ pass_batch: batch }).eq('id', true)

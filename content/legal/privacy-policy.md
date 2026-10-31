@@ -1,6 +1,6 @@
 # Privacy Policy
 
-**Last updated:** 19 October 2026
+**Last updated:** 31 October 2026
 
 This policy explains how HatchGrab Ltd ("we", "us", "our") collects and uses personal data across two connected services:
 
@@ -89,11 +89,23 @@ The truck decides how long to keep your details and how they contact you afterwa
 
 We collect basic technical data automatically: IP address, browser type, device type, pages viewed, and the site you arrived from. We use this to keep the sites working and secure, and to understand which pages are useful.
 
-**Cookies and browser storage.** We use cookies and your browser's local storage only where they are strictly necessary to make the sites work — signing you in, keeping your basket, and remembering your preferences, such as your country and postcode. We do not use advertising or tracking cookies, and we do not track you across other websites.
+**Cookies and browser storage.** We use cookies and your browser's local storage only where they are strictly necessary to make the sites work — signing you in, keeping your basket, remembering your preferences, such as your country and postcode, and, while you try the demo, which demo orders you placed. We do not use advertising or tracking cookies, and we do not track you across other websites.
 
-**Product analytics.** We use PostHog to understand which pages and features are used: pages viewed and clicks, with basic browser and device details. It stores nothing in your browser — no cookies and no local storage — so it cannot recognise you from one visit to the next. It does not run on the operator dashboard, kitchen screen or management pages, or on truck pages shown on an operator's own website.
+**Product analytics.** We use PostHog to understand which pages and features are used: pages viewed and clicks, with basic browser and device details. It stores nothing in your browser — no cookies and no local storage — so it cannot recognise you from one visit to the next. It does not run on the operator dashboard, kitchen screen or management pages, or on truck pages shown on an operator's own website. It does run on the HatchGrab demo, which shows a sample kitchen screen.
 
 You can block or delete cookies in your browser settings, though parts of the site may stop working if you block the necessary ones.
+
+**If you try the HatchGrab demo**
+
+When you build a demo from the HatchGrab website, we ask for your email address. We use it to send you a link to your demo and may contact you about setting up HatchGrab; we do this because it is in our legitimate interest to follow up on a demo you asked for. If you tick "Send me occasional tips and news from HatchGrab", we will also send you occasional tips and news, based on your consent; you can unsubscribe at any time, and not ticking it does not affect your demo.
+
+We also keep the menu you upload (a photo, PDF or pasted text) and the menu we read from it. We send it to Google's Gemini service so it can read the dishes and prices, and we keep it so we can check how well that worked and help you if you go on to set up HatchGrab. It is stored privately; only HatchGrab staff can open it.
+
+We delete your demo email, the menu file and the demo itself when the demo expires: 24 hours after you build it, or 14 days if you ask us to keep it. If you sign up, we keep the demo record for up to 30 days so your menu can move into your account, then delete it. If you sign up, your menu moves into your account, and your account's privacy terms apply from then on.
+
+We keep anonymous counts of how far demos get, such as "a demo was built" or "an order was placed". They contain no email address, and once your demo is deleted they can no longer be linked to you.
+
+Demos we prepare for a food truck we have contacted are kept for up to 30 days and do not ask for an email.
 
 ---
 
@@ -132,6 +144,7 @@ As our service grows we may add providers, including an SMS provider. We will up
 - **Accounting records:** six years from the end of the relevant financial year, as UK tax law requires.
 - **Support correspondence:** 24 months.
 - **Technical and security logs:** 90 days.
+- **Demo data:** 24 hours, or 14 days if you ask us to keep your demo; up to 30 days if you sign up from it, or for demos we prepare for a food truck we have contacted (see section 5).
 
 Our email provider keeps delivery logs for a limited time under its own retention policy.
 

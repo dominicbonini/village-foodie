@@ -1482,7 +1482,8 @@
       "heading": "Registrirajte se zdaj za brezplačni mesec",
       "sub": "Odštevanje se začne šele, ko se odločite za objavo."
     },
-    "cashIcon": "💶"
+    "cashIcon": "💶",
+    "walkBanner": "Predstavitev · to je vaš jedilnik, kot ga bodo videle vaše stranke. Nič se ne zaračuna in nobena e-pošta se ne pošlje."
   },
   "userMenu": {
     "menuLabel": "Uporabniški meni",
@@ -2264,7 +2265,11 @@
       "or": "ali",
       "pasteLabel": "Prilepite besedilo jedilnika",
       "pastePlaceholder": "Sem prilepite jedilnik — imena artiklov, opise, cene …"
-    }
+    },
+    "emailLabel": "Vaš e-naslov",
+    "emailNote": "Po e-pošti vam bomo poslali povezavo do vaše predstavitve in se vam morda oglasili glede nastavitve HatchGrab. <link>Pravilnik o zasebnosti</link>",
+    "marketing": "Občasno mi pošljite nasvete in novice HatchGrab",
+    "emailInvalid": "Vnesite veljaven e-poštni naslov."
   },
   "provisionContent": {
     "firstVanName": "Food truck 1",
@@ -6269,5 +6274,57 @@
     "customersSee": "Stranke vidijo:",
     "postalWarning": "To ni videti kot {article} — na primer {example}. Vseeno lahko shranite.",
     "regionChoose": "Izberite …"
+  },
+  "demoLinkEmail": {
+    "subject": "Vaša predstavitev HatchGrab – tukaj je povezava",
+    "heading": "Vaša predstavitev je nared",
+    "intro": "Tukaj je povezava do predstavitve, ki smo jo pripravili iz vašega jedilnika. Naročite iz nje kot ena od vaših strank, nato pa opazujte, kako naročilo prispe na vaš kuhinjski zaslon. Prijava ni potrebna – samo tapnite.",
+    "button": "Odpri predstavitev",
+    "deletion": "To je samo predstavitev, zato je ne hranimo: izbrisali jo bomo skupaj z naloženim jedilnikom dne {date}. Če jo želite obdržati dlje, v predstavitvi pritisnite »Shrani moj jedilnik« in hranili jo bomo 14 dni.",
+    "deletionSoon": "To je samo predstavitev, zato je ne hranimo: izbrisali jo bomo skupaj z naloženim jedilnikom po 24 urah. Če jo želite obdržati dlje, v predstavitvi pritisnite »Shrani moj jedilnik« in hranili jo bomo 14 dni."
+  },
+  "demoWalk": {
+    "step1": "Korak 1 od 3 · Naročite kot ena od vaših strank",
+    "paymentTitle": "Plačilo",
+    "paymentPanel": "Tukaj vaša stranka plača s kartico, z Apple Pay ali Google Pay ali pa izbere plačilo ob prevzemu. V predstavitvi se nič ne zaračuna.",
+    "defaultName": "Alex",
+    "step2": "Korak 2 od 3",
+    "bubbleTitle": "To je vaš kuhinjski zaslon",
+    "bubbleArrived": "Naročilo, ki ste ga pravkar oddali, je takoj prispelo sem in prikazuje čas prevzema. Tapnite »Začni pripravo«.",
+    "bubbleReady": "Ko je hrana pripravljena, tapnite »Pripravljeno«. Vaša stranka takoj dobi obvestilo.",
+    "step3": "Korak 3 od 3 · končano",
+    "told": "{name} pravkar prejema obvestilo, da je hrana pripravljena.",
+    "thatsIt": "To je HatchGrab: stranke naročajo na telefonu, vi to vidite tukaj, one pa prevzamejo brez čakanja v vrsti. Vaš jedilnik je že nastavljen.",
+    "startFree": "{months, plural, =0 {Začnite brezplačno, jedilnik ostane} one {Začnite brezplačno za # mesec, jedilnik ostane} two {Začnite brezplačno za # meseca, jedilnik ostane} few {Začnite brezplačno za # mesece, jedilnik ostane} other {Začnite brezplačno za # mesecev, jedilnik ostane}}",
+    "tryAnother": "Preizkusite še eno naročilo",
+    "barOrder": "Naročite kot stranka",
+    "barArrives": "Prispe v vašo kuhinjo",
+    "barReady": "Označite kot pripravljeno",
+    "phoneLabel": "Telefon vaše stranke",
+    "kitchenLabel": "Vaš kuhinjski zaslon",
+    "waitingTitle": "Čakamo na naročila",
+    "waitingBody": "Naročite nekaj na telefonu. Tukaj se prikaže v trenutku, ko stranka odda naročilo.",
+    "startCooking": "Začni pripravo",
+    "ready": "Pripravljeno",
+    "readyForCollection": "Pripravljeno za prevzem",
+    "cooking": "V pripravi",
+    "readyBadge": "Pripravljeno",
+    "newBadge": "Novo naročilo",
+    "orderNumber": "Naročilo #{number}",
+    "collectAt": "Prevzemite ob {time}",
+    "collectAsap": "Prevzemite čim prej",
+    "phoneReadyTitle": "Vaše naročilo je pripravljeno",
+    "phoneReadyBody": "Prevzemite ga pri food trucku.",
+    "bandTitle": "To je HatchGrab. Vaš jedilnik je že nastavljen.",
+    "bandStart": "Začnite brezplačno, jedilnik ostane",
+    "orderAgain": "Naroči znova",
+    "loading": "Nastavljamo vašo predstavitev…",
+    "goneTitle": "Ta predstavitev se je končala",
+    "goneBody": "Predstavitve izbrišemo po enem dnevu. Novo lahko iz svojega jedilnika ustvarite v manj kot minuti.",
+    "goneButton": "Ustvari novo predstavitev",
+    "failed": "Ni uspelo – poskusite znova.",
+    "backToMenu": "Nazaj na jedilnik",
+    "formNote": "To je predstavitev: nikomur se nič ne zaračuna in nič se ne pošlje, zato vam ni treba vpisati e-poštnega naslova.",
+    "namePlaceholder": "Alex"
   }
 }

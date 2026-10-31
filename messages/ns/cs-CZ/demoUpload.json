@@ -53,5 +53,9 @@
     "or": "nebo",
     "pasteLabel": "Vložit text jídelního lístku",
     "pastePlaceholder": "Sem vložte jídelní lístek — názvy položek, popisy, ceny..."
-  }
+  },
+  "emailLabel": "Váš e-mail",
+  "emailNote": "Pošleme vám e-mailem odkaz na vaše demo a můžeme vás kontaktovat ohledně nastavení HatchGrab. <link>Zásady ochrany osobních údajů</link>",
+  "marketing": "Občas mi posílejte tipy a novinky od HatchGrab",
+  "emailInvalid": "Zadejte prosím platnou e-mailovou adresu."
 }

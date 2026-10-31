@@ -24,5 +24,6 @@
     "heading": "Registreeru kohe ja saa tasuta kuu",
     "sub": "Aeg hakkab jooksma alles siis, kui otsustad avalikuks minna."
   },
-  "cashIcon": "💶"
+  "cashIcon": "💶",
+  "walkBanner": "Demo · see on sinu menüü just nii, nagu sinu kliendid seda näevad. Raha ei võeta ja e-kirju ei saadeta."
 }

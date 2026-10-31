@@ -53,5 +53,9 @@
     "or": "lub",
     "pasteLabel": "Wklej tekst menu",
     "pastePlaceholder": "Wklej tu swoje menu — nazwy pozycji, opisy, ceny…"
-  }
+  },
+  "emailLabel": "Twój e-mail",
+  "emailNote": "Wyślemy ci e-mailem link do twojego demo i możemy się z tobą skontaktować w sprawie konfiguracji HatchGrab. <link>Polityka prywatności</link>",
+  "marketing": "Wysyłaj mi od czasu do czasu porady i nowości od HatchGrab",
+  "emailInvalid": "Wpisz poprawny adres e-mail."
 }

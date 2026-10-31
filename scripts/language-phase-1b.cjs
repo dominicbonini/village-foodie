@@ -66,6 +66,9 @@ if (!CAPTURE_TO && !('HG_MESSAGES_FROZEN' in process.env)) process.env.HG_MESSAG
 // buzzer line) — so everything else in those views is still byte-identical. Only a view the table LISTS (a US ticket,
 // whose header padding moves with a longer time) is excluded here; language-phase-2 checks it.
 const PHASE2 = require('./_lp2-named.cjs')
+// demo-2 (30 October 2026): the demo views it changed on purpose or retired (scripts/_demo2-named.cjs).
+const DEMO2 = require('./_demo2-named.cjs')
+const demo2Skipped = []
 
 function diffJson(a, b, p = '') {
   if (JSON.stringify(a) === JSON.stringify(b)) return null
@@ -108,6 +111,9 @@ function diffJson(a, b, p = '') {
     if (!fs.existsSync(file)) { t(`${area}: a BEFORE snapshot exists (run --recapture=${area})`, false); continue }
     const before = JSON.parse(zlib.gunzipSync(fs.readFileSync(file))).views
     head(`${area} · byte-identical to BEFORE (GB and US)${mod.compare ? ', apart from the named difference' : ''}`)
+    const d2 = DEMO2.filterBefore(before, `1b/${area}/`, views)
+    for (const k of d2.retired) t(`${area} · ${k}: RETIRED by demo-2 — no longer rendered`, !(k in views))
+    demo2Skipped.push(...d2.listed.map(k => `${area} · ${k}`))
     for (const k of Object.keys(before)) {
       const p2 = PHASE2.apply(`1b/${area}/${k}`, before[k])
       if (p2.listed) { phase2Skipped.push(`${area} · ${k} (${p2.touched.join('+')})`); continue }
@@ -121,6 +127,7 @@ function diffJson(a, b, p = '') {
   if (CAPTURE_TO) return
   if (Object.keys(phase2Named).length) console.log(`\n  Language Phase 2's named code changes, applied to BEFORE (scripts/_lp2-named.cjs): ${Object.entries(phase2Named).map(([k, n]) => `${k} ${n}`).join(' · ')}`)
   if (phase2Skipped.length) console.log(`  ${phase2Skipped.length} view(s) LISTED as changed by Language Phase 2 and checked there instead: ${phase2Skipped.slice(0, 6).join(', ')}${phase2Skipped.length > 6 ? ' …' : ''}`)
+  if (demo2Skipped.length) console.log(`  ${demo2Skipped.length} view(s) LISTED as changed on purpose by demo-2 (scripts/_demo2-named.cjs) and proved in scripts/demo-2.cjs: ${demo2Skipped.slice(0, 6).join(', ')}${demo2Skipped.length > 6 ? ' …' : ''}`)
   console.log(`\n${fail ? '✗' : '✓'} language-phase-1b: ${pass} passed, ${fail} failed`)
   if (fail) process.exit(1)
 })().catch(e => { console.error(e); process.exit(1) })

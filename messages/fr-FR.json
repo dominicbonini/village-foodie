@@ -1482,7 +1482,8 @@
       "heading": "Votre mois gratuit : inscrivez-vous maintenant",
       "sub": "Le compteur ne démarre que lorsque vous décidez de passer en ligne."
     },
-    "cashIcon": "💶"
+    "cashIcon": "💶",
+    "walkBanner": "Démo · voici votre carte, telle que vos clients la verront. Rien n’est débité et aucun e-mail n’est envoyé."
   },
   "userMenu": {
     "menuLabel": "Menu utilisateur",
@@ -2264,7 +2265,11 @@
       "or": "ou",
       "pasteLabel": "Coller le texte de la carte",
       "pastePlaceholder": "Collez votre carte ici — noms des articles, descriptions, prix…"
-    }
+    },
+    "emailLabel": "Votre e-mail",
+    "emailNote": "Nous vous enverrons par e-mail un lien vers votre démo et pourrons vous contacter au sujet de la mise en place de HatchGrab. <link>Politique de confidentialité</link>",
+    "marketing": "Envoyez-moi de temps en temps des conseils et des nouvelles de HatchGrab",
+    "emailInvalid": "Veuillez saisir une adresse e-mail valide."
   },
   "provisionContent": {
     "firstVanName": "Camion 1",
@@ -6269,5 +6274,57 @@
     "customersSee": "Vu par les clients :",
     "postalWarning": "Cela ne ressemble pas à {article} — par exemple {example}. Vous pouvez quand même l’enregistrer.",
     "regionChoose": "Choisir…"
+  },
+  "demoLinkEmail": {
+    "subject": "Votre démo HatchGrab — voici votre lien",
+    "heading": "Votre démo est prête",
+    "intro": "Voici le lien vers la démo que nous avons créée à partir de votre carte. Commandez comme l’un de vos clients, puis regardez la commande arriver sur votre écran cuisine. Aucune connexion nécessaire — il suffit de toucher le lien.",
+    "button": "Ouvrir ma démo",
+    "deletion": "Ceci est une démo, nous ne la conservons donc pas : nous la supprimerons, ainsi que la carte que vous avez importée, le {date}. Pour la garder plus longtemps, appuyez sur « Enregistrer ma carte » dans la démo et nous la conserverons 14 jours.",
+    "deletionSoon": "Ceci est une démo, nous ne la conservons donc pas : nous la supprimerons, ainsi que la carte que vous avez importée, au bout de 24 heures. Pour la garder plus longtemps, appuyez sur « Enregistrer ma carte » dans la démo et nous la conserverons 14 jours."
+  },
+  "demoWalk": {
+    "step1": "Étape 1 sur 3 · Commandez comme l’un de vos clients",
+    "paymentTitle": "Paiement",
+    "paymentPanel": "Votre client paie ici par carte, Apple Pay ou Google Pay, ou choisit de payer au food truck. Dans la démo, rien n’est débité.",
+    "defaultName": "Alex",
+    "step2": "Étape 2 sur 3",
+    "bubbleTitle": "Voici votre écran cuisine",
+    "bubbleArrived": "La commande que vous venez de passer est arrivée ici instantanément, avec l’heure de retrait. Appuyez sur Lancer la cuisson.",
+    "bubbleReady": "Quand le repas est prêt, appuyez sur Prête. Votre client est prévenu tout de suite.",
+    "step3": "Étape 3 sur 3 · terminé",
+    "told": "On vient de prévenir {name} que sa commande est prête.",
+    "thatsIt": "Voilà HatchGrab : vos clients commandent sur leur téléphone, vous voyez la commande ici, ils la retirent sans faire la queue. Votre carte est déjà configurée.",
+    "startFree": "{months, plural, =0 {Démarrer gratuitement, garder ma carte} one {Démarrer gratuitement pendant # mois, garder ma carte} many {Démarrer gratuitement pendant # de mois, garder ma carte} other {Démarrer gratuitement pendant # mois, garder ma carte}}",
+    "tryAnother": "Essayer une autre commande",
+    "barOrder": "Commandez comme un client",
+    "barArrives": "Elle arrive dans votre cuisine",
+    "barReady": "Marquez-la prête",
+    "phoneLabel": "Le téléphone de votre client",
+    "kitchenLabel": "Votre écran cuisine",
+    "waitingTitle": "En attente de commandes",
+    "waitingBody": "Commandez quelque chose sur le téléphone. La commande s’affiche ici dès que votre client appuie sur Commander.",
+    "startCooking": "Lancer la cuisson",
+    "ready": "Prête",
+    "readyForCollection": "Prête pour le retrait",
+    "cooking": "En cuisine",
+    "readyBadge": "Prête",
+    "newBadge": "Nouvelle commande",
+    "orderNumber": "Commande n° {number}",
+    "collectAt": "Retrait à {time}",
+    "collectAsap": "Retrait au plus tôt",
+    "phoneReadyTitle": "Votre commande est prête",
+    "phoneReadyBody": "Venez la retirer au food truck.",
+    "bandTitle": "Voilà HatchGrab. Votre carte est déjà configurée.",
+    "bandStart": "Démarrer gratuitement, garder ma carte",
+    "orderAgain": "Commander à nouveau",
+    "loading": "Préparation de votre démo…",
+    "goneTitle": "Cette démo est terminée",
+    "goneBody": "Les démos sont supprimées au bout d’un jour. Vous pouvez en créer une nouvelle à partir de votre carte en moins d’une minute.",
+    "goneButton": "Créer une nouvelle démo",
+    "failed": "Cela n’a pas fonctionné — veuillez réessayer.",
+    "backToMenu": "Retour à la carte",
+    "formNote": "Ceci est une démo : personne n’est débité et rien n’est envoyé, vous n’avez donc pas besoin d’indiquer d’e-mail.",
+    "namePlaceholder": "Alex"
   }
 }

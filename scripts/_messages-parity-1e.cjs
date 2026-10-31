@@ -165,6 +165,16 @@ const NEW_WORDING = {
   const enGB = JSON.parse(fs.readFileSync(path.join(REPO, 'messages/en-GB.json'), 'utf8'))
   for (const k of flatKeys(enGB.comparison || {}, 'comparison.')) NEW_WORDING[k] = 'compare-de-1: the German comparison page (a new namespace)'
 }
+// ⚠️ RE-PINNED (demo-2, 30 October 2026, docs/demo-2-report.md): the new demo's words — two NEW namespaces, `demoWalk`
+// (the walkthrough: order page, kitchen, sheet/band) and `demoLinkEmail` (the "here is your demo" email), plus the upload
+// modal's email step and the order page's walkthrough banner. All new wording; scripts/demo-2.cjs proves where each renders.
+{
+  const flatKeys = (o, p = '') => Object.entries(o).flatMap(([k, v]) => (v && typeof v === 'object' ? flatKeys(v, `${p}${k}.`) : [`${p}${k}`]))
+  const enGB = JSON.parse(fs.readFileSync(path.join(REPO, 'messages/en-GB.json'), 'utf8'))
+  for (const ns of ['demoWalk', 'demoLinkEmail']) for (const k of flatKeys(enGB[ns] || {}, `${ns}.`)) NEW_WORDING[k] = `demo-2: the new demo (${ns}, a new namespace)`
+  for (const k of ['demoUpload.emailLabel', 'demoUpload.emailNote', 'demoUpload.marketing', 'demoUpload.emailInvalid']) NEW_WORDING[k] = 'demo-2: the upload modal email step'
+  NEW_WORDING['demo.walkBanner'] = 'demo-2: the walkthrough banner on the demo order page'
+}
 /** ⚠️ RE-PINNED (features-page-restore, 20 October 2026): a restored message EDITED on purpose → [ref, the old key, how]:
  *  its en-GB text must be EXACTLY the old text so edited (here: the old text's first sentence). */
 const RESTORED_EDITED = {

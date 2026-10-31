@@ -101,6 +101,10 @@ const NAMED = [
   // 2026-10-22. PRECISE, after ireland-3's item, one copy in scripts/_lp-anz-terms.cjs.
   // eslint-disable-next-line @typescript-eslint/no-require-imports -- CommonJS harness module (anz-terms)
   ...require('./_lp-anz-terms.cjs').ITEMS.map(P => ({ id: P.id, what: P.what, applies: id => P.views(id), apply: (v, id) => P.apply(id, v) })),
+  // ⚠️ RE-PINNED (demo-2b, 31 October 2026): the Privacy Policy's demo section — the sitemap's /privacy lastmod 2026-10-31.
+  // PRECISE, after anz-terms' item, one copy in scripts/_lp-demo2b.cjs.
+  // eslint-disable-next-line @typescript-eslint/no-require-imports -- CommonJS harness module (demo-2b)
+  ...require('./_lp-demo2b.cjs').ITEMS.map(P => ({ id: P.id, what: P.what, applies: id => P.views(id), apply: (v, id) => P.apply(id, v) })),
   // ⚠️ RE-PINNED (about-page, 22 October 2026): the country menu out of the nav (Dominic), the footers' About link, the
   // Organization's founder and the sitemap's /about. PRECISE, after every earlier item, one copy in scripts/_lp-about-page.cjs.
   // eslint-disable-next-line @typescript-eslint/no-require-imports -- CommonJS harness module (about-page)

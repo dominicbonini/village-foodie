@@ -2808,6 +2808,18 @@ head('5b · THE MODAL AND THE CARD')
       /* ⚠️ DEMO "SETTING UP" GATE (14 October 2026, Reset for sending) — while a demo is being set up, the ended
        * card, the welcome and the loop-complete baseline stand down. Each replacement is asserted below. */
       /^const demoEndedCard=demoServiceEnded\?\($/, /^\{isDemo&&<DemoWelcome token=\{token\}/, /^loaded=\{!loading&&!!truck\}$/,
+      /* ⚠️ demo-2 (30 October 2026, docs/demo-2-report.md) — DemoWelcome and DemoLoopComplete are RETIRED from the
+       * dashboard (the guided path is the walkthrough at /try/<slug>), with their imports, their mount props, the restart's
+       * baseline clean-up and the highlight setter only DemoLoopComplete called. The replacements — none of the two
+       * mounts, and forgetRetiredDemoFlags before the reload — are asserted below. */
+      /^import \{ DemoWelcome \} from '@\/components\/dashboard\/DemoWelcome'$/, /^import \{ DemoLoopComplete \} from '@\/components\/dashboard\/DemoLoopComplete'$/,
+      /^import \{ clearDemoWelcomeSeen \} from '@\/lib\/demo-board-build'$/, /^const\[highlightOrderKey,setHighlightOrderKey\]=useState<string\|null>\(null\)$/,
+      /^try\{$/, /^localStorage\.removeItem\(`hg_demo_seen_orders_\$\{token\}`\)$/, /^localStorage\.removeItem\(`hg_demo_loop_\$\{token\}`\)$/, /^\}catch\{\}$/,
+      /^clearDemoWelcomeSeen\(token\)$/, /^\{isDemo&&!demoSettingUp&&<DemoWelcome token=\{token\}/, /^completionPresses=\{effectiveCompletionPresses\} takesCash=\{effectiveTakesCash\}$/,
+      /^logoUrl=\{\(demoBranded&&truck&&features\.can\('branded_qr_code'\)/, /^\{isDemo&&!demoServiceEnded&&\($/, /^<DemoLoopComplete$/,
+      /^token=\{token\}$/, /^phone=\{truck\?\.phone\?\?null\}$/, /^orderKeys=\{orders\.map\(o=>o\.order_key\)\}$/, /^orders=\{orders\}$/,
+      /^loaded=\{!loading&&!!truck&&!demoSettingUp\}$/, /^onHighlight=\{setHighlightOrderKey\}$/, /^isAdmin=\{isAdmin\}$/,
+      /^extractionSource=\{demoSession\?\.extraction_source\?\?null\}$/, /^\/>$/, /^\)\}$/,
       /* ⚠️ LANGUAGE PHASE 1b re-pin (docs/language-phase-1b-report.md). Lines whose WORDS moved into `dashboard` messages
        * are accounted by `phase1bWordsMoved` below (each word proved present in the catalogue). These are the lost lines
        * that carried no checkable sentence — the cancel-reason table that became ids + `cancelReasons.*`, the access-denied
@@ -2860,20 +2872,23 @@ head('5b · THE MODAL AND THE CARD')
         && GB_MSG('dashboard.edit.current') === '(current)'
         && pg.includes("const label=`${ind.label?` ${ind.label}`:''}${isCurrent?` · ${tDash('edit.current')}`:''}`")
     })())
-    t('⚠️ …and the demo setting-up gate is present on all three (ended card, welcome, loop-complete baseline)', (() => {
+    // ⚠️ RE-PINNED (demo-2, 30 October 2026): the welcome and the loop-complete prompt are retired from the dashboard, so
+    // the gate now stands down the ended card alone — and neither retired mount may come back.
+    t('⚠️ …and the demo setting-up gate is present on the ended card, and the retired welcome / loop-complete mounts are gone (demo-2)', (() => {
       const pg = codeOf(fs.readFileSync(path.join(REPO, 'app/dashboard/[token]/page.tsx'), 'utf8'))
-      return /const demoEndedCard=demoServiceEnded&&!demoSettingUp\?\(/.test(pg) && /\{isDemo&&!demoSettingUp&&<DemoWelcome token=\{token\}/.test(pg)
-        && /loaded=\{!loading&&!!truck&&!demoSettingUp\}/.test(pg)
+      return /const demoEndedCard=demoServiceEnded&&!demoSettingUp\?\(/.test(pg) && !/<DemoWelcome\b/.test(pg) && !/<DemoLoopComplete\b/.test(pg)
+        && /forgetRetiredDemoFlags\(token\)/.test(pg)
     })())
     t('⚠️ …and the Language Phase 0 replacements are present (walk-up helper, default category constant)', (() => {
       const pg = codeOf(fs.readFileSync(path.join(REPO, 'app/dashboard/[token]/page.tsx'), 'utf8'))
       return /customer_name:m\.customerName\|\|WALK_UP_NAME,/.test(pg) && /order\.customer_name&&!isWalkUp\(order\.customer_name\)\?/.test(pg)
         && (pg.match(/\?\.category\|\|DEFAULT_CATEGORY_KEY/g) || []).length === 2
     })())
-    t('⚠️ …and the Phase 2C phone copy reaches both demo signup mounts', (() => {
+    // ⚠️ RE-PINNED (demo-2): one demo signup mount remains on the dashboard (the banner's); the loop-complete one is retired.
+    t('⚠️ …and the Phase 2C phone copy reaches the demo signup mount (the banner\'s — the loop-complete one is retired, demo-2)', (() => {
       const pg = codeOf(fs.readFileSync(path.join(REPO, 'app/dashboard/[token]/page.tsx'), 'utf8')).replace(/\s+/g, '')
       return /<DemoGetStartedtoken=\{token\}isAdmin=\{isAdmin\}extractionSource=\{demoSession\?\.extraction_source\?\?null\}phone=\{truck\?\.phone\?\?null\}\/>/.test(pg)
-        && /<DemoLoopCompletetoken=\{token\}phone=\{truck\?\.phone\?\?null\}/.test(pg)
+        && !/<DemoLoopComplete/.test(pg)
     })())
     t('⚠️ …and every Phase 2B edit is present in its truck-clock form', (() => {
       const pg = codeOf(fs.readFileSync(path.join(REPO, 'app/dashboard/[token]/page.tsx'), 'utf8'))
@@ -3008,7 +3023,9 @@ head('5b · THE MODAL AND THE CARD')
       && /^\s*const features=useFeatures\(truck\)$/m.test(now)
       && now.includes("const showBrandedQr=features.can('branded_qr_code')&&truck.qr_code_style==='branded'")
       && now.includes("const canPrintTickets = features.can('ticket_printing')")
-      && now.includes("logoUrl={(demoBranded&&truck&&features.can('branded_qr_code')&&truck.qr_code_style==='branded')?(truck.logo||null):null}/>}")
+      // ⚠️ RE-PINNED (demo-2, 30 October 2026): the third gate line was DemoWelcome's QR logo — retired with the welcome,
+      // so it must now be ABSENT (and the welcome with it), not present.
+      && !now.includes("logoUrl={(demoBranded&&truck&&features.can('branded_qr_code')&&truck.qr_code_style==='branded')?(truck.logo||null):null}/>}")
       && !/hasFeature\(|canAccess\(/.test(codeOf(now))
     if (!plansGatesMoved) unexplained.push('(plans-data-model Stage A / A2: a gate line is not in its features.can(feature) form)')
     if (!lp1d2Moved) unexplained.push('(Language Phase 1d Part 2: the completion rows are not read from `completionSettings` under their moved keys)')

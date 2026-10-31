@@ -1,0 +1,8 @@
+{
+  "subject": "Din HatchGrab-demo – här är din länk",
+  "heading": "Din demo är klar",
+  "intro": "Här är länken till demon vi byggde utifrån din meny. Beställ från den som en av dina kunder och se sedan beställningen komma in på din köksskärm. Ingen inloggning behövs – tryck bara på den.",
+  "button": "Öppna min demo",
+  "deletion": "Det här är en demo, så vi sparar den inte: vi raderar den, och menyn du laddade upp, den {date}. Vill du ha mer tid trycker du på ”Spara min meny” i demon, så sparar vi den i 14 dagar.",
+  "deletionSoon": "Det här är en demo, så vi sparar den inte: vi raderar den, och menyn du laddade upp, efter 24 timmar. Vill du ha mer tid trycker du på ”Spara min meny” i demon, så sparar vi den i 14 dagar."
+}

@@ -43,6 +43,7 @@ import { moneyFormatForTruck } from '@/lib/money-server'
 import { truckTimeZone, truckTimeSettings } from '@/lib/truck-time'
 import { formatMajor, type MoneyFormat } from '@/lib/money-format'
 import { isDemoIdentifier } from '@/lib/demo'
+import { recordDemoEvent } from '@/lib/demo-events'
 import { customerErrorBody, type CustomerErrorCode, type CustomerErrorParams } from '@/lib/i18n/customer-errors'
 import { localeForTruck } from '@/lib/i18n/server-locale'
 import { DEFAULT_LOCALE, type AppLocale } from '@/lib/i18n/locales'
@@ -263,7 +264,12 @@ export async function POST(req: NextRequest) {
     } = body
 
     // ── Validate ──────────────────────────────────────────────────────────────
-    if (!truckId || !customerName || !customerEmail || (!items?.length && !deals?.length)) {
+    // 🔴 demo-2 (30 Oct 2026, docs/demo-2-report.md): A DEMO ORDER NEEDS NO EMAIL. The visitor orders from their own
+    // menu as a customer, and a demo never emails anyone, so asking for an address would be friction for nothing. The
+    // exemption is keyed on the `demo-` identifier here and CONFIRMED on the truck's own id below (a real truck's
+    // order without an email is refused there exactly as here). The order is stored with customer_email NULL.
+    const demoRequest = isDemoIdentifier(String(truckId ?? ''))
+    if (!truckId || !customerName || (!customerEmail && !demoRequest) || (!items?.length && !deals?.length)) {
       return NextResponse.json(customerErrorBody(locale, 'missing_fields'), { status: 400 })
     }
 
@@ -311,6 +317,10 @@ export async function POST(req: NextRequest) {
 
     // Demo trucks are exempt from the hidden-truck gate below and never send email — see both comments.
     const isDemoTruck = isDemoIdentifier(truck.id)
+    // demo-2: the email exemption above holds only for a truck that IS a demo by its own id.
+    if (!customerEmail && !isDemoTruck) {
+      return NextResponse.json(customerErrorBody(locale, 'missing_fields'), { status: 400 })
+    }
     // 🔴 THE TRUCK'S CLOCK (Phase 2B): trucks.timezone, else its country's default. Every "today" and
     // "now" below is this truck's — the UTC date (Vercel's) was yesterday from 00:00 to 01:00 BST.
     const truckTz = await truckTimeZone(truck)
@@ -1277,7 +1287,7 @@ export async function POST(req: NextRequest) {
       // derived figure and not the raw float (see the reprice block above).
       const p_order = {
         customer_name:  customerName,
-        customer_email: customerEmail,
+        customer_email: customerEmail || null,   // demo-2: null on a demo order with no email
         customer_phone: customerPhone,
         order_type:     'collection',
         items:          pricedItems,
@@ -1608,6 +1618,9 @@ export async function POST(req: NextRequest) {
         console.error('Order-pending push failed (non-fatal, order saved):', pushErr)
       }
     }
+
+    // demo-2: the demo funnel's "order placed" — server-side, by the demo's truck id (no email, no token).
+    if (isDemoTruck) await recordDemoEvent(supabase, { demoId: truck.id as string, event: 'order_placed' })
 
     // ── Done ──────────────────────────────────────────────────────────────────
     return NextResponse.json({

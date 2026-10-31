@@ -1482,7 +1482,8 @@
       "heading": "Tilmeld dig din gratis måned nu",
       "sub": "Uret starter først, når du beslutter dig for at gå live."
     },
-    "cashIcon": "💵"
+    "cashIcon": "💵",
+    "walkBanner": "Demo · dette er dit menukort, sådan som dine kunder vil se det. Der trækkes ingen penge, og der sendes ingen e-mails."
   },
   "userMenu": {
     "menuLabel": "Brugermenu",
@@ -2264,7 +2265,11 @@
       "or": "eller",
       "pasteLabel": "Indsæt menukortets tekst",
       "pastePlaceholder": "Indsæt dit menukort her – varenavne, beskrivelser, priser…"
-    }
+    },
+    "emailLabel": "Din e-mail",
+    "emailNote": "Vi sender dig et link til din demo på e-mail og kontakter dig måske om at sætte HatchGrab op. <link>Privatlivspolitik</link>",
+    "marketing": "Send mig tips og nyheder fra HatchGrab en gang imellem",
+    "emailInvalid": "Indtast en gyldig e-mailadresse."
   },
   "provisionContent": {
     "firstVanName": "Foodtruck 1",
@@ -6269,5 +6274,57 @@
     "customersSee": "Kunderne ser:",
     "postalWarning": "Det ligner ikke {article} — for eksempel {example}. Du kan stadig gemme det.",
     "regionChoose": "Vælg…"
+  },
+  "demoLinkEmail": {
+    "subject": "Din HatchGrab-demo – her er dit link",
+    "heading": "Din demo er klar",
+    "intro": "Her er linket til den demo, vi har bygget ud fra dit menukort. Bestil fra den som en af dine kunder, og se så bestillingen lande på din køkkenskærm. Intet login nødvendigt – tryk bare på linket.",
+    "button": "Åbn min demo",
+    "deletion": "Dette er en demo, så vi gemmer den ikke: Vi sletter den og det menukort, du uploadede, den {date}. Vil du have mere tid, så tryk på «Gem mit menukort» i demoen, så gemmer vi det i 14 dage.",
+    "deletionSoon": "Dette er en demo, så vi gemmer den ikke: Vi sletter den og det menukort, du uploadede, efter 24 timer. Vil du have mere tid, så tryk på «Gem mit menukort» i demoen, så gemmer vi det i 14 dage."
+  },
+  "demoWalk": {
+    "step1": "Trin 1 af 3 · Bestil som en af dine kunder",
+    "paymentTitle": "Betaling",
+    "paymentPanel": "Her betaler din kunde med kort, Apple Pay eller Google Pay eller vælger at betale ved foodtrucken. I demoen trækkes der ingen penge.",
+    "defaultName": "Alex",
+    "step2": "Trin 2 af 3",
+    "bubbleTitle": "Dette er din køkkenskærm",
+    "bubbleArrived": "Bestillingen, du lige har afgivet, landede her med det samme – med afhentningstiden. Tryk på «Start tilberedning».",
+    "bubbleReady": "Når maden er klar, så tryk på «Klar». Din kunde får besked med det samme.",
+    "step3": "Trin 3 af 3 · færdig",
+    "told": "{name} har lige fået besked om, at maden er klar.",
+    "thatsIt": "Det er HatchGrab: Kunderne bestiller på deres telefon, du ser det her, og de henter uden at stå i kø. Dit menukort er allerede sat op.",
+    "startFree": "{months, plural, =0 {Start gratis, behold mit menukort} one {Start gratis i # måned, behold mit menukort} other {Start gratis i # måneder, behold mit menukort}}",
+    "tryAnother": "Prøv en bestilling mere",
+    "barOrder": "Bestil som en kunde",
+    "barArrives": "Den lander i dit køkken",
+    "barReady": "Markér den som klar",
+    "phoneLabel": "Din kundes telefon",
+    "kitchenLabel": "Din køkkenskærm",
+    "waitingTitle": "Venter på bestillinger",
+    "waitingBody": "Bestil noget på telefonen. Det dukker op her, så snart din kunde trykker på Bestil.",
+    "startCooking": "Start tilberedning",
+    "ready": "Klar",
+    "readyForCollection": "Klar til afhentning",
+    "cooking": "Tilberedes",
+    "readyBadge": "Klar",
+    "newBadge": "Ny bestilling",
+    "orderNumber": "Bestilling #{number}",
+    "collectAt": "Afhentes kl. {time}",
+    "collectAsap": "Afhentes hurtigst muligt",
+    "phoneReadyTitle": "Din bestilling er klar",
+    "phoneReadyBody": "Hent den ved foodtrucken.",
+    "bandTitle": "Det er HatchGrab. Dit menukort er allerede sat op.",
+    "bandStart": "Start gratis, behold mit menukort",
+    "orderAgain": "Bestil igen",
+    "loading": "Gør din demo klar…",
+    "goneTitle": "Denne demo er afsluttet",
+    "goneBody": "Demoer slettes efter et døgn. Du kan bygge en ny ud fra dit menukort på under et minut.",
+    "goneButton": "Byg en ny demo",
+    "failed": "Det virkede ikke – prøv igen.",
+    "backToMenu": "Tilbage til menukortet",
+    "formNote": "Dette er en demo: Ingen bliver opkrævet, og intet bliver sendt, så du behøver ikke at angive en e-mail.",
+    "namePlaceholder": "Alex"
   }
 }

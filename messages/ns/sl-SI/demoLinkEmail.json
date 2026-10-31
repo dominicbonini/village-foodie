@@ -1,0 +1,8 @@
+{
+  "subject": "Vaša predstavitev HatchGrab – tukaj je povezava",
+  "heading": "Vaša predstavitev je nared",
+  "intro": "Tukaj je povezava do predstavitve, ki smo jo pripravili iz vašega jedilnika. Naročite iz nje kot ena od vaših strank, nato pa opazujte, kako naročilo prispe na vaš kuhinjski zaslon. Prijava ni potrebna – samo tapnite.",
+  "button": "Odpri predstavitev",
+  "deletion": "To je samo predstavitev, zato je ne hranimo: izbrisali jo bomo skupaj z naloženim jedilnikom dne {date}. Če jo želite obdržati dlje, v predstavitvi pritisnite »Shrani moj jedilnik« in hranili jo bomo 14 dni.",
+  "deletionSoon": "To je samo predstavitev, zato je ne hranimo: izbrisali jo bomo skupaj z naloženim jedilnikom po 24 urah. Če jo želite obdržati dlje, v predstavitvi pritisnite »Shrani moj jedilnik« in hranili jo bomo 14 dni."
+}

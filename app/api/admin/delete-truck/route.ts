@@ -15,6 +15,8 @@ import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@supabase/supabase-js'
 import { verifyAdmin } from '@/lib/auth/admin'
 import { deleteTruckCascade, DeleteTruckError } from '@/lib/delete-truck'
+import { isDemoIdentifier } from '@/lib/demo'
+import { deleteDemoMenuFiles } from '@/lib/demo-menu-files'
 
 const supabase = createClient(
   (process.env.SUPABASE_URL || process.env.NEXT_PUBLIC_SUPABASE_URL)!,
@@ -188,6 +190,9 @@ export async function POST(req: NextRequest) {
   const impact = await countImpact(truckId)
 
   try {
+    // demo-2: a demo's uploaded menu files (the private `demo-menus` bucket) go with it — no file outlives its demo.
+    // A no-op for a real truck (the helper refuses anything that is not `demo-`).
+    if (isDemoIdentifier(truckId)) await deleteDemoMenuFiles(supabase, truckId)
     await deleteTruckCascade(supabase, truckId)
   } catch (err) {
     if (err instanceof DeleteTruckError) {

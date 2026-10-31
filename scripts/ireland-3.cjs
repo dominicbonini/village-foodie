@@ -45,7 +45,10 @@ const ALLERGEN_ADDED = 'In Ireland, HatchGrab shows allergens against each dish 
   t('everything before `## Ireland` is BEFORE byte for byte, with only the "Last updated" line changed', head === B.replace(OLD_LINE, NEW_LINE), `${head.length} vs ${B.length} bytes`)
   const usB = B.slice(B.indexOf('## United States')), usA = A.slice(A.indexOf('## United States'), cut)
   t(`the United States section is byte-identical (${Buffer.byteLength(usA)} bytes)`, usA === usB)
-  for (const f of ['content/legal/terms-and-conditions.md', 'content/legal/privacy-policy.md']) t(`${f} is byte-identical (the GB documents)`, read(f) === before(f))
+  // ⚠️ RE-PINNED (demo-2b, 31 October 2026, docs/demo-2b-report.md): the privacy policy gained the demo section and its
+  // date moved — it must now be its old self + EXACTLY that named change (scripts/_demo2b-privacy.cjs).
+  t('content/legal/terms-and-conditions.md is byte-identical (the GB documents)', read('content/legal/terms-and-conditions.md') === before('content/legal/terms-and-conditions.md'))
+  t('content/legal/privacy-policy.md is the GB document + only demo-2b\'s named change (the demo section, the date)', read('content/legal/privacy-policy.md') === require('./_demo2b-privacy.cjs').apply(before('content/legal/privacy-policy.md')))
   t('the file ends with one newline, as BEFORE did', A.endsWith('.\n') && !A.endsWith('\n\n') && B.endsWith('.\n'))
 
   // ── 2 · the Ireland section is the approved draft ──
@@ -80,13 +83,20 @@ const ALLERGEN_ADDED = 'In Ireland, HatchGrab shows allergens against each dish 
   console.log('\n── lib/legal.ts')
   const L = read('lib/legal.ts'), LB = before('lib/legal.ts')
   t(`COUNTRY_TERMS_UPDATED = '${DATE}', the page's own line`, L.includes(`export const COUNTRY_TERMS_UPDATED = '${DATE}'`))
-  t(`TERMS_VERSION = '${VERSION}' (was '2026-10-20' at ${BEFORE_REF}): the latest of the three documents' dates`, L.includes(`export const TERMS_VERSION = '${VERSION}'`) && LB.includes("export const TERMS_VERSION = '2026-10-20'"))
+  // ⚠️ RE-PINNED (demo-2b, 31 October 2026, docs/demo-2b-report.md): TERMS_VERSION moved on to '2026-10-31' with the Privacy
+  // Policy's demo section (the latest of the three documents' dates; scripts/_lp-demo2b.cjs).
+  const TV = require('./_lp-demo2b.cjs').TERMS_VERSION_NEW
+  t(`TERMS_VERSION = demo-2b's '${TV}' (was '2026-10-20' at ${BEFORE_REF}; ${VERSION} after anz-terms): the latest of the three documents' dates`, L.includes(`export const TERMS_VERSION = '${TV}'`) && LB.includes("export const TERMS_VERSION = '2026-10-20'"))
+  // ⚠️ RE-PINNED (demo-2b, 31 October 2026, docs/demo-2b-report.md): PRIVACY_UPDATED moved with the privacy policy's own
+  // line (scripts/_demo2b-privacy.cjs) — it must read exactly demo-2b's date; TERMS_UPDATED is still unchanged.
+  const D2B = require('./_demo2b-privacy.cjs')
   for (const k of ['PRIVACY_UPDATED', 'TERMS_UPDATED']) {
     const re = new RegExp(`export const ${k} = '[^']+'`)
-    t(`${k} unchanged`, re.exec(L)?.[0] === re.exec(LB)?.[0])
+    const want = k === 'PRIVACY_UPDATED' ? `export const PRIVACY_UPDATED = '${D2B.NEW_DATE}'` : re.exec(LB)?.[0]
+    t(k === 'PRIVACY_UPDATED' ? `${k} = demo-2b's date (was ${D2B.OLD_DATE})` : `${k} unchanged`, re.exec(L)?.[0] === want && (k !== 'PRIVACY_UPDATED' || re.exec(LB)?.[0] === `export const PRIVACY_UPDATED = '${D2B.OLD_DATE}'`))
   }
   const strip = s => s.replace(/\/\*\*[\s\S]*?\*\//g, '')
-  t('lib/legal.ts changed nothing else in code (doc comments aside)', strip(L).replace(`'${DATE}'`, "'19 October 2026'").replace(`'${VERSION}'`, "'2026-10-20'") === strip(LB))
+  t('lib/legal.ts changed nothing else in code (doc comments aside)', strip(L).replace(`'${DATE}'`, "'19 October 2026'").replace(`'${TV}'`, "'2026-10-20'").replace(`PRIVACY_UPDATED = '${D2B.NEW_DATE}'`, `PRIVACY_UPDATED = '${D2B.OLD_DATE}'`) === strip(LB))
 
   // ── 5 · the rendered page ──
   console.log('\n── /country-terms, through the real renderer')

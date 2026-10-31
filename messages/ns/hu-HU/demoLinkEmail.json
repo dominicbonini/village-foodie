@@ -1,0 +1,8 @@
+{
+  "subject": "Az Ön HatchGrab demója — itt a link",
+  "heading": "Elkészült a demója",
+  "intro": "Itt a link a demóhoz, amelyet az Ön étlapjából készítettünk. Rendeljen róla úgy, mint az egyik vásárlója, aztán nézze, ahogy a rendelés megérkezik a konyhai kijelzőjére. Bejelentkezés nem kell — csak koppintson rá.",
+  "button": "Demóm megnyitása",
+  "deletion": "Ez egy demó, ezért nem őrizzük meg: a feltöltött étlappal együtt töröljük, a törlés napja: {date}. Ha tovább szeretné megtartani, nyomja meg a demóban az „Étlapom mentése” gombot, és 14 napig megőrizzük.",
+  "deletionSoon": "Ez egy demó, ezért nem őrizzük meg: 24 óra elteltével töröljük, a feltöltött étlappal együtt. Ha tovább szeretné megtartani, nyomja meg a demóban az „Étlapom mentése” gombot, és 14 napig megőrizzük."
+}

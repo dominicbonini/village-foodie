@@ -53,5 +53,9 @@
     "or": "eller",
     "pasteLabel": "Lim inn menytekst",
     "pastePlaceholder": "Lim inn menyen her — navn på retter, beskrivelser, priser …"
-  }
+  },
+  "emailLabel": "E-postadressen din",
+  "emailNote": "Vi sender deg en lenke til demoen din på e-post og kan kontakte deg om å sette opp HatchGrab. <link>Personvernerklæring</link>",
+  "marketing": "Send meg tips og nyheter fra HatchGrab innimellom",
+  "emailInvalid": "Skriv inn en gyldig e-postadresse."
 }

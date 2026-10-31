@@ -1,0 +1,8 @@
+{
+  "subject": "Vaša ukážka HatchGrab — tu je odkaz",
+  "heading": "Vaša ukážka je pripravená",
+  "intro": "Tu je odkaz na ukážku, ktorú sme vytvorili z vášho jedálneho lístka. Objednajte si z nej ako jeden z vašich zákazníkov a potom sledujte, ako objednávka príde na vašu kuchynskú obrazovku. Netreba sa prihlasovať — stačí ťuknúť.",
+  "button": "Otvoriť moju ukážku",
+  "deletion": "Je to len ukážka, takže ju neuchovávame: vymažeme ju aj nahratý jedálny lístok dňa {date}. Ak ju chcete mať dlhšie, stlačte v ukážke „Uložiť jedálny lístok“ a ponecháme ju 14 dní.",
+  "deletionSoon": "Je to len ukážka, takže ju neuchovávame: vymažeme ju aj nahratý jedálny lístok po 24 hodinách. Ak ju chcete mať dlhšie, stlačte v ukážke „Uložiť jedálny lístok“ a ponecháme ju 14 dní."
+}

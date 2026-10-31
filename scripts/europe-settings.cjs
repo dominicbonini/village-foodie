@@ -252,7 +252,9 @@ const NAMES = { AT: 'Austria', BE: 'Belgium', BG: 'Bulgaria', HR: 'Croatia', CY:
   const paras = (eea + gis).split(/\n\s*\n/).map(p => p.trim()).filter(p => p && !p.startsWith('#') && !p.startsWith('|'))
   t(`every paragraph opens with a bold label, as the other sections do (${paras.length})`, paras.every(p => /^\*\*[^*]+\.\*\* /.test(p)) || paras.every(p => /^\*\*/.test(p) || /^This section applies/.test(p)))
   const legal = read('lib/legal.ts')
-  t('the page\'s date and TERMS_VERSION stay 22 October 2026 (the same day as France\'s amendment)', /COUNTRY_TERMS_UPDATED = '22 October 2026'/.test(legal) && /TERMS_VERSION = '2026-10-22'/.test(legal) && terms.includes('**Last updated:** 22 October 2026'))
+  // ⚠️ RE-PINNED (demo-2b, 31 October 2026, docs/demo-2b-report.md): TERMS_VERSION moved on to '2026-10-31' with the Privacy
+  // Policy's demo section (the latest of the three documents' dates; scripts/_lp-demo2b.cjs).
+  t('the page\'s date stays 22 October 2026 (the same day as France\'s amendment); TERMS_VERSION is demo-2b\'s 2026-10-31', /COUNTRY_TERMS_UPDATED = '22 October 2026'/.test(legal) && legal.includes(`TERMS_VERSION = '${require('./_lp-demo2b.cjs').TERMS_VERSION_NEW}'`) && terms.includes('**Last updated:** 22 October 2026'))
   const LT = await kit.bundle('eus-legal', "export { renderLegalMarkdown } from '@/lib/legal-markdown'\nexport { staticMarkup } from '@/lib/static-markup'")
   const html = LT.staticMarkup(LT.renderLegalMarkdown(terms))
   t('the page renders the regulators as a table (no "|" left in the text)', /<table[\s\S]*Liechtenstein[\s\S]*<\/table>/.test(html) && !/\|\s*Austria/.test(text(html)))

@@ -1482,7 +1482,8 @@
       "heading": "Registrer deg for en gratis måned nå",
       "sub": "Klokka starter ikke før du bestemmer deg for å åpne for kunder."
     },
-    "cashIcon": "💵"
+    "cashIcon": "💵",
+    "walkBanner": "Demo · dette er menyen din, slik kundene dine vil se den. Ingenting belastes, og ingen e-poster sendes."
   },
   "userMenu": {
     "menuLabel": "Brukermeny",
@@ -2264,7 +2265,11 @@
       "or": "eller",
       "pasteLabel": "Lim inn menytekst",
       "pastePlaceholder": "Lim inn menyen her — navn på retter, beskrivelser, priser …"
-    }
+    },
+    "emailLabel": "E-postadressen din",
+    "emailNote": "Vi sender deg en lenke til demoen din på e-post og kan kontakte deg om å sette opp HatchGrab. <link>Personvernerklæring</link>",
+    "marketing": "Send meg tips og nyheter fra HatchGrab innimellom",
+    "emailInvalid": "Skriv inn en gyldig e-postadresse."
   },
   "provisionContent": {
     "firstVanName": "Matbil 1",
@@ -6269,5 +6274,57 @@
     "customersSee": "Kundene ser:",
     "postalWarning": "Det ser ikke ut som {article} – for eksempel {example}. Du kan likevel lagre det.",
     "regionChoose": "Velg …"
+  },
+  "demoLinkEmail": {
+    "subject": "HatchGrab-demoen din – her er lenken",
+    "heading": "Demoen din er klar",
+    "intro": "Her er lenken til demoen vi lagde av menyen din. Bestill fra den som en av kundene dine, og se bestillingen komme inn på kjøkkenskjermen din. Ingen innlogging nødvendig – bare trykk på den.",
+    "button": "Åpne demoen min",
+    "deletion": "Dette er en demo, så vi tar ikke vare på den: Vi sletter den, og menyen du lastet opp, den {date}. Vil du ha den lenger, trykker du på «Lagre menyen min» i demoen, så tar vi vare på den i 14 dager.",
+    "deletionSoon": "Dette er en demo, så vi tar ikke vare på den: Vi sletter den, og menyen du lastet opp, etter 24 timer. Vil du ha den lenger, trykker du på «Lagre menyen min» i demoen, så tar vi vare på den i 14 dager."
+  },
+  "demoWalk": {
+    "step1": "Steg 1 av 3 · Bestill som en av kundene dine",
+    "paymentTitle": "Betaling",
+    "paymentPanel": "Her betaler kunden din med kort, Apple Pay eller Google Pay, eller velger å betale ved matbilen. I demoen belastes ingenting.",
+    "defaultName": "Alex",
+    "step2": "Steg 2 av 3",
+    "bubbleTitle": "Dette er kjøkkenskjermen din",
+    "bubbleArrived": "Bestillingen du nettopp la inn, kom hit med en gang, med hentetiden. Trykk på «Begynn å lage».",
+    "bubbleReady": "Når maten er klar, trykker du på «Klar». Kunden din får beskjed med en gang.",
+    "step3": "Steg 3 av 3 · ferdig",
+    "told": "{name} har nettopp fått beskjed om at maten er klar.",
+    "thatsIt": "Det er HatchGrab: Kundene bestiller på mobilen, du ser det her, og de henter uten å stå i kø. Menyen din er allerede satt opp.",
+    "startFree": "{months, plural, =0 {Start gratis, behold menyen min} one {Start gratis i # måned, behold menyen min} other {Start gratis i # måneder, behold menyen min}}",
+    "tryAnother": "Prøv en bestilling til",
+    "barOrder": "Bestill som en kunde",
+    "barArrives": "Den kommer inn på kjøkkenet ditt",
+    "barReady": "Merk den som klar",
+    "phoneLabel": "Mobilen til kunden din",
+    "kitchenLabel": "Kjøkkenskjermen din",
+    "waitingTitle": "Venter på bestillinger",
+    "waitingBody": "Bestill noe på mobilen. Det dukker opp her i det øyeblikket kunden din trykker på Bestill.",
+    "startCooking": "Begynn å lage",
+    "ready": "Klar",
+    "readyForCollection": "Klar til henting",
+    "cooking": "Lages",
+    "readyBadge": "Klar",
+    "newBadge": "Ny bestilling",
+    "orderNumber": "Bestilling nr. {number}",
+    "collectAt": "Hentes kl. {time}",
+    "collectAsap": "Hentes så snart som mulig",
+    "phoneReadyTitle": "Bestillingen din er klar",
+    "phoneReadyBody": "Hent den ved matbilen.",
+    "bandTitle": "Det er HatchGrab. Menyen din er allerede satt opp.",
+    "bandStart": "Start gratis, behold menyen min",
+    "orderAgain": "Bestill igjen",
+    "loading": "Gjør klar demoen din…",
+    "goneTitle": "Denne demoen er avsluttet",
+    "goneBody": "Demoer slettes etter et døgn. Du kan lage en ny av menyen din på under ett minutt.",
+    "goneButton": "Lag en ny demo",
+    "failed": "Det fungerte ikke – prøv igjen.",
+    "backToMenu": "Tilbake til menyen",
+    "formNote": "Dette er en demo: Ingen belastes og ingenting sendes, så du trenger ikke å oppgi e-post.",
+    "namePlaceholder": "Alex"
   }
 }

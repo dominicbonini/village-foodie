@@ -135,7 +135,13 @@ const WORDS = {
   const at = A.indexOf('\n## Canada\n')
   t('the fixture is the page anz-terms published (US, Ireland, Australia, New Zealand; dated 22 October 2026)', JSON.stringify([...B.matchAll(/^## (.+)$/gm)].map(m => m[1])) === JSON.stringify(['United States', 'Ireland', 'Australia', 'New Zealand']) && B.includes('**Last updated:** 22 October 2026'))
   t('everything before `## Canada` — the intro, US, Ireland, Australia and New Zealand — is byte-identical (the date is already the build date)', at > 0 && A.slice(0, at) === B, `${at} vs ${B.length} bytes`)   // A[at] is the blank line before `## Canada`
-  for (const f of ['content/legal/terms-and-conditions.md', 'content/legal/privacy-policy.md']) t(`${f} is byte-identical (7fcd4fc9)`, read(f) === execFileSync('git', ['show', `7fcd4fc9:${f}`], { cwd: REPO, encoding: 'utf8' }))
+  // ⚠️ RE-PINNED (demo-2b, 31 October 2026, docs/demo-2b-report.md): the privacy policy gained the demo section and its
+  // date moved — it must now be its old self + EXACTLY that named change (scripts/_demo2b-privacy.cjs).
+  {
+    const at = f => execFileSync('git', ['show', `7fcd4fc9:${f}`], { cwd: REPO, encoding: 'utf8' })
+    t('content/legal/terms-and-conditions.md is byte-identical (7fcd4fc9)', read('content/legal/terms-and-conditions.md') === at('content/legal/terms-and-conditions.md'))
+    t('content/legal/privacy-policy.md is 7fcd4fc9\'s + only demo-2b\'s named change (the demo section, the date)', read('content/legal/privacy-policy.md') === require('./_demo2b-privacy.cjs').apply(at('content/legal/privacy-policy.md')))
+  }
   // ⚠️ RE-PINNED (france-1, 22 October 2026, docs/france-1-report.md §11): France's section follows Canada's, so Canada's section
   // ends where France's begins; everything checked below is Canada's own text, as before.
   const frAt = A.indexOf('\n## France\n')
@@ -154,8 +160,10 @@ const WORDS = {
   const files = fs.readdirSync(path.join(REPO, 'content/legal'))
   t(`no "[FLAG" in any of content/legal's ${files.length} files`, files.every(f => !read(`content/legal/${f}`).includes('[FLAG')))
   const L = read('lib/legal.ts')
-  t('the dates and TERMS_VERSION are the build date — 22 October 2026, which anz-terms had already set: the page, COUNTRY_TERMS_UPDATED and TERMS_VERSION agree',
-    A.includes('**Last updated:** 22 October 2026') && L.includes("export const COUNTRY_TERMS_UPDATED = '22 October 2026'") && L.includes("export const TERMS_VERSION = '2026-10-22'"))
+  // ⚠️ RE-PINNED (demo-2b, 31 October 2026, docs/demo-2b-report.md): TERMS_VERSION moved on to '2026-10-31' with the Privacy
+  // Policy's demo section (the latest of the three documents' dates; scripts/_lp-demo2b.cjs).
+  t('the dates are the build date — 22 October 2026, which anz-terms had already set: the page and COUNTRY_TERMS_UPDATED agree; TERMS_VERSION is demo-2b\'s 2026-10-31',
+    A.includes('**Last updated:** 22 October 2026') && L.includes("export const COUNTRY_TERMS_UPDATED = '22 October 2026'") && L.includes(`export const TERMS_VERSION = '${require('./_lp-demo2b.cjs').TERMS_VERSION_NEW}'`))
   const R = await kit.bundle('ca2-md-html', "export { renderLegalMarkdownHtml } from '@/lib/legal-markdown-html'")
   // ⚠️ RE-PINNED (france-1): …then France's section (docs/france-1-report.md §11).
   t('the page renders: the before-page\'s HTML, then the Canada section\'s (then France\'s); the country headings in order', R.renderLegalMarkdownHtml(A) === R.renderLegalMarkdownHtml(B) + R.renderLegalMarkdownHtml(C) + (frAt > at ? R.renderLegalMarkdownHtml(A.slice(frAt + 1)) : '')

@@ -195,6 +195,11 @@ function filesIn(dir) { return fs.readdirSync(dir).filter(f => f.endsWith('.json
   const RETIRED_VIEWS = ['smoke-copy/GB|addressPlaceholders|addressStyleOf', 'smoke-copy/US|addressPlaceholders|addressStyleOf']
   const retiredAbsent = RETIRED_VIEWS.filter(id => id in BEFORE).map(id => [id, !(id in F) && !(id in A)])
   for (const id of RETIRED_VIEWS) delete BEFORE[id]
+  // ⚠️ RE-PINNED (demo-2, 30 October 2026, docs/demo-2-report.md): the demo dashboard no longer mounts DemoWelcome /
+  // DemoLoopComplete — its smoke views are named in scripts/_demo2-named.cjs and leave the comparison when they differ
+  // (scripts/demo-2.cjs proves the new demo instead).
+  const demo2 = require('./_demo2-named.cjs').filterBefore(BEFORE, '1d2/', A)
+  if (demo2.listed.length) console.log(`  demo-2: ${demo2.listed.length} view(s) changed on purpose, named in scripts/_demo2-named.cjs`)
   const ids = Object.keys(BEFORE)
   const isUS = id => id.split('/').slice(1).join('/').split('|')[0] === 'US'
   const area = id => id.split('/')[0]

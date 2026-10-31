@@ -40,7 +40,11 @@ const OLD_LINE = '**Last updated:** 21 October 2026', NEW_LINE = `**Last updated
   const sec = (s, h, next) => { const i = s.indexOf(`## ${h}`); const j = next ? s.indexOf(`\n## ${next}`, i) : s.length; return s.slice(i, j) }
   t(`the United States section is byte-identical (${sec(B, 'United States', 'Ireland').length} bytes)`, sec(A, 'United States', 'Ireland') === sec(B, 'United States', 'Ireland'))
   t(`the Ireland section is byte-identical (${sec(B, 'Ireland').length} bytes)`, sec(A, 'Ireland', 'Australia') === sec(B, 'Ireland'))
-  for (const f of ['content/legal/terms-and-conditions.md', 'content/legal/privacy-policy.md']) t(`${f} is byte-identical (7fcd4fc9)`, read(f) === atRef('7fcd4fc9', f))
+  // ⚠️ RE-PINNED (demo-2b, 31 October 2026, docs/demo-2b-report.md): the privacy policy gained the demo section and its
+  // date moved — it must now be its old self + EXACTLY that named change (scripts/_demo2b-privacy.cjs).
+  const D2B = require('./_demo2b-privacy.cjs')
+  t('content/legal/terms-and-conditions.md is byte-identical (7fcd4fc9)', read('content/legal/terms-and-conditions.md') === atRef('7fcd4fc9', 'content/legal/terms-and-conditions.md'))
+  t('content/legal/privacy-policy.md is 7fcd4fc9\'s + only demo-2b\'s named change (the demo section, the date)', read('content/legal/privacy-policy.md') === D2B.apply(atRef('7fcd4fc9', 'content/legal/privacy-policy.md')))
   t('the file ends with one newline, after New Zealand\'s contact line', A.endsWith('Wickham Street, CB8 8PD, United Kingdom.\n') && !A.endsWith('\n\n'))
 
   // ── 2 · the shape and the points ──
@@ -82,8 +86,11 @@ const OLD_LINE = '**Last updated:** 21 October 2026', NEW_LINE = `**Last updated
   console.log('\n── lib/legal.ts')
   const L = read('lib/legal.ts')
   t(`COUNTRY_TERMS_UPDATED = '${DATE}' and the page's line agree`, L.includes(`export const COUNTRY_TERMS_UPDATED = '${DATE}'`) && A.includes(NEW_LINE))
-  t(`TERMS_VERSION = '${VERSION}' (was '2026-10-21'), the latest of the three documents' dates`, L.includes(`export const TERMS_VERSION = '${VERSION}'`))
-  t('PRIVACY_UPDATED and TERMS_UPDATED unchanged (19 and 20 October 2026)', L.includes("export const PRIVACY_UPDATED = '19 October 2026'") && L.includes("export const TERMS_UPDATED = '20 October 2026'"))
+  // ⚠️ RE-PINNED (demo-2b, 31 October 2026, docs/demo-2b-report.md): TERMS_VERSION moved on to '2026-10-31' with the Privacy
+  // Policy's demo section (the latest of the three documents' dates; scripts/_lp-demo2b.cjs).
+  t(`TERMS_VERSION = demo-2b's '${require('./_lp-demo2b.cjs').TERMS_VERSION_NEW}' (anz-terms set '${VERSION}'), the latest of the three documents' dates`, L.includes(`export const TERMS_VERSION = '${require('./_lp-demo2b.cjs').TERMS_VERSION_NEW}'`))
+  // ⚠️ RE-PINNED (demo-2b, 31 October 2026): PRIVACY_UPDATED moved with the privacy policy's own line (scripts/_demo2b-privacy.cjs).
+  t(`PRIVACY_UPDATED = demo-2b's date (${require('./_demo2b-privacy.cjs').NEW_DATE}); TERMS_UPDATED unchanged (20 October 2026)`, L.includes(`export const PRIVACY_UPDATED = '${require('./_demo2b-privacy.cjs').NEW_DATE}'`) && L.includes("export const TERMS_UPDATED = '20 October 2026'"))
 
   // ── 5 · the product does what the sections say ──
   console.log('\n── what the sections say the product does')

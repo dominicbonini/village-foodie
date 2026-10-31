@@ -54,7 +54,10 @@ permissions:
 jobs:
   check:
     runs-on: ubuntu-latest
-    timeout-minutes: 240          # 15 deep checks with their second checks fit well inside; the budget caps stop it first
+    # competitor-check-8 (31 Oct 2026): 350 (GitHub's hosted-runner limit is 360). A deep check may now take 30 minutes, so 15 can
+    # need 7.5 hours: the checker is told its share (--job-minutes 330, below) and stops STARTING checks with under 10 minutes
+    # left — the rest are checked the next night, and nothing is ever cut off mid-check by this timeout.
+    timeout-minutes: 350
     # id-token: write lets the job ask GitHub for the OIDC token the Claude API login exchanges.
     permissions:
       id-token: write
@@ -113,7 +116,7 @@ jobs:
         # Inputs reach the script as environment variables, never pasted into the shell line.
         run: |
           set -euo pipefail
-          args=(--mode "$MODE")
+          args=(--mode "$MODE" --job-minutes 330)
           if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then args+=(--manual); fi
           if [ -n "${COMPETITOR:-}" ]; then args+=(--competitor "$COMPETITOR"); fi
           if [ -n "${LIMIT:-}" ]; then args+=(--limit "$LIMIT"); fi

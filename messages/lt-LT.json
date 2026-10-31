@@ -1482,7 +1482,8 @@
       "heading": "Užsiregistruokite dabar ir gaukite nemokamą mėnesį",
       "sub": "Laikas pradedamas skaičiuoti tik tada, kai nuspręsite pradėti veikti."
     },
-    "cashIcon": "💶"
+    "cashIcon": "💶",
+    "walkBanner": "Demo · tai jūsų meniu, toks, kokį jį matys jūsų klientai. Pinigai nenuskaičiuojami ir el. laiškai nesiunčiami."
   },
   "userMenu": {
     "menuLabel": "Naudotojo meniu",
@@ -2264,7 +2265,11 @@
       "or": "arba",
       "pasteLabel": "Įklijuoti meniu tekstą",
       "pastePlaceholder": "Įklijuokite meniu čia — patiekalų pavadinimus, aprašymus, kainas..."
-    }
+    },
+    "emailLabel": "Jūsų el. paštas",
+    "emailNote": "El. paštu atsiųsime jums nuorodą į jūsų demonstraciją ir galime susisiekti dėl HatchGrab nustatymo. <link>Privatumo politika</link>",
+    "marketing": "Kartkartėmis siųskite man HatchGrab patarimus ir naujienas",
+    "emailInvalid": "Įveskite galiojantį el. pašto adresą."
   },
   "provisionContent": {
     "firstVanName": "Furgonas 1",
@@ -6269,5 +6274,57 @@
     "customersSee": "Klientai mato:",
     "postalWarning": "Tai nepanašu į {article} — pavyzdžiui, {example}. Vis tiek galite išsaugoti.",
     "regionChoose": "Pasirinkite…"
+  },
+  "demoLinkEmail": {
+    "subject": "Jūsų HatchGrab demonstracija — štai nuoroda",
+    "heading": "Jūsų demonstracija paruošta",
+    "intro": "Štai nuoroda į demonstraciją, kurią sukūrėme pagal jūsų meniu. Užsisakykite joje kaip vienas iš jūsų klientų ir stebėkite, kaip užsakymas atkeliauja į jūsų virtuvės ekraną. Prisijungti nereikia — tiesiog bakstelėkite nuorodą.",
+    "button": "Atverti demonstraciją",
+    "deletion": "Tai demonstracija, todėl jos nesaugome: ją ir jūsų įkeltą meniu ištrinsime {date}. Jei norite ilgiau, demonstracijoje paspauskite „Išsaugoti meniu“ ir saugosime ją 14 dienų.",
+    "deletionSoon": "Tai demonstracija, todėl jos nesaugome: ją ir jūsų įkeltą meniu ištrinsime po 24 valandų. Jei norite ilgiau, demonstracijoje paspauskite „Išsaugoti meniu“ ir saugosime ją 14 dienų."
+  },
+  "demoWalk": {
+    "step1": "1 žingsnis iš 3 · Užsisakykite kaip vienas iš jūsų klientų",
+    "paymentTitle": "Mokėjimas",
+    "paymentPanel": "Čia jūsų klientas moka kortele, Apple Pay ar Google Pay arba pasirenka mokėti atsiimdamas. Demonstracijoje pinigai nenuskaičiuojami.",
+    "defaultName": "Alex",
+    "step2": "2 žingsnis iš 3",
+    "bubbleTitle": "Tai jūsų virtuvės ekranas",
+    "bubbleArrived": "Ką tik pateiktas užsakymas akimirksniu atkeliavo čia kartu su atsiėmimo laiku. Bakstelėkite „Pradėti gaminti“.",
+    "bubbleReady": "Kai maistas paruoštas, bakstelėkite „Paruošta“. Jūsų klientui iškart pranešama.",
+    "step3": "3 žingsnis iš 3 · baigta",
+    "told": "{name} ką tik gavo pranešimą, kad maistas paruoštas.",
+    "thatsIt": "Tai ir yra HatchGrab: klientai užsisako telefonu, jūs tai matote čia, o jie atsiima be eilės. Jūsų meniu jau paruoštas.",
+    "startFree": "{months, plural, =0 {Pradėti nemokamai ir išsaugoti meniu} one {Pradėti nemokamai # mėnesiui ir išsaugoti meniu} few {Pradėti nemokamai # mėnesiams ir išsaugoti meniu} many {Pradėti nemokamai # mėnesio ir išsaugoti meniu} other {Pradėti nemokamai # mėnesių ir išsaugoti meniu}}",
+    "tryAnother": "Išbandyti kitą užsakymą",
+    "barOrder": "Užsisakykite kaip klientas",
+    "barArrives": "Jis atkeliauja į jūsų virtuvę",
+    "barReady": "Pažymėkite paruoštu",
+    "phoneLabel": "Jūsų kliento telefonas",
+    "kitchenLabel": "Jūsų virtuvės ekranas",
+    "waitingTitle": "Laukiama užsakymų",
+    "waitingBody": "Užsisakykite ką nors telefonu. Užsakymas čia atsiras tą pačią akimirką, kai klientas jį pateiks.",
+    "startCooking": "Pradėti gaminti",
+    "ready": "Paruošta",
+    "readyForCollection": "Paruošta atsiimti",
+    "cooking": "Gaminama",
+    "readyBadge": "Paruošta",
+    "newBadge": "Naujas užsakymas",
+    "orderNumber": "Užsakymas #{number}",
+    "collectAt": "Atsiimti {time}",
+    "collectAsap": "Atsiimti kuo greičiau",
+    "phoneReadyTitle": "Jūsų užsakymas paruoštas",
+    "phoneReadyBody": "Atsiimkite jį prie maisto furgono.",
+    "bandTitle": "Tai ir yra HatchGrab. Jūsų meniu jau paruoštas.",
+    "bandStart": "Pradėti nemokamai ir išsaugoti meniu",
+    "orderAgain": "Užsakyti dar kartą",
+    "loading": "Nustatome jūsų demonstraciją…",
+    "goneTitle": "Ši demonstracija baigėsi",
+    "goneBody": "Demonstracijos ištrinamos po paros. Naują galite sukurti iš savo meniu greičiau nei per minutę.",
+    "goneButton": "Sukurti naują demo",
+    "failed": "Nepavyko — bandykite dar kartą.",
+    "backToMenu": "Atgal į meniu",
+    "formNote": "Tai demonstracija: niekam nenuskaičiuojami pinigai ir niekas nesiunčiama, todėl el. pašto nurodyti nereikia.",
+    "namePlaceholder": "Alex"
   }
 }

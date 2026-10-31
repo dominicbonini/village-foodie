@@ -20,6 +20,7 @@ import { createSupabaseServerClient } from '@/lib/supabase/server'
 import { signupRatelimit, signupEmailRatelimit } from '@/lib/ratelimit'
 import { sendSignupVerificationEmail, firstNameFrom } from '@/lib/email-signup'
 import { isDemoIdentifier } from '@/lib/demo'
+import { recordDemoEvent } from '@/lib/demo-events'
 // Language Phase 1c: a refusal of ours is `{ ok: false, error, …, code, params }` (lib/i18n/onboarding-errors.ts).
 // Signup asks for no country, so its words are en-GB. ⚠️ Supabase's own message (a refused createUser) is passed on
 // as it came, without a code.
@@ -196,14 +197,23 @@ export async function POST(req: NextRequest) {
   // Language Phase 1c: the verification email is written in the demo truck's language when the account came from
   // one; otherwise the locale is left out and lib/email-signup.ts writes it in en-GB.
   let demoLocale: string | undefined
+  // 🔴 demo-2 (30 Oct 2026): BY TOKEN OR BY SLUG. The demo walkthrough (/try/<slug>) never holds the dashboard token —
+  // it works from the slug the customer order page already shows — so "Start free" claims by slug. The truck's OWN id
+  // must still be a demo, and a slug claim only takes a demo NOBODY has claimed yet (a slug is shared more widely than
+  // a token: it is in the order page's address), so it can never move someone else's claimed menu to a new account.
   if (demoToken && isDemoIdentifier(demoToken)) {
-    const { data: demoTruck } = await supabase
+    const byToken = await supabase
       .from('trucks').select('id, name, country').eq('dashboard_token', demoToken).maybeSingle()
-    if (demoTruck) {
+    const bySlug = byToken.data ? null : await supabase
+      .from('trucks').select('id, name, country').eq('slug', demoToken).maybeSingle()
+    const demoTruck = byToken.data ?? bySlug?.data ?? null
+    if (demoTruck && isDemoIdentifier(String(demoTruck.id))) {
       demoTruckName = (demoTruck.name ?? '').trim() || null
       demoLocale = await localeForTruck(demoTruck)
-      await supabase.from('demo_sessions')
+      const claim = supabase.from('demo_sessions')
         .update({ claimed_by_operator_id: operator.id }).eq('truck_id', demoTruck.id)
+      await (byToken.data ? claim : claim.is('claimed_by_operator_id', null))
+      await recordDemoEvent(supabase, { demoId: String(demoTruck.id), event: 'signup_done' })
     }
   }
 

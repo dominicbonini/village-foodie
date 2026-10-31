@@ -17,8 +17,8 @@ const COMPONENTS = {
   pay: 'components/dashboard/PaymentActionsModal.tsx',
   add: 'components/dashboard/AddOrderPanel.tsx',
   grid: 'components/dashboard/BuzzerGrid.tsx',
-  welcome: 'components/dashboard/DemoWelcome.tsx',
-  loop: 'components/dashboard/DemoLoopComplete.tsx',
+  // ⛔ welcome (DemoWelcome) and loop (DemoLoopComplete) RETIRED 30 October 2026 (demo-2, docs/demo-2-report.md) —
+  // their views are listed in scripts/_demo2-named.cjs and must be absent.
   menu: 'components/dashboard/UserMenu.tsx',
   reject: 'components/shared/RejectOrderModal.tsx',
   cancel: 'components/shared/EventCancelModal.tsx',
@@ -68,8 +68,6 @@ async function views(ctx) {
       "export { CapacityBreachBanner } from '@/components/dashboard/CapacityBreachBanner'",
       "export { DayLoadStrip } from '@/components/dashboard/DayLoadStrip'",
       "export { DemoLockChip } from '@/components/dashboard/DemoLockChip'",
-      "export { DemoLoopComplete } from '@/components/dashboard/DemoLoopComplete'",
-      "export { DemoWelcome } from '@/components/dashboard/DemoWelcome'",
       "export { KeepAwakePrompt } from '@/components/dashboard/KeepAwakePrompt'",
       "export { default as UserMenu } from '@/components/dashboard/UserMenu'",
       "export { DemoModeBanner } from '@/components/DemoModeBanner'",
@@ -79,10 +77,6 @@ async function views(ctx) {
         { file: COMPONENTS.cancel, states: ['reason', 'note'] },
         { file: COMPONENTS.finish, states: ['selected', 'step'] },
         { file: COMPONENTS.grid, states: ['pending'] },
-        { file: COMPONENTS.welcome, states: ['qrDataUrl', 'qrFailed'] },
-        // a static render reads the server snapshot ("seen"), so the welcome would never open: read a flag instead
-        { file: COMPONENTS.welcome, from: '() => true,', to: '() => !globalThis.__lpWelcomeOpen,' },
-        { file: COMPONENTS.loop, states: ['visible', 'freshKeys'] },
         { file: COMPONENTS.menu, states: ['open', 'deviceOpen'] },
         // "This device" is native-only (Capacitor): a flag stands in for the native shell
         { file: COMPONENTS.menu, from: '{isNativeApp() && (', to: '{(globalThis.__lpNative || isNativeApp()) && (' },
@@ -418,26 +412,7 @@ async function views(ctx) {
     put('demoLock|class', X, h(X.DemoLockChip, { className: 'ml-1' }))
     put('demoBanner', X, h(X.DemoModeBanner, {}))
     put('demoBanner|action', X, h(X.DemoModeBanner, { action: h('button', null, 'Set up my truck') }))
-    const loopOrders = [C.ORDERS.pay_at_hatch, C.ORDERS.card_paid]
-    const loop = (key, state, over = {}) => put(`demoLoop|${key}`, X, h(X.DemoLoopComplete, { token: 'harness', orderKeys: loopOrders.map(o => o.order_key), orders: loopOrders, loaded: true, phone: C.phone, ...over }), state)
-    loop('hidden', null)
-    loop('one', { visible: true, freshKeys: [loopOrders[0].order_key] })
-    loop('ambiguous', { visible: true, freshKeys: loopOrders.map(o => o.order_key) })
-    loop('unknown', { visible: true, freshKeys: ['missing'] })
-    loop('sample', { visible: true, freshKeys: [loopOrders[0].order_key] }, { extractionSource: 'template' })
-    const welcome = (key, over = {}, state = null) => {
-      globalThis.__lpWelcomeOpen = true
-      try { put(`demoWelcome|${key}`, X, h(X.DemoWelcome, { token: 'harness', orderUrl: 'https://example.test/trucks/test-kitchen/order', ...over }), state) } finally { delete globalThis.__lpWelcomeOpen }
-    }
-    welcome('own')
-    welcome('sample', { isSample: true })
-    welcome('noUrl', { orderUrl: null })
-    welcome('qr', {}, { qrDataUrl: 'data:image/png;base64,AAAA' })
-    welcome('qrFailed', {}, { qrFailed: true })
-    welcome('oneCash', { completionPresses: 'one', takesCash: true })
-    welcome('oneNoCash', { completionPresses: 'one', takesCash: false })
-    welcome('two', { completionPresses: 'two', takesCash: true })
-    put('demoWelcome|seen', X, h(X.DemoWelcome, { token: 'harness', orderUrl: null }))
+    // ⛔ demoLoop|… and demoWelcome|… views RETIRED with their components (demo-2) — see scripts/_demo2-named.cjs.
     for (const ws of ['held', 'denied', 'unsupported', 'insecure', 'native', 'off', 'unknown']) {
       put(`keepAwake|${ws}`, X, h(X.KeepAwakePrompt, { keepScreenOn: true, wakeState: ws, onAcquire() {} }))
     }

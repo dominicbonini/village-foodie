@@ -53,5 +53,9 @@
     "or": "alebo",
     "pasteLabel": "Vložiť text jedálneho lístka",
     "pastePlaceholder": "Sem vložte jedálny lístok — názvy položiek, popisy, ceny..."
-  }
+  },
+  "emailLabel": "Váš e-mail",
+  "emailNote": "Pošleme vám e-mailom odkaz na vašu ukážku a môžeme vás kontaktovať ohľadom nastavenia HatchGrab. <link>Ochrana súkromia</link>",
+  "marketing": "Posielajte mi občas tipy a novinky od HatchGrab",
+  "emailInvalid": "Zadajte platnú e-mailovú adresu."
 }

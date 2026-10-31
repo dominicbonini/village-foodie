@@ -660,6 +660,10 @@ async function main() {
   }
   const before = JSON.parse(zlib.gunzipSync(fs.readFileSync(path.join(REPO, BEFORE_FILE)))).views
   const PHASE2_LISTED = {}, phase2Named = {}
+  // demo-2 (30 October 2026): the demo views it changed on purpose (scripts/_demo2-named.cjs), proved in scripts/demo-2.cjs.
+  const DEMO2 = require('./_demo2-named.cjs')
+  const demo2Listed = Object.keys(before).flatMap(sec => (sec === 'emails' ? [] : DEMO2.filterBefore(before[sec], `1a/${sec}/`, got[sec]).listed.map(k => `${sec} · ${k}`)))
+  if (demo2Listed.length) console.log(`  ${demo2Listed.length} view(s) LISTED as changed on purpose by demo-2 and proved in scripts/demo-2.cjs: ${demo2Listed.join(', ')}`)
   for (const sec of Object.keys(before)) for (const k of Object.keys(before[sec])) {
     // `emails.sent` holds the GB senders' nine emails then the US senders' nine: each half is its country's view.
     if (sec === 'emails' && k === 'sent') {

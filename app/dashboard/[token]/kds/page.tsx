@@ -138,6 +138,19 @@ export default function KdsPage({ token: tokenProp, vanId: vanIdProp, vanName: v
   useEffect(() => { if (isNativeApp()) setLastScreen('kds') }, [])
 
   const [truck, setTruck] = useState<TruckData | null>(null)
+  // G11 (demo-2b, 31 October 2026, docs/demo-2b-report.md): the demo's signup button gets what the dashboard gives it —
+  // the demo's extraction source (so a SAMPLE demo never reads "your menu" once signup is on) and the admin flag (an
+  // admin's preview opens the wizard with signup still off). Both demo-only: an operator's KDS reads and fetches
+  // nothing new.
+  const [demoExtractionSource, setDemoExtractionSource] = useState<string | null>(null)
+  const [isAdmin, setIsAdmin] = useState(false)
+  useEffect(() => {
+    if (!isDemo) return
+    let cancelled = false
+    nativeAuthHeader().then(h => fetch('/api/auth/me', { headers: h })).then(r => r.json())
+      .then(d => { if (!cancelled && d?.is_admin) setIsAdmin(true) }).catch(() => null)
+    return () => { cancelled = true }
+  }, [isDemo])
   // 🔴 THE TRUCK'S TIME (Phase 2B): its zone decides "now" and "today" on the kitchen screen (was the
   // device's clock), and its style writes every time and date. Before the truck loads, GB's stand in.
   const kdsTime = useMemo(() => (truck ? timeSettingsOr(truck.time, 'kds') : LEGACY_UK_TIME_SETTINGS), [truck])
@@ -688,6 +701,7 @@ export default function KdsPage({ token: tokenProp, vanId: vanIdProp, vanName: v
       // guard, because the forbidden state this guard exists to prevent is one event's data under
       // another event's name. That guarantee is unchanged; only the truck escapes it.
       setTruck(data.truck)
+      if (data.demo !== undefined) setDemoExtractionSource(data.demo?.extraction_source ?? null)   // G11: the /api/dashboard demo block
       loadedOnceRef.current = true   // R5 — from here on, the 60s poll exists, so an abort has a retry behind it
       setLastRefresh(new Date())     // R9 — the board's age, shown in the degraded strip
       setHasLoaded(true)             // R9 — render-safe mirror of loadedOnceRef (see its note)
@@ -2626,7 +2640,7 @@ export default function KdsPage({ token: tokenProp, vanId: vanIdProp, vanName: v
           orange identity strip wedged between two of those would break an ordering the operator is meant
           to be able to rely on. This is a persistent statement about the whole screen, so it sits
           directly under the header, where it was directly over it. */}
-      {isDemo && <DemoModeBanner action={<DemoGetStarted token={token} phone={truck?.phone ?? null} />} />}
+      {isDemo && <DemoModeBanner action={<DemoGetStarted token={token} isAdmin={isAdmin} extractionSource={demoExtractionSource} phone={truck?.phone ?? null} />} />}
 
       {/* ── THE BANNER STACK — ONE CONTAINER, DIRECTLY UNDER THE HEADER ───────────────────────────
           🔴 THE WAKE-LOCK BAR USED TO RENDER HERE AND THE REST RENDERED FURTHER DOWN, so on a phone the

@@ -59,7 +59,14 @@ export async function provisionDemo(_db, input) {
 }`,
     '@/lib/demo-session': `export async function claimDemoFirstOpen() { const c = globalThis.__claim || 'claimed'; return c === 'claimed' ? { claimed: true, at: '2026-10-09T17:20:00.000Z' } : { claimed: false, reason: c } }
 export async function saveDemoEmail(_db, id, email) { ;(globalThis.__calls ||= []).push(['saveDemoEmail', [id, email]]); return globalThis.__save || { ok: true, expiresAt: '2026-10-23T17:20:00.000Z' } }
-export async function markReturnEmailSent(_db, id) { ;(globalThis.__calls ||= []).push(['markReturnEmailSent', id]) }`,
+export async function markReturnEmailSent(_db, id) { ;(globalThis.__calls ||= []).push(['markReturnEmailSent', id]) }
+// demo-2 (30 October 2026): the email asked before a landing build — the same check as lib/demo-session, and a recorder.
+export const isDemoEmail = v => typeof v === 'string' && v.trim().length <= 320 && /^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$/.test(v.trim())
+export async function recordDemoVisitorEmail() { return true }`,
+    // demo-2: the menu kept for Admin, the funnel counts and the link email — no-ops here (scripts/demo-2.cjs proves them).
+    '@/lib/demo-menu-files': 'export async function saveDemoMenuFiles() { return [] }',
+    '@/lib/demo-events': 'export async function recordDemoEvent() {}',
+    '@/lib/demo-link-email': "export async function sendDemoLinkEmail() { return { sent: false, reason: 'harness' } }",
     '@/lib/auth/admin': "export async function verifyAdmin() { if (globalThis.__admin === 'throw') throw new Error('no'); return globalThis.__admin === true }",
     // Tokens are random in production; fixed here so a link in an email is the same on every run.
     crypto: "import * as real from 'node:crypto'\nexport * from 'node:crypto'\nexport function randomBytes(n) { return { toString: () => 'f'.repeat(n * 2) } }\nexport default { ...real, randomBytes }",
@@ -303,18 +310,21 @@ export { POST as buildPOST } from '@/app/api/demo/build-request/route'` + cache,
     // ── /api/demo (POST, multipart) ──
     const form = (parts) => { const f = new FormData(); for (const [k, v] of Object.entries(parts)) f.append(k, v); return f }
     const demo = (k, body, o = {}) => call(`${cc}|demo|${k}`, { tables: T(o), ...o }, () => P.demoPOST(post('/api/demo', body, o.headers)))
+    // ⚠️ RE-PINNED (demo-2, 30 October 2026): a landing build now needs an email, checked after the size/type/menu checks
+    // and BEFORE the rate limit. The forms that reach that check carry one, so each still proves the path it did.
+    const EM = { email: 'prospect@example.com' }
     await demo('badForm', '{"not":"a form"}')
     await demo('tooBig', form({ file: new File([new Uint8Array(10 * 1024 * 1024 + 1)], 'menu.jpg', { type: 'image/jpeg' }) }))
     await demo('badType', form({ file: new File(['hello'], 'menu.txt', { type: 'text/plain' }) }))
     await demo('textLong', form({ text: 'x'.repeat(20_001) }))
     await demo('nothing', form({ text: '   ' }))
-    await demo('rateLimited', form({ text: 'Margherita 9.50' }), { headers: XFF, rl: { demo: 'deny' } })
-    await demo('limiterDown', form({ text: 'Margherita 9.50' }), { headers: XFF, rl: { demo: 'throw' } })
-    await demo('menuFailed', form({ file: new File(['%PDF'], 'menu.pdf', { type: 'application/pdf' }) }), { provisionDemo: 'failed' })
-    await demo('imported', form({ text: 'Margherita 9.50' }))
-    await demo('template', form({ template: 'pizza' }), { provisionDemo: 'template' })
-    await demo('provisionError', form({ text: 'Margherita 9.50' }), { provisionDemo: 'throwDemo' })
-    await demo('unexpected', form({ text: 'Margherita 9.50' }), { provisionDemo: 'throw' })
+    await demo('rateLimited', form({ text: 'Margherita 9.50', ...EM }), { headers: XFF, rl: { demo: 'deny' } })
+    await demo('limiterDown', form({ text: 'Margherita 9.50', ...EM }), { headers: XFF, rl: { demo: 'throw' } })
+    await demo('menuFailed', form({ file: new File(['%PDF'], 'menu.pdf', { type: 'application/pdf' }), ...EM }), { provisionDemo: 'failed' })
+    await demo('imported', form({ text: 'Margherita 9.50', ...EM }))
+    await demo('template', form({ template: 'pizza', ...EM }), { provisionDemo: 'template' })
+    await demo('provisionError', form({ text: 'Margherita 9.50', ...EM }), { provisionDemo: 'throwDemo' })
+    await demo('unexpected', form({ text: 'Margherita 9.50', ...EM }), { provisionDemo: 'throw' })
     // ── /api/demo/build-request ──
     const build = (k, body, o = {}) => call(`${cc}|build-request|${k}`, { tables: T(o), ...o }, () => P.buildPOST(post('/api/demo/build-request', body, o.headers)))
     await build('badJson', '{nope')

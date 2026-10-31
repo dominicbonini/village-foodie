@@ -80,6 +80,8 @@ const fixture = (over = {}) => ({
     t('it starts around the moment they opened it (15:00 London, the demo window\'s half-hour floor), not when it was built', r.event.start_time.startsWith('15:00') && r.event.end_time > '18:00', `${r.event.start_time}–${r.event.end_time}`)
     t('the preview\'s orders are gone', !rows(pg, 'orders').some(o => o.customer_name === 'Preview order'))
     t('any orders on the board are on the new event', rows(pg, 'orders').every(o => o.event_id === r.event.id))
+    // demo-2 (30 Oct 2026, docs/demo-2-report.md): a restart opens an EMPTY board — no seeded orders.
+    t('demo-2: the new service has NO seeded orders — the board is empty until the visitor orders', rows(pg, 'orders').length === 0 && r.seededOrders === 0, JSON.stringify(rows(pg, 'orders').length))
     const ev = evs[0]
     const KEPT = ['venue_name', 'venue_address', 'customer_note', 'event_type_id', 'order_ready_override', 'buzzer_prompt', 'takes_cash_override', 'offline_protection_override', 'offline_protection_mode_override', 'offline_auto_reject_mins_override', 'collection_interval_mins_override', 'price_mode', 'price_amount', 'price_rounding']
     const old = fixture().truck_events[0]
@@ -117,41 +119,14 @@ const fixture = (over = {}) => ({
   t('one "setting up" flag: a restart in flight, or a first-open claim not yet answered',
     /const demoSettingUp=!!\(isDemo&&\(restarting\|\|\(demoFirstOpenPending&&!firstOpenChecked\)\)\)/.test(dash))
   t('…the "This service has ended" card stands down while it is set', /const demoEndedCard=demoServiceEnded&&!demoSettingUp\?\(/.test(dash))
-  t('…the welcome stands down while it is set', /\{isDemo&&!demoSettingUp&&<DemoWelcome/.test(dash))
-  t('…the loop-complete prompt is not "loaded", so it writes no baseline mid-restart', /loaded=\{!loading&&!!truck&&!demoSettingUp\}/.test(dash))
+  // demo-2 (30 Oct 2026): DemoWelcome and DemoLoopComplete are RETIRED — the guided path is the walkthrough
+  // (/try/<slug>, docs/demo-2-report.md) — so neither renders on the dashboard any more.
+  t('demo-2: the dashboard renders neither the welcome nor the loop-complete prompt', !/<DemoWelcome|<DemoLoopComplete/.test(dash))
   t('…and one full-screen "Setting up your demo…" panel is shown instead, from messages/', /\{demoSettingUp&&\(\s*<div className="fixed inset-0 z-\[90\][^>]*>\s*<p[^>]*>\{tDash\('demoSettingUp'\)\}<\/p>/.test(dash)
     && JSON.parse(read('messages/en-GB.json')).dashboard.demoSettingUp === 'Setting up your demo…')
 
-  t('a successful restart clears the welcome\'s "seen" flag before reloading, so the new service introduces itself',
-    /clearDemoWelcomeSeen\(token\)\s*\n[\s\S]{0,800}?window\.location\.reload\(\)/.test(dash))
-
-  // The prompt itself, mounted for real (react-dom/client on the mini DOM, effects running), replaying what
-  // Chrome did: the first seeded orders ARRIVE on the old page mid-restart, then the reload shows them all.
-  const { installMiniDom } = require('./_mini-dom.cjs')
-  const React = require(require('path').join(kit.REPO, 'node_modules/react')); const { act } = React
-  const { createRoot } = require(require('path').join(kit.REPO, 'node_modules/react-dom/client'))
-  globalThis.IS_REACT_ACT_ENVIRONMENT = true
-  const L = await kit.bundle('drs-loop', "export { DemoLoopComplete } from '@/components/dashboard/DemoLoopComplete'\nexport { markDemoWelcomeSeen } from '@/lib/demo-board-build'")
-  const replay = async (loadedMidRestart) => {
-    const dom = installMiniDom(); localStorage.clear()
-    L.markDemoWelcomeSeen && sessionStorage?.setItem?.('hg_demo_welcome_tok-demo', 'seen')
-    const root = createRoot(dom.container)
-    const order = k => ({ order_key: k, id: k, customer_name: k, total: 5, items: [], status: 'pending' })
-    const mount = async (keys, loaded) => { await act(async () => { root.render(React.createElement(L.DemoLoopComplete, { token: 'tok-demo', orderKeys: keys, orders: keys.map(order), loaded, onHighlight() {} })) }); await act(async () => { await new Promise(r => setTimeout(r, 5)) }) }
-    await mount(['s1'], loadedMidRestart)                 // mid-restart: the first seeded order has arrived
-    await act(async () => root.unmount())                // the reload
-    const root2 = createRoot(dom.container)
-    await act(async () => { root2.render(React.createElement(L.DemoLoopComplete, { token: 'tok-demo', orderKeys: ['s1', 's2', 's3'], orders: ['s1', 's2', 's3'].map(order), loaded: true, onHighlight() {} })) })
-    await act(async () => { await new Promise(r => setTimeout(r, 5)) })
-    const text = dom.container.textContent
-    await act(async () => root2.unmount()); dom.teardown()
-    return text
-  }
-  globalThis.sessionStorage = globalThis.sessionStorage || (() => { const m = new Map(); return { getItem: k => (m.has(k) ? m.get(k) : null), setItem: (k, v) => m.set(k, String(v)), removeItem: k => m.delete(k), clear: () => m.clear() } })()
-  const before = await kit.quietAsync(() => replay(true))
-  const after = await kit.quietAsync(() => replay(false))
-  t('CONTROL — fed the arriving orders mid-restart (the old wiring), the prompt fires on the seeded board', /exactly how a real order lands/.test(before), before.slice(0, 160))
-  t('with the setting-up gate, the reloaded seeded board is just the baseline — no prompt', !/exactly how a real order lands/.test(after), after.slice(0, 160))
+  t('demo-2: a successful restart clears the RETIRED welcome / baseline names (through lib/demo-board-build) before reloading',
+    /forgetRetiredDemoFlags\(token\)\s*\n[\s\S]{0,400}?window\.location\.reload\(\)/.test(dash))
 
   delete globalThis.__harnessDb
   console.log(`\n${fail ? '✗' : '✓'} demo-reset-for-sending: ${pass} passed, ${fail} failed`)

@@ -53,5 +53,9 @@
     "or": "eller",
     "pasteLabel": "Indsæt menukortets tekst",
     "pastePlaceholder": "Indsæt dit menukort her – varenavne, beskrivelser, priser…"
-  }
+  },
+  "emailLabel": "Din e-mail",
+  "emailNote": "Vi sender dig et link til din demo på e-mail og kontakter dig måske om at sætte HatchGrab op. <link>Privatlivspolitik</link>",
+  "marketing": "Send mig tips og nyheder fra HatchGrab en gang imellem",
+  "emailInvalid": "Indtast en gyldig e-mailadresse."
 }

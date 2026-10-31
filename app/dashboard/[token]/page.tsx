@@ -106,8 +106,6 @@ import { NotificationSettings } from '@/components/native/NotificationSettings'
 import { OfflineBanner } from '@/components/native/OfflineBanner'
 import { WebOfflineBanner } from '@/components/WebOfflineBanner'
 import { KeepAwakePrompt } from '@/components/dashboard/KeepAwakePrompt'
-import { DemoWelcome } from '@/components/dashboard/DemoWelcome'
-import { DemoLoopComplete } from '@/components/dashboard/DemoLoopComplete'
 import { DemoModeBanner } from '@/components/DemoModeBanner'
 import { DemoGetStarted } from '@/components/DemoGetStarted'
 import { CapacityBreachBanner } from '@/components/dashboard/CapacityBreachBanner'
@@ -161,7 +159,7 @@ import '@/lib/i18n/catalog/completionSettings'
 import '@/lib/i18n/catalog/kitchenCapacity'
 import '@/lib/i18n/catalog/offlineProtection'
 import '@/lib/i18n/catalog/serviceSettings'
-import { clearDemoWelcomeSeen } from '@/lib/demo-board-build'   // a restarted service re-introduces itself
+import { forgetRetiredDemoFlags } from '@/lib/demo-board-build'   // demo-2: clears the retired welcome / baseline names
 
 /** The ONLY list of valid ?tab= values, shared by the tab bar and the URL validator — so a tab cannot be
  *  added to the UI without becoming linkable, or removed without ceasing to be. */
@@ -928,7 +926,7 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
   // the settled ring. Set only by that component (which only renders when isDemo), and read only in the
   // `isDemo&&` ternaries on the two OrderCard grids, so on a live board it is null for the page's whole
   // life and every card renders byte-for-byte what it did before.
-  const[highlightOrderKey,setHighlightOrderKey]=useState<string|null>(null)
+  const[highlightOrderKey]=useState<string|null>(null)   // demo-2: nothing sets it since DemoLoopComplete was retired; kept so the cards keep their prop
   // DEMO ONLY — the server-side session block from /api/dashboard (see the route). Null for an operator
   // truck, where the key isn't sent at all.
   const[demoSession,setDemoSession]=useState<{extraction_source:string|null;email:string|null;expires_at:string|null;discovery_truck_id?:string|null;public_ref?:string|null;first_opened_at?:string|null}|null>(null)
@@ -1972,21 +1970,11 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
         restartingRef.current=false; setRestarting(false)
         return false
       }
-      // RESET THE LOOP-COMPLETE STATE. Its baseline is a persisted list of order keys
-      // (components/dashboard/DemoLoopComplete.tsx) — every key in it has just been deleted, so without
-      // this the NEW seeded board reads as 37 orders the visitor caused and the prompt fires instantly
-      // on load. Clearing both keys means the fresh board is re-baselined on next load and the visitor
-      // gets the moment properly when they order on the new service. Same key names as the component.
-      // MUST happen before the reload — localStorage outlives it, React state does not.
-      try{
-        localStorage.removeItem(`hg_demo_seen_orders_${token}`)
-        localStorage.removeItem(`hg_demo_loop_${token}`)
-      }catch{/* private mode — the baseline just re-records itself */}
-      // 🔴 AND THE NEW SERVICE INTRODUCES ITSELF AGAIN (14 October 2026). The welcome's "seen" flag lives in
-      // sessionStorage and survives this reload; it used to be cleared only when DemoLoopComplete spotted a
-      // REPLACED board — which the line above makes impossible, by deleting the baseline that spotting needs.
-      // So a tab that had dismissed the welcome once never saw it again after a restart (Dominic, Chrome).
-      clearDemoWelcomeSeen(token)
+      // demo-2: the welcome popup and the "your order arrived" card are retired (the walkthrough at /try/<slug> is
+      // the guided path now), so there is no baseline or "seen" flag to reset — only their old names to clear,
+      // through lib/demo-board-build. MUST happen before the reload: storage outlives it.
+      forgetRetiredDemoFlags(token)
+      try{localStorage.removeItem(`hg_demo_loop_${token}`)}catch{/* private mode */}
       // SUCCESS, and only now. `restarting` is deliberately NOT cleared: the button stays disabled and
       // reading "Setting up…" until the document is replaced, so it is never pressable again in the gap.
       window.location.reload()
@@ -4055,29 +4043,11 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
           the event bar. Both are plain in-flow `w-full … shrink-0` bars, so above `AppHeader` either one
           would have been the element under the iOS status bar whenever it showed. DemoWelcome stays here:
           it is a `fixed inset-0` modal and never participates in the column. */}
-      {/* One-time orientation, shown BEFORE they see the board. Carries the customer order link, which is
-          the thing most likely to be missed and the one that closes the loop. */}
-      {/* isSample reads the SERVER's answer alone (demo_sessions.extraction_source, via /api/dashboard's
-          demo block). It replaced a `?welcome=sample` URL param, which was gone after one navigation — so
-          a reloaded sample demo used to start claiming "Here's your menu" about a menu nobody uploaded,
-          breaking the §11 rule DemoWelcome:93 exists to enforce. A stored column survives reloads, tabs
-          and devices; a query param survives none of them.
-          The param was briefly kept as an `||` fallback while it was unconfirmed whether the column
-          existed in prod (it is written by lib/provision-demo.ts but had no migration). Live schema
-          confirmed it present and populated on 2026-07-28, and the migration now exists
-          (20260728_demo_sessions_extraction_source.sql), so the fallback is gone. */}
-      {/* logoUrl: the SAME predicate as handleShowQR's `showBrandedQr` — plan feature AND qr_code_style ===
-          'branded' — so the welcome QR and the fullscreen QR cannot disagree. Unbranded demos pass null. */}
-      {/* completionPresses/takesCash: the SAME resolvePaidStep values the order cards use, so the
-          introduction's "Hit <label> on an order" bullet cannot name a button that is not on screen. */}
       {demoSettingUp&&(
         <div className="fixed inset-0 z-[90] bg-slate-50 flex items-center justify-center" role="status" aria-live="polite">
           <p className="text-base font-black text-slate-700">{tDash('demoSettingUp')}</p>
         </div>
       )}
-      {isDemo&&!demoSettingUp&&<DemoWelcome token={token} orderUrl={customerOrderUrl} isSample={demoSession?.extraction_source==='template'}
-        completionPresses={effectiveCompletionPresses} takesCash={effectiveTakesCash}
-        logoUrl={(demoBranded&&truck&&features.can('branded_qr_code')&&truck.qr_code_style==='branded')?(truck.logo||null):null}/>}
       {/* Keep-screen-on prompt — full-width shrink-0 bar in the app-shell (visible on the service screen, not
           buried). Shows only when the pref is on but the lock isn't held; the operator's first tap dismisses
           AND acquires it. */}
@@ -4458,18 +4428,6 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
                   behind this is dead (nothing bookable past end_time), so a signup prompt would be
                   pitching off the back of something that no longer works. One action, no dead ends. */}
               {demoEndedCard}
-              {isDemo&&!demoServiceEnded&&(
-                <DemoLoopComplete
-                  token={token}
-                  phone={truck?.phone??null}
-                  orderKeys={orders.map(o=>o.order_key)}
-                  orders={orders}
-                  loaded={!loading&&!!truck&&!demoSettingUp}
-                  onHighlight={setHighlightOrderKey}
-                  isAdmin={isAdmin}
-                  extractionSource={demoSession?.extraction_source??null}
-                />
-              )}
               {/* Prep time banner — hidden in DEMO. Not just its "Edit categories" → /manage link: the whole
                   card's copy instructs the reader to fix prep times *in Manage*, which a demo visitor cannot
                   reach. Hiding only the link would leave instructions pointing nowhere. (Demo prep times are

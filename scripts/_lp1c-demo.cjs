@@ -24,7 +24,7 @@ const { makeFakePg } = require('./_fake-pg.cjs')
 const FILES = {
   gs: 'components/DemoGetStarted.tsx',
   up: 'components/landing/DemoUpload.tsx',
-  loop: 'components/dashboard/DemoLoopComplete.tsx',
+  // ⛔ loop (components/dashboard/DemoLoopComplete.tsx) retired 30 October 2026 (demo-2)
 }
 const GS_STATES = ['open', 'email', 'busy', 'savedUntil', 'error', 'justSaved', 'step', 'baseChoice', 'operatorFirstName', 'operatorLastName',
   'truckName', 'password', 'logoPreview', 'cuisineSlots', 'contactPhone', 'phoneIsWhatsapp', 'promoCode', 'termsAccepted', 'showEmailEdit',
@@ -89,7 +89,6 @@ async function views(ctx) {
   const ui = await kit.bundle('lp1c-demo-ui', [
     `export { DemoGetStarted } from '@/${FILES.gs}'`,
     `export { DemoModalProvider, DemoCta, DemoModal } from '@/${FILES.up}'`,
-    `export { DemoLoopComplete } from '@/${FILES.loop}'`,
   ].join('\n') + '\n' + ctxExport, {
     stubs: { '@/lib/supabase/client': 'export const createSupabaseBrowserClient = () => globalThis.__lpSupa' },
     patches: [
@@ -103,7 +102,6 @@ async function views(ctx) {
       { file: FILES.up, from: "if (!open || typeof document === 'undefined') return null", to: 'if (!open) return null' },
       { file: FILES.up, from: '  return createPortal(', to: '  return ((el: any, _b: any) => el)(' },
       { file: FILES.up, from: '    document.body,\n  )', to: '    null,\n  )' },
-      { file: FILES.loop, states: ['visible', 'freshKeys'] },
     ],
   })
 
@@ -358,14 +356,7 @@ async function views(ctx) {
     await press('up|buildSent', upEl(), { ...F, buildEmail: EMAIL }, ['Send'], { [BUILD]: { body: { ok: true } } })
     await press('up|close', upEl(), { ...O, phase: 'error', message: 'x' }, ['×'])
 
-    // ══ DemoLoopComplete — the card that carries the signup offer ══════════════════════════════════
-    const loopOrders = [C.ORDERS.pay_at_hatch, C.ORDERS.card_paid]
-    const loop = (key, state, over = {}) => { out[`${cc}|loop|${key}`] = html(state, h(ui.DemoLoopComplete, { token: TOKEN, orderKeys: loopOrders.map(o => o.order_key), orders: loopOrders, loaded: true, phone: C.phone, ...over })) }
-    loop('hidden', null)
-    loop('one', { visible: true, freshKeys: [loopOrders[0].order_key] })
-    loop('admin', { visible: true, freshKeys: [loopOrders[0].order_key] }, { isAdmin: true })
-    loop('sample', { visible: true, freshKeys: [loopOrders[0].order_key] }, { isAdmin: true, extractionSource: 'template' })
-    loop('ambiguous', { visible: true, freshKeys: loopOrders.map(o => o.order_key) })
+    // ⛔ DemoLoopComplete RETIRED 30 October 2026 (demo-2): its `loop|…` views are listed in scripts/_demo2-named.cjs.
 
     // ══ 🔴 THE ROWS A DEMO IS PROVISIONED WITH (stored values — not translated in this phase) ════════════
     const KEYS = { demo_sessions: [['truck_id']], slot_capacity: [['truck_id', 'event_date', 'slot']], production_slot_usage: [['truck_id', 'event_id', 'production_slot']] }

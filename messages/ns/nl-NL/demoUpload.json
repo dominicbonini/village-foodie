@@ -53,5 +53,9 @@
     "or": "of",
     "pasteLabel": "Tekst van menukaart plakken",
     "pastePlaceholder": "Plak je menukaart hier — namen van gerechten, beschrijvingen, prijzen…"
-  }
+  },
+  "emailLabel": "Je e-mailadres",
+  "emailNote": "We mailen je een link naar je demo en nemen mogelijk contact met je op over het instellen van HatchGrab. <link>Privacybeleid</link>",
+  "marketing": "Stuur me af en toe tips en nieuws van HatchGrab",
+  "emailInvalid": "Voer een geldig e-mailadres in."
 }

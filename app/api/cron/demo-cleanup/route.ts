@@ -24,6 +24,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@supabase/supabase-js'
 import { verifyAdmin } from '@/lib/auth/admin'
 import { deleteTruckCascade, DeleteTruckError } from '@/lib/delete-truck'
+import { deleteDemoMenuFiles } from '@/lib/demo-menu-files'
 import { isDemoIdentifier, DEMO_PREFIX } from '@/lib/demo'
 import { HATCHGRAB_SENDER } from '@/lib/email-config'
 
@@ -50,7 +51,12 @@ const BATCH_LIMIT = 200      // bounded work per invocation; the hourly schedule
 
 interface Failure { truckId: string; step?: string; error: string }
 
-/** Delete one demo truck through the SINGLE verified cascade, asserting the demo prefix first. */
+/** demo-2: stored menu files deleted by this run (lib/demo-menu-files), recorded in demo_cleanup_log.files_deleted. */
+let filesDeleted = 0
+
+/** Delete one demo truck through the SINGLE verified cascade, asserting the demo prefix first.
+ *  demo-2: its uploaded menu files (the private `demo-menus` bucket) go FIRST, so a file can never outlive its demo —
+ *  if the cascade then fails, the next run retries a demo that simply has no files left. */
 async function sweep(truckId: string, failures: Failure[]): Promise<boolean> {
   // ASSERT, don't assume (the brief's requirement). Every query below is already prefix-filtered, so this
   // can only fire if a query is later loosened — which is exactly when you want a hard stop rather than a
@@ -62,6 +68,7 @@ async function sweep(truckId: string, failures: Failure[]): Promise<boolean> {
     return false
   }
   try {
+    filesDeleted += await deleteDemoMenuFiles(supabase, truckId)
     await deleteTruckCascade(supabase, truckId)
     return true
   } catch (err) {
@@ -94,6 +101,7 @@ async function notify(subject: string, html: string) {
 
 async function run(): Promise<NextResponse> {
   const startedAt = Date.now()
+  filesDeleted = 0   // a warm function instance keeps module state between runs
   const failures: Failure[] = []
   let expiredDeleted = 0
   let orphansDeleted = 0
@@ -201,11 +209,14 @@ async function run(): Promise<NextResponse> {
 
   // ── Always log, even on failure. This row IS the run history. ─────────────────────────────────────
   try {
-    await supabase.from('demo_cleanup_log').insert({
+    const row = {
       ok, expired_deleted: expiredDeleted, orphans_deleted: orphansDeleted,
       failures: failures.length ? failures : null, error: hardError,
       duration_ms: durationMs, gap_mins: gapMins,
-    })
+    }
+    // demo-2: with the files count — and, before 20261052 adds that column, without it rather than not at all.
+    const { error: logErr } = await supabase.from('demo_cleanup_log').insert({ ...row, files_deleted: filesDeleted })
+    if (logErr) await supabase.from('demo_cleanup_log').insert(row)
   } catch (err) {
     // If even the log write fails the job is blind — say so loudly in the function logs, which is the one
     // channel left.
@@ -220,10 +231,10 @@ async function run(): Promise<NextResponse> {
       `<p>Ran successfully, but the previous successful run was <strong>${gapMins} minutes</strong> ago (expected hourly). The job may have been failing silently.</p>`)
   }
 
-  console.log(`[demo-cleanup] ok=${ok} expired=${expiredDeleted} orphans=${orphansDeleted} failures=${failures.length} gap=${gapMins ?? 'n/a'}m ${durationMs}ms`)
+  console.log(`[demo-cleanup] ok=${ok} expired=${expiredDeleted} orphans=${orphansDeleted} files=${filesDeleted} failures=${failures.length} gap=${gapMins ?? 'n/a'}m ${durationMs}ms`)
 
   return NextResponse.json(
-    { ok, expiredDeleted, orphansDeleted, failures, error: hardError, durationMs, gapMins },
+    { ok, expiredDeleted, orphansDeleted, filesDeleted, failures, error: hardError, durationMs, gapMins },
     { status: ok ? 200 : 500 },
   )
 }

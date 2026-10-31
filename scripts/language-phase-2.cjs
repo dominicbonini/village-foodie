@@ -171,6 +171,13 @@ function filesIn(dir) { const out = []; const w = d => { for (const f of fs.read
     for (const l of [...f, ...a].join('\n').split('\n').filter(l => /render errors/.test(l))) console.log(`  ⚠️ ${l}`)
   } else console.log('--reuse: the last F and A captures (node_modules/.cache/lp2-runs)')
   const BEFORE = load(BEFORE_DIR), F = load(path.join(RUNS, 'F')), A = load(path.join(RUNS, 'A'))
+  // demo-2 (30 October 2026): the demo views it changed on purpose or retired (scripts/_demo2-named.cjs).
+  const DEMO2 = require('./_demo2-named.cjs')
+  const demo2 = { listed: [], retired: [] }
+  for (const id of Object.keys(BEFORE)) {
+    const r = DEMO2.apply(id)
+    if (r.retired) { demo2.retired.push(id); delete BEFORE[id] } else if (r.listed && !(id in A && JSON.stringify(A[id]) === JSON.stringify(BEFORE[id]))) { demo2.listed.push(id); delete BEFORE[id] }
+  }
   const ids = Object.keys(BEFORE)
   const isUS = id => id.split('/').slice(2).join('/').split('|').includes('US')
   const area = id => id.split('/').slice(0, 2).join('/')
@@ -182,6 +189,8 @@ function filesIn(dir) { const out = []; const w = d => { for (const f of fs.read
   }
   head(`views: BEFORE ${ids.length} · F ${Object.keys(F).length} · A ${Object.keys(A).length} (GB ${ids.filter(i => !isUS(i)).length}, US ${ids.filter(isUS).length})`)
   for (const id of ids) { if (!(id in F)) t(`${id}: still rendered (F)`, false); if (!(id in A)) t(`${id}: still rendered (A)`, false) }
+  for (const id of demo2.retired) t(`${id}: RETIRED by demo-2 — no longer rendered (F and A)`, !(id in F) && !(id in A))
+  if (demo2.listed.length) console.log(`  ${demo2.listed.length} view(s) LISTED as changed on purpose by demo-2 (scripts/_demo2-named.cjs) and proved in scripts/demo-2.cjs`)
   const newViews = Object.keys(A).filter(id => !(id in BEFORE))
   if (newViews.length) console.log(`  ${newViews.length} view(s) exist only AFTER (not compared with BEFORE; the US-words and ticket checks still read them): ${newViews.slice(0, 10).join(', ')}${newViews.length > 10 ? ' …' : ''}`)
   const split = (() => { try { execFileSync(process.execPath, ['scripts/split-messages.cjs', '--check'], { cwd: REPO, stdio: 'pipe' }); return null } catch (e) { return String(e.stdout || e.message).trim() } })()

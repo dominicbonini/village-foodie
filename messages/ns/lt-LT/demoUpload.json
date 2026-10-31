@@ -53,5 +53,9 @@
     "or": "arba",
     "pasteLabel": "Įklijuoti meniu tekstą",
     "pastePlaceholder": "Įklijuokite meniu čia — patiekalų pavadinimus, aprašymus, kainas..."
-  }
+  },
+  "emailLabel": "Jūsų el. paštas",
+  "emailNote": "El. paštu atsiųsime jums nuorodą į jūsų demonstraciją ir galime susisiekti dėl HatchGrab nustatymo. <link>Privatumo politika</link>",
+  "marketing": "Kartkartėmis siųskite man HatchGrab patarimus ir naujienas",
+  "emailInvalid": "Įveskite galiojantį el. pašto adresą."
 }

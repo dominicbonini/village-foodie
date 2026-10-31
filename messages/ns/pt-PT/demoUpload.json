@@ -53,5 +53,9 @@
     "or": "ou",
     "pasteLabel": "Colar texto da ementa",
     "pastePlaceholder": "Cole aqui a sua ementa — nomes dos artigos, descrições, preços…"
-  }
+  },
+  "emailLabel": "O seu email",
+  "emailNote": "Vamos enviar-lhe por email um link para a sua demonstração e poderemos contactá-lo sobre a configuração do HatchGrab. <link>Política de privacidade</link>",
+  "marketing": "Enviem-me ocasionalmente dicas e novidades do HatchGrab",
+  "emailInvalid": "Introduza um endereço de email válido."
 }

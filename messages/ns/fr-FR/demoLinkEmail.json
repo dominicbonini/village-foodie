@@ -1,0 +1,8 @@
+{
+  "subject": "Votre démo HatchGrab — voici votre lien",
+  "heading": "Votre démo est prête",
+  "intro": "Voici le lien vers la démo que nous avons créée à partir de votre carte. Commandez comme l’un de vos clients, puis regardez la commande arriver sur votre écran cuisine. Aucune connexion nécessaire — il suffit de toucher le lien.",
+  "button": "Ouvrir ma démo",
+  "deletion": "Ceci est une démo, nous ne la conservons donc pas : nous la supprimerons, ainsi que la carte que vous avez importée, le {date}. Pour la garder plus longtemps, appuyez sur « Enregistrer ma carte » dans la démo et nous la conserverons 14 jours.",
+  "deletionSoon": "Ceci est une démo, nous ne la conservons donc pas : nous la supprimerons, ainsi que la carte que vous avez importée, au bout de 24 heures. Pour la garder plus longtemps, appuyez sur « Enregistrer ma carte » dans la démo et nous la conserverons 14 jours."
+}

@@ -228,7 +228,10 @@ const read = f => fs.readFileSync(path.join(REPO, f), 'utf8')
   head('6 · malformed record_findings')
   {
     const bad = L.validateRecordFindings({ findings: [{ field: 'price_of_everything', outcome: 'maybe' }], pages_read: [], notes: null, extra: 1 })
-    t('the validator rejects unknown fields, outcomes and properties, and missing keys', !bad.ok && bad.errors.some(e => /Unknown properties/.test(e)) && bad.errors.some(e => /field is not one/.test(e)) && bad.errors.some(e => /missing/.test(e)))
+    // ⚠️ RE-PINNED (competitor-check-8, 31 October 2026, docs/competitor-check-8-report.md): validation is PER FINDING — an
+    // unknown property is dropped (counted), a missing one reads as null; a call is still rejected when EVERY finding is
+    // unusable, which this one is (no valid field, no valid outcome).
+    t('the validator rejects a call whose only finding is unusable (an unknown field and outcome); the stray property is dropped, not the reason', !bad.ok && bad.errors.some(e => /field is not one/.test(e)) && bad.errors.some(e => /outcome is not one/.test(e)) && !bad.errors.some(e => /Unknown properties|extra/.test(e)))
     t('…and a quoted outcome with no quote', !L.validateRecordFindings({ findings: [FX.F({ outcome: 'changed', quote: null })], pages_read: [], notes: null }).ok)
     const calls = []
     const store = FX.memoryCheckerStore({ settings: () => settings, competitors: [FX.competitor(8), FX.competitor(9)] })
@@ -777,7 +780,9 @@ const read = f => fs.readFileSync(path.join(REPO, f), 'utf8')
     await L.runChecker(deps2(oddApi, odd), { mode: 'single', trigger: 'manual', competitor: 'Testtruck Ordering 042' })
     t('a finding about a feature that is not in the checked list is dropped', !odd.findings.some(f => f.field === 'feature'), odd.findings.map(f => f.field))
     t('validator: a feature finding needs its key and answer; feature_key only with field "feature"', !L.validateRecordFindings({ findings: [FX.F({ field: 'feature', outcome: 'changed', feature: 'yes', quote: 'q', quote_en: 'q', source_url: 'https://x.example/' })], pages_read: [], notes: null }).ok
-      && !L.validateRecordFindings({ findings: [FX.F({ field: 'plan', feature_key: 'kds', outcome: 'not_stated' })], pages_read: [], notes: null }).ok
+      // ⚠️ RE-PINNED (competitor-check-8, 31 October 2026): a feature_key on a non-feature finding is a STRAY field — dropped and
+      // counted, the finding kept (it used to reject the whole call: Clover · DE and Lightspeed · DE on 31 Oct).
+      && (v => v.ok && v.value.findings.length === 1 && v.value.findings[0].feature_key === null && v.value.ignored.strayFields === 1)(L.validateRecordFindings({ findings: [FX.F({ field: 'plan', feature_key: 'kds', outcome: 'not_stated' })], pages_read: [], notes: null }))
       && L.validateRecordFindings({ findings: [FX.F({ field: 'feature', feature_key: 'kds', feature: 'partial', note: 'add-on', outcome: 'changed', quote: 'q', quote_en: 'q', source_url: 'https://x.example/' })], pages_read: [], notes: null }).ok)
 
     // The extra cost per competitor of the longer list: the list in every extractor turn, a finding per feature, and a second
@@ -1069,7 +1074,7 @@ const read = f => fs.readFileSync(path.join(REPO, f), 'utf8')
         const groups = [...user.matchAll(/^Group (\d+)\. (.*)$/gm)].map(m => m[2])
         const turn = p.messages.filter(m => m.role === 'assistant').length
         const keysOf = g => ((/^Features: (.*)\.$/.exec(g) || [])[1] || '').split(', ').filter(Boolean)
-        const o = script(turn, { url, name, groups, keysOf, fetch: () => FX.fetchPair(url, pageOf(name)) })
+        const o = script(turn, { url, name, groups, keysOf, fetchPage: () => FX.fetchPair(url, pageOf(name)) })
         if (o.throw) throw o.throw
         return FX.msg(o.blocks, o.stop || 'tool_use', EX_USAGE)
       })()
@@ -1083,7 +1088,7 @@ const read = f => fs.readFileSync(path.join(REPO, f), 'utf8')
     const groups45 = L.findingGroups(FEATS)
     const seen1 = { calls: [], responses: [] }
     const st1 = storeWith(81, FEATS)
-    const [r1] = await L.runChecker(deps(scripted((turn, x) => ({ blocks: [...(turn === 0 ? x.fetch() : []), rec(turn === 0 ? [priceF(x.url)] : x.keysOf(x.groups[turn]).map(k => featF(k, x.url)), turn < x.groups.length - 1)] }), seen1), st1),
+    const [r1] = await L.runChecker(deps(scripted((turn, x) => ({ blocks: [...(turn === 0 ? x.fetchPage() : []), rec(turn === 0 ? [priceF(x.url)] : x.keysOf(x.groups[turn]).map(k => featF(k, x.url)), turn < x.groups.length - 1)] }), seen1), st1),
       { mode: 'single', trigger: 'manual', competitor: 'Testtruck Ordering 081' })
     const ex1 = seen1.calls.filter(p => !isVerifier(p))
     const feats1 = st1.findings.filter(f => f.field === 'feature')
@@ -1098,7 +1103,7 @@ const read = f => fs.readFileSync(path.join(REPO, f), 'utf8')
       seen1.calls.every(p => p.max_tokens === 128000) && L.maxOutputTokensFor('claude-haiku-5-5') === 128000 && L.maxOutputTokensFor('claude-unknown-1') === 32000)
     const over = storeWith(82); const seenO = { calls: [], responses: [] }
     over.settings = async () => ({ ...settings, maxOutputTokens: { 'claude-sonnet-5-5': 64000 } })
-    await L.runChecker(deps(scripted((turn, x) => ({ blocks: [...x.fetch(), rec([priceF(x.url)], false)] }), seenO), over), { mode: 'single', trigger: 'manual', competitor: 'Testtruck Ordering 082' })
+    await L.runChecker(deps(scripted((turn, x) => ({ blocks: [...x.fetchPage(), rec([priceF(x.url)], false)] }), seenO), over), { mode: 'single', trigger: 'manual', competitor: 'Testtruck Ordering 082' })
     t('…max_tokens comes from the per-model setting (max_output_tokens) when it names the model; bad entries are ignored',
       seenO.calls.length > 0 && seenO.calls.every(p => p.max_tokens === 64000)
       && JSON.stringify(L.maxOutputTokensOut({ 'claude-sonnet-5-5': 64000, 'claude-haiku-5-5': 'lots', tiny: 10, frac: 2048.5 })) === JSON.stringify({ 'claude-sonnet-5-5': 64000 })
@@ -1113,7 +1118,7 @@ const read = f => fs.readFileSync(path.join(REPO, f), 'utf8')
     const seen2 = { calls: [], responses: [] }
     const st2 = storeWith(84)
     const [r2] = await L.runChecker(deps(scripted((turn, x) => turn === 0
-      ? { blocks: [...x.fetch(), rec([priceF(x.url), featF('term', x.url)], true), rec([featF('preorder', x.url)], true)], stop: 'max_tokens' }
+      ? { blocks: [...x.fetchPage(), rec([priceF(x.url), featF('term', x.url)], true), rec([featF('preorder', x.url)], true)], stop: 'max_tokens' }
       : { blocks: [rec([priceF(x.url), featF('preorder', x.url), featF('whatsapp', x.url)], false)] }, seen2), st2), { mode: 'single', trigger: 'manual', competitor: 'Testtruck Ordering 084' })
     const ex2 = seen2.calls.filter(p => !isVerifier(p))
     const cont = ex2[1] && ex2[1].messages[2].content
@@ -1129,7 +1134,7 @@ const read = f => fs.readFileSync(path.join(REPO, f), 'utf8')
     const seen3 = { calls: [], responses: [] }
     const st3 = storeWith(85)
     const order = ['price', 'preorder', 'whatsapp', 'term']
-    const [r3] = await L.runChecker(deps(scripted((turn, x) => ({ blocks: [...(turn === 0 ? x.fetch() : []), rec([order[turn] === 'price' ? priceF(x.url) : featF(order[turn], x.url)], true), rec([featF('term', x.url)], true)], stop: 'max_tokens' }), seen3), st3),
+    const [r3] = await L.runChecker(deps(scripted((turn, x) => ({ blocks: [...(turn === 0 ? x.fetchPage() : []), rec([order[turn] === 'price' ? priceF(x.url) : featF(order[turn], x.url)], true), rec([featF('term', x.url)], true)], stop: 'max_tokens' }), seen3), st3),
       { mode: 'single', trigger: 'manual', competitor: 'Testtruck Ordering 085' })
     const run3 = st3.runs[0]
     t(`still cut off after ${L.MAX_CONTINUATIONS} continuations: the check fails — but the ${L.MAX_CONTINUATIONS + 1} complete calls' findings are KEPT (written, quote-checked, verified), the rest reported as failed`,
@@ -1137,8 +1142,10 @@ const read = f => fs.readFileSync(path.join(REPO, f), 'utf8')
       && /cut off \(max_tokens\) 3 times/.test(r3.failed[0].error) && /3 finding\(s\) from its complete calls kept; the rest was not recorded/.test(r3.failed[0].error)
       && JSON.stringify(st3.findings.map(keyOf).sort()) === JSON.stringify(['feature:preorder', 'feature:whatsapp', 'monthly_price:Starter']) && st3.findings.every(f => f.second_check === 'confirmed')
       && /cut off/.test(run3.notes), { failed: r3.failed, findings: st3.findings.map(keyOf) })
-    t('…and the competitor is NOT marked checked (it is tried again); the run is a red cross like any run where everything failed',
-      !st3.schedule.some(([id]) => id === 'c-085') && r3.stoppedReason === 'error' && L.exitCodeOf([r3]) === 1)
+    // ⚠️ RE-PINNED (competitor-check-8, 31 October 2026): an INCOMPLETE check is reported in the run, not a red cross — only a
+    // stage failing as a whole exits non-zero (the brief's item 5).
+    t('…and the competitor is NOT marked checked (it is tried again); the incomplete check is reported, not a red cross (stopped_reason done, exit 0)',
+      !st3.schedule.some(([id]) => id === 'c-085') && r3.stoppedReason === 'done' && L.exitCodeOf([r3]) === 0 && r3.failed[0].kind === 'incomplete')
     const want3 = seen3.responses.reduce((sum, r) => sum + costOfRes(r), 0)
     t('…its cost is every response\'s usage — the three cut-off answers and the verifier calls — in the run and its row (not $0)',
       want3 > 0 && Math.abs(r3.spend.usd - want3) < 1e-9 && run3.cost_usd === Number(want3.toFixed(4)) && run3.input_tokens === seen3.responses.reduce((s2, r) => s2 + r.usage.input_tokens, 0), { want: want3, run: run3.cost_usd })
@@ -1154,7 +1161,7 @@ const read = f => fs.readFileSync(path.join(REPO, f), 'utf8')
       r4.failed.length === 1 && r4.checked === 1 && failedCost > 0 && Math.abs(r4.spend.usd - all4) < 1e-9 && st4.runs[0].cost_usd === Number(all4.toFixed(4)), { failedCost, all: all4, run: st4.runs[0].cost_usd })
     const st5 = storeWith(88); const seen5 = { calls: [], responses: [] }
     const boom = Object.assign(new Error('overloaded_error: Overloaded'), { status: 529 })
-    const [r5] = await L.runChecker(deps(scripted((turn, x) => turn === 0 ? { blocks: [...x.fetch(), FX.toolUse('web_search_lookalike', {})] } : { throw: boom }, seen5), st5), { mode: 'single', trigger: 'manual', competitor: 'Testtruck Ordering 088' })
+    const [r5] = await L.runChecker(deps(scripted((turn, x) => turn === 0 ? { blocks: [...x.fetchPage(), FX.toolUse('web_search_lookalike', {})] } : { throw: boom }, seen5), st5), { mode: 'single', trigger: 'manual', competitor: 'Testtruck Ordering 088' })
     const want5 = seen5.responses.reduce((sum, r) => sum + costOfRes(r), 0)
     t('…an API error on the second call: the first call\'s usage still counts (run cost > 0, equal to the responses received), and towards the caps',
       r5.failed.length === 1 && /Overloaded/.test(r5.failed[0].error) && want5 > 0 && Math.abs(r5.spend.usd - want5) < 1e-9 && st5.runs[0].cost_usd === Number(want5.toFixed(4)))

@@ -262,7 +262,9 @@ const at = (o, k) => k.split('.').reduce((x, p) => (x == null ? undefined : x[p]
     has(fr, 'You are the seller', 'Code de la consommation', 'TVA', 'R. 412-12 to R. 412-16', 'in euros', 'Cartes Bancaires', 'consumer mediator', 'CNIL', 'law of England and Wales'))
   const legal = read('lib/legal.ts')
   const updated = /COUNTRY_TERMS_UPDATED = '([^']+)'/.exec(legal)?.[1], version = /TERMS_VERSION = '([^']+)'/.exec(legal)?.[1]
-  t('the page\'s date, its "Last updated" line and TERMS_VERSION agree (22 October 2026 / 2026-10-22)', updated === '22 October 2026' && terms.includes(`**Last updated:** ${updated}`) && version === '2026-10-22')
+  // ⚠️ RE-PINNED (demo-2b, 31 October 2026, docs/demo-2b-report.md): TERMS_VERSION moved on to '2026-10-31' with the Privacy
+  // Policy's demo section (the latest of the three documents' dates; scripts/_lp-demo2b.cjs).
+  t('the page\'s date and its "Last updated" line agree (22 October 2026); TERMS_VERSION is demo-2b\'s 2026-10-31', updated === '22 October 2026' && terms.includes(`**Last updated:** ${updated}`) && version === require('./_lp-demo2b.cjs').TERMS_VERSION_NEW)
 
   // ── --shots: the real /fr pages, the PDF and the confirmation email painted with the build's CSS (docs/france-1/) ──
   if (process.argv.includes('--shots')) {

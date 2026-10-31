@@ -1,0 +1,8 @@
+{
+  "subject": "Ihre HatchGrab-Demo – hier ist Ihr Link",
+  "heading": "Ihre Demo ist fertig",
+  "intro": "Hier ist der Link zu der Demo, die wir aus Ihrer Speisekarte erstellt haben. Bestellen Sie darüber wie einer Ihrer Kunden und sehen Sie dann zu, wie die Bestellung auf Ihrem Küchenmonitor eingeht. Keine Anmeldung nötig – einfach antippen.",
+  "button": "Meine Demo öffnen",
+  "deletion": "Das ist eine Demo, deshalb bewahren wir sie nicht auf: Wir löschen sie – und die Speisekarte, die Sie hochgeladen haben – am {date}. Wenn Sie mehr Zeit möchten, tippen Sie in der Demo auf „Speisekarte speichern“, dann bewahren wir sie 14 Tage lang auf.",
+  "deletionSoon": "Das ist eine Demo, deshalb bewahren wir sie nicht auf: Wir löschen sie – und die Speisekarte, die Sie hochgeladen haben – nach 24 Stunden. Wenn Sie mehr Zeit möchten, tippen Sie in der Demo auf „Speisekarte speichern“, dann bewahren wir sie 14 Tage lang auf."
+}

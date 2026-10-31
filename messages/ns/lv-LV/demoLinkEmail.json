@@ -1,0 +1,8 @@
+{
+  "subject": "Jūsu HatchGrab demo — lūk, jūsu saite",
+  "heading": "Jūsu demo versija ir gatava",
+  "intro": "Lūk, saite uz demo, ko izveidojām no jūsu ēdienkartes. Pasūtiet tajā kā viens no jūsu klientiem un vērojiet, kā pasūtījums pienāk jūsu virtuves ekrānā. Pieteikšanās nav vajadzīga — vienkārši pieskarieties saitei.",
+  "button": "Atvērt manu demo",
+  "deletion": "Šī ir demo versija, tāpēc mēs to neglabājam: mēs to dzēsīsim kopā ar jūsu augšupielādēto ēdienkarti šajā datumā: {date}. Ja vēlaties to saglabāt ilgāk, demo versijā nospiediet “Saglabāt manu ēdienkarti”, un mēs to glabāsim 14 dienas.",
+  "deletionSoon": "Šī ir demo versija, tāpēc mēs to neglabājam: mēs to dzēsīsim kopā ar jūsu augšupielādēto ēdienkarti pēc 24 stundām. Ja vēlaties to saglabāt ilgāk, demo versijā nospiediet “Saglabāt manu ēdienkarti”, un mēs to glabāsim 14 dienas."
+}

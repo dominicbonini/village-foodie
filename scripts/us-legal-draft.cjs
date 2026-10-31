@@ -26,7 +26,10 @@ const TERMS_DATE = '20 October 2026'
 // ⚠️ RE-PINNED (anz-terms, 22 October 2026): re-dated 22 October 2026 with the Australia and New Zealand sections
 // (docs/anz-terms-report.md; scripts/anz-terms.cjs proves them and that the rest is unchanged).
 const COUNTRY_TERMS_DATE = '22 October 2026'
-const DOC_DATE = { terms: TERMS_DATE, privacy: NEW_DATE, 'country-terms': COUNTRY_TERMS_DATE }
+// ⚠️ RE-PINNED (demo-2b, 31 October 2026, docs/demo-2b-report.md): the Privacy Policy gained the demo section and was
+// re-dated 31 October 2026 — applied ON TOP of the named changes below (scripts/_demo2b-privacy.cjs), and its date is that.
+const D2B = require('./_demo2b-privacy.cjs')
+const DOC_DATE = { terms: TERMS_DATE, privacy: D2B.NEW_DATE, 'country-terms': COUNTRY_TERMS_DATE }
 const CT = '[Country-specific terms](/country-terms)'
 
 // ⚠️ RE-PINNED (pricing-pages, Stage B, 20 October 2026): the card processor's name, as BEFORE's own terms spell it
@@ -91,6 +94,7 @@ const NAMED = {
     let expect = before(file)
     const bad = []
     for (const [from, to] of changes) { if (expect.split(from).length !== 2) bad.push(from.slice(0, 50)); expect = expect.replace(from, to) }
+    if (file === 'content/legal/privacy-policy.md') expect = D2B.apply(expect)   // demo-2b (above)
     t(`each of the ${changes.length} named changes applies to BEFORE exactly once`, bad.length === 0, bad.join(' · '))
     t('the document is BEFORE with exactly those changes — every other byte of the UK text is unchanged', read(file) === expect)
     t('it points to the Country-specific terms, as part of it', read(file).includes(CT) && /which forms part of (these terms|this policy)\./.test(read(file)))

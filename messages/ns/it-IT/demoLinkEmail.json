@@ -1,0 +1,8 @@
+{
+  "subject": "La tua demo HatchGrab — ecco il tuo link",
+  "heading": "La tua demo è pronta",
+  "intro": "Ecco il link alla demo che abbiamo creato dal tuo menu. Ordina come uno dei tuoi clienti, poi guarda l’ordine arrivare sul tuo monitor cucina. Nessun accesso richiesto — basta toccarlo.",
+  "button": "Apri la mia demo",
+  "deletion": "Questa è una demo, quindi non la conserviamo: la elimineremo, insieme al menu che hai caricato, il {date}. Se vuoi più tempo, premi «Salva il mio menu» nella demo e la conserveremo per 14 giorni.",
+  "deletionSoon": "Questa è una demo, quindi non la conserviamo: la elimineremo, insieme al menu che hai caricato, dopo 24 ore. Se vuoi più tempo, premi «Salva il mio menu» nella demo e la conserveremo per 14 giorni."
+}

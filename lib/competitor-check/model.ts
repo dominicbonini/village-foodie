@@ -76,8 +76,14 @@ export interface RawFinding {
   quote_en: string | null
   source_url: string | null
 }
-/** competitor-check-5: `more` — another record_findings call (the next group) follows; false (or absent) on the last. */
-export interface RecordFindingsInput { findings: RawFinding[]; pages_read: string[]; notes: string | null; more?: boolean }
+/** competitor-check-5: `more` — another record_findings call (the next group) follows; false (or absent) on the last.
+ *  competitor-check-8: `ignored` — what validation left out of the call's otherwise usable findings (logged, never stored). */
+export interface RecordFindingsInput { findings: RawFinding[]; pages_read: string[]; notes: string | null; more?: boolean; ignored?: Ignored }
+/** competitor-check-8: per call (summed over a conversation's calls) — stray fields dropped from findings that were kept, and
+ *  the findings that were unusable and left out ("findings[3]: …"). */
+export interface Ignored { strayFields: number; unusable: string[] }
+export const addIgnored = (a?: Ignored, b?: Ignored): Ignored | undefined =>
+  !a ? b : !b ? a : { strayFields: a.strayFields + b.strayFields, unusable: [...a.unusable, ...b.unusable] }
 
 // ── competitor-check-5 (30 Oct 2026): the answer is cut off (max_tokens) ───────────────────────────────────────────
 /** The longest quote kept: the shortest exact passage that proves the value. A longer one is cut back to a prefix (still an
@@ -113,6 +119,7 @@ export function mergeRecorded(a: RecordFindingsInput, b: RecordFindingsInput): R
     pages_read: [...new Set([...a.pages_read, ...b.pages_read])],
     notes: [a.notes, b.notes].filter(Boolean).join(' · ') || null,
     more: b.more,
+    ...(a.ignored || b.ignored ? { ignored: addIgnored(a.ignored, b.ignored) } : {}),
   }
 }
 
@@ -233,57 +240,85 @@ const numOrNull = (v: unknown) => v === null || (typeof v === 'number' && Number
 const inList = (v: unknown, list: readonly unknown[]) => list.includes(v)
 const isHttpUrl = (v: unknown) => typeof v === 'string' && v.length <= 600 && /^https?:\/\/[^\s/]+\.[^\s/]+/i.test(v)
 
-/** Validates the record_findings input. Returns the findings or a list of plain errors (sent back to the model once). */
-export function validateRecordFindings(input: unknown): { ok: true; value: RecordFindingsInput } | { ok: false; errors: string[] } {
+/** competitor-check-8: the fields that belong to one KIND of finding. On a finding of another kind they are stray — a
+ *  price finding carrying a feature_key — and are dropped (counted), the finding kept. (31 Oct: one stray feature_key used to
+ *  reject a whole call, twice, and with it Clover · DE's and Lightspeed · DE's checks.) */
+export const KIND_FIELDS: Readonly<Record<string, (r: Record<string, unknown>) => boolean>> = {
+  feature_key: r => r.field === 'feature',
+  feature: r => r.field === 'feature',
+  classification: r => r.field === 'classification' || r.outcome === 'classification',
+}
+
+/** Why one finding is unusable (empty: it is usable). Run after the stray fields are dropped. */
+function findingErrors(r: Record<string, unknown>, at: string): string[] {
   const errors: string[] = []
+  if (!inList(r.field, FIELDS)) errors.push(`${at}.field is not one of the fields.`)
+  if (!inList(r.outcome, OUTCOMES)) errors.push(`${at}.outcome is not one of the outcomes.`)
+  for (const k of ['plan_name', 'found_value', 'quote', 'quote_en']) if (!strOrNull(r[k])) errors.push(`${at}.${k} must be text (at most ${MAX_TEXT} characters) or null.`)
+  if (!strOrNull(r.note, 300)) errors.push(`${at}.note must be text (at most 300 characters) or null.`)
+  if (!(r.feature_key === null || (typeof r.feature_key === 'string' && /^[a-z][a-z0-9_]{1,30}$/.test(r.feature_key)))) errors.push(`${at}.feature_key must be a feature key from the list, or null.`)
+  if (!(r.country_code === null || (typeof r.country_code === 'string' && /^[A-Z]{2}$/.test(r.country_code)))) errors.push(`${at}.country_code must be two capital letters or null.`)
+  if (!(r.currency === null || (typeof r.currency === 'string' && /^[A-Z]{3}$/.test(r.currency)))) errors.push(`${at}.currency must be an ISO code (EUR, GBP…) or null.`)
+  for (const k of ['amount', 'percent']) if (!numOrNull(r[k])) errors.push(`${at}.${k} must be a non-negative number or null.`)
+  if (!inList(r.period, ['month', 'year', 'one_off', null])) errors.push(`${at}.period is invalid.`)
+  if (!inList(r.vat, ['incl', 'excl', 'unknown', null])) errors.push(`${at}.vat is invalid.`)
+  if (!inList(r.feature, [...FEATURE_ANSWERS, null])) errors.push(`${at}.feature is invalid.`)
+  if (!inList(r.classification, [...CLASSIFICATIONS, null])) errors.push(`${at}.classification is invalid.`)
+  for (const k of ['url', 'source_url']) if (!(r[k] === null || isHttpUrl(r[k]))) errors.push(`${at}.${k} must be an http(s) URL or null.`)
+  // competitor-check-5: the translation may be empty — the page is in English.
+  if (inList(r.outcome, QUOTED_OUTCOMES) && (!isStr(r.quote) || !String(r.quote).trim() || !isHttpUrl(r.source_url)))
+    errors.push(`${at}: a "${String(r.outcome)}" finding needs a verbatim quote and the page's URL.`)
+  if (r.field === 'feature' && (r.feature_key === null || (inList(r.outcome, ['changed', 'unchanged']) && r.feature === null)))
+    errors.push(`${at}: a feature finding needs "feature_key" (from the list) and "feature" (yes / no / partial / unknown).`)
+  if (r.outcome === 'classification' && r.classification === null) errors.push(`${at}: a classification finding needs "classification".`)
+  if (r.outcome === 'new_url' && r.url === null) errors.push(`${at}: a new_url finding needs "url".`)
+  if ((r.outcome === 'in_country' || r.outcome === 'not_in_country') !== (r.field === 'availability')) errors.push(`${at}: "in_country" and "not_in_country" go with the field "availability", and only they do.`)
+  return errors
+}
+
+/**
+ * Validates the record_findings input. competitor-check-8: PER FINDING, not per call.
+ *   • a property the schema does not have (on the call or a finding), a field that belongs to another kind of finding
+ *     (KIND_FIELDS), an unreadable pages_read / notes / more — dropped and counted (`ignored.strayFields`);
+ *   • a finding that is unusable (no valid field or outcome, a quoted outcome without its quote and URL, …) — left out, with
+ *     its reason in `ignored.unusable`; the rest of the call is kept;
+ * The call is rejected (sent back once to fix, as before) only when it has no usable shape — not an object, no findings
+ * array, more than 200 findings — or when it had findings and EVERY one was unusable.
+ */
+export function validateRecordFindings(input: unknown): { ok: true; value: RecordFindingsInput } | { ok: false; errors: string[] } {
   if (!input || typeof input !== 'object' || Array.isArray(input)) return { ok: false, errors: ['The input must be an object.'] }
   // competitor-check-4: the sentinels become null first; everything below is the same check as before.
   const o = fromWireFindings(input as Record<string, unknown>)
-  const extra = Object.keys(o).filter(k => !['findings', 'pages_read', 'notes', 'more'].includes(k))
-  if (extra.length) errors.push(`Unknown properties: ${extra.join(', ')}.`)
-  if (!Array.isArray(o.findings)) return { ok: false, errors: [...errors, '"findings" must be an array.'] }
-  if (o.findings.length > 200) errors.push('Too many findings (at most 200).')
-  if (!Array.isArray(o.pages_read) || !o.pages_read.every(p => isStr(p, 600))) errors.push('"pages_read" must be a list of URLs.')
-  if (!strOrNull(o.notes)) errors.push('"notes" must be text or null.')
-  if (!(o.more === undefined || typeof o.more === 'boolean')) errors.push('"more" must be true or false.')
+  let strayFields = 0
+  for (const k of Object.keys(o)) if (!['findings', 'pages_read', 'notes', 'more'].includes(k)) { delete o[k]; strayFields++ }
+  if (!Array.isArray(o.findings)) return { ok: false, errors: ['"findings" must be an array.'] }
+  if (o.findings.length > 200) return { ok: false, errors: ['Too many findings (at most 200).'] }
+  if (!Array.isArray(o.pages_read)) { o.pages_read = []; strayFields++ }
+  else if (!o.pages_read.every(p => isStr(p, 600))) { o.pages_read = o.pages_read.filter(p => isStr(p, 600)); strayFields++ }
+  if (!strOrNull(o.notes)) { o.notes = null; strayFields++ }
+  if (!(o.more === undefined || typeof o.more === 'boolean')) { delete o.more; strayFields++ }
   const KEYS = Object.keys(RECORD_FINDINGS_TOOL.input_schema.properties.findings.items.properties)
+  const kept: RawFinding[] = [], unusable: string[] = []
   o.findings.forEach((f, i) => {
     const at = `findings[${i}]`
-    if (!f || typeof f !== 'object' || Array.isArray(f)) { errors.push(`${at} must be an object.`); return }
+    if (!f || typeof f !== 'object' || Array.isArray(f)) { unusable.push(`${at} must be an object.`); return }
     const r = f as Record<string, unknown>
-    const unknown = Object.keys(r).filter(k => !KEYS.includes(k)); if (unknown.length) errors.push(`${at}: unknown properties ${unknown.join(', ')}.`)
-    const missing = KEYS.filter(k => !(k in r)); if (missing.length) errors.push(`${at}: missing ${missing.join(', ')}.`)
-    if (!inList(r.field, FIELDS)) errors.push(`${at}.field is not one of the fields.`)
-    if (!inList(r.outcome, OUTCOMES)) errors.push(`${at}.outcome is not one of the outcomes.`)
-    for (const k of ['plan_name', 'found_value', 'quote', 'quote_en']) if (!strOrNull(r[k])) errors.push(`${at}.${k} must be text (at most ${MAX_TEXT} characters) or null.`)
-    if (!strOrNull(r.note, 300)) errors.push(`${at}.note must be text (at most 300 characters) or null.`)
-    if (!(r.feature_key === null || (typeof r.feature_key === 'string' && /^[a-z][a-z0-9_]{1,30}$/.test(r.feature_key)))) errors.push(`${at}.feature_key must be a feature key from the list, or null.`)
-    if (!(r.country_code === null || (typeof r.country_code === 'string' && /^[A-Z]{2}$/.test(r.country_code)))) errors.push(`${at}.country_code must be two capital letters or null.`)
-    if (!(r.currency === null || (typeof r.currency === 'string' && /^[A-Z]{3}$/.test(r.currency)))) errors.push(`${at}.currency must be an ISO code (EUR, GBP…) or null.`)
-    for (const k of ['amount', 'percent']) if (!numOrNull(r[k])) errors.push(`${at}.${k} must be a non-negative number or null.`)
-    if (!inList(r.period, ['month', 'year', 'one_off', null])) errors.push(`${at}.period is invalid.`)
-    if (!inList(r.vat, ['incl', 'excl', 'unknown', null])) errors.push(`${at}.vat is invalid.`)
-    if (!inList(r.feature, [...FEATURE_ANSWERS, null])) errors.push(`${at}.feature is invalid.`)
-    if (!inList(r.classification, [...CLASSIFICATIONS, null])) errors.push(`${at}.classification is invalid.`)
-    for (const k of ['url', 'source_url']) if (!(r[k] === null || isHttpUrl(r[k]))) errors.push(`${at}.${k} must be an http(s) URL or null.`)
-    // competitor-check-5: the translation may be empty — the page is in English.
-    if (inList(r.outcome, QUOTED_OUTCOMES) && (!isStr(r.quote) || !String(r.quote).trim() || !isHttpUrl(r.source_url)))
-      errors.push(`${at}: a "${String(r.outcome)}" finding needs a verbatim quote and the page's URL.`)
-    if (r.field === 'feature' && (r.feature_key === null || (inList(r.outcome, ['changed', 'unchanged']) && r.feature === null)))
-      errors.push(`${at}: a feature finding needs "feature_key" (from the list) and "feature" (yes / no / partial / unknown).`)
-    if (r.field !== 'feature' && r.feature_key !== null) errors.push(`${at}: "feature_key" goes with the field "feature" only.`)
-    if (r.outcome === 'classification' && r.classification === null) errors.push(`${at}: a classification finding needs "classification".`)
-    if (r.outcome === 'new_url' && r.url === null) errors.push(`${at}: a new_url finding needs "url".`)
-    if ((r.outcome === 'in_country' || r.outcome === 'not_in_country') !== (r.field === 'availability')) errors.push(`${at}: "in_country" and "not_in_country" go with the field "availability", and only they do.`)
+    for (const k of Object.keys(r)) if (!KEYS.includes(k)) { delete r[k]; strayFields++ }
+    for (const k of KEYS) if (!(k in r)) r[k] = null   // a missing property reads as "does not apply"; the checks below decide
+    for (const [k, belongs] of Object.entries(KIND_FIELDS)) if (r[k] !== null && !belongs(r)) { r[k] = null; strayFields++ }
+    const errs = findingErrors(r, at)
+    if (errs.length) unusable.push(errs.join(' ')); else kept.push(r as unknown as RawFinding)
   })
-  if (errors.length) return { ok: false, errors }
+  if (o.findings.length > 0 && kept.length === 0) return { ok: false, errors: unusable }
   // competitor-check-5: a quote longer than QUOTE_MAX is cut back to a prefix (an exact substring still); a "translation"
   // that only repeats the quote (an English page) is empty.
-  for (const r of o.findings as RawFinding[]) {
+  for (const r of kept) {
     r.quote_en = r.quote_en !== null && r.quote !== null && squash(r.quote_en) === squash(r.quote) ? null : capQuote(r.quote_en, QUOTE_MAX + 100)
     r.quote = capQuote(r.quote)
   }
-  return { ok: true, value: o as unknown as RecordFindingsInput }
+  const value = { ...(o as unknown as RecordFindingsInput), findings: kept }
+  if (strayFields || unusable.length) value.ignored = { strayFields, unusable }
+  return { ok: true, value }
 }
 
 export function validateRecordVerdict(input: unknown): RecordVerdictInput | null {

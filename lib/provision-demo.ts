@@ -12,7 +12,7 @@
 //   buildDemoAssumptions           → the wizard answers, incl. categoryPrep         [lib/demo-assumptions]
 //   commitMenu                     → the one write of the menu                      [lib/menu-commit]
 //   provisionDemoEvent             → live event + slot_capacity + occupancy rebuild [lib/provision-demo-event]
-//   seedDemoOrders                 → ~10 real orders, customer_email NULL           [lib/seed-demo-orders]
+//   (no seeded orders since demo-2 — the board opens empty; lib/seed-demo-orders is no longer called)
 //
 // ORDERING MATTERS: menu BEFORE event. Seeding reads committed menu items to build realistic tickets, and
 // the occupancy rebuild must run after the orders exist — so the event step (which ends in that rebuild)
@@ -31,7 +31,6 @@ import { commitMenu, clearMenu, type CommitMenuResult } from '@/lib/menu-commit'
 import { buildDemoAssumptions } from '@/lib/demo-assumptions'
 import type { DemoKitchen } from '@/lib/demo-kitchen'
 import { provisionDemoEvent, type DemoEvent } from '@/lib/provision-demo-event'
-import { seedDemoOrders } from '@/lib/seed-demo-orders'
 import { rebuildProductionSlotUsage } from '@/lib/slot-bookings'
 import { createDemoSession, touchDemoSession, DemoSessionError, rearmDemoFirstOpen } from '@/lib/demo-session'
 import { copyDemoLogo } from '@/lib/demo-logo'
@@ -355,37 +354,12 @@ export async function provisionDemo(
       `Demo event creation failed: ${err instanceof Error ? err.message : 'unknown'}`, truckId)
   }
 
-  // ── 5. Seeded orders ──────────────────────────────────────────────────────────────────────────────
-  let seededOrders = 0
-  try {
-    const seeded = await seedDemoOrders(supabase, {
-      truckId, eventId: event.id, eventDate: event.event_date,
-      startTime: event.start_time, endTime: event.end_time,
-      capacity: DEMO_MAINS_BATCH,
-      // Floor the first collection to now+10 — demoEventWindow's half-hour start can be ≤29 min in the
-      // past, and without this the front-weighted board would open with already-late orders.
-      now,
-    })
-    seededOrders = seeded.inserted
-    if (seeded.skippedNoMenu) warnings.push('No menu items to seed orders from — board left empty.')
-    // 🔴 THE CAPACITY POST-CONDITION SPEAKS THROUGH HERE. seedDemoOrders now checks its own board with
-    // the REAL breach detector and sheds orders rather than ship one that is over capacity; anything it
-    // could not clear (or could not check) arrives as a warning naming the slot, the category and the
-    // counts. Never swallowed — these reach the admin response.
-    if (seeded.warnings.length) warnings.push(...seeded.warnings)
-
-    // Re-run the occupancy rebuild now that the orders exist. provisionDemoEvent ran it against an empty
-    // board; the traffic lights read production_slot_usage, so without this second pass the seeded orders
-    // would sit on the board without occupying anything and every slot would show green — the demo would
-    // look busy while claiming it had infinite capacity.
-    if (seeded.inserted > 0) {
-      await rebuildProductionSlotUsage(supabase, truckId, event.event_date)
-    }
-  } catch (err) {
-    // Non-fatal: a demo with a menu, an event and an empty board is still playable — they can place their
-    // own test order. Losing the whole demo over decoration would be the wrong trade.
-    warnings.push(`Order seeding failed (non-fatal): ${err instanceof Error ? err.message : 'unknown'}`)
-  }
+  // ── 5. NO SEEDED ORDERS (demo-2, 30 October 2026) ─────────────────────────────────────────────────
+  // The board used to open with up to 80 example orders (lib/seed-demo-orders). It now opens EMPTY: the visitor orders
+  // from their own menu as a customer and watches THAT order arrive in the kitchen (docs/demo-2-report.md). The event,
+  // its slot grid and the occupancy rebuild above all still run, so the order page offers real collection times.
+  // `seededOrders` stays in the result (always 0) so every caller and the admin modal keep their shape.
+  const seededOrders = 0
 
   return { truckId, slug, dashboardToken, vanId, event, menu, seededOrders, warnings, publicRef, logoStoragePath, logoNote }
 }

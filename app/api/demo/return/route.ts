@@ -2,9 +2,10 @@
 // The return link from the saved-demo email (spec Stage 4).
 //
 // It CANNOT just point at /dashboard/<token>: by the time they click, the original event is in the past —
-// closed or simply over — so they'd land on a dead board with no orders and conclude the product doesn't
-// work. So the link re-provisions first: a fresh event (now → next hour +2h), fresh slot grid, freshly
-// seeded orders, THEN redirect.
+// closed or simply over — so they'd land on a dead board where no order can be placed and conclude the product
+// doesn't work. So the link re-provisions first: a fresh event (now → next hour +2h) and a fresh slot grid, THEN
+// redirect. ⚠️ demo-2 (30 October 2026): the new service starts EMPTY — no orders are seeded on a build or any
+// restart any more (lib/provision-demo.ts, lib/demo-restart.ts); the demo's orders are the ones the visitor places.
 //
 // Re-provisioning runs the SAME provisionDemo path as first-run, via `existingTruckId` → the
 // `replaceExisting` branch in lib/provision-demo-event. That branch deletes the previous same-day event

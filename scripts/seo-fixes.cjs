@@ -217,7 +217,11 @@ export function permanentRedirect(to) { const e = new Error('redirect'); e.to = 
   t(`/uk lastmod = the latest of the copy date, GB's plan data and its settings row (${iso(ukE.lastModified)})`, iso(ukE.lastModified) === latest(copy, PLAN_AT, settingsAt('GB')), [iso(ukE.lastModified), copy, PLAN_AT, settingsAt('GB')])
   t(`/us lastmod uses the US plan_prices date, not GB's (${iso(usE.lastModified)})`, iso(usE.lastModified) === latest(copy, PRICE_US_AT, '2026-10-19T12:00:00.000Z', '2026-10-17T08:00:00.000Z', settingsAt('US')))
   const lp = /export const PRIVACY_UPDATED = '([^']+)'/.exec(read('lib/legal.ts'))[1]
-  t(`legal lastmod = the document's own "Last updated" (${lp})`, iso(smOff.find(e => e.url.endsWith('/privacy')).lastModified).startsWith('2026-10-19'))
+  // ⚠️ RE-PINNED (demo-2b, 31 October 2026, docs/demo-2b-report.md): the privacy date moved (the demo section), so the
+  // expected day is read from PRIVACY_UPDATED itself instead of the literal 2026-10-19 — the check is still "lastmod is
+  // the document's own date", which is what its label always said.
+  const lpIso = (([d, m, y]) => `${y}-${String(['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'].indexOf(m) + 1).padStart(2, '0')}-${d.padStart(2, '0')}`)(lp.split(' '))
+  t(`legal lastmod = the document's own "Last updated" (${lp})`, iso(smOff.find(e => e.url.endsWith('/privacy')).lastModified).startsWith(lpIso), [iso(smOff.find(e => e.url.endsWith('/privacy')).lastModified), lpIso])
   t('/contact has no lastmod (no content date exists) rather than request time', !('lastModified' in smOff.find(e => e.url.endsWith('/contact'))))
   t('no lastmod is the request time', smOn.every(e => !e.lastModified || iso(e.lastModified) !== new Date().toISOString()))
   t('country pages carry xhtml alternates — the same set as their <head> (US on: en-GB, en-US, x-default)', JSON.stringify(ukE.alternates?.languages) === JSON.stringify({ 'en-GB': 'https://www.hatchgrab.com/uk', 'en-US': 'https://www.hatchgrab.com/us', 'x-default': 'https://www.hatchgrab.com/' }), ukE.alternates)

@@ -53,5 +53,9 @@
     "or": "tai",
     "pasteLabel": "Liitä ruokalistan teksti",
     "pastePlaceholder": "Liitä ruokalistasi tähän — tuotteiden nimet, kuvaukset, hinnat..."
-  }
+  },
+  "emailLabel": "Sähköpostisi",
+  "emailNote": "Lähetämme sinulle sähköpostitse linkin demoosi ja saatamme ottaa sinuun yhteyttä HatchGrabin käyttöönotosta. <link>Tietosuojaseloste</link>",
+  "marketing": "Lähetä minulle silloin tällöin vinkkejä ja uutisia HatchGrabilta",
+  "emailInvalid": "Anna kelvollinen sähköpostiosoite."
 }

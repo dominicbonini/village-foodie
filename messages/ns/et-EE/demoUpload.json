@@ -53,5 +53,9 @@
     "or": "või",
     "pasteLabel": "Kleebi menüü tekst",
     "pastePlaceholder": "Kleebi oma menüü siia — toodete nimed, kirjeldused, hinnad…"
-  }
+  },
+  "emailLabel": "Sinu e-post",
+  "emailNote": "Saadame sulle e-kirjaga lingi sinu demole ja võime sinuga ühendust võtta, et HatchGrabi seadistada. <link>Privaatsuspoliitika</link>",
+  "marketing": "Saada mulle aeg-ajalt HatchGrabi nõuandeid ja uudiseid",
+  "emailInvalid": "Palun sisesta kehtiv e-posti aadress."
 }

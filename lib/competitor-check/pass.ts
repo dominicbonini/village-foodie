@@ -22,11 +22,11 @@
 // 🔴 FINDINGS are written exactly as the routine and deep checks write them (Dominic accepts each); pass_state records each
 // competitor and country done, so a stopped pass resumes where it stopped. The daily and monthly caps cover everything.
 import type Anthropic from '@anthropic-ai/sdk'
-import { RECORD_FINDINGS_TOOL, APP_STORE_HOSTS, validateRecordFindings, maxOutputTokensFor, type Classification, type RecordFindingsInput } from './model'
+import { RECORD_FINDINGS_TOOL, APP_STORE_HOSTS, validateRecordFindings, maxOutputTokensFor, type Classification, type RecordFindingsInput, type Ignored } from './model'
 import { EXTRACTOR_SYSTEM, passFeatureBlock, passCompetitorBlock, classifyMessage, type CheckFeature } from './prompts'
 import { addSpend, ZERO_SPEND, budgetStop, passTargets, type PassItem, type PassState, type Spend } from './core'
 import {
-  converse, rowsFrom, secondCheck, domainsOf, answersFor, loginFailure, FINDING_GROUPS, MAX_CONTINUATIONS,
+  converse, rowsFrom, secondCheck, domainsOf, answersFor, loginFailure, allFailedOutright, FINDING_GROUPS, MAX_CONTINUATIONS,
   type CheckerDeps, type CheckSettings, type CompetitorForCheck, type FindingRow, type RunReport, type Meter, type Recorded,
 } from './checker'
 
@@ -55,6 +55,8 @@ export interface PassBatch { id: string; submittedAt: string; items: PassBatchIt
 export interface PassSettings {
   extractorModel: string; verifierModel: string; perDay: number; requestedAt: string | null; country: string | null
   maxFetches: number; maxSearches: number; maxPageTokens: number; batch: PassBatch | null
+  /** competitor-check-8 (20261053): the failed batches whose items' errors have been logged (null: the column is missing). */
+  reread?: string[] | null
 }
 export const DEFAULT_PASS: PassSettings = { extractorModel: 'claude-haiku-5-5', verifierModel: 'claude-haiku-5-5', perDay: 40, requestedAt: null, country: null,
   maxFetches: 3, maxSearches: 1, maxPageTokens: 6000, batch: null }
@@ -63,6 +65,30 @@ export interface BatchApi {
   create(requests: { custom_id: string; params: Row }[]): Promise<{ id: string }>
   retrieve(id: string): Promise<{ processing_status: string }>
   results(id: string): Promise<AsyncIterable<{ custom_id: string; result: { type: string; message?: Anthropic.Beta.BetaMessage; error?: { error?: { type?: string; message?: string } } } }>>
+  /** competitor-check-8: the workspace's batches, newest first (to re-read a failed one collected before its errors were logged). */
+  list?(): AsyncIterable<BatchSummary>
+}
+export interface BatchSummary { id: string; processing_status: string; created_at: string; request_counts: { processing: number; succeeded: number; errored: number; canceled: number; expired: number } }
+/** competitor-check-8: a batch's results stay readable for 29 days (https://platform.claude.com/docs/en/build-with-claude/batch-processing). */
+export const BATCH_RESULTS_DAYS = 29
+/** competitor-check-8: how many failed items are logged in full; the rest are counted by error type. */
+export const FAILED_ITEMS_SHOWN = 5
+
+/** competitor-check-8: one failed batch item's reason — the API's error type and message, or the result type (expired,
+ *  canceled). */
+export function itemError(result: { type: string; error?: { error?: { type?: string; message?: string } } }): { type: string; message: string } {
+  const e = result.error?.error
+  return e ? { type: e.type ?? 'error', message: e.message ?? '' } : { type: result.type, message: result.type === 'expired' ? 'the batch reached its 24-hour limit before this request ran' : '' }
+}
+/** competitor-check-8: the failed items of a batch, logged so a failure is never blind again — the first FAILED_ITEMS_SHOWN in
+ *  full, then a count by error type. */
+export function logBatchFailures(log: (line: string) => void, batchId: string, total: number, fails: { name: string; type: string; message: string }[], what = 'collected') {
+  if (!fails.length) return
+  log(`Quick pass: batch ${batchId} (${what}) — ${fails.length} of ${total} item${total === 1 ? '' : 's'} failed:`)
+  for (const f of fails.slice(0, FAILED_ITEMS_SHOWN)) log(`  ${f.name}: ${f.type}${f.message ? ` — ${f.message}` : ''}`)
+  const byType = new Map<string, number>()
+  for (const f of fails) byType.set(f.type, (byType.get(f.type) ?? 0) + 1)
+  log(`  ${fails.length > FAILED_ITEMS_SHOWN ? `… and ${fails.length - FAILED_ITEMS_SHOWN} more · ` : ''}by error type: ${[...byType].map(([k, n]) => `${k} × ${n}`).join(', ')}`)
 }
 
 /** Batch when the docs allow it and the checker has the batch API; never for a dry run (it would bill a whole batch). */
@@ -131,7 +157,7 @@ export function classOf(rows: FindingRow[], c: Pick<CompetitorForCheck, 'focus'>
 /** One item: the read (from a batch result, or asked now), the rows, the second check. competitor-check-5: a cut-off answer
  *  is continued; if it still cannot finish, its complete findings are kept and `incomplete` says why. */
 export async function processPassItem(deps: CheckerDeps, s: CheckSettings, item: PassItem<CompetitorForCheck>, runId: string, seed?: Anthropic.Beta.BetaMessage):
-  Promise<{ findings: FindingRow[]; spend: Spend; dropped: number; klass: 'relevant' | 'not_relevant' | 'unclear' | null; incomplete: string | null }> {
+  Promise<{ findings: FindingRow[]; spend: Spend; dropped: number; klass: 'relevant' | 'not_relevant' | 'unclear' | null; incomplete: string | null; ignored?: Ignored }> {
   const c = item.row
   const r = passRequest(c, item, s, deps.now().toISOString().slice(0, 10))
   let ex: { value: RecordFindingsInput; contents: unknown[][]; spend: Spend }, incomplete: string | null = null
@@ -151,7 +177,7 @@ export async function processPassItem(deps: CheckerDeps, s: CheckSettings, item:
   const verify = item.kind === 'classify' ? ZERO_SPEND
     : await secondCheck(deps, { model: s.pass.verifierModel, prices: s.prices, pageTokens: s.pass.maxPageTokens, allowed: r.allowed, maxInputTokens: PRICE_STEP_TOKENS,
       maxTokens: maxOutputTokensFor(s.pass.verifierModel, s.maxOutputTokens) }, c, findings, needsSecondCheck)
-  return { findings, spend: addSpend(ex.spend, verify), dropped: dropped + (all.length - findings.length), klass: item.kind === 'classify' && !incomplete ? classOf(findings, c) : null, incomplete }
+  return { findings, spend: addSpend(ex.spend, verify), dropped: dropped + (all.length - findings.length), klass: item.kind === 'classify' && !incomplete ? classOf(findings, c) : null, incomplete, ignored: ex.value.ignored }
 }
 
 /** pass_state after an item: the classification, or the country done. */
@@ -172,6 +198,8 @@ export async function runPass(deps: CheckerDeps, s: CheckSettings, all: Competit
   const byId = new Map(all.map(c => [c.id, c]))
   const transport = passTransport(deps)
   let inFlight = p.batch
+  // ── 0 · competitor-check-8: re-read and log any failed batch collected before its errors were logged ──
+  if (transport === 'batch' && deps.batch) await rereadFailedBatches(deps, s, byId, inFlight?.id ?? null)
   // ── 1 · collect the batch in flight ──
   if (transport === 'batch' && inFlight && deps.batch) {
     const st = await deps.batch.retrieve(inFlight.id)
@@ -221,10 +249,12 @@ async function saveRun(deps: CheckerDeps, runId: string, r: RunReport, finished:
 async function writeItem(deps: CheckerDeps, item: PassItem<CompetitorForCheck>, out: Awaited<ReturnType<typeof processPassItem>>, r: RunReport, meter: Meter) {
   const name = `${item.row.name}${item.country ? ` · ${item.country}` : ''}`
   r.findings.push(...out.findings)
-  if (out.incomplete) r.failed.push({ name, error: out.incomplete })
+  if (out.incomplete) r.failed.push({ name, error: out.incomplete, kind: 'incomplete' })
   else { r.checked++; r.checkedIds!.push(item.row.id) }
   r.spend = addSpend(r.spend, meter.spend)
-  deps.log(`  ${item.row.name}${item.country ? ` · ${item.country}` : ' · classification'}: ${out.incomplete ? 'INCOMPLETE — ' : ''}${out.findings.length} finding(s)${out.klass ? ` (${out.klass})` : ''} · $${meter.spend.usd.toFixed(4)}`)
+  const ign = out.ignored
+  deps.log(`  ${item.row.name}${item.country ? ` · ${item.country}` : ' · classification'}: ${out.incomplete ? 'INCOMPLETE — ' : ''}${out.findings.length} finding(s)${out.klass ? ` (${out.klass})` : ''}`
+    + `${ign?.strayFields ? `, ${ign.strayFields} stray field${ign.strayFields === 1 ? '' : 's'} ignored` : ''}${ign?.unusable.length ? `, ${ign.unusable.length} unusable finding${ign.unusable.length === 1 ? '' : 's'} left out` : ''} · $${meter.spend.usd.toFixed(4)}`)
   if (deps.dryRun) return
   if (out.findings.length) await deps.store.insertFindings(out.findings)
   if (out.incomplete) return
@@ -241,14 +271,18 @@ async function writeItem(deps: CheckerDeps, item: PassItem<CompetitorForCheck>, 
 async function collectBatch(deps: CheckerDeps, s: CheckSettings, b: PassBatch, byId: Map<string, CompetitorForCheck>, trigger: 'schedule' | 'manual'): Promise<RunReport> {
   const { runId, report } = await startRun(deps, trigger)
   const items = new Map(b.items.map(i => [i.customId, i]))
+  // competitor-check-8: every failed item's reason is LOGGED (first 5 in full, then counted by type), not only stored.
+  const itemFails: { name: string; type: string; message: string }[] = []
   for await (const res of await deps.batch!.results(b.id)) {
     const it = items.get(res.custom_id)
     const row = it ? byId.get(it.competitorId) : undefined
     if (!it || !row) continue
     const item = (it.kind === 'classify' ? { kind: 'classify', row, country: null, done: false } : { kind: 'check', row, country: it.country!, done: false }) as PassItem<CompetitorForCheck>
     if (res.result.type !== 'succeeded' || !res.result.message) {
-      const why = res.result.error?.error ? `${res.result.error.error.type ?? 'error'}: ${res.result.error.error.message ?? ''}`.trim() : res.result.type
-      report.failed.push({ name: `${row.name}${it.country ? ` · ${it.country}` : ''}`, error: `batch item ${res.result.type} (${why}) — sent again in the next share` })
+      const err = itemError(res.result)
+      const name = `${row.name}${it.country ? ` · ${it.country}` : ''}`
+      itemFails.push({ name, ...err })
+      report.failed.push({ name, error: `batch item ${res.result.type} (${`${err.type}: ${err.message}`.trim()}) — sent again in the next share`, kind: 'error' })
       continue
     }
     const meter: Meter = { spend: ZERO_SPEND }
@@ -256,13 +290,47 @@ async function collectBatch(deps: CheckerDeps, s: CheckSettings, b: PassBatch, b
     catch (e) {
       report.spend = addSpend(report.spend, meter.spend)   // competitor-check-5: a failed item's calls cost too
       if (loginFailure(e)) { report.stoppedReason = 'error'; report.error = `${loginFailure(e)} — the pass stopped.`; break }
-      report.failed.push({ name: `${row.name}${it.country ? ` · ${it.country}` : ''}`, error: e instanceof Error ? e.message : String(e) })
+      report.failed.push({ name: `${row.name}${it.country ? ` · ${it.country}` : ''}`, error: e instanceof Error ? e.message : String(e), kind: 'error' })
     }
     await saveRun(deps, runId, report, false)
   }
-  if (report.stoppedReason === 'done' && report.checked === 0 && report.failed.length > 0) { report.stoppedReason = 'error'; report.error = `Every item of the batch failed (${report.failed.length}).` }
+  logBatchFailures(deps.log, b.id, b.items.length, itemFails)
+  // competitor-check-8: logged now, so never re-read later.
+  if (!deps.dryRun && s.pass.reread && deps.store.setPassReread) await deps.store.setPassReread([...s.pass.reread, b.id].slice(-50))
+  if (report.stoppedReason === 'done' && allFailedOutright(report)) { report.stoppedReason = 'error'; report.error = `Every item of the batch failed (${report.failed.length}).` }
   await saveRun(deps, runId, report, true)
   return report
+}
+
+/**
+ * competitor-check-8: a batch collected before its items' errors were logged (31 Oct: "Every item of the batch failed (40)",
+ * no reason printed) is re-read ONCE while its results last (BATCH_RESULTS_DAYS) and its failed items are logged the same way.
+ * It READS ONLY: no run row, no finding, no pass_state, no cost — an errored item is not billed, and a succeeded one was
+ * already processed when the batch was collected. Needs the API's batch list and 20261053's pass_batches_reread (which
+ * records each batch re-read, so it is logged once); without them it says so in one line.
+ */
+export async function rereadFailedBatches(deps: CheckerDeps, s: CheckSettings, byId: Map<string, CompetitorForCheck>, inFlightId: string | null) {
+  if (!deps.batch?.list) return
+  if (!s.pass.reread || !deps.store.setPassReread) { deps.log('Quick pass: failed batches are not re-read until 20261053 runs (pass_batches_reread).'); return }
+  const since = deps.now().getTime() - BATCH_RESULTS_DAYS * 86_400_000
+  const done = new Set(s.pass.reread)
+  const add: string[] = []
+  let seen = 0
+  for await (const b of deps.batch.list()) {
+    if (++seen > 50 || Date.parse(b.created_at) < since) break
+    const n = b.request_counts, failed = n.errored + n.canceled + n.expired
+    if (b.id === inFlightId || done.has(b.id) || b.processing_status !== 'ended' || !failed) continue
+    const fails: { name: string; type: string; message: string }[] = []
+    for await (const res of await deps.batch.results(b.id)) {
+      if (res.result.type === 'succeeded') continue
+      const [cid, cc] = [res.custom_id.replace(/_[A-Za-z]+$/, ''), (/_([A-Z]{2})$/.exec(res.custom_id) ?? [])[1]]
+      const row = byId.get(cid)
+      fails.push({ name: row ? `${row.name}${cc ? ` · ${cc}` : ''}` : res.custom_id, ...itemError(res.result) })
+    }
+    logBatchFailures(deps.log, b.id, n.processing + n.succeeded + failed, fails, `re-read — collected earlier, $0, nothing written`)
+    add.push(b.id)
+  }
+  if (add.length && !deps.dryRun) await deps.store.setPassReread([...s.pass.reread, ...add].slice(-50))
 }
 
 /** One by one: the budget guard before each item (as runOne), the same processing, written as it goes. */
@@ -282,11 +350,11 @@ async function runPassSync(deps: CheckerDeps, s: CheckSettings, items: PassItem<
       report.spend = addSpend(report.spend, meter.spend)   // competitor-check-5: a failed item's calls cost too
       const login = loginFailure(e)
       if (login) { report.stoppedReason = 'error'; report.error = `${login} — the pass stopped.`; await saveRun(deps, runId, report, false); break }
-      report.failed.push({ name: `${item.row.name}${item.country ? ` · ${item.country}` : ''}`, error: e instanceof Error ? e.message : String(e) })
+      report.failed.push({ name: `${item.row.name}${item.country ? ` · ${item.country}` : ''}`, error: e instanceof Error ? e.message : String(e), kind: 'error' })
     }
     await saveRun(deps, runId, report, false)
   }
-  if (report.stoppedReason === 'done' && report.checked === 0 && report.failed.length > 0) { report.stoppedReason = 'error'; report.error = `Every check in this run failed (${report.failed.length}).` }
+  if (report.stoppedReason === 'done' && allFailedOutright(report)) { report.stoppedReason = 'error'; report.error = `Every check in this run failed (${report.failed.length}).` }
   await saveRun(deps, runId, report, true)
   return report
 }

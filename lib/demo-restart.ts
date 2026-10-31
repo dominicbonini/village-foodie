@@ -17,7 +17,8 @@
 // ── THE MODEL: AN ELAPSED DEMO ENDS ───────────────────────────────────────────────────────────────
 // A real truck's yesterday tickets do not turn up on today's board. Orders from a previous service are
 // not real and must not carry over. So an elapsed demo ENDS, visibly, and the visitor starts a new
-// service — which wipes the old event AND its orders and seeds a fresh board for the current time.
+// service — which wipes the old event AND its orders and opens a fresh, EMPTY board for the current time (no seeded
+// orders since demo-2).
 // Nothing is shifted, nothing is inherited, and the new board is provisioned by exactly the same code
 // path as a first-run demo, so it cannot drift from one.
 //
@@ -30,9 +31,6 @@
 import type { SupabaseClient } from '@supabase/supabase-js'
 import { isDemoIdentifier } from '@/lib/demo'
 import { provisionDemoEvent, type DemoEvent } from '@/lib/provision-demo-event'
-import { seedDemoOrders } from '@/lib/seed-demo-orders'
-import { rebuildProductionSlotUsage } from '@/lib/slot-bookings'
-import { DEMO_MAINS_BATCH } from '@/lib/provision-demo'
 
 export class DemoRestartError extends Error {
   constructor(message: string) { super(message); this.name = 'DemoRestartError' }
@@ -121,40 +119,11 @@ export async function restartDemoService(
   }
   if (carried) await applyEventSettings(supabase, truckId, event.id, carried, warnings)
 
-  // ── 3. Re-seed against the NEW window ───────────────────────────────────────────────────────────
-  // Same call shape as first-run provisioning (lib/provision-demo.ts), so a restarted board and a
-  // freshly provisioned one are produced by identical code. `now` drives the seeder's first-collection
-  // floor; the order COUNT now scales to the window's bookable slots (see seed-demo-orders).
-  let seededOrders = 0
-  try {
-    const seeded = await seedDemoOrders(supabase, {
-      truckId, eventId: event.id, eventDate: event.event_date,
-      startTime: event.start_time, endTime: event.end_time,
-      capacity: DEMO_MAINS_BATCH,
-      now,
-      tz: opts.tz,
-    })
-    seededOrders = seeded.inserted
-    if (seeded.skippedNoMenu) warnings.push('No menu items to seed orders from — board left empty.')
-    // 🔴 THE CAPACITY POST-CONDITION SPEAKS THROUGH HERE. seedDemoOrders now checks its own board with
-    // the REAL breach detector and sheds orders rather than ship one that is over capacity; anything it
-    // could not clear (or could not check) arrives as a warning naming the slot, the category and the
-    // counts. Never swallowed — these reach the admin response.
-    if (seeded.warnings.length) warnings.push(...seeded.warnings)
-
-    // ── 4. Rebuild occupancy (§9.3 #2) ────────────────────────────────────────────────────────────
-    // provisionDemoEvent already ran a rebuild, but against an EMPTY board. Without this second pass
-    // the seeded orders sit there occupying nothing and every slot reads green — a full board over an
-    // all-green slot map, which is the single most damaging first impression the demo can give.
-    if (seeded.inserted > 0) {
-      await rebuildProductionSlotUsage(supabase, truckId, event.event_date)
-    }
-  } catch (err) {
-    // Non-fatal, matching first-run provisioning: a live event with an empty board is still playable —
-    // the visitor can place their own order, which is the loop that matters. Losing the restart over
-    // decoration would be the wrong trade.
-    warnings.push(`Order seeding failed (non-fatal): ${err instanceof Error ? err.message : 'unknown'}`)
-  }
+  // ── 3. NO RE-SEED (demo-2, 30 October 2026) ───────────────────────────────────────────────────
+  // A restarted service opens EMPTY, exactly like a fresh build (lib/provision-demo.ts step 5): the visitor's own
+  // order is the only one on the board. provisionDemoEvent above already wrote the slot grid and ran the occupancy
+  // rebuild against that empty board, so nothing else is needed. `seededOrders` stays in the result (always 0).
+  const seededOrders = 0
 
   return { event, ordersDeleted, eventsDeleted, seededOrders, warnings }
 }

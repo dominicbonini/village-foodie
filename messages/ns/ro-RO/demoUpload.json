@@ -53,5 +53,9 @@
     "or": "sau",
     "pasteLabel": "Lipiți textul meniului",
     "pastePlaceholder": "Lipiți meniul aici — numele produselor, descrieri, prețuri..."
-  }
+  },
+  "emailLabel": "Adresa de e-mail",
+  "emailNote": "Vă vom trimite pe e-mail un link către demo și vă putem contacta în legătură cu configurarea HatchGrab. <link>Politica de confidențialitate</link>",
+  "marketing": "Trimiteți-mi din când în când sfaturi și noutăți de la HatchGrab",
+  "emailInvalid": "Introduceți o adresă de e-mail validă."
 }

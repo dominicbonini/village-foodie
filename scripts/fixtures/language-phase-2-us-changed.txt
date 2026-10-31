@@ -1,4 +1,4 @@
-# Language Phase 2 — every US view that differs from BEFORE (2149 US views; 1381 changed). Written by scripts/language-phase-2.cjs.
+# Language Phase 2 — every US view that differs from BEFORE (2083 US views; 1322 changed). Written by scripts/language-phase-2.cjs.
 # view id	why (named code change in F, or words only)
 1a/orderPage/US|loading	words
 1a/orderPage/US|eventsError	words
@@ -54,7 +54,6 @@
 1a/orderPage/US|privateNamed	code: P2-us-clock+midnight-card-time-nbsp-US+us-layout-fix-1-nbsp+us-layout-fix-2-live-on-date-line + words
 1a/orderPage/US|privateUnnamed	code: P2-us-clock+midnight-card-time-nbsp-US+us-layout-fix-1-nbsp+us-layout-fix-2-live-on-date-line + words
 1a/orderPage/US|closedAtTime	code: P2-us-clock+midnight-card-time-nbsp-US+us-layout-fix-1-nbsp+us-layout-fix-2-live-on-date-line + words
-1a/orderPage/US|demoClosed	words
 1a/orderPage/US|itemModalEdit	code: P2-us-clock+midnight-card-time-nbsp-US+us-layout-fix-1-nbsp+us-layout-fix-2-live-on-date-line+legal-followups-service-fee-notice + words
 1a/orderPage/US|itemModalUpsell	code: P2-us-clock+midnight-card-time-nbsp-US+us-layout-fix-1-nbsp+us-layout-fix-2-live-on-date-line+legal-followups-service-fee-notice + words
 1a/orderPage/US|sheetEmailError	code: P2-us-clock+midnight-card-time-nbsp-US+us-layout-fix-1-nbsp+us-layout-fix-2-live-on-date-line+us-layout-fix-12-choose-time+us-layout-fix-10-charges-fold-order-footer+us-layout-fix-10-charges-fold-sheet-footer+legal-followups-privacy-link+legal-followups-service-fee-notice + words
@@ -662,17 +661,6 @@
 1b/components/US|dayLoad|strip|breached	code: P2-us-clock+us-layout-fix-1-nbsp
 1b/components/US|dayLoad|sidebar	code: P2-us-clock+us-layout-fix-1-nbsp+us-layout-fix-9-sidebar-wide-time
 1b/components/US|dayLoad|sidebar|breached	code: P2-us-clock+us-layout-fix-1-nbsp+us-layout-fix-9-sidebar-wide-time
-1b/components/US|demoLoop|one	words
-1b/components/US|demoLoop|ambiguous	words
-1b/components/US|demoLoop|unknown	words
-1b/components/US|demoLoop|sample	words
-1b/components/US|demoWelcome|own	words
-1b/components/US|demoWelcome|sample	words
-1b/components/US|demoWelcome|noUrl	words
-1b/components/US|demoWelcome|qr	words
-1b/components/US|demoWelcome|qrFailed	words
-1b/components/US|demoWelcome|oneCash	words
-1b/components/US|demoWelcome|oneNoCash	words
 1b/components/US|keepAwake|unsupported	words
 1b/components/US|keepAwake|insecure	words
 1b/dashboard/US|loading	words
@@ -780,16 +768,6 @@
 1b/dashboard/US|edit|dealModal	code: P2-us-clock+midnight-dayloadstrip-event-prop+us-layout-fix-1-nbsp + words
 1b/dashboard/US|edit|reprice	code: P2-us-clock+midnight-dayloadstrip-event-prop+us-layout-fix-1-nbsp + words
 1b/dashboard/US|edit|repriceStale	code: P2-us-clock+midnight-dayloadstrip-event-prop+us-layout-fix-1-nbsp + words
-1b/dashboard/US|demo	code: P2-us-clock+midnight-dayloadstrip-event-prop+us-layout-fix-1-nbsp + words
-1b/dashboard/US|demo|settingUp	code: P2-us-clock+midnight-dayloadstrip-event-prop+us-layout-fix-1-nbsp + words
-1b/dashboard/US|demo|ended	code: P2-us-clock+midnight-dayloadstrip-event-prop+us-layout-fix-1-nbsp + words
-1b/dashboard/US|demo|endedRestarting	code: P2-us-clock+midnight-dayloadstrip-event-prop+us-layout-fix-1-nbsp + words
-1b/dashboard/US|demo|endedNoEvent	code: P2-us-clock+midnight-dayloadstrip-event-prop+us-layout-fix-1-nbsp + words
-1b/dashboard/US|demo|eventLock	code: P2-us-clock+midnight-dayloadstrip-event-prop+us-layout-fix-1-nbsp + words
-1b/dashboard/US|demo|settings	code: P2-us-clock+us-layout-fix-1-nbsp + words
-1b/dashboard/US|demo|qr	code: P2-us-clock+midnight-dayloadstrip-event-prop+us-layout-fix-1-nbsp + words
-1b/dashboard/US|demo|extraWait	code: P2-us-clock+midnight-dayloadstrip-event-prop+us-layout-fix-1-nbsp + words
-1b/dashboard/US|demo|branded	code: P2-us-clock+midnight-dayloadstrip-event-prop+us-layout-fix-1-nbsp + words
 1b/dashboard/US|handler|openOrderFromPush	words
 1b/dashboard/US|handler|submitPin|s503	words
 1b/dashboard/US|handler|printMode|lead_time	words
@@ -1103,11 +1081,11 @@
 1c/api/US|setup|zoneBad	code: 1d-setup-trade-area-codes
 1c/api/US|setup|townMissing	code: 1d-setup-trade-area-codes
 1c/api/US|setup|townLong	code: 1d-setup-trade-area-codes
-1c/api/US|signup|gateAdmin	code: legal-followups-terms-version+pricing-tidy-terms-version+ireland-3-terms-version+anz-terms-terms-version
-1c/api/US|signup|limiterDown	code: legal-followups-terms-version+pricing-tidy-terms-version+ireland-3-terms-version+anz-terms-terms-version
-1c/api/US|signup|verifyRowFails	code: legal-followups-terms-version+pricing-tidy-terms-version+ireland-3-terms-version+anz-terms-terms-version
-1c/api/US|signup|ok	code: legal-followups-terms-version+pricing-tidy-terms-version+ireland-3-terms-version+anz-terms-terms-version
-1c/api/US|signup|okPlain	code: legal-followups-terms-version+pricing-tidy-terms-version+ireland-3-terms-version+anz-terms-terms-version
+1c/api/US|signup|gateAdmin	code: legal-followups-terms-version+pricing-tidy-terms-version+ireland-3-terms-version+anz-terms-terms-version+demo-2b-terms-version
+1c/api/US|signup|limiterDown	code: legal-followups-terms-version+pricing-tidy-terms-version+ireland-3-terms-version+anz-terms-terms-version+demo-2b-terms-version
+1c/api/US|signup|verifyRowFails	code: legal-followups-terms-version+pricing-tidy-terms-version+ireland-3-terms-version+anz-terms-terms-version+demo-2b-terms-version
+1c/api/US|signup|ok	code: legal-followups-terms-version+pricing-tidy-terms-version+ireland-3-terms-version+anz-terms-terms-version+demo-2b-terms-version
+1c/api/US|signup|okPlain	code: legal-followups-terms-version+pricing-tidy-terms-version+ireland-3-terms-version+anz-terms-terms-version+demo-2b-terms-version
 1c/api/US|cancel-email-change|noChangeId	words
 1c/api/US|change-email|brevoFails	words
 1c/api/US|change-email|ok	words
@@ -1243,39 +1221,6 @@
 1c/demo/US|press|setup|ready	words
 1c/demo/US|press|setup|readyContinue	words
 1c/demo/US|press|setup|bestEffortFail	words
-1c/demo/US|up|idle	words
-1c/demo/US|up|idle|text	words
-1c/demo/US|up|idle|file	words
-1c/demo/US|up|error|server	words
-1c/demo/US|up|error|somethingWrong	words
-1c/demo/US|up|error|unreachable	words
-1c/demo/US|up|error|noMessage	words
-1c/demo/US|up|working|slowSample	words
-1c/demo/US|up|failed	words
-1c/demo/US|up|failed|text	words
-1c/demo/US|up|failed|email	words
-1c/demo/US|up|failed|busy	words
-1c/demo/US|up|failed|sent	words
-1c/demo/US|up|failed|serverMessage	words
-1c/demo/US|up|failed|sendFailed	words
-1c/demo/US|press|up|refused	words
-1c/demo/US|press|up|refusedWords	words
-1c/demo/US|press|up|unreachable	words
-1c/demo/US|press|up|menuFailed	words
-1c/demo/US|press|up|menuFailedRetry	words
-1c/demo/US|press|up|menuFailedOther	words
-1c/demo/US|press|up|sampleRefused	words
-1c/demo/US|press|up|buildRefused	words
-1c/demo/US|press|up|buildRefusedWords	words
-1c/demo/US|press|up|buildUnreachable	words
-1c/demo/US|press|up|buildSent	words
-1c/demo/US|loop|one	words
-1c/demo/US|loop|admin	words
-1c/demo/US|loop|sample	words
-1c/demo/US|loop|ambiguous	words
-1c/demo/US|rows|return|build	code: plans-demo-batch-override
-1c/demo/US|rows|return|visit	code: plans-demo-batch-override+ie1-demo-visit-next-day
-1c/demo/US|rows|return|restart	code: plans-demo-batch-override+ie1-demo-date-from-now
 1c/goLive/US|check|unverifiedOne	words
 1c/goLive/US|check|unverifiedOneOfOne	words
 1c/goLive/US|check|noVan	words
@@ -1374,10 +1319,6 @@
 2/extra/US|card|oct|full	code: P2-us-clock+midnight-card-time-nbsp-US+us-layout-fix-1-nbsp+us-layout-fix-2-live-on-date-line
 2/extra/US|card|oct|compact	code: P2-us-clock+midnight-card-time-nbsp-US+us-layout-fix-1-nbsp+us-layout-fix-2-live-on-date-line
 2/extra/US|manage|schedule|cards	code: P2-us-clock+1d-us-address-style+us-layout-fix-1-nbsp+us-layout-fix-3-schedule-phone-cards+pending-card-layout
-2/extra/US|rows|demo|pizza	code: P2-demo-US + words
-2/extra/US|rows|demo|burgers	code: P2-demo-US + words
-2/extra/US|rows|demo|curries	code: P2-demo-US + words
-2/extra/US|rows|demo|outreach	code: P2-demo-US + words
 2/extra/US|rows|truck|operator	code: plans-a2-trial-expires-at + words
 2/extra/US|rows|truck|namedVan	code: plans-a2-trial-expires-at
 2/extra/US|rows|truck|demo	code: plans-demo-batch-override + words

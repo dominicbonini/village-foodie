@@ -53,5 +53,9 @@
     "or": "vai",
     "pasteLabel": "Ielīmēt ēdienkartes tekstu",
     "pastePlaceholder": "Ielīmējiet ēdienkarti šeit — pozīciju nosaukumus, aprakstus, cenas..."
-  }
+  },
+  "emailLabel": "Jūsu e-pasts",
+  "emailNote": "Mēs jums nosūtīsim saiti uz jūsu demo un, iespējams, sazināsimies ar jums par HatchGrab iestatīšanu. <link>Privātuma politika</link>",
+  "marketing": "Laiku pa laikam sūtiet man HatchGrab padomus un jaunumus",
+  "emailInvalid": "Lūdzu, ievadiet derīgu e-pasta adresi."
 }

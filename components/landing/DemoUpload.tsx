@@ -29,6 +29,8 @@ import { MenuUploadFields } from '@/components/menu/MenuUploadFields'
 import { useT } from '@/lib/i18n/use-t'
 import '@/lib/i18n/catalog/demoUpload'
 import { errorText } from '@/lib/i18n/customer-errors'
+import { rememberDemoEmail } from '@/lib/demo-board-build'
+import { isDemoEmail } from '@/lib/demo-session'
 import '@/lib/i18n/catalog/errorsOnboarding'
 
 type Phase = 'idle' | 'working' | 'menu_failed' | 'error'
@@ -142,6 +144,12 @@ export function DemoModal() {
   const [templateRun, setTemplateRun] = useState(false) // this submit is a SAMPLE (no Gemini) → template load labels
   const [failedTruckId, setFailedTruckId] = useState<string | null>(null)
 
+  // demo-2 (30 Oct 2026, docs/demo-2-report.md): EMAIL FIRST. Required before "Build my demo" AND before the sample —
+  // the demo link is emailed to it once the build finishes. The tips-and-news box is optional and starts unticked.
+  const [email, setEmail] = useState('')
+  const [marketing, setMarketing] = useState(false)
+  const emailOk = isDemoEmail(email)
+
   const [buildEmail, setBuildEmail] = useState('')
   const [buildSent, setBuildSent] = useState(false)
   const [buildBusy, setBuildBusy] = useState(false)
@@ -171,6 +179,7 @@ export function DemoModal() {
     setOpen(false)
     abortRef.current?.abort()
     setPhase('idle'); setFile(null); setText(''); setMessage(null); setSlowPrompt(false); setSampleOffer(false); setTemplateRun(false)
+    setEmail(''); setMarketing(false)
     setBuildEmail(''); setBuildSent(false); setFailedTruckId(null)
   }, [phase, setOpen])
 
@@ -214,6 +223,8 @@ export function DemoModal() {
     setPhase('working'); setMessage(null); startProgress()
     try {
       const fd = new FormData()
+      fd.append('email', email.trim())
+      fd.append('marketing', marketing ? 'true' : 'false')
       if (opts.templateId) fd.append('template', opts.templateId)
       else {
         if (file) fd.append('file', file)
@@ -238,9 +249,11 @@ export function DemoModal() {
             advanceStep(i)
           }
         }
-        // Full navigation: the demo dashboard is a different app shell and should start from a clean
-        // mount. `.assign()` rather than `location.href =` — identical semantics, but an assignment trips
-        // react-hooks/immutability inside a component.
+        // Full navigation to the demo WALKTHROUGH (/try/<slug>) — never a URL carrying the dashboard token.
+        // `.assign()` rather than `location.href =` — identical semantics, but an assignment trips
+        // react-hooks/immutability inside a component. The email is remembered in THIS tab only, for the
+        // "Start free" prefill (lib/demo-board-build) — the walkthrough never reads it from the server.
+        if (typeof data.slug === 'string') rememberDemoEmail(data.slug, email)
         window.location.assign(data.redirectTo)
         return
       }
@@ -276,7 +289,7 @@ export function DemoModal() {
     }
   }
 
-  const canSubmit = !!file || !!text.trim()
+  const canSubmit = (!!file || !!text.trim()) && emailOk
   // Which load labels to show. Same schedule either way (STEPS/TEMPLATE_STEPS share .at), so only the
   // working-view text changes — a template run never shows "Reading your menu…".
   const shownSteps = templateRun ? TEMPLATE_STEPS : STEPS
@@ -446,6 +459,23 @@ export function DemoModal() {
               {/* SHARED with Manage → Menu's importer — one dropzone, one set of section labels. */}
               <MenuUploadFields file={file} onFile={setFile} text={text} onText={setText} accent="landing" />
 
+              {/* demo-2: EMAIL FIRST — before "Build my demo" and before "See sample menu", both of which need it. */}
+              <div className="mt-4" data-demo-email>
+                <label htmlFor="demo-upload-email" className="block text-xs font-bold text-slate-600 mb-1">{t('emailLabel')}</label>
+                <input id="demo-upload-email" type="email" inputMode="email" autoComplete="email" required
+                  value={email} onChange={e => setEmail(e.target.value)} placeholder={t('emailPlaceholder')}
+                  aria-invalid={email.trim() !== '' && !emailOk}
+                  className={`w-full border rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--orange)] ${email.trim() !== '' && !emailOk ? 'border-red-400' : 'border-slate-200'}`} />
+                {email.trim() !== '' && !emailOk && <p className="text-xs text-red-600 mt-1">{t('emailInvalid')}</p>}
+                <p className="text-xs text-slate-500 mt-1.5">
+                  {t.rich('emailNote', { link: c => <a href="/privacy" target="_blank" rel="noopener noreferrer" className="underline underline-offset-2 text-slate-700">{c}</a> })}
+                </p>
+                <label className="mt-2 flex items-start gap-2 text-xs text-slate-600 cursor-pointer">
+                  <input type="checkbox" checked={marketing} onChange={e => setMarketing(e.target.checked)} className="mt-0.5 accent-[var(--orange)]" />
+                  <span>{t('marketing')}</span>
+                </label>
+              </div>
+
               {/* FRONT-DOOR sample entry — SUBORDINATE to the upload (smaller, muted, below a divider) so
                   uploading their own menu stays the obvious primary path. For a visitor with no photo to
                   hand. §11: framed unmistakably as a sample, never a silent substitute. */}
@@ -455,8 +485,8 @@ export function DemoModal() {
                   <p className="text-xs text-slate-500 mt-0.5 mb-2">{t('noPhotoBody')}</p>
                   {/* One unlabelled, SUBORDINATE button (not full-width, muted) — the upload above stays the
                       obvious primary path. No cuisine named, so the sample can be re-themed without copy. */}
-                  <button type="button" onClick={() => submit({ templateId: SAMPLE_TEMPLATE.id })}
-                    className="inline-block border border-slate-200 text-slate-600 font-medium py-1.5 px-4 rounded-xl text-sm hover:bg-slate-50">
+                  <button type="button" onClick={() => submit({ templateId: SAMPLE_TEMPLATE.id })} disabled={!emailOk}
+                    className="inline-block border border-slate-200 text-slate-600 font-medium py-1.5 px-4 rounded-xl text-sm hover:bg-slate-50 disabled:opacity-40">
                     {t('seeSample')}
                   </button>
                 </div>

@@ -26,6 +26,8 @@ import { verifyAdmin } from '@/lib/auth/admin'
 import { provisionDemo, ProvisionDemoError } from '@/lib/provision-demo'
 import { getDemoTemplate } from '@/lib/demo-templates'
 import { parseDemoKitchen } from '@/lib/demo-kitchen'
+import { saveDemoMenuFiles } from '@/lib/demo-menu-files'
+import { recordDemoEvent } from '@/lib/demo-events'
 
 // Same ceiling as /api/demo and for the same reason: the provision blocks for the whole extract + commit.
 export const maxDuration = 300
@@ -121,6 +123,14 @@ export async function POST(req: NextRequest) {
       replaceBoard: !!existingTruckId,
       ...(discoveryTruckId ? { discoveryTruckId, name, logoUrl, country } : {}),
     })
+
+    // demo-2 (docs/demo-2-report.md): the menu given here is kept for Admin › Demos under the demo (a rebuild ADDS its
+    // new menu; the sweep deletes them all with the demo), and the build is counted as an outreach demo's.
+    if (file || text) await saveDemoMenuFiles(supabase, result.truckId, { file, text })
+    if (!existingTruckId) {
+      if (template) await recordDemoEvent(supabase, { demoId: result.truckId, event: 'sample_used', source: 'outreach' })
+      await recordDemoEvent(supabase, { demoId: result.truckId, event: result.menu.kind === 'failed' ? 'build_failed' : 'build_ok', source: 'outreach' })
+    }
 
     // Counts read back from the DB rather than inferred — the point of this route is to verify what
     // ACTUALLY landed, so trusting the provisioner's own arithmetic would defeat it.

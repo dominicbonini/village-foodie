@@ -53,5 +53,9 @@
     "or": "vagy",
     "pasteLabel": "Étlap szövegének beillesztése",
     "pastePlaceholder": "Illessze be ide az étlapját — tételnevek, leírások, árak..."
-  }
+  },
+  "emailLabel": "Az Ön e-mail-címe",
+  "emailNote": "E-mailben elküldjük a demója linkjét, és felvehetjük Önnel a kapcsolatot a HatchGrab beállításával kapcsolatban. <link>Adatvédelmi tájékoztató</link>",
+  "marketing": "Időnként tippeket és híreket kérek a HatchGrabtől",
+  "emailInvalid": "Adjon meg egy érvényes e-mail-címet."
 }

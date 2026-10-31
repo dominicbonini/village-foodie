@@ -183,21 +183,9 @@ async function board(seedDemoOrders, E, opts) {
     console.log(`  ${crosses ? '✓ FAILED as required' : '🔴 PASSED — THE HARNESS PROVES NOTHING'}  V6 the midnight clamp removed: ${w.start}–${w.end} crosses into the next day`)
     fs.rmSync(tmp, { recursive: true, force: true }); if (!crosses) process.exit(1)
   }
-  {
-    // V7 — THE WRONG PANEL: the replacement test removed, so a rebuilt board's seeded orders read as the
-    // visitor's own and the "real order lands" prompt fires over the introduction.
-    const tmp = fs.mkdtempSync(path.join(os.tmpdir(), 'dsp-v7-'))
-    fs.cpSync(path.join(REPO, 'lib'), path.join(tmp, 'lib'), { recursive: true }); fs.cpSync(path.join(REPO, 'messages'), path.join(tmp, 'messages'), { recursive: true })   // ⚠️ RE-PINNED (Language Phase 1d): lib/ now reaches catalogs (settingsCopy, whereYouTrade) that import messages/ns/** — the copy needs them to compile
-    try { fs.symlinkSync(path.join(REPO, 'node_modules'), path.join(tmp, 'node_modules')) } catch {}
-    const f = path.join(tmp, 'lib/demo-board-build.ts'); const src = fs.readFileSync(f, 'utf8')
-    const needle = '  return !baseline.some(k => now.has(k))'
-    if (src.split(needle).length !== 2) { console.log('🔴 v7: the replacement test was not found exactly once'); process.exit(1) }
-    fs.writeFileSync(f, src.replace(needle, '  return false'))
-    const B = build(tmp, 'v7', ['lib/demo-board-build.ts']).req('lib/demo-board-build.js')
-    const blind = B.boardWasReplaced(['a', 'b', 'c'], ['x', 'y', 'z']) === false
-    console.log(`  ${blind ? '✓ FAILED as required' : '🔴 PASSED — THE HARNESS PROVES NOTHING'}  V7 replacement test removed: a wholly new board reads as ${blind ? 'the SAME board — every seeded order looks like the visitor\'s' : 'replaced'}`)
-    fs.rmSync(tmp, { recursive: true, force: true }); if (!blind) process.exit(1)
-  }
+  // ⛔ V7 RETIRED (demo-2, 30 October 2026, docs/demo-2-report.md): it mutated the "board replaced" test in
+  // lib/demo-board-build.ts, which went with DemoWelcome and DemoLoopComplete — there is no seeded board left to
+  // mistake for the visitor's own. What that module holds now is proven in ITEM 2 below and in scripts/demo-2.cjs.
 
   const real = build(REPO, 'dspReal', SEED_FILES)
   const seedDemoOrders = real.req('lib/seed-demo-orders.js').seedDemoOrders
@@ -315,33 +303,27 @@ async function board(seedDemoOrders, E, opts) {
       'every cooking order carries a reservation at batch 8 / prep 15')
   }
 
-  console.log('\n── ITEM 2: WHICH PANEL SPEAKS FIRST ─────────────────────────────────────────────────────')
+  console.log('\n── ITEM 2 (demo-2): THE DEMO\'S BROWSER STATE — the visitor\'s orders and email, per tab ──────')
   {
+    // 🔴 RE-PINNED 30 October 2026 (demo-2). The welcome popup and the "real order lands" panel are retired, and
+    // with them the board-replacement test and the two flags it guarded. lib/demo-board-build.ts now owns the
+    // walkthrough's state: the orders THIS tab placed (what the kitchen shows) and the email typed before the build
+    // (the "Start free" prefill) — both sessionStorage, keyed on the SLUG — and it clears the retired names.
     const B = build(REPO, 'dspBoard', ['lib/demo-board-build.ts']).req('lib/demo-board-build.js')
-    const seeded = ['a', 'b', 'c'], rebuilt = ['x', 'y', 'z']
-    check(B.boardWasReplaced(seeded, rebuilt) === true, 'a board sharing no order key with the baseline reads as REPLACED — a rebuild, or the first-open restart')
-    check(B.boardWasReplaced(seeded, [...seeded, 'theirs']) === false,
-      'a prospect placing their own order ADDS a key, which must never read as a replacement — this is the case that must still fire the signup panel')
-    check(B.boardWasReplaced(null, seeded) === false && B.boardWasReplaced(seeded, []) === false,
-      'no baseline, or an empty board, is not a replacement')
-    // 🔴 THE TWO FLAGS NOW LIVE IN DIFFERENT STORES, AND THAT IS THE POINT (19 September 2026). The
-    // BASELINE stays in localStorage — it answers "which orders were here when this viewer first saw the
-    // board" and must survive a reload and a tab close, or the signup prompt would fire on the seeded
-    // board every time the demo is opened. The WELCOME's flag moved to sessionStorage so that opening the
-    // link again shows the introduction again, and so that a check before sending leaves nothing behind.
     const local = new Map(), session = new Map()
     const face = m => ({ getItem: k => (m.has(k) ? m.get(k) : null), setItem: (k, v) => m.set(k, String(v)), removeItem: k => m.delete(k) })
     global.window = global.window || {}
     global.localStorage = face(local); global.sessionStorage = face(session)
-    session.set(B.demoWelcomeKey('tok'), 'seen'); local.set(B.demoBaselineKey('tok'), JSON.stringify(seeded))
-    B.resetDemoBoardFlags('tok', rebuilt)
-    check(session.get(B.demoWelcomeKey('tok')) === undefined, 'a replaced board CLEARS the welcome flag, so the rebuilt demo introduces itself again')
-    check(JSON.parse(local.get(B.demoBaselineKey('tok'))).join() === rebuilt.join(),
-      'and re-baselines on the seeded orders, so they are never mistaken for the visitor\'s own')
-    check(B.demoWelcomeSeen('tok') === false, 'and the shared reader agrees the introduction is due')
-    B.markDemoWelcomeSeen('tok')
-    check(B.demoWelcomeSeen('tok') === true && local.has(B.demoWelcomeKey('tok')) === false,
-      'a dismissal is recorded for the SESSION only — nothing durable says anyone has seen it')
+    B.addDemoWalkOrder('demo-slug', 'k1'); B.addDemoWalkOrder('demo-slug', 'k2'); B.addDemoWalkOrder('demo-slug', 'k1')
+    check(B.demoWalkOrders('demo-slug').join() === 'k2,k1', 'the orders this tab placed, oldest first, each once')
+    check(local.size === 0, '…in sessionStorage only — nothing durable is left on a shared computer')
+    B.clearDemoWalkOrders('demo-slug')
+    check(B.demoWalkOrders('demo-slug').length === 0, 'a restart forgets them')
+    B.rememberDemoEmail('demo-slug', ' a@b.co ')
+    check(B.demoEmailFor('demo-slug') === 'a@b.co' && B.demoEmailFor('demo-other') === '', 'the email is remembered for that demo only')
+    session.set('hg_demo_welcome_tok', 'seen'); local.set('hg_demo_seen_orders_tok', '["a"]')
+    B.forgetRetiredDemoFlags('tok')
+    check(!session.has('hg_demo_welcome_tok') && !local.has('hg_demo_seen_orders_tok'), 'the retired welcome / baseline names are cleared')
   }
 
   console.log('\n── ITEM 1: THE LOGO WARNING ─────────────────────────────────────────────────────────────')
@@ -384,6 +366,6 @@ async function board(seedDemoOrders, E, opts) {
     check(!ok.error && ok.kitchen.intervalMins === 30 && ok.kitchen.prepSecs === 3600 && ok.kitchen.batchSize === 50, 'the bounds themselves are accepted (30 / 60 / 50)')
   }
 
-  console.log(fails ? `\n🔴 ${fails} FAILED` : '\n✅ four hours, a full board, the right panel first, an honest logo warning — on every combination')
+  console.log(fails ? `\n🔴 ${fails} FAILED` : '\n✅ four hours, a full board (the seeder, kept but no longer called), the demo\'s browser state, an honest logo warning — on every combination')
   process.exit(fails ? 1 : 0)
 })().catch(e => { console.error('HARNESS THREW', e); process.exit(1) })

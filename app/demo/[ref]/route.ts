@@ -1,8 +1,11 @@
 // app/demo/[ref]/route.ts
 // The readable demo URL: /demo/<public_ref> ("/demo/pizzeria-gusto").
 //
-// It RESOLVES and REDIRECTS, nothing more: demo_sessions.public_ref → the demo truck's dashboard_token →
-// 307 to /dashboard/<token>, which is the existing demo dashboard with its existing token-only access.
+// It RESOLVES and REDIRECTS, nothing more: demo_sessions.public_ref → the demo truck's slug → 307 to /try/<slug>, the
+// demo walkthrough (demo-2, 30 October 2026: the prospect starts as a customer on their own branded menu, then sees
+// the order arrive in the kitchen). 🔴 It used to redirect to /dashboard/<token>, which put the dashboard TOKEN — the
+// demo's full credential — in the address bar of anyone who guessed a public_ref. The slug it redirects to now is the
+// one the customer order page already shows publicly; the token never leaves the server.
 // No dashboard logic lives here and none is duplicated. public_ref is a LOOKUP KEY: it is guessable by
 // design (accepted, 12 September 2026 — it exists so a prospect can be told a URL over the phone), and it
 // never becomes a credential because the boundary stays the `demo-` token proxy.ts already recognises.
@@ -50,11 +53,11 @@ export async function GET(req: NextRequest, ctx: { params: Promise<{ ref: string
   if (!session?.truck_id) return await bounce(req, 'expired')
 
   const { data: truck } = await supabase
-    .from('trucks').select('id, dashboard_token').eq('id', session.truck_id as string).maybeSingle()
+    .from('trucks').select('id, slug, dashboard_token').eq('id', session.truck_id as string).maybeSingle()
   // The row's own id is the authority — a matched session still has to point at a demo truck.
-  if (!truck || !isDemoIdentifier(truck.id as string) || !isDemoIdentifier(truck.dashboard_token as string)) {
+  if (!truck || !isDemoIdentifier(truck.id as string) || !isDemoIdentifier(truck.dashboard_token as string) || !isDemoIdentifier(String(truck.slug ?? ''))) {
     return await bounce(req, 'expired')
   }
 
-  return NextResponse.redirect(new URL(`/dashboard/${truck.dashboard_token}`, req.url))
+  return NextResponse.redirect(new URL(`/try/${encodeURIComponent(truck.slug as string)}`, req.url))
 }

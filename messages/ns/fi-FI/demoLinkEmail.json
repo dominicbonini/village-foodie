@@ -1,0 +1,8 @@
+{
+  "subject": "HatchGrab-demosi – tässä linkkisi",
+  "heading": "Demosi on valmis",
+  "intro": "Tässä on linkki demoon, jonka rakensimme ruokalistastasi. Tilaa sen kautta kuin olisit yksi asiakkaistasi ja katso sitten, miten tilaus saapuu keittiönäyttöösi. Kirjautumista ei tarvita – napauta vain linkkiä.",
+  "button": "Avaa demoni",
+  "deletion": "Tämä on demo, joten emme säilytä sitä: poistamme sen ja lataamasi ruokalistan {date}. Jos haluat lisää aikaa, paina demossa ”Tallenna ruokalistani”, niin säilytämme sen 14 päivää.",
+  "deletionSoon": "Tämä on demo, joten emme säilytä sitä: poistamme sen ja lataamasi ruokalistan 24 tunnin kuluttua. Jos haluat lisää aikaa, paina demossa ”Tallenna ruokalistani”, niin säilytämme sen 14 päivää."
+}

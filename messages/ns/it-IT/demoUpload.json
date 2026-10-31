@@ -53,5 +53,9 @@
     "or": "oppure",
     "pasteLabel": "Incolla il testo del menu",
     "pastePlaceholder": "Incolla qui il tuo menu — nomi dei piatti, descrizioni, prezzi..."
-  }
+  },
+  "emailLabel": "La tua email",
+  "emailNote": "Ti invieremo via email un link alla tua demo e potremmo contattarti per configurare HatchGrab. <link>Informativa sulla privacy</link>",
+  "marketing": "Inviatemi ogni tanto consigli e novità di HatchGrab",
+  "emailInvalid": "Inserisci un indirizzo email valido."
 }

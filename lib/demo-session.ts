@@ -138,6 +138,34 @@ export async function touchDemoSession(
   }
 }
 
+/** demo-2: the email a landing-page visitor gives BEFORE the build, and their choice about tips and news. */
+export const DEMO_EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+export const isDemoEmail = (v: unknown): v is string => typeof v === 'string' && v.trim().length <= 320 && DEMO_EMAIL_RE.test(v.trim())
+
+/**
+ * demo-2: stores the visitor's email (`visitor_email`, with `email_given_at`) and the tips-and-news choice
+ * (`marketing_opt_in`, with `marketing_opt_in_at` when ticked) on the demo's session.
+ * 🔴 IT DOES NOT TOUCH `email` OR `expires_at`. Giving an address to be sent the link is not asking to keep the demo:
+ * the privacy text promises deletion after 24 hours unless they ask to keep it ("Save my menu" → `saveDemoEmail`).
+ * Best-effort: before 20261052 the columns do not exist, and the demo must still build — returns false and logs.
+ */
+export async function recordDemoVisitorEmail(
+  supabase: SupabaseClient, truckId: string, email: string, marketingOptIn: boolean, now = new Date(),
+): Promise<boolean> {
+  if (!isDemoIdentifier(truckId) || !isDemoEmail(email)) return false
+  try {
+    const { error } = await supabase.from('demo_sessions').update({
+      visitor_email: email.trim().toLowerCase(), email_given_at: now.toISOString(),
+      marketing_opt_in: marketingOptIn, marketing_opt_in_at: marketingOptIn ? now.toISOString() : null,
+    }).eq('truck_id', truckId)
+    if (error) { console.warn(`[demo-session] visitor email not stored for ${truckId} (${error.message}) — is 20261052 run?`); return false }
+    return true
+  } catch (err) {
+    console.warn(`[demo-session] visitor email not stored for ${truckId}:`, err)
+    return false
+  }
+}
+
 export interface SaveEmailResult {
   ok: boolean
   /** The date stated to the visitor AND in the email. Same value both places — never two answers. */

@@ -113,9 +113,18 @@ type DemoError = string | { code: DemoErrorCode } | { server: { error?: unknown;
 /** A field's problem, held as a code (`demoGetStarted.fieldError.<code>`; 'phoneInvalid' is the shared phone sentence). */
 type FieldErrorCode = 'firstName' | 'lastName' | 'truck' | 'cuisine' | 'phoneMissing' | 'phoneInvalid' | 'email' | 'password' | 'terms'
 
-export function DemoGetStarted({ token, slug, label, className, isAdmin = false, extractionSource = null, phone = null }: {
+export function DemoGetStarted({ token, slug, label, className, isAdmin = false, extractionSource = null, phone = null, setupLabel, prefillEmail, onOpen }: {
   token?: string
   slug?: string
+  /** demo-2 (30 Oct 2026): the trigger's words WHEN SIGN-UP IS OFFERED ("Start free for 3 months, keep my menu").
+   *  When it is not (signup off), the button falls back to the save-my-menu path with that path's own label — a
+   *  "Start free" that opened an email box would promise a door that is not there. */
+  setupLabel?: string
+  /** demo-2: the email the visitor typed before the build, from THIS browser's memory (lib/demo-board-build) — never
+   *  read from the server. Fills the email box unless one was already saved here. */
+  prefillEmail?: string
+  /** demo-2: told when the visitor opens the flow (the walkthrough counts `signup_started`). */
+  onOpen?: () => void
   /** 🔴 The phone box's country, name and example — the host page's truck payload `phone` (Phase 2C).
    *  Null (a pre-2C payload): the box names no country or example and /api/setup checks the number. */
   phone?: PhoneCopy | null
@@ -168,8 +177,9 @@ export function DemoGetStarted({ token, slug, label, className, isAdmin = false,
   // another device. The durable pre-fill is /signup reading demo_sessions server-side, which is unbuilt.
   const emailKey = `hg_demo_email_${key}`
 
-  const [open, setOpen] = useState(false)
-  const [email, setEmail] = useState('')
+  const [open, setOpenState] = useState(false)
+  const setOpen = (v: boolean) => { if (v && !open) onOpen?.(); setOpenState(v) }
+  const [email, setEmail] = useState(prefillEmail ?? '')
   const [busy, setBusy] = useState(false)
   const [savedUntil, setSavedUntil] = useState<string | null>(null)
   // 🔴 A CODE when the words are ours, the route's own string when it sent one (Language Phase 1c) — see DemoError.
@@ -342,7 +352,10 @@ export function DemoGetStarted({ token, slug, label, className, isAdmin = false,
   // that the server sanctions, and this flag only decides whether we RENDER the door the server would
   // have opened anyway. Forging `isAdmin` in the browser reveals a button and then earns a 403 — exactly
   // what a non-admin gets today, minus the button. The server is the gate; this is the mirror.
-  const canSetup = (process.env.NEXT_PUBLIC_SIGNUP_PUBLIC === 'true' || isAdmin) && !!token
+  // 🔴 demo-2: A SLUG IS ENOUGH NOW. /api/signup claims a demo by its dashboard token OR its slug (a slug only claims
+  // a demo nobody has claimed yet), so the walkthrough and the customer order page — which hold the slug only — can
+  // offer sign-up too. Before demo-2 this required the token, and the order page always fell back to "Save my menu".
+  const canSetup = (process.env.NEXT_PUBLIC_SIGNUP_PUBLIC === 'true' || isAdmin) && !!(token || slug)
 
   // ── THE ONE PLACE THE VARIANT IS DECIDED ────────────────────────────────────────────────────────
   // Order matters. `saveOnly` wins first: when there is no setup path on offer, the upload/sample
@@ -352,7 +365,7 @@ export function DemoGetStarted({ token, slug, label, className, isAdmin = false,
     !canSetup ? 'saveOnly' : extractionSource === 'template' ? 'sample' : 'upload'
   // An explicit `label` still wins — the loop-complete card passes its own, and that call site's wording
   // is its own decision. Omitted → the variant's button, which is what every banner uses.
-  const triggerLabel = label ?? tPage(`${copyVariant}.bannerButton`)
+  const triggerLabel = (canSetup && setupLabel) ? setupLabel : (label ?? tPage(`${copyVariant}.bannerButton`))
   /** The words of an error held in state: the route's own string as it came, or our code's sentence. */
   const errorText = (e: DemoError | null): string | null => (e == null ? null : typeof e === 'string' ? e
     : 'server' in e ? errorTextIn([tErr, tTrade] as never[], e.server, t(`error.${e.code}`)) : t(`error.${e.code}`))
@@ -498,7 +511,7 @@ export function DemoGetStarted({ token, slug, label, className, isAdmin = false,
           // insert — and so the verification email, which is sent inside /api/signup, can greet them by
           // their real first name instead of the local part of their address.
           body: JSON.stringify({
-            email: email.trim(), password, demo: token, signup_code: promoCode.trim(),
+            email: email.trim(), password, demo: token || slug, signup_code: promoCode.trim(),
             first_name: operatorFirstName.trim(), last_name: operatorLastName.trim(),
           }),
         })

@@ -24,5 +24,6 @@
     "heading": "Rekisteröidy nyt ja saat ilmaisen kuukauden",
     "sub": "Aika alkaa kulua vasta, kun päätät julkaista."
   },
-  "cashIcon": "💶"
+  "cashIcon": "💶",
+  "walkBanner": "Demo · tämä on ruokalistasi sellaisena kuin asiakkaasi näkevät sen. Mitään ei veloiteta eikä sähköposteja lähetetä."
 }
