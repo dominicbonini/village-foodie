@@ -1,0 +1,10 @@
+{
+  "vanFallback": "Van",
+  "eventsFeed": {
+    "today": "Hari ini · {date}",
+    "tomorrow": "Esok · {date}"
+  },
+  "privacyNotSaved": "Acara ini sudah aktif, tetapi tetapan privasinya tidak dapat disimpan.",
+  "stockWarning": "Tiada item tersedia dalam “{category}”",
+  "uncategorised": "Tanpa kategori"
+}

@@ -1,0 +1,29 @@
+{
+  "notAvailable": "示範模式不提供此功能",
+  "demoMode": "示範模式",
+  "loopLands": "真實訂單就是這樣送到的",
+  "showMe": "示範給我看",
+  "noCard": "{sub} 無需信用卡。",
+  "notYet": "暫時不要",
+  "cashAndCollected": "現金及已取餐",
+  "logoPlaceholder": "你的標誌放在這裏",
+  "welcomeTitle": "{sample, select, yes {這是示範樣本} other {這是你的示範}}",
+  "welcomeIntro": "{sample, select, yes {這是一份<b>示範餐牌</b>，讓你了解整個運作，你隨時可以上載自己的餐牌。} other {這是你自己的餐牌及品牌，顯示在真實的訂單版面上。}}版面上現有的訂單都是例子，讓你看看繁忙時段的情況。",
+  "twoThings": "可以試試這兩樣：",
+  "hitButton": "在訂單上按<b>{button}</b>",
+  "scanQr": "掃描 <b>QR 碼</b>（或點按連結），以顧客身份落單，然後看看訂單如何送到",
+  "qrAlt": "前往你的顧客落單頁面的 QR 碼",
+  "openHere": "或在此裝置上開啟",
+  "copyLink": "複製連結",
+  "copyDescribedAs": "落單連結",
+  "noLinkTitle": "你的顧客落單連結",
+  "noLinkBody": "你的落單頁面連結在右上角的選單內。",
+  "asLive": "落單及廚房流程與正式運作時完全一樣。",
+  "startExploring": "開始探索",
+  "signupOffer": {
+    "heading": "立即登記，享免費一個月",
+    "sub": "直至你決定正式啟用，才開始計算。"
+  },
+  "cashIcon": "💵",
+  "walkBanner": "示範 · 這是你的餐牌，也是顧客將會看到的樣子。不會收取任何費用，也不會發出任何電郵。"
+}

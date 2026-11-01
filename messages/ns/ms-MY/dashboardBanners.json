@@ -1,0 +1,21 @@
+{
+  "breachHeadline": "{n, plural, one {{count} slot} other {{count} slot}} melebihi kapasiti — semak",
+  "batchOver": "{cat} melebihi kelompok — {count} untuk {slot} ({per} setiap kelompok)",
+  "eventStartOver": "Melebihi kapasiti pada permulaan acara — {n, plural, one {{count} item} other {{count} item}} untuk {slot}",
+  "kitchenOver": "Dapur melebihi kapasiti — {n, plural, one {{count} item} other {{count} item}} dimasak untuk {slot}",
+  "orderItems": "#{id} — {n, plural, one {{count} item} other {{count} item}}",
+  "placedAnyway": "Tetap dibuat: {list}",
+  "placedItem": "#{id} untuk {slot}",
+  "orphans": "{times} melebihi kapasiti — tiada pesanan ditemui yang berkaitan",
+  "dismiss": "Abaikan",
+  "kitchenCapacity": "Kapasiti dapur",
+  "overCapacity": "Melebihi kapasiti",
+  "wakeUnsupported": "Peranti ini tidak dapat mengekalkan skrin hidup.",
+  "wakeInsecure": "Skrin tidak dapat dikekalkan hidup daripada alamat ini.",
+  "wakeRetry": "Kekalkan skrin hidup — ketik untuk cuba lagi",
+  "wakeAcquire": "Kekalkan skrin hidup",
+  "degraded": {
+    "serverError": "Pelayan tidak dapat memuatkan pesanan{hasStatus, select, yes { (ralat {status})} other {}}. Menunjukkan pesanan dari {at}. Pesanan baharu mungkin tidak ditunjukkan.",
+    "unreachable": "Tidak dapat menghubungi pelayan. Menunjukkan pesanan dari {at}. Pesanan baharu mungkin tidak ditunjukkan."
+  }
+}

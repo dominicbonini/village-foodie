@@ -24,8 +24,10 @@
     "heading": "Perioada de probă gratuită nu a început încă"
   },
   "onTrial": "Aveți acces la toate funcțiile. Alegeți un plan înainte de sfârșitul perioadei de probă.",
+  "onTrialPaidEnd": "Aveți acces la toate funcțiile. La finalul perioadei de probă, planul {plan} costă {price} pe lună. Vă vom contacta înainte de atunci pentru a configura plata.",
   "onTrialNoCta": "Aveți acces la toate funcțiile.",
   "noCharge": "🔒 Nu vi se va percepe nimic pe durata perioadei de probă, care durează până pe {date}. Facturarea începe doar atunci când alegeți un plan și introduceți datele de plată. Până atunci nu aveți nimic de anulat și nimic de plătit.",
+  "noChargePaidEnd": "🔒 Nu vi se va percepe nimic pe durata perioadei de probă, care durează până pe {date}.",
   "fees": "*Pentru comenzile online se aplică comisioanele standard de procesare a plăților cu cardul",
   "setUpPayment": "⏱ Alegeți un plan înainte de sfârșitul perioadei de probă",
   "changeYourPlan": "Schimbați planul",

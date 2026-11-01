@@ -5,7 +5,9 @@ import { HATCHGRAB_SENDER } from '@/lib/email-config'
 // Language Phase 1c: a refusal of ours is `{ error, code, params }` (lib/i18n/onboarding-errors.ts). No truck is
 // known on this route, so its words are en-GB (docs/language-phase-1c-report.md).
 import { onboardingErrorBody } from '@/lib/i18n/onboarding-errors'
-import { DEFAULT_LOCALE } from '@/lib/i18n/locales'
+import { DEFAULT_LOCALE, isEnglish } from '@/lib/i18n/locales'
+import { localeForOperator } from '@/lib/i18n/server-locale'
+import { visitorCountryCodeOf } from '@/lib/visitor-country'
 // The reset email's words: messages/en-GB.json `emailAccount` (Language Phase 1c), in en-GB — the operator's
 // language is not known on this route (docs/language-phase-1c-report.md). The markup and the link stay here.
 import { translatorFor } from '@/lib/i18n/translator'
@@ -57,8 +59,11 @@ export async function POST(req: NextRequest) {
     })
 
   // Reset link points to HatchGrab (operator platform)
-  const resetUrl = `${HG_URL}/reset-password?token=${token}`
-  const t = translatorFor(DEFAULT_LOCALE, 'emailAccount.passwordReset')
+  // legal-languages-1 (1 November 2026): in the operator's language — their truck's country's, else the country they are
+  // asking from (lib/i18n/server-locale.ts localeForOperator) — and the link opens the page in it too (?lang=, proxy.ts).
+  const locale = await localeForOperator(supabase, operator.id, await visitorCountryCodeOf(req))
+  const resetUrl = `${HG_URL}/reset-password?token=${token}${isEnglish(locale) ? '' : `&lang=${locale}`}`
+  const t = translatorFor(locale, 'emailAccount.passwordReset')
 
   const html = `
     <div style="font-family:Arial,sans-serif;color:#334155;max-width:600px;">

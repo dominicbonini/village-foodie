@@ -1,0 +1,8 @@
+{
+  "notFoundTitle": "Sivua ei löytynyt",
+  "notFoundBody": "Emme löytäneet sivua. Se on ehkä siirretty, tai osoite on kirjoitettu väärin.",
+  "home": "Siirry etusivulle",
+  "errorTitle": "Jokin meni vikaan",
+  "errorBody": "Valitettavasti sivu ei latautunut. Yritä uudelleen tai palaa etusivulle.",
+  "retry": "Yritä uudelleen"
+}

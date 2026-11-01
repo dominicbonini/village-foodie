@@ -398,7 +398,7 @@ export async function promoteDraft(
           subtotal:       draft.subtotal,
           discount_amt:   draft.discount_amt,
           total:          draft.total,
-          total_minor:    draft.total_minor ?? toMinor(draft.total),
+          total_minor:    draft.total_minor ?? toMinor(draft.total, draft.currency),
           // 🔴 THE DRAFT'S CURRENCY — the one the hold was authorised in. orders_fill_currency_country
           // (20261010_07) would otherwise copy the truck's, which is the same today; naming it here makes
           // the order record what the customer was actually charged in. `country` is left to the trigger.

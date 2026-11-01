@@ -126,7 +126,9 @@ function capture(dir, outDir) {
     const p = PHASE[ph]; const d = path.join(outDir, ph); fs.mkdirSync(d, { recursive: true })
     const runs = p.areas ? p.areas.map(a => [`--capture-to=${d}`, `--area=${a}`]) : [p.capture(outDir)]
     for (const args of runs) {
-      const r = spawnSync(process.execPath, [`scripts/${p.file}`, ...args], { cwd: dir, encoding: 'utf8', maxBuffer: 1 << 28, env: { ...process.env, HG_KIT_CACHE_SUFFIX: 'languages-1-e2e' } })
+      // legal-languages-1 (1 November 2026): one bundle cache PER LANGUAGE — the audit runs several languages at once, and a shared
+      // cache let one run read another's half-written bundle (a Spanish run loaded Lithuanian words; others a broken module).
+      const r = spawnSync(process.execPath, [`scripts/${p.file}`, ...args], { cwd: dir, encoding: 'utf8', maxBuffer: 1 << 28, env: { ...process.env, HG_KIT_CACHE_SUFFIX: `languages-1-e2e-${TAG}` } })
       if (r.status !== 0) { console.log(`  ✗ capture ${ph} ${args.join(' ')} failed:\n${(r.stderr || r.stdout).slice(-1500)}`); process.exitCode = 1 }
     }
     const files = p.areas || p.dir ? fs.readdirSync(d).filter(f => f.endsWith('.json.gz')).map(f => path.join(d, f)) : [path.join(outDir, '1a.json.gz')]
@@ -297,5 +299,8 @@ async function overflowAll(views) {
   }
   fs.writeFileSync(path.join(OUT, 'findings.json'), JSON.stringify(findings, null, 1) + '\n')
   if (process.argv.includes('--dump')) fs.writeFileSync(path.join(OUT, 'views.json'), JSON.stringify(Object.fromEntries(pseudoViews.map(k => [k, views[k]]))))
+  // legal-languages-1 (1 November 2026): --dump-gb also writes the ENGLISH (GB) views, for the audit's wrong-language-on-an-English-page
+  // check (scripts/legal-languages-1-audit.cjs).
+  if (process.argv.includes('--dump-gb')) fs.writeFileSync(path.join(OUT, 'views-gb.json'), JSON.stringify(Object.fromEntries(Object.keys(views).filter(k => /(^|[|/])GB([|/.]|$)/.test(k)).map(k => [k, views[k]]))))
   if (!KEEP) fs.rmSync(dir, { recursive: true, force: true }); else console.log(`kept: ${dir}`)
 })().catch(e => { console.error(e); process.exit(1) })

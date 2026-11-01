@@ -13,5 +13,6 @@
   "countryTerms": "Country terms",
   "contact": "Contact",
   "lastUpdated": "Last updated {date}",
-  "questions": "Questions? <link>Get in touch</link> — we’re real people."
+  "questions": "Questions? <link>Get in touch</link> — we’re real people.",
+  "translationNote": "This is a translation. If it differs from the <link>English version</link>, the English version applies."
 }

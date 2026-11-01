@@ -1,0 +1,9 @@
+{
+  "title": "計劃及功能",
+  "generated": "產生日期：{date}",
+  "allowanceHeading": "網上訂單限額",
+  "smallPrint": "細則",
+  "priceNoteMasked": "顯示為「待定」的價格尚未公布。",
+  "omitNote": "本文件刻意不包括價格。",
+  "terms": "所列數字為上述日期已公布的計劃條款，日後或會更改。信用卡手續費由 Stripe 收取，並非 HatchGrab 的收費。本文件僅為摘要，並非合約。"
+}

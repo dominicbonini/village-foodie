@@ -1,0 +1,8 @@
+{
+  "notFoundTitle": "Nie znaleziono strony",
+  "notFoundBody": "Nie udało się znaleźć tej strony. Mogła zostać przeniesiona albo adres został błędnie wpisany.",
+  "home": "Przejdź do strony głównej",
+  "errorTitle": "Coś poszło nie tak",
+  "errorBody": "Przepraszamy, ta strona się nie wczytała. Spróbuj ponownie lub wróć do strony głównej.",
+  "retry": "Spróbuj ponownie"
+}

@@ -1,0 +1,14 @@
+{
+  "homeLabel": "Página inicial do HatchGrab",
+  "cta": "Enviar meu cardápio →",
+  "ctaShort": "Enviar cardápio",
+  "features": "Recursos",
+  "pricing": "Preços",
+  "logIn": "Entrar",
+  "country": {
+    "button": "País: {name}. Trocar país",
+    "menu": "País",
+    "title": "Escolha seu país",
+    "subline": "Preços, idioma e configurações mudam de acordo."
+  }
+}

@@ -7,6 +7,7 @@ import enNZ from '@/messages/en-NZ.json'
 import enCA from '@/messages/en-CA.json'
 import enMT from '@/messages/en-MT.json'
 import enGI from '@/messages/en-GI.json'
+import enSG from '@/messages/en-SG.json'
 import type { AppLocale } from './locales'
 /* eslint-disable @typescript-eslint/no-require-imports -- untyped on purpose (see scripts/split-messages.cjs) */
 const frFR: unknown = require('@/messages/fr-FR.json')
@@ -37,6 +38,13 @@ const elGR: unknown = require('@/messages/el-GR.json')
 const elCY: unknown = require('@/messages/el-CY.json')
 const bgBG: unknown = require('@/messages/bg-BG.json')
 const frLU: unknown = require('@/messages/fr-LU.json')
+const esMX: unknown = require('@/messages/es-MX.json')
+const ptBR: unknown = require('@/messages/pt-BR.json')
+const msMY: unknown = require('@/messages/ms-MY.json')
+const jaJP: unknown = require('@/messages/ja-JP.json')
+const zhHK: unknown = require('@/messages/zh-HK.json')
+const thTH: unknown = require('@/messages/th-TH.json')
+const arAE: unknown = require('@/messages/ar-AE.json')
 /* eslint-enable @typescript-eslint/no-require-imports */
 
-export const LOCALE_FILES: Partial<Record<AppLocale, unknown>> = { 'en-US': enUS, 'en-IE': enIE, 'en-AU': enAU, 'en-NZ': enNZ, 'en-CA': enCA, 'fr-FR': frFR, 'en-MT': enMT, 'en-GI': enGI, 'de-DE': deDE, 'de-AT': deAT, 'de-CH': deCH, 'de-LI': deLI, 'es-ES': esES, 'it-IT': itIT, 'pt-PT': ptPT, 'nl-NL': nlNL, 'nl-BE': nlBE, 'sv-SE': svSE, 'da-DK': daDK, 'nb-NO': nbNO, 'pl-PL': plPL, 'cs-CZ': csCZ, 'hu-HU': huHU, 'sk-SK': skSK, 'ro-RO': roRO, 'hr-HR': hrHR, 'sl-SI': slSI, 'fi-FI': fiFI, 'et-EE': etEE, 'lv-LV': lvLV, 'lt-LT': ltLT, 'el-GR': elGR, 'el-CY': elCY, 'bg-BG': bgBG, 'fr-LU': frLU }
+export const LOCALE_FILES: Partial<Record<AppLocale, unknown>> = { 'en-US': enUS, 'en-IE': enIE, 'en-AU': enAU, 'en-NZ': enNZ, 'en-CA': enCA, 'fr-FR': frFR, 'en-MT': enMT, 'en-GI': enGI, 'de-DE': deDE, 'de-AT': deAT, 'de-CH': deCH, 'de-LI': deLI, 'es-ES': esES, 'it-IT': itIT, 'pt-PT': ptPT, 'nl-NL': nlNL, 'nl-BE': nlBE, 'sv-SE': svSE, 'da-DK': daDK, 'nb-NO': nbNO, 'pl-PL': plPL, 'cs-CZ': csCZ, 'hu-HU': huHU, 'sk-SK': skSK, 'ro-RO': roRO, 'hr-HR': hrHR, 'sl-SI': slSI, 'fi-FI': fiFI, 'et-EE': etEE, 'lv-LV': lvLV, 'lt-LT': ltLT, 'el-GR': elGR, 'el-CY': elCY, 'bg-BG': bgBG, 'fr-LU': frLU, 'es-MX': esMX, 'pt-BR': ptBR, 'ms-MY': msMY, 'en-SG': enSG, 'ja-JP': jaJP, 'zh-HK': zhHK, 'th-TH': thTH, 'ar-AE': arAE }

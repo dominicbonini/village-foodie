@@ -633,6 +633,28 @@
       "Walnut": "Orzech włoski",
       "Wheatandtriticale": "Pszenica i pszenżyto",
       "Glutenbarleyoatsrye": "Gluten (jęczmień, owies, żyto)",
+      "Shrimp": "Krewetki",
+      "Crab": "Krab",
+      "Buckwheat": "Gryka",
+      "Abalone": "Słuchotka",
+      "Squid": "Kałamarnica",
+      "Salmonroe": "Ikra łososia",
+      "Orange": "Pomarańcza",
+      "Kiwifruit": "Kiwi",
+      "Beef": "Wołowina",
+      "Salmon": "Łosoś",
+      "Mackerel": "Makrela",
+      "Soybean": "Soja",
+      "Chicken": "Kurczak",
+      "Banana": "Banan",
+      "Pork": "Wieprzowina",
+      "Peach": "Brzoskwinia",
+      "Yam": "Pochrzyn",
+      "Apple": "Jabłko",
+      "Gelatin": "Żelatyna",
+      "Chestnut": "Kasztan jadalny",
+      "Naturallatex": "Lateks naturalny",
+      "Lactose": "Laktoza",
       "Nuts": "Orzechy",
       "Shellfish": "Owoce morza"
     }
@@ -4854,6 +4876,7 @@
       "ends": "{hasDate, select, yes {Okres próbny kończy się <hl>{date}</hl>} other {Okres próbny <hl>wkrótce</hl> się kończy}}",
       "offer": "{hasMonths, select, yes {{months, plural, one {Wszystkie funkcje za darmo przez # miesiąc} few {Wszystkie funkcje za darmo przez # miesiące} many {Wszystkie funkcje za darmo przez # miesięcy} other {Wszystkie funkcje za darmo przez # miesiąca}}} other {Wszystkie funkcje za darmo w okresie próbnym}}",
       "body": "{hasDate, select, yes {W okresie próbnym, który trwa do <b>{date}</b>, nie zapłacisz nic. Opłaty zaczynają się dopiero wtedy, gdy wybierzesz plan i podasz dane płatnicze. Do tego czasu nie ma czego anulować ani za co płacić. Wybierz plan przed tym terminem — jeśli tego nie zrobisz, przejdziesz na plan {fallback} i niektóre funkcje przestaną działać.} other {W okresie próbnym nie zapłacisz nic. Opłaty zaczynają się dopiero wtedy, gdy wybierzesz plan i podasz dane płatnicze. Do tego czasu nie ma czego anulować ani za co płacić. Wybierz plan przed końcem okresu próbnego — jeśli tego nie zrobisz, przejdziesz na plan {fallback} i niektóre funkcje przestaną działać.}}",
+      "bodyPaidEnd": "{hasDate, select, yes {W okresie próbnym, który trwa do <b>{date}</b>, nie zapłacisz nic. Po zakończeniu okresu próbnego plan {fallback} kosztuje {price} miesięcznie. Skontaktujemy się z Tobą wcześniej, aby skonfigurować płatność.} other {W okresie próbnym nie zapłacisz nic. Po zakończeniu okresu próbnego plan {fallback} kosztuje {price} miesięcznie. Skontaktujemy się z Tobą wcześniej, aby skonfigurować płatność.}}",
       "fees": "*Przy zamówieniach online obowiązują standardowe opłaty za obsługę płatności kartą",
       "upgrade": "Zmień plan tutaj →"
     }
@@ -4884,8 +4907,10 @@
       "heading": "Twój bezpłatny okres próbny jeszcze się nie rozpoczął"
     },
     "onTrial": "Masz dostęp do wszystkich funkcji. Wybierz plan przed końcem okresu próbnego.",
+    "onTrialPaidEnd": "Masz dostęp do wszystkich funkcji. Po zakończeniu okresu próbnego plan {plan} kosztuje {price} miesięcznie. Skontaktujemy się z Tobą wcześniej, aby skonfigurować płatność.",
     "onTrialNoCta": "Masz dostęp do wszystkich funkcji.",
     "noCharge": "🔒 W okresie próbnym, który trwa do {date}, nie zapłacisz nic. Opłaty zaczynają się dopiero wtedy, gdy wybierzesz plan i podasz dane płatnicze. Do tego czasu nie ma czego anulować ani za co płacić.",
+    "noChargePaidEnd": "🔒 W okresie próbnym, który trwa do {date}, nie zapłacisz nic.",
     "fees": "*Przy zamówieniach online obowiązują standardowe opłaty za obsługę płatności kartą",
     "setUpPayment": "⏱ Wybierz plan przed końcem okresu próbnego",
     "changeYourPlan": "Zmień plan",
@@ -5472,7 +5497,6 @@
     "hero": {
       "title": "System zamówień stworzony dla <lean>food trucków.</lean>",
       "subSmall": "Prześlij swoje menu, bez rejestracji.<br></br>Działające demo w niecałe 60 sekund.",
-      "tagline": "Mniej czasu na organizację.<br></br>Więcej czasu na <lean>gotowanie.</lean>",
       "cta": "Prześlij moje menu →",
       "ctaNote": "<lead>Prześlij zdjęcie swojego menu i zobacz, jak działa, w niecałe 60 sekund.</lead><small>Bez rejestracji. Bez karty.</small>"
     },
@@ -5556,7 +5580,6 @@
     }
   },
   "landingFooter": {
-    "tagline": "Mniej czasu na organizację.<br></br>Więcej czasu na gotowanie.",
     "features": "Funkcje",
     "pricing": "Cennik",
     "privacy": "Prywatność",
@@ -5638,7 +5661,8 @@
     "countryTerms": "Warunki krajowe",
     "contact": "Kontakt",
     "lastUpdated": "Ostatnia aktualizacja: {date}",
-    "questions": "Masz pytania? <link>Napisz do nas</link> — odpowiadają prawdziwi ludzie."
+    "questions": "Masz pytania? <link>Napisz do nas</link> — odpowiadają prawdziwi ludzie.",
+    "translationNote": "To jest tłumaczenie. W przypadku rozbieżności z <link>wersją angielską</link> rozstrzygająca jest wersja angielska."
   },
   "truckPage": {
     "meta": {
@@ -5794,7 +5818,15 @@
       "Australiancards": "karty australijskie",
       "NewZealandcards": "karty nowozelandzkie",
       "Canadiancards": "karty kanadyjskie",
-      "Swisscards": "karty szwajcarskie"
+      "Swisscards": "karty szwajcarskie",
+      "Braziliancards": "karty brazylijskie",
+      "Mexicancards": "karty meksykańskie",
+      "Japanesecards": "karty japońskie",
+      "Singaporecards": "karty z Singapuru",
+      "HongKongcards": "karty z Hongkongu",
+      "Malaysiancards": "karty malezyjskie",
+      "Thaicards": "karty tajlandzkie",
+      "UAEcards": "karty z ZEA"
     },
     "perMonth": {
       "mo": "{amount}/mies.",
@@ -5963,7 +5995,8 @@
   "pricing": {
     "banner": {
       "title": "{months, plural, one {Przez pierwszy miesiąc korzystasz całkowicie za darmo — ze wszystkich funkcji.} few {Przez pierwsze # miesiące korzystasz całkowicie za darmo — ze wszystkich funkcji.} many {Przez pierwsze # miesięcy korzystasz całkowicie za darmo — ze wszystkich funkcji.} other {Przez pierwsze # miesięcy korzystasz całkowicie za darmo — ze wszystkich funkcji.}}",
-      "body": "Z {brand} klienci zamawiają z wyprzedzeniem i płacą przy odbiorze, więc możesz przyjmować zamówienia online bez podłączania operatora płatności kartą. Wolisz pobierać płatność z góry? Włącz płatności kartą online w dowolnej chwili. Po zakończeniu okresu próbnego przechodzisz na plan <plan>{fallback}</plan>{fallbackFree, select, yes { (bez opłaty miesięcznej)} other {}}, chyba że wybierzesz inny plan. Bez karty na start, bez umowy, rezygnujesz w dowolnej chwili."
+      "body": "Z {brand} klienci zamawiają z wyprzedzeniem i płacą przy odbiorze, więc możesz przyjmować zamówienia online bez podłączania operatora płatności kartą. Wolisz pobierać płatność z góry? Włącz płatności kartą online w dowolnej chwili. Po zakończeniu okresu próbnego przechodzisz na plan <plan>{fallback}</plan>{fallbackFree, select, yes { (bez opłaty miesięcznej)} other {}}, chyba że wybierzesz inny plan. Bez karty na start, bez umowy, rezygnujesz w dowolnej chwili.",
+      "bodyOnly": "Z {brand} klienci zamawiają z wyprzedzeniem i płacą przy odbiorze, więc możesz przyjmować zamówienia online bez podłączania operatora płatności kartą. Wolisz pobierać płatność z góry? Włącz płatności kartą online w dowolnej chwili. Po zakończeniu okresu próbnego plan <plan>{fallback}</plan> kosztuje {price} miesięcznie. Skontaktujemy się z Tobą wcześniej, aby skonfigurować płatność. Bez karty na start, bez umowy, rezygnujesz w dowolnej chwili."
     },
     "card": {
       "perTruckMonth": "za food truck / miesiąc",
@@ -6231,6 +6264,9 @@
       "stateTerritory": "Stan lub terytorium",
       "province": "Prowincja",
       "county": "Hrabstwo",
+      "prefecture": "Prefektura",
+      "emirate": "Emirat",
+      "region": "Region",
       "area": "Miejscowość (wieś lub miasto)",
       "townOrArea": "Miasto lub gmina",
       "city": "Miasto",
@@ -6326,5 +6362,13 @@
     "backToMenu": "Wróć do menu",
     "formNote": "To jest demo: nikt nie płaci i nic nie jest wysyłane, więc nie musisz podawać e-maila.",
     "namePlaceholder": "Alex"
+  },
+  "errorPage": {
+    "notFoundTitle": "Nie znaleziono strony",
+    "notFoundBody": "Nie udało się znaleźć tej strony. Mogła zostać przeniesiona albo adres został błędnie wpisany.",
+    "home": "Przejdź do strony głównej",
+    "errorTitle": "Coś poszło nie tak",
+    "errorBody": "Przepraszamy, ta strona się nie wczytała. Spróbuj ponownie lub wróć do strony głównej.",
+    "retry": "Spróbuj ponownie"
   }
 }

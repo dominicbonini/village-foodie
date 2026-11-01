@@ -78,6 +78,7 @@
     "ends": "{hasDate, select, yes {Zkušební období končí <hl>{date}</hl>} other {Zkušební období končí <hl>brzy</hl>}}",
     "offer": "{hasMonths, select, yes {{months, plural, one {Všechny funkce zdarma na # měsíc} few {Všechny funkce zdarma na # měsíce} other {Všechny funkce zdarma na # měsíců}}} other {Všechny funkce zdarma po dobu zkušebního období}}",
     "body": "{hasDate, select, yes {Během zkušebního období, které trvá do <b>{date}</b>, vám nic neúčtujeme. Účtovat začneme teprve, až si vyberete tarif a zadáte platební údaje. Do té doby není co rušit ani platit. Vyberte si tarif do konce zkušebního období — jinak přejdete na {fallback} a některé funkce přestanou fungovat.} other {Během zkušebního období vám nic neúčtujeme. Účtovat začneme teprve, až si vyberete tarif a zadáte platební údaje. Do té doby není co rušit ani platit. Vyberte si tarif do konce zkušebního období — jinak přejdete na {fallback} a některé funkce přestanou fungovat.}}",
+    "bodyPaidEnd": "{hasDate, select, yes {Během zkušebního období, které trvá do <b>{date}</b>, vám nic neúčtujeme. Po skončení zkušebního období bude tarif {fallback} stát {price} měsíčně. Ještě předtím se vám ozveme, abychom nastavili platbu.} other {Během zkušebního období vám nic neúčtujeme. Po skončení zkušebního období bude tarif {fallback} stát {price} měsíčně. Ještě předtím se vám ozveme, abychom nastavili platbu.}}",
     "fees": "*U online objednávek se účtují standardní poplatky za zpracování karet",
     "upgrade": "Přejít na vyšší tarif →"
   }

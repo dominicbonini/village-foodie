@@ -1,0 +1,30 @@
+{
+  "labels": {
+    "weekDates": "週の日付",
+    "dayList": "曜日の一覧",
+    "place": "出店場所",
+    "venue": "会場",
+    "area": "エリア",
+    "dayDate": "曜日・日付",
+    "times": "時間",
+    "orderLink": "注文リンク",
+    "locationTag": "位置情報タグ"
+  },
+  "weekHeader": "{truck} — 今週の出店場所：",
+  "dayLine": "{day} — {where} — {times}",
+  "dayLineNoTimes": "{day} — {where}",
+  "dayLineCancelled": "{day} — {where} — 申し訳ありませんが中止になりました",
+  "noDates": "今週の出店予定はありません。またチェックしてください。",
+  "orderAhead": "事前注文はこちら：{url}",
+  "orderAheadTagged": "事前注文はこちら：{url} {tag}",
+  "eventLine": "{when}、{truck}は{where}に出店します。{times}",
+  "eventLineNoTimes": "{when}、{truck}は{where}に出店します。",
+  "cancelledSorry": "申し訳ありませんが、{when}の{where}への出店は中止になりました。",
+  "cancelledApology": "お越しいただく予定だった皆さま、申し訳ありません。またすぐにお会いしましょう。",
+  "when": {
+    "today": "今日",
+    "tonight": "今夜",
+    "tomorrow": "明日",
+    "dated": "{date}"
+  }
+}

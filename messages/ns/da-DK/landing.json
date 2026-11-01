@@ -7,7 +7,6 @@
   "hero": {
     "title": "Bestillingssystemet, der er bygget til <lean>foodtrucks.</lean>",
     "subSmall": "Upload dit menukort, uden tilmelding.<br></br>Se en demo, der virker, på under 60 sekunder.",
-    "tagline": "Mindre tid på bestillinger.<br></br>Mere tid ved <lean>grillen.</lean>",
     "cta": "Upload mit menukort →",
     "ctaNote": "<lead>Upload et billede af dit menukort, og se det virke på under 60 sekunder.</lead><small>Ingen tilmelding. Intet betalingskort.</small>"
   },

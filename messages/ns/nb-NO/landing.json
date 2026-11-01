@@ -7,7 +7,6 @@
   "hero": {
     "title": "Bestillingssystemet laget for <lean>matbiler.</lean>",
     "subSmall": "Last opp menyen din, uten registrering.<br></br>Se en fungerende demo på under 60 sekunder.",
-    "tagline": "Mindre tid på bestillinger.<br></br>Mer tid til <lean>matlaging.</lean>",
     "cta": "Last opp menyen min →",
     "ctaNote": "<lead>Last opp et bilde av menyen din og se den i bruk på under 60 sekunder.</lead><small>Ingen registrering. Ingen kort.</small>"
   },

@@ -1,0 +1,42 @@
+{
+  "publicName": "Acara peribadi",
+  "chip": "Peribadi",
+  "grid": {
+    "orderingSection": "PESANAN",
+    "linkRowLabel": "Terima pesanan melalui pautan peribadi dan kod QR",
+    "columnTitle": "Jenis Peribadi terbina dalam. Ia tidak boleh ditukar nama, dialihkan atau dipadam."
+  },
+  "form": {
+    "help": "Dipaparkan pada jadual anda sebagai “Acara peribadi” dengan tarikh dan masa sahaja — tidak sekali-kali alamat, peta atau Village Foodie.",
+    "linkPromise": "Tetamu membuat pesanan melalui pautan peribadi dan kod QR — anda akan menerimanya selepas menyimpan.",
+    "nameLabel": "Nama acara",
+    "nameHelp": "Tetamu melihat nama ini di bahagian atas halaman pesanan.",
+    "namePlaceholder": "Majlis perkahwinan Aisyah & Faiz",
+    "previewNote": "Cara ia dipaparkan pada jadual anda — tanpa tempat, bandar atau poskod.",
+    "needsTimes": "Tambah masa mula dan tamat — acara peribadi yang menerima pesanan melalui pautan memerlukannya."
+  },
+  "link": {
+    "button": "Pautan & QR",
+    "title": "Pautan peribadi & kod QR",
+    "label": "Pautan peribadi",
+    "copy": "Salin",
+    "copied": "Disalin",
+    "qrDownload": "Muat turun QR",
+    "tableCards": "Cetak kad meja",
+    "newLink": "Buat pautan baharu",
+    "working": "Sedang diproses…",
+    "newLinkConfirm": "Buat pautan baharu? Pautan semasa akan berhenti berfungsi serta-merta, dan mana-mana kod QR yang telah anda cetak juga akan berhenti berfungsi.",
+    "newLinkHelp": "Gunakan ini jika pautan telah tersebar ke tempat yang tidak sepatutnya. Pautan semasa berhenti berfungsi serta-merta, dan kod QR yang dicetak juga berhenti berfungsi.",
+    "newLinkFailed": "Tidak dapat membuat pautan baharu.",
+    "offNotice": "Pesanan melalui pautan peribadi dimatikan untuk acara ini, jadi tiada pautan untuk dikongsi. Acara ini masih dipaparkan pada jadual anda sebagai “Acara peribadi”."
+  },
+  "cards": {
+    "printTitle": "{truck} — kad meja",
+    "scan": "Imbas untuk memesan",
+    "blurb": "Pesan dan bayar di telefon anda. Kami akan memanggil nama anda apabila pesanan sedia.",
+    "footer": "Pesanan oleh HatchGrab"
+  },
+  "noSinglePost": "Acara peribadi tidak mendapat hantaran sendiri — ia muncul pada poster mingguan anda sebagai “Acara peribadi”.",
+  "confirmToPrivate": "Ini menyembunyikan alamat dan acara daripada peta. Tetamu memerlukan pautan peribadi untuk membuat pesanan.",
+  "confirmFromPrivate": "Ini menjadikan acara awam: alamat dan pin petanya akan dipaparkan, dan pautan peribadi akan berhenti berfungsi."
+}

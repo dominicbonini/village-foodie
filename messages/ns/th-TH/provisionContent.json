@@ -1,0 +1,57 @@
+{
+  "firstVanName": "รถคันที่ 1",
+  "demoCategories": {
+    "pizza": "พิซซ่า",
+    "burgers": "เบอร์เกอร์",
+    "mains": "จานหลัก",
+    "sides": "เครื่องเคียง",
+    "drinks": "เครื่องดื่ม"
+  },
+  "demoTemplates": {
+    "pizza": {
+      "label": "🍕 รถขายพิซซ่า",
+      "items": {
+        "margherita": "มาร์เกอริต้า",
+        "pepperoni": "เปปเปอโรนี",
+        "ndujaHoney": "เอ็นดูยาและน้ำผึ้ง",
+        "fourCheese": "โฟร์ชีส",
+        "gardenVeg": "ผักรวม",
+        "garlicBread": "ขนมปังกระเทียม",
+        "rocketParmesan": "ร็อกเก็ตและพาร์เมซาน",
+        "olives": "มะกอก",
+        "sanPellegrino": "ซานเพลลีกรีโน",
+        "coke": "โค้ก"
+      }
+    },
+    "burgers": {
+      "label": "🍔 รถขายเบอร์เกอร์",
+      "items": {
+        "classicCheeseburger": "ชีสเบอร์เกอร์คลาสสิก",
+        "doubleBacon": "ดับเบิลเบคอน",
+        "buttermilkChicken": "ไก่บัตเตอร์มิลค์",
+        "halloumiStack": "ฮาลูมิสแต็ก",
+        "smashBurger": "สแมชเบอร์เกอร์",
+        "skinOnFries": "เฟรนช์ฟรายส์ติดเปลือก",
+        "loadedCheeseFries": "เฟรนช์ฟรายส์ชีสจัดเต็ม",
+        "onionRings": "หอมทอด",
+        "craftLemonade": "เลมอนเนดโฮมเมด",
+        "coke": "โค้ก"
+      }
+    },
+    "curries": {
+      "label": "🍛 รถขายแกง",
+      "items": {
+        "chickenTikkaMasala": "ไก่ทิกก้ามาซาล่า",
+        "lambRoganJosh": "แกงโรแกนจอชแกะ",
+        "chanaMasala": "ชาน่ามาซาล่า",
+        "butterChicken": "ไก่เนย",
+        "saagPaneer": "ซากปานีร์",
+        "pilauRice": "ข้าวพิลาฟ",
+        "garlicNaan": "นานกระเทียม",
+        "onionBhaji": "หอมใหญ่ชุบแป้งทอด (บาจี)",
+        "mangoLassi": "ลัสซี่มะม่วง",
+        "coke": "โค้ก"
+      }
+    }
+  }
+}

@@ -1,0 +1,18 @@
+{
+  "meta": {
+    "title": "Sokongan",
+    "description": "Dapatkan bantuan dengan HatchGrab. Hantar mesej kepada kami dan kami akan membalas melalui e-mel."
+  },
+  "logIn": "Log masuk",
+  "eyebrow": "Sokongan",
+  "title": "Apa yang boleh kami bantu?",
+  "lede": "Ada sesuatu yang tidak berfungsi, atau soalan tentang akaun anda? Dua cara untuk menghubungi kami — kedua-duanya akan kami balas melalui e-mel.",
+  "emailUs": "E-mel kami",
+  "formHeading": "Atau isi borang di bawah",
+  "loadingForm": "Memuatkan borang…",
+  "formTitle": "Hubungi sokongan HatchGrab",
+  "privacy": "Privasi",
+  "terms": "Terma",
+  "about": "Tentang kami",
+  "copyright": "© {year} HatchGrab"
+}

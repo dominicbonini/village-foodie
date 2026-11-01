@@ -1,5 +1,6 @@
 'use client';
 
+import { stripeLocaleOf } from '@/lib/stripe-locale'
 import { useState, useEffect, useLayoutEffect, useMemo, useRef, useCallback, use, type ReactNode } from 'react';
 import { soldOutRefusalMessage } from '@/lib/payments/sold-out-copy';
 import { isValidEmail } from '@/lib/contact-validation'
@@ -37,8 +38,9 @@ import { toggleWithGroupRules, validateModifierSelection, minRequiredForGroup, s
 import { clockGridMinutes } from '@/lib/slot-generation'
 import { currencySymbol as currencySymbolOf, formatMajorOrBare, formatMinorOrBare, type MoneyFormat } from '@/lib/money-format'
 import { currencyInfo } from '@/lib/currencies'
+import { minorDigits } from '@/lib/money-format'
 import { feePhrase } from '@/lib/fee-phrase'
-import { PRIVACY_PATH } from '@/lib/legal'
+import { legalPath } from '@/lib/legal'
 import { MoneyProvider } from '@/components/MoneyContext'
 // Phase 3 screens: tax, a tip and the service fee, SHOWN with the server's own pure engine. The server
 // re-prices on submit; the browser sends only the tip choice.
@@ -1577,10 +1579,12 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
    * that reads them renders exactly what it did before. */
   const checkout = truck?.checkout ?? null
   const cardChosen = !!(truck?.card_payments_ready && payByCard)
-  const foodMinor = Math.round(total * 100)
+  // world-countries-1 (31 October 2026): the currency's own minor units — whole yen for JPY (never ×100). GBP/USD/EUR: as before.
+  const minorDp = truck?.money?.currency ? minorDigits(truck.money.currency) : 2
+  const foodMinor = Math.round(total * 10 ** minorDp)
   const tipOtherMinor = (() => {
     const m = tipOther.trim().replace(/,/g, '').match(/^(\d+)(?:\.(\d{1,2}))?$/)
-    return m ? Number(m[1]) * 100 + Number((m[2] ?? '').padEnd(2, '0')) : 0
+    return m ? Number(m[1]) * 10 ** minorDp + (minorDp ? Number((m[2] ?? '').padEnd(minorDp, '0').slice(0, minorDp)) : 0) : 0
   })()
   const tipChoice: TipChoice = useMemo(() => (tipSel === 'none' ? { kind: 'none' }
     : tipSel === 'other' ? (tipOtherMinor > 0 ? { kind: 'amount', minor: tipOtherMinor } : { kind: 'none' })
@@ -1591,7 +1595,7 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
     channel: cardChosen ? 'online_card' : 'online_pay_at_truck',
     tip: showTip ? tipChoice : null,
   }) : null
-  const grandTotal = pageCharges ? pageCharges.totalMinor / 100 : total
+  const grandTotal = pageCharges ? pageCharges.totalMinor / 10 ** minorDp : total
 
   const hasItems = basket.length > 0 || appliedDeals.length > 0
   const totalItems = basket.reduce((s, b) => s + b.quantity, 0)
@@ -1731,7 +1735,7 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
   // name, email and phone are collected. Opens in a new tab so the basket and form stay as they are.
   const privacyLinkEl = (
     <p className="text-center text-slate-400 text-xs mt-1">
-      <a href={PRIVACY_PATH} target="_blank" rel="noopener noreferrer" className="underline hover:text-slate-600">{tOrder('privacyLink')}</a>
+      <a href={legalPath('privacy', { locale: pageLocale })} target="_blank" rel="noopener noreferrer" className="underline hover:text-slate-600">{tOrder('privacyLink')}</a>
     </p>
   )
   // UNDER "Pay at the truck": what that choice leaves out — one line, either or both halves.
@@ -2057,6 +2061,8 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
         // Appearance only — no behaviour.
         const elements = stripe.elements({
           clientSecret: payment.clientSecret,
+          // legal-languages-1: Stripe's card form in the page's language (English pages: Stripe's 'auto', as before).
+          ...(stripeLocaleOf(pageLocale) ? { locale: stripeLocaleOf(pageLocale) as never } : {}),
           appearance: { theme: 'flat', variables: { colorPrimary: '#f97316', borderRadius: '12px', fontFamily: 'inherit' } },
         })
         // ⚠️ WALLETS ON. Apple Pay and Google Pay render as native buttons where the browser and device
@@ -2087,7 +2093,7 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
       elementsRef.current = null
       setElementReady(false)
     }
-  }, [payment?.clientSecret, payment?.stripeAccount, paymentBoxEl])
+  }, [payment?.clientSecret, payment?.stripeAccount, paymentBoxEl, pageLocale])
 
   // ── 🔴 CONFIRM. THE ONE PLACE MONEY IS AUTHORISED. ──────────────────────────────────────────────
   const confirmCardPayment = async () => {
@@ -2422,7 +2428,7 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
           clientSecret:  data.clientSecret as string,
           stripeAccount: data.stripeAccount as string,
           orderKey:      data.orderKey as string,
-          totalPence:    Math.round(Number(data.total ?? 0) * 100),
+          totalPence:    Math.round(Number(data.total ?? 0) * 10 ** minorDp),   // world-countries-1: the currency's minor units
           // Stamped with the basket it was authorised FOR, so a later reopen can tell "show this again"
           // from "this is for a basket that no longer exists".
           fingerprint:   basketFingerprint,
@@ -4484,6 +4490,8 @@ function OrderConfirmation({
   time: TimeSettings | null | undefined
 }) {
   const t = useT('order')
+  // legal-languages-1: the privacy policy in the truck's language (English for an English truck, as before).
+  const privacyHref = legalPath('privacy', { locale: useAppLocale() })
   const amount = (major: number) => formatMajorOrBare(major, money, 'order confirmation')
   const ts = timeSettingsOr(time, 'order confirmation')
   const at = (slot: string | null) => formatSlot(slot, ts)
@@ -4642,7 +4650,7 @@ function OrderConfirmation({
           </a>
           {/* Legal follow-ups (19 October 2026): the privacy policy, small, under the way back. */}
           <p className="text-slate-400 text-xs mt-4">
-            <a href={PRIVACY_PATH} target="_blank" rel="noopener noreferrer" className="underline hover:text-slate-600">{t('privacyLink')}</a>
+            <a href={privacyHref} target="_blank" rel="noopener noreferrer" className="underline hover:text-slate-600">{t('privacyLink')}</a>
           </p>
         </div>
       </div>

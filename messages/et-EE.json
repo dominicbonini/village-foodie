@@ -633,6 +633,28 @@
       "Walnut": "Kreeka pähkel",
       "Wheatandtriticale": "Nisu ja tritikale",
       "Glutenbarleyoatsrye": "Gluteen (oder, kaer, rukis)",
+      "Shrimp": "Krevetid",
+      "Crab": "Krabi",
+      "Buckwheat": "Tatar",
+      "Abalone": "Merikõrv",
+      "Squid": "Kalmaar",
+      "Salmonroe": "Lõhemari",
+      "Orange": "Apelsin",
+      "Kiwifruit": "Kiivi",
+      "Beef": "Veiseliha",
+      "Salmon": "Lõhe",
+      "Mackerel": "Makrell",
+      "Soybean": "Sojaoad",
+      "Chicken": "Kanaliha",
+      "Banana": "Banaan",
+      "Pork": "Sealiha",
+      "Peach": "Virsik",
+      "Yam": "Jamss",
+      "Apple": "Õun",
+      "Gelatin": "Želatiin",
+      "Chestnut": "Kastan",
+      "Naturallatex": "Looduslik lateks",
+      "Lactose": "Laktoos",
       "Nuts": "Pähklid",
       "Shellfish": "Koorikloomad ja molluskid"
     }
@@ -4854,6 +4876,7 @@
       "ends": "{hasDate, select, yes {Prooviperioodi lõpp: <hl>{date}</hl>} other {Prooviperiood lõpeb <hl>peagi</hl>}}",
       "offer": "{hasMonths, select, yes {{months, plural, one {Kõik funktsioonid tasuta # kuu jooksul} other {Kõik funktsioonid tasuta # kuu jooksul}}} other {Kõik funktsioonid tasuta prooviperioodi jooksul}}",
       "body": "{hasDate, select, yes {Prooviperioodi ajal, mis kestab kuni <b>{date}</b>, ei võeta sinult mingit tasu. Arveldus algab alles siis, kui valid paketi ja sisestad oma makseandmed. Seni pole midagi tühistada ega maksta. Vali pakett enne seda kuupäeva — kui sa seda ei tee, viiakse sind üle paketile {fallback} ja mõned funktsioonid lakkavad töötamast.} other {Prooviperioodi ajal ei võeta sinult mingit tasu. Arveldus algab alles siis, kui valid paketi ja sisestad oma makseandmed. Seni pole midagi tühistada ega maksta. Vali pakett enne prooviperioodi lõppu — kui sa seda ei tee, viiakse sind üle paketile {fallback} ja mõned funktsioonid lakkavad töötamast.}}",
+      "bodyPaidEnd": "{hasDate, select, yes {Prooviperioodi ajal, mis kestab kuni <b>{date}</b>, ei võeta sinult mingit tasu. Kui prooviperiood lõpeb, on paketi {fallback} hind {price} kuus. Võtame sinuga enne seda ühendust, et maksmine korraldada.} other {Prooviperioodi ajal ei võeta sinult mingit tasu. Kui prooviperiood lõpeb, on paketi {fallback} hind {price} kuus. Võtame sinuga enne seda ühendust, et maksmine korraldada.}}",
       "fees": "*Veebitellimustele kehtivad tavapärased kaardimaksete töötlustasud",
       "upgrade": "Vali pakett siin →"
     }
@@ -4884,8 +4907,10 @@
       "heading": "Sinu tasuta prooviperiood pole veel alanud"
     },
     "onTrial": "Sul on kõik funktsioonid. Vali pakett enne prooviperioodi lõppu.",
+    "onTrialPaidEnd": "Sul on kõik funktsioonid. Kui prooviperiood lõpeb, on paketi {plan} hind {price} kuus. Võtame sinuga enne seda ühendust, et maksmine korraldada.",
     "onTrialNoCta": "Sul on kõik funktsioonid.",
     "noCharge": "🔒 Prooviperioodi ajal, mis kestab kuni {date}, ei võeta sinult mingit tasu. Arveldus algab alles siis, kui valid paketi ja sisestad oma makseandmed. Seni pole midagi tühistada ega maksta.",
+    "noChargePaidEnd": "🔒 Prooviperioodi ajal, mis kestab kuni {date}, ei võeta sinult mingit tasu.",
     "fees": "*Veebitellimustele kehtivad tavapärased kaardimaksete töötlustasud",
     "setUpPayment": "⏱ Vali pakett enne prooviperioodi lõppu",
     "changeYourPlan": "Muuda paketti",
@@ -5472,7 +5497,6 @@
     "hero": {
       "title": "Tellimissüsteem, mis on loodud <lean>toiduautodele.</lean>",
       "subSmall": "Laadi oma menüü üles, registreerumist pole vaja.<br></br>Näed töötavat demot vähem kui 60 sekundiga.",
-      "tagline": "Vähem askeldamist.<br></br>Rohkem <lean>kokkamist.</lean>",
       "cta": "Laadi oma menüü üles →",
       "ctaNote": "<lead>Laadi üles foto oma menüüst ja näed seda töötamas vähem kui 60 sekundiga.</lead><small>Registreerumist pole vaja. Pangakaarti pole vaja.</small>"
     },
@@ -5556,7 +5580,6 @@
     }
   },
   "landingFooter": {
-    "tagline": "Vähem askeldamist.<br></br>Rohkem kokkamist.",
     "features": "Funktsioonid",
     "pricing": "Hinnad",
     "privacy": "Privaatsus",
@@ -5638,7 +5661,8 @@
     "countryTerms": "Riigi tingimused",
     "contact": "Kontakt",
     "lastUpdated": "Viimati uuendatud: {date}",
-    "questions": "Küsimusi? <link>Võta ühendust</link> — me oleme päris inimesed."
+    "questions": "Küsimusi? <link>Võta ühendust</link> — me oleme päris inimesed.",
+    "translationNote": "See on tõlge. Kui see erineb <link>ingliskeelsest versioonist</link>, kehtib ingliskeelne versioon."
   },
   "truckPage": {
     "meta": {
@@ -5794,7 +5818,15 @@
       "Australiancards": "Austraalia kaardid",
       "NewZealandcards": "Uus-Meremaa kaardid",
       "Canadiancards": "Kanada kaardid",
-      "Swisscards": "Šveitsi kaardid"
+      "Swisscards": "Šveitsi kaardid",
+      "Braziliancards": "Brasiilia kaardid",
+      "Mexicancards": "Mehhiko kaardid",
+      "Japanesecards": "Jaapani kaardid",
+      "Singaporecards": "Singapuri kaardid",
+      "HongKongcards": "Hongkongi kaardid",
+      "Malaysiancards": "Malaisia kaardid",
+      "Thaicards": "Tai kaardid",
+      "UAEcards": "AÜE kaardid"
     },
     "perMonth": {
       "mo": "{amount}/kuu",
@@ -5963,7 +5995,8 @@
   "pricing": {
     "banner": {
       "title": "{months, plural, one {Sinu esimene kuu on täiesti tasuta — kõik funktsioonid avatud.} other {Sinu esimesed # kuud on täiesti tasuta — kõik funktsioonid avatud.}}",
-      "body": "{brand} võimaldab klientidel ette tellida ja maksta kättesaamisel, nii et saad veebitellimusi vastu võtta ilma kaardimaksete teenusepakkujat üldse ühendamata. Eelistad makset kohe ette? Lisa veebipõhised kaardimaksed millal tahes. Kui prooviperiood lõpeb ja sa ei vali muud paketti, lähed üle paketile <plan>{fallback}</plan>{fallbackFree, select, yes { — ilma kuutasuta} other {}}. Alustamiseks pole pangakaarti vaja, lepingut pole, loobu igal ajal."
+      "body": "{brand} võimaldab klientidel ette tellida ja maksta kättesaamisel, nii et saad veebitellimusi vastu võtta ilma kaardimaksete teenusepakkujat üldse ühendamata. Eelistad makset kohe ette? Lisa veebipõhised kaardimaksed millal tahes. Kui prooviperiood lõpeb ja sa ei vali muud paketti, lähed üle paketile <plan>{fallback}</plan>{fallbackFree, select, yes { — ilma kuutasuta} other {}}. Alustamiseks pole pangakaarti vaja, lepingut pole, loobu igal ajal.",
+      "bodyOnly": "{brand} võimaldab klientidel ette tellida ja maksta kättesaamisel, nii et saad veebitellimusi vastu võtta ilma kaardimaksete teenusepakkujat üldse ühendamata. Eelistad makset kohe ette? Lisa veebipõhised kaardimaksed millal tahes. Kui prooviperiood lõpeb, on paketi <plan>{fallback}</plan> hind {price} kuus. Võtame sinuga enne seda ühendust, et maksmine korraldada. Alustamiseks pole pangakaarti vaja, lepingut pole, loobu igal ajal."
     },
     "card": {
       "perTruckMonth": "toiduauto kohta kuus",
@@ -6231,6 +6264,9 @@
       "stateTerritory": "Osariik või territoorium",
       "province": "Provints",
       "county": "Maakond",
+      "prefecture": "Prefektuur",
+      "emirate": "Emiraat",
+      "region": "Piirkond",
       "area": "Piirkond (küla, alev või linn)",
       "townOrArea": "Linn või piirkond",
       "city": "Linn",
@@ -6326,5 +6362,13 @@
     "backToMenu": "Tagasi menüüsse",
     "formNote": "See on demo: kelleltki ei võeta raha ja midagi ei saadeta, seega e-posti pole vaja sisestada.",
     "namePlaceholder": "Alex"
+  },
+  "errorPage": {
+    "notFoundTitle": "Lehte ei leitud",
+    "notFoundBody": "Me ei leidnud seda lehte. See võib olla teisaldatud või aadress on valesti kirjutatud.",
+    "home": "Mine avalehele",
+    "errorTitle": "Midagi läks valesti",
+    "errorBody": "Vabandust, see leht ei laadinud. Proovige uuesti või minge tagasi avalehele.",
+    "retry": "Proovi uuesti"
   }
 }

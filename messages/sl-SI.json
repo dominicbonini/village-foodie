@@ -633,6 +633,28 @@
       "Walnut": "Oreh",
       "Wheatandtriticale": "Pšenica in tritikala",
       "Glutenbarleyoatsrye": "Gluten (ječmen, oves, rž)",
+      "Shrimp": "Kozice",
+      "Crab": "Rakovica",
+      "Buckwheat": "Ajda",
+      "Abalone": "Morsko uho",
+      "Squid": "Lignji",
+      "Salmonroe": "Lososove ikre",
+      "Orange": "Pomaranča",
+      "Kiwifruit": "Kivi",
+      "Beef": "Govedina",
+      "Salmon": "Losos",
+      "Mackerel": "Skuša",
+      "Soybean": "Soja",
+      "Chicken": "Piščanec",
+      "Banana": "Banana",
+      "Pork": "Svinjina",
+      "Peach": "Breskev",
+      "Yam": "Jam",
+      "Apple": "Jabolko",
+      "Gelatin": "Želatina",
+      "Chestnut": "Kostanj",
+      "Naturallatex": "Naravni lateks",
+      "Lactose": "Laktoza",
       "Nuts": "Oreški",
       "Shellfish": "Morski sadeži"
     }
@@ -4854,6 +4876,7 @@
       "ends": "{hasDate, select, yes {Preizkusno obdobje se konča <hl>{date}</hl>} other {Preizkusno obdobje se konča <hl>kmalu</hl>}}",
       "offer": "{hasMonths, select, yes {{months, plural, one {Vse funkcije brezplačno za # mesec} two {Vse funkcije brezplačno za # meseca} few {Vse funkcije brezplačno za # mesece} other {Vse funkcije brezplačno za # mesecev}}} other {Vse funkcije brezplačno v preizkusnem obdobju}}",
       "body": "{hasDate, select, yes {V preizkusnem obdobju, ki traja do <b>{date}</b>, vam ne bomo ničesar zaračunali. Obračun se začne šele, ko izberete paket in vnesete plačilne podatke. Do takrat vam ni treba ničesar preklicati ali plačati. Paket izberite pred tem datumom — sicer boste prešli na paket {fallback} in nekatere funkcije ne bodo več delovale.} other {V preizkusnem obdobju vam ne bomo ničesar zaračunali. Obračun se začne šele, ko izberete paket in vnesete plačilne podatke. Do takrat vam ni treba ničesar preklicati ali plačati. Paket izberite, preden se preizkusno obdobje konča — sicer boste prešli na paket {fallback} in nekatere funkcije ne bodo več delovale.}}",
+      "bodyPaidEnd": "{hasDate, select, yes {V preizkusnem obdobju, ki traja do <b>{date}</b>, vam ne bomo ničesar zaračunali. Ko se preizkusno obdobje konča, paket {fallback} stane {price} na mesec. Pred tem vas bomo kontaktirali, da uredimo plačilo.} other {V preizkusnem obdobju vam ne bomo ničesar zaračunali. Ko se preizkusno obdobje konča, paket {fallback} stane {price} na mesec. Pred tem vas bomo kontaktirali, da uredimo plačilo.}}",
       "fees": "*Za spletna naročila veljajo standardni stroški obdelave kartičnih plačil",
       "upgrade": "Nadgradite tukaj →"
     }
@@ -4884,8 +4907,10 @@
       "heading": "Vaše brezplačno preizkusno obdobje se še ni začelo"
     },
     "onTrial": "Na voljo imate vse funkcije. Paket izberite, preden se preizkusno obdobje konča.",
+    "onTrialPaidEnd": "Na voljo imate vse funkcije. Ko se preizkusno obdobje konča, paket {plan} stane {price} na mesec. Pred tem vas bomo kontaktirali, da uredimo plačilo.",
     "onTrialNoCta": "Na voljo imate vse funkcije.",
     "noCharge": "🔒 V preizkusnem obdobju, ki traja do {date}, vam ne bomo ničesar zaračunali. Obračun se začne šele, ko izberete paket in vnesete plačilne podatke. Do takrat vam ni treba ničesar preklicati ali plačati.",
+    "noChargePaidEnd": "🔒 V preizkusnem obdobju, ki traja do {date}, vam ne bomo ničesar zaračunali.",
     "fees": "*Za spletna naročila veljajo standardni stroški obdelave kartičnih plačil",
     "setUpPayment": "⏱ Paket izberite, preden se preizkusno obdobje konča",
     "changeYourPlan": "Zamenjajte paket",
@@ -5472,7 +5497,6 @@
     "hero": {
       "title": "Sistem za naročanje, narejen za <lean>food trucke.</lean>",
       "subSmall": "Naložite jedilnik, brez registracije.<br></br>Delujoč demo si oglejte v manj kot 60 sekundah.",
-      "tagline": "Manj telefoniranja.<br></br>Več <lean>kuhanja.</lean>",
       "cta": "Naložite svoj jedilnik →",
       "ctaNote": "<lead>Naložite fotografijo jedilnika in v manj kot 60 sekundah si oglejte, kako deluje.</lead><small>Brez registracije. Brez kartice.</small>"
     },
@@ -5556,7 +5580,6 @@
     }
   },
   "landingFooter": {
-    "tagline": "Manj telefoniranja.<br></br>Več kuhanja.",
     "features": "Funkcije",
     "pricing": "Cenik",
     "privacy": "Zasebnost",
@@ -5638,7 +5661,8 @@
     "countryTerms": "Pogoji za države",
     "contact": "Kontakt",
     "lastUpdated": "Zadnja posodobitev: {date}",
-    "questions": "Vprašanja? <link>Pišite nam</link> — smo resnični ljudje."
+    "questions": "Vprašanja? <link>Pišite nam</link> — smo resnični ljudje.",
+    "translationNote": "To je prevod. Če se razlikuje od <link>angleške različice</link>, velja angleška različica."
   },
   "truckPage": {
     "meta": {
@@ -5794,7 +5818,15 @@
       "Australiancards": "kartice iz Avstralije",
       "NewZealandcards": "kartice iz Nove Zelandije",
       "Canadiancards": "kartice iz Kanade",
-      "Swisscards": "kartice iz Švice"
+      "Swisscards": "kartice iz Švice",
+      "Braziliancards": "kartice iz Brazilije",
+      "Mexicancards": "kartice iz Mehike",
+      "Japanesecards": "kartice iz Japonske",
+      "Singaporecards": "kartice iz Singapurja",
+      "HongKongcards": "kartice iz Hongkonga",
+      "Malaysiancards": "kartice iz Malezije",
+      "Thaicards": "kartice iz Tajske",
+      "UAEcards": "kartice iz ZAE"
     },
     "perMonth": {
       "mo": "{amount}/mes.",
@@ -5963,7 +5995,8 @@
   "pricing": {
     "banner": {
       "title": "{months, plural, one {Vaš prvi mesec je popolnoma brezplačen — vse funkcije so odklenjene.} two {Vaša prva # meseca sta popolnoma brezplačna — vse funkcije so odklenjene.} few {Vaši prvi # meseci so popolnoma brezplačni — vse funkcije so odklenjene.} other {Vaših prvih # mesecev je popolnoma brezplačnih — vse funkcije so odklenjene.}}",
-      "body": "S storitvijo {brand} kupci naročijo vnaprej in plačajo ob prevzemu, zato lahko spletna naročila sprejemate, ne da bi sploh povezali ponudnika kartičnih plačil. Bi raje prejeli plačilo vnaprej? Spletna kartična plačila lahko dodate kadar koli. Ko se brezplačno preizkusno obdobje konča, preidete na paket <plan>{fallback}</plan>{fallbackFree, select, yes { (brez mesečnega plačila)} other {}}, razen če izberete drug paket. Brez kartice za začetek, brez pogodbe, odpoved kadar koli."
+      "body": "S storitvijo {brand} kupci naročijo vnaprej in plačajo ob prevzemu, zato lahko spletna naročila sprejemate, ne da bi sploh povezali ponudnika kartičnih plačil. Bi raje prejeli plačilo vnaprej? Spletna kartična plačila lahko dodate kadar koli. Ko se brezplačno preizkusno obdobje konča, preidete na paket <plan>{fallback}</plan>{fallbackFree, select, yes { (brez mesečnega plačila)} other {}}, razen če izberete drug paket. Brez kartice za začetek, brez pogodbe, odpoved kadar koli.",
+      "bodyOnly": "S storitvijo {brand} kupci naročijo vnaprej in plačajo ob prevzemu, zato lahko spletna naročila sprejemate, ne da bi sploh povezali ponudnika kartičnih plačil. Bi raje prejeli plačilo vnaprej? Spletna kartična plačila lahko dodate kadar koli. Ko se brezplačno preizkusno obdobje konča, paket <plan>{fallback}</plan> stane {price} na mesec. Pred tem vas bomo kontaktirali, da uredimo plačilo. Brez kartice za začetek, brez pogodbe, odpoved kadar koli."
     },
     "card": {
       "perTruckMonth": "na food truck / mesec",
@@ -6231,6 +6264,9 @@
       "stateTerritory": "Zvezna država ali ozemlje",
       "province": "Provinca",
       "county": "Okrožje",
+      "prefecture": "Prefektura",
+      "emirate": "Emirat",
+      "region": "Regija",
       "area": "Kraj (vas, trg ali mesto)",
       "townOrArea": "Kraj ali območje",
       "city": "Mesto",
@@ -6326,5 +6362,13 @@
     "backToMenu": "Nazaj na jedilnik",
     "formNote": "To je predstavitev: nikomur se nič ne zaračuna in nič se ne pošlje, zato vam ni treba vpisati e-poštnega naslova.",
     "namePlaceholder": "Alex"
+  },
+  "errorPage": {
+    "notFoundTitle": "Strani ni mogoče najti",
+    "notFoundBody": "Te strani nismo našli. Morda je bila premaknjena ali pa je naslov napačno vpisan.",
+    "home": "Na domačo stran",
+    "errorTitle": "Prišlo je do napake",
+    "errorBody": "Žal se ta stran ni naložila. Poskusite znova ali se vrnite na domačo stran.",
+    "retry": "Poskusi znova"
   }
 }

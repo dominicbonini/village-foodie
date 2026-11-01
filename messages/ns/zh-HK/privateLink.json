@@ -1,0 +1,12 @@
+{
+  "guestLabel": "私人活動",
+  "truckFallback": "這架美食車",
+  "noSlugTitle": "這架美食車尚未設定網上落單。",
+  "orderingOffTitle": "網上落單尚未開啟",
+  "orderingOffBody": "此活動不接受網上落單，請到美食車前落單。",
+  "replacedTitle": "此連結已被更換",
+  "replacedBody": "此連結已失效——{truck} 已更換連結。請向主辦單位索取新的連結或 QR 碼。",
+  "madePublicBody": "此連結已失效——{truck} 已將此活動設為公開。你可以在其平常的頁面落單。",
+  "unknownTitle": "此連結無效",
+  "unknownBody": "此連結無效。請向主辦單位查證，或再次掃描 QR 碼。"
+}

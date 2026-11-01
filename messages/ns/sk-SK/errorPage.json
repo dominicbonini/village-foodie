@@ -1,0 +1,8 @@
+{
+  "notFoundTitle": "Stránka sa nenašla",
+  "notFoundBody": "Túto stránku sme nenašli. Mohla byť presunutá alebo je adresa zadaná nesprávne.",
+  "home": "Prejsť na úvodnú stránku",
+  "errorTitle": "Niečo sa pokazilo",
+  "errorBody": "Ospravedlňujeme sa, táto stránka sa nenačítala. Skúste to znova alebo sa vráťte na úvodnú stránku.",
+  "retry": "Skúsiť znova"
+}

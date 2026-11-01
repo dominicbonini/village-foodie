@@ -105,7 +105,15 @@
     "Australiancards": "australske kort",
     "NewZealandcards": "newzealandske kort",
     "Canadiancards": "canadiske kort",
-    "Swisscards": "schweiziske kort"
+    "Swisscards": "schweiziske kort",
+    "Braziliancards": "brasilianske kort",
+    "Mexicancards": "mexicanske kort",
+    "Japanesecards": "japanske kort",
+    "Singaporecards": "kort fra Singapore",
+    "HongKongcards": "kort fra Hongkong",
+    "Malaysiancards": "malaysiske kort",
+    "Thaicards": "thailandske kort",
+    "UAEcards": "kort fra De Forenede Arabiske Emirater"
   },
   "perMonth": {
     "mo": "{amount}/md.",

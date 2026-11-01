@@ -127,7 +127,9 @@ const gb = () => [snake(SEEDS.gbFromSeed())]
     const en = JSON.parse(read('messages/en-GB.json'))
     t('…its words: "Your email", the line with the privacy-policy link, and the optional tips box (unticked by default)',
       en.demoUpload.emailLabel === 'Your email' && en.demoUpload.emailNote.startsWith('We’ll email you a link to your demo and may contact you about setting up HatchGrab.')
-      && /<link>/.test(en.demoUpload.emailNote) && /href="\/privacy"/.test(up) && en.demoUpload.marketing === 'Send me occasional tips and news from HatchGrab' && /useState\(false\)/.test(up.slice(up.indexOf('const [marketing'))))
+      // ⚠️ RE-PINNED (legal-languages-1, 1 November 2026): the link is useLegalPath('privacy') — /privacy on every English page, as
+      // before (scripts/legal-languages-1.cjs §3), the country's translation on a non-English one.
+      && /<link>/.test(en.demoUpload.emailNote) && /const privacyHref = useLegalPath\('privacy'\)/.test(up) && /<a href=\{privacyHref\} target="_blank"/.test(up) && en.demoUpload.marketing === 'Send me occasional tips and news from HatchGrab' && /useState\(false\)/.test(up.slice(up.indexOf('const [marketing'))))
   }
 
   // ── §2 · NO SEEDED ORDERS ──────────────────────────────────────────────────────────────────────────────────────

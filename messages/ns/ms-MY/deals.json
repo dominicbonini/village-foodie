@@ -1,0 +1,17 @@
+{
+  "back": "← Kembali",
+  "title": "Gunakan set",
+  "save": "Jimat {amount}",
+  "selectItems": "Pilih item untuk setiap slot",
+  "choose": "Pilih {category}…",
+  "inYourBasket": "── Dalam troli anda ──",
+  "basketUnit": "{name}{withMods, select, yes { (+ {mods})} other {}} (dalam troli){state, select, used { — sudah dalam set} taken { — dipilih dalam slot lain} other {}}",
+  "addNew": "── Tambah baharu ──",
+  "itemWithPrice": "{name} {price}",
+  "ruleHint": "· {rule, select, requiredOne {Wajib · pilih satu} required {Wajib} other {Pilih satu}}{unmet, select, yes { (wajib)} other {}}",
+  "notePlaceholder": "Tambah nota, cth. tanpa bawang (pilihan)",
+  "backButton": "Kembali",
+  "cancel": "Batal",
+  "chooseRequired": "Pilih pilihan wajib",
+  "apply": "Gunakan set · {amount}"
+}

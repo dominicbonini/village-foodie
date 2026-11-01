@@ -1,0 +1,44 @@
+{
+  "perTruckMonth": "por food truck / mês",
+  "transactionFees": "Taxas por transação",
+  "comingSoon": "Em breve",
+  "footnote2Masked": "Os pagamentos online são processados pela Stripe Connect. As taxas da plataforma e de processamento de cartão ainda serão definidas e confirmadas no lançamento.",
+  "card": {
+    "title": "Cobrança e pagamentos",
+    "managed": "A cobrança é gerenciada pelo HatchGrab",
+    "earlyAccess": "Durante o acesso antecipado, configuramos e ajustamos os planos manualmente.",
+    "planLine": "{trial, select, yes {{truck} · plano {plan} (teste)} other {{truck} · plano {plan}}}"
+  },
+  "currentPlan": "Plano atual",
+  "plan": {
+    "included": "Inclui {amount} em pedidos online por mês.",
+    "includedUnlimited": "Pedidos online ilimitados incluídos.",
+    "promo": "Preço especial.",
+    "promoUntil": "Preço especial até {date}.",
+    "ended": "Seu plano {plan} terminou em {date}. Agora você está no plano {now}.",
+    "trialMonths": "Teste grátis de {months} meses."
+  },
+  "trialEnds": "O teste termina em {date}",
+  "yourTrialEnds": "Seu teste termina em {date}",
+  "notStarted": {
+    "heading": "Seu teste grátis ainda não começou"
+  },
+  "onTrial": "Você tem todos os recursos. Escolha um plano antes do fim do teste.",
+  "onTrialPaidEnd": "Você tem todos os recursos. Quando o teste terminar, o plano {plan} custa {price} por mês. Antes disso, vamos entrar em contato para configurar o pagamento.",
+  "onTrialNoCta": "Você tem todos os recursos.",
+  "noCharge": "🔒 Você não paga nada durante o teste, que vai até {date}. A cobrança só começa quando você escolhe um plano e informa seus dados de pagamento. Até lá, não há nada para cancelar nem nada para pagar.",
+  "noChargePaidEnd": "🔒 Você não paga nada durante o teste, que vai até {date}.",
+  "fees": "*Taxas padrão de processamento de cartão se aplicam aos pedidos online",
+  "setUpPayment": "⏱ Escolha um plano antes do fim do teste",
+  "changeYourPlan": "Mudar de plano",
+  "planButton": "{plan} — {price}",
+  "upgradeModal": {
+    "title": "Mudar para o plano {plan}",
+    "tagline": "{price} — {description}",
+    "body": "Estamos configurando a cobrança automática. Para mudar agora, mande uma mensagem e deixamos tudo pronto em até 24 horas.",
+    "mailSubject": "Mudar para o plano {plan} — {truck}",
+    "mailBody": "Olá, gostaria de mudar o {truck} para o plano {plan} ({price}).",
+    "email": "Enviar e-mail para mudar",
+    "cancel": "Cancelar"
+  }
+}

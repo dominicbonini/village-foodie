@@ -1,0 +1,69 @@
+{
+  "close": "關閉",
+  "cancel": "取消",
+  "selectReason": "選擇原因",
+  "reject": {
+    "title": "拒絕訂單 #{orderId}？",
+    "reasonLabel": "原因——必填（顧客會看到）",
+    "reason": "{reason, select, sold_out {有食品已售罄} too_busy {太忙——未能及時準備} closing_soon {即將收檔} other {其他}}",
+    "noteRequired": "原因——必填",
+    "noteOptional": "補充備註——選填",
+    "notePlaceholder": "為顧客補充更多詳情…",
+    "keep": "保留訂單",
+    "confirm": "拒絕訂單"
+  },
+  "eventCancel": {
+    "title": "取消此活動？",
+    "affected": "{n, plural, other {{count} 張訂單}}將被取消，並會通知顧客。",
+    "reasonLabel": "原因——選填",
+    "reason": "{reason, select, vehicle_breakdown {車輛故障} weather {天氣} venue_issue {場地問題} personal_emergency {個人緊急事故} other {其他}}",
+    "messageLabel": "給顧客的訊息——選填",
+    "messagePlaceholder": "例如：抱歉，我們的拖車在前往場地途中壞了…",
+    "keep": "保留活動",
+    "cancelling": "取消中…",
+    "confirm": "取消活動"
+  },
+  "actions": {
+    "startEvent": "{restart, select, yes {重新開始活動} other {開始活動}}",
+    "changeEvent": "更改活動",
+    "changeEventType": "更改活動類型…",
+    "privateLink": "私人連結及 QR 碼",
+    "noteLabel": "給顧客的備註",
+    "notePlaceholder": "例如：請在主停車場泊車，留意橙色帳篷",
+    "noteHint": "會在落單頁面的活動資料下方向顧客顯示。",
+    "saveNote": "儲存備註",
+    "resume": "恢復接單",
+    "pause": "暫停接單",
+    "changeFinishTime": "更改活動結束時間",
+    "finishEvent": "結束活動",
+    "cancelEvent": "取消活動"
+  },
+  "finish": {
+    "confirmTitle": "更改結束時間？",
+    "willFinish": "此活動將於 <b>{selected}</b> 結束{hasCurrent, select, yes {，而非 <b>{current}</b>} other {}}。",
+    "dueAfter": "<b>{n, plural, other {有 {count} 張訂單的取餐時間在 {selected} 之後。}}</b>{n, plural, other {這些訂單}}會留在訂單板上，仍{n, plural, other {需製作}}。更改結束時間只會停止顧客為較後時間落新訂單。",
+    "saving": "儲存中…",
+    "confirm": "更改結束時間",
+    "keepCurrent": "保留 {current}",
+    "keepAsIs": "維持不變",
+    "title": "更改結束時間",
+    "currentlySet": "此活動目前設定於 <b>{current}</b> 結束。",
+    "noFinishTime": "此活動未有設定結束時間。",
+    "noTimesLeft": "今日已沒有可選時間，請改用「結束活動」。",
+    "newFinishTime": "新結束時間",
+    "optionCurrent": "{time}（目前）",
+    "earlier": "這早於目前的結束時間，顧客將無法為此時間之後落單。",
+    "review": "檢查更改",
+    "optionNextDay": "{time}（翌日）"
+  },
+  "extraWait": {
+    "title": "增加額外等候時間",
+    "hint": "會加到新訂單所報的取餐時間上，不會改變活動結束時間。",
+    "option": "+{mins} 分鐘"
+  },
+  "picker": {
+    "reconnect": "重新連接以載入",
+    "selected": "已選取",
+    "status": "{tone, select, paused {⏸ 已暫停} live {● 進行中} finished {● 已結束} cancelled {已取消} other {未開始}}"
+  }
+}

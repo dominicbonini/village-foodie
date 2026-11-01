@@ -24,6 +24,7 @@ import { isPlausiblePhone } from '@/lib/phone'
 import { minorDigits } from '@/lib/money-format'
 import { CURRENCY_CODES, isSupportedCurrency } from '@/lib/currencies'
 import { addressFormatKeyOf, isAddressFormatKey, type AddressFormatKey } from '@/lib/address-formats'
+import { ALLERGEN_SETS, type AllergenSet } from '@/lib/allergens'
 
 /** What every box on one country's column holds. Numbers are STRINGS — exactly what was typed. */
 export interface CountryForm {
@@ -65,14 +66,15 @@ export interface CountryForm {
   addressFormat: AddressFormatKey
   timezones: string[]
   defaultTimezone: string
-  allergenSet: 'uk14' | 'us9' | 'anz' | 'ca'
+  allergenSet: AllergenSet
   /** allergen-card-country (21 October 2026): may trucks here show allergens as one card for the whole menu? */
   allergenCardOnlyAllowed: boolean
   supportHours: string
 }
 
 /** The stored values one save writes — everything on the row except its code and the save stamp. */
-export type CountryValues = Omit<CountrySettings, 'countryCode' | 'updatedAt' | 'updatedBy'>
+// world-countries-1: platformFeeAllowed is data (SQL only) — Admin reads it to refuse the fee switch, never writes it.
+export type CountryValues = Omit<CountrySettings, 'countryCode' | 'updatedAt' | 'updatedBy' | 'platformFeeAllowed'>
 
 export interface FieldError { field: keyof CountryForm | 'countryCode' | 'copyFrom' | 'form'; message: string }
 
@@ -219,7 +221,7 @@ export function isTimeZone(z: string): boolean {
  * @param ctx.truckCount     trucks in this country — a currency cannot change while it is above 0
  * @param ctx.storedCurrency the currency the row holds now (absent for a brand-new country)
  */
-export function formToValues(f: CountryForm, ctx: { truckCount: number; storedCurrency?: string; countryCode?: string }):
+export function formToValues(f: CountryForm, ctx: { truckCount: number; storedCurrency?: string; countryCode?: string; platformFeeAllowed?: boolean }):
   { ok: true; values: CountryValues } | { ok: false; errors: FieldError[] } {
   const errors: FieldError[] = []
   const err = (field: FieldError['field'], message: string) => errors.push({ field, message })
@@ -330,7 +332,10 @@ export function formToValues(f: CountryForm, ctx: { truckCount: number; storedCu
   if (badZone) err('timezones', `“${badZone}” isn't a time zone we recognise.`)
   if (new Set(timezones).size !== timezones.length) err('timezones', 'Each time zone can only appear once.')
   if (!timezones.includes(f.defaultTimezone)) err('defaultTimezone', 'The default time zone has to be one of the zones offered.')
-  if (f.allergenSet !== 'uk14' && f.allergenSet !== 'us9' && f.allergenSet !== 'anz' && f.allergenSet !== 'ca') err('allergenSet', 'Choose an allergen list.')
+  if (!(ALLERGEN_SETS as readonly string[]).includes(f.allergenSet)) err('allergenSet', 'Choose an allergen list.')
+  // world-countries-1 (31 October 2026): the platform fee cannot be switched on where HatchGrab may not take one
+  // (country_settings.platform_fee_allowed — data, SQL only; the database refuses it too).
+  if (f.platformFeeEnabled && ctx.platformFeeAllowed === false) err('platformFeeEnabled', 'HatchGrab may not take a platform fee in this country (Stripe does not allow an application fee here).')
 
   if (errors.length) return { ok: false, errors }
   return {

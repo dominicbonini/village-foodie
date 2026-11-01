@@ -1,0 +1,49 @@
+{
+  "banner": {
+    "title": "{months, plural, other {最初の#か月間は完全無料。すべての機能をご利用いただけます。}}",
+    "body": "{brand}なら、お客様は事前に注文して受け取り時に支払えるため、カード決済サービスを一切接続しなくてもオンライン注文を受け付けられます。先に代金を受け取りたい場合は、オンラインカード決済をいつでも追加できます。トライアル終了後、プランを選ばない場合は<plan>{fallback}</plan>{fallbackFree, select, yes {（月額料金なし）} other {}}に移行します。開始時のカード登録不要、契約の縛りなし、いつでも解約できます。",
+    "bodyOnly": "{brand}なら、お客様は事前に注文して受け取り時に支払えるため、カード決済サービスを一切接続しなくてもオンライン注文を受け付けられます。先に代金を受け取りたい場合は、オンラインカード決済をいつでも追加できます。トライアル終了後、<plan>{fallback}</plan>は月額{price}です。お支払いの設定について、終了前にこちらからご連絡します。開始時のカード登録不要、契約の縛りなし、いつでも解約できます。"
+  },
+  "card": {
+    "perTruckMonth": "1台あたり／月",
+    "mostTrucks": "一番人気",
+    "tryFree": "無料で試す",
+    "seeEvery": "すべての機能を見る →",
+    "everything": "営業に必要なものがすべて",
+    "everythingIn": "{plan}の全機能に加えて"
+  },
+  "fee": {
+    "feeOnly": "オンラインのカード注文にのみ<b>{fee}*</b>。店頭注文は常に無料です。",
+    "included": "毎月オンライン注文<b>{included}</b>分までは込み、それを超えると<b>{fee}*</b>。店頭注文は常に無料です。",
+    "noFee": "どれだけ忙しくても、オンライン注文に<b>HatchGrabの手数料はかかりません</b>。毎月の費用は定額で明確です。"
+  },
+  "base": {
+    "walkUp": "店頭注文＆キッチンディスプレイ",
+    "online": "オンライン注文",
+    "preorders": "事前注文＆受け取り時間",
+    "capacity": "調理キャパシティの管理",
+    "privateEvents": "貸切イベント",
+    "printing": "キッチン伝票の印刷",
+    "app": "iPhone・iPad・Android対応のキッチンアプリ"
+  },
+  "added": {
+    "whatsapp_replies": "WhatsApp自動返信",
+    "schedule_graphics": "SNS投稿 — FacebookとInstagram用の出店スケジュールをすぐに投稿可能",
+    "event_types": "出店タイプと料金のカスタマイズ"
+  },
+  "money": {
+    "unlimitedOrders": "オンライン注文は無制限、HatchGrabの手数料0%",
+    "samePrice": "一番忙しい月でも同じ料金"
+  },
+  "comingSoon": "近日公開",
+  "bar": {
+    "title": "一番お得なプランは？",
+    "subtitle": "毎月のオンライン注文額",
+    "first": "{to}未満 → <b>{plan}</b>",
+    "middle": "{from}〜{to} → <b>{plan}</b>",
+    "last": "{from}超 → <b>{plan}</b>",
+    "only": "金額を問わず → <b>{plan}</b>"
+  },
+  "footnote": "* オンラインのカード注文には別途Stripeのカード決済手数料（{country}では現在{cardFee}）がかかり、HatchGrabではなくStripeに支払われます。店頭注文はご自身のカード決済端末を使用し、HatchGrabの手数料は0%です。",
+  "currencyLine": "価格は{currency}（{code}）で表示しています"
+}

@@ -1,0 +1,31 @@
+{
+  "title": "Menú",
+  "importMenu": "✨ Importar menú",
+  "toast": {
+    "enterPrice": "Ingresa un precio"
+  },
+  "empty": {
+    "title": "Crea tu menú en segundos",
+    "body": "Toma una foto del pizarrón de tu menú, una captura de tu menú actual o arrastra un PDF: nuestra IA extraerá todo y creará tu menú digital automáticamente.",
+    "importAi": "✨ Importar menú con IA"
+  },
+  "category": {
+    "countsTitle": "Cuenta para el límite de pedidos máximos por franja (se ajusta en Menú → Capacidad de cocina)"
+  },
+  "allergens": {
+    "modeCard": "Tabla de alérgenos",
+    "buildFirst": "Primero crea tu menú: agrega platillos y luego configura sus alérgenos",
+    "cardSaved": "tabla de alérgenos guardada",
+    "cardNotAllowed": "Donde vende tu food truck no se puede usar solo una tabla de alérgenos, así que los clientes ven los alérgenos de cada platillo. Confirma los alérgenos de cada platillo.",
+    "addCard": "agrega una tabla de alérgenos para que los clientes vean la información de alérgenos",
+    "uploadIntro": "Sube tu tabla de alérgenos o pega tu información de alérgenos. Nuestra IA la extraerá y la ordenará con claridad para los clientes.",
+    "dropHere": "Suelta aquí tu tabla de alérgenos"
+  },
+  "deleteItem": {
+    "body": "Este producto se ocultará de tu menú de inmediato. No aparecerá en la página de pedidos de los clientes ni en el panel Añadir pedido."
+  },
+  "item": {
+    "createHint": "Completa los datos y luego agrega el producto.",
+    "allergenGateBody": "Abre el recuadro “Configurar / revisar alérgenos” en la pestaña Menú: el asistente te guía para confirmar cada platillo."
+  }
+}

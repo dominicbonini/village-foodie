@@ -1,0 +1,61 @@
+{
+  "steps": {
+    "reading": "Lendo seu cardápio…",
+    "found": "Encontramos seus itens…",
+    "kitchen": "Configurando sua cozinha…",
+    "page": "Montando sua página de pedidos…",
+    "almost": "Quase pronto…"
+  },
+  "templateSteps": {
+    "truck": "Montando seu food truck de exemplo…",
+    "menu": "Configurando o cardápio…",
+    "kitchen": "Configurando a cozinha…",
+    "page": "Montando a página de pedidos…",
+    "almost": "Quase pronto…"
+  },
+  "dialogLabel": "Envie seu cardápio",
+  "heading": "✨ Envie seu cardápio",
+  "failedHeading": "Não conseguimos ler esse cardápio",
+  "close": "Fechar",
+  "intro": "Uma foto da lousa do seu cardápio, um print, um PDF ou o texto colado. Nossa IA lê e monta para você uma página de pedidos funcionando — com seus itens e seus preços — em menos de 60 segundos. Sem cadastro, sem cartão.",
+  "failedIntro": "Às vezes a foto está escura demais, torta ou o cardápio é escrito à mão. Isso é problema nosso, não um erro seu. Alguns caminhos:",
+  "usually": "Isso costuma levar menos de 60 segundos.",
+  "slow": "Está demorando mais que o normal — cardápios grandes às vezes demoram.",
+  "keepWaiting": "Continuar esperando",
+  "sampleWhileYouWait": "Ou dê uma olhada em um cardápio de exemplo enquanto espera",
+  "standIn": "Este <b>não vai ser o seu cardápio</b> — é só um exemplo para você ver como funciona.",
+  "seeSample": "Ver cardápio de exemplo",
+  "tryAgain": "Tentar de novo",
+  "tryPhotoAgain": "Tentar esta foto de novo",
+  "tryDifferent": "Tentar outra foto",
+  "uploadAnother": "← Enviar outra foto",
+  "orSample": "Ou dê uma olhada em um cardápio de exemplo",
+  "orBuild": "Ou a gente monta para você",
+  "buildSent": "✓ Obrigado — recebemos. Vamos te mandar um e-mail.",
+  "buildBody": "Deixe seu e-mail e uma pessoa de verdade vai cadastrar seu cardápio e te mandar o link.",
+  "emailPlaceholder": "you@yourtruck.co.uk",
+  "sending": "…",
+  "send": "Enviar",
+  "noPhoto": "Não tem uma foto do cardápio à mão?",
+  "noPhotoBody": "Dê uma olhada em um food truck de exemplo — você pode enviar o seu quando quiser.",
+  "build": "Montar minha demo →",
+  "nothingPublished": "Nada é publicado — só você consegue ver.",
+  "error": {
+    "somethingWrong": "Algo deu errado. Tente de novo.",
+    "serverUnreachable": "Não conseguimos falar com o servidor. Verifique sua conexão e tente de novo.",
+    "sendFailed": "Não foi possível enviar — tente de novo."
+  },
+  "fields": {
+    "uploadLabel": "Enviar arquivo do cardápio",
+    "dropHere": "Solte seu cardápio aqui",
+    "dragOrTap": "Arraste e solte ou toque para escolher",
+    "fileTypes": "Imagem ou PDF",
+    "or": "ou",
+    "pasteLabel": "Colar texto do cardápio",
+    "pastePlaceholder": "Cole seu cardápio aqui — nomes dos itens, descrições, preços..."
+  },
+  "emailLabel": "Seu e-mail",
+  "emailNote": "Vamos te mandar por e-mail um link para a sua demo e podemos entrar em contato sobre a configuração do HatchGrab. <link>Política de privacidade</link>",
+  "marketing": "Quero receber dicas e novidades do HatchGrab de vez em quando",
+  "emailInvalid": "Informe um e-mail válido."
+}

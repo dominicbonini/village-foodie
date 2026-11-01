@@ -1,0 +1,9 @@
+{
+  "paidStepTitle": "Receber pedidos sem pagamento",
+  "completionTitle": "Concluir um pedido não pago",
+  "completionHelp": "O que acontece quando um pedido não pago está pronto para ser entregue.",
+  "pressesOne": "Um toque (“Marcar como pago e retirado”)",
+  "pressesOneHelp": "Melhor quando você recebe o dinheiro na hora de entregar a comida. Você tem um único botão, “Marcar como pago e retirado”, que registra o pagamento e conclui o pedido de uma vez.",
+  "pressesTwo": "Dois toques (“Marcar como pago” e “Retirado”)",
+  "pressesTwoHelp": "Melhor quando o pagamento e a entrega acontecem em momentos diferentes — o cliente paga na retirada e pega o pedido quando estiver pronto. Você tem dois botões: primeiro “Marcar como pago” e depois “Retirado”, quando ele pega a comida."
+}

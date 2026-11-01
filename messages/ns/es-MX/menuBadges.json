@@ -1,0 +1,15 @@
+{
+  "allergen": {
+    "Peanuts": "Cacahuates",
+    "Soy": "Soya",
+    "Treenuts": "Nueces de árbol",
+    "Sesame": "Ajonjolí",
+    "Lupin": "Lupino",
+    "Soybeans": "Soya",
+    "Peanut": "Cacahuate",
+    "Cashew": "Nueces de la India",
+    "Pecan": "Nueces pecanas",
+    "Walnut": "Nueces de Castilla",
+    "Nuts": "Nueces"
+  }
+}

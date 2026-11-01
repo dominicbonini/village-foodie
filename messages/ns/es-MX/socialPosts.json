@@ -1,0 +1,7 @@
+{
+  "templatePanelNote": "Las palabras en naranja se llenan con los datos de cada evento. Al guardar se actualizan el texto de arriba y todas las publicaciones futuras.",
+  "socialTagPlaceholder": "@festivalcoyoacan",
+  "daysBlurb": "Una fila por día. Arrastra el cuadro naranja de tu cartel para moverlas; arrastra sus esquinas para hacer las filas más grandes o más pequeñas.",
+  "deleteOwnTextKey": "o presiona Supr",
+  "liveFontFallback": "Tu fuente subida no se puede mostrar aquí, así que ese texto aparece en Oswald mientras editas. Toca “👁 Vista previa” para verlo bien."
+}

@@ -43,7 +43,7 @@ const GB = SEEDS.gbFromSeed()
 const US_ON = { ...SEEDS.usFromSeed(), enabled: true, starterMonthlyMinor: 0, proMonthlyMinor: 3900, maxMonthlyMinor: 6900, proAllowanceMinor: 200000, maxAllowanceMinor: 300000, platformFeePct: 0.99 }
 const STUBS = {
   // ⚠️ europe-languages-2 (23 October 2026): + Noto_Sans — app/layout.tsx's Greek / Cyrillic fallback.
-  'next/font/google': ['Archivo', 'Public_Sans', 'Courier_Prime', 'Geist', 'Geist_Mono', 'Noto_Sans'].map(n => `export const ${n} = () => ({ variable: 'font-${n}', className: 'font-${n}', style: {} })`).join('\n'),
+  'next/font/google': ['Archivo', 'Public_Sans', 'Courier_Prime', 'Geist', 'Geist_Mono', 'Noto_Sans', 'Noto_Sans_JP', 'Noto_Sans_HK', 'Noto_Sans_Thai', 'Noto_Sans_Arabic'].map(n => `export const ${n} = () => ({ variable: 'font-${n}', className: 'font-${n}', style: {} })`).join('\n'),
   'next/headers': `
     export async function headers() { return { get: k => (k === 'host' ? 'www.hatchgrab.com' : null), has: () => false } }
     export async function cookies() { return { get: () => undefined, has: () => false, getAll: () => [] } }`,
@@ -282,6 +282,8 @@ async function main() {
   // that does not carry EXACTLY those changes is compared as it is, and fails.
   // eslint-disable-next-line @typescript-eslint/no-require-imports -- CommonJS harness module (about-page)
   const AP = require('./_lp-about-page.cjs')
+  // eslint-disable-next-line @typescript-eslint/no-require-imports -- CommonJS harness module (world-countries-1)
+  const TAGLINE = require('./_lp-tagline.cjs')
   const aboutBack = (got, exp) => { if (!AP.LANDED) return [got, exp]; const r = AP.viewBack(got, exp); return r ? [r[0], r[1]] : [got, exp] }
   // ⚠️ RE-PINNED (country-picker-1, 23 October 2026, docs/country-picker-1-report.md): PICKER-footer — BEFORE's footer menu
   // (<div class="cc cc-foot">) and AFTER's picker (<span class="cc cc-foot">) cut whole from their sides, verified first: one
@@ -318,14 +320,15 @@ async function main() {
       // a plan with the feature off denies it, and an override `true` still wins over that plan.
       const badPlan = p.overrideOnly.filter(([, , , , planOff, planOffGrant]) => !(planOff === false && planOffGrant === true))
       t(`parity → Stage A2: with no override the plan's switch decides (off → denied); an override true wins over it (${p.overrideOnly.length} rows)`, p.overrideOnly.length > 20 && badPlan.length === 0, JSON.stringify(badPlan))
-    } else if (k === 'landingFooter') { const [g, e] = aboutBack(got.keys[k], seoFooter(before.keys[k])); const d = diffJson(e, g); t(`${k} (+ seo-s7-badges-lazy${AP.LANDED ? ', about-page ABOUT-link' : ''})`, d === null, d) }   // ⚠️ RE-PINNED (seo-fixes, 20 October 2026; about-page, 22 October 2026)
+    } else if (k === 'landingFooter') { const [g, e] = aboutBack(got.keys[k], seoFooter(TAGLINE.cut(before.keys[k]))); const d = diffJson(e, g); t(`${k} (+ seo-s7-badges-lazy${AP.LANDED ? ', about-page ABOUT-link' : ''}, tagline cut`, d === null, d) }   // ⚠️ RE-PINNED (seo-fixes, 20 October 2026; about-page, 22 October 2026; world-countries-1, tagline)
     else { const d = diffJson(before.keys[k], got.keys[k]); t(k, d === null, d) }
   }
   for (const k of Object.keys(before.landing)) {
     // ⚠️ RE-PINNED (pricing-pages, Stage B, 20 October 2026): #pricing is Stage B's (banner → cards → cheapest bar → footnote)
     // — scripts/_lp-stage-b.cjs landingPricing: the section's region cut from both, the rest byte-identical.
     // ⚠️ RE-PINNED (seo-fixes, 20 October 2026): + seo-fixes's named items (seoLanding, above), outside #pricing.
-    if (!LEGACY_DISPLAY) { const [g, e] = pickerBack(aboutBack(got.landing[k].replace(SEP, ''), seoLanding(k, landing1e(k, before.landing[k])))); const r = STAGE_B.landingPricing(e, g); t(`landing page (${k}) rendered HTML, apart from Stage B's #pricing (pricing-b-landing-pricing), seo-fixes's named items${PICKER.LANDED ? ' and the footer picker (PICKER-footer)' : ''}`, r.ok, r.problems.join(' · ')); continue }
+    // ⚠️ RE-PINNED (world-countries-1, tagline): the hero's and the footer's tagline cut from BEFORE (scripts/_lp-tagline.cjs).
+    if (!LEGACY_DISPLAY) { const [g, e] = pickerBack(aboutBack(got.landing[k].replace(SEP, ''), seoLanding(k, landing1e(k, TAGLINE.cut(before.landing[k]))))); const r = STAGE_B.landingPricing(e, g); t(`landing page (${k}) rendered HTML, apart from Stage B's #pricing (pricing-b-landing-pricing), seo-fixes's named items${PICKER.LANDED ? ' and the footer picker (PICKER-footer)' : ''}`, r.ok, r.problems.join(' · ')); continue }
     const d = diffJson(landing1e(k, before.landing[k]), got.landing[k].replace(SEP, '')); t(`landing page (${k}) rendered HTML`, d === null, d)
   }
 

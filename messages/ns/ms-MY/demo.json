@@ -1,0 +1,29 @@
+{
+  "notAvailable": "Tidak tersedia dalam demo",
+  "demoMode": "MOD DEMO",
+  "loopLands": "Begitulah pesanan sebenar masuk",
+  "showMe": "Tunjukkan",
+  "noCard": "{sub} Tidak perlu kad.",
+  "notYet": "Belum lagi",
+  "cashAndCollected": "Tunai & diambil",
+  "logoPlaceholder": "Logo anda di sini",
+  "welcomeTitle": "{sample, select, yes {Ini demo contoh} other {Ini demo anda}}",
+  "welcomeIntro": "{sample, select, yes {Ini ialah <b>menu contoh</b> supaya anda dapat melihat cara semuanya berfungsi — muat naik menu anda sendiri bila-bila masa untuk menjadikannya milik anda.} other {Ini menu dan jenama anda sendiri, pada papan sebenar.}} Pesanan yang sudah ada di sini hanyalah contoh, supaya anda dapat melihat suasana yang sibuk.",
+  "twoThings": "Dua perkara untuk dicuba:",
+  "hitButton": "Tekan <b>{button}</b> pada satu pesanan",
+  "scanQr": "Imbas <b>kod QR</b> — atau ketik pautan — dan buat pesanan sebagai pelanggan, kemudian lihat ia masuk",
+  "qrAlt": "Kod QR ke halaman pesanan pelanggan anda",
+  "openHere": "Atau buka pada peranti ini",
+  "copyLink": "Salin pautan",
+  "copyDescribedAs": "pautan pesanan",
+  "noLinkTitle": "Pautan pesanan pelanggan anda",
+  "noLinkBody": "Pautan halaman pesanan anda ada dalam menu, di kanan atas.",
+  "asLive": "Aliran pesanan dan dapur adalah sama seperti semasa beroperasi sebenar.",
+  "startExploring": "Mula meneroka",
+  "signupOffer": {
+    "heading": "Daftar untuk bulan percuma anda sekarang",
+    "sub": "Kiraan masa tidak bermula sehingga anda memutuskan untuk mula beroperasi."
+  },
+  "cashIcon": "💵",
+  "walkBanner": "Demo · ini menu anda, seperti yang akan dilihat oleh pelanggan anda. Tiada caj dikenakan dan tiada e-mel dihantar."
+}

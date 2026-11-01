@@ -1,0 +1,23 @@
+{
+  "explainerLead": "Anda mesti memastikan papan pemuka atau skrin dapur anda sentiasa hidup dan dalam talian semasa berniaga.",
+  "explainerBody": "Jika skrin padam, peranti terputus internet, atau anda beralih ke laman web lain, perlindungan luar talian akan mengambil alih — sama ada menjeda pesanan atau mematikan terima automatik, mengikut pilihan anda.",
+  "reminder": "⚠️ Pastikan papan pemuka atau skrin dapur anda sentiasa hidup dan dalam talian semasa berniaga, jika tidak perlindungan luar talian mungkin diaktifkan.",
+  "enableConfirm": "Perlindungan luar talian diaktifkan.\n\nSupaya pesanan terus masuk, skrin anda mesti sentiasa hidup. Jika peranti ini terputus sambungan, perlindungan luar talian akan mengambil alih mengikut mod yang anda pilih.\n\nPastikan Skrin Sentiasa Hidup diaktifkan pada peranti ini.",
+  "disableConfirm": "Nyahaktifkan perlindungan luar talian untuk acara ini?\n\nJika peranti ini terputus sambungan, pesanan dalam talian akan diteruskan — pelanggan mungkin membuat pesanan yang anda tidak dapat lihat. Nyahaktifkan hanya jika sambungan anda stabil.",
+  "cardDescription": "Menentukan apa yang berlaku kepada pesanan masuk apabila peranti anda terputus sambungan.",
+  "purpose": "Jika peranti anda terputus sambungan, ini menghalang pesanan masuk semasa anda tidak dapat melihatnya.",
+  "switchLabel": "Perlindungan pesanan luar talian",
+  "switchHelp": "Apa yang berlaku apabila van ini terputus sambungan.",
+  "modes": {
+    "pause": {
+      "label": "Jeda pesanan dalam talian",
+      "help": "Pelanggan tidak boleh membuat pesanan sehingga anda kembali dalam talian."
+    },
+    "no_auto_accept": {
+      "label": "Terus terima pesanan, sahkan sendiri",
+      "help": "Terima automatik dimatikan, jadi pelanggan masih boleh membuat pesanan tetapi tiada yang disahkan secara automatik. Anda akan mengesahkan setiap pesanan apabila kembali dalam talian — dan pesanan yang masih menunggu akan ditolak secara automatik selepas masa yang anda pilih, dan pelanggan akan dimaklumkan melalui e-mel."
+    }
+  },
+  "autoRejectLabel": "Tolak pesanan yang menunggu lebih lama daripada",
+  "autoRejectOption": "{n, plural, other {{count} min}}"
+}

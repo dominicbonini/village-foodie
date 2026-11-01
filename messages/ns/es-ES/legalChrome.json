@@ -13,5 +13,6 @@
   "countryTerms": "Condiciones por país",
   "contact": "Contacto",
   "lastUpdated": "Última actualización: {date}",
-  "questions": "¿Tienes preguntas? <link>Escríbenos</link> — somos personas de verdad."
+  "questions": "¿Tienes preguntas? <link>Escríbenos</link> — somos personas de verdad.",
+  "translationNote": "Esta es una traducción. Si difiere de la <link>versión en inglés</link>, prevalece la versión en inglés."
 }

@@ -24,8 +24,10 @@
     "heading": "Jūsu bezmaksas izmēģinājuma periods vēl nav sācies"
   },
   "onTrial": "Jums ir pieejamas visas funkcijas. Izvēlieties plānu, pirms beidzas izmēģinājuma periods.",
+  "onTrialPaidEnd": "Jums ir pieejamas visas funkcijas. Kad izmēģinājuma periods beigsies, plāns {plan} maksās {price} mēnesī. Pirms tam mēs ar jums sazināsimies, lai iestatītu maksājumu.",
   "onTrialNoCta": "Jums ir pieejamas visas funkcijas.",
   "noCharge": "🔒 Izmēģinājuma periodā, kas ilgst līdz {date}, no jums netiks iekasēts nekas. Norēķini sākas tikai tad, kad izvēlaties plānu un ievadāt maksājuma datus. Līdz tam nav ko atcelt un nav par ko maksāt.",
+  "noChargePaidEnd": "🔒 Izmēģinājuma periodā, kas ilgst līdz {date}, no jums netiks iekasēts nekas.",
   "fees": "*Tiešsaistes pasūtījumiem piemēro standarta karšu apstrādes komisiju",
   "setUpPayment": "⏱ Izvēlieties plānu, pirms beidzas izmēģinājuma periods",
   "changeYourPlan": "Mainīt plānu",

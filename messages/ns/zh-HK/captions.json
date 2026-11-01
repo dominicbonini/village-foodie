@@ -1,0 +1,30 @@
+{
+  "labels": {
+    "weekDates": "該週日期",
+    "dayList": "日子列表",
+    "place": "地點",
+    "venue": "場地",
+    "area": "地區",
+    "dayDate": "星期及日期",
+    "times": "時間",
+    "orderLink": "落單連結",
+    "locationTag": "地點標籤"
+  },
+  "weekHeader": "{truck} — 本週出車地點：",
+  "dayLine": "{day} — {where} — {times}",
+  "dayLineNoTimes": "{day} — {where}",
+  "dayLineCancelled": "{day} — {where} — 已取消，抱歉",
+  "noDates": "本週暫無出車日期 — 請稍後再留意。",
+  "orderAhead": "預先落單：{url}",
+  "orderAheadTagged": "預先落單：{url} {tag}",
+  "eventLine": "{truck} {when}在 {where}，時間：{times}。",
+  "eventLineNoTimes": "{truck} {when}在 {where}。",
+  "cancelledSorry": "抱歉 — 我們{when}未能到 {where}。",
+  "cancelledApology": "向所有原本打算前來的朋友致歉。我們很快會再見！",
+  "when": {
+    "today": "今日",
+    "tonight": "今晚",
+    "tomorrow": "明日",
+    "dated": "於 {date}"
+  }
+}

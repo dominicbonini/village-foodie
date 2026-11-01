@@ -1,0 +1,58 @@
+{
+  "label": {
+    "street": "地址",
+    "postcode": "郵政編碼",
+    "zip": "郵遞區號（ZIP code）",
+    "eircode": "Eircode",
+    "postalCode": "郵政編碼",
+    "state": "州",
+    "stateTerritory": "州或領地",
+    "province": "省",
+    "county": "郡",
+    "prefecture": "都道府縣",
+    "emirate": "酋長國",
+    "region": "地區",
+    "area": "地區（鄉村、市鎮或城市）",
+    "townOrArea": "市鎮或地區",
+    "city": "城市",
+    "suburb": "區域",
+    "townOrCity": "市鎮或城市"
+  },
+  "short": {
+    "area": "地區",
+    "townOrArea": "市鎮或地區",
+    "city": "城市",
+    "suburb": "區域",
+    "townOrCity": "市鎮或城市"
+  },
+  "inSentence": {
+    "postcode": "郵政編碼",
+    "zip": "郵遞區號",
+    "eircode": "Eircode",
+    "postalCode": "郵政編碼"
+  },
+  "withArticle": {
+    "postcode": "有效的郵政編碼",
+    "zip": "有效的郵遞區號",
+    "eircode": "有效的 Eircode",
+    "postalCode": "有效的郵政編碼"
+  },
+  "tradeLabel": {
+    "area": "市鎮或城市",
+    "townOrArea": "市鎮或地區",
+    "city": "城市",
+    "suburb": "區域",
+    "townOrCity": "市鎮或城市"
+  },
+  "basedIn": {
+    "area": "你所在的市鎮或城市",
+    "townOrArea": "你所在的市鎮或地區",
+    "city": "你所在的城市",
+    "suburb": "你所在的區域",
+    "townOrCity": "你所在的市鎮或城市"
+  },
+  "example": "例如：{example}",
+  "customersSee": "客人會看到：",
+  "postalWarning": "這看來不像{article}——例如 {example}。你仍然可以儲存。",
+  "regionChoose": "請選擇…"
+}

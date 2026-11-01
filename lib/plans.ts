@@ -66,6 +66,18 @@ export interface PlanPrice {
   /** The platform fee, in basis points, on online food above the included amount. */
   feeBps: number
   extraVanMonthlyMinor: number
+  /** world-countries-1 (31 October 2026, docs/world-countries-1-report.md §1): is the plan OFFERED in this country? A row may
+   *  exist and be switched off (`plan_prices.offered = false`): its prices are kept as data, but no page, prompt or choice shows
+   *  it — Brazil, Mexico, Malaysia, Singapore and Thailand offer Unlimited only, because HatchGrab may not take a platform fee
+   *  there (country_settings.platform_fee_allowed). The row still satisfies the switch-on triggers (every public plan has a
+   *  row). True when the column is not there yet (before 20261054 runs) — every row was offered before it existed.
+   *  🔴 Readers treat only an explicit `false` as switched off: a catalogue built without the field (a fixture, an older
+   *  payload) is every row offered, exactly as before. */
+  offered: boolean
+  /** world-countries-1: THE COUNTRY'S TRIAL-END PLAN (`plan_prices.is_trial_end`, at most one row per country): the plan a
+   *  truck in this country resolves to when its plan's end date passes. No flagged row = the plans table's expiry fallback
+   *  (Pay as you go) — every country before world-countries-1. False when the column is not there yet. */
+  trialEnd: boolean
 }
 
 /** The whole catalogue: plans in sort order, every price row, and every feature switch. */
@@ -87,6 +99,9 @@ export interface TruckPlanFields {
   plan_price_override_minor?: number | null
   plan_price_override_until?: string | null
   plan_price_override_note?: string | null
+  /** world-countries-1: the truck's country (trucks.country) — which country's trial-end plan an ENDED plan falls back to
+   *  (`expiryFallbackFor`). Absent = the plans table's expiry fallback, exactly as before. */
+  country?: string | null
 }
 
 // ── the list ────────────────────────────────────────────────────────────────────────────────────────────────────────
@@ -128,6 +143,18 @@ const onlyOne = (catalog: PlanCatalog, pick: (p: PlanRow) => boolean, what: stri
 export const signupDefaultPlan = (catalog: PlanCatalog): PlanRow => onlyOne(catalog, p => p.isSignupDefault, 'signup-default')
 /** The plan a truck falls back to when its plan has ended. 🔴 THROWS unless exactly one row is flagged. */
 export const expiryFallbackPlan = (catalog: PlanCatalog): PlanRow => onlyOne(catalog, p => p.isExpiryFallback, 'expiry-fallback')
+/**
+ * world-countries-1 (31 October 2026): 🔴 THE PLAN A TRUCK IN THIS COUNTRY FALLS BACK TO when its plan ends — the country's
+ * trial-end row (`plan_prices.is_trial_end`, offered, an active public non-trial plan), else the plans table's expiry fallback
+ * (`expiryFallbackPlan`: Pay as you go). Data, never a country code in code: Brazil, Mexico, Malaysia, Singapore and Thailand
+ * flag Unlimited, because Pay as you go is not offered there.
+ */
+export function expiryFallbackFor(catalog: PlanCatalog, countryCode: string | null | undefined): PlanRow {
+  const cc = String(countryCode ?? '').toUpperCase()
+  const row = cc ? catalog.prices.find(p => p.countryCode === cc && p.trialEnd === true && p.offered !== false) : undefined
+  const plan = row ? planByKey(catalog, row.planKey) : null
+  return plan && plan.active && plan.isPublic && !plan.isTrial ? plan : expiryFallbackPlan(catalog)
+}
 /** The plan a demo truck is provisioned on. 🔴 THROWS unless exactly one row is flagged. */
 export const demoPlan = (catalog: PlanCatalog): PlanRow => onlyOne(catalog, p => p.isDemo, 'demo')
 
@@ -139,6 +166,15 @@ export function catalogProblems(catalog: PlanCatalog): string[] {
     if (n !== 1) out.push(`${n} ${what} plans (expected exactly 1)`)
   }
   for (const pr of catalog.prices) if (!planByKey(catalog, pr.planKey)) out.push(`a price row for unknown plan "${pr.planKey}"`)
+  // world-countries-1: at most one trial-end row per country, and it must be an offered row of an active public non-trial plan.
+  const ends = new Map<string, number>()
+  for (const pr of catalog.prices) {
+    if (!pr.trialEnd) continue
+    ends.set(pr.countryCode, (ends.get(pr.countryCode) ?? 0) + 1)
+    const pl = planByKey(catalog, pr.planKey)
+    if (pr.offered === false || !pl || !pl.active || !pl.isPublic || pl.isTrial) out.push(`the trial-end row ${pr.countryCode}/${pr.planKey} is not an offered row of an active public non-trial plan`)
+  }
+  for (const [cc, n] of ends) if (n > 1) out.push(`${n} trial-end rows for ${cc} (at most 1)`)
   // ⚠️ A SWITCH NAMING NO CODE FEATURE IS NOT A PROBLEM HERE (Stage B, decision 1): `splitUnknownFeatures` sets it aside
   // as a warning before this runs, so one typo in plan_features can never take the catalogue — and every page — down.
   for (const f of catalog.features ?? []) {
@@ -186,16 +222,25 @@ export interface EffectivePlan {
  *   • the assigned plan, while its end date (planEndDate) is NULL or in the future;
  *   • the EXPIRY-FALLBACK plan once that date has passed (`ended: true`) — WITH THE FALLBACK'S feature switches (Stage
  *     A2 replaced Stage A's "keeps every feature"): an ended trial has exactly what a Pay as you go truck has;
+ *     world-countries-1: the fallback is the TRUCK'S COUNTRY'S (`expiryFallbackFor`, from `truck.country`) — Unlimited where
+ *     Pay as you go is not offered; the plans table's own fallback everywhere else, and whenever the country is not given;
  *   • the expiry fallback too for a key that is not in the table or a plan that is inactive (`ended: false`) — defensive;
  *     the foreign key on trucks.plan makes an unknown key impossible in the database.
  */
 export function effectivePlan(truck: TruckPlanFields | null | undefined, catalog: PlanCatalog, now: Date = new Date()): EffectivePlan {
   const assigned = planByKey(catalog, truck?.plan)
-  const fallback = expiryFallbackPlan(catalog)
+  const fallback = expiryFallbackFor(catalog, truck?.country)
   if (!assigned || !assigned.active) return { plan: fallback, assigned, ended: false, endedAt: null }
   const end = planEndDate(truck)
   if (end && new Date(end).getTime() <= now.getTime()) return { plan: fallback, assigned, ended: true, endedAt: end }
   return { plan: assigned, assigned, ended: false, endedAt: null }
+}
+
+/** world-countries-1: a plan's price row in a country ONLY WHEN THE PLAN IS OFFERED THERE (`offered`), else null. What every
+ *  surface that lists or offers plans asks; `planPriceFor` still answers for a row that exists but is switched off. */
+export function offeredPriceFor(catalog: PlanCatalog, planKey: PlanKey, countryCode: string | null | undefined): PlanPrice | null {
+  const p = planPriceFor(catalog, planKey, countryCode)
+  return p && p.offered !== false ? p : null
 }
 
 /** A plan's price row in a country, or null (internal plans have none: they charge nothing). */
@@ -409,9 +454,14 @@ export function mapPriceRow(r: Row): PlanPrice {
     monthlyMinor: int(r, 'monthly_minor'),
     includedOnlineMinor: inc === null || inc === undefined ? null : int(r, 'included_online_minor'),
     feeBps: int(r, 'fee_bps'), extraVanMonthlyMinor: int(r, 'extra_van_monthly_minor'),
+    // world-countries-1: absent (before 20261054 runs) = offered, not the trial end — exactly what every row was before.
+    offered: r.offered !== false, trialEnd: r.is_trial_end === true,
   }
 }
 
 export const PLAN_COLUMNS = 'key, name, description, sort_order, is_public, is_internal, is_trial, is_signup_default, is_expiry_fallback, is_demo, pay_at_hatch_allowed, active, included_vans, trial_months, is_highlighted, subtitle'
 export const PLAN_FEATURE_COLUMNS = 'plan_key, feature, enabled'
 export const PLAN_PRICE_COLUMNS = 'plan_key, country_code, monthly_minor, included_online_minor, fee_bps, extra_van_monthly_minor'
+/** world-countries-1 (31 October 2026): the price columns with `offered` and `is_trial_end` (20261054). lib/plans-server.ts reads
+ *  these, and falls back to PLAN_PRICE_COLUMNS while the columns do not exist yet (Postgres 42703), so the code may deploy first. */
+export const PLAN_PRICE_COLUMNS_WC1 = `${PLAN_PRICE_COLUMNS}, offered, is_trial_end`

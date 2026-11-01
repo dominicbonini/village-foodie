@@ -24,8 +24,10 @@
     "heading": "Vaše brezplačno preizkusno obdobje se še ni začelo"
   },
   "onTrial": "Na voljo imate vse funkcije. Paket izberite, preden se preizkusno obdobje konča.",
+  "onTrialPaidEnd": "Na voljo imate vse funkcije. Ko se preizkusno obdobje konča, paket {plan} stane {price} na mesec. Pred tem vas bomo kontaktirali, da uredimo plačilo.",
   "onTrialNoCta": "Na voljo imate vse funkcije.",
   "noCharge": "🔒 V preizkusnem obdobju, ki traja do {date}, vam ne bomo ničesar zaračunali. Obračun se začne šele, ko izberete paket in vnesete plačilne podatke. Do takrat vam ni treba ničesar preklicati ali plačati.",
+  "noChargePaidEnd": "🔒 V preizkusnem obdobju, ki traja do {date}, vam ne bomo ničesar zaračunali.",
   "fees": "*Za spletna naročila veljajo standardni stroški obdelave kartičnih plačil",
   "setUpPayment": "⏱ Paket izberite, preden se preizkusno obdobje konča",
   "changeYourPlan": "Zamenjajte paket",

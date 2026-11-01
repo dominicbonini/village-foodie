@@ -37,7 +37,7 @@ import type { PlanCatalog } from '@/lib/plans'
 import { getPlanCatalog } from '@/lib/plans-server'
 import { localizePlans } from '@/lib/plan-names'   // languages-1: plan names in the locale's language
 import {
-  offerPlans, offerTrialMonths, offerFallback, baseBullets, addedFeatureBullets, moneyBullets, cheapestBands,
+  offerPlans, offerTrialMonths, offerFallback, baseBullets, addedFeatureBullets, moneyBullets, cheapestBands, singlePlanExtras,
   tableGroups, tableCell, walkUpFree, type OfferPlan,
 } from '@/lib/plan-offer'
 import { noteMarker, planTableNotes } from '@/lib/feature-table'
@@ -166,6 +166,9 @@ export function buildPlansPdfHtml(s: CountrySettings, catalog: PlanCatalog): str
   const months = offerTrialMonths(catalog)
   const fallback = offerFallback(catalog, s.countryCode)
   const bands = cheapestBands(plans, s.currency)
+  // world-countries-1 (31 October 2026): ONE plan offered (Unlimited-only countries) — as the landing's pricing section: the banner
+  // names its price, the card lists the base, what the plan adds and its money bullets, and there is no "cheapest" bar.
+  const single = plans.length === 1 ? plans[0] : null
   const fee = (p: OfferPlan) => show(pctLabel(p.feeBps / 100, s))
   const whole = (minor: number) => show(formatWholeAmount(minor, money))
   const words = (f: string) => (tp.has(`added.${f}` as never) ? tp(`added.${f}` as never) : tPrompt(`features.${f}.name` as never))
@@ -175,7 +178,9 @@ export function buildPlansPdfHtml(s: CountrySettings, catalog: PlanCatalog): str
   // ── THE TRIAL BANNER ──
   const banner = months === null ? '' : `
     <div class="banner"><b>${esc(tp('banner.title', { months }))}</b>
-      <span>${html(tp, 'banner.body', { brand: priceText(PRICE_WORD.payAtHatch, locale), fallback: fallback.plan.name, fallbackFree: fallback.free ? 'yes' : 'no' })}</span></div>`
+      <span>${single
+        ? html(tp, 'banner.bodyOnly', { brand: priceText(PRICE_WORD.payAtHatch, locale), fallback: single.plan.name, price: show(formatAmount(single.monthlyMinor, money)) })
+        : html(tp, 'banner.body', { brand: priceText(PRICE_WORD.payAtHatch, locale), fallback: fallback.plan.name, fallbackFree: fallback.free ? 'yes' : 'no' })}</span></div>`
 
   // ── THE CARDS — one per public plan, the landing's content ──
   const feeSentence = (p: OfferPlan) => p.shape === 'feeOnly' ? html(tp, 'fee.feeOnly', { fee: fee(p) })
@@ -184,7 +189,9 @@ export function buildPlansPdfHtml(s: CountrySettings, catalog: PlanCatalog): str
   const cards = `<div class="cards">${plans.map((p, i) => {
     const prev = i > 0 ? plans[i - 1] : null
     const items = prev === null
-      ? [`<li class="lead">${esc(tp('card.everything'))}</li>`, ...baseBullets(catalog, p).map(k => `<li>${esc(tp(`base.${k}` as never))}</li>`)]
+      ? [`<li class="lead">${esc(tp('card.everything'))}</li>`, ...baseBullets(catalog, p).map(k => `<li>${esc(tp(`base.${k}` as never))}</li>`),
+        ...(single ? [...singlePlanExtras(catalog, p).map(f => `<li>${esc(words(f.feature))}${f.comingSoon ? soon : ''}${f.sub.map(x => `<span class="sub">${esc(words(x.feature))}${x.comingSoon ? soon : ''}</span>`).join('')}</li>`),
+          ...moneyBullets(p).map(m => `<li>${esc(tp(`money.${m}`))}</li>`)] : [])]
       : [`<li class="lead">${esc(tp('card.everythingIn', { plan: prev.plan.name }))}</li>`,
         ...addedFeatureBullets(catalog, p, prev).map(f => `<li>${esc(words(f.feature))}${f.comingSoon ? soon : ''}${f.sub.map(x => `<span class="sub">${esc(words(x.feature))}${x.comingSoon ? soon : ''}</span>`).join('')}</li>`),
         ...moneyBullets(p).map(m => `<li>${esc(tp(`money.${m}`))}</li>`)]
@@ -200,7 +207,7 @@ export function buildPlansPdfHtml(s: CountrySettings, catalog: PlanCatalog): str
 
   // ── WHICH PLAN IS CHEAPEST ──
   // landing-mobile-tidy (21 October 2026): the bands no longer say "of online orders a month"; the heading's small line does.
-  const bar = omit || bands.length === 0 ? '' : `<div class="cheap"><b>${esc(tp('bar.title'))}</b> <span class="cheap-sub">${esc(tp('bar.subtitle'))}</span> ${bands.length === 1
+  const bar = omit || bands.length === 0 || single ? '' : `<div class="cheap"><b>${esc(tp('bar.title'))}</b> <span class="cheap-sub">${esc(tp('bar.subtitle'))}</span> ${bands.length === 1
     ? html(tp, 'bar.only', { plan: bands[0].plan.plan.name })
     : bands.map((band, i) => i === 0 ? html(tp, 'bar.first', { to: whole(band.toMinor as number), plan: band.plan.plan.name })
       : band.toMinor === null ? html(tp, 'bar.last', { from: whole(band.fromMinor as number), plan: band.plan.plan.name })

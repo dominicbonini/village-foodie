@@ -1,0 +1,10 @@
+{
+  "copy": "نسخ",
+  "copied": "تم النسخ ✓",
+  "failed": "فشل النسخ",
+  "aria": "{label} {thing}",
+  "announceCopied": "تم نسخ {thing}",
+  "announceCopiedValue": "تم نسخ القيمة",
+  "announceFailed": "تعذّر نسخ {thing}. حدّد النص وانسخه بنفسك.",
+  "announceFailedValue": "تعذّر نسخ القيمة. حدّد النص وانسخه بنفسك."
+}

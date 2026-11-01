@@ -1,0 +1,10 @@
+{
+  "phone": {
+    "noMenuItems": "Aún no hay productos en el menú: agrégalos en Menú › Productos."
+  },
+  "newType": {
+    "chips": {
+      "privateHire": "Renta de food truck"
+    }
+  }
+}

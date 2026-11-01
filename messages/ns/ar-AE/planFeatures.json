@@ -1,0 +1,135 @@
+{
+  "row": {
+    "discovery_map_listing": {
+      "name": "الظهور على خريطة الاكتشاف"
+    },
+    "web_dashboard": {
+      "name": "لوحة تحكم على الويب تعمل على أي جهاز"
+    },
+    "qr_code": {
+      "name": "رمز QR"
+    },
+    "schedule_import": {
+      "name": "استيراد تلقائي لجدول المواقع"
+    },
+    "meal_deals_upsells": {
+      "name": "وجبات كومبو وعروض إضافية"
+    },
+    "walkup_orders": {
+      "name": "معالجة الطلبات الحضورية"
+    },
+    "sold_out_toggle": {
+      "name": "زر «نفد» الفوري"
+    },
+    "kitchen_app": {
+      "name": "تطبيق المطبخ لأجهزة iPhone وiPad وAndroid"
+    },
+    "offline_protection": {
+      "name": "حماية الطلبات عند انقطاع الاتصال"
+    },
+    "online_payments": {
+      "name": "الدفع عبر الإنترنت"
+    },
+    "advance_preordering": {
+      "name": "الطلب المسبق قبل أيام"
+    },
+    "preorder_deadline": {
+      "name": "موعد نهائي للطلب المسبق"
+    },
+    "time_slot_selection": {
+      "name": "اختيار العميل لوقت الاستلام"
+    },
+    "kitchen_capacity": {
+      "name": "إدارة سعة المطبخ"
+    },
+    "stock_countdown": {
+      "name": "عدّ تنازلي تلقائي للمخزون"
+    },
+    "auto_accept": {
+      "name": "قبول الطلبات الإلكترونية تلقائيًا"
+    },
+    "branded_qr_code": {
+      "name": "رمز QR بعلامتك التجارية"
+    },
+    "private_events": {
+      "name": "الفعاليات الخاصة"
+    },
+    "social_media_posts": {
+      "name": "منشورات وسائل التواصل الاجتماعي"
+    },
+    "whatsapp_auto_replies": {
+      "name": "ردود WhatsApp التلقائية"
+    },
+    "messenger_instagram_replies": {
+      "name": "ردود Messenger وInstagram التلقائية"
+    },
+    "tap_to_pay": {
+      "name": "استلام الدفع على هاتفك"
+    },
+    "advanced_reporting": {
+      "name": "تقارير متقدّمة"
+    },
+    "sms_order_alerts": {
+      "name": "تنبيهات الطلبات عبر الرسائل النصية"
+    },
+    "multi_device_kitchen": {
+      "name": "مزامنة المطبخ على عدة أجهزة"
+    },
+    "multi_user_access": {
+      "name": "وصول عدة مستخدمين"
+    },
+    "embed_schedule": {
+      "name": "صفحة جدول المواقع على موقعك الإلكتروني"
+    },
+    "event_types": {
+      "name": "أنواع فعاليات وأسعار مخصّصة"
+    },
+    "buzzer_tracking": {
+      "name": "تتبّع أجهزة النداء"
+    },
+    "ticket_printing": {
+      "name": "طباعة تذاكر المطبخ"
+    },
+    "customer_display": {
+      "name": "شاشة عرض للعملاء"
+    },
+    "loyalty_stamp_cards": {
+      "name": "بطاقات ولاء رقمية بالأختام"
+    }
+  },
+  "cardRegionOnline": "بطاقات {region} العادية",
+  "cardRegion": {
+    "UKcards": "البطاقات البريطانية",
+    "EEAcards": "بطاقات المنطقة الاقتصادية الأوروبية",
+    "UScards": "البطاقات الأمريكية",
+    "Australiancards": "البطاقات الأسترالية",
+    "NewZealandcards": "بطاقات نيوزيلندا",
+    "Canadiancards": "البطاقات الكندية",
+    "Swisscards": "البطاقات السويسرية",
+    "Braziliancards": "البطاقات البرازيلية",
+    "Mexicancards": "البطاقات المكسيكية",
+    "Japanesecards": "البطاقات اليابانية",
+    "Singaporecards": "بطاقات سنغافورة",
+    "HongKongcards": "بطاقات هونغ كونغ",
+    "Malaysiancards": "البطاقات الماليزية",
+    "Thaicards": "البطاقات التايلاندية",
+    "UAEcards": "بطاقات الإمارات"
+  },
+  "perMonth": {
+    "mo": "{amount}/شهر",
+    "month": "{amount} شهريًا"
+  },
+  "priceWord": {
+    "free": "مجانًا",
+    "freeTrial": "تجربة مجانية",
+    "lifetime": "مدى الحياة",
+    "zeroPercent": "0%",
+    "payAtHatch": "الدفع عند الاستلام",
+    "unlimited": "غير محدود",
+    "none": "—",
+    "masked": "يُحدَّد لاحقًا"
+  },
+  "cell": {
+    "included": "مشمول"
+  }
+}

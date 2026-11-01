@@ -9,7 +9,7 @@
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import type { Feature } from '@/lib/features'
-import { activePlans, planByKey, planPriceFor, effectivePlan, expiryFallbackPlan, plansInOrder, trialEndFor, extendTrialEnd, type PlanCatalog, type PlanKey, type PlanRow } from '@/lib/plans'
+import { activePlans, planByKey, planPriceFor, effectivePlan, expiryFallbackFor, plansInOrder, trialEndFor, extendTrialEnd, type PlanCatalog, type PlanKey, type PlanRow } from '@/lib/plans'
 import { safeHref } from '@/lib/safe-href'
 import { STOPPED_AFTER_MS, STOPPED_AFTER_LABEL, CHECK_CRON_EXPRESSION, CADENCE_DERIVED } from '@/lib/custom-domain/cadence'
 import { formatAmount, pctLabel } from '@/lib/money-format'
@@ -836,7 +836,8 @@ export default function AdminPage() {
   const currentModalPlanRow = planByKey(plans, currentModalPlan)
   // The plan a trial preset puts the truck on: the active plan flagged is_trial (none → no presets).
   const trialPlanRow = activePlans(plans).find(p => p.isTrial) ?? null
-  const fallbackPlanRow = plans.plans.some(p => p.isExpiryFallback) ? expiryFallbackPlan(plans) : null
+  // world-countries-1: the truck's COUNTRY's trial-end plan (Unlimited where Pay as you go is not offered).
+  const fallbackPlanRow = plans.plans.some(p => p.isExpiryFallback) ? expiryFallbackFor(plans, editingTruck?.country) : null
   const modalTrialExpiry = modalEdits.trial_expires_at ? new Date(modalEdits.trial_expires_at) : null
   const modalTrialExpired = modalTrialExpiry ? modalTrialExpiry < new Date() : false
   const modalTrialDays = modalTrialExpiry
@@ -1452,9 +1453,15 @@ export default function AdminPage() {
               <div className="flex gap-1 flex-wrap">
                 {/* 🔴 THE BUTTONS ARE THE TABLE'S ACTIVE PLANS, IN sort_order (Stage A) — no list in code. Choosing a plan
                     that is not a trial clears the end date, as before. */}
-                {activePlans(plans).map(p => (
+                {activePlans(plans).map(p => {
+                  // world-countries-1: a public plan whose price row in the truck's country is switched off (offered = false —
+                  // Unlimited-only countries) cannot be chosen; the API refuses it too.
+                  const notOffered = p.isPublic && !!editingTruck?.country && planPriceFor(plans, p.key, editingTruck.country)?.offered === false
+                  return (
                   <button
                     key={p.key}
+                    disabled={notOffered}
+                    title={notOffered ? `Not offered in ${editingTruck?.country}` : undefined}
                     onClick={() => setModalEdits(prev => ({
                       ...prev,
                       plan: p.key,
@@ -1462,11 +1469,12 @@ export default function AdminPage() {
                     }))}
                     className={`text-xs px-2.5 py-1 rounded-lg font-bold transition-colors ${
                       currentModalPlan === p.key ? 'bg-slate-900 text-white' : 'bg-slate-100 text-slate-500 hover:bg-slate-200'
-                    }`}
+                    }${notOffered ? ' opacity-40 line-through cursor-not-allowed' : ''}`}
                   >
                     {p.name}
                   </button>
-                ))}
+                  )
+                })}
               </div>
               {currentModalPlanRow?.isTrial && (
                 <div className="flex items-center gap-2 mt-2 flex-wrap">

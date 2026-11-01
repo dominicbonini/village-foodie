@@ -1,0 +1,25 @@
+{
+  "newOrder": {
+    "subject": "Novo pedido nº {id} — {name}{withSlot, select, yes { · {slot}} other {}}",
+    "heading": "Novo pedido recebido",
+    "from": "<b>Pedido nº {id}</b> de <b>{name}</b>",
+    "collection": "Retirada: {time}",
+    "asap": "Sem horário definido — o quanto antes",
+    "total": "Total",
+    "notes": "<b>Observações:</b> {notes}",
+    "autoConfirmed": "Confirmado automaticamente — você não precisa fazer nada.",
+    "confirmPrompt": "Entre no seu painel do HatchGrab para confirmar ou recusar este pedido.",
+    "text": "Novo pedido nº {id} de {name}{withSlot, select, yes { para {slot}} other {}}{withVenue, select, yes { em {venue}} other {}}.{withCharges, select, yes { {charges}.} other {}} Total: {total}.{withNotes, select, yes { Observações: {notes}} other {}}"
+  },
+  "newEvents": {
+    "subject": "Novos eventos encontrados para {truck} — revise, por favor",
+    "hi": "Olá,",
+    "found": "Encontramos <b>{n, plural, one {{count} novo evento} other {{count} novos eventos}}</b> na sua agenda que precisam da sua aprovação antes de aparecer para os clientes.",
+    "listHeading": "Eventos encontrados:",
+    "approve": "Assim que você aprová-los na aba Agenda, eles vão aparecer no mapa e sua página de pedidos estará pronta para receber pedidos antecipados.",
+    "cta": "Revisar sua agenda →",
+    "signoff": "— Equipe HatchGrab · hatchgrab.com",
+    "unknownVenue": "Local desconhecido",
+    "text": "Olá,\n\nEncontramos {n, plural, one {{count} novo evento} other {{count} novos eventos}} na sua agenda que precisam da sua aprovação:\n\n{list}\n\nRevise em: {url}\n\nAssim que você aprová-los, eles vão aparecer no mapa.\n\n— Equipe HatchGrab"
+  }
+}

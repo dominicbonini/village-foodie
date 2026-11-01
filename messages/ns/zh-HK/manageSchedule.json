@@ -1,0 +1,102 @@
+{
+  "status": {
+    "cancelled": "已取消",
+    "finished": "已結束",
+    "unconfirmed": "未確認",
+    "confirmed": "已確認",
+    "open": "營業中",
+    "closed": "已關閉"
+  },
+  "sections": {
+    "label": "出車時間表分頁",
+    "events": "活動",
+    "eventTypes": "活動類型"
+  },
+  "header": {
+    "title": "出車時間表",
+    "upcoming": "{count} 個即將舉行",
+    "import": "✨ 匯入出車時間表",
+    "importHint": "相片、PDF 或文字",
+    "addEvent": "+ 新增活動",
+    "scraperAuto": "正從你的網站自動搜尋活動",
+    "changeInSettings": "在設定中更改",
+    "scraperManual": "你正以手動方式管理出車時間表"
+  },
+  "empty": {
+    "title": "沒有即將舉行的活動",
+    "body": "從你的社交媒體和預約日曆擷取的活動會在這裏顯示，等你確認"
+  },
+  "list": {
+    "openNow": "營業中",
+    "needsApproval": "需要你批准",
+    "needsConfirmation": "需要確認",
+    "confirmed": "已確認",
+    "past": "過往活動（{count}）",
+    "found": "我們為你找到 {count, plural, other {# 個活動——上線前請先檢查並批准。}}"
+  },
+  "card": {
+    "addName": "加入名稱",
+    "timeNeeded": "⚠ 需要時間",
+    "setTimeFirst": "請先設定時間",
+    "confirm": "確認",
+    "copy": "複製",
+    "edit": "編輯",
+    "makePost": "製作帖文",
+    "cancel": "取消",
+    "approve": "批准",
+    "reject": "拒絕",
+    "stock": "⚠️ 存貨",
+    "stockHidden": "已隱藏——{reason}",
+    "noDeals": "沒有生效中的套餐",
+    "dealsActive": "{count, plural, other {# 個套餐}}生效中 · {names}{hidden, plural, =0 {} other { · # 個已隱藏}}",
+    "approveNeedsTimes": "這個活動要有開始和結束時間才可以批准——請用「編輯」加入。"
+  },
+  "guessed": {
+    "title": "📍 我們估計了這個地點",
+    "body": "有多於一個場地符合<b>{venue}</b>，所以我們選了{hasTown, select, yes {<b>{town}</b>內} other {}}最接近的一個{hasPostcode, select, yes {（{postcode}）} other {}}。批准前請確認地點正確——如有錯誤，請用<b>編輯</b>修正地區或{postal}，否則顧客會被帶到錯誤的地點。",
+    "thisVenue": "這個場地"
+  },
+  "noLocation": {
+    "title": "📍 尚未有位置",
+    "body": "我們未能在地圖上找到這個場地，因此它會列出，但不會顯示地圖標記。用<b>編輯</b>加入{postal}，就可以在地圖上顯示。"
+  },
+  "conflict": {
+    "title": "⚠️ {count, plural, other {可能有衝突}}——{pending, select, yes {批准} other {確認}}前請先檢查",
+    "duplicate": "這看來與你已有的活動相同。",
+    "review": "同一場地及日期，但時間不同——這是更改了時間的同一個活動，還是另一個時段？批准前請先檢查。",
+    "already": "已在你的出車時間表上：<b>{venue}</b>{details}（{status, select, confirmed {已確認} open {營業中} other {{status}}}）",
+    "unnamedVenue": "未命名場地",
+    "ack": "是，這些是不同的活動——仍然{pending, select, yes {批准} other {確認}}",
+    "cancel": "取消",
+    "overlap": "這個活動的時間與同日另一個活動重疊——一架車輛不能同時在兩個地方。批准前請先檢查。"
+  },
+  "toast": {
+    "loadFailed": "未能載入活動",
+    "linkFailed": "未能載入連結",
+    "placeTypeFailed": "活動已儲存。{place} 的慣用類型未能儲存——{reason}。",
+    "placeTypeFailedReason": "儲存未能完成",
+    "eventUpdated": "活動已更新",
+    "eventAdded": "活動已新增",
+    "eventsSaved": "{count, plural, other {已儲存 # 個活動}}",
+    "saveEventsFailed": "未能儲存活動",
+    "needsTime": "批准前請加入開始和結束時間——這個活動需要時間才可以上線。",
+    "addStartTime": "加入開始時間",
+    "addEndTime": "加入結束時間",
+    "chooseTruckBefore": "批准前請選擇由哪架美食車負責這個活動。",
+    "chooseTruck": "選擇由哪架美食車負責這個活動",
+    "eventConfirmed": "活動已確認",
+    "eventRejected": "活動已拒絕",
+    "undo": "↩ 復原",
+    "eventRestored": "活動已還原",
+    "restoreFailed": "未能還原",
+    "eventCancelled": "活動已取消",
+    "eventCancelledOrders": "活動已取消 · {count, plural, other {# 張訂單}}已取消",
+    "placeHidden": "地點已隱藏",
+    "placeShown": "地點已重新顯示",
+    "saveThatFailed": "未能儲存。"
+  },
+  "link": {
+    "label": "私人連結及 QR 碼",
+    "close": "關閉"
+  }
+}

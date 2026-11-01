@@ -1,0 +1,127 @@
+{
+  "eyebrow": "Perbandingan kos",
+  "title": "Bandingkan kos<br></br><accent>pesanan dalam talian anda</accent>",
+  "system": {
+    "title": "Adakah anda menerima pesanan dalam talian sekarang?",
+    "yes": "Ya, dengan sistem lain",
+    "no": "Tidak, belum lagi"
+  },
+  "trucks": {
+    "title": "Berapa banyak trak yang anda jalankan?",
+    "aria": "Bilangan trak"
+  },
+  "plan": {
+    "yourChoice": "Pilihan anda",
+    "weSuggest": "Cadangan kami",
+    "summary": "{price} setiap trak sebulan, termasuk pesanan dalam talian bernilai {allowance}{fleet, plural, other { bagi setiap trak}}.",
+    "switchTo": "Guna {plan} sebaliknya",
+    "summaryFeeOnly": "{hasMonthly, select, yes {{price} setiap trak sebulan, ditambah {pct} untuk pesanan kad dalam talian.} other {Tanpa yuran bulanan — {pct} untuk pesanan kad dalam talian sahaja.}}",
+    "summaryNoFee": "{price} setiap trak sebulan, dengan pesanan dalam talian tanpa had dan tiada yuran HatchGrab."
+  },
+  "orders": {
+    "titleYes": "Pesanan dalam talian sebulan, bagi setiap trak",
+    "count": "~{count, plural, other {# pesanan}}",
+    "captionNo": "Anggaran kasar pun tidak mengapa — pra-pesanan dan pelanggan yang tidak mahu beratur, bukan tunai atau kad di kaunter.",
+    "captionYes": "Hanya pesanan yang dibuat melalui halaman pesanan anda — bukan tunai atau kad di kaunter.",
+    "sliderAria": "Nilai pesanan dalam talian bulanan bagi setiap trak",
+    "overAllowance": "Pesanan dalam talian bernilai {allowance} termasuk bagi setiap trak. Lebihan {excess} dikenakan {pct} — <b>{over}</b> sebulan bagi setiap trak.",
+    "insideAllowance": "Dalam had pesanan dalam talian bernilai {allowance} yang termasuk — tiada caj tambahan selain pelan.",
+    "acrossFleet": "Bagi {fleet, plural, other {# trak}}: <b>{amount}</b> sebulan.",
+    "titleNo": "Berapa banyak agaknya jualan dalam talian anda sebulan, bagi setiap trak?",
+    "feeOnly": "{pct} untuk setiap pesanan kad dalam talian — <b>{over}</b> sebulan bagi setiap trak.",
+    "noFee": "Pesanan dalam talian tanpa had termasuk — tiada caj tambahan selain pelan."
+  },
+  "fee": {
+    "title": "Berapa yang anda bayar bagi setiap pesanan sekarang?",
+    "pctLabel": "Peratusan",
+    "pctPlaceholder": "Kadar anda",
+    "pctAria": "Yuran peratusan",
+    "fixedLabel": "Ditambah setiap pesanan",
+    "fixedPlaceholder": "Yuran anda",
+    "fixedAria": "Sen setiap pesanan",
+    "modeLabel": "Kadar mereka:",
+    "modeInclusive": "termasuk pemprosesan kad",
+    "modeOnTop": "dikenakan sebagai tambahan",
+    "onTopNote": "Pemprosesan kad sebanyak {fee} dikenakan sebagai tambahan, jadi anda sebenarnya membayar <b>{pct} + {fixed}</b> secara keseluruhan.",
+    "inclusiveNote": "Pemprosesan kad sebanyak {fee} sudah termasuk di dalamnya, dan anda tetap perlu membayarnya di mana-mana. Yuran mereka sendiri ialah <b>{pct}</b>."
+  },
+  "days": {
+    "title": "Berapa hari seminggu anda berniaga?",
+    "help": "Acara, pasar, tapak — mana-mana hari van anda keluar berniaga."
+  },
+  "jump": {
+    "cost": "Lihat kosnya ↓",
+    "saving": "Lihat penjimatan anda ↓"
+  },
+  "noSystem": {
+    "hero": "<lead>Pesanan dalam talian, pra-pesanan dan skrin dapur anda untuk</lead><figure>{amount}</figure><unit>setiap hari berniaga</unit>",
+    "basedOn": "Berdasarkan {days, plural, other {# hari}} seminggu · {monthly} sebulan{fleet, plural, other { setiap van}}"
+  },
+  "coffee": "Lebih murah daripada secawan kopi.",
+  "freeMonths": "{n, plural, other {Dan # bulan pertama anda percuma daripada kami.}}",
+  "cta": {
+    "upload": "Muat naik menu saya →",
+    "uploadSave": "Muat naik menu saya dan jimat {amount} →",
+    "ask": "Tanya kami soalan",
+    "noCard": "Tiada kad diperlukan untuk persediaan"
+  },
+  "breakdown": {
+    "title": "Pecahan bulan anda",
+    "titleDearer": "Bulan anda dengan HatchGrab",
+    "plan": "Pelan {plan}",
+    "over": "{pct} untuk {excess} yang melebihi {allowance} termasuk",
+    "inside": "Pesanan dalam talian dalam had {allowance} yang termasuk",
+    "total": "HatchGrab setiap bulan",
+    "freeMonths": "{n, plural, other {Bulan 1–#}}",
+    "freeAmount": "{amount} — percuma daripada kami",
+    "acrossFleet": "Bagi {fleet, plural, other {# van}}",
+    "perMonth": "{amount} sebulan",
+    "card": "Pemprosesan kad — {fee} Stripe bagi setiap pesanan, dibayar kepada Stripe. Anda akan membayar lebih kurang sama dengan terminal kad di kaunter.",
+    "provider": "Yuran penyedia semasa anda sendiri ({pct})",
+    "feeOnly": "{pct} untuk pesanan dalam talian bernilai {excess}",
+    "noFee": "Pesanan dalam talian — tanpa had, tiada yuran HatchGrab"
+  },
+  "enterRate": "Masukkan jumlah yang anda bayar sekarang untuk melihat penjimatan anda.",
+  "panel": {
+    "nowYear": "<label>Sekarang anda membayar</label><fig>{amount}<q> setahun</q></fig>",
+    "nowMonth": "<label>Sekarang anda membayar</label><fig>{amount}<q> sebulan</q></fig>",
+    "oursYear": "<label>Dengan HatchGrab</label><fig>{amount}<q> pada tahun pertama</q></fig>",
+    "oursMonth": "<label>Dengan HatchGrab</label><fig>{amount}<q> sebulan</q></fig>",
+    "acrossFleet": "bagi {fleet, plural, other {# van}}"
+  },
+  "hero": {
+    "save": "<verb>Anda jimat</verb><figure>{amount}</figure><sub><num>{pct}</num> lebih rendah pada tahun pertama anda</sub>",
+    "same": "<verb>Lebih kurang sama</verb><figure>{amount}</figure><sub><num>{pct}</num> lebih tinggi pada tahun pertama anda</sub>",
+    "dearer": "<lead>Semua yang HatchGrab lakukan, untuk</lead><figure>{amount}</figure><unit>lebih seminggu</unit>",
+    "dearerSub": "{fleet, plural, other {{amount} lebih setiap van sebulan berbanding sekarang}}"
+  },
+  "anchor": {
+    "liability": "Itu sama dengan insurans liabiliti awam untuk setahun.",
+    "weekendPitch": "Itu sama dengan sewa tapak hujung minggu di festival makanan.",
+    "festivalPitches": "Itu sama dengan sewa beberapa tapak festival.",
+    "fryer": "Itu sama dengan penggoreng dan kuali leper yang baharu.",
+    "counter": "Itu sama dengan ubah suai penuh kaunter hidangan anda.",
+    "vanDeposit": "Itu sama dengan deposit untuk van kedua.",
+    "secondVan": "Itu sama dengan van kedua di jalan raya."
+  },
+  "year": {
+    "one": "Tahun pertama",
+    "two": "Tahun kedua",
+    "save": "Jimat {amount}<note>({pct} lebih rendah)</note>",
+    "extra": "Tambahan {amount}<note>({pct} lebih tinggi)</note>",
+    "current": "Penyedia semasa <b>{amount}</b>",
+    "ours": "HatchGrab <b>{amount}</b>"
+  },
+  "smallPrint": {
+    "no": "Anggaran berdasarkan angka yang anda masukkan, dengan andaian purata pesanan {aov}. Pemprosesan kad dikenakan tidak kira penyedia mana yang anda gunakan. Semak dahulu sebelum membuat keputusan.",
+    "yes": "Anggaran berdasarkan angka yang anda masukkan, dengan andaian purata pesanan {aov}. Pemprosesan kad sebanyak {fee} bagi setiap pesanan dikenakan tidak kira penyedia mana yang anda gunakan, jadi ia dikecualikan daripada kedua-dua pihak.",
+    "onTop": "Angka keseluruhan dalam soalan {n} termasuk caj ini — perbandingan tidak, pada kedua-dua pihak.",
+    "check": "Semak kadar penyedia semasa anda sebelum membuat keputusan."
+  },
+  "intro": "Ambil masa kira-kira seminit. Sudah menggunakan sistem? Kami akan bandingkannya. Belum lagi? Kami akan tunjukkan dengan tepat kosnya.",
+  "twoYear": "Dalam tempoh dua tahun, itu penjimatan sebanyak <b>{amount}</b>.",
+  "meta": {
+    "title": "Kalkulator kos — HatchGrab {country}",
+    "description": "Bandingkan kos pesanan dalam talian anda sekarang dengan setahun menggunakan HatchGrab — anggaran dalam masa seminit."
+  }
+}

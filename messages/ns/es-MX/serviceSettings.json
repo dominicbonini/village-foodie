@@ -1,0 +1,7 @@
+{
+  "pricesStandardCell": "Los precios de tu menú",
+  "pricesMenuCell": "Menú",
+  "pricesTypeOffCell": "Precios del menú",
+  "priceTypeHint": "Toca un precio para escribir el tuyo.",
+  "eventPriceOwnNote": "{hasType, select, yes {{type} {price} · este evento} other {menú {price} · este evento}}"
+}

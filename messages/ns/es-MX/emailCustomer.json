@@ -1,0 +1,15 @@
+{
+  "confirmation": {
+    "contactInstagram": "Mándanos un DM en Instagram",
+    "leadReady": "Tu pedido ya está listo — pasa a recogerlo a {truck}.",
+    "textReady": "Tu pedido ya está listo — pasa a recogerlo.",
+    "textInstagram": "¿Preguntas? Mándanos un DM en Instagram: {value}"
+  },
+  "cancelSentence": {
+    "refunded": "Se reembolsó un importe de {amount} a tu tarjeta. Los reembolsos suelen tardar entre 5 y 10 días hábiles en aparecer en tu estado de cuenta, según tu banco."
+  },
+  "refund": {
+    "timing": "Los reembolsos suelen tardar entre 5 y 10 días hábiles en aparecer en tu estado de cuenta, según tu banco.",
+    "contact": "Si algo no te parece correcto, ponte en contacto con {truck}."
+  }
+}

@@ -1,0 +1,87 @@
+{
+  "$comment": "world-countries-1 (31 October 2026): the WhatsApp allergen guard’s trigger words for CHINESE, Traditional, Hong Kong (zh-HK): 致敏 / 過敏 / 敏感, 不耐, 麩質, 走<allergen> (Hong Kong’s \"without\"), 唔含 / 不含 / 冇 / 無, 適合, 安全, 交叉污染, 可能含有 — no spaces, stems only. OPTION B, as every other language: absence / safety words only, NOT the bare allergen names (a presence question may reach the AI, which answers only from the tags and gets the caveat). Matched with the Unicode normaliser. caveatWords: a tagged label of the country’s allergen set (stored in English, lower case) → the words a reply may use for it. scripts/world-countries-1.cjs proves it.",
+  "language": "zh",
+  "normalise": "unicode",
+  "stems": [
+    "致敏",
+    "過敏",
+    "敏感",
+    "不耐",
+    "乳糖不耐",
+    "麩質",
+    "乳糜瀉",
+    "腹腔病",
+    "過敏性休克",
+    "epipen",
+    "無麩質",
+    "走蛋",
+    "走奶",
+    "走花生",
+    "走麩質",
+    "走海鮮",
+    "唔含",
+    "不含",
+    "冇花生",
+    "冇蛋",
+    "冇奶",
+    "無花生",
+    "無蛋",
+    "無奶",
+    "無乳製品",
+    "適合",
+    "安全",
+    "交叉污染",
+    "可能含有",
+    "微量"
+  ],
+  "tokens": [],
+  "caveatWords": {
+    "codex": {
+      "gluten": [
+        "麩質",
+        "小麥",
+        "麵粉"
+      ],
+      "crustaceans": [
+        "甲殼類",
+        "蝦",
+        "蟹",
+        "海鮮"
+      ],
+      "eggs": [
+        "蛋",
+        "雞蛋"
+      ],
+      "fish": [
+        "魚"
+      ],
+      "peanuts": [
+        "花生"
+      ],
+      "soy": [
+        "大豆",
+        "黃豆",
+        "豆腐",
+        "豉油"
+      ],
+      "milk": [
+        "奶",
+        "牛奶",
+        "乳製品",
+        "芝士",
+        "牛油",
+        "乳糖"
+      ],
+      "tree nuts": [
+        "果仁",
+        "堅果",
+        "杏仁",
+        "核桃",
+        "腰果"
+      ],
+      "sulphites": [
+        "亞硫酸鹽"
+      ]
+    }
+  }
+}

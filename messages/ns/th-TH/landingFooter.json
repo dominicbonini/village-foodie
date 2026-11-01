@@ -1,0 +1,16 @@
+{
+  "features": "ฟีเจอร์",
+  "pricing": "ราคา",
+  "privacy": "ความเป็นส่วนตัว",
+  "terms": "ข้อกำหนด",
+  "contact": "ติดต่อ",
+  "about": "เกี่ยวกับเรา",
+  "copyright": "© {year} HatchGrab",
+  "credit": "จากทีมผู้สร้าง <b>Village Foodie</b>",
+  "badges": {
+    "appStoreLink": "ดาวน์โหลด HatchGrab บน App Store",
+    "appStoreAlt": "ดาวน์โหลดบน App Store",
+    "googlePlayLink": "ดาวน์โหลด HatchGrab บน Google Play",
+    "googlePlayAlt": "ดาวน์โหลดบน Google Play"
+  }
+}

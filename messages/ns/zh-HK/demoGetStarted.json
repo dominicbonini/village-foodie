@@ -1,0 +1,103 @@
+{
+  "upload": {
+    "bannerButton": "儲存我的餐牌 →",
+    "heading": "設定你的美食車",
+    "sub": "你的餐牌會直接帶過去。",
+    "privacy": "我們只會用這些資料來設定你的美食車及發送示範連結——詳情請參閱我們的<link>私隱政策</link>。"
+  },
+  "sample": {
+    "bannerButton": "設定我的美食車 →",
+    "heading": "設定你的美食車",
+    "sub": "下一步你會上載自己的餐牌——只需一分鐘。",
+    "privacy": "我們只會用這些資料來設定你的美食車及發送示範連結——詳情請參閱我們的<link>私隱政策</link>。"
+  },
+  "saveOnly": {
+    "bannerButton": "儲存我的餐牌 →",
+    "heading": "儲存你的示範",
+    "sub": "我們會保留 14 天，並立即以電郵寄你一條返回連結。",
+    "privacy": "我們只會用這些資料來發送示範連結——詳情請參閱我們的<link>私隱政策</link>。"
+  },
+  "confirmationHeading": "一切準備就緒",
+  "postSaveButton": "設定我的美食車 →",
+  "enterSetupButton": "設定我的美食車 →",
+  "emailOnlyLink": "只需以電郵寄我一條返回這個示範的連結",
+  "sendLinkButton": "寄連結給我",
+  "savingButton": "儲存中…",
+  "continueButton": "繼續 →",
+  "createAccountButton": "建立我的帳戶 →",
+  "retryButton": "再試一次",
+  "backToDemoButton": "返回示範",
+  "savedStatus": "{hasDate, select, yes {✓ 已儲存——保留至 {date}} other {✓ 已儲存}}",
+  "back": "返回",
+  "close": "關閉",
+  "truckStepHeading": "關於你的美食車",
+  "detailsStepHeading": "完成設定",
+  "stepper": {
+    "details": "你的資料",
+    "menu": "餐牌",
+    "allergens": "致敏原",
+    "kitchen": "廚房設定",
+    "schedule": "出車時間表"
+  },
+  "confirmEmailed": "我們已以電郵寄你一條直接返回這個示範的連結——無需登入。",
+  "confirmKeepUntil": "我們會保留至 <b>{date}</b>。當你正式設定時，你的餐牌會一併帶過去。",
+  "loading": "載入中…",
+  "firstName": "名字",
+  "lastName": "姓氏",
+  "truckName": "美食車名稱",
+  "truckNamePlaceholder": "例如：村口小廚",
+  "cuisine": "菜系",
+  "logoLabel": "標誌 <opt>（選填）</opt>",
+  "logoPreviewAlt": "標誌預覽",
+  "changeLogo": "更換標誌",
+  "removeLogo": "移除",
+  "uploadLogo": "📷 上載標誌",
+  "readyTitle": "你的帳戶已準備好",
+  "readyBody": "現在一起完成美食車的設定——你的餐牌、致敏原和廚房。",
+  "hangTight": "請稍候——正在為你設定一切。",
+  "stage": {
+    "account": "正在建立你的帳戶",
+    "truck": "正在設定你的美食車",
+    "menu": "正在載入你的餐牌"
+  },
+  "stageState": {
+    "done": "完成",
+    "recognised": "你已經有帳戶",
+    "failed": "失敗",
+    "active": "進行中",
+    "pending": "等待中"
+  },
+  "signIn": "登入",
+  "phone": "電話",
+  "onWhatsapp": "這個號碼有使用 WhatsApp",
+  "email": "電郵",
+  "emailPlaceholder": "you@yourtruck.co.uk",
+  "settingUpAs": "以 <b>{email}</b> 設定 <change>更改</change>",
+  "password": "密碼",
+  "passwordPlaceholder": "最少 8 個字元",
+  "hidePassword": "隱藏密碼",
+  "showPassword": "顯示密碼",
+  "promoLabel": "有優惠碼？<opt>（選填）</opt>",
+  "promoPlaceholder": "在此輸入",
+  "agreeTerms": "我同意<terms>條款</terms>及<privacy>私隱政策</privacy>。",
+  "freeMonth": "設定期間不會開始計算你的免費月份。免費月份會在你選擇第一個正式活動時才開始——隨你準備好再說。",
+  "fieldError": {
+    "firstName": "請告訴我們你的名字。",
+    "lastName": "還有你的姓氏。",
+    "truck": "請為你的美食車命名。",
+    "cuisine": "請告訴我們你煮甚麼。",
+    "phoneMissing": "請加入電話號碼——顧客和我們都會用它聯絡你。",
+    "email": "請輸入有效的電郵地址。",
+    "password": "密碼最少要有 8 個字元。",
+    "terms": "請接受條款以繼續。"
+  },
+  "error": {
+    "saveFailed": "未能儲存，請再試一次。",
+    "savedNoEmail": "已儲存——但暫時未能以電郵寄出連結。",
+    "unreachable": "暫時未能連線，請再試一次。",
+    "createAccountFailed": "無法建立你的帳戶。",
+    "truckCreateFailed": "你的帳戶已準備好，但我們未能建立你的美食車。請再試一次。",
+    "truckUnreachable": "你的帳戶已準備好，但暫時未能建立你的美食車。請再試一次。",
+    "truckNoToken": "你的美食車已設定好，但暫時未能開啟。請再試一次。"
+  }
+}

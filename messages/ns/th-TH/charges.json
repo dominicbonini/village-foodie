@@ -1,0 +1,13 @@
+{
+  "subtotal": "ยอดรวมย่อย",
+  "taxFallback": "ภาษี",
+  "taxIncluded": "รวม {label} แล้ว",
+  "serviceFeeCustomer": "ค่าบริการออนไลน์",
+  "serviceFee": "ค่าบริการ",
+  "cardFee": "ค่าธรรมเนียมบัตร",
+  "tip": "ทิป",
+  "rate": "{rate}%",
+  "line": "{label}: {amount}",
+  "lineWithRate": "{label} {rate}: {amount}",
+  "foldedCharges": "{parts, select, tax_fees_tip {ภาษี ค่าธรรมเนียม และทิป} tax_tip {ภาษีและทิป} fees_tip {ค่าธรรมเนียมและทิป} fees {ค่าธรรมเนียม} other {ภาษีและค่าธรรมเนียม}}"
+}

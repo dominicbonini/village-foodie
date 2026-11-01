@@ -1,0 +1,22 @@
+{
+  "getApp": {
+    "body": "La app de cocina gestiona tu servicio desde un celular o una tablet, y es la única forma de seguir recibiendo pedidos cuando te quedas sin señal. Gratis con tu cuenta, para iPhone, iPad y Android."
+  },
+  "details": {
+    "websitePlaceholder": "https://tufoodtruck.mx",
+    "menuIcon": "Ícono del menú"
+  },
+  "contact": {
+    "emailPlaceholder": "hola@tufoodtruck.mx",
+    "emailError": "Ingresa un correo válido (p. ej., hola@tufoodtruck.mx)"
+  },
+  "vans": {
+    "takesCashHelp": "Divide el botón de pago en “Efectivo” y “Tarjeta” para que lo que cobras cuadre con la caja. Puedes activarlo para un solo evento desde el panel."
+  },
+  "collection": {
+    "canPick": "{who, select, customers {Los clientes pueden elegir {example}} other {Tú y tus clientes pueden elegir {example}}}"
+  },
+  "schedule": {
+    "urlPlaceholder": "https://tufoodtruck.mx/eventos"
+  }
+}

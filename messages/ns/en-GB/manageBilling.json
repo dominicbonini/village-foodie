@@ -24,8 +24,10 @@
     "heading": "Your free trial has not started yet"
   },
   "onTrial": "You have every feature. Choose a plan before your trial ends.",
+  "onTrialPaidEnd": "You have every feature. When your trial ends, {plan} is {price} a month. We’ll be in touch before then to set up payment.",
   "onTrialNoCta": "You have every feature.",
   "noCharge": "🔒 You won’t be charged anything during your trial, which runs until {date}. Billing only ever starts when you choose a plan and enter your payment details. Until then there’s nothing to cancel and nothing to pay.",
+  "noChargePaidEnd": "🔒 You won’t be charged anything during your trial, which runs until {date}.",
   "fees": "*Standard card processing fees apply on online orders",
   "setUpPayment": "⏱ Choose a plan before your trial ends",
   "changeYourPlan": "Change your plan",

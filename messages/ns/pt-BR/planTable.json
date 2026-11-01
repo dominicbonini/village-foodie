@@ -1,0 +1,36 @@
+{
+  "h1": "Tudo para tocar seu turno, em todos os planos.",
+  "lede": "Pedidos, pedidos antecipados, capacidade e a tela da cozinha estão incluídos em todos os planos.{hasUpgrades, select, yes { Com {plans}, você ganha também {features} e taxas menores.} other {}}",
+  "perMonth": "{price} / mês",
+  "group": {
+    "pay": "O que você paga",
+    "run": "Gerencie seu turno",
+    "online": "Pedidos online",
+    "marketing": "Marketing e automação"
+  },
+  "pay": {
+    "included": "Pedidos online incluídos por mês",
+    "fee": "Taxa do HatchGrab em pedidos online com cartão*",
+    "walkUp": "Pedidos no balcão"
+  },
+  "cell": {
+    "unlimited": "Ilimitado",
+    "free": "Grátis",
+    "feeAbove": "<b>{fee}</b> acima de {included}",
+    "yes": "Incluído",
+    "none": "Não incluído",
+    "comingSoon": "Em breve"
+  },
+  "short": {
+    "whatsapp_replies": "WhatsApp",
+    "schedule_graphics": "redes sociais",
+    "event_types": "preços personalizados por evento"
+  },
+  "meta": {
+    "description": "Todos os recursos do HatchGrab em todos os planos, lado a lado — {plans}, com taxas e franquias.{months, plural, =0 {} one { Seu primeiro mês inclui tudo.} other { Seus primeiros # meses incluem tudo.}}"
+  },
+  "notes": {
+    "whatsapp": "As respostas automáticas no WhatsApp exigem uma conta do WhatsApp Business. A Meta pode cobrar por algumas mensagens; as respostas são geradas automaticamente.",
+    "printing": "A impressão de comandas da cozinha exige uma impressora Bluetooth ou com fio compatível (não inclusa)."
+  }
+}

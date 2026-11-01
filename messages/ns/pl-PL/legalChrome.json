@@ -13,5 +13,6 @@
   "countryTerms": "Warunki krajowe",
   "contact": "Kontakt",
   "lastUpdated": "Ostatnia aktualizacja: {date}",
-  "questions": "Masz pytania? <link>Napisz do nas</link> — odpowiadają prawdziwi ludzie."
+  "questions": "Masz pytania? <link>Napisz do nas</link> — odpowiadają prawdziwi ludzie.",
+  "translationNote": "To jest tłumaczenie. W przypadku rozbieżności z <link>wersją angielską</link> rozstrzygająca jest wersja angielska."
 }

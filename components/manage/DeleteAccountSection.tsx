@@ -44,7 +44,7 @@
 // 🔴 NOTHING ABOUT THE FLOW CHANGED — not the confirmation dialog, not the typed-name requirement, not
 // a button label, not a gate. This is the container's paint and one icon.
 import { useCallback, useEffect, useRef, useState } from 'react'
-import { PRIVACY_PATH } from '@/lib/legal'
+import { useLegalPath } from '@/lib/i18n/use-legal-path'
 import { HATCHGRAB_SENDER } from '@/lib/email-config'
 // ── 🔴 THE NATIVE SHELL CARRIES NO COOKIE. WITHOUT THIS THE WHOLE SECTION DISAPPEARS. ──────────────
 // Observed on an iPad, 25 August 2026: Manage → Settings showed no Danger Zone at all. The shell's
@@ -102,6 +102,7 @@ export function DeleteAccountSection({ truckName, showToast }: {
   // Language Phase 1d Part 2: every word is `deleteAccount`. ⚠️ The retention and data-copy sentences are LEGAL wording
   // and carry no en-US override — they are listed for a legal decision, not translated.
   const t = useT('deleteAccount')
+  const privacyHref = useLegalPath('privacy')   // legal-languages-1: the truck's language
   const [summary, setSummary] = useState<AccountSummary | null>(null)
   const [loadFailed, setLoadFailed] = useState(false)
   const [open, setOpen] = useState(false)
@@ -281,7 +282,7 @@ export function DeleteAccountSection({ truckName, showToast }: {
                   <li>{t('whatPersonal')}</li>
                   <li>{t('whatCustomers')}</li>
                   <li>
-                    {t.rich('whatAccounting', { b: c => <strong>{c}</strong>, link: c => <a href={PRIVACY_PATH} target="_blank" rel="noopener noreferrer" className="underline font-semibold">{c}</a> })}
+                    {t.rich('whatAccounting', { b: c => <strong>{c}</strong>, link: c => <a href={privacyHref} target="_blank" rel="noopener noreferrer" className="underline font-semibold">{c}</a> })}
                   </li>
                 </ul>
               </div>

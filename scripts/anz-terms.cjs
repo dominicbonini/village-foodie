@@ -18,7 +18,11 @@
 const fs = require('fs'); const path = require('path'); const { execFileSync } = require('child_process')
 const REPO = path.resolve(__dirname, '..')
 const kit = require('./_render-kit.cjs')({ cacheTag: 'anz-terms' })
-const read = f => fs.readFileSync(path.join(REPO, f), 'utf8')
+// ⚠️ RE-PINNED (world-countries-2, 1 November 2026, docs/world-countries-2-report.md §1): the Terms of Service (§4), the
+// Country-specific terms (eight countries appended, re-dated) and lib/legal.ts (two dates, TERMS_VERSION) are read as they were
+// before world-countries-2 — scripts/_lp-world-countries-2.cjs asBefore() removes exactly its named change and throws if it is
+// not there, so every other byte is still pinned here. The new text itself is proved by scripts/world-countries-2.cjs.
+const read = f => require('./_lp-world-countries-2.cjs').asBefore(f, fs.readFileSync(path.join(REPO, f), 'utf8'))
 const atRef = (ref, f) => execFileSync('git', ['show', `${ref}:${f}`], { cwd: REPO, encoding: 'utf8' })
 let pass = 0, fail = 0
 const t = (name, ok, detail) => { if (ok) { pass++; console.log(`  ✓ ${name}`) } else { fail++; console.log(`  ✗ ${name}${detail !== undefined ? `\n      ${typeof detail === 'string' ? detail.slice(0, 600) : JSON.stringify(detail).slice(0, 600)}` : ''}`) } }
@@ -79,7 +83,9 @@ const OLD_LINE = '**Last updated:** 21 October 2026', NEW_LINE = `**Last updated
   t('neither section relies on the Privacy Act 1988 small business exemption', !/small business/i.test(AU + NZ))
 
   // ── 3 · no flag ──
-  const files = fs.readdirSync(path.join(REPO, 'content/legal'))
+  // ⚠️ RE-PINNED (legal-languages-1, 1 November 2026): content/legal now holds a folder per language (content/legal/<base>/, the
+  // translations, proved by scripts/legal-languages-1.cjs); this check reads the English documents, the folder's FILES, as before.
+  const files = fs.readdirSync(path.join(REPO, 'content/legal')).filter(f => fs.statSync(path.join(REPO, 'content/legal', f)).isFile())
   t(`no "[FLAG" in any of content/legal's ${files.length} files`, files.length >= 3 && files.every(f => !read(`content/legal/${f}`).includes('[FLAG')))
 
   // ── 4 · the dates ──

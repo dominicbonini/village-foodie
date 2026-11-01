@@ -1,0 +1,28 @@
+{
+  "hi": "{name}様",
+  "limit80": {
+    "subject": "今月のWhatsApp自動返信の80%を使用しました",
+    "used": "今月のWhatsApp自動返信は<b>{limit}件中{used}件</b>を使用しました。",
+    "nothingStopped": "現在、停止しているものはありません。{limit}件に達すると、上限がリセットされる<b>{reset}</b>まで自動返信が一時停止します。その間もお客様はメッセージを送ることができ、届いたメッセージはすべて確認できます。",
+    "raise": "月間の上限は、設定からいつでも引き上げられます。",
+    "raiseLink": "月間の上限は、設定からいつでも引き上げられます：",
+    "button": "設定を開く"
+  },
+  "limit100": {
+    "subject": "今月のWhatsApp自動返信が一時停止しました",
+    "usedAll": "今月のWhatsApp自動返信を{limit}件すべて使用したため、一時停止しました。",
+    "stillReach": "<b>お客様はこれまでどおりメッセージを送ることができ、メッセージはすべて届きます。</b>停止しているのは自動返信の送信だけです。",
+    "startAgain": "<b>{reset}</b>に再開します。設定で月間の上限を引き上げれば、すぐに再開します。",
+    "startAgainLink": "{reset}に再開します。設定で月間の上限を引き上げれば、すぐに再開します：",
+    "button": "上限を引き上げる"
+  },
+  "paymentBlocked": {
+    "subject": "WhatsAppでメッセージを送信するには支払い方法の登録が必要です",
+    "stopped": "WhatsApp Businessアカウントに有効な支払い方法がないため、WhatsAppが自動返信の送信を停止しました。",
+    "stillMessage": "<b>お客様からのメッセージは引き続き届き、内容もすべて確認できます</b>。ただし、返信はお客様に届いていません。",
+    "payDirect": "これらのメッセージの料金はWhatsAppに直接お支払いいただいているため、HatchGrabではなくWhatsApp Managerで対応が必要です。WhatsApp Managerでカードを追加または更新すると、返信は自動的に再開されます。",
+    "payDirectLink": "これらのメッセージの料金はWhatsAppに直接お支払いいただいているため、HatchGrabではなくWhatsApp Managerで対応が必要です。WhatsApp Managerでカードを追加または更新すると、返信は自動的に再開されます：",
+    "button": "WhatsApp Managerを開く",
+    "settings": "HatchGrabの設定：<link>{url}</link>"
+  }
+}

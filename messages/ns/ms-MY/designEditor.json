@@ -1,0 +1,134 @@
+{
+  "item": {
+    "weekHeading": "Tajuk minggu",
+    "weekHeadingSample": "Minggu bermula …",
+    "daysSample": "{first} hingga {last}",
+    "date": "Tarikh",
+    "place": "Tempat",
+    "venue": "Tempat",
+    "area": "Kawasan",
+    "time": "Masa",
+    "rows": "Baris",
+    "rowsSample": "Jarak {px}px · {first} hingga {last}",
+    "ownText": "Teks anda sendiri",
+    "noteTokenSample": "Nota yang anda taip semasa membuat hantaran",
+    "nothingYet": "Belum ada apa-apa",
+    "thisBox": "kotak ini"
+  },
+  "sample": {
+    "venue": "Dataran Merdeka",
+    "area": "Petaling Jaya"
+  },
+  "bar": {
+    "previewWith": "Pratonton dengan",
+    "undo": "Buat asal",
+    "undoTitle": "Buat asal (⌘Z)",
+    "redo": "Buat semula",
+    "redoTitle": "Buat semula (⇧⌘Z)",
+    "cancel": "Batal",
+    "saving": "Menyimpan…",
+    "save": "Simpan reka bentuk"
+  },
+  "grid": {
+    "eachRow": "Setiap baris",
+    "placeOff": "Nama tempat ada dalam gambar anda — HatchGrab tidak akan menambahnya."
+  },
+  "background": {
+    "uploading": "Memuat naik…",
+    "replace": "Ganti gambar",
+    "shape": {
+      "square": "Segi empat sama (1:1)",
+      "portrait45": "Potret (4:5)",
+      "portrait916": "Potret (9:16)",
+      "landscape169": "Landskap (16:9)",
+      "portrait": "Potret",
+      "landscape": "Landskap"
+    }
+  },
+  "scope": {
+    "title": "Kedudukan teks",
+    "standard": "Kedudukan sama seperti Standard",
+    "own": "Kedudukan tersendiri untuk {place}",
+    "locked": "Kedudukan ini diambil daripada reka bentuk Standard anda. Pilih “Kedudukan tersendiri untuk {place}” untuk mengalihkannya di sini sahaja."
+  },
+  "stage": {
+    "hint": "Seret kotak untuk mengalihkannya · seret penjuru untuk mengubah saiz",
+    "zoomOut": "Zum keluar",
+    "zoomIn": "Zum masuk"
+  },
+  "rows": {
+    "spacing": "Jarak",
+    "daysRun": "Hari dari {first} hingga {last}. Tiga kotak Baris 1 disalin ke bawah mengikut jarak ini.",
+    "whichEvents": "Acara mana",
+    "showCancelled": "Tunjukkan acara yang dibatalkan",
+    "showCancelledHint": "Acara yang dibatalkan menunjukkan tempatnya dipangkah dan perkataan DIBATALKAN. Jika dimatikan, hari itu dibaca sebagai hari cuti."
+  },
+  "days": {
+    "reorder": "Susun semula",
+    "move": "alih"
+  },
+  "picture": {
+    "picture": "Gambar",
+    "fill": "Penuhkan kotak",
+    "fit": "Muat di dalam",
+    "corners": "Penjuru",
+    "square": "Tajam",
+    "rounded": "Bulat",
+    "ifMissing": "Jika lokasi tiada imej",
+    "noPicture": {
+      "omit": "Tinggalkan",
+      "blank": "Biarkan ruang kosong",
+      "logo": "Tunjukkan logo anda"
+    },
+    "border": "Bingkai",
+    "drawBorder": "Lukis bingkai",
+    "drawBorderHint": "Garisan di sekeliling gambar, dalam warna pilihan anda.",
+    "borderWidth": "Ketebalan bingkai",
+    "cornerRadius": "Jejari penjuru",
+    "locationPictures": "Gambar lokasi",
+    "addLocationPictures": "+ Tambah gambar lokasi",
+    "allHaveImage": "{total, plural, =0 {Anda belum mempunyai sebarang lokasi.} other {Semua # lokasi anda mempunyai imej.}}",
+    "someWithout": "{without} daripada {total, plural, other {# lokasi}} anda {without, plural, other {belum}} mempunyai imej"
+  },
+  "settings": {
+    "font": "Fon",
+    "colour": "Warna",
+    "textColour": "Warna teks",
+    "ownStyleNote": "{count, plural, other {{names} mempunyai gaya tersendiri, jadi tidak diubah.}}",
+    "matchAgain": "Padankan semula",
+    "matchName": "Padankan dengan {name}",
+    "lastToggle": "{kind, select, weekly {Pastikan sama ada Tempat atau Masa dihidupkan. Acara yang dibatalkan menunjukkan tempatnya dipangkah dan perkataan DIBATALKAN, jadi jika kedua-duanya dimatikan, tiada apa-apa yang menunjukkan ia dibatalkan.} other {Pastikan sama ada Tempat atau Masa dihidupkan. Acara yang dibatalkan menunjukkan tempatnya dipangkah dan perkataan DIBATALKAN, jadi jika kedua-duanya dimatikan, tiada apa-apa yang menunjukkan ia dibatalkan.}}"
+  },
+  "letters": {
+    "boldGlyph": "B",
+    "italicGlyph": "I",
+    "capsGlyph": "AA",
+    "italicTitle": "{italic} — fon ini mempunyai condong sebenar"
+  },
+  "align": {
+    "left": "Kiri",
+    "centre": "Tengah",
+    "right": "Kanan"
+  },
+  "effects": {
+    "outlineColour": "Warna garis luar",
+    "bandColour": "Warna jalur",
+    "bandDaysOff": "Jalur pada hari cuti",
+    "bandCancelled": "Jalur apabila acara dibatalkan",
+    "bandDaysOffHint": "Digunakan menggantikan jalur di atas pada hari tanpa berniaga.",
+    "bandCancelledHint": "Digunakan menggantikan jalur di atas apabila acara dibatalkan."
+  },
+  "more": {
+    "dayOwnLine": "Hari pada baris tersendiri",
+    "dayOwnLineHint": "Nama hari di atas tarikh. Tarikh sahaja.",
+    "noEventDay": "Pada hari tanpa acara",
+    "wordsBeforePlaceholder": "cth. Cari kami",
+    "neverHyphenate": "Satu perkataan panjang tanpa ruang sentiasa dikecilkan — kami tidak pernah memecahkan nama tempat dengan sempang."
+  },
+  "bits": {
+    "less": "Kurang",
+    "more": "Lebih",
+    "chooseColourFor": "{label} — pilih sebarang warna",
+    "chooseColour": "Pilih sebarang warna"
+  }
+}

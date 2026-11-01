@@ -1,0 +1,32 @@
+{
+  "steps": {
+    "based": "Lokasi anda",
+    "identity": "Trak anda",
+    "menu": "Menu anda",
+    "event": "Acara pertama"
+  },
+  "stepItem": "{number}. {label}",
+  "settingUp": "Menyediakan",
+  "loading": "Memuatkan",
+  "loadingCountries": "Memuatkan…",
+  "verify": {
+    "ok": "E-mel disahkan — terima kasih.",
+    "expired": "Pautan pengesahan itu telah tamat tempoh. Hubungi kami dan kami akan selesaikannya sebelum anda mula beroperasi.",
+    "invalid": "Pautan pengesahan itu tidak berfungsi. Hubungi kami dan kami akan selesaikannya sebelum anda mula beroperasi."
+  },
+  "identity": {
+    "heading": "Apakah nama trak anda?",
+    "intro": "Inilah nama yang dilihat oleh pelanggan. Tiada apa yang dipaparkan kepada umum sehingga anda memilih untuk mula beroperasi.",
+    "nameLabel": "Nama trak",
+    "namePlaceholder": "Burger Pak Abu",
+    "phoneLabel": "Telefon",
+    "whatsappTick": "Nombor ini ada WhatsApp",
+    "phoneHelp": "Pelanggan melihat nombor ini pada pengesahan pesanan mereka supaya mereka boleh bertanya tentang pesanan. Tanda ini menentukan sama ada tertulis “Hubungi kami” atau “WhatsApp kami”. Anda boleh menukar kedua-duanya dalam Tetapan."
+  },
+  "phoneRequired": "Tambah nombor telefon — pelanggan dan kami menggunakannya untuk menghubungi anda.",
+  "createFailed": "Tidak dapat mencipta trak anda.",
+  "unreachable": "Tidak dapat menghubungi kami sebentar tadi — sila cuba lagi.",
+  "back": "Kembali",
+  "creating": "Mencipta trak anda…",
+  "continue": "Teruskan"
+}

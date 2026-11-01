@@ -1,0 +1,30 @@
+{
+  "heading": "Cukai, tip dan yuran",
+  "rate": {
+    "label": "Kadar cukai jualan",
+    "hint": "Kadar yang anda kenakan pada setiap pesanan. Pelanggan melihatnya ditambah semasa pembayaran, pada resit dan pada tiket.",
+    "regionDefault": "Biarkan kosong untuk mengenakan {label} pada {rate}%, kadar untuk makanan siap di {region}."
+  },
+  "included": {
+    "label": "{label} dalam harga anda",
+    "hint": "Harga anda sudah termasuk {label}. Kadar ini hanya menunjukkan berapa banyak daripada setiap harga ialah {label}, pada resit dan tiket — tiada apa-apa ditambah semasa pembayaran.",
+    "default": "Biarkan kosong untuk menggunakan {rate}%, kadar {label} untuk makanan panas yang dijual untuk dibawa pulang di {country}."
+  },
+  "tips": {
+    "label": "Tip",
+    "hint": "Pelanggan yang membayar dalam talian dengan kad boleh menambah tip. Semuanya untuk anda.",
+    "choices": "Pilihan yang pelanggan lihat:",
+    "chip": "{rate}%",
+    "other": "Jumlah lain"
+  },
+  "fee": {
+    "label": "Yuran perkhidmatan dalam talian",
+    "hint": "Ditambah pada pesanan dalam talian sahaja. Tidak pernah pada pesanan Bayar semasa ambil atau walk-in. Anda menyimpannya.",
+    "pctAria": "Peratus yuran perkhidmatan",
+    "fixedAria": "Jumlah tetap yuran perkhidmatan",
+    "max": "Maksimum yang boleh anda kenakan: {max}",
+    "example": "Pelanggan melihatnya sebelum membayar, sebagai satu baris: “{label} {amount}”.",
+    "hatchgrab": "HatchGrab menambah yuran perkhidmatan {fee} pada pesanan dalam talian pelanggan anda. Anda tidak membayarnya dan tidak boleh mengubahnya."
+  },
+  "saveFailed": "Tidak dapat disimpan — sila cuba lagi."
+}

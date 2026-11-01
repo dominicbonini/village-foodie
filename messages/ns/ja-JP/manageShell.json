@@ -1,0 +1,85 @@
+{
+  "loading": "管理画面を読み込み中…",
+  "loadFailed": "読み込みに失敗しました",
+  "requestFailed": "失敗しました",
+  "invalidToken": "トークンが無効か、有効期限が切れています",
+  "loadFailedReason": "このページを読み込めませんでした：{reason}",
+  "noCountrySettings": "このキッチンカーの国別設定を読み込めませんでした。ページを再読み込みしてください。",
+  "noPlans": "このキッチンカーのプランを読み込めませんでした。ページを再読み込みしてください。",
+  "stale": "{hasTime, select, yes {最新の情報を取得できませんでした。{time}時点で保存された内容を表示しています。変更内容は引き続き保存されます。} other {最新の情報を取得できませんでした。保存済みの内容を表示しています。変更内容は引き続き保存されます。}}",
+  "verify": {
+    "ok": "メールアドレスを確認しました。ありがとうございます。",
+    "expired": "この確認リンクは有効期限が切れています。公開前に対応いたしますので、お問い合わせください。",
+    "invalid": "この確認リンクは使用できませんでした。公開前に対応いたしますので、お問い合わせください。"
+  },
+  "profile": {
+    "updated": "プロフィールを更新しました",
+    "saveFailed": "保存できませんでした",
+    "title": "プロフィールを編集",
+    "name": "名前",
+    "namePlaceholder": "お名前",
+    "email": "メールアドレス",
+    "cancel": "キャンセル",
+    "saving": "保存中…",
+    "save": "保存"
+  },
+  "header": {
+    "subtitle": "管理画面",
+    "ordersDashboard": "← 注文ダッシュボード"
+  },
+  "tabs": {
+    "menu": "メニュー",
+    "schedule": "出店スケジュール",
+    "social": "SNS",
+    "reports": "レポート",
+    "team": "チーム",
+    "settings": "設定",
+    "payments": "決済",
+    "billing": "プラン・請求",
+    "paymentsIcon": "💴",
+    "scheduleCount": "出店スケジュール（{count}）",
+    "stripeAttention": "Stripeで対応が必要です",
+    "allergensNotSet": "アレルゲン未設定"
+  },
+  "menuSections": {
+    "label": "メニューのセクション",
+    "items": "商品",
+    "capacity": "調理キャパシティ",
+    "extras": "トッピング・追加提案",
+    "deals": "セット"
+  },
+  "socialSections": {
+    "label": "SNSのセクション",
+    "create": "投稿を作成",
+    "designs": "デザイン",
+    "locations": "出店場所の設定"
+  },
+  "notices": {
+    "review": "確認する →",
+    "tour": "ダッシュボードの使い方を簡単にご案内しましょうか？",
+    "showMeAround": "案内を見る",
+    "dismiss": "閉じる",
+    "approval": "{count, plural, other {出店が<b>{count}</b>件見つかりました。公開前に内容を確認して承認してください。}}",
+    "allergens": "<b>アレルゲン未設定</b>：確認が済むまで、お客様はアレルギー情報を見られません。「メニュー」タブで各商品のアレルゲンを確認してください。",
+    "domainLive": "<link>{domain}</link>が公開されました。内容を確認し、問題がなければ「設定」でお知らせください。",
+    "stripe": "<b>Stripeで対応が必要です</b>：解決するまでカード決済が停止する可能性があります。",
+    "profileTitle": "プロフィールを完成させましょう",
+    "missing": "未入力：{fields}。",
+    "goToSettings": "設定へ →",
+    "field": {
+      "truckName": "キッチンカー名",
+      "cuisineType": "料理ジャンル",
+      "contactEmail": "連絡先メールアドレス",
+      "contactPhone": "連絡先電話番号"
+    }
+  },
+  "trialPopup": {
+    "title": "{months, select, none {無料トライアル中です} other {{months}か月間の無料トライアル中です}}",
+    "ends": "{hasDate, select, yes {トライアル終了日：<hl>{date}</hl>} other {トライアルは<hl>まもなく</hl>終了します}}",
+    "offer": "{hasMonths, select, yes {{months, plural, other {#か月間、すべての機能が無料}}} other {トライアル期間中はすべての機能が無料}}",
+    "body": "{hasDate, select, yes {トライアル期間（<b>{date}</b>まで）中に料金は一切かかりません。料金が発生するのは、プランを選んでお支払い情報を入力したときだけです。それまでは解約手続きも支払いも不要です。期限までにプランをお選びください。選ばなかった場合は{fallback}に移行し、一部の機能が使えなくなります。} other {トライアル中に料金は一切かかりません。料金が発生するのは、プランを選んでお支払い情報を入力したときだけです。それまでは解約手続きも支払いも不要です。期限までにプランをお選びください。選ばなかった場合は{fallback}に移行し、一部の機能が使えなくなります。}}",
+    "bodyPaidEnd": "{hasDate, select, yes {トライアル期間（<b>{date}</b>まで）中に料金は一切かかりません。トライアル終了後、{fallback}は月額{price}です。お支払いの設定について、終了前にこちらからご連絡します。} other {トライアル中に料金は一切かかりません。トライアル終了後、{fallback}は月額{price}です。お支払いの設定について、終了前にこちらからご連絡します。}}",
+    "fees": "*オンライン注文には所定のカード決済手数料がかかります",
+    "upgrade": "こちらからアップグレード →"
+  }
+}

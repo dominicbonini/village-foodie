@@ -1,0 +1,18 @@
+{
+  "menuLabel": "用戶選單",
+  "screenOn": "屏幕常亮",
+  "screenOff": "容許屏幕關閉",
+  "newOrderSound": "新訂單提示聲",
+  "copied": "已複製",
+  "orderLink": "落單連結",
+  "qrCode": "QR 碼",
+  "kitchenScreen": "廚房顯示屏",
+  "thisDevice": "此裝置",
+  "manage": "管理控制台",
+  "ordersDashboard": "訂單控制台",
+  "admin": "系統管理",
+  "privacy": "私隱政策",
+  "terms": "條款",
+  "signOut": "登出",
+  "close": "關閉"
+}

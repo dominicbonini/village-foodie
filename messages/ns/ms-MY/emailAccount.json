@@ -1,0 +1,38 @@
+{
+  "newEmail": {
+    "subject": "Sahkan alamat e-mel HatchGrab baharu anda",
+    "heading": "Sahkan alamat e-mel anda",
+    "button": "Sahkan alamat e-mel"
+  },
+  "changeEmail": {
+    "requested": "Anda telah meminta untuk menukar alamat e-mel HatchGrab anda kepada alamat ini.",
+    "click": "Klik butang di bawah untuk mengesahkan. Pautan ini tamat tempoh dalam 24 jam.",
+    "ignore": "Jika anda tidak meminta perubahan ini, anda boleh abaikan e-mel ini dengan selamat.",
+    "stillActive": "Alamat e-mel semasa anda kekal aktif."
+  },
+  "resendVerification": {
+    "requested": "Anda telah meminta untuk menukar e-mel HatchGrab anda kepada alamat ini.",
+    "click": "Klik di bawah untuk mengesahkan. Pautan ini tamat tempoh dalam 24 jam.",
+    "ignore": "Jika anda tidak memintanya, abaikan e-mel ini.",
+    "stillActive": "E-mel semasa anda kekal aktif."
+  },
+  "passwordReset": {
+    "subject": "Set semula kata laluan HatchGrab anda",
+    "heading": "Set semula kata laluan anda",
+    "requested": "Kami menerima permintaan untuk menetapkan semula kata laluan akaun HatchGrab anda.",
+    "click": "Klik butang di bawah untuk memilih kata laluan baharu. Pautan ini tamat tempoh dalam 1 jam.",
+    "button": "Set semula kata laluan",
+    "ignore": "Jika anda tidak memintanya, anda boleh abaikan e-mel ini dengan selamat.",
+    "unchanged": "Kata laluan anda tidak akan berubah sehingga anda mengklik pautan di atas."
+  },
+  "deletionScheduled": {
+    "subject": "Akaun HatchGrab anda dijadualkan untuk dipadam",
+    "received": "Kami telah menerima permintaan untuk memadam akaun HatchGrab ini.",
+    "orderingStopped": "<b>Pesanan dalam talian telah dihentikan serta-merta</b> pada: {trucks}.",
+    "noTrucks": "(tiada trak)",
+    "readable": "Papan pemuka anda kekal boleh dibaca untuk {days, plural, other {# hari}} akan datang.",
+    "scheduled": "Akaun ini dijadualkan untuk dipadam pada <b>{date}</b>.",
+    "cannotCancel": "<b>Ini tidak boleh dibatalkan dari dalam aplikasi.</b> Jika ini bukan anda, atau anda telah berubah fikiran, balas e-mel ini secepat mungkin.",
+    "kept": "Apabila akaun dipadam, kami membuang butiran peribadi anda dan butiran pelanggan anda. Kami menyimpan rekod perakaunan tanpa nama, yang dikehendaki oleh undang-undang untuk kami simpan."
+  }
+}

@@ -1,0 +1,16 @@
+{
+  "features": "Recursos",
+  "pricing": "Preços",
+  "privacy": "Privacidade",
+  "terms": "Termos",
+  "contact": "Contato",
+  "about": "Sobre",
+  "copyright": "© {year} HatchGrab",
+  "credit": "Dos criadores do <b>Village Foodie</b>",
+  "badges": {
+    "appStoreLink": "Baixe o HatchGrab na App Store",
+    "appStoreAlt": "Baixar na App Store",
+    "googlePlayLink": "Baixe o HatchGrab no Google Play",
+    "googlePlayAlt": "Disponível no Google Play"
+  }
+}

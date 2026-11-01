@@ -1,0 +1,85 @@
+{
+  "loading": "Carregando a central de gestão…",
+  "loadFailed": "Falha ao carregar",
+  "requestFailed": "Falhou",
+  "invalidToken": "Token inválido ou expirado",
+  "loadFailedReason": "Não foi possível carregar esta página: {reason}",
+  "noCountrySettings": "Não foi possível carregar as configurações de país deste food truck. Atualize a página.",
+  "noPlans": "Não foi possível carregar o plano deste food truck. Atualize a página.",
+  "stale": "{hasTime, select, yes {Não foi possível atualizar. Mostrando o que foi salvo às {time}. As alterações que você fizer continuam sendo salvas.} other {Não foi possível atualizar. Mostrando o que foi salvo. As alterações que você fizer continuam sendo salvas.}}",
+  "verify": {
+    "ok": "E-mail confirmado — obrigado!",
+    "expired": "Esse link de confirmação expirou. Fale com a gente e resolvemos antes de você entrar no ar.",
+    "invalid": "Esse link de confirmação não funcionou. Fale com a gente e resolvemos antes de você entrar no ar."
+  },
+  "profile": {
+    "updated": "Perfil atualizado",
+    "saveFailed": "Falha ao salvar",
+    "title": "Editar perfil",
+    "name": "Nome",
+    "namePlaceholder": "Seu nome",
+    "email": "E-mail",
+    "cancel": "Cancelar",
+    "saving": "Salvando…",
+    "save": "Salvar"
+  },
+  "header": {
+    "subtitle": "Central de gestão",
+    "ordersDashboard": "← Painel de pedidos"
+  },
+  "tabs": {
+    "menu": "Cardápio",
+    "schedule": "Agenda",
+    "social": "Redes sociais",
+    "reports": "Relatórios",
+    "team": "Equipe",
+    "settings": "Configurações",
+    "payments": "Pagamentos",
+    "billing": "Cobrança",
+    "paymentsIcon": "💵",
+    "scheduleCount": "Agenda ({count})",
+    "stripeAttention": "A Stripe precisa da sua atenção",
+    "allergensNotSet": "alérgenos não definidos"
+  },
+  "menuSections": {
+    "label": "Seções do cardápio",
+    "items": "Itens",
+    "capacity": "Capacidade da cozinha",
+    "extras": "Complementos e sugestões",
+    "deals": "Combos"
+  },
+  "socialSections": {
+    "label": "Seções de redes sociais",
+    "create": "Criar post",
+    "designs": "Artes",
+    "locations": "Configurações dos locais"
+  },
+  "notices": {
+    "review": "Revisar →",
+    "tour": "Quer um tour rápido pelo seu painel?",
+    "showMeAround": "Fazer o tour",
+    "dismiss": "Dispensar",
+    "approval": "{count, plural, one {Encontramos <b>{count}</b> evento para você — revise e aprove antes que ele entre no ar.} other {Encontramos <b>{count}</b> eventos para você — revise e aprove antes que eles entrem no ar.}}",
+    "allergens": "<b>Alérgenos não definidos</b> — os clientes não veem as informações de alérgenos até você confirmá-las. Revise os alérgenos de cada prato na aba Cardápio.",
+    "domainLive": "<link>{domain}</link> está no ar. Dê uma olhada e depois nos confirme em Configurações que está tudo certo.",
+    "stripe": "<b>A Stripe precisa de algo de você</b> — os pagamentos com cartão podem parar até isso ser resolvido.",
+    "profileTitle": "Complete seu perfil",
+    "missing": "Faltando: {fields}.",
+    "goToSettings": "Ir para Configurações →",
+    "field": {
+      "truckName": "nome do food truck",
+      "cuisineType": "tipo de culinária",
+      "contactEmail": "e-mail de contato",
+      "contactPhone": "telefone de contato"
+    }
+  },
+  "trialPopup": {
+    "title": "{months, select, none {Você está no teste grátis} other {Você está em um teste grátis de {months} meses}}",
+    "ends": "{hasDate, select, yes {O teste termina em <hl>{date}</hl>} other {O teste termina <hl>em breve</hl>}}",
+    "offer": "{hasMonths, select, yes {{months, plural, one {Todos os recursos grátis por # mês} other {Todos os recursos grátis por # meses}}} other {Todos os recursos grátis durante o seu teste}}",
+    "body": "{hasDate, select, yes {Você não paga nada durante o teste, que vai até <b>{date}</b>. A cobrança só começa quando você escolhe um plano e informa seus dados de pagamento. Até lá, não há nada para cancelar nem nada para pagar. Escolha seu plano antes disso — se não escolher, você passa para o plano {fallback} e alguns recursos param de funcionar.} other {Você não paga nada enquanto estiver no teste. A cobrança só começa quando você escolhe um plano e informa seus dados de pagamento. Até lá, não há nada para cancelar nem nada para pagar. Escolha seu plano antes disso — se não escolher, você passa para o plano {fallback} e alguns recursos param de funcionar.}}",
+    "bodyPaidEnd": "{hasDate, select, yes {Você não paga nada durante o teste, que vai até <b>{date}</b>. Quando o teste terminar, o plano {fallback} custa {price} por mês. Antes disso, vamos entrar em contato para configurar o pagamento.} other {Você não paga nada enquanto estiver no teste. Quando o teste terminar, o plano {fallback} custa {price} por mês. Antes disso, vamos entrar em contato para configurar o pagamento.}}",
+    "fees": "*Taxas padrão de processamento de cartão se aplicam aos pedidos online",
+    "upgrade": "Faça o upgrade aqui →"
+  }
+}

@@ -1,0 +1,127 @@
+{
+  "gate": {
+    "reverted": "注文#{id}を元に戻しました",
+    "saved": "注文#{id}を保存しました",
+    "undo": "↩ 元に戻す",
+    "paymentNotRecorded": "⚠ 注文#{id}：支払いが記録されていません。{collect, select, yes {注文は完了しました} other {注文は保存されました}}が、支払いは記録されていません。",
+    "recordPayment": "支払いを記録",
+    "paid": "注文#{id}は支払い済みです",
+    "undonePayment": "取り消しました：支払いを削除",
+    "undoneCollected": "取り消しました：未受け取りに戻しました",
+    "collected": "注文#{id}：{paidToo, select, yes {支払い済み・受け取り済み} other {受け取り済み}}",
+    "ready": "注文#{id}：準備完了",
+    "readyBuzzer": "注文#{id}：準備完了・<pill></pill>",
+    "status": "注文#{id}：{action, select, confirm {承認しました} reject {却下しました} ready {準備完了} collected {受け取り済み} undo_collected {元に戻しました} cancel {キャンセルしました} other {更新しました}}"
+  },
+  "conflicts": {
+    "more": "ほか{count}件",
+    "notOnScreenPlus": "ほか{count}件はこの画面にありません",
+    "notOnScreen": "{n, plural, other {この画面にない注文：{count}件}}"
+  },
+  "banner": {
+    "paymentTitle": "⚠ 支払いが記録されていません",
+    "paymentBody": "{orders}：このデバイス上でのみ支払い済みになっています。支払いは処理されていません。",
+    "paymentCheck": "注文を確認し、まだ未払いの場合はもう一度支払いを受けてください。",
+    "dismiss": "閉じる",
+    "confirmChecked": "{orders}を確認したことを確定してください",
+    "confirmHides": "警告が非表示になります。記録はどちらの場合もこのデバイスに残ります。",
+    "notYet": "まだ",
+    "iveChecked": "{orders}を確認しました",
+    "statusBody": "⚠ {orders}：この変更は反映されませんでした。注文を確認してください。",
+    "offline": "📴 接続がありません。{n, plural, other {{count}件の変更をこのデバイスに保存しました。オンラインに戻ると送信されます。}}設定はロックされています。",
+    "syncing": "オンラインに戻りました。{n, plural, other {{count}件の変更}}を送信中…",
+    "synced": "すべての変更を送信しました。",
+    "stillQueued": "{n, plural, other {{count}件の変更をこのデバイスに保存しています。送信を再試行中です。}}"
+  },
+  "lock": {
+    "locked": "HatchGrabはロックされています",
+    "verifying": "認証中…",
+    "unlock": "ロック解除",
+    "cantUseBiometric": "Face ID／Touch IDを使えない場合",
+    "enterPin": "予備のPINを入力してください",
+    "wrongPin": "PINが違います。もう一度お試しください。",
+    "checking": "確認中…",
+    "tryBiometric": "Face ID／Touch IDを使う",
+    "forgot": "PINを忘れた場合は、アプリを再インストールする必要があります。"
+  },
+  "notify": {
+    "title": "🔔 通知",
+    "intro": "このデバイスへの通知です。オンにすると、受け取る通知を選べます。",
+    "refused": "オンにするには、デバイスの設定で通知を許可してください。",
+    "newOrder": "新規注文の通知",
+    "newOrderHelp": "お客様の注文に承認が必要なときに通知します。",
+    "offline": "オフライン／一時停止の通知",
+    "offlineHelp": "このデバイスがオフラインになったとき（注文受付が一時停止したとき）に通知します。<green>オフラインでも動作します。</green>"
+  },
+  "van": {
+    "label": "車両",
+    "loadRetry": "読み込めませんでした・再試行",
+    "select": "選択…"
+  },
+  "deviceSave": {
+    "network": "サーバーに接続できませんでした。接続を確認して、もう一度お試しください。",
+    "server": "保存できませんでした。もう一度お試しください。"
+  },
+  "setup": {
+    "fetchErrorTitle": "デバイスの設定を読み込めませんでした",
+    "fetchErrorBody": "<b>このデバイス</b>を設定するためにサーバーへ接続できませんでした。接続を確認して、もう一度お試しください。注文や設定には影響ありません。",
+    "retry": "再試行",
+    "later": "あとで",
+    "noVanTitle": "有効な車両がありません",
+    "noVanBody": "このキッチンカーにはまだ有効な車両がありません。<b>設定 → キッチンカー一覧</b>で車両を有効にすると、このデバイスは自動で設定されます。ここでの操作は不要です。",
+    "goToVans": "設定 → キッチンカー一覧へ",
+    "title": "このデバイスを設定",
+    "body": "<b>このデバイス</b>の初回設定です。起動時に開く画面と、担当する車両を選びます。設定はこのデバイスにのみ適用され、他のデバイスは個別に設定します。あとからプロフィールメニュー →「このデバイス」で変更できます。",
+    "whichScreen": "このデバイスの起動時に開く画面は？",
+    "dashboard": "ダッシュボード",
+    "kds": "キッチンディスプレイ",
+    "whichVan": "このデバイスの車両は？",
+    "selectVan": "車両を選択…",
+    "saving": "保存中…",
+    "tryAgain": "もう一度試す",
+    "continue": "次へ"
+  },
+  "device": {
+    "title": "このデバイス",
+    "viewing": "表示中：<b>{truck}</b>",
+    "viewingVan": "表示中：<b>{truck}</b>（<b>{van}</b>）",
+    "only": "このデバイスのみの設定です。他のデバイスは個別に設定します。（ID：{id}…）",
+    "truck": "キッチンカー",
+    "van": "車両",
+    "defaultScreen": "起動時の画面",
+    "orderNotifications": "注文の通知",
+    "patchFailed": "{setting, select, van {車両} defaultScreen {起動時の画面} other {注文の通知}}を保存できませんでした。{reason}",
+    "requireBiometric": "起動時に指紋認証または顔認証を必須にする",
+    "pinTitle": "予備のPINを設定（4〜6桁）",
+    "pinHelp": "指紋認証や顔認証が使えないときにロックを解除する唯一の手段です。忘れないようにしてください（PINを忘れるとアプリの再インストールが必要です）。オフラインでも使えます。",
+    "pinPlaceholder": "PIN",
+    "confirmPinPlaceholder": "PIN（確認）",
+    "pinTooShort": "4桁以上で入力してください。",
+    "pinMismatch": "PINが一致しません。",
+    "setPin": "PINを設定して有効にする",
+    "cancel": "キャンセル",
+    "noBiometric": "このデバイスには指紋認証や顔認証が設定されていません。デバイスの設定で追加してください。予備のPINは引き続き使えます。",
+    "footer": "これらの設定はこのデバイスにのみ適用されます。他のデバイスは個別に設定します。"
+  },
+  "appLock": {
+    "unlockReason": "HatchGrabのロックを解除",
+    "usePasscode": "パスコードを使用",
+    "cancel": "キャンセル",
+    "confirmEnable": "アプリのロックを有効にするには認証してください"
+  },
+  "channel": {
+    "ordersName": "新規注文",
+    "ordersDescription": "注文に承認が必要なときの通知です。"
+  },
+  "localNotify": {
+    "newOrderTitle": "新規注文",
+    "orderReceived": "注文{number}を受け付けました",
+    "newOrders": "{n, plural, other {新しい注文が{count}件あります}}"
+  },
+  "offlineAlert": {
+    "pausedTitle": "注文受付を一時停止中",
+    "pausedBody": "オフラインのため、お客様の注文受付を一時停止しています。",
+    "offlineTitle": "オフラインです",
+    "offlineBody": "このデバイスの接続が切れました。"
+  }
+}

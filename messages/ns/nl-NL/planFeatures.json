@@ -105,7 +105,15 @@
     "Australiancards": "betaalkaarten uit Australië",
     "NewZealandcards": "betaalkaarten uit Nieuw-Zeeland",
     "Canadiancards": "betaalkaarten uit Canada",
-    "Swisscards": "betaalkaarten uit Zwitserland"
+    "Swisscards": "betaalkaarten uit Zwitserland",
+    "Braziliancards": "betaalkaarten uit Brazilië",
+    "Mexicancards": "betaalkaarten uit Mexico",
+    "Japanesecards": "betaalkaarten uit Japan",
+    "Singaporecards": "betaalkaarten uit Singapore",
+    "HongKongcards": "betaalkaarten uit Hongkong",
+    "Malaysiancards": "betaalkaarten uit Maleisië",
+    "Thaicards": "betaalkaarten uit Thailand",
+    "UAEcards": "betaalkaarten uit de VAE"
   },
   "perMonth": {
     "mo": "{amount}/mnd",

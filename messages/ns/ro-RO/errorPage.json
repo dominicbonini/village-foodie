@@ -1,0 +1,8 @@
+{
+  "notFoundTitle": "Pagina nu a fost găsită",
+  "notFoundBody": "Nu am găsit această pagină. Este posibil să fi fost mutată sau ca adresa să fie scrisă greșit.",
+  "home": "Mergi la pagina principală",
+  "errorTitle": "Ceva nu a funcționat",
+  "errorBody": "Ne pare rău, această pagină nu s-a încărcat. Încearcă din nou sau revino la pagina principală.",
+  "retry": "Încearcă din nou"
+}

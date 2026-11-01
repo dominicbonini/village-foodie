@@ -20,6 +20,7 @@
 // The docs call this out as a performance best practice: "Create a single Connect instance by calling
 // loadConnectAndInitialize only once per session… A common mistake is to create one Connect instance per
 // component." It is held in a ref and created once, after an account exists.
+import { stripeLocaleOf } from '@/lib/stripe-locale'
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { loadConnectAndInitialize } from '@stripe/connect-js'
 import type { StripeConnectInstance } from '@stripe/connect-js'
@@ -39,7 +40,7 @@ import { useCountrySettings } from '@/components/CountrySettingsProvider'
 // Language Phase 1d Part 2: every word on this tab is a `managePayments` message (messages/en-GB.json; US words in
 // en-US.json), read in the truck's locale. The trial reassurance that was CONNECTING_STRIPE_NOT_A_COMMITMENT in
 // lib/settings-copy.ts is `managePayments.trialNote` — its reasoning is still recorded there.
-import { useT } from '@/lib/i18n/use-t'
+import { useT, useAppLocale } from '@/lib/i18n/use-t'
 import type { FeatureAccessView } from '@/lib/useFeatures'
 import { PAY_AT_HATCH_FEATURE } from '@/lib/plans'
 import { PlanPrompt } from '@/components/PlanPrompt'
@@ -147,6 +148,7 @@ export function PaymentsTab({ token, onTrial, features, showToast, afterOnline }
 }) {
   const cs = useCountrySettings()
   const t = useT('managePayments')
+  const appLocale = useAppLocale()
   const tPrompt = useT('planPrompt')
   const [status, setStatus] = useState<Status | null>(null)
   const [loading, setLoading] = useState(true)
@@ -266,8 +268,10 @@ export function PaymentsTab({ token, onTrial, features, showToast, afterOnline }
       // the parent container, and everything else must be set explicitly — so the rest is left at
       // Stripe's defaults rather than half-matched to the page.
       appearance: { variables: { colorPrimary: '#ea580c' } },
+      // legal-languages-1: Stripe's onboarding in the truck's language (English: Stripe's default, as before).
+      ...(stripeLocaleOf(appLocale) ? { locale: stripeLocaleOf(appLocale) as never } : {}),
     })
-  }, [status?.accountId, publishableKey, post, isAdminViewer])
+  }, [status?.accountId, publishableKey, post, isAdminViewer, appLocale])
 
   // Derived, not stored: an account exists but the browser key is absent, so the components cannot mount.
   const keyMissing = !!status?.accountId && !publishableKey

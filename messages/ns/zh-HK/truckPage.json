@@ -1,0 +1,47 @@
+{
+  "meta": {
+    "fallbackTitle": "美食車 | Village Foodie",
+    "hgFallbackTitle": "美食車",
+    "orderTitle": "向 {truck} 落單",
+    "orderDescription": "預先向 {truck} 落單，然後到美食車取餐。",
+    "title": "{truck} | Village Foodie",
+    "logoAlt": "{truck} 標誌"
+  },
+  "shareTitle": "{truck} 出車時間表",
+  "shareText": "看看 {truck} 下一站在哪裏開檔！🚚",
+  "linkCopied": "已複製個人檔案連結！📋",
+  "facebookPage": "Facebook 專頁",
+  "loadingMap": "正在載入地圖…",
+  "view": {
+    "list": "列表",
+    "map": "地圖"
+  },
+  "ownThisTruck": "你是這架美食車的東主？",
+  "ownThisTruckTitle": "你是這架美食車的東主？按此更新你的個人檔案",
+  "actions": {
+    "menu": "餐牌",
+    "call": "致電",
+    "message": "訊息",
+    "share": "分享",
+    "order": "落單"
+  },
+  "loadingSchedule": "正在載入出車時間表…",
+  "loadError": {
+    "title": "無法載入",
+    "body": "我們暫時無法載入出車時間表，這通常只是短暫問題。請再試一次。",
+    "retry": "重試"
+  },
+  "notFound": {
+    "title": "找不到這架美食車",
+    "body": "我們找不到這架美食車的任何資料。他們可能已搬遷或更新了個人檔案。",
+    "cta": "查看所有美食車"
+  },
+  "noEvents": {
+    "title": "暫無即將舉行的活動",
+    "body": "我們可能缺少這架美食車的部分資料。你是東主，或知道他們的出車時間表嗎？",
+    "cta": "給我們發訊息更新資料！"
+  },
+  "whereToFind": "在哪裏找到我們",
+  "missingEvent": "<strong>我們漏了某個活動？</strong> <br></br>如果你是這架美食車的東主，或只是忠實粉絲，請幫我們保持這個頁面資料準確！<br></br><link>聯絡我們補充遺漏的資料。</link>",
+  "weeklySchedule": "訂閱每週時間表 🍕"
+}

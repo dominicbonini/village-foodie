@@ -1,0 +1,8 @@
+{
+  "phone_invalid": "{withName, select, yes {Ingresa un número de teléfono válido ({name})} other {Ingresa un número de teléfono válido}}{withExample, select, yes { (p. ej., {example})} other {}}.",
+  "email_invalid": "Ingresa una dirección de correo válida.",
+  "file_too_big": "Ese archivo es demasiado grande (máx. {mb} MB). Basta con una foto normal de tu menú.",
+  "file_type_unsupported": "Ese tipo de archivo no es compatible: envía una foto o un PDF de tu menú.",
+  "text_too_long": "Es mucho texto: pega solo el menú.",
+  "menu_missing": "Agrega una foto de tu menú o pégalo aquí."
+}

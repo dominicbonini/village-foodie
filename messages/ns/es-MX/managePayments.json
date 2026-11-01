@@ -1,0 +1,11 @@
+{
+  "admin": {
+    "body": "Este food truck no ha configurado los pagos online. Solo el propietario puede hacerlo, desde su propia cuenta con la sesión iniciada: aquí no hay nada que tocar."
+  },
+  "walkUp": {
+    "ownTerminal": "Tu propia terminal",
+    "ownTerminalHelp": "Zettle, Square o la que ya uses. No hay nada que configurar: solo se aplican las comisiones de tu proveedor.",
+    "hatchgrabHelp": "Usa la misma conexión de Stripe que tus pagos online: una terminal, o pago sin contacto directamente en tu celular o tablet.",
+    "hatchgrabFees": "{fee} por pago con {region}, más {surcharge} por los pagos sin contacto cobrados con un celular o tablet. Otras tarjetas pueden costar más."
+  }
+}

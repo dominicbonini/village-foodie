@@ -1,0 +1,4 @@
+{
+  "customer": "{required, select, yes {مطلوب} other {اختياري}}{limit, select, one { · اختر واحدًا} upTo { · اختر حتى {max}} other {}}",
+  "operator": "{required, select, yes {مطلوب} other {اختياري}}{limit, select, one { · يختار العميل واحدًا} upTo { · يمكن للعميل اختيار حتى {max}} other {}}"
+}

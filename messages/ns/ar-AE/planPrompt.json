@@ -1,0 +1,118 @@
+{
+  "includedOn": "{many, select, yes {تشمل باقة {plan} ما يلي: {feature}.} other {تشمل باقة {plan} الميزة التالية: {feature}.}}",
+  "notOnPlan": "{many, select, yes {غير مشمولة في باقتك: {feature}.} other {ميزة غير مشمولة في باقتك: {feature}.}}",
+  "switchedOff": "{many, select, yes {تم إيقاف ما يلي لعربتك: {feature}.} other {تم إيقاف هذه الميزة لعربتك: {feature}.}}",
+  "planLine": "{plan} · {price} · {description}",
+  "planLineNoPrice": "{plan} · {description}",
+  "upgrade": "ترقية الباقة ←",
+  "features": {
+    "discovery_map": {
+      "name": "الظهور على خريطة الاكتشاف",
+      "many": "no"
+    },
+    "web_dashboard": {
+      "name": "لوحة التحكم على الويب",
+      "many": "no"
+    },
+    "ipad_kds": {
+      "name": "تطبيق المطبخ",
+      "many": "no"
+    },
+    "qr_menu": {
+      "name": "قائمة الطعام عبر رمز QR",
+      "many": "no"
+    },
+    "meal_deals": {
+      "name": "وجبات الكومبو",
+      "many": "yes"
+    },
+    "upsells": {
+      "name": "العروض الإضافية",
+      "many": "yes"
+    },
+    "walkup_orders": {
+      "name": "الطلبات الحضورية",
+      "many": "yes"
+    },
+    "online_ordering_pay_at_hatch": {
+      "name": "الطلب مع الدفع عند الاستلام",
+      "many": "no"
+    },
+    "sold_out_toggle": {
+      "name": "زر «نفد»",
+      "many": "no"
+    },
+    "stock_countdown": {
+      "name": "العدّ التنازلي للمخزون",
+      "many": "no"
+    },
+    "offline_protection": {
+      "name": "حماية الطلبات عند انقطاع الاتصال",
+      "many": "no"
+    },
+    "online_payments": {
+      "name": "الدفع عبر الإنترنت",
+      "many": "yes"
+    },
+    "advance_preordering": {
+      "name": "الطلب المسبق قبل أيام",
+      "many": "no"
+    },
+    "time_slot_selection": {
+      "name": "اختيار العملاء لأوقات الاستلام",
+      "many": "yes"
+    },
+    "smart_batch_pacing": {
+      "name": "إدارة سعة المطبخ",
+      "many": "no"
+    },
+    "auto_accept": {
+      "name": "القبول التلقائي",
+      "many": "no"
+    },
+    "instagram_messenger_replies": {
+      "name": "ردود Messenger وInstagram التلقائية",
+      "many": "yes"
+    },
+    "branded_qr_code": {
+      "name": "رموز QR بعلامتك التجارية",
+      "many": "yes"
+    },
+    "advanced_reporting": {
+      "name": "التقارير المتقدّمة",
+      "many": "no"
+    },
+    "ticket_printing": {
+      "name": "طباعة تذاكر المطبخ",
+      "many": "no"
+    },
+    "multi_device_kds": {
+      "name": "مزامنة المطبخ على عدة أجهزة",
+      "many": "no"
+    },
+    "cook_screen": {
+      "name": "شاشة الطهي",
+      "many": "no"
+    },
+    "whatsapp_replies": {
+      "name": "ردود WhatsApp التلقائية",
+      "many": "yes"
+    },
+    "embed_schedule": {
+      "name": "جدول مواقعك على موقعك الإلكتروني",
+      "many": "no"
+    },
+    "schedule_graphics": {
+      "name": "منشورات وسائل التواصل الاجتماعي",
+      "many": "yes"
+    },
+    "event_types": {
+      "name": "أنواع الفعاليات المخصّصة",
+      "many": "yes"
+    },
+    "private_events": {
+      "name": "الفعاليات الخاصة",
+      "many": "yes"
+    }
+  }
+}

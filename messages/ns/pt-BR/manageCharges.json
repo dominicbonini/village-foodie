@@ -1,0 +1,30 @@
+{
+  "heading": "Tributos, gorjetas e taxas",
+  "rate": {
+    "label": "Alíquota de tributos",
+    "hint": "A alíquota que você cobra em todos os pedidos. Os clientes a veem somada no checkout, nos recibos e nas comandas.",
+    "regionDefault": "Deixe em branco para cobrar {label} de {rate}%, a alíquota sobre comida pronta ({region})."
+  },
+  "included": {
+    "label": "{label} nos seus preços",
+    "hint": "Seus preços já incluem {label}. Esta alíquota só indica quanto de cada preço é {label}, nos recibos e nas comandas — nada é somado no checkout.",
+    "default": "Deixe em branco para usar {rate}%, a alíquota de {label} sobre comida quente vendida para viagem. País: {country}."
+  },
+  "tips": {
+    "label": "Gorjetas",
+    "hint": "Os clientes que pagam online com cartão podem adicionar uma gorjeta. Tudo vai para você.",
+    "choices": "Opções que os clientes veem:",
+    "chip": "{rate}%",
+    "other": "Outro valor"
+  },
+  "fee": {
+    "label": "Taxa de serviço online",
+    "hint": "Somada só aos pedidos online. Nunca em pedidos com Pagamento na retirada nem em vendas presenciais. O valor fica com você.",
+    "pctAria": "Percentual da taxa de serviço",
+    "fixedAria": "Valor fixo da taxa de serviço",
+    "max": "Máximo que você pode cobrar: {max}",
+    "example": "Os clientes veem a taxa antes de pagar, em uma linha: “{label} {amount}”.",
+    "hatchgrab": "O HatchGrab adiciona uma taxa de serviço de {fee} aos pedidos online dos seus clientes. Você não paga essa taxa e não pode alterá-la."
+  },
+  "saveFailed": "Não foi possível salvar — tente de novo."
+}

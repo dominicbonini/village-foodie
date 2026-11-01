@@ -8,7 +8,7 @@ import type { DiscountCode } from '@/lib/order-calculations'
 /* ⚠️ `loadPriceBook` IS NO LONGER IMPORTED HERE, AND THAT IS THE POINT: this route reaches it
  * through `loadEventPriceBook` (below), which is the ONE place the event-aware wrapper is
  * applied. An import of the raw book beside the wrapper is an invitation to call the wrong one. */
-import { repriceOrder, toMinor, type RepriceItem } from '@/lib/order-repricing'
+import { repriceOrder, toMinor, fromMinor, type RepriceItem } from '@/lib/order-repricing'
 // Phase 3: tax, tip and fees — the pure engine and the server's rules (docs/phase-3-foundations-report.md).
 import { computeOrderCharges, parseTipChoice, tipChoiceAllowed } from '@/lib/order-charges'
 import { loadChargeRules } from '@/lib/order-charge-rules'
@@ -727,7 +727,8 @@ export async function POST(req: NextRequest) {
     const pricedDeals = repriced.deals
     // 🔴 FOOD AFTER THE DISCOUNT, in minor units — the base every Phase 3 charge is computed on, and the
     // stored food_minor. The GRAND total (serverTotalMinor) is decided below, once the event is known.
-    const foodMinor = toMinor(repriced.calculation.total)
+    // world-countries-1: in the truck's currency's minor units — whole yen for JPY (the order's currency is the truck's).
+    const foodMinor = toMinor(repriced.calculation.total, truck.currency)
     const serverSubtotal = repriced.calculation.subtotal
     const serverDiscountAmt = repriced.calculation.discountAmt
 
@@ -826,7 +827,7 @@ export async function POST(req: NextRequest) {
     // The GRAND total: what the card is authorised for, what total_minor stores, what the emails show.
     // `total` (major units) is derived from it, so the two are the same number by construction.
     const serverTotalMinor = charges.totalMinor
-    const serverTotal = serverTotalMinor / 100
+    const serverTotal = fromMinor(serverTotalMinor, truck.currency)
 
     // ── Required-modifier completeness guard (A2, safety net) ──────────────────────────────
     // Belt-and-braces BEHIND the order modals: reject if a standalone line is missing a required

@@ -1,0 +1,85 @@
+{
+  "loading": "正在載入管理控制台…",
+  "loadFailed": "載入失敗",
+  "requestFailed": "失敗",
+  "invalidToken": "連結無效或已過期",
+  "loadFailedReason": "未能載入此頁面：{reason}",
+  "noCountrySettings": "未能載入這輛美食車的國家設定，請重新整理。",
+  "noPlans": "未能載入這輛美食車的計劃，請重新整理。",
+  "stale": "{hasTime, select, yes {未能重新整理，正在顯示 {time} 儲存的內容。你作出的更改仍會儲存。} other {未能重新整理，正在顯示已儲存的內容。你作出的更改仍會儲存。}}",
+  "verify": {
+    "ok": "電郵已確認，謝謝。",
+    "expired": "該確認連結已過期。請聯絡我們，我們會在你正式上線前處理好。",
+    "invalid": "該確認連結無效。請聯絡我們，我們會在你正式上線前處理好。"
+  },
+  "profile": {
+    "updated": "個人資料已更新",
+    "saveFailed": "儲存失敗",
+    "title": "編輯個人資料",
+    "name": "姓名",
+    "namePlaceholder": "你的姓名",
+    "email": "電郵",
+    "cancel": "取消",
+    "saving": "儲存中…",
+    "save": "儲存"
+  },
+  "header": {
+    "subtitle": "管理控制台",
+    "ordersDashboard": "← 訂單控制台"
+  },
+  "tabs": {
+    "menu": "餐牌",
+    "schedule": "出車時間表",
+    "social": "社交媒體",
+    "reports": "報告",
+    "team": "團隊",
+    "settings": "設定",
+    "payments": "付款",
+    "billing": "帳單",
+    "paymentsIcon": "💵",
+    "scheduleCount": "出車時間表（{count}）",
+    "stripeAttention": "Stripe 需要你處理",
+    "allergensNotSet": "未設定致敏原"
+  },
+  "menuSections": {
+    "label": "餐牌分區",
+    "items": "食品",
+    "capacity": "廚房容量",
+    "extras": "配料及加購",
+    "deals": "套餐優惠"
+  },
+  "socialSections": {
+    "label": "社交媒體分區",
+    "create": "製作帖文",
+    "designs": "設計",
+    "locations": "地點設定"
+  },
+  "notices": {
+    "review": "檢查 →",
+    "tour": "想快速了解你的控制台嗎？",
+    "showMeAround": "帶我看看",
+    "dismiss": "關閉",
+    "approval": "{count, plural, other {我們為你找到 <b>{count}</b> 個活動，請在上線前檢查並批准。}}",
+    "allergens": "<b>未設定致敏原</b>：在你核實之前，客戶看不到致敏原資料。請在「餐牌」分頁檢查每款菜式的致敏原。",
+    "domainLive": "<link>{domain}</link> 已經上線。請看看，然後在「設定」中告訴我們是否正確。",
+    "stripe": "<b>Stripe 需要你提供資料</b>：問題解決前，信用卡付款可能會停止。",
+    "profileTitle": "完成你的個人資料",
+    "missing": "缺少：{fields}。",
+    "goToSettings": "前往設定 →",
+    "field": {
+      "truckName": "美食車名稱",
+      "cuisineType": "菜式類型",
+      "contactEmail": "聯絡電郵",
+      "contactPhone": "聯絡電話"
+    }
+  },
+  "trialPopup": {
+    "title": "{months, select, none {你正在免費試用} other {你正在享用 {months} 個月免費試用}}",
+    "ends": "{hasDate, select, yes {試用期於 <hl>{date}</hl> 結束} other {試用期<hl>即將</hl>結束}}",
+    "offer": "{hasMonths, select, yes {{months, plural, other {所有功能免費使用 # 個月}}} other {試用期內所有功能免費使用}}",
+    "body": "{hasDate, select, yes {試用期內不會向你收取任何費用，試用期至 <b>{date}</b> 為止。只有在你選擇計劃並輸入付款資料後才會開始收費。在此之前，你毋須取消任何東西，亦毋須支付任何費用。請在試用期結束前選擇計劃，否則你將轉用 {fallback}，部分功能會停止運作。} other {試用期間不會向你收取任何費用。只有在你選擇計劃並輸入付款資料後才會開始收費。在此之前，你毋須取消任何東西，亦毋須支付任何費用。請在試用期結束前選擇計劃，否則你將轉用 {fallback}，部分功能會停止運作。}}",
+    "bodyPaidEnd": "{hasDate, select, yes {試用期內不會向你收取任何費用，試用期至 <b>{date}</b> 為止。試用期結束後，{fallback} 每月收費 {price}。我們會在試用期結束前聯絡你，安排付款事宜。} other {試用期間不會向你收取任何費用。試用期結束後，{fallback} 每月收費 {price}。我們會在試用期結束前聯絡你，安排付款事宜。}}",
+    "fees": "*網上訂單須支付標準信用卡手續費",
+    "upgrade": "在這裏升級 →"
+  }
+}

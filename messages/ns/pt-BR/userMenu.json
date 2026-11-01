@@ -1,0 +1,18 @@
+{
+  "menuLabel": "Menu do usuário",
+  "screenOn": "Tela ligada",
+  "screenOff": "Tela desligada",
+  "newOrderSound": "Som de novo pedido",
+  "copied": "Copiado",
+  "orderLink": "Link do pedido",
+  "qrCode": "QR code",
+  "kitchenScreen": "Tela da cozinha",
+  "thisDevice": "Este dispositivo",
+  "manage": "Gerenciar",
+  "ordersDashboard": "Painel de pedidos",
+  "admin": "Admin",
+  "privacy": "Política de privacidade",
+  "terms": "Termos",
+  "signOut": "Sair",
+  "close": "Fechar"
+}

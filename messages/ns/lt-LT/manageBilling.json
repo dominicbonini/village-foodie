@@ -24,8 +24,10 @@
     "heading": "Jūsų nemokamas bandomasis laikotarpis dar neprasidėjo"
   },
   "onTrial": "Galite naudotis visomis funkcijomis. Pasirinkite planą, kol nesibaigė bandomasis laikotarpis.",
+  "onTrialPaidEnd": "Galite naudotis visomis funkcijomis. Pasibaigus bandomajam laikotarpiui, planas {plan} kainuos {price} per mėnesį. Dar prieš tai susisieksime su jumis, kad sutvarkytume mokėjimą.",
   "onTrialNoCta": "Galite naudotis visomis funkcijomis.",
   "noCharge": "🔒 Bandomuoju laikotarpiu, kuris trunka iki {date}, jums nebus nieko apmokestinta. Mokesčiai pradedami skaičiuoti tik tada, kai pasirenkate planą ir įvedate mokėjimo duomenis. Iki tol nėra ko atšaukti ir nėra už ką mokėti.",
+  "noChargePaidEnd": "🔒 Bandomuoju laikotarpiu, kuris trunka iki {date}, jums nebus nieko apmokestinta.",
   "fees": "*Už internetinius užsakymus taikomi standartiniai kortelių mokėjimų apdorojimo mokesčiai",
   "setUpPayment": "⏱ Pasirinkite planą, kol nesibaigė bandomasis laikotarpis",
   "changeYourPlan": "Keisti planą",

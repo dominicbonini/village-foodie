@@ -1,0 +1,8 @@
+{
+  "notFoundTitle": "Lehte ei leitud",
+  "notFoundBody": "Me ei leidnud seda lehte. See võib olla teisaldatud või aadress on valesti kirjutatud.",
+  "home": "Mine avalehele",
+  "errorTitle": "Midagi läks valesti",
+  "errorBody": "Vabandust, see leht ei laadinud. Proovige uuesti või minge tagasi avalehele.",
+  "retry": "Proovi uuesti"
+}

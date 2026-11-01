@@ -24,8 +24,10 @@
     "heading": "Twój bezpłatny okres próbny jeszcze się nie rozpoczął"
   },
   "onTrial": "Masz dostęp do wszystkich funkcji. Wybierz plan przed końcem okresu próbnego.",
+  "onTrialPaidEnd": "Masz dostęp do wszystkich funkcji. Po zakończeniu okresu próbnego plan {plan} kosztuje {price} miesięcznie. Skontaktujemy się z Tobą wcześniej, aby skonfigurować płatność.",
   "onTrialNoCta": "Masz dostęp do wszystkich funkcji.",
   "noCharge": "🔒 W okresie próbnym, który trwa do {date}, nie zapłacisz nic. Opłaty zaczynają się dopiero wtedy, gdy wybierzesz plan i podasz dane płatnicze. Do tego czasu nie ma czego anulować ani za co płacić.",
+  "noChargePaidEnd": "🔒 W okresie próbnym, który trwa do {date}, nie zapłacisz nic.",
   "fees": "*Przy zamówieniach online obowiązują standardowe opłaty za obsługę płatności kartą",
   "setUpPayment": "⏱ Wybierz plan przed końcem okresu próbnego",
   "changeYourPlan": "Zmień plan",

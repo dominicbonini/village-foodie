@@ -1,0 +1,13 @@
+{
+  "stepHeading": "キッチンカーの拠点はどこですか？",
+  "stepIntro": "通貨、価格、タイムゾーン、電話番号の形式が設定されます。国はカード決済に紐付いているため、後から変更できません。",
+  "settingsHeading": "営業エリア",
+  "countryLabel": "国",
+  "countryGuessed": "現在地から推定しました。違っている場合は変更してください。",
+  "countryLocked": "国は変更できません",
+  "townLabel": "市区町村",
+  "townQuestion": "拠点の市区町村",
+  "timezoneLabel": "タイムゾーン",
+  "continueButton": "続ける",
+  "saveFailed": "設定を保存できませんでした。もう一度お試しください。"
+}

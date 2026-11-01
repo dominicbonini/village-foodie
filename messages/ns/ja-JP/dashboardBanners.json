@@ -1,0 +1,21 @@
+{
+  "breachHeadline": "{n, plural, other {{count}件の時間枠}}が調理キャパシティ超過です：確認してください",
+  "batchOver": "{cat}がバッチ上限を超えています：{slot}に{count}（1バッチ{per}）",
+  "eventStartOver": "出店開始時点で調理キャパシティ超過：{slot}に{n, plural, other {{count}点}}",
+  "kitchenOver": "キッチンが調理キャパシティ超過：{slot}向けに{n, plural, other {{count}点}}を調理中",
+  "orderItems": "#{id}：{n, plural, other {{count}点}}",
+  "placedAnyway": "承知の上で登録：{list}",
+  "placedItem": "#{id}（{slot}）",
+  "orphans": "{times}が調理キャパシティ超過です：該当する注文が見つかりません",
+  "dismiss": "閉じる",
+  "kitchenCapacity": "調理キャパシティ",
+  "overCapacity": "調理キャパシティ超過",
+  "wakeUnsupported": "このデバイスでは画面をオンのままにできません。",
+  "wakeInsecure": "このアドレスからは画面をオンのままにできません。",
+  "wakeRetry": "画面をオンのままにする：タップして再試行",
+  "wakeAcquire": "画面をオンのままにする",
+  "degraded": {
+    "serverError": "サーバーが注文を読み込めませんでした{hasStatus, select, yes {（エラー{status}）} other {}}。{at}時点の注文を表示しています。新しい注文が表示されていない可能性があります。",
+    "unreachable": "サーバーに接続できません。{at}時点の注文を表示しています。新しい注文が表示されていない可能性があります。"
+  }
+}

@@ -61,7 +61,7 @@ import { privateDisplayName } from '@/lib/private-events/resolve'
 // (orders.currency, orderMoney); the menu, the Add Order panel and the event-price note in the TRUCK's —
 // both from /api/dashboard's truck.money, which the offline snapshot keeps. ⚠️ A truck object with no
 // `money` (a snapshot saved before this build) shows figures with NO symbol and warns — never a guessed £.
-import { formatMajorOrBare, formatMinorOrBare, editableAmount, orderMoney } from '@/lib/money-format'
+import { formatMajorOrBare, formatMinorOrBare, editableAmount, orderMoney, toMinorUnits, toMajor } from '@/lib/money-format'
 import { MoneyProvider } from '@/components/MoneyContext'
 import { resolveOfflineWithType, offlineIsHandChange } from '@/lib/event-types/resolve'
 import { readSoundConfig, writeSoundConfig, seedSoundConfig, effectiveSoundConfig } from '@/lib/sound-prefs'
@@ -3907,9 +3907,11 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
     const o=editingOrder
     const priced=!!o&&!!truck?.charge_rules&&(o.tax_inclusive===false||chargeLinesFor(chargeSourceOf(o as unknown as Record<string,unknown>)).length>0)
     if(!priced||!o)return linear
-    const baseFood=o.food_minor!=null?o.food_minor/100:editOrderBaseline.total
+    // world-countries-1: in the ORDER's currency's minor units (whole yen for JPY), never ×100.
+    const cur=(o as {currency?:string|null}).currency??truck?.money?.currency??'GBP'
+    const baseFood=o.food_minor!=null?toMajor(o.food_minor,cur):editOrderBaseline.total
     const food=Math.max(0,baseFood+itemDelta-removedOriginalValue+addedNewValue)
-    return chargesForEdit(Math.round(food*100),rulesFromCheckout(truck!.charge_rules!),o).totalMinor/100
+    return toMajor(chargesForEdit(toMinorUnits(food,cur),rulesFromCheckout(truck!.charge_rules!),o).totalMinor,cur)
   })():Math.max(0,editItemsSubtotal)
   // The server's unpriceable-line verdict is only meaningful for the basket it was computed against.
   // Change anything and the banner disappears rather than naming a line that is no longer there;

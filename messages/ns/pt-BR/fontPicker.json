@@ -1,0 +1,46 @@
+{
+  "tab": {
+    "all": "Todas",
+    "bold": "Fortes e altas",
+    "hand": "Manuscritas",
+    "classic": "Clássicas",
+    "clean": "Limpas",
+    "own": "Suas",
+    "ownCount": "Suas ({count})"
+  },
+  "yoursTag": "· sua",
+  "loadingFonts": "Carregando fontes…",
+  "search": "Pesquisar entre {count, number} fontes",
+  "uploadButton": "↑ Enviar sua fonte",
+  "loadingLibrary": "Carregando a biblioteca de fontes…",
+  "tryAgain": "Tentar de novo",
+  "noOwn": "Você ainda não enviou nenhuma fonte. Use o botão “↑ Enviar sua fonte” acima.",
+  "recent": "Usadas recentemente",
+  "popular": "Populares para cartazes",
+  "adding": "Adicionando…",
+  "noMatch": "Nenhuma fonte corresponde a “{query}”.",
+  "showing": "Mostrando {shown} de {total, number} — digite mais para filtrar.",
+  "couldNotAdd": "Não foi possível adicionar essa fonte",
+  "tooBig": "Essa fonte tem {size, number, ::.0 group-off} MB. O limite é 5 MB.",
+  "woff": "Envie um arquivo TTF ou OTF — normalmente dá para baixar um no site onde você comprou a fonte.",
+  "uploadIncomplete": "O envio não foi concluído",
+  "added": "“{name}” adicionada na versão {face}.",
+  "face": {
+    "regular": "normal",
+    "bold": "negrito",
+    "italic": "itálico"
+  },
+  "licenceTick": "Sou dono desta fonte ou tenho licença para usá-la",
+  "checking": "Verificando a fonte…",
+  "addFont": "Adicionar fonte",
+  "cancel": "Cancelar",
+  "missingFaces": "Adicione a versão {faces} de “{name}” (opcional) — escolha o arquivo de novo.",
+  "somethingWrong": "Algo deu errado",
+  "faceLower": {
+    "regular": "normal",
+    "bold": "negrito",
+    "italic": "itálico"
+  },
+  "ownLicence": "Sua própria",
+  "loadFailed": "Não foi possível carregar as fontes"
+}

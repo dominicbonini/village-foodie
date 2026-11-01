@@ -1,0 +1,70 @@
+{
+  "error": {
+    "generic": "出現錯誤",
+    "previewFailed": "未能製作預覽",
+    "loadFailed": "未能載入",
+    "tooBig": "這張圖片有 {size, number, ::.0 group-off}MB，上限為 10MB。",
+    "wrongType": "請選擇 PNG 或 JPG 檔案。",
+    "uploadIncomplete": "上載未能完成",
+    "uploadFailed": "上載失敗",
+    "saveFailed": "未能儲存",
+    "buildFailed": "未能製作帖文",
+    "copyFailed": "未能複製，請選取文字後自行複製。"
+  },
+  "loading": "載入中…",
+  "missingTable": {
+    "title": "每週帖文需要更新資料庫",
+    "body": "設計資料表尚未建立。完成資料庫遷移後，此頁面便可以使用。"
+  },
+  "kind": {
+    "label": "選擇設計",
+    "event": "單次活動",
+    "week": "每週"
+  },
+  "setup": {
+    "title": "設定你的每週帖文",
+    "intro": "上載你平時製作的每週出車時間表圖片的空白版本，即同一設計，但刪除你自己的文字框。HatchGrab 會根據你的出車時間表填上該星期的內容。",
+    "canvaTitle": "如何從 Canva 匯出空白版本",
+    "canvaStep1": "打開你平時用的每週出車時間表設計。",
+    "canvaStep2": "刪除寫有日期、地點和時間的文字框，保留你想要的背景和標題。",
+    "canvaStep3": "分享 › 下載 › PNG。",
+    "uploading": "上載中…",
+    "upload": "上載你的空白圖片",
+    "uploadHint": "PNG 或 JPG，最大 10MB，短邊最少 {px}px。",
+    "phoneTip": "最好用電腦或 iPad，在手機上拖動文字框會太細小。",
+    "designName": "每週帖文設計",
+    "backDesigns": "‹ 設計",
+    "back": "‹ 返回",
+    "pictureNote": "不含任何日期或地點的圖片，這些由我們加上。",
+    "saved": "設計已儲存。"
+  },
+  "week": {
+    "this": "本星期",
+    "next": "下星期"
+  },
+  "post": {
+    "title": "你的每週帖文",
+    "editDesign": "編輯設計",
+    "weekOf": "{date} 起的一週",
+    "imageAlt": "你的每週帖文",
+    "building": "正在製作你的帖文…",
+    "updating": "更新中…",
+    "eventsTitle": "本星期的活動",
+    "noEvents": "本星期沒有活動。",
+    "eventDateCancelled": "{date} · 已取消",
+    "showCancelled": "顯示已取消的活動",
+    "showPrivate": "顯示私人活動",
+    "privateHint": "會顯示為「私人活動」並附上日期和時間，但絕不顯示地點。",
+    "noteTitle": "備註",
+    "notePlaceholder": "例如：歡迎預先落單自取",
+    "noteHint": "會顯示在帖文文字中；如你已擺放備註框，亦會顯示在框內。",
+    "captionTitle": "專頁帖文文字",
+    "perEventTitle": "每個活動的帖文",
+    "nothingToPost": "本星期沒有內容可發佈。",
+    "textCopied": "文字已複製。",
+    "copyText": "複製文字",
+    "image": "圖片",
+    "share": "分享",
+    "noOrderLink": "未有落單連結，請在「設定」中設定你美食車的網址。"
+  }
+}

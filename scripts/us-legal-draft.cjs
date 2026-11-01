@@ -13,7 +13,11 @@ const fs = require('fs'); const path = require('path'); const { execFileSync } =
 const REPO = path.resolve(__dirname, '..')
 const kit = require('./_render-kit.cjs')({ cacheTag: 'us-legal-draft' })
 const BEFORE_REF = '8a5c4b5a'
-const read = f => fs.readFileSync(path.join(REPO, f), 'utf8')
+// ⚠️ RE-PINNED (world-countries-2, 1 November 2026, docs/world-countries-2-report.md §1): the Terms of Service (§4), the
+// Country-specific terms (eight countries appended, re-dated) and lib/legal.ts (two dates, TERMS_VERSION) are read as they were
+// before world-countries-2 — scripts/_lp-world-countries-2.cjs asBefore() removes exactly its named change and throws if it is
+// not there, so every other byte is still pinned here. The new text itself is proved by scripts/world-countries-2.cjs.
+const read = f => require('./_lp-world-countries-2.cjs').asBefore(f, fs.readFileSync(path.join(REPO, f), 'utf8'))
 const before = f => execFileSync('git', ['show', `${BEFORE_REF}:${f}`], { cwd: REPO, encoding: 'utf8' })
 let pass = 0, fail = 0
 const t = (name, ok, detail) => { if (ok) { pass++; console.log(`  ✓ ${name}`) } else { fail++; console.log(`  ✗ ${name}${detail ? `\n      ${detail}` : ''}`) } }
@@ -135,10 +139,14 @@ const NAMED = {
       { stubs: { 'next/headers': 'export async function headers() { return new Map() }\nexport async function cookies() { return { get() { return undefined }, getAll() { return [] } } }' } })
     P.metadata = await P.generateMetadata()
     const html = kit.renderStatic(kit.h(P.default))
-    const paras = read(file).split(/\n\s*\n/).map(words).filter(p => p.length > 30 && !p.startsWith('|'))
+    // ⚠️ RE-PINNED (world-countries-2): the RENDERED page is today's document, so its paragraphs and date are read as they are now
+    // (read() above gives the older bytes for the byte pins); world-countries-2 re-dated the Terms and the Country-specific terms.
+    const W2 = require('./_lp-world-countries-2.cjs')
+    const shownDate = W2.LANDED && doc !== 'privacy' ? W2.NEW_DATE : DOC_DATE[doc]
+    const paras = fs.readFileSync(path.join(REPO, file), 'utf8').split(/\n\s*\n/).map(words).filter(p => p.length > 30 && !p.startsWith('|'))
     const missing = paras.filter(p => !flat(html).includes(p))
     t(`/${doc} renders every paragraph of its document (${paras.length})`, missing.length === 0, missing.slice(0, 2).join(' · '))
-    t(`/${doc} shows "Last updated: ${DOC_DATE[doc]}"`, flat(html).includes(flat(`Last updated: ${DOC_DATE[doc]}`)))  // ⚠️ RE-PINNED (pricing-tidy, 20 October 2026): per-document date
+    t(`/${doc} shows "Last updated: ${shownDate}"`, flat(html).includes(flat(`Last updated: ${shownDate}`)))  // ⚠️ RE-PINNED (pricing-tidy, 20 October 2026): per-document date
     if (doc !== 'country-terms') t(`/${doc} links to the Country-specific terms (a real <a href="/country-terms">)`, html.includes('<a href="/country-terms"'))
     else t('/country-terms links back to /terms and /privacy, and has its own title', html.includes('<a href="/terms"') && html.includes('<a href="/privacy"') && (P.metadata?.title?.absolute ?? P.metadata?.title) === 'Country-specific terms — HatchGrab')
   }

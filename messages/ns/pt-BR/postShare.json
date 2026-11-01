@@ -1,0 +1,10 @@
+{
+  "download": "Baixar imagem",
+  "copied": "Copiado ✓",
+  "copyCaption": "Copiar legenda",
+  "share": "Compartilhar",
+  "copiedStatus": "{kind, select, postText {Texto do post copiado.} other {Legenda copiada.}}",
+  "copyFailed": "Não foi possível copiar — selecione o texto e copie manualmente.",
+  "sharedStatus": "{kind, select, postText {Texto do post copiado — cole no seu post.} other {Legenda copiada — cole no seu post.}}",
+  "shareRefused": "{kind, select, postText {O compartilhamento foi recusado, então a imagem foi baixada. Texto do post copiado.} other {O compartilhamento foi recusado, então a imagem foi baixada. Legenda copiada.}}"
+}

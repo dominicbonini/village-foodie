@@ -1,0 +1,10 @@
+{
+  "download": "画像をダウンロード",
+  "copied": "コピーしました ✓",
+  "copyCaption": "キャプションをコピー",
+  "share": "共有",
+  "copiedStatus": "{kind, select, postText {投稿文をコピーしました。} other {キャプションをコピーしました。}}",
+  "copyFailed": "コピーできませんでした。テキストを選択して手動でコピーしてください。",
+  "sharedStatus": "{kind, select, postText {投稿文をコピーしました。投稿に貼り付けてください。} other {キャプションをコピーしました。投稿に貼り付けてください。}}",
+  "shareRefused": "{kind, select, postText {共有が許可されなかったため、画像をダウンロードしました。投稿文をコピーしました。} other {共有が許可されなかったため、画像をダウンロードしました。キャプションをコピーしました。}}"
+}

@@ -1,0 +1,30 @@
+{
+  "labels": {
+    "weekDates": "تواريخ الأسبوع",
+    "dayList": "قائمة الأيام",
+    "place": "المكان",
+    "venue": "مكان الفعالية",
+    "area": "المنطقة",
+    "dayDate": "اليوم والتاريخ",
+    "times": "الأوقات",
+    "orderLink": "رابط الطلب",
+    "locationTag": "وسم الموقع"
+  },
+  "weekHeader": "{truck} — أين نحن هذا الأسبوع:",
+  "dayLine": "{day} — {where} — {times}",
+  "dayLineNoTimes": "{day} — {where}",
+  "dayLineCancelled": "{day} — {where} — أُلغيت، نعتذر",
+  "noDates": "لا مواعيد هذا الأسبوع — تابعونا قريبًا.",
+  "orderAhead": "اطلب مسبقًا: {url}",
+  "orderAheadTagged": "اطلب مسبقًا: {url} {tag}",
+  "eventLine": "{truck} في {where} {when}، {times}.",
+  "eventLineNoTimes": "{truck} في {where} {when}.",
+  "cancelledSorry": "نعتذر — لن نتمكن من الحضور إلى {where} {when}.",
+  "cancelledApology": "نعتذر لكل من كان يخطط للحضور. سنعود قريبًا.",
+  "when": {
+    "today": "اليوم",
+    "tonight": "الليلة",
+    "tomorrow": "غدًا",
+    "dated": "في {date}"
+  }
+}

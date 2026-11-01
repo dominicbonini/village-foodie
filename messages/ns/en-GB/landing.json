@@ -7,7 +7,6 @@
   "hero": {
     "title": "The ordering system built for <lean>food trucks.</lean>",
     "subSmall": "Upload your menu, no signup needed.<br></br>See a working demo in under 60 seconds.",
-    "tagline": "Less time booking.<br></br>More time <lean>cooking.</lean>",
     "cta": "Upload my menu →",
     "ctaNote": "<lead>Upload a photo of your menu and see it working in under 60 seconds.</lead><small>No signup. No card.</small>"
   },

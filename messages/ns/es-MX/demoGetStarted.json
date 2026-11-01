@@ -1,0 +1,24 @@
+{
+  "upload": {
+    "bannerButton": "Guardar mi menú →",
+    "sub": "Tu menú se pasa tal cual."
+  },
+  "sample": {
+    "sub": "Después vas a subir tu propio menú: es cosa de un minuto."
+  },
+  "saveOnly": {
+    "bannerButton": "Guardar mi menú →"
+  },
+  "stepper": {
+    "menu": "Menú"
+  },
+  "confirmKeepUntil": "La guardaremos hasta el <b>{date}</b>. Tu menú se va contigo cuando hagas la configuración completa.",
+  "readyBody": "Ahora terminemos de configurar tu food truck: el menú, los alérgenos y la cocina.",
+  "stage": {
+    "menu": "Cargando tu menú"
+  },
+  "emailPlaceholder": "tu@tufoodtruck.mx",
+  "fieldError": {
+    "email": "Ingresa una dirección de correo válida."
+  }
+}

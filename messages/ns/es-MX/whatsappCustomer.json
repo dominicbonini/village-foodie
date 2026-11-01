@@ -1,0 +1,6 @@
+{
+  "allergenRedirect": "{opener}Aquí puedes ver nuestro menú completo y la información sobre alérgenos: {url} — {truck} {emoji}",
+  "menuFallback": "{opener}Checa nuestro menú completo aquí: {url} — {truck} {emoji}",
+  "menuSummary": "{opener}Tenemos {summary}. Checa el menú completo y haz tu pedido anticipado aquí: {url} — {truck} {emoji}",
+  "allergenCaveat": "Consulta el menú completo para ver la información sobre alérgenos — esta es una respuesta automática."
+}

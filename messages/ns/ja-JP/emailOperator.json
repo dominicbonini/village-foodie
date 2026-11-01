@@ -1,0 +1,25 @@
+{
+  "newOrder": {
+    "subject": "新規注文#{id}：{name}{withSlot, select, yes {・{slot}} other {}}",
+    "heading": "新しい注文が入りました",
+    "from": "<b>{name}</b>様から<b>注文#{id}</b>",
+    "collection": "受け取り時間：{time}",
+    "asap": "時間指定なし（できるだけ早く）",
+    "total": "合計",
+    "notes": "<b>メモ：</b>{notes}",
+    "autoConfirmed": "自動受付済みです。対応は不要です。",
+    "confirmPrompt": "HatchGrabのダッシュボードにログインして、この注文を承認または却下してください。",
+    "text": "{name}様から新規注文#{id}{withSlot, select, yes {（{slot}）} other {}}{withVenue, select, yes {、場所：{venue}} other {}}。{withCharges, select, yes {{charges}。} other {}}合計{total}。{withNotes, select, yes {メモ：{notes}} other {}}"
+  },
+  "newEvents": {
+    "subject": "{truck}の新しい出店予定が見つかりました：ご確認ください",
+    "hi": "こんにちは。",
+    "found": "出店スケジュールに<b>{n, plural, other {{count}件の新しい出店予定}}</b>が見つかりました。お客様に表示する前に承認が必要です。",
+    "listHeading": "見つかった出店予定：",
+    "approve": "「出店スケジュール」タブで承認すると、マップに公開され、注文ページで事前注文を受け付けられるようになります。",
+    "cta": "出店スケジュールを確認 →",
+    "signoff": "HatchGrabチーム・hatchgrab.com",
+    "unknownVenue": "場所不明",
+    "text": "こんにちは。\n\n出店スケジュールに{n, plural, other {{count}件の新しい出店予定}}が見つかりました。承認が必要です：\n\n{list}\n\n確認はこちら：{url}\n\n承認すると、マップに公開されます。\n\nHatchGrabチーム"
+  }
+}

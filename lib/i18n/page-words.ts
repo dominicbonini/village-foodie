@@ -19,13 +19,15 @@ import '@/lib/i18n/catalog/eventCard'
 import '@/lib/i18n/catalog/siteFooter'
 import '@/lib/i18n/catalog/truckPage'
 import '@/lib/i18n/catalog/embed'
+import '@/lib/i18n/catalog/legalChrome'
+import '@/lib/i18n/catalog/auth'
 import { NAMESPACES } from './namespaces'
 import { isLanguageBase } from './locales'
 import { languageWords } from './registry'
 import type { LanguageSeed } from './page-locale'
 
 /** `{ seed }` for a non-English page of this kind, `{}` otherwise — spread into the client root's props. */
-export function pageSeedProps(locale: string | null | undefined, page: 'marketing' | 'truckPage' | 'embed'): { seed?: LanguageSeed } {
+export function pageSeedProps(locale: string | null | undefined, page: 'marketing' | 'truckPage' | 'embed' | 'legal' | 'auth'): { seed?: LanguageSeed } {
   if (!isLanguageBase(locale)) return {}
   return { seed: languageWords(locale, NAMESPACES[page]) }
 }

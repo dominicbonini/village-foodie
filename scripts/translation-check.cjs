@@ -155,7 +155,8 @@ function check({ locale, messages, en, glossary, back, planKeys, knownPlanKeys, 
       const en_n = numbersIn(se.text), t_n = numbersIn(st.text, decimalComma), t_raw = numbersIn(st.text, false)
       const missingN = en_n.filter(x => { const i = t_n.indexOf(x); if (i >= 0) { t_n.splice(i, 1); return false } const j = t_raw.indexOf(x); if (j >= 0) { t_raw.splice(j, 1); return false } return true })
       const missingCur = ['£', '$', '€', '%'].filter(c => se.text.split(c).length > st.text.split(c).length)
-      const missingBrand = BRANDS.filter(b => se.text.includes(b) && !st.text.includes(b))
+      // world-countries-1 (31 October 2026): an allergen label names a FOOD — "Apple" (Japan's list) is the fruit, not the brand.
+      const missingBrand = /^menuBadges\.allergen\./.test(k) ? [] : BRANDS.filter(b => se.text.includes(b) && !st.text.includes(b))
       if (missingN.length || missingCur.length || missingBrand.length) F.numbers.push([k, [missingN.length ? `number(s) ${missingN.join(', ')}` : '', missingCur.length ? `sign(s) ${missingCur.join(' ')}` : '', missingBrand.length ? `brand(s) ${missingBrand.join(', ')}` : ''].filter(Boolean).join('; ') + ' not kept', t])
       const el = se.text.trim().length, tl = st.text.trim().length
       const shortish = el <= 24 || /(button|cta|label|tab|title|action|save|cancel|confirm|submit|short|badge|chip|heading|toggle)$/i.test(k.split('.').pop())
@@ -206,13 +207,15 @@ if (require.main === module) {
   if (!a.locale) { console.error('usage: node scripts/translation-check.cjs --locale <xx-YY> [--messages f] [--glossary f] [--back f] [--report f]'); process.exit(2) }
   const read = f => JSON.parse(fs.readFileSync(path.resolve(REPO, f), 'utf8'))
   const lang = a.locale.split('-')[0].toLowerCase()
-  const gFile = a.glossary || `lib/i18n/glossary/${lang}.json`
+  // world-countries-1 (31 October 2026): a REGIONAL glossary (pt-BR, es-MX — a language whose European table would be wrong there)
+  // is used when it exists; every other locale reads its language's, exactly as before.
+  const gFile = a.glossary || (fs.existsSync(path.join(REPO, `lib/i18n/glossary/${a.locale}.json`)) ? `lib/i18n/glossary/${a.locale}.json` : `lib/i18n/glossary/${lang}.json`)
   const bFile = a.back || `docs/i18n/back/${a.locale}.json`
   const catalogPlans = (() => { try { return require('./_plans-catalog-fixture.cjs').seedCatalog(REPO).plans } catch { return null } })()
   const planKeys = catalogPlans && catalogPlans.filter(p => p.isPublic && p.active && p.name !== 'Pro').map(p => p.key)
   const knownPlanKeys = catalogPlans && catalogPlans.filter(p => p.active).map(p => p.key)
   const guardLanguages = fs.readdirSync(path.join(REPO, 'lib/allergen-guard')).filter(f => f.endsWith('.json')).map(f => f.replace(/\.json$/, ''))
-  const swFile = a['same-words'] || `docs/i18n/same-words/${lang}.json`
+  const swFile = a['same-words'] || (fs.existsSync(path.join(REPO, `docs/i18n/same-words/${a.locale}.json`)) ? `docs/i18n/same-words/${a.locale}.json` : `docs/i18n/same-words/${lang}.json`)
   // german-1 (22 October 2026): a REGIONAL VARIANT of a language (de-AT, de-CH over de-DE; de-LI over de-CH — LOCALE_PARENT in
   // lib/i18n/locales.ts) is a sparse file, so it is checked as the app reads it: its chain merged, outermost last, and its
   // back-translations likewise. A locale with no parent reads its one file, exactly as before.

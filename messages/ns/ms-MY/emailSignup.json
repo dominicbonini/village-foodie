@@ -1,0 +1,26 @@
+{
+  "greeting": "{hasName, select, yes {Hai {name},} other {Hai,}}",
+  "signoffName": "Dominic",
+  "signoffRole": "Pengasas, HatchGrab",
+  "verify": {
+    "subject": "Sahkan alamat e-mel anda",
+    "thanks": "{hasTruck, select, yes {Terima kasih kerana menyediakan {truck} di HatchGrab.} other {Terima kasih kerana menyediakan trak anda di HatchGrab.}}",
+    "button": "Sahkan alamat e-mel saya",
+    "buttonText": "Sahkan alamat e-mel saya: {url}",
+    "why": "Inilah alamat yang anda gunakan untuk log masuk, dan ke sinilah makluman pesanan dihantar — jadi elok dilakukan sekarang.",
+    "next": "Setelah ia disahkan, saya akan menghantar semua yang anda perlukan untuk bermula.",
+    "carryOn": "Sementara itu, anda boleh teruskan persediaan.",
+    "stuck": "Tersekat di mana-mana? Balas sahaja e-mel ini — saya sendiri yang menjawabnya.",
+    "fallbackLink": "Jika butang tidak berfungsi, tampal pautan ini: {url}"
+  },
+  "welcome": {
+    "subject": "{hasName, select, yes {Selamat datang ke HatchGrab, {name}} other {Selamat datang ke HatchGrab}}",
+    "intro": "{hasTruck, select, yes {Saya sungguh gembira mengalu-alukan {truck} ke HatchGrab.} other {Saya sungguh gembira mengalu-alukan trak anda ke HatchGrab.}}",
+    "trial": "{months, plural, other {Percubaan percuma # bulan anda telah bermula — semua ciri dibuka.}}",
+    "setup": "Jika anda belum melakukannya, persediaan adalah mudah dan mengambil masa kira-kira lima belas minit.",
+    "button": "Buka papan pemuka anda",
+    "bookmark": "Elok ditanda buku. Ia berfungsi pada mana-mana peranti.",
+    "stuck": "Balas sahaja e-mel ini jika anda tersekat — saya sendiri yang menjawabnya.",
+    "lookingForward": "{hasTruck, select, yes {Tidak sabar melihat {truck} berniaga.} other {Tidak sabar melihat trak anda berniaga.}}"
+  }
+}

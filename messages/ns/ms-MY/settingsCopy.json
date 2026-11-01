@@ -1,0 +1,19 @@
+{
+  "allowCancellation": {
+    "label": "Benarkan pelanggan membatalkan pesanan",
+    "sentence": "Pelanggan boleh membatalkan sehingga <select></select> sebelum masa ambil mereka"
+  },
+  "autoAccept": {
+    "label": "Terima pesanan secara automatik",
+    "help": "Pesanan disahkan secara automatik. Jika slot yang diminta penuh, pesanan dialihkan ke slot seterusnya yang tersedia. Hanya disahkan apabila ada kapasiti. Pesanan dengan nota pelanggan (cth. alahan) masih perlu disahkan."
+  },
+  "orderReady": {
+    "label": "Langkah pesanan siap",
+    "help": "Paparkan butang “Tandakan siap” pada skrin pesanan. Skrin dapur ditetapkan secara berasingan, pada setiap peranti. Pelanggan menerima e-mel setiap kali pesanan ditandakan siap. Terpakai untuk semua acara — anda masih boleh menghidupkan atau mematikannya untuk satu acara di papan pemukanya."
+  },
+  "buzzers": {
+    "label": "Adakah anda memberikan buzzer untuk pengambilan?",
+    "help": "Rekodkan buzzer yang anda berikan kepada setiap pelanggan, supaya anda tahu siapa yang perlu dicari apabila makanan mereka siap.",
+    "countLabel": "Berapa banyak buzzer yang anda ada?"
+  }
+}

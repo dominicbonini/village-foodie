@@ -13,5 +13,6 @@
   "countryTerms": "Termeni pe țări",
   "contact": "Contact",
   "lastUpdated": "Ultima actualizare: {date}",
-  "questions": "Întrebări? <link>Contactați-ne</link> — suntem oameni reali."
+  "questions": "Întrebări? <link>Contactați-ne</link> — suntem oameni reali.",
+  "translationNote": "Aceasta este o traducere. Dacă diferă de <link>versiunea în limba engleză</link>, prevalează versiunea în limba engleză."
 }

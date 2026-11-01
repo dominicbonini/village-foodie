@@ -1,0 +1,47 @@
+{
+  "meta": {
+    "fallbackTitle": "Food truck | Village Foodie",
+    "hgFallbackTitle": "Food truck",
+    "orderTitle": "{truck} — faça seu pedido",
+    "orderDescription": "Peça antes e retire direto no food truck — {truck}.",
+    "title": "{truck} | Village Foodie",
+    "logoAlt": "Logo — {truck}"
+  },
+  "shareTitle": "Agenda — {truck}",
+  "shareText": "Veja onde {truck} vai estar nos próximos dias! 🚚",
+  "linkCopied": "Link do perfil copiado! 📋",
+  "facebookPage": "Página no Facebook",
+  "loadingMap": "Carregando mapa…",
+  "view": {
+    "list": "Lista",
+    "map": "Mapa"
+  },
+  "ownThisTruck": "Este food truck é seu?",
+  "ownThisTruckTitle": "Este food truck é seu? Clique para atualizar seu perfil",
+  "actions": {
+    "menu": "Cardápio",
+    "call": "Ligar",
+    "message": "Mensagem",
+    "share": "Compartilhar",
+    "order": "Pedir"
+  },
+  "loadingSchedule": "Carregando agenda…",
+  "loadError": {
+    "title": "Não foi possível carregar",
+    "body": "Não conseguimos carregar a agenda agora — normalmente é uma falha rápida. Tente de novo.",
+    "retry": "Tentar de novo"
+  },
+  "notFound": {
+    "title": "Food truck não encontrado",
+    "body": "Não encontramos detalhes deste food truck. Ele pode ter mudado de lugar ou atualizado o perfil.",
+    "cta": "Ver todos os food trucks"
+  },
+  "noEvents": {
+    "title": "Nenhum evento futuro encontrado",
+    "body": "Talvez estejam faltando alguns detalhes deste food truck. Você é o dono ou conhece a agenda dele?",
+    "cta": "Mande uma mensagem pra gente atualizar!"
+  },
+  "whereToFind": "Onde nos encontrar",
+  "missingEvent": "<strong>Está faltando algum evento?</strong> <br></br>Se você é dono deste food truck ou só um fã dedicado, ajude a manter esta página certinha! <br></br><link>Fale com a gente para adicionar os detalhes que faltam.</link>",
+  "weeklySchedule": "Receba a agenda semanal 🍕"
+}

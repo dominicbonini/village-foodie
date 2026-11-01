@@ -1,0 +1,17 @@
+{
+  "back": "← 返回",
+  "title": "選用套餐",
+  "save": "節省 {amount}",
+  "selectItems": "請為每個位置選擇食品",
+  "choose": "選擇{category}…",
+  "inYourBasket": "── 購物車內 ──",
+  "basketUnit": "{name}{withMods, select, yes {（+ {mods}）} other {}}（購物車內）{state, select, used {——已用於其他套餐} taken {——已在另一位置選取} other {}}",
+  "addNew": "── 新增 ──",
+  "itemWithPrice": "{name} {price}",
+  "ruleHint": "· {rule, select, requiredOne {必選 · 選一項} required {必選} other {選一項}}{unmet, select, yes {（必選）} other {}}",
+  "notePlaceholder": "加入備註，例如走洋葱（選填）",
+  "backButton": "返回",
+  "cancel": "取消",
+  "chooseRequired": "請選擇必選項目",
+  "apply": "選用套餐 · {amount}"
+}

@@ -1,0 +1,38 @@
+{
+  "newEmail": {
+    "subject": "Verifique seu novo e-mail do HatchGrab",
+    "heading": "Verifique seu e-mail",
+    "button": "Verificar e-mail"
+  },
+  "changeEmail": {
+    "requested": "Você pediu para trocar o seu e-mail do HatchGrab para este endereço.",
+    "click": "Clique no botão abaixo para verificar. Este link expira em 24 horas.",
+    "ignore": "Se você não pediu essa alteração, pode ignorar este e-mail com tranquilidade.",
+    "stillActive": "Seu e-mail atual continua ativo."
+  },
+  "resendVerification": {
+    "requested": "Você pediu para trocar o seu e-mail do HatchGrab para este endereço.",
+    "click": "Clique abaixo para verificar. Este link expira em 24 horas.",
+    "ignore": "Se não foi você que pediu, ignore este e-mail.",
+    "stillActive": "Seu e-mail atual continua ativo."
+  },
+  "passwordReset": {
+    "subject": "Redefina sua senha do HatchGrab",
+    "heading": "Redefina sua senha",
+    "requested": "Recebemos um pedido para redefinir a senha da sua conta HatchGrab.",
+    "click": "Clique no botão abaixo para escolher uma nova senha. Este link expira em 1 hora.",
+    "button": "Redefinir senha",
+    "ignore": "Se não foi você que pediu, pode ignorar este e-mail com tranquilidade.",
+    "unchanged": "Sua senha só muda quando você clicar no link acima."
+  },
+  "deletionScheduled": {
+    "subject": "A exclusão da sua conta HatchGrab foi agendada",
+    "received": "Recebemos um pedido para excluir esta conta HatchGrab.",
+    "orderingStopped": "<b>Os pedidos online foram interrompidos imediatamente</b> em: {trucks}.",
+    "noTrucks": "(nenhum food truck)",
+    "readable": "Seu painel continua disponível para consulta pelos próximos {days, plural, one {# dia} other {# dias}}.",
+    "scheduled": "A exclusão da conta está agendada para <b>{date}</b>.",
+    "cannotCancel": "<b>Isso não pode ser cancelado pelo app.</b> Se não foi você, ou se você mudou de ideia, responda este e-mail o quanto antes.",
+    "kept": "Quando a conta for excluída, removemos seus dados pessoais e os dados dos seus clientes. Mantemos registros contábeis anônimos, que somos obrigados por lei a guardar."
+  }
+}

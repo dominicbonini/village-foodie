@@ -1,0 +1,8 @@
+{
+  "notFoundTitle": "Az oldal nem található",
+  "notFoundBody": "Nem találtuk ezt az oldalt. Lehet, hogy áthelyezték, vagy elírták a címet.",
+  "home": "Ugrás a kezdőlapra",
+  "errorTitle": "Hiba történt",
+  "errorBody": "Sajnáljuk, ez az oldal nem töltődött be. Próbálja újra, vagy térjen vissza a kezdőlapra.",
+  "retry": "Újra"
+}

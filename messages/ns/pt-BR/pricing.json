@@ -1,0 +1,49 @@
+{
+  "banner": {
+    "title": "{months, plural, one {Seu primeiro mês é totalmente grátis — com todos os recursos liberados.} other {Seus primeiros # meses são totalmente grátis — com todos os recursos liberados.}}",
+    "body": "Com {brand}, os clientes pedem antes e pagam na retirada, então você recebe pedidos online sem precisar conectar nenhuma processadora de cartão. Prefere receber adiantado? Ative pagamentos online com cartão quando quiser. Quando o teste acabar, você passa para o plano <plan>{fallback}</plan>{fallbackFree, select, yes { — sem mensalidade —} other {}}, a menos que escolha outro plano. Sem cartão para começar, sem contrato, cancele quando quiser.",
+    "bodyOnly": "Com {brand}, os clientes pedem antes e pagam na retirada, então você recebe pedidos online sem precisar conectar nenhuma processadora de cartão. Prefere receber adiantado? Ative pagamentos online com cartão quando quiser. Quando o teste acabar, o plano <plan>{fallback}</plan> custa {price} por mês. Antes disso, vamos entrar em contato para configurar o pagamento. Sem cartão para começar, sem contrato, cancele quando quiser."
+  },
+  "card": {
+    "perTruckMonth": "por food truck / mês",
+    "mostTrucks": "O mais escolhido",
+    "tryFree": "Experimente grátis",
+    "seeEvery": "Ver todos os recursos →",
+    "everything": "Tudo para tocar um turno",
+    "everythingIn": "Tudo do plano {plan}, e mais:"
+  },
+  "fee": {
+    "feeOnly": "<b>{fee}*</b> só nos pedidos online pagos com cartão. Pedidos no balcão são sempre grátis.",
+    "included": "Os primeiros <b>{included}</b> em pedidos online por mês estão incluídos; depois, <b>{fee}*</b>. Pedidos no balcão são sempre grátis.",
+    "noFee": "<b>Sem taxas do HatchGrab</b> nos pedidos online, por mais movimentado que seja. Um custo mensal previsível."
+  },
+  "base": {
+    "walkUp": "Pedidos no balcão e tela da cozinha",
+    "online": "Pedidos online",
+    "preorders": "Pedidos antecipados e horários de retirada",
+    "capacity": "Gestão da capacidade da cozinha",
+    "privateEvents": "Eventos privados",
+    "printing": "Impressão de comandas da cozinha",
+    "app": "App da cozinha para iPhone, iPad e Android"
+  },
+  "added": {
+    "whatsapp_replies": "Respostas automáticas no WhatsApp",
+    "schedule_graphics": "Posts para redes sociais — sua agenda para Facebook e Instagram — prontos para postar",
+    "event_types": "Tipos de evento e preços personalizados"
+  },
+  "money": {
+    "unlimitedOrders": "Pedidos online ilimitados, 0% de taxa do HatchGrab",
+    "samePrice": "O mesmo preço no seu mês mais movimentado"
+  },
+  "comingSoon": "Em breve",
+  "bar": {
+    "title": "Qual plano sai mais barato para mim?",
+    "subtitle": "Seus pedidos online por mês",
+    "first": "Abaixo de {to} → <b>{plan}</b>",
+    "middle": "{from} – {to} → <b>{plan}</b>",
+    "last": "Acima de {from} → <b>{plan}</b>",
+    "only": "Qualquer volume → <b>{plan}</b>"
+  },
+  "footnote": "* Mais a taxa de processamento de cartão da Stripe nos pedidos online com cartão ({country}: atualmente {cardFee}), paga à Stripe, não ao HatchGrab. Pedidos no balcão usam sua própria maquininha — o HatchGrab cobra 0%.",
+  "currencyLine": "Preços em {currency} ({code})"
+}

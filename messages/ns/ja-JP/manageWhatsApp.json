@@ -1,0 +1,106 @@
+{
+  "preview": {
+    "title": "接続する前に試してみる",
+    "intro": "お客様が送りそうな質問を入力すると、実際に返される返信を確認できます。誰にも送信されません。",
+    "examples": {
+      "where": "今夜はどこに出店していますか？",
+      "doYouDo": "ペパロニはありますか？",
+      "menu": "メニューを教えてください"
+    },
+    "placeholder": "デザートは何がありますか？",
+    "send": "送信",
+    "empty": "ここに返信が表示されます",
+    "working": "返信を作成中…",
+    "noReply": "返信は送信されません。",
+    "noReplyWhy": "迷惑メッセージ、予約の依頼、または関係のない内容と判断されたため、自動返信は行われません。",
+    "footnote": "返信はAIが生成するため、毎回少しずつ異なり、まれに誤りが含まれることがあります。",
+    "failed": "現在、プレビューを作成できません。",
+    "unreachable": "サーバーに接続できませんでした。接続状況を確認して、もう一度お試しください。"
+  },
+  "setup": {
+    "button": {
+      "preparing": "準備中…",
+      "unavailable": "利用できません",
+      "waiting": "Facebookのウィンドウを待っています…",
+      "finishing": "完了処理中…",
+      "reconnect": "再接続",
+      "setUp": "設定する"
+    },
+    "startAgain": "最初からやり直す",
+    "popupHint": "Facebookのウィンドウが表示されない場合は、ブロックされている可能性があります。hatchgrab.comのポップアップを許可してから、「最初からやり直す」を押してください。"
+  },
+  "notice": {
+    "sdkUnavailable": "この環境ではWhatsAppの設定を利用できません。",
+    "sdkBlocked": "Metaのログイン用スクリプトを読み込めませんでした。主な原因は広告ブロッカーやトラッキング防止機能です。",
+    "setupFailed": "設定を完了できませんでした。変更は行われていません。",
+    "setupFinished": "設定が完了しました。",
+    "metaError": "設定中にMetaで問題が発生しました。変更は行われていません。もう一度お試しいただき、繰り返し発生する場合はお問い合わせください。",
+    "closed": "設定が完了する前に閉じられました。変更は行われていません。もう一度試すには「設定する」を押してください。",
+    "disconnectedUnreachable": "WhatsAppの接続を解除しました。Metaに接続できなかったため、アクセス権を削除できませんでした。WhatsApp Businessの「設定」→「アカウント」→「ビジネスプラットフォーム」からHatchGrabを削除してください。",
+    "disconnected": "WhatsAppの接続を解除しました。自動返信は停止しています。",
+    "close": "閉じる"
+  },
+  "card": {
+    "title": "自動返信",
+    "description": "メニューと出店スケジュールをもとに、SNSでのお客様からの質問に自動で回答します。",
+    "channels": "チャネル",
+    "requiresAccount": "WhatsApp Businessアカウントが必要です。",
+    "connected": "接続済み",
+    "popupInstruction": "WhatsApp Businessアカウントを接続するためのFacebookのウィンドウが開きます。何も表示されない場合は、ブラウザでhatchgrab.comのポップアップを許可してから、もう一度「設定する」を押してください。",
+    "switchedOff": "このキッチンカーではWhatsAppの自動返信がオフになっています。",
+    "expiring": "WhatsAppの接続の更新期限が近づいています。自動返信を継続するには「再接続」を押してください。",
+    "comingSoon": "近日公開",
+    "instagram": "InstagramのDMに自動返信します。Instagramのプロアカウントが必要になる予定です。",
+    "messenger": "Facebook Messengerに自動返信します。Facebookページが必要になる予定です。"
+  },
+  "blocked": {
+    "title": "返信が届いていません",
+    "body": "WhatsApp Businessアカウントのお支払いに問題があるため、WhatsAppが自動返信の送信を拒否しています。お客様からのメッセージは引き続き受信でき、内容もすべて確認できますが、お客様に返信は届いていません。",
+    "fix": "これらのメッセージの料金はWhatsAppに直接お支払いいただくため、WhatsApp Managerで解決します。<link>お支払い方法を確認する</link>"
+  },
+  "limit": {
+    "heading": "自動返信",
+    "label": "月間の上限",
+    "option": "{n, number}",
+    "usage": "{limit, number}件中{used, number}件使用済み・{date}にリセット",
+    "perCustomer": "お客様1人につき24時間で最大{n}件まで返信し、その後は「担当者から直接ご連絡します」というメッセージを1件送信します。",
+    "emailAt": "上限に達すると返信は一時停止します。80%と100%に達した時点でメールでお知らせします。",
+    "saved": "月間の返信上限を保存しました",
+    "saveFailed": "上限を保存できませんでした"
+  },
+  "billing": {
+    "heading": "お支払い",
+    "paymentMethod": "お支払い方法",
+    "added": "お支払い方法が登録されています",
+    "missing": "お支払い方法が登録されていません",
+    "addInManager": "WhatsApp Managerで登録",
+    "summary": "返信の料金は、HatchGrabではなくMetaからWhatsAppアカウントに請求されます。{from}から、毎月最初の{free, number}件は無料です。{checked}時点の情報です。変更については<link>Metaの料金ページ</link>をご確認ください。",
+    "howMetaCharges": "Metaの料金について",
+    "chargesTitle": "WhatsAppの返信料金を請求するのはMetaで、HatchGrabではありません。",
+    "chargesBody": "HatchGrabが代わりに送信する返信は、MetaからWhatsApp Businessアカウントに請求されます。{from}から、Metaでは電話番号ごとに毎月{free, number}件の無料返信が含まれ、それを超えると返信1件ごとにMetaの料金がかかります。WhatsApp Businessアプリからご自身で送信した返信には料金はかかりません。料金はMetaが設定しており、変更される場合があります。<link>Metaの料金を見る</link>",
+    "addPaymentInManager": "WhatsApp Managerでお支払い方法を登録",
+    "aboveMissing": "上限がMetaの無料返信数（{free, number}件）を超えています。お支払い方法が登録されていないと、無料分を使い切った時点でMetaがすべての返信を停止します。",
+    "aboveGeneral": "上限がMetaの無料返信数（{free, number}件）を超えています。それを超える返信には、WhatsAppアカウントにお支払い方法の登録が必要です。登録がないと、無料分を使い切った時点でMetaがすべての返信を停止します。",
+    "addPaymentMethod": "お支払い方法を登録"
+  },
+  "disconnect": {
+    "link": "WhatsAppの接続を解除",
+    "title": "WhatsAppの接続を解除しますか？",
+    "body": "自動返信はすぐに停止し、HatchGrabはWhatsAppアカウントにアクセスできなくなります。電話番号はWhatsApp Businessアプリで引き続き使用できます。HatchGrabを完全に削除するには、WhatsApp Businessの「設定」→「アカウント」→「ビジネスプラットフォーム」も開いてください。",
+    "cancel": "キャンセル",
+    "confirm": "接続を解除",
+    "working": "接続を解除しています…",
+    "failed": "接続を解除できませんでした"
+  },
+  "signup": {
+    "logged": "記録しました。",
+    "partial": "WhatsApp Businessアカウントは連携できましたが、接続を完了できませんでした。お客様側の問題ではありません。お問い合わせいただければ、こちらで完了させます。",
+    "noNumber": "WhatsApp Businessアカウントは連携されましたが、電話番号が取得できませんでした。「再接続」を押して、電話番号の手順を完了してください。",
+    "needsRegistering": "アカウントは連携されましたが、返信を開始する前に、この電話番号をこちらで登録する必要があります。サポートまでお問い合わせください。設定は保存されているため、もう一度実行しないでください。",
+    "registerRefused": "アカウントは連携されましたが、Metaが電話番号の登録を受け付けませんでした。設定は保存されています。もう一度実行せず、サポートまでお問い合わせください。",
+    "deliveryRefused": "アカウントは連携されましたが、Metaがメッセージ配信を有効にしませんでした。設定は保存されています。もう一度実行せず、サポートまでお問い合わせください。",
+    "numberTaken": "このWhatsApp番号は、すでに別のHatchGrabアカウントに接続されています。1つの番号で対応できるキッチンカーは1台のみです。サポートにお問い合わせいただければ、こちらで移行します。",
+    "saveIncomplete": "あと少しです。保存を完了できませんでした。設定は保存されているため、もう一度実行せず、サポートまでお問い合わせください。",
+    "connected": "WhatsAppが接続されました。この電話番号に届いたメッセージに自動返信が始まります。"
+  }
+}

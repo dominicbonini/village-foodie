@@ -71,6 +71,9 @@
 // ⚠️ LAST-UPDATED DATES ARE DATA, NOT DECORATION. They are rendered to the reader as the freshness signal
 // and must move whenever the copy does. Update them HERE, never in the page.
 
+import { COUNTRY_PATH_SEGMENTS, HATCHGRAB_ORIGIN } from '@/lib/marketing-country'
+import { LANGUAGE_BASES, isEnglish, overrideChain, resolveLocale, type AppLocale } from '@/lib/i18n/locales'
+
 /** Canonical route for the privacy policy. */
 export const PRIVACY_PATH = '/privacy'
 
@@ -86,8 +89,8 @@ export const COUNTRY_TERMS_PATH = '/country-terms'
  *  The pages render the document's own line; these exist for anywhere else that needs the date without
  *  parsing the file. ⚠️ If you amend a document, change BOTH — the .md line is what a reader sees. */
 export const PRIVACY_UPDATED = '31 October 2026'
-export const TERMS_UPDATED = '20 October 2026'
-export const COUNTRY_TERMS_UPDATED = '22 October 2026'
+export const TERMS_UPDATED = '1 November 2026'
+export const COUNTRY_TERMS_UPDATED = '1 November 2026'
 
 /** One of the dates above ("19 October 2026") as a Date (UTC midnight), for the sitemap's lastmod (seo-fixes S5). */
 export function legalUpdatedDate(written: string): Date {
@@ -99,14 +102,16 @@ export function legalUpdatedDate(written: string): Date {
 
 /** The version of the terms a signup accepts, recorded as `operators.terms_version` beside `terms_accepted_at`
  *  (app/api/signup). 🔴 MOVE IT WITH THE DOCUMENTS: it names the Terms of Service, Privacy Policy and Country-specific
- *  terms dated above — the latest of them; 31 October 2026 since the Privacy Policy's demo section (demo-2b),
+ *  terms dated above — the latest of them; 1 November 2026 since the Terms' §4 (a finished trial moves to the plan shown for the
+ *  country) and the Country-specific terms' eight new countries (world-countries-2), 31 October 2026 for the Privacy Policy's
+ *  demo section (demo-2b) before that,
  *  22 October 2026 for the Country-specific terms' Australia and New Zealand
  *  sections (anz-terms) before that, 21 October 2026 for the Ireland section (ireland-3) before that,
  *  20 October 2026 for the Terms' §4 rewrite (pricing-tidy) before that. It was
  *  'holding-2026-07-23', typed in the route, and stayed there while the documents moved twice (legal follow-ups,
  *  19 October 2026). ⚠️ It is only WRITTEN, at signup: nothing reads or compares it, so moving it asks no existing truck
  *  to re-accept anything (checked 20 October 2026 — app, edge functions, database functions and triggers). */
-export const TERMS_VERSION = '2026-10-31'
+export const TERMS_VERSION = '2026-11-01'
 
 /** Both documents, for anywhere that renders the pair (footers, consent lines). */
 export const LEGAL_LINKS = [
@@ -118,4 +123,47 @@ export const LEGAL_LINKS = [
  *  Europe/London, at render. The same zone on the server and in the browser, so a hydrated footer agrees. */
 export function copyrightYear(now: Date = new Date()): number {
   return Number(new Intl.DateTimeFormat('en-GB', { timeZone: 'Europe/London', year: 'numeric' }).format(now))
+}
+
+// ══ legal-languages-1 (1 November 2026, docs/legal-languages-1-report.md §1): THE DOCUMENTS IN THE READER'S LANGUAGE ══════════
+// The English documents above are the GOVERNING version, at /privacy, /terms and /country-terms, reachable from every country.
+// Each non-English language has a faithful translation of all three (content/legal/<language base>/<file>), served at its
+// country's address — /fr/privacy, /de/terms, /jp/country-terms (app/[country]/(legal)/…) — with one line at the top saying it is
+// a translation and that the English version applies, linking to the English page. An English-speaking country (or one with no
+// address, or one switched off) has no translated address: its readers get the English page.
+// ⚠️ Translating moves NO date here: a translation shows its English document's own date (the legal-date rule, manual §43).
+
+/** The three legal documents by name. */
+export type LegalDoc = 'privacy' | 'terms' | 'country-terms'
+export const LEGAL_DOCS: readonly LegalDoc[] = ['privacy', 'terms', 'country-terms']
+/** Each document's English (governing) address. */
+export const LEGAL_DOC_PATH: Readonly<Record<LegalDoc, string>> = { privacy: PRIVACY_PATH, terms: TERMS_PATH, 'country-terms': COUNTRY_TERMS_PATH }
+/** Each document's file: the English one in content/legal/, a translation in content/legal/<language base>/. */
+export const LEGAL_DOC_FILE: Readonly<Record<LegalDoc, string>> = { privacy: 'privacy-policy.md', terms: 'terms-and-conditions.md', 'country-terms': 'country-specific-terms.md' }
+
+/** The language base whose translation a locale reads (de-AT → de-DE, es-MX → es-ES, de-CH → de-DE written the Swiss way),
+ *  or null for English — which reads the English documents. */
+export function legalBaseOf(locale: string | null | undefined): AppLocale | null {
+  if (isEnglish(locale)) return null
+  return overrideChain(resolveLocale(locale)).find(l => (LANGUAGE_BASES as readonly string[]).includes(l)) ?? null
+}
+
+/** The address of a legal document for a reader in `country` reading `locale`: its translation at /<country>/<doc> where the
+ *  language is not English and the country has an address; otherwise the English page. Without a country, the locale's
+ *  region names it. Every link to a legal document —
+ *  footers, consent lines, the order page, emails, the documents' own cross-references — asks this. */
+export function legalPath(doc: LegalDoc, where: { country?: string | null; locale?: string | null } = {}): string {
+  // No country given: the locale's own region, which is its country in every locale HatchGrab has (fr-FR → FR, de-AT → AT).
+  const code = where.country ?? (/^[a-z]{2}-([A-Z]{2})$/.exec(String(where.locale ?? '')) || [])[1]
+  const seg = code ? COUNTRY_PATH_SEGMENTS[String(code).toUpperCase()] : undefined
+  return seg && legalBaseOf(where.locale) ? `/${seg}/${doc}` : LEGAL_DOC_PATH[doc]
+}
+/** The same, absolute — for an email, which has no page to be relative to. */
+export const legalUrl = (doc: LegalDoc, where: { country?: string | null; locale?: string | null } = {}): string =>
+  `${HATCHGRAB_ORIGIN}${legalPath(doc, where)}`
+
+/** Which translated legal address a pathname is: '/fr/privacy' → { segment: 'fr', doc: 'privacy' }; anything else → null. */
+export function legalAddressOf(pathname: string): { segment: string; doc: LegalDoc } | null {
+  const m = /^\/([a-z]{2})\/(privacy|terms|country-terms)$/.exec(pathname)
+  return m ? { segment: m[1], doc: m[2] as LegalDoc } : null
 }

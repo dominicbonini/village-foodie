@@ -1,0 +1,83 @@
+{
+  "title": "Jenis acara",
+  "newTypeButton": "+ Jenis acara baharu",
+  "close": "Tutup",
+  "loading": "Memuatkan…",
+  "missingTitle": "Jenis acara belum diaktifkan.",
+  "missingBody": "Kemas kini pangkalan data untuk ciri ini belum digunakan. Tiada apa-apa yang rosak — setiap acara menggunakan tetapan biasa anda.",
+  "column": "Lajur",
+  "vanGone": "Van itu sudah tiada.",
+  "typeGone": "Jenis itu sudah tiada.",
+  "standard": "Standard",
+  "standardHeading": "STANDARD",
+  "moreFor": "Lagi untuk {name}",
+  "rename": "Tukar nama",
+  "moveLeft": "Alih ke kiri",
+  "moveRight": "Alih ke kanan",
+  "delete": "Padam",
+  "sections": {
+    "vans": "VAN",
+    "prices": "HARGA",
+    "itemPrices": "HARGA ITEM",
+    "service": "PERKHIDMATAN"
+  },
+  "labelFor": "{label} untuk {name}",
+  "intervalEvery": "Setiap {mins} min",
+  "noTypes": "Anda belum mempunyai jenis acara, jadi setiap acara menggunakan tetapan biasa anda.",
+  "renameTitle": "Tukar nama jenis ini",
+  "name": "Nama",
+  "cancel": "Batal",
+  "save": "Simpan",
+  "copyVanOne": "Salin tetapan Van 1",
+  "thisType": "jenis ini",
+  "matchTitle": "Samakan dengan Standard untuk “{name}”?",
+  "matchKeeps": "Apa-apa yang anda ubah pada papan pemuka satu acara kekal seperti sedia ada, dan harga jenis ini tidak diubah.",
+  "matchWillUse": "Ia akan menggunakan: {summary}",
+  "deleteTitle": "Padam “{name}”?",
+  "deleteBody": "{n, plural, =0 {Tiada acara akan datang yang menggunakan “{name}”.} other {{count} acara akan datang menggunakan “{name}”. Acara tersebut akan kembali kepada Standard.}} Apa-apa yang anda ubah pada satu acara kekal seperti sedia ada.",
+  "keep": "Kekalkan",
+  "phone": {
+    "standardTag": "Standard",
+    "defaultTag": "lalai",
+    "vanSetup": "Tetapan biasa van ini — digunakan pada setiap acara tanpa jenis.",
+    "standardSetup": "Tetapan biasa anda — digunakan pada setiap acara tanpa jenis.",
+    "cardSummary": "{upcoming, plural, other {{upcomingCount} acara akan datang}} · {changed, plural, =0 {belum ada perubahan} other {{changedCount} daripada {total} diubah}}",
+    "noMenuItems": "Belum ada item menu — tambahkannya dalam Menu › Item."
+  },
+  "newType": {
+    "title": "Jenis acara baharu",
+    "namePlaceholder": "cth. Hari keluarga sekolah",
+    "help": "Ketik satu nama atau taip nama anda sendiri. Ia bermula sebagai salinan Standard, dan perubahan pada Standard kemudian tidak akan mengubahnya. Ubah apa-apa selepas itu.",
+    "create": "Cipta",
+    "chips": {
+      "festival": "Festival",
+      "pub": "Kafe",
+      "market": "Pasar",
+      "privateHire": "Tempahan peribadi"
+    }
+  },
+  "select": {
+    "label": "Jenis acara",
+    "usual": "{name} biasa digunakan untuk tempat ini."
+  },
+  "summary": {
+    "normalSetup": "Tetapan biasa anda",
+    "sameAsStandard": "Sama seperti Standard",
+    "buzzersOn": "buzzer dihidupkan",
+    "buzzersOff": "buzzer dimatikan",
+    "takeCashOn": "terima tunai dihidupkan",
+    "takeCashOff": "terima tunai dimatikan",
+    "markReadyOn": "langkah tanda sedia dihidupkan",
+    "markReadyOff": "langkah tanda sedia dimatikan",
+    "collectionEvery": "pengambilan setiap {mins} min",
+    "offlineOff": "perlindungan luar talian dimatikan",
+    "offlineKeepTaking": "luar talian: terus terima pesanan",
+    "offlinePause": "luar talian: jeda pesanan"
+  },
+  "errors": {
+    "somethingWentWrong": "Ada sesuatu yang tidak kena",
+    "couldNotLoad": "Tidak dapat dimuatkan",
+    "couldNotSave": "Tidak dapat disimpan",
+    "noVans": "Trak ini tiada van untuk diubah."
+  }
+}

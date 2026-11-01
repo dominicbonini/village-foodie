@@ -1,0 +1,16 @@
+{
+  "takeConfirm": "เครื่องเรียกคิว <b>{number}</b> อยู่กับ<b>ออเดอร์ #{holderId}</b>{hasName, select, yes { ({name})} other {}} นำมาใช้กับ<b>{hasTarget, select, yes {ออเดอร์ #{targetId}} other {ออเดอร์นี้}}</b>ไหม?",
+  "cancel": "ยกเลิก",
+  "take": "ใช้เครื่องเรียกคิว {number}",
+  "titleBlocking": "เครื่องเรียกคิวสำหรับออเดอร์ #{id}?",
+  "title": "เลือกเครื่องเรียกคิว",
+  "subtitle": "{hasTarget, select, yes {ออเดอร์ #{id}} other {ออเดอร์นี้}}{hasCurrent, select, yes { · ตอนนี้ใช้เครื่องเรียกคิว {current}} other {}}",
+  "allTaken": "{n, plural, one {เครื่องเรียกคิวถูกใช้อยู่ แตะเพื่อย้ายมาจากออเดอร์อื่น} other {เครื่องเรียกคิวทั้ง {count} เครื่องถูกใช้อยู่ แตะเครื่องหนึ่งเพื่อย้ายมาจากออเดอร์อื่น}}",
+  "thisOrder": "ออเดอร์นี้",
+  "noBuzzer": "ไม่ใช้เครื่องเรียกคิว",
+  "done": "เสร็จสิ้น",
+  "lostTitle": "ออเดอร์ #{id} ไม่มีเครื่องเรียกคิว",
+  "lostBody": "{hasName, select, yes {{name} — } other {}}มีออเดอร์อื่นใช้เครื่องเรียกคิวเดียวกันขณะที่คุณออฟไลน์ ให้เครื่องอื่นกับลูกค้าแทน",
+  "dismiss": "ปิด",
+  "assign": "ให้เครื่องเรียกคิว"
+}

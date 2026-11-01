@@ -62,6 +62,8 @@ const LIB_NOW = [
   'lib/country-settings-types.ts', 'lib/money-format.ts',
   // ⚠️ RE-PINNED (currency-registry, 21 October 2026): both of those import the currency registry (a leaf, no imports).
   'lib/currencies.ts',
+  // ⚠️ RE-PINNED (world-countries-1, 31 October 2026): lib/country-settings-types.ts imports the AllergenSet type from it.
+  'lib/allergens.ts',
   // ⚠️ RE-PINNED (address-formats-1, 21 October 2026): lib/country-settings-types.ts imports the address-format config's
   // key type (lib/address-formats.ts, a leaf with no imports).
   'lib/address-formats.ts',
@@ -420,7 +422,14 @@ head('1 · ZERO CHANGE FOR A TRUCK WITH NO TYPES — against the PRE-BUILD TREE'
     /* ⚠️ AND AUDIT D34 (docs/audit-fixes-report.md) CHANGED ONE LINE OF THE CALCULATOR, ON PURPOSE: a fixed
      * discount is capped at the subtotal. It is put back to its old form here so the rest of the calculator is
      * still compared byte for byte; scripts/audit-fixes.cjs proves the cap and that every other total is unmoved. */
-    const sansDisplay = (f, src) => f !== 'lib/order-calculations.ts' ? src : src
+    /* ⚠️ RE-PINNED (world-countries-1, 31 October 2026): toMinor / fromMinor in order-repricing.ts take the CURRENCY (the yen is
+     * zero-decimal: ¥1,200 is 1200, never 120000) — put back to their old two-decimal form here (with their one import), so the
+     * rest of the file is still compared byte for byte; scripts/world-countries-1.cjs proves every two-decimal currency unchanged. */
+    const sansYen = src => src
+      .replace("import type { SupabaseClient } from '@supabase/supabase-js'\nimport { minorDigits } from '@/lib/money-format'", "import type { SupabaseClient } from '@supabase/supabase-js'")
+      .replace(/\/\*\* pence, exact\. The authoritative charge amount for orders\.total_minor\.[\s\S]*?const digitsOf = [^\n]*\n/, '/** pence, exact. The authoritative charge amount for orders.total_minor. */\nexport function toMinor(amount: number): number {\n  return Math.round(num(amount) * 100)\n}\n')
+      .replace('export function fromMinor(minor: number, currency: string | null | undefined): number {\n  return Math.round(num(minor)) / 10 ** digitsOf(currency)\n}', 'export function fromMinor(minor: number): number {\n  return Math.round(num(minor)) / 100\n}')
+    const sansDisplay = (f, src) => f === 'lib/order-repricing.ts' ? sansYen(src) : f !== 'lib/order-calculations.ts' ? src : src
       .replace(/^import \{ formatMajorOrBare, type MoneyFormat \} from '@\/lib\/money-format'\n\n/m, '')
       .replace(/\/\*\* Format modifier names[\s\S]*?\n\}\n/, '')
       .replace(/        \/\/ Fixed amount discount — never more than the subtotal \(audit D34\)[^\n]*\n        \/\/ zero, but the STORED[^\n]*\n        discountAmt = Math\.min\(discountCode\.value, subtotal\)/,

@@ -145,10 +145,17 @@ async function views(ctx) {
     page('identity|noCountries', { checking: false, stage: 'identity' })
 
     // 🔴 THE PRESSES — what each handler sets, recorded
+    const LABEL_KEY = { Continue: 'continue', Back: 'back' }
+    const labelIn = (locale, label) => {
+      try { const w = require(path.join(REPO, `messages/${locale}.json`)).setup?.[LABEL_KEY[label]]; return typeof w === 'string' ? w : label } catch { return label }
+    }
     const press = async (key, state, label, fetchReply) => {
       const rec = []
       const { buttons } = withButtons(REPO, () => html(state, wrap(h(M.SetupPage))))
-      const b = buttons.find(x => x.text === label)
+      // legal-languages-1 (1 November 2026): in another language (scripts/languages-1-e2e.cjs swaps the US fixture's 'en-US' for
+      // it) the wizard's buttons carry that language's words, so a press finds `setup.continue` / `setup.back` there too.
+      // English is unchanged: en-US has no such override, so the label is found exactly as before.
+      const b = buttons.find(x => x.text === label) ?? buttons.find(x => x.text === labelIn(cc === 'US' ? 'en-US' : 'en-GB', label))
       if (!b) { out[`${cc}|press|${key}`] = 'ERROR no button ' + label + ' in ' + JSON.stringify(buttons.map(x => x.text)); return }
       const realFetch = globalThis.fetch
       globalThis.fetch = async () => { if (fetchReply instanceof Error) throw fetchReply; return { json: async () => fetchReply } }

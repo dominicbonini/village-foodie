@@ -1,0 +1,44 @@
+{
+  "perTruckMonth": "每架美食車／每月",
+  "transactionFees": "交易手續費",
+  "comingSoon": "即將推出",
+  "footnote2Masked": "網上付款由 Stripe Connect 提供。平台費及信用卡手續費有待確定，將於正式推出時公佈。",
+  "card": {
+    "title": "帳單及付款",
+    "managed": "帳單由 HatchGrab 管理",
+    "earlyAccess": "搶先體驗期間，我們會以人手設定及調整計劃。",
+    "planLine": "{trial, select, yes {{truck} · {plan} 計劃（試用中）} other {{truck} · {plan} 計劃}}"
+  },
+  "currentPlan": "目前計劃",
+  "plan": {
+    "included": "每月包括 {amount} 網上訂單額。",
+    "includedUnlimited": "包括無上限網上訂單。",
+    "promo": "特別價。",
+    "promoUntil": "特別價至 {date}。",
+    "ended": "你的 {plan} 計劃已於 {date} 結束。你現在使用 {now}。",
+    "trialMonths": "{months} 個月免費試用。"
+  },
+  "trialEnds": "試用期於 {date} 結束",
+  "yourTrialEnds": "你的試用期於 {date} 結束",
+  "notStarted": {
+    "heading": "你的免費試用尚未開始"
+  },
+  "onTrial": "你可使用所有功能。請在試用期結束前選擇計劃。",
+  "onTrialPaidEnd": "你可使用所有功能。試用期結束後，{plan} 每月收費 {price}。我們會在試用期結束前聯絡你，安排付款事宜。",
+  "onTrialNoCta": "你可使用所有功能。",
+  "noCharge": "🔒 試用期內不會向你收取任何費用，試用期至 {date} 為止。只有在你選擇計劃並輸入付款資料後才會開始收費。在此之前，你毋須取消任何東西，亦毋須支付任何費用。",
+  "noChargePaidEnd": "🔒 試用期內不會向你收取任何費用，試用期至 {date} 為止。",
+  "fees": "*網上訂單須支付標準信用卡手續費",
+  "setUpPayment": "⏱ 請在試用期結束前選擇計劃",
+  "changeYourPlan": "更改計劃",
+  "planButton": "{plan}：{price}",
+  "upgradeModal": {
+    "title": "轉用 {plan}",
+    "tagline": "{price}：{description}",
+    "body": "我們正在設定自動收費。如想立即轉用，請給我們留言，我們會在 24 小時內為你辦妥。",
+    "mailSubject": "轉用 {plan}：{truck}",
+    "mailBody": "你好，我想將 {truck} 轉用 {plan}（{price}）計劃。",
+    "email": "電郵我們轉用計劃",
+    "cancel": "取消"
+  }
+}

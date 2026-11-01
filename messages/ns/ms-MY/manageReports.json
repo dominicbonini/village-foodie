@@ -1,0 +1,92 @@
+{
+  "filter": {
+    "dateRange": "📅 Julat tarikh",
+    "event": "📍 Acara",
+    "filterBy": "Tapis mengikut",
+    "show": "Tunjuk",
+    "range": "<from></from><sep>hingga</sep><until></until>",
+    "selectEvent": "Pilih acara…",
+    "eventOption": "{venue} · {date}",
+    "unnamedEvent": "Acara",
+    "viewReport": "Lihat laporan",
+    "loading": "Memuatkan…",
+    "orders": "📋 Pesanan",
+    "items": "📦 Item",
+    "exportCsv": "⬇ Eksport CSV"
+  },
+  "empty": {
+    "noOrders": "Tiada pesanan ditemui untuk tempoh ini.",
+    "selectEvent": "Pilih acara di atas untuk melihat laporannya."
+  },
+  "summary": {
+    "totals": "{n, plural, other {{count} pesanan}} · {total}"
+  },
+  "revenue": {
+    "title": "Pecahan hasil",
+    "deals": "Hasil set kombo",
+    "modifiers": "Caj pilihan tambahan",
+    "foodSales": "Jualan makanan",
+    "total": "Jumlah",
+    "other": "Lain-lain",
+    "tax": "Cukai",
+    "tips": "Tip",
+    "serviceFees": "Yuran perkhidmatan",
+    "cardFees": "Yuran kad"
+  },
+  "itemsSold": {
+    "title": "Item terjual"
+  },
+  "dealsCard": {
+    "title": "Set kombo"
+  },
+  "custom": {
+    "title": "Penyesuaian",
+    "paidModifiers": "Pilihan tambahan berbayar",
+    "customerNotes": "Nota pelanggan",
+    "note": "“{note}”"
+  },
+  "table": {
+    "item": "Item",
+    "modifier": "Pilihan tambahan",
+    "qty": "Kuantiti",
+    "total": "Jumlah",
+    "date": "Tarikh",
+    "time": "Masa",
+    "channel": "Saluran"
+  },
+  "breakdown": {
+    "orders": "Pecahan pesanan",
+    "items": "Pecahan item"
+  },
+  "channel": {
+    "online": "Dalam talian",
+    "walkUp": "Walk-in"
+  },
+  "csv": {
+    "orderId": "ID pesanan",
+    "date": "Tarikh",
+    "event": "Acara",
+    "timePlaced": "Masa dibuat",
+    "collectionTime": "Masa ambil",
+    "customerName": "Nama pelanggan",
+    "orderType": "Jenis pesanan",
+    "items": "Item",
+    "deals": "Set kombo",
+    "modifiers": "Pilihan tambahan",
+    "notes": "Nota",
+    "subtotal": "Subjumlah",
+    "tip": "Tip",
+    "serviceFee": "Yuran perkhidmatan",
+    "total": "Jumlah",
+    "itemName": "Nama item",
+    "qty": "Kuantiti",
+    "unitPrice": "Harga seunit",
+    "itemTotal": "Jumlah item",
+    "orderTotal": "Jumlah pesanan",
+    "unknownEvent": "Acara tidak diketahui",
+    "asap": "Secepat mungkin",
+    "unknownCustomer": "Tidak diketahui",
+    "customerOnline": "Pelanggan dalam talian",
+    "placedByTruck": "Dibuat oleh trak"
+  }
+}

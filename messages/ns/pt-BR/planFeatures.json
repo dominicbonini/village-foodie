@@ -1,0 +1,135 @@
+{
+  "row": {
+    "discovery_map_listing": {
+      "name": "Presença no mapa de descoberta"
+    },
+    "web_dashboard": {
+      "name": "Painel web universal"
+    },
+    "qr_code": {
+      "name": "QR code"
+    },
+    "schedule_import": {
+      "name": "Importação automática da agenda"
+    },
+    "meal_deals_upsells": {
+      "name": "Combos e sugestões de venda"
+    },
+    "walkup_orders": {
+      "name": "Processamento de pedidos no balcão"
+    },
+    "sold_out_toggle": {
+      "name": "Botão de esgotado instantâneo"
+    },
+    "kitchen_app": {
+      "name": "App da cozinha para iPhone, iPad e Android"
+    },
+    "offline_protection": {
+      "name": "Proteção de pedidos offline"
+    },
+    "online_payments": {
+      "name": "Pagamentos online"
+    },
+    "advance_preordering": {
+      "name": "Pedidos antecipados para datas futuras"
+    },
+    "preorder_deadline": {
+      "name": "Prazo para pedidos antecipados"
+    },
+    "time_slot_selection": {
+      "name": "Escolha de horário pelo cliente"
+    },
+    "kitchen_capacity": {
+      "name": "Gestão da capacidade da cozinha"
+    },
+    "stock_countdown": {
+      "name": "Contagem automática de estoque"
+    },
+    "auto_accept": {
+      "name": "Aceite automático de pedidos online"
+    },
+    "branded_qr_code": {
+      "name": "QR code com a sua marca"
+    },
+    "private_events": {
+      "name": "Eventos privados"
+    },
+    "social_media_posts": {
+      "name": "Posts para redes sociais"
+    },
+    "whatsapp_auto_replies": {
+      "name": "Respostas automáticas no WhatsApp"
+    },
+    "messenger_instagram_replies": {
+      "name": "Respostas automáticas no Messenger e Instagram"
+    },
+    "tap_to_pay": {
+      "name": "Receba pagamentos no seu celular"
+    },
+    "advanced_reporting": {
+      "name": "Relatórios avançados"
+    },
+    "sms_order_alerts": {
+      "name": "Avisos de pedido por SMS"
+    },
+    "multi_device_kitchen": {
+      "name": "Sincronização da cozinha em vários aparelhos"
+    },
+    "multi_user_access": {
+      "name": "Acesso para vários usuários"
+    },
+    "embed_schedule": {
+      "name": "Página da agenda no seu próprio site"
+    },
+    "event_types": {
+      "name": "Tipos de evento e preços personalizados"
+    },
+    "buzzer_tracking": {
+      "name": "Controle de pagers"
+    },
+    "ticket_printing": {
+      "name": "Impressão de comandas da cozinha"
+    },
+    "customer_display": {
+      "name": "Tela para os clientes"
+    },
+    "loyalty_stamp_cards": {
+      "name": "Cartão fidelidade digital"
+    }
+  },
+  "cardRegionOnline": "{region}, tarifa padrão",
+  "cardRegion": {
+    "UKcards": "Cartões do Reino Unido",
+    "EEAcards": "Cartões do EEE",
+    "UScards": "Cartões dos EUA",
+    "Australiancards": "Cartões australianos",
+    "NewZealandcards": "Cartões da Nova Zelândia",
+    "Canadiancards": "Cartões canadenses",
+    "Swisscards": "Cartões suíços",
+    "Braziliancards": "Cartões brasileiros",
+    "Mexicancards": "Cartões mexicanos",
+    "Japanesecards": "Cartões japoneses",
+    "Singaporecards": "Cartões de Singapura",
+    "HongKongcards": "Cartões de Hong Kong",
+    "Malaysiancards": "Cartões da Malásia",
+    "Thaicards": "Cartões tailandeses",
+    "UAEcards": "Cartões dos Emirados Árabes Unidos"
+  },
+  "perMonth": {
+    "mo": "{amount}/mês",
+    "month": "{amount} por mês"
+  },
+  "priceWord": {
+    "free": "Grátis",
+    "freeTrial": "Teste grátis",
+    "lifetime": "Vitalício",
+    "zeroPercent": "0%",
+    "payAtHatch": "Pague na retirada",
+    "unlimited": "Ilimitado",
+    "none": "—",
+    "masked": "A definir"
+  },
+  "cell": {
+    "included": "Incluído"
+  }
+}

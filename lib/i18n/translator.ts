@@ -18,5 +18,15 @@ export type AppNamespace = NamespaceKeys<Messages, NestedKeyOf<Messages>>
 
 export function translatorFor<NS extends AppNamespace>(locale: string | null | undefined, namespace: NS) {
   const l = resolveLocale(locale)
-  return createTranslator({ locale: l, messages: messagesOf(l, [namespace.split('.')[0]]), namespace })
+  const t = createTranslator({ locale: l, messages: messagesOf(l, [namespace.split('.')[0]]), namespace })
+  // legal-languages-1 (1 November 2026): the translator remembers its locale (translatorLocale), so a helper handed only `t`
+  // — the customer emails' privacy link (lib/email-privacy.ts) — can point at the document in the same language.
+  Object.defineProperty(t, TRANSLATOR_LOCALE, { value: l })
+  return t
+}
+
+const TRANSLATOR_LOCALE = Symbol.for('hatchgrab.translatorLocale')
+/** The locale a `translatorFor` translator words in, or null for any other function. */
+export function translatorLocale(t: unknown): string | null {
+  return (t as { [TRANSLATOR_LOCALE]?: string } | null)?.[TRANSLATOR_LOCALE] ?? null
 }

@@ -1,0 +1,135 @@
+{
+  "row": {
+    "discovery_map_listing": {
+      "name": "在探索地圖上刊登"
+    },
+    "web_dashboard": {
+      "name": "通用網上控制台"
+    },
+    "qr_code": {
+      "name": "QR 碼"
+    },
+    "schedule_import": {
+      "name": "自動匯入出車時間表"
+    },
+    "meal_deals_upsells": {
+      "name": "套餐優惠及加購推介"
+    },
+    "walkup_orders": {
+      "name": "處理現場訂單"
+    },
+    "sold_out_toggle": {
+      "name": "一按即設售罄"
+    },
+    "kitchen_app": {
+      "name": "iPhone、iPad 及 Android 廚房 App"
+    },
+    "offline_protection": {
+      "name": "離線訂單保護"
+    },
+    "online_payments": {
+      "name": "網上付款"
+    },
+    "advance_preordering": {
+      "name": "提前預先落單"
+    },
+    "preorder_deadline": {
+      "name": "預先落單截單時間"
+    },
+    "time_slot_selection": {
+      "name": "客人自選取餐時段"
+    },
+    "kitchen_capacity": {
+      "name": "廚房容量管理"
+    },
+    "stock_countdown": {
+      "name": "自動存貨倒數"
+    },
+    "auto_accept": {
+      "name": "自動接收網上訂單"
+    },
+    "branded_qr_code": {
+      "name": "品牌 QR 碼"
+    },
+    "private_events": {
+      "name": "私人活動"
+    },
+    "social_media_posts": {
+      "name": "社交媒體帖文"
+    },
+    "whatsapp_auto_replies": {
+      "name": "WhatsApp 自動回覆"
+    },
+    "messenger_instagram_replies": {
+      "name": "Messenger 及 Instagram 自動回覆"
+    },
+    "tap_to_pay": {
+      "name": "用手機收款"
+    },
+    "advanced_reporting": {
+      "name": "進階報告"
+    },
+    "sms_order_alerts": {
+      "name": "短訊訂單通知"
+    },
+    "multi_device_kitchen": {
+      "name": "多部裝置廚房同步"
+    },
+    "multi_user_access": {
+      "name": "多用戶存取"
+    },
+    "embed_schedule": {
+      "name": "在你自己的網站顯示出車時間表"
+    },
+    "event_types": {
+      "name": "自訂活動類型及價錢"
+    },
+    "buzzer_tracking": {
+      "name": "取餐器追蹤"
+    },
+    "ticket_printing": {
+      "name": "打印廚房單"
+    },
+    "customer_display": {
+      "name": "客人顯示屏"
+    },
+    "loyalty_stamp_cards": {
+      "name": "電子印花卡"
+    }
+  },
+  "cardRegionOnline": "標準{region}",
+  "cardRegion": {
+    "UKcards": "英國信用卡",
+    "EEAcards": "歐洲經濟區信用卡",
+    "UScards": "美國信用卡",
+    "Australiancards": "澳洲信用卡",
+    "NewZealandcards": "紐西蘭信用卡",
+    "Canadiancards": "加拿大信用卡",
+    "Swisscards": "瑞士信用卡",
+    "Braziliancards": "巴西信用卡",
+    "Mexicancards": "墨西哥信用卡",
+    "Japanesecards": "日本信用卡",
+    "Singaporecards": "新加坡信用卡",
+    "HongKongcards": "香港信用卡",
+    "Malaysiancards": "馬來西亞信用卡",
+    "Thaicards": "泰國信用卡",
+    "UAEcards": "阿聯酋信用卡"
+  },
+  "perMonth": {
+    "mo": "{amount}／月",
+    "month": "每月 {amount}"
+  },
+  "priceWord": {
+    "free": "免費",
+    "freeTrial": "免費試用",
+    "lifetime": "終身",
+    "zeroPercent": "0%",
+    "payAtHatch": "取餐時付款",
+    "unlimited": "無上限",
+    "none": "—",
+    "masked": "待定"
+  },
+  "cell": {
+    "included": "已包含"
+  }
+}

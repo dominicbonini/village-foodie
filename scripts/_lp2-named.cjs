@@ -599,6 +599,14 @@ const NAMED = [
     // eslint-disable-next-line @typescript-eslint/no-require-imports -- CommonJS harness module (demo-2b)
     expect: b => require('./_lp-demo2b.cjs').termsVersion(b) },
 
+  // ── ⚠️ RE-PINNED (world-countries-2, 1 November 2026; scripts/_lp-world-countries-2.cjs) ─────────────────────────────────
+  { id: 'world-countries-2-terms-version', part: 'world-countries-2 (1 Nov 2026)', country: 'both',
+    what: '⚠️ RE-PINNED (world-countries-2, 1 November 2026): the Terms of Service §4 (a finished trial moves to the plan shown for the country) and the Country-specific terms (eight countries) were re-dated 1 November 2026, now the latest of the three documents, so a new account records TERMS_VERSION "2026-11-01" (lib/legal.ts) where it recorded "2026-10-31". PRECISE: only the terms_version field, applied after demo-2b\'s',
+    // eslint-disable-next-line @typescript-eslint/no-require-imports -- CommonJS harness module (world-countries-2)
+    views: id => require('./_lp-world-countries-2.cjs').LANDED && /^1c\/api\/(GB|US)\|signup\|/.test(id),
+    // eslint-disable-next-line @typescript-eslint/no-require-imports -- CommonJS harness module (world-countries-2)
+    expect: b => require('./_lp-world-countries-2.cjs').termsVersion(b) },
+
   // ── ⚠️ RE-PINNED (ireland-1, 20 October 2026; lib/provision-demo-event.ts demoEventWindow) ─────────────────────────────
   { id: 'ie1-demo-date-from-now', part: 'ireland-1 (20 Oct 2026)', country: 'both',
     what: '⚠️ RE-PINNED (ireland-1, 20 October 2026): demoEventWindow takes the demo event’s DATE from `now` (localDateOfInstant(now, tz)) where it read the real clock (getLocalDateInTz). The return-visit restart passes now = LATER (2026-10-10T11:00Z) while the kit clock is the fixture NOW (2026-10-09), so its event — and every row dated by it — moves from the clock’s date to LATER’s date in the truck’s zone. PRECISE: `"event_date":"<clock date>"` → `"event_date":"<LATER date>"`, nothing else.',

@@ -1,0 +1,36 @@
+{
+  "h1": "每個計劃都包含營業所需的一切。",
+  "lede": "每個計劃都包含落單、預先落單、廚房容量管理及廚房顯示屏。{hasUpgrades, select, yes {{plans} 另加{features}，而且收費更低。} other {}}",
+  "perMonth": "每月 {price}",
+  "group": {
+    "pay": "你需支付的費用",
+    "run": "營業運作",
+    "online": "網上訂單",
+    "marketing": "推廣及自動化"
+  },
+  "pay": {
+    "included": "每月包含的網上訂單",
+    "fee": "網上信用卡訂單的 HatchGrab 收費*",
+    "walkUp": "現場訂單"
+  },
+  "cell": {
+    "unlimited": "無上限",
+    "free": "免費",
+    "feeAbove": "超出 {included} 後收取 <b>{fee}</b>",
+    "yes": "已包含",
+    "none": "不包含",
+    "comingSoon": "即將推出"
+  },
+  "short": {
+    "whatsapp_replies": "WhatsApp",
+    "schedule_graphics": "社交媒體",
+    "event_types": "自訂活動價錢"
+  },
+  "meta": {
+    "description": "並列比較每個計劃的所有 HatchGrab 功能——{plans}，連同收費及包含額度。{months, plural, =0 {} other {首 # 個月包含所有功能。}}"
+  },
+  "notes": {
+    "whatsapp": "WhatsApp 自動回覆需要 WhatsApp Business 帳戶。Meta 可能會就部分訊息收費；回覆由系統自動產生。",
+    "printing": "打印廚房單需要相容的藍牙或有線打印機（不隨附）。"
+  }
+}

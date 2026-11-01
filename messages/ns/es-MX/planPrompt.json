@@ -1,0 +1,13 @@
+{
+  "features": {
+    "qr_menu": {
+      "name": "El menú con código QR"
+    },
+    "meal_deals": {
+      "name": "Los combos"
+    },
+    "stock_countdown": {
+      "name": "La cuenta regresiva de stock"
+    }
+  }
+}

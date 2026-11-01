@@ -1,0 +1,135 @@
+{
+  "row": {
+    "discovery_map_listing": {
+      "name": "แสดงบนแผนที่ค้นหาร้าน"
+    },
+    "web_dashboard": {
+      "name": "แดชบอร์ดบนเว็บใช้ได้ทุกอุปกรณ์"
+    },
+    "qr_code": {
+      "name": "คิวอาร์โค้ด"
+    },
+    "schedule_import": {
+      "name": "นำเข้าตารางออกร้านอัตโนมัติ"
+    },
+    "meal_deals_upsells": {
+      "name": "เซ็ตอาหารและเมนูแนะนำเพิ่ม"
+    },
+    "walkup_orders": {
+      "name": "จัดการออเดอร์หน้ารถ"
+    },
+    "sold_out_toggle": {
+      "name": "ตั้งสถานะหมดได้ทันที"
+    },
+    "kitchen_app": {
+      "name": "แอปครัวสำหรับ iPhone, iPad และ Android"
+    },
+    "offline_protection": {
+      "name": "ป้องกันออเดอร์เมื่อออฟไลน์"
+    },
+    "online_payments": {
+      "name": "ชำระเงินออนไลน์"
+    },
+    "advance_preordering": {
+      "name": "สั่งล่วงหน้าได้หลายวัน"
+    },
+    "preorder_deadline": {
+      "name": "เวลาปิดรับสั่งล่วงหน้า"
+    },
+    "time_slot_selection": {
+      "name": "ลูกค้าเลือกช่วงเวลารับอาหาร"
+    },
+    "kitchen_capacity": {
+      "name": "การจัดการกำลังการผลิตของครัว"
+    },
+    "stock_countdown": {
+      "name": "นับสต็อกถอยหลังอัตโนมัติ"
+    },
+    "auto_accept": {
+      "name": "รับออเดอร์ออนไลน์อัตโนมัติ"
+    },
+    "branded_qr_code": {
+      "name": "คิวอาร์โค้ดแบบมีโลโก้"
+    },
+    "private_events": {
+      "name": "อีเวนต์ส่วนตัว"
+    },
+    "social_media_posts": {
+      "name": "โพสต์โซเชียลมีเดีย"
+    },
+    "whatsapp_auto_replies": {
+      "name": "ตอบกลับ WhatsApp อัตโนมัติ"
+    },
+    "messenger_instagram_replies": {
+      "name": "ตอบกลับ Messenger และ Instagram อัตโนมัติ"
+    },
+    "tap_to_pay": {
+      "name": "รับชำระเงินด้วยโทรศัพท์ของคุณ"
+    },
+    "advanced_reporting": {
+      "name": "รายงานขั้นสูง"
+    },
+    "sms_order_alerts": {
+      "name": "แจ้งเตือนออเดอร์ทาง SMS"
+    },
+    "multi_device_kitchen": {
+      "name": "ซิงค์ครัวหลายอุปกรณ์"
+    },
+    "multi_user_access": {
+      "name": "ใช้งานได้หลายผู้ใช้"
+    },
+    "embed_schedule": {
+      "name": "หน้าตารางออกร้านบนเว็บไซต์ของคุณเอง"
+    },
+    "event_types": {
+      "name": "ประเภทอีเวนต์และราคาที่กำหนดเอง"
+    },
+    "buzzer_tracking": {
+      "name": "ติดตามเครื่องเรียกคิว"
+    },
+    "ticket_printing": {
+      "name": "พิมพ์ใบออเดอร์ในครัว"
+    },
+    "customer_display": {
+      "name": "จอแสดงผลสำหรับลูกค้า"
+    },
+    "loyalty_stamp_cards": {
+      "name": "บัตรสะสมแต้มดิจิทัล"
+    }
+  },
+  "cardRegionOnline": "{region} มาตรฐาน",
+  "cardRegion": {
+    "UKcards": "บัตรจากสหราชอาณาจักร",
+    "EEAcards": "บัตรจากเขตเศรษฐกิจยุโรป (EEA)",
+    "UScards": "บัตรจากสหรัฐอเมริกา",
+    "Australiancards": "บัตรจากออสเตรเลีย",
+    "NewZealandcards": "บัตรจากนิวซีแลนด์",
+    "Canadiancards": "บัตรจากแคนาดา",
+    "Swisscards": "บัตรจากสวิตเซอร์แลนด์",
+    "Braziliancards": "บัตรจากบราซิล",
+    "Mexicancards": "บัตรจากเม็กซิโก",
+    "Japanesecards": "บัตรจากญี่ปุ่น",
+    "Singaporecards": "บัตรจากสิงคโปร์",
+    "HongKongcards": "บัตรจากฮ่องกง",
+    "Malaysiancards": "บัตรจากมาเลเซีย",
+    "Thaicards": "บัตรที่ออกในไทย",
+    "UAEcards": "บัตรจากสหรัฐอาหรับเอมิเรตส์"
+  },
+  "perMonth": {
+    "mo": "{amount}/เดือน",
+    "month": "{amount} ต่อเดือน"
+  },
+  "priceWord": {
+    "free": "ฟรี",
+    "freeTrial": "ทดลองใช้ฟรี",
+    "lifetime": "ตลอดชีพ",
+    "zeroPercent": "0%",
+    "payAtHatch": "จ่ายตอนรับอาหาร",
+    "unlimited": "ไม่จำกัด",
+    "none": "—",
+    "masked": "รอยืนยัน"
+  },
+  "cell": {
+    "included": "รวมอยู่แล้ว"
+  }
+}

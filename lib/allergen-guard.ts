@@ -37,6 +37,11 @@ import lv from './allergen-guard/lv.json'   // europe-languages-2
 import lt from './allergen-guard/lt.json'   // europe-languages-2
 import el from './allergen-guard/el.json'   // europe-languages-2
 import bg from './allergen-guard/bg.json'   // europe-languages-2
+import ms from './allergen-guard/ms.json'   // world-countries-1 (31 October 2026)
+import ja from './allergen-guard/ja.json'   // world-countries-1
+import zh from './allergen-guard/zh.json'   // world-countries-1
+import th from './allergen-guard/th.json'   // world-countries-1
+import ar from './allergen-guard/ar.json'   // world-countries-1
 
 export interface GuardWords {
   language: string
@@ -55,7 +60,8 @@ export interface GuardWords {
 /** Every language with a list. A new language's file is imported and added here (docs/i18n/add-a-country.md). */
 export const GUARD_WORDS: Record<string, GuardWords> = { en: en as GuardWords, fr: fr as GuardWords, de: de as GuardWords,
   es: es as GuardWords, it: it as GuardWords, pt: pt as GuardWords, nl: nl as GuardWords, sv: sv as GuardWords, da: da as GuardWords, nb: nb as GuardWords,
-  pl: pl as GuardWords, cs: cs as GuardWords, sk: sk as GuardWords, hu: hu as GuardWords, ro: ro as GuardWords, hr: hr as GuardWords, sl: sl as GuardWords, fi: fi as GuardWords, et: et as GuardWords, lv: lv as GuardWords, lt: lt as GuardWords, el: el as GuardWords, bg: bg as GuardWords }
+  pl: pl as GuardWords, cs: cs as GuardWords, sk: sk as GuardWords, hu: hu as GuardWords, ro: ro as GuardWords, hr: hr as GuardWords, sl: sl as GuardWords, fi: fi as GuardWords, et: et as GuardWords, lv: lv as GuardWords, lt: lt as GuardWords, el: el as GuardWords, bg: bg as GuardWords,
+  ms: ms as GuardWords, ja: ja as GuardWords, zh: zh as GuardWords, th: th as GuardWords, ar: ar as GuardWords }
 
 const asciiNorm = (s: string) => ` ${s.toLowerCase().replace(/[^a-z0-9]+/g, ' ').replace(/\s+/g, ' ').trim()} `
 const unicodeNorm = (s: string) => ` ${s.normalize('NFKD').replace(/\p{M}+/gu, '').toLowerCase().replace(/[^\p{L}\p{N}]+/gu, ' ').replace(/\s+/g, ' ').trim()} `

@@ -22,6 +22,7 @@
 // Behaviour below the presentation layer is UNCHANGED: same endpoint, same load-screen timing, same
 // failure handling. Rate limiting and the size/type caps live server-side and are untouched.
 
+import { useLegalPath } from '@/lib/i18n/use-legal-path'
 import { useState, useEffect, useRef, createContext, useContext, useCallback } from 'react'
 import { createPortal } from 'react-dom'
 import { DEMO_TEMPLATES } from '@/lib/demo-templates'
@@ -133,6 +134,7 @@ export function DemoCta({ id, className, children }: { id?: string; className?: 
 export function DemoModal() {
   const { open, setOpen } = useDemoModal()
   const t = useT('demoUpload')
+  const privacyHref = useLegalPath('privacy')   // legal-languages-1: the page's language (/fr/privacy on /fr)
   const tErr = useT('errorsOnboarding')
   const [phase, setPhase] = useState<Phase>('idle')
   const [file, setFile] = useState<File | null>(null)
@@ -468,7 +470,7 @@ export function DemoModal() {
                   className={`w-full border rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--orange)] ${email.trim() !== '' && !emailOk ? 'border-red-400' : 'border-slate-200'}`} />
                 {email.trim() !== '' && !emailOk && <p className="text-xs text-red-600 mt-1">{t('emailInvalid')}</p>}
                 <p className="text-xs text-slate-500 mt-1.5">
-                  {t.rich('emailNote', { link: c => <a href="/privacy" target="_blank" rel="noopener noreferrer" className="underline underline-offset-2 text-slate-700">{c}</a> })}
+                  {t.rich('emailNote', { link: c => <a href={privacyHref} target="_blank" rel="noopener noreferrer" className="underline underline-offset-2 text-slate-700">{c}</a> })}
                 </p>
                 <label className="mt-2 flex items-start gap-2 text-xs text-slate-600 cursor-pointer">
                   <input type="checkbox" checked={marketing} onChange={e => setMarketing(e.target.checked)} className="mt-0.5 accent-[var(--orange)]" />

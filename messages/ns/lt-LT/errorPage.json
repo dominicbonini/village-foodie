@@ -1,0 +1,8 @@
+{
+  "notFoundTitle": "Puslapis nerastas",
+  "notFoundBody": "Šio puslapio neradome. Galbūt jis buvo perkeltas arba adresas įvestas klaidingai.",
+  "home": "Eiti į pradžios puslapį",
+  "errorTitle": "Kažkas nepavyko",
+  "errorBody": "Atsiprašome, šis puslapis neįsikėlė. Bandykite dar kartą arba grįžkite į pradžios puslapį.",
+  "retry": "Bandyti dar kartą"
+}

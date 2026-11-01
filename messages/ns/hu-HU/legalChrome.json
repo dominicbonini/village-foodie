@@ -13,5 +13,6 @@
   "countryTerms": "Országspecifikus feltételek",
   "contact": "Kapcsolat",
   "lastUpdated": "Utolsó frissítés: {date}",
-  "questions": "Kérdése van? <link>Lépjen kapcsolatba velünk</link> — valódi emberek vagyunk."
+  "questions": "Kérdése van? <link>Lépjen kapcsolatba velünk</link> — valódi emberek vagyunk.",
+  "translationNote": "Ez egy fordítás. Ha eltér az <link>angol nyelvű változattól</link>, az angol nyelvű változat az irányadó."
 }

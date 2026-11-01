@@ -184,6 +184,8 @@ export interface DeletedCollectRow extends LedgerRow {
 export interface BalanceableOrder {
   total_minor?: number | null
   total?: number | null
+  /** world-countries-1: the order's currency — its minor units (whole yen for JPY). Absent = two decimals, as before. */
+  currency?: string | null
 }
 
 export interface OrderBalance {
@@ -197,7 +199,7 @@ export interface OrderBalance {
  *  so `total` never carries sub-penny error (0 of 346 rows exceed 2dp, live-verified 29 July). */
 export function orderTotalMinor(order: BalanceableOrder): number {
   if (order.total_minor != null) return Math.round(order.total_minor)
-  return toMinor(Number(order.total ?? 0))
+  return toMinor(Number(order.total ?? 0), order.currency)
 }
 
 /**
@@ -492,7 +494,7 @@ async function readOrder(supabase: SupabaseClient, orderKey: string): Promise<Le
 async function switchToHatchCharges(supabase: SupabaseClient, orderKey: string, order: LedgerOrder): Promise<LedgerOrder | null> {
   const re = chargesForHatchSwitch(order)
   if (!re) return null
-  const patch = { total: re.totalMinor / 100, total_minor: re.totalMinor, ...re.snapshot }
+  const patch = { total: fromMinor(re.totalMinor, order.currency), total_minor: re.totalMinor, ...re.snapshot }
   const { error } = await supabase.from('orders').update(patch).eq('order_key', orderKey)
   if (error) throw new Error(`[ledger] could not drop the online charges from ${orderKey} before taking payment at the truck: ${error.message}`)
   console.log(
@@ -544,7 +546,7 @@ export async function recalcOrderPayment(supabase: SupabaseClient, orderKey: str
 
   const { error } = await supabase
     .from('orders')
-    .update({ payment_status: balance.status, amount_paid: fromMinor(balance.paidMinor) })
+    .update({ payment_status: balance.status, amount_paid: fromMinor(balance.paidMinor, order.currency) })
     .eq('order_key', orderKey)
   // A CHECK violation here (23514) almost certainly means the DEPLOY-COUPLED constraint migration
   // 20260729_orders_payment_status_widen_check.sql has not been applied — say so rather than surfacing

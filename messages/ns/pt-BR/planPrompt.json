@@ -1,0 +1,118 @@
+{
+  "includedOn": "{many, select, yes {{feature} fazem parte do plano {plan}.} other {{feature} faz parte do plano {plan}.}}",
+  "notOnPlan": "{many, select, yes {{feature} não estão no seu plano.} other {{feature} não está no seu plano.}}",
+  "switchedOff": "{many, select, yes {{feature}: recursos desativados no seu food truck.} other {{feature}: recurso desativado no seu food truck.}}",
+  "planLine": "{plan} · {price} · {description}",
+  "planLineNoPrice": "{plan} · {description}",
+  "upgrade": "Fazer upgrade →",
+  "features": {
+    "discovery_map": {
+      "name": "A presença no mapa de descoberta",
+      "many": "no"
+    },
+    "web_dashboard": {
+      "name": "O painel web",
+      "many": "no"
+    },
+    "ipad_kds": {
+      "name": "O app da cozinha",
+      "many": "no"
+    },
+    "qr_menu": {
+      "name": "O cardápio por QR code",
+      "many": "no"
+    },
+    "meal_deals": {
+      "name": "Os combos",
+      "many": "yes"
+    },
+    "upsells": {
+      "name": "As sugestões de venda",
+      "many": "yes"
+    },
+    "walkup_orders": {
+      "name": "Os pedidos no balcão",
+      "many": "yes"
+    },
+    "online_ordering_pay_at_hatch": {
+      "name": "Os pedidos com pagamento na retirada",
+      "many": "yes"
+    },
+    "sold_out_toggle": {
+      "name": "O botão de esgotado",
+      "many": "no"
+    },
+    "stock_countdown": {
+      "name": "A contagem de estoque",
+      "many": "no"
+    },
+    "offline_protection": {
+      "name": "A proteção de pedidos offline",
+      "many": "no"
+    },
+    "online_payments": {
+      "name": "Os pagamentos online",
+      "many": "yes"
+    },
+    "advance_preordering": {
+      "name": "Os pedidos antecipados para datas futuras",
+      "many": "yes"
+    },
+    "time_slot_selection": {
+      "name": "Os horários escolhidos pelo cliente",
+      "many": "yes"
+    },
+    "smart_batch_pacing": {
+      "name": "A gestão da capacidade da cozinha",
+      "many": "no"
+    },
+    "auto_accept": {
+      "name": "O aceite automático",
+      "many": "no"
+    },
+    "instagram_messenger_replies": {
+      "name": "As respostas automáticas no Messenger e Instagram",
+      "many": "yes"
+    },
+    "branded_qr_code": {
+      "name": "Os QR codes com a sua marca",
+      "many": "yes"
+    },
+    "advanced_reporting": {
+      "name": "Os relatórios avançados",
+      "many": "yes"
+    },
+    "ticket_printing": {
+      "name": "A impressão de comandas da cozinha",
+      "many": "no"
+    },
+    "multi_device_kds": {
+      "name": "A sincronização da cozinha em vários aparelhos",
+      "many": "no"
+    },
+    "cook_screen": {
+      "name": "A tela do cozinheiro",
+      "many": "no"
+    },
+    "whatsapp_replies": {
+      "name": "As respostas automáticas no WhatsApp",
+      "many": "yes"
+    },
+    "embed_schedule": {
+      "name": "A sua agenda no seu próprio site",
+      "many": "no"
+    },
+    "schedule_graphics": {
+      "name": "Os posts para redes sociais",
+      "many": "yes"
+    },
+    "event_types": {
+      "name": "Os tipos de evento personalizados",
+      "many": "yes"
+    },
+    "private_events": {
+      "name": "Os eventos privados",
+      "many": "yes"
+    }
+  }
+}

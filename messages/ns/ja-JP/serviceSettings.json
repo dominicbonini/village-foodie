@@ -1,0 +1,59 @@
+{
+  "labels": {
+    "collection_interval_mins": "受け取り時間",
+    "takes_cash": "現金払いを受け付けますか？",
+    "offline_protection": "オフライン時の注文保護",
+    "buzzer_prompt": "呼び出しベルの追加をリマインドする"
+  },
+  "typeFollowsVanTitle": "各車両の通常設定に従う",
+  "sameSettingsAllVansLabel": "すべての車両で同じ設定",
+  "sameSettingsAllVansHeader": "すべての車両",
+  "sameSettingsConfirm": "車両1の設定をすべての車両にコピーしますか？設定の「車両1と同じ」と同様に、車両1の車両設定がすべてコピーされます。調理キャパシティには別の切り替えがあります。",
+  "eventTypesFooterStandard": "「標準」は通常の設定です。ここで変更すると、設定にも反映されます。",
+  "eventTypesFooterOneEvent": "1回の出店だけ設定を変更するには、その出店のダッシュボードを使ってください。",
+  "eventTypesSubtitle": "変更は自動で保存されます。",
+  "matchStandardLabel": "標準に合わせる",
+  "matchStandardConfirm": "この種類のすべての設定を標準に戻しますか？ここで変更した内容はすべて消去されます。",
+  "priceLabels": {
+    "price_change_on": "価格を変更",
+    "price_mode": "価格の変更方法",
+    "price_amount": "金額",
+    "price_rounding": "端数処理",
+    "item_prices": "商品の価格"
+  },
+  "priceMode": {
+    "add_amount": "+ {symbol}",
+    "add_pct": "+ %",
+    "sub_amount": "− {symbol}",
+    "sub_pct": "− %",
+    "none": "価格を個別に設定する"
+  },
+  "priceRounding": {
+    "none": "なし",
+    "nearest_1": "{symbol}1単位で四捨五入",
+    "up_1": "常に切り上げ"
+  },
+  "pricesStandardCell": "メニューの価格",
+  "pricesTruckWideTitle": "価格はすべての車両で共通です",
+  "pricesMenuCell": "メニュー",
+  "pricesTypeOffCell": "メニューの価格",
+  "itemPricesShow": "価格を表示",
+  "itemPricesHide": "価格を隠す",
+  "priceItemsHeading": "商品ごとの価格を設定",
+  "priceItemsOpen": "商品ごとの価格を確認・変更 ›",
+  "priceItemsClose": "商品の価格を隠す ⌃",
+  "ownPriceCount": "{n, plural, other {{count}個の商品に個別の価格があります}}",
+  "priceTypeHint": "価格を押すと、任意の金額を入力できます。",
+  "pricesLiveNotice": "この出店は公開中です。新しい注文には新しい価格が適用されます。すでに受けた注文の価格は変わりません。",
+  "placeTypeHelper": "この出店場所を選ぶと、「出店を追加」で常にこの種類が選ばれます。",
+  "postPictureStandardNote": "ここでのイベント投稿には標準のデザインが使われます。",
+  "eventItemsCardDescription": "この出店だけの価格、販売数の上限、販売状況です。変更はすぐに反映されます。",
+  "eventPriceColumnLabel": "価格",
+  "eventPriceOwnNote": "{hasType, select, yes {{type} {price} · この出店} other {メニュー {price} · この出店}}",
+  "eventPriceEdit": "✎ 価格を編集",
+  "eventPriceCancel": "キャンセル",
+  "eventPriceSave": "価格を保存",
+  "eventPriceEditNote": "この出店だけの価格を編集しています。保存するまで販売数の上限と販売状況は変更できません。",
+  "eventPriceLiveNote": "公開中：新しい注文には新しい価格が適用されます。",
+  "offlineWhenOfflineLabel": "オフライン時"
+}

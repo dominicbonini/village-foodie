@@ -105,7 +105,15 @@
     "Australiancards": "карти от Австралия",
     "NewZealandcards": "карти от Нова Зеландия",
     "Canadiancards": "карти от Канада",
-    "Swisscards": "карти от Швейцария"
+    "Swisscards": "карти от Швейцария",
+    "Braziliancards": "карти от Бразилия",
+    "Mexicancards": "карти от Мексико",
+    "Japanesecards": "карти от Япония",
+    "Singaporecards": "карти от Сингапур",
+    "HongKongcards": "карти от Хонконг",
+    "Malaysiancards": "карти от Малайзия",
+    "Thaicards": "карти от Тайланд",
+    "UAEcards": "карти от ОАЕ"
   },
   "perMonth": {
     "mo": "{amount}/мес.",

@@ -78,6 +78,7 @@
     "ends": "{hasDate, select, yes {Trial ends <hl>{date}</hl>} other {Trial ends <hl>soon</hl>}}",
     "offer": "{hasMonths, select, yes {{months, plural, one {Every feature free for # month} other {Every feature free for # months}}} other {Every feature free during your trial}}",
     "body": "{hasDate, select, yes {You won’t be charged anything during your trial, which runs until <b>{date}</b>. Billing only ever starts when you choose a plan and enter your payment details. Until then there’s nothing to cancel and nothing to pay. Choose your plan before then — if you don’t, you’ll move to {fallback} and some features will stop working.} other {You won’t be charged anything while you’re on trial. Billing only ever starts when you choose a plan and enter your payment details. Until then there’s nothing to cancel and nothing to pay. Choose your plan before then — if you don’t, you’ll move to {fallback} and some features will stop working.}}",
+    "bodyPaidEnd": "{hasDate, select, yes {You won’t be charged anything during your trial, which runs until <b>{date}</b>. When your trial ends, {fallback} is {price} a month. We’ll be in touch before then to set up payment.} other {You won’t be charged anything while you’re on trial. When your trial ends, {fallback} is {price} a month. We’ll be in touch before then to set up payment.}}",
     "fees": "*Standard card processing fees apply on online orders",
     "upgrade": "Upgrade here →"
   }

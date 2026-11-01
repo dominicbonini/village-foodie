@@ -14,7 +14,7 @@
 import { useState } from 'react'
 import { Card, Toggle } from './primitives'
 import { useCountrySettings } from '@/components/CountrySettingsProvider'
-import { formatMinor, currencySymbol, editableMinor } from '@/lib/money-format'
+import { formatMinor, currencySymbol, editableMinor, toMinorUnits } from '@/lib/money-format'
 import { applyBps } from '@/lib/order-charges'
 import { normaliseDecimal, decimalForInput } from '@/lib/decimal-input'   // france-1: "12,50" in a decimal-comma locale
 import { formatRateMilli, formatRateBps } from '@/lib/order-charge-lines'
@@ -92,7 +92,7 @@ export function ChargesCard({ truck, api, showToast, onTruckUpdate }: {
   const exampleFee = (() => {
     const pctNum = Number(normaliseDecimal(feePct, cs.locale)), fixedNum = Number(normaliseDecimal(feeFixed, cs.locale))   // france-1
     const bps = pctNum > 0 ? Math.round(pctNum * 100) : 0
-    const fixed = fixedNum > 0 ? Math.round(fixedNum * 100) : 0
+    const fixed = fixedNum > 0 ? toMinorUnits(fixedNum, cs.currency) : 0   // world-countries-1: the currency's minor units
     return applyBps(EXAMPLE_FOOD_MINOR, Math.min(bps, maxPct ?? 0)) + Math.min(fixed, maxFixed ?? 0)
   })()
 

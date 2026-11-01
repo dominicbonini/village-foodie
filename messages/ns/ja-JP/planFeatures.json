@@ -1,0 +1,135 @@
+{
+  "row": {
+    "discovery_map_listing": {
+      "name": "発見マップへの掲載"
+    },
+    "web_dashboard": {
+      "name": "どこでも使えるWebダッシュボード"
+    },
+    "qr_code": {
+      "name": "QRコード"
+    },
+    "schedule_import": {
+      "name": "出店スケジュールの自動取り込み"
+    },
+    "meal_deals_upsells": {
+      "name": "お得なセット＆追加購入の提案"
+    },
+    "walkup_orders": {
+      "name": "店頭注文の処理"
+    },
+    "sold_out_toggle": {
+      "name": "ワンタップで売り切れ表示"
+    },
+    "kitchen_app": {
+      "name": "iPhone・iPad・Android対応のキッチンアプリ"
+    },
+    "offline_protection": {
+      "name": "オフライン時の注文保護"
+    },
+    "online_payments": {
+      "name": "オンライン決済"
+    },
+    "advance_preordering": {
+      "name": "日時指定の事前注文"
+    },
+    "preorder_deadline": {
+      "name": "事前注文の締め切り"
+    },
+    "time_slot_selection": {
+      "name": "お客様による時間枠の選択"
+    },
+    "kitchen_capacity": {
+      "name": "調理キャパシティの管理"
+    },
+    "stock_countdown": {
+      "name": "在庫の自動カウントダウン"
+    },
+    "auto_accept": {
+      "name": "オンライン注文の自動受付"
+    },
+    "branded_qr_code": {
+      "name": "ロゴ入りQRコード"
+    },
+    "private_events": {
+      "name": "貸切イベント"
+    },
+    "social_media_posts": {
+      "name": "SNS投稿"
+    },
+    "whatsapp_auto_replies": {
+      "name": "WhatsApp自動返信"
+    },
+    "messenger_instagram_replies": {
+      "name": "Messenger・Instagram自動返信"
+    },
+    "tap_to_pay": {
+      "name": "スマートフォンで決済を受け付け"
+    },
+    "advanced_reporting": {
+      "name": "詳細レポート"
+    },
+    "sms_order_alerts": {
+      "name": "SMSによる注文通知"
+    },
+    "multi_device_kitchen": {
+      "name": "複数端末でのキッチン同期"
+    },
+    "multi_user_access": {
+      "name": "複数ユーザーのアクセス"
+    },
+    "embed_schedule": {
+      "name": "自社サイトに出店スケジュールを掲載"
+    },
+    "event_types": {
+      "name": "出店タイプと料金のカスタマイズ"
+    },
+    "buzzer_tracking": {
+      "name": "呼び出しベルの管理"
+    },
+    "ticket_printing": {
+      "name": "キッチン伝票の印刷"
+    },
+    "customer_display": {
+      "name": "お客様向けディスプレイ"
+    },
+    "loyalty_stamp_cards": {
+      "name": "デジタルスタンプカード"
+    }
+  },
+  "cardRegionOnline": "{region}の標準料金",
+  "cardRegion": {
+    "UKcards": "英国発行のカード",
+    "EEAcards": "EEA発行のカード",
+    "UScards": "米国発行のカード",
+    "Australiancards": "オーストラリア発行のカード",
+    "NewZealandcards": "ニュージーランド発行のカード",
+    "Canadiancards": "カナダ発行のカード",
+    "Swisscards": "スイス発行のカード",
+    "Braziliancards": "ブラジル発行のカード",
+    "Mexicancards": "メキシコ発行のカード",
+    "Japanesecards": "日本国内発行のカード",
+    "Singaporecards": "シンガポール発行のカード",
+    "HongKongcards": "香港発行のカード",
+    "Malaysiancards": "マレーシア発行のカード",
+    "Thaicards": "タイ発行のカード",
+    "UAEcards": "UAE発行のカード"
+  },
+  "perMonth": {
+    "mo": "{amount}/月",
+    "month": "月額{amount}"
+  },
+  "priceWord": {
+    "free": "無料",
+    "freeTrial": "無料トライアル",
+    "lifetime": "永久無料",
+    "zeroPercent": "0%",
+    "payAtHatch": "受け取り時に支払う",
+    "unlimited": "無制限",
+    "none": "—",
+    "masked": "未定"
+  },
+  "cell": {
+    "included": "含まれる"
+  }
+}

@@ -109,7 +109,7 @@ export async function saveCountry(
   if (stored.updatedAt !== expected) return refuse(409, STALE_SAVE)
   const trucks = (await store.truckCounts([code]))[code] ?? 0
 
-  const parsed = formToValues(form, { truckCount: trucks, storedCurrency: stored.currency, countryCode: stored.countryCode })
+  const parsed = formToValues(form, { truckCount: trucks, storedCurrency: stored.currency, countryCode: stored.countryCode, platformFeeAllowed: stored.platformFeeAllowed })
   if (!parsed.ok) return refuse(400, parsed.errors[0].message, parsed.errors)
 
   let saved: CountrySettings | null

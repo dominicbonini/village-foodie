@@ -1,0 +1,57 @@
+{
+  "firstVanName": "المركبة 1",
+  "demoCategories": {
+    "pizza": "بيتزا",
+    "burgers": "برغر",
+    "mains": "الأطباق الرئيسية",
+    "sides": "الأطباق الجانبية",
+    "drinks": "المشروبات"
+  },
+  "demoTemplates": {
+    "pizza": {
+      "label": "🍕 عربة بيتزا",
+      "items": {
+        "margherita": "مارغريتا",
+        "pepperoni": "بيبروني",
+        "ndujaHoney": "إندويا وعسل",
+        "fourCheese": "أربعة أجبان",
+        "gardenVeg": "خضار طازجة",
+        "garlicBread": "خبز بالثوم",
+        "rocketParmesan": "جرجير وبارميزان",
+        "olives": "زيتون",
+        "sanPellegrino": "سان بيليغرينو",
+        "coke": "كوكاكولا"
+      }
+    },
+    "burgers": {
+      "label": "🍔 عربة برغر",
+      "items": {
+        "classicCheeseburger": "تشيز برغر كلاسيكي",
+        "doubleBacon": "دبل بيكون",
+        "buttermilkChicken": "دجاج باللبن الرائب",
+        "halloumiStack": "برغر الحلوم",
+        "smashBurger": "سماش برغر",
+        "skinOnFries": "بطاطا مقلية بقشرها",
+        "loadedCheeseFries": "بطاطا مقلية محمّلة بالجبن",
+        "onionRings": "حلقات البصل",
+        "craftLemonade": "ليموناضة محضّرة يدويًا",
+        "coke": "كوكاكولا"
+      }
+    },
+    "curries": {
+      "label": "🍛 عربة كاري",
+      "items": {
+        "chickenTikkaMasala": "دجاج تكا ماسالا",
+        "lambRoganJosh": "لحم ضأن روغان جوش",
+        "chanaMasala": "تشانا ماسالا",
+        "butterChicken": "دجاج بالزبدة",
+        "saagPaneer": "ساغ بانير",
+        "pilauRice": "أرز بيلاو",
+        "garlicNaan": "خبز نان بالثوم",
+        "onionBhaji": "بهاجي البصل",
+        "mangoLassi": "لاسي المانجو",
+        "coke": "كوكاكولا"
+      }
+    }
+  }
+}

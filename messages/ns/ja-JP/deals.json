@@ -1,0 +1,17 @@
+{
+  "back": "← 戻る",
+  "title": "セットを適用",
+  "save": "{amount}おトク",
+  "selectItems": "各枠の商品を選んでください",
+  "choose": "{category}を選択…",
+  "inYourBasket": "── カート内 ──",
+  "basketUnit": "{name}{withMods, select, yes {（+ {mods}）} other {}}（カート内）{state, select, used { — 他のセットで使用中} taken { — 別の枠で選択済み} other {}}",
+  "addNew": "── 新しく追加 ──",
+  "itemWithPrice": "{name} {price}",
+  "ruleHint": "· {rule, select, requiredOne {必須・1つ選択} required {必須} other {1つ選択}}{unmet, select, yes {（未選択）} other {}}",
+  "notePlaceholder": "メモを追加（例：玉ねぎ抜き）※任意",
+  "backButton": "戻る",
+  "cancel": "キャンセル",
+  "chooseRequired": "必須オプションを選択してください",
+  "apply": "セットを適用 · {amount}"
+}

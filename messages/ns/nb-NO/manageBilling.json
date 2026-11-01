@@ -24,8 +24,10 @@
     "heading": "Den gratis prøveperioden din har ikke startet ennå"
   },
   "onTrial": "Du har alle funksjoner. Velg et abonnement før prøveperioden slutter.",
+  "onTrialPaidEnd": "Du har alle funksjoner. Når prøveperioden er over, koster abonnementet {plan} {price} i måneden. Vi tar kontakt med deg før den tid for å ordne betalingen.",
   "onTrialNoCta": "Du har alle funksjoner.",
   "noCharge": "🔒 Du blir ikke belastet noe i prøveperioden, som varer til {date}. Fakturering starter først når du velger et abonnement og legger inn betalingsopplysningene dine. Inntil da er det ingenting å si opp og ingenting å betale.",
+  "noChargePaidEnd": "🔒 Du blir ikke belastet noe i prøveperioden, som varer til {date}.",
   "fees": "*Vanlige kortgebyrer gjelder for nettbestillinger",
   "setUpPayment": "⏱ Velg et abonnement før prøveperioden slutter",
   "changeYourPlan": "Bytt abonnement",

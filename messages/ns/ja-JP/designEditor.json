@@ -1,0 +1,134 @@
+{
+  "item": {
+    "weekHeading": "週の見出し",
+    "weekHeadingSample": "…の週",
+    "daysSample": "{first}～{last}",
+    "date": "日付",
+    "place": "出店場所",
+    "venue": "会場",
+    "area": "エリア",
+    "time": "時間",
+    "rows": "行",
+    "rowsSample": "{px}px間隔・{first}～{last}",
+    "ownText": "自由テキスト",
+    "noteTokenSample": "投稿作成時に入力するメモ",
+    "nothingYet": "まだありません",
+    "thisBox": "このボックス"
+  },
+  "sample": {
+    "venue": "代々木公園",
+    "area": "渋谷区"
+  },
+  "bar": {
+    "previewWith": "プレビューに使うデータ",
+    "undo": "元に戻す",
+    "undoTitle": "元に戻す（⌘Z）",
+    "redo": "やり直す",
+    "redoTitle": "やり直す（⇧⌘Z）",
+    "cancel": "キャンセル",
+    "saving": "保存中…",
+    "save": "デザインを保存"
+  },
+  "grid": {
+    "eachRow": "各行",
+    "placeOff": "出店場所の名前は画像に入っているため、HatchGrabは追加しません。"
+  },
+  "background": {
+    "uploading": "アップロード中…",
+    "replace": "画像を差し替え",
+    "shape": {
+      "square": "正方形（1:1）",
+      "portrait45": "縦長（4:5）",
+      "portrait916": "縦長（9:16）",
+      "landscape169": "横長（16:9）",
+      "portrait": "縦長",
+      "landscape": "横長"
+    }
+  },
+  "scope": {
+    "title": "文字の配置",
+    "standard": "標準と同じ配置",
+    "own": "{place}専用の配置",
+    "locked": "この配置は標準デザインのものです。この出店場所だけで動かすには「{place}専用の配置」を選んでください。"
+  },
+  "stage": {
+    "hint": "ボックスをドラッグして移動・角をドラッグしてサイズ変更",
+    "zoomOut": "縮小表示",
+    "zoomIn": "拡大表示"
+  },
+  "rows": {
+    "spacing": "間隔",
+    "daysRun": "曜日は{first}～{last}の順です。1行目の3つのボックスが、この間隔で下に複製されます。",
+    "whichEvents": "表示する出店",
+    "showCancelled": "中止になった出店を表示",
+    "showCancelledHint": "中止になった出店は、出店場所に取り消し線が引かれ「中止」と表示されます。オフにすると、その日は休業日として表示されます。"
+  },
+  "days": {
+    "reorder": "並べ替え",
+    "move": "移動"
+  },
+  "picture": {
+    "picture": "画像",
+    "fill": "ボックス全体に表示",
+    "fit": "ボックス内に収める",
+    "corners": "角",
+    "square": "角ばった形",
+    "rounded": "角丸",
+    "ifMissing": "出店場所に画像がない場合",
+    "noPicture": {
+      "omit": "表示しない",
+      "blank": "空白にする",
+      "logo": "ロゴを表示"
+    },
+    "border": "枠線",
+    "drawBorder": "枠線を付ける",
+    "drawBorderHint": "画像の周りに、好きな色の線を付けます。",
+    "borderWidth": "枠線の太さ",
+    "cornerRadius": "角の丸み",
+    "locationPictures": "出店場所の画像",
+    "addLocationPictures": "＋ 出店場所の画像を追加",
+    "allHaveImage": "{total, plural, =0 {出店場所がまだありません。} other {出店場所#か所すべてに画像があります。}}",
+    "someWithout": "出店場所{total, plural, other {#か所}}のうち、{without}{without, plural, other {か所}}にまだ画像がありません"
+  },
+  "settings": {
+    "font": "フォント",
+    "colour": "色",
+    "textColour": "文字色",
+    "ownStyleNote": "{count, plural, other {{names}は個別のスタイルが設定されているため、変更されません。}}",
+    "matchAgain": "再びそろえる",
+    "matchName": "{name}にそろえる",
+    "lastToggle": "{kind, select, weekly {「出店場所」と「時間」のどちらかはオンのままにしてください。中止になった出店は出店場所に取り消し線が引かれ「中止」と表示されるため、両方オフにすると中止であることが伝わりません。} other {「会場」と「時間」のどちらかはオンのままにしてください。中止になった出店は出店場所に取り消し線が引かれ「中止」と表示されるため、両方オフにすると中止であることが伝わりません。}}"
+  },
+  "letters": {
+    "boldGlyph": "B",
+    "italicGlyph": "I",
+    "capsGlyph": "AA",
+    "italicTitle": "{italic}（このフォントには専用の斜体があります）"
+  },
+  "align": {
+    "left": "左",
+    "centre": "中央",
+    "right": "右"
+  },
+  "effects": {
+    "outlineColour": "ふち取りの色",
+    "bandColour": "色帯の色",
+    "bandDaysOff": "休業日の色帯",
+    "bandCancelled": "出店中止時の色帯",
+    "bandDaysOffHint": "出店のない日は、上の色帯の代わりにこちらを使います。",
+    "bandCancelledHint": "出店が中止になった場合は、上の色帯の代わりにこちらを使います。"
+  },
+  "more": {
+    "dayOwnLine": "曜日を別の行に表示",
+    "dayOwnLineHint": "日付の上に曜日を表示します。日付のみに適用されます。",
+    "noEventDay": "出店がない日",
+    "wordsBeforePlaceholder": "例：出店場所はこちら",
+    "neverHyphenate": "スペースを含まない長い名前は常に縮小され、出店場所の名前が途中で区切られることはありません。"
+  },
+  "bits": {
+    "less": "少なく",
+    "more": "多く",
+    "chooseColourFor": "{label}：好きな色を選ぶ",
+    "chooseColour": "好きな色を選ぶ"
+  }
+}

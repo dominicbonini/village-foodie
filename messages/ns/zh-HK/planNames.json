@@ -1,0 +1,28 @@
+{
+  "payg": {
+    "name": "免月費",
+    "subtitle": "適合季節性及兼職經營的美食車",
+    "description": "無需月費。只在顧客以信用卡網上付款時才收費。"
+  },
+  "pro": {
+    "subtitle": "適合經常接受預先落單的美食車",
+    "description": "包括 WhatsApp 自動回覆及社交媒體帖文在內的所有功能，並每月包括一定數量的網上訂單。"
+  },
+  "unlimited": {
+    "name": "無上限",
+    "subtitle": "適合生意繁忙的美食車及音樂節",
+    "description": "所有功能，而且無論多忙，網上訂單都不收手續費。"
+  },
+  "trial": {
+    "name": "免費試用",
+    "description": "試用期內免費使用所有功能。"
+  },
+  "demo": {
+    "name": "示範",
+    "description": "供潛在客戶試用的示範環境——永不公開。"
+  },
+  "tester": {
+    "name": "測試員",
+    "description": "推出前測試員——可使用全部功能。"
+  }
+}

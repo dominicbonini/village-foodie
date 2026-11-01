@@ -1,0 +1,16 @@
+{
+  "takeConfirm": "呼び出しベル<b>{number}</b>は<b>注文#{holderId}</b>{hasName, select, yes {（{name}）} other {}}に割り当てられています。<b>{hasTarget, select, yes {注文#{targetId}} other {この注文}}</b>に移しますか？",
+  "cancel": "キャンセル",
+  "take": "呼び出しベル{number}を移す",
+  "titleBlocking": "注文#{id}の呼び出しベルは？",
+  "title": "呼び出しベルを選択",
+  "subtitle": "{hasTarget, select, yes {注文#{id}} other {この注文}}{hasCurrent, select, yes {・現在の呼び出しベル：{current}} other {}}",
+  "allTaken": "{n, plural, other {呼び出しベル（{count}個）はすべて使用中です。タップすると別の注文から移せます。}}",
+  "thisOrder": "この注文",
+  "noBuzzer": "呼び出しベルなし",
+  "done": "完了",
+  "lostTitle": "注文#{id}に呼び出しベルがありません",
+  "lostBody": "{hasName, select, yes {{name}：} other {}}オフラインの間に、別の注文が同じ呼び出しベルを割り当てました。別の呼び出しベルをお渡しください。",
+  "dismiss": "閉じる",
+  "assign": "割り当てる"
+}

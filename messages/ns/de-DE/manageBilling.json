@@ -24,8 +24,10 @@
     "heading": "Ihre kostenlose Testphase hat noch nicht begonnen"
   },
   "onTrial": "Ihnen stehen alle Funktionen zur Verfügung. Wählen Sie einen Tarif, bevor Ihre Testphase endet.",
+  "onTrialPaidEnd": "Ihnen stehen alle Funktionen zur Verfügung. Nach Ende Ihrer Testphase kostet der Tarif {plan} im Monat {price}. Wir melden uns vorher bei Ihnen, um die Zahlung einzurichten.",
   "onTrialNoCta": "Ihnen stehen alle Funktionen zur Verfügung.",
   "noCharge": "🔒 Während Ihrer Testphase, die bis zum {date} läuft, zahlen Sie nichts. Die Abrechnung beginnt erst, wenn Sie einen Tarif wählen und Ihre Zahlungsdaten eingeben. Bis dahin gibt es nichts zu kündigen und nichts zu bezahlen.",
+  "noChargePaidEnd": "🔒 Während Ihrer Testphase, die bis zum {date} läuft, zahlen Sie nichts.",
   "fees": "*Bei Online-Bestellungen fallen die üblichen Kartengebühren an",
   "setUpPayment": "⏱ Wählen Sie einen Tarif, bevor Ihre Testphase endet",
   "changeYourPlan": "Tarif wechseln",

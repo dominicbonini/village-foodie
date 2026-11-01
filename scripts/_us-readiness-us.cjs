@@ -167,7 +167,7 @@ async function landingJsonLd(x, query, rows) {
   const { kit, REPO } = x
   const m = await kit.bundle('ur-landing-page', "export { default as Page } from '@/app/landing/page'\nexport { clearCountrySettingsCache } from '@/lib/country-settings'" + (x.PLAN_CLEAR || ''), {
     stubs: {
-      'next/font/google': ['Archivo', 'Public_Sans', 'Courier_Prime'].map(n => `export const ${n} = () => ({ variable: 'font-${n}', className: 'font-${n}', style: {} })`).join('\n'),
+      'next/font/google': ['Archivo', 'Public_Sans', 'Courier_Prime', 'Noto_Sans_JP', 'Noto_Sans_HK', 'Noto_Sans_Thai', 'Noto_Sans_Arabic'].map(n => `export const ${n} = () => ({ variable: 'font-${n}', className: 'font-${n}', style: {} })`).join('\n'),
       'next/headers': `
         export async function headers() { return { get: () => null, has: () => false } }
         export async function cookies() { return { get: () => undefined, has: () => false, getAll: () => [] } }`,

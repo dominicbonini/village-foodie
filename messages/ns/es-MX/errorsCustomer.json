@@ -1,0 +1,6 @@
+{
+  "menu_changed": "El menú cambió — revisa tu pedido antes de hacerlo.",
+  "menu_changed_item": "El menú cambió — {item} ya no está disponible. Revisa tu pedido antes de hacerlo.",
+  "menu_changed_option": "El menú cambió — {option} (de {item}) ya no está disponible. Revisa tu pedido antes de hacerlo.",
+  "card_unavailable": "Ahora mismo no pudimos preparar el pago con tarjeta, así que tu pedido no se realizó y no se te cobró nada. Tu carrito está guardado — vuelve a intentarlo o elige Paga al recoger."
+}

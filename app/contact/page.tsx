@@ -49,10 +49,16 @@ type SearchParams = Promise<Record<string, string | string[] | undefined>>;
  *  marketing pages resolve it (?country, the hg_country cookie, the request's country, else GB). A support page
  *  must never fail on that lookup, so a country list that cannot be read is en-GB. Never called on Village Foodie. */
 async function hatchGrabLocale(searchParams?: SearchParams): Promise<AppLocale> {
+  return (await hatchGrabPlace(searchParams)).locale;
+}
+/** legal-languages-1 (1 November 2026): the same, with the country — so the footer's legal links point at that country's
+ *  translations (lib/legal.ts legalPath). GB on any failure, as the locale. */
+async function hatchGrabPlace(searchParams?: SearchParams): Promise<{ locale: AppLocale; country: string | null }> {
   try {
-    return localeOfCountry((await resolveVisitorCountry((await searchParams)?.country)).settings);
+    const { settings } = await resolveVisitorCountry((await searchParams)?.country);
+    return { locale: localeOfCountry(settings), country: settings.countryCode };
   } catch {
-    return DEFAULT_LOCALE;
+    return { locale: DEFAULT_LOCALE, country: null };
   }
 }
 
@@ -90,7 +96,7 @@ export default async function ContactPage({ searchParams }: { searchParams: Sear
     // next/font faces at module scope; a static import would attach their <link> tags to this route
     // for BOTH brands. Measured, not assumed — see the note in HatchGrabContact.tsx.
     const { HatchGrabContact } = await import('./HatchGrabContact');
-    return <HatchGrabContact locale={await hatchGrabLocale(searchParams)} />;
+    return <HatchGrabContact {...await hatchGrabPlace(searchParams)} />;
   }
 
   return (

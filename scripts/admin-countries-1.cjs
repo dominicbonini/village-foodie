@@ -206,8 +206,16 @@ const ACTIVE_PUBLIC_PLANS = ['payg', 'pro', 'unlimited']   // public.plans where
   fs.writeFileSync(path.join(REPO, 'docs/admin-countries-1/ie-save-before-after.json'), JSON.stringify({ before, written, after, differs: diff }, null, 1) + '\n')
   // ⚠️ RE-PINNED (compare-de-1, 25 October 2026): the save path's own files, by name. compare-de-1 changed other files under
   // lib/admin (the Pricing check's actions and store) and added app/api/admin/countries/comparison — neither is on this path.
-  t('the save path is untouched: no change to the country actions and store, the countries route, or the loader', execFileSync('git', ['diff', '--stat', 'HEAD', '--',
-    'lib/admin/country-actions.ts', 'lib/admin/country-store.ts', 'app/api/admin/countries/route.ts', 'lib/country-settings.ts'], { cwd: REPO }).toString() === '')
+  // ⚠️ RE-PINNED (world-countries-1, 31 October 2026): the save path changed ONLY by world-countries-1's named items — the loader
+  // reads `platform_fee_allowed` tolerantly (selectWithFallback, used by the store's reads and writes too), the new allergen sets
+  // come from lib/allergens.ts, and the save passes the stored row's platformFeeAllowed to the form (which refuses the fee where it
+  // is not allowed). Every changed line must belong to one of those; the countries route is untouched.
+  const saveDiff = execFileSync('git', ['diff', '-U0', 'HEAD', '--', 'lib/admin/country-actions.ts', 'lib/admin/country-store.ts', 'app/api/admin/countries/route.ts', 'lib/country-settings.ts'], { cwd: REPO }).toString()
+  const changed = saveDiff.split('\n').filter(l => /^[+-]/.test(l) && !/^(\+\+\+|---)/.test(l))
+  const WC1 = /world-countries-1|selectWithFallback|COUNTRY_SETTINGS_COLUMNS|BASE_COLUMNS|WC1_COLUMNS|platform_fee_allowed|platformFeeAllowed|ALLERGEN_SETS|const s = await db\(\)|\.update\(columns\)|\.eq\('country_code', code\)|\.eq\('updated_at', expectedUpdatedAt\)|\.select\(cols\)\)?|\.select\(COUNTRY_SETTINGS_COLUMNS\)|^[+-]\s*(\/\/.*|\*.*|\]|\)|)$|const COLUMNS = COUNTRY_SETTINGS_COLUMNS|const first = await run|const e = first\.error|if \(e && \(e\.code|return first|^[+-]\}$|from\('country_settings'\)|allergen_set', \[|'support_hours', 'updated_at', 'updated_by',|^[-]\]\.join\(', '\)|const \{ data, error \} = await \(await db\(\)\)|^-\s*const parsed = formToValues\(form, \{ truckCount: trucks, storedCurrency: stored\.currency, countryCode: stored\.countryCode \}\)$/
+  const foreign = changed.filter(l => !WC1.test(l))
+  t('the save path changed only by world-countries-1\'s named items (a tolerant loader, the allergen-set list, the fee permission); the countries route untouched',
+    foreign.length === 0 && !/app\/api\/admin\/countries\/route\.ts/.test(saveDiff), foreign.slice(0, 8))
 
   // ══ 4 ════════════════════════════════════════════════════════════════════════════════════════════════════════════
   head('4 · The small fixes')

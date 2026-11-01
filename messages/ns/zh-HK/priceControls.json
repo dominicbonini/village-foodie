@@ -1,0 +1,8 @@
+{
+  "change": "{label}——更改",
+  "useRule": "{label}——改用規則",
+  "typePrice": "{label}——輸入價錢",
+  "backToRule": "返回使用規則",
+  "diffUp": "(+{amount})",
+  "diffDown": "(−{amount})"
+}

@@ -7,7 +7,6 @@
   "hero": {
     "title": "Sistemul de comenzi creat pentru <lean>food truck-uri.</lean>",
     "subSmall": "Încărcați meniul, fără înregistrare.<br></br>Vedeți un demo funcțional în mai puțin de 60 de secunde.",
-    "tagline": "Mai puțin timp cu administrarea.<br></br>Mai mult timp <lean>la gătit.</lean>",
     "cta": "Încărcați meniul →",
     "ctaNote": "<lead>Încărcați o fotografie a meniului și vedeți-l funcționând în mai puțin de 60 de secunde.</lead><small>Fără înregistrare. Fără card.</small>"
   },

@@ -469,7 +469,7 @@ export async function seedDemoOrders(
    * the lines the planner builds. This read is the truck row only; the duplicate event read went with
    * the hoist rather than being left to drift from it. */
   const { data: truckRow } = await supabase
-    .from('trucks').select('plan, feature_overrides, slot_duration_mins').eq('id', args.truckId).maybeSingle()
+    .from('trucks').select('plan, feature_overrides, slot_duration_mins, currency').eq('id', args.truckId).maybeSingle()
   // The van's ceiling is needed at PLANNING time now (the two-batch probe asks the engine, and the engine
   // needs the same inputs it will be given later), not only by the post-condition. One read, reused.
   let kitchenCapacityForPlan: number | null = null
@@ -728,7 +728,7 @@ export async function seedDemoOrders(
       total,
       // §4a — pence, derived from the total we just computed. Seeded rows carry it like every other
       // write path so a demo dashboard reads the same shape production does.
-      total_minor: toMinor(total),
+      total_minor: toMinor(total, (truckRow as { currency?: string | null } | null)?.currency),   // world-countries-1: whole yen for JPY
       notes: null,
       // Confirmed, not pending: a pile of unactioned "New — action needed" cards reads as a backlog, not
       // a working kitchen.

@@ -24,8 +24,10 @@
     "heading": "Vaše bezplatné zkušební období ještě nezačalo"
   },
   "onTrial": "Máte k dispozici všechny funkce. Vyberte si tarif do konce zkušebního období.",
+  "onTrialPaidEnd": "Máte k dispozici všechny funkce. Po skončení zkušebního období bude tarif {plan} stát {price} měsíčně. Ještě předtím se vám ozveme, abychom nastavili platbu.",
   "onTrialNoCta": "Máte k dispozici všechny funkce.",
   "noCharge": "🔒 Během zkušebního období, které trvá do {date}, vám nic neúčtujeme. Účtovat začneme teprve, až si vyberete tarif a zadáte platební údaje. Do té doby není co rušit ani platit.",
+  "noChargePaidEnd": "🔒 Během zkušebního období, které trvá do {date}, vám nic neúčtujeme.",
   "fees": "*U online objednávek se účtují standardní poplatky za zpracování karet",
   "setUpPayment": "⏱ Vyberte si tarif do konce zkušebního období",
   "changeYourPlan": "Změnit tarif",

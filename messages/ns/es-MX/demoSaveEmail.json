@@ -1,0 +1,4 @@
+{
+  "intro": "Aquí tienes tu enlace para volver a la demo con tu menú. No hace falta iniciar sesión: solo tócalo.",
+  "deletion": "Es una demo, así que no la guardamos para siempre: la borraremos junto con el menú el <b>{date}</b> ({days, plural, one {# día} many {# días} other {# días}}). Si te registras antes de esa fecha, tu menú se va contigo."
+}

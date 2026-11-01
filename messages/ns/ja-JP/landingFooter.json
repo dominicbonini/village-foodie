@@ -1,0 +1,16 @@
+{
+  "features": "機能",
+  "pricing": "料金",
+  "privacy": "プライバシー",
+  "terms": "利用規約",
+  "contact": "お問い合わせ",
+  "about": "会社概要",
+  "copyright": "© {year} HatchGrab",
+  "credit": "<b>Village Foodie</b>のチームが運営しています",
+  "badges": {
+    "appStoreLink": "App StoreでHatchGrabをダウンロード",
+    "appStoreAlt": "App Storeからダウンロード",
+    "googlePlayLink": "Google PlayでHatchGrabを入手",
+    "googlePlayAlt": "Google Playで手に入れよう"
+  }
+}

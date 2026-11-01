@@ -1,0 +1,135 @@
+{
+  "row": {
+    "discovery_map_listing": {
+      "name": "Senarai di peta penemuan"
+    },
+    "web_dashboard": {
+      "name": "Papan pemuka web universal"
+    },
+    "qr_code": {
+      "name": "Kod QR"
+    },
+    "schedule_import": {
+      "name": "Import jadual automatik"
+    },
+    "meal_deals_upsells": {
+      "name": "Set kombo & cadangan tambahan"
+    },
+    "walkup_orders": {
+      "name": "Pemprosesan pesanan walk-in"
+    },
+    "sold_out_toggle": {
+      "name": "Suis habis dijual segera"
+    },
+    "kitchen_app": {
+      "name": "Aplikasi dapur iPhone, iPad dan Android"
+    },
+    "offline_protection": {
+      "name": "Perlindungan pesanan luar talian"
+    },
+    "online_payments": {
+      "name": "Pembayaran dalam talian"
+    },
+    "advance_preordering": {
+      "name": "Pra-pesanan awal"
+    },
+    "preorder_deadline": {
+      "name": "Tarikh akhir pra-pesanan"
+    },
+    "time_slot_selection": {
+      "name": "Pilihan slot masa oleh pelanggan"
+    },
+    "kitchen_capacity": {
+      "name": "Pengurusan kapasiti dapur"
+    },
+    "stock_countdown": {
+      "name": "Kiraan stok automatik"
+    },
+    "auto_accept": {
+      "name": "Terima pesanan dalam talian secara automatik"
+    },
+    "branded_qr_code": {
+      "name": "Kod QR berjenama"
+    },
+    "private_events": {
+      "name": "Acara peribadi"
+    },
+    "social_media_posts": {
+      "name": "Hantaran media sosial"
+    },
+    "whatsapp_auto_replies": {
+      "name": "Balasan automatik WhatsApp"
+    },
+    "messenger_instagram_replies": {
+      "name": "Balasan automatik Messenger & Instagram"
+    },
+    "tap_to_pay": {
+      "name": "Terima bayaran di telefon anda"
+    },
+    "advanced_reporting": {
+      "name": "Laporan lanjutan"
+    },
+    "sms_order_alerts": {
+      "name": "Makluman pesanan melalui SMS"
+    },
+    "multi_device_kitchen": {
+      "name": "Penyegerakan dapur berbilang peranti"
+    },
+    "multi_user_access": {
+      "name": "Akses berbilang pengguna"
+    },
+    "embed_schedule": {
+      "name": "Halaman jadual di laman web anda sendiri"
+    },
+    "event_types": {
+      "name": "Jenis acara & harga tersuai"
+    },
+    "buzzer_tracking": {
+      "name": "Penjejakan buzzer"
+    },
+    "ticket_printing": {
+      "name": "Cetakan tiket dapur"
+    },
+    "customer_display": {
+      "name": "Paparan untuk pelanggan"
+    },
+    "loyalty_stamp_cards": {
+      "name": "Kad cop kesetiaan digital"
+    }
+  },
+  "cardRegionOnline": "{region} standard",
+  "cardRegion": {
+    "UKcards": "kad UK",
+    "EEAcards": "kad EEA",
+    "UScards": "kad AS",
+    "Australiancards": "kad Australia",
+    "NewZealandcards": "kad New Zealand",
+    "Canadiancards": "kad Kanada",
+    "Swisscards": "kad Switzerland",
+    "Braziliancards": "kad Brazil",
+    "Mexicancards": "kad Mexico",
+    "Japanesecards": "kad Jepun",
+    "Singaporecards": "kad Singapura",
+    "HongKongcards": "kad Hong Kong",
+    "Malaysiancards": "kad Malaysia",
+    "Thaicards": "kad Thailand",
+    "UAEcards": "kad UAE"
+  },
+  "perMonth": {
+    "mo": "{amount}/bln",
+    "month": "{amount}/bulan"
+  },
+  "priceWord": {
+    "free": "Percuma",
+    "freeTrial": "Percubaan percuma",
+    "lifetime": "Seumur hayat",
+    "zeroPercent": "0%",
+    "payAtHatch": "Bayar semasa ambil",
+    "unlimited": "Tanpa had",
+    "none": "—",
+    "masked": "Akan disahkan"
+  },
+  "cell": {
+    "included": "Termasuk"
+  }
+}

@@ -24,8 +24,10 @@
     "heading": "Je gratis proefperiode is nog niet begonnen"
   },
   "onTrial": "Je hebt alle functies. Kies een abonnement voordat je proefperiode afloopt.",
+  "onTrialPaidEnd": "Je hebt alle functies. Na je proefperiode kost {plan} je {price} per maand. We nemen voor die tijd contact met je op om de betaling te regelen.",
   "onTrialNoCta": "Je hebt alle functies.",
   "noCharge": "🔒 Tijdens je proefperiode, die loopt tot {date}, betaal je niets. Er wordt pas iets in rekening gebracht als je een abonnement kiest en je betaalgegevens invult. Tot die tijd valt er niets op te zeggen en niets te betalen.",
+  "noChargePaidEnd": "🔒 Tijdens je proefperiode, die loopt tot {date}, betaal je niets.",
   "fees": "*Op online bestellingen gelden de standaard kaarttransactiekosten",
   "setUpPayment": "⏱ Kies een abonnement voordat je proefperiode afloopt",
   "changeYourPlan": "Abonnement wijzigen",

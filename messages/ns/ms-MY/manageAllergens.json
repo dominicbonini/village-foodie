@@ -1,0 +1,117 @@
+{
+  "cardEditor": {
+    "title": "Kad alergen anda",
+    "intro": "Pelanggan melihat ini <b>tepat seperti yang anda tulis</b> — tiada apa yang ditulis semula. Taip atau tampal di bawah, atau muat naik gambar/PDF dan kami akan membaca teksnya untuk anda semak.",
+    "empty": "Belum ada kad alergen.",
+    "placeholder": "cth. Semua fish & chips kami mengandungi gandum dan susu. Penggoreng dikongsi dengan item yang mengandungi gluten dan kacang. Pilihan vegan tersedia — tanya kakitangan.",
+    "reading": "Membaca imej…",
+    "upload": "📷 Muat naik imej / PDF",
+    "uploadNote": "Kami membaca teks daripada imej anda supaya anda boleh menyemaknya — imej itu tidak disimpan."
+  },
+  "cardUpload": {
+    "dishFallback": "Hidangan",
+    "question": "Adakah anda mempunyai kad alergen untuk dimuat naik?",
+    "perDish": "{detected, select, yes {Muat naik kad dan kami akan menggunakannya untuk membina alergen hidangan anda. Alergen yang dikesan akan kelihatan pada halaman seterusnya, tempat anda mengesahkan setiap hidangan.} other {Muat naik kad dan kami akan menggunakannya untuk membina alergen hidangan anda.}}",
+    "cardOnly": "Muat naik kad alergen yang akan dilihat oleh pelanggan.",
+    "yes": "Ya",
+    "no": "Tidak",
+    "noProblem": "Tiada masalah — anda tidak memerlukannya. Teruskan dengan butang di bawah.",
+    "analysing": "Menganalisis kad…",
+    "dropzone": "Seret dan lepas atau ketik untuk memilih",
+    "imageOrPdf": "Imej atau PDF",
+    "or": "atau",
+    "pastePlaceholder": "Tampal teks kad alergen anda di sini…",
+    "process": "Proses kad",
+    "cardRead": "Kad dibaca ✓",
+    "unmatchedHeading": "Tidak dapat dipadankan secara automatik — tetapkan atau abaikan",
+    "quotedName": "“{name}”",
+    "ambiguous": "Tidak jelas — sepadan dengan beberapa hidangan; pilih yang betul.",
+    "assignTo": "Tetapkan kepada hidangan…",
+    "dismiss": "Abaikan",
+    "blanket": "Kad ini menyatakan <b>{list}</b> mungkin ada dalam <b>semua</b> hidangan. Tambah pada setiap hidangan? (anda masih akan mengesahkan setiap satu) <muted>— dimatikan secara lalai</muted>",
+    "kitchenNotes": "Nota dapur (disimpan dalam maklumat alergen anda)",
+    "matchSummary": "{n, plural, =0 {{matched} dipadankan dengan hidangan.} other {{matched} dipadankan dengan hidangan. {count} perlu anda tetapkan.}}"
+  },
+  "savedCard": {
+    "showLess": "Tunjuk kurang",
+    "showMore": "Tunjuk lagi",
+    "fileOnly": "Fail kad telah disimpan untuk trak ini, tetapi tiada teks ringkasan disimpan. Buka fail asal untuk membacanya.",
+    "viewOriginal": "Lihat kad asal"
+  },
+  "wizard": {
+    "toast": {
+      "readFailed": "Tidak dapat membaca kad alergen — cuba lagi",
+      "confirmed": "{name} disahkan",
+      "undo": "Buat asal",
+      "saveFailed": "Tidak dapat menyimpan — sila cuba lagi",
+      "imageFailed": "Tidak dapat membaca imej itu — taip atau tampal kad anda",
+      "cardRead": "{n, plural, other {Kad dibaca — {matched} dipadankan, {count} perlu ditetapkan}}"
+    },
+    "genericWarn": {
+      "text": "“{generic}” dikesan tetapi tidak khusus. Pilih {picks} jika hidangan ini mengandungi {family} — atau biarkan tidak dipilih jika tidak.",
+      "andOr": "{a} dan/atau {b}"
+    },
+    "badge": {
+      "justConfirmed": "✓ Disahkan",
+      "confirmed": "Disahkan",
+      "needsReview": "Perlu disemak"
+    },
+    "confirm": {
+      "confirming": "Mengesahkan…",
+      "confirmed": "Disahkan ✓",
+      "confirm": "Sahkan",
+      "changed": "· diubah",
+      "changedTitle": "Diedit sejak kali terakhir anda sahkan — sahkan sekali lagi"
+    },
+    "allergens": "Alergen",
+    "dietary": "Diet",
+    "uncategorised": "Tanpa kategori",
+    "review": {
+      "progress": "{confirmed} daripada {total} disahkan",
+      "allConfirmed": "✓ Semua disahkan",
+      "list": "Senarai",
+      "table": "Jadual",
+      "detected": "Dikesan daripada menu anda — <b>semak ini</b>. Alergen kekal tersembunyi daripada pelanggan sehingga anda mengesahkan setiap hidangan.",
+      "viewOnly": "👁 Lihat sahaja — hanya pemilik boleh mengesahkan atau menukar alergen.",
+      "emptyTitle": "Tiada item menu",
+      "emptyBody": "Tambah item menu dahulu, kemudian tetapkan alergennya di sini.",
+      "dish": "Hidangan",
+      "status": "Status"
+    },
+    "cardPanel": {
+      "reading": "Membaca maklumat alergen…",
+      "saved": "🛡️ Kad alergen disimpan",
+      "viewOriginal": "Lihat kad asal",
+      "replace": "Ganti kad",
+      "uploadHelp": "Muat naik kad alergen anda (foto/PDF) atau tampal maklumat alergen anda — AI kami menyusunnya untuk pelanggan.",
+      "add": "Tambah kad alergen",
+      "viewOnly": "👁 Lihat sahaja — hanya pemilik boleh menambah kad alergen.",
+      "intro": "Pelanggan akan melihat kad ini sebagai rujukan alergen menu. Alergen setiap hidangan kekal tersembunyi dalam mod kad sahaja (data hidangan anda disimpan sekiranya anda bertukar kepada setiap hidangan kemudian)."
+    },
+    "subtitle": {
+      "choose": "Pilih cara pelanggan melihat maklumat alergen",
+      "card": "Tambah kad alergen anda",
+      "cardOptional": "Tambah kad alergen (pilihan)",
+      "review": "Semak & sahkan setiap hidangan"
+    },
+    "heading": {
+      "import": "Alergen",
+      "standalone": "Tetapan alergen"
+    },
+    "nav": {
+      "next": "Seterusnya →",
+      "back": "← Kembali",
+      "skip": "Langkau dahulu",
+      "saving": "Menyimpan…",
+      "done": "Selesai",
+      "saveLater": "Simpan & sambung kemudian",
+      "close": "Tutup",
+      "finish": "Selesai",
+      "skipImport": "Langkau tetapan alergen dahulu"
+    },
+    "hint": {
+      "skipDefers": "Langkau bermaksud tangguh — hidangan yang belum anda sahkan kekal tersembunyi daripada pelanggan sehingga alergennya disahkan.",
+      "importIncomplete": "Sahkan setiap hidangan untuk meneruskan — atau “Langkau tetapan alergen dahulu”."
+    }
+  }
+}

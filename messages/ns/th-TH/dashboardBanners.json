@@ -1,0 +1,21 @@
+{
+  "breachHeadline": "{n, plural, other {{count} ช่วงเวลา}}เกินกำลังการผลิต — ตรวจสอบ",
+  "batchOver": "{cat} เกินรอบการทำ — {count} สำหรับ {slot} (รอบละ {per})",
+  "eventStartOver": "เกินกำลังการผลิตตอนเริ่มอีเวนต์ — {n, plural, other {{count} รายการ}} สำหรับ {slot}",
+  "kitchenOver": "ครัวเกินกำลังการผลิต — กำลังทำ {n, plural, other {{count} รายการ}} สำหรับ {slot}",
+  "orderItems": "#{id} — {n, plural, other {{count} รายการ}}",
+  "placedAnyway": "สั่งแม้เกินกำลัง: {list}",
+  "placedItem": "#{id} สำหรับ {slot}",
+  "orphans": "{times} เกินกำลังการผลิต — ไม่พบออเดอร์ที่เป็นสาเหตุ",
+  "dismiss": "ปิด",
+  "kitchenCapacity": "กำลังการผลิตของครัว",
+  "overCapacity": "เกินกำลังการผลิต",
+  "wakeUnsupported": "อุปกรณ์นี้เปิดหน้าจอค้างไว้ไม่ได้",
+  "wakeInsecure": "เปิดหน้าจอค้างไว้จากที่อยู่เว็บนี้ไม่ได้",
+  "wakeRetry": "เปิดหน้าจอค้างไว้ — แตะเพื่อลองอีกครั้ง",
+  "wakeAcquire": "เปิดหน้าจอค้างไว้",
+  "degraded": {
+    "serverError": "เซิร์ฟเวอร์โหลดออเดอร์ไม่ได้{hasStatus, select, yes { (ข้อผิดพลาด {status})} other {}} กำลังแสดงออเดอร์จาก {at} ออเดอร์ใหม่อาจไม่แสดง",
+    "unreachable": "เชื่อมต่อเซิร์ฟเวอร์ไม่ได้ กำลังแสดงออเดอร์จาก {at} ออเดอร์ใหม่อาจไม่แสดง"
+  }
+}

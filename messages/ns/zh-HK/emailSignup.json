@@ -1,0 +1,26 @@
+{
+  "greeting": "{hasName, select, yes {{name}，你好：} other {你好：}}",
+  "signoffName": "Dominic",
+  "signoffRole": "HatchGrab 創辦人",
+  "verify": {
+    "subject": "確認你的電郵地址",
+    "thanks": "{hasTruck, select, yes {多謝你在 HatchGrab 設定 {truck}。} other {多謝你在 HatchGrab 設定你的美食車。}}",
+    "button": "確認我的電郵地址",
+    "buttonText": "確認我的電郵地址：{url}",
+    "why": "你會用這個地址登入，訂單提示亦會寄到這裏——所以值得現在就處理。",
+    "next": "確認後，我會把開始營業所需的一切寄給你。",
+    "carryOn": "在此期間，你可以繼續設定。",
+    "stuck": "遇到任何問題？直接回覆這封電郵就可以——我會親自回覆。",
+    "fallbackLink": "如果按鈕無法使用，請貼上這條連結：{url}"
+  },
+  "welcome": {
+    "subject": "{hasName, select, yes {歡迎使用 HatchGrab，{name}} other {歡迎使用 HatchGrab}}",
+    "intro": "{hasTruck, select, yes {我非常高興歡迎 {truck} 加入 HatchGrab。} other {我非常高興歡迎你的美食車加入 HatchGrab。}}",
+    "trial": "{months, plural, one {你的一個月免費試用已經開始——所有功能全面開放。} other {你的 # 個月免費試用已經開始——所有功能全面開放。}}",
+    "setup": "如果你還未設定，過程很簡單，大約需時十五分鐘。",
+    "button": "開啟你的控制台",
+    "bookmark": "建議加入書籤，任何裝置都可以使用。",
+    "stuck": "如果遇到困難，直接回覆這封電郵就可以——我會親自回覆。",
+    "lookingForward": "{hasTruck, select, yes {期待看到 {truck} 開始營業。} other {期待看到你的美食車開始營業。}}"
+  }
+}

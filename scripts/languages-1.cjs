@@ -162,7 +162,7 @@ const XX = P.pseudoTree(EN)
   t('an email / the plans PDF: no lang attribute for any English locale (byte-identical), lang="fr-FR" for French', ENGLISH.every(l => H.langAttrOf(l) === '') && H.langAttrOf('fr-FR') === ' lang="fr-FR"')
   t('og:locale and JSON-LD inLanguage follow the locale (fr_FR / fr-FR)', JSON.stringify(H.marketingCountry({ shortName: 'France', name: 'France', locale: 'fr-FR' })) === JSON.stringify({ short: 'France', name: 'France', lang: 'fr-FR', ogLocale: 'fr_FR' }))
   const client = read('lib/i18n/client.tsx')
-  t('a truck surface sets <html lang> when its language is a non-English base (only then)', /isLanguageBase\(locale\) && typeof document !== 'undefined'\) document\.documentElement\.lang = htmlLangOfLocale\(locale\)/.test(client))
+  t('a truck surface sets <html lang> when its language is a non-English base (only then)', /isLanguageBase\(locale\) && typeof document !== 'undefined'\)( \{\s*)? document\.documentElement\.lang = htmlLangOfLocale\(locale\)/.test(client))   // ⚠️ RE-PINNED (world-countries-1): the same line, now inside a block that also adds the script font / dir for ja, zh, th, ar
 
   // ══ 5 ══════════════════════════════════════════════════════════════════════════════════════════════════════════════
   head('5 · PLAN NAMES: through the language file; Pro never; English is the same catalogue')

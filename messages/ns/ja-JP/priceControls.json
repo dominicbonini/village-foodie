@@ -1,0 +1,8 @@
+{
+  "change": "{label}：変更",
+  "useRule": "{label}：ルールを適用",
+  "typePrice": "{label}：価格を入力",
+  "backToRule": "ルールに戻す",
+  "diffUp": "(+{amount})",
+  "diffDown": "(−{amount})"
+}

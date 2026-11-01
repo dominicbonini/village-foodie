@@ -13,5 +13,6 @@
   "countryTerms": "Vilkår per land",
   "contact": "Kontakt",
   "lastUpdated": "Sist oppdatert {date}",
-  "questions": "Spørsmål? <link>Ta kontakt</link> — vi er ekte mennesker."
+  "questions": "Spørsmål? <link>Ta kontakt</link> — vi er ekte mennesker.",
+  "translationNote": "Dette er en oversettelse. Hvis den avviker fra den <link>engelske versjonen</link>, gjelder den engelske versjonen."
 }

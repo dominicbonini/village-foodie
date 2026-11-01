@@ -210,7 +210,9 @@ const code = f => read(f).replace(/\/\*[\s\S]*?\*\//g, '').replace(/^\s*\/\/.*$/
   head('5 · ALLERGENS — the Canadian set; every other set byte-identical')
   const A = await kit.bundle('ca1-allergens', "export * from '@/lib/allergens'")
   const CA_LIST = ['Peanuts', 'Tree nuts', 'Sesame', 'Milk', 'Eggs', 'Fish', 'Crustaceans', 'Molluscs', 'Soy', 'Wheat and triticale', 'Mustard', 'Added sulphites', 'Gluten (barley, oats, rye)']
-  t('the set list is uk14, us9, anz, ca; the ca list is Health Canada\'s priority allergens (13 entries)', JSON.stringify(A.ALLERGEN_SETS) === JSON.stringify(['uk14', 'us9', 'anz', 'ca']) && JSON.stringify(A.allergenVocab('ca')) === JSON.stringify(CA_LIST))
+  // ⚠️ RE-PINNED (world-countries-1, 31 October 2026): the list starts uk14, us9, anz, ca (jp, br, codex follow); the admin form checks
+  // a set against lib/allergens.ts ALLERGEN_SETS instead of naming each.
+  t('the set list is uk14, us9, anz, ca; the ca list is Health Canada\'s priority allergens (13 entries)', JSON.stringify(A.ALLERGEN_SETS.slice(0, 4)) === JSON.stringify(['uk14', 'us9', 'anz', 'ca']) && JSON.stringify(A.allergenVocab('ca')) === JSON.stringify(CA_LIST))
   const extractSrc = read('lib/menu-extract.ts')
   const surf = set => ({
     allergenVocab: JSON.stringify(A.allergenVocab(set)), genericReplacements: JSON.stringify(A.genericReplacements(set)),
@@ -251,7 +253,7 @@ const code = f => read(f).replace(/\/\*[\s\S]*?\*\//g, '').replace(/^\s*\/\/.*$/
   t('the reply caveat widens to the Canadian family words for a ca truck only (its own list, beside anz\'s)', !!guardWords.caveatWords.ca.milk && !!guardWords.caveatWords.anz.milk
     && gMod.exports.caveatTriggerWords(['Crustaceans'], 'ca', 'en-CA').has('shrimp') && !gMod.exports.caveatTriggerWords(['Crustaceans'], 'anz', 'en-AU').has('shrimp') && !gMod.exports.caveatTriggerWords(['Crustaceans'], 'uk14', 'en-GB').has('shrimp'))
   const Lo = await R.lib()
-  t('the settings loader accepts allergen_set "ca" (the SQL\'s row loads) and the admin form offers "Canada 13"', CA.allergenSet === 'ca' && /\['ca', 'Canada 13'\]/.test(read('components/admin/CountriesTab.tsx')) && /f\.allergenSet !== 'ca'/.test(read('lib/admin/country-form.ts')) && typeof Lo.mapCountryRow === 'function')
+  t('the settings loader accepts allergen_set "ca" (the SQL\'s row loads) and the admin form offers "Canada 13"', CA.allergenSet === 'ca' && /\['ca', 'Canada 13'\]/.test(read('components/admin/CountriesTab.tsx')) && /ALLERGEN_SETS as readonly string\[\]\)\.includes\(f\.allergenSet\)/.test(read('lib/admin/country-form.ts')) && typeof Lo.mapCountryRow === 'function')
 
   // ══ 6 ════════════════════════════════════════════════════════════════════════════════════════════════════════════
   head('6 · QUEBEC — refused at signup and in Where you trade, said plainly')

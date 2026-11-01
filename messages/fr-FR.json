@@ -633,6 +633,28 @@
       "Walnut": "Noix",
       "Wheatandtriticale": "Blé et triticale",
       "Glutenbarleyoatsrye": "Gluten (orge, avoine, seigle)",
+      "Shrimp": "Crevette",
+      "Crab": "Crabe",
+      "Buckwheat": "Sarrasin",
+      "Abalone": "Ormeau",
+      "Squid": "Calmar",
+      "Salmonroe": "Œufs de saumon",
+      "Orange": "Orange",
+      "Kiwifruit": "Kiwi",
+      "Beef": "Bœuf",
+      "Salmon": "Saumon",
+      "Mackerel": "Maquereau",
+      "Soybean": "Soja",
+      "Chicken": "Poulet",
+      "Banana": "Banane",
+      "Pork": "Porc",
+      "Peach": "Pêche",
+      "Yam": "Igname",
+      "Apple": "Pomme",
+      "Gelatin": "Gélatine",
+      "Chestnut": "Châtaigne",
+      "Naturallatex": "Latex naturel",
+      "Lactose": "Lactose",
       "Nuts": "Fruits à coque",
       "Shellfish": "Fruits de mer"
     }
@@ -4854,6 +4876,7 @@
       "ends": "{hasDate, select, yes {Fin de l’essai : <hl>{date}</hl>} other {Fin de l’essai : <hl>bientôt</hl>}}",
       "offer": "{hasMonths, select, yes {{months, plural, one {Toutes les fonctionnalités gratuites pendant # mois} other {Toutes les fonctionnalités gratuites pendant # mois}}} other {Toutes les fonctionnalités gratuites pendant votre essai}}",
       "body": "{hasDate, select, yes {Rien ne vous sera facturé pendant votre essai, qui dure jusqu’au <b>{date}</b>. La facturation ne commence que lorsque vous choisissez une offre et saisissez vos informations de paiement. D’ici là, il n’y a rien à résilier et rien à payer. Choisissez votre offre avant cette date — sinon, vous passerez à l’offre {fallback} et certaines fonctionnalités cesseront de fonctionner.} other {Rien ne vous sera facturé pendant votre essai. La facturation ne commence que lorsque vous choisissez une offre et saisissez vos informations de paiement. D’ici là, il n’y a rien à résilier et rien à payer. Choisissez votre offre avant la fin de l’essai — sinon, vous passerez à l’offre {fallback} et certaines fonctionnalités cesseront de fonctionner.}}",
+      "bodyPaidEnd": "{hasDate, select, yes {Rien ne vous sera facturé pendant votre essai, qui dure jusqu’au <b>{date}</b>. À la fin de votre essai, l’offre {fallback} coûtera {price} par mois. Nous vous contacterons d’ici là pour mettre en place le paiement.} other {Rien ne vous sera facturé pendant votre essai. À la fin de votre essai, l’offre {fallback} coûtera {price} par mois. Nous vous contacterons d’ici là pour mettre en place le paiement.}}",
       "fees": "*Des frais standard de traitement des paiements par carte s’appliquent aux commandes en ligne",
       "upgrade": "Mettre à niveau ici →"
     }
@@ -4884,8 +4907,10 @@
       "heading": "Votre essai gratuit n’a pas encore commencé"
     },
     "onTrial": "Vous avez accès à toutes les fonctionnalités. Choisissez une offre avant la fin de votre essai.",
+    "onTrialPaidEnd": "Vous avez accès à toutes les fonctionnalités. À la fin de votre essai, l’offre {plan} coûtera {price} par mois. Nous vous contacterons d’ici là pour mettre en place le paiement.",
     "onTrialNoCta": "Vous avez accès à toutes les fonctionnalités.",
     "noCharge": "🔒 Rien ne vous sera facturé pendant votre essai, qui dure jusqu’au {date}. La facturation ne démarre que lorsque vous choisissez une offre et saisissez vos informations de paiement. D’ici là, il n’y a rien à résilier ni à payer.",
+    "noChargePaidEnd": "🔒 Rien ne vous sera facturé pendant votre essai, qui dure jusqu’au {date}.",
     "fees": "*Des frais standard de traitement des cartes s’appliquent aux commandes en ligne",
     "setUpPayment": "⏱ Choisissez une offre avant la fin de votre essai",
     "changeYourPlan": "Changer d’offre",
@@ -5472,7 +5497,6 @@
     "hero": {
       "title": "Le logiciel de commande en ligne pensé pour les <lean>food trucks.</lean>",
       "subSmall": "Importez votre carte, sans inscription.<br></br>Une démo fonctionnelle en moins de 60 secondes.",
-      "tagline": "Moins de temps à gérer.<br></br>Plus de temps à <lean>cuisiner.</lean>",
       "cta": "Importer ma carte →",
       "ctaNote": "<lead>Importez une photo de votre carte et voyez-la fonctionner en moins de 60 secondes.</lead><small>Sans inscription. Sans carte bancaire.</small>"
     },
@@ -5556,7 +5580,6 @@
     }
   },
   "landingFooter": {
-    "tagline": "Moins de temps à réserver.<br></br>Plus de temps à cuisiner.",
     "features": "Fonctionnalités",
     "pricing": "Tarifs",
     "privacy": "Confidentialité",
@@ -5638,7 +5661,8 @@
     "countryTerms": "Conditions par pays",
     "contact": "Contact",
     "lastUpdated": "Dernière mise à jour : {date}",
-    "questions": "Des questions ? <link>Contactez-nous</link> — nous sommes de vraies personnes."
+    "questions": "Des questions ? <link>Contactez-nous</link> — nous sommes de vraies personnes.",
+    "translationNote": "Ceci est une traduction. En cas de divergence avec la <link>version anglaise</link>, la version anglaise prévaut."
   },
   "truckPage": {
     "meta": {
@@ -5794,7 +5818,15 @@
       "Australiancards": "cartes australiennes",
       "NewZealandcards": "cartes néo-zélandaises",
       "Canadiancards": "cartes canadiennes",
-      "Swisscards": "cartes suisses"
+      "Swisscards": "cartes suisses",
+      "Braziliancards": "cartes brésiliennes",
+      "Mexicancards": "cartes mexicaines",
+      "Japanesecards": "cartes japonaises",
+      "Singaporecards": "cartes singapouriennes",
+      "HongKongcards": "cartes hongkongaises",
+      "Malaysiancards": "cartes malaisiennes",
+      "Thaicards": "cartes thaïlandaises",
+      "UAEcards": "cartes des EAU"
     },
     "perMonth": {
       "mo": "{amount}/mois",
@@ -5963,7 +5995,8 @@
   "pricing": {
     "banner": {
       "title": "{months, plural, one {Votre premier mois est entièrement gratuit, avec toutes les fonctionnalités.} other {Vos # premiers mois sont entièrement gratuits, avec toutes les fonctionnalités.}}",
-      "body": "Avec {brand}, vos clients commandent à l’avance et paient au retrait : vous pouvez donc prendre des commandes en ligne sans aucun prestataire de paiement par carte. Vous préférez encaisser à l’avance ? Ajoutez le paiement en ligne par carte quand vous voulez. À la fin de votre essai gratuit, vous passez à l’offre <plan>{fallback}</plan>{fallbackFree, select, yes { (sans abonnement mensuel)} other {}}, sauf si vous choisissez une autre offre. Sans carte bancaire pour démarrer, sans engagement, résiliable à tout moment."
+      "body": "Avec {brand}, vos clients commandent à l’avance et paient au retrait : vous pouvez donc prendre des commandes en ligne sans aucun prestataire de paiement par carte. Vous préférez encaisser à l’avance ? Ajoutez le paiement en ligne par carte quand vous voulez. À la fin de votre essai gratuit, vous passez à l’offre <plan>{fallback}</plan>{fallbackFree, select, yes { (sans abonnement mensuel)} other {}}, sauf si vous choisissez une autre offre. Sans carte bancaire pour démarrer, sans engagement, résiliable à tout moment.",
+      "bodyOnly": "Avec {brand}, vos clients commandent à l’avance et paient au retrait : vous pouvez donc prendre des commandes en ligne sans aucun prestataire de paiement par carte. Vous préférez encaisser à l’avance ? Ajoutez le paiement en ligne par carte quand vous voulez. À la fin de votre essai gratuit, l’offre <plan>{fallback}</plan> coûtera {price} par mois. Nous vous contacterons d’ici là pour mettre en place le paiement. Sans carte bancaire pour démarrer, sans engagement, résiliable à tout moment."
     },
     "card": {
       "perTruckMonth": "par food truck / mois",
@@ -6231,6 +6264,9 @@
       "stateTerritory": "État ou territoire",
       "province": "Province",
       "county": "Comté",
+      "prefecture": "Préfecture",
+      "emirate": "Émirat",
+      "region": "Région",
       "area": "Commune (village ou ville)",
       "townOrArea": "Ville ou commune",
       "city": "Ville",
@@ -6326,5 +6362,13 @@
     "backToMenu": "Retour à la carte",
     "formNote": "Ceci est une démo : personne n’est débité et rien n’est envoyé, vous n’avez donc pas besoin d’indiquer d’e-mail.",
     "namePlaceholder": "Alex"
+  },
+  "errorPage": {
+    "notFoundTitle": "Page introuvable",
+    "notFoundBody": "Nous n’avons pas trouvé cette page. Elle a peut-être été déplacée, ou l’adresse est mal saisie.",
+    "home": "Aller à la page d’accueil",
+    "errorTitle": "Une erreur est survenue",
+    "errorBody": "Désolés, cette page ne s’est pas chargée. Réessayez, ou revenez à la page d’accueil.",
+    "retry": "Réessayer"
   }
 }

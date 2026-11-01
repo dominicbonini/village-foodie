@@ -1,0 +1,8 @@
+{
+  "notFoundTitle": "Pagina niet gevonden",
+  "notFoundBody": "We konden die pagina niet vinden. Misschien is ze verplaatst, of is het adres verkeerd getypt.",
+  "home": "Naar de startpagina",
+  "errorTitle": "Er ging iets mis",
+  "errorBody": "Sorry, deze pagina is niet geladen. Probeer het opnieuw, of ga terug naar de startpagina.",
+  "retry": "Opnieuw proberen"
+}

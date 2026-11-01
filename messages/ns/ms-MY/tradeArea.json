@@ -1,0 +1,8 @@
+{
+  "country_missing": "Pilih negara tempat trak anda berpangkalan.",
+  "country_off": "Trak di negara itu belum boleh mendaftar. Pilih negara lain.",
+  "zone_unknown": "Zon waktu itu tiada dalam pilihan kami untuk negara itu. Pilih satu daripada senarai.",
+  "town_missing": "Beritahu kami pekan atau bandar tempat anda berpangkalan.",
+  "town_too_long": "Nama bandar itu terlalu panjang — maksimum 120 aksara.",
+  "region_closed": "Trak yang berpangkalan di {region} belum boleh mendaftar{reason, select, language {: HatchGrab belum tersedia dalam bahasa ini: {language}} taxLines {: kami sedang menambah baris GST dan PST yang berasingan dahulu} other {}}. Jika trak anda berpangkalan di tempat lain, pilih pekan atau bandar itu."
+}

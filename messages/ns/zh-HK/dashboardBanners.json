@@ -1,0 +1,21 @@
+{
+  "breachHeadline": "{n, plural, other {{count} 個時段}}超出容量，請檢查",
+  "batchOver": "{cat} 超出每批數量：{slot} 有 {count} 件（每批 {per} 件）",
+  "eventStartOver": "活動開始時已超出容量：{slot} 有 {n, plural, other {{count} 件食品}}",
+  "kitchenOver": "廚房超出容量：{slot} 正在製作 {n, plural, other {{count} 件食品}}",
+  "orderItems": "#{id} — {n, plural, other {{count} 件食品}}",
+  "placedAnyway": "仍然落單：{list}",
+  "placedItem": "#{id}，時段 {slot}",
+  "orphans": "{times} 超出容量，但找不到相關訂單",
+  "dismiss": "關閉",
+  "kitchenCapacity": "廚房容量",
+  "overCapacity": "超出容量",
+  "wakeUnsupported": "此裝置無法保持屏幕開啟。",
+  "wakeInsecure": "使用此網址無法保持屏幕開啟。",
+  "wakeRetry": "保持屏幕開啟：點按再試一次",
+  "wakeAcquire": "保持屏幕開啟",
+  "degraded": {
+    "serverError": "伺服器無法載入訂單{hasStatus, select, yes {（錯誤 {status}）} other {}}。正在顯示 {at} 的訂單，可能遺漏新訂單。",
+    "unreachable": "無法連接伺服器。正在顯示 {at} 的訂單，可能遺漏新訂單。"
+  }
+}

@@ -206,3 +206,10 @@ html:not([data-brand="hatchgrab"]) .brand-mark-hg { display: none; }
 /* europe-languages-2 (23 October 2026): Greek and Bulgarian pages — Noto Sans fills the letters Geist lacks (Greek), after Geist and
    before its metric fallback. The variable exists only on those pages (app/layout.tsx), so no Latin page is affected. */
 :root:lang(el) body, :root:lang(bg) body { --font-geist-sans: 'Geist', var(--font-script-fallback), 'Geist Fallback'; }
+/* world-countries-1 (31 October 2026): Japanese, Traditional Chinese (Hong Kong), Thai and Arabic — each language's Noto (app/layout.tsx,
+   present only on its own pages) BEFORE Geist's metric fallback, which is a size-adjusted local Arial that would otherwise draw (or
+   miss) these scripts and keep Noto from ever loading. */
+:root:lang(ja) body { --font-geist-sans: 'Geist', var(--font-script-ja), 'Geist Fallback'; }
+:root:lang(zh) body { --font-geist-sans: 'Geist', var(--font-script-zh-hk), 'Geist Fallback'; }
+:root:lang(th) body { --font-geist-sans: 'Geist', var(--font-script-th), 'Geist Fallback'; }
+:root:lang(ar) body { --font-geist-sans: 'Geist', var(--font-script-ar), 'Geist Fallback'; }

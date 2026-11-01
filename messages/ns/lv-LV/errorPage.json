@@ -1,0 +1,8 @@
+{
+  "notFoundTitle": "Lapa nav atrasta",
+  "notFoundBody": "Mēs neatradām šo lapu. Iespējams, tā ir pārvietota vai adrese ir ierakstīta kļūdaini.",
+  "home": "Uz sākumlapu",
+  "errorTitle": "Kaut kas nogāja greizi",
+  "errorBody": "Atvainojiet, šī lapa netika ielādēta. Mēģiniet vēlreiz vai atgriezieties sākumlapā.",
+  "retry": "Mēģināt vēlreiz"
+}

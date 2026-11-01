@@ -1,0 +1,17 @@
+{
+  "back": "← ย้อนกลับ",
+  "title": "ใช้เซ็ต",
+  "save": "ประหยัด {amount}",
+  "selectItems": "เลือกรายการสำหรับแต่ละช่อง",
+  "choose": "เลือก {category}…",
+  "inYourBasket": "── ในตะกร้าของคุณ ──",
+  "basketUnit": "{name}{withMods, select, yes { (+ {mods})} other {}} (อยู่ในตะกร้า){state, select, used { — อยู่ในเซ็ตอื่นแล้ว} taken { — เลือกไว้ในช่องอื่นแล้ว} other {}}",
+  "addNew": "── เพิ่มรายการใหม่ ──",
+  "itemWithPrice": "{name} {price}",
+  "ruleHint": "· {rule, select, requiredOne {ต้องเลือก · เลือก 1 อย่าง} required {ต้องเลือก} other {เลือก 1 อย่าง}}{unmet, select, yes { (ต้องเลือก)} other {}}",
+  "notePlaceholder": "เพิ่มหมายเหตุ เช่น ไม่ใส่หัวหอม (ไม่บังคับ)",
+  "backButton": "ย้อนกลับ",
+  "cancel": "ยกเลิก",
+  "chooseRequired": "เลือกตัวเลือกที่ต้องเลือก",
+  "apply": "ใช้เซ็ต · {amount}"
+}

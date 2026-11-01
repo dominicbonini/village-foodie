@@ -1,0 +1,36 @@
+{
+  "h1": "営業に必要なものすべてを、すべてのプランで。",
+  "lede": "注文、事前注文、調理キャパシティ、キッチンディスプレイはすべてのプランに含まれます。{hasUpgrades, select, yes {{plans}では{features}が加わり、手数料も下がります。} other {}}",
+  "perMonth": "月額{price}",
+  "group": {
+    "pay": "お支払い",
+    "run": "営業の運営",
+    "online": "オンライン注文",
+    "marketing": "マーケティング＆自動化"
+  },
+  "pay": {
+    "included": "毎月込みのオンライン注文",
+    "fee": "オンラインのカード注文にかかるHatchGrabの手数料*",
+    "walkUp": "店頭注文"
+  },
+  "cell": {
+    "unlimited": "無制限",
+    "free": "無料",
+    "feeAbove": "{included}を超えた分に<b>{fee}</b>",
+    "yes": "含まれる",
+    "none": "含まれない",
+    "comingSoon": "近日公開"
+  },
+  "short": {
+    "whatsapp_replies": "WhatsApp",
+    "schedule_graphics": "SNS",
+    "event_types": "出店タイプ別料金"
+  },
+  "meta": {
+    "description": "HatchGrabの全機能を全プランで並べて比較：{plans}。手数料と無料枠も掲載しています。{months, plural, =0 {} other {最初の#か月間はすべての機能をご利用いただけます。}}"
+  },
+  "notes": {
+    "whatsapp": "WhatsApp自動返信にはWhatsApp Businessアカウントが必要です。一部のメッセージはMetaの料金がかかる場合があります。返信は自動で生成されます。",
+    "printing": "キッチン伝票の印刷には、対応するBluetoothまたは有線のプリンターが必要です（別売り）。"
+  }
+}

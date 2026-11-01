@@ -22,6 +22,11 @@
 //   namePlural    the currency's name as the currency line says it ("New Zealand dollars"). English, like `name`.
 //   homeDisplay   the ONE override, for a currency whose home locale Intl does not print the way locals write it:
 //                 'narrowSymbol' (RON: ro-RO gives "29 RON", Romanians write "29 lei"). Absent = Intl's own form.
+//   printedSymbol world-countries-2 (1 November 2026, Dominic): the symbol PRINTED in place of the one Intl gives, in every
+//                 locale — JPY's normal-width "¥" where ja-JP's Intl writes the full-width "￥". lib/money-format.ts applies it to
+//                 every amount (menus, orders, emails, plan prices). Absent = Intl's own symbol.
+//   symbolTight   world-countries-2: no space between the symbol and the figure, in every locale — MYR "RM29" where ms-MY's
+//                 Intl writes "RM 29". lib/money-format.ts applies it to every amount. Absent = Intl's own spacing.
 //   narrowIn      the locales where Intl writes the currency as a FOREIGN one but locals write its narrow symbol
 //                 (europe-settings, 22 October 2026): en-GI gives "GB£29" because Gibraltar's own pound is GIP, but
 //                 Gibraltar prices in sterling written "£29"; ro-RO's "29 RON" is "29 lei". lib/money-format.ts applies it
@@ -48,6 +53,8 @@ export interface CurrencyInfo {
   intlSymbol: string
   symbolShared: boolean
   homeDisplay?: 'narrowSymbol'
+  printedSymbol?: string
+  symbolTight?: boolean
   narrowIn?: readonly string[]
   decimals: number
   minorSign: string
@@ -90,6 +97,31 @@ export const CURRENCIES: readonly CurrencyInfo[] = [
   // lei: Romania's. The Moldovan leu is also "lei" in Romanian speech, but writes "L" / "MDL" (CLDR) and is not one of ours,
   // so a Romanian page's "29 lei" is unambiguous. homeDisplay: ro-RO's standard symbol is the code ("29 RON").
   { code: 'RON', name: 'Romanian leu', namePlural: 'Romanian lei', symbol: 'lei', intlSymbol: 'lei', symbolShared: false, homeDisplay: 'narrowSymbol', narrowIn: ['ro-RO'], decimals: 2, minorSign: 'bani', shortFee: 'amount', locale: 'ro-RO' },
+  // ── world-countries-1 (31 October 2026, docs/world-countries-1-report.md §1): Brazil, Mexico, Japan, Singapore, Hong Kong,
+  //    Malaysia, the UAE and Thailand. Each home form is Intl's in the country's locale (native-prices), but for two printing
+  //    overrides world-countries-2 added (JPY's "¥", MYR's "RM29").
+  //    Small fees are written as amounts ("R$ 0,39"), as each country's Stripe pricing page writes them.
+  // R$: the real's alone (pt-BR "R$ 59").
+  { code: 'BRL', name: 'Brazilian real', namePlural: 'Brazilian reais', symbol: 'R$', intlSymbol: 'R$', symbolShared: false, decimals: 2, minorSign: 'centavos', shortFee: 'amount', locale: 'pt-BR' },
+  // $: Mexico writes its peso "$349", the US dollar's sign — so the page names the currency (es-MX); side by side it is "MX$".
+  { code: 'MXN', name: 'Mexican peso', namePlural: 'Mexican pesos', symbol: '$', intlSymbol: 'MX$', symbolShared: true, decimals: 2, minorSign: 'centavos', shortFee: 'amount', locale: 'es-MX' },
+  // ¥: world-countries-2 (Dominic, 1 November 2026) — the NORMAL-WIDTH sign everywhere ("¥1,980"). ja-JP's Intl writes the
+  // full-width "￥", so printedSymbol replaces it on every amount. (world-countries-1 had kept Intl's "￥".) English writes "¥1,980", and
+  // the yuan writes itself "CN¥" beside it, so the yen's sign names one currency here. 🔴 ZERO-DECIMAL AT STRIPE: an amount in
+  // JPY is whole yen ("minor unit" = 1 yen), never ×100 (docs.stripe.com/currencies#zero-decimal).
+  { code: 'JPY', name: 'Japanese yen', namePlural: 'Japanese yen', symbol: '¥', intlSymbol: '¥', symbolShared: false, printedSymbol: '¥', decimals: 0, minorSign: '¥', shortFee: 'amount', locale: 'ja-JP' },
+  // $: Singapore writes "$29" — also the US, Canadian, Australian and New Zealand dollars' sign; side by side international English
+  // writes it "SGD 29" (as it does SEK), which is what the international form prints.
+  { code: 'SGD', name: 'Singapore dollar', namePlural: 'Singapore dollars', symbol: '$', intlSymbol: 'SGD', symbolShared: true, decimals: 2, minorSign: '¢', shortFee: 'amount', locale: 'en-SG' },
+  // HK$: zh-HK writes "HK$119" — the letters name it, so no line is needed.
+  { code: 'HKD', name: 'Hong Kong dollar', namePlural: 'Hong Kong dollars', symbol: 'HK$', intlSymbol: 'HK$', symbolShared: false, decimals: 2, minorSign: '¢', shortFee: 'amount', locale: 'zh-HK' },
+  // RM: the ringgit's alone, written against the figure — "RM29" (world-countries-2, Dominic, 1 November 2026: ms-MY's Intl
+  // writes "RM 29", so symbolTight drops the space on every amount).
+  { code: 'MYR', name: 'Malaysian ringgit', namePlural: 'Malaysian ringgit', symbol: 'RM', intlSymbol: 'RM', symbolShared: false, symbolTight: true, decimals: 2, minorSign: 'sen', shortFee: 'amount', locale: 'ms-MY' },
+  // د.إ.: the dirham's own sign, after the number in ar-AE ("59 د.إ."); it names one currency, so the side-by-side form is the same.
+  { code: 'AED', name: 'UAE dirham', namePlural: 'UAE dirhams', symbol: 'د.إ.', intlSymbol: 'د.إ.', symbolShared: false, decimals: 2, minorSign: 'fils', shortFee: 'amount', locale: 'ar-AE' },
+  // ฿: the baht's alone (th-TH "฿199").
+  { code: 'THB', name: 'Thai baht', namePlural: 'Thai baht', symbol: '฿', intlSymbol: '฿', symbolShared: false, decimals: 2, minorSign: 'satang', shortFee: 'amount', locale: 'th-TH' },
 ]
 
 /** Every supported ISO 4217 code, in the list's order — what the database CHECK allows. */

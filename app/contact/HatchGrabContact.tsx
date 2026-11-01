@@ -23,7 +23,7 @@ import { Suspense } from 'react'
 import { Archivo, Public_Sans, Courier_Prime } from 'next/font/google'
 import { HEADER_BG } from '@/lib/brand'
 import { HatchGrabWordmark } from '@/components/brand/HatchGrabWordmark'
-import { PRIVACY_PATH, TERMS_PATH, copyrightYear } from '@/lib/legal'
+import { legalPath, copyrightYear } from '@/lib/legal'
 import { ABOUT_PATH } from '@/lib/about'
 import { ContactForm } from './ContactForm'
 import { translatorFor } from '@/lib/i18n/translator'
@@ -41,7 +41,7 @@ const courierPrime = Courier_Prime({ subsets: ['latin'], weight: ['400', '700'],
 const SUPPORT_EMAIL = 'hello@hatchgrab.com'
 
 /** Language Phase 1e: the words are `contactPage`, in the visitor's country's language (page.tsx resolves it). */
-export function HatchGrabContact({ locale }: { locale: AppLocale }) {
+export function HatchGrabContact({ locale, country = null }: { locale: AppLocale; country?: string | null }) {
   const t = translatorFor(locale, 'contactPage')
   return (
     <div className={`hg-landing ${archivo.variable} ${publicSans.variable} ${courierPrime.variable}`}>
@@ -184,8 +184,9 @@ export function HatchGrabContact({ locale }: { locale: AppLocale }) {
       <footer className={HEADER_BG}>
         <div className="wrap">
           <div className="foot-links">
-            <a href={PRIVACY_PATH}>{t('privacy')}</a>
-            <a href={TERMS_PATH}>{t('terms')}</a>
+            {/* legal-languages-1: the documents in the visitor's language (English pages: /privacy, /terms, as before). */}
+            <a href={legalPath('privacy', { country, locale })}>{t('privacy')}</a>
+            <a href={legalPath('terms', { country, locale })}>{t('terms')}</a>
             {/* about-page (22 October 2026): this footer is HatchGrab's only (Village Foodie's /contact has its own). */}
             <a href={ABOUT_PATH}>{t('about')}</a>
           </div>

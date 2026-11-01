@@ -1,0 +1,16 @@
+{
+  "features": "Ciri-ciri",
+  "pricing": "Harga",
+  "privacy": "Privasi",
+  "terms": "Terma",
+  "contact": "Hubungi kami",
+  "about": "Tentang kami",
+  "copyright": "© {year} HatchGrab",
+  "credit": "Daripada pasukan di sebalik <b>Village Foodie</b>",
+  "badges": {
+    "appStoreLink": "Muat turun HatchGrab di App Store",
+    "appStoreAlt": "Muat turun di App Store",
+    "googlePlayLink": "Dapatkan HatchGrab di Google Play",
+    "googlePlayAlt": "Dapatkannya di Google Play"
+  }
+}

@@ -1,0 +1,13 @@
+{
+  "subtotal": "Subjumlah",
+  "taxFallback": "Cukai",
+  "taxIncluded": "Termasuk {label}",
+  "serviceFeeCustomer": "Yuran perkhidmatan dalam talian",
+  "serviceFee": "Yuran perkhidmatan",
+  "cardFee": "Yuran kad",
+  "tip": "Tip",
+  "rate": "{rate}%",
+  "line": "{label}: {amount}",
+  "lineWithRate": "{label} {rate}: {amount}",
+  "foldedCharges": "{parts, select, tax_fees_tip {Cukai, yuran & tip} tax_tip {Cukai & tip} fees_tip {Yuran & tip} fees {Yuran} other {Cukai & yuran}}"
+}

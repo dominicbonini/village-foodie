@@ -1,0 +1,92 @@
+{
+  "filter": {
+    "dateRange": "📅 النطاق الزمني",
+    "event": "📍 الفعالية",
+    "filterBy": "تصفية حسب",
+    "show": "عرض",
+    "range": "<from></from><sep>إلى</sep><until></until>",
+    "selectEvent": "اختر فعالية…",
+    "eventOption": "{venue} · {date}",
+    "unnamedEvent": "فعالية",
+    "viewReport": "عرض التقرير",
+    "loading": "جارٍ التحميل…",
+    "orders": "📋 الطلبات",
+    "items": "📦 الأصناف",
+    "exportCsv": "⬇ تصدير CSV"
+  },
+  "empty": {
+    "noOrders": "لا توجد طلبات في هذه الفترة.",
+    "selectEvent": "اختر فعالية أعلاه لعرض تقريرها."
+  },
+  "summary": {
+    "totals": "{n, plural, zero {{count} طلب} one {طلب واحد} two {طلبان} few {{count} طلبات} many {{count} طلبًا} other {{count} طلب}} · {total}"
+  },
+  "revenue": {
+    "title": "تفاصيل الإيرادات",
+    "deals": "إيرادات وجبات الكومبو",
+    "modifiers": "رسوم الإضافات",
+    "foodSales": "مبيعات الطعام",
+    "total": "الإجمالي",
+    "other": "أخرى",
+    "tax": "الضريبة",
+    "tips": "الإكراميات",
+    "serviceFees": "رسوم الخدمة",
+    "cardFees": "رسوم البطاقات"
+  },
+  "itemsSold": {
+    "title": "الأصناف المبيعة"
+  },
+  "dealsCard": {
+    "title": "وجبات الكومبو"
+  },
+  "custom": {
+    "title": "التخصيصات",
+    "paidModifiers": "الإضافات المدفوعة",
+    "customerNotes": "ملاحظات العملاء",
+    "note": "«{note}»"
+  },
+  "table": {
+    "item": "الصنف",
+    "modifier": "الإضافة",
+    "qty": "الكمية",
+    "total": "الإجمالي",
+    "date": "التاريخ",
+    "time": "الوقت",
+    "channel": "القناة"
+  },
+  "breakdown": {
+    "orders": "تفاصيل الطلبات",
+    "items": "تفاصيل الأصناف"
+  },
+  "channel": {
+    "online": "عبر الإنترنت",
+    "walkUp": "طلب حضوري"
+  },
+  "csv": {
+    "orderId": "رقم الطلب",
+    "date": "التاريخ",
+    "event": "الفعالية",
+    "timePlaced": "وقت تقديم الطلب",
+    "collectionTime": "وقت الاستلام",
+    "customerName": "اسم العميل",
+    "orderType": "نوع الطلب",
+    "items": "الأصناف",
+    "deals": "وجبات الكومبو",
+    "modifiers": "الإضافات",
+    "notes": "الملاحظات",
+    "subtotal": "المجموع الفرعي",
+    "tip": "الإكرامية",
+    "serviceFee": "رسوم الخدمة",
+    "total": "الإجمالي",
+    "itemName": "اسم الصنف",
+    "qty": "الكمية",
+    "unitPrice": "سعر الوحدة",
+    "itemTotal": "إجمالي الصنف",
+    "orderTotal": "إجمالي الطلب",
+    "unknownEvent": "فعالية غير معروفة",
+    "asap": "في أقرب وقت",
+    "unknownCustomer": "غير معروف",
+    "customerOnline": "العميل عبر الإنترنت",
+    "placedByTruck": "أضافته العربة"
+  }
+}

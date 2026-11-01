@@ -1,0 +1,103 @@
+{
+  "upload": {
+    "bannerButton": "メニューを保存 →",
+    "heading": "キッチンカーを設定",
+    "sub": "メニューはそのまま引き継がれます。",
+    "privacy": "この情報は、キッチンカーの設定とデモリンクの送信にのみ使用します。詳しくは<link>プライバシーポリシー</link>をご覧ください。"
+  },
+  "sample": {
+    "bannerButton": "キッチンカーを設定 →",
+    "heading": "キッチンカーを設定",
+    "sub": "次にご自身のメニューをアップロードします。1分ほどで終わります。",
+    "privacy": "この情報は、キッチンカーの設定とデモリンクの送信にのみ使用します。詳しくは<link>プライバシーポリシー</link>をご覧ください。"
+  },
+  "saveOnly": {
+    "bannerButton": "メニューを保存 →",
+    "heading": "デモを保存",
+    "sub": "14日間保存し、すぐに戻れるリンクをメールでお送りします。",
+    "privacy": "この情報は、デモリンクの送信にのみ使用します。詳しくは<link>プライバシーポリシー</link>をご覧ください。"
+  },
+  "confirmationHeading": "準備が整いました",
+  "postSaveButton": "キッチンカーを設定 →",
+  "enterSetupButton": "キッチンカーを設定 →",
+  "emailOnlyLink": "このデモに戻るためのリンクだけをメールで受け取る",
+  "sendLinkButton": "リンクを送信",
+  "savingButton": "保存しています…",
+  "continueButton": "次へ →",
+  "createAccountButton": "アカウントを作成 →",
+  "retryButton": "再試行",
+  "backToDemoButton": "デモに戻る",
+  "savedStatus": "{hasDate, select, yes {✓ 保存しました（{date}まで保存）} other {✓ 保存しました}}",
+  "back": "戻る",
+  "close": "閉じる",
+  "truckStepHeading": "キッチンカーについて",
+  "detailsStepHeading": "設定を完了する",
+  "stepper": {
+    "details": "基本情報",
+    "menu": "メニュー",
+    "allergens": "アレルゲン",
+    "kitchen": "キッチン設定",
+    "schedule": "出店スケジュール"
+  },
+  "confirmEmailed": "このデモにすぐ戻れるリンクをメールでお送りしました。ログインは不要です。",
+  "confirmKeepUntil": "<b>{date}</b>まで保存します。本登録の際には、メニューもそのまま引き継がれます。",
+  "loading": "読み込み中…",
+  "firstName": "名",
+  "lastName": "姓",
+  "truckName": "キッチンカー名",
+  "truckNamePlaceholder": "例：ビレッジキッチン",
+  "cuisine": "料理ジャンル",
+  "logoLabel": "ロゴ <opt>（任意）</opt>",
+  "logoPreviewAlt": "ロゴのプレビュー",
+  "changeLogo": "ロゴを変更",
+  "removeLogo": "削除",
+  "uploadLogo": "📷 ロゴをアップロード",
+  "readyTitle": "アカウントの準備ができました",
+  "readyBody": "続いて、メニュー、アレルゲン、キッチンなど、キッチンカーの設定を完了しましょう。",
+  "hangTight": "少々お待ちください。すべての設定を行っています。",
+  "stage": {
+    "account": "アカウントを作成中",
+    "truck": "キッチンカーを設定中",
+    "menu": "メニューを読み込み中"
+  },
+  "stageState": {
+    "done": "完了",
+    "recognised": "アカウント登録済み",
+    "failed": "失敗",
+    "active": "処理中",
+    "pending": "待機中"
+  },
+  "signIn": "ログイン",
+  "phone": "電話番号",
+  "onWhatsapp": "この番号はWhatsAppで利用可能",
+  "email": "メールアドレス",
+  "emailPlaceholder": "you@yourtruck.co.uk",
+  "settingUpAs": "<b>{email}</b>で設定中 <change>変更</change>",
+  "password": "パスワード",
+  "passwordPlaceholder": "8文字以上",
+  "hidePassword": "パスワードを隠す",
+  "showPassword": "パスワードを表示",
+  "promoLabel": "コードをお持ちですか？<opt>（任意）</opt>",
+  "promoPlaceholder": "こちらに入力してください",
+  "agreeTerms": "<terms>利用規約</terms>および<privacy>プライバシーポリシー</privacy>に同意します。",
+  "freeMonth": "設定しただけでは無料の1か月間は始まりません。無料期間は、最初の公開出店を選んだ時点から始まります。準備ができたらいつでもどうぞ。",
+  "fieldError": {
+    "firstName": "名を入力してください。",
+    "lastName": "姓を入力してください。",
+    "truck": "キッチンカーの名前を入力してください。",
+    "cuisine": "料理ジャンルを入力してください。",
+    "phoneMissing": "電話番号を入力してください。お客様と当社の双方がご連絡に使用します。",
+    "email": "有効なメールアドレスを入力してください。",
+    "password": "パスワードは8文字以上にしてください。",
+    "terms": "続行するには利用規約に同意してください。"
+  },
+  "error": {
+    "saveFailed": "保存できませんでした。もう一度お試しください。",
+    "savedNoEmail": "保存しましたが、現在リンクをメールで送信できませんでした。",
+    "unreachable": "現在サーバーに接続できません。もう一度お試しください。",
+    "createAccountFailed": "アカウントを作成できませんでした。",
+    "truckCreateFailed": "アカウントの準備はできましたが、キッチンカーを作成できませんでした。もう一度お試しください。",
+    "truckUnreachable": "アカウントの準備はできましたが、現在キッチンカーを作成できませんでした。もう一度お試しください。",
+    "truckNoToken": "キッチンカーの設定は完了しましたが、現在開くことができませんでした。もう一度お試しください。"
+  }
+}

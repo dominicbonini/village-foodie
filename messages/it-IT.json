@@ -633,6 +633,28 @@
       "Walnut": "Noci",
       "Wheatandtriticale": "Frumento e triticale",
       "Glutenbarleyoatsrye": "Glutine (orzo, avena, segale)",
+      "Shrimp": "Gamberi",
+      "Crab": "Granchi",
+      "Buckwheat": "Grano saraceno",
+      "Abalone": "Abalone",
+      "Squid": "Calamari",
+      "Salmonroe": "Uova di salmone",
+      "Orange": "Arance",
+      "Kiwifruit": "Kiwi",
+      "Beef": "Manzo",
+      "Salmon": "Salmone",
+      "Mackerel": "Sgombro",
+      "Soybean": "Soia",
+      "Chicken": "Pollo",
+      "Banana": "Banane",
+      "Pork": "Maiale",
+      "Peach": "Pesche",
+      "Yam": "Igname",
+      "Apple": "Mele",
+      "Gelatin": "Gelatina",
+      "Chestnut": "Castagne",
+      "Naturallatex": "Lattice naturale",
+      "Lactose": "Lattosio",
       "Nuts": "Frutta a guscio",
       "Shellfish": "Frutti di mare"
     }
@@ -4854,6 +4876,7 @@
       "ends": "{hasDate, select, yes {La prova termina il <hl>{date}</hl>} other {La prova termina <hl>a breve</hl>}}",
       "offer": "{hasMonths, select, yes {{months, plural, one {Tutte le funzioni gratis per # mese} other {Tutte le funzioni gratis per # mesi}}} other {Tutte le funzioni gratis durante la prova}}",
       "body": "{hasDate, select, yes {Durante la prova, che dura fino al <b>{date}</b>, non ti verrà addebitato nulla. La fatturazione inizia solo quando scegli un piano e inserisci i tuoi dati di pagamento. Fino ad allora non c’è nulla da disdire e nulla da pagare. Scegli il tuo piano entro quella data — altrimenti passerai al piano {fallback} e alcune funzioni smetteranno di funzionare.} other {Durante la prova non ti verrà addebitato nulla. La fatturazione inizia solo quando scegli un piano e inserisci i tuoi dati di pagamento. Fino ad allora non c’è nulla da disdire e nulla da pagare. Scegli il tuo piano prima della fine della prova — altrimenti passerai al piano {fallback} e alcune funzioni smetteranno di funzionare.}}",
+      "bodyPaidEnd": "{hasDate, select, yes {Durante la prova, che dura fino al <b>{date}</b>, non ti verrà addebitato nulla. Alla fine della prova il piano {fallback} costa {price} al mese. Ti contatteremo prima di allora per impostare il pagamento.} other {Durante la prova non ti verrà addebitato nulla. Alla fine della prova il piano {fallback} costa {price} al mese. Ti contatteremo prima di allora per impostare il pagamento.}}",
       "fees": "*Sugli ordini online si applicano le normali commissioni per i pagamenti con carta",
       "upgrade": "Scegli un piano →"
     }
@@ -4884,8 +4907,10 @@
       "heading": "La tua prova gratuita non è ancora iniziata"
     },
     "onTrial": "Hai tutte le funzioni. Scegli un piano prima della fine della prova.",
+    "onTrialPaidEnd": "Hai tutte le funzioni. Alla fine della prova il piano {plan} costa {price} al mese. Ti contatteremo prima di allora per impostare il pagamento.",
     "onTrialNoCta": "Hai tutte le funzioni.",
     "noCharge": "🔒 Durante la prova, che dura fino al {date}, non ti verrà addebitato nulla. La fatturazione inizia solo quando scegli un piano e inserisci i tuoi dati di pagamento. Fino ad allora non c’è nulla da disdire e nulla da pagare.",
+    "noChargePaidEnd": "🔒 Durante la prova, che dura fino al {date}, non ti verrà addebitato nulla.",
     "fees": "*Sugli ordini online si applicano le normali commissioni per i pagamenti con carta",
     "setUpPayment": "⏱ Scegli un piano prima della fine della prova",
     "changeYourPlan": "Cambia piano",
@@ -5472,7 +5497,6 @@
     "hero": {
       "title": "Il sistema di ordini online pensato per i <lean>food truck.</lean>",
       "subSmall": "Carica il tuo menu, senza registrazione.<br></br>Una demo funzionante in meno di 60 secondi.",
-      "tagline": "Meno tempo a gestire gli ordini.<br></br>Più tempo ai <lean>fornelli.</lean>",
       "cta": "Carica il mio menu →",
       "ctaNote": "<lead>Carica una foto del tuo menu e guardalo funzionare in meno di 60 secondi.</lead><small>Nessuna registrazione. Nessuna carta.</small>"
     },
@@ -5556,7 +5580,6 @@
     }
   },
   "landingFooter": {
-    "tagline": "Meno tempo a gestire gli ordini.<br></br>Più tempo ai fornelli.",
     "features": "Funzioni",
     "pricing": "Prezzi",
     "privacy": "Privacy",
@@ -5638,7 +5661,8 @@
     "countryTerms": "Termini per paese",
     "contact": "Contatti",
     "lastUpdated": "Ultimo aggiornamento: {date}",
-    "questions": "Domande? <link>Contattaci</link> — siamo persone vere."
+    "questions": "Domande? <link>Contattaci</link> — siamo persone vere.",
+    "translationNote": "Questa è una traduzione. In caso di difformità rispetto alla <link>versione inglese</link>, prevale la versione inglese."
   },
   "truckPage": {
     "meta": {
@@ -5794,7 +5818,15 @@
       "Australiancards": "carte australiane",
       "NewZealandcards": "carte neozelandesi",
       "Canadiancards": "carte canadesi",
-      "Swisscards": "carte svizzere"
+      "Swisscards": "carte svizzere",
+      "Braziliancards": "carte brasiliane",
+      "Mexicancards": "carte messicane",
+      "Japanesecards": "carte giapponesi",
+      "Singaporecards": "carte di Singapore",
+      "HongKongcards": "carte di Hong Kong",
+      "Malaysiancards": "carte malesi",
+      "Thaicards": "carte thailandesi",
+      "UAEcards": "carte degli EAU"
     },
     "perMonth": {
       "mo": "{amount}/mese",
@@ -5963,7 +5995,8 @@
   "pricing": {
     "banner": {
       "title": "{months, plural, one {Il tuo primo mese è completamente gratis — tutte le funzioni sbloccate.} other {I tuoi primi # mesi sono completamente gratis — tutte le funzioni sbloccate.}}",
-      "body": "Con {brand} i clienti ordinano in anticipo e pagano al ritiro, così puoi ricevere ordini online senza collegare alcun servizio di pagamento con carta. Preferisci incassare in anticipo? Aggiungi i pagamenti online con carta quando vuoi. Alla fine della prova passi al piano <plan>{fallback}</plan>{fallbackFree, select, yes { (nessun canone mensile)} other {}}, a meno che tu non scelga un altro piano. Nessuna carta per iniziare, nessun vincolo, disdici quando vuoi."
+      "body": "Con {brand} i clienti ordinano in anticipo e pagano al ritiro, così puoi ricevere ordini online senza collegare alcun servizio di pagamento con carta. Preferisci incassare in anticipo? Aggiungi i pagamenti online con carta quando vuoi. Alla fine della prova passi al piano <plan>{fallback}</plan>{fallbackFree, select, yes { (nessun canone mensile)} other {}}, a meno che tu non scelga un altro piano. Nessuna carta per iniziare, nessun vincolo, disdici quando vuoi.",
+      "bodyOnly": "Con {brand} i clienti ordinano in anticipo e pagano al ritiro, così puoi ricevere ordini online senza collegare alcun servizio di pagamento con carta. Preferisci incassare in anticipo? Aggiungi i pagamenti online con carta quando vuoi. Alla fine della prova il piano <plan>{fallback}</plan> costa {price} al mese. Ti contatteremo prima di allora per impostare il pagamento. Nessuna carta per iniziare, nessun vincolo, disdici quando vuoi."
     },
     "card": {
       "perTruckMonth": "per food truck / mese",
@@ -6231,6 +6264,9 @@
       "stateTerritory": "Stato o territorio",
       "province": "Provincia",
       "county": "Contea",
+      "prefecture": "Prefettura",
+      "emirate": "Emirato",
+      "region": "Regione",
       "area": "Località (paese o città)",
       "townOrArea": "Città o località",
       "city": "Città",
@@ -6326,5 +6362,13 @@
     "backToMenu": "Torna al menu",
     "formNote": "Questa è una demo: non viene addebitato nulla a nessuno e non viene inviato niente, quindi non serve indicare un’email.",
     "namePlaceholder": "Alex"
+  },
+  "errorPage": {
+    "notFoundTitle": "Pagina non trovata",
+    "notFoundBody": "Non abbiamo trovato questa pagina. Potrebbe essere stata spostata, oppure l’indirizzo potrebbe essere errato.",
+    "home": "Vai alla home page",
+    "errorTitle": "Qualcosa è andato storto",
+    "errorBody": "Ci dispiace, questa pagina non si è caricata. Riprova oppure torna alla home page.",
+    "retry": "Riprova"
   }
 }

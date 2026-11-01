@@ -1,0 +1,5 @@
+{
+  "welcomeIntro": "{sample, select, yes {Este es un <b>menú de ejemplo</b> para que veas cómo funciona todo; sube el tuyo cuando quieras para hacerlo tuyo.} other {Este es tu propio menú, con tu imagen de marca, en un tablero real.}} Los pedidos que ya aparecen son ejemplos, para que veas un servicio con mucho movimiento.",
+  "hitButton": "Toca <b>{button}</b> en un pedido",
+  "walkBanner": "Demo · este es tu menú, tal como lo verán tus clientes. No se cobra nada y no se envía ningún correo."
+}

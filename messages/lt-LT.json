@@ -633,6 +633,28 @@
       "Walnut": "Graikinis riešutas",
       "Wheatandtriticale": "Kviečiai ir kvietrugiai",
       "Glutenbarleyoatsrye": "Glitimas (miežiai, avižos, rugiai)",
+      "Shrimp": "Krevetės",
+      "Crab": "Krabai",
+      "Buckwheat": "Grikiai",
+      "Abalone": "Jūrų ausis",
+      "Squid": "Kalmaras",
+      "Salmonroe": "Lašišos ikrai",
+      "Orange": "Apelsinas",
+      "Kiwifruit": "Kivis",
+      "Beef": "Jautiena",
+      "Salmon": "Lašiša",
+      "Mackerel": "Skumbrė",
+      "Soybean": "Sojos pupelės",
+      "Chicken": "Vištiena",
+      "Banana": "Bananas",
+      "Pork": "Kiauliena",
+      "Peach": "Persikas",
+      "Yam": "Jamas",
+      "Apple": "Obuolys",
+      "Gelatin": "Želatina",
+      "Chestnut": "Kaštonas",
+      "Naturallatex": "Natūralusis lateksas",
+      "Lactose": "Laktozė",
       "Nuts": "Riešutai",
       "Shellfish": "Jūros gėrybės"
     }
@@ -4854,6 +4876,7 @@
       "ends": "{hasDate, select, yes {Bandomasis laikotarpis baigiasi <hl>{date}</hl>} other {Bandomasis laikotarpis <hl>netrukus</hl> baigiasi}}",
       "offer": "{hasMonths, select, yes {{months, plural, one {Visos funkcijos nemokamai # mėnesį} few {Visos funkcijos nemokamai # mėnesius} many {Visos funkcijos nemokamai # mėnesių} other {Visos funkcijos nemokamai # mėnesių}}} other {Visos funkcijos nemokamai bandomuoju laikotarpiu}}",
       "body": "{hasDate, select, yes {Bandomuoju laikotarpiu, kuris trunka iki <b>{date}</b>, jums nebus nieko apmokestinta. Mokesčiai pradedami skaičiuoti tik tada, kai pasirenkate planą ir įvedate mokėjimo duomenis. Iki tol nėra ko atšaukti ir nėra už ką mokėti. Pasirinkite planą iki tos datos — jei to nepadarysite, būsite perkelti į planą {fallback} ir kai kurios funkcijos nebeveiks.} other {Bandomuoju laikotarpiu jums nebus nieko apmokestinta. Mokesčiai pradedami skaičiuoti tik tada, kai pasirenkate planą ir įvedate mokėjimo duomenis. Iki tol nėra ko atšaukti ir nėra už ką mokėti. Pasirinkite planą, kol nesibaigė bandomasis laikotarpis — jei to nepadarysite, būsite perkelti į planą {fallback} ir kai kurios funkcijos nebeveiks.}}",
+      "bodyPaidEnd": "{hasDate, select, yes {Bandomuoju laikotarpiu, kuris trunka iki <b>{date}</b>, jums nebus nieko apmokestinta. Pasibaigus bandomajam laikotarpiui, planas {fallback} kainuos {price} per mėnesį. Dar prieš tai susisieksime su jumis, kad sutvarkytume mokėjimą.} other {Bandomuoju laikotarpiu jums nebus nieko apmokestinta. Pasibaigus bandomajam laikotarpiui, planas {fallback} kainuos {price} per mėnesį. Dar prieš tai susisieksime su jumis, kad sutvarkytume mokėjimą.}}",
       "fees": "*Už internetinius užsakymus taikomi standartiniai kortelių mokėjimų apdorojimo mokesčiai",
       "upgrade": "Keisti planą čia →"
     }
@@ -4884,8 +4907,10 @@
       "heading": "Jūsų nemokamas bandomasis laikotarpis dar neprasidėjo"
     },
     "onTrial": "Galite naudotis visomis funkcijomis. Pasirinkite planą, kol nesibaigė bandomasis laikotarpis.",
+    "onTrialPaidEnd": "Galite naudotis visomis funkcijomis. Pasibaigus bandomajam laikotarpiui, planas {plan} kainuos {price} per mėnesį. Dar prieš tai susisieksime su jumis, kad sutvarkytume mokėjimą.",
     "onTrialNoCta": "Galite naudotis visomis funkcijomis.",
     "noCharge": "🔒 Bandomuoju laikotarpiu, kuris trunka iki {date}, jums nebus nieko apmokestinta. Mokesčiai pradedami skaičiuoti tik tada, kai pasirenkate planą ir įvedate mokėjimo duomenis. Iki tol nėra ko atšaukti ir nėra už ką mokėti.",
+    "noChargePaidEnd": "🔒 Bandomuoju laikotarpiu, kuris trunka iki {date}, jums nebus nieko apmokestinta.",
     "fees": "*Už internetinius užsakymus taikomi standartiniai kortelių mokėjimų apdorojimo mokesčiai",
     "setUpPayment": "⏱ Pasirinkite planą, kol nesibaigė bandomasis laikotarpis",
     "changeYourPlan": "Keisti planą",
@@ -5472,7 +5497,6 @@
     "hero": {
       "title": "Užsakymų sistema, sukurta <lean>food truck verslui.</lean>",
       "subSmall": "Įkelkite savo meniu – registruotis nereikia.<br></br>Veikiančią demonstracinę versiją pamatysite greičiau nei per 60 sekundžių.",
-      "tagline": "Mažiau laiko užsakymams.<br></br>Daugiau – <lean>gaminimui.</lean>",
       "cta": "Įkelti mano meniu →",
       "ctaNote": "<lead>Įkelkite savo meniu nuotrauką ir pamatykite, kaip viskas veikia, greičiau nei per 60 sekundžių.</lead><small>Be registracijos. Be kortelės.</small>"
     },
@@ -5556,7 +5580,6 @@
     }
   },
   "landingFooter": {
-    "tagline": "Mažiau laiko užsakymams.<br></br>Daugiau – gaminimui.",
     "features": "Funkcijos",
     "pricing": "Kainos",
     "privacy": "Privatumas",
@@ -5638,7 +5661,8 @@
     "countryTerms": "Šalių sąlygos",
     "contact": "Kontaktai",
     "lastUpdated": "Paskutinį kartą atnaujinta {date}",
-    "questions": "Turite klausimų? <link>Susisiekite</link> – mes tikri žmonės."
+    "questions": "Turite klausimų? <link>Susisiekite</link> – mes tikri žmonės.",
+    "translationNote": "Tai yra vertimas. Jei jis skiriasi nuo <link>versijos anglų kalba</link>, taikoma versija anglų kalba."
   },
   "truckPage": {
     "meta": {
@@ -5794,7 +5818,15 @@
       "Australiancards": "Australijos kortelės",
       "NewZealandcards": "Naujosios Zelandijos kortelės",
       "Canadiancards": "Kanados kortelės",
-      "Swisscards": "Šveicarijos kortelės"
+      "Swisscards": "Šveicarijos kortelės",
+      "Braziliancards": "Brazilijos kortelės",
+      "Mexicancards": "Meksikos kortelės",
+      "Japanesecards": "Japonijos kortelės",
+      "Singaporecards": "Singapūro kortelės",
+      "HongKongcards": "Honkongo kortelės",
+      "Malaysiancards": "Malaizijos kortelės",
+      "Thaicards": "Tailando kortelės",
+      "UAEcards": "JAE kortelės"
     },
     "perMonth": {
       "mo": "{amount}/mėn.",
@@ -5963,7 +5995,8 @@
   "pricing": {
     "banner": {
       "title": "{months, plural, one {# mėnesį naudojatės visiškai nemokamai – visos funkcijos atrakintos.} few {# mėnesius naudojatės visiškai nemokamai – visos funkcijos atrakintos.} many {# mėnesio naudojatės visiškai nemokamai – visos funkcijos atrakintos.} other {# mėnesių naudojatės visiškai nemokamai – visos funkcijos atrakintos.}}",
-      "body": "Su {brand} klientai užsisako iš anksto ir sumoka atsiimdami, todėl užsakymus internetu galite priimti visai nejungdami kortelių mokėjimų tiekėjo. Norite, kad būtų sumokama iš anksto? Bet kada pridėkite mokėjimus kortele internetu. Pasibaigus bandomajam laikotarpiui, pereisite prie plano <plan>{fallback}</plan>{fallbackFree, select, yes { (mėnesinis mokestis netaikomas)} other {}}, nebent pasirinksite kitą planą. Pradedant kortelės nereikia, jokios sutarties, atsisakyti galite bet kada."
+      "body": "Su {brand} klientai užsisako iš anksto ir sumoka atsiimdami, todėl užsakymus internetu galite priimti visai nejungdami kortelių mokėjimų tiekėjo. Norite, kad būtų sumokama iš anksto? Bet kada pridėkite mokėjimus kortele internetu. Pasibaigus bandomajam laikotarpiui, pereisite prie plano <plan>{fallback}</plan>{fallbackFree, select, yes { (mėnesinis mokestis netaikomas)} other {}}, nebent pasirinksite kitą planą. Pradedant kortelės nereikia, jokios sutarties, atsisakyti galite bet kada.",
+      "bodyOnly": "Su {brand} klientai užsisako iš anksto ir sumoka atsiimdami, todėl užsakymus internetu galite priimti visai nejungdami kortelių mokėjimų tiekėjo. Norite, kad būtų sumokama iš anksto? Bet kada pridėkite mokėjimus kortele internetu. Pasibaigus bandomajam laikotarpiui, planas <plan>{fallback}</plan> kainuos {price} per mėnesį. Dar prieš tai susisieksime su jumis, kad sutvarkytume mokėjimą. Pradedant kortelės nereikia, jokios sutarties, atsisakyti galite bet kada."
     },
     "card": {
       "perTruckMonth": "už furgoną / mėn.",
@@ -6231,6 +6264,9 @@
       "stateTerritory": "Valstija arba teritorija",
       "province": "Provincija",
       "county": "Apskritis",
+      "prefecture": "Prefektūra",
+      "emirate": "Emyratas",
+      "region": "Regionas",
       "area": "Vietovė (kaimas, miestelis ar miestas)",
       "townOrArea": "Miestas ar vietovė",
       "city": "Miestas",
@@ -6326,5 +6362,13 @@
     "backToMenu": "Atgal į meniu",
     "formNote": "Tai demonstracija: niekam nenuskaičiuojami pinigai ir niekas nesiunčiama, todėl el. pašto nurodyti nereikia.",
     "namePlaceholder": "Alex"
+  },
+  "errorPage": {
+    "notFoundTitle": "Puslapis nerastas",
+    "notFoundBody": "Šio puslapio neradome. Galbūt jis buvo perkeltas arba adresas įvestas klaidingai.",
+    "home": "Eiti į pradžios puslapį",
+    "errorTitle": "Kažkas nepavyko",
+    "errorBody": "Atsiprašome, šis puslapis neįsikėlė. Bandykite dar kartą arba grįžkite į pradžios puslapį.",
+    "retry": "Bandyti dar kartą"
   }
 }

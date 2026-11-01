@@ -1,0 +1,134 @@
+{
+  "item": {
+    "weekHeading": "星期標題",
+    "weekHeadingSample": "… 起的一週",
+    "daysSample": "{first} 至 {last}",
+    "date": "日期",
+    "place": "地點",
+    "venue": "場地",
+    "area": "地區",
+    "time": "時間",
+    "rows": "各行",
+    "rowsSample": "相隔 {px}px · {first} 至 {last}",
+    "ownText": "你自己的文字",
+    "noteTokenSample": "製作帖文時輸入的備註",
+    "nothingYet": "暫時未有內容",
+    "thisBox": "這個文字框"
+  },
+  "sample": {
+    "venue": "西九文化區",
+    "area": "尖沙咀"
+  },
+  "bar": {
+    "previewWith": "預覽內容",
+    "undo": "復原",
+    "undoTitle": "復原 (⌘Z)",
+    "redo": "重做",
+    "redoTitle": "重做 (⇧⌘Z)",
+    "cancel": "取消",
+    "saving": "儲存中…",
+    "save": "儲存設計"
+  },
+  "grid": {
+    "eachRow": "每行",
+    "placeOff": "地點名稱已在你的圖片上，HatchGrab 不會再加上。"
+  },
+  "background": {
+    "uploading": "上載中…",
+    "replace": "更換圖片",
+    "shape": {
+      "square": "正方形 (1:1)",
+      "portrait45": "直向 (4:5)",
+      "portrait916": "直向 (9:16)",
+      "landscape169": "橫向 (16:9)",
+      "portrait": "直向",
+      "landscape": "橫向"
+    }
+  },
+  "scope": {
+    "title": "文字位置",
+    "standard": "與標準設計位置相同",
+    "own": "{place} 專用位置",
+    "locked": "這些位置來自你的標準設計。選擇「{place} 專用位置」，即可只在這裏移動。"
+  },
+  "stage": {
+    "hint": "拖動文字框可移動 · 拖動一角可調整大小",
+    "zoomOut": "縮小",
+    "zoomIn": "放大"
+  },
+  "rows": {
+    "spacing": "間距",
+    "daysRun": "日子由 {first} 排到 {last}。第 1 行的三個文字框會按這個距離向下複製。",
+    "whichEvents": "顯示哪些活動",
+    "showCancelled": "顯示已取消的活動",
+    "showCancelledHint": "已取消的活動會以刪除線顯示地點，並加上「已取消」字樣。關閉後，該日會顯示為休息日。"
+  },
+  "days": {
+    "reorder": "重新排序",
+    "move": "移動"
+  },
+  "picture": {
+    "picture": "圖片",
+    "fill": "填滿文字框",
+    "fit": "完整顯示",
+    "corners": "邊角",
+    "square": "直角",
+    "rounded": "圓角",
+    "ifMissing": "如地點沒有圖片",
+    "noPicture": {
+      "omit": "不顯示",
+      "blank": "留空位置",
+      "logo": "顯示你的標誌"
+    },
+    "border": "邊框",
+    "drawBorder": "加上邊框",
+    "drawBorderHint": "在圖片四周加一條線，顏色由你決定。",
+    "borderWidth": "邊框粗幼",
+    "cornerRadius": "圓角半徑",
+    "locationPictures": "地點圖片",
+    "addLocationPictures": "+ 加入地點圖片",
+    "allHaveImage": "{total, plural, =0 {你還未有任何地點。} other {你的 # 個地點全部都有圖片。}}",
+    "someWithout": "你的 {total, plural, other {# 個地點}}中，有 {without} 個{without, plural, other {仍未有圖片}}"
+  },
+  "settings": {
+    "font": "字型",
+    "colour": "顏色",
+    "textColour": "文字顏色",
+    "ownStyleNote": "{count, plural, other {{names} 有自己的樣式，因此不會改變。}}",
+    "matchAgain": "重新統一",
+    "matchName": "與 {name} 一致",
+    "lastToggle": "{kind, select, weekly {請保持「地點」或「時間」其中一項開啟。已取消的活動會以刪除線顯示地點並加上「已取消」字樣，如兩項都關閉，便無法顯示活動已取消。} other {請保持「場地」或「時間」其中一項開啟。已取消的活動會以刪除線顯示地點並加上「已取消」字樣，如兩項都關閉，便無法顯示活動已取消。}}"
+  },
+  "letters": {
+    "boldGlyph": "B",
+    "italicGlyph": "I",
+    "capsGlyph": "AA",
+    "italicTitle": "{italic}：這款字型設有真正的斜體"
+  },
+  "align": {
+    "left": "靠左",
+    "centre": "置中",
+    "right": "靠右"
+  },
+  "effects": {
+    "outlineColour": "外框顏色",
+    "bandColour": "色帶顏色",
+    "bandDaysOff": "休息日的色帶",
+    "bandCancelled": "活動取消時的色帶",
+    "bandDaysOffHint": "在沒有營業的日子取代上面的色帶。",
+    "bandCancelledHint": "在活動取消時取代上面的色帶。"
+  },
+  "more": {
+    "dayOwnLine": "星期另起一行",
+    "dayOwnLineHint": "星期顯示在日期上方。只適用於日期。",
+    "noEventDay": "沒有活動的日子",
+    "wordsBeforePlaceholder": "例如：今日在",
+    "neverHyphenate": "沒有空格的長字一律會縮小，我們絕不會把地點名稱斷開。"
+  },
+  "bits": {
+    "less": "較少",
+    "more": "較多",
+    "chooseColourFor": "{label}：選擇任何顏色",
+    "chooseColour": "選擇任何顏色"
+  }
+}

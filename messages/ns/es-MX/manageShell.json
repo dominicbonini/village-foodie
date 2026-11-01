@@ -1,0 +1,17 @@
+{
+  "tabs": {
+    "menu": "Menú",
+    "paymentsIcon": "💵"
+  },
+  "menuSections": {
+    "label": "Secciones del menú",
+    "deals": "Combos"
+  },
+  "notices": {
+    "allergens": "<b>Alérgenos sin configurar</b>: los clientes no pueden ver la información de alérgenos hasta que la verifiques. Revisa los alérgenos de cada platillo en la pestaña Menú."
+  },
+  "trialPopup": {
+    "title": "{months, select, none {Estás en una prueba gratis} other {Estás en una prueba gratis (meses gratis: {months})}}",
+    "body": "{hasDate, select, yes {No se te cobrará nada durante tu prueba, que dura hasta el <b>{date}</b>. La facturación solo empieza cuando eliges un plan e ingresas tus datos de pago. Hasta entonces, no hay nada que cancelar ni nada que pagar. Elige tu plan antes de esa fecha; si no lo haces, pasarás al plan {fallback} y algunas funciones dejarán de funcionar.} other {No se te cobrará nada mientras estés en periodo de prueba. La facturación solo empieza cuando eliges un plan e ingresas tus datos de pago. Hasta entonces, no hay nada que cancelar ni nada que pagar. Elige tu plan antes de que termine la prueba; si no lo haces, pasarás al plan {fallback} y algunas funciones dejarán de funcionar.}}"
+  }
+}

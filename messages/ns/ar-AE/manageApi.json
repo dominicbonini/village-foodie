@@ -1,0 +1,10 @@
+{
+  "vanFallback": "مركبة",
+  "eventsFeed": {
+    "today": "اليوم · {date}",
+    "tomorrow": "غدًا · {date}"
+  },
+  "privacyNotSaved": "الفعالية مباشرة، لكن تعذّر حفظ إعداد الخصوصية الخاص بها.",
+  "stockWarning": "لا توجد أصناف متاحة في «{category}»",
+  "uncategorised": "بدون فئة"
+}

@@ -1,0 +1,10 @@
+{
+  "download": "Muat turun gambar",
+  "copied": "Disalin ✓",
+  "copyCaption": "Salin kapsyen",
+  "share": "Kongsi",
+  "copiedStatus": "{kind, select, postText {Teks hantaran disalin.} other {Kapsyen disalin.}}",
+  "copyFailed": "Tidak dapat menyalin — pilih teks itu dan salin secara manual.",
+  "sharedStatus": "{kind, select, postText {Teks hantaran disalin — tampalkannya ke dalam hantaran anda.} other {Kapsyen disalin — tampalkannya ke dalam hantaran anda.}}",
+  "shareRefused": "{kind, select, postText {Perkongsian ditolak, jadi gambar telah dimuat turun. Teks hantaran disalin.} other {Perkongsian ditolak, jadi gambar telah dimuat turun. Kapsyen disalin.}}"
+}

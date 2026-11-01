@@ -7,7 +7,6 @@
   "hero": {
     "title": "Pasūtījumu sistēma, kas radīta <lean>food truck uzņēmumiem.</lean>",
     "subSmall": "Augšupielādējiet savu ēdienkarti, reģistrēšanās nav vajadzīga.<br></br>Darbojošos demo redzēsiet nepilnās 60 sekundēs.",
-    "tagline": "Mazāk pierakstīšanas.<br></br>Vairāk <lean>gatavošanas.</lean>",
     "cta": "Augšupielādēt ēdienkarti →",
     "ctaNote": "<lead>Augšupielādējiet savas ēdienkartes foto un nepilnās 60 sekundēs redziet to darbībā.</lead><small>Bez reģistrēšanās. Bez kartes.</small>"
   },

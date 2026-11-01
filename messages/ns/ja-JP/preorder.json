@@ -1,0 +1,6 @@
+{
+  "closedPending": "事前注文の受付は終了しました。キッチンの承認待ちです。",
+  "deadline": "{time}まで事前注文できます",
+  "deadlineOnDay": "{day} {time}まで事前注文できます",
+  "opens": "事前注文は{day}に受付開始"
+}

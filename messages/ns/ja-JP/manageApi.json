@@ -1,0 +1,10 @@
+{
+  "vanFallback": "車両",
+  "eventsFeed": {
+    "today": "今日 · {date}",
+    "tomorrow": "明日 · {date}"
+  },
+  "privacyNotSaved": "出店は公開されましたが、公開設定を保存できませんでした。",
+  "stockWarning": "「{category}」に販売可能な商品がありません",
+  "uncategorised": "未分類"
+}

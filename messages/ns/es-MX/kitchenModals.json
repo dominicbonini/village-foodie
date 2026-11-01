@@ -1,0 +1,8 @@
+{
+  "eventCancel": {
+    "messagePlaceholder": "p. ej., Lo sentimos, se nos descompuso el remolque camino al lugar…"
+  },
+  "actions": {
+    "notePlaceholder": "p. ej., Estaciónate en el estacionamiento principal y busca la carpa naranja"
+  }
+}

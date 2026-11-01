@@ -1,0 +1,59 @@
+{
+  "labels": {
+    "collection_interval_mins": "取餐時間",
+    "takes_cash": "你收現金嗎？",
+    "offline_protection": "離線訂單保護",
+    "buzzer_prompt": "提醒我加入取餐器"
+  },
+  "typeFollowsVanTitle": "跟隨每架車輛的慣用設定",
+  "sameSettingsAllVansLabel": "所有車輛使用相同設定",
+  "sameSettingsAllVansHeader": "所有車輛",
+  "sameSettingsConfirm": "將 1 號車的設定複製到每架車輛？這會複製 1 號車的所有車輛設定，效果與「設定」中的「與 1 號車相同」一樣。廚房容量有獨立開關。",
+  "eventTypesFooterStandard": "「標準」是你的慣常設定。在這裏更改，「設定」中的也會一併更改。",
+  "eventTypesFooterOneEvent": "如只想更改單一活動的設定，請使用該活動的控制台。",
+  "eventTypesSubtitle": "更改會即時儲存。",
+  "matchStandardLabel": "與標準相同",
+  "matchStandardConfirm": "將這個類型的所有設定還原為「標準」？你在這裏作出的任何更改都會被清除。",
+  "priceLabels": {
+    "price_change_on": "更改價錢",
+    "price_mode": "價錢調整",
+    "price_amount": "金額",
+    "price_rounding": "進位方式",
+    "item_prices": "食品價錢"
+  },
+  "priceMode": {
+    "add_amount": "+ {symbol}",
+    "add_pct": "+ %",
+    "sub_amount": "− {symbol}",
+    "sub_pct": "− %",
+    "none": "自行設定每個價錢"
+  },
+  "priceRounding": {
+    "none": "不進位",
+    "nearest_1": "最接近的 {symbol}1",
+    "up_1": "一律向上進位"
+  },
+  "pricesStandardCell": "你的餐牌價錢",
+  "pricesTruckWideTitle": "你每架車輛的價錢都相同",
+  "pricesMenuCell": "餐牌",
+  "pricesTypeOffCell": "餐牌價錢",
+  "itemPricesShow": "顯示價錢",
+  "itemPricesHide": "隱藏價錢",
+  "priceItemsHeading": "設定每項食品的價錢",
+  "priceItemsOpen": "查看或更改每項食品的價錢 ›",
+  "priceItemsClose": "隱藏食品價錢 ⌃",
+  "ownPriceCount": "{n, plural, other {{count} 項食品設有自訂價錢}}",
+  "priceTypeHint": "按一下價錢即可自行輸入。",
+  "pricesLiveNotice": "這個活動已上線。新訂單會使用新價錢，已落的訂單會維持原價。",
+  "placeTypeHelper": "每當你選擇這個地點，「新增活動」就會揀選這個類型。",
+  "postPictureStandardNote": "這裏的活動帖文使用你的標準設計。",
+  "eventItemsCardDescription": "只適用於這個活動的價錢、食品上限及供應狀況。更改會即時生效。",
+  "eventPriceColumnLabel": "價錢",
+  "eventPriceOwnNote": "{hasType, select, yes {{type} {price} · 此活動} other {餐牌 {price} · 此活動}}",
+  "eventPriceEdit": "✎ 編輯價錢",
+  "eventPriceCancel": "取消",
+  "eventPriceSave": "儲存價錢",
+  "eventPriceEditNote": "正在編輯只適用於這個活動的價錢。儲存前，食品上限及供應狀況會被鎖定。",
+  "eventPriceLiveNote": "已上線：新訂單會使用新價錢。",
+  "offlineWhenOfflineLabel": "離線時"
+}

@@ -1,0 +1,6 @@
+{
+  "orderPending": {
+    "title": "承認待ちの新規注文",
+    "body": "注文{number}：{truck}"
+  }
+}

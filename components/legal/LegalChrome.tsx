@@ -46,7 +46,12 @@ import '@/lib/i18n/catalog/legalChrome'
 // legal documents are UK documents in UK English, and no word of this chrome differs in US English.
 // `homeHref` (Language Phase 1e tidy): where the logo goes — the visitor's country page ('/uk', '/us'), decided by the
 // server layout with the router's own rule, so a tap does not hop through /landing. '/landing' off a HatchGrab host.
-export function LegalChrome({ children, homeHref }: { children: React.ReactNode; homeHref: string }) {
+// legal-languages-1 (1 November 2026): `links` — a TRANSLATION's footer points at the same country's translations and contact
+// (components/legal/translated-legal.tsx legalChromeLinks). Absent for the English documents: their footer is exactly as before.
+export function LegalChrome({ children, homeHref, links }: {
+  children: React.ReactNode; homeHref: string
+  links?: { privacy: string; terms: string; countryTerms: string; contact: string }
+}) {
   const t = useT('legalChrome')
   // 🔴 A `mounted` TWO-PASS IS REQUIRED HERE AND WAS NOT REQUIRED IN AppHeader — the difference is real,
   // not caution. AppHeader sits behind a loading early-return on all three of its renderers, so it never
@@ -108,10 +113,10 @@ export function LegalChrome({ children, homeHref }: { children: React.ReactNode;
           from a consent line should not have to go back to find the other. */}
       <footer className="shrink-0 border-t border-slate-200 bg-white">
         <div className="max-w-[1140px] mx-auto px-5 sm:px-10 py-6 flex flex-wrap items-center justify-center gap-x-5 gap-y-2 text-xs text-slate-500">
-          <Link href={PRIVACY_PATH} className="hover:text-slate-800 underline">{t('privacy')}</Link>
-          <Link href={TERMS_PATH} className="hover:text-slate-800 underline">{t('terms')}</Link>
-          <Link href={COUNTRY_TERMS_PATH} className="hover:text-slate-800 underline">{t('countryTerms')}</Link>
-          <Link href="/contact" className="hover:text-slate-800 underline">{t('contact')}</Link>
+          <Link href={links?.privacy ?? PRIVACY_PATH} className="hover:text-slate-800 underline">{t('privacy')}</Link>
+          <Link href={links?.terms ?? TERMS_PATH} className="hover:text-slate-800 underline">{t('terms')}</Link>
+          <Link href={links?.countryTerms ?? COUNTRY_TERMS_PATH} className="hover:text-slate-800 underline">{t('countryTerms')}</Link>
+          <Link href={links?.contact ?? '/contact'} className="hover:text-slate-800 underline">{t('contact')}</Link>
           <span className="text-slate-400">HatchGrab</span>
         </div>
       </footer>

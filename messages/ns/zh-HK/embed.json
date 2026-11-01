@@ -1,0 +1,8 @@
+{
+  "metaDescription": "{truck} 接下來的出車地點。",
+  "orderFrom": "向 {truck} 落單",
+  "poweredBy": "由 <b>HatchGrab</b> 提供",
+  "loadFailed": "暫時未能載入出車時間表。",
+  "loading": "正在載入出車時間表…",
+  "empty": "{truck} 暫未有即將舉行的活動。"
+}

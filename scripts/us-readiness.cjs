@@ -39,7 +39,7 @@ const head = s => console.log(`\n── ${s}`)
 
 const GB = snake(SEEDS.gbFromSeed())
 const US_ON = snake({ ...SEEDS.usFromSeed(), enabled: true, starterMonthlyMinor: 0, proMonthlyMinor: 3900, maxMonthlyMinor: 6900, proAllowanceMinor: 200000, maxAllowanceMinor: 300000, platformFeePct: 0.99 })
-const FONTS = { 'next/font/google': ['Archivo', 'Public_Sans', 'Courier_Prime'].map(n => `export const ${n} = () => ({ variable: 'font-${n}', className: 'font-${n}', style: {} })`).join('\n'),
+const FONTS = { 'next/font/google': ['Archivo', 'Public_Sans', 'Courier_Prime', 'Noto_Sans_JP', 'Noto_Sans_HK', 'Noto_Sans_Thai', 'Noto_Sans_Arabic'].map(n => `export const ${n} = () => ({ variable: 'font-${n}', className: 'font-${n}', style: {} })`).join('\n'),
   'next/headers': `
     const H = () => globalThis.__urReq || { headers: {}, cookies: {} }
     export async function headers() { const r = H(); return { get: k => r.headers[k.toLowerCase()] ?? null, has: k => k.toLowerCase() in r.headers } }

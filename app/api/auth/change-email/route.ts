@@ -5,6 +5,8 @@ import { createSupabaseServerClient } from '@/lib/supabase/server'
 // known on this route, so its words are en-GB (docs/language-phase-1c-report.md).
 import { onboardingErrorBody } from '@/lib/i18n/onboarding-errors'
 import { DEFAULT_LOCALE } from '@/lib/i18n/locales'
+import { localeForOperator } from '@/lib/i18n/server-locale'
+import { visitorCountryCodeOf } from '@/lib/visitor-country'
 // The verification email's words: messages/en-GB.json `emailAccount` (Language Phase 1c), in en-GB — the operator's
 // language is not known on this route (docs/language-phase-1c-report.md). The markup and the link stay here.
 import { translatorFor } from '@/lib/i18n/translator'
@@ -73,7 +75,8 @@ export async function POST(req: NextRequest) {
   }
 
   const verifyUrl = `${process.env.NEXT_PUBLIC_HATCHGRAB_URL}/verify-email?token=${change.token}`
-  const t = translatorFor(DEFAULT_LOCALE, 'emailAccount')
+  // legal-languages-1 (1 November 2026): in the operator's language (lib/i18n/server-locale.ts localeForOperator).
+  const t = translatorFor(await localeForOperator(supabase, operator.id, await visitorCountryCodeOf(req)), 'emailAccount')
 
   const brevoRes = await fetch('https://api.brevo.com/v3/smtp/email', {
     method: 'POST',

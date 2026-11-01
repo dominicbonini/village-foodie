@@ -633,6 +633,28 @@
       "Walnut": "Saksanpähkinä",
       "Wheatandtriticale": "Vehnä ja ruisvehnä",
       "Glutenbarleyoatsrye": "Gluteeni (ohra, kaura, ruis)",
+      "Shrimp": "Katkarapu",
+      "Crab": "Taskurapu",
+      "Buckwheat": "Tattari",
+      "Abalone": "Merikorva",
+      "Squid": "Kalmari",
+      "Salmonroe": "Lohenmäti",
+      "Orange": "Appelsiini",
+      "Kiwifruit": "Kiivi",
+      "Beef": "Naudanliha",
+      "Salmon": "Lohi",
+      "Mackerel": "Makrilli",
+      "Soybean": "Soijapavut",
+      "Chicken": "Kana",
+      "Banana": "Banaani",
+      "Pork": "Sianliha",
+      "Peach": "Persikka",
+      "Yam": "Jamssi",
+      "Apple": "Omena",
+      "Gelatin": "Liivate",
+      "Chestnut": "Kastanja",
+      "Naturallatex": "Luonnonkumilateksi",
+      "Lactose": "Laktoosi",
       "Nuts": "Pähkinät",
       "Shellfish": "Äyriäiset"
     }
@@ -4854,6 +4876,7 @@
       "ends": "{hasDate, select, yes {Kokeilujakso päättyy <hl>{date}</hl>} other {Kokeilujakso päättyy <hl>pian</hl>}}",
       "offer": "{hasMonths, select, yes {{months, plural, one {Kaikki ominaisuudet ilmaiseksi # kuukauden ajan} other {Kaikki ominaisuudet ilmaiseksi # kuukauden ajan}}} other {Kaikki ominaisuudet ilmaiseksi kokeilujakson ajan}}",
       "body": "{hasDate, select, yes {Sinulta ei veloiteta mitään kokeilujakson aikana, joka kestää <b>{date}</b> asti. Laskutus alkaa vasta, kun valitset paketin ja annat maksutietosi. Siihen asti ei ole mitään peruttavaa eikä maksettavaa. Valitse pakettisi ennen sitä — jos et valitse, siirryt pakettiin {fallback} ja osa ominaisuuksista lakkaa toimimasta.} other {Sinulta ei veloiteta mitään kokeilujakson aikana. Laskutus alkaa vasta, kun valitset paketin ja annat maksutietosi. Siihen asti ei ole mitään peruttavaa eikä maksettavaa. Valitse pakettisi ennen kokeilujakson loppua — jos et valitse, siirryt pakettiin {fallback} ja osa ominaisuuksista lakkaa toimimasta.}}",
+      "bodyPaidEnd": "{hasDate, select, yes {Sinulta ei veloiteta mitään kokeilujakson aikana, joka kestää <b>{date}</b> asti. Kun kokeilujaksosi päättyy, paketin {fallback} hinta on {price} kuukaudessa. Otamme sinuun yhteyttä ennen sitä, jotta voimme järjestää maksun.} other {Sinulta ei veloiteta mitään kokeilujakson aikana. Kun kokeilujaksosi päättyy, paketin {fallback} hinta on {price} kuukaudessa. Otamme sinuun yhteyttä ennen sitä, jotta voimme järjestää maksun.}}",
       "fees": "*Verkkotilauksiin sovelletaan tavanomaisia korttimaksujen käsittelykuluja",
       "upgrade": "Päivitä pakettia tästä →"
     }
@@ -4884,8 +4907,10 @@
       "heading": "Ilmainen kokeilujaksosi ei ole vielä alkanut"
     },
     "onTrial": "Käytössäsi ovat kaikki ominaisuudet. Valitse paketti ennen kuin kokeilujaksosi päättyy.",
+    "onTrialPaidEnd": "Käytössäsi ovat kaikki ominaisuudet. Kun kokeilujaksosi päättyy, paketin {plan} hinta on {price} kuukaudessa. Otamme sinuun yhteyttä ennen sitä, jotta voimme järjestää maksun.",
     "onTrialNoCta": "Käytössäsi ovat kaikki ominaisuudet.",
     "noCharge": "🔒 Sinulta ei veloiteta mitään kokeilujakson aikana, joka kestää {date} asti. Laskutus alkaa vasta, kun valitset paketin ja annat maksutietosi. Siihen asti ei ole mitään peruttavaa eikä maksettavaa.",
+    "noChargePaidEnd": "🔒 Sinulta ei veloiteta mitään kokeilujakson aikana, joka kestää {date} asti.",
     "fees": "*Verkkotilauksiin sovelletaan tavanomaisia korttimaksujen käsittelykuluja",
     "setUpPayment": "⏱ Valitse paketti ennen kuin kokeilujaksosi päättyy",
     "changeYourPlan": "Vaihda pakettia",
@@ -5472,7 +5497,6 @@
     "hero": {
       "title": "Tilausjärjestelmä, joka on tehty <lean>ruokarekoille.</lean>",
       "subSmall": "Lataa ruokalistasi, rekisteröitymistä ei tarvita.<br></br>Näet toimivan demon alle 60 sekunnissa.",
-      "tagline": "Vähemmän aikaa tilauksiin.<br></br>Enemmän aikaa <lean>kokkaamiseen.</lean>",
       "cta": "Lataa ruokalistani →",
       "ctaNote": "<lead>Lataa kuva ruokalistastasi ja näe se toiminnassa alle 60 sekunnissa.</lead><small>Ei rekisteröitymistä. Ei korttia.</small>"
     },
@@ -5556,7 +5580,6 @@
     }
   },
   "landingFooter": {
-    "tagline": "Vähemmän aikaa tilauksiin.<br></br>Enemmän aikaa kokkaamiseen.",
     "features": "Ominaisuudet",
     "pricing": "Hinnoittelu",
     "privacy": "Tietosuoja",
@@ -5638,7 +5661,8 @@
     "countryTerms": "Maakohtaiset ehdot",
     "contact": "Ota yhteyttä",
     "lastUpdated": "Päivitetty viimeksi {date}",
-    "questions": "Kysyttävää? <link>Ota yhteyttä</link> — olemme oikeita ihmisiä."
+    "questions": "Kysyttävää? <link>Ota yhteyttä</link> — olemme oikeita ihmisiä.",
+    "translationNote": "Tämä on käännös. Jos se poikkeaa <link>englanninkielisestä versiosta</link>, englanninkielinen versio on ratkaiseva."
   },
   "truckPage": {
     "meta": {
@@ -5794,7 +5818,15 @@
       "Australiancards": "Australian kortit",
       "NewZealandcards": "Uuden-Seelannin kortit",
       "Canadiancards": "Kanadan kortit",
-      "Swisscards": "sveitsiläiset kortit"
+      "Swisscards": "sveitsiläiset kortit",
+      "Braziliancards": "Brasilian kortit",
+      "Mexicancards": "Meksikon kortit",
+      "Japanesecards": "Japanin kortit",
+      "Singaporecards": "Singaporen kortit",
+      "HongKongcards": "Hongkongin kortit",
+      "Malaysiancards": "Malesian kortit",
+      "Thaicards": "Thaimaan kortit",
+      "UAEcards": "Arabiemiirikuntien kortit"
     },
     "perMonth": {
       "mo": "{amount}/kk",
@@ -5963,7 +5995,8 @@
   "pricing": {
     "banner": {
       "title": "{months, plural, one {Ensimmäinen kuukautesi on täysin ilmainen — kaikki ominaisuudet käytössä.} other {Ensimmäiset # kuukauttasi ovat täysin ilmaisia — kaikki ominaisuudet käytössä.}}",
-      "body": "Näin {brand} toimii: asiakkaat tilaavat etukäteen ja maksavat noutaessaan, joten voit ottaa vastaan verkkotilauksia ilman korttimaksujen käsittelijää. Haluatko ottaa maksun etukäteen? Lisää korttimaksut verkossa milloin tahansa. Kun kokeilujaksosi päättyy, siirryt pakettiin <plan>{fallback}</plan>{fallbackFree, select, yes { (ei kuukausimaksua)} other {}}, ellet valitse muuta pakettia. Aloittamiseen ei tarvita korttia, ei sopimusta, voit lopettaa milloin tahansa."
+      "body": "Näin {brand} toimii: asiakkaat tilaavat etukäteen ja maksavat noutaessaan, joten voit ottaa vastaan verkkotilauksia ilman korttimaksujen käsittelijää. Haluatko ottaa maksun etukäteen? Lisää korttimaksut verkossa milloin tahansa. Kun kokeilujaksosi päättyy, siirryt pakettiin <plan>{fallback}</plan>{fallbackFree, select, yes { (ei kuukausimaksua)} other {}}, ellet valitse muuta pakettia. Aloittamiseen ei tarvita korttia, ei sopimusta, voit lopettaa milloin tahansa.",
+      "bodyOnly": "Näin {brand} toimii: asiakkaat tilaavat etukäteen ja maksavat noutaessaan, joten voit ottaa vastaan verkkotilauksia ilman korttimaksujen käsittelijää. Haluatko ottaa maksun etukäteen? Lisää korttimaksut verkossa milloin tahansa. Kun kokeilujaksosi päättyy, paketin <plan>{fallback}</plan> hinta on {price} kuukaudessa. Otamme sinuun yhteyttä ennen sitä, jotta voimme järjestää maksun. Aloittamiseen ei tarvita korttia, ei sopimusta, voit lopettaa milloin tahansa."
     },
     "card": {
       "perTruckMonth": "ruokarekkaa kohden / kk",
@@ -6231,6 +6264,9 @@
       "stateTerritory": "Osavaltio tai territorio",
       "province": "Provinssi",
       "county": "Kreivikunta",
+      "prefecture": "Prefektuuri",
+      "emirate": "Emiraatti",
+      "region": "Alue",
       "area": "Alue (kylä, taajama tai kaupunki)",
       "townOrArea": "Paikkakunta tai alue",
       "city": "Kaupunki",
@@ -6326,5 +6362,13 @@
     "backToMenu": "Takaisin ruokalistaan",
     "formNote": "Tämä on demo: keneltäkään ei veloiteta mitään eikä mitään lähetetä, joten sähköpostiosoitetta ei tarvita.",
     "namePlaceholder": "Alex"
+  },
+  "errorPage": {
+    "notFoundTitle": "Sivua ei löytynyt",
+    "notFoundBody": "Emme löytäneet sivua. Se on ehkä siirretty, tai osoite on kirjoitettu väärin.",
+    "home": "Siirry etusivulle",
+    "errorTitle": "Jokin meni vikaan",
+    "errorBody": "Valitettavasti sivu ei latautunut. Yritä uudelleen tai palaa etusivulle.",
+    "retry": "Yritä uudelleen"
   }
 }

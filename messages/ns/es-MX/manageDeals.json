@@ -1,0 +1,25 @@
+{
+  "toast": {
+    "updated": "Combo actualizado",
+    "created": "Combo creado",
+    "removed": "Combo eliminado"
+  },
+  "confirmRemove": "¿Eliminar este combo?",
+  "heading": "Combos",
+  "count": "{n, plural, one {{count} combo configurado} many {{count} combos configurados} other {{count} combos configurados}}",
+  "newDeal": "+ Nuevo combo",
+  "emptyTitle": "Aún no hay combos",
+  "editTitle": "Editar combo",
+  "newTitle": "Nuevo combo",
+  "name": "Nombre del combo",
+  "namePlaceholder": "p. ej. Combo de mediodía",
+  "price": "Precio del combo",
+  "slots": "Componentes (categorías obligatorias en este combo)",
+  "dealActive": "Combo activo",
+  "applyHelp": "Elige si este combo se aplica automáticamente a tus eventos",
+  "applyAllHelp": "Este combo estará activo en cada evento nuevo que crees. Puedes desactivarlo para eventos específicos en Agenda.",
+  "applyAllNote": "Este combo se agregará a los eventos nuevos. Para los eventos ya creados, ve a Agenda para administrar los combos de cada evento.",
+  "save": "Guardar combo",
+  "emptyBody": "Crea un combo como “Combo de mediodía — cualquier pizza + bebida + salsa por {price}”",
+  "manualHelp": "Este combo no aparecerá en los eventos a menos que lo actives en la pestaña Agenda."
+}

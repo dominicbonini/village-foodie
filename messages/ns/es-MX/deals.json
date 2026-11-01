@@ -1,0 +1,6 @@
+{
+  "title": "Aplicar un combo",
+  "inYourBasket": "── En tu carrito ──",
+  "basketUnit": "{name}{withMods, select, yes { (+ {mods})} other {}} (en el carrito){state, select, used { — ya está en un combo} taken { — elegido en otro apartado} other {}}",
+  "apply": "Aplicar combo · {amount}"
+}

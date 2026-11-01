@@ -1,0 +1,8 @@
+{
+  "allergen_card_not_allowed": "Donde trabaja tu food truck, los alérgenos deben indicarse junto a cada platillo, así que no se puede elegir solo una tabla de alérgenos.",
+  "menu_failed": "No se pudo procesar el menú",
+  "menu_read_failed": "No se pudo leer el menú; no se guardó nada",
+  "wa_no_code": "Meta no devolvió un código de un solo uso. Toca “Configurar” y vuelve a intentarlo.",
+  "wa_no_waba": "Meta no devolvió una cuenta de WhatsApp Business. Toca “Configurar” y vuelve a intentarlo.",
+  "wa_code_expired": "Tardó demasiado y el código de un solo uso de Meta expiró. No se guardó nada. Toca “Configurar” y vuelve a hacerlo: solo debería tomarte un minuto."
+}

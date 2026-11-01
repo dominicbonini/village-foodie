@@ -1,0 +1,58 @@
+{
+  "label": {
+    "street": "Alamat",
+    "postcode": "Poskod",
+    "zip": "Kod ZIP",
+    "eircode": "Eircode",
+    "postalCode": "Kod pos",
+    "state": "Negeri",
+    "stateTerritory": "Negeri atau wilayah",
+    "province": "Provinsi",
+    "county": "Daerah",
+    "prefecture": "Prefektur",
+    "emirate": "Emiriah",
+    "region": "Wilayah",
+    "area": "Kawasan (kampung, pekan atau bandar)",
+    "townOrArea": "Pekan atau kawasan",
+    "city": "Bandar",
+    "suburb": "Kawasan kejiranan",
+    "townOrCity": "Pekan atau bandar"
+  },
+  "short": {
+    "area": "Kawasan",
+    "townOrArea": "Pekan atau kawasan",
+    "city": "Bandar",
+    "suburb": "Kejiranan",
+    "townOrCity": "Pekan atau bandar"
+  },
+  "inSentence": {
+    "postcode": "poskod",
+    "zip": "kod ZIP",
+    "eircode": "Eircode",
+    "postalCode": "kod pos"
+  },
+  "withArticle": {
+    "postcode": "poskod",
+    "zip": "kod ZIP",
+    "eircode": "Eircode",
+    "postalCode": "kod pos"
+  },
+  "tradeLabel": {
+    "area": "Pekan atau bandar",
+    "townOrArea": "Pekan atau kawasan",
+    "city": "Bandar",
+    "suburb": "Kawasan kejiranan",
+    "townOrCity": "Pekan atau bandar"
+  },
+  "basedIn": {
+    "area": "Pekan atau bandar pangkalan anda",
+    "townOrArea": "Pekan atau kawasan pangkalan anda",
+    "city": "Bandar pangkalan anda",
+    "suburb": "Kawasan kejiranan pangkalan anda",
+    "townOrCity": "Pekan atau bandar pangkalan anda"
+  },
+  "example": "cth. {example}",
+  "customersSee": "Pelanggan akan nampak:",
+  "postalWarning": "Itu nampaknya bukan {article} yang sah — contohnya {example}. Anda masih boleh menyimpannya.",
+  "regionChoose": "Pilih…"
+}

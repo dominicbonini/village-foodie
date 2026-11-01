@@ -1,0 +1,83 @@
+{
+  "title": "出店タイプ",
+  "newTypeButton": "＋ 新しい出店タイプ",
+  "close": "閉じる",
+  "loading": "読み込み中…",
+  "missingTitle": "出店タイプはまだ有効になっていません。",
+  "missingBody": "この機能のためのデータベース更新がまだ適用されていません。不具合ではありません。すべての出店で通常の設定が使われています。",
+  "column": "列",
+  "vanGone": "その車両は削除されています。",
+  "typeGone": "そのタイプは削除されています。",
+  "standard": "標準",
+  "standardHeading": "標準",
+  "moreFor": "{name}のその他の操作",
+  "rename": "名前を変更",
+  "moveLeft": "左へ移動",
+  "moveRight": "右へ移動",
+  "delete": "削除",
+  "sections": {
+    "vans": "車両",
+    "prices": "価格",
+    "itemPrices": "商品の価格",
+    "service": "サービス"
+  },
+  "labelFor": "{name}の{label}",
+  "intervalEvery": "{mins}分ごと",
+  "noTypes": "出店タイプはまだありません。そのため、すべての出店で通常の設定が使われます。",
+  "renameTitle": "このタイプの名前を変更",
+  "name": "名前",
+  "cancel": "キャンセル",
+  "save": "保存",
+  "copyVanOne": "車両1の設定をコピー",
+  "thisType": "このタイプ",
+  "matchTitle": "「{name}」を標準に合わせますか？",
+  "matchKeeps": "個別の出店のダッシュボードで変更した内容はそのまま残り、このタイプの価格も変更されません。",
+  "matchWillUse": "適用される設定：{summary}",
+  "deleteTitle": "「{name}」を削除しますか？",
+  "deleteBody": "{n, plural, =0 {「{name}」を使う今後の出店はありません。} other {「{name}」を使う今後の出店が{count}件あります。これらは標準に戻ります。}}個別の出店で変更した内容はそのまま残ります。",
+  "keep": "残す",
+  "phone": {
+    "standardTag": "標準",
+    "defaultTag": "デフォルト",
+    "vanSetup": "この車両の通常の設定です。タイプが指定されていないすべての出店で使われます。",
+    "standardSetup": "通常の設定です。タイプが指定されていないすべての出店で使われます。",
+    "cardSummary": "今後の出店{upcoming, plural, other {{upcomingCount}件}} · {changed, plural, =0 {まだ変更なし} other {{total}項目中{changedCount}項目を変更}}",
+    "noMenuItems": "メニューに商品がまだありません。メニュー › 商品で追加してください。"
+  },
+  "newType": {
+    "title": "新しい出店タイプ",
+    "namePlaceholder": "例：学校のお祭り",
+    "help": "名前をタップするか、自由に入力してください。最初は標準のコピーとして作成され、後で標準を変更しても影響はありません。作成後に自由に変更できます。",
+    "create": "作成",
+    "chips": {
+      "festival": "フェス",
+      "pub": "パブ",
+      "market": "マルシェ",
+      "privateHire": "貸切"
+    }
+  },
+  "select": {
+    "label": "出店タイプ",
+    "usual": "この場所では通常{name}です。"
+  },
+  "summary": {
+    "normalSetup": "通常の設定",
+    "sameAsStandard": "標準と同じ",
+    "buzzersOn": "呼び出しベル：オン",
+    "buzzersOff": "呼び出しベル：オフ",
+    "takeCashOn": "現金払い：オン",
+    "takeCashOff": "現金払い：オフ",
+    "markReadyOn": "準備完了ステップ：オン",
+    "markReadyOff": "準備完了ステップ：オフ",
+    "collectionEvery": "受け取り：{mins}分ごと",
+    "offlineOff": "オフライン保護：オフ",
+    "offlineKeepTaking": "オフライン時：注文の受付を続ける",
+    "offlinePause": "オフライン時：注文の受付を一時停止"
+  },
+  "errors": {
+    "somethingWentWrong": "問題が発生しました",
+    "couldNotLoad": "読み込めませんでした",
+    "couldNotSave": "保存できませんでした",
+    "noVans": "このキッチンカーには変更できる車両がありません。"
+  }
+}

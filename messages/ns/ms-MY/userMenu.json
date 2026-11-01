@@ -1,0 +1,18 @@
+{
+  "menuLabel": "Menu pengguna",
+  "screenOn": "Skrin hidup",
+  "screenOff": "Skrin mati",
+  "newOrderSound": "Bunyi pesanan baharu",
+  "copied": "Disalin",
+  "orderLink": "Pautan pesanan",
+  "qrCode": "Kod QR",
+  "kitchenScreen": "Skrin dapur",
+  "thisDevice": "Peranti ini",
+  "manage": "Urus",
+  "ordersDashboard": "Papan pemuka pesanan",
+  "admin": "Admin",
+  "privacy": "Dasar privasi",
+  "terms": "Terma",
+  "signOut": "Log keluar",
+  "close": "Tutup"
+}

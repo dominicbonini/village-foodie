@@ -1,0 +1,25 @@
+{
+  "newOrder": {
+    "subject": "طلب جديد #{id} — {name}{withSlot, select, yes { · {slot}} other {}}",
+    "heading": "تم استقبال طلب جديد",
+    "from": "<b>الطلب #{id}</b> من <b>{name}</b>",
+    "collection": "الاستلام: {time}",
+    "asap": "دون وقت محدد — في أقرب وقت",
+    "total": "الإجمالي",
+    "notes": "<b>ملاحظات:</b> {notes}",
+    "autoConfirmed": "تم التأكيد تلقائيًا — لا حاجة إلى أي إجراء.",
+    "confirmPrompt": "سجّل الدخول إلى لوحة تحكم HatchGrab لتأكيد هذا الطلب أو رفضه.",
+    "text": "طلب جديد #{id} من {name}{withSlot, select, yes { لموعد {slot}} other {}}{withVenue, select, yes { في {venue}} other {}}.{withCharges, select, yes { {charges}.} other {}} الإجمالي: {total}.{withNotes, select, yes { ملاحظات: {notes}} other {}}"
+  },
+  "newEvents": {
+    "subject": "فعاليات جديدة · {truck} — يُرجى المراجعة",
+    "hi": "مرحبًا،",
+    "found": "وجدنا <b>{n, plural, zero {{count} فعالية جديدة} one {فعالية جديدة واحدة} two {فعاليتين جديدتين} few {{count} فعاليات جديدة} many {{count} فعاليةً جديدة} other {{count} فعالية جديدة}}</b> في جدول المواقع تحتاج إلى موافقتك قبل أن تظهر للعملاء.",
+    "listHeading": "الفعاليات التي تم العثور عليها:",
+    "approve": "بمجرد موافقتك عليها في تبويب «جدول المواقع»، ستظهر على الخريطة وتصبح صفحة الطلب جاهزة لاستقبال الطلبات المسبقة.",
+    "cta": "مراجعة جدول المواقع ←",
+    "signoff": "— فريق HatchGrab · hatchgrab.com",
+    "unknownVenue": "مكان غير معروف",
+    "text": "مرحبًا،\n\nوجدنا {n, plural, zero {{count} فعالية جديدة} one {فعالية جديدة واحدة} two {فعاليتين جديدتين} few {{count} فعاليات جديدة} many {{count} فعاليةً جديدة} other {{count} فعالية جديدة}} في جدول المواقع تحتاج إلى موافقتك:\n\n{list}\n\nيمكنك مراجعتها هنا: {url}\n\nبمجرد موافقتك عليها ستظهر على الخريطة.\n\n— فريق HatchGrab"
+  }
+}

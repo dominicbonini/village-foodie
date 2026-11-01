@@ -1,0 +1,58 @@
+{
+  "label": {
+    "street": "ที่อยู่",
+    "postcode": "รหัสไปรษณีย์",
+    "zip": "รหัสไปรษณีย์ (ZIP)",
+    "eircode": "Eircode",
+    "postalCode": "รหัสไปรษณีย์",
+    "state": "รัฐ",
+    "stateTerritory": "รัฐหรือดินแดน",
+    "province": "จังหวัด",
+    "county": "เคาน์ตี",
+    "prefecture": "จังหวัด",
+    "emirate": "รัฐ (เอมิเรต)",
+    "region": "ภูมิภาค",
+    "area": "พื้นที่ (หมู่บ้าน ตำบล หรือเมือง)",
+    "townOrArea": "เมืองหรือพื้นที่",
+    "city": "เมือง",
+    "suburb": "ย่าน",
+    "townOrCity": "อำเภอหรือเมือง"
+  },
+  "short": {
+    "area": "พื้นที่",
+    "townOrArea": "เมืองหรือพื้นที่",
+    "city": "เมือง",
+    "suburb": "ย่าน",
+    "townOrCity": "อำเภอหรือเมือง"
+  },
+  "inSentence": {
+    "postcode": "รหัสไปรษณีย์",
+    "zip": "รหัสไปรษณีย์ (ZIP)",
+    "eircode": "Eircode",
+    "postalCode": "รหัสไปรษณีย์"
+  },
+  "withArticle": {
+    "postcode": "รหัสไปรษณีย์",
+    "zip": "รหัสไปรษณีย์ (ZIP)",
+    "eircode": "Eircode",
+    "postalCode": "รหัสไปรษณีย์"
+  },
+  "tradeLabel": {
+    "area": "อำเภอหรือเมือง",
+    "townOrArea": "เมืองหรือพื้นที่",
+    "city": "เมือง",
+    "suburb": "ย่าน",
+    "townOrCity": "อำเภอหรือเมือง"
+  },
+  "basedIn": {
+    "area": "อำเภอหรือเมืองที่คุณอยู่",
+    "townOrArea": "เมืองหรือพื้นที่ที่คุณอยู่",
+    "city": "เมืองที่คุณอยู่",
+    "suburb": "ย่านที่คุณอยู่",
+    "townOrCity": "อำเภอหรือเมืองที่คุณอยู่"
+  },
+  "example": "เช่น {example}",
+  "customersSee": "ลูกค้าจะเห็น:",
+  "postalWarning": "ข้อมูลนี้ดูไม่เหมือน {article} เช่น {example} แต่คุณยังบันทึกได้",
+  "regionChoose": "เลือก…"
+}

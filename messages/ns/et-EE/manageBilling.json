@@ -24,8 +24,10 @@
     "heading": "Sinu tasuta prooviperiood pole veel alanud"
   },
   "onTrial": "Sul on kõik funktsioonid. Vali pakett enne prooviperioodi lõppu.",
+  "onTrialPaidEnd": "Sul on kõik funktsioonid. Kui prooviperiood lõpeb, on paketi {plan} hind {price} kuus. Võtame sinuga enne seda ühendust, et maksmine korraldada.",
   "onTrialNoCta": "Sul on kõik funktsioonid.",
   "noCharge": "🔒 Prooviperioodi ajal, mis kestab kuni {date}, ei võeta sinult mingit tasu. Arveldus algab alles siis, kui valid paketi ja sisestad oma makseandmed. Seni pole midagi tühistada ega maksta.",
+  "noChargePaidEnd": "🔒 Prooviperioodi ajal, mis kestab kuni {date}, ei võeta sinult mingit tasu.",
   "fees": "*Veebitellimustele kehtivad tavapärased kaardimaksete töötlustasud",
   "setUpPayment": "⏱ Vali pakett enne prooviperioodi lõppu",
   "changeYourPlan": "Muuda paketti",

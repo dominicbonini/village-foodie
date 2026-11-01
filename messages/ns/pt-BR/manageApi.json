@@ -1,0 +1,10 @@
+{
+  "vanFallback": "Van",
+  "eventsFeed": {
+    "today": "Hoje · {date}",
+    "tomorrow": "Amanhã · {date}"
+  },
+  "privacyNotSaved": "O evento está no ar, mas não foi possível salvar a privacidade dele.",
+  "stockWarning": "Nenhum item disponível em “{category}”",
+  "uncategorised": "Sem categoria"
+}

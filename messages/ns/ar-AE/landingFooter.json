@@ -1,0 +1,16 @@
+{
+  "features": "المزايا",
+  "pricing": "الأسعار",
+  "privacy": "الخصوصية",
+  "terms": "الشروط",
+  "contact": "تواصل معنا",
+  "about": "من نحن",
+  "copyright": "© {year} HatchGrab",
+  "credit": "من فريق <b>Village Foodie</b>",
+  "badges": {
+    "appStoreLink": "نزّل HatchGrab من App Store",
+    "appStoreAlt": "نزّله من App Store",
+    "googlePlayLink": "احصل على HatchGrab من Google Play",
+    "googlePlayAlt": "احصل عليه من Google Play"
+  }
+}

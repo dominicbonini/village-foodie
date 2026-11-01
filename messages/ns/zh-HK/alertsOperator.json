@@ -1,0 +1,28 @@
+{
+  "hi": "{name}，你好：",
+  "limit80": {
+    "subject": "你已用了本月 80% 的 WhatsApp 回覆",
+    "used": "你本月的 WhatsApp 自動回覆已使用 <b>{used} 則（上限 {limit} 則）</b>。",
+    "nothingStopped": "目前一切如常。當用量達到 {limit} 則，自動回覆會暫停，直至你的配額於 <b>{reset}</b> 重設。顧客仍可傳訊息給你，你亦仍會看到他們傳來的所有內容。",
+    "raise": "你可隨時在「設定」提高每月上限。",
+    "raiseLink": "你可隨時在「設定」提高每月上限：",
+    "button": "開啟設定"
+  },
+  "limit100": {
+    "subject": "你本月的 WhatsApp 自動回覆已暫停",
+    "usedAll": "你已用完本月全部 {limit} 則 WhatsApp 自動回覆，因此自動回覆已暫停。",
+    "stillReach": "<b>顧客仍可照常傳訊息給你，所有訊息仍會送達。</b>唯一停止的是自動回覆。",
+    "startAgain": "自動回覆會於 <b>{reset}</b> 重新啟動；如你在「設定」提高每月上限，則會立即恢復。",
+    "startAgainLink": "自動回覆會於 {reset} 重新啟動；如你在「設定」提高每月上限，則會立即恢復：",
+    "button": "提高我的上限"
+  },
+  "paymentBlocked": {
+    "subject": "WhatsApp 需要付款方式才能發送訊息",
+    "stopped": "由於你的 WhatsApp Business 帳戶沒有可用的付款方式，WhatsApp 已停止發出你的自動回覆。",
+    "stillMessage": "<b>顧客仍然可以傳訊息給你，你亦仍然看到他們傳來的所有內容</b>——但回覆無法送達他們。",
+    "payDirect": "這些訊息的費用由你直接付給 WhatsApp，所以要在 WhatsApp Manager 而不是 HatchGrab 處理。在那裏新增或更新信用卡，回覆便會自動恢復。",
+    "payDirectLink": "這些訊息的費用由你直接付給 WhatsApp，所以要在 WhatsApp Manager 而不是 HatchGrab 處理。在那裏新增或更新信用卡，回覆便會自動恢復：",
+    "button": "開啟 WhatsApp Manager",
+    "settings": "你的 HatchGrab 設定：<link>{url}</link>"
+  }
+}

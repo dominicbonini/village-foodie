@@ -52,9 +52,16 @@ export function llmsText(countries: CountrySettings[], catalog: PlanCatalog, com
 
   if (months !== null && countries.length) {
     // The plan a trial falls back to is one plan for every country; "no monthly fee" only where it is free in all of them.
-    const fbs = countries.map(c => offerFallback(catalog, c.countryCode))
+    // world-countries-1 (31 October 2026): a country may name its OWN trial-end plan (Unlimited where it is the only plan offered).
+    // The sentence names the plan most countries move to, exactly as before; the others follow, by plan, with their countries.
+    const fbs = countries.map(c => ({ c, fb: offerFallback(catalog, c.countryCode) }))
+    const byPlan = new Map<string, typeof fbs>()
+    for (const x of fbs) byPlan.set(x.fb.plan.key, [...(byPlan.get(x.fb.plan.key) ?? []), x])
+    const groups = [...byPlan.values()].sort((a, b) => b.length - a.length)
+    const main = groups[0]
+    const others = groups.slice(1).map(g => ` In ${g.map(x => x.c.name).join(', ')}, a truck moves to ${g[0].fb.plan.name}.`).join('')
     L.push('## Free trial', '')
-    L.push(`The first ${months === 1 ? 'month is' : `${months} months are`} completely free, with every feature unlocked. When the trial ends, a truck moves to ${fbs[0].plan.name}${fbs.every(f => f.free) ? ' (no monthly fee)' : ''} unless it chooses a plan. No card to start, no contract, cancel anytime.`, '')
+    L.push(`The first ${months === 1 ? 'month is' : `${months} months are`} completely free, with every feature unlocked. When the trial ends, a truck moves to ${main[0].fb.plan.name}${main.every(x => x.fb.free) ? ' (no monthly fee)' : ''} unless it chooses a plan.${others} No card to start, no contract, cancel anytime.`, '')
   }
 
   L.push('## Countries', '')

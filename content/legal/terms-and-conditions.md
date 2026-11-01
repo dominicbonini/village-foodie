@@ -1,6 +1,6 @@
 # Terms of Service
 
-**Last updated:** 20 October 2026
+**Last updated:** 1 November 2026
 
 These terms govern your use of HatchGrab. Please read them — by creating an account or using the service you agree to them.
 
@@ -53,7 +53,7 @@ If your allergen or ingredient information is wrong, incomplete or out of date, 
 
 **Your content.** You are responsible for your menu descriptions, images, trading name and logo, and you confirm you have the right to use them.
 
-**Your customers' data.** You decide what customer information you collect through HatchGrab and what you do with it. Section 9 sets out how we handle that data on your behalf.
+**Your customers' data.** You decide what customer information you collect through HatchGrab and what you do with it. Section 10 sets out how we handle that data on your behalf.
 
 **Lawful use.** You must not use HatchGrab to break the law, infringe anyone's rights, send unsolicited marketing, attempt to gain unauthorised access to our systems, or interfere with the service for other users.
 
@@ -63,19 +63,19 @@ If your allergen or ingredient information is wrong, incomplete or out of date, 
 
 **No contract, cancel anytime.** There is no minimum term and no notice period. You are never tied in.
 
-- **Plans.** Our plans, their monthly prices, the online order value each includes and the fee each charges are shown on our website and in the app. One plan has no monthly fee. Prices are in your local currency. We are not registered for VAT, so no VAT is added to our fees. Where another local tax applies to you, we will tell you before it is added.
-- **Free trial.** New accounts start with a free trial with every feature unlocked. Its length is shown on our website and in the app when you sign up. You do not need a card to start. At the end of the trial your account moves to our plan with no monthly fee unless you have chosen another plan. We will remind you in the app before your trial ends.
+- **Plans.** Our plans, their monthly prices, the online order value each includes and the fee each charges are shown on our website and in the app. Which plans we offer depends on your country, and in most countries one of them has no monthly fee. Prices are in your local currency. We are not registered for VAT, so no VAT is added to our fees. Where another local tax applies to you, we will tell you before it is added.
+- **Free trial.** New accounts start with a free trial with every feature unlocked. Its length is shown on our website and in the app when you sign up. You do not need a card to start. At the end of the trial your account moves to the plan shown for your country on our pricing page, unless you have chosen another plan. In most countries that plan has no monthly fee. We will remind you in the app before your trial ends.
 - **Paid in advance, and non-refundable.** Monthly plan fees are billed one month in advance. **Fees already paid are non-refundable**, including if you cancel part-way through a month or stop using the service. This is the trade for there being no contract and no minimum term. Nothing here affects rights you have that cannot lawfully be excluded.
-- **Cancellation.** You can cancel at any time by contacting us or from within the service. Cancellation stops the next payment; it does not refund the month you are in. You keep full access until the end of the period you have paid for, then move to our plan with no monthly fee.
+- **Cancellation.** You can cancel at any time by contacting us or from within the service. Cancellation stops the next payment; it does not refund the month you are in. You keep full access until the end of the period you have paid for, then move to the plan shown for your country on our pricing page, which in most countries has no monthly fee.
 - **HatchGrab fees on online card orders.** Depending on your plan, we charge a stated percentage of the value of online orders your customers pay for by card — on all of it, on the value above the amount your plan includes each month, or not at all. **We charge no fee on Pay at Hatch orders or on walk-up orders.**
 - **Card processing.** Card processing fees on online card orders are charged by our payment provider (Stripe), are paid to them and not to us, and are separate from our fees. Walk-up orders are taken on your own card reader, under your own agreement with its provider.
 - **Price changes.** We may change our prices, fees or what a plan includes. We will give you at least 30 days' notice before a change affects you, and you may change plan or cancel before it takes effect.
 
 ### If payment is not made
 
-**If a payment fails or is not made, your account moves to our plan with no monthly fee.** We do not lock you out.
+**If a payment fails or is not made, your account moves to the plan shown for your country on our pricing page, which in most countries has no monthly fee.** We do not lock you out.
 
-- If a payment is not made within **7 days** of its due date, your account moves to the plan with no monthly fee. You keep your account, your menu, your orders and your data, and you can carry on taking orders and using the kitchen screen and dashboard. You lose the features that plan does not include, and that plan's fee on online card orders applies.
+- If a payment is not made within **7 days** of its due date, your account moves to that plan. You keep your account, your menu, your orders and your data, and you can carry on taking orders and using the kitchen screen and dashboard. You lose any features that plan does not include, and that plan's fee on online card orders applies, if it has one.
 - Paying the outstanding amount restores your plan.
 - Moving plan does not entitle you to a refund of fees already paid, and you remain liable for amounts due up to that date.
 

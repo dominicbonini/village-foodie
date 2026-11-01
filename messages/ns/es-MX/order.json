@@ -1,0 +1,25 @@
+{
+  "state": {
+    "cardFormLoadFailed": "No pudimos cargar el formulario de tarjeta. Revisa tu conexión e inténtalo de nuevo. Tu carrito quedó guardado y no se te cobró nada."
+  },
+  "yourNamedDeal": "tu combo {name}",
+  "taxNotice": "Los precios del menú no incluyen {tax}. Se añade abajo.",
+  "busyNotice": "Estamos recibiendo muchos pedidos en este momento. Vuelve a tocar “Hacer pedido” en unos instantes. Tu pedido quedó guardado aquí.",
+  "menuChangedFallback": "El menú cambió. Revisa tu pedido antes de hacerlo.",
+  "loadingMenu": "Cargando el menú…",
+  "closedDemo": "Este servicio de demostración terminó: se acabó el horario del evento, exactamente como pasaría con uno real. Vuelve a abrir tu panel de demostración y elige “Empezar un nuevo servicio” para preparar otro. Tu menú se queda como está.",
+  "mealDeals": "🎁 Combos",
+  "addDeal": "Añadir combo",
+  "addAnotherDeal": "+ Añadir otro combo",
+  "dealNumber": "Combo {number}",
+  "yourDeal": "Tu combo",
+  "menu": "Menú",
+  "dualNetworkNotice": "Independientemente del logotipo de la marca de pago que se muestre al ingresar tus datos de pago, siempre que uses una tarjeta de débito de doble red con el logotipo de eftpos y el de otra marca de pago, tu pago podrá procesarse a través de cualquiera de las dos redes.",
+  "emailInvalid": "Ingresa un correo válido (p. ej. sarah@email.com)",
+  "placeOrder": "Hacer pedido",
+  "addItemsPrompt": "Añade productos del menú para hacer un pedido",
+  "modalAdd": "Añadir al carrito · {amount}",
+  "allergenCard": "📎 Ver la tabla de alérgenos (PDF/imagen)",
+  "allergensUsed": "Alérgenos presentes en este menú",
+  "slotTaken": "Alguien acaba de tomar tu horario de las {time}: esta es la siguiente hora disponible."
+}

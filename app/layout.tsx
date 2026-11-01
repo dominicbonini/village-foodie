@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from "next";
-import { Geist, Geist_Mono, Noto_Sans } from "next/font/google";
+import { Geist, Geist_Mono } from "next/font/google";
+import { scriptFontClassOf, isRtl } from "@/lib/script-fonts";
 import { headers } from "next/headers";
 import "./globals.css";
 import { CSPostHogProvider } from "./providers";
@@ -23,18 +24,10 @@ const geistMono = Geist_Mono({
   preload: false,
 });
 
-// europe-languages-2 (23 October 2026): GREEK AND CYRILLIC. Geist has Cyrillic but no Greek, and the landing faces (Archivo,
-// Public Sans) have neither, so a Greek or Bulgarian page fell back to whatever the device had. Noto Sans fills ONLY those letters:
-// its variable is put on <body> only when the page is in Greek or Bulgarian (below), the stacks name it only under :lang(el) /
-// :lang(bg) (app/globals.css, app/landing/landing.css), it is never preloaded, and each @font-face carries a unicode-range — so
-// a Latin page never fetches one of its files, and English HTML is byte for byte as before.
-const scriptFallback = Noto_Sans({
-  variable: "--font-script-fallback",
-  subsets: ["greek", "cyrillic"],
-  preload: false,
-  display: "swap",
-});
-const NEEDS_SCRIPT_FALLBACK = /^(el|bg)(-|$)/i
+// europe-languages-2 (23 October 2026): GREEK AND CYRILLIC (Noto Sans, its variable on <body> only for a Greek or Bulgarian page);
+// world-countries-1 (31 October 2026): Japanese, Traditional Chinese, Thai and Arabic. All defined in lib/script-fonts.ts — moved
+// there by world-countries-2 (1 November 2026) so the language provider applies Greek and Bulgarian too, on pages that learn a
+// truck's language in the browser.
 
 export async function generateMetadata(): Promise<Metadata> {
   const headersList = await headers()
@@ -121,9 +114,11 @@ export default async function RootLayout({
   // docs/brand-consolidation-report.md; no operator surface changes appearance because of it.
   const brand = host?.includes('hatchgrab') ? 'hatchgrab' : 'villagefoodie'
   return (
-    <html lang={lang} data-brand={brand}>
+    // world-countries-1: an Arabic page reads right to left (dir="rtl" on that language's pages only); every other page's <html>
+    // is exactly as before (no dir attribute).
+    <html lang={lang} data-brand={brand} {...(isRtl(lang) ? { dir: 'rtl' } : {})}>
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased${NEEDS_SCRIPT_FALLBACK.test(lang) ? ` ${scriptFallback.variable}` : ''}`}
+        className={`${geistSans.variable} ${geistMono.variable} antialiased${scriptFontClassOf(lang) ? ` ${scriptFontClassOf(lang)}` : ''}`}
       >
         <CSPostHogProvider host={host}>
           {children}

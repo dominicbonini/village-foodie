@@ -1,0 +1,23 @@
+{
+  "explainerLead": "Você precisa manter o painel ou a tela da cozinha ligados e online durante o turno.",
+  "explainerBody": "Se a tela desligar, o aparelho perder a internet ou você trocar para outro site, a proteção offline assume — pausando os pedidos ou desativando o aceite automático, conforme o que você escolheu.",
+  "reminder": "⚠️ Deixe o painel ou a tela da cozinha ligados e online durante o atendimento, senão a proteção offline pode entrar em ação.",
+  "enableConfirm": "Proteção offline ativada.\n\nPara os pedidos continuarem chegando, sua tela precisa ficar ligada. Se este aparelho perder a conexão, a proteção offline entra em ação no modo que você escolheu.\n\nVerifique se a opção Tela ligada está ativada neste aparelho.",
+  "disableConfirm": "Desativar a proteção offline neste evento?\n\nSe este aparelho perder a conexão, os pedidos online continuam — os clientes podem fazer pedidos que você não consegue ver. Só desative se a sua conexão for confiável.",
+  "cardDescription": "Define o que acontece com os pedidos que chegam quando o seu aparelho fica offline.",
+  "purpose": "Se o seu aparelho perder a conexão, isso impede que cheguem pedidos enquanto você não consegue vê-los.",
+  "switchLabel": "Proteção de pedidos offline",
+  "switchHelp": "O que acontece quando esta van perde a conexão.",
+  "modes": {
+    "pause": {
+      "label": "Pausar pedidos online",
+      "help": "Os clientes não conseguem pedir até você voltar a ficar online."
+    },
+    "no_auto_accept": {
+      "label": "Continuar recebendo pedidos e confirmar você mesmo",
+      "help": "O aceite automático fica desligado: os clientes ainda podem pedir, mas nada é confirmado automaticamente. Você confirma cada pedido quando voltar a ficar online — e o que ainda estiver aguardando é recusado automaticamente depois do tempo escolhido, e o cliente recebe um e-mail avisando."
+    }
+  },
+  "autoRejectLabel": "Recusar pedidos aguardando há mais de",
+  "autoRejectOption": "{n, plural, one {{count} min} other {{count} min}}"
+}

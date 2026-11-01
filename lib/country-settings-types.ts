@@ -13,6 +13,7 @@
 import type { AddressFormatKey } from '@/lib/address-formats'   // address-formats-1: the pure address-format config
 import { currencyInfo } from '@/lib/currencies'
 import type { MoneyFormat } from '@/lib/money-format'
+import type { AllergenSet } from '@/lib/allergens'
 
 /** How a country's phone numbers are checked: 'length' — a plausible length (libphonenumber "possible",
  *  the default); 'strict' — real numbers only (libphonenumber "valid"); 'off' — anything not empty. */
@@ -66,9 +67,14 @@ export interface CountrySettings {
   serviceFeeTruckMaxFixedMinor: number | null
   /** The platform fee switched on (the rate is the truck's plan's plan_prices.fee_bps). Default OFF; nothing sends it this phase. */
   platformFeeEnabled: boolean
+  /** world-countries-1 (31 October 2026): MAY HatchGrab take a platform fee here at all? False where Stripe does not let a platform
+   *  outside the country collect an application fee on its connected accounts (Brazil, Mexico, Malaysia, Singapore, Thailand).
+   *  🔴 It overrides `platformFeeEnabled` (platformFeeOn below), and the database refuses enabled without allowed
+   *  (country_settings_platform_fee_allowed_chk) — so switching the fee on later can never break card payments there. */
+  platformFeeAllowed: boolean
   /** Whether the service fee and card surcharge are taxed (D8). Default false. */
   feesTaxed: boolean
-  allergenSet: 'uk14' | 'us9' | 'anz' | 'ca'   // anz-1: Australia / New Zealand (lib/allergens.ts ANZ); canada-1: Canada (CA)
+  allergenSet: AllergenSet   // anz-1: Australia / New Zealand (lib/allergens.ts ANZ); canada-1: Canada (CA); world-countries-1: jp, br, codex
   /** allergen-card-country (21 October 2026): may a truck here show its allergens as ONE card for the whole menu
    *  (allergen_display_mode 'card')? True everywhere except where the law requires allergens per dish (Ireland, FSAI). */
   allergenCardOnlyAllowed: boolean
@@ -89,6 +95,16 @@ export interface CountrySettings {
   supportHours: string | null
   updatedAt: string
   updatedBy: string | null
+}
+
+/**
+ * world-countries-1 (31 October 2026): 🔴 THE ONE ANSWER TO "IS THE PLATFORM FEE ON IN THIS COUNTRY?" — switched on AND allowed.
+ * Every path that would compute, store or send a platform (application) fee asks this, never `platformFeeEnabled` alone
+ * (lib/order-charge-rules.ts today; the capture path when the fee lands — scripts/world-countries-1.cjs fails if any file sends
+ * an application fee without it).
+ */
+export function platformFeeOn(s: Pick<CountrySettings, 'platformFeeEnabled'> & { platformFeeAllowed?: boolean }): boolean {
+  return s.platformFeeEnabled === true && s.platformFeeAllowed !== false
 }
 
 /** The two things a money formatter needs, taken from a settings row. */

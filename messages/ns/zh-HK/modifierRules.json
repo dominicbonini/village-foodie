@@ -1,0 +1,4 @@
+{
+  "customer": "{required, select, yes {必選} other {選填}}{limit, select, one { · 選擇一項} upTo { · 最多選擇 {max} 項} other {}}",
+  "operator": "{required, select, yes {必選} other {選填}}{limit, select, one { · 顧客選擇一項} upTo { · 顧客最多可選擇 {max} 項} other {}}"
+}

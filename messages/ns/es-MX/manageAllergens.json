@@ -1,0 +1,45 @@
+{
+  "cardEditor": {
+    "title": "Tu tabla de alérgenos",
+    "empty": "Aún no hay tabla de alérgenos.",
+    "placeholder": "p. ej., Todo nuestro pescado capeado con papas contiene trigo y leche. La freidora se comparte con productos que contienen gluten y nueces. Hay opciones veganas: pregunta al personal."
+  },
+  "cardUpload": {
+    "question": "¿Tienes una tabla de alérgenos para subir?",
+    "cardOnly": "Sube la tabla de alérgenos que verán los clientes.",
+    "analysing": "Analizando la tabla…",
+    "pastePlaceholder": "Pega aquí el texto de tu tabla de alérgenos…",
+    "process": "Procesar tabla",
+    "cardRead": "Tabla leída ✓",
+    "blanket": "La tabla indica que <b>{list}</b> puede estar presente en <b>todos</b> los platillos. ¿Agregarlo a todos? (de todos modos confirmarás cada uno) <muted>— desactivado de forma predeterminada</muted>"
+  },
+  "savedCard": {
+    "fileOnly": "Hay un archivo de tabla guardado para este food truck, pero no se guardó ningún texto de resumen. Abre el original para leerlo.",
+    "viewOriginal": "Ver tabla original"
+  },
+  "wizard": {
+    "toast": {
+      "readFailed": "No se pudo leer la tabla de alérgenos. Vuelve a intentarlo",
+      "imageFailed": "No se pudo leer esa imagen. Escribe o pega tu tabla",
+      "cardRead": "{n, plural, one {Tabla leída: {matched} asociados, {count} pendiente de asignar} many {Tabla leída: {matched} asociados, {count} pendientes de asignar} other {Tabla leída: {matched} asociados, {count} pendientes de asignar}}"
+    },
+    "review": {
+      "detected": "Detectados a partir de tu menú: <b>revísalos</b>. Los alérgenos siguen ocultos para los clientes hasta que confirmes cada platillo.",
+      "emptyTitle": "No hay productos en el menú",
+      "emptyBody": "Primero agrega productos al menú y luego configura aquí sus alérgenos."
+    },
+    "cardPanel": {
+      "saved": "🛡️ Tabla de alérgenos guardada",
+      "viewOriginal": "Ver tabla original",
+      "replace": "Reemplazar tabla",
+      "uploadHelp": "Sube tu tabla de alérgenos (foto/PDF) o pega tu información de alérgenos: nuestra IA la organiza para los clientes.",
+      "add": "Añadir tabla de alérgenos",
+      "viewOnly": "👁 Solo lectura: solo el titular puede agregar la tabla de alérgenos.",
+      "intro": "Los clientes verán esta tabla como la referencia de alérgenos de tu menú. Los alérgenos por platillo quedan ocultos en el modo solo tabla de alérgenos (los datos de tus platillos se conservan por si más adelante cambias a alérgenos por platillo)."
+    },
+    "subtitle": {
+      "card": "Agrega tu tabla de alérgenos",
+      "cardOptional": "Agrega una tabla de alérgenos (opcional)"
+    }
+  }
+}

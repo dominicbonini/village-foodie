@@ -24,8 +24,10 @@
     "heading": "Az ingyenes próbaidőszaka még nem kezdődött el"
   },
   "onTrial": "Minden funkció elérhető Önnek. Válasszon csomagot a próbaidőszak vége előtt.",
+  "onTrialPaidEnd": "Minden funkció elérhető Önnek. A próbaidőszak után ez a csomag lesz érvényes: {plan}, havi {price} áron. Még a próbaidőszak vége előtt felvesszük Önnel a kapcsolatot, hogy beállítsuk a fizetést.",
   "onTrialNoCta": "Minden funkció elérhető Önnek.",
   "noCharge": "🔒 A próbaidőszak végéig ({date}) semmilyen díjat nem számolunk fel Önnek. Számlázás csak akkor indul, ha Ön csomagot választ, és megadja a fizetési adatait. Addig nincs mit lemondani, és nincs mit fizetni.",
+  "noChargePaidEnd": "🔒 A próbaidőszak végéig ({date}) semmilyen díjat nem számolunk fel Önnek.",
   "fees": "*Az online rendeléseknél a szokásos kártyás tranzakciós díjak érvényesek",
   "setUpPayment": "⏱ Válasszon csomagot a próbaidőszak vége előtt",
   "changeYourPlan": "Csomag módosítása",

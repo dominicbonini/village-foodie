@@ -1,0 +1,44 @@
+{
+  "perTruckMonth": "1台あたり／月",
+  "transactionFees": "決済手数料",
+  "comingSoon": "近日公開",
+  "footnote2Masked": "オンライン決済はStripe Connectを利用しています。プラットフォーム手数料とカード決済手数料は未定で、サービス開始時にお知らせします。",
+  "card": {
+    "title": "プラン・請求",
+    "managed": "請求はHatchGrabが管理しています",
+    "earlyAccess": "アーリーアクセス期間中は、プランの設定や変更を手動で行っています。",
+    "planLine": "{trial, select, yes {{truck}・{plan}プラン（トライアル）} other {{truck}・{plan}プラン}}"
+  },
+  "currentPlan": "現在のプラン",
+  "plan": {
+    "included": "月{amount}分のオンライン注文が含まれます。",
+    "includedUnlimited": "オンライン注文は無制限です。",
+    "promo": "特別価格です。",
+    "promoUntil": "{date}まで特別価格です。",
+    "ended": "{plan}プランは{date}に終了しました。現在は{now}をご利用中です。",
+    "trialMonths": "{months}か月間の無料トライアル。"
+  },
+  "trialEnds": "トライアル終了日：{date}",
+  "yourTrialEnds": "トライアルは{date}に終了します",
+  "notStarted": {
+    "heading": "無料トライアルはまだ始まっていません"
+  },
+  "onTrial": "すべての機能をご利用いただけます。トライアル終了前にプランをお選びください。",
+  "onTrialPaidEnd": "すべての機能をご利用いただけます。トライアル終了後、{plan}は月額{price}です。お支払いの設定について、終了前にこちらからご連絡します。",
+  "onTrialNoCta": "すべての機能をご利用いただけます。",
+  "noCharge": "🔒 トライアル期間（{date}まで）中に料金は一切かかりません。料金が発生するのは、プランを選んでお支払い情報を入力したときだけです。それまでは解約手続きも支払いも不要です。",
+  "noChargePaidEnd": "🔒 トライアル期間（{date}まで）中に料金は一切かかりません。",
+  "fees": "*オンライン注文には所定のカード決済手数料がかかります",
+  "setUpPayment": "⏱ トライアル終了前にプランをお選びください",
+  "changeYourPlan": "プランを変更",
+  "planButton": "{plan}（{price}）",
+  "upgradeModal": {
+    "title": "{plan}に切り替える",
+    "tagline": "{price}：{description}",
+    "body": "現在、自動請求の仕組みを準備中です。今すぐ切り替えたい場合はメッセージをお送りください。24時間以内に設定いたします。",
+    "mailSubject": "{plan}への切り替え：{truck}",
+    "mailBody": "お世話になっております。{truck}を{plan}（{price}）プランに切り替えたいと考えています。",
+    "email": "メールで切り替えを依頼",
+    "cancel": "キャンセル"
+  }
+}

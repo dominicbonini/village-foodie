@@ -1,0 +1,42 @@
+{
+  "publicName": "私人活動",
+  "chip": "私人",
+  "grid": {
+    "orderingSection": "落單",
+    "linkRowLabel": "透過私人連結及 QR 碼接單",
+    "columnTitle": "內置的「私人」類型，不能重新命名、移動或刪除。"
+  },
+  "form": {
+    "help": "在你的出車時間表上顯示為「私人活動」，只會顯示日期和時間，絕不顯示地址、地圖或 Village Foodie。",
+    "linkPromise": "賓客透過私人連結及 QR 碼落單，儲存後你便會取得。",
+    "nameLabel": "活動名稱",
+    "nameHelp": "賓客會在落單頁面頂部看到這個名稱。",
+    "namePlaceholder": "Sarah 與 Tom 的婚禮",
+    "previewNote": "在你的出車時間表上的顯示方式：不會顯示場地、地區或地址。",
+    "needsTimes": "請加入開始及結束時間，透過連結接單的私人活動必須設定時間。"
+  },
+  "link": {
+    "button": "連結及 QR 碼",
+    "title": "私人連結及 QR 碼",
+    "label": "私人連結",
+    "copy": "複製",
+    "copied": "已複製",
+    "qrDownload": "下載 QR 碼",
+    "tableCards": "打印枱卡",
+    "newLink": "建立新連結",
+    "working": "處理中…",
+    "newLinkConfirm": "要建立新連結嗎？目前的連結會即時失效，你已打印的 QR 碼亦會一併失效。",
+    "newLinkHelp": "如連結流傳到不應到的地方，請使用此功能。目前的連結會即時失效，已打印的 QR 碼亦會失效。",
+    "newLinkFailed": "無法建立新連結。",
+    "offNotice": "此活動已關閉私人連結落單，所以沒有連結可分享。活動仍會在你的出車時間表上顯示為「私人活動」。"
+  },
+  "cards": {
+    "printTitle": "{truck}：枱卡",
+    "scan": "掃描落單",
+    "blurb": "用手機落單及付款，準備好後我們會叫你的名字。",
+    "footer": "HatchGrab 網上落單"
+  },
+  "noSinglePost": "私人活動不會有獨立帖文，只會以「私人活動」形式出現在你的每週海報上。",
+  "confirmToPrivate": "這會隱藏地址，並把活動從地圖上移除。賓客需要私人連結才可落單。",
+  "confirmFromPrivate": "這會把活動公開：地址和地圖標記會顯示，私人連結亦會失效。"
+}

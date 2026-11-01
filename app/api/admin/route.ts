@@ -3,7 +3,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@supabase/supabase-js'
 import { verifyAdmin } from '@/lib/auth/admin'   // canonical admin check (shared with the /landing gate)
 import { getPlanCatalog } from '@/lib/plans-server'
-import { isPlanKey, type PlanCatalog } from '@/lib/plans'
+import { isPlanKey, planByKey, planPriceFor, type PlanCatalog } from '@/lib/plans'
 import { getCountrySettings, getCountrySettingsMany } from '@/lib/country-settings'
 import type { CountrySettings } from '@/lib/country-settings-types'
 import { MARKETING_COUNTRY } from '@/lib/marketing-country'
@@ -172,6 +172,14 @@ export async function POST(req: NextRequest) {
   if (unknown.length) return NextResponse.json({ error: `These fields cannot be changed here: ${unknown.join(', ')}` }, { status: 400 })
   if (invalid.length) return NextResponse.json({ error: `Invalid value for: ${invalid.join(', ')}` }, { status: 400 })
   if (!Object.keys(patch).length) return NextResponse.json({ error: 'Nothing to change' }, { status: 400 })
+  // world-countries-1 (31 October 2026): a public plan whose price row in the truck's country is switched off (offered = false —
+  // Unlimited-only countries, where HatchGrab may not take a platform fee) is refused. Every other choice is as before.
+  const chosen = 'plan' in patch ? planByKey(plans, patch.plan as string) : null
+  if (chosen) {
+    const { data: tc } = await supabase.from('trucks').select('country').eq('id', truckId).maybeSingle()
+    const row = chosen?.isPublic && tc?.country ? planPriceFor(plans, chosen.key, tc.country) : null
+    if (row && row.offered === false) return NextResponse.json({ error: `${chosen!.name} is not offered in ${tc!.country}.` }, { status: 400 })
+  }
 
   const { error } = await supabase.from('trucks').update(patch).eq('id', truckId)
   if (error) return NextResponse.json({ error: error.message }, { status: 500 })

@@ -17,7 +17,7 @@ import { Suspense, useState } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { createSupabaseBrowserClient } from '@/lib/supabase/client'
 import { HatchGrabWordmark } from '@/components/brand/HatchGrabWordmark'
-import { PRIVACY_PATH, TERMS_PATH } from '@/lib/legal'
+import { useLegalPath } from '@/lib/i18n/use-legal-path'
 import { useT } from '@/lib/i18n/use-t'
 import '@/lib/i18n/catalog/auth'
 import { errorText } from '@/lib/i18n/customer-errors'
@@ -26,12 +26,14 @@ import '@/lib/i18n/catalog/errorsOnboarding'
 function SignupForm() {
   const router = useRouter()
   const params = useSearchParams()
-  // Language Phase 1c: the words are `auth.signup` / `auth.fields`. No truck exists yet and this route has no
-  // provider, so they read en-GB (DEFAULT_LOCALE), as the page always did.
+  // Language Phase 1c: the words are `auth.signup` / `auth.fields`. No truck exists yet; legal-languages-1 (1 November
+  // 2026): the layout's <AuthLocale> provides the visitor's language (proxy.ts decides it), en-GB for an English visitor.
   const t = useT('auth.signup')
   const tField = useT('auth.fields')
   // A refusal is worded from its code (errorsOnboarding), its English `error` the fallback (US polish batch, 19 Oct 2026).
   const tErr = useT('errorsOnboarding')
+  // legal-languages-1: the terms the visitor accepts, in their language (the layout's <AuthLocale>); English as before.
+  const termsHref = useLegalPath('terms'), privacyHref = useLegalPath('privacy')
   // Carried from the demo's "Save my menu" CTA so the account can be linked to the demo it came from.
   const demo = params.get('demo')
 
@@ -141,8 +143,8 @@ function SignupForm() {
           {/* Consent by conduct — directly under the action it refers to, which is what makes it consent. */}
           <p className="text-[11px] text-slate-400 text-center leading-relaxed">
             {t.rich('consent', {
-              terms: c => <a href={TERMS_PATH} target="_blank" rel="noopener noreferrer" className="underline hover:text-slate-600">{c}</a>,
-              privacy: c => <a href={PRIVACY_PATH} target="_blank" rel="noopener noreferrer" className="underline hover:text-slate-600">{c}</a>,
+              terms: c => <a href={termsHref} target="_blank" rel="noopener noreferrer" className="underline hover:text-slate-600">{c}</a>,
+              privacy: c => <a href={privacyHref} target="_blank" rel="noopener noreferrer" className="underline hover:text-slate-600">{c}</a>,
             })}
           </p>
         </form>

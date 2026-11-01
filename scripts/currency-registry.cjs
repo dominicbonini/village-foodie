@@ -45,8 +45,9 @@ const THREE_DECIMAL = ['BHD', 'JOD', 'KWD', 'OMR', 'TND']
   const incomplete = R.CURRENCIES.filter(c => !c.name || !c.namePlural || !c.symbol || !c.intlSymbol || typeof c.symbolShared !== 'boolean' || !Number.isInteger(c.decimals) || !c.minorSign || !['minor', 'amount'].includes(c.shortFee) || !c.locale || 'planLocale' in c)
   t('every currency has a name and plural name, a home and an international symbol, the symbol-shared flag, its decimals, a minor-unit sign, a short-fee style and a home locale (and no `planLocale`, retired by native-prices)', incomplete.length === 0, incomplete.map(c => c.code))
   // ⚠️ RE-PINNED (native-prices, 22 October 2026): the symbol-shared flag, as Dominic decided it (21 Oct) — and a reason beside each entry.
-  const SHARED = ['AUD', 'NZD', 'CAD', 'SEK', 'NOK', 'DKK'], UNSHARED = ['GBP', 'USD', 'EUR', 'CHF', 'PLN', 'CZK', 'HUF', 'RON']
-  t(`symbolShared is true for exactly ${SHARED.join(', ')} and false for ${UNSHARED.join(', ')} (all 14)`,
+  // ⚠️ RE-PINNED (world-countries-1, 31 October 2026): + MXN and SGD shared ("$"), + BRL JPY HKD MYR AED THB unshared — all 22.
+  const SHARED = ['AUD', 'NZD', 'CAD', 'SEK', 'NOK', 'DKK', 'MXN', 'SGD'], UNSHARED = ['GBP', 'USD', 'EUR', 'CHF', 'PLN', 'CZK', 'HUF', 'RON', 'BRL', 'JPY', 'HKD', 'MYR', 'AED', 'THB']
+  t(`symbolShared is true for exactly ${SHARED.join(', ')} and false for ${UNSHARED.join(', ')} (all 22)`,
     SHARED.every(c => R.currencyInfo(c).symbolShared === true) && UNSHARED.every(c => R.currencyInfo(c).symbolShared === false) && SHARED.length + UNSHARED.length === R.CURRENCIES.length,
     R.CURRENCIES.map(c => `${c.code} ${c.symbolShared}`))
   const regSrc = fs.readFileSync(path.join(REPO, 'lib/currencies.ts'), 'utf8').split('\n')
@@ -54,13 +55,15 @@ const THREE_DECIMAL = ['BHD', 'JOD', 'KWD', 'OMR', 'TND']
   t('each entry carries its reason for the flag — a comment line directly above it in lib/currencies.ts', unjustified.length === 0, unjustified)
   t('an international symbol differs from the home one exactly where the home symbol is shared', R.CURRENCIES.every(c => (c.intlSymbol !== c.symbol) === c.symbolShared), R.CURRENCIES.map(c => `${c.code} ${c.symbol}/${c.intlSymbol}`))
   const wrongDecimals = R.CURRENCIES.filter(c => c.decimals !== (ZERO_DECIMAL.includes(c.code) ? 0 : THREE_DECIMAL.includes(c.code) ? 3 : 2))
-  t('every currency\'s decimals are the card processor\'s (none of ours is zero- or three-decimal; HUF charges are two-decimal)', wrongDecimals.length === 0, wrongDecimals.map(c => `${c.code} ${c.decimals}`))
+  // ⚠️ RE-PINNED (world-countries-1): the yen is ours now — a zero-decimal currency at the card processor (ZERO_DECIMAL above lists it).
+  t('every currency\'s decimals are the card processor\'s (JPY zero-decimal; none three-decimal; HUF charges are two-decimal)', wrongDecimals.length === 0, wrongDecimals.map(c => `${c.code} ${c.decimals}`))
   t('the signs asked for: GBP p; USD and CAD ¢; EUR, AUD and NZD c', JSON.stringify(['GBP', 'USD', 'CAD', 'EUR', 'AUD', 'NZD'].map(c => R.currencyInfo(c).minorSign)) === JSON.stringify(['p', '¢', '¢', 'c', 'c', 'c']))
-  t('currencyInfo is case-insensitive and null for an unlisted code', R.currencyInfo('eur')?.code === 'EUR' && R.currencyInfo('JPY') === null && R.currencyInfo(null) === null && !R.isSupportedCurrency('XYZ'))
+  t('currencyInfo is case-insensitive and null for an unlisted code', R.currencyInfo('eur')?.code === 'EUR' && R.currencyInfo('KRW') === null && R.currencyInfo(null) === null && !R.isSupportedCurrency('XYZ'))
 
   // ══ 2 ════════════════════════════════════════════════════════════════════════════════════════════════════════════
   head('2 · THE DATABASE LIST — the CHECK names exactly the registry\'s codes')
-  const sql = fs.readFileSync(path.join(REPO, 'supabase/migrations/20261027_currency_registry.sql'), 'utf8')
+  // ⚠️ RE-PINNED (world-countries-1, 31 October 2026): the CHECK is now widened by 20261054 (block A) — the newest file that sets it.
+  const sql = fs.readFileSync(path.join(REPO, 'supabase/migrations/20261054_world_countries_1_schema.sql'), 'utf8')
   const m = /add constraint country_settings_currency_chk\s+check \(currency in \(([^)]*)\)\)/.exec(sql)
   const checkList = m ? [...m[1].matchAll(/'([A-Z]{3})'/g)].map(x => x[1]) : null
   t('the migration adds country_settings_currency_chk as an IN list', !!checkList && checkList.length > 0, sql.slice(0, 300))
@@ -90,21 +93,30 @@ const THREE_DECIMAL = ['BHD', 'JOD', 'KWD', 'OMR', 'TND']
   // ⚠️ RE-PINNED (native-prices, 22 October 2026): our plan prices on a country's OWN pages are the HOME form, as locals write
   // it; the INTERNATIONAL form is for the side-by-side places (Admin, /llms.txt). Both pinned for all 14, in the home locale.
   const sp = s => s.replace(/[\u00a0\u202f]/g, ' ')
-  const HOME = { GBP: '£29', USD: '$29', EUR: '€29', CAD: '$29', AUD: '$29', NZD: '$29', CHF: 'CHF 29', SEK: '29 kr', NOK: '29 kr', DKK: '29 kr.', PLN: '29 zł', CZK: '29 Kč', HUF: '29 Ft', RON: '29 lei' }
-  const INTL = { GBP: '£29', USD: '$29', EUR: '€29', CAD: 'CA$29', AUD: 'A$29', NZD: 'NZ$29', CHF: 'CHF 29', SEK: 'SEK 29', NOK: 'NOK 29', DKK: 'DKK 29', PLN: '29 zł', CZK: '29 Kč', HUF: '29 Ft', RON: '29 lei' }
+  // ⚠️ RE-PINNED (world-countries-1): + the eight — 2900 minor units each (for the yen, ZERO-decimal, that is ¥2,900).
+  // ⚠️ RE-PINNED (world-countries-2, 1 November 2026, Dominic): JPY prints the normal-width "¥" (not ja-JP's full-width "￥")
+  // and MYR "RM29" (no space) — the registry's printedSymbol / symbolTight, both forms.
+  const HOME = { GBP: '£29', USD: '$29', EUR: '€29', CAD: '$29', AUD: '$29', NZD: '$29', CHF: 'CHF 29', SEK: '29 kr', NOK: '29 kr', DKK: '29 kr.', PLN: '29 zł', CZK: '29 Kč', HUF: '29 Ft', RON: '29 lei',
+    BRL: 'R$ 29', MXN: '$29', JPY: '¥2,900', SGD: '$29', HKD: 'HK$29', MYR: 'RM29', AED: '\u200f29 د.إ.\u200f', THB: '฿29' }
+  const INTL = { GBP: '£29', USD: '$29', EUR: '€29', CAD: 'CA$29', AUD: 'A$29', NZD: 'NZ$29', CHF: 'CHF 29', SEK: 'SEK 29', NOK: 'NOK 29', DKK: 'DKK 29', PLN: '29 zł', CZK: '29 Kč', HUF: '29 Ft', RON: '29 lei',
+    BRL: 'R$ 29', MXN: 'MX$29', JPY: '¥2,900', SGD: 'SGD 29', HKD: 'HK$29', MYR: 'RM29', AED: '\u200f29 د.إ.\u200f', THB: '฿29' }
   const homeOf = c => sp(R.formatWholeAmount(2900, R.planMoneyFormatOf(F(c.code, c.locale)))), intlOf = c => sp(R.formatWholeAmount(2900, R.intlMoneyFormatOf(F(c.code, c.locale))))
-  t('HOME form, all 14 in their home locale: £29 · $29 · €29 · $29 (CAD) · $29 (AUD) · $29 (NZD) · CHF 29 · 29 kr · 29 kr · 29 kr. · 29 zł · 29 Kč · 29 Ft · 29 lei',
+  t('HOME form, all 22 in their home locale: £29 · $29 · €29 · $29 (CAD) · $29 (AUD) · $29 (NZD) · CHF 29 · 29 kr · 29 kr · 29 kr. · 29 zł · 29 Kč · 29 Ft · 29 lei',
     R.CURRENCIES.every(c => homeOf(c) === HOME[c.code]) && Object.keys(HOME).length === R.CURRENCIES.length, R.CURRENCIES.filter(c => homeOf(c) !== HOME[c.code]).map(c => `${c.code}: ${homeOf(c)}`))
-  t('INTERNATIONAL form, all 14: the shared ones name themselves (CA$29, A$29, NZ$29, SEK 29, NOK 29, DKK 29); the rest are their home form',
+  t('INTERNATIONAL form, all 22: the shared ones name themselves (CA$29, A$29, NZ$29, SEK 29, NOK 29, DKK 29, MX$29, SGD 29); the rest are their home form',
     R.CURRENCIES.every(c => intlOf(c) === INTL[c.code]), R.CURRENCIES.filter(c => intlOf(c) !== INTL[c.code]).map(c => `${c.code}: ${intlOf(c)}`))
   t('each form carries the registry\'s own symbol for it (`symbol` at home, `intlSymbol` side by side)', R.CURRENCIES.every(c => homeOf(c).includes(c.symbol) && intlOf(c).includes(c.intlSymbol)))
   const ownForm = c => sp(R.formatWholeAmount(2900, R.moneyFormatOf(F(c.code, c.locale))))
   // ⚠️ RE-PINNED (europe-settings, 22 October 2026): `narrowIn` writes a currency's narrow symbol in the locales that print it
   // as foreign (ro-RO "29 RON", en-GI "GB£29") for EVERY amount, so a Romanian truck's own menu now says "29 lei" too — the
   // home form and the truck's own form agree for all 14. The plan-only override (`homeDisplay`) is still RON's alone.
-  const rawForm = c => sp(new Intl.NumberFormat(c.locale, { style: 'currency', currency: c.code, minimumFractionDigits: 0, maximumFractionDigits: 0 }).format(29))
+  // ⚠️ RE-PINNED (world-countries-1): the same 2900 minor units in major units (29, or 2900 for the zero-decimal yen).
+  // ⚠️ RE-PINNED (world-countries-2): + the two PRINTING overrides — JPY's printedSymbol and MYR's symbolTight change Intl's
+  // raw form ("￥2,900", "RM 29") and nothing else; every other currency is still exactly Intl's.
+  const rawForm = c => sp(new Intl.NumberFormat(c.locale, { style: 'currency', currency: c.code, minimumFractionDigits: 0, maximumFractionDigits: 0 }).format(R.toMajor(2900, c.code)))
   t('Intl does the work: the home form IS the country\'s own format; an override exists only where Intl alone misses the native symbol (RON: Intl\'s "29 RON" → "29 lei", plan prices and the truck\'s own alike)',
-    R.CURRENCIES.every(c => homeOf(c) === ownForm(c) && (c.homeDisplay ? !rawForm(c).includes(c.symbol) : rawForm(c) === ownForm(c))) && R.CURRENCIES.filter(c => c.homeDisplay).map(c => c.code).join() === 'RON'
+    R.CURRENCIES.every(c => homeOf(c) === ownForm(c) && (c.homeDisplay ? !rawForm(c).includes(c.symbol) : (c.printedSymbol || c.symbolTight) ? rawForm(c) !== ownForm(c) && ownForm(c).includes(c.symbol) : rawForm(c) === ownForm(c)))
+    && R.CURRENCIES.filter(c => c.printedSymbol || c.symbolTight).map(c => c.code).join() === 'JPY,MYR' && R.CURRENCIES.filter(c => c.homeDisplay).map(c => c.code).join() === 'RON'
     && R.CURRENCIES.filter(c => c.narrowIn).map(c => `${c.code}:${c.narrowIn}`).join() === 'GBP:en-GI,RON:ro-RO',
     R.CURRENCIES.map(c => `${c.code} ${ownForm(c)} → ${homeOf(c)}`))
   t('GB / US / IE: the international form IS the home form (one format object for both)', ['GBP|en-GB', 'USD|en-US', 'EUR|en-IE'].every(k => { const [c, l] = k.split('|'); return JSON.stringify(R.intlMoneyFormatOf(F(c, l))) === JSON.stringify(R.moneyFormatOf(F(c, l))) }))
@@ -116,7 +128,7 @@ const THREE_DECIMAL = ['BHD', 'JOD', 'KWD', 'OMR', 'TND']
   t('a truck\'s own money is untouched: moneyFormatOf is still just the country\'s currency and locale (no display override, no line)', R.CURRENCIES.every(c => JSON.stringify(R.moneyFormatOf(F(c.code, c.locale))) === JSON.stringify(F(c.code, c.locale))))
   t('decimals come from the registry: HUF 2 (Intl says 0 — the card processor takes HUF in two-decimal units), GBP / USD / EUR 2',
     R.minorDigits('HUF') === 2 && ['GBP', 'USD', 'EUR'].every(c => R.minorDigits(c) === 2) && R.toMajor(2900, 'HUF') === 29)
-  t('a code outside the registry still formats through Intl (JPY 0 decimals) — the formatter never throws on one', R.minorDigits('JPY') === 0)
+  t('a code outside the registry still formats through Intl (KRW 0 decimals) — the formatter never throws on one; the yen, now in it, is 0 too', R.minorDigits('KRW') === 0 && R.minorDigits('JPY') === 0)
 
   // ══ 4 ════════════════════════════════════════════════════════════════════════════════════════════════════════════
   head('4 · THE LOADER — an unlisted currency is refused; a list leaves that one row out')

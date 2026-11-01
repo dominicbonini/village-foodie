@@ -1,0 +1,57 @@
+{
+  "shortened": {
+    "heading": "Tajuk tidak muat dan telah dipendekkan.",
+    "date": "Tarikh tidak muat dan telah dipendekkan.",
+    "daysOff": "Teks hari cuti tidak muat dan telah dipendekkan.",
+    "place": "Nama tempat tidak muat dan telah dipendekkan.",
+    "time": "Masa tidak muat dan telah dipendekkan.",
+    "note": "Teks anda sendiri tidak muat dan telah dipendekkan.",
+    "venue": "Nama tempat acara tidak muat dan telah dipendekkan.",
+    "area": "Kawasan tidak muat dan telah dipendekkan."
+  },
+  "fontFallback": "Fon yang digunakan oleh reka bentuk ini ({id}) tidak dapat dimuatkan — kotak tersebut menggunakan Oswald.",
+  "wrongShapeBackground": "Gambar tempat ini berbeza bentuknya daripada reka bentuk anda, jadi latar belakang standard digunakan.",
+  "rowsFit": "Hari terakhir berada {px}px di bawah bahagian bawah imej — kurangkan jarak baris atau alihkan baris 1 ke atas.",
+  "placeStatus": {
+    "ownBoth": "Gambar dan kedudukan teks sendiri",
+    "wrongShape": "Bentuk berbeza — tidak digunakan sehingga diganti",
+    "ownPicture": "Gambar sendiri, kedudukan standard",
+    "ownPositions": "Gambar standard, kedudukan teks sendiri",
+    "none": "Belum ada gambar — menggunakan Standard"
+  },
+  "standardStatus": "Digunakan di semua tempat lain",
+  "option": {
+    "oneOff": "Muat naik satu untuk hantaran ini sahaja",
+    "placePoster": "Poster {name}",
+    "standard": "Reka bentuk standard"
+  },
+  "previewLabel": {
+    "lastEvent": "Pratonton menggunakan acara terakhir anda di sini",
+    "noEvents": "Belum ada acara di sini — pratonton menunjukkan acara anda yang seterusnya dengan nama tempat ini"
+  },
+  "fontUsage": {
+    "weekly": "reka bentuk hantaran mingguan anda",
+    "event": "reka bentuk hantaran acara tunggal anda",
+    "place": "reka bentuk anda untuk {place}",
+    "placeUnnamed": "reka bentuk anda untuk sesuatu tempat"
+  },
+  "face": {
+    "regular": "Biasa",
+    "bold": "Tebal",
+    "italic": "Condong"
+  },
+  "picture": {
+    "legacy": "Poster acara",
+    "fallback": "Gambar",
+    "wrongShape": "Bentuk berbeza — tidak boleh digunakan sebagai latar belakang penuh"
+  },
+  "noPicture": {
+    "omit": "Tinggalkan",
+    "blank": "Biarkan ruang kosong",
+    "logo": "Tunjukkan logo anda"
+  },
+  "noPicturesAll": "{total, plural, other {Semua lokasi anda ({total}) mempunyai imej.}}",
+  "noPicturesSome": "{without, plural, other {{without} daripada {total} lokasi anda belum ada imej}}",
+  "licenceTick": "Saya memiliki fon ini atau mempunyai lesen untuk menggunakannya",
+  "fontUploadButton": "↑ Muat naik fon anda"
+}

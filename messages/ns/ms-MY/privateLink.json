@@ -1,0 +1,12 @@
+{
+  "guestLabel": "ACARA PERIBADI",
+  "truckFallback": "Food truck ini",
+  "noSlugTitle": "Trak ini belum disediakan untuk pesanan dalam talian.",
+  "orderingOffTitle": "Pesanan dalam talian tidak dihidupkan",
+  "orderingOffBody": "Acara ini tidak menerima pesanan dalam talian. Sila buat pesanan di kaunter trak.",
+  "replacedTitle": "Pautan ini telah diganti",
+  "replacedBody": "Pautan ini tidak lagi berfungsi — {truck} telah menggantikannya. Minta pautan atau kod QR baharu daripada penganjur.",
+  "madePublicBody": "Pautan ini tidak lagi berfungsi — {truck} telah menjadikan acara ini terbuka kepada umum. Anda boleh membuat pesanan dari halaman biasa mereka.",
+  "unknownTitle": "Pautan ini tidak berfungsi",
+  "unknownBody": "Pautan ini tidak berfungsi. Semak dengan penganjur, atau imbas kod QR sekali lagi."
+}

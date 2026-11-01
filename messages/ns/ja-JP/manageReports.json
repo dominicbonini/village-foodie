@@ -1,0 +1,92 @@
+{
+  "filter": {
+    "dateRange": "📅 期間",
+    "event": "📍 出店",
+    "filterBy": "絞り込み",
+    "show": "表示",
+    "range": "<from></from><sep>〜</sep><until></until>",
+    "selectEvent": "出店を選択…",
+    "eventOption": "{venue} · {date}",
+    "unnamedEvent": "出店",
+    "viewReport": "レポートを表示",
+    "loading": "読み込み中…",
+    "orders": "📋 注文",
+    "items": "📦 商品",
+    "exportCsv": "⬇ CSVをエクスポート"
+  },
+  "empty": {
+    "noOrders": "この期間の注文はありません。",
+    "selectEvent": "レポートを表示するには、上で出店を選択してください。"
+  },
+  "summary": {
+    "totals": "{n, plural, other {{count}件の注文}} · {total}"
+  },
+  "revenue": {
+    "title": "売上の内訳",
+    "deals": "セットの売上",
+    "modifiers": "オプションの追加料金",
+    "foodSales": "フードの売上",
+    "total": "合計",
+    "other": "その他",
+    "tax": "消費税",
+    "tips": "チップ",
+    "serviceFees": "サービス料",
+    "cardFees": "カード手数料"
+  },
+  "itemsSold": {
+    "title": "販売した商品"
+  },
+  "dealsCard": {
+    "title": "セット"
+  },
+  "custom": {
+    "title": "カスタマイズ",
+    "paidModifiers": "有料オプション",
+    "customerNotes": "お客様の備考",
+    "note": "「{note}」"
+  },
+  "table": {
+    "item": "商品",
+    "modifier": "オプション",
+    "qty": "数量",
+    "total": "合計",
+    "date": "日付",
+    "time": "時刻",
+    "channel": "チャネル"
+  },
+  "breakdown": {
+    "orders": "注文の内訳",
+    "items": "商品の内訳"
+  },
+  "channel": {
+    "online": "オンライン",
+    "walkUp": "店頭"
+  },
+  "csv": {
+    "orderId": "注文ID",
+    "date": "日付",
+    "event": "出店",
+    "timePlaced": "注文時刻",
+    "collectionTime": "受け取り時間",
+    "customerName": "お客様名",
+    "orderType": "注文の種類",
+    "items": "商品",
+    "deals": "セット",
+    "modifiers": "オプション",
+    "notes": "備考",
+    "subtotal": "小計",
+    "tip": "チップ",
+    "serviceFee": "サービス料",
+    "total": "合計",
+    "itemName": "商品名",
+    "qty": "数量",
+    "unitPrice": "単価",
+    "itemTotal": "商品合計",
+    "orderTotal": "注文合計",
+    "unknownEvent": "不明な出店",
+    "asap": "できるだけ早く",
+    "unknownCustomer": "不明",
+    "customerOnline": "お客様（オンライン）",
+    "placedByTruck": "キッチンカーが入力"
+  }
+}

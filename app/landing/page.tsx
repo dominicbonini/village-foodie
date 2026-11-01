@@ -295,7 +295,8 @@ export default async function LandingPage({ params, searchParams }: { params?: P
                 on `.hero-sub-sm` in landing.css. ⚠️ "no signup needed" moved UP into line 1 on
                 12 September, which is what allowed the separate line under the button to be deleted. */}
             <p className="hero-sub-sm">{t.rich('hero.subSmall', { br })}</p>
-            <p className="hero-tag">{t.rich('hero.tagline', { br, lean })}</p>
+            {/* world-countries-1 (31 October 2026): the tagline "Less time booking. More time cooking." that sat here is removed,
+                in every language (Dominic). The CTA row keeps the gap the tagline used to leave above it (landing.css). */}
             {/* CTA row: button LEFT + text RIGHT on desktop (≥940px); stacked, full-width button + centred text on mobile. */}
             <div className="hero-cta-row">
               {/* 🔴 THE id IS THE OBSERVER'S TARGET, NOT A STYLING HOOK — nothing in landing.css selects

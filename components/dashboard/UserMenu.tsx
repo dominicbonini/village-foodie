@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { PRIVACY_PATH, TERMS_PATH } from '@/lib/legal'
+import { useLegalPath } from '@/lib/i18n/use-legal-path'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { Toggle } from '@/components/dashboard/OrderCard'
@@ -69,6 +69,8 @@ export default function UserMenu({
   onOpenKDS,
 }: UserMenuProps) {
   const t = useT('userMenu')
+  // legal-languages-1: the documents in the truck's language (English with no provider — the admin page — as before).
+  const privacyHref = useLegalPath('privacy'), termsHref = useLegalPath('terms')
   const router = useRouter()
   const [open, setOpen] = useState(false)
   const [deviceOpen, setDeviceOpen] = useState(false)   // "This device" sheet (native-only)
@@ -268,14 +270,14 @@ export default function UserMenu({
                 Routes come from lib/legal.ts; never type them here. */}
             <hr className="border-slate-100" />
             <Link
-              href={PRIVACY_PATH}
+              href={privacyHref}
               onClick={() => setOpen(false)}
               className="flex items-center gap-2 px-4 py-2.5 text-xs text-slate-500 hover:bg-slate-50"
             >
               {t('privacy')}
             </Link>
             <Link
-              href={TERMS_PATH}
+              href={termsHref}
               onClick={() => setOpen(false)}
               className="flex items-center gap-2 px-4 py-2.5 text-xs text-slate-500 hover:bg-slate-50"
             >

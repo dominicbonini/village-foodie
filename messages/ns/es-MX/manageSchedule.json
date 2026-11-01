@@ -1,0 +1,9 @@
+{
+  "card": {
+    "noDeals": "Ningún combo activo",
+    "dealsActive": "{count, plural, one {# combo activo} many {# combos activos} other {# combos activos}} · {names}{hidden, plural, =0 {} one { · # oculto} many { · # ocultos} other { · # ocultos}}"
+  },
+  "noLocation": {
+    "body": "No pudimos ubicar este lugar en el mapa, así que aparecerá en la lista pero sin marcador en el mapa. Añade {postal} con <b>Editar</b> para que salga en el mapa."
+  }
+}

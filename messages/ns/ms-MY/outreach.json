@@ -1,0 +1,11 @@
+{
+  "optOut": {
+    "missing": "E-mel ini tiada baris pilihan keluar, jadi ia tidak boleh dihantar. Gunakan Insert opt-out untuk menambahnya.",
+    "notSetUp": "Tiada ayat pilihan keluar disediakan, jadi tiada e-mel jangkauan boleh dihantar. Tambah satu di panel Signature pada tab Templates.",
+    "notLoaded": "Ayat pilihan keluar belum dimuatkan, jadi ini tidak boleh dihantar.",
+    "unreadable": "Ayat pilihan keluar tidak dapat dibaca, jadi tiada apa-apa dihantar."
+  },
+  "retry": {
+    "notRebuilt": "Mesej itu tidak dapat dibina semula dengan baris syarikat, jadi tiada apa-apa dihantar."
+  }
+}

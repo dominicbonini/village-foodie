@@ -1,0 +1,30 @@
+{
+  "heading": "稅項、小費及費用",
+  "rate": {
+    "label": "銷售稅率",
+    "hint": "你向每張訂單收取的稅率。客戶會在結帳時、收據和訂單票上看到這項附加費用。",
+    "regionDefault": "留空即按 {rate}% 收取 {label}，這是 {region} 預製食品的稅率。"
+  },
+  "included": {
+    "label": "價格已包含 {label}",
+    "hint": "你的價格已包含 {label}。此稅率只用於在收據和訂單票上列明每個價格中 {label} 所佔的金額，結帳時不會另外加收。",
+    "default": "留空即使用 {rate}%，這是 {country} 外賣熱食的 {label} 稅率。"
+  },
+  "tips": {
+    "label": "小費",
+    "hint": "以信用卡網上付款的客戶可以加小費，全數歸你所有。",
+    "choices": "客戶看到的選項：",
+    "chip": "{rate}%",
+    "other": "其他金額"
+  },
+  "fee": {
+    "label": "網上服務費",
+    "hint": "只會加到網上訂單，取餐時付款或現場付款的訂單一律不會收取。費用歸你所有。",
+    "pctAria": "服務費百分比",
+    "fixedAria": "服務費固定金額",
+    "max": "最高收費：{max}",
+    "example": "客戶付款前會看到一行：「{label} {amount}」。",
+    "hatchgrab": "HatchGrab 會向你的客戶的網上訂單收取 {fee} 服務費。你毋須支付，亦不能更改。"
+  },
+  "saveFailed": "未能儲存，請再試一次。"
+}

@@ -1,0 +1,6 @@
+{
+  "orderPending": {
+    "title": "Pesanan baharu untuk disahkan",
+    "body": "Pesanan {number} — {truck}"
+  }
+}

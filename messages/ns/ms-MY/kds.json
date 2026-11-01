@@ -1,0 +1,129 @@
+{
+  "docTitle": "Dapur {truck}",
+  "loading": "Memuatkan dapur…",
+  "pin": {
+    "title": "Masukkan PIN",
+    "placeholder": "PIN",
+    "unlock": "Buka kunci",
+    "unreachable": "Tidak dapat menghubungi pelayan sekarang. PIN anda tiada masalah — cuba lagi sebentar lagi.",
+    "incorrect": "PIN salah",
+    "generic": "Ada masalah. Cuba lagi."
+  },
+  "error": {
+    "linkInvalid": "Pautan ini tidak lagi sah.",
+    "couldNotLoad": "Tidak dapat memuatkan pesanan",
+    "truckNotFound": "Trak tidak ditemui"
+  },
+  "degraded": {
+    "at": "⚠️ Tidak dapat menghubungi pelayan. Menunjukkan tiket dari {time}. PESANAN BAHARU MUNGKIN TIDAK DITUNJUKKAN.",
+    "earlier": "⚠️ Tidak dapat menghubungi pelayan. Menunjukkan tiket dari tadi. PESANAN BAHARU MUNGKIN TIDAK DITUNJUKKAN."
+  },
+  "header": {
+    "dashboard": "Papan pemuka",
+    "backTitle": "Kembali ke papan pemuka",
+    "list": "Senarai",
+    "grid": "Grid",
+    "full": "Penuh",
+    "cook": "Masak",
+    "fullTitle": "Kad penuh — harga dan butiran bayaran, seperti yang dilihat di kaunter.",
+    "cookTitle": "Kad masak — tulisan lebih besar, dikumpulkan mengikut kategori, tanpa harga.",
+    "readyStep": "Langkah siap",
+    "readyOnlyTitle": "Skrin ini hanya menandakan pesanan siap, jadi ini tidak boleh dimatikan — itulah satu-satunya langkah yang dilakukannya.",
+    "readyOnTitle": "Skrin ini menandakan pesanan siap. Ketik supaya skrin lain yang melakukannya.",
+    "readyOffTitle": "Skrin lain menandakan pesanan siap. Ketik supaya skrin ini yang melakukannya.",
+    "handover": "Bayaran & serahan",
+    "handoverOnlyTitle": "Skrin ini hanya menerima bayaran, jadi ini tidak boleh dimatikan — itulah satu-satunya langkah yang dilakukannya.",
+    "handoverOnTitle": "Skrin ini menerima bayaran dan menyerahkan pesanan. Ketik supaya skrin lain yang melakukannya.",
+    "handoverOffTitle": "Skrin lain menerima bayaran. Ketik supaya skrin ini yang melakukannya.",
+    "soundOn": "Bunyi pesanan baharu dihidupkan — ketik untuk mematikannya",
+    "soundOff": "Bunyi pesanan baharu dimatikan — ketik untuk menghidupkannya",
+    "screenOn": "Skrin hidup",
+    "screenOff": "Skrin mati",
+    "screenSettings": "Tetapan skrin",
+    "manageEvent": "Urus acara",
+    "manageEventTitle": "Urus acara — mula, jeda, ubah atau tamatkannya",
+    "soundSettings": "Tetapan bunyi",
+    "soundSettingsTitle": "Bunyi yang dimainkan pada peranti ini",
+    "cashIcon": "💵"
+  },
+  "panel": {
+    "viewSettings": "Tetapan paparan",
+    "on": "Hidup",
+    "off": "Mati",
+    "newOrderSound": "Bunyi pesanan baharu",
+    "soundNeedsConfirming": "Hanya pesanan yang perlu disahkan",
+    "soundAll": "Semua pesanan baharu",
+    "soundDue": "Bunyi apabila pesanan perlu mula dimasak",
+    "soundDueHelp": "Berbunyi apabila tiket bertukar jingga.",
+    "deviceSettings": "Tetapan peranti",
+    "sound": "Bunyi",
+    "close": "Tutup"
+  },
+  "banner": {
+    "mismatchTitle": "⚠️ Pesanan untuk acara ini tidak dimuatkan",
+    "mismatchBody": "Pelayan membalas dengan acara lain, jadi tiada apa-apa ditunjukkan supaya pesanan yang salah tidak dipaparkan. Pilih acara sekali lagi, atau muat semula.",
+    "mismatchBodyAt": "Pelayan membalas dengan acara lain, jadi tiada apa-apa ditunjukkan supaya pesanan yang salah tidak dipaparkan untuk tempat ini: {venue}. Pilih acara sekali lagi, atau muat semula.",
+    "paused": "⏸ Pesanan dijeda{reason, select, offline { (peranti di luar talian)} other {}} — pelanggan tidak boleh membuat pesanan",
+    "resume": "Sambung semula",
+    "offline": "Tiada sambungan — menunjukkan pesanan terakhir yang diketahui. Pesanan dalam talian telah dijeda untuk pelanggan.",
+    "queued": "{n, plural, one {{count} tindakan dalam giliran} other {{count} tindakan dalam giliran}}",
+    "extraWait": "⏱ Masa menunggu tambahan +{mins} min aktif",
+    "clear": "Kosongkan",
+    "toMake": "Perlu dibuat",
+    "today": "Hari ini · {range}",
+    "onDate": "{date} · {range}",
+    "startEvent": "Mulakan acara",
+    "recentlyClosed": "Acara tamat · {venue} berakhir pada {time}",
+    "eventStatus": "{tone, select, paused {⏸ Dijeda} live {● Berlangsung} finished {● Tamat} cancelled {Dibatalkan} other {Belum bermula}}"
+  },
+  "board": {
+    "queueClear": "Tiada giliran",
+    "doneToday": "Selesai hari ini · {count}",
+    "paid": "✓ dibayar",
+    "cardHeld": "kad ditahan",
+    "due": "{amount} perlu dibayar"
+  },
+  "screenOff": {
+    "title": "Benarkan skrin dimatikan?",
+    "bodyVans": "{vans} {n, plural, one {telah} other {telah}} mendayakan pengesanan luar talian. Jika skrin dimatikan, peranti mungkin berhenti menghantar isyarat dalam taliannya dan pesanan pelanggan mungkin dijeda.",
+    "body": "Jika skrin dimatikan, peranti mungkin berhenti menghantar isyarat dalam taliannya.",
+    "keepHint": "Pastikan skrin sentiasa hidup supaya pesanan tidak terganggu.",
+    "keep": "Kekalkan skrin hidup",
+    "allow": "Benarkan skrin mati"
+  },
+  "event": {
+    "change": "Tukar acara",
+    "cancel": "Batal",
+    "waitActive": "⏱ +{mins}m aktif · Ketik untuk kosongkan",
+    "addWait": "⏱ Tambah masa menunggu",
+    "endTitle": "Tamatkan acara?",
+    "endEarly": "Acara ini dijadualkan tamat pada {time}. Tiada lagi pesanan akan dibenarkan. Sahkan untuk menamatkan acara?",
+    "endNow": "Tamatkan acara ini? Tiada lagi pesanan akan diterima.",
+    "yes": "Ya",
+    "started": "Acara dimulakan",
+    "startFutureConfirm": "Acara ini pada {date}. Mulakan sekarang?",
+    "finishTimeNow": "Masa tamat kini {time}",
+    "finished": "Acara tamat",
+    "cancelled": "Acara dibatalkan",
+    "noteSaved": "Nota disimpan",
+    "pauseConfirm": "Jeda pesanan? Pelanggan akan melihat \"Tidak menerima pesanan\" sehingga anda menyambung semula.",
+    "switchConfirm": "Tukar daripada {from} kepada {to}?{n, plural, =0 {} one { {count} pesanan pada skrin ini akan diganti.} other { {count} pesanan pada skrin ini akan diganti.}} Ketik acara semasa untuk bertukar kembali."
+  },
+  "intro": {
+    "title": "Ini skrin dapur",
+    "p1": "Ini paparan untuk tukang masak — pesanan yang perlu anda buat, mengikut urutan membuatnya. Skrin di tepi gril menunjukkan ini, manakala kaunter menggunakan papan pemuka pesanan.",
+    "p2": "Kad bergerak apabila anda mengetiknya, jadi sesiapa yang memasak sentiasa tahu apa seterusnya dan tiada siapa perlu menjerit. Semua di sini ialah data demo anda — cubalah.",
+    "gotIt": "Faham"
+  },
+  "toast": {
+    "failed": "Gagal",
+    "rejectFailed": "Gagal menolak",
+    "buzzerSaved": "Buzzer {n} disimpan",
+    "buzzerRemoved": "Buzzer {n} dibuang",
+    "buzzerRemovedNone": "Buzzer dibuang",
+    "buzzerAssigned": "Buzzer {n} diberikan",
+    "buzzerAssignedFrom": "Buzzer {n} diberikan (diambil daripada #{from})",
+    "buzzerRemoveFailed": "{had, select, no {Tidak dapat membuang buzzer daripada {target, select, order {pesanan #{id}} other {pesanan ini}}} other {Tidak dapat membuang buzzer {n} — ia masih pada {target, select, order {pesanan #{id}} other {pesanan ini}}}}",
+    "buzzerAssignFailed": "Tidak dapat memberikan buzzer {n} kepada {target, select, order {pesanan #{id}} other {pesanan ini}} — {had, select, yes {ia masih ada buzzer {prior}} other {ia masih tiada buzzer}}"
+  }
+}

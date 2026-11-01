@@ -312,7 +312,16 @@
     "payAtHatchShort": "Paga al recoger",
     "payAsYouGo": "Pago por uso",
     "unlimited": "Ilimitado",
-    "freeTrial": "prueba gratis"
+    "freeTrial": "prueba gratis",
+    "regions": {
+      "ES-MX": {
+        "payAtHatchFeature": "Pago al recoger",
+        "payAtHatchShort": "Paga al recoger",
+        "payAsYouGo": "Pago por uso",
+        "unlimited": "Ilimitado",
+        "freeTrial": "prueba gratis"
+      }
+    }
   },
   "regionalNotes": [
     "**Spain only:** \"recoger/recogida\" is right for Spain (avoid for LatAm). LatAm would need its own file later."

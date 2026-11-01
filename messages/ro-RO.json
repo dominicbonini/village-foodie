@@ -633,6 +633,28 @@
       "Walnut": "Nucă",
       "Wheatandtriticale": "Grâu și triticale",
       "Glutenbarleyoatsrye": "Gluten (orz, ovăz, secară)",
+      "Shrimp": "Creveți",
+      "Crab": "Crab",
+      "Buckwheat": "Hrișcă",
+      "Abalone": "Abalone",
+      "Squid": "Calmar",
+      "Salmonroe": "Icre de somon",
+      "Orange": "Portocală",
+      "Kiwifruit": "Kiwi",
+      "Beef": "Carne de vită",
+      "Salmon": "Somon",
+      "Mackerel": "Macrou",
+      "Soybean": "Boabe de soia",
+      "Chicken": "Carne de pui",
+      "Banana": "Banană",
+      "Pork": "Carne de porc",
+      "Peach": "Piersică",
+      "Yam": "Ignamă",
+      "Apple": "Măr",
+      "Gelatin": "Gelatină",
+      "Chestnut": "Castană",
+      "Naturallatex": "Latex natural",
+      "Lactose": "Lactoză",
       "Nuts": "Fructe cu coajă lemnoasă",
       "Shellfish": "Fructe de mare"
     }
@@ -4854,6 +4876,7 @@
       "ends": "{hasDate, select, yes {Perioada de probă se încheie pe <hl>{date}</hl>} other {Perioada de probă se încheie <hl>în curând</hl>}}",
       "offer": "{hasMonths, select, yes {{months, plural, one {Toate funcțiile gratuite timp de # lună} few {Toate funcțiile gratuite timp de # luni} other {Toate funcțiile gratuite timp de # de luni}}} other {Toate funcțiile gratuite pe durata perioadei de probă}}",
       "body": "{hasDate, select, yes {Nu vi se va percepe nimic pe durata perioadei de probă, care durează până pe <b>{date}</b>. Facturarea începe doar atunci când alegeți un plan și introduceți datele de plată. Până atunci nu aveți nimic de anulat și nimic de plătit. Alegeți planul înainte de această dată — dacă nu o faceți, veți trece la planul {fallback} și unele funcții nu vor mai funcționa.} other {Nu vi se va percepe nimic cât timp sunteți în perioada de probă. Facturarea începe doar atunci când alegeți un plan și introduceți datele de plată. Până atunci nu aveți nimic de anulat și nimic de plătit. Alegeți planul înainte de sfârșitul perioadei de probă — dacă nu o faceți, veți trece la planul {fallback} și unele funcții nu vor mai funcționa.}}",
+      "bodyPaidEnd": "{hasDate, select, yes {Nu vi se va percepe nimic pe durata perioadei de probă, care durează până pe <b>{date}</b>. La finalul perioadei de probă, planul {fallback} costă {price} pe lună. Vă vom contacta înainte de atunci pentru a configura plata.} other {Nu vi se va percepe nimic cât timp sunteți în perioada de probă. La finalul perioadei de probă, planul {fallback} costă {price} pe lună. Vă vom contacta înainte de atunci pentru a configura plata.}}",
       "fees": "*Pentru comenzile online se aplică comisioanele standard de procesare a plăților cu cardul",
       "upgrade": "Alegeți un plan →"
     }
@@ -4884,8 +4907,10 @@
       "heading": "Perioada de probă gratuită nu a început încă"
     },
     "onTrial": "Aveți acces la toate funcțiile. Alegeți un plan înainte de sfârșitul perioadei de probă.",
+    "onTrialPaidEnd": "Aveți acces la toate funcțiile. La finalul perioadei de probă, planul {plan} costă {price} pe lună. Vă vom contacta înainte de atunci pentru a configura plata.",
     "onTrialNoCta": "Aveți acces la toate funcțiile.",
     "noCharge": "🔒 Nu vi se va percepe nimic pe durata perioadei de probă, care durează până pe {date}. Facturarea începe doar atunci când alegeți un plan și introduceți datele de plată. Până atunci nu aveți nimic de anulat și nimic de plătit.",
+    "noChargePaidEnd": "🔒 Nu vi se va percepe nimic pe durata perioadei de probă, care durează până pe {date}.",
     "fees": "*Pentru comenzile online se aplică comisioanele standard de procesare a plăților cu cardul",
     "setUpPayment": "⏱ Alegeți un plan înainte de sfârșitul perioadei de probă",
     "changeYourPlan": "Schimbați planul",
@@ -5472,7 +5497,6 @@
     "hero": {
       "title": "Sistemul de comenzi creat pentru <lean>food truck-uri.</lean>",
       "subSmall": "Încărcați meniul, fără înregistrare.<br></br>Vedeți un demo funcțional în mai puțin de 60 de secunde.",
-      "tagline": "Mai puțin timp cu administrarea.<br></br>Mai mult timp <lean>la gătit.</lean>",
       "cta": "Încărcați meniul →",
       "ctaNote": "<lead>Încărcați o fotografie a meniului și vedeți-l funcționând în mai puțin de 60 de secunde.</lead><small>Fără înregistrare. Fără card.</small>"
     },
@@ -5556,7 +5580,6 @@
     }
   },
   "landingFooter": {
-    "tagline": "Mai puțin timp cu administrarea.<br></br>Mai mult timp la gătit.",
     "features": "Funcții",
     "pricing": "Prețuri",
     "privacy": "Confidențialitate",
@@ -5638,7 +5661,8 @@
     "countryTerms": "Termeni pe țări",
     "contact": "Contact",
     "lastUpdated": "Ultima actualizare: {date}",
-    "questions": "Întrebări? <link>Contactați-ne</link> — suntem oameni reali."
+    "questions": "Întrebări? <link>Contactați-ne</link> — suntem oameni reali.",
+    "translationNote": "Aceasta este o traducere. Dacă diferă de <link>versiunea în limba engleză</link>, prevalează versiunea în limba engleză."
   },
   "truckPage": {
     "meta": {
@@ -5794,7 +5818,15 @@
       "Australiancards": "carduri din Australia",
       "NewZealandcards": "carduri din Noua Zeelandă",
       "Canadiancards": "carduri din Canada",
-      "Swisscards": "carduri elvețiene"
+      "Swisscards": "carduri elvețiene",
+      "Braziliancards": "carduri din Brazilia",
+      "Mexicancards": "carduri din Mexic",
+      "Japanesecards": "carduri din Japonia",
+      "Singaporecards": "carduri din Singapore",
+      "HongKongcards": "carduri din Hong Kong",
+      "Malaysiancards": "carduri din Malaysia",
+      "Thaicards": "carduri din Thailanda",
+      "UAEcards": "carduri din EAU"
     },
     "perMonth": {
       "mo": "{amount}/lună",
@@ -5963,7 +5995,8 @@
   "pricing": {
     "banner": {
       "title": "{months, plural, one {Prima lună este complet gratuită — toate funcțiile deblocate.} few {Primele # luni sunt complet gratuite — toate funcțiile deblocate.} other {Primele # de luni sunt complet gratuite — toate funcțiile deblocate.}}",
-      "body": "Cu {brand}, clienții comandă în avans și plătesc la ridicare, așa că puteți primi comenzi online fără să conectați vreun procesator de plăți cu cardul. Preferați să încasați în avans? Adăugați oricând plățile online cu cardul. La finalul perioadei de probă treceți la planul <plan>{fallback}</plan>{fallbackFree, select, yes { (fără taxă lunară)} other {}}, dacă nu alegeți alt plan. Fără card la început, fără contract, anulați oricând."
+      "body": "Cu {brand}, clienții comandă în avans și plătesc la ridicare, așa că puteți primi comenzi online fără să conectați vreun procesator de plăți cu cardul. Preferați să încasați în avans? Adăugați oricând plățile online cu cardul. La finalul perioadei de probă treceți la planul <plan>{fallback}</plan>{fallbackFree, select, yes { (fără taxă lunară)} other {}}, dacă nu alegeți alt plan. Fără card la început, fără contract, anulați oricând.",
+      "bodyOnly": "Cu {brand}, clienții comandă în avans și plătesc la ridicare, așa că puteți primi comenzi online fără să conectați vreun procesator de plăți cu cardul. Preferați să încasați în avans? Adăugați oricând plățile online cu cardul. La finalul perioadei de probă, planul <plan>{fallback}</plan> costă {price} pe lună. Vă vom contacta înainte de atunci pentru a configura plata. Fără card la început, fără contract, anulați oricând."
     },
     "card": {
       "perTruckMonth": "per food truck / lună",
@@ -6231,6 +6264,9 @@
       "stateTerritory": "Stat sau teritoriu",
       "province": "Provincie",
       "county": "Județ",
+      "prefecture": "Prefectură",
+      "emirate": "Emirat",
+      "region": "Regiune",
       "area": "Localitate (sat, comună sau oraș)",
       "townOrArea": "Localitate sau zonă",
       "city": "Oraș",
@@ -6326,5 +6362,13 @@
     "backToMenu": "Înapoi la meniu",
     "formNote": "Acesta este un demo: nu se încasează nimic de la nimeni și nu se trimite nimic, așa că nu trebuie să introduceți o adresă de e-mail.",
     "namePlaceholder": "Alex"
+  },
+  "errorPage": {
+    "notFoundTitle": "Pagina nu a fost găsită",
+    "notFoundBody": "Nu am găsit această pagină. Este posibil să fi fost mutată sau ca adresa să fie scrisă greșit.",
+    "home": "Mergi la pagina principală",
+    "errorTitle": "Ceva nu a funcționat",
+    "errorBody": "Ne pare rău, această pagină nu s-a încărcat. Încearcă din nou sau revino la pagina principală.",
+    "retry": "Încearcă din nou"
   }
 }

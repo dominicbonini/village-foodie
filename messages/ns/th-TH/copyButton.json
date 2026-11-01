@@ -1,0 +1,10 @@
+{
+  "copy": "คัดลอก",
+  "copied": "คัดลอกแล้ว ✓",
+  "failed": "คัดลอกไม่สำเร็จ",
+  "aria": "{label} {thing}",
+  "announceCopied": "คัดลอก{thing}แล้ว",
+  "announceCopiedValue": "คัดลอกค่าแล้ว",
+  "announceFailed": "คัดลอก{thing}ไม่ได้ เลือกข้อความแล้วคัดลอกด้วยตัวเอง",
+  "announceFailedValue": "คัดลอกค่าไม่ได้ เลือกข้อความแล้วคัดลอกด้วยตัวเอง"
+}

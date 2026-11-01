@@ -1,0 +1,127 @@
+{
+  "gate": {
+    "reverted": "Pesanan #{id} dikembalikan",
+    "saved": "Pesanan #{id} disimpan",
+    "undo": "↩ Buat asal",
+    "paymentNotRecorded": "⚠ Pesanan #{id} — BAYARAN TIDAK DIREKODKAN. {collect, select, yes {Pesanan telah selesai} other {Pesanan telah disimpan}}, tetapi bayarannya tidak.",
+    "recordPayment": "Rekodkan bayaran",
+    "paid": "Pesanan #{id} dibayar",
+    "undonePayment": "Dibuat asal — bayaran dibuang",
+    "undoneCollected": "Dibuat asal — pesanan belum diambil",
+    "collected": "Pesanan #{id} {paidToo, select, yes {dibayar dan diambil} other {diambil}}",
+    "ready": "Pesanan #{id} siap",
+    "readyBuzzer": "Pesanan #{id} siap · <pill></pill>",
+    "status": "Pesanan #{id} {action, select, confirm {disahkan} reject {ditolak} ready {siap} collected {diambil} undo_collected {dipulihkan} cancel {dibatalkan} other {dikemas kini}}"
+  },
+  "conflicts": {
+    "more": "+{count} lagi",
+    "notOnScreenPlus": "+{count} tiada pada skrin ini",
+    "notOnScreen": "{n, plural, one {{count} pesanan tiada pada skrin ini} other {{count} pesanan tiada pada skrin ini}}"
+  },
+  "banner": {
+    "paymentTitle": "⚠ BAYARAN TIDAK DIREKODKAN",
+    "paymentBody": "{orders} — ditandakan dibayar pada peranti ini sahaja. Ia belum berjaya dihantar.",
+    "paymentCheck": "Semak pesanan dan terima bayaran sekali lagi jika masih belum dibayar.",
+    "dismiss": "Abaikan",
+    "confirmChecked": "Sahkan anda telah menyemak: {orders}",
+    "confirmHides": "Ini menyembunyikan amaran. Rekod tetap disimpan pada peranti ini.",
+    "notYet": "Belum lagi",
+    "iveChecked": "Saya telah menyemak: {orders}",
+    "statusBody": "⚠ {orders} — perubahan ini tidak berjaya. Semak pesanan.",
+    "offline": "📴 Tiada sambungan — {n, plural, one {{count} perubahan disimpan pada peranti ini. Ia akan dihantar apabila anda kembali dalam talian.} other {{count} perubahan disimpan pada peranti ini. Ia akan dihantar apabila anda kembali dalam talian.}} Tetapan dikunci.",
+    "syncing": "Kembali dalam talian — menghantar {n, plural, one {{count} perubahan} other {{count} perubahan}}…",
+    "synced": "Semua perubahan telah dihantar.",
+    "stillQueued": "{n, plural, one {{count} perubahan disimpan pada peranti ini. Masih cuba menghantarnya.} other {{count} perubahan disimpan pada peranti ini. Masih cuba menghantarnya.}}"
+  },
+  "lock": {
+    "locked": "HatchGrab dikunci",
+    "verifying": "Mengesahkan…",
+    "unlock": "Buka kunci",
+    "cantUseBiometric": "Tidak boleh guna Face / Touch ID?",
+    "enterPin": "Masukkan PIN sandaran anda",
+    "wrongPin": "PIN salah — cuba lagi.",
+    "checking": "Menyemak…",
+    "tryBiometric": "Cuba Face / Touch ID",
+    "forgot": "Lupa PIN? Anda perlu memasang semula aplikasi."
+  },
+  "notify": {
+    "title": "🔔 Pemberitahuan",
+    "intro": "Makluman pada peranti ini. Hidupkan untuk memilih makluman yang anda terima.",
+    "refused": "Pemberitahuan perlu didayakan dalam Tetapan peranti anda untuk menghidupkan ini.",
+    "newOrder": "Makluman pesanan baharu",
+    "newOrderHelp": "Terima pemberitahuan apabila pesanan pelanggan perlu disahkan.",
+    "offline": "Makluman luar talian / dijeda",
+    "offlineHelp": "Terima pemberitahuan apabila peranti ini ke luar talian (dan pesanan dijeda). <green>Berfungsi tanpa sambungan.</green>"
+  },
+  "van": {
+    "label": "Van",
+    "loadRetry": "Tidak dapat dimuatkan · Cuba semula",
+    "select": "Pilih…"
+  },
+  "deviceSave": {
+    "network": "Tidak dapat menghubungi pelayan — semak sambungan dan cuba lagi.",
+    "server": "Tidak dapat menyimpannya sekarang. Sila cuba lagi."
+  },
+  "setup": {
+    "fetchErrorTitle": "Tidak dapat memuatkan persediaan peranti",
+    "fetchErrorBody": "Kami tidak dapat menghubungi pelayan untuk menyediakan <b>peranti ini</b>. Semak sambungan dan cuba lagi — pesanan dan tetapan anda tidak terjejas.",
+    "retry": "Cuba semula",
+    "later": "Nanti",
+    "noVanTitle": "Tiada van aktif",
+    "noVanBody": "Trak ini belum ada van aktif. Aktifkan satu di <b>Tetapan → Trak anda</b>, kemudian peranti ini akan disediakan secara automatik — tiada langkah lain di sini.",
+    "goToVans": "Pergi ke Tetapan → Trak anda",
+    "title": "Sediakan peranti ini",
+    "body": "Persediaan sekali sahaja untuk <b>peranti ini</b>: skrin yang dibuka dan van yang dikendalikannya. Hanya untuk peranti ini — peranti lain ditetapkan berasingan, dan anda boleh mengubahnya kemudian daripada menu profil → “Peranti ini”.",
+    "whichScreen": "Skrin mana yang perlu dibuka oleh peranti ini?",
+    "dashboard": "Papan pemuka",
+    "kds": "Skrin dapur",
+    "whichVan": "Peranti ini untuk van mana?",
+    "selectVan": "Pilih van…",
+    "saving": "Menyimpan…",
+    "tryAgain": "Cuba lagi",
+    "continue": "Teruskan"
+  },
+  "device": {
+    "title": "Peranti ini",
+    "viewing": "Anda sedang melihat: <b>{truck}</b>",
+    "viewingVan": "Anda sedang melihat: <b>{truck}</b> — <b>{van}</b>",
+    "only": "Peranti ini sahaja — peranti lain ditetapkan berasingan. (ID: {id}…)",
+    "truck": "Trak",
+    "van": "Van",
+    "defaultScreen": "Skrin lalai",
+    "orderNotifications": "Pemberitahuan pesanan",
+    "patchFailed": "{setting, select, van {Van} defaultScreen {Skrin lalai} other {Pemberitahuan pesanan}} tidak disimpan. {reason}",
+    "requireBiometric": "Perlukan cap jari atau buka kunci wajah untuk membuka",
+    "pinTitle": "Tetapkan PIN sandaran (4–6 digit)",
+    "pinHelp": "Cara masuk jika cap jari atau buka kunci wajah tidak berfungsi — ia satu-satunya cara lain, jadi jangan lupa (PIN yang dilupakan bermakna memasang semula aplikasi). Berfungsi tanpa sambungan.",
+    "pinPlaceholder": "PIN",
+    "confirmPinPlaceholder": "Sahkan PIN",
+    "pinTooShort": "Gunakan sekurang-kurangnya 4 digit.",
+    "pinMismatch": "PIN tidak sepadan.",
+    "setPin": "Tetapkan PIN & dayakan",
+    "cancel": "Batal",
+    "noBiometric": "Tiada cap jari atau buka kunci wajah disediakan pada peranti ini — tambah satu dalam tetapan peranti anda. PIN sandaran anda masih berfungsi.",
+    "footer": "Tetapan ini hanya untuk peranti ini — peranti lain dikonfigurasikan berasingan."
+  },
+  "appLock": {
+    "unlockReason": "Buka kunci HatchGrab",
+    "usePasscode": "Guna kod laluan",
+    "cancel": "Batal",
+    "confirmEnable": "Sahkan untuk mendayakan kunci aplikasi"
+  },
+  "channel": {
+    "ordersName": "Pesanan baharu",
+    "ordersDescription": "Makluman apabila pesanan perlu disahkan."
+  },
+  "localNotify": {
+    "newOrderTitle": "Pesanan baharu",
+    "orderReceived": "Pesanan {number} diterima",
+    "newOrders": "{n, plural, one {Anda ada pesanan baharu} other {Anda ada {count} pesanan baharu}}"
+  },
+  "offlineAlert": {
+    "pausedTitle": "Pesanan dijeda",
+    "pausedBody": "Anda di luar talian — pesanan pelanggan dijeda.",
+    "offlineTitle": "Anda di luar talian",
+    "offlineBody": "Peranti ini telah terputus sambungan."
+  }
+}

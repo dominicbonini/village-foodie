@@ -105,7 +105,15 @@
     "Australiancards": "Austraalia kaardid",
     "NewZealandcards": "Uus-Meremaa kaardid",
     "Canadiancards": "Kanada kaardid",
-    "Swisscards": "Šveitsi kaardid"
+    "Swisscards": "Šveitsi kaardid",
+    "Braziliancards": "Brasiilia kaardid",
+    "Mexicancards": "Mehhiko kaardid",
+    "Japanesecards": "Jaapani kaardid",
+    "Singaporecards": "Singapuri kaardid",
+    "HongKongcards": "Hongkongi kaardid",
+    "Malaysiancards": "Malaisia kaardid",
+    "Thaicards": "Tai kaardid",
+    "UAEcards": "AÜE kaardid"
   },
   "perMonth": {
     "mo": "{amount}/kuu",

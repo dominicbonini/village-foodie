@@ -1,0 +1,31 @@
+{
+  "intro": "Em Gerenciar você configura seu food truck e acompanha como ele está indo. No Painel você recebe os pedidos e toca cada evento enquanto ele acontece.",
+  "ariaLabel": "Tour pelo painel",
+  "step": "{current} de {total}",
+  "skip": "Pular",
+  "back": "← Voltar",
+  "next": "Próximo →",
+  "done": "Concluído",
+  "stops": {
+    "menu": {
+      "title": "Cardápio",
+      "body": "Seus pratos, preços e alérgenos. Qualquer mudança aqui já vale na hora."
+    },
+    "schedule": {
+      "title": "Agenda",
+      "body": "Onde e quando você vai vender. Adicione um evento aqui e os clientes já podem fazer pedidos para ele."
+    },
+    "build": {
+      "title": "Combos e “Complementos e sugestões”",
+      "body": "Combos, sugestões de venda, personalizações e a capacidade da cozinha ficam em Cardápio — explore à vontade."
+    },
+    "settings": {
+      "title": "Configurações",
+      "body": "Os dados do seu food truck e como os clientes pagam."
+    },
+    "billing": {
+      "title": "Cobrança",
+      "body": "Onde ficam as informações do seu plano, da cobrança e dos recursos."
+    }
+  }
+}

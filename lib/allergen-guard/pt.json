@@ -1,5 +1,5 @@
 {
-  "$comment": "europe-languages-1 (22 October 2026): the WhatsApp allergen guard's trigger words for EUROPEAN PORTUGUESE (pt-PT). OPTION B, as English, French and German: absence / safety words only — allergy and intolerance words, coeliac disease, anaphylaxis, EpiPen, the \"free from\" / \"without <allergen>\" forms, \"suitable for\" / \"safe for\", traces and cross-contamination — NOT the bare allergen names (a presence question may reach the AI, which answers only from the tags and gets the caveat). Matched with the Unicode normaliser (lower case, accents folded), so accented and unaccented spellings both match one entry; spelling variants that differ by more than accents are listed. caveatWords: a tagged uk14 label (stored in English, lower case) → the words a reply in the language may use for it. scripts/europe-languages-1.cjs proves it.",
+  "$comment": "europe-languages-1 (22 October 2026): the WhatsApp allergen guard's trigger words for EUROPEAN PORTUGUESE (pt-PT). OPTION B, as English, French and German: absence / safety words only — allergy and intolerance words, coeliac disease, anaphylaxis, EpiPen, the \"free from\" / \"without <allergen>\" forms, \"suitable for\" / \"safe for\", traces and cross-contamination — NOT the bare allergen names (a presence question may reach the AI, which answers only from the tags and gets the caveat). Matched with the Unicode normaliser (lower case, accents folded), so accented and unaccented spellings both match one entry; spelling variants that differ by more than accents are listed. caveatWords: a tagged uk14 label (stored in English, lower case) → the words a reply in the language may use for it. scripts/europe-languages-1.cjs proves it. world-countries-1 (31 October 2026): + BRAZILIAN forms (pt-BR reads this list): castanha, camarão, frutos do mar, \"zero lactose\", \"traços de\", \"não contém\"; and caveatWords for Brazil's ANVISA set (br).",
   "language": "pt",
   "normalise": "unicode",
   "stems": [
@@ -42,7 +42,16 @@
     "segura para",
     "vestigios de",
     "pode conter",
-    "contaminacao cruzada"
+    "contaminacao cruzada",
+    "sem castanha",
+    "sem castanhas",
+    "sem camarao",
+    "sem frutos do mar",
+    "zero lactose",
+    "zero gluten",
+    "tracos de",
+    "nao contem",
+    "sem latex"
   ],
   "tokens": [],
   "caveatWords": {
@@ -123,6 +132,112 @@
         "mexilhão",
         "lulas",
         "polvo"
+      ]
+    },
+    "br": {
+      "wheat": [
+        "trigo",
+        "glúten",
+        "farinha"
+      ],
+      "rye": [
+        "centeio",
+        "glúten"
+      ],
+      "barley": [
+        "cevada",
+        "glúten"
+      ],
+      "oats": [
+        "aveia",
+        "glúten"
+      ],
+      "crustaceans": [
+        "crustáceo",
+        "crustáceos",
+        "camarão",
+        "camarões",
+        "lagosta",
+        "caranguejo",
+        "frutos do mar"
+      ],
+      "eggs": [
+        "ovo",
+        "ovos",
+        "maionese"
+      ],
+      "fish": [
+        "peixe",
+        "peixes"
+      ],
+      "peanuts": [
+        "amendoim"
+      ],
+      "soy": [
+        "soja",
+        "tofu"
+      ],
+      "milk": [
+        "leite",
+        "laticínio",
+        "laticínios",
+        "queijo",
+        "creme de leite",
+        "manteiga",
+        "iogurte",
+        "requeijão"
+      ],
+      "lactose": [
+        "lactose"
+      ],
+      "almond": [
+        "amêndoa",
+        "amêndoas",
+        "castanha"
+      ],
+      "hazelnut": [
+        "avelã",
+        "avelãs",
+        "castanha"
+      ],
+      "cashew": [
+        "castanha de caju",
+        "castanha-de-caju",
+        "caju",
+        "castanha"
+      ],
+      "brazil nut": [
+        "castanha do pará",
+        "castanha-do-pará",
+        "castanha do brasil",
+        "castanha"
+      ],
+      "macadamia": [
+        "macadâmia",
+        "castanha"
+      ],
+      "walnut": [
+        "noz",
+        "nozes"
+      ],
+      "pecan": [
+        "noz pecã",
+        "pecã",
+        "nozes"
+      ],
+      "pistachio": [
+        "pistache"
+      ],
+      "pine nut": [
+        "pinoli",
+        "pinhão"
+      ],
+      "chestnut": [
+        "castanha",
+        "castanhas"
+      ],
+      "natural latex": [
+        "látex"
       ]
     }
   }

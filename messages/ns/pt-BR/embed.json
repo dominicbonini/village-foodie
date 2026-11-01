@@ -1,0 +1,8 @@
+{
+  "metaDescription": "Onde {truck} vai estar nos próximos dias.",
+  "orderFrom": "Pedir de {truck}",
+  "poweredBy": "Tecnologia <b>HatchGrab</b>",
+  "loadFailed": "Não foi possível carregar a agenda agora.",
+  "loading": "Carregando agenda…",
+  "empty": "Nenhum evento próximo na agenda de {truck}."
+}

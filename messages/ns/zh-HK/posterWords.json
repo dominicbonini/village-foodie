@@ -1,0 +1,25 @@
+{
+  "heading": "{start} 至 {end} 當週",
+  "daysOff": "今日休息",
+  "cancelled": "已取消",
+  "placeSample": {
+    "nameTownBelow": "藝術公園\n西九文化區",
+    "nameTown": "藝術公園，西九文化區",
+    "nameOnly": "藝術公園"
+  },
+  "busyWeek": {
+    "venue1": "大會堂",
+    "town1": "中環",
+    "venue2": "旺角大球場及界限街遊樂場足球場",
+    "town2": "旺角",
+    "venue3": "時代廣場",
+    "town3": "銅鑼灣",
+    "venue4": "美食節",
+    "town4": "西九文化區",
+    "venue5": "海港城",
+    "town5": "尖沙咀",
+    "venue6": "海濱長廊",
+    "town6": "觀塘"
+  },
+  "poweredBy": "由 HatchGrab 提供"
+}

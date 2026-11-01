@@ -13,5 +13,6 @@
   "countryTerms": "Landevilkår",
   "contact": "Kontakt",
   "lastUpdated": "Senest opdateret {date}",
-  "questions": "Spørgsmål? <link>Kontakt os</link> — vi er rigtige mennesker."
+  "questions": "Spørgsmål? <link>Kontakt os</link> — vi er rigtige mennesker.",
+  "translationNote": "Dette er en oversættelse. Hvis den afviger fra den <link>engelske version</link>, gælder den engelske version."
 }

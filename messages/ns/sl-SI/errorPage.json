@@ -1,0 +1,8 @@
+{
+  "notFoundTitle": "Strani ni mogoče najti",
+  "notFoundBody": "Te strani nismo našli. Morda je bila premaknjena ali pa je naslov napačno vpisan.",
+  "home": "Na domačo stran",
+  "errorTitle": "Prišlo je do napake",
+  "errorBody": "Žal se ta stran ni naložila. Poskusite znova ali se vrnite na domačo stran.",
+  "retry": "Poskusi znova"
+}

@@ -1,0 +1,30 @@
+{
+  "labels": {
+    "weekDates": "วันที่ของสัปดาห์",
+    "dayList": "รายการวัน",
+    "place": "สถานที่",
+    "venue": "สถานที่จัดงาน",
+    "area": "พื้นที่",
+    "dayDate": "วันและวันที่",
+    "times": "เวลา",
+    "orderLink": "ลิงก์สั่งอาหาร",
+    "locationTag": "แท็กตำแหน่ง"
+  },
+  "weekHeader": "{truck} — สัปดาห์นี้เราอยู่ที่ไหนบ้าง:",
+  "dayLine": "{day} — {where} — {times}",
+  "dayLineNoTimes": "{day} — {where}",
+  "dayLineCancelled": "{day} — {where} — ยกเลิก ขออภัย",
+  "noDates": "สัปดาห์นี้ยังไม่มีวันออกร้าน — แวะมาดูใหม่เร็วๆ นี้",
+  "orderAhead": "สั่งล่วงหน้า: {url}",
+  "orderAheadTagged": "สั่งล่วงหน้า: {url} {tag}",
+  "eventLine": "{truck} ที่ {where} {when} เวลา {times}",
+  "eventLineNoTimes": "{truck} ที่ {where} {when}",
+  "cancelledSorry": "ขออภัย — เราไม่สามารถไปที่ {where} {when} ได้",
+  "cancelledApology": "ขออภัยทุกคนที่ตั้งใจจะมา แล้วเราจะกลับมาเร็วๆ นี้",
+  "when": {
+    "today": "วันนี้",
+    "tonight": "คืนนี้",
+    "tomorrow": "พรุ่งนี้",
+    "dated": "วันที่ {date}"
+  }
+}

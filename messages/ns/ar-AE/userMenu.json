@@ -1,0 +1,18 @@
+{
+  "menuLabel": "قائمة المستخدم",
+  "screenOn": "إبقاء الشاشة مضاءة",
+  "screenOff": "الشاشة قد تنطفئ",
+  "newOrderSound": "صوت الطلبات الجديدة",
+  "copied": "تم النسخ",
+  "orderLink": "رابط الطلب",
+  "qrCode": "رمز QR",
+  "kitchenScreen": "شاشة المطبخ",
+  "thisDevice": "هذا الجهاز",
+  "manage": "الإدارة",
+  "ordersDashboard": "لوحة الطلبات",
+  "admin": "المشرف",
+  "privacy": "سياسة الخصوصية",
+  "terms": "الشروط",
+  "signOut": "تسجيل الخروج",
+  "close": "إغلاق"
+}

@@ -1,0 +1,106 @@
+{
+  "preview": {
+    "title": "Cuba dahulu sebelum menyambung",
+    "intro": "Taip soalan seperti yang ditanya pelanggan, dan lihat dengan tepat balasan yang mereka akan terima. Tiada apa-apa dihantar kepada sesiapa.",
+    "examples": {
+      "where": "Malam ini di mana?",
+      "doYouDo": "Ada pizza pepperoni?",
+      "menu": "Apa yang ada dalam menu?"
+    },
+    "placeholder": "Ada pencuci mulut apa?",
+    "send": "Hantar",
+    "empty": "Balasan anda akan dipaparkan di sini",
+    "working": "Sedang menyediakan balasan…",
+    "noReply": "Tiada balasan akan dihantar.",
+    "noReplyWhy": "Mesej itu kelihatan seperti spam, permintaan tempahan atau sesuatu yang tidak berkaitan, jadi balasan automatik tidak membalas.",
+    "footnote": "Balasan dijana oleh AI dan berbeza sedikit setiap kali, dan kadangkala boleh tersilap.",
+    "failed": "Pratonton tidak dapat dibina sekarang.",
+    "unreachable": "Tidak dapat menghubungi pelayan. Semak sambungan anda dan cuba lagi."
+  },
+  "setup": {
+    "button": {
+      "preparing": "Menyediakan…",
+      "unavailable": "Tidak tersedia",
+      "waiting": "Menunggu tetingkap Facebook…",
+      "finishing": "Menyelesaikan…",
+      "reconnect": "Sambung semula",
+      "setUp": "Sediakan"
+    },
+    "startAgain": "Mula semula",
+    "popupHint": "Tidak nampak tetingkap Facebook? Ia mungkin telah disekat. Benarkan tetingkap timbul untuk hatchgrab.com, kemudian tekan Mula semula."
+  },
+  "notice": {
+    "sdkUnavailable": "Persediaan WhatsApp tidak tersedia dalam persekitaran ini.",
+    "sdkBlocked": "Skrip log masuk Meta tidak dapat dimuatkan. Biasanya ini disebabkan oleh penyekat iklan atau perlindungan penjejakan.",
+    "setupFailed": "Persediaan tidak dapat diselesaikan. Tiada apa-apa yang diubah.",
+    "setupFinished": "Persediaan selesai.",
+    "metaError": "Meta melaporkan masalah semasa persediaan. Tiada apa-apa yang diubah. Cuba lagi, dan hubungi kami jika masalah ini berulang.",
+    "closed": "Persediaan ditutup sebelum selesai. Tiada apa-apa yang diubah — tekan Sediakan untuk mencuba lagi.",
+    "disconnectedUnreachable": "Sambungan WhatsApp telah diputuskan. Kami tidak dapat menghubungi Meta untuk membuang akses. Sila buang HatchGrab dalam WhatsApp Business → Settings → Account → Business Platform.",
+    "disconnected": "Sambungan WhatsApp telah diputuskan. Balasan automatik telah berhenti.",
+    "close": "Tutup"
+  },
+  "card": {
+    "title": "Balasan automatik",
+    "description": "Jawab soalan pelanggan secara automatik di media sosial anda, menggunakan menu dan jadual anda.",
+    "channels": "Saluran",
+    "requiresAccount": "Memerlukan akaun WhatsApp Business.",
+    "connected": "Disambungkan",
+    "popupInstruction": "Tetingkap Facebook akan dibuka untuk menyambungkan akaun WhatsApp Business anda. Jika tiada apa-apa muncul, benarkan tetingkap timbul untuk hatchgrab.com dalam pelayar anda, kemudian tekan Sediakan sekali lagi.",
+    "switchedOff": "Balasan automatik WhatsApp dimatikan untuk trak anda.",
+    "expiring": "Sambungan WhatsApp anda perlu diperbaharui tidak lama lagi. Tekan Sambung semula supaya balasan automatik terus berjalan.",
+    "comingSoon": "Akan datang",
+    "instagram": "Balasan automatik untuk mesej terus Instagram. Akan memerlukan akaun profesional Instagram.",
+    "messenger": "Balasan automatik untuk Facebook Messenger. Akan memerlukan Halaman Facebook."
+  },
+  "blocked": {
+    "title": "Balasan anda tidak dihantar",
+    "body": "WhatsApp enggan menghantar balasan automatik anda kerana masalah pengebilan pada akaun WhatsApp Business anda. Pelanggan masih boleh menghantar mesej kepada anda dan anda masih akan melihat semua yang mereka hantar — tetapi mereka tidak menerima balasan.",
+    "fix": "Anda membayar WhatsApp secara terus untuk mesej ini, jadi masalah ini diselesaikan dalam WhatsApp Manager. <link>Semak kaedah pembayaran anda</link>"
+  },
+  "limit": {
+    "heading": "Balasan automatik",
+    "label": "Had bulanan",
+    "option": "{n, number}",
+    "usage": "{used, number} daripada {limit, number} digunakan · set semula {date}",
+    "perCustomer": "Sehingga {n} balasan bagi setiap pelanggan dalam 24 jam, kemudian satu mesej yang memberitahu anda akan membalas sendiri.",
+    "emailAt": "Balasan dihentikan seketika apabila mencapai had anda. Kami akan menghantar e-mel kepada anda pada 80% dan 100%.",
+    "saved": "Had balasan bulanan disimpan",
+    "saveFailed": "Had tidak dapat disimpan"
+  },
+  "billing": {
+    "heading": "Pengebilan",
+    "paymentMethod": "Kaedah pembayaran",
+    "added": "Kaedah pembayaran ditambah",
+    "missing": "Tiada kaedah pembayaran ditambah",
+    "addInManager": "Tambah dalam WhatsApp Manager",
+    "summary": "Meta, bukan HatchGrab, mengebil akaun WhatsApp anda untuk balasan. Mulai {from}, {free, number} balasan pertama sebulan adalah percuma. Tepat pada {checked}; semak <link>harga Meta</link> untuk sebarang perubahan.",
+    "howMetaCharges": "Cara Meta mengenakan caj",
+    "chargesTitle": "Meta yang mengenakan caj untuk balasan WhatsApp, bukan HatchGrab.",
+    "chargesBody": "Setiap balasan yang dihantar HatchGrab bagi pihak anda dibilkan oleh Meta kepada akaun WhatsApp Business anda. Mulai {from}, Meta menyertakan {free, number} balasan percuma sebulan bagi setiap nombor; selepas itu, setiap balasan dikenakan caj pada kadar Meta. Balasan yang anda hantar sendiri daripada aplikasi WhatsApp Business tidak dikenakan caj. Meta menetapkan harga ini dan mungkin mengubahnya. <link>Lihat harga Meta</link>",
+    "addPaymentInManager": "Tambah kaedah pembayaran dalam WhatsApp Manager",
+    "aboveMissing": "Had anda melebihi {free, number} balasan percuma Meta. Tanpa kaedah pembayaran, Meta akan menghentikan semua balasan sebaik sahaja balasan percuma itu habis digunakan.",
+    "aboveGeneral": "Had anda melebihi {free, number} balasan percuma Meta. Balasan selebihnya memerlukan kaedah pembayaran pada akaun WhatsApp anda; tanpanya, Meta menghentikan semua balasan sebaik sahaja balasan percuma habis digunakan.",
+    "addPaymentMethod": "Tambah kaedah pembayaran"
+  },
+  "disconnect": {
+    "link": "Putuskan sambungan WhatsApp",
+    "title": "Putuskan sambungan WhatsApp?",
+    "body": "Balasan automatik berhenti serta-merta dan HatchGrab kehilangan akses kepada akaun WhatsApp anda. Nombor anda masih berfungsi dalam aplikasi WhatsApp Business. Untuk membuang HatchGrab sepenuhnya, buka juga WhatsApp Business → Settings → Account → Business Platform.",
+    "cancel": "Batal",
+    "confirm": "Putuskan sambungan",
+    "working": "Memutuskan sambungan…",
+    "failed": "Sambungan tidak dapat diputuskan"
+  },
+  "signup": {
+    "logged": "Direkodkan.",
+    "partial": "Kami telah memautkan akaun WhatsApp Business anda tetapi tidak dapat melengkapkan sambungan. Tiada masalah di pihak anda — sila hubungi kami dan kami akan menyelesaikannya.",
+    "noNumber": "Akaun WhatsApp Business anda telah dipautkan, tetapi tiada nombor telefon diterima. Tekan Sambung semula dan lengkapkan langkah nombor.",
+    "needsRegistering": "Akaun anda telah dipautkan, tetapi nombor ini perlu didaftarkan oleh kami sebelum balasan boleh bermula. Sila hubungi sokongan — persediaan anda telah disimpan, jangan jalankannya sekali lagi.",
+    "registerRefused": "Akaun anda telah dipautkan tetapi Meta tidak mahu mendaftarkan nombor itu. Persediaan anda telah disimpan — sila hubungi sokongan dan jangan jalankannya sekali lagi.",
+    "deliveryRefused": "Akaun anda telah dipautkan tetapi Meta tidak mahu menghidupkan penghantaran mesej. Persediaan anda telah disimpan — sila hubungi sokongan dan jangan jalankannya sekali lagi.",
+    "numberTaken": "Nombor WhatsApp itu sudah disambungkan kepada akaun HatchGrab yang lain. Satu nombor hanya boleh menjawab untuk satu trak. Hubungi sokongan dan kami akan memindahkannya.",
+    "saveIncomplete": "Hampir siap — kami tidak dapat menyelesaikan penyimpanan. Persediaan anda telah disimpan, sila hubungi sokongan dan jangan jalankannya sekali lagi.",
+    "connected": "WhatsApp telah disambungkan. Balasan automatik akan mula menjawab mesej ke nombor ini."
+  }
+}

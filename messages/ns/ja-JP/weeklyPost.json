@@ -1,0 +1,70 @@
+{
+  "error": {
+    "generic": "問題が発生しました",
+    "previewFailed": "プレビューを作成できませんでした",
+    "loadFailed": "読み込めませんでした",
+    "tooBig": "この画像は{size, number, ::.0 group-off}MBです。上限は10MBです。",
+    "wrongType": "PNGまたはJPGを選んでください。",
+    "uploadIncomplete": "アップロードが完了しませんでした",
+    "uploadFailed": "アップロードに失敗しました",
+    "saveFailed": "保存できませんでした",
+    "buildFailed": "投稿を作成できませんでした",
+    "copyFailed": "コピーできませんでした。テキストを選択して手動でコピーしてください。"
+  },
+  "loading": "読み込み中…",
+  "missingTable": {
+    "title": "週間スケジュール投稿にはデータベースの更新が必要です",
+    "body": "デザイン用のテーブルがまだ作成されていません。マイグレーションを適用すると、この画面が使えるようになります。"
+  },
+  "kind": {
+    "label": "デザインの種類",
+    "event": "単発イベント",
+    "week": "週間"
+  },
+  "setup": {
+    "title": "週間スケジュール投稿を設定",
+    "intro": "いつも作っている週間スケジュール画像の、文字を入れていない版をアップロードしてください。デザインはそのままで、ご自身で入れていた文字ボックスを削除したものです。HatchGrabが出店スケジュールから1週間分の内容を書き込みます。",
+    "canvaTitle": "Canvaで文字なしの画像を書き出す方法",
+    "canvaStep1": "いつもの週間スケジュールのデザインを開きます。",
+    "canvaStep2": "日付・出店場所・時間の文字ボックスを削除します。残したい背景や見出しはそのままにしてください。",
+    "canvaStep3": "「共有」›「ダウンロード」›「PNG」を選びます。",
+    "uploading": "アップロード中…",
+    "upload": "文字なしの画像をアップロード",
+    "uploadHint": "PNGまたはJPG、10MBまで、短辺{px}px以上。",
+    "phoneTip": "パソコンかiPadでの操作がおすすめです。スマートフォンではボックスが小さく、ドラッグしにくくなります。",
+    "designName": "週間スケジュール投稿のデザイン",
+    "backDesigns": "‹ デザイン",
+    "back": "‹ 戻る",
+    "pictureNote": "日付や出店場所が入っていない画像です。それらはHatchGrab側で追加します。",
+    "saved": "デザインを保存しました。"
+  },
+  "week": {
+    "this": "今週",
+    "next": "来週"
+  },
+  "post": {
+    "title": "週間スケジュール投稿",
+    "editDesign": "デザインを編集",
+    "weekOf": "{date}の週",
+    "imageAlt": "週間スケジュール投稿",
+    "building": "投稿を作成中…",
+    "updating": "更新中…",
+    "eventsTitle": "今週の出店",
+    "noEvents": "今週の出店はありません。",
+    "eventDateCancelled": "{date}・中止",
+    "showCancelled": "中止になった出店を表示",
+    "showPrivate": "貸切イベントを表示",
+    "privateHint": "日付と時間とともに「貸切イベント」と表示されます。出店場所は表示されません。",
+    "noteTitle": "メモ",
+    "notePlaceholder": "例：事前注文で受け取りできます",
+    "noteHint": "キャプションに表示されます。メモ欄を配置している場合は、そこにも表示されます。",
+    "captionTitle": "投稿用のキャプション",
+    "perEventTitle": "出店ごとの投稿",
+    "nothingToPost": "今週投稿する内容はありません。",
+    "textCopied": "テキストをコピーしました。",
+    "copyText": "テキストをコピー",
+    "image": "画像",
+    "share": "共有",
+    "noOrderLink": "注文リンクがまだありません。「設定」でキッチンカーのWebアドレスを設定してください。"
+  }
+}

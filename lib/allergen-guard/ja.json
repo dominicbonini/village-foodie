@@ -1,0 +1,151 @@
+{
+  "$comment": "world-countries-1 (31 October 2026): the WhatsApp allergen guard’s trigger words for JAPANESE (ja-JP): アレルギー, 不耐症, 〜不使用 / 〜抜き / 入っていない / 含まれていない, 除去, コンタミ / 微量 — no spaces, so stems only (no tokens). OPTION B, as every other language: absence / safety words only, NOT the bare allergen names (a presence question may reach the AI, which answers only from the tags and gets the caveat). Matched with the Unicode normaliser. caveatWords: a tagged label of the country’s allergen set (stored in English, lower case) → the words a reply may use for it. scripts/world-countries-1.cjs proves it.",
+  "language": "ja",
+  "normalise": "unicode",
+  "stems": [
+    "アレルギー",
+    "アレルゲン",
+    "不耐症",
+    "乳糖不耐",
+    "セリアック",
+    "アナフィラキシー",
+    "エピペン",
+    "epipen",
+    "グルテンフリー",
+    "不使用",
+    "抜き",
+    "入っていない",
+    "入ってない",
+    "入っていません",
+    "使っていない",
+    "使ってない",
+    "使っていません",
+    "含まれていない",
+    "含まれていません",
+    "含まない",
+    "除去",
+    "コンタミ",
+    "微量",
+    "混入"
+  ],
+  "tokens": [],
+  "caveatWords": {
+    "jp": {
+      "shrimp": [
+        "えび",
+        "エビ",
+        "海老"
+      ],
+      "crab": [
+        "かに",
+        "カニ",
+        "蟹"
+      ],
+      "walnut": [
+        "くるみ",
+        "クルミ"
+      ],
+      "wheat": [
+        "小麦",
+        "グルテン"
+      ],
+      "buckwheat": [
+        "そば",
+        "蕎麦"
+      ],
+      "egg": [
+        "卵",
+        "たまご",
+        "玉子"
+      ],
+      "milk": [
+        "乳",
+        "牛乳",
+        "乳製品",
+        "チーズ",
+        "バター"
+      ],
+      "peanut": [
+        "落花生",
+        "ピーナッツ"
+      ],
+      "almond": [
+        "アーモンド"
+      ],
+      "abalone": [
+        "あわび",
+        "アワビ"
+      ],
+      "squid": [
+        "いか",
+        "イカ"
+      ],
+      "salmon roe": [
+        "いくら",
+        "イクラ"
+      ],
+      "orange": [
+        "オレンジ"
+      ],
+      "cashew": [
+        "カシューナッツ"
+      ],
+      "kiwi fruit": [
+        "キウイ"
+      ],
+      "beef": [
+        "牛肉"
+      ],
+      "sesame": [
+        "ごま",
+        "ゴマ",
+        "胡麻"
+      ],
+      "salmon": [
+        "さけ",
+        "鮭",
+        "サーモン"
+      ],
+      "mackerel": [
+        "さば",
+        "鯖"
+      ],
+      "soybean": [
+        "大豆",
+        "醤油",
+        "味噌",
+        "豆腐"
+      ],
+      "chicken": [
+        "鶏肉",
+        "チキン"
+      ],
+      "banana": [
+        "バナナ"
+      ],
+      "pork": [
+        "豚肉",
+        "ポーク"
+      ],
+      "macadamia": [
+        "マカダミアナッツ"
+      ],
+      "peach": [
+        "もも",
+        "桃"
+      ],
+      "yam": [
+        "やまいも",
+        "山芋",
+        "長芋"
+      ],
+      "apple": [
+        "りんご",
+        "リンゴ"
+      ],
+      "gelatin": [
+        "ゼラチン"
+      ]
+    }
+  }
+}

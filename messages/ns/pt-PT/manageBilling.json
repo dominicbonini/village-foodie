@@ -24,8 +24,10 @@
     "heading": "O seu teste gratuito ainda não começou"
   },
   "onTrial": "Tem todas as funcionalidades. Escolha um plano antes de o teste terminar.",
+  "onTrialPaidEnd": "Tem todas as funcionalidades. Quando o teste terminar, o plano {plan} custa {price} por mês. Entraremos em contacto consigo antes disso para configurar o pagamento.",
   "onTrialNoCta": "Tem todas as funcionalidades.",
   "noCharge": "🔒 Não lhe será cobrado nada durante o teste, que decorre até {date}. A faturação só começa quando escolher um plano e introduzir os seus dados de pagamento. Até lá, não há nada para cancelar nem nada para pagar.",
+  "noChargePaidEnd": "🔒 Não lhe será cobrado nada durante o teste, que decorre até {date}.",
   "fees": "*Aplicam-se as taxas normais de processamento de cartões nas encomendas online",
   "setUpPayment": "⏱ Escolha um plano antes de o teste terminar",
   "changeYourPlan": "Mudar de plano",

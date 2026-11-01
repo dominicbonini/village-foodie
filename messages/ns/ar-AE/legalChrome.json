@@ -1,0 +1,18 @@
+{
+  "meta": {
+    "privacyTitle": "سياسة الخصوصية — HatchGrab",
+    "privacyDescription": "كيف تجمع HatchGrab Ltd البيانات الشخصية وتستخدمها.",
+    "termsTitle": "شروط الخدمة — HatchGrab",
+    "termsDescription": "شروط استخدام HatchGrab.",
+    "countryTermsTitle": "الشروط الخاصة بكل دولة — HatchGrab",
+    "countryTermsDescription": "القواعد الإضافية التي تنطبق على HatchGrab في بعض الدول."
+  },
+  "homeLabel": "الصفحة الرئيسية لـ HatchGrab",
+  "privacy": "الخصوصية",
+  "terms": "الشروط",
+  "countryTerms": "شروط الدولة",
+  "contact": "تواصل معنا",
+  "lastUpdated": "آخر تحديث: {date}",
+  "questions": "لديك أسئلة؟ <link>تواصل معنا</link>، فنحن أشخاص حقيقيون.",
+  "translationNote": "هذه ترجمة. في حال وجود أي اختلاف بينها وبين <link>النسخة الإنجليزية</link>، تسري النسخة الإنجليزية."
+}

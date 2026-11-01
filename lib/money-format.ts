@@ -40,8 +40,27 @@ const cache = new Map<string, Intl.NumberFormat>()
 function nf(locale: string, opts: Intl.NumberFormatOptions): Intl.NumberFormat {
   const key = locale + '|' + JSON.stringify(opts)
   let f = cache.get(key)
-  if (!f) { f = new Intl.NumberFormat(locale, opts); cache.set(key, f) }
+  if (!f) { f = printed(new Intl.NumberFormat(locale, opts), opts); cache.set(key, f) }
   return f
+}
+
+/** world-countries-2 (1 November 2026): a currency formatter that prints the registry's own form where Intl's differs —
+ *  `printedSymbol` (JPY "¥" for ja-JP's full-width "￥") and `symbolTight` (MYR "RM29" for ms-MY's "RM 29"). Every amount
+ *  in this module goes through `nf`, so menus, orders, emails and plan prices all print it. Any other currency gets Intl's
+ *  formatter itself, untouched. */
+function printed(f: Intl.NumberFormat, opts: Intl.NumberFormatOptions): Intl.NumberFormat {
+  const c = opts.style === 'currency' ? currencyInfo(opts.currency) : null
+  if (!c || (!c.printedSymbol && !c.symbolTight)) return f
+  const fix = (parts: Intl.NumberFormatPart[]): Intl.NumberFormatPart[] => parts
+    .map(p => (p.type === 'currency' && c.printedSymbol ? { ...p, value: c.printedSymbol } : p))
+    // only beside the registry's own symbol: an English page's "MYR 29" keeps its space (a code is never run into a figure)
+    .filter((p, i, all) => !(c.symbolTight && p.type === 'literal' && /^\s+$/.test(p.value)
+      && [all[i - 1], all[i + 1]].some(q => q?.type === 'currency' && q.value === c.symbol)))
+  return {
+    format: (n: number) => fix(f.formatToParts(n)).map(p => p.value).join(''),
+    formatToParts: (n: number) => fix(f.formatToParts(n)),
+    resolvedOptions: () => f.resolvedOptions(),
+  } as unknown as Intl.NumberFormat
 }
 
 /** How many minor units make one major unit's decimal places: 2 for GBP and USD, 0 for JPY — never assumed, because
@@ -57,6 +76,12 @@ export function minorDigits(currency: string): number {
 /** Minor units → major units (2900 → 29 for GBP). The one division in this module. */
 export function toMajor(minor: number, currency: string): number {
   return minor / 10 ** minorDigits(currency)
+}
+
+/** world-countries-1 (31 October 2026): major units → the currency's minor units, rounded — 29.5 GBP → 2950, ¥1,200 → 1200
+ *  (the yen has no minor unit at Stripe). THE inverse of toMajor; a screen never multiplies by 100 itself. */
+export function toMinorUnits(major: number, currency: string): number {
+  return Math.round(major * 10 ** minorDigits(currency))
 }
 
 /** "£1,500" — whole major units, rounded. For allowances and headline figures. */

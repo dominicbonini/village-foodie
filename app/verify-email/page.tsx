@@ -1,6 +1,8 @@
 import { redirect } from 'next/navigation'
 import { createClient } from '@supabase/supabase-js'
 import VerifyEmailSuccess from './VerifyEmailSuccess'
+import { PageLocale } from '@/lib/i18n/page-locale'
+import { pageSeedProps } from '@/lib/i18n/page-words'
 import { translatorFor } from '@/lib/i18n/translator'
 import { localeForTruck } from '@/lib/i18n/server-locale'
 import { DEFAULT_LOCALE, type AppLocale } from '@/lib/i18n/locales'
@@ -160,5 +162,6 @@ export default async function VerifyEmailPage({
     .update({ verified_at: new Date().toISOString() })
     .eq('id', change.id)
 
-  return <VerifyEmailSuccess newEmail={change.new_email} locale={locale} />
+  // legal-languages-1: a non-English language's words are seeded for the client half (it fell back to English before).
+  return <PageLocale locale={locale} {...pageSeedProps(locale, 'auth')}><VerifyEmailSuccess newEmail={change.new_email} locale={locale} /></PageLocale>
 }

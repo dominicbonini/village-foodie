@@ -1,0 +1,25 @@
+{
+  "heading": "Semana de {start} a {end}",
+  "daysOff": "Sem atendimento hoje",
+  "cancelled": "CANCELADO",
+  "placeSample": {
+    "nameTownBelow": "Bar do Zé\nVila Madalena",
+    "nameTown": "Bar do Zé, Vila Madalena",
+    "nameOnly": "Bar do Zé"
+  },
+  "busyWeek": {
+    "venue1": "Praça da Liberdade",
+    "town1": "Belo Horizonte",
+    "venue2": "Centro Esportivo e Recreativo do Parque Ibirapuera e Quadras Poliesportivas",
+    "town2": "São José dos Campos",
+    "venue3": "Praça da Matriz",
+    "town3": "Campinas",
+    "venue4": "Festival Gastronômico",
+    "town4": "Curitiba",
+    "venue5": "Bar do Zé",
+    "town5": "Vila Madalena",
+    "venue6": "Av. Paulista",
+    "town6": "São Paulo"
+  },
+  "poweredBy": "Tecnologia HatchGrab"
+}

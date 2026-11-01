@@ -1,0 +1,70 @@
+{
+  "$comment": "world-countries-1 (31 October 2026): the WhatsApp allergen guard’s trigger words for THAI (th-TH): แพ้ / ภูมิแพ้, ไม่ทนต่อ, ไม่มี<allergen> / ปลอด / ไม่ใส่, ปนเปื้อน, อาจมี, เหมาะสำหรับ — no spaces, stems only; tone marks fold away on both sides. OPTION B, as every other language: absence / safety words only, NOT the bare allergen names (a presence question may reach the AI, which answers only from the tags and gets the caveat). Matched with the Unicode normaliser. caveatWords: a tagged label of the country’s allergen set (stored in English, lower case) → the words a reply may use for it. scripts/world-countries-1.cjs proves it.",
+  "language": "th",
+  "normalise": "unicode",
+  "stems": [
+    "แพ้",
+    "ภูมิแพ้",
+    "ไม่ทนต่อ",
+    "เซลิแอค",
+    "อะนาฟิแล็กซิส",
+    "epipen",
+    "ไม่มีกลูเตน",
+    "ปลอดกลูเตน",
+    "ปลอด",
+    "ไม่ใส่",
+    "ไม่มีถั่ว",
+    "ไม่มีนม",
+    "ไม่มีไข่",
+    "ไม่มีอาหารทะเล",
+    "ปนเปื้อน",
+    "อาจมี",
+    "เหมาะสำหรับ",
+    "ปลอดภัยสำหรับ"
+  ],
+  "tokens": [],
+  "caveatWords": {
+    "codex": {
+      "gluten": [
+        "กลูเตน",
+        "แป้งสาลี",
+        "ข้าวสาลี"
+      ],
+      "crustaceans": [
+        "กุ้ง",
+        "ปู",
+        "อาหารทะเล"
+      ],
+      "eggs": [
+        "ไข่"
+      ],
+      "fish": [
+        "ปลา"
+      ],
+      "peanuts": [
+        "ถั่วลิสง",
+        "ถั่ว"
+      ],
+      "soy": [
+        "ถั่วเหลือง",
+        "เต้าหู้",
+        "ซีอิ๊ว"
+      ],
+      "milk": [
+        "นม",
+        "แลคโตส",
+        "เนย",
+        "ชีส"
+      ],
+      "tree nuts": [
+        "ถั่ว",
+        "อัลมอนด์",
+        "มะม่วงหิมพานต์",
+        "วอลนัท"
+      ],
+      "sulphites": [
+        "ซัลไฟต์"
+      ]
+    }
+  }
+}

@@ -1,0 +1,102 @@
+{
+  "status": {
+    "cancelled": "中止",
+    "finished": "終了",
+    "unconfirmed": "未確定",
+    "confirmed": "確定済み",
+    "open": "営業中",
+    "closed": "営業終了"
+  },
+  "sections": {
+    "label": "出店スケジュールのセクション",
+    "events": "出店",
+    "eventTypes": "出店タイプ"
+  },
+  "header": {
+    "title": "出店スケジュール",
+    "upcoming": "今後{count}件",
+    "import": "✨ 出店スケジュールを取り込む",
+    "importHint": "写真・PDF・テキスト",
+    "addEvent": "＋出店を追加",
+    "scraperAuto": "Webサイトから出店情報を自動で取得しています",
+    "changeInSettings": "設定で変更",
+    "scraperManual": "出店スケジュールを手動で管理しています"
+  },
+  "empty": {
+    "title": "今後の出店はありません",
+    "body": "SNSや予約カレンダーから取得した出店情報がここに表示され、確定できます"
+  },
+  "list": {
+    "openNow": "営業中",
+    "needsApproval": "承認が必要",
+    "needsConfirmation": "確定が必要",
+    "confirmed": "確定済み",
+    "past": "過去の出店（{count}）",
+    "found": "{count, plural, other {#件の出店が見つかりました。公開する前に確認して承認してください。}}"
+  },
+  "card": {
+    "addName": "名前を追加",
+    "timeNeeded": "⚠ 時間の入力が必要",
+    "setTimeFirst": "先に時間を設定してください",
+    "confirm": "確定",
+    "copy": "コピー",
+    "edit": "編集",
+    "makePost": "投稿を作成",
+    "cancel": "中止",
+    "approve": "承認",
+    "reject": "却下",
+    "stock": "⚠️ 在庫",
+    "stockHidden": "非表示：{reason}",
+    "noDeals": "有効なセットはありません",
+    "dealsActive": "{count, plural, other {#件のセット}}が有効 · {names}{hidden, plural, =0 {} other { · #件非表示}}",
+    "approveNeedsTimes": "この出店に開始時間と終了時間が入力されるまで、承認はできません。「編集」から入力してください。"
+  },
+  "guessed": {
+    "title": "📍 場所を推定しました",
+    "body": "<b>{venue}</b>に一致する会場が複数あったため、{hasTown, select, yes {<b>{town}</b>で} other {}}最も近いもの{hasPostcode, select, yes {（{postcode}）} other {}}を選びました。承認する前に正しいか確認してください。間違っている場合は<b>編集</b>からエリアまたは{postal}を修正してください。修正しないと、お客様が違う場所に案内されます。",
+    "thisVenue": "この会場"
+  },
+  "noLocation": {
+    "title": "📍 場所が未設定です",
+    "body": "この会場を地図上で特定できなかったため、一覧には表示されますが地図のピンは表示されません。<b>編集</b>から{postal}を追加すると地図に表示されます。"
+  },
+  "conflict": {
+    "title": "⚠️ {count, plural, other {重複の可能性があります}}：{pending, select, yes {承認} other {確定}}する前にご確認ください",
+    "duplicate": "登録済みの出店と同じもののようです。",
+    "review": "会場と日付が同じで、時間が異なります。時間を変更した同じ出店ですか、それとも別の枠ですか？承認する前にご確認ください。",
+    "already": "出店スケジュールに登録済み：<b>{venue}</b>{details}（{status, select, confirmed {確定済み} open {営業中} other {{status}}}）",
+    "unnamedVenue": "名称未設定の会場",
+    "ack": "はい、別の出店です。このまま{pending, select, yes {承認} other {確定}}する",
+    "cancel": "キャンセル",
+    "overlap": "この出店の時間が同じ日の別の出店と重なっています。1台の車両が同時に2か所にいることはできません。承認する前にご確認ください。"
+  },
+  "toast": {
+    "loadFailed": "出店を読み込めませんでした",
+    "linkFailed": "リンクを読み込めませんでした",
+    "placeTypeFailed": "出店は保存しました。{place}の通常の種類は保存されませんでした：{reason}。",
+    "placeTypeFailedReason": "保存が完了しませんでした",
+    "eventUpdated": "出店を更新しました",
+    "eventAdded": "出店を追加しました",
+    "eventsSaved": "{count, plural, other {#件の出店を保存しました}}",
+    "saveEventsFailed": "出店を保存できませんでした",
+    "needsTime": "承認する前に開始時間と終了時間を入力してください。公開するには時間が必要です。",
+    "addStartTime": "開始時間を入力してください",
+    "addEndTime": "終了時間を入力してください",
+    "chooseTruckBefore": "承認する前に、この出店を担当するキッチンカーを選んでください。",
+    "chooseTruck": "この出店を担当するキッチンカーを選んでください",
+    "eventConfirmed": "出店を確定しました",
+    "eventRejected": "出店を却下しました",
+    "undo": "↩ 元に戻す",
+    "eventRestored": "出店を復元しました",
+    "restoreFailed": "復元できませんでした",
+    "eventCancelled": "出店を中止しました",
+    "eventCancelledOrders": "出店を中止しました · {count, plural, other {#件の注文}}をキャンセルしました",
+    "placeHidden": "出店場所を非表示にしました",
+    "placeShown": "出店場所を再表示しました",
+    "saveThatFailed": "保存できませんでした。"
+  },
+  "link": {
+    "label": "専用リンクとQRコード",
+    "close": "閉じる"
+  }
+}

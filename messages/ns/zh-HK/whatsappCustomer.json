@@ -1,0 +1,15 @@
+{
+  "greeting": "你好 👋",
+  "opener": "{greeting} ",
+  "allergenRedirect": "{opener}完整餐牌及致敏原資料請看這裏：{url} —— {truck} {emoji}",
+  "menuFallback": "{opener}完整餐牌請看這裏：{url} —— {truck} {emoji}",
+  "otherCategory": "其他",
+  "categoryFrom": "{category} {price} 起",
+  "listTwo": "{first}及{second}",
+  "listMany": "{init}及{last}",
+  "menuSummary": "{opener}我們有{summary}。完整餐牌及預先落單請按這裏：{url} —— {truck} {emoji}",
+  "allergenCaveat": "致敏原資料請以完整餐牌為準——此為自動回覆。",
+  "specificFallback": "{opener}最新出車時間表請看這裏：{url}\n\n{truck} {emoji}",
+  "capHandoff": "多謝你的訊息！這裏每日只能回覆數次。\n\n落單請按：{link}",
+  "capContact": "直接聯絡我們：{number}"
+}

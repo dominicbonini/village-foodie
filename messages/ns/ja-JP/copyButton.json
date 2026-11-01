@@ -1,0 +1,10 @@
+{
+  "copy": "コピー",
+  "copied": "コピーしました ✓",
+  "failed": "コピーできませんでした",
+  "aria": "{thing}を{label}",
+  "announceCopied": "{thing}をコピーしました",
+  "announceCopiedValue": "値をコピーしました",
+  "announceFailed": "{thing}をコピーできませんでした。テキストを選択して手動でコピーしてください。",
+  "announceFailedValue": "値をコピーできませんでした。テキストを選択して手動でコピーしてください。"
+}

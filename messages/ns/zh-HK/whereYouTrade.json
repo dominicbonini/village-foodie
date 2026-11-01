@@ -1,0 +1,13 @@
+{
+  "stepHeading": "你的美食車在哪裏營業？",
+  "stepIntro": "這會設定你的貨幣、價格、時區及電話格式。國家／地區之後不能更改，因為它與你的信用卡收款綁定。",
+  "settingsHeading": "營業地點",
+  "countryLabel": "國家／地區",
+  "countryGuessed": "我們按你所在位置推測出這個選項。如有錯誤請更改。",
+  "countryLocked": "你的國家／地區不能更改",
+  "townLabel": "城市或地區",
+  "townQuestion": "你所在的城市或地區",
+  "timezoneLabel": "時區",
+  "continueButton": "繼續",
+  "saveFailed": "無法儲存設定，請再試一次。"
+}

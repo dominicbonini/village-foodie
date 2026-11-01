@@ -1,0 +1,15 @@
+{
+  "greeting": "こんにちは👋",
+  "opener": "{greeting} ",
+  "allergenRedirect": "{opener}メニューとアレルギー情報はこちらからご確認いただけます：{url} — {truck} {emoji}",
+  "menuFallback": "{opener}メニューはこちらからご覧いただけます：{url} — {truck} {emoji}",
+  "otherCategory": "その他",
+  "categoryFrom": "{category}（{price}〜）",
+  "listTwo": "{first}と{second}",
+  "listMany": "{init}、{last}",
+  "menuSummary": "{opener}{summary}をご用意しています。メニューの確認と事前注文はこちらから：{url} — {truck} {emoji}",
+  "allergenCaveat": "これは自動返信です。アレルギー情報は必ずメニューでご確認ください。",
+  "specificFallback": "{opener}最新の出店スケジュールはこちら：{url}\n\n{truck} {emoji}",
+  "capHandoff": "たくさんのメッセージをありがとうございます！こちらでの返信は1日に数回までとなっています。\n\nご注文はこちら：{link}",
+  "capContact": "直接のお問い合わせ：{number}"
+}

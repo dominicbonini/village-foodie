@@ -1,0 +1,47 @@
+{
+  "meta": {
+    "fallbackTitle": "Food Truck | Village Foodie",
+    "hgFallbackTitle": "Food truck",
+    "orderTitle": "Pesan daripada {truck}",
+    "orderDescription": "Pesan awal daripada {truck} dan ambil sendiri di trak.",
+    "title": "{truck} | Village Foodie",
+    "logoAlt": "Logo {truck}"
+  },
+  "shareTitle": "Jadual {truck}",
+  "shareText": "Lihat di mana {truck} akan berniaga seterusnya! 🚚",
+  "linkCopied": "Pautan profil disalin ke papan keratan! 📋",
+  "facebookPage": "Halaman Facebook",
+  "loadingMap": "Memuatkan Peta…",
+  "view": {
+    "list": "Senarai",
+    "map": "Peta"
+  },
+  "ownThisTruck": "Pemilik trak ini?",
+  "ownThisTruckTitle": "Pemilik trak ini? Klik untuk mengemas kini profil anda",
+  "actions": {
+    "menu": "Menu",
+    "call": "Telefon",
+    "message": "Mesej",
+    "share": "Kongsi",
+    "order": "Pesan"
+  },
+  "loadingSchedule": "Memuatkan jadual…",
+  "loadError": {
+    "title": "Tidak dapat dimuatkan",
+    "body": "Kami tidak dapat memuatkan jadual buat masa ini — biasanya ini gangguan sekejap sahaja. Sila cuba lagi.",
+    "retry": "Cuba lagi"
+  },
+  "notFound": {
+    "title": "Trak tidak ditemui",
+    "body": "Kami tidak menemui sebarang butiran untuk food truck ini. Mereka mungkin telah berpindah atau mengemas kini profil mereka.",
+    "cta": "Lihat semua trak"
+  },
+  "noEvents": {
+    "title": "Tiada acara akan datang ditemui",
+    "body": "Kami mungkin tertinggal beberapa butiran untuk trak ini. Adakah anda pemiliknya, atau anda tahu jadual mereka?",
+    "cta": "Hantar mesej kepada kami untuk kemas kini!"
+  },
+  "whereToFind": "Di Mana Anda Boleh Temui Kami",
+  "missingEvent": "<strong>Ada acara yang kami tertinggal?</strong> <br></br>Jika anda pemilik trak ini atau peminat setia, bantu kami memastikan halaman ini tepat! <br></br><link>Hubungi kami untuk menambah butiran yang tiada.</link>",
+  "weeklySchedule": "Dapatkan Jadual Mingguan 🍕"
+}

@@ -633,6 +633,28 @@
       "Walnut": "Walnüsse",
       "Wheatandtriticale": "Weizen und Triticale",
       "Glutenbarleyoatsrye": "Gluten (Gerste, Hafer, Roggen)",
+      "Shrimp": "Garnelen",
+      "Crab": "Krabben",
+      "Buckwheat": "Buchweizen",
+      "Abalone": "Abalone",
+      "Squid": "Kalmar",
+      "Salmonroe": "Lachsrogen",
+      "Orange": "Orangen",
+      "Kiwifruit": "Kiwis",
+      "Beef": "Rindfleisch",
+      "Salmon": "Lachs",
+      "Mackerel": "Makrele",
+      "Soybean": "Sojabohnen",
+      "Chicken": "Hühnerfleisch",
+      "Banana": "Bananen",
+      "Pork": "Schweinefleisch",
+      "Peach": "Pfirsiche",
+      "Yam": "Yamswurzel",
+      "Apple": "Äpfel",
+      "Gelatin": "Gelatine",
+      "Chestnut": "Esskastanien",
+      "Naturallatex": "Naturlatex",
+      "Lactose": "Laktose",
       "Nuts": "Schalenfrüchte",
       "Shellfish": "Schalentiere"
     }
@@ -4854,6 +4876,7 @@
       "ends": "{hasDate, select, yes {Die Testphase endet am <hl>{date}</hl>} other {Die Testphase endet <hl>bald</hl>}}",
       "offer": "{hasMonths, select, yes {{months, plural, one {Alle Funktionen # Monat kostenlos} other {Alle Funktionen # Monate kostenlos}}} other {Alle Funktionen während Ihrer Testphase kostenlos}}",
       "body": "{hasDate, select, yes {Während Ihrer Testphase, die bis zum <b>{date}</b> läuft, zahlen Sie nichts. Die Abrechnung beginnt erst, wenn Sie einen Tarif wählen und Ihre Zahlungsdaten eingeben. Bis dahin gibt es nichts zu kündigen und nichts zu bezahlen. Wählen Sie Ihren Tarif vorher – sonst wechseln Sie zu {fallback} und einige Funktionen stehen nicht mehr zur Verfügung.} other {Während der Testphase zahlen Sie nichts. Die Abrechnung beginnt erst, wenn Sie einen Tarif wählen und Ihre Zahlungsdaten eingeben. Bis dahin gibt es nichts zu kündigen und nichts zu bezahlen. Wählen Sie Ihren Tarif vorher – sonst wechseln Sie zu {fallback} und einige Funktionen stehen nicht mehr zur Verfügung.}}",
+      "bodyPaidEnd": "{hasDate, select, yes {Während Ihrer Testphase, die bis zum <b>{date}</b> läuft, zahlen Sie nichts. Nach Ende Ihrer Testphase kostet der Tarif {fallback} im Monat {price}. Wir melden uns vorher bei Ihnen, um die Zahlung einzurichten.} other {Während der Testphase zahlen Sie nichts. Nach Ende Ihrer Testphase kostet der Tarif {fallback} im Monat {price}. Wir melden uns vorher bei Ihnen, um die Zahlung einzurichten.}}",
       "fees": "*Bei Online-Bestellungen fallen die üblichen Kartengebühren an",
       "upgrade": "Hier upgraden →"
     }
@@ -4884,8 +4907,10 @@
       "heading": "Ihre kostenlose Testphase hat noch nicht begonnen"
     },
     "onTrial": "Ihnen stehen alle Funktionen zur Verfügung. Wählen Sie einen Tarif, bevor Ihre Testphase endet.",
+    "onTrialPaidEnd": "Ihnen stehen alle Funktionen zur Verfügung. Nach Ende Ihrer Testphase kostet der Tarif {plan} im Monat {price}. Wir melden uns vorher bei Ihnen, um die Zahlung einzurichten.",
     "onTrialNoCta": "Ihnen stehen alle Funktionen zur Verfügung.",
     "noCharge": "🔒 Während Ihrer Testphase, die bis zum {date} läuft, zahlen Sie nichts. Die Abrechnung beginnt erst, wenn Sie einen Tarif wählen und Ihre Zahlungsdaten eingeben. Bis dahin gibt es nichts zu kündigen und nichts zu bezahlen.",
+    "noChargePaidEnd": "🔒 Während Ihrer Testphase, die bis zum {date} läuft, zahlen Sie nichts.",
     "fees": "*Bei Online-Bestellungen fallen die üblichen Kartengebühren an",
     "setUpPayment": "⏱ Wählen Sie einen Tarif, bevor Ihre Testphase endet",
     "changeYourPlan": "Tarif wechseln",
@@ -5472,7 +5497,6 @@
     "hero": {
       "title": "Das Online-Bestellsystem für <lean>Foodtrucks.</lean>",
       "subSmall": "Speisekarte hochladen, ohne Registrierung.<br></br>Eine funktionierende Demo in unter 60 Sekunden.",
-      "tagline": "Weniger Verwaltung.<br></br>Mehr Zeit zum <lean>Kochen.</lean>",
       "cta": "Speisekarte hochladen →",
       "ctaNote": "<lead>Laden Sie ein Foto Ihrer Speisekarte hoch und sehen Sie sie in unter 60 Sekunden in Aktion.</lead><small>Ohne Registrierung. Ohne Kreditkarte.</small>"
     },
@@ -5556,7 +5580,6 @@
     }
   },
   "landingFooter": {
-    "tagline": "Weniger Verwaltung.<br></br>Mehr Zeit zum Kochen.",
     "features": "Funktionen",
     "pricing": "Preise",
     "privacy": "Datenschutz",
@@ -5638,7 +5661,8 @@
     "countryTerms": "Länderbedingungen",
     "contact": "Kontakt",
     "lastUpdated": "Zuletzt aktualisiert am {date}",
-    "questions": "Fragen? <link>Schreiben Sie uns</link> – bei uns antworten echte Menschen."
+    "questions": "Fragen? <link>Schreiben Sie uns</link> – bei uns antworten echte Menschen.",
+    "translationNote": "Dies ist eine Übersetzung. Weicht sie von der <link>englischen Fassung</link> ab, gilt die englische Fassung."
   },
   "truckPage": {
     "meta": {
@@ -5794,7 +5818,15 @@
       "Australiancards": "australische Karten",
       "NewZealandcards": "neuseeländische Karten",
       "Canadiancards": "kanadische Karten",
-      "Swisscards": "Schweizer Karten"
+      "Swisscards": "Schweizer Karten",
+      "Braziliancards": "brasilianische Karten",
+      "Mexicancards": "mexikanische Karten",
+      "Japanesecards": "japanische Karten",
+      "Singaporecards": "Karten aus Singapur",
+      "HongKongcards": "Karten aus Hongkong",
+      "Malaysiancards": "malaysische Karten",
+      "Thaicards": "thailändische Karten",
+      "UAEcards": "Karten aus den VAE"
     },
     "perMonth": {
       "mo": "{amount}/Mon.",
@@ -5963,7 +5995,8 @@
   "pricing": {
     "banner": {
       "title": "{months, plural, one {Ihr erster Monat ist komplett kostenlos – alle Funktionen freigeschaltet.} other {Ihre ersten # Monate sind komplett kostenlos – alle Funktionen freigeschaltet.}}",
-      "body": "Mit {brand} bestellen Kunden vorab und bezahlen bei der Abholung – so nehmen Sie Online-Bestellungen an, ganz ohne Zahlungsanbieter für Kartenzahlungen. Lieber im Voraus kassieren? Fügen Sie jederzeit Online-Kartenzahlungen hinzu. Nach Ende der Testphase wechseln Sie in den Tarif <plan>{fallback}</plan>{fallbackFree, select, yes { – ohne Grundgebühr –} other {}}, sofern Sie keinen anderen Tarif wählen. Keine Kreditkarte zum Start, keine Vertragsbindung, jederzeit kündbar."
+      "body": "Mit {brand} bestellen Kunden vorab und bezahlen bei der Abholung – so nehmen Sie Online-Bestellungen an, ganz ohne Zahlungsanbieter für Kartenzahlungen. Lieber im Voraus kassieren? Fügen Sie jederzeit Online-Kartenzahlungen hinzu. Nach Ende der Testphase wechseln Sie in den Tarif <plan>{fallback}</plan>{fallbackFree, select, yes { – ohne Grundgebühr –} other {}}, sofern Sie keinen anderen Tarif wählen. Keine Kreditkarte zum Start, keine Vertragsbindung, jederzeit kündbar.",
+      "bodyOnly": "Mit {brand} bestellen Kunden vorab und bezahlen bei der Abholung – so nehmen Sie Online-Bestellungen an, ganz ohne Zahlungsanbieter für Kartenzahlungen. Lieber im Voraus kassieren? Fügen Sie jederzeit Online-Kartenzahlungen hinzu. Nach Ende der Testphase kostet der Tarif <plan>{fallback}</plan> im Monat {price}. Wir melden uns vorher bei Ihnen, um die Zahlung einzurichten. Keine Kreditkarte zum Start, keine Vertragsbindung, jederzeit kündbar."
     },
     "card": {
       "perTruckMonth": "pro Foodtruck / Monat",
@@ -6231,6 +6264,9 @@
       "stateTerritory": "Bundesstaat oder Territorium",
       "province": "Provinz",
       "county": "Grafschaft",
+      "prefecture": "Präfektur",
+      "emirate": "Emirat",
+      "region": "Region",
       "area": "Ort (Dorf, Gemeinde oder Stadt)",
       "townOrArea": "Ort oder Gegend",
       "city": "Stadt",
@@ -6705,5 +6741,13 @@
     "backToMenu": "Zurück zur Speisekarte",
     "formNote": "Das ist eine Demo: Niemandem wird etwas berechnet und nichts wird verschickt – Sie müssen also keine E-Mail-Adresse angeben.",
     "namePlaceholder": "Alex"
+  },
+  "errorPage": {
+    "notFoundTitle": "Seite nicht gefunden",
+    "notFoundBody": "Wir konnten diese Seite nicht finden. Vielleicht wurde sie verschoben, oder die Adresse ist falsch geschrieben.",
+    "home": "Zur Startseite",
+    "errorTitle": "Etwas ist schiefgelaufen",
+    "errorBody": "Entschuldigung, diese Seite wurde nicht geladen. Versuchen Sie es erneut, oder gehen Sie zurück zur Startseite.",
+    "retry": "Erneut versuchen"
   }
 }

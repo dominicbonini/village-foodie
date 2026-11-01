@@ -78,6 +78,7 @@
     "ends": "{hasDate, select, yes {Prooviperioodi lõpp: <hl>{date}</hl>} other {Prooviperiood lõpeb <hl>peagi</hl>}}",
     "offer": "{hasMonths, select, yes {{months, plural, one {Kõik funktsioonid tasuta # kuu jooksul} other {Kõik funktsioonid tasuta # kuu jooksul}}} other {Kõik funktsioonid tasuta prooviperioodi jooksul}}",
     "body": "{hasDate, select, yes {Prooviperioodi ajal, mis kestab kuni <b>{date}</b>, ei võeta sinult mingit tasu. Arveldus algab alles siis, kui valid paketi ja sisestad oma makseandmed. Seni pole midagi tühistada ega maksta. Vali pakett enne seda kuupäeva — kui sa seda ei tee, viiakse sind üle paketile {fallback} ja mõned funktsioonid lakkavad töötamast.} other {Prooviperioodi ajal ei võeta sinult mingit tasu. Arveldus algab alles siis, kui valid paketi ja sisestad oma makseandmed. Seni pole midagi tühistada ega maksta. Vali pakett enne prooviperioodi lõppu — kui sa seda ei tee, viiakse sind üle paketile {fallback} ja mõned funktsioonid lakkavad töötamast.}}",
+    "bodyPaidEnd": "{hasDate, select, yes {Prooviperioodi ajal, mis kestab kuni <b>{date}</b>, ei võeta sinult mingit tasu. Kui prooviperiood lõpeb, on paketi {fallback} hind {price} kuus. Võtame sinuga enne seda ühendust, et maksmine korraldada.} other {Prooviperioodi ajal ei võeta sinult mingit tasu. Kui prooviperiood lõpeb, on paketi {fallback} hind {price} kuus. Võtame sinuga enne seda ühendust, et maksmine korraldada.}}",
     "fees": "*Veebitellimustele kehtivad tavapärased kaardimaksete töötlustasud",
     "upgrade": "Vali pakett siin →"
   }

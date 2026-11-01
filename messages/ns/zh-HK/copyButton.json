@@ -1,0 +1,10 @@
+{
+  "copy": "複製",
+  "copied": "已複製 ✓",
+  "failed": "複製失敗",
+  "aria": "{label} {thing}",
+  "announceCopied": "已複製{thing}",
+  "announceCopiedValue": "已複製數值",
+  "announceFailed": "未能複製{thing}。請選取文字後自行複製。",
+  "announceFailedValue": "未能複製數值。請選取文字後自行複製。"
+}

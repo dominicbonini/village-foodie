@@ -10,7 +10,11 @@ const fs = require('fs'); const path = require('path')
 const REPO = path.resolve(__dirname, '..')
 const kit = require('./_render-kit.cjs')({ cacheTag: 'legal-follow-ups' })
 const { makeFakePg } = require('./_fake-pg.cjs')
-const read = f => fs.readFileSync(path.join(REPO, f), 'utf8')
+// ⚠️ RE-PINNED (world-countries-2, 1 November 2026, docs/world-countries-2-report.md §1): the Terms of Service (§4), the
+// Country-specific terms (eight countries appended, re-dated) and lib/legal.ts (two dates, TERMS_VERSION) are read as they were
+// before world-countries-2 — scripts/_lp-world-countries-2.cjs asBefore() removes exactly its named change and throws if it is
+// not there, so every other byte is still pinned here. The new text itself is proved by scripts/world-countries-2.cjs.
+const read = f => require('./_lp-world-countries-2.cjs').asBefore(f, fs.readFileSync(path.join(REPO, f), 'utf8'))
 let pass = 0, fail = 0
 const t = (name, ok, detail) => { if (ok) { pass++; console.log(`  ✓ ${name}`) } else { fail++; console.log(`  ✗ ${name}${detail !== undefined ? `\n      ${typeof detail === 'string' ? detail : JSON.stringify(detail).slice(0, 700)}` : ''}`) } }
 const head = s => console.log(`\n${s}`)
@@ -97,7 +101,7 @@ const J = x => JSON.stringify(x)
     const rules = { taxInclusive: false, taxRateMilli: 6625, taxLabel: 'Sales tax', feesTaxed: false, serviceFee: { recipient: 'truck', bps: 300, fixedMinor: 30 }, surcharge: null, tipping: { presetsBps: [1000, 1500, 2000], customAllowed: true } }
     const r = C.computeOrderCharges({ foodMinor: 2400, rules, channel: 'online_card', tip: { kind: 'percent', bps: 1500 } })
     t('a $24.00 card order with a 15% tip: food_minor stays 2400; the tip (360) is its own field; the total adds it', r.snapshot.food_minor === 2400 && r.tipMinor === 360 && r.snapshot.tip_minor === 360 && r.totalMinor === 2400 + r.taxMinor + 360 + r.serviceFeeMinor, r)
-    t('the submit route passes the FOOD after discount as foodMinor (never a total with a tip in it)', /const foodMinor = toMinor\(repriced\.calculation\.total\)/.test(read('app/api/orders/submit/route.ts')))
+    t('the submit route passes the FOOD after discount as foodMinor (never a total with a tip in it)', /const foodMinor = toMinor\(repriced\.calculation\.total(, truck\.currency)?\)/.test(read('app/api/orders/submit/route.ts')))   // ⚠️ RE-PINNED (world-countries-1): in the truck's currency's minor units (whole yen for JPY)
     t('no platform (application) fee is taken on any payment today', /NO application_fee_amount/.test(read('lib/payments/capture.ts')) && /NO application_fee_amount/.test(read('lib/payments/authorize.ts')))
   }
 
@@ -119,7 +123,11 @@ const J = x => JSON.stringify(x)
     const usd = m => F.formatMinor(m, { currency: 'USD', locale: 'en-US' })
     const line = F.translatorFor('en-US', 'order')('serviceFeeNotice', { fee: F.feePhrase(300, 30, 'USD', usd) })
     t('…reading "Online card orders include a service fee of 3% + 30¢." for a 3% + 30¢ fee', line === 'Online card orders include a service fee of 3% + 30¢.', line)
-    t('the privacy link sits under every "Place order" button (3) and on the confirmation page, opening /privacy in a new tab', (op.match(/\n\s*\{privacyLinkEl\}\n/g) || []).length === 3 && /<a href=\{PRIVACY_PATH\} target="_blank" rel="noopener noreferrer" className="underline hover:text-slate-600">\{t\('privacyLink'\)\}<\/a>/.test(op))
+    // ⚠️ RE-PINNED (legal-languages-1, 1 November 2026): the link asks lib/legal.ts legalPath for the page's language — /privacy for
+    // every English page, exactly as before (scripts/legal-languages-1.cjs §3), the country's translation otherwise.
+    t('the privacy link sits under every "Place order" button (3) and on the confirmation page, opening the privacy policy (/privacy in English) in a new tab', (op.match(/\n\s*\{privacyLinkEl\}\n/g) || []).length === 3
+      && /<a href=\{legalPath\('privacy', \{ locale: pageLocale \}\)\} target="_blank" rel="noopener noreferrer" className="underline hover:text-slate-600">\{tOrder\('privacyLink'\)\}<\/a>/.test(op)
+      && /const privacyHref = legalPath\('privacy', \{ locale: useAppLocale\(\) \}\)/.test(op) && /<a href=\{privacyHref\} target="_blank" rel="noopener noreferrer" className="underline hover:text-slate-600">\{t\('privacyLink'\)\}<\/a>/.test(op))
     const E = await kit.bundle('lfu-email', "export { formatConfirmationEmail } from '@/lib/email'\nexport { PRIVACY_URL } from '@/lib/email-privacy'")
     const MONEY = { currency: 'GBP', locale: 'en-GB' }, TIME = { timeZone: 'Europe/London', locale: 'en-GB', timeFormat: '24h', dateOrder: 'dmy', weekStart: 'monday' }
     const em = E.formatConfirmationEmail({ money: MONEY, time: TIME, phoneCountry: 'GB', orderId: '7', orderKey: 'ok-7', truckName: 'Pizza Kitchen', customerName: 'Sam', items: [{ name: 'Margherita', quantity: 1, unit_price: 9.5, modifiers: [] }], deals: [], discountAmt: 0, total: 9.5, notes: null, slot: '12:30', autoAccepted: true, allowCancellation: false, baseUrl: 'https://www.hatchgrab.com', truckSlug: 'test-kitchen', eventDate: '2026-10-25' })

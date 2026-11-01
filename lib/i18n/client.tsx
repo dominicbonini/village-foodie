@@ -31,8 +31,21 @@ export function I18nProvider({ namespaces, children }: { namespaces: readonly Ap
   }, [])
   // languages-1: <html lang> follows a non-English truck's language once it is known (the server rendered "en" before it
   // knew the truck). English pages keep the server's value, exactly as before.
+  // world-countries-1 (31 October 2026): and its script font (Japanese, Chinese, Thai, Arabic — lib/script-fonts.ts) on <body>, and
+  // dir="rtl" for Arabic. The font module is loaded ONLY for those languages (a dynamic import), so no other page ever carries it;
+  // an English or European page is untouched. world-countries-2 (1 November 2026): + Greek and Bulgarian (their Noto Sans), which
+  // until then only the server layout applied — so a truck page that learnt its Greek language here drew it in the device font.
   useEffect(() => {
-    if (isLanguageBase(locale) && typeof document !== 'undefined') document.documentElement.lang = htmlLangOfLocale(locale)
+    if (isLanguageBase(locale) && typeof document !== 'undefined') {
+      document.documentElement.lang = htmlLangOfLocale(locale)
+      if (/^(ja|zh|th|ar|el|bg)(-|$)/i.test(locale)) {
+        void import('@/lib/script-fonts').then(m => {
+          const cls = m.scriptFontClassOf(locale)
+          if (cls) document.body.classList.add(cls)
+          if (m.isRtl(locale)) document.documentElement.dir = 'rtl'
+        })
+      }
+    }
   }, [locale])
   const value = useMemo(() => ({ locale, setLocale }), [locale, setLocale])
   return (

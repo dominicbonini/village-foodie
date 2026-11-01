@@ -1,0 +1,13 @@
+{
+  "stepHeading": "Di manakah trak anda berpangkalan?",
+  "stepIntro": "Ini menetapkan mata wang, harga, zon waktu dan format nombor telefon anda. Negara tidak boleh ditukar kemudian kerana ia berkait dengan pembayaran kad anda.",
+  "settingsHeading": "Tempat anda berniaga",
+  "countryLabel": "Negara",
+  "countryGuessed": "Kami meneka ini berdasarkan lokasi anda. Tukar jika salah.",
+  "countryLocked": "Negara anda tidak boleh ditukar",
+  "townLabel": "Pekan atau bandar",
+  "townQuestion": "Pekan atau bandar tempat anda beroperasi",
+  "timezoneLabel": "Zon waktu",
+  "continueButton": "Teruskan",
+  "saveFailed": "Tidak dapat menyimpan tetapan — sila cuba lagi."
+}

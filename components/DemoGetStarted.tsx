@@ -42,7 +42,7 @@
 // The endpoint accepts either; both are `demo-` prefixed and 130-bit random.
 
 import { useState, useEffect, useRef, Fragment } from 'react'
-import { PRIVACY_PATH, TERMS_PATH } from '@/lib/legal'
+import { legalPath } from '@/lib/legal'
 import { createPortal } from 'react-dom'
 import { createSupabaseBrowserClient } from '@/lib/supabase/client'
 import { emojiForCuisine } from '@/lib/cuisines'
@@ -217,6 +217,9 @@ export function DemoGetStarted({ token, slug, label, className, isAdmin = false,
   const tPage = useT('demoGetStarted')
   const pageLocale = useAppLocale()
   const wizardLocale = step !== 'landing' && chosenCountry ? resolveLocale(chosenCountry.locale) : null
+  // legal-languages-1 (1 November 2026): the terms and privacy links in the language of the country being signed up — the
+  // truck's own (lib/legal.ts legalPath); the page's before a country is chosen. English for an English one, as before.
+  const legalWhere = { country: chosenCountry?.code ?? null, locale: wizardLocale ?? pageLocale }
   // languages-1: useTIn fetches a non-English wizard language's words and rebuilds the translator when they land.
   const tWizard = useTIn(wizardLocale, 'demoGetStarted')
   const t = tWizard ?? tPage
@@ -1136,8 +1139,8 @@ export function DemoGetStarted({ token, slug, label, className, isAdmin = false,
                         className="mt-0.5 w-4 h-4 accent-orange-600 cursor-pointer" />
                       <span className="text-xs text-slate-600">
                         {t.rich('agreeTerms', {
-                          terms: c => <a href={TERMS_PATH} target="_blank" rel="noopener noreferrer" className="underline hover:text-slate-800">{c}</a>,
-                          privacy: c => <a href={PRIVACY_PATH} target="_blank" rel="noopener noreferrer" className="underline hover:text-slate-800">{c}</a>,
+                          terms: c => <a href={legalPath('terms', legalWhere)} target="_blank" rel="noopener noreferrer" className="underline hover:text-slate-800">{c}</a>,
+                          privacy: c => <a href={legalPath('privacy', legalWhere)} target="_blank" rel="noopener noreferrer" className="underline hover:text-slate-800">{c}</a>,
                         })}
                       </span>
                     </label>
@@ -1191,7 +1194,7 @@ export function DemoGetStarted({ token, slug, label, className, isAdmin = false,
                       that overstates what you'll be contacted about is the one line that must not. */}
                   <p className="text-xs text-slate-400">
                     {t.rich(`${copyVariant}.privacy`, {
-                      link: c => <a href={PRIVACY_PATH} target="_blank" rel="noopener noreferrer" className="underline hover:text-slate-600">{c}</a>,
+                      link: c => <a href={legalPath('privacy', legalWhere)} target="_blank" rel="noopener noreferrer" className="underline hover:text-slate-600">{c}</a>,
                     })}
                   </p>
                 </div>

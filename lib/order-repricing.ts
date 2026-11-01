@@ -61,6 +61,7 @@ import {
   type MenuItem,
 } from '@/lib/order-calculations'
 import type { SupabaseClient } from '@supabase/supabase-js'
+import { minorDigits } from '@/lib/money-format'
 
 // ─── Payload shapes (deliberately loose — these come off the wire / out of jsonb) ────────────────
 
@@ -506,15 +507,19 @@ export function repriceOrder(
   return { calculation, items: repricedItems, deals: repricedDeals, unresolved }
 }
 
-/** pence, exact. The authoritative charge amount for orders.total_minor. */
-export function toMinor(amount: number): number {
-  return Math.round(num(amount) * 100)
+/** pence, exact. The authoritative charge amount for orders.total_minor.
+ *  🔴 world-countries-1 (31 October 2026): IN THE CURRENCY'S OWN MINOR UNITS — 2 decimals for every currency before it, NONE for
+ *  the yen (lib/currencies.ts `decimals`, Stripe's: ¥1,200 is 1200, never 120000). The currency is REQUIRED, so no call site can
+ *  forget it; null/undefined (an order read without its currency) is two decimals, every currency's before the yen. */
+export function toMinor(amount: number, currency: string | null | undefined): number {
+  return Math.round(num(amount) * 10 ** digitsOf(currency))
 }
+const digitsOf = (currency: string | null | undefined) => (currency ? minorDigits(currency) : 2)
 
 /** pence → pounds. The INVERSE of toMinor, and the only way back: the payment ledger holds integer minor
  *  units while orders.amount_paid is numeric(8,2) pounds, so every crossing of that boundary goes through
  *  this pair. NEVER hardcode ×100 or ÷100 at a call site — one open-coded conversion is all it takes for a
  *  money value to be out by two orders of magnitude with nothing to catch it. */
-export function fromMinor(minor: number): number {
-  return Math.round(num(minor)) / 100
+export function fromMinor(minor: number, currency: string | null | undefined): number {
+  return Math.round(num(minor)) / 10 ** digitsOf(currency)
 }

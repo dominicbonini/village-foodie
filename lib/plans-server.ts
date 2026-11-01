@@ -6,7 +6,7 @@
 // 🔴 IT FAILS LOUDLY. A read error, or a catalogue without exactly one signup-default / expiry-fallback / demo plan,
 // THROWS — it never invents a plan. ⚠️ A feature switch naming no code feature is the one exception (Stage B, decision 1):
 // it is IGNORED and logged, and Admin shows it — one typo must not take every page down.
-import { mapPlanRow, mapPriceRow, mapFeatureRow, catalogProblems, splitUnknownFeatures, effectivePlan, planPriceFor, PLAN_COLUMNS, PLAN_PRICE_COLUMNS, PLAN_FEATURE_COLUMNS, type PlanCatalog } from '@/lib/plans'
+import { mapPlanRow, mapPriceRow, mapFeatureRow, catalogProblems, splitUnknownFeatures, effectivePlan, planPriceFor, PLAN_COLUMNS, PLAN_PRICE_COLUMNS, PLAN_PRICE_COLUMNS_WC1, PLAN_FEATURE_COLUMNS, type PlanCatalog } from '@/lib/plans'
 
 const TTL_MS = 60_000
 let cache: { at: number; value: PlanCatalog } | null = null
@@ -33,11 +33,18 @@ type CatalogClient = { from: (table: string) => { select: (cols: string) => unkn
 export async function readPlanCatalog(client: CatalogClient): Promise<PlanCatalog> {
   type Res = { data: unknown[] | null; error: { message: string } | null }
   const plansQ = client.from('plans').select(PLAN_COLUMNS) as unknown as { order: (c: string, o: { ascending: boolean }) => Promise<Res> }
-  const [plans, prices, features] = await Promise.all([
+  const [plans, pricesWc1, features] = await Promise.all([
     plansQ.order('sort_order', { ascending: true }),
-    client.from('plan_prices').select(PLAN_PRICE_COLUMNS) as unknown as Promise<Res>,
+    client.from('plan_prices').select(PLAN_PRICE_COLUMNS_WC1) as unknown as Promise<Res>,
     client.from('plan_features').select(PLAN_FEATURE_COLUMNS) as unknown as Promise<Res>,
   ])
+  // world-countries-1 (31 October 2026): `offered` and `is_trial_end` come with 20261054. Until it runs the named select fails
+  // with 42703 (undefined column) and the old columns are read instead — every row then reads as offered, none as a trial end,
+  // which is exactly the catalogue before. Any other error still throws below.
+  const missingColumn = (e: { message: string; code?: string } | null) => !!e && (e.code === '42703' || (/offered|is_trial_end/.test(e.message) && /column/i.test(e.message)))
+  const prices = missingColumn(pricesWc1.error as { message: string; code?: string } | null)
+    ? await (client.from('plan_prices').select(PLAN_PRICE_COLUMNS) as unknown as Promise<Res>)
+    : pricesWc1
   if (plans.error) throw new Error(`[plans] could not read public.plans: ${plans.error.message}`)
   if (prices.error) throw new Error(`[plans] could not read public.plan_prices: ${prices.error.message}`)
   if (features.error) throw new Error(`[plans] could not read public.plan_features: ${features.error.message}`)
@@ -67,10 +74,11 @@ export function clearPlanCatalogCache(): void {
  */
 export async function truckPlanFeeBps(truckId: string, countryCode: string): Promise<number | null> {
   const { supabase } = await import('@/lib/supabase')
-  const { data, error } = await supabase.from('trucks').select('plan, trial_expires_at').eq('id', truckId).single()
+  // world-countries-1: `country` too — an ended plan falls back to the country's trial-end plan (expiryFallbackFor).
+  const { data, error } = await supabase.from('trucks').select('plan, trial_expires_at, country').eq('id', truckId).single()
   if (error || !data) throw new Error(`[plans] could not read the plan of truck ${truckId}: ${error?.message ?? 'not found'}`)
   const catalog = await getPlanCatalog()
-  const eff = effectivePlan(data as { plan: string; trial_expires_at: string | null }, catalog)
+  const eff = effectivePlan(data as { plan: string; trial_expires_at: string | null; country: string | null }, catalog)
   return planPriceFor(catalog, eff.plan.key, countryCode)?.feeBps ?? null
 }
 

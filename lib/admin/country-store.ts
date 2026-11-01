@@ -7,7 +7,7 @@
 
 import 'server-only'
 import type { CountryStore } from '@/lib/admin/country-actions'
-import { COUNTRY_SETTINGS_COLUMNS, mapCountryRow, listCountrySettings, readAllCountryRows } from '@/lib/country-settings'
+import { mapCountryRow, listCountrySettings, readAllCountryRows, selectWithFallback } from '@/lib/country-settings'
 
 type Row = Record<string, unknown>
 const db = async () => (await import('@/lib/supabase')).supabase
@@ -17,7 +17,8 @@ export const serviceCountryStore: CountryStore = {
   unreadable: async () => (await readAllCountryRows()).unreadable,
 
   async get(code) {
-    const { data, error } = await (await db()).from('country_settings').select(COUNTRY_SETTINGS_COLUMNS).eq('country_code', code).maybeSingle()
+    const s = await db()
+    const { data, error } = await selectWithFallback(cols => s.from('country_settings').select(cols).eq('country_code', code).maybeSingle())
     if (error) throw new Error(`[country-store] read ${code}: ${error.message}`)
     return data ? mapCountryRow(data as unknown as Row) : null
   },
@@ -33,18 +34,22 @@ export const serviceCountryStore: CountryStore = {
   },
 
   async update(code, expectedUpdatedAt, columns) {
-    const { data, error } = await (await db()).from('country_settings')
+    // world-countries-1: the returned row is read with the loader's columns; a database before 20261054 refuses the update's
+    // RETURNING list with 42703 BEFORE writing (one statement), so the retry writes once.
+    const s = await db()
+    const { data, error } = await selectWithFallback(cols => s.from('country_settings')
       .update(columns)
       .eq('country_code', code)
       .eq('updated_at', expectedUpdatedAt)   // 🔴 the stale-save condition — no match, no write
-      .select(COUNTRY_SETTINGS_COLUMNS)
+      .select(cols))
     if (error) throw new Error(`[country-store] save ${code}: ${error.message}`)
     const rows = (data ?? []) as unknown as Row[]
     return rows.length === 1 ? mapCountryRow(rows[0]) : null
   },
 
   async insert(columns) {
-    const { data, error } = await (await db()).from('country_settings').insert(columns).select(COUNTRY_SETTINGS_COLUMNS).single()
+    const s = await db()
+    const { data, error } = await selectWithFallback(cols => s.from('country_settings').insert(columns).select(cols).single())
     if (error) throw new Error(`[country-store] add: ${error.message}`)
     return mapCountryRow(data as unknown as Row)
   },

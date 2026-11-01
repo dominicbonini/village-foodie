@@ -1,0 +1,57 @@
+{
+  "shortened": {
+    "heading": "見出しが収まらなかったため、短縮しました。",
+    "date": "日付が収まらなかったため、短縮しました。",
+    "daysOff": "休業日の文言が収まらなかったため、短縮しました。",
+    "place": "出店場所の名前が収まらなかったため、短縮しました。",
+    "time": "時間が収まらなかったため、短縮しました。",
+    "note": "入力したテキストが収まらなかったため、短縮しました。",
+    "venue": "会場名が収まらなかったため、短縮しました。",
+    "area": "エリア名が収まらなかったため、短縮しました。"
+  },
+  "fontFallback": "このデザインで使用しているフォント（{id}）を読み込めませんでした。該当するボックスはOswaldで表示しています。",
+  "wrongShapeBackground": "この出店場所の画像はデザインと縦横比が異なるため、標準の背景を使用しています。",
+  "rowsFit": "最終日が画像の下端より{px}px下にはみ出しています。行の間隔を狭めるか、1行目を上に移動してください。",
+  "placeStatus": {
+    "ownBoth": "独自の画像と文字配置",
+    "wrongShape": "縦横比が異なります — 差し替えるまで使用されません",
+    "ownPicture": "独自の画像、標準の配置",
+    "ownPositions": "標準の画像、独自の文字配置",
+    "none": "画像なし — 標準を使用中"
+  },
+  "standardStatus": "その他すべての出店場所で使用",
+  "option": {
+    "oneOff": "この投稿専用の画像をアップロード",
+    "placePoster": "{name}のポスター",
+    "standard": "標準デザイン"
+  },
+  "previewLabel": {
+    "lastEvent": "この場所での直近の出店でプレビューしています",
+    "noEvents": "この場所での出店はまだありません — 次回の出店にこの場所の名前を入れてプレビューしています"
+  },
+  "fontUsage": {
+    "weekly": "週間スケジュール投稿のデザイン",
+    "event": "単発イベント投稿のデザイン",
+    "place": "{place}用のデザイン",
+    "placeUnnamed": "出店場所用のデザイン"
+  },
+  "face": {
+    "regular": "標準",
+    "bold": "太字",
+    "italic": "斜体"
+  },
+  "picture": {
+    "legacy": "出店用ポスター",
+    "fallback": "画像",
+    "wrongShape": "縦横比が異なります — 背景全体には使用できません"
+  },
+  "noPicture": {
+    "omit": "表示しない",
+    "blank": "空白にする",
+    "logo": "ロゴを表示"
+  },
+  "noPicturesAll": "{total, plural, other {すべての出店場所（{total}か所）に画像があります。}}",
+  "noPicturesSome": "{without, plural, other {{total}か所のうち{without}か所の出店場所にまだ画像がありません}}",
+  "licenceTick": "このフォントを所有しているか、使用ライセンスを持っています",
+  "fontUploadButton": "↑ フォントをアップロード"
+}

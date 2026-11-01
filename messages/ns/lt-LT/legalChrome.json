@@ -13,5 +13,6 @@
   "countryTerms": "Šalių sąlygos",
   "contact": "Kontaktai",
   "lastUpdated": "Paskutinį kartą atnaujinta {date}",
-  "questions": "Turite klausimų? <link>Susisiekite</link> – mes tikri žmonės."
+  "questions": "Turite klausimų? <link>Susisiekite</link> – mes tikri žmonės.",
+  "translationNote": "Tai yra vertimas. Jei jis skiriasi nuo <link>versijos anglų kalba</link>, taikoma versija anglų kalba."
 }

@@ -1,0 +1,18 @@
+{
+  "meta": {
+    "privacyTitle": "プライバシーポリシー — HatchGrab",
+    "privacyDescription": "HatchGrab Ltdによる個人データの収集と利用について。",
+    "termsTitle": "利用規約 — HatchGrab",
+    "termsDescription": "HatchGrabの利用条件です。",
+    "countryTermsTitle": "国別の規約 — HatchGrab",
+    "countryTermsDescription": "一部の国でHatchGrabに適用される追加のルールです。"
+  },
+  "homeLabel": "HatchGrabホーム",
+  "privacy": "プライバシー",
+  "terms": "利用規約",
+  "countryTerms": "国別の規約",
+  "contact": "お問い合わせ",
+  "lastUpdated": "最終更新日：{date}",
+  "questions": "ご不明な点は<link>お問い合わせ</link>ください。実際のスタッフが対応します。",
+  "translationNote": "これは翻訳です。<link>英語版</link>と内容が異なる場合は、英語版が優先されます。"
+}

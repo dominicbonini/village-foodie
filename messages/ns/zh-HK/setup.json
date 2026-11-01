@@ -1,0 +1,32 @@
+{
+  "steps": {
+    "based": "所在地區",
+    "identity": "你的美食車",
+    "menu": "你的餐牌",
+    "event": "第一個活動"
+  },
+  "stepItem": "{number}. {label}",
+  "settingUp": "設定中",
+  "loading": "載入中",
+  "loadingCountries": "載入中…",
+  "verify": {
+    "ok": "電郵已確認，謝謝。",
+    "expired": "這條確認連結已過期。請聯絡我們，我們會在你正式上線前處理好。",
+    "invalid": "這條確認連結無效。請聯絡我們，我們會在你正式上線前處理好。"
+  },
+  "identity": {
+    "heading": "你的美食車叫甚麼名字？",
+    "intro": "這是顧客會看到的名稱。在你選擇正式上線之前，一切都不會公開。",
+    "nameLabel": "美食車名稱",
+    "namePlaceholder": "阿 Bob 漢堡",
+    "phoneLabel": "電話",
+    "whatsappTick": "這個號碼有使用 WhatsApp",
+    "phoneHelp": "顧客會在訂單確認上看到這個號碼，方便查詢訂單。剔選與否決定顯示「致電我們」還是「WhatsApp 我們」。兩者都可以在「設定」中更改。"
+  },
+  "phoneRequired": "請加入電話號碼——顧客和我們都會用它聯絡你。",
+  "createFailed": "無法建立你的美食車。",
+  "unreachable": "暫時未能連線，請再試一次。",
+  "back": "返回",
+  "creating": "正在建立你的美食車…",
+  "continue": "繼續"
+}

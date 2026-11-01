@@ -633,6 +633,28 @@
       "Walnut": "Walnut",
       "Wheatandtriticale": "Wheat and triticale",
       "Glutenbarleyoatsrye": "Gluten (barley, oats, rye)",
+      "Shrimp": "Shrimp",
+      "Crab": "Crab",
+      "Buckwheat": "Buckwheat",
+      "Abalone": "Abalone",
+      "Squid": "Squid",
+      "Salmonroe": "Salmon roe",
+      "Orange": "Orange",
+      "Kiwifruit": "Kiwi fruit",
+      "Beef": "Beef",
+      "Salmon": "Salmon",
+      "Mackerel": "Mackerel",
+      "Soybean": "Soybean",
+      "Chicken": "Chicken",
+      "Banana": "Banana",
+      "Pork": "Pork",
+      "Peach": "Peach",
+      "Yam": "Yam",
+      "Apple": "Apple",
+      "Gelatin": "Gelatin",
+      "Chestnut": "Chestnut",
+      "Naturallatex": "Natural latex",
+      "Lactose": "Lactose",
       "Nuts": "Nuts",
       "Shellfish": "Shellfish"
     }
@@ -4854,6 +4876,7 @@
       "ends": "{hasDate, select, yes {Trial ends <hl>{date}</hl>} other {Trial ends <hl>soon</hl>}}",
       "offer": "{hasMonths, select, yes {{months, plural, one {Every feature free for # month} other {Every feature free for # months}}} other {Every feature free during your trial}}",
       "body": "{hasDate, select, yes {You won’t be charged anything during your trial, which runs until <b>{date}</b>. Billing only ever starts when you choose a plan and enter your payment details. Until then there’s nothing to cancel and nothing to pay. Choose your plan before then — if you don’t, you’ll move to {fallback} and some features will stop working.} other {You won’t be charged anything while you’re on trial. Billing only ever starts when you choose a plan and enter your payment details. Until then there’s nothing to cancel and nothing to pay. Choose your plan before then — if you don’t, you’ll move to {fallback} and some features will stop working.}}",
+      "bodyPaidEnd": "{hasDate, select, yes {You won’t be charged anything during your trial, which runs until <b>{date}</b>. When your trial ends, {fallback} is {price} a month. We’ll be in touch before then to set up payment.} other {You won’t be charged anything while you’re on trial. When your trial ends, {fallback} is {price} a month. We’ll be in touch before then to set up payment.}}",
       "fees": "*Standard card processing fees apply on online orders",
       "upgrade": "Upgrade here →"
     }
@@ -4884,8 +4907,10 @@
       "heading": "Your free trial has not started yet"
     },
     "onTrial": "You have every feature. Choose a plan before your trial ends.",
+    "onTrialPaidEnd": "You have every feature. When your trial ends, {plan} is {price} a month. We’ll be in touch before then to set up payment.",
     "onTrialNoCta": "You have every feature.",
     "noCharge": "🔒 You won’t be charged anything during your trial, which runs until {date}. Billing only ever starts when you choose a plan and enter your payment details. Until then there’s nothing to cancel and nothing to pay.",
+    "noChargePaidEnd": "🔒 You won’t be charged anything during your trial, which runs until {date}.",
     "fees": "*Standard card processing fees apply on online orders",
     "setUpPayment": "⏱ Choose a plan before your trial ends",
     "changeYourPlan": "Change your plan",
@@ -5472,7 +5497,6 @@
     "hero": {
       "title": "The ordering system built for <lean>food trucks.</lean>",
       "subSmall": "Upload your menu, no signup needed.<br></br>See a working demo in under 60 seconds.",
-      "tagline": "Less time booking.<br></br>More time <lean>cooking.</lean>",
       "cta": "Upload my menu →",
       "ctaNote": "<lead>Upload a photo of your menu and see it working in under 60 seconds.</lead><small>No signup. No card.</small>"
     },
@@ -5556,7 +5580,6 @@
     }
   },
   "landingFooter": {
-    "tagline": "Less time booking.<br></br>More time cooking.",
     "features": "Features",
     "pricing": "Pricing",
     "privacy": "Privacy",
@@ -5638,7 +5661,8 @@
     "countryTerms": "Country terms",
     "contact": "Contact",
     "lastUpdated": "Last updated {date}",
-    "questions": "Questions? <link>Get in touch</link> — we’re real people."
+    "questions": "Questions? <link>Get in touch</link> — we’re real people.",
+    "translationNote": "This is a translation. If it differs from the <link>English version</link>, the English version applies."
   },
   "truckPage": {
     "meta": {
@@ -5794,7 +5818,15 @@
       "Australiancards": "Australian cards",
       "NewZealandcards": "New Zealand cards",
       "Canadiancards": "Canadian cards",
-      "Swisscards": "Swiss cards"
+      "Swisscards": "Swiss cards",
+      "Braziliancards": "Brazilian cards",
+      "Mexicancards": "Mexican cards",
+      "Japanesecards": "Japanese cards",
+      "Singaporecards": "Singapore cards",
+      "HongKongcards": "Hong Kong cards",
+      "Malaysiancards": "Malaysian cards",
+      "Thaicards": "Thai cards",
+      "UAEcards": "UAE cards"
     },
     "perMonth": {
       "mo": "{amount}/mo",
@@ -5936,7 +5968,8 @@
   "pricing": {
     "banner": {
       "title": "{months, plural, one {Your first month is completely free — every feature unlocked.} other {Your first # months are completely free — every feature unlocked.}}",
-      "body": "With {brand}, customers order ahead and pay when they collect, so you can take online orders without connecting a card processor at all. Prefer to take payment up front? Add online card payments any time. When your trial ends you move to <plan>{fallback}</plan>{fallbackFree, select, yes { — no monthly fee —} other {}} unless you choose a plan. No card to start, no contract, cancel anytime."
+      "body": "With {brand}, customers order ahead and pay when they collect, so you can take online orders without connecting a card processor at all. Prefer to take payment up front? Add online card payments any time. When your trial ends you move to <plan>{fallback}</plan>{fallbackFree, select, yes { — no monthly fee —} other {}} unless you choose a plan. No card to start, no contract, cancel anytime.",
+      "bodyOnly": "With {brand}, customers order ahead and pay when they collect, so you can take online orders without connecting a card processor at all. Prefer to take payment up front? Add online card payments any time. When your trial ends, <plan>{fallback}</plan> is {price} a month. We’ll be in touch before then to set up payment. No card to start, no contract, cancel anytime."
     },
     "card": {
       "perTruckMonth": "per truck / month",
@@ -6204,6 +6237,9 @@
       "stateTerritory": "State or territory",
       "province": "Province",
       "county": "County",
+      "prefecture": "Prefecture",
+      "emirate": "Emirate",
+      "region": "Region",
       "area": "Area (village, town or city)",
       "townOrArea": "Town or area",
       "city": "City",
@@ -6678,5 +6714,13 @@
     "backToMenu": "Back to the menu",
     "formNote": "This is a demo: nobody is charged and nothing is sent, so you don’t need to give an email.",
     "namePlaceholder": "Alex"
+  },
+  "errorPage": {
+    "notFoundTitle": "Page not found",
+    "notFoundBody": "We couldn’t find that page. It may have moved, or the address may be mistyped.",
+    "home": "Go to the home page",
+    "errorTitle": "Something went wrong",
+    "errorBody": "Sorry — this page didn’t load. Try again, or go back to the home page.",
+    "retry": "Try again"
   }
 }

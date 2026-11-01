@@ -27,7 +27,8 @@ const US_ON = () => ({ ...SEEDS.usFromSeed(), enabled: true, starterMonthlyMinor
 const ROWS = { off: () => [GB(), US_OFF()], on: () => [GB(), US_ON()] }
 
 // ⚠️ europe-languages-2 (23 October 2026): + Noto_Sans — app/layout.tsx's Greek / Cyrillic fallback.
-const FONT_NAMES = ['Archivo', 'Public_Sans', 'Courier_Prime', 'Geist', 'Geist_Mono', 'Inter', 'Noto_Sans']
+// ⚠️ RE-PINNED (world-countries-1, 31 October 2026): + the four script fonts lib/script-fonts.ts imports (Japanese, Chinese, Thai, Arabic).
+const FONT_NAMES = ['Archivo', 'Public_Sans', 'Courier_Prime', 'Geist', 'Geist_Mono', 'Inter', 'Noto_Sans', 'Noto_Sans_JP', 'Noto_Sans_HK', 'Noto_Sans_Thai', 'Noto_Sans_Arabic']
 const STUBS = {
   'next/font/google': FONT_NAMES.map(n => `export const ${n} = () => ({ variable: 'font-${n}', className: 'font-${n}', style: {} })`).join('\n'),
   'next/headers': `

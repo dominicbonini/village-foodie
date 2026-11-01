@@ -1,0 +1,7 @@
+{
+  "allergenMode": {
+    "perDishBody": "Revisa cada platillo y confirma sus alérgenos. Los clientes ven etiquetas por platillo y una tabla resumen de alérgenos generada a partir de ellas.",
+    "cardTitle": "Mostrar una tabla de alérgenos",
+    "cardBody": "Sube o pega una sola tabla de alérgenos (PDF, imagen o texto), que se muestra tal cual. Las etiquetas por platillo quedan ocultas."
+  }
+}

@@ -321,7 +321,16 @@
     "payAtHatchShort": "Pagar ao levantar",
     "payAsYouGo": "Sem mensalidade",
     "unlimited": "Ilimitado",
-    "freeTrial": "experimente grátis"
+    "freeTrial": "experimente grátis",
+    "regions": {
+      "PT-BR": {
+        "payAtHatchFeature": "Pagamento na retirada",
+        "payAtHatchShort": "Pague na retirada",
+        "payAsYouGo": "Sem mensalidade",
+        "unlimited": "Ilimitado",
+        "freeTrial": "teste grátis"
+      }
+    }
   },
   "regionalNotes": [
     "**Notes:** \"você\" is avoided; the implicit formal third person (\"Introduza o seu email\") is the European norm. \"Utilizador\","

@@ -13,5 +13,6 @@
   "countryTerms": "Riigi tingimused",
   "contact": "Kontakt",
   "lastUpdated": "Viimati uuendatud: {date}",
-  "questions": "Küsimusi? <link>Võta ühendust</link> — me oleme päris inimesed."
+  "questions": "Küsimusi? <link>Võta ühendust</link> — me oleme päris inimesed.",
+  "translationNote": "See on tõlge. Kui see erineb <link>ingliskeelsest versioonist</link>, kehtib ingliskeelne versioon."
 }

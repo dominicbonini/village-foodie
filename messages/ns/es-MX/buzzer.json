@@ -1,0 +1,4 @@
+{
+  "take": "Tomar avisador {number}",
+  "lostBody": "{hasName, select, yes {{name}: otro} other {Otro}} pedido tomó el mismo avisador mientras estabas sin conexión. Dale uno distinto."
+}

@@ -1,0 +1,9 @@
+{
+  "subject": "Demo HatchGrab anda — ini pautan untuk kembali",
+  "heading": "Demo anda telah disimpan",
+  "intro": "Ini pautan untuk kembali ke demo yang mengandungi menu anda. Tidak perlu log masuk — ketik sahaja.",
+  "button": "Buka demo saya",
+  "freshDay": "Setiap kali anda kembali, kami akan menyediakan hari perniagaan yang baharu supaya ada sesuatu untuk dicuba.",
+  "deletion": "Ini hanya demo, jadi kami tidak menyimpannya selama-lamanya — kami akan memadamnya bersama menu pada <b>{date}</b> ({days, plural, other {# hari}}). Jika anda mendaftar sebelum itu, menu anda akan dibawa bersama.",
+  "notSent": "Disimpan, tetapi kami tidak dapat menghantar e-mel sebentar tadi."
+}

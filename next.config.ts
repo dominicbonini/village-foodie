@@ -27,6 +27,11 @@ const nextConfig: NextConfig = {
    * would add 6.3MB to every function in the deployment. */
   outputFileTracingIncludes: {
     '/api/weekly-post': ['./assets/fonts/weekly-post/**'],
+    /* legal-languages-1 (1 November 2026): a translated legal page reads its language's document (content/legal/<language>/…)
+     * with `fs` at a path chosen at request time (lib/legal-documents.ts) — the tracer cannot see through that either. */
+    '/[country]/privacy': ['./content/legal/**'],
+    '/[country]/terms': ['./content/legal/**'],
+    '/[country]/country-terms': ['./content/legal/**'],
   },
   /* compare-de-1 (24 October 2026): a comparison page's Markdown and JSON twins — /de/vergleich/foodtruck-bestellsystem.md
    * and .json — are served by app/api/compare/[country]/[section]/[slug]/[format]/route.ts. afterFiles is checked before

@@ -24,8 +24,10 @@
     "heading": "Ilmainen kokeilujaksosi ei ole vielä alkanut"
   },
   "onTrial": "Käytössäsi ovat kaikki ominaisuudet. Valitse paketti ennen kuin kokeilujaksosi päättyy.",
+  "onTrialPaidEnd": "Käytössäsi ovat kaikki ominaisuudet. Kun kokeilujaksosi päättyy, paketin {plan} hinta on {price} kuukaudessa. Otamme sinuun yhteyttä ennen sitä, jotta voimme järjestää maksun.",
   "onTrialNoCta": "Käytössäsi ovat kaikki ominaisuudet.",
   "noCharge": "🔒 Sinulta ei veloiteta mitään kokeilujakson aikana, joka kestää {date} asti. Laskutus alkaa vasta, kun valitset paketin ja annat maksutietosi. Siihen asti ei ole mitään peruttavaa eikä maksettavaa.",
+  "noChargePaidEnd": "🔒 Sinulta ei veloiteta mitään kokeilujakson aikana, joka kestää {date} asti.",
   "fees": "*Verkkotilauksiin sovelletaan tavanomaisia korttimaksujen käsittelykuluja",
   "setUpPayment": "⏱ Valitse paketti ennen kuin kokeilujaksosi päättyy",
   "changeYourPlan": "Vaihda pakettia",

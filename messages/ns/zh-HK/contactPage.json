@@ -1,0 +1,18 @@
+{
+  "meta": {
+    "title": "支援",
+    "description": "取得 HatchGrab 的協助。給我們發送訊息，我們會以電郵回覆你。"
+  },
+  "logIn": "登入",
+  "eyebrow": "支援",
+  "title": "有甚麼可以幫到你？",
+  "lede": "有功能無法正常運作，或對帳戶有疑問？你可以透過兩種方式聯絡我們，無論哪種方式，我們都會以電郵回覆你。",
+  "emailUs": "電郵給我們",
+  "formHeading": "或填寫以下表格",
+  "loadingForm": "正在載入表格…",
+  "formTitle": "聯絡 HatchGrab 支援團隊",
+  "privacy": "私隱",
+  "terms": "條款",
+  "about": "關於我們",
+  "copyright": "© {year} HatchGrab"
+}

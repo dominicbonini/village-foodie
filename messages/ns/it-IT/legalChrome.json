@@ -13,5 +13,6 @@
   "countryTerms": "Termini per paese",
   "contact": "Contatti",
   "lastUpdated": "Ultimo aggiornamento: {date}",
-  "questions": "Domande? <link>Contattaci</link> — siamo persone vere."
+  "questions": "Domande? <link>Contattaci</link> — siamo persone vere.",
+  "translationNote": "Questa è una traduzione. In caso di difformità rispetto alla <link>versione inglese</link>, prevale la versione inglese."
 }

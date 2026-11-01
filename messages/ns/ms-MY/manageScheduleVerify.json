@@ -1,0 +1,9 @@
+{
+  "launch_failed": "Pengesahan tidak tersedia buat sementara waktu. Sila cuba lagi sebentar lagi.",
+  "malformed": "Itu tidak kelihatan seperti alamat laman web. Cuba sesuatu seperti yourtruck.co.uk/events",
+  "blocked": "Kami tidak dapat mengakses laman ini — ia mungkin menyekat semakan automatik. Cuba halaman yang menyenaraikan jadual anda, atau tambah acara secara manual.",
+  "unreachable": "Kami tidak dapat menghubungi laman web ini. Ia mungkin tidak berfungsi, atau alamatnya salah.",
+  "no_content": "Kami berjaya sampai ke halaman ini tetapi tidak dapat membaca apa-apa di dalamnya. Pastikan ia boleh diakses oleh umum.",
+  "no_events": "Kami tidak menemui sebarang acara akan datang di halaman ini. Pastikan URL itu terus menuju ke tempat jadual anda disenaraikan.",
+  "blockedDomain": "Sila gunakan URL laman web anda — halaman Facebook dan Instagram tidak boleh dibaca secara automatik."
+}

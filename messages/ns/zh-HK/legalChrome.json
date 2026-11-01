@@ -1,0 +1,18 @@
+{
+  "meta": {
+    "privacyTitle": "私隱政策 — HatchGrab",
+    "privacyDescription": "HatchGrab Ltd 如何收集及使用個人資料。",
+    "termsTitle": "服務條款 — HatchGrab",
+    "termsDescription": "使用 HatchGrab 的條款。",
+    "countryTermsTitle": "個別國家／地區條款 — HatchGrab",
+    "countryTermsDescription": "HatchGrab 在部分國家／地區適用的額外規則。"
+  },
+  "homeLabel": "HatchGrab 主頁",
+  "privacy": "私隱",
+  "terms": "條款",
+  "countryTerms": "國家／地區條款",
+  "contact": "聯絡我們",
+  "lastUpdated": "最後更新：{date}",
+  "questions": "有疑問？<link>聯絡我們</link>——我們是真人回覆。",
+  "translationNote": "此為譯本。如與<link>英文版本</link>有任何歧異，概以英文版本為準。"
+}

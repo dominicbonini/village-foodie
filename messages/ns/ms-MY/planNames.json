@@ -1,0 +1,28 @@
+{
+  "payg": {
+    "name": "Tanpa yuran bulanan",
+    "subtitle": "Peniaga bermusim & separuh masa",
+    "description": "Tiada yuran bulanan. Anda hanya bayar apabila pelanggan membayar dalam talian dengan kad."
+  },
+  "pro": {
+    "subtitle": "Trak yang menerima pra-pesanan secara tetap",
+    "description": "Semua ciri, termasuk balasan automatik WhatsApp dan hantaran media sosial, dengan pesanan dalam talian termasuk setiap bulan."
+  },
+  "unlimited": {
+    "name": "Tanpa had",
+    "subtitle": "Trak sibuk & festival",
+    "description": "Semua ciri, tanpa yuran untuk pesanan dalam talian, walau sesibuk mana pun anda."
+  },
+  "trial": {
+    "name": "Percubaan percuma",
+    "description": "Setiap ciri, percuma, sepanjang tempoh percubaan anda."
+  },
+  "demo": {
+    "name": "Demo",
+    "description": "Kotak pasir untuk bakal pelanggan — tidak sekali-kali didedahkan kepada umum."
+  },
+  "tester": {
+    "name": "Penguji",
+    "description": "Penguji pra-pelancaran — akses penuh."
+  }
+}

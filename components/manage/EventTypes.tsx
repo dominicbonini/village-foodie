@@ -71,7 +71,8 @@ import { normaliseInterval } from '@/lib/slot-interval'
  * `privateEvents` (the ones lib/private-events/copy.ts held — the purple panel's sentences are still the same
  * words the old separate tick used). Read in the truck's language; the US gets "Bar", "Catering", "school fair",
  * "trucks" and "pickup every N min". A type's NAME is the truck's stored value and is shown as stored. */
-import { useT } from '@/lib/i18n/use-t'
+import { useT, useAppLocale } from '@/lib/i18n/use-t'
+import { isEnglish } from '@/lib/i18n/locales'
 import '@/lib/i18n/catalog/eventTypes'
 import '@/lib/i18n/catalog/privateEvents'
 import '@/lib/i18n/catalog/serviceSettings'
@@ -429,6 +430,15 @@ function useTruckMoney(): MoneyFormat {
 //   3. EVERY CONTROL IS IN ITS OWN TYPE'S COLUMN, on the row its name is on. Nothing is in the label
 //      column.
 
+/** legal-languages-1 (1 November 2026): the built-in Private type is STORED as "Private" (lib/private-events/copy.ts
+ *  PRIVATE_TYPE_NAME — data, matched by the database's unique index) and was shown as stored, in English, in every language.
+ *  A non-English truck sees its language's words for it (`privateEvents.publicName`); English is exactly as before. Display
+ *  only: every rule compares `kind === 'private'`, never the name, and the Private type cannot be renamed. */
+const privateTypeName = (locale: string, words: string): string | null => (isEnglish(locale) ? null : words)
+function withPrivateName<T extends { kind?: string | null; name: string }>(rows: T[], name: string | null): T[] {
+  return name ? rows.map(r => (r.kind === 'private' ? { ...r, name } : r)) : rows
+}
+
 export function EventTypesPanel({ token, onClose, manageApi, inline = false }: {
   token: string
   /** Required for the overlay; ignored when `inline`, which has nothing to close. */
@@ -464,6 +474,8 @@ export function EventTypesPanel({ token, onClose, manageApi, inline = false }: {
   // CountrySettingsProvider, never a typed £ (10 October 2026).
   const t = useT('eventTypes')
   const tp = useT('privateEvents')
+  // legal-languages-1: the built-in Private type's name in the truck's language (English keeps its stored name).
+  const privateTypeLabel = privateTypeName(useAppLocale(), tp('publicName'))
   const { ts, rowLabel, offlineModes } = useServiceWords()
   const currencySym = useTruckCurrencySymbol()
   const truckMoney = useTruckMoney()
@@ -521,7 +533,7 @@ export function EventTypesPanel({ token, onClose, manageApi, inline = false }: {
   const load = useCallback(async () => {
     try {
       const r = await api(token, { action: 'load', withPrices: true })
-      setTypes((r.types ?? []) as TypeRow[])
+      setTypes(withPrivateName((r.types ?? []) as TypeRow[], privateTypeLabel))
       setStandard(r.standard ?? null)
       setVans(Array.isArray(r.vans) ? (r.vans as VanRow[]) : [])
       setReadOnly(r.readOnly === true)
@@ -538,7 +550,7 @@ export function EventTypesPanel({ token, onClose, manageApi, inline = false }: {
       setMenu((r.menu ?? { categories: [] }) as PricingMenu)
     } catch (e) { setMsg(failure(e, 'couldNotLoad')) }
     finally { setLoading(false) }
-  }, [token])
+  }, [token, privateTypeLabel])
 
   // eslint-disable-next-line react-hooks/set-state-in-effect
   useEffect(() => { void load() }, [load])
@@ -2557,6 +2569,8 @@ export function EventTypeSelect({
   actions?: ReactNode
   actionsNote?: ReactNode
 }) {
+  // legal-languages-1: the built-in Private type's name in the truck's language (English keeps its stored name).
+  const privateTypeLabel = privateTypeName(useAppLocale(), useT('privateEvents')('publicName'))
   const t = useT('eventTypes')
   const tp = useT('privateEvents')
   const [types, setTypes] = useState<TypeRow[]>([])
@@ -2572,12 +2586,12 @@ export function EventTypeSelect({
     void (async () => {
       try {
         const r = await api(token, { action: 'load' })
-        if (live) setTypes((r.types ?? []) as TypeRow[])
+        if (live) setTypes(withPrivateName((r.types ?? []) as TypeRow[], privateTypeLabel))
       } catch { /* no types is the right answer on a failure: the field shows Standard only */ }
       finally { if (live) setReady(true) }
     })()
     return () => { live = false }
-  }, [token])
+  }, [token, privateTypeLabel])
 
   /* The usual type for this place, debounced — it is a database read per venue name.
    * ⚠️ `placeId` IS IN THE DEPENDENCIES AND IS NOT DEBOUNCED AWAY: picking a place in the picker is a

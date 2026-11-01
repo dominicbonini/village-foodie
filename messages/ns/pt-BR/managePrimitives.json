@@ -1,0 +1,9 @@
+{
+  "allergenMode": {
+    "perDishTitle": "Mostrar alérgenos em cada prato",
+    "recommended": "Recomendado",
+    "perDishBody": "Revise cada prato e confirme os alérgenos dele. Os clientes veem etiquetas em cada prato e um resumo de alérgenos gerado a partir delas.",
+    "cardTitle": "Mostrar uma ficha de alérgenos",
+    "cardBody": "Envie ou cole uma única ficha de alérgenos (PDF, imagem ou texto), exibida do jeito que está. As etiquetas por prato ficam ocultas."
+  }
+}

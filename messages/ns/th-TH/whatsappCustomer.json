@@ -1,0 +1,15 @@
+{
+  "greeting": "สวัสดี 👋",
+  "opener": "{greeting} ",
+  "allergenRedirect": "{opener}ดูเมนูทั้งหมดและข้อมูลสารก่อภูมิแพ้ได้ที่นี่: {url} — {truck} {emoji}",
+  "menuFallback": "{opener}ดูเมนูทั้งหมดของเราได้ที่นี่: {url} — {truck} {emoji}",
+  "otherCategory": "อื่นๆ",
+  "categoryFrom": "{category} เริ่มต้น {price}",
+  "listTwo": "{first} และ {second}",
+  "listMany": "{init} และ {last}",
+  "menuSummary": "{opener}เรามี {summary} ดูเมนูทั้งหมดและสั่งล่วงหน้าได้ที่นี่: {url} — {truck} {emoji}",
+  "allergenCaveat": "โปรดตรวจสอบข้อมูลสารก่อภูมิแพ้ในเมนูทั้งหมดอีกครั้ง — นี่คือข้อความตอบกลับอัตโนมัติ",
+  "specificFallback": "{opener}ดูตารางออกร้านล่าสุดของเราได้ที่นี่: {url}\n\n{truck} {emoji}",
+  "capHandoff": "ขอบคุณสำหรับทุกข้อความ! ช่องทางนี้ตอบกลับได้เพียงไม่กี่ครั้งต่อวัน\n\nสั่งอาหาร: {link}",
+  "capContact": "ติดต่อเราโดยตรง: {number}"
+}

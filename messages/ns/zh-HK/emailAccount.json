@@ -1,0 +1,38 @@
+{
+  "newEmail": {
+    "subject": "驗證你新的 HatchGrab 電郵地址",
+    "heading": "驗證你的電郵地址",
+    "button": "驗證電郵地址"
+  },
+  "changeEmail": {
+    "requested": "你要求將 HatchGrab 電郵地址更改為這個地址。",
+    "click": "請按下方按鈕進行驗證。此連結會在 24 小時後失效。",
+    "ignore": "如果你沒有要求更改，可以放心忽略這封電郵。",
+    "stillActive": "你目前的電郵地址仍然有效。"
+  },
+  "resendVerification": {
+    "requested": "你要求將 HatchGrab 電郵更改為這個地址。",
+    "click": "請按下方進行驗證。此連結會在 24 小時後失效。",
+    "ignore": "如果你沒有提出這個要求，請忽略這封電郵。",
+    "stillActive": "你目前的電郵仍然有效。"
+  },
+  "passwordReset": {
+    "subject": "重設你的 HatchGrab 密碼",
+    "heading": "重設你的密碼",
+    "requested": "我們收到重設你 HatchGrab 帳戶密碼的要求。",
+    "click": "請按下方按鈕選擇新密碼。此連結會在 1 小時後失效。",
+    "button": "重設密碼",
+    "ignore": "如果你沒有提出這個要求，可以放心忽略這封電郵。",
+    "unchanged": "在你按下上方連結之前，你的密碼不會更改。"
+  },
+  "deletionScheduled": {
+    "subject": "你的 HatchGrab 帳戶已排定刪除",
+    "received": "我們已收到刪除這個 HatchGrab 帳戶的要求。",
+    "orderingStopped": "以下美食車的<b>網上落單已即時停止</b>：{trucks}。",
+    "noTrucks": "（沒有美食車）",
+    "readable": "在未來 {days, plural, one {# 天} other {# 天}}內，你仍可以查閱控制台。",
+    "scheduled": "帳戶已排定於 <b>{date}</b> 刪除。",
+    "cannotCancel": "<b>此操作無法在應用程式內取消。</b>如果這不是你本人的操作，或你改變了主意，請盡快回覆這封電郵。",
+    "kept": "帳戶刪除後，我們會移除你的個人資料及你顧客的資料。我們會保留依法必須保存的匿名會計紀錄。"
+  }
+}

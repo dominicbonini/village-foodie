@@ -33,7 +33,9 @@ export const MARKETING_COUNTRY = 'GB'
 // off, it 302s to /uk like the others.
 export const COUNTRY_PATH_SEGMENTS: Readonly<Record<string, string>> = { GB: 'uk', US: 'us', IE: 'ie', AU: 'au', NZ: 'nz', CA: 'ca', FR: 'fr',
   // europe-settings (22 October 2026): the rest of Stripe's Europe — each at its ISO code. Switched off, every one 302s to /uk.
-  AT: 'at', BE: 'be', BG: 'bg', HR: 'hr', CY: 'cy', CZ: 'cz', DK: 'dk', EE: 'ee', FI: 'fi', DE: 'de', GI: 'gi', GR: 'gr', HU: 'hu', IT: 'it', LV: 'lv', LI: 'li', LT: 'lt', LU: 'lu', MT: 'mt', NL: 'nl', NO: 'no', PL: 'pl', PT: 'pt', RO: 'ro', SK: 'sk', SI: 'si', ES: 'es', SE: 'se', CH: 'ch' }
+  AT: 'at', BE: 'be', BG: 'bg', HR: 'hr', CY: 'cy', CZ: 'cz', DK: 'dk', EE: 'ee', FI: 'fi', DE: 'de', GI: 'gi', GR: 'gr', HU: 'hu', IT: 'it', LV: 'lv', LI: 'li', LT: 'lt', LU: 'lu', MT: 'mt', NL: 'nl', NO: 'no', PL: 'pl', PT: 'pt', RO: 'ro', SK: 'sk', SI: 'si', ES: 'es', SE: 'se', CH: 'ch',
+  // world-countries-1 (31 October 2026): Brazil, Mexico, Japan, Singapore, Hong Kong, Malaysia, Thailand and the UAE, at their ISO codes.
+  BR: 'br', MX: 'mx', JP: 'jp', SG: 'sg', HK: 'hk', MY: 'my', TH: 'th', AE: 'ae' }
 
 /** The three marketing pages that have a country address. */
 export type MarketingPage = 'landing' | 'features' | 'compare'

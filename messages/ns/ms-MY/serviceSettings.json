@@ -1,0 +1,59 @@
+{
+  "labels": {
+    "collection_interval_mins": "Masa ambil",
+    "takes_cash": "Adakah anda terima tunai?",
+    "offline_protection": "Perlindungan pesanan luar talian",
+    "buzzer_prompt": "Ingatkan saya untuk menambah buzzer"
+  },
+  "typeFollowsVanTitle": "Mengikut tetapan biasa setiap van",
+  "sameSettingsAllVansLabel": "Tetapan sama untuk semua van",
+  "sameSettingsAllVansHeader": "Semua van",
+  "sameSettingsConfirm": "Salin tetapan Van 1 ke setiap van? Ini menyalin semua tetapan van bagi Van 1, sama seperti ‘Sama seperti Van 1’ dalam Tetapan. Kapasiti dapur ada suisnya sendiri.",
+  "eventTypesFooterStandard": "Standard ialah tetapan biasa anda. Menukarnya di sini juga menukarnya dalam Tetapan.",
+  "eventTypesFooterOneEvent": "Untuk menukar tetapan bagi satu acara sahaja, gunakan papan pemuka acara itu.",
+  "eventTypesSubtitle": "Perubahan disimpan secara automatik.",
+  "matchStandardLabel": "Ikut Standard",
+  "matchStandardConfirm": "Kembalikan setiap tetapan jenis ini kepada Standard? Apa-apa yang anda ubah di sini akan dikosongkan.",
+  "priceLabels": {
+    "price_change_on": "Tukar harga",
+    "price_mode": "Perubahan harga",
+    "price_amount": "Jumlah",
+    "price_rounding": "Pembundaran",
+    "item_prices": "Harga item"
+  },
+  "priceMode": {
+    "add_amount": "+ {symbol}",
+    "add_pct": "+ %",
+    "sub_amount": "− {symbol}",
+    "sub_pct": "− %",
+    "none": "Tetapkan setiap harga sendiri"
+  },
+  "priceRounding": {
+    "none": "Tiada",
+    "nearest_1": "{symbol}1 terdekat",
+    "up_1": "Sentiasa bundarkan ke atas"
+  },
+  "pricesStandardCell": "Harga menu anda",
+  "pricesTruckWideTitle": "Harga anda sama untuk setiap van",
+  "pricesMenuCell": "Menu",
+  "pricesTypeOffCell": "Harga menu",
+  "itemPricesShow": "Papar harga",
+  "itemPricesHide": "Sembunyikan harga",
+  "priceItemsHeading": "Tetapkan harga setiap item",
+  "priceItemsOpen": "Lihat atau tukar harga setiap item ›",
+  "priceItemsClose": "Sembunyikan harga item ⌃",
+  "ownPriceCount": "{n, plural, other {{count} item mempunyai harga sendiri}}",
+  "priceTypeHint": "Tekan harga untuk menaip harga anda sendiri.",
+  "pricesLiveNotice": "Acara ini sedang aktif. Pesanan baharu menggunakan harga baharu. Pesanan yang sudah dibuat mengekalkan harganya.",
+  "placeTypeHelper": "Tambah acara memilih jenis ini setiap kali anda memilih tempat ini.",
+  "postPictureStandardNote": "Hantaran acara di sini menggunakan reka bentuk standard anda.",
+  "eventItemsCardDescription": "Harga, had item dan ketersediaan untuk acara ini sahaja. Perubahan berkuat kuasa serta-merta.",
+  "eventPriceColumnLabel": "Harga",
+  "eventPriceOwnNote": "{hasType, select, yes {{type} {price} · acara ini} other {menu {price} · acara ini}}",
+  "eventPriceEdit": "✎ Edit harga",
+  "eventPriceCancel": "Batal",
+  "eventPriceSave": "Simpan harga",
+  "eventPriceEditNote": "Mengedit harga untuk acara ini sahaja. Had item dan ketersediaan dikunci sehingga anda simpan.",
+  "eventPriceLiveNote": "Aktif: pesanan baharu menggunakan harga baharu.",
+  "offlineWhenOfflineLabel": "Semasa luar talian"
+}

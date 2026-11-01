@@ -1,0 +1,15 @@
+{
+  "greeting": "Oi! 👋",
+  "opener": "{greeting} ",
+  "allergenRedirect": "{opener}Você encontra nosso cardápio completo e as informações sobre alérgenos aqui: {url} — {truck} {emoji}",
+  "menuFallback": "{opener}Confira nosso cardápio completo aqui: {url} — {truck} {emoji}",
+  "otherCategory": "Outros",
+  "categoryFrom": "{category} a partir de {price}",
+  "listTwo": "{first} e {second}",
+  "listMany": "{init} e {last}",
+  "menuSummary": "{opener}Temos {summary}. Veja o cardápio completo e faça seu pedido antecipado aqui: {url} — {truck} {emoji}",
+  "allergenCaveat": "Confira as informações sobre alérgenos no cardápio completo — esta é uma resposta automática.",
+  "specificFallback": "{opener}Confira nossa agenda mais recente aqui: {url}\n\n{truck} {emoji}",
+  "capHandoff": "Obrigado por todas as mensagens! Por aqui só consigo responder algumas vezes por dia.\n\nPara pedir: {link}",
+  "capContact": "Para falar direto com a gente: {number}"
+}

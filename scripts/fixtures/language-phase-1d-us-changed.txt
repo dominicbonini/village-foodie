@@ -257,7 +257,7 @@ api/US|manage|addVanNoName	code: named difference 1 (name_required)
 api/US|manage|renameVanNoName	code: named difference 1 (name_required)
 api/US|manage|deleteLastVan	code: named difference 1 (last_van) + words
 api/US|manage|unknownAction	code: named difference 1 (unknown_action)
-api/US|manageGET|stockWarning	code: plans-manage-get-catalogue+pricing-b-country-settings-fields+allergen-card-country-field+address-formats-1-country-key+pricing-b-catalogue-ignored-features + words
+api/US|manageGET|stockWarning	code: plans-manage-get-catalogue+pricing-b-country-settings-fields+allergen-card-country-field+address-formats-1-country-key+world-countries-1-manage-fields+pricing-b-catalogue-ignored-features + words
 api/US|eventTypes|badJson	code: named difference 1 (bad_request)
 api/US|eventTypes|noToken	code: named difference 1 (token_required)
 api/US|eventTypes|badToken	code: named difference 1 (invalid_token)

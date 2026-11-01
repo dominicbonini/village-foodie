@@ -1,0 +1,45 @@
+{
+  "toast": {
+    "layout": "{layout, select, scroll {El menú se muestra en una sola página} other {El menú se muestra por categorías}}",
+    "presses": "{presses, select, one {Un toque para este evento} other {Dos toques para este evento}}"
+  },
+  "demo": {
+    "endedBody": "Empieza uno nuevo y prepararemos un servicio a partir de este momento. Tu menú se queda como está.",
+    "lockBody": "Desde aquí empiezas y cierras un servicio, pausas los pedidos cuando la fila se hace larga o cambias a otro evento."
+  },
+  "pin": {
+    "title": "Ingresa el PIN"
+  },
+  "banner": {
+    "menuSnapshot": "Menú guardado en esta tableta a las {time}. Revisa los precios antes de cobrar.",
+    "offlinePaused": "La protección sin conexión está activada: los clientes pueden ver el menú, pero no pedir.",
+    "paused": "Pedidos en pausa{indefinite, select, yes {} other { (se reanudan en ~{mins} min)}} · Los clientes pueden ver el menú, pero no pedir"
+  },
+  "tabs": {
+    "stock": "Menú y stock"
+  },
+  "orders": {
+    "prepBannerBody": "Tu menú usa tiempos de preparación predeterminados. Actualízalos en Gestionar para que tu cocina no se sature de pedidos."
+  },
+  "addTab": {
+    "noMenuSaved": "Tu menú no está guardado en este dispositivo, así que no hay nada con qué crear un pedido."
+  },
+  "settings": {
+    "layoutTitle": "Diseño del menú",
+    "layoutTabsHelp": "Muestra una categoría a la vez. Toca una categoría para cambiar. Ideal para menús largos, donde cada producto se queda siempre en el mismo lugar.",
+    "layoutScrollHelp": "Muestra todos los productos en una lista con desplazamiento, con un encabezado por categoría. No hay botones de categoría: te desplazas para moverte. Ideal para menús cortos, donde puedes ver casi todo de un vistazo.",
+    "canPick": "{who, select, customers {Los clientes pueden elegir {example}} other {Tú y tus clientes pueden elegir {example}}}"
+  },
+  "stock": {
+    "ownPriceTitle": "Precio propio de este evento: toca × para volver al precio del tipo o del menú",
+    "loadingMenu": "Cargando el menú…"
+  },
+  "pause": {
+    "body": "Los clientes podrán seguir viendo el menú, pero no podrán pedir."
+  },
+  "edit": {
+    "addDeal": "+ Añadir combo",
+    "repriceTitle": "No está en el menú",
+    "repriceBody": "Estos productos son nuevos en este pedido y no están en el menú, así que no se pudo comprobar el precio. Todo lo que ya estaba en el pedido mantiene su precio original. Todavía no se ha guardado nada."
+  }
+}

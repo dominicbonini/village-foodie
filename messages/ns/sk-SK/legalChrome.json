@@ -13,5 +13,6 @@
   "countryTerms": "Podmienky pre krajiny",
   "contact": "Kontakt",
   "lastUpdated": "Naposledy aktualizované {date}",
-  "questions": "Máte otázky? <link>Ozvite sa nám</link> — sme skutoční ľudia."
+  "questions": "Máte otázky? <link>Ozvite sa nám</link> — sme skutoční ľudia.",
+  "translationNote": "Toto je preklad. Ak sa líši od <link>anglickej verzie</link>, platí anglická verzia."
 }

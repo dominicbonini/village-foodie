@@ -1,0 +1,46 @@
+{
+  "tab": {
+    "all": "Semua",
+    "bold": "Tebal & tinggi",
+    "hand": "Tulisan tangan",
+    "classic": "Klasik",
+    "clean": "Ringkas",
+    "own": "Milik anda",
+    "ownCount": "Milik anda ({count})"
+  },
+  "yoursTag": "· milik anda",
+  "loadingFonts": "Memuatkan fon…",
+  "search": "Cari {count, number} fon",
+  "uploadButton": "↑ Muat naik fon anda",
+  "loadingLibrary": "Memuatkan pustaka fon…",
+  "tryAgain": "Cuba lagi",
+  "noOwn": "Anda belum memuat naik sebarang fon. Gunakan butang “↑ Muat naik fon anda” di atas.",
+  "recent": "Digunakan baru-baru ini",
+  "popular": "Popular untuk poster",
+  "adding": "Menambah…",
+  "noMatch": "Tiada fon yang sepadan dengan “{query}”.",
+  "showing": "Menunjukkan {shown} daripada {total, number} — taip lagi untuk mengecilkan carian.",
+  "couldNotAdd": "Fon itu tidak dapat ditambah",
+  "tooBig": "Fon itu {size, number, ::.0 group-off}MB. Hadnya 5MB.",
+  "woff": "Sila muat naik fail TTF atau OTF — biasanya anda boleh memuat turunnya dari tempat anda membeli fon itu.",
+  "uploadIncomplete": "Muat naik tidak selesai",
+  "added": "“{name}” ditambah sebagai versi {face}.",
+  "face": {
+    "regular": "biasa",
+    "bold": "tebal",
+    "italic": "condong"
+  },
+  "licenceTick": "Saya memiliki fon ini atau mempunyai lesen untuk menggunakannya",
+  "checking": "Menyemak fon…",
+  "addFont": "Tambah fon",
+  "cancel": "Batal",
+  "missingFaces": "Tambah versi {faces} untuk “{name}” (pilihan) — pilih fail itu sekali lagi.",
+  "somethingWrong": "Ada sesuatu yang tidak kena",
+  "faceLower": {
+    "regular": "biasa",
+    "bold": "tebal",
+    "italic": "condong"
+  },
+  "ownLicence": "Milik anda sendiri",
+  "loadFailed": "Tidak dapat memuatkan fon"
+}

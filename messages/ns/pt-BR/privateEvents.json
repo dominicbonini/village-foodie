@@ -1,0 +1,42 @@
+{
+  "publicName": "Evento privado",
+  "chip": "Privado",
+  "grid": {
+    "orderingSection": "PEDIDOS",
+    "linkRowLabel": "Receber pedidos por link privado e QR code",
+    "columnTitle": "O tipo Privado já vem incluído. Ele não pode ser renomeado, movido nem excluído."
+  },
+  "form": {
+    "help": "Aparece na sua agenda como “Evento privado”, só com a data e os horários — nunca o endereço, o mapa ou o Village Foodie.",
+    "linkPromise": "Os convidados pedem por um link privado e QR code — você recebe os dois depois de salvar.",
+    "nameLabel": "Nome do evento",
+    "nameHelp": "Os convidados veem isso no topo da página de pedido.",
+    "namePlaceholder": "Casamento da Ana e do Pedro",
+    "previewNote": "Como aparece na sua agenda — sem local, cidade ou CEP.",
+    "needsTimes": "Adicione um horário de início e de término — um evento privado que recebe pedidos por link precisa deles."
+  },
+  "link": {
+    "button": "Link e QR",
+    "title": "Link privado e QR code",
+    "label": "Link privado",
+    "copy": "Copiar",
+    "copied": "Copiado",
+    "qrDownload": "Baixar QR",
+    "tableCards": "Imprimir displays de mesa",
+    "newLink": "Gerar novo link",
+    "working": "Processando…",
+    "newLinkConfirm": "Gerar um novo link? O link atual para de funcionar na hora, e os QR codes que você já imprimiu também vão parar de funcionar.",
+    "newLinkHelp": "Use isto se o link foi parar onde não devia. O link atual para de funcionar na hora, e os QR codes impressos também.",
+    "newLinkFailed": "Não foi possível gerar um novo link.",
+    "offNotice": "Os pedidos por link privado estão desativados para este evento, então não há link para compartilhar. O evento continua aparecendo na sua agenda como “Evento privado”."
+  },
+  "cards": {
+    "printTitle": "{truck} — displays de mesa",
+    "scan": "Escaneie para pedir",
+    "blurb": "Peça e pague pelo celular. Chamamos seu nome quando estiver pronto.",
+    "footer": "Pedidos por HatchGrab"
+  },
+  "noSinglePost": "Eventos privados não ganham um post próprio — eles aparecem no seu cartaz semanal como “Evento privado”.",
+  "confirmToPrivate": "Isso oculta o endereço e tira o evento do mapa. Os convidados vão precisar do link privado para pedir.",
+  "confirmFromPrivate": "Isso torna o evento público: o endereço e o pino no mapa vão aparecer, e o link privado vai parar de funcionar."
+}

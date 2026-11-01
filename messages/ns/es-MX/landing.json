@@ -1,0 +1,34 @@
+{
+  "hero": {
+    "subSmall": "Sube tu menú, sin registrarte.<br></br>Mira una demo funcionando en menos de 60 segundos.",
+    "cta": "Subir mi menú →",
+    "ctaNote": "<lead>Sube una foto de tu menú y míralo funcionando en menos de 60 segundos.</lead><small>Sin registro. Sin tarjeta.</small>"
+  },
+  "shots": {
+    "dashboardAlt": "Tomando un pedido en HatchGrab: el menú a la izquierda y el carrito con el total a la derecha",
+    "phoneAlt": "Pidiendo a un food truck en HatchGrab: el menú con fotos y precios, y el total del carrito"
+  },
+  "trust": {
+    "cancel": "Cancela cuando quieras, sin plazos forzosos"
+  },
+  "does": {
+    "lede": "La mayoría de los sistemas de pedidos dan por hecho una dirección fija, un wifi confiable y el mismo horario cada semana. Tú cambias de lugar cada semana, a horas distintas, con poca o nada de señal de celular. HatchGrab está hecho para eso.",
+    "devicesBody": "En el celular del delantal, la tablet del mostrador, la laptop del food truck… y la terminal con la que ya cobras.",
+    "postsBody": "Sube el diseño que ya publicas en Facebook o Instagram. Nosotros llenamos tus fechas, lugares y horarios, listo para compartir — cada semana o cada día.",
+    "whatsappBody": "“¿Dónde están esta noche?” “¿Qué postres tienen?” Tu WhatsApp responde mientras manejas hacia tu ubicación o estás en la plancha, con tu propio menú y tu agenda. Messenger e Instagram, muy pronto.",
+    "whatsappSoonBody": "“¿Dónde están esta noche?” “¿Qué postres tienen?” Pronto tu WhatsApp responderá mientras manejas hacia tu ubicación o estás en la plancha. Messenger e Instagram vendrán después.",
+    "slotsBody": "Tus clientes hacen un pedido anticipado y eligen la hora de recogida. Sin filas, y la comida lista cuando llegan."
+  },
+  "steps": {
+    "menuTitle": "Crea tu menú",
+    "menuBody": "Toma una foto de tu pizarrón o pega el texto. Platillos, precios y extras se importan solos. Tú solo revisas que estén bien.",
+    "scheduleBody": "¿La tienes en tu web? La leemos de ahí y la mantenemos al día. Si no, tómale una foto también. Tú solo apruebas lo que encuentra."
+  },
+  "final": {
+    "lede": "Sube una foto o una captura de tu menú y lo convertimos en una página de pedidos que funciona, para que la pruebes en menos de 60 segundos. Tus platillos, tus precios. Sin registro, sin tarjeta, sin instalar nada. Échale un vistazo y luego decide.",
+    "cta": "Subir mi menú ahora →"
+  },
+  "meta": {
+    "description": "Recibe pedidos y pedidos anticipados en tu ubicación, sin filas. Software de pedidos y pantalla de cocina (KDS) para food trucks y catering móvil ({country}) — no es un punto de venta."
+  }
+}

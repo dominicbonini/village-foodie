@@ -1,5 +1,5 @@
 {
-  "$comment": "europe-languages-1 (22 October 2026): the WhatsApp allergen guard's trigger words for SPANISH (es-ES). OPTION B, as English, French and German: absence / safety words only — allergy and intolerance words, coeliac disease, anaphylaxis, EpiPen, the \"free from\" / \"without <allergen>\" forms, \"suitable for\" / \"safe for\", traces and cross-contamination — NOT the bare allergen names (a presence question may reach the AI, which answers only from the tags and gets the caveat). Matched with the Unicode normaliser (lower case, accents folded), so accented and unaccented spellings both match one entry; spelling variants that differ by more than accents are listed. caveatWords: a tagged uk14 label (stored in English, lower case) → the words a reply in the language may use for it. scripts/europe-languages-1.cjs proves it.",
+  "$comment": "europe-languages-1 (22 October 2026): the WhatsApp allergen guard's trigger words for SPANISH (es-ES). OPTION B, as English, French and German: absence / safety words only — allergy and intolerance words, coeliac disease, anaphylaxis, EpiPen, the \"free from\" / \"without <allergen>\" forms, \"suitable for\" / \"safe for\", traces and cross-contamination — NOT the bare allergen names (a presence question may reach the AI, which answers only from the tags and gets the caveat). Matched with the Unicode normaliser (lower case, accents folded), so accented and unaccented spellings both match one entry; spelling variants that differ by more than accents are listed. caveatWords: a tagged uk14 label (stored in English, lower case) → the words a reply in the language may use for it. scripts/europe-languages-1.cjs proves it. world-countries-1 (31 October 2026): + MEXICAN spellings (es-MX reads this list): cacahuate, soya, camarón, nuez, \"no contiene\"; and caveatWords for the codex set Mexico uses.",
   "language": "es",
   "normalise": "unicode",
   "stems": [
@@ -41,7 +41,13 @@
     "segura para",
     "trazas de",
     "puede contener",
-    "contaminacion cruzada"
+    "contaminacion cruzada",
+    "sin cacahuate",
+    "sin soya",
+    "sin camaron",
+    "sin nuez",
+    "sin mariscos",
+    "no contiene"
   ],
   "tokens": [
     "sg"
@@ -125,6 +131,68 @@
         "mejillones",
         "calamar",
         "pulpo"
+      ]
+    },
+    "codex": {
+      "gluten": [
+        "gluten",
+        "trigo",
+        "harina"
+      ],
+      "crustaceans": [
+        "crustáceo",
+        "crustáceos",
+        "camarón",
+        "camarones",
+        "gamba",
+        "langostino",
+        "marisco",
+        "mariscos"
+      ],
+      "eggs": [
+        "huevo",
+        "huevos",
+        "mayonesa"
+      ],
+      "fish": [
+        "pescado",
+        "pescados"
+      ],
+      "peanuts": [
+        "cacahuate",
+        "cacahuates",
+        "cacahuete",
+        "maní"
+      ],
+      "soy": [
+        "soya",
+        "soja",
+        "tofu"
+      ],
+      "milk": [
+        "leche",
+        "lactosa",
+        "lácteo",
+        "lácteos",
+        "queso",
+        "crema",
+        "mantequilla",
+        "yogur"
+      ],
+      "tree nuts": [
+        "nuez",
+        "nueces",
+        "almendra",
+        "almendras",
+        "avellana",
+        "pistache",
+        "pistacho",
+        "nuez de la india",
+        "anacardo"
+      ],
+      "sulphites": [
+        "sulfito",
+        "sulfitos"
       ]
     }
   }

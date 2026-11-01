@@ -105,7 +105,15 @@
     "Australiancards": "carte australiane",
     "NewZealandcards": "carte neozelandesi",
     "Canadiancards": "carte canadesi",
-    "Swisscards": "carte svizzere"
+    "Swisscards": "carte svizzere",
+    "Braziliancards": "carte brasiliane",
+    "Mexicancards": "carte messicane",
+    "Japanesecards": "carte giapponesi",
+    "Singaporecards": "carte di Singapore",
+    "HongKongcards": "carte di Hong Kong",
+    "Malaysiancards": "carte malesi",
+    "Thaicards": "carte thailandesi",
+    "UAEcards": "carte degli EAU"
   },
   "perMonth": {
     "mo": "{amount}/mese",

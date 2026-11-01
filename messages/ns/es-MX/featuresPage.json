@@ -1,0 +1,12 @@
+{
+  "detail": {
+    "walkup_orders": "Toma y gestiona pedidos en la ventanilla, cobrados con tu propia terminal.",
+    "web_dashboard": "Gestiona tu servicio desde el navegador de cualquier celular, tablet o laptop.",
+    "meal_deals_upsells": "Agrupa platillos en combos y ofrece extras al pagar para subir el ticket promedio.",
+    "stock_countdown": "Indica las existencias y se van descontando con cada pedido; al llegar a cero, el platillo se agota solo.",
+    "tap_to_pay": "Cobra con tarjeta desde un celular compatible, sin necesidad de una terminal aparte.",
+    "qr_code": "Un código QR imprimible que abre tu menú y tu página de pedidos.",
+    "schedule_import": "Llenamos tu agenda automáticamente — desde tu web o desde una foto que ya publicas en Facebook. Tú solo revisas y confirmas.",
+    "whatsapp_auto_replies": "Respuestas automáticas de WhatsApp a las consultas sobre tu menú y tu agenda."
+  }
+}

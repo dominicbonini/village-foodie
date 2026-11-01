@@ -1,0 +1,117 @@
+{
+  "cardEditor": {
+    "title": "你的致敏原資料卡",
+    "intro": "顧客會看到<b>與你所寫完全相同的內容</b>——不會被改寫。在下方輸入或貼上內容，或上載相片／PDF，我們會讀取文字讓你檢查。",
+    "empty": "尚未有致敏原資料卡。",
+    "placeholder": "例如：我們所有炸魚薯條均含小麥及奶類。炸爐與含麩質及堅果的食品共用。設有純素選擇——請向職員查詢。",
+    "reading": "正在讀取圖片…",
+    "upload": "📷 上載圖片／PDF",
+    "uploadNote": "我們會讀取圖片上的文字讓你檢查——圖片本身不會被儲存。"
+  },
+  "cardUpload": {
+    "dishFallback": "菜式",
+    "question": "你有致敏原資料卡要上載嗎？",
+    "perDish": "{detected, select, yes {上載資料卡後，我們會用它建立各款菜式的致敏原。偵測到的致敏原會在下一頁顯示，讓你逐款確認。} other {上載資料卡後，我們會用它建立各款菜式的致敏原。}}",
+    "cardOnly": "上載顧客會看到的致敏原資料卡。",
+    "yes": "有",
+    "no": "沒有",
+    "noProblem": "沒問題——你不一定需要。請按下方按鈕繼續。",
+    "analysing": "正在分析資料卡…",
+    "dropzone": "拖放檔案或點按選擇",
+    "imageOrPdf": "圖片或 PDF",
+    "or": "或",
+    "pastePlaceholder": "在此貼上你的致敏原資料卡文字…",
+    "process": "處理資料卡",
+    "cardRead": "已讀取資料卡 ✓",
+    "unmatchedHeading": "以下項目未能自動配對——請指定或略去",
+    "quotedName": "「{name}」",
+    "ambiguous": "不明確——配對到多款菜式，請選擇正確的一款。",
+    "assignTo": "指定菜式…",
+    "dismiss": "略去",
+    "blanket": "資料卡指出<b>所有</b>菜式都可能含有<b>{list}</b>。要加到每款菜式嗎？（你仍需逐款確認）<muted>——預設為關閉</muted>",
+    "kitchenNotes": "廚房備註（儲存至你的致敏原資料）",
+    "matchSummary": "{n, plural, =0 {{matched} 項已配對到菜式。} one {{matched} 項已配對到菜式。{count} 項需要你指定。} other {{matched} 項已配對到菜式。{count} 項需要你指定。}}"
+  },
+  "savedCard": {
+    "showLess": "顯示較少",
+    "showMore": "顯示更多",
+    "fileOnly": "這架美食車已儲存資料卡檔案，但沒有儲存摘要文字。請開啟原本的檔案查閱。",
+    "viewOriginal": "查看原本的資料卡"
+  },
+  "wizard": {
+    "toast": {
+      "readFailed": "未能讀取致敏原資料卡，請再試一次",
+      "confirmed": "已確認 {name}",
+      "undo": "復原",
+      "saveFailed": "未能儲存，請再試一次",
+      "imageFailed": "未能讀取這張圖片——請改為輸入或貼上資料卡內容",
+      "cardRead": "{n, plural, one {已讀取資料卡——{matched} 項已配對，{count} 項需要指定} other {已讀取資料卡——{matched} 項已配對，{count} 項需要指定}}"
+    },
+    "genericWarn": {
+      "text": "偵測到「{generic}」，但不夠具體。如果這款菜式含有{family}，請選擇 {picks}；如果不含，就不用選。",
+      "andOr": "{a}及／或{b}"
+    },
+    "badge": {
+      "justConfirmed": "✓ 已確認",
+      "confirmed": "已確認",
+      "needsReview": "需要檢查"
+    },
+    "confirm": {
+      "confirming": "確認中…",
+      "confirmed": "已確認 ✓",
+      "confirm": "確認",
+      "changed": "· 已更改",
+      "changedTitle": "上次確認後曾經修改——請再次確認"
+    },
+    "allergens": "致敏原",
+    "dietary": "飲食需要",
+    "uncategorised": "未分類",
+    "review": {
+      "progress": "已確認 {confirmed}／{total}",
+      "allConfirmed": "✓ 全部已確認",
+      "list": "列表",
+      "table": "表格",
+      "detected": "從你的餐牌偵測所得——<b>請檢查這些內容</b>。在你逐款確認菜式之前，致敏原不會向顧客顯示。",
+      "viewOnly": "👁 僅供查看——只有東主可以確認或更改致敏原。",
+      "emptyTitle": "沒有餐牌食品",
+      "emptyBody": "請先加入餐牌食品，然後在這裏設定它們的致敏原。",
+      "dish": "菜式",
+      "status": "狀態"
+    },
+    "cardPanel": {
+      "reading": "正在讀取致敏原資料…",
+      "saved": "🛡️ 已儲存致敏原資料卡",
+      "viewOriginal": "查看原本資料卡",
+      "replace": "更換資料卡",
+      "uploadHelp": "上載你的致敏原資料卡（相片／PDF）或貼上致敏原資料，我們的 AI 會為顧客整理清楚。",
+      "add": "加入致敏原資料卡",
+      "viewOnly": "👁 只供查看：只有東主可以加入致敏原資料卡。",
+      "intro": "顧客會以這張資料卡作為餐牌的致敏原參考。在「只用資料卡」模式下，各菜式的致敏原會隱藏（你的菜式資料會保留，日後轉用逐款菜式時仍可使用）。"
+    },
+    "subtitle": {
+      "choose": "選擇顧客如何查看致敏原資料",
+      "card": "加入你的致敏原資料卡",
+      "cardOptional": "加入致敏原資料卡（可選）",
+      "review": "逐款菜式檢查及確認"
+    },
+    "heading": {
+      "import": "致敏原",
+      "standalone": "致敏原設定"
+    },
+    "nav": {
+      "next": "下一步 →",
+      "back": "← 返回",
+      "skip": "暫時略過",
+      "saving": "正在儲存…",
+      "done": "完成",
+      "saveLater": "儲存，稍後再完成",
+      "close": "關閉",
+      "finish": "完成設定",
+      "skipImport": "暫時略過致敏原設定"
+    },
+    "hint": {
+      "skipDefers": "略過只是延後處理：未確認的菜式會對顧客隱藏，直至確認其致敏原為止。",
+      "importIncomplete": "確認所有菜式後才可繼續，或選擇「暫時略過致敏原設定」。"
+    }
+  }
+}

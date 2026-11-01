@@ -1,7 +1,8 @@
 // lib/allergens.ts — 🔴 THE ALLERGEN LIST A TRUCK USES, BY ITS COUNTRY (US readiness sweep, D35;
 // docs/us-readiness-sweep-report.md).
 //
-// PURE AND CLIENT-SAFE. `country_settings.allergen_set` says which list a country uses ('uk14' | 'us9' | 'anz' | 'ca'); every
+// PURE AND CLIENT-SAFE. `country_settings.allergen_set` says which list a country uses ('uk14' | 'us9' | 'anz' | 'ca' | 'jp' | 'br' |
+// 'codex'); every
 // place that offers, checks or asks an AI for allergens reads its list from here.
 //
 // ── 🔴 NO STORED DATA CHANGES ─────────────────────────────────────────────────────────────────────────────
@@ -12,9 +13,9 @@
 // ⚠️ THE UK LIST IS COPIED HERE VERBATIM, IN ITS ORDER, from components/manage/primitives.tsx's
 // `ALLERGEN_VOCAB` — which now re-exports it, so every UK screen and prompt reads exactly what it did.
 
-export type AllergenSet = 'uk14' | 'us9' | 'anz' | 'ca'
-/** Every allergen set, for validation (lib/country-settings.ts, lib/admin/country-form.ts). */
-export const ALLERGEN_SETS: readonly AllergenSet[] = ['uk14', 'us9', 'anz', 'ca']
+export type AllergenSet = 'uk14' | 'us9' | 'anz' | 'ca' | 'jp' | 'br' | 'codex'
+/** Every allergen set, for validation (lib/country-settings.ts, lib/admin/country-form.ts). world-countries-1: jp, br, codex. */
+export const ALLERGEN_SETS: readonly AllergenSet[] = ['uk14', 'us9', 'anz', 'ca', 'jp', 'br', 'codex']
 
 /** The 14 allergens UK law requires a food business to declare. */
 export const UK_14 = ['Gluten', 'Crustaceans', 'Eggs', 'Fish', 'Peanuts', 'Soy', 'Dairy', 'Tree nuts', 'Celery', 'Mustard', 'Sesame', 'Sulphites', 'Lupin', 'Molluscs'] as const
@@ -35,12 +36,33 @@ export const ANZ = ['Wheat', 'Barley', 'Rye', 'Oats', 'Milk', 'Egg', 'Fish', 'Cr
  *  https://inspection.canada.ca/en/food-labels/labelling/industry/list-ingredients-and-allergens */
 export const CA = ['Peanuts', 'Tree nuts', 'Sesame', 'Milk', 'Eggs', 'Fish', 'Crustaceans', 'Molluscs', 'Soy', 'Wheat and triticale', 'Mustard',
   'Added sulphites', 'Gluten (barley, oats, rye)'] as const
+/** world-countries-1 (31 October 2026, docs/world-countries-1-report.md §2): JAPAN — the Consumer Affairs Agency's list under the
+ *  Food Labeling Standards (食品表示基準): the 8 SPECIFIED RAW MATERIALS a label must declare (特定原材料: えび, かに, くるみ — mandatory
+ *  since April 2025 —, 小麦, そば, 卵, 乳, 落花生) first, then the 20 RECOMMENDED ones (特定原材料に準ずるもの, as revised in 2024:
+ *  macadamia added, matsutake removed). Declaring allergens is not mandatory for food service (外食) in Japan; this is the list a
+ *  Japanese diner expects to see. Flat, like the others; the eight come first so a menu shows them first. ⚠️ Flagged for Dominic. */
+export const JP = ['Shrimp', 'Crab', 'Walnut', 'Wheat', 'Buckwheat', 'Egg', 'Milk', 'Peanut',
+  'Almond', 'Abalone', 'Squid', 'Salmon roe', 'Orange', 'Cashew', 'Kiwi fruit', 'Beef', 'Sesame', 'Salmon', 'Mackerel', 'Soybean',
+  'Chicken', 'Banana', 'Pork', 'Macadamia', 'Peach', 'Yam', 'Apple', 'Gelatin'] as const
+/** world-countries-1: BRAZIL — ANVISA RDC 26/2015 (the 17 groups of its annex, the cereals and tree nuts named one by one, and
+ *  natural latex) plus LACTOSE (RDC 136/2017, declared on its own). Packaged-food law; food service follows it in practice.
+ *  ⚠️ Flagged for Dominic. */
+export const BR = ['Wheat', 'Rye', 'Barley', 'Oats', 'Crustaceans', 'Eggs', 'Fish', 'Peanuts', 'Soy', 'Milk', 'Almond', 'Hazelnut',
+  'Cashew', 'Brazil nut', 'Macadamia', 'Walnut', 'Pecan', 'Pistachio', 'Pine nut', 'Chestnut', 'Natural latex', 'Lactose'] as const
+/** world-countries-1: THE CODEX LIST (Codex General Standard for the Labelling of Prepackaged Foods, CXS 1-1985 §4.2.1.4) — cereals
+ *  containing gluten, crustacea, eggs, fish, peanuts, soybeans, milk, tree nuts and sulphites of 10 mg/kg or more — which
+ *  Mexico (NOM-051-SCFI/SSA1-2010), Singapore (Food Regulations), Hong Kong (Food and Drugs (Composition and Labelling)
+ *  Regulations), Malaysia (Food Regulations 1985), Thailand (MOPH Notification 367) and the UAE (GSO 9/2013) each adopt for
+ *  packaged food. The labels are the ones the other lists already use, so nothing new is translated. ⚠️ Flagged for Dominic. */
+export const CODEX = ['Gluten', 'Crustaceans', 'Eggs', 'Fish', 'Peanuts', 'Soy', 'Milk', 'Tree nuts', 'Sulphites'] as const
+const BR_TREE_NUTS = ['Almond', 'Hazelnut', 'Cashew', 'Brazil nut', 'Macadamia', 'Walnut', 'Pecan', 'Pistachio', 'Pine nut', 'Chestnut'] as const
+
 /** The nine tree nuts the ANZ list names one by one. */
 export const ANZ_TREE_NUTS = ['Almond', 'Brazil nut', 'Cashew', 'Hazelnut', 'Macadamia', 'Pecan', 'Pine nut', 'Pistachio', 'Walnut'] as const
 
 /** The list for a country's set. Anything unrecognised is the UK list — the list every truck had before. */
 export function allergenVocab(set: AllergenSet | null | undefined): readonly string[] {
-  return set === 'us9' ? US_9 : set === 'anz' ? ANZ : set === 'ca' ? CA : UK_14
+  return set === 'us9' ? US_9 : set === 'anz' ? ANZ : set === 'ca' ? CA : set === 'jp' ? JP : set === 'br' ? BR : set === 'codex' ? CODEX : UK_14
 }
 
 /**
@@ -56,6 +78,31 @@ export function genericReplacements(set: AllergenSet | null | undefined): Record
   // label(s) before it is confirmed, never dropped (dropping would under-warn).
   // canada-1: the UK / US / ANZ labels a copied or imported menu may carry, refined to the Canadian ones. "Gluten" may be
   // either cereal entry; "Shellfish" either of crustaceans and molluscs.
+  // world-countries-1: the other lists' labels a copied or imported menu may carry, refined to each new list's own (never dropped).
+  if (set === 'jp') {
+    return {
+      Nuts: ['Walnut', 'Almond', 'Cashew', 'Macadamia', 'Peanut'], 'Tree nuts': ['Walnut', 'Almond', 'Cashew', 'Macadamia'], Gluten: ['Wheat'],
+      Shellfish: ['Shrimp', 'Crab', 'Abalone', 'Squid'], Crustaceans: ['Shrimp', 'Crab'], Crustacean: ['Shrimp', 'Crab'], 'Crustacean shellfish': ['Shrimp', 'Crab'],
+      Molluscs: ['Abalone', 'Squid'], Mollusc: ['Abalone', 'Squid'], Dairy: ['Milk'], Eggs: ['Egg'], Peanuts: ['Peanut'], Soy: ['Soybean'], Soybeans: ['Soybean'],
+      'Wheat and triticale': ['Wheat'],
+    }
+  }
+  if (set === 'br') {
+    return {
+      Nuts: [...BR_TREE_NUTS, 'Peanuts'], 'Tree nuts': [...BR_TREE_NUTS], Gluten: ['Wheat', 'Rye', 'Barley', 'Oats'], Shellfish: ['Crustaceans'],
+      Crustacean: ['Crustaceans'], 'Crustacean shellfish': ['Crustaceans'], Dairy: ['Milk'], Egg: ['Eggs'], Peanut: ['Peanuts'], Soybeans: ['Soy'],
+      'Wheat and triticale': ['Wheat'], 'Gluten (barley, oats, rye)': ['Barley', 'Oats', 'Rye'],
+    }
+  }
+  if (set === 'codex') {
+    return {
+      Nuts: ['Tree nuts', 'Peanuts'], Shellfish: ['Crustaceans'], Crustacean: ['Crustaceans'], 'Crustacean shellfish': ['Crustaceans'],
+      Dairy: ['Milk'], Egg: ['Eggs'], Peanut: ['Peanuts'], Soybeans: ['Soy'], Wheat: ['Gluten'], Barley: ['Gluten'], Rye: ['Gluten'], Oats: ['Gluten'],
+      'Wheat and triticale': ['Gluten'], 'Gluten (barley, oats, rye)': ['Gluten'], 'Added sulphites': ['Sulphites'],
+      Almond: ['Tree nuts'], 'Brazil nut': ['Tree nuts'], Cashew: ['Tree nuts'], Hazelnut: ['Tree nuts'], Macadamia: ['Tree nuts'], Pecan: ['Tree nuts'],
+      'Pine nut': ['Tree nuts'], Pistachio: ['Tree nuts'], Walnut: ['Tree nuts'],
+    }
+  }
   if (set === 'ca') {
     return {
       Nuts: ['Tree nuts', 'Peanuts'], Shellfish: ['Crustaceans', 'Molluscs'], Gluten: ['Wheat and triticale', 'Gluten (barley, oats, rye)'],
@@ -83,6 +130,30 @@ export function genericReplacements(set: AllergenSet | null | undefined): Record
 
 /** lib/menu-extract.ts — the allergen block of the importer prompt, after the "allergens:" rule line. */
 export function menuExtractAllergenLines(set: AllergenSet | null | undefined): string {
+  if (set === 'jp') {
+    return `  The allergens of Japanese food labelling — the 8 specified raw materials, then the 20 recommended (use these EXACT names): ${JP.join(', ')}
+  Map common menu wording to these names:
+  "prawn"/"shrimp"/"ebi" → Shrimp; "crab"/"kani" → Crab; "flour"/"wheat"/"udon"/"ramen noodles" → Wheat; "soba"/"buckwheat" → Buckwheat; "eggs"/"tamago" → Egg;
+  "dairy"/"cheese"/"butter"/"cream"/"lactose" → Milk; "peanuts"/"groundnuts" → Peanut; "soy"/"soya"/"tofu"/"miso"/"soy sauce"/"edamame" → Soybean; "ikura" → Salmon roe;
+  "sesame seeds"/"goma" → Sesame; "saba" → Mackerel; "squid"/"ika" → Squid; "nagaimo"/"yamaimo"/"yam" → Yam.
+  A bare "nuts"/"tree nuts" (no nut named), a bare "gluten" or a bare "shellfish" is NOT one of these names — leave it as written (the operator refines it).
+  Normalise prefixes — "Includes Milk" / "Contains Milk" both become "Milk"; "May Contain Peanut" becomes "Peanut".`
+  }
+  if (set === 'br') {
+    return `  The allergens Brazilian food law requires to be declared (ANVISA RDC 26/2015, and lactose) (use these EXACT names): ${BR.join(', ')}
+  Map common menu wording to these names:
+  "dairy"/"cheese"/"cream"/"butter" → Milk; "lactose" → Lactose; "egg" → Eggs; "peanut"/"groundnuts" → Peanuts; "soya"/"soybeans"/"tofu" → Soy;
+  "prawn"/"shrimp"/"crab"/"lobster" → Crustaceans; "flour"/"wheat" → Wheat; "almonds" → Almond, "cashews" → Cashew, "Brazil nuts"/"Pará nuts" → Brazil nut (each tree nut by its own name); "latex" → Natural latex.
+  A bare "nuts"/"tree nuts" (no nut named) or a bare "gluten" (no grain named) is NOT one of these names — leave it as "Nuts"/"Tree nuts"/"Gluten" (the operator refines it).
+  Normalise prefixes — "Includes Milk" / "Contains Milk" both become "Milk"; "May Contain Peanuts" becomes "Peanuts".`
+  }
+  if (set === 'codex') {
+    return `  The allergens of the Codex labelling standard your country follows (use these EXACT names): ${CODEX.join(', ')}
+  Map common menu wording to these names:
+  "dairy"/"lactose"/"cheese"/"cream"/"butter" → Milk; "egg" → Eggs; "peanut"/"groundnuts" → Peanuts; "nuts"/"almonds"/"cashews"/"walnuts"/"pecans"/"hazelnuts" → Tree nuts;
+  "soya"/"soybeans"/"tofu" → Soy; "prawn"/"shrimp"/"crab"/"lobster"/"crayfish" → Crustaceans; "flour"/"wheat"/"barley"/"rye"/"oats" → Gluten; "sulphur dioxide"/"sulfites" → Sulphites.
+  Normalise prefixes — "Includes Milk" / "Contains Milk" both become "Milk"; "May Contain Peanuts" becomes "Peanuts".`
+  }
   if (set === 'ca') {
     return `  The priority food allergens of Canadian food law (use these EXACT names): ${CA.join(', ')}
   Map common menu wording to these names:
@@ -119,6 +190,9 @@ export function menuExtractAllergenLines(set: AllergenSet | null | undefined): s
 
 /** The importer prompt's example array for the "allergens:" rule line. */
 export function menuExtractAllergenExample(set: AllergenSet | null | undefined): string {
+  if (set === 'jp') return '["Milk", "Wheat", "Peanut"]'
+  if (set === 'br') return '["Milk", "Wheat", "Peanuts"]'
+  if (set === 'codex') return '["Milk", "Gluten", "Peanuts"]'
   if (set === 'ca') return '["Milk", "Wheat and triticale", "Peanuts"]'
   if (set === 'anz') return '["Milk", "Wheat", "Peanut"]'
   return set === 'us9' ? '["Milk", "Wheat", "Peanuts"]' : '["Dairy", "Gluten", "Peanuts"]'
@@ -126,6 +200,20 @@ export function menuExtractAllergenExample(set: AllergenSet | null | undefined):
 
 /** app/api/manage/process-allergens — the card prompt's list block. */
 export function allergenCardListLines(set: AllergenSet | null | undefined): string {
+  if (set === 'jp') {
+    return `Standard allergens to look for (Japanese food labelling: the 8 specified raw materials, then the 20 recommended — use these EXACT names):
+${JP.slice(0, 8).join(', ')},
+${JP.slice(8).join(', ')}`
+  }
+  if (set === 'br') {
+    return `Standard allergens to look for (the allergens Brazilian food law requires to be declared — use these EXACT names):
+${BR.slice(0, 10).join(', ')},
+${BR.slice(10).join(', ')}`
+  }
+  if (set === 'codex') {
+    return `Standard allergens to look for (the Codex labelling standard's allergens — use these EXACT names):
+${CODEX.join(', ')}`
+  }
   if (set === 'ca') {
     return `Standard allergens to look for (the priority food allergens of Canadian food law — use these EXACT names):
 ${CA.slice(0, 7).join(', ')},
@@ -147,6 +235,20 @@ Celery, Mustard, Sesame, Sulphites, Lupin, Molluscs`
 
 /** The card prompt's closing rule. */
 export function allergenCardClosingRule(set: AllergenSet | null | undefined): string {
+  if (set === 'jp') {
+    return `If information is unclear or not present for a field, use an empty array or null. Be precise — the EXACT names
+only; map "dairy"→"Milk", "eggs"→"Egg", "prawn"→"Shrimp", "soy"→"Soybean", "soba"→"Buckwheat". Leave generic
+"Nuts"/"Tree nuts"/"Shellfish"/"Gluten" as written (the operator refines them).`
+  }
+  if (set === 'br') {
+    return `If information is unclear or not present for a field, use an empty array or null. Be precise — the EXACT names
+only; map "dairy"→"Milk", and name each tree nut and each cereal on its own. Leave generic "Nuts"/"Tree nuts"/"Shellfish"/"Gluten"
+as written (the operator refines them).`
+  }
+  if (set === 'codex') {
+    return `If information is unclear or not present for a field, use an empty array or null. Be precise — the 9 EXACT
+names only; map "dairy"→"Milk", "wheat"→"Gluten", "sulfites"→"Sulphites". Leave generic "Nuts"/"Shellfish" as written (the operator refines them).`
+  }
   if (set === 'ca') {
     return `If information is unclear or not present for a field, use an empty array or null. Be precise — the EXACT names
 only; map "dairy"→"Milk", "sulphites"→"Added sulphites", "wheat"→"Wheat and triticale", and "barley"/"oats"/"rye"→"Gluten (barley, oats, rye)".
@@ -169,6 +271,9 @@ names only; map "milk"→"Dairy". Leave generic "Nuts"/"Shellfish" as written (t
 export function allergenCardExample(set: AllergenSet | null | undefined): { contains: string; mayContain: string; entry: string; freeFrom: string; blanket: string } {
   // freeFrom / blanket (anz-1): the card prompt's two remaining example arrays — the UK/US prompt's own literals, so those
   // prompts are byte-identical; an ANZ prompt names ANZ labels ("Tree nuts" is not one).
+  if (set === 'jp') return { contains: '["Milk", "Wheat", "Egg"]', mayContain: '["Nuts", "Soybean"]', entry: '["Peanut", "Wheat", "Shrimp"]', freeFrom: '["Crab", "Salmon"]', blanket: '["Peanut"]' }
+  if (set === 'br') return { contains: '["Milk", "Wheat", "Eggs"]', mayContain: '["Nuts", "Soy"]', entry: '["Peanuts", "Wheat", "Crustaceans"]', freeFrom: '["Crustaceans", "Fish"]', blanket: '["Peanuts"]' }
+  if (set === 'codex') return { contains: '["Milk", "Gluten", "Eggs"]', mayContain: '["Nuts", "Soy"]', entry: '["Peanuts", "Gluten", "Crustaceans"]', freeFrom: '["Shellfish", "Fish"]', blanket: '["Tree nuts"]' }
   if (set === 'ca') return { contains: '["Milk", "Wheat and triticale", "Eggs"]', mayContain: '["Nuts", "Soy"]', entry: '["Peanuts", "Wheat and triticale", "Crustaceans"]', freeFrom: '["Shellfish", "Fish"]', blanket: '["Tree nuts"]' }
   if (set === 'anz') return { contains: '["Milk", "Wheat", "Egg"]', mayContain: '["Nuts", "Soy"]', entry: '["Peanut", "Wheat", "Crustacean"]', freeFrom: '["Crustacean", "Fish"]', blanket: '["Peanut"]' }
   return set === 'us9'
@@ -187,6 +292,24 @@ export function localiseExampleAllergens(text: string, set: AllergenSet | null |
     return text
       .replace('(e.g. Prawn →\n  ["Crustaceans"], Cheese → ["Dairy"], Halloumi → ["Dairy"])', '(e.g. Prawn →\n  ["Crustaceans"], Cheese → ["Milk"], Halloumi → ["Milk"])')
       .replace('"allergens": ["Dairy", "Lactose", "Gluten", "Eggs"]', '"allergens": ["Milk", "Wheat and triticale", "Eggs"]')
+  }
+  // world-countries-1: the same swaps for the three new lists, onto their own labels.
+  if (set === 'jp') {
+    return text
+      .replace('(e.g. Prawn →\n  ["Crustaceans"], Cheese → ["Dairy"], Halloumi → ["Dairy"])', '(e.g. Prawn →\n  ["Shrimp"], Cheese → ["Milk"], Halloumi → ["Milk"])')
+      .replace('"allergens": ["Dairy", "Lactose", "Gluten", "Eggs"]', '"allergens": ["Milk", "Wheat", "Egg"]')
+      .replace('"allergens": ["Peanuts", "Eggs"]', '"allergens": ["Peanut", "Egg"]')
+      .replace('"allergens": ["Crustaceans"]', '"allergens": ["Shrimp"]')
+  }
+  if (set === 'br') {
+    return text
+      .replace('(e.g. Prawn →\n  ["Crustaceans"], Cheese → ["Dairy"], Halloumi → ["Dairy"])', '(e.g. Prawn →\n  ["Crustaceans"], Cheese → ["Milk"], Halloumi → ["Milk"])')
+      .replace('"allergens": ["Dairy", "Lactose", "Gluten", "Eggs"]', '"allergens": ["Milk", "Lactose", "Wheat", "Eggs"]')
+  }
+  if (set === 'codex') {
+    return text
+      .replace('(e.g. Prawn →\n  ["Crustaceans"], Cheese → ["Dairy"], Halloumi → ["Dairy"])', '(e.g. Prawn →\n  ["Crustaceans"], Cheese → ["Milk"], Halloumi → ["Milk"])')
+      .replace('"allergens": ["Dairy", "Lactose", "Gluten", "Eggs"]', '"allergens": ["Milk", "Gluten", "Eggs"]')
   }
   if (set !== 'anz') return text
   return text

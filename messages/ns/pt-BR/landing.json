@@ -1,0 +1,77 @@
+{
+  "jsonLd": {
+    "subCategory": "Sistema de pedidos para food trucks e buffets itinerantes",
+    "description": "Pedidos, pedidos antecipados e tela da cozinha para food trucks e buffets itinerantes ({country}).",
+    "audience": "Donos de food trucks e buffets itinerantes"
+  },
+  "hero": {
+    "title": "O sistema de pedidos feito para <lean>food trucks.</lean>",
+    "subSmall": "Envie seu cardápio, sem precisar de cadastro.<br></br>Veja uma demonstração funcionando em menos de 60 segundos.",
+    "cta": "Enviar meu cardápio →",
+    "ctaNote": "<lead>Envie uma foto do seu cardápio e veja tudo funcionando em menos de 60 segundos.</lead><small>Sem cadastro. Sem cartão.</small>"
+  },
+  "shots": {
+    "kitchenAlt": "A tela da cozinha do HatchGrab, mostrando as comandas na ordem de preparo",
+    "dashboardAlt": "Registrando um pedido no HatchGrab: o cardápio à esquerda, a sacola e o total à direita",
+    "phoneAlt": "Pedindo em um food truck pelo HatchGrab: o cardápio com fotos e preços e o total da sacola"
+  },
+  "trust": {
+    "freeMonth": "{months, plural, one {Primeiro mês totalmente grátis, com tudo liberado} other {Primeiros # meses totalmente grátis, com tudo liberado}}",
+    "noCard": "Sem precisar de cartão",
+    "cancel": "Cancele quando quiser, sem contrato"
+  },
+  "does": {
+    "eyebrow": "O que ele faz",
+    "title": "Feito para food trucks, não para restaurantes.",
+    "lede": "A maioria dos sistemas de pedidos parte do princípio de que você tem endereço fixo, Wi-Fi confiável e o mesmo horário toda semana. Você está num lugar novo a cada semana, em horários diferentes, com sinal de celular fraco ou nenhum. O HatchGrab foi feito para isso.",
+    "slotsTitle": "Os clientes escolhem o horário de retirada",
+    "capacityTitle": "Defina a capacidade da sua cozinha",
+    "capacityBody": "Defina quanto você consegue preparar de uma vez e quanto tempo leva. Quando um horário de retirada lota, os clientes não podem mais escolhê-lo.",
+    "devicesTitle": "Funciona em qualquer aparelho",
+    "devicesBody": "Roda no celular do seu avental, no tablet do balcão, no notebook do food truck — e na maquininha que você já usa para receber.",
+    "postsTitle": "Automatize seus posts no Facebook e no Instagram",
+    "postsBody": "Envie a arte que você já posta no Facebook ou no Instagram. Nós preenchemos suas datas, locais e horários, prontos para compartilhar — toda semana ou todo dia.",
+    "whatsappTitle": "Respostas automáticas no WhatsApp",
+    "whatsappBody": "“Onde vocês vão estar hoje à noite?” “Quais sobremesas vocês têm?” Seu WhatsApp é respondido enquanto você dirige até o ponto ou está na chapa, usando seu próprio cardápio e sua agenda. Messenger e Instagram em breve.",
+    "whatsappSoonTitle": "Respostas automáticas no WhatsApp <soon>Em breve</soon>",
+    "whatsappSoonBody": "“Onde vocês vão estar hoje à noite?” “Quais sobremesas vocês têm?” Em breve, seu WhatsApp vai ser respondido enquanto você dirige até o ponto ou está na chapa. Messenger e Instagram logo depois.",
+    "offlineTitle": "Sem sinal? Continue atendendo.",
+    "offlineBody": "Se o sinal cair, os pedidos online são pausados automaticamente para que os clientes não façam pedidos que você não vai ver. Continue recebendo pedidos com o app para iPhone, iPad e Android.",
+    "slotsBody": "Os clientes pedem antecipado e escolhem um horário de retirada. Menos fila, e a comida pronta quando eles chegam."
+  },
+  "steps": {
+    "eyebrow": "Primeiros passos",
+    "title": "Configure tudo e comece a receber pedidos em uns 15 minutos.",
+    "lede": "Três coisas para resolver — e duas delas só precisam de uma foto.",
+    "menuTitle": "Monte seu cardápio",
+    "menuBody": "Tire uma foto do seu quadro ou cole o texto. Itens, preços e adicionais entram sozinhos. Você só confere se está tudo certo.",
+    "scheduleTitle": "Adicione sua agenda",
+    "scheduleBody": "Ela está no seu site? Nós lemos de lá e mantemos tudo atualizado. Se não estiver, tire uma foto também. Você só aprova o que encontrarmos.",
+    "shareTitle": "Compartilhe seu link",
+    "shareBody": "Poste no Facebook, cole o QR code no food truck. Os pedidos chegam na sua tela, na ordem em que você precisa prepará-los."
+  },
+  "testimonial": {
+    "quote": "O HatchGrab deixou os pedidos muito mais fáceis. Está tudo organizado, conseguimos controlar o estoque e saber exatamente quantas pizzas ainda temos para vender — e os horários de retirada são fantásticos para as cidadezinhas movimentadas.",
+    "award": "Pizzaria Móvel do Ano",
+    "awardScope": "Vencedora regional",
+    "business": "Pizzeria Gusto",
+    "byline": "Nadia e Bogdan — proprietários"
+  },
+  "pricing": {
+    "eyebrow": "Preços",
+    "title": "Comece grátis. Faça upgrade quando precisar.",
+    "switchHead": "Vai trocar de plataforma?",
+    "switchBody": "Veja quanto você pagaria no HatchGrab pelos mesmos pedidos. Leva cerca de um minuto.",
+    "switchCta": "Compare quanto você paga"
+  },
+  "final": {
+    "truckLabel": "Food truck",
+    "title": "Quer ver como é fácil configurar?",
+    "lede": "Envie uma foto ou print do seu cardápio e a gente transforma tudo em uma página de pedidos funcionando, para você testar à vontade em menos de 60 segundos. Seus itens, seus preços. Sem cadastro, sem cartão, nada para instalar. Dá uma olhada e depois decide.",
+    "cta": "Enviar meu cardápio agora →"
+  },
+  "meta": {
+    "title": "Sistema de pedidos para food truck e buffet itinerante — HatchGrab {country}",
+    "description": "Receba pedidos e pedidos antecipados no seu ponto, sem fila. Software de pedidos e tela da cozinha para food trucks e buffet itinerante ({country}) — não é um PDV."
+  }
+}

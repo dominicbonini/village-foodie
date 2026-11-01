@@ -1,0 +1,9 @@
+{
+  "allergenMode": {
+    "perDishTitle": "Paparkan alergen pada setiap hidangan",
+    "recommended": "Disyorkan",
+    "perDishBody": "Semak setiap hidangan dan sahkan alergennya. Pelanggan melihat tag bagi setiap hidangan serta kad ringkasan alergen yang dijana daripadanya.",
+    "cardTitle": "Paparkan kad alergen",
+    "cardBody": "Muat naik atau tampal satu kad alergen (PDF, imej atau teks), dipaparkan seperti asal. Tag setiap hidangan kekal tersembunyi."
+  }
+}

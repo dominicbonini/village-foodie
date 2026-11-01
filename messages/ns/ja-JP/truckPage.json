@@ -1,0 +1,47 @@
+{
+  "meta": {
+    "fallbackTitle": "キッチンカー | Village Foodie",
+    "hgFallbackTitle": "キッチンカー",
+    "orderTitle": "{truck}に注文する",
+    "orderDescription": "{truck}に事前注文して、キッチンカーで受け取れます。",
+    "title": "{truck} | Village Foodie",
+    "logoAlt": "{truck}のロゴ"
+  },
+  "shareTitle": "{truck}の出店スケジュール",
+  "shareText": "{truck}の次の出店場所をチェック！🚚",
+  "linkCopied": "プロフィールのリンクをクリップボードにコピーしました！📋",
+  "facebookPage": "Facebookページ",
+  "loadingMap": "地図を読み込み中…",
+  "view": {
+    "list": "リスト",
+    "map": "地図"
+  },
+  "ownThisTruck": "このキッチンカーのオーナーですか？",
+  "ownThisTruckTitle": "このキッチンカーのオーナーですか？クリックしてプロフィールを更新",
+  "actions": {
+    "menu": "メニュー",
+    "call": "電話",
+    "message": "メッセージ",
+    "share": "共有",
+    "order": "注文"
+  },
+  "loadingSchedule": "スケジュールを読み込み中…",
+  "loadError": {
+    "title": "読み込めませんでした",
+    "body": "現在スケジュールを読み込めませんでした。通常は一時的な不具合です。もう一度お試しください。",
+    "retry": "再試行"
+  },
+  "notFound": {
+    "title": "キッチンカーが見つかりません",
+    "body": "このキッチンカーの情報が見つかりませんでした。移転したか、プロフィールを更新した可能性があります。",
+    "cta": "すべてのキッチンカーを見る"
+  },
+  "noEvents": {
+    "title": "今後の出店予定はありません",
+    "body": "このキッチンカーの情報が一部不足しているかもしれません。オーナーの方、または出店スケジュールをご存じの方はいらっしゃいますか？",
+    "cta": "メッセージで更新情報をお知らせください！"
+  },
+  "whereToFind": "出店場所",
+  "missingEvent": "<strong>掲載されていない出店予定がありますか？</strong><br></br>このキッチンカーのオーナーの方も熱心なファンの方も、このページを正確に保つためにご協力ください！<br></br><link>不足している情報の追加はこちらからご連絡ください。</link>",
+  "weeklySchedule": "毎週のスケジュールを受け取る 🍕"
+}

@@ -1,0 +1,17 @@
+{
+  "back": "→ رجوع",
+  "title": "تطبيق وجبة كومبو",
+  "save": "وفّر {amount}",
+  "selectItems": "اختيار الأصناف لكل خانة",
+  "choose": "اختيار {category}…",
+  "inYourBasket": "── في سلتك ──",
+  "basketUnit": "{name}{withMods, select, yes { (+ {mods})} other {}} (في السلة){state, select, used { — ضمن وجبة كومبو بالفعل} taken { — مختار في خانة أخرى} other {}}",
+  "addNew": "── إضافة جديد ──",
+  "itemWithPrice": "{name} {price}",
+  "ruleHint": "· {rule, select, requiredOne {مطلوب · اختيار واحد} required {مطلوب} other {اختيار واحد}}{unmet, select, yes { (مطلوب)} other {}}",
+  "notePlaceholder": "إضافة ملاحظة، مثلًا: بدون بصل (اختياري)",
+  "backButton": "رجوع",
+  "cancel": "إلغاء",
+  "chooseRequired": "اختيار الخيارات المطلوبة",
+  "apply": "تطبيق الكومبو · {amount}"
+}

@@ -1,0 +1,57 @@
+{
+  "firstVanName": "Van 1",
+  "demoCategories": {
+    "pizza": "Pizzas",
+    "burgers": "Hambúrgueres",
+    "mains": "Pratos principais",
+    "sides": "Acompanhamentos",
+    "drinks": "Bebidas"
+  },
+  "demoTemplates": {
+    "pizza": {
+      "label": "🍕 Food truck de pizza",
+      "items": {
+        "margherita": "Margherita",
+        "pepperoni": "Pepperoni",
+        "ndujaHoney": "Nduja e mel",
+        "fourCheese": "Quatro queijos",
+        "gardenVeg": "Vegetariana da horta",
+        "garlicBread": "Pão de alho",
+        "rocketParmesan": "Rúcula e parmesão",
+        "olives": "Azeitonas",
+        "sanPellegrino": "San Pellegrino",
+        "coke": "Coca-Cola"
+      }
+    },
+    "burgers": {
+      "label": "🍔 Food truck de hambúrguer",
+      "items": {
+        "classicCheeseburger": "Cheeseburger clássico",
+        "doubleBacon": "Duplo bacon",
+        "buttermilkChicken": "Frango crocante marinado no leitelho",
+        "halloumiStack": "Burger de halloumi",
+        "smashBurger": "Smash burger",
+        "skinOnFries": "Batata frita rústica com casca",
+        "loadedCheeseFries": "Batata frita com cheddar",
+        "onionRings": "Anéis de cebola",
+        "craftLemonade": "Limonada artesanal",
+        "coke": "Coca-Cola"
+      }
+    },
+    "curries": {
+      "label": "🍛 Food truck de curry",
+      "items": {
+        "chickenTikkaMasala": "Frango tikka masala",
+        "lambRoganJosh": "Rogan josh de cordeiro",
+        "chanaMasala": "Chana masala",
+        "butterChicken": "Butter chicken",
+        "saagPaneer": "Saag paneer",
+        "pilauRice": "Arroz pilau",
+        "garlicNaan": "Naan de alho",
+        "onionBhaji": "Bhaji de cebola",
+        "mangoLassi": "Lassi de manga",
+        "coke": "Coca-Cola"
+      }
+    }
+  }
+}

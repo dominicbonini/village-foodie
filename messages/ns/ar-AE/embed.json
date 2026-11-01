@@ -1,0 +1,8 @@
+{
+  "metaDescription": "المواقع القادمة لعربة الطعام {truck}.",
+  "orderFrom": "اطلب من {truck}",
+  "poweredBy": "بدعم من <b>HatchGrab</b>",
+  "loadFailed": "تعذّر تحميل جدول المواقع حاليًا.",
+  "loading": "جارٍ تحميل جدول المواقع…",
+  "empty": "لا توجد فعاليات قادمة مُدرجة لدى {truck}."
+}

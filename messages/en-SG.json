@@ -1,0 +1,80 @@
+{
+  "manageTeam": {
+    "phonePlaceholder": "+65 8123 4567"
+  },
+  "pricing": {
+    "footnote": "* Plus Stripe’s card processing on online card orders (currently {cardFee} in {country}), paid to Stripe, not HatchGrab. Walk-up orders use your own card reader — HatchGrab charges 0%."
+  },
+  "compare": {
+    "fee": {
+      "fixedAria": "Cents per order"
+    }
+  },
+  "planFeatures": {
+    "priceWord": {
+      "payAtHatch": "Pay at the truck"
+    }
+  },
+  "planPrompt": {
+    "features": {
+      "online_ordering_pay_at_hatch": {
+        "name": "Pay-at-the-truck ordering"
+      }
+    }
+  },
+  "order": {
+    "walkUpOnly": "This truck takes walk-up orders, in person.",
+    "seeYou": "See you at the truck!"
+  },
+  "dashboard": {
+    "toast": {
+      "cardPayments": "{state, select, off {Card payments off — customers pay at the truck} other {Card payments back on}}"
+    },
+    "banner": {
+      "cardPaymentsOff": "Card payments are off — customers are paying at the truck. This stays off, on every event, until you turn it back on."
+    },
+    "settings": {
+      "cardsHelp": "Turn this off during a card problem and customers will place orders as normal and pay at the truck instead. Orders keep coming; only the card step stops."
+    }
+  },
+  "privateLink": {
+    "orderingOffBody": "This event isn’t taking orders online. Please order at the truck."
+  },
+  "emailCustomer": {
+    "payNote": {
+      "unknownBody": "Your card was authorised, so please do not pay again — {truck} will confirm when you collect.",
+      "unknownText": "We’re still confirming your payment. Your card was authorised, so please do not pay again — {truck} will confirm when you collect."
+    },
+    "confirmation": {
+      "seeYou": "See you at the truck!",
+      "textCollection": "Collection time: {time}. See you at the truck!"
+    }
+  },
+  "kds": {
+    "header": {
+      "fullTitle": "Full cards — prices and payment details, as the counter sees them."
+    }
+  },
+  "addOrder": {
+    "catClosed": "{cat} is closed for online orders this event — hidden from customers. You can still add walk-up orders at the truck; you’ll be asked to confirm.",
+    "addAnywayConfirm": "{detail}\n\nAdd anyway (as a walk-up order)?\n\nOK = add anyway   ·   Cancel = edit the order"
+  },
+  "manageSettings": {
+    "qr": {
+      "printHelp": "Print or display this code so customers can scan and pre-order. Place it at your counter, on your truck, or share it online."
+    }
+  },
+  "managePayments": {
+    "walkUp": {
+      "body": "How you take money at the truck. HatchGrab charges no platform fee on walk-ups, whichever you choose."
+    }
+  },
+  "completionSettings": {
+    "pressesTwoHelp": "Best when payment and handover happen at different moments — someone pays at the truck, then collects when it’s ready. You get two buttons: “Mark paid” first, then “Collected” when they take the food."
+  },
+  "featuresPage": {
+    "detail": {
+      "walkup_orders": "Take and manage orders at the truck, paid on your own card terminal."
+    }
+  }
+}

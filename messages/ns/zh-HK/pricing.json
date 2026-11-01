@@ -1,0 +1,49 @@
+{
+  "banner": {
+    "title": "{months, plural, other {首 # 個月完全免費，所有功能全面開放。}}",
+    "body": "使用 {brand}，客人可預先落單並在取餐時付款，所以你完全無需連接任何信用卡收款服務，都可以接收網上訂單。想預先收款？隨時可加設網上信用卡付款。試用期結束後，除非你選擇其他計劃，否則會轉用 <plan>{fallback}</plan>{fallbackFree, select, yes {（無月費）} other {}}。開始時無需信用卡，無需合約，可隨時取消。",
+    "bodyOnly": "使用 {brand}，客人可預先落單並在取餐時付款，所以你完全無需連接任何信用卡收款服務，都可以接收網上訂單。想預先收款？隨時可加設網上信用卡付款。試用期結束後，<plan>{fallback}</plan> 每月收費 {price}。我們會在試用期結束前聯絡你，安排付款事宜。開始時無需信用卡，無需合約，可隨時取消。"
+  },
+  "card": {
+    "perTruckMonth": "每架美食車／每月",
+    "mostTrucks": "最多美食車選用",
+    "tryFree": "免費試用",
+    "seeEvery": "查看所有功能 →",
+    "everything": "營業所需的一切",
+    "everythingIn": "包含 {plan} 的所有功能，另加"
+  },
+  "fee": {
+    "feeOnly": "只限網上信用卡訂單收取 <b>{fee}*</b>。現場訂單一律免費。",
+    "included": "每月首 <b>{included}</b> 網上訂單已包含在內，其後收取 <b>{fee}*</b>。現場訂單一律免費。",
+    "noFee": "無論生意多忙，網上訂單都<b>不收 HatchGrab 費用</b>。每月固定一筆費用，清楚易計。"
+  },
+  "base": {
+    "walkUp": "現場訂單及廚房顯示屏",
+    "online": "網上落單",
+    "preorders": "預先落單及取餐時間",
+    "capacity": "廚房容量管理",
+    "privateEvents": "私人活動",
+    "printing": "打印廚房單",
+    "app": "iPhone、iPad 及 Android 廚房 App"
+  },
+  "added": {
+    "whatsapp_replies": "WhatsApp 自動回覆",
+    "schedule_graphics": "社交媒體帖文——你的 Facebook 及 Instagram 出車時間表——隨時可發佈",
+    "event_types": "自訂活動類型及價錢"
+  },
+  "money": {
+    "unlimitedOrders": "網上訂單無上限，HatchGrab 收費 0%",
+    "samePrice": "最忙的月份也是同一價錢"
+  },
+  "comingSoon": "即將推出",
+  "bar": {
+    "title": "哪個計劃對我最划算？",
+    "subtitle": "你每月的網上訂單",
+    "first": "少於 {to} → <b>{plan}</b>",
+    "middle": "{from} – {to} → <b>{plan}</b>",
+    "last": "多於 {from} → <b>{plan}</b>",
+    "only": "任何數量 → <b>{plan}</b>"
+  },
+  "footnote": "* 網上信用卡訂單另需支付 Stripe 的信用卡手續費（{country}目前為 {cardFee}），費用付予 Stripe，並非 HatchGrab。現場訂單使用你自己的信用卡機，HatchGrab 收費 0%。",
+  "currencyLine": "價錢以{currency}（{code}）計算"
+}

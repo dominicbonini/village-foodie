@@ -54,6 +54,13 @@ the language goes live.
 | **LT** | Mokėjimas atsiimant | Mokėkite atsiimdami | Be mėnesinio mokesčio | Neribotas | išbandykite nemokamai |
 | **EL** | Πληρωμή κατά την παραλαβή | Πληρώστε στην παραλαβή | Χωρίς μηνιαία συνδρομή | Απεριόριστο | δοκιμάστε δωρεάν |
 | **BG** | Плащане при вземане | Платете при вземане | Без месечна такса | Неограничен | опитайте безплатно |
+| **PT-BR** | Pagamento na retirada | Pague na retirada | Sem mensalidade | Ilimitado | teste grátis |
+| **ES-MX** | Pago al recoger | Paga al recoger | Pago por uso | Ilimitado | prueba gratis |
+| **MS** | Bayar semasa ambil | Bayar semasa ambil | Tanpa yuran bulanan | Tanpa had | cuba percuma |
+| **JA** | 受け取り時のお支払い | 受け取り時に支払う | 月額無料 | 無制限 | 無料トライアル |
+| **ZH** | 取餐時付款 | 取餐時付款 | 免月費 | 無上限 | 免費試用 |
+| **TH** | ชำระเงินตอนรับอาหาร | จ่ายตอนรับอาหาร | ไม่มีค่ารายเดือน | ไม่จำกัด | ทดลองใช้ฟรี |
+| **AR** | الدفع عند الاستلام | ادفع عند الاستلام | بدون رسوم شهرية | غير محدود | تجربة مجانية |
 
 ---
 
@@ -683,6 +690,158 @@ guidance word these concepts; no search-volume tool. European Portuguese only (B
 | Walk-up order | **поръчка на място** |  | B2B | Low | native check |
 
 ---
+
+## PT-BR — Portuguese (Brazil)
+
+*world-countries-1, 31 October 2026. A full Brazilian file, never European Portuguese: "você", "cardápio", "celular", "tela", "retirada". iFood, Rappi and Goomer write this way. No search-volume tool; Med/Low rows want a native check.*
+
+| Concept | Use | Alternatives / Avoid | B2B/B2C | Conf. | Notes |
+|---|---|---|---|---|---|
+| Food truck | **food truck** (o, pl. food trucks) | caminhão de comida (rare) | Both | High | the search term |
+| Street food | **comida de rua** | street food | Both | High |  |
+| Pre-order | **pedido antecipado** / **encomenda** | pré-venda | Both | Med |  |
+| Click & collect | **retirada no local** | retire no balcão | Both | High | "levantamento" is European — never |
+| Pickup time | **horário de retirada** |  | B2C | High |  |
+| Time slot | **horário** | faixa de horário | Both | Med |  |
+| Kitchen capacity | **capacidade da cozinha** |  | B2B | Med |  |
+| KDS | **tela da cozinha** | KDS | B2B | High | "ecrã" is European |
+| POS / till | **PDV** (ponto de venda) | caixa | B2B | High |  |
+| Card reader | **maquininha** | maquininha de cartão | B2B | High | the Brazilian word |
+| Menu (list of dishes) | **cardápio** |  | Both | High | "ementa" is European |
+| Meal deal / combo | **combo** |  | B2C | High |  |
+| Allergens | **alérgenos** | alergênicos | Both | High |  |
+| Private hire | **aluguel de food truck** / **contratar um food truck** | food truck para festas, casamentos | Both | High | hiring a truck |
+| Private event | **evento privado** |  | Both | Med | the app's private event |
+| Commission-free | **sem comissão** / 0% **de comissão** |  | B2B | High | card fees stated separately |
+| WhatsApp auto-reply | **respostas automáticas no WhatsApp** |  | B2B | High |  |
+| Walk-up order | **pedido no balcão** |  | B2B | Low | native check |
+
+## ES-MX — Spanish (Mexico)
+
+*world-countries-1, 31 October 2026. Mexican Spanish over the Spain file only where the words really are the same: "tú" and "ustedes" (never "vosotros"), "celular", "computadora", "menú" for the list of dishes, "terminal" for the card reader, "renta". Rappi, DiDi Food and Uber Eats México write this way.*
+
+| Concept | Use | Alternatives / Avoid | B2B/B2C | Conf. | Notes |
+|---|---|---|---|---|---|
+| Food truck | **food truck** (el, pl. food trucks) | foodtruck | Both | High |  |
+| Street food | **comida callejera** | street food, antojitos | Both | High |  |
+| Pre-order | **pedido anticipado** / **pedir por adelantado** |  | Both | Med |  |
+| Click & collect | **pedidos para recoger** | para llevar | Both | High |  |
+| Pickup time | **hora para recoger** | hora de recogida | B2C | Med |  |
+| KDS | **pantalla de cocina** | KDS | B2B | High |  |
+| POS / till | **punto de venta** | TPV is Spain's | B2B | High |  |
+| Card reader | **terminal** | terminal bancaria | B2B | High | "datáfono" is Spain's |
+| Menu (list of dishes) | **menú** | carta | Both | High | in Mexico "menú" is the list of dishes |
+| Meal deal / combo | **combo** | paquete | B2C | High |  |
+| Allergens | **alérgenos** |  | Both | High |  |
+| Private hire | **renta de food truck** / **rentar un food truck** | food truck para eventos, bodas | Both | High | "alquiler" is Spain's |
+| Private event | **evento privado** |  | Both | Med |  |
+| Commission-free | **sin comisiones** |  | B2B | High |  |
+| WhatsApp auto-reply | **respuestas automáticas de WhatsApp** |  | B2B | High |  |
+| Walk-up order | **pedidos en ventanilla** | pedidos en mostrador | B2B | Low | native check |
+
+## MS — Malay (Malaysia)
+
+*world-countries-1, 31 October 2026. "anda", as GrabFood and foodpanda Malaysia write. Malaysians search "food truck" in English inside Malay.*
+
+| Concept | Use | Alternatives / Avoid | B2B/B2C | Conf. | Notes |
+|---|---|---|---|---|---|
+| Food truck | **food truck** | trak makanan | Both | Med |  |
+| Street food | **makanan jalanan** | street food | Both | Med |  |
+| Pre-order | **pra-pesanan** / **pesan awal** | pre-order | Both | Med |  |
+| Click & collect | **ambil sendiri** | bungkus (takeaway) | Both | High | GrabFood's word |
+| Pickup time | **masa ambil** |  | B2C | Med |  |
+| KDS | **skrin dapur** | KDS | B2B | Med |  |
+| Card reader | **terminal kad** | mesin kad | B2B | Med |  |
+| Menu (list of dishes) | **menu** |  | Both | High |  |
+| Allergens | **alergen** |  | Both | High |  |
+| Private hire | **sewa food truck** |  | Both | Med |  |
+| Private event | **acara peribadi** |  | Both | Med |  |
+| Commission-free | **tanpa komisen** |  | B2B | High |  |
+| WhatsApp auto-reply | **balasan automatik WhatsApp** |  | B2B | High |  |
+
+## JA — Japanese (Japan)
+
+*world-countries-1, 31 October 2026. Polite です／ます. The term Japanese people search is キッチンカー (never フードトラック). モバイルオーダー is the established term for ordering ahead on a phone.*
+
+| Concept | Use | Alternatives / Avoid | B2B/B2C | Conf. | Notes |
+|---|---|---|---|---|---|
+| Food truck | **キッチンカー** | 移動販売車 | Both | High | フードトラック: never |
+| Street food | **屋台** / ストリートフード |  | Both | Med |  |
+| Mobile ordering | **モバイルオーダー** |  | Both | High |  |
+| Pre-order | **事前注文** | 予約注文 | Both | High |  |
+| Click & collect | **受け取り** | テイクアウト | Both | High |  |
+| Pickup time | **受け取り時間** |  | B2C | High |  |
+| KDS | **キッチンディスプレイ** | KDS | B2B | Med |  |
+| POS / till | **POSレジ** |  | B2B | High |  |
+| Card reader | **カード決済端末** |  | B2B | High |  |
+| Menu (list of dishes) | **メニュー** |  | Both | High |  |
+| Allergens | **アレルギー** / アレルゲン | アレルギー表示 | Both | High |  |
+| Private hire | **キッチンカー出店依頼** / **キッチンカーのレンタル** | ケータリング | Both | Med |  |
+| Private event | **プライベートイベント** | 貸切 | Both | Med |  |
+| Commission-free | **手数料無料** / 手数料0% |  | B2B | High |  |
+| WhatsApp auto-reply | **WhatsApp自動返信** |  | B2B | Med | LINE is Japan's app; WhatsApp is the product |
+
+## ZH — Chinese (Traditional, Hong Kong)
+
+*world-countries-1, 31 October 2026. Traditional characters as Hong Kong writes them (not Taiwan's words): 餐牌 (not 菜單), 致敏原 (not 過敏原), 落單, 自取, 手機. "你", as foodpanda and Deliveroo Hong Kong write.*
+
+| Concept | Use | Alternatives / Avoid | B2B/B2C | Conf. | Notes |
+|---|---|---|---|---|---|
+| Food truck | **美食車** | 餐車 | Both | High | the government scheme's word |
+| Street food | **街頭小食** |  | Both | Med |  |
+| Pre-order | **預先落單** / 預訂 |  | Both | Med |  |
+| Order (verb) | **落單** | 下單 | Both | High | Hong Kong usage |
+| Click & collect | **自取** |  | Both | High |  |
+| Pickup time | **取餐時間** |  | B2C | High |  |
+| KDS | **廚房顯示屏** | KDS | B2B | Med |  |
+| Card reader | **信用卡機** | 讀卡器 | B2B | Med |  |
+| Menu (list of dishes) | **餐牌** | 菜單 (Taiwan) | Both | High |  |
+| Allergens | **致敏原** | 過敏原 (Taiwan) | Both | High |  |
+| Private hire | **租用美食車** |  | Both | Med |  |
+| Private event | **私人活動** |  | Both | Med |  |
+| Commission-free | **免佣金** | 零佣金 | B2B | High |  |
+| WhatsApp auto-reply | **WhatsApp 自動回覆** |  | B2B | High |  |
+
+## TH — Thai (Thailand)
+
+*world-countries-1, 31 October 2026. Polite register with คุณ; no ครับ/ค่ะ particles in interface text (as LINE MAN and GrabFood Thailand).*
+
+| Concept | Use | Alternatives / Avoid | B2B/B2C | Conf. | Notes |
+|---|---|---|---|---|---|
+| Food truck | **ฟู้ดทรัค** | รถขายอาหาร | Both | Med |  |
+| Street food | **สตรีทฟู้ด** | อาหารริมทาง | Both | Med |  |
+| Pre-order | **สั่งล่วงหน้า** |  | Both | High |  |
+| Click & collect | **รับเอง** | รับที่ร้าน | Both | High | GrabFood's word |
+| Pickup time | **เวลารับอาหาร** |  | B2C | Med |  |
+| KDS | **จอครัว** | KDS | B2B | Med |  |
+| Card reader | **เครื่องรูดบัตร** | EDC | B2B | High |  |
+| Menu (list of dishes) | **เมนู** |  | Both | High |  |
+| Allergens | **สารก่อภูมิแพ้** |  | Both | High |  |
+| Private hire | **เช่าฟู้ดทรัค** |  | Both | Med |  |
+| Private event | **งานส่วนตัว** |  | Both | Med |  |
+| Commission-free | **ไม่มีค่าคอมมิชชัน** | ไม่หัก GP | B2B | Med |  |
+| WhatsApp auto-reply | **ตอบกลับอัตโนมัติทาง WhatsApp** |  | B2B | Med | LINE is Thailand's app |
+
+## AR — Arabic (Modern Standard, United Arab Emirates)
+
+*world-countries-1, 31 October 2026. Modern Standard Arabic, right to left; second person, kept gender-neutral where the sentence allows (imperatives and nouns), as Talabat and Careem write. Latin digits, as the UAE's apps print prices.*
+
+| Concept | Use | Alternatives / Avoid | B2B/B2C | Conf. | Notes |
+|---|---|---|---|---|---|
+| Food truck | **عربة الطعام** / **فود ترك** | شاحنة طعام | Both | Med |  |
+| Street food | **طعام الشارع** |  | Both | Med |  |
+| Pre-order | **الطلب المسبق** |  | Both | High |  |
+| Click & collect | **الاستلام** | استلام من العربة | Both | High |  |
+| Pickup time | **وقت الاستلام** |  | B2C | High |  |
+| KDS | **شاشة المطبخ** |  | B2B | Med |  |
+| POS / till | **نقاط البيع** |  | B2B | High |  |
+| Card reader | **جهاز الدفع** | جهاز البطاقات | B2B | Med |  |
+| Menu (list of dishes) | **قائمة الطعام** | المنيو | Both | High |  |
+| Allergens | **مسببات الحساسية** |  | Both | High |  |
+| Private hire | **استئجار عربة طعام** |  | Both | Med |  |
+| Private event | **فعالية خاصة** |  | Both | Med |  |
+| Commission-free | **بدون عمولة** |  | B2B | High |  |
+| WhatsApp auto-reply | **الرد التلقائي على واتساب** | WhatsApp | B2B | Med |  |
 
 ## Build notes for the language work (for the agent)
 

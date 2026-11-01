@@ -13,7 +13,9 @@ module.exports = async function after({ kit, t, head, read, REPO, snapshot, SNAP
   // ⚠️ RE-PINNED (france-1, 22 October 2026): + France's format 'fr' (street, code postal, ville; no region).
   // ⚠️ RE-PINNED (europe-settings, 22 October 2026): + the 29 European formats after France's, in the CHECK's order.
   const EUROPE = ['at', 'be', 'bg', 'hr', 'cy', 'cz', 'dk', 'ee', 'fi', 'de', 'gi', 'gr', 'hu', 'it', 'lv', 'li', 'lt', 'lu', 'mt', 'nl', 'no', 'pl', 'pt', 'ro', 'sk', 'si', 'es', 'se', 'ch']
-  t(`36 formats: ${F.ADDRESS_FORMAT_KEYS.join(', ')}`, JSON.stringify(F.ADDRESS_FORMAT_KEYS) === JSON.stringify(['gb', 'us', 'ie', 'au', 'nz', 'ca', 'fr', ...EUROPE]))
+  // ⚠️ RE-PINNED (world-countries-1, 31 October 2026): Brazil, Mexico, Japan, Singapore, Hong Kong, Malaysia, Thailand, the UAE follow.
+  const WORLD = ['br', 'mx', 'jp', 'sg', 'hk', 'my', 'th', 'ae']
+  t(`44 formats: ${F.ADDRESS_FORMAT_KEYS.join(', ')}`, JSON.stringify(F.ADDRESS_FORMAT_KEYS) === JSON.stringify(['gb', 'us', 'ie', 'au', 'nz', 'ca', 'fr', ...EUROPE, ...WORLD]))
   const problems = F.validateAddressFormats()
   t('the validator finds nothing: every pattern compiles and matches its own example, every template token exists and has a field, every region list is well formed', problems.length === 0, problems)
   const broken = { ...F.ADDRESS_FORMATS, gb: { ...F.ADDRESS_FORMATS.gb, postalCode: { ...F.ADDRESS_FORMATS.gb.postalCode, pattern: '([' }, templates: { ...F.ADDRESS_FORMATS.gb.templates, line: { sep: ', ', parts: ['{venue}', '{county}'] } } } }
@@ -29,7 +31,8 @@ module.exports = async function after({ kit, t, head, read, REPO, snapshot, SNAP
     F.isValidPostalCode(F.ADDRESS_FORMATS.gb, 'co10 7bq') && !F.isValidPostalCode(F.ADDRESS_FORMATS.gb, '2026') && F.isValidPostalCode(F.ADDRESS_FORMATS.ie, 'V94 X2T6')
     && !F.isValidPostalCode(F.ADDRESS_FORMATS.ie, 'CB8 8PD') && F.isValidPostalCode(F.ADDRESS_FORMATS.au, '2026') && !F.isValidPostalCode(F.ADDRESS_FORMATS.au, '20261')
     && F.isValidPostalCode(F.ADDRESS_FORMATS.ca, 'K1A 0B1') && !F.isValidPostalCode(F.ADDRESS_FORMATS.ca, 'D02 X963') && F.isValidPostalCode(F.ADDRESS_FORMATS.us, '07030'))
-  t('a postal code identifies one premises only in GB and Ireland', F.ADDRESS_FORMAT_KEYS.filter(k => F.ADDRESS_FORMATS[k].postalCode.identifiesPremises).join() === 'gb,ie')
+  // ⚠️ RE-PINNED (world-countries-1): + Singapore, whose six-digit postal code is one building.
+  t('a postal code identifies one premises only in GB, Ireland and Singapore', F.ADDRESS_FORMAT_KEYS.filter(k => F.ADDRESS_FORMATS[k].postalCode.identifiesPremises).join() === 'gb,ie,sg')
   // ⚠️ RE-PINNED (address-formats-2, 21 October 2026): the prompts READ these lines from the config now, so they are no
   // longer in the prompt files' source; scripts/address-formats-2.cjs compares the whole GB and US prompts, byte for byte,
   // against a capture of the code before. Here: GB's postcode rules and screenshot lines are still the old text.
@@ -64,7 +67,9 @@ module.exports = async function after({ kit, t, head, read, REPO, snapshot, SNAP
   // ⚠️ RE-PINNED (france-1): + FR 'postalCode' (« code postal »).
   // ⚠️ RE-PINNED (europe-settings): + the 29, 'postalCode' except Gibraltar and Malta ('postcode', as they write it).
   t("each format's postal label variant: GB/AU/NZ 'postcode', US 'zip', IE 'eircode', CA and FR 'postalCode'; Europe 'postalCode', GI and MT 'postcode'",
-    F.ADDRESS_FORMAT_KEYS.map(k => F.postalLabelOf(F.ADDRESS_FORMATS[k])).join() === ['postcode', 'zip', 'eircode', 'postcode', 'postcode', 'postalCode', 'postalCode', ...EUROPE.map(k => (k === 'gi' || k === 'mt' ? 'postcode' : 'postalCode'))].join() && typeof F.messagesStyleOf === 'undefined')
+    F.ADDRESS_FORMAT_KEYS.map(k => F.postalLabelOf(F.ADDRESS_FORMATS[k])).join() === ['postcode', 'zip', 'eircode', 'postcode', 'postcode', 'postalCode', 'postalCode', ...EUROPE.map(k => (k === 'gi' || k === 'mt' ? 'postcode' : 'postalCode')),
+      // ⚠️ RE-PINNED (world-countries-1): BR MX SG TH 'postalCode', JP MY 'postcode'; HK and the UAE have no postal field (the default).
+      'postalCode', 'postalCode', 'postcode', 'postalCode', 'postcode', 'postcode', 'postalCode', 'postcode'].join() && typeof F.messagesStyleOf === 'undefined')
   const tab = read('components/admin/CountriesTab.tsx'), form = read('lib/admin/country-form.ts')
   t('Admin › Countries: the address field is a dropdown of the config\'s formats ("United Kingdom — postcode", "Ireland — Eircode", …)',
     /choice\(code, 'addressFormat', ADDRESS_FORMAT_KEYS\.map\(k => \[k, ADDRESS_FORMATS\[k\]\.adminLabel\]\)\)/.test(tab) && F.ADDRESS_FORMATS.ie.adminLabel === 'Ireland — Eircode' && F.ADDRESS_FORMATS.au.adminLabel === 'Australia — suburb, state, postcode')

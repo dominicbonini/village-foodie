@@ -105,7 +105,15 @@
     "Australiancards": "australské karty",
     "NewZealandcards": "novozélandské karty",
     "Canadiancards": "kanadské karty",
-    "Swisscards": "švýcarské karty"
+    "Swisscards": "švýcarské karty",
+    "Braziliancards": "brazilské karty",
+    "Mexicancards": "mexické karty",
+    "Japanesecards": "japonské karty",
+    "Singaporecards": "singapurské karty",
+    "HongKongcards": "hongkongské karty",
+    "Malaysiancards": "malajsijské karty",
+    "Thaicards": "thajské karty",
+    "UAEcards": "karty ze SAE"
   },
   "perMonth": {
     "mo": "{amount}/měs.",

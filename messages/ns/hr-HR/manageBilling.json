@@ -24,8 +24,10 @@
     "heading": "Vaše besplatno probno razdoblje još nije počelo"
   },
   "onTrial": "Imate sve značajke. Odaberite paket prije isteka probnog razdoblja.",
+  "onTrialPaidEnd": "Imate sve značajke. Kad probno razdoblje završi, paket {plan} košta {price} mjesečno. Javit ćemo vam se prije toga kako bismo dogovorili plaćanje.",
   "onTrialNoCta": "Imate sve značajke.",
   "noCharge": "🔒 Tijekom probnog razdoblja, koje traje do {date}, ništa vam se neće naplatiti. Naplata počinje tek kad odaberete paket i unesete podatke za plaćanje. Do tada nemate što otkazati ni platiti.",
+  "noChargePaidEnd": "🔒 Tijekom probnog razdoblja, koje traje do {date}, ništa vam se neće naplatiti.",
   "fees": "*Na online narudžbe primjenjuju se standardne naknade za obradu kartičnih plaćanja",
   "setUpPayment": "⏱ Odaberite paket prije isteka probnog razdoblja",
   "changeYourPlan": "Promijeni paket",

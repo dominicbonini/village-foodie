@@ -1,7 +1,8 @@
 {
   "banner": {
     "title": "{months, plural, one {Przez pierwszy miesiąc korzystasz całkowicie za darmo — ze wszystkich funkcji.} few {Przez pierwsze # miesiące korzystasz całkowicie za darmo — ze wszystkich funkcji.} many {Przez pierwsze # miesięcy korzystasz całkowicie za darmo — ze wszystkich funkcji.} other {Przez pierwsze # miesięcy korzystasz całkowicie za darmo — ze wszystkich funkcji.}}",
-    "body": "Z {brand} klienci zamawiają z wyprzedzeniem i płacą przy odbiorze, więc możesz przyjmować zamówienia online bez podłączania operatora płatności kartą. Wolisz pobierać płatność z góry? Włącz płatności kartą online w dowolnej chwili. Po zakończeniu okresu próbnego przechodzisz na plan <plan>{fallback}</plan>{fallbackFree, select, yes { (bez opłaty miesięcznej)} other {}}, chyba że wybierzesz inny plan. Bez karty na start, bez umowy, rezygnujesz w dowolnej chwili."
+    "body": "Z {brand} klienci zamawiają z wyprzedzeniem i płacą przy odbiorze, więc możesz przyjmować zamówienia online bez podłączania operatora płatności kartą. Wolisz pobierać płatność z góry? Włącz płatności kartą online w dowolnej chwili. Po zakończeniu okresu próbnego przechodzisz na plan <plan>{fallback}</plan>{fallbackFree, select, yes { (bez opłaty miesięcznej)} other {}}, chyba że wybierzesz inny plan. Bez karty na start, bez umowy, rezygnujesz w dowolnej chwili.",
+    "bodyOnly": "Z {brand} klienci zamawiają z wyprzedzeniem i płacą przy odbiorze, więc możesz przyjmować zamówienia online bez podłączania operatora płatności kartą. Wolisz pobierać płatność z góry? Włącz płatności kartą online w dowolnej chwili. Po zakończeniu okresu próbnego plan <plan>{fallback}</plan> kosztuje {price} miesięcznie. Skontaktujemy się z Tobą wcześniej, aby skonfigurować płatność. Bez karty na start, bez umowy, rezygnujesz w dowolnej chwili."
   },
   "card": {
     "perTruckMonth": "za food truck / miesiąc",

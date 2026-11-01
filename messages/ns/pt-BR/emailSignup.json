@@ -1,0 +1,26 @@
+{
+  "greeting": "{hasName, select, yes {Oi, {name},} other {Oi,}}",
+  "signoffName": "Dominic",
+  "signoffRole": "Fundador, HatchGrab",
+  "verify": {
+    "subject": "Confirme seu e-mail",
+    "thanks": "{hasTruck, select, yes {Obrigado por configurar {truck} no HatchGrab.} other {Obrigado por configurar seu food truck no HatchGrab.}}",
+    "button": "Confirmar meu e-mail",
+    "buttonText": "Confirmar meu e-mail: {url}",
+    "why": "É com esse endereço que você vai entrar, e é para ele que vão os avisos de pedidos — por isso vale fazer agora.",
+    "next": "Assim que ele for confirmado, eu te mando tudo o que você precisa para começar.",
+    "carryOn": "Enquanto isso, você pode continuar a configuração.",
+    "stuck": "Travou em alguma coisa? É só responder este e-mail — eu mesmo respondo.",
+    "fallbackLink": "Se o botão não funcionar, cole este link no navegador: {url}"
+  },
+  "welcome": {
+    "subject": "{hasName, select, yes {Boas-vindas à HatchGrab, {name}} other {Boas-vindas à HatchGrab}}",
+    "intro": "{hasTruck, select, yes {É uma alegria dar as boas-vindas a {truck} no HatchGrab.} other {É uma alegria dar as boas-vindas ao seu food truck no HatchGrab.}}",
+    "trial": "{months, plural, one {Seu teste grátis de # mês começou — todos os recursos liberados.} other {Seu teste grátis de # meses começou — todos os recursos liberados.}}",
+    "setup": "Se você ainda não fez, a configuração é simples e leva uns quinze minutos.",
+    "button": "Abrir seu painel",
+    "bookmark": "Vale salvar nos favoritos. Funciona em qualquer aparelho.",
+    "stuck": "Se travar em algo, é só responder este e-mail — eu mesmo respondo.",
+    "lookingForward": "{hasTruck, select, yes {Mal posso esperar para ver {truck} vendendo.} other {Mal posso esperar para ver seu food truck vendendo.}}"
+  }
+}

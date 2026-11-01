@@ -1,0 +1,24 @@
+{
+  "preview": {
+    "examples": {
+      "where": "¿Dónde están esta noche?",
+      "doYouDo": "¿Tienen pizza de pepperoni?",
+      "menu": "¿Qué hay en el menú?"
+    },
+    "placeholder": "¿Qué postres tienen?"
+  },
+  "setup": {
+    "popupHint": "¿No ves la ventana de Facebook? Puede que se haya bloqueado. Permite las ventanas emergentes para hatchgrab.com y toca Empezar de nuevo."
+  },
+  "notice": {
+    "closed": "La configuración se cerró antes de terminar. No se cambió nada: toca Configurar para intentarlo de nuevo."
+  },
+  "card": {
+    "description": "Responde automáticamente a las preguntas de los clientes en tus redes sociales con tu menú y tu agenda.",
+    "popupInstruction": "Se abrirá una ventana de Facebook para conectar tu cuenta de WhatsApp Business. Si no aparece nada, permite las ventanas emergentes para hatchgrab.com en tu navegador y vuelve a tocar Configurar.",
+    "expiring": "Tu conexión con WhatsApp debe renovarse pronto. Toca Reconectar para que las respuestas automáticas sigan funcionando."
+  },
+  "signup": {
+    "noNumber": "Tu cuenta de WhatsApp Business está vinculada, pero no se recibió ningún número de teléfono. Toca Reconectar y completa el paso del número."
+  }
+}

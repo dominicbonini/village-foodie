@@ -7,7 +7,6 @@
   "hero": {
     "title": "Rendelési rendszer, kifejezetten <lean>food truckokra szabva.</lean>",
     "subSmall": "Töltse fel az étlapját, regisztráció nélkül.<br></br>Működő demó kevesebb mint 60 másodperc alatt.",
-    "tagline": "Kevesebb papírmunka.<br></br>Több <lean>főzés.</lean>",
     "cta": "Feltöltöm az étlapomat →",
     "ctaNote": "<lead>Töltsön fel egy fotót az étlapjáról, és kevesebb mint 60 másodperc múlva már működés közben láthatja.</lead><small>Regisztráció nélkül. Bankkártya nélkül.</small>"
   },

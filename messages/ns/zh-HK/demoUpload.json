@@ -1,0 +1,61 @@
+{
+  "steps": {
+    "reading": "正在讀取你的餐牌…",
+    "found": "已找到你的食品…",
+    "kitchen": "正在設定你的廚房…",
+    "page": "正在建立你的落單頁面…",
+    "almost": "快將完成…"
+  },
+  "templateSteps": {
+    "truck": "正在建立你的範例美食車…",
+    "menu": "正在設定餐牌…",
+    "kitchen": "正在設定廚房…",
+    "page": "正在建立落單頁面…",
+    "almost": "快將完成…"
+  },
+  "dialogLabel": "上載你的餐牌",
+  "heading": "✨ 上載你的餐牌",
+  "failedHeading": "我們未能讀取這份餐牌",
+  "close": "關閉",
+  "intro": "餐牌板的相片、截圖、PDF，或直接貼上文字都可以。我們的 AI 會讀取內容，在 60 秒內為你建立一個可以使用的落單頁面——你的食品、你的價錢。無需註冊，無需信用卡。",
+  "failedIntro": "有時相片太暗、角度太斜，或者是手寫的。這是我們要處理的問題，不是你做錯了甚麼。你可以：",
+  "usually": "通常需時不到 60 秒。",
+  "slow": "這次比平時久——大型餐牌有時會這樣。",
+  "keepWaiting": "繼續等候",
+  "sampleWhileYouWait": "或者在等候期間先用範例餐牌看看",
+  "standIn": "這<b>不會是你的餐牌</b>——只是一個代用範例，讓你看看運作方式。",
+  "seeSample": "查看範例餐牌",
+  "tryAgain": "再試一次",
+  "tryPhotoAgain": "再試這張相片",
+  "tryDifferent": "試另一張相片",
+  "uploadAnother": "← 上載另一張相片",
+  "orSample": "或者用範例餐牌看看",
+  "orBuild": "或者由我們替你建立",
+  "buildSent": "✓ 多謝——我們已收到，稍後會以電郵聯絡你。",
+  "buildBody": "留下你的電郵，真人職員會替你輸入餐牌，然後把連結寄給你。",
+  "emailPlaceholder": "you@yourtruck.co.uk",
+  "sending": "…",
+  "send": "發送",
+  "noPhoto": "手邊沒有餐牌相片？",
+  "noPhotoBody": "可以先用範例美食車看看——你隨時都可以上載自己的餐牌。",
+  "build": "建立我的示範 →",
+  "nothingPublished": "不會公開任何內容——只有你看得到。",
+  "error": {
+    "somethingWrong": "出現問題，請再試一次。",
+    "serverUnreachable": "我們未能連線至伺服器。請檢查你的網絡連線，然後再試一次。",
+    "sendFailed": "未能發送，請再試一次。"
+  },
+  "fields": {
+    "uploadLabel": "上載餐牌檔案",
+    "dropHere": "將餐牌拖放到這裏",
+    "dragOrTap": "拖放檔案或點按選擇",
+    "fileTypes": "圖片或 PDF",
+    "or": "或",
+    "pasteLabel": "貼上餐牌文字",
+    "pastePlaceholder": "在此貼上你的餐牌——食品名稱、描述、價錢…"
+  },
+  "emailLabel": "你的電郵",
+  "emailNote": "我們會以電郵寄你示範連結，並可能就設定 HatchGrab 與你聯絡。<link>私隱政策</link>",
+  "marketing": "間中寄給我 HatchGrab 的實用貼士和消息",
+  "emailInvalid": "請輸入有效的電郵地址。"
+}

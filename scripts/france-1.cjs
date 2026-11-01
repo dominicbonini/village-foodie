@@ -29,7 +29,11 @@ const LP1E = require('./_lp1e-fixtures.cjs')
 let pass = 0, fail = 0
 const t = (label, ok, detail) => { if (ok) { pass++; console.log('  ✓ ' + label) } else { fail++; console.log('  🔴 ' + label + (detail !== undefined ? `\n      ${typeof detail === 'string' ? detail.slice(0, 900) : JSON.stringify(detail).slice(0, 900)}` : '')) } }
 const head = s => console.log('\n── ' + s + ' ' + '─'.repeat(Math.max(0, 100 - s.length)))
-const read = f => fs.readFileSync(path.join(REPO, f), 'utf8')
+// ⚠️ RE-PINNED (world-countries-2, 1 November 2026, docs/world-countries-2-report.md §1): the Terms of Service (§4), the
+// Country-specific terms (eight countries appended, re-dated) and lib/legal.ts (two dates, TERMS_VERSION) are read as they were
+// before world-countries-2 — scripts/_lp-world-countries-2.cjs asBefore() removes exactly its named change and throws if it is
+// not there, so every other byte is still pinned here. The new text itself is proved by scripts/world-countries-2.cjs.
+const read = f => require('./_lp-world-countries-2.cjs').asBefore(f, fs.readFileSync(path.join(REPO, f), 'utf8'))
 const NB = /[  ]/g
 const text = s => String(s ?? '').replace(/<style[\s\S]*?<\/style>/g, ' ').replace(/<script[\s\S]*?<\/script>/g, ' ').replace(/<[^>]+>/g, ' ')
   .replace(/&amp;/g, '&').replace(/&#x27;|&#39;/g, "'").replace(/&quot;/g, '"').replace(/&nbsp;/g, ' ').replace(NB, ' ').replace(/\s+/g, ' ').trim()

@@ -113,12 +113,12 @@ export function tradingStatusOf(status: string | null | undefined): TradingStatu
  * ⚠️ NEVER BLANK. A place row with an empty name falls through to the event's own venue_name, and an
  * event with neither gets a dash rather than an empty box, so the row still reads as a row.
  */
-export function locationName(ev: WeekEvent, place: Place | null): string {
+export function locationName(ev: WeekEvent, place: Place | null, privateLabel: string = PRIVATE_PUBLIC_LABEL): string {
   /* ⛔ FIRST, AND BEFORE THE PLACE IS CONSULTED AT ALL (20261014). A private event's row says
    * "Private event" and nothing else — not the place's "Name on posts", not its short name, not the
    * venue. Returning early is what makes that true however the place resolved: a private booking at
    * a pitch the truck uses publicly would otherwise print that pitch's name. */
-  if (ev.is_private) return PRIVATE_PUBLIC_LABEL
+  if (ev.is_private) return privateLabel
   const short = String(place?.short_name ?? '').trim()
   if (short) return short
   const name = String(place?.name ?? '').trim()
@@ -163,9 +163,11 @@ const startMins = (t: string | null | undefined): number => {
  * weekly design's — so the raw times have to survive this function. ⛔ "From 5pm" was the other reason
  * they did and it is gone (6 October 2026): both posters state a start and a finish now.
  */
-export function entryFor(ev: WeekEvent, places: readonly Place[], timeStyle: TimeStyle): DayEntry {
+// legal-languages-1 (1 November 2026): `privateLabel` — a private event's public name in the truck's language (the route passes
+// `privateEvents.publicName`); omitted = the English label, exactly as before.
+export function entryFor(ev: WeekEvent, places: readonly Place[], timeStyle: TimeStyle, privateLabel?: string): DayEntry {
   const place = placeForEvent(ev, places)
-  const name = locationName(ev, place)
+  const name = locationName(ev, place, privateLabel)
   const status = tradingStatusOf(ev.status)
   return {
     eventId: ev.id,
@@ -210,6 +212,8 @@ export const timeTextFor = (
 
 export interface BuildWeekOptions {
   timeStyle: TimeStyle
+  /** legal-languages-1: a private event's public name in the truck's language; omitted = the English label. */
+  privateLabel?: string
   /** Default on. Off hides cancelled events entirely, which can turn a day into a day off. */
   showCancelled: boolean
   /**
@@ -265,7 +269,7 @@ export function buildWeekData(
     if (ev.is_private === true && opts.showPrivate !== true) continue
     const status = tradingStatusOf(ev.status)
     if (status === 'cancelled' && !opts.showCancelled) continue
-    bucket.push(entryFor(ev, places, opts.timeStyle))
+    bucket.push(entryFor(ev, places, opts.timeStyle, opts.privateLabel))
     included.push(ev)
   }
 

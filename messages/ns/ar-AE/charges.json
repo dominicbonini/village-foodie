@@ -1,0 +1,13 @@
+{
+  "subtotal": "المجموع الفرعي",
+  "taxFallback": "الضريبة",
+  "taxIncluded": "يشمل {label}",
+  "serviceFeeCustomer": "رسوم الخدمة عبر الإنترنت",
+  "serviceFee": "رسوم الخدمة",
+  "cardFee": "رسوم البطاقة",
+  "tip": "الإكرامية",
+  "rate": "{rate}%",
+  "line": "{label}: {amount}",
+  "lineWithRate": "{label} {rate}: {amount}",
+  "foldedCharges": "{parts, select, tax_fees_tip {الضريبة والرسوم والإكرامية} tax_tip {الضريبة والإكرامية} fees_tip {الرسوم والإكرامية} fees {الرسوم} other {الضريبة والرسوم}}"
+}

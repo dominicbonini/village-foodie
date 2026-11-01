@@ -1,0 +1,31 @@
+{
+  "intro": "Urus ialah tempat anda menyediakan trak anda dan melihat prestasinya. Papan pemuka ialah tempat anda menerima pesanan dan mengendalikan setiap acara semasa ia berlangsung.",
+  "ariaLabel": "Panduan papan pemuka",
+  "step": "{current} daripada {total}",
+  "skip": "Langkau",
+  "back": "← Kembali",
+  "next": "Seterusnya →",
+  "done": "Selesai",
+  "stops": {
+    "menu": {
+      "title": "Menu",
+      "body": "Hidangan, harga dan alergen anda. Tukar apa-apa di sini dan ia terus aktif serta-merta."
+    },
+    "schedule": {
+      "title": "Jadual",
+      "body": "Di mana dan bila anda berniaga. Tambah acara di sini dan pelanggan boleh membuat pesanan untuknya."
+    },
+    "build": {
+      "title": "Set kombo dan Tambahan & cadangan",
+      "body": "Set kombo, cadangan tambahan, penyesuaian dan kapasiti dapur anda terletak di bawah Menu — cubalah terokai."
+    },
+    "settings": {
+      "title": "Tetapan",
+      "body": "Butiran trak anda dan cara pelanggan membayar."
+    },
+    "billing": {
+      "title": "Pengebilan",
+      "body": "Tempat maklumat pelan, pengebilan dan ciri anda."
+    }
+  }
+}

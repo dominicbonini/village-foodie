@@ -1,0 +1,11 @@
+{
+  "savedToast": "Pedido {id} guardado{paid, select, cash { — pagado en efectivo} card { — pagado con tu terminal} other {}}",
+  "confirmedToast": "Pedido #{id} confirmado{paid, select, cash { — pagado en efectivo} card { — pagado con tu terminal} other {}}",
+  "notOnMenu": "{name}{hasOn, select, yes { (en {on})} other {}} — no está en el menú",
+  "somethingNotOnMenu": "Algo de este pedido ya no está en el menú",
+  "deals": "Combos",
+  "addAnotherDeal": "+ Añadir otro combo",
+  "applyDeal": "+ Aplicar un combo",
+  "loadingMenu": "Cargando menú…",
+  "notePlaceholder": "p. ej., sin cebolla, bien cocido…"
+}

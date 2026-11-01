@@ -24,7 +24,11 @@ const { makeFakePg } = require('./_fake-pg.cjs')
 let pass = 0, fail = 0
 const t = (label, ok, detail) => { if (ok) { pass++; console.log('  ✓ ' + label) } else { fail++; console.log('  🔴 ' + label + (detail !== undefined ? `\n      ${typeof detail === 'string' ? detail.slice(0, 900) : JSON.stringify(detail).slice(0, 900)}` : '')) } }
 const head = s => console.log('\n── ' + s + ' ' + '─'.repeat(Math.max(0, 100 - s.length)))
-const read = f => fs.readFileSync(path.join(REPO, f), 'utf8')
+// ⚠️ RE-PINNED (world-countries-2, 1 November 2026, docs/world-countries-2-report.md §1): the Terms of Service (§4), the
+// Country-specific terms (eight countries appended, re-dated) and lib/legal.ts (two dates, TERMS_VERSION) are read as they were
+// before world-countries-2 — scripts/_lp-world-countries-2.cjs asBefore() removes exactly its named change and throws if it is
+// not there, so every other byte is still pinned here. The new text itself is proved by scripts/world-countries-2.cjs.
+const read = f => require('./_lp-world-countries-2.cjs').asBefore(f, fs.readFileSync(path.join(REPO, f), 'utf8'))
 const snake = LP1E.snake
 const { NextRequest } = require(path.join(REPO, 'node_modules/next/server'))
 const post = (url, body) => new NextRequest(url, { method: 'POST', body: JSON.stringify(body), headers: { 'content-type': 'application/json' } })
@@ -157,7 +161,9 @@ const WORDS = {
     'Canadian dollars', 'does not add a card surcharge', 'prepackaged food', 'Health Canada\'s priority allergens', 'GST/HST, give us your registration number', 'PIPEDA', 'British Columbia and Alberta', '30 days', 'www.priv.gc.ca', '1-800-282-1376',
     'real risk of significant harm', '10 business days']
   t(`the canada-1 §6 draft's points are all there (${points.length})`, points.every(p => C.includes(p)), points.filter(p => !C.includes(p)))
-  const files = fs.readdirSync(path.join(REPO, 'content/legal'))
+  // ⚠️ RE-PINNED (legal-languages-1, 1 November 2026): content/legal now holds a folder per language (content/legal/<base>/, the
+  // translations, proved by scripts/legal-languages-1.cjs); this check reads the English documents, the folder's FILES, as before.
+  const files = fs.readdirSync(path.join(REPO, 'content/legal')).filter(f => fs.statSync(path.join(REPO, 'content/legal', f)).isFile())
   t(`no "[FLAG" in any of content/legal's ${files.length} files`, files.every(f => !read(`content/legal/${f}`).includes('[FLAG')))
   const L = read('lib/legal.ts')
   // ⚠️ RE-PINNED (demo-2b, 31 October 2026, docs/demo-2b-report.md): TERMS_VERSION moved on to '2026-10-31' with the Privacy

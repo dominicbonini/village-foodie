@@ -1,0 +1,4 @@
+{
+  "customer": "{required, select, yes {Wajib} other {Pilihan}}{limit, select, one { · Pilih satu} upTo { · Pilih sehingga {max}} other {}}",
+  "operator": "{required, select, yes {Wajib} other {Pilihan}}{limit, select, one { · Pelanggan memilih satu} upTo { · Pelanggan boleh memilih sehingga {max}} other {}}"
+}

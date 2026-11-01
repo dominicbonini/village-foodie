@@ -1,0 +1,19 @@
+{
+  "heading": "Sugestões de venda",
+  "intro": "Incentive os clientes a adicionar algo a mais. Quando alguém pedir de uma categoria, sugira itens de outra — uma bebida com a pizza, um molho com o hambúrguer.",
+  "add": "+ Adicionar sugestão",
+  "toast": {
+    "updated": "Regra de sugestão atualizada",
+    "added": "Regra de sugestão adicionada",
+    "removed": "Regra removida"
+  },
+  "whenAdds": "Quando o cliente adicionar…",
+  "suggestFrom": "Sugerir itens de…",
+  "chooseCategory": "Escolha a categoria",
+  "cancel": "Cancelar",
+  "saveChanges": "Salvar alterações",
+  "addRule": "Adicionar regra",
+  "empty": "Nenhuma regra de sugestão ainda.",
+  "confirmRemove": "Remover a regra de sugestão “{trigger} → {suggest}”?",
+  "upTo": "{n, plural, one {Até {count} item sugerido} other {Até {count} itens sugeridos}}"
+}

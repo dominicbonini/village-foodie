@@ -1,0 +1,26 @@
+{
+  "greeting": "{hasName, select, yes {{name}様} other {こんにちは。}}",
+  "signoffName": "Dominic",
+  "signoffRole": "HatchGrab 創業者",
+  "verify": {
+    "subject": "メールアドレスの確認をお願いします",
+    "thanks": "{hasTruck, select, yes {HatchGrabで{truck}の設定を始めていただき、ありがとうございます。} other {HatchGrabでキッチンカーの設定を始めていただき、ありがとうございます。}}",
+    "button": "メールアドレスを確認する",
+    "buttonText": "メールアドレスを確認する：{url}",
+    "why": "このアドレスはログインに使用し、注文の通知もここに届きます。今のうちに確認しておくことをおすすめします。",
+    "next": "確認が完了したら、始めるために必要な情報をすべてお送りします。",
+    "carryOn": "確認が済むまでの間も、設定はそのまま続けていただけます。",
+    "stuck": "お困りのことがあれば、このメールにそのまま返信してください。私が直接お答えします。",
+    "fallbackLink": "ボタンが機能しない場合は、次のURLを貼り付けてください：{url}"
+  },
+  "welcome": {
+    "subject": "{hasName, select, yes {{name}様、HatchGrabへようこそ} other {HatchGrabへようこそ}}",
+    "intro": "{hasTruck, select, yes {{truck}をHatchGrabにお迎えできて、本当にうれしく思います。} other {皆様のキッチンカーをHatchGrabにお迎えできて、本当にうれしく思います。}}",
+    "trial": "{months, plural, other {#か月間の無料トライアルが始まりました。すべての機能をご利用いただけます。}}",
+    "setup": "まだの場合も、設定は簡単で、15分ほどで完了します。",
+    "button": "ダッシュボードを開く",
+    "bookmark": "ブックマークしておくと便利です。どの端末でも利用できます。",
+    "stuck": "お困りのときは、このメールにそのまま返信してください。私が直接お答えします。",
+    "lookingForward": "{hasTruck, select, yes {{truck}の営業開始を楽しみにしています。} other {キッチンカーの営業開始を楽しみにしています。}}"
+  }
+}

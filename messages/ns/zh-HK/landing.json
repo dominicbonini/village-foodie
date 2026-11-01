@@ -1,0 +1,77 @@
+{
+  "jsonLd": {
+    "subCategory": "美食車及流動餐飲落單系統",
+    "description": "為{country}美食車及流動餐飲而設的落單、預先落單及廚房顯示屏系統。",
+    "audience": "美食車及流動餐飲經營者"
+  },
+  "hero": {
+    "title": "專為<lean>美食車</lean>而設的落單系統。",
+    "subSmall": "上載你的餐牌，毋須註冊。<br></br>60 秒內即可看到實際運作的示範。",
+    "cta": "上載我的餐牌 →",
+    "ctaNote": "<lead>上載餐牌相片，60 秒內即可看到實際運作。</lead><small>毋須註冊，毋須信用卡。</small>"
+  },
+  "shots": {
+    "kitchenAlt": "HatchGrab 廚房顯示屏，按烹調次序顯示訂單",
+    "dashboardAlt": "在 HatchGrab 接單：左邊是餐牌，右邊是即時更新的購物車及總額",
+    "phoneAlt": "在 HatchGrab 向美食車落單：附相片及價錢的餐牌，以及即時更新的購物車總額"
+  },
+  "trust": {
+    "freeMonth": "{months, plural, other {首 # 個月完全免費，所有功能全面開放}}",
+    "noCard": "毋須信用卡",
+    "cancel": "隨時取消，毋須簽約"
+  },
+  "does": {
+    "eyebrow": "功能",
+    "title": "專為美食車而設，而不是餐廳。",
+    "lede": "大部分落單系統都假設你有固定地址、穩定的 Wi-Fi，而且每星期營業時間相同。但你每星期都在不同地方、不同時間開檔，流動網絡訊號時有時無，甚至完全沒有。HatchGrab 正是為此而設。",
+    "slotsTitle": "顧客自選取餐時間",
+    "capacityTitle": "設定廚房容量",
+    "capacityBody": "設定你一次可以煮多少，以及需時多久。某個取餐時間額滿後，顧客便無法選擇。",
+    "devicesTitle": "任何裝置都適用",
+    "devicesBody": "可在你圍裙袋中的手機、櫃枱上的平板電腦、車上的手提電腦運作——以及你現有的信用卡機。",
+    "postsTitle": "自動製作 Facebook 及 Instagram 帖文",
+    "postsBody": "上載你平時在 Facebook 或 Instagram 使用的設計，我們會填上日期、地點及時間，隨時可以分享——每週或每日都可以。",
+    "whatsappTitle": "WhatsApp 自動回覆",
+    "whatsappBody": "「你今晚喺邊度？」「有咩甜品？」你駕車前往開檔地點或忙於燒烤時，你的 WhatsApp 會根據你的餐牌及出車時間表自動回覆。Messenger 及 Instagram 即將推出。",
+    "whatsappSoonTitle": "WhatsApp 自動回覆 <soon>即將推出</soon>",
+    "whatsappSoonBody": "「你今晚喺邊度？」「有咩甜品？」很快，你駕車前往開檔地點或忙於燒烤時，你的 WhatsApp 也能自動回覆。Messenger 及 Instagram 稍後推出。",
+    "offlineTitle": "沒有訊號？照樣做生意。",
+    "offlineBody": "一旦失去訊號，網上落單會自動暫停，以免顧客落了你看不到的單。你可繼續用 iPhone、iPad 及 Android 應用程式接單。",
+    "slotsBody": "顧客預先落單並選擇取餐時間。人龍更短，顧客一到便有得食。"
+  },
+  "steps": {
+    "eyebrow": "開始使用",
+    "title": "約 15 分鐘完成設定並開始接單。",
+    "lede": "只需處理三件事——其中兩件只需拍一張相。",
+    "menuTitle": "建立餐牌",
+    "menuBody": "為你的餐牌板拍照或直接貼上。食品、價錢及附加選項全部自動匯入，你只需檢查是否正確。",
+    "scheduleTitle": "加入出車時間表",
+    "scheduleBody": "你的網站上已有時間表？我們會從網站讀取並保持更新。如沒有，同樣拍張相就可以。你只需批准系統找到的內容。",
+    "shareTitle": "分享你的連結",
+    "shareBody": "在 Facebook 發佈連結，把 QR 碼貼在車上。訂單會按你需要烹調的次序顯示在屏幕上。"
+  },
+  "testimonial": {
+    "quote": "HatchGrab 令落單簡單得多。一切井井有條，我們可以追蹤存貨，清楚知道還有多少個薄餅可以賣——而且取餐時段對人多的社區十分有用。",
+    "award": "年度最佳流動薄餅店",
+    "awardScope": "地區得獎者",
+    "business": "Pizzeria Gusto",
+    "byline": "Nadia 及 Bogdan — 東主"
+  },
+  "pricing": {
+    "eyebrow": "收費",
+    "title": "免費開始，有需要時才升級。",
+    "switchHead": "正從其他平台轉過來？",
+    "switchBody": "看看同樣的訂單在 HatchGrab 要付多少。只需約一分鐘。",
+    "switchCta": "比較你現時的費用"
+  },
+  "final": {
+    "truckLabel": "美食車",
+    "title": "想看看設定有幾簡單？",
+    "lede": "上載餐牌的相片或截圖，我們會在 60 秒內把它變成一個可以實際使用的落單頁面，讓你試玩一下。你的食品，你的價錢。無需註冊，無需信用卡，無需安裝任何東西。先看看，再決定。",
+    "cta": "立即上載我的餐牌 →"
+  },
+  "meta": {
+    "title": "美食車及流動餐飲落單系統 — HatchGrab {country}",
+    "description": "在開檔地點接收訂單及預先落單，免除排隊。專為 {country} 美食車及流動餐飲而設的落單及廚房顯示屏軟件，並非收銀系統。"
+  }
+}

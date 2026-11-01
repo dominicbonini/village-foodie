@@ -1,0 +1,10 @@
+{
+  "payNote": {
+    "unknownBody": "Your card was authorised, so please do not pay again — {truck} will confirm when you collect.",
+    "unknownText": "We’re still confirming your payment. Your card was authorised, so please do not pay again — {truck} will confirm when you collect."
+  },
+  "confirmation": {
+    "seeYou": "See you at the truck!",
+    "textCollection": "Collection time: {time}. See you at the truck!"
+  }
+}

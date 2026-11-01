@@ -1,0 +1,19 @@
+{
+  "allowCancellation": {
+    "label": "Permitir que os clientes cancelem pedidos",
+    "sentence": "Os clientes podem cancelar até <select></select> antes do horário de retirada"
+  },
+  "autoAccept": {
+    "label": "Aceitar pedidos automaticamente",
+    "help": "Os pedidos são confirmados automaticamente. Se o horário pedido estiver lotado, o pedido passa para o próximo horário disponível. Só confirma quando há capacidade. Pedidos com observações do cliente (por exemplo, uma alergia) ainda precisam ser confirmados."
+  },
+  "orderReady": {
+    "label": "Etapa de pedido pronto",
+    "help": "Mostra um botão “Marcar como pronto” na tela de pedidos. As telas da cozinha são configuradas à parte, em cada aparelho. Os clientes recebem um e-mail sempre que um pedido é marcado como pronto. Vale para todos os eventos — você ainda pode ligar ou desligar para um único evento no painel dele."
+  },
+  "buzzers": {
+    "label": "Você entrega pagers para a retirada?",
+    "help": "Registre qual pager você entregou a cada cliente, para saber quem procurar quando a comida estiver pronta.",
+    "countLabel": "Quantos pagers você tem?"
+  }
+}

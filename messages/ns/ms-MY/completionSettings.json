@@ -1,0 +1,9 @@
+{
+  "paidStepTitle": "Terima pesanan tanpa bayaran",
+  "completionTitle": "Menyelesaikan pesanan yang belum dibayar",
+  "completionHelp": "Apa yang berlaku apabila pesanan yang belum dibayar sedia untuk diserahkan.",
+  "pressesOne": "Satu tekan (“Tandakan dibayar & diambil”)",
+  "pressesOneHelp": "Paling sesuai jika anda menerima wang semasa menyerahkan makanan. Anda mendapat satu butang, “Tandakan dibayar & diambil”, yang merekodkan bayaran dan menyelesaikan pesanan serentak.",
+  "pressesTwo": "Dua tekan (“Tandakan dibayar” & “Diambil”)",
+  "pressesTwoHelp": "Paling sesuai jika bayaran dan penyerahan berlaku pada masa berbeza — pelanggan membayar di trak, kemudian mengambil apabila siap. Anda mendapat dua butang: “Tandakan dibayar” dahulu, kemudian “Diambil” apabila mereka mengambil makanan."
+}

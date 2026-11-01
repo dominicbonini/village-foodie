@@ -1,0 +1,21 @@
+{
+  "breachHeadline": "{n, plural, zero {لا فترات} one {فترة واحدة} two {فترتان} few {{count} فترات} many {{count} فترةً} other {{count} فترة}} تجاوزت السعة — يُرجى المراجعة",
+  "batchOver": "{cat}: تجاوز حجم الدفعة — {count} لفترة {slot} ({per} لكل دفعة)",
+  "eventStartOver": "تجاوز السعة عند بدء الفعالية — {n, plural, zero {لا أصناف} one {صنف واحد} two {صنفان} few {{count} أصناف} many {{count} صنفًا} other {{count} صنف}} لفترة {slot}",
+  "kitchenOver": "المطبخ تجاوز السعة — {n, plural, zero {لا أصناف} one {صنف واحد} two {صنفان} few {{count} أصناف} many {{count} صنفًا} other {{count} صنف}} قيد الطهي لفترة {slot}",
+  "orderItems": "#{id} — {n, plural, zero {لا أصناف} one {صنف واحد} two {صنفان} few {{count} أصناف} many {{count} صنفًا} other {{count} صنف}}",
+  "placedAnyway": "تمت إضافتها رغم ذلك: {list}",
+  "placedItem": "#{id} لفترة {slot}",
+  "orphans": "{times}: تجاوز السعة — لم يتم العثور على طلبات مسؤولة عنه",
+  "dismiss": "تجاهل",
+  "kitchenCapacity": "سعة المطبخ",
+  "overCapacity": "تجاوز السعة",
+  "wakeUnsupported": "لا يمكن لهذا الجهاز إبقاء الشاشة مضاءة.",
+  "wakeInsecure": "لا يمكن إبقاء الشاشة مضاءة من هذا العنوان.",
+  "wakeRetry": "إبقاء الشاشة مضاءة — اضغط للمحاولة مجددًا",
+  "wakeAcquire": "إبقاء الشاشة مضاءة",
+  "degraded": {
+    "serverError": "تعذّر على الخادم تحميل الطلبات{hasStatus, select, yes { (خطأ {status})} other {}}. يتم عرض الطلبات حتى {at}. قد لا تظهر الطلبات الجديدة.",
+    "unreachable": "تعذّر الوصول إلى الخادم. يتم عرض الطلبات حتى {at}. قد لا تظهر الطلبات الجديدة."
+  }
+}

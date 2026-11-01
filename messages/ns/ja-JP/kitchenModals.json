@@ -1,0 +1,69 @@
+{
+  "close": "閉じる",
+  "cancel": "キャンセル",
+  "selectReason": "理由を選択",
+  "reject": {
+    "title": "注文 #{orderId} を却下しますか？",
+    "reasonLabel": "理由（必須・お客様に表示されます）",
+    "reason": "{reason, select, sold_out {売り切れの商品がある} too_busy {混雑のため時間内に用意できない} closing_soon {まもなく営業終了} other {その他}}",
+    "noteRequired": "理由（必須）",
+    "noteOptional": "補足メモ（任意）",
+    "notePlaceholder": "お客様への詳しい説明を入力…",
+    "keep": "注文を残す",
+    "confirm": "注文を却下"
+  },
+  "eventCancel": {
+    "title": "この出店を中止しますか？",
+    "affected": "{n, plural, other {{count}件の注文}}がキャンセルされ、お客様に通知されます。",
+    "reasonLabel": "理由（任意）",
+    "reason": "{reason, select, vehicle_breakdown {車両の故障} weather {天候} venue_issue {会場の都合} personal_emergency {やむを得ない事情} other {その他}}",
+    "messageLabel": "お客様へのメッセージ（任意）",
+    "messagePlaceholder": "例：申し訳ありません、会場へ向かう途中で車両が故障しました…",
+    "keep": "出店を続ける",
+    "cancelling": "中止しています…",
+    "confirm": "出店を中止"
+  },
+  "actions": {
+    "startEvent": "{restart, select, yes {出店を再開} other {出店を開始}}",
+    "changeEvent": "出店を変更",
+    "changeEventType": "出店タイプを変更…",
+    "privateLink": "専用リンクとQRコード",
+    "noteLabel": "お客様へのお知らせ",
+    "notePlaceholder": "例：メイン駐車場に停めて、オレンジ色のテントを目印にお越しください",
+    "noteHint": "注文ページの出店情報の下に、お客様向けに表示されます。",
+    "saveNote": "お知らせを保存",
+    "resume": "注文を再開",
+    "pause": "注文を一時停止",
+    "changeFinishTime": "出店の終了時間を変更",
+    "finishEvent": "出店を終了",
+    "cancelEvent": "出店を中止"
+  },
+  "finish": {
+    "confirmTitle": "終了時間を変更しますか？",
+    "willFinish": "この出店は{hasCurrent, select, yes {<b>{current}</b>ではなく} other {}}<b>{selected}</b>に終了します。",
+    "dueAfter": "<b>{n, plural, other {{count}件の注文}}の受け取り時間が{selected}以降です。</b>{n, plural, other {これらの注文}}はボードに残り、引き続き調理が必要です。終了時間を変更しても、それ以降の時間への新規注文が止まるだけです。",
+    "saving": "保存中…",
+    "confirm": "終了時間を変更",
+    "keepCurrent": "{current}のままにする",
+    "keepAsIs": "変更しない",
+    "title": "終了時間を変更",
+    "currentlySet": "この出店の終了時間は現在<b>{current}</b>に設定されています。",
+    "noFinishTime": "この出店には終了時間が設定されていません。",
+    "noTimesLeft": "今日は選べる時間が残っていません。代わりに「出店を終了」を使ってください。",
+    "newFinishTime": "新しい終了時間",
+    "optionCurrent": "{time}（現在）",
+    "earlier": "現在の終了時間より早い時間です。お客様はこの時間より後の注文ができなくなります。",
+    "review": "変更内容を確認",
+    "optionNextDay": "{time}（翌日）"
+  },
+  "extraWait": {
+    "title": "待ち時間を追加",
+    "hint": "新しい注文に案内する受け取り時間に加算されます。出店の終了時間は変わりません。",
+    "option": "+{mins}分"
+  },
+  "picker": {
+    "reconnect": "再接続して読み込む",
+    "selected": "選択中",
+    "status": "{tone, select, paused {⏸ 一時停止中} live {● 営業中} finished {● 終了} cancelled {中止} other {未開始}}"
+  }
+}

@@ -1,0 +1,127 @@
+{
+  "eyebrow": "コスト比較",
+  "title": "オンライン注文の<br></br><accent>コストを比較</accent>",
+  "system": {
+    "title": "現在、オンライン注文を受け付けていますか？",
+    "yes": "はい、他のシステムで",
+    "no": "いいえ、まだです"
+  },
+  "trucks": {
+    "title": "キッチンカーは何台ありますか？",
+    "aria": "キッチンカーの台数"
+  },
+  "plan": {
+    "yourChoice": "選択中のプラン",
+    "weSuggest": "おすすめのプラン",
+    "summary": "1台あたり月額{price}。オンライン注文{allowance}分まで込み{fleet, plural, other {（1台ごと）}}です。",
+    "switchTo": "{plan}に切り替える",
+    "summaryFeeOnly": "{hasMonthly, select, yes {1台あたり月額{price}、オンラインのカード注文に{pct}。} other {月額料金なし。オンラインのカード注文にのみ{pct}。}}",
+    "summaryNoFee": "1台あたり月額{price}。オンライン注文は無制限で、HatchGrabの手数料はかかりません。"
+  },
+  "orders": {
+    "titleYes": "1台あたりの月間オンライン注文",
+    "count": "約{count, plural, other {#件}}",
+    "captionNo": "おおよその見込みで構いません。事前注文や行列をスキップする注文が対象で、店頭での現金・カード払いは含みません。",
+    "captionYes": "注文ページから入った注文のみが対象です。店頭での現金・カード払いは含みません。",
+    "sliderAria": "1台あたりの月間オンライン注文額",
+    "overAllowance": "1台あたりオンライン注文{allowance}分まで込みです。それを超える{excess}には{pct}がかかり、1台あたり月<b>{over}</b>です。",
+    "insideAllowance": "込みのオンライン注文{allowance}分の範囲内です。プラン料金以外はかかりません。",
+    "acrossFleet": "{fleet, plural, other {#台}}の合計：月<b>{amount}</b>",
+    "titleNo": "1台あたり、毎月どれくらいオンラインで売り上げられそうですか？",
+    "feeOnly": "オンラインのカード注文すべてに{pct}。1台あたり月<b>{over}</b>です。",
+    "noFee": "オンライン注文は無制限で込みです。プラン料金以外はかかりません。"
+  },
+  "fee": {
+    "title": "現在、1件あたりいくら支払っていますか？",
+    "pctLabel": "料率",
+    "pctPlaceholder": "現在の料率",
+    "pctAria": "手数料率",
+    "fixedLabel": "＋1件あたり",
+    "fixedPlaceholder": "現在の手数料",
+    "fixedAria": "1件あたりの固定手数料",
+    "modeLabel": "その会社の料率：",
+    "modeInclusive": "カード決済手数料を含む",
+    "modeOnTop": "別途上乗せされる",
+    "onTopNote": "これに加えて{fee}のカード決済手数料がかかるため、実際の負担は合計<b>{pct} + {fixed}</b>です。",
+    "inclusiveNote": "{fee}のカード決済手数料はこれに含まれており、どのサービスを使っても発生します。その会社自体の手数料は<b>{pct}</b>です。"
+  },
+  "days": {
+    "title": "週に何日営業していますか？",
+    "help": "イベント、マルシェ、出店場所など、キッチンカーを出す日すべてです。"
+  },
+  "jump": {
+    "cost": "費用を見る ↓",
+    "saving": "節約額を見る ↓"
+  },
+  "noSystem": {
+    "hero": "<lead>オンライン注文・事前注文・キッチンディスプレイが、営業1日あたり</lead><figure>{amount}</figure><unit>で使えます</unit>",
+    "basedOn": "週{days, plural, other {#日}}の営業で計算 · 月{monthly}{fleet, plural, other {（1台あたり）}}"
+  },
+  "coffee": "コーヒー1杯より安い金額です。",
+  "freeMonths": "{n, plural, other {さらに、最初の#か月間は無料です。}}",
+  "cta": {
+    "upload": "メニューをアップロード →",
+    "uploadSave": "メニューをアップロードして{amount}節約 →",
+    "ask": "質問する",
+    "noCard": "設定にカードは不要です"
+  },
+  "breakdown": {
+    "title": "1か月の内訳",
+    "titleDearer": "HatchGrabでの1か月",
+    "plan": "{plan}プラン",
+    "over": "込みの{allowance}を超えた{excess}に{pct}",
+    "inside": "込みの{allowance}の範囲内のオンライン注文",
+    "total": "HatchGrabの月額",
+    "freeMonths": "{n, plural, other {最初の#か月間}}",
+    "freeAmount": "{amount} — 無料",
+    "acrossFleet": "{fleet, plural, other {#台}}の合計",
+    "perMonth": "月{amount}",
+    "card": "カード決済手数料 — 1件あたりStripeの{fee}。Stripeに支払われます。店頭のカード決済端末でもほぼ同じ金額がかかります。",
+    "provider": "現在のサービス自体の手数料（{pct}）",
+    "feeOnly": "オンライン注文{excess}に{pct}",
+    "noFee": "オンライン注文 — 無制限、HatchGrabの手数料なし"
+  },
+  "enterRate": "現在の支払額を入力すると、節約額が表示されます。",
+  "panel": {
+    "nowYear": "<label>現在のお支払い</label><fig>{amount}<q>／年</q></fig>",
+    "nowMonth": "<label>現在のお支払い</label><fig>{amount}<q>／月</q></fig>",
+    "oursYear": "<label>HatchGrabなら</label><fig>{amount}<q>（初年度）</q></fig>",
+    "oursMonth": "<label>HatchGrabなら</label><fig>{amount}<q>／月</q></fig>",
+    "acrossFleet": "{fleet, plural, other {#台の合計}}"
+  },
+  "hero": {
+    "save": "<verb>節約できる金額</verb><figure>{amount}</figure><sub>初年度は<num>{pct}</num>安くなります</sub>",
+    "same": "<verb>ほぼ同じ</verb><figure>{amount}</figure><sub>初年度は<num>{pct}</num>高くなります</sub>",
+    "dearer": "<lead>HatchGrabのすべての機能が、1週間あたり</lead><figure>{amount}</figure><unit>の追加で使えます</unit>",
+    "dearerSub": "{fleet, plural, other {1台あたり、現在より月{amount}多くかかります}}"
+  },
+  "anchor": {
+    "liability": "1年分の賠償責任保険料に相当します。",
+    "weekendPitch": "フードフェスの週末出店料1回分に相当します。",
+    "festivalPitches": "フェスの出店料2回分ほどに相当します。",
+    "fryer": "新しいフライヤーと鉄板が買える金額です。",
+    "counter": "販売カウンターを丸ごと改装できる金額です。",
+    "vanDeposit": "2台目のキッチンカーの頭金になる金額です。",
+    "secondVan": "2台目のキッチンカーを走らせられる金額です。"
+  },
+  "year": {
+    "one": "1年目",
+    "two": "2年目",
+    "save": "{amount}の節約<note>（{pct}安い）</note>",
+    "extra": "{amount}の追加<note>（{pct}高い）</note>",
+    "current": "現在のサービス <b>{amount}</b>",
+    "ours": "HatchGrab <b>{amount}</b>"
+  },
+  "smallPrint": {
+    "no": "入力された数値をもとに、平均注文額{aov}と仮定した概算です。カード決済手数料はどのサービスを使っても発生します。決定前にご確認ください。",
+    "yes": "入力された数値をもとに、平均注文額{aov}と仮定した概算です。1件あたり{fee}のカード決済手数料はどのサービスを使っても発生するため、両方の計算から除いています。",
+    "onTop": "質問{n}の合計額にはこれが含まれていますが、比較ではどちら側にも含めていません。",
+    "check": "決定前に、現在のサービスの料金をご確認ください。"
+  },
+  "intro": "所要時間は約1分。すでにシステムをお使いなら比較します。まだなら、費用を正確にお見せします。",
+  "twoYear": "2年間で<b>{amount}</b>の節約になります。",
+  "meta": {
+    "title": "コスト計算ツール — HatchGrab {country}",
+    "description": "現在のオンライン注文のコストと、HatchGrabを1年使った場合を比較。1分で概算がわかります。"
+  }
+}

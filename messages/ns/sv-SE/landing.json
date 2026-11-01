@@ -7,7 +7,6 @@
   "hero": {
     "title": "Beställningssystemet byggt för <lean>foodtruckar.</lean>",
     "subSmall": "Ladda upp din meny, ingen registrering behövs.<br></br>Se en fungerande demo på under 60 sekunder.",
-    "tagline": "Mindre tid på beställningar.<br></br>Mer tid att <lean>laga mat.</lean>",
     "cta": "Ladda upp min meny →",
     "ctaNote": "<lead>Ladda upp ett foto av din meny och se den fungera på under 60 sekunder.</lead><small>Ingen registrering. Inget kort.</small>"
   },

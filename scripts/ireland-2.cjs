@@ -88,7 +88,8 @@ const BEFORE = [
   const codes = [...(M.CURRENCY_CODES ?? [])]
   const differ = codes.filter(c => M.minorUnitSign(c) !== M.minorUnitSuffix(c))
   const minorStyle = codes.filter(c => M.minorUnitSuffix(c) !== null)
-  t(`the registry lists 14 currencies (${codes.join(' ')})`, codes.length === 14, codes)
+  // ⚠️ RE-PINNED (world-countries-1, 31 October 2026): + BRL MXN JPY SGD HKD MYR AED THB — 22.
+  t(`the registry lists 22 currencies (${codes.join(' ')})`, codes.length === 22, codes)
   t(`every "minor" currency's box keeps its sign (${minorStyle.map(c => `${c} ${M.minorUnitSign(c)}`).join(', ')})`,
     minorStyle.length > 0 && minorStyle.every(c => M.minorUnitSign(c) === M.minorUnitSuffix(c)) && minorStyle.includes('GBP') && minorStyle.includes('USD'))
   t(`the box changes only where a sentence writes an amount: ${differ.map(c => `${c} → "${M.minorUnitSign(c)}"`).join(', ')} (EUR among them; GBP and USD not)`,

@@ -1,0 +1,8 @@
+{
+  "notFoundTitle": "Pagina non trovata",
+  "notFoundBody": "Non abbiamo trovato questa pagina. Potrebbe essere stata spostata, oppure l’indirizzo potrebbe essere errato.",
+  "home": "Vai alla home page",
+  "errorTitle": "Qualcosa è andato storto",
+  "errorBody": "Ci dispiace, questa pagina non si è caricata. Riprova oppure torna alla home page.",
+  "retry": "Riprova"
+}

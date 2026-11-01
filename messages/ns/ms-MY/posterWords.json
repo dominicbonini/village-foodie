@@ -1,0 +1,25 @@
+{
+  "heading": "Minggu {start} hingga {end}",
+  "daysOff": "Tidak berniaga hari ini",
+  "cancelled": "DIBATALKAN",
+  "placeSample": {
+    "nameTownBelow": "Dataran Merdeka\nKuala Lumpur",
+    "nameTown": "Dataran Merdeka, Kuala Lumpur",
+    "nameOnly": "Dataran Merdeka"
+  },
+  "busyWeek": {
+    "venue1": "Dewan Orang Ramai Seksyen 14",
+    "town1": "Petaling Jaya",
+    "venue2": "Padang Rekreasi dan Taman Permainan Tasik Shah Alam",
+    "town2": "Shah Alam",
+    "venue3": "Pasar Malam Jalan Raja",
+    "town3": "Kuala Lumpur",
+    "venue4": "Festival Makanan",
+    "town4": "Johor Bahru",
+    "venue5": "Medan Selera Gurney",
+    "town5": "Georgetown",
+    "venue6": "Padang Kota Lama",
+    "town6": "Georgetown"
+  },
+  "poweredBy": "Dikuasakan oleh HatchGrab"
+}

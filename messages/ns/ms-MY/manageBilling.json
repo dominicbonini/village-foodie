@@ -1,0 +1,44 @@
+{
+  "perTruckMonth": "setiap trak / bulan",
+  "transactionFees": "Yuran transaksi",
+  "comingSoon": "Akan datang",
+  "footnote2Masked": "Pembayaran dalam talian dikuasakan oleh Stripe Connect. Yuran platform dan pemprosesan kad belum dimuktamadkan dan akan disahkan semasa pelancaran.",
+  "card": {
+    "title": "Pengebilan & pembayaran",
+    "managed": "Pengebilan diuruskan oleh HatchGrab",
+    "earlyAccess": "Semasa akses awal, kami menyediakan dan melaraskan pelan secara manual.",
+    "planLine": "{trial, select, yes {{truck} · Pelan {plan} (percubaan)} other {{truck} · Pelan {plan}}}"
+  },
+  "currentPlan": "Pelan semasa",
+  "plan": {
+    "included": "Termasuk pesanan dalam talian bernilai {amount} sebulan.",
+    "includedUnlimited": "Termasuk pesanan dalam talian tanpa had.",
+    "promo": "Harga istimewa.",
+    "promoUntil": "Harga istimewa sehingga {date}.",
+    "ended": "Pelan {plan} anda tamat pada {date}. Anda kini menggunakan {now}.",
+    "trialMonths": "Percubaan percuma {months} bulan."
+  },
+  "trialEnds": "Percubaan tamat {date}",
+  "yourTrialEnds": "Percubaan anda tamat {date}",
+  "notStarted": {
+    "heading": "Percubaan percuma anda belum bermula"
+  },
+  "onTrial": "Anda mempunyai semua ciri. Pilih pelan sebelum percubaan anda tamat.",
+  "onTrialPaidEnd": "Anda mempunyai semua ciri. Apabila percubaan anda tamat, harga pelan {plan} ialah {price} sebulan. Kami akan menghubungi anda sebelum itu untuk menguruskan pembayaran.",
+  "onTrialNoCta": "Anda mempunyai semua ciri.",
+  "noCharge": "🔒 Anda tidak akan dikenakan sebarang caj sepanjang percubaan anda, yang berlangsung sehingga {date}. Pengebilan hanya bermula apabila anda memilih pelan dan memasukkan butiran pembayaran anda. Sehingga itu, tiada apa-apa untuk dibatalkan dan tiada apa-apa untuk dibayar.",
+  "noChargePaidEnd": "🔒 Anda tidak akan dikenakan sebarang caj sepanjang percubaan anda, yang berlangsung sehingga {date}.",
+  "fees": "*Yuran pemprosesan kad standard dikenakan pada pesanan dalam talian",
+  "setUpPayment": "⏱ Pilih pelan sebelum percubaan anda tamat",
+  "changeYourPlan": "Tukar pelan anda",
+  "planButton": "{plan} — {price}",
+  "upgradeModal": {
+    "title": "Tukar ke {plan}",
+    "tagline": "{price} — {description}",
+    "body": "Kami sedang menyediakan pengebilan automatik. Untuk bertukar sekarang, hantar mesej kepada kami dan kami akan sediakannya untuk anda dalam masa 24 jam.",
+    "mailSubject": "Tukar ke {plan} — {truck}",
+    "mailBody": "Hai, saya ingin menukar {truck} ke pelan {plan} ({price}).",
+    "email": "E-mel kami untuk bertukar",
+    "cancel": "Batal"
+  }
+}

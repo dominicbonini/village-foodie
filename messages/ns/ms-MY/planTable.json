@@ -1,0 +1,36 @@
+{
+  "h1": "Semua yang diperlukan untuk menjalankan perkhidmatan anda, dalam setiap pelan.",
+  "lede": "Pesanan, pra-pesanan, kapasiti dan skrin dapur termasuk dalam setiap pelan.{hasUpgrades, select, yes { {plans} menambah {features}, serta yuran yang lebih rendah.} other {}}",
+  "perMonth": "{price} / bulan",
+  "group": {
+    "pay": "Apa yang anda bayar",
+    "run": "Jalankan perkhidmatan anda",
+    "online": "Pesanan dalam talian",
+    "marketing": "Pemasaran & automasi"
+  },
+  "pay": {
+    "included": "Pesanan dalam talian yang termasuk setiap bulan",
+    "fee": "Yuran HatchGrab untuk pesanan kad dalam talian*",
+    "walkUp": "Pesanan walk-in"
+  },
+  "cell": {
+    "unlimited": "Tanpa had",
+    "free": "Percuma",
+    "feeAbove": "<b>{fee}</b> melebihi {included}",
+    "yes": "Termasuk",
+    "none": "Tidak termasuk",
+    "comingSoon": "Akan datang"
+  },
+  "short": {
+    "whatsapp_replies": "WhatsApp",
+    "schedule_graphics": "media sosial",
+    "event_types": "harga acara tersuai"
+  },
+  "meta": {
+    "description": "Setiap ciri HatchGrab dalam setiap pelan, sebelah-menyebelah — {plans}, dengan yuran dan peruntukan.{months, plural, =0 {} other { # bulan pertama anda merangkumi semua ciri.}}"
+  },
+  "notes": {
+    "whatsapp": "Balasan automatik WhatsApp memerlukan akaun WhatsApp Business. Meta mungkin mengenakan caj untuk sesetengah mesej; balasan dijana secara automatik.",
+    "printing": "Cetakan tiket dapur memerlukan pencetak Bluetooth atau berwayar yang serasi (tidak dibekalkan)."
+  }
+}

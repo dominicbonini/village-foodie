@@ -32,7 +32,7 @@ const SEEDS = require('./_country-settings-gb.cjs')
 const snake = o => Object.fromEntries(Object.entries(o).map(([k, v]) => [k.replace(/[A-Z]/g, c => '_' + c.toLowerCase()), v]))
 
 const STUBS = {
-  'next/font/google': ['Archivo', 'Public_Sans', 'Courier_Prime'].map(n => `export const ${n} = () => ({ variable: 'font-${n}', className: 'font-${n}', style: {} })`).join('\n'),
+  'next/font/google': ['Archivo', 'Public_Sans', 'Courier_Prime', 'Noto_Sans_JP', 'Noto_Sans_HK', 'Noto_Sans_Thai', 'Noto_Sans_Arabic'].map(n => `export const ${n} = () => ({ variable: 'font-${n}', className: 'font-${n}', style: {} })`).join('\n'),
   'next/headers': `
     const H = () => globalThis.__mcReq || { headers: {}, cookies: {} }
     export async function headers() { const r = H(); return { get: k => r.headers[k.toLowerCase()] ?? null, has: k => k.toLowerCase() in r.headers } }
@@ -152,7 +152,9 @@ const usTables = () => { const t = PLAN_ROWS(); t.plan_prices = t.plan_prices.ma
 const STAGE_B = fs.existsSync(path.join(REPO, 'lib/plan-offer.ts')) && fs.existsSync(path.join(REPO, 'components/pricing/PlanTable.tsx'))
 const B_REGIONS = {
   landing: ['Pricing Start free. Upgrade when you need to. ', ' Want to see how easy setup is?'],
-  features: [' Upload menu ', ' Less time booking. More time cooking.'],
+  // ⚠️ RE-PINNED (world-countries-1, tagline): the region's end was the footer tagline, now removed (and cut from BEFORE) — it
+  // ends at the footer's link row instead, the words that followed the tagline.
+  features: [' Upload menu ', ' Features Pricing Privacy Terms'],
 }
 const B_TABLE_ATTRS = /^aria-label=(Included|Not included)$/
 const trialMonthsB = () => (CATALOG().plans.find(p => p.isSignupDefault && p.isTrial) || {}).trialMonths
@@ -332,6 +334,14 @@ async function compare() {
     const to = 'Upload a photo of your menu and see it working in under 60 seconds. No signup. No card.'
     if (!BEFORE.landing.text.includes(from)) throw new Error('hero-note re-pin: the stored landing text no longer holds the old line')
     BEFORE.landing.text = BEFORE.landing.text.replace(from, to)
+  }
+  /* ⚠️ RE-PINNED (world-countries-1, tagline, 31 October 2026): "Less time booking. More time cooking." removed from the hero and
+   * every footer (scripts/_lp-tagline.cjs) — cut from every stored page; the landing must have held it. */
+  {
+    const cut = require('./_lp-tagline.cjs').cut   // eslint-disable-line @typescript-eslint/no-require-imports -- CommonJS harness module
+    const was = JSON.stringify(BEFORE.landing)
+    for (const p of Object.keys(BEFORE)) BEFORE[p] = cut(BEFORE[p])
+    if (JSON.stringify(BEFORE.landing) === was) throw new Error('tagline re-pin: the stored landing no longer holds the tagline')
   }
   const GB = SEEDS.gbFromSeed(), US_OFF = SEEDS.usFromSeed()
 

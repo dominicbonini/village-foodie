@@ -1,0 +1,43 @@
+{
+  "allergensUnanswered": {
+    "title": "Pilih cara anda memaparkan maklumat alergen",
+    "detail": "Sehingga anda membuat pilihan, pelanggan tidak akan nampak sebarang hidangan anda — menu melindungi dirinya dengan menyembunyikan apa-apa yang alergennya belum disahkan, dan buat masa ini itu termasuk semuanya.",
+    "where": "Menu → Alergen"
+  },
+  "allergensCardMissing": {
+    "title": "Tambah kad alergen anda",
+    "detail": "Anda telah memilih untuk memaparkan kad alergen, tetapi tiada kad yang disimpan — jadi pelanggan akan diberitahu bahawa maklumat alergen tersedia, kemudian tidak menemui apa-apa.",
+    "where": "Menu → Alergen"
+  },
+  "allergensItemsUnverified": {
+    "title": "{n, plural, other {Sahkan alergen pada {count} hidangan}}",
+    "detail": "{n, plural, other {{u, plural, other {{unverified} daripada {total} hidangan anda disembunyikan daripada pelanggan sehingga anda mengesahkan alergennya.}}}} Hidangan yang dipaparkan tanpa alergen yang disahkan akan dibaca sebagai \"tidak mengandungi apa-apa\", jadi menu menyembunyikannya daripada mengambil risiko itu.",
+    "where": "Menu → Alergen"
+  },
+  "noVan": {
+    "title": "Tambah van",
+    "detail": "Acara dijalankan menggunakan van — tanpa van, tiada apa-apa untuk menerima pesanan.",
+    "where": "Tetapan → Trak anda"
+  },
+  "kitchenCapacityUnset": {
+    "title": "Tetapkan kapasiti dapur anda",
+    "detail": "Tiada kapasiti ditetapkan untuk {vans}. Tanpanya, kami akan terus menjanjikan masa ambil kepada pelanggan yang tidak mungkin dapat dicapai oleh dapur anda.",
+    "where": "Menu → Kapasiti dapur",
+    "unnamedVan": "Van tanpa nama"
+  },
+  "noPrepBearingCategory": {
+    "title": "Beritahu kami berapa lama makanan anda disediakan",
+    "detail": "{categories, select, none {Anda belum ada kategori menu, jadi kami tidak dapat mengira berapa lama sesuatu pesanan mengambil masa.} other {Tiada satu pun kategori anda yang mempunyai masa memasak, jadi setiap pesanan kelihatan siap serta-merta bagi kami. Kami akan terus memberi pelanggan masa ambil yang tidak mungkin dicapai oleh dapur anda, dan semakin sibuk anda, semakin jauh tersasarnya.}}",
+    "where": "Menu → Kategori → Persediaan dapur"
+  },
+  "emailUnverified": {
+    "title": "Sahkan alamat e-mel anda",
+    "detail": "Kami menghantar pemberitahuan pesanan dan pemulihan akaun ke alamat ini. Jika alamat ini salah, anda hanya akan tahu apabila sesuatu sudah pun tidak kena.",
+    "where": "Semak peti masuk anda untuk pautan pengesahan kami"
+  },
+  "emailUnknown": {
+    "title": "Status pengesahan e-mel tidak diketahui",
+    "detail": "Pengesahan e-mel belum disambungkan lagi, jadi perkara ini tidak dapat dinilai. Ia sengaja menyekat dan bukannya lulus secara senyap.",
+    "where": "—"
+  }
+}

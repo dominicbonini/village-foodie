@@ -7,7 +7,6 @@
   "hero": {
     "title": "Objednávkový systém vytvořený pro <lean>food trucky.</lean>",
     "subSmall": "Nahrajte svůj jídelní lístek, bez registrace.<br></br>Funkční ukázku uvidíte za méně než 60 sekund.",
-    "tagline": "Méně papírování.<br></br>Více <lean>vaření.</lean>",
     "cta": "Nahrát jídelní lístek →",
     "ctaNote": "<lead>Nahrajte fotku svého jídelního lístku a za méně než 60 sekund uvidíte, jak to funguje.</lead><small>Bez registrace. Bez platební karty.</small>"
   },

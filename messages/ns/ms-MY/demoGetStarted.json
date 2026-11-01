@@ -1,0 +1,103 @@
+{
+  "upload": {
+    "bannerButton": "Simpan menu saya →",
+    "heading": "Sediakan trak anda",
+    "sub": "Menu anda dibawa terus.",
+    "privacy": "Kami hanya akan menggunakan ini untuk menyediakan trak anda dan menghantar pautan demo anda — lihat <link>dasar privasi</link> kami."
+  },
+  "sample": {
+    "bannerButton": "Sediakan trak saya →",
+    "heading": "Sediakan trak anda",
+    "sub": "Seterusnya, anda akan memuat naik menu anda sendiri — hanya seminit.",
+    "privacy": "Kami hanya akan menggunakan ini untuk menyediakan trak anda dan menghantar pautan demo anda — lihat <link>dasar privasi</link> kami."
+  },
+  "saveOnly": {
+    "bannerButton": "Simpan menu saya →",
+    "heading": "Simpan demo anda",
+    "sub": "Kami akan menyimpannya selama 14 hari dan menghantar pautan terus kepada anda melalui e-mel.",
+    "privacy": "Kami hanya akan menggunakan ini untuk menghantar pautan demo anda — lihat <link>dasar privasi</link> kami."
+  },
+  "confirmationHeading": "Semuanya sudah siap",
+  "postSaveButton": "Sediakan trak saya →",
+  "enterSetupButton": "Sediakan trak saya →",
+  "emailOnlyLink": "E-melkan sahaja pautan kepada saya untuk kembali ke demo ini",
+  "sendLinkButton": "Hantar pautan kepada saya",
+  "savingButton": "Menyimpan…",
+  "continueButton": "Teruskan →",
+  "createAccountButton": "Cipta akaun saya →",
+  "retryButton": "Cuba lagi",
+  "backToDemoButton": "Kembali ke demo",
+  "savedStatus": "{hasDate, select, yes {✓ Disimpan — disimpan sehingga {date}} other {✓ Disimpan}}",
+  "back": "Kembali",
+  "close": "Tutup",
+  "truckStepHeading": "Tentang trak anda",
+  "detailsStepHeading": "Selesaikan persediaan",
+  "stepper": {
+    "details": "Butiran anda",
+    "menu": "Menu",
+    "allergens": "Alergen",
+    "kitchen": "Persediaan dapur",
+    "schedule": "Jadual"
+  },
+  "confirmEmailed": "Kami telah menghantar e-mel kepada anda berisi pautan terus ke demo ini — tidak perlu log masuk.",
+  "confirmKeepUntil": "Kami akan menyimpannya sehingga <b>{date}</b>. Menu anda akan dibawa bersama apabila anda membuat persediaan sebenar.",
+  "loading": "Memuatkan…",
+  "firstName": "Nama pertama",
+  "lastName": "Nama akhir",
+  "truckName": "Nama trak",
+  "truckNamePlaceholder": "cth. Dapur Kampung",
+  "cuisine": "Masakan",
+  "logoLabel": "Logo <opt>(pilihan)</opt>",
+  "logoPreviewAlt": "Pratonton logo",
+  "changeLogo": "Tukar logo",
+  "removeLogo": "Buang",
+  "uploadLogo": "📷 Muat naik logo",
+  "readyTitle": "Akaun anda sudah sedia",
+  "readyBody": "Sekarang mari selesaikan persediaan trak anda — menu, alergen dan dapur anda.",
+  "hangTight": "Tunggu sebentar — sedang menyediakan semuanya.",
+  "stage": {
+    "account": "Mencipta akaun anda",
+    "truck": "Menyediakan trak anda",
+    "menu": "Memuatkan menu anda"
+  },
+  "stageState": {
+    "done": "selesai",
+    "recognised": "anda sudah ada akaun",
+    "failed": "gagal",
+    "active": "sedang berjalan",
+    "pending": "menunggu"
+  },
+  "signIn": "Log masuk",
+  "phone": "Telefon",
+  "onWhatsapp": "Nombor ini ada WhatsApp",
+  "email": "E-mel",
+  "emailPlaceholder": "you@yourtruck.co.uk",
+  "settingUpAs": "Menyediakan sebagai <b>{email}</b> <change>tukar</change>",
+  "password": "Kata laluan",
+  "passwordPlaceholder": "Sekurang-kurangnya 8 aksara",
+  "hidePassword": "Sembunyikan kata laluan",
+  "showPassword": "Tunjukkan kata laluan",
+  "promoLabel": "Ada kod? <opt>(pilihan)</opt>",
+  "promoPlaceholder": "Masukkan di sini",
+  "agreeTerms": "Saya bersetuju dengan <terms>Terma</terms> dan <privacy>Dasar Privasi</privacy>.",
+  "freeMonth": "Persediaan tidak akan memulakan bulan percuma anda. Ia bermula apabila anda memilih acara langsung pertama anda — bila-bila masa anda bersedia.",
+  "fieldError": {
+    "firstName": "Beritahu kami nama pertama anda.",
+    "lastName": "Dan nama akhir anda.",
+    "truck": "Berikan nama kepada trak anda.",
+    "cuisine": "Beritahu kami apa yang anda masak.",
+    "phoneMissing": "Tambah nombor telefon — pelanggan dan kami menggunakannya untuk menghubungi anda.",
+    "email": "Masukkan alamat e-mel yang sah.",
+    "password": "Kata laluan mestilah sekurang-kurangnya 8 aksara.",
+    "terms": "Sila terima terma untuk meneruskan."
+  },
+  "error": {
+    "saveFailed": "Tidak dapat menyimpannya — cuba lagi.",
+    "savedNoEmail": "Disimpan — tetapi kami tidak dapat menghantar pautan melalui e-mel sebentar tadi.",
+    "unreachable": "Tidak dapat menghubungi kami sebentar tadi — cuba lagi.",
+    "createAccountFailed": "Tidak dapat mencipta akaun anda.",
+    "truckCreateFailed": "Akaun anda sudah sedia, tetapi kami tidak dapat mencipta trak anda. Cuba lagi.",
+    "truckUnreachable": "Akaun anda sudah sedia, tetapi kami tidak dapat mencipta trak anda sebentar tadi. Cuba lagi.",
+    "truckNoToken": "Trak anda sudah disediakan, tetapi kami tidak dapat membukanya sebentar tadi. Cuba lagi."
+  }
+}

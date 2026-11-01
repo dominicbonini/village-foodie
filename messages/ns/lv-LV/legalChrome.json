@@ -13,5 +13,6 @@
   "countryTerms": "Valstu noteikumi",
   "contact": "Kontakti",
   "lastUpdated": "Pēdējoreiz atjaunināts: {date}",
-  "questions": "Jautājumi? <link>Sazinieties ar mums</link> — mēs esam īsti cilvēki."
+  "questions": "Jautājumi? <link>Sazinieties ar mums</link> — mēs esam īsti cilvēki.",
+  "translationNote": "Šis ir tulkojums. Ja tas atšķiras no <link>angļu valodas versijas</link>, noteicošā ir angļu valodas versija."
 }

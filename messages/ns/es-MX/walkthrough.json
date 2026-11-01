@@ -1,0 +1,11 @@
+{
+  "stops": {
+    "menu": {
+      "title": "Menú"
+    },
+    "build": {
+      "title": "Combos, extras y ventas sugeridas",
+      "body": "Los combos, las ventas sugeridas, las personalizaciones y tu capacidad de cocina están en Menú: échale un vistazo."
+    }
+  }
+}

@@ -13,5 +13,6 @@
   "countryTerms": "Uvjeti za zemlju",
   "contact": "Kontakt",
   "lastUpdated": "Posljednje ažuriranje: {date}",
-  "questions": "Imate pitanja? <link>Javite nam se</link> — mi smo stvarni ljudi."
+  "questions": "Imate pitanja? <link>Javite nam se</link> — mi smo stvarni ljudi.",
+  "translationNote": "Ovo je prijevod. Ako se razlikuje od <link>verzije na engleskom jeziku</link>, mjerodavna je verzija na engleskom jeziku."
 }

@@ -1,0 +1,69 @@
+{
+  "close": "Tutup",
+  "cancel": "Batal",
+  "selectReason": "Pilih sebab",
+  "reject": {
+    "title": "Tolak pesanan #{orderId}?",
+    "reasonLabel": "Sebab — wajib (dipaparkan kepada pelanggan)",
+    "reason": "{reason, select, sold_out {Satu item sudah habis dijual} too_busy {Terlalu sibuk — tidak sempat siapkan} closing_soon {Akan tutup tidak lama lagi} other {Lain-lain}}",
+    "noteRequired": "Sebab — wajib",
+    "noteOptional": "Nota tambahan — pilihan",
+    "notePlaceholder": "Tambah butiran lanjut untuk pelanggan…",
+    "keep": "Kekalkan pesanan",
+    "confirm": "Tolak pesanan"
+  },
+  "eventCancel": {
+    "title": "Batalkan acara ini?",
+    "affected": "{n, plural, other {{count} pesanan}} akan dibatalkan dan pelanggan akan dimaklumkan.",
+    "reasonLabel": "Sebab — pilihan",
+    "reason": "{reason, select, vehicle_breakdown {Kenderaan rosak} weather {Cuaca} venue_issue {Masalah tempat} personal_emergency {Kecemasan peribadi} other {Lain-lain}}",
+    "messageLabel": "Mesej kepada pelanggan — pilihan",
+    "messagePlaceholder": "cth. Maaf, treler kami rosak dalam perjalanan ke tempat acara…",
+    "keep": "Kekalkan acara",
+    "cancelling": "Membatalkan…",
+    "confirm": "Batalkan acara"
+  },
+  "actions": {
+    "startEvent": "{restart, select, yes {Mulakan semula acara} other {Mulakan acara}}",
+    "changeEvent": "Tukar acara",
+    "changeEventType": "Tukar jenis acara…",
+    "privateLink": "Pautan peribadi & kod QR",
+    "noteLabel": "Nota untuk pelanggan",
+    "notePlaceholder": "cth. Letak kereta di tempat letak kereta utama, cari kanopi oren",
+    "noteHint": "Dipaparkan kepada pelanggan di halaman pesanan, di bawah butiran acara anda.",
+    "saveNote": "Simpan nota",
+    "resume": "Sambung semula pesanan",
+    "pause": "Jeda pesanan",
+    "changeFinishTime": "Tukar masa tamat acara",
+    "finishEvent": "Tamatkan acara",
+    "cancelEvent": "Batalkan acara"
+  },
+  "finish": {
+    "confirmTitle": "Tukar masa tamat?",
+    "willFinish": "Acara ini akan tamat pada <b>{selected}</b>{hasCurrent, select, yes {, bukan <b>{current}</b>} other {}}.",
+    "dueAfter": "<b>{n, plural, other {{count} pesanan}} dijadualkan selepas {selected}.</b> {n, plural, other {Pesanan tersebut}} kekal di papan dan masih perlu disediakan. Menukar masa tamat hanya menghalang pesanan BAHARU dibuat untuk masa yang lebih lewat.",
+    "saving": "Menyimpan…",
+    "confirm": "Tukar masa tamat",
+    "keepCurrent": "Kekalkan {current}",
+    "keepAsIs": "Kekalkan seperti sedia ada",
+    "title": "Tukar masa tamat",
+    "currentlySet": "Acara ini kini ditetapkan untuk tamat pada <b>{current}</b>.",
+    "noFinishTime": "Acara ini tiada masa tamat yang ditetapkan.",
+    "noTimesLeft": "Tiada lagi masa yang tinggal hari ini. Gunakan Tamatkan acara.",
+    "newFinishTime": "Masa tamat baharu",
+    "optionCurrent": "{time} (semasa)",
+    "earlier": "Masa itu lebih awal daripada masa tamat semasa. Pelanggan tidak akan dapat membuat pesanan untuk masa selepasnya.",
+    "review": "Semak perubahan",
+    "optionNextDay": "{time} (hari berikutnya)"
+  },
+  "extraWait": {
+    "title": "Tambah masa menunggu",
+    "hint": "Ditambah pada masa ambil yang dimaklumkan untuk pesanan baharu. Ia tidak mengubah masa tamat acara.",
+    "option": "+{mins} min"
+  },
+  "picker": {
+    "reconnect": "Sambung semula untuk memuatkan",
+    "selected": "Dipilih",
+    "status": "{tone, select, paused {⏸ Dijeda} live {● Berlangsung} finished {● Tamat} cancelled {Dibatalkan} other {Belum bermula}}"
+  }
+}

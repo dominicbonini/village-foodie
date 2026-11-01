@@ -1,0 +1,43 @@
+{
+  "allergensUnanswered": {
+    "title": "Escolha como mostrar as informações de alérgenos",
+    "detail": "Até você escolher, os clientes não veem nenhum prato — o cardápio se protege ocultando tudo que tem alérgenos não confirmados, e agora isso é tudo.",
+    "where": "Cardápio → Alérgenos"
+  },
+  "allergensCardMissing": {
+    "title": "Adicione sua ficha de alérgenos",
+    "detail": "Você escolheu mostrar uma ficha de alérgenos, mas nenhuma foi salva — os clientes seriam avisados de que há informações de alérgenos e não encontrariam nada.",
+    "where": "Cardápio → Alérgenos"
+  },
+  "allergensItemsUnverified": {
+    "title": "{n, plural, one {Confirme os alérgenos de {count} prato} other {Confirme os alérgenos de {count} pratos}}",
+    "detail": "{n, plural, one {Seu prato fica oculto para os clientes até você confirmar os alérgenos dele.} other {{u, plural, one {{unverified} dos seus {total} pratos está oculto para os clientes até você confirmar os alérgenos dele.} other {{unverified} dos seus {total} pratos estão ocultos para os clientes até você confirmar os alérgenos deles.}}}} Um prato exibido sem alérgenos confirmados é lido como “não contém nenhum”, então o cardápio prefere ocultá-lo a correr esse risco.",
+    "where": "Cardápio → Alérgenos"
+  },
+  "noVan": {
+    "title": "Adicione uma van",
+    "detail": "Os eventos acontecem em uma van — sem nenhuma, não há por onde receber pedidos.",
+    "where": "Configurações → Seus food trucks"
+  },
+  "kitchenCapacityUnset": {
+    "title": "Defina a capacidade da cozinha",
+    "detail": "Nenhuma capacidade definida para: {vans}. Sem ela, vamos continuar prometendo aos clientes horários de retirada que a sua cozinha não tem como cumprir.",
+    "where": "Cardápio → Capacidade da cozinha",
+    "unnamedVan": "Van sem nome"
+  },
+  "noPrepBearingCategory": {
+    "title": "Conte quanto tempo sua comida leva para ficar pronta",
+    "detail": "{categories, select, none {Você ainda não tem categorias no cardápio, então não temos como calcular quanto tempo um pedido leva.} other {Nenhuma das suas categorias tem tempo de preparo definido, então para nós todo pedido parece instantâneo. Continuaríamos dando aos clientes horários de retirada que a sua cozinha não tem chance de cumprir — e quanto mais movimento, maior o atraso.}}",
+    "where": "Cardápio → Categorias → Configuração da cozinha"
+  },
+  "emailUnverified": {
+    "title": "Confirme seu e-mail",
+    "detail": "Enviamos os avisos de pedidos e a recuperação de conta para esse endereço. Se ele estiver errado, você só descobre quando algo já deu errado.",
+    "where": "Procure nosso link de confirmação na sua caixa de entrada"
+  },
+  "emailUnknown": {
+    "title": "Status de confirmação do e-mail desconhecido",
+    "detail": "A verificação de e-mail ainda não está integrada, então isso não pode ser avaliado. Por segurança, isso bloqueia em vez de passar sem aviso.",
+    "where": "—"
+  }
+}

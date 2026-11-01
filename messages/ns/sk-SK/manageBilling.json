@@ -24,8 +24,10 @@
     "heading": "Vaše bezplatné skúšobné obdobie sa ešte nezačalo"
   },
   "onTrial": "Máte k dispozícii všetky funkcie. Vyberte si plán pred koncom skúšobného obdobia.",
+  "onTrialPaidEnd": "Máte k dispozícii všetky funkcie. Po skončení skúšobného obdobia bude plán {plan} stáť {price} mesačne. Ešte predtým sa vám ozveme, aby sme nastavili platbu.",
   "onTrialNoCta": "Máte k dispozícii všetky funkcie.",
   "noCharge": "🔒 Počas skúšobného obdobia, ktoré trvá do {date}, vám nebudeme nič účtovať. Fakturácia sa začne až vtedy, keď si vyberiete plán a zadáte platobné údaje. Dovtedy nie je čo rušiť ani platiť.",
+  "noChargePaidEnd": "🔒 Počas skúšobného obdobia, ktoré trvá do {date}, vám nebudeme nič účtovať.",
   "fees": "*Pri online objednávkach sa účtujú štandardné poplatky za spracovanie platieb kartou",
   "setUpPayment": "⏱ Vyberte si plán pred koncom skúšobného obdobia",
   "changeYourPlan": "Zmeniť plán",

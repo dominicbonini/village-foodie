@@ -1,0 +1,16 @@
+{
+  "demoTemplates": {
+    "pizza": {
+      "items": {
+        "rocketParmesan": "Arúgula y parmesano"
+      }
+    },
+    "burgers": {
+      "items": {
+        "doubleBacon": "Doble tocino",
+        "skinOnFries": "Papas fritas con cáscara",
+        "loadedCheeseFries": "Papas con queso"
+      }
+    }
+  }
+}

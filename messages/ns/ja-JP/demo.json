@@ -1,0 +1,29 @@
+{
+  "notAvailable": "デモではご利用いただけません",
+  "demoMode": "デモモード",
+  "loopLands": "実際の注文もこのように届きます",
+  "showMe": "見てみる",
+  "noCard": "{sub}カード登録は不要です。",
+  "notYet": "まだ",
+  "cashAndCollected": "現金・受け取り済み",
+  "logoPlaceholder": "ここにロゴ",
+  "welcomeTitle": "{sample, select, yes {サンプルのデモをご用意しました} other {専用のデモをご用意しました}}",
+  "welcomeIntro": "{sample, select, yes {仕組みを確認できるよう<b>仮のメニュー</b>を表示しています。いつでも自分のメニューをアップロードして、オリジナルにできます。} other {実際の画面に、お客様のメニューとブランドを表示しています。}}表示中の注文はサンプルなので、混雑時の様子を確認できます。",
+  "twoThings": "試してほしいことが2つあります：",
+  "hitButton": "注文の<b>{button}</b>を押す",
+  "scanQr": "<b>QRコード</b>を読み取るかリンクをタップして、お客様として注文し、届く様子を確認する",
+  "qrAlt": "お客様用注文ページのQRコード",
+  "openHere": "またはこのデバイスで開く",
+  "copyLink": "リンクをコピー",
+  "copyDescribedAs": "注文リンク",
+  "noLinkTitle": "お客様用の注文リンク",
+  "noLinkBody": "注文ページのリンクは右上のメニューにあります。",
+  "asLive": "注文とキッチンの流れは、本番とまったく同じです。",
+  "startExploring": "さっそく試す",
+  "signupOffer": {
+    "heading": "今すぐ登録して1か月無料でお試しください",
+    "sub": "無料期間は、本番運用を開始するまで始まりません。"
+  },
+  "cashIcon": "💴",
+  "walkBanner": "デモ・お客様に表示されるメニュー画面です。料金は発生せず、メールも送信されません。"
+}

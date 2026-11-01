@@ -1,0 +1,58 @@
+{
+  "label": {
+    "street": "住所",
+    "postcode": "郵便番号",
+    "zip": "ZIPコード",
+    "eircode": "Eircode",
+    "postalCode": "郵便番号",
+    "state": "州",
+    "stateTerritory": "州または準州",
+    "province": "州",
+    "county": "カウンティ",
+    "prefecture": "都道府県",
+    "emirate": "首長国",
+    "region": "地域",
+    "area": "地域（市区町村）",
+    "townOrArea": "市区町村・地域",
+    "city": "市区町村",
+    "suburb": "地区",
+    "townOrCity": "市区町村"
+  },
+  "short": {
+    "area": "地域",
+    "townOrArea": "市区町村・地域",
+    "city": "市区町村",
+    "suburb": "地区",
+    "townOrCity": "市区町村"
+  },
+  "inSentence": {
+    "postcode": "郵便番号",
+    "zip": "ZIPコード",
+    "eircode": "Eircode",
+    "postalCode": "郵便番号"
+  },
+  "withArticle": {
+    "postcode": "郵便番号",
+    "zip": "ZIPコード",
+    "eircode": "Eircode",
+    "postalCode": "郵便番号"
+  },
+  "tradeLabel": {
+    "area": "市区町村",
+    "townOrArea": "市区町村・地域",
+    "city": "市区町村",
+    "suburb": "地区",
+    "townOrCity": "市区町村"
+  },
+  "basedIn": {
+    "area": "拠点の市区町村",
+    "townOrArea": "拠点の市区町村・地域",
+    "city": "拠点の市区町村",
+    "suburb": "拠点の地区",
+    "townOrCity": "拠点の市区町村"
+  },
+  "example": "例：{example}",
+  "customersSee": "お客様に表示される内容：",
+  "postalWarning": "正しい{article}ではないようです（例：{example}）。このまま保存することもできます。",
+  "regionChoose": "選択…"
+}

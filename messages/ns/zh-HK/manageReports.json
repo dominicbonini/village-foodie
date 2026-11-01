@@ -1,0 +1,92 @@
+{
+  "filter": {
+    "dateRange": "📅 日期範圍",
+    "event": "📍 活動",
+    "filterBy": "篩選方式",
+    "show": "顯示",
+    "range": "<from></from><sep>至</sep><until></until>",
+    "selectEvent": "選擇活動…",
+    "eventOption": "{venue} · {date}",
+    "unnamedEvent": "活動",
+    "viewReport": "查看報告",
+    "loading": "載入中…",
+    "orders": "📋 訂單",
+    "items": "📦 食品",
+    "exportCsv": "⬇ 匯出 CSV"
+  },
+  "empty": {
+    "noOrders": "此期間沒有訂單。",
+    "selectEvent": "請在上方選擇活動以查看其報告。"
+  },
+  "summary": {
+    "totals": "{n, plural, other {{count} 張訂單}} · {total}"
+  },
+  "revenue": {
+    "title": "收入明細",
+    "deals": "套餐收入",
+    "modifiers": "附加選項加價",
+    "foodSales": "食品銷售",
+    "total": "總計",
+    "other": "其他",
+    "tax": "稅項",
+    "tips": "小費",
+    "serviceFees": "服務費",
+    "cardFees": "刷卡手續費"
+  },
+  "itemsSold": {
+    "title": "已售食品"
+  },
+  "dealsCard": {
+    "title": "套餐優惠"
+  },
+  "custom": {
+    "title": "自訂選項",
+    "paidModifiers": "收費附加選項",
+    "customerNotes": "顧客備註",
+    "note": "「{note}」"
+  },
+  "table": {
+    "item": "食品",
+    "modifier": "附加選項",
+    "qty": "數量",
+    "total": "總計",
+    "date": "日期",
+    "time": "時間",
+    "channel": "渠道"
+  },
+  "breakdown": {
+    "orders": "訂單明細",
+    "items": "食品明細"
+  },
+  "channel": {
+    "online": "網上",
+    "walkUp": "現場"
+  },
+  "csv": {
+    "orderId": "訂單編號",
+    "date": "日期",
+    "event": "活動",
+    "timePlaced": "落單時間",
+    "collectionTime": "取餐時間",
+    "customerName": "顧客姓名",
+    "orderType": "訂單類型",
+    "items": "食品",
+    "deals": "套餐",
+    "modifiers": "附加選項",
+    "notes": "備註",
+    "subtotal": "小計",
+    "tip": "小費",
+    "serviceFee": "服務費",
+    "total": "總計",
+    "itemName": "食品名稱",
+    "qty": "數量",
+    "unitPrice": "單價",
+    "itemTotal": "食品總額",
+    "orderTotal": "訂單總額",
+    "unknownEvent": "不明活動",
+    "asap": "盡快",
+    "unknownCustomer": "不明",
+    "customerOnline": "顧客網上落單",
+    "placedByTruck": "美食車代落單"
+  }
+}

@@ -1,0 +1,129 @@
+{
+  "docTitle": "{truck}キッチン",
+  "loading": "キッチンを読み込み中…",
+  "pin": {
+    "title": "PINを入力",
+    "placeholder": "PIN",
+    "unlock": "ロック解除",
+    "unreachable": "現在サーバーに接続できません。PINは正しいので、少し待ってからもう一度お試しください。",
+    "incorrect": "PINが違います",
+    "generic": "問題が発生しました。もう一度お試しください。"
+  },
+  "error": {
+    "linkInvalid": "このリンクは無効になりました。",
+    "couldNotLoad": "注文を読み込めませんでした",
+    "truckNotFound": "キッチンカーが見つかりません"
+  },
+  "degraded": {
+    "at": "⚠️ サーバーに接続できません。{time}時点の伝票を表示しています。新しい注文が表示されていない可能性があります。",
+    "earlier": "⚠️ サーバーに接続できません。以前の伝票を表示しています。新しい注文が表示されていない可能性があります。"
+  },
+  "header": {
+    "dashboard": "ダッシュボード",
+    "backTitle": "ダッシュボードに戻る",
+    "list": "リスト",
+    "grid": "グリッド",
+    "full": "詳細",
+    "cook": "調理用",
+    "fullTitle": "詳細カード：価格や支払い情報を店頭と同じように表示します。",
+    "cookTitle": "調理用カード：大きな文字で、カテゴリごとにまとめ、価格は表示しません。",
+    "readyStep": "準備完了の操作",
+    "readyOnlyTitle": "この画面は準備完了の操作だけを担当しているため、オフにできません。",
+    "readyOnTitle": "この画面で注文を準備完了にします。別の画面に任せる場合はタップしてください。",
+    "readyOffTitle": "別の画面で注文を準備完了にします。この画面で行う場合はタップしてください。",
+    "handover": "支払いと受け渡し",
+    "handoverOnlyTitle": "この画面は支払いの受け付けだけを担当しているため、オフにできません。",
+    "handoverOnTitle": "この画面で支払いを受けて商品をお渡しします。別の画面に任せる場合はタップしてください。",
+    "handoverOffTitle": "別の画面で支払いを受けます。この画面で行う場合はタップしてください。",
+    "soundOn": "新規注文の通知音：オン（タップでオフ）",
+    "soundOff": "新規注文の通知音：オフ（タップでオン）",
+    "screenOn": "画面オン",
+    "screenOff": "画面オフ",
+    "screenSettings": "画面設定",
+    "manageEvent": "出店を管理",
+    "manageEventTitle": "出店を管理：開始、一時停止、変更、終了",
+    "soundSettings": "サウンド設定",
+    "soundSettingsTitle": "このデバイスで鳴らす音",
+    "cashIcon": "💴"
+  },
+  "panel": {
+    "viewSettings": "表示設定",
+    "on": "オン",
+    "off": "オフ",
+    "newOrderSound": "新規注文の通知音",
+    "soundNeedsConfirming": "承認が必要な注文のみ",
+    "soundAll": "すべての新規注文",
+    "soundDue": "調理開始時刻になったら音を鳴らす",
+    "soundDueHelp": "伝票が黄色に変わると音が鳴ります。",
+    "deviceSettings": "デバイス設定",
+    "sound": "サウンド",
+    "close": "閉じる"
+  },
+  "banner": {
+    "mismatchTitle": "⚠️ この出店の注文を読み込めませんでした",
+    "mismatchBody": "サーバーから別の出店の情報が返ってきたため、誤った注文を表示しないよう何も表示していません。出店を選び直すか、再読み込みしてください。",
+    "mismatchBodyAt": "サーバーから別の出店の情報が返ってきたため、{venue}の誤った注文を表示しないよう何も表示していません。出店を選び直すか、再読み込みしてください。",
+    "paused": "⏸ 注文受付を一時停止中{reason, select, offline {（デバイスがオフライン）} other {}}：お客様は注文できません",
+    "resume": "再開",
+    "offline": "接続がありません。最後に取得した注文を表示しています。お客様のオンライン注文は一時停止中です。",
+    "queued": "{n, plural, other {{count}件の操作が送信待ち}}",
+    "extraWait": "⏱ 待ち時間+{mins}分を適用中",
+    "clear": "解除",
+    "toMake": "調理待ち",
+    "today": "本日・{range}",
+    "onDate": "{date}・{range}",
+    "startEvent": "出店を開始",
+    "recentlyClosed": "出店終了・{venue}は{time}に終了しました",
+    "eventStatus": "{tone, select, paused {⏸ 一時停止中} live {● 営業中} finished {● 終了} cancelled {中止} other {未開始}}"
+  },
+  "board": {
+    "queueClear": "調理待ちはありません",
+    "doneToday": "本日の完了・{count}",
+    "paid": "✓ 支払い済み",
+    "cardHeld": "カード仮押さえ",
+    "due": "未払い{amount}"
+  },
+  "screenOff": {
+    "title": "画面オフを許可しますか？",
+    "bodyVans": "{vans}{n, plural, other {}}ではオフライン検知が有効です。画面がオフになると、デバイスがオンライン信号を送れなくなり、お客様の注文受付が一時停止される場合があります。",
+    "body": "画面がオフになると、デバイスがオンライン信号を送れなくなる場合があります。",
+    "keepHint": "注文受付を途切れさせないよう、画面はオンのままにしてください。",
+    "keep": "画面をオンのままにする",
+    "allow": "画面オフを許可"
+  },
+  "event": {
+    "change": "出店を変更",
+    "cancel": "キャンセル",
+    "waitActive": "⏱ +{mins}分を適用中・タップで解除",
+    "addWait": "⏱ 待ち時間を追加",
+    "endTitle": "出店を終了しますか？",
+    "endEarly": "この出店は{time}まで予定されています。終了すると、以降の注文は受け付けられません。出店を終了しますか？",
+    "endNow": "この出店を終了しますか？以降の注文は受け付けられません。",
+    "yes": "はい",
+    "started": "出店を開始しました",
+    "startFutureConfirm": "この出店は{date}の予定です。今すぐ開始しますか？",
+    "finishTimeNow": "終了時刻を{time}に変更しました",
+    "finished": "出店を終了しました",
+    "cancelled": "出店を中止しました",
+    "noteSaved": "メモを保存しました",
+    "pauseConfirm": "注文を一時停止しますか？再開するまで、お客様には「注文一時停止中」と表示されます。",
+    "switchConfirm": "{from}から{to}に切り替えますか？{n, plural, =0 {} other {この画面の注文{count}件が置き換わります。}}現在の出店をタップすると元に戻せます。"
+  },
+  "intro": {
+    "title": "これがキッチンディスプレイです",
+    "p1": "調理担当者用の画面で、作るべき注文を作る順に表示します。グリルの横の画面にはこれを表示し、カウンターでは注文ダッシュボードを使います。",
+    "p2": "カードはタップすると次へ移動するので、調理担当者はいつでも次に何を作るかがわかり、大声で伝え合う必要もありません。ここに表示されているのはすべてデモデータです。自由に試してみてください。",
+    "gotIt": "わかりました"
+  },
+  "toast": {
+    "failed": "失敗しました",
+    "rejectFailed": "却下できませんでした",
+    "buzzerSaved": "呼び出しベル{n}を保存しました",
+    "buzzerRemoved": "呼び出しベル{n}を外しました",
+    "buzzerRemovedNone": "呼び出しベルを外しました",
+    "buzzerAssigned": "呼び出しベル{n}を割り当てました",
+    "buzzerAssignedFrom": "呼び出しベル{n}を割り当てました（#{from}から移動）",
+    "buzzerRemoveFailed": "{had, select, no {{target, select, order {注文#{id}} other {この注文}}から呼び出しベルを外せませんでした} other {呼び出しベル{n}を外せませんでした。まだ{target, select, order {注文#{id}} other {この注文}}に割り当てられています}}",
+    "buzzerAssignFailed": "呼び出しベル{n}を{target, select, order {注文#{id}} other {この注文}}に割り当てられませんでした。{had, select, yes {呼び出しベル{prior}のままです} other {呼び出しベルは未割り当てのままです}}"
+  }
+}

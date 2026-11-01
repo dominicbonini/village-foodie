@@ -1,0 +1,12 @@
+{
+  "bubbleArrived": "El pedido que acabas de hacer llegó aquí al instante, con la hora de recogida. Toca Cocinar.",
+  "bubbleReady": "Cuando la comida esté lista, toca Listo. Tu cliente recibe el aviso al momento.",
+  "thatsIt": "Eso es HatchGrab: tus clientes piden desde el celular, tú lo ves aquí y ellos recogen sin hacer fila. Tu menú ya está configurado.",
+  "startFree": "{months, plural, =0 {Empezar gratis y conservar mi menú} one {Empezar gratis durante # mes y conservar mi menú} many {Empezar gratis durante # de meses y conservar mi menú} other {Empezar gratis durante # meses y conservar mi menú}}",
+  "phoneLabel": "El celular de tu cliente",
+  "waitingBody": "Pide algo en el celular. Aparece aquí en cuanto tu cliente toca “Hacer pedido”.",
+  "bandTitle": "Eso es HatchGrab. Tu menú ya está configurado.",
+  "bandStart": "Empezar gratis y conservar mi menú",
+  "goneBody": "Las demos se eliminan después de un día. Puedes crear una nueva con tu menú en menos de un minuto.",
+  "backToMenu": "Volver al menú"
+}

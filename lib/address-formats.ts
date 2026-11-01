@@ -25,22 +25,26 @@
 // suburb / townOrCity), so they translate. Examples, patterns, region names, templates and the AI rules ARE here: they
 // are facts about a country's addresses ("CB8 8PD" is the same in every language), not words to translate.
 
-export type AddressFormatKey = 'gb' | 'us' | 'ie' | 'au' | 'nz' | 'ca' | 'fr' | EuropeKey
+export type AddressFormatKey = 'gb' | 'us' | 'ie' | 'au' | 'nz' | 'ca' | 'fr' | EuropeKey | WorldKey
 /** europe-settings (22 October 2026): the rest of Stripe's Europe, one format each. */
 export type EuropeKey = 'at' | 'be' | 'bg' | 'hr' | 'cy' | 'cz' | 'dk' | 'ee' | 'fi' | 'de' | 'gi' | 'gr' | 'hu' | 'it' | 'lv' | 'li' | 'lt' | 'lu' | 'mt' | 'nl' | 'no' | 'pl' | 'pt' | 'ro' | 'sk' | 'si' | 'es' | 'se' | 'ch'
+/** world-countries-1 (31 October 2026): Brazil, Mexico, Japan, Singapore, Hong Kong, Malaysia, Thailand and the UAE. */
+export type WorldKey = 'br' | 'mx' | 'jp' | 'sg' | 'hk' | 'my' | 'th' | 'ae'
 /** The two values `country_settings.address_format` held before this stage. Still accepted (see `addressFormatKeyOf`)
  *  so a deploy is safe before the "run after deploy" SQL maps them. */
 export type LegacyAddressStyle = 'postcode' | 'zip_state'
 
 export type AddressFieldKey = 'street' | 'suburb' | 'locality' | 'region' | 'postalCode'
 export type PostalLabel = 'postcode' | 'eircode' | 'zip' | 'postalCode'
-export type RegionLabel = 'state' | 'stateTerritory' | 'province' | 'county'
+export type RegionLabel = 'state' | 'stateTerritory' | 'province' | 'county' | 'prefecture' | 'emirate' | 'region'
 /** 'area' is GB/US's "Area (village, town or city)" (en-US "City or town"); 'townOrArea' is Ireland's "Town or area". */
 export type LocalityLabel = 'area' | 'townOrArea' | 'city' | 'suburb' | 'townOrCity'
 export type FieldLabel = PostalLabel | RegionLabel | LocalityLabel | 'street'
 export type PostalNormaliser = 'gb' | 'eircode' | 'digits' | 'zip' | 'ca' | 'none'
   // europe-settings: "110 00" (CZ, SK, GR, SE), "00-950" (PL), "1000-001" (PT), "1012 JS" (NL), "VLT 1117" (MT), "L-1648", "LV-1050", "LT-01143"
   | 'nnn_nn' | 'nn_nnn' | 'nnnn_nnn' | 'nnnn_aa' | 'mt' | 'lu' | 'lv' | 'lt'
+  // world-countries-1: "01310-100" (Brazil's CEP), "100-0005" (Japan's 郵便番号)
+  | 'nnnnn_nnn' | 'nnn_nnnn'
 
 export interface AddressField { key: AddressFieldKey; required: boolean; label: FieldLabel }
 export interface Region {
@@ -974,6 +978,268 @@ const EUROPE_ROWS: readonly EuropeRow[] = [
 ]
 
 
+// ══ world-countries-1 (31 October 2026, docs/world-countries-1-report.md §2) — EIGHT COUNTRIES OUTSIDE EUROPE ════════════
+// One format each, built by one factory from a row of FACTS, as europe-settings' rows are — but the shapes differ more, so a
+// row names its own LINE PARTS (in the order locals write an address) instead of a before/after flag:
+//   • Brazil   "Parque Ibirapuera, São Paulo, SP, 04094-050"     (city, state code, CEP)
+//   • Mexico   "Zócalo, 06000 Ciudad de México, Ciudad de México" (C.P. before the city, then the state)
+//   • Japan    "代々木公園 〒151-0052 東京都渋谷区"                    (largest to smallest: 〒, prefecture, then the city or ward;
+//              spaces, not commas)
+//   • Singapore "Marina Bay Sands, Singapore 018956"             (one city; a six-digit code is ONE building)
+//   • Hong Kong "Central Harbourfront, Central, 香港島"            (no postal codes — district and area only)
+//   • Malaysia "Dataran Merdeka, 50050 Kuala Lumpur, Wilayah Persekutuan Kuala Lumpur"
+//   • Thailand "Lumphini Park, Bangkok 10330"                    (the code after the province or city)
+//   • the UAE  "Dubai Marina, Dubai, دبي"                          (no postal codes — the emirate)
+// ⛔ NO COUNTRY-CODE BRANCHES: everything a reader needs is on the row.
+interface WorldRow {
+  key: WorldKey
+  country: string
+  adminLabel: string
+  /** null: the country has no postal codes (Hong Kong, the UAE) — no postal field, no postal rules. */
+  postal: { pattern: string; normaliser: PostalNormaliser; example: string; label: PostalLabel; local: string; desc: string; identifiesPremises: boolean } | null
+  /** The town part of a line, as template parts in local order (the venue is put first by the factory). */
+  townParts: readonly string[]
+  /** How the locality field is labelled (the `address.label.*` variant). */
+  localityLabel: LocalityLabel
+  /** The separator between a line's parts — ", " unless the language writes an address without commas (Japanese: a space). */
+  sep?: string
+  examples: { venue: string; street: string; locality: string; paste: string }
+  language: string
+  timeHint: string
+  regions?: { list: readonly Region[]; label: RegionLabel; example: string; local: string; shownAs: 'code' | 'name'; required: boolean }
+  includedTax?: RegionSalesTax
+}
+
+function worldAi(r: WorldRow): AddressAi {
+  const ex = r.examples
+  const pc = r.postal?.example ?? ''
+  // ⚠️ NOT renderTemplate: this runs while the module is still being evaluated (ADDRESS_FORMATS below), before TOKEN_RE exists.
+  const fill = (part: string) => part.replace('{locality}', ex.locality).replace('{region}', r.regions?.example ?? '').replace('{postalCode}', pc).trim()
+  const townLine = r.townParts.map(fill).filter(Boolean).join(r.sep ?? ', ')
+  const region = r.regions
+  const regionRule = region
+    ? `\n- "state" holds the ${region.local} (e.g. "${region.example}") when one is written; otherwise leave it ""`
+    : `\n- There is no region or state in ${r.country} addresses — never return one`
+  const postalKeys = r.postal ? `,"postcode":"${pc}"` : ''
+  const regionPart = region ? `,"state":"${region.example}"` : ''
+  const postalRules = r.postal
+    ? `POSTAL CODE RULES:
+- "postcode" holds the ${r.postal.local}: ${r.postal.desc} (e.g. "${pc}"), as written in "${townLine}"
+- Always extract the FULL postal code as one unit, even when it is split across two lines
+- ${r.postal.identifiesPremises ? 'A postal code here identifies ONE building' : 'A postal code covers an area, never one building'}
+- A postal code alone is never a town${regionRule}`
+    : `POSTAL CODE RULES:
+- ${r.country} addresses have NO postal codes — "postcode" is always ""${regionRule}`
+  return {
+    importer: {
+      knowledge: 'venues and locations in {country}',
+      venueRules: `- Extract ONLY the venue name — never include the town${r.postal ? ` or the ${r.postal.local}` : ''} in venue_name
+- "${ex.venue}, ${townLine}" → venue_name="${ex.venue}", town="${ex.locality}"${r.postal ? `, postcode="${pc}"` : ''}
+- "${ex.venue}, ${ex.locality}, 18:00-22:00" → venue_name="${ex.venue}", town="${ex.locality}"`,
+      postalRules,
+      addressRules: `ADDRESS RULES:
+- address is for street-level detail only — the street and number (e.g. "${ex.street}")
+- NEVER populate address with the town${r.postal ? ' or the postal code' : ''} — leave it blank if no street address is available
+- Most schedules will not have a street address — leave address as "" in those cases`,
+      enrichRules: `- If you have a venue name and town but no ${r.postal ? 'postal code → give the venue\'s postal code only if you are certain of it' : `${region ? region.local : 'area'} → give it only if you are certain of it`}
+- If you have a venue name but no town → determine the town from your knowledge of that venue in {country}
+- If the venue name is ambiguous and you have a ${r.postal ? 'postal code or ' : ''}town → use that to identify the correct venue
+- Only enrich with high confidence — if uncertain, leave the field as ""
+- Schedules are often written in ${r.language}: read its day and month names, and times such as ${r.timeHint} → 24-hour "HH:MM"`,
+      examples: `Input: "${ex.venue}, ${townLine}"
+Output: {"event_date":"03/06/{year}","start_time":"","end_time":"","venue_name":"${ex.venue}","town":"${ex.locality}"${regionPart}${postalKeys}}
+
+Input: "${ex.venue}, ${ex.locality}, 18:00-22:00"
+Output: {"event_date":"14/06/{year}","start_time":"18:00","end_time":"22:00","venue_name":"${ex.venue}","town":"${ex.locality}"${region ? ',"state":""' : ''}${r.postal ? ',"postcode":""' : ''}}`,
+      outputShape: `"town":"Town"${region ? `,"state":"${region.example}"` : ''}${postalKeys}`,
+    },
+    screenshot: {
+      locationLines: `- Extract ONLY the venue name into "Venue Name" — never include the town${r.postal ? ' or the postal code' : ''} in it.
+- Put the town in "Village"${r.postal ? `, and the ${r.postal.local}, if one is shown, in "Postcode"` : ''}.${region ? `\n- Put the ${region.local}, if one is shown, in "State" (e.g. "${region.example}").` : ''}
+- ${r.postal ? `${r.country}'s postal codes look like "${pc}" (${r.postal.desc}). If none is shown, use "".` : `${r.country} has no postal codes: "Postcode" is always "".`}
+- Times may be written ${r.timeHint}: return 24-hour "HH:MM".`,
+      eventShape: `{ "DateStart": "DD/MM/YYYY", "TimeStart": "HH:MM", "TimeEnd": "HH:MM", "Truck Name": "Name", "Venue Name": "Name", "Village": "${ex.locality}"${region ? `, "State": "${region.example}"` : ''}, "Postcode": "${pc}" }`,
+    },
+    scraper: {
+      venueRules: `VENUE RULES: "venue_name" = ONLY the venue name. "town" = the town or city it is in.${r.postal ? ` "postcode" = the ${r.postal.local} (e.g. "${pc}"), otherwise "".` : ' There are no postal codes: "postcode" is always "".'}${region ? ` "state" = the ${region.local} (e.g. "${region.example}") when one is written, otherwise "".` : ''}`,
+      townRules: `TOWN RULES (IMPORTANT): ALWAYS populate "town". If the town is EMBEDDED inside the venue name, SPLIT it out —
+put the place-name in "town" and keep "venue_name" as just the venue name. Never leave a town buried in venue_name. If the
+town truly cannot be determined, use "".`,
+      examples: `  "${ex.paste}" -> {"venue_name":"${ex.venue}","town":"${ex.locality}"}
+  "${ex.venue}, ${townLine}" -> {"venue_name":"${ex.venue}","town":"${ex.locality}"${postalKeys}}`,
+      outputShape: `"town":"Town"${region ? `,"state":"${region.example} or empty"` : ''}${r.postal ? ',"postcode":"Postal code or empty"' : ''}`,
+    },
+  }
+}
+
+function worldFormat(r: WorldRow): AddressFormat {
+  const town = r.townParts
+  const sep = r.sep ?? ', '
+  return {
+    key: r.key,
+    adminLabel: r.adminLabel,
+    fields: [
+      { key: 'street', required: false, label: 'street' },
+      { key: 'locality', required: true, label: r.localityLabel },
+      ...(r.regions ? [{ key: 'region' as const, required: r.regions.required, label: r.regions.label }] : []),
+      ...(r.postal ? [{ key: 'postalCode' as const, required: false, label: r.postal.label }] : []),
+    ],
+    regions: r.regions ? { list: r.regions.list, shownAs: r.regions.shownAs } : null,
+    // A country with no postal codes has no postal FIELD; this entry is then never asked (an empty code passes its pattern).
+    postalCode: r.postal
+      ? { pattern: r.postal.pattern, normaliser: r.postal.normaliser, example: r.postal.example, identifiesPremises: r.postal.identifiesPremises }
+      : { pattern: '^$', normaliser: 'none', example: '', identifiesPremises: false },
+    entry: { customersSee: true, postalCheck: !!r.postal, requiredMarks: true, regionInput: r.regions ? 'select' : 'text', sublines: 'area', reviewAndPlaces: true },
+    examples: {
+      venue: r.examples.venue, addressLine: `${r.examples.street}, ${r.examples.locality}`, locality: r.examples.locality,
+      ...(r.regions ? { region: r.regions.example } : {}), importPostalCode: r.postal?.example ?? '', paste: r.examples.paste,
+    },
+    templates: {
+      line: { sep, parts: ['{venue}', ...town] },
+      area: [{ sep, parts: town }],
+      calendar: { sep, parts: ['{venue}', ...town] },
+      geocode: { sep: ', ', parts: ['{venue}', ...town, '{country}'] },
+    },
+    places: r.regions
+      ? { localityTypes: ['locality', 'sublocality', 'postal_town'], regionFrom: ['administrative_area_level_1'], regionCode: 'match' }
+      : { localityTypes: ['locality', 'sublocality', 'postal_town'], regionFrom: [], regionCode: null },
+    ai: worldAi(r),
+    ...(r.includedTax ? { includedTax: r.includedTax } : {}),
+  }
+}
+
+const BR_STATES: readonly Region[] = [
+  ['AC', 'Acre'], ['AL', 'Alagoas'], ['AP', 'Amapá'], ['AM', 'Amazonas'], ['BA', 'Bahia'], ['CE', 'Ceará'], ['DF', 'Distrito Federal'],
+  ['ES', 'Espírito Santo'], ['GO', 'Goiás'], ['MA', 'Maranhão'], ['MT', 'Mato Grosso'], ['MS', 'Mato Grosso do Sul'], ['MG', 'Minas Gerais'],
+  ['PA', 'Pará'], ['PB', 'Paraíba'], ['PR', 'Paraná'], ['PE', 'Pernambuco'], ['PI', 'Piauí'], ['RJ', 'Rio de Janeiro'],
+  ['RN', 'Rio Grande do Norte'], ['RS', 'Rio Grande do Sul'], ['RO', 'Rondônia'], ['RR', 'Roraima'], ['SC', 'Santa Catarina'],
+  ['SP', 'São Paulo'], ['SE', 'Sergipe'], ['TO', 'Tocantins'],
+].map(([code, name]) => ({ code, name }))
+// ISO 3166-2:MX codes without "MX-", shown by name; the common short forms as aliases.
+const MX_STATES: readonly Region[] = ([
+  ['AGU', 'Aguascalientes', []], ['BCN', 'Baja California', ['BC']], ['BCS', 'Baja California Sur', []], ['CAM', 'Campeche', []],
+  ['CHP', 'Chiapas', []], ['CHH', 'Chihuahua', []], ['CMX', 'Ciudad de México', ['CDMX', 'Mexico City', 'Distrito Federal', 'DF']],
+  ['COA', 'Coahuila', ['Coahuila de Zaragoza']], ['COL', 'Colima', []], ['DUR', 'Durango', []], ['GUA', 'Guanajuato', []], ['GRO', 'Guerrero', []],
+  ['HID', 'Hidalgo', []], ['JAL', 'Jalisco', []], ['MEX', 'Estado de México', ['México', 'Edomex', 'Edo. Méx.']], ['MIC', 'Michoacán', ['Michoacán de Ocampo']],
+  ['MOR', 'Morelos', []], ['NAY', 'Nayarit', []], ['NLE', 'Nuevo León', ['NL']], ['OAX', 'Oaxaca', []], ['PUE', 'Puebla', []],
+  ['QUE', 'Querétaro', ['Qro.']], ['ROO', 'Quintana Roo', ['Q. Roo']], ['SLP', 'San Luis Potosí', []], ['SIN', 'Sinaloa', []], ['SON', 'Sonora', []],
+  ['TAB', 'Tabasco', []], ['TAM', 'Tamaulipas', []], ['TLA', 'Tlaxcala', []], ['VER', 'Veracruz', ['Veracruz de Ignacio de la Llave']],
+  ['YUC', 'Yucatán', []], ['ZAC', 'Zacatecas', []],
+] as const).map(([code, name, aliases]) => ({ code, name, aliases: [...aliases] }))
+// JIS X 0401 prefecture codes, shown by their Japanese name; the English name (with and without "Prefecture") as aliases.
+const JP_PREFECTURES: readonly Region[] = ([
+  ['01', '北海道', 'Hokkaido'], ['02', '青森県', 'Aomori'], ['03', '岩手県', 'Iwate'], ['04', '宮城県', 'Miyagi'], ['05', '秋田県', 'Akita'],
+  ['06', '山形県', 'Yamagata'], ['07', '福島県', 'Fukushima'], ['08', '茨城県', 'Ibaraki'], ['09', '栃木県', 'Tochigi'], ['10', '群馬県', 'Gunma'],
+  ['11', '埼玉県', 'Saitama'], ['12', '千葉県', 'Chiba'], ['13', '東京都', 'Tokyo'], ['14', '神奈川県', 'Kanagawa'], ['15', '新潟県', 'Niigata'],
+  ['16', '富山県', 'Toyama'], ['17', '石川県', 'Ishikawa'], ['18', '福井県', 'Fukui'], ['19', '山梨県', 'Yamanashi'], ['20', '長野県', 'Nagano'],
+  ['21', '岐阜県', 'Gifu'], ['22', '静岡県', 'Shizuoka'], ['23', '愛知県', 'Aichi'], ['24', '三重県', 'Mie'], ['25', '滋賀県', 'Shiga'],
+  ['26', '京都府', 'Kyoto'], ['27', '大阪府', 'Osaka'], ['28', '兵庫県', 'Hyogo'], ['29', '奈良県', 'Nara'], ['30', '和歌山県', 'Wakayama'],
+  ['31', '鳥取県', 'Tottori'], ['32', '島根県', 'Shimane'], ['33', '岡山県', 'Okayama'], ['34', '広島県', 'Hiroshima'], ['35', '山口県', 'Yamaguchi'],
+  ['36', '徳島県', 'Tokushima'], ['37', '香川県', 'Kagawa'], ['38', '愛媛県', 'Ehime'], ['39', '高知県', 'Kochi'], ['40', '福岡県', 'Fukuoka'],
+  ['41', '佐賀県', 'Saga'], ['42', '長崎県', 'Nagasaki'], ['43', '熊本県', 'Kumamoto'], ['44', '大分県', 'Oita'], ['45', '宮崎県', 'Miyazaki'],
+  ['46', '鹿児島県', 'Kagoshima'], ['47', '沖縄県', 'Okinawa'],
+] as const).map(([code, name, en]) => ({ code, name, aliases: [en, `${en} Prefecture`, name.replace(/[都府県]$/, '')] }))
+// ISO 3166-2:MY codes without "MY-", shown by their Malay name.
+const MY_STATES: readonly Region[] = ([
+  ['01', 'Johor', []], ['02', 'Kedah', []], ['03', 'Kelantan', []], ['04', 'Melaka', ['Malacca']], ['05', 'Negeri Sembilan', []],
+  ['06', 'Pahang', []], ['07', 'Pulau Pinang', ['Penang']], ['08', 'Perak', []], ['09', 'Perlis', []], ['10', 'Selangor', []],
+  ['11', 'Terengganu', []], ['12', 'Sabah', []], ['13', 'Sarawak', []], ['14', 'Wilayah Persekutuan Kuala Lumpur', ['Kuala Lumpur', 'KL', 'WP Kuala Lumpur']],
+  ['15', 'Wilayah Persekutuan Labuan', ['Labuan', 'WP Labuan']], ['16', 'Wilayah Persekutuan Putrajaya', ['Putrajaya', 'WP Putrajaya']],
+] as const).map(([code, name, aliases]) => ({ code, name, aliases: [...aliases] }))
+// ISO 3166-2:AE codes without "AE-", shown by their Arabic name; English names as aliases.
+const AE_EMIRATES: readonly Region[] = ([
+  ['AZ', 'أبوظبي', ['Abu Dhabi']], ['AJ', 'عجمان', ['Ajman']], ['FU', 'الفجيرة', ['Fujairah']], ['SH', 'الشارقة', ['Sharjah']],
+  ['DU', 'دبي', ['Dubai']], ['RK', 'رأس الخيمة', ['Ras Al Khaimah', 'Ras al-Khaimah']], ['UQ', 'أم القيوين', ['Umm Al Quwain', 'Umm al-Quwain']],
+] as const).map(([code, name, aliases]) => ({ code, name, aliases: [...aliases] }))
+// Hong Kong's three areas, shown by their Chinese name; English as aliases.
+const HK_AREAS: readonly Region[] = ([
+  ['HKI', '香港島', ['Hong Kong Island', 'HK Island']], ['KLN', '九龍', ['Kowloon']], ['NT', '新界', ['New Territories']],
+] as const).map(([code, name, aliases]) => ({ code, name, aliases: [...aliases] }))
+
+// The tax a price INCLUDES by default, where every food business charges it (the truck may set its own, Manage › Payments):
+// Japan's consumption tax at the reduced 8 % on takeaway food (軽減税率), Mexico's IVA at 16 %. Every other new country has a
+// registration threshold, so no default is set and a truck adds its own rate if it is registered (report §2).
+const TAX_JP: RegionSalesTax = { label: '消費税', milli: 8000 }
+const TAX_MX: RegionSalesTax = { label: 'IVA', milli: 16000 }
+// Where prices include a tax only a REGISTERED business charges (Brazil's tributos, Singapore's GST, Thailand's VAT, the UAE's
+// VAT): the label with a 0 default, so Manage › Payments shows the rate box (it is hidden for a tax-inclusive country with no
+// included tax) and a registered truck types its own rate; at 0 no "includes" line is printed (order-charge-lines includedTaxLine).
+const TAX_BR: RegionSalesTax = { label: 'Tributos', milli: 0 }
+const TAX_SG: RegionSalesTax = { label: 'GST', milli: 0 }
+const TAX_TH: RegionSalesTax = { label: 'VAT', milli: 0 }
+const TAX_AE: RegionSalesTax = { label: 'VAT', milli: 0 }
+
+const WORLD_ROWS: readonly WorldRow[] = [
+  {
+    key: 'br', country: 'Brazil', adminLabel: 'Brazil — cidade, UF, CEP',
+    postal: { pattern: '^\\d{5}-\\d{3}$', normaliser: 'nnnnn_nnn', example: '04094-050', label: 'postalCode', local: 'CEP', desc: '8 digits written "NNNNN-NNN"', identifiesPremises: false },
+    townParts: ['{locality}', '{region}', '{postalCode}'], localityLabel: 'city',
+    examples: { venue: 'Parque Ibirapuera', street: 'Av. Pedro Álvares Cabral, 1000', locality: 'São Paulo', paste: 'Parque Ibirapuera, São Paulo' },
+    language: 'Portuguese', timeHint: '"18h", "18h30"',
+    regions: { list: BR_STATES, label: 'state', example: 'SP', local: 'state (UF, two letters)', shownAs: 'code', required: false },
+    includedTax: TAX_BR,
+  },
+  {
+    key: 'mx', country: 'Mexico', adminLabel: 'Mexico — C.P., ciudad, estado',
+    postal: { pattern: '^\\d{5}$', normaliser: 'digits', example: '06000', label: 'postalCode', local: 'código postal (C.P.)', desc: '5 digits', identifiesPremises: false },
+    townParts: ['{postalCode} {locality}', '{region}'], localityLabel: 'city',
+    examples: { venue: 'Zócalo', street: 'Plaza de la Constitución s/n', locality: 'Ciudad de México', paste: 'Zócalo, Ciudad de México' },
+    language: 'Spanish', timeHint: '"6 pm", "18:00 hrs", "6:30 p.m."',
+    regions: { list: MX_STATES, label: 'state', example: 'Ciudad de México', local: 'state', shownAs: 'name', required: false },
+    includedTax: TAX_MX,
+  },
+  {
+    key: 'jp', country: 'Japan', adminLabel: 'Japan — 〒, 都道府県, 市区町村',
+    postal: { pattern: '^\\d{3}-\\d{4}$', normaliser: 'nnn_nnnn', example: '151-0052', label: 'postcode', local: '郵便番号 (postal code)', desc: '7 digits written "NNN-NNNN", after the 〒 mark', identifiesPremises: false },
+    townParts: ['〒{postalCode}', '{region}{locality}'], localityLabel: 'city', sep: ' ',
+    examples: { venue: '代々木公園', street: '代々木神園町2-1', locality: '渋谷区', paste: '代々木公園、渋谷区' },
+    language: 'Japanese', timeHint: '"18時", "18時30分", "午後6時"',
+    regions: { list: JP_PREFECTURES, label: 'prefecture', example: '東京都', local: 'prefecture (都道府県)', shownAs: 'name', required: true },
+    includedTax: TAX_JP,
+  },
+  {
+    key: 'sg', country: 'Singapore', adminLabel: 'Singapore — postal code (one building)',
+    postal: { pattern: '^\\d{6}$', normaliser: 'digits', example: '018956', label: 'postalCode', local: 'postal code', desc: '6 digits, one per building', identifiesPremises: true },
+    townParts: ['{locality} {postalCode}'], localityLabel: 'area',
+    examples: { venue: 'Marina Bay Sands', street: '10 Bayfront Avenue', locality: 'Singapore', paste: 'Marina Bay Sands, Singapore' },
+    language: 'English', timeHint: '"6pm", "6.30pm"',
+    includedTax: TAX_SG,
+  },
+  {
+    key: 'hk', country: 'Hong Kong', adminLabel: 'Hong Kong — district, area (no postal codes)',
+    postal: null,
+    townParts: ['{locality}', '{region}'], localityLabel: 'area',
+    examples: { venue: '中環海濱活動空間', street: '龍和道9號', locality: '中環', paste: '中環海濱活動空間，中環' },
+    language: 'Traditional Chinese or English', timeHint: '"下午6時", "6pm", "18:00"',
+    regions: { list: HK_AREAS, label: 'region', example: '香港島', local: 'area (Hong Kong Island, Kowloon or the New Territories)', shownAs: 'name', required: false },
+  },
+  {
+    key: 'my', country: 'Malaysia', adminLabel: 'Malaysia — poskod, bandar, negeri',
+    postal: { pattern: '^\\d{5}$', normaliser: 'digits', example: '50050', label: 'postcode', local: 'poskod', desc: '5 digits', identifiesPremises: false },
+    townParts: ['{postalCode} {locality}', '{region}'], localityLabel: 'townOrCity',
+    examples: { venue: 'Dataran Merdeka', street: 'Jalan Raja', locality: 'Kuala Lumpur', paste: 'Dataran Merdeka, Kuala Lumpur' },
+    language: 'Malay or English', timeHint: '"6 petang", "6pm", "6.30pm"',
+    regions: { list: MY_STATES, label: 'state', example: 'Wilayah Persekutuan Kuala Lumpur', local: 'state', shownAs: 'name', required: false },
+  },
+  {
+    key: 'th', country: 'Thailand', adminLabel: 'Thailand — district, province, postal code',
+    postal: { pattern: '^\\d{5}$', normaliser: 'digits', example: '10330', label: 'postalCode', local: 'รหัสไปรษณีย์ (postal code)', desc: '5 digits', identifiesPremises: false },
+    townParts: ['{locality} {postalCode}'], localityLabel: 'townOrCity',
+    examples: { venue: 'สวนลุมพินี', street: 'ถนนพระรามที่ 4', locality: 'กรุงเทพมหานคร', paste: 'สวนลุมพินี, กรุงเทพมหานคร' },
+    language: 'Thai', timeHint: '"18.00 น.", "6 โมงเย็น"',
+    includedTax: TAX_TH,
+  },
+  {
+    key: 'ae', country: 'United Arab Emirates', adminLabel: 'UAE — area, emirate (no postal codes)',
+    postal: null,
+    townParts: ['{locality}', '{region}'], localityLabel: 'area',
+    examples: { venue: 'The Beach JBR', street: 'Jumeirah Beach Residence', locality: 'Dubai Marina', paste: 'The Beach JBR, Dubai Marina' },
+    language: 'Arabic or English', timeHint: '"6 مساءً", "6pm", "18:00"',
+    regions: { list: AE_EMIRATES, label: 'emirate', example: 'دبي', local: 'emirate', shownAs: 'name', required: true },
+    includedTax: TAX_AE,
+  },
+]
+
 export const ADDRESS_FORMATS: Readonly<Record<AddressFormatKey, AddressFormat>> = {
   gb: {
     key: 'gb',
@@ -1141,6 +1407,8 @@ export const ADDRESS_FORMATS: Readonly<Record<AddressFormatKey, AddressFormat>> 
   },
   // europe-settings (22 October 2026): the rest of Stripe's Europe, built from EUROPE_ROWS (above), in its order.
   ...(Object.fromEntries(EUROPE_ROWS.map(r => [r.key, europeFormat(r)])) as Record<EuropeKey, AddressFormat>),
+  // world-countries-1 (31 October 2026): the eight countries outside Europe, built from WORLD_ROWS (above), in its order.
+  ...(Object.fromEntries(WORLD_ROWS.map(r => [r.key, worldFormat(r)])) as Record<WorldKey, AddressFormat>),
 }
 
 export const ADDRESS_FORMAT_KEYS: readonly AddressFormatKey[] = Object.keys(ADDRESS_FORMATS) as AddressFormatKey[]
@@ -1250,6 +1518,11 @@ const NORMALISERS: Readonly<Record<PostalNormaliser, (s: string) => string>> = {
   lv: s => { const c = s.toUpperCase().replace(/[\s-]+/g, '').replace(/^LV/, ''); return /^\d{4}$/.test(c) ? `LV-${c}` : s.trim().toUpperCase() },
   /** "01143" / "lt01143" → "LT-01143" (LT). */
   lt: s => { const c = s.toUpperCase().replace(/[\s-]+/g, '').replace(/^LT/, ''); return /^\d{5}$/.test(c) ? `LT-${c}` : s.trim().toUpperCase() },
+  // world-countries-1:
+  /** "01310100" / "01310 100" → "01310-100" (BR, the CEP). */
+  nnnnn_nnn: s => { const c = s.replace(/[\s-]+/g, ''); return /^\d{8}$/.test(c) ? `${c.slice(0, 5)}-${c.slice(5)}` : s.trim() },
+  /** "1000005" / "〒100-0005" → "100-0005" (JP; the 〒 mark is the template's, never stored). */
+  nnn_nnnn: s => { const c = s.replace(/[\s〒-]+/g, ''); return /^\d{7}$/.test(c) ? `${c.slice(0, 3)}-${c.slice(3)}` : s.trim() },
 }
 export const POSTAL_NORMALISERS: readonly PostalNormaliser[] = Object.keys(NORMALISERS) as PostalNormaliser[]
 
@@ -1295,8 +1568,10 @@ export function validateAddressFormats(formats: Readonly<Record<string, AddressF
     try { new RegExp(f.postalCode.pattern) } catch { compiles = false; at(`postal pattern does not compile: ${f.postalCode.pattern}`) }
     const knownNormaliser = f.postalCode.normaliser in NORMALISERS
     if (!knownNormaliser) at(`unknown normaliser ${f.postalCode.normaliser}`)
-    if (compiles && knownNormaliser && !isValidPostalCode(f, f.postalCode.example)) at(`the example "${f.postalCode.example}" fails its own pattern`)
     const keys = f.fields.map(x => x.key)
+    // world-countries-1: a format with no postal FIELD (Hong Kong, the UAE — no postal codes) has an empty example.
+    const hasPostal = keys.includes('postalCode')
+    if (hasPostal && compiles && knownNormaliser && !isValidPostalCode(f, f.postalCode.example)) at(`the example "${f.postalCode.example}" fails its own pattern`)
     if (new Set(keys).size !== keys.length) at('a field appears twice')
     if (!keys.includes('locality')) at('no locality field')
     if (keys.includes('region') !== !!f.regions) at('a region field needs a region list, and a list needs the field')
@@ -1315,7 +1590,7 @@ export function validateAddressFormats(formats: Readonly<Record<string, AddressF
       // canada-2: a closed region may keep its tax (Saskatchewan, Manitoba — for when they open); a language closure names it.
       for (const r of f.regions.list) if (r.signupClosed && !(r.signupClosed.reason === 'taxLines' || (r.signupClosed.reason === 'language' && r.signupClosed.needsLanguage.trim()))) at(`${r.code}: a malformed signup closure`)
     }
-    for (const [k, v] of Object.entries(f.examples)) if (typeof v !== 'string' || !v.trim()) at(`an empty example ${k}`)
+    for (const [k, v] of Object.entries(f.examples)) if ((typeof v !== 'string' || !v.trim()) && !(k === 'importPostalCode' && !hasPostal)) at(`an empty example ${k}`)
     if (keys.includes('region') !== !!f.examples.region) at('a region field needs a region example, and an example needs the field')
     if (keys.includes('suburb') !== !!f.examples.suburb) at('a suburb field needs a suburb example, and an example needs the field')
     if (f.regions && f.examples.region && !regionOf(f, f.examples.region)) at(`the region example "${f.examples.region}" is not in its list`)

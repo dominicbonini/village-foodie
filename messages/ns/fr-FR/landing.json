@@ -7,7 +7,6 @@
   "hero": {
     "title": "Le logiciel de commande en ligne pensé pour les <lean>food trucks.</lean>",
     "subSmall": "Importez votre carte, sans inscription.<br></br>Une démo fonctionnelle en moins de 60 secondes.",
-    "tagline": "Moins de temps à gérer.<br></br>Plus de temps à <lean>cuisiner.</lean>",
     "cta": "Importer ma carte →",
     "ctaNote": "<lead>Importez une photo de votre carte et voyez-la fonctionner en moins de 60 secondes.</lead><small>Sans inscription. Sans carte bancaire.</small>"
   },

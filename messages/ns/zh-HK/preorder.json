@@ -1,0 +1,6 @@
+{
+  "closedPending": "預先落單已截止，待廚房確認。",
+  "deadline": "請於 {time} 前預先落單",
+  "deadlineOnDay": "請於 {day} {time} 前預先落單",
+  "opens": "{day} 開始接受預先落單"
+}

@@ -2302,6 +2302,16 @@ function runWiringSuite(lib) {
      * ⚠️ ADDING AN ENTRY IS THE EXPENSIVE WAY TO SILENCE THIS GUARD, DELIBERATELY. The cheap way is
      * to leave the line alone. */
     const movedEdits = [
+      /* ── legal-languages-1, 1 November 2026 (docs/legal-languages-1-report.md §4.2) — a stored dietary tag is shown in the truck's
+       * language (lib/dietary-label.ts), as the order page already did; English shows the stored name exactly as before. ── */
+      { was: '{draft.dietary.map(d => <DietaryChip key={d} label={d} />)}', now: '{draft.dietary.map(d => <DietaryChip key={d} label={dietaryLabel(d, wizLocale)} />)}', nowIn: 'app/manage/[token]/page.tsx',
+        reason: "the allergen wizard's dietary pills in the truck's language" },
+      { was: '<span key={d} className="text-[10px] px-1.5 py-0.5 bg-green-50 text-green-700 rounded-md border border-green-100">{d}</span>',
+        now: '<span key={d} className="text-[10px] px-1.5 py-0.5 bg-green-50 text-green-700 rounded-md border border-green-100">{dietaryLabel(d, tkLocale)}</span>', nowIn: 'app/manage/[token]/page.tsx',
+        reason: "the menu list's dietary tags in the truck's language" },
+      { was: '<span key={d} className="text-xs px-2 py-1 bg-green-50 border border-green-200 text-green-700 rounded-lg">{d}</span>',
+        now: '<span key={d} className="text-xs px-2 py-1 bg-green-50 border border-green-200 text-green-700 rounded-lg">{dietaryLabel(d, tkLocale)}</span>', nowIn: 'app/manage/[token]/page.tsx',
+        reason: "an allergen card's extracted dietary options in the truck's language" },
       /* ── Phase 3 screens, 13 October 2026 (docs/phase-3-screens-report.md) — each with its new form ── */
       { was: "{activeTab === 'payments'  && <PaymentsTab  token={token} plan={truck?.plan} showToast={showToast} />}",
         // ⚠️ RE-PINNED (plans-data-model, Stage A, 19 October 2026): PaymentsTab's `plan` prop became `onTrial: boolean`

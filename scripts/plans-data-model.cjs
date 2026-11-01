@@ -563,7 +563,13 @@ if (RENDER) {
   // (scripts/_lp-demo2b.cjs).
   // eslint-disable-next-line @typescript-eslint/no-require-imports -- CommonJS harness module (demo-2b)
   const D2B = require('./_lp-demo2b.cjs')
-  const LEGAL_LASTMOD_OF = { privacy: D2B.LANDED ? D2B.PRIVACY_LASTMOD_NEW : LEGAL_LASTMOD, terms: '2026-10-20T00:00:00.000Z', 'country-terms': ANZT.LANDED ? ANZT.COUNTRY_TERMS_LASTMOD_NEW : IE3.LANDED ? IE3.COUNTRY_TERMS_LASTMOD_NEW : LEGAL_LASTMOD }
+  // eslint-disable-next-line @typescript-eslint/no-require-imports -- CommonJS harness module (world-countries-1)
+  const TAGLINE = require('./_lp-tagline.cjs')
+  // ⚠️ RE-PINNED (world-countries-2, 1 November 2026): the Terms (§4) and the Country-specific terms (eight countries) re-dated
+  // 1 November 2026 (scripts/_lp-world-countries-2.cjs).
+  // eslint-disable-next-line @typescript-eslint/no-require-imports -- CommonJS harness module (world-countries-2)
+  const W2 = require('./_lp-world-countries-2.cjs')
+  const LEGAL_LASTMOD_OF = { privacy: D2B.LANDED ? D2B.PRIVACY_LASTMOD_NEW : LEGAL_LASTMOD, terms: W2.LANDED ? W2.LASTMOD_NEW : '2026-10-20T00:00:00.000Z', 'country-terms': W2.LANDED ? W2.LASTMOD_NEW : ANZT.LANDED ? ANZT.COUNTRY_TERMS_LASTMOD_NEW : IE3.LANDED ? IE3.COUNTRY_TERMS_LASTMOD_NEW : LEGAL_LASTMOD }
   /** The seo-fixes named change a view key falls under, as [name, (after, before) → [after', before'] | null]. */
   const seoFixes = (k) => {
     if (/^(landing|features|compare)\|[A-Z]+\|html(-usOn|-cookieUS)?$/.test(k)) return ['SEO-menu + SEO-badges' + (/^landing/.test(k) ? ' + SEO-ld' : '') + ': the country menus\' <ul> + <a role="menuitemradio"> options, the badges\' loading="lazy" (no image preload hints)' + (/^landing/.test(k) ? ', the one @graph JSON-LD' : ''),
@@ -638,6 +644,9 @@ if (RENDER) {
     // ⚠️ RE-PINNED (seo-fixes, 20 October 2026): every check below reads the seo-fixes-normalised sides.
     const seoNamed = new Map(), N = {}
     for (const k of keys) {
+      // ⚠️ RE-PINNED (world-countries-1, tagline, 31 October 2026): the hero's and footer's tagline is cut from BEFORE's marketing
+      // HTML (scripts/_lp-tagline.cjs) — every other byte is still compared below.
+      if (/^(landing|features|compare)\|[A-Z]+\|html/.test(k)) B[area][k] = TAGLINE.cut(B[area][k])
       const sf = seoFixes(k)
       if (!sf) { N[k] = [A[area][k], B[area][k]]; continue }
       const r = sf[1](A[area][k], B[area][k])

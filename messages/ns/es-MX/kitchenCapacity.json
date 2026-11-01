@@ -1,0 +1,3 @@
+{
+  "warning": "⚠️ Para que la capacidad de cocina funcione bien, indica un tiempo de preparación y un tamaño de tanda en las categorías de tu menú (Menú y stock). Sin ellos, la capacidad no puede saber cuánto tardan los productos en cocinarse."
+}

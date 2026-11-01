@@ -7,7 +7,6 @@
   "hero": {
     "title": "El sistema de pedidos online pensado para <lean>food trucks.</lean>",
     "subSmall": "Sube tu carta, sin registrarte.<br></br>Mira una demo funcionando en menos de 60 segundos.",
-    "tagline": "Menos tiempo gestionando.<br></br>Más tiempo <lean>cocinando.</lean>",
     "cta": "Subir mi carta →",
     "ctaNote": "<lead>Sube una foto de tu carta y mírala funcionando en menos de 60 segundos.</lead><small>Sin registro. Sin tarjeta.</small>"
   },

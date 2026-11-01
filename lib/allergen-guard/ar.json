@@ -1,0 +1,87 @@
+{
+  "$comment": "world-countries-1 (31 October 2026): the WhatsApp allergen guard’s trigger words for ARABIC (ar-AE): حساسية, عدم تحمل, بدون / خالي من / لا يحتوي <allergen>, آمن / مناسب ل, قد يحتوي, آثار, تلوث — hamza and diacritics fold away on both sides. OPTION B, as every other language: absence / safety words only, NOT the bare allergen names (a presence question may reach the AI, which answers only from the tags and gets the caveat). Matched with the Unicode normaliser. caveatWords: a tagged label of the country’s allergen set (stored in English, lower case) → the words a reply may use for it. scripts/world-countries-1.cjs proves it.",
+  "language": "ar",
+  "normalise": "unicode",
+  "stems": [
+    "حساسية",
+    "حساسيه",
+    "عدم تحمل",
+    "سيلياك",
+    "الداء البطني",
+    "صدمة تحسسية",
+    "إبيبن",
+    "epipen",
+    "خالي من",
+    "خالية من",
+    "خال من",
+    "بدون جلوتين",
+    "بدون غلوتين",
+    "بدون لاكتوز",
+    "بدون حليب",
+    "بدون بيض",
+    "بدون مكسرات",
+    "بدون فول سوداني",
+    "بدون فستق",
+    "بدون مأكولات بحرية",
+    "لا يحتوي",
+    "لا تحتوي",
+    "آمن ل",
+    "آمنة ل",
+    "مناسب ل",
+    "مناسبة ل",
+    "قد يحتوي",
+    "قد تحتوي",
+    "آثار",
+    "تلوث"
+  ],
+  "tokens": [],
+  "caveatWords": {
+    "codex": {
+      "gluten": [
+        "جلوتين",
+        "غلوتين",
+        "قمح",
+        "طحين"
+      ],
+      "crustaceans": [
+        "قشريات",
+        "روبيان",
+        "جمبري",
+        "سلطعون",
+        "مأكولات بحرية"
+      ],
+      "eggs": [
+        "بيض"
+      ],
+      "fish": [
+        "سمك",
+        "أسماك"
+      ],
+      "peanuts": [
+        "فول سوداني",
+        "فستق"
+      ],
+      "soy": [
+        "صويا",
+        "توفو"
+      ],
+      "milk": [
+        "حليب",
+        "لاكتوز",
+        "ألبان",
+        "جبن",
+        "زبدة"
+      ],
+      "tree nuts": [
+        "مكسرات",
+        "لوز",
+        "كاجو",
+        "جوز",
+        "بندق"
+      ],
+      "sulphites": [
+        "كبريتيت"
+      ]
+    }
+  }
+}

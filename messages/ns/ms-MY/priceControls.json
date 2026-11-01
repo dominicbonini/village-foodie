@@ -1,0 +1,8 @@
+{
+  "change": "{label} — tukar",
+  "useRule": "{label} — guna peraturan",
+  "typePrice": "{label} — taip harga",
+  "backToRule": "Kembali kepada peraturan",
+  "diffUp": "(+{amount})",
+  "diffDown": "(−{amount})"
+}

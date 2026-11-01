@@ -51,9 +51,12 @@ async function open(browser, { html, lang, width = 390, height = 900, B = built(
     if (u.pathname === '/view') {
       // The render kit stubs next/font: a page's wrapper carries "font-Archivo" where the build has the Archivo variable class.
       html = html.replace(/\bfont-([A-Z][A-Za-z]*(?:_[A-Z][A-Za-z]*)*)\b/g, (m, X) => B.varClass[`--font-${X.toLowerCase().replace(/_/g, '-')}`] ?? m)
-      const body = [B.geistClass, B.monoClass, NEEDS_SCRIPT_FALLBACK.test(lang) ? B.scriptClass : null, 'antialiased'].filter(Boolean).join(' ')
+      // world-countries-1 (31 October 2026): the Japanese, Chinese, Thai and Arabic Noto (lib/script-fonts.ts) on their own pages, as
+      // the root layout puts it; and dir="rtl" on an Arabic page. Every other page exactly as before.
+      const scriptVar = { ja: '--font-script-ja', zh: '--font-script-zh-hk', th: '--font-script-th', ar: '--font-script-ar' }[String(lang).slice(0, 2)]
+      const body = [B.geistClass, B.monoClass, NEEDS_SCRIPT_FALLBACK.test(lang) ? B.scriptClass : null, scriptVar ? B.varClass[scriptVar] : null, 'antialiased'].filter(Boolean).join(' ')
       const links = B.files.map(f => `<link rel="stylesheet" href="/_next/static/chunks/${f}">`).join('')
-      return route.fulfill({ status: 200, contentType: 'text/html; charset=utf-8', body: `<!doctype html><html lang="${lang}"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">${links}<style>body{background:#fff;margin:0}</style></head><body class="${body}">${html}${script ? '<script src="/view.js"></script>' : ''}</body></html>` })
+      return route.fulfill({ status: 200, contentType: 'text/html; charset=utf-8', body: `<!doctype html><html lang="${lang}"${/^ar(-|$)/i.test(lang) ? ' dir="rtl"' : ''}><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">${links}<style>body{background:#fff;margin:0}</style></head><body class="${body}">${html}${script ? '<script src="/view.js"></script>' : ''}</body></html>` })
     }
     if (u.pathname === '/view.js' && script) {
       return route.fulfill({ status: 200, contentType: 'text/javascript; charset=utf-8', body: script })

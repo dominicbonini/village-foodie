@@ -1,0 +1,127 @@
+{
+  "eyebrow": "成本比較",
+  "title": "比較你的網上<br></br><accent>落單成本</accent>",
+  "system": {
+    "title": "你現在有接收網上訂單嗎？",
+    "yes": "有，用其他系統",
+    "no": "沒有，暫時未有"
+  },
+  "trucks": {
+    "title": "你經營多少架美食車？",
+    "aria": "美食車數目"
+  },
+  "plan": {
+    "yourChoice": "你的選擇",
+    "weSuggest": "我們建議",
+    "summary": "每架美食車每月 {price}，每架包含 {allowance} 網上訂單額度{fleet, plural, other {}}。",
+    "switchTo": "改用 {plan}",
+    "summaryFeeOnly": "{hasMonthly, select, yes {每架美食車每月 {price}，網上信用卡訂單另收 {pct}。} other {無月費——只限網上信用卡訂單收取 {pct}。}}",
+    "summaryNoFee": "每架美食車每月 {price}，網上訂單無上限，不收 HatchGrab 費用。"
+  },
+  "orders": {
+    "titleYes": "每架美食車每月的網上訂單",
+    "count": "約 {count, plural, other {# 張訂單}}",
+    "captionNo": "大概估計便可——指預先落單及免排隊的客人，不包括在窗口用現金或信用卡付款的生意。",
+    "captionYes": "只計透過你的落單頁面下的訂單——不包括在窗口用現金或信用卡付款的生意。",
+    "sliderAria": "每架美食車每月網上訂單金額",
+    "overAllowance": "每架美食車包含 {allowance} 網上訂單額度。超出的 {excess} 按 {pct} 收費——每架每月 <b>{over}</b>。",
+    "insideAllowance": "在已包含的 {allowance} 網上訂單額度之內——計劃以外無額外收費。",
+    "acrossFleet": "{fleet, plural, other {# 架美食車}}合共：每月 <b>{amount}</b>。",
+    "titleNo": "你估計每架美食車每月網上生意大約有多少？",
+    "feeOnly": "每張網上信用卡訂單收取 {pct}——每架美食車每月 <b>{over}</b>。",
+    "noFee": "已包含無上限網上訂單——計劃以外無額外收費。"
+  },
+  "fee": {
+    "title": "你現在每張訂單支付多少？",
+    "pctLabel": "百分比",
+    "pctPlaceholder": "你的費率",
+    "pctAria": "百分比收費",
+    "fixedLabel": "另加每張訂單",
+    "fixedPlaceholder": "你的收費",
+    "fixedAria": "每張訂單的固定收費",
+    "modeLabel": "他們的費率：",
+    "modeInclusive": "已包含信用卡手續費",
+    "modeOnTop": "另外收取",
+    "onTopNote": "另需額外支付 {fee} 的信用卡手續費，所以你實際上合共支付 <b>{pct} + {fixed}</b>。",
+    "inclusiveNote": "當中已包含 {fee} 的信用卡手續費，用任何服務都要支付。他們本身的收費是 <b>{pct}</b>。"
+  },
+  "days": {
+    "title": "你每星期營業多少天？",
+    "help": "活動、市集、開檔地點——美食車出車的任何一天都計算在內。"
+  },
+  "jump": {
+    "cost": "查看收費 ↓",
+    "saving": "查看可節省多少 ↓"
+  },
+  "noSystem": {
+    "hero": "<lead>網上落單、預先落單及廚房顯示屏，只需</lead><figure>{amount}</figure><unit>每個營業日</unit>",
+    "basedOn": "以每星期 {days, plural, other {# 天}}計算 · 每月 {monthly}{fleet, plural, other {（每架美食車）}}"
+  },
+  "coffee": "比一杯咖啡還便宜。",
+  "freeMonths": "{n, plural, other {而且首 # 個月由我們請客。}}",
+  "cta": {
+    "upload": "上載我的餐牌 →",
+    "uploadSave": "上載我的餐牌，節省 {amount} →",
+    "ask": "向我們查詢",
+    "noCard": "設定時無需信用卡"
+  },
+  "breakdown": {
+    "title": "你每月的費用明細",
+    "titleDearer": "你在 HatchGrab 的每月費用",
+    "plan": "{plan} 計劃",
+    "over": "超出已包含 {allowance} 的 {excess}，收取 {pct}",
+    "inside": "已包含 {allowance} 額度內的網上訂單",
+    "total": "HatchGrab 每月費用",
+    "freeMonths": "{n, plural, other {第 1–# 個月}}",
+    "freeAmount": "{amount}——由我們請客",
+    "acrossFleet": "{fleet, plural, other {# 架美食車}}合共",
+    "perMonth": "每月 {amount}",
+    "card": "信用卡手續費——Stripe 每張訂單收取 {fee}，付予 Stripe。在窗口用信用卡機收款，你也要支付差不多的費用。",
+    "provider": "你現有服務商本身的收費（{pct}）",
+    "feeOnly": "{excess} 網上訂單收取 {pct}",
+    "noFee": "網上訂單——無上限，不收 HatchGrab 費用"
+  },
+  "enterRate": "輸入你現在支付的費用，看看可節省多少。",
+  "panel": {
+    "nowYear": "<label>你現時支付</label><fig>{amount}<q>／年</q></fig>",
+    "nowMonth": "<label>你現時支付</label><fig>{amount}<q>／月</q></fig>",
+    "oursYear": "<label>使用 HatchGrab</label><fig>{amount}<q>（第一年）</q></fig>",
+    "oursMonth": "<label>使用 HatchGrab</label><fig>{amount}<q>／月</q></fig>",
+    "acrossFleet": "{fleet, plural, other {# 架美食車}}合共"
+  },
+  "hero": {
+    "save": "<verb>你可節省</verb><figure>{amount}</figure><sub>第一年少付 <num>{pct}</num></sub>",
+    "same": "<verb>差不多</verb><figure>{amount}</figure><sub>第一年多付 <num>{pct}</num></sub>",
+    "dearer": "<lead>HatchGrab 的所有功能，只需</lead><figure>{amount}</figure><unit>每星期額外費用</unit>",
+    "dearerSub": "{fleet, plural, other {每架美食車每月比現在多 {amount}}}"
+  },
+  "anchor": {
+    "liability": "相當於一年的公眾責任保險。",
+    "weekendPitch": "相當於美食節一個週末的檔位費。",
+    "festivalPitches": "相當於幾次美食節的檔位費。",
+    "fryer": "相當於一部新炸爐及鐵板。",
+    "counter": "相當於把出餐櫃位全面翻新。",
+    "vanDeposit": "相當於第二架美食車的訂金。",
+    "secondVan": "相當於多一架美食車上路。"
+  },
+  "year": {
+    "one": "第一年",
+    "two": "第二年",
+    "save": "節省 {amount}<note>（少 {pct}）</note>",
+    "extra": "多付 {amount}<note>（多 {pct}）</note>",
+    "current": "現有服務商 <b>{amount}</b>",
+    "ours": "HatchGrab <b>{amount}</b>"
+  },
+  "smallPrint": {
+    "no": "以上為根據你輸入的數字所作的估算，並假設平均每張訂單 {aov}。無論使用哪個服務商，都需支付信用卡手續費。決定前請先核實。",
+    "yes": "以上為根據你輸入的數字所作的估算，並假設平均每張訂單 {aov}。無論使用哪個服務商，每張訂單都需支付 {fee} 的信用卡手續費，因此兩邊都沒有計算在內。",
+    "onTop": "第 {n} 題的總額已包含此費用——但兩邊的比較都沒有計算在內。",
+    "check": "決定前請先核實你現有服務商的費率。"
+  },
+  "intro": "大約一分鐘便完成。已在使用某個系統？我們會為你比較。還未使用？我們會清楚告訴你實際收費。",
+  "twoYear": "兩年合共節省 <b>{amount}</b>。",
+  "meta": {
+    "title": "成本計算機 — HatchGrab {country}",
+    "description": "比較你現在的網上訂單成本與使用 HatchGrab 一年的費用——一分鐘內得出估算。"
+  }
+}

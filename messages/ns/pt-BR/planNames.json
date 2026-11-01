@@ -1,0 +1,28 @@
+{
+  "payg": {
+    "name": "Sem mensalidade",
+    "subtitle": "Para quem trabalha por temporada ou meio período",
+    "description": "Sem mensalidade. Você só paga quando um cliente paga online com cartão."
+  },
+  "pro": {
+    "subtitle": "Food trucks com pedidos antecipados frequentes",
+    "description": "Tudo, incluindo respostas automáticas no WhatsApp e posts para redes sociais, com pedidos online incluídos todo mês."
+  },
+  "unlimited": {
+    "name": "Ilimitado",
+    "subtitle": "Food trucks movimentados e festivais",
+    "description": "Tudo, sem taxa nos pedidos online, por mais movimentado que seja."
+  },
+  "trial": {
+    "name": "Teste grátis",
+    "description": "Todos os recursos, grátis, durante todo o seu teste."
+  },
+  "demo": {
+    "name": "Demo",
+    "description": "Ambiente de teste para prospects — nunca público."
+  },
+  "tester": {
+    "name": "Testador",
+    "description": "Testador antes do lançamento — acesso completo."
+  }
+}

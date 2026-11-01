@@ -27,7 +27,11 @@ const F = require('./_europe-settings-fixtures.cjs')
 let pass = 0, fail = 0
 const t = (label, ok, detail) => { if (ok) { pass++; console.log('  ✓ ' + label) } else { fail++; console.log('  🔴 ' + label + (detail !== undefined ? `\n      ${typeof detail === 'string' ? detail.slice(0, 900) : JSON.stringify(detail).slice(0, 900)}` : '')) } }
 const head = s => console.log('\n── ' + s + ' ' + '─'.repeat(Math.max(0, 100 - s.length)))
-const read = f => fs.readFileSync(path.join(REPO, f), 'utf8')
+// ⚠️ RE-PINNED (world-countries-2, 1 November 2026, docs/world-countries-2-report.md §1): the Terms of Service (§4), the
+// Country-specific terms (eight countries appended, re-dated) and lib/legal.ts (two dates, TERMS_VERSION) are read as they were
+// before world-countries-2 — scripts/_lp-world-countries-2.cjs asBefore() removes exactly its named change and throws if it is
+// not there, so every other byte is still pinned here. The new text itself is proved by scripts/world-countries-2.cjs.
+const read = f => require('./_lp-world-countries-2.cjs').asBefore(f, fs.readFileSync(path.join(REPO, f), 'utf8'))
 const text = s => String(s ?? '').replace(/<style[\s\S]*?<\/style>/g, ' ').replace(/<script[\s\S]*?<\/script>/g, ' ').replace(/<[^>]+>/g, ' ')
   .replace(/&amp;/g, '&').replace(/&#x27;|&#39;/g, "'").replace(/&quot;/g, '"').replace(/&nbsp;/g, ' ').replace(/[  ]/g, ' ').replace(/\s+/g, ' ').trim()
 const count = (s, x) => s.split(x).length - 1
@@ -124,7 +128,7 @@ const NAMES = { AT: 'Austria', BE: 'Belgium', BG: 'Bulgaria', HR: 'Croatia', CY:
   head('2 · THE ADDRESS FORMATS — one per country, each example passing its own pattern')
   const AF = await kit.bundle('eus-af', "export * from '@/lib/address-formats'")
   t('every format validates (validateAddressFormats: no problem)', AF.validateAddressFormats().length === 0, AF.validateAddressFormats())
-  t('the format keys, in the order the CHECK lists them: gb us ie au nz ca fr, then the 29', AF.ADDRESS_FORMAT_KEYS.join(' ') === ['gb', 'us', 'ie', 'au', 'nz', 'ca', 'fr', ...CODES.map(c => c.toLowerCase())].join(' '), AF.ADDRESS_FORMAT_KEYS.join(' '))
+  t('the format keys, in the order the CHECK lists them: gb us ie au nz ca fr, then the 29', AF.ADDRESS_FORMAT_KEYS.slice(0, 36).join(' ') === ['gb', 'us', 'ie', 'au', 'nz', 'ca', 'fr', ...CODES.map(c => c.toLowerCase())].join(' '), AF.ADDRESS_FORMAT_KEYS.join(' '))   // ⚠️ RE-PINNED (world-countries-1): world-countries-1's eight follow
   const pc = CODES.map(c => { const f = AF.ADDRESS_FORMATS[c.toLowerCase()]; const ex = f.postalCode.example; return [c, ex, AF.isValidPostalCode(f, ex) && AF.normalisePostalCode(f, ex) === ex && new RegExp(f.postalCode.pattern).test(ex) && !AF.isValidPostalCode(f, 'ABC') && f.postalCode.identifiesPremises === false] })
   t('each format\'s example passes its own pattern and normalises to itself; "ABC" passes none; no code identifies one premises', pc.every(([, , ok]) => ok), pc.filter(([, , ok]) => !ok))
   const NORM = { CZ: ['11000', '110 00'], SE: ['11129', '111 29'], GR: ['10557', '105 57'], SK: ['81101', '811 01'], PL: ['31042', '31-042'], PT: ['1100148', '1100-148'], NL: ['1012js', '1012 JS'], LU: ['1648', 'L-1648'], LV: ['1050', 'LV-1050'], LT: ['01143', 'LT-01143'], MT: ['vlt1117', 'VLT 1117'], GI: ['gx111aa', 'GX11 1AA'] }
@@ -215,7 +219,8 @@ const NAMES = { AT: 'Austria', BE: 'Belgium', BG: 'Bulgaria', HR: 'Croatia', CY:
   head('7 · THE NOT RUN SQL — block A "run now", block B "run after deploy"')
   const A = read(F.SQL_A)
   const aList = /check \(address_format in \(([^)]*)\)\)/.exec(A)?.[1].split(',').map(x => x.trim().replace(/'/g, ''))
-  t('block A widens the address-format CHECK to exactly the formats\' keys, in their order (France\'s fr kept)', JSON.stringify(aList) === JSON.stringify([...AF.ADDRESS_FORMAT_KEYS]) && /^begin;$/m.test(A) && /^commit;$/m.test(A) && /NOT RUN/.test(A))
+  // ⚠️ RE-PINNED (world-countries-1, 31 October 2026): block A widened it to the 36 formats then; 20261054 widens it to the 44 now.
+  t('block A widens the address-format CHECK to exactly the formats\' keys, in their order (France\'s fr kept)', JSON.stringify(aList) === JSON.stringify([...AF.ADDRESS_FORMAT_KEYS].slice(0, 36)) && /^begin;$/m.test(A) && /^commit;$/m.test(A) && /NOT RUN/.test(A))
   t('…and nothing else: one drop and one add, no other table touched', count(A, 'alter table') === 2 && !/insert|update |delete/i.test(A.replace(/^--.*$/gm, '')))
   t('block B: begin … commit; rows before prices; every row switched off; written by "europe-settings draft"', /^begin;$/m.test(sql) && /^commit;$/m.test(sql) && sql.indexOf('insert into public.country_settings') < sql.indexOf('insert into public.plan_prices')
     && rows.every(r => r.enabled === false && r.updated_by === 'europe-settings draft') && /NOT RUN/.test(sql.slice(0, 400)))

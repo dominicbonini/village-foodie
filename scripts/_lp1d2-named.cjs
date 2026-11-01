@@ -343,6 +343,11 @@ const plansEntries2 = () => [
     what: '⚠️ RE-PINNED (pricing-pages, Stage B, 20 October 2026): GET /api/manage’s `countrySettings` no longer carries the six plan-price fields (lib/country-settings.ts stopped selecting them) — the same change Part 1 names (pricing-b-country-settings-fields). PRECISE.',
     views: id => /^api\/(GB|US)\|manageGET\|/.test(id),
     expect: b => require('./_lp-stage-b.cjs').countrySettingsFieldsGone(b) },
+  { id: 'world-countries-1-manage-fields-2', country: 'both', agent: 'world-countries-1 (31 Oct 2026)',
+    what: '⚠️ RE-PINNED (world-countries-1, 31 October 2026): GET /api/manage’s `countrySettings` gains `platformFeeAllowed: true` after `platformFeeEnabled`, and each catalogue price row gains `offered: true, trialEnd: false` after `extraVanMonthlyMinor` — the values every existing row reads as (no column yet). PRECISE: those fields only.',
+    views: id => /^api\/(GB|US)\|manageGET\|/.test(id),
+    // eslint-disable-next-line @typescript-eslint/no-require-imports -- CommonJS harness module (world-countries-1)
+    expect: b => require('./_lp-tagline.cjs').manageFields(b) },
   { id: 'pricing-b-catalogue-ignored-features-2', country: 'both', agent: 'pricing-pages Stage B (20 Oct 2026)',
     what: '⚠️ RE-PINNED (pricing-pages, Stage B, 20 October 2026): the catalogue GET /api/manage answers ends with `ignoredFeatures` ([] on the seed) — the same change Part 1 names (pricing-b-catalogue-ignored-features). PRECISE.',
     views: id => /^api\/(GB|US)\|manageGET\|/.test(id),

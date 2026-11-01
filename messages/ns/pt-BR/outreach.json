@@ -1,0 +1,11 @@
+{
+  "optOut": {
+    "missing": "Este e-mail não tem a linha de descadastro, então não pode ser enviado. Use Insert opt-out para adicioná-la.",
+    "notSetUp": "Nenhuma frase de descadastro está configurada, então nenhum e-mail de prospecção pode ser enviado. Adicione uma no painel Signature da aba Templates.",
+    "notLoaded": "A frase de descadastro ainda não carregou, então isto não pode ser enviado.",
+    "unreadable": "Não foi possível ler a frase de descadastro, então nada foi enviado."
+  },
+  "retry": {
+    "notRebuilt": "Não foi possível refazer essa mensagem com a linha da empresa, então nada foi enviado."
+  }
+}

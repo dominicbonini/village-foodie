@@ -1,0 +1,8 @@
+{
+  "change": "{label} — تغيير",
+  "useRule": "{label} — استخدام القاعدة بدلًا من ذلك",
+  "typePrice": "{label} — إدخال سعر",
+  "backToRule": "العودة إلى القاعدة",
+  "diffUp": "(+{amount})",
+  "diffDown": "(−{amount})"
+}

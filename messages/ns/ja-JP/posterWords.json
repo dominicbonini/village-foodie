@@ -1,0 +1,25 @@
+{
+  "heading": "{start}〜{end}の週",
+  "daysOff": "本日は出店なし",
+  "cancelled": "中止",
+  "placeSample": {
+    "nameTownBelow": "代々木公園イベント広場\n渋谷区",
+    "nameTown": "代々木公園イベント広場（渋谷区）",
+    "nameOnly": "代々木公園イベント広場"
+  },
+  "busyWeek": {
+    "venue1": "市民ホール前広場",
+    "town1": "渋谷区",
+    "venue2": "総合運動公園多目的広場および第二グラウンド",
+    "town2": "世田谷区",
+    "venue3": "駅前広場",
+    "town3": "武蔵野市",
+    "venue4": "フードフェスティバル",
+    "town4": "横浜",
+    "venue5": "クラフトビールバー ブル",
+    "town5": "鎌倉",
+    "venue6": "中央公園",
+    "town6": "大阪"
+  },
+  "poweredBy": "提供：HatchGrab"
+}

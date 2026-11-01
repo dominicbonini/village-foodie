@@ -14,7 +14,7 @@ import { formatAmount, formatWholeAmount, pctLabel } from '@/lib/money-format'
 import { cardFeeOnlineLabel } from '@/lib/card-fees'
 import type { PlanCatalog } from '@/lib/plans'
 import {
-  offerPlans, offerTrialMonths, offerFallback, baseBullets, addedFeatureBullets, moneyBullets, cheapestBands,
+  offerPlans, offerTrialMonths, offerFallback, baseBullets, addedFeatureBullets, moneyBullets, cheapestBands, singlePlanExtras,
   type OfferPlan,
 } from '@/lib/plan-offer'
 
@@ -48,6 +48,11 @@ export function PricingSection({ catalog, settings, t, tPrompt, brand, featuresH
   const months = offerTrialMonths(catalog)
   const fallback = offerFallback(catalog, settings.countryCode)
   const bands = cheapestBands(plans, settings.currency)
+  // world-countries-1 (31 October 2026): a country that offers ONE plan (Unlimited only, where HatchGrab may not take a platform
+  // fee — plan_prices.offered). Its card is the same card, centred (landing.css .plans-single); it lists the base, what the
+  // plan adds and its money bullets; the banner names the plan's price instead of "unless you choose a plan"; there is no
+  // "Which plan is cheapest?" bar, since there is nothing to choose. Every country with more than one plan renders as before.
+  const single = plans.length === 1 ? plans[0] : null
   const b = (c: ReactNode) => <b>{c}</b>
   const fee = (p: OfferPlan) => feeLabel(p.feeBps, settings.locale)
   const whole = (minor: number) => formatWholeAmount(minor, money)
@@ -66,12 +71,14 @@ export function PricingSection({ catalog, settings, t, tPrompt, brand, featuresH
       {months !== null && (
         <div className="trial-banner">
           <strong>{t('banner.title', { months })}</strong>
-          <span>{t.rich('banner.body', { brand, fallback: fallback.plan.name, fallbackFree: fallback.free ? 'yes' : 'no', plan: (c: ReactNode) => <u>{c}</u> })}</span>
+          <span>{single
+            ? t.rich('banner.bodyOnly', { brand, fallback: single.plan.name, price: formatAmount(single.monthlyMinor, money), plan: (c: ReactNode) => <u>{c}</u> })
+            : t.rich('banner.body', { brand, fallback: fallback.plan.name, fallbackFree: fallback.free ? 'yes' : 'no', plan: (c: ReactNode) => <u>{c}</u> })}</span>
         </div>
       )}
 
       {currencyLine && <p className="price-currency">{t('currencyLine', currencyLine)}</p>}
-      <div className="plans">
+      <div className={single ? 'plans plans-single' : 'plans'}>
         {plans.map((p, i) => {
           const prev = i > 0 ? plans[i - 1] : null
           return (
@@ -94,6 +101,15 @@ export function PricingSection({ catalog, settings, t, tPrompt, brand, featuresH
                     <>
                       <li className="lead">{t('card.everything')}</li>
                       {baseBullets(catalog, p).map(k => <li key={k}>{t(`base.${k}` as never)}</li>)}
+                      {single && singlePlanExtras(catalog, p).map(f => (
+                        <li key={f.feature}>
+                          {featureWords(f.feature)}{f.comingSoon && soonChip}
+                          {f.sub.map(sub => (
+                            <span key={sub.feature} className="li-sub">{featureWords(sub.feature)}{sub.comingSoon && soonChip}</span>
+                          ))}
+                        </li>
+                      ))}
+                      {single && moneyBullets(p).map(m => <li key={m}>{t(`money.${m}`)}</li>)}
                     </>
                   ) : (
                     <>
@@ -111,14 +127,14 @@ export function PricingSection({ catalog, settings, t, tPrompt, brand, featuresH
                   )}
                 </ul>
                 {prev === null && <p className="plan-more"><a href={featuresHref}>{t('card.seeEvery')}</a></p>}
-                {cta(p.highlighted ? 'btn btn-primary' : 'btn btn-ghost', t('card.tryFree'))}
+                {cta(p.highlighted || single ? 'btn btn-primary' : 'btn btn-ghost', t('card.tryFree'))}
               </div>
             </div>
           )
         })}
       </div>
 
-      {bands.length > 0 && (
+      {bands.length > 0 && !single && (
         <div className="cheap-bar">
           <span className="cheap-head">
             <span className="cheap-title">{t('bar.title')}</span>

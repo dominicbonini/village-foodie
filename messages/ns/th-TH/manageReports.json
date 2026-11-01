@@ -1,0 +1,92 @@
+{
+  "filter": {
+    "dateRange": "📅 ช่วงวันที่",
+    "event": "📍 อีเวนต์",
+    "filterBy": "กรองตาม",
+    "show": "แสดง",
+    "range": "<from></from><sep>ถึง</sep><until></until>",
+    "selectEvent": "เลือกอีเวนต์…",
+    "eventOption": "{venue} · {date}",
+    "unnamedEvent": "อีเวนต์",
+    "viewReport": "ดูรายงาน",
+    "loading": "กำลังโหลด…",
+    "orders": "📋 ออเดอร์",
+    "items": "📦 รายการ",
+    "exportCsv": "⬇ ส่งออก CSV"
+  },
+  "empty": {
+    "noOrders": "ไม่พบออเดอร์ในช่วงเวลานี้",
+    "selectEvent": "เลือกอีเวนต์ด้านบนเพื่อดูรายงาน"
+  },
+  "summary": {
+    "totals": "{n, plural, other {{count} ออเดอร์}} · {total}"
+  },
+  "revenue": {
+    "title": "รายละเอียดรายได้",
+    "deals": "รายได้จากเซ็ต",
+    "modifiers": "ค่าตัวเลือกเสริม",
+    "foodSales": "ยอดขายอาหาร",
+    "total": "ยอดรวม",
+    "other": "อื่น ๆ",
+    "tax": "ภาษี",
+    "tips": "ทิป",
+    "serviceFees": "ค่าบริการ",
+    "cardFees": "ค่าธรรมเนียมบัตร"
+  },
+  "itemsSold": {
+    "title": "รายการที่ขายได้"
+  },
+  "dealsCard": {
+    "title": "เซ็ต"
+  },
+  "custom": {
+    "title": "การปรับแต่ง",
+    "paidModifiers": "ตัวเลือกเสริมแบบมีค่าใช้จ่าย",
+    "customerNotes": "หมายเหตุจากลูกค้า",
+    "note": "“{note}”"
+  },
+  "table": {
+    "item": "รายการ",
+    "modifier": "ตัวเลือก",
+    "qty": "จำนวน",
+    "total": "ยอดรวม",
+    "date": "วันที่",
+    "time": "เวลา",
+    "channel": "ช่องทาง"
+  },
+  "breakdown": {
+    "orders": "รายละเอียดออเดอร์",
+    "items": "รายละเอียดรายการ"
+  },
+  "channel": {
+    "online": "ออนไลน์",
+    "walkUp": "หน้ารถ"
+  },
+  "csv": {
+    "orderId": "รหัสออเดอร์",
+    "date": "วันที่",
+    "event": "อีเวนต์",
+    "timePlaced": "เวลาที่สั่ง",
+    "collectionTime": "เวลารับอาหาร",
+    "customerName": "ชื่อลูกค้า",
+    "orderType": "ประเภทออเดอร์",
+    "items": "รายการ",
+    "deals": "เซ็ต",
+    "modifiers": "ตัวเลือก",
+    "notes": "หมายเหตุ",
+    "subtotal": "ยอดรวมย่อย",
+    "tip": "ทิป",
+    "serviceFee": "ค่าบริการ",
+    "total": "ยอดรวม",
+    "itemName": "ชื่อรายการ",
+    "qty": "จำนวน",
+    "unitPrice": "ราคาต่อหน่วย",
+    "itemTotal": "ยอดรวมรายการ",
+    "orderTotal": "ยอดรวมออเดอร์",
+    "unknownEvent": "อีเวนต์ที่ไม่ทราบ",
+    "asap": "เร็วที่สุด",
+    "unknownCustomer": "ไม่ทราบ",
+    "customerOnline": "ลูกค้าสั่งออนไลน์",
+    "placedByTruck": "ร้านเป็นผู้สั่ง"
+  }
+}

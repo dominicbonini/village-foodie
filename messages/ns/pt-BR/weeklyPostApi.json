@@ -1,0 +1,57 @@
+{
+  "shortened": {
+    "heading": "O título não coube e foi encurtado.",
+    "date": "A data não coube e foi encurtada.",
+    "daysOff": "O texto de dias sem atendimento não coube e foi encurtado.",
+    "place": "O nome do local não coube e foi encurtado.",
+    "time": "O horário não coube e foi encurtado.",
+    "note": "Seu texto não coube e foi encurtado.",
+    "venue": "O estabelecimento não coube e foi encurtado.",
+    "area": "A região não coube e foi encurtada."
+  },
+  "fontFallback": "Não foi possível carregar uma fonte usada nesta arte ({id}) — essas caixas estão em Oswald.",
+  "wrongShapeBackground": "A imagem deste local tem um formato diferente da sua arte, então o fundo padrão é usado.",
+  "rowsFit": "O último dia fica {px}px abaixo da parte de baixo da imagem — diminua o espaçamento entre as linhas ou suba a linha 1.",
+  "placeStatus": {
+    "ownBoth": "Imagem e posições de texto próprias",
+    "wrongShape": "Formato diferente — não é usada até ser substituída",
+    "ownPicture": "Imagem própria, posições padrão",
+    "ownPositions": "Imagem padrão, posições de texto próprias",
+    "none": "Ainda sem imagem — usando o Padrão"
+  },
+  "standardStatus": "Usado em todos os outros locais",
+  "option": {
+    "oneOff": "Enviar uma só para este post",
+    "placePoster": "Pôster de {name}",
+    "standard": "Arte padrão"
+  },
+  "previewLabel": {
+    "lastEvent": "A prévia usa seu último evento aqui",
+    "noEvents": "Ainda não há eventos aqui — a prévia mostra seu próximo evento com o nome deste local"
+  },
+  "fontUsage": {
+    "weekly": "sua arte do post semanal",
+    "event": "sua arte do post de evento único",
+    "place": "sua arte para {place}",
+    "placeUnnamed": "sua arte para um local"
+  },
+  "face": {
+    "regular": "Normal",
+    "bold": "Negrito",
+    "italic": "Itálico"
+  },
+  "picture": {
+    "legacy": "Pôster do evento",
+    "fallback": "Imagem",
+    "wrongShape": "Formato diferente — não pode ser usada como fundo inteiro"
+  },
+  "noPicture": {
+    "omit": "Deixar de fora",
+    "blank": "Deixar um espaço em branco",
+    "logo": "Mostrar seu logo"
+  },
+  "noPicturesAll": "{total, plural, one {Seu local tem uma imagem.} other {Todos os seus {total} locais têm imagem.}}",
+  "noPicturesSome": "{without, plural, one {{without} dos seus {total} locais ainda não tem imagem} other {{without} dos seus {total} locais ainda não têm imagem}}",
+  "licenceTick": "Sou dono desta fonte ou tenho licença para usá-la",
+  "fontUploadButton": "↑ Enviar sua fonte"
+}

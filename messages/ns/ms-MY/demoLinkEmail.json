@@ -1,0 +1,8 @@
+{
+  "subject": "Demo HatchGrab anda — ini pautan anda",
+  "heading": "Demo anda sudah sedia",
+  "intro": "Ini pautan ke demo yang kami bina daripada menu anda. Buat pesanan seperti pelanggan anda, kemudian lihat pesanan itu tiba di skrin dapur anda. Tidak perlu log masuk — ketik sahaja.",
+  "button": "Buka demo saya",
+  "deletion": "Ini hanya demo, jadi kami tidak menyimpannya: kami akan memadamnya, bersama menu yang anda muat naik, pada {date}. Jika anda mahu lebih lama, tekan “Simpan menu saya” dalam demo dan kami akan menyimpannya selama 14 hari.",
+  "deletionSoon": "Ini hanya demo, jadi kami tidak menyimpannya: kami akan memadamnya, bersama menu yang anda muat naik, selepas 24 jam. Jika anda mahu lebih lama, tekan “Simpan menu saya” dalam demo dan kami akan menyimpannya selama 14 hari."
+}

@@ -1,0 +1,17 @@
+{
+  "back": "← Voltar",
+  "title": "Aplicar combo",
+  "save": "Economize {amount}",
+  "selectItems": "Escolha os itens de cada parte do combo",
+  "choose": "Escolha: {category}…",
+  "inYourBasket": "── Na sua sacola ──",
+  "basketUnit": "{name}{withMods, select, yes { (+ {mods})} other {}} (na sacola){state, select, used { — já está em um combo} taken { — escolhido em outra parte} other {}}",
+  "addNew": "── Adicionar novo ──",
+  "itemWithPrice": "{name} {price}",
+  "ruleHint": "· {rule, select, requiredOne {Obrigatório · escolha um} required {Obrigatório} other {Escolha um}}{unmet, select, yes { (obrigatório)} other {}}",
+  "notePlaceholder": "Adicione uma observação, ex.: sem cebola (opcional)",
+  "backButton": "Voltar",
+  "cancel": "Cancelar",
+  "chooseRequired": "Escolha as opções obrigatórias",
+  "apply": "Aplicar combo · {amount}"
+}

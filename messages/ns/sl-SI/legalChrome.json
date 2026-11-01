@@ -13,5 +13,6 @@
   "countryTerms": "Pogoji za države",
   "contact": "Kontakt",
   "lastUpdated": "Zadnja posodobitev: {date}",
-  "questions": "Vprašanja? <link>Pišite nam</link> — smo resnični ljudje."
+  "questions": "Vprašanja? <link>Pišite nam</link> — smo resnični ljudje.",
+  "translationNote": "To je prevod. Če se razlikuje od <link>angleške različice</link>, velja angleška različica."
 }

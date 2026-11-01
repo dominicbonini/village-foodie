@@ -1,0 +1,59 @@
+{
+  "labels": {
+    "collection_interval_mins": "เวลารับอาหาร",
+    "takes_cash": "คุณรับเงินสดไหม",
+    "offline_protection": "การป้องกันเมื่อออฟไลน์",
+    "buzzer_prompt": "เตือนให้ฉันเพิ่มเครื่องเรียกคิว"
+  },
+  "typeFollowsVanTitle": "ใช้ตามการตั้งค่าปกติของรถแต่ละคัน",
+  "sameSettingsAllVansLabel": "ใช้การตั้งค่าเดียวกันกับรถทุกคัน",
+  "sameSettingsAllVansHeader": "รถทุกคัน",
+  "sameSettingsConfirm": "คัดลอกการตั้งค่าของรถ 1 ไปยังรถทุกคันไหม การตั้งค่ารถทั้งหมดของรถ 1 จะถูกคัดลอก เหมือนกับ “เหมือนรถ 1” ในการตั้งค่า กำลังการผลิตของครัวมีสวิตช์แยกต่างหาก",
+  "eventTypesFooterStandard": "มาตรฐาน คือการตั้งค่าปกติของคุณ การเปลี่ยนที่นี่จะเปลี่ยนในการตั้งค่าด้วย",
+  "eventTypesFooterOneEvent": "หากต้องการเปลี่ยนการตั้งค่าเฉพาะอีเวนต์เดียว ให้ใช้แดชบอร์ดของอีเวนต์นั้น",
+  "eventTypesSubtitle": "การเปลี่ยนแปลงจะบันทึกอัตโนมัติ",
+  "matchStandardLabel": "ใช้ตามมาตรฐาน",
+  "matchStandardConfirm": "ตั้งค่าทุกอย่างของประเภทนี้กลับเป็นมาตรฐานไหม สิ่งที่คุณเปลี่ยนไว้ที่นี่จะถูกล้าง",
+  "priceLabels": {
+    "price_change_on": "เปลี่ยนราคา",
+    "price_mode": "การเปลี่ยนราคา",
+    "price_amount": "จำนวน",
+    "price_rounding": "การปัดเศษ",
+    "item_prices": "ราคารายการ"
+  },
+  "priceMode": {
+    "add_amount": "+ {symbol}",
+    "add_pct": "+ %",
+    "sub_amount": "− {symbol}",
+    "sub_pct": "− %",
+    "none": "ตั้งราคาแต่ละรายการเอง"
+  },
+  "priceRounding": {
+    "none": "ไม่ปัดเศษ",
+    "nearest_1": "ใกล้เคียง {symbol}1 ที่สุด",
+    "up_1": "ปัดขึ้นเสมอ"
+  },
+  "pricesStandardCell": "ราคาในเมนูของคุณ",
+  "pricesTruckWideTitle": "ราคาของคุณเหมือนกันสำหรับรถทุกคัน",
+  "pricesMenuCell": "เมนู",
+  "pricesTypeOffCell": "ราคาในเมนู",
+  "itemPricesShow": "แสดงราคา",
+  "itemPricesHide": "ซ่อนราคา",
+  "priceItemsHeading": "ตั้งราคาของแต่ละรายการ",
+  "priceItemsOpen": "ดูหรือเปลี่ยนราคาของแต่ละรายการ ›",
+  "priceItemsClose": "ซ่อนราคารายการ ⌃",
+  "ownPriceCount": "{n, plural, other {มี {count} รายการที่ตั้งราคาเอง}}",
+  "priceTypeHint": "กดที่ราคาเพื่อพิมพ์ราคาของคุณเอง",
+  "pricesLiveNotice": "อีเวนต์นี้กำลังเปิดขายอยู่ ออเดอร์ใหม่จะใช้ราคาใหม่ ออเดอร์ที่สั่งไปแล้วจะใช้ราคาเดิม",
+  "placeTypeHelper": "เพิ่มอีเวนต์ จะเลือกประเภทนี้ทุกครั้งที่คุณเลือกสถานที่นี้",
+  "postPictureStandardNote": "โพสต์อีเวนต์ที่นี่ใช้ดีไซน์มาตรฐานของคุณ",
+  "eventItemsCardDescription": "ราคา จำนวนจำกัดของรายการ และการพร้อมขาย สำหรับอีเวนต์นี้เท่านั้น การเปลี่ยนแปลงมีผลทันที",
+  "eventPriceColumnLabel": "ราคา",
+  "eventPriceOwnNote": "{hasType, select, yes {{type} {price} · อีเวนต์นี้} other {เมนู {price} · อีเวนต์นี้}}",
+  "eventPriceEdit": "✎ แก้ไขราคา",
+  "eventPriceCancel": "ยกเลิก",
+  "eventPriceSave": "บันทึกราคา",
+  "eventPriceEditNote": "กำลังแก้ไขราคาสำหรับอีเวนต์นี้เท่านั้น จำนวนจำกัดของรายการและการพร้อมขายจะถูกล็อกไว้จนกว่าคุณจะบันทึก",
+  "eventPriceLiveNote": "กำลังเปิดขาย: ออเดอร์ใหม่จะใช้ราคาใหม่",
+  "offlineWhenOfflineLabel": "เมื่อออฟไลน์"
+}

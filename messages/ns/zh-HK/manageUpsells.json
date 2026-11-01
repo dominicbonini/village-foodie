@@ -1,0 +1,19 @@
+{
+  "heading": "加購推介",
+  "intro": "鼓勵顧客多加一樣。當顧客點了某個類別的食品，就推介另一個類別的食品，例如薄餅配飲品、漢堡配醬汁。",
+  "add": "+ 加入加購推介",
+  "toast": {
+    "updated": "已更新加購推介規則",
+    "added": "已加入加購推介規則",
+    "removed": "已移除規則"
+  },
+  "whenAdds": "當顧客加入…",
+  "suggestFrom": "推介以下類別的食品…",
+  "chooseCategory": "選擇類別",
+  "cancel": "取消",
+  "saveChanges": "儲存變更",
+  "addRule": "加入規則",
+  "empty": "暫時未有加購推介規則。",
+  "confirmRemove": "要移除加購推介規則「{trigger} → {suggest}」嗎？",
+  "upTo": "{n, plural, other {最多推介 {count} 項食品}}"
+}

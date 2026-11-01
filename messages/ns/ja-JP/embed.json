@@ -1,0 +1,8 @@
+{
+  "metaDescription": "{truck}の次回の出店場所はこちら。",
+  "orderFrom": "{truck}で注文する",
+  "poweredBy": "提供：<b>HatchGrab</b>",
+  "loadFailed": "出店スケジュールを読み込めませんでした。",
+  "loading": "出店スケジュールを読み込んでいます…",
+  "empty": "{truck}の今後の出店予定はありません。"
+}

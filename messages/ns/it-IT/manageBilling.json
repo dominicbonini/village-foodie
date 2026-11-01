@@ -24,8 +24,10 @@
     "heading": "La tua prova gratuita non è ancora iniziata"
   },
   "onTrial": "Hai tutte le funzioni. Scegli un piano prima della fine della prova.",
+  "onTrialPaidEnd": "Hai tutte le funzioni. Alla fine della prova il piano {plan} costa {price} al mese. Ti contatteremo prima di allora per impostare il pagamento.",
   "onTrialNoCta": "Hai tutte le funzioni.",
   "noCharge": "🔒 Durante la prova, che dura fino al {date}, non ti verrà addebitato nulla. La fatturazione inizia solo quando scegli un piano e inserisci i tuoi dati di pagamento. Fino ad allora non c’è nulla da disdire e nulla da pagare.",
+  "noChargePaidEnd": "🔒 Durante la prova, che dura fino al {date}, non ti verrà addebitato nulla.",
   "fees": "*Sugli ordini online si applicano le normali commissioni per i pagamenti con carta",
   "setUpPayment": "⏱ Scegli un piano prima della fine della prova",
   "changeYourPlan": "Cambia piano",

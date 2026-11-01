@@ -187,12 +187,12 @@ module.exports = async function us(h) {
     }
     const dash = read('app/dashboard/[token]/page.tsx')
     t('the dashboard edit preview calls chargesForEdit for a charged order, and keeps its old sum for every other (UK) order',
-      /chargesForEdit\(Math\.round\(food\*100\),rulesFromCheckout\(truck!\.charge_rules!\),o\)/.test(dash) && /if\(!priced\|\|!o\)return linear/.test(dash))
+      /chargesForEdit\(toMinorUnits\(food,cur\),rulesFromCheckout\(truck!\.charge_rules!\),o\)/.test(dash)   /* ⚠️ RE-PINNED (world-countries-1): in the order's currency's minor units */ && /if\(!priced\|\|!o\)return linear/.test(dash))
     const walk = E.computeOrderCharges({ foodMinor: 2400, rules: browserRules, channel: 'walk_up' })
     t('offline walk-up: tax, no fee, no tip → $25.98', walk.totalMinor === 2598 && walk.serviceFeeMinor === 0 && walk.tipMinor === 0)
     const panel = read('components/dashboard/AddOrderPanel.tsx')
     t('the Add Order panel\'s offline order uses it, ONLY when the dashboard sent charge_rules (never for a UK truck)',
-      /\.\.\.\(truck\.charge_rules \? \(\(\) => \{\s*const c = computeOrderCharges\(\{ foodMinor: Math\.round\(manualTotal \* 100\), rules: rulesFromCheckout\(truck\.charge_rules\), channel: 'walk_up' \}\)/.test(panel))
+      /\.\.\.\(truck\.charge_rules \? \(\(\) => \{[\s\S]{0,200}?const c = computeOrderCharges\(\{ foodMinor: toMinorUnits\(manualTotal, cur\), rules: rulesFromCheckout\(truck\.charge_rules\), channel: 'walk_up' \}\)/.test(panel))   // ⚠️ RE-PINNED (world-countries-1): the truck's currency's minor units
     t('the dashboard route sends charge_rules only when a rule applies', /\.\.\.\(chargeRules \? \{ charge_rules: chargeRules \} : \{\}\)/.test(read('app/api/dashboard/route.ts'))
       && E.checkoutRulesFrom(R.resolveChargeRules(SEEDS.gbFromSeed(), { country: 'GB' })) === null)
   }

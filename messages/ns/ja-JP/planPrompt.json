@@ -1,0 +1,118 @@
+{
+  "includedOn": "{many, select, yes {{feature}は{plan}に含まれています。} other {{feature}は{plan}に含まれています。}}",
+  "notOnPlan": "{many, select, yes {{feature}はご利用中のプランに含まれていません。} other {{feature}はご利用中のプランに含まれていません。}}",
+  "switchedOff": "{many, select, yes {このキッチンカーでは{feature}がオフになっています。} other {このキッチンカーでは{feature}がオフになっています。}}",
+  "planLine": "{plan} · {price} · {description}",
+  "planLineNoPrice": "{plan} · {description}",
+  "upgrade": "アップグレード →",
+  "features": {
+    "discovery_map": {
+      "name": "発見マップへの掲載",
+      "many": "no"
+    },
+    "web_dashboard": {
+      "name": "Webダッシュボード",
+      "many": "no"
+    },
+    "ipad_kds": {
+      "name": "キッチンアプリ",
+      "many": "no"
+    },
+    "qr_menu": {
+      "name": "QRコードメニュー",
+      "many": "no"
+    },
+    "meal_deals": {
+      "name": "お得なセット",
+      "many": "yes"
+    },
+    "upsells": {
+      "name": "追加購入の提案",
+      "many": "yes"
+    },
+    "walkup_orders": {
+      "name": "店頭注文",
+      "many": "yes"
+    },
+    "online_ordering_pay_at_hatch": {
+      "name": "受け取り時のお支払いによる注文",
+      "many": "no"
+    },
+    "sold_out_toggle": {
+      "name": "売り切れ切り替え",
+      "many": "no"
+    },
+    "stock_countdown": {
+      "name": "在庫カウントダウン",
+      "many": "no"
+    },
+    "offline_protection": {
+      "name": "オフライン時の注文保護",
+      "many": "no"
+    },
+    "online_payments": {
+      "name": "オンライン決済",
+      "many": "yes"
+    },
+    "advance_preordering": {
+      "name": "日時指定の事前注文",
+      "many": "no"
+    },
+    "time_slot_selection": {
+      "name": "お客様による時間枠の選択",
+      "many": "yes"
+    },
+    "smart_batch_pacing": {
+      "name": "調理キャパシティの管理",
+      "many": "no"
+    },
+    "auto_accept": {
+      "name": "自動受付",
+      "many": "no"
+    },
+    "instagram_messenger_replies": {
+      "name": "Messenger・Instagram自動返信",
+      "many": "yes"
+    },
+    "branded_qr_code": {
+      "name": "ロゴ入りQRコード",
+      "many": "yes"
+    },
+    "advanced_reporting": {
+      "name": "詳細レポート",
+      "many": "no"
+    },
+    "ticket_printing": {
+      "name": "キッチン伝票の印刷",
+      "many": "no"
+    },
+    "multi_device_kds": {
+      "name": "複数端末でのキッチン同期",
+      "many": "no"
+    },
+    "cook_screen": {
+      "name": "調理画面",
+      "many": "no"
+    },
+    "whatsapp_replies": {
+      "name": "WhatsApp自動返信",
+      "many": "yes"
+    },
+    "embed_schedule": {
+      "name": "自社サイトへの出店スケジュール掲載",
+      "many": "no"
+    },
+    "schedule_graphics": {
+      "name": "SNS投稿",
+      "many": "yes"
+    },
+    "event_types": {
+      "name": "出店タイプのカスタマイズ",
+      "many": "yes"
+    },
+    "private_events": {
+      "name": "貸切イベント",
+      "many": "yes"
+    }
+  }
+}

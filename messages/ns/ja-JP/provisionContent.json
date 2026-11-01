@@ -1,0 +1,57 @@
+{
+  "firstVanName": "車両1",
+  "demoCategories": {
+    "pizza": "ピザ",
+    "burgers": "バーガー",
+    "mains": "メイン",
+    "sides": "サイド",
+    "drinks": "ドリンク"
+  },
+  "demoTemplates": {
+    "pizza": {
+      "label": "🍕 ピザのキッチンカー",
+      "items": {
+        "margherita": "マルゲリータ",
+        "pepperoni": "ペパロニ",
+        "ndujaHoney": "ンドゥイヤ＆はちみつ",
+        "fourCheese": "クアトロフォルマッジ",
+        "gardenVeg": "彩り野菜",
+        "garlicBread": "ガーリックブレッド",
+        "rocketParmesan": "ルッコラ＆パルミジャーノ",
+        "olives": "オリーブ",
+        "sanPellegrino": "サンペレグリノ",
+        "coke": "コーラ"
+      }
+    },
+    "burgers": {
+      "label": "🍔 バーガーのキッチンカー",
+      "items": {
+        "classicCheeseburger": "クラシックチーズバーガー",
+        "doubleBacon": "ダブルベーコン",
+        "buttermilkChicken": "バターミルクチキン",
+        "halloumiStack": "ハルーミチーズスタック",
+        "smashBurger": "スマッシュバーガー",
+        "skinOnFries": "皮付きフライドポテト",
+        "loadedCheeseFries": "ローデッドチーズフライ",
+        "onionRings": "オニオンリング",
+        "craftLemonade": "クラフトレモネード",
+        "coke": "コーラ"
+      }
+    },
+    "curries": {
+      "label": "🍛 カレーのキッチンカー",
+      "items": {
+        "chickenTikkaMasala": "チキンティッカマサラ",
+        "lambRoganJosh": "ラムのローガンジョシュ",
+        "chanaMasala": "チャナマサラ",
+        "butterChicken": "バターチキンカレー",
+        "saagPaneer": "サグパニール",
+        "pilauRice": "ピラウライス",
+        "garlicNaan": "ガーリックナン",
+        "onionBhaji": "オニオンバジ",
+        "mangoLassi": "マンゴーラッシー",
+        "coke": "コーラ"
+      }
+    }
+  }
+}

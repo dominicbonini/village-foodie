@@ -13,5 +13,6 @@
   "countryTerms": "Voorwaarden per land",
   "contact": "Contact",
   "lastUpdated": "Laatst bijgewerkt: {date}",
-  "questions": "Vragen? <link>Neem contact op</link> — we zijn echte mensen."
+  "questions": "Vragen? <link>Neem contact op</link> — we zijn echte mensen.",
+  "translationNote": "Dit is een vertaling. Als deze afwijkt van de <link>Engelse versie</link>, geldt de Engelse versie."
 }

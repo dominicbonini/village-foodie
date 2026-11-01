@@ -1,0 +1,14 @@
+{
+  "homeLabel": "HatchGrabホーム",
+  "cta": "メニューをアップロード →",
+  "ctaShort": "メニューをアップロード",
+  "features": "機能",
+  "pricing": "料金",
+  "logIn": "ログイン",
+  "country": {
+    "button": "国：{name}。国を変更",
+    "menu": "国",
+    "title": "国を選択",
+    "subline": "料金、言語、設定が選んだ国に合わせて切り替わります。"
+  }
+}

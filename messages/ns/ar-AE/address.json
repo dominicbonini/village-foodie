@@ -1,0 +1,58 @@
+{
+  "label": {
+    "street": "العنوان",
+    "postcode": "الرمز البريدي",
+    "zip": "الرمز البريدي (ZIP)",
+    "eircode": "رمز Eircode",
+    "postalCode": "الرمز البريدي",
+    "state": "الولاية",
+    "stateTerritory": "الولاية أو الإقليم",
+    "province": "المقاطعة",
+    "county": "المقاطعة الإدارية",
+    "prefecture": "المحافظة",
+    "emirate": "الإمارة",
+    "region": "المنطقة",
+    "area": "المنطقة (قرية أو بلدة أو مدينة)",
+    "townOrArea": "المدينة أو المنطقة",
+    "city": "المدينة",
+    "suburb": "الحي",
+    "townOrCity": "البلدة أو المدينة"
+  },
+  "short": {
+    "area": "المنطقة",
+    "townOrArea": "المدينة أو المنطقة",
+    "city": "المدينة",
+    "suburb": "الحي",
+    "townOrCity": "البلدة أو المدينة"
+  },
+  "inSentence": {
+    "postcode": "الرمز البريدي",
+    "zip": "الرمز البريدي (ZIP)",
+    "eircode": "رمز Eircode",
+    "postalCode": "الرمز البريدي"
+  },
+  "withArticle": {
+    "postcode": "رمز بريدي",
+    "zip": "رمز بريدي (ZIP)",
+    "eircode": "رمز Eircode",
+    "postalCode": "رمز بريدي"
+  },
+  "tradeLabel": {
+    "area": "البلدة أو المدينة",
+    "townOrArea": "المدينة أو المنطقة",
+    "city": "المدينة",
+    "suburb": "الحي",
+    "townOrCity": "البلدة أو المدينة"
+  },
+  "basedIn": {
+    "area": "البلدة أو المدينة التي تعمل منها",
+    "townOrArea": "المدينة أو المنطقة التي تعمل منها",
+    "city": "المدينة التي تعمل منها",
+    "suburb": "الحي الذي تعمل منه",
+    "townOrCity": "البلدة أو المدينة التي تعمل منها"
+  },
+  "example": "مثال: {example}",
+  "customersSee": "يرى العملاء:",
+  "postalWarning": "لا يبدو أن هذا {article}، مثال: {example}. ويمكنك حفظه مع ذلك.",
+  "regionChoose": "اختر…"
+}

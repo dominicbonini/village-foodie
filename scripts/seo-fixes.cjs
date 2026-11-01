@@ -237,7 +237,7 @@ export function permanentRedirect(to) { const e = new Error('redirect'); e.to = 
     px.indexOf('request.headers.delete(PAGE_LANG_HEADER)') > 0 && px.indexOf('request.headers.delete(PAGE_LANG_HEADER)') < px.indexOf('request.headers.set(PAGE_LANG_HEADER, row.locale)')
     && /if \(LEGAL_DOCUMENT_PATHS\.has\(pathname\)\) request\.headers\.set\(PAGE_LANG_HEADER, DEFAULT_LOCALE\)/.test(px)
     && px.indexOf('request.headers.delete(PAGE_LANG_HEADER)') < px.indexOf('let supabaseResponse = NextResponse.next({ request })'))
-  t('the root layout reads it: <html lang={lang}>', /const lang = htmlLangOf\(requestHeaders\.get\(PAGE_LANG_HEADER\)\)/.test(read('app/layout.tsx')) && /<html lang=\{lang\} data-brand=\{brand\}>/.test(read('app/layout.tsx')))
+  t('the root layout reads it: <html lang={lang}>', /const lang = htmlLangOf\(requestHeaders\.get\(PAGE_LANG_HEADER\)\)/.test(read('app/layout.tsx')) && /<html lang=\{lang\} data-brand=\{brand\}( \{\.\.\.\(isRtl\(lang\) \? \{ dir: 'rtl' \} : \{\}\)\})?>/.test(read('app/layout.tsx')))   // ⚠️ RE-PINNED (world-countries-1): + dir="rtl" on an Arabic page only
 
   // ══ 9 ════════════════════════════════════════════════════════════════════════════════════════════════════════════
   head('9 · S7 — page weight')

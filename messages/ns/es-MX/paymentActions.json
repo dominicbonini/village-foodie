@@ -1,0 +1,4 @@
+{
+  "paidCardMachine": "Pagado con tu terminal{mixed, select, yes { — {amount}} other {}}",
+  "inPersonHint": "Efectivo o tu terminal — no se registra"
+}

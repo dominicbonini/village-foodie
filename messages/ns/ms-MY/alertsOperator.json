@@ -1,0 +1,28 @@
+{
+  "hi": "Hai {name},",
+  "limit80": {
+    "subject": "Anda telah menggunakan 80% balasan WhatsApp bulan ini",
+    "used": "Balasan WhatsApp automatik anda telah menggunakan <b>{used} daripada {limit}</b> untuk bulan ini.",
+    "nothingStopped": "Tiada apa-apa yang terhenti. Apabila anda mencapai {limit}, balasan automatik akan dijeda sehingga kuota anda ditetapkan semula pada <b>{reset}</b> — pelanggan masih boleh menghantar mesej kepada anda, dan anda masih akan melihat semua yang mereka hantar.",
+    "raise": "Anda boleh menaikkan had bulanan anda dalam Tetapan pada bila-bila masa.",
+    "raiseLink": "Anda boleh menaikkan had bulanan anda dalam Tetapan pada bila-bila masa:",
+    "button": "Buka Tetapan"
+  },
+  "limit100": {
+    "subject": "Balasan automatik WhatsApp anda telah dijeda untuk bulan ini",
+    "usedAll": "Anda telah menggunakan kesemua {limit} balasan WhatsApp automatik bulan ini, jadi ia telah dijeda.",
+    "stillReach": "<b>Pelanggan masih boleh menghantar mesej kepada anda seperti biasa, dan setiap mesej masih sampai kepada anda.</b> Satu-satunya yang terhenti ialah balasan automatik yang dihantar semula.",
+    "startAgain": "Ia akan bermula semula pada <b>{reset}</b>, atau serta-merta jika anda menaikkan had bulanan anda dalam Tetapan.",
+    "startAgainLink": "Ia akan bermula semula pada {reset}, atau serta-merta jika anda menaikkan had bulanan anda dalam Tetapan:",
+    "button": "Naikkan had saya"
+  },
+  "paymentBlocked": {
+    "subject": "WhatsApp perlukan kaedah pembayaran sebelum boleh menghantar",
+    "stopped": "WhatsApp telah menghentikan balasan automatik anda kerana tiada kaedah pembayaran yang berfungsi pada akaun WhatsApp Business anda.",
+    "stillMessage": "<b>Pelanggan masih boleh menghantar mesej kepada anda, dan anda masih akan nampak semua yang mereka hantar</b> — tetapi balasan tidak sampai kepada mereka.",
+    "payDirect": "Anda membayar WhatsApp secara terus untuk mesej ini, jadi masalah ini diselesaikan dalam WhatsApp Manager, bukan dalam HatchGrab. Tambah atau kemas kini kad di sana dan balasan akan bermula semula dengan sendirinya.",
+    "payDirectLink": "Anda membayar WhatsApp secara terus untuk mesej ini, jadi masalah ini diselesaikan dalam WhatsApp Manager, bukan dalam HatchGrab. Tambah atau kemas kini kad di sana dan balasan akan bermula semula dengan sendirinya:",
+    "button": "Buka WhatsApp Manager",
+    "settings": "Tetapan HatchGrab anda: <link>{url}</link>"
+  }
+}

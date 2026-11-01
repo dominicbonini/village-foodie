@@ -1,0 +1,19 @@
+{
+  "heading": "Cadangan tambahan",
+  "intro": "Galakkan pelanggan menambah sesuatu. Apabila seseorang memesan daripada satu kategori, cadangkan item daripada kategori lain — minuman dengan piza, sos dengan burger.",
+  "add": "+ Tambah cadangan",
+  "toast": {
+    "updated": "Peraturan cadangan tambahan dikemas kini",
+    "added": "Peraturan cadangan tambahan ditambah",
+    "removed": "Peraturan dibuang"
+  },
+  "whenAdds": "Apabila pelanggan menambah…",
+  "suggestFrom": "Cadangkan item daripada…",
+  "chooseCategory": "Pilih kategori",
+  "cancel": "Batal",
+  "saveChanges": "Simpan perubahan",
+  "addRule": "Tambah peraturan",
+  "empty": "Belum ada peraturan cadangan tambahan.",
+  "confirmRemove": "Buang peraturan cadangan tambahan “{trigger} → {suggest}”?",
+  "upTo": "{n, plural, other {Sehingga {count} item dicadangkan}}"
+}

@@ -1,0 +1,29 @@
+{
+  "notAvailable": "Indisponível na demonstração",
+  "demoMode": "MODO DEMONSTRAÇÃO",
+  "loopLands": "É exatamente assim que um pedido real chega",
+  "showMe": "Mostrar",
+  "noCard": "{sub} Sem precisar de cartão.",
+  "notYet": "Agora não",
+  "cashAndCollected": "Dinheiro e retirado",
+  "logoPlaceholder": "Seu logo aqui",
+  "welcomeTitle": "{sample, select, yes {Esta é uma demonstração de exemplo} other {Esta é a sua demonstração}}",
+  "welcomeIntro": "{sample, select, yes {Este é um <b>cardápio de exemplo</b> para você ver como tudo funciona — envie o seu quando quiser para deixá-lo com a sua cara.} other {Este é o seu próprio cardápio e a sua marca, num painel de verdade.}} Os pedidos que já estão nele são exemplos, para você ver um turno movimentado.",
+  "twoThings": "Duas coisas para testar:",
+  "hitButton": "Toque em <b>{button}</b> em um pedido",
+  "scanQr": "Escaneie o <b>QR code</b> — ou toque no link — e faça um pedido como cliente; depois veja ele chegar",
+  "qrAlt": "QR code da sua página de pedidos para clientes",
+  "openHere": "Ou abra neste dispositivo",
+  "copyLink": "Copiar link",
+  "copyDescribedAs": "link do pedido",
+  "noLinkTitle": "O link de pedidos para seus clientes",
+  "noLinkBody": "O link da sua página de pedidos está no menu, no canto superior direito.",
+  "asLive": "O fluxo de pedidos e da cozinha é exatamente igual ao real.",
+  "startExploring": "Começar a explorar",
+  "signupOffer": {
+    "heading": "Cadastre-se agora e ganhe um mês grátis",
+    "sub": "O prazo só começa a contar quando você decidir entrar no ar."
+  },
+  "cashIcon": "💵",
+  "walkBanner": "Demonstração · este é o seu cardápio, do jeito que seus clientes vão ver. Nada é cobrado e nenhum e-mail é enviado."
+}

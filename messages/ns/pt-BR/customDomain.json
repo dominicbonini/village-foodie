@@ -1,0 +1,161 @@
+{
+  "card": {
+    "title": "Coloque sua agenda no seu site",
+    "live": "<addr>{address}</addr> está mostrando sua agenda.",
+    "create": "Criamos uma página em <addr>{address}</addr> mostrando sua agenda.",
+    "exampleDomain": "seufoodtruck.com.br",
+    "liveBadge": "No ar",
+    "setUp": "Configurar",
+    "viewSetup": "Ver configuração",
+    "continue": "Continuar",
+    "justLive": "<b>{address}</b> está funcionando. Dê uma olhada e depois confirme para a gente aqui embaixo se está tudo certo."
+  },
+  "waiting": {
+    "title": "Estamos aguardando {address}",
+    "bodySince": "Você configurou isso em {date}. Endereços web novos costumam começar a funcionar em poucos minutos e, às vezes, levam até 24 horas para chegar a todo mundo — você não precisa fazer nada enquanto isso. Se outra pessoa ia adicionar a linha para você, vale conferir se ela adicionou.",
+    "body": "Endereços web novos costumam começar a funcionar em poucos minutos e, às vezes, levam até 24 horas para chegar a todo mundo — você não precisa fazer nada enquanto isso. Se outra pessoa ia adicionar a linha para você, vale conferir se ela adicionou."
+  },
+  "ready": {
+    "title": "{address} está no ar",
+    "body": "Dê uma olhada e depois confirme nas suas configurações que está tudo certo."
+  },
+  "confirm": {
+    "heading": "Dê uma olhada e confirme se está tudo certo",
+    "open": "Abra <link>{address}</link>",
+    "checkTimes": "Confira se as datas e os horários estão certos.",
+    "yes": "Sim, está tudo certo",
+    "no": "Não, tem um problema",
+    "problemLine": "Conte o que você está vendo e a gente verifica.",
+    "emailUs": "Mande um e-mail",
+    "mailSubject": "Problema com {address}",
+    "mailLiveSince": "No ar desde {date}",
+    "mailSeeing": "O que estou vendo:"
+  },
+  "confirmed": {
+    "heading": "Obrigado — tudo anotado.",
+    "body": "Não precisa fazer mais nada."
+  },
+  "turnOff": {
+    "link": "Desativar",
+    "heading": "Desativar seu endereço web próprio?",
+    "stops": "Isto vai parar de funcionar:",
+    "carriesOn": "Isto continua exatamente como está, e é para onde o seu QR code leva as pessoas:",
+    "reAdd": "Se você for configurar de novo mais tarde, deixe a linha que você adicionou na empresa do seu domínio. Se não for, peça para eles a removerem.",
+    "cancel": "Manter ativado",
+    "confirm": "Desativar",
+    "working": "Desativando…",
+    "failed": "Não conseguimos desativar isso agora. Nada mudou — seu endereço continua funcionando. Tente novamente daqui a pouco."
+  },
+  "wizard": {
+    "resumeFailedTitle": "Não conseguimos carregar sua configuração.",
+    "resumeFailedBody": "Nada mudou. Tente novamente daqui a pouco.",
+    "close": "Fechar",
+    "resuming": "Continuando de onde você parou…",
+    "genericError": "Algo deu errado",
+    "saveFailed": "Não foi possível salvar"
+  },
+  "address": {
+    "intro": "Sua agenda ganha um endereço web próprio.",
+    "question": "Qual é o endereço do seu site?",
+    "hint": "Aquele que as pessoas já usam para encontrar você.",
+    "aria": "Seu endereço web próprio",
+    "willBe": "Seu endereço será <addr>{address}</addr>",
+    "example": "Por exemplo, <addr>{address}</addr>",
+    "noChange": "Seu site não muda — você só adiciona um link para o novo endereço.",
+    "notSetUp": "Ainda não configuramos isso.",
+    "restricted": "Quem cuida do seu endereço web precisa nos autorizar a configurar o cadeado — o pequeno cadeado que os clientes veem ao lado dele. Enquanto não nos autorizarem, ele não vai aparecer, então paramos aqui em vez de deixar você esperando. Peça para eles nos adicionarem e tente novamente.",
+    "blocked": "No momento, seu endereço web bloqueia o cadeado por completo. Quem cuida dele precisa liberar isso para funcionar. Peça para mudarem isso e tente novamente.",
+    "elsewhere": "Já tem algo respondendo nesse endereço. Envie a mensagem da próxima tela para quem cuida dele — essa pessoa vai saber o que fazer.",
+    "provider": "Seu endereço web é gerenciado por <b>{provider}</b>. Vamos mostrar onde você deve ir.",
+    "provisionFailed": "Não conseguimos configurar esse endereço.",
+    "willNotWork": "Esse endereço não vai funcionar.",
+    "couldNotBeSetUp": "Não foi possível configurar esse endereço.",
+    "couldNotSetUp": "Não foi possível configurar",
+    "checking": "Verificando…",
+    "setting": "Configurando…",
+    "tryAgain": "Tentar de novo",
+    "setUpAddress": "Configurar este endereço",
+    "notNow": "Agora não"
+  },
+  "apex": {
+    "empty": "Digite o endereço que você quer usar.",
+    "not_a_domain": "Isso não parece um endereço web.",
+    "unparseable": "Não conseguimos entender isso como um endereço web. Confira a grafia e tente novamente.",
+    "apex": "{host} é o endereço completo do seu site. Se você apontá-lo para nós, seu site será substituído por esta página. Coloque uma palavra na frente — por exemplo, agenda.{host}.",
+    "too_deep": "Esse endereço tem partes demais. Algo como agenda.{domain} funciona melhor."
+  },
+  "record": {
+    "addAt": "Adicione isto em {provider}",
+    "open": "Abrir {provider}",
+    "guide": "Guia oficial de {provider} sobre isso",
+    "addAtSave": "Adicione isto em {provider} e salve.",
+    "addSomewhere": "Adicione isto onde o seu endereço web é gerenciado e salve.",
+    "hintChoose": "Escolha esta opção na lista.",
+    "hintWord": "Só esta palavra, não o endereço inteiro.",
+    "hintExact": "Copie exatamente assim.",
+    "timing": "Normalmente começa a funcionar em até uma hora, mas pode demorar mais. Você não precisa deixar esta página aberta.",
+    "someoneElse": "Outra pessoa cuida do seu endereço web?",
+    "sentTo": "Enviado para {email}",
+    "emailPlaceholder": "o e-mail dessa pessoa",
+    "sending": "Enviando…",
+    "send": "Enviar estas informações",
+    "sendFailed": "Não foi possível enviar"
+  },
+  "providers": {
+    "cloudflare": {
+      "open": "Abra seu endereço web e depois “DNS” e “Records”.",
+      "add": "Selecione “Add record” e escolha “CNAME” em “Type”.",
+      "name": "Coloque o primeiro valor abaixo em “Name”.",
+      "value": "Coloque o segundo valor abaixo em “Target”.",
+      "proxy": "Defina “Proxy status” como “DNS only” — a nuvem ao lado precisa ficar cinza, não laranja.",
+      "save": "Deixe “TTL” em “Auto” e selecione “Save”.",
+      "caveat": "Se a nuvem continuar laranja, o cadeado nunca vai aparecer, e nada vai dizer por quê."
+    },
+    "godaddy": {
+      "open": "Abra seu “Domain Portfolio” e escolha seu endereço web.",
+      "dns": "Em “Domain Settings”, selecione “DNS”.",
+      "add": "Selecione “Add New Record” e escolha “CNAME” no menu “Type”.",
+      "name": "Coloque o primeiro valor abaixo em “Name”.",
+      "value": "Coloque o segundo valor abaixo em “Value”.",
+      "save": "Deixe “TTL” como está e selecione “Save”.",
+      "caveat": "Se você adicionou mais de um de uma vez, o botão diz “Save All Records”."
+    },
+    "123reg": {
+      "signIn": "Entre no seu “123 Reg Control Panel”.",
+      "manage": "Ao lado de “Domains”, selecione “Manage All” e escolha seu endereço web.",
+      "dns": "Selecione “DNS” e depois “Add New Record”.",
+      "type": "Escolha “CNAME” na lista “Type”.",
+      "name": "Coloque o primeiro valor abaixo em “Name”.",
+      "value": "Coloque o segundo valor abaixo em “Value” e adicione um ponto final no fim dele.",
+      "save": "Deixe “TTL” em “Default” e clique em “Save”.",
+      "caveat": "O 123 Reg precisa de um ponto final no fim do segundo valor, senão não funciona."
+    },
+    "wix": {
+      "open": "Abra “Domains” e clique no ícone “Domain Actions” ao lado do seu endereço web.",
+      "manage": "Escolha “Manage DNS Records”.",
+      "add": "Na seção “CNAME (Aliases)”, clique em “+ Add Record” e depois em “Got it”.",
+      "name": "Coloque o primeiro valor abaixo em “Host Name”.",
+      "value": "Coloque o segundo valor abaixo em “Value”.",
+      "save": "Clique em “Save” e depois em “Save Changes” na janela que abrir.",
+      "caveat": "Se o seu endereço web só aponta para o Wix, em vez de estar registrado lá, o Wix não consegue fazer essa alteração — quem detém o domínio precisa fazer."
+    }
+  },
+  "instructionsEmail": {
+    "subject": "Um registro a adicionar para a página de agenda de {truckName}",
+    "hello": "Olá,",
+    "introAt": "Vamos colocar a agenda atualizada de {truckName} em {address}, e para isso é preciso adicionar um registro ao nosso domínio em {provider}.",
+    "introHolder": "Vamos colocar a agenda atualizada de {truckName} em {address}, e para isso é preciso adicionar um registro ao nosso domínio, onde quer que ele esteja registrado.",
+    "stepsAt": "Em {provider}:",
+    "guide": "Guia oficial deles: {url}",
+    "wholeChange": "A alteração é só essa — nada mais no site é afetado, e o resto do nosso domínio continua funcionando exatamente como hoje. Normalmente começa a funcionar em até uma hora.",
+    "pointsAt": "A página para onde ele aponta mostra onde vamos estar vendendo em seguida e se atualiza sozinha.",
+    "replyTo": "Se tiver alguma dúvida, responda para {email}.",
+    "thanks": "Obrigado,"
+  },
+  "liveEmail": {
+    "subject": "{address} está funcionando",
+    "goodNews": "Boa notícia — {address} está funcionando.",
+    "body": "Sua agenda agora aparece no seu próprio endereço. Dê uma olhada e confira se está tudo certo: abra {address}, veja se os eventos são seus e se as datas estão corretas.",
+    "confirm": "Depois disso, abra suas configurações no HatchGrab e confirme que está tudo certo. Nada depende disso — só serve para sabermos que uma pessoa viu."
+  }
+}

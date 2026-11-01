@@ -1,0 +1,117 @@
+{
+  "cardEditor": {
+    "title": "Sua ficha de alérgenos",
+    "intro": "Os clientes veem isto <b>exatamente como você escrever</b> — nada é reescrito. Digite ou cole abaixo, ou envie uma foto/PDF e nós lemos o texto para você conferir.",
+    "empty": "Nenhuma ficha de alérgenos ainda.",
+    "placeholder": "ex.: Todos os nossos peixes empanados com fritas contêm trigo e leite. A fritadeira é compartilhada com itens que contêm glúten e castanhas. Temos opções veganas — pergunte à equipe.",
+    "reading": "Lendo a imagem…",
+    "upload": "📷 Enviar imagem / PDF",
+    "uploadNote": "Lemos o texto da sua imagem para você revisar — a imagem não é armazenada."
+  },
+  "cardUpload": {
+    "dishFallback": "Prato",
+    "question": "Você tem uma ficha de alérgenos para enviar?",
+    "perDish": "{detected, select, yes {Envie a ficha e vamos usá-la para montar os alérgenos dos seus pratos. Os alérgenos detectados vão aparecer na próxima página, onde você confirma cada prato.} other {Envie a ficha e vamos usá-la para montar os alérgenos dos seus pratos.}}",
+    "cardOnly": "Envie a ficha de alérgenos que os clientes vão ver.",
+    "yes": "Sim",
+    "no": "Não",
+    "noProblem": "Sem problema — você não precisa de uma. Continue pelo botão abaixo.",
+    "analysing": "Analisando a ficha…",
+    "dropzone": "Arraste e solte ou toque para escolher",
+    "imageOrPdf": "Imagem ou PDF",
+    "or": "ou",
+    "pastePlaceholder": "Cole aqui o texto da sua ficha de alérgenos…",
+    "process": "Processar ficha",
+    "cardRead": "Ficha lida ✓",
+    "unmatchedHeading": "Não conseguimos associar estes automaticamente — atribua ou descarte",
+    "quotedName": "“{name}”",
+    "ambiguous": "Ambíguo — corresponde a vários pratos; escolha o certo.",
+    "assignTo": "Atribuir ao prato…",
+    "dismiss": "Descartar",
+    "blanket": "A ficha diz que <b>{list}</b> pode estar presente em <b>todos</b> os pratos. Adicionar a todos os pratos? (você ainda confirma cada um) <muted>— desativado por padrão</muted>",
+    "kitchenNotes": "Observações da cozinha (salvas nas suas informações de alérgenos)",
+    "matchSummary": "{n, plural, =0 {Associados a um prato: {matched}.} one {Associados a um prato: {matched}. Aguardando sua atribuição: {count}.} other {Associados a um prato: {matched}. Aguardando sua atribuição: {count}.}}"
+  },
+  "savedCard": {
+    "showLess": "Mostrar menos",
+    "showMore": "Mostrar mais",
+    "fileOnly": "Há um arquivo de ficha salvo para este food truck, mas nenhum texto de resumo foi armazenado. Abra o original para ler.",
+    "viewOriginal": "Ver ficha original"
+  },
+  "wizard": {
+    "toast": {
+      "readFailed": "Não foi possível ler a ficha de alérgenos — tente de novo",
+      "confirmed": "{name} confirmado",
+      "undo": "Desfazer",
+      "saveFailed": "Não foi possível salvar — tente de novo",
+      "imageFailed": "Não foi possível ler essa imagem — digite ou cole sua ficha",
+      "cardRead": "{n, plural, one {Ficha lida — associados: {matched}; aguardando atribuição: {count}} other {Ficha lida — associados: {matched}; aguardando atribuição: {count}}}"
+    },
+    "genericWarn": {
+      "text": "“{generic}” foi detectado, mas não é específico. Escolha {picks} se este prato contém {family} — ou deixe sem marcar se não contiver.",
+      "andOr": "{a} e/ou {b}"
+    },
+    "badge": {
+      "justConfirmed": "✓ Confirmado",
+      "confirmed": "Confirmado",
+      "needsReview": "Revisar"
+    },
+    "confirm": {
+      "confirming": "Confirmando…",
+      "confirmed": "Confirmado ✓",
+      "confirm": "Confirmar",
+      "changed": "· alterado",
+      "changedTitle": "Editado depois da última confirmação — confirme de novo"
+    },
+    "allergens": "Alérgenos",
+    "dietary": "Dieta",
+    "uncategorised": "Sem categoria",
+    "review": {
+      "progress": "{confirmed} de {total} confirmados",
+      "allConfirmed": "✓ Todos confirmados",
+      "list": "Lista",
+      "table": "Tabela",
+      "detected": "Detectados no seu cardápio — <b>confira</b>. Os alérgenos ficam ocultos para os clientes até você confirmar cada prato.",
+      "viewOnly": "👁 Somente visualização — só o proprietário pode confirmar ou alterar os alérgenos.",
+      "emptyTitle": "Nenhum item no cardápio",
+      "emptyBody": "Adicione itens ao cardápio primeiro e depois defina os alérgenos deles aqui.",
+      "dish": "Prato",
+      "status": "Status"
+    },
+    "cardPanel": {
+      "reading": "Lendo as informações de alérgenos…",
+      "saved": "🛡️ Ficha de alérgenos salva",
+      "viewOriginal": "Ver ficha original",
+      "replace": "Substituir ficha",
+      "uploadHelp": "Envie sua ficha de alérgenos (foto/PDF) ou cole as informações de alérgenos — nossa IA organiza tudo para os clientes.",
+      "add": "Adicionar ficha de alérgenos",
+      "viewOnly": "👁 Somente visualização — só o proprietário pode adicionar a ficha de alérgenos.",
+      "intro": "Os clientes vão ver esta ficha como a referência de alérgenos do cardápio. Os alérgenos por prato ficam ocultos no modo só ficha (os dados dos seus pratos são mantidos caso você mude para por prato depois)."
+    },
+    "subtitle": {
+      "choose": "Escolha como os clientes veem as informações de alérgenos",
+      "card": "Adicione sua ficha de alérgenos",
+      "cardOptional": "Adicione uma ficha de alérgenos (opcional)",
+      "review": "Confira e confirme cada prato"
+    },
+    "heading": {
+      "import": "Alérgenos",
+      "standalone": "Configuração de alérgenos"
+    },
+    "nav": {
+      "next": "Próximo →",
+      "back": "← Voltar",
+      "skip": "Pular por enquanto",
+      "saving": "Salvando…",
+      "done": "Concluído",
+      "saveLater": "Salvar e terminar depois",
+      "close": "Fechar",
+      "finish": "Finalizar",
+      "skipImport": "Pular a configuração de alérgenos por enquanto"
+    },
+    "hint": {
+      "skipDefers": "Pular só adia — os pratos que você não confirmou ficam ocultos para os clientes até que os alérgenos deles sejam confirmados.",
+      "importIncomplete": "Confirme todos os pratos para continuar — ou “Pular a configuração de alérgenos por enquanto”."
+    }
+  }
+}

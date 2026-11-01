@@ -1,0 +1,20 @@
+{
+  "meta": {
+    "title": "Tentang kami — HatchGrab",
+    "description": "HatchGrab membina perisian praktikal untuk food truck dan katering bergerak: pesanan dalam talian, masa ambil dan kurang soalan berulang. Diasaskan oleh Dominic Bonini."
+  },
+  "eyebrow": "Tentang kami",
+  "title": "Dibina mengikut cara food truck sebenarnya beroperasi",
+  "photoAlt": "{name}, pengasas HatchGrab",
+  "story": {
+    "start": "HatchGrab bermula dengan satu pemerhatian mudah: food truck memerlukan alat yang lebih baik untuk menjalankan perniagaan mereka.",
+    "villageFoodie": "Selepas mencipta Village Foodie, sebuah direktori yang membantu orang ramai menemui food truck yang datang ke kawasan mereka, saya meluangkan lebih banyak masa untuk memahami cabaran yang dihadapi perniagaan makanan bergerak. Tidak seperti restoran biasa, food truck sentiasa berpindah, berniaga di lokasi yang berbeza dan melayan pelanggan dalam keadaan yang sentiasa berubah.",
+    "fixedAddress": "Namun, kebanyakan perisian yang ada untuk mereka direka untuk perniagaan yang mempunyai alamat tetap.",
+    "change": "HatchGrab dicipta untuk mengubahnya.",
+    "build": "Kami membina perisian praktikal khusus untuk food truck dan katering bergerak, membantu mereka menerima pesanan dalam talian, mengurus masa ambil, memastikan pesanan berjalan lancar dan mengurangkan masa melayan soalan yang berulang.",
+    "focus": "Fokus kami mudah: menjadikan pengurusan food truck lebih mudah, dengan alat yang direka mengikut cara perniagaan ini sebenarnya beroperasi."
+  },
+  "signature": "<b>{name}</b><br></br>Pengasas, HatchGrab",
+  "company": "{company} · registered in England and Wales · nombor syarikat {number} · pejabat berdaftar: {address}",
+  "contact": "Hubungi kami"
+}

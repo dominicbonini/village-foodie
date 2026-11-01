@@ -78,6 +78,7 @@
     "ends": "{hasDate, select, yes {Prøveperioden slutter <hl>{date}</hl>} other {Prøveperioden slutter <hl>snart</hl>}}",
     "offer": "{hasMonths, select, yes {{months, plural, one {Alle funksjoner gratis i # måned} other {Alle funksjoner gratis i # måneder}}} other {Alle funksjoner gratis i prøveperioden}}",
     "body": "{hasDate, select, yes {Du blir ikke belastet noe i prøveperioden, som varer til <b>{date}</b>. Fakturering starter først når du velger et abonnement og legger inn betalingsopplysningene dine. Inntil da er det ingenting å si opp og ingenting å betale. Velg abonnement før den tid — hvis ikke, går du over til {fallback}, og noen funksjoner slutter å virke.} other {Du blir ikke belastet noe mens du har prøveperiode. Fakturering starter først når du velger et abonnement og legger inn betalingsopplysningene dine. Inntil da er det ingenting å si opp og ingenting å betale. Velg abonnement før den tid — hvis ikke, går du over til {fallback}, og noen funksjoner slutter å virke.}}",
+    "bodyPaidEnd": "{hasDate, select, yes {Du blir ikke belastet noe i prøveperioden, som varer til <b>{date}</b>. Når prøveperioden er over, koster abonnementet {fallback} {price} i måneden. Vi tar kontakt med deg før den tid for å ordne betalingen.} other {Du blir ikke belastet noe mens du har prøveperiode. Når prøveperioden er over, koster abonnementet {fallback} {price} i måneden. Vi tar kontakt med deg før den tid for å ordne betalingen.}}",
     "fees": "*Vanlige kortgebyrer gjelder for nettbestillinger",
     "upgrade": "Oppgrader her →"
   }

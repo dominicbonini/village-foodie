@@ -1,0 +1,8 @@
+{
+  "notFoundTitle": "Page introuvable",
+  "notFoundBody": "Nous n’avons pas trouvé cette page. Elle a peut-être été déplacée, ou l’adresse est mal saisie.",
+  "home": "Aller à la page d’accueil",
+  "errorTitle": "Une erreur est survenue",
+  "errorBody": "Désolés, cette page ne s’est pas chargée. Réessayez, ou revenez à la page d’accueil.",
+  "retry": "Réessayer"
+}

@@ -11,7 +11,7 @@
 // PURE AND CLIENT-SAFE.
 import { FEATURES, type Feature } from '@/lib/features'
 import {
-  publicPlans, planPriceFor, planAllowsFeature, expiryFallbackPlan, signupDefaultPlan, activePlans,
+  publicPlans, planPriceFor, planAllowsFeature, expiryFallbackFor, signupDefaultPlan, activePlans,
   type PlanCatalog, type PlanRow, type PlanPrice,
 } from '@/lib/plans'
 import { FEATURE_TABLE, FEATURE_GROUPS, BASE_CARD_BULLETS, ADDED_FEATURE_BULLETS, type FeatureGroup, type FeatureTableRow } from '@/lib/feature-table'
@@ -41,12 +41,13 @@ export function feeShape(p: Pick<PlanPrice, 'includedOnlineMinor' | 'feeBps'>): 
   return p.includedOnlineMinor > 0 ? 'included' : 'feeOnly'
 }
 
-/** The public plans a country's pages show, in sort_order — each with its price row there (a plan unpriced in the country is left out). */
+/** The public plans a country's pages show, in sort_order — each with its price row there (a plan unpriced in the country is left out;
+ *  world-countries-1: so is a plan whose row there is switched off, `offered = false` — Unlimited-only countries). */
 export function offerPlans(catalog: PlanCatalog, countryCode: string | null | undefined): OfferPlan[] {
   const out: OfferPlan[] = []
   for (const plan of publicPlans(catalog)) {
     const price = planPriceFor(catalog, plan.key, countryCode)
-    if (!price) continue
+    if (!price || price.offered === false) continue
     out.push({ plan, price, monthlyMinor: price.monthlyMinor, includedMinor: price.includedOnlineMinor, feeBps: price.feeBps, shape: feeShape(price), highlighted: plan.isHighlighted })
   }
   return out
@@ -59,9 +60,10 @@ export function offerTrialMonths(catalog: PlanCatalog): number | null {
   return activePlans(catalog).find(p => p.isTrial && p.trialMonths)?.trialMonths ?? null
 }
 
-/** The plan a truck moves to when its plan ends, and whether it has no monthly fee in the country. */
+/** The plan a truck moves to when its plan ends, and whether it has no monthly fee in the country.
+ *  world-countries-1: the COUNTRY'S trial-end plan (lib/plans.ts expiryFallbackFor) — Unlimited where it is the only plan. */
 export function offerFallback(catalog: PlanCatalog, countryCode: string | null | undefined): { plan: PlanRow; free: boolean } {
-  const plan = expiryFallbackPlan(catalog)
+  const plan = expiryFallbackFor(catalog, countryCode)
   const price = planPriceFor(catalog, plan.key, countryCode)
   return { plan, free: !price || price.monthlyMinor === 0 }
 }
@@ -93,6 +95,23 @@ export function addedFeatureBullets(catalog: PlanCatalog, plan: OfferPlan, previ
     })
   }
   return out
+}
+
+/**
+ * world-countries-1 (31 October 2026): A COUNTRY WITH ONE PLAN (Unlimited only, where HatchGrab may not take a platform fee).
+ * Its single card is the first card — "Everything to run a service" and the base bullets — and, since there is no card before
+ * it to say "Everything in …, plus", it also lists what makes it more than the base: the features it has that SOME other active
+ * public plan switches off (the catalogue's own split, never a list here), in the cards' order. Empty for a plan that adds none.
+ */
+export function singlePlanExtras(catalog: PlanCatalog, plan: OfferPlan): CardFeatureBullet[] {
+  const others = publicPlans(catalog).filter(p => p.key !== plan.plan.key)
+  const added = FEATURES.filter(f => planAllowsFeature(catalog, plan.plan.key, f) && others.some(o => !planAllowsFeature(catalog, o.key, f)))
+  const listed = ADDED_FEATURE_BULLETS.map(b => b.feature)
+  const ordered = [...ADDED_FEATURE_BULLETS.filter(b => added.includes(b.feature) && !b.hidden), ...added.filter(f => !listed.includes(f)).map(feature => ({ feature, under: undefined, comingSoon: false }))]
+  return ordered.filter(b => !(b.under && added.includes(b.under))).map(b => ({
+    feature: b.feature, comingSoon: !!b.comingSoon,
+    sub: ordered.filter(x => x.under === b.feature).map(x => ({ feature: x.feature, comingSoon: !!x.comingSoon })),
+  }))
 }
 
 /**

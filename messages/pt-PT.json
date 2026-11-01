@@ -633,6 +633,28 @@
       "Walnut": "Nozes",
       "Wheatandtriticale": "Trigo e triticale",
       "Glutenbarleyoatsrye": "Glúten (cevada, aveia, centeio)",
+      "Shrimp": "Camarão",
+      "Crab": "Caranguejo",
+      "Buckwheat": "Trigo-sarraceno",
+      "Abalone": "Abalone",
+      "Squid": "Lulas",
+      "Salmonroe": "Ovas de salmão",
+      "Orange": "Laranjas",
+      "Kiwifruit": "Kiwis",
+      "Beef": "Carne de vaca",
+      "Salmon": "Salmão",
+      "Mackerel": "Cavala",
+      "Soybean": "Soja",
+      "Chicken": "Frango",
+      "Banana": "Bananas",
+      "Pork": "Porco",
+      "Peach": "Pêssegos",
+      "Yam": "Inhame",
+      "Apple": "Maçãs",
+      "Gelatin": "Gelatina",
+      "Chestnut": "Castanhas",
+      "Naturallatex": "Látex natural",
+      "Lactose": "Lactose",
       "Nuts": "Frutos de casca rija",
       "Shellfish": "Marisco"
     }
@@ -4854,6 +4876,7 @@
       "ends": "{hasDate, select, yes {O teste termina <hl>{date}</hl>} other {O teste termina <hl>em breve</hl>}}",
       "offer": "{hasMonths, select, yes {{months, plural, one {Todas as funcionalidades grátis durante # mês} other {Todas as funcionalidades grátis durante # meses}}} other {Todas as funcionalidades grátis durante o teste}}",
       "body": "{hasDate, select, yes {Não lhe será cobrado nada durante o teste, que decorre até <b>{date}</b>. A faturação só começa quando escolher um plano e introduzir os seus dados de pagamento. Até lá, não há nada para cancelar nem nada para pagar. Escolha o seu plano antes dessa data — caso contrário, passa para o plano {fallback} e algumas funcionalidades deixam de funcionar.} other {Não lhe será cobrado nada durante o teste. A faturação só começa quando escolher um plano e introduzir os seus dados de pagamento. Até lá, não há nada para cancelar nem nada para pagar. Escolha o seu plano antes do fim do teste — caso contrário, passa para o plano {fallback} e algumas funcionalidades deixam de funcionar.}}",
+      "bodyPaidEnd": "{hasDate, select, yes {Não lhe será cobrado nada durante o teste, que decorre até <b>{date}</b>. Quando o teste terminar, o plano {fallback} custa {price} por mês. Entraremos em contacto consigo antes disso para configurar o pagamento.} other {Não lhe será cobrado nada durante o teste. Quando o teste terminar, o plano {fallback} custa {price} por mês. Entraremos em contacto consigo antes disso para configurar o pagamento.}}",
       "fees": "*Aplicam-se as taxas normais de processamento de cartões nas encomendas online",
       "upgrade": "Mudar de plano aqui →"
     }
@@ -4884,8 +4907,10 @@
       "heading": "O seu teste gratuito ainda não começou"
     },
     "onTrial": "Tem todas as funcionalidades. Escolha um plano antes de o teste terminar.",
+    "onTrialPaidEnd": "Tem todas as funcionalidades. Quando o teste terminar, o plano {plan} custa {price} por mês. Entraremos em contacto consigo antes disso para configurar o pagamento.",
     "onTrialNoCta": "Tem todas as funcionalidades.",
     "noCharge": "🔒 Não lhe será cobrado nada durante o teste, que decorre até {date}. A faturação só começa quando escolher um plano e introduzir os seus dados de pagamento. Até lá, não há nada para cancelar nem nada para pagar.",
+    "noChargePaidEnd": "🔒 Não lhe será cobrado nada durante o teste, que decorre até {date}.",
     "fees": "*Aplicam-se as taxas normais de processamento de cartões nas encomendas online",
     "setUpPayment": "⏱ Escolha um plano antes de o teste terminar",
     "changeYourPlan": "Mudar de plano",
@@ -5472,7 +5497,6 @@
     "hero": {
       "title": "O sistema de encomendas online feito para <lean>food trucks.</lean>",
       "subSmall": "Carregue a sua ementa, sem registo.<br></br>Veja uma demonstração a funcionar em menos de 60 segundos.",
-      "tagline": "Menos tempo a gerir.<br></br>Mais tempo a <lean>cozinhar.</lean>",
       "cta": "Carregar a minha ementa →",
       "ctaNote": "<lead>Carregue uma foto da sua ementa e veja-a a funcionar em menos de 60 segundos.</lead><small>Sem registo. Sem cartão.</small>"
     },
@@ -5556,7 +5580,6 @@
     }
   },
   "landingFooter": {
-    "tagline": "Menos tempo a gerir.<br></br>Mais tempo a cozinhar.",
     "features": "Funcionalidades",
     "pricing": "Preços",
     "privacy": "Privacidade",
@@ -5638,7 +5661,8 @@
     "countryTerms": "Termos por país",
     "contact": "Contacto",
     "lastUpdated": "Última atualização: {date}",
-    "questions": "Dúvidas? <link>Fale connosco</link> — somos pessoas reais."
+    "questions": "Dúvidas? <link>Fale connosco</link> — somos pessoas reais.",
+    "translationNote": "Esta é uma tradução. Em caso de divergência com a <link>versão em inglês</link>, prevalece a versão em inglês."
   },
   "truckPage": {
     "meta": {
@@ -5794,7 +5818,15 @@
       "Australiancards": "cartões australianos",
       "NewZealandcards": "cartões neozelandeses",
       "Canadiancards": "cartões canadianos",
-      "Swisscards": "cartões suíços"
+      "Swisscards": "cartões suíços",
+      "Braziliancards": "cartões brasileiros",
+      "Mexicancards": "cartões mexicanos",
+      "Japanesecards": "cartões japoneses",
+      "Singaporecards": "cartões de Singapura",
+      "HongKongcards": "cartões de Hong Kong",
+      "Malaysiancards": "cartões malaios",
+      "Thaicards": "cartões tailandeses",
+      "UAEcards": "cartões dos EAU"
     },
     "perMonth": {
       "mo": "{amount}/mês",
@@ -5963,7 +5995,8 @@
   "pricing": {
     "banner": {
       "title": "{months, plural, one {O seu primeiro mês é totalmente grátis — com todas as funcionalidades desbloqueadas.} other {Os seus primeiros # meses são totalmente grátis — com todas as funcionalidades desbloqueadas.}}",
-      "body": "Com {brand}, os clientes encomendam com antecedência e pagam no levantamento, por isso pode receber encomendas online sem ligar nenhum serviço de pagamentos com cartão. Prefere receber o pagamento antecipadamente? Adicione pagamentos online com cartão quando quiser. Quando o seu teste terminar, passa para o plano <plan>{fallback}</plan>{fallbackFree, select, yes { (sem mensalidade)} other {}}, a menos que escolha outro plano. Sem cartão para começar, sem contrato, cancele quando quiser."
+      "body": "Com {brand}, os clientes encomendam com antecedência e pagam no levantamento, por isso pode receber encomendas online sem ligar nenhum serviço de pagamentos com cartão. Prefere receber o pagamento antecipadamente? Adicione pagamentos online com cartão quando quiser. Quando o seu teste terminar, passa para o plano <plan>{fallback}</plan>{fallbackFree, select, yes { (sem mensalidade)} other {}}, a menos que escolha outro plano. Sem cartão para começar, sem contrato, cancele quando quiser.",
+      "bodyOnly": "Com {brand}, os clientes encomendam com antecedência e pagam no levantamento, por isso pode receber encomendas online sem ligar nenhum serviço de pagamentos com cartão. Prefere receber o pagamento antecipadamente? Adicione pagamentos online com cartão quando quiser. Quando o seu teste terminar, o plano <plan>{fallback}</plan> custa {price} por mês. Entraremos em contacto consigo antes disso para configurar o pagamento. Sem cartão para começar, sem contrato, cancele quando quiser."
     },
     "card": {
       "perTruckMonth": "por food truck / mês",
@@ -6231,6 +6264,9 @@
       "stateTerritory": "Estado ou território",
       "province": "Província",
       "county": "Condado",
+      "prefecture": "Prefeitura",
+      "emirate": "Emirado",
+      "region": "Região",
       "area": "Localidade (aldeia, vila ou cidade)",
       "townOrArea": "Vila ou localidade",
       "city": "Cidade",
@@ -6326,5 +6362,13 @@
     "backToMenu": "Voltar à ementa",
     "formNote": "Isto é uma demonstração: ninguém é cobrado e nada é enviado, por isso não precisa de indicar um email.",
     "namePlaceholder": "Alex"
+  },
+  "errorPage": {
+    "notFoundTitle": "Página não encontrada",
+    "notFoundBody": "Não encontrámos essa página. Pode ter sido movida, ou o endereço pode estar mal escrito.",
+    "home": "Ir para a página inicial",
+    "errorTitle": "Algo correu mal",
+    "errorBody": "Lamentamos, esta página não carregou. Tente novamente ou volte à página inicial.",
+    "retry": "Tentar novamente"
   }
 }

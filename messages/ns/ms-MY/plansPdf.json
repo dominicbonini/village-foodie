@@ -1,0 +1,9 @@
+{
+  "title": "Pelan dan ciri",
+  "generated": "Dijana pada {date}",
+  "allowanceHeading": "Kuota pesanan dalam talian",
+  "smallPrint": "Cetakan kecil",
+  "priceNoteMasked": "Harga yang ditunjukkan sebagai “Akan disahkan” belum diterbitkan.",
+  "omitNote": "Harga sengaja tidak dimasukkan dalam dokumen ini.",
+  "terms": "Angka ini ialah terma pelan yang diterbitkan pada tarikh di atas dan mungkin berubah. Yuran pemprosesan kad ialah caj Stripe sendiri, bukan caj HatchGrab. Dokumen ini ialah ringkasan, bukan kontrak."
+}

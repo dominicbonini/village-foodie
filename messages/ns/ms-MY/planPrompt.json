@@ -1,0 +1,118 @@
+{
+  "includedOn": "{many, select, yes {{feature} termasuk dalam {plan}.} other {{feature} termasuk dalam {plan}.}}",
+  "notOnPlan": "{many, select, yes {{feature} tiada dalam pelan anda.} other {{feature} tiada dalam pelan anda.}}",
+  "switchedOff": "{many, select, yes {{feature} dimatikan untuk trak anda.} other {{feature} dimatikan untuk trak anda.}}",
+  "planLine": "{plan} · {price} · {description}",
+  "planLineNoPrice": "{plan} · {description}",
+  "upgrade": "Naik taraf →",
+  "features": {
+    "discovery_map": {
+      "name": "Senarai di peta penemuan",
+      "many": "no"
+    },
+    "web_dashboard": {
+      "name": "Papan pemuka web",
+      "many": "no"
+    },
+    "ipad_kds": {
+      "name": "Aplikasi dapur",
+      "many": "no"
+    },
+    "qr_menu": {
+      "name": "Menu kod QR",
+      "many": "no"
+    },
+    "meal_deals": {
+      "name": "Set kombo",
+      "many": "yes"
+    },
+    "upsells": {
+      "name": "Cadangan tambahan",
+      "many": "yes"
+    },
+    "walkup_orders": {
+      "name": "Pesanan walk-in",
+      "many": "yes"
+    },
+    "online_ordering_pay_at_hatch": {
+      "name": "Pesanan Bayar semasa ambil",
+      "many": "no"
+    },
+    "sold_out_toggle": {
+      "name": "Suis habis dijual",
+      "many": "no"
+    },
+    "stock_countdown": {
+      "name": "Kiraan stok",
+      "many": "no"
+    },
+    "offline_protection": {
+      "name": "Perlindungan pesanan luar talian",
+      "many": "no"
+    },
+    "online_payments": {
+      "name": "Pembayaran dalam talian",
+      "many": "yes"
+    },
+    "advance_preordering": {
+      "name": "Pra-pesanan awal",
+      "many": "no"
+    },
+    "time_slot_selection": {
+      "name": "Slot masa pelanggan",
+      "many": "yes"
+    },
+    "smart_batch_pacing": {
+      "name": "Pengurusan kapasiti dapur",
+      "many": "no"
+    },
+    "auto_accept": {
+      "name": "Terima automatik",
+      "many": "no"
+    },
+    "instagram_messenger_replies": {
+      "name": "Balasan automatik Messenger & Instagram",
+      "many": "yes"
+    },
+    "branded_qr_code": {
+      "name": "Kod QR berjenama",
+      "many": "yes"
+    },
+    "advanced_reporting": {
+      "name": "Laporan lanjutan",
+      "many": "no"
+    },
+    "ticket_printing": {
+      "name": "Cetakan tiket dapur",
+      "many": "no"
+    },
+    "multi_device_kds": {
+      "name": "Penyegerakan dapur berbilang peranti",
+      "many": "no"
+    },
+    "cook_screen": {
+      "name": "Skrin tukang masak",
+      "many": "no"
+    },
+    "whatsapp_replies": {
+      "name": "Balasan automatik WhatsApp",
+      "many": "yes"
+    },
+    "embed_schedule": {
+      "name": "Jadual anda di laman web anda sendiri",
+      "many": "no"
+    },
+    "schedule_graphics": {
+      "name": "Hantaran media sosial",
+      "many": "yes"
+    },
+    "event_types": {
+      "name": "Jenis acara tersuai",
+      "many": "yes"
+    },
+    "private_events": {
+      "name": "Acara peribadi",
+      "many": "yes"
+    }
+  }
+}

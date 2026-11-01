@@ -1,0 +1,8 @@
+{
+  "notFoundTitle": "Page not found",
+  "notFoundBody": "We couldn’t find that page. It may have moved, or the address may be mistyped.",
+  "home": "Go to the home page",
+  "errorTitle": "Something went wrong",
+  "errorBody": "Sorry — this page didn’t load. Try again, or go back to the home page.",
+  "retry": "Try again"
+}

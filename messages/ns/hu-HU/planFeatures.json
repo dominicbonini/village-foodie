@@ -105,7 +105,15 @@
     "Australiancards": "ausztrál kártyák",
     "NewZealandcards": "új-zélandi kártyák",
     "Canadiancards": "kanadai kártyák",
-    "Swisscards": "svájci kártyák"
+    "Swisscards": "svájci kártyák",
+    "Braziliancards": "brazil kártyák",
+    "Mexicancards": "mexikói kártyák",
+    "Japanesecards": "japán kártyák",
+    "Singaporecards": "szingapúri kártyák",
+    "HongKongcards": "hongkongi kártyák",
+    "Malaysiancards": "malajziai kártyák",
+    "Thaicards": "thaiföldi kártyák",
+    "UAEcards": "EAE-s kártyák"
   },
   "perMonth": {
     "mo": "{amount}/hó",

@@ -19,13 +19,14 @@
 //                         country's maximum).
 //   card surcharge        ⚠️ ALWAYS OFF in Phase 3, whatever the country says. The engine supports it.
 //   card fee payer        the truck's card_fee_payer (default 'truck').
-//   platform fee          the country's platform_fee_enabled (OFF) + the truck's EFFECTIVE PLAN's fee_bps in its
+//   platform fee          the country's platform_fee_enabled (OFF) AND platform_fee_allowed (world-countries-1: false where
+//                         Stripe forbids an application fee — platformFeeOn) + the truck's EFFECTIVE PLAN's fee_bps in its
 //                         country (public.plan_prices, lib/plans.ts). Never sent this phase. ⚠️ country_settings.
 //                         platform_fee_pct is RETIRED (plans-data-model, Stage A) and is not read here.
 //
 // 🔴 GB: tax included, every add-on off → the grand total is the food, exactly as before Phase 3.
 import 'server-only'
-import type { CountrySettings } from '@/lib/country-settings-types'
+import { platformFeeOn, type CountrySettings } from '@/lib/country-settings-types'
 import { countrySettingsForTruck } from '@/lib/country-settings'
 import { truckPlanFeeBps } from '@/lib/plans-server'
 import type { OrderChargeRules } from '@/lib/order-charges'
@@ -91,7 +92,8 @@ export function resolveChargeRules(
     tipping,
     surcharge: null,                     // ⚠️ OFF in Phase 3 — see the header
     cardFeePayer: truck.card_fee_payer === 'customer' ? 'customer' : 'truck',
-    platformFee: country.platformFeeEnabled && platformFeeBps !== null ? { bps: platformFeeBps } : null,
+    // world-countries-1: switched on AND allowed in the country (platformFeeOn) — never where Stripe forbids an application fee.
+    platformFee: platformFeeOn(country) && platformFeeBps !== null ? { bps: platformFeeBps } : null,
   }
 }
 
@@ -105,6 +107,6 @@ export async function loadChargeRules(
 ): Promise<OrderChargeRules> {
   const country = await countrySettingsForTruck(truck)
   // The plan's fee is read only while the country's platform fee is switched on (OFF everywhere this phase).
-  const platformFeeBps = country.platformFeeEnabled ? await truckPlanFeeBps(truck.id, country.countryCode) : null
+  const platformFeeBps = platformFeeOn(country) ? await truckPlanFeeBps(truck.id, country.countryCode) : null
   return resolveChargeRules(country, truck, platformFeeBps)
 }

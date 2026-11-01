@@ -17,6 +17,7 @@ import 'server-only'
 import type { CountrySettings } from '@/lib/country-settings-types'
 import { CURRENCY_CODES } from '@/lib/currencies'
 import { ACCEPTED_ADDRESS_FORMAT_VALUES, addressFormatKeyOf, type AddressFormatKey } from '@/lib/address-formats'
+import { ALLERGEN_SETS } from '@/lib/allergens'
 
 const TTL_MS = 60_000
 const cache = new Map<string, { at: number; value: CountrySettings }>()
@@ -36,7 +37,7 @@ let listCache: { at: number; value: CountrySettings[] } | null = null
 // ⛔ NOR ARE THE SIX OLD PLAN PRICE COLUMNS (starter/pro/max monthly, pro/max allowance, platform_fee_pct): retired by
 // plans-data-model Stage A, and their last reader — the frozen display copy — was deleted in Stage B
 // (docs/pricing-pages-report.md). Plans and prices are public.plans / plan_prices (lib/plans.ts). The columns stay.
-export const COUNTRY_SETTINGS_COLUMNS = [
+const BASE_COLUMNS = [
   'country_code', 'name', 'enabled',
   'currency', 'locale', 'time_format', 'date_order', 'week_start',
   'phone_country_code', 'short_name', 'phone_example', 'phone_check', 'address_format', 'timezones', 'default_timezone',
@@ -52,8 +53,24 @@ export const COUNTRY_SETTINGS_COLUMNS = [
   'service_fee_recipient', 'service_fee_hatchgrab_bps', 'service_fee_hatchgrab_fixed_minor',
   'service_fee_truck_max_bps', 'service_fee_truck_max_fixed_minor', 'platform_fee_enabled', 'fees_taxed',
   'support_hours', 'updated_at', 'updated_by',
-].join(', ')
-const COLUMNS = COUNTRY_SETTINGS_COLUMNS
+]
+/** world-countries-1 (31 October 2026, docs/world-countries-1-report.md §1): may HatchGrab take a platform fee in this country
+ *  (20261054)? Read by name like every column — but TOLERANTLY: until 20261054 runs, the select that names it fails with 42703
+ *  and `selectWithFallback` reads the columns without it, and mapCountryRow takes its absence as `true` (every existing row's
+ *  value). So this code may deploy before the SQL, and nothing changes until it runs. */
+const WC1_COLUMNS = ['platform_fee_allowed']
+export const COUNTRY_SETTINGS_COLUMNS = [...BASE_COLUMNS, ...WC1_COLUMNS].join(', ')
+/** The column list without world-countries-1's columns — what a database before 20261054 can answer. */
+export const COUNTRY_SETTINGS_COLUMNS_BEFORE_WC1 = BASE_COLUMNS.join(', ')
+
+/** world-countries-1: runs a read with COUNTRY_SETTINGS_COLUMNS; if the database has no world-countries-1 column yet (Postgres
+ *  42703, "column … does not exist"), runs it again with the columns before it. Any other error is returned as it came. */
+export async function selectWithFallback<R extends { error: { message: string; code?: string } | null }>(run: (columns: string) => PromiseLike<R>): Promise<R> {
+  const first = await run(COUNTRY_SETTINGS_COLUMNS)
+  const e = first.error
+  if (e && (e.code === '42703' || WC1_COLUMNS.some(c => e.message.includes(c)))) return run(COUNTRY_SETTINGS_COLUMNS_BEFORE_WC1)
+  return first
+}
 
 type Row = Record<string, unknown>
 
@@ -130,7 +147,7 @@ export function mapCountryRow(r: Row): CountrySettings {
     serviceFeeAllowed: bool(c, r, 'service_fee_allowed'),
     tippingEnabledDefault: bool(c, r, 'tipping_enabled_default'),
     tipPresetsPct: numArr(c, r, 'tip_presets_pct'),
-    allergenSet: oneOf(c, r, 'allergen_set', ['uk14', 'us9', 'anz', 'ca'] as const),   // canada-1: 'ca'
+    allergenSet: oneOf(c, r, 'allergen_set', ALLERGEN_SETS),   // canada-1: 'ca'; world-countries-1: 'jp', 'br', 'codex' (lib/allergens.ts)
     allergenCardOnlyAllowed: bool(c, r, 'allergen_card_only_allowed'),
     cardFeeOnlinePct: num(c, r, 'card_fee_online_pct'),
     cardFeeOnlineFixedMinor: num(c, r, 'card_fee_online_fixed_minor'),
@@ -144,6 +161,8 @@ export function mapCountryRow(r: Row): CountrySettings {
     serviceFeeTruckMaxBps: numOrNull(c, r, 'service_fee_truck_max_bps'),
     serviceFeeTruckMaxFixedMinor: numOrNull(c, r, 'service_fee_truck_max_fixed_minor'),
     platformFeeEnabled: bool(c, r, 'platform_fee_enabled'),
+    // world-countries-1: absent before 20261054 runs — every existing row's value is true (the column's default).
+    platformFeeAllowed: r.platform_fee_allowed === undefined ? true : bool(c, r, 'platform_fee_allowed'),
     feesTaxed: bool(c, r, 'fees_taxed'),
     supportHours: strOrNull(c, r, 'support_hours'),
     updatedAt: str(c, r, 'updated_at'),
@@ -162,7 +181,7 @@ export async function getCountrySettings(code: string): Promise<CountrySettings>
   // modules that only NAME this loader (lib/plans-pdf.ts's renderer, the harnesses that render it) must
   // be loadable without a database.
   const { supabase } = await import('@/lib/supabase')
-  const { data, error } = await supabase.from('country_settings').select(COLUMNS).eq('country_code', key).maybeSingle()
+  const { data, error } = await selectWithFallback(cols => supabase.from('country_settings').select(cols).eq('country_code', key).maybeSingle())
   if (error) throw new Error(`[country-settings] could not read ${key}: ${error.message}`)
   if (!data) throw new Error(`[country-settings] no settings row for ${key} — refusing to fall back to another country's figures`)
 
@@ -222,7 +241,7 @@ export async function listCountrySettings(): Promise<CountrySettings[]> {
  */
 export async function readAllCountryRows(): Promise<{ countries: CountrySettings[]; unreadable: { code: string; reason: string }[] }> {
   const { supabase } = await import('@/lib/supabase')
-  const { data, error } = await supabase.from('country_settings').select(COLUMNS).order('name')
+  const { data, error } = await selectWithFallback(cols => supabase.from('country_settings').select(cols).order('name'))
   if (error) throw new Error(`[country-settings] could not list countries: ${error.message}`)
   const countries: CountrySettings[] = []
   const unreadable: { code: string; reason: string }[] = []

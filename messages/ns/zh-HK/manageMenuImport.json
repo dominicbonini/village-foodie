@@ -1,0 +1,189 @@
+{
+  "cancel": "取消",
+  "back": "← 返回",
+  "backPlain": "返回",
+  "next": "下一步 →",
+  "continue": "繼續 →",
+  "closeImport": "關閉匯入",
+  "tryAgain": "再試一次",
+  "catError": {
+    "empty": "請為類別命名。",
+    "tooLong": "名稱太長。",
+    "clash": "已有名為「{name}」的類別。"
+  },
+  "steps": {
+    "details": "你的資料",
+    "menu": "餐牌",
+    "extras": "配料",
+    "allergens": "致敏原",
+    "kitchen": "廚房設定",
+    "schedule": "出車時間表",
+    "settings": "設定"
+  },
+  "toast": {
+    "demoGone": "你的示範餐牌已無法使用，請重新上載以繼續。",
+    "eventsSaveFailed": "無法儲存活動",
+    "cardReadFailed": "無法讀取致敏原資料卡，請再試一次",
+    "imageReadFailed": "無法讀取該圖片，請改為輸入或貼上資料卡內容",
+    "commitFailedDetail": "未能完成儲存餐牌：{error}。部分食品可能已經儲存，重試前請先檢查你的餐牌。",
+    "commitFailed": "未能完成儲存餐牌。部分食品可能已經儲存，重試前請先檢查你的餐牌。",
+    "finishFailed": "無法標示設定已完成，但你仍可繼續。",
+    "scheduleReadFailed": "無法讀取該時間表，請試用較清晰的相片，或自行輸入日期。",
+    "cardRead": "已讀取資料卡：{matched} 項已配對，{pending, plural, other {# 項需要}}你指派"
+  },
+  "settingsReview": {
+    "anchorOrder": "設定 → 訂單設定",
+    "anchorDisplay": "設定 → 你的美食車 → 顯示設定",
+    "mins15": "15 分鐘",
+    "mins30": "30 分鐘",
+    "mins60": "60 分鐘",
+    "hours2": "2 小時",
+    "title": "請檢查幾項設定",
+    "loading": "正在載入你目前的設定…",
+    "looksGood": "沒問題 →",
+    "secondaryAria": "{label}：{secondary}",
+    "saveFailed": "無法儲存，你可以在「設定」更改。",
+    "anchorContact": "設定 → 聯絡方式",
+    "intro": "我們已為你套用一些常用設定，值得快速看一看。你日後可隨時在「設定」更改任何一項。",
+    "cancelAria": "顧客最遲可於取餐前多久取消"
+  },
+  "allergensNotSet": {
+    "bodySetup": "正式開業前請先檢查。在你完成之前，食品會被標示為「未設定致敏原」。",
+    "body": "正式開業前請先在「設定」檢查。在你完成之前，食品會被標示為「未設定致敏原」。",
+    "title": "⚠ 尚未設定致敏原及飲食需要"
+  },
+  "welcome": {
+    "title": "歡迎使用 HatchGrab",
+    "yourTruck": "你的美食車",
+    "stop": "你可以隨時暫停，稍後再回來。",
+    "body": "{name} 已設定好。接下來我們會加入你的餐牌，然後是你的第一個活動。",
+    "go": "開始吧"
+  },
+  "offer": {
+    "title": "要使用示範中的餐牌嗎？",
+    "use": "使用這個餐牌",
+    "upload": "上載另一個餐牌",
+    "body": "我們已儲存你上載的餐牌，共 {count, plural, other {# 項食品}}。你可以以此為起點，或上載另一個餐牌。"
+  },
+  "upload": {
+    "title": "匯入你的餐牌",
+    "body": "上載餐牌板相片、截圖或 PDF，或以文字貼上你的餐牌。我們的 AI 會讀取並建立你的電子餐牌，儲存前你可檢查所有內容。",
+    "confirmCancel": "要取消這次匯入嗎？你對這個餐牌的檢查將會捨棄。",
+    "process": "處理餐牌",
+    "later": "稍後再做"
+  },
+  "processing": {
+    "title": "正在分析你的餐牌",
+    "body": "AI 正在讀取你的食品並分類…"
+  },
+  "review": {
+    "title": "檢查已匯入的餐牌",
+    "editLaterSetup": "名稱、價錢、配料、致敏原及飲食需要資料，日後都可隨時編輯。",
+    "editLater": "名稱、價錢、配料、致敏原及飲食需要資料，日後都可隨時在「設定」編輯。",
+    "noPrice": "{count, plural, other {# 項食品}}讀取不到價錢",
+    "renameCategoryAria": "重新命名類別 {name}",
+    "renameAria": "重新命名 {name}",
+    "renameTitle": "重新命名類別",
+    "deleteAria": "刪除 {name}",
+    "deleteTitle": "刪除類別",
+    "lastCategory": "你的餐牌最少需要一個類別",
+    "countOf": "{total} 項中的 {kept} 項",
+    "existing": "現有",
+    "deleteEmptyTitle": "要刪除「{name}」嗎？",
+    "deleteEmptyBody": "這個類別沒有食品，所以不會遺失任何內容。",
+    "delete": "刪除",
+    "moveTitle": "{count, plural, other {這 # 項食品}}要移到哪裏？",
+    "moveBody": "刪除「{name}」需要把它的菜式移到其他地方，沒有類別的食品不會匯入。",
+    "moveAria": "把 {name} 的食品移到",
+    "chooseCategory": "選擇類別…",
+    "moveDelete": "移動並刪除",
+    "itemName": "食品名稱",
+    "free": "免費？",
+    "freeOn": "免費 ✕",
+    "nameFirst": "請先為新食品命名，然後再加入另一項",
+    "addItem": "+ 加入食品",
+    "categoryName": "類別名稱",
+    "newCategoryAria": "新類別名稱",
+    "addCategory": "+ 加入類別",
+    "ready": "{count, plural, other {# 項食品}}可以加入。取消剔選你不需要的食品。",
+    "noPriceBody": "請為每項設定價錢或標示為免費，否則它會以 {zero} 上架。處理好之前無法繼續。",
+    "incomplete": "請輸入名稱以加入此食品，空白行不會匯入。"
+  },
+  "extras": {
+    "introSetup": "部分菜式可以設定為<b>一款可自選的食品</b>，或保留為<b>獨立菜式</b>。請選擇每款的顯示方式，日後可以更改。",
+    "intro": "部分菜式可以設定為<b>一款可自選的食品</b>，或保留為<b>獨立菜式</b>。請選擇每款的顯示方式，日後可在「設定」更改。",
+    "none": "沒有可合併的菜式，每項食品都是獨立菜式。",
+    "axisChoice": "· 選擇{axis}",
+    "grouped": "合併 · 一款食品，由顧客選擇",
+    "separate": "獨立餐牌食品"
+  },
+  "allergens": {
+    "title": "致敏原",
+    "detected": "我們在你的餐牌中偵測到致敏原，請在下方選擇顯示方式。",
+    "howShow": "你想如何向顧客顯示致敏原？",
+    "skip": "暫時略過致敏原設定"
+  },
+  "kitchen": {
+    "title": "廚房設定",
+    "intro": "讓顧客知道要等多久，這些設定日後都可以更改。",
+    "howWorks": "廚房容量如何運作",
+    "allExist": "所有類別已經存在，無需設定時間。",
+    "totalHelp": "設定總容量，限制廚房每個時段最多處理多少項食品。保留 ∞ 即不設上限。",
+    "saveAdd": "儲存並加入餐牌"
+  },
+  "schedule": {
+    "title": "加入我的出車時間表",
+    "intro": "如果你的出車時間表放在你的網站上，我們可以自動保持更新，或者你可以自行加入日期。",
+    "websiteTitle": "我的出車時間表在我的網站上",
+    "urlPlaceholder": "https://yourtruck.co.uk/events",
+    "checking": "檢查中…",
+    "verify": "驗證",
+    "checkingSite": "正在檢查你的網站…",
+    "takesTime": "可能需時最多 2 分鐘，請保持此頁開啟。",
+    "canRead": "✓ 我們可以讀取你的出車時間表",
+    "ownSite": "必須是你自己的網站，不是 Facebook 或 Instagram 專頁。",
+    "photoTitle": "上載我的出車時間表相片",
+    "dragChoose": "拖放或點按以選擇",
+    "imageOrPdf": "圖片或 PDF",
+    "or": "或",
+    "pastePlaceholder": "在此貼上你的日期…",
+    "read": "讀取時間表",
+    "found": "找到 {count, plural, other {# 個日期}}，將會加入你的出車時間表。",
+    "dateTbc": "日期待定",
+    "save": "儲存 {count, plural, other {# 個日期}}",
+    "manualDesc": "稍後在「出車時間表」分頁加入，現在無需做任何事。",
+    "manualBody": "沒問題。你隨時可以在帳戶的「出車時間表」分頁加入及管理日期。",
+    "blockedDomain": "請使用你的網站網址，系統無法自動讀取 Facebook 及 Instagram 專頁。",
+    "saveFailed": "我們已讀取你的出車時間表，但暫時無法儲存，請再試一次。",
+    "websiteDesc": "我們會定期檢查，並把新日期發送給你批核。",
+    "keepChecking": "我們會持續檢查此頁面，並把任何新日期發送給你批核。",
+    "photoDesc": "拍照或貼上你的日期，我們會讀取並讓你檢查。",
+    "noneFound": "我們在內容中找不到任何日期，請試用較清晰的相片，或自行加入日期。",
+    "manualTitle": "我會自行加入日期",
+    "trialNotStarted": "加入活動不會開始你的免費試用，你可稍後選擇由哪個活動開始。"
+  },
+  "done": {
+    "summary": "{categories, plural, other {# 個類別}}共 {items, plural, other {# 項食品}}。",
+    "imported": "已匯入餐牌！",
+    "added": "你的食品已加入餐牌。",
+    "duplicates": "已略過 {count, plural, other {# 項重複食品}}",
+    "showMe": "帶我看看",
+    "remind": "稍後提醒我",
+    "allSet": "一切準備就緒！",
+    "explore": "我自己探索"
+  },
+  "discard": {
+    "setupTitle": "稍後再完成設定？",
+    "setupBody": "你的帳戶和美食車已儲存，資料不會遺失。你可以隨時加入餐牌：登入後在餐牌頁面按<b>匯入餐牌</b>，就可以從這裏繼續。",
+    "keepGoing": "繼續設定",
+    "finishLater": "稍後完成",
+    "title": "放棄這次匯入？",
+    "keepEditing": "繼續編輯",
+    "discard": "放棄",
+    "body": "你的變更不會儲存——匯入的食品、準備時間和廚房容量都不會加入。"
+  },
+  "allergenCardText": {
+    "contains": "含有：{list}",
+    "mayContain": "可能含有：{list}"
+  }
+}

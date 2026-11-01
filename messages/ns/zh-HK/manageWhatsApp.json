@@ -1,0 +1,106 @@
+{
+  "preview": {
+    "title": "連接前先試用",
+    "intro": "像顧客一樣輸入問題，即可看到他們會收到的回覆。不會向任何人發送訊息。",
+    "examples": {
+      "where": "你今晚喺邊度？",
+      "doYouDo": "有冇辣肉腸薄餅？",
+      "menu": "餐牌有咩食？"
+    },
+    "placeholder": "有咩甜品？",
+    "send": "發送",
+    "empty": "回覆會在此顯示",
+    "working": "正在擬定回覆…",
+    "noReply": "不會發送任何回覆。",
+    "noReplyWhy": "這看來是垃圾訊息、預訂查詢或無關內容，因此自動回覆不會作出回應。",
+    "footnote": "回覆由 AI 生成，每次略有不同，間中或會出錯。",
+    "failed": "暫時未能建立預覽。",
+    "unreachable": "無法連接伺服器。請檢查網絡連線後再試。"
+  },
+  "setup": {
+    "button": {
+      "preparing": "準備中…",
+      "unavailable": "暫不可用",
+      "waiting": "正在等候 Facebook 視窗…",
+      "finishing": "即將完成…",
+      "reconnect": "重新連接",
+      "setUp": "開始設定"
+    },
+    "startAgain": "重新開始",
+    "popupHint": "看不到 Facebook 視窗？它可能被封鎖了。請允許 hatchgrab.com 的彈出視窗，然後按「重新開始」。"
+  },
+  "notice": {
+    "sdkUnavailable": "此環境不支援 WhatsApp 設定。",
+    "sdkBlocked": "未能載入 Meta 的登入程式。通常是廣告攔截器或追蹤保護功能所致。",
+    "setupFailed": "未能完成設定，所有內容均未有變更。",
+    "setupFinished": "設定完成。",
+    "metaError": "Meta 在設定期間報告了問題，所有內容均未有變更。請再試一次；如問題持續，請聯絡我們。",
+    "closed": "設定在完成前已關閉，所有內容均未有變更——請按「開始設定」再試。",
+    "disconnectedUnreachable": "WhatsApp 已中斷連接，但我們未能聯絡 Meta 移除存取權限。請在 WhatsApp Business → Settings → Account → Business Platform 中移除 HatchGrab。",
+    "disconnected": "WhatsApp 已中斷連接，自動回覆已停止。",
+    "close": "關閉"
+  },
+  "card": {
+    "title": "自動回覆",
+    "description": "根據你的餐牌及出車時間表，在社交媒體上自動回答顧客的問題。",
+    "channels": "渠道",
+    "requiresAccount": "需要 WhatsApp Business 帳戶。",
+    "connected": "已連接",
+    "popupInstruction": "系統會開啟 Facebook 視窗，讓你連接 WhatsApp Business 帳戶。如沒有任何顯示，請在瀏覽器允許 hatchgrab.com 的彈出視窗，然後再按「開始設定」。",
+    "switchedOff": "你的美食車已關閉 WhatsApp 自動回覆。",
+    "expiring": "你的 WhatsApp 連接即將需要續期。請按「重新連接」，讓自動回覆繼續運作。",
+    "comingSoon": "即將推出",
+    "instagram": "自動回覆 Instagram 私訊。需要 Instagram 專業帳戶。",
+    "messenger": "自動回覆 Facebook Messenger 訊息。需要 Facebook 專頁。"
+  },
+  "blocked": {
+    "title": "你的回覆未能送達",
+    "body": "由於你的 WhatsApp Business 帳戶出現付款問題，WhatsApp 拒絕發送你的自動回覆。顧客仍可傳訊息給你，你亦仍會看到他們發送的所有內容——但他們不會收到回覆。",
+    "fix": "這些訊息的費用由你直接支付給 WhatsApp，因此須在 WhatsApp Manager 處理。<link>檢查你的付款方式</link>"
+  },
+  "limit": {
+    "heading": "自動回覆",
+    "label": "每月上限",
+    "option": "{n, number}",
+    "usage": "已使用 {used, number}／{limit, number} · {date} 重設",
+    "perCustomer": "每位顧客在 24 小時內最多收到 {n} 個回覆，之後會收到一則訊息，說明你會親自回覆。",
+    "emailAt": "達到上限後回覆會暫停。我們會在用量達 80% 及 100% 時以電郵通知你。",
+    "saved": "已儲存每月回覆上限",
+    "saveFailed": "未能儲存上限"
+  },
+  "billing": {
+    "heading": "帳單",
+    "paymentMethod": "付款方式",
+    "added": "已新增付款方式",
+    "missing": "未新增付款方式",
+    "addInManager": "在 WhatsApp Manager 新增",
+    "summary": "回覆費用由 Meta（而非 HatchGrab）向你的 WhatsApp 帳戶收取。由 {from} 起，每月首 {free, number} 個回覆免費。資料截至 {checked}；如有更改，請參閱 <link>Meta 的收費</link>。",
+    "howMetaCharges": "Meta 如何收費",
+    "chargesTitle": "WhatsApp 回覆由 Meta 收費，並非 HatchGrab。",
+    "chargesBody": "HatchGrab 代你發送的每個回覆，均由 Meta 向你的 WhatsApp Business 帳戶收費。由 {from} 起，Meta 每個號碼每月包括 {free, number} 個免費回覆；超出後，每個回覆按 Meta 的收費計算。你自己在 WhatsApp Business 應用程式發送的回覆不會收費。收費由 Meta 訂定，並可能會更改。<link>查看 Meta 的收費</link>",
+    "addPaymentInManager": "在 WhatsApp Manager 新增付款方式",
+    "aboveMissing": "你的上限高於 Meta 的 {free, number} 個免費回覆。如沒有付款方式，免費回覆用完後 Meta 會停止所有回覆。",
+    "aboveGeneral": "你的上限高於 Meta 的 {free, number} 個免費回覆。超出的回覆需要你的 WhatsApp 帳戶設有付款方式；如沒有，免費回覆用完後 Meta 會停止所有回覆。",
+    "addPaymentMethod": "新增付款方式"
+  },
+  "disconnect": {
+    "link": "中斷 WhatsApp 連接",
+    "title": "要中斷 WhatsApp 連接嗎？",
+    "body": "自動回覆會即時停止，HatchGrab 亦會失去你 WhatsApp 帳戶的存取權限。你的號碼在 WhatsApp Business 應用程式中仍可照常使用。如要完全移除 HatchGrab，請同時開啟 WhatsApp Business → Settings → Account → Business Platform。",
+    "cancel": "取消",
+    "confirm": "中斷連接",
+    "working": "正在中斷連接…",
+    "failed": "未能中斷連接"
+  },
+  "signup": {
+    "logged": "已記錄。",
+    "partial": "我們已連結你的 WhatsApp Business 帳戶，但未能完成連接。你那邊沒有任何問題——請聯絡我們，我們會為你完成。",
+    "noNumber": "你的 WhatsApp Business 帳戶已連結，但未有傳回電話號碼。請按「重新連接」並完成號碼步驟。",
+    "needsRegistering": "你的帳戶已連結，但此號碼須由我們登記後才能開始回覆。請聯絡支援團隊——你的設定已儲存，請勿再次執行設定。",
+    "registerRefused": "你的帳戶已連結，但 Meta 拒絕登記此號碼。你的設定已儲存——請聯絡支援團隊，切勿再次執行設定。",
+    "deliveryRefused": "你的帳戶已連結，但 Meta 拒絕開啟訊息傳送。你的設定已儲存——請聯絡支援團隊，切勿再次執行設定。",
+    "numberTaken": "此 WhatsApp 號碼已連接至另一個 HatchGrab 帳戶。每個號碼只能為一架美食車回覆。請聯絡支援團隊，我們會為你轉移。",
+    "saveIncomplete": "差一點就完成——我們未能完成儲存。你的設定已儲存，請聯絡支援團隊，切勿再次執行設定。",
+    "connected": "WhatsApp 已連接。自動回覆將開始回應發送至此號碼的訊息。"
+  }
+}

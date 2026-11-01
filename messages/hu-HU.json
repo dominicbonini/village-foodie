@@ -633,6 +633,28 @@
       "Walnut": "Dió",
       "Wheatandtriticale": "Búza és tritikálé",
       "Glutenbarleyoatsrye": "Glutén (árpa, zab, rozs)",
+      "Shrimp": "Garnélarák",
+      "Crab": "Tarisznyarák",
+      "Buckwheat": "Hajdina",
+      "Abalone": "Abalone",
+      "Squid": "Tintahal",
+      "Salmonroe": "Lazacikra",
+      "Orange": "Narancs",
+      "Kiwifruit": "Kivi",
+      "Beef": "Marhahús",
+      "Salmon": "Lazac",
+      "Mackerel": "Makréla",
+      "Soybean": "Szójabab",
+      "Chicken": "Csirkehús",
+      "Banana": "Banán",
+      "Pork": "Sertéshús",
+      "Peach": "Őszibarack",
+      "Yam": "Jamgyökér",
+      "Apple": "Alma",
+      "Gelatin": "Zselatin",
+      "Chestnut": "Gesztenye",
+      "Naturallatex": "Természetes latex",
+      "Lactose": "Laktóz",
       "Nuts": "Diófélék",
       "Shellfish": "Tenger gyümölcsei"
     }
@@ -4854,6 +4876,7 @@
       "ends": "{hasDate, select, yes {A próbaidőszak vége: <hl>{date}</hl>} other {A próbaidőszak <hl>hamarosan</hl> véget ér}}",
       "offer": "{hasMonths, select, yes {{months, plural, one {Minden funkció ingyenes # hónapig} other {Minden funkció ingyenes # hónapig}}} other {Minden funkció ingyenes a próbaidőszak alatt}}",
       "body": "{hasDate, select, yes {A próbaidőszak végéig (<b>{date}</b>) semmilyen díjat nem számolunk fel Önnek. Számlázás csak akkor indul, ha Ön csomagot választ, és megadja a fizetési adatait. Addig nincs mit lemondani, és nincs mit fizetni. Addig válasszon csomagot — ha nem teszi, ez lesz a csomagja: {fallback}, és néhány funkció nem fog működni.} other {A próbaidőszak alatt semmilyen díjat nem számolunk fel Önnek. Számlázás csak akkor indul, ha Ön csomagot választ, és megadja a fizetési adatait. Addig nincs mit lemondani, és nincs mit fizetni. A próbaidőszak vége előtt válasszon csomagot — ha nem teszi, ez lesz a csomagja: {fallback}, és néhány funkció nem fog működni.}}",
+      "bodyPaidEnd": "{hasDate, select, yes {A próbaidőszak végéig (<b>{date}</b>) semmilyen díjat nem számolunk fel Önnek. A próbaidőszak után ez a csomag lesz érvényes: {fallback}, havi {price} áron. Még a próbaidőszak vége előtt felvesszük Önnel a kapcsolatot, hogy beállítsuk a fizetést.} other {A próbaidőszak alatt semmilyen díjat nem számolunk fel Önnek. A próbaidőszak után ez a csomag lesz érvényes: {fallback}, havi {price} áron. Még a próbaidőszak vége előtt felvesszük Önnel a kapcsolatot, hogy beállítsuk a fizetést.}}",
       "fees": "*Az online rendeléseknél a szokásos kártyás tranzakciós díjak érvényesek",
       "upgrade": "Csomagváltás itt →"
     }
@@ -4884,8 +4907,10 @@
       "heading": "Az ingyenes próbaidőszaka még nem kezdődött el"
     },
     "onTrial": "Minden funkció elérhető Önnek. Válasszon csomagot a próbaidőszak vége előtt.",
+    "onTrialPaidEnd": "Minden funkció elérhető Önnek. A próbaidőszak után ez a csomag lesz érvényes: {plan}, havi {price} áron. Még a próbaidőszak vége előtt felvesszük Önnel a kapcsolatot, hogy beállítsuk a fizetést.",
     "onTrialNoCta": "Minden funkció elérhető Önnek.",
     "noCharge": "🔒 A próbaidőszak végéig ({date}) semmilyen díjat nem számolunk fel Önnek. Számlázás csak akkor indul, ha Ön csomagot választ, és megadja a fizetési adatait. Addig nincs mit lemondani, és nincs mit fizetni.",
+    "noChargePaidEnd": "🔒 A próbaidőszak végéig ({date}) semmilyen díjat nem számolunk fel Önnek.",
     "fees": "*Az online rendeléseknél a szokásos kártyás tranzakciós díjak érvényesek",
     "setUpPayment": "⏱ Válasszon csomagot a próbaidőszak vége előtt",
     "changeYourPlan": "Csomag módosítása",
@@ -5472,7 +5497,6 @@
     "hero": {
       "title": "Rendelési rendszer, kifejezetten <lean>food truckokra szabva.</lean>",
       "subSmall": "Töltse fel az étlapját, regisztráció nélkül.<br></br>Működő demó kevesebb mint 60 másodperc alatt.",
-      "tagline": "Kevesebb papírmunka.<br></br>Több <lean>főzés.</lean>",
       "cta": "Feltöltöm az étlapomat →",
       "ctaNote": "<lead>Töltsön fel egy fotót az étlapjáról, és kevesebb mint 60 másodperc múlva már működés közben láthatja.</lead><small>Regisztráció nélkül. Bankkártya nélkül.</small>"
     },
@@ -5556,7 +5580,6 @@
     }
   },
   "landingFooter": {
-    "tagline": "Kevesebb papírmunka.<br></br>Több főzés.",
     "features": "Funkciók",
     "pricing": "Árak",
     "privacy": "Adatvédelem",
@@ -5638,7 +5661,8 @@
     "countryTerms": "Országspecifikus feltételek",
     "contact": "Kapcsolat",
     "lastUpdated": "Utolsó frissítés: {date}",
-    "questions": "Kérdése van? <link>Lépjen kapcsolatba velünk</link> — valódi emberek vagyunk."
+    "questions": "Kérdése van? <link>Lépjen kapcsolatba velünk</link> — valódi emberek vagyunk.",
+    "translationNote": "Ez egy fordítás. Ha eltér az <link>angol nyelvű változattól</link>, az angol nyelvű változat az irányadó."
   },
   "truckPage": {
     "meta": {
@@ -5794,7 +5818,15 @@
       "Australiancards": "ausztrál kártyák",
       "NewZealandcards": "új-zélandi kártyák",
       "Canadiancards": "kanadai kártyák",
-      "Swisscards": "svájci kártyák"
+      "Swisscards": "svájci kártyák",
+      "Braziliancards": "brazil kártyák",
+      "Mexicancards": "mexikói kártyák",
+      "Japanesecards": "japán kártyák",
+      "Singaporecards": "szingapúri kártyák",
+      "HongKongcards": "hongkongi kártyák",
+      "Malaysiancards": "malajziai kártyák",
+      "Thaicards": "thaiföldi kártyák",
+      "UAEcards": "EAE-s kártyák"
     },
     "perMonth": {
       "mo": "{amount}/hó",
@@ -5963,7 +5995,8 @@
   "pricing": {
     "banner": {
       "title": "{months, plural, one {Az első hónap teljesen ingyenes — minden funkció elérhető.} other {Az első # hónap teljesen ingyenes — minden funkció elérhető.}}",
-      "body": "{brand} használatával a vásárlók előre rendelnek, és átvételkor fizetnek, így online rendeléseket fogadhat anélkül, hogy bármilyen kártyás fizetési szolgáltatót bekötne. Inkább előre fizettetne? Az online kártyás fizetést bármikor bekapcsolhatja. A próbaidőszak végén erre a csomagra vált: <plan>{fallback}</plan>{fallbackFree, select, yes { (havidíj nélkül)} other {}}, hacsak nem választ másikat. Bankkártya nélkül indulhat, szerződés nélkül, és bármikor lemondhatja."
+      "body": "{brand} használatával a vásárlók előre rendelnek, és átvételkor fizetnek, így online rendeléseket fogadhat anélkül, hogy bármilyen kártyás fizetési szolgáltatót bekötne. Inkább előre fizettetne? Az online kártyás fizetést bármikor bekapcsolhatja. A próbaidőszak végén erre a csomagra vált: <plan>{fallback}</plan>{fallbackFree, select, yes { (havidíj nélkül)} other {}}, hacsak nem választ másikat. Bankkártya nélkül indulhat, szerződés nélkül, és bármikor lemondhatja.",
+      "bodyOnly": "{brand} használatával a vásárlók előre rendelnek, és átvételkor fizetnek, így online rendeléseket fogadhat anélkül, hogy bármilyen kártyás fizetési szolgáltatót bekötne. Inkább előre fizettetne? Az online kártyás fizetést bármikor bekapcsolhatja. A próbaidőszak után ez a csomag lesz érvényes: <plan>{fallback}</plan>, havi {price} áron. Még a próbaidőszak vége előtt felvesszük Önnel a kapcsolatot, hogy beállítsuk a fizetést. Bankkártya nélkül indulhat, szerződés nélkül, és bármikor lemondhatja."
     },
     "card": {
       "perTruckMonth": "food truckonként / hónap",
@@ -6231,6 +6264,9 @@
       "stateTerritory": "Állam vagy terület",
       "province": "Tartomány",
       "county": "Megye",
+      "prefecture": "Prefektúra",
+      "emirate": "Emírség",
+      "region": "Régió",
       "area": "Település (falu, község vagy város)",
       "townOrArea": "Település vagy környék",
       "city": "Város",
@@ -6326,5 +6362,13 @@
     "backToMenu": "Vissza az étlaphoz",
     "formNote": "Ez egy demó: senkit nem terhelünk, és semmit nem küldünk el, így e-mail-címet sem kell megadnia.",
     "namePlaceholder": "Alex"
+  },
+  "errorPage": {
+    "notFoundTitle": "Az oldal nem található",
+    "notFoundBody": "Nem találtuk ezt az oldalt. Lehet, hogy áthelyezték, vagy elírták a címet.",
+    "home": "Ugrás a kezdőlapra",
+    "errorTitle": "Hiba történt",
+    "errorBody": "Sajnáljuk, ez az oldal nem töltődött be. Próbálja újra, vagy térjen vissza a kezdőlapra.",
+    "retry": "Újra"
   }
 }

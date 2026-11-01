@@ -1,0 +1,70 @@
+{
+  "error": {
+    "generic": "Ada sesuatu yang tidak kena",
+    "previewFailed": "Pratonton tidak dapat dibuat",
+    "loadFailed": "Tidak dapat dimuatkan",
+    "tooBig": "Imej itu {size, number, ::.0 group-off}MB. Hadnya 10MB.",
+    "wrongType": "Sila pilih PNG atau JPG.",
+    "uploadIncomplete": "Muat naik tidak selesai",
+    "uploadFailed": "Muat naik gagal",
+    "saveFailed": "Tidak dapat disimpan",
+    "buildFailed": "Tidak dapat membina hantaran",
+    "copyFailed": "Tidak dapat menyalin — pilih teks dan salin secara manual."
+  },
+  "loading": "Memuatkan…",
+  "missingTable": {
+    "title": "Hantaran mingguan memerlukan kemas kini pangkalan data",
+    "body": "Jadual reka bentuk belum dicipta. Setelah migrasi digunakan, skrin ini akan berfungsi."
+  },
+  "kind": {
+    "label": "Reka bentuk mana",
+    "event": "Acara tunggal",
+    "week": "Mingguan"
+  },
+  "setup": {
+    "title": "Sediakan hantaran mingguan anda",
+    "intro": "Muat naik versi kosong grafik jadual mingguan yang biasa anda buat — reka bentuk yang sama, tanpa kotak teks anda. HatchGrab mengisi minggu itu daripada jadual anda.",
+    "canvaTitle": "Cara mengeksport versi kosong dari Canva",
+    "canvaStep1": "Buka reka bentuk jadual mingguan anda yang biasa.",
+    "canvaStep2": "Padam kotak teks yang mengandungi tarikh, tempat dan masa — kekalkan latar belakang dan tajuk yang anda mahu simpan.",
+    "canvaStep3": "Kongsi › Muat turun › PNG.",
+    "uploading": "Memuat naik…",
+    "upload": "Muat naik imej kosong anda",
+    "uploadHint": "PNG atau JPG, sehingga 10MB, sekurang-kurangnya {px}px pada sisi pendek.",
+    "phoneTip": "Paling baik pada komputer atau iPad — kotaknya kecil untuk diseret pada telefon.",
+    "designName": "Reka bentuk hantaran mingguan",
+    "backDesigns": "‹ Reka bentuk",
+    "back": "‹ Kembali",
+    "pictureNote": "Gambar anda tanpa sebarang tarikh atau tempat padanya. Kami yang tambah.",
+    "saved": "Reka bentuk disimpan."
+  },
+  "week": {
+    "this": "Minggu ini",
+    "next": "Minggu depan"
+  },
+  "post": {
+    "title": "Hantaran mingguan anda",
+    "editDesign": "Edit reka bentuk",
+    "weekOf": "Minggu {date}",
+    "imageAlt": "Hantaran mingguan anda",
+    "building": "Membina hantaran anda…",
+    "updating": "Mengemas kini…",
+    "eventsTitle": "Acara minggu ini",
+    "noEvents": "Tiada acara minggu ini.",
+    "eventDateCancelled": "{date} · dibatalkan",
+    "showCancelled": "Tunjukkan acara yang dibatalkan",
+    "showPrivate": "Tunjukkan acara peribadi",
+    "privateHint": "Ia dipaparkan sebagai “Acara peribadi” dengan tarikh dan masa — tidak pernah tempatnya.",
+    "noteTitle": "Nota",
+    "notePlaceholder": "cth. Pra-pesan untuk ambil sendiri",
+    "noteHint": "Dipaparkan dalam kapsyen, dan dalam kotak nota jika anda meletakkannya.",
+    "captionTitle": "Kapsyen untuk halaman anda",
+    "perEventTitle": "Hantaran untuk setiap acara",
+    "nothingToPost": "Tiada apa-apa untuk dihantar minggu ini.",
+    "textCopied": "Teks disalin.",
+    "copyText": "Salin teks",
+    "image": "Imej",
+    "share": "Kongsi",
+    "noOrderLink": "Belum ada pautan pesanan — tetapkan alamat web trak anda dalam Tetapan."
+  }
+}

@@ -1,0 +1,85 @@
+{
+  "loading": "Memuatkan konsol pengurusan…",
+  "loadFailed": "Gagal dimuatkan",
+  "requestFailed": "Gagal",
+  "invalidToken": "Token tidak sah atau telah tamat tempoh",
+  "loadFailedReason": "Tidak dapat memuatkan halaman ini: {reason}",
+  "noCountrySettings": "Tidak dapat memuatkan tetapan negara trak ini. Sila muat semula.",
+  "noPlans": "Tidak dapat memuatkan pelan trak ini. Sila muat semula.",
+  "stale": "{hasTime, select, yes {Tidak dapat dimuat semula. Menunjukkan apa yang disimpan pada {time}. Perubahan yang anda buat tetap disimpan.} other {Tidak dapat dimuat semula. Menunjukkan apa yang telah disimpan. Perubahan yang anda buat tetap disimpan.}}",
+  "verify": {
+    "ok": "E-mel disahkan — terima kasih.",
+    "expired": "Pautan pengesahan itu telah tamat tempoh. Hubungi kami dan kami akan selesaikannya sebelum anda mula beroperasi.",
+    "invalid": "Pautan pengesahan itu tidak berfungsi. Hubungi kami dan kami akan selesaikannya sebelum anda mula beroperasi."
+  },
+  "profile": {
+    "updated": "Profil dikemas kini",
+    "saveFailed": "Gagal disimpan",
+    "title": "Edit profil",
+    "name": "Nama",
+    "namePlaceholder": "Nama anda",
+    "email": "E-mel",
+    "cancel": "Batal",
+    "saving": "Menyimpan…",
+    "save": "Simpan"
+  },
+  "header": {
+    "subtitle": "Konsol pengurusan",
+    "ordersDashboard": "← Papan pemuka pesanan"
+  },
+  "tabs": {
+    "menu": "Menu",
+    "schedule": "Jadual",
+    "social": "Media sosial",
+    "reports": "Laporan",
+    "team": "Pasukan",
+    "settings": "Tetapan",
+    "payments": "Pembayaran",
+    "billing": "Pengebilan",
+    "paymentsIcon": "💵",
+    "scheduleCount": "Jadual ({count})",
+    "stripeAttention": "Stripe memerlukan perhatian anda",
+    "allergensNotSet": "alergen belum ditetapkan"
+  },
+  "menuSections": {
+    "label": "Bahagian menu",
+    "items": "Item",
+    "capacity": "Kapasiti dapur",
+    "extras": "Tambahan & cadangan",
+    "deals": "Set kombo"
+  },
+  "socialSections": {
+    "label": "Bahagian media sosial",
+    "create": "Buat hantaran",
+    "designs": "Reka bentuk",
+    "locations": "Tetapan lokasi"
+  },
+  "notices": {
+    "review": "Semak →",
+    "tour": "Mahu lawatan ringkas papan pemuka anda?",
+    "showMeAround": "Tunjukkan saya",
+    "dismiss": "Tutup",
+    "approval": "{count, plural, other {Kami menemui <b>{count}</b> acara untuk anda — semak dan luluskan sebelum disiarkan.}}",
+    "allergens": "<b>Alergen belum ditetapkan</b> — pelanggan tidak dapat melihat maklumat alergen sehingga anda mengesahkannya. Semak alergen setiap hidangan di tab Menu.",
+    "domainLive": "<link>{domain}</link> sudah aktif. Lihat dahulu, kemudian beritahu kami dalam Tetapan jika ia betul.",
+    "stripe": "<b>Stripe memerlukan sesuatu daripada anda</b> — pembayaran kad boleh terhenti sehingga ia diselesaikan.",
+    "profileTitle": "Lengkapkan profil anda",
+    "missing": "Tiada: {fields}.",
+    "goToSettings": "Pergi ke Tetapan →",
+    "field": {
+      "truckName": "nama trak",
+      "cuisineType": "jenis masakan",
+      "contactEmail": "e-mel hubungan",
+      "contactPhone": "telefon hubungan"
+    }
+  },
+  "trialPopup": {
+    "title": "{months, select, none {Anda dalam percubaan percuma} other {Anda dalam percubaan percuma {months} bulan}}",
+    "ends": "{hasDate, select, yes {Percubaan tamat <hl>{date}</hl>} other {Percubaan tamat <hl>tidak lama lagi</hl>}}",
+    "offer": "{hasMonths, select, yes {{months, plural, other {Semua ciri percuma selama # bulan}}} other {Semua ciri percuma sepanjang tempoh percubaan anda}}",
+    "body": "{hasDate, select, yes {Anda tidak akan dikenakan sebarang caj sepanjang percubaan anda, yang berlangsung sehingga <b>{date}</b>. Pengebilan hanya bermula apabila anda memilih pelan dan memasukkan butiran pembayaran anda. Sehingga itu, tiada apa-apa untuk dibatalkan dan tiada apa-apa untuk dibayar. Pilih pelan anda sebelum itu — jika tidak, anda akan berpindah ke {fallback} dan sesetengah ciri akan berhenti berfungsi.} other {Anda tidak akan dikenakan sebarang caj semasa dalam percubaan. Pengebilan hanya bermula apabila anda memilih pelan dan memasukkan butiran pembayaran anda. Sehingga itu, tiada apa-apa untuk dibatalkan dan tiada apa-apa untuk dibayar. Pilih pelan anda sebelum itu — jika tidak, anda akan berpindah ke {fallback} dan sesetengah ciri akan berhenti berfungsi.}}",
+    "bodyPaidEnd": "{hasDate, select, yes {Anda tidak akan dikenakan sebarang caj sepanjang percubaan anda, yang berlangsung sehingga <b>{date}</b>. Apabila percubaan anda tamat, harga pelan {fallback} ialah {price} sebulan. Kami akan menghubungi anda sebelum itu untuk menguruskan pembayaran.} other {Anda tidak akan dikenakan sebarang caj semasa dalam percubaan. Apabila percubaan anda tamat, harga pelan {fallback} ialah {price} sebulan. Kami akan menghubungi anda sebelum itu untuk menguruskan pembayaran.}}",
+    "fees": "*Yuran pemprosesan kad standard dikenakan pada pesanan dalam talian",
+    "upgrade": "Naik taraf di sini →"
+  }
+}

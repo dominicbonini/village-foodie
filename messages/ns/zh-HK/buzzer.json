@@ -1,0 +1,16 @@
+{
+  "takeConfirm": "取餐器 <b>{number}</b> 在<b>訂單 #{holderId}</b>{hasName, select, yes {（{name}）} other {}}那裏。要將它轉給<b>{hasTarget, select, yes {訂單 #{targetId}} other {此訂單}}</b>嗎？",
+  "cancel": "取消",
+  "take": "取用取餐器 {number}",
+  "titleBlocking": "為訂單 #{id} 分配取餐器？",
+  "title": "選擇取餐器",
+  "subtitle": "{hasTarget, select, yes {訂單 #{id}} other {此訂單}}{hasCurrent, select, yes { · 目前使用取餐器 {current}} other {}}",
+  "allTaken": "{n, plural, other {全部 {count} 個取餐器都已派出。點按其中一個，即可從另一張訂單取回。}}",
+  "thisOrder": "此訂單",
+  "noBuzzer": "不用取餐器",
+  "done": "完成",
+  "lostTitle": "訂單 #{id} 沒有取餐器",
+  "lostBody": "{hasName, select, yes {{name}：} other {}}你離線期間，另一張訂單取用了同一個取餐器。請給他們另一個。",
+  "dismiss": "關閉",
+  "assign": "分配"
+}

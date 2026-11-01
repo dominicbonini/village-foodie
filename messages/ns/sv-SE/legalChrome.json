@@ -13,5 +13,6 @@
   "countryTerms": "Villkor per land",
   "contact": "Kontakt",
   "lastUpdated": "Senast uppdaterad {date}",
-  "questions": "Frågor? <link>Hör av dig</link> – vi är riktiga människor."
+  "questions": "Frågor? <link>Hör av dig</link> – vi är riktiga människor.",
+  "translationNote": "Detta är en översättning. Om den skiljer sig från den <link>engelska versionen</link> gäller den engelska versionen."
 }

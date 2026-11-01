@@ -1,0 +1,18 @@
+{
+  "meta": {
+    "privacyTitle": "Dasar Privasi — HatchGrab",
+    "privacyDescription": "Cara HatchGrab Ltd mengumpul dan menggunakan data peribadi.",
+    "termsTitle": "Terma Perkhidmatan — HatchGrab",
+    "termsDescription": "Terma penggunaan HatchGrab.",
+    "countryTermsTitle": "Terma khusus negara — HatchGrab",
+    "countryTermsDescription": "Peraturan tambahan yang terpakai pada HatchGrab di sesetengah negara."
+  },
+  "homeLabel": "Laman utama HatchGrab",
+  "privacy": "Privasi",
+  "terms": "Terma",
+  "countryTerms": "Terma negara",
+  "contact": "Hubungi kami",
+  "lastUpdated": "Kemas kini terakhir {date}",
+  "questions": "Ada soalan? <link>Hubungi kami</link> — kami manusia sebenar.",
+  "translationNote": "Ini ialah terjemahan. Jika terdapat perbezaan dengan <link>versi bahasa Inggeris</link>, versi bahasa Inggeris akan terpakai."
+}

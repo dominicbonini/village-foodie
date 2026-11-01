@@ -7,7 +7,6 @@
   "hero": {
     "title": "Tilausjärjestelmä, joka on tehty <lean>ruokarekoille.</lean>",
     "subSmall": "Lataa ruokalistasi, rekisteröitymistä ei tarvita.<br></br>Näet toimivan demon alle 60 sekunnissa.",
-    "tagline": "Vähemmän aikaa tilauksiin.<br></br>Enemmän aikaa <lean>kokkaamiseen.</lean>",
     "cta": "Lataa ruokalistani →",
     "ctaNote": "<lead>Lataa kuva ruokalistastasi ja näe se toiminnassa alle 60 sekunnissa.</lead><small>Ei rekisteröitymistä. Ei korttia.</small>"
   },

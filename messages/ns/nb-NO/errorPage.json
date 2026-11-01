@@ -1,0 +1,8 @@
+{
+  "notFoundTitle": "Fant ikke siden",
+  "notFoundBody": "Vi fant ikke den siden. Den kan ha blitt flyttet, eller adressen kan være skrevet feil.",
+  "home": "Gå til forsiden",
+  "errorTitle": "Noe gikk galt",
+  "errorBody": "Beklager, siden ble ikke lastet inn. Prøv igjen, eller gå tilbake til forsiden.",
+  "retry": "Prøv igjen"
+}

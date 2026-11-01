@@ -1,0 +1,17 @@
+{
+  "placeSample": {
+    "nameTownBelow": "Bar La Plaza\nTepoztlán",
+    "nameTown": "Bar La Plaza, Tepoztlán"
+  },
+  "busyWeek": {
+    "venue1": "Casa de Cultura de Tepoztlán",
+    "town1": "Tepoztlán",
+    "venue2": "Unidad Deportiva Municipal y Campo de Futbol de San Pedro Garza García",
+    "town2": "San Pedro Garza García",
+    "venue3": "Zócalo",
+    "town3": "Puebla",
+    "town5": "Querétaro",
+    "venue6": "Jardín Principal",
+    "town6": "San Miguel de Allende"
+  }
+}

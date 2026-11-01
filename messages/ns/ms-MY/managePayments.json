@@ -1,0 +1,94 @@
+{
+  "heading": "Pembayaran",
+  "loading": "Menyemak akaun Stripe anda…",
+  "state": {
+    "not_connected": {
+      "title": "Belum disediakan",
+      "body": "Mengambil kira-kira 10 minit. Anda perlukan butiran bank dan kad pengenalan anda.",
+      "chip": "Belum disediakan"
+    },
+    "requirements": {
+      "title": "Stripe perlukan butiran anda",
+      "body": "Pembayaran kad tidak akan berfungsi sehingga Stripe menerima butiran perniagaan dan bank anda.",
+      "chip": "Tindakan diperlukan"
+    },
+    "pending": {
+      "title": "Disambungkan — Stripe sedang menyemak butiran anda",
+      "body": "Tiada apa-apa yang perlu anda lakukan. Stripe sedang menyemak maklumat yang anda hantar, dan halaman ini dikemas kini apabila mereka selesai.",
+      "chip": "Sedang disemak"
+    },
+    "ready": {
+      "title": "Disambungkan",
+      "body": "Akaun Stripe anda telah disambungkan dan boleh menerima bayaran.",
+      "chip": "Sedia"
+    },
+    "restricted": {
+      "title": "Pembayaran kad dijeda",
+      "body": "Stripe telah menjeda pembayaran kad pada akaun anda sehingga sesuatu diselesaikan.",
+      "chip": "Dijeda"
+    },
+    "unsupported": {
+      "title": "Pembayaran kad tidak tersedia untuk akaun ini",
+      "body": "Stripe tidak dapat mengaktifkan pembayaran kad di sini. Hubungi kami dan kami akan selesaikannya bersama anda.",
+      "chip": "Tidak tersedia"
+    }
+  },
+  "keyMismatch": {
+    "title": "Kunci Stripe tidak sepadan",
+    "body": "Pelayan laman ini menggunakan kunci Stripe <b>{server, select, live {langsung} other {ujian}}</b>, manakala pelayar dibina dengan kunci <b>{browser, select, live {langsung} other {ujian}}</b>. Pembayaran kad akan gagal sebaik sahaja pelanggan cuba membayar, jadi penyediaan Stripe disekat sehingga kedua-duanya sepadan.",
+    "fix": "Kedua-dua kunci mesti ditetapkan untuk persekitaran yang sama, dan laman dibina semula selepas itu — kunci boleh terbit dimasukkan semasa pembinaan, kunci rahsia dibaca pada setiap permintaan."
+  },
+  "permission": {
+    "title": "Hanya pemilik trak boleh menyediakan pembayaran",
+    "body": "Stripe disambungkan oleh orang yang akaun banknya menerima wang, jadi ia mesti disediakan daripada akaun mereka sendiri yang telah log masuk. Tiada masalah dengan trak ini atau dengan HatchGrab."
+  },
+  "config": {
+    "keyMissingTitle": "Pembayaran kad belum dikonfigurasi",
+    "fetchTitle": "Kami tidak dapat menyemak akaun Stripe trak ini",
+    "keyMissing": "{name} belum ditetapkan — komponen terbenam tidak dapat dimuatkan."
+  },
+  "errors": {
+    "requestFailed": "Permintaan gagal ({status})",
+    "unreachable": "Tidak dapat menghubungi Stripe"
+  },
+  "online": {
+    "heading": "Pembayaran dalam talian",
+    "body": "Pelanggan membayar dengan kad semasa membuat pesanan. Wang terus masuk ke akaun Stripe anda sendiri — kami tidak pernah memegangnya.",
+    "feeLine": "Stripe mengenakan {fee} bagi setiap pembayaran untuk {region} standard. Kad lain mungkin lebih mahal. Yuran HatchGrab sendiri untuk pesanan dalam talian bergantung pada pelan anda — lihat Pengebilan.",
+    "testMode": "Mod ujian. Belum ada bayaran sebenar boleh diterima."
+  },
+  "trialNote": "Menyediakan ini tidak memulakan langganan anda atau mengenakan sebarang caj hari ini. Ini cara pelanggan membayar anda — pelan anda berasingan.",
+  "admin": {
+    "title": "Dilihat sebagai pentadbir platform",
+    "body": "Trak ini belum menyediakan pembayaran dalam talian. Hanya pemilik boleh memulakannya, daripada akaun mereka sendiri yang telah log masuk — tiada apa-apa untuk ditekan di sini."
+  },
+  "setUp": {
+    "button": "Sediakan pembayaran dalam talian",
+    "busy": "Sedang menyediakan…"
+  },
+  "toast": {
+    "alreadySetUp": "Sudah disediakan — meneruskan",
+    "addDetails": "Sekarang tambah butiran anda untuk Stripe",
+    "createFailed": "Tidak dapat mencipta akaun"
+  },
+  "onboarding": {
+    "restricted": "Stripe akan uruskan dari sini — anda akan log masuk ke Stripe dan mengemas kini butiran yang diperlukan.",
+    "firstRun": "Stripe akan uruskan dari sini — anda akan log masuk ke Stripe, kemudian memberikan butiran perniagaan dan bank anda."
+  },
+  "details": {
+    "title": "Butiran Stripe anda",
+    "body": "Tukar akaun bank yang menerima bayaran anda, atau kemas kini butiran dan dokumen perniagaan anda.",
+    "button": "Lihat atau edit"
+  },
+  "walkUp": {
+    "heading": "Pembayaran walk-in",
+    "body": "Cara anda menerima wang di trak. HatchGrab tidak mengenakan yuran platform untuk pelanggan walk-in, mana-mana pilihan anda.",
+    "ownTerminal": "Terminal kad anda sendiri",
+    "current": "Semasa",
+    "ownTerminalHelp": "Zettle, Square, atau apa sahaja yang sudah anda gunakan. Tiada apa-apa untuk disediakan — hanya yuran penyedia anda sendiri dikenakan.",
+    "hatchgrab": "Melalui HatchGrab",
+    "comingSoon": "Akan datang",
+    "hatchgrabHelp": "Menggunakan sambungan Stripe yang sama dengan pembayaran dalam talian anda — terminal kad, atau tanpa sentuh terus daripada telefon atau tablet anda.",
+    "hatchgrabFees": "{fee} bagi setiap pembayaran untuk {region}, ditambah {surcharge} untuk bayaran tanpa sentuh yang diterima pada telefon atau tablet. Kad lain mungkin lebih mahal."
+  }
+}

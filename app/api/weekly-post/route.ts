@@ -39,7 +39,9 @@ import { truckTimeSettings } from '@/lib/truck-time'
  * option labels) are `weeklyPostApi`; the words a poster DRAWS follow the poster's country (lib/weekly-post/words.ts). */
 import { manageErrorBody, type ManageErrorCode } from '@/lib/i18n/manage-errors'
 import { localeForTruck } from '@/lib/i18n/server-locale'
-import { DEFAULT_LOCALE } from '@/lib/i18n/locales'
+import '@/lib/i18n/catalog/privateEvents'
+import { translatorFor } from '@/lib/i18n/translator'
+import { DEFAULT_LOCALE, isEnglish } from '@/lib/i18n/locales'
 import { weeklyPostWordsFor, type WpRefusal } from '@/lib/weekly-post/words'
 import { localeFor } from '@/lib/weekly-post/locale'
 import { wpRefusal, type WpErrorCode } from '@/lib/weekly-post/words'
@@ -733,6 +735,10 @@ const ctxRefusal = (code: WpErrorCode, status: number) => {
   return { error: r.error, status, refusal: { code: r.code, params: r.params } }
 }
 
+/** legal-languages-1 (1 November 2026): a private event's public name in the truck's language (`privateEvents.publicName` —
+ *  "Private event" in English, the label lib/private-events/resolve.ts has always used). */
+const privateEventLabel = (locale: string) => translatorFor(locale, 'privateEvents')('publicName')
+
 async function eventPostContext(
   truck: TruckRow,
   eventId: string,
@@ -772,7 +778,7 @@ async function eventPostContext(
     .eq('truck_id', truck.id)
 
   const standardLayout = (design.layout ?? null) as EventLayout | null
-  const entry = entryFor(ev as never, (places ?? []) as never, standardLayout?.timeStyle ?? '12h')
+  const entry = entryFor(ev as never, (places ?? []) as never, standardLayout?.timeStyle ?? '12h', privateEventLabel(locale))
   const date = String((ev as { event_date?: string }).event_date ?? '')
 
   /* 🔴 THE PLACE IS FOUND BY ID, NOT BY NAME (stage 2 report §8.3, corrected here). `entryFor` runs
@@ -1033,6 +1039,7 @@ export async function POST(req: NextRequest) {
       showCancelled: layout?.showCancelled ?? true,
       showPrivate,
       excludedEventIds: Array.isArray(body.excluded) ? body.excluded.map(String) : [],
+      privateLabel: privateEventLabel(locale),   // legal-languages-1: a private event's public name, in the truck's language
     })
     return NextResponse.json({
       missingTable,
@@ -1192,6 +1199,7 @@ export async function POST(req: NextRequest) {
       const rows = inWeek(range.start, range.end)
       const wk = buildWeekData(range, rows as never, (placeRows ?? []) as never, {
         timeStyle: weeklyTimeStyle,
+        privateLabel: privateEventLabel(locale),   // legal-languages-1: a private event's public name, in the truck's language
         showCancelled: true,
         /* 🔴 `true` SINCE 10 OCTOBER, AND IT FOLLOWS THE POSTER. The note above read "the weekly poster
          * leaves private bookings out, so a caption that listed one would describe a poster that does
@@ -1758,6 +1766,7 @@ export async function POST(req: NextRequest) {
       showCancelled: layout?.showCancelled ?? true,
       showPrivate,
       excludedEventIds: Array.isArray(body.excluded) ? body.excluded.map(String) : [],
+      privateLabel: privateEventLabel(locale),   // legal-languages-1: a private event's public name, in the truck's language
     })
     const orderUrl = truck.slug ? scanUrl(truck.slug) : null
     const note = typeof body.note === 'string' ? body.note : null
@@ -1805,6 +1814,7 @@ export async function POST(req: NextRequest) {
     const which: WeekChoice = body.week === 'next' ? 'next' : body.week === 'this' ? 'this' : defaultWeekChoice(new Date(), wk)
     const range = weekRange(which, new Date(), wk)
     const opts = {
+      privateLabel: privateEventLabel(locale),   // legal-languages-1: a private event's public name, in the truck's language
       timeStyle: v.layout.timeStyle,
       showCancelled: v.layout.showCancelled,
       showPrivate,
@@ -1920,7 +1930,7 @@ export async function POST(req: NextRequest) {
      * place's id. Matching the preview by name here while the poster matched by id would preview one
      * place's design on another place's event. */
     const placeIdOfEvent = (e: Record<string, unknown>) =>
-      entryFor(e as never, allPlaces as never, ts).placeId
+      entryFor(e as never, allPlaces as never, ts, privateEventLabel(locale)).placeId
     const firstAt = (rows: Record<string, unknown>[] | null, placeId: string) =>
       (rows ?? []).find(e => placeIdOfEvent(e) === placeId) ?? null
 
@@ -2031,7 +2041,7 @@ export async function POST(req: NextRequest) {
         .filter((e: Record<string, unknown>) => e.is_private !== true)
         .slice(0, 8)
         .map((e: Record<string, unknown>) => {
-          const entry = entryFor(e as never, allPlaces as never, ts)
+          const entry = entryFor(e as never, allPlaces as never, ts, privateEventLabel(locale))
           return {
             id: String(e.id),
             label: `${shortDate(String(e.event_date ?? ''), country)} · ${entry.name}`,
@@ -2552,8 +2562,11 @@ export async function POST(req: NextRequest) {
     } catch (e) {
       /* ⚠️ THE REASON IS SHOWN, because the two likely ones need different actions from the operator:
        * the migration has not been run, or the font source is unreachable right now. */
-      /* ⚠️ THE EXCEPTION'S OWN TEXT IS PASSED ON AS `reason` — it is not ours to word. */
-      return e instanceof Error
+      /* ⚠️ THE EXCEPTION'S OWN TEXT IS PASSED ON AS `reason` — it is not ours to word. legal-languages-1 (1 November 2026):
+       * that text is English, so a non-English truck gets the sentence without it (the `_unknown` wording) and the reason
+       * goes to the log; English is exactly as before. */
+      if (e instanceof Error && !isEnglish(locale)) console.error('[weekly-post] font add failed:', e.message)
+      return e instanceof Error && isEnglish(locale)
         ? refuse(locale, 'wp_font_add_failed', 502, { family: entry.family, reason: e.message })
         : refuse(locale, 'wp_font_add_failed_unknown', 502, { family: entry.family })
     }
@@ -2656,7 +2669,9 @@ export async function POST(req: NextRequest) {
       await fontStorage.upload(finalPath, bytes)
       if (finalPath !== path) await fontStorage.remove([path])
     } catch (e) {
-      return e instanceof Error
+      // legal-languages-1: the exception's English text is shown to an English truck only (as for wp_font_add_failed above).
+      if (e instanceof Error && !isEnglish(locale)) console.error('[weekly-post] font store failed:', e.message)
+      return e instanceof Error && isEnglish(locale)
         ? discard('wp_font_store_failed', { reason: e.message }, 500)
         : discard('wp_font_store_failed_unknown', {}, 500)
     }

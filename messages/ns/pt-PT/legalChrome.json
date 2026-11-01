@@ -13,5 +13,6 @@
   "countryTerms": "Termos por país",
   "contact": "Contacto",
   "lastUpdated": "Última atualização: {date}",
-  "questions": "Dúvidas? <link>Fale connosco</link> — somos pessoas reais."
+  "questions": "Dúvidas? <link>Fale connosco</link> — somos pessoas reais.",
+  "translationNote": "Esta é uma tradução. Em caso de divergência com a <link>versão em inglês</link>, prevalece a versão em inglês."
 }

@@ -1,0 +1,70 @@
+{
+  "error": {
+    "generic": "Algo deu errado",
+    "previewFailed": "Não foi possível gerar a pré-visualização",
+    "loadFailed": "Não foi possível carregar",
+    "tooBig": "Essa imagem tem {size, number, ::.0 group-off} MB. O limite é 10 MB.",
+    "wrongType": "Escolha um arquivo PNG ou JPG.",
+    "uploadIncomplete": "O envio não foi concluído",
+    "uploadFailed": "O envio falhou",
+    "saveFailed": "Não foi possível salvar",
+    "buildFailed": "Não foi possível montar o post",
+    "copyFailed": "Não foi possível copiar — selecione o texto e copie manualmente."
+  },
+  "loading": "Carregando…",
+  "missingTable": {
+    "title": "O post semanal precisa de uma atualização no banco de dados",
+    "body": "A tabela de artes ainda não foi criada. Depois que a migração for aplicada, esta tela vai funcionar."
+  },
+  "kind": {
+    "label": "Qual arte",
+    "event": "Evento único",
+    "week": "Semanal"
+  },
+  "setup": {
+    "title": "Configure seu post semanal",
+    "intro": "Envie a versão em branco da arte da agenda semanal que você já faz — a mesma arte, sem as suas caixas de texto. O HatchGrab preenche a semana a partir da sua agenda.",
+    "canvaTitle": "Como exportar uma versão em branco no Canva",
+    "canvaStep1": "Abra a arte da agenda semanal que você costuma usar.",
+    "canvaStep2": "Exclua as caixas de texto com as datas, locais e horários — mantenha o fundo e os títulos que quiser.",
+    "canvaStep3": "Compartilhar › Baixar › PNG.",
+    "uploading": "Enviando…",
+    "upload": "Enviar sua imagem em branco",
+    "uploadHint": "PNG ou JPG, até 10 MB, com pelo menos {px}px no lado menor.",
+    "phoneTip": "Funciona melhor no computador ou no iPad — no celular as caixas ficam pequenas para arrastar.",
+    "designName": "Arte do post semanal",
+    "backDesigns": "‹ Artes",
+    "back": "‹ Voltar",
+    "pictureNote": "Sua imagem sem nenhuma data ou local. Nós adicionamos isso.",
+    "saved": "Arte salva."
+  },
+  "week": {
+    "this": "Esta semana",
+    "next": "Próxima semana"
+  },
+  "post": {
+    "title": "Seu post semanal",
+    "editDesign": "Editar arte",
+    "weekOf": "Semana de {date}",
+    "imageAlt": "Seu post semanal",
+    "building": "Montando seu post…",
+    "updating": "Atualizando…",
+    "eventsTitle": "Eventos desta semana",
+    "noEvents": "Nenhum evento nesta semana.",
+    "eventDateCancelled": "{date} · cancelado",
+    "showCancelled": "Mostrar eventos cancelados",
+    "showPrivate": "Mostrar eventos privados",
+    "privateHint": "Eles aparecem como “Evento privado”, com a data e os horários — nunca o local.",
+    "noteTitle": "Recado",
+    "notePlaceholder": "ex.: Faça seu pedido antecipado para retirar",
+    "noteHint": "Aparece na legenda e na caixa de recado, se você tiver colocado uma.",
+    "captionTitle": "Legenda para a sua página",
+    "perEventTitle": "Post para cada evento",
+    "nothingToPost": "Nada para postar nesta semana.",
+    "textCopied": "Texto copiado.",
+    "copyText": "Copiar texto",
+    "image": "Imagem",
+    "share": "Compartilhar",
+    "noOrderLink": "Ainda não há link de pedidos — defina o endereço web do seu food truck em Configurações."
+  }
+}

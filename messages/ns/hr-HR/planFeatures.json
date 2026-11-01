@@ -105,7 +105,15 @@
     "Australiancards": "australske kartice",
     "NewZealandcards": "novozelandske kartice",
     "Canadiancards": "kanadske kartice",
-    "Swisscards": "švicarske kartice"
+    "Swisscards": "švicarske kartice",
+    "Braziliancards": "brazilske kartice",
+    "Mexicancards": "meksičke kartice",
+    "Japanesecards": "japanske kartice",
+    "Singaporecards": "singapurske kartice",
+    "HongKongcards": "hongkonške kartice",
+    "Malaysiancards": "malezijske kartice",
+    "Thaicards": "tajlandske kartice",
+    "UAEcards": "kartice iz UAE-a"
   },
   "perMonth": {
     "mo": "{amount}/mj.",

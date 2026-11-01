@@ -1,0 +1,58 @@
+{
+  "label": {
+    "street": "Endereço",
+    "postcode": "Código postal",
+    "zip": "ZIP code",
+    "eircode": "Eircode",
+    "postalCode": "CEP",
+    "state": "Estado",
+    "stateTerritory": "Estado ou território",
+    "province": "Província",
+    "county": "Condado",
+    "prefecture": "Prefeitura (província)",
+    "emirate": "Emirado",
+    "region": "Região",
+    "area": "Localidade (vila, bairro ou cidade)",
+    "townOrArea": "Cidade ou região",
+    "city": "Cidade",
+    "suburb": "Bairro",
+    "townOrCity": "Cidade ou município"
+  },
+  "short": {
+    "area": "Localidade",
+    "townOrArea": "Cidade ou região",
+    "city": "Cidade",
+    "suburb": "Bairro",
+    "townOrCity": "Cidade ou município"
+  },
+  "inSentence": {
+    "postcode": "código postal",
+    "zip": "ZIP code",
+    "eircode": "Eircode",
+    "postalCode": "CEP"
+  },
+  "withArticle": {
+    "postcode": "um código postal",
+    "zip": "um ZIP code",
+    "eircode": "um Eircode",
+    "postalCode": "um CEP"
+  },
+  "tradeLabel": {
+    "area": "Cidade ou município",
+    "townOrArea": "Cidade ou região",
+    "city": "Cidade",
+    "suburb": "Bairro",
+    "townOrCity": "Cidade ou município"
+  },
+  "basedIn": {
+    "area": "Cidade ou município onde fica sua base",
+    "townOrArea": "Cidade ou região onde fica sua base",
+    "city": "Cidade onde fica sua base",
+    "suburb": "Bairro onde fica sua base",
+    "townOrCity": "Cidade ou município onde fica sua base"
+  },
+  "example": "ex.: {example}",
+  "customersSee": "Os clientes veem:",
+  "postalWarning": "Isso não parece {article} — por exemplo, {example}. Você pode salvar mesmo assim.",
+  "regionChoose": "Escolha…"
+}

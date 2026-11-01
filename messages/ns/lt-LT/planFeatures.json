@@ -105,7 +105,15 @@
     "Australiancards": "Australijos kortelės",
     "NewZealandcards": "Naujosios Zelandijos kortelės",
     "Canadiancards": "Kanados kortelės",
-    "Swisscards": "Šveicarijos kortelės"
+    "Swisscards": "Šveicarijos kortelės",
+    "Braziliancards": "Brazilijos kortelės",
+    "Mexicancards": "Meksikos kortelės",
+    "Japanesecards": "Japonijos kortelės",
+    "Singaporecards": "Singapūro kortelės",
+    "HongKongcards": "Honkongo kortelės",
+    "Malaysiancards": "Malaizijos kortelės",
+    "Thaicards": "Tailando kortelės",
+    "UAEcards": "JAE kortelės"
   },
   "perMonth": {
     "mo": "{amount}/mėn.",

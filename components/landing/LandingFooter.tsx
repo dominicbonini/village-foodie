@@ -9,7 +9,7 @@
 // component and needs no provider.
 import { HEADER_BG } from '@/lib/brand'
 import { HatchGrabWordmark } from '@/components/brand/HatchGrabWordmark'
-import { PRIVACY_PATH, TERMS_PATH, copyrightYear } from '@/lib/legal'
+import { legalPath, copyrightYear } from '@/lib/legal'
 import { CountryMenu } from '@/components/landing/CountryMenu'
 import type { VisitorCountryMenu } from '@/lib/visitor-country-types'
 // Language Phase 1e: the footer's words are `landingFooter` messages, in the page's locale (`locale` — the visitor's
@@ -75,10 +75,8 @@ export function LandingFooter({ landingHref = '', featuresHref = '/features', co
               ⚠️ Desktop is untouched: above 720px no rule matches, so the wordmark keeps margin:0 and
               stays left in its space-between column. */}
           <HatchGrabWordmark variant="dark" className="block foot-logo" />
-          {/* Same slogan and same line break as the hero tagline (:148), so the two agree.
-              ⚠️ Deliberately WITHOUT the hero's `.lean` orange accent on "cooking." — the footer tag
-              is muted #8A93A6 by design and an orange word here was not asked for. */}
-          <p className="foot-tag">{t.rich('tagline', { br: () => <br /> })}</p>
+          {/* world-countries-1 (31 October 2026): the footer slogan "Less time booking. More time cooking." under the wordmark is
+              removed, in every language (Dominic). */}
         </div>
         {/* 🔴 THE RIGHT COLUMN — LINKS ON TOP, BADGE BENEATH THEM.
             Moved here 2 September 2026 on request, and only AFTER the middle position was built and
@@ -107,8 +105,10 @@ export function LandingFooter({ landingHref = '', featuresHref = '/features', co
                 flex row, so a fifth item costs nothing — unlike the nav, which must not wrap. */}
             <a href={featuresHref}>{t('features')}</a>
             <a href={`${landingHref}#pricing`}>{t('pricing')}</a>
-            <a href={PRIVACY_PATH}>{t('privacy')}</a>
-            <a href={TERMS_PATH}>{t('terms')}</a>
+            {/* legal-languages-1 (1 November 2026): the documents in the page's language — /fr/privacy on a French page; the
+                English /privacy and /terms on an English one, exactly as before (lib/legal.ts legalPath). */}
+            <a href={legalPath('privacy', { country: country?.current.code, locale })}>{t('privacy')}</a>
+            <a href={legalPath('terms', { country: country?.current.code, locale })}>{t('terms')}</a>
             {/* 🔴 WAS `href="#"` — a control that went nowhere, then /support, which was deleted on
                 20 August 2026. Now /contact, which serves HatchGrab chrome on this host and is the
                 Support URL given to App Store review.

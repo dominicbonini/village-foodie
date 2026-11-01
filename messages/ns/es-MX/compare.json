@@ -1,0 +1,24 @@
+{
+  "orders": {
+    "captionNo": "Basta con una estimación: pedidos anticipados y clientes que se saltan la fila, no el efectivo ni la tarjeta en la ventanilla."
+  },
+  "fee": {
+    "fixedAria": "Centavos por pedido"
+  },
+  "cta": {
+    "upload": "Subir mi menú →",
+    "uploadSave": "Subir mi menú y ahorrar {amount} →"
+  },
+  "breakdown": {
+    "card": "Comisión de tarjeta: los {fee} por pedido de Stripe, que se pagan a Stripe. Pagarías más o menos lo mismo con una terminal en la ventanilla."
+  },
+  "enterRate": "Ingresa lo que pagas ahora para ver cuánto ahorras.",
+  "anchor": {
+    "counter": "Es la remodelación completa de tu mostrador.",
+    "vanDeposit": "Es el enganche de un segundo food truck."
+  },
+  "smallPrint": {
+    "no": "Estimaciones basadas en las cifras que ingresas, con un pedido promedio de {aov}. La comisión de tarjeta se aplica sea cual sea el proveedor. Compruébalo antes de decidir.",
+    "yes": "Estimaciones basadas en las cifras que ingresas, con un pedido promedio de {aov}. La comisión de tarjeta de {fee} por pedido se aplica sea cual sea el proveedor, así que queda fuera en ambos lados."
+  }
+}

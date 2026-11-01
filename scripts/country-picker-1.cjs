@@ -98,7 +98,7 @@ const dec = s => String(s).replace(/&amp;/g, '&').replace(/&#x27;/g, "'").replac
   const EN = JSON.parse(read('messages/en-GB.json')).landingNav.country
   t('en-GB: landingNav.country.title "Choose your country", .subline "Prices, language and settings change to match."', EN.title === 'Choose your country' && EN.subline === 'Prices, language and settings change to match.')
   const missing = BASES.filter(l => { const c = JSON.parse(read(`messages/${l}.json`)).landingNav.country; const b = JSON.parse(read(`docs/i18n/back/${l}.json`)); return !c.title || !c.subline || c.title === EN.title || !b['landingNav.country.title'] || !b['landingNav.country.subline'] })
-  t(`all ${BASES.length} non-English bases carry both, translated, with back-translations`, BASES.length === 22 && missing.length === 0, missing)
+  t(`all ${BASES.length} non-English bases carry both, translated, with back-translations`, BASES.length >= 22 && missing.length === 0, missing)   // ⚠️ RE-PINNED (world-countries-1): + pt-BR, ms-MY, ja-JP, zh-HK… — every base, however many
   const structural = BASES.concat(['de-AT', 'de-CH', 'de-LI', 'nl-BE', 'el-CY', 'fr-LU']).map(l => { const r = spawnSync(process.execPath, ['scripts/translation-check.cjs', '--locale', l], { cwd: REPO, encoding: 'utf8' }); return [l, /\*\*Structural: 0\*\*/.test(r.stdout)] }).filter(([, ok]) => !ok).map(([l]) => l)
   t('translation-check: 0 structural for every base and regional variant', structural.length === 0, structural)
   const src = read('components/landing/CountryMenu.tsx')

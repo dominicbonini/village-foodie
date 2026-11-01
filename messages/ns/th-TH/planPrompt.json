@@ -1,0 +1,118 @@
+{
+  "includedOn": "{many, select, yes {{feature} มีในแพ็กเกจ {plan}} other {{feature} มีในแพ็กเกจ {plan}}}",
+  "notOnPlan": "{many, select, yes {{feature} ไม่มีในแพ็กเกจของคุณ} other {{feature} ไม่มีในแพ็กเกจของคุณ}}",
+  "switchedOff": "{many, select, yes {{feature} ถูกปิดไว้สำหรับรถของคุณ} other {{feature} ถูกปิดไว้สำหรับรถของคุณ}}",
+  "planLine": "{plan} · {price} · {description}",
+  "planLineNoPrice": "{plan} · {description}",
+  "upgrade": "อัปเกรด →",
+  "features": {
+    "discovery_map": {
+      "name": "การแสดงบนแผนที่ค้นหาร้าน",
+      "many": "no"
+    },
+    "web_dashboard": {
+      "name": "แดชบอร์ดบนเว็บ",
+      "many": "no"
+    },
+    "ipad_kds": {
+      "name": "แอปครัว",
+      "many": "no"
+    },
+    "qr_menu": {
+      "name": "เมนูคิวอาร์โค้ด",
+      "many": "no"
+    },
+    "meal_deals": {
+      "name": "เซ็ตอาหาร",
+      "many": "yes"
+    },
+    "upsells": {
+      "name": "เมนูแนะนำเพิ่ม",
+      "many": "yes"
+    },
+    "walkup_orders": {
+      "name": "ออเดอร์หน้ารถ",
+      "many": "yes"
+    },
+    "online_ordering_pay_at_hatch": {
+      "name": "การสั่งออนไลน์แบบชำระเงินตอนรับอาหาร",
+      "many": "no"
+    },
+    "sold_out_toggle": {
+      "name": "ปุ่มสลับสถานะหมด",
+      "many": "no"
+    },
+    "stock_countdown": {
+      "name": "การนับสต็อกถอยหลัง",
+      "many": "no"
+    },
+    "offline_protection": {
+      "name": "การป้องกันออเดอร์เมื่อออฟไลน์",
+      "many": "no"
+    },
+    "online_payments": {
+      "name": "การชำระเงินออนไลน์",
+      "many": "yes"
+    },
+    "advance_preordering": {
+      "name": "การสั่งล่วงหน้าได้หลายวัน",
+      "many": "no"
+    },
+    "time_slot_selection": {
+      "name": "ช่วงเวลารับอาหารที่ลูกค้าเลือก",
+      "many": "yes"
+    },
+    "smart_batch_pacing": {
+      "name": "การจัดการกำลังการผลิตของครัว",
+      "many": "no"
+    },
+    "auto_accept": {
+      "name": "การรับออเดอร์อัตโนมัติ",
+      "many": "no"
+    },
+    "instagram_messenger_replies": {
+      "name": "การตอบกลับ Messenger และ Instagram อัตโนมัติ",
+      "many": "yes"
+    },
+    "branded_qr_code": {
+      "name": "คิวอาร์โค้ดแบบมีโลโก้",
+      "many": "yes"
+    },
+    "advanced_reporting": {
+      "name": "รายงานขั้นสูง",
+      "many": "no"
+    },
+    "ticket_printing": {
+      "name": "การพิมพ์ใบออเดอร์ในครัว",
+      "many": "no"
+    },
+    "multi_device_kds": {
+      "name": "การซิงค์ครัวหลายอุปกรณ์",
+      "many": "no"
+    },
+    "cook_screen": {
+      "name": "จอสำหรับพ่อครัว",
+      "many": "no"
+    },
+    "whatsapp_replies": {
+      "name": "การตอบกลับ WhatsApp อัตโนมัติ",
+      "many": "yes"
+    },
+    "embed_schedule": {
+      "name": "ตารางออกร้านบนเว็บไซต์ของคุณเอง",
+      "many": "no"
+    },
+    "schedule_graphics": {
+      "name": "โพสต์โซเชียลมีเดีย",
+      "many": "yes"
+    },
+    "event_types": {
+      "name": "ประเภทอีเวนต์ที่กำหนดเอง",
+      "many": "yes"
+    },
+    "private_events": {
+      "name": "อีเวนต์ส่วนตัว",
+      "many": "yes"
+    }
+  }
+}

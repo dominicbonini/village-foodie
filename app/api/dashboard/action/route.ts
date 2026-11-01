@@ -37,7 +37,7 @@ import { nextOrderId } from '@/lib/order-utils'
 /* ⚠️ `loadPriceBook` IS NO LONGER IMPORTED HERE, AND THAT IS THE POINT: this route reaches it
  * through `loadEventPriceBook` (below), which is the ONE place the event-aware wrapper is
  * applied. An import of the raw book beside the wrapper is an invitation to call the wrong one. */
-import { repriceOrder, toMinor, type RepriceItem } from '@/lib/order-repricing'
+import { repriceOrder, toMinor, fromMinor, type RepriceItem } from '@/lib/order-repricing'
 // Phase 3: tax, tip and fees — the same engine and rules as the customer path (docs/phase-3-foundations-report.md).
 import { computeOrderCharges, chargesForEdit } from '@/lib/order-charges'
 import { chargeSourceOf } from '@/lib/order-charge-lines'
@@ -847,10 +847,11 @@ export async function POST(req: NextRequest) {
       // the original amount (D14); a service fee is recomputed, never above the original; and an edit
       // never ADDS a charge the order did not have. GB: tax included, nothing else → the grand total is
       // the food, the same number as before Phase 3.
-      const editFoodMinor = toMinor(repriced.calculation.total)
+      // world-countries-1: in the ORDER's currency's minor units (whole yen for JPY).
+      const editFoodMinor = toMinor(repriced.calculation.total, order.currency ?? truck.currency)
       const editCharges = chargesForEdit(editFoodMinor, await loadChargeRules(truck), order)
       const newTotalMinor = editCharges.totalMinor
-      const newTotal = newTotalMinor / 100
+      const newTotal = fromMinor(newTotalMinor, order.currency ?? truck.currency)
       const unresolved = [...repriced.unresolved, ...unresolvedDiscount]
 
       // ── CONFIRM UNPRICEABLE NEW LINES ──────────────────────────────────────────────────────────
@@ -1577,12 +1578,12 @@ export async function POST(req: NextRequest) {
       // ── 🔴 Phase 3: A WALK-UP IS TAXED (D9) AND CARRIES NO SERVICE FEE, SURCHARGE OR ONLINE TIP. The same
       // engine and rules as the customer path, channel 'walk_up'. GB: tax included → total = food.
       const walkupCharges = computeOrderCharges({
-        foodMinor: toMinor(priced.calculation.total),
+        foodMinor: toMinor(priced.calculation.total, truck.currency),   // world-countries-1: the truck's currency's minor units
         rules: await loadChargeRules(truck),
         channel: 'walk_up',
       })
       const serverTotalMinor = walkupCharges.totalMinor
-      const serverTotal = serverTotalMinor / 100
+      const serverTotal = fromMinor(serverTotalMinor, truck.currency)
       const serverSubtotal = priced.calculation.subtotal
       const serverDiscountAmt = priced.calculation.discountAmt
       const serverDealSavings = priced.calculation.dealSavings

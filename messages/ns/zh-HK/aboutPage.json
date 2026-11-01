@@ -1,0 +1,20 @@
+{
+  "meta": {
+    "title": "關於我們 — HatchGrab",
+    "description": "HatchGrab 為美食車及流動餐飲商戶打造實用軟件：網上訂單、取餐時間，減少重複回答相同問題。由 Dominic Bonini 創立。"
+  },
+  "eyebrow": "關於我們",
+  "title": "按照美食車的真實運作方式而設計",
+  "photoAlt": "{name}，HatchGrab 創辦人",
+  "story": {
+    "start": "HatchGrab 源於一個簡單的觀察：美食車需要更好的工具來經營生意。",
+    "villageFoodie": "我創立了 Village Foodie——一個幫助大家發掘附近美食車的目錄——之後花了更多時間了解流動餐飲生意所面對的挑戰。與傳統餐廳不同，美食車經常移動，在不同地點營業，服務客人的環境也不斷變化。",
+    "fixedAddress": "然而，它們可用的軟件大多是為有固定地址的商戶而設計。",
+    "change": "HatchGrab 正是為改變這個情況而誕生。",
+    "build": "我們專為美食車及流動餐飲商戶打造實用軟件，幫助他們接收網上訂單、管理取餐時間、令訂單處理暢順，並減少花在回答重複問題上的時間。",
+    "focus": "我們的目標很簡單：以按照這些生意真實運作方式而設計的工具，令經營美食車更輕鬆。"
+  },
+  "signature": "<b>{name}</b><br></br>HatchGrab 創辦人",
+  "company": "{company} · registered in England and Wales · 公司編號 {number} · 註冊辦事處：{address}",
+  "contact": "聯絡我們"
+}

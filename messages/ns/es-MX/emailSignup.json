@@ -1,0 +1,9 @@
+{
+  "verify": {
+    "why": "Es la dirección con la que vas a iniciar sesión y adonde llegan los avisos de pedidos, así que vale la pena hacerlo ya."
+  },
+  "welcome": {
+    "trial": "{months, plural, one {Tu prueba gratis de un mes ya empezó: todas las funciones desbloqueadas.} many {Tu prueba gratis de # meses ya empezó: todas las funciones desbloqueadas.} other {Tu prueba gratis de # meses ya empezó: todas las funciones desbloqueadas.}}",
+    "bookmark": "Vale la pena guardarlo en marcadores. Funciona en cualquier dispositivo."
+  }
+}

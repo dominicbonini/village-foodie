@@ -1,0 +1,189 @@
+{
+  "cancel": "Cancelar",
+  "back": "← Voltar",
+  "backPlain": "Voltar",
+  "next": "Próximo →",
+  "continue": "Continuar →",
+  "closeImport": "Fechar importação",
+  "tryAgain": "Tentar de novo",
+  "catError": {
+    "empty": "Dê um nome à categoria.",
+    "tooLong": "Esse nome é longo demais.",
+    "clash": "Já existe uma categoria chamada “{name}”."
+  },
+  "steps": {
+    "details": "Seus dados",
+    "menu": "Cardápio",
+    "extras": "Complementos",
+    "allergens": "Alérgenos",
+    "kitchen": "Cozinha",
+    "schedule": "Agenda",
+    "settings": "Configurações"
+  },
+  "toast": {
+    "demoGone": "Seu cardápio de demonstração não está mais disponível — envie de novo para continuar.",
+    "eventsSaveFailed": "Não foi possível salvar os eventos",
+    "cardReadFailed": "Não foi possível ler a ficha de alérgenos — tente novamente",
+    "imageReadFailed": "Não foi possível ler essa imagem — digite ou cole sua ficha",
+    "commitFailedDetail": "Não foi possível terminar de salvar o cardápio: {error}. Alguns itens podem já ter sido salvos — confira seu cardápio antes de tentar de novo.",
+    "commitFailed": "Não foi possível terminar de salvar o cardápio. Alguns itens podem já ter sido salvos — confira seu cardápio antes de tentar de novo.",
+    "finishFailed": "Não foi possível marcar a configuração como concluída — você ainda pode continuar.",
+    "scheduleReadFailed": "Não foi possível ler essa agenda — tente uma foto mais nítida ou digite suas datas.",
+    "cardRead": "Ficha lida — {matched} associados, {pending, plural, one {# precisa} other {# precisam}} da sua definição"
+  },
+  "settingsReview": {
+    "anchorOrder": "Configurações → Configurações de pedidos",
+    "anchorDisplay": "Configurações → Seus food trucks → Configurações de exibição",
+    "mins15": "15 minutos",
+    "mins30": "30 minutos",
+    "mins60": "60 minutos",
+    "hours2": "2 horas",
+    "title": "Algumas configurações para conferir",
+    "loading": "Carregando suas configurações atuais…",
+    "looksGood": "Tudo certo →",
+    "secondaryAria": "{label} — {secondary}",
+    "saveFailed": "Não foi possível salvar — você pode alterar isso em Configurações.",
+    "anchorContact": "Configurações → Dados de contato",
+    "intro": "Já deixamos algumas configurações comuns prontas para você. Vale dar uma olhada rápida — você pode alterar qualquer uma delas depois em Configurações.",
+    "cancelAria": "Com quanto tempo de antecedência da retirada os clientes podem cancelar"
+  },
+  "allergensNotSet": {
+    "bodySetup": "Revise antes de entrar no ar. Até lá, os itens ficam marcados como “alérgenos não definidos”.",
+    "body": "Revise em Configurações antes de entrar no ar. Até lá, os itens ficam marcados como “alérgenos não definidos”.",
+    "title": "⚠ Alérgenos e dieta ainda não foram definidos"
+  },
+  "welcome": {
+    "title": "Boas-vindas ao HatchGrab",
+    "yourTruck": "Seu food truck",
+    "stop": "Você pode parar e voltar quando quiser.",
+    "body": "{name} está configurado. Agora vamos adicionar seu cardápio e depois seu primeiro evento.",
+    "go": "Vamos lá"
+  },
+  "offer": {
+    "title": "Usar o cardápio da sua demonstração?",
+    "use": "Usar este cardápio",
+    "upload": "Enviar outro cardápio",
+    "body": "Salvamos o cardápio que você enviou — {count, plural, one {# item} other {# itens}}. Use como ponto de partida ou envie outro."
+  },
+  "upload": {
+    "title": "Importe seu cardápio",
+    "body": "Envie uma foto do quadro do cardápio, uma captura de tela, um PDF ou cole seu cardápio como texto. Nossa IA lê tudo e monta seu cardápio digital — você revisa tudo antes de salvar.",
+    "confirmCancel": "Cancelar esta importação? A revisão que você fez deste cardápio será descartada.",
+    "process": "Processar cardápio",
+    "later": "Faço isso depois"
+  },
+  "processing": {
+    "title": "Analisando seu cardápio",
+    "body": "A IA está lendo e organizando seus itens em categorias…"
+  },
+  "review": {
+    "title": "Revisar cardápio importado",
+    "editLaterSetup": "Nomes, preços, complementos, alérgenos e informações de dieta podem ser editados a qualquer momento depois.",
+    "editLater": "Nomes, preços, complementos, alérgenos e informações de dieta podem ser editados a qualquer momento em Configurações.",
+    "noPrice": "{count, plural, one {# item estava sem um preço legível} other {# itens estavam sem um preço legível}}",
+    "renameCategoryAria": "Renomear a categoria {name}",
+    "renameAria": "Renomear {name}",
+    "renameTitle": "Renomear categoria",
+    "deleteAria": "Excluir {name}",
+    "deleteTitle": "Excluir categoria",
+    "lastCategory": "Seu cardápio precisa de pelo menos uma categoria",
+    "countOf": "{kept} de {total}",
+    "existing": "já existe",
+    "deleteEmptyTitle": "Excluir “{name}”?",
+    "deleteEmptyBody": "Ela não tem itens, então nada é perdido.",
+    "delete": "Excluir",
+    "moveTitle": "Para onde {count, plural, one {vai # item} other {vão # itens}}?",
+    "moveBody": "Para excluir “{name}”, os pratos dela precisam ir para outro lugar — itens sem categoria não são importados.",
+    "moveAria": "Mover itens de {name} para",
+    "chooseCategory": "Escolha uma categoria…",
+    "moveDelete": "Mover e excluir",
+    "itemName": "Nome do item",
+    "free": "grátis?",
+    "freeOn": "Grátis ✕",
+    "nameFirst": "Dê um nome ao novo item antes de adicionar outro",
+    "addItem": "+ Adicionar item",
+    "categoryName": "Nome da categoria",
+    "newCategoryAria": "Nome da nova categoria",
+    "addCategory": "+ Adicionar categoria",
+    "ready": "{count, plural, one {# item pronto} other {# itens prontos}} para adicionar. Desmarque o que você não quiser.",
+    "noPriceBody": "Defina um preço para cada um ou marque como grátis — senão ele entraria no ar a {zero}. Você só pode continuar depois de resolver isso.",
+    "incomplete": "Informe um nome para adicionar este item — linhas vazias não são importadas."
+  },
+  "extras": {
+    "introSetup": "Alguns pratos podem ser configurados como <b>um item personalizável</b> ou mantidos como <b>pratos separados</b>. Escolha como cada um deve aparecer. Você pode mudar isso depois.",
+    "intro": "Alguns pratos podem ser configurados como <b>um item personalizável</b> ou mantidos como <b>pratos separados</b>. Escolha como cada um deve aparecer. Você pode mudar isso depois em Configurações.",
+    "none": "Nenhum prato para agrupar — cada item é um prato independente.",
+    "axisChoice": "· escolha de {axis}",
+    "grouped": "Agrupado · um item, o cliente escolhe",
+    "separate": "Itens separados no cardápio"
+  },
+  "allergens": {
+    "title": "Alérgenos",
+    "detected": "Detectamos alérgenos no seu cardápio. Escolha abaixo como mostrá-los.",
+    "howShow": "Como você quer mostrar os alérgenos aos clientes?",
+    "skip": "Pular a configuração de alérgenos por enquanto"
+  },
+  "kitchen": {
+    "title": "Configuração da cozinha",
+    "intro": "Ajude os clientes a saber quanto tempo vão esperar — você pode mudar isso a qualquer momento.",
+    "howWorks": "Como funciona a capacidade da cozinha",
+    "allExist": "Todas as categorias já existem — não há tempos para definir.",
+    "totalHelp": "Defina uma capacidade total para limitar quantos itens a cozinha aceita por intervalo. Deixe em ∞ para não ter limite.",
+    "saveAdd": "Salvar e adicionar ao cardápio"
+  },
+  "schedule": {
+    "title": "Adicionar minha agenda",
+    "intro": "Se a sua agenda está no seu site, podemos mantê-la atualizada automaticamente — ou você mesmo adiciona suas datas.",
+    "websiteTitle": "Minha agenda está no meu site",
+    "urlPlaceholder": "https://yourtruck.co.uk/events",
+    "checking": "Verificando…",
+    "verify": "Verificar",
+    "checkingSite": "Verificando seu site…",
+    "takesTime": "Isso pode levar até 2 minutos — mantenha esta tela aberta.",
+    "canRead": "✓ Conseguimos ler sua agenda",
+    "ownSite": "Seu próprio site — não uma página do Facebook ou do Instagram.",
+    "photoTitle": "Enviar uma foto da minha agenda",
+    "dragChoose": "Arraste e solte ou toque para escolher",
+    "imageOrPdf": "Imagem ou PDF",
+    "or": "ou",
+    "pastePlaceholder": "Cole suas datas aqui…",
+    "read": "Ler agenda",
+    "found": "{count, plural, one {# data encontrada} other {# datas encontradas}} — serão adicionadas à sua agenda.",
+    "dateTbc": "Data a confirmar",
+    "save": "Salvar {count, plural, one {# data} other {# datas}}",
+    "manualDesc": "Adicione depois na aba Agenda — nada para fazer agora.",
+    "manualBody": "Sem problemas. Você pode adicionar e gerenciar suas datas a qualquer momento na aba Agenda da sua conta.",
+    "blockedDomain": "Use o endereço do seu site — não conseguimos ler páginas do Facebook e do Instagram automaticamente.",
+    "saveFailed": "Lemos sua agenda, mas não conseguimos salvá-la agora — tente novamente.",
+    "websiteDesc": "Vamos verificar o site regularmente e enviar as novas datas para sua aprovação.",
+    "keepChecking": "Vamos continuar verificando esta página e enviar as novas datas para sua aprovação.",
+    "photoDesc": "Fotografe ou cole suas datas — nós lemos tudo para você conferir.",
+    "noneFound": "Não encontramos nenhuma data aí — tente uma foto mais nítida ou adicione uma data você mesmo.",
+    "manualTitle": "Vou adicionar minhas datas eu mesmo",
+    "trialNotStarted": "Adicionar eventos não inicia seu teste grátis — você escolhe depois qual evento dá início a ele."
+  },
+  "done": {
+    "summary": "{items, plural, one {# item} other {# itens}} em {categories, plural, one {# categoria} other {# categorias}}.",
+    "imported": "Cardápio importado!",
+    "added": "Seus itens foram adicionados ao cardápio.",
+    "duplicates": "{count, plural, one {# duplicado ignorado} other {# duplicados ignorados}}",
+    "showMe": "Fazer o tour",
+    "remind": "Lembrar mais tarde",
+    "allSet": "Tudo pronto!",
+    "explore": "Vou explorar sozinho"
+  },
+  "discard": {
+    "setupTitle": "Terminar a configuração depois?",
+    "setupBody": "Sua conta e seu food truck estão salvos — nada se perdeu. Você pode adicionar seu cardápio quando quiser: entre e toque em <b>Importar cardápio</b> na tela do cardápio para continuar daqui.",
+    "keepGoing": "Continuar",
+    "finishLater": "Terminar depois",
+    "title": "Descartar esta importação?",
+    "keepEditing": "Continuar editando",
+    "discard": "Descartar",
+    "body": "Suas alterações não serão salvas — os itens importados, os tempos de preparo e a capacidade da cozinha não serão adicionados."
+  },
+  "allergenCardText": {
+    "contains": "Contém: {list}",
+    "mayContain": "Pode conter: {list}"
+  }
+}

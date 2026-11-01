@@ -6,7 +6,8 @@
   "tokens": ["gf", "df", "free"],
   "bySet": {
     "anz": { "stems": ["anaphyla", "epipen", "epi pen"], "tokens": ["nf", "lf"] },
-    "ca": { "stems": ["anaphyla", "epipen", "epi pen", "peanut free", "nut free"], "tokens": [] }
+    "ca": { "stems": ["anaphyla", "epipen", "epi pen", "peanut free", "nut free"], "tokens": [] },
+    "codex": { "stems": ["anaphyla", "epipen", "epi pen", "nut free", "peanut free"], "tokens": [] }
   },
   "caveatWords": {
     "anz": {
@@ -20,6 +21,11 @@
       "crustaceans": ["crustacean", "shellfish", "shrimp", "prawn", "crab", "lobster"], "molluscs": ["mollusc", "shellfish", "clams", "mussels", "oysters", "scallops"],
       "wheat and triticale": ["wheat", "triticale", "gluten"], "gluten (barley, oats, rye)": ["gluten", "barley", "oats", "rye"],
       "added sulphites": ["sulphite", "sulfite"], "mustard": ["mustard"]
+    },
+    "codex": {
+      "milk": ["dairy", "lactose"], "eggs": ["egg"], "peanuts": ["peanut", "nuts"], "tree nuts": ["nuts", "nut"], "soy": ["soya"],
+      "crustaceans": ["crustacean", "shellfish", "shrimp", "prawn", "crab", "lobster"], "gluten": ["wheat", "barley", "rye", "oats"],
+      "sulphites": ["sulphite", "sulfite"]
     }
   }
 }

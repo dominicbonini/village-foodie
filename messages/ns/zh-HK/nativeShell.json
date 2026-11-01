@@ -1,0 +1,127 @@
+{
+  "gate": {
+    "reverted": "訂單 #{id} 已還原",
+    "saved": "訂單 #{id} 已儲存",
+    "undo": "↩ 復原",
+    "paymentNotRecorded": "⚠ 訂單 #{id}：付款未有記錄。{collect, select, yes {訂單已完成} other {訂單已儲存}}，但款項沒有記錄。",
+    "recordPayment": "記錄付款",
+    "paid": "訂單 #{id} 已付款",
+    "undonePayment": "已復原：付款已移除",
+    "undoneCollected": "已復原：訂單未取餐",
+    "collected": "訂單 #{id} {paidToo, select, yes {已付款及已取餐} other {已取餐}}",
+    "ready": "訂單 #{id} 可取餐",
+    "readyBuzzer": "訂單 #{id} 可取餐 · <pill></pill>",
+    "status": "訂單 #{id} {action, select, confirm {已確認} reject {已拒絕} ready {可取餐} collected {已取餐} undo_collected {已還原} cancel {已取消} other {已更新}}"
+  },
+  "conflicts": {
+    "more": "還有 {count} 張",
+    "notOnScreenPlus": "另有 {count} 張不在此屏幕",
+    "notOnScreen": "{n, plural, other {{count} 張訂單不在此屏幕}}"
+  },
+  "banner": {
+    "paymentTitle": "⚠ 付款未有記錄",
+    "paymentBody": "{orders}：只在此裝置上標記為已付款，付款並未成功處理。",
+    "paymentCheck": "請檢查訂單，如仍未付款，請再次收款。",
+    "dismiss": "關閉",
+    "confirmChecked": "確認你已檢查 {orders}",
+    "confirmHides": "此舉會隱藏警告。無論如何，此裝置都會保留記錄。",
+    "notYet": "暫時不要",
+    "iveChecked": "我已檢查 {orders}",
+    "statusBody": "⚠ {orders}：此更改未能成功處理。請檢查訂單。",
+    "offline": "📴 沒有網絡連線：{n, plural, other {{count} 項更改已儲存在此裝置，恢復連線後會自動傳送。}}設定已鎖定。",
+    "syncing": "已恢復連線，正在傳送 {n, plural, other {{count} 項更改}}…",
+    "synced": "所有更改已傳送。",
+    "stillQueued": "{n, plural, other {{count} 項更改已儲存在此裝置，仍在嘗試傳送。}}"
+  },
+  "lock": {
+    "locked": "HatchGrab 已上鎖",
+    "verifying": "正在驗證…",
+    "unlock": "解鎖",
+    "cantUseBiometric": "無法使用 Face ID／Touch ID？",
+    "enterPin": "輸入你的後備 PIN 碼",
+    "wrongPin": "PIN 碼錯誤，請再試一次。",
+    "checking": "正在檢查…",
+    "tryBiometric": "改用 Face ID／Touch ID",
+    "forgot": "忘記 PIN 碼？你需要重新安裝應用程式。"
+  },
+  "notify": {
+    "title": "🔔 通知",
+    "intro": "此裝置上的提示。開啟後可選擇接收哪些提示。",
+    "refused": "須先在裝置的「設定」中允許通知，才可開啟此功能。",
+    "newOrder": "新訂單提示",
+    "newOrderHelp": "有顧客訂單需要確認時通知你。",
+    "offline": "離線／暫停提示",
+    "offlineHelp": "此裝置離線（落單因而暫停）時通知你。<green>離線時亦適用。</green>"
+  },
+  "van": {
+    "label": "車輛",
+    "loadRetry": "無法載入 · 重試",
+    "select": "選擇…"
+  },
+  "deviceSave": {
+    "network": "無法連接伺服器，請檢查網絡連線後再試一次。",
+    "server": "暫時未能儲存，請再試一次。"
+  },
+  "setup": {
+    "fetchErrorTitle": "無法載入裝置設定",
+    "fetchErrorBody": "我們無法連接伺服器以設定<b>此裝置</b>。請檢查網絡連線後再試一次，你的訂單及設定不受影響。",
+    "retry": "重試",
+    "later": "稍後",
+    "noVanTitle": "沒有啟用中的車輛",
+    "noVanBody": "這架美食車尚未有啟用中的車輛。請在<b>設定 → 你的美食車</b>啟用一架，此裝置便會自動完成設定，這裏不需再做任何步驟。",
+    "goToVans": "前往設定 → 你的美食車",
+    "title": "設定此裝置",
+    "body": "<b>此裝置</b>的一次性設定：開啟時顯示的畫面，以及它屬於哪架車輛。只適用於此裝置，其他裝置須分別設定。你稍後可在個人資料選單 →「此裝置」更改。",
+    "whichScreen": "此裝置開啟時應顯示哪個畫面？",
+    "dashboard": "訂單控制台",
+    "kds": "廚房顯示屏",
+    "whichVan": "此裝置屬於哪架車輛？",
+    "selectVan": "選擇車輛…",
+    "saving": "儲存中…",
+    "tryAgain": "再試一次",
+    "continue": "繼續"
+  },
+  "device": {
+    "title": "此裝置",
+    "viewing": "你正在查看：<b>{truck}</b>",
+    "viewingVan": "你正在查看：<b>{truck}</b> — <b>{van}</b>",
+    "only": "只適用於此裝置，其他裝置須分別設定。（ID：{id}…）",
+    "truck": "美食車",
+    "van": "車輛",
+    "defaultScreen": "預設畫面",
+    "orderNotifications": "訂單通知",
+    "patchFailed": "{setting, select, van {車輛} defaultScreen {預設畫面} other {訂單通知}}未能儲存。{reason}",
+    "requireBiometric": "開啟時須以指紋或面容解鎖",
+    "pinTitle": "設定後備 PIN 碼（4–6 位數字）",
+    "pinHelp": "指紋或面容解鎖無法使用時，可用它進入。這是唯一的後備方法，請緊記（忘記 PIN 碼便要重新安裝應用程式）。離線時亦適用。",
+    "pinPlaceholder": "PIN 碼",
+    "confirmPinPlaceholder": "確認 PIN 碼",
+    "pinTooShort": "請輸入最少 4 位數字。",
+    "pinMismatch": "兩次輸入的 PIN 碼不相符。",
+    "setPin": "設定 PIN 碼並啟用",
+    "cancel": "取消",
+    "noBiometric": "此裝置未設定指紋或面容解鎖，請在裝置設定中加入。你的後備 PIN 碼仍然有效。",
+    "footer": "這些設定只適用於此裝置，其他裝置須分別設定。"
+  },
+  "appLock": {
+    "unlockReason": "解鎖 HatchGrab",
+    "usePasscode": "使用密碼",
+    "cancel": "取消",
+    "confirmEnable": "確認以啟用應用程式鎖"
+  },
+  "channel": {
+    "ordersName": "新訂單",
+    "ordersDescription": "有訂單需要確認時發出提示。"
+  },
+  "localNotify": {
+    "newOrderTitle": "新訂單",
+    "orderReceived": "已收到訂單 {number}",
+    "newOrders": "{n, plural, other {你有 {count} 張新訂單}}"
+  },
+  "offlineAlert": {
+    "pausedTitle": "落單已暫停",
+    "pausedBody": "你已離線，顧客落單已暫停。",
+    "offlineTitle": "你已離線",
+    "offlineBody": "此裝置已失去網絡連線。"
+  }
+}

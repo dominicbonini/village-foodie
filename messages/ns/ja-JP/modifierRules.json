@@ -1,0 +1,4 @@
+{
+  "customer": "{required, select, yes {必須} other {任意}}{limit, select, one { · 1つ選択} upTo { · {max}個まで選択} other {}}",
+  "operator": "{required, select, yes {必須} other {任意}}{limit, select, one { · お客様が1つ選択} upTo { · お客様が{max}個まで選択可能} other {}}"
+}

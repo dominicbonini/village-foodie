@@ -633,6 +633,28 @@
       "Walnut": "Walnoten",
       "Wheatandtriticale": "Tarwe en triticale",
       "Glutenbarleyoatsrye": "Gluten (gerst, haver, rogge)",
+      "Shrimp": "Garnalen",
+      "Crab": "Krab",
+      "Buckwheat": "Boekweit",
+      "Abalone": "Zeeoor",
+      "Squid": "Inktvis",
+      "Salmonroe": "Zalmkuit",
+      "Orange": "Sinaasappels",
+      "Kiwifruit": "Kiwi’s",
+      "Beef": "Rundvlees",
+      "Salmon": "Zalm",
+      "Mackerel": "Makreel",
+      "Soybean": "Sojabonen",
+      "Chicken": "Kip",
+      "Banana": "Bananen",
+      "Pork": "Varkensvlees",
+      "Peach": "Perziken",
+      "Yam": "Yamswortel",
+      "Apple": "Appels",
+      "Gelatin": "Gelatine",
+      "Chestnut": "Kastanjes",
+      "Naturallatex": "Natuurlatex",
+      "Lactose": "Lactose",
       "Nuts": "Noten",
       "Shellfish": "Schaal- en weekdieren"
     }
@@ -4854,6 +4876,7 @@
       "ends": "{hasDate, select, yes {Proefperiode eindigt <hl>{date}</hl>} other {Proefperiode eindigt <hl>binnenkort</hl>}}",
       "offer": "{hasMonths, select, yes {{months, plural, one {Alle functies # maand gratis} other {Alle functies # maanden gratis}}} other {Alle functies gratis tijdens je proefperiode}}",
       "body": "{hasDate, select, yes {Tijdens je proefperiode, die loopt tot <b>{date}</b>, betaal je niets. Er wordt pas iets in rekening gebracht als je een abonnement kiest en je betaalgegevens invult. Tot die tijd valt er niets op te zeggen en niets te betalen. Kies vóór die datum je abonnement — doe je dat niet, dan ga je over naar {fallback} en werken sommige functies niet meer.} other {Zolang je proefperiode loopt, betaal je niets. Er wordt pas iets in rekening gebracht als je een abonnement kiest en je betaalgegevens invult. Tot die tijd valt er niets op te zeggen en niets te betalen. Kies je abonnement voordat de proefperiode afloopt — doe je dat niet, dan ga je over naar {fallback} en werken sommige functies niet meer.}}",
+      "bodyPaidEnd": "{hasDate, select, yes {Tijdens je proefperiode, die loopt tot <b>{date}</b>, betaal je niets. Na je proefperiode kost {fallback} je {price} per maand. We nemen voor die tijd contact met je op om de betaling te regelen.} other {Zolang je proefperiode loopt, betaal je niets. Na je proefperiode kost {fallback} je {price} per maand. We nemen voor die tijd contact met je op om de betaling te regelen.}}",
       "fees": "*Op online bestellingen gelden de standaard kaarttransactiekosten",
       "upgrade": "Upgrade hier →"
     }
@@ -4884,8 +4907,10 @@
       "heading": "Je gratis proefperiode is nog niet begonnen"
     },
     "onTrial": "Je hebt alle functies. Kies een abonnement voordat je proefperiode afloopt.",
+    "onTrialPaidEnd": "Je hebt alle functies. Na je proefperiode kost {plan} je {price} per maand. We nemen voor die tijd contact met je op om de betaling te regelen.",
     "onTrialNoCta": "Je hebt alle functies.",
     "noCharge": "🔒 Tijdens je proefperiode, die loopt tot {date}, betaal je niets. Er wordt pas iets in rekening gebracht als je een abonnement kiest en je betaalgegevens invult. Tot die tijd valt er niets op te zeggen en niets te betalen.",
+    "noChargePaidEnd": "🔒 Tijdens je proefperiode, die loopt tot {date}, betaal je niets.",
     "fees": "*Op online bestellingen gelden de standaard kaarttransactiekosten",
     "setUpPayment": "⏱ Kies een abonnement voordat je proefperiode afloopt",
     "changeYourPlan": "Abonnement wijzigen",
@@ -5472,7 +5497,6 @@
     "hero": {
       "title": "Het online bestelsysteem gemaakt voor <lean>foodtrucks.</lean>",
       "subSmall": "Upload je menukaart, geen account nodig.<br></br>Binnen 60 seconden een werkende demo.",
-      "tagline": "Minder regelen.<br></br>Meer <lean>koken.</lean>",
       "cta": "Upload mijn menukaart →",
       "ctaNote": "<lead>Upload een foto van je menukaart en zie hem binnen 60 seconden werken.</lead><small>Geen account. Geen creditcard.</small>"
     },
@@ -5556,7 +5580,6 @@
     }
   },
   "landingFooter": {
-    "tagline": "Minder regelen.<br></br>Meer koken.",
     "features": "Functies",
     "pricing": "Prijzen",
     "privacy": "Privacy",
@@ -5638,7 +5661,8 @@
     "countryTerms": "Voorwaarden per land",
     "contact": "Contact",
     "lastUpdated": "Laatst bijgewerkt: {date}",
-    "questions": "Vragen? <link>Neem contact op</link> — we zijn echte mensen."
+    "questions": "Vragen? <link>Neem contact op</link> — we zijn echte mensen.",
+    "translationNote": "Dit is een vertaling. Als deze afwijkt van de <link>Engelse versie</link>, geldt de Engelse versie."
   },
   "truckPage": {
     "meta": {
@@ -5794,7 +5818,15 @@
       "Australiancards": "betaalkaarten uit Australië",
       "NewZealandcards": "betaalkaarten uit Nieuw-Zeeland",
       "Canadiancards": "betaalkaarten uit Canada",
-      "Swisscards": "betaalkaarten uit Zwitserland"
+      "Swisscards": "betaalkaarten uit Zwitserland",
+      "Braziliancards": "betaalkaarten uit Brazilië",
+      "Mexicancards": "betaalkaarten uit Mexico",
+      "Japanesecards": "betaalkaarten uit Japan",
+      "Singaporecards": "betaalkaarten uit Singapore",
+      "HongKongcards": "betaalkaarten uit Hongkong",
+      "Malaysiancards": "betaalkaarten uit Maleisië",
+      "Thaicards": "betaalkaarten uit Thailand",
+      "UAEcards": "betaalkaarten uit de VAE"
     },
     "perMonth": {
       "mo": "{amount}/mnd",
@@ -5963,7 +5995,8 @@
   "pricing": {
     "banner": {
       "title": "{months, plural, one {Je eerste maand is helemaal gratis — met alle functies.} other {Je eerste # maanden zijn helemaal gratis — met alle functies.}}",
-      "body": "Met {brand} bestellen klanten vooraf en betalen ze bij het afhalen, dus je kunt online bestellingen aannemen zonder een betaalprovider te koppelen. Liever vooraf laten betalen? Voeg op elk moment online kaartbetalingen toe. Na je proefperiode ga je over op <plan>{fallback}</plan>{fallbackFree, select, yes { — zonder maandkosten —} other {}}, tenzij je zelf een abonnement kiest. Geen creditcard nodig om te starten, geen contract, altijd opzegbaar."
+      "body": "Met {brand} bestellen klanten vooraf en betalen ze bij het afhalen, dus je kunt online bestellingen aannemen zonder een betaalprovider te koppelen. Liever vooraf laten betalen? Voeg op elk moment online kaartbetalingen toe. Na je proefperiode ga je over op <plan>{fallback}</plan>{fallbackFree, select, yes { — zonder maandkosten —} other {}}, tenzij je zelf een abonnement kiest. Geen creditcard nodig om te starten, geen contract, altijd opzegbaar.",
+      "bodyOnly": "Met {brand} bestellen klanten vooraf en betalen ze bij het afhalen, dus je kunt online bestellingen aannemen zonder een betaalprovider te koppelen. Liever vooraf laten betalen? Voeg op elk moment online kaartbetalingen toe. Na je proefperiode kost <plan>{fallback}</plan> je {price} per maand. We nemen voor die tijd contact met je op om de betaling te regelen. Geen creditcard nodig om te starten, geen contract, altijd opzegbaar."
     },
     "card": {
       "perTruckMonth": "per foodtruck / maand",
@@ -6231,6 +6264,9 @@
       "stateTerritory": "Staat of territorium",
       "province": "Provincie",
       "county": "Graafschap",
+      "prefecture": "Prefectuur",
+      "emirate": "Emiraat",
+      "region": "Regio",
       "area": "Plaats (dorp of stad)",
       "townOrArea": "Plaats of regio",
       "city": "Stad",
@@ -6326,5 +6362,13 @@
     "backToMenu": "Terug naar de menukaart",
     "formNote": "Dit is een demo: er wordt niemand iets afgerekend en er wordt niets verstuurd, dus je hoeft geen e-mailadres op te geven.",
     "namePlaceholder": "Alex"
+  },
+  "errorPage": {
+    "notFoundTitle": "Pagina niet gevonden",
+    "notFoundBody": "We konden die pagina niet vinden. Misschien is ze verplaatst, of is het adres verkeerd getypt.",
+    "home": "Naar de startpagina",
+    "errorTitle": "Er ging iets mis",
+    "errorBody": "Sorry, deze pagina is niet geladen. Probeer het opnieuw, of ga terug naar de startpagina.",
+    "retry": "Opnieuw proberen"
   }
 }

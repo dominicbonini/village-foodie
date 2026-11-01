@@ -1,0 +1,59 @@
+{
+  "labels": {
+    "collection_interval_mins": "Horários de retirada",
+    "takes_cash": "Você aceita dinheiro?",
+    "offline_protection": "Proteção de pedidos offline",
+    "buzzer_prompt": "Lembrar de adicionar um pager"
+  },
+  "typeFollowsVanTitle": "Segue a configuração habitual de cada van",
+  "sameSettingsAllVansLabel": "Mesmas configurações para todas as vans",
+  "sameSettingsAllVansHeader": "Todas as vans",
+  "sameSettingsConfirm": "Copiar as configurações da Van 1 para todas as vans? Isso copia todas as configurações de van da Van 1, o mesmo que ‘Igual a: Van 1’ em Configurações. A capacidade da cozinha tem uma opção própria.",
+  "eventTypesFooterStandard": "Padrão é a sua configuração habitual. Alterar aqui também altera em Configurações.",
+  "eventTypesFooterOneEvent": "Para mudar uma configuração só para um evento, use o painel desse evento.",
+  "eventTypesSubtitle": "As alterações são salvas na hora.",
+  "matchStandardLabel": "Igualar ao Padrão",
+  "matchStandardConfirm": "Voltar todas as configurações deste tipo para o Padrão? Tudo o que você alterou aqui será apagado.",
+  "priceLabels": {
+    "price_change_on": "Alterar preços",
+    "price_mode": "Ajuste de preço",
+    "price_amount": "Valor",
+    "price_rounding": "Arredondamento",
+    "item_prices": "Preços dos itens"
+  },
+  "priceMode": {
+    "add_amount": "+ {symbol}",
+    "add_pct": "+ %",
+    "sub_amount": "− {symbol}",
+    "sub_pct": "− %",
+    "none": "Definir cada preço eu mesmo"
+  },
+  "priceRounding": {
+    "none": "Nenhum",
+    "nearest_1": "Para o {symbol}1 mais próximo",
+    "up_1": "Sempre arredondar para cima"
+  },
+  "pricesStandardCell": "Preços do seu cardápio",
+  "pricesTruckWideTitle": "Seus preços são os mesmos em todas as vans",
+  "pricesMenuCell": "Cardápio",
+  "pricesTypeOffCell": "Preços do cardápio",
+  "itemPricesShow": "Mostrar preços",
+  "itemPricesHide": "Ocultar preços",
+  "priceItemsHeading": "Defina o preço de cada item",
+  "priceItemsOpen": "Ver ou alterar o preço de cada item ›",
+  "priceItemsClose": "Ocultar preços dos itens ⌃",
+  "ownPriceCount": "{n, plural, one {{count} item tem preço próprio} other {{count} itens têm preço próprio}}",
+  "priceTypeHint": "Toque em um preço para digitar o seu.",
+  "pricesLiveNotice": "Este evento está no ar. Novos pedidos usam os novos preços. Pedidos já feitos mantêm os deles.",
+  "placeTypeHelper": "Adicionar evento escolhe este tipo sempre que você seleciona este local.",
+  "postPictureStandardNote": "Os posts de eventos aqui usam sua arte padrão.",
+  "eventItemsCardDescription": "Preços, limites de itens e disponibilidade só para este evento. As alterações valem na hora.",
+  "eventPriceColumnLabel": "Preço",
+  "eventPriceOwnNote": "{hasType, select, yes {{type} {price} · este evento} other {cardápio {price} · este evento}}",
+  "eventPriceEdit": "✎ Editar preços",
+  "eventPriceCancel": "Cancelar",
+  "eventPriceSave": "Salvar preços",
+  "eventPriceEditNote": "Editando preços só deste evento. Limites de itens e disponibilidade ficam bloqueados até você salvar.",
+  "eventPriceLiveNote": "No ar: novos pedidos usam os novos preços.",
+  "offlineWhenOfflineLabel": "Quando estiver offline"
+}

@@ -7,15 +7,17 @@ import { isCustomHost, isAllowedOnCustomHost, isAcmeChallenge } from '@/lib/cust
 // runs on the Node.js runtime in Next 16 ("Proxy always runs on Node.js runtime") and Next bundles the proxy in a
 // server layer, where `server-only` resolves to its empty module.
 import { listCountrySettingsCached } from '@/lib/country-settings'
-import { MARKETING_COUNTRY, ROUTER_PATHS, countryPageOf, marketingRedirect, routableCountries } from '@/lib/marketing-country'
+import { MARKETING_COUNTRY, ROUTER_PATHS, countryPageOf, countryOfSegment, marketingRedirect, pickMarketingCountry, routableCountries } from '@/lib/marketing-country'
 import { VISITOR_COUNTRY_COOKIE, VISITOR_COUNTRY_MAX_AGE } from '@/lib/visitor-country-types'
 import { PAGE_LANG_HEADER } from '@/lib/page-lang'
-import { DEFAULT_LOCALE } from '@/lib/i18n/locales'
-import { PRIVACY_PATH, TERMS_PATH, COUNTRY_TERMS_PATH } from '@/lib/legal'
+import { DEFAULT_LOCALE, LOCALES, isEnglish } from '@/lib/i18n/locales'
+import { PRIVACY_PATH, TERMS_PATH, COUNTRY_TERMS_PATH, legalAddressOf } from '@/lib/legal'
 import { comparisonAddressOf, comparisonFlagsOf } from '@/lib/comparison-flags'
 
 // seo-fixes S4: the legal documents, written in en-GB on every host.
 const LEGAL_DOCUMENT_PATHS = new Set([PRIVACY_PATH, TERMS_PATH, COUNTRY_TERMS_PATH])
+// legal-languages-1: the account pages whose language the proxy decides (see the page-language block below).
+const AUTH_LANG_PATHS = new Set(['/signup', '/login', '/forgot-password', '/reset-password'])
 
 // ── Rate-limit SCOPE = a POSITIVE ALLOWLIST of ONLY the public, scraping-prone endpoints. ───────────────
 // INVERTED by design (NOT "limit every /api/* minus an exempt list"). Operator surfaces — the dashboard /
@@ -312,13 +314,32 @@ export async function proxy(request: NextRequest) {
   request.headers.delete(PAGE_LANG_HEADER)
   if (isHatchGrab(host)) {
     // compare-de-1: a comparison page (/de/vergleich/…) is a country page too — <html lang="de-DE">.
-    const langPage = countryPageOf(pathname) ?? comparisonAddressOf(pathname)
+    // legal-languages-1 (1 November 2026): a translated legal document (/fr/privacy) is in its country's language too.
+    const legal = legalAddressOf(pathname)
+    const legalCode = legal ? countryOfSegment(legal.segment) : null
+    const langPage = countryPageOf(pathname) ?? comparisonAddressOf(pathname) ?? (legalCode ? { code: legalCode } : null)
     if (langPage) {
       const row = (await listCountrySettingsCached().catch(() => [])).find(c => c.countryCode === langPage.code)
       if (row?.locale) request.headers.set(PAGE_LANG_HEADER, row.locale)
     }
   }
   if (LEGAL_DOCUMENT_PATHS.has(pathname)) request.headers.set(PAGE_LANG_HEADER, DEFAULT_LOCALE)
+  // legal-languages-1 (1 November 2026): THE ACCOUNT PAGES (signup, login, forgot / reset password) — no truck is known yet,
+  // so they speak the language a link asked for (?lang=fr-FR, written by the account emails) or the visitor's country's
+  // (?country → the hg_country cookie → the request's country — the marketing router's own rule). Their layouts read this
+  // header (<PageLocale>). An English language sets nothing, so an English visitor's pages are exactly as before.
+  if (isHatchGrab(host) && AUTH_LANG_PATHS.has(pathname)) {
+    const asked = request.nextUrl.searchParams.get('lang')
+    let lang: string | null = asked && (LOCALES as readonly string[]).includes(asked) ? asked : null
+    if (!lang) {
+      const all = await listCountrySettingsCached().catch(() => [])
+      const code = pickMarketingCountry(all.filter(c => c.enabled).map(c => c.countryCode), {
+        query: request.nextUrl.searchParams.get('country'), cookie: request.cookies.get(VISITOR_COUNTRY_COOKIE)?.value, ip: request.headers.get('x-vercel-ip-country'),
+      }).code
+      lang = all.find(c => c.countryCode === code)?.locale ?? null
+    }
+    if (lang && !isEnglish(lang)) request.headers.set(PAGE_LANG_HEADER, lang)
+  }
 
   // ── Supabase auth session ──────────────────────────────────────
   let supabaseResponse = NextResponse.next({ request })

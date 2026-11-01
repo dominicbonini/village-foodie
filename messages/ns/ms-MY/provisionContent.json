@@ -1,0 +1,57 @@
+{
+  "firstVanName": "Van 1",
+  "demoCategories": {
+    "pizza": "Piza",
+    "burgers": "Burger",
+    "mains": "Hidangan utama",
+    "sides": "Hidangan sampingan",
+    "drinks": "Minuman"
+  },
+  "demoTemplates": {
+    "pizza": {
+      "label": "🍕 Van piza",
+      "items": {
+        "margherita": "Margherita",
+        "pepperoni": "Pepperoni",
+        "ndujaHoney": "Nduja & Madu",
+        "fourCheese": "Empat Keju",
+        "gardenVeg": "Sayur-sayuran",
+        "garlicBread": "Roti Bawang Putih",
+        "rocketParmesan": "Roket & Parmesan",
+        "olives": "Buah Zaitun",
+        "sanPellegrino": "San Pellegrino",
+        "coke": "Coke"
+      }
+    },
+    "burgers": {
+      "label": "🍔 Van burger",
+      "items": {
+        "classicCheeseburger": "Burger Keju Klasik",
+        "doubleBacon": "Bekon Dua Lapis",
+        "buttermilkChicken": "Ayam Buttermilk",
+        "halloumiStack": "Halloumi Bertingkat",
+        "smashBurger": "Smash Burger",
+        "skinOnFries": "Kentang Goreng Berkulit",
+        "loadedCheeseFries": "Kentang Goreng Keju Melimpah",
+        "onionRings": "Cincin Bawang",
+        "craftLemonade": "Air Lemon Buatan Sendiri",
+        "coke": "Coke"
+      }
+    },
+    "curries": {
+      "label": "🍛 Van kari",
+      "items": {
+        "chickenTikkaMasala": "Ayam Tikka Masala",
+        "lambRoganJosh": "Rogan Josh Kambing",
+        "chanaMasala": "Chana Masala",
+        "butterChicken": "Ayam Mentega",
+        "saagPaneer": "Saag Paneer",
+        "pilauRice": "Nasi Pilau",
+        "garlicNaan": "Naan Bawang Putih",
+        "onionBhaji": "Bhaji Bawang",
+        "mangoLassi": "Lassi Mangga",
+        "coke": "Coke"
+      }
+    }
+  }
+}

@@ -633,6 +633,28 @@
       "Walnut": "Valnødder",
       "Wheatandtriticale": "Hvede og triticale",
       "Glutenbarleyoatsrye": "Gluten (byg, havre, rug)",
+      "Shrimp": "Rejer",
+      "Crab": "Krabber",
+      "Buckwheat": "Boghvede",
+      "Abalone": "Abalone",
+      "Squid": "Blæksprutte",
+      "Salmonroe": "Lakserogn",
+      "Orange": "Appelsiner",
+      "Kiwifruit": "Kiwi",
+      "Beef": "Oksekød",
+      "Salmon": "Laks",
+      "Mackerel": "Makrel",
+      "Soybean": "Sojabønner",
+      "Chicken": "Kylling",
+      "Banana": "Bananer",
+      "Pork": "Svinekød",
+      "Peach": "Ferskner",
+      "Yam": "Yams",
+      "Apple": "Æbler",
+      "Gelatin": "Gelatine",
+      "Chestnut": "Kastanjer",
+      "Naturallatex": "Naturlatex",
+      "Lactose": "Laktose",
       "Nuts": "Nødder",
       "Shellfish": "Skaldyr"
     }
@@ -4854,6 +4876,7 @@
       "ends": "{hasDate, select, yes {Prøveperioden slutter <hl>{date}</hl>} other {Prøveperioden slutter <hl>snart</hl>}}",
       "offer": "{hasMonths, select, yes {{months, plural, one {Alle funktioner gratis i # måned} other {Alle funktioner gratis i # måneder}}} other {Alle funktioner gratis i din prøveperiode}}",
       "body": "{hasDate, select, yes {Du betaler ikke noget i din prøveperiode, som løber til <b>{date}</b>. Betalingen starter først, når du vælger et abonnement og indtaster dine betalingsoplysninger. Indtil da er der intet at opsige og intet at betale. Vælg dit abonnement inden da – ellers overgår du til {fallback}, og nogle funktioner holder op med at virke.} other {Du betaler ikke noget, så længe du er i prøveperioden. Betalingen starter først, når du vælger et abonnement og indtaster dine betalingsoplysninger. Indtil da er der intet at opsige og intet at betale. Vælg dit abonnement inden da – ellers overgår du til {fallback}, og nogle funktioner holder op med at virke.}}",
+      "bodyPaidEnd": "{hasDate, select, yes {Du betaler ikke noget i din prøveperiode, som løber til <b>{date}</b>. Når din prøveperiode slutter, koster abonnementet {fallback} {price} om måneden. Vi kontakter dig inden da for at sætte betalingen op.} other {Du betaler ikke noget, så længe du er i prøveperioden. Når din prøveperiode slutter, koster abonnementet {fallback} {price} om måneden. Vi kontakter dig inden da for at sætte betalingen op.}}",
       "fees": "*Almindelige kortgebyrer gælder for onlinebestillinger",
       "upgrade": "Opgrader her →"
     }
@@ -4884,8 +4907,10 @@
       "heading": "Din gratis prøveperiode er ikke startet endnu"
     },
     "onTrial": "Du har alle funktioner. Vælg et abonnement, før din prøveperiode slutter.",
+    "onTrialPaidEnd": "Du har alle funktioner. Når din prøveperiode slutter, koster abonnementet {plan} {price} om måneden. Vi kontakter dig inden da for at sætte betalingen op.",
     "onTrialNoCta": "Du har alle funktioner.",
     "noCharge": "🔒 Du betaler ikke noget i din prøveperiode, som løber til {date}. Betalingen starter først, når du vælger et abonnement og indtaster dine betalingsoplysninger. Indtil da er der intet at opsige og intet at betale.",
+    "noChargePaidEnd": "🔒 Du betaler ikke noget i din prøveperiode, som løber til {date}.",
     "fees": "*Almindelige kortgebyrer gælder for onlinebestillinger",
     "setUpPayment": "⏱ Vælg et abonnement, før din prøveperiode slutter",
     "changeYourPlan": "Skift abonnement",
@@ -5472,7 +5497,6 @@
     "hero": {
       "title": "Bestillingssystemet, der er bygget til <lean>foodtrucks.</lean>",
       "subSmall": "Upload dit menukort, uden tilmelding.<br></br>Se en demo, der virker, på under 60 sekunder.",
-      "tagline": "Mindre tid på bestillinger.<br></br>Mere tid ved <lean>grillen.</lean>",
       "cta": "Upload mit menukort →",
       "ctaNote": "<lead>Upload et billede af dit menukort, og se det virke på under 60 sekunder.</lead><small>Ingen tilmelding. Intet betalingskort.</small>"
     },
@@ -5556,7 +5580,6 @@
     }
   },
   "landingFooter": {
-    "tagline": "Mindre tid på bestillinger.<br></br>Mere tid ved grillen.",
     "features": "Funktioner",
     "pricing": "Priser",
     "privacy": "Privatliv",
@@ -5638,7 +5661,8 @@
     "countryTerms": "Landevilkår",
     "contact": "Kontakt",
     "lastUpdated": "Senest opdateret {date}",
-    "questions": "Spørgsmål? <link>Kontakt os</link> — vi er rigtige mennesker."
+    "questions": "Spørgsmål? <link>Kontakt os</link> — vi er rigtige mennesker.",
+    "translationNote": "Dette er en oversættelse. Hvis den afviger fra den <link>engelske version</link>, gælder den engelske version."
   },
   "truckPage": {
     "meta": {
@@ -5794,7 +5818,15 @@
       "Australiancards": "australske kort",
       "NewZealandcards": "newzealandske kort",
       "Canadiancards": "canadiske kort",
-      "Swisscards": "schweiziske kort"
+      "Swisscards": "schweiziske kort",
+      "Braziliancards": "brasilianske kort",
+      "Mexicancards": "mexicanske kort",
+      "Japanesecards": "japanske kort",
+      "Singaporecards": "kort fra Singapore",
+      "HongKongcards": "kort fra Hongkong",
+      "Malaysiancards": "malaysiske kort",
+      "Thaicards": "thailandske kort",
+      "UAEcards": "kort fra De Forenede Arabiske Emirater"
     },
     "perMonth": {
       "mo": "{amount}/md.",
@@ -5963,7 +5995,8 @@
   "pricing": {
     "banner": {
       "title": "{months, plural, one {Din første måned er helt gratis — med alle funktioner.} other {Dine første # måneder er helt gratis — med alle funktioner.}}",
-      "body": "Med {brand} forudbestiller kunderne og betaler ved afhentning, så du kan tage imod onlinebestillinger helt uden at tilknytte en kortindløser. Vil du hellere tage betaling på forhånd? Tilføj onlinebetaling med kort når som helst. Når din prøveperiode slutter, skifter du til abonnementet <plan>{fallback}</plan>{fallbackFree, select, yes { (ingen fast månedspris)} other {}}, medmindre du vælger et andet. Intet betalingskort for at starte, ingen binding, opsig når som helst."
+      "body": "Med {brand} forudbestiller kunderne og betaler ved afhentning, så du kan tage imod onlinebestillinger helt uden at tilknytte en kortindløser. Vil du hellere tage betaling på forhånd? Tilføj onlinebetaling med kort når som helst. Når din prøveperiode slutter, skifter du til abonnementet <plan>{fallback}</plan>{fallbackFree, select, yes { (ingen fast månedspris)} other {}}, medmindre du vælger et andet. Intet betalingskort for at starte, ingen binding, opsig når som helst.",
+      "bodyOnly": "Med {brand} forudbestiller kunderne og betaler ved afhentning, så du kan tage imod onlinebestillinger helt uden at tilknytte en kortindløser. Vil du hellere tage betaling på forhånd? Tilføj onlinebetaling med kort når som helst. Når din prøveperiode slutter, koster abonnementet <plan>{fallback}</plan> {price} om måneden. Vi kontakter dig inden da for at sætte betalingen op. Intet betalingskort for at starte, ingen binding, opsig når som helst."
     },
     "card": {
       "perTruckMonth": "pr. foodtruck/måned",
@@ -6231,6 +6264,9 @@
       "stateTerritory": "Delstat eller territorium",
       "province": "Provins",
       "county": "Grevskab",
+      "prefecture": "Præfektur",
+      "emirate": "Emirat",
+      "region": "Region",
       "area": "Område (landsby eller by)",
       "townOrArea": "By eller område",
       "city": "By",
@@ -6326,5 +6362,13 @@
     "backToMenu": "Tilbage til menukortet",
     "formNote": "Dette er en demo: Ingen bliver opkrævet, og intet bliver sendt, så du behøver ikke at angive en e-mail.",
     "namePlaceholder": "Alex"
+  },
+  "errorPage": {
+    "notFoundTitle": "Siden blev ikke fundet",
+    "notFoundBody": "Vi kunne ikke finde den side. Den er måske flyttet, eller adressen er skrevet forkert.",
+    "home": "Gå til forsiden",
+    "errorTitle": "Noget gik galt",
+    "errorBody": "Beklager, siden blev ikke indlæst. Prøv igen, eller gå tilbage til forsiden.",
+    "retry": "Prøv igen"
   }
 }

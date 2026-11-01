@@ -1,0 +1,16 @@
+{
+  "takeConfirm": "جهاز النداء <b>{number}</b> مع <b>الطلب #{holderId}</b>{hasName, select, yes { ({name})} other {}}. هل تريد أخذه لـ<b>{hasTarget, select, yes {الطلب #{targetId}} other {هذا الطلب}}</b>؟",
+  "cancel": "إلغاء",
+  "take": "أخذ جهاز النداء {number}",
+  "titleBlocking": "جهاز نداء للطلب #{id}؟",
+  "title": "اختيار جهاز نداء",
+  "subtitle": "{hasTarget, select, yes {الطلب #{id}} other {هذا الطلب}}{hasCurrent, select, yes { · جهاز النداء الحالي {current}} other {}}",
+  "allTaken": "{n, plural, zero {لا توجد أجهزة نداء متاحة.} one {جهاز النداء مستخدم. اضغط عليه لأخذه من طلب آخر.} two {جهازا النداء مستخدمان. اضغط على أحدهما لأخذه من طلب آخر.} few {كل أجهزة النداء مستخدمة ({count}). اضغط على أحدها لأخذه من طلب آخر.} many {كل أجهزة النداء مستخدمة ({count}). اضغط على أحدها لأخذه من طلب آخر.} other {كل أجهزة النداء مستخدمة ({count}). اضغط على أحدها لأخذه من طلب آخر.}}",
+  "thisOrder": "هذا الطلب",
+  "noBuzzer": "بدون جهاز نداء",
+  "done": "تم",
+  "lostTitle": "الطلب #{id} ليس لديه جهاز نداء",
+  "lostBody": "{hasName, select, yes {{name} — } other {}}طلب آخر أخذ جهاز النداء نفسه أثناء انقطاع اتصالك. يُرجى إعطاء هذا الطلب جهازًا آخر.",
+  "dismiss": "تجاهل",
+  "assign": "تخصيص"
+}

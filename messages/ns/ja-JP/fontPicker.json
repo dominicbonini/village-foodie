@@ -1,0 +1,46 @@
+{
+  "tab": {
+    "all": "すべて",
+    "bold": "太字・縦長",
+    "hand": "手書き",
+    "classic": "クラシック",
+    "clean": "シンプル",
+    "own": "マイフォント",
+    "ownCount": "マイフォント（{count}）"
+  },
+  "yoursTag": "・マイフォント",
+  "loadingFonts": "フォントを読み込み中…",
+  "search": "{count, number}種類のフォントを検索",
+  "uploadButton": "↑ フォントをアップロード",
+  "loadingLibrary": "フォントライブラリを読み込み中…",
+  "tryAgain": "再試行",
+  "noOwn": "まだフォントをアップロードしていません。上の「↑ フォントをアップロード」ボタンを使ってください。",
+  "recent": "最近使ったフォント",
+  "popular": "ポスターで人気",
+  "adding": "追加中…",
+  "noMatch": "「{query}」に一致するフォントはありません。",
+  "showing": "{total, number}件中{shown}件を表示中。さらに入力すると絞り込めます。",
+  "couldNotAdd": "このフォントを追加できませんでした",
+  "tooBig": "このフォントは{size, number, ::.0 group-off}MBです。上限は5MBです。",
+  "woff": "TTFまたはOTFファイルをアップロードしてください。通常、フォントを購入したサイトからダウンロードできます。",
+  "uploadIncomplete": "アップロードが完了しませんでした",
+  "added": "「{name}」を{face}として追加しました。",
+  "face": {
+    "regular": "標準",
+    "bold": "太字",
+    "italic": "斜体"
+  },
+  "licenceTick": "このフォントを所有している、または使用ライセンスを持っています",
+  "checking": "フォントを確認中…",
+  "addFont": "フォントを追加",
+  "cancel": "キャンセル",
+  "missingFaces": "「{name}」の{faces}も追加できます（任意）。もう一度ファイルを選んでください。",
+  "somethingWrong": "問題が発生しました",
+  "faceLower": {
+    "regular": "標準",
+    "bold": "太字",
+    "italic": "斜体"
+  },
+  "ownLicence": "マイフォント",
+  "loadFailed": "フォントを読み込めませんでした"
+}

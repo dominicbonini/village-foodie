@@ -1,0 +1,59 @@
+{
+  "labels": {
+    "collection_interval_mins": "أوقات الاستلام",
+    "takes_cash": "هل تقبل الدفع نقدًا؟",
+    "offline_protection": "حماية الطلبات عند انقطاع الاتصال",
+    "buzzer_prompt": "تذكيري بإضافة جهاز نداء"
+  },
+  "typeFollowsVanTitle": "يتبع الإعداد المعتاد لكل مركبة",
+  "sameSettingsAllVansLabel": "الإعدادات نفسها لكل المركبات",
+  "sameSettingsAllVansHeader": "كل المركبات",
+  "sameSettingsConfirm": "هل تريد نسخ إعدادات المركبة 1 إلى كل المركبات؟ يؤدي ذلك إلى نسخ جميع إعدادات المركبة 1، تمامًا مثل خيار «مثل المركبة 1» في الإعدادات. أما سعة المطبخ فلها مفتاح خاص بها.",
+  "eventTypesFooterStandard": "«القياسي» هو إعدادك المعتاد. تغييره هنا يغيّره أيضًا في الإعدادات.",
+  "eventTypesFooterOneEvent": "لتغيير إعداد لفعالية واحدة فقط، استخدم لوحة التحكم الخاصة بتلك الفعالية.",
+  "eventTypesSubtitle": "تُحفظ التغييرات تلقائيًا أثناء العمل.",
+  "matchStandardLabel": "مطابقة القياسي",
+  "matchStandardConfirm": "هل تريد إعادة كل إعدادات هذا النوع إلى «القياسي»؟ سيتم مسح أي تغييرات أجريتها هنا.",
+  "priceLabels": {
+    "price_change_on": "تغيير الأسعار",
+    "price_mode": "تغيير السعر",
+    "price_amount": "المبلغ",
+    "price_rounding": "التقريب",
+    "item_prices": "أسعار الأصناف"
+  },
+  "priceMode": {
+    "add_amount": "+ {symbol}",
+    "add_pct": "+ %",
+    "sub_amount": "− {symbol}",
+    "sub_pct": "− %",
+    "none": "تحديد كل سعر بنفسي"
+  },
+  "priceRounding": {
+    "none": "بدون",
+    "nearest_1": "لأقرب {symbol}1",
+    "up_1": "التقريب لأعلى دائمًا"
+  },
+  "pricesStandardCell": "أسعار قائمة الطعام",
+  "pricesTruckWideTitle": "أسعارك موحدة لكل المركبات",
+  "pricesMenuCell": "القائمة",
+  "pricesTypeOffCell": "أسعار القائمة",
+  "itemPricesShow": "إظهار الأسعار",
+  "itemPricesHide": "إخفاء الأسعار",
+  "priceItemsHeading": "تحديد سعر كل صنف",
+  "priceItemsOpen": "عرض سعر كل صنف أو تغييره ‹",
+  "priceItemsClose": "إخفاء أسعار الأصناف ⌃",
+  "ownPriceCount": "{n, plural, zero {{count} صنف بسعر خاص} one {{count} صنف بسعر خاص} two {{count} صنفان بسعر خاص} few {{count} أصناف بسعر خاص} many {{count} صنفًا بسعر خاص} other {{count} صنف بسعر خاص}}",
+  "priceTypeHint": "اضغط على أي سعر لكتابة سعرك الخاص.",
+  "pricesLiveNotice": "هذه الفعالية مباشرة. تستخدم الطلبات الجديدة الأسعار الجديدة، وتحتفظ الطلبات المقدَّمة مسبقًا بأسعارها.",
+  "placeTypeHelper": "تختار «إضافة فعالية» هذا النوع كلما اخترت هذا المكان.",
+  "postPictureStandardNote": "تستخدم منشورات الفعاليات هنا تصميمك القياسي.",
+  "eventItemsCardDescription": "الأسعار وحدود الأصناف والتوفر لهذه الفعالية فقط. تسري التغييرات فورًا.",
+  "eventPriceColumnLabel": "السعر",
+  "eventPriceOwnNote": "{hasType, select, yes {{type} {price} · هذه الفعالية} other {القائمة {price} · هذه الفعالية}}",
+  "eventPriceEdit": "✎ تعديل الأسعار",
+  "eventPriceCancel": "إلغاء",
+  "eventPriceSave": "حفظ الأسعار",
+  "eventPriceEditNote": "أنت تعدّل الأسعار لهذه الفعالية فقط. حدود الأصناف والتوفر مقفلة حتى تحفظ.",
+  "eventPriceLiveNote": "مباشر: تستخدم الطلبات الجديدة الأسعار الجديدة.",
+  "offlineWhenOfflineLabel": "عند انقطاع الاتصال"
+}

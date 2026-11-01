@@ -33,7 +33,11 @@
 // (Cyprus) a sparse override over it, and bg-BG (Bulgaria) — full bases, each added here as its translation is merged.
 // admin-countries-1 (23 October 2026): fr-LU (Luxembourg), a sparse override over fr-FR — its +352 phone example, .lu example
 // addresses and Luxembourg sample places; its TVA (3 %, food and restaurant services) is data on the `lu` address format.
-export const LOCALES = ['en-GB', 'en-US', 'en-IE', 'en-AU', 'en-NZ', 'en-CA', 'fr-FR', 'en-MT', 'en-GI', 'de-DE', 'de-AT', 'de-CH', 'de-LI', 'es-ES', 'it-IT', 'pt-PT', 'nl-NL', 'nl-BE', 'sv-SE', 'da-DK', 'nb-NO', 'pl-PL', 'cs-CZ', 'hu-HU', 'sk-SK', 'ro-RO', 'hr-HR', 'sl-SI', 'fi-FI', 'et-EE', 'lv-LV', 'lt-LT', 'el-GR', 'el-CY', 'bg-BG', 'fr-LU'] as const
+// world-countries-1 (31 October 2026, docs/world-countries-1-report.md §3): es-MX (Mexico), a sparse override over es-ES — only what
+// Mexico says differently (ustedes, menú, celular, combo, toca, ingresa, renta, "Hacer pedido"); then pt-BR (Brazil), ms-MY
+// (Malaysia), ja-JP (Japan), zh-HK (Hong Kong), th-TH (Thailand) and ar-AE (the UAE, right to left) — full bases, each added as its
+// translation is merged; en-SG (Singapore), a sparse English override of en-GB.
+export const LOCALES = ['en-GB', 'en-US', 'en-IE', 'en-AU', 'en-NZ', 'en-CA', 'fr-FR', 'en-MT', 'en-GI', 'de-DE', 'de-AT', 'de-CH', 'de-LI', 'es-ES', 'it-IT', 'pt-PT', 'nl-NL', 'nl-BE', 'sv-SE', 'da-DK', 'nb-NO', 'pl-PL', 'cs-CZ', 'hu-HU', 'sk-SK', 'ro-RO', 'hr-HR', 'sl-SI', 'fi-FI', 'et-EE', 'lv-LV', 'lt-LT', 'el-GR', 'el-CY', 'bg-BG', 'fr-LU', 'es-MX', 'pt-BR', 'ms-MY', 'en-SG', 'ja-JP', 'zh-HK', 'th-TH', 'ar-AE'] as const
 export type AppLocale = (typeof LOCALES)[number]
 export const DEFAULT_LOCALE: AppLocale = 'en-GB'
 
@@ -42,11 +46,11 @@ export const DEFAULT_LOCALE: AppLocale = 'en-GB'
  *  messages/en-CA.json holds only that list and is merged over en-US, which is merged over en-GB. Every other locale has no
  *  parent: its chain is itself alone, exactly as before. (languages-1: a regional variant of a language — fr-BE, de-AT — is
  *  written over its language's base the same way.) */
-export const LOCALE_PARENT: Partial<Record<AppLocale, AppLocale>> = { 'en-CA': 'en-US', 'en-MT': 'en-IE', 'en-GI': 'en-IE', 'de-AT': 'de-DE', 'de-CH': 'de-DE', 'de-LI': 'de-CH', 'nl-BE': 'nl-NL', 'el-CY': 'el-GR', 'fr-LU': 'fr-FR' }
+export const LOCALE_PARENT: Partial<Record<AppLocale, AppLocale>> = { 'en-CA': 'en-US', 'en-MT': 'en-IE', 'en-GI': 'en-IE', 'de-AT': 'de-DE', 'de-CH': 'de-DE', 'de-LI': 'de-CH', 'nl-BE': 'nl-NL', 'el-CY': 'el-GR', 'fr-LU': 'fr-FR', 'es-MX': 'es-ES' }
 
 /** languages-1: the NON-ENGLISH locales — each a full base file (see the header). france-1: fr-FR (France's country row decides when anyone sees it); a country
  *  prompt adds its locale here (docs/i18n/add-a-country.md). */
-export const LANGUAGE_BASES: readonly AppLocale[] = ['fr-FR', 'de-DE', 'es-ES', 'it-IT', 'pt-PT', 'nl-NL', 'sv-SE', 'da-DK', 'nb-NO', 'pl-PL', 'cs-CZ', 'hu-HU', 'sk-SK', 'ro-RO', 'hr-HR', 'sl-SI', 'fi-FI', 'et-EE', 'lv-LV', 'lt-LT', 'el-GR', 'bg-BG']
+export const LANGUAGE_BASES: readonly AppLocale[] = ['fr-FR', 'de-DE', 'es-ES', 'it-IT', 'pt-PT', 'nl-NL', 'sv-SE', 'da-DK', 'nb-NO', 'pl-PL', 'cs-CZ', 'hu-HU', 'sk-SK', 'ro-RO', 'hr-HR', 'sl-SI', 'fi-FI', 'et-EE', 'lv-LV', 'lt-LT', 'el-GR', 'bg-BG', 'pt-BR', 'ms-MY', 'ja-JP', 'zh-HK', 'th-TH', 'ar-AE']
 
 /** The override files a locale reads, outermost last: [] for en-GB, ['en-US'] for en-US, ['en-US', 'en-CA'] for en-CA,
  *  ['fr-FR'] for a language base (merged over en-GB, which is then only its fallback). */

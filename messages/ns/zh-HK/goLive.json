@@ -1,0 +1,43 @@
+{
+  "allergensUnanswered": {
+    "title": "選擇如何顯示致敏原資料",
+    "detail": "在你作出選擇之前，顧客看不到你任何菜式——餐牌會自動隱藏所有致敏原未經確認的項目，而目前全部都未確認。",
+    "where": "餐牌 → 致敏原"
+  },
+  "allergensCardMissing": {
+    "title": "加入你的致敏原資料卡",
+    "detail": "你選擇了顯示致敏原資料卡，但尚未儲存任何資料卡——顧客會被告知有致敏原資料，打開後卻甚麼都看不到。",
+    "where": "餐牌 → 致敏原"
+  },
+  "allergensItemsUnverified": {
+    "title": "{n, plural, one {確認 {count} 款菜式的致敏原} other {確認 {count} 款菜式的致敏原}}",
+    "detail": "{n, plural, one {在你確認致敏原之前，這款菜式不會向顧客顯示。} other {{u, plural, one {你 {total} 款菜式中有 {unverified} 款不會向顧客顯示，直至你確認其致敏原。} other {你 {total} 款菜式中有 {unverified} 款不會向顧客顯示，直至你確認其致敏原。}}}}未確認致敏原的菜式一旦顯示，會被理解為「不含任何致敏原」，所以餐牌寧願將它隱藏，也不冒這個險。",
+    "where": "餐牌 → 致敏原"
+  },
+  "noVan": {
+    "title": "加入一架車輛",
+    "detail": "活動要以車輛運作——沒有車輛，就無法接收任何訂單。",
+    "where": "設定 → 你的美食車"
+  },
+  "kitchenCapacityUnset": {
+    "title": "設定你的廚房容量",
+    "detail": "{vans} 尚未設定廚房容量。沒有這項設定，我們會一直向顧客承諾你的廚房根本無法做到的取餐時間。",
+    "where": "餐牌 → 廚房容量",
+    "unnamedVan": "未命名車輛"
+  },
+  "noPrepBearingCategory": {
+    "title": "告訴我們你的食物需要多久準備",
+    "detail": "{categories, select, none {你還未有任何餐牌類別，所以我們無法計算一張訂單需時多久。} other {你所有類別都未設定烹調時間，所以在我們看來每張訂單都是即時完成。我們會一直給顧客你的廚房不可能趕得及的取餐時間，而且你越忙，時間就會差得越遠。}}",
+    "where": "餐牌 → 類別 → 廚房設定"
+  },
+  "emailUnverified": {
+    "title": "確認你的電郵地址",
+    "detail": "我們會將訂單通知和帳戶恢復資料寄到這個地址。如果地址有誤，你要到出了問題時才會發現。",
+    "where": "請查看收件匣中的確認連結"
+  },
+  "emailUnknown": {
+    "title": "電郵確認狀態不明",
+    "detail": "電郵驗證功能尚未接通，所以無法評估。按設計，這會阻止上線，而不是默默放行。",
+    "where": "—"
+  }
+}

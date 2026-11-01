@@ -1,0 +1,32 @@
+{
+  "steps": {
+    "based": "Onde você fica",
+    "identity": "Seu food truck",
+    "menu": "Seu cardápio",
+    "event": "Primeiro evento"
+  },
+  "stepItem": "{number}. {label}",
+  "settingUp": "Configurando",
+  "loading": "Carregando",
+  "loadingCountries": "Carregando…",
+  "verify": {
+    "ok": "E-mail confirmado — obrigado.",
+    "expired": "Esse link de confirmação expirou. Fale com a gente e resolvemos isso antes de você entrar no ar.",
+    "invalid": "Esse link de confirmação não funcionou. Fale com a gente e resolvemos isso antes de você entrar no ar."
+  },
+  "identity": {
+    "heading": "Qual é o nome do seu food truck?",
+    "intro": "É o nome que os clientes veem. Nada fica público até você decidir entrar no ar.",
+    "nameLabel": "Nome do food truck",
+    "namePlaceholder": "Zé Burguer",
+    "phoneLabel": "Telefone",
+    "whatsappTick": "Este número tem WhatsApp",
+    "phoneHelp": "Os clientes veem esse número na confirmação do pedido para tirar dúvidas. A marcação define se aparece “Ligue para nós” ou “Fale pelo WhatsApp”. Você pode mudar os dois em Configurações."
+  },
+  "phoneRequired": "Adicione um telefone — os clientes e nós usamos esse número para falar com você.",
+  "createFailed": "Não foi possível criar seu food truck.",
+  "unreachable": "Não conseguimos conexão agora — tente de novo.",
+  "back": "Voltar",
+  "creating": "Criando seu food truck…",
+  "continue": "Continuar"
+}

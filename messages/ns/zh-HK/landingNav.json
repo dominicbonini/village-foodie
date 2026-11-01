@@ -1,0 +1,14 @@
+{
+  "homeLabel": "HatchGrab 主頁",
+  "cta": "上載我的餐牌 →",
+  "ctaShort": "上載餐牌",
+  "features": "功能",
+  "pricing": "收費",
+  "logIn": "登入",
+  "country": {
+    "button": "國家／地區：{name}。更改國家／地區",
+    "menu": "國家／地區",
+    "title": "選擇你的國家／地區",
+    "subline": "價錢、語言及設定會隨之更改。"
+  }
+}

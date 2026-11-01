@@ -23,7 +23,7 @@ import { EventAddressFields, RegionInput, placeSubline, postalCodeForSave, useAd
 import { TruckTimeContext, useTruckTime } from '@/components/TruckTimeContext'
 import { moneyFormatOf, planMoneyFormatOf, currencyLineOf, type CountrySettings } from '@/lib/country-settings-types'
 import { maskPriceFor } from '@/lib/pricing'
-import { formatMajor, formatWholeAmount, currencySymbol, type MoneyFormat } from '@/lib/money-format'
+import { formatMajor, formatWholeAmount, formatAmount, currencySymbol, type MoneyFormat } from '@/lib/money-format'
 import { purchaseCtaAllowed } from '@/lib/commerce-policy'
 import { DeleteAccountSection } from '@/components/manage/DeleteAccountSection'
 import { WhereYouTrade } from '@/components/manage/WhereYouTrade'
@@ -49,7 +49,7 @@ import { PaymentsTab } from '@/components/manage/PaymentsTab'
 import type { Feature } from '@/lib/features'
 // 🔴 THE PLAN, ITS PRICE, ITS INCLUDED AMOUNT, THE EXTRA-VAN PRICE AND "IS IT A TRIAL": lib/plans.ts, over the catalogue the
 // Manage GET sends (plans-data-model Stage A). Nothing on this page names a plan.
-import { effectivePlan, expiryFallbackPlan, truckPlanPrice, extraVanMonthlyMinor, includedVans, trialMonthsOf, publicPlans, planPriceFor, type PlanCatalog, type PlanKey, type PlanRow } from '@/lib/plans'
+import { effectivePlan, expiryFallbackFor, truckPlanPrice, extraVanMonthlyMinor, includedVans, trialMonthsOf, publicPlans, planPriceFor, type PlanCatalog, type PlanKey, type PlanRow } from '@/lib/plans'
 import { PlanCatalogProvider, usePlanCatalog } from '@/components/PlanCatalogProvider'
 import { useFeatures, featureAccessView } from '@/lib/useFeatures'
 import { PlanPrompt } from '@/components/PlanPrompt'
@@ -1090,6 +1090,13 @@ export default function ManagePage({ params }: { params: Promise<{ token: string
   const onTrialPlan = !!(truck && planCatalog && effectivePlan(truck, planCatalog).plan.isTrial)
   // The trial popup's "{N}-month" and "Every feature free for {N} months": the truck's trial plan's plans.trial_months.
   const trialPopupMonths = truck && planCatalog ? trialMonthsOf(effectivePlan(truck, planCatalog).plan) : null
+  // world-countries-1 (31 October 2026): the plan a finished trial drops to IN THE TRUCK'S COUNTRY.
+  // world-countries-2 (1 November 2026, Dominic): where that plan has a MONTHLY PRICE (Unlimited, in the countries that offer only
+  // it), the popup says what it costs and that we will be in touch to set up payment — never "billing only starts when you choose
+  // a plan", nor "some features will stop working". Everywhere else (a free trial-end plan) the popup is exactly as before.
+  const trialEndPlan = truck && planCatalog ? expiryFallbackFor(planCatalog, truck.country) : null
+  const trialEndMonthly = trialEndPlan && planCatalog ? planPriceFor(planCatalog, trialEndPlan.key, truck?.country)?.monthlyMinor ?? 0 : 0
+  const trialEndPaid = trialEndMonthly > 0
   useEffect(() => {
     if (urlAskedForTab.current) return
     if (onTrialPlan && purchaseCtaAllowed()) setActiveTab('billing')
@@ -1686,12 +1693,20 @@ export default function ManagePage({ params }: { params: Promise<{ token: string
                   🟢 STAGE B: its fallback is no longer the retired "free Starter tier" — it names the plan a trial
                   moves to when it ends (public.plans' expiry fallback), from the data. */}
               <p className="text-sm text-orange-700 mt-1">
-                {t.rich('trialPopup.body', {
-                  hasDate: truck.trial_expires_at ? 'yes' : 'no',
-                  date: truck.trial_expires_at ? formatTrialEndDate(truck.trial_expires_at, mgTime!) : '',
-                  fallback: planCatalog ? expiryFallbackPlan(planCatalog).name : '',
-                  b: chunks => <strong>{chunks}</strong>,
-                })}
+                {trialEndPaid
+                  ? <TrialEndPrice minor={trialEndMonthly}>{price => t.rich('trialPopup.bodyPaidEnd', {
+                      hasDate: truck.trial_expires_at ? 'yes' : 'no',
+                      date: truck.trial_expires_at ? formatTrialEndDate(truck.trial_expires_at, mgTime!) : '',
+                      fallback: trialEndPlan?.name ?? '',
+                      price,
+                      b: chunks => <strong>{chunks}</strong>,
+                    })}</TrialEndPrice>
+                  : t.rich('trialPopup.body', {
+                      hasDate: truck.trial_expires_at ? 'yes' : 'no',
+                      date: truck.trial_expires_at ? formatTrialEndDate(truck.trial_expires_at, mgTime!) : '',
+                      fallback: trialEndPlan?.name ?? '',   // world-countries-1: the truck's country's trial-end plan
+                      b: chunks => <strong>{chunks}</strong>,
+                    })}
               </p>
               <p className="text-xs text-orange-500 mt-2">
                 {t('trialPopup.fees')}
@@ -1830,6 +1845,14 @@ let __impUidSeq = 0
 const newImpUid = () => `imp-${++__impUidSeq}`
 const withImpUids = (data: any) => (!data || !Array.isArray(data.items)) ? data
   : { ...data, items: data.items.map((it: any) => ({ ...it, _uid: it._uid ?? newImpUid() })) }
+
+/** world-countries-2 (1 November 2026): the trial-end plan's monthly price, as the popup's sentence writes it — in the country's
+ *  own form and under the same mask as Billing's plan card (usePlanPriceMask), so it is "TBC" wherever Billing's would be. */
+function TrialEndPrice({ minor, children }: { minor: number; children: (price: string) => React.ReactNode }) {
+  const mask = usePlanPriceMask()
+  const cs = useOptionalCountrySettings()
+  return cs ? <>{children(mask(formatAmount(minor, planMoneyFormatOf(cs))))}</> : null
+}
 
 // #3: the legacy-generic "!" tooltip. Rendered via a PORTAL to document.body with position:fixed so it
 // CANNOT be clipped by the matrix's overflow scroll container or occluded by neighbouring/frozen cells
@@ -2352,7 +2375,7 @@ function AllergenWizardModal({ items, categories, canEdit, onClose, onConfirmRow
     (draft.dietary.length > 0 || draft.allergens.length > 0) ? (
       <span className="inline-flex flex-wrap gap-1 align-middle">
         {draft.allergens.map(a => <AllergenChip key={a} label={allergenLabel(a, wizLocale)} />)}
-        {draft.dietary.map(d => <DietaryChip key={d} label={d} />)}
+        {draft.dietary.map(d => <DietaryChip key={d} label={dietaryLabel(d, wizLocale)} />)}
       </span>
     ) : null
   // WARN (not block): shown while a detected generic is unresolved. The consequence text makes confirming
@@ -5055,7 +5078,7 @@ function MenuTab({ truck, categories, items, subcategories, token, modifierGroup
                             <span className={`text-[10px] px-1.5 py-0.5 bg-rose-50 text-rose-700 rounded-md border border-rose-100 ${truck.auto_accept ? '' : 'opacity-50'}`}>{t('category.manualReview')}</span>
                           )}
                           {item.allergens_verified !== false && item.dietary_info?.map(d => (
-                            <span key={d} className="text-[10px] px-1.5 py-0.5 bg-green-50 text-green-700 rounded-md border border-green-100">{d}</span>
+                            <span key={d} className="text-[10px] px-1.5 py-0.5 bg-green-50 text-green-700 rounded-md border border-green-100">{dietaryLabel(d, tkLocale)}</span>
                           ))}
                           {item.allergens_verified !== false && item.allergens?.map(a => (
                             <span key={a} className="text-[10px] px-1.5 py-0.5 bg-amber-50 text-amber-700 rounded-md border border-amber-100">{allergenLabel(a, tkLocale)}</span>
@@ -5374,7 +5397,7 @@ function MenuTab({ truck, categories, items, subcategories, token, modifierGroup
                 <p className="text-xs font-semibold text-slate-500 mb-1">{t('allergens.dietaryOptions')}</p>
                 <div className="flex flex-wrap gap-1">
                   {allergenExtracted.dietary_options.map((d: string) => (
-                    <span key={d} className="text-xs px-2 py-1 bg-green-50 border border-green-200 text-green-700 rounded-lg">{d}</span>
+                    <span key={d} className="text-xs px-2 py-1 bg-green-50 border border-green-200 text-green-700 rounded-lg">{dietaryLabel(d, tkLocale)}</span>
                   ))}
                 </div>
               </div>
@@ -14601,8 +14624,16 @@ function BillingTab({ truck }: { truck: Truck | null }) {
   const currentPriceLabel = monthlyLabel(planNow.monthlyMinor, onTrial)
   // The other public plans, in the table's order — what the purchase buttons offer. An internal plan (demo, tester)
   // is not offered a purchase: it was given, not bought.
-  const otherPlans = publicPlans(catalog).filter(p => p.key !== eff.plan.key)
+  // world-countries-1: never a plan whose row in the truck's country is switched off (offered = false) — every plan in a country
+  // with all its rows offered, or with no row, is listed exactly as before.
+  const otherPlans = publicPlans(catalog).filter(p => p.key !== eff.plan.key && planPriceFor(catalog, p.key, countryRow.countryCode)?.offered !== false)
   const offersPlans = (onTrial || eff.plan.isPublic) && otherPlans.length > 0
+  // world-countries-2 (1 November 2026, Dominic): where the plan a finished trial drops to has a MONTHLY PRICE (Unlimited, in the
+  // countries that offer only it), the trial lines say what it costs and that we will be in touch to set up payment — the same
+  // meaning as the landing banner and the trial popup. "Choose a plan before your trial ends" and "billing only starts when you
+  // choose a plan" go there. Every country whose trial ends on a free plan is exactly as before.
+  const trialEndRow = planPriceFor(catalog, expiryFallbackFor(catalog, countryRow.countryCode).key, countryRow.countryCode)
+  const trialEndPaid = (trialEndRow?.monthlyMinor ?? 0) > 0
   // ⚠️ PRE-EXISTING: these two `useState` calls sit below the `!truck` guard (see the note at the top).
   const [showUpgradeModal, setShowUpgradeModal] = useState(false)
   const [upgradeTarget, setUpgradeTarget] = useState<string>('')
@@ -14727,7 +14758,9 @@ function BillingTab({ truck }: { truck: Truck | null }) {
                 {truck.trial_expires_at && (
                   <p className="text-xs text-slate-600 mt-0.5">
                     {purchaseCtaAllowed()
-                      ? t('onTrial')
+                      ? trialEndPaid
+                        ? t('onTrialPaidEnd', { plan: expiryFallbackFor(catalog, countryRow.countryCode).name, price: cardPx(formatAmount(trialEndRow?.monthlyMinor ?? 0, cardMoney)) })
+                        : t('onTrial')
                       : t('onTrialNoCta')}
                   </p>
                 )}
@@ -14789,7 +14822,7 @@ function BillingTab({ truck }: { truck: Truck | null }) {
             <p className="text-xs text-center text-slate-500 mt-3">
               {/* 🔴 CORRECTED 14 August 2026 — billing only ever begins after an operator picks a plan AND enters
                   payment details; nothing "activates" at the end of a trial. */}
-              {t('noCharge', { date: formatTrialEndDate(truck.trial_expires_at, billingTime) })}
+              {t(trialEndPaid ? 'noChargePaidEnd' : 'noCharge', { date: formatTrialEndDate(truck.trial_expires_at, billingTime) })}
             </p>
             <p className="text-xs text-center text-slate-400 mt-1">
               {t('fees')}
@@ -14799,7 +14832,7 @@ function BillingTab({ truck }: { truck: Truck | null }) {
       </div>
       {/* 🔴 iOS (App Store 3.1.1/3.1.3): an instruction to choose a plan, so it is suppressed — and its `-mt-3`
           goes with it. */}
-      {onTrial && purchaseCtaAllowed() && (
+      {onTrial && purchaseCtaAllowed() && !trialEndPaid && (
         <p className="text-xs text-amber-600 font-medium -mt-3">
           {t('setUpPayment')}
         </p>

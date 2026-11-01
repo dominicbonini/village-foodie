@@ -1,0 +1,18 @@
+{
+  "meta": {
+    "privacyTitle": "นโยบายความเป็นส่วนตัว — HatchGrab",
+    "privacyDescription": "วิธีที่ HatchGrab Ltd เก็บรวบรวมและใช้ข้อมูลส่วนบุคคล",
+    "termsTitle": "ข้อกำหนดการให้บริการ — HatchGrab",
+    "termsDescription": "ข้อกำหนดในการใช้งาน HatchGrab",
+    "countryTermsTitle": "ข้อกำหนดเฉพาะประเทศ — HatchGrab",
+    "countryTermsDescription": "กฎเพิ่มเติมที่ใช้กับ HatchGrab ในบางประเทศ"
+  },
+  "homeLabel": "หน้าแรก HatchGrab",
+  "privacy": "ความเป็นส่วนตัว",
+  "terms": "ข้อกำหนด",
+  "countryTerms": "ข้อกำหนดเฉพาะประเทศ",
+  "contact": "ติดต่อ",
+  "lastUpdated": "อัปเดตล่าสุด {date}",
+  "questions": "มีคำถามไหม <link>ติดต่อเรา</link> — เราเป็นคนจริง ๆ",
+  "translationNote": "เอกสารนี้เป็นฉบับแปล หากมีข้อความใดแตกต่างจาก<link>ฉบับภาษาอังกฤษ</link> ให้ถือฉบับภาษาอังกฤษเป็นหลัก"
+}

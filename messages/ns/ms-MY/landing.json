@@ -1,0 +1,77 @@
+{
+  "jsonLd": {
+    "subCategory": "Sistem pesanan untuk food truck dan katering bergerak",
+    "description": "Pesanan, pra-pesanan dan skrin dapur untuk food truck dan katering bergerak di {country}.",
+    "audience": "Pengusaha food truck dan katering bergerak"
+  },
+  "hero": {
+    "title": "Sistem pesanan yang dibina khas untuk <lean>food truck.</lean>",
+    "subSmall": "Muat naik menu anda, tanpa perlu mendaftar.<br></br>Lihat demo yang berfungsi dalam masa kurang daripada 60 saat.",
+    "cta": "Muat naik menu saya →",
+    "ctaNote": "<lead>Muat naik foto menu anda dan lihat ia berfungsi dalam masa kurang daripada 60 saat.</lead><small>Tanpa daftar. Tanpa kad.</small>"
+  },
+  "shots": {
+    "kitchenAlt": "Skrin dapur HatchGrab, menunjukkan tiket pesanan mengikut urutan memasak",
+    "dashboardAlt": "Mengambil pesanan di HatchGrab: menu di sebelah kiri, bakul semasa dan jumlah di sebelah kanan",
+    "phoneAlt": "Membuat pesanan daripada food truck di HatchGrab: menu dengan foto dan harga, serta jumlah bakul semasa"
+  },
+  "trust": {
+    "freeMonth": "{months, plural, other {# bulan pertama percuma sepenuhnya, semua ciri dibuka}}",
+    "noCard": "Tidak perlu kad",
+    "cancel": "Batal bila-bila masa, tiada kontrak"
+  },
+  "does": {
+    "eyebrow": "Apa yang ia lakukan",
+    "title": "Dibina untuk food truck, bukan restoran.",
+    "lede": "Kebanyakan sistem pesanan menganggap anda ada alamat tetap, wifi yang stabil dan waktu operasi yang sama setiap minggu. Anda pula berada di tempat baharu setiap minggu, pada waktu berbeza, dengan liputan mudah alih yang lemah atau tiada langsung. HatchGrab dibina untuk keadaan itu.",
+    "slotsTitle": "Pelanggan memilih masa ambil",
+    "capacityTitle": "Tetapkan kapasiti dapur anda",
+    "capacityBody": "Tetapkan berapa banyak yang boleh anda masak serentak, dan berapa lama masanya. Apabila sesuatu masa ambil sudah penuh, pelanggan tidak boleh memilihnya.",
+    "devicesTitle": "Berfungsi pada sebarang peranti",
+    "devicesBody": "Berjalan pada telefon di poket apron anda, tablet di kaunter, komputer riba di dalam van — dan terminal kad yang sudah anda gunakan untuk menerima bayaran.",
+    "postsTitle": "Automatikkan hantaran Facebook & Instagram anda",
+    "postsBody": "Muat naik reka bentuk yang sudah anda siarkan di Facebook atau Instagram. Kami akan mengisi tarikh, tempat dan masa anda, sedia untuk dikongsi — setiap minggu atau setiap hari.",
+    "whatsappTitle": "Balasan automatik WhatsApp",
+    "whatsappBody": "“Malam ini di mana?” “Ada pencuci mulut apa?” WhatsApp anda dijawab semasa anda memandu ke tapak niaga atau sibuk di depan dapur, menggunakan menu dan jadual anda sendiri. Messenger dan Instagram akan datang.",
+    "whatsappSoonTitle": "Balasan automatik WhatsApp <soon>Akan datang</soon>",
+    "whatsappSoonBody": "“Malam ini di mana?” “Ada pencuci mulut apa?” Tidak lama lagi WhatsApp anda akan dijawab semasa anda memandu ke tapak niaga atau sibuk di depan dapur. Messenger dan Instagram akan menyusul.",
+    "offlineTitle": "Tiada isyarat? Terus berniaga.",
+    "offlineBody": "Jika anda hilang isyarat, pesanan dalam talian dihentikan seketika secara automatik supaya pelanggan tidak boleh membuat pesanan yang anda tidak nampak. Teruskan mengambil pesanan dengan aplikasi iPhone, iPad dan Android.",
+    "slotsBody": "Pelanggan membuat pesanan awal dan memilih masa ambil. Barisan lebih pendek, dan makanan sudah siap apabila mereka tiba."
+  },
+  "steps": {
+    "eyebrow": "Mula beroperasi",
+    "title": "Siap disediakan dan mula menerima pesanan dalam kira-kira 15 minit.",
+    "lede": "Tiga perkara untuk diuruskan — dan dua daripadanya hanya perlukan foto.",
+    "menuTitle": "Bina menu anda",
+    "menuBody": "Ambil foto papan menu anda atau tampalkannya. Item, harga dan tambahan semuanya dimasukkan sendiri. Anda cuma perlu semak sama ada semuanya betul.",
+    "scheduleTitle": "Tambah jadual anda",
+    "scheduleBody": "Ada di laman web anda? Kami akan membacanya dari situ dan sentiasa mengemas kininya. Jika tiada, ambil fotonya juga. Anda cuma perlu luluskan apa yang ditemui.",
+    "shareTitle": "Kongsi pautan anda",
+    "shareBody": "Siarkannya di Facebook, tampal kod QR pada van. Pesanan masuk ke skrin anda, mengikut urutan yang perlu anda masak."
+  },
+  "testimonial": {
+    "quote": "HatchGrab menjadikan urusan pesanan jauh lebih mudah. Semuanya tersusun, kami boleh menjejak stok dan tahu dengan tepat berapa banyak pizza yang tinggal untuk dijual — dan slot masa itu sangat bagus untuk kawasan yang sibuk.",
+    "award": "Pizzeria Bergerak Terbaik Tahun Ini",
+    "awardScope": "Pemenang peringkat wilayah",
+    "business": "Pizzeria Gusto",
+    "byline": "Nadia & Bogdan — pemilik"
+  },
+  "pricing": {
+    "eyebrow": "Harga",
+    "title": "Mula secara percuma. Naik taraf apabila perlu.",
+    "switchHead": "Beralih daripada platform lain?",
+    "switchBody": "Lihat berapa yang anda akan bayar di HatchGrab untuk pesanan yang sama. Ambil masa kira-kira seminit.",
+    "switchCta": "Bandingkan bayaran anda"
+  },
+  "final": {
+    "truckLabel": "Food truck",
+    "title": "Mahu lihat betapa mudahnya persediaan?",
+    "lede": "Muat naik foto atau tangkapan skrin menu anda dan kami akan menjadikannya halaman pesanan yang berfungsi untuk anda cuba dalam masa kurang 60 saat. Item anda, harga anda. Tiada pendaftaran, tiada kad, tiada apa-apa untuk dipasang. Lihat dahulu, kemudian buat keputusan.",
+    "cta": "Muat naik menu saya sekarang →"
+  },
+  "meta": {
+    "title": "Sistem pesanan food truck & katering bergerak — HatchGrab {country}",
+    "description": "Terima pesanan dan pra-pesanan di tapak anda tanpa barisan. Perisian pesanan dan skrin dapur untuk food truck dan katering bergerak di {country} — bukan sistem POS."
+  }
+}

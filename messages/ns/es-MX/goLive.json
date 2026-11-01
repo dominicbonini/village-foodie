@@ -1,0 +1,22 @@
+{
+  "allergensUnanswered": {
+    "detail": "Hasta que elijas, los clientes no ven ninguno de tus platillos: el menú se protege ocultando todo lo que tenga alérgenos sin confirmar, y en este momento eso es todo.",
+    "where": "Menú → Alérgenos"
+  },
+  "allergensCardMissing": {
+    "title": "Agrega tu tabla de alérgenos",
+    "detail": "Elegiste mostrar una tabla de alérgenos, pero no hay ninguna guardada, así que a los clientes se les diría que hay información de alérgenos y luego no encontrarían nada.",
+    "where": "Menú → Alérgenos"
+  },
+  "allergensItemsUnverified": {
+    "detail": "{n, plural, one {Tu platillo está oculto para los clientes hasta que confirmes sus alérgenos.} other {{u, plural, one {{unverified} de tus {total} platillos está oculto para los clientes hasta que confirmes sus alérgenos.} other {{unverified} de tus {total} platillos están ocultos para los clientes hasta que confirmes sus alérgenos.}}}} Un platillo mostrado sin alérgenos confirmados se lee como “no contiene ninguno”, así que el menú lo oculta en vez de correr ese riesgo.",
+    "where": "Menú → Alérgenos"
+  },
+  "kitchenCapacityUnset": {
+    "where": "Menú → Capacidad de cocina"
+  },
+  "noPrepBearingCategory": {
+    "detail": "{categories, select, none {Todavía no tienes categorías en el menú, así que no podemos calcular cuánto tarda un pedido.} other {Ninguna de tus categorías tiene un tiempo de cocción configurado, así que para nosotros todos los pedidos parecen instantáneos. Seguiríamos dando a los clientes horas de recogida que tu cocina no tiene forma de cumplir, y entre más trabajo tengas, más desfasadas estarían.}}",
+    "where": "Menú → Categorías → Configuración de cocina"
+  }
+}

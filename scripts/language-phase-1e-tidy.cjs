@@ -105,10 +105,18 @@ const NAMED = [
   // PRECISE, after anz-terms' item, one copy in scripts/_lp-demo2b.cjs.
   // eslint-disable-next-line @typescript-eslint/no-require-imports -- CommonJS harness module (demo-2b)
   ...require('./_lp-demo2b.cjs').ITEMS.map(P => ({ id: P.id, what: P.what, applies: id => P.views(id), apply: (v, id) => P.apply(id, v) })),
+  // ⚠️ RE-PINNED (world-countries-2, 1 November 2026): Terms §4 and the eight new countries — the sitemap's /terms and
+  // /country-terms lastmod 2026-11-01. PRECISE, after demo-2b's item, one copy in scripts/_lp-world-countries-2.cjs.
+  // eslint-disable-next-line @typescript-eslint/no-require-imports -- CommonJS harness module (world-countries-2)
+  ...require('./_lp-world-countries-2.cjs').ITEMS.map(P => ({ id: P.id, what: P.what, applies: id => P.views(id), apply: (v, id) => P.apply(id, v) })),
   // ⚠️ RE-PINNED (about-page, 22 October 2026): the country menu out of the nav (Dominic), the footers' About link, the
   // Organization's founder and the sitemap's /about. PRECISE, after every earlier item, one copy in scripts/_lp-about-page.cjs.
   // eslint-disable-next-line @typescript-eslint/no-require-imports -- CommonJS harness module (about-page)
   ...require('./_lp-about-page.cjs').ITEMS.map(P => ({ id: P.id, what: P.what, applies: id => P.views(id), apply: (v, id) => P.apply(id, v) })),
+  // ⚠️ RE-PINNED (world-countries-1, tagline, 31 October 2026): the hero's and the footer's tagline removed (Dominic). PRECISE, after
+  // every earlier item, one copy in scripts/_lp-tagline.cjs.
+  // eslint-disable-next-line @typescript-eslint/no-require-imports -- CommonJS harness module (world-countries-1)
+  ...require('./_lp-tagline.cjs').ITEMS.map(P => ({ id: P.id, what: P.what, applies: id => P.views(id), apply: (v, id) => P.apply(id, v) })),
 ]
 // ⚠️ RE-PINNED (plans-data-model, Stage A, 19 October 2026): Manage › Billing is ONE data-driven plan card above the frozen comparison
 // table — STRUCTURAL, by the same proof Part 2 and Phase 1e name (scripts/_lp1d2-named.cjs makeBillingProof, one copy):

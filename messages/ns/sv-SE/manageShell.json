@@ -78,6 +78,7 @@
     "ends": "{hasDate, select, yes {Provperioden slutar <hl>{date}</hl>} other {Provperioden slutar <hl>snart</hl>}}",
     "offer": "{hasMonths, select, yes {{months, plural, one {Alla funktioner gratis i # månad} other {Alla funktioner gratis i # månader}}} other {Alla funktioner gratis under provperioden}}",
     "body": "{hasDate, select, yes {Du debiteras ingenting under provperioden, som pågår till <b>{date}</b>. Faktureringen börjar först när du väljer ett abonnemang och anger dina betaluppgifter. Fram till dess finns det inget att säga upp och inget att betala. Välj abonnemang innan dess – annars flyttas du till {fallback} och vissa funktioner slutar fungera.} other {Du debiteras ingenting under provperioden. Faktureringen börjar först när du väljer ett abonnemang och anger dina betaluppgifter. Fram till dess finns det inget att säga upp och inget att betala. Välj abonnemang innan provperioden slutar – annars flyttas du till {fallback} och vissa funktioner slutar fungera.}}",
+    "bodyPaidEnd": "{hasDate, select, yes {Du debiteras ingenting under provperioden, som pågår till <b>{date}</b>. När provperioden slutar kostar abonnemanget {fallback} {price} i månaden. Vi hör av oss innan dess för att ordna betalningen.} other {Du debiteras ingenting under provperioden. När provperioden slutar kostar abonnemanget {fallback} {price} i månaden. Vi hör av oss innan dess för att ordna betalningen.}}",
     "fees": "*Vanliga avgifter för kortbetalning tillkommer för onlinebeställningar",
     "upgrade": "Uppgradera här →"
   }

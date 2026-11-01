@@ -105,7 +105,15 @@
     "Australiancards": "carduri din Australia",
     "NewZealandcards": "carduri din Noua Zeelandă",
     "Canadiancards": "carduri din Canada",
-    "Swisscards": "carduri elvețiene"
+    "Swisscards": "carduri elvețiene",
+    "Braziliancards": "carduri din Brazilia",
+    "Mexicancards": "carduri din Mexic",
+    "Japanesecards": "carduri din Japonia",
+    "Singaporecards": "carduri din Singapore",
+    "HongKongcards": "carduri din Hong Kong",
+    "Malaysiancards": "carduri din Malaysia",
+    "Thaicards": "carduri din Thailanda",
+    "UAEcards": "carduri din EAU"
   },
   "perMonth": {
     "mo": "{amount}/lună",

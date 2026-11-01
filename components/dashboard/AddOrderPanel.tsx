@@ -35,7 +35,7 @@ import { newUuid } from '@/lib/native/outbox'
 import { isOnline } from '@/lib/native/reachability'
 import { createCapacityRefresher, type CapacityRefresher } from '@/lib/capacity-refresh'
 import { MoneyProvider } from '@/components/MoneyContext'
-import { formatMajorOrBare } from '@/lib/money-format'
+import { formatMajorOrBare, toMinorUnits, toMajor } from '@/lib/money-format'
 // Phase 3 screens: the offline walk-up total, worked out by the server's own pure engine.
 import { computeOrderCharges, rulesFromCheckout } from '@/lib/order-charges'
 import { WALK_UP_NAME } from '@/lib/walk-up'
@@ -1614,8 +1614,10 @@ setItemModal({ item, modGroups, editCartKey })
            * it overrides it. 🔴 A UK TRUCK HAS NO `charge_rules`: nothing is spread, the object is exactly
            * what it was, and food = total as before. */
           ...(truck.charge_rules ? (() => {
-            const c = computeOrderCharges({ foodMinor: Math.round(manualTotal * 100), rules: rulesFromCheckout(truck.charge_rules), channel: 'walk_up' })
-            return { total: c.totalMinor / 100, total_minor: c.totalMinor, ...c.snapshot }
+            // world-countries-1: the truck's currency's minor units (whole yen for JPY), never ×100.
+            const cur = truck.money?.currency ?? 'GBP'
+            const c = computeOrderCharges({ foodMinor: toMinorUnits(manualTotal, cur), rules: rulesFromCheckout(truck.charge_rules), channel: 'walk_up' })
+            return { total: toMajor(c.totalMinor, cur), total_minor: c.totalMinor, ...c.snapshot }
           })() : {}),
           // 🔴 DERIVED FROM THE SAME VALUE THAT WAS QUEUED, NOT A LITERAL (14 August 2026). This read
           // `payment_status: 'unpaid'` — a hardcoded string, eight lines after `paymentTaken` was

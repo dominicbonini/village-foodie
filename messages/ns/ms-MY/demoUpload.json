@@ -1,0 +1,61 @@
+{
+  "steps": {
+    "reading": "Membaca menu anda…",
+    "found": "Item anda ditemui…",
+    "kitchen": "Menyediakan dapur anda…",
+    "page": "Membina halaman pesanan anda…",
+    "almost": "Hampir siap…"
+  },
+  "templateSteps": {
+    "truck": "Membina trak contoh anda…",
+    "menu": "Menyediakan menu…",
+    "kitchen": "Menyediakan dapur…",
+    "page": "Membina halaman pesanan…",
+    "almost": "Hampir siap…"
+  },
+  "dialogLabel": "Muat naik menu anda",
+  "heading": "✨ Muat naik menu anda",
+  "failedHeading": "Kami tidak dapat membaca menu itu",
+  "close": "Tutup",
+  "intro": "Gambar papan menu anda, tangkapan skrin, PDF, atau tampal sebagai teks. AI kami membacanya dan membina halaman pesanan yang berfungsi untuk anda — item anda, harga anda — dalam masa kurang 60 saat. Tanpa pendaftaran, tanpa kad.",
+  "failedIntro": "Kadangkala gambar terlalu gelap, terlalu senget, atau ditulis tangan. Itu tanggungjawab kami, bukan kesilapan anda. Beberapa pilihan seterusnya:",
+  "usually": "Ini biasanya mengambil masa kurang 60 saat.",
+  "slow": "Ini mengambil masa lebih lama daripada biasa — menu besar kadangkala begitu.",
+  "keepWaiting": "Terus menunggu",
+  "sampleWhileYouWait": "Atau tinjau menu contoh sementara menunggu",
+  "standIn": "Ini <b>bukan menu anda</b> — ia hanya pengganti supaya anda dapat melihat cara ia berfungsi.",
+  "seeSample": "Lihat menu contoh",
+  "tryAgain": "Cuba lagi",
+  "tryPhotoAgain": "Cuba gambar ini sekali lagi",
+  "tryDifferent": "Cuba gambar lain",
+  "uploadAnother": "← Muat naik gambar lain",
+  "orSample": "Atau tinjau menu contoh",
+  "orBuild": "Atau biar kami bina untuk anda",
+  "buildSent": "✓ Terima kasih — kami sudah menerimanya. Kami akan menghantar e-mel kepada anda.",
+  "buildBody": "Tinggalkan e-mel anda dan seorang manusia sebenar akan memasukkan menu anda dan menghantar pautannya kepada anda.",
+  "emailPlaceholder": "you@yourtruck.co.uk",
+  "sending": "…",
+  "send": "Hantar",
+  "noPhoto": "Tiada gambar menu di tangan?",
+  "noPhotoBody": "Tinjau trak contoh sahaja — anda boleh memuat naik menu anda bila-bila masa.",
+  "build": "Bina demo saya →",
+  "nothingPublished": "Tiada apa yang diterbitkan — hanya anda yang boleh melihatnya.",
+  "error": {
+    "somethingWrong": "Ada sesuatu yang tidak kena. Sila cuba lagi.",
+    "serverUnreachable": "Kami tidak dapat menghubungi pelayan. Semak sambungan anda dan cuba lagi.",
+    "sendFailed": "Tidak dapat menghantarnya — cuba lagi."
+  },
+  "fields": {
+    "uploadLabel": "Muat naik fail menu",
+    "dropHere": "Lepaskan menu anda di sini",
+    "dragOrTap": "Seret dan lepas atau ketik untuk memilih",
+    "fileTypes": "Imej atau PDF",
+    "or": "atau",
+    "pasteLabel": "Tampal teks menu",
+    "pastePlaceholder": "Tampal menu anda di sini — nama item, penerangan, harga..."
+  },
+  "emailLabel": "E-mel anda",
+  "emailNote": "Kami akan menghantar e-mel berisi pautan ke demo anda dan mungkin menghubungi anda tentang penyediaan HatchGrab. <link>Dasar privasi</link>",
+  "marketing": "Hantar tip dan berita daripada HatchGrab kepada saya sekali-sekala",
+  "emailInvalid": "Sila masukkan alamat e-mel yang sah."
+}

@@ -633,6 +633,28 @@
       "Walnut": "Orah",
       "Wheatandtriticale": "Pšenica i pšenoraž",
       "Glutenbarleyoatsrye": "Gluten (ječam, zob, raž)",
+      "Shrimp": "Kozice",
+      "Crab": "Rakovica",
+      "Buckwheat": "Heljda",
+      "Abalone": "Petrovo uho",
+      "Squid": "Lignja",
+      "Salmonroe": "Ikra lososa",
+      "Orange": "Naranča",
+      "Kiwifruit": "Kivi",
+      "Beef": "Govedina",
+      "Salmon": "Losos",
+      "Mackerel": "Skuša",
+      "Soybean": "Soja u zrnu",
+      "Chicken": "Piletina",
+      "Banana": "Banana",
+      "Pork": "Svinjetina",
+      "Peach": "Breskva",
+      "Yam": "Jam",
+      "Apple": "Jabuka",
+      "Gelatin": "Želatina",
+      "Chestnut": "Kesten",
+      "Naturallatex": "Prirodni lateks",
+      "Lactose": "Laktoza",
       "Nuts": "Orašasto voće",
       "Shellfish": "Rakovi i školjkaši"
     }
@@ -4854,6 +4876,7 @@
       "ends": "{hasDate, select, yes {Probno razdoblje završava <hl>{date}</hl>} other {Probno razdoblje završava <hl>uskoro</hl>}}",
       "offer": "{hasMonths, select, yes {{months, plural, one {Sve značajke besplatno tijekom # mjeseca} few {Sve značajke besplatno tijekom # mjeseca} other {Sve značajke besplatno tijekom # mjeseci}}} other {Sve značajke besplatno tijekom probnog razdoblja}}",
       "body": "{hasDate, select, yes {Tijekom probnog razdoblja, koje traje do <b>{date}</b>, ništa vam se neće naplatiti. Naplata počinje tek kad odaberete paket i unesete podatke za plaćanje. Do tada nemate što otkazati ni platiti. Odaberite paket prije tog datuma – ako to ne učinite, prijeći ćete na paket {fallback} i neke značajke prestat će raditi.} other {Tijekom probnog razdoblja ništa vam se neće naplatiti. Naplata počinje tek kad odaberete paket i unesete podatke za plaćanje. Do tada nemate što otkazati ni platiti. Odaberite paket prije isteka probnog razdoblja – ako to ne učinite, prijeći ćete na paket {fallback} i neke značajke prestat će raditi.}}",
+      "bodyPaidEnd": "{hasDate, select, yes {Tijekom probnog razdoblja, koje traje do <b>{date}</b>, ništa vam se neće naplatiti. Kad probno razdoblje završi, paket {fallback} košta {price} mjesečno. Javit ćemo vam se prije toga kako bismo dogovorili plaćanje.} other {Tijekom probnog razdoblja ništa vam se neće naplatiti. Kad probno razdoblje završi, paket {fallback} košta {price} mjesečno. Javit ćemo vam se prije toga kako bismo dogovorili plaćanje.}}",
       "fees": "*Na online narudžbe primjenjuju se standardne naknade za obradu kartičnih plaćanja",
       "upgrade": "Nadogradite ovdje →"
     }
@@ -4884,8 +4907,10 @@
       "heading": "Vaše besplatno probno razdoblje još nije počelo"
     },
     "onTrial": "Imate sve značajke. Odaberite paket prije isteka probnog razdoblja.",
+    "onTrialPaidEnd": "Imate sve značajke. Kad probno razdoblje završi, paket {plan} košta {price} mjesečno. Javit ćemo vam se prije toga kako bismo dogovorili plaćanje.",
     "onTrialNoCta": "Imate sve značajke.",
     "noCharge": "🔒 Tijekom probnog razdoblja, koje traje do {date}, ništa vam se neće naplatiti. Naplata počinje tek kad odaberete paket i unesete podatke za plaćanje. Do tada nemate što otkazati ni platiti.",
+    "noChargePaidEnd": "🔒 Tijekom probnog razdoblja, koje traje do {date}, ništa vam se neće naplatiti.",
     "fees": "*Na online narudžbe primjenjuju se standardne naknade za obradu kartičnih plaćanja",
     "setUpPayment": "⏱ Odaberite paket prije isteka probnog razdoblja",
     "changeYourPlan": "Promijeni paket",
@@ -5472,7 +5497,6 @@
     "hero": {
       "title": "Sustav za narudžbe stvoren za <lean>food truckove.</lean>",
       "subSmall": "Učitajte svoj jelovnik, bez registracije.<br></br>Pogledajte demo koji radi za manje od 60 sekundi.",
-      "tagline": "Manje administracije.<br></br>Više <lean>kuhanja.</lean>",
       "cta": "Učitaj moj jelovnik →",
       "ctaNote": "<lead>Učitajte fotografiju svog jelovnika i pogledajte kako radi za manje od 60 sekundi.</lead><small>Bez registracije. Bez kartice.</small>"
     },
@@ -5556,7 +5580,6 @@
     }
   },
   "landingFooter": {
-    "tagline": "Manje administracije.<br></br>Više kuhanja.",
     "features": "Značajke",
     "pricing": "Cijene",
     "privacy": "Privatnost",
@@ -5638,7 +5661,8 @@
     "countryTerms": "Uvjeti za zemlju",
     "contact": "Kontakt",
     "lastUpdated": "Posljednje ažuriranje: {date}",
-    "questions": "Imate pitanja? <link>Javite nam se</link> — mi smo stvarni ljudi."
+    "questions": "Imate pitanja? <link>Javite nam se</link> — mi smo stvarni ljudi.",
+    "translationNote": "Ovo je prijevod. Ako se razlikuje od <link>verzije na engleskom jeziku</link>, mjerodavna je verzija na engleskom jeziku."
   },
   "truckPage": {
     "meta": {
@@ -5794,7 +5818,15 @@
       "Australiancards": "australske kartice",
       "NewZealandcards": "novozelandske kartice",
       "Canadiancards": "kanadske kartice",
-      "Swisscards": "švicarske kartice"
+      "Swisscards": "švicarske kartice",
+      "Braziliancards": "brazilske kartice",
+      "Mexicancards": "meksičke kartice",
+      "Japanesecards": "japanske kartice",
+      "Singaporecards": "singapurske kartice",
+      "HongKongcards": "hongkonške kartice",
+      "Malaysiancards": "malezijske kartice",
+      "Thaicards": "tajlandske kartice",
+      "UAEcards": "kartice iz UAE-a"
     },
     "perMonth": {
       "mo": "{amount}/mj.",
@@ -5963,7 +5995,8 @@
   "pricing": {
     "banner": {
       "title": "{months, plural, one {Vaš prvi mjesec potpuno je besplatan — sve značajke otključane.} few {Vaša prva # mjeseca potpuno su besplatna — sve značajke otključane.} other {Vaših prvih # mjeseci potpuno je besplatno — sve značajke otključane.}}",
-      "body": "S platformom {brand} kupci naručuju unaprijed i plaćaju pri preuzimanju, pa možete primati online narudžbe bez ikakvog povezivanja s pružateljem kartičnog plaćanja. Radije naplaćujete unaprijed? Online plaćanje karticom možete dodati bilo kada. Kad vaše besplatno probno razdoblje završi, prelazite na paket <plan>{fallback}</plan>{fallbackFree, select, yes { (bez mjesečne naknade)} other {}}, osim ako odaberete neki drugi paket. Bez kartice za početak, bez ugovora, otkažite bilo kada."
+      "body": "S platformom {brand} kupci naručuju unaprijed i plaćaju pri preuzimanju, pa možete primati online narudžbe bez ikakvog povezivanja s pružateljem kartičnog plaćanja. Radije naplaćujete unaprijed? Online plaćanje karticom možete dodati bilo kada. Kad vaše besplatno probno razdoblje završi, prelazite na paket <plan>{fallback}</plan>{fallbackFree, select, yes { (bez mjesečne naknade)} other {}}, osim ako odaberete neki drugi paket. Bez kartice za početak, bez ugovora, otkažite bilo kada.",
+      "bodyOnly": "S platformom {brand} kupci naručuju unaprijed i plaćaju pri preuzimanju, pa možete primati online narudžbe bez ikakvog povezivanja s pružateljem kartičnog plaćanja. Radije naplaćujete unaprijed? Online plaćanje karticom možete dodati bilo kada. Kad vaše besplatno probno razdoblje završi, paket <plan>{fallback}</plan> košta {price} mjesečno. Javit ćemo vam se prije toga kako bismo dogovorili plaćanje. Bez kartice za početak, bez ugovora, otkažite bilo kada."
     },
     "card": {
       "perTruckMonth": "po food trucku / mjesečno",
@@ -6231,6 +6264,9 @@
       "stateTerritory": "Savezna država ili teritorij",
       "province": "Pokrajina",
       "county": "Okrug",
+      "prefecture": "Prefektura",
+      "emirate": "Emirat",
+      "region": "Regija",
       "area": "Mjesto (selo ili grad)",
       "townOrArea": "Grad ili mjesto",
       "city": "Grad",
@@ -6326,5 +6362,13 @@
     "backToMenu": "Natrag na jelovnik",
     "formNote": "Ovo je demo: nikome se ništa ne naplaćuje i ništa se ne šalje, pa ne morate unositi e-poštu.",
     "namePlaceholder": "Alex"
+  },
+  "errorPage": {
+    "notFoundTitle": "Stranica nije pronađena",
+    "notFoundBody": "Nismo pronašli tu stranicu. Možda je premještena ili je adresa pogrešno upisana.",
+    "home": "Idi na početnu stranicu",
+    "errorTitle": "Nešto je pošlo po zlu",
+    "errorBody": "Žao nam je, ova se stranica nije učitala. Pokušajte ponovno ili se vratite na početnu stranicu.",
+    "retry": "Pokušaj ponovno"
   }
 }

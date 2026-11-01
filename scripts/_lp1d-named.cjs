@@ -357,6 +357,11 @@ const plansEntries = ({ prefix = '', beforeDir = 'language-phase-1d-before', smo
     what: '⚠️ RE-PINNED (address-formats-1, 21 October 2026): as address-formats-1-events-format-gb, the US truck’s key "us". PRECISE.',
     views: under(prefix, /^api\/US\|events\|/),
     expect: b => require('./_lp-address-formats-1.cjs').eventsWithAddressFormat('us')(b) },
+  { id: 'world-countries-1-manage-fields', country: 'both', agent: 'world-countries-1 (31 Oct 2026)',
+    what: '⚠️ RE-PINNED (world-countries-1, 31 October 2026): GET /api/manage’s `countrySettings` gains `platformFeeAllowed: true` after `platformFeeEnabled`, and each catalogue price row gains `offered: true, trialEnd: false` after `extraVanMonthlyMinor` — the values every existing row reads as (no column yet). PRECISE: those fields only.',
+    views: under(prefix, /^api\/(GB|US)\|manageGET\|/),
+    // eslint-disable-next-line @typescript-eslint/no-require-imports -- CommonJS harness module (world-countries-1)
+    expect: b => require('./_lp-tagline.cjs').manageFields(b) },
   { id: 'pricing-b-catalogue-ignored-features', country: 'both', agent: 'pricing-pages Stage B (20 Oct 2026)',
     what: '⚠️ RE-PINNED (pricing-pages, Stage B, 20 October 2026): the plan catalogue GET /api/manage answers (`plans`) ends with `ignoredFeatures` — the plan_features rows naming no code feature, which the loader sets aside for Admin’s warning (lib/plans.ts splitUnknownFeatures); [] on the seed. PRECISE: that one key, last.',
     views: under(prefix, /^api\/(GB|US)\|manageGET\|/),

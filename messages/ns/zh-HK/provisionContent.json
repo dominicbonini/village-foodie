@@ -1,0 +1,57 @@
+{
+  "firstVanName": "1 號車",
+  "demoCategories": {
+    "pizza": "薄餅",
+    "burgers": "漢堡包",
+    "mains": "主菜",
+    "sides": "小食",
+    "drinks": "飲品"
+  },
+  "demoTemplates": {
+    "pizza": {
+      "label": "🍕 薄餅車",
+      "items": {
+        "margherita": "瑪格麗特薄餅",
+        "pepperoni": "意大利辣肉腸薄餅",
+        "ndujaHoney": "Nduja 辣肉醬蜜糖薄餅",
+        "fourCheese": "四重芝士薄餅",
+        "gardenVeg": "田園雜菜薄餅",
+        "garlicBread": "蒜蓉包",
+        "rocketParmesan": "火箭菜巴馬臣芝士沙律",
+        "olives": "橄欖",
+        "sanPellegrino": "San Pellegrino 有汽礦泉水",
+        "coke": "可樂"
+      }
+    },
+    "burgers": {
+      "label": "🍔 漢堡車",
+      "items": {
+        "classicCheeseburger": "經典芝士漢堡",
+        "doubleBacon": "雙層煙肉漢堡",
+        "buttermilkChicken": "酪乳炸雞漢堡",
+        "halloumiStack": "哈羅米芝士漢堡",
+        "smashBurger": "Smash 脆邊牛肉漢堡",
+        "skinOnFries": "連皮薯條",
+        "loadedCheeseFries": "芝士滿載薯條",
+        "onionRings": "洋蔥圈",
+        "craftLemonade": "手工檸檬水",
+        "coke": "可樂"
+      }
+    },
+    "curries": {
+      "label": "🍛 咖喱車",
+      "items": {
+        "chickenTikkaMasala": "印度烤雞咖喱",
+        "lambRoganJosh": "羊肉咖喱（Rogan Josh）",
+        "chanaMasala": "鷹嘴豆咖喱",
+        "butterChicken": "牛油雞",
+        "saagPaneer": "菠菜芝士咖喱",
+        "pilauRice": "香料飯",
+        "garlicNaan": "蒜蓉烤餅",
+        "onionBhaji": "炸洋蔥球",
+        "mangoLassi": "芒果乳酪飲",
+        "coke": "可樂"
+      }
+    }
+  }
+}

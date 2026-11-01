@@ -1,0 +1,18 @@
+{
+  "menuLabel": "ユーザーメニュー",
+  "screenOn": "画面オン",
+  "screenOff": "画面オフ",
+  "newOrderSound": "新規注文の通知音",
+  "copied": "コピーしました",
+  "orderLink": "注文リンク",
+  "qrCode": "QRコード",
+  "kitchenScreen": "キッチンディスプレイ",
+  "thisDevice": "このデバイス",
+  "manage": "管理画面",
+  "ordersDashboard": "注文ダッシュボード",
+  "admin": "管理者",
+  "privacy": "プライバシーポリシー",
+  "terms": "利用規約",
+  "signOut": "ログアウト",
+  "close": "閉じる"
+}

@@ -1,0 +1,61 @@
+{
+  "steps": {
+    "menu": "Menú"
+  },
+  "toast": {
+    "demoGone": "El menú de tu demo ya no está disponible: vuelve a subirlo para continuar.",
+    "cardReadFailed": "No se pudo leer la tabla de alérgenos: inténtalo de nuevo",
+    "imageReadFailed": "No se pudo leer esa imagen: escribe o pega tu tabla de alérgenos",
+    "commitFailedDetail": "No se pudo terminar de guardar el menú: {error}. Puede que algunos productos ya se hayan guardado; revisa tu menú antes de volver a intentarlo.",
+    "commitFailed": "No se pudo terminar de guardar el menú. Puede que algunos productos ya se hayan guardado; revisa tu menú antes de volver a intentarlo.",
+    "cardRead": "Tabla leída: {matched} asociados; {pending, plural, one {# queda pendiente} many {# quedan pendientes} other {# quedan pendientes}} de que los asignes tú"
+  },
+  "allergensNotSet": {
+    "bodySetup": "Revísalos antes de publicar tu menú. Hasta entonces, los productos aparecen marcados como “alérgenos sin configurar”.",
+    "body": "Revísalos en Ajustes antes de publicar tu menú. Hasta entonces, los productos aparecen marcados como “alérgenos sin configurar”."
+  },
+  "welcome": {
+    "body": "{name} ya está configurado. Ahora agregaremos tu menú y después tu primer evento."
+  },
+  "offer": {
+    "title": "¿Usar el menú de tu demo?",
+    "use": "Usar este menú",
+    "upload": "Subir otro menú",
+    "body": "Guardamos el menú que subiste: {count, plural, one {# producto} many {# productos} other {# productos}}. Úsalo como punto de partida o sube otro."
+  },
+  "upload": {
+    "title": "Importa tu menú",
+    "body": "Sube una foto del pizarrón de tu menú, una captura de pantalla o un PDF, o pega tu menú como texto. Nuestra IA lo lee y crea tu menú digital; tú revisas todo antes de que se guarde.",
+    "confirmCancel": "¿Cancelar esta importación? Se descartará tu revisión de este menú.",
+    "process": "Procesar menú"
+  },
+  "processing": {
+    "title": "Analizando tu menú"
+  },
+  "review": {
+    "title": "Revisa el menú importado",
+    "lastCategory": "Tu menú necesita al menos una categoría",
+    "moveBody": "Para eliminar “{name}” hay que mover sus platillos a otro lugar: los productos sin categoría no se importan."
+  },
+  "extras": {
+    "separate": "Productos separados en el menú"
+  },
+  "allergens": {
+    "detected": "Detectamos alérgenos en tu menú. Elige abajo cómo mostrarlos."
+  },
+  "kitchen": {
+    "saveAdd": "Guardar y añadir al menú"
+  },
+  "schedule": {
+    "urlPlaceholder": "https://tufoodtruck.mx/eventos",
+    "photoDesc": "Toma una foto o pega tus fechas: las leeremos para que las revises.",
+    "trialNotStarted": "Añadir eventos no inicia tu prueba gratis: más adelante eliges qué evento la inicia."
+  },
+  "done": {
+    "imported": "¡Menú importado!",
+    "added": "Tus productos se agregaron al menú."
+  },
+  "discard": {
+    "setupBody": "Tu cuenta y tu food truck están guardados: no se pierde nada. Puedes agregar tu menú cuando quieras: inicia sesión y toca <b>Importar menú</b> en la pantalla de tu menú para seguir justo aquí."
+  }
+}

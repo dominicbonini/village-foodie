@@ -1,0 +1,20 @@
+{
+  "meta": {
+    "title": "Sobre — HatchGrab",
+    "description": "O HatchGrab cria software prático para food trucks e buffet itinerante: pedidos online, horários de retirada e menos perguntas repetidas. Fundado por Dominic Bonini."
+  },
+  "eyebrow": "Sobre",
+  "title": "Feito para o jeito que os food trucks realmente funcionam",
+  "photoAlt": "{name}, fundador do HatchGrab",
+  "story": {
+    "start": "O HatchGrab nasceu de uma observação simples: food trucks precisam de ferramentas melhores para tocar seus negócios.",
+    "villageFoodie": "Depois de criar o Village Foodie, um guia que ajuda as pessoas a descobrir os food trucks que passam pela região delas, passei mais tempo entendendo os desafios dos negócios de comida sobre rodas. Diferente dos restaurantes tradicionais, os food trucks estão sempre em movimento, trabalhando em lugares diferentes e atendendo clientes em condições que mudam o tempo todo.",
+    "fixedAddress": "Mesmo assim, boa parte dos softwares disponíveis para eles foi pensada para negócios com endereço fixo.",
+    "change": "O HatchGrab foi criado para mudar isso.",
+    "build": "Criamos software prático especificamente para food trucks e buffet itinerante, ajudando esses negócios a receber pedidos online, gerenciar horários de retirada, manter os pedidos fluindo sem complicação e perder menos tempo com perguntas repetidas.",
+    "focus": "Nosso foco é simples: facilitar a vida de quem tem food truck, com ferramentas pensadas para o jeito que esses negócios realmente funcionam."
+  },
+  "signature": "<b>{name}</b><br></br>Fundador, HatchGrab",
+  "company": "{company} · registered in England and Wales · número da empresa {number} · sede registrada: {address}",
+  "contact": "Fale com a gente"
+}

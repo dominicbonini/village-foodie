@@ -1,0 +1,89 @@
+{
+  "$comment": "world-countries-1 (31 October 2026): the WhatsApp allergen guard’s trigger words for MALAY (ms-MY): alergi / alahan, tanpa / tiada / bebas <allergen>, sesuai / selamat untuk, boleh mengandungi, pencemaran silang. OPTION B, as every other language: absence / safety words only, NOT the bare allergen names (a presence question may reach the AI, which answers only from the tags and gets the caveat). Matched with the Unicode normaliser. caveatWords: a tagged label of the country’s allergen set (stored in English, lower case) → the words a reply may use for it. scripts/world-countries-1.cjs proves it.",
+  "language": "ms",
+  "normalise": "unicode",
+  "stems": [
+    "alergi",
+    "alahan",
+    "intoleran",
+    "tidak tahan laktosa",
+    "seliak",
+    "penyakit seliak",
+    "anafilaksis",
+    "epipen",
+    "epi pen",
+    "adrenalin",
+    "bebas gluten",
+    "tanpa gluten",
+    "tiada gluten",
+    "tanpa laktosa",
+    "bebas laktosa",
+    "tanpa susu",
+    "tiada susu",
+    "tanpa telur",
+    "tiada telur",
+    "tanpa kacang",
+    "tiada kacang",
+    "bebas kacang",
+    "tanpa makanan laut",
+    "tanpa udang",
+    "tanpa soya",
+    "tanpa bijan",
+    "tiada bijan",
+    "sesuai untuk",
+    "selamat untuk",
+    "boleh mengandungi",
+    "mungkin mengandungi",
+    "kesan kacang",
+    "pencemaran silang",
+    "tidak mengandungi"
+  ],
+  "tokens": [],
+  "caveatWords": {
+    "codex": {
+      "gluten": [
+        "gluten",
+        "gandum",
+        "tepung"
+      ],
+      "crustaceans": [
+        "krustasea",
+        "udang",
+        "ketam",
+        "makanan laut"
+      ],
+      "eggs": [
+        "telur"
+      ],
+      "fish": [
+        "ikan"
+      ],
+      "peanuts": [
+        "kacang tanah",
+        "kacang"
+      ],
+      "soy": [
+        "soya",
+        "kacang soya",
+        "tauhu",
+        "kicap"
+      ],
+      "milk": [
+        "susu",
+        "laktosa",
+        "tenusu",
+        "keju",
+        "mentega"
+      ],
+      "tree nuts": [
+        "kacang",
+        "badam",
+        "gajus",
+        "walnut"
+      ],
+      "sulphites": [
+        "sulfit"
+      ]
+    }
+  }
+}

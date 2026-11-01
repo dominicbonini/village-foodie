@@ -1,0 +1,16 @@
+{
+  "row": {
+    "meal_deals_upsells": {
+      "name": "Combos y ventas sugeridas"
+    },
+    "stock_countdown": {
+      "name": "Cuenta regresiva automática de stock"
+    },
+    "tap_to_pay": {
+      "name": "Cobra con tu celular"
+    }
+  },
+  "priceWord": {
+    "freeTrial": "Prueba gratis"
+  }
+}

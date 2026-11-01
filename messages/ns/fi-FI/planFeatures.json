@@ -105,7 +105,15 @@
     "Australiancards": "Australian kortit",
     "NewZealandcards": "Uuden-Seelannin kortit",
     "Canadiancards": "Kanadan kortit",
-    "Swisscards": "sveitsiläiset kortit"
+    "Swisscards": "sveitsiläiset kortit",
+    "Braziliancards": "Brasilian kortit",
+    "Mexicancards": "Meksikon kortit",
+    "Japanesecards": "Japanin kortit",
+    "Singaporecards": "Singaporen kortit",
+    "HongKongcards": "Hongkongin kortit",
+    "Malaysiancards": "Malesian kortit",
+    "Thaicards": "Thaimaan kortit",
+    "UAEcards": "Arabiemiirikuntien kortit"
   },
   "perMonth": {
     "mo": "{amount}/kk",

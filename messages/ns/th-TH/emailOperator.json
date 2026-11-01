@@ -1,0 +1,25 @@
+{
+  "newOrder": {
+    "subject": "ออเดอร์ใหม่ #{id} — {name}{withSlot, select, yes { · {slot}} other {}}",
+    "heading": "ได้รับออเดอร์ใหม่",
+    "from": "<b>ออเดอร์ #{id}</b> จาก <b>{name}</b>",
+    "collection": "เวลารับอาหาร: {time}",
+    "asap": "ไม่ระบุเวลา — เร็วที่สุด",
+    "total": "ยอดรวม",
+    "notes": "<b>โน้ต:</b> {notes}",
+    "autoConfirmed": "ยืนยันอัตโนมัติแล้ว — ไม่ต้องทำอะไรเพิ่ม",
+    "confirmPrompt": "เข้าสู่ระบบแดชบอร์ด HatchGrab ของคุณเพื่อยืนยันหรือปฏิเสธออเดอร์นี้",
+    "text": "ออเดอร์ใหม่ #{id} จาก {name}{withSlot, select, yes { สำหรับ {slot}} other {}}{withVenue, select, yes { ที่ {venue}} other {}}{withCharges, select, yes { {charges}} other {}} ยอดรวม {total}{withNotes, select, yes { โน้ต: {notes}} other {}}"
+  },
+  "newEvents": {
+    "subject": "พบอีเวนต์ใหม่ของ {truck} — โปรดตรวจสอบ",
+    "hi": "สวัสดี",
+    "found": "เราพบ<b>อีเวนต์ใหม่ {n, plural, other {{count} รายการ}}</b>ในตารางออกร้านของคุณ ซึ่งต้องได้รับการอนุมัติจากคุณก่อนจึงจะแสดงให้ลูกค้าเห็น",
+    "listHeading": "อีเวนต์ที่พบ:",
+    "approve": "เมื่อคุณอนุมัติในแท็บตารางออกร้านแล้ว อีเวนต์จะแสดงบนแผนที่ และหน้าสั่งอาหารของคุณจะพร้อมรับการสั่งล่วงหน้า",
+    "cta": "ตรวจสอบตารางออกร้าน →",
+    "signoff": "— ทีมงาน HatchGrab · hatchgrab.com",
+    "unknownVenue": "ไม่ทราบสถานที่",
+    "text": "สวัสดี\n\nเราพบอีเวนต์ใหม่ {n, plural, other {{count} รายการ}}ในตารางออกร้านของคุณ ซึ่งต้องได้รับการอนุมัติจากคุณ:\n\n{list}\n\nตรวจสอบได้ที่: {url}\n\nเมื่อคุณอนุมัติแล้ว อีเวนต์จะแสดงบนแผนที่\n\n— ทีมงาน HatchGrab"
+  }
+}

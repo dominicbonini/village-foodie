@@ -17,7 +17,11 @@ const fs = require('fs'); const path = require('path'); const { execFileSync } =
 const REPO = path.resolve(__dirname, '..')
 const kit = require('./_render-kit.cjs')({ cacheTag: 'ireland-3' })
 const BEFORE_REF = '7fcd4fc9'
-const read = f => fs.readFileSync(path.join(REPO, f), 'utf8')
+// ⚠️ RE-PINNED (world-countries-2, 1 November 2026, docs/world-countries-2-report.md §1): the Terms of Service (§4), the
+// Country-specific terms (eight countries appended, re-dated) and lib/legal.ts (two dates, TERMS_VERSION) are read as they were
+// before world-countries-2 — scripts/_lp-world-countries-2.cjs asBefore() removes exactly its named change and throws if it is
+// not there, so every other byte is still pinned here. The new text itself is proved by scripts/world-countries-2.cjs.
+const read = f => require('./_lp-world-countries-2.cjs').asBefore(f, fs.readFileSync(path.join(REPO, f), 'utf8'))
 const before = f => execFileSync('git', ['show', `${BEFORE_REF}:${f}`], { cwd: REPO, encoding: 'utf8' })
 let pass = 0, fail = 0
 const t = (name, ok, detail) => { if (ok) { pass++; console.log(`  ✓ ${name}`) } else { fail++; console.log(`  ✗ ${name}${detail ? `\n      ${detail}` : ''}`) } }
@@ -75,7 +79,9 @@ const ALLERGEN_ADDED = 'In Ireland, HatchGrab shows allergens against each dish 
 
   // ── 3 · no flag left anywhere ──
   console.log('\n── content/legal')
-  const files = fs.readdirSync(path.join(REPO, 'content/legal'))
+  // ⚠️ RE-PINNED (legal-languages-1, 1 November 2026): content/legal now holds a folder per language (content/legal/<base>/, the
+  // translations, proved by scripts/legal-languages-1.cjs); this check reads the English documents, the folder's FILES, as before.
+  const files = fs.readdirSync(path.join(REPO, 'content/legal')).filter(f => fs.statSync(path.join(REPO, 'content/legal', f)).isFile())
   const flagged = files.filter(f => read(`content/legal/${f}`).includes('[FLAG'))
   t(`no "[FLAG" in any of content/legal's ${files.length} files`, files.length >= 3 && flagged.length === 0, flagged.join(', '))
 
@@ -96,7 +102,13 @@ const ALLERGEN_ADDED = 'In Ireland, HatchGrab shows allergens against each dish 
     t(k === 'PRIVACY_UPDATED' ? `${k} = demo-2b's date (was ${D2B.OLD_DATE})` : `${k} unchanged`, re.exec(L)?.[0] === want && (k !== 'PRIVACY_UPDATED' || re.exec(LB)?.[0] === `export const PRIVACY_UPDATED = '${D2B.OLD_DATE}'`))
   }
   const strip = s => s.replace(/\/\*\*[\s\S]*?\*\//g, '')
-  t('lib/legal.ts changed nothing else in code (doc comments aside)', strip(L).replace(`'${DATE}'`, "'19 October 2026'").replace(`'${TV}'`, "'2026-10-20'").replace(`PRIVACY_UPDATED = '${D2B.NEW_DATE}'`, `PRIVACY_UPDATED = '${D2B.OLD_DATE}'`) === strip(LB))
+  // ⚠️ RE-PINNED (legal-languages-1, 1 November 2026): lib/legal.ts gained the translated documents' addresses — two imports and one
+  // block at the end of the file (legalPath and its helpers), every existing line unchanged. PRECISE: exactly those are taken out,
+  // and the run fails if the block is not where it is named; everything else is still compared.
+  const LL1_MARK = '\n// ══ legal-languages-1 (1 November 2026'
+  const LL1_IMPORTS = "import { COUNTRY_PATH_SEGMENTS, HATCHGRAB_ORIGIN } from '@/lib/marketing-country'\nimport { LANGUAGE_BASES, isEnglish, overrideChain, resolveLocale, type AppLocale } from '@/lib/i18n/locales'\n\n"
+  const withoutLL1 = x => { if (!x.includes(LL1_MARK) || !x.includes(LL1_IMPORTS)) throw new Error('legal-languages-1 block not found in lib/legal.ts'); return x.slice(0, x.indexOf(LL1_MARK)).replace(LL1_IMPORTS, '') }
+  t('lib/legal.ts changed nothing else in code (doc comments aside)', strip(withoutLL1(L)).replace(`'${DATE}'`, "'19 October 2026'").replace(`'${TV}'`, "'2026-10-20'").replace(`PRIVACY_UPDATED = '${D2B.NEW_DATE}'`, `PRIVACY_UPDATED = '${D2B.OLD_DATE}'`) === strip(LB))
 
   // ── 5 · the rendered page ──
   console.log('\n── /country-terms, through the real renderer')

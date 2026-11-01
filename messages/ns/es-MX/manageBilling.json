@@ -1,0 +1,9 @@
+{
+  "plan": {
+    "trialMonths": "Prueba gratis. Meses gratis: {months}."
+  },
+  "notStarted": {
+    "heading": "Tu prueba gratis aún no empieza"
+  },
+  "noCharge": "🔒 No se te cobrará nada durante tu prueba, que dura hasta el {date}. La facturación solo empieza cuando eliges un plan e ingresas tus datos de pago. Hasta entonces, no hay nada que cancelar ni nada que pagar."
+}

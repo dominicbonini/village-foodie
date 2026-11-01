@@ -1,0 +1,25 @@
+{
+  "newOrder": {
+    "subject": "Pesanan baharu #{id} — {name}{withSlot, select, yes { · {slot}} other {}}",
+    "heading": "Pesanan baharu diterima",
+    "from": "<b>Pesanan #{id}</b> daripada <b>{name}</b>",
+    "collection": "Masa ambil: {time}",
+    "asap": "Tiada masa khusus — secepat mungkin",
+    "total": "Jumlah",
+    "notes": "<b>Nota:</b> {notes}",
+    "autoConfirmed": "Disahkan secara automatik — tiada tindakan diperlukan.",
+    "confirmPrompt": "Log masuk ke papan pemuka HatchGrab anda untuk mengesahkan atau menolak pesanan ini.",
+    "text": "Pesanan baharu #{id} daripada {name}{withSlot, select, yes { untuk {slot}} other {}}{withVenue, select, yes { di {venue}} other {}}.{withCharges, select, yes { {charges}.} other {}} Jumlah {total}.{withNotes, select, yes { Nota: {notes}} other {}}"
+  },
+  "newEvents": {
+    "subject": "Acara baharu ditemui untuk {truck} — sila semak",
+    "hi": "Hai,",
+    "found": "Kami menemui <b>{n, plural, one {{count} acara baharu} other {{count} acara baharu}}</b> dalam jadual anda yang memerlukan kelulusan anda sebelum dipaparkan kepada pelanggan.",
+    "listHeading": "Acara yang ditemui:",
+    "approve": "Sebaik sahaja anda meluluskannya dalam tab Jadual, ia akan dipaparkan pada peta dan halaman pesanan anda akan sedia menerima pra-pesanan.",
+    "cta": "Semak jadual anda →",
+    "signoff": "— Pasukan HatchGrab · hatchgrab.com",
+    "unknownVenue": "Tempat tidak diketahui",
+    "text": "Hai,\n\nKami menemui {n, plural, one {{count} acara baharu} other {{count} acara baharu}} dalam jadual anda yang memerlukan kelulusan anda:\n\n{list}\n\nSemaknya di: {url}\n\nSebaik sahaja anda meluluskannya, ia akan dipaparkan pada peta.\n\n— Pasukan HatchGrab"
+  }
+}

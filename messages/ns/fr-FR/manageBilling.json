@@ -24,8 +24,10 @@
     "heading": "Votre essai gratuit n’a pas encore commencé"
   },
   "onTrial": "Vous avez accès à toutes les fonctionnalités. Choisissez une offre avant la fin de votre essai.",
+  "onTrialPaidEnd": "Vous avez accès à toutes les fonctionnalités. À la fin de votre essai, l’offre {plan} coûtera {price} par mois. Nous vous contacterons d’ici là pour mettre en place le paiement.",
   "onTrialNoCta": "Vous avez accès à toutes les fonctionnalités.",
   "noCharge": "🔒 Rien ne vous sera facturé pendant votre essai, qui dure jusqu’au {date}. La facturation ne démarre que lorsque vous choisissez une offre et saisissez vos informations de paiement. D’ici là, il n’y a rien à résilier ni à payer.",
+  "noChargePaidEnd": "🔒 Rien ne vous sera facturé pendant votre essai, qui dure jusqu’au {date}.",
   "fees": "*Des frais standard de traitement des cartes s’appliquent aux commandes en ligne",
   "setUpPayment": "⏱ Choisissez une offre avant la fin de votre essai",
   "changeYourPlan": "Changer d’offre",

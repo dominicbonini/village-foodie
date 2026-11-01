@@ -109,6 +109,10 @@ export const NAMESPACES = {
   truckPage: ['eventCard', 'siteFooter', 'truckPage'],
   // The custom-domain page's schedule widget (app/domain/page.tsx → app/embed/[slug]/EmbedSchedule.tsx).
   embed: ['embed', 'eventCard'],
+  // legal-languages-1 (1 November 2026): a translated legal page's chrome (components/legal/LegalChrome.tsx, under <PageLocale>).
+  legal: ['legalChrome'],
+  // legal-languages-1: the account pages — signup, login, forgot / reset password, verify email (their layouts, <PageLocale>).
+  auth: ['auth', 'errorsOnboarding'],
   // Language Phase 1c: the setup wizard.
   setup: ['setup', 'whereBased', 'tradeArea', 'errorsOnboarding',
     // address-formats-2 (21 Oct 2026): the town/address words by the country's address format (WhereBasedStep, AddressFields).

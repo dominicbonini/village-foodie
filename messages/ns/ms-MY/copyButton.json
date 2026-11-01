@@ -1,0 +1,10 @@
+{
+  "copy": "Salin",
+  "copied": "Disalin ✓",
+  "failed": "Gagal menyalin",
+  "aria": "{label} {thing}",
+  "announceCopied": "{thing} disalin",
+  "announceCopiedValue": "Nilai disalin",
+  "announceFailed": "Tidak dapat menyalin {thing}. Pilih teks itu dan salin sendiri.",
+  "announceFailedValue": "Tidak dapat menyalin nilai itu. Pilih teks itu dan salin sendiri."
+}

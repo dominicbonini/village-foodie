@@ -1,0 +1,6 @@
+{
+  "orderPending": {
+    "title": "Novo pedido para confirmar",
+    "body": "Pedido {number} — {truck}"
+  }
+}

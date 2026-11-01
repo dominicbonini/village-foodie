@@ -105,7 +105,15 @@
     "Australiancards": "αυστραλιανές κάρτες",
     "NewZealandcards": "νεοζηλανδικές κάρτες",
     "Canadiancards": "καναδικές κάρτες",
-    "Swisscards": "ελβετικές κάρτες"
+    "Swisscards": "ελβετικές κάρτες",
+    "Braziliancards": "βραζιλιάνικες κάρτες",
+    "Mexicancards": "μεξικανικές κάρτες",
+    "Japanesecards": "ιαπωνικές κάρτες",
+    "Singaporecards": "κάρτες από τη Σιγκαπούρη",
+    "HongKongcards": "κάρτες από το Χονγκ Κονγκ",
+    "Malaysiancards": "μαλαισιανές κάρτες",
+    "Thaicards": "ταϊλανδικές κάρτες",
+    "UAEcards": "κάρτες από τα ΗΑΕ"
   },
   "perMonth": {
     "mo": "{amount}/μήνα",

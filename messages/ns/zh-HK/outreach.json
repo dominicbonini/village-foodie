@@ -1,0 +1,11 @@
+{
+  "optOut": {
+    "missing": "此電郵沒有退訂句子，因此無法發送。請使用 Insert opt-out 加入。",
+    "notSetUp": "尚未設定退訂句子，因此無法發送任何推廣電郵。請在 Templates 分頁的 Signature 面板加入。",
+    "notLoaded": "退訂句子尚未載入，因此無法發送。",
+    "unreadable": "無法讀取退訂句子，因此沒有發送任何內容。"
+  },
+  "retry": {
+    "notRebuilt": "無法以公司資料行重新建立該訊息，因此沒有發送任何內容。"
+  }
+}

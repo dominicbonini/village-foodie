@@ -633,6 +633,28 @@
       "Walnut": "Vlašský orech",
       "Wheatandtriticale": "Pšenica a tritikale",
       "Glutenbarleyoatsrye": "Glutén (jačmeň, ovos, raž)",
+      "Shrimp": "Krevety",
+      "Crab": "Krab",
+      "Buckwheat": "Pohánka",
+      "Abalone": "Ušeň",
+      "Squid": "Kalmár",
+      "Salmonroe": "Lososie ikry",
+      "Orange": "Pomaranč",
+      "Kiwifruit": "Kiwi",
+      "Beef": "Hovädzie mäso",
+      "Salmon": "Losos",
+      "Mackerel": "Makrela",
+      "Soybean": "Sója",
+      "Chicken": "Kuracie mäso",
+      "Banana": "Banán",
+      "Pork": "Bravčové mäso",
+      "Peach": "Broskyňa",
+      "Yam": "Jam",
+      "Apple": "Jablko",
+      "Gelatin": "Želatína",
+      "Chestnut": "Jedlý gaštan",
+      "Naturallatex": "Prírodný latex",
+      "Lactose": "Laktóza",
       "Nuts": "Orechy",
       "Shellfish": "Morské plody"
     }
@@ -4854,6 +4876,7 @@
       "ends": "{hasDate, select, yes {Skúšobné obdobie končí <hl>{date}</hl>} other {Skúšobné obdobie končí <hl>čoskoro</hl>}}",
       "offer": "{hasMonths, select, yes {{months, plural, one {Všetky funkcie zadarmo na # mesiac} few {Všetky funkcie zadarmo na # mesiace} other {Všetky funkcie zadarmo na # mesiacov}}} other {Všetky funkcie zadarmo počas skúšobného obdobia}}",
       "body": "{hasDate, select, yes {Počas skúšobného obdobia, ktoré trvá do <b>{date}</b>, vám nebudeme nič účtovať. Fakturácia sa začne až vtedy, keď si vyberiete plán a zadáte platobné údaje. Dovtedy nie je čo rušiť ani platiť. Vyberte si plán ešte predtým — inak prejdete na plán {fallback} a niektoré funkcie prestanú fungovať.} other {Počas skúšobného obdobia vám nebudeme nič účtovať. Fakturácia sa začne až vtedy, keď si vyberiete plán a zadáte platobné údaje. Dovtedy nie je čo rušiť ani platiť. Vyberte si plán ešte pred jeho koncom — inak prejdete na plán {fallback} a niektoré funkcie prestanú fungovať.}}",
+      "bodyPaidEnd": "{hasDate, select, yes {Počas skúšobného obdobia, ktoré trvá do <b>{date}</b>, vám nebudeme nič účtovať. Po skončení skúšobného obdobia bude plán {fallback} stáť {price} mesačne. Ešte predtým sa vám ozveme, aby sme nastavili platbu.} other {Počas skúšobného obdobia vám nebudeme nič účtovať. Po skončení skúšobného obdobia bude plán {fallback} stáť {price} mesačne. Ešte predtým sa vám ozveme, aby sme nastavili platbu.}}",
       "fees": "*Pri online objednávkach sa účtujú štandardné poplatky za spracovanie platieb kartou",
       "upgrade": "Prejsť na vyšší plán →"
     }
@@ -4884,8 +4907,10 @@
       "heading": "Vaše bezplatné skúšobné obdobie sa ešte nezačalo"
     },
     "onTrial": "Máte k dispozícii všetky funkcie. Vyberte si plán pred koncom skúšobného obdobia.",
+    "onTrialPaidEnd": "Máte k dispozícii všetky funkcie. Po skončení skúšobného obdobia bude plán {plan} stáť {price} mesačne. Ešte predtým sa vám ozveme, aby sme nastavili platbu.",
     "onTrialNoCta": "Máte k dispozícii všetky funkcie.",
     "noCharge": "🔒 Počas skúšobného obdobia, ktoré trvá do {date}, vám nebudeme nič účtovať. Fakturácia sa začne až vtedy, keď si vyberiete plán a zadáte platobné údaje. Dovtedy nie je čo rušiť ani platiť.",
+    "noChargePaidEnd": "🔒 Počas skúšobného obdobia, ktoré trvá do {date}, vám nebudeme nič účtovať.",
     "fees": "*Pri online objednávkach sa účtujú štandardné poplatky za spracovanie platieb kartou",
     "setUpPayment": "⏱ Vyberte si plán pred koncom skúšobného obdobia",
     "changeYourPlan": "Zmeniť plán",
@@ -5472,7 +5497,6 @@
     "hero": {
       "title": "Objednávkový systém vytvorený pre <lean>food trucky.</lean>",
       "subSmall": "Nahrajte svoj jedálny lístok, bez registrácie.<br></br>Funkčnú ukážku uvidíte za menej ako 60 sekúnd.",
-      "tagline": "Menej papierovania.<br></br>Viac času na <lean>varenie.</lean>",
       "cta": "Nahrať jedálny lístok →",
       "ctaNote": "<lead>Nahrajte fotku svojho jedálneho lístka a za menej ako 60 sekúnd uvidíte, ako funguje.</lead><small>Bez registrácie. Bez platobnej karty.</small>"
     },
@@ -5556,7 +5580,6 @@
     }
   },
   "landingFooter": {
-    "tagline": "Menej papierovania.<br></br>Viac času na varenie.",
     "features": "Funkcie",
     "pricing": "Ceny",
     "privacy": "Ochrana súkromia",
@@ -5638,7 +5661,8 @@
     "countryTerms": "Podmienky pre krajiny",
     "contact": "Kontakt",
     "lastUpdated": "Naposledy aktualizované {date}",
-    "questions": "Máte otázky? <link>Ozvite sa nám</link> — sme skutoční ľudia."
+    "questions": "Máte otázky? <link>Ozvite sa nám</link> — sme skutoční ľudia.",
+    "translationNote": "Toto je preklad. Ak sa líši od <link>anglickej verzie</link>, platí anglická verzia."
   },
   "truckPage": {
     "meta": {
@@ -5794,7 +5818,15 @@
       "Australiancards": "austrálske karty",
       "NewZealandcards": "novozélandské karty",
       "Canadiancards": "kanadské karty",
-      "Swisscards": "švajčiarske karty"
+      "Swisscards": "švajčiarske karty",
+      "Braziliancards": "brazílske karty",
+      "Mexicancards": "mexické karty",
+      "Japanesecards": "japonské karty",
+      "Singaporecards": "singapurské karty",
+      "HongKongcards": "hongkonské karty",
+      "Malaysiancards": "malajzijské karty",
+      "Thaicards": "thajské karty",
+      "UAEcards": "karty zo SAE"
     },
     "perMonth": {
       "mo": "{amount}/mes.",
@@ -5963,7 +5995,8 @@
   "pricing": {
     "banner": {
       "title": "{months, plural, one {Váš prvý mesiac je úplne zadarmo — so všetkými funkciami.} few {Vaše prvé # mesiace sú úplne zadarmo — so všetkými funkciami.} other {Vašich prvých # mesiacov je úplne zadarmo — so všetkými funkciami.}}",
-      "body": "S aplikáciou {brand} si zákazníci objednajú vopred a zaplatia pri vyzdvihnutí, takže môžete prijímať online objednávky bez akéhokoľvek spracovateľa platieb kartou. Chcete radšej platbu vopred? Online platby kartou si môžete pridať kedykoľvek. Keď sa skúšobné obdobie skončí, prejdete na plán <plan>{fallback}</plan>{fallbackFree, select, yes { (bez mesačného paušálu)} other {}}, ak si nevyberiete iný plán. Na začiatok netreba platobnú kartu, žiadna zmluva, zrušiť môžete kedykoľvek."
+      "body": "S aplikáciou {brand} si zákazníci objednajú vopred a zaplatia pri vyzdvihnutí, takže môžete prijímať online objednávky bez akéhokoľvek spracovateľa platieb kartou. Chcete radšej platbu vopred? Online platby kartou si môžete pridať kedykoľvek. Keď sa skúšobné obdobie skončí, prejdete na plán <plan>{fallback}</plan>{fallbackFree, select, yes { (bez mesačného paušálu)} other {}}, ak si nevyberiete iný plán. Na začiatok netreba platobnú kartu, žiadna zmluva, zrušiť môžete kedykoľvek.",
+      "bodyOnly": "S aplikáciou {brand} si zákazníci objednajú vopred a zaplatia pri vyzdvihnutí, takže môžete prijímať online objednávky bez akéhokoľvek spracovateľa platieb kartou. Chcete radšej platbu vopred? Online platby kartou si môžete pridať kedykoľvek. Keď sa skúšobné obdobie skončí, bude plán <plan>{fallback}</plan> stáť {price} mesačne. Ešte predtým sa vám ozveme, aby sme nastavili platbu. Na začiatok netreba platobnú kartu, žiadna zmluva, zrušiť môžete kedykoľvek."
     },
     "card": {
       "perTruckMonth": "za food truck / mesiac",
@@ -6231,6 +6264,9 @@
       "stateTerritory": "Štát alebo teritórium",
       "province": "Provincia",
       "county": "Grófstvo",
+      "prefecture": "Prefektúra",
+      "emirate": "Emirát",
+      "region": "Oblasť",
       "area": "Obec (dedina alebo mesto)",
       "townOrArea": "Mesto alebo obec",
       "city": "Mesto",
@@ -6326,5 +6362,13 @@
     "backToMenu": "Späť na jedálny lístok",
     "formNote": "Toto je ukážka: nikomu sa nič neúčtuje a nič sa neodosiela, takže nemusíte zadávať e-mail.",
     "namePlaceholder": "Alex"
+  },
+  "errorPage": {
+    "notFoundTitle": "Stránka sa nenašla",
+    "notFoundBody": "Túto stránku sme nenašli. Mohla byť presunutá alebo je adresa zadaná nesprávne.",
+    "home": "Prejsť na úvodnú stránku",
+    "errorTitle": "Niečo sa pokazilo",
+    "errorBody": "Ospravedlňujeme sa, táto stránka sa nenačítala. Skúste to znova alebo sa vráťte na úvodnú stránku.",
+    "retry": "Skúsiť znova"
   }
 }
