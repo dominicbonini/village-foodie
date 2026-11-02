@@ -265,7 +265,10 @@ async function identityViews(tag) {
   t('every column the brief names', ['position int', 'question_en', 'answer_en', 'answer_single_plan_en', 'show_in', 'note', 'note_done', 'published_at', 'created_at', 'updated_at', 'updated_by', 'title_en'].every(c => code.includes(c.split(' ')[0])))
   t('no operator_apps column (decision faq-1 Q1 → A) and no write to country_settings or its app flags', !/operator_apps/.test(code) && !/(alter table|update|insert into)\s+public\.country_settings/i.test(code))
   t('one transaction, safe twice (if not exists; fixed ids, on conflict do nothing)', /^begin;/m.test(code) && /^commit;/m.test(code) && (code.match(/create table if not exists/g) || []).length === 2 && (code.match(/on conflict \(id\) do nothing;/g) || []).length === 2)
-  t('the next free migration number', fs.readdirSync(path.join(REPO, 'supabase/migrations')).filter(f => f.startsWith('20261056')).length === 1 && !fs.readdirSync(path.join(REPO, 'supabase/migrations')).some(f => f > '20261056_faq_1.sql' && /^\d{8}/.test(f)))
+  // ⚠️ RE-PINNED (faq-1c-undo, 2 November 2026): 20261058_faq_1c_undo.sql follows it now (faq-1c's 20261057 ran and was removed from
+  // the repo; 20261058 reverses it outside the FAQ). 20261056 is still the one faq-1 file, and nothing else came after it.
+  t('the faq-1 migration number is unique, and only 20261058_faq_1c_undo.sql follows it', fs.readdirSync(path.join(REPO, 'supabase/migrations')).filter(f => f.startsWith('20261056')).length === 1
+    && JSON.stringify(fs.readdirSync(path.join(REPO, 'supabase/migrations')).filter(f => f > '20261056_faq_1.sql' && /^\d{8}/.test(f))) === JSON.stringify(['20261058_faq_1c_undo.sql']))
 
   // ══ 7 ══════════════════════════════════════════════════════════════════════════════════════════════════════════════
   head('7 · the seed')
@@ -318,6 +321,32 @@ async function identityViews(tag) {
   t('only Admin › FAQ and its server code import lib/faq or the faq messages', importers.every(f => allowed.has(f)), importers.filter(f => !allowed.has(f)))
   t('the admin page mounts it as the last tab', /pricing:[^\n]*\n[\s\S]*demos:[^\n]*\n[^\n]*\n\s*faq:\s*\{ icon: '❓', label: 'FAQ' \},\n\} as const/.test(read('app/admin/page.tsx')))
   t('faq.phrases.* is in en-GB only for now (Dominic, 1 Nov: English until approved)', (() => { const d = JSON.parse(read('messages/en-GB.json')).faq?.phrases; return d && Object.keys(d).join() === 'appsSentence,appsOffline,webOffline' })())
+
+  // ══ 9 ══════════════════════════════════════════════════════════════════════════════════════════════════════════════
+  // faq-1c-undo (2 November 2026): the six FAQ rows Dominic kept from faq-1c, as supabase/migrations/20261058_faq_1c_undo.sql leaves
+  // them (faq-1c's own migration, 20261057, ran and was removed from the repo; 20261058 carries its FAQ edits and nothing else of it).
+  head('9 · the FAQ rows kept from faq-1c (20261058) read correctly everywhere')
+  {
+    const undo = read('supabase/migrations/20261058_faq_1c_undo.sql')
+    const blocks = undo.split('update public.faq_items set').slice(1)
+    const blockOf = id => blocks.find(bk => new RegExp(`^[\\s\\S]*?\\n\\s+where id = 'fa000002-0000-4000-8000-00000000${id}'`).test(bk) && !/^\\s*note_done/.test(bk))
+    const dq = (b, tag) => { const m = new RegExp(`\\$${tag}\\$([\\s\\S]*?)\\$${tag}\\$`).exec(b); return m ? m[1] : null }
+    const byId = Object.fromEntries(seed.items.map(i => [i.id.slice(-4), { ...i }]))
+    { const b = blockOf('0002'); byId['0002'].questionEn = dq(b, 'q'); byId['0002'].answerEn = dq(b, 'a'); byId['0002'].answerSinglePlanEn = dq(b, 's') }
+    { const x = dq(blockOf('0003'), 'x'); byId['0003'].answerEn += x; byId['0003'].answerSinglePlanEn += x }
+    byId['0006'].answerEn = byId['0006'].answerEn.replace('and connect Stripe if you want online card payments', 'and connect Stripe so customers can pay online')
+    for (const id of ['0007', '0010', '0015']) byId[id].answerEn = dq(blockOf(id), 'a')
+    t('the six rows rebuilt from 20261058', ['0002', '0003', '0006', '0007', '0010', '0015'].every(id => byId[id].answerEn && !byId[id].answerEn.includes('$')) && byId['0002'].questionEn === 'What do I pay on each order?' && byId['0010'].answerEn.startsWith('During your free trial, yes:'))
+    for (const id of ['0002', '0003', '0006', '0007', '0010', '0015']) {
+      const c = L.checkItem(byId[id], world)
+      t(`…${id} reads correctly in every switched-on country (${c.shownCount})`, c.ok && c.shownCount === 44, c.sentences)
+      const bare = [byId[id].questionEn, byId[id].answerEn, byId[id].answerSinglePlanEn || ''].join(' ').replace(/\{[^{}]*\}/g, ' ').replace('under 60 seconds', '')
+      t(`…${id}: no digit, currency sign or plan name outside a live value`, !/\d/.test(bare) && !/\p{Sc}/u.test(bare) && !catalog.plans.some(p => new RegExp(`\\b${p.name}\\b`).test(bare)))
+    }
+    t('20261058 writes no status and no note text, and reverses faq-1c outside the FAQ (plans true, Gusto\'s override, the comparison row)',
+      !/status\s*=/.test(undo) && !/set note\s*=/.test(undo) && /set pay_at_hatch_allowed = true/.test(undo) && /feature_overrides - 'online_ordering_pay_at_hatch'/.test(undo) && /hatchgrab_source = 'plan:online_ordering_pay_at_hatch'/.test(undo))
+    t('no faq-1c migration that changes plans stays in the repo', !fs.existsSync(path.join(REPO, 'supabase/migrations/20261057_faq_1c.sql')))
+  }
 
   console.log(`\nfaq-1: ${pass} passed, ${fail} failed`)
   process.exit(fail ? 1 : 0)

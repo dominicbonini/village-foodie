@@ -54,7 +54,6 @@
   "online": {
     "heading": "Płatności online",
     "body": "Klienci płacą kartą przy składaniu zamówienia. Pieniądze trafiają prosto na twoje własne konto Stripe — nigdy ich nie przechowujemy.",
-    "payAtHatchTrialOnly": "{brand} jest częścią bezpłatnego okresu próbnego. Klienci płacą teraz za zamówienia z wyprzedzeniem online kartą — podłącz Stripe poniżej.",
     "feeLine": "Stripe pobiera {fee} za płatność standardową kartą ({region}). Inne karty mogą kosztować więcej. Prowizja HatchGrab od zamówień online zależy od twojego planu — zobacz Rozliczenia.",
     "testMode": "Tryb testowy. Nie można jeszcze przyjmować prawdziwych płatności."
   },

@@ -54,7 +54,6 @@
   "online": {
     "heading": "Onlinebetalningar",
     "body": "Kunderna betalar med kort när de beställer. Pengarna går direkt till ditt eget Stripe-konto – vi håller aldrig i dem.",
-    "payAtHatchTrialOnly": "{brand} ingår i din gratis provperiod. Kunderna betalar nu förbeställningar online med kort – koppla in Stripe nedan.",
     "feeLine": "Stripe tar {fee} per betalning för vanliga {region}. Andra kort kan kosta mer. HatchGrabs egen avgift på onlinebeställningar beror på ditt abonnemang – se Fakturering.",
     "testMode": "Testläge. Inga riktiga betalningar kan tas emot än."
   },

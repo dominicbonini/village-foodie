@@ -194,7 +194,7 @@
       "saveFailed": "Opslaan mislukt",
       "layout": "{layout, select, scroll {Menu wordt als één pagina getoond} other {Menu wordt in aparte categorieën getoond}}",
       "autoAccept": "{state, select, on {Automatisch accepteren aan} other {Automatisch accepteren uit}}",
-      "cardPayments": "{state, select, off {{pah, select, on {Kaartbetalingen uit — klanten betalen aan het loket} other {Kaartbetalingen uit — online bestellen staat stil tot je ze weer aanzet}}} other {Kaartbetalingen weer aan}}",
+      "cardPayments": "{state, select, off {Kaartbetalingen uit — klanten betalen aan het loket} other {Kaartbetalingen weer aan}}",
       "intervalsFailed": "Afhaaltijden konden nu niet worden opgeslagen.",
       "unpaidOrders": "{state, select, on {Onbetaalde bestellingen aan voor dit evenement} other {Onbetaalde bestellingen uit voor dit evenement}}",
       "presses": "{presses, select, one {Eén keer drukken voor dit evenement} other {Twee keer drukken voor dit evenement}}",
@@ -397,7 +397,7 @@
       "buzzerPromptTitle": "Herinnering: buzzer toevoegen",
       "buzzerPromptHelp": "Opent het buzzerraster zodra je een bestelling plaatst, zodat het nummer op het overzicht staat terwijl de klant nog voor je staat. Staat dit uit, dan kun je nog steeds altijd een buzzer toevoegen door op de bestelling te tikken, maar krijg je geen herinnering. Handig als je buzzers uitdeelt, makkelijk uit te zetten als je dat niet doet.",
       "cardsTitle": "Online kaartbetalingen accepteren",
-      "cardsHelp": "{pah, select, on {Zet dit uit bij een probleem met kaartbetalingen: klanten plaatsen dan gewoon bestellingen en betalen aan het loket. Bestellingen blijven binnenkomen; alleen de kaartstap stopt.} other {Zet dit uit bij een probleem met kaartbetalingen en online bestellen stopt tot je het weer aanzet — je plan omvat geen betaling bij het afhalen. Bestellingen aan de truck gaan gewoon door.}}",
+      "cardsHelp": "Zet dit uit bij een probleem met kaartbetalingen: klanten plaatsen dan gewoon bestellingen en betalen aan het loket. Bestellingen blijven binnenkomen; alleen de kaartstap stopt.",
       "cardsScope": "Dit geldt voor je hele foodtruck, bij elk evenement, en blijft uit totdat je het weer aanzet.",
       "cardsOffSince": "Uit sinds {date}",
       "soundsTitle": "Geluiden",
@@ -4472,7 +4472,6 @@
     "online": {
       "heading": "Online betalingen",
       "body": "Klanten betalen met hun kaart wanneer ze bestellen. Het geld gaat rechtstreeks naar je eigen Stripe-account — wij houden het nooit vast.",
-      "payAtHatchTrialOnly": "{brand} hoort bij je gratis proefperiode. Klanten betalen vooraf geplaatste bestellingen nu online met een kaart — koppel hieronder Stripe.",
       "feeLine": "Stripe rekent {fee} per betaling voor standaard {region}. Andere kaarten kunnen meer kosten. De eigen kosten van HatchGrab voor online bestellingen hangen af van je abonnement — zie Facturatie.",
       "testMode": "Testmodus. Er kunnen nog geen echte betalingen worden ontvangen."
     },
@@ -5997,8 +5996,8 @@
   "pricing": {
     "banner": {
       "title": "{months, plural, one {Je eerste maand is helemaal gratis — met alle functies.} other {Je eerste # maanden zijn helemaal gratis — met alle functies.}}",
-      "body": "Tijdens je gratis proefperiode kunnen klanten vooraf bestellen en bij het afhalen betalen, dus je kunt beginnen voordat je kaartbetalingen koppelt. Na je proefperiode worden vooraf geplaatste bestellingen online met een kaart betaald. Liever vooraf laten betalen? Voeg op elk moment online kaartbetalingen toe. Na je proefperiode ga je over op <plan>{fallback}</plan>{fallbackFree, select, yes { — zonder maandkosten —} other {}}, tenzij je zelf een abonnement kiest. Geen creditcard nodig om te starten, geen contract, altijd opzegbaar.",
-      "bodyOnly": "Tijdens je gratis proefperiode kunnen klanten vooraf bestellen en bij het afhalen betalen, dus je kunt beginnen voordat je kaartbetalingen koppelt. Na je proefperiode worden vooraf geplaatste bestellingen online met een kaart betaald. Liever vooraf laten betalen? Voeg op elk moment online kaartbetalingen toe. Na je proefperiode kost <plan>{fallback}</plan> je {price} per maand. We nemen voor die tijd contact met je op om de betaling te regelen. Geen creditcard nodig om te starten, geen contract, altijd opzegbaar."
+      "body": "Met {brand} bestellen klanten vooraf en betalen ze bij het afhalen, dus je kunt online bestellingen aannemen zonder een betaalprovider te koppelen. Liever vooraf laten betalen? Voeg op elk moment online kaartbetalingen toe. Na je proefperiode ga je over op <plan>{fallback}</plan>{fallbackFree, select, yes { — zonder maandkosten —} other {}}, tenzij je zelf een abonnement kiest. Geen creditcard nodig om te starten, geen contract, altijd opzegbaar.",
+      "bodyOnly": "Met {brand} bestellen klanten vooraf en betalen ze bij het afhalen, dus je kunt online bestellingen aannemen zonder een betaalprovider te koppelen. Liever vooraf laten betalen? Voeg op elk moment online kaartbetalingen toe. Na je proefperiode kost <plan>{fallback}</plan> je {price} per maand. We nemen voor die tijd contact met je op om de betaling te regelen. Geen creditcard nodig om te starten, geen contract, altijd opzegbaar."
     },
     "card": {
       "perTruckMonth": "per foodtruck / maand",

@@ -2,7 +2,7 @@
   "toast": {
     "intervalsSaved": "Pickup times saved for this event",
     "printMode": "{mode, select, onConfirmed {Tickets will print when you accept an order} other {Tickets will print shortly before pickup}}",
-    "cardPayments": "{state, select, off {{pah, select, on {Card payments off — customers pay at the window} other {Card payments off — online ordering is paused until you turn them back on}}} other {Card payments back on}}",
+    "cardPayments": "{state, select, off {Card payments off — customers pay at the window} other {Card payments back on}}",
     "intervalsFailed": "Pickup times could not be saved right now.",
     "eventCancelled": "Event canceled"
   },
@@ -26,7 +26,7 @@
     "status": "{status, select, pending {New} confirmed {Confirmed} rejected {Rejected} modified {Modified} cancelled {Canceled} cooking {Cooking} ready {Ready} collected {Picked up} other {{status}}}"
   },
   "settings": {
-    "cardsHelp": "{pah, select, on {Turn this off during a card problem and customers will place orders as normal and pay at the window instead. Orders keep coming; only the card step stops.} other {Turn this off during a card problem and online ordering stops until you turn it back on — your plan doesn’t include paying at the window. Walk-up orders carry on as normal.}}",
+    "cardsHelp": "Turn this off during a card problem and customers will place orders as normal and pay at the window instead. Orders keep coming; only the card step stops.",
     "intervalsTitle": "Pickup times",
     "intervalsHelp": "How far apart pickup times are. This doesn’t change kitchen capacity or prep times.",
     "intervalsUnavailable": "Pickup times are unavailable right now.",

@@ -54,7 +54,6 @@
   "online": {
     "heading": "Pagamenti online",
     "body": "I clienti pagano con carta quando ordinano. I soldi vanno direttamente sul tuo account Stripe: noi non li tratteniamo mai.",
-    "payAtHatchTrialOnly": "{brand} fa parte della tua prova gratuita. Ora i clienti pagano i preordini online con carta: collega Stripe qui sotto.",
     "feeLine": "Stripe applica {fee} per pagamento con {region} standard. Altre carte possono costare di più. La commissione di HatchGrab sugli ordini online dipende dal tuo piano: vedi Fatturazione.",
     "testMode": "Modalità test. Non è ancora possibile ricevere pagamenti reali."
   },

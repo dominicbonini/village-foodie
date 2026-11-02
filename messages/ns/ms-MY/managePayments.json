@@ -54,7 +54,6 @@
   "online": {
     "heading": "Pembayaran dalam talian",
     "body": "Pelanggan membayar dengan kad semasa membuat pesanan. Wang terus masuk ke akaun Stripe anda sendiri — kami tidak pernah memegangnya.",
-    "payAtHatchTrialOnly": "{brand} ialah sebahagian daripada percubaan percuma anda. Pelanggan kini membayar pra-pesanan dalam talian dengan kad — sambungkan Stripe di bawah.",
     "feeLine": "Stripe mengenakan {fee} bagi setiap pembayaran untuk {region} standard. Kad lain mungkin lebih mahal. Yuran HatchGrab sendiri untuk pesanan dalam talian bergantung pada pelan anda — lihat Pengebilan.",
     "testMode": "Mod ujian. Belum ada bayaran sebenar boleh diterima."
   },

@@ -54,7 +54,6 @@
   "online": {
     "heading": "Online plaćanja",
     "body": "Kupci plaćaju karticom pri naručivanju. Novac ide izravno na vaš Stripe račun – mi ga nikad ne držimo.",
-    "payAtHatchTrialOnly": "{brand} dio je vašeg besplatnog probnog razdoblja. Kupci sada plaćaju prednarudžbe online karticom — povežite Stripe u nastavku.",
     "feeLine": "Stripe naplaćuje {fee} po plaćanju za standardne {region}. Druge kartice mogu koštati više. Vlastita naknada HatchGraba na online narudžbe ovisi o vašem paketu – pogledajte karticu „Naplata“.",
     "testMode": "Testni način rada. Stvarna plaćanja još se ne mogu primati."
   },

@@ -54,7 +54,6 @@
   "online": {
     "heading": "Online payments",
     "body": "Customers pay by card when they order. Money goes straight to your own Stripe account — we never hold it.",
-    "payAtHatchTrialOnly": "{brand} is part of your free trial. Customers now pay for pre-orders online by card — connect Stripe below.",
     "feeLine": "Stripe charges {fee} per payment on standard {region}. Other cards may cost more. HatchGrab’s own fee on online orders depends on your plan — see Billing.",
     "testMode": "Test mode. No real payments can be taken yet."
   },

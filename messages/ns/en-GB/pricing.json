@@ -1,8 +1,8 @@
 {
   "banner": {
     "title": "{months, plural, one {Your first month is completely free — every feature unlocked.} other {Your first # months are completely free — every feature unlocked.}}",
-    "body": "During your free trial, customers can order ahead and pay when they collect, so you can start before connecting card payments. After your trial, pre-orders are paid online by card. Prefer to take payment up front? Add online card payments any time. When your trial ends you move to <plan>{fallback}</plan>{fallbackFree, select, yes { — no monthly fee —} other {}} unless you choose a plan. No card to start, no contract, cancel anytime.",
-    "bodyOnly": "During your free trial, customers can order ahead and pay when they collect, so you can start before connecting card payments. After your trial, pre-orders are paid online by card. Prefer to take payment up front? Add online card payments any time. When your trial ends, <plan>{fallback}</plan> is {price} a month. We’ll be in touch before then to set up payment. No card to start, no contract, cancel anytime."
+    "body": "With {brand}, customers order ahead and pay when they collect, so you can take online orders without connecting a card processor at all. Prefer to take payment up front? Add online card payments any time. When your trial ends you move to <plan>{fallback}</plan>{fallbackFree, select, yes { — no monthly fee —} other {}} unless you choose a plan. No card to start, no contract, cancel anytime.",
+    "bodyOnly": "With {brand}, customers order ahead and pay when they collect, so you can take online orders without connecting a card processor at all. Prefer to take payment up front? Add online card payments any time. When your trial ends, <plan>{fallback}</plan> is {price} a month. We’ll be in touch before then to set up payment. No card to start, no contract, cancel anytime."
   },
   "card": {
     "perTruckMonth": "per truck / month",

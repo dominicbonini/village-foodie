@@ -150,18 +150,12 @@ const stageAF2 = () => (fs.existsSync(STAGE_AF2_FILE) ? readJson(STAGE_AF2_FILE)
 // frozen catalogue shows them at their text before, like the other stages.
 const STAGE_CT1_FILE = path.join(REPO, 'scripts/fixtures/copy-truth-1-messages.json')
 const stageCT1 = () => (fs.existsSync(STAGE_CT1_FILE) ? readJson(STAGE_CT1_FILE) : EMPTY_STAGE())
-// ⚠️ RE-PINNED (faq-1c, 2 November 2026): faq-1c's message changes are a SEVENTH sibling (scripts/fixtures/faq-1c-messages.json —
-// Pay at Hatch the free trial's only: the banner's first sentence, the dashboard's card-payments words taking {pah}, the comparison
-// FAQ and payment-methods note; Manage › Payments' line and the comparison row's note added), applied after copy-truth-1 by the same
-// rule. The new arguments ({pah}) are optional for the old text, and the old banner's {brand} is still passed.
-const STAGE_F1C_FILE = path.join(REPO, 'scripts/fixtures/faq-1c-messages.json')
-const stageF1C = () => (fs.existsSync(STAGE_F1C_FILE) ? readJson(STAGE_F1C_FILE) : EMPTY_STAGE())
 const stageA = () => {
-  const a = stageAOnly(), b = stageA2(), sb = stageB(), st = stageTidy(), af2 = stageAF2(), ct1 = stageCT1(), f1c = stageF1C(), out = {}
+  const a = stageAOnly(), b = stageA2(), sb = stageB(), st = stageTidy(), af2 = stageAF2(), ct1 = stageCT1(), out = {}
   for (const loc of ['en-GB', 'en-US']) {
     const o = out[loc] = {}
     for (const part of ['removed', 'reworded', 'added']) o[part] = { ...((a[loc] || {})[part] || {}), ...((b[loc] || {})[part] || {}) }
-    for (const x of [sb[loc] || {}, st[loc] || {}, af2[loc] || {}, ct1[loc] || {}, f1c[loc] || {}]) {
+    for (const x of [sb[loc] || {}, st[loc] || {}, af2[loc] || {}, ct1[loc] || {}]) {
       for (const [k, v] of Object.entries(x.removed || {})) { const was = k in o.reworded ? o.reworded[k].before : k in o.added ? undefined : v; delete o.reworded[k]; delete o.added[k]; if (was !== undefined) o.removed[k] = was }
       for (const [k, v] of Object.entries(x.reworded || {})) { if (k in o.added) o.added[k] = v.after; else o.reworded[k] = k in o.reworded ? { before: o.reworded[k].before, after: v.after } : v }
       for (const [k, v] of Object.entries(x.added || {})) o.added[k] = v
@@ -322,4 +316,4 @@ function gbKeyDiff(frozenFile = FROZEN_DEFAULT, afterFile = fs.existsSync(PHASE2
   return out
 }
 
-module.exports = { stageA, stageAOnly, stageA2, stageB, stageTidy, stageAF2, STAGE_AF2_FILE, stageCT1, STAGE_CT1_FILE, stageF1C, STAGE_F1C_FILE, STAGE_A_FILE, STAGE_A2_FILE, STAGE_B_FILE, STAGE_TIDY_FILE, REPO, MOVED_FILE, MOVED_FILE_1D2, MOVED_FILE_1E, MOVED_FILES, KEY_MOVES_FILE, KEY_MOVES_FILE_1E, keyMoves, withMoves, movedTree, PHASE2_END_GB, FROZEN_DEFAULT, FROZEN_REF, FROZEN_INLINE, withInline, SPEC, leaves, getPath, overlay, mode, catalogues, enGBForNode, generated, resolveMessages, gbKeyDiff, readJson }
+module.exports = { stageA, stageAOnly, stageA2, stageB, stageTidy, stageAF2, STAGE_AF2_FILE, stageCT1, STAGE_CT1_FILE, STAGE_A_FILE, STAGE_A2_FILE, STAGE_B_FILE, STAGE_TIDY_FILE, REPO, MOVED_FILE, MOVED_FILE_1D2, MOVED_FILE_1E, MOVED_FILES, KEY_MOVES_FILE, KEY_MOVES_FILE_1E, keyMoves, withMoves, movedTree, PHASE2_END_GB, FROZEN_DEFAULT, FROZEN_REF, FROZEN_INLINE, withInline, SPEC, leaves, getPath, overlay, mode, catalogues, enGBForNode, generated, resolveMessages, gbKeyDiff, readJson }

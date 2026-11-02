@@ -54,7 +54,6 @@
   "online": {
     "heading": "Mokėjimai internetu",
     "body": "Klientai moka kortele užsakydami. Pinigai keliauja tiesiai į jūsų Stripe paskyrą — mes jų niekada nelaikome.",
-    "payAtHatchTrialOnly": "{brand} yra jūsų nemokamo bandomojo laikotarpio dalis. Klientai dabar išankstinius užsakymus apmoka internetu kortele — prijunkite Stripe žemiau.",
     "feeLine": "Stripe ima {fee} už mokėjimą standartine kortele ({region}). Kitos kortelės gali kainuoti daugiau. HatchGrab mokestis už užsakymus internetu priklauso nuo jūsų plano — žr. „Atsiskaitymai“.",
     "testMode": "Bandomasis režimas. Tikrų mokėjimų dar negalima priimti."
   },

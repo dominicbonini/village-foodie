@@ -54,7 +54,6 @@
   "online": {
     "heading": "Tiešsaistes maksājumi",
     "body": "Klienti maksā ar karti, kad pasūta. Nauda nonāk tieši jūsu Stripe kontā — mēs to nekad neuzglabājam.",
-    "payAtHatchTrialOnly": "{brand} ir daļa no jūsu bezmaksas izmēģinājuma perioda. Klienti tagad iepriekšējos pasūtījumus apmaksā tiešsaistē ar karti — pievienojiet Stripe zemāk.",
     "feeLine": "Stripe iekasē {fee} par maksājumu ar standarta kartēm ({region}). Citas kartes var izmaksāt dārgāk. HatchGrab komisija par tiešsaistes pasūtījumiem ir atkarīga no jūsu plāna — skatiet sadaļu Norēķini.",
     "testMode": "Testa režīms. Īstus maksājumus vēl nevar pieņemt."
   },

@@ -54,7 +54,6 @@
   "online": {
     "heading": "Plăți online",
     "body": "Clienții plătesc cu cardul când comandă. Banii ajung direct în propriul dumneavoastră cont Stripe — noi nu îi păstrăm niciodată.",
-    "payAtHatchTrialOnly": "{brand} face parte din perioada de probă gratuită. Clienții plătesc acum precomenzile online cu cardul — conectați Stripe mai jos.",
     "feeLine": "Stripe percepe {fee} per plată standard cu {region}. Alte carduri pot costa mai mult. Taxa proprie HatchGrab pentru comenzile online depinde de abonament — vedeți Facturare.",
     "testMode": "Mod de testare. Încă nu se pot primi plăți reale."
   },

@@ -54,7 +54,6 @@
   "online": {
     "heading": "Veebimaksed",
     "body": "Kliendid maksavad tellides kaardiga. Raha läheb otse sinu enda Stripe’i kontole — meie seda kunagi ei hoia.",
-    "payAtHatchTrialOnly": "{brand} kuulub sinu tasuta prooviperioodi juurde. Kliendid maksavad nüüd ettetellimuste eest veebis kaardiga — ühenda allpool Stripe.",
     "feeLine": "Stripe võtab tavaliste kaartide puhul ({region}) {fee} makse kohta. Teised kaardid võivad maksta rohkem. HatchGrabi enda tasu veebitellimustelt sõltub sinu paketist — vaata jaotist Arveldus.",
     "testMode": "Testrežiim. Päris makseid veel vastu võtta ei saa."
   },

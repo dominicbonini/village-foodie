@@ -1,11 +1,11 @@
 {
   "toast": {
-    "cardPayments": "{state, select, off {{pah, select, on {Card payments off — customers pay at the truck} other {Card payments off — online ordering is paused until you turn them back on}}} other {Card payments back on}}"
+    "cardPayments": "{state, select, off {Card payments off — customers pay at the truck} other {Card payments back on}}"
   },
   "banner": {
     "cardPaymentsOff": "Card payments are off — customers are paying at the truck. This stays off, on every event, until you turn it back on."
   },
   "settings": {
-    "cardsHelp": "{pah, select, on {Turn this off during a card problem and customers will place orders as normal and pay at the truck instead. Orders keep coming; only the card step stops.} other {Turn this off during a card problem and online ordering stops until you turn it back on — your plan doesn’t include paying at the truck. Walk-up orders carry on as normal.}}"
+    "cardsHelp": "Turn this off during a card problem and customers will place orders as normal and pay at the truck instead. Orders keep coming; only the card step stops."
   }
 }

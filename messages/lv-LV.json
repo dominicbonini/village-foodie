@@ -194,7 +194,7 @@
       "saveFailed": "Neizdevās saglabāt",
       "layout": "{layout, select, scroll {Ēdienkarte tiek rādīta vienā lapā} other {Ēdienkarte tiek rādīta pa kategorijām}}",
       "autoAccept": "{state, select, on {Automātiskā pieņemšana ieslēgta} other {Automātiskā pieņemšana izslēgta}}",
-      "cardPayments": "{state, select, off {{pah, select, on {Maksājumi ar karti izslēgti — klienti maksā uz vietas pie busiņa} other {Karšu maksājumi izslēgti — pasūtīšana tiešsaistē ir apturēta, līdz tos atkal ieslēdzat}}} other {Maksājumi ar karti atkal ieslēgti}}",
+      "cardPayments": "{state, select, off {Maksājumi ar karti izslēgti — klienti maksā uz vietas pie busiņa} other {Maksājumi ar karti atkal ieslēgti}}",
       "intervalsFailed": "Saņemšanas laikus pašlaik neizdevās saglabāt.",
       "unpaidOrders": "{state, select, on {Neapmaksāti pasūtījumi šim pasākumam ieslēgti} other {Neapmaksāti pasūtījumi šim pasākumam izslēgti}}",
       "presses": "{presses, select, one {Šim pasākumam — viens pieskāriens} other {Šim pasākumam — divi pieskārieni}}",
@@ -397,7 +397,7 @@
       "buzzerPromptTitle": "Atgādināt man pievienot peidžeri",
       "buzzerPromptHelp": "Atver peidžeru režģi, tiklīdz noformējat pasūtījumu, lai numurs nonāktu sarakstā, kamēr klients vēl stāv jūsu priekšā. Ja tas ir izslēgts, peidžeri joprojām varat pievienot jebkurā laikā, pieskaroties pasūtījumam, taču nekas jums par to neatgādinās. Noderīgi, ja izsniedzat peidžerus; viegli izslēdzams, ja ne.",
       "cardsTitle": "Pieņemt maksājumus ar karti tiešsaistē",
-      "cardsHelp": "{pah, select, on {Izslēdziet šo karšu maksājumu problēmu laikā, un klienti noformēs pasūtījumus kā parasti, bet samaksās uz vietas pie busiņa. Pasūtījumi turpina ienākt; apstājas tikai maksājums ar karti.} other {Izslēdziet to karšu problēmas laikā, un pasūtīšana tiešsaistē apstājas, līdz to atkal ieslēdzat — jūsu plāns neietver samaksu saņemot. Pasūtījumi uz vietas turpinās kā parasti.}}",
+      "cardsHelp": "Izslēdziet šo karšu maksājumu problēmu laikā, un klienti noformēs pasūtījumus kā parasti, bet samaksās uz vietas pie busiņa. Pasūtījumi turpina ienākt; apstājas tikai maksājums ar karti.",
       "cardsScope": "Tas attiecas uz visu jūsu food truck uzņēmumu, visos pasākumos, un paliek izslēgts, līdz jūs to atkal ieslēgsiet.",
       "cardsOffSince": "Izslēgts kopš {date}",
       "soundsTitle": "Skaņas",
@@ -4472,7 +4472,6 @@
     "online": {
       "heading": "Tiešsaistes maksājumi",
       "body": "Klienti maksā ar karti, kad pasūta. Nauda nonāk tieši jūsu Stripe kontā — mēs to nekad neuzglabājam.",
-      "payAtHatchTrialOnly": "{brand} ir daļa no jūsu bezmaksas izmēģinājuma perioda. Klienti tagad iepriekšējos pasūtījumus apmaksā tiešsaistē ar karti — pievienojiet Stripe zemāk.",
       "feeLine": "Stripe iekasē {fee} par maksājumu ar standarta kartēm ({region}). Citas kartes var izmaksāt dārgāk. HatchGrab komisija par tiešsaistes pasūtījumiem ir atkarīga no jūsu plāna — skatiet sadaļu Norēķini.",
       "testMode": "Testa režīms. Īstus maksājumus vēl nevar pieņemt."
     },
@@ -5997,8 +5996,8 @@
   "pricing": {
     "banner": {
       "title": "{months, plural, zero {Jūsu pirmie # mēneši ir pilnīgi bez maksas — visas funkcijas pieejamas.} one {Jūsu pirmais mēnesis ir pilnīgi bez maksas — visas funkcijas pieejamas.} other {Jūsu pirmie # mēneši ir pilnīgi bez maksas — visas funkcijas pieejamas.}}",
-      "body": "Bezmaksas izmēģinājuma laikā klienti var pasūtīt iepriekš un samaksāt saņemot, tāpēc varat sākt, pirms pievienojat karšu maksājumus. Pēc izmēģinājuma perioda iepriekšējie pasūtījumi tiek apmaksāti tiešsaistē ar karti. Vēlaties saņemt samaksu uzreiz? Pievienojiet karšu maksājumus tiešsaistē jebkurā laikā. Kad izmēģinājuma periods beidzas, jūs pārejat uz plānu <plan>{fallback}</plan>{fallbackFree, select, yes { (0 € mēnesī)} other {}}, ja vien neizvēlaties citu plānu. Lai sāktu, karte nav vajadzīga, nav līguma, atteikties var jebkurā laikā.",
-      "bodyOnly": "Bezmaksas izmēģinājuma laikā klienti var pasūtīt iepriekš un samaksāt saņemot, tāpēc varat sākt, pirms pievienojat karšu maksājumus. Pēc izmēģinājuma perioda iepriekšējie pasūtījumi tiek apmaksāti tiešsaistē ar karti. Vēlaties saņemt samaksu uzreiz? Pievienojiet karšu maksājumus tiešsaistē jebkurā laikā. Kad izmēģinājuma periods beidzas, plāns <plan>{fallback}</plan> maksā {price} mēnesī. Pirms tam mēs ar jums sazināsimies, lai iestatītu maksājumu. Lai sāktu, karte nav vajadzīga, nav līguma, atteikties var jebkurā laikā."
+      "body": "Izmantojot {brand}, klienti pasūta iepriekš un maksā saņemot, tāpēc tiešsaistes pasūtījumus varat pieņemt, vispār nepievienojot karšu maksājumu apstrādātāju. Vēlaties saņemt samaksu uzreiz? Pievienojiet karšu maksājumus tiešsaistē jebkurā laikā. Kad izmēģinājuma periods beidzas, jūs pārejat uz plānu <plan>{fallback}</plan>{fallbackFree, select, yes { (0 € mēnesī)} other {}}, ja vien neizvēlaties citu plānu. Lai sāktu, karte nav vajadzīga, nav līguma, atteikties var jebkurā laikā.",
+      "bodyOnly": "Izmantojot {brand}, klienti pasūta iepriekš un maksā saņemot, tāpēc tiešsaistes pasūtījumus varat pieņemt, vispār nepievienojot karšu maksājumu apstrādātāju. Vēlaties saņemt samaksu uzreiz? Pievienojiet karšu maksājumus tiešsaistē jebkurā laikā. Kad izmēģinājuma periods beidzas, plāns <plan>{fallback}</plan> maksā {price} mēnesī. Pirms tam mēs ar jums sazināsimies, lai iestatītu maksājumu. Lai sāktu, karte nav vajadzīga, nav līguma, atteikties var jebkurā laikā."
     },
     "card": {
       "perTruckMonth": "par busiņu / mēnesī",

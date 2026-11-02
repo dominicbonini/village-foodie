@@ -54,7 +54,6 @@
   "online": {
     "heading": "Verkkomaksut",
     "body": "Asiakkaat maksavat kortilla tilatessaan. Rahat menevät suoraan omalle Stripe-tilillesi — me emme koskaan säilytä niitä.",
-    "payAtHatchTrialOnly": "{brand} kuuluu ilmaiseen kokeilujaksoosi. Asiakkaat maksavat nyt ennakkotilaukset verkossa kortilla — yhdistä Stripe alla.",
     "feeLine": "Stripe veloittaa {fee} maksulta tavallisilla korteilla ({region}). Muut kortit voivat maksaa enemmän. HatchGrabin oma maksu verkkotilauksista riippuu paketistasi — katso Laskutus.",
     "testMode": "Testitila. Oikeita maksuja ei voi vielä vastaanottaa."
   },

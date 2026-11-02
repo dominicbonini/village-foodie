@@ -54,7 +54,6 @@
   "online": {
     "heading": "Online betalingen",
     "body": "Klanten betalen met hun kaart wanneer ze bestellen. Het geld gaat rechtstreeks naar je eigen Stripe-account — wij houden het nooit vast.",
-    "payAtHatchTrialOnly": "{brand} hoort bij je gratis proefperiode. Klanten betalen vooraf geplaatste bestellingen nu online met een kaart — koppel hieronder Stripe.",
     "feeLine": "Stripe rekent {fee} per betaling voor standaard {region}. Andere kaarten kunnen meer kosten. De eigen kosten van HatchGrab voor online bestellingen hangen af van je abonnement — zie Facturatie.",
     "testMode": "Testmodus. Er kunnen nog geen echte betalingen worden ontvangen."
   },

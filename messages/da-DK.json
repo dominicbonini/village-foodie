@@ -194,7 +194,7 @@
       "saveFailed": "Kunne ikke gemme",
       "layout": "{layout, select, scroll {Menukortet vises som én side} other {Menukortet vises med separate kategorier}}",
       "autoAccept": "{state, select, on {Automatisk accept slået til} other {Automatisk accept slået fra}}",
-      "cardPayments": "{state, select, off {{pah, select, on {Kortbetaling slået fra – kunderne betaler i lugen} other {Kortbetaling slået fra – onlinebestilling er sat på pause, indtil du slår den til igen}}} other {Kortbetaling slået til igen}}",
+      "cardPayments": "{state, select, off {Kortbetaling slået fra – kunderne betaler i lugen} other {Kortbetaling slået til igen}}",
       "intervalsFailed": "Afhentningstiderne kunne ikke gemmes lige nu.",
       "unpaidOrders": "{state, select, on {Ubetalte bestillinger slået til for dette arrangement} other {Ubetalte bestillinger slået fra for dette arrangement}}",
       "presses": "{presses, select, one {Ét tryk for dette arrangement} other {To tryk for dette arrangement}}",
@@ -397,7 +397,7 @@
       "buzzerPromptTitle": "Mind mig om at tilføje en buzzer",
       "buzzerPromptHelp": "Åbner buzzer-oversigten, så snart du afgiver en bestilling, så nummeret kommer på tavlen, mens kunden stadig står foran dig. Når det er slået fra, kan du stadig tilføje en buzzer når som helst ved at trykke på bestillingen, men du bliver ikke mindet om det. Nyttigt, hvor du deler buzzere ud, og nemt at slå fra, hvor du ikke gør.",
       "cardsTitle": "Tag imod kortbetaling online",
-      "cardsHelp": "{pah, select, on {Slå dette fra, hvis der er problemer med kortbetaling, så afgiver kunderne bestillinger som normalt og betaler i lugen i stedet. Bestillingerne bliver ved med at komme; det er kun korttrinnet, der stopper.} other {Slå dette fra ved et kortproblem, så stopper onlinebestilling, indtil du slår det til igen – dit abonnement omfatter ikke betaling ved afhentning. Bestillinger ved vognen fortsætter som normalt.}}",
+      "cardsHelp": "Slå dette fra, hvis der er problemer med kortbetaling, så afgiver kunderne bestillinger som normalt og betaler i lugen i stedet. Bestillingerne bliver ved med at komme; det er kun korttrinnet, der stopper.",
       "cardsScope": "Det gælder hele din foodtruck ved alle arrangementer og forbliver slået fra, indtil du slår det til igen.",
       "cardsOffSince": "Slået fra siden {date}",
       "soundsTitle": "Lyde",
@@ -4472,7 +4472,6 @@
     "online": {
       "heading": "Onlinebetalinger",
       "body": "Kunderne betaler med kort, når de bestiller. Pengene går direkte til din egen Stripe-konto — vi holder aldrig på dem.",
-      "payAtHatchTrialOnly": "{brand} er en del af din gratis prøveperiode. Kunderne betaler nu forudbestillinger online med kort – tilknyt Stripe herunder.",
       "feeLine": "Stripe tager {fee} pr. betaling med almindelige {region}. Andre kort kan koste mere. HatchGrabs eget gebyr på onlinebestillinger afhænger af dit abonnement — se fanen Abonnement.",
       "testMode": "Testtilstand. Der kan endnu ikke tages imod rigtige betalinger."
     },
@@ -5997,8 +5996,8 @@
   "pricing": {
     "banner": {
       "title": "{months, plural, one {Din første måned er helt gratis — med alle funktioner.} other {Dine første # måneder er helt gratis — med alle funktioner.}}",
-      "body": "I din gratis prøveperiode kan kunderne forudbestille og betale ved afhentning, så du kan komme i gang, før du tilknytter kortbetaling. Efter prøveperioden betales forudbestillinger online med kort. Vil du hellere tage betaling på forhånd? Tilføj onlinebetaling med kort når som helst. Når din prøveperiode slutter, skifter du til abonnementet <plan>{fallback}</plan>{fallbackFree, select, yes { (ingen fast månedspris)} other {}}, medmindre du vælger et andet. Intet betalingskort for at starte, ingen binding, opsig når som helst.",
-      "bodyOnly": "I din gratis prøveperiode kan kunderne forudbestille og betale ved afhentning, så du kan komme i gang, før du tilknytter kortbetaling. Efter prøveperioden betales forudbestillinger online med kort. Vil du hellere tage betaling på forhånd? Tilføj onlinebetaling med kort når som helst. Når din prøveperiode slutter, koster abonnementet <plan>{fallback}</plan> {price} om måneden. Vi kontakter dig inden da for at sætte betalingen op. Intet betalingskort for at starte, ingen binding, opsig når som helst."
+      "body": "Med {brand} forudbestiller kunderne og betaler ved afhentning, så du kan tage imod onlinebestillinger helt uden at tilknytte en kortindløser. Vil du hellere tage betaling på forhånd? Tilføj onlinebetaling med kort når som helst. Når din prøveperiode slutter, skifter du til abonnementet <plan>{fallback}</plan>{fallbackFree, select, yes { (ingen fast månedspris)} other {}}, medmindre du vælger et andet. Intet betalingskort for at starte, ingen binding, opsig når som helst.",
+      "bodyOnly": "Med {brand} forudbestiller kunderne og betaler ved afhentning, så du kan tage imod onlinebestillinger helt uden at tilknytte en kortindløser. Vil du hellere tage betaling på forhånd? Tilføj onlinebetaling med kort når som helst. Når din prøveperiode slutter, koster abonnementet <plan>{fallback}</plan> {price} om måneden. Vi kontakter dig inden da for at sætte betalingen op. Intet betalingskort for at starte, ingen binding, opsig når som helst."
     },
     "card": {
       "perTruckMonth": "pr. foodtruck/måned",

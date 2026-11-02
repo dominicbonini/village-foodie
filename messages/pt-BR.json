@@ -194,7 +194,7 @@
       "saveFailed": "Não foi possível salvar",
       "layout": "{layout, select, scroll {O cardápio aparece em uma página só} other {O cardápio aparece em categorias separadas}}",
       "autoAccept": "{state, select, on {Aceite automático ativado} other {Aceite automático desativado}}",
-      "cardPayments": "{state, select, off {{pah, select, on {Pagamento com cartão desligado: os clientes pagam na retirada} other {Pagamentos com cartão desativados — os pedidos online estão pausados até você reativá-los}}} other {Pagamento com cartão ligado de novo}}",
+      "cardPayments": "{state, select, off {Pagamento com cartão desligado: os clientes pagam na retirada} other {Pagamento com cartão ligado de novo}}",
       "intervalsFailed": "Não foi possível salvar os horários de retirada agora.",
       "unpaidOrders": "{state, select, on {Pedidos não pagos ativados para este evento} other {Pedidos não pagos desativados para este evento}}",
       "presses": "{presses, select, one {Um toque para este evento} other {Dois toques para este evento}}",
@@ -397,7 +397,7 @@
       "buzzerPromptTitle": "Lembrar de adicionar um pager",
       "buzzerPromptHelp": "Abre a grade de pagers assim que você faz um pedido, para o número entrar no painel enquanto o cliente ainda está na sua frente. Com isso desligado, você ainda pode adicionar um pager a qualquer momento tocando no pedido, mas nada vai lembrar você. Útil onde você entrega pagers, fácil de desligar onde não entrega.",
       "cardsTitle": "Aceitar pagamento online com cartão",
-      "cardsHelp": "{pah, select, on {Desligue durante um problema com cartões e os clientes vão fazer pedidos normalmente e pagar na retirada. Os pedidos continuam chegando; só a etapa do cartão para.} other {Desative isto durante um problema com cartões e os pedidos online param até você reativar — seu plano não inclui o pagamento na retirada. Os pedidos no balcão continuam normalmente.}}",
+      "cardsHelp": "Desligue durante um problema com cartões e os clientes vão fazer pedidos normalmente e pagar na retirada. Os pedidos continuam chegando; só a etapa do cartão para.",
       "cardsScope": "Vale para o food truck inteiro, em todos os eventos, e continua desligado até você ligar de novo.",
       "cardsOffSince": "Desligado desde {date}",
       "soundsTitle": "Sons",
@@ -4472,7 +4472,6 @@
     "online": {
       "heading": "Pagamentos online",
       "body": "Os clientes pagam com cartão ao fazer o pedido. O dinheiro vai direto para a sua própria conta Stripe — nunca ficamos com ele.",
-      "payAtHatchTrialOnly": "{brand} faz parte do seu teste grátis. Agora os clientes pagam os pedidos antecipados online com cartão — conecte o Stripe abaixo.",
       "feeLine": "A Stripe cobra {fee} por pagamento com {region} padrão. Outros cartões podem custar mais. A taxa da própria HatchGrab sobre pedidos online depende do seu plano — veja em Cobrança.",
       "testMode": "Modo de teste. Ainda não é possível receber pagamentos reais."
     },
@@ -5969,8 +5968,8 @@
   "pricing": {
     "banner": {
       "title": "{months, plural, one {Seu primeiro mês é totalmente grátis — com todos os recursos liberados.} other {Seus primeiros # meses são totalmente grátis — com todos os recursos liberados.}}",
-      "body": "Durante o teste grátis, os clientes podem pedir antes e pagar na retirada, então você pode começar antes de conectar os pagamentos com cartão. Depois do teste, os pedidos antecipados são pagos online com cartão. Prefere receber adiantado? Ative pagamentos online com cartão quando quiser. Quando o teste acabar, você passa para o plano <plan>{fallback}</plan>{fallbackFree, select, yes { — sem mensalidade —} other {}}, a menos que escolha outro plano. Sem cartão para começar, sem contrato, cancele quando quiser.",
-      "bodyOnly": "Durante o teste grátis, os clientes podem pedir antes e pagar na retirada, então você pode começar antes de conectar os pagamentos com cartão. Depois do teste, os pedidos antecipados são pagos online com cartão. Prefere receber adiantado? Ative pagamentos online com cartão quando quiser. Quando o teste acabar, o plano <plan>{fallback}</plan> custa {price} por mês. Antes disso, vamos entrar em contato para configurar o pagamento. Sem cartão para começar, sem contrato, cancele quando quiser."
+      "body": "Com {brand}, os clientes pedem antes e pagam na retirada, então você recebe pedidos online sem precisar conectar nenhuma processadora de cartão. Prefere receber adiantado? Ative pagamentos online com cartão quando quiser. Quando o teste acabar, você passa para o plano <plan>{fallback}</plan>{fallbackFree, select, yes { — sem mensalidade —} other {}}, a menos que escolha outro plano. Sem cartão para começar, sem contrato, cancele quando quiser.",
+      "bodyOnly": "Com {brand}, os clientes pedem antes e pagam na retirada, então você recebe pedidos online sem precisar conectar nenhuma processadora de cartão. Prefere receber adiantado? Ative pagamentos online com cartão quando quiser. Quando o teste acabar, o plano <plan>{fallback}</plan> custa {price} por mês. Antes disso, vamos entrar em contato para configurar o pagamento. Sem cartão para começar, sem contrato, cancele quando quiser."
     },
     "card": {
       "perTruckMonth": "por food truck / mês",

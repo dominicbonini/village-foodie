@@ -43,8 +43,7 @@ import { useCountrySettings } from '@/components/CountrySettingsProvider'
 import { useT, useAppLocale } from '@/lib/i18n/use-t'
 import type { FeatureAccessView } from '@/lib/useFeatures'
 import { PAY_AT_HATCH_FEATURE } from '@/lib/plans'
-import { priceText } from '@/lib/price-text'
-import { PRICE_WORD } from '@/lib/price-words'
+import { PlanPrompt } from '@/components/PlanPrompt'
 import '@/lib/i18n/catalog/planPrompt'
 import '@/lib/i18n/catalog/managePayments'
 import {
@@ -423,10 +422,8 @@ export function PaymentsTab({ token, onTrial, features, showToast, afterOnline }
             switch to show: customers are offered it whenever the plan allows it. When the PLAN does not, the one upgrade
             prompt says which plan does; when an OVERRIDE switched it off, the plain "switched off for your truck". Every
             plan allows it as seeded, so neither line shows today. */}
-        {/* faq-1c (2 November 2026): Pay at Hatch is the free trial's only (plans.pay_at_hatch_allowed false on every public plan,
-            Dominic) — there is no plan to upgrade to, so the slot says what is true instead of a PlanPrompt. */}
         {features.block(PAY_AT_HATCH_FEATURE) === 'plan' && (
-          <p className="mt-3 text-sm text-slate-600" data-pay-at-hatch-trial-only>{t('online.payAtHatchTrialOnly', { brand: priceText(PRICE_WORD.payAtHatch, appLocale) })}</p>
+          <div className="mt-3"><PlanPrompt feature={PAY_AT_HATCH_FEATURE} upgradeTo={features.upgradeTo(PAY_AT_HATCH_FEATURE)} /></div>
         )}
         {features.block(PAY_AT_HATCH_FEATURE) === 'override' && (
           <p className="mt-2 text-xs text-slate-500">{tPrompt('switchedOff', { feature: tPrompt(`features.${PAY_AT_HATCH_FEATURE}.name` as never), many: tPrompt(`features.${PAY_AT_HATCH_FEATURE}.many` as never) })}</p>

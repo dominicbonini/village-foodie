@@ -194,7 +194,7 @@
       "saveFailed": "Speichern fehlgeschlagen",
       "layout": "{layout, select, scroll {Speisekarte wird als eine Seite angezeigt} other {Speisekarte zeigt getrennte Kategorien}}",
       "autoAccept": "{state, select, on {Automatische Annahme aktiviert} other {Automatische Annahme deaktiviert}}",
-      "cardPayments": "{state, select, off {{pah, select, on {Kartenzahlung aus – Kunden bezahlen vor Ort an der Ausgabe} other {Kartenzahlung aus – Online-Bestellungen pausieren, bis Sie sie wieder einschalten}}} other {Kartenzahlung wieder an}}",
+      "cardPayments": "{state, select, off {Kartenzahlung aus – Kunden bezahlen vor Ort an der Ausgabe} other {Kartenzahlung wieder an}}",
       "intervalsFailed": "Die Abholzeiten konnten gerade nicht gespeichert werden.",
       "unpaidOrders": "{state, select, on {Unbezahlte Bestellungen für dieses Event an} other {Unbezahlte Bestellungen für dieses Event aus}}",
       "presses": "{presses, select, one {Einmal tippen für dieses Event} other {Zweimal tippen für dieses Event}}",
@@ -397,7 +397,7 @@
       "buzzerPromptTitle": "An Pager erinnern",
       "buzzerPromptHelp": "Öffnet die Pager-Auswahl, sobald Sie eine Bestellung aufgeben, damit die Nummer in der Übersicht steht, während der Kunde noch vor Ihnen steht. Ist die Option aus, können Sie trotzdem jederzeit einen Pager hinzufügen, indem Sie auf die Bestellung tippen – Sie werden nur nicht daran erinnert. Nützlich, wenn Sie Pager ausgeben, und leicht abzuschalten, wenn nicht.",
       "cardsTitle": "Kartenzahlung online annehmen",
-      "cardsHelp": "{pah, select, on {Schalten Sie dies bei einem Kartenproblem aus: Kunden bestellen wie gewohnt und bezahlen stattdessen vor Ort an der Ausgabe. Bestellungen gehen weiter ein; nur der Kartenschritt entfällt.} other {Schalten Sie dies bei einem Kartenproblem aus, stoppen Online-Bestellungen, bis Sie es wieder einschalten – Ihr Tarif enthält keine Zahlung bei der Abholung. Bestellungen vor Ort laufen normal weiter.}}",
+      "cardsHelp": "Schalten Sie dies bei einem Kartenproblem aus: Kunden bestellen wie gewohnt und bezahlen stattdessen vor Ort an der Ausgabe. Bestellungen gehen weiter ein; nur der Kartenschritt entfällt.",
       "cardsScope": "Dies gilt für Ihren gesamten Foodtruck bei jedem Event und bleibt aus, bis Sie es wieder einschalten.",
       "cardsOffSince": "Aus seit {date}",
       "soundsTitle": "Töne",
@@ -4472,7 +4472,6 @@
     "online": {
       "heading": "Online-Zahlungen",
       "body": "Kunden zahlen bei der Bestellung mit Karte. Das Geld geht direkt auf Ihr eigenes Stripe-Konto – wir verwahren es nie.",
-      "payAtHatchTrialOnly": "{brand} ist Teil Ihrer kostenlosen Testphase. Kunden bezahlen Vorbestellungen jetzt online per Karte – verbinden Sie unten Stripe.",
       "feeLine": "Stripe berechnet {fee} pro Zahlung mit Standard-{region}. Andere Karten können mehr kosten. Die eigene Gebühr von HatchGrab für Online-Bestellungen hängt von Ihrem Tarif ab – siehe Abrechnung.",
       "testMode": "Testmodus. Es können noch keine echten Zahlungen angenommen werden."
     },
@@ -5997,8 +5996,8 @@
   "pricing": {
     "banner": {
       "title": "{months, plural, one {Ihr erster Monat ist komplett kostenlos – alle Funktionen freigeschaltet.} other {Ihre ersten # Monate sind komplett kostenlos – alle Funktionen freigeschaltet.}}",
-      "body": "Während Ihrer kostenlosen Testphase können Kunden vorab bestellen und bei der Abholung bezahlen – so können Sie starten, bevor Sie Kartenzahlungen verbinden. Nach der Testphase werden Vorbestellungen online per Karte bezahlt. Lieber im Voraus kassieren? Fügen Sie jederzeit Online-Kartenzahlungen hinzu. Nach Ende der Testphase wechseln Sie in den Tarif <plan>{fallback}</plan>{fallbackFree, select, yes { – ohne Grundgebühr –} other {}}, sofern Sie keinen anderen Tarif wählen. Keine Kreditkarte zum Start, keine Vertragsbindung, jederzeit kündbar.",
-      "bodyOnly": "Während Ihrer kostenlosen Testphase können Kunden vorab bestellen und bei der Abholung bezahlen – so können Sie starten, bevor Sie Kartenzahlungen verbinden. Nach der Testphase werden Vorbestellungen online per Karte bezahlt. Lieber im Voraus kassieren? Fügen Sie jederzeit Online-Kartenzahlungen hinzu. Nach Ende der Testphase kostet der Tarif <plan>{fallback}</plan> im Monat {price}. Wir melden uns vorher bei Ihnen, um die Zahlung einzurichten. Keine Kreditkarte zum Start, keine Vertragsbindung, jederzeit kündbar."
+      "body": "Mit {brand} bestellen Kunden vorab und bezahlen bei der Abholung – so nehmen Sie Online-Bestellungen an, ganz ohne Zahlungsanbieter für Kartenzahlungen. Lieber im Voraus kassieren? Fügen Sie jederzeit Online-Kartenzahlungen hinzu. Nach Ende der Testphase wechseln Sie in den Tarif <plan>{fallback}</plan>{fallbackFree, select, yes { – ohne Grundgebühr –} other {}}, sofern Sie keinen anderen Tarif wählen. Keine Kreditkarte zum Start, keine Vertragsbindung, jederzeit kündbar.",
+      "bodyOnly": "Mit {brand} bestellen Kunden vorab und bezahlen bei der Abholung – so nehmen Sie Online-Bestellungen an, ganz ohne Zahlungsanbieter für Kartenzahlungen. Lieber im Voraus kassieren? Fügen Sie jederzeit Online-Kartenzahlungen hinzu. Nach Ende der Testphase kostet der Tarif <plan>{fallback}</plan> im Monat {price}. Wir melden uns vorher bei Ihnen, um die Zahlung einzurichten. Keine Kreditkarte zum Start, keine Vertragsbindung, jederzeit kündbar."
     },
     "card": {
       "perTruckMonth": "pro Foodtruck / Monat",
@@ -6407,7 +6406,7 @@
       "tseQ": "Brauche ich trotzdem eine Kasse mit TSE?",
       "tseA": "HatchGrab ist kein Kassensystem und hat keine TSE. Wie Sie Online-Bestellungen in Ihrer Kasse erfassen, klären Sie bitte mit Ihrer Steuerberatung.",
       "paymentsQ": "Welche Zahlungsarten unterstützt HatchGrab?",
-      "paymentsA": "Gäste bezahlen online mit Karte, Apple Pay oder Google Pay. Während der kostenlosen Testphase eines Trucks können sie auch direkt am Truck bezahlen. PayPal und Klarna werden derzeit nicht unterstützt.",
+      "paymentsA": "Gäste können online mit Karte, Apple Pay oder Google Pay oder direkt am Truck bezahlen. PayPal und Klarna werden derzeit nicht unterstützt.",
       "costTrial": "{months, plural, one {Der erste Monat ist} other {Die ersten # Monate sind}} kostenlos, mit allen Funktionen."
     },
     "method": {
@@ -6560,8 +6559,7 @@
       },
       "payattruck": {
         "label": "Bezahlen am Truck",
-        "explain": "Gäste bestellen online und zahlen bei der Abholung.",
-        "ours": "Während der kostenlosen Testphase"
+        "explain": "Gäste bestellen online und zahlen bei der Abholung."
       },
       "localpay": {
         "label": "Lokale Zahlungsarten (BLIK, iDEAL, Swish, MobilePay …)",
@@ -6583,7 +6581,7 @@
       "paymethods": {
         "label": "Angebotene Zahlungsarten",
         "explain": "Wie Gäste bezahlen können, so wie der Anbieter es angibt.",
-        "ours": "Karte, Apple Pay, Google Pay; Zahlung am Truck während der kostenlosen Testphase"
+        "ours": "Karte, Apple Pay, Google Pay; Zahlung am Truck"
       },
       "kds": {
         "label": "Küchenmonitor (KDS)",

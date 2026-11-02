@@ -91,7 +91,7 @@
     "tseQ": "Brauche ich trotzdem eine Kasse mit TSE?",
     "tseA": "HatchGrab ist kein Kassensystem und hat keine TSE. Wie Sie Online-Bestellungen in Ihrer Kasse erfassen, klären Sie bitte mit Ihrer Steuerberatung.",
     "paymentsQ": "Welche Zahlungsarten unterstützt HatchGrab?",
-    "paymentsA": "Gäste bezahlen online mit Karte, Apple Pay oder Google Pay. Während der kostenlosen Testphase eines Trucks können sie auch direkt am Truck bezahlen. PayPal und Klarna werden derzeit nicht unterstützt.",
+    "paymentsA": "Gäste können online mit Karte, Apple Pay oder Google Pay oder direkt am Truck bezahlen. PayPal und Klarna werden derzeit nicht unterstützt.",
     "costTrial": "{months, plural, one {Der erste Monat ist} other {Die ersten # Monate sind}} kostenlos, mit allen Funktionen."
   },
   "method": {
@@ -244,8 +244,7 @@
     },
     "payattruck": {
       "label": "Bezahlen am Truck",
-      "explain": "Gäste bestellen online und zahlen bei der Abholung.",
-      "ours": "Während der kostenlosen Testphase"
+      "explain": "Gäste bestellen online und zahlen bei der Abholung."
     },
     "localpay": {
       "label": "Lokale Zahlungsarten (BLIK, iDEAL, Swish, MobilePay …)",
@@ -267,7 +266,7 @@
     "paymethods": {
       "label": "Angebotene Zahlungsarten",
       "explain": "Wie Gäste bezahlen können, so wie der Anbieter es angibt.",
-      "ours": "Karte, Apple Pay, Google Pay; Zahlung am Truck während der kostenlosen Testphase"
+      "ours": "Karte, Apple Pay, Google Pay; Zahlung am Truck"
     },
     "kds": {
       "label": "Küchenmonitor (KDS)",
