@@ -197,7 +197,9 @@ async function run(ctx) {
       // Stage B deleted e.g. landing.pricing.summary, planFeatures.footnote.n1, planMeta.description.trial) has no text left
       // to differ: it must be absent from messages/en-GB.json instead (as scripts/_lp1d-checks.cjs does for Stage A).
       const aNow = W.flat(W.catalogues('A')['en-GB'])
-      const removedNamed = Object.keys(named).filter(k => !(k in gbDiff) && k in (sa.removed || {}))
+      // ⚠️ RE-PINNED (contact-1, 2 November 2026): and a named key contact-1 deleted with the Tally embed (scripts/_lp-contact-1.cjs REMOVED_KEYS).
+      const C1_REMOVED = require('./_lp-contact-1.cjs').REMOVED_KEYS
+      const removedNamed = Object.keys(named).filter(k => !(k in gbDiff) && (k in (sa.removed || {}) || C1_REMOVED.includes(k)))
       t(`the named keys a plan stage removed are absent from messages/en-GB.json (${removedNamed.length})`, removedNamed.every(k => !(k in aNow)), removedNamed.filter(k => k in aNow).join(', '))
       const gone = Object.keys(named).filter(k => !(k in gbDiff) && !removedNamed.includes(k))
       const moved = Object.keys(gbDiff).filter(k => k in named && (named[k].before !== gbDiff[k].before || named[k].after !== gbDiff[k].after))

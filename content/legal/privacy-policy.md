@@ -1,6 +1,6 @@
 # Privacy Policy
 
-**Last updated:** 31 October 2026
+**Last updated:** 2 November 2026
 
 This policy explains how HatchGrab Ltd ("we", "us", "our") collects and uses personal data across two connected services:
 
@@ -106,6 +106,10 @@ We delete your demo email, the menu file and the demo itself when the demo expir
 We keep anonymous counts of how far demos get, such as "a demo was built" or "an order was placed". They contain no email address, and once your demo is deleted they can no longer be linked to you.
 
 Demos we prepare for a food truck we have contacted are kept for up to 30 days and do not ask for an email.
+
+**If you use our contact form**
+
+If you send us a message through the contact form on the HatchGrab website, we handle it ourselves: we keep your message and the details you enter, and send them to our team by email through Brevo. We use them only to reply to you, and keep them for up to 24 months. To stop the form being misused, we also keep a scrambled version of your IP address with your message.
 
 ---
 

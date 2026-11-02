@@ -21,6 +21,8 @@
 // more than RETENTION_MONTHS ago — the whole row: the customer's number, their message and our reply are all it holds.
 // A row with no `created_at` cannot be aged and is left (none exist today). Bounded and idempotent like the rest: a
 // deleted row is not there to delete twice.
+// contact-1 (2 November 2026; privacy section 7, "Support correspondence: 24 months"): it also DELETES every
+// `contact_messages` row (HatchGrab's own contact form) created more than CONTACT_RETENTION_MONTHS ago — the whole row.
 import type { SupabaseClient } from '@supabase/supabase-js'
 
 export const RETENTION_MONTHS = 12
@@ -33,11 +35,14 @@ export const RETENTION_MAX_PER_RUN = 5000
 export const RETENTION_RECHECK_DAYS = 30
 
 /** The instant before which an order's customer details are removed: RETENTION_MONTHS calendar months ago (UTC). */
-export function retentionCutoff(now: Date = new Date()): Date {
+export function retentionCutoff(now: Date = new Date(), months: number = RETENTION_MONTHS): Date {
   const d = new Date(now.getTime())
-  d.setUTCMonth(d.getUTCMonth() - RETENTION_MONTHS)
+  d.setUTCMonth(d.getUTCMonth() - months)
   return d
 }
+
+/** contact-1: a contact-form message is support correspondence — kept 24 months (privacy section 7), then deleted. */
+export const CONTACT_RETENTION_MONTHS = 24
 
 type Json = unknown
 const blank = (v: unknown) => v == null || (typeof v === 'string' && v === '')
@@ -87,7 +92,7 @@ export function retentionPatch(row: Row, nameEmpty: '' | null): Record<string, u
 
 export interface RetentionResult {
   cutoff: string; ordersExamined: number; ordersCleared: number; draftsExamined: number; draftsCleared: number; draftsPurged: number | null
-  whatsappLogsDeleted: number; messagesDeleted: number; failures: string[]
+  whatsappLogsDeleted: number; messagesDeleted: number; contactMessagesDeleted: number; failures: string[]
 }
 
 const COLS = 'order_key, created_at, customer_name, customer_email, customer_phone, notes, items, deals'
@@ -119,9 +124,10 @@ async function pass(supabase: SupabaseClient, table: 'orders' | 'order_drafts', 
   }
 }
 
-/** The WhatsApp logs past the cutoff, deleted in id-keyed batches (both tables' `id` is their primary key). */
+/** The WhatsApp logs (and, contact-1, the contact form's messages) past their cutoff, deleted in id-keyed batches (each table's
+ *  `id` is its primary key). */
 export const WHATSAPP_TABLES = ['whatsapp_logs', 'messages'] as const
-async function deleteOld(supabase: SupabaseClient, table: (typeof WHATSAPP_TABLES)[number], cutoffIso: string, failures: string[]): Promise<number> {
+async function deleteOld(supabase: SupabaseClient, table: (typeof WHATSAPP_TABLES)[number] | 'contact_messages', cutoffIso: string, failures: string[]): Promise<number> {
   let deleted = 0
   while (deleted < RETENTION_MAX_PER_RUN) {
     const { data, error } = await supabase.from(table).select('id').lt('created_at', cutoffIso).order('id', { ascending: true }).limit(RETENTION_BATCH)
@@ -155,8 +161,10 @@ export async function runOrderRetention(supabase: SupabaseClient, now: Date = ne
   // 4 · the WhatsApp logs: the customer's messages to a truck and our automatic replies, and the send log
   const whatsappLogsDeleted = await deleteOld(supabase, 'whatsapp_logs', cutoff.toISOString(), failures)
   const messagesDeleted = await deleteOld(supabase, 'messages', cutoff.toISOString(), failures)
+  // 5 · contact-1: the contact form's messages past 24 months
+  const contactMessagesDeleted = await deleteOld(supabase, 'contact_messages', retentionCutoff(now, CONTACT_RETENTION_MONTHS).toISOString(), failures)
   return {
     cutoff: cutoff.toISOString(), ordersExamined: o.examined, ordersCleared: o.cleared, draftsExamined: d.examined, draftsCleared: d.cleared,
-    draftsPurged, whatsappLogsDeleted, messagesDeleted, failures,
+    draftsPurged, whatsappLogsDeleted, messagesDeleted, contactMessagesDeleted, failures,
   }
 }

@@ -1,4 +1,4 @@
-<!-- translation-of: privacy-policy.md sha256:cd7be1c77baa5cbf4b0d0587c82b29ea032c1dfee04b069e17ef0786c06679a7 -->
+<!-- translation-of: privacy-policy.md sha256:fa2e1f9b3b13db7a43d979b81cceb96103d9fcb329d6ba0665d42f761abe003c -->
 # Privacybeleid
 
 **Laatst bijgewerkt:** {{LAST_UPDATED}}
@@ -107,6 +107,10 @@ Wij verwijderen uw demo-e-mailadres, het menubestand en de demo zelf wanneer de 
 Wij houden anonieme tellingen bij van hoe ver demo's komen, zoals "er is een demo gemaakt" of "er is een bestelling geplaatst". Deze bevatten geen e-mailadres en kunnen, zodra uw demo is verwijderd, niet meer aan u worden gekoppeld.
 
 Demo's die wij voorbereiden voor een foodtruck waarmee wij contact hebben opgenomen, worden maximaal 30 dagen bewaard en vragen niet om een e-mailadres.
+
+**Als u ons contactformulier gebruikt**
+
+Als u ons een bericht stuurt via het contactformulier op de website van HatchGrab, behandelen wij dat zelf: wij bewaren uw bericht en de gegevens die u invult, en sturen ze per e-mail via Brevo naar ons team. Wij gebruiken ze alleen om u te antwoorden en bewaren ze maximaal 24 maanden. Om misbruik van het formulier te voorkomen, bewaren wij bij uw bericht ook een onherkenbaar gemaakte versie van uw IP-adres.
 
 ---
 

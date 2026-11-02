@@ -1,4 +1,4 @@
-<!-- translation-of: privacy-policy.md sha256:cd7be1c77baa5cbf4b0d0587c82b29ea032c1dfee04b069e17ef0786c06679a7 -->
+<!-- translation-of: privacy-policy.md sha256:fa2e1f9b3b13db7a43d979b81cceb96103d9fcb329d6ba0665d42f761abe003c -->
 # Datenschutzerklärung
 
 **Zuletzt aktualisiert:** {{LAST_UPDATED}}
@@ -107,6 +107,10 @@ Wir löschen Ihre Demo-E-Mail-Adresse, die Speisekartendatei und die Demo selbst
 Wir führen anonyme Zählungen darüber, wie weit Demos kommen, etwa „eine Demo wurde erstellt“ oder „eine Bestellung wurde aufgegeben“. Sie enthalten keine E-Mail-Adresse und können, sobald Ihre Demo gelöscht ist, nicht mehr mit Ihnen in Verbindung gebracht werden.
 
 Demos, die wir für einen von uns kontaktierten Foodtruck vorbereiten, werden bis zu 30 Tage lang aufbewahrt und fragen nicht nach einer E-Mail-Adresse.
+
+**Wenn Sie unser Kontaktformular nutzen**
+
+Wenn Sie uns über das Kontaktformular auf der HatchGrab-Website eine Nachricht senden, bearbeiten wir diese selbst: Wir speichern Ihre Nachricht und die von Ihnen eingegebenen Angaben und senden sie per E-Mail über Brevo an unser Team. Wir verwenden sie nur, um Ihnen zu antworten, und bewahren sie bis zu 24 Monate lang auf. Um Missbrauch des Formulars zu verhindern, speichern wir zusammen mit Ihrer Nachricht zudem eine unkenntlich gemachte Fassung Ihrer IP-Adresse.
 
 ---
 

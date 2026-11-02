@@ -1,4 +1,4 @@
-<!-- translation-of: privacy-policy.md sha256:cd7be1c77baa5cbf4b0d0587c82b29ea032c1dfee04b069e17ef0786c06679a7 -->
+<!-- translation-of: privacy-policy.md sha256:fa2e1f9b3b13db7a43d979b81cceb96103d9fcb329d6ba0665d42f761abe003c -->
 # Pravila o privatnosti
 
 **Posljednje ažuriranje:** {{LAST_UPDATED}}
@@ -107,6 +107,10 @@ Vašu e-poštu za demo, datoteku jelovnika i sam demo brišemo kada demo istekne
 Čuvamo anonimne brojače o tome dokle demo stigne, kao što su „izrađen je demo” ili „predana je narudžba”. Oni ne sadržavaju adresu e-pošte i nakon brisanja vašeg dema više se ne mogu povezati s vama.
 
 Demo verzije koje pripremamo za food truck kojem smo se obratili čuvamo do 30 dana i za njih se ne traži e-pošta.
+
+**Ako koristite naš obrazac za kontakt**
+
+Ako nam pošaljete poruku putem obrasca za kontakt na web-stranici HatchGraba, sami je obrađujemo: pohranjujemo vašu poruku i podatke koje unesete te ih e-poštom putem usluge Brevo šaljemo našem timu. Upotrebljavamo ih samo kako bismo vam odgovorili i čuvamo ih najdulje 24 mjeseca. Kako bismo spriječili zlouporabu obrasca, uz vašu poruku pohranjujemo i kodirani oblik vaše IP adrese.
 
 ---
 

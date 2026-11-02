@@ -27,6 +27,7 @@ import { deleteTruckCascade, DeleteTruckError } from '@/lib/delete-truck'
 import { deleteDemoMenuFiles } from '@/lib/demo-menu-files'
 import { isDemoIdentifier, DEMO_PREFIX } from '@/lib/demo'
 import { HATCHGRAB_SENDER } from '@/lib/email-config'
+import { retryContactEmails, brevoSend, CONTACT_MAX_ATTEMPTS, CONTACT_RETRY_BATCH, type ContactRow } from '@/lib/contact-server'
 
 const supabase = createClient(
   (process.env.SUPABASE_URL || process.env.NEXT_PUBLIC_SUPABASE_URL)!,
@@ -249,6 +250,21 @@ async function authorised(req: NextRequest): Promise<boolean> {
 
 export async function GET(req: NextRequest) {
   if (!await authorised(req)) return NextResponse.json({ error: 'Unauthorised' }, { status: 401 })
+  // contact-1 (2 November 2026): this is the hourly job, so it also retries contact-form messages whose email failed (up to 3 more
+  // tries; lib/contact-server.ts retryContactEmails). Its own step, before the demo work and outside it: it never changes this run's
+  // result, its log row or its alert, and a failure in it is only logged.
+  await retryContactEmails({
+    pending: async stuckBeforeIso => {
+      const { data, error } = await supabase.from('contact_messages').select('*')
+        .or(`email_status.eq.failed,and(email_status.is.null,created_at.lt."${stuckBeforeIso}")`)
+        .lt('email_attempts', CONTACT_MAX_ATTEMPTS).order('created_at', { ascending: true }).limit(CONTACT_RETRY_BATCH)
+      if (error) throw new Error(error.message)
+      return (data ?? []) as ContactRow[]
+    },
+    update: async (id, patch) => ({ error: (await supabase.from('contact_messages').update(patch).eq('id', id)).error?.message ?? null }),
+    send: mail => brevoSend(mail),
+    now: () => new Date(),
+  }).catch(err => console.error('[demo-cleanup] contact email retry failed:', err))
   return run()
 }
 

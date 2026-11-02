@@ -1,0 +1,37 @@
+/* app/contact/contact-form.css — HatchGrab's own contact form (contact-1, 2 November 2026; docs/contact-1/contact-form-mockup.png).
+   Imported by app/contact/HatchGrabContact.tsx only — the module page.tsx reaches through a dynamic import on the HatchGrab host —
+   so the Village Foodie render of /contact never links it. Everything is scoped under `.hg-landing .cf` and uses landing.css's tokens
+   (--head, --ink, --line, --orange …); the button is the landing's own `.btn .btn-primary .btn-lg`.
+   ⚠️ landing.css resets `.hg-landing * { margin: 0 }`, so spacing here is grid gaps, not margins. */
+.hg-landing .cf { display: grid; gap: 1.25rem; max-width: 58rem; }
+.hg-landing .cf-pair { display: grid; gap: 1.25rem; grid-template-columns: 1fr; }
+@media (min-width: 640px) { .hg-landing .cf-pair { grid-template-columns: 1fr 1fr; } }
+.hg-landing .cf-field { display: grid; gap: .45rem; align-content: start; }
+.hg-landing .cf label { font-family: var(--body); font-weight: 700; font-size: 1rem; color: var(--head); }
+.hg-landing .cf-optional { font-weight: 400; color: var(--ink-soft); font-size: .95rem; }
+.hg-landing .cf input, .hg-landing .cf select, .hg-landing .cf textarea {
+  width: 100%; font: inherit; font-size: 1rem; color: var(--head); background: #fff;
+  border: 1px solid var(--line); border-radius: 8px; padding: .8rem 1rem; line-height: 1.4;
+}
+.hg-landing .cf textarea { resize: vertical; min-height: 10.5rem; }
+.hg-landing .cf input::placeholder, .hg-landing .cf textarea::placeholder { color: var(--ink-faint); }
+.hg-landing .cf select {
+  appearance: none; -webkit-appearance: none; padding-inline-end: 2.75rem; cursor: pointer;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%2316314F' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
+  background-repeat: no-repeat; background-position: right 1rem center;
+}
+[dir="rtl"] .hg-landing .cf select { background-position: left 1rem center; }
+.hg-landing .cf input:focus, .hg-landing .cf select:focus, .hg-landing .cf textarea:focus { outline: 2.5px solid var(--orange); outline-offset: 1px; border-color: var(--orange); }
+.hg-landing .cf [aria-invalid="true"] { border-color: #C2410C; }
+.hg-landing .cf-error { color: #B42318; font-size: .9rem; font-weight: 600; }
+.hg-landing .cf-send { display: flex; flex-wrap: wrap; align-items: center; gap: .75rem 1.25rem; padding-top: .25rem; }
+.hg-landing .cf-send .btn[disabled] { opacity: .7; cursor: progress; transform: none; }
+.hg-landing .cf-privacy { color: var(--ink-soft); font-size: .9rem; }
+.hg-landing .cf-privacy a { text-decoration: underline; }
+/* The trap field: off-screen, never displayed to a person (aria-hidden on its box, no tab stop). Not display:none — some bots skip
+   hidden inputs, and the point is that they fill it. */
+.hg-landing .cf-trap { position: absolute; left: -10000px; top: auto; width: 1px; height: 1px; overflow: hidden; }
+.hg-landing .cf-thanks { max-width: 58rem; background: #F0FAF4; border: 1px solid #BFE3CC; border-radius: 12px; padding: 1.4rem 1.6rem; display: grid; gap: .35rem; }
+.hg-landing .cf-thanks:focus { outline: 2.5px solid var(--orange); outline-offset: 3px; }
+.hg-landing .cf-thanks-title { font-family: var(--display); font-weight: 700; font-size: 1.2rem; color: #1E7A43; }
+.hg-landing .cf-thanks p:not(.cf-thanks-title) { color: var(--ink); }

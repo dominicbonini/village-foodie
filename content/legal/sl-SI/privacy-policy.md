@@ -1,4 +1,4 @@
-<!-- translation-of: privacy-policy.md sha256:cd7be1c77baa5cbf4b0d0587c82b29ea032c1dfee04b069e17ef0786c06679a7 -->
+<!-- translation-of: privacy-policy.md sha256:fa2e1f9b3b13db7a43d979b81cceb96103d9fcb329d6ba0665d42f761abe003c -->
 # Politika zasebnosti
 
 **Zadnja posodobitev:** {{LAST_UPDATED}}
@@ -107,6 +107,10 @@ Vaš e-poštni naslov za predstavitev, datoteko z jedilnikom in samo predstavite
 Hranimo anonimna števila o tem, kako daleč pridejo predstavitve, na primer „predstavitev je bila pripravljena“ ali „naročilo je bilo oddano“. Ne vsebujejo e-poštnega naslova in ko je vaša predstavitev izbrisana, jih ni več mogoče povezati z vami.
 
 Predstavitve, ki jih pripravimo za food truck, s katerim smo stopili v stik, hranimo do 30 dni in zanje ne zahtevamo e-poštnega naslova.
+
+**Če uporabite naš kontaktni obrazec**
+
+Če nam pošljete sporočilo prek kontaktnega obrazca na spletnem mestu HatchGrab, ga obdelamo sami: shranimo vaše sporočilo in podatke, ki jih vnesete, ter jih po e-pošti prek storitve Brevo pošljemo naši ekipi. Uporabimo jih samo za odgovor vam in jih hranimo največ 24 mesecev. Da preprečimo zlorabo obrazca, skupaj z vašim sporočilom hranimo tudi zakodirano obliko vašega naslova IP.
 
 ---
 

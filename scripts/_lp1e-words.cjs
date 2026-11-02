@@ -60,7 +60,8 @@ function movedProblems() {
   const a = flat(catalogues('A')['en-GB']), at0 = flat(LP2.readJson(FROZEN_GB)), out = []
   // ⚠️ RE-PINNED (pricing-pages, Stage B, 20 October 2026): a key a plan stage REMOVED (LP2.stageA().removed) may stay in
   // the as-moved list — the list is history — but only while it is absent from the catalogue (scripts/_lp1d-words.cjs's rule).
-  const removed = LP2.stageA()['en-GB'].removed || {}
+  // ⚠️ RE-PINNED (contact-1, 2 November 2026): so may a key contact-1 deleted with the Tally embed (scripts/_lp-contact-1.cjs REMOVED_KEYS).
+  const removed = { ...(LP2.stageA()['en-GB'].removed || {}), ...Object.fromEntries(require('./_lp-contact-1.cjs').REMOVED_KEYS.map(k => [k, true])) }
   for (const [k, m] of Object.entries(moved())) {
     if (k in removed && !(k in a)) continue
     if (!(k in a)) out.push(`${k}: in the as-moved list but not in messages/en-GB.json`)

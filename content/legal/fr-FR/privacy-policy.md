@@ -1,4 +1,4 @@
-<!-- translation-of: privacy-policy.md sha256:cd7be1c77baa5cbf4b0d0587c82b29ea032c1dfee04b069e17ef0786c06679a7 -->
+<!-- translation-of: privacy-policy.md sha256:fa2e1f9b3b13db7a43d979b81cceb96103d9fcb329d6ba0665d42f761abe003c -->
 # Politique de confidentialité
 
 **Dernière mise à jour :** {{LAST_UPDATED}}
@@ -107,6 +107,10 @@ Nous supprimons l’e-mail de votre démo, le fichier de la carte et la démo el
 Nous conservons des décomptes anonymes de l’avancement des démos, tels que « une démo a été créée » ou « une commande a été passée ». Ils ne contiennent aucune adresse e-mail et, une fois votre démo supprimée, ils ne peuvent plus être rattachés à vous.
 
 Les démos que nous préparons pour un food truck que nous avons contacté sont conservées pendant 30 jours au maximum et ne demandent pas d’adresse e-mail.
+
+**Si vous utilisez notre formulaire de contact**
+
+Si vous nous envoyez un message via le formulaire de contact du site web de HatchGrab, nous le traitons nous-mêmes : nous conservons votre message et les informations que vous saisissez, et nous les transmettons à notre équipe par e-mail via Brevo. Nous les utilisons uniquement pour vous répondre et les conservons jusqu’à 24 mois. Pour éviter toute utilisation abusive du formulaire, nous conservons également, avec votre message, une version brouillée de votre adresse IP.
 
 ---
 

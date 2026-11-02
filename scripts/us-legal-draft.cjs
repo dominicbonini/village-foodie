@@ -34,6 +34,10 @@ const COUNTRY_TERMS_DATE = '22 October 2026'
 // re-dated 31 October 2026 — applied ON TOP of the named changes below (scripts/_demo2b-privacy.cjs), and its date is that.
 const D2B = require('./_demo2b-privacy.cjs')
 const DOC_DATE = { terms: TERMS_DATE, privacy: D2B.NEW_DATE, 'country-terms': COUNTRY_TERMS_DATE }
+// ⚠️ RE-PINNED (contact-1, 2 November 2026, docs/contact-1-report.md): the Privacy Policy gained the contact-form paragraph and was
+// re-dated 2 November 2026. `read` takes that back exactly (scripts/_lp-contact-1.cjs, chained by _lp-world-countries-2.cjs); the
+// rendered /privacy page shows the new date.
+const C1 = require('./_lp-contact-1.cjs')
 const CT = '[Country-specific terms](/country-terms)'
 
 // ⚠️ RE-PINNED (pricing-pages, Stage B, 20 October 2026): the card processor's name, as BEFORE's own terms spell it
@@ -142,7 +146,7 @@ const NAMED = {
     // ⚠️ RE-PINNED (world-countries-2): the RENDERED page is today's document, so its paragraphs and date are read as they are now
     // (read() above gives the older bytes for the byte pins); world-countries-2 re-dated the Terms and the Country-specific terms.
     const W2 = require('./_lp-world-countries-2.cjs')
-    const shownDate = W2.LANDED && doc !== 'privacy' ? W2.NEW_DATE : DOC_DATE[doc]
+    const shownDate = W2.LANDED && doc !== 'privacy' ? W2.NEW_DATE : C1.LANDED && doc === 'privacy' ? C1.PRIVACY_DATE_NEW : DOC_DATE[doc]
     const paras = fs.readFileSync(path.join(REPO, file), 'utf8').split(/\n\s*\n/).map(words).filter(p => p.length > 30 && !p.startsWith('|'))
     const missing = paras.filter(p => !flat(html).includes(p))
     t(`/${doc} renders every paragraph of its document (${paras.length})`, missing.length === 0, missing.slice(0, 2).join(' · '))

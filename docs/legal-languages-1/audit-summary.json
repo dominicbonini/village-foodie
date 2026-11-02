@@ -339,7 +339,7 @@
      "id": "1d/copy/US|serviceSettings|SAME_SETTINGS_CONFIRM",
      "runs": [
       "the same as Same as",
-      "Kitchen capacity has its own switch"
+      "capacity has its own switch"
      ],
      "reason": "legacy en-GB constant exports (lib/copy/*, lib/settings-copy.ts, lib/kitchen-capacity.ts) kept for old callers; every screen words these from messages — the 1d/settings, 1d/schedule and 1b/dashboard views of the same settings are checked"
     },
@@ -571,7 +571,8 @@
     {
      "id": "1d/copy/US|kitchenCapacity|KITCHEN_CAPACITY_DESC",
      "runs": [
-      "The most items your kitchen can turn out at once",
+      "The most items your",
+      "can turn out at once",
       "the categories you’ve ticked",
       "Each category’s own batch size still applies"
      ],
@@ -597,7 +598,6 @@
     {
      "id": "1d/copy/US|kitchenCapacity|KITCHEN_CAPACITY_WARNING",
      "runs": [
-      "For kitchen capacity",
       "and batch size",
       "capacity can’t tell how"
      ],
@@ -606,10 +606,10 @@
     {
      "id": "1d/copy/US|kitchenCapacity|KITCHEN_SETUP_EXPLAINER",
      "runs": [
-      "How kitchen setup works",
-      "If your kitchen can cook",
       "items are in progress",
-      "is automatically told their order takes"
+      "is automatically told their order takes",
+      "Items like drinks",
+      "dips that are"
      ],
      "reason": "legacy en-GB constant exports (lib/copy/*, lib/settings-copy.ts, lib/kitchen-capacity.ts) kept for old callers; every screen words these from messages — the 1d/settings, 1d/schedule and 1b/dashboard views of the same settings are checked"
     },
@@ -1114,21 +1114,18 @@
     {
      "id": "1b/components/US|add|capacity|over",
      "runs": [
-      "The kitchen can cook [harness]",
       "in that window [harness]"
      ]
     },
     {
      "id": "1b/components/US|add|capacity|filled",
      "runs": [
-      "The kitchen can cook [harness]",
       "in that window [harness]"
      ]
     },
     {
      "id": "1b/components/US|add|capacity|stale",
      "runs": [
-      "The kitchen can cook [harness]",
       "in that window [harness]"
      ]
     },
@@ -2531,7 +2528,7 @@
      "id": "1d/copy/US|serviceSettings|SAME_SETTINGS_CONFIRM",
      "runs": [
       "the same as Same as",
-      "Kitchen capacity has its own switch"
+      "capacity has its own switch"
      ],
      "reason": "legacy en-GB constant exports (lib/copy/*, lib/settings-copy.ts, lib/kitchen-capacity.ts) kept for old callers; every screen words these from messages — the 1d/settings, 1d/schedule and 1b/dashboard views of the same settings are checked"
     },
@@ -2648,7 +2645,7 @@
      "id": "1d/copy/US|offlineProtection|OFFLINE_PROTECTION_EXPLAINER",
      "runs": [
       "You must keep your",
-      "kitchen screen on and",
+      "screen on and",
       "If the screen goes off",
       "the device loses"
      ],
@@ -2668,7 +2665,7 @@
      "id": "1d/copy/US|offlineProtection|OFFLINE_PROTECTION_EXPLAINER_LEAD",
      "runs": [
       "You must keep your",
-      "kitchen screen on and"
+      "screen on and"
      ],
      "reason": "legacy en-GB constant exports (lib/copy/*, lib/settings-copy.ts, lib/kitchen-capacity.ts) kept for old callers; every screen words these from messages — the 1d/settings, 1d/schedule and 1b/dashboard views of the same settings are checked"
     },
@@ -2693,7 +2690,7 @@
     {
      "id": "1d/copy/US|offlineProtection|OFFLINE_PROTECTION_REMINDER",
      "runs": [
-      "kitchen screen on and",
+      "screen on and",
       "protection may take over"
      ],
      "reason": "legacy en-GB constant exports (lib/copy/*, lib/settings-copy.ts, lib/kitchen-capacity.ts) kept for old callers; every screen words these from messages — the 1d/settings, 1d/schedule and 1b/dashboard views of the same settings are checked"
@@ -2761,7 +2758,8 @@
     {
      "id": "1d/copy/US|kitchenCapacity|KITCHEN_CAPACITY_DESC",
      "runs": [
-      "The most items your kitchen can turn out at once",
+      "The most items your",
+      "can turn out at once",
       "the categories you’ve ticked",
       "Each category’s own batch size still applies on top"
      ],
@@ -2787,7 +2785,6 @@
     {
      "id": "1d/copy/US|kitchenCapacity|KITCHEN_CAPACITY_WARNING",
      "runs": [
-      "For kitchen capacity",
       "set a prep",
       "and batch size on your menu categories",
       "capacity can’t tell how long items take"
@@ -2797,10 +2794,10 @@
     {
      "id": "1d/copy/US|kitchenCapacity|KITCHEN_SETUP_EXPLAINER",
      "runs": [
-      "How kitchen setup works",
-      "If your kitchen can cook",
       "items at a",
-      "is automatically told their order takes"
+      "is automatically told their order takes",
+      "Items like drinks",
+      "instantly can be left as"
      ],
      "reason": "legacy en-GB constant exports (lib/copy/*, lib/settings-copy.ts, lib/kitchen-capacity.ts) kept for old callers; every screen words these from messages — the 1d/settings, 1d/schedule and 1b/dashboard views of the same settings are checked"
     },
@@ -3138,24 +3135,6 @@
      "id": "1a/1a/statusPage/US|cancelError",
      "runs": [
       "This order can [en-GB]"
-     ]
-    },
-    {
-     "id": "1b/components/US|add|capacity|over",
-     "runs": [
-      "The kitchen can cook [harness]"
-     ]
-    },
-    {
-     "id": "1b/components/US|add|capacity|filled",
-     "runs": [
-      "The kitchen can cook [harness]"
-     ]
-    },
-    {
-     "id": "1b/components/US|add|capacity|stale",
-     "runs": [
-      "The kitchen can cook [harness]"
      ]
     },
     {
@@ -4708,7 +4687,7 @@
      "id": "1d/copy/US|offlineProtection|OFFLINE_PROTECTION_EXPLAINER",
      "runs": [
       "You must keep your dashboard",
-      "kitchen screen on and",
+      "screen on and",
       "If the screen goes off",
       "the device loses"
      ],
@@ -4728,7 +4707,7 @@
      "id": "1d/copy/US|offlineProtection|OFFLINE_PROTECTION_EXPLAINER_LEAD",
      "runs": [
       "You must keep your dashboard",
-      "kitchen screen on and"
+      "screen on and"
      ],
      "reason": "legacy en-GB constant exports (lib/copy/*, lib/settings-copy.ts, lib/kitchen-capacity.ts) kept for old callers; every screen words these from messages — the 1d/settings, 1d/schedule and 1b/dashboard views of the same settings are checked"
     },
@@ -4754,7 +4733,7 @@
      "id": "1d/copy/US|offlineProtection|OFFLINE_PROTECTION_REMINDER",
      "runs": [
       "Keep your dashboard",
-      "kitchen screen on and",
+      "screen on and",
       "offline protection may take over"
      ],
      "reason": "legacy en-GB constant exports (lib/copy/*, lib/settings-copy.ts, lib/kitchen-capacity.ts) kept for old callers; every screen words these from messages — the 1d/settings, 1d/schedule and 1b/dashboard views of the same settings are checked"
@@ -4830,7 +4809,8 @@
     {
      "id": "1d/copy/US|kitchenCapacity|KITCHEN_CAPACITY_DESC",
      "runs": [
-      "The most items your kitchen can turn out at once",
+      "The most items your",
+      "can turn out at once",
       "the categories you’ve ticked",
       "Each category’s own batch size still applies on top"
      ],
@@ -4856,7 +4836,6 @@
     {
      "id": "1d/copy/US|kitchenCapacity|KITCHEN_CAPACITY_WARNING",
      "runs": [
-      "For kitchen capacity",
       "and batch size on your menu categories",
       "capacity can’t tell how long items take"
      ],
@@ -4865,10 +4844,10 @@
     {
      "id": "1d/copy/US|kitchenCapacity|KITCHEN_SETUP_EXPLAINER",
      "runs": [
-      "How kitchen setup works",
-      "If your kitchen can cook",
       "items are in progress",
-      "is automatically told their order takes"
+      "is automatically told their order takes",
+      "Items like drinks",
+      "dips that are"
      ],
      "reason": "legacy en-GB constant exports (lib/copy/*, lib/settings-copy.ts, lib/kitchen-capacity.ts) kept for old callers; every screen words these from messages — the 1d/settings, 1d/schedule and 1b/dashboard views of the same settings are checked"
     },
@@ -5377,21 +5356,18 @@
     {
      "id": "1b/components/US|add|capacity|over",
      "runs": [
-      "The kitchen can cook [harness]",
       "in that window [harness]"
      ]
     },
     {
      "id": "1b/components/US|add|capacity|filled",
      "runs": [
-      "The kitchen can cook [harness]",
       "in that window [harness]"
      ]
     },
     {
      "id": "1b/components/US|add|capacity|stale",
      "runs": [
-      "The kitchen can cook [harness]",
       "in that window [harness]"
      ]
     },
@@ -6813,7 +6789,7 @@
      "id": "1d/copy/US|serviceSettings|SAME_SETTINGS_CONFIRM",
      "runs": [
       "the same as Same as",
-      "Kitchen capacity has its own switch"
+      "capacity has its own switch"
      ],
      "reason": "legacy en-GB constant exports (lib/copy/*, lib/settings-copy.ts, lib/kitchen-capacity.ts) kept for old callers; every screen words these from messages — the 1d/settings, 1d/schedule and 1b/dashboard views of the same settings are checked"
     },
@@ -6930,7 +6906,7 @@
      "id": "1d/copy/US|offlineProtection|OFFLINE_PROTECTION_EXPLAINER",
      "runs": [
       "You must keep your",
-      "kitchen screen on and",
+      "screen on and",
       "If the screen goes off",
       "the device loses"
      ],
@@ -6950,7 +6926,7 @@
      "id": "1d/copy/US|offlineProtection|OFFLINE_PROTECTION_EXPLAINER_LEAD",
      "runs": [
       "You must keep your",
-      "kitchen screen on and"
+      "screen on and"
      ],
      "reason": "legacy en-GB constant exports (lib/copy/*, lib/settings-copy.ts, lib/kitchen-capacity.ts) kept for old callers; every screen words these from messages — the 1d/settings, 1d/schedule and 1b/dashboard views of the same settings are checked"
     },
@@ -6975,7 +6951,7 @@
     {
      "id": "1d/copy/US|offlineProtection|OFFLINE_PROTECTION_REMINDER",
      "runs": [
-      "kitchen screen on and",
+      "screen on and",
       "protection may take over"
      ],
      "reason": "legacy en-GB constant exports (lib/copy/*, lib/settings-copy.ts, lib/kitchen-capacity.ts) kept for old callers; every screen words these from messages — the 1d/settings, 1d/schedule and 1b/dashboard views of the same settings are checked"
@@ -7044,7 +7020,8 @@
     {
      "id": "1d/copy/US|kitchenCapacity|KITCHEN_CAPACITY_DESC",
      "runs": [
-      "The most items your kitchen can turn out at once",
+      "The most items your",
+      "can turn out at once",
       "the categories you’ve ticked",
       "Each category’s own batch size still applies on top"
      ],
@@ -7070,7 +7047,6 @@
     {
      "id": "1d/copy/US|kitchenCapacity|KITCHEN_CAPACITY_WARNING",
      "runs": [
-      "For kitchen capacity",
       "and batch size on your",
       "capacity can’t tell how long items take"
      ],
@@ -7079,10 +7055,10 @@
     {
      "id": "1d/copy/US|kitchenCapacity|KITCHEN_SETUP_EXPLAINER",
      "runs": [
-      "How kitchen setup works",
-      "If your kitchen can cook",
       "is automatically told their order takes",
-      "Items like drinks"
+      "Items like drinks",
+      "dips that are",
+      "instantly can be left as"
      ],
      "reason": "legacy en-GB constant exports (lib/copy/*, lib/settings-copy.ts, lib/kitchen-capacity.ts) kept for old callers; every screen words these from messages — the 1d/settings, 1d/schedule and 1b/dashboard views of the same settings are checked"
     },
@@ -7576,24 +7552,6 @@
      "id": "1a/1a/statusPage/US|cancelError",
      "runs": [
       "This order can [en-GB]"
-     ]
-    },
-    {
-     "id": "1b/components/US|add|capacity|over",
-     "runs": [
-      "The kitchen can cook [harness]"
-     ]
-    },
-    {
-     "id": "1b/components/US|add|capacity|filled",
-     "runs": [
-      "The kitchen can cook [harness]"
-     ]
-    },
-    {
-     "id": "1b/components/US|add|capacity|stale",
-     "runs": [
-      "The kitchen can cook [harness]"
      ]
     },
     {
@@ -8887,7 +8845,7 @@
     {
      "id": "1d/copy/US|serviceSettings|SAME_SETTINGS_CONFIRM",
      "runs": [
-      "Kitchen capacity has its own switch"
+      "capacity has its own switch"
      ],
      "reason": "legacy en-GB constant exports (lib/copy/*, lib/settings-copy.ts, lib/kitchen-capacity.ts) kept for old callers; every screen words these from messages — the 1d/settings, 1d/schedule and 1b/dashboard views of the same settings are checked"
     },
@@ -9003,7 +8961,7 @@
      "id": "1d/copy/US|offlineProtection|OFFLINE_PROTECTION_EXPLAINER",
      "runs": [
       "You must keep your dashboard",
-      "kitchen screen on and",
+      "screen on and",
       "If the screen goes off",
       "the device loses"
      ],
@@ -9023,7 +8981,7 @@
      "id": "1d/copy/US|offlineProtection|OFFLINE_PROTECTION_EXPLAINER_LEAD",
      "runs": [
       "You must keep your dashboard",
-      "kitchen screen on and"
+      "screen on and"
      ],
      "reason": "legacy en-GB constant exports (lib/copy/*, lib/settings-copy.ts, lib/kitchen-capacity.ts) kept for old callers; every screen words these from messages — the 1d/settings, 1d/schedule and 1b/dashboard views of the same settings are checked"
     },
@@ -9049,7 +9007,7 @@
      "id": "1d/copy/US|offlineProtection|OFFLINE_PROTECTION_REMINDER",
      "runs": [
       "Keep your dashboard",
-      "kitchen screen on and",
+      "screen on and",
       "protection may take over"
      ],
      "reason": "legacy en-GB constant exports (lib/copy/*, lib/settings-copy.ts, lib/kitchen-capacity.ts) kept for old callers; every screen words these from messages — the 1d/settings, 1d/schedule and 1b/dashboard views of the same settings are checked"
@@ -9115,7 +9073,8 @@
     {
      "id": "1d/copy/US|kitchenCapacity|KITCHEN_CAPACITY_DESC",
      "runs": [
-      "The most items your kitchen can turn out at once",
+      "The most items your",
+      "can turn out at once",
       "the categories you’ve ticked",
       "Each category’s own batch size still applies on top"
      ],
@@ -9149,10 +9108,10 @@
     {
      "id": "1d/copy/US|kitchenCapacity|KITCHEN_SETUP_EXPLAINER",
      "runs": [
-      "How kitchen setup works",
-      "If your kitchen can cook",
       "items are in progress",
-      "is automatically told their order takes"
+      "is automatically told their order takes",
+      "Items like drinks",
+      "dips that are"
      ],
      "reason": "legacy en-GB constant exports (lib/copy/*, lib/settings-copy.ts, lib/kitchen-capacity.ts) kept for old callers; every screen words these from messages — the 1d/settings, 1d/schedule and 1b/dashboard views of the same settings are checked"
     },
@@ -9515,21 +9474,18 @@
     {
      "id": "1b/components/US|add|capacity|over",
      "runs": [
-      "The kitchen can cook [harness]",
       "in that window [harness]"
      ]
     },
     {
      "id": "1b/components/US|add|capacity|filled",
      "runs": [
-      "The kitchen can cook [harness]",
       "in that window [harness]"
      ]
     },
     {
      "id": "1b/components/US|add|capacity|stale",
      "runs": [
-      "The kitchen can cook [harness]",
       "in that window [harness]"
      ]
     },
@@ -10863,7 +10819,7 @@
     {
      "id": "1d/copy/US|serviceSettings|SAME_SETTINGS_CONFIRM",
      "runs": [
-      "Kitchen capacity has its own switch"
+      "capacity has its own switch"
      ],
      "reason": "legacy en-GB constant exports (lib/copy/*, lib/settings-copy.ts, lib/kitchen-capacity.ts) kept for old callers; every screen words these from messages — the 1d/settings, 1d/schedule and 1b/dashboard views of the same settings are checked"
     },
@@ -10966,7 +10922,7 @@
      "id": "1d/copy/US|offlineProtection|OFFLINE_PROTECTION_EXPLAINER",
      "runs": [
       "must keep your",
-      "kitchen screen on and",
+      "screen on and",
       "If the screen goes off",
       "the device loses"
      ],
@@ -10986,7 +10942,7 @@
      "id": "1d/copy/US|offlineProtection|OFFLINE_PROTECTION_EXPLAINER_LEAD",
      "runs": [
       "must keep your",
-      "kitchen screen on and"
+      "screen on and"
      ],
      "reason": "legacy en-GB constant exports (lib/copy/*, lib/settings-copy.ts, lib/kitchen-capacity.ts) kept for old callers; every screen words these from messages — the 1d/settings, 1d/schedule and 1b/dashboard views of the same settings are checked"
     },
@@ -11012,7 +10968,7 @@
     {
      "id": "1d/copy/US|offlineProtection|OFFLINE_PROTECTION_REMINDER",
      "runs": [
-      "kitchen screen on and",
+      "screen on and",
       "protection may take"
      ],
      "reason": "legacy en-GB constant exports (lib/copy/*, lib/settings-copy.ts, lib/kitchen-capacity.ts) kept for old callers; every screen words these from messages — the 1d/settings, 1d/schedule and 1b/dashboard views of the same settings are checked"
@@ -11081,7 +11037,7 @@
     {
      "id": "1d/copy/US|kitchenCapacity|KITCHEN_CAPACITY_DESC",
      "runs": [
-      "your kitchen can turn out at once",
+      "can turn out at once",
       "the categories you’ve ticked",
       "Each category’s own",
       "size still applies on top"
@@ -11108,7 +11064,6 @@
     {
      "id": "1d/copy/US|kitchenCapacity|KITCHEN_CAPACITY_WARNING",
      "runs": [
-      "For kitchen capacity",
       "set a prep",
       "size on your",
       "capacity can’t tell how long"
@@ -11118,10 +11073,10 @@
     {
      "id": "1d/copy/US|kitchenCapacity|KITCHEN_SETUP_EXPLAINER",
      "runs": [
-      "How kitchen setup works",
-      "If your kitchen can cook",
       "automatically told their order takes",
-      "instantly can be left"
+      "instantly can be left",
+      "can also set a maximum",
+      "limit when creating an event"
      ],
      "reason": "legacy en-GB constant exports (lib/copy/*, lib/settings-copy.ts, lib/kitchen-capacity.ts) kept for old callers; every screen words these from messages — the 1d/settings, 1d/schedule and 1b/dashboard views of the same settings are checked"
     },
@@ -11599,24 +11554,6 @@
      "id": "1a/1a/statusPage/US|cancelError",
      "runs": [
       "This order can [en-GB]"
-     ]
-    },
-    {
-     "id": "1b/components/US|add|capacity|over",
-     "runs": [
-      "The kitchen can cook [harness]"
-     ]
-    },
-    {
-     "id": "1b/components/US|add|capacity|filled",
-     "runs": [
-      "The kitchen can cook [harness]"
-     ]
-    },
-    {
-     "id": "1b/components/US|add|capacity|stale",
-     "runs": [
-      "The kitchen can cook [harness]"
      ]
     },
     {
@@ -12620,7 +12557,7 @@
      "id": "1d/copy/US|serviceSettings|SAME_SETTINGS_CONFIRM",
      "runs": [
       "the same as Same as",
-      "Kitchen capacity has its own switch"
+      "capacity has its own switch"
      ],
      "reason": "legacy en-GB constant exports (lib/copy/*, lib/settings-copy.ts, lib/kitchen-capacity.ts) kept for old callers; every screen words these from messages — the 1d/settings, 1d/schedule and 1b/dashboard views of the same settings are checked"
     },
@@ -12737,7 +12674,7 @@
      "id": "1d/copy/US|offlineProtection|OFFLINE_PROTECTION_EXPLAINER",
      "runs": [
       "You must keep your dashboard",
-      "kitchen screen on and",
+      "screen on and",
       "If the screen goes off",
       "the device loses"
      ],
@@ -12757,7 +12694,7 @@
      "id": "1d/copy/US|offlineProtection|OFFLINE_PROTECTION_EXPLAINER_LEAD",
      "runs": [
       "You must keep your dashboard",
-      "kitchen screen on and"
+      "screen on and"
      ],
      "reason": "legacy en-GB constant exports (lib/copy/*, lib/settings-copy.ts, lib/kitchen-capacity.ts) kept for old callers; every screen words these from messages — the 1d/settings, 1d/schedule and 1b/dashboard views of the same settings are checked"
     },
@@ -12783,7 +12720,7 @@
      "id": "1d/copy/US|offlineProtection|OFFLINE_PROTECTION_REMINDER",
      "runs": [
       "Keep your dashboard",
-      "kitchen screen on and",
+      "screen on and",
       "protection may take over"
      ],
      "reason": "legacy en-GB constant exports (lib/copy/*, lib/settings-copy.ts, lib/kitchen-capacity.ts) kept for old callers; every screen words these from messages — the 1d/settings, 1d/schedule and 1b/dashboard views of the same settings are checked"
@@ -12853,7 +12790,8 @@
     {
      "id": "1d/copy/US|kitchenCapacity|KITCHEN_CAPACITY_DESC",
      "runs": [
-      "The most items your kitchen can turn out at once",
+      "The most items your",
+      "can turn out at once",
       "the categories you’ve ticked",
       "Each category’s own batch size still applies on top"
      ],
@@ -12879,7 +12817,6 @@
     {
      "id": "1d/copy/US|kitchenCapacity|KITCHEN_CAPACITY_WARNING",
      "runs": [
-      "For kitchen capacity",
       "set a prep",
       "and batch size on your menu categories",
       "capacity can’t tell how long items take"
@@ -12889,10 +12826,10 @@
     {
      "id": "1d/copy/US|kitchenCapacity|KITCHEN_SETUP_EXPLAINER",
      "runs": [
-      "How kitchen setup works",
-      "If your kitchen can cook",
       "items at a",
-      "is automatically told their order takes"
+      "is automatically told their order takes",
+      "Items like drinks",
+      "dips that are"
      ],
      "reason": "legacy en-GB constant exports (lib/copy/*, lib/settings-copy.ts, lib/kitchen-capacity.ts) kept for old callers; every screen words these from messages — the 1d/settings, 1d/schedule and 1b/dashboard views of the same settings are checked"
     },
@@ -13406,24 +13343,6 @@
      "id": "1a/1a/statusPage/US|cancelError",
      "runs": [
       "This order can [en-GB]"
-     ]
-    },
-    {
-     "id": "1b/components/US|add|capacity|over",
-     "runs": [
-      "The kitchen can cook [harness]"
-     ]
-    },
-    {
-     "id": "1b/components/US|add|capacity|filled",
-     "runs": [
-      "The kitchen can cook [harness]"
-     ]
-    },
-    {
-     "id": "1b/components/US|add|capacity|stale",
-     "runs": [
-      "The kitchen can cook [harness]"
      ]
     },
     {
@@ -14883,7 +14802,7 @@
      "id": "1d/copy/US|serviceSettings|SAME_SETTINGS_CONFIRM",
      "runs": [
       "the same as Same as",
-      "Kitchen capacity has its own switch"
+      "capacity has its own switch"
      ],
      "reason": "legacy en-GB constant exports (lib/copy/*, lib/settings-copy.ts, lib/kitchen-capacity.ts) kept for old callers; every screen words these from messages — the 1d/settings, 1d/schedule and 1b/dashboard views of the same settings are checked"
     },
@@ -15000,7 +14919,7 @@
      "id": "1d/copy/US|offlineProtection|OFFLINE_PROTECTION_EXPLAINER",
      "runs": [
       "You must keep your dashboard",
-      "kitchen screen on and",
+      "screen on and",
       "If the screen goes off",
       "the device loses internet"
      ],
@@ -15020,7 +14939,7 @@
      "id": "1d/copy/US|offlineProtection|OFFLINE_PROTECTION_EXPLAINER_LEAD",
      "runs": [
       "You must keep your dashboard",
-      "kitchen screen on and"
+      "screen on and"
      ],
      "reason": "legacy en-GB constant exports (lib/copy/*, lib/settings-copy.ts, lib/kitchen-capacity.ts) kept for old callers; every screen words these from messages — the 1d/settings, 1d/schedule and 1b/dashboard views of the same settings are checked"
     },
@@ -15046,7 +14965,7 @@
      "id": "1d/copy/US|offlineProtection|OFFLINE_PROTECTION_REMINDER",
      "runs": [
       "Keep your dashboard",
-      "kitchen screen on and",
+      "screen on and",
       "protection may take"
      ],
      "reason": "legacy en-GB constant exports (lib/copy/*, lib/settings-copy.ts, lib/kitchen-capacity.ts) kept for old callers; every screen words these from messages — the 1d/settings, 1d/schedule and 1b/dashboard views of the same settings are checked"
@@ -15113,10 +15032,10 @@
     {
      "id": "1d/copy/US|kitchenCapacity|KITCHEN_CAPACITY_DESC",
      "runs": [
-      "The most items your kitchen can turn out",
+      "The most items your",
+      "can turn out",
       "the categories you’ve ticked",
-      "Each category’s own",
-      "size still applies on top"
+      "Each category’s own"
      ],
      "reason": "legacy en-GB constant exports (lib/copy/*, lib/settings-copy.ts, lib/kitchen-capacity.ts) kept for old callers; every screen words these from messages — the 1d/settings, 1d/schedule and 1b/dashboard views of the same settings are checked"
     },
@@ -15148,10 +15067,10 @@
     {
      "id": "1d/copy/US|kitchenCapacity|KITCHEN_SETUP_EXPLAINER",
      "runs": [
-      "How kitchen setup works",
-      "If your kitchen can cook",
       "items are in progress",
-      "is automatically told their order takes"
+      "is automatically told their order takes",
+      "Items like drinks",
+      "instantly can be left as"
      ],
      "reason": "legacy en-GB constant exports (lib/copy/*, lib/settings-copy.ts, lib/kitchen-capacity.ts) kept for old callers; every screen words these from messages — the 1d/settings, 1d/schedule and 1b/dashboard views of the same settings are checked"
     },
@@ -15497,21 +15416,18 @@
     {
      "id": "1b/components/US|add|capacity|over",
      "runs": [
-      "The kitchen can cook [harness]",
       "pizzas in that window [harness]"
      ]
     },
     {
      "id": "1b/components/US|add|capacity|filled",
      "runs": [
-      "The kitchen can cook [harness]",
       "pizzas in that window [harness]"
      ]
     },
     {
      "id": "1b/components/US|add|capacity|stale",
      "runs": [
-      "The kitchen can cook [harness]",
       "pizzas in that window [harness]"
      ]
     },
@@ -16963,7 +16879,7 @@
      "id": "1d/copy/US|serviceSettings|SAME_SETTINGS_CONFIRM",
      "runs": [
       "the same as Same as",
-      "Kitchen capacity has its own switch"
+      "capacity has its own switch"
      ],
      "reason": "legacy en-GB constant exports (lib/copy/*, lib/settings-copy.ts, lib/kitchen-capacity.ts) kept for old callers; every screen words these from messages — the 1d/settings, 1d/schedule and 1b/dashboard views of the same settings are checked"
     },
@@ -17081,7 +16997,7 @@
      "id": "1d/copy/US|offlineProtection|OFFLINE_PROTECTION_EXPLAINER",
      "runs": [
       "You must keep your dashboard",
-      "kitchen screen on and online during service",
+      "screen on and online during service",
       "If the screen goes off",
       "the device loses internet"
      ],
@@ -17101,7 +17017,7 @@
      "id": "1d/copy/US|offlineProtection|OFFLINE_PROTECTION_EXPLAINER_LEAD",
      "runs": [
       "You must keep your dashboard",
-      "kitchen screen on and online during service"
+      "screen on and online during service"
      ],
      "reason": "legacy en-GB constant exports (lib/copy/*, lib/settings-copy.ts, lib/kitchen-capacity.ts) kept for old callers; every screen words these from messages — the 1d/settings, 1d/schedule and 1b/dashboard views of the same settings are checked"
     },
@@ -17127,7 +17043,7 @@
      "id": "1d/copy/US|offlineProtection|OFFLINE_PROTECTION_REMINDER",
      "runs": [
       "Keep your dashboard",
-      "kitchen screen on and online during service",
+      "screen on and online during service",
       "offline protection may take"
      ],
      "reason": "legacy en-GB constant exports (lib/copy/*, lib/settings-copy.ts, lib/kitchen-capacity.ts) kept for old callers; every screen words these from messages — the 1d/settings, 1d/schedule and 1b/dashboard views of the same settings are checked"
@@ -17202,10 +17118,10 @@
     {
      "id": "1d/copy/US|kitchenCapacity|KITCHEN_CAPACITY_DESC",
      "runs": [
-      "The most items your kitchen can turn out",
+      "The most items your",
+      "can turn out",
       "the categories you’ve ticked",
-      "Each category’s own batch size",
-      "applies on top"
+      "Each category’s own batch size"
      ],
      "reason": "legacy en-GB constant exports (lib/copy/*, lib/settings-copy.ts, lib/kitchen-capacity.ts) kept for old callers; every screen words these from messages — the 1d/settings, 1d/schedule and 1b/dashboard views of the same settings are checked"
     },
@@ -17238,10 +17154,10 @@
     {
      "id": "1d/copy/US|kitchenCapacity|KITCHEN_SETUP_EXPLAINER",
      "runs": [
-      "How kitchen setup works",
-      "If your kitchen can cook",
       "items are in progress",
-      "is automatically told their order takes"
+      "is automatically told their order takes",
+      "dips that are",
+      "You can also set a maximum"
      ],
      "reason": "legacy en-GB constant exports (lib/copy/*, lib/settings-copy.ts, lib/kitchen-capacity.ts) kept for old callers; every screen words these from messages — the 1d/settings, 1d/schedule and 1b/dashboard views of the same settings are checked"
     },
@@ -17739,21 +17655,18 @@
     {
      "id": "1b/components/US|add|capacity|over",
      "runs": [
-      "The kitchen can cook [harness]",
       "pizzas in that window [harness]"
      ]
     },
     {
      "id": "1b/components/US|add|capacity|filled",
      "runs": [
-      "The kitchen can cook [harness]",
       "pizzas in that window [harness]"
      ]
     },
     {
      "id": "1b/components/US|add|capacity|stale",
      "runs": [
-      "The kitchen can cook [harness]",
       "pizzas in that window [harness]"
      ]
     },
@@ -18863,7 +18776,7 @@
      "id": "1a/1a/emails/rejectSentence|US|held|false",
      "runs": [
       "was held for this order and never charged",
-      "and that hold will clear"
+      "and that hold will clear on its own"
      ],
      "reason": "the harness calls rejectionPaymentSentence without a locale; its real caller (lib/orders/reject-order.ts) passes the order's"
     },
@@ -18879,7 +18792,7 @@
      "id": "1a/1a/emails/rejectSentence|US|held_short|false",
      "runs": [
       "was held for this order and never charged",
-      "and that hold will clear"
+      "and that hold will clear on its own"
      ],
      "reason": "the harness calls rejectionPaymentSentence without a locale; its real caller (lib/orders/reject-order.ts) passes the order's"
     },
@@ -18999,7 +18912,7 @@
      "id": "1c/api/US|deletion|post|okNoTrucks",
      "runs": [
       "account is scheduled for deletion",
-      "ordering has stopped immediately",
+      "ordering has stopped immediately on",
       "Your dashboard stays available",
       "read for the next"
      ],
@@ -19102,7 +19015,7 @@
     {
      "id": "1d/copy/US|serviceSettings|MATCH_STANDARD_CONFIRM",
      "runs": [
-      "Put every setting",
+      "Put every setting on this",
       "Anything you changed here will be cleared"
      ],
      "reason": "legacy en-GB constant exports (lib/copy/*, lib/settings-copy.ts, lib/kitchen-capacity.ts) kept for old callers; every screen words these from messages — the 1d/settings, 1d/schedule and 1b/dashboard views of the same settings are checked"
@@ -19149,7 +19062,7 @@
     {
      "id": "1d/copy/US|serviceSettings|SAME_SETTINGS_CONFIRM",
      "runs": [
-      "Kitchen capacity has its own switch"
+      "capacity has its own switch"
      ],
      "reason": "legacy en-GB constant exports (lib/copy/*, lib/settings-copy.ts, lib/kitchen-capacity.ts) kept for old callers; every screen words these from messages — the 1d/settings, 1d/schedule and 1b/dashboard views of the same settings are checked"
     },
@@ -19256,7 +19169,7 @@
      "id": "1d/copy/US|offlineProtection|OFFLINE_PROTECTION_ENABLE_CONFIRM",
      "runs": [
       "keep orders flowing",
-      "your screen must stay",
+      "your screen must stay on",
       "If this device loses connection",
       "protection takes over in the mode you chose"
      ],
@@ -19266,9 +19179,9 @@
      "id": "1d/copy/US|offlineProtection|OFFLINE_PROTECTION_EXPLAINER",
      "runs": [
       "You must keep your dashboard",
+      "screen on and",
       "If the screen goes off",
-      "the device loses",
-      "protection takes over"
+      "the device loses"
      ],
      "reason": "legacy en-GB constant exports (lib/copy/*, lib/settings-copy.ts, lib/kitchen-capacity.ts) kept for old callers; every screen words these from messages — the 1d/settings, 1d/schedule and 1b/dashboard views of the same settings are checked"
     },
@@ -19285,7 +19198,8 @@
     {
      "id": "1d/copy/US|offlineProtection|OFFLINE_PROTECTION_EXPLAINER_LEAD",
      "runs": [
-      "You must keep your dashboard"
+      "You must keep your dashboard",
+      "screen on and"
      ],
      "reason": "legacy en-GB constant exports (lib/copy/*, lib/settings-copy.ts, lib/kitchen-capacity.ts) kept for old callers; every screen words these from messages — the 1d/settings, 1d/schedule and 1b/dashboard views of the same settings are checked"
     },
@@ -19311,6 +19225,7 @@
      "id": "1d/copy/US|offlineProtection|OFFLINE_PROTECTION_REMINDER",
      "runs": [
       "Keep your dashboard",
+      "screen on and",
       "protection may take over"
      ],
      "reason": "legacy en-GB constant exports (lib/copy/*, lib/settings-copy.ts, lib/kitchen-capacity.ts) kept for old callers; every screen words these from messages — the 1d/settings, 1d/schedule and 1b/dashboard views of the same settings are checked"
@@ -19327,7 +19242,7 @@
      "runs": [
       "for every event",
       "different amount for",
-      "that event’s dashboard",
+      "on that event’s dashboard",
       "events you’ve already set there keep their own amount"
      ],
      "reason": "legacy en-GB constant exports (lib/copy/*, lib/settings-copy.ts, lib/kitchen-capacity.ts) kept for old callers; every screen words these from messages — the 1d/settings, 1d/schedule and 1b/dashboard views of the same settings are checked"
@@ -19379,9 +19294,10 @@
     {
      "id": "1d/copy/US|kitchenCapacity|KITCHEN_CAPACITY_DESC",
      "runs": [
-      "The most items your kitchen can turn out at once",
+      "The most items your",
+      "can turn out at once",
       "the categories you’ve ticked",
-      "Each category’s own batch size still applies"
+      "Each category’s own batch size still applies on top"
      ],
      "reason": "legacy en-GB constant exports (lib/copy/*, lib/settings-copy.ts, lib/kitchen-capacity.ts) kept for old callers; every screen words these from messages — the 1d/settings, 1d/schedule and 1b/dashboard views of the same settings are checked"
     },
@@ -19405,8 +19321,7 @@
     {
      "id": "1d/copy/US|kitchenCapacity|KITCHEN_CAPACITY_WARNING",
      "runs": [
-      "For kitchen capacity",
-      "and batch size",
+      "and batch size on your",
       "capacity can’t tell how long items take"
      ],
      "reason": "legacy en-GB constant exports (lib/copy/*, lib/settings-copy.ts, lib/kitchen-capacity.ts) kept for old callers; every screen words these from messages — the 1d/settings, 1d/schedule and 1b/dashboard views of the same settings are checked"
@@ -19414,10 +19329,10 @@
     {
      "id": "1d/copy/US|kitchenCapacity|KITCHEN_SETUP_EXPLAINER",
      "runs": [
-      "How kitchen setup works",
-      "If your kitchen can cook",
       "items are in progress",
-      "is automatically told their order takes"
+      "is automatically told their order takes",
+      "Items like drinks",
+      "dips that are"
      ],
      "reason": "legacy en-GB constant exports (lib/copy/*, lib/settings-copy.ts, lib/kitchen-capacity.ts) kept for old callers; every screen words these from messages — the 1d/settings, 1d/schedule and 1b/dashboard views of the same settings are checked"
     },
@@ -19443,14 +19358,14 @@
      "id": "1d/copy/US|privateEvents|PRIVATE_NO_SINGLE_POST",
      "runs": [
       "Private events don’t get their own",
-      "your weekly poster as"
+      "they appear on your weekly poster as"
      ],
      "reason": "legacy en-GB constant exports (lib/copy/*, lib/settings-copy.ts, lib/kitchen-capacity.ts) kept for old callers; every screen words these from messages — the 1d/settings, 1d/schedule and 1b/dashboard views of the same settings are checked"
     },
     {
      "id": "1d/copy/US|privateEvents|SCRAPED_PRIVATE_HINT",
      "runs": [
-      "found the word private",
+      "found the word private on their schedule",
       "so this is marked as"
      ],
      "reason": "legacy en-GB constant exports (lib/copy/*, lib/settings-copy.ts, lib/kitchen-capacity.ts) kept for old callers; every screen words these from messages — the 1d/settings, 1d/schedule and 1b/dashboard views of the same settings are checked"
@@ -19558,6 +19473,7 @@
      "id": "1d2/social/US|posts|create|editTemplate",
      "runs": [
       "The Kings Arms",
+      "Area on Day",
       "That template could",
       "Week dates List of"
      ],
@@ -19926,21 +19842,18 @@
     {
      "id": "1b/components/US|add|capacity|over",
      "runs": [
-      "The kitchen can cook [harness]",
       "pizzas in that window [harness]"
      ]
     },
     {
      "id": "1b/components/US|add|capacity|filled",
      "runs": [
-      "The kitchen can cook [harness]",
       "pizzas in that window [harness]"
      ]
     },
     {
      "id": "1b/components/US|add|capacity|stale",
      "runs": [
-      "The kitchen can cook [harness]",
       "pizzas in that window [harness]"
      ]
     },
@@ -20058,7 +19971,8 @@
     {
      "id": "1b/native/US|notify|refused",
      "runs": [
-      "be enabled in your device [en-GB]"
+      "be enabled in your device [en-GB]",
+      "turn this on [en-GB]"
      ]
     },
     {
@@ -20283,7 +20197,7 @@
     {
      "id": "1d/menu/US|menuTab|setup|schedule|verifyError",
      "runs": [
-      "couldn’t find any events [harness]"
+      "couldn’t find any events on that page [harness]"
      ]
     },
     {
@@ -20500,13 +20414,19 @@
     {
      "id": "1d/settings/US|verifyError|page",
      "runs": [
-      "couldn’t find any events [harness]"
+      "couldn’t find any events on that page [harness]"
      ]
     },
     {
      "id": "1d2/api/US|weeklyPost|overview.storedCaption",
      "runs": [
       "are this week [en-GB]"
+     ]
+    },
+    {
+     "id": "1d2/payments/US|pay|fetchError|routeWords",
+     "runs": [
+      "configured on this server [harness]"
      ]
     },
     {
@@ -20775,9 +20695,21 @@
      ]
     },
     {
+     "id": "1d2/shell/US|team|handler|invite|error",
+     "runs": [
+      "is already on your team [harness]"
+     ]
+    },
+    {
      "id": "1d2/shell/US|team|handler|edit|error",
      "runs": [
       "You can’t change that member [harness]"
+     ]
+    },
+    {
+     "id": "1d2/wada/US|settings|notice|serverMessage|auto-replies",
+     "runs": [
+      "replies are on [harness]"
      ]
     },
     {
@@ -21255,7 +21187,7 @@
      "id": "1d/copy/US|serviceSettings|SAME_SETTINGS_CONFIRM",
      "runs": [
       "the same as Same as",
-      "Kitchen capacity has its own switch"
+      "capacity has its own switch"
      ],
      "reason": "legacy en-GB constant exports (lib/copy/*, lib/settings-copy.ts, lib/kitchen-capacity.ts) kept for old callers; every screen words these from messages — the 1d/settings, 1d/schedule and 1b/dashboard views of the same settings are checked"
     },
@@ -21372,7 +21304,7 @@
      "id": "1d/copy/US|offlineProtection|OFFLINE_PROTECTION_EXPLAINER",
      "runs": [
       "You must keep your dashboard",
-      "kitchen screen on and",
+      "screen on and",
       "If the screen goes off",
       "the device loses"
      ],
@@ -21392,7 +21324,7 @@
      "id": "1d/copy/US|offlineProtection|OFFLINE_PROTECTION_EXPLAINER_LEAD",
      "runs": [
       "You must keep your dashboard",
-      "kitchen screen on and"
+      "screen on and"
      ],
      "reason": "legacy en-GB constant exports (lib/copy/*, lib/settings-copy.ts, lib/kitchen-capacity.ts) kept for old callers; every screen words these from messages — the 1d/settings, 1d/schedule and 1b/dashboard views of the same settings are checked"
     },
@@ -21418,7 +21350,7 @@
      "id": "1d/copy/US|offlineProtection|OFFLINE_PROTECTION_REMINDER",
      "runs": [
       "Keep your dashboard",
-      "kitchen screen on and",
+      "screen on and",
       "protection may take over"
      ],
      "reason": "legacy en-GB constant exports (lib/copy/*, lib/settings-copy.ts, lib/kitchen-capacity.ts) kept for old callers; every screen words these from messages — the 1d/settings, 1d/schedule and 1b/dashboard views of the same settings are checked"
@@ -21487,7 +21419,8 @@
     {
      "id": "1d/copy/US|kitchenCapacity|KITCHEN_CAPACITY_DESC",
      "runs": [
-      "The most items your kitchen can turn out at once",
+      "The most items your",
+      "can turn out at once",
       "the categories you’ve ticked",
       "Each category’s own batch size still applies on top"
      ],
@@ -21513,7 +21446,6 @@
     {
      "id": "1d/copy/US|kitchenCapacity|KITCHEN_CAPACITY_WARNING",
      "runs": [
-      "For kitchen capacity",
       "and batch size on your",
       "capacity can’t tell how long items take"
      ],
@@ -21522,10 +21454,10 @@
     {
      "id": "1d/copy/US|kitchenCapacity|KITCHEN_SETUP_EXPLAINER",
      "runs": [
-      "How kitchen setup works",
-      "If your kitchen can cook",
       "items are in progress",
-      "is automatically told their order takes"
+      "is automatically told their order takes",
+      "Items like drinks",
+      "dips that are"
      ],
      "reason": "legacy en-GB constant exports (lib/copy/*, lib/settings-copy.ts, lib/kitchen-capacity.ts) kept for old callers; every screen words these from messages — the 1d/settings, 1d/schedule and 1b/dashboard views of the same settings are checked"
     },
@@ -22038,21 +21970,18 @@
     {
      "id": "1b/components/US|add|capacity|over",
      "runs": [
-      "The kitchen can cook [harness]",
       "pizzas in that window [harness]"
      ]
     },
     {
      "id": "1b/components/US|add|capacity|filled",
      "runs": [
-      "The kitchen can cook [harness]",
       "pizzas in that window [harness]"
      ]
     },
     {
      "id": "1b/components/US|add|capacity|stale",
      "runs": [
-      "The kitchen can cook [harness]",
       "pizzas in that window [harness]"
      ]
     },
@@ -23524,7 +23453,7 @@
      "id": "1d/copy/US|serviceSettings|SAME_SETTINGS_CONFIRM",
      "runs": [
       "the same as Same as",
-      "Kitchen capacity has its own switch"
+      "capacity has its own switch"
      ],
      "reason": "legacy en-GB constant exports (lib/copy/*, lib/settings-copy.ts, lib/kitchen-capacity.ts) kept for old callers; every screen words these from messages — the 1d/settings, 1d/schedule and 1b/dashboard views of the same settings are checked"
     },
@@ -23634,7 +23563,7 @@
      "id": "1d/copy/US|offlineProtection|OFFLINE_PROTECTION_EXPLAINER",
      "runs": [
       "You must keep your dashboard",
-      "kitchen screen on and",
+      "screen on and",
       "If the screen goes off",
       "the device loses internet"
      ],
@@ -23654,7 +23583,7 @@
      "id": "1d/copy/US|offlineProtection|OFFLINE_PROTECTION_EXPLAINER_LEAD",
      "runs": [
       "You must keep your dashboard",
-      "kitchen screen on and"
+      "screen on and"
      ],
      "reason": "legacy en-GB constant exports (lib/copy/*, lib/settings-copy.ts, lib/kitchen-capacity.ts) kept for old callers; every screen words these from messages — the 1d/settings, 1d/schedule and 1b/dashboard views of the same settings are checked"
     },
@@ -23680,7 +23609,7 @@
      "id": "1d/copy/US|offlineProtection|OFFLINE_PROTECTION_REMINDER",
      "runs": [
       "Keep your dashboard",
-      "kitchen screen on and",
+      "screen on and",
       "protection may take over"
      ],
      "reason": "legacy en-GB constant exports (lib/copy/*, lib/settings-copy.ts, lib/kitchen-capacity.ts) kept for old callers; every screen words these from messages — the 1d/settings, 1d/schedule and 1b/dashboard views of the same settings are checked"
@@ -23750,7 +23679,7 @@
     {
      "id": "1d/copy/US|kitchenCapacity|KITCHEN_CAPACITY_DESC",
      "runs": [
-      "items your kitchen can turn out at once",
+      "can turn out at once",
       "the categories you’ve ticked",
       "Each category’s own batch size still applies on top"
      ],
@@ -23776,7 +23705,6 @@
     {
      "id": "1d/copy/US|kitchenCapacity|KITCHEN_CAPACITY_WARNING",
      "runs": [
-      "For kitchen capacity",
       "and batch size on your menu categories",
       "capacity can’t tell how long items take"
      ],
@@ -23785,10 +23713,10 @@
     {
      "id": "1d/copy/US|kitchenCapacity|KITCHEN_SETUP_EXPLAINER",
      "runs": [
-      "How kitchen setup works",
-      "If your kitchen can cook",
       "min prep and",
-      "items are in progress"
+      "items are in progress",
+      "automatically told their order takes",
+      "Items like drinks"
      ],
      "reason": "legacy en-GB constant exports (lib/copy/*, lib/settings-copy.ts, lib/kitchen-capacity.ts) kept for old callers; every screen words these from messages — the 1d/settings, 1d/schedule and 1b/dashboard views of the same settings are checked"
     },
@@ -24309,21 +24237,18 @@
     {
      "id": "1b/components/US|add|capacity|over",
      "runs": [
-      "The kitchen can cook [harness]",
       "pizzas in that window [harness]"
      ]
     },
     {
      "id": "1b/components/US|add|capacity|filled",
      "runs": [
-      "The kitchen can cook [harness]",
       "pizzas in that window [harness]"
      ]
     },
     {
      "id": "1b/components/US|add|capacity|stale",
      "runs": [
-      "The kitchen can cook [harness]",
       "pizzas in that window [harness]"
      ]
     },
@@ -25492,7 +25417,7 @@
      "id": "1d/copy/US|serviceSettings|SAME_SETTINGS_CONFIRM",
      "runs": [
       "the same as Same as",
-      "Kitchen capacity has its own switch"
+      "capacity has its own switch"
      ],
      "reason": "legacy en-GB constant exports (lib/copy/*, lib/settings-copy.ts, lib/kitchen-capacity.ts) kept for old callers; every screen words these from messages — the 1d/settings, 1d/schedule and 1b/dashboard views of the same settings are checked"
     },
@@ -25609,7 +25534,7 @@
      "id": "1d/copy/US|offlineProtection|OFFLINE_PROTECTION_EXPLAINER",
      "runs": [
       "You must keep your dashboard",
-      "kitchen screen on and",
+      "screen on and",
       "If the screen goes off",
       "the device loses"
      ],
@@ -25629,7 +25554,7 @@
      "id": "1d/copy/US|offlineProtection|OFFLINE_PROTECTION_EXPLAINER_LEAD",
      "runs": [
       "You must keep your dashboard",
-      "kitchen screen on and"
+      "screen on and"
      ],
      "reason": "legacy en-GB constant exports (lib/copy/*, lib/settings-copy.ts, lib/kitchen-capacity.ts) kept for old callers; every screen words these from messages — the 1d/settings, 1d/schedule and 1b/dashboard views of the same settings are checked"
     },
@@ -25655,7 +25580,7 @@
      "id": "1d/copy/US|offlineProtection|OFFLINE_PROTECTION_REMINDER",
      "runs": [
       "Keep your dashboard",
-      "kitchen screen on and",
+      "screen on and",
       "protection may take over"
      ],
      "reason": "legacy en-GB constant exports (lib/copy/*, lib/settings-copy.ts, lib/kitchen-capacity.ts) kept for old callers; every screen words these from messages — the 1d/settings, 1d/schedule and 1b/dashboard views of the same settings are checked"
@@ -25724,7 +25649,8 @@
     {
      "id": "1d/copy/US|kitchenCapacity|KITCHEN_CAPACITY_DESC",
      "runs": [
-      "The most items your kitchen can turn out at once",
+      "The most items your",
+      "can turn out at once",
       "the categories you’ve ticked",
       "Each category’s own batch size still applies on top"
      ],
@@ -25750,7 +25676,6 @@
     {
      "id": "1d/copy/US|kitchenCapacity|KITCHEN_CAPACITY_WARNING",
      "runs": [
-      "For kitchen capacity",
       "and batch size on your",
       "capacity can’t tell how long items take"
      ],
@@ -25759,10 +25684,10 @@
     {
      "id": "1d/copy/US|kitchenCapacity|KITCHEN_SETUP_EXPLAINER",
      "runs": [
-      "How kitchen setup works",
-      "If your kitchen can cook",
       "items are in progress",
-      "is automatically told their order takes"
+      "is automatically told their order takes",
+      "Items like drinks",
+      "dips that are"
      ],
      "reason": "legacy en-GB constant exports (lib/copy/*, lib/settings-copy.ts, lib/kitchen-capacity.ts) kept for old callers; every screen words these from messages — the 1d/settings, 1d/schedule and 1b/dashboard views of the same settings are checked"
     },
@@ -26268,21 +26193,18 @@
     {
      "id": "1b/components/US|add|capacity|over",
      "runs": [
-      "The kitchen can cook [harness]",
       "pizzas in that window [harness]"
      ]
     },
     {
      "id": "1b/components/US|add|capacity|filled",
      "runs": [
-      "The kitchen can cook [harness]",
       "pizzas in that window [harness]"
      ]
     },
     {
      "id": "1b/components/US|add|capacity|stale",
      "runs": [
-      "The kitchen can cook [harness]",
       "pizzas in that window [harness]"
      ]
     },
@@ -27725,7 +27647,7 @@
      "id": "1d/copy/US|serviceSettings|SAME_SETTINGS_CONFIRM",
      "runs": [
       "the same as Same as",
-      "Kitchen capacity has its own switch"
+      "capacity has its own switch"
      ],
      "reason": "legacy en-GB constant exports (lib/copy/*, lib/settings-copy.ts, lib/kitchen-capacity.ts) kept for old callers; every screen words these from messages — the 1d/settings, 1d/schedule and 1b/dashboard views of the same settings are checked"
     },
@@ -27842,7 +27764,7 @@
      "id": "1d/copy/US|offlineProtection|OFFLINE_PROTECTION_EXPLAINER",
      "runs": [
       "You must keep your dashboard",
-      "kitchen screen on and",
+      "screen on and",
       "If the screen goes off",
       "the device loses"
      ],
@@ -27862,7 +27784,7 @@
      "id": "1d/copy/US|offlineProtection|OFFLINE_PROTECTION_EXPLAINER_LEAD",
      "runs": [
       "You must keep your dashboard",
-      "kitchen screen on and"
+      "screen on and"
      ],
      "reason": "legacy en-GB constant exports (lib/copy/*, lib/settings-copy.ts, lib/kitchen-capacity.ts) kept for old callers; every screen words these from messages — the 1d/settings, 1d/schedule and 1b/dashboard views of the same settings are checked"
     },
@@ -27888,7 +27810,7 @@
      "id": "1d/copy/US|offlineProtection|OFFLINE_PROTECTION_REMINDER",
      "runs": [
       "Keep your dashboard",
-      "kitchen screen on and",
+      "screen on and",
       "protection may take over"
      ],
      "reason": "legacy en-GB constant exports (lib/copy/*, lib/settings-copy.ts, lib/kitchen-capacity.ts) kept for old callers; every screen words these from messages — the 1d/settings, 1d/schedule and 1b/dashboard views of the same settings are checked"
@@ -27957,7 +27879,8 @@
     {
      "id": "1d/copy/US|kitchenCapacity|KITCHEN_CAPACITY_DESC",
      "runs": [
-      "The most items your kitchen can turn out at once",
+      "The most items your",
+      "can turn out at once",
       "the categories you’ve ticked",
       "Each category’s own batch size still applies on top"
      ],
@@ -27983,7 +27906,6 @@
     {
      "id": "1d/copy/US|kitchenCapacity|KITCHEN_CAPACITY_WARNING",
      "runs": [
-      "For kitchen capacity",
       "and batch size on your menu categories",
       "capacity can’t tell how long items take"
      ],
@@ -27992,10 +27914,10 @@
     {
      "id": "1d/copy/US|kitchenCapacity|KITCHEN_SETUP_EXPLAINER",
      "runs": [
-      "How kitchen setup works",
-      "If your kitchen can cook",
       "is automatically told their order takes",
-      "Items like drinks"
+      "Items like drinks",
+      "instantly can be left as",
+      "You can also set"
      ],
      "reason": "legacy en-GB constant exports (lib/copy/*, lib/settings-copy.ts, lib/kitchen-capacity.ts) kept for old callers; every screen words these from messages — the 1d/settings, 1d/schedule and 1b/dashboard views of the same settings are checked"
     },
@@ -28490,21 +28412,18 @@
     {
      "id": "1b/components/US|add|capacity|over",
      "runs": [
-      "The kitchen can cook [harness]",
       "pizzas in that window [harness]"
      ]
     },
     {
      "id": "1b/components/US|add|capacity|filled",
      "runs": [
-      "The kitchen can cook [harness]",
       "pizzas in that window [harness]"
      ]
     },
     {
      "id": "1b/components/US|add|capacity|stale",
      "runs": [
-      "The kitchen can cook [harness]",
       "pizzas in that window [harness]"
      ]
     },
@@ -29917,7 +29836,7 @@
      "id": "1d/copy/US|serviceSettings|SAME_SETTINGS_CONFIRM",
      "runs": [
       "the same as Same as",
-      "Kitchen capacity has its own switch"
+      "capacity has its own switch"
      ],
      "reason": "legacy en-GB constant exports (lib/copy/*, lib/settings-copy.ts, lib/kitchen-capacity.ts) kept for old callers; every screen words these from messages — the 1d/settings, 1d/schedule and 1b/dashboard views of the same settings are checked"
     },
@@ -30148,7 +30067,8 @@
     {
      "id": "1d/copy/US|kitchenCapacity|KITCHEN_CAPACITY_DESC",
      "runs": [
-      "The most items your kitchen can turn out at once",
+      "The most items your",
+      "can turn out at once",
       "the categories you’ve ticked",
       "Each category’s own batch size still applies"
      ],
@@ -30174,7 +30094,6 @@
     {
      "id": "1d/copy/US|kitchenCapacity|KITCHEN_CAPACITY_WARNING",
      "runs": [
-      "For kitchen capacity",
       "and batch size",
       "your menu categories",
       "capacity can’t tell how long items take"
@@ -30184,10 +30103,10 @@
     {
      "id": "1d/copy/US|kitchenCapacity|KITCHEN_SETUP_EXPLAINER",
      "runs": [
-      "How kitchen setup works",
-      "If your kitchen can cook",
       "items are in progress",
-      "is automatically told their order takes"
+      "is automatically told their order takes",
+      "Items like drinks",
+      "dips that are"
      ],
      "reason": "legacy en-GB constant exports (lib/copy/*, lib/settings-copy.ts, lib/kitchen-capacity.ts) kept for old callers; every screen words these from messages — the 1d/settings, 1d/schedule and 1b/dashboard views of the same settings are checked"
     },
@@ -30695,21 +30614,18 @@
     {
      "id": "1b/components/US|add|capacity|over",
      "runs": [
-      "The kitchen can cook [harness]",
       "pizzas in that window [harness]"
      ]
     },
     {
      "id": "1b/components/US|add|capacity|filled",
      "runs": [
-      "The kitchen can cook [harness]",
       "pizzas in that window [harness]"
      ]
     },
     {
      "id": "1b/components/US|add|capacity|stale",
      "runs": [
-      "The kitchen can cook [harness]",
       "pizzas in that window [harness]"
      ]
     },
@@ -32127,7 +32043,7 @@
     {
      "id": "1d/copy/US|serviceSettings|SAME_SETTINGS_CONFIRM",
      "runs": [
-      "Kitchen capacity has its own switch"
+      "capacity has its own switch"
      ],
      "reason": "legacy en-GB constant exports (lib/copy/*, lib/settings-copy.ts, lib/kitchen-capacity.ts) kept for old callers; every screen words these from messages — the 1d/settings, 1d/schedule and 1b/dashboard views of the same settings are checked"
     },
@@ -32252,7 +32168,7 @@
      "id": "1d/copy/US|offlineProtection|OFFLINE_PROTECTION_EXPLAINER",
      "runs": [
       "You must keep your dashboard",
-      "kitchen screen on and online during service",
+      "screen on and online during service",
       "If the screen goes off",
       "the device loses internet"
      ],
@@ -32272,7 +32188,7 @@
      "id": "1d/copy/US|offlineProtection|OFFLINE_PROTECTION_EXPLAINER_LEAD",
      "runs": [
       "You must keep your dashboard",
-      "kitchen screen on and online during service"
+      "screen on and online during service"
      ],
      "reason": "legacy en-GB constant exports (lib/copy/*, lib/settings-copy.ts, lib/kitchen-capacity.ts) kept for old callers; every screen words these from messages — the 1d/settings, 1d/schedule and 1b/dashboard views of the same settings are checked"
     },
@@ -32298,7 +32214,7 @@
      "id": "1d/copy/US|offlineProtection|OFFLINE_PROTECTION_REMINDER",
      "runs": [
       "Keep your dashboard",
-      "kitchen screen on and online during service",
+      "screen on and online during service",
       "offline protection may take over"
      ],
      "reason": "legacy en-GB constant exports (lib/copy/*, lib/settings-copy.ts, lib/kitchen-capacity.ts) kept for old callers; every screen words these from messages — the 1d/settings, 1d/schedule and 1b/dashboard views of the same settings are checked"
@@ -32373,7 +32289,8 @@
     {
      "id": "1d/copy/US|kitchenCapacity|KITCHEN_CAPACITY_DESC",
      "runs": [
-      "The most items your kitchen can turn out at once",
+      "The most items your",
+      "can turn out at once",
       "the categories you’ve ticked",
       "Each category’s own batch size still applies on top"
      ],
@@ -32399,7 +32316,6 @@
     {
      "id": "1d/copy/US|kitchenCapacity|KITCHEN_CAPACITY_WARNING",
      "runs": [
-      "For kitchen capacity",
       "and batch size on your menu categories",
       "capacity can’t tell how long items take"
      ],
@@ -32408,10 +32324,10 @@
     {
      "id": "1d/copy/US|kitchenCapacity|KITCHEN_SETUP_EXPLAINER",
      "runs": [
-      "How kitchen setup works",
-      "If your kitchen can cook",
       "is automatically told their order takes",
-      "Items like drinks"
+      "Items like drinks",
+      "dips that are",
+      "instantly can be left as"
      ],
      "reason": "legacy en-GB constant exports (lib/copy/*, lib/settings-copy.ts, lib/kitchen-capacity.ts) kept for old callers; every screen words these from messages — the 1d/settings, 1d/schedule and 1b/dashboard views of the same settings are checked"
     },
@@ -32928,24 +32844,6 @@
      "id": "1a/1a/statusPage/US|cancelError",
      "runs": [
       "This order can [en-GB]"
-     ]
-    },
-    {
-     "id": "1b/components/US|add|capacity|over",
-     "runs": [
-      "The kitchen can cook [harness]"
-     ]
-    },
-    {
-     "id": "1b/components/US|add|capacity|filled",
-     "runs": [
-      "The kitchen can cook [harness]"
-     ]
-    },
-    {
-     "id": "1b/components/US|add|capacity|stale",
-     "runs": [
-      "The kitchen can cook [harness]"
      ]
     },
     {
@@ -34390,7 +34288,7 @@
      "id": "1d/copy/US|serviceSettings|SAME_SETTINGS_CONFIRM",
      "runs": [
       "the same as Same as",
-      "Kitchen capacity has its own switch"
+      "capacity has its own switch"
      ],
      "reason": "legacy en-GB constant exports (lib/copy/*, lib/settings-copy.ts, lib/kitchen-capacity.ts) kept for old callers; every screen words these from messages — the 1d/settings, 1d/schedule and 1b/dashboard views of the same settings are checked"
     },
@@ -34629,7 +34527,8 @@
     {
      "id": "1d/copy/US|kitchenCapacity|KITCHEN_CAPACITY_DESC",
      "runs": [
-      "The most items your kitchen can turn out at once",
+      "The most items your",
+      "can turn out at once",
       "the categories you’ve ticked",
       "Each category’s own batch size still applies"
      ],
@@ -34655,20 +34554,20 @@
     {
      "id": "1d/copy/US|kitchenCapacity|KITCHEN_CAPACITY_WARNING",
      "runs": [
-      "For kitchen capacity",
       "set a prep",
       "and batch size",
-      "your menu categories"
+      "your menu categories",
+      "capacity can’t tell how long items take"
      ],
      "reason": "legacy en-GB constant exports (lib/copy/*, lib/settings-copy.ts, lib/kitchen-capacity.ts) kept for old callers; every screen words these from messages — the 1d/settings, 1d/schedule and 1b/dashboard views of the same settings are checked"
     },
     {
      "id": "1d/copy/US|kitchenCapacity|KITCHEN_SETUP_EXPLAINER",
      "runs": [
-      "How kitchen setup works",
-      "If your kitchen can cook",
       "items at a",
-      "items are in progress"
+      "items are in progress",
+      "is automatically told their order takes",
+      "Items like drinks"
      ],
      "reason": "legacy en-GB constant exports (lib/copy/*, lib/settings-copy.ts, lib/kitchen-capacity.ts) kept for old callers; every screen words these from messages — the 1d/settings, 1d/schedule and 1b/dashboard views of the same settings are checked"
     },
@@ -35182,21 +35081,18 @@
     {
      "id": "1b/components/US|add|capacity|over",
      "runs": [
-      "The kitchen can cook [harness]",
       "pizzas in that window [harness]"
      ]
     },
     {
      "id": "1b/components/US|add|capacity|filled",
      "runs": [
-      "The kitchen can cook [harness]",
       "pizzas in that window [harness]"
      ]
     },
     {
      "id": "1b/components/US|add|capacity|stale",
      "runs": [
-      "The kitchen can cook [harness]",
       "pizzas in that window [harness]"
      ]
     },
@@ -36711,7 +36607,7 @@
      "id": "1d/copy/US|serviceSettings|SAME_SETTINGS_CONFIRM",
      "runs": [
       "the same as Same as",
-      "Kitchen capacity has its own switch"
+      "capacity has its own switch"
      ],
      "reason": "legacy en-GB constant exports (lib/copy/*, lib/settings-copy.ts, lib/kitchen-capacity.ts) kept for old callers; every screen words these from messages — the 1d/settings, 1d/schedule and 1b/dashboard views of the same settings are checked"
     },
@@ -36958,7 +36854,8 @@
     {
      "id": "1d/copy/US|kitchenCapacity|KITCHEN_CAPACITY_DESC",
      "runs": [
-      "The most items your kitchen can turn out at once",
+      "The most items your",
+      "can turn out at once",
       "the categories you’ve ticked",
       "Each category’s own batch size still applies"
      ],
@@ -36984,20 +36881,20 @@
     {
      "id": "1d/copy/US|kitchenCapacity|KITCHEN_CAPACITY_WARNING",
      "runs": [
-      "For kitchen capacity",
       "set a prep",
       "and batch size",
-      "your menu categories"
+      "your menu categories",
+      "capacity can’t tell how long items take"
      ],
      "reason": "legacy en-GB constant exports (lib/copy/*, lib/settings-copy.ts, lib/kitchen-capacity.ts) kept for old callers; every screen words these from messages — the 1d/settings, 1d/schedule and 1b/dashboard views of the same settings are checked"
     },
     {
      "id": "1d/copy/US|kitchenCapacity|KITCHEN_SETUP_EXPLAINER",
      "runs": [
-      "How kitchen setup works",
-      "If your kitchen can cook",
       "items at a",
-      "items are in progress"
+      "items are in progress",
+      "is automatically told their order takes",
+      "Items like drinks"
      ],
      "reason": "legacy en-GB constant exports (lib/copy/*, lib/settings-copy.ts, lib/kitchen-capacity.ts) kept for old callers; every screen words these from messages — the 1d/settings, 1d/schedule and 1b/dashboard views of the same settings are checked"
     },
@@ -37506,21 +37403,18 @@
     {
      "id": "1b/components/US|add|capacity|over",
      "runs": [
-      "The kitchen can cook [harness]",
       "pizzas in that window [harness]"
      ]
     },
     {
      "id": "1b/components/US|add|capacity|filled",
      "runs": [
-      "The kitchen can cook [harness]",
       "pizzas in that window [harness]"
      ]
     },
     {
      "id": "1b/components/US|add|capacity|stale",
      "runs": [
-      "The kitchen can cook [harness]",
       "pizzas in that window [harness]"
      ]
     },
@@ -38944,7 +38838,7 @@
      "id": "1d/copy/US|serviceSettings|SAME_SETTINGS_CONFIRM",
      "runs": [
       "the same as Same as",
-      "Kitchen capacity has its own switch"
+      "capacity has its own switch"
      ],
      "reason": "legacy en-GB constant exports (lib/copy/*, lib/settings-copy.ts, lib/kitchen-capacity.ts) kept for old callers; every screen words these from messages — the 1d/settings, 1d/schedule and 1b/dashboard views of the same settings are checked"
     },
@@ -39068,7 +38962,7 @@
      "id": "1d/copy/US|offlineProtection|OFFLINE_PROTECTION_EXPLAINER",
      "runs": [
       "must keep your dashboard",
-      "kitchen screen on and online during service",
+      "screen on and online during service",
       "If the screen goes off",
       "the device loses internet"
      ],
@@ -39088,7 +38982,7 @@
      "id": "1d/copy/US|offlineProtection|OFFLINE_PROTECTION_EXPLAINER_LEAD",
      "runs": [
       "must keep your dashboard",
-      "kitchen screen on and online during service"
+      "screen on and online during service"
      ],
      "reason": "legacy en-GB constant exports (lib/copy/*, lib/settings-copy.ts, lib/kitchen-capacity.ts) kept for old callers; every screen words these from messages — the 1d/settings, 1d/schedule and 1b/dashboard views of the same settings are checked"
     },
@@ -39115,7 +39009,7 @@
      "id": "1d/copy/US|offlineProtection|OFFLINE_PROTECTION_REMINDER",
      "runs": [
       "Keep your dashboard",
-      "kitchen screen on and online during service",
+      "screen on and online during service",
       "offline protection may take over"
      ],
      "reason": "legacy en-GB constant exports (lib/copy/*, lib/settings-copy.ts, lib/kitchen-capacity.ts) kept for old callers; every screen words these from messages — the 1d/settings, 1d/schedule and 1b/dashboard views of the same settings are checked"
@@ -39190,7 +39084,8 @@
     {
      "id": "1d/copy/US|kitchenCapacity|KITCHEN_CAPACITY_DESC",
      "runs": [
-      "The most items your kitchen can turn out at once",
+      "The most items your",
+      "can turn out at once",
       "the categories you’ve ticked",
       "Each category’s own batch size still applies on top"
      ],
@@ -39216,7 +39111,6 @@
     {
      "id": "1d/copy/US|kitchenCapacity|KITCHEN_CAPACITY_WARNING",
      "runs": [
-      "For kitchen capacity",
       "set a prep",
       "and batch size on your menu categories",
       "capacity can’t tell how long items take"
@@ -39226,10 +39120,10 @@
     {
      "id": "1d/copy/US|kitchenCapacity|KITCHEN_SETUP_EXPLAINER",
      "runs": [
-      "How kitchen setup works",
-      "If your kitchen can cook",
       "items at a",
-      "items are in progress"
+      "items are in progress",
+      "is automatically told their order takes",
+      "Items like drinks"
      ],
      "reason": "legacy en-GB constant exports (lib/copy/*, lib/settings-copy.ts, lib/kitchen-capacity.ts) kept for old callers; every screen words these from messages — the 1d/settings, 1d/schedule and 1b/dashboard views of the same settings are checked"
     },
@@ -39747,21 +39641,18 @@
     {
      "id": "1b/components/US|add|capacity|over",
      "runs": [
-      "The kitchen can cook [harness]",
       "pizzas in that window [harness]"
      ]
     },
     {
      "id": "1b/components/US|add|capacity|filled",
      "runs": [
-      "The kitchen can cook [harness]",
       "pizzas in that window [harness]"
      ]
     },
     {
      "id": "1b/components/US|add|capacity|stale",
      "runs": [
-      "The kitchen can cook [harness]",
       "pizzas in that window [harness]"
      ]
     },
@@ -41161,7 +41052,7 @@
      "id": "1d/copy/US|serviceSettings|SAME_SETTINGS_CONFIRM",
      "runs": [
       "the same as Same as",
-      "Kitchen capacity has its own switch"
+      "capacity has its own switch"
      ],
      "reason": "legacy en-GB constant exports (lib/copy/*, lib/settings-copy.ts, lib/kitchen-capacity.ts) kept for old callers; every screen words these from messages — the 1d/settings, 1d/schedule and 1b/dashboard views of the same settings are checked"
     },
@@ -41286,7 +41177,7 @@
      "id": "1d/copy/US|offlineProtection|OFFLINE_PROTECTION_EXPLAINER",
      "runs": [
       "You must keep your dashboard",
-      "kitchen screen on and online during service",
+      "screen on and online during service",
       "If the screen goes off",
       "the device loses internet"
      ],
@@ -41306,7 +41197,7 @@
      "id": "1d/copy/US|offlineProtection|OFFLINE_PROTECTION_EXPLAINER_LEAD",
      "runs": [
       "You must keep your dashboard",
-      "kitchen screen on and online during service"
+      "screen on and online during service"
      ],
      "reason": "legacy en-GB constant exports (lib/copy/*, lib/settings-copy.ts, lib/kitchen-capacity.ts) kept for old callers; every screen words these from messages — the 1d/settings, 1d/schedule and 1b/dashboard views of the same settings are checked"
     },
@@ -41332,7 +41223,7 @@
      "id": "1d/copy/US|offlineProtection|OFFLINE_PROTECTION_REMINDER",
      "runs": [
       "Keep your dashboard",
-      "kitchen screen on and online during service",
+      "screen on and online during service",
       "offline protection may take over"
      ],
      "reason": "legacy en-GB constant exports (lib/copy/*, lib/settings-copy.ts, lib/kitchen-capacity.ts) kept for old callers; every screen words these from messages — the 1d/settings, 1d/schedule and 1b/dashboard views of the same settings are checked"
@@ -41407,7 +41298,8 @@
     {
      "id": "1d/copy/US|kitchenCapacity|KITCHEN_CAPACITY_DESC",
      "runs": [
-      "The most items your kitchen can turn out at once",
+      "The most items your",
+      "can turn out at once",
       "the categories you’ve ticked",
       "Each category’s own batch size still applies on top"
      ],
@@ -41433,7 +41325,6 @@
     {
      "id": "1d/copy/US|kitchenCapacity|KITCHEN_CAPACITY_WARNING",
      "runs": [
-      "For kitchen capacity",
       "set a prep",
       "and batch size on your menu categories",
       "capacity can’t tell how long items take"
@@ -41443,10 +41334,10 @@
     {
      "id": "1d/copy/US|kitchenCapacity|KITCHEN_SETUP_EXPLAINER",
      "runs": [
-      "How kitchen setup works",
-      "If your kitchen can cook",
       "items at a",
-      "items are in progress"
+      "items are in progress",
+      "is automatically told their order takes",
+      "Items like drinks"
      ],
      "reason": "legacy en-GB constant exports (lib/copy/*, lib/settings-copy.ts, lib/kitchen-capacity.ts) kept for old callers; every screen words these from messages — the 1d/settings, 1d/schedule and 1b/dashboard views of the same settings are checked"
     },
@@ -41969,21 +41860,18 @@
     {
      "id": "1b/components/US|add|capacity|over",
      "runs": [
-      "The kitchen can cook [harness]",
       "pizzas in that window [harness]"
      ]
     },
     {
      "id": "1b/components/US|add|capacity|filled",
      "runs": [
-      "The kitchen can cook [harness]",
       "pizzas in that window [harness]"
      ]
     },
     {
      "id": "1b/components/US|add|capacity|stale",
      "runs": [
-      "The kitchen can cook [harness]",
       "pizzas in that window [harness]"
      ]
     },
@@ -43503,7 +43391,7 @@
      "id": "1d/copy/US|serviceSettings|SAME_SETTINGS_CONFIRM",
      "runs": [
       "the same as Same as",
-      "Kitchen capacity has its own switch"
+      "capacity has its own switch"
      ],
      "reason": "legacy en-GB constant exports (lib/copy/*, lib/settings-copy.ts, lib/kitchen-capacity.ts) kept for old callers; every screen words these from messages — the 1d/settings, 1d/schedule and 1b/dashboard views of the same settings are checked"
     },
@@ -43621,7 +43509,7 @@
      "id": "1d/copy/US|offlineProtection|OFFLINE_PROTECTION_EXPLAINER",
      "runs": [
       "You must keep your dashboard",
-      "kitchen screen on and",
+      "screen on and",
       "If the screen goes off",
       "the device loses internet"
      ],
@@ -43641,7 +43529,7 @@
      "id": "1d/copy/US|offlineProtection|OFFLINE_PROTECTION_EXPLAINER_LEAD",
      "runs": [
       "You must keep your dashboard",
-      "kitchen screen on and"
+      "screen on and"
      ],
      "reason": "legacy en-GB constant exports (lib/copy/*, lib/settings-copy.ts, lib/kitchen-capacity.ts) kept for old callers; every screen words these from messages — the 1d/settings, 1d/schedule and 1b/dashboard views of the same settings are checked"
     },
@@ -43667,7 +43555,7 @@
      "id": "1d/copy/US|offlineProtection|OFFLINE_PROTECTION_REMINDER",
      "runs": [
       "Keep your dashboard",
-      "kitchen screen on and",
+      "screen on and",
       "offline protection may take over"
      ],
      "reason": "legacy en-GB constant exports (lib/copy/*, lib/settings-copy.ts, lib/kitchen-capacity.ts) kept for old callers; every screen words these from messages — the 1d/settings, 1d/schedule and 1b/dashboard views of the same settings are checked"
@@ -43742,7 +43630,8 @@
     {
      "id": "1d/copy/US|kitchenCapacity|KITCHEN_CAPACITY_DESC",
      "runs": [
-      "The most items your kitchen can turn out at once",
+      "The most items your",
+      "can turn out at once",
       "the categories you’ve ticked",
       "Each category’s own batch size still applies on top"
      ],
@@ -43768,7 +43657,6 @@
     {
      "id": "1d/copy/US|kitchenCapacity|KITCHEN_CAPACITY_WARNING",
      "runs": [
-      "For kitchen capacity",
       "set a prep",
       "and batch size on your menu categories",
       "capacity can’t tell how long items take"
@@ -43778,10 +43666,10 @@
     {
      "id": "1d/copy/US|kitchenCapacity|KITCHEN_SETUP_EXPLAINER",
      "runs": [
-      "How kitchen setup works",
-      "If your kitchen can cook",
       "min prep and",
-      "items at a"
+      "items at a",
+      "items are in progress",
+      "is automatically told their order takes"
      ],
      "reason": "legacy en-GB constant exports (lib/copy/*, lib/settings-copy.ts, lib/kitchen-capacity.ts) kept for old callers; every screen words these from messages — the 1d/settings, 1d/schedule and 1b/dashboard views of the same settings are checked"
     },
@@ -44304,21 +44192,18 @@
     {
      "id": "1b/components/US|add|capacity|over",
      "runs": [
-      "The kitchen can cook [harness]",
       "pizzas in that window [harness]"
      ]
     },
     {
      "id": "1b/components/US|add|capacity|filled",
      "runs": [
-      "The kitchen can cook [harness]",
       "pizzas in that window [harness]"
      ]
     },
     {
      "id": "1b/components/US|add|capacity|stale",
      "runs": [
-      "The kitchen can cook [harness]",
       "pizzas in that window [harness]"
      ]
     },
@@ -45867,7 +45752,7 @@
      "id": "1d/copy/US|serviceSettings|SAME_SETTINGS_CONFIRM",
      "runs": [
       "the same as Same as",
-      "Kitchen capacity has its own switch"
+      "capacity has its own switch"
      ],
      "reason": "legacy en-GB constant exports (lib/copy/*, lib/settings-copy.ts, lib/kitchen-capacity.ts) kept for old callers; every screen words these from messages — the 1d/settings, 1d/schedule and 1b/dashboard views of the same settings are checked"
     },
@@ -45992,7 +45877,7 @@
      "id": "1d/copy/US|offlineProtection|OFFLINE_PROTECTION_EXPLAINER",
      "runs": [
       "You must keep your dashboard",
-      "kitchen screen on and online during service",
+      "screen on and online during service",
       "If the screen goes off",
       "the device loses internet"
      ],
@@ -46012,7 +45897,7 @@
      "id": "1d/copy/US|offlineProtection|OFFLINE_PROTECTION_EXPLAINER_LEAD",
      "runs": [
       "You must keep your dashboard",
-      "kitchen screen on and online during service"
+      "screen on and online during service"
      ],
      "reason": "legacy en-GB constant exports (lib/copy/*, lib/settings-copy.ts, lib/kitchen-capacity.ts) kept for old callers; every screen words these from messages — the 1d/settings, 1d/schedule and 1b/dashboard views of the same settings are checked"
     },
@@ -46038,7 +45923,7 @@
      "id": "1d/copy/US|offlineProtection|OFFLINE_PROTECTION_REMINDER",
      "runs": [
       "Keep your dashboard",
-      "kitchen screen on and online during service",
+      "screen on and online during service",
       "offline protection may take over"
      ],
      "reason": "legacy en-GB constant exports (lib/copy/*, lib/settings-copy.ts, lib/kitchen-capacity.ts) kept for old callers; every screen words these from messages — the 1d/settings, 1d/schedule and 1b/dashboard views of the same settings are checked"
@@ -46113,7 +45998,8 @@
     {
      "id": "1d/copy/US|kitchenCapacity|KITCHEN_CAPACITY_DESC",
      "runs": [
-      "The most items your kitchen can turn out at once",
+      "The most items your",
+      "can turn out at once",
       "the categories you’ve ticked",
       "Each category’s own batch size still applies on top"
      ],
@@ -46139,7 +46025,6 @@
     {
      "id": "1d/copy/US|kitchenCapacity|KITCHEN_CAPACITY_WARNING",
      "runs": [
-      "For kitchen capacity",
       "set a prep",
       "and batch size on your menu categories",
       "capacity can’t tell how long items take"
@@ -46149,10 +46034,10 @@
     {
      "id": "1d/copy/US|kitchenCapacity|KITCHEN_SETUP_EXPLAINER",
      "runs": [
-      "How kitchen setup works",
-      "If your kitchen can cook",
       "min prep and",
-      "items at a"
+      "items at a",
+      "items are in progress",
+      "is automatically told their order takes"
      ],
      "reason": "legacy en-GB constant exports (lib/copy/*, lib/settings-copy.ts, lib/kitchen-capacity.ts) kept for old callers; every screen words these from messages — the 1d/settings, 1d/schedule and 1b/dashboard views of the same settings are checked"
     },
@@ -46675,21 +46560,18 @@
     {
      "id": "1b/components/US|add|capacity|over",
      "runs": [
-      "The kitchen can cook [harness]",
       "pizzas in that window [harness]"
      ]
     },
     {
      "id": "1b/components/US|add|capacity|filled",
      "runs": [
-      "The kitchen can cook [harness]",
       "pizzas in that window [harness]"
      ]
     },
     {
      "id": "1b/components/US|add|capacity|stale",
      "runs": [
-      "The kitchen can cook [harness]",
       "pizzas in that window [harness]"
      ]
     },
@@ -48131,7 +48013,7 @@
     {
      "id": "1d/copy/US|serviceSettings|SAME_SETTINGS_CONFIRM",
      "runs": [
-      "Kitchen capacity has its own switch"
+      "capacity has its own switch"
      ],
      "reason": "legacy en-GB constant exports (lib/copy/*, lib/settings-copy.ts, lib/kitchen-capacity.ts) kept for old callers; every screen words these from messages — the 1d/settings, 1d/schedule and 1b/dashboard views of the same settings are checked"
     },
@@ -48231,9 +48113,9 @@
      "id": "1d/copy/US|offlineProtection|OFFLINE_PROTECTION_EXPLAINER",
      "runs": [
       "must keep your dashboard",
-      "kitchen screen on",
       "If the screen goes off",
-      "the device loses"
+      "the device loses",
+      "protection takes over"
      ],
      "reason": "legacy en-GB constant exports (lib/copy/*, lib/settings-copy.ts, lib/kitchen-capacity.ts) kept for old callers; every screen words these from messages — the 1d/settings, 1d/schedule and 1b/dashboard views of the same settings are checked"
     },
@@ -48250,8 +48132,7 @@
     {
      "id": "1d/copy/US|offlineProtection|OFFLINE_PROTECTION_EXPLAINER_LEAD",
      "runs": [
-      "must keep your dashboard",
-      "kitchen screen on"
+      "must keep your dashboard"
      ],
      "reason": "legacy en-GB constant exports (lib/copy/*, lib/settings-copy.ts, lib/kitchen-capacity.ts) kept for old callers; every screen words these from messages — the 1d/settings, 1d/schedule and 1b/dashboard views of the same settings are checked"
     },
@@ -48278,7 +48159,6 @@
      "id": "1d/copy/US|offlineProtection|OFFLINE_PROTECTION_REMINDER",
      "runs": [
       "Keep your dashboard",
-      "kitchen screen on",
       "protection may take over"
      ],
      "reason": "legacy en-GB constant exports (lib/copy/*, lib/settings-copy.ts, lib/kitchen-capacity.ts) kept for old callers; every screen words these from messages — the 1d/settings, 1d/schedule and 1b/dashboard views of the same settings are checked"
@@ -48345,7 +48225,8 @@
     {
      "id": "1d/copy/US|kitchenCapacity|KITCHEN_CAPACITY_DESC",
      "runs": [
-      "The most items your kitchen can turn out at once",
+      "The most items your",
+      "can turn out at once",
       "the categories you’ve ticked",
       "Each category’s own batch size still applies on top"
      ],
@@ -48378,10 +48259,10 @@
     {
      "id": "1d/copy/US|kitchenCapacity|KITCHEN_SETUP_EXPLAINER",
      "runs": [
-      "How kitchen setup works",
-      "If your kitchen can cook",
       "is automatically told their order takes",
-      "Items like drinks"
+      "Items like drinks",
+      "dips that are",
+      "instantly can be left"
      ],
      "reason": "legacy en-GB constant exports (lib/copy/*, lib/settings-copy.ts, lib/kitchen-capacity.ts) kept for old callers; every screen words these from messages — the 1d/settings, 1d/schedule and 1b/dashboard views of the same settings are checked"
     },
@@ -48873,24 +48754,6 @@
      "id": "1a/1a/statusPage/US|cancelError",
      "runs": [
       "This order can [en-GB]"
-     ]
-    },
-    {
-     "id": "1b/components/US|add|capacity|over",
-     "runs": [
-      "The kitchen can cook [harness]"
-     ]
-    },
-    {
-     "id": "1b/components/US|add|capacity|filled",
-     "runs": [
-      "The kitchen can cook [harness]"
-     ]
-    },
-    {
-     "id": "1b/components/US|add|capacity|stale",
-     "runs": [
-      "The kitchen can cook [harness]"
      ]
     },
     {
@@ -50121,7 +49984,7 @@
     {
      "id": "1d/copy/US|serviceSettings|SAME_SETTINGS_CONFIRM",
      "runs": [
-      "Kitchen capacity has its own switch"
+      "capacity has its own switch"
      ],
      "reason": "legacy en-GB constant exports (lib/copy/*, lib/settings-copy.ts, lib/kitchen-capacity.ts) kept for old callers; every screen words these from messages — the 1d/settings, 1d/schedule and 1b/dashboard views of the same settings are checked"
     },
@@ -50238,9 +50101,9 @@
      "id": "1d/copy/US|offlineProtection|OFFLINE_PROTECTION_EXPLAINER",
      "runs": [
       "must keep your dashboard",
-      "kitchen screen on",
       "online during service",
-      "If the screen goes off"
+      "If the screen goes off",
+      "the device loses"
      ],
      "reason": "legacy en-GB constant exports (lib/copy/*, lib/settings-copy.ts, lib/kitchen-capacity.ts) kept for old callers; every screen words these from messages — the 1d/settings, 1d/schedule and 1b/dashboard views of the same settings are checked"
     },
@@ -50258,7 +50121,6 @@
      "id": "1d/copy/US|offlineProtection|OFFLINE_PROTECTION_EXPLAINER_LEAD",
      "runs": [
       "must keep your dashboard",
-      "kitchen screen on",
       "online during service"
      ],
      "reason": "legacy en-GB constant exports (lib/copy/*, lib/settings-copy.ts, lib/kitchen-capacity.ts) kept for old callers; every screen words these from messages — the 1d/settings, 1d/schedule and 1b/dashboard views of the same settings are checked"
@@ -50286,7 +50148,6 @@
      "id": "1d/copy/US|offlineProtection|OFFLINE_PROTECTION_REMINDER",
      "runs": [
       "Keep your dashboard",
-      "kitchen screen on",
       "online during service",
       "offline protection may take over"
      ],
@@ -50363,7 +50224,8 @@
     {
      "id": "1d/copy/US|kitchenCapacity|KITCHEN_CAPACITY_DESC",
      "runs": [
-      "The most items your kitchen can turn out at once",
+      "The most items your",
+      "can turn out at once",
       "the categories you’ve ticked",
       "Each category’s own batch size still applies on top"
      ],
@@ -50389,7 +50251,6 @@
     {
      "id": "1d/copy/US|kitchenCapacity|KITCHEN_CAPACITY_WARNING",
      "runs": [
-      "For kitchen capacity",
       "batch size on your",
       "capacity can’t tell how long items take"
      ],
@@ -50398,10 +50259,10 @@
     {
      "id": "1d/copy/US|kitchenCapacity|KITCHEN_SETUP_EXPLAINER",
      "runs": [
-      "How kitchen setup works",
-      "If your kitchen can cook",
       "items at a",
-      "is automatically told their order takes"
+      "is automatically told their order takes",
+      "Items like drinks",
+      "dips that are"
      ],
      "reason": "legacy en-GB constant exports (lib/copy/*, lib/settings-copy.ts, lib/kitchen-capacity.ts) kept for old callers; every screen words these from messages — the 1d/settings, 1d/schedule and 1b/dashboard views of the same settings are checked"
     },
@@ -50902,24 +50763,6 @@
      "id": "1a/1a/statusPage/US|cancelError",
      "runs": [
       "This order can [en-GB]"
-     ]
-    },
-    {
-     "id": "1b/components/US|add|capacity|over",
-     "runs": [
-      "The kitchen can cook [harness]"
-     ]
-    },
-    {
-     "id": "1b/components/US|add|capacity|filled",
-     "runs": [
-      "The kitchen can cook [harness]"
-     ]
-    },
-    {
-     "id": "1b/components/US|add|capacity|stale",
-     "runs": [
-      "The kitchen can cook [harness]"
      ]
     },
     {
@@ -52275,7 +52118,7 @@
      "id": "1d/copy/US|serviceSettings|SAME_SETTINGS_CONFIRM",
      "runs": [
       "the same as Same as",
-      "Kitchen capacity has its own switch"
+      "capacity has its own switch"
      ],
      "reason": "legacy en-GB constant exports (lib/copy/*, lib/settings-copy.ts, lib/kitchen-capacity.ts) kept for old callers; every screen words these from messages — the 1d/settings, 1d/schedule and 1b/dashboard views of the same settings are checked"
     },
@@ -52399,9 +52242,9 @@
      "id": "1d/copy/US|offlineProtection|OFFLINE_PROTECTION_EXPLAINER",
      "runs": [
       "must keep your dashboard",
-      "kitchen screen on",
       "online during service",
-      "If the screen goes off"
+      "If the screen goes off",
+      "the device loses internet"
      ],
      "reason": "legacy en-GB constant exports (lib/copy/*, lib/settings-copy.ts, lib/kitchen-capacity.ts) kept for old callers; every screen words these from messages — the 1d/settings, 1d/schedule and 1b/dashboard views of the same settings are checked"
     },
@@ -52419,7 +52262,6 @@
      "id": "1d/copy/US|offlineProtection|OFFLINE_PROTECTION_EXPLAINER_LEAD",
      "runs": [
       "must keep your dashboard",
-      "kitchen screen on",
       "online during service"
      ],
      "reason": "legacy en-GB constant exports (lib/copy/*, lib/settings-copy.ts, lib/kitchen-capacity.ts) kept for old callers; every screen words these from messages — the 1d/settings, 1d/schedule and 1b/dashboard views of the same settings are checked"
@@ -52447,7 +52289,6 @@
      "id": "1d/copy/US|offlineProtection|OFFLINE_PROTECTION_REMINDER",
      "runs": [
       "Keep your dashboard",
-      "kitchen screen on",
       "online during service",
       "offline protection may take over"
      ],
@@ -52523,7 +52364,8 @@
     {
      "id": "1d/copy/US|kitchenCapacity|KITCHEN_CAPACITY_DESC",
      "runs": [
-      "The most items your kitchen can turn out at once",
+      "The most items your",
+      "can turn out at once",
       "the categories you’ve ticked",
       "Each category’s own batch size still applies on top"
      ],
@@ -52549,7 +52391,6 @@
     {
      "id": "1d/copy/US|kitchenCapacity|KITCHEN_CAPACITY_WARNING",
      "runs": [
-      "For kitchen capacity",
       "set a prep",
       "batch size on your menu categories",
       "capacity can’t tell how long items take"
@@ -52559,10 +52400,10 @@
     {
      "id": "1d/copy/US|kitchenCapacity|KITCHEN_SETUP_EXPLAINER",
      "runs": [
-      "How kitchen setup works",
-      "If your kitchen can cook",
       "items at a",
-      "is automatically told their order takes"
+      "is automatically told their order takes",
+      "Items like drinks",
+      "dips that are"
      ],
      "reason": "legacy en-GB constant exports (lib/copy/*, lib/settings-copy.ts, lib/kitchen-capacity.ts) kept for old callers; every screen words these from messages — the 1d/settings, 1d/schedule and 1b/dashboard views of the same settings are checked"
     },
@@ -53067,24 +52908,6 @@
      "id": "1a/1a/statusPage/US|cancelError",
      "runs": [
       "This order can [en-GB]"
-     ]
-    },
-    {
-     "id": "1b/components/US|add|capacity|over",
-     "runs": [
-      "The kitchen can cook [harness]"
-     ]
-    },
-    {
-     "id": "1b/components/US|add|capacity|filled",
-     "runs": [
-      "The kitchen can cook [harness]"
-     ]
-    },
-    {
-     "id": "1b/components/US|add|capacity|stale",
-     "runs": [
-      "The kitchen can cook [harness]"
      ]
     },
     {
@@ -54455,7 +54278,7 @@
      "id": "1d/copy/US|serviceSettings|SAME_SETTINGS_CONFIRM",
      "runs": [
       "the same as Same as",
-      "Kitchen capacity has its own switch"
+      "capacity has its own switch"
      ],
      "reason": "legacy en-GB constant exports (lib/copy/*, lib/settings-copy.ts, lib/kitchen-capacity.ts) kept for old callers; every screen words these from messages — the 1d/settings, 1d/schedule and 1b/dashboard views of the same settings are checked"
     },
@@ -54579,9 +54402,9 @@
      "id": "1d/copy/US|offlineProtection|OFFLINE_PROTECTION_EXPLAINER",
      "runs": [
       "must keep your dashboard",
-      "kitchen screen on",
       "online during service",
-      "If the screen goes off"
+      "If the screen goes off",
+      "the device loses internet"
      ],
      "reason": "legacy en-GB constant exports (lib/copy/*, lib/settings-copy.ts, lib/kitchen-capacity.ts) kept for old callers; every screen words these from messages — the 1d/settings, 1d/schedule and 1b/dashboard views of the same settings are checked"
     },
@@ -54599,7 +54422,6 @@
      "id": "1d/copy/US|offlineProtection|OFFLINE_PROTECTION_EXPLAINER_LEAD",
      "runs": [
       "must keep your dashboard",
-      "kitchen screen on",
       "online during service"
      ],
      "reason": "legacy en-GB constant exports (lib/copy/*, lib/settings-copy.ts, lib/kitchen-capacity.ts) kept for old callers; every screen words these from messages — the 1d/settings, 1d/schedule and 1b/dashboard views of the same settings are checked"
@@ -54627,7 +54449,6 @@
      "id": "1d/copy/US|offlineProtection|OFFLINE_PROTECTION_REMINDER",
      "runs": [
       "Keep your dashboard",
-      "kitchen screen on",
       "online during service",
       "offline protection may take over"
      ],
@@ -54703,7 +54524,8 @@
     {
      "id": "1d/copy/US|kitchenCapacity|KITCHEN_CAPACITY_DESC",
      "runs": [
-      "The most items your kitchen can turn out at once",
+      "The most items your",
+      "can turn out at once",
       "the categories you’ve ticked",
       "Each category’s own batch size still applies on top"
      ],
@@ -54729,7 +54551,6 @@
     {
      "id": "1d/copy/US|kitchenCapacity|KITCHEN_CAPACITY_WARNING",
      "runs": [
-      "For kitchen capacity",
       "set a prep",
       "batch size on your menu categories",
       "capacity can’t tell how long items take"
@@ -54739,10 +54560,10 @@
     {
      "id": "1d/copy/US|kitchenCapacity|KITCHEN_SETUP_EXPLAINER",
      "runs": [
-      "How kitchen setup works",
-      "If your kitchen can cook",
       "items at a",
-      "is automatically told their order takes"
+      "is automatically told their order takes",
+      "Items like drinks",
+      "dips that are"
      ],
      "reason": "legacy en-GB constant exports (lib/copy/*, lib/settings-copy.ts, lib/kitchen-capacity.ts) kept for old callers; every screen words these from messages — the 1d/settings, 1d/schedule and 1b/dashboard views of the same settings are checked"
     },
@@ -55248,24 +55069,6 @@
      "id": "1a/1a/statusPage/US|cancelError",
      "runs": [
       "This order can [en-GB]"
-     ]
-    },
-    {
-     "id": "1b/components/US|add|capacity|over",
-     "runs": [
-      "The kitchen can cook [harness]"
-     ]
-    },
-    {
-     "id": "1b/components/US|add|capacity|filled",
-     "runs": [
-      "The kitchen can cook [harness]"
-     ]
-    },
-    {
-     "id": "1b/components/US|add|capacity|stale",
-     "runs": [
-      "The kitchen can cook [harness]"
      ]
     },
     {
@@ -56706,7 +56509,7 @@
      "id": "1d/copy/US|serviceSettings|SAME_SETTINGS_CONFIRM",
      "runs": [
       "the same as Same as",
-      "Kitchen capacity has its own switch"
+      "capacity has its own switch"
      ],
      "reason": "legacy en-GB constant exports (lib/copy/*, lib/settings-copy.ts, lib/kitchen-capacity.ts) kept for old callers; every screen words these from messages — the 1d/settings, 1d/schedule and 1b/dashboard views of the same settings are checked"
     },
@@ -56830,9 +56633,9 @@
      "id": "1d/copy/US|offlineProtection|OFFLINE_PROTECTION_EXPLAINER",
      "runs": [
       "must keep your dashboard",
-      "kitchen screen on",
       "online during service",
-      "If the screen goes off"
+      "If the screen goes off",
+      "the device loses internet"
      ],
      "reason": "legacy en-GB constant exports (lib/copy/*, lib/settings-copy.ts, lib/kitchen-capacity.ts) kept for old callers; every screen words these from messages — the 1d/settings, 1d/schedule and 1b/dashboard views of the same settings are checked"
     },
@@ -56850,7 +56653,6 @@
      "id": "1d/copy/US|offlineProtection|OFFLINE_PROTECTION_EXPLAINER_LEAD",
      "runs": [
       "must keep your dashboard",
-      "kitchen screen on",
       "online during service"
      ],
      "reason": "legacy en-GB constant exports (lib/copy/*, lib/settings-copy.ts, lib/kitchen-capacity.ts) kept for old callers; every screen words these from messages — the 1d/settings, 1d/schedule and 1b/dashboard views of the same settings are checked"
@@ -56878,7 +56680,6 @@
      "id": "1d/copy/US|offlineProtection|OFFLINE_PROTECTION_REMINDER",
      "runs": [
       "Keep your dashboard",
-      "kitchen screen on",
       "online during service",
       "offline protection may take over"
      ],
@@ -56954,7 +56755,8 @@
     {
      "id": "1d/copy/US|kitchenCapacity|KITCHEN_CAPACITY_DESC",
      "runs": [
-      "The most items your kitchen can turn out at once",
+      "The most items your",
+      "can turn out at once",
       "the categories you’ve ticked",
       "Each category’s own batch size still applies on top"
      ],
@@ -56980,7 +56782,6 @@
     {
      "id": "1d/copy/US|kitchenCapacity|KITCHEN_CAPACITY_WARNING",
      "runs": [
-      "For kitchen capacity",
       "set a prep",
       "batch size on your menu categories",
       "capacity can’t tell how long items take"
@@ -56990,10 +56791,10 @@
     {
      "id": "1d/copy/US|kitchenCapacity|KITCHEN_SETUP_EXPLAINER",
      "runs": [
-      "How kitchen setup works",
-      "If your kitchen can cook",
       "items at a",
-      "is automatically told their order takes"
+      "is automatically told their order takes",
+      "Items like drinks",
+      "dips that are"
      ],
      "reason": "legacy en-GB constant exports (lib/copy/*, lib/settings-copy.ts, lib/kitchen-capacity.ts) kept for old callers; every screen words these from messages — the 1d/settings, 1d/schedule and 1b/dashboard views of the same settings are checked"
     },
@@ -57506,24 +57307,6 @@
      "id": "1a/1a/statusPage/US|cancelError",
      "runs": [
       "This order can [en-GB]"
-     ]
-    },
-    {
-     "id": "1b/components/US|add|capacity|over",
-     "runs": [
-      "The kitchen can cook [harness]"
-     ]
-    },
-    {
-     "id": "1b/components/US|add|capacity|filled",
-     "runs": [
-      "The kitchen can cook [harness]"
-     ]
-    },
-    {
-     "id": "1b/components/US|add|capacity|stale",
-     "runs": [
-      "The kitchen can cook [harness]"
      ]
     },
     {
@@ -58943,7 +58726,7 @@
      "id": "1d/copy/US|serviceSettings|SAME_SETTINGS_CONFIRM",
      "runs": [
       "the same as Same as",
-      "Kitchen capacity has its own switch"
+      "capacity has its own switch"
      ],
      "reason": "legacy en-GB constant exports (lib/copy/*, lib/settings-copy.ts, lib/kitchen-capacity.ts) kept for old callers; every screen words these from messages — the 1d/settings, 1d/schedule and 1b/dashboard views of the same settings are checked"
     },
@@ -59067,9 +58850,9 @@
      "id": "1d/copy/US|offlineProtection|OFFLINE_PROTECTION_EXPLAINER",
      "runs": [
       "must keep your dashboard",
-      "kitchen screen on",
       "online during service",
-      "If the screen goes off"
+      "If the screen goes off",
+      "the device loses internet"
      ],
      "reason": "legacy en-GB constant exports (lib/copy/*, lib/settings-copy.ts, lib/kitchen-capacity.ts) kept for old callers; every screen words these from messages — the 1d/settings, 1d/schedule and 1b/dashboard views of the same settings are checked"
     },
@@ -59087,7 +58870,6 @@
      "id": "1d/copy/US|offlineProtection|OFFLINE_PROTECTION_EXPLAINER_LEAD",
      "runs": [
       "must keep your dashboard",
-      "kitchen screen on",
       "online during service"
      ],
      "reason": "legacy en-GB constant exports (lib/copy/*, lib/settings-copy.ts, lib/kitchen-capacity.ts) kept for old callers; every screen words these from messages — the 1d/settings, 1d/schedule and 1b/dashboard views of the same settings are checked"
@@ -59115,7 +58897,6 @@
      "id": "1d/copy/US|offlineProtection|OFFLINE_PROTECTION_REMINDER",
      "runs": [
       "Keep your dashboard",
-      "kitchen screen on",
       "online during service",
       "offline protection may take over"
      ],
@@ -59191,7 +58972,8 @@
     {
      "id": "1d/copy/US|kitchenCapacity|KITCHEN_CAPACITY_DESC",
      "runs": [
-      "The most items your kitchen can turn out at once",
+      "The most items your",
+      "can turn out at once",
       "the categories you’ve ticked",
       "Each category’s own batch size still applies on top"
      ],
@@ -59217,7 +58999,6 @@
     {
      "id": "1d/copy/US|kitchenCapacity|KITCHEN_CAPACITY_WARNING",
      "runs": [
-      "For kitchen capacity",
       "set a prep",
       "batch size on your menu categories",
       "capacity can’t tell how long items take"
@@ -59227,10 +59008,10 @@
     {
      "id": "1d/copy/US|kitchenCapacity|KITCHEN_SETUP_EXPLAINER",
      "runs": [
-      "How kitchen setup works",
-      "If your kitchen can cook",
       "items at a",
-      "is automatically told their order takes"
+      "is automatically told their order takes",
+      "Items like drinks",
+      "dips that are"
      ],
      "reason": "legacy en-GB constant exports (lib/copy/*, lib/settings-copy.ts, lib/kitchen-capacity.ts) kept for old callers; every screen words these from messages — the 1d/settings, 1d/schedule and 1b/dashboard views of the same settings are checked"
     },
@@ -59743,24 +59524,6 @@
      "id": "1a/1a/statusPage/US|cancelError",
      "runs": [
       "This order can [en-GB]"
-     ]
-    },
-    {
-     "id": "1b/components/US|add|capacity|over",
-     "runs": [
-      "The kitchen can cook [harness]"
-     ]
-    },
-    {
-     "id": "1b/components/US|add|capacity|filled",
-     "runs": [
-      "The kitchen can cook [harness]"
-     ]
-    },
-    {
-     "id": "1b/components/US|add|capacity|stale",
-     "runs": [
-      "The kitchen can cook [harness]"
      ]
     },
     {
@@ -60840,7 +60603,7 @@
    "wrongOnEnglish": []
   }
  },
- "generated": "2026-11-01",
+ "generated": "2026-11-02",
  "excludedRules": [
   {
    "views": "/^1d\\/copy\\//",

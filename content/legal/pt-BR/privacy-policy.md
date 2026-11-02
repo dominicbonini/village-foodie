@@ -1,4 +1,4 @@
-<!-- translation-of: privacy-policy.md sha256:cd7be1c77baa5cbf4b0d0587c82b29ea032c1dfee04b069e17ef0786c06679a7 -->
+<!-- translation-of: privacy-policy.md sha256:fa2e1f9b3b13db7a43d979b81cceb96103d9fcb329d6ba0665d42f761abe003c -->
 # Política de Privacidade
 
 **Última atualização:** {{LAST_UPDATED}}
@@ -107,6 +107,10 @@ Excluímos o e-mail da sua demonstração, o arquivo do cardápio e a própria d
 Mantemos contagens anônimas de até onde as demonstrações avançam, como “uma demonstração foi criada” ou “um pedido foi feito”. Elas não contêm nenhum endereço de e-mail e, depois que a sua demonstração é excluída, não podem mais ser associadas a você.
 
 As demonstrações que preparamos para um food truck com o qual entramos em contato são mantidas por até 30 dias e não pedem e-mail.
+
+**Se você usar nosso formulário de contato**
+
+Se você nos enviar uma mensagem pelo formulário de contato no site do HatchGrab, nós mesmos cuidamos dela: guardamos sua mensagem e os dados que você informar e os enviamos à nossa equipe por e-mail por meio da Brevo. Usamos esses dados apenas para responder a você e os guardamos por até 24 meses. Para evitar o uso indevido do formulário, também guardamos, junto com a sua mensagem, uma versão codificada do seu endereço IP.
 
 ---
 

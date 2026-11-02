@@ -1,4 +1,4 @@
-<!-- translation-of: privacy-policy.md sha256:cd7be1c77baa5cbf4b0d0587c82b29ea032c1dfee04b069e17ef0786c06679a7 -->
+<!-- translation-of: privacy-policy.md sha256:fa2e1f9b3b13db7a43d979b81cceb96103d9fcb329d6ba0665d42f761abe003c -->
 # Adatvédelmi tájékoztató
 
 **Utolsó frissítés:** {{LAST_UPDATED}}
@@ -107,6 +107,10 @@ A demóhoz megadott e-mail-címét, az étlapfájlt és magát a demót a demó 
 Anonim összesítéseket vezetünk arról, hogy a demók meddig jutnak, például „elkészült egy demó” vagy „leadtak egy rendelést”. Ezek nem tartalmaznak e-mail-címet, és miután a demóját töröltük, már nem kapcsolhatók Önhöz.
 
 Az általunk megkeresett food truckok számára készített demókat legfeljebb 30 napig őrizzük meg, és ezekhez nem kérünk e-mail-címet.
+
+**Ha a kapcsolatfelvételi űrlapunkat használja**
+
+Ha a HatchGrab weboldalán található kapcsolatfelvételi űrlapon keresztül üzenetet küld nekünk, azt mi magunk kezeljük: tároljuk az üzenetét és az Ön által megadott adatokat, és e-mailben, a Brevo szolgáltatáson keresztül továbbítjuk csapatunknak. Kizárólag arra használjuk őket, hogy válaszoljunk Önnek, és legfeljebb 24 hónapig őrizzük meg őket. Az űrlappal való visszaélés megakadályozása érdekében az üzenetével együtt IP-címének egy kódolt változatát is tároljuk.
 
 ---
 

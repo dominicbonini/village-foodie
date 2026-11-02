@@ -1,4 +1,4 @@
-<!-- translation-of: privacy-policy.md sha256:cd7be1c77baa5cbf4b0d0587c82b29ea032c1dfee04b069e17ef0786c06679a7 -->
+<!-- translation-of: privacy-policy.md sha256:fa2e1f9b3b13db7a43d979b81cceb96103d9fcb329d6ba0665d42f761abe003c -->
 # Dasar Privasi
 
 **Kemas kini terakhir:** {{LAST_UPDATED}}
@@ -107,6 +107,10 @@ Kami memadam e-mel demo anda, fail menu dan demo itu sendiri apabila demo tamat 
 Kami menyimpan kiraan tanpa nama tentang sejauh mana demo berjalan, seperti "demo telah dibina" atau "pesanan telah dibuat". Kiraan ini tidak mengandungi alamat e-mel, dan setelah demo anda dipadam, kiraan ini tidak lagi boleh dikaitkan dengan anda.
 
 Demo yang kami sediakan untuk food truck yang telah kami hubungi disimpan sehingga 30 hari dan tidak meminta e-mel.
+
+**Jika anda menggunakan borang hubungan kami**
+
+Jika anda menghantar mesej kepada kami melalui borang hubungan di laman web HatchGrab, kami mengendalikannya sendiri: kami menyimpan mesej anda dan butiran yang anda masukkan, dan menghantarnya kepada pasukan kami melalui e-mel menerusi Brevo. Kami menggunakannya hanya untuk membalas anda dan menyimpannya sehingga 24 bulan. Untuk menghalang borang itu disalahgunakan, kami juga menyimpan versi terkod alamat IP anda bersama mesej anda.
 
 ---
 

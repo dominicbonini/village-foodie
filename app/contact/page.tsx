@@ -32,6 +32,7 @@ import { Suspense } from 'react';
 import { isHatchGrabHost } from '@/lib/brand';
 import { BrandHomeLink } from '@/components/shared/BrandHomeLink';
 import { ContactForm } from './ContactForm';
+import { topicFromParam } from '@/lib/contact';
 import { resolveVisitorCountry } from '@/lib/visitor-country';
 import { DEFAULT_LOCALE, localeOfCountry, type AppLocale } from '@/lib/i18n/locales';
 import { translatorFor } from '@/lib/i18n/translator';
@@ -96,7 +97,9 @@ export default async function ContactPage({ searchParams }: { searchParams: Sear
     // next/font faces at module scope; a static import would attach their <link> tags to this route
     // for BOTH brands. Measured, not assumed — see the note in HatchGrabContact.tsx.
     const { HatchGrabContact } = await import('./HatchGrabContact');
-    return <HatchGrabContact {...await hatchGrabPlace(searchParams)} />;
+    // contact-1: ?topic= picks the form's first choice (lib/contact.ts topicFromParam — Tally's old values and anything
+    // unrecognised are the first topic); ?venue= / ?truck= are Village Foodie's and are not read here.
+    return <HatchGrabContact {...await hatchGrabPlace(searchParams)} topic={topicFromParam((await searchParams)?.topic)} />;
   }
 
   return (

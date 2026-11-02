@@ -1,4 +1,4 @@
-<!-- translation-of: privacy-policy.md sha256:cd7be1c77baa5cbf4b0d0587c82b29ea032c1dfee04b069e17ef0786c06679a7 -->
+<!-- translation-of: privacy-policy.md sha256:fa2e1f9b3b13db7a43d979b81cceb96103d9fcb329d6ba0665d42f761abe003c -->
 # Privaatsuspoliitika
 
 **Viimati uuendatud:** {{LAST_UPDATED}}
@@ -107,6 +107,10 @@ Kustutame teie demo e-posti aadressi, menüüfaili ja demo enda, kui demo aegub:
 Säilitame anonüümset statistikat selle kohta, kui kaugele demodega jõutakse, näiteks „demo koostati“ või „tellimus esitati“. See ei sisalda e-posti aadressi ja pärast teie demo kustutamist ei saa seda enam teiega seostada.
 
 Demosid, mille me koostame toiduautole, kellega oleme ühendust võtnud, säilitatakse kuni 30 päeva ja nende puhul e-posti aadressi ei küsita.
+
+**Kui kasutate meie kontaktivormi**
+
+Kui saadate meile sõnumi HatchGrabi veebisaidi kontaktivormi kaudu, käsitleme seda ise: säilitame teie sõnumi ja sisestatud andmed ning saadame need e-posti teel Brevo kaudu meie meeskonnale. Kasutame neid ainult teile vastamiseks ja säilitame neid kuni 24 kuud. Vormi kuritarvitamise vältimiseks säilitame koos teie sõnumiga ka teie IP-aadressi tundmatuks muudetud kuju.
 
 ---
 

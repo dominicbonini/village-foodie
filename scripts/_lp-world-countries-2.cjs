@@ -111,6 +111,9 @@ function asBefore(file, text) {
   // ⚠️ RE-PINNED (world-countries-3, 1 November 2026): three later sentences (Mexico's authority, Terms §3's section number,
   // Canada's French line — scripts/_lp-world-countries-3.cjs) are taken back first, exactly, so "before world-countries-2" is
   // still every other byte of HEAD's text.
+  // ⚠️ RE-PINNED (contact-1, 2 November 2026): the Privacy Policy's contact-form paragraph, its date, PRIVACY_UPDATED, TERMS_VERSION and
+  // that doc comment's newest lines (scripts/_lp-contact-1.cjs) are taken back before that, exactly — newest change first.
+  text = require('./_lp-contact-1.cjs').asBefore(file, text)
   text = require('./_lp-world-countries-3.cjs').asBefore(file, text)
   if (!LANDED) return text
   if (file === 'content/legal/terms-and-conditions.md') return unapplyTerms(text)

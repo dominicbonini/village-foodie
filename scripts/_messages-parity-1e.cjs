@@ -345,7 +345,9 @@ module.exports = function area({ t, head }) {
     // while it is absent from messages/en-GB.json (checked here).
     const removedByStage = W.LP2.stageA()['en-GB'].removed || {}
     const gbNow = Object.fromEntries(W.LP2.leaves(W.LP2.readJson(path.join(REPO, 'messages/en-GB.json'))))
-    const removedNamed = Object.keys(named).filter(k => !diff[k] && k in removedByStage)
+    // ⚠️ RE-PINNED (contact-1, 2 November 2026): and a named key contact-1 deleted with the Tally embed (scripts/_lp-contact-1.cjs REMOVED_KEYS).
+    const C1_REMOVED = require('./_lp-contact-1.cjs').REMOVED_KEYS
+    const removedNamed = Object.keys(named).filter(k => !diff[k] && (k in removedByStage || C1_REMOVED.includes(k)))
     t(`the named keys a plan stage removed are absent from messages/en-GB.json (${removedNamed.length})`, removedNamed.every(k => !(k in gbNow)), removedNamed.filter(k => k in gbNow).join(', '))
     const stale = Object.keys(named).filter(k => !diff[k] && !removedNamed.includes(k))
     const byStageA = Object.keys(diff).filter(isStageA)

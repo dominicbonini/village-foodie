@@ -1,4 +1,4 @@
-<!-- translation-of: privacy-policy.md sha256:cd7be1c77baa5cbf4b0d0587c82b29ea032c1dfee04b069e17ef0786c06679a7 -->
+<!-- translation-of: privacy-policy.md sha256:fa2e1f9b3b13db7a43d979b81cceb96103d9fcb329d6ba0665d42f761abe003c -->
 # Tietosuojaseloste
 
 **Päivitetty viimeksi:** {{LAST_UPDATED}}
@@ -107,6 +107,10 @@ Poistamme esittelyä varten antamasi sähköpostiosoitteen, ruokalistatiedoston 
 Säilytämme anonyymejä laskureita siitä, kuinka pitkälle esittelyissä edetään, kuten ”esittely luotiin” tai ”tilaus tehtiin”. Ne eivät sisällä sähköpostiosoitetta, eikä niitä voida enää yhdistää sinuun sen jälkeen, kun esittelysi on poistettu.
 
 Esittelyt, jotka valmistelemme ruokarekalle, johon olemme ottaneet yhteyttä, säilytetään enintään 30 päivää, eikä niissä pyydetä sähköpostiosoitetta.
+
+**Jos käytät yhteydenottolomakettamme**
+
+Jos lähetät meille viestin HatchGrabin verkkosivuston yhteydenottolomakkeella, käsittelemme sen itse: tallennamme viestisi ja antamasi tiedot ja lähetämme ne tiimillemme sähköpostitse Brevon kautta. Käytämme niitä vain vastataksemme sinulle ja säilytämme niitä enintään 24 kuukautta. Lomakkeen väärinkäytön estämiseksi tallennamme viestisi yhteyteen myös tunnistamattomaksi muunnetun version IP-osoitteestasi.
 
 ---
 

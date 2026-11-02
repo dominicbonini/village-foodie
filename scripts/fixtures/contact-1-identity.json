@@ -1,0 +1,36 @@
+{
+ "$why": "contact-1 §6: sha256 of Village Foodie's /contact (HTML and metadata) for every search its links send, at 3d6228b7, by scripts/contact-1.cjs capture.",
+ "commit": "3d6228b7",
+ "pages": {
+  "vf-contact:bare": {
+   "html": "cf20f487bcbec72284822afed262dada9da7debbc4f69440100a2a9edc2e82b1",
+   "meta": "e62f413e6de3f8d0a0bcc1655d38366e1ee658ee2f288849257c49137e31e99e",
+   "tally": 2
+  },
+  "vf-contact:topic=General%20Enquiry": {
+   "html": "25d971230c59791d06d6b384ad2d2562c6544be1ce407ae0c327c5d5ed0e80b5",
+   "meta": "e62f413e6de3f8d0a0bcc1655d38366e1ee658ee2f288849257c49137e31e99e",
+   "tally": 2
+  },
+  "vf-contact:topic=Add%20Business&truck=Pizza%20Gusto": {
+   "html": "22bfa5346619a7fb7396a3d3caddedf35bb610479db7857c6934dd52014266d3",
+   "meta": "e62f413e6de3f8d0a0bcc1655d38366e1ee658ee2f288849257c49137e31e99e",
+   "tally": 2
+  },
+  "vf-contact:topic=ClaimVenue&venue=The%20Plough%20Inn": {
+   "html": "584427e1eea90deb1c440d11e8cdacdf29786966e8f4423e7f5c9f4b1fb0e716",
+   "meta": "e62f413e6de3f8d0a0bcc1655d38366e1ee658ee2f288849257c49137e31e99e",
+   "tally": 2
+  },
+  "vf-contact:topic=Report%20Issue": {
+   "html": "d833dd5a6705a7bdfbdfa7efff52914fadb633b0fc1fa3725b79c1ae19409793",
+   "meta": "e62f413e6de3f8d0a0bcc1655d38366e1ee658ee2f288849257c49137e31e99e",
+   "tally": 2
+  },
+  "vf-contact:topic=Cost%20Comparison": {
+   "html": "e63cfdaa5454f9d454693feffafc23de4d3582619bd65a8d0fb7dba05373dd18",
+   "meta": "e62f413e6de3f8d0a0bcc1655d38366e1ee658ee2f288849257c49137e31e99e",
+   "tally": 2
+  }
+ }
+}

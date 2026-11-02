@@ -2,7 +2,8 @@
 // removes and keeps, and why). Vercel Cron, daily (vercel.json); service role.
 // 🔴 It removes customer details from orders more than 12 months old, as the privacy policy promises, and runs
 // purge_order_drafts() — the erasure of abandoned card drafts, which nothing was calling — and deletes WhatsApp logs
-// (`whatsapp_logs`, `messages`) more than 12 months old.
+// (`whatsapp_logs`, `messages`) more than 12 months old — and (contact-1) the contact form's messages (`contact_messages`) more than
+// 24 months old.
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@supabase/supabase-js'
 import { verifyAdmin } from '@/lib/auth/admin'

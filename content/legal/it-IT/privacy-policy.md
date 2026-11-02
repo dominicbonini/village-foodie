@@ -1,4 +1,4 @@
-<!-- translation-of: privacy-policy.md sha256:cd7be1c77baa5cbf4b0d0587c82b29ea032c1dfee04b069e17ef0786c06679a7 -->
+<!-- translation-of: privacy-policy.md sha256:fa2e1f9b3b13db7a43d979b81cceb96103d9fcb329d6ba0665d42f761abe003c -->
 # Informativa sulla privacy
 
 **Ultimo aggiornamento:** {{LAST_UPDATED}}
@@ -107,6 +107,10 @@ Cancelliamo la Sua email della demo, il file del menu e la demo stessa alla scad
 Conserviamo conteggi anonimi dei progressi delle demo, come «è stata creata una demo» o «è stato effettuato un ordine». Non contengono alcun indirizzo email e, una volta cancellata la Sua demo, non possono più essere collegati a Lei.
 
 Le demo che prepariamo per un food truck che abbiamo contattato vengono conservate per un massimo di 30 giorni e non richiedono un indirizzo email.
+
+**Se utilizza il nostro modulo di contatto**
+
+Se ci invia un messaggio tramite il modulo di contatto sul sito web di HatchGrab, lo gestiamo noi direttamente: conserviamo il Suo messaggio e i dati che inserisce e li inviamo al nostro team via email tramite Brevo. Li utilizziamo esclusivamente per risponderLe e li conserviamo per un massimo di 24 mesi. Per evitare un uso improprio del modulo, conserviamo inoltre, insieme al Suo messaggio, una versione codificata del Suo indirizzo IP.
 
 ---
 

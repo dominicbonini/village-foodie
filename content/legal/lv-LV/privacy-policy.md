@@ -1,4 +1,4 @@
-<!-- translation-of: privacy-policy.md sha256:cd7be1c77baa5cbf4b0d0587c82b29ea032c1dfee04b069e17ef0786c06679a7 -->
+<!-- translation-of: privacy-policy.md sha256:fa2e1f9b3b13db7a43d979b81cceb96103d9fcb329d6ba0665d42f761abe003c -->
 # Privātuma politika
 
 **Pēdējoreiz atjaunināts:** {{LAST_UPDATED}}
@@ -107,6 +107,10 @@ Mēs dzēšam jūsu demo e-pasta adresi, ēdienkartes failu un pašu demo, kad d
 Mēs glabājam anonīmus skaitītājus par to, cik tālu demo nonāk, piemēram, „demo tika izveidots“ vai „tika veikts pasūtījums“. Tajos nav e-pasta adreses, un pēc jūsu demo dzēšanas tos vairs nevar saistīt ar jums.
 
 Demo, ko mēs sagatavojam food truck, ar kuru esam sazinājušies, tiek glabāti līdz 30 dienām, un tajos e-pasta adrese netiek prasīta.
+
+**Ja izmantojat mūsu saziņas veidlapu**
+
+Ja jūs nosūtāt mums ziņu, izmantojot saziņas veidlapu HatchGrab tīmekļvietnē, mēs to apstrādājam paši: mēs glabājam jūsu ziņu un jūsu ievadītos datus un nosūtām tos savai komandai pa e-pastu, izmantojot Brevo. Mēs tos izmantojam tikai, lai jums atbildētu, un glabājam ne ilgāk kā 24 mēnešus. Lai novērstu veidlapas ļaunprātīgu izmantošanu, kopā ar jūsu ziņu mēs glabājam arī jūsu IP adreses kodētu versiju.
 
 ---
 

@@ -126,6 +126,9 @@ const NAMED = [
   ...require('./_lp-seo-geo-2.cjs').ITEMS.map(P => ({ id: P.id, what: P.what, applies: id => P.views(id), apply: (v, id) => P.apply(id, v) })),
   // ⚠️ RE-PINNED (store-badges-1, 2 November 2026): the footer badges by flag and the Play URL — scripts/_lp-store-badges-1.cjs.
   ...require('./_lp-store-badges-1.cjs').ITEMS.map(P => ({ id: P.id, what: P.what, applies: id => P.views(id), apply: (v, id) => P.apply(id, v) })),
+  // ⚠️ RE-PINNED (contact-1, 2 November 2026): the sitemap's /privacy lastmod — PRECISE (scripts/_lp-contact-1.cjs; its /contact item is
+  // structural and sits with the other structural proofs below).
+  ...require('./_lp-contact-1.cjs').ITEMS.filter(P => !P.proveWith).map(P => ({ id: P.id, what: P.what, applies: id => P.views(id), apply: (v, id) => P.apply(id, v) })),
 ]
 // ⚠️ RE-PINNED (plans-data-model, Stage A, 19 October 2026): Manage › Billing is ONE data-driven plan card above the frozen comparison
 // table — STRUCTURAL, by the same proof Part 2 and Phase 1e name (scripts/_lp1d2-named.cjs makeBillingProof, one copy):
@@ -145,6 +148,9 @@ const STAGE_B_VIEWS = [
   [/^pages\/features\|(GB|US)\|html(?!-usOff)/, 'pricing-b-features-page', STAGE_B.featuresPage],
   [/^pages\/compare\|(GB|US)\|html(?!-usOff)|^parts\/calc\|(GB|US)\|/, 'pricing-b-compare-calc', STAGE_B.calcProof],
   [/^parts\/pdf\|(GB|US)\|html$/, 'pricing-b-plans-pdf', STAGE_B.plansPdf],
+  // ⚠️ RE-PINNED (contact-1, 2 November 2026): HatchGrab's /contact — the Tally embed out, HatchGrab's own form in, every other byte the
+  // same (scripts/_lp-contact-1.cjs contactProof; scripts/contact-1.cjs proves the form).
+  [require('./_lp-contact-1.cjs').CONTACT_VIEWS, 'contact-1-form', require('./_lp-contact-1.cjs').contactProof],
 ]
 if (STAGE_B.LANDED) NAMED.push({ id: 'pricing-b-features-description', what: 'Stage B — THE ONE SEO change: /features’s description names the catalogue’s public plans and the trial’s months; titles, canonicals, hreflang, robots and og:url unchanged',
   applies: id => /^pages\/features\|(GB|US)\|meta(?!-usOff)/.test(id), apply: (v, id) => STAGE_B.featuresDescription(v, ccOf(id) === 'US' ? 'en-US' : 'en-GB') })

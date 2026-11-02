@@ -34,7 +34,14 @@ let pass = 0, fail = 0
 const t = (label, ok, detail) => { if (ok) { pass++; console.log('  ✓ ' + label) } else { fail++; console.log('  🔴 ' + label + (detail !== undefined ? `\n      ${typeof detail === 'string' ? detail.slice(0, 900) : JSON.stringify(detail).slice(0, 900)}` : '')) } }
 const head = s => console.log('\n── ' + s + ' ' + '─'.repeat(Math.max(0, 100 - s.length)))
 const read = f => fs.readFileSync(path.join(REPO, f), 'utf8')
-const atHead = f => execSync(`git show HEAD:${f}`, { cwd: REPO, encoding: 'utf8' })
+// ⚠️ RE-PINNED (contact-1, 2 November 2026): "HEAD" here meant the tree this workstream was written on, before world-countries-2's
+// legal change was committed (2b625a66 committed this harness and that change together, so HEAD later carried the Terms edits twice
+// and §2 threw "Terms edit — expected once, found 0"). It is that tree, by name: 3240c536, 2b625a66's parent.
+const LL1_BASE = '3240c536'
+const atHead = f => execSync(`git show ${LL1_BASE}:${f}`, { cwd: REPO, encoding: 'utf8' })
+// ⚠️ RE-PINNED (contact-1): the Privacy Policy's contact-form paragraph and its date, taken back exactly (scripts/_lp-contact-1.cjs,
+// which throws if either is not there); contact-1 also moved PRIVACY_UPDATED and TERMS_VERSION with it.
+const C1 = require('./_lp-contact-1.cjs')
 const LOC = read('lib/i18n/locales.ts')
 const BASES = JSON.parse('[' + /export const LANGUAGE_BASES[^=]*= \[([^\]]*)\]/.exec(LOC)[1].replace(/'/g, '"') + ']')
 const text = s => String(s ?? '').replace(/<style[\s\S]*?<\/style>/g, ' ').replace(/<script[\s\S]*?<\/script>/g, ' ').replace(/<[^>]+>/g, ' ')
@@ -71,14 +78,15 @@ const REGIONAL = [['de-AT', 'AT', 'de-DE'], ['de-CH', 'CH', 'de-DE'], ['nl-BE', 
   // The baseline is HEAD + world-countries-2's named legal change (still in the working tree; scripts/_lp-world-countries-2.cjs):
   // this workstream changes no English word and moves no date.
   const W2 = require('./_lp-world-countries-2.cjs')
-  t('content/legal/privacy-policy.md is HEAD\'s, byte for byte', read('content/legal/privacy-policy.md') === atHead('content/legal/privacy-policy.md'))
+  t('content/legal/privacy-policy.md is HEAD\'s, byte for byte (+ contact-1\'s paragraph and date)', C1.privacyAsBefore(read('content/legal/privacy-policy.md')) === atHead('content/legal/privacy-policy.md'))
   // ⚠️ RE-PINNED (world-countries-3, 1 November 2026): three later English sentences (Mexico's authority, Terms §3's section number,
   // Canada's French line) are taken back exactly first (scripts/_lp-world-countries-3.cjs, which throws if one is not there).
   const W3 = require('./_lp-world-countries-3.cjs')
   t('content/legal/terms-and-conditions.md is HEAD\'s + world-countries-2\'s §4 edits (+ world-countries-3\'s §3 section number), nothing else', W3.asBefore('content/legal/terms-and-conditions.md', read('content/legal/terms-and-conditions.md')) === W2.applyTerms(atHead('content/legal/terms-and-conditions.md')))
   t('content/legal/country-specific-terms.md is HEAD\'s + world-countries-2\'s eight sections and date, nothing else', W2.asBefore('content/legal/country-specific-terms.md', read('content/legal/country-specific-terms.md')) === atHead('content/legal/country-specific-terms.md'))
   const legal = read('lib/legal.ts'), legalHead = atHead('lib/legal.ts')
-  const want = { PRIVACY_UPDATED: /export const PRIVACY_UPDATED = '([^']+)'/.exec(legalHead)[1], TERMS_UPDATED: W2.NEW_DATE, COUNTRY_TERMS_UPDATED: W2.NEW_DATE, TERMS_VERSION: W2.TERMS_VERSION_NEW }
+  // ⚠️ RE-PINNED (contact-1): PRIVACY_UPDATED 31 October → 2 November 2026 and TERMS_VERSION '2026-11-01' → '2026-11-02', by name.
+  const want = { PRIVACY_UPDATED: /export const PRIVACY_UPDATED = '([^']+)'/.exec(legalHead)[1] === C1.PRIVACY_DATE_OLD ? C1.PRIVACY_DATE_NEW : null, TERMS_UPDATED: W2.NEW_DATE, COUNTRY_TERMS_UPDATED: W2.NEW_DATE, TERMS_VERSION: W2.TERMS_VERSION_NEW === C1.TERMS_VERSION_OLD ? C1.TERMS_VERSION_NEW : null }
   for (const [k, v] of Object.entries(want)) {
     const re = new RegExp(`export const ${k} = '([^']+)'`)
     t(`${k} is '${v}', as before this workstream — translating moves no date`, re.exec(legal)?.[1] === v, re.exec(legal)?.[1])
@@ -175,7 +183,10 @@ const REGIONAL = [['de-AT', 'AT', 'de-DE'], ['de-CH', 'CH', 'de-DE'], ['nl-BE', 
   t('proxy.ts: the account pages (signup, login, forgot / reset password) speak ?lang= or the visitor\'s country\'s language; English sets nothing',
     /const AUTH_LANG_PATHS = new Set\(\['\/signup', '\/login', '\/forgot-password', '\/reset-password'\]\)/.test(proxy) && /if \(lang && !isEnglish\(lang\)\) request\.headers\.set\(PAGE_LANG_HEADER, lang\)/.test(proxy))
   t('the account pages\' layouts wrap them in <AuthLocale> (seeded words; no wrapper for English); verify-email seeds its client half',
-    ['app/signup/layout.tsx', 'app/login/layout.tsx', 'app/forgot-password/layout.tsx', 'app/reset-password/layout.tsx'].every(f => /<AuthLocale>\{children\}<\/AuthLocale>/.test(read(f)))
+    // ⚠️ RE-PINNED (contact-1, 2 November 2026 — reached for the first time since §2 stopped throwing): copy-truth-1 put signup's
+    // children inside <TrialMonthsProvider> (the trial line's months), still inside <AuthLocale>.
+    ['app/login/layout.tsx', 'app/forgot-password/layout.tsx', 'app/reset-password/layout.tsx'].every(f => /<AuthLocale>\{children\}<\/AuthLocale>/.test(read(f)))
+    && /<AuthLocale><TrialMonthsProvider months=\{months\}>\{children\}<\/TrialMonthsProvider><\/AuthLocale>/.test(read('app/signup/layout.tsx'))
     && /<PageLocale locale=\{locale\} \{\.\.\.pageSeedProps\(locale, 'auth'\)\}><VerifyEmailSuccess/.test(read('app/verify-email/page.tsx')))
   t('account emails (password reset, email change, resend verification) are in the operator\'s language (localeForOperator); the reset link carries ?lang=',
     ['app/api/auth/forgot-password/route.ts', 'app/api/auth/change-email/route.ts', 'app/api/auth/resend-verification/route.ts'].every(f => /localeForOperator\(supabase, operator\.id, await visitorCountryCodeOf\(req\)\)/.test(read(f)))
@@ -243,6 +254,8 @@ const REGIONAL = [['de-AT', 'AT', 'de-DE'], ['de-CH', 'CH', 'de-DE'], ['nl-BE', 
       'lib/weekly-post/words.ts': 'a refusal\'s en-GB `error` fallback beside its code, which the client words in the language',
       'lib/private-events/copy.ts': 'the English default label; a non-English caller passes its own (privateLabel)',
       'lib/i18n/typecheck.ts': 'a type test, never run',
+      // ⚠️ RE-PINNED (contact-1 — reached for the first time since §2 stopped throwing): seo-geo-2's /llms.txt, English by design.
+      'lib/llms-text.ts': '/llms.txt — the English description for AI crawlers (seo-geo-2 B4), English by design',
       'app/(legal)/': 'the English legal pages — governing, English by design',
       'app/verify-email/page.tsx': 'the invalid-link branch, which has no account and so no language (English, the default)',
       'app/api/account/request-deletion/route.ts': 'a coded refusal (confirm_mismatch) the screen words in the language',

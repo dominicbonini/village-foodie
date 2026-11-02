@@ -276,3 +276,20 @@ export const placesRatelimit = new Ratelimit({
   analytics: true,
   prefix: 'vf_rl_places',
 })
+
+// CONTACT tier — POST /api/contact, HatchGrab's own contact form (contact-1, 2 November 2026). Two buckets: 5 messages an hour
+// from one address (keyed on the salted IP hash, never the raw address) and 20 a day to one email address (keyed on its sha256),
+// so neither a script on one connection nor one that rotates addresses can fill the support inbox. Rolling windows. The route
+// fails OPEN on an Upstash error, as the others do: a person's message matters more than a blocked script.
+export const contactIpRatelimit = new Ratelimit({
+  redis: Redis.fromEnv(),
+  limiter: Ratelimit.slidingWindow(5, '1 h'),
+  analytics: true,
+  prefix: 'hg_rl_contact_ip',
+})
+export const contactEmailRatelimit = new Ratelimit({
+  redis: Redis.fromEnv(),
+  limiter: Ratelimit.slidingWindow(20, '24 h'),
+  analytics: true,
+  prefix: 'hg_rl_contact_email',
+})

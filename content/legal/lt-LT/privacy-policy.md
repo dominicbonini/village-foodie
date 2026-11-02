@@ -1,4 +1,4 @@
-<!-- translation-of: privacy-policy.md sha256:cd7be1c77baa5cbf4b0d0587c82b29ea032c1dfee04b069e17ef0786c06679a7 -->
+<!-- translation-of: privacy-policy.md sha256:fa2e1f9b3b13db7a43d979b81cceb96103d9fcb329d6ba0665d42f761abe003c -->
 # Privatumo politika
 
 **Paskutinį kartą atnaujinta:** {{LAST_UPDATED}}
@@ -107,6 +107,10 @@ Jūsų demonstracinės versijos el. pašto adresą, meniu failą ir pačią demo
 Saugome anoniminius skaičiavimus, kaip toli pažengia demonstracinės versijos, pavyzdžiui, „sukurta demonstracinė versija“ arba „pateiktas užsakymas“. Juose nėra el. pašto adreso, o ištrynus jūsų demonstracinę versiją jų nebegalima susieti su jumis.
 
 Demonstracinės versijos, kurias parengiame food truck, su kuriuo susisiekėme, saugomos iki 30 dienų, ir el. pašto adreso jose neprašoma.
+
+**Jei naudojatės mūsų kontaktine forma**
+
+Jei atsiunčiate mums žinutę per kontaktinę formą HatchGrab svetainėje, ją tvarkome patys: saugome jūsų žinutę ir jūsų įvestus duomenis ir el. paštu per Brevo siunčiame juos savo komandai. Juos naudojame tik tam, kad jums atsakytume, ir saugome ne ilgiau kaip 24 mėnesius. Kad būtų išvengta piktnaudžiavimo forma, kartu su jūsų žinute saugome ir užkoduotą jūsų IP adreso versiją.
 
 ---
 

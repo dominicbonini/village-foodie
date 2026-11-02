@@ -1,4 +1,4 @@
-<!-- translation-of: privacy-policy.md sha256:cd7be1c77baa5cbf4b0d0587c82b29ea032c1dfee04b069e17ef0786c06679a7 -->
+<!-- translation-of: privacy-policy.md sha256:fa2e1f9b3b13db7a43d979b81cceb96103d9fcb329d6ba0665d42f761abe003c -->
 # Zásady ochrany osobních údajů
 
 **Poslední aktualizace:** {{LAST_UPDATED}}
@@ -107,6 +107,10 @@ Váš e-mail k demu, soubor s jídelním lístkem i samotné demo smažeme, jakm
 Uchováváme anonymní počty toho, jak daleko se dema dostanou, například „demo bylo vytvořeno“ nebo „byla zadána objednávka“. Neobsahují žádnou e-mailovou adresu a po smazání vašeho dema je již nelze s vámi spojit.
 
 Dema, která připravíme pro food truck, který jsme oslovili, uchováváme po dobu až 30 dnů a nevyžadují e-mail.
+
+**Pokud použijete náš kontaktní formulář**
+
+Pokud nám pošlete zprávu prostřednictvím kontaktního formuláře na webu HatchGrab, zpracováváme ji sami: uchováváme vaši zprávu a údaje, které zadáte, a posíláme je našemu týmu e-mailem prostřednictvím služby Brevo. Používáme je pouze k tomu, abychom vám odpověděli, a uchováváme je nejvýše 24 měsíců. Abychom zabránili zneužití formuláře, uchováváme spolu s vaší zprávou také zakódovanou podobu vaší IP adresy.
 
 ---
 

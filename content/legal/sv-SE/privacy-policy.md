@@ -1,4 +1,4 @@
-<!-- translation-of: privacy-policy.md sha256:cd7be1c77baa5cbf4b0d0587c82b29ea032c1dfee04b069e17ef0786c06679a7 -->
+<!-- translation-of: privacy-policy.md sha256:fa2e1f9b3b13db7a43d979b81cceb96103d9fcb329d6ba0665d42f761abe003c -->
 # Integritetspolicy
 
 **Senast uppdaterad:** {{LAST_UPDATED}}
@@ -107,6 +107,10 @@ Vi raderar din e-postadress för demon, menyfilen och själva demon när demon l
 Vi sparar anonyma räkningar av hur långt demor kommer, till exempel ”en demo skapades” eller ”en beställning gjordes”. De innehåller ingen e-postadress, och när din demo har raderats kan de inte längre kopplas till dig.
 
 Demor som vi förbereder för en foodtruck som vi har kontaktat sparas i upp till 30 dagar och kräver ingen e-postadress.
+
+**Om du använder vårt kontaktformulär**
+
+Om du skickar ett meddelande till oss via kontaktformuläret på HatchGrabs webbplats hanterar vi det själva: Vi sparar ditt meddelande och de uppgifter du anger och skickar dem till vårt team via e-post genom Brevo. Vi använder dem bara för att svara dig och sparar dem i upp till 24 månader. För att förhindra missbruk av formuläret sparar vi också en förvrängd version av din IP-adress tillsammans med ditt meddelande.
 
 ---
 

@@ -1,4 +1,4 @@
-<!-- translation-of: privacy-policy.md sha256:cd7be1c77baa5cbf4b0d0587c82b29ea032c1dfee04b069e17ef0786c06679a7 -->
+<!-- translation-of: privacy-policy.md sha256:fa2e1f9b3b13db7a43d979b81cceb96103d9fcb329d6ba0665d42f761abe003c -->
 # Política de Privacidade
 
 **Última atualização:** {{LAST_UPDATED}}
@@ -107,6 +107,10 @@ Apagamos o seu email da demonstração, o ficheiro da ementa e a própria demons
 Mantemos contagens anónimas de até onde chegam as demonstrações, como «foi criada uma demonstração» ou «foi feita uma encomenda». Não contêm nenhum endereço de email e, depois de a sua demonstração ser apagada, deixam de poder ser associadas a si.
 
 As demonstrações que preparamos para um food truck que contactámos são guardadas durante um máximo de 30 dias e não pedem um email.
+
+**Se utilizar o nosso formulário de contacto**
+
+Se nos enviar uma mensagem através do formulário de contacto no website do HatchGrab, tratamos dela nós próprios: guardamos a sua mensagem e os dados que introduzir e enviamo-los à nossa equipa por email através da Brevo. Utilizamo-los apenas para lhe responder e conservamo-los durante um período máximo de 24 meses. Para evitar a utilização abusiva do formulário, guardamos também, juntamente com a sua mensagem, uma versão codificada do seu endereço IP.
 
 ---
 

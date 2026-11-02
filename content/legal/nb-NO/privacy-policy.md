@@ -1,4 +1,4 @@
-<!-- translation-of: privacy-policy.md sha256:cd7be1c77baa5cbf4b0d0587c82b29ea032c1dfee04b069e17ef0786c06679a7 -->
+<!-- translation-of: privacy-policy.md sha256:fa2e1f9b3b13db7a43d979b81cceb96103d9fcb329d6ba0665d42f761abe003c -->
 # Personvernerklæring
 
 **Sist oppdatert:** {{LAST_UPDATED}}
@@ -107,6 +107,10 @@ Vi sletter demo-e-postadressen din, menyfilen og selve demoen når demoen utløp
 Vi fører anonyme tellinger av hvor langt demoer kommer, for eksempel «en demo ble laget» eller «en bestilling ble lagt inn». De inneholder ingen e-postadresse, og når demoen din er slettet, kan de ikke lenger knyttes til deg.
 
 Demoer vi lager for en matbil vi har kontaktet, oppbevares i opptil 30 dager og ber ikke om noen e-postadresse.
+
+**Hvis du bruker kontaktskjemaet vårt**
+
+Hvis du sender oss en melding via kontaktskjemaet på HatchGrabs nettsted, behandler vi den selv: Vi lagrer meldingen din og opplysningene du skriver inn, og sender dem til teamet vårt på e-post via Brevo. Vi bruker dem bare til å svare deg og oppbevarer dem i opptil 24 måneder. For å hindre misbruk av skjemaet lagrer vi også en tilslørt versjon av IP-adressen din sammen med meldingen.
 
 ---
 

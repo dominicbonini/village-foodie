@@ -1,4 +1,4 @@
-<!-- translation-of: privacy-policy.md sha256:cd7be1c77baa5cbf4b0d0587c82b29ea032c1dfee04b069e17ef0786c06679a7 -->
+<!-- translation-of: privacy-policy.md sha256:fa2e1f9b3b13db7a43d979b81cceb96103d9fcb329d6ba0665d42f761abe003c -->
 # Politica de confidențialitate
 
 **Ultima actualizare:** {{LAST_UPDATED}}
@@ -107,6 +107,10 @@ Păstrăm, de asemenea, meniul pe care îl încărcați (o fotografie, un PDF sa
 Păstrăm numărători anonime privind cât de departe ajung demo-urile, cum ar fi „a fost construit un demo” sau „a fost plasată o comandă”. Acestea nu conțin nicio adresă de e-mail și, odată ce demo-ul dumneavoastră este șters, nu mai pot fi asociate cu dumneavoastră.
 
 Demo-urile pe care le pregătim pentru un food truck pe care l-am contactat sunt păstrate timp de până la 30 de zile și nu solicită o adresă de e-mail.
+
+**Dacă folosiți formularul nostru de contact**
+
+Dacă ne trimiteți un mesaj prin formularul de contact de pe site-ul HatchGrab, îl gestionăm noi înșine: păstrăm mesajul dumneavoastră și datele pe care le introduceți și le trimitem echipei noastre prin e-mail, prin intermediul Brevo. Le folosim numai pentru a vă răspunde și le păstrăm cel mult 24 de luni. Pentru a preveni utilizarea abuzivă a formularului, păstrăm, împreună cu mesajul dumneavoastră, și o versiune codificată a adresei dumneavoastră IP.
 
 ---
 

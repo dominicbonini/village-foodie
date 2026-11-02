@@ -1,4 +1,4 @@
-<!-- translation-of: privacy-policy.md sha256:cd7be1c77baa5cbf4b0d0587c82b29ea032c1dfee04b069e17ef0786c06679a7 -->
+<!-- translation-of: privacy-policy.md sha256:fa2e1f9b3b13db7a43d979b81cceb96103d9fcb329d6ba0665d42f761abe003c -->
 # Privatlivspolitik
 
 **Senest opdateret:** {{LAST_UPDATED}}
@@ -107,6 +107,10 @@ Vi sletter din demo-e-mail, menukortfilen og selve demoen, når demoen udløber:
 Vi fører anonyme optællinger af, hvor langt demoer kommer, såsom "en demo blev bygget" eller "en bestilling blev afgivet". De indeholder ingen e-mailadresse, og når din demo er slettet, kan de ikke længere knyttes til dig.
 
 Demoer, som vi forbereder til en foodtruck, vi har kontaktet, opbevares i op til 30 dage og beder ikke om en e-mailadresse.
+
+**Hvis du bruger vores kontaktformular**
+
+Hvis du sender os en besked via kontaktformularen på HatchGrabs websted, håndterer vi den selv: Vi gemmer din besked og de oplysninger, du indtaster, og sender dem til vores team via e-mail gennem Brevo. Vi bruger dem kun til at svare dig og opbevarer dem i op til 24 måneder. For at forhindre misbrug af formularen gemmer vi desuden en sløret udgave af din IP-adresse sammen med din besked.
 
 ---
 

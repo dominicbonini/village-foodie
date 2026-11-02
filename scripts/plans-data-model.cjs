@@ -578,7 +578,10 @@ if (RENDER) {
   // 1 November 2026 (scripts/_lp-world-countries-2.cjs).
   // eslint-disable-next-line @typescript-eslint/no-require-imports -- CommonJS harness module (world-countries-2)
   const W2 = require('./_lp-world-countries-2.cjs')
-  const LEGAL_LASTMOD_OF = { privacy: D2B.LANDED ? D2B.PRIVACY_LASTMOD_NEW : LEGAL_LASTMOD, terms: W2.LANDED ? W2.LASTMOD_NEW : '2026-10-20T00:00:00.000Z', 'country-terms': W2.LANDED ? W2.LASTMOD_NEW : ANZT.LANDED ? ANZT.COUNTRY_TERMS_LASTMOD_NEW : IE3.LANDED ? IE3.COUNTRY_TERMS_LASTMOD_NEW : LEGAL_LASTMOD }
+  // ⚠️ RE-PINNED (contact-1, 2 November 2026): the Privacy Policy re-dated 2 November 2026 with the contact-form paragraph
+  // (scripts/_lp-contact-1.cjs); HatchGrab's /contact is proved by contactProof below.
+  const C1 = require('./_lp-contact-1.cjs')   // eslint-disable-line @typescript-eslint/no-require-imports -- CommonJS harness module (contact-1)
+  const LEGAL_LASTMOD_OF = { privacy: C1.LANDED ? C1.PRIVACY_LASTMOD_NEW : D2B.LANDED ? D2B.PRIVACY_LASTMOD_NEW : LEGAL_LASTMOD, terms: W2.LANDED ? W2.LASTMOD_NEW : '2026-10-20T00:00:00.000Z', 'country-terms': W2.LANDED ? W2.LASTMOD_NEW : ANZT.LANDED ? ANZT.COUNTRY_TERMS_LASTMOD_NEW : IE3.LANDED ? IE3.COUNTRY_TERMS_LASTMOD_NEW : LEGAL_LASTMOD }
   /** The seo-fixes named change a view key falls under, as [name, (after, before) → [after', before'] | null]. */
   const seoFixes = (k) => {
     if (/^(landing|features|compare)\|[A-Z]+\|html(-usOn|-cookieUS)?$/.test(k)) return ['SEO-menu + SEO-badges' + (/^landing/.test(k) ? ' + SEO-ld' : '') + ': the country menus\' <ul> + <a role="menuitemradio"> options, the badges\' loading="lazy" (no image preload hints)' + (/^landing/.test(k) ? ', the one @graph JSON-LD' : ''),
@@ -671,6 +674,13 @@ if (RENDER) {
       N[k] = r || [A[area][k], B[area][k]]
     }
     for (const [n, e] of seoNamed) t(`${area}: seo-fixes ${n} (${e.keys.length} views)`, e.bad.length === 0, e.bad.join(', '))
+    // ⚠️ RE-PINNED (contact-1, 2 November 2026): HatchGrab's /contact — STRUCTURAL (scripts/_lp-contact-1.cjs contactProof, on the sides as
+    // normalised above): the Tally script and iframe out, HatchGrab's own form in the region from the form heading to the section's end,
+    // every other byte the same. Proven, the view counts as unchanged below; scripts/contact-1.cjs proves the form itself.
+    const c1Keys = keys.filter(k => C1.LANDED && C1.CONTACT_VIEWS.test(`parts/${k}`) && area === 'parts')
+    const c1Bad = []
+    for (const k of c1Keys) { const pr = C1.contactProof(N[k][1], N[k][0]); if (pr.ok) N[k] = [N[k][1], N[k][1]]; else c1Bad.push(`${k}: ${pr.problems.join(' · ')}`) }
+    if (c1Keys.length) t(`${area}: contact-1 — /contact's Tally embed replaced by HatchGrab's own form, every other byte the same (${c1Keys.length} views)`, c1Bad.length === 0, c1Bad.join(' | '))
     const identical = keys.filter(k => !stageB(k))
     const diff = identical.filter(k => JSON.stringify(N[k][0]) !== JSON.stringify(N[k][1]))
     t(`${area}: every view Stage B does not touch is byte-identical, seo-fixes' named changes aside (${identical.length} views: ${[...new Set(identical.map(k => k.split('|')[0]))].join(', ')})`, diff.length === 0, diff.join(', '))

@@ -333,6 +333,9 @@ for (const e of require('./_lp-seo-geo-2.cjs').ITEMS) NAMED.push({ id: e.id, wha
 // Play URL lost &hl=en. One copy in scripts/_lp-store-badges-1.cjs.
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- CommonJS harness module (store-badges-1)
 for (const e of require('./_lp-store-badges-1.cjs').ITEMS) NAMED.push({ id: e.id, what: e.what, views: e.views, apply: (id, v) => e.apply(id, v) })
+// ⚠️ RE-PINNED (contact-1, 2 November 2026, docs/contact-1-report.md): the sitemap's /privacy lastmod (PRECISE) and HatchGrab's /contact
+// (STRUCTURAL — the Tally embed out, HatchGrab's own form in, every other byte the same); one copy in scripts/_lp-contact-1.cjs.
+for (const e of require('./_lp-contact-1.cjs').ITEMS) NAMED.push({ id: e.id, what: e.what, views: e.views, apply: (id, v) => e.apply(id, v), ...(e.proveWith ? { proveWith: e.proveWith } : {}) })
 
 /** BEFORE value of view `id` → { expected, touched: [named ids whose transform changed it] }. */
 // ⚠️ RE-PINNED (plans-data-model, Stage A): an entry with `proveWith` adds `matches(f)` → { ok, problems } — its own

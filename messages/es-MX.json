@@ -735,7 +735,13 @@
     "ctaShort": "Subir menú"
   },
   "contactPage": {
-    "formHeading": "O llena el formulario"
+    "form": {
+      "thanksTitle": "Gracias, tu mensaje llegó.",
+      "errors": {
+        "rateLimited": "Ya enviaste varios mensajes — vuelve a intentarlo más tarde o escríbenos a {email}.",
+        "failed": "Algo salió mal — escríbenos a {email}."
+      }
+    }
   },
   "siteFooter": {
     "hire": "Rentar un food truck"

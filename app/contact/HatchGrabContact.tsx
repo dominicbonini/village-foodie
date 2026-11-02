@@ -18,18 +18,23 @@
 // ── 🔴 NO VILLAGE FOODIE BRANDING ANYWHERE ON THIS RENDER ──────────────────────────────────────────
 // The landing footer's "From the people behind Village Foodie" line is deliberately NOT carried
 // across, exactly as it was not carried into /support. One brand on the page a reviewer opens.
-import Script from 'next/script'
-import { Suspense } from 'react'
+//
+// ── 🔴 THE FORM IS HATCHGRAB'S OWN (contact-1, 2 November 2026; docs/contact-1-report.md) ────────────
+// The Tally embed (and its script) left this render: ./HatchGrabContactForm.tsx posts to /api/contact, every word in the visitor's
+// language. Village Foodie's render keeps Tally (page.tsx, ./ContactForm.tsx) — unchanged.
 import { Archivo, Public_Sans, Courier_Prime } from 'next/font/google'
 import { HEADER_BG } from '@/lib/brand'
 import { HatchGrabWordmark } from '@/components/brand/HatchGrabWordmark'
 import { legalPath, copyrightYear } from '@/lib/legal'
 import { ABOUT_PATH } from '@/lib/about'
-import { ContactForm } from './ContactForm'
+import { HatchGrabContactForm, type ContactFormWords } from './HatchGrabContactForm'
+import { contactRenderToken } from '@/lib/contact-server'
+import { CONTACT_LIMITS, CONTACT_TOPICS, type ContactTopic } from '@/lib/contact'
 import { translatorFor } from '@/lib/i18n/translator'
 import type { AppLocale } from '@/lib/i18n/locales'
 import '@/lib/i18n/catalog/contactPage'
 import '../landing/landing.css'
+import './contact-form.css'
 
 // The same three faces the landing page loads, mapped to the same CSS vars the stylesheet expects.
 const archivo = Archivo({ subsets: ['latin'], style: ['normal', 'italic'], variable: '--font-archivo', display: 'swap' })
@@ -40,13 +45,35 @@ const courierPrime = Courier_Prime({ subsets: ['latin'], weight: ['400', '700'],
 // The support mailbox. An address, not a word: the same in every language, so it is not in messages.
 const SUPPORT_EMAIL = 'hello@hatchgrab.com'
 
-/** Language Phase 1e: the words are `contactPage`, in the visitor's country's language (page.tsx resolves it). */
-export function HatchGrabContact({ locale, country = null }: { locale: AppLocale; country?: string | null }) {
+/** contact-1: the form's words, resolved here in the page's language — the limits as numbers in its own format, and the two error
+ *  sentences with the support address filled in. Exported for scripts/contact-1-screens.cjs, which mounts the same form with them. */
+export function contactFormWords(locale: AppLocale): ContactFormWords {
+  const t = translatorFor(locale, 'contactPage')
+  const L = CONTACT_LIMITS
+  return {
+    topicLabel: t('form.topicLabel'),
+    topics: Object.fromEntries(CONTACT_TOPICS.map(id => [id, t(`form.topics.${id}`)])) as Record<ContactTopic, string>,
+    nameLabel: t('form.nameLabel'), namePlaceholder: t('form.namePlaceholder'), emailLabel: t('form.emailLabel'),
+    businessLabel: t('form.businessLabel'), optional: t('form.optional'), businessPlaceholder: t('form.businessPlaceholder'),
+    messageLabel: t('form.messageLabel'), send: t('form.send'), sending: t('form.sending'),
+    privacyLine: t('form.privacyLine'), privacyLink: t('form.privacyLink'), thanksTitle: t('form.thanksTitle'), thanksBody: t('form.thanksBody'),
+    errors: {
+      nameRequired: t('form.errors.nameRequired'), nameTooLong: t('form.errors.nameTooLong', { max: L.name }),
+      emailRequired: t('form.errors.emailRequired'), emailInvalid: t('form.errors.emailInvalid'), emailTooLong: t('form.errors.emailTooLong', { max: L.email }),
+      businessRequired: t('form.errors.businessRequired'), businessTooLong: t('form.errors.businessTooLong', { max: L.business }),
+      messageTooShort: t('form.errors.messageTooShort', { min: L.messageMin }), messageTooLong: t('form.errors.messageTooLong', { max: L.messageMax }),
+      topicInvalid: t('form.errors.topicInvalid'),
+      rateLimited: t('form.errors.rateLimited', { email: SUPPORT_EMAIL }), failed: t('form.errors.failed', { email: SUPPORT_EMAIL }),
+    },
+  }
+}
+
+/** Language Phase 1e: the words are `contactPage`, in the visitor's country's language (page.tsx resolves it).
+ *  contact-1: `topic` is the form's first choice (page.tsx maps ?topic=, lib/contact.ts topicFromParam). */
+export function HatchGrabContact({ locale, country = null, topic = CONTACT_TOPICS[0] }: { locale: AppLocale; country?: string | null; topic?: ContactTopic }) {
   const t = translatorFor(locale, 'contactPage')
   return (
     <div className={`hg-landing ${archivo.variable} ${publicSans.variable} ${courierPrime.variable}`}>
-      <Script src="https://tally.so/widgets/embed.js" strategy="lazyOnload" />
-
       {/* ============ NAV ============ same slate bg, same fixed height, same container as /landing. */}
       <nav className={HEADER_BG}>
         <div className="nav-in">
@@ -84,11 +111,11 @@ export function HatchGrabContact({ locale, country = null }: { locale: AppLocale
               where an `mx-auto` was silently doing nothing. An inline style is the one thing that wins
               without adding a rule to a stylesheet this task must not touch. 1.5rem rather than `.lede`'s 2.6rem: measured at
               320x568, every pixel here is one the form loses. See the report's 6.
-              🔴 THE COPY MUST NOT CLAIM BOTH ROUTES REACH THE SAME INBOX. The form is a THIRD-PARTY
-              Tally embed (ContactForm.tsx:44, form id 7R2Ra2); where Tally forwards a submission is set
-              in Tally's dashboard and is NOT knowable from this repository. Saying "both reach the same
-              place" would be asserting something unverified about where a customer's message goes.
-              See docs/support-page-contact-report.md 4. */}
+              🔴 THE COPY MUST NOT CLAIM BOTH ROUTES REACH THE SAME INBOX. It was written when the form was
+              the third-party Tally embed, whose destination was set in Tally's dashboard and not knowable
+              here (docs/support-page-contact-report.md 4). Since contact-1 the form emails the same support
+              inbox (lib/contact-server.ts supportInbox) — but the copy was not asked to change, so it still
+              says only that we reply by email. */}
           {/* 🔴 ONE COLUMN AT EVERY WIDTH — `gridTemplateColumns: '1fr'` OVERRIDES `.does`.
               `.does` goes two-up at >=760px (landing.css:248), and on a laptop that put "Or fill in the
               form below" in the RIGHT column while the form itself starts full-width on the LEFT. The
@@ -128,33 +155,19 @@ export function HatchGrabContact({ locale, country = null }: { locale: AppLocale
             </div>
           </div>
 
-          {/* ── THE EMBED ─────────────────────────────────────────────────────────────────────────
-              🔴 THE SAME FORM THE VILLAGE FOODIE RENDER USES — one component, one id, one set of
-              parameters. /support hardcoded `topic=General%20Enquiry` into a static URL; this render
-              instead accepts the SAME `topic`/`venue`/`truck` query parameters the other brand does,
-              so a HatchGrab surface can pre-set a topic through the link rather than through a second
-              copy of the embed. The landing footer's Contact link sends `topic=General%20Enquiry`,
-              which is what /support pre-set and what Village Foodie's own footer link sends.
-              ⚠️ AN EMPTY `topic` IS AN ALREADY-SHIPPING STATE, not a new one: every bare /contact link
-              on villagefoodie.co.uk (the legal footer, LegalPage.tsx) has always sent one.
-              ⚠️ `dynamicHeight=1` NEEDS tally.so/widgets/embed.js TO RESIZE THE FRAME. The script is
-              loaded above, but the `minHeight` is what keeps the form usable if that script never
-              arrives — the frame simply scrolls internally instead. A support page must not depend on
-              a third-party script to be operable.
-              ⚠️ `support-frame` IS NOT A RULE IN landing.css — grep returns nothing. It is carried over
-              from /support unchanged rather than "tidied": the sizing is in the inline style beside it,
-              and dropping a class that some future sheet may claim is not this change's business.
-              ⚠️ THE <Suspense> BOUNDARY IS REQUIRED, not decorative — ContactForm reads useSearchParams,
-              and without a boundary the whole route opts out of prerendering. /support needed none
-              because its iframe was static. */}
-          <Suspense fallback={<div className="lede">{t('loadingForm')}</div>}>
-            <ContactForm
-              title={t('formTitle')}
-              height="700"
-              className="support-frame"
-              style={{ width: '100%', minHeight: '700px', border: 0 }}
-            />
-          </Suspense>
+          {/* ── 🔴 THE FORM (contact-1) ── HatchGrab's own: ./HatchGrabContactForm.tsx → /api/contact. It replaced the Tally embed
+              (form 7R2Ra2), which stays on Village Foodie only. ?topic= links pick the first topic unless they name one of the form's
+              own (page.tsx); ?venue= and ?truck= are Village Foodie's and are ignored here. The privacy line links the visitor's own
+              language's Privacy Policy (legalPath, as the footer does). The render timestamp is signed on the server
+              (lib/contact-server.ts contactRenderToken) for the "under 3 seconds is a bot" check. */}
+          <HatchGrabContactForm
+            words={contactFormWords(locale)}
+            initialTopic={topic}
+            rendered={contactRenderToken(new Date())}
+            country={country}
+            locale={locale}
+            privacyHref={legalPath('privacy', { country, locale })}
+          />
 
           {/* 🔴 THE TRAILING "Or just email us at ..." PARAGRAPH WAS HERE AND IS GONE — MOVED, NOT
               DELETED. It now sits above the form as the "Email us" option; the address itself is

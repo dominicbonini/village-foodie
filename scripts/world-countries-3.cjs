@@ -58,13 +58,17 @@ const placeOf = (file, start) => {
   t('Canada: Quebec waits because "a Canadian French version is not yet available"', sectionOf(country, /^## Canada$/m).includes('because a Canadian French version is not yet available,'))
 
   head('2 · THE DATES — the legal-date rule: both changed documents and TERMS_VERSION already carry 1 November 2026')
-  const legal = read('lib/legal.ts'), legalHead = execSync('git show HEAD:lib/legal.ts', { cwd: REPO, encoding: 'utf8' })
+  // ⚠️ RE-PINNED (contact-1, 2 November 2026): contact-1's named change to lib/legal.ts and the Privacy Policy (its paragraph and date,
+  // PRIVACY_UPDATED, TERMS_VERSION) is taken back exactly first — scripts/_lp-contact-1.cjs, which throws if it is not there — and the
+  // comparison is with 3d6228b7, the commit before contact-1 (HEAD carries contact-1 once it is committed).
+  const C1 = require('./_lp-contact-1.cjs')
+  const legal = C1.asBefore('lib/legal.ts', read('lib/legal.ts')), legalHead = execSync('git show 3d6228b7:lib/legal.ts', { cwd: REPO, encoding: 'utf8' })
   const val = (s, k) => new RegExp(`export const ${k} = '([^']+)'`).exec(s)?.[1]
   t(`TERMS_UPDATED and COUNTRY_TERMS_UPDATED are '1 November 2026', as each document's own line; TERMS_VERSION '2026-11-01' (the latest)`,
     val(legal, 'TERMS_UPDATED') === '1 November 2026' && val(legal, 'COUNTRY_TERMS_UPDATED') === '1 November 2026' && val(legal, 'TERMS_VERSION') === '2026-11-01'
     && terms.includes('**Last updated:** 1 November 2026') && country.includes('**Last updated:** 1 November 2026'))
   t(`PRIVACY_UPDATED is unchanged ('${val(legalHead, 'PRIVACY_UPDATED')}') — the Privacy Policy is not edited`, val(legal, 'PRIVACY_UPDATED') === val(legalHead, 'PRIVACY_UPDATED')
-    && read('content/legal/privacy-policy.md') === execSync('git show HEAD:content/legal/privacy-policy.md', { cwd: REPO, encoding: 'utf8' }))
+    && C1.asBefore('content/legal/privacy-policy.md', read('content/legal/privacy-policy.md')) === execSync('git show 3d6228b7:content/legal/privacy-policy.md', { cwd: REPO, encoding: 'utf8' }))
 
   head(`3 · EVERY TRANSLATION (${BASES.length}) — the same three changes, at the same places`)
   const mx = placeOf('country-specific-terms.md', '**Complaints.** Tell us first at privacy@hatchgrab.com. If you are not satisfied, you can complain to the Secretaría')

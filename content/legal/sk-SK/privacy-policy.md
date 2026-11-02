@@ -1,4 +1,4 @@
-<!-- translation-of: privacy-policy.md sha256:cd7be1c77baa5cbf4b0d0587c82b29ea032c1dfee04b069e17ef0786c06679a7 -->
+<!-- translation-of: privacy-policy.md sha256:fa2e1f9b3b13db7a43d979b81cceb96103d9fcb329d6ba0665d42f761abe003c -->
 # Zásady ochrany osobných údajov
 
 **Naposledy aktualizované:** {{LAST_UPDATED}}
@@ -107,6 +107,10 @@ Váš e-mail k ukážke, súbor s jedálnym lístkom aj samotnú ukážku vymaž
 Uchovávame anonymné počty toho, ako ďaleko sa ukážky dostanú, napríklad „bola vytvorená ukážka“ alebo „bola zadaná objednávka“. Neobsahujú žiadnu e-mailovú adresu a po vymazaní vašej ukážky ich už nemožno spojiť s vami.
 
 Ukážky, ktoré pripravíme pre food truck, ktorý sme oslovili, uchovávame najviac 30 dní a nežiadajú e-mail.
+
+**Ak použijete náš kontaktný formulár**
+
+Ak nám pošlete správu prostredníctvom kontaktného formulára na webovej stránke HatchGrab, spracúvame ju sami: uchovávame vašu správu a údaje, ktoré zadáte, a posielame ich nášmu tímu e-mailom prostredníctvom služby Brevo. Používame ich len na to, aby sme vám odpovedali, a uchovávame ich najviac 24 mesiacov. Aby sme zabránili zneužitiu formulára, uchovávame spolu s vašou správou aj zakódovanú podobu vašej IP adresy.
 
 ---
 

@@ -88,7 +88,7 @@ export const COUNTRY_TERMS_PATH = '/country-terms'
  *  🔴 THESE MIRROR THE `**Last updated:**` LINE INSIDE content/legal/*.md, WHICH IS THE SOURCE OF TRUTH.
  *  The pages render the document's own line; these exist for anywhere else that needs the date without
  *  parsing the file. ⚠️ If you amend a document, change BOTH — the .md line is what a reader sees. */
-export const PRIVACY_UPDATED = '31 October 2026'
+export const PRIVACY_UPDATED = '2 November 2026'
 export const TERMS_UPDATED = '1 November 2026'
 export const COUNTRY_TERMS_UPDATED = '1 November 2026'
 
@@ -102,8 +102,9 @@ export function legalUpdatedDate(written: string): Date {
 
 /** The version of the terms a signup accepts, recorded as `operators.terms_version` beside `terms_accepted_at`
  *  (app/api/signup). 🔴 MOVE IT WITH THE DOCUMENTS: it names the Terms of Service, Privacy Policy and Country-specific
- *  terms dated above — the latest of them; 1 November 2026 since the Terms' §4 (a finished trial moves to the plan shown for the
- *  country) and the Country-specific terms' eight new countries (world-countries-2), 31 October 2026 for the Privacy Policy's
+ *  terms dated above — the latest of them; 2 November 2026 since the Privacy Policy's contact-form paragraph (contact-1: HatchGrab's
+ *  own form, emailed through Brevo, kept up to 24 months), 1 November 2026 for the Terms' §4 (a finished trial moves to the plan shown for the
+ *  country) and the Country-specific terms' eight new countries (world-countries-2) before that, 31 October 2026 for the Privacy Policy's
  *  demo section (demo-2b) before that,
  *  22 October 2026 for the Country-specific terms' Australia and New Zealand
  *  sections (anz-terms) before that, 21 October 2026 for the Ireland section (ireland-3) before that,
@@ -111,7 +112,7 @@ export function legalUpdatedDate(written: string): Date {
  *  'holding-2026-07-23', typed in the route, and stayed there while the documents moved twice (legal follow-ups,
  *  19 October 2026). ⚠️ It is only WRITTEN, at signup: nothing reads or compares it, so moving it asks no existing truck
  *  to re-accept anything (checked 20 October 2026 — app, edge functions, database functions and triggers). */
-export const TERMS_VERSION = '2026-11-01'
+export const TERMS_VERSION = '2026-11-02'
 
 /** Both documents, for anywhere that renders the pair (footers, consent lines). */
 export const LEGAL_LINKS = [
