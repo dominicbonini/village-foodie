@@ -11,6 +11,7 @@ import EmbedSchedule from '@/app/embed/[slug]/EmbedSchedule'
 import { localeForTruck } from '@/lib/i18n/server-locale'
 import { translatorFor } from '@/lib/i18n/translator'
 import { isEnglish } from '@/lib/i18n/locales'
+import { countryPagePath } from '@/lib/marketing-country'
 import { pageSeedProps } from '@/lib/i18n/page-words'
 import '@/lib/i18n/catalog/embed'
 
@@ -156,6 +157,8 @@ export default async function CustomDomainPage() {
   // languages-1: the page's words in the truck's language (en-GB for every English truck, as before).
   const locale = await localeForTruck(truck)
   const t = translatorFor(locale, 'embed')
+  // faq-2-seo-geo-2 B5: the credit links to the truck's own country page (/uk, /de …) — the root otherwise.
+  const creditHref = HATCHGRAB_URL + (countryPagePath(truck.country ?? 'GB', 'landing') ?? '')
 
   /**
    * ── THE LAPSED-PLAN FALLBACK: their name, one link onward, the brand line. ──────────────────────
@@ -201,7 +204,7 @@ export default async function CustomDomainPage() {
             {t('orderFrom', { truck: truck.name })}
           </a>
         )}
-        <PoweredBy locale={locale} />
+        <PoweredBy locale={locale} href={creditHref} />
       </Shell>
     )
   }
@@ -213,7 +216,7 @@ export default async function CustomDomainPage() {
           the Order button would resolve to the operator's OWN domain — putting our ordering flow, and
           the payment provider's frame inside it, on an address we do not control. */}
       <EmbedSchedule slug={truck.slug ?? ''} truckName={truck.name} orderOrigin={HATCHGRAB_URL} locale={locale} {...pageSeedProps(locale, 'embed')} />
-      <PoweredBy locale={locale} />
+      <PoweredBy locale={locale} href={creditHref} />
     </Shell>
   )
 }

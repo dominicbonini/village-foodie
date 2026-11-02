@@ -205,3 +205,16 @@ async function itemWrite(store: FaqStore, action: 'item.update' | 'item.publish'
   const saved = await store.updateItem(id, { ...patch, ...(textChanged ? { updatedAt: stamp.at, updatedBy: stamp.by } : {}) })
   return saved ? { ok: true, data: { item: saved } } : refuse(409, GONE)
 }
+
+/** faq-2-seo-geo-2 B6: did this action change what a public page shows? (publish, unpublish, delete, a move, a section rename or
+ *  delete, or a save of a published question's text or Show in). A note, a draft's text or a new empty question changes nothing. */
+export function changesPublicPages(body: Record<string, unknown>, r: ActionResult<unknown>): boolean {
+  if (!r.ok) return false
+  const action = str(body.action)
+  if (action === 'item.update') {
+    const item = (r.data as { item?: FaqItemRow }).item
+    const patch = (body.patch && typeof body.patch === 'object' ? body.patch : {}) as Record<string, unknown>
+    return item?.status === 'published' && ['questionEn', 'answerEn', 'answerSinglePlanEn', 'showIn'].some(k => k in patch)
+  }
+  return ['item.publish', 'item.unpublish', 'item.delete', 'item.move', 'section.rename', 'section.move', 'section.delete'].includes(action ?? '')
+}

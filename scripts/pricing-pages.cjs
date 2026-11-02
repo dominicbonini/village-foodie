@@ -506,7 +506,9 @@ const withFourth = () => {
     if (!(!require('fs').existsSync(require('path').join(REPO, 'lib/robots-policy.ts'))
       ? JSON.stringify(app.areaServed) === JSON.stringify(old.areaServed)
       : (!('areaServed' in app) && Array.isArray(app.countriesSupported) && app.countriesSupported.includes(cc) && app.countriesSupported.every(c => /^[A-Z]{2}$/.test(c))
-        && app.operatingSystem === 'Web, iOS, Android' && org.legalName === 'HatchGrab Ltd' && org.address?.addressCountry === 'GB'))) return false
+        // ⚠️ RE-PINNED (seo-geo-2 B3, 2 November 2026): operatingSystem is true per country — "Web" here (no app flag in these
+        // fixtures; it was "Web, iOS, Android" everywhere). scripts/seo-geo-2.cjs proves the value per country.
+        && app.operatingSystem === (require('./_lp-seo-geo-2.cjs').LANDED ? 'Web' : 'Web, iOS, Android') && org.legalName === 'HatchGrab Ltd' && org.address?.addressCountry === 'GB'))) return false
     if (app.url !== `https://www.hatchgrab.com/${slug}` || JSON.stringify(app.publisher) !== JSON.stringify({ '@id': ORG })) return false
     return Array.isArray(app.offers) && app.offers.map(o => o.name).join(',') === 'Pay as you go,Pro,Unlimited'
       && app.offers.every(o => o['@type'] === 'Offer' && o.priceCurrency === cur && o.url === `https://www.hatchgrab.com/${slug}#pricing`)

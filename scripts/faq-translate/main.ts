@@ -25,6 +25,7 @@ import { priceText } from '@/lib/price-text'
 import { PRICE_WORD } from '@/lib/price-words'
 import type { PlanCatalog } from '@/lib/plans'
 import type { Prices } from '@/lib/competitor-check/core'
+import { submitIndexNow, landingUrlsFor } from '@/lib/indexnow'
 
 type Row = Record<string, unknown>
 const REPO = process.cwd()
@@ -160,6 +161,15 @@ async function main() {
     deps.prices = prices
   }
   const report = await runTranslator(deps, { dryRun, maxUsd, limit })
+  // faq-2-seo-geo-2 B6: the pages this run changed (the switched-on countries whose page language reads a locale written ok or
+  // removed) go to IndexNow — never in a dry run. Their 60-second cache shows the rows by then; a failed submission is only logged.
+  if (!dryRun && !fixtures && report.changedLocales.length) {
+    const db = createClient(process.env.NEXT_PUBLIC_SUPABASE_URL!, process.env.SUPABASE_SERVICE_ROLE_KEY!, { auth: { persistSession: false } })
+    const { data } = await db.from('country_settings').select('country_code, locale, enabled')
+    const countries = ((data ?? []) as Row[]).map(r => ({ countryCode: String(r.country_code), locale: String(r.locale), enabled: r.enabled === true }))
+    await new Promise(res => setTimeout(res, 65_000))   // past the pages' 60-second cache, so the crawler finds the new text
+    await submitIndexNow(landingUrlsFor(countries, report.changedLocales), { log })
+  }
   if (!dryRun && report.done === 0 && report.jobs > 0 && report.skippedForCap === 0) { console.error('Every model call failed.'); process.exit(1) }
 }
 

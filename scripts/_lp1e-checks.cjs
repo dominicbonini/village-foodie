@@ -353,6 +353,13 @@ async function run(ctx) {
         const ok = v.status < 500 && !loops
         if (ok) oddOk++
         t(`router · odd path ${k.url} us=${k.usOn ? 'on' : 'off'}: answered (${v.status} ${v.kind}${v.location ? ' ' + v.location : ''})`, ok)
+      } else if (require('./_lp-seo-geo-2.cjs').routerMoved(k.host, k.url)) {   // eslint-disable-line @typescript-eslint/no-require-imports -- CommonJS harness module
+        // ⚠️ RE-PINNED (seo-geo-2 B1, 2 November 2026): Village Foodie's consumer pages on hatchgrab.com (/venues/<slug>, /trucks,
+        // /hire) and the landing preview on villagefoodie.co.uk now answer 308 to the other host (scripts/_lp-seo-geo-2.cjs).
+        const want = require('./_lp-seo-geo-2.cjs').routerMoved(k.host, k.url)   // eslint-disable-line @typescript-eslint/no-require-imports -- CommonJS harness module
+        const ok = v.status === 308 && v.location === want
+        if (ok) untouchedOk++
+        t(`router · ${k.host} ${k.url} c=${k.cookie || '-'} us=${k.usOn ? 'on' : 'off'}: 308 → ${want} (seo-geo-2 B1, named)`, ok, JSON.stringify(v))
       } else {
         const b = BEFORE[id]
         const strip = x => x && typeof x === 'object' ? { status: x.status, kind: x.kind, location: x.location, rewrite: x.rewrite, setCookie: x.setCookie, ends: x.ends || null } : x

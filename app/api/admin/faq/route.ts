@@ -8,12 +8,18 @@
 // Countries route answers 404). A database error is logged and answered with a plain sentence, never passed through.
 // ⚠️ faq-3: after EVERY POST (save, publish, unpublish, reorder, delete — a failed one too, which may have written part) the public
 // FAQ's cache is cleared (lib/faq/public.ts), so the English landing pages show the change without a deploy.
+// ⚠️ faq-2-seo-geo-2 B6: when the change is to what a public page shows (changesPublicPages), and only in production, every
+// switched-on country's landing page is submitted to IndexNow after the response (an English edit also hides the question in the
+// other languages until it is re-translated, so every page changes). A failed submission is logged and changes nothing else.
 
 import { NextRequest, NextResponse } from 'next/server'
 import { adminUser } from '@/lib/auth/admin'
 import { serviceFaqStore } from '@/lib/admin/faq-store'
-import { listFaq, faqAction, type ActionResult } from '@/lib/admin/faq-actions'
+import { listFaq, faqAction, changesPublicPages, type ActionResult } from '@/lib/admin/faq-actions'
 import { clearPublicFaqCache } from '@/lib/faq/public'
+import { submitIndexNow, landingUrlsFor } from '@/lib/indexnow'
+import { listCountrySettingsCached } from '@/lib/country-settings'
+import { keepAlive } from '@/lib/runtime/after-response'
 
 export const dynamic = 'force-dynamic'
 
@@ -41,9 +47,20 @@ export async function GET(req: NextRequest) {
 export async function POST(req: NextRequest) {
   let body: Record<string, unknown> = {}
   try { const b = await req.json(); if (b && typeof b === 'object') body = b } catch { /* an empty body is an unknown action */ }
+  let publicChange = false
   try {
-    return await guarded(req, stamp => faqAction(serviceFaqStore, body, stamp))
+    return await guarded(req, async stamp => {
+      const r = await faqAction(serviceFaqStore, body, stamp)
+      publicChange = changesPublicPages(body, r)
+      return r
+    })
   } finally {
     clearPublicFaqCache()
+    if (publicChange && process.env.VERCEL_ENV === 'production') {
+      keepAlive(async () => {
+        const urls = landingUrlsFor(await listCountrySettingsCached(), 'all')
+        await submitIndexNow(urls, { log: s => console.log(s) })
+      }, 'faq indexnow')
+    }
   }
 }

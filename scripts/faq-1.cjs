@@ -34,6 +34,7 @@ let pass = 0, fail = 0
 const t = (label, ok, d) => { if (ok) pass++; else { fail++; console.log('  🔴 ' + label + (d !== undefined ? `\n      ${String(typeof d === 'string' ? d : JSON.stringify(d)).slice(0, 700)}` : '')) } }
 const head = s => console.log('\n' + s)
 const sha = s => crypto.createHash('sha256').update(String(s ?? 'null')).digest('hex')
+const SG2 = require('./_lp-seo-geo-2.cjs')   // eslint-disable-line @typescript-eslint/no-require-imports -- CommonJS harness module (seo-geo-2)
 
 /** The landing page for GB, US, BR and JP and /llms.txt, over the world fixtures with every country switched on (as live). */
 async function identityViews(tag) {
@@ -42,9 +43,13 @@ async function identityViews(tag) {
   const out = {}
   for (const [cc, seg] of Object.entries(SEG)) {
     const P = await kit.quietAsync(() => R.page('landing', seg, rows))
-    out[`${cc}/landing`] = sha(P.html) + ':' + sha(JSON.stringify(P.meta))
+    // ⚠️ RE-PINNED (seo-geo-2 B3, 2 November 2026): hashed as HEAD rendered it — operatingSystem set back to "Web, iOS, Android"
+    // where seo-geo-2 made it "Web" (scripts/_lp-seo-geo-2.cjs asBefore; seo-geo-2.cjs proves the value per country).
+    out[`${cc}/landing`] = sha(SG2.asBefore(P.html)) + ':' + sha(JSON.stringify(P.meta))
   }
-  out.llms = sha(await R.llms(rows))
+  // ⚠️ RE-PINNED (seo-geo-2 B4): /llms.txt is rebuilt on purpose — not compared with HEAD on a tree with seo-geo-2 (its content is
+  // proven by seo-geo-2.cjs §5); captured as before on an older tree.
+  if (!SG2.LANDED) out.llms = sha(await R.llms(rows))
   return { out, R, rows }
 }
 
@@ -323,9 +328,10 @@ async function identityViews(tag) {
   // difference from the commit before it, so scripts/fixtures/faq-1-identity.json was recaptured from the tree after it. /llms.txt's
   // hash did not move.
   const pinned = JSON.parse(read(IDENTITY))
+  if (SG2.LANDED) delete pinned.llms   // ⚠️ RE-PINNED (seo-geo-2 B4): /llms.txt rebuilt — see identityViews
   const { out } = await identityViews('faq1-identity')
   for (const k of Object.keys(pinned)) t(`${k} byte-identical to HEAD (sha256 of HTML and metadata)`, out[k] === pinned[k], { now: out[k], head: pinned[k] })
-  t('the same views (GB, US, BR, JP landing + /llms.txt)', JSON.stringify(Object.keys(out).sort()) === JSON.stringify(Object.keys(pinned).sort()))
+  t(`the same views (GB, US, BR, JP landing${SG2.LANDED ? '; /llms.txt rebuilt by seo-geo-2 B4' : ' + /llms.txt'})`, JSON.stringify(Object.keys(out).sort()) === JSON.stringify(Object.keys(pinned).sort()))
   const publicFiles = []
   const walk = d => { for (const e of fs.readdirSync(path.join(REPO, d), { withFileTypes: true })) { const p = `${d}/${e.name}`; if (e.isDirectory()) walk(p); else if (/\.(ts|tsx)$/.test(e.name)) publicFiles.push(p) } }
   for (const d of ['app', 'components', 'lib']) walk(d)
@@ -333,7 +339,9 @@ async function identityViews(tag) {
   // ⚠️ RE-PINNED (faq-3): the FAQ is public on the English landing pages — lib/faq/public.ts, read by app/landing/page.tsx, its
   // cache cleared by the Admin route. scripts/faq-3.cjs proves what those pages show.
   const allowed = new Set(['components/admin/FaqTab.tsx', 'lib/admin/faq-actions.ts', 'lib/faq/check.ts', 'lib/faq/feedback.ts', 'lib/faq/live-values.ts', 'lib/i18n/catalog/faq.ts',
-    'lib/faq/public.ts', 'app/landing/page.tsx', 'app/api/admin/faq/route.ts', 'lib/faq/translation.ts', 'lib/faq/translator.ts'])
+    'lib/faq/public.ts', 'app/landing/page.tsx', 'app/api/admin/faq/route.ts', 'lib/faq/translation.ts', 'lib/faq/translator.ts',
+    // ⚠️ RE-PINNED (seo-geo-2 B4): /llms.txt carries the English FAQ (lib/faq/public.ts landingFaq for GB); lib/llms-text.ts takes its type.
+    'app/llms.txt/route.ts', 'lib/llms-text.ts'])
   t('only Admin › FAQ, its server code and the English landing page (faq-3) import lib/faq or the faq messages', importers.every(f => allowed.has(f)), importers.filter(f => !allowed.has(f)))
   t('the admin page mounts it as the last tab', /pricing:[^\n]*\n[\s\S]*demos:[^\n]*\n[^\n]*\n\s*faq:\s*\{ icon: '❓', label: 'FAQ' \},\n\} as const/.test(read('app/admin/page.tsx')))
   t('faq.phrases.* is in en-GB only for now (Dominic, 1 Nov: English until approved)', (() => { const d = JSON.parse(read('messages/en-GB.json')).faq?.phrases; return d && Object.keys(d).join() === 'appsSentence,appsOffline,webOffline' })())

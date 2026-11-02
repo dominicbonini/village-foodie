@@ -1,0 +1,57 @@
+name: IndexNow
+
+# faq-2-seo-geo-2 B6 (2 November 2026, docs/faq-2-seo-geo-2-report.md): after every production deploy, tell IndexNow (Bing, and
+# through it ChatGPT search and Copilot) about every URL in both sitemaps — only those that answer 200 themselves, are not
+# noindex and are self-canonical (scripts/indexnow/main.ts probes each first). Every response is logged.
+# On a push to main it waits for the Vercel production deployment of THAT commit (the GitHub deployment Vercel creates, environment
+# "Production", status success) before submitting; no deployment within 30 minutes → the job stops with a message, submitting
+# nothing. The IndexNow key is public by design (public/07509b28087e749402ef79858216bd5a.txt); no secret is used.
+on:
+  push:
+    branches: [main]
+  workflow_dispatch: {}
+
+concurrency:
+  group: indexnow
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+  deployments: read
+
+jobs:
+  submit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - run: npm ci
+        env:
+          PUPPETEER_SKIP_DOWNLOAD: 'true'
+      - name: Wait for the production deployment of this commit
+        if: ${{ github.event_name == 'push' }}
+        env:
+          GH_TOKEN: ${{ github.token }}
+          SHA: ${{ github.sha }}
+          REPO: ${{ github.repository }}
+        run: |
+          set -euo pipefail
+          for i in $(seq 1 60); do
+            id=$(gh api "repos/$REPO/deployments?sha=$SHA&environment=Production" --jq '.[0].id // empty' || true)
+            if [ -n "$id" ]; then
+              state=$(gh api "repos/$REPO/deployments/$id/statuses" --jq '.[0].state // empty' || true)
+              echo "$(date -u +%FT%TZ) deployment $id: ${state:-no status yet}"
+              if [ "$state" = "success" ]; then exit 0; fi
+              if [ "$state" = "failure" ] || [ "$state" = "error" ]; then echo "The production deployment failed — nothing submitted."; exit 1; fi
+            else
+              echo "$(date -u +%FT%TZ) no production deployment for $SHA yet"
+            fi
+            sleep 30
+          done
+          echo "No successful production deployment of $SHA within 30 minutes — nothing submitted."
+          exit 1
+      - name: Submit the sitemap URLs
+        run: node scripts/competitor-check/run.mjs scripts/indexnow/main.ts

@@ -80,8 +80,10 @@ const ROWS = { ieOff: () => [LP1E.GB(), LP1E.US_ON(), IE(false)], ieOn: () => [L
     t(`/${seg}: Organization legalName "${LP.COMPANY.name}", addressCountry ${LP.COMPANY.countryCode} (lib/company.ts), url, logo, sameAs = App Store + Google Play`,
       org?.legalName === LP.COMPANY.name && org?.address?.addressCountry === LP.COMPANY.countryCode && org?.url === 'https://www.hatchgrab.com/' && /\/logos\//.test(org?.logo || '')
       && org?.sameAs?.length === 2 && /apps\.apple\.com/.test(org.sameAs[0]) && /play\.google\.com/.test(org.sameAs[1]), org)
-    t(`/${seg}: SoftwareApplication — BusinessApplication, "Web, iOS, Android", a one-sentence description`,
-      app?.applicationCategory === 'BusinessApplication' && app?.operatingSystem === 'Web, iOS, Android' && typeof app?.description === 'string' && (app.description.match(/[.!?](\s|$)/g) || []).length === 1, app)
+    // ⚠️ RE-PINNED (seo-geo-2 B3, 2 November 2026): operatingSystem is true per country — these fixture rows set no app flag, so
+    // "Web" (it was "Web, iOS, Android" everywhere). scripts/seo-geo-2.cjs proves GB's "Web, iOS, Android" with its flags on.
+    t(`/${seg}: SoftwareApplication — BusinessApplication, "Web" (no app flag in these fixtures), a one-sentence description`,
+      app?.applicationCategory === 'BusinessApplication' && app?.operatingSystem === 'Web' && typeof app?.description === 'string' && (app.description.match(/[.!?](\s|$)/g) || []).length === 1, app)
     t(`/${seg}: countriesSupported = the switched-on countries (GB, US — Ireland is off), and no invalid areaServed`, JSON.stringify(app?.countriesSupported) === '["GB","US"]' && !('areaServed' in (app || {})), app?.countriesSupported)
     const prices = (app?.offers || []).map(o => `${o.name}=${o.price} ${o.priceCurrency}`)
     t(`/${seg}: Offers as before — one per public plan, in ${cur}, from plan_prices`, prices.length === 3 && (app.offers || []).every(o => o.priceCurrency === cur), prices)

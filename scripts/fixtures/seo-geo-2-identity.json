@@ -1,0 +1,54 @@
+{
+ "$why": "seo-geo-2 §4: each landing page at dad7911a (sha256 of the HTML, of the HTML with the operatingSystem value masked, of the metadata).",
+ "commit": "dad7911a",
+ "pages": {
+  "landing:uk": {
+   "html": "f2ef08cb7e91142e9c5e976ae77313be0a6290c48c635df58b9051a9b6b239e7",
+   "htmlWithoutOs": "4346b0b94ce42bc0879213e2335114fee8c14a5d60bd977f5f8df61683e14830",
+   "meta": "158f9bd5c47447b4afa3b666b5f279f26042fd448ccd077b4fe4d9e6526acc33",
+   "os": "Web, iOS, Android"
+  },
+  "landing:us": {
+   "html": "134976da3dec23e93da5a7b99a7268ec04ef6269d6e98904939003090a3f3f6b",
+   "htmlWithoutOs": "1f865a5a579da31ecf6ce87aebfe40c6be0b519f199dfe143c0b1809af004648",
+   "meta": "bc4f706534d13a7882f8af207bd6d6163fb02f4a16ef3d3cbc35c2a032195c6f",
+   "os": "Web, iOS, Android"
+  },
+  "landing:ie": {
+   "html": "d61ec140cd3708bb7a9cdf252c5c81c075b749563bc197853b2b643e4adef1d7",
+   "htmlWithoutOs": "f204a882636c0b5ed56fdd669038e5d25c2980de12c94ca9d80f3975a78c6c69",
+   "meta": "f0887d81db54d140cc8a1e035ee1d1179a17f52fd236a95f3f6176c0e227f04a",
+   "os": "Web, iOS, Android"
+  },
+  "landing:de": {
+   "html": "628f3984e870fe81bad10cb509ce14422ab159d74d8ad1356ee73d956251ee43",
+   "htmlWithoutOs": "1c9268d19ffc6fb9daf1b4178a2f16d1c8a64c5b1489b0e1dae6a0b9f7157de9",
+   "meta": "63406b0514ec6d81c4134bf27c3fbf8a56158de1ec5b36704ae5721f150d2ee8",
+   "os": "Web, iOS, Android"
+  },
+  "landing:fr": {
+   "html": "80f314c1ac5d2c71a340f90bad2995a677e9523189d09b75fbc81e66db2ca06d",
+   "htmlWithoutOs": "e4ccf7fe55ed1eb1e792e5ff763ebaba4ae387b2cc47b73762d848759499b6aa",
+   "meta": "8c672ba54a18a9537fc29776956106602cff9591093de11547b5bf833753538d",
+   "os": "Web, iOS, Android"
+  },
+  "landing:jp": {
+   "html": "4753d4acc341fdf8d85e822b13167c20cd329e9904c7e33fcbb15c995aa87858",
+   "htmlWithoutOs": "776b044fe6f095e851d483a5f99b251ee8664b7bdacd6d198aea85dbdc5441ac",
+   "meta": "93d9227611a74608f949983273f5f5738509cad59655958cfa5114e0d8685c0d",
+   "os": "Web, iOS, Android"
+  },
+  "landing:ae": {
+   "html": "d88a465b085fd2d7241e19a6083f50c1c48e55d385e691cb08d513b07911e844",
+   "htmlWithoutOs": "2612ff75e704178a578840248e926b61d5e445ed2c15fabc06800b393a66b76d",
+   "meta": "103ad56bf6c7fa7b07c8cf285bae945448e49010acb2c48c11f5bf3da39f74cf",
+   "os": "Web, iOS, Android"
+  },
+  "landing:br": {
+   "html": "91aeebbaec726c8595b6f92005b0cfb0b7a605c242478327f8a19270c9072f10",
+   "htmlWithoutOs": "3730a7cd1685a2ff8a9b66a8b74e859c6b18d5d8a6b25f5c3251452798b3b555",
+   "meta": "8260392b963b1f138465be8a4e8ffe7c251e6a154c0b8a763467fb5435e695e9",
+   "os": "Web, iOS, Android"
+  }
+ }
+}

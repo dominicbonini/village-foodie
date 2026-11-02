@@ -567,6 +567,7 @@ if (RENDER) {
   // eslint-disable-next-line @typescript-eslint/no-require-imports -- CommonJS harness module (world-countries-1)
   const TAGLINE = require('./_lp-tagline.cjs')
   const CT1 = require('./_lp-copy-truth-1.cjs')   // ⚠️ RE-PINNED (copy-truth-1): see its use below
+  const SG2 = require('./_lp-seo-geo-2.cjs')   // eslint-disable-line @typescript-eslint/no-require-imports -- ⚠️ RE-PINNED (seo-geo-2 B3): see its use below
   // ⚠️ RE-PINNED (world-countries-2, 1 November 2026): the Terms (§4) and the Country-specific terms (eight countries) re-dated
   // 1 November 2026 (scripts/_lp-world-countries-2.cjs).
   // eslint-disable-next-line @typescript-eslint/no-require-imports -- CommonJS harness module (world-countries-2)
@@ -653,6 +654,10 @@ if (RENDER) {
       // ⚠️ RE-PINNED (copy-truth-1, 2 November 2026): the landing's offline line (scripts/_lp-copy-truth-1.cjs); the country pages'
       // sitemap lastmod is COPY_LASTMOD above.
       if (CT1.LANDED && /^landing\|[A-Z]+\|html/.test(k)) { const was = B[area][k]; B[area][k] = CT1.offline(was); if (B[area][k] !== was) ct1Moved++ }
+      // ⚠️ RE-PINNED (seo-geo-2 B3, 2 November 2026): the landing JSON-LD's operatingSystem, true per country — "Web" in these
+      // fixtures. seo-fixes builds the expected JSON-LD from BEFORE with "Web, iOS, Android", so AFTER's value is set back to it
+      // (scripts/_lp-seo-geo-2.cjs osBack, PRECISE) in the landing views that carry the JSON-LD.
+      if (SG2.LANDED && /^landing\|[A-Z]+\|(html|meta)/.test(k) && JSON.stringify(A[area][k] ?? '').includes('operatingSystem')) A[area][k] = SG2.osBack(A[area][k])
       const sf = seoFixes(k)
       if (!sf) { N[k] = [A[area][k], B[area][k]]; continue }
       const r = sf[1](A[area][k], B[area][k])

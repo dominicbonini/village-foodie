@@ -98,8 +98,11 @@ export function TruckIdentity({ name, logoPath }: { name: string; logoPath: stri
 }
 
 /** The only outbound brand mark on the surface, and the only link to us other than the fallback. */
-/** languages-1: `locale` — the truck's; absent → en-GB, as before. */
-export function PoweredBy({ locale }: { locale?: string | null } = {}) {
+/** languages-1: `locale` — the truck's; absent → en-GB, as before.
+ *  faq-2-seo-geo-2 B5 (2 November 2026): `href` — the truck's own country page (app/domain/page.tsx passes it), so the credit is a
+ *  plain followable link to the right page rather than to the root's country router (a 302 by the visitor's country). Absent →
+ *  the root, as before. Still no rel, no nofollow, no target. */
+export function PoweredBy({ locale, href }: { locale?: string | null; href?: string } = {}) {
   const t = translatorFor(locale, 'embed')
   return (
     /* ── 🔴 THE TREATMENT IS COPIED FROM THE ORDER EMAIL, NOT INVENTED (29 August 2026). ──────────
@@ -151,7 +154,7 @@ export function PoweredBy({ locale }: { locale?: string | null } = {}) {
           cargo — and `noreferrer` would additionally strip the referrer, hiding from our own analytics
           that the click came from an operator's domain, which is the one thing worth knowing here. */}
       <a
-        href={process.env.NEXT_PUBLIC_HATCHGRAB_URL || 'https://www.hatchgrab.com'}
+        href={href ?? (process.env.NEXT_PUBLIC_HATCHGRAB_URL || 'https://www.hatchgrab.com')}
         className="transition-colors hover:text-slate-700"
       >
         {t.rich('poweredBy', { b: c => <span className="font-bold text-orange-600">{c}</span> })}

@@ -1,3 +1,4 @@
+import { venueHasUpcomingEvents, venueRobots } from '@/lib/venue-index';
 import { Metadata } from 'next';
 import VenueClient from './VenueClient';
 import { createSlug, getVenueSlug } from '@/lib/utils';
@@ -65,10 +66,13 @@ async function getVenueMeta(slug: string) {
 // Builds the WhatsApp / Social Media Preview Card
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
     const resolvedParams = await params;
-    const venue = await getVenueMeta(resolvedParams.slug);
+    // faq-2-seo-geo-2 B1: no upcoming public event at this venue → `noindex, follow` (lib/venue-index.ts — the same feed and key
+    // the schedule below reads); with events, or when the feed can't be read, nothing is added.
+    const [venue, hasEvents] = await Promise.all([getVenueMeta(resolvedParams.slug), venueHasUpcomingEvents(resolvedParams.slug)]);
+    const robots = venueRobots(hasEvents);
   
     if (!venue) {
-      return { title: 'Venue | Village Foodie' };
+      return { title: 'Venue | Village Foodie', ...robots };
     }
   
     const baseUrl = 'https://villagefoodie.co.uk';
@@ -92,6 +96,7 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
     }
   
     return {
+      ...robots,
       title: `${venue.name} | Village Foodie`,
       description: `Check out the upcoming street food schedule at ${venue.name}! 🍻`,
       openGraph: {

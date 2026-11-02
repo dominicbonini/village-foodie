@@ -42,7 +42,9 @@ async function views(tag, landingText, featuresText, gbApps = true) {
   const out = {}, cut = {}
   for (const [cc, seg] of Object.entries(SEG)) {
     const P = await kit.quietAsync(() => R.page('landing', seg, rows))
-    out[`${cc}/landing`] = sha(once(P.html, `<p>${landingText(cc)}</p>`, `${cc}/landing`)) + ':' + sha(JSON.stringify(P.meta))
+    // ⚠️ RE-PINNED (seo-geo-2 B3, 2 November 2026): hashed as HEAD rendered it — the JSON-LD's operatingSystem set back to
+    // "Web, iOS, Android" where seo-geo-2 made it "Web" (scripts/_lp-seo-geo-2.cjs asBefore; the value is proven by seo-geo-2.cjs).
+    out[`${cc}/landing`] = sha(once(SG2.asBefore(P.html), `<p>${landingText(cc)}</p>`, `${cc}/landing`)) + ':' + sha(JSON.stringify(P.meta))
     cut[`${cc}/landing`] = P.html
   }
   for (const cc of ['GB', 'US']) {
@@ -50,12 +52,14 @@ async function views(tag, landingText, featuresText, gbApps = true) {
     out[`${cc}/features`] = sha(once(P.html, featuresText(cc), `${cc}/features`)) + ':' + sha(JSON.stringify(P.meta))
     cut[`${cc}/features`] = P.html
   }
-  out.llms = sha(await R.llms(rows))
+  const llmsText = await R.llms(rows)
+  out.llms = sha(llmsText)
   out.sitemap = sha(JSON.stringify((await R.sitemap(rows)).map(e => ({ ...e, lastModified: undefined }))))
-  return { out, cut }
+  return { out, cut, llmsText }
 }
 
 const LOCALE = { GB: 'en-GB', US: 'en-US', BR: 'pt-BR', JP: 'ja-JP' }
+const SG2 = require('./_lp-seo-geo-2.cjs')   // eslint-disable-line @typescript-eslint/no-require-imports -- CommonJS harness module (seo-geo-2)
 
 ;(async () => {
   const T = await kit.bundle('ct1-words', [
@@ -162,7 +166,10 @@ const LOCALE = { GB: 'en-GB', US: 'en-US', BR: 'pt-BR', JP: 'ja-JP' }
   const newLanding = (cc, apps) => tl(cc)('does.offlineBody') + (apps ? ' ' + tl(cc)('does.offlineApps') : '')
   const newFeatures = (cc, apps) => tf(cc)('detail.offline_protection') + (apps ? ' ' + tf(cc)('offlineApps') : '')
   const pinned = JSON.parse(read(HEAD_FILE))
-  const { out, cut } = await views('ct1-now', cc => newLanding(cc, cc === 'GB'), cc => newFeatures(cc, cc === 'GB'))
+  const { out, cut, llmsText } = await views('ct1-now', cc => newLanding(cc, cc === 'GB'), cc => newFeatures(cc, cc === 'GB'))
+  // ⚠️ RE-PINNED (seo-geo-2 B4, 2 November 2026): /llms.txt is rebuilt on purpose (Features, the English FAQ, every country's lines in
+  // English) — not compared with HEAD any more; scripts/seo-geo-2.cjs §5 proves its content. Here: it carries the new section.
+  if (SG2.LANDED) { delete pinned.llms; t('llms: rebuilt by seo-geo-2 B4 (not compared with HEAD; its content is proven by seo-geo-2.cjs) — it carries the Features section', /\n## Features\n/.test(llmsText)) }
   for (const k of Object.keys(pinned)) t(`${k}: identical to HEAD${/landing|features/.test(k) ? ' apart from the offline text' : k === 'sitemap' ? ' apart from lastmod' : ''}`, out[k] === pinned[k], { now: out[k], head: pinned[k] })
   t('the landing offline line is the new sentence everywhere', ['GB', 'US', 'BR', 'JP'].every(cc => cut[`${cc}/landing`].includes(`<p>${newLanding(cc, cc === 'GB')}</p>`)))
   t('GB (both app flags on) keeps the apps sentence: "…Carry on taking orders with the iPhone, iPad and Android app."', cut['GB/landing'].includes('if you lose signal, so customers can’t place orders you won’t see. Carry on taking orders with the iPhone, iPad and Android app.</p>'))

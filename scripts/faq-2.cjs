@@ -31,6 +31,9 @@ const LP1E = require('./_lp1e-fixtures.cjs')
 const WF = require('./_world-countries-1-fixtures.cjs')
 const FIX = require('./fixtures/faq-3-rows.json')
 const TR = require('./fixtures/faq-2-translations.json')
+// ⚠️ RE-PINNED (seo-geo-2 B3, 2 November 2026): the landing pages are hashed as HEAD rendered them — the JSON-LD's operatingSystem
+// set back to "Web, iOS, Android" where seo-geo-2 made it "Web" (scripts/_lp-seo-geo-2.cjs asBefore; seo-geo-2.cjs proves the value).
+const SG2 = require('./_lp-seo-geo-2.cjs')
 const IDENTITY = path.join(REPO, 'scripts/fixtures/faq-2-identity.json')
 const HEAD_COMMIT = '78e16437'
 
@@ -50,7 +53,7 @@ async function identitySet() {
   const info = console.info; console.info = () => {}
   for (const seg of ['uk', 'us', 'ie', 'de', 'fr', 'jp', 'ae']) {
     const r = await kit.quietAsync(() => wf.page('landing', seg, rows))
-    out[`landing:${seg}`] = { html: sha(r.html), meta: sha(JSON.stringify(r.meta)), redirectedTo: r.redirectedTo }
+    out[`landing:${seg}`] = { html: sha(SG2.asBefore(r.html)), meta: sha(JSON.stringify(r.meta)), redirectedTo: r.redirectedTo }
   }
   console.info = info
   return out

@@ -344,6 +344,8 @@ export default async function LandingPage({ params, searchParams }: { params?: P
                 pricesShown: s.enabled,
                 // faq-3: the FAQPage, "<page URL>#faq" — the visible questions and answers, exactly; absent without the section.
                 faq: faq?.flatMap(sec => sec.items),
+                // faq-2-seo-geo-2 B3: operatingSystem names the apps only where they are in this country's stores.
+                apps: { ios: appFlags.iosApp, android: appFlags.androidApp },
                 app: {
                   name: BRANDS.HATCHGRAB.name,
                   applicationCategory: 'BusinessApplication',

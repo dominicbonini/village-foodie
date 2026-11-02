@@ -12,6 +12,8 @@
 //   • Organization + legalName ("HatchGrab Ltd") and its country of registration (GB), from lib/company.ts — the
 //     Companies House record, named once;
 //   • SoftwareApplication + operatingSystem "Web, iOS, Android" — the web app plus the two store listings in sameAs.
+//     ⛔ faq-2-seo-geo-2 B3 (2 November 2026): TRUE PER COUNTRY (35.ak-7) — "Web" everywhere, plus "iOS" / "Android" only where
+//     that country's country_settings.ios_app_available / android_app_available is true (operatingSystemsOf). sameAs is unchanged.
 // ── faq-3 (2 November 2026, docs/faq-3-report.md §3) ────────────────────────────────────────────────────────────────────────
 //   • FAQPage (faqPageLd) — the ONE builder for the comparison pages' FAQ (lib/comparison.ts) and the English landing pages'
 //     (`faq`, only when the page shows its FAQ section). Each answer's text is the visible answer, exactly.
@@ -72,8 +74,11 @@ export function planOffersLd(catalog: PlanCatalog, countryCode: string, currency
 }
 
 /** ai-search-1: where HatchGrab runs — the web app, and the iOS and Android apps whose store listings are the
- *  Organization's sameAs (lib/app-badges.ts). One string, as schema.org's examples write it. */
-export const OPERATING_SYSTEMS = 'Web, iOS, Android'
+ *  Organization's sameAs (lib/app-badges.ts). One string, as schema.org's examples write it.
+ *  faq-2-seo-geo-2 B3: per country — the apps only where they are in that country's stores (the comparison pages' flags). */
+export function operatingSystemsOf(apps: { ios: boolean; android: boolean }): string {
+  return ['Web', ...(apps.ios ? ['iOS'] : []), ...(apps.android ? ['Android'] : [])].join(', ')
+}
 
 /** An FAQ question and its answer, as the page shows them (components/faq/FaqDetails.tsx renders the same pairs). */
 export interface FaqPair { q: string; a: string }
@@ -96,8 +101,10 @@ export function landingGraph(opts: {
   app: Record<string, unknown>
   /** about-page: the founder's photo URL, or null (organizationLd). */
   founderImage?: string | null
-  /** faq-3: the FAQ the page shows (English pages only), or nothing — then no FAQPage is emitted. */
+  /** faq-3: the FAQ the page shows, or nothing — then no FAQPage is emitted. */
   faq?: FaqPair[] | null
+  /** faq-2-seo-geo-2 B3: the country's app flags (country_settings.ios_app_available / android_app_available). */
+  apps: { ios: boolean; android: boolean }
 }) {
   const offers = planOffersLd(opts.catalog, opts.countryCode, opts.currency, opts.pageUrl, opts.pricesShown)
   return {
@@ -108,7 +115,7 @@ export function landingGraph(opts: {
       {
         '@type': 'SoftwareApplication',
         ...opts.app,
-        operatingSystem: OPERATING_SYSTEMS,
+        operatingSystem: operatingSystemsOf(opts.apps),
         url: opts.pageUrl,
         publisher: { '@id': ORG_ID },
         ...(offers.length ? { offers } : {}),

@@ -1,5 +1,6 @@
 import { createServerClient } from '@supabase/ssr'
 import { NextResponse, type NextRequest } from 'next/server'
+import { crossHostRedirect } from '@/lib/host-redirects'
 import { ratelimit, strictRatelimit, eventsRatelimit, embedRatelimit, customHostRatelimit } from '@/lib/ratelimit'
 import { isCustomHost, isAllowedOnCustomHost, isAcmeChallenge } from '@/lib/custom-host'
 // Language Phase 1e — the country router. Pure decision (lib/marketing-country.ts) + the switched-on list through the
@@ -218,6 +219,13 @@ export async function proxy(request: NextRequest) {
       `https://www.hatchgrab.com${pathname}${request.nextUrl.search}`
     )
   }
+
+  // ── 🔴 faq-2-seo-geo-2 B1 (2 November 2026): A PAGE ON THE OTHER BRAND'S PRODUCTION HOST MOVES THERE, PERMANENTLY ──────────
+  // Village Foodie's consumer pages found on www.hatchgrab.com (/venues/<slug>, /trucks, /hire) → the same path on
+  // www.villagefoodie.co.uk; the unlisted HatchGrab landing preview found on www.villagefoodie.co.uk → www.hatchgrab.com. The
+  // order page and the truck pages stay where they are (lib/host-redirects.ts says why). Preview and local hosts are untouched.
+  const crossHost = crossHostRedirect(host, pathname, request.nextUrl.search)
+  if (crossHost) return NextResponse.redirect(crossHost, 308)
 
   // ── Rate limiting ─────────────────────────────────────────────────
   // Only the public allowlist (isStrictPublic / isGeneralPublic) is ever limited — operator surfaces are

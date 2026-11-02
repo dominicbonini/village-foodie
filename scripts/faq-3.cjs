@@ -27,6 +27,9 @@ const LP1E = require('./_lp1e-fixtures.cjs')
 const WF = require('./_world-countries-1-fixtures.cjs')
 const CDE = require('./_compare-de-1-fixtures.cjs')
 const FIX = require('./fixtures/faq-3-rows.json')
+// ⚠️ RE-PINNED (seo-geo-2 B3, 2 November 2026): the landing pages are hashed as HEAD rendered them — the JSON-LD's operatingSystem
+// set back to "Web, iOS, Android" where seo-geo-2 made it "Web" (scripts/_lp-seo-geo-2.cjs asBefore; seo-geo-2.cjs proves the value).
+const SG2 = require('./_lp-seo-geo-2.cjs')
 const IDENTITY = path.join(REPO, 'scripts/fixtures/faq-3-identity.json')
 
 let pass = 0, fail = 0
@@ -44,12 +47,12 @@ async function identitySet() {
   // GB and US first, with NO FAQ rows: the empty FAQ renders nothing, so the page is HEAD's.
   for (const seg of ['uk', 'us']) {
     const r = await kit.quietAsync(() => wf.page('landing', seg, rows))
-    out[`landing:${seg}:no-faq`] = { html: sha(r.html), meta: sha(JSON.stringify(r.meta)), redirectedTo: r.redirectedTo }
+    out[`landing:${seg}:no-faq`] = { html: sha(SG2.asBefore(r.html)), meta: sha(JSON.stringify(r.meta)), redirectedTo: r.redirectedTo }
   }
   Object.assign(wf.tables, FAQ())   // the renderer's own tables object — every request after this holds the FAQ rows
   for (const seg of ['de', 'fr', 'br', 'jp']) {
     const r = await kit.quietAsync(() => wf.page('landing', seg, rows))
-    out[`landing:${seg}`] = { html: sha(r.html), meta: sha(JSON.stringify(r.meta)), redirectedTo: r.redirectedTo }
+    out[`landing:${seg}`] = { html: sha(SG2.asBefore(r.html)), meta: sha(JSON.stringify(r.meta)), redirectedTo: r.redirectedTo }
   }
   // Comparison pages over compare-de-1's renderer: every visibility and view, the till players, the app flags, the twins, with the
   // FAQ rows in the database too.
@@ -66,7 +69,7 @@ async function identitySet() {
   }
   for (const [k, o] of Object.entries(pages)) {
     const r = await kit.quietAsync(() => cmp.page({ ...o, tables: { ...faqT, ...(o.tables || {}) } }))
-    out[`comparison:${k}`] = { html: sha(r.html), meta: sha(JSON.stringify(r.meta)), notFound: r.notFound, empty: !r.html }
+    out[`comparison:${k}`] = { html: sha(SG2.asBefore(r.html)), meta: sha(JSON.stringify(r.meta)), notFound: r.notFound, empty: !r.html }
   }
   for (const f of ['md', 'json']) {
     const r = await kit.quietAsync(() => cmp.twin(f, { status: 'live', tables: faqT }))
@@ -280,7 +283,8 @@ const sectionOrder = html => [...html.matchAll(/<section(?: id="([a-z-]+)")?(?: 
   await post({ action: 'item.move', id: row4.id, dir: 1 })
   t('a reorder / save (any POST) refreshes too: the renamed question shows', (visibleFaq((await landing('uk', live, { clear: false })).html)?.pairs || []).some(x => x.q === 'Is there a contract?'))
   const src = fs.readFileSync(path.join(REPO, 'app/api/admin/faq/route.ts'), 'utf8')
-  t('the route clears the cache in a finally after EVERY POST (save, publish, unpublish, reorder, delete)', /finally \{\s*clearPublicFaqCache\(\)\s*\}/.test(src))
+  // ⚠️ RE-PINNED (seo-geo-2 B6): the finally also schedules the IndexNow submission after the clear.
+  t('the route clears the cache in a finally after EVERY POST (save, publish, unpublish, reorder, delete)', /finally \{\s*clearPublicFaqCache\(\)/.test(src))
 
   head('5 · DE, FR, BR, JP landing and every comparison page byte-identical to HEAD (GB/US too with nothing published)')
   if (!fs.existsSync(IDENTITY)) t('scripts/fixtures/faq-3-identity.json exists (captured at HEAD)', false)
@@ -294,7 +298,8 @@ const sectionOrder = html => [...html.matchAll(/<section(?: id="([a-z-]+)")?(?: 
   const cmpSrc = fs.readFileSync(path.join(REPO, 'app/[country]/[section]/[slug]/page.tsx'), 'utf8')
   t('the comparison page renders the shared component (no <details> of its own)', /<FaqDetails items=\{v\.faq\} className="cmp-faq" \/>/.test(cmpSrc) && !/<details/.test(cmpSrc))
   t('lib/comparison.ts builds its FAQPage with the shared builder', /faqPageLd\(`\$\{page\}#faq`, v\.faq\)/.test(fs.readFileSync(path.join(REPO, 'lib/comparison.ts'), 'utf8')))
-  t('/llms.txt\'s builder is untouched by faq-3', execFileSync('git', ['diff', '--stat', 'a92f983a', '--', 'lib/llms-text.ts', 'app/llms.txt'], { cwd: REPO }).toString().trim() === '')
+  // ⚠️ RE-PINNED (seo-geo-2 B4): /llms.txt was rebuilt later, on purpose — faq-3's own commits (a92f983a..78e16437) did not touch it.
+  t('/llms.txt\'s builder is untouched by faq-3', execFileSync('git', ['diff', '--stat', 'a92f983a', '78e16437', '--', 'lib/llms-text.ts', 'app/llms.txt'], { cwd: REPO }).toString().trim() === '')
 
   head('6 · translation-check: landing.faq.title in en-GB and all 28 bases')
   const en = JSON.parse(fs.readFileSync(path.join(REPO, 'messages/en-GB.json'), 'utf8'))
