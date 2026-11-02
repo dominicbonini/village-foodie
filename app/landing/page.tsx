@@ -229,8 +229,9 @@ export default async function LandingPage({ params, searchParams }: { params?: P
   // the country's stores (country_settings.ios_app_available / android_app_available, the comparison pages' flags, 35.an-7).
   const appFlags = await comparisonFlagsOf(s.countryCode)
   const appsHere = appFlags.iosApp && appFlags.androidApp
-  // faq-3 (2 November 2026): the FAQ between pricing and the final CTA — English pages only (lib/i18n/locales.ts isEnglish, inside
-  // landingFaq), published questions only; null renders nothing at all (no section, no heading, no FAQPage).
+  // faq-3 (2 November 2026): the FAQ between pricing and the final CTA — published questions only; null renders nothing at all
+  // (no section, no heading, no FAQPage). faq-2 (the same day): every country, in its page's language — a non-English page shows
+  // only questions with an up-to-date translation (lib/faq/public.ts).
   const faq = await landingFaq(s)
   // The FAQ section and the final CTA, placed together below (see the note there).
   const faqSection = faq && (
@@ -714,8 +715,8 @@ export default async function LandingPage({ params, searchParams }: { params?: P
           Stage B). The section had no `id`, so there was no anchor to keep. */}
 
       {/* ============ FAQ ============ (faq-3, 2 November 2026 — Dominic's approved mockup, docs/faq-3/faq-public-mockup.png)
-          English pages only, and only when a question is visible (lib/faq/public.ts); otherwise NOTHING renders here and the page is
-          byte-identical to before. 🔴 IT TAKES A SLOT IN THE WHITE/WASH SEQUENCE ("how it works" above): the opposite of pricing,
+          Every country in its own language since faq-2, and only when a question is visible (lib/faq/public.ts); otherwise NOTHING
+          renders here and the page is byte-identical to before. 🔴 IT TAKES A SLOT IN THE WHITE/WASH SEQUENCE ("how it works" above): the opposite of pricing,
           and the final CTA flips to stay the opposite of it —
             GB:     … pricing WASH · FAQ white · final CTA WASH · footer
             others: … pricing white · FAQ WASH · final CTA white · footer

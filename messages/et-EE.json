@@ -6375,5 +6375,12 @@
     "errorTitle": "Midagi läks valesti",
     "errorBody": "Vabandust, see leht ei laadinud. Proovige uuesti või minge tagasi avalehele.",
     "retry": "Proovi uuesti"
+  },
+  "faq": {
+    "phrases": {
+      "appsSentence": "Olemas on ka iPadi ja Androidi rakendus, mis võtab kohapealseid tellimusi vastu ka siis, kui levi kaob.",
+      "appsOffline": "iPadi ja Androidi rakendus võtab kohapealseid tellimusi vastu ka ilma levita ja saadab need, kui oled taas võrgus; veebitöölaud vajab ühendust.",
+      "webOffline": "Veebitöölaud vajab uute tellimuste näitamiseks ühendust."
+    }
   }
 }

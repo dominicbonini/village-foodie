@@ -1,0 +1,7 @@
+{
+  "phrases": {
+    "appsSentence": "Er is ook een app voor iPad en Android, die bestellingen aan de truck blijft aannemen als je geen verbinding hebt.",
+    "appsOffline": "De app voor iPad en Android blijft bestellingen aan de truck aannemen zonder verbinding en verstuurt ze zodra je weer online bent; het webdashboard heeft een verbinding nodig.",
+    "webOffline": "Het webdashboard heeft een verbinding nodig om nieuwe bestellingen te tonen."
+  }
+}

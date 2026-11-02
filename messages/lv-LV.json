@@ -6375,5 +6375,12 @@
     "errorTitle": "Kaut kas nogāja greizi",
     "errorBody": "Atvainojiet, šī lapa netika ielādēta. Mēģiniet vēlreiz vai atgriezieties sākumlapā.",
     "retry": "Mēģināt vēlreiz"
+  },
+  "faq": {
+    "phrases": {
+      "appsSentence": "Ir arī iPad un Android lietotne, kas turpina pieņemt pasūtījumus uz vietas, ja pazūd signāls.",
+      "appsOffline": "iPad un Android lietotne pieņem pasūtījumus uz vietas arī bez signāla un nosūta tos, kad atkal esat tiešsaistē; tīmekļa vadības panelim nepieciešams savienojums.",
+      "webOffline": "Tīmekļa vadības panelim nepieciešams savienojums, lai rādītu jaunus pasūtījumus."
+    }
   }
 }

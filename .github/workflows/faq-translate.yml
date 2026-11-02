@@ -1,0 +1,85 @@
+name: FAQ translate
+
+# faq-2 (2 November 2026, docs/faq-2-seo-geo-2-report.md Part A): translates every PUBLISHED FAQ question and section whose
+# translation is missing, out of date (its source_hash no longer matches the English) or failed, into every language base the site
+# uses (lib/i18n/locales.ts) and the regional variants whose wording truly differs. Writes only public.faq_translations; the
+# country pages show a new translation within a minute (their 60-second cache), with no deploy.
+#
+# ⚠️ SCHEDULED WORKFLOWS RUN ONLY FROM THE DEFAULT BRANCH: nothing runs on the timer until this file is on main on GitHub.
+# 🔴 CLAUDE API LOGIN: Workload Identity Federation, exactly as competitor-check.yml — no API key anywhere. The job asks GitHub for
+# an OIDC token (audience https://api.anthropic.com), keeps it fresh in /tmp/gha-jwt, and the SDK exchanges it using the same four
+# repository VARIABLES: ANTHROPIC_FEDERATION_RULE_ID, ANTHROPIC_ORGANIZATION_ID, ANTHROPIC_SERVICE_ACCOUNT_ID,
+# ANTHROPIC_WORKSPACE_ID. SECRETS (names only): NEXT_PUBLIC_SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY.
+# Nothing stale → the script ends in seconds, before any login or model call. Spend cap per run: max_usd (default 2).
+on:
+  schedule:
+    - cron: '25 * * * *'          # hourly, at :25 — clear of the competitor check (02:10) and the scrapes
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: 'Plan and build every request, call no model, write nothing'
+        required: false
+        default: 'false'
+        type: choice
+        options: ['false', 'true']
+      max_usd:
+        description: 'Spend cap for this run, in USD'
+        required: false
+        default: '2'
+
+# Two runs never overlap.
+concurrency:
+  group: faq-translate
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+jobs:
+  translate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    # id-token: write lets the job ask GitHub for the OIDC token the Claude API login exchanges.
+    permissions:
+      id-token: write
+      contents: read
+    env:
+      ANTHROPIC_FEDERATION_RULE_ID: ${{ vars.ANTHROPIC_FEDERATION_RULE_ID }}
+      ANTHROPIC_ORGANIZATION_ID: ${{ vars.ANTHROPIC_ORGANIZATION_ID }}
+      ANTHROPIC_SERVICE_ACCOUNT_ID: ${{ vars.ANTHROPIC_SERVICE_ACCOUNT_ID }}
+      ANTHROPIC_WORKSPACE_ID: ${{ vars.ANTHROPIC_WORKSPACE_ID }}
+      ANTHROPIC_IDENTITY_TOKEN_FILE: /tmp/gha-jwt
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - run: npm ci
+        env:
+          PUPPETEER_SKIP_DOWNLOAD: 'true'
+      # The GitHub OIDC token for the Claude API login, re-fetched every 60 s (a token lasts ~5 minutes and is exchanged once);
+      # each fetch writes a temporary file and renames it, so the SDK never reads a half-written token.
+      - name: Get the GitHub OIDC token
+        id: oidc
+        run: |
+          set -euo pipefail
+          fetch_jwt() {
+            curl -sS -H "Authorization: Bearer $ACTIONS_ID_TOKEN_REQUEST_TOKEN" "$ACTIONS_ID_TOKEN_REQUEST_URL&audience=https://api.anthropic.com" | jq -r .value > /tmp/gha-jwt.next \
+              && [ -s /tmp/gha-jwt.next ] && [ "$(cat /tmp/gha-jwt.next)" != "null" ] && mv /tmp/gha-jwt.next /tmp/gha-jwt
+          }
+          fetch_jwt || { echo "Could not get a GitHub OIDC token (is id-token: write set?)"; exit 1; }
+          export -f fetch_jwt
+          nohup bash -c 'while true; do sleep 60; fetch_jwt || echo "$(date -u +%FT%TZ) token re-fetch FAILED; keeping the last one"; done' >> /tmp/gha-jwt-refresh.log 2>&1 &
+      - name: Translate
+        if: ${{ steps.oidc.outcome == 'success' }}
+        env:
+          NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+          DRY_RUN: ${{ github.event.inputs.dry_run }}
+          MAX_USD: ${{ github.event.inputs.max_usd }}
+        # Inputs reach the script as environment variables, never pasted into the shell line.
+        run: |
+          set -euo pipefail
+          args=(scripts/faq-translate/main.ts --max-usd "${MAX_USD:-2}")
+          if [ "${DRY_RUN:-false}" = "true" ]; then args+=(--dry-run); fi
+          node scripts/competitor-check/run.mjs "${args[@]}"

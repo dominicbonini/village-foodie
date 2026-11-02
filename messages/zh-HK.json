@@ -6375,5 +6375,12 @@
     "errorTitle": "出現問題",
     "errorBody": "抱歉，此頁面未能載入。請再試一次，或返回主頁。",
     "retry": "再試一次"
+  },
+  "faq": {
+    "phrases": {
+      "appsSentence": "另有iPad及Android應用程式，即使失去訊號，仍可繼續接收現場訂單。",
+      "appsOffline": "iPad及Android應用程式在沒有訊號時仍可接收現場訂單，並在恢復連線後送出；網上控制台則需要連線。",
+      "webOffline": "網上控制台需要連線才能顯示新訂單。"
+    }
   }
 }

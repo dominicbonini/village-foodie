@@ -10,12 +10,14 @@
 // ── THE CHECK AND THE PREVIEW ─────────────────────────────────────────────────────────────────────────
 // lib/faq/check.ts runs here on every keystroke's text and again on the server before a publish, or before a save to a
 // published question — the same code, so the page can never show green for something the server refuses. The preview line
-// fills the answer for the "Preview as" country. Until faq-2 it is ENGLISH (labelled so where the country's language isn't).
+// fills the answer for the "Preview as" country, in that country's language (faq-2): its up-to-date translation, or a plain
+// note that the question is hidden there until one exists.
 //
-// ── LAID OUT FOR faq-2 ────────────────────────────────────────────────────────────────────────────────
-// faq-2 adds three translation indicators (the summary's "· 28 languages" and "all translations up to date", and each
-// question's "Translations 28/28 up to date" / "Translates when published"). Each has a marked place below — the end of the
-// countries chip, the end of the published chip, and the end of each question's status row — so adding them moves nothing.
+// ── THE TRANSLATION INDICATORS (faq-2, 2 November 2026 — the approved mockup's dashed parts) ─────────────────────────────
+// The summary's "· 28 languages" and "all translations up to date" (or how many are translating / failed), and each question's
+// "✓ Translations 28/28 up to date" · "● Translating — within the hour (n/28)" · "✕ n failed" (the reasons on hover) ·
+// "○ Translates when published". Counted on the server against the CURRENT English (lib/admin/faq-actions.ts
+// translationSummaries); refreshed after every save. The translator is .github/workflows/faq-translate.yml (hourly).
 
 import { useEffect, useMemo, useRef, useState, type ReactNode } from 'react'
 import { nativeAuthHeader } from '@/lib/native/session'
@@ -27,6 +29,8 @@ import { resolveItem, previewLocaleOf, TOKEN_HELP, type FaqWorld } from '@/lib/f
 import { feedbackText, openNotes, type FaqItemRow, type FaqSectionRow } from '@/lib/faq/feedback'
 import { publicPlans } from '@/lib/plans'
 import { isEnglish } from '@/lib/i18n/locales'
+import { ensureLanguage, subscribe } from '@/lib/i18n/registry'
+import { previewTextOf, TRANSLATED_BASES, type TranslationSummary } from '@/lib/faq/translation'
 import { MARKETING_COUNTRY } from '@/lib/marketing-country'
 
 type Patch = Partial<Pick<FaqItemRow, 'questionEn' | 'answerEn' | 'answerSinglePlanEn' | 'showIn' | 'note' | 'noteDone'>>
@@ -42,6 +46,18 @@ async function call(method: 'GET' | 'POST', body?: unknown): Promise<{ ok: boole
   return { ok: res.ok, status: res.status, data }
 }
 const errorOf = (r: { data: Record<string, unknown> }, fallback: string) => (typeof r.data.error === 'string' ? r.data.error : fallback)
+
+/** "Português", "Deutsch" — a language in its own words, for the Preview as menu. */
+const languageName = (locale: string) => { try { const n = new Intl.DisplayNames([locale], { type: 'language' }).of(locale.slice(0, 2)) ?? locale; return n.charAt(0).toLocaleUpperCase(locale) + n.slice(1) } catch { return locale } }
+
+/* ── one question's translation indicator ── */
+function TranslationChip({ status, summary }: { status: 'published' | 'draft'; summary: TranslationSummary | undefined }) {
+  if (status !== 'published') return <span className="font-semibold text-amber-700">○ Translates when published</span>
+  const total = summary?.total ?? TRANSLATED_BASES.length, fresh = summary?.fresh ?? 0, failed = summary?.failed ?? []
+  if (failed.length) return <span className="cursor-help font-semibold text-red-700" title={failed.map(f => `${f.locale}: ${f.reason}`).join('\n')}>✕ {failed.length} failed</span>
+  if (fresh >= total) return <span className="font-semibold text-green-700">✓ Translations {fresh}/{total} up to date</span>
+  return <span className="font-semibold text-amber-700">● Translating — within the hour ({fresh}/{total})</span>
+}
 
 const flagOf = (code: string) => /^[A-Z]{2}$/.test(code) ? String.fromCodePoint(...[...code].map(c => 0x1F1E6 + c.charCodeAt(0) - 65)) : ''
 const shortDate = (iso: string) => { try { return new Date(iso).toLocaleDateString('en-GB', { day: 'numeric', month: 'short' }) } catch { return '' } }
@@ -110,8 +126,8 @@ function CheckMessage({ check, onAddSingle, onShowOnly }: { check: CheckResult; 
 }
 
 /* ── one question ── */
-function QuestionCard({ item, world, previewCode, busy, onPatch, onPublish, onMove, onDelete, first, last }: {
-  item: FaqItemRow; world: FaqWorld; previewCode: string; busy: boolean
+function QuestionCard({ item, world, previewCode, busy, summary, onPatch, onPublish, onMove, onDelete, first, last }: {
+  item: FaqItemRow; world: FaqWorld; previewCode: string; busy: boolean; summary: TranslationSummary | undefined
   onPatch: (patch: Patch) => Promise<string | null>; onPublish: (publish: boolean) => Promise<string | null>
   onMove: (dir: -1 | 1) => void; onDelete: () => void; first: boolean; last: boolean
 }) {
@@ -156,7 +172,12 @@ function QuestionCard({ item, world, previewCode, busy, onPatch, onPublish, onMo
   const putBack = () => { setQ(item.questionEn); setA(item.answerEn); setS(item.answerSinglePlanEn ?? ''); setError(null) }
 
   const country = world.countries.find(c => c.settings.countryCode === previewCode) ?? null
-  const preview = country ? resolveItem(draft, world, country, previewLocaleOf(country.settings)) : null
+  // faq-2: the preview in the country's own language — an English page reads the draft (or an English variant's own row); any
+  // other page its up-to-date translation, or nothing (hidden there, as on the public page).
+  const locale = country?.settings.locale ?? 'en-GB'
+  const picked = country ? previewTextOf(summary, locale) : null
+  const previewSource = picked === 'english' ? draft : picked ? { ...draft, questionEn: picked.question ?? '', answerEn: picked.answer ?? '', answerSinglePlanEn: picked.answerSinglePlan } : null
+  const preview = country && previewSource ? resolveItem(previewSource, world, country, isEnglish(locale) ? previewLocaleOf(country.settings) : locale) : null
   const choices = showInChoices(world)
   if (!choices.some(([v]) => v === item.showIn)) choices.push([item.showIn, `${item.showIn} (not offered in any switched-on country)`])
   const showSingle = singleOpen || !!item.answerSinglePlanEn || !!s
@@ -207,6 +228,7 @@ function QuestionCard({ item, world, previewCode, busy, onPatch, onPublish, onMo
             {check.ok && (check.shownCount === 0
               ? <span className="font-semibold text-amber-700">Not shown in any switched-on country</span>
               : <span className="font-semibold text-green-700">✓ Reads correctly in all {check.shownCount} countries{check.shownCount < total ? ' where it shows' : ''}</span>)}
+            <TranslationChip status={item.status} summary={summary} />
             {saved && <span className="text-xs text-slate-400" aria-live="polite">{saved}</span>}
             <span className="ml-auto flex items-center gap-3">
               {item.status === 'published'
@@ -225,13 +247,17 @@ function QuestionCard({ item, world, previewCode, busy, onPatch, onPublish, onMo
             <p role="alert" className="text-sm font-semibold text-red-700">{error}{unsaved && item.status === 'published' && <> <button type="button" onClick={putBack} className="underline">Put back the published text</button></>}</p>
           )}
 
+          {country && !preview && (
+            <p className="text-sm text-slate-500"><span>{country.settings.name} preview: </span>
+              <span className="italic">no up-to-date {languageName(locale)} translation yet, so it is hidden on {country.settings.name}&rsquo;s page{item.status === 'published' ? ' until the next translation run' : ' (it is translated once published)'}</span></p>
+          )}
           {country && preview && (
             <p className="text-sm text-slate-500">
               <span>{country.settings.name} preview: </span>
               {!preview.shown
                 ? <span className="italic">not shown in {country.settings.name}</span>
                 : <span className={preview.problems.length ? 'text-red-700' : 'text-slate-800'}>{preview.text || <span className="italic text-slate-400">(no answer yet)</span>}</span>}
-              {preview.shown && !isEnglish(country.settings.locale) && <span className="text-slate-400"> (English — translations come next)</span>}
+              {preview.shown && picked !== 'english' && unsaved && <span className="text-slate-400"> (the translation of the saved text)</span>}
               {preview.shown && preview.omitted.length > 0 && <span className="text-blue-700"> ({preview.omitted.map(t => `{${t}}`).join(', ')} left out: the iPad and Android apps aren&rsquo;t in {country.settings.name}&rsquo;s stores)</span>}
             </p>
           )}
@@ -260,6 +286,10 @@ export default function FaqTab() {
   const [sections, setSections] = useState<FaqSectionRow[]>([])
   const [items, setItems] = useState<FaqItemRow[]>([])
   const [world, setWorld] = useState<FaqWorld | null>(null)
+  const [translations, setTranslations] = useState<Record<string, TranslationSummary>>({})
+  // Re-render when a language's words arrive (the preview's live values in that language).
+  const [, setWordsVersion] = useState(0)
+  useEffect(() => subscribe(() => setWordsVersion(v => v + 1)), [])
   const [loadError, setLoadError] = useState<string | null>(null)
   const [previewCode, setPreviewCode] = useState(MARKETING_COUNTRY)
   const [busy, setBusy] = useState(false)
@@ -275,6 +305,7 @@ export default function FaqTab() {
       if (cancelled) return
       if (!r.ok) { setLoadError(errorOf(r, 'The FAQ could not be loaded.')); return }
       setSections(r.data.sections as FaqSectionRow[]); setItems(r.data.items as FaqItemRow[])
+      setTranslations((r.data.translations ?? {}) as Record<string, TranslationSummary>)
       const w = r.data.world as FaqWorld
       setWorld(w)
       if (!w.countries.some(c => c.settings.countryCode === MARKETING_COUNTRY) && w.countries[0]) setPreviewCode(w.countries[0].settings.countryCode)
@@ -282,6 +313,11 @@ export default function FaqTab() {
     return () => { cancelled = true }
   }, [])
   useEffect(() => { if (!copied) return; const t = setTimeout(() => setCopied(null), 2500); return () => clearTimeout(t) }, [copied])
+  // The preview country's language words (plan names, the apps sentence) — loaded in the browser only when asked for.
+  const previewLocale = world?.countries.find(c => c.settings.countryCode === previewCode)?.settings.locale
+  useEffect(() => { if (previewLocale && !isEnglish(previewLocale)) void ensureLanguage(previewLocale) }, [previewLocale])
+  /** faq-2: after a save, the indicators again (an English edit makes every translation of it out of date). */
+  const refreshTranslations = () => { void call('GET').then(r => { if (r.ok) setTranslations((r.data.translations ?? {}) as Record<string, TranslationSummary>) }).catch(() => {}) }
 
   /** A structural action (sections, moves, deletes, new question): the reply is the whole list. */
   const act = async (body: Record<string, unknown>): Promise<string | null> => {
@@ -290,6 +326,7 @@ export default function FaqTab() {
       const r = await call('POST', body)
       if (!r.ok) { const e = errorOf(r, 'That could not be saved.'); setPageError(e); return e }
       setSections(r.data.sections as FaqSectionRow[]); setItems(r.data.items as FaqItemRow[])
+      refreshTranslations()
       return null
     } catch { setPageError('That could not be saved.'); return 'That could not be saved.' }
     finally { setBusy(false) }
@@ -301,6 +338,7 @@ export default function FaqTab() {
       if (!r.ok) return errorOf(r, 'That could not be saved.')
       const saved = r.data.item as FaqItemRow
       setItems(prev => prev.map(i => (i.id === saved.id ? saved : i)))
+      refreshTranslations()
       return null
     } catch { return 'That could not be saved.' }
   }
@@ -312,6 +350,9 @@ export default function FaqTab() {
   const sortedSections = [...sections].sort(byPosition)
   const itemsOf = (sid: string) => items.filter(i => i.sectionId === sid).sort(byPosition)
   const published = items.filter(i => i.status === 'published').length
+  const pubItems = items.filter(i => i.status === 'published')
+  const failedTr = pubItems.filter(i => (translations[i.id]?.failed.length ?? 0) > 0).length
+  const translating = pubItems.filter(i => !(translations[i.id]?.failed.length) && (translations[i.id]?.fresh ?? 0) < TRANSLATED_BASES.length).length
   const failing = [...checks.values()].filter(c => !c.ok).length
   const notes = openNotes(items)
   // The heading's example token is the highlighted plan's price — read from the data, never typed.
@@ -339,14 +380,14 @@ export default function FaqTab() {
             </InfoTip>
           </h2>
           <p className="mt-1 max-w-4xl text-sm text-slate-600">
-            You write in English. Answers use live values like <code className="rounded bg-orange-50 px-1 font-mono text-orange-700">{example}</code>, so every country sees its own prices. Notes are private and only go out with &ldquo;Copy feedback&rdquo;.
+            You write in English. Answers use live values like <code className="rounded bg-orange-50 px-1 font-mono text-orange-700">{example}</code>, so every country sees its own prices. Publishing translates into every language automatically. Notes are private and only go out with &ldquo;Copy feedback&rdquo;.
           </p>
         </div>
         <div className="flex flex-wrap items-center gap-2">
           <label className={`${chip} font-semibold text-slate-800`}>Preview as:
             <select value={previewCode} onChange={e => setPreviewCode(e.target.value)} className="bg-transparent font-semibold focus:outline-none">
               {[...world.countries].sort((x, y) => x.settings.name.localeCompare(y.settings.name)).map(c => (
-                <option key={c.settings.countryCode} value={c.settings.countryCode}>{flagOf(c.settings.countryCode)} {c.settings.name}</option>
+                <option key={c.settings.countryCode} value={c.settings.countryCode}>{flagOf(c.settings.countryCode)} {c.settings.name} · {languageName(c.settings.locale)}</option>
               ))}
             </select>
           </label>
@@ -361,11 +402,14 @@ export default function FaqTab() {
       {copied && <p aria-live="polite" className="text-sm font-semibold text-slate-600">{copied}</p>}
       {pageError && <p role="alert" className="text-sm font-semibold text-red-700">{pageError}</p>}
 
-      {/* ── the summary, counted from the data. faq-2 adds "· 28 languages" to the first chip and ", all translations up to date"
-          to the second. ── */}
+      {/* ── the summary, counted from the data (faq-2: the languages, and the translations' state) ── */}
       <div className="flex flex-wrap gap-2">
-        <span className={chip}>🌍 <b>{world.countries.length}</b> countries switched on</span>
-        <span className={`${chip} font-semibold text-green-700`}>✓ {published} published</span>
+        <span className={chip}>🌍 <b>{world.countries.length}</b> countries · <b>{TRANSLATED_BASES.length}</b> languages</span>
+        {failedTr === 0 && translating === 0
+          ? <span className={`${chip} font-semibold text-green-700`}>✓ {published} published{published ? ', all translations up to date' : ''}</span>
+          : <span className={`${chip} font-semibold text-green-700`}>✓ {published} published
+              {translating > 0 && <span className="text-amber-700"> · ● {translating} translating</span>}
+              {failedTr > 0 && <span className="text-red-700"> · ✕ {failedTr} with failed translations</span>}</span>}
         {failing > 0
           ? <span className={`${chip} font-semibold text-amber-700`}>● {failing} {failing === 1 ? 'question needs' : 'questions need'} an answer for some countries</span>
           : <span className={`${chip} font-semibold text-green-700`}>✓ Every question reads correctly in every country</span>}
@@ -414,7 +458,7 @@ export default function FaqTab() {
             </div>
             {list.length === 0 && <p className="px-6 py-4 text-sm text-slate-400">No questions in this section yet.</p>}
             {list.map((i, ii) => (
-              <QuestionCard key={i.id} item={i} world={world} previewCode={previewCode} busy={busy}
+              <QuestionCard key={i.id} item={i} world={world} previewCode={previewCode} busy={busy} summary={translations[i.id]}
                 first={si === 0 && ii === 0} last={si === sortedSections.length - 1 && ii === list.length - 1}
                 onPatch={patch => itemCall({ action: 'item.update', id: i.id, patch })}
                 onPublish={on => itemCall({ action: on ? 'item.publish' : 'item.unpublish', id: i.id })}

@@ -1,0 +1,7 @@
+{
+  "phrases": {
+    "appsSentence": "Lisäksi on iPad- ja Android-sovellus, joka ottaa paikan päällä tehtyjä tilauksia vastaan, vaikka yhteys katkeaisi.",
+    "appsOffline": "iPad- ja Android-sovellus ottaa paikan päällä tehtyjä tilauksia vastaan ilman yhteyttä ja lähettää ne, kun olet taas verkossa; selainpohjainen ohjauspaneeli tarvitsee yhteyden.",
+    "webOffline": "Selainpohjainen ohjauspaneeli tarvitsee yhteyden näyttääkseen uudet tilaukset."
+  }
+}

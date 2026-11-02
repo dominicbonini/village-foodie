@@ -6375,5 +6375,12 @@
     "errorTitle": "Noget gik galt",
     "errorBody": "Beklager, siden blev ikke indlæst. Prøv igen, eller gå tilbage til forsiden.",
     "retry": "Prøv igen"
+  },
+  "faq": {
+    "phrases": {
+      "appsSentence": "Der er også en app til iPad og Android, som bliver ved med at tage imod bestillinger ved vognen, hvis du mister signalet.",
+      "appsOffline": "Appen til iPad og Android tager imod bestillinger ved vognen uden signal og sender dem, når du er online igen; weboversigten kræver forbindelse.",
+      "webOffline": "Weboversigten kræver forbindelse for at vise nye bestillinger."
+    }
   }
 }

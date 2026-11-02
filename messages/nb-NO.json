@@ -6375,5 +6375,12 @@
     "errorTitle": "Noe gikk galt",
     "errorBody": "Beklager, siden ble ikke lastet inn. Prøv igjen, eller gå tilbake til forsiden.",
     "retry": "Prøv igjen"
+  },
+  "faq": {
+    "phrases": {
+      "appsSentence": "Det finnes også en app for iPad og Android, som fortsetter å ta imot bestillinger ved bilen hvis du mister dekningen.",
+      "appsOffline": "Appen for iPad og Android tar imot bestillinger ved bilen uten dekning og sender dem når du er på nett igjen; den nettbaserte oversikten trenger tilkobling.",
+      "webOffline": "Den nettbaserte oversikten trenger tilkobling for å vise nye bestillinger."
+    }
   }
 }

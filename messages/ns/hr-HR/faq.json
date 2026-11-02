@@ -1,0 +1,7 @@
+{
+  "phrases": {
+    "appsSentence": "Postoji i aplikacija za iPad i Android, koja nastavlja primati narudžbe na licu mjesta ako izgubite signal.",
+    "appsOffline": "Aplikacija za iPad i Android prima narudžbe na licu mjesta i bez signala te ih šalje kad ponovno budete online; web nadzornoj ploči potrebna je veza.",
+    "webOffline": "Web nadzornoj ploči potrebna je veza za prikaz novih narudžbi."
+  }
+}

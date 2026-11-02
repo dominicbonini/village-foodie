@@ -6375,5 +6375,12 @@
     "errorTitle": "Hiba történt",
     "errorBody": "Sajnáljuk, ez az oldal nem töltődött be. Próbálja újra, vagy térjen vissza a kezdőlapra.",
     "retry": "Újra"
+  },
+  "faq": {
+    "phrases": {
+      "appsSentence": "Van iPad- és Android-alkalmazás is, amely térerő nélkül is tovább fogadja a helyszíni rendeléseket.",
+      "appsOffline": "Az iPad- és Android-alkalmazás térerő nélkül is fogadja a helyszíni rendeléseket, és elküldi őket, amint újra online lesz; a webes vezérlőpulthoz kapcsolat kell.",
+      "webOffline": "A webes vezérlőpultnak kapcsolat kell az új rendelések megjelenítéséhez."
+    }
   }
 }

@@ -92,6 +92,18 @@ export const serviceFaqStore: FaqStore = {
     const rows = (data ?? []) as Row[]
     return rows.length === 1 ? itemOf(rows[0]) : null
   },
+  // faq-2: every translation, for the indicators and the preview (the translator writes them; this page only reads).
+  async translations() {
+    const { data, error } = await (await db()).from('faq_translations').select('item_id, section_id, locale, question, answer, answer_single_plan, title, source_hash, model, translated_at, status, reason')
+    fail('read translations', error)
+    return ((data ?? []) as Row[]).map(r => ({
+      itemId: typeof r.item_id === 'string' ? r.item_id : null, sectionId: typeof r.section_id === 'string' ? r.section_id : null, locale: String(r.locale),
+      question: typeof r.question === 'string' ? r.question : null, answer: typeof r.answer === 'string' ? r.answer : null,
+      answerSinglePlan: typeof r.answer_single_plan === 'string' ? r.answer_single_plan : null, title: typeof r.title === 'string' ? r.title : null,
+      sourceHash: String(r.source_hash), model: typeof r.model === 'string' ? r.model : null, translatedAt: String(r.translated_at ?? ''),
+      status: r.status === 'ok' ? 'ok' as const : 'failed' as const, reason: typeof r.reason === 'string' ? r.reason : null,
+    }))
+  },
   async deleteItem(id) {
     const { data, error } = await (await db()).from('faq_items').delete().eq('id', id).select('id')
     fail('delete question', error)

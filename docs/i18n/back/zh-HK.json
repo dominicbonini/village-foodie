@@ -5157,5 +5157,8 @@
  "whereYouTrade.stepIntro": "This sets your currency, prices, time zone and phone format. The country/region cannot be changed later because it is bound to your card payments.",
  "whereYouTrade.timezoneLabel": "Time zone",
  "whereYouTrade.townLabel": "City or district",
- "whereYouTrade.townQuestion": "The city or district you are based in"
+ "whereYouTrade.townQuestion": "The city or district you are based in",
+ "faq.phrases.appsSentence": "There is also an iPad and Android app, which keeps taking walk-up orders if you lose signal.",
+ "faq.phrases.appsOffline": "The iPad and Android app keeps taking walk-up orders without signal and sends them when you are back online; the web dashboard needs a connection.",
+ "faq.phrases.webOffline": "The web dashboard needs a connection to show new orders."
 }

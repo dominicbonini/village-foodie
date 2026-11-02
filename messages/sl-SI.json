@@ -6375,5 +6375,12 @@
     "errorTitle": "Prišlo je do napake",
     "errorBody": "Žal se ta stran ni naložila. Poskusite znova ali se vrnite na domačo stran.",
     "retry": "Poskusi znova"
+  },
+  "faq": {
+    "phrases": {
+      "appsSentence": "Na voljo je tudi aplikacija za iPad in Android, ki še naprej sprejema naročila na mestu, če izgubite signal.",
+      "appsOffline": "Aplikacija za iPad in Android sprejema naročila na mestu tudi brez signala in jih pošlje, ko ste spet povezani; spletna nadzorna plošča potrebuje povezavo.",
+      "webOffline": "Spletna nadzorna plošča potrebuje povezavo za prikaz novih naročil."
+    }
   }
 }

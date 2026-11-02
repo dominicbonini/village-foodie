@@ -1,0 +1,41 @@
+{
+ "$why": "faq-2 §6: sha256 of each landing page (the faq-3 FAQ rows, no translations) at 78e16437, by scripts/faq-2.cjs capture.",
+ "commit": "78e16437",
+ "pages": {
+  "landing:uk": {
+   "html": "1dc92feeaf6912dcee5cecd6a8c496122e1258f04b77aea02f9900232f1e87df",
+   "meta": "158f9bd5c47447b4afa3b666b5f279f26042fd448ccd077b4fe4d9e6526acc33",
+   "redirectedTo": null
+  },
+  "landing:us": {
+   "html": "134976da3dec23e93da5a7b99a7268ec04ef6269d6e98904939003090a3f3f6b",
+   "meta": "bc4f706534d13a7882f8af207bd6d6163fb02f4a16ef3d3cbc35c2a032195c6f",
+   "redirectedTo": null
+  },
+  "landing:ie": {
+   "html": "d61ec140cd3708bb7a9cdf252c5c81c075b749563bc197853b2b643e4adef1d7",
+   "meta": "f0887d81db54d140cc8a1e035ee1d1179a17f52fd236a95f3f6176c0e227f04a",
+   "redirectedTo": null
+  },
+  "landing:de": {
+   "html": "628f3984e870fe81bad10cb509ce14422ab159d74d8ad1356ee73d956251ee43",
+   "meta": "63406b0514ec6d81c4134bf27c3fbf8a56158de1ec5b36704ae5721f150d2ee8",
+   "redirectedTo": null
+  },
+  "landing:fr": {
+   "html": "80f314c1ac5d2c71a340f90bad2995a677e9523189d09b75fbc81e66db2ca06d",
+   "meta": "8c672ba54a18a9537fc29776956106602cff9591093de11547b5bf833753538d",
+   "redirectedTo": null
+  },
+  "landing:jp": {
+   "html": "4753d4acc341fdf8d85e822b13167c20cd329e9904c7e33fcbb15c995aa87858",
+   "meta": "93d9227611a74608f949983273f5f5738509cad59655958cfa5114e0d8685c0d",
+   "redirectedTo": null
+  },
+  "landing:ae": {
+   "html": "d88a465b085fd2d7241e19a6083f50c1c48e55d385e691cb08d513b07911e844",
+   "meta": "103ad56bf6c7fa7b07c8cf285bae945448e49010acb2c48c11f5bf3da39f74cf",
+   "redirectedTo": null
+  }
+ }
+}

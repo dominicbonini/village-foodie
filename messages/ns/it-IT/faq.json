@@ -1,0 +1,7 @@
+{
+  "phrases": {
+    "appsSentence": "C’è anche un’app per iPad e Android, che continua a ricevere gli ordini al banco se perdi il segnale.",
+    "appsOffline": "L’app per iPad e Android continua a ricevere gli ordini al banco senza segnale e li invia quando torni online; la dashboard web ha bisogno di una connessione.",
+    "webOffline": "La dashboard web ha bisogno di una connessione per mostrare i nuovi ordini."
+  }
+}

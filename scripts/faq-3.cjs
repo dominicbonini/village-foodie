@@ -307,7 +307,8 @@ const sectionOrder = html => [...html.matchAll(/<section(?: id="([a-z-]+)")?(?: 
     // It exits 1 while any structural line remains (the three English-only faq.phrases keys, by Dominic's decision) — read its report.
     let out
     try { out = execFileSync('node', ['scripts/translation-check.cjs', '--locale', l, '--back', `docs/i18n/back/${l}.json`], { cwd: REPO }).toString() } catch (e) { out = String(e.stdout) }
-    t(`${l}: "${m.landing?.faq?.title}" — present, structural 3 (faq.phrases), no flag on landing.faq`, typeof m.landing?.faq?.title === 'string' && m.landing.faq.title.length > 0 && m.landing.faq.title !== en.landing.faq.title && /\*\*Structural: 3\*\*/.test(out) && !out.includes('landing.faq'), out.split('\n').filter(x => /Structural|landing\.faq/.test(x)).join(' | '))
+    // ⚠️ RE-PINNED (faq-2): faq.phrases.* translated in every base — structural 0 now.
+    t(`${l}: "${m.landing?.faq?.title}" — present, structural 0 (faq-2 translated faq.phrases), no flag on landing.faq`, typeof m.landing?.faq?.title === 'string' && m.landing.faq.title.length > 0 && m.landing.faq.title !== en.landing.faq.title && /\*\*Structural: 0\*\*/.test(out) && !out.includes('landing.faq'), out.split('\n').filter(x => /Structural|landing\.faq/.test(x)).join(' | '))
   }
 
   console.log(`\nfaq-3: ${pass} passed, ${fail} failed`)

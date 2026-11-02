@@ -147,7 +147,8 @@ async function identityViews(tag) {
     t(`${f}: no internal plan key as a quoted string either`, !catalog.plans.some(p => new RegExp(`['"\`]${p.key}['"\`]`).test(src)))
   }
   // ⚠️ RE-PINNED (faq-3): lib/faq/public.ts, the public FAQ's loader — it names no plan either (this same grep covers it).
-  t('four files in lib/faq (faq-3 added public.ts)', faqFiles.length === 4 && faqFiles.includes('lib/faq/public.ts'), faqFiles)
+  // ⚠️ RE-PINNED (faq-2): + translation.ts, source-hash.ts and translator.ts (the FAQ in every language) — the same grep covers them.
+  t('seven files in lib/faq (faq-3: public.ts; faq-2: translation.ts, source-hash.ts, translator.ts)', faqFiles.length === 7 && ['lib/faq/public.ts', 'lib/faq/translation.ts', 'lib/faq/source-hash.ts', 'lib/faq/translator.ts'].every(f => faqFiles.includes(f)), faqFiles)
 
   // ══ 4 ══════════════════════════════════════════════════════════════════════════════════════════════════════════════
   head('4 · Copy feedback for Claude')
@@ -241,7 +242,8 @@ async function identityViews(tag) {
   const plain = page.replace(/<[^>]+>/g, '').replace(/&#x27;|&#39;/g, "'").replace(/&amp;/g, '&').replace(/&quot;/g, '"').replace(/&lt;/g, '<').replace(/&gt;/g, '>')
   t('the page renders: heading, Preview as, + Section, + Question, Copy feedback for Claude (n)', /FAQ/.test(plain) && plain.includes('Preview as:') && plain.includes('+ Section') && plain.includes('+ Question') && plain.includes(`Copy feedback for Claude (${L.openNotes(tabItems)})`) && L.openNotes(tabItems) === 10, plain.slice(0, 300))
   // ⚠️ RE-PINNED (faq-3): the seed's …0007 and …0010 now fail the check too (the paying-at-the-truck wording) — 3, not 1.
-  t('the summary: 44 countries switched on · 1 published · 3 questions need an answer for some countries (faq-3: …0007 and …0010 by their wording)', plain.includes('44 countries switched on') && plain.includes('✓ 1 published') && plain.includes('3 questions need an answer for some countries'))
+  // ⚠️ RE-PINNED (faq-2): the first chip names the languages, and the published chip the translations' state (none here).
+  t('the summary: 44 countries · 28 languages · 1 published (translating) · 3 questions need an answer for some countries (faq-3: …0007 and …0010 by their wording)', plain.includes('44 countries · 28 languages') && plain.includes('✓ 1 published · ● 1 translating') && plain.includes('3 questions need an answer for some countries'))
   t('five sections with Rename · ↑ ↓ · Delete', (page.match(/>Rename</g) || []).length === 5)
   t('the single-plan answer under its computed label', plain.includes('Where only Unlimited is offered (5 countries)'))
   t('green "✓ Reads correctly in all 44 countries", and "… where it shows" for Show in', plain.includes('✓ Reads correctly in all 44 countries') && plain.includes('✓ Reads correctly in all 39 countries where it shows'))
@@ -250,7 +252,8 @@ async function identityViews(tag) {
   t('MY NOTES with Done; a done note is dimmed', (page.match(/>My notes</g) || []).length === 26 && /text-slate-400[^>]*>Apps only where they are on the store\./.test(page))
   t('tokens drawn highlighted in the answers at rest', /<code class="[^"]*font-mono[^"]*text-orange-700[^"]*">\{payg\.name\}<\/code>/.test(page))
   t('Draft / Published labels, "New" and "Edited <date>"', plain.includes('Published') && plain.includes('Draft') && plain.includes('New') && plain.includes('Edited 1 Nov'))
-  t('no translation indicator yet (faq-2)', !/Translations? \d+\/\d+|Translates when published|languages/.test(plain))
+  // ⚠️ RE-PINNED (faq-2): the indicators are here now — scripts/faq-2.cjs §9 proves each one.
+  t('the translation indicators (faq-2): the published question translating, the drafts "Translates when published"', /● Translating — within the hour \(0\/28\)/.test(plain) && /○ Translates when published/.test(plain))
 
   // ══ 6 ══════════════════════════════════════════════════════════════════════════════════════════════════════════════
   head('6 · the migration: security, columns and no new app column')
@@ -269,8 +272,8 @@ async function identityViews(tag) {
   t('one transaction, safe twice (if not exists; fixed ids, on conflict do nothing)', /^begin;/m.test(code) && /^commit;/m.test(code) && (code.match(/create table if not exists/g) || []).length === 2 && (code.match(/on conflict \(id\) do nothing;/g) || []).length === 2)
   // ⚠️ RE-PINNED (faq-1c-undo, 2 November 2026): 20261058_faq_1c_undo.sql follows it now (faq-1c's 20261057 ran and was removed from
   // the repo; 20261058 reverses it outside the FAQ). 20261056 is still the one faq-1 file, and nothing else came after it.
-  t('the faq-1 migration number is unique, and only 20261058_faq_1c_undo.sql and 20261059_faq_3.sql (faq-3) follow it', fs.readdirSync(path.join(REPO, 'supabase/migrations')).filter(f => f.startsWith('20261056')).length === 1
-    && JSON.stringify(fs.readdirSync(path.join(REPO, 'supabase/migrations')).filter(f => f > '20261056_faq_1.sql' && /^\d{8}/.test(f))) === JSON.stringify(['20261058_faq_1c_undo.sql', '20261059_faq_3.sql']))
+  t('the faq-1 migration number is unique, and only 20261058, 20261059 (faq-3) and 20261060 (faq-2) follow it', fs.readdirSync(path.join(REPO, 'supabase/migrations')).filter(f => f.startsWith('20261056')).length === 1
+    && JSON.stringify(fs.readdirSync(path.join(REPO, 'supabase/migrations')).filter(f => f > '20261056_faq_1.sql' && /^\d{8}/.test(f))) === JSON.stringify(['20261058_faq_1c_undo.sql', '20261059_faq_3.sql', '20261060_faq_2_translations.sql']))
 
   // ══ 7 ══════════════════════════════════════════════════════════════════════════════════════════════════════════════
   head('7 · the seed')
@@ -330,7 +333,7 @@ async function identityViews(tag) {
   // ⚠️ RE-PINNED (faq-3): the FAQ is public on the English landing pages — lib/faq/public.ts, read by app/landing/page.tsx, its
   // cache cleared by the Admin route. scripts/faq-3.cjs proves what those pages show.
   const allowed = new Set(['components/admin/FaqTab.tsx', 'lib/admin/faq-actions.ts', 'lib/faq/check.ts', 'lib/faq/feedback.ts', 'lib/faq/live-values.ts', 'lib/i18n/catalog/faq.ts',
-    'lib/faq/public.ts', 'app/landing/page.tsx', 'app/api/admin/faq/route.ts'])
+    'lib/faq/public.ts', 'app/landing/page.tsx', 'app/api/admin/faq/route.ts', 'lib/faq/translation.ts', 'lib/faq/translator.ts'])
   t('only Admin › FAQ, its server code and the English landing page (faq-3) import lib/faq or the faq messages', importers.every(f => allowed.has(f)), importers.filter(f => !allowed.has(f)))
   t('the admin page mounts it as the last tab', /pricing:[^\n]*\n[\s\S]*demos:[^\n]*\n[^\n]*\n\s*faq:\s*\{ icon: '❓', label: 'FAQ' \},\n\} as const/.test(read('app/admin/page.tsx')))
   t('faq.phrases.* is in en-GB only for now (Dominic, 1 Nov: English until approved)', (() => { const d = JSON.parse(read('messages/en-GB.json')).faq?.phrases; return d && Object.keys(d).join() === 'appsSentence,appsOffline,webOffline' })())

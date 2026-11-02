@@ -6375,5 +6375,12 @@
     "errorTitle": "Une erreur est survenue",
     "errorBody": "Désolés, cette page ne s’est pas chargée. Réessayez, ou revenez à la page d’accueil.",
     "retry": "Réessayer"
+  },
+  "faq": {
+    "phrases": {
+      "appsSentence": "Il existe aussi une app iPad et Android, qui continue de prendre les commandes au comptoir si vous perdez le réseau.",
+      "appsOffline": "L’app iPad et Android continue de prendre les commandes au comptoir sans réseau et les envoie dès que vous êtes de nouveau en ligne ; le tableau de bord web a besoin d’une connexion.",
+      "webOffline": "Le tableau de bord web a besoin d’une connexion pour afficher les nouvelles commandes."
+    }
   }
 }

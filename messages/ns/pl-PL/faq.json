@@ -1,0 +1,7 @@
+{
+  "phrases": {
+    "appsSentence": "Jest też aplikacja na iPada i Androida, która dalej przyjmuje zamówienia na miejscu, gdy stracisz zasięg.",
+    "appsOffline": "Aplikacja na iPada i Androida przyjmuje zamówienia na miejscu bez zasięgu i wysyła je, gdy znów będziesz online; panel w przeglądarce wymaga połączenia.",
+    "webOffline": "Panel w przeglądarce wymaga połączenia, aby pokazywać nowe zamówienia."
+  }
+}

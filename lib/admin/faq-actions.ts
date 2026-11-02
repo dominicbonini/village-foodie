@@ -7,10 +7,13 @@
 // 🔴 PUBLISHING IS REFUSED WHILE THE CHECK FAILS (lib/faq/check.ts), and so is a save to a PUBLISHED question's question,
 // answers or Show in: the check runs on the text as it would be after the save, and a failure writes nothing — the published
 // text stays. Notes are private and never change what is published, so they save without the check.
-// ⛔ Nothing here is public. No page, sitemap, /llms.txt or JSON-LD reads these tables yet (faq-1 is admin only).
+// faq-3 / faq-2: the published questions are public on the country landing pages (lib/faq/public.ts), in every language from
+// public.faq_translations, which only the translator writes (scripts/faq-translate/main.ts). This page reads their status.
 import { checkItem } from '@/lib/faq/check'
 import { isShowIn, type FaqWorld } from '@/lib/faq/live-values'
 import type { FaqItemRow, FaqSectionRow } from '@/lib/faq/feedback'
+import { summarize, type FaqTranslationRow, type TranslationSummary } from '@/lib/faq/translation'
+import { itemSourceHash, sectionSourceHash } from '@/lib/faq/source-hash'
 
 export type { FaqItemRow, FaqSectionRow }
 
@@ -32,6 +35,8 @@ export interface FaqStore {
   /** Writes ONE item. Returns the row as saved, or null when it is gone. */
   updateItem(id: string, cols: Partial<Omit<FaqItemRow, 'id' | 'createdAt'>>): Promise<FaqItemRow | null>
   deleteItem(id: string): Promise<number>
+  /** faq-2: every stored translation (public.faq_translations). Optional — a store without it reports none. */
+  translations?(): Promise<FaqTranslationRow[]>
 }
 
 export type ActionResult<T> = { ok: true; data: T } | { ok: false; status: number; error: string }
@@ -44,10 +49,20 @@ const MAX_TEXT = 4000
 export type FaqState = { sections: FaqSectionRow[]; items: FaqItemRow[] }
 const state = async (store: FaqStore): Promise<ActionResult<FaqState>> => ({ ok: true, data: { sections: await store.sections(), items: await store.items() } })
 
-/** The page's first read: every section and question, and the world the check and the preview read. */
-export async function listFaq(store: FaqStore): Promise<ActionResult<FaqState & { world: FaqWorld }>> {
-  const [sections, items, world] = await Promise.all([store.sections(), store.items(), store.world()])
-  return { ok: true, data: { sections, items, world } }
+/** faq-2: each question's and section's translation summary, against its CURRENT English (the hash is computed here, on the
+ *  server). */
+export function translationSummaries(sections: FaqSectionRow[], items: FaqItemRow[], rows: FaqTranslationRow[]): Record<string, TranslationSummary> {
+  const out: Record<string, TranslationSummary> = {}
+  for (const i of items) out[i.id] = summarize(rows.filter(r => r.itemId === i.id), itemSourceHash(i))
+  for (const s of sections) out[s.id] = summarize(rows.filter(r => r.sectionId === s.id), sectionSourceHash(s))
+  return out
+}
+
+/** The page's first read: every section and question, the world the check and the preview read, and (faq-2) each one's
+ *  translations. */
+export async function listFaq(store: FaqStore): Promise<ActionResult<FaqState & { world: FaqWorld; translations: Record<string, TranslationSummary> }>> {
+  const [sections, items, world, rows] = await Promise.all([store.sections(), store.items(), store.world(), store.translations?.() ?? Promise.resolve([])])
+  return { ok: true, data: { sections, items, world, translations: translationSummaries(sections, items, rows) } }
 }
 
 /** The check's refusal as one sentence: what fails, then that nothing was written. */

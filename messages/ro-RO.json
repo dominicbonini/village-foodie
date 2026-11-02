@@ -6375,5 +6375,12 @@
     "errorTitle": "Ceva nu a funcționat",
     "errorBody": "Ne pare rău, această pagină nu s-a încărcat. Încearcă din nou sau revino la pagina principală.",
     "retry": "Încearcă din nou"
+  },
+  "faq": {
+    "phrases": {
+      "appsSentence": "Există și o aplicație pentru iPad și Android, care continuă să preia comenzile la fața locului dacă pierdeți semnalul.",
+      "appsOffline": "Aplicația pentru iPad și Android preia comenzile la fața locului și fără semnal și le trimite când reveniți online; panoul de control web are nevoie de conexiune.",
+      "webOffline": "Panoul de control web are nevoie de conexiune pentru a afișa comenzile noi."
+    }
   }
 }
