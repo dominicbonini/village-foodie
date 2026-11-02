@@ -17,6 +17,8 @@
 // ── 🔴 THE PHOTO ─────────────────────────────────────────────────────────────────────────────────────────────────────────
 // public/about/dominic.jpg when the file exists (lib/about-server.ts); otherwise NOTHING is rendered — no box, no alt text —
 // and the story takes the full width. A plain <img>: one small local file, and next/image would need its dimensions.
+// store-badges-1: the footer's store badges follow the country's app flags (the cached reader the FAQ and comparison pages use).
+import { appsOf } from '@/lib/comparison-flags'
 import { Archivo, Public_Sans, Courier_Prime } from 'next/font/google'
 import type { Metadata } from 'next'
 import { headers } from 'next/headers'
@@ -128,7 +130,8 @@ export default async function AboutPage({ searchParams }: { searchParams: Search
           <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(graph) }} />
         </section>
 
-        <LandingFooter landingHref={visitor.paths.landing} featuresHref={visitor.paths.features} country={visitor.menu} locale={settings.locale} comparison={await comparisonFooter(settings.countryCode, settings.locale)} />
+        <LandingFooter landingHref={visitor.paths.landing} featuresHref={visitor.paths.features} country={visitor.menu} locale={settings.locale} comparison={await comparisonFooter(settings.countryCode, settings.locale)} 
+          apps={await appsOf(settings.countryCode)} />
       </div>
 
       {/* Mounted once, outside `.hg-landing` — the nav's CTA drives it (as on /features). */}

@@ -22,6 +22,8 @@
 // ungates before pricing publishes, unpublished prices would otherwise become public with no error and
 // no warning. ⚠️ THE LAYOUT RUNS FIRST AND IS STRICTER, so while the landing stays gated a non-admin is
 // stopped there even with the flag set.
+// store-badges-1: the footer's store badges follow the country's app flags (the cached reader the FAQ and comparison pages use).
+import { appsOf } from '@/lib/comparison-flags'
 import { Archivo, Public_Sans, Courier_Prime } from 'next/font/google'
 import type { Metadata, ResolvingMetadata } from 'next'
 import { headers } from 'next/headers'
@@ -229,7 +231,8 @@ export default async function CostPage({ params, searchParams }: { params?: Prom
         {...(currencyLineOf(settings) ? { currencyLine: translatorFor(settings.locale, 'pricing')('currencyLine', currencyLineOf(settings)!) } : {})} />
 
       <div className={CHROME}>
-        <LandingFooter landingHref={visitor.paths.landing} featuresHref={visitor.paths.features} country={visitor.menu} locale={settings.locale} comparison={await comparisonFooter(settings.countryCode, settings.locale)} />
+        <LandingFooter landingHref={visitor.paths.landing} featuresHref={visitor.paths.features} country={visitor.menu} locale={settings.locale} comparison={await comparisonFooter(settings.countryCode, settings.locale)} 
+          apps={await appsOf(settings.countryCode)} />
       </div>
 
       {/* Mounted ONCE — all three CTAs above drive this one instance. Same placement as

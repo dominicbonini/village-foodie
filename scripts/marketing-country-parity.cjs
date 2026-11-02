@@ -351,6 +351,15 @@ async function compare() {
     if (CT1.LANDED) { BEFORE.landing = CT1.offlineMust(BEFORE.landing); for (const p of Object.keys(BEFORE)) BEFORE[p] = CT1.offline(BEFORE[p]) }
   }
   const GB = SEEDS.gbFromSeed(), US_OFF = SEEDS.usFromSeed()
+  const SB1_LANDED = require('./_lp-store-badges-1.cjs').LANDED   // eslint-disable-line @typescript-eslint/no-require-imports -- CommonJS harness module (store-badges-1)
+  /** ⚠️ RE-PINNED (store-badges-1): BEFORE's two badge links (hrefs, alt and aria words, the badge files) taken out of a stored page's
+   *  attributes — no app flag in these fixtures, so none render. PRECISE: the stored page must have held them. */
+  const sb1Attrs = (p, B) => {
+    if (!SB1_LANDED || p === 'pdf') return
+    const badgeAttr = x => /apps\.apple\.com|play\.google\.com\/store|\/badges\/|=Download HatchGrab on the App Store$|=Download on the App Store$|=Get HatchGrab on Google Play$|=Get it on Google Play$/.test(String(x))
+    if (!B.attrs.some(badgeAttr)) throw new Error(`store-badges-1 re-pin: the stored ${p} page holds no badge attributes`)
+    B.attrs = B.attrs.filter(x => !badgeAttr(x))
+  }
 
   const viewsB = {}
   console.log('1. UK — every page identical to BEFORE apart from the country buttons (marked build)')
@@ -360,6 +369,9 @@ async function compare() {
       // ⚠️ RE-PINNED (pricing-pages, Stage B, 20 October 2026): compared with Stage B's named regions cut out of both sides.
       const [B, A0] = seoSides(tidySides(p, stageBSides(p, BEFORE[p], v)), v)   // ⚠️ RE-PINNED (seo-fixes): the badge preload hints named; (compare-tidy): T-staff / T-renumber / T-panel
       const A = aboutSide(A0) || A0   // ⚠️ RE-PINNED (about-page): the footer's About link named (null → compared as it is, and fails)
+      // ⚠️ RE-PINNED (store-badges-1, 2 November 2026): the footer badges follow the country's app flags — none set in these fixtures,
+      // so BEFORE's two badge links (their hrefs, alt and aria words, and the badge files) go. PRECISE: BEFORE must have held them.
+      sb1Attrs(p, B)
       if (label === 'GB visitor') viewsB[p] = v
       ok(A.text === B.text, `${p} · ${label} · text identical`, firstDiff(A.text, B.text))
       ok(JSON.stringify(A.attrs) === JSON.stringify(B.attrs), `${p} · ${label} · attributes identical`)
@@ -439,6 +451,7 @@ async function compare() {
     const ukWithUsOn = await visit(p, { rows, ip: 'GB', build: 'marked', tables })
     const [B, A0] = seoSides(tidySides(p, stageBSides(p, BEFORE[p], ukWithUsOn)), ukWithUsOn)   // ⚠️ RE-PINNED (pricing-pages, Stage B): the named regions cut out; (seo-fixes): the badge preload hints named
     const A = aboutSide(A0) || A0   // ⚠️ RE-PINNED (about-page): the footer's About link named
+    sb1Attrs(p, B)   // ⚠️ RE-PINNED (store-badges-1): the badge links, as above
     ok(A.text === B.text && JSON.stringify(A.attrs) === JSON.stringify(B.attrs), `${p} · a UK visitor with US switched on · still identical to BEFORE`, firstDiff(A.text, B.text))
   }
   const toGB = await visit('landing', { rows, ip: 'US', query: { country: 'gb' }, build: 'marked', tables })

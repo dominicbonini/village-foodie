@@ -28,6 +28,7 @@ import { type Feature } from '@/lib/features'
 import { featureRefusal } from '@/lib/plan-refusal'
 import { truckCan } from '@/lib/plans'
 import { countrySettingsForTruck, addressFormatForTruck } from '@/lib/country-settings'
+import { comparisonFlagsOf } from '@/lib/comparison-flags'
 import { getPlanCatalog } from '@/lib/plans-server'
 import { localizePlans } from '@/lib/plan-names'   // languages-1: plan names in the locale's language
 import { checkTradeArea, splitRegionCodeWrite } from '@/lib/trade-area'
@@ -536,9 +537,16 @@ export async function GET(req: NextRequest) {
   // fatality as the settings above: they come from the same row.
   const time = await truckTimeSettings(truck as { timezone?: string | null; country?: string | null })
 
+  // store-badges-1 (2 November 2026): whether the truck's country has the iPad / Android app in its stores
+  // (country_settings.ios_app_available / android_app_available — the cached reader the FAQ and comparison pages use). Settings'
+  // "Get the app" card shows only where at least one is, each badge only where its own is. Never fatal: unread → none shown.
+  const flags = await comparisonFlagsOf((truck as { country?: string | null }).country ?? countrySettings.countryCode)
+  const appsAvailable = { ios: flags.iosApp, android: flags.androidApp }
+
   return NextResponse.json({
     truck: { ...truck, logo, time },
     countrySettings,
+    appsAvailable,
     plans,
     whatsappConnection,
     whatsappUsage,

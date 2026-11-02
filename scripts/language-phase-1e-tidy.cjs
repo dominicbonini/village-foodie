@@ -124,6 +124,8 @@ const NAMED = [
   // ⚠️ RE-PINNED (seo-geo-2 B3, 2 November 2026): the landing JSON-LD's operatingSystem, true per country — one copy in
   // scripts/_lp-seo-geo-2.cjs.
   ...require('./_lp-seo-geo-2.cjs').ITEMS.map(P => ({ id: P.id, what: P.what, applies: id => P.views(id), apply: (v, id) => P.apply(id, v) })),
+  // ⚠️ RE-PINNED (store-badges-1, 2 November 2026): the footer badges by flag and the Play URL — scripts/_lp-store-badges-1.cjs.
+  ...require('./_lp-store-badges-1.cjs').ITEMS.map(P => ({ id: P.id, what: P.what, applies: id => P.views(id), apply: (v, id) => P.apply(id, v) })),
 ]
 // ⚠️ RE-PINNED (plans-data-model, Stage A, 19 October 2026): Manage › Billing is ONE data-driven plan card above the frozen comparison
 // table — STRUCTURAL, by the same proof Part 2 and Phase 1e name (scripts/_lp1d2-named.cjs makeBillingProof, one copy):

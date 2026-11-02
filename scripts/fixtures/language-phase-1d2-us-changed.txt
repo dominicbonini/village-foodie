@@ -8,7 +8,7 @@ shell/US|shell|tab|schedule	words
 shell/US|shell|tab|social	words
 shell/US|shell|tab|reports	words
 shell/US|shell|tab|team	words
-shell/US|shell|tab|settings	words
+shell/US|shell|tab|settings	code: store-badges-1-settings-prop + words
 shell/US|shell|tab|payments	code: plans-payments-on-trial-prop+plans-a2-payments-features-prop + words
 shell/US|shell|tab|billing	words
 shell/US|shell|tab|menu|extras	words
@@ -41,7 +41,7 @@ shell/US|shell|notices|all|menu	code: us-layout-fix-1-nbsp + words
 shell/US|shell|notices|all|schedule	code: us-layout-fix-1-nbsp + words
 shell/US|shell|notices|all|social	code: us-layout-fix-1-nbsp + words
 shell/US|shell|notices|all|reports	code: us-layout-fix-1-nbsp + words
-shell/US|shell|notices|all|settings	code: us-layout-fix-1-nbsp + words
+shell/US|shell|notices|all|settings	code: us-layout-fix-1-nbsp+store-badges-1-settings-prop + words
 shell/US|shell|notices|all|payments	code: plans-payments-on-trial-prop+plans-a2-payments-features-prop+us-layout-fix-1-nbsp + words
 shell/US|shell|notices|all|billing	code: us-layout-fix-1-nbsp + words
 shell/US|shell|trialPopup|dated	words
@@ -422,8 +422,8 @@ api/US|manageGET|noToken	code: named difference 1 (token_required)
 api/US|manageGET|badToken	code: named difference 1 (invalid_token)
 api/US|manageGET|noUser	code: named difference 1 (sign_in_required)
 api/US|manageGET|notThisTruck	code: named difference 1 (no_truck_access)
-api/US|manageGET|ok	code: plans-manage-get-catalogue-2+plans-a2-fixture-plan-unlimited+allergen-card-country-field-2+address-formats-1-country-key-2+pricing-b-country-settings-fields-2+world-countries-1-manage-fields-2+pricing-b-catalogue-ignored-features-2
-api/US|manageGET|ok.staff	code: plans-manage-get-catalogue-2+plans-a2-fixture-plan-unlimited+allergen-card-country-field-2+address-formats-1-country-key-2+pricing-b-country-settings-fields-2+world-countries-1-manage-fields-2+pricing-b-catalogue-ignored-features-2
+api/US|manageGET|ok	code: plans-manage-get-catalogue-2+plans-a2-fixture-plan-unlimited+allergen-card-country-field-2+address-formats-1-country-key-2+pricing-b-country-settings-fields-2+world-countries-1-manage-fields-2+pricing-b-catalogue-ignored-features-2+store-badges-1-manage-get
+api/US|manageGET|ok.staff	code: plans-manage-get-catalogue-2+plans-a2-fixture-plan-unlimited+allergen-card-country-field-2+address-formats-1-country-key-2+pricing-b-country-settings-fields-2+world-countries-1-manage-fields-2+pricing-b-catalogue-ignored-features-2+store-badges-1-manage-get
 api/US|weeklyPost|badJson	code: named difference 1 (bad_request)
 api/US|weeklyPost|noToken	code: named difference 1 (token_required)
 api/US|weeklyPost|badToken	code: named difference 1 (invalid_token)

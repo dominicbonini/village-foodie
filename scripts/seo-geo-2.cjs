@@ -27,6 +27,9 @@ const kit = require('./_render-kit.cjs')({ cacheTag: 'seo-geo-2' })
 const LP1E = require('./_lp1e-fixtures.cjs')
 const WF = require('./_world-countries-1-fixtures.cjs')
 const FIX = require('./fixtures/faq-3-rows.json')
+// ⚠️ RE-PINNED (store-badges-1, 2 November 2026): hashed with the footer's store badges and the Play URL's &hl=en taken out (scripts/
+// _lp-store-badges-1.cjs strip, both sides; the badges follow the app flags now and are proven by scripts/store-badges-1.cjs).
+const SB1 = require('./_lp-store-badges-1.cjs')
 const IDENTITY = path.join(REPO, 'scripts/fixtures/seo-geo-2-identity.json')
 const HEAD_COMMIT = 'dad7911a'
 
@@ -49,7 +52,7 @@ async function identitySet() {
     for (const seg of SEGS) {
       const r = await kit.quietAsync(() => wf.page('landing', seg, rows))
       const os = (/"operatingSystem":"([^"]*)"/.exec(r.html) || [])[1] ?? null
-      out[`landing:${seg}`] = { html: sha(r.html), htmlWithoutOs: sha(withoutOs(r.html)), meta: sha(JSON.stringify(r.meta)), os }
+      out[`landing:${seg}`] = { html: sha(SB1.strip(r.html)), htmlWithoutOs: sha(withoutOs(SB1.strip(r.html))), meta: sha(JSON.stringify(r.meta)), os }
     }
   } finally { console.info = info }
   return out

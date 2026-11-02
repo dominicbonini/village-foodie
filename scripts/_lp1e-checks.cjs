@@ -430,6 +430,13 @@ async function run(ctx) {
     for (const p of ['landing', 'features', 'compare']) {
       const g = String(A[`pages/${p}|GB|html`] || ''), u = String(A[`pages/${p}|US|html`] || ''), b = String(BEFORE[`pages/${p}|GB|html`] || '')
       if (!b.includes(UK_STORE)) continue
+      // ⚠️ RE-PINNED (store-badges-1, 2 November 2026): the footer badges follow the country's app flags and these fixtures set
+      // none, so /features and /compare carry no store link at all now (the landing keeps the App Store URL in its JSON-LD sameAs,
+      // which follows the same rule). appStoreUrlFor itself is proven by scripts/store-badges-1.cjs §3.
+      if (require('./_lp-store-badges-1.cjs').LANDED && p !== 'landing') {   // eslint-disable-line @typescript-eslint/no-require-imports -- CommonJS harness module
+        t(`app store · ${p} GB / US: no store link — no app flag in these fixtures (store-badges-1, named)`, !g.includes(UK_STORE) && !g.includes(FREE_STORE) && !u.includes(UK_STORE) && !u.includes(FREE_STORE))
+        continue
+      }
       t(`app store · ${p} GB: the UK listing, as before`, g.includes(UK_STORE) && !g.includes(FREE_STORE))
       t(`app store · ${p} US: the locale-free listing, never the UK one`, u.includes(FREE_STORE) && !u.includes(UK_STORE))
     }

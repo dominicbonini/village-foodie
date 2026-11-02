@@ -550,6 +550,10 @@ module.exports = async function us(h) {
         // CustomDomainSetup no longer takes the now-unused `plan` / `trialExpiresAt` props (only the overrides gate it)
         // ⚠️ RE-PINNED (Stage A2): CustomDomainSetup's `featureOverrides` prop became `truck` (it asks useFeatures itself).
         ['<CustomDomainSetup token={token} plan={truck.plan}', 1, /<CustomDomainSetup token=\{token\} truck=\{truck\} truckName=/, null],
+        // ⚠️ RE-PINNED (store-badges-1, 2 November 2026): SettingsTab takes the truck's country's app flags (`appsAvailable`), so the
+        // "Get the app" card and its badges show only where an app is available — the signature line and the badges' line.
+        ['function SettingsTab({ userRole, truck,', 1, /appsAvailable = NO_APPS, onOpenWalkthrough, notices \}: \{$/, null],
+        ['<StoreBadges className="mt-3 flex flex-wrap items-center gap-3" countryCode={truck?.country} locale={settingsLocale} />', 1, /<StoreBadges className="mt-3 flex flex-wrap items-center gap-3" countryCode=\{truck\?\.country\} locale=\{settingsLocale\} apps=\{appsAvailable\} \/>/, null],
       ]
       const stageAHunk = h => STAGE_A_HUNKS.some(([sig, n, addRe, goneRe]) => h.del.some(l => l.includes(sig)) && h.del.length === n
         && (addRe ? h.add.some(x => addRe.test(x)) : h.add.length === 0) && (!goneRe || !goneRe.test(nowR)))

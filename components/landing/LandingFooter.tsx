@@ -58,7 +58,10 @@ import { AdminOnly } from '@/components/landing/AdminOnly'
  *  of a signed-in admin (AdminOnly asks /api/auth/me), so the server HTML never names a draft; 'off' passes nothing. */
 export interface FooterComparison { mode: 'live' | 'admin'; href: string; heading: string; link: string }
 
-export function LandingFooter({ landingHref = '', featuresHref = '/features', country, locale, comparison }: { landingHref?: string; featuresHref?: string; country?: VisitorCountryMenu; locale?: string; comparison?: FooterComparison } = {}) {
+// store-badges-1 (2 November 2026): `apps` — the page's country's app flags (country_settings.ios_app_available /
+// android_app_available), which each page reads through lib/comparison-flags.ts appsOf (60-second cached). Absent → no badges:
+// the footer never claims an app it was not told about (35.ak-7). Kept SYNCHRONOUS so every renderer can still draw it.
+export function LandingFooter({ landingHref = '', featuresHref = '/features', country, locale, comparison, apps }: { landingHref?: string; featuresHref?: string; country?: VisitorCountryMenu; locale?: string; comparison?: FooterComparison; apps?: { ios: boolean; android: boolean } } = {}) {
   const t = translatorFor(locale, 'landingFooter')
   return (
   <footer className={HEADER_BG}>
@@ -146,7 +149,8 @@ export function LandingFooter({ landingHref = '', featuresHref = '/features', co
                 stack centred if they do not. `.foot-badge img` sets height:40px, width:auto.
                 ⚠️ The classes REPLACE the component's Tailwind defaults rather than adding to them, so
                 exactly one rule owns the gap. */}
-            <StoreBadges className="foot-apps" linkClassName="foot-badge" countryCode={country?.current.code} locale={locale} />
+            {/* store-badges-1: each badge only where its app is in this country's store; neither → nothing (no .foot-apps, no gap). */}
+            <StoreBadges className="foot-apps" linkClassName="foot-badge" countryCode={country?.current.code} locale={locale} apps={apps ?? { ios: false, android: false }} />
         </div>
       </div>
       {/* 🔴 REVERSED ON 2 SEPTEMBER 2026, ON REQUEST — THE ORIGINAL REASONING IS KEPT BELOW ON PURPOSE.

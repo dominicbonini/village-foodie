@@ -15,6 +15,8 @@
 // ── THE ADDRESS ──────────────────────────────────────────────────────────────────────────────────────────────────────
 // The section and slug are the country's own messages (comparison.path); any other pair is a 404. Static siblings —
 // app/[country]/features and /compare — always win over this route.
+// store-badges-1: the footer's store badges follow the country's app flags (the cached reader the FAQ and comparison pages use).
+import { appsOf } from '@/lib/comparison-flags'
 import { cache } from 'react'
 import Link from 'next/link'
 import { Archivo, Public_Sans, Courier_Prime } from 'next/font/google'
@@ -252,7 +254,8 @@ export default async function ComparisonPage({ params, searchParams }: { params:
         </main>
 
         <LandingFooter landingHref={visitor.paths.landing} featuresHref={visitor.paths.features} country={visitor.menu} locale={settings.locale}
-          comparison={await comparisonFooter(settings.countryCode, settings.locale)} />
+          comparison={await comparisonFooter(settings.countryCode, settings.locale)} 
+          apps={await appsOf(settings.countryCode)} />
       </div>
       <DemoModal />
     </DemoModalProvider>

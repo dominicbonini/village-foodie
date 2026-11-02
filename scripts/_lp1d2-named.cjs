@@ -469,10 +469,34 @@ const NAMED = [
   //    OUT OF SCOPE (smoke): components/StoreBadges.tsx — both badge <img>s gain loading="lazy", so React no longer emits
   //    their two image preload links. Manage › Settings shows the badges (GB and US). PRECISE, one copy
   //    (scripts/_lp-seo-fixes.cjs badgesLazy, also named by Part 1 and Phase 1e).
+  // ── ⚠️ RE-PINNED (store-badges-1, 2 November 2026, docs/store-badges-1-report.md) ──────────────────────────────────────────
+  //    GET /api/manage answers the truck's country's app flags (`appsAvailable`, after countrySettings — none in these fixtures),
+  //    and Manage › Settings' app-download card shows only where one is, so it is gone from the shell's Settings views. PRECISE.
+  ...(require('./_lp-store-badges-1.cjs').LANDED ? [
+    { id: 'store-badges-1-manage-get', country: 'both', agent: 'store-badges-1 (2 Nov 2026)',
+      what: '⚠️ RE-PINNED (store-badges-1, 2 November 2026): GET /api/manage answers `appsAvailable` (the truck\'s country\'s app flags) right after countrySettings — { ios: false, android: false } in these fixtures. PRECISE.',
+      views: id => /^api\/(GB|US)\|manageGET\|/.test(id),
+      expect: b => require('./_lp-store-badges-1.cjs').manageGetApps(b) },
+    { id: 'store-badges-1-settings-prop', country: 'both', agent: 'store-badges-1 (2 Nov 2026)',
+      what: '⚠️ RE-PINNED (store-badges-1, 2 November 2026): Manage hands SettingsTab the truck\'s country\'s app flags (`appsAvailable`, after `notices`) — the app-download card shows only where an app is. The shell stubs the tab, so its props record the new one — { ios: false, android: false } in these fixtures. PRECISE.',
+      views: id => /^shell\/(GB|US)\|shell\|(tab|notices\|all)\|settings$/.test(id),
+      expect: b => mapStrings(b, x => stProps(x, 'SettingsTab', p => ('notices' in p && !('appsAvailable' in p) ? { ...p, appsAvailable: { ios: false, android: false } } : p))) },
+  ] : []),
   { id: 'seo-s7-badges-lazy', country: 'both', agent: 'seo-fixes (20 Oct 2026)', smokeOnly: true,
     what: '⚠️ RE-PINNED (seo-fixes S7, 20 October 2026): Manage › Settings — the App Store / Google Play badges load lazily: loading="lazy" on both <img>s (after height), their two <link rel="preload" as="image"> gone. PRECISE, GB and US.',
     views: id => /^smoke-settings\/(GB|US)\|[^|]+\|page$/.test(id),
     expect: b => mapStrings(b, require('./_lp-seo-fixes.cjs').badgesLazy) },
+  // ⚠️ RE-PINNED (store-badges-1, 2 November 2026): AFTER seo-s7 (which needs the badges to make them lazy), the card goes.
+  ...(require('./_lp-store-badges-1.cjs').LANDED ? [
+  { id: 'store-badges-1-manage-get', country: 'both', agent: 'store-badges-1 (2 Nov 2026)', smokeOnly: true,
+      what: '⚠️ RE-PINNED (store-badges-1, 2 November 2026): GET /api/manage answers `appsAvailable` right after countrySettings — { ios: false, android: false } in these fixtures. PRECISE.',
+      views: id => /^smoke-api\/(GB|US)\|manageGET\|/.test(id),
+      expect: b => require('./_lp-store-badges-1.cjs').manageGetApps(b) },
+  { id: 'store-badges-1-app-card', country: 'both', agent: 'store-badges-1 (2 Nov 2026)', smokeOnly: true,
+      what: '⚠️ RE-PINNED (store-badges-1, 2 November 2026): Manage › Settings — the app-download card shows only where the truck\'s country has an app (none in these fixtures), so it is gone. PRECISE, GB and US.',
+      views: id => /^smoke-settings\/(GB|US)\|[^|]+\|page$/.test(id),
+      expect: b => require('./_lp-store-badges-1.cjs').noAppCardMust(b) },
+  ] : []),
 ]
 
 const SMOKE_SHARED = [

@@ -518,8 +518,13 @@ if (RENDER) {
   const BADGE_PRELOAD = /<link rel="preload" as="image" href="\/badges\/[^"]+"\/>/g
   const BADGE_LAZY = /(<img src="\/badges\/[^"]+" alt="[^"]+" width="\d+" height="40") loading="lazy"/g
   /** SEO-badges: [after without the two lazy attributes, before without the two preload hints]; null if not exactly that. */
-  const seoBadges = (a, b) => (a.match(BADGE_LAZY) || []).length === 2 && (b.match(BADGE_PRELOAD) || []).length === 2 && !BADGE_PRELOAD.test(a)
-    ? [a.replace(BADGE_LAZY, '$1'), b.replace(BADGE_PRELOAD, '')] : null
+  // ⚠️ RE-PINNED (store-badges-1, 2 November 2026): the footer badges follow the country's app flags, none set in these fixtures —
+  // so AFTER carries NO badge (and no preload hint), and BEFORE's two badges, their two preload hints and the Play URL's &hl=en go
+  // (scripts/_lp-store-badges-1.cjs; the badges themselves are proven by scripts/store-badges-1.cjs).
+  const seoBadges = (a, b) => (SB1.LANDED && !/foot-apps|\/badges\//.test(a)
+    ? ((b.match(BADGE_PRELOAD) || []).length === 2 && SB1.carriesBadges(b) ? [a, SB1.noBadges(b.replace(BADGE_PRELOAD, ''))] : null)
+    : (a.match(BADGE_LAZY) || []).length === 2 && (b.match(BADGE_PRELOAD) || []).length === 2 && !BADGE_PRELOAD.test(a)
+      ? [a.replace(BADGE_LAZY, '$1'), b.replace(BADGE_PRELOAD, '')] : null)
   /** SEO-ld: the new graph checked against BEFORE's one SoftwareApplication object. */
   const ldOk = (g, old, cc) => {
     const slug = cc === 'US' ? 'us' : 'uk', cur = cc === 'US' ? 'USD' : 'GBP'
@@ -567,6 +572,7 @@ if (RENDER) {
   // eslint-disable-next-line @typescript-eslint/no-require-imports -- CommonJS harness module (world-countries-1)
   const TAGLINE = require('./_lp-tagline.cjs')
   const CT1 = require('./_lp-copy-truth-1.cjs')   // ⚠️ RE-PINNED (copy-truth-1): see its use below
+  const SB1 = require('./_lp-store-badges-1.cjs')   // eslint-disable-line @typescript-eslint/no-require-imports -- ⚠️ RE-PINNED (store-badges-1): see seoBadges
   const SG2 = require('./_lp-seo-geo-2.cjs')   // eslint-disable-line @typescript-eslint/no-require-imports -- ⚠️ RE-PINNED (seo-geo-2 B3): see its use below
   // ⚠️ RE-PINNED (world-countries-2, 1 November 2026): the Terms (§4) and the Country-specific terms (eight countries) re-dated
   // 1 November 2026 (scripts/_lp-world-countries-2.cjs).

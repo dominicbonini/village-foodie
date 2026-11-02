@@ -2086,6 +2086,10 @@ function runWiringSuite(lib) {
      * logo's card-title treatment, the cancellation group's stray divider and duplicate label, and the
      * lines that gained an id/import. Anything NOT on it is a loss. */
     const allowed = [
+      /* ⚠️ RE-PINNED (store-badges-1, 2 November 2026, docs/store-badges-1-report.md): the app-download card shows only where the
+       * truck's country has an app (`(appsAvailable.ios || appsAvailable.android)` joined its condition), proved by
+       * scripts/store-badges-1.cjs §5. */
+      "{!isNativeApp() && (",
       /* ⚠️ MIDNIGHT EVENTS AND THE IMPORT REVIEW (17 October 2026, docs/midnight-and-format-fixes-report.md), proved by
        * scripts/midnight-events.cjs (area "manage") and the companion check below: the end-time field offers every time
        * but the start's own (`notSameAs`, was `minExclusive`), `endEqualsStart` replaced `endIsNotAfterStart`, the status
@@ -2984,7 +2988,7 @@ function runWiringSuite(lib) {
      * scripts/language-phase-1e.cjs's Billing views (GB F === BEFORE byte-identical; US listed). ══ */
     movedEdits.push(
       { was: 'const vanPx = usePriceMask()', nowIn: PAGE_F, now: 'const vanPx = (val: string) => priceText(vanMask(val), vanSettings.locale)', reason: "the van add-on's price word in the truck's locale (the mask is `vanMask`)" },
-      { exact: true, was: '<StoreBadges className="mt-3 flex flex-wrap items-center gap-3" />', nowIn: PAGE_F, now: '<StoreBadges className="mt-3 flex flex-wrap items-center gap-3" countryCode={truck?.country} locale={settingsLocale} />', reason: "the App Store link follows the truck's country (GB unchanged); ⚠️ RE-PINNED (languages-1): the badge alt text in the truck's language" },
+      { exact: true, was: '<StoreBadges className="mt-3 flex flex-wrap items-center gap-3" />', nowIn: PAGE_F, now: '<StoreBadges className="mt-3 flex flex-wrap items-center gap-3" countryCode={truck?.country} locale={settingsLocale} apps={appsAvailable} />', reason: "the App Store link follows the truck's country (GB unchanged); ⚠️ RE-PINNED (languages-1): the badge alt text in the truck's language; ⚠️ RE-PINNED (store-badges-1): each badge only where the truck's country has that app (`apps`)" },
       { exact: true, was: 'const px = usePriceMask()', nowIn: PAGE_F, now: 'const px = (val: string) => priceText(mask(val), cs.locale)', reason: "Billing's price words in the truck's locale (the mask is `mask`)" },
       { exact: true, was: '<div key={row.name} className="flex items-start py-2.5 border-t border-slate-100">', nowIn: PAGE_F, now: '<div key={row.id} className="flex items-start py-2.5 border-t border-slate-100">', reason: 'React key by row id' },
       { exact: true, was: '{FEATURE_SECTIONS.map(section => (', nowIn: PAGE_F, now: '{sections.map(section => (', reason: "the sections in the truck's locale: const sections = featureSections(cs.locale)" },

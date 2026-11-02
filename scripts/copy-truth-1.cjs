@@ -44,12 +44,12 @@ async function views(tag, landingText, featuresText, gbApps = true) {
     const P = await kit.quietAsync(() => R.page('landing', seg, rows))
     // ⚠️ RE-PINNED (seo-geo-2 B3, 2 November 2026): hashed as HEAD rendered it — the JSON-LD's operatingSystem set back to
     // "Web, iOS, Android" where seo-geo-2 made it "Web" (scripts/_lp-seo-geo-2.cjs asBefore; the value is proven by seo-geo-2.cjs).
-    out[`${cc}/landing`] = sha(once(SG2.asBefore(P.html), `<p>${landingText(cc)}</p>`, `${cc}/landing`)) + ':' + sha(JSON.stringify(P.meta))
+    out[`${cc}/landing`] = sha(once(SB1.strip(SG2.asBefore(P.html)), `<p>${landingText(cc)}</p>`, `${cc}/landing`)) + ':' + sha(JSON.stringify(P.meta))
     cut[`${cc}/landing`] = P.html
   }
   for (const cc of ['GB', 'US']) {
     const P = await kit.quietAsync(() => R.page('features', SEG[cc], rows))
-    out[`${cc}/features`] = sha(once(P.html, featuresText(cc), `${cc}/features`)) + ':' + sha(JSON.stringify(P.meta))
+    out[`${cc}/features`] = sha(once(SB1.strip(P.html), featuresText(cc), `${cc}/features`)) + ':' + sha(JSON.stringify(P.meta))
     cut[`${cc}/features`] = P.html
   }
   const llmsText = await R.llms(rows)
@@ -59,6 +59,9 @@ async function views(tag, landingText, featuresText, gbApps = true) {
 }
 
 const LOCALE = { GB: 'en-GB', US: 'en-US', BR: 'pt-BR', JP: 'ja-JP' }
+// ⚠️ RE-PINNED (store-badges-1, 2 November 2026): hashed with the footer's store badges and the Play URL's &hl=en taken out (scripts/
+// _lp-store-badges-1.cjs strip, both sides; the badges follow the app flags now and are proven by scripts/store-badges-1.cjs).
+const SB1 = require('./_lp-store-badges-1.cjs')
 const SG2 = require('./_lp-seo-geo-2.cjs')   // eslint-disable-line @typescript-eslint/no-require-imports -- CommonJS harness module (seo-geo-2)
 
 ;(async () => {

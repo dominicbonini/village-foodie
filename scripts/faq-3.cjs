@@ -29,6 +29,9 @@ const CDE = require('./_compare-de-1-fixtures.cjs')
 const FIX = require('./fixtures/faq-3-rows.json')
 // ⚠️ RE-PINNED (seo-geo-2 B3, 2 November 2026): the landing pages are hashed as HEAD rendered them — the JSON-LD's operatingSystem
 // set back to "Web, iOS, Android" where seo-geo-2 made it "Web" (scripts/_lp-seo-geo-2.cjs asBefore; seo-geo-2.cjs proves the value).
+// ⚠️ RE-PINNED (store-badges-1, 2 November 2026): hashed with the footer's store badges and the Play URL's &hl=en taken out (scripts/
+// _lp-store-badges-1.cjs strip, both sides; the badges follow the app flags now and are proven by scripts/store-badges-1.cjs).
+const SB1 = require('./_lp-store-badges-1.cjs')
 const SG2 = require('./_lp-seo-geo-2.cjs')
 const IDENTITY = path.join(REPO, 'scripts/fixtures/faq-3-identity.json')
 
@@ -47,12 +50,12 @@ async function identitySet() {
   // GB and US first, with NO FAQ rows: the empty FAQ renders nothing, so the page is HEAD's.
   for (const seg of ['uk', 'us']) {
     const r = await kit.quietAsync(() => wf.page('landing', seg, rows))
-    out[`landing:${seg}:no-faq`] = { html: sha(SG2.asBefore(r.html)), meta: sha(JSON.stringify(r.meta)), redirectedTo: r.redirectedTo }
+    out[`landing:${seg}:no-faq`] = { html: sha(SB1.strip(SG2.asBefore(r.html))), meta: sha(JSON.stringify(r.meta)), redirectedTo: r.redirectedTo }
   }
   Object.assign(wf.tables, FAQ())   // the renderer's own tables object — every request after this holds the FAQ rows
   for (const seg of ['de', 'fr', 'br', 'jp']) {
     const r = await kit.quietAsync(() => wf.page('landing', seg, rows))
-    out[`landing:${seg}`] = { html: sha(SG2.asBefore(r.html)), meta: sha(JSON.stringify(r.meta)), redirectedTo: r.redirectedTo }
+    out[`landing:${seg}`] = { html: sha(SB1.strip(SG2.asBefore(r.html))), meta: sha(JSON.stringify(r.meta)), redirectedTo: r.redirectedTo }
   }
   // Comparison pages over compare-de-1's renderer: every visibility and view, the till players, the app flags, the twins, with the
   // FAQ rows in the database too.
@@ -69,7 +72,7 @@ async function identitySet() {
   }
   for (const [k, o] of Object.entries(pages)) {
     const r = await kit.quietAsync(() => cmp.page({ ...o, tables: { ...faqT, ...(o.tables || {}) } }))
-    out[`comparison:${k}`] = { html: sha(SG2.asBefore(r.html)), meta: sha(JSON.stringify(r.meta)), notFound: r.notFound, empty: !r.html }
+    out[`comparison:${k}`] = { html: sha(SB1.strip(SG2.asBefore(r.html))), meta: sha(JSON.stringify(r.meta)), notFound: r.notFound, empty: !r.html }
   }
   for (const f of ['md', 'json']) {
     const r = await kit.quietAsync(() => cmp.twin(f, { status: 'live', tables: faqT }))
@@ -83,7 +86,7 @@ async function identitySet() {
     const meta = await cmp.M.generateMetadata(args)
     return { meta, html: await cmp.ctx.prerender(kit.h(cmp.M.default, args)) }
   }))
-  out['comparison:gb:live'] = { html: sha(gb.html), meta: sha(JSON.stringify(gb.meta)) }
+  out['comparison:gb:live'] = { html: sha(SB1.strip(gb.html)), meta: sha(JSON.stringify(gb.meta)) }
   return out
 }
 

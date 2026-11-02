@@ -135,29 +135,29 @@ schedule/US|vanFilter|two	words
 schedule/US|vanFilter|label|all	words
 schedule/US|privateLink|on	words
 schedule/US|privateLink|copied	words
-settings/US|owner|page	code: 1e-us-app-store-link+1d-us-settings-clock+us-layout-fix-1-nbsp+us-layout-fix-12-deadline-row+seo-s7-badges-lazy + words
-settings/US|twoVans|page	code: 1e-us-app-store-link+1d-us-settings-clock+us-layout-fix-1-nbsp+us-layout-fix-12-deadline-row+seo-s7-badges-lazy + words
-settings/US|manager|page	code: 1e-us-app-store-link+1d-us-settings-clock+us-layout-fix-1-nbsp+us-layout-fix-12-deadline-row+seo-s7-badges-lazy + words
-settings/US|starter|page	code: 1e-us-app-store-link+1d-us-settings-clock+us-layout-fix-1-nbsp+us-layout-fix-12-deadline-row+seo-s7-badges-lazy + words
-settings/US|pro|page	code: 1e-us-app-store-link+1d-us-settings-clock+us-layout-fix-1-nbsp+us-layout-fix-12-deadline-row+seo-s7-badges-lazy + words
-settings/US|legacy|page	code: 1e-us-app-store-link+1d-us-settings-clock+us-layout-fix-1-nbsp+us-layout-fix-12-deadline-row+seo-s7-badges-lazy + words
-settings/US|addingVan|page	code: 1e-us-app-store-link+1d-us-settings-clock+us-layout-fix-1-nbsp+us-layout-fix-12-deadline-row+seo-s7-badges-lazy + words
-settings/US|renamingVan|page	code: 1e-us-app-store-link+1d-us-settings-clock+us-layout-fix-1-nbsp+us-layout-fix-12-deadline-row+seo-s7-badges-lazy + words
-settings/US|deletingVan|page	code: 1e-us-app-store-link+1d-us-settings-clock+us-layout-fix-1-nbsp+us-layout-fix-12-deadline-row+seo-s7-badges-lazy + words
-settings/US|vanBilling|page	code: 1e-us-app-store-link+1d-us-settings-clock+us-layout-fix-1-nbsp+us-layout-fix-12-deadline-row+seo-s7-badges-lazy + words
-settings/US|vanUpgrade|page	code: 1e-us-app-store-link+1d-us-settings-clock+us-layout-fix-1-nbsp+us-layout-fix-12-deadline-row+seo-s7-badges-lazy + words
-settings/US|qrModal|page	code: 1e-us-app-store-link+1d-us-settings-clock+us-layout-fix-1-nbsp+us-layout-fix-12-deadline-row+seo-s7-badges-lazy + words
-settings/US|qrPreviews|page	code: 1e-us-app-store-link+1d-us-settings-clock+us-layout-fix-1-nbsp+us-layout-fix-12-deadline-row+seo-s7-badges-lazy + words
-settings/US|verifyError|page	code: 1e-us-app-store-link+1d-us-settings-clock+us-layout-fix-1-nbsp+us-layout-fix-12-deadline-row+seo-s7-badges-lazy + words
-settings/US|verifying|page	code: 1e-us-app-store-link+1d-us-settings-clock+us-layout-fix-1-nbsp+us-layout-fix-12-deadline-row+seo-s7-badges-lazy + words
-settings/US|preorders|page	code: 1e-us-app-store-link+1d-us-settings-clock+us-layout-fix-1-nbsp+us-layout-fix-12-deadline-row+seo-s7-badges-lazy + words
-settings/US|preordersOff|page	code: 1e-us-app-store-link+1d-us-settings-clock+us-layout-fix-1-nbsp+us-layout-fix-12-deadline-row+seo-s7-badges-lazy + words
-settings/US|emoji|page	code: 1e-us-app-store-link+1d-us-settings-clock+us-layout-fix-1-nbsp+us-layout-fix-12-deadline-row+seo-s7-badges-lazy + words
-settings/US|kds|page	code: 1e-us-app-store-link+1d-us-settings-clock+us-layout-fix-1-nbsp+us-layout-fix-12-deadline-row+seo-s7-badges-lazy + words
-settings/US|noCuisine|page	code: 1e-us-app-store-link+1d-us-settings-clock+us-layout-fix-1-nbsp+us-layout-fix-12-deadline-row+seo-s7-badges-lazy + words
-settings/US|setup|page	code: 1e-us-app-store-link+1d-us-settings-clock+us-layout-fix-1-nbsp+us-layout-fix-12-deadline-row+seo-s7-badges-lazy + words
-settings/US|trial|page	code: 1e-us-app-store-link+1d-us-settings-clock+us-layout-fix-1-nbsp+us-layout-fix-12-deadline-row+seo-s7-badges-lazy + words
-settings/US|noBase|page	code: 1e-us-app-store-link+1d-us-settings-clock+us-layout-fix-1-nbsp+us-layout-fix-12-deadline-row+seo-s7-badges-lazy + words
+settings/US|owner|page	code: 1e-us-app-store-link+1d-us-settings-clock+us-layout-fix-1-nbsp+us-layout-fix-12-deadline-row+seo-s7-badges-lazy+store-badges-1-app-card + words
+settings/US|twoVans|page	code: 1e-us-app-store-link+1d-us-settings-clock+us-layout-fix-1-nbsp+us-layout-fix-12-deadline-row+seo-s7-badges-lazy+store-badges-1-app-card + words
+settings/US|manager|page	code: 1e-us-app-store-link+1d-us-settings-clock+us-layout-fix-1-nbsp+us-layout-fix-12-deadline-row+seo-s7-badges-lazy+store-badges-1-app-card + words
+settings/US|starter|page	code: 1e-us-app-store-link+1d-us-settings-clock+us-layout-fix-1-nbsp+us-layout-fix-12-deadline-row+seo-s7-badges-lazy+store-badges-1-app-card + words
+settings/US|pro|page	code: 1e-us-app-store-link+1d-us-settings-clock+us-layout-fix-1-nbsp+us-layout-fix-12-deadline-row+seo-s7-badges-lazy+store-badges-1-app-card + words
+settings/US|legacy|page	code: 1e-us-app-store-link+1d-us-settings-clock+us-layout-fix-1-nbsp+us-layout-fix-12-deadline-row+seo-s7-badges-lazy+store-badges-1-app-card + words
+settings/US|addingVan|page	code: 1e-us-app-store-link+1d-us-settings-clock+us-layout-fix-1-nbsp+us-layout-fix-12-deadline-row+seo-s7-badges-lazy+store-badges-1-app-card + words
+settings/US|renamingVan|page	code: 1e-us-app-store-link+1d-us-settings-clock+us-layout-fix-1-nbsp+us-layout-fix-12-deadline-row+seo-s7-badges-lazy+store-badges-1-app-card + words
+settings/US|deletingVan|page	code: 1e-us-app-store-link+1d-us-settings-clock+us-layout-fix-1-nbsp+us-layout-fix-12-deadline-row+seo-s7-badges-lazy+store-badges-1-app-card + words
+settings/US|vanBilling|page	code: 1e-us-app-store-link+1d-us-settings-clock+us-layout-fix-1-nbsp+us-layout-fix-12-deadline-row+seo-s7-badges-lazy+store-badges-1-app-card + words
+settings/US|vanUpgrade|page	code: 1e-us-app-store-link+1d-us-settings-clock+us-layout-fix-1-nbsp+us-layout-fix-12-deadline-row+seo-s7-badges-lazy+store-badges-1-app-card + words
+settings/US|qrModal|page	code: 1e-us-app-store-link+1d-us-settings-clock+us-layout-fix-1-nbsp+us-layout-fix-12-deadline-row+seo-s7-badges-lazy+store-badges-1-app-card + words
+settings/US|qrPreviews|page	code: 1e-us-app-store-link+1d-us-settings-clock+us-layout-fix-1-nbsp+us-layout-fix-12-deadline-row+seo-s7-badges-lazy+store-badges-1-app-card + words
+settings/US|verifyError|page	code: 1e-us-app-store-link+1d-us-settings-clock+us-layout-fix-1-nbsp+us-layout-fix-12-deadline-row+seo-s7-badges-lazy+store-badges-1-app-card + words
+settings/US|verifying|page	code: 1e-us-app-store-link+1d-us-settings-clock+us-layout-fix-1-nbsp+us-layout-fix-12-deadline-row+seo-s7-badges-lazy+store-badges-1-app-card + words
+settings/US|preorders|page	code: 1e-us-app-store-link+1d-us-settings-clock+us-layout-fix-1-nbsp+us-layout-fix-12-deadline-row+seo-s7-badges-lazy+store-badges-1-app-card + words
+settings/US|preordersOff|page	code: 1e-us-app-store-link+1d-us-settings-clock+us-layout-fix-1-nbsp+us-layout-fix-12-deadline-row+seo-s7-badges-lazy+store-badges-1-app-card + words
+settings/US|emoji|page	code: 1e-us-app-store-link+1d-us-settings-clock+us-layout-fix-1-nbsp+us-layout-fix-12-deadline-row+seo-s7-badges-lazy+store-badges-1-app-card + words
+settings/US|kds|page	code: 1e-us-app-store-link+1d-us-settings-clock+us-layout-fix-1-nbsp+us-layout-fix-12-deadline-row+seo-s7-badges-lazy+store-badges-1-app-card + words
+settings/US|noCuisine|page	code: 1e-us-app-store-link+1d-us-settings-clock+us-layout-fix-1-nbsp+us-layout-fix-12-deadline-row+seo-s7-badges-lazy+store-badges-1-app-card + words
+settings/US|setup|page	code: 1e-us-app-store-link+1d-us-settings-clock+us-layout-fix-1-nbsp+us-layout-fix-12-deadline-row+seo-s7-badges-lazy+store-badges-1-app-card + words
+settings/US|trial|page	code: 1e-us-app-store-link+1d-us-settings-clock+us-layout-fix-1-nbsp+us-layout-fix-12-deadline-row+seo-s7-badges-lazy+store-badges-1-app-card + words
+settings/US|noBase|page	code: 1e-us-app-store-link+1d-us-settings-clock+us-layout-fix-1-nbsp+us-layout-fix-12-deadline-row+seo-s7-badges-lazy+store-badges-1-app-card + words
 settings/US|whereYouTrade|set	words
 settings/US|whereYouTrade|unset	words
 settings/US|whereYouTrade|readOnly	words
@@ -257,7 +257,7 @@ api/US|manage|addVanNoName	code: named difference 1 (name_required)
 api/US|manage|renameVanNoName	code: named difference 1 (name_required)
 api/US|manage|deleteLastVan	code: named difference 1 (last_van) + words
 api/US|manage|unknownAction	code: named difference 1 (unknown_action)
-api/US|manageGET|stockWarning	code: plans-manage-get-catalogue+pricing-b-country-settings-fields+allergen-card-country-field+address-formats-1-country-key+world-countries-1-manage-fields+pricing-b-catalogue-ignored-features + words
+api/US|manageGET|stockWarning	code: plans-manage-get-catalogue+pricing-b-country-settings-fields+allergen-card-country-field+address-formats-1-country-key+world-countries-1-manage-fields+pricing-b-catalogue-ignored-features+store-badges-1-manage-get + words
 api/US|eventTypes|badJson	code: named difference 1 (bad_request)
 api/US|eventTypes|noToken	code: named difference 1 (token_required)
 api/US|eventTypes|badToken	code: named difference 1 (invalid_token)

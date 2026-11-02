@@ -662,6 +662,8 @@ export default function ManagePage({ params }: { params: Promise<{ token: string
   // The truck's own country settings, from the same authenticated /api/manage response (never read by the
   // browser directly). Every price below the CountrySettingsProvider reads them. See the provider's header.
   const [countrySettings, setCountrySettings] = useState<CountrySettings | null>(null)
+  // store-badges-1: the truck's country's app flags (from /api/manage) — the app-download card shows only where one is available.
+  const [appsAvailable, setAppsAvailable] = useState<{ ios: boolean; android: boolean }>({ ios: false, android: false })
   // The plan catalogue (public.plans / public.plan_prices), from the same response (plans-data-model Stage A). Every plan
   // fact below — the effective plan, its price, the extra-van price, "is this a trial" — is read through lib/plans.ts.
   const [planCatalog, setPlanCatalog] = useState<PlanCatalog | null>(null)
@@ -831,6 +833,7 @@ export default function ManagePage({ params }: { params: Promise<{ token: string
       if (!res.ok) throw Object.assign(new Error(data.error), { auth: res.status === 401 || res.status === 403 })
       setTruck(data.truck)
       setCountrySettings(data.countrySettings ?? null)
+      setAppsAvailable({ ios: data.appsAvailable?.ios === true, android: data.appsAvailable?.android === true })
       setPlanCatalog(data.plans ?? null)
       // 🔴 FAIL TOWARD 'not_connected'. An older deployment (or a payload without the field) must offer
       // setup rather than imply a connection. Never default to anything that reads as connected.
@@ -1630,7 +1633,7 @@ export default function ManagePage({ params }: { params: Promise<{ token: string
             setCurrentUserPhone(phone)
           }}
         />}
-        {activeTab === 'settings'  && <SettingsTab  userRole={userRole} truck={truck} whatsappConnection={whatsappConnection} whatsappUsage={whatsappUsage} onConnectionUpdate={setWhatsappConnection} token={token} api={api} showToast={showToast} onVerifySuccess={handleVerifiedEvents} onSwitchTab={setActiveTab} categories={categories} items={items} subcategories={subcategories} onTruckUpdate={partial => setTruck(prev => prev ? { ...prev, ...partial } : prev)} onItemsPatch={(ids, patch) => setItems(prev => prev.map(i => ids.includes(i.id) ? { ...i, ...patch } : i))} onCategoriesPatch={(ids, patch) => setCategories(prev => prev.map(c => ids.includes(c.id) ? { ...c, ...patch } : c))} onOpenWalkthrough={openWalkthrough} notices={notices} />}
+        {activeTab === 'settings'  && <SettingsTab  userRole={userRole} truck={truck} whatsappConnection={whatsappConnection} whatsappUsage={whatsappUsage} onConnectionUpdate={setWhatsappConnection} token={token} api={api} showToast={showToast} onVerifySuccess={handleVerifiedEvents} onSwitchTab={setActiveTab} categories={categories} items={items} subcategories={subcategories} onTruckUpdate={partial => setTruck(prev => prev ? { ...prev, ...partial } : prev)} onItemsPatch={(ids, patch) => setItems(prev => prev.map(i => ids.includes(i.id) ? { ...i, ...patch } : i))} onCategoriesPatch={(ids, patch) => setCategories(prev => prev.map(c => ids.includes(c.id) ? { ...c, ...patch } : c))} onOpenWalkthrough={openWalkthrough} notices={notices} appsAvailable={appsAvailable} />}
         {activeTab === 'payments'  && <PaymentsTab  token={token} onTrial={onTrialPlan} features={featureAccessView(truck, planCatalog, truck?.country ?? null)} showToast={showToast}
           /* Phase 3 screens: after the online payments section and before "Walk-up payments" — the new
            * "Tax, tips and fees" card (only where tax is added at checkout), then "Taking payment", moved
@@ -11383,7 +11386,13 @@ function useSettingsJumpBar(active: boolean) {
   return { barRef, sectionEls, pinnedTop, activeId, jumpTo, lastSectionMinHeight }
 }
 
-function SettingsTab({ userRole, truck, whatsappConnection, whatsappUsage, onConnectionUpdate, token, api, showToast, onVerifySuccess, onSwitchTab, categories, items, subcategories, onTruckUpdate, onItemsPatch, onCategoriesPatch, onOpenWalkthrough, notices }: {
+/** store-badges-1: no app in the truck's country's stores — the default until /api/manage says otherwise. */
+const NO_APPS = { ios: false, android: false } as const
+
+function SettingsTab({ userRole, truck, whatsappConnection, whatsappUsage, onConnectionUpdate, token, api, showToast, onVerifySuccess, onSwitchTab, categories, items, subcategories, onTruckUpdate, onItemsPatch, onCategoriesPatch, appsAvailable = NO_APPS, onOpenWalkthrough, notices }: {
+  /** store-badges-1: the truck's country's app flags — the app-download card shows only where at least one app is available.
+   *  Absent → none (no card). */
+  appsAvailable?: { ios: boolean; android: boolean }
   /** 🔴 OWNER-ONLY gating for the danger zone at the bottom. The Settings TAB itself is owner+manager,
    *  so this is the existing role value narrowed one step further — not a new check. */
   userRole: UserRole
@@ -12368,7 +12377,9 @@ function SettingsTab({ userRole, truck, whatsappConnection, whatsappUsage, onCon
           ⚠️ `isNativeApp()` IS CALLED DIRECTLY WITH NO `mounted` FLAG, and that is safe here for the
           reason recorded at the auto-replies wrapper below: SettingsTab renders beneath the `loading`
           early-return, so this markup appears in no server render and cannot hydrate-mismatch. */}
-      {!isNativeApp() && (
+      {/* store-badges-1 (2 November 2026): only where the truck's country has at least one app in its stores (never an app where its
+          flag is false, 35.ak-7). Wording unchanged. */}
+      {!isNativeApp() && (appsAvailable.ios || appsAvailable.android) && (
         <Card className="p-4">
           <p className="text-base font-bold text-slate-800">{t('getApp.title')}</p>
           {/* ⚠️ OPERATOR VOCABULARY AND A REASON, NOT A FEATURE LIST. The one thing the app does that
@@ -12379,7 +12390,7 @@ function SettingsTab({ userRole, truck, whatsappConnection, whatsappUsage, onCon
           </p>
           {/* 🔴 THE SHARED BADGES — components/StoreBadges.tsx. Apple's badge first and in black is a
               VENDOR RULE, not styling, which is why this is a component and not two <a> tags here. */}
-          <StoreBadges className="mt-3 flex flex-wrap items-center gap-3" countryCode={truck?.country} locale={settingsLocale} />
+          <StoreBadges className="mt-3 flex flex-wrap items-center gap-3" countryCode={truck?.country} locale={settingsLocale} apps={appsAvailable} />
         </Card>
       )}
 

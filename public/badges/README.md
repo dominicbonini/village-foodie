@@ -82,3 +82,93 @@ Both badges render from **one component**, `components/StoreBadges.tsx`, reading
 
 🔴 **APPLE'S BADGE IS FIRST IN THE DOM AND THE WRAPPER HAS NO `order` PROPERTY**, so Apple's *"place the
 App Store badge first in the lineup"* holds by construction and cannot be undone in CSS.
+
+
+## Every language (store-badges-1, 2 November 2026)
+
+Each vendor's **own** localized badge for each of the site's 28 language bases, **downloaded unmodified** from the vendor on
+**2 November 2026** and written to disk byte-for-byte. **Nothing was edited, recoloured, cropped, re-lettered or redrawn** — both
+vendors forbid it, and "App Store" is never translated. Checked by eye: Apple's own files keep "App Store" in English;
+Apple's **Croatian** badge declines it the Croatian way ("Preuzmi u App Store**u**") — that is Apple's artwork, unmodified. The English files above keep their
+names and stay the English badges (every English locale, and any language without a file of its own).
+
+- **Apple** — the **black** "Download on the App Store" badge, **SVG**, from Apple's marketing tools
+  (`toolbox.marketingtools.apple.com`, an apple.com host; `tools.applemarketingtools.com` did not resolve from here). Norwegian is
+  Apple's `no-no`, Arabic Apple's `ar-ar`. Each file keeps its OWN size: most are 119.66 × 40, but French, Hungarian, Croatian
+  (130.14 × 41), Finnish, Estonian, Japanese and Chinese are wider or narrower.
+- **Google** — the "Get it on Google Play" badge from Google's badge page (`play.google.com/intl/…/badges`). **Google offers no
+  SVG there, so it is the PNG, 646 × 250** — 6.25× our 40 px display height (at least 3× was asked). Full-bleed (no built-in
+  margin), so it sizes by height like the English one. Portuguese (Portugal) is Google's `pt`, Norwegian `no`.
+- **No English fallback was needed:** both vendors have a badge for all 28 languages.
+- Regional variants read their base's file (de-AT / de-CH / de-LI → de-DE, es-MX → es-ES, fr-LU → fr-FR, nl-BE → nl-NL,
+  el-CY → el-GR) — `lib/store-badge-files.ts` `badgeFor`.
+- Every file's sha256 is in `scripts/fixtures/store-badges-1-manifest.json`; `scripts/store-badges-1.cjs` checks each file on disk
+  against it.
+- **Shown only where the app is available:** `components/StoreBadges.tsx` renders Apple's badge only where the page's country has
+  `ios_app_available`, Google's only where it has `android_app_available` (35.ak-7), Apple first, and nothing at all when neither.
+
+### Apple — `apple/`
+
+| File | Language | Source URL | Downloaded |
+|---|---|---|---|
+| `apple/fr-FR.svg` | French (France) (fr-FR) | https://toolbox.marketingtools.apple.com/api/v2/badges/download-on-the-app-store/black/fr-fr | 2026-11-02 |
+| `apple/de-DE.svg` | German (Germany) (de-DE) | https://toolbox.marketingtools.apple.com/api/v2/badges/download-on-the-app-store/black/de-de | 2026-11-02 |
+| `apple/es-ES.svg` | European Spanish (es-ES) | https://toolbox.marketingtools.apple.com/api/v2/badges/download-on-the-app-store/black/es-es | 2026-11-02 |
+| `apple/it-IT.svg` | Italian (Italy) (it-IT) | https://toolbox.marketingtools.apple.com/api/v2/badges/download-on-the-app-store/black/it-it | 2026-11-02 |
+| `apple/pt-PT.svg` | European Portuguese (pt-PT) | https://toolbox.marketingtools.apple.com/api/v2/badges/download-on-the-app-store/black/pt-pt | 2026-11-02 |
+| `apple/nl-NL.svg` | Dutch (Netherlands) (nl-NL) | https://toolbox.marketingtools.apple.com/api/v2/badges/download-on-the-app-store/black/nl-nl | 2026-11-02 |
+| `apple/sv-SE.svg` | Swedish (Sweden) (sv-SE) | https://toolbox.marketingtools.apple.com/api/v2/badges/download-on-the-app-store/black/sv-se | 2026-11-02 |
+| `apple/da-DK.svg` | Danish (Denmark) (da-DK) | https://toolbox.marketingtools.apple.com/api/v2/badges/download-on-the-app-store/black/da-dk | 2026-11-02 |
+| `apple/nb-NO.svg` | Norwegian Bokmål (Norway) (nb-NO) | https://toolbox.marketingtools.apple.com/api/v2/badges/download-on-the-app-store/black/no-no | 2026-11-02 |
+| `apple/pl-PL.svg` | Polish (Poland) (pl-PL) | https://toolbox.marketingtools.apple.com/api/v2/badges/download-on-the-app-store/black/pl-pl | 2026-11-02 |
+| `apple/cs-CZ.svg` | Czech (Czechia) (cs-CZ) | https://toolbox.marketingtools.apple.com/api/v2/badges/download-on-the-app-store/black/cs-cz | 2026-11-02 |
+| `apple/hu-HU.svg` | Hungarian (Hungary) (hu-HU) | https://toolbox.marketingtools.apple.com/api/v2/badges/download-on-the-app-store/black/hu-hu | 2026-11-02 |
+| `apple/sk-SK.svg` | Slovak (Slovakia) (sk-SK) | https://toolbox.marketingtools.apple.com/api/v2/badges/download-on-the-app-store/black/sk-sk | 2026-11-02 |
+| `apple/ro-RO.svg` | Romanian (Romania) (ro-RO) | https://toolbox.marketingtools.apple.com/api/v2/badges/download-on-the-app-store/black/ro-ro | 2026-11-02 |
+| `apple/hr-HR.svg` | Croatian (Croatia) (hr-HR) | https://toolbox.marketingtools.apple.com/api/v2/badges/download-on-the-app-store/black/hr-hr | 2026-11-02 |
+| `apple/sl-SI.svg` | Slovenian (Slovenia) (sl-SI) | https://toolbox.marketingtools.apple.com/api/v2/badges/download-on-the-app-store/black/sl-si | 2026-11-02 |
+| `apple/fi-FI.svg` | Finnish (Finland) (fi-FI) | https://toolbox.marketingtools.apple.com/api/v2/badges/download-on-the-app-store/black/fi-fi | 2026-11-02 |
+| `apple/et-EE.svg` | Estonian (Estonia) (et-EE) | https://toolbox.marketingtools.apple.com/api/v2/badges/download-on-the-app-store/black/et-ee | 2026-11-02 |
+| `apple/lv-LV.svg` | Latvian (Latvia) (lv-LV) | https://toolbox.marketingtools.apple.com/api/v2/badges/download-on-the-app-store/black/lv-lv | 2026-11-02 |
+| `apple/lt-LT.svg` | Lithuanian (Lithuania) (lt-LT) | https://toolbox.marketingtools.apple.com/api/v2/badges/download-on-the-app-store/black/lt-lt | 2026-11-02 |
+| `apple/el-GR.svg` | Greek (Greece) (el-GR) | https://toolbox.marketingtools.apple.com/api/v2/badges/download-on-the-app-store/black/el-gr | 2026-11-02 |
+| `apple/bg-BG.svg` | Bulgarian (Bulgaria) (bg-BG) | https://toolbox.marketingtools.apple.com/api/v2/badges/download-on-the-app-store/black/bg-bg | 2026-11-02 |
+| `apple/pt-BR.svg` | Brazilian Portuguese (pt-BR) | https://toolbox.marketingtools.apple.com/api/v2/badges/download-on-the-app-store/black/pt-br | 2026-11-02 |
+| `apple/ms-MY.svg` | Malay (Malaysia) (ms-MY) | https://toolbox.marketingtools.apple.com/api/v2/badges/download-on-the-app-store/black/ms-my | 2026-11-02 |
+| `apple/ja-JP.svg` | Japanese (Japan) (ja-JP) | https://toolbox.marketingtools.apple.com/api/v2/badges/download-on-the-app-store/black/ja-jp | 2026-11-02 |
+| `apple/zh-HK.svg` | Chinese (Hong Kong SAR China) (zh-HK) | https://toolbox.marketingtools.apple.com/api/v2/badges/download-on-the-app-store/black/zh-hk | 2026-11-02 |
+| `apple/th-TH.svg` | Thai (Thailand) (th-TH) | https://toolbox.marketingtools.apple.com/api/v2/badges/download-on-the-app-store/black/th-th | 2026-11-02 |
+| `apple/ar-AE.svg` | Arabic (United Arab Emirates) (ar-AE) | https://toolbox.marketingtools.apple.com/api/v2/badges/download-on-the-app-store/black/ar-ar | 2026-11-02 |
+
+### Google — `google/`
+
+| File | Language | Source URL | Downloaded |
+|---|---|---|---|
+| `google/fr-FR.png` | French (France) (fr-FR) | https://play.google.com/intl/en_us/badges/static/images/badges/fr_badge_web_generic.png | 2026-11-02 |
+| `google/de-DE.png` | German (Germany) (de-DE) | https://play.google.com/intl/en_us/badges/static/images/badges/de_badge_web_generic.png | 2026-11-02 |
+| `google/es-ES.png` | European Spanish (es-ES) | https://play.google.com/intl/en_us/badges/static/images/badges/es_badge_web_generic.png | 2026-11-02 |
+| `google/it-IT.png` | Italian (Italy) (it-IT) | https://play.google.com/intl/en_us/badges/static/images/badges/it_badge_web_generic.png | 2026-11-02 |
+| `google/pt-PT.png` | European Portuguese (pt-PT) | https://play.google.com/intl/en_us/badges/static/images/badges/pt_badge_web_generic.png | 2026-11-02 |
+| `google/nl-NL.png` | Dutch (Netherlands) (nl-NL) | https://play.google.com/intl/en_us/badges/static/images/badges/nl_badge_web_generic.png | 2026-11-02 |
+| `google/sv-SE.png` | Swedish (Sweden) (sv-SE) | https://play.google.com/intl/en_us/badges/static/images/badges/sv_badge_web_generic.png | 2026-11-02 |
+| `google/da-DK.png` | Danish (Denmark) (da-DK) | https://play.google.com/intl/en_us/badges/static/images/badges/da_badge_web_generic.png | 2026-11-02 |
+| `google/nb-NO.png` | Norwegian Bokmål (Norway) (nb-NO) | https://play.google.com/intl/en_us/badges/static/images/badges/no_badge_web_generic.png | 2026-11-02 |
+| `google/pl-PL.png` | Polish (Poland) (pl-PL) | https://play.google.com/intl/en_us/badges/static/images/badges/pl_badge_web_generic.png | 2026-11-02 |
+| `google/cs-CZ.png` | Czech (Czechia) (cs-CZ) | https://play.google.com/intl/en_us/badges/static/images/badges/cs_badge_web_generic.png | 2026-11-02 |
+| `google/hu-HU.png` | Hungarian (Hungary) (hu-HU) | https://play.google.com/intl/en_us/badges/static/images/badges/hu_badge_web_generic.png | 2026-11-02 |
+| `google/sk-SK.png` | Slovak (Slovakia) (sk-SK) | https://play.google.com/intl/en_us/badges/static/images/badges/sk_badge_web_generic.png | 2026-11-02 |
+| `google/ro-RO.png` | Romanian (Romania) (ro-RO) | https://play.google.com/intl/en_us/badges/static/images/badges/ro_badge_web_generic.png | 2026-11-02 |
+| `google/hr-HR.png` | Croatian (Croatia) (hr-HR) | https://play.google.com/intl/en_us/badges/static/images/badges/hr_badge_web_generic.png | 2026-11-02 |
+| `google/sl-SI.png` | Slovenian (Slovenia) (sl-SI) | https://play.google.com/intl/en_us/badges/static/images/badges/sl_badge_web_generic.png | 2026-11-02 |
+| `google/fi-FI.png` | Finnish (Finland) (fi-FI) | https://play.google.com/intl/en_us/badges/static/images/badges/fi_badge_web_generic.png | 2026-11-02 |
+| `google/et-EE.png` | Estonian (Estonia) (et-EE) | https://play.google.com/intl/en_us/badges/static/images/badges/et_badge_web_generic.png | 2026-11-02 |
+| `google/lv-LV.png` | Latvian (Latvia) (lv-LV) | https://play.google.com/intl/en_us/badges/static/images/badges/lv_badge_web_generic.png | 2026-11-02 |
+| `google/lt-LT.png` | Lithuanian (Lithuania) (lt-LT) | https://play.google.com/intl/en_us/badges/static/images/badges/lt_badge_web_generic.png | 2026-11-02 |
+| `google/el-GR.png` | Greek (Greece) (el-GR) | https://play.google.com/intl/en_us/badges/static/images/badges/el_badge_web_generic.png | 2026-11-02 |
+| `google/bg-BG.png` | Bulgarian (Bulgaria) (bg-BG) | https://play.google.com/intl/en_us/badges/static/images/badges/bg_badge_web_generic.png | 2026-11-02 |
+| `google/pt-BR.png` | Brazilian Portuguese (pt-BR) | https://play.google.com/intl/en_us/badges/static/images/badges/pt-br_badge_web_generic.png | 2026-11-02 |
+| `google/ms-MY.png` | Malay (Malaysia) (ms-MY) | https://play.google.com/intl/en_us/badges/static/images/badges/ms_badge_web_generic.png | 2026-11-02 |
+| `google/ja-JP.png` | Japanese (Japan) (ja-JP) | https://play.google.com/intl/en_us/badges/static/images/badges/ja_badge_web_generic.png | 2026-11-02 |
+| `google/zh-HK.png` | Chinese (Hong Kong SAR China) (zh-HK) | https://play.google.com/intl/en_us/badges/static/images/badges/zh-hk_badge_web_generic.png | 2026-11-02 |
+| `google/th-TH.png` | Thai (Thailand) (th-TH) | https://play.google.com/intl/en_us/badges/static/images/badges/th_badge_web_generic.png | 2026-11-02 |
+| `google/ar-AE.png` | Arabic (United Arab Emirates) (ar-AE) | https://play.google.com/intl/en_us/badges/static/images/badges/ar_badge_web_generic.png | 2026-11-02 |

@@ -188,6 +188,7 @@
     "faq-3.cjs",
     "faq-2.cjs",
     "seo-geo-2.cjs",
+    "store-badges-1.cjs",
     "copy-truth-1.cjs"
   ],
   "excluded": {
@@ -319,6 +320,7 @@
         "_lp-tagline.cjs",
         "_lp-copy-truth-1.cjs",
         "_lp-seo-geo-2.cjs",
+        "_lp-store-badges-1.cjs",
         "_lp-world-countries-2.cjs",
         "_legal-translations.cjs",
         "_lp-world-countries-3.cjs"

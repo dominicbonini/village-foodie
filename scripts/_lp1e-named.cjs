@@ -329,6 +329,10 @@ for (const e of require('./_lp-copy-truth-1.cjs').ITEMS) NAMED.push({ id: e.id, 
 // PRECISE, after every earlier item, GB and US; one copy in scripts/_lp-seo-geo-2.cjs.
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- CommonJS harness module (seo-geo-2)
 for (const e of require('./_lp-seo-geo-2.cjs').ITEMS) NAMED.push({ id: e.id, what: e.what, views: e.views, apply: (id, v) => e.apply(id, v) })
+// ⚠️ RE-PINNED (store-badges-1, 2 November 2026): the footer badges follow the country's app flags (none in these fixtures) and the
+// Play URL lost &hl=en. One copy in scripts/_lp-store-badges-1.cjs.
+// eslint-disable-next-line @typescript-eslint/no-require-imports -- CommonJS harness module (store-badges-1)
+for (const e of require('./_lp-store-badges-1.cjs').ITEMS) NAMED.push({ id: e.id, what: e.what, views: e.views, apply: (id, v) => e.apply(id, v) })
 
 /** BEFORE value of view `id` → { expected, touched: [named ids whose transform changed it] }. */
 // ⚠️ RE-PINNED (plans-data-model, Stage A): an entry with `proveWith` adds `matches(f)` → { ok, problems } — its own

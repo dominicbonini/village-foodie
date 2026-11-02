@@ -29,6 +29,8 @@
 // landing it came from is already `index: true`, the content was public on it this morning, and
 // "what's included on each plan" is exactly what an operator types into a search box. Removing it from
 // the landing and NOT indexing it here would have made a public page private by accident.
+// store-badges-1: the footer's store badges follow the country's app flags (the cached reader the FAQ and comparison pages use).
+import { appsOf } from '@/lib/comparison-flags'
 import { Archivo, Public_Sans, Courier_Prime } from 'next/font/google'
 import type { Metadata } from 'next'
 import { headers } from 'next/headers'
@@ -233,7 +235,8 @@ export default async function FeaturesPage({ params, searchParams }: { params?: 
             ⚠️ THE WAY BACK IS STILL THERE — the nav's own "Pricing" link resolves to /landing#pricing
             on this route, via the `landingHref` prop above, and the footer carries one too. */}
 
-        <LandingFooter landingHref={visitor.paths.landing} featuresHref={visitor.paths.features} country={visitor.menu} locale={settings.locale} comparison={await comparisonFooter(settings.countryCode, settings.locale)} />
+        <LandingFooter landingHref={visitor.paths.landing} featuresHref={visitor.paths.features} country={visitor.menu} locale={settings.locale} comparison={await comparisonFooter(settings.countryCode, settings.locale)} 
+          apps={await appsOf(settings.countryCode)} />
       </div>
 
       {/* Mounted ONCE — the nav's CTA drives this one instance. It portals to document.body, so it is

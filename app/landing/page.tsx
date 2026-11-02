@@ -730,7 +730,7 @@ export default async function LandingPage({ params, searchParams }: { params?: P
       {faqSection ? <>{faqSection}{finalCta}</> : finalCta}
 
       {/* ============ FOOTER ============ (slate bg = HEADER_BG from lib/brand.ts) */}
-      <LandingFooter featuresHref={visitor.paths.features} country={visitor.menu} locale={s.locale} comparison={await comparisonFooter(s.countryCode, s.locale)} />
+      <LandingFooter featuresHref={visitor.paths.features} country={visitor.menu} locale={s.locale} comparison={await comparisonFooter(s.countryCode, s.locale)} apps={{ ios: appFlags.iosApp, android: appFlags.androidApp }} />
       {/* Mounted ONCE — every DemoCta above drives this one instance. */}
       <DemoModal />
     </div>

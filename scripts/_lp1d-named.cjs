@@ -471,6 +471,26 @@ const NAMED = [
   { id: 'seo-s7-badges-lazy', country: 'US', agent: 'seo-fixes (20 Oct 2026)',
     what: '⚠️ RE-PINNED (seo-fixes S7, 20 October 2026): the store badges load lazily (see the GB entry of this id, PRECISE there). LISTED: every US Settings page view.',
     views: id => /^settings\/US\|[^|]+\|page$/.test(id) },
+  // ── ⚠️ RE-PINNED (store-badges-1, 2 November 2026, docs/store-badges-1-report.md) ──────────────────────────────────────────
+  //    Manage › Settings' app-download card (title, body, badges) shows only where the truck's country has an app; these fixtures
+  //    give none, so the card is gone. GB PRECISE (scripts/_lp-store-badges-1.cjs noAppCardMust); the US Settings views LISTED.
+  ...(require('./_lp-store-badges-1.cjs').LANDED ? [
+    { id: 'store-badges-1-app-card', country: 'GB', agent: 'store-badges-1 (2 Nov 2026)',
+      what: '⚠️ RE-PINNED (store-badges-1, 2 November 2026): Manage › Settings — the app-download card shows only where the truck\'s country has an app (none in these fixtures), so it is gone. PRECISE.',
+      views: id => /^settings\/GB\|[^|]+\|page$/.test(id),
+      expect: b => require('./_lp-store-badges-1.cjs').noAppCardMust(b) },
+    { id: 'store-badges-1-app-card', country: 'US', agent: 'store-badges-1 (2 Nov 2026)',
+      what: '⚠️ RE-PINNED (store-badges-1, 2 November 2026): the app-download card is gone (see the GB entry of this id, PRECISE there). LISTED: every US Settings page view.',
+      views: id => /^settings\/US\|[^|]+\|page$/.test(id) },
+    { id: 'store-badges-1-manage-get', country: 'GB', agent: 'store-badges-1 (2 Nov 2026)',
+      what: '⚠️ RE-PINNED (store-badges-1, 2 November 2026): GET /api/manage answers `appsAvailable` (the truck\'s country\'s app flags) right after countrySettings — { ios: false, android: false } in these fixtures. PRECISE.',
+      views: id => /^api\/GB\|manageGET\|/.test(id),
+      expect: b => require('./_lp-store-badges-1.cjs').manageGetApps(b) },
+    { id: 'store-badges-1-manage-get', country: 'US', agent: 'store-badges-1 (2 Nov 2026)',
+      what: '⚠️ RE-PINNED (store-badges-1, 2 November 2026): GET /api/manage answers `appsAvailable` (see the GB entry of this id). PRECISE.',
+      views: id => /^api\/US\|manageGET\|/.test(id),
+      expect: b => require('./_lp-store-badges-1.cjs').manageGetApps(b) },
+  ] : []),
   // ── TODO: the agents' named code changes land here as they report them (SCHED-A: 12-hour hour pickers and US ZIP
   //    codes; SETTINGS / SCHED-B / MENU-A / MENU-B / API: any GB code change they list). Each one PRECISE where a
   //    transform can say it, LISTED (US only) where it cannot.

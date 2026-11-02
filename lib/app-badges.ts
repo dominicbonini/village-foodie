@@ -57,7 +57,10 @@ export const APP_STORE_BADGE_SRC = '/badges/Download_on_the_App_Store_Badge_US-U
  * ⚠️ THE GUARD STAYS EVEN THOUGH THE VALUE IS NOW REAL. `{GOOGLE_PLAY_URL && …}` costs nothing and
  * means the badge can never render pointing at an empty string if this is ever cleared.
  */
-export const GOOGLE_PLAY_URL = 'https://play.google.com/store/apps/details?id=com.hatchgrab.app&hl=en'
+// 🔴 store-badges-1 (2 November 2026): `&hl=en` REMOVED ON DOMINIC'S WORD, as the note above asked — Play now opens the listing in
+// the visitor's own language, matching the badges, which are in the page's language (lib/store-badge-files.ts). Nothing else in
+// the URL changed.
+export const GOOGLE_PLAY_URL = 'https://play.google.com/store/apps/details?id=com.hatchgrab.app'
 
 /**
  * Google's official badge, filed alongside Apple's in `public/badges/` on 5 September 2026 and written

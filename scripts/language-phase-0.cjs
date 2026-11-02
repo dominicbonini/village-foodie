@@ -289,6 +289,10 @@ async function main() {
   // ⚠️ RE-PINNED (seo-geo-2 B3, 2 November 2026): the landing JSON-LD's operatingSystem, true per country — "Web" in these fixtures
   // (scripts/_lp-seo-geo-2.cjs), applied to the expected side after seo-fixes builds its JSON-LD.
   const SG2 = require('./_lp-seo-geo-2.cjs')   // eslint-disable-line @typescript-eslint/no-require-imports -- CommonJS harness module
+  // ⚠️ RE-PINNED (store-badges-1, 2 November 2026): the footer badges follow the country's app flags (none set here, so none render)
+  // and the Play URL lost &hl=en — applied to the expected side after seo-fixes (scripts/_lp-store-badges-1.cjs, PRECISE).
+  const SB1 = require('./_lp-store-badges-1.cjs')   // eslint-disable-line @typescript-eslint/no-require-imports -- CommonJS harness module
+  const sb1 = x => (SB1.LANDED ? SB1.noBadgesMust(x) : x)
   const aboutBack = (got, exp) => { if (!AP.LANDED) return [got, exp]; const r = AP.viewBack(got, exp); return r ? [r[0], r[1]] : [got, exp] }
   // ⚠️ RE-PINNED (country-picker-1, 23 October 2026, docs/country-picker-1-report.md): PICKER-footer — BEFORE's footer menu
   // (<div class="cc cc-foot">) and AFTER's picker (<span class="cc cc-foot">) cut whole from their sides, verified first: one
@@ -325,7 +329,7 @@ async function main() {
       // a plan with the feature off denies it, and an override `true` still wins over that plan.
       const badPlan = p.overrideOnly.filter(([, , , , planOff, planOffGrant]) => !(planOff === false && planOffGrant === true))
       t(`parity → Stage A2: with no override the plan's switch decides (off → denied); an override true wins over it (${p.overrideOnly.length} rows)`, p.overrideOnly.length > 20 && badPlan.length === 0, JSON.stringify(badPlan))
-    } else if (k === 'landingFooter') { const [g, e] = aboutBack(got.keys[k], seoFooter(TAGLINE.cut(before.keys[k]))); const d = diffJson(e, g); t(`${k} (+ seo-s7-badges-lazy${AP.LANDED ? ', about-page ABOUT-link' : ''}, tagline cut`, d === null, d) }   // ⚠️ RE-PINNED (seo-fixes, 20 October 2026; about-page, 22 October 2026; world-countries-1, tagline)
+    } else if (k === 'landingFooter') { const [g, e] = aboutBack(got.keys[k], sb1(seoFooter(TAGLINE.cut(before.keys[k])))); const d = diffJson(e, g); t(`${k} (+ seo-s7-badges-lazy${AP.LANDED ? ', about-page ABOUT-link' : ''}, tagline cut`, d === null, d) }   // ⚠️ RE-PINNED (seo-fixes, 20 October 2026; about-page, 22 October 2026; world-countries-1, tagline)
     else { const d = diffJson(before.keys[k], got.keys[k]); t(k, d === null, d) }
   }
   for (const k of Object.keys(before.landing)) {
@@ -333,7 +337,7 @@ async function main() {
     // — scripts/_lp-stage-b.cjs landingPricing: the section's region cut from both, the rest byte-identical.
     // ⚠️ RE-PINNED (seo-fixes, 20 October 2026): + seo-fixes's named items (seoLanding, above), outside #pricing.
     // ⚠️ RE-PINNED (world-countries-1, tagline): the hero's and the footer's tagline cut from BEFORE (scripts/_lp-tagline.cjs).
-    if (!LEGACY_DISPLAY) { const [g, e] = pickerBack(aboutBack(got.landing[k].replace(SEP, ''), (x => (SG2.LANDED ? SG2.osMust(x) : x))(seoLanding(k, landing1e(k, CT1.LANDED ? CT1.offlineMust(TAGLINE.cut(before.landing[k])) : TAGLINE.cut(before.landing[k])))))); const r = STAGE_B.landingPricing(e, g); t(`landing page (${k}) rendered HTML, apart from Stage B's #pricing (pricing-b-landing-pricing), seo-fixes's named items${PICKER.LANDED ? ' and the footer picker (PICKER-footer)' : ''}`, r.ok, r.problems.join(' · ')); continue }
+    if (!LEGACY_DISPLAY) { const [g, e] = pickerBack(aboutBack(got.landing[k].replace(SEP, ''), (x => sb1(SG2.LANDED ? SG2.osMust(x) : x))(seoLanding(k, landing1e(k, CT1.LANDED ? CT1.offlineMust(TAGLINE.cut(before.landing[k])) : TAGLINE.cut(before.landing[k])))))); const r = STAGE_B.landingPricing(e, g); t(`landing page (${k}) rendered HTML, apart from Stage B's #pricing (pricing-b-landing-pricing), seo-fixes's named items${PICKER.LANDED ? ' and the footer picker (PICKER-footer)' : ''}`, r.ok, r.problems.join(' · ')); continue }
     const d = diffJson(landing1e(k, before.landing[k]), got.landing[k].replace(SEP, '')); t(`landing page (${k}) rendered HTML`, d === null, d)
   }
 

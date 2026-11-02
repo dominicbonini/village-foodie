@@ -1,0 +1,11 @@
+{
+ "$why": "store-badges-1 §4: /uk (GB's app flags on, as live) at 6d00f678, by scripts/store-badges-1.cjs capture.",
+ "commit": "6d00f678",
+ "uk": {
+  "sha256": "999a56ab752221363b61e3d02462d21ee3ddd8cd4bf69233a0d63d0e75ccd327",
+  "playHrefs": [
+   "play.google.com/store/apps/details?id=com.hatchgrab.app",
+   "play.google.com/store/apps/details?id=com.hatchgrab.app&amp;hl=en"
+  ]
+ }
+}

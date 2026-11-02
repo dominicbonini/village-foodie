@@ -40,6 +40,13 @@ export async function comparisonFlagsOf(code: string): Promise<ComparisonFlags> 
   return (await comparisonFlags()).get(code.toUpperCase()) ?? OFF(code.toUpperCase())
 }
 
+/** store-badges-1 (2 November 2026): a country's two app flags, as the store badges, the FAQ and Settings' app card read them —
+ *  `{ ios, android }`, from the same cached read. Unknown or unreadable → both false (never an app that is not flagged). */
+export async function appsOf(code: string | null | undefined): Promise<{ ios: boolean; android: boolean }> {
+  const f = await comparisonFlagsOf(code || 'GB')
+  return { ios: f.iosApp, android: f.androidApp }
+}
+
 /** A comparison address or its twin — '/de/vergleich/foodtruck-bestellsystem', '….md', '….json' — taken apart, or null.
  *  The section and slug are not checked here (the page compares them with the country's messages and 404s). */
 export function comparisonAddressOf(pathname: string): { code: string; section: string; slug: string; format: 'html' | 'md' | 'json' } | null {
