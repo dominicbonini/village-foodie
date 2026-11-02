@@ -98,7 +98,7 @@ async function call(method: 'GET' | 'PUT' | 'POST' | 'DELETE', body?: unknown): 
 
 /* ── ⓘ: a tooltip on hover, a popover on tap or click (Escape, a tap elsewhere or a scroll closes it) ──
  * The bubble is portalled to <body> with fixed coordinates, so the scroll box never clips it. */
-function InfoTip({ label, children, tone = 'slate' }: { label: string; children: React.ReactNode; tone?: 'slate' | 'amber' }) {
+export function InfoTip({ label, children, tone = 'slate' }: { label: string; children: React.ReactNode; tone?: 'slate' | 'amber' }) {
   const [open, setOpen] = useState<null | 'hover' | 'pinned'>(null)
   const [pos, setPos] = useState<{ left: number; top: number } | null>(null)
   const btn = useRef<HTMLButtonElement>(null)
@@ -471,6 +471,13 @@ export default function CountriesTab() {
     // not offered "Show an allergen card", and the server refuses it (docs/allergen-card-country-report.md).
     { label: 'Allergen card on its own', hint: 'Off where the law needs allergens shown against each dish', cell: code => toggle(code, 'allergenCardOnlyAllowed', `Allergen card on its own, ${code}`) },
     { label: 'Support hours', cell: code => text(code, 'supportHours', 'Not shown') },
+
+    /* faq-1 (1 November 2026): the app flags (country_settings.ios_app_available / android_app_available, 20261042) — what the
+     * comparison pages and the FAQ's {apps.*} values read. The store adds them to each row; a row without them shows "—" and a
+     * save leaves them as they are. */
+    { group: 'Apps' },
+    { label: 'iPad app', hint: 'The iPad app is on the App Store in this country', cell: code => typeof forms[code].iosAppAvailable === 'boolean' ? toggle(code, 'iosAppAvailable', `iPad app, ${code}`) : dash() },
+    { label: 'Android app', hint: 'The Android app is on Google Play in this country', cell: code => typeof forms[code].androidAppAvailable === 'boolean' ? toggle(code, 'androidAppAvailable', `Android app, ${code}`) : dash() },
   ]
 
   // ROWS → the flat column list, each column knowing its group.

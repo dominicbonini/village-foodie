@@ -7,20 +7,37 @@
 
 import 'server-only'
 import type { CountryStore } from '@/lib/admin/country-actions'
+import type { CountrySettings } from '@/lib/country-settings-types'
 import { mapCountryRow, listCountrySettings, readAllCountryRows, selectWithFallback } from '@/lib/country-settings'
 
 type Row = Record<string, unknown>
 const db = async () => (await import('@/lib/supabase')).supabase
 
+// ── faq-1 (1 November 2026): THE APP FLAGS, read beside the loader's columns ─────────────────────────────────────────────
+// country_settings.ios_app_available / android_app_available (20261042) are not loader columns — the public pages read them only
+// through lib/comparison-flags.ts — so this store reads them in a second select and adds them to each row it hands the page.
+// A save writes them only when the page sent them (lib/admin/country-actions.ts valuesToColumns).
+const APP_FLAGS = 'country_code, ios_app_available, android_app_available'
+async function withAppFlags(rows: CountrySettings[]): Promise<CountrySettings[]> {
+  if (!rows.length) return rows
+  const { data, error } = await (await db()).from('country_settings').select(APP_FLAGS).in('country_code', rows.map(r => r.countryCode))
+  if (error) throw new Error(`[country-store] app flags: ${error.message}`)
+  const by = new Map(((data ?? []) as Row[]).map(r => [String(r.country_code), r]))
+  return rows.map(r => {
+    const f = by.get(r.countryCode)
+    return f ? { ...r, iosAppAvailable: f.ios_app_available === true, androidAppAvailable: f.android_app_available === true } : r
+  })
+}
+
 export const serviceCountryStore: CountryStore = {
-  list: () => listCountrySettings(),
+  list: async () => withAppFlags(await listCountrySettings()),
   unreadable: async () => (await readAllCountryRows()).unreadable,
 
   async get(code) {
     const s = await db()
     const { data, error } = await selectWithFallback(cols => s.from('country_settings').select(cols).eq('country_code', code).maybeSingle())
     if (error) throw new Error(`[country-store] read ${code}: ${error.message}`)
-    return data ? mapCountryRow(data as unknown as Row) : null
+    return data ? (await withAppFlags([mapCountryRow(data as unknown as Row)]))[0] : null
   },
 
   async truckCounts(codes) {
@@ -44,14 +61,14 @@ export const serviceCountryStore: CountryStore = {
       .select(cols))
     if (error) throw new Error(`[country-store] save ${code}: ${error.message}`)
     const rows = (data ?? []) as unknown as Row[]
-    return rows.length === 1 ? mapCountryRow(rows[0]) : null
+    return rows.length === 1 ? (await withAppFlags([mapCountryRow(rows[0])]))[0] : null
   },
 
   async insert(columns) {
     const s = await db()
     const { data, error } = await selectWithFallback(cols => s.from('country_settings').insert(columns).select(cols).single())
     if (error) throw new Error(`[country-store] add: ${error.message}`)
-    return mapCountryRow(data as unknown as Row)
+    return (await withAppFlags([mapCountryRow(data as unknown as Row)]))[0]
   },
 
   async remove(code) {

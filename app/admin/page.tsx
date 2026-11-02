@@ -31,6 +31,7 @@ import ScreenshotsPanel from '@/components/admin/ScreenshotsPanel' // the screen
 import CountriesTab from '@/components/admin/CountriesTab'           // per-country prices, fees and formats
 import PricingCheckTab from '@/components/admin/PricingCheckTab'     // competitor prices vs ours, per country (admin only)
 import DemosTab from '@/components/admin/DemosTab'                   // demo-2: the demos, their menus and the funnel
+import FaqTab from '@/components/admin/FaqTab'                       // faq-1: the FAQ's sections, questions, check and notes
 import { useSignupCountries } from '@/components/setup/WhereBasedStep'  // switched-on countries (create-truck)
 
 interface AdminTruck {
@@ -236,6 +237,8 @@ const ADMIN_TABS = {
   pricing:     { icon: '⚖️', label: 'Pricing check' },
   // Every demo still alive, what its visitor did, and the funnel counts — components/admin/DemosTab.tsx (demo-2).
   demos:       { icon: '🧪', label: 'Demos' },
+  // The FAQ: English questions with live values, checked per country, private notes — components/admin/FaqTab.tsx (faq-1).
+  faq:         { icon: '❓', label: 'FAQ' },
 } as const
 type AdminTab = keyof typeof ADMIN_TABS
 
@@ -269,6 +272,9 @@ export default function AdminPage() {
   // The same for Pricing check: mounted on the first visit, then hidden rather than unmounted (its filters and country stay).
   const [pricingSeen, setPricingSeen] = useState(false)
   if (adminTab === 'pricing' && !pricingSeen) setPricingSeen(true)
+  // The same for FAQ (faq-1): mounted on the first visit, then hidden, so a half-typed answer survives a look at another tab.
+  const [faqSeen, setFaqSeen] = useState(false)
+  if (adminTab === 'faq' && !faqSeen) setFaqSeen(true)
 
   // ── ?tab= SEEDS THE OPENING TAB, so /admin/outreach's redirect lands on the outreach tab rather than
   // on Trucks. 🔴 READ FROM window.location IN AN EFFECT, NOT useSearchParams(): useSearchParams forces
@@ -913,7 +919,7 @@ export default function AdminPage() {
           max-w-6xl (1152px) until admin-countries-1 (23 October 2026); every admin body is now full width with
           32px side padding (px-8), and a text-heavy panel keeps its own readable width (the screenshot uploader's
           max-w-3xl). The wrapper is HIDDEN rather than unmounted so the tab blocks inside keep their state. */}
-      <div className={(adminTab === 'outreach' || adminTab === 'events' || adminTab === 'pricing' || adminTab === 'demos') ? 'hidden' : "w-full px-8 py-6"}>
+      <div className={(adminTab === 'outreach' || adminTab === 'events' || adminTab === 'pricing' || adminTab === 'demos' || adminTab === 'faq') ? 'hidden' : "w-full px-8 py-6"}>
 
         {/* ── EVENT SCREENSHOTS ─────────────────────────────────────────────────────────────────
             🔎 INSIDE this wrapper, unlike Outreach. Outreach is out there because its table needs
@@ -1429,6 +1435,14 @@ export default function AdminPage() {
       {adminTab === 'demos' && (
         <div className="w-full px-3 sm:px-6 lg:px-8 py-6">
           <DemosTab />
+        </div>
+      )}
+
+      {/* faq-1: Admin › FAQ — full width with the page's 32px sides on a laptop and a desktop (px-8), narrower on a phone like
+          Demos; mounted on the first visit and HIDDEN after (like Countries), so drafts and the Preview-as country survive. */}
+      {faqSeen && (
+        <div className={adminTab === 'faq' ? 'w-full px-3 sm:px-6 lg:px-8 py-6' : 'hidden'}>
+          <FaqTab />
         </div>
       )}
 

@@ -6722,5 +6722,12 @@
     "errorTitle": "Something went wrong",
     "errorBody": "Sorry — this page didn’t load. Try again, or go back to the home page.",
     "retry": "Try again"
+  },
+  "faq": {
+    "phrases": {
+      "appsSentence": "There’s also an iPad and Android app, which keeps taking walk-up orders if you lose signal.",
+      "appsOffline": "The iPad and Android app keeps taking walk-up orders without signal and sends them when you’re back online; the web dashboard needs a connection.",
+      "webOffline": "The web dashboard needs a connection to show new orders."
+    }
   }
 }

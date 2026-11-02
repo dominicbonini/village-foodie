@@ -70,6 +70,9 @@ export interface CountryForm {
   /** allergen-card-country (21 October 2026): may trucks here show allergens as one card for the whole menu? */
   allergenCardOnlyAllowed: boolean
   supportHours: string
+  /** faq-1: the app flags — carried only when the row was read with them (Admin's store); absent → a save writes neither. */
+  iosAppAvailable?: boolean
+  androidAppAvailable?: boolean
 }
 
 /** The stored values one save writes — everything on the row except its code and the save stamp. */
@@ -100,6 +103,7 @@ export const FIELD_LABELS: Record<keyof CountryForm, string> = {
   currency: 'Currency', locale: 'Language style', timeFormat: 'Times', dateOrder: 'Dates', weekStart: 'Week starts',
   phoneCountryCode: 'Phone country code', shortName: 'Short name', phoneExample: 'Example phone number', phoneCheck: 'Phone number check', addressFormat: 'Addresses', timezones: 'Time zones offered at signup',
   defaultTimezone: 'Default time zone', allergenSet: 'Allergen list', allergenCardOnlyAllowed: 'Allergen card on its own', supportHours: 'Support hours',
+  iosAppAvailable: 'iPad app', androidAppAvailable: 'Android app',
 }
 
 /** 🔴 THE ENABLED RULE IS THE DATABASE'S (the country_settings trigger, 20261024_plans.sql): a country can be switched
@@ -164,6 +168,8 @@ export function rowToForm(r: CountrySettings): CountryForm {
     phoneCountryCode: r.phoneCountryCode, shortName: r.shortName ?? '', phoneExample: r.phoneExample ?? '', phoneCheck: r.phoneCheck, addressFormat: addressFormatKeyOf(r.addressFormat) ?? r.addressFormat,   /* address-formats-1: a legacy value read as its format, as the loader does */
     timezones: [...r.timezones], defaultTimezone: r.defaultTimezone,
     allergenSet: r.allergenSet, allergenCardOnlyAllowed: r.allergenCardOnlyAllowed, supportHours: r.supportHours ?? '',
+    ...(typeof r.iosAppAvailable === 'boolean' ? { iosAppAvailable: r.iosAppAvailable } : {}),
+    ...(typeof r.androidAppAvailable === 'boolean' ? { androidAppAvailable: r.androidAppAvailable } : {}),
   }
 }
 
@@ -357,6 +363,8 @@ export function formToValues(f: CountryForm, ctx: { truckCount: number; storedCu
       serviceFeeHatchgrabBps, serviceFeeHatchgrabFixedMinor, serviceFeeTruckMaxBps, serviceFeeTruckMaxFixedMinor,
       platformFeeEnabled: f.platformFeeEnabled, feesTaxed: f.feesTaxed,
       supportHours: supportHours || null,
+      ...(typeof f.iosAppAvailable === 'boolean' ? { iosAppAvailable: f.iosAppAvailable } : {}),
+      ...(typeof f.androidAppAvailable === 'boolean' ? { androidAppAvailable: f.androidAppAvailable } : {}),
     },
   }
 }
@@ -388,5 +396,7 @@ export function asCountryForm(x: unknown): CountryForm | null {
   if (strs.some(k => typeof o[k] !== 'string')) return null
   if (bools.some(k => typeof o[k] !== 'boolean')) return null
   if (lists.some(k => !Array.isArray(o[k]) || (o[k] as unknown[]).some(v => typeof v !== 'string'))) return null
+  // faq-1: the app flags are optional (absent → not written), but when present they are on or off, nothing else.
+  if (['iosAppAvailable', 'androidAppAvailable'].some(k => k in o && typeof o[k] !== 'boolean')) return null
   return o as unknown as CountryForm
 }

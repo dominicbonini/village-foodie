@@ -78,6 +78,12 @@ export interface CountrySettings {
   /** allergen-card-country (21 October 2026): may a truck here show its allergens as ONE card for the whole menu
    *  (allergen_display_mode 'card')? True everywhere except where the law requires allergens per dish (Ireland, FSAI). */
   allergenCardOnlyAllowed: boolean
+  /** faq-1 (1 November 2026): is the iPad app / the Android app in this country's App Store / Google Play
+   *  (country_settings.ios_app_available / android_app_available, 20261042 — the flags the comparison pages read through
+   *  lib/comparison-flags.ts)? ⚠️ SET ONLY BY THE ADMIN COUNTRIES STORE (lib/admin/country-store.ts): the public loader never
+   *  reads them, so no public page's data changes. Absent = not read, and a save then leaves the columns as they are. */
+  iosAppAvailable?: boolean
+  androidAppAvailable?: boolean
 
   // ⛔ THE SIX OLD PLAN PRICE COLUMNS ARE NOT ON THIS TYPE (pricing-pages, Stage B): retired by plans-data-model Stage A
   // and no longer read anywhere. Plans and their prices are public.plans / public.plan_prices, read through lib/plans.ts.

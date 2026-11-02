@@ -202,6 +202,11 @@ const NEW_WORDING = {
   'address.label.prefecture': 'world-countries-1: \"Prefecture\"',
   'address.label.emirate': 'world-countries-1: \"Emirate\"',
   'address.label.region': 'world-countries-1: \"Region\"',
+  // ⚠️ RE-PINNED (faq-1, 1 November 2026): the FAQ's three phrases — new words, written for {apps.sentence} / {apps.offline}
+  // (lib/faq/live-values.ts) and checked against the native offline outbox (lib/native/orderGate.ts). English only until Dominic approves.
+  'faq.phrases.appsSentence': 'faq-1: the apps sentence where the iPad and Android app are in the stores — new words',
+  'faq.phrases.appsOffline': 'faq-1: what keeps working without signal where the apps are in the stores — new words',
+  'faq.phrases.webOffline': 'faq-1: what needs a connection where they are not — new words',
 }
 // ⚠️ RE-PINNED (compare-de-1, 25 October 2026, docs/compare-de-1-report.md): the comparison page's words — a NEW namespace,
 // `comparison` (the German page /de/vergleich/foodtruck-bestellsystem; German and the English base only,

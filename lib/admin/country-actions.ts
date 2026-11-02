@@ -43,6 +43,9 @@ export function valuesToColumns(v: CountryValues): Record<string, unknown> {
     service_fee_truck_max_bps: v.serviceFeeTruckMaxBps, service_fee_truck_max_fixed_minor: v.serviceFeeTruckMaxFixedMinor,
     platform_fee_enabled: v.platformFeeEnabled, fees_taxed: v.feesTaxed,
     support_hours: v.supportHours,
+    // faq-1: only when the form carried them (Admin's store reads them) — never a guessed false over a real true.
+    ...(typeof v.iosAppAvailable === 'boolean' ? { ios_app_available: v.iosAppAvailable } : {}),
+    ...(typeof v.androidAppAvailable === 'boolean' ? { android_app_available: v.androidAppAvailable } : {}),
   }
 }
 
@@ -55,7 +58,8 @@ export function newCountryValues(code: string, name: string, from: CountrySettin
   delete (v as Partial<CountrySettings>).updatedBy
   // Phase 2C: the short name and example phone number are the COUNTRY's own words — copying another
   // country's ("UK", "07700 900123") would be wrong on day one, so they start empty, like the plan prices.
-  return { ...v, name: name.trim(), enabled: false, shortName: null, phoneExample: null }
+  // faq-1: the apps are in no store for a brand-new country — never copied from the country it was copied from.
+  return { ...v, name: name.trim(), enabled: false, shortName: null, phoneExample: null, iosAppAvailable: false, androidAppAvailable: false }
 }
 
 export interface CountryStore {

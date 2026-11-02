@@ -106,14 +106,16 @@ const ACTIVE_PUBLIC_PLANS = ['payg', 'pro', 'unlimited']   // public.plans where
     'Card fee cap %', 'Credit cards only', 'Card fee not allowed in', 'Tipping on for new trucks', 'Tip choices %', 'Allowed in this country', 'Who keeps it',
     "HatchGrab's fee %", "HatchGrab's fee fixed (p/c)", 'Most a truck can charge %', 'Most a truck can charge fixed (p/c)', 'Service fee and card fee are taxed',
     'Currency', 'Language style', 'Times', 'Dates', 'Week starts', 'Phone country code', 'Short name', 'Example phone number', 'Phone number check', 'Addresses',
-    'Time zones offered at signup', 'Default time zone', 'Allergen list', 'Allergen card on its own', 'Support hours']
+    'Time zones offered at signup', 'Default time zone', 'Allergen list', 'Allergen card on its own', 'Support hours',
+    // ⚠️ RE-PINNED (faq-1, 1 November 2026): the Apps group — the app flags the comparison pages and the FAQ read.
+    'iPad app', 'Android app']
   t('the setting columns, in the approved order, units in the header', heads.join('|') === EXPECTED.join('|'), heads)
   const groups = [...html.matchAll(/<th colSpan="(\d+)"[^>]*>(?:<span[^>]*>)?([^<]*)/g)].map(m => `${m[2]}:${m[1]}`)
   // The group names are read from the component's own `{ group: '…' }` entries (the sweep refuses a harness naming the card
   // processor, and the third group is named after it); the column counts are pinned.
   const srcGroups = [...read(CT).matchAll(/\{ group: '([^']+)'/g)].map(m => m[1])
   t('the grouped header: the page\'s own groups, in order, spanning their columns (Status also spans the badge column)',
-    groups.join('|') === srcGroups.map((g, i) => `${g}:${[4, 1, 6, 8, 6, 1, 12, 3][i]}`).join('|') && srcGroups.length === 8, groups)
+    groups.join('|') === srcGroups.map((g, i) => `${g}:${[4, 1, 6, 8, 6, 1, 12, 3, 2][i]}`).join('|') && srcGroups.length === 9, groups)   // ⚠️ RE-PINNED (faq-1): + Apps, 2 columns
   t('the Extra van line is gone (display only — plan_prices.extra_van_monthly_minor is untouched)', !/Extra van|Same as the plan/.test(html) && !read(CT).includes("label: 'Extra van'"))
   t('no help text in a header or a cell: every hint is behind an ⓘ (no hint paragraph is rendered)', !html.includes('Trucks can sign up from this country') && !html.includes('Not charged yet') && (html.match(/data-info-tip/g) || []).length > 50)
   t('"Last saved … by …" is behind the ⓘ beside each country (36 of them), not printed', !/Last saved/.test(html) && (html.match(/aria-label="About [^"]*, last saved"/g) || []).length === 36)
@@ -213,7 +215,11 @@ const ACTIVE_PUBLIC_PLANS = ['payg', 'pro', 'unlimited']   // public.plans where
   const saveDiff = execFileSync('git', ['diff', '-U0', 'HEAD', '--', 'lib/admin/country-actions.ts', 'lib/admin/country-store.ts', 'app/api/admin/countries/route.ts', 'lib/country-settings.ts'], { cwd: REPO }).toString()
   const changed = saveDiff.split('\n').filter(l => /^[+-]/.test(l) && !/^(\+\+\+|---)/.test(l))
   const WC1 = /world-countries-1|selectWithFallback|COUNTRY_SETTINGS_COLUMNS|BASE_COLUMNS|WC1_COLUMNS|platform_fee_allowed|platformFeeAllowed|ALLERGEN_SETS|const s = await db\(\)|\.update\(columns\)|\.eq\('country_code', code\)|\.eq\('updated_at', expectedUpdatedAt\)|\.select\(cols\)\)?|\.select\(COUNTRY_SETTINGS_COLUMNS\)|^[+-]\s*(\/\/.*|\*.*|\]|\)|)$|const COLUMNS = COUNTRY_SETTINGS_COLUMNS|const first = await run|const e = first\.error|if \(e && \(e\.code|return first|^[+-]\}$|from\('country_settings'\)|allergen_set', \[|'support_hours', 'updated_at', 'updated_by',|^[-]\]\.join\(', '\)|const \{ data, error \} = await \(await db\(\)\)|^-\s*const parsed = formToValues\(form, \{ truckCount: trucks, storedCurrency: stored\.currency, countryCode: stored\.countryCode \}\)$/
-  const foreign = changed.filter(l => !WC1.test(l))
+  // ⚠️ RE-PINNED (faq-1, 1 November 2026): the app flags (country_settings.ios_app_available / android_app_available) are added to
+  // the rows the ADMIN store hands the page (withAppFlags, a second select) and written only when the form carries them; a new
+  // country starts with both off. The public loader (lib/country-settings.ts) and the countries route are still untouched.
+  const FAQ1 = /faq-1|withAppFlags|APP_FLAGS|app flags|const by = new Map\(|const f = by\.get\(r\.countryCode\)|iosAppAvailable|androidAppAvailable|ios_app_available|android_app_available|import type \{ CountrySettings \} from '@\/lib\/country-settings-types'|if \(!rows\.length\) return rows|^[+-]\s+return rows\.map\(r => \{$|^[+-]\s+\}\)$|^-\s*return \{ \.\.\.v, name: name\.trim\(\), enabled: false, shortName: null, phoneExample: null \}$|^-\s*list: \(\) => listCountrySettings\(\),$|^-\s*return (data \? |rows\.length === 1 \? )?mapCountryRow\((data as unknown as Row|rows\[0\])\)( : null)?$/
+  const foreign = changed.filter(l => !WC1.test(l) && !FAQ1.test(l))
   t('the save path changed only by world-countries-1\'s named items (a tolerant loader, the allergen-set list, the fee permission); the countries route untouched',
     foreign.length === 0 && !/app\/api\/admin\/countries\/route\.ts/.test(saveDiff), foreign.slice(0, 8))
 

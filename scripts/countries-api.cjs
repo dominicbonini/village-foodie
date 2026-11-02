@@ -53,6 +53,9 @@ const COL = { // column → field, exactly lib/admin/country-form.ts valuesToCol
   service_fee_recipient: 'serviceFeeRecipient', service_fee_hatchgrab_bps: 'serviceFeeHatchgrabBps',
   service_fee_hatchgrab_fixed_minor: 'serviceFeeHatchgrabFixedMinor', service_fee_truck_max_bps: 'serviceFeeTruckMaxBps',
   service_fee_truck_max_fixed_minor: 'serviceFeeTruckMaxFixedMinor', platform_fee_enabled: 'platformFeeEnabled', fees_taxed: 'feesTaxed',
+  // ⚠️ RE-PINNED (faq-1, 1 November 2026): the app flags (20261042). The admin form carries them when its store read them, and a
+  // NEW country is inserted with both off (lib/admin/country-actions.ts newCountryValues) — never copied from another country.
+  ios_app_available: 'iosAppAvailable', android_app_available: 'androidAppAvailable',
 }
 let checkFired = []
 let triggerFired = []
