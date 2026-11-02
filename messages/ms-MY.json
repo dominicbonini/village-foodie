@@ -194,7 +194,7 @@
       "saveFailed": "Gagal menyimpan",
       "layout": "{layout, select, scroll {Menu dipaparkan dalam satu halaman} other {Menu dipaparkan mengikut kategori berasingan}}",
       "autoAccept": "{state, select, on {Terima automatik dihidupkan} other {Terima automatik dimatikan}}",
-      "cardPayments": "{state, select, off {Pembayaran kad dimatikan — pelanggan bayar di kaunter} other {Pembayaran kad dihidupkan semula}}",
+      "cardPayments": "{state, select, off {{pah, select, on {Pembayaran kad dimatikan — pelanggan bayar di kaunter} other {Pembayaran kad dimatikan — pesanan dalam talian dijeda sehingga anda menghidupkannya semula}}} other {Pembayaran kad dihidupkan semula}}",
       "intervalsFailed": "Masa ambil tidak dapat disimpan sekarang.",
       "unpaidOrders": "{state, select, on {Pesanan belum bayar dihidupkan untuk acara ini} other {Pesanan belum bayar dimatikan untuk acara ini}}",
       "presses": "{presses, select, one {Satu tekanan untuk acara ini} other {Dua tekanan untuk acara ini}}",
@@ -397,7 +397,7 @@
       "buzzerPromptTitle": "Ingatkan saya untuk menambah buzzer",
       "buzzerPromptHelp": "Membuka grid buzzer sebaik sahaja anda membuat pesanan, supaya nombornya masuk ke papan semasa pelanggan masih di hadapan anda. Jika dimatikan, anda masih boleh menambah buzzer pada bila-bila masa dengan mengetik pesanan, tetapi tiada peringatan akan muncul. Berguna jika anda memberi buzzer kepada pelanggan, mudah dimatikan jika tidak.",
       "cardsTitle": "Terima pembayaran kad dalam talian",
-      "cardsHelp": "Matikan ini semasa ada masalah kad, dan pelanggan akan membuat pesanan seperti biasa tetapi membayar di kaunter. Pesanan terus masuk; hanya langkah kad yang berhenti.",
+      "cardsHelp": "{pah, select, on {Matikan ini semasa ada masalah kad, dan pelanggan akan membuat pesanan seperti biasa tetapi membayar di kaunter. Pesanan terus masuk; hanya langkah kad yang berhenti.} other {Matikan ini semasa masalah kad dan pesanan dalam talian berhenti sehingga anda menghidupkannya semula — pelan anda tidak termasuk pembayaran semasa ambil. Pesanan walk-in berjalan seperti biasa.}}",
       "cardsScope": "Ini terpakai untuk seluruh trak anda, pada setiap acara, dan kekal dimatikan sehingga anda menghidupkannya semula.",
       "cardsOffSince": "Dimatikan sejak {date}",
       "soundsTitle": "Bunyi",
@@ -4472,6 +4472,7 @@
     "online": {
       "heading": "Pembayaran dalam talian",
       "body": "Pelanggan membayar dengan kad semasa membuat pesanan. Wang terus masuk ke akaun Stripe anda sendiri — kami tidak pernah memegangnya.",
+      "payAtHatchTrialOnly": "{brand} ialah sebahagian daripada percubaan percuma anda. Pelanggan kini membayar pra-pesanan dalam talian dengan kad — sambungkan Stripe di bawah.",
       "feeLine": "Stripe mengenakan {fee} bagi setiap pembayaran untuk {region} standard. Kad lain mungkin lebih mahal. Yuran HatchGrab sendiri untuk pesanan dalam talian bergantung pada pelan anda — lihat Pengebilan.",
       "testMode": "Mod ujian. Belum ada bayaran sebenar boleh diterima."
     },
@@ -5968,8 +5969,8 @@
   "pricing": {
     "banner": {
       "title": "{months, plural, other {# bulan pertama anda percuma sepenuhnya — semua ciri dibuka.}}",
-      "body": "Dengan {brand}, pelanggan memesan awal dan membayar semasa ambil, jadi anda boleh menerima pesanan dalam talian tanpa menyambungkan pemproses kad langsung. Lebih suka terima bayaran di awal? Tambah pembayaran kad dalam talian bila-bila masa. Apabila percubaan anda tamat, anda beralih ke <plan>{fallback}</plan>{fallbackFree, select, yes { — tanpa yuran bulanan —} other {}} melainkan anda memilih pelan. Tiada kad untuk bermula, tiada kontrak, batal bila-bila masa.",
-      "bodyOnly": "Dengan {brand}, pelanggan memesan awal dan membayar semasa ambil, jadi anda boleh menerima pesanan dalam talian tanpa menyambungkan pemproses kad langsung. Lebih suka terima bayaran di awal? Tambah pembayaran kad dalam talian bila-bila masa. Apabila percubaan anda tamat, harga pelan <plan>{fallback}</plan> ialah {price} sebulan. Kami akan menghubungi anda sebelum itu untuk menguruskan pembayaran. Tiada kad untuk bermula, tiada kontrak, batal bila-bila masa."
+      "body": "Semasa percubaan percuma anda, pelanggan boleh memesan awal dan membayar semasa ambil, jadi anda boleh bermula sebelum menyambungkan pembayaran kad. Selepas percubaan, pra-pesanan dibayar dalam talian dengan kad. Lebih suka terima bayaran di awal? Tambah pembayaran kad dalam talian bila-bila masa. Apabila percubaan anda tamat, anda beralih ke <plan>{fallback}</plan>{fallbackFree, select, yes { — tanpa yuran bulanan —} other {}} melainkan anda memilih pelan. Tiada kad untuk bermula, tiada kontrak, batal bila-bila masa.",
+      "bodyOnly": "Semasa percubaan percuma anda, pelanggan boleh memesan awal dan membayar semasa ambil, jadi anda boleh bermula sebelum menyambungkan pembayaran kad. Selepas percubaan, pra-pesanan dibayar dalam talian dengan kad. Lebih suka terima bayaran di awal? Tambah pembayaran kad dalam talian bila-bila masa. Apabila percubaan anda tamat, harga pelan <plan>{fallback}</plan> ialah {price} sebulan. Kami akan menghubungi anda sebelum itu untuk menguruskan pembayaran. Tiada kad untuk bermula, tiada kontrak, batal bila-bila masa."
     },
     "card": {
       "perTruckMonth": "setiap trak / bulan",

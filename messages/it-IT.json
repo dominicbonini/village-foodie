@@ -194,7 +194,7 @@
       "saveFailed": "Salvataggio non riuscito",
       "layout": "{layout, select, scroll {Il menu viene mostrato su una sola pagina} other {Il menu viene mostrato per categorie separate}}",
       "autoAccept": "{state, select, on {Accettazione automatica attivata} other {Accettazione automatica disattivata}}",
-      "cardPayments": "{state, select, off {Pagamenti con carta disattivati: i clienti pagano al banco} other {Pagamenti con carta riattivati}}",
+      "cardPayments": "{state, select, off {{pah, select, on {Pagamenti con carta disattivati: i clienti pagano al banco} other {Pagamenti con carta disattivati: gli ordini online sono in pausa finché non li riattivi}}} other {Pagamenti con carta riattivati}}",
       "intervalsFailed": "Al momento non è stato possibile salvare gli orari di ritiro.",
       "unpaidOrders": "{state, select, on {Ordini non pagati attivati per questo evento} other {Ordini non pagati disattivati per questo evento}}",
       "presses": "{presses, select, one {Un tocco per questo evento} other {Due tocchi per questo evento}}",
@@ -397,7 +397,7 @@
       "buzzerPromptTitle": "Ricordami di assegnare un cercapersone",
       "buzzerPromptHelp": "Apre la griglia dei cercapersone appena registri un ordine, così il numero finisce sulla bacheca mentre il cliente è ancora davanti a te. Se è disattivato puoi comunque assegnare un cercapersone in qualsiasi momento toccando l’ordine, ma non riceverai alcun promemoria. Utile se distribuisci i cercapersone, facile da disattivare se non lo fai.",
       "cardsTitle": "Accetta pagamenti con carta online",
-      "cardsHelp": "Disattivalo durante un problema con le carte: i clienti continueranno a ordinare come sempre e pagheranno invece al banco. Gli ordini continuano ad arrivare; si ferma solo il passaggio della carta.",
+      "cardsHelp": "{pah, select, on {Disattivalo durante un problema con le carte: i clienti continueranno a ordinare come sempre e pagheranno invece al banco. Gli ordini continuano ad arrivare; si ferma solo il passaggio della carta.} other {Disattivalo durante un problema con le carte e gli ordini online si fermano finché non lo riattivi: il tuo piano non include il pagamento al ritiro. Gli ordini al banco continuano normalmente.}}",
       "cardsScope": "Vale per tutto il tuo food truck, per tutti gli eventi, e resta disattivato finché non lo riattivi.",
       "cardsOffSince": "Disattivato dal {date}",
       "soundsTitle": "Suoni",
@@ -4472,6 +4472,7 @@
     "online": {
       "heading": "Pagamenti online",
       "body": "I clienti pagano con carta quando ordinano. I soldi vanno direttamente sul tuo account Stripe: noi non li tratteniamo mai.",
+      "payAtHatchTrialOnly": "{brand} fa parte della tua prova gratuita. Ora i clienti pagano i preordini online con carta: collega Stripe qui sotto.",
       "feeLine": "Stripe applica {fee} per pagamento con {region} standard. Altre carte possono costare di più. La commissione di HatchGrab sugli ordini online dipende dal tuo piano: vedi Fatturazione.",
       "testMode": "Modalità test. Non è ancora possibile ricevere pagamenti reali."
     },
@@ -5996,8 +5997,8 @@
   "pricing": {
     "banner": {
       "title": "{months, plural, one {Il tuo primo mese è completamente gratis — tutte le funzioni sbloccate.} other {I tuoi primi # mesi sono completamente gratis — tutte le funzioni sbloccate.}}",
-      "body": "Con {brand} i clienti ordinano in anticipo e pagano al ritiro, così puoi ricevere ordini online senza collegare alcun servizio di pagamento con carta. Preferisci incassare in anticipo? Aggiungi i pagamenti online con carta quando vuoi. Alla fine della prova passi al piano <plan>{fallback}</plan>{fallbackFree, select, yes { (nessun canone mensile)} other {}}, a meno che tu non scelga un altro piano. Nessuna carta per iniziare, nessun vincolo, disdici quando vuoi.",
-      "bodyOnly": "Con {brand} i clienti ordinano in anticipo e pagano al ritiro, così puoi ricevere ordini online senza collegare alcun servizio di pagamento con carta. Preferisci incassare in anticipo? Aggiungi i pagamenti online con carta quando vuoi. Alla fine della prova il piano <plan>{fallback}</plan> costa {price} al mese. Ti contatteremo prima di allora per impostare il pagamento. Nessuna carta per iniziare, nessun vincolo, disdici quando vuoi."
+      "body": "Durante la prova gratuita i clienti possono ordinare in anticipo e pagare al ritiro, così puoi iniziare prima di collegare i pagamenti con carta. Dopo la prova, i preordini si pagano online con carta. Preferisci incassare in anticipo? Aggiungi i pagamenti online con carta quando vuoi. Alla fine della prova passi al piano <plan>{fallback}</plan>{fallbackFree, select, yes { (nessun canone mensile)} other {}}, a meno che tu non scelga un altro piano. Nessuna carta per iniziare, nessun vincolo, disdici quando vuoi.",
+      "bodyOnly": "Durante la prova gratuita i clienti possono ordinare in anticipo e pagare al ritiro, così puoi iniziare prima di collegare i pagamenti con carta. Dopo la prova, i preordini si pagano online con carta. Preferisci incassare in anticipo? Aggiungi i pagamenti online con carta quando vuoi. Alla fine della prova il piano <plan>{fallback}</plan> costa {price} al mese. Ti contatteremo prima di allora per impostare il pagamento. Nessuna carta per iniziare, nessun vincolo, disdici quando vuoi."
     },
     "card": {
       "perTruckMonth": "per food truck / mese",

@@ -54,6 +54,7 @@
   "online": {
     "heading": "Pagamentos online",
     "body": "Os clientes pagam com cartão ao fazer o pedido. O dinheiro vai direto para a sua própria conta Stripe — nunca ficamos com ele.",
+    "payAtHatchTrialOnly": "{brand} faz parte do seu teste grátis. Agora os clientes pagam os pedidos antecipados online com cartão — conecte o Stripe abaixo.",
     "feeLine": "A Stripe cobra {fee} por pagamento com {region} padrão. Outros cartões podem custar mais. A taxa da própria HatchGrab sobre pedidos online depende do seu plano — veja em Cobrança.",
     "testMode": "Modo de teste. Ainda não é possível receber pagamentos reais."
   },

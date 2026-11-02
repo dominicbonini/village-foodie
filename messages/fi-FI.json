@@ -194,7 +194,7 @@
       "saveFailed": "Tallennus epäonnistui",
       "layout": "{layout, select, scroll {Ruokalista näytetään yhtenä sivuna} other {Ruokalista näytetään erillisinä kategorioina}}",
       "autoAccept": "{state, select, on {Automaattinen hyväksyntä käytössä} other {Automaattinen hyväksyntä pois käytöstä}}",
-      "cardPayments": "{state, select, off {Korttimaksut pois päältä — asiakkaat maksavat noudettaessa} other {Korttimaksut taas käytössä}}",
+      "cardPayments": "{state, select, off {{pah, select, on {Korttimaksut pois päältä — asiakkaat maksavat noudettaessa} other {Korttimaksut pois — verkkotilaukset ovat tauolla, kunnes kytket ne takaisin}}} other {Korttimaksut taas käytössä}}",
       "intervalsFailed": "Noutoaikoja ei voitu tallentaa juuri nyt.",
       "unpaidOrders": "{state, select, on {Maksamattomat tilaukset käytössä tässä tapahtumassa} other {Maksamattomat tilaukset pois käytöstä tässä tapahtumassa}}",
       "presses": "{presses, select, one {Yksi painallus tässä tapahtumassa} other {Kaksi painallusta tässä tapahtumassa}}",
@@ -397,7 +397,7 @@
       "buzzerPromptTitle": "Muistuta lisäämään summeri",
       "buzzerPromptHelp": "Avaa summeriruudukon heti, kun teet tilauksen, joten numero päätyy taululle asiakkaan ollessa vielä edessäsi. Kun tämä on pois päältä, voit yhä lisätä summerin milloin tahansa napauttamalla tilausta, mutta sinua ei muistuteta. Hyödyllinen, jos jaat summereita, ja helppo kytkeä pois, jos et jaa.",
       "cardsTitle": "Ota vastaan korttimaksuja verkossa",
-      "cardsHelp": "Kytke tämä pois korttiongelman aikana, niin asiakkaat tekevät tilauksia normaalisti ja maksavat sen sijaan noudettaessa. Tilauksia tulee edelleen; vain korttimaksuvaihe pysähtyy.",
+      "cardsHelp": "{pah, select, on {Kytke tämä pois korttiongelman aikana, niin asiakkaat tekevät tilauksia normaalisti ja maksavat sen sijaan noudettaessa. Tilauksia tulee edelleen; vain korttimaksuvaihe pysähtyy.} other {Kytke tämä pois korttiongelman aikana, niin verkkotilaukset pysähtyvät, kunnes kytket sen takaisin — pakettisi ei sisällä maksamista noudettaessa. Tilaukset paikan päällä jatkuvat normaalisti.}}",
       "cardsScope": "Tämä koskee koko ruokarekkaasi kaikissa tapahtumissa ja pysyy pois päältä, kunnes otat sen uudelleen käyttöön.",
       "cardsOffSince": "Pois päältä {date} alkaen",
       "soundsTitle": "Äänet",
@@ -4472,6 +4472,7 @@
     "online": {
       "heading": "Verkkomaksut",
       "body": "Asiakkaat maksavat kortilla tilatessaan. Rahat menevät suoraan omalle Stripe-tilillesi — me emme koskaan säilytä niitä.",
+      "payAtHatchTrialOnly": "{brand} kuuluu ilmaiseen kokeilujaksoosi. Asiakkaat maksavat nyt ennakkotilaukset verkossa kortilla — yhdistä Stripe alla.",
       "feeLine": "Stripe veloittaa {fee} maksulta tavallisilla korteilla ({region}). Muut kortit voivat maksaa enemmän. HatchGrabin oma maksu verkkotilauksista riippuu paketistasi — katso Laskutus.",
       "testMode": "Testitila. Oikeita maksuja ei voi vielä vastaanottaa."
     },
@@ -5996,8 +5997,8 @@
   "pricing": {
     "banner": {
       "title": "{months, plural, one {Ensimmäinen kuukautesi on täysin ilmainen — kaikki ominaisuudet käytössä.} other {Ensimmäiset # kuukauttasi ovat täysin ilmaisia — kaikki ominaisuudet käytössä.}}",
-      "body": "Näin {brand} toimii: asiakkaat tilaavat etukäteen ja maksavat noutaessaan, joten voit ottaa vastaan verkkotilauksia ilman korttimaksujen käsittelijää. Haluatko ottaa maksun etukäteen? Lisää korttimaksut verkossa milloin tahansa. Kun kokeilujaksosi päättyy, siirryt pakettiin <plan>{fallback}</plan>{fallbackFree, select, yes { (ei kuukausimaksua)} other {}}, ellet valitse muuta pakettia. Aloittamiseen ei tarvita korttia, ei sopimusta, voit lopettaa milloin tahansa.",
-      "bodyOnly": "Näin {brand} toimii: asiakkaat tilaavat etukäteen ja maksavat noutaessaan, joten voit ottaa vastaan verkkotilauksia ilman korttimaksujen käsittelijää. Haluatko ottaa maksun etukäteen? Lisää korttimaksut verkossa milloin tahansa. Kun kokeilujaksosi päättyy, paketin <plan>{fallback}</plan> hinta on {price} kuukaudessa. Otamme sinuun yhteyttä ennen sitä, jotta voimme järjestää maksun. Aloittamiseen ei tarvita korttia, ei sopimusta, voit lopettaa milloin tahansa."
+      "body": "Ilmaisen kokeilujakson aikana asiakkaat voivat tilata etukäteen ja maksaa noutaessaan, joten voit aloittaa ennen kuin otat korttimaksut käyttöön. Kokeilujakson jälkeen ennakkotilaukset maksetaan verkossa kortilla. Haluatko ottaa maksun etukäteen? Lisää korttimaksut verkossa milloin tahansa. Kun kokeilujaksosi päättyy, siirryt pakettiin <plan>{fallback}</plan>{fallbackFree, select, yes { (ei kuukausimaksua)} other {}}, ellet valitse muuta pakettia. Aloittamiseen ei tarvita korttia, ei sopimusta, voit lopettaa milloin tahansa.",
+      "bodyOnly": "Ilmaisen kokeilujakson aikana asiakkaat voivat tilata etukäteen ja maksaa noutaessaan, joten voit aloittaa ennen kuin otat korttimaksut käyttöön. Kokeilujakson jälkeen ennakkotilaukset maksetaan verkossa kortilla. Haluatko ottaa maksun etukäteen? Lisää korttimaksut verkossa milloin tahansa. Kun kokeilujaksosi päättyy, paketin <plan>{fallback}</plan> hinta on {price} kuukaudessa. Otamme sinuun yhteyttä ennen sitä, jotta voimme järjestää maksun. Aloittamiseen ei tarvita korttia, ei sopimusta, voit lopettaa milloin tahansa."
     },
     "card": {
       "perTruckMonth": "ruokarekkaa kohden / kk",

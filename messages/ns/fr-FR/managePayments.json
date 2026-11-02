@@ -54,6 +54,7 @@
   "online": {
     "heading": "Paiements en ligne",
     "body": "Les clients paient par carte au moment de commander. L’argent va directement sur votre propre compte Stripe : nous ne le détenons jamais.",
+    "payAtHatchTrialOnly": "{brand} fait partie de votre essai gratuit. Vos clients paient désormais leurs précommandes en ligne par carte : connectez Stripe ci-dessous.",
     "feeLine": "Stripe facture {fee} par paiement sur les {region} standard. Les autres cartes peuvent coûter plus cher. Les frais HatchGrab sur les commandes en ligne dépendent de votre offre : voir Facturation.",
     "testMode": "Mode test. Aucun paiement réel ne peut encore être encaissé."
   },

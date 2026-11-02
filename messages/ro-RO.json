@@ -194,7 +194,7 @@
       "saveFailed": "Salvarea a eșuat",
       "layout": "{layout, select, scroll {Meniul se afișează pe o singură pagină} other {Meniul se afișează pe categorii separate}}",
       "autoAccept": "{state, select, on {Acceptare automată activată} other {Acceptare automată dezactivată}}",
-      "cardPayments": "{state, select, off {Plățile cu cardul sunt oprite — clienții plătesc la food truck} other {Plățile cu cardul sunt din nou active}}",
+      "cardPayments": "{state, select, off {{pah, select, on {Plățile cu cardul sunt oprite — clienții plătesc la food truck} other {Plățile cu cardul sunt dezactivate — comenzile online sunt în pauză până le reactivați}}} other {Plățile cu cardul sunt din nou active}}",
       "intervalsFailed": "Orele de ridicare nu au putut fi salvate acum.",
       "unpaidOrders": "{state, select, on {Comenzi neplătite activate pentru acest eveniment} other {Comenzi neplătite dezactivate pentru acest eveniment}}",
       "presses": "{presses, select, one {O singură apăsare pentru acest eveniment} other {Două apăsări pentru acest eveniment}}",
@@ -397,7 +397,7 @@
       "buzzerPromptTitle": "Amintiți-mi să adaug un pager",
       "buzzerPromptHelp": "Deschide grila de pagere imediat ce plasați o comandă, ca numărul să ajungă pe panou cât timp clientul este încă în fața dumneavoastră. Cu opțiunea oprită puteți adăuga oricând un pager atingând comanda, dar nu vă va aminti nimic. Util acolo unde dați pagere, ușor de oprit acolo unde nu.",
       "cardsTitle": "Acceptați plăți online cu cardul",
-      "cardsHelp": "Opriți opțiunea când aveți o problemă cu plățile cu cardul: clienții vor plasa comenzi ca de obicei și vor plăti la food truck. Comenzile continuă să vină; se oprește doar plata cu cardul.",
+      "cardsHelp": "{pah, select, on {Opriți opțiunea când aveți o problemă cu plățile cu cardul: clienții vor plasa comenzi ca de obicei și vor plăti la food truck. Comenzile continuă să vină; se oprește doar plata cu cardul.} other {Dezactivați asta în timpul unei probleme cu cardurile și comenzile online se opresc până le reactivați — planul dumneavoastră nu include plata la ridicare. Comenzile la fața locului continuă normal.}}",
       "cardsScope": "Se aplică întregului food truck, la toate evenimentele, și rămâne oprită până când o reactivați.",
       "cardsOffSince": "Oprită din {date}",
       "soundsTitle": "Sunete",
@@ -4472,6 +4472,7 @@
     "online": {
       "heading": "Plăți online",
       "body": "Clienții plătesc cu cardul când comandă. Banii ajung direct în propriul dumneavoastră cont Stripe — noi nu îi păstrăm niciodată.",
+      "payAtHatchTrialOnly": "{brand} face parte din perioada de probă gratuită. Clienții plătesc acum precomenzile online cu cardul — conectați Stripe mai jos.",
       "feeLine": "Stripe percepe {fee} per plată standard cu {region}. Alte carduri pot costa mai mult. Taxa proprie HatchGrab pentru comenzile online depinde de abonament — vedeți Facturare.",
       "testMode": "Mod de testare. Încă nu se pot primi plăți reale."
     },
@@ -5996,8 +5997,8 @@
   "pricing": {
     "banner": {
       "title": "{months, plural, one {Prima lună este complet gratuită — toate funcțiile deblocate.} few {Primele # luni sunt complet gratuite — toate funcțiile deblocate.} other {Primele # de luni sunt complet gratuite — toate funcțiile deblocate.}}",
-      "body": "Cu {brand}, clienții comandă în avans și plătesc la ridicare, așa că puteți primi comenzi online fără să conectați vreun procesator de plăți cu cardul. Preferați să încasați în avans? Adăugați oricând plățile online cu cardul. La finalul perioadei de probă treceți la planul <plan>{fallback}</plan>{fallbackFree, select, yes { (fără taxă lunară)} other {}}, dacă nu alegeți alt plan. Fără card la început, fără contract, anulați oricând.",
-      "bodyOnly": "Cu {brand}, clienții comandă în avans și plătesc la ridicare, așa că puteți primi comenzi online fără să conectați vreun procesator de plăți cu cardul. Preferați să încasați în avans? Adăugați oricând plățile online cu cardul. La finalul perioadei de probă, planul <plan>{fallback}</plan> costă {price} pe lună. Vă vom contacta înainte de atunci pentru a configura plata. Fără card la început, fără contract, anulați oricând."
+      "body": "În perioada de probă gratuită, clienții pot comanda în avans și plăti la ridicare, așa că puteți începe înainte să conectați plățile cu cardul. După perioada de probă, precomenzile se plătesc online cu cardul. Preferați să încasați în avans? Adăugați oricând plățile online cu cardul. La finalul perioadei de probă treceți la planul <plan>{fallback}</plan>{fallbackFree, select, yes { (fără taxă lunară)} other {}}, dacă nu alegeți alt plan. Fără card la început, fără contract, anulați oricând.",
+      "bodyOnly": "În perioada de probă gratuită, clienții pot comanda în avans și plăti la ridicare, așa că puteți începe înainte să conectați plățile cu cardul. După perioada de probă, precomenzile se plătesc online cu cardul. Preferați să încasați în avans? Adăugați oricând plățile online cu cardul. La finalul perioadei de probă, planul <plan>{fallback}</plan> costă {price} pe lună. Vă vom contacta înainte de atunci pentru a configura plata. Fără card la început, fără contract, anulați oricând."
     },
     "card": {
       "perTruckMonth": "per food truck / lună",

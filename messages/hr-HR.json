@@ -194,7 +194,7 @@
       "saveFailed": "Spremanje nije uspjelo",
       "layout": "{layout, select, scroll {Jelovnik se prikazuje kao jedna stranica} other {Jelovnik se prikazuje po zasebnim kategorijama}}",
       "autoAccept": "{state, select, on {Automatsko prihvaćanje uključeno} other {Automatsko prihvaćanje isključeno}}",
-      "cardPayments": "{state, select, off {Plaćanje karticom isključeno — kupci plaćaju na licu mjesta} other {Plaćanje karticom ponovno uključeno}}",
+      "cardPayments": "{state, select, off {{pah, select, on {Plaćanje karticom isključeno — kupci plaćaju na licu mjesta} other {Kartično plaćanje isključeno — online naručivanje pauzirano je dok ga ponovno ne uključite}}} other {Plaćanje karticom ponovno uključeno}}",
       "intervalsFailed": "Vremena preuzimanja trenutačno nije moguće spremiti.",
       "unpaidOrders": "{state, select, on {Neplaćene narudžbe uključene za ovaj događaj} other {Neplaćene narudžbe isključene za ovaj događaj}}",
       "presses": "{presses, select, one {Jedan dodir za ovaj događaj} other {Dva dodira za ovaj događaj}}",
@@ -397,7 +397,7 @@
       "buzzerPromptTitle": "Podsjeti me da dodam pager",
       "buzzerPromptHelp": "Otvara mrežu pagera čim pošaljete narudžbu, kako bi broj bio na ploči dok je kupac još pred vama. Kad je isključeno, pager i dalje možete dodati bilo kad dodirom na narudžbu, ali ništa vas neće podsjetiti. Korisno ako dijelite pagere, a lako se isključuje ako ne dijelite.",
       "cardsTitle": "Primaj online plaćanja karticom",
-      "cardsHelp": "Isključite ovo dok traje problem s karticama i kupci će naručivati kao i inače, a platit će na licu mjesta. Narudžbe i dalje stižu; zaustavlja se samo korak plaćanja karticom.",
+      "cardsHelp": "{pah, select, on {Isključite ovo dok traje problem s karticama i kupci će naručivati kao i inače, a platit će na licu mjesta. Narudžbe i dalje stižu; zaustavlja se samo korak plaćanja karticom.} other {Isključite ovo tijekom problema s karticama i online naručivanje staje dok ga ponovno ne uključite — vaš paket ne uključuje plaćanje pri preuzimanju. Narudžbe na licu mjesta nastavljaju se normalno.}}",
       "cardsScope": "Ovo vrijedi za cijeli vaš food truck, na svim događajima, i ostaje isključeno dok ga ponovno ne uključite.",
       "cardsOffSince": "Isključeno od {date}",
       "soundsTitle": "Zvukovi",
@@ -4472,6 +4472,7 @@
     "online": {
       "heading": "Online plaćanja",
       "body": "Kupci plaćaju karticom pri naručivanju. Novac ide izravno na vaš Stripe račun – mi ga nikad ne držimo.",
+      "payAtHatchTrialOnly": "{brand} dio je vašeg besplatnog probnog razdoblja. Kupci sada plaćaju prednarudžbe online karticom — povežite Stripe u nastavku.",
       "feeLine": "Stripe naplaćuje {fee} po plaćanju za standardne {region}. Druge kartice mogu koštati više. Vlastita naknada HatchGraba na online narudžbe ovisi o vašem paketu – pogledajte karticu „Naplata“.",
       "testMode": "Testni način rada. Stvarna plaćanja još se ne mogu primati."
     },
@@ -5996,8 +5997,8 @@
   "pricing": {
     "banner": {
       "title": "{months, plural, one {Vaš prvi mjesec potpuno je besplatan — sve značajke otključane.} few {Vaša prva # mjeseca potpuno su besplatna — sve značajke otključane.} other {Vaših prvih # mjeseci potpuno je besplatno — sve značajke otključane.}}",
-      "body": "S platformom {brand} kupci naručuju unaprijed i plaćaju pri preuzimanju, pa možete primati online narudžbe bez ikakvog povezivanja s pružateljem kartičnog plaćanja. Radije naplaćujete unaprijed? Online plaćanje karticom možete dodati bilo kada. Kad vaše besplatno probno razdoblje završi, prelazite na paket <plan>{fallback}</plan>{fallbackFree, select, yes { (bez mjesečne naknade)} other {}}, osim ako odaberete neki drugi paket. Bez kartice za početak, bez ugovora, otkažite bilo kada.",
-      "bodyOnly": "S platformom {brand} kupci naručuju unaprijed i plaćaju pri preuzimanju, pa možete primati online narudžbe bez ikakvog povezivanja s pružateljem kartičnog plaćanja. Radije naplaćujete unaprijed? Online plaćanje karticom možete dodati bilo kada. Kad vaše besplatno probno razdoblje završi, paket <plan>{fallback}</plan> košta {price} mjesečno. Javit ćemo vam se prije toga kako bismo dogovorili plaćanje. Bez kartice za početak, bez ugovora, otkažite bilo kada."
+      "body": "Tijekom besplatnog probnog razdoblja kupci mogu naručiti unaprijed i platiti pri preuzimanju, pa možete početi prije nego što povežete kartično plaćanje. Nakon probnog razdoblja prednarudžbe se plaćaju online karticom. Radije naplaćujete unaprijed? Online plaćanje karticom možete dodati bilo kada. Kad vaše besplatno probno razdoblje završi, prelazite na paket <plan>{fallback}</plan>{fallbackFree, select, yes { (bez mjesečne naknade)} other {}}, osim ako odaberete neki drugi paket. Bez kartice za početak, bez ugovora, otkažite bilo kada.",
+      "bodyOnly": "Tijekom besplatnog probnog razdoblja kupci mogu naručiti unaprijed i platiti pri preuzimanju, pa možete početi prije nego što povežete kartično plaćanje. Nakon probnog razdoblja prednarudžbe se plaćaju online karticom. Radije naplaćujete unaprijed? Online plaćanje karticom možete dodati bilo kada. Kad vaše besplatno probno razdoblje završi, paket <plan>{fallback}</plan> košta {price} mjesečno. Javit ćemo vam se prije toga kako bismo dogovorili plaćanje. Bez kartice za početak, bez ugovora, otkažite bilo kada."
     },
     "card": {
       "perTruckMonth": "po food trucku / mjesečno",

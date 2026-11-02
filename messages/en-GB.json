@@ -194,7 +194,7 @@
       "saveFailed": "Failed to save",
       "layout": "{layout, select, scroll {Menu shows as one page} other {Menu shows separate categories}}",
       "autoAccept": "{state, select, on {Auto-accept enabled} other {Auto-accept disabled}}",
-      "cardPayments": "{state, select, off {Card payments off — customers pay at the hatch} other {Card payments back on}}",
+      "cardPayments": "{state, select, off {{pah, select, on {Card payments off — customers pay at the hatch} other {Card payments off — online ordering is paused until you turn them back on}}} other {Card payments back on}}",
       "intervalsFailed": "Collection times could not be saved right now.",
       "unpaidOrders": "{state, select, on {Unpaid orders on for this event} other {Unpaid orders off for this event}}",
       "presses": "{presses, select, one {One press for this event} other {Two presses for this event}}",
@@ -397,7 +397,7 @@
       "buzzerPromptTitle": "Remind me to add a buzzer",
       "buzzerPromptHelp": "Opens the buzzer grid as soon as you place an order, so the number goes on the board while the customer is still in front of you. With it off you can still add a buzzer any time by tapping the order, but nothing will prompt you. Useful where you hand buzzers out, easy to switch off where you don’t.",
       "cardsTitle": "Take card payments online",
-      "cardsHelp": "Turn this off during a card problem and customers will place orders as normal and pay at the hatch instead. Orders keep coming; only the card step stops.",
+      "cardsHelp": "{pah, select, on {Turn this off during a card problem and customers will place orders as normal and pay at the hatch instead. Orders keep coming; only the card step stops.} other {Turn this off during a card problem and online ordering stops until you turn it back on — your plan doesn’t include paying at the hatch. Walk-up orders carry on as normal.}}",
       "cardsScope": "This applies to your whole truck, on every event, and stays off until you turn it back on.",
       "cardsOffSince": "Off since {date}",
       "soundsTitle": "Sounds",
@@ -4472,6 +4472,7 @@
     "online": {
       "heading": "Online payments",
       "body": "Customers pay by card when they order. Money goes straight to your own Stripe account — we never hold it.",
+      "payAtHatchTrialOnly": "{brand} is part of your free trial. Customers now pay for pre-orders online by card — connect Stripe below.",
       "feeLine": "Stripe charges {fee} per payment on standard {region}. Other cards may cost more. HatchGrab’s own fee on online orders depends on your plan — see Billing.",
       "testMode": "Test mode. No real payments can be taken yet."
     },
@@ -5969,8 +5970,8 @@
   "pricing": {
     "banner": {
       "title": "{months, plural, one {Your first month is completely free — every feature unlocked.} other {Your first # months are completely free — every feature unlocked.}}",
-      "body": "With {brand}, customers order ahead and pay when they collect, so you can take online orders without connecting a card processor at all. Prefer to take payment up front? Add online card payments any time. When your trial ends you move to <plan>{fallback}</plan>{fallbackFree, select, yes { — no monthly fee —} other {}} unless you choose a plan. No card to start, no contract, cancel anytime.",
-      "bodyOnly": "With {brand}, customers order ahead and pay when they collect, so you can take online orders without connecting a card processor at all. Prefer to take payment up front? Add online card payments any time. When your trial ends, <plan>{fallback}</plan> is {price} a month. We’ll be in touch before then to set up payment. No card to start, no contract, cancel anytime."
+      "body": "During your free trial, customers can order ahead and pay when they collect, so you can start before connecting card payments. After your trial, pre-orders are paid online by card. Prefer to take payment up front? Add online card payments any time. When your trial ends you move to <plan>{fallback}</plan>{fallbackFree, select, yes { — no monthly fee —} other {}} unless you choose a plan. No card to start, no contract, cancel anytime.",
+      "bodyOnly": "During your free trial, customers can order ahead and pay when they collect, so you can start before connecting card payments. After your trial, pre-orders are paid online by card. Prefer to take payment up front? Add online card payments any time. When your trial ends, <plan>{fallback}</plan> is {price} a month. We’ll be in touch before then to set up payment. No card to start, no contract, cancel anytime."
     },
     "card": {
       "perTruckMonth": "per truck / month",
@@ -6379,7 +6380,7 @@
       "tseQ": "Do I still need a till with a TSE?",
       "tseA": "HatchGrab is not a till and has no TSE. How you record online orders in your till is a question for your tax adviser.",
       "paymentsQ": "Which payment methods does HatchGrab support?",
-      "paymentsA": "Customers pay online by card, Apple Pay or Google Pay, or pay at the truck. PayPal and Klarna are not supported at the moment.",
+      "paymentsA": "Customers pay online by card, Apple Pay or Google Pay. During a truck’s free trial they can also pay at the truck. PayPal and Klarna are not supported at the moment.",
       "costTrial": "{months, plural, one {The first month is} other {The first # months are}} free, with every feature."
     },
     "method": {
@@ -6532,7 +6533,8 @@
       },
       "payattruck": {
         "label": "Pay at the truck",
-        "explain": "Customers order online and pay when they collect."
+        "explain": "Customers order online and pay when they collect.",
+        "ours": "During the free trial"
       },
       "localpay": {
         "label": "Local payment methods (BLIK, iDEAL, Swish, MobilePay…)",
@@ -6554,7 +6556,7 @@
       "paymethods": {
         "label": "Payment methods offered",
         "explain": "How customers can pay, as the vendor states it.",
-        "ours": "card, Apple Pay, Google Pay; pay at the truck"
+        "ours": "card, Apple Pay, Google Pay; pay at the truck during the free trial"
       },
       "kds": {
         "label": "Kitchen display (KDS)",

@@ -54,6 +54,7 @@
   "online": {
     "heading": "Online platby",
     "body": "Zákazníci platia kartou pri objednávke. Peniaze idú priamo na váš vlastný účet Stripe — my ich nikdy nedržíme.",
+    "payAtHatchTrialOnly": "{brand} je súčasťou vášho bezplatného skúšobného obdobia. Zákazníci teraz platia objednávky vopred online kartou — pripojte nižšie Stripe.",
     "feeLine": "Stripe účtuje {fee} za platbu (štandardné {region}). Iné karty môžu stáť viac. Vlastný poplatok HatchGrab za online objednávky závisí od vášho plánu — pozrite si Fakturáciu.",
     "testMode": "Testovací režim. Zatiaľ nie je možné prijímať skutočné platby."
   },

@@ -5,6 +5,7 @@ import { useState, useEffect, useLayoutEffect, useCallback, useRef, useMemo, use
 import { useSearchParams, useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { useFeatures } from '@/lib/useFeatures'
+import { PAY_AT_HATCH_FEATURE } from '@/lib/plans'   // faq-1c: the card-payments words depend on it
 import { scanUrl } from '@/lib/custom-domain/copy'   // the one builder for the address a QR encodes
 /* ✅ RESTORED IN FULL (5 October 2026). It had been trimmed to two strings when the offline-protection
  * control moved into the deleted "This event" card; the card is gone and the card's copy came back
@@ -2121,7 +2122,8 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
       if(!res.ok)throw new Error('write failed')
       const d=await res.json().catch(()=>({}))
       setTruck(t=>t?{...t,online_payments_paused_at:d?.online_payments_paused_at??null}:t)
-      showToast(tDash('toast.cardPayments',{state:paused?'off':'on'}))
+      // faq-1c: with card payments off, customers pay at the hatch only where Pay at Hatch is on for this truck; elsewhere online ordering stops.
+      showToast(tDash('toast.cardPayments',{state:paused?'off':'on',pah:features.can(PAY_AT_HATCH_FEATURE)?'on':'off'}))
     }catch{showToast(tDash('toast.saveFailed'),'error')}
     finally{setSavingOnlinePaymentsPause(false)}
   }
@@ -5493,7 +5495,7 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
                 <div className="flex-1 min-w-0">
                   <p className="text-sm font-semibold text-slate-800">{tDash('settings.cardsTitle')}</p>
                   <p className="text-xs text-slate-500 mt-0.5">
-                    {tDash('settings.cardsHelp')}
+                    {tDash('settings.cardsHelp', { pah: features.can(PAY_AT_HATCH_FEATURE) ? 'on' : 'off' })}
                   </p>
                   <p className="text-xs text-slate-400 mt-1">
                     {tDash('settings.cardsScope')}

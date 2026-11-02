@@ -1,0 +1,58 @@
+{
+ "$comment": "faq-1c (2 November 2026, docs/faq-1c-report.md): Pay at Hatch became the free trial's only. The banner's first sentence says so; the dashboard's card-payments words take {pah} (pay at the hatch only where it is on for the truck); the comparison FAQ and payment-methods note say during the free trial; Manage › Payments' new line and the comparison row's note added. A SEVENTH sibling of the plan-stage records, applied after copy-truth-1 by the same rule (scripts/_lp2-frozen.cjs stageA()).",
+ "en-GB": {
+  "removed": {},
+  "reworded": {
+   "pricing.banner.body": {
+    "before": "With {brand}, customers order ahead and pay when they collect, so you can take online orders without connecting a card processor at all. Prefer to take payment up front? Add online card payments any time. When your trial ends you move to <plan>{fallback}</plan>{fallbackFree, select, yes { — no monthly fee —} other {}} unless you choose a plan. No card to start, no contract, cancel anytime.",
+    "after": "During your free trial, customers can order ahead and pay when they collect, so you can start before connecting card payments. After your trial, pre-orders are paid online by card. Prefer to take payment up front? Add online card payments any time. When your trial ends you move to <plan>{fallback}</plan>{fallbackFree, select, yes { — no monthly fee —} other {}} unless you choose a plan. No card to start, no contract, cancel anytime."
+   },
+   "pricing.banner.bodyOnly": {
+    "before": "With {brand}, customers order ahead and pay when they collect, so you can take online orders without connecting a card processor at all. Prefer to take payment up front? Add online card payments any time. When your trial ends, <plan>{fallback}</plan> is {price} a month. We’ll be in touch before then to set up payment. No card to start, no contract, cancel anytime.",
+    "after": "During your free trial, customers can order ahead and pay when they collect, so you can start before connecting card payments. After your trial, pre-orders are paid online by card. Prefer to take payment up front? Add online card payments any time. When your trial ends, <plan>{fallback}</plan> is {price} a month. We’ll be in touch before then to set up payment. No card to start, no contract, cancel anytime."
+   },
+   "dashboard.settings.cardsHelp": {
+    "before": "Turn this off during a card problem and customers will place orders as normal and pay at the hatch instead. Orders keep coming; only the card step stops.",
+    "after": "{pah, select, on {Turn this off during a card problem and customers will place orders as normal and pay at the hatch instead. Orders keep coming; only the card step stops.} other {Turn this off during a card problem and online ordering stops until you turn it back on — your plan doesn’t include paying at the hatch. Walk-up orders carry on as normal.}}"
+   },
+   "dashboard.toast.cardPayments": {
+    "before": "{state, select, off {Card payments off — customers pay at the hatch} other {Card payments back on}}",
+    "after": "{state, select, off {{pah, select, on {Card payments off — customers pay at the hatch} other {Card payments off — online ordering is paused until you turn them back on}}} other {Card payments back on}}"
+   },
+   "comparison.faq.paymentsA": {
+    "before": "Customers pay online by card, Apple Pay or Google Pay, or pay at the truck. PayPal and Klarna are not supported at the moment.",
+    "after": "Customers pay online by card, Apple Pay or Google Pay. During a truck’s free trial they can also pay at the truck. PayPal and Klarna are not supported at the moment."
+   },
+   "comparison.features.paymethods.ours": {
+    "before": "card, Apple Pay, Google Pay; pay at the truck",
+    "after": "card, Apple Pay, Google Pay; pay at the truck during the free trial"
+   }
+  },
+  "added": {
+   "managePayments.online.payAtHatchTrialOnly": "{brand} is part of your free trial. Customers now pay for pre-orders online by card — connect Stripe below.",
+   "comparison.features.payattruck.ours": "During the free trial"
+  }
+ },
+ "en-US": {
+  "removed": {},
+  "reworded": {
+   "pricing.banner.body": {
+    "before": "With {brand}, customers order ahead and pay when they pick up, so you can take online orders without connecting a card processor at all. Prefer to take payment up front? Add online card payments any time. When your trial ends you move to <plan>{fallback}</plan>{fallbackFree, select, yes { — no monthly fee —} other {}} unless you choose a plan. No card to start, no contract, cancel anytime.",
+    "after": "During your free trial, customers can order ahead and pay when they pick up, so you can start before connecting card payments. After your trial, pre-orders are paid online by card. Prefer to take payment up front? Add online card payments any time. When your trial ends you move to <plan>{fallback}</plan>{fallbackFree, select, yes { — no monthly fee —} other {}} unless you choose a plan. No card to start, no contract, cancel anytime."
+   },
+   "pricing.banner.bodyOnly": {
+    "before": "With {brand}, customers order ahead and pay when they pick up, so you can take online orders without connecting a card processor at all. Prefer to take payment up front? Add online card payments any time. When your trial ends, <plan>{fallback}</plan> is {price} a month. We’ll be in touch before then to set up payment. No card to start, no contract, cancel anytime.",
+    "after": "During your free trial, customers can order ahead and pay when they pick up, so you can start before connecting card payments. After your trial, pre-orders are paid online by card. Prefer to take payment up front? Add online card payments any time. When your trial ends, <plan>{fallback}</plan> is {price} a month. We’ll be in touch before then to set up payment. No card to start, no contract, cancel anytime."
+   },
+   "dashboard.settings.cardsHelp": {
+    "before": "Turn this off during a card problem and customers will place orders as normal and pay at the window instead. Orders keep coming; only the card step stops.",
+    "after": "{pah, select, on {Turn this off during a card problem and customers will place orders as normal and pay at the window instead. Orders keep coming; only the card step stops.} other {Turn this off during a card problem and online ordering stops until you turn it back on — your plan doesn’t include paying at the window. Walk-up orders carry on as normal.}}"
+   },
+   "dashboard.toast.cardPayments": {
+    "before": "{state, select, off {Card payments off — customers pay at the window} other {Card payments back on}}",
+    "after": "{state, select, off {{pah, select, on {Card payments off — customers pay at the window} other {Card payments off — online ordering is paused until you turn them back on}}} other {Card payments back on}}"
+   }
+  },
+  "added": {}
+ }
+}

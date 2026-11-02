@@ -194,7 +194,7 @@
       "saveFailed": "Shranjevanje ni uspelo",
       "layout": "{layout, select, scroll {Jedilnik je prikazan na eni strani} other {Jedilnik je prikazan po ločenih kategorijah}}",
       "autoAccept": "{state, select, on {Samodejno sprejemanje vklopljeno} other {Samodejno sprejemanje izklopljeno}}",
-      "cardPayments": "{state, select, off {Plačila s kartico izklopljena — stranke plačajo ob prevzemu} other {Plačila s kartico spet vklopljena}}",
+      "cardPayments": "{state, select, off {{pah, select, on {Plačila s kartico izklopljena — stranke plačajo ob prevzemu} other {Kartična plačila izklopljena — spletno naročanje je ustavljeno, dokler jih znova ne vklopite}}} other {Plačila s kartico spet vklopljena}}",
       "intervalsFailed": "Časov prevzema trenutno ni bilo mogoče shraniti.",
       "unpaidOrders": "{state, select, on {Neplačana naročila za ta dogodek vklopljena} other {Neplačana naročila za ta dogodek izklopljena}}",
       "presses": "{presses, select, one {En pritisk za ta dogodek} other {Dva pritiska za ta dogodek}}",
@@ -397,7 +397,7 @@
       "buzzerPromptTitle": "Opomni me, naj dodam pozivnik",
       "buzzerPromptHelp": "Mrežo pozivnikov odpre takoj, ko oddate naročilo, tako da številka pride na pregled, medtem ko je stranka še pred vami. Če je izklopljeno, lahko pozivnik še vedno kadar koli dodate s tapom na naročilo, vendar vas nič ne bo opomnilo. Uporabno, kjer delite pozivnike, in enostavno za izklop, kjer jih ne.",
       "cardsTitle": "Sprejemaj spletna plačila s kartico",
-      "cardsHelp": "Izklopite to ob težavah s karticami in stranke bodo naročale kot običajno, plačale pa ob prevzemu. Naročila še naprej prihajajo; ustavi se samo korak s kartico.",
+      "cardsHelp": "{pah, select, on {Izklopite to ob težavah s karticami in stranke bodo naročale kot običajno, plačale pa ob prevzemu. Naročila še naprej prihajajo; ustavi se samo korak s kartico.} other {Izklopite to ob težavi s karticami in spletno naročanje se ustavi, dokler ga znova ne vklopite — vaš paket ne vključuje plačila ob prevzemu. Naročila na mestu tečejo kot običajno.}}",
       "cardsScope": "To velja za vaš celoten food truck, na vseh dogodkih, in ostane izklopljeno, dokler tega znova ne vklopite.",
       "cardsOffSince": "Izklopljeno od: {date}",
       "soundsTitle": "Zvoki",
@@ -4472,6 +4472,7 @@
     "online": {
       "heading": "Spletna plačila",
       "body": "Stranke plačajo s kartico ob naročilu. Denar gre neposredno na vaš lastni račun Stripe – mi ga nikoli ne hranimo.",
+      "payAtHatchTrialOnly": "{brand} je del vašega brezplačnega preizkusnega obdobja. Kupci zdaj prednaročila plačajo s kartico na spletu — spodaj povežite Stripe.",
       "feeLine": "Stripe za standardne kartice zaračuna {fee} na plačilo ({region}). Druge kartice so lahko dražje. Pristojbina HatchGrab za spletna naročila je odvisna od vašega paketa – glejte Obračun.",
       "testMode": "Testni način. Pravih plačil še ni mogoče sprejemati."
     },
@@ -5996,8 +5997,8 @@
   "pricing": {
     "banner": {
       "title": "{months, plural, one {Vaš prvi mesec je popolnoma brezplačen — vse funkcije so odklenjene.} two {Vaša prva # meseca sta popolnoma brezplačna — vse funkcije so odklenjene.} few {Vaši prvi # meseci so popolnoma brezplačni — vse funkcije so odklenjene.} other {Vaših prvih # mesecev je popolnoma brezplačnih — vse funkcije so odklenjene.}}",
-      "body": "S storitvijo {brand} kupci naročijo vnaprej in plačajo ob prevzemu, zato lahko spletna naročila sprejemate, ne da bi sploh povezali ponudnika kartičnih plačil. Bi raje prejeli plačilo vnaprej? Spletna kartična plačila lahko dodate kadar koli. Ko se brezplačno preizkusno obdobje konča, preidete na paket <plan>{fallback}</plan>{fallbackFree, select, yes { (brez mesečnega plačila)} other {}}, razen če izberete drug paket. Brez kartice za začetek, brez pogodbe, odpoved kadar koli.",
-      "bodyOnly": "S storitvijo {brand} kupci naročijo vnaprej in plačajo ob prevzemu, zato lahko spletna naročila sprejemate, ne da bi sploh povezali ponudnika kartičnih plačil. Bi raje prejeli plačilo vnaprej? Spletna kartična plačila lahko dodate kadar koli. Ko se brezplačno preizkusno obdobje konča, paket <plan>{fallback}</plan> stane {price} na mesec. Pred tem vas bomo kontaktirali, da uredimo plačilo. Brez kartice za začetek, brez pogodbe, odpoved kadar koli."
+      "body": "Med brezplačnim preizkusnim obdobjem lahko kupci naročijo vnaprej in plačajo ob prevzemu, zato lahko začnete, še preden povežete kartična plačila. Po preizkusnem obdobju se prednaročila plačajo s kartico na spletu. Bi raje prejeli plačilo vnaprej? Spletna kartična plačila lahko dodate kadar koli. Ko se brezplačno preizkusno obdobje konča, preidete na paket <plan>{fallback}</plan>{fallbackFree, select, yes { (brez mesečnega plačila)} other {}}, razen če izberete drug paket. Brez kartice za začetek, brez pogodbe, odpoved kadar koli.",
+      "bodyOnly": "Med brezplačnim preizkusnim obdobjem lahko kupci naročijo vnaprej in plačajo ob prevzemu, zato lahko začnete, še preden povežete kartična plačila. Po preizkusnem obdobju se prednaročila plačajo s kartico na spletu. Bi raje prejeli plačilo vnaprej? Spletna kartična plačila lahko dodate kadar koli. Ko se brezplačno preizkusno obdobje konča, paket <plan>{fallback}</plan> stane {price} na mesec. Pred tem vas bomo kontaktirali, da uredimo plačilo. Brez kartice za začetek, brez pogodbe, odpoved kadar koli."
     },
     "card": {
       "perTruckMonth": "na food truck / mesec",

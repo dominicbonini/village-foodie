@@ -194,7 +194,7 @@
       "saveFailed": "Salvestamine ebaõnnestus",
       "layout": "{layout, select, scroll {Menüü kuvatakse ühe lehena} other {Menüü kuvatakse eraldi kategooriatena}}",
       "autoAccept": "{state, select, on {Automaatne vastuvõtmine sees} other {Automaatne vastuvõtmine väljas}}",
-      "cardPayments": "{state, select, off {Kaardimaksed väljas — kliendid maksavad leti juures} other {Kaardimaksed jälle sees}}",
+      "cardPayments": "{state, select, off {{pah, select, on {Kaardimaksed väljas — kliendid maksavad leti juures} other {Kaardimaksed väljas — veebitellimine on peatatud, kuni lülitad need tagasi sisse}}} other {Kaardimaksed jälle sees}}",
       "intervalsFailed": "Kättesaamise aegu ei saanud praegu salvestada.",
       "unpaidOrders": "{state, select, on {Maksmata tellimused selle ürituse jaoks sees} other {Maksmata tellimused selle ürituse jaoks väljas}}",
       "presses": "{presses, select, one {Selle ürituse jaoks üks vajutus} other {Selle ürituse jaoks kaks vajutust}}",
@@ -397,7 +397,7 @@
       "buzzerPromptTitle": "Tuleta meelde piipar lisada",
       "buzzerPromptHelp": "Avab piiparite ruudustiku kohe, kui tellimuse esitad, nii et number läheb töölauale, kui klient on veel sinu ees. Kui see on väljas, saad piipari alati lisada tellimust puudutades, kuid keegi ei tuleta seda meelde. Kasulik, kui jagad piipareid; lihtne välja lülitada, kui ei jaga.",
       "cardsTitle": "Võta veebis vastu kaardimakseid",
-      "cardsHelp": "Lülita see kaardiprobleemi ajal välja ja kliendid esitavad tellimusi nagu tavaliselt, kuid maksavad hoopis leti juures. Tellimused tulevad edasi; ainult kaardimakse samm peatub.",
+      "cardsHelp": "{pah, select, on {Lülita see kaardiprobleemi ajal välja ja kliendid esitavad tellimusi nagu tavaliselt, kuid maksavad hoopis leti juures. Tellimused tulevad edasi; ainult kaardimakse samm peatub.} other {Lülita see kaardiprobleemi ajal välja ja veebitellimine peatub, kuni lülitad selle tagasi sisse — sinu pakett ei sisalda maksmist kättesaamisel. Kohapealsed tellimused jätkuvad tavapäraselt.}}",
       "cardsScope": "See kehtib kogu sinu toiduautole kõigil üritustel ja jääb välja, kuni lülitad selle uuesti sisse.",
       "cardsOffSince": "Väljas alates: {date}",
       "soundsTitle": "Helid",
@@ -4472,6 +4472,7 @@
     "online": {
       "heading": "Veebimaksed",
       "body": "Kliendid maksavad tellides kaardiga. Raha läheb otse sinu enda Stripe’i kontole — meie seda kunagi ei hoia.",
+      "payAtHatchTrialOnly": "{brand} kuulub sinu tasuta prooviperioodi juurde. Kliendid maksavad nüüd ettetellimuste eest veebis kaardiga — ühenda allpool Stripe.",
       "feeLine": "Stripe võtab tavaliste kaartide puhul ({region}) {fee} makse kohta. Teised kaardid võivad maksta rohkem. HatchGrabi enda tasu veebitellimustelt sõltub sinu paketist — vaata jaotist Arveldus.",
       "testMode": "Testrežiim. Päris makseid veel vastu võtta ei saa."
     },
@@ -5996,8 +5997,8 @@
   "pricing": {
     "banner": {
       "title": "{months, plural, one {Sinu esimene kuu on täiesti tasuta — kõik funktsioonid avatud.} other {Sinu esimesed # kuud on täiesti tasuta — kõik funktsioonid avatud.}}",
-      "body": "{brand} võimaldab klientidel ette tellida ja maksta kättesaamisel, nii et saad veebitellimusi vastu võtta ilma kaardimaksete teenusepakkujat üldse ühendamata. Eelistad makset kohe ette? Lisa veebipõhised kaardimaksed millal tahes. Kui prooviperiood lõpeb ja sa ei vali muud paketti, lähed üle paketile <plan>{fallback}</plan>{fallbackFree, select, yes { — ilma kuutasuta} other {}}. Alustamiseks pole pangakaarti vaja, lepingut pole, loobu igal ajal.",
-      "bodyOnly": "{brand} võimaldab klientidel ette tellida ja maksta kättesaamisel, nii et saad veebitellimusi vastu võtta ilma kaardimaksete teenusepakkujat üldse ühendamata. Eelistad makset kohe ette? Lisa veebipõhised kaardimaksed millal tahes. Kui prooviperiood lõpeb, on paketi <plan>{fallback}</plan> hind {price} kuus. Võtame sinuga enne seda ühendust, et maksmine korraldada. Alustamiseks pole pangakaarti vaja, lepingut pole, loobu igal ajal."
+      "body": "Tasuta prooviperioodi ajal saavad kliendid ette tellida ja maksta kättesaamisel, nii et saad alustada enne kaardimaksete ühendamist. Pärast prooviperioodi makstakse ettetellimused veebis kaardiga. Eelistad makset kohe ette? Lisa veebipõhised kaardimaksed millal tahes. Kui prooviperiood lõpeb ja sa ei vali muud paketti, lähed üle paketile <plan>{fallback}</plan>{fallbackFree, select, yes { — ilma kuutasuta} other {}}. Alustamiseks pole pangakaarti vaja, lepingut pole, loobu igal ajal.",
+      "bodyOnly": "Tasuta prooviperioodi ajal saavad kliendid ette tellida ja maksta kättesaamisel, nii et saad alustada enne kaardimaksete ühendamist. Pärast prooviperioodi makstakse ettetellimused veebis kaardiga. Eelistad makset kohe ette? Lisa veebipõhised kaardimaksed millal tahes. Kui prooviperiood lõpeb, on paketi <plan>{fallback}</plan> hind {price} kuus. Võtame sinuga enne seda ühendust, et maksmine korraldada. Alustamiseks pole pangakaarti vaja, lepingut pole, loobu igal ajal."
     },
     "card": {
       "perTruckMonth": "toiduauto kohta kuus",

@@ -194,7 +194,7 @@
       "saveFailed": "Nepavyko išsaugoti",
       "layout": "{layout, select, scroll {Meniu rodomas viename puslapyje} other {Meniu rodomas atskiromis kategorijomis}}",
       "autoAccept": "{state, select, on {Automatinis priėmimas įjungtas} other {Automatinis priėmimas išjungtas}}",
-      "cardPayments": "{state, select, off {Mokėjimai kortele išjungti — klientai moka atsiimdami, prie furgono} other {Mokėjimai kortele vėl įjungti}}",
+      "cardPayments": "{state, select, off {{pah, select, on {Mokėjimai kortele išjungti — klientai moka atsiimdami, prie furgono} other {Mokėjimai kortele išjungti — užsakymai internetu sustabdyti, kol vėl juos įjungsite}}} other {Mokėjimai kortele vėl įjungti}}",
       "intervalsFailed": "Šiuo metu nepavyko išsaugoti atsiėmimo laikų.",
       "unpaidOrders": "{state, select, on {Neapmokėti užsakymai šiam renginiui įjungti} other {Neapmokėti užsakymai šiam renginiui išjungti}}",
       "presses": "{presses, select, one {Šiam renginiui — vienas paspaudimas} other {Šiam renginiui — du paspaudimai}}",
@@ -397,7 +397,7 @@
       "buzzerPromptTitle": "Priminti pridėti gaviklį",
       "buzzerPromptHelp": "Pateikus užsakymą iš karto atidaromas gaviklių tinklelis, kad numeris atsirastų lentoje, kol klientas dar stovi priešais jus. Išjungę vis tiek galėsite bet kada pridėti gaviklį paliesdami užsakymą, tačiau niekas jums nepriminys. Naudinga, jei dalijate gaviklius; lengva išjungti, jei ne.",
       "cardsTitle": "Priimti mokėjimus kortele internetu",
-      "cardsHelp": "Išjunkite tai kilus problemoms su kortelėmis — klientai užsisakys kaip įprasta, o sumokės atsiimdami, prie furgono. Užsakymai ir toliau gaunami; sustabdomas tik mokėjimo kortele žingsnis.",
+      "cardsHelp": "{pah, select, on {Išjunkite tai kilus problemoms su kortelėmis — klientai užsisakys kaip įprasta, o sumokės atsiimdami, prie furgono. Užsakymai ir toliau gaunami; sustabdomas tik mokėjimo kortele žingsnis.} other {Išjunkite tai kilus problemai su kortelėmis, ir užsakymai internetu sustos, kol vėl įjungsite — jūsų planas neapima mokėjimo atsiimant. Užsakymai vietoje vyksta kaip įprasta.}}",
       "cardsScope": "Tai taikoma visam jūsų food truck verslui, visuose renginiuose, ir lieka išjungta, kol vėl įjungsite.",
       "cardsOffSince": "Išjungta nuo {date}",
       "soundsTitle": "Garsai",
@@ -4472,6 +4472,7 @@
     "online": {
       "heading": "Mokėjimai internetu",
       "body": "Klientai moka kortele užsakydami. Pinigai keliauja tiesiai į jūsų Stripe paskyrą — mes jų niekada nelaikome.",
+      "payAtHatchTrialOnly": "{brand} yra jūsų nemokamo bandomojo laikotarpio dalis. Klientai dabar išankstinius užsakymus apmoka internetu kortele — prijunkite Stripe žemiau.",
       "feeLine": "Stripe ima {fee} už mokėjimą standartine kortele ({region}). Kitos kortelės gali kainuoti daugiau. HatchGrab mokestis už užsakymus internetu priklauso nuo jūsų plano — žr. „Atsiskaitymai“.",
       "testMode": "Bandomasis režimas. Tikrų mokėjimų dar negalima priimti."
     },
@@ -5996,8 +5997,8 @@
   "pricing": {
     "banner": {
       "title": "{months, plural, one {# mėnesį naudojatės visiškai nemokamai – visos funkcijos atrakintos.} few {# mėnesius naudojatės visiškai nemokamai – visos funkcijos atrakintos.} many {# mėnesio naudojatės visiškai nemokamai – visos funkcijos atrakintos.} other {# mėnesių naudojatės visiškai nemokamai – visos funkcijos atrakintos.}}",
-      "body": "Su {brand} klientai užsisako iš anksto ir sumoka atsiimdami, todėl užsakymus internetu galite priimti visai nejungdami kortelių mokėjimų tiekėjo. Norite, kad būtų sumokama iš anksto? Bet kada pridėkite mokėjimus kortele internetu. Pasibaigus bandomajam laikotarpiui, pereisite prie plano <plan>{fallback}</plan>{fallbackFree, select, yes { (mėnesinis mokestis netaikomas)} other {}}, nebent pasirinksite kitą planą. Pradedant kortelės nereikia, jokios sutarties, atsisakyti galite bet kada.",
-      "bodyOnly": "Su {brand} klientai užsisako iš anksto ir sumoka atsiimdami, todėl užsakymus internetu galite priimti visai nejungdami kortelių mokėjimų tiekėjo. Norite, kad būtų sumokama iš anksto? Bet kada pridėkite mokėjimus kortele internetu. Pasibaigus bandomajam laikotarpiui, planas <plan>{fallback}</plan> kainuos {price} per mėnesį. Dar prieš tai susisieksime su jumis, kad sutvarkytume mokėjimą. Pradedant kortelės nereikia, jokios sutarties, atsisakyti galite bet kada."
+      "body": "Nemokamo bandomojo laikotarpio metu klientai gali užsisakyti iš anksto ir sumokėti atsiimdami, todėl galite pradėti dar neprijungę mokėjimų kortele. Pasibaigus bandomajam laikotarpiui, išankstiniai užsakymai apmokami internetu kortele. Norite, kad būtų sumokama iš anksto? Bet kada pridėkite mokėjimus kortele internetu. Pasibaigus bandomajam laikotarpiui, pereisite prie plano <plan>{fallback}</plan>{fallbackFree, select, yes { (mėnesinis mokestis netaikomas)} other {}}, nebent pasirinksite kitą planą. Pradedant kortelės nereikia, jokios sutarties, atsisakyti galite bet kada.",
+      "bodyOnly": "Nemokamo bandomojo laikotarpio metu klientai gali užsisakyti iš anksto ir sumokėti atsiimdami, todėl galite pradėti dar neprijungę mokėjimų kortele. Pasibaigus bandomajam laikotarpiui, išankstiniai užsakymai apmokami internetu kortele. Norite, kad būtų sumokama iš anksto? Bet kada pridėkite mokėjimus kortele internetu. Pasibaigus bandomajam laikotarpiui, planas <plan>{fallback}</plan> kainuos {price} per mėnesį. Dar prieš tai susisieksime su jumis, kad sutvarkytume mokėjimą. Pradedant kortelės nereikia, jokios sutarties, atsisakyti galite bet kada."
     },
     "card": {
       "perTruckMonth": "už furgoną / mėn.",

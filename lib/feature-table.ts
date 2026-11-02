@@ -105,7 +105,9 @@ export const FEATURE_GROUPS: readonly FeatureGroup[] = ['run', 'online', 'market
  */
 export const BASE_CARD_BULLETS: readonly { key: string; feature?: Feature }[] = [
   { key: 'walkUp', feature: 'walkup_orders' },
-  { key: 'online', feature: 'online_ordering_pay_at_hatch' },
+  // faq-1c (2 November 2026): "Online ordering" is shown while the plan has ONLINE CARD PAYMENTS — it was keyed to Pay at Hatch,
+  // which is now the free trial's only (plans.pay_at_hatch_allowed false on every public plan), and online ordering is not.
+  { key: 'online', feature: 'online_payments' },
   { key: 'preorders', feature: 'advance_preordering' },
   { key: 'capacity', feature: 'smart_batch_pacing' },
   { key: 'privateEvents', feature: 'private_events' },

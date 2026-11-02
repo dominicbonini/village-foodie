@@ -194,7 +194,7 @@
       "saveFailed": "Uložení se nezdařilo",
       "layout": "{layout, select, scroll {Jídelní lístek se zobrazuje na jedné stránce} other {Jídelní lístek se zobrazuje po kategoriích}}",
       "autoAccept": "{state, select, on {Automatické přijímání zapnuto} other {Automatické přijímání vypnuto}}",
-      "cardPayments": "{state, select, off {Platby kartou vypnuty — zákazníci platí na místě u výdejního okénka} other {Platby kartou opět zapnuty}}",
+      "cardPayments": "{state, select, off {{pah, select, on {Platby kartou vypnuty — zákazníci platí na místě u výdejního okénka} other {Platby kartou vypnuty — online objednávky jsou pozastavené, dokud je znovu nezapnete}}} other {Platby kartou opět zapnuty}}",
       "intervalsFailed": "Časy vyzvednutí se teď nepodařilo uložit.",
       "unpaidOrders": "{state, select, on {Nezaplacené objednávky pro tuto akci zapnuty} other {Nezaplacené objednávky pro tuto akci vypnuty}}",
       "presses": "{presses, select, one {Pro tuto akci jedno stisknutí} other {Pro tuto akci dvě stisknutí}}",
@@ -397,7 +397,7 @@
       "buzzerPromptTitle": "Připomenout mi přidat pager",
       "buzzerPromptHelp": "Hned po odeslání objednávky otevře mřížku pagerů, takže číslo se dostane na přehled, dokud zákazník ještě stojí před vámi. Když je to vypnuté, můžete pager přidat kdykoli klepnutím na objednávku, ale nic vás nepobídne. Hodí se tam, kde pagery rozdáváte; kde ne, snadno to vypnete.",
       "cardsTitle": "Přijímat platby kartou online",
-      "cardsHelp": "Při potížích s kartami to vypněte — zákazníci budou objednávat jako obvykle a zaplatí místo toho na místě u výdejního okénka. Objednávky dál přicházejí; zastaví se jen krok platby kartou.",
+      "cardsHelp": "{pah, select, on {Při potížích s kartami to vypněte — zákazníci budou objednávat jako obvykle a zaplatí místo toho na místě u výdejního okénka. Objednávky dál přicházejí; zastaví se jen krok platby kartou.} other {Vypněte to při problému s kartami a online objednávky se zastaví, dokud to znovu nezapnete — váš tarif nezahrnuje platbu při vyzvednutí. Objednávky na místě pokračují jako obvykle.}}",
       "cardsScope": "Platí to pro celý váš food truck, u všech akcí, a zůstane to vypnuté, dokud to znovu nezapnete.",
       "cardsOffSince": "Vypnuto od {date}",
       "soundsTitle": "Zvuky",
@@ -4472,6 +4472,7 @@
     "online": {
       "heading": "Online platby",
       "body": "Zákazníci platí kartou při objednání. Peníze jdou přímo na váš vlastní účet Stripe – my je nikdy nedržíme.",
+      "payAtHatchTrialOnly": "{brand} je součástí vašeho bezplatného zkušebního období. Zákazníci teď platí objednávky předem online kartou — připojte níže Stripe.",
       "feeLine": "Stripe si účtuje {fee} za platbu (standardní {region}). Jiné karty mohou být dražší. Vlastní poplatek HatchGrab za online objednávky závisí na vašem tarifu – viz Fakturace.",
       "testMode": "Testovací režim. Skutečné platby zatím nelze přijímat."
     },
@@ -5996,8 +5997,8 @@
   "pricing": {
     "banner": {
       "title": "{months, plural, one {Váš první měsíc je úplně zdarma — se všemi funkcemi.} few {Vaše první # měsíce jsou úplně zdarma — se všemi funkcemi.} other {Vašich prvních # měsíců je úplně zdarma — se všemi funkcemi.}}",
-      "body": "S {brand} si zákazníci objednají předem a zaplatí při vyzvednutí, takže můžete přijímat online objednávky, aniž byste museli připojovat platební bránu pro karty. Chcete raději inkasovat předem? Online platby kartou můžete přidat kdykoli. Po skončení zkušebního období přejdete na tarif <plan>{fallback}</plan>{fallbackFree, select, yes { — bez měsíčního poplatku —} other {}}, pokud si nevyberete jiný tarif. Na začátek žádná platební karta, žádné závazky, zrušení kdykoli.",
-      "bodyOnly": "S {brand} si zákazníci objednají předem a zaplatí při vyzvednutí, takže můžete přijímat online objednávky, aniž byste museli připojovat platební bránu pro karty. Chcete raději inkasovat předem? Online platby kartou můžete přidat kdykoli. Po skončení zkušebního období bude tarif <plan>{fallback}</plan> stát {price} měsíčně. Ještě předtím se vám ozveme, abychom nastavili platbu. Na začátek žádná platební karta, žádné závazky, zrušení kdykoli."
+      "body": "Během bezplatného zkušebního období si zákazníci mohou objednat předem a zaplatit při vyzvednutí, takže můžete začít ještě před připojením plateb kartou. Po zkušebním období se objednávky předem platí online kartou. Chcete raději inkasovat předem? Online platby kartou můžete přidat kdykoli. Po skončení zkušebního období přejdete na tarif <plan>{fallback}</plan>{fallbackFree, select, yes { — bez měsíčního poplatku —} other {}}, pokud si nevyberete jiný tarif. Na začátek žádná platební karta, žádné závazky, zrušení kdykoli.",
+      "bodyOnly": "Během bezplatného zkušebního období si zákazníci mohou objednat předem a zaplatit při vyzvednutí, takže můžete začít ještě před připojením plateb kartou. Po zkušebním období se objednávky předem platí online kartou. Chcete raději inkasovat předem? Online platby kartou můžete přidat kdykoli. Po skončení zkušebního období bude tarif <plan>{fallback}</plan> stát {price} měsíčně. Ještě předtím se vám ozveme, abychom nastavili platbu. Na začátek žádná platební karta, žádné závazky, zrušení kdykoli."
     },
     "card": {
       "perTruckMonth": "za food truck / měsíc",

@@ -194,7 +194,7 @@
       "saveFailed": "Nie udało się zapisać",
       "layout": "{layout, select, scroll {Menu wyświetla się na jednej stronie} other {Menu wyświetla osobne kategorie}}",
       "autoAccept": "{state, select, on {Automatyczne przyjmowanie włączone} other {Automatyczne przyjmowanie wyłączone}}",
-      "cardPayments": "{state, select, off {Płatności kartą wyłączone — klienci płacą przy okienku} other {Płatności kartą znów włączone}}",
+      "cardPayments": "{state, select, off {{pah, select, on {Płatności kartą wyłączone — klienci płacą przy okienku} other {Płatności kartą wyłączone — zamówienia online są wstrzymane, dopóki ich nie włączysz}}} other {Płatności kartą znów włączone}}",
       "intervalsFailed": "Nie udało się teraz zapisać godzin odbioru.",
       "unpaidOrders": "{state, select, on {Nieopłacone zamówienia włączone dla tego wydarzenia} other {Nieopłacone zamówienia wyłączone dla tego wydarzenia}}",
       "presses": "{presses, select, one {Jedno naciśnięcie dla tego wydarzenia} other {Dwa naciśnięcia dla tego wydarzenia}}",
@@ -397,7 +397,7 @@
       "buzzerPromptTitle": "Przypominaj mi o przypisaniu pagera",
       "buzzerPromptHelp": "Otwiera siatkę pagerów, gdy tylko złożysz zamówienie, żeby numer trafił na listę, póki klient stoi przed tobą. Gdy ta opcja jest wyłączona, nadal możesz w każdej chwili dodać pager, dotykając zamówienia, ale nic ci o tym nie przypomni. Przydatne, jeśli wydajesz pagery, a łatwo to wyłączyć, jeśli nie.",
       "cardsTitle": "Przyjmuj płatności kartą online",
-      "cardsHelp": "Wyłącz to, gdy są problemy z płatnościami kartą — klienci będą składać zamówienia jak zwykle, a zapłacą przy okienku. Zamówienia nadal spływają; zatrzymuje się tylko krok płatności kartą.",
+      "cardsHelp": "{pah, select, on {Wyłącz to, gdy są problemy z płatnościami kartą — klienci będą składać zamówienia jak zwykle, a zapłacą przy okienku. Zamówienia nadal spływają; zatrzymuje się tylko krok płatności kartą.} other {Wyłącz to podczas problemu z kartami, a zamówienia online się zatrzymają, dopóki nie włączysz tego ponownie — twój plan nie obejmuje płatności przy odbiorze. Zamówienia na miejscu działają normalnie.}}",
       "cardsScope": "Dotyczy całego twojego food trucka, na wszystkich wydarzeniach, i pozostaje wyłączone, dopóki tego nie włączysz.",
       "cardsOffSince": "Wyłączone od {date}",
       "soundsTitle": "Dźwięki",
@@ -4472,6 +4472,7 @@
     "online": {
       "heading": "Płatności online",
       "body": "Klienci płacą kartą przy składaniu zamówienia. Pieniądze trafiają prosto na twoje własne konto Stripe — nigdy ich nie przechowujemy.",
+      "payAtHatchTrialOnly": "{brand} jest częścią bezpłatnego okresu próbnego. Klienci płacą teraz za zamówienia z wyprzedzeniem online kartą — podłącz Stripe poniżej.",
       "feeLine": "Stripe pobiera {fee} za płatność standardową kartą ({region}). Inne karty mogą kosztować więcej. Prowizja HatchGrab od zamówień online zależy od twojego planu — zobacz Rozliczenia.",
       "testMode": "Tryb testowy. Nie można jeszcze przyjmować prawdziwych płatności."
     },
@@ -5996,8 +5997,8 @@
   "pricing": {
     "banner": {
       "title": "{months, plural, one {Przez pierwszy miesiąc korzystasz całkowicie za darmo — ze wszystkich funkcji.} few {Przez pierwsze # miesiące korzystasz całkowicie za darmo — ze wszystkich funkcji.} many {Przez pierwsze # miesięcy korzystasz całkowicie za darmo — ze wszystkich funkcji.} other {Przez pierwsze # miesięcy korzystasz całkowicie za darmo — ze wszystkich funkcji.}}",
-      "body": "Z {brand} klienci zamawiają z wyprzedzeniem i płacą przy odbiorze, więc możesz przyjmować zamówienia online bez podłączania operatora płatności kartą. Wolisz pobierać płatność z góry? Włącz płatności kartą online w dowolnej chwili. Po zakończeniu okresu próbnego przechodzisz na plan <plan>{fallback}</plan>{fallbackFree, select, yes { (bez opłaty miesięcznej)} other {}}, chyba że wybierzesz inny plan. Bez karty na start, bez umowy, rezygnujesz w dowolnej chwili.",
-      "bodyOnly": "Z {brand} klienci zamawiają z wyprzedzeniem i płacą przy odbiorze, więc możesz przyjmować zamówienia online bez podłączania operatora płatności kartą. Wolisz pobierać płatność z góry? Włącz płatności kartą online w dowolnej chwili. Po zakończeniu okresu próbnego plan <plan>{fallback}</plan> kosztuje {price} miesięcznie. Skontaktujemy się z Tobą wcześniej, aby skonfigurować płatność. Bez karty na start, bez umowy, rezygnujesz w dowolnej chwili."
+      "body": "W bezpłatnym okresie próbnym klienci mogą zamawiać z wyprzedzeniem i płacić przy odbiorze, więc możesz zacząć, zanim podłączysz płatności kartą. Po okresie próbnym zamówienia z wyprzedzeniem są opłacane online kartą. Wolisz pobierać płatność z góry? Włącz płatności kartą online w dowolnej chwili. Po zakończeniu okresu próbnego przechodzisz na plan <plan>{fallback}</plan>{fallbackFree, select, yes { (bez opłaty miesięcznej)} other {}}, chyba że wybierzesz inny plan. Bez karty na start, bez umowy, rezygnujesz w dowolnej chwili.",
+      "bodyOnly": "W bezpłatnym okresie próbnym klienci mogą zamawiać z wyprzedzeniem i płacić przy odbiorze, więc możesz zacząć, zanim podłączysz płatności kartą. Po okresie próbnym zamówienia z wyprzedzeniem są opłacane online kartą. Wolisz pobierać płatność z góry? Włącz płatności kartą online w dowolnej chwili. Po zakończeniu okresu próbnego plan <plan>{fallback}</plan> kosztuje {price} miesięcznie. Skontaktujemy się z Tobą wcześniej, aby skonfigurować płatność. Bez karty na start, bez umowy, rezygnujesz w dowolnej chwili."
     },
     "card": {
       "perTruckMonth": "za food truck / miesiąc",

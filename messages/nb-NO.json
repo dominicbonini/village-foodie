@@ -194,7 +194,7 @@
       "saveFailed": "Kunne ikke lagre",
       "layout": "{layout, select, scroll {Menyen vises som én side} other {Menyen vises med separate kategorier}}",
       "autoAccept": "{state, select, on {Automatisk godkjenning slått på} other {Automatisk godkjenning slått av}}",
-      "cardPayments": "{state, select, off {Kortbetaling av — kundene betaler i luka} other {Kortbetaling på igjen}}",
+      "cardPayments": "{state, select, off {{pah, select, on {Kortbetaling av — kundene betaler i luka} other {Kortbetaling av – nettbestillingen er satt på pause til du slår den på igjen}}} other {Kortbetaling på igjen}}",
       "intervalsFailed": "Hentetidene kunne ikke lagres akkurat nå.",
       "unpaidOrders": "{state, select, on {Ubetalte bestillinger på for dette arrangementet} other {Ubetalte bestillinger av for dette arrangementet}}",
       "presses": "{presses, select, one {Ett trykk for dette arrangementet} other {To trykk for dette arrangementet}}",
@@ -397,7 +397,7 @@
       "buzzerPromptTitle": "Minn meg på å gi ut en personsøker",
       "buzzerPromptHelp": "Åpner rutenettet med personsøkere så snart du legger inn en bestilling, slik at nummeret kommer på bestillingslisten mens kunden fortsatt står foran deg. Når dette er av, kan du fortsatt legge til en personsøker når som helst ved å trykke på bestillingen, men du får ingen påminnelse. Nyttig der du deler ut personsøkere, lett å slå av der du ikke gjør det.",
       "cardsTitle": "Ta imot kortbetaling på nett",
-      "cardsHelp": "Slå av dette ved problemer med kortbetaling, så legger kundene inn bestillinger som vanlig og betaler i luka i stedet. Bestillingene fortsetter å komme; bare kortsteget stopper.",
+      "cardsHelp": "{pah, select, on {Slå av dette ved problemer med kortbetaling, så legger kundene inn bestillinger som vanlig og betaler i luka i stedet. Bestillingene fortsetter å komme; bare kortsteget stopper.} other {Slå av dette ved kortproblemer, så stopper nettbestillingen til du slår det på igjen – abonnementet ditt inkluderer ikke betaling ved henting. Bestillinger ved bilen fortsetter som vanlig.}}",
       "cardsScope": "Dette gjelder hele matbilen din, på alle arrangementer, og forblir av til du slår det på igjen.",
       "cardsOffSince": "Av siden {date}",
       "soundsTitle": "Lyder",
@@ -4472,6 +4472,7 @@
     "online": {
       "heading": "Betaling på nett",
       "body": "Kundene betaler med kort når de bestiller. Pengene går rett til din egen Stripe-konto – vi holder dem aldri.",
+      "payAtHatchTrialOnly": "{brand} er en del av den gratis prøveperioden. Kundene betaler nå forhåndsbestillinger på nett med kort – koble til Stripe nedenfor.",
       "feeLine": "Stripe tar {fee} per betaling med vanlige {region}. Andre kort kan koste mer. HatchGrabs eget gebyr på nettbestillinger avhenger av abonnementet ditt – se Fakturering.",
       "testMode": "Testmodus. Ingen ekte betalinger kan tas imot ennå."
     },
@@ -5996,8 +5997,8 @@
   "pricing": {
     "banner": {
       "title": "{months, plural, one {Den første måneden er helt gratis — alle funksjoner er låst opp.} other {De første # månedene er helt gratis — alle funksjoner er låst opp.}}",
-      "body": "Med {brand} forhåndsbestiller kundene og betaler når de henter, så du kan ta imot nettbestillinger uten å koble til noen kortinnløser i det hele tatt. Vil du heller ta betalt på forhånd? Legg til kortbetaling på nett når som helst. Når prøveperioden er over, går du over til <plan>{fallback}</plan>{fallbackFree, select, yes { (ingen fast månedskostnad)} other {}}, med mindre du velger et abonnement. Ikke noe kort for å starte, ingen bindingstid, si opp når som helst.",
-      "bodyOnly": "Med {brand} forhåndsbestiller kundene og betaler når de henter, så du kan ta imot nettbestillinger uten å koble til noen kortinnløser i det hele tatt. Vil du heller ta betalt på forhånd? Legg til kortbetaling på nett når som helst. Når prøveperioden er over, koster abonnementet <plan>{fallback}</plan> {price} i måneden. Vi tar kontakt med deg før den tid for å ordne betalingen. Ikke noe kort for å starte, ingen bindingstid, si opp når som helst."
+      "body": "I den gratis prøveperioden kan kundene forhåndsbestille og betale når de henter, så du kan komme i gang før du kobler til kortbetaling. Etter prøveperioden betales forhåndsbestillinger på nett med kort. Vil du heller ta betalt på forhånd? Legg til kortbetaling på nett når som helst. Når prøveperioden er over, går du over til <plan>{fallback}</plan>{fallbackFree, select, yes { (ingen fast månedskostnad)} other {}}, med mindre du velger et abonnement. Ikke noe kort for å starte, ingen bindingstid, si opp når som helst.",
+      "bodyOnly": "I den gratis prøveperioden kan kundene forhåndsbestille og betale når de henter, så du kan komme i gang før du kobler til kortbetaling. Etter prøveperioden betales forhåndsbestillinger på nett med kort. Vil du heller ta betalt på forhånd? Legg til kortbetaling på nett når som helst. Når prøveperioden er over, koster abonnementet <plan>{fallback}</plan> {price} i måneden. Vi tar kontakt med deg før den tid for å ordne betalingen. Ikke noe kort for å starte, ingen bindingstid, si opp når som helst."
     },
     "card": {
       "perTruckMonth": "per matbil / måned",

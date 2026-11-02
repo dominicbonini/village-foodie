@@ -54,6 +54,7 @@
   "online": {
     "heading": "網上付款",
     "body": "客戶落單時以信用卡付款。款項直接存入你自己的 Stripe 帳戶，我們從不代為持有。",
+    "payAtHatchTrialOnly": "{brand} 是免費試用的一部分。客人現時需於網上以信用卡支付預先落單的訂單——請在下方連接 Stripe。",
     "feeLine": "標準 {region}每筆付款，Stripe 收取 {fee}。其他卡可能收費較高。HatchGrab 就網上訂單收取的費用視乎你的計劃，詳情請看「帳單」。",
     "testMode": "測試模式。暫時無法收取真實付款。"
   },

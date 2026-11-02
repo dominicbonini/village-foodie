@@ -91,7 +91,7 @@
     "tseQ": "Do I still need a till with a TSE?",
     "tseA": "HatchGrab is not a till and has no TSE. How you record online orders in your till is a question for your tax adviser.",
     "paymentsQ": "Which payment methods does HatchGrab support?",
-    "paymentsA": "Customers pay online by card, Apple Pay or Google Pay, or pay at the truck. PayPal and Klarna are not supported at the moment.",
+    "paymentsA": "Customers pay online by card, Apple Pay or Google Pay. During a truck’s free trial they can also pay at the truck. PayPal and Klarna are not supported at the moment.",
     "costTrial": "{months, plural, one {The first month is} other {The first # months are}} free, with every feature."
   },
   "method": {
@@ -244,7 +244,8 @@
     },
     "payattruck": {
       "label": "Pay at the truck",
-      "explain": "Customers order online and pay when they collect."
+      "explain": "Customers order online and pay when they collect.",
+      "ours": "During the free trial"
     },
     "localpay": {
       "label": "Local payment methods (BLIK, iDEAL, Swish, MobilePay…)",
@@ -266,7 +267,7 @@
     "paymethods": {
       "label": "Payment methods offered",
       "explain": "How customers can pay, as the vendor states it.",
-      "ours": "card, Apple Pay, Google Pay; pay at the truck"
+      "ours": "card, Apple Pay, Google Pay; pay at the truck during the free trial"
     },
     "kds": {
       "label": "Kitchen display (KDS)",

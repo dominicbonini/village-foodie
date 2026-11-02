@@ -194,7 +194,7 @@
       "saveFailed": "Échec de l’enregistrement",
       "layout": "{layout, select, scroll {La carte s’affiche sur une seule page} other {La carte s’affiche par catégories séparées}}",
       "autoAccept": "{state, select, on {Acceptation automatique activée} other {Acceptation automatique désactivée}}",
-      "cardPayments": "{state, select, off {Paiements par carte désactivés — les clients paient sur place} other {Paiements par carte réactivés}}",
+      "cardPayments": "{state, select, off {{pah, select, on {Paiements par carte désactivés — les clients paient sur place} other {Paiement par carte désactivé — la commande en ligne est en pause jusqu’à sa réactivation}}} other {Paiements par carte réactivés}}",
       "intervalsFailed": "Impossible d’enregistrer les heures de retrait pour le moment.",
       "unpaidOrders": "{state, select, on {Commandes non payées activées pour cet événement} other {Commandes non payées désactivées pour cet événement}}",
       "presses": "{presses, select, one {Un seul appui pour cet événement} other {Deux appuis pour cet événement}}",
@@ -397,7 +397,7 @@
       "buzzerPromptTitle": "Me rappeler d’attribuer un bipeur",
       "buzzerPromptHelp": "Ouvre la grille des bipeurs dès que vous passez une commande, pour que le numéro figure sur le tableau pendant que le client est encore devant vous. Désactivé, vous pouvez toujours ajouter un bipeur à tout moment en touchant la commande, mais rien ne vous le rappellera. Utile si vous distribuez des bipeurs, facile à désactiver sinon.",
       "cardsTitle": "Paiements par carte en ligne",
-      "cardsHelp": "Désactivez cette option en cas de problème de carte : les clients passeront commande normalement et paieront plutôt sur place. Les commandes continuent d’arriver ; seule l’étape de paiement par carte s’arrête.",
+      "cardsHelp": "{pah, select, on {Désactivez cette option en cas de problème de carte : les clients passeront commande normalement et paieront plutôt sur place. Les commandes continuent d’arriver ; seule l’étape de paiement par carte s’arrête.} other {Désactivez ceci en cas de problème de carte et la commande en ligne s’arrête jusqu’à ce que vous le réactiviez : votre offre n’inclut pas le paiement au retrait. Les commandes au comptoir continuent normalement.}}",
       "cardsScope": "Ce réglage s’applique à tout votre food truck, sur chaque événement, et reste désactivé jusqu’à ce que vous le réactiviez.",
       "cardsOffSince": "Désactivé depuis le {date}",
       "soundsTitle": "Sons",
@@ -4472,6 +4472,7 @@
     "online": {
       "heading": "Paiements en ligne",
       "body": "Les clients paient par carte au moment de commander. L’argent va directement sur votre propre compte Stripe : nous ne le détenons jamais.",
+      "payAtHatchTrialOnly": "{brand} fait partie de votre essai gratuit. Vos clients paient désormais leurs précommandes en ligne par carte : connectez Stripe ci-dessous.",
       "feeLine": "Stripe facture {fee} par paiement sur les {region} standard. Les autres cartes peuvent coûter plus cher. Les frais HatchGrab sur les commandes en ligne dépendent de votre offre : voir Facturation.",
       "testMode": "Mode test. Aucun paiement réel ne peut encore être encaissé."
     },
@@ -5996,8 +5997,8 @@
   "pricing": {
     "banner": {
       "title": "{months, plural, one {Votre premier mois est entièrement gratuit, avec toutes les fonctionnalités.} other {Vos # premiers mois sont entièrement gratuits, avec toutes les fonctionnalités.}}",
-      "body": "Avec {brand}, vos clients commandent à l’avance et paient au retrait : vous pouvez donc prendre des commandes en ligne sans aucun prestataire de paiement par carte. Vous préférez encaisser à l’avance ? Ajoutez le paiement en ligne par carte quand vous voulez. À la fin de votre essai gratuit, vous passez à l’offre <plan>{fallback}</plan>{fallbackFree, select, yes { (sans abonnement mensuel)} other {}}, sauf si vous choisissez une autre offre. Sans carte bancaire pour démarrer, sans engagement, résiliable à tout moment.",
-      "bodyOnly": "Avec {brand}, vos clients commandent à l’avance et paient au retrait : vous pouvez donc prendre des commandes en ligne sans aucun prestataire de paiement par carte. Vous préférez encaisser à l’avance ? Ajoutez le paiement en ligne par carte quand vous voulez. À la fin de votre essai gratuit, l’offre <plan>{fallback}</plan> coûtera {price} par mois. Nous vous contacterons d’ici là pour mettre en place le paiement. Sans carte bancaire pour démarrer, sans engagement, résiliable à tout moment."
+      "body": "Pendant votre essai gratuit, vos clients peuvent commander à l’avance et payer au retrait : vous pouvez donc démarrer avant de connecter le paiement par carte. Après l’essai, les précommandes se paient en ligne par carte. Vous préférez encaisser à l’avance ? Ajoutez le paiement en ligne par carte quand vous voulez. À la fin de votre essai gratuit, vous passez à l’offre <plan>{fallback}</plan>{fallbackFree, select, yes { (sans abonnement mensuel)} other {}}, sauf si vous choisissez une autre offre. Sans carte bancaire pour démarrer, sans engagement, résiliable à tout moment.",
+      "bodyOnly": "Pendant votre essai gratuit, vos clients peuvent commander à l’avance et payer au retrait : vous pouvez donc démarrer avant de connecter le paiement par carte. Après l’essai, les précommandes se paient en ligne par carte. Vous préférez encaisser à l’avance ? Ajoutez le paiement en ligne par carte quand vous voulez. À la fin de votre essai gratuit, l’offre <plan>{fallback}</plan> coûtera {price} par mois. Nous vous contacterons d’ici là pour mettre en place le paiement. Sans carte bancaire pour démarrer, sans engagement, résiliable à tout moment."
     },
     "card": {
       "perTruckMonth": "par food truck / mois",

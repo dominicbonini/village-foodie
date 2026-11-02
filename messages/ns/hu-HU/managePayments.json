@@ -54,6 +54,7 @@
   "online": {
     "heading": "Online fizetés",
     "body": "A vásárlók rendeléskor kártyával fizetnek. A pénz közvetlenül az Ön saját Stripe-fiókjába kerül — mi sosem tartjuk magunknál.",
+    "payAtHatchTrialOnly": "{brand} az ingyenes próbaidőszak része. A vásárlók mostantól online, kártyával fizetik az előrendeléseket — kösse be lent a Stripe-ot.",
     "feeLine": "A Stripe díja fizetésenként {fee} a szokásos kártyáknál ({region}). Más kártyák drágábbak lehetnek. A HatchGrab saját díja az online rendeléseken a csomagjától függ — lásd: Számlázás.",
     "testMode": "Tesztüzemmód. Valódi fizetést még nem lehet fogadni."
   },

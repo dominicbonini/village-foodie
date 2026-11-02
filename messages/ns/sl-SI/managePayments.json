@@ -54,6 +54,7 @@
   "online": {
     "heading": "Spletna plačila",
     "body": "Stranke plačajo s kartico ob naročilu. Denar gre neposredno na vaš lastni račun Stripe – mi ga nikoli ne hranimo.",
+    "payAtHatchTrialOnly": "{brand} je del vašega brezplačnega preizkusnega obdobja. Kupci zdaj prednaročila plačajo s kartico na spletu — spodaj povežite Stripe.",
     "feeLine": "Stripe za standardne kartice zaračuna {fee} na plačilo ({region}). Druge kartice so lahko dražje. Pristojbina HatchGrab za spletna naročila je odvisna od vašega paketa – glejte Obračun.",
     "testMode": "Testni način. Pravih plačil še ni mogoče sprejemati."
   },

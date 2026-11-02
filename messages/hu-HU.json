@@ -194,7 +194,7 @@
       "saveFailed": "Nem sikerült menteni",
       "layout": "{layout, select, scroll {Az étlap egy oldalon jelenik meg} other {Az étlap külön kategóriákban jelenik meg}}",
       "autoAccept": "{state, select, on {Automatikus elfogadás bekapcsolva} other {Automatikus elfogadás kikapcsolva}}",
-      "cardPayments": "{state, select, off {Kártyás fizetés kikapcsolva — a vásárlók a pultnál fizetnek} other {Kártyás fizetés újra bekapcsolva}}",
+      "cardPayments": "{state, select, off {{pah, select, on {Kártyás fizetés kikapcsolva — a vásárlók a pultnál fizetnek} other {Kártyás fizetés kikapcsolva — az online rendelés szünetel, amíg vissza nem kapcsolja}}} other {Kártyás fizetés újra bekapcsolva}}",
       "intervalsFailed": "Az átvételi időket most nem sikerült menteni.",
       "unpaidOrders": "{state, select, on {Fizetetlen rendelések bekapcsolva ennél az eseménynél} other {Fizetetlen rendelések kikapcsolva ennél az eseménynél}}",
       "presses": "{presses, select, one {Egy érintés ennél az eseménynél} other {Két érintés ennél az eseménynél}}",
@@ -397,7 +397,7 @@
       "buzzerPromptTitle": "Emlékeztessen a csipogó kiadására",
       "buzzerPromptHelp": "A rendelés leadása után azonnal megnyitja a csipogórácsot, így a szám felkerül a táblára, amíg a vásárló még Ön előtt áll. Kikapcsolva is bármikor adhat csipogót a rendelésre koppintva, de semmi sem emlékezteti rá. Hasznos, ha csipogót ad ki, és könnyen kikapcsolható, ha nem.",
       "cardsTitle": "Online kártyás fizetés elfogadása",
-      "cardsHelp": "Kártyás probléma esetén kapcsolja ki, és a vásárlók a szokásos módon rendelnek, de a pultnál fizetnek. A rendelések továbbra is érkeznek; csak a kártyás lépés marad ki.",
+      "cardsHelp": "{pah, select, on {Kártyás probléma esetén kapcsolja ki, és a vásárlók a szokásos módon rendelnek, de a pultnál fizetnek. A rendelések továbbra is érkeznek; csak a kártyás lépés marad ki.} other {Kapcsolja ki kártyás probléma esetén, és az online rendelés leáll, amíg vissza nem kapcsolja — a csomagja nem tartalmazza az átvételkori fizetést. A helyszíni rendelések a szokásos módon folytatódnak.}}",
       "cardsScope": "Ez az egész food truckra vonatkozik, minden eseménynél, és kikapcsolva marad, amíg vissza nem kapcsolja.",
       "cardsOffSince": "Kikapcsolva ekkor óta: {date}",
       "soundsTitle": "Hangok",
@@ -4472,6 +4472,7 @@
     "online": {
       "heading": "Online fizetés",
       "body": "A vásárlók rendeléskor kártyával fizetnek. A pénz közvetlenül az Ön saját Stripe-fiókjába kerül — mi sosem tartjuk magunknál.",
+      "payAtHatchTrialOnly": "{brand} az ingyenes próbaidőszak része. A vásárlók mostantól online, kártyával fizetik az előrendeléseket — kösse be lent a Stripe-ot.",
       "feeLine": "A Stripe díja fizetésenként {fee} a szokásos kártyáknál ({region}). Más kártyák drágábbak lehetnek. A HatchGrab saját díja az online rendeléseken a csomagjától függ — lásd: Számlázás.",
       "testMode": "Tesztüzemmód. Valódi fizetést még nem lehet fogadni."
     },
@@ -5996,8 +5997,8 @@
   "pricing": {
     "banner": {
       "title": "{months, plural, one {Az első hónap teljesen ingyenes — minden funkció elérhető.} other {Az első # hónap teljesen ingyenes — minden funkció elérhető.}}",
-      "body": "{brand} használatával a vásárlók előre rendelnek, és átvételkor fizetnek, így online rendeléseket fogadhat anélkül, hogy bármilyen kártyás fizetési szolgáltatót bekötne. Inkább előre fizettetne? Az online kártyás fizetést bármikor bekapcsolhatja. A próbaidőszak végén erre a csomagra vált: <plan>{fallback}</plan>{fallbackFree, select, yes { (havidíj nélkül)} other {}}, hacsak nem választ másikat. Bankkártya nélkül indulhat, szerződés nélkül, és bármikor lemondhatja.",
-      "bodyOnly": "{brand} használatával a vásárlók előre rendelnek, és átvételkor fizetnek, így online rendeléseket fogadhat anélkül, hogy bármilyen kártyás fizetési szolgáltatót bekötne. Inkább előre fizettetne? Az online kártyás fizetést bármikor bekapcsolhatja. A próbaidőszak után ez a csomag lesz érvényes: <plan>{fallback}</plan>, havi {price} áron. Még a próbaidőszak vége előtt felvesszük Önnel a kapcsolatot, hogy beállítsuk a fizetést. Bankkártya nélkül indulhat, szerződés nélkül, és bármikor lemondhatja."
+      "body": "Az ingyenes próbaidőszak alatt a vásárlók előre rendelhetnek, és átvételkor fizethetnek, így a kártyás fizetés bekötése előtt is elkezdheti. A próbaidőszak után az előrendeléseket online, kártyával fizetik. Inkább előre fizettetne? Az online kártyás fizetést bármikor bekapcsolhatja. A próbaidőszak végén erre a csomagra vált: <plan>{fallback}</plan>{fallbackFree, select, yes { (havidíj nélkül)} other {}}, hacsak nem választ másikat. Bankkártya nélkül indulhat, szerződés nélkül, és bármikor lemondhatja.",
+      "bodyOnly": "Az ingyenes próbaidőszak alatt a vásárlók előre rendelhetnek, és átvételkor fizethetnek, így a kártyás fizetés bekötése előtt is elkezdheti. A próbaidőszak után az előrendeléseket online, kártyával fizetik. Inkább előre fizettetne? Az online kártyás fizetést bármikor bekapcsolhatja. A próbaidőszak után ez a csomag lesz érvényes: <plan>{fallback}</plan>, havi {price} áron. Még a próbaidőszak vége előtt felvesszük Önnel a kapcsolatot, hogy beállítsuk a fizetést. Bankkártya nélkül indulhat, szerződés nélkül, és bármikor lemondhatja."
     },
     "card": {
       "perTruckMonth": "food truckonként / hónap",

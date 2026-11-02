@@ -54,6 +54,7 @@
   "online": {
     "heading": "Online-Zahlungen",
     "body": "Kunden zahlen bei der Bestellung mit Karte. Das Geld geht direkt auf Ihr eigenes Stripe-Konto – wir verwahren es nie.",
+    "payAtHatchTrialOnly": "{brand} ist Teil Ihrer kostenlosen Testphase. Kunden bezahlen Vorbestellungen jetzt online per Karte – verbinden Sie unten Stripe.",
     "feeLine": "Stripe berechnet {fee} pro Zahlung mit Standard-{region}. Andere Karten können mehr kosten. Die eigene Gebühr von HatchGrab für Online-Bestellungen hängt von Ihrem Tarif ab – siehe Abrechnung.",
     "testMode": "Testmodus. Es können noch keine echten Zahlungen angenommen werden."
   },

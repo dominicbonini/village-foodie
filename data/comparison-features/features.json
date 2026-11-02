@@ -136,7 +136,7 @@
    "checked": true,
    "show_scope": "all",
    "show_countries": [],
-   "hatchgrab_source": "plan:online_ordering_pay_at_hatch"
+   "hatchgrab_source": "fixed:partial:note"
   },
   {
    "key": "localpay",
