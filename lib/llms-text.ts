@@ -21,7 +21,7 @@ import '@/lib/i18n/catalog/landing'
 import type { PlanCatalog } from '@/lib/plans'
 import { offerPlans, offerTrialMonths, offerFallback, type OfferPlan } from '@/lib/plan-offer'
 import { formatAmount, formatWholeAmount, pctLabel } from '@/lib/money-format'
-import { HATCHGRAB_ORIGIN, countryPagePath } from '@/lib/marketing-country'
+import { HATCHGRAB_ORIGIN, MARKETING_COUNTRY, countryPagePath } from '@/lib/marketing-country'
 import { TERMS_PATH, PRIVACY_PATH } from '@/lib/legal'
 import { BRANDS } from '@/lib/brand'
 import { COMPANY } from '@/lib/company'
@@ -50,7 +50,7 @@ function cardSentence(c: CountrySettings): string {
  *  as the UK page shows it, or nothing. */
 export function llmsText(countries: CountrySettings[], catalog: PlanCatalog, comparisons: LlmsComparison[] = [], faq: PublicFaq | null = null): string {
   const name = BRANDS.HATCHGRAB.name
-  const url = (cc: string, page: 'landing' | 'features' | 'compare') => HATCHGRAB_ORIGIN + (countryPagePath(cc, page) ?? '')
+  const url = (cc: string, page: 'landing' | 'features' | 'compare' | 'faq') => HATCHGRAB_ORIGIN + (countryPagePath(cc, page) ?? '')
   const months = offerTrialMonths(catalog)
   const L: string[] = []
   L.push(`# ${name}`, '')
@@ -114,6 +114,8 @@ export function llmsText(countries: CountrySettings[], catalog: PlanCatalog, com
   // B4: the English FAQ, as the UK page shows it (published, checked, resolved for GB).
   if (faq?.length) {
     L.push('## Frequently asked questions', '')
+    // faq-4: the FAQ has its own page; the UK one, linked, with the English list kept below.
+    L.push(`FAQ page: ${url(MARKETING_COUNTRY, 'faq')}`, '')
     for (const sec of faq) {
       L.push(`### ${sec.title}`, '')
       for (const q of sec.items) L.push(`**${q.q}**`, '', q.a, '')

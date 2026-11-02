@@ -260,7 +260,8 @@ export function permanentRedirect(to) { const e = new Error('redirect'); e.to = 
   t('the store badges are lazy (not preloaded)', (read('components/StoreBadges.tsx').match(/loading="lazy"/g) || []).length >= 2)
   t('fonts: Geist Mono and Courier Prime are not preloaded (still declared, so still loaded where used); Archivo, Public Sans and Geist are',
     /Geist_Mono\(\{[^}]*preload: false/.test(read('app/layout.tsx')) && !/Geist\(\{[^}]*preload: false/.test(read('app/layout.tsx'))
-    && ['app/landing/page.tsx', 'app/features/page.tsx', 'app/compare/page.tsx', 'app/contact/HatchGrabContact.tsx'].every(f => /Courier_Prime\(\{[^}]*preload: false/.test(read(f)) && !/Archivo\(\{[^}]*preload: false/.test(read(f))))
+    // ⚠️ RE-PINNED (faq-4, 2 November 2026): /features' fonts moved, unchanged, into the frame it shares with /faq (components/landing/MarketingFrame.tsx).
+    && ['app/landing/page.tsx', 'components/landing/MarketingFrame.tsx', 'app/compare/page.tsx', 'app/contact/HatchGrabContact.tsx'].every(f => /Courier_Prime\(\{[^}]*preload: false/.test(read(f)) && !/Archivo\(\{[^}]*preload: false/.test(read(f))))
 
   // ══ 10 ═══════════════════════════════════════════════════════════════════════════════════════════════════════════
   head('10 · N1 — /compare\'s title and description')

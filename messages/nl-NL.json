@@ -5556,7 +5556,9 @@
       "switchCta": "Vergelijk wat je nu betaalt"
     },
     "faq": {
-      "title": "Veelgestelde vragen"
+      "title": "Veelgestelde vragen",
+      "metaTitle": "Veelgestelde vragen | HatchGrab",
+      "metaDescription": "Duidelijke antwoorden voor foodtrucks over de prijzen van HatchGrab, het instellen, bestellingen aannemen en betalingen."
     },
     "final": {
       "truckLabel": "Foodtruck",
@@ -5586,6 +5588,7 @@
   "landingFooter": {
     "features": "Functies",
     "pricing": "Prijzen",
+    "faq": "Veelgestelde vragen",
     "privacy": "Privacy",
     "terms": "Voorwaarden",
     "contact": "Contact",

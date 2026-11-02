@@ -59,10 +59,8 @@ import { resolveVisitorCountry } from '@/lib/visitor-country'
 import { marketingCountry, countryPageAlternates } from '@/lib/marketing-meta'
 // seo-fixes M5 + S9: the JSON-LD graph (Organization, WebSite, SoftwareApplication + Offers), built from data.
 import { landingGraph } from '@/lib/structured-data'
-// faq-3: the FAQ on English pages (lib/faq/public.ts) — the same <details> markup as the comparison pages (components/faq).
-import { landingFaq } from '@/lib/faq/public'
-import { FaqDetails } from '@/components/faq/FaqDetails'
-import './faq.css'
+// faq-4 (2 November 2026): the FAQ is its own page (/<country>/faq); the landing only links to it from the footer.
+import { faqHrefFor } from '@/lib/faq/public'
 import { aboutPhotoUrl } from '@/lib/about-server'
 import { HATCHGRAB_ORIGIN, countryPagePath } from '@/lib/marketing-country'
 import { BRANDS } from '@/lib/brand'
@@ -229,69 +227,6 @@ export default async function LandingPage({ params, searchParams }: { params?: P
   // the country's stores (country_settings.ios_app_available / android_app_available, the comparison pages' flags, 35.an-7).
   const appFlags = await comparisonFlagsOf(s.countryCode)
   const appsHere = appFlags.iosApp && appFlags.androidApp
-  // faq-3 (2 November 2026): the FAQ between pricing and the final CTA — published questions only; null renders nothing at all
-  // (no section, no heading, no FAQPage). faq-2 (the same day): every country, in its page's language — a non-English page shows
-  // only questions with an up-to-date translation (lib/faq/public.ts).
-  const faq = await landingFaq(s)
-  // The FAQ section and the final CTA, placed together below (see the note there).
-  const faqSection = faq && (
-    <section id="faq" className={showTestimonial ? undefined : 'band'} aria-labelledby="faq-title">
-      <div className="wrap">
-        <div className="price-head">
-          <h2 id="faq-title">{t('faq.title')}</h2>
-        </div>
-        <div className="faq">
-          {faq.map(sec => (
-            <div key={sec.title} className="faq-group">
-              <p className="faq-label">{sec.title}</p>
-              <FaqDetails items={sec.items} className="faq-q" />
-            </div>
-          ))}
-        </div>
-      </div>
-    </section>
-  )
-  const finalCta = (
-    <section id="try" className={(faq ? showTestimonial : !showTestimonial) ? 'band' : undefined}>
-      <div className="wrap final">
-        {/* Truck illustration — inlined VERBATIM from public/illustrations/food-truck-themed.svg.
-            🔴 THEMED, NOT LITERAL: fills are var(--head, #16314F) and var(--orange, #EF8B2C), so this
-            tracks landing.css's tokens instead of drifting. The block this replaced carried two
-            hardcoded fills in the app's ACTION orange (Tailwind orange-600) rather than the brand
-            orange — exactly the drift being removed. Do not reintroduce a literal hex here.
-            (The literal is deliberately NOT written out above, so a grep for it stays clean.)
-            ⚠️ className="truck" is what sizes it (.hg-landing .truck { width: min(230px,60%); height: auto }),
-            so it must stay on the <svg>; there are deliberately NO width/height attributes to fight it.
-            The standalone public/illustrations/food-truck.svg (plain hex) is the spare for <img> use. */}
-        <svg className="truck" viewBox="24.0 18.0 351.5 176.0" xmlns="http://www.w3.org/2000/svg" role="img" aria-label={t('final.truckLabel')}>
-          <g transform="translate(399.5,0) scale(-1,1)">
-            <path d="M30.0 121.2 L30.0 159.3 L31.2 161.7 L35.5 165.3 L364.6 165.3 L368.2 162.4 L369.9 159.3 L369.9 30.0 L368.9 27.8 L367.2 25.9 L365.3 24.7 L362.7 24.0 L96.8 24.2 L93.4 25.9 L90.5 30.2 L74.4 85.0 L73.2 90.4 L71.3 95.4 L69.7 97.0 L36.7 111.9 L32.6 115.5 Z" fill="var(--head, #16314F)"/>
-            <circle cx="95.1" cy="165.4" r="29.3" fill="#FFFFFF"/>
-            <circle cx="316.2" cy="165.4" r="29.3" fill="#FFFFFF"/>
-            <circle cx="95.1" cy="165.4" r="23.1" fill="var(--head, #16314F)"/>
-            <circle cx="316.2" cy="165.4" r="23.1" fill="var(--head, #16314F)"/>
-            <circle cx="95.1" cy="165.4" r="10.1" fill="#FFFFFF"/>
-            <circle cx="316.2" cy="165.4" r="10.1" fill="#FFFFFF"/>
-            <path d="M102.52 48.49 L139.33 48.49 Q143.33 48.49 143.33 52.49 L143.33 92.51 Q143.33 96.51 139.33 96.51 L88.16 96.51 Q84.16 96.51 85.31 92.68 L97.37 52.32 Q98.52 48.49 102.52 48.49 Z" fill="#FFFFFF"/>
-            <rect x="162.5" y="48.5" width="153.7" height="61.2" rx="4.0" fill="#FFFFFF"/>
-            <rect x="162.5" y="110.7" width="153.7" height="6.2" rx="4.0" fill="var(--orange, #EF8B2C)"/>
-          </g>
-        </svg>
-        <h2>{t('final.title')}</h2>
-        <p className="lede">{t('final.lede')}</p>
-        {/* This section keeps its heading + copy; its button opens the SAME modal every other CTA on
-            the page opens. `#try` remains a valid anchor target (the return-link bounce uses it), but
-            nothing scrolls here to reach the upload any more. No ✨ on page CTAs — the sparkle is the
-            MODAL's cue (mirroring Manage's "✨ Import menu"), not the landing page's. */}
-        <DemoCta className="btn btn-primary btn-lg">{t('final.cta')}</DemoCta>
-        <ul className="proof">
-          {trialMonths !== null && <li><Check />{' ' + t('trust.freeMonth', { months: trialMonths })}</li>}
-          <li><Check />{' ' + t('trust.noCard')}</li>
-          <li><Check />{' ' + t('trust.cancel')}</li>
-        </ul>
-      </div>
-    </section>
-  )
   return (
     // DemoModalProvider is a CLIENT component taking server-rendered children — that's what lets every
     // CTA below open one shared modal without the page itself becoming a client component.
@@ -342,8 +277,6 @@ export default async function LandingPage({ params, searchParams }: { params?: P
                 // about-page: the Organization names its founder, with the About page's photo when there is one.
                 founderImage: aboutPhotoUrl(),
                 pricesShown: s.enabled,
-                // faq-3: the FAQPage, "<page URL>#faq" — the visible questions and answers, exactly; absent without the section.
-                faq: faq?.flatMap(sec => sec.items),
                 // faq-2-seo-geo-2 B3: operatingSystem names the apps only where they are in this country's stores.
                 apps: { ios: appFlags.iosApp, android: appFlags.androidApp },
                 app: {
@@ -358,7 +291,7 @@ export default async function LandingPage({ params, searchParams }: { params?: P
                   countriesSupported: visitor.menu.options.map(o => o.code),
                   audience: { '@type': 'BusinessAudience', audienceType: t('jsonLd.audience') },
                 },
-              })).replace(/</g, '\\u003c') }}
+              })) }}
             />
             <h1>{t.rich('hero.title', { lean })}</h1>
             {/* 🔴 MOBILE-ONLY (<640px), AND IT IS `display:none` BY DEFAULT — see landing.css. A block
@@ -716,21 +649,50 @@ export default async function LandingPage({ params, searchParams }: { params?: P
       {/* ⛔ THE FULL COMPARISON TABLE LEFT THIS PAGE on 6 October 2026 — it is /features (components/pricing/PlanTable.tsx since
           Stage B). The section had no `id`, so there was no anchor to keep. */}
 
-      {/* ============ FAQ ============ (faq-3, 2 November 2026 — Dominic's approved mockup, docs/faq-3/faq-public-mockup.png)
-          Every country in its own language since faq-2, and only when a question is visible (lib/faq/public.ts); otherwise NOTHING
-          renders here and the page is byte-identical to before. 🔴 IT TAKES A SLOT IN THE WHITE/WASH SEQUENCE ("how it works" above): the opposite of pricing,
-          and the final CTA flips to stay the opposite of it —
-            GB:     … pricing WASH · FAQ white · final CTA WASH · footer
-            others: … pricing white · FAQ WASH · final CTA white · footer
-          The heading block is pricing's own (.price-head), with no sub-line (Dominic, 2 November); the section labels and the +/− are app/landing/faq.css. */}
-      {/* 🔴 ONE SLOT FOR BOTH (faq-3): with no FAQ the slot holds the final CTA element exactly as before; with one, a fragment of the
-          two. A separate `{faq && …}` slot would move every later sibling one position and change React's generated ids (the
-          footer's country menu) on EVERY page, the German ones included — found by scripts/faq-3.cjs's HEAD comparison. */}
-      {/* ============ FINAL CTA ============ (faq-3: wash after a white FAQ, white after a wash one — see the FAQ above) */}
-      {faqSection ? <>{faqSection}{finalCta}</> : finalCta}
+      {/* ============ FINAL CTA ============ */}
+      <section id="try" className={showTestimonial ? undefined : 'band'}>
+        <div className="wrap final">
+          {/* Truck illustration — inlined VERBATIM from public/illustrations/food-truck-themed.svg.
+              🔴 THEMED, NOT LITERAL: fills are var(--head, #16314F) and var(--orange, #EF8B2C), so this
+              tracks landing.css's tokens instead of drifting. The block this replaced carried two
+              hardcoded fills in the app's ACTION orange (Tailwind orange-600) rather than the brand
+              orange — exactly the drift being removed. Do not reintroduce a literal hex here.
+              (The literal is deliberately NOT written out above, so a grep for it stays clean.)
+              ⚠️ className="truck" is what sizes it (.hg-landing .truck { width: min(230px,60%); height: auto }),
+              so it must stay on the <svg>; there are deliberately NO width/height attributes to fight it.
+              The standalone public/illustrations/food-truck.svg (plain hex) is the spare for <img> use. */}
+          <svg className="truck" viewBox="24.0 18.0 351.5 176.0" xmlns="http://www.w3.org/2000/svg" role="img" aria-label={t('final.truckLabel')}>
+            <g transform="translate(399.5,0) scale(-1,1)">
+              <path d="M30.0 121.2 L30.0 159.3 L31.2 161.7 L35.5 165.3 L364.6 165.3 L368.2 162.4 L369.9 159.3 L369.9 30.0 L368.9 27.8 L367.2 25.9 L365.3 24.7 L362.7 24.0 L96.8 24.2 L93.4 25.9 L90.5 30.2 L74.4 85.0 L73.2 90.4 L71.3 95.4 L69.7 97.0 L36.7 111.9 L32.6 115.5 Z" fill="var(--head, #16314F)"/>
+              <circle cx="95.1" cy="165.4" r="29.3" fill="#FFFFFF"/>
+              <circle cx="316.2" cy="165.4" r="29.3" fill="#FFFFFF"/>
+              <circle cx="95.1" cy="165.4" r="23.1" fill="var(--head, #16314F)"/>
+              <circle cx="316.2" cy="165.4" r="23.1" fill="var(--head, #16314F)"/>
+              <circle cx="95.1" cy="165.4" r="10.1" fill="#FFFFFF"/>
+              <circle cx="316.2" cy="165.4" r="10.1" fill="#FFFFFF"/>
+              <path d="M102.52 48.49 L139.33 48.49 Q143.33 48.49 143.33 52.49 L143.33 92.51 Q143.33 96.51 139.33 96.51 L88.16 96.51 Q84.16 96.51 85.31 92.68 L97.37 52.32 Q98.52 48.49 102.52 48.49 Z" fill="#FFFFFF"/>
+              <rect x="162.5" y="48.5" width="153.7" height="61.2" rx="4.0" fill="#FFFFFF"/>
+              <rect x="162.5" y="110.7" width="153.7" height="6.2" rx="4.0" fill="var(--orange, #EF8B2C)"/>
+            </g>
+          </svg>
+          <h2>{t('final.title')}</h2>
+          <p className="lede">{t('final.lede')}</p>
+          {/* This section keeps its heading + copy; its button opens the SAME modal every other CTA on
+              the page opens. `#try` remains a valid anchor target (the return-link bounce uses it), but
+              nothing scrolls here to reach the upload any more. No ✨ on page CTAs — the sparkle is the
+              MODAL's cue (mirroring Manage's "✨ Import menu"), not the landing page's. */}
+          <DemoCta className="btn btn-primary btn-lg">{t('final.cta')}</DemoCta>
+          <ul className="proof">
+            {trialMonths !== null && <li><Check />{' ' + t('trust.freeMonth', { months: trialMonths })}</li>}
+            <li><Check />{' ' + t('trust.noCard')}</li>
+            <li><Check />{' ' + t('trust.cancel')}</li>
+          </ul>
+        </div>
+      </section>
 
       {/* ============ FOOTER ============ (slate bg = HEADER_BG from lib/brand.ts) */}
-      <LandingFooter featuresHref={visitor.paths.features} country={visitor.menu} locale={s.locale} comparison={await comparisonFooter(s.countryCode, s.locale)} apps={{ ios: appFlags.iosApp, android: appFlags.androidApp }} />
+      {/* store-badges-1: the badges follow the country's app flags. faq-4: the FAQ link only where this country's /faq has content. */}
+      <LandingFooter featuresHref={visitor.paths.features} country={visitor.menu} locale={s.locale} comparison={await comparisonFooter(s.countryCode, s.locale)} apps={{ ios: appFlags.iosApp, android: appFlags.androidApp }} faqHref={await faqHrefFor(s)} />
       {/* Mounted ONCE — every DemoCta above drives this one instance. */}
       <DemoModal />
     </div>

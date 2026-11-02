@@ -66,7 +66,9 @@
     "switchCta": "Sammenlign, hvad du betaler"
   },
   "faq": {
-    "title": "Ofte stillede spørgsmål"
+    "title": "Ofte stillede spørgsmål",
+    "metaTitle": "Ofte stillede spørgsmål | HatchGrab",
+    "metaDescription": "Klare svar til foodtrucks om HatchGrabs priser, opsætning, modtagelse af bestillinger og betalinger."
   },
   "final": {
     "truckLabel": "Foodtruck",

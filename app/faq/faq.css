@@ -1,7 +1,8 @@
-/* app/landing/faq.css — THE LANDING PAGE'S FAQ (faq-3, 2 November 2026; Dominic's approved mockup docs/faq-3/faq-public-mockup.png).
-   Imported by app/landing/page.tsx ONLY — not in landing.css, which the comparison pages also import, so their CSS is unchanged.
-   The section, .wrap, .band, .price-head and h2 are landing.css's own; this file adds only what the mockup has and the page
-   did not: the section labels, the question rows and the orange +/−. Colours are landing.css's tokens. */
+/* app/faq/faq.css — THE FAQ PAGE'S QUESTION LIST (faq-3, 2 November 2026, Dominic's approved mockup docs/faq-3/faq-public-mockup.png;
+   faq-4, the same day: moved from app/landing/faq.css with the FAQ, which is now its own page, /<country>/faq).
+   Imported by app/faq/page.tsx ONLY — not in landing.css, which the comparison pages also import, so their CSS is unchanged.
+   The frame, .wrap, .band and the heading are the /features page's own (landing.css: .features-page); this file adds only what the
+   mockup has and those pages did not: the section labels, the question rows and the orange +/−. Colours are landing.css's tokens. */
 
 .hg-landing .faq { max-width: 68rem; margin-inline: auto; }
 .hg-landing .faq-group + .faq-group { margin-top: 2.4rem; }

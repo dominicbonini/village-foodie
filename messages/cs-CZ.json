@@ -5556,7 +5556,9 @@
       "switchCta": "Porovnat, kolik platíte"
     },
     "faq": {
-      "title": "Časté dotazy"
+      "title": "Časté dotazy",
+      "metaTitle": "Časté dotazy | HatchGrab",
+      "metaDescription": "Jasné odpovědi pro food trucky o cenách HatchGrab, nastavení, přijímání objednávek a platbách."
     },
     "final": {
       "truckLabel": "Food truck",
@@ -5586,6 +5588,7 @@
   "landingFooter": {
     "features": "Funkce",
     "pricing": "Ceník",
+    "faq": "Časté dotazy",
     "privacy": "Soukromí",
     "terms": "Podmínky",
     "contact": "Kontakt",

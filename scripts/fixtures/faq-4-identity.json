@@ -1,0 +1,29 @@
+{
+ "$why": "faq-4: sha256 of pages at the commits before faq-3 (landing, a92f983a) and before faq-4 (features, a97c2a58), by scripts/faq-4.cjs.",
+ "pages": {
+  "landing:uk": {
+   "sha256": "4388d22b560d52a8b917c3d631bf0bc71513e466bcc205aebad9a7a76d661882",
+   "commit": "a92f983a"
+  },
+  "landing:us": {
+   "sha256": "a47dc70ac3d515c5acdadc6b37f8b94b2d548801954234aa69b738fe48e88e83",
+   "commit": "a92f983a"
+  },
+  "landing:de": {
+   "sha256": "41a26275c0859c1054f67d3db7befd0bc5b216932c5636f2ebc8d9cb4203c62c",
+   "commit": "a92f983a"
+  },
+  "landing:jp": {
+   "sha256": "dbecbe7d7644372c6263ff9f4c4a1208b92025d67b4cfcc204fc10e1e1ce3769",
+   "commit": "a92f983a"
+  },
+  "features:uk": {
+   "sha256": "5beac83f085ae594e219185237bd2c03b655fc742144a230d4c1d70cc053ce74",
+   "commit": "a97c2a58"
+  },
+  "features:de": {
+   "sha256": "c3bd07392349462b3c54758198576b0a3e22179616c0e36a2e9f7aea19ef8b26",
+   "commit": "a97c2a58"
+  }
+ }
+}

@@ -37,6 +37,11 @@ const TR = require('./fixtures/faq-2-translations.json')
 // _lp-store-badges-1.cjs strip, both sides; the badges follow the app flags now and are proven by scripts/store-badges-1.cjs).
 const SB1 = require('./_lp-store-badges-1.cjs')
 const SG2 = require('./_lp-seo-geo-2.cjs')
+// ⚠️ RE-PINNED (faq-4, 2 November 2026): the FAQ left the landing pages for its own page, /<country>/faq (app/faq/page.tsx — the same
+// rules, list and FAQPage builder), so §4 and §5 read that page; a language with no translation is a 404 there. §6 hashes the landing
+// pages with faq-4's two changes taken out on both sides (scripts/_lp-faq-4.cjs: faq-3's FAQ section, its FAQPage and the final CTA's
+// band; the footer's FAQ link) — recaptured at 78e16437 with them. scripts/faq-4.cjs proves the page and the landing pages without it.
+const F4 = require('./_lp-faq-4.cjs')
 const IDENTITY = path.join(REPO, 'scripts/fixtures/faq-2-identity.json')
 const HEAD_COMMIT = '78e16437'
 
@@ -56,7 +61,7 @@ async function identitySet() {
   const info = console.info; console.info = () => {}
   for (const seg of ['uk', 'us', 'ie', 'de', 'fr', 'jp', 'ae']) {
     const r = await kit.quietAsync(() => wf.page('landing', seg, rows))
-    out[`landing:${seg}`] = { html: sha(SB1.strip(SG2.asBefore(r.html))), meta: sha(JSON.stringify(r.meta)), redirectedTo: r.redirectedTo }
+    out[`landing:${seg}`] = { html: sha(SB1.strip(SG2.asBefore(F4.noLandingFaq(F4.noFaqLink(r.html))))), meta: sha(JSON.stringify(r.meta)), redirectedTo: r.redirectedTo }
   }
   console.info = info
   return out
@@ -73,13 +78,14 @@ if (process.argv[2] === 'capture') {
 const ents = s => s.replace(/&#x27;|&#39;/g, "'").replace(/&quot;/g, '"').replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&amp;/g, '&')
 const sectionOf = (html, id) => { const m = new RegExp(`<section id="${id}"[^>]*>[\\s\\S]*?</section>`).exec(html); return m ? m[0] : null }
 function visibleFaq(html) {
-  const sec = sectionOf(html, 'faq')
+  // ⚠️ RE-PINNED (faq-4): the FAQ page's section (the /features frame's band), its heading the page's <h1>.
+  const sec = html && /<div class="faq">/.test(html) ? (/<section class="band features-page">[\s\S]*?<\/section>/.exec(html) || [])[0] : null
   if (!sec) return null
   const groups = sec.split('<div class="faq-group">').slice(1).map(g => ({
     label: ents(/<p class="faq-label">([\s\S]*?)<\/p>/.exec(g)[1]),
     items: [...g.matchAll(/<details class="faq-q"><summary>([\s\S]*?)<\/summary><p>([\s\S]*?)<\/p><\/details>/g)].map(m => ({ q: ents(m[1]), a: ents(m[2]) })),
   }))
-  return { sec, groups, pairs: groups.flatMap(g => g.items), title: ents((/<h2 id="faq-title">([\s\S]*?)<\/h2>/.exec(sec) || [])[1] || '') }
+  return { sec, groups, pairs: groups.flatMap(g => g.items), title: ents((/<h1>([\s\S]*?)<\/h1>/.exec(sec) || [])[1] || '') }
 }
 const faqLd = html => { const m = /<script type="application\/ld\+json">([\s\S]*?)<\/script>/.exec(html); return m ? (JSON.parse(m[1])['@graph'] || []).find(n => n['@type'] === 'FAQPage') || null : null }
 
@@ -87,6 +93,7 @@ const faqLd = html => { const m = /<script type="application\/ld\+json">([\s\S]*
   const ctx = LP1E.context(kit, REPO)
   const M = await ctx.bundle('faq2-live', [
     "export { default as Landing, generateMetadata } from '@/app/[country]/page'",
+    "export { default as FaqPage, generateMetadata as faqMetadata } from '@/app/[country]/faq/page'",   // ⚠️ RE-PINNED (faq-4)
     "export { clearPublicFaqCache as __faq, landingFaq } from '@/lib/faq/public'",
     "export { clearPlanCatalogCache as __p } from '@/lib/plans-server'",
     "export { clearComparisonCache as __cmp } from '@/lib/comparison-flags'",
@@ -112,15 +119,20 @@ const faqLd = html => { const m = /<script type="application\/ld\+json">([\s\S]*
   const TRANSLATIONS = () => TR.rows.map(r => trRow(r))
   const rules = l => ({ planNames: [...new Set([...catalog.plans.map(p => p.name), ...M.localizePlans(catalog, l).plans.map(p => p.name)])], bannedLocal: [M.priceText(M.PRICE_WORD.payAtHatch, l)].filter(w => w !== 'Pay at Hatch'), minRatio: M.minRatioOf(l) })
   const logs = []
-  async function landing(seg, tables) {
+  // ⚠️ RE-PINNED (faq-4): `landing` renders the country's FAQ page (/<seg>/faq; notFound → { notFound: true, html: null }); `page:
+  // 'landing'` the landing page itself, for its pricing cards.
+  async function landing(seg, tables, { page = 'faq' } = {}) {
     return ctx.withReq({ rows: ROWS, tables: { ...wf.tables, ...tables } }, async () => {
       M.__p(); M.__cmp(); M.__faq()
       const args = { params: Promise.resolve({ country: seg }), searchParams: Promise.resolve({}) }
       const q = [console.info, console.warn, console.error]
       console.info = (...a) => logs.push(a.join(' ')); console.warn = (...a) => logs.push(a.join(' ')); console.error = (...a) => logs.push(a.join(' '))
       try {
-        const meta = await M.generateMetadata(args)
-        return { meta, html: await ctx.prerender(kit.h(M.Landing, args)) }
+        if (page === 'landing') return { meta: await M.generateMetadata(args), html: await ctx.prerender(kit.h(M.Landing, args)) }
+        try {
+          const meta = await M.faqMetadata(args)
+          return { meta, html: await ctx.prerender(kit.h(M.FaqPage, args)) }
+        } catch (e) { if (e?.message === 'notFound') return { notFound: true, meta: null, html: null }; throw e }
       } finally { [console.info, console.warn, console.error] = q }
     })
   }
@@ -266,7 +278,7 @@ const faqLd = html => { const m = /<script type="application\/ld\+json">([\s\S]*
     t(`/${seg}: exactly the three translated questions, in Admin order; every untranslated one hidden`, JSON.stringify(v.pairs.map(x => x.q)) === JSON.stringify(['0001', '0004', '0008'].map(n => want.find(r => r.id === `fa000002-0000-4000-8000-00000000${n}`).question)))
     t(`/${seg}: no English question or answer on the page's FAQ`, !v.pairs.some(x => Object.values(english).some(e => e.questionEn === x.q || e.answerEn === x.a)))
     t(`/${seg}: live values filled, in the page's words (no token left; the plan names as the page's catalogue names them)`, !v.pairs.some(x => /[{}]/.test(x.a)) && M.localizePlans(catalog, locale).plans.filter(pl => pl.isPublic).some(pl => v.pairs[0].a.includes(pl.name)))
-    const pricing = ents(sectionOf(p.html, 'pricing') || '')
+    const pricing = ents(sectionOf((await landing(seg, base, { page: 'landing' })).html, 'pricing') || '')   // ⚠️ RE-PINNED (faq-4): the landing page's cards
     const amounts = (v.pairs[0].a.match(/(?:[€$¥£]|AED|د\.إ)\s?[\d.,]+|[\d.,]+\s?(?:€|¥|円|AED|د\.إ)/g) || [])
     t(`/${seg}: every amount in the cost answer is one the pricing cards print (${amounts.slice(0, 3).join(' · ')})`, amounts.length > 0 && amounts.every(a => pricing.includes(a)), { amounts, answer: v.pairs[0].a })
     const ld = faqLd(p.html)
@@ -274,7 +286,7 @@ const faqLd = html => { const m = /<script type="application\/ld\+json">([\s\S]*
   }
   t('Arabic pages are dir="rtl" (app/layout.tsx, as already set — 35.an-24)', /\{\.\.\.\(isRtl\(lang\) \? \{ dir: 'rtl' \} : \{\}\)\}/.test(read('app/layout.tsx')))
   const deNone = await landing('de', { ...FAQ(), faq_translations: [] })
-  t('a language with no translation shows no FAQ at all (no heading, no FAQPage)', !/id="faq"/.test(deNone.html) && !faqLd(deNone.html))
+  t('a language with no translation shows no FAQ at all (faq-4: /de/faq is a 404 — no heading, no FAQPage)', deNone.notFound && !deNone.html)
 
   head(`6 · English pages, and pages with no translation, byte-identical to HEAD (${HEAD_COMMIT})`)
   if (!fs.existsSync(IDENTITY)) t('scripts/fixtures/faq-2-identity.json exists (captured at HEAD)', false)

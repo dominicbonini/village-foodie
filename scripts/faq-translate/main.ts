@@ -25,7 +25,7 @@ import { priceText } from '@/lib/price-text'
 import { PRICE_WORD } from '@/lib/price-words'
 import type { PlanCatalog } from '@/lib/plans'
 import type { Prices } from '@/lib/competitor-check/core'
-import { submitIndexNow, landingUrlsFor } from '@/lib/indexnow'
+import { submitIndexNow, faqUrlsFor } from '@/lib/indexnow'
 
 type Row = Record<string, unknown>
 const REPO = process.cwd()
@@ -137,7 +137,7 @@ async function main() {
           messages: [{ role: 'user', content: req.user }],
         } as never).finalMessage()
         const use = (msg.content as { type: string; input?: { translations?: Row[] } }[]).find(b => b.type === 'tool_use')
-        return { translations: use?.input?.translations ?? [], usage: msg.usage as never }
+        return { translations: use?.input?.translations ?? [], usage: msg.usage as never, stopReason: (msg as { stop_reason?: string | null }).stop_reason ?? null }
       },
       write: dryRun ? undefined : async (rows: WriteRow[]) => {
         // Replace this question's (or section's) rows for these locales: delete, then insert (the key is generated).
@@ -161,14 +161,14 @@ async function main() {
     deps.prices = prices
   }
   const report = await runTranslator(deps, { dryRun, maxUsd, limit })
-  // faq-2-seo-geo-2 B6: the pages this run changed (the switched-on countries whose page language reads a locale written ok or
-  // removed) go to IndexNow — never in a dry run. Their 60-second cache shows the rows by then; a failed submission is only logged.
-  if (!dryRun && !fixtures && report.changedLocales.length) {
+  // faq-2-seo-geo-2 B6 / faq-4: the FAQ pages this run changed (the switched-on countries whose page language reads a locale written
+  // ok — so the page has content) go to IndexNow — never in a dry run. Their 60-second cache shows the rows by then; a failed submission is only logged.
+  if (!dryRun && !fixtures && report.okLocales.length) {
     const db = createClient(process.env.NEXT_PUBLIC_SUPABASE_URL!, process.env.SUPABASE_SERVICE_ROLE_KEY!, { auth: { persistSession: false } })
     const { data } = await db.from('country_settings').select('country_code, locale, enabled')
     const countries = ((data ?? []) as Row[]).map(r => ({ countryCode: String(r.country_code), locale: String(r.locale), enabled: r.enabled === true }))
     await new Promise(res => setTimeout(res, 65_000))   // past the pages' 60-second cache, so the crawler finds the new text
-    await submitIndexNow(landingUrlsFor(countries, report.changedLocales), { log })
+    await submitIndexNow(faqUrlsFor(countries, report.okLocales), { log })   // faq-4: the FAQ pages, in the languages a row was written ok
   }
   if (!dryRun && report.done === 0 && report.jobs > 0 && report.skippedForCap === 0) { console.error('Every model call failed.'); process.exit(1) }
 }

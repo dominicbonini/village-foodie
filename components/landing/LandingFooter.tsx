@@ -61,7 +61,9 @@ export interface FooterComparison { mode: 'live' | 'admin'; href: string; headin
 // store-badges-1 (2 November 2026): `apps` — the page's country's app flags (country_settings.ios_app_available /
 // android_app_available), which each page reads through lib/comparison-flags.ts appsOf (60-second cached). Absent → no badges:
 // the footer never claims an app it was not told about (35.ak-7). Kept SYNCHRONOUS so every renderer can still draw it.
-export function LandingFooter({ landingHref = '', featuresHref = '/features', country, locale, comparison, apps }: { landingHref?: string; featuresHref?: string; country?: VisitorCountryMenu; locale?: string; comparison?: FooterComparison; apps?: { ios: boolean; android: boolean } } = {}) {
+// faq-4 (2 November 2026): `faqHref` — the country's FAQ page, passed only where it has a question to show (lib/faq/public.ts
+// faqHrefFor); absent → no FAQ link.
+export function LandingFooter({ landingHref = '', featuresHref = '/features', country, locale, comparison, apps, faqHref }: { landingHref?: string; featuresHref?: string; country?: VisitorCountryMenu; locale?: string; comparison?: FooterComparison; apps?: { ios: boolean; android: boolean }; faqHref?: string } = {}) {
   const t = translatorFor(locale, 'landingFooter')
   return (
   <footer className={HEADER_BG}>
@@ -107,7 +109,10 @@ export function LandingFooter({ landingHref = '', featuresHref = '/features', co
                 floor acceptable: below that the link still exists, here. ⚠️ `.foot-links` is a wrapping
                 flex row, so a fifth item costs nothing — unlike the nav, which must not wrap. */}
             <a href={featuresHref}>{t('features')}</a>
-            <a href={`${landingHref}#pricing`}>{t('pricing')}</a>
+            {/* faq-4: the FAQ page, beside Features and Pricing — only where this country's /faq has content. 🔴 ONE SLOT WITH PRICING: a
+                separate `{faqHref && …}` slot would move the country menu after it one position and change React's generated ids on EVERY
+                page (found by scripts/faq-4.cjs's HEAD comparison, as faq-3 found for the landing). */}
+            {faqHref ? <><a href={`${landingHref}#pricing`}>{t('pricing')}</a><a href={faqHref}>{t('faq')}</a></> : <a href={`${landingHref}#pricing`}>{t('pricing')}</a>}
             {/* legal-languages-1 (1 November 2026): the documents in the page's language — /fr/privacy on a French page; the
                 English /privacy and /terms on an English one, exactly as before (lib/legal.ts legalPath). */}
             <a href={legalPath('privacy', { country: country?.current.code, locale })}>{t('privacy')}</a>

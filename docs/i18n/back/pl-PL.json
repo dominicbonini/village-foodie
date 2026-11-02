@@ -5160,5 +5160,8 @@
  "whereYouTrade.townQuestion": "Town in which you are based",
  "faq.phrases.appsSentence": "There is also an iPad and Android app, which keeps taking walk-up orders if you lose signal.",
  "faq.phrases.appsOffline": "The iPad and Android app keeps taking walk-up orders without signal and sends them when you are back online; the web dashboard needs a connection.",
- "faq.phrases.webOffline": "The web dashboard needs a connection to show new orders."
+ "faq.phrases.webOffline": "The web dashboard needs a connection to show new orders.",
+ "landing.faq.metaTitle": "Most frequently asked questions | HatchGrab",
+ "landing.faq.metaDescription": "Clear answers for food trucks about HatchGrab's prices, setting up, taking orders and payments.",
+ "landingFooter.faq": "Most frequently asked questions"
 }

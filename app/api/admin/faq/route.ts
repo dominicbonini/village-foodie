@@ -9,15 +9,15 @@
 // ⚠️ faq-3: after EVERY POST (save, publish, unpublish, reorder, delete — a failed one too, which may have written part) the public
 // FAQ's cache is cleared (lib/faq/public.ts), so the English landing pages show the change without a deploy.
 // ⚠️ faq-2-seo-geo-2 B6: when the change is to what a public page shows (changesPublicPages), and only in production, every
-// switched-on country's landing page is submitted to IndexNow after the response (an English edit also hides the question in the
-// other languages until it is re-translated, so every page changes). A failed submission is logged and changes nothing else.
+// switched-on country's FAQ page that has content is submitted to IndexNow after the response (faq-4; an English edit also hides
+// the question in the other languages until it is re-translated, so every page changes). A failed submission is logged and changes nothing else.
 
 import { NextRequest, NextResponse } from 'next/server'
 import { adminUser } from '@/lib/auth/admin'
 import { serviceFaqStore } from '@/lib/admin/faq-store'
 import { listFaq, faqAction, changesPublicPages, type ActionResult } from '@/lib/admin/faq-actions'
-import { clearPublicFaqCache } from '@/lib/faq/public'
-import { submitIndexNow, landingUrlsFor } from '@/lib/indexnow'
+import { clearPublicFaqCache, faqCountries } from '@/lib/faq/public'
+import { submitIndexNow, faqUrlsFor } from '@/lib/indexnow'
 import { listCountrySettingsCached } from '@/lib/country-settings'
 import { keepAlive } from '@/lib/runtime/after-response'
 
@@ -58,7 +58,9 @@ export async function POST(req: NextRequest) {
     clearPublicFaqCache()
     if (publicChange && process.env.VERCEL_ENV === 'production') {
       keepAlive(async () => {
-        const urls = landingUrlsFor(await listCountrySettingsCached(), 'all')
+        // faq-4: the FAQ pages — after the clear above, only the countries whose /faq still has a question to show (never a 404).
+        const withContent = new Set((await faqCountries()).map(c => c.code))
+        const urls = faqUrlsFor((await listCountrySettingsCached()).filter(c => withContent.has(c.countryCode)), 'all')
         await submitIndexNow(urls, { log: s => console.log(s) })
       }, 'faq indexnow')
     }

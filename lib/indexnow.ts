@@ -6,11 +6,11 @@
 // WHO SUBMITS:
 //   • after every production deploy — .github/workflows/indexnow.yml (on push to main, it waits for the Vercel deployment),
 //     every URL in both sitemaps (scripts/indexnow/main.ts);
-//   • after an Admin › FAQ change to published content — app/api/admin/faq/route.ts, the switched-on country landing pages;
-//   • after a translation run that wrote rows — scripts/faq-translate/main.ts, the landing pages in those languages.
+//   • after an Admin › FAQ change to published content — app/api/admin/faq/route.ts, the FAQ pages that have content (faq-4);
+//   • after a translation run that wrote rows — scripts/faq-translate/main.ts, the FAQ pages in those languages (faq-4).
 // ⛔ NEVER A NOINDEX OR REDIRECTING URL: the deploy run probes every URL first (probeVerdict) and drops any that does not answer
 // 200 itself, says noindex (header or meta) or names another canonical. The FAQ and translation submissions name only switched-on
-// countries' landing pages, which are 200, self-canonical and indexable by construction (lib/marketing-meta.ts).
+// countries' FAQ pages that have content (faq-4), which are 200, self-canonical and indexable by construction.
 // Every response is logged. A failed submission never fails the thing that asked for it.
 import { HATCHGRAB_ORIGIN, countryPagePath } from '@/lib/marketing-country'
 import { overrideChain, type AppLocale } from '@/lib/i18n/locales'
@@ -62,13 +62,15 @@ export function probeVerdict(url: string, status: number, xRobots: string | null
   return null
 }
 
-/** The landing pages of the switched-on countries whose page language reads any of `locales` (a translation in de-DE changes the
- *  German, Austrian, Swiss and Liechtenstein pages: their locale chain includes de-DE). `locales: 'all'` → every one. */
-export function landingUrlsFor(countries: { countryCode: string; locale: string; enabled: boolean }[], locales: string[] | 'all'): string[] {
+/** The FAQ pages (faq-4: the FAQ is its own page, /<country>/faq — no longer the landing page's) of the switched-on countries whose
+ *  page language reads any of `locales` (a translation in de-DE changes the German, Austrian, Swiss and Liechtenstein pages: their
+ *  locale chain includes de-DE). `locales: 'all'` → every one. The caller passes only countries whose FAQ page has content (a 404 is
+ *  never submitted). */
+export function faqUrlsFor(countries: { countryCode: string; locale: string; enabled: boolean }[], locales: string[] | 'all'): string[] {
   const out: string[] = []
   for (const c of countries) {
     if (!c.enabled) continue
-    const path = countryPagePath(c.countryCode, 'landing')
+    const path = countryPagePath(c.countryCode, 'faq')
     if (!path) continue
     const chain = [...overrideChain(c.locale as AppLocale), c.locale]
     if (locales === 'all' || locales.some(l => chain.includes(l))) out.push(HATCHGRAB_ORIGIN + path)

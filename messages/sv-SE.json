@@ -5556,7 +5556,9 @@
       "switchCta": "Jämför vad du betalar"
     },
     "faq": {
-      "title": "Vanliga frågor"
+      "title": "Vanliga frågor",
+      "metaTitle": "Vanliga frågor | HatchGrab",
+      "metaDescription": "Raka svar för foodtruckar om HatchGrabs priser, att komma igång, ta emot beställningar och betalningar."
     },
     "final": {
       "truckLabel": "Foodtruck",
@@ -5586,6 +5588,7 @@
   "landingFooter": {
     "features": "Funktioner",
     "pricing": "Priser",
+    "faq": "Vanliga frågor",
     "privacy": "Integritet",
     "terms": "Villkor",
     "contact": "Kontakt",

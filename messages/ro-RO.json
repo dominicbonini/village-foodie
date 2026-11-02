@@ -5556,7 +5556,9 @@
       "switchCta": "Comparați ce plătiți"
     },
     "faq": {
-      "title": "Întrebări frecvente"
+      "title": "Întrebări frecvente",
+      "metaTitle": "Întrebări frecvente | HatchGrab",
+      "metaDescription": "Răspunsuri clare pentru food truck-uri despre prețurile HatchGrab, configurare, preluarea comenzilor și plăți."
     },
     "final": {
       "truckLabel": "Food truck",
@@ -5586,6 +5588,7 @@
   "landingFooter": {
     "features": "Funcții",
     "pricing": "Prețuri",
+    "faq": "Întrebări frecvente",
     "privacy": "Confidențialitate",
     "terms": "Termeni",
     "contact": "Contact",

@@ -66,7 +66,9 @@
     "switchCta": "Compare what you’re paying"
   },
   "faq": {
-    "title": "Frequently asked questions"
+    "title": "Frequently asked questions",
+    "metaTitle": "Frequently asked questions | HatchGrab",
+    "metaDescription": "Straight answers for food trucks about HatchGrab's prices, setting up, taking orders and payments."
   },
   "final": {
     "truckLabel": "Food truck",

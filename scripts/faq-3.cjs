@@ -34,6 +34,13 @@ const FIX = require('./fixtures/faq-3-rows.json')
 const SB1 = require('./_lp-store-badges-1.cjs')
 const SG2 = require('./_lp-seo-geo-2.cjs')
 const IDENTITY = path.join(REPO, 'scripts/fixtures/faq-3-identity.json')
+// ⚠️ RE-PINNED (faq-4, 2 November 2026): the FAQ left the landing pages for its own page, /<country>/faq (app/faq/page.tsx — the same
+// rules, the same <FaqDetails> list, the same FAQPage builder). §1–§4 read that page now: the section's place on the landing page and
+// its white/wash band are replaced by "the landing page carries no FAQ"; nothing published, or no translation, is a 404. §6 reads
+// faq-4's two new landing.faq keys beside the title. scripts/faq-4.cjs proves the page, its frame and the landing pages without it.
+// §5's comparison pages are hashed without faq-4's footer FAQ link (scripts/_lp-faq-4.cjs noFaqLink, both sides; faq-4 §6 proves
+// where it shows).
+const { noFaqLink } = require('./_lp-faq-4.cjs')
 
 let pass = 0, fail = 0
 const t = (name, ok, detail) => { if (ok) pass++; else { fail++; console.log(`  ✗ ${name}${detail === undefined ? '' : ' — ' + (typeof detail === 'string' ? detail : JSON.stringify(detail)).slice(0, 400)}`) } }
@@ -86,7 +93,7 @@ async function identitySet() {
     const meta = await cmp.M.generateMetadata(args)
     return { meta, html: await cmp.ctx.prerender(kit.h(cmp.M.default, args)) }
   }))
-  out['comparison:gb:live'] = { html: sha(SB1.strip(gb.html)), meta: sha(JSON.stringify(gb.meta)) }
+  out['comparison:gb:live'] = { html: sha(SB1.strip(noFaqLink(gb.html))), meta: sha(JSON.stringify(gb.meta)) }
   return out
 }
 
@@ -103,7 +110,8 @@ if (process.argv[2] === 'capture') {
 const ents = s => s.replace(/&#x27;|&#39;/g, "'").replace(/&quot;/g, '"').replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&amp;/g, '&')
 const sectionOf = (html, id) => { const m = new RegExp(`<section id="${id}"[^>]*>[\\s\\S]*?</section>`).exec(html); return m ? m[0] : null }
 function visibleFaq(html) {
-  const sec = sectionOf(html, 'faq')
+  // ⚠️ RE-PINNED (faq-4): the FAQ page's section (the /features frame's band), its heading the page's <h1>.
+  const sec = html && /<div class="faq">/.test(html) ? (/<section class="band features-page">[\s\S]*?<\/section>/.exec(html) || [])[0] : null
   if (!sec) return null
   const groups = []
   for (const g of sec.split('<div class="faq-group">').slice(1)) {
@@ -111,7 +119,7 @@ function visibleFaq(html) {
     const items = [...g.matchAll(/<details class="faq-q"><summary>([\s\S]*?)<\/summary><p>([\s\S]*?)<\/p><\/details>/g)].map(m => ({ q: ents(m[1]), a: ents(m[2]) }))
     groups.push({ label, items })
   }
-  return { sec, groups, pairs: groups.flatMap(g => g.items), title: ents((/<h2 id="faq-title">([\s\S]*?)<\/h2>/.exec(sec) || [])[1] || '') }
+  return { sec, groups, pairs: groups.flatMap(g => g.items), title: ents((/<h1>([\s\S]*?)<\/h1>/.exec(sec) || [])[1] || '') }
 }
 function graphOf(html) {
   const m = /<script type="application\/ld\+json">([\s\S]*?)<\/script>/.exec(html)
@@ -126,6 +134,7 @@ const sectionOrder = html => [...html.matchAll(/<section(?: id="([a-z-]+)")?(?: 
   const ADMIN_STUB = "export async function adminUser() { return globalThis.__faqAdmin ? { id: 'admin-1', email: 'admin@example.test' } : null }\nexport async function verifyAdmin() { return !!globalThis.__faqAdmin }"
   const M = await ctx.bundle('faq3-live', [
     "export { default as Landing, generateMetadata } from '@/app/[country]/page'",
+    "export { default as FaqPage, generateMetadata as faqMetadata } from '@/app/[country]/faq/page'",   // ⚠️ RE-PINNED (faq-4)
     "export { POST } from '@/app/api/admin/faq/route'",
     "export { clearPublicFaqCache as __faq, landingFaq } from '@/lib/faq/public'",
     "export { clearPlanCatalogCache as __p } from '@/lib/plans-server'",
@@ -141,6 +150,15 @@ const sectionOrder = html => [...html.matchAll(/<section(?: id="([a-z-]+)")?(?: 
   // The app flags as live: the iPad and Android app in the UK stores only (country_settings, 20261042).
   const ROWS = WF.rowsWith(WF.WORLD).map(r => ({ ...r, iosAppAvailable: r.countryCode === 'GB', androidAppAvailable: r.countryCode === 'GB' }))
   const logs = []
+  // ⚠️ RE-PINNED (faq-4): `landing` renders the country's FAQ page (/<seg>/faq; notFound → { notFound: true, html: null });
+  // `landingPage` the landing page itself, for its prices and for "no FAQ here".
+  async function landingPage(seg, faqTables) {
+    return ctx.withReq({ rows: ROWS, tables: { ...wf.tables, ...faqTables } }, async () => {
+      M.__p(); M.__cmp(); M.__faq()
+      const args = { params: Promise.resolve({ country: seg }), searchParams: Promise.resolve({}) }
+      return kit.quietAsync(async () => ({ meta: await M.generateMetadata(args), html: await ctx.prerender(kit.h(M.Landing, args)) }))
+    })
+  }
   async function landing(seg, faqTables, { clear = true } = {}) {
     return ctx.withReq({ rows: ROWS, tables: { ...wf.tables, ...faqTables } }, async () => {
       M.__p(); M.__cmp(); if (clear) M.__faq()
@@ -151,8 +169,10 @@ const sectionOrder = html => [...html.matchAll(/<section(?: id="([a-z-]+)")?(?: 
         // The page's own renderer silences console.warn (LP1E prerender), so the FAQ is resolved here first — logged, and cached —
         // and the page below reads that cache entry: the same call the page makes, with the same result.
         if (clear) await M.landingFaq(await M.getCountrySettings(codeOf(seg)))
-        const meta = await M.generateMetadata(args)
-        return { meta, html: await ctx.prerender(kit.h(M.Landing, args)) }
+        try {
+          const meta = await M.faqMetadata(args)
+          return { meta, html: await ctx.prerender(kit.h(M.FaqPage, args)) }
+        } catch (e) { if (e?.message === 'notFound') return { notFound: true, meta: null, html: null }; throw e }
       } finally { [console.info, console.warn, console.error] = q }
     })
   }
@@ -160,7 +180,7 @@ const sectionOrder = html => [...html.matchAll(/<section(?: id="([a-z-]+)")?(?: 
   const codeOf = seg => Object.keys(segOf).find(c => segOf[c] === seg)
   const ENGLISH = ROWS.filter(r => r.enabled && M.isEnglish(r.locale) && segOf[r.countryCode]).map(r => r.countryCode).sort()
 
-  head('1 · GB, US and IE show the FAQ with their own prices; the FAQPage JSON-LD equals the visible text')
+  head('1 · GB, US and IE show the FAQ with their own prices; the FAQPage JSON-LD equals the visible text (faq-4: on /<country>/faq)')
   const pages = {}
   for (const cc of ['GB', 'US', 'IE']) pages[cc] = await landing(segOf[cc], FAQ())
   const CUR = { GB: '£', US: '$', IE: '€' }
@@ -172,12 +192,12 @@ const sectionOrder = html => [...html.matchAll(/<section(?: id="([a-z-]+)")?(?: 
     t(`${cc}: section labels in Admin order`, JSON.stringify(v.groups.map(g => g.label)) === JSON.stringify(FIX.faq_sections.map(s => s.title_en)), v.groups.map(g => g.label))
     const cost = v.pairs.find(x => x.q === 'How much does HatchGrab cost?')
     const amounts = cost ? cost.a.match(/[£$€]\d+(?:,\d{3})*(?:\.\d{2})?/g) || [] : []
-    const pricing = sectionOf(p.html, 'pricing') || ''
+    const pricing = sectionOf((await landingPage(segOf[cc], FAQ())).html, 'pricing') || ''   // ⚠️ RE-PINNED (faq-4): the landing page's cards
     t(`${cc}: the cost answer is in ${CUR[cc]} and every amount in it is one the pricing cards print`, amounts.length >= 3 && amounts.every(a => a.startsWith(CUR[cc]) && ents(pricing).includes(a)), { amounts, answer: cost?.a })
     t(`${cc}: no token left unfilled`, !v.pairs.some(x => /[{}]/.test(x.q + x.a)))
     const ld = faqLd(graphOf(p.html))
     const canonical = p.meta.alternates.canonical
-    t(`${cc}: FAQPage in the landing @graph, @id = canonical + "#faq" (${canonical}#faq)`, !!ld && ld['@id'] === `${canonical}#faq`, ld?.['@id'])
+    t(`${cc}: FAQPage in the FAQ page's @graph, @id = canonical + "#faq" (${canonical}#faq)`, !!ld && ld['@id'] === `${canonical}#faq`, ld?.['@id'])
     const ldPairs = ld ? ld.mainEntity.map(e => ({ q: e.name, a: e.acceptedAnswer.text })) : []
     t(`${cc}: every JSON-LD question and answer equals the visible one, in order (${ldPairs.length})`, JSON.stringify(ldPairs) === JSON.stringify(v.pairs))
     t(`${cc}: answers are in the HTML while closed (no <details open>)`, !/<details[^>]* open/.test(v.sec) && v.pairs.every(x => x.a.length > 20))
@@ -189,7 +209,7 @@ const sectionOrder = html => [...html.matchAll(/<section(?: id="([a-z-]+)")?(?: 
   const trialQ = gbPairs.find(x => x.q.startsWith('Is there a free trial'))?.a ?? ''
   t('…0003: the card-payments sentence is gone', trialQ.length > 0 && !/Connect online card payments/.test(trialQ), trialQ)
 
-  head(`2 · every English page (${ENGLISH.join(', ')}): …0010 absent, no banned wording, the section's place`)
+  head(`2 · every English page (${ENGLISH.join(', ')}): …0010 absent, no banned wording; the landing page carries no FAQ (faq-4)`)
   t('the English pages are the switched-on English-locale countries with a page (9, as live)', ENGLISH.join(',') === 'AU,CA,GB,GI,IE,MT,NZ,SG,US', ENGLISH)
   const BANNED = /pay at hatch|pay at the truck|pay when they collect|\{payAtTruck\}/i
   const q10 = FIX.faq_items.find(i => i.id.endsWith('0010'))
@@ -200,15 +220,15 @@ const sectionOrder = html => [...html.matchAll(/<section(?: id="([a-z-]+)")?(?: 
     t(`${cc}: FAQ shown, FAQPage present`, !!v && !!ld)
     t(`${cc}: …0010 ("${q10.question_en}") absent from the page and the JSON-LD`, !p.html.includes(q10.question_en.replace(/'/g, '&#x27;')) && !JSON.stringify(ld).includes(q10.question_en))
     t(`${cc}: no banned wording in the FAQ or its JSON-LD`, !!v && !BANNED.test(ents(v.sec)) && !BANNED.test(JSON.stringify(ld)))
-    const order = sectionOrder(p.html).map(s => s.split(':')[0])
-    const i = order.indexOf('faq')
-    t(`${cc}: between pricing and the final CTA`, i > 0 && order[i - 1] === 'pricing' && order[i + 1] === 'try', order)
-    const seq = sectionOrder(p.html).filter(s => /^(pricing|faq|try):/.test(s)).map(s => s.split(':')[1])
-    const want = cc === 'GB' ? ['band', 'white', 'band'] : ['white', 'band', 'white']
-    t(`${cc}: white/wash alternation kept (pricing · FAQ · final = ${want.join(' · ')})`, JSON.stringify(seq) === JSON.stringify(want), seq)
+    // ⚠️ RE-PINNED (faq-4): was "between pricing and the final CTA" and its white/wash band — the landing page has no FAQ now.
+    const lp = await landingPage(segOf[cc], FAQ())
+    const order = sectionOrder(lp.html).map(s => s.split(':')[0])
+    t(`${cc}: the landing page carries no FAQ section and no FAQPage; pricing is followed by the final CTA again`, !/id="faq"/.test(lp.html) && !faqLd(graphOf(lp.html)) && order[order.indexOf('pricing') + 1] === 'try', order)
   }
   const de = await landing('de', FAQ())
-  t('DE (a German page): no FAQ section, no heading, no FAQPage — even with every row published', !/id="faq"/.test(de.html) && !faqLd(graphOf(de.html)) && !de.html.includes('Frequently asked questions'))
+  // ⚠️ RE-PINNED (faq-4): /de/faq with no German translation is a 404; the /de landing page shows no FAQ either.
+  const deLanding = await landingPage('de', FAQ())
+  t('DE (a German page, no translations): /de/faq is a 404, and /de shows no FAQ, no heading, no FAQPage — even with every row published', de.notFound && !/id="faq"/.test(deLanding.html) && !faqLd(graphOf(deLanding.html)) && !deLanding.html.includes('Frequently asked questions'))
 
   head('3 · the rules: show_in, the check, empty sections, nothing published')
   const S = FIX.faq_sections[0].id
@@ -232,8 +252,9 @@ const sectionOrder = html => [...html.matchAll(/<section(?: id="([a-z-]+)")?(?: 
   t('a section with nothing visible is left out (no label)', !gbX.groups.some(g => g.label === 'Synthetic empty section'))
   const none = FAQ(); none.faq_items.forEach(i => { i.status = 'draft' })
   const gbNone = await landing('uk', none)
-  t('nothing published: no FAQ section and no FAQPage', !/id="faq"/.test(gbNone.html) && !faqLd(graphOf(gbNone.html)))
-  t('…and the final CTA keeps its HEAD band (GB white)', /<section id="try">/.test(gbNone.html))
+  // ⚠️ RE-PINNED (faq-4): nothing published → /uk/faq is a 404 (no section, no FAQPage); the landing's final CTA as before faq-3.
+  t('nothing published: no FAQ section and no FAQPage (/uk/faq is a 404)', gbNone.notFound && !gbNone.html)
+  t('…and the final CTA keeps its HEAD band (GB white)', /<section id="try">/.test((await landingPage('uk', none)).html))
   t('the fixture: 24 published, …0010 the only draft, …0017 and …0022 absent', FIX.faq_items.filter(i => i.status === 'published').length === 24 && FIX.faq_items.filter(i => i.status === 'draft').map(i => i.id.slice(-4)).join() === '0010' && !FIX.faq_items.some(i => /00(17|22)$/.test(i.id)))
   const toText = i => ({ questionEn: i.question_en, answerEn: i.answer_en, answerSinglePlanEn: i.answer_single_plan_en, showIn: i.show_in })
   const bannedPublished = FIX.faq_items.filter(i => i.status === 'published' && M.bannedWordingIn(toText(i)).length)
@@ -261,7 +282,7 @@ const sectionOrder = html => [...html.matchAll(/<section(?: id="([a-z-]+)")?(?: 
   const save = await M.faqAction({ ...store, items: async () => [pubItem] }, { action: 'item.update', id: 'x1', patch: { answerEn: 'Or Pay at Hatch.' } }, { by: 'admin', at: '2026-11-02T12:00:00Z' })
   t('Admin: saving a PUBLISHED question with it is refused too, and nothing is written', !save.ok && save.status === 400 && /Published answers can't mention/.test(save.error) && writes.length === 0, save)
 
-  head('4 · an Admin publish / unpublish refreshes the English landing page (the real route, no deploy)')
+  head('4 · an Admin publish / unpublish refreshes the English FAQ page (the real route, no deploy; faq-4: /uk/faq)')
   const live = FAQ()
   const Q4 = 'Is there a contract? Can I cancel anytime?'
   const row4 = live.faq_items.find(i => i.question_en === Q4)
@@ -277,7 +298,7 @@ const sectionOrder = html => [...html.matchAll(/<section(?: id="([a-z-]+)")?(?: 
   row4.status = 'draft'        // what the database holds once Admin has unpublished it
   t('the cache holds for its minute: the database changed, the page did not (no route call yet)', await shows())
   const st1 = await post({ action: 'item.unpublish', id: row4.id })
-  t(`after POST item.unpublish (answered ${st1}): the question is gone from /uk`, !(await shows()))
+  t(`after POST item.unpublish (answered ${st1}): the question is gone from /uk/faq`, !(await shows()))
   row4.status = 'published'
   t('…republished in the database: still gone until the route runs', !(await shows()))
   const st2 = await post({ action: 'item.publish', id: row4.id })
@@ -306,7 +327,8 @@ const sectionOrder = html => [...html.matchAll(/<section(?: id="([a-z-]+)")?(?: 
 
   head('6 · translation-check: landing.faq.title in en-GB and all 28 bases')
   const en = JSON.parse(fs.readFileSync(path.join(REPO, 'messages/en-GB.json'), 'utf8'))
-  t('en-GB landing.faq = { title: "Frequently asked questions" } (one key: no sub-line, Dominic)', JSON.stringify(en.landing.faq) === '{"title":"Frequently asked questions"}', en.landing.faq)
+  // ⚠️ RE-PINNED (faq-4): beside the title, the FAQ page's <title> and description (faq-4 §8 checks them in every base).
+  t('en-GB landing.faq = { title: "Frequently asked questions", metaTitle, metaDescription } (no sub-line, Dominic)', en.landing.faq.title === 'Frequently asked questions' && JSON.stringify(Object.keys(en.landing.faq)) === '["title","metaTitle","metaDescription"]', en.landing.faq)
   const src2 = fs.readFileSync(path.join(REPO, 'lib/i18n/locales.ts'), 'utf8')
   const BASES = /export const LANGUAGE_BASES[^=]*=\s*\[([^\]]*)\]/.exec(src2)[1].match(/'[^']+'/g).map(s => s.slice(1, -1))
   t('28 language bases', BASES.length === 28, BASES.length)

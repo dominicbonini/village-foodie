@@ -78,7 +78,7 @@ export async function resolveVisitorCountry(
   return {
     settings,
     menu: { current: optionOf(settings), options, remember: picked.fromQuery ? settings.countryCode : null },
-    paths: { landing: '/landing', features: '/features', compare: '/compare' },
+    paths: { landing: '/landing', features: '/features', compare: '/compare', faq: '/faq' },
     countryPage: null,
   }
 }
@@ -110,7 +110,7 @@ async function resolveCountryPage(segment: string, page: MarketingPage): Promise
     settings,
     menu: { current: optionOf(settings), options, remember: null },
     paths: {
-      landing: countryPagePath(code, 'landing')!, features: countryPagePath(code, 'features')!, compare: countryPagePath(code, 'compare')!,
+      landing: countryPagePath(code, 'landing')!, features: countryPagePath(code, 'features')!, compare: countryPagePath(code, 'compare')!, faq: countryPagePath(code, 'faq')!,
     },
     countryPage: { alternates: live.map(c => ({ code: c.countryCode, locale: c.locale })) },
   }

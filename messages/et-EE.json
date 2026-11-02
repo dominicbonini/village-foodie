@@ -5556,7 +5556,9 @@
       "switchCta": "Võrdle, kui palju maksad"
     },
     "faq": {
-      "title": "Korduma kippuvad küsimused"
+      "title": "Korduma kippuvad küsimused",
+      "metaTitle": "Korduma kippuvad küsimused | HatchGrab",
+      "metaDescription": "Selged vastused toiduautodele HatchGrabi hindade, seadistamise, tellimuste vastuvõtmise ja maksete kohta."
     },
     "final": {
       "truckLabel": "Toiduauto",
@@ -5586,6 +5588,7 @@
   "landingFooter": {
     "features": "Funktsioonid",
     "pricing": "Hinnad",
+    "faq": "Korduma kippuvad küsimused",
     "privacy": "Privaatsus",
     "terms": "Tingimused",
     "contact": "Kontakt",

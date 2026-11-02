@@ -5556,7 +5556,9 @@
       "switchCta": "Porównaj, ile płacisz"
     },
     "faq": {
-      "title": "Najczęściej zadawane pytania"
+      "title": "Najczęściej zadawane pytania",
+      "metaTitle": "Najczęściej zadawane pytania | HatchGrab",
+      "metaDescription": "Konkretne odpowiedzi dla food trucków o cenach HatchGrab, konfiguracji, przyjmowaniu zamówień i płatnościach."
     },
     "final": {
       "truckLabel": "Food truck",
@@ -5586,6 +5588,7 @@
   "landingFooter": {
     "features": "Funkcje",
     "pricing": "Cennik",
+    "faq": "Najczęściej zadawane pytania",
     "privacy": "Prywatność",
     "terms": "Regulamin",
     "contact": "Kontakt",

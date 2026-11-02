@@ -15,8 +15,8 @@
 //     ⛔ faq-2-seo-geo-2 B3 (2 November 2026): TRUE PER COUNTRY (35.ak-7) — "Web" everywhere, plus "iOS" / "Android" only where
 //     that country's country_settings.ios_app_available / android_app_available is true (operatingSystemsOf). sameAs is unchanged.
 // ── faq-3 (2 November 2026, docs/faq-3-report.md §3) ────────────────────────────────────────────────────────────────────────
-//   • FAQPage (faqPageLd) — the ONE builder for the comparison pages' FAQ (lib/comparison.ts) and the English landing pages'
-//     (`faq`, only when the page shows its FAQ section). Each answer's text is the visible answer, exactly.
+//   • FAQPage (faqPageLd) — the ONE builder for the comparison pages' FAQ (lib/comparison.ts) and the FAQ pages' (app/faq/page.tsx;
+//     faq-4 took it off the landing pages' graph with the FAQ section). Each answer's text is the visible answer, exactly.
 // ⛔ NOTHING IS TYPED: the brand name and origin, the logo path, the store URLs, the plans, their prices and the
 // currency all come from their one definition. ⛔ NO OFFER IS EMITTED FOR A PRICE THE PAGE DOES NOT SHOW (`pricesShown`
 // is the caller's statement of what the page renders).
@@ -101,8 +101,6 @@ export function landingGraph(opts: {
   app: Record<string, unknown>
   /** about-page: the founder's photo URL, or null (organizationLd). */
   founderImage?: string | null
-  /** faq-3: the FAQ the page shows, or nothing — then no FAQPage is emitted. */
-  faq?: FaqPair[] | null
   /** faq-2-seo-geo-2 B3: the country's app flags (country_settings.ios_app_available / android_app_available). */
   apps: { ios: boolean; android: boolean }
 }) {
@@ -120,7 +118,6 @@ export function landingGraph(opts: {
         publisher: { '@id': ORG_ID },
         ...(offers.length ? { offers } : {}),
       },
-      ...(opts.faq?.length ? [faqPageLd(`${opts.pageUrl}#faq`, opts.faq)] : []),
     ],
   }
 }

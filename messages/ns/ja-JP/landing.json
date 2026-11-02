@@ -66,7 +66,9 @@
     "switchCta": "今の料金と比較する"
   },
   "faq": {
-    "title": "よくある質問"
+    "title": "よくある質問",
+    "metaTitle": "よくある質問 | HatchGrab",
+    "metaDescription": "キッチンカー向けに、HatchGrabの料金、導入、注文の受け付け、支払いについてわかりやすくお答えします。"
   },
   "final": {
     "truckLabel": "キッチンカー",

@@ -29,24 +29,16 @@
 // landing it came from is already `index: true`, the content was public on it this morning, and
 // "what's included on each plan" is exactly what an operator types into a search box. Removing it from
 // the landing and NOT indexing it here would have made a public page private by accident.
-// store-badges-1: the footer's store badges follow the country's app flags (the cached reader the FAQ and comparison pages use).
-import { appsOf } from '@/lib/comparison-flags'
-import { Archivo, Public_Sans, Courier_Prime } from 'next/font/google'
 import type { Metadata } from 'next'
 import { headers } from 'next/headers'
 import { notFound } from 'next/navigation'
 import { isHatchGrabHost } from '@/lib/brand'
-import { LandingNav } from '@/components/landing/LandingNav'
-import { LandingFooter } from '@/components/landing/LandingFooter'
 // compare-de-1: the footer's "Vergleich" column for the country's own comparison page (live, or admins only).
-import { comparisonFooter, comparisonFlagsOf } from '@/lib/comparison-server'
-import { DemoModalProvider, DemoModal } from '@/components/landing/DemoUpload'   // client children — the chrome's CTA
+import { comparisonFlagsOf } from '@/lib/comparison-server'
+import { MarketingFrame } from '@/components/landing/MarketingFrame'
 // Language Phase 1e: the page's client components (country menu, demo modal and CTAs) read the visitor's locale
 // from this boundary.
-import { PageLocale } from '@/lib/i18n/page-locale'
 // languages-1: a non-English page hands its browser the words its client components read (none for English).
-import { pageSeedProps } from '@/lib/i18n/page-words'
-import { localeOfCountry } from '@/lib/i18n/locales'
 import { PlanTable, planTableNotes } from '@/components/pricing/PlanTable'
 import { FEATURE_TABLE } from '@/lib/feature-table'
 import { getPlanCatalog } from '@/lib/plans-server'
@@ -132,24 +124,10 @@ async function onHatchGrab(): Promise<boolean> {
   return isHatchGrabHost(headersList.get('host') || '')
 }
 
-// ── 🔴 DECLARED HERE, NOT IMPORTED FROM THE LANDING PAGE. ───────────────────────────────────────────
-// landing.css reads --font-archivo / --font-public-sans / --font-courier-prime, and those variables are
-// set by the class each next/font instance generates. Two instances of the same config share the same
-// CSS variable NAMES, so the chrome and the table style identically; next/font deduplicates the font
-// files themselves. /compare carries the same three declarations for the same reason.
-const archivo = Archivo({ subsets: ['latin'], style: ['normal', 'italic'], variable: '--font-archivo', display: 'swap' })
-const publicSans = Public_Sans({ subsets: ['latin'], variable: '--font-public-sans', display: 'swap' })
-// seo-fixes S7 (20 October 2026): declared and loaded when used (--ticket), but NOT preloaded — nothing above the fold uses it.
-const courierPrime = Courier_Prime({ subsets: ['latin'], weight: ['400', '700'], variable: '--font-courier-prime', display: 'swap', preload: false })
-
-// 🔴 ONE `.hg-landing` ROUND THE WHOLE PAGE, WHICH /compare DELIBERATELY DOES NOT DO.
-// All of landing.css is scoped under `.hg-landing`, and one of its rules is `.hg-landing * { margin: 0 }`.
-// That is why /compare splits its wrapper in two — its calculator is Tailwind and the scoped reset would
-// strip every `mt-3` and `space-y-3` in it. ⚠️ NOTHING ON THIS PAGE IS TAILWIND: the chrome is landing.css markup and
-// the table its own plan-table.css (two classes deep, so the reset cannot strip it), so one wrapper is correct here AND is what makes the sticky table
-// header work — `.hg-landing nav` is `position: sticky`, and a sticky element only travels inside its
-// parent's box, so the nav's containing block must be the page.
-const CHROME = `hg-landing ${archivo.variable} ${publicSans.variable} ${courierPrime.variable}`
+// ── The fonts: declared in components/landing/MarketingFrame.tsx (faq-4 moved them there with the frame), not imported from the
+// landing page. landing.css reads --font-archivo / --font-public-sans / --font-courier-prime, set by the class each next/font instance
+// generates; instances of the same config share the variable NAMES, and next/font deduplicates the files. /compare carries the same
+// three declarations for the same reason.
 
 export default async function FeaturesPage({ params, searchParams }: { params?: Promise<{ country?: string }>; searchParams: Promise<Record<string, string | string[] | undefined>> }) {
   // ── 🔴 THE BRAND GATE. THIS PAGE DOES NOT EXIST ON VILLAGE FOODIE. See the header note.
@@ -181,19 +159,10 @@ export default async function FeaturesPage({ params, searchParams }: { params?: 
   const appFlags = await comparisonFlagsOf(settings.countryCode)
   if (appFlags.iosApp && appFlags.androidApp && details.offline_protection) details.offline_protection += ' ' + tPage('offlineApps')
 
+  // faq-4 (2 November 2026): the page frame (fonts, chrome, nav, footer, demo modal) is components/landing/MarketingFrame.tsx — moved
+  // from here, not rewritten, and shared with /<country>/faq. This page renders byte-identically through it.
   return (
-    <PageLocale locale={localeOfCountry(settings)} {...pageSeedProps(settings.locale, 'marketing')}>
-    <DemoModalProvider>
-      <div className={CHROME}>
-        {/* ⚠️ `landingHref` IS NOT OPTIONAL ON A CHILD ROUTE. The nav's logo and its Pricing link are
-            BARE FRAGMENTS by default (`#pricing`), and a bare fragment resolves against whatever page
-            you are on — so on this page they would silently do nothing. See the table in
-            LandingNav.tsx. '/landing' is used rather than '/' because '/' is only the landing on a
-            hatchgrab host, and /landing is a real route that 308s to the root on this one.
-            🔴 THIS IS WHAT STEP 2c ASKS FOR: on the landing, Pricing stays `#pricing`; here it becomes
-            `/landing#pricing`. One prop, both behaviours, no second nav. */}
-        <LandingNav landingHref={visitor.paths.landing} featuresHref={visitor.paths.features} locale={settings.locale} />
-
+    <MarketingFrame visitor={visitor}>
         {/* The approved mockup's content in the pre-Stage-B page's look (features-page-restore, 20 October 2026): the
             centred eyebrow + heading + lede (the h1 keeps the old h2's look — still the page's one h1), the plan table in its "features" variant with a description per row, and the
             footnotes in the old `.fn` style. */}
@@ -223,7 +192,6 @@ export default async function FeaturesPage({ params, searchParams }: { params?: 
             </div>
           </div>
         </section>
-
         {/* ══ ⛔ THE "See prices and plans →" LINK AND ITS SECTION ARE GONE — 6 October 2026 ══════════
             Removed on request. 🔴 THE WHOLE `<section>` WENT, NOT JUST THE `<p>`: every bare
             `<section>` in landing.css carries `padding: clamp(3.5rem,7vw,5.5rem) 0`, so an emptied one
@@ -234,15 +202,6 @@ export default async function FeaturesPage({ params, searchParams }: { params?: 
             pointing at markup that no longer exists.
             ⚠️ THE WAY BACK IS STILL THERE — the nav's own "Pricing" link resolves to /landing#pricing
             on this route, via the `landingHref` prop above, and the footer carries one too. */}
-
-        <LandingFooter landingHref={visitor.paths.landing} featuresHref={visitor.paths.features} country={visitor.menu} locale={settings.locale} comparison={await comparisonFooter(settings.countryCode, settings.locale)} 
-          apps={await appsOf(settings.countryCode)} />
-      </div>
-
-      {/* Mounted ONCE — the nav's CTA drives this one instance. It portals to document.body, so it is
-          deliberately OUTSIDE `.hg-landing` and brings its own tokens via `hg-demo-modal`. */}
-      <DemoModal />
-    </DemoModalProvider>
-    </PageLocale>
+    </MarketingFrame>
   )
 }

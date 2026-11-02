@@ -30,6 +30,11 @@ const FIX = require('./fixtures/faq-3-rows.json')
 // ⚠️ RE-PINNED (store-badges-1, 2 November 2026): hashed with the footer's store badges and the Play URL's &hl=en taken out (scripts/
 // _lp-store-badges-1.cjs strip, both sides; the badges follow the app flags now and are proven by scripts/store-badges-1.cjs).
 const SB1 = require('./_lp-store-badges-1.cjs')
+// ⚠️ RE-PINNED (faq-4, 2 November 2026): the FAQ left the landing pages for its own page, /<country>/faq. §4 hashes the landing pages
+// with faq-4's two changes taken out on both sides (scripts/_lp-faq-4.cjs: faq-3's FAQ section, its FAQPage and the final CTA's band;
+// the footer's FAQ link) — recaptured at dad7911a with them. §7: IndexNow names the FAQ pages (lib/indexnow.ts faqUrlsFor, was
+// landingUrlsFor), the Admin route only those with content, the translator those in the languages it wrote ok rows for.
+const F4 = require('./_lp-faq-4.cjs')
 const IDENTITY = path.join(REPO, 'scripts/fixtures/seo-geo-2-identity.json')
 const HEAD_COMMIT = 'dad7911a'
 
@@ -52,7 +57,8 @@ async function identitySet() {
     for (const seg of SEGS) {
       const r = await kit.quietAsync(() => wf.page('landing', seg, rows))
       const os = (/"operatingSystem":"([^"]*)"/.exec(r.html) || [])[1] ?? null
-      out[`landing:${seg}`] = { html: sha(SB1.strip(r.html)), htmlWithoutOs: sha(withoutOs(SB1.strip(r.html))), meta: sha(JSON.stringify(r.meta)), os }
+      const html = F4.noLandingFaq(F4.noFaqLink(r.html))   // ⚠️ RE-PINNED (faq-4)
+      out[`landing:${seg}`] = { html: sha(SB1.strip(html)), htmlWithoutOs: sha(withoutOs(SB1.strip(html))), meta: sha(JSON.stringify(r.meta)), os }
     }
   } finally { console.info = info }
   return out
@@ -219,16 +225,16 @@ if (process.argv[2] === 'capture') {
   const failed = await I.submitIndexNow(['https://www.hatchgrab.com/uk'], { fetchImpl: async () => { throw new Error('offline') } })
   t('a network failure is a logged result, never a throw', failed[0].status === null && failed[0].body === 'offline')
   const cs = ROWS.map(r => ({ countryCode: r.countryCode, locale: r.locale, enabled: r.enabled }))
-  const de = I.landingUrlsFor(cs, ['de-DE']).map(u => u.split('/').pop()).sort()
+  const de = I.faqUrlsFor(cs, ['de-DE']).map(u => u.split('/').at(-2)).sort()   // ⚠️ RE-PINNED (faq-4): /<seg>/faq
   t(`a de-DE translation → the German-language pages: ${de.join(', ')}`, JSON.stringify(de) === JSON.stringify(['at', 'ch', 'de', 'li']))
-  t('"all" → every switched-on country with a page', I.landingUrlsFor(cs, 'all').length === cs.filter(c => c.enabled).length && I.landingUrlsFor(cs.map(c => (c.countryCode === 'FR' ? { ...c, enabled: false } : c)), 'all').every(u => !u.endsWith('/fr')))
+  t('"all" → every switched-on country with a page', I.faqUrlsFor(cs, 'all').length === cs.filter(c => c.enabled).length && I.faqUrlsFor(cs.map(c => (c.countryCode === 'FR' ? { ...c, enabled: false } : c)), 'all').every(u => !u.endsWith('/fr/faq')))
   const ok1 = { ok: true, data: { item: { status: 'published' } } }
   t('the FAQ route submits for a public change: publish, unpublish, delete, a move, a published question\'s text', ['item.publish', 'item.unpublish', 'item.delete', 'item.move', 'section.rename', 'section.delete'].every(a => I.changesPublicPages({ action: a }, ok1)) && I.changesPublicPages({ action: 'item.update', patch: { answerEn: 'x' } }, ok1))
   t('…and not for a note, a draft\'s text, a new question, or a refusal', !I.changesPublicPages({ action: 'item.update', patch: { note: 'x' } }, ok1) && !I.changesPublicPages({ action: 'item.update', patch: { answerEn: 'x' } }, { ok: true, data: { item: { status: 'draft' } } }) && !I.changesPublicPages({ action: 'item.create' }, ok1) && !I.changesPublicPages({ action: 'item.publish' }, { ok: false, status: 400, error: 'x' }))
   const route = read('app/api/admin/faq/route.ts')
-  t('…only in production, after the response (keepAlive), with every switched-on landing page', /publicChange && process\.env\.VERCEL_ENV === 'production'/.test(route) && /keepAlive\(async \(\) => \{\s*const urls = landingUrlsFor\(await listCountrySettingsCached\(\), 'all'\)/.test(route))
+  t('…only in production, after the response (keepAlive), with every switched-on country\'s FAQ page that has content (faq-4)', /publicChange && process\.env\.VERCEL_ENV === 'production'/.test(route) && /keepAlive\(async \(\) => \{[\s\S]*?const withContent = new Set\(\(await faqCountries\(\)\)\.map\(c => c\.code\)\)\s*const urls = faqUrlsFor\(\(await listCountrySettingsCached\(\)\)\.filter\(c => withContent\.has\(c\.countryCode\)\), 'all'\)/.test(route))
   const tm = read('scripts/faq-translate/main.ts')
-  t('the translator submits only the pages it changed, never in a dry run, after the pages\' cache', /if \(!dryRun && !fixtures && report\.changedLocales\.length\)/.test(tm) && /landingUrlsFor\(countries, report\.changedLocales\)/.test(tm) && /setTimeout\(res, 65_000\)/.test(tm))
+  t('the translator submits only the pages it changed, never in a dry run, after the pages\' cache', /if \(!dryRun && !fixtures && report\.okLocales\.length\)/.test(tm) && /faqUrlsFor\(countries, report\.okLocales\)/.test(tm) && /setTimeout\(res, 65_000\)/.test(tm))
   const wy = read('.github/workflows/indexnow.yml')
   t('the deploy workflow: on push to main, waits for the production deployment of the commit, then submits both sitemaps\' fit URLs', /push:\s*\n\s*branches: \[main\]/.test(wy) && /deployments\?sha=\$SHA&environment=Production/.test(wy) && /"\$state" = "success"/.test(wy) && /deployments: read/.test(wy) && /scripts\/indexnow\/main\.ts/.test(wy))
   const im = read('scripts/indexnow/main.ts')

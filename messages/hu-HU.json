@@ -5556,7 +5556,9 @@
       "switchCta": "Hasonlítsa össze, mennyit fizet"
     },
     "faq": {
-      "title": "Gyakori kérdések"
+      "title": "Gyakori kérdések",
+      "metaTitle": "Gyakori kérdések | HatchGrab",
+      "metaDescription": "Egyenes válaszok food truckoknak a HatchGrab árairól, a beállításról, a rendelésfelvételről és a fizetésekről."
     },
     "final": {
       "truckLabel": "Food truck",
@@ -5586,6 +5588,7 @@
   "landingFooter": {
     "features": "Funkciók",
     "pricing": "Árak",
+    "faq": "Gyakori kérdések",
     "privacy": "Adatvédelem",
     "terms": "Feltételek",
     "contact": "Kapcsolat",

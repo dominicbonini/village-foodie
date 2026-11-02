@@ -37,15 +37,16 @@ export const COUNTRY_PATH_SEGMENTS: Readonly<Record<string, string>> = { GB: 'uk
   // world-countries-1 (31 October 2026): Brazil, Mexico, Japan, Singapore, Hong Kong, Malaysia, Thailand and the UAE, at their ISO codes.
   BR: 'br', MX: 'mx', JP: 'jp', SG: 'sg', HK: 'hk', MY: 'my', TH: 'th', AE: 'ae' }
 
-/** The three marketing pages that have a country address. */
-export type MarketingPage = 'landing' | 'features' | 'compare'
+/** The marketing pages that have a country address. faq-4 (2 November 2026): + 'faq' (/<country>/faq, routed from /faq like
+ *  /features; a country whose FAQ has nothing to show answers 404 there — app/faq/page.tsx). */
+export type MarketingPage = 'landing' | 'features' | 'compare' | 'faq'
 
 /** The host every canonical, og:url, hreflang and sitemap URL names — one host, the www one (as app/layout.tsx's
  *  metadataBase now is). */
 export const HATCHGRAB_ORIGIN = 'https://www.hatchgrab.com'
 
 /** The router (x-default) address of each page — what the page was served at before country addresses. */
-export const ROUTER_PATH: Readonly<Record<MarketingPage, string>> = { landing: '/', features: '/features', compare: '/compare' }
+export const ROUTER_PATH: Readonly<Record<MarketingPage, string>> = { landing: '/', features: '/features', compare: '/compare', faq: '/faq' }
 
 /**
  * The paths the router answers on a HatchGrab host, and which page each one means. Exact paths only.
@@ -53,7 +54,7 @@ export const ROUTER_PATH: Readonly<Record<MarketingPage, string>> = { landing: '
  */
 export const ROUTER_PATHS: Readonly<Record<string, MarketingPage>> = {
   '/': 'landing', '/landing': 'landing', '/1ng7n4p5omux2gdk9kqvwz': 'landing',
-  '/features': 'features', '/compare': 'compare',
+  '/features': 'features', '/compare': 'compare', '/faq': 'faq',
 }
 
 const upper = (v: unknown) => (typeof v === 'string' ? v.trim().toUpperCase() : '')
@@ -73,7 +74,7 @@ export function countryPagePath(code: string, page: MarketingPage): string | nul
 
 /** Which country page a pathname is: '/us/compare' → { code: 'US', page: 'compare' }; anything else → null. */
 export function countryPageOf(pathname: string): { code: string; page: MarketingPage } | null {
-  const m = /^\/([a-z]+)(?:\/(features|compare))?$/.exec(pathname)
+  const m = /^\/([a-z]+)(?:\/(features|compare|faq))?$/.exec(pathname)
   const code = m && countryOfSegment(m[1])
   return code ? { code, page: (m![2] as MarketingPage | undefined) ?? 'landing' } : null
 }

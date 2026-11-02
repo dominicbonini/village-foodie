@@ -29,7 +29,7 @@ export interface WriteRow {
   source_hash: string; model: string; translated_at: string; status: 'ok' | 'failed'; reason: string | null
 }
 export interface ModelRequest { system: [rules: string, localeWords: string]; user: string; locales: string[]; maxTokens: number }
-export interface ModelReply { translations: Record<string, unknown>[]; usage: Usage | null }
+export interface ModelReply { translations: Record<string, unknown>[]; usage: Usage | null; stopReason?: string | null }
 
 export interface TranslatorDeps {
   read(): Promise<{ items: SourceItem[]; sections: SourceSection[]; translations: FaqTranslationRow[] }>
@@ -46,8 +46,10 @@ export interface TranslatorDeps {
 export interface TranslatorOptions { dryRun: boolean; maxUsd: number; model?: string; limit?: number }
 export interface TranslatorReport {
   jobs: number; done: number; skippedForCap: number; ok: number; failed: number; removed: number; usd: number
-  /** Locales whose pages changed (a row written ok, or removed) — for the IndexNow submission. */
+  /** Locales whose pages changed (a row written ok, or removed). */
   changedLocales: string[]
+  /** faq-4: locales with a row written ok — their FAQ pages have content, so the IndexNow submission names them. */
+  okLocales: string[]
   lines: string[]
 }
 
@@ -106,8 +108,10 @@ export function buildRequest(job: Job, english: SourceItem | SourceSection, cont
   })
   const fields = job.kind === 'item' ? 'question, answer' + ('answer_single_plan' in src ? ' and answer_single_plan' : '') : 'title'
   const user = JSON.stringify({ english: src, return: `For each locale: ${fields}.`, locales })
-  // ~ the English's length per locale, generously, for the non-Latin scripts.
-  const maxTokens = Math.min(64000, 2000 + job.locales.length * Math.ceil(JSON.stringify(src).length / 2.5))
+  // The output budget: up to about one token per English character per locale (Thai, Japanese and Chinese can take that many),
+  // plus the JSON around them. faq-4: was one per 2.5 characters, which a long answer in 41 locales could run past; a reply cut off
+  // at the limit loses every locale of that call (logged as such by the caller).
+  const maxTokens = Math.min(100000, 4000 + job.locales.length * Math.ceil(JSON.stringify(src).length * 1.1))
   return { system: [SYSTEM, localeWords(contextOf)], user, locales: job.locales, maxTokens }
 }
 
@@ -153,7 +157,7 @@ export function rowsFromReply(job: Job, english: SourceItem | SourceSection, rep
 /** One run. */
 export async function runTranslator(deps: TranslatorDeps, opts: TranslatorOptions): Promise<TranslatorReport> {
   const model = opts.model ?? TRANSLATOR_MODEL
-  const report: TranslatorReport = { jobs: 0, done: 0, skippedForCap: 0, ok: 0, failed: 0, removed: 0, usd: 0, changedLocales: [], lines: [] }
+  const report: TranslatorReport = { jobs: 0, done: 0, skippedForCap: 0, ok: 0, failed: 0, removed: 0, usd: 0, changedLocales: [], okLocales: [], lines: [] }
   const log = (s: string) => { report.lines.push(s); deps.log(s) }
   const { items, sections, translations } = await deps.read()
   const published = items.filter(i => i.status === 'published')
@@ -164,7 +168,7 @@ export async function runTranslator(deps: TranslatorDeps, opts: TranslatorOption
   report.jobs = work.length
   if (!work.length) { log(`Nothing to translate: ${published.length} published questions and ${usedSections.length} sections, every translation up to date. No model call.`); return report }
   log(`${work.length} to translate (${work.filter(w => w.job.kind === 'section').length} section titles, ${work.filter(w => w.job.kind === 'item').length} questions) into up to ${TRANSLATED_BASES.length} languages and ${MODEL_VARIANTS.length} variants · cap $${opts.maxUsd.toFixed(2)}${opts.dryRun ? ' · DRY RUN: no model call, nothing written' : ''}`)
-  const changed = new Set<string>()
+  const changed = new Set<string>(), okSet = new Set<string>()
   const queue = opts.limit ? work.slice(0, opts.limit) : work
   for (const { job, english } of queue) {
     const label = job.kind === 'item' ? `…${job.id.slice(-4)} "${(english as SourceItem).questionEn}"` : `section "${(english as SourceSection).titleEn}"`
@@ -186,18 +190,20 @@ export async function runTranslator(deps: TranslatorDeps, opts: TranslatorOption
     try { reply = await deps.call(req) } catch (e) { log(`  ${label}: the model call FAILED — ${e instanceof Error ? e.message : String(e)} (retried next run)`); continue }
     const usd = deps.prices ? costOf(reply.usage, model, deps.prices).usd : 0
     report.usd += usd
+    if (reply.stopReason === 'max_tokens') log(`  ${label}: the reply hit its ${req.maxTokens}-token limit — every locale it did not finish is stored failed and retried next run`)
     const { rows, remove } = rowsFromReply(job, english, reply.translations, deps.contextOf, translations, model, deps.now())
     if (rows.length) await deps.write?.(rows)
     if (remove.length) await deps.remove?.(job.kind, job.id, remove)
     const ok = rows.filter(r => r.status === 'ok'), bad = rows.filter(r => r.status === 'failed')
     report.ok += ok.length; report.failed += bad.length; report.removed += remove.length; report.done++
-    for (const r of ok) changed.add(r.locale)
+    for (const r of ok) { changed.add(r.locale); okSet.add(r.locale) }
     for (const l of remove) changed.add(l)
     log(`  ${label}: ${ok.length} ok${bad.length ? ` · ${bad.length} failed (${bad.slice(0, 3).map(r => `${r.locale}: ${r.reason}`).join('; ')}${bad.length > 3 ? '; …' : ''})` : ''}${remove.length ? ` · ${remove.length} variant row(s) removed (now read their parent)` : ''} · $${usd.toFixed(4)}`)
   }
   if (report.skippedForCap) log(`Spend cap $${opts.maxUsd.toFixed(2)} reached: ${report.skippedForCap} left for the next run.`)
   if (opts.limit && work.length > opts.limit) log(`--limit ${opts.limit}: ${work.length - opts.limit} left for the next run.`)
   report.changedLocales = [...changed].sort()
+  report.okLocales = [...okSet].sort()
   log(`Done: ${report.done} translated · ${report.ok} rows ok · ${report.failed} failed · ${report.removed} removed · $${report.usd.toFixed(4)}`)
   return report
 }

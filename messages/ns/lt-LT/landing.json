@@ -66,7 +66,9 @@
     "switchCta": "Palyginkite, kiek mokate"
   },
   "faq": {
-    "title": "Dažniausiai užduodami klausimai"
+    "title": "Dažniausiai užduodami klausimai",
+    "metaTitle": "Dažniausiai užduodami klausimai | HatchGrab",
+    "metaDescription": "Aiškūs atsakymai food truck verslui apie HatchGrab kainas, nustatymą, užsakymų priėmimą ir mokėjimus."
   },
   "final": {
     "truckLabel": "Food truck",

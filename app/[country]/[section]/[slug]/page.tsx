@@ -17,6 +17,8 @@
 // app/[country]/features and /compare — always win over this route.
 // store-badges-1: the footer's store badges follow the country's app flags (the cached reader the FAQ and comparison pages use).
 import { appsOf } from '@/lib/comparison-flags'
+// faq-4: the footer's FAQ link, only where this country's /faq has a question to show.
+import { faqHrefFor } from '@/lib/faq/public'
 import { cache } from 'react'
 import Link from 'next/link'
 import { Archivo, Public_Sans, Courier_Prime } from 'next/font/google'
@@ -255,7 +257,7 @@ export default async function ComparisonPage({ params, searchParams }: { params:
 
         <LandingFooter landingHref={visitor.paths.landing} featuresHref={visitor.paths.features} country={visitor.menu} locale={settings.locale}
           comparison={await comparisonFooter(settings.countryCode, settings.locale)} 
-          apps={await appsOf(settings.countryCode)} />
+          apps={await appsOf(settings.countryCode)} faqHref={await faqHrefFor(settings)} />
       </div>
       <DemoModal />
     </DemoModalProvider>

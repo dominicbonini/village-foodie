@@ -135,11 +135,23 @@ export function shownRow(locale: string, rowsOfSource: FaqTranslationRow[], hash
   return null
 }
 
-/** Admin's indicator for one published question: how many of the 28 bases are fresh, and the failures (any locale). */
+/** faq-4 (2 November 2026): the visitor languages each of the 28 bases serves — the base and every regional variant that reads it
+ *  (de-DE ← de-AT, de-CH, de-LI; es-ES ← es-MX …), from lib/i18n/locales.ts. English locales are not here: an English page always
+ *  has the English. */
+export const VISITOR_LOCALES_OF: Readonly<Record<string, readonly string[]>> = Object.fromEntries(TRANSLATED_BASES.map(b =>
+  [b, LOCALES.filter(l => !isEnglish(l) && overrideChain(l as AppLocale)[0] === b)]))
+
+/** Admin's indicator for one published question — 🔴 BY THE PUBLIC PAGES' OWN RULE (faq-4): a base counts as covered only when
+ *  every visitor language it serves would SHOW the question (shownRow: the same function lib/faq/public.ts renders with), so
+ *  "28/28" means every non-English page shows it, and the two can never disagree. Failures: any locale's, for the hover. */
 export function translationStatus(rowsOfSource: FaqTranslationRow[], hash: string): { fresh: number; total: number; failed: { locale: string; reason: string }[] } {
-  const by = new Map(rowsOfSource.map(r => [r.locale, r]))
   const failed = rowsOfSource.filter(r => r.status === 'failed' && r.sourceHash === hash).map(r => ({ locale: r.locale, reason: r.reason ?? 'failed' }))
-  return { fresh: TRANSLATED_BASES.filter(l => isFresh(by.get(l), hash)).length, total: TRANSLATED_BASES.length, failed }
+  return { fresh: coveredBases(rowsOfSource, hash).length, total: TRANSLATED_BASES.length, failed }
+}
+
+/** The bases whose every visitor language shows the question (translationStatus counts these) — shownRow, the public rule. */
+export function coveredBases(rowsOfSource: FaqTranslationRow[], hash: string): string[] {
+  return TRANSLATED_BASES.filter(b => VISITOR_LOCALES_OF[b].every(l => shownRow(l, rowsOfSource, hash) !== null))
 }
 
 /** What Admin › FAQ receives per question or section (computed on the server, where the hash is): the indicator, and every

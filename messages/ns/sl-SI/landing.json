@@ -66,7 +66,9 @@
     "switchCta": "Primerjajte, koliko plačujete"
   },
   "faq": {
-    "title": "Pogosta vprašanja"
+    "title": "Pogosta vprašanja",
+    "metaTitle": "Pogosta vprašanja | HatchGrab",
+    "metaDescription": "Jasni odgovori za food trucke o cenah HatchGrab, nastavitvi, sprejemanju naročil in plačilih."
   },
   "final": {
     "truckLabel": "Food truck",

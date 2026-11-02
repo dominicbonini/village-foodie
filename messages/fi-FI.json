@@ -5556,7 +5556,9 @@
       "switchCta": "Vertaa, mitä maksat nyt"
     },
     "faq": {
-      "title": "Usein kysytyt kysymykset"
+      "title": "Usein kysytyt kysymykset",
+      "metaTitle": "Usein kysytyt kysymykset | HatchGrab",
+      "metaDescription": "Suorat vastaukset ruokarekoille HatchGrabin hinnoista, käyttöönotosta, tilausten vastaanottamisesta ja maksuista."
     },
     "final": {
       "truckLabel": "Ruokarekka",
@@ -5586,6 +5588,7 @@
   "landingFooter": {
     "features": "Ominaisuudet",
     "pricing": "Hinnoittelu",
+    "faq": "Usein kysytyt kysymykset",
     "privacy": "Tietosuoja",
     "terms": "Käyttöehdot",
     "contact": "Ota yhteyttä",

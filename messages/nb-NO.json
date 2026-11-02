@@ -5556,7 +5556,9 @@
       "switchCta": "Sammenlign hva du betaler"
     },
     "faq": {
-      "title": "Ofte stilte spørsmål"
+      "title": "Ofte stilte spørsmål",
+      "metaTitle": "Ofte stilte spørsmål | HatchGrab",
+      "metaDescription": "Klare svar for matbiler om HatchGrabs priser, oppsett, mottak av bestillinger og betalinger."
     },
     "final": {
       "truckLabel": "Matbil",
@@ -5586,6 +5588,7 @@
   "landingFooter": {
     "features": "Funksjoner",
     "pricing": "Priser",
+    "faq": "Ofte stilte spørsmål",
     "privacy": "Personvern",
     "terms": "Vilkår",
     "contact": "Kontakt",

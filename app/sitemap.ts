@@ -8,6 +8,7 @@ import { PRIVACY_PATH, TERMS_PATH, COUNTRY_TERMS_PATH, PRIVACY_UPDATED, TERMS_UP
 import { BRANDS } from '@/lib/brand'
 import { ABOUT_PATH, ABOUT_UPDATED } from '@/lib/about'
 import { liveComparisonPages } from '@/lib/comparison-server'
+import { faqCountries } from '@/lib/faq/public'
 
 // app/sitemap.ts — serves /sitemap.xml. There was none before.
 //
@@ -83,8 +84,17 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     const comparisons: MetadataRoute.Sitemap = (await liveComparisonPages()).map(c => ({
       url: c.url, lastModified: new Date(c.checked), changeFrequency: 'monthly', priority: 0.7, alternates: { languages: { [c.locale]: c.url } },
     }))
+    // faq-4 (2 November 2026): each country's FAQ page — ONLY where it has a question to show (a country with none answers 404 and is
+    // left out); lastmod = the newest publish or translation time it shows; hreflang names only the FAQ pages with content.
+    const faqs = await faqCountries().catch(() => [])
+    const faqAlternates = faqs.map(f => ({ code: f.code, locale: f.locale }))
+    const faqPages: MetadataRoute.Sitemap = faqs.filter(f => live.includes(f.code)).map(f => ({
+      url: HATCHGRAB_ORIGIN + countryPagePath(f.code, 'faq'), ...(f.updatedAt ? { lastModified: new Date(f.updatedAt) } : {}), changeFrequency: 'weekly', priority: 0.6,
+      alternates: { languages: countryPageAlternates('faq', f.code, faqAlternates).languages },
+    }))
     return [
       ...countryPages.flat(),
+      ...faqPages,
       ...comparisons,
       { url: HATCHGRAB_ORIGIN + PRIVACY_PATH, lastModified: legalUpdatedDate(PRIVACY_UPDATED), changeFrequency: 'yearly', priority: 0.3 },
       { url: HATCHGRAB_ORIGIN + TERMS_PATH, lastModified: legalUpdatedDate(TERMS_UPDATED), changeFrequency: 'yearly', priority: 0.3 },

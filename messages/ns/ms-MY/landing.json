@@ -66,7 +66,9 @@
     "switchCta": "Bandingkan bayaran anda"
   },
   "faq": {
-    "title": "Soalan lazim"
+    "title": "Soalan lazim",
+    "metaTitle": "Soalan lazim | HatchGrab",
+    "metaDescription": "Jawapan jelas untuk food truck tentang harga HatchGrab, persediaan, penerimaan pesanan dan pembayaran."
   },
   "final": {
     "truckLabel": "Food truck",

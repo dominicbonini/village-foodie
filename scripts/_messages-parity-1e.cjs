@@ -207,6 +207,8 @@ const NEW_WORDING = {
   'faq.phrases.appsSentence': 'faq-1: the apps sentence where the iPad and Android app are in the stores — new words',
   'faq.phrases.appsOffline': 'faq-1: what keeps working without signal where the apps are in the stores — new words',
   'faq.phrases.webOffline': 'faq-1: what needs a connection where they are not — new words',
+  // ⚠️ RE-PINNED (faq-4, 2 November 2026): the footer's link to the FAQ's own page (/<country>/faq), only where it has content — new words.
+  'landingFooter.faq': 'faq-4: "FAQ", the footer link to the FAQ page — new words',
 }
 // ⚠️ RE-PINNED (compare-de-1, 25 October 2026, docs/compare-de-1-report.md): the comparison page's words — a NEW namespace,
 // `comparison` (the German page /de/vergleich/foodtruck-bestellsystem; German and the English base only,
