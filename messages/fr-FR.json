@@ -1501,8 +1501,8 @@
     "asLive": "Les commandes et la cuisine fonctionnent exactement comme en conditions réelles.",
     "startExploring": "Commencer à explorer",
     "signupOffer": {
-      "heading": "Votre mois gratuit : inscrivez-vous maintenant",
-      "sub": "Le compteur ne démarre que lorsque vous décidez de passer en ligne."
+      "heading": "{months, plural, =0 {Démarrer gratuitement} one {Démarrer gratuitement pendant # mois} many {Démarrer gratuitement pendant # de mois} other {Démarrer gratuitement pendant # mois}}",
+      "sub": "Votre essai gratuit commence à la création de votre compte."
     },
     "cashIcon": "💶",
     "walkBanner": "Démo · voici votre carte, telle que vos clients la verront. Rien n’est débité et aucun e-mail n’est envoyé."
@@ -1922,7 +1922,7 @@
     },
     "signup": {
       "title": "Créez votre compte",
-      "subtitle": "Votre mois gratuit ne commence qu’à votre mise en ligne.",
+      "subtitle": "{months, plural, =0 {Votre essai gratuit commence à la création de votre compte.} one {Votre premier mois est gratuit, à partir de la création de votre compte.} many {Vos # premiers mois sont gratuits, à partir de la création de votre compte.} other {Vos # premiers mois sont gratuits, à partir de la création de votre compte.}}",
       "emailPlaceholder": "vous@votrefoodtruck.fr",
       "codeLabel": "Vous avez un code ? <optional>(facultatif)</optional>",
       "codePlaceholder": "Saisissez-le ici",
@@ -2211,7 +2211,7 @@
     "promoLabel": "Vous avez un code ? <opt>(facultatif)</opt>",
     "promoPlaceholder": "Saisissez-le ici",
     "agreeTerms": "J’accepte les <terms>Conditions</terms> et la <privacy>Politique de confidentialité</privacy>.",
-    "freeMonth": "La configuration ne lance pas votre mois gratuit. Il commence lorsque vous choisissez votre premier événement en ligne — quand vous le souhaitez.",
+    "freeMonth": "{months, plural, =0 {Votre essai gratuit commence à la création de votre compte.} one {Votre premier mois est gratuit, à partir de la création de votre compte.} many {Vos # premiers mois sont gratuits, à partir de la création de votre compte.} other {Vos # premiers mois sont gratuits, à partir de la création de votre compte.}}",
     "fieldError": {
       "firstName": "Indiquez votre prénom.",
       "lastName": "Et votre nom.",
@@ -3918,7 +3918,7 @@
       "cancel": "Annuler",
       "newPlaceholder": "ex. : Camion 2, Camion festival",
       "addButton": "Ajouter",
-      "addConfirm": "L’ajout d’un food truck supplémentaire sera facturé en option sur votre abonnement.\n\nCela apparaîtra sur votre prochaine période de facturation.\n\nVoulez-vous continuer ?",
+      "addConfirm": "{free, select, yes {L’ajout d’un food truck est gratuit avec votre offre.} other {Un food truck supplémentaire coûte {price} par mois avec votre offre. Nous vous contacterons avant toute facturation.}}\n\nVoulez-vous continuer ?",
       "removed": "Supprimé : {name}",
       "kdsLinkCopied": "Lien de l’écran de commande copié"
     },
@@ -3944,8 +3944,8 @@
     },
     "vanBilling": {
       "title": "Ajouter un autre food truck",
-      "body": "Votre offre {plan} inclut {vans, plural, one {# food truck} other {# food trucks}}. L’ajout d’un food truck supplémentaire coûte <b>{price}</b> et sera ajouté à votre prochaine période de facturation.",
-      "note": "⚠️ Remarque : pendant l’accès anticipé, l’ajustement de facturation est traité manuellement. Vous recevrez un e-mail de confirmation sous 24 heures.",
+      "body": "Votre offre {plan} inclut {vans, plural, one {# food truck} other {# food trucks}}. L’ajout d’un food truck supplémentaire coûte <b>{price}</b>.",
+      "note": "⚠️ Nous vous contacterons avant toute facturation.",
       "cancel": "Annuler",
       "add": "Ajouter un food truck — {price}"
     },
@@ -5526,7 +5526,8 @@
       "whatsappSoonTitle": "Réponses automatiques WhatsApp <soon>Bientôt</soon>",
       "whatsappSoonBody": "« Vous êtes où ce soir ? » « Vous avez quoi comme desserts ? » Bientôt, votre WhatsApp répondra pendant que vous roulez vers votre emplacement ou que vous êtes au grill. Messenger et Instagram suivront.",
       "offlineTitle": "Pas de réseau ? Continuez à servir.",
-      "offlineBody": "Si vous perdez le réseau, la commande en ligne se met automatiquement en pause pour que les clients ne passent pas de commandes que vous ne verriez pas. Continuez à prendre des commandes avec l’app iPhone, iPad et Android.",
+      "offlineBody": "Activez la protection des commandes hors ligne et la commande en ligne se met automatiquement en pause si vous perdez le réseau, pour que les clients ne passent pas de commandes que vous ne verriez pas.",
+      "offlineApps": "Continuez à prendre des commandes avec l’app iPhone, iPad et Android.",
       "slotsBody": "Les clients commandent à l’avance et choisissent leur heure de retrait. Moins de file d’attente, et des plats prêts à leur arrivée."
     },
     "steps": {
@@ -6084,7 +6085,7 @@
       "kitchen_app": "La façon la plus complète d’utiliser HatchGrab : un écran cuisine en direct, et le seul moyen de continuer à prendre des commandes quand vous perdez le réseau.",
       "multi_device_kitchen": "Utilisez plusieurs écrans — comptoir et cuisine — qui affichent tous les mêmes commandes en direct.",
       "multi_user_access": "Donnez à votre équipe ses propres identifiants, avec le bon niveau d’accès.",
-      "offline_protection": "Si vous perdez le réseau, la commande en ligne se met en pause pour que les clients ne passent pas de commandes que vous ne verriez pas. L’app iPhone, iPad et Android vous permet de continuer à prendre des commandes hors ligne ; le tableau de bord web nécessite une connexion.",
+      "offline_protection": "Activez la protection des commandes hors ligne et la commande en ligne se met automatiquement en pause si vous perdez le réseau, pour que les clients ne passent pas de commandes que vous ne verriez pas.",
       "ticket_printing": "Imprimez les tickets de commande sur une imprimante Bluetooth ou filaire en cuisine.",
       "web_dashboard": "Gérez votre service depuis le navigateur de n’importe quel téléphone, tablette ou ordinateur portable.",
       "meal_deals_upsells": "Regroupez des articles en formules et proposez des suppléments au moment du paiement pour augmenter le panier moyen.",
@@ -6113,6 +6114,7 @@
       "sms_order_alerts": "Prévenez automatiquement les clients par SMS quand leur commande est prête.",
       "loyalty_stamp_cards": "Récompensez vos clients fidèles avec des cartes de fidélité numériques à tampons — collectés et utilisés automatiquement."
     },
+    "offlineApps": "L’app iPhone, iPad et Android vous permet de continuer à prendre des commandes hors ligne ; le tableau de bord web nécessite une connexion.",
     "metaTitle": "Offres et fonctionnalités comparées — HatchGrab {country}"
   },
   "compare": {

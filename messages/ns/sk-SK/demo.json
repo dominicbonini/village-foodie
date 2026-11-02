@@ -21,8 +21,8 @@
   "asLive": "Objednávanie aj práca kuchyne fungujú presne ako naostro.",
   "startExploring": "Začať skúmať",
   "signupOffer": {
-    "heading": "Zaregistrujte sa teraz a získajte mesiac zadarmo",
-    "sub": "Odpočet sa začne, až keď sa rozhodnete spustiť prevádzku naostro."
+    "heading": "{months, plural, =0 {Začnite zadarmo} one {Začnite zadarmo na # mesiac} few {Začnite zadarmo na # mesiace} many {Začnite zadarmo na # mesiaca} other {Začnite zadarmo na # mesiacov}}",
+    "sub": "Bezplatné skúšobné obdobie sa začína, keď si vytvoríte účet."
   },
   "cashIcon": "💶",
   "walkBanner": "Ukážka · toto je váš jedálny lístok tak, ako ho uvidia vaši zákazníci. Nič sa neúčtuje a neodosielajú sa žiadne e-maily."

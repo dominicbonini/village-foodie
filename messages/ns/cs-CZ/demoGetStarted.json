@@ -80,7 +80,7 @@
   "promoLabel": "Máte kód? <opt>(nepovinné)</opt>",
   "promoPlaceholder": "Zadejte ho sem",
   "agreeTerms": "Souhlasím s <terms>Podmínkami</terms> a <privacy>Zásadami ochrany osobních údajů</privacy>.",
-  "freeMonth": "Nastavením se váš měsíc zdarma nespustí. Začne, až vyberete svou první ostrou akci — kdykoli budete připraveni.",
+  "freeMonth": "{months, plural, =0 {Bezplatné zkušební období začíná, když si vytvoříte účet.} one {Váš první měsíc je zdarma, počítáno od vytvoření účtu.} few {Vaše první # měsíce jsou zdarma, počítáno od vytvoření účtu.} many {Vašich prvních # měsíce je zdarma, počítáno od vytvoření účtu.} other {Vašich prvních # měsíců je zdarma, počítáno od vytvoření účtu.}}",
   "fieldError": {
     "firstName": "Napište nám své jméno.",
     "lastName": "A své příjmení.",

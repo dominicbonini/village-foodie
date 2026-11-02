@@ -548,7 +548,8 @@ if (RENDER) {
   }
   const ccOf = k => (/\|US\|/.test(k) ? 'US' : 'GB')
   const CMP_DESC = 'Compare what your online orders cost you now with a year on HatchGrab — an estimate in a minute.'
-  const LEGAL_LASTMOD = '2026-10-19T00:00:00.000Z', COPY_LASTMOD = '2026-10-20T00:00:00.000Z'
+  // ⚠️ RE-PINNED (copy-truth-1, 2 November 2026): MARKETING_COPY_UPDATED moved to 2026-11-02 for the offline line (scripts/_lp-copy-truth-1.cjs).
+  const LEGAL_LASTMOD = '2026-10-19T00:00:00.000Z', COPY_LASTMOD = require('./_lp-copy-truth-1.cjs').LANDED ? require('./_lp-copy-truth-1.cjs').LASTMOD_NEW : '2026-10-20T00:00:00.000Z'
   // ⚠️ RE-PINNED (pricing-tidy, 20 October 2026): the Terms of Service were re-dated 20 October 2026 (§4 edited), so
   // /terms's lastmod is 2026-10-20; /privacy and /country-terms stay 2026-10-19.
   // ⚠️ RE-PINNED (ireland-3, 21 October 2026): the Country-specific terms gained the Ireland section and were re-dated
@@ -565,6 +566,7 @@ if (RENDER) {
   const D2B = require('./_lp-demo2b.cjs')
   // eslint-disable-next-line @typescript-eslint/no-require-imports -- CommonJS harness module (world-countries-1)
   const TAGLINE = require('./_lp-tagline.cjs')
+  const CT1 = require('./_lp-copy-truth-1.cjs')   // ⚠️ RE-PINNED (copy-truth-1): see its use below
   // ⚠️ RE-PINNED (world-countries-2, 1 November 2026): the Terms (§4) and the Country-specific terms (eight countries) re-dated
   // 1 November 2026 (scripts/_lp-world-countries-2.cjs).
   // eslint-disable-next-line @typescript-eslint/no-require-imports -- CommonJS harness module (world-countries-2)
@@ -639,6 +641,7 @@ if (RENDER) {
       }]
     return null
   }
+  let ct1Moved = 0   // copy-truth-1: landing views whose BEFORE held the old offline text (a redirect view holds none)
   for (const area of ['pages', 'parts']) {
     const keys = Object.keys(B[area])
     // ⚠️ RE-PINNED (seo-fixes, 20 October 2026): every check below reads the seo-fixes-normalised sides.
@@ -647,6 +650,9 @@ if (RENDER) {
       // ⚠️ RE-PINNED (world-countries-1, tagline, 31 October 2026): the hero's and footer's tagline is cut from BEFORE's marketing
       // HTML (scripts/_lp-tagline.cjs) — every other byte is still compared below.
       if (/^(landing|features|compare)\|[A-Z]+\|html/.test(k)) B[area][k] = TAGLINE.cut(B[area][k])
+      // ⚠️ RE-PINNED (copy-truth-1, 2 November 2026): the landing's offline line (scripts/_lp-copy-truth-1.cjs); the country pages'
+      // sitemap lastmod is COPY_LASTMOD above.
+      if (CT1.LANDED && /^landing\|[A-Z]+\|html/.test(k)) { const was = B[area][k]; B[area][k] = CT1.offline(was); if (B[area][k] !== was) ct1Moved++ }
       const sf = seoFixes(k)
       if (!sf) { N[k] = [A[area][k], B[area][k]]; continue }
       const r = sf[1](A[area][k], B[area][k])
@@ -664,6 +670,8 @@ if (RENDER) {
       t(`${area}: ${n} (${ks.length} views)`, bad.length === 0, bad.join(', '))
     }
   }
+  if (CT1.LANDED) t('copy-truth-1: the landing\'s offline line is the one named change in the BEFORE pages that held it (scripts/_lp-copy-truth-1.cjs)', ct1Moved >= 3, ct1Moved)
+
   // Billing: the frozen matrix is REPLACED by the one <PlanTable> in every view that had it (rendered proof of the table
   // itself: scripts/pricing-pages.cjs). The highlighted column is the truck's effective plan when that plan is public.
   const hadTable = Object.keys(B.billing).filter(k => table(B.billing[k]))

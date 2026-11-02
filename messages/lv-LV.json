@@ -1501,8 +1501,8 @@
     "asLive": "Pasūtīšanas un virtuves plūsma darbojas tieši tāpat kā īstā darbā.",
     "startExploring": "Sākt izpēti",
     "signupOffer": {
-      "heading": "Reģistrējieties bezmaksas mēnesim jau tagad",
-      "sub": "Laiks sāk skaitīties tikai tad, kad nolemjat sākt darbu."
+      "heading": "{months, plural, =0 {Sāciet bez maksas} zero {Sāciet bez maksas uz # mēnešiem} one {Sāciet bez maksas uz # mēnesi} other {Sāciet bez maksas uz # mēnešiem}}",
+      "sub": "Jūsu bezmaksas izmēģinājuma periods sākas, kad izveidojat kontu."
     },
     "cashIcon": "💶",
     "walkBanner": "Demo · šī ir jūsu ēdienkarte tieši tāda, kādu to redzēs jūsu klienti. Nauda netiek iekasēta, un e-pasti netiek sūtīti."
@@ -1922,7 +1922,7 @@
     },
     "signup": {
       "title": "Izveidojiet savu kontu",
-      "subtitle": "Bezmaksas mēnesis sāksies tikai tad, kad sāksiet darboties tiešsaistē.",
+      "subtitle": "{months, plural, =0 {Jūsu bezmaksas izmēģinājuma periods sākas, kad izveidojat kontu.} zero {Jūsu pirmie # mēneši ir bez maksas, sākot no konta izveides.} one {Pirmais # mēnesis ir bez maksas, sākot no konta izveides.} other {Jūsu pirmie # mēneši ir bez maksas, sākot no konta izveides.}}",
       "emailPlaceholder": "jus@jusufoodtruck.lv",
       "codeLabel": "Vai jums ir kods? <optional>(neobligāti)</optional>",
       "codePlaceholder": "Ievadiet to šeit",
@@ -2211,7 +2211,7 @@
     "promoLabel": "Vai jums ir kods? <opt>(neobligāti)</opt>",
     "promoPlaceholder": "Ievadiet to šeit",
     "agreeTerms": "Es piekrītu <terms>Noteikumiem</terms> un <privacy>Privātuma politikai</privacy>.",
-    "freeMonth": "Iestatīšana neuzsāks jūsu bezmaksas mēnesi. Tas sāksies, kad izvēlēsieties savu pirmo publisko pasākumu — kad vien būsiet gatavi.",
+    "freeMonth": "{months, plural, =0 {Jūsu bezmaksas izmēģinājuma periods sākas, kad izveidojat kontu.} zero {Jūsu pirmie # mēneši ir bez maksas, sākot no konta izveides.} one {Pirmais # mēnesis ir bez maksas, sākot no konta izveides.} other {Jūsu pirmie # mēneši ir bez maksas, sākot no konta izveides.}}",
     "fieldError": {
       "firstName": "Norādiet savu vārdu.",
       "lastName": "Un savu uzvārdu.",
@@ -3918,7 +3918,7 @@
       "cancel": "Atcelt",
       "newPlaceholder": "Piem., Busiņš 2, Festivāla busiņš",
       "addButton": "Pievienot",
-      "addConfirm": "Papildu busiņš tiks iekļauts jūsu abonementā kā maksas papildinājums.\n\nTas atspoguļosies nākamajā norēķinu periodā.\n\nVai vēlaties turpināt?",
+      "addConfirm": "{free, select, yes {Busiņa pievienošana jūsu plānā ir bez maksas.} other {Papildu busiņš jūsu plānā maksā {price} mēnesī. Mēs sazināsimies ar jums, pirms kaut ko iekasēsim.}}\n\nVai vēlaties turpināt?",
       "removed": "Noņemts: {name}",
       "kdsLinkCopied": "Pasūtījumu ekrāna saite nokopēta"
     },
@@ -3944,8 +3944,8 @@
     },
     "vanBilling": {
       "title": "Pievienot vēl vienu busiņu",
-      "body": "Jūsu plāns {plan} ietver {vans, plural, zero {# busiņus} one {# busiņu} other {# busiņus}}. Papildu busiņš maksā <b>{price}</b>, un šī summa tiks pievienota nākamajam norēķinu periodam.",
-      "note": "⚠️ Piezīme: agrīnās piekļuves laikā norēķinu korekcija tiek veikta manuāli. 24 stundu laikā saņemsiet apstiprinājuma e-pastu.",
+      "body": "Jūsu plāns {plan} ietver {vans, plural, zero {# busiņus} one {# busiņu} other {# busiņus}}. Papildu busiņš maksā <b>{price}</b>.",
+      "note": "⚠️ Mēs sazināsimies ar jums, pirms kaut ko iekasēsim.",
       "cancel": "Atcelt",
       "add": "Pievienot busiņu — {price}"
     },
@@ -5526,7 +5526,8 @@
       "whatsappSoonTitle": "WhatsApp automātiskās atbildes <soon>Drīzumā</soon>",
       "whatsappSoonBody": "“Kur jūs esat šovakar?” “Kādi deserti jums ir?” Drīz jūsu WhatsApp saņems atbildes, kamēr jūs braucat uz tirdzniecības vietu vai stāvat pie grila. Pēc tam Messenger un Instagram.",
       "offlineTitle": "Nav signāla? Turpiniet strādāt.",
-      "offlineBody": "Ja pazūd signāls, pasūtīšana tiešsaistē automātiski tiek apturēta, lai klienti nevarētu veikt pasūtījumus, ko jūs neredzēsiet. Turpiniet pieņemt pasūtījumus ar iPhone, iPad un Android lietotni.",
+      "offlineBody": "Ieslēdziet pasūtījumu aizsardzību bezsaistē, un pasūtīšana tiešsaistē automātiski tiek apturēta, ja pazūd signāls, lai klienti nevarētu veikt pasūtījumus, ko jūs neredzēsiet.",
+      "offlineApps": "Turpiniet pieņemt pasūtījumus ar iPhone, iPad un Android lietotni.",
       "slotsBody": "Klienti pasūta iepriekš un izvēlas saņemšanas laiku. Mazāk rindu, un ēdiens ir gatavs, kad viņi ierodas."
     },
     "steps": {
@@ -6084,7 +6085,7 @@
       "kitchen_app": "Pilnvērtīgākais veids, kā lietot HatchGrab: reāllaika virtuves ekrāns un vienīgais veids, kā turpināt pieņemt pasūtījumus, ja pazūd signāls.",
       "multi_device_kitchen": "Izmantojiet vairākus ekrānus — pie letes un virtuvē —, un visos būs redzami tie paši aktuālie pasūtījumi.",
       "multi_user_access": "Piešķiriet darbiniekiem atsevišķus pieteikšanās datus ar atbilstošu piekļuves līmeni.",
-      "offline_protection": "Ja pazūd signāls, pasūtīšana tiešsaistē tiek apturēta, lai klienti nevarētu veikt pasūtījumus, ko jūs neredzēsiet. Ar iPhone, iPad un Android lietotni varat turpināt pieņemt pasūtījumus bezsaistē; tīmekļa vadības panelim vajadzīgs savienojums.",
+      "offline_protection": "Ieslēdziet pasūtījumu aizsardzību bezsaistē, un pasūtīšana tiešsaistē automātiski tiek apturēta, ja pazūd signāls, lai klienti nevarētu veikt pasūtījumus, ko jūs neredzēsiet.",
       "ticket_printing": "Drukājiet pasūtījumu čekus Bluetooth vai vadu printerī virtuvē.",
       "web_dashboard": "Vadiet darbu no jebkura tālruņa, planšetdatora vai klēpjdatora pārlūkprogrammas.",
       "meal_deals_upsells": "Apvienojiet pozīcijas komplektos un piedāvājiet papildpiedāvājumus pirms apmaksas, lai palielinātu vidējo pasūtījuma summu.",
@@ -6113,6 +6114,7 @@
       "sms_order_alerts": "Automātiski nosūtiet klientiem īsziņu, kad viņu pasūtījums ir gatavs.",
       "loyalty_stamp_cards": "Atalgojiet pastāvīgos klientus ar digitālām zīmogu kartēm — zīmogi tiek krāti un izmantoti automātiski."
     },
+    "offlineApps": "Ar iPhone, iPad un Android lietotni varat turpināt pieņemt pasūtījumus bezsaistē; tīmekļa vadības panelim vajadzīgs savienojums.",
     "metaTitle": "Plānu un funkciju salīdzinājums — HatchGrab {country}"
   },
   "compare": {

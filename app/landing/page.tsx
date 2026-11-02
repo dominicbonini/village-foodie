@@ -36,7 +36,7 @@ import { LandingNav } from '@/components/landing/LandingNav'
 import { HeroCtaWatcher } from '@/components/landing/HeroCtaWatcher'   // client: drives the header CTA's mobile reveal
 import { LandingFooter } from '@/components/landing/LandingFooter'
 // compare-de-1: the footer's "Vergleich" column for the country's own comparison page (live, or admins only).
-import { comparisonFooter } from '@/lib/comparison-server'
+import { comparisonFooter, comparisonFlagsOf } from '@/lib/comparison-server'
 // ══ 🔴 THIS IMPORT IS SMALLER THAN IT WAS, AND IT MUST NOT BECOME EMPTY (6 October 2026) ══════════
 // FEATURE_SECTIONS, FOOTNOTES, TRANSACTION_ROWS and `type FeatureValue` went to
 // components/landing/FeatureComparison.tsx with the comparison table, and the whole
@@ -221,6 +221,10 @@ export default async function LandingPage({ params, searchParams }: { params?: P
   // 🔴 THE PIZZERIA GUSTO TESTIMONIAL AND AWARD ARE A UK TRUCK'S WORDS ABOUT UK VILLAGES — shown to GB visitors
   // only (Language Phase 1e). Decided by the page's country code, never by a word.
   const showTestimonial = s.countryCode === 'GB'
+  // copy-truth-1 (2 November 2026): the apps sentence after the offline line only where the iPad/iPhone AND Android apps are in
+  // the country's stores (country_settings.ios_app_available / android_app_available, the comparison pages' flags, 35.an-7).
+  const appFlags = await comparisonFlagsOf(s.countryCode)
+  const appsHere = appFlags.iosApp && appFlags.androidApp
   return (
     // DemoModalProvider is a CLIENT component taking server-rendered children — that's what lets every
     // CTA below open one shared modal without the page itself becoming a client component.
@@ -465,7 +469,7 @@ export default async function LandingPage({ params, searchParams }: { params?: P
                 the sentence is present tense like every other claim on this page. The three platforms are
                 COMBINED into the existing sentence rather than given a line of their own: they are one app
                 on three devices, and a separate line would read as a separate product. */}
-            <div className="does-item"><h3><TileIcon icon={WifiOff} /><span>{t('does.offlineTitle')}</span></h3><p>{t('does.offlineBody')}</p></div>
+            <div className="does-item"><h3><TileIcon icon={WifiOff} /><span>{t('does.offlineTitle')}</span></h3><p>{t('does.offlineBody') + (appsHere ? ' ' + t('does.offlineApps') : '')}</p></div>
             {/* 🔴 THE NOT-LIVE TILE, AND IT IS LAST ON PURPOSE. Production at 08ac368 carried it here,
                 after "No signal? Keep serving." — a capability that has not shipped does not sit among
                 five that have. Flipping WHATSAPP_LIVE moves it up to fifth (above) in the same edit.

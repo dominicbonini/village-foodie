@@ -36,7 +36,8 @@
     "whatsappSoonTitle": "WhatsApp automatiniai atsakymai <soon>Jau netrukus</soon>",
     "whatsappSoonBody": "„Kur būsite šįvakar?“ „Kokių desertų turite?“ Netrukus į žinutes WhatsApp bus atsakoma, kol vairuojate į prekybos vietą ar stovite prie grilio. Vėliau – ir Messenger bei Instagram.",
     "offlineTitle": "Nėra ryšio? Toliau aptarnaukite klientus.",
-    "offlineBody": "Jei dingsta ryšys, užsakymai internetu automatiškai sustabdomi, kad klientai negalėtų pateikti užsakymų, kurių nematytumėte. Toliau priimkite užsakymus su iPhone, iPad ir Android programėle.",
+    "offlineBody": "Įjunkite užsakymų apsaugą be ryšio, ir užsakymai internetu automatiškai sustabdomi, jei dingsta ryšys, kad klientai negalėtų pateikti užsakymų, kurių nematytumėte.",
+    "offlineApps": "Toliau priimkite užsakymus su iPhone, iPad ir Android programėle.",
     "slotsBody": "Klientai užsisako iš anksto ir pasirenka atsiėmimo laiką. Trumpesnės eilės, o maistas paruoštas jiems atvykus."
   },
   "steps": {

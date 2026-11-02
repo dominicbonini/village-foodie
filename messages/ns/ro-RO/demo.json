@@ -21,8 +21,8 @@
   "asLive": "Fluxul de comandă și de bucătărie este exact ca în funcționarea reală.",
   "startExploring": "Începeți explorarea",
   "signupOffer": {
-    "heading": "Înscrieți-vă acum pentru luna gratuită",
-    "sub": "Perioada începe să curgă abia când decideți să vă lansați."
+    "heading": "{months, plural, =0 {Începeți gratuit} one {Începeți gratuit pentru # lună} few {Începeți gratuit pentru # luni} other {Începeți gratuit pentru # de luni}}",
+    "sub": "Perioada de probă gratuită începe când vă creați contul."
   },
   "cashIcon": "💵",
   "walkBanner": "Demo · acesta este meniul dumneavoastră, așa cum îl vor vedea clienții. Nu se încasează nimic și nu se trimit e-mailuri."

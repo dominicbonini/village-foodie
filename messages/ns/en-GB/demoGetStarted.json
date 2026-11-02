@@ -80,7 +80,7 @@
   "promoLabel": "Have a code? <opt>(optional)</opt>",
   "promoPlaceholder": "Enter it here",
   "agreeTerms": "I agree to the <terms>Terms</terms> and <privacy>Privacy Policy</privacy>.",
-  "freeMonth": "Setting up won’t start your free month. That begins when you pick your first live event — whenever you’re ready.",
+  "freeMonth": "{months, plural, =0 {Your free trial starts when you sign up.} one {Your first month is free, starting when you sign up.} other {Your first # months are free, starting when you sign up.}}",
   "fieldError": {
     "firstName": "Tell us your first name.",
     "lastName": "And your last name.",

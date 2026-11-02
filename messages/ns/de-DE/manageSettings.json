@@ -137,7 +137,7 @@
     "cancel": "Abbrechen",
     "newPlaceholder": "z. B. Foodtruck 2, Festival-Foodtruck",
     "addButton": "Hinzufügen",
-    "addConfirm": "Ein zusätzlicher Foodtruck wird als Zusatzleistung zu Ihrem Abonnement berechnet.\n\nDas wird in Ihrem nächsten Abrechnungszeitraum berücksichtigt.\n\nMöchten Sie fortfahren?",
+    "addConfirm": "{free, select, yes {Ein weiterer Foodtruck ist in Ihrem Tarif kostenlos.} other {Ein zusätzlicher Foodtruck kostet in Ihrem Tarif {price} pro Monat. Wir melden uns, bevor etwas berechnet wird.}}\n\nMöchten Sie fortfahren?",
     "removed": "{name} entfernt",
     "kdsLinkCopied": "Link zum Bestellbildschirm kopiert"
   },
@@ -163,8 +163,8 @@
   },
   "vanBilling": {
     "title": "Weiteren Foodtruck hinzufügen",
-    "body": "Ihr Tarif {plan} umfasst {vans, plural, one {# Foodtruck} other {# Foodtrucks}}. Ein zusätzlicher Foodtruck kostet <b>{price}</b> und wird in Ihrem nächsten Abrechnungszeitraum berechnet.",
-    "note": "⚠️ Hinweis: Während des Early Access wird die Abrechnung manuell angepasst. Sie erhalten innerhalb von 24 Stunden eine Bestätigung per E-Mail.",
+    "body": "Ihr Tarif {plan} umfasst {vans, plural, one {# Foodtruck} other {# Foodtrucks}}. Ein zusätzlicher Foodtruck kostet <b>{price}</b>.",
+    "note": "⚠️ Wir melden uns, bevor etwas berechnet wird.",
     "cancel": "Abbrechen",
     "add": "Foodtruck hinzufügen – {price}"
   },

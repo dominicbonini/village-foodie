@@ -80,7 +80,7 @@
   "promoLabel": "Kas sul on kood? <opt>(valikuline)</opt>",
   "promoPlaceholder": "Sisesta see siia",
   "agreeTerms": "Nõustun <terms>tingimustega</terms> ja <privacy>privaatsuspoliitikaga</privacy>.",
-  "freeMonth": "Seadistamine ei käivita sinu tasuta kuud. See algab siis, kui valid oma esimese päris ürituse — siis, kui oled valmis.",
+  "freeMonth": "{months, plural, =0 {Sinu tasuta prooviperiood algab, kui lood konto.} one {Sinu esimene kuu on tasuta, alates konto loomisest.} other {Sinu esimesed # kuud on tasuta, alates konto loomisest.}}",
   "fieldError": {
     "firstName": "Ütle meile oma eesnimi.",
     "lastName": "Ja oma perekonnanimi.",

@@ -11925,9 +11925,13 @@ function SettingsTab({ userRole, truck, whatsappConnection, whatsappUsage, onCon
   const vanAddonLabel = (unit: 'mo' | 'month') => perMonthText(vanAddonMinor, planMoneyFormatOf(vanSettings), unit)   // native-prices: a plan price, in the country's own form
 
   const handleAddVanClick = () => {
-    const confirmed = window.confirm(t('vans.addConfirm'))
+    // copy-truth-1 (2 November 2026): the confirmation says what THIS van costs on the truck's own plan, in its country — free
+    // when it is within the plan's included vans or the extra-van price is zero (the same test as the billing modal below),
+    // else that price, home form, masked like the modal's. Nothing is charged for vans yet, and it no longer says so otherwise.
+    const vanIsFree = !(vans.length >= vansIncluded && vanAddonMinor > 0)
+    const confirmed = window.confirm(t('vans.addConfirm', { free: vanIsFree ? 'yes' : 'no', price: vanPx(formatAmount(vanAddonMinor, planMoneyFormatOf(vanSettings))) }))
     if (!confirmed) return
-    if (vans.length >= vansIncluded && vanAddonMinor > 0) setShowVanBillingModal(true)
+    if (!vanIsFree) setShowVanBillingModal(true)
     else setAddingVan(true)
   }
 

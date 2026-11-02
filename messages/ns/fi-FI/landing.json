@@ -36,7 +36,8 @@
     "whatsappSoonTitle": "WhatsAppin automaattiset vastaukset <soon>Tulossa pian</soon>",
     "whatsappSoonBody": "”Missä olette tänä iltana?” ”Mitä jälkiruokia teillä on?” Pian WhatsAppiisi vastataan, kun ajat myyntipaikalle tai seisot grillin ääressä. Messenger ja Instagram seuraavat perässä.",
     "offlineTitle": "Ei kenttää? Jatka myyntiä.",
-    "offlineBody": "Jos yhteys katkeaa, verkkotilaukset keskeytyvät automaattisesti, jotta asiakkaat eivät voi tehdä tilauksia, joita et näe. Jatka tilausten vastaanottamista iPhone-, iPad- ja Android-sovelluksella.",
+    "offlineBody": "Ota tilausten offline-suojaus käyttöön, niin verkkotilaukset keskeytyvät automaattisesti, jos yhteys katkeaa, jotta asiakkaat eivät voi tehdä tilauksia, joita et näe.",
+    "offlineApps": "Jatka tilausten vastaanottamista iPhone-, iPad- ja Android-sovelluksella.",
     "slotsBody": "Asiakkaat tilaavat etukäteen ja valitsevat noutoajan. Vähemmän jonoja, ja ruoka on valmiina, kun he saapuvat."
   },
   "steps": {

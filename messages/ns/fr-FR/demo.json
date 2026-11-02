@@ -21,8 +21,8 @@
   "asLive": "Les commandes et la cuisine fonctionnent exactement comme en conditions réelles.",
   "startExploring": "Commencer à explorer",
   "signupOffer": {
-    "heading": "Votre mois gratuit : inscrivez-vous maintenant",
-    "sub": "Le compteur ne démarre que lorsque vous décidez de passer en ligne."
+    "heading": "{months, plural, =0 {Démarrer gratuitement} one {Démarrer gratuitement pendant # mois} many {Démarrer gratuitement pendant # de mois} other {Démarrer gratuitement pendant # mois}}",
+    "sub": "Votre essai gratuit commence à la création de votre compte."
   },
   "cashIcon": "💶",
   "walkBanner": "Démo · voici votre carte, telle que vos clients la verront. Rien n’est débité et aucun e-mail n’est envoyé."

@@ -5,7 +5,7 @@
     "kitchen_app": "使用 HatchGrab 最完整的方式：即時廚房顯示屏，也是失去網絡訊號時仍能繼續接單的唯一方法。",
     "multi_device_kitchen": "同時使用多個顯示屏——前櫃及廚房——全部顯示相同的即時訂單。",
     "multi_user_access": "為員工設立獨立登入帳戶，並給予合適的存取權限。",
-    "offline_protection": "如果失去網絡訊號，網上落單會暫停，以免客人落了你看不到的單。iPhone、iPad 及 Android App 讓你在離線時繼續接單；網上控制台則需要網絡連線。",
+    "offline_protection": "開啟離線落單保護後，一旦失去訊號，網上落單會自動暫停，以免顧客落了你看不到的單。",
     "ticket_printing": "把訂單單據打印到廚房的藍牙或有線打印機。",
     "web_dashboard": "用任何手機、平板電腦或手提電腦的瀏覽器處理營業運作。",
     "meal_deals_upsells": "把食品組合成套餐優惠，並在結帳時推介加購，提高平均訂單金額。",
@@ -34,5 +34,6 @@
     "sms_order_alerts": "客人的訂單可取餐時，自動發短訊通知他們。",
     "loyalty_stamp_cards": "用電子印花卡獎勵回頭客——自動儲印花及換領。"
   },
+  "offlineApps": "iPhone、iPad 及 Android App 讓你在離線時繼續接單；網上控制台則需要網絡連線。",
   "metaTitle": "計劃及功能比較 — HatchGrab {country}"
 }

@@ -5,7 +5,7 @@
     "kitchen_app": "Pilnvērtīgākais veids, kā lietot HatchGrab: reāllaika virtuves ekrāns un vienīgais veids, kā turpināt pieņemt pasūtījumus, ja pazūd signāls.",
     "multi_device_kitchen": "Izmantojiet vairākus ekrānus — pie letes un virtuvē —, un visos būs redzami tie paši aktuālie pasūtījumi.",
     "multi_user_access": "Piešķiriet darbiniekiem atsevišķus pieteikšanās datus ar atbilstošu piekļuves līmeni.",
-    "offline_protection": "Ja pazūd signāls, pasūtīšana tiešsaistē tiek apturēta, lai klienti nevarētu veikt pasūtījumus, ko jūs neredzēsiet. Ar iPhone, iPad un Android lietotni varat turpināt pieņemt pasūtījumus bezsaistē; tīmekļa vadības panelim vajadzīgs savienojums.",
+    "offline_protection": "Ieslēdziet pasūtījumu aizsardzību bezsaistē, un pasūtīšana tiešsaistē automātiski tiek apturēta, ja pazūd signāls, lai klienti nevarētu veikt pasūtījumus, ko jūs neredzēsiet.",
     "ticket_printing": "Drukājiet pasūtījumu čekus Bluetooth vai vadu printerī virtuvē.",
     "web_dashboard": "Vadiet darbu no jebkura tālruņa, planšetdatora vai klēpjdatora pārlūkprogrammas.",
     "meal_deals_upsells": "Apvienojiet pozīcijas komplektos un piedāvājiet papildpiedāvājumus pirms apmaksas, lai palielinātu vidējo pasūtījuma summu.",
@@ -34,5 +34,6 @@
     "sms_order_alerts": "Automātiski nosūtiet klientiem īsziņu, kad viņu pasūtījums ir gatavs.",
     "loyalty_stamp_cards": "Atalgojiet pastāvīgos klientus ar digitālām zīmogu kartēm — zīmogi tiek krāti un izmantoti automātiski."
   },
+  "offlineApps": "Ar iPhone, iPad un Android lietotni varat turpināt pieņemt pasūtījumus bezsaistē; tīmekļa vadības panelim vajadzīgs savienojums.",
   "metaTitle": "Plānu un funkciju salīdzinājums — HatchGrab {country}"
 }

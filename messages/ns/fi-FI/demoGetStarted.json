@@ -80,7 +80,7 @@
   "promoLabel": "Onko sinulla koodi? <opt>(valinnainen)</opt>",
   "promoPlaceholder": "Syötä se tähän",
   "agreeTerms": "Hyväksyn <terms>käyttöehdot</terms> ja <privacy>tietosuojaselosteen</privacy>.",
-  "freeMonth": "Käyttöönotto ei käynnistä ilmaista kuukauttasi. Se alkaa, kun valitset ensimmäisen julkisen tapahtumasi — silloin kun olet valmis.",
+  "freeMonth": "{months, plural, =0 {Ilmainen kokeilujaksosi alkaa, kun luot tilisi.} one {Ensimmäinen kuukautesi on ilmainen, tilin luomisesta alkaen.} other {Ensimmäiset # kuukauttasi ovat ilmaisia, tilin luomisesta alkaen.}}",
   "fieldError": {
     "firstName": "Kerro etunimesi.",
     "lastName": "Ja sukunimesi.",

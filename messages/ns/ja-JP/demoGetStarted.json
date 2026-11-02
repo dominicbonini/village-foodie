@@ -80,7 +80,7 @@
   "promoLabel": "コードをお持ちですか？<opt>（任意）</opt>",
   "promoPlaceholder": "こちらに入力してください",
   "agreeTerms": "<terms>利用規約</terms>および<privacy>プライバシーポリシー</privacy>に同意します。",
-  "freeMonth": "設定しただけでは無料の1か月間は始まりません。無料期間は、最初の公開出店を選んだ時点から始まります。準備ができたらいつでもどうぞ。",
+  "freeMonth": "{months, plural, =0 {無料トライアルはアカウント作成時に始まります。} other {アカウント作成時から最初の#か月間は無料です。}}",
   "fieldError": {
     "firstName": "名を入力してください。",
     "lastName": "姓を入力してください。",

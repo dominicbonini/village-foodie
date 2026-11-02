@@ -80,7 +80,7 @@
   "promoLabel": "Imate kod? <opt>(neobavezno)</opt>",
   "promoPlaceholder": "Upišite ga ovdje",
   "agreeTerms": "Prihvaćam <terms>Uvjete</terms> i <privacy>Pravila privatnosti</privacy>.",
-  "freeMonth": "Postavljanjem ne pokrećete besplatni mjesec. On počinje kad odaberete svoj prvi događaj uživo – kad god budete spremni.",
+  "freeMonth": "{months, plural, =0 {Besplatno probno razdoblje počinje kad izradite račun.} one {Prvi # mjesec je besplatan, računajući od izrade računa.} few {Vaša prva # mjeseca su besplatna, računajući od izrade računa.} other {Vaših prvih # mjeseci je besplatno, računajući od izrade računa.}}",
   "fieldError": {
     "firstName": "Upišite svoje ime.",
     "lastName": "I svoje prezime.",

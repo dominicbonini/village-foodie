@@ -80,7 +80,7 @@
   "promoLabel": "Van kódja? <opt>(nem kötelező)</opt>",
   "promoPlaceholder": "Írja be ide",
   "agreeTerms": "Elfogadom a <terms>Felhasználási feltételeket</terms> és az <privacy>Adatvédelmi tájékoztatót</privacy>.",
-  "freeMonth": "A beállítás még nem indítja el az ingyenes hónapot. Az akkor kezdődik, amikor kiválasztja az első élő eseményét — amikor csak készen áll.",
+  "freeMonth": "{months, plural, =0 {Az ingyenes próbaidőszak a fiók létrehozásakor kezdődik.} one {Az első hónap ingyenes, a fiók létrehozásától számítva.} other {Az első # hónap ingyenes, a fiók létrehozásától számítva.}}",
   "fieldError": {
     "firstName": "Adja meg a keresztnevét.",
     "lastName": "És a vezetéknevét.",

@@ -1501,8 +1501,8 @@
     "asLive": "The ordering and kitchen flow is exactly as it runs live.",
     "startExploring": "Start exploring",
     "signupOffer": {
-      "heading": "Sign up for your free month now",
-      "sub": "The clock doesn’t start until you decide to go live."
+      "heading": "{months, plural, =0 {Start free} one {Start free for # month} other {Start free for # months}}",
+      "sub": "Your free trial starts when you sign up."
     },
     "cashIcon": "💷",
     "walkBanner": "Demo · this is your menu, the way your customers will see it. Nothing is charged and no emails are sent."
@@ -1922,7 +1922,7 @@
     },
     "signup": {
       "title": "Create your account",
-      "subtitle": "Your free month doesn’t start until you go live.",
+      "subtitle": "{months, plural, =0 {Your free trial starts when you sign up.} one {Your first month is free, starting when you sign up.} other {Your first # months are free, starting when you sign up.}}",
       "emailPlaceholder": "you@yourtruck.co.uk",
       "codeLabel": "Have a code? <optional>(optional)</optional>",
       "codePlaceholder": "Enter it here",
@@ -2211,7 +2211,7 @@
     "promoLabel": "Have a code? <opt>(optional)</opt>",
     "promoPlaceholder": "Enter it here",
     "agreeTerms": "I agree to the <terms>Terms</terms> and <privacy>Privacy Policy</privacy>.",
-    "freeMonth": "Setting up won’t start your free month. That begins when you pick your first live event — whenever you’re ready.",
+    "freeMonth": "{months, plural, =0 {Your free trial starts when you sign up.} one {Your first month is free, starting when you sign up.} other {Your first # months are free, starting when you sign up.}}",
     "fieldError": {
       "firstName": "Tell us your first name.",
       "lastName": "And your last name.",
@@ -3918,7 +3918,7 @@
       "cancel": "Cancel",
       "newPlaceholder": "e.g. Van 2, Festival Van",
       "addButton": "Add",
-      "addConfirm": "Adding an additional truck will be charged as an add-on to your subscription.\n\nThis will be reflected in your next billing cycle.\n\nDo you want to continue?",
+      "addConfirm": "{free, select, yes {Adding a van is free on your plan.} other {An extra van is {price} a month on your plan. We’ll be in touch before anything is charged.}}\n\nDo you want to continue?",
       "removed": "{name} removed",
       "kdsLinkCopied": "Order screen link copied"
     },
@@ -3944,8 +3944,8 @@
     },
     "vanBilling": {
       "title": "Add another truck",
-      "body": "Your {plan} plan includes {vans, plural, one {# truck} other {# trucks}}. Adding an additional truck costs <b>{price}</b> and will be added to your next billing cycle.",
-      "note": "⚠️ Note: Billing adjustment is processed manually during early access. You will receive a confirmation email within 24 hours.",
+      "body": "Your {plan} plan includes {vans, plural, one {# truck} other {# trucks}}. Adding an additional truck costs <b>{price}</b>.",
+      "note": "⚠️ We’ll be in touch before anything is charged.",
       "cancel": "Cancel",
       "add": "Add truck — {price}"
     },
@@ -5526,7 +5526,8 @@
       "whatsappSoonTitle": "WhatsApp auto-replies <soon>Coming soon</soon>",
       "whatsappSoonBody": "“Where are you tonight?” “What desserts do you have?” Soon your WhatsApp will get answered while you’re driving to the pitch or at the grill. Messenger and Instagram to follow.",
       "offlineTitle": "No signal? Keep serving.",
-      "offlineBody": "If you lose signal, online ordering pauses automatically so customers can’t place orders you won’t see. Carry on taking orders with the iPhone, iPad and Android app.",
+      "offlineBody": "Switch on offline protection and online ordering pauses automatically if you lose signal, so customers can’t place orders you won’t see.",
+      "offlineApps": "Carry on taking orders with the iPhone, iPad and Android app.",
       "slotsBody": "Customers order ahead and pick a collection time. Fewer queues, and food ready when they arrive."
     },
     "steps": {
@@ -6057,7 +6058,7 @@
       "kitchen_app": "The fullest way to run HatchGrab: a live kitchen screen, plus the only way to keep taking orders when you lose signal.",
       "multi_device_kitchen": "Run several screens — front counter and kitchen — all showing the same live orders.",
       "multi_user_access": "Give staff their own logins with the right level of access.",
-      "offline_protection": "If you lose signal, online ordering pauses so customers can’t place orders you won’t see. The iPhone, iPad and Android app keeps you taking orders offline; the web dashboard needs a connection.",
+      "offline_protection": "Switch on offline protection and online ordering pauses automatically if you lose signal, so customers can’t place orders you won’t see.",
       "ticket_printing": "Print order tickets to a Bluetooth or wired printer in the kitchen.",
       "web_dashboard": "Run your service from any phone, tablet or laptop browser.",
       "meal_deals_upsells": "Bundle items into deals and offer add-ons at checkout to lift the average order.",
@@ -6086,6 +6087,7 @@
       "sms_order_alerts": "Text customers automatically when their order’s ready.",
       "loyalty_stamp_cards": "Reward repeat customers with digital stamp cards — collected and redeemed automatically."
     },
+    "offlineApps": "The iPhone, iPad and Android app keeps you taking orders offline; the web dashboard needs a connection.",
     "metaTitle": "Plans & features compared — HatchGrab {country}"
   },
   "compare": {

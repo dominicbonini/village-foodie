@@ -21,8 +21,8 @@
   "asLive": "A rendelési és konyhai folyamat pontosan úgy működik, mint élesben.",
   "startExploring": "Felfedezés indítása",
   "signupOffer": {
-    "heading": "Regisztráljon most az ingyenes hónapért",
-    "sub": "Az idő csak akkor kezd telni, amikor úgy dönt, hogy élesben indul."
+    "heading": "{months, plural, =0 {Kezdje ingyen} one {Kezdje ingyen # hónapig} other {Kezdje ingyen # hónapig}}",
+    "sub": "Az ingyenes próbaidőszak a fiók létrehozásakor kezdődik."
   },
   "cashIcon": "💵",
   "walkBanner": "Demó · ez az Ön étlapja, ahogyan a vásárlói látni fogják. Semmit nem terhelünk, és nem küldünk e-mailt."

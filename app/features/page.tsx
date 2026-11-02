@@ -37,7 +37,7 @@ import { isHatchGrabHost } from '@/lib/brand'
 import { LandingNav } from '@/components/landing/LandingNav'
 import { LandingFooter } from '@/components/landing/LandingFooter'
 // compare-de-1: the footer's "Vergleich" column for the country's own comparison page (live, or admins only).
-import { comparisonFooter } from '@/lib/comparison-server'
+import { comparisonFooter, comparisonFlagsOf } from '@/lib/comparison-server'
 import { DemoModalProvider, DemoModal } from '@/components/landing/DemoUpload'   // client children — the chrome's CTA
 // Language Phase 1e: the page's client components (country menu, demo modal and CTAs) read the visitor's locale
 // from this boundary.
@@ -173,7 +173,11 @@ export default async function FeaturesPage({ params, searchParams }: { params?: 
   // features-page-restore: the eyebrow and each capability row's description — the pre-Stage-B page's words, restored
   // as `featuresPage` (en-GB base, en-US overrides). They name no plan and no number: the table says who has what.
   const tPage = translatorFor(settings.locale, 'featuresPage')
-  const details = Object.fromEntries(FEATURE_TABLE.map(r => [r.id, tPage(`detail.${r.id}` as never)]))
+  const details: Record<string, string> = Object.fromEntries(FEATURE_TABLE.map(r => [r.id, tPage(`detail.${r.id}` as never)]))
+  // copy-truth-1 (2 November 2026): offline protection's apps sentence only where the iPad/iPhone AND Android apps are in the
+  // country's stores (the comparison pages' flags, 35.an-7); everywhere else the description is its first sentence alone.
+  const appFlags = await comparisonFlagsOf(settings.countryCode)
+  if (appFlags.iosApp && appFlags.androidApp && details.offline_protection) details.offline_protection += ' ' + tPage('offlineApps')
 
   return (
     <PageLocale locale={localeOfCountry(settings)} {...pageSeedProps(settings.locale, 'marketing')}>

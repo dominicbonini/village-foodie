@@ -21,8 +21,8 @@
   "asLive": "O fluxo de encomendas e da cozinha é exatamente igual ao real.",
   "startExploring": "Começar a explorar",
   "signupOffer": {
-    "heading": "Registe-se já para o seu mês grátis",
-    "sub": "O tempo só começa a contar quando decidir ficar online."
+    "heading": "{months, plural, =0 {Começar grátis} one {Começar grátis durante # mês} many {Começar grátis durante # de meses} other {Começar grátis durante # meses}}",
+    "sub": "O seu teste gratuito começa quando cria a sua conta."
   },
   "cashIcon": "💶",
   "walkBanner": "Demonstração · esta é a sua ementa, tal como os seus clientes a vão ver. Nada é cobrado e não são enviados emails."

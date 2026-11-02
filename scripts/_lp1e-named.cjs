@@ -321,6 +321,10 @@ for (const e of require('./_lp-about-page.cjs').ITEMS) NAMED.push({ id: e.id, wh
 // every earlier item, GB and US; one copy in scripts/_lp-tagline.cjs.
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- CommonJS harness module (world-countries-1)
 for (const e of require('./_lp-tagline.cjs').ITEMS) NAMED.push({ id: e.id, what: e.what, views: e.views, apply: (id, v) => e.apply(id, v) })
+// ⚠️ RE-PINNED (copy-truth-1, 2 November 2026): the landing's offline line and the country pages' sitemap lastmod. PRECISE, after
+// every earlier item, GB and US; one copy in scripts/_lp-copy-truth-1.cjs.
+// eslint-disable-next-line @typescript-eslint/no-require-imports -- CommonJS harness module (copy-truth-1)
+for (const e of require('./_lp-copy-truth-1.cjs').ITEMS) NAMED.push({ id: e.id, what: e.what, views: e.views, apply: (id, v) => e.apply(id, v) })
 
 /** BEFORE value of view `id` → { expected, touched: [named ids whose transform changed it] }. */
 // ⚠️ RE-PINNED (plans-data-model, Stage A): an entry with `proveWith` adds `matches(f)` → { ok, problems } — its own

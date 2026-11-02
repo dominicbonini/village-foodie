@@ -535,7 +535,8 @@ module.exports = async function us(h) {
           // ⚠️ RE-PINNED (languages-1): perMonthLabel → perMonthText (the "/mo" words from messages, en-GB unchanged).
           /^  const vanAddonLabel = \(unit: 'mo' \| 'month'\) => perMonthText\(vanAddonMinor, planMoneyFormatOf\(vanSettings\), unit\)/, /INCLUDED_VANS: Record/],
         // ⚠️ RE-PINNED (Stage A2): the van flow uses the plan's `includedVans` (plans.included_vans) instead of a literal 1.
-        ['const included = INCLUDED_VANS[truck.plan] ?? 1', 13, /^    if \(vans\.length >= vansIncluded && vanAddonMinor > 0\) setShowVanBillingModal\(true\)$/, null],
+        // ⚠️ RE-PINNED (copy-truth-1, 2 November 2026): the same test, computed once as `vanIsFree` so the confirmation can say what the van costs.
+        ['const included = INCLUDED_VANS[truck.plan] ?? 1', 13, /^    if \((vans\.length >= vansIncluded && vanAddonMinor > 0|!vanIsFree)\) setShowVanBillingModal\(true\)$/, null],
         ['BELOW THE PLAN THEY STILL SEE IT, WITH THEIR OWN LOGO', 3, /SWITCHED OFF FOR THIS TRUCK \(a feature override — no plan gates this since plans-data-model,$/, null],
         ['showUpgrade={true}', 7, null, /showUpgrade|feature="branded_qr_code"/],
         ['showUpgrade={true}', 9, null, /showUpgrade|feature="branded_qr_code"/],

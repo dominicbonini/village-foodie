@@ -21,8 +21,8 @@
   "asLive": "Il flusso di ordini e cucina è esattamente quello reale.",
   "startExploring": "Inizia a esplorare",
   "signupOffer": {
-    "heading": "Iscriviti ora per il tuo mese gratuito",
-    "sub": "Il conteggio parte solo quando decidi di andare online."
+    "heading": "{months, plural, =0 {Inizia gratis} one {Inizia gratis per # mese} many {Inizia gratis per # di mesi} other {Inizia gratis per # mesi}}",
+    "sub": "La tua prova gratuita inizia quando crei il tuo account."
   },
   "cashIcon": "💶",
   "walkBanner": "Demo · questo è il tuo menu, come lo vedranno i tuoi clienti. Non viene addebitato nulla e non viene inviata nessuna email."

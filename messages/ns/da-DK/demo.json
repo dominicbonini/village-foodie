@@ -21,8 +21,8 @@
   "asLive": "Bestillings- og køkkenforløbet er præcis, som det kører i virkeligheden.",
   "startExploring": "Gå på opdagelse",
   "signupOffer": {
-    "heading": "Tilmeld dig din gratis måned nu",
-    "sub": "Uret starter først, når du beslutter dig for at gå live."
+    "heading": "{months, plural, =0 {Start gratis} one {Start gratis i # måned} other {Start gratis i # måneder}}",
+    "sub": "Din gratis prøveperiode starter, når du opretter din konto."
   },
   "cashIcon": "💵",
   "walkBanner": "Demo · dette er dit menukort, sådan som dine kunder vil se det. Der trækkes ingen penge, og der sendes ingen e-mails."

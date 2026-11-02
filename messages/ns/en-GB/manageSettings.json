@@ -137,7 +137,7 @@
     "cancel": "Cancel",
     "newPlaceholder": "e.g. Van 2, Festival Van",
     "addButton": "Add",
-    "addConfirm": "Adding an additional truck will be charged as an add-on to your subscription.\n\nThis will be reflected in your next billing cycle.\n\nDo you want to continue?",
+    "addConfirm": "{free, select, yes {Adding a van is free on your plan.} other {An extra van is {price} a month on your plan. We’ll be in touch before anything is charged.}}\n\nDo you want to continue?",
     "removed": "{name} removed",
     "kdsLinkCopied": "Order screen link copied"
   },
@@ -163,8 +163,8 @@
   },
   "vanBilling": {
     "title": "Add another truck",
-    "body": "Your {plan} plan includes {vans, plural, one {# truck} other {# trucks}}. Adding an additional truck costs <b>{price}</b> and will be added to your next billing cycle.",
-    "note": "⚠️ Note: Billing adjustment is processed manually during early access. You will receive a confirmation email within 24 hours.",
+    "body": "Your {plan} plan includes {vans, plural, one {# truck} other {# trucks}}. Adding an additional truck costs <b>{price}</b>.",
+    "note": "⚠️ We’ll be in touch before anything is charged.",
     "cancel": "Cancel",
     "add": "Add truck — {price}"
   },

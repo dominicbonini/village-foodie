@@ -302,6 +302,10 @@ async function identityViews(tag) {
 
   // ══ 8 ══════════════════════════════════════════════════════════════════════════════════════════════════════════════
   head('8 · nothing public changes')
+  // ⚠️ RE-PINNED (copy-truth-1, 2 November 2026): the landing page's offline line changed on purpose (offline protection is switched
+  // on by the truck; the apps sentence only where the apps are in the stores). scripts/copy-truth-1.cjs proves that line is the ONLY
+  // difference from the commit before it, so scripts/fixtures/faq-1-identity.json was recaptured from the tree after it. /llms.txt's
+  // hash did not move.
   const pinned = JSON.parse(read(IDENTITY))
   const { out } = await identityViews('faq1-identity')
   for (const k of Object.keys(pinned)) t(`${k} byte-identical to HEAD (sha256 of HTML and metadata)`, out[k] === pinned[k], { now: out[k], head: pinned[k] })

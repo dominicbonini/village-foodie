@@ -16,7 +16,7 @@
     "devicesBody": "Runs on the phone in your apron, the tablet on the counter, the laptop in the truck — and the card reader you already take payment on.",
     "whatsappBody": "“Where are you tonight?” “What desserts do you have?” Your WhatsApp gets answered while you’re driving to your spot or at the grill, using your own menu and schedule. Messenger and Instagram coming soon.",
     "whatsappSoonBody": "“Where are you tonight?” “What desserts do you have?” Soon your WhatsApp will get answered while you’re driving to your spot or at the grill. Messenger and Instagram to follow.",
-    "offlineBody": "If you lose signal, online ordering pauses automatically so customers can’t place orders you won’t see. Continue taking orders with the iPhone, iPad and Android app."
+    "offlineApps": "Continue taking orders with the iPhone, iPad and Android app."
   },
   "steps": {
     "eyebrow": "Getting started",

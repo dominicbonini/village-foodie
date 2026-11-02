@@ -1501,8 +1501,8 @@
     "asLive": "Objednávanie aj práca kuchyne fungujú presne ako naostro.",
     "startExploring": "Začať skúmať",
     "signupOffer": {
-      "heading": "Zaregistrujte sa teraz a získajte mesiac zadarmo",
-      "sub": "Odpočet sa začne, až keď sa rozhodnete spustiť prevádzku naostro."
+      "heading": "{months, plural, =0 {Začnite zadarmo} one {Začnite zadarmo na # mesiac} few {Začnite zadarmo na # mesiace} many {Začnite zadarmo na # mesiaca} other {Začnite zadarmo na # mesiacov}}",
+      "sub": "Bezplatné skúšobné obdobie sa začína, keď si vytvoríte účet."
     },
     "cashIcon": "💶",
     "walkBanner": "Ukážka · toto je váš jedálny lístok tak, ako ho uvidia vaši zákazníci. Nič sa neúčtuje a neodosielajú sa žiadne e-maily."
@@ -1922,7 +1922,7 @@
     },
     "signup": {
       "title": "Vytvorte si účet",
-      "subtitle": "Váš bezplatný mesiac sa začne, až keď spustíte predaj.",
+      "subtitle": "{months, plural, =0 {Bezplatné skúšobné obdobie sa začína, keď si vytvoríte účet.} one {Váš prvý mesiac je zadarmo, počítané od vytvorenia účtu.} few {Vaše prvé # mesiace sú zadarmo, počítané od vytvorenia účtu.} many {Vašich prvých # mesiaca je zadarmo, počítané od vytvorenia účtu.} other {Vašich prvých # mesiacov je zadarmo, počítané od vytvorenia účtu.}}",
       "emailPlaceholder": "vy@vasfoodtruck.sk",
       "codeLabel": "Máte kód? <optional>(nepovinné)</optional>",
       "codePlaceholder": "Zadajte ho sem",
@@ -2211,7 +2211,7 @@
     "promoLabel": "Máte kód? <opt>(nepovinné)</opt>",
     "promoPlaceholder": "Zadajte ho sem",
     "agreeTerms": "Súhlasím s <terms>Podmienkami</terms> a <privacy>Zásadami ochrany súkromia</privacy>.",
-    "freeMonth": "Nastavením sa váš bezplatný mesiac nezačne. Začne sa, až keď spustíte svoju prvú akciu — kedykoľvek budete pripravení.",
+    "freeMonth": "{months, plural, =0 {Bezplatné skúšobné obdobie sa začína, keď si vytvoríte účet.} one {Váš prvý mesiac je zadarmo, počítané od vytvorenia účtu.} few {Vaše prvé # mesiace sú zadarmo, počítané od vytvorenia účtu.} many {Vašich prvých # mesiaca je zadarmo, počítané od vytvorenia účtu.} other {Vašich prvých # mesiacov je zadarmo, počítané od vytvorenia účtu.}}",
     "fieldError": {
       "firstName": "Zadajte svoje meno.",
       "lastName": "A priezvisko.",
@@ -3918,7 +3918,7 @@
       "cancel": "Zrušiť",
       "newPlaceholder": "napr. Food truck 2, Festivalový food truck",
       "addButton": "Pridať",
-      "addConfirm": "Ďalší food truck sa vám bude účtovať ako doplnok k predplatnému.\n\nPrejaví sa to v nasledujúcom fakturačnom období.\n\nChcete pokračovať?",
+      "addConfirm": "{free, select, yes {Pridanie ďalšieho food trucku je vo vašom pláne zadarmo.} other {Ďalší food truck stojí vo vašom pláne {price} mesačne. Skôr než čokoľvek naúčtujeme, ozveme sa vám.}}\n\nChcete pokračovať?",
       "removed": "Odstránené: {name}",
       "kdsLinkCopied": "Odkaz na obrazovku objednávok skopírovaný"
     },
@@ -3944,8 +3944,8 @@
     },
     "vanBilling": {
       "title": "Pridať ďalší food truck",
-      "body": "Váš plán {plan} zahŕňa {vans, plural, one {# food truck} few {# food trucky} other {# food truckov}}. Ďalší food truck stojí <b>{price}</b> a pripočíta sa k nasledujúcemu fakturačnému obdobiu.",
-      "note": "⚠️ Poznámka: Počas predčasného prístupu sa úprava fakturácie spracúva ručne. Do 24 hodín dostanete potvrdzovací e-mail.",
+      "body": "Váš plán {plan} zahŕňa {vans, plural, one {# food truck} few {# food trucky} other {# food truckov}}. Ďalší food truck stojí <b>{price}</b>.",
+      "note": "⚠️ Skôr než čokoľvek naúčtujeme, ozveme sa vám.",
       "cancel": "Zrušiť",
       "add": "Pridať food truck — {price}"
     },
@@ -5526,7 +5526,8 @@
       "whatsappSoonTitle": "Automatické odpovede pre WhatsApp <soon>Už čoskoro</soon>",
       "whatsappSoonBody": "„Kde ste dnes večer?“ „Aké máte dezerty?“ Čoskoro sa na správy cez WhatsApp bude odpovedať, kým šoférujete na stanovište alebo stojíte pri grile. Messenger a Instagram budú nasledovať.",
       "offlineTitle": "Bez signálu? Predávajte ďalej.",
-      "offlineBody": "Ak stratíte signál, online objednávanie sa automaticky pozastaví, aby zákazníci nemohli zadávať objednávky, ktoré by ste nevideli. Objednávky prijímajte ďalej v aplikácii pre iPhone, iPad a Android.",
+      "offlineBody": "Zapnite ochranu objednávok offline a online objednávanie sa automaticky pozastaví, ak stratíte signál, aby zákazníci nemohli zadávať objednávky, ktoré by ste nevideli.",
+      "offlineApps": "Objednávky prijímajte ďalej v aplikácii pre iPhone, iPad a Android.",
       "slotsBody": "Zákazníci si objednajú vopred a vyberú si čas vyzdvihnutia. Kratšie rady a jedlo hotové, keď prídu."
     },
     "steps": {
@@ -6084,7 +6085,7 @@
       "kitchen_app": "Najkompletnejší spôsob, ako používať HatchGrab: živá kuchynská obrazovka a zároveň jediný spôsob, ako prijímať objednávky aj pri výpadku signálu.",
       "multi_device_kitchen": "Používajte viac obrazoviek — pri okienku aj v kuchyni — a na všetkých uvidíte rovnaké aktuálne objednávky.",
       "multi_user_access": "Dajte zamestnancom vlastné prihlasovacie údaje so správnou úrovňou prístupu.",
-      "offline_protection": "Ak stratíte signál, online objednávanie sa pozastaví, aby zákazníci nemohli zadávať objednávky, ktoré by ste nevideli. Aplikácia pre iPhone, iPad a Android vám umožní prijímať objednávky aj offline; webový prehľad potrebuje pripojenie.",
+      "offline_protection": "Zapnite ochranu objednávok offline a online objednávanie sa automaticky pozastaví, ak stratíte signál, aby zákazníci nemohli zadávať objednávky, ktoré by ste nevideli.",
       "ticket_printing": "Tlačte bločky objednávok na Bluetooth alebo káblovej tlačiarni v kuchyni.",
       "web_dashboard": "Riaďte prevádzku z prehliadača na akomkoľvek telefóne, tablete či notebooku.",
       "meal_deals_upsells": "Spojte položky do menu a pri objednávke ponúknite doplnky, aby ste zvýšili priemernú hodnotu objednávky.",
@@ -6113,6 +6114,7 @@
       "sms_order_alerts": "Automaticky pošlite zákazníkom SMS, keď je ich objednávka pripravená.",
       "loyalty_stamp_cards": "Odmeňte stálych zákazníkov digitálnymi kartičkami s pečiatkami — pečiatky sa zbierajú aj uplatňujú automaticky."
     },
+    "offlineApps": "Aplikácia pre iPhone, iPad a Android vám umožní prijímať objednávky aj offline; webový prehľad potrebuje pripojenie.",
     "metaTitle": "Porovnanie plánov a funkcií — HatchGrab {country}"
   },
   "compare": {

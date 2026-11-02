@@ -1501,8 +1501,8 @@
     "asLive": "落單及廚房流程與正式運作時完全一樣。",
     "startExploring": "開始探索",
     "signupOffer": {
-      "heading": "立即登記，享免費一個月",
-      "sub": "直至你決定正式啟用，才開始計算。"
+      "heading": "{months, plural, =0 {免費開始} other {免費使用 # 個月}}",
+      "sub": "免費試用由你建立帳戶時開始。"
     },
     "cashIcon": "💵",
     "walkBanner": "示範 · 這是你的餐牌，也是顧客將會看到的樣子。不會收取任何費用，也不會發出任何電郵。"
@@ -1922,7 +1922,7 @@
     },
     "signup": {
       "title": "建立帳戶",
-      "subtitle": "你的免費月份要到正式上線時才開始計算。",
+      "subtitle": "{months, plural, =0 {免費試用由你建立帳戶時開始。} other {由建立帳戶起計，首 # 個月免費。}}",
       "emailPlaceholder": "you@yourtruck.co.uk",
       "codeLabel": "有優惠碼？<optional>（選填）</optional>",
       "codePlaceholder": "在此輸入",
@@ -2211,7 +2211,7 @@
     "promoLabel": "有優惠碼？<opt>（選填）</opt>",
     "promoPlaceholder": "在此輸入",
     "agreeTerms": "我同意<terms>條款</terms>及<privacy>私隱政策</privacy>。",
-    "freeMonth": "設定期間不會開始計算你的免費月份。免費月份會在你選擇第一個正式活動時才開始——隨你準備好再說。",
+    "freeMonth": "{months, plural, =0 {免費試用由你建立帳戶時開始。} other {由建立帳戶起計，首 # 個月免費。}}",
     "fieldError": {
       "firstName": "請告訴我們你的名字。",
       "lastName": "還有你的姓氏。",
@@ -3918,7 +3918,7 @@
       "cancel": "取消",
       "newPlaceholder": "例如：2 號車、音樂節車",
       "addButton": "新增",
-      "addConfirm": "新增額外美食車會作為附加項目計入你的訂閱費用。\n\n費用會反映在你下一個收費週期。\n\n要繼續嗎？",
+      "addConfirm": "{free, select, yes {在你的計劃下，新增美食車是免費的。} other {在你的計劃下，每架額外美食車每月 {price}。我們會在收取任何費用前聯絡你。}}\n\n要繼續嗎？",
       "removed": "已移除 {name}",
       "kdsLinkCopied": "已複製訂單畫面連結"
     },
@@ -3944,8 +3944,8 @@
     },
     "vanBilling": {
       "title": "新增另一架美食車",
-      "body": "你的 {plan} 計劃包括 {vans, plural, other {# 架美食車}}。新增額外美食車的費用為 <b>{price}</b>，會加入你下一個收費週期。",
-      "note": "⚠️ 注意：搶先體驗期間，收費調整會以人手處理。你會在 24 小時內收到確認電郵。",
+      "body": "你的 {plan} 計劃包括 {vans, plural, other {# 架美食車}}。新增額外美食車的費用為 <b>{price}</b>。",
+      "note": "⚠️ 我們會在收取任何費用前聯絡你。",
       "cancel": "取消",
       "add": "新增美食車 — {price}"
     },
@@ -5526,7 +5526,8 @@
       "whatsappSoonTitle": "WhatsApp 自動回覆 <soon>即將推出</soon>",
       "whatsappSoonBody": "「你今晚喺邊度？」「有咩甜品？」很快，你駕車前往開檔地點或忙於燒烤時，你的 WhatsApp 也能自動回覆。Messenger 及 Instagram 稍後推出。",
       "offlineTitle": "沒有訊號？照樣做生意。",
-      "offlineBody": "一旦失去訊號，網上落單會自動暫停，以免顧客落了你看不到的單。你可繼續用 iPhone、iPad 及 Android 應用程式接單。",
+      "offlineBody": "開啟離線落單保護後，一旦失去訊號，網上落單會自動暫停，以免顧客落了你看不到的單。",
+      "offlineApps": "你可繼續用 iPhone、iPad 及 Android 應用程式接單。",
       "slotsBody": "顧客預先落單並選擇取餐時間。人龍更短，顧客一到便有得食。"
     },
     "steps": {
@@ -6056,7 +6057,7 @@
       "kitchen_app": "使用 HatchGrab 最完整的方式：即時廚房顯示屏，也是失去網絡訊號時仍能繼續接單的唯一方法。",
       "multi_device_kitchen": "同時使用多個顯示屏——前櫃及廚房——全部顯示相同的即時訂單。",
       "multi_user_access": "為員工設立獨立登入帳戶，並給予合適的存取權限。",
-      "offline_protection": "如果失去網絡訊號，網上落單會暫停，以免客人落了你看不到的單。iPhone、iPad 及 Android App 讓你在離線時繼續接單；網上控制台則需要網絡連線。",
+      "offline_protection": "開啟離線落單保護後，一旦失去訊號，網上落單會自動暫停，以免顧客落了你看不到的單。",
       "ticket_printing": "把訂單單據打印到廚房的藍牙或有線打印機。",
       "web_dashboard": "用任何手機、平板電腦或手提電腦的瀏覽器處理營業運作。",
       "meal_deals_upsells": "把食品組合成套餐優惠，並在結帳時推介加購，提高平均訂單金額。",
@@ -6085,6 +6086,7 @@
       "sms_order_alerts": "客人的訂單可取餐時，自動發短訊通知他們。",
       "loyalty_stamp_cards": "用電子印花卡獎勵回頭客——自動儲印花及換領。"
     },
+    "offlineApps": "iPhone、iPad 及 Android App 讓你在離線時繼續接單；網上控制台則需要網絡連線。",
     "metaTitle": "計劃及功能比較 — HatchGrab {country}"
   },
   "compare": {

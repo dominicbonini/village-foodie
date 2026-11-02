@@ -36,7 +36,8 @@
     "whatsappSoonTitle": "Automatiska svar på WhatsApp <soon>Kommer snart</soon>",
     "whatsappSoonBody": "”Var står ni ikväll?” ”Vilka efterrätter har ni?” Snart svarar din WhatsApp medan du kör till ställplatsen eller står vid grillen. Messenger och Instagram följer efter.",
     "offlineTitle": "Ingen täckning? Fortsätt servera.",
-    "offlineBody": "Om du tappar täckningen pausas onlinebeställningen automatiskt, så att kunderna inte kan lägga beställningar som du inte ser. Fortsätt ta emot beställningar med appen för iPhone, iPad och Android.",
+    "offlineBody": "Slå på skyddet för beställningar offline så pausas onlinebeställningen automatiskt om du tappar täckningen, så att kunderna inte kan lägga beställningar som du inte ser.",
+    "offlineApps": "Fortsätt ta emot beställningar med appen för iPhone, iPad och Android.",
     "slotsBody": "Kunderna förbeställer, väljer en upphämtningstid och slipper kön. Maten är klar när de kommer."
   },
   "steps": {

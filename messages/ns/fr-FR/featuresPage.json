@@ -5,7 +5,7 @@
     "kitchen_app": "La façon la plus complète d’utiliser HatchGrab : un écran cuisine en direct, et le seul moyen de continuer à prendre des commandes quand vous perdez le réseau.",
     "multi_device_kitchen": "Utilisez plusieurs écrans — comptoir et cuisine — qui affichent tous les mêmes commandes en direct.",
     "multi_user_access": "Donnez à votre équipe ses propres identifiants, avec le bon niveau d’accès.",
-    "offline_protection": "Si vous perdez le réseau, la commande en ligne se met en pause pour que les clients ne passent pas de commandes que vous ne verriez pas. L’app iPhone, iPad et Android vous permet de continuer à prendre des commandes hors ligne ; le tableau de bord web nécessite une connexion.",
+    "offline_protection": "Activez la protection des commandes hors ligne et la commande en ligne se met automatiquement en pause si vous perdez le réseau, pour que les clients ne passent pas de commandes que vous ne verriez pas.",
     "ticket_printing": "Imprimez les tickets de commande sur une imprimante Bluetooth ou filaire en cuisine.",
     "web_dashboard": "Gérez votre service depuis le navigateur de n’importe quel téléphone, tablette ou ordinateur portable.",
     "meal_deals_upsells": "Regroupez des articles en formules et proposez des suppléments au moment du paiement pour augmenter le panier moyen.",
@@ -34,5 +34,6 @@
     "sms_order_alerts": "Prévenez automatiquement les clients par SMS quand leur commande est prête.",
     "loyalty_stamp_cards": "Récompensez vos clients fidèles avec des cartes de fidélité numériques à tampons — collectés et utilisés automatiquement."
   },
+  "offlineApps": "L’app iPhone, iPad et Android vous permet de continuer à prendre des commandes hors ligne ; le tableau de bord web nécessite une connexion.",
   "metaTitle": "Offres et fonctionnalités comparées — HatchGrab {country}"
 }

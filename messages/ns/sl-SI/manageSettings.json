@@ -137,7 +137,7 @@
     "cancel": "Prekliči",
     "newPlaceholder": "npr. Food truck 2, Festivalski food truck",
     "addButton": "Dodaj",
-    "addConfirm": "Dodaten food truck bo zaračunan kot dodatek k vaši naročnini.\n\nTo bo upoštevano v naslednjem obračunskem obdobju.\n\nŽelite nadaljevati?",
+    "addConfirm": "{free, select, yes {Dodajanje food trucka je v vašem paketu brezplačno.} other {Dodaten food truck v vašem paketu stane {price} na mesec. Preden karkoli zaračunamo, se vam oglasimo.}}\n\nŽelite nadaljevati?",
     "removed": "Odstranjeno: {name}",
     "kdsLinkCopied": "Povezava do zaslona za naročila je kopirana"
   },
@@ -163,8 +163,8 @@
   },
   "vanBilling": {
     "title": "Dodaj še en food truck",
-    "body": "Vaš paket {plan} vključuje {vans, plural, one {# food truck} two {# food trucka} few {# food trucke} other {# food truckov}}. Dodaten food truck stane <b>{price}</b> in bo dodan v naslednje obračunsko obdobje.",
-    "note": "⚠️ Opomba: V obdobju zgodnjega dostopa se prilagoditev obračuna obdela ročno. V 24 urah boste prejeli potrditveno e-pošto.",
+    "body": "Vaš paket {plan} vključuje {vans, plural, one {# food truck} two {# food trucka} few {# food trucke} other {# food truckov}}. Dodaten food truck stane <b>{price}</b>.",
+    "note": "⚠️ Preden karkoli zaračunamo, se vam oglasimo.",
     "cancel": "Prekliči",
     "add": "Dodaj food truck — {price}"
   },

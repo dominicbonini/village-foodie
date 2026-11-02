@@ -21,8 +21,8 @@
   "asLive": "Bestellablauf und Küche funktionieren genau wie im Live-Betrieb.",
   "startExploring": "Jetzt erkunden",
   "signupOffer": {
-    "heading": "Jetzt für Ihren kostenlosen Monat registrieren",
-    "sub": "Die Uhr läuft erst, wenn Sie sich entscheiden, live zu gehen."
+    "heading": "{months, plural, =0 {Kostenlos starten} one {# Monat kostenlos starten} other {# Monate kostenlos starten}}",
+    "sub": "Ihre kostenlose Testphase beginnt, wenn Sie Ihr Konto erstellen."
   },
   "cashIcon": "💶",
   "walkBanner": "Demo · Das ist Ihre Speisekarte, so wie Ihre Kunden sie sehen werden. Es wird nichts abgebucht und es werden keine E-Mails verschickt."

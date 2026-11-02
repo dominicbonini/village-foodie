@@ -137,7 +137,7 @@
     "cancel": "Avbryt",
     "newPlaceholder": "t.ex. Foodtruck 2, Festivaltrucken",
     "addButton": "Lägg till",
-    "addConfirm": "En extra foodtruck debiteras som ett tillägg till ditt abonnemang.\n\nDet syns i din nästa faktureringsperiod.\n\nVill du fortsätta?",
+    "addConfirm": "{free, select, yes {Att lägga till en foodtruck är gratis i ditt abonnemang.} other {En extra foodtruck kostar {price} i månaden i ditt abonnemang. Vi hör av oss innan något debiteras.}}\n\nVill du fortsätta?",
     "removed": "{name} borttagen",
     "kdsLinkCopied": "Länken till beställningsskärmen kopierad"
   },
@@ -163,8 +163,8 @@
   },
   "vanBilling": {
     "title": "Lägg till ytterligare en foodtruck",
-    "body": "I ditt abonnemang {plan} ingår {vans, plural, one {# foodtruck} other {# foodtruckar}}. En extra foodtruck kostar <b>{price}</b> och läggs till i din nästa faktureringsperiod.",
-    "note": "⚠️ Obs! Under lanseringsperioden justeras faktureringen manuellt. Du får ett bekräftelsemejl inom 24 timmar.",
+    "body": "I ditt abonnemang {plan} ingår {vans, plural, one {# foodtruck} other {# foodtruckar}}. En extra foodtruck kostar <b>{price}</b>.",
+    "note": "⚠️ Vi hör av oss innan något debiteras.",
     "cancel": "Avbryt",
     "add": "Lägg till foodtruck – {price}"
   },

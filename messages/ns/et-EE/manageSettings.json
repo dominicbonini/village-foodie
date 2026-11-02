@@ -137,7 +137,7 @@
     "cancel": "Tühista",
     "newPlaceholder": "nt Toiduauto 2, Festivaliauto",
     "addButton": "Lisa",
-    "addConfirm": "Täiendava toiduauto eest lisandub tasu sinu paketile.\n\nSee kajastub sinu järgmises arveldusperioodis.\n\nKas soovid jätkata?",
+    "addConfirm": "{free, select, yes {Toiduauto lisamine on sinu paketis tasuta.} other {Täiendav toiduauto maksab sinu paketis {price} kuus. Võtame sinuga ühendust enne, kui midagi arveldame.}}\n\nKas soovid jätkata?",
     "removed": "Eemaldatud: {name}",
     "kdsLinkCopied": "Tellimuste ekraani link kopeeritud"
   },
@@ -163,8 +163,8 @@
   },
   "vanBilling": {
     "title": "Lisa veel üks toiduauto",
-    "body": "Sinu pakett {plan} sisaldab {vans, plural, one {# toiduautot} other {# toiduautot}}. Täiendava toiduauto lisamine maksab <b>{price}</b> ja lisandub sinu järgmisse arveldusperioodi.",
-    "note": "⚠️ NB: Varajase juurdepääsu ajal tehakse arvelduse korrigeerimine käsitsi. Saad kinnitava e-kirja 24 tunni jooksul.",
+    "body": "Sinu pakett {plan} sisaldab {vans, plural, one {# toiduautot} other {# toiduautot}}. Täiendava toiduauto lisamine maksab <b>{price}</b>.",
+    "note": "⚠️ Võtame sinuga ühendust enne, kui midagi arveldame.",
     "cancel": "Tühista",
     "add": "Lisa toiduauto — {price}"
   },

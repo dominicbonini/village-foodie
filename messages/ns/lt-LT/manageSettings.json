@@ -137,7 +137,7 @@
     "cancel": "Atšaukti",
     "newPlaceholder": "pvz., Furgonas 2, Festivalio furgonas",
     "addButton": "Pridėti",
-    "addConfirm": "Papildomas furgonas bus apmokestintas kaip jūsų prenumeratos priedas.\n\nTai atsispindės kitame atsiskaitymo laikotarpyje.\n\nAr norite tęsti?",
+    "addConfirm": "{free, select, yes {Pridėti furgoną jūsų plane nemokama.} other {Papildomas furgonas jūsų plane kainuoja {price} per mėnesį. Prieš ką nors apmokestindami, susisieksime su jumis.}}\n\nAr norite tęsti?",
     "removed": "Pašalinta: {name}",
     "kdsLinkCopied": "Užsakymų ekrano nuoroda nukopijuota"
   },
@@ -163,8 +163,8 @@
   },
   "vanBilling": {
     "title": "Pridėti dar vieną furgoną",
-    "body": "Jūsų planas {plan} apima {vans, plural, one {# furgoną} few {# furgonus} many {# furgonų} other {# furgonų}}. Papildomas furgonas kainuoja <b>{price}</b> – suma bus įtraukta į kitą atsiskaitymo laikotarpį.",
-    "note": "⚠️ Pastaba: ankstyvosios prieigos laikotarpiu atsiskaitymo pakeitimai tvarkomi rankiniu būdu. Patvirtinimo el. laišką gausite per 24 valandas.",
+    "body": "Jūsų planas {plan} apima {vans, plural, one {# furgoną} few {# furgonus} many {# furgonų} other {# furgonų}}. Papildomas furgonas kainuoja <b>{price}</b>.",
+    "note": "⚠️ Prieš ką nors apmokestindami, susisieksime su jumis.",
     "cancel": "Atšaukti",
     "add": "Pridėti furgoną – {price}"
   },

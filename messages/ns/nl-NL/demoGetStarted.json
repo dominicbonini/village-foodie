@@ -80,7 +80,7 @@
   "promoLabel": "Heb je een code? <opt>(optioneel)</opt>",
   "promoPlaceholder": "Vul hem hier in",
   "agreeTerms": "Ik ga akkoord met de <terms>Voorwaarden</terms> en het <privacy>Privacybeleid</privacy>.",
-  "freeMonth": "Met instellen start je gratis maand nog niet. Die begint pas als je je eerste live evenement kiest — wanneer jij er klaar voor bent.",
+  "freeMonth": "{months, plural, =0 {Je gratis proefperiode begint zodra je je account aanmaakt.} one {Je eerste maand is gratis, vanaf het moment dat je je account aanmaakt.} other {Je eerste # maanden zijn gratis, vanaf het moment dat je je account aanmaakt.}}",
   "fieldError": {
     "firstName": "Vul je voornaam in.",
     "lastName": "En je achternaam.",

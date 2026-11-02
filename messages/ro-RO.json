@@ -1501,8 +1501,8 @@
     "asLive": "Fluxul de comandă și de bucătărie este exact ca în funcționarea reală.",
     "startExploring": "Începeți explorarea",
     "signupOffer": {
-      "heading": "Înscrieți-vă acum pentru luna gratuită",
-      "sub": "Perioada începe să curgă abia când decideți să vă lansați."
+      "heading": "{months, plural, =0 {Începeți gratuit} one {Începeți gratuit pentru # lună} few {Începeți gratuit pentru # luni} other {Începeți gratuit pentru # de luni}}",
+      "sub": "Perioada de probă gratuită începe când vă creați contul."
     },
     "cashIcon": "💵",
     "walkBanner": "Demo · acesta este meniul dumneavoastră, așa cum îl vor vedea clienții. Nu se încasează nimic și nu se trimit e-mailuri."
@@ -1922,7 +1922,7 @@
     },
     "signup": {
       "title": "Creați-vă contul",
-      "subtitle": "Luna gratuită începe abia când vă lansați.",
+      "subtitle": "{months, plural, =0 {Perioada de probă gratuită începe când vă creați contul.} one {Prima lună este gratuită, de la crearea contului.} few {Primele # luni sunt gratuite, de la crearea contului.} other {Primele # de luni sunt gratuite, de la crearea contului.}}",
       "emailPlaceholder": "nume@foodtruckultau.ro",
       "codeLabel": "Aveți un cod? <optional>(opțional)</optional>",
       "codePlaceholder": "Introduceți-l aici",
@@ -2211,7 +2211,7 @@
     "promoLabel": "Aveți un cod? <opt>(opțional)</opt>",
     "promoPlaceholder": "Introduceți-l aici",
     "agreeTerms": "Accept <terms>Termenii</terms> și <privacy>Politica de confidențialitate</privacy>.",
-    "freeMonth": "Configurarea nu pornește luna gratuită. Aceasta începe când alegeți primul eveniment activ — oricând sunteți pregătit.",
+    "freeMonth": "{months, plural, =0 {Perioada de probă gratuită începe când vă creați contul.} one {Prima lună este gratuită, de la crearea contului.} few {Primele # luni sunt gratuite, de la crearea contului.} other {Primele # de luni sunt gratuite, de la crearea contului.}}",
     "fieldError": {
       "firstName": "Spuneți-ne prenumele.",
       "lastName": "Și numele de familie.",
@@ -3918,7 +3918,7 @@
       "cancel": "Anulați",
       "newPlaceholder": "ex.: Food truck 2, Food truck festival",
       "addButton": "Adăugați",
-      "addConfirm": "Adăugarea unui food truck suplimentar va fi facturată ca supliment la abonament.\n\nAcest lucru se va reflecta în următorul ciclu de facturare.\n\nDoriți să continuați?",
+      "addConfirm": "{free, select, yes {Adăugarea unui food truck este gratuită în planul dumneavoastră.} other {Un food truck suplimentar costă {price} pe lună în planul dumneavoastră. Vă vom contacta înainte de a factura ceva.}}\n\nDoriți să continuați?",
       "removed": "Eliminat: {name}",
       "kdsLinkCopied": "Linkul ecranului de comenzi a fost copiat"
     },
@@ -3944,8 +3944,8 @@
     },
     "vanBilling": {
       "title": "Adăugați încă un food truck",
-      "body": "Planul {plan} include {vans, plural, one {# food truck} few {# food truck-uri} other {# de food truck-uri}}. Adăugarea unui food truck suplimentar costă <b>{price}</b> și va fi inclusă în următorul ciclu de facturare.",
-      "note": "⚠️ Notă: În perioada de acces anticipat, ajustarea facturării se face manual. Veți primi un e-mail de confirmare în 24 de ore.",
+      "body": "Planul {plan} include {vans, plural, one {# food truck} few {# food truck-uri} other {# de food truck-uri}}. Adăugarea unui food truck suplimentar costă <b>{price}</b>.",
+      "note": "⚠️ Vă vom contacta înainte de a factura ceva.",
       "cancel": "Anulați",
       "add": "Adăugați un food truck — {price}"
     },
@@ -5526,7 +5526,8 @@
       "whatsappSoonTitle": "Răspunsuri automate pe WhatsApp <soon>În curând</soon>",
       "whatsappSoonBody": "„Unde sunteți diseară?” „Ce deserturi aveți?” În curând, mesajele de pe WhatsApp vor primi răspuns în timp ce conduceți spre locație sau stați la grătar. Urmează Messenger și Instagram.",
       "offlineTitle": "Fără semnal? Serviți în continuare.",
-      "offlineBody": "Dacă pierdeți semnalul, comenzile online se pun automat pe pauză, ca clienții să nu plaseze comenzi pe care nu le-ați vedea. Continuați să primiți comenzi cu aplicația pentru iPhone, iPad și Android.",
+      "offlineBody": "Activați protecția comenzilor offline și comenzile online se pun automat pe pauză dacă pierdeți semnalul, ca clienții să nu plaseze comenzi pe care nu le-ați vedea.",
+      "offlineApps": "Continuați să primiți comenzi cu aplicația pentru iPhone, iPad și Android.",
       "slotsBody": "Clienții comandă în avans și aleg ora de ridicare. Cozi mai scurte și mâncare gata când ajung."
     },
     "steps": {
@@ -6084,7 +6085,7 @@
       "kitchen_app": "Cel mai complet mod de a folosi HatchGrab: un ecran de bucătărie live, plus singura cale de a primi comenzi în continuare când pierdeți semnalul.",
       "multi_device_kitchen": "Folosiți mai multe ecrane — la tejghea și în bucătărie — toate cu aceleași comenzi live.",
       "multi_user_access": "Dați personalului conturi proprii, cu nivelul potrivit de acces.",
-      "offline_protection": "Dacă pierdeți semnalul, comenzile online se pun pe pauză, ca clienții să nu plaseze comenzi pe care nu le-ați vedea. Aplicația pentru iPhone, iPad și Android vă permite să primiți comenzi și offline; panoul de control web are nevoie de conexiune.",
+      "offline_protection": "Activați protecția comenzilor offline și comenzile online se pun automat pe pauză dacă pierdeți semnalul, ca clienții să nu plaseze comenzi pe care nu le-ați vedea.",
       "ticket_printing": "Tipăriți bonurile de comandă pe o imprimantă Bluetooth sau cu fir din bucătărie.",
       "web_dashboard": "Gestionați serviciul din browserul oricărui telefon, tabletă sau laptop.",
       "meal_deals_upsells": "Grupați produsele în combo-uri și oferiți produse suplimentare la finalizarea comenzii, ca să creșteți valoarea medie a comenzii.",
@@ -6113,6 +6114,7 @@
       "sms_order_alerts": "Trimiteți automat un SMS clienților când comanda lor este gata.",
       "loyalty_stamp_cards": "Recompensați clienții fideli cu carduri digitale de fidelitate cu ștampile — colectate și folosite automat."
     },
+    "offlineApps": "Aplicația pentru iPhone, iPad și Android vă permite să primiți comenzi și offline; panoul de control web are nevoie de conexiune.",
     "metaTitle": "Planuri și funcții comparate — HatchGrab {country}"
   },
   "compare": {

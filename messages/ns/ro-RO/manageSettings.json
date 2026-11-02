@@ -137,7 +137,7 @@
     "cancel": "Anulați",
     "newPlaceholder": "ex.: Food truck 2, Food truck festival",
     "addButton": "Adăugați",
-    "addConfirm": "Adăugarea unui food truck suplimentar va fi facturată ca supliment la abonament.\n\nAcest lucru se va reflecta în următorul ciclu de facturare.\n\nDoriți să continuați?",
+    "addConfirm": "{free, select, yes {Adăugarea unui food truck este gratuită în planul dumneavoastră.} other {Un food truck suplimentar costă {price} pe lună în planul dumneavoastră. Vă vom contacta înainte de a factura ceva.}}\n\nDoriți să continuați?",
     "removed": "Eliminat: {name}",
     "kdsLinkCopied": "Linkul ecranului de comenzi a fost copiat"
   },
@@ -163,8 +163,8 @@
   },
   "vanBilling": {
     "title": "Adăugați încă un food truck",
-    "body": "Planul {plan} include {vans, plural, one {# food truck} few {# food truck-uri} other {# de food truck-uri}}. Adăugarea unui food truck suplimentar costă <b>{price}</b> și va fi inclusă în următorul ciclu de facturare.",
-    "note": "⚠️ Notă: În perioada de acces anticipat, ajustarea facturării se face manual. Veți primi un e-mail de confirmare în 24 de ore.",
+    "body": "Planul {plan} include {vans, plural, one {# food truck} few {# food truck-uri} other {# de food truck-uri}}. Adăugarea unui food truck suplimentar costă <b>{price}</b>.",
+    "note": "⚠️ Vă vom contacta înainte de a factura ceva.",
     "cancel": "Anulați",
     "add": "Adăugați un food truck — {price}"
   },

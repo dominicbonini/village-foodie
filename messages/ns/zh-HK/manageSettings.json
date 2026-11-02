@@ -137,7 +137,7 @@
     "cancel": "取消",
     "newPlaceholder": "例如：2 號車、音樂節車",
     "addButton": "新增",
-    "addConfirm": "新增額外美食車會作為附加項目計入你的訂閱費用。\n\n費用會反映在你下一個收費週期。\n\n要繼續嗎？",
+    "addConfirm": "{free, select, yes {在你的計劃下，新增美食車是免費的。} other {在你的計劃下，每架額外美食車每月 {price}。我們會在收取任何費用前聯絡你。}}\n\n要繼續嗎？",
     "removed": "已移除 {name}",
     "kdsLinkCopied": "已複製訂單畫面連結"
   },
@@ -163,8 +163,8 @@
   },
   "vanBilling": {
     "title": "新增另一架美食車",
-    "body": "你的 {plan} 計劃包括 {vans, plural, other {# 架美食車}}。新增額外美食車的費用為 <b>{price}</b>，會加入你下一個收費週期。",
-    "note": "⚠️ 注意：搶先體驗期間，收費調整會以人手處理。你會在 24 小時內收到確認電郵。",
+    "body": "你的 {plan} 計劃包括 {vans, plural, other {# 架美食車}}。新增額外美食車的費用為 <b>{price}</b>。",
+    "note": "⚠️ 我們會在收取任何費用前聯絡你。",
     "cancel": "取消",
     "add": "新增美食車 — {price}"
   },

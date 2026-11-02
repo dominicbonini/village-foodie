@@ -5,7 +5,7 @@
     "kitchen_app": "A forma mais completa de usar a HatchGrab: um ecrã da cozinha em tempo real e a única forma de continuar a receber encomendas quando perde a rede.",
     "multi_device_kitchen": "Use vários ecrãs — balcão e cozinha — todos a mostrar as mesmas encomendas em tempo real.",
     "multi_user_access": "Dê à sua equipa acessos próprios, com o nível de permissões adequado.",
-    "offline_protection": "Se perder a rede, as encomendas online são pausadas, para que os clientes não façam encomendas que não vai ver. A app para iPhone, iPad e Android permite-lhe continuar a receber encomendas offline; o painel web precisa de ligação.",
+    "offline_protection": "Ative a proteção de encomendas sem ligação e as encomendas online são pausadas automaticamente se perder a rede, para que os clientes não façam encomendas que não vai ver.",
     "ticket_printing": "Imprima os talões das encomendas numa impressora Bluetooth ou com cabo na cozinha.",
     "web_dashboard": "Gira o seu serviço a partir do navegador de qualquer telemóvel, tablet ou portátil.",
     "meal_deals_upsells": "Junte artigos em menus e sugira extras no pagamento para aumentar o valor médio de cada encomenda.",
@@ -34,5 +34,6 @@
     "sms_order_alerts": "Envie automaticamente uma SMS aos clientes quando a encomenda estiver pronta.",
     "loyalty_stamp_cards": "Recompense os clientes habituais com cartões de fidelização digitais — os carimbos são atribuídos e trocados automaticamente."
   },
+  "offlineApps": "A app para iPhone, iPad e Android permite-lhe continuar a receber encomendas offline; o painel web precisa de ligação.",
   "metaTitle": "Planos e funcionalidades comparados — HatchGrab {country}"
 }

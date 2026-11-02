@@ -21,8 +21,8 @@
   "asLive": "Objednávání i práce v kuchyni fungují přesně jako v ostrém provozu.",
   "startExploring": "Pustit se do toho",
   "signupOffer": {
-    "heading": "Zaregistrujte se teď na měsíc zdarma",
-    "sub": "Čas začne běžet až ve chvíli, kdy se rozhodnete spustit ostrý provoz."
+    "heading": "{months, plural, =0 {Začněte zdarma} one {Začněte zdarma na # měsíc} few {Začněte zdarma na # měsíce} many {Začněte zdarma na # měsíce} other {Začněte zdarma na # měsíců}}",
+    "sub": "Bezplatné zkušební období začíná, když si vytvoříte účet."
   },
   "cashIcon": "💵",
   "walkBanner": "Ukázka · toto je váš jídelní lístek tak, jak ho uvidí vaši zákazníci. Nic se neúčtuje a neposílají se žádné e-maily."

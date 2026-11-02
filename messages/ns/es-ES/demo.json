@@ -21,8 +21,8 @@
   "asLive": "El flujo de pedidos y cocina funciona exactamente igual que en un servicio real.",
   "startExploring": "Empezar a explorar",
   "signupOffer": {
-    "heading": "Regístrate ya y consigue tu mes gratis",
-    "sub": "El mes no empieza a contar hasta que decidas publicarte."
+    "heading": "{months, plural, =0 {Empezar gratis} one {Empezar gratis durante # mes} many {Empezar gratis durante # de meses} other {Empezar gratis durante # meses}}",
+    "sub": "Tu prueba gratuita empieza cuando creas tu cuenta."
   },
   "cashIcon": "💶",
   "walkBanner": "Demo · esta es tu carta, tal como la verán tus clientes. No se cobra nada y no se envía ningún correo."

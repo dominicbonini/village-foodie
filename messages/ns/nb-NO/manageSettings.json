@@ -137,7 +137,7 @@
     "cancel": "Avbryt",
     "newPlaceholder": "f.eks. Matbil 2, Festivalbil",
     "addButton": "Legg til",
-    "addConfirm": "En ekstra matbil blir fakturert som et tillegg til abonnementet ditt.\n\nDette vises i neste faktureringsperiode.\n\nVil du fortsette?",
+    "addConfirm": "{free, select, yes {Det er gratis å legge til en matbil på abonnementet ditt.} other {En ekstra matbil koster {price} i måneden på abonnementet ditt. Vi tar kontakt før noe blir fakturert.}}\n\nVil du fortsette?",
     "removed": "{name} er fjernet",
     "kdsLinkCopied": "Lenke til bestillingsskjerm kopiert"
   },
@@ -163,8 +163,8 @@
   },
   "vanBilling": {
     "title": "Legg til en matbil til",
-    "body": "Abonnementet {plan} inkluderer {vans, plural, one {# matbil} other {# matbiler}}. En ekstra matbil koster <b>{price}</b> og legges til i neste faktureringsperiode.",
-    "note": "⚠️ Merk: Endringer i faktureringen behandles manuelt mens vi er i tidlig tilgang. Du får en bekreftelse på e-post innen 24 timer.",
+    "body": "Abonnementet {plan} inkluderer {vans, plural, one {# matbil} other {# matbiler}}. En ekstra matbil koster <b>{price}</b>.",
+    "note": "⚠️ Vi tar kontakt før noe blir fakturert.",
     "cancel": "Avbryt",
     "add": "Legg til matbil – {price}"
   },

@@ -19,6 +19,7 @@ import { createSupabaseBrowserClient } from '@/lib/supabase/client'
 import { HatchGrabWordmark } from '@/components/brand/HatchGrabWordmark'
 import { useLegalPath } from '@/lib/i18n/use-legal-path'
 import { useT } from '@/lib/i18n/use-t'
+import { useTrialMonths } from '@/lib/trial-months'
 import '@/lib/i18n/catalog/auth'
 import { errorText } from '@/lib/i18n/customer-errors'
 import '@/lib/i18n/catalog/errorsOnboarding'
@@ -29,6 +30,8 @@ function SignupForm() {
   // Language Phase 1c: the words are `auth.signup` / `auth.fields`. No truck exists yet; legal-languages-1 (1 November
   // 2026): the layout's <AuthLocale> provides the visitor's language (proxy.ts decides it), en-GB for an English visitor.
   const t = useT('auth.signup')
+  // copy-truth-1 (2 November 2026): the trial's length, read from the plan data by the server layout (lib/trial-months.tsx).
+  const trialMonths = useTrialMonths()
   const tField = useT('auth.fields')
   // A refusal is worded from its code (errorsOnboarding), its English `error` the fallback (US polish batch, 19 Oct 2026).
   const tErr = useT('errorsOnboarding')
@@ -81,7 +84,8 @@ function SignupForm() {
           <div className="flex justify-center mb-4"><HatchGrabWordmark /></div>
           <h1 className="text-xl font-black text-slate-900">{t('title')}</h1>
           <p className="text-sm text-slate-500 mt-1">
-            {t('subtitle')}
+            {/* copy-truth-1: the trial's length is data (plans.trial_months) and it starts at signup; 0 = not known, no number shown. */}
+            {t('subtitle', { months: trialMonths ?? 0 })}
           </p>
         </div>
 

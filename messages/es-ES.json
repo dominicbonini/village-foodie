@@ -1501,8 +1501,8 @@
     "asLive": "El flujo de pedidos y cocina funciona exactamente igual que en un servicio real.",
     "startExploring": "Empezar a explorar",
     "signupOffer": {
-      "heading": "Regístrate ya y consigue tu mes gratis",
-      "sub": "El mes no empieza a contar hasta que decidas publicarte."
+      "heading": "{months, plural, =0 {Empezar gratis} one {Empezar gratis durante # mes} many {Empezar gratis durante # de meses} other {Empezar gratis durante # meses}}",
+      "sub": "Tu prueba gratuita empieza cuando creas tu cuenta."
     },
     "cashIcon": "💶",
     "walkBanner": "Demo · esta es tu carta, tal como la verán tus clientes. No se cobra nada y no se envía ningún correo."
@@ -1922,7 +1922,7 @@
     },
     "signup": {
       "title": "Crea tu cuenta",
-      "subtitle": "Tu mes gratis no empieza hasta que te publiques.",
+      "subtitle": "{months, plural, =0 {Tu prueba gratuita empieza cuando creas tu cuenta.} one {Tu primer mes es gratis, desde que creas tu cuenta.} many {Tus primeros # de meses son gratis, desde que creas tu cuenta.} other {Tus primeros # meses son gratis, desde que creas tu cuenta.}}",
       "emailPlaceholder": "tu@tufoodtruck.es",
       "codeLabel": "¿Tienes un código? <optional>(opcional)</optional>",
       "codePlaceholder": "Escríbelo aquí",
@@ -2211,7 +2211,7 @@
     "promoLabel": "¿Tienes un código? <opt>(opcional)</opt>",
     "promoPlaceholder": "Escríbelo aquí",
     "agreeTerms": "Acepto los <terms>Términos</terms> y la <privacy>Política de privacidad</privacy>.",
-    "freeMonth": "Configurar no pone en marcha tu mes gratis. Este empieza cuando eliges tu primer evento publicado, cuando tú quieras.",
+    "freeMonth": "{months, plural, =0 {Tu prueba gratuita empieza cuando creas tu cuenta.} one {Tu primer mes es gratis, desde que creas tu cuenta.} many {Tus primeros # de meses son gratis, desde que creas tu cuenta.} other {Tus primeros # meses son gratis, desde que creas tu cuenta.}}",
     "fieldError": {
       "firstName": "Dinos tu nombre.",
       "lastName": "Y tus apellidos.",
@@ -3918,7 +3918,7 @@
       "cancel": "Cancelar",
       "newPlaceholder": "p. ej., Food truck 2, Food truck festivales",
       "addButton": "Añadir",
-      "addConfirm": "Añadir otro food truck se cobrará como complemento de tu suscripción.\n\nSe reflejará en tu próximo ciclo de facturación.\n\n¿Quieres continuar?",
+      "addConfirm": "{free, select, yes {Añadir otro food truck es gratis con tu plan.} other {Cada food truck adicional cuesta {price} al mes con tu plan. Te avisaremos antes de cobrar nada.}}\n\n¿Quieres continuar?",
       "removed": "{name} eliminado",
       "kdsLinkCopied": "Enlace de la pantalla de pedidos copiado"
     },
@@ -3944,8 +3944,8 @@
     },
     "vanBilling": {
       "title": "Añadir otro food truck",
-      "body": "Tu plan {plan} incluye {vans, plural, one {# food truck} other {# food trucks}}. Añadir otro food truck cuesta <b>{price}</b> y se sumará a tu próximo ciclo de facturación.",
-      "note": "⚠️ Nota: durante el acceso anticipado, el ajuste de facturación se procesa manualmente. Recibirás un email de confirmación en un plazo de 24 horas.",
+      "body": "Tu plan {plan} incluye {vans, plural, one {# food truck} other {# food trucks}}. Añadir otro food truck cuesta <b>{price}</b>.",
+      "note": "⚠️ Te avisaremos antes de cobrar nada.",
       "cancel": "Cancelar",
       "add": "Añadir food truck: {price}"
     },
@@ -5526,7 +5526,8 @@
       "whatsappSoonTitle": "Respuestas automáticas de WhatsApp <soon>Próximamente</soon>",
       "whatsappSoonBody": "“¿Dónde estáis esta noche?” “¿Qué postres tenéis?” Pronto tu WhatsApp responderá mientras conduces hacia tu ubicación o estás en la plancha. Messenger e Instagram vendrán después.",
       "offlineTitle": "¿Sin cobertura? Sigue sirviendo.",
-      "offlineBody": "Si te quedas sin cobertura, los pedidos online se pausan solos para que nadie haga pedidos que no vas a ver. Sigue tomando pedidos con la app para iPhone, iPad y Android.",
+      "offlineBody": "Activa la protección de pedidos sin conexión y los pedidos online se pausan solos si te quedas sin cobertura, para que nadie haga pedidos que no vas a ver.",
+      "offlineApps": "Sigue tomando pedidos con la app para iPhone, iPad y Android.",
       "slotsBody": "Tus clientes hacen un pedido anticipado y eligen la hora de recogida. Sin colas, y la comida lista cuando llegan."
     },
     "steps": {
@@ -6084,7 +6085,7 @@
       "kitchen_app": "La forma más completa de usar HatchGrab: una pantalla de cocina (KDS) en directo, y la única manera de seguir tomando pedidos cuando te quedas sin cobertura.",
       "multi_device_kitchen": "Usa varias pantallas — mostrador y cocina — con los mismos pedidos en directo.",
       "multi_user_access": "Da a tu equipo su propio acceso con el nivel de permisos adecuado.",
-      "offline_protection": "Si te quedas sin cobertura, los pedidos online se pausan para que nadie haga pedidos que no vas a ver. La app para iPhone, iPad y Android te permite seguir tomando pedidos sin conexión; el panel web necesita conexión.",
+      "offline_protection": "Activa la protección de pedidos sin conexión y los pedidos online se pausan solos si te quedas sin cobertura, para que nadie haga pedidos que no vas a ver.",
       "ticket_printing": "Imprime las comandas en una impresora Bluetooth o con cable en la cocina.",
       "web_dashboard": "Gestiona tu servicio desde el navegador de cualquier móvil, tablet u ordenador portátil.",
       "meal_deals_upsells": "Agrupa platos en menús y ofrece extras al pagar para subir el ticket medio.",
@@ -6113,6 +6114,7 @@
       "sms_order_alerts": "Avisa a los clientes por SMS automáticamente cuando su pedido está listo.",
       "loyalty_stamp_cards": "Premia a los clientes que repiten con tarjetas de sellos digitales — los sellos se suman y se canjean automáticamente."
     },
+    "offlineApps": "La app para iPhone, iPad y Android te permite seguir tomando pedidos sin conexión; el panel web necesita conexión.",
     "metaTitle": "Planes y funciones comparados — HatchGrab {country}"
   },
   "compare": {

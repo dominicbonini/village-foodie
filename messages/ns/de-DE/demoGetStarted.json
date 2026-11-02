@@ -80,7 +80,7 @@
   "promoLabel": "Haben Sie einen Code? <opt>(optional)</opt>",
   "promoPlaceholder": "Hier eingeben",
   "agreeTerms": "Ich stimme den <terms>Nutzungsbedingungen</terms> und der <privacy>Datenschutzerklärung</privacy> zu.",
-  "freeMonth": "Die Einrichtung startet Ihren kostenlosen Monat noch nicht. Er beginnt erst, wenn Sie Ihr erstes Live-Event auswählen – wann immer Sie so weit sind.",
+  "freeMonth": "{months, plural, =0 {Ihre kostenlose Testphase beginnt, wenn Sie Ihr Konto erstellen.} one {Ihr erster Monat ist kostenlos, ab dem Erstellen Ihres Kontos.} other {Ihre ersten # Monate sind kostenlos, ab dem Erstellen Ihres Kontos.}}",
   "fieldError": {
     "firstName": "Nennen Sie uns Ihren Vornamen.",
     "lastName": "Und Ihren Nachnamen.",

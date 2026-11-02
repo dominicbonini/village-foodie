@@ -80,7 +80,7 @@
   "promoLabel": "Turite kodą? <opt>(neprivaloma)</opt>",
   "promoPlaceholder": "Įveskite jį čia",
   "agreeTerms": "Sutinku su <terms>Sąlygomis</terms> ir <privacy>Privatumo politika</privacy>.",
-  "freeMonth": "Nustatymas nepradės jūsų nemokamo mėnesio. Jis prasidės, kai pasirinksite pirmąjį tikrą renginį — kai tik būsite pasiruošę.",
+  "freeMonth": "{months, plural, =0 {Nemokamas bandomasis laikotarpis prasideda, kai susikuriate paskyrą.} one {Pirmas # mėnuo nemokamas, skaičiuojant nuo paskyros sukūrimo.} few {Pirmi # mėnesiai nemokami, skaičiuojant nuo paskyros sukūrimo.} many {Pirmi # mėnesio nemokami, skaičiuojant nuo paskyros sukūrimo.} other {Pirmi # mėnesių nemokami, skaičiuojant nuo paskyros sukūrimo.}}",
   "fieldError": {
     "firstName": "Nurodykite savo vardą.",
     "lastName": "Ir pavardę.",

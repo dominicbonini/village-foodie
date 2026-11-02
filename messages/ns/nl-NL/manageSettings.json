@@ -137,7 +137,7 @@
     "cancel": "Annuleren",
     "newPlaceholder": "bijv. Foodtruck 2, Festivaltruck",
     "addButton": "Toevoegen",
-    "addConfirm": "Een extra foodtruck wordt in rekening gebracht als uitbreiding op je abonnement.\n\nDit zie je terug in je volgende factuurperiode.\n\nWil je doorgaan?",
+    "addConfirm": "{free, select, yes {Een foodtruck toevoegen is gratis in je plan.} other {Een extra foodtruck kost {price} per maand in je plan. We nemen contact op voordat we iets in rekening brengen.}}\n\nWil je doorgaan?",
     "removed": "{name} verwijderd",
     "kdsLinkCopied": "Link naar bestelscherm gekopieerd"
   },
@@ -163,8 +163,8 @@
   },
   "vanBilling": {
     "title": "Nog een foodtruck toevoegen",
-    "body": "Je plan {plan} omvat {vans, plural, one {# foodtruck} other {# foodtrucks}}. Een extra foodtruck kost <b>{price}</b> en wordt toegevoegd aan je volgende factuurperiode.",
-    "note": "⚠️ Let op: tijdens de vroege toegang verwerken we factuuraanpassingen handmatig. Je krijgt binnen 24 uur een bevestiging per e-mail.",
+    "body": "Je plan {plan} omvat {vans, plural, one {# foodtruck} other {# foodtrucks}}. Een extra foodtruck kost <b>{price}</b>.",
+    "note": "⚠️ We nemen contact op voordat we iets in rekening brengen.",
     "cancel": "Annuleren",
     "add": "Foodtruck toevoegen — {price}"
   },

@@ -44,5 +44,7 @@ export function countryPageAlternates(page: MarketingPage, code: string, alterna
  * 20 October 2026). The sitemap's lastmod for those pages is the later of this and the plan data they show
  * (lib/plans-server.ts planDataUpdatedAt) and the country's settings row. 🔴 MOVE IT WHEN THAT COPY CHANGES — the same
  * discipline as lib/legal.ts's *_UPDATED dates.
+ * copy-truth-1 (2 November 2026): moved for the offline line on the landing page and /features (offline protection is switched
+ * on by the truck, and the apps sentence shows only where the apps are in the stores).
  */
-export const MARKETING_COPY_UPDATED = '2026-10-20'
+export const MARKETING_COPY_UPDATED = '2026-11-02'

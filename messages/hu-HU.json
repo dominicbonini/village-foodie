@@ -1501,8 +1501,8 @@
     "asLive": "A rendelési és konyhai folyamat pontosan úgy működik, mint élesben.",
     "startExploring": "Felfedezés indítása",
     "signupOffer": {
-      "heading": "Regisztráljon most az ingyenes hónapért",
-      "sub": "Az idő csak akkor kezd telni, amikor úgy dönt, hogy élesben indul."
+      "heading": "{months, plural, =0 {Kezdje ingyen} one {Kezdje ingyen # hónapig} other {Kezdje ingyen # hónapig}}",
+      "sub": "Az ingyenes próbaidőszak a fiók létrehozásakor kezdődik."
     },
     "cashIcon": "💵",
     "walkBanner": "Demó · ez az Ön étlapja, ahogyan a vásárlói látni fogják. Semmit nem terhelünk, és nem küldünk e-mailt."
@@ -1922,7 +1922,7 @@
     },
     "signup": {
       "title": "Hozza létre fiókját",
-      "subtitle": "Az ingyenes hónap csak az élesítéssel kezdődik.",
+      "subtitle": "{months, plural, =0 {Az ingyenes próbaidőszak a fiók létrehozásakor kezdődik.} one {Az első hónap ingyenes, a fiók létrehozásától számítva.} other {Az első # hónap ingyenes, a fiók létrehozásától számítva.}}",
       "emailPlaceholder": "nev@afoodtruckod.hu",
       "codeLabel": "Van kódja? <optional>(nem kötelező)</optional>",
       "codePlaceholder": "Írja be ide",
@@ -2211,7 +2211,7 @@
     "promoLabel": "Van kódja? <opt>(nem kötelező)</opt>",
     "promoPlaceholder": "Írja be ide",
     "agreeTerms": "Elfogadom a <terms>Felhasználási feltételeket</terms> és az <privacy>Adatvédelmi tájékoztatót</privacy>.",
-    "freeMonth": "A beállítás még nem indítja el az ingyenes hónapot. Az akkor kezdődik, amikor kiválasztja az első élő eseményét — amikor csak készen áll.",
+    "freeMonth": "{months, plural, =0 {Az ingyenes próbaidőszak a fiók létrehozásakor kezdődik.} one {Az első hónap ingyenes, a fiók létrehozásától számítva.} other {Az első # hónap ingyenes, a fiók létrehozásától számítva.}}",
     "fieldError": {
       "firstName": "Adja meg a keresztnevét.",
       "lastName": "És a vezetéknevét.",
@@ -3918,7 +3918,7 @@
       "cancel": "Mégse",
       "newPlaceholder": "pl. 2. food truck, Fesztivál food truck",
       "addButton": "Hozzáadás",
-      "addConfirm": "Egy további food truck hozzáadását az előfizetése kiegészítőjeként számlázzuk.\n\nEz a következő számlázási időszakban jelenik meg.\n\nFolytatja?",
+      "addConfirm": "{free, select, yes {Egy további food truck hozzáadása az Ön csomagjában ingyenes.} other {Egy további food truck ára az Ön csomagjában havi {price}. Mielőtt bármit felszámolnánk, felvesszük Önnel a kapcsolatot.}}\n\nFolytatja?",
       "removed": "Eltávolítva: {name}",
       "kdsLinkCopied": "A rendelési képernyő linkje kimásolva"
     },
@@ -3944,8 +3944,8 @@
     },
     "vanBilling": {
       "title": "Újabb food truck hozzáadása",
-      "body": "Az Ön {plan} csomagjában {vans, plural, one {# food truck} other {# food truck}} szerepel. Egy további food truck ára <b>{price}</b>, amely a következő számlázási időszakban jelenik meg.",
-      "note": "⚠️ Megjegyzés: a korai hozzáférés idején a számlázás módosítását kézzel dolgozzuk fel. 24 órán belül visszaigazoló e-mailt kap.",
+      "body": "Az Ön {plan} csomagjában {vans, plural, one {# food truck} other {# food truck}} szerepel. Egy további food truck ára <b>{price}</b>.",
+      "note": "⚠️ Mielőtt bármit felszámolnánk, felvesszük Önnel a kapcsolatot.",
       "cancel": "Mégse",
       "add": "Food truck hozzáadása — {price}"
     },
@@ -5526,7 +5526,8 @@
       "whatsappSoonTitle": "WhatsApp automatikus válaszok <soon>Hamarosan</soon>",
       "whatsappSoonBody": "„Hol lesznek ma este?” „Milyen desszertjeik vannak?” Hamarosan a WhatsAppon érkező kérdésekre akkor is születik válasz, amikor Ön éppen a helyszínre vezet vagy a grill mellett áll. Utána jön a Messenger és az Instagram.",
       "offlineTitle": "Nincs térerő? Szolgáljon ki tovább.",
-      "offlineBody": "Ha megszűnik a térerő, az online rendelés automatikusan szünetel, így a vásárlók nem adhatnak le olyan rendelést, amelyet Ön nem látna. A rendelésfelvételt folytathatja az iPhone-, iPad- és Android-alkalmazással.",
+      "offlineBody": "Kapcsolja be az offline rendelésvédelmet, és ha megszűnik a térerő, az online rendelés automatikusan szünetel, így a vásárlók nem adhatnak le olyan rendelést, amelyet Ön nem látna.",
+      "offlineApps": "A rendelésfelvételt folytathatja az iPhone-, iPad- és Android-alkalmazással.",
       "slotsBody": "A vásárlók előre rendelnek, és átvételi időt választanak. Rövidebb sorok, és az étel kész, mire megérkeznek."
     },
     "steps": {
@@ -6084,7 +6085,7 @@
       "kitchen_app": "A HatchGrab legteljesebb formája: élő konyhai kijelző, és az egyetlen mód arra, hogy térerő nélkül is fogadhasson rendeléseket.",
       "multi_device_kitchen": "Több kijelző — elöl a pultnál és a konyhában —, mindegyiken ugyanazok az élő rendelések.",
       "multi_user_access": "Adjon a munkatársainak saját belépést, a megfelelő jogosultsági szinttel.",
-      "offline_protection": "Ha megszűnik a térerő, az online rendelés szünetel, így a vásárlók nem adhatnak le olyan rendelést, amelyet Ön nem látna. Az iPhone-, iPad- és Android-alkalmazással offline is fogadhat rendeléseket; a webes vezérlőpulthoz internetkapcsolat kell.",
+      "offline_protection": "Kapcsolja be az offline rendelésvédelmet, és ha megszűnik a térerő, az online rendelés automatikusan szünetel, így a vásárlók nem adhatnak le olyan rendelést, amelyet Ön nem látna.",
       "ticket_printing": "Rendelésjegyek nyomtatása Bluetooth- vagy vezetékes nyomtatóra a konyhában.",
       "web_dashboard": "Irányítsa a kiszolgálást bármilyen telefon, tablet vagy laptop böngészőjéből.",
       "meal_deals_upsells": "Állítson össze menüket, és kínáljon kiegészítőket a fizetésnél, hogy nőjön az átlagos rendelési érték.",
@@ -6113,6 +6114,7 @@
       "sms_order_alerts": "Automatikus SMS a vásárlóknak, amikor elkészült a rendelésük.",
       "loyalty_stamp_cards": "Jutalmazza a visszatérő vásárlókat digitális pecsétkártyákkal — a gyűjtés és a beváltás automatikus."
     },
+    "offlineApps": "Az iPhone-, iPad- és Android-alkalmazással offline is fogadhat rendeléseket; a webes vezérlőpulthoz internetkapcsolat kell.",
     "metaTitle": "Csomagok és funkciók összehasonlítása — HatchGrab {country}"
   },
   "compare": {

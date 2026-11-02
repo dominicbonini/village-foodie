@@ -21,8 +21,8 @@
   "asLive": "Tilaus- ja keittiöprosessi toimii täsmälleen kuten oikeassa käytössä.",
   "startExploring": "Aloita tutustuminen",
   "signupOffer": {
-    "heading": "Rekisteröidy nyt ja saat ilmaisen kuukauden",
-    "sub": "Aika alkaa kulua vasta, kun päätät julkaista."
+    "heading": "{months, plural, =0 {Aloita ilmaiseksi} one {Aloita ilmaiseksi # kuukaudeksi} other {Aloita ilmaiseksi # kuukaudeksi}}",
+    "sub": "Ilmainen kokeilujaksosi alkaa, kun luot tilisi."
   },
   "cashIcon": "💶",
   "walkBanner": "Demo · tämä on ruokalistasi sellaisena kuin asiakkaasi näkevät sen. Mitään ei veloiteta eikä sähköposteja lähetetä."

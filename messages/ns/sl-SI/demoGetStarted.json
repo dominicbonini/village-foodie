@@ -80,7 +80,7 @@
   "promoLabel": "Imate kodo? <opt>(neobvezno)</opt>",
   "promoPlaceholder": "Vnesite jo tukaj",
   "agreeTerms": "Strinjam se s <terms>Pogoji uporabe</terms> in <privacy>Politiko zasebnosti</privacy>.",
-  "freeMonth": "Nastavitev ne sproži vašega brezplačnega meseca. Ta se začne, ko izberete prvi dogodek v živo — kadar boste pripravljeni.",
+  "freeMonth": "{months, plural, =0 {Brezplačno preizkusno obdobje se začne, ko ustvarite račun.} one {Vaš prvi mesec je brezplačen, od takrat, ko ustvarite račun.} two {Vaša prva # meseca sta brezplačna, od takrat, ko ustvarite račun.} few {Vaši prvi # meseci so brezplačni, od takrat, ko ustvarite račun.} other {Vaših prvih # mesecev je brezplačnih, od takrat, ko ustvarite račun.}}",
   "fieldError": {
     "firstName": "Vpišite svoje ime.",
     "lastName": "In še priimek.",

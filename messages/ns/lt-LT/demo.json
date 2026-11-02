@@ -21,8 +21,8 @@
   "asLive": "Užsakymų ir virtuvės eiga — lygiai tokia pati kaip tikrame darbe.",
   "startExploring": "Pradėti naršyti",
   "signupOffer": {
-    "heading": "Užsiregistruokite dabar ir gaukite nemokamą mėnesį",
-    "sub": "Laikas pradedamas skaičiuoti tik tada, kai nuspręsite pradėti veikti."
+    "heading": "{months, plural, =0 {Pradėkite nemokamai} one {Pradėkite nemokamai # mėnesiui} few {Pradėkite nemokamai # mėnesiams} many {Pradėkite nemokamai # mėnesio} other {Pradėkite nemokamai # mėnesių}}",
+    "sub": "Nemokamas bandomasis laikotarpis prasideda, kai susikuriate paskyrą."
   },
   "cashIcon": "💶",
   "walkBanner": "Demo · tai jūsų meniu, toks, kokį jį matys jūsų klientai. Pinigai nenuskaičiuojami ir el. laiškai nesiunčiami."

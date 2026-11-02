@@ -21,8 +21,8 @@
   "asLive": "Naročanje in delo v kuhinji potekata točno tako kot v živo.",
   "startExploring": "Začni raziskovati",
   "signupOffer": {
-    "heading": "Registrirajte se zdaj za brezplačni mesec",
-    "sub": "Odštevanje se začne šele, ko se odločite za objavo."
+    "heading": "{months, plural, =0 {Začnite brezplačno} one {Začnite brezplačno za # mesec} two {Začnite brezplačno za # meseca} few {Začnite brezplačno za # mesece} other {Začnite brezplačno za # mesecev}}",
+    "sub": "Brezplačno preizkusno obdobje se začne, ko ustvarite račun."
   },
   "cashIcon": "💶",
   "walkBanner": "Predstavitev · to je vaš jedilnik, kot ga bodo videle vaše stranke. Nič se ne zaračuna in nobena e-pošta se ne pošlje."

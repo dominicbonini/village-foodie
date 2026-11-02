@@ -1501,8 +1501,8 @@
     "asLive": "Aliran pesanan dan dapur adalah sama seperti semasa beroperasi sebenar.",
     "startExploring": "Mula meneroka",
     "signupOffer": {
-      "heading": "Daftar untuk bulan percuma anda sekarang",
-      "sub": "Kiraan masa tidak bermula sehingga anda memutuskan untuk mula beroperasi."
+      "heading": "{months, plural, =0 {Mula secara percuma} other {Mula secara percuma selama # bulan}}",
+      "sub": "Percubaan percuma anda bermula apabila anda mencipta akaun."
     },
     "cashIcon": "💵",
     "walkBanner": "Demo · ini menu anda, seperti yang akan dilihat oleh pelanggan anda. Tiada caj dikenakan dan tiada e-mel dihantar."
@@ -1922,7 +1922,7 @@
     },
     "signup": {
       "title": "Cipta akaun anda",
-      "subtitle": "Bulan percuma anda tidak bermula sehingga anda mula beroperasi.",
+      "subtitle": "{months, plural, =0 {Percubaan percuma anda bermula apabila anda mencipta akaun.} other {# bulan pertama anda percuma, bermula apabila anda mencipta akaun.}}",
       "emailPlaceholder": "you@yourtruck.co.uk",
       "codeLabel": "Ada kod? <optional>(pilihan)</optional>",
       "codePlaceholder": "Masukkan di sini",
@@ -2211,7 +2211,7 @@
     "promoLabel": "Ada kod? <opt>(pilihan)</opt>",
     "promoPlaceholder": "Masukkan di sini",
     "agreeTerms": "Saya bersetuju dengan <terms>Terma</terms> dan <privacy>Dasar Privasi</privacy>.",
-    "freeMonth": "Persediaan tidak akan memulakan bulan percuma anda. Ia bermula apabila anda memilih acara langsung pertama anda — bila-bila masa anda bersedia.",
+    "freeMonth": "{months, plural, =0 {Percubaan percuma anda bermula apabila anda mencipta akaun.} other {# bulan pertama anda percuma, bermula apabila anda mencipta akaun.}}",
     "fieldError": {
       "firstName": "Beritahu kami nama pertama anda.",
       "lastName": "Dan nama akhir anda.",
@@ -3918,7 +3918,7 @@
       "cancel": "Batal",
       "newPlaceholder": "cth. Van 2, Van Festival",
       "addButton": "Tambah",
-      "addConfirm": "Menambah trak tambahan akan dikenakan caj sebagai tambahan kepada langganan anda.\n\nIni akan dicerminkan dalam kitaran pengebilan anda yang seterusnya.\n\nAdakah anda mahu teruskan?",
+      "addConfirm": "{free, select, yes {Menambah trak adalah percuma dalam pelan anda.} other {Trak tambahan berharga {price} sebulan dalam pelan anda. Kami akan menghubungi anda sebelum mengenakan sebarang caj.}}\n\nAdakah anda mahu teruskan?",
       "removed": "Dibuang: {name}",
       "kdsLinkCopied": "Pautan skrin pesanan disalin"
     },
@@ -3944,8 +3944,8 @@
     },
     "vanBilling": {
       "title": "Tambah trak lain",
-      "body": "Pelan anda ({plan}) termasuk {vans, plural, other {# trak}}. Menambah trak tambahan berharga <b>{price}</b> dan akan ditambah pada kitaran pengebilan anda yang seterusnya.",
-      "note": "⚠️ Nota: Pelarasan pengebilan diproses secara manual semasa akses awal. Anda akan menerima e-mel pengesahan dalam masa 24 jam.",
+      "body": "Pelan anda ({plan}) termasuk {vans, plural, other {# trak}}. Menambah trak tambahan berharga <b>{price}</b>.",
+      "note": "⚠️ Kami akan menghubungi anda sebelum mengenakan sebarang caj.",
       "cancel": "Batal",
       "add": "Tambah trak — {price}"
     },
@@ -5526,7 +5526,8 @@
       "whatsappSoonTitle": "Balasan automatik WhatsApp <soon>Akan datang</soon>",
       "whatsappSoonBody": "“Malam ini di mana?” “Ada pencuci mulut apa?” Tidak lama lagi WhatsApp anda akan dijawab semasa anda memandu ke tapak niaga atau sibuk di depan dapur. Messenger dan Instagram akan menyusul.",
       "offlineTitle": "Tiada isyarat? Terus berniaga.",
-      "offlineBody": "Jika anda hilang isyarat, pesanan dalam talian dihentikan seketika secara automatik supaya pelanggan tidak boleh membuat pesanan yang anda tidak nampak. Teruskan mengambil pesanan dengan aplikasi iPhone, iPad dan Android.",
+      "offlineBody": "Hidupkan perlindungan pesanan luar talian dan pesanan dalam talian dihentikan seketika secara automatik jika anda hilang isyarat, supaya pelanggan tidak boleh membuat pesanan yang anda tidak nampak.",
+      "offlineApps": "Teruskan mengambil pesanan dengan aplikasi iPhone, iPad dan Android.",
       "slotsBody": "Pelanggan membuat pesanan awal dan memilih masa ambil. Barisan lebih pendek, dan makanan sudah siap apabila mereka tiba."
     },
     "steps": {
@@ -6056,7 +6057,7 @@
       "kitchen_app": "Cara paling lengkap untuk menggunakan HatchGrab: skrin dapur secara langsung, serta satu-satunya cara untuk terus menerima pesanan apabila tiada liputan.",
       "multi_device_kitchen": "Gunakan beberapa skrin — kaunter hadapan dan dapur — semuanya memaparkan pesanan langsung yang sama.",
       "multi_user_access": "Beri kakitangan log masuk mereka sendiri dengan tahap akses yang sesuai.",
-      "offline_protection": "Jika tiada liputan, pesanan dalam talian dijeda supaya pelanggan tidak boleh membuat pesanan yang anda tidak nampak. Aplikasi iPhone, iPad dan Android membolehkan anda terus menerima pesanan secara luar talian; papan pemuka web memerlukan sambungan.",
+      "offline_protection": "Hidupkan perlindungan pesanan luar talian dan pesanan dalam talian dihentikan seketika secara automatik jika anda hilang isyarat, supaya pelanggan tidak boleh membuat pesanan yang anda tidak nampak.",
       "ticket_printing": "Cetak tiket pesanan ke pencetak Bluetooth atau berwayar di dapur.",
       "web_dashboard": "Jalankan perkhidmatan anda daripada pelayar di mana-mana telefon, tablet atau komputer riba.",
       "meal_deals_upsells": "Gabungkan item menjadi set kombo dan tawarkan tambahan semasa pembayaran untuk meningkatkan purata nilai pesanan.",
@@ -6085,6 +6086,7 @@
       "sms_order_alerts": "Hantar SMS kepada pelanggan secara automatik apabila pesanan mereka siap.",
       "loyalty_stamp_cards": "Ganjari pelanggan tetap dengan kad cop digital — dikumpul dan ditebus secara automatik."
     },
+    "offlineApps": "Aplikasi iPhone, iPad dan Android membolehkan anda terus menerima pesanan secara luar talian; papan pemuka web memerlukan sambungan.",
     "metaTitle": "Perbandingan pelan & ciri — HatchGrab {country}"
   },
   "compare": {

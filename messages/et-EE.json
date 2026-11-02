@@ -1501,8 +1501,8 @@
     "asLive": "Tellimine ja köögi töövoog on täpselt samad nagu päriselt.",
     "startExploring": "Hakka uurima",
     "signupOffer": {
-      "heading": "Registreeru kohe ja saa tasuta kuu",
-      "sub": "Aeg hakkab jooksma alles siis, kui otsustad avalikuks minna."
+      "heading": "{months, plural, =0 {Alusta tasuta} one {Alusta # kuu tasuta} other {Alusta # kuud tasuta}}",
+      "sub": "Sinu tasuta prooviperiood algab, kui lood konto."
     },
     "cashIcon": "💶",
     "walkBanner": "Demo · see on sinu menüü just nii, nagu sinu kliendid seda näevad. Raha ei võeta ja e-kirju ei saadeta."
@@ -1922,7 +1922,7 @@
     },
     "signup": {
       "title": "Loo konto",
-      "subtitle": "Sinu tasuta kuu ei alga enne, kui hakkad päriselt tellimusi vastu võtma.",
+      "subtitle": "{months, plural, =0 {Sinu tasuta prooviperiood algab, kui lood konto.} one {Sinu esimene kuu on tasuta, alates konto loomisest.} other {Sinu esimesed # kuud on tasuta, alates konto loomisest.}}",
       "emailPlaceholder": "sina@sinutoiduauto.ee",
       "codeLabel": "Kas sul on kood? <optional>(valikuline)</optional>",
       "codePlaceholder": "Sisesta see siia",
@@ -2211,7 +2211,7 @@
     "promoLabel": "Kas sul on kood? <opt>(valikuline)</opt>",
     "promoPlaceholder": "Sisesta see siia",
     "agreeTerms": "Nõustun <terms>tingimustega</terms> ja <privacy>privaatsuspoliitikaga</privacy>.",
-    "freeMonth": "Seadistamine ei käivita sinu tasuta kuud. See algab siis, kui valid oma esimese päris ürituse — siis, kui oled valmis.",
+    "freeMonth": "{months, plural, =0 {Sinu tasuta prooviperiood algab, kui lood konto.} one {Sinu esimene kuu on tasuta, alates konto loomisest.} other {Sinu esimesed # kuud on tasuta, alates konto loomisest.}}",
     "fieldError": {
       "firstName": "Ütle meile oma eesnimi.",
       "lastName": "Ja oma perekonnanimi.",
@@ -3918,7 +3918,7 @@
       "cancel": "Tühista",
       "newPlaceholder": "nt Toiduauto 2, Festivaliauto",
       "addButton": "Lisa",
-      "addConfirm": "Täiendava toiduauto eest lisandub tasu sinu paketile.\n\nSee kajastub sinu järgmises arveldusperioodis.\n\nKas soovid jätkata?",
+      "addConfirm": "{free, select, yes {Toiduauto lisamine on sinu paketis tasuta.} other {Täiendav toiduauto maksab sinu paketis {price} kuus. Võtame sinuga ühendust enne, kui midagi arveldame.}}\n\nKas soovid jätkata?",
       "removed": "Eemaldatud: {name}",
       "kdsLinkCopied": "Tellimuste ekraani link kopeeritud"
     },
@@ -3944,8 +3944,8 @@
     },
     "vanBilling": {
       "title": "Lisa veel üks toiduauto",
-      "body": "Sinu pakett {plan} sisaldab {vans, plural, one {# toiduautot} other {# toiduautot}}. Täiendava toiduauto lisamine maksab <b>{price}</b> ja lisandub sinu järgmisse arveldusperioodi.",
-      "note": "⚠️ NB: Varajase juurdepääsu ajal tehakse arvelduse korrigeerimine käsitsi. Saad kinnitava e-kirja 24 tunni jooksul.",
+      "body": "Sinu pakett {plan} sisaldab {vans, plural, one {# toiduautot} other {# toiduautot}}. Täiendava toiduauto lisamine maksab <b>{price}</b>.",
+      "note": "⚠️ Võtame sinuga ühendust enne, kui midagi arveldame.",
       "cancel": "Tühista",
       "add": "Lisa toiduauto — {price}"
     },
@@ -5526,7 +5526,8 @@
       "whatsappSoonTitle": "WhatsAppi automaatvastused <soon>Tulekul</soon>",
       "whatsappSoonBody": "„Kus te täna õhtul olete?“ „Milliseid magustoite teil on?“ Peagi vastatakse sinu WhatsAppi sõnumitele sel ajal, kui sõidad müügikohta või seisad grilli taga. Messenger ja Instagram järgnevad.",
       "offlineTitle": "Levi pole? Teeninda edasi.",
-      "offlineBody": "Kui levi kaob, peatub veebitellimine automaatselt, et kliendid ei saaks esitada tellimusi, mida sa ei näe. Jätka tellimuste vastuvõtmist iPhone’i, iPadi ja Androidi rakendusega.",
+      "offlineBody": "Lülita sisse tellimuste võrguühenduseta kaitse ja veebitellimine peatub automaatselt, kui levi kaob, et kliendid ei saaks esitada tellimusi, mida sa ei näe.",
+      "offlineApps": "Jätka tellimuste vastuvõtmist iPhone’i, iPadi ja Androidi rakendusega.",
       "slotsBody": "Kliendid tellivad ette ja valivad kättesaamise aja. Vähem järjekordi ja toit on valmis, kui nad saabuvad."
     },
     "steps": {
@@ -6084,7 +6085,7 @@
       "kitchen_app": "Kõige täielikum viis HatchGrabi kasutamiseks: reaalajas köögiekraan ning ainus võimalus tellimusi vastu võtta ka siis, kui levi kaob.",
       "multi_device_kitchen": "Kasuta mitut ekraani — leti ääres ja köögis — ning kõik näitavad samu tellimusi reaalajas.",
       "multi_user_access": "Anna töötajatele oma kasutajakontod sobiva ligipääsutasemega.",
-      "offline_protection": "Kui levi kaob, peatub veebitellimine, et kliendid ei saaks esitada tellimusi, mida sa ei näe. iPhone’i, iPadi ja Androidi rakendusega saad tellimusi vastu võtta ka võrguühenduseta; veebitöölaud vajab ühendust.",
+      "offline_protection": "Lülita sisse tellimuste võrguühenduseta kaitse ja veebitellimine peatub automaatselt, kui levi kaob, et kliendid ei saaks esitada tellimusi, mida sa ei näe.",
       "ticket_printing": "Prindi tellimuste tšekid köögis Bluetooth- või juhtmega printerisse.",
       "web_dashboard": "Juhi vahetust mis tahes telefoni, tahvelarvuti või sülearvuti brauserist.",
       "meal_deals_upsells": "Koonda tooted komplektideks ja paku kassas lisasid, et tõsta keskmise tellimuse väärtust.",
@@ -6113,6 +6114,7 @@
       "sms_order_alerts": "Saada klientidele automaatselt SMS, kui nende tellimus on valmis.",
       "loyalty_stamp_cards": "Premeeri püsikliente digitaalsete templikaartidega — templid kogutakse ja lunastatakse automaatselt."
     },
+    "offlineApps": "iPhone’i, iPadi ja Androidi rakendusega saad tellimusi vastu võtta ka võrguühenduseta; veebitöölaud vajab ühendust.",
     "metaTitle": "Paketid ja funktsioonid võrdluses — HatchGrab {country}"
   },
   "compare": {

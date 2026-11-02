@@ -21,8 +21,8 @@
   "asLive": "Bestillingene og kjøkkenflyten fungerer nøyaktig som i ekte drift.",
   "startExploring": "Begynn å utforske",
   "signupOffer": {
-    "heading": "Registrer deg for en gratis måned nå",
-    "sub": "Klokka starter ikke før du bestemmer deg for å åpne for kunder."
+    "heading": "{months, plural, =0 {Start gratis} one {Start gratis i # måned} other {Start gratis i # måneder}}",
+    "sub": "Den gratis prøveperioden starter når du oppretter kontoen."
   },
   "cashIcon": "💵",
   "walkBanner": "Demo · dette er menyen din, slik kundene dine vil se den. Ingenting belastes, og ingen e-poster sendes."

@@ -21,8 +21,8 @@
   "asLive": "Zamawianie i praca kuchni działają dokładnie tak jak na żywo.",
   "startExploring": "Zacznij odkrywać",
   "signupOffer": {
-    "heading": "Zarejestruj się teraz i odbierz darmowy miesiąc",
-    "sub": "Okres próbny zacznie się dopiero, gdy zdecydujesz się wystartować."
+    "heading": "{months, plural, =0 {Zacznij za darmo} one {Zacznij za darmo na # miesiąc} few {Zacznij za darmo na # miesiące} many {Zacznij za darmo na # miesięcy} other {Zacznij za darmo na # miesiąca}}",
+    "sub": "Bezpłatny okres próbny zaczyna się, gdy zakładasz konto."
   },
   "cashIcon": "💵",
   "walkBanner": "Demo · to twoje menu, tak jak zobaczą je twoi klienci. Nie pobieramy żadnych opłat i nie wysyłamy żadnych e-maili."

@@ -1,0 +1,327 @@
+{
+ "$comment": "copy-truth-1 (2 November 2026): the OLD wording of every changed key, per locale, as at 82c5adee (before the change). scripts/copy-truth-1.cjs proves none of it remains in any messages file. Never regenerate.",
+ "old": {
+  "en-GB": {
+   "auth.signup.subtitle": "Your free month doesn’t start until you go live.",
+   "demoGetStarted.freeMonth": "Setting up won’t start your free month. That begins when you pick your first live event — whenever you’re ready.",
+   "demo.signupOffer.heading": "Sign up for your free month now",
+   "demo.signupOffer.sub": "The clock doesn’t start until you decide to go live.",
+   "landing.does.offlineBody": "If you lose signal, online ordering pauses automatically so customers can’t place orders you won’t see. Carry on taking orders with the iPhone, iPad and Android app.",
+   "featuresPage.detail.offline_protection": "If you lose signal, online ordering pauses so customers can’t place orders you won’t see. The iPhone, iPad and Android app keeps you taking orders offline; the web dashboard needs a connection.",
+   "manageSettings.vans.addConfirm": "Adding an additional truck will be charged as an add-on to your subscription.\n\nThis will be reflected in your next billing cycle.\n\nDo you want to continue?",
+   "manageSettings.vanBilling.body": "Your {plan} plan includes {vans, plural, one {# truck} other {# trucks}}. Adding an additional truck costs <b>{price}</b> and will be added to your next billing cycle.",
+   "manageSettings.vanBilling.note": "⚠️ Note: Billing adjustment is processed manually during early access. You will receive a confirmation email within 24 hours."
+  },
+  "en-US": {
+   "landing.does.offlineBody": "If you lose signal, online ordering pauses automatically so customers can’t place orders you won’t see. Continue taking orders with the iPhone, iPad and Android app."
+  },
+  "fr-FR": {
+   "auth.signup.subtitle": "Votre mois gratuit ne commence qu’à votre mise en ligne.",
+   "demoGetStarted.freeMonth": "La configuration ne lance pas votre mois gratuit. Il commence lorsque vous choisissez votre premier événement en ligne — quand vous le souhaitez.",
+   "demo.signupOffer.heading": "Votre mois gratuit : inscrivez-vous maintenant",
+   "demo.signupOffer.sub": "Le compteur ne démarre que lorsque vous décidez de passer en ligne.",
+   "landing.does.offlineBody": "Si vous perdez le réseau, la commande en ligne se met automatiquement en pause pour que les clients ne passent pas de commandes que vous ne verriez pas. Continuez à prendre des commandes avec l’app iPhone, iPad et Android.",
+   "featuresPage.detail.offline_protection": "Si vous perdez le réseau, la commande en ligne se met en pause pour que les clients ne passent pas de commandes que vous ne verriez pas. L’app iPhone, iPad et Android vous permet de continuer à prendre des commandes hors ligne ; le tableau de bord web nécessite une connexion.",
+   "manageSettings.vans.addConfirm": "L’ajout d’un food truck supplémentaire sera facturé en option sur votre abonnement.\n\nCela apparaîtra sur votre prochaine période de facturation.\n\nVoulez-vous continuer ?",
+   "manageSettings.vanBilling.body": "Votre offre {plan} inclut {vans, plural, one {# food truck} other {# food trucks}}. L’ajout d’un food truck supplémentaire coûte <b>{price}</b> et sera ajouté à votre prochaine période de facturation.",
+   "manageSettings.vanBilling.note": "⚠️ Remarque : pendant l’accès anticipé, l’ajustement de facturation est traité manuellement. Vous recevrez un e-mail de confirmation sous 24 heures."
+  },
+  "de-DE": {
+   "auth.signup.subtitle": "Ihr kostenloser Monat beginnt erst, wenn Sie live gehen.",
+   "demoGetStarted.freeMonth": "Die Einrichtung startet Ihren kostenlosen Monat noch nicht. Er beginnt erst, wenn Sie Ihr erstes Live-Event auswählen – wann immer Sie so weit sind.",
+   "demo.signupOffer.heading": "Jetzt für Ihren kostenlosen Monat registrieren",
+   "demo.signupOffer.sub": "Die Uhr läuft erst, wenn Sie sich entscheiden, live zu gehen.",
+   "landing.does.offlineBody": "Wenn Sie den Empfang verlieren, werden Online-Bestellungen automatisch pausiert, damit Kunden keine Bestellungen aufgeben, die Sie nicht sehen. Mit der App für iPhone, iPad und Android nehmen Sie weiter Bestellungen an.",
+   "featuresPage.detail.offline_protection": "Wenn Sie den Empfang verlieren, werden Online-Bestellungen pausiert, damit Kunden keine Bestellungen aufgeben, die Sie nicht sehen. Mit der App für iPhone, iPad und Android nehmen Sie offline weiter Bestellungen an; das Web-Dashboard braucht eine Verbindung.",
+   "manageSettings.vans.addConfirm": "Ein zusätzlicher Foodtruck wird als Zusatzleistung zu Ihrem Abonnement berechnet.\n\nDas wird in Ihrem nächsten Abrechnungszeitraum berücksichtigt.\n\nMöchten Sie fortfahren?",
+   "manageSettings.vanBilling.body": "Ihr Tarif {plan} umfasst {vans, plural, one {# Foodtruck} other {# Foodtrucks}}. Ein zusätzlicher Foodtruck kostet <b>{price}</b> und wird in Ihrem nächsten Abrechnungszeitraum berechnet.",
+   "manageSettings.vanBilling.note": "⚠️ Hinweis: Während des Early Access wird die Abrechnung manuell angepasst. Sie erhalten innerhalb von 24 Stunden eine Bestätigung per E-Mail."
+  },
+  "es-ES": {
+   "auth.signup.subtitle": "Tu mes gratis no empieza hasta que te publiques.",
+   "demoGetStarted.freeMonth": "Configurar no pone en marcha tu mes gratis. Este empieza cuando eliges tu primer evento publicado, cuando tú quieras.",
+   "demo.signupOffer.heading": "Regístrate ya y consigue tu mes gratis",
+   "demo.signupOffer.sub": "El mes no empieza a contar hasta que decidas publicarte.",
+   "landing.does.offlineBody": "Si te quedas sin cobertura, los pedidos online se pausan solos para que nadie haga pedidos que no vas a ver. Sigue tomando pedidos con la app para iPhone, iPad y Android.",
+   "featuresPage.detail.offline_protection": "Si te quedas sin cobertura, los pedidos online se pausan para que nadie haga pedidos que no vas a ver. La app para iPhone, iPad y Android te permite seguir tomando pedidos sin conexión; el panel web necesita conexión.",
+   "manageSettings.vans.addConfirm": "Añadir otro food truck se cobrará como complemento de tu suscripción.\n\nSe reflejará en tu próximo ciclo de facturación.\n\n¿Quieres continuar?",
+   "manageSettings.vanBilling.body": "Tu plan {plan} incluye {vans, plural, one {# food truck} other {# food trucks}}. Añadir otro food truck cuesta <b>{price}</b> y se sumará a tu próximo ciclo de facturación.",
+   "manageSettings.vanBilling.note": "⚠️ Nota: durante el acceso anticipado, el ajuste de facturación se procesa manualmente. Recibirás un email de confirmación en un plazo de 24 horas."
+  },
+  "it-IT": {
+   "auth.signup.subtitle": "Il tuo mese gratuito inizia solo quando vai online.",
+   "demoGetStarted.freeMonth": "La configurazione non avvia il tuo mese gratuito. Inizia quando scegli il tuo primo evento online — quando vuoi tu.",
+   "demo.signupOffer.heading": "Iscriviti ora per il tuo mese gratuito",
+   "demo.signupOffer.sub": "Il conteggio parte solo quando decidi di andare online.",
+   "landing.does.offlineBody": "Se perdi il segnale, gli ordini online si mettono in pausa automaticamente, così i clienti non possono inviare ordini che non vedresti. Continua a prendere ordini con l’app per iPhone, iPad e Android.",
+   "featuresPage.detail.offline_protection": "Se perdi il segnale, gli ordini online si mettono in pausa, così i clienti non possono inviare ordini che non vedresti. L’app per iPhone, iPad e Android ti permette di continuare a prendere ordini offline; la dashboard web richiede una connessione.",
+   "manageSettings.vans.addConfirm": "Un food truck in più ti verrà addebitato come componente aggiuntivo del tuo abbonamento.\n\nL’importo comparirà nel prossimo ciclo di fatturazione.\n\nVuoi continuare?",
+   "manageSettings.vanBilling.body": "Il tuo piano {plan} include {vans, plural, one {# food truck} other {# food truck}}. Un food truck in più costa <b>{price}</b> e verrà aggiunto al prossimo ciclo di fatturazione.",
+   "manageSettings.vanBilling.note": "⚠️ Nota: durante l’accesso anticipato l’adeguamento della fatturazione viene gestito manualmente. Riceverai un’email di conferma entro 24 ore."
+  },
+  "pt-PT": {
+   "auth.signup.subtitle": "O seu mês grátis só começa quando ficar online.",
+   "demoGetStarted.freeMonth": "Configurar não dá início ao seu mês grátis. Esse só começa quando escolher o seu primeiro evento ao vivo — quando estiver pronto.",
+   "demo.signupOffer.heading": "Registe-se já para o seu mês grátis",
+   "demo.signupOffer.sub": "O tempo só começa a contar quando decidir ficar online.",
+   "landing.does.offlineBody": "Se perder a rede, as encomendas online são pausadas automaticamente, para que os clientes não façam encomendas que não vai ver. Continue a receber encomendas com a app para iPhone, iPad e Android.",
+   "featuresPage.detail.offline_protection": "Se perder a rede, as encomendas online são pausadas, para que os clientes não façam encomendas que não vai ver. A app para iPhone, iPad e Android permite-lhe continuar a receber encomendas offline; o painel web precisa de ligação.",
+   "manageSettings.vans.addConfirm": "Adicionar mais um food truck será cobrado como extra na sua subscrição.\n\nIsto será refletido no seu próximo ciclo de faturação.\n\nQuer continuar?",
+   "manageSettings.vanBilling.body": "O seu plano {plan} inclui {vans, plural, one {# food truck} other {# food trucks}}. Adicionar mais um food truck custa <b>{price}</b>, valor acrescentado ao seu próximo ciclo de faturação.",
+   "manageSettings.vanBilling.note": "⚠️ Nota: durante o acesso antecipado, o ajuste da faturação é processado manualmente. Receberá um email de confirmação no prazo de 24 horas."
+  },
+  "nl-NL": {
+   "auth.signup.subtitle": "Je gratis maand begint pas als je live gaat.",
+   "demoGetStarted.freeMonth": "Met instellen start je gratis maand nog niet. Die begint pas als je je eerste live evenement kiest — wanneer jij er klaar voor bent.",
+   "demo.signupOffer.heading": "Meld je nu aan voor je gratis maand",
+   "demo.signupOffer.sub": "De klok gaat pas lopen als jij besluit live te gaan.",
+   "landing.does.offlineBody": "Valt je verbinding weg, dan pauzeert online bestellen automatisch, zodat klanten geen bestellingen plaatsen die jij niet ziet. Neem gewoon verder bestellingen op met de app voor iPhone, iPad en Android.",
+   "featuresPage.detail.offline_protection": "Valt je verbinding weg, dan pauzeert online bestellen, zodat klanten geen bestellingen plaatsen die jij niet ziet. Met de app voor iPhone, iPad en Android neem je offline gewoon bestellingen op; het webdashboard heeft een verbinding nodig.",
+   "manageSettings.vans.addConfirm": "Een extra foodtruck wordt in rekening gebracht als uitbreiding op je abonnement.\n\nDit zie je terug in je volgende factuurperiode.\n\nWil je doorgaan?",
+   "manageSettings.vanBilling.body": "Je plan {plan} omvat {vans, plural, one {# foodtruck} other {# foodtrucks}}. Een extra foodtruck kost <b>{price}</b> en wordt toegevoegd aan je volgende factuurperiode.",
+   "manageSettings.vanBilling.note": "⚠️ Let op: tijdens de vroege toegang verwerken we factuuraanpassingen handmatig. Je krijgt binnen 24 uur een bevestiging per e-mail."
+  },
+  "sv-SE": {
+   "auth.signup.subtitle": "Din gratismånad börjar inte förrän du går live.",
+   "demoGetStarted.freeMonth": "Din gratismånad startar inte när du ställer in kontot. Den börjar när du väljer ditt första evenemang som ska gå live — när du än är redo.",
+   "demo.signupOffer.heading": "Registrera dig för din gratismånad nu",
+   "demo.signupOffer.sub": "Klockan börjar inte ticka förrän du bestämmer dig för att gå live.",
+   "landing.does.offlineBody": "Om du tappar täckningen pausas onlinebeställningen automatiskt, så att kunderna inte kan lägga beställningar som du inte ser. Fortsätt ta emot beställningar med appen för iPhone, iPad och Android.",
+   "featuresPage.detail.offline_protection": "Om du tappar täckningen pausas onlinebeställningen, så att kunderna inte kan lägga beställningar som du inte ser. Appen för iPhone, iPad och Android låter dig fortsätta ta emot beställningar offline; översikten på webben kräver uppkoppling.",
+   "manageSettings.vans.addConfirm": "En extra foodtruck debiteras som ett tillägg till ditt abonnemang.\n\nDet syns i din nästa faktureringsperiod.\n\nVill du fortsätta?",
+   "manageSettings.vanBilling.body": "I ditt abonnemang {plan} ingår {vans, plural, one {# foodtruck} other {# foodtruckar}}. En extra foodtruck kostar <b>{price}</b> och läggs till i din nästa faktureringsperiod.",
+   "manageSettings.vanBilling.note": "⚠️ Obs! Under lanseringsperioden justeras faktureringen manuellt. Du får ett bekräftelsemejl inom 24 timmar."
+  },
+  "da-DK": {
+   "auth.signup.subtitle": "Din gratis måned starter først, når du går live.",
+   "demoGetStarted.freeMonth": "Opsætningen starter ikke din gratis måned. Den begynder, når du vælger dit første live-arrangement – når du er klar.",
+   "demo.signupOffer.heading": "Tilmeld dig din gratis måned nu",
+   "demo.signupOffer.sub": "Uret starter først, når du beslutter dig for at gå live.",
+   "landing.does.offlineBody": "Hvis du mister signalet, sættes onlinebestilling automatisk på pause, så kunderne ikke kan afgive bestillinger, du ikke ser. Bliv ved med at tage imod bestillinger med appen til iPhone, iPad og Android.",
+   "featuresPage.detail.offline_protection": "Hvis du mister signalet, sættes onlinebestilling på pause, så kunderne ikke kan afgive bestillinger, du ikke ser. Appen til iPhone, iPad og Android lader dig tage imod bestillinger offline; webdashboardet kræver forbindelse.",
+   "manageSettings.vans.addConfirm": "En ekstra foodtruck opkræves som tilkøb til dit abonnement.\n\nDet fremgår af din næste faktureringsperiode.\n\nVil du fortsætte?",
+   "manageSettings.vanBilling.body": "Dit abonnement {plan} omfatter {vans, plural, one {# foodtruck} other {# foodtrucks}}. En ekstra foodtruck koster <b>{price}</b> og lægges til din næste faktureringsperiode.",
+   "manageSettings.vanBilling.note": "⚠️ Bemærk: I perioden med tidlig adgang behandles ændringer i faktureringen manuelt. Du modtager en bekræftelse på e-mail inden for 24 timer."
+  },
+  "nb-NO": {
+   "auth.signup.subtitle": "Gratismåneden din starter ikke før du åpner for bestillinger.",
+   "demoGetStarted.freeMonth": "Oppsettet starter ikke gratismåneden din. Den begynner når du velger ditt første aktive arrangement — når du er klar.",
+   "demo.signupOffer.heading": "Registrer deg for en gratis måned nå",
+   "demo.signupOffer.sub": "Klokka starter ikke før du bestemmer deg for å åpne for kunder.",
+   "landing.does.offlineBody": "Mister du dekningen, settes nettbestillingen automatisk på pause, så kundene ikke kan legge inn bestillinger du ikke ser. Fortsett å ta imot bestillinger med appen for iPhone, iPad og Android.",
+   "featuresPage.detail.offline_protection": "Mister du dekningen, settes nettbestillingen på pause, så kundene ikke kan legge inn bestillinger du ikke ser. Med appen for iPhone, iPad og Android kan du fortsette å ta imot bestillinger uten nett; nettoversikten krever tilkobling.",
+   "manageSettings.vans.addConfirm": "En ekstra matbil blir fakturert som et tillegg til abonnementet ditt.\n\nDette vises i neste faktureringsperiode.\n\nVil du fortsette?",
+   "manageSettings.vanBilling.body": "Abonnementet {plan} inkluderer {vans, plural, one {# matbil} other {# matbiler}}. En ekstra matbil koster <b>{price}</b> og legges til i neste faktureringsperiode.",
+   "manageSettings.vanBilling.note": "⚠️ Merk: Endringer i faktureringen behandles manuelt mens vi er i tidlig tilgang. Du får en bekreftelse på e-post innen 24 timer."
+  },
+  "pl-PL": {
+   "auth.signup.subtitle": "Twój darmowy miesiąc zacznie się dopiero, gdy wystartujesz.",
+   "demoGetStarted.freeMonth": "Konfiguracja nie uruchamia twojego darmowego miesiąca. Zaczyna się on dopiero, gdy wybierzesz pierwsze wydarzenie na żywo — kiedy tylko zechcesz.",
+   "demo.signupOffer.heading": "Zarejestruj się teraz i odbierz darmowy miesiąc",
+   "demo.signupOffer.sub": "Okres próbny zacznie się dopiero, gdy zdecydujesz się wystartować.",
+   "landing.does.offlineBody": "Gdy stracisz zasięg, zamówienia online automatycznie się wstrzymują, więc klienci nie złożą zamówień, których nie zobaczysz. Przyjmuj dalej zamówienia w aplikacji na iPhone, iPad i Android.",
+   "featuresPage.detail.offline_protection": "Gdy stracisz zasięg, zamówienia online się wstrzymują, więc klienci nie złożą zamówień, których nie zobaczysz. Aplikacja na iPhone, iPad i Android pozwala dalej przyjmować zamówienia offline; panel w przeglądarce wymaga połączenia.",
+   "manageSettings.vans.addConfirm": "Kolejny food truck zostanie doliczony do twojej subskrypcji jako dodatek.\n\nZobaczysz to w następnym okresie rozliczeniowym.\n\nCzy chcesz kontynuować?",
+   "manageSettings.vanBilling.body": "Twój plan {plan} obejmuje {vans, plural, one {# food truck} few {# food trucki} many {# food trucków} other {# food trucka}}. Dodanie kolejnego food trucka kosztuje <b>{price}</b> i zostanie doliczone w następnym okresie rozliczeniowym.",
+   "manageSettings.vanBilling.note": "⚠️ Uwaga: we wczesnym dostępie korekty rozliczeń są przetwarzane ręcznie. W ciągu 24 godzin otrzymasz e-mail z potwierdzeniem."
+  },
+  "cs-CZ": {
+   "auth.signup.subtitle": "Váš měsíc zdarma začne až ve chvíli, kdy spustíte ostrý provoz.",
+   "demoGetStarted.freeMonth": "Nastavením se váš měsíc zdarma nespustí. Začne, až vyberete svou první ostrou akci — kdykoli budete připraveni.",
+   "demo.signupOffer.heading": "Zaregistrujte se teď na měsíc zdarma",
+   "demo.signupOffer.sub": "Čas začne běžet až ve chvíli, kdy se rozhodnete spustit ostrý provoz.",
+   "landing.does.offlineBody": "Když ztratíte signál, online objednávky se automaticky pozastaví, aby zákazníci nemohli zadat objednávky, které neuvidíte. Objednávky dál přijímáte v aplikaci pro iPhone, iPad a Android.",
+   "featuresPage.detail.offline_protection": "Když ztratíte signál, online objednávky se pozastaví, aby zákazníci nemohli zadat objednávky, které neuvidíte. Aplikace pro iPhone, iPad a Android vám umožní přijímat objednávky i offline; webový přehled potřebuje připojení.",
+   "manageSettings.vans.addConfirm": "Další food truck bude účtován jako doplněk k vašemu tarifu.\n\nProjeví se to v příštím zúčtovacím období.\n\nChcete pokračovat?",
+   "manageSettings.vanBilling.body": "Váš tarif {plan} zahrnuje {vans, plural, one {# food truck} few {# food trucky} other {# food trucků}}. Další food truck stojí <b>{price}</b> a bude připočten v příštím zúčtovacím období.",
+   "manageSettings.vanBilling.note": "⚠️ Poznámka: Během předběžného přístupu se úprava vyúčtování zpracovává ručně. Do 24 hodin obdržíte potvrzovací e-mail."
+  },
+  "hu-HU": {
+   "auth.signup.subtitle": "Az ingyenes hónap csak az élesítéssel kezdődik.",
+   "demoGetStarted.freeMonth": "A beállítás még nem indítja el az ingyenes hónapot. Az akkor kezdődik, amikor kiválasztja az első élő eseményét — amikor csak készen áll.",
+   "demo.signupOffer.heading": "Regisztráljon most az ingyenes hónapért",
+   "demo.signupOffer.sub": "Az idő csak akkor kezd telni, amikor úgy dönt, hogy élesben indul.",
+   "landing.does.offlineBody": "Ha megszűnik a térerő, az online rendelés automatikusan szünetel, így a vásárlók nem adhatnak le olyan rendelést, amelyet Ön nem látna. A rendelésfelvételt folytathatja az iPhone-, iPad- és Android-alkalmazással.",
+   "featuresPage.detail.offline_protection": "Ha megszűnik a térerő, az online rendelés szünetel, így a vásárlók nem adhatnak le olyan rendelést, amelyet Ön nem látna. Az iPhone-, iPad- és Android-alkalmazással offline is fogadhat rendeléseket; a webes vezérlőpulthoz internetkapcsolat kell.",
+   "manageSettings.vans.addConfirm": "Egy további food truck hozzáadását az előfizetése kiegészítőjeként számlázzuk.\n\nEz a következő számlázási időszakban jelenik meg.\n\nFolytatja?",
+   "manageSettings.vanBilling.body": "Az Ön {plan} csomagjában {vans, plural, one {# food truck} other {# food truck}} szerepel. Egy további food truck ára <b>{price}</b>, amely a következő számlázási időszakban jelenik meg.",
+   "manageSettings.vanBilling.note": "⚠️ Megjegyzés: a korai hozzáférés idején a számlázás módosítását kézzel dolgozzuk fel. 24 órán belül visszaigazoló e-mailt kap."
+  },
+  "sk-SK": {
+   "auth.signup.subtitle": "Váš bezplatný mesiac sa začne, až keď spustíte predaj.",
+   "demoGetStarted.freeMonth": "Nastavením sa váš bezplatný mesiac nezačne. Začne sa, až keď spustíte svoju prvú akciu — kedykoľvek budete pripravení.",
+   "demo.signupOffer.heading": "Zaregistrujte sa teraz a získajte mesiac zadarmo",
+   "demo.signupOffer.sub": "Odpočet sa začne, až keď sa rozhodnete spustiť prevádzku naostro.",
+   "landing.does.offlineBody": "Ak stratíte signál, online objednávanie sa automaticky pozastaví, aby zákazníci nemohli zadávať objednávky, ktoré by ste nevideli. Objednávky prijímajte ďalej v aplikácii pre iPhone, iPad a Android.",
+   "featuresPage.detail.offline_protection": "Ak stratíte signál, online objednávanie sa pozastaví, aby zákazníci nemohli zadávať objednávky, ktoré by ste nevideli. Aplikácia pre iPhone, iPad a Android vám umožní prijímať objednávky aj offline; webový prehľad potrebuje pripojenie.",
+   "manageSettings.vans.addConfirm": "Ďalší food truck sa vám bude účtovať ako doplnok k predplatnému.\n\nPrejaví sa to v nasledujúcom fakturačnom období.\n\nChcete pokračovať?",
+   "manageSettings.vanBilling.body": "Váš plán {plan} zahŕňa {vans, plural, one {# food truck} few {# food trucky} other {# food truckov}}. Ďalší food truck stojí <b>{price}</b> a pripočíta sa k nasledujúcemu fakturačnému obdobiu.",
+   "manageSettings.vanBilling.note": "⚠️ Poznámka: Počas predčasného prístupu sa úprava fakturácie spracúva ručne. Do 24 hodín dostanete potvrdzovací e-mail."
+  },
+  "ro-RO": {
+   "auth.signup.subtitle": "Luna gratuită începe abia când vă lansați.",
+   "demoGetStarted.freeMonth": "Configurarea nu pornește luna gratuită. Aceasta începe când alegeți primul eveniment activ — oricând sunteți pregătit.",
+   "demo.signupOffer.heading": "Înscrieți-vă acum pentru luna gratuită",
+   "demo.signupOffer.sub": "Perioada începe să curgă abia când decideți să vă lansați.",
+   "landing.does.offlineBody": "Dacă pierdeți semnalul, comenzile online se pun automat pe pauză, ca clienții să nu plaseze comenzi pe care nu le-ați vedea. Continuați să primiți comenzi cu aplicația pentru iPhone, iPad și Android.",
+   "featuresPage.detail.offline_protection": "Dacă pierdeți semnalul, comenzile online se pun pe pauză, ca clienții să nu plaseze comenzi pe care nu le-ați vedea. Aplicația pentru iPhone, iPad și Android vă permite să primiți comenzi și offline; panoul de control web are nevoie de conexiune.",
+   "manageSettings.vans.addConfirm": "Adăugarea unui food truck suplimentar va fi facturată ca supliment la abonament.\n\nAcest lucru se va reflecta în următorul ciclu de facturare.\n\nDoriți să continuați?",
+   "manageSettings.vanBilling.body": "Planul {plan} include {vans, plural, one {# food truck} few {# food truck-uri} other {# de food truck-uri}}. Adăugarea unui food truck suplimentar costă <b>{price}</b> și va fi inclusă în următorul ciclu de facturare.",
+   "manageSettings.vanBilling.note": "⚠️ Notă: În perioada de acces anticipat, ajustarea facturării se face manual. Veți primi un e-mail de confirmare în 24 de ore."
+  },
+  "hr-HR": {
+   "auth.signup.subtitle": "Besplatni mjesec ne počinje dok ne krenete uživo.",
+   "demoGetStarted.freeMonth": "Postavljanjem ne pokrećete besplatni mjesec. On počinje kad odaberete svoj prvi događaj uživo – kad god budete spremni.",
+   "demo.signupOffer.heading": "Prijavite se sada za besplatni mjesec",
+   "demo.signupOffer.sub": "Odbrojavanje ne počinje dok ne odlučite krenuti uživo.",
+   "landing.does.offlineBody": "Ako izgubite signal, online naručivanje automatski se pauzira kako kupci ne bi slali narudžbe koje nećete vidjeti. Nastavite primati narudžbe u aplikaciji za iPhone, iPad i Android.",
+   "featuresPage.detail.offline_protection": "Ako izgubite signal, online naručivanje se pauzira kako kupci ne bi slali narudžbe koje nećete vidjeti. Aplikacija za iPhone, iPad i Android omogućuje vam primanje narudžbi i izvan mreže; web nadzornoj ploči potrebna je veza.",
+   "manageSettings.vans.addConfirm": "Dodatni food truck naplaćuje se kao dodatak vašoj pretplati.\n\nTo će se odraziti u vašem sljedećem razdoblju naplate.\n\nŽelite li nastaviti?",
+   "manageSettings.vanBilling.body": "Vaš paket {plan} uključuje {vans, plural, one {# food truck} few {# food trucka} other {# food truckova}}. Dodatni food truck stoji <b>{price}</b> i bit će dodan u vaše sljedeće razdoblje naplate.",
+   "manageSettings.vanBilling.note": "⚠️ Napomena: tijekom ranog pristupa usklađivanje naplate obrađuje se ručno. E-poruku s potvrdom primit ćete u roku od 24 sata."
+  },
+  "sl-SI": {
+   "auth.signup.subtitle": "Vaš brezplačni mesec začne teči šele, ko začnete delovati v živo.",
+   "demoGetStarted.freeMonth": "Nastavitev ne sproži vašega brezplačnega meseca. Ta se začne, ko izberete prvi dogodek v živo — kadar boste pripravljeni.",
+   "demo.signupOffer.heading": "Registrirajte se zdaj za brezplačni mesec",
+   "demo.signupOffer.sub": "Odštevanje se začne šele, ko se odločite za objavo.",
+   "landing.does.offlineBody": "Če izgubite signal, se spletno naročanje samodejno ustavi, da kupci ne morejo oddati naročil, ki jih ne bi videli. Naročila še naprej sprejemajte z aplikacijo za iPhone, iPad in Android.",
+   "featuresPage.detail.offline_protection": "Če izgubite signal, se spletno naročanje ustavi, da kupci ne morejo oddati naročil, ki jih ne bi videli. Z aplikacijo za iPhone, iPad in Android sprejemate naročila tudi brez povezave; spletna nadzorna plošča potrebuje povezavo.",
+   "manageSettings.vans.addConfirm": "Dodaten food truck bo zaračunan kot dodatek k vaši naročnini.\n\nTo bo upoštevano v naslednjem obračunskem obdobju.\n\nŽelite nadaljevati?",
+   "manageSettings.vanBilling.body": "Vaš paket {plan} vključuje {vans, plural, one {# food truck} two {# food trucka} few {# food trucke} other {# food truckov}}. Dodaten food truck stane <b>{price}</b> in bo dodan v naslednje obračunsko obdobje.",
+   "manageSettings.vanBilling.note": "⚠️ Opomba: V obdobju zgodnjega dostopa se prilagoditev obračuna obdela ročno. V 24 urah boste prejeli potrditveno e-pošto."
+  },
+  "fi-FI": {
+   "auth.signup.subtitle": "Ilmainen kuukautesi alkaa vasta, kun julkaiset ruokarekkasi.",
+   "demoGetStarted.freeMonth": "Käyttöönotto ei käynnistä ilmaista kuukauttasi. Se alkaa, kun valitset ensimmäisen julkisen tapahtumasi — silloin kun olet valmis.",
+   "demo.signupOffer.heading": "Rekisteröidy nyt ja saat ilmaisen kuukauden",
+   "demo.signupOffer.sub": "Aika alkaa kulua vasta, kun päätät julkaista.",
+   "landing.does.offlineBody": "Jos yhteys katkeaa, verkkotilaukset keskeytyvät automaattisesti, jotta asiakkaat eivät voi tehdä tilauksia, joita et näe. Jatka tilausten vastaanottamista iPhone-, iPad- ja Android-sovelluksella.",
+   "featuresPage.detail.offline_protection": "Jos yhteys katkeaa, verkkotilaukset keskeytyvät, jotta asiakkaat eivät voi tehdä tilauksia, joita et näe. iPhone-, iPad- ja Android-sovelluksella voit jatkaa tilausten vastaanottamista ilman yhteyttä; selainpohjainen ohjauspaneeli tarvitsee yhteyden.",
+   "manageSettings.vans.addConfirm": "Lisäruokarekka veloitetaan pakettisi lisäosana.\n\nTämä näkyy seuraavalla laskutusjaksollasi.\n\nHaluatko jatkaa?",
+   "manageSettings.vanBilling.body": "Pakettiisi {plan} sisältyy {vans, plural, one {# ruokarekka} other {# ruokarekkaa}}. Lisäruokarekka maksaa <b>{price}</b>, ja se lisätään seuraavaan laskutusjaksoosi.",
+   "manageSettings.vanBilling.note": "⚠️ Huom: Laskutuksen muutos käsitellään ennakkokäyttövaiheessa käsin. Saat vahvistussähköpostin 24 tunnin kuluessa."
+  },
+  "et-EE": {
+   "auth.signup.subtitle": "Sinu tasuta kuu ei alga enne, kui hakkad päriselt tellimusi vastu võtma.",
+   "demoGetStarted.freeMonth": "Seadistamine ei käivita sinu tasuta kuud. See algab siis, kui valid oma esimese päris ürituse — siis, kui oled valmis.",
+   "demo.signupOffer.heading": "Registreeru kohe ja saa tasuta kuu",
+   "demo.signupOffer.sub": "Aeg hakkab jooksma alles siis, kui otsustad avalikuks minna.",
+   "landing.does.offlineBody": "Kui levi kaob, peatub veebitellimine automaatselt, et kliendid ei saaks esitada tellimusi, mida sa ei näe. Jätka tellimuste vastuvõtmist iPhone’i, iPadi ja Androidi rakendusega.",
+   "featuresPage.detail.offline_protection": "Kui levi kaob, peatub veebitellimine, et kliendid ei saaks esitada tellimusi, mida sa ei näe. iPhone’i, iPadi ja Androidi rakendusega saad tellimusi vastu võtta ka võrguühenduseta; veebitöölaud vajab ühendust.",
+   "manageSettings.vans.addConfirm": "Täiendava toiduauto eest lisandub tasu sinu paketile.\n\nSee kajastub sinu järgmises arveldusperioodis.\n\nKas soovid jätkata?",
+   "manageSettings.vanBilling.body": "Sinu pakett {plan} sisaldab {vans, plural, one {# toiduautot} other {# toiduautot}}. Täiendava toiduauto lisamine maksab <b>{price}</b> ja lisandub sinu järgmisse arveldusperioodi.",
+   "manageSettings.vanBilling.note": "⚠️ NB: Varajase juurdepääsu ajal tehakse arvelduse korrigeerimine käsitsi. Saad kinnitava e-kirja 24 tunni jooksul."
+  },
+  "lv-LV": {
+   "auth.signup.subtitle": "Bezmaksas mēnesis sāksies tikai tad, kad sāksiet darboties tiešsaistē.",
+   "demoGetStarted.freeMonth": "Iestatīšana neuzsāks jūsu bezmaksas mēnesi. Tas sāksies, kad izvēlēsieties savu pirmo publisko pasākumu — kad vien būsiet gatavi.",
+   "demo.signupOffer.heading": "Reģistrējieties bezmaksas mēnesim jau tagad",
+   "demo.signupOffer.sub": "Laiks sāk skaitīties tikai tad, kad nolemjat sākt darbu.",
+   "landing.does.offlineBody": "Ja pazūd signāls, pasūtīšana tiešsaistē automātiski tiek apturēta, lai klienti nevarētu veikt pasūtījumus, ko jūs neredzēsiet. Turpiniet pieņemt pasūtījumus ar iPhone, iPad un Android lietotni.",
+   "featuresPage.detail.offline_protection": "Ja pazūd signāls, pasūtīšana tiešsaistē tiek apturēta, lai klienti nevarētu veikt pasūtījumus, ko jūs neredzēsiet. Ar iPhone, iPad un Android lietotni varat turpināt pieņemt pasūtījumus bezsaistē; tīmekļa vadības panelim vajadzīgs savienojums.",
+   "manageSettings.vans.addConfirm": "Papildu busiņš tiks iekļauts jūsu abonementā kā maksas papildinājums.\n\nTas atspoguļosies nākamajā norēķinu periodā.\n\nVai vēlaties turpināt?",
+   "manageSettings.vanBilling.body": "Jūsu plāns {plan} ietver {vans, plural, zero {# busiņus} one {# busiņu} other {# busiņus}}. Papildu busiņš maksā <b>{price}</b>, un šī summa tiks pievienota nākamajam norēķinu periodam.",
+   "manageSettings.vanBilling.note": "⚠️ Piezīme: agrīnās piekļuves laikā norēķinu korekcija tiek veikta manuāli. 24 stundu laikā saņemsiet apstiprinājuma e-pastu."
+  },
+  "lt-LT": {
+   "auth.signup.subtitle": "Nemokamas mėnuo prasidės tik tada, kai pradėsite veikti.",
+   "demoGetStarted.freeMonth": "Nustatymas nepradės jūsų nemokamo mėnesio. Jis prasidės, kai pasirinksite pirmąjį tikrą renginį — kai tik būsite pasiruošę.",
+   "demo.signupOffer.heading": "Užsiregistruokite dabar ir gaukite nemokamą mėnesį",
+   "demo.signupOffer.sub": "Laikas pradedamas skaičiuoti tik tada, kai nuspręsite pradėti veikti.",
+   "landing.does.offlineBody": "Jei dingsta ryšys, užsakymai internetu automatiškai sustabdomi, kad klientai negalėtų pateikti užsakymų, kurių nematytumėte. Toliau priimkite užsakymus su iPhone, iPad ir Android programėle.",
+   "featuresPage.detail.offline_protection": "Jei dingsta ryšys, užsakymai internetu sustabdomi, kad klientai negalėtų pateikti užsakymų, kurių nematytumėte. Su iPhone, iPad ir Android programėle užsakymus galite priimti ir be ryšio; internetiniam valdymo skydeliui reikia ryšio.",
+   "manageSettings.vans.addConfirm": "Papildomas furgonas bus apmokestintas kaip jūsų prenumeratos priedas.\n\nTai atsispindės kitame atsiskaitymo laikotarpyje.\n\nAr norite tęsti?",
+   "manageSettings.vanBilling.body": "Jūsų planas {plan} apima {vans, plural, one {# furgoną} few {# furgonus} many {# furgonų} other {# furgonų}}. Papildomas furgonas kainuoja <b>{price}</b> – suma bus įtraukta į kitą atsiskaitymo laikotarpį.",
+   "manageSettings.vanBilling.note": "⚠️ Pastaba: ankstyvosios prieigos laikotarpiu atsiskaitymo pakeitimai tvarkomi rankiniu būdu. Patvirtinimo el. laišką gausite per 24 valandas."
+  },
+  "el-GR": {
+   "auth.signup.subtitle": "Ο δωρεάν μήνας σας ξεκινά μόνο όταν αρχίσετε να δέχεστε παραγγελίες.",
+   "demoGetStarted.freeMonth": "Η ρύθμιση δεν ξεκινά τον δωρεάν μήνα σας. Αυτός αρχίζει όταν επιλέξετε την πρώτη σας ενεργή εκδήλωση — όποτε είστε έτοιμοι.",
+   "demo.signupOffer.heading": "Εγγραφείτε τώρα για τον δωρεάν μήνα σας",
+   "demo.signupOffer.sub": "Ο χρόνος δεν αρχίζει να μετρά μέχρι να αποφασίσετε να ξεκινήσετε.",
+   "landing.does.offlineBody": "Αν χαθεί το σήμα, οι online παραγγελίες σταματούν αυτόματα, ώστε οι πελάτες να μη στέλνουν παραγγελίες που δεν θα δείτε. Συνεχίστε να δέχεστε παραγγελίες με την εφαρμογή για iPhone, iPad και Android.",
+   "featuresPage.detail.offline_protection": "Αν χαθεί το σήμα, οι online παραγγελίες σταματούν, ώστε οι πελάτες να μη στέλνουν παραγγελίες που δεν θα δείτε. Με την εφαρμογή για iPhone, iPad και Android συνεχίζετε να δέχεστε παραγγελίες εκτός σύνδεσης· ο πίνακας ελέγχου web χρειάζεται σύνδεση.",
+   "manageSettings.vans.addConfirm": "Η προσθήκη ενός ακόμη food truck θα χρεωθεί ως πρόσθετο στη συνδρομή σας.\n\nΘα εμφανιστεί στον επόμενο κύκλο χρέωσης.\n\nΘέλετε να συνεχίσετε;",
+   "manageSettings.vanBilling.body": "Το πακέτο σας «{plan}» περιλαμβάνει {vans, plural, one {# food truck} other {# food truck}}. Η προσθήκη ενός ακόμη food truck κοστίζει <b>{price}</b> και θα προστεθεί στον επόμενο κύκλο χρέωσης.",
+   "manageSettings.vanBilling.note": "⚠️ Σημείωση: Η προσαρμογή της χρέωσης γίνεται χειροκίνητα κατά την περίοδο πρόωρης πρόσβασης. Θα λάβετε email επιβεβαίωσης εντός 24 ωρών."
+  },
+  "bg-BG": {
+   "auth.signup.subtitle": "Безплатният Ви месец започва едва когато стартирате.",
+   "demoGetStarted.freeMonth": "Настройката няма да стартира безплатния Ви месец. Той започва, когато публикувате първото си събитие — когато сте готови.",
+   "demo.signupOffer.heading": "Регистрирайте се сега за безплатния си месец",
+   "demo.signupOffer.sub": "Отброяването не започва, докато не решите да стартирате.",
+   "landing.does.offlineBody": "Ако загубите сигнал, онлайн поръчките спират автоматично, така че клиентите да не могат да правят поръчки, които няма да видите. Продължавайте да приемате поръчки с приложението за iPhone, iPad и Android.",
+   "featuresPage.detail.offline_protection": "Ако загубите сигнал, онлайн поръчките спират, така че клиентите да не могат да правят поръчки, които няма да видите. С приложението за iPhone, iPad и Android продължавате да приемате поръчки и без интернет; уеб таблото изисква връзка.",
+   "manageSettings.vans.addConfirm": "Добавянето на допълнителен фуд трък ще се таксува като добавка към абонамента Ви.\n\nТова ще се отрази в следващия Ви период на плащане.\n\nИскате ли да продължите?",
+   "manageSettings.vanBilling.body": "Вашият план „{plan}“ включва {vans, plural, one {# фуд трък} other {# фуд тръка}}. Добавянето на още един фуд трък струва <b>{price}</b> и ще бъде включено в следващия Ви период на плащане.",
+   "manageSettings.vanBilling.note": "⚠️ Забележка: По време на ранния достъп корекцията в плащанията се обработва ръчно. Ще получите имейл за потвърждение до 24 часа."
+  },
+  "pt-BR": {
+   "auth.signup.subtitle": "Seu mês grátis só começa quando você entrar no ar.",
+   "demoGetStarted.freeMonth": "A configuração não dá início ao seu mês grátis. Ele começa no seu primeiro evento com pedidos de verdade — quando você estiver pronto.",
+   "demo.signupOffer.heading": "Cadastre-se agora e ganhe um mês grátis",
+   "demo.signupOffer.sub": "O prazo só começa a contar quando você decidir entrar no ar.",
+   "landing.does.offlineBody": "Se o sinal cair, os pedidos online são pausados automaticamente para que os clientes não façam pedidos que você não vai ver. Continue recebendo pedidos com o app para iPhone, iPad e Android.",
+   "featuresPage.detail.offline_protection": "Se o sinal cair, os pedidos online são pausados para que os clientes não façam pedidos que você não vai ver. O app para iPhone, iPad e Android continua recebendo pedidos offline; o painel web precisa de conexão.",
+   "manageSettings.vans.addConfirm": "Cada food truck adicional é cobrado como um adicional da sua assinatura.\n\nIsso vai aparecer no seu próximo ciclo de cobrança.\n\nDeseja continuar?",
+   "manageSettings.vanBilling.body": "O seu plano {plan} inclui {vans, plural, one {# food truck} other {# food trucks}}. Cada food truck adicional custa <b>{price}</b>, que entra no seu próximo ciclo de cobrança.",
+   "manageSettings.vanBilling.note": "⚠️ Observação: durante o acesso antecipado, o ajuste da cobrança é feito manualmente. Você vai receber um e-mail de confirmação em até 24 horas."
+  },
+  "ms-MY": {
+   "auth.signup.subtitle": "Bulan percuma anda tidak bermula sehingga anda mula beroperasi.",
+   "demoGetStarted.freeMonth": "Persediaan tidak akan memulakan bulan percuma anda. Ia bermula apabila anda memilih acara langsung pertama anda — bila-bila masa anda bersedia.",
+   "demo.signupOffer.heading": "Daftar untuk bulan percuma anda sekarang",
+   "demo.signupOffer.sub": "Kiraan masa tidak bermula sehingga anda memutuskan untuk mula beroperasi.",
+   "landing.does.offlineBody": "Jika anda hilang isyarat, pesanan dalam talian dihentikan seketika secara automatik supaya pelanggan tidak boleh membuat pesanan yang anda tidak nampak. Teruskan mengambil pesanan dengan aplikasi iPhone, iPad dan Android.",
+   "featuresPage.detail.offline_protection": "Jika tiada liputan, pesanan dalam talian dijeda supaya pelanggan tidak boleh membuat pesanan yang anda tidak nampak. Aplikasi iPhone, iPad dan Android membolehkan anda terus menerima pesanan secara luar talian; papan pemuka web memerlukan sambungan.",
+   "manageSettings.vans.addConfirm": "Menambah trak tambahan akan dikenakan caj sebagai tambahan kepada langganan anda.\n\nIni akan dicerminkan dalam kitaran pengebilan anda yang seterusnya.\n\nAdakah anda mahu teruskan?",
+   "manageSettings.vanBilling.body": "Pelan anda ({plan}) termasuk {vans, plural, other {# trak}}. Menambah trak tambahan berharga <b>{price}</b> dan akan ditambah pada kitaran pengebilan anda yang seterusnya.",
+   "manageSettings.vanBilling.note": "⚠️ Nota: Pelarasan pengebilan diproses secara manual semasa akses awal. Anda akan menerima e-mel pengesahan dalam masa 24 jam."
+  },
+  "ja-JP": {
+   "auth.signup.subtitle": "無料の1か月間は、公開するまで始まりません。",
+   "demoGetStarted.freeMonth": "設定しただけでは無料の1か月間は始まりません。無料期間は、最初の公開出店を選んだ時点から始まります。準備ができたらいつでもどうぞ。",
+   "demo.signupOffer.heading": "今すぐ登録して1か月無料でお試しください",
+   "demo.signupOffer.sub": "無料期間は、本番運用を開始するまで始まりません。",
+   "landing.does.offlineBody": "電波が途切れると、オンライン注文の受付を自動で一時停止するので、確認できない注文が入ることはありません。iPhone、iPad、Androidのアプリで、そのまま注文を受け付けられます。",
+   "featuresPage.detail.offline_protection": "電波が届かなくなると、オンライン注文が一時停止され、お客様が見えない注文を確定することはありません。iPhone・iPad・Androidアプリならオフラインでも注文を受け続けられます。Webダッシュボードはインターネット接続が必要です。",
+   "manageSettings.vans.addConfirm": "キッチンカーを追加すると、ご利用中のプランにオプションとして料金が加算されます。\n\n次回の請求サイクルに反映されます。\n\n続けますか？",
+   "manageSettings.vanBilling.body": "{plan}プランには{vans, plural, other {#台}}のキッチンカーが含まれています。キッチンカーを追加すると<b>{price}</b>かかり、次回の請求サイクルに加算されます。",
+   "manageSettings.vanBilling.note": "⚠️ ご注意：アーリーアクセス期間中は、請求の調整を手動で行います。24時間以内に確認メールをお送りします。"
+  },
+  "zh-HK": {
+   "auth.signup.subtitle": "你的免費月份要到正式上線時才開始計算。",
+   "demoGetStarted.freeMonth": "設定期間不會開始計算你的免費月份。免費月份會在你選擇第一個正式活動時才開始——隨你準備好再說。",
+   "demo.signupOffer.heading": "立即登記，享免費一個月",
+   "demo.signupOffer.sub": "直至你決定正式啟用，才開始計算。",
+   "landing.does.offlineBody": "一旦失去訊號，網上落單會自動暫停，以免顧客落了你看不到的單。你可繼續用 iPhone、iPad 及 Android 應用程式接單。",
+   "featuresPage.detail.offline_protection": "如果失去網絡訊號，網上落單會暫停，以免客人落了你看不到的單。iPhone、iPad 及 Android App 讓你在離線時繼續接單；網上控制台則需要網絡連線。",
+   "manageSettings.vans.addConfirm": "新增額外美食車會作為附加項目計入你的訂閱費用。\n\n費用會反映在你下一個收費週期。\n\n要繼續嗎？",
+   "manageSettings.vanBilling.body": "你的 {plan} 計劃包括 {vans, plural, other {# 架美食車}}。新增額外美食車的費用為 <b>{price}</b>，會加入你下一個收費週期。",
+   "manageSettings.vanBilling.note": "⚠️ 注意：搶先體驗期間，收費調整會以人手處理。你會在 24 小時內收到確認電郵。"
+  },
+  "th-TH": {
+   "auth.signup.subtitle": "เดือนแรกที่ใช้ฟรีจะเริ่มนับเมื่อคุณเปิดใช้งานจริงเท่านั้น",
+   "demoGetStarted.freeMonth": "การตั้งค่ายังไม่นับเป็นเดือนที่ใช้ฟรี เดือนฟรีจะเริ่มเมื่อคุณเลือกอีเวนต์จริงครั้งแรก เมื่อไรก็ได้ที่คุณพร้อม",
+   "demo.signupOffer.heading": "สมัครรับฟรีหนึ่งเดือนเลยตอนนี้",
+   "demo.signupOffer.sub": "ระยะเวลาจะยังไม่เริ่มนับจนกว่าคุณจะตัดสินใจเปิดใช้งานจริง",
+   "landing.does.offlineBody": "หากสัญญาณหลุด การสั่งซื้อออนไลน์จะหยุดชั่วคราวโดยอัตโนมัติ ลูกค้าจึงไม่สามารถสั่งออเดอร์ที่คุณมองไม่เห็นได้ รับออเดอร์ต่อได้ด้วยแอปบน iPhone, iPad และ Android",
+   "featuresPage.detail.offline_protection": "หากสัญญาณหาย การสั่งออนไลน์จะหยุดชั่วคราว ลูกค้าจึงสั่งออเดอร์ที่คุณมองไม่เห็นไม่ได้ แอปบน iPhone, iPad และ Android ช่วยให้คุณรับออเดอร์ต่อได้แม้ออฟไลน์ ส่วนแดชบอร์ดบนเว็บต้องเชื่อมต่ออินเทอร์เน็ต",
+   "manageSettings.vans.addConfirm": "การเพิ่มรถอีกคันจะคิดค่าบริการเป็นส่วนเสริมของแพ็กเกจสมาชิกของคุณ\n\nยอดนี้จะแสดงในรอบบิลถัดไป\n\nต้องการดำเนินการต่อไหม",
+   "manageSettings.vanBilling.body": "แพ็กเกจ {plan} ของคุณรวมรถ {vans, plural, other {# คัน}} การเพิ่มรถอีกคันมีค่าใช้จ่าย <b>{price}</b> และจะเพิ่มเข้าไปในรอบบิลถัดไป",
+   "manageSettings.vanBilling.note": "⚠️ หมายเหตุ: ในช่วงทดลองใช้ก่อนเปิดตัว การปรับยอดเรียกเก็บเงินจะดำเนินการด้วยตนเอง คุณจะได้รับอีเมลยืนยันภายใน 24 ชั่วโมง"
+  },
+  "ar-AE": {
+   "auth.signup.subtitle": "لن يبدأ شهرك المجاني إلا عندما تبدأ استقبال الطلبات فعليًا.",
+   "demoGetStarted.freeMonth": "لن يبدأ شهرك المجاني بمجرد الإعداد، بل يبدأ عندما تختار أول فعالية فعلية لك — متى كنت مستعدًا.",
+   "demo.signupOffer.heading": "سجّل الآن واحصل على شهرك المجاني",
+   "demo.signupOffer.sub": "لا يبدأ احتساب المدة إلا عندما تقرر بدء استقبال الطلبات فعليًا.",
+   "landing.does.offlineBody": "إذا انقطعت الإشارة، تتوقف الطلبات عبر الإنترنت تلقائيًا حتى لا يتمكن العملاء من إرسال طلبات لن تراها. واصل استقبال الطلبات عبر تطبيق iPhone وiPad وAndroid.",
+   "featuresPage.detail.offline_protection": "عند انقطاع الإشارة، يتوقف الطلب عبر الإنترنت مؤقتًا حتى لا يرسل العملاء طلبات لن تراها. يتيح لك تطبيق iPhone وiPad وAndroid مواصلة استقبال الطلبات دون اتصال، أما لوحة التحكم على الويب فتحتاج إلى اتصال.",
+   "manageSettings.vans.addConfirm": "ستُحتسب إضافة عربة أخرى كإضافة مدفوعة على اشتراكك.\n\nوسيظهر ذلك في دورة الفوترة التالية.\n\nهل تريد المتابعة؟",
+   "manageSettings.vanBilling.body": "تشمل باقتك {plan}: {vans, plural, zero {# عربة} one {عربة واحدة} two {عربتين} few {# عربات} many {# عربة} other {# عربة}}. تكلفة إضافة عربة أخرى <b>{price}</b>، وتُضاف إلى دورة الفوترة التالية.",
+   "manageSettings.vanBilling.note": "⚠️ ملاحظة: تتم معالجة تعديل الفوترة يدويًا خلال مرحلة الوصول المبكر. وستتلقى رسالة تأكيد عبر البريد الإلكتروني خلال 24 ساعة."
+  }
+ }
+}

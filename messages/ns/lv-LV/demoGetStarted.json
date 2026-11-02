@@ -80,7 +80,7 @@
   "promoLabel": "Vai jums ir kods? <opt>(neobligāti)</opt>",
   "promoPlaceholder": "Ievadiet to šeit",
   "agreeTerms": "Es piekrītu <terms>Noteikumiem</terms> un <privacy>Privātuma politikai</privacy>.",
-  "freeMonth": "Iestatīšana neuzsāks jūsu bezmaksas mēnesi. Tas sāksies, kad izvēlēsieties savu pirmo publisko pasākumu — kad vien būsiet gatavi.",
+  "freeMonth": "{months, plural, =0 {Jūsu bezmaksas izmēģinājuma periods sākas, kad izveidojat kontu.} zero {Jūsu pirmie # mēneši ir bez maksas, sākot no konta izveides.} one {Pirmais # mēnesis ir bez maksas, sākot no konta izveides.} other {Jūsu pirmie # mēneši ir bez maksas, sākot no konta izveides.}}",
   "fieldError": {
     "firstName": "Norādiet savu vārdu.",
     "lastName": "Un savu uzvārdu.",

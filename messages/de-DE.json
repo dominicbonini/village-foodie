@@ -1501,8 +1501,8 @@
     "asLive": "Bestellablauf und Küche funktionieren genau wie im Live-Betrieb.",
     "startExploring": "Jetzt erkunden",
     "signupOffer": {
-      "heading": "Jetzt für Ihren kostenlosen Monat registrieren",
-      "sub": "Die Uhr läuft erst, wenn Sie sich entscheiden, live zu gehen."
+      "heading": "{months, plural, =0 {Kostenlos starten} one {# Monat kostenlos starten} other {# Monate kostenlos starten}}",
+      "sub": "Ihre kostenlose Testphase beginnt, wenn Sie Ihr Konto erstellen."
     },
     "cashIcon": "💶",
     "walkBanner": "Demo · Das ist Ihre Speisekarte, so wie Ihre Kunden sie sehen werden. Es wird nichts abgebucht und es werden keine E-Mails verschickt."
@@ -1922,7 +1922,7 @@
     },
     "signup": {
       "title": "Konto erstellen",
-      "subtitle": "Ihr kostenloser Monat beginnt erst, wenn Sie live gehen.",
+      "subtitle": "{months, plural, =0 {Ihre kostenlose Testphase beginnt, wenn Sie Ihr Konto erstellen.} one {Ihr erster Monat ist kostenlos, ab dem Erstellen Ihres Kontos.} other {Ihre ersten # Monate sind kostenlos, ab dem Erstellen Ihres Kontos.}}",
       "emailPlaceholder": "name@ihr-foodtruck.de",
       "codeLabel": "Haben Sie einen Code? <optional>(optional)</optional>",
       "codePlaceholder": "Hier eingeben",
@@ -2211,7 +2211,7 @@
     "promoLabel": "Haben Sie einen Code? <opt>(optional)</opt>",
     "promoPlaceholder": "Hier eingeben",
     "agreeTerms": "Ich stimme den <terms>Nutzungsbedingungen</terms> und der <privacy>Datenschutzerklärung</privacy> zu.",
-    "freeMonth": "Die Einrichtung startet Ihren kostenlosen Monat noch nicht. Er beginnt erst, wenn Sie Ihr erstes Live-Event auswählen – wann immer Sie so weit sind.",
+    "freeMonth": "{months, plural, =0 {Ihre kostenlose Testphase beginnt, wenn Sie Ihr Konto erstellen.} one {Ihr erster Monat ist kostenlos, ab dem Erstellen Ihres Kontos.} other {Ihre ersten # Monate sind kostenlos, ab dem Erstellen Ihres Kontos.}}",
     "fieldError": {
       "firstName": "Nennen Sie uns Ihren Vornamen.",
       "lastName": "Und Ihren Nachnamen.",
@@ -3918,7 +3918,7 @@
       "cancel": "Abbrechen",
       "newPlaceholder": "z. B. Foodtruck 2, Festival-Foodtruck",
       "addButton": "Hinzufügen",
-      "addConfirm": "Ein zusätzlicher Foodtruck wird als Zusatzleistung zu Ihrem Abonnement berechnet.\n\nDas wird in Ihrem nächsten Abrechnungszeitraum berücksichtigt.\n\nMöchten Sie fortfahren?",
+      "addConfirm": "{free, select, yes {Ein weiterer Foodtruck ist in Ihrem Tarif kostenlos.} other {Ein zusätzlicher Foodtruck kostet in Ihrem Tarif {price} pro Monat. Wir melden uns, bevor etwas berechnet wird.}}\n\nMöchten Sie fortfahren?",
       "removed": "{name} entfernt",
       "kdsLinkCopied": "Link zum Bestellbildschirm kopiert"
     },
@@ -3944,8 +3944,8 @@
     },
     "vanBilling": {
       "title": "Weiteren Foodtruck hinzufügen",
-      "body": "Ihr Tarif {plan} umfasst {vans, plural, one {# Foodtruck} other {# Foodtrucks}}. Ein zusätzlicher Foodtruck kostet <b>{price}</b> und wird in Ihrem nächsten Abrechnungszeitraum berechnet.",
-      "note": "⚠️ Hinweis: Während des Early Access wird die Abrechnung manuell angepasst. Sie erhalten innerhalb von 24 Stunden eine Bestätigung per E-Mail.",
+      "body": "Ihr Tarif {plan} umfasst {vans, plural, one {# Foodtruck} other {# Foodtrucks}}. Ein zusätzlicher Foodtruck kostet <b>{price}</b>.",
+      "note": "⚠️ Wir melden uns, bevor etwas berechnet wird.",
       "cancel": "Abbrechen",
       "add": "Foodtruck hinzufügen – {price}"
     },
@@ -5526,7 +5526,8 @@
       "whatsappSoonTitle": "Automatische WhatsApp-Antworten <soon>Demnächst</soon>",
       "whatsappSoonBody": "„Wo stehen Sie heute Abend?“ „Welche Desserts haben Sie?“ Bald werden Ihre WhatsApp-Nachrichten beantwortet, während Sie zum Standort fahren oder am Grill stehen. Messenger und Instagram folgen.",
       "offlineTitle": "Kein Empfang? Einfach weiter verkaufen.",
-      "offlineBody": "Wenn Sie den Empfang verlieren, werden Online-Bestellungen automatisch pausiert, damit Kunden keine Bestellungen aufgeben, die Sie nicht sehen. Mit der App für iPhone, iPad und Android nehmen Sie weiter Bestellungen an.",
+      "offlineBody": "Schalten Sie den Offline-Bestellschutz ein, dann werden Online-Bestellungen automatisch pausiert, wenn Sie den Empfang verlieren, damit Kunden keine Bestellungen aufgeben, die Sie nicht sehen.",
+      "offlineApps": "Mit der App für iPhone, iPad und Android nehmen Sie weiter Bestellungen an.",
       "slotsBody": "Kunden bestellen vor und wählen eine Abholzeit. Kürzere Schlangen – und das Essen ist fertig, wenn sie ankommen."
     },
     "steps": {
@@ -6084,7 +6085,7 @@
       "kitchen_app": "Die umfassendste Art, HatchGrab zu nutzen: ein Live-Küchenmonitor – und die einzige Möglichkeit, auch ohne Empfang weiter Bestellungen anzunehmen.",
       "multi_device_kitchen": "Mehrere Bildschirme betreiben – Theke und Küche –, die alle dieselben Live-Bestellungen zeigen.",
       "multi_user_access": "Geben Sie Ihrem Team eigene Logins mit den passenden Zugriffsrechten.",
-      "offline_protection": "Wenn Sie den Empfang verlieren, werden Online-Bestellungen pausiert, damit Kunden keine Bestellungen aufgeben, die Sie nicht sehen. Mit der App für iPhone, iPad und Android nehmen Sie offline weiter Bestellungen an; das Web-Dashboard braucht eine Verbindung.",
+      "offline_protection": "Schalten Sie den Offline-Bestellschutz ein, dann werden Online-Bestellungen automatisch pausiert, wenn Sie den Empfang verlieren, damit Kunden keine Bestellungen aufgeben, die Sie nicht sehen.",
       "ticket_printing": "Bestellbons auf einem Bluetooth- oder kabelgebundenen Drucker in der Küche drucken.",
       "web_dashboard": "Steuern Sie Ihren Betrieb im Browser auf jedem Smartphone, Tablet oder Laptop.",
       "meal_deals_upsells": "Bündeln Sie Gerichte zu Menüs und bieten Sie beim Bestellabschluss Extras an, um den durchschnittlichen Bestellwert zu steigern.",
@@ -6113,6 +6114,7 @@
       "sms_order_alerts": "Kunden automatisch per SMS benachrichtigen, wenn ihre Bestellung fertig ist.",
       "loyalty_stamp_cards": "Belohnen Sie Stammkunden mit digitalen Stempelkarten – Stempel werden automatisch gesammelt und eingelöst."
     },
+    "offlineApps": "Mit der App für iPhone, iPad und Android nehmen Sie offline weiter Bestellungen an; das Web-Dashboard braucht eine Verbindung.",
     "metaTitle": "Tarife & Funktionen im Vergleich – HatchGrab {country}"
   },
   "compare": {

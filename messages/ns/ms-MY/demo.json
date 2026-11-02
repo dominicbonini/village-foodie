@@ -21,8 +21,8 @@
   "asLive": "Aliran pesanan dan dapur adalah sama seperti semasa beroperasi sebenar.",
   "startExploring": "Mula meneroka",
   "signupOffer": {
-    "heading": "Daftar untuk bulan percuma anda sekarang",
-    "sub": "Kiraan masa tidak bermula sehingga anda memutuskan untuk mula beroperasi."
+    "heading": "{months, plural, =0 {Mula secara percuma} other {Mula secara percuma selama # bulan}}",
+    "sub": "Percubaan percuma anda bermula apabila anda mencipta akaun."
   },
   "cashIcon": "💵",
   "walkBanner": "Demo · ini menu anda, seperti yang akan dilihat oleh pelanggan anda. Tiada caj dikenakan dan tiada e-mel dihantar."

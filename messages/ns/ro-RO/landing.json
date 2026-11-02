@@ -36,7 +36,8 @@
     "whatsappSoonTitle": "Răspunsuri automate pe WhatsApp <soon>În curând</soon>",
     "whatsappSoonBody": "„Unde sunteți diseară?” „Ce deserturi aveți?” În curând, mesajele de pe WhatsApp vor primi răspuns în timp ce conduceți spre locație sau stați la grătar. Urmează Messenger și Instagram.",
     "offlineTitle": "Fără semnal? Serviți în continuare.",
-    "offlineBody": "Dacă pierdeți semnalul, comenzile online se pun automat pe pauză, ca clienții să nu plaseze comenzi pe care nu le-ați vedea. Continuați să primiți comenzi cu aplicația pentru iPhone, iPad și Android.",
+    "offlineBody": "Activați protecția comenzilor offline și comenzile online se pun automat pe pauză dacă pierdeți semnalul, ca clienții să nu plaseze comenzi pe care nu le-ați vedea.",
+    "offlineApps": "Continuați să primiți comenzi cu aplicația pentru iPhone, iPad și Android.",
     "slotsBody": "Clienții comandă în avans și aleg ora de ridicare. Cozi mai scurte și mâncare gata când ajung."
   },
   "steps": {

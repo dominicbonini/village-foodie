@@ -80,7 +80,7 @@
   "promoLabel": "Ada kod? <opt>(pilihan)</opt>",
   "promoPlaceholder": "Masukkan di sini",
   "agreeTerms": "Saya bersetuju dengan <terms>Terma</terms> dan <privacy>Dasar Privasi</privacy>.",
-  "freeMonth": "Persediaan tidak akan memulakan bulan percuma anda. Ia bermula apabila anda memilih acara langsung pertama anda — bila-bila masa anda bersedia.",
+  "freeMonth": "{months, plural, =0 {Percubaan percuma anda bermula apabila anda mencipta akaun.} other {# bulan pertama anda percuma, bermula apabila anda mencipta akaun.}}",
   "fieldError": {
     "firstName": "Beritahu kami nama pertama anda.",
     "lastName": "Dan nama akhir anda.",

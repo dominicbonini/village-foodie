@@ -137,7 +137,7 @@
     "cancel": "Mégse",
     "newPlaceholder": "pl. 2. food truck, Fesztivál food truck",
     "addButton": "Hozzáadás",
-    "addConfirm": "Egy további food truck hozzáadását az előfizetése kiegészítőjeként számlázzuk.\n\nEz a következő számlázási időszakban jelenik meg.\n\nFolytatja?",
+    "addConfirm": "{free, select, yes {Egy további food truck hozzáadása az Ön csomagjában ingyenes.} other {Egy további food truck ára az Ön csomagjában havi {price}. Mielőtt bármit felszámolnánk, felvesszük Önnel a kapcsolatot.}}\n\nFolytatja?",
     "removed": "Eltávolítva: {name}",
     "kdsLinkCopied": "A rendelési képernyő linkje kimásolva"
   },
@@ -163,8 +163,8 @@
   },
   "vanBilling": {
     "title": "Újabb food truck hozzáadása",
-    "body": "Az Ön {plan} csomagjában {vans, plural, one {# food truck} other {# food truck}} szerepel. Egy további food truck ára <b>{price}</b>, amely a következő számlázási időszakban jelenik meg.",
-    "note": "⚠️ Megjegyzés: a korai hozzáférés idején a számlázás módosítását kézzel dolgozzuk fel. 24 órán belül visszaigazoló e-mailt kap.",
+    "body": "Az Ön {plan} csomagjában {vans, plural, one {# food truck} other {# food truck}} szerepel. Egy további food truck ára <b>{price}</b>.",
+    "note": "⚠️ Mielőtt bármit felszámolnánk, felvesszük Önnel a kapcsolatot.",
     "cancel": "Mégse",
     "add": "Food truck hozzáadása — {price}"
   },

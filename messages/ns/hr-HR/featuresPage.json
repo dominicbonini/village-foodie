@@ -5,7 +5,7 @@
     "kitchen_app": "Najpotpuniji način rada s HatchGrabom: kuhinjski zaslon uživo i jedini način da nastavite primati narudžbe kad izgubite signal.",
     "multi_device_kitchen": "Koristite više zaslona — na pultu i u kuhinji — i svi prikazuju iste narudžbe uživo.",
     "multi_user_access": "Dajte zaposlenicima vlastite prijave s odgovarajućom razinom pristupa.",
-    "offline_protection": "Ako izgubite signal, online naručivanje se pauzira kako kupci ne bi slali narudžbe koje nećete vidjeti. Aplikacija za iPhone, iPad i Android omogućuje vam primanje narudžbi i izvan mreže; web nadzornoj ploči potrebna je veza.",
+    "offline_protection": "Uključite zaštitu narudžbi izvan mreže i online naručivanje automatski se pauzira ako izgubite signal, kako kupci ne bi slali narudžbe koje nećete vidjeti.",
     "ticket_printing": "Ispisujte listiće narudžbi na Bluetooth ili žičanom pisaču u kuhinji.",
     "web_dashboard": "Vodite posao iz preglednika na bilo kojem telefonu, tabletu ili prijenosnom računalu.",
     "meal_deals_upsells": "Spojite artikle u menije i ponudite dodatke pri plaćanju kako biste povećali prosječnu narudžbu.",
@@ -34,5 +34,6 @@
     "sms_order_alerts": "Automatski pošaljite kupcima SMS kad im je narudžba spremna.",
     "loyalty_stamp_cards": "Nagradite stalne kupce digitalnim karticama vjernosti s pečatima — pečati se skupljaju i iskorištavaju automatski."
   },
+  "offlineApps": "Aplikacija za iPhone, iPad i Android omogućuje vam primanje narudžbi i izvan mreže; web nadzornoj ploči potrebna je veza.",
   "metaTitle": "Usporedba paketa i značajki — HatchGrab {country}"
 }

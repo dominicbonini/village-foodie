@@ -5,7 +5,7 @@
     "kitchen_app": "Najcelovitejši način dela s HatchGrab: kuhinjski zaslon v živo in edini način, da naročila sprejemate tudi, ko izgubite signal.",
     "multi_device_kitchen": "Uporabljajte več zaslonov — pri pultu in v kuhinji — ki vsi prikazujejo ista naročila v živo.",
     "multi_user_access": "Osebju dodelite lastne prijave z ustrezno ravnjo dostopa.",
-    "offline_protection": "Če izgubite signal, se spletno naročanje ustavi, da kupci ne morejo oddati naročil, ki jih ne bi videli. Z aplikacijo za iPhone, iPad in Android sprejemate naročila tudi brez povezave; spletna nadzorna plošča potrebuje povezavo.",
+    "offline_protection": "Vklopite zaščito naročil brez povezave in spletno naročanje se samodejno ustavi, če izgubite signal, da kupci ne morejo oddati naročil, ki jih ne bi videli.",
     "ticket_printing": "Tiskajte listke naročil na tiskalnik Bluetooth ali žični tiskalnik v kuhinji.",
     "web_dashboard": "Upravljajte prodajo v brskalniku na katerem koli telefonu, tablici ali prenosniku.",
     "meal_deals_upsells": "Združite artikle v menije in pri zaključku naročila ponudite dodatke, da povečate povprečno vrednost naročila.",
@@ -34,5 +34,6 @@
     "sms_order_alerts": "Kupcem samodejno pošljite SMS, ko je njihovo naročilo pripravljeno.",
     "loyalty_stamp_cards": "Nagradite stalne kupce z digitalnimi karticami z žigi — žigi se zbirajo in unovčijo samodejno."
   },
+  "offlineApps": "Z aplikacijo za iPhone, iPad in Android sprejemate naročila tudi brez povezave; spletna nadzorna plošča potrebuje povezavo.",
   "metaTitle": "Primerjava paketov in funkcij — HatchGrab {country}"
 }

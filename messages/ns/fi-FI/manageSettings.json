@@ -137,7 +137,7 @@
     "cancel": "Peru",
     "newPlaceholder": "esim. Ruokarekka 2, Festarirekka",
     "addButton": "Lisää",
-    "addConfirm": "Lisäruokarekka veloitetaan pakettisi lisäosana.\n\nTämä näkyy seuraavalla laskutusjaksollasi.\n\nHaluatko jatkaa?",
+    "addConfirm": "{free, select, yes {Lisäruokarekan lisääminen on pakettisi kanssa maksutonta.} other {Lisäruokarekka maksaa pakettisi kanssa {price} kuukaudessa. Otamme yhteyttä ennen kuin mitään veloitetaan.}}\n\nHaluatko jatkaa?",
     "removed": "{name} poistettu",
     "kdsLinkCopied": "Tilausnäkymän linkki kopioitu"
   },
@@ -163,8 +163,8 @@
   },
   "vanBilling": {
     "title": "Lisää uusi ruokarekka",
-    "body": "Pakettiisi {plan} sisältyy {vans, plural, one {# ruokarekka} other {# ruokarekkaa}}. Lisäruokarekka maksaa <b>{price}</b>, ja se lisätään seuraavaan laskutusjaksoosi.",
-    "note": "⚠️ Huom: Laskutuksen muutos käsitellään ennakkokäyttövaiheessa käsin. Saat vahvistussähköpostin 24 tunnin kuluessa.",
+    "body": "Pakettiisi {plan} sisältyy {vans, plural, one {# ruokarekka} other {# ruokarekkaa}}. Lisäruokarekka maksaa <b>{price}</b>.",
+    "note": "⚠️ Otamme yhteyttä ennen kuin mitään veloitetaan.",
     "cancel": "Peru",
     "add": "Lisää ruokarekka — {price}"
   },

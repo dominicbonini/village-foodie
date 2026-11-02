@@ -36,7 +36,8 @@
     "whatsappSoonTitle": "Balasan automatik WhatsApp <soon>Akan datang</soon>",
     "whatsappSoonBody": "“Malam ini di mana?” “Ada pencuci mulut apa?” Tidak lama lagi WhatsApp anda akan dijawab semasa anda memandu ke tapak niaga atau sibuk di depan dapur. Messenger dan Instagram akan menyusul.",
     "offlineTitle": "Tiada isyarat? Terus berniaga.",
-    "offlineBody": "Jika anda hilang isyarat, pesanan dalam talian dihentikan seketika secara automatik supaya pelanggan tidak boleh membuat pesanan yang anda tidak nampak. Teruskan mengambil pesanan dengan aplikasi iPhone, iPad dan Android.",
+    "offlineBody": "Hidupkan perlindungan pesanan luar talian dan pesanan dalam talian dihentikan seketika secara automatik jika anda hilang isyarat, supaya pelanggan tidak boleh membuat pesanan yang anda tidak nampak.",
+    "offlineApps": "Teruskan mengambil pesanan dengan aplikasi iPhone, iPad dan Android.",
     "slotsBody": "Pelanggan membuat pesanan awal dan memilih masa ambil. Barisan lebih pendek, dan makanan sudah siap apabila mereka tiba."
   },
   "steps": {

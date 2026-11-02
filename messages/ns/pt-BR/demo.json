@@ -21,8 +21,8 @@
   "asLive": "O fluxo de pedidos e da cozinha é exatamente igual ao real.",
   "startExploring": "Começar a explorar",
   "signupOffer": {
-    "heading": "Cadastre-se agora e ganhe um mês grátis",
-    "sub": "O prazo só começa a contar quando você decidir entrar no ar."
+    "heading": "{months, plural, =0 {Comece grátis} one {Comece grátis por # mês} many {Comece grátis por # de meses} other {Comece grátis por # meses}}",
+    "sub": "Seu teste grátis começa quando você cria sua conta."
   },
   "cashIcon": "💵",
   "walkBanner": "Demonstração · este é o seu cardápio, do jeito que seus clientes vão ver. Nada é cobrado e nenhum e-mail é enviado."

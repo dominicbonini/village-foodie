@@ -21,8 +21,8 @@
   "asLive": "Tellimine ja köögi töövoog on täpselt samad nagu päriselt.",
   "startExploring": "Hakka uurima",
   "signupOffer": {
-    "heading": "Registreeru kohe ja saa tasuta kuu",
-    "sub": "Aeg hakkab jooksma alles siis, kui otsustad avalikuks minna."
+    "heading": "{months, plural, =0 {Alusta tasuta} one {Alusta # kuu tasuta} other {Alusta # kuud tasuta}}",
+    "sub": "Sinu tasuta prooviperiood algab, kui lood konto."
   },
   "cashIcon": "💶",
   "walkBanner": "Demo · see on sinu menüü just nii, nagu sinu kliendid seda näevad. Raha ei võeta ja e-kirju ei saadeta."

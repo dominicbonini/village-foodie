@@ -1501,8 +1501,8 @@
     "asLive": "Il flusso di ordini e cucina è esattamente quello reale.",
     "startExploring": "Inizia a esplorare",
     "signupOffer": {
-      "heading": "Iscriviti ora per il tuo mese gratuito",
-      "sub": "Il conteggio parte solo quando decidi di andare online."
+      "heading": "{months, plural, =0 {Inizia gratis} one {Inizia gratis per # mese} many {Inizia gratis per # di mesi} other {Inizia gratis per # mesi}}",
+      "sub": "La tua prova gratuita inizia quando crei il tuo account."
     },
     "cashIcon": "💶",
     "walkBanner": "Demo · questo è il tuo menu, come lo vedranno i tuoi clienti. Non viene addebitato nulla e non viene inviata nessuna email."
@@ -1922,7 +1922,7 @@
     },
     "signup": {
       "title": "Crea il tuo account",
-      "subtitle": "Il tuo mese gratuito inizia solo quando vai online.",
+      "subtitle": "{months, plural, =0 {La tua prova gratuita inizia quando crei il tuo account.} one {Il tuo primo mese è gratis, a partire da quando crei il tuo account.} many {I tuoi primi # di mesi sono gratis, a partire da quando crei il tuo account.} other {I tuoi primi # mesi sono gratis, a partire da quando crei il tuo account.}}",
       "emailPlaceholder": "tu@iltuofoodtruck.it",
       "codeLabel": "Hai un codice? <optional>(facoltativo)</optional>",
       "codePlaceholder": "Inseriscilo qui",
@@ -2211,7 +2211,7 @@
     "promoLabel": "Hai un codice? <opt>(facoltativo)</opt>",
     "promoPlaceholder": "Inseriscilo qui",
     "agreeTerms": "Accetto i <terms>Termini</terms> e l’<privacy>Informativa sulla privacy</privacy>.",
-    "freeMonth": "La configurazione non avvia il tuo mese gratuito. Inizia quando scegli il tuo primo evento online — quando vuoi tu.",
+    "freeMonth": "{months, plural, =0 {La tua prova gratuita inizia quando crei il tuo account.} one {Il tuo primo mese è gratis, a partire da quando crei il tuo account.} many {I tuoi primi # di mesi sono gratis, a partire da quando crei il tuo account.} other {I tuoi primi # mesi sono gratis, a partire da quando crei il tuo account.}}",
     "fieldError": {
       "firstName": "Indica il tuo nome.",
       "lastName": "E il tuo cognome.",
@@ -3918,7 +3918,7 @@
       "cancel": "Annulla",
       "newPlaceholder": "es. Food truck 2, Food truck festival",
       "addButton": "Aggiungi",
-      "addConfirm": "Un food truck in più ti verrà addebitato come componente aggiuntivo del tuo abbonamento.\n\nL’importo comparirà nel prossimo ciclo di fatturazione.\n\nVuoi continuare?",
+      "addConfirm": "{free, select, yes {Aggiungere un food truck è gratis con il tuo piano.} other {Un food truck in più costa {price} al mese con il tuo piano. Ti contatteremo prima di addebitare qualsiasi importo.}}\n\nVuoi continuare?",
       "removed": "{name} rimosso",
       "kdsLinkCopied": "Link della schermata ordini copiato"
     },
@@ -3944,8 +3944,8 @@
     },
     "vanBilling": {
       "title": "Aggiungi un altro food truck",
-      "body": "Il tuo piano {plan} include {vans, plural, one {# food truck} other {# food truck}}. Un food truck in più costa <b>{price}</b> e verrà aggiunto al prossimo ciclo di fatturazione.",
-      "note": "⚠️ Nota: durante l’accesso anticipato l’adeguamento della fatturazione viene gestito manualmente. Riceverai un’email di conferma entro 24 ore.",
+      "body": "Il tuo piano {plan} include {vans, plural, one {# food truck} other {# food truck}}. Un food truck in più costa <b>{price}</b>.",
+      "note": "⚠️ Ti contatteremo prima di addebitare qualsiasi importo.",
       "cancel": "Annulla",
       "add": "Aggiungi food truck: {price}"
     },
@@ -5526,7 +5526,8 @@
       "whatsappSoonTitle": "Risposte automatiche WhatsApp <soon>In arrivo</soon>",
       "whatsappSoonBody": "«Dove siete stasera?» «Che dolci avete?» Presto il tuo WhatsApp risponderà mentre guidi verso la postazione o sei alla piastra. Seguiranno Messenger e Instagram.",
       "offlineTitle": "Niente segnale? Continua a servire.",
-      "offlineBody": "Se perdi il segnale, gli ordini online si mettono in pausa automaticamente, così i clienti non possono inviare ordini che non vedresti. Continua a prendere ordini con l’app per iPhone, iPad e Android.",
+      "offlineBody": "Attiva la protezione ordini offline e gli ordini online si mettono in pausa automaticamente se perdi il segnale, così i clienti non possono inviare ordini che non vedresti.",
+      "offlineApps": "Continua a prendere ordini con l’app per iPhone, iPad e Android.",
       "slotsBody": "I clienti ordinano in anticipo e scelgono un orario di ritiro. Meno code e cibo pronto al loro arrivo."
     },
     "steps": {
@@ -6084,7 +6085,7 @@
       "kitchen_app": "Il modo più completo di usare HatchGrab: un monitor cucina in tempo reale, e l’unico modo per continuare a prendere ordini quando perdi il segnale.",
       "multi_device_kitchen": "Usa più schermi — banco e cucina — che mostrano tutti gli stessi ordini in tempo reale.",
       "multi_user_access": "Dai al tuo staff accessi personali con il giusto livello di permessi.",
-      "offline_protection": "Se perdi il segnale, gli ordini online si mettono in pausa, così i clienti non possono inviare ordini che non vedresti. L’app per iPhone, iPad e Android ti permette di continuare a prendere ordini offline; la dashboard web richiede una connessione.",
+      "offline_protection": "Attiva la protezione ordini offline e gli ordini online si mettono in pausa automaticamente se perdi il segnale, così i clienti non possono inviare ordini che non vedresti.",
       "ticket_printing": "Stampa le comande su una stampante Bluetooth o via cavo in cucina.",
       "web_dashboard": "Gestisci il servizio dal browser di qualsiasi telefono, tablet o portatile.",
       "meal_deals_upsells": "Raggruppa i piatti in menu combo e proponi extra al momento del pagamento per aumentare lo scontrino medio.",
@@ -6113,6 +6114,7 @@
       "sms_order_alerts": "Avvisa automaticamente i clienti via SMS quando il loro ordine è pronto.",
       "loyalty_stamp_cards": "Premia i clienti abituali con carte fedeltà digitali — timbri raccolti e premi riscattati in automatico."
     },
+    "offlineApps": "L’app per iPhone, iPad e Android ti permette di continuare a prendere ordini offline; la dashboard web richiede una connessione.",
     "metaTitle": "Piani e funzioni a confronto — HatchGrab {country}"
   },
   "compare": {

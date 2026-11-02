@@ -1501,8 +1501,8 @@
     "asLive": "Bestellen en de keukenflow werken precies zoals live.",
     "startExploring": "Ga op ontdekking",
     "signupOffer": {
-      "heading": "Meld je nu aan voor je gratis maand",
-      "sub": "De klok gaat pas lopen als jij besluit live te gaan."
+      "heading": "{months, plural, =0 {Gratis beginnen} one {# maand gratis beginnen} other {# maanden gratis beginnen}}",
+      "sub": "Je gratis proefperiode begint zodra je je account aanmaakt."
     },
     "cashIcon": "💶",
     "walkBanner": "Demo · dit is je menukaart, zoals je klanten hem zullen zien. Er wordt niets afgerekend en er worden geen e-mails verstuurd."
@@ -1922,7 +1922,7 @@
     },
     "signup": {
       "title": "Maak je account aan",
-      "subtitle": "Je gratis maand begint pas als je live gaat.",
+      "subtitle": "{months, plural, =0 {Je gratis proefperiode begint zodra je je account aanmaakt.} one {Je eerste maand is gratis, vanaf het moment dat je je account aanmaakt.} other {Je eerste # maanden zijn gratis, vanaf het moment dat je je account aanmaakt.}}",
       "emailPlaceholder": "naam@jouwfoodtruck.nl",
       "codeLabel": "Heb je een code? <optional>(optioneel)</optional>",
       "codePlaceholder": "Vul hem hier in",
@@ -2211,7 +2211,7 @@
     "promoLabel": "Heb je een code? <opt>(optioneel)</opt>",
     "promoPlaceholder": "Vul hem hier in",
     "agreeTerms": "Ik ga akkoord met de <terms>Voorwaarden</terms> en het <privacy>Privacybeleid</privacy>.",
-    "freeMonth": "Met instellen start je gratis maand nog niet. Die begint pas als je je eerste live evenement kiest — wanneer jij er klaar voor bent.",
+    "freeMonth": "{months, plural, =0 {Je gratis proefperiode begint zodra je je account aanmaakt.} one {Je eerste maand is gratis, vanaf het moment dat je je account aanmaakt.} other {Je eerste # maanden zijn gratis, vanaf het moment dat je je account aanmaakt.}}",
     "fieldError": {
       "firstName": "Vul je voornaam in.",
       "lastName": "En je achternaam.",
@@ -3918,7 +3918,7 @@
       "cancel": "Annuleren",
       "newPlaceholder": "bijv. Foodtruck 2, Festivaltruck",
       "addButton": "Toevoegen",
-      "addConfirm": "Een extra foodtruck wordt in rekening gebracht als uitbreiding op je abonnement.\n\nDit zie je terug in je volgende factuurperiode.\n\nWil je doorgaan?",
+      "addConfirm": "{free, select, yes {Een foodtruck toevoegen is gratis in je plan.} other {Een extra foodtruck kost {price} per maand in je plan. We nemen contact op voordat we iets in rekening brengen.}}\n\nWil je doorgaan?",
       "removed": "{name} verwijderd",
       "kdsLinkCopied": "Link naar bestelscherm gekopieerd"
     },
@@ -3944,8 +3944,8 @@
     },
     "vanBilling": {
       "title": "Nog een foodtruck toevoegen",
-      "body": "Je plan {plan} omvat {vans, plural, one {# foodtruck} other {# foodtrucks}}. Een extra foodtruck kost <b>{price}</b> en wordt toegevoegd aan je volgende factuurperiode.",
-      "note": "⚠️ Let op: tijdens de vroege toegang verwerken we factuuraanpassingen handmatig. Je krijgt binnen 24 uur een bevestiging per e-mail.",
+      "body": "Je plan {plan} omvat {vans, plural, one {# foodtruck} other {# foodtrucks}}. Een extra foodtruck kost <b>{price}</b>.",
+      "note": "⚠️ We nemen contact op voordat we iets in rekening brengen.",
       "cancel": "Annuleren",
       "add": "Foodtruck toevoegen — {price}"
     },
@@ -5526,7 +5526,8 @@
       "whatsappSoonTitle": "Automatische antwoorden via WhatsApp <soon>Binnenkort</soon>",
       "whatsappSoonBody": "“Waar staan jullie vanavond?” “Welke desserts hebben jullie?” Binnenkort wordt je WhatsApp beantwoord terwijl jij naar je standplaats rijdt of achter de grill staat. Messenger en Instagram volgen daarna.",
       "offlineTitle": "Geen bereik? Gewoon doorgaan.",
-      "offlineBody": "Valt je verbinding weg, dan pauzeert online bestellen automatisch, zodat klanten geen bestellingen plaatsen die jij niet ziet. Neem gewoon verder bestellingen op met de app voor iPhone, iPad en Android.",
+      "offlineBody": "Zet de offlinebeveiliging voor bestellingen aan en online bestellen pauzeert automatisch als je verbinding wegvalt, zodat klanten geen bestellingen plaatsen die jij niet ziet.",
+      "offlineApps": "Neem gewoon verder bestellingen op met de app voor iPhone, iPad en Android.",
       "slotsBody": "Klanten bestellen vooraf en kiezen een afhaaltijd. Kortere wachtrijen, en het eten staat klaar als ze aankomen."
     },
     "steps": {
@@ -6084,7 +6085,7 @@
       "kitchen_app": "De meest complete manier om HatchGrab te gebruiken: een live keukenscherm, en de enige manier om bestellingen te blijven aannemen als je geen bereik hebt.",
       "multi_device_kitchen": "Gebruik meerdere schermen — aan de toonbank en in de keuken — die allemaal dezelfde live bestellingen tonen.",
       "multi_user_access": "Geef medewerkers hun eigen login met het juiste toegangsniveau.",
-      "offline_protection": "Valt je verbinding weg, dan pauzeert online bestellen, zodat klanten geen bestellingen plaatsen die jij niet ziet. Met de app voor iPhone, iPad en Android neem je offline gewoon bestellingen op; het webdashboard heeft een verbinding nodig.",
+      "offline_protection": "Zet de offlinebeveiliging voor bestellingen aan en online bestellen pauzeert automatisch als je verbinding wegvalt, zodat klanten geen bestellingen plaatsen die jij niet ziet.",
       "ticket_printing": "Print bestelbonnen op een Bluetooth- of kabelprinter in de keuken.",
       "web_dashboard": "Draai je service vanuit de browser op elke telefoon, tablet of laptop.",
       "meal_deals_upsells": "Bundel gerechten in combideals en bied extra’s aan bij het afrekenen om je gemiddelde bestelbedrag te verhogen.",
@@ -6113,6 +6114,7 @@
       "sms_order_alerts": "Stuur klanten automatisch een sms als hun bestelling klaar is.",
       "loyalty_stamp_cards": "Beloon vaste klanten met digitale spaarkaarten — stempels sparen en inwisselen gaat automatisch."
     },
+    "offlineApps": "Met de app voor iPhone, iPad en Android neem je offline gewoon bestellingen op; het webdashboard heeft een verbinding nodig.",
     "metaTitle": "Abonnementen & functies vergeleken — HatchGrab {country}"
   },
   "compare": {

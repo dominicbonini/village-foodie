@@ -137,7 +137,7 @@
     "cancel": "Batal",
     "newPlaceholder": "cth. Van 2, Van Festival",
     "addButton": "Tambah",
-    "addConfirm": "Menambah trak tambahan akan dikenakan caj sebagai tambahan kepada langganan anda.\n\nIni akan dicerminkan dalam kitaran pengebilan anda yang seterusnya.\n\nAdakah anda mahu teruskan?",
+    "addConfirm": "{free, select, yes {Menambah trak adalah percuma dalam pelan anda.} other {Trak tambahan berharga {price} sebulan dalam pelan anda. Kami akan menghubungi anda sebelum mengenakan sebarang caj.}}\n\nAdakah anda mahu teruskan?",
     "removed": "Dibuang: {name}",
     "kdsLinkCopied": "Pautan skrin pesanan disalin"
   },
@@ -163,8 +163,8 @@
   },
   "vanBilling": {
     "title": "Tambah trak lain",
-    "body": "Pelan anda ({plan}) termasuk {vans, plural, other {# trak}}. Menambah trak tambahan berharga <b>{price}</b> dan akan ditambah pada kitaran pengebilan anda yang seterusnya.",
-    "note": "⚠️ Nota: Pelarasan pengebilan diproses secara manual semasa akses awal. Anda akan menerima e-mel pengesahan dalam masa 24 jam.",
+    "body": "Pelan anda ({plan}) termasuk {vans, plural, other {# trak}}. Menambah trak tambahan berharga <b>{price}</b>.",
+    "note": "⚠️ Kami akan menghubungi anda sebelum mengenakan sebarang caj.",
     "cancel": "Batal",
     "add": "Tambah trak — {price}"
   },

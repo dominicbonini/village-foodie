@@ -343,6 +343,13 @@ async function compare() {
     for (const p of Object.keys(BEFORE)) BEFORE[p] = cut(BEFORE[p])
     if (JSON.stringify(BEFORE.landing) === was) throw new Error('tagline re-pin: the stored landing no longer holds the tagline')
   }
+  /* ⚠️ RE-PINNED (copy-truth-1, 2 November 2026): the landing's offline line says offline protection is switched on by the truck, and
+   * the apps sentence shows only where both app flags are on (none in these fixtures) — the stored pages' old text set to the new
+   * sentence (scripts/_lp-copy-truth-1.cjs); the landing must have held it. */
+  {
+    const CT1 = require('./_lp-copy-truth-1.cjs')   // eslint-disable-line @typescript-eslint/no-require-imports -- CommonJS harness module
+    if (CT1.LANDED) { BEFORE.landing = CT1.offlineMust(BEFORE.landing); for (const p of Object.keys(BEFORE)) BEFORE[p] = CT1.offline(BEFORE[p]) }
+  }
   const GB = SEEDS.gbFromSeed(), US_OFF = SEEDS.usFromSeed()
 
   const viewsB = {}

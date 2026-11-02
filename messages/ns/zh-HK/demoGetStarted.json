@@ -80,7 +80,7 @@
   "promoLabel": "有優惠碼？<opt>（選填）</opt>",
   "promoPlaceholder": "在此輸入",
   "agreeTerms": "我同意<terms>條款</terms>及<privacy>私隱政策</privacy>。",
-  "freeMonth": "設定期間不會開始計算你的免費月份。免費月份會在你選擇第一個正式活動時才開始——隨你準備好再說。",
+  "freeMonth": "{months, plural, =0 {免費試用由你建立帳戶時開始。} other {由建立帳戶起計，首 # 個月免費。}}",
   "fieldError": {
     "firstName": "請告訴我們你的名字。",
     "lastName": "還有你的姓氏。",

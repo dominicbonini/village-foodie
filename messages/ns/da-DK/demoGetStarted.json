@@ -80,7 +80,7 @@
   "promoLabel": "Har du en kode? <opt>(valgfrit)</opt>",
   "promoPlaceholder": "Skriv den her",
   "agreeTerms": "Jeg accepterer <terms>vilkårene</terms> og <privacy>privatlivspolitikken</privacy>.",
-  "freeMonth": "Opsætningen starter ikke din gratis måned. Den begynder, når du vælger dit første live-arrangement – når du er klar.",
+  "freeMonth": "{months, plural, =0 {Din gratis prøveperiode starter, når du opretter din konto.} one {Din første måned er gratis, regnet fra du opretter din konto.} other {Dine første # måneder er gratis, regnet fra du opretter din konto.}}",
   "fieldError": {
     "firstName": "Fortæl os dit fornavn.",
     "lastName": "Og dit efternavn.",

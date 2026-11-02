@@ -1501,8 +1501,8 @@
     "asLive": "Naročanje in delo v kuhinji potekata točno tako kot v živo.",
     "startExploring": "Začni raziskovati",
     "signupOffer": {
-      "heading": "Registrirajte se zdaj za brezplačni mesec",
-      "sub": "Odštevanje se začne šele, ko se odločite za objavo."
+      "heading": "{months, plural, =0 {Začnite brezplačno} one {Začnite brezplačno za # mesec} two {Začnite brezplačno za # meseca} few {Začnite brezplačno za # mesece} other {Začnite brezplačno za # mesecev}}",
+      "sub": "Brezplačno preizkusno obdobje se začne, ko ustvarite račun."
     },
     "cashIcon": "💶",
     "walkBanner": "Predstavitev · to je vaš jedilnik, kot ga bodo videle vaše stranke. Nič se ne zaračuna in nobena e-pošta se ne pošlje."
@@ -1922,7 +1922,7 @@
     },
     "signup": {
       "title": "Ustvarite račun",
-      "subtitle": "Vaš brezplačni mesec začne teči šele, ko začnete delovati v živo.",
+      "subtitle": "{months, plural, =0 {Brezplačno preizkusno obdobje se začne, ko ustvarite račun.} one {Vaš prvi mesec je brezplačen, od takrat, ko ustvarite račun.} two {Vaša prva # meseca sta brezplačna, od takrat, ko ustvarite račun.} few {Vaši prvi # meseci so brezplačni, od takrat, ko ustvarite račun.} other {Vaših prvih # mesecev je brezplačnih, od takrat, ko ustvarite račun.}}",
       "emailPlaceholder": "vi@vasfoodtruck.si",
       "codeLabel": "Imate kodo? <optional>(neobvezno)</optional>",
       "codePlaceholder": "Vnesite jo tukaj",
@@ -2211,7 +2211,7 @@
     "promoLabel": "Imate kodo? <opt>(neobvezno)</opt>",
     "promoPlaceholder": "Vnesite jo tukaj",
     "agreeTerms": "Strinjam se s <terms>Pogoji uporabe</terms> in <privacy>Politiko zasebnosti</privacy>.",
-    "freeMonth": "Nastavitev ne sproži vašega brezplačnega meseca. Ta se začne, ko izberete prvi dogodek v živo — kadar boste pripravljeni.",
+    "freeMonth": "{months, plural, =0 {Brezplačno preizkusno obdobje se začne, ko ustvarite račun.} one {Vaš prvi mesec je brezplačen, od takrat, ko ustvarite račun.} two {Vaša prva # meseca sta brezplačna, od takrat, ko ustvarite račun.} few {Vaši prvi # meseci so brezplačni, od takrat, ko ustvarite račun.} other {Vaših prvih # mesecev je brezplačnih, od takrat, ko ustvarite račun.}}",
     "fieldError": {
       "firstName": "Vpišite svoje ime.",
       "lastName": "In še priimek.",
@@ -3918,7 +3918,7 @@
       "cancel": "Prekliči",
       "newPlaceholder": "npr. Food truck 2, Festivalski food truck",
       "addButton": "Dodaj",
-      "addConfirm": "Dodaten food truck bo zaračunan kot dodatek k vaši naročnini.\n\nTo bo upoštevano v naslednjem obračunskem obdobju.\n\nŽelite nadaljevati?",
+      "addConfirm": "{free, select, yes {Dodajanje food trucka je v vašem paketu brezplačno.} other {Dodaten food truck v vašem paketu stane {price} na mesec. Preden karkoli zaračunamo, se vam oglasimo.}}\n\nŽelite nadaljevati?",
       "removed": "Odstranjeno: {name}",
       "kdsLinkCopied": "Povezava do zaslona za naročila je kopirana"
     },
@@ -3944,8 +3944,8 @@
     },
     "vanBilling": {
       "title": "Dodaj še en food truck",
-      "body": "Vaš paket {plan} vključuje {vans, plural, one {# food truck} two {# food trucka} few {# food trucke} other {# food truckov}}. Dodaten food truck stane <b>{price}</b> in bo dodan v naslednje obračunsko obdobje.",
-      "note": "⚠️ Opomba: V obdobju zgodnjega dostopa se prilagoditev obračuna obdela ročno. V 24 urah boste prejeli potrditveno e-pošto.",
+      "body": "Vaš paket {plan} vključuje {vans, plural, one {# food truck} two {# food trucka} few {# food trucke} other {# food truckov}}. Dodaten food truck stane <b>{price}</b>.",
+      "note": "⚠️ Preden karkoli zaračunamo, se vam oglasimo.",
       "cancel": "Prekliči",
       "add": "Dodaj food truck — {price}"
     },
@@ -5526,7 +5526,8 @@
       "whatsappSoonTitle": "Samodejni odgovori v WhatsAppu <soon>Kmalu</soon>",
       "whatsappSoonBody": "„Kje ste nocoj?“ „Katere sladice imate?“ Kmalu se bo na sporočila v WhatsAppu odgovarjalo namesto vas, medtem ko se peljete na prodajno mesto ali stojite za žarom. Sledita Messenger in Instagram.",
       "offlineTitle": "Ni signala? Strezite naprej.",
-      "offlineBody": "Če izgubite signal, se spletno naročanje samodejno ustavi, da kupci ne morejo oddati naročil, ki jih ne bi videli. Naročila še naprej sprejemajte z aplikacijo za iPhone, iPad in Android.",
+      "offlineBody": "Vklopite zaščito naročil brez povezave in spletno naročanje se samodejno ustavi, če izgubite signal, da kupci ne morejo oddati naročil, ki jih ne bi videli.",
+      "offlineApps": "Naročila še naprej sprejemajte z aplikacijo za iPhone, iPad in Android.",
       "slotsBody": "Kupci naročijo vnaprej in izberejo čas prevzema. Krajše vrste in hrana, ki je pripravljena, ko pridejo."
     },
     "steps": {
@@ -6084,7 +6085,7 @@
       "kitchen_app": "Najcelovitejši način dela s HatchGrab: kuhinjski zaslon v živo in edini način, da naročila sprejemate tudi, ko izgubite signal.",
       "multi_device_kitchen": "Uporabljajte več zaslonov — pri pultu in v kuhinji — ki vsi prikazujejo ista naročila v živo.",
       "multi_user_access": "Osebju dodelite lastne prijave z ustrezno ravnjo dostopa.",
-      "offline_protection": "Če izgubite signal, se spletno naročanje ustavi, da kupci ne morejo oddati naročil, ki jih ne bi videli. Z aplikacijo za iPhone, iPad in Android sprejemate naročila tudi brez povezave; spletna nadzorna plošča potrebuje povezavo.",
+      "offline_protection": "Vklopite zaščito naročil brez povezave in spletno naročanje se samodejno ustavi, če izgubite signal, da kupci ne morejo oddati naročil, ki jih ne bi videli.",
       "ticket_printing": "Tiskajte listke naročil na tiskalnik Bluetooth ali žični tiskalnik v kuhinji.",
       "web_dashboard": "Upravljajte prodajo v brskalniku na katerem koli telefonu, tablici ali prenosniku.",
       "meal_deals_upsells": "Združite artikle v menije in pri zaključku naročila ponudite dodatke, da povečate povprečno vrednost naročila.",
@@ -6113,6 +6114,7 @@
       "sms_order_alerts": "Kupcem samodejno pošljite SMS, ko je njihovo naročilo pripravljeno.",
       "loyalty_stamp_cards": "Nagradite stalne kupce z digitalnimi karticami z žigi — žigi se zbirajo in unovčijo samodejno."
     },
+    "offlineApps": "Z aplikacijo za iPhone, iPad in Android sprejemate naročila tudi brez povezave; spletna nadzorna plošča potrebuje povezavo.",
     "metaTitle": "Primerjava paketov in funkcij — HatchGrab {country}"
   },
   "compare": {

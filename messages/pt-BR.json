@@ -1501,8 +1501,8 @@
     "asLive": "O fluxo de pedidos e da cozinha é exatamente igual ao real.",
     "startExploring": "Começar a explorar",
     "signupOffer": {
-      "heading": "Cadastre-se agora e ganhe um mês grátis",
-      "sub": "O prazo só começa a contar quando você decidir entrar no ar."
+      "heading": "{months, plural, =0 {Comece grátis} one {Comece grátis por # mês} many {Comece grátis por # de meses} other {Comece grátis por # meses}}",
+      "sub": "Seu teste grátis começa quando você cria sua conta."
     },
     "cashIcon": "💵",
     "walkBanner": "Demonstração · este é o seu cardápio, do jeito que seus clientes vão ver. Nada é cobrado e nenhum e-mail é enviado."
@@ -1922,7 +1922,7 @@
     },
     "signup": {
       "title": "Crie sua conta",
-      "subtitle": "Seu mês grátis só começa quando você entrar no ar.",
+      "subtitle": "{months, plural, =0 {Seu teste grátis começa quando você cria sua conta.} one {Seu primeiro mês é grátis, a partir da criação da sua conta.} many {Seus primeiros # de meses são grátis, a partir da criação da sua conta.} other {Seus primeiros # meses são grátis, a partir da criação da sua conta.}}",
       "emailPlaceholder": "you@yourtruck.co.uk",
       "codeLabel": "Tem um código? <optional>(opcional)</optional>",
       "codePlaceholder": "Digite aqui",
@@ -2211,7 +2211,7 @@
     "promoLabel": "Tem um código? <opt>(opcional)</opt>",
     "promoPlaceholder": "Digite aqui",
     "agreeTerms": "Concordo com os <terms>Termos</terms> e a <privacy>Política de Privacidade</privacy>.",
-    "freeMonth": "A configuração não dá início ao seu mês grátis. Ele começa no seu primeiro evento com pedidos de verdade — quando você estiver pronto.",
+    "freeMonth": "{months, plural, =0 {Seu teste grátis começa quando você cria sua conta.} one {Seu primeiro mês é grátis, a partir da criação da sua conta.} many {Seus primeiros # de meses são grátis, a partir da criação da sua conta.} other {Seus primeiros # meses são grátis, a partir da criação da sua conta.}}",
     "fieldError": {
       "firstName": "Informe seu nome.",
       "lastName": "E seu sobrenome.",
@@ -3918,7 +3918,7 @@
       "cancel": "Cancelar",
       "newPlaceholder": "ex.: Van 2, Van dos festivais",
       "addButton": "Adicionar",
-      "addConfirm": "Cada food truck adicional é cobrado como um adicional da sua assinatura.\n\nIsso vai aparecer no seu próximo ciclo de cobrança.\n\nDeseja continuar?",
+      "addConfirm": "{free, select, yes {Adicionar um food truck é grátis no seu plano.} other {Cada food truck adicional custa {price} por mês no seu plano. Vamos falar com você antes de cobrar qualquer coisa.}}\n\nDeseja continuar?",
       "removed": "{name} removido",
       "kdsLinkCopied": "Link da tela de pedidos copiado"
     },
@@ -3944,8 +3944,8 @@
     },
     "vanBilling": {
       "title": "Adicionar outro food truck",
-      "body": "O seu plano {plan} inclui {vans, plural, one {# food truck} other {# food trucks}}. Cada food truck adicional custa <b>{price}</b>, que entra no seu próximo ciclo de cobrança.",
-      "note": "⚠️ Observação: durante o acesso antecipado, o ajuste da cobrança é feito manualmente. Você vai receber um e-mail de confirmação em até 24 horas.",
+      "body": "O seu plano {plan} inclui {vans, plural, one {# food truck} other {# food trucks}}. Cada food truck adicional custa <b>{price}</b>.",
+      "note": "⚠️ Vamos falar com você antes de cobrar qualquer coisa.",
       "cancel": "Cancelar",
       "add": "Adicionar food truck — {price}"
     },
@@ -5526,7 +5526,8 @@
       "whatsappSoonTitle": "Respostas automáticas no WhatsApp <soon>Em breve</soon>",
       "whatsappSoonBody": "“Onde vocês vão estar hoje à noite?” “Quais sobremesas vocês têm?” Em breve, seu WhatsApp vai ser respondido enquanto você dirige até o ponto ou está na chapa. Messenger e Instagram logo depois.",
       "offlineTitle": "Sem sinal? Continue atendendo.",
-      "offlineBody": "Se o sinal cair, os pedidos online são pausados automaticamente para que os clientes não façam pedidos que você não vai ver. Continue recebendo pedidos com o app para iPhone, iPad e Android.",
+      "offlineBody": "Ative a proteção de pedidos offline e os pedidos online são pausados automaticamente se o sinal cair, para que os clientes não façam pedidos que você não vai ver.",
+      "offlineApps": "Continue recebendo pedidos com o app para iPhone, iPad e Android.",
       "slotsBody": "Os clientes pedem antecipado e escolhem um horário de retirada. Menos fila, e a comida pronta quando eles chegam."
     },
     "steps": {
@@ -6056,7 +6057,7 @@
       "kitchen_app": "O jeito mais completo de usar o HatchGrab: uma tela da cozinha em tempo real, e a única forma de continuar recebendo pedidos quando o sinal cai.",
       "multi_device_kitchen": "Use várias telas — balcão e cozinha — todas mostrando os mesmos pedidos em tempo real.",
       "multi_user_access": "Dê à sua equipe logins próprios, com o nível de acesso certo.",
-      "offline_protection": "Se o sinal cair, os pedidos online são pausados para que os clientes não façam pedidos que você não vai ver. O app para iPhone, iPad e Android continua recebendo pedidos offline; o painel web precisa de conexão.",
+      "offline_protection": "Ative a proteção de pedidos offline e os pedidos online são pausados automaticamente se o sinal cair, para que os clientes não façam pedidos que você não vai ver.",
       "ticket_printing": "Imprima as comandas dos pedidos em uma impressora Bluetooth ou com fio na cozinha.",
       "web_dashboard": "Gerencie seu turno pelo navegador de qualquer celular, tablet ou notebook.",
       "meal_deals_upsells": "Junte itens em combos e ofereça adicionais na finalização do pedido para aumentar o ticket médio.",
@@ -6085,6 +6086,7 @@
       "sms_order_alerts": "Avise os clientes por SMS automaticamente quando o pedido estiver pronto.",
       "loyalty_stamp_cards": "Recompense clientes fiéis com cartões fidelidade digitais — carimbos acumulados e resgatados automaticamente."
     },
+    "offlineApps": "O app para iPhone, iPad e Android continua recebendo pedidos offline; o painel web precisa de conexão.",
     "metaTitle": "Planos e recursos comparados — HatchGrab {country}"
   },
   "compare": {

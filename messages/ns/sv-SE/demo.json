@@ -21,8 +21,8 @@
   "asLive": "Beställnings- och köksflödet fungerar precis som på riktigt.",
   "startExploring": "Börja utforska",
   "signupOffer": {
-    "heading": "Registrera dig för din gratismånad nu",
-    "sub": "Klockan börjar inte ticka förrän du bestämmer dig för att gå live."
+    "heading": "{months, plural, =0 {Börja gratis} one {Börja gratis i # månad} other {Börja gratis i # månader}}",
+    "sub": "Din gratis provperiod börjar när du skapar ditt konto."
   },
   "cashIcon": "💵",
   "walkBanner": "Demo · det här är din meny, så som dina kunder kommer att se den. Inget debiteras och inga mejl skickas."

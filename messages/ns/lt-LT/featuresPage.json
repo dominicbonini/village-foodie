@@ -5,7 +5,7 @@
     "kitchen_app": "Išsamiausias būdas naudotis HatchGrab: tiesioginis virtuvės ekranas ir vienintelis būdas toliau priimti užsakymus, kai dingsta ryšys.",
     "multi_device_kitchen": "Naudokite kelis ekranus – prie prekystalio ir virtuvėje –, visuose rodomi tie patys užsakymai realiuoju laiku.",
     "multi_user_access": "Suteikite darbuotojams atskirus prisijungimus su tinkamu prieigos lygiu.",
-    "offline_protection": "Jei dingsta ryšys, užsakymai internetu sustabdomi, kad klientai negalėtų pateikti užsakymų, kurių nematytumėte. Su iPhone, iPad ir Android programėle užsakymus galite priimti ir be ryšio; internetiniam valdymo skydeliui reikia ryšio.",
+    "offline_protection": "Įjunkite užsakymų apsaugą be ryšio, ir užsakymai internetu automatiškai sustabdomi, jei dingsta ryšys, kad klientai negalėtų pateikti užsakymų, kurių nematytumėte.",
     "ticket_printing": "Spausdinkite užsakymų kvitus virtuvėje Bluetooth arba laidiniu spausdintuvu.",
     "web_dashboard": "Valdykite aptarnavimą iš bet kurio telefono, planšetės ar nešiojamojo kompiuterio naršyklės.",
     "meal_deals_upsells": "Sujunkite patiekalus į rinkinius ir apmokėjimo metu siūlykite priedų, kad padidėtų vidutinė užsakymo suma.",
@@ -34,5 +34,6 @@
     "sms_order_alerts": "Automatiškai praneškite klientams SMS žinute, kai jų užsakymas paruoštas.",
     "loyalty_stamp_cards": "Apdovanokite nuolatinius klientus skaitmeninėmis lojalumo kortelėmis – spaudai renkami ir panaudojami automatiškai."
   },
+  "offlineApps": "Su iPhone, iPad ir Android programėle užsakymus galite priimti ir be ryšio; internetiniam valdymo skydeliui reikia ryšio.",
   "metaTitle": "Planų ir funkcijų palyginimas – HatchGrab {country}"
 }

@@ -284,6 +284,8 @@ async function main() {
   const AP = require('./_lp-about-page.cjs')
   // eslint-disable-next-line @typescript-eslint/no-require-imports -- CommonJS harness module (world-countries-1)
   const TAGLINE = require('./_lp-tagline.cjs')
+  // ⚠️ RE-PINNED (copy-truth-1, 2 November 2026): the landing's offline line — its BEFORE text set to the new sentence (scripts/_lp-copy-truth-1.cjs).
+  const CT1 = require('./_lp-copy-truth-1.cjs')
   const aboutBack = (got, exp) => { if (!AP.LANDED) return [got, exp]; const r = AP.viewBack(got, exp); return r ? [r[0], r[1]] : [got, exp] }
   // ⚠️ RE-PINNED (country-picker-1, 23 October 2026, docs/country-picker-1-report.md): PICKER-footer — BEFORE's footer menu
   // (<div class="cc cc-foot">) and AFTER's picker (<span class="cc cc-foot">) cut whole from their sides, verified first: one
@@ -328,7 +330,7 @@ async function main() {
     // — scripts/_lp-stage-b.cjs landingPricing: the section's region cut from both, the rest byte-identical.
     // ⚠️ RE-PINNED (seo-fixes, 20 October 2026): + seo-fixes's named items (seoLanding, above), outside #pricing.
     // ⚠️ RE-PINNED (world-countries-1, tagline): the hero's and the footer's tagline cut from BEFORE (scripts/_lp-tagline.cjs).
-    if (!LEGACY_DISPLAY) { const [g, e] = pickerBack(aboutBack(got.landing[k].replace(SEP, ''), seoLanding(k, landing1e(k, TAGLINE.cut(before.landing[k]))))); const r = STAGE_B.landingPricing(e, g); t(`landing page (${k}) rendered HTML, apart from Stage B's #pricing (pricing-b-landing-pricing), seo-fixes's named items${PICKER.LANDED ? ' and the footer picker (PICKER-footer)' : ''}`, r.ok, r.problems.join(' · ')); continue }
+    if (!LEGACY_DISPLAY) { const [g, e] = pickerBack(aboutBack(got.landing[k].replace(SEP, ''), seoLanding(k, landing1e(k, CT1.LANDED ? CT1.offlineMust(TAGLINE.cut(before.landing[k])) : TAGLINE.cut(before.landing[k]))))); const r = STAGE_B.landingPricing(e, g); t(`landing page (${k}) rendered HTML, apart from Stage B's #pricing (pricing-b-landing-pricing), seo-fixes's named items${PICKER.LANDED ? ' and the footer picker (PICKER-footer)' : ''}`, r.ok, r.problems.join(' · ')); continue }
     const d = diffJson(landing1e(k, before.landing[k]), got.landing[k].replace(SEP, '')); t(`landing page (${k}) rendered HTML`, d === null, d)
   }
 

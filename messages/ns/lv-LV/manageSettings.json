@@ -137,7 +137,7 @@
     "cancel": "Atcelt",
     "newPlaceholder": "Piem., Busiņš 2, Festivāla busiņš",
     "addButton": "Pievienot",
-    "addConfirm": "Papildu busiņš tiks iekļauts jūsu abonementā kā maksas papildinājums.\n\nTas atspoguļosies nākamajā norēķinu periodā.\n\nVai vēlaties turpināt?",
+    "addConfirm": "{free, select, yes {Busiņa pievienošana jūsu plānā ir bez maksas.} other {Papildu busiņš jūsu plānā maksā {price} mēnesī. Mēs sazināsimies ar jums, pirms kaut ko iekasēsim.}}\n\nVai vēlaties turpināt?",
     "removed": "Noņemts: {name}",
     "kdsLinkCopied": "Pasūtījumu ekrāna saite nokopēta"
   },
@@ -163,8 +163,8 @@
   },
   "vanBilling": {
     "title": "Pievienot vēl vienu busiņu",
-    "body": "Jūsu plāns {plan} ietver {vans, plural, zero {# busiņus} one {# busiņu} other {# busiņus}}. Papildu busiņš maksā <b>{price}</b>, un šī summa tiks pievienota nākamajam norēķinu periodam.",
-    "note": "⚠️ Piezīme: agrīnās piekļuves laikā norēķinu korekcija tiek veikta manuāli. 24 stundu laikā saņemsiet apstiprinājuma e-pastu.",
+    "body": "Jūsu plāns {plan} ietver {vans, plural, zero {# busiņus} one {# busiņu} other {# busiņus}}. Papildu busiņš maksā <b>{price}</b>.",
+    "note": "⚠️ Mēs sazināsimies ar jums, pirms kaut ko iekasēsim.",
     "cancel": "Atcelt",
     "add": "Pievienot busiņu — {price}"
   },

@@ -1501,8 +1501,8 @@
     "asLive": "Beställnings- och köksflödet fungerar precis som på riktigt.",
     "startExploring": "Börja utforska",
     "signupOffer": {
-      "heading": "Registrera dig för din gratismånad nu",
-      "sub": "Klockan börjar inte ticka förrän du bestämmer dig för att gå live."
+      "heading": "{months, plural, =0 {Börja gratis} one {Börja gratis i # månad} other {Börja gratis i # månader}}",
+      "sub": "Din gratis provperiod börjar när du skapar ditt konto."
     },
     "cashIcon": "💵",
     "walkBanner": "Demo · det här är din meny, så som dina kunder kommer att se den. Inget debiteras och inga mejl skickas."
@@ -1922,7 +1922,7 @@
     },
     "signup": {
       "title": "Skapa ditt konto",
-      "subtitle": "Din gratismånad börjar inte förrän du går live.",
+      "subtitle": "{months, plural, =0 {Din gratis provperiod börjar när du skapar ditt konto.} one {Din första månad är gratis, räknat från när du skapar ditt konto.} other {Dina första # månader är gratis, räknat från när du skapar ditt konto.}}",
       "emailPlaceholder": "du@dinfoodtruck.se",
       "codeLabel": "Har du en kod? <optional>(valfritt)</optional>",
       "codePlaceholder": "Ange den här",
@@ -2211,7 +2211,7 @@
     "promoLabel": "Har du en kod? <opt>(valfritt)</opt>",
     "promoPlaceholder": "Ange den här",
     "agreeTerms": "Jag godkänner <terms>villkoren</terms> och <privacy>integritetspolicyn</privacy>.",
-    "freeMonth": "Din gratismånad startar inte när du ställer in kontot. Den börjar när du väljer ditt första evenemang som ska gå live — när du än är redo.",
+    "freeMonth": "{months, plural, =0 {Din gratis provperiod börjar när du skapar ditt konto.} one {Din första månad är gratis, räknat från när du skapar ditt konto.} other {Dina första # månader är gratis, räknat från när du skapar ditt konto.}}",
     "fieldError": {
       "firstName": "Ange ditt förnamn.",
       "lastName": "Och ditt efternamn.",
@@ -3918,7 +3918,7 @@
       "cancel": "Avbryt",
       "newPlaceholder": "t.ex. Foodtruck 2, Festivaltrucken",
       "addButton": "Lägg till",
-      "addConfirm": "En extra foodtruck debiteras som ett tillägg till ditt abonnemang.\n\nDet syns i din nästa faktureringsperiod.\n\nVill du fortsätta?",
+      "addConfirm": "{free, select, yes {Att lägga till en foodtruck är gratis i ditt abonnemang.} other {En extra foodtruck kostar {price} i månaden i ditt abonnemang. Vi hör av oss innan något debiteras.}}\n\nVill du fortsätta?",
       "removed": "{name} borttagen",
       "kdsLinkCopied": "Länken till beställningsskärmen kopierad"
     },
@@ -3944,8 +3944,8 @@
     },
     "vanBilling": {
       "title": "Lägg till ytterligare en foodtruck",
-      "body": "I ditt abonnemang {plan} ingår {vans, plural, one {# foodtruck} other {# foodtruckar}}. En extra foodtruck kostar <b>{price}</b> och läggs till i din nästa faktureringsperiod.",
-      "note": "⚠️ Obs! Under lanseringsperioden justeras faktureringen manuellt. Du får ett bekräftelsemejl inom 24 timmar.",
+      "body": "I ditt abonnemang {plan} ingår {vans, plural, one {# foodtruck} other {# foodtruckar}}. En extra foodtruck kostar <b>{price}</b>.",
+      "note": "⚠️ Vi hör av oss innan något debiteras.",
       "cancel": "Avbryt",
       "add": "Lägg till foodtruck – {price}"
     },
@@ -5526,7 +5526,8 @@
       "whatsappSoonTitle": "Automatiska svar på WhatsApp <soon>Kommer snart</soon>",
       "whatsappSoonBody": "”Var står ni ikväll?” ”Vilka efterrätter har ni?” Snart svarar din WhatsApp medan du kör till ställplatsen eller står vid grillen. Messenger och Instagram följer efter.",
       "offlineTitle": "Ingen täckning? Fortsätt servera.",
-      "offlineBody": "Om du tappar täckningen pausas onlinebeställningen automatiskt, så att kunderna inte kan lägga beställningar som du inte ser. Fortsätt ta emot beställningar med appen för iPhone, iPad och Android.",
+      "offlineBody": "Slå på skyddet för beställningar offline så pausas onlinebeställningen automatiskt om du tappar täckningen, så att kunderna inte kan lägga beställningar som du inte ser.",
+      "offlineApps": "Fortsätt ta emot beställningar med appen för iPhone, iPad och Android.",
       "slotsBody": "Kunderna förbeställer, väljer en upphämtningstid och slipper kön. Maten är klar när de kommer."
     },
     "steps": {
@@ -6084,7 +6085,7 @@
       "kitchen_app": "Det mest kompletta sättet att köra HatchGrab: en live-köksskärm, och det enda sättet att fortsätta ta emot beställningar när du tappar täckningen.",
       "multi_device_kitchen": "Kör flera skärmar – vid disken och i köket – som alla visar samma beställningar i realtid.",
       "multi_user_access": "Ge personalen egna inloggningar med rätt behörighet.",
-      "offline_protection": "Om du tappar täckningen pausas onlinebeställningen, så att kunderna inte kan lägga beställningar som du inte ser. Appen för iPhone, iPad och Android låter dig fortsätta ta emot beställningar offline; översikten på webben kräver uppkoppling.",
+      "offline_protection": "Slå på skyddet för beställningar offline så pausas onlinebeställningen automatiskt om du tappar täckningen, så att kunderna inte kan lägga beställningar som du inte ser.",
       "ticket_printing": "Skriv ut beställningsbongar på en Bluetooth- eller kabelansluten skrivare i köket.",
       "web_dashboard": "Driv din servering från webbläsaren i valfri mobil, surfplatta eller laptop.",
       "meal_deals_upsells": "Sätt ihop rätter till måltider och erbjud tillval i kassan för att höja snittordern.",
@@ -6113,6 +6114,7 @@
       "sms_order_alerts": "Skicka automatiskt ett sms till kunderna när beställningen är klar.",
       "loyalty_stamp_cards": "Belöna återkommande kunder med digitala stämpelkort – stämplar samlas och löses in automatiskt."
     },
+    "offlineApps": "Appen för iPhone, iPad och Android låter dig fortsätta ta emot beställningar offline; översikten på webben kräver uppkoppling.",
     "metaTitle": "Abonnemang och funktioner jämförda – HatchGrab {country}"
   },
   "compare": {

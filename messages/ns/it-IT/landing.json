@@ -36,7 +36,8 @@
     "whatsappSoonTitle": "Risposte automatiche WhatsApp <soon>In arrivo</soon>",
     "whatsappSoonBody": "«Dove siete stasera?» «Che dolci avete?» Presto il tuo WhatsApp risponderà mentre guidi verso la postazione o sei alla piastra. Seguiranno Messenger e Instagram.",
     "offlineTitle": "Niente segnale? Continua a servire.",
-    "offlineBody": "Se perdi il segnale, gli ordini online si mettono in pausa automaticamente, così i clienti non possono inviare ordini che non vedresti. Continua a prendere ordini con l’app per iPhone, iPad e Android.",
+    "offlineBody": "Attiva la protezione ordini offline e gli ordini online si mettono in pausa automaticamente se perdi il segnale, così i clienti non possono inviare ordini che non vedresti.",
+    "offlineApps": "Continua a prendere ordini con l’app per iPhone, iPad e Android.",
     "slotsBody": "I clienti ordinano in anticipo e scelgono un orario di ritiro. Meno code e cibo pronto al loro arrivo."
   },
   "steps": {

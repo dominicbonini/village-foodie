@@ -143,12 +143,19 @@ const stageTidy = () => (fs.existsSync(STAGE_TIDY_FILE) ? readJson(STAGE_TIDY_FI
 // pricing-tidy by the same rule.
 const STAGE_AF2_FILE = path.join(REPO, 'scripts/fixtures/address-formats-2-messages.json')
 const stageAF2 = () => (fs.existsSync(STAGE_AF2_FILE) ? readJson(STAGE_AF2_FILE) : EMPTY_STAGE())
+// ⚠️ RE-PINNED (copy-truth-1, 2 November 2026): copy-truth-1's message changes are a SIXTH sibling
+// (scripts/fixtures/copy-truth-1-messages.json — the trial line, the offline line and the add-van words reworded in en-GB; the
+// offline apps sentence added as its own keys; en-US's offlineBody override removed and its apps sentence added), applied after
+// address-formats-2 by the same rule. Every new argument they take (months, free, price) is optional for the old text, so a
+// frozen catalogue shows them at their text before, like the other stages.
+const STAGE_CT1_FILE = path.join(REPO, 'scripts/fixtures/copy-truth-1-messages.json')
+const stageCT1 = () => (fs.existsSync(STAGE_CT1_FILE) ? readJson(STAGE_CT1_FILE) : EMPTY_STAGE())
 const stageA = () => {
-  const a = stageAOnly(), b = stageA2(), sb = stageB(), st = stageTidy(), af2 = stageAF2(), out = {}
+  const a = stageAOnly(), b = stageA2(), sb = stageB(), st = stageTidy(), af2 = stageAF2(), ct1 = stageCT1(), out = {}
   for (const loc of ['en-GB', 'en-US']) {
     const o = out[loc] = {}
     for (const part of ['removed', 'reworded', 'added']) o[part] = { ...((a[loc] || {})[part] || {}), ...((b[loc] || {})[part] || {}) }
-    for (const x of [sb[loc] || {}, st[loc] || {}, af2[loc] || {}]) {
+    for (const x of [sb[loc] || {}, st[loc] || {}, af2[loc] || {}, ct1[loc] || {}]) {
       for (const [k, v] of Object.entries(x.removed || {})) { const was = k in o.reworded ? o.reworded[k].before : k in o.added ? undefined : v; delete o.reworded[k]; delete o.added[k]; if (was !== undefined) o.removed[k] = was }
       for (const [k, v] of Object.entries(x.reworded || {})) { if (k in o.added) o.added[k] = v.after; else o.reworded[k] = k in o.reworded ? { before: o.reworded[k].before, after: v.after } : v }
       for (const [k, v] of Object.entries(x.added || {})) o.added[k] = v
@@ -309,4 +316,4 @@ function gbKeyDiff(frozenFile = FROZEN_DEFAULT, afterFile = fs.existsSync(PHASE2
   return out
 }
 
-module.exports = { stageA, stageAOnly, stageA2, stageB, stageTidy, stageAF2, STAGE_AF2_FILE, STAGE_A_FILE, STAGE_A2_FILE, STAGE_B_FILE, STAGE_TIDY_FILE, REPO, MOVED_FILE, MOVED_FILE_1D2, MOVED_FILE_1E, MOVED_FILES, KEY_MOVES_FILE, KEY_MOVES_FILE_1E, keyMoves, withMoves, movedTree, PHASE2_END_GB, FROZEN_DEFAULT, FROZEN_REF, FROZEN_INLINE, withInline, SPEC, leaves, getPath, overlay, mode, catalogues, enGBForNode, generated, resolveMessages, gbKeyDiff, readJson }
+module.exports = { stageA, stageAOnly, stageA2, stageB, stageTidy, stageAF2, STAGE_AF2_FILE, stageCT1, STAGE_CT1_FILE, STAGE_A_FILE, STAGE_A2_FILE, STAGE_B_FILE, STAGE_TIDY_FILE, REPO, MOVED_FILE, MOVED_FILE_1D2, MOVED_FILE_1E, MOVED_FILES, KEY_MOVES_FILE, KEY_MOVES_FILE_1E, keyMoves, withMoves, movedTree, PHASE2_END_GB, FROZEN_DEFAULT, FROZEN_REF, FROZEN_INLINE, withInline, SPEC, leaves, getPath, overlay, mode, catalogues, enGBForNode, generated, resolveMessages, gbKeyDiff, readJson }

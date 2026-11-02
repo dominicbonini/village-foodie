@@ -3240,6 +3240,10 @@ function runWiringSuite(lib) {
      * auto-replies¹, Kitchen ticket printing²) under the pricing footnote, so the import names `planTableNotes` too. */
     const TIDY_NOW = { "import { PlanTable } from '@/components/pricing/PlanTable'": "import { PlanTable, planTableNotes } from '@/components/pricing/PlanTable'" }
     for (const m of movedEdits) if (TIDY_NOW[m.now]) m.now = TIDY_NOW[m.now]
+    /* ⚠️ RE-PINNED (copy-truth-1, 2 November 2026): the add-van confirmation now says what THIS van costs, so the billing-modal test
+     * is computed once as `vanIsFree` (the same condition) and the modal opens on `!vanIsFree`. The claim is re-pointed to it. */
+    const COPY_TRUTH_1_NOW = { 'if (vans.length >= vansIncluded && vanAddonMinor > 0) setShowVanBillingModal(true)': 'const vanIsFree = !(vans.length >= vansIncluded && vanAddonMinor > 0)' }
+    for (const m of movedEdits) if (COPY_TRUTH_1_NOW[m.now]) m.now = COPY_TRUTH_1_NOW[m.now]
     /* ⚠️ RE-PINNED (US layout fixes, 18 October 2026): the FOUR lines of 719ac91 the US layout edits replaced — FIVE since
      * 19 October, when fix 3's van line had to be named too (see its note in the list) — (the diff
      * 4d72838 → now is exactly fixes 1-manage-join, 3, 4, 5a and 12-deadline-row; every other line they touched is

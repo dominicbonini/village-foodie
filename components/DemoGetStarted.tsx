@@ -113,10 +113,10 @@ type DemoError = string | { code: DemoErrorCode } | { server: { error?: unknown;
 /** A field's problem, held as a code (`demoGetStarted.fieldError.<code>`; 'phoneInvalid' is the shared phone sentence). */
 type FieldErrorCode = 'firstName' | 'lastName' | 'truck' | 'cuisine' | 'phoneMissing' | 'phoneInvalid' | 'email' | 'password' | 'terms'
 
-export function DemoGetStarted({ token, slug, label, className, isAdmin = false, extractionSource = null, phone = null, setupLabel, prefillEmail, onOpen }: {
+export function DemoGetStarted({ token, slug, label, className, isAdmin = false, extractionSource = null, phone = null, setupLabel, prefillEmail, onOpen, trialMonths = null }: {
   token?: string
   slug?: string
-  /** demo-2 (30 Oct 2026): the trigger's words WHEN SIGN-UP IS OFFERED ("Start free for 3 months, keep my menu").
+  /** demo-2 (30 Oct 2026): the trigger's words WHEN SIGN-UP IS OFFERED ("Start free for {months} months, keep my menu", the length read from plans.trial_months).
    *  When it is not (signup off), the button falls back to the save-my-menu path with that path's own label — a
    *  "Start free" that opened an email box would promise a door that is not there. */
   setupLabel?: string
@@ -125,6 +125,9 @@ export function DemoGetStarted({ token, slug, label, className, isAdmin = false,
   prefillEmail?: string
   /** demo-2: told when the visitor opens the flow (the walkthrough counts `signup_started`). */
   onOpen?: () => void
+  /** copy-truth-1 (2 November 2026): the trial's length (plans.trial_months), for the line beside the setup button — the trial
+   *  starts at signup. The walkthrough has it from its API; a caller without it passes nothing and the line names no length. */
+  trialMonths?: number | null
   /** 🔴 The phone box's country, name and example — the host page's truck payload `phone` (Phase 2C).
    *  Null (a pre-2C payload): the box names no country or example and /api/setup checks the number. */
   phone?: PhoneCopy | null
@@ -1162,9 +1165,9 @@ export function DemoGetStarted({ token, slug, label, className, isAdmin = false,
                     </p>
                   )}
 
-                  {/* The free-month line lives HERE — the view where the commitment actually happens (§4). */}
+                  {/* The trial line lives HERE — the view where the commitment actually happens (§4). copy-truth-1: it says the trial starts at signup. */}
                   <p className="text-sm text-slate-600">
-                    {t('freeMonth')}
+                    {t('freeMonth', { months: trialMonths ?? 0 })}
                   </p>
                 </div>
                 )
@@ -1178,10 +1181,10 @@ export function DemoGetStarted({ token, slug, label, className, isAdmin = false,
                     className="w-full border border-slate-200 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-orange-400"
                   />
                   {error && <p className="text-sm text-red-600">{errorText(error)}</p>}
-                  {/* NO free-month line here. It used to render on exactly this branch (`!canSetup`), which
+                  {/* NO trial line here. It used to render on exactly this branch (`!canSetup`), which
                       is the branch where there IS NO SETUP BUTTON — the customer order page passes a slug,
                       not a token, so canSetup is false and the only action is "Send me the link". Promising
-                      that "setting up won't start your free month" beside an offer that doesn't include
+                      a line about the trial beside an offer that doesn't include
                       setting up is a promise about something not on the table; it invites the reader to look
                       for a signup control that isn't there. The line belongs WITH the primary setup button,
                       and that is where it now lives exclusively: the canSetup wizard's step-3 commitment view
@@ -1189,7 +1192,7 @@ export function DemoGetStarted({ token, slug, label, className, isAdmin = false,
                   {/* RETROFIT: this capture has collected addresses since Phase 3 with no privacy notice
                       near it — a live compliance gap, not a Phase 4 nicety. One line by design.
                       The !canSetup half names ONLY what actually happens on this surface: we send the
-                      demo link. It used to add "and get you set up", which — like the free-month line
+                      demo link. It used to add "and get you set up", which — like the trial line
                       removed just above — described a path this branch doesn't offer. A privacy notice
                       that overstates what you'll be contacted about is the one line that must not. */}
                   <p className="text-xs text-slate-400">

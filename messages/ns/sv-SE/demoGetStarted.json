@@ -80,7 +80,7 @@
   "promoLabel": "Har du en kod? <opt>(valfritt)</opt>",
   "promoPlaceholder": "Ange den här",
   "agreeTerms": "Jag godkänner <terms>villkoren</terms> och <privacy>integritetspolicyn</privacy>.",
-  "freeMonth": "Din gratismånad startar inte när du ställer in kontot. Den börjar när du väljer ditt första evenemang som ska gå live — när du än är redo.",
+  "freeMonth": "{months, plural, =0 {Din gratis provperiod börjar när du skapar ditt konto.} one {Din första månad är gratis, räknat från när du skapar ditt konto.} other {Dina första # månader är gratis, räknat från när du skapar ditt konto.}}",
   "fieldError": {
     "firstName": "Ange ditt förnamn.",
     "lastName": "Och ditt efternamn.",

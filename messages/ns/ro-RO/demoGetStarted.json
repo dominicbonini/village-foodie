@@ -80,7 +80,7 @@
   "promoLabel": "Aveți un cod? <opt>(opțional)</opt>",
   "promoPlaceholder": "Introduceți-l aici",
   "agreeTerms": "Accept <terms>Termenii</terms> și <privacy>Politica de confidențialitate</privacy>.",
-  "freeMonth": "Configurarea nu pornește luna gratuită. Aceasta începe când alegeți primul eveniment activ — oricând sunteți pregătit.",
+  "freeMonth": "{months, plural, =0 {Perioada de probă gratuită începe când vă creați contul.} one {Prima lună este gratuită, de la crearea contului.} few {Primele # luni sunt gratuite, de la crearea contului.} other {Primele # de luni sunt gratuite, de la crearea contului.}}",
   "fieldError": {
     "firstName": "Spuneți-ne prenumele.",
     "lastName": "Și numele de familie.",

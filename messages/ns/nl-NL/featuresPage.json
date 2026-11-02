@@ -5,7 +5,7 @@
     "kitchen_app": "De meest complete manier om HatchGrab te gebruiken: een live keukenscherm, en de enige manier om bestellingen te blijven aannemen als je geen bereik hebt.",
     "multi_device_kitchen": "Gebruik meerdere schermen — aan de toonbank en in de keuken — die allemaal dezelfde live bestellingen tonen.",
     "multi_user_access": "Geef medewerkers hun eigen login met het juiste toegangsniveau.",
-    "offline_protection": "Valt je verbinding weg, dan pauzeert online bestellen, zodat klanten geen bestellingen plaatsen die jij niet ziet. Met de app voor iPhone, iPad en Android neem je offline gewoon bestellingen op; het webdashboard heeft een verbinding nodig.",
+    "offline_protection": "Zet de offlinebeveiliging voor bestellingen aan en online bestellen pauzeert automatisch als je verbinding wegvalt, zodat klanten geen bestellingen plaatsen die jij niet ziet.",
     "ticket_printing": "Print bestelbonnen op een Bluetooth- of kabelprinter in de keuken.",
     "web_dashboard": "Draai je service vanuit de browser op elke telefoon, tablet of laptop.",
     "meal_deals_upsells": "Bundel gerechten in combideals en bied extra’s aan bij het afrekenen om je gemiddelde bestelbedrag te verhogen.",
@@ -34,5 +34,6 @@
     "sms_order_alerts": "Stuur klanten automatisch een sms als hun bestelling klaar is.",
     "loyalty_stamp_cards": "Beloon vaste klanten met digitale spaarkaarten — stempels sparen en inwisselen gaat automatisch."
   },
+  "offlineApps": "Met de app voor iPhone, iPad en Android neem je offline gewoon bestellingen op; het webdashboard heeft een verbinding nodig.",
   "metaTitle": "Abonnementen & functies vergeleken — HatchGrab {country}"
 }

@@ -80,7 +80,7 @@
   "promoLabel": "¿Tienes un código? <opt>(opcional)</opt>",
   "promoPlaceholder": "Escríbelo aquí",
   "agreeTerms": "Acepto los <terms>Términos</terms> y la <privacy>Política de privacidad</privacy>.",
-  "freeMonth": "Configurar no pone en marcha tu mes gratis. Este empieza cuando eliges tu primer evento publicado, cuando tú quieras.",
+  "freeMonth": "{months, plural, =0 {Tu prueba gratuita empieza cuando creas tu cuenta.} one {Tu primer mes es gratis, desde que creas tu cuenta.} many {Tus primeros # de meses son gratis, desde que creas tu cuenta.} other {Tus primeros # meses son gratis, desde que creas tu cuenta.}}",
   "fieldError": {
     "firstName": "Dinos tu nombre.",
     "lastName": "Y tus apellidos.",

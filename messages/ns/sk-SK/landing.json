@@ -36,7 +36,8 @@
     "whatsappSoonTitle": "Automatické odpovede pre WhatsApp <soon>Už čoskoro</soon>",
     "whatsappSoonBody": "„Kde ste dnes večer?“ „Aké máte dezerty?“ Čoskoro sa na správy cez WhatsApp bude odpovedať, kým šoférujete na stanovište alebo stojíte pri grile. Messenger a Instagram budú nasledovať.",
     "offlineTitle": "Bez signálu? Predávajte ďalej.",
-    "offlineBody": "Ak stratíte signál, online objednávanie sa automaticky pozastaví, aby zákazníci nemohli zadávať objednávky, ktoré by ste nevideli. Objednávky prijímajte ďalej v aplikácii pre iPhone, iPad a Android.",
+    "offlineBody": "Zapnite ochranu objednávok offline a online objednávanie sa automaticky pozastaví, ak stratíte signál, aby zákazníci nemohli zadávať objednávky, ktoré by ste nevideli.",
+    "offlineApps": "Objednávky prijímajte ďalej v aplikácii pre iPhone, iPad a Android.",
     "slotsBody": "Zákazníci si objednajú vopred a vyberú si čas vyzdvihnutia. Kratšie rady a jedlo hotové, keď prídu."
   },
   "steps": {

@@ -137,7 +137,7 @@
     "cancel": "Annuller",
     "newPlaceholder": "f.eks. Foodtruck 2, Festival-foodtruck",
     "addButton": "Tilføj",
-    "addConfirm": "En ekstra foodtruck opkræves som tilkøb til dit abonnement.\n\nDet fremgår af din næste faktureringsperiode.\n\nVil du fortsætte?",
+    "addConfirm": "{free, select, yes {Det er gratis at tilføje en foodtruck på dit abonnement.} other {En ekstra foodtruck koster {price} om måneden på dit abonnement. Vi kontakter dig, før der opkræves noget.}}\n\nVil du fortsætte?",
     "removed": "{name} er fjernet",
     "kdsLinkCopied": "Link til ordreskærm kopieret"
   },
@@ -163,8 +163,8 @@
   },
   "vanBilling": {
     "title": "Tilføj endnu en foodtruck",
-    "body": "Dit abonnement {plan} omfatter {vans, plural, one {# foodtruck} other {# foodtrucks}}. En ekstra foodtruck koster <b>{price}</b> og lægges til din næste faktureringsperiode.",
-    "note": "⚠️ Bemærk: I perioden med tidlig adgang behandles ændringer i faktureringen manuelt. Du modtager en bekræftelse på e-mail inden for 24 timer.",
+    "body": "Dit abonnement {plan} omfatter {vans, plural, one {# foodtruck} other {# foodtrucks}}. En ekstra foodtruck koster <b>{price}</b>.",
+    "note": "⚠️ Vi kontakter dig, før der opkræves noget.",
     "cancel": "Annuller",
     "add": "Tilføj foodtruck — {price}"
   },

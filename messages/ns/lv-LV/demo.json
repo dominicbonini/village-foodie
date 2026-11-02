@@ -21,8 +21,8 @@
   "asLive": "Pasūtīšanas un virtuves plūsma darbojas tieši tāpat kā īstā darbā.",
   "startExploring": "Sākt izpēti",
   "signupOffer": {
-    "heading": "Reģistrējieties bezmaksas mēnesim jau tagad",
-    "sub": "Laiks sāk skaitīties tikai tad, kad nolemjat sākt darbu."
+    "heading": "{months, plural, =0 {Sāciet bez maksas} zero {Sāciet bez maksas uz # mēnešiem} one {Sāciet bez maksas uz # mēnesi} other {Sāciet bez maksas uz # mēnešiem}}",
+    "sub": "Jūsu bezmaksas izmēģinājuma periods sākas, kad izveidojat kontu."
   },
   "cashIcon": "💶",
   "walkBanner": "Demo · šī ir jūsu ēdienkarte tieši tāda, kādu to redzēs jūsu klienti. Nauda netiek iekasēta, un e-pasti netiek sūtīti."

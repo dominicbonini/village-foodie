@@ -140,6 +140,7 @@ export function DemoWalkthrough({ slug }: { slug: string }) {
       prefillEmail={demoEmailFor(slug)}
       extractionSource={info?.extractionSource ?? null}
       setupLabel={variant === 'sheet' ? t('startFree', { months }) : t('bandStart')}
+      trialMonths={months}
       onOpen={() => { void post({ action: 'event', event: 'signup_started' }).catch(() => undefined) }}
       className="w-full sm:w-auto bg-orange-600 hover:bg-orange-700 text-white font-black px-6 py-3 rounded-xl text-base shadow-sm"
     />

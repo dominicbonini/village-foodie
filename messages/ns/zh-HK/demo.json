@@ -21,8 +21,8 @@
   "asLive": "落單及廚房流程與正式運作時完全一樣。",
   "startExploring": "開始探索",
   "signupOffer": {
-    "heading": "立即登記，享免費一個月",
-    "sub": "直至你決定正式啟用，才開始計算。"
+    "heading": "{months, plural, =0 {免費開始} other {免費使用 # 個月}}",
+    "sub": "免費試用由你建立帳戶時開始。"
   },
   "cashIcon": "💵",
   "walkBanner": "示範 · 這是你的餐牌，也是顧客將會看到的樣子。不會收取任何費用，也不會發出任何電郵。"

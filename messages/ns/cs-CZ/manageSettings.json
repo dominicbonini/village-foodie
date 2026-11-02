@@ -137,7 +137,7 @@
     "cancel": "Zrušit",
     "newPlaceholder": "např. Food truck 2, Festivalový food truck",
     "addButton": "Přidat",
-    "addConfirm": "Další food truck bude účtován jako doplněk k vašemu tarifu.\n\nProjeví se to v příštím zúčtovacím období.\n\nChcete pokračovat?",
+    "addConfirm": "{free, select, yes {Přidání dalšího food trucku je ve vašem tarifu zdarma.} other {Další food truck stojí ve vašem tarifu {price} měsíčně. Než cokoli naúčtujeme, ozveme se vám.}}\n\nChcete pokračovat?",
     "removed": "Odebráno: {name}",
     "kdsLinkCopied": "Odkaz na obrazovku objednávek zkopírován"
   },
@@ -163,8 +163,8 @@
   },
   "vanBilling": {
     "title": "Přidat další food truck",
-    "body": "Váš tarif {plan} zahrnuje {vans, plural, one {# food truck} few {# food trucky} other {# food trucků}}. Další food truck stojí <b>{price}</b> a bude připočten v příštím zúčtovacím období.",
-    "note": "⚠️ Poznámka: Během předběžného přístupu se úprava vyúčtování zpracovává ručně. Do 24 hodin obdržíte potvrzovací e-mail.",
+    "body": "Váš tarif {plan} zahrnuje {vans, plural, one {# food truck} few {# food trucky} other {# food trucků}}. Další food truck stojí <b>{price}</b>.",
+    "note": "⚠️ Než cokoli naúčtujeme, ozveme se vám.",
     "cancel": "Zrušit",
     "add": "Přidat food truck — {price}"
   },

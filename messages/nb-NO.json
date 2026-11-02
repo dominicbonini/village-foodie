@@ -1501,8 +1501,8 @@
     "asLive": "Bestillingene og kjøkkenflyten fungerer nøyaktig som i ekte drift.",
     "startExploring": "Begynn å utforske",
     "signupOffer": {
-      "heading": "Registrer deg for en gratis måned nå",
-      "sub": "Klokka starter ikke før du bestemmer deg for å åpne for kunder."
+      "heading": "{months, plural, =0 {Start gratis} one {Start gratis i # måned} other {Start gratis i # måneder}}",
+      "sub": "Den gratis prøveperioden starter når du oppretter kontoen."
     },
     "cashIcon": "💵",
     "walkBanner": "Demo · dette er menyen din, slik kundene dine vil se den. Ingenting belastes, og ingen e-poster sendes."
@@ -1922,7 +1922,7 @@
     },
     "signup": {
       "title": "Opprett kontoen din",
-      "subtitle": "Gratismåneden din starter ikke før du åpner for bestillinger.",
+      "subtitle": "{months, plural, =0 {Den gratis prøveperioden starter når du oppretter kontoen.} one {Den første måneden er gratis, regnet fra du oppretter kontoen.} other {De første # månedene er gratis, regnet fra du oppretter kontoen.}}",
       "emailPlaceholder": "deg@dinmatbil.no",
       "codeLabel": "Har du en kode? <optional>(valgfritt)</optional>",
       "codePlaceholder": "Skriv den inn her",
@@ -2211,7 +2211,7 @@
     "promoLabel": "Har du en kode? <opt>(valgfritt)</opt>",
     "promoPlaceholder": "Skriv den inn her",
     "agreeTerms": "Jeg godtar <terms>vilkårene</terms> og <privacy>personvernerklæringen</privacy>.",
-    "freeMonth": "Oppsettet starter ikke gratismåneden din. Den begynner når du velger ditt første aktive arrangement — når du er klar.",
+    "freeMonth": "{months, plural, =0 {Den gratis prøveperioden starter når du oppretter kontoen.} one {Den første måneden er gratis, regnet fra du oppretter kontoen.} other {De første # månedene er gratis, regnet fra du oppretter kontoen.}}",
     "fieldError": {
       "firstName": "Fortell oss fornavnet ditt.",
       "lastName": "Og etternavnet ditt.",
@@ -3918,7 +3918,7 @@
       "cancel": "Avbryt",
       "newPlaceholder": "f.eks. Matbil 2, Festivalbil",
       "addButton": "Legg til",
-      "addConfirm": "En ekstra matbil blir fakturert som et tillegg til abonnementet ditt.\n\nDette vises i neste faktureringsperiode.\n\nVil du fortsette?",
+      "addConfirm": "{free, select, yes {Det er gratis å legge til en matbil på abonnementet ditt.} other {En ekstra matbil koster {price} i måneden på abonnementet ditt. Vi tar kontakt før noe blir fakturert.}}\n\nVil du fortsette?",
       "removed": "{name} er fjernet",
       "kdsLinkCopied": "Lenke til bestillingsskjerm kopiert"
     },
@@ -3944,8 +3944,8 @@
     },
     "vanBilling": {
       "title": "Legg til en matbil til",
-      "body": "Abonnementet {plan} inkluderer {vans, plural, one {# matbil} other {# matbiler}}. En ekstra matbil koster <b>{price}</b> og legges til i neste faktureringsperiode.",
-      "note": "⚠️ Merk: Endringer i faktureringen behandles manuelt mens vi er i tidlig tilgang. Du får en bekreftelse på e-post innen 24 timer.",
+      "body": "Abonnementet {plan} inkluderer {vans, plural, one {# matbil} other {# matbiler}}. En ekstra matbil koster <b>{price}</b>.",
+      "note": "⚠️ Vi tar kontakt før noe blir fakturert.",
       "cancel": "Avbryt",
       "add": "Legg til matbil – {price}"
     },
@@ -5526,7 +5526,8 @@
       "whatsappSoonTitle": "Automatiske svar på WhatsApp <soon>Kommer snart</soon>",
       "whatsappSoonBody": "«Hvor står dere i kveld?» «Hvilke desserter har dere?» Snart blir WhatsApp-meldingene dine besvart mens du kjører til standplassen eller står ved grillen. Messenger og Instagram følger etter.",
       "offlineTitle": "Ingen dekning? Fortsett å servere.",
-      "offlineBody": "Mister du dekningen, settes nettbestillingen automatisk på pause, så kundene ikke kan legge inn bestillinger du ikke ser. Fortsett å ta imot bestillinger med appen for iPhone, iPad og Android.",
+      "offlineBody": "Slå på beskyttelse ved frakobling, så settes nettbestillingen automatisk på pause hvis du mister dekningen, slik at kundene ikke kan legge inn bestillinger du ikke ser.",
+      "offlineApps": "Fortsett å ta imot bestillinger med appen for iPhone, iPad og Android.",
       "slotsBody": "Kundene forhåndsbestiller, velger hentetid og slipper køen. Maten er klar når de kommer."
     },
     "steps": {
@@ -6084,7 +6085,7 @@
       "kitchen_app": "Den mest komplette måten å bruke HatchGrab på: en kjøkkenskjerm i sanntid, og den eneste måten å fortsette å ta imot bestillinger på når du mister dekningen.",
       "multi_device_kitchen": "Bruk flere skjermer — i luka og på kjøkkenet — som alle viser de samme bestillingene i sanntid.",
       "multi_user_access": "Gi de ansatte egne pålogginger med riktig tilgangsnivå.",
-      "offline_protection": "Mister du dekningen, settes nettbestillingen på pause, så kundene ikke kan legge inn bestillinger du ikke ser. Med appen for iPhone, iPad og Android kan du fortsette å ta imot bestillinger uten nett; nettoversikten krever tilkobling.",
+      "offline_protection": "Slå på beskyttelse ved frakobling, så settes nettbestillingen automatisk på pause hvis du mister dekningen, slik at kundene ikke kan legge inn bestillinger du ikke ser.",
       "ticket_printing": "Skriv ut bestillingsbonger på en Bluetooth- eller kablet skriver på kjøkkenet.",
       "web_dashboard": "Driv serveringen fra nettleseren på hvilken som helst telefon, nettbrett eller bærbar PC.",
       "meal_deals_upsells": "Sett sammen retter til måltider og tilby tillegg i kassen for å øke snittbestillingen.",
@@ -6113,6 +6114,7 @@
       "sms_order_alerts": "Send kundene en SMS automatisk når bestillingen er klar.",
       "loyalty_stamp_cards": "Belønn faste kunder med digitale stempelkort — stemplene samles inn og løses inn automatisk."
     },
+    "offlineApps": "Med appen for iPhone, iPad og Android kan du fortsette å ta imot bestillinger uten nett; nettoversikten krever tilkobling.",
     "metaTitle": "Abonnementer og funksjoner sammenlignet — HatchGrab {country}"
   },
   "compare": {

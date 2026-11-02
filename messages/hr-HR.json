@@ -1501,8 +1501,8 @@
     "asLive": "Naručivanje i rad kuhinje teku točno kao uživo.",
     "startExploring": "Počnite istraživati",
     "signupOffer": {
-      "heading": "Prijavite se sada za besplatni mjesec",
-      "sub": "Odbrojavanje ne počinje dok ne odlučite krenuti uživo."
+      "heading": "{months, plural, =0 {Počnite besplatno} one {Počnite besplatno na # mjesec} few {Počnite besplatno na # mjeseca} other {Počnite besplatno na # mjeseci}}",
+      "sub": "Besplatno probno razdoblje počinje kad izradite račun."
     },
     "cashIcon": "💶",
     "walkBanner": "Demo · ovo je vaš jelovnik, onakav kakvim će ga vidjeti vaši kupci. Ništa se ne naplaćuje i ne šalju se e-poruke."
@@ -1922,7 +1922,7 @@
     },
     "signup": {
       "title": "Izradite svoj račun",
-      "subtitle": "Besplatni mjesec ne počinje dok ne krenete uživo.",
+      "subtitle": "{months, plural, =0 {Besplatno probno razdoblje počinje kad izradite račun.} one {Prvi # mjesec je besplatan, računajući od izrade računa.} few {Vaša prva # mjeseca su besplatna, računajući od izrade računa.} other {Vaših prvih # mjeseci je besplatno, računajući od izrade računa.}}",
       "emailPlaceholder": "vi@vasfoodtruck.hr",
       "codeLabel": "Imate kod? <optional>(neobavezno)</optional>",
       "codePlaceholder": "Upišite ga ovdje",
@@ -2211,7 +2211,7 @@
     "promoLabel": "Imate kod? <opt>(neobavezno)</opt>",
     "promoPlaceholder": "Upišite ga ovdje",
     "agreeTerms": "Prihvaćam <terms>Uvjete</terms> i <privacy>Pravila privatnosti</privacy>.",
-    "freeMonth": "Postavljanjem ne pokrećete besplatni mjesec. On počinje kad odaberete svoj prvi događaj uživo – kad god budete spremni.",
+    "freeMonth": "{months, plural, =0 {Besplatno probno razdoblje počinje kad izradite račun.} one {Prvi # mjesec je besplatan, računajući od izrade računa.} few {Vaša prva # mjeseca su besplatna, računajući od izrade računa.} other {Vaših prvih # mjeseci je besplatno, računajući od izrade računa.}}",
     "fieldError": {
       "firstName": "Upišite svoje ime.",
       "lastName": "I svoje prezime.",
@@ -3918,7 +3918,7 @@
       "cancel": "Odustani",
       "newPlaceholder": "npr. Food truck 2, Festivalski food truck",
       "addButton": "Dodaj",
-      "addConfirm": "Dodatni food truck naplaćuje se kao dodatak vašoj pretplati.\n\nTo će se odraziti u vašem sljedećem razdoblju naplate.\n\nŽelite li nastaviti?",
+      "addConfirm": "{free, select, yes {Dodavanje food trucka besplatno je u vašem paketu.} other {Dodatni food truck stoji {price} mjesečno u vašem paketu. Javit ćemo vam se prije bilo kakve naplate.}}\n\nŽelite li nastaviti?",
       "removed": "Uklonjeno: {name}",
       "kdsLinkCopied": "Poveznica na zaslon narudžbi je kopirana"
     },
@@ -3944,8 +3944,8 @@
     },
     "vanBilling": {
       "title": "Dodajte još jedan food truck",
-      "body": "Vaš paket {plan} uključuje {vans, plural, one {# food truck} few {# food trucka} other {# food truckova}}. Dodatni food truck stoji <b>{price}</b> i bit će dodan u vaše sljedeće razdoblje naplate.",
-      "note": "⚠️ Napomena: tijekom ranog pristupa usklađivanje naplate obrađuje se ručno. E-poruku s potvrdom primit ćete u roku od 24 sata.",
+      "body": "Vaš paket {plan} uključuje {vans, plural, one {# food truck} few {# food trucka} other {# food truckova}}. Dodatni food truck stoji <b>{price}</b>.",
+      "note": "⚠️ Javit ćemo vam se prije bilo kakve naplate.",
       "cancel": "Odustani",
       "add": "Dodaj food truck — {price}"
     },
@@ -5526,7 +5526,8 @@
       "whatsappSoonTitle": "Automatski odgovori na WhatsAppu <soon>Uskoro</soon>",
       "whatsappSoonBody": "„Gdje ste večeras?“ „Koje deserte imate?“ Uskoro će poruke na vašem WhatsAppu dobivati odgovor dok vozite prema lokaciji ili stojite za roštiljem. Messenger i Instagram slijede.",
       "offlineTitle": "Nema signala? Nastavite posluživati.",
-      "offlineBody": "Ako izgubite signal, online naručivanje automatski se pauzira kako kupci ne bi slali narudžbe koje nećete vidjeti. Nastavite primati narudžbe u aplikaciji za iPhone, iPad i Android.",
+      "offlineBody": "Uključite zaštitu narudžbi izvan mreže i online naručivanje automatski se pauzira ako izgubite signal, kako kupci ne bi slali narudžbe koje nećete vidjeti.",
+      "offlineApps": "Nastavite primati narudžbe u aplikaciji za iPhone, iPad i Android.",
       "slotsBody": "Kupci naručuju unaprijed i biraju vrijeme preuzimanja. Manje redova, a hrana je spremna kad stignu."
     },
     "steps": {
@@ -6084,7 +6085,7 @@
       "kitchen_app": "Najpotpuniji način rada s HatchGrabom: kuhinjski zaslon uživo i jedini način da nastavite primati narudžbe kad izgubite signal.",
       "multi_device_kitchen": "Koristite više zaslona — na pultu i u kuhinji — i svi prikazuju iste narudžbe uživo.",
       "multi_user_access": "Dajte zaposlenicima vlastite prijave s odgovarajućom razinom pristupa.",
-      "offline_protection": "Ako izgubite signal, online naručivanje se pauzira kako kupci ne bi slali narudžbe koje nećete vidjeti. Aplikacija za iPhone, iPad i Android omogućuje vam primanje narudžbi i izvan mreže; web nadzornoj ploči potrebna je veza.",
+      "offline_protection": "Uključite zaštitu narudžbi izvan mreže i online naručivanje automatski se pauzira ako izgubite signal, kako kupci ne bi slali narudžbe koje nećete vidjeti.",
       "ticket_printing": "Ispisujte listiće narudžbi na Bluetooth ili žičanom pisaču u kuhinji.",
       "web_dashboard": "Vodite posao iz preglednika na bilo kojem telefonu, tabletu ili prijenosnom računalu.",
       "meal_deals_upsells": "Spojite artikle u menije i ponudite dodatke pri plaćanju kako biste povećali prosječnu narudžbu.",
@@ -6113,6 +6114,7 @@
       "sms_order_alerts": "Automatski pošaljite kupcima SMS kad im je narudžba spremna.",
       "loyalty_stamp_cards": "Nagradite stalne kupce digitalnim karticama vjernosti s pečatima — pečati se skupljaju i iskorištavaju automatski."
     },
+    "offlineApps": "Aplikacija za iPhone, iPad i Android omogućuje vam primanje narudžbi i izvan mreže; web nadzornoj ploči potrebna je veza.",
     "metaTitle": "Usporedba paketa i značajki — HatchGrab {country}"
   },
   "compare": {

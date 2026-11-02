@@ -137,7 +137,7 @@
     "cancel": "Annulla",
     "newPlaceholder": "es. Food truck 2, Food truck festival",
     "addButton": "Aggiungi",
-    "addConfirm": "Un food truck in più ti verrà addebitato come componente aggiuntivo del tuo abbonamento.\n\nL’importo comparirà nel prossimo ciclo di fatturazione.\n\nVuoi continuare?",
+    "addConfirm": "{free, select, yes {Aggiungere un food truck è gratis con il tuo piano.} other {Un food truck in più costa {price} al mese con il tuo piano. Ti contatteremo prima di addebitare qualsiasi importo.}}\n\nVuoi continuare?",
     "removed": "{name} rimosso",
     "kdsLinkCopied": "Link della schermata ordini copiato"
   },
@@ -163,8 +163,8 @@
   },
   "vanBilling": {
     "title": "Aggiungi un altro food truck",
-    "body": "Il tuo piano {plan} include {vans, plural, one {# food truck} other {# food truck}}. Un food truck in più costa <b>{price}</b> e verrà aggiunto al prossimo ciclo di fatturazione.",
-    "note": "⚠️ Nota: durante l’accesso anticipato l’adeguamento della fatturazione viene gestito manualmente. Riceverai un’email di conferma entro 24 ore.",
+    "body": "Il tuo piano {plan} include {vans, plural, one {# food truck} other {# food truck}}. Un food truck in più costa <b>{price}</b>.",
+    "note": "⚠️ Ti contatteremo prima di addebitare qualsiasi importo.",
     "cancel": "Annulla",
     "add": "Aggiungi food truck: {price}"
   },
