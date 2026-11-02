@@ -65,6 +65,9 @@
     "switchBody": "Vedeți cât ați plăti pe HatchGrab pentru aceleași comenzi. Durează cam un minut.",
     "switchCta": "Comparați ce plătiți"
   },
+  "faq": {
+    "title": "Întrebări frecvente"
+  },
   "final": {
     "truckLabel": "Food truck",
     "title": "Vreți să vedeți cât de ușoară este configurarea?",

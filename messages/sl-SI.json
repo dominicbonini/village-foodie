@@ -5555,6 +5555,9 @@
       "switchBody": "Poglejte, koliko bi za enaka naročila plačali s HatchGrab. Traja približno minuto.",
       "switchCta": "Primerjajte, koliko plačujete"
     },
+    "faq": {
+      "title": "Pogosta vprašanja"
+    },
     "final": {
       "truckLabel": "Food truck",
       "title": "Bi radi videli, kako preprosta je nastavitev?",

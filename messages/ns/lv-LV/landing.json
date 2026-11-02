@@ -65,6 +65,9 @@
     "switchBody": "Uzziniet, cik jūs maksātu HatchGrab par tiem pašiem pasūtījumiem. Tas aizņem aptuveni minūti.",
     "switchCta": "Salīdziniet, cik maksājat"
   },
+  "faq": {
+    "title": "Biežāk uzdotie jautājumi"
+  },
   "final": {
     "truckLabel": "Food truck",
     "title": "Vēlaties redzēt, cik vienkārši ir sākt?",

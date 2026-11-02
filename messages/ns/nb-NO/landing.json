@@ -65,6 +65,9 @@
     "switchBody": "Se hva du ville betalt hos HatchGrab for de samme bestillingene. Tar omtrent ett minutt.",
     "switchCta": "Sammenlign hva du betaler"
   },
+  "faq": {
+    "title": "Ofte stilte spørsmål"
+  },
   "final": {
     "truckLabel": "Matbil",
     "title": "Vil du se hvor enkelt det er å komme i gang?",

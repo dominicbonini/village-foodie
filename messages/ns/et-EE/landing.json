@@ -65,6 +65,9 @@
     "switchBody": "Vaata, kui palju maksaksid samade tellimuste eest HatchGrabis. Võtab umbes minuti.",
     "switchCta": "Võrdle, kui palju maksad"
   },
+  "faq": {
+    "title": "Korduma kippuvad küsimused"
+  },
   "final": {
     "truckLabel": "Toiduauto",
     "title": "Tahad näha, kui lihtne on seadistamine?",

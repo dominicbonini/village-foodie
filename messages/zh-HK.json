@@ -5555,6 +5555,9 @@
       "switchBody": "看看同樣的訂單在 HatchGrab 要付多少。只需約一分鐘。",
       "switchCta": "比較你現時的費用"
     },
+    "faq": {
+      "title": "常見問題"
+    },
     "final": {
       "truckLabel": "美食車",
       "title": "想看看設定有幾簡單？",

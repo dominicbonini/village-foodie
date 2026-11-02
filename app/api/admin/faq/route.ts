@@ -6,11 +6,14 @@
 // 🔴 ADMIN ONLY, CHECKED HERE ON THE SERVER; SERVICE ROLE; SERVER ONLY. public.faq_sections and public.faq_items have RLS on and
 // no policies, so the browser never touches them. A request that is not from an admin gets 403 (faq-1 asks for 403, where the
 // Countries route answers 404). A database error is logged and answered with a plain sentence, never passed through.
+// ⚠️ faq-3: after EVERY POST (save, publish, unpublish, reorder, delete — a failed one too, which may have written part) the public
+// FAQ's cache is cleared (lib/faq/public.ts), so the English landing pages show the change without a deploy.
 
 import { NextRequest, NextResponse } from 'next/server'
 import { adminUser } from '@/lib/auth/admin'
 import { serviceFaqStore } from '@/lib/admin/faq-store'
 import { listFaq, faqAction, type ActionResult } from '@/lib/admin/faq-actions'
+import { clearPublicFaqCache } from '@/lib/faq/public'
 
 export const dynamic = 'force-dynamic'
 
@@ -38,5 +41,9 @@ export async function GET(req: NextRequest) {
 export async function POST(req: NextRequest) {
   let body: Record<string, unknown> = {}
   try { const b = await req.json(); if (b && typeof b === 'object') body = b } catch { /* an empty body is an unknown action */ }
-  return guarded(req, stamp => faqAction(serviceFaqStore, body, stamp))
+  try {
+    return await guarded(req, stamp => faqAction(serviceFaqStore, body, stamp))
+  } finally {
+    clearPublicFaqCache()
+  }
 }

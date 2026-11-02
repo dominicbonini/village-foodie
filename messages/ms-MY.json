@@ -5555,6 +5555,9 @@
       "switchBody": "Lihat berapa yang anda akan bayar di HatchGrab untuk pesanan yang sama. Ambil masa kira-kira seminit.",
       "switchCta": "Bandingkan bayaran anda"
     },
+    "faq": {
+      "title": "Soalan lazim"
+    },
     "final": {
       "truckLabel": "Food truck",
       "title": "Mahu lihat betapa mudahnya persediaan?",

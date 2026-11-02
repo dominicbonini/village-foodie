@@ -146,7 +146,8 @@ async function identityViews(tag) {
     t(`${f}: none of ${words.join(', ')}`, hits.length === 0, hits)
     t(`${f}: no internal plan key as a quoted string either`, !catalog.plans.some(p => new RegExp(`['"\`]${p.key}['"\`]`).test(src)))
   }
-  t('three files in lib/faq', faqFiles.length === 3, faqFiles)
+  // ⚠️ RE-PINNED (faq-3): lib/faq/public.ts, the public FAQ's loader — it names no plan either (this same grep covers it).
+  t('four files in lib/faq (faq-3 added public.ts)', faqFiles.length === 4 && faqFiles.includes('lib/faq/public.ts'), faqFiles)
 
   // ══ 4 ══════════════════════════════════════════════════════════════════════════════════════════════════════════════
   head('4 · Copy feedback for Claude')
@@ -239,7 +240,8 @@ async function identityViews(tag) {
   if (process.env.FAQ1_DUMP) fs.writeFileSync(process.env.FAQ1_DUMP, page)
   const plain = page.replace(/<[^>]+>/g, '').replace(/&#x27;|&#39;/g, "'").replace(/&amp;/g, '&').replace(/&quot;/g, '"').replace(/&lt;/g, '<').replace(/&gt;/g, '>')
   t('the page renders: heading, Preview as, + Section, + Question, Copy feedback for Claude (n)', /FAQ/.test(plain) && plain.includes('Preview as:') && plain.includes('+ Section') && plain.includes('+ Question') && plain.includes(`Copy feedback for Claude (${L.openNotes(tabItems)})`) && L.openNotes(tabItems) === 10, plain.slice(0, 300))
-  t('the summary: 44 countries switched on · 1 published · 1 question needs an answer for some countries', plain.includes('44 countries switched on') && plain.includes('✓ 1 published') && plain.includes('1 question needs an answer for some countries'))
+  // ⚠️ RE-PINNED (faq-3): the seed's …0007 and …0010 now fail the check too (the paying-at-the-truck wording) — 3, not 1.
+  t('the summary: 44 countries switched on · 1 published · 3 questions need an answer for some countries (faq-3: …0007 and …0010 by their wording)', plain.includes('44 countries switched on') && plain.includes('✓ 1 published') && plain.includes('3 questions need an answer for some countries'))
   t('five sections with Rename · ↑ ↓ · Delete', (page.match(/>Rename</g) || []).length === 5)
   t('the single-plan answer under its computed label', plain.includes('Where only Unlimited is offered (5 countries)'))
   t('green "✓ Reads correctly in all 44 countries", and "… where it shows" for Show in', plain.includes('✓ Reads correctly in all 44 countries') && plain.includes('✓ Reads correctly in all 39 countries where it shows'))
@@ -267,8 +269,8 @@ async function identityViews(tag) {
   t('one transaction, safe twice (if not exists; fixed ids, on conflict do nothing)', /^begin;/m.test(code) && /^commit;/m.test(code) && (code.match(/create table if not exists/g) || []).length === 2 && (code.match(/on conflict \(id\) do nothing;/g) || []).length === 2)
   // ⚠️ RE-PINNED (faq-1c-undo, 2 November 2026): 20261058_faq_1c_undo.sql follows it now (faq-1c's 20261057 ran and was removed from
   // the repo; 20261058 reverses it outside the FAQ). 20261056 is still the one faq-1 file, and nothing else came after it.
-  t('the faq-1 migration number is unique, and only 20261058_faq_1c_undo.sql follows it', fs.readdirSync(path.join(REPO, 'supabase/migrations')).filter(f => f.startsWith('20261056')).length === 1
-    && JSON.stringify(fs.readdirSync(path.join(REPO, 'supabase/migrations')).filter(f => f > '20261056_faq_1.sql' && /^\d{8}/.test(f))) === JSON.stringify(['20261058_faq_1c_undo.sql']))
+  t('the faq-1 migration number is unique, and only 20261058_faq_1c_undo.sql and 20261059_faq_3.sql (faq-3) follow it', fs.readdirSync(path.join(REPO, 'supabase/migrations')).filter(f => f.startsWith('20261056')).length === 1
+    && JSON.stringify(fs.readdirSync(path.join(REPO, 'supabase/migrations')).filter(f => f > '20261056_faq_1.sql' && /^\d{8}/.test(f))) === JSON.stringify(['20261058_faq_1c_undo.sql', '20261059_faq_3.sql']))
 
   // ══ 7 ══════════════════════════════════════════════════════════════════════════════════════════════════════════════
   head('7 · the seed')
@@ -288,10 +290,18 @@ async function identityViews(tag) {
     }
   }
   t('the one allowed figure is "60 seconds", in question 6 only', /under 60 seconds/.test(q(6).answerEn) && seed.items.filter(i => /\d/.test([i.questionEn, i.answerEn, i.answerSinglePlanEn ?? ''].join(' ').replace(/\{[^{}]*\}/g, ''))).length === 1)
+  // ⚠️ RE-PINNED (faq-3, 2 November 2026): the check also refuses an answer that mentions paying at the truck (lib/faq/check.ts
+  // BANNED_WORDING). The seed's …0007 ("pay at the truck") and …0010 ({payAtTruck}) say so, as faq-1b agreed them then; live,
+  // …0007 was reworded and …0010 is a draft (20261059). Every other part of the check still passes for every seed question.
+  const WORDING = /Published answers can't mention Pay at Hatch/
+  const wordingFails = []
   for (const [n, i] of seed.items.entries()) {
     const c = L.checkItem(i, world)
-    t(`question ${n + 1} reads correctly in every switched-on country it shows in (${c.shownCount})`, c.ok && c.shownCount > 0, c.sentences)
+    if (c.sentences.some(x => WORDING.test(x))) wordingFails.push(i.id.slice(-4))
+    const rest = c.sentences.filter(x => !WORDING.test(x))
+    t(`question ${n + 1} reads correctly in every switched-on country it shows in (${c.shownCount})`, rest.length === 0 && c.shownCount > 0, rest)
   }
+  t('faq-3: of the seed, only …0007 and …0010 carry the wording the check now refuses', wordingFails.join() === '0007,0010', wordingFails)
   // faq-1b (2 November 2026): the agreed list — every kept id in its place, …0017 folded into …0007, three new rows.
   const ID = n => `fa000002-0000-4000-8000-0000000000${String(n).padStart(2, '0')}`
   t('faq-1b: the 26 ids in the agreed order', JSON.stringify(seed.items.map(i => i.id)) === JSON.stringify([1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 25, 26, 18, 19, 20, 21, 22, 23, 24, 27].map(ID)))
@@ -317,8 +327,11 @@ async function identityViews(tag) {
   const walk = d => { for (const e of fs.readdirSync(path.join(REPO, d), { withFileTypes: true })) { const p = `${d}/${e.name}`; if (e.isDirectory()) walk(p); else if (/\.(ts|tsx)$/.test(e.name)) publicFiles.push(p) } }
   for (const d of ['app', 'components', 'lib']) walk(d)
   const importers = publicFiles.filter(f => /@\/lib\/faq\/|@\/lib\/i18n\/catalog\/faq'|translatorFor\([^)]*'faq'\)/.test(read(f)))
-  const allowed = new Set(['components/admin/FaqTab.tsx', 'lib/admin/faq-actions.ts', 'lib/faq/check.ts', 'lib/faq/feedback.ts', 'lib/faq/live-values.ts', 'lib/i18n/catalog/faq.ts'])
-  t('only Admin › FAQ and its server code import lib/faq or the faq messages', importers.every(f => allowed.has(f)), importers.filter(f => !allowed.has(f)))
+  // ⚠️ RE-PINNED (faq-3): the FAQ is public on the English landing pages — lib/faq/public.ts, read by app/landing/page.tsx, its
+  // cache cleared by the Admin route. scripts/faq-3.cjs proves what those pages show.
+  const allowed = new Set(['components/admin/FaqTab.tsx', 'lib/admin/faq-actions.ts', 'lib/faq/check.ts', 'lib/faq/feedback.ts', 'lib/faq/live-values.ts', 'lib/i18n/catalog/faq.ts',
+    'lib/faq/public.ts', 'app/landing/page.tsx', 'app/api/admin/faq/route.ts'])
+  t('only Admin › FAQ, its server code and the English landing page (faq-3) import lib/faq or the faq messages', importers.every(f => allowed.has(f)), importers.filter(f => !allowed.has(f)))
   t('the admin page mounts it as the last tab', /pricing:[^\n]*\n[\s\S]*demos:[^\n]*\n[^\n]*\n\s*faq:\s*\{ icon: '❓', label: 'FAQ' \},\n\} as const/.test(read('app/admin/page.tsx')))
   t('faq.phrases.* is in en-GB only for now (Dominic, 1 Nov: English until approved)', (() => { const d = JSON.parse(read('messages/en-GB.json')).faq?.phrases; return d && Object.keys(d).join() === 'appsSentence,appsOffline,webOffline' })())
 
@@ -339,7 +352,9 @@ async function identityViews(tag) {
     t('the six rows rebuilt from 20261058', ['0002', '0003', '0006', '0007', '0010', '0015'].every(id => byId[id].answerEn && !byId[id].answerEn.includes('$')) && byId['0002'].questionEn === 'What do I pay on each order?' && byId['0010'].answerEn.startsWith('During your free trial, yes:'))
     for (const id of ['0002', '0003', '0006', '0007', '0010', '0015']) {
       const c = L.checkItem(byId[id], world)
-      t(`…${id} reads correctly in every switched-on country (${c.shownCount})`, c.ok && c.shownCount === 44, c.sentences)
+      // faq-3: …0010 as 20261058 left it names {payAtTruck}, which the check now refuses — it is a draft since 20261059.
+      const rest = c.sentences.filter(x => !(id === '0010' && /Published answers can't mention Pay at Hatch/.test(x)))
+      t(`…${id} reads correctly in every switched-on country (${c.shownCount})${id === '0010' ? ' apart from the wording faq-3 refuses' : ''}`, rest.length === 0 && c.shownCount === 44 && (id !== '0010' || !c.ok), c.sentences)
       const bare = [byId[id].questionEn, byId[id].answerEn, byId[id].answerSinglePlanEn || ''].join(' ').replace(/\{[^{}]*\}/g, ' ').replace('under 60 seconds', '')
       t(`…${id}: no digit, currency sign or plan name outside a live value`, !/\d/.test(bare) && !/\p{Sc}/u.test(bare) && !catalog.plans.some(p => new RegExp(`\\b${p.name}\\b`).test(bare)))
     }

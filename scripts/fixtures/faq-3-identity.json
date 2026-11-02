@@ -1,0 +1,90 @@
+{
+ "$why": "faq-3 §5: sha256 of each page as rendered at the commit before faq-3 (a92f983a), by scripts/faq-3.cjs capture.",
+ "commit": "a92f983a",
+ "pages": {
+  "landing:uk:no-faq": {
+   "html": "9b5605d0e95c778643c892350767e4b7a2b9bb7680e17c8f26dfe295e4ca8d6b",
+   "meta": "158f9bd5c47447b4afa3b666b5f279f26042fd448ccd077b4fe4d9e6526acc33",
+   "redirectedTo": null
+  },
+  "landing:us:no-faq": {
+   "html": "53fdc6cc21ded3eb65f636d6c0479f605a4d95fe8f9a51dc27b0e15e4f41c167",
+   "meta": "bc4f706534d13a7882f8af207bd6d6163fb02f4a16ef3d3cbc35c2a032195c6f",
+   "redirectedTo": null
+  },
+  "landing:de": {
+   "html": "628f3984e870fe81bad10cb509ce14422ab159d74d8ad1356ee73d956251ee43",
+   "meta": "63406b0514ec6d81c4134bf27c3fbf8a56158de1ec5b36704ae5721f150d2ee8",
+   "redirectedTo": null
+  },
+  "landing:fr": {
+   "html": "80f314c1ac5d2c71a340f90bad2995a677e9523189d09b75fbc81e66db2ca06d",
+   "meta": "8c672ba54a18a9537fc29776956106602cff9591093de11547b5bf833753538d",
+   "redirectedTo": null
+  },
+  "landing:br": {
+   "html": "91aeebbaec726c8595b6f92005b0cfb0b7a605c242478327f8a19270c9072f10",
+   "meta": "8260392b963b1f138465be8a4e8ffe7c251e6a154c0b8a763467fb5435e695e9",
+   "redirectedTo": null
+  },
+  "landing:jp": {
+   "html": "4753d4acc341fdf8d85e822b13167c20cd329e9904c7e33fcbb15c995aa87858",
+   "meta": "93d9227611a74608f949983273f5f5738509cad59655958cfa5114e0d8685c0d",
+   "redirectedTo": null
+  },
+  "comparison:de:live": {
+   "html": "c74e332a30a7bab70ae3ec490656559da791377a7b4af30cfee30ee870aff1db",
+   "meta": "648c240805547d1ccb24f19a8463d005d6baadbef02ba410191188d7b72348c4",
+   "notFound": false,
+   "empty": false
+  },
+  "comparison:de:live:apps": {
+   "html": "49716925ab9813286d734f12289d4ffd76cd0580d7390e268a499622c8ae6e0b",
+   "meta": "648c240805547d1ccb24f19a8463d005d6baadbef02ba410191188d7b72348c4",
+   "notFound": false,
+   "empty": false
+  },
+  "comparison:de:live:global": {
+   "html": "15d75b978e9dda67c5844802085c157bc799744cb658e177a40dd560d12dc2a8",
+   "meta": "648c240805547d1ccb24f19a8463d005d6baadbef02ba410191188d7b72348c4",
+   "notFound": false,
+   "empty": false
+  },
+  "comparison:de:admin:admin": {
+   "html": "a363a3ed9c39e1c3b33c015ae9a482da5d6fcfef97120258642336a8acd91e0d",
+   "meta": "09b5af3251e417bd39498b3cb0cb31253c0eb921d325fa172a70ec74e996b45e",
+   "notFound": false,
+   "empty": false
+  },
+  "comparison:de:admin:admin:public-view": {
+   "html": "699c023dcb0531bab20e2d1a93ac1355f62c40758f19455c996b6b55349d2edb",
+   "meta": "09b5af3251e417bd39498b3cb0cb31253c0eb921d325fa172a70ec74e996b45e",
+   "notFound": false,
+   "empty": false
+  },
+  "comparison:de:admin:visitor": {
+   "html": "74234e98afe7498fb5daf1f36ac2d78acc339464f950703b8c019892f982b90b",
+   "meta": "74234e98afe7498fb5daf1f36ac2d78acc339464f950703b8c019892f982b90b",
+   "notFound": true,
+   "empty": true
+  },
+  "comparison:de:off": {
+   "html": "74234e98afe7498fb5daf1f36ac2d78acc339464f950703b8c019892f982b90b",
+   "meta": "74234e98afe7498fb5daf1f36ac2d78acc339464f950703b8c019892f982b90b",
+   "notFound": true,
+   "empty": true
+  },
+  "comparison:de:live.md": {
+   "status": 200,
+   "body": "e1a11745fa650e2973f8779e962bc20a3de7d0a4efa839053150ad9225c56250"
+  },
+  "comparison:de:live.json": {
+   "status": 200,
+   "body": "25c7e82f211fb35a83215f80b149f60788ff6110687fc4e6283a9080743ac07e"
+  },
+  "comparison:gb:live": {
+   "html": "110b2048f4b0a60c98de2ec1fb4a5e69c8b5449ddb008ec7d08299fe43484839",
+   "meta": "bb228f9cbdd7216c8858b2387870bea738b31bcc5810df92d6bcf06c2c5b1335"
+  }
+ }
+}

@@ -5555,6 +5555,9 @@
       "switchBody": "Se, hvad du ville betale hos HatchGrab for de samme bestillinger. Det tager cirka et minut.",
       "switchCta": "Sammenlign, hvad du betaler"
     },
+    "faq": {
+      "title": "Ofte stillede spørgsmål"
+    },
     "final": {
       "truckLabel": "Foodtruck",
       "title": "Vil du se, hvor nemt det er at komme i gang?",

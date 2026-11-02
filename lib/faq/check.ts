@@ -2,6 +2,7 @@
 //
 // Each question is resolved for EVERY switched-on country (lib/faq/live-values.ts). It fails for a country where a token is
 // unknown, names a plan not offered there, or has no value (an allowance with no limit). Switched-off countries are never checked.
+// It also fails, everywhere, for an answer that mentions paying at the truck (BANNED_WORDING, faq-3).
 // The result carries the admin's sentences (English: admin pages are English-only, 35.an-20), the failing countries by their
 // English names, and which of the two fixes would help:
 //   • "Add an answer for those countries" — every failing country offers one plan, so the single-plan answer would be used;
@@ -25,6 +26,17 @@ export interface CheckResult {
   fixes: { addSingle: boolean; showOnly: { key: string; name: string } | null }
 }
 
+/** faq-3 (Dominic, 2 November 2026): no answer on the public FAQ mentions Pay at Hatch, paying at the truck or paying on
+ *  collection. Matched in either answer, ignoring case. A draft may hold it (…0010 does); the check fails, so it can't be published,
+ *  a published question can't be saved with it, and the public FAQ leaves such a question out (lib/faq/public.ts). */
+export const BANNED_WORDING = ['{payAtTruck}', 'Pay at Hatch', 'pay at the truck', 'pay when they collect'] as const
+
+/** The banned phrases an item's answers contain, as written in BANNED_WORDING (empty when none). */
+export function bannedWordingIn(item: Pick<FaqText, 'answerEn' | 'answerSinglePlanEn'>): string[] {
+  const text = `${item.answerEn}\n${item.answerSinglePlanEn ?? ''}`.toLowerCase()
+  return BANNED_WORDING.filter(w => text.includes(w.toLowerCase()))
+}
+
 const englishList = (xs: string[]) => new Intl.ListFormat('en-GB', { type: 'conjunction' }).format(xs)
 /** "Brazil, Mexico and Thailand" — or, past ten, "36 countries" — always in English, by name. */
 const countriesPhrase = (names: string[], total: number) =>
@@ -44,6 +56,8 @@ export function checkItem(item: FaqText, world: FaqWorld): CheckResult {
   // A token in the question is never filled in: live values are for answers.
   const inQuestion = tokensIn(item.questionEn)
   if (inQuestion.length || /[{}]/.test(item.questionEn)) sentences.push(`The question uses ${inQuestion.length ? inQuestion.map(t => `{${t}}`).join(', ') : 'a brace'}; live values work in answers only.`)
+  const banned = bannedWordingIn(item)
+  if (banned.length) sentences.push(`The answer says ${englishList(banned.map(w => `“${w}”`))}. Published answers can't mention Pay at Hatch, paying at the truck or paying when customers collect.`)
 
   // One sentence per (which answer, token, kind of problem), naming its countries.
   const groups = new Map<string, { single: boolean; problem: Problem; names: string[] }>()

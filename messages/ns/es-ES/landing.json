@@ -65,6 +65,9 @@
     "switchBody": "Mira lo que pagarías en HatchGrab por los mismos pedidos. Se tarda un minuto.",
     "switchCta": "Compara lo que pagas"
   },
+  "faq": {
+    "title": "Preguntas frecuentes"
+  },
   "final": {
     "truckLabel": "Food truck",
     "title": "¿Quieres ver lo fácil que es empezar?",

@@ -65,6 +65,9 @@
     "switchBody": "Sehen Sie, was Sie bei HatchGrab für dieselben Bestellungen zahlen würden. Dauert etwa eine Minute.",
     "switchCta": "Kosten vergleichen"
   },
+  "faq": {
+    "title": "Häufige Fragen"
+  },
   "final": {
     "truckLabel": "Foodtruck",
     "title": "Möchten Sie sehen, wie einfach die Einrichtung ist?",

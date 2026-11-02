@@ -5555,6 +5555,9 @@
       "switchBody": "Pažiūrėkite, kiek mokėtumėte HatchGrab už tuos pačius užsakymus. Tai užtrunka maždaug minutę.",
       "switchCta": "Palyginkite, kiek mokate"
     },
+    "faq": {
+      "title": "Dažniausiai užduodami klausimai"
+    },
     "final": {
       "truckLabel": "Food truck",
       "title": "Norite pamatyti, kaip lengva viską nustatyti?",

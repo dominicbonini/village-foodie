@@ -26,6 +26,7 @@ import { adminUser } from '@/lib/auth/admin'
 import { LandingNav } from '@/components/landing/LandingNav'
 import { LandingFooter } from '@/components/landing/LandingFooter'
 import { DemoModalProvider, DemoModal, DemoCta } from '@/components/landing/DemoUpload'
+import { FaqDetails } from '@/components/faq/FaqDetails'   // faq-3: the FAQ markup, shared with the English landing pages
 import { PageLocale } from '@/lib/i18n/page-locale'
 import { pageSeedProps } from '@/lib/i18n/page-words'
 import { localeOfCountry } from '@/lib/i18n/locales'
@@ -223,12 +224,7 @@ export default async function ComparisonPage({ params, searchParams }: { params:
             {/* 7 · FAQ */}
             <section aria-labelledby="faq" data-faq>
               <h2 id="faq">{t('faq.title')}</h2>
-              {v.faq.map(f => (
-                <details key={f.q} className="cmp-faq">
-                  <summary>{f.q}</summary>
-                  <p>{f.a}</p>
-                </details>
-              ))}
+              <FaqDetails items={v.faq} className="cmp-faq" />
             </section>
 
             {/* 8 · method */}

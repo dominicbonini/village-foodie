@@ -5555,6 +5555,9 @@
       "switchBody": "Podívejte se, kolik byste za stejné objednávky platili u HatchGrab. Zabere to asi minutu.",
       "switchCta": "Porovnat, kolik platíte"
     },
+    "faq": {
+      "title": "Časté dotazy"
+    },
     "final": {
       "truckLabel": "Food truck",
       "title": "Chcete vidět, jak snadné je nastavení?",

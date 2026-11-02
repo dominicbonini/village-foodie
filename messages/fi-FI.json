@@ -5555,6 +5555,9 @@
       "switchBody": "Katso, mitä maksaisit HatchGrabissa samoista tilauksista. Vie noin minuutin.",
       "switchCta": "Vertaa, mitä maksat nyt"
     },
+    "faq": {
+      "title": "Usein kysytyt kysymykset"
+    },
     "final": {
       "truckLabel": "Ruokarekka",
       "title": "Haluatko nähdä, kuinka helppo käyttöönotto on?",

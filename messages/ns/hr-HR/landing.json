@@ -65,6 +65,9 @@
     "switchBody": "Pogledajte koliko biste za iste narudžbe plaćali s HatchGrabom. Traje otprilike minutu.",
     "switchCta": "Usporedite što plaćate"
   },
+  "faq": {
+    "title": "Često postavljana pitanja"
+  },
   "final": {
     "truckLabel": "Food truck",
     "title": "Želite vidjeti koliko je postavljanje jednostavno?",

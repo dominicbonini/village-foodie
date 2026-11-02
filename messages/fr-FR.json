@@ -5555,6 +5555,9 @@
       "switchBody": "Découvrez combien vous paieriez sur HatchGrab pour les mêmes commandes. Ça prend environ une minute.",
       "switchCta": "Comparez ce que vous payez"
     },
+    "faq": {
+      "title": "Questions fréquentes"
+    },
     "final": {
       "truckLabel": "Food truck",
       "title": "Envie de voir comme c’est simple ?",

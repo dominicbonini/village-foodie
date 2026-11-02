@@ -12,6 +12,9 @@
 //   • Organization + legalName ("HatchGrab Ltd") and its country of registration (GB), from lib/company.ts — the
 //     Companies House record, named once;
 //   • SoftwareApplication + operatingSystem "Web, iOS, Android" — the web app plus the two store listings in sameAs.
+// ── faq-3 (2 November 2026, docs/faq-3-report.md §3) ────────────────────────────────────────────────────────────────────────
+//   • FAQPage (faqPageLd) — the ONE builder for the comparison pages' FAQ (lib/comparison.ts) and the English landing pages'
+//     (`faq`, only when the page shows its FAQ section). Each answer's text is the visible answer, exactly.
 // ⛔ NOTHING IS TYPED: the brand name and origin, the logo path, the store URLs, the plans, their prices and the
 // currency all come from their one definition. ⛔ NO OFFER IS EMITTED FOR A PRICE THE PAGE DOES NOT SHOW (`pricesShown`
 // is the caller's statement of what the page renders).
@@ -72,6 +75,17 @@ export function planOffersLd(catalog: PlanCatalog, countryCode: string, currency
  *  Organization's sameAs (lib/app-badges.ts). One string, as schema.org's examples write it. */
 export const OPERATING_SYSTEMS = 'Web, iOS, Android'
 
+/** An FAQ question and its answer, as the page shows them (components/faq/FaqDetails.tsx renders the same pairs). */
+export interface FaqPair { q: string; a: string }
+
+/** schema.org FAQPage: one Question per pair, its acceptedAnswer the visible answer's text. `id` is "<page URL>#faq". */
+export function faqPageLd(id: string, items: FaqPair[]) {
+  return {
+    '@type': 'FAQPage', '@id': id,
+    mainEntity: items.map(f => ({ '@type': 'Question', name: f.q, acceptedAnswer: { '@type': 'Answer', text: f.a } })),
+  }
+}
+
 /** The landing page's whole graph. `app` is the SoftwareApplication's own fields (its words are the page's messages). */
 export function landingGraph(opts: {
   countryCode: string
@@ -82,6 +96,8 @@ export function landingGraph(opts: {
   app: Record<string, unknown>
   /** about-page: the founder's photo URL, or null (organizationLd). */
   founderImage?: string | null
+  /** faq-3: the FAQ the page shows (English pages only), or nothing — then no FAQPage is emitted. */
+  faq?: FaqPair[] | null
 }) {
   const offers = planOffersLd(opts.catalog, opts.countryCode, opts.currency, opts.pageUrl, opts.pricesShown)
   return {
@@ -97,6 +113,7 @@ export function landingGraph(opts: {
         publisher: { '@id': ORG_ID },
         ...(offers.length ? { offers } : {}),
       },
+      ...(opts.faq?.length ? [faqPageLd(`${opts.pageUrl}#faq`, opts.faq)] : []),
     ],
   }
 }

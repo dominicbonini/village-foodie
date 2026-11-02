@@ -5555,6 +5555,9 @@
       "switchBody": "Bekijk wat je bij HatchGrab zou betalen voor dezelfde bestellingen. Duurt ongeveer een minuut.",
       "switchCta": "Vergelijk wat je nu betaalt"
     },
+    "faq": {
+      "title": "Veelgestelde vragen"
+    },
     "final": {
       "truckLabel": "Foodtruck",
       "title": "Benieuwd hoe makkelijk het instellen gaat?",

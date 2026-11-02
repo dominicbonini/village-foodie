@@ -1,0 +1,27 @@
+/* app/landing/faq.css — THE LANDING PAGE'S FAQ (faq-3, 2 November 2026; Dominic's approved mockup docs/faq-3/faq-public-mockup.png).
+   Imported by app/landing/page.tsx ONLY — not in landing.css, which the comparison pages also import, so their CSS is unchanged.
+   The section, .wrap, .band, .price-head and h2 are landing.css's own; this file adds only what the mockup has and the page
+   did not: the section labels, the question rows and the orange +/−. Colours are landing.css's tokens. */
+
+.hg-landing .faq { max-width: 68rem; margin-inline: auto; }
+.hg-landing .faq-group + .faq-group { margin-top: 2.4rem; }
+
+/* The section label: small capitals, as .eyebrow, in the muted grey the pricing currency line uses (--hero-grey, #3E5472:
+   7.73:1 on white, 7.25:1 on the wash band — `--ink-soft` misses the 4.5:1 floor; see landing.css's hero notes). */
+.hg-landing .faq-label { --hero-grey: #3E5472; font-family: var(--display); font-weight: 700; font-size: .75rem; letter-spacing: .14em; text-transform: uppercase; color: var(--hero-grey); margin-bottom: .35rem; }
+
+/* One question: a rule under each row; the question in the heading navy; the +/− in the one orange, on the right. */
+.hg-landing .faq-q { border-bottom: 1px solid var(--line); }
+.hg-landing .faq-q summary {
+  display: flex; align-items: center; justify-content: space-between; gap: 1.25rem;
+  padding: 1.05rem 0; cursor: pointer; list-style: none;
+  font-family: var(--display); font-weight: 700; font-size: 1.08rem; line-height: 1.3; letter-spacing: -.01em; color: var(--head);
+}
+.hg-landing .faq-q summary::-webkit-details-marker { display: none; }
+.hg-landing .faq-q summary::after { content: '+'; flex: none; font-family: var(--body); font-weight: 400; font-size: 1.6rem; line-height: 1; color: var(--orange); }
+.hg-landing .faq-q[open] summary::after { content: '\2212'; }
+.hg-landing .faq-q summary:focus-visible { outline: 2px solid var(--orange); outline-offset: 2px; border-radius: 4px; }
+.hg-landing .faq-q p { color: var(--ink); line-height: 1.6; padding: 0 2.5rem 1.25rem 0; }
+@media(max-width:639px){
+  .hg-landing .faq-q summary { font-size: 1rem; padding: .95rem 0; }
+}

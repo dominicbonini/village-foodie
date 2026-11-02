@@ -65,6 +65,9 @@
     "switchBody": "Nézze meg, mennyit fizetne a HatchGrabnél ugyanennyi rendelésért. Kb. egy percet vesz igénybe.",
     "switchCta": "Hasonlítsa össze, mennyit fizet"
   },
+  "faq": {
+    "title": "Gyakori kérdések"
+  },
   "final": {
     "truckLabel": "Food truck",
     "title": "Kíváncsi, milyen egyszerű a beállítás?",

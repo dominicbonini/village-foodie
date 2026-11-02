@@ -46,5 +46,6 @@ export function countryPageAlternates(page: MarketingPage, code: string, alterna
  * discipline as lib/legal.ts's *_UPDATED dates.
  * copy-truth-1 (2 November 2026): moved for the offline line on the landing page and /features (offline protection is switched
  * on by the truck, and the apps sentence shows only where the apps are in the stores).
+ * faq-3 (2 November 2026): moved for the FAQ section on the English landing pages — the same day, so the value stands.
  */
 export const MARKETING_COPY_UPDATED = '2026-11-02'

@@ -37,7 +37,7 @@ import {
 } from '@/lib/comparison-features'
 import { BRANDS } from '@/lib/brand'
 import { HATCHGRAB_ORIGIN } from '@/lib/marketing-country'
-import { organizationLd, websiteLd } from '@/lib/structured-data'
+import { organizationLd, websiteLd, faqPageLd } from '@/lib/structured-data'
 import { IMPRESSUM_DECISION } from '@/lib/comparison-decisions'
 
 import type { ComparisonFlags, ComparisonStatus } from '@/lib/comparison-types'
@@ -394,10 +394,7 @@ export function comparisonGraph(v: ComparisonView, input: ComparisonInput, t: Co
           { '@type': 'ListItem', position: 2, name: t('breadcrumb.here'), item: page },
         ],
       },
-      {
-        '@type': 'FAQPage', '@id': `${page}#faq`,
-        mainEntity: v.faq.map(f => ({ '@type': 'Question', name: f.q, acceptedAnswer: { '@type': 'Answer', text: f.a } })),
-      },
+      faqPageLd(`${page}#faq`, v.faq),
       {
         '@type': 'ItemList', '@id': `${page}#tools`, name: t('table.title'),
         itemListElement: v.columns.map((c, i) => ({ '@type': 'ListItem', position: i + 1, name: c.name, ...(c.url ? { url: c.url } : {}) })),
