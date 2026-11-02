@@ -12,7 +12,7 @@
 //   5 · the admin route: 403 for a non-admin on GET and POST; publish refused while the check fails; a published question's
 //       failing save refused with the published text kept; notes save without the check
 //   6 · the migration: RLS on, no policies, grants revoked from anon / authenticated / public, service role only; no operator_apps
-//   7 · the seed: 5 sections, 24 drafts in order; no digit, currency sign, plan name or country name outside a live value (one
+//   7 · the seed: 5 sections, 26 drafts in order (faq-1b's agreed list); no digit, currency sign, plan name or country name outside a live value (one
 //       allowed: "60 seconds" in question 6); every question reads correctly in every switched-on country
 //   8 · nothing public changes: the landing page (GB, US, BR, JP) and /llms.txt hash exactly as at HEAD; no public file imports
 //       lib/faq or the faq messages
@@ -112,7 +112,7 @@ async function identityViews(tag) {
   const br = L.resolveItem(q(1), world, C('BR'), 'en-GB'), gb = L.resolveItem(q(1), world, C('GB'), 'en-GB')
   t('BR reads question 1\'s single-plan answer; GB the main one', br.shown && br.single && br.text.startsWith(`There’s one plan: ${nameOf('unlimited')}, R$`) && gb.shown && !gb.single && gb.text.startsWith('Each plan is per truck per month: Pay as you go £0'), [br.text, gb.text])
   t('Show in hides question 5 ("part of the year", plan:payg) in BR and shows it in GB', !L.resolveItem(q(5), world, C('BR'), 'en-GB').shown && L.resolveItem(q(5), world, C('GB'), 'en-GB').shown)
-  t('question 7 in the US: the apps sentence is left out cleanly (no trailing space)', (() => { const r = L.resolveItem(q(7), world, C('US'), 'en-US'); return r.text.endsWith('the devices you already have.') && r.omitted.join() === 'apps.sentence' })())
+  t('question 7 in the US: the apps sentence is left out cleanly (no trailing space)', (() => { const r = L.resolveItem(q(7), world, C('US'), 'en-US'); return r.text.endsWith('the card machine you already have.') && r.omitted.join() === 'apps.sentence' })())
 
   // ══ 2 ══════════════════════════════════════════════════════════════════════════════════════════════════════════════
   head('2 · the check fails, and names the countries')
@@ -155,7 +155,7 @@ async function identityViews(tag) {
   items[0] = { ...items[0], note: 'Lead with the cheapest plan.' }
   items[4] = { ...items[4], note: 'Done already', noteDone: true }
   items[21] = { ...items[21], note: '   ' }
-  items[23] = { ...items[23], note: 'Confirm with the lawyer.', status: 'published' }
+  items[24] = { ...items[24], note: 'Confirm with the lawyer.', status: 'published' }   // faq-1b: "Do I own my customers’ data?" is the 25th
   const text = L.feedbackText(secs, items, world, 'GB', new Date('2026-11-01T12:00:00Z'))
   const lines = text.split('\n')
   t('the count: notes with words that aren\'t done (2 — a done note and a blank one are left out)', L.openNotes(items) === 2)
@@ -165,7 +165,7 @@ async function identityViews(tag) {
   t('each block: question with id and status, Answer, single-plan answer, UK preview, My note — in that order', new RegExp([
     `^### How much does HatchGrab cost\\?  \\[id: ${items[0].id}\\] \\[draft\\]`, '^Answer: Each plan is per truck per month: \\{payg\\.name\\}[^\\n]*', '^Answer where one plan is offered: There’s one plan[^\\n]*',
     '^UK preview: Each plan is per truck per month: Pay as you go £0[^\\n]*', '^My note: Lead with the cheapest plan\\.'].join('\\n'), 'm').test(block), block.slice(0, 600))
-  t('"none" where there is no single-plan answer, and the status as stored', text.includes(`[id: ${items[23].id}] [published]`) && /Answer where one plan is offered: none\nUK preview: You control it/.test(text))
+  t('"none" where there is no single-plan answer, and the status as stored', text.includes(`[id: ${items[24].id}] [published]`) && /Answer where one plan is offered: none\nUK preview: You control it/.test(text))
   t('the done note is not in the text', !text.includes('Done already'))
   t('the button shows the same number (FaqTab renders openNotes)', /Copy feedback for Claude \(\{notes\}\)/.test(read('components/admin/FaqTab.tsx')) && /const notes = openNotes\(items\)/.test(read('components/admin/FaqTab.tsx')))
 
@@ -189,7 +189,7 @@ async function identityViews(tag) {
   globalThis.__faqAdmin = { id: 'admin-1', email: 'dominic@hatchgrab.com' }
   const g = await kit.quietAsync(() => Rt.GET(new Rt.NextRequest(url)))
   const gb2 = await g.json()
-  t('an admin GET: 5 sections, 24 questions and the world', g.status === 200 && gb2.sections.length === 5 && gb2.items.length === 24 && gb2.world.countries.length === 44)
+  t('an admin GET: 5 sections, 26 questions and the world', g.status === 200 && gb2.sections.length === 5 && gb2.items.length === 26 && gb2.world.countries.length === 44)
   // Question 4 has no single-plan answer and shows everywhere, so a plan token in it fails in the five Unlimited-only countries.
   store.patchItem(q(4).id, { answerEn: 'From {payg.price}.' })
   const pubBad = await post({ action: 'item.publish', id: q(4).id })
@@ -216,7 +216,7 @@ async function identityViews(tag) {
   t('unpublish returns it to a draft', unp.status === 200 && store.item(q(4).id).status === 'draft')
   const writesBefore = store.writes
   const del = await post({ action: 'section.delete', id: secs[4].id })
-  t('deleting a section takes its questions with it', del.status === 200 && store.state.sections.length === 4 && store.state.items.length === 21 && store.writes > writesBefore)
+  t('deleting a section takes its questions with it', del.status === 200 && store.state.sections.length === 4 && store.state.items.length === 22 && store.writes > writesBefore)
   const mv = await post({ action: 'item.move', id: q(1).id, dir: -1 })
   t('moving the first question up stays put (nothing above it)', mv.status === 200 && store.item(q(1).id).sectionId === secs[0].id)
   await post({ action: 'item.move', id: q(6).id, dir: -1 })
@@ -238,14 +238,14 @@ async function identityViews(tag) {
   try { page = kit.renderStatic(kit.h(T.FaqTab)) } finally { delete globalThis.__ms }
   if (process.env.FAQ1_DUMP) fs.writeFileSync(process.env.FAQ1_DUMP, page)
   const plain = page.replace(/<[^>]+>/g, '').replace(/&#x27;|&#39;/g, "'").replace(/&amp;/g, '&').replace(/&quot;/g, '"').replace(/&lt;/g, '<').replace(/&gt;/g, '>')
-  t('the page renders: heading, Preview as, + Section, + Question, Copy feedback for Claude (n)', /FAQ/.test(plain) && plain.includes('Preview as:') && plain.includes('+ Section') && plain.includes('+ Question') && plain.includes(`Copy feedback for Claude (${L.openNotes(tabItems)})`) && L.openNotes(tabItems) === 9, plain.slice(0, 300))
+  t('the page renders: heading, Preview as, + Section, + Question, Copy feedback for Claude (n)', /FAQ/.test(plain) && plain.includes('Preview as:') && plain.includes('+ Section') && plain.includes('+ Question') && plain.includes(`Copy feedback for Claude (${L.openNotes(tabItems)})`) && L.openNotes(tabItems) === 10, plain.slice(0, 300))
   t('the summary: 44 countries switched on · 1 published · 1 question needs an answer for some countries', plain.includes('44 countries switched on') && plain.includes('✓ 1 published') && plain.includes('1 question needs an answer for some countries'))
   t('five sections with Rename · ↑ ↓ · Delete', (page.match(/>Rename</g) || []).length === 5)
   t('the single-plan answer under its computed label', plain.includes('Where only Unlimited is offered (5 countries)'))
   t('green "✓ Reads correctly in all 44 countries", and "… where it shows" for Show in', plain.includes('✓ Reads correctly in all 44 countries') && plain.includes('✓ Reads correctly in all 39 countries where it shows'))
   t('the red check with both fixes, worded as the mockup', plain.includes(`This answer uses {payg.price}, but ${nameOf('payg')} isn't offered in Brazil, Malaysia, Mexico, Singapore and Thailand.`) && plain.includes('Add an answer for those countries') && plain.includes(`show only where ${nameOf('payg')} is offered`) && plain.includes("It can't be published until one is chosen."))
   t('the preview line for the default country (GB), English', plain.includes('United Kingdom preview: Each plan is per truck per month: Pay as you go £0'))
-  t('MY NOTES with Done; a done note is dimmed', (page.match(/>My notes</g) || []).length === 24 && /text-slate-400[^>]*>Apps only where they are on the store\./.test(page))
+  t('MY NOTES with Done; a done note is dimmed', (page.match(/>My notes</g) || []).length === 26 && /text-slate-400[^>]*>Apps only where they are on the store\./.test(page))
   t('tokens drawn highlighted in the answers at rest', /<code class="[^"]*font-mono[^"]*text-orange-700[^"]*">\{payg\.name\}<\/code>/.test(page))
   t('Draft / Published labels, "New" and "Edited <date>"', plain.includes('Published') && plain.includes('Draft') && plain.includes('New') && plain.includes('Edited 1 Nov'))
   t('no translation indicator yet (faq-2)', !/Translations? \d+\/\d+|Translates when published|languages/.test(plain))
@@ -270,8 +270,8 @@ async function identityViews(tag) {
   // ══ 7 ══════════════════════════════════════════════════════════════════════════════════════════════════════════════
   head('7 · the seed')
   t('5 sections, in order', seed.sections.map(s => s.titleEn).join('|') === 'Pricing|Getting started|Orders and payments|Reaching customers|About HatchGrab')
-  t('24 questions, all drafts (status left to its default)', seed.items.length === 24 && !/'published'\s*[,)]/.test(sql.slice(sql.indexOf('insert into public.faq_items'))))
-  t('questions per section 5 · 4 · 8 · 4 · 3, positions 1..n', JSON.stringify(seed.sections.map(s => seed.items.filter(i => i.sectionId === s.id).map(i => i.position))) === JSON.stringify([[1, 2, 3, 4, 5], [1, 2, 3, 4], [1, 2, 3, 4, 5, 6, 7, 8], [1, 2, 3, 4], [1, 2, 3]]))
+  t('26 questions, all drafts (status left to its default)', seed.items.length === 26 && !/'published'\s*[,)]/.test(sql.slice(sql.indexOf('insert into public.faq_items'))))
+  t('questions per section 5 · 4 · 9 · 4 · 4, positions 1..n (faq-1b)', JSON.stringify(seed.sections.map(s => seed.items.filter(i => i.sectionId === s.id).map(i => i.position))) === JSON.stringify([[1, 2, 3, 4, 5], [1, 2, 3, 4], [1, 2, 3, 4, 5, 6, 7, 8, 9], [1, 2, 3, 4], [1, 2, 3, 4]]))
   const planNames = catalog.plans.map(p => p.name)
   const countryNames = [...new Set(rows.flatMap(r => [r.name, r.shortName]).filter(n => n && n.length > 2))]
   for (const [n, i] of seed.items.entries()) {
@@ -289,7 +289,15 @@ async function identityViews(tag) {
     const c = L.checkItem(i, world)
     t(`question ${n + 1} reads correctly in every switched-on country it shows in (${c.shownCount})`, c.ok && c.shownCount > 0, c.sentences)
   }
-  t('every CHECK note starts "CHECK (Cursor): "', seed.items.filter(i => i.note).every(i => i.note.startsWith('CHECK (Cursor): ')) && seed.items.filter(i => i.note).length === 8)
+  // faq-1b (2 November 2026): the agreed list — every kept id in its place, …0017 folded into …0007, three new rows.
+  const ID = n => `fa000002-0000-4000-8000-0000000000${String(n).padStart(2, '0')}`
+  t('faq-1b: the 26 ids in the agreed order', JSON.stringify(seed.items.map(i => i.id)) === JSON.stringify([1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 25, 26, 18, 19, 20, 21, 22, 23, 24, 27].map(ID)))
+  t('faq-1b: "Do I need a card reader?" (…0017) is gone, folded into question 7', !seed.items.some(i => i.id === ID(17)) && /card reader/.test(q(7).questionEn) && /card machine you already have/.test(q(7).answerEn))
+  t('faq-1b: answers short — none over about 80 words', seed.items.every(i => [i.answerEn, i.answerSinglePlanEn ?? ''].every(a => a.split(/\s+/).filter(Boolean).length <= 85)), seed.items.map(i => i.answerEn.split(/\s+/).length))
+  t('faq-1b: question 12 avoids "kitchen capacity"', !/capacity/i.test(q(12).answerEn))
+  t('faq-1b: question 21 says it fills your design and nothing is posted automatically', /your own design/.test(q(21).answerEn) && /nothing is posted automatically/.test(q(21).answerEn))
+  t('faq-1b: question 26 promises no hours, response time or phone number, and carries its CHECK note', !/\d|hour|within|phone|call us/i.test(q(26).answerEn) && /^CHECK \(Cursor\): .*support details/.test(q(26).note))
+  t('every CHECK note starts "CHECK (Cursor): "', seed.items.filter(i => i.note).every(i => i.note.startsWith('CHECK (Cursor): ')) && seed.items.filter(i => i.note).length === 9)
   t('en-GB spelling: no US forms', !/\b(color|center|program|organiz|apologiz|favorite|license)\w*/i.test(seed.items.map(i => [i.questionEn, i.answerEn, i.answerSinglePlanEn].join(' ')).join(' ')))
 
   // ══ 8 ══════════════════════════════════════════════════════════════════════════════════════════════════════════════

@@ -1,4 +1,4 @@
--- 20261056_faq_1.sql — faq-1 (1 November 2026, docs/faq-1-report.md): the FAQ's tables and its first 24 questions, as DRAFTS.
+-- 20261056_faq_1.sql — faq-1 (1 November 2026, docs/faq-1-report.md): the FAQ's tables and its 26 questions (faq-1b list), as DRAFTS.
 -- ⚠️ NOT RUN. Dominic runs it by hand. Safe to run twice: the tables are created only if missing, and every seeded row has a
 -- fixed id with `on conflict (id) do nothing`.
 --
@@ -63,7 +63,8 @@ comment on table public.faq_items is
 comment on column public.faq_items.answer_single_plan_en is 'faq-1: the answer used where the country offers only one plan; NULL = use answer_en everywhere.';
 comment on column public.faq_items.show_in is 'faq-1: where the question appears — all; apps (country_settings.ios_app_available AND android_app_available); plan:<plans.key> (that plan offered there).';
 
--- ══ THE SEED — 5 sections, 24 questions, ALL DRAFTS, in the brief's order. Every claim checked against the code and data
+-- ══ THE SEED — 5 sections, 26 questions, ALL DRAFTS, in the agreed order (faq-1b, 2 November 2026: the list Dominic agreed;
+--    question …0017 "Do I need a card reader?" folded into …0007; …0025, …0026, …0027 new). Every claim checked against the code and data
 --    (docs/faq-1-report.md §5); a claim that could not be confirmed carries a note starting "CHECK (Cursor): ". No price,
 --    percentage, plan name, plan count, trial length or country is typed — live values only (35.ak-7). ══
 
@@ -112,15 +113,15 @@ insert into public.faq_items (id, section_id, position, question_en, answer_en, 
    'CHECK (Cursor): a self-serve truck is created hidden and its orders are refused until Admin makes it public (app/api/setup/route.ts visibility ''hidden''; app/api/orders/submit/route.ts refuses while excluded), so I added "We then switch your ordering page on." Confirm that is how you want to describe it. Public signup is also behind the SIGNUP_PUBLIC setting, which I did not read. The sign-up wizard itself is Where you''re based › Your truck › Your menu; the schedule is added in Manage › Schedule and Stripe in Manage › Payments.',
    'faq-1 seed'),
   ('fa000002-0000-4000-8000-000000000007', 'fa000001-0000-4000-8000-000000000002', 2,
-   'Do I need an iPad or special equipment?',
-   'No. HatchGrab runs in the web browser on any phone, tablet or laptop, so you can use the devices you already have. {apps.sentence}',
+   'Do I need an iPad, card reader or special equipment?',
+   'No. HatchGrab runs in the web browser on any phone, tablet or laptop, so you can use the devices you already have. You don’t need a card reader either: customers can pay at the truck or by card online, and for walk-up orders you keep using the card machine you already have. {apps.sentence}',
    null, 'all', null, 'faq-1 seed'),
   ('fa000002-0000-4000-8000-000000000008', 'fa000001-0000-4000-8000-000000000002', 3,
    'Do my customers need to download an app?',
    'No. Customers order from a web page on their phone, from your link or QR code. There’s nothing to download and no account to create: they just give their name and email.',
    null, 'all', null, 'faq-1 seed'),
   ('fa000002-0000-4000-8000-000000000009', 'fa000001-0000-4000-8000-000000000002', 4,
-   'Can I try it before I sign up?',
+   'Can I try HatchGrab before signing up?',
    'Yes. Upload a photo of your menu and HatchGrab builds a working demo from it: you place an order as a customer and watch it arrive on the kitchen screen. You only need an email address, and no card.',
    null, 'all', null, 'faq-1 seed'),
 -- ── Orders and payments ──
@@ -133,15 +134,15 @@ insert into public.faq_items (id, section_id, position, question_en, answer_en, 
    'Card payments go straight into your own Stripe account, and Stripe pays them out to your bank on its usual schedule for your country. HatchGrab never holds your money.',
    null, 'all', null, 'faq-1 seed'),
   ('fa000002-0000-4000-8000-000000000012', 'fa000001-0000-4000-8000-000000000003', 3,
-   'Can I stop too many orders arriving at once?',
-   'Yes. You set how much your kitchen can cook at once and how long it takes, and once a collection time is full, customers can’t pick it. You can also pause online orders for an event at any time.',
+   'Can I control how many orders I receive at once?',
+   'Yes. You tell HatchGrab how much you can cook at once and how long it takes, and once a collection time is full, customers can’t choose it. You can also pause online orders for an event at any time.',
    null, 'all', null, 'faq-1 seed'),
   ('fa000002-0000-4000-8000-000000000013', 'fa000001-0000-4000-8000-000000000003', 4,
-   'Do online and walk-up orders show on the same screen?',
+   'Do online and walk-up orders appear on the same screen?',
    'Yes. Pre-orders, online orders and the orders you take at the window all show on one kitchen screen.',
    null, 'all', null, 'faq-1 seed'),
   ('fa000002-0000-4000-8000-000000000014', 'fa000001-0000-4000-8000-000000000003', 5,
-   'What happens if I lose signal?',
+   'What happens if I lose my internet connection?',
    'Switch on offline protection and online ordering pauses automatically when you lose signal, so customers can’t place orders you won’t see. {apps.offline}',
    null, 'all',
    'CHECK (Cursor): offline protection is OFF until a truck switches it on (truck_vans.auto_pause_on_offline defaults to false; the monitor applies event › event type › van › off), so "Online ordering pauses automatically" became "Switch on offline protection and online ordering pauses automatically". The public landing line (landing.does.offlineBody) and /features say it pauses automatically with no condition — they may want the same change. The iPad and Android app queues walk-up orders offline in the code (lib/native/orderGate.ts, on any native platform), but the manual records it has never been tested on Android.',
@@ -156,30 +157,31 @@ insert into public.faq_items (id, section_id, position, question_en, answer_en, 
    'Can I show allergen information?',
    'Yes. A setup guide walks you through the allergens in each dish, using your country’s allergen list, and customers see them when they order. Where the law allows, you can show one allergen card for the whole menu instead.',
    null, 'all', null, 'faq-1 seed'),
-  ('fa000002-0000-4000-8000-000000000017', 'fa000001-0000-4000-8000-000000000003', 8,
-   'Do I need a card reader?',
-   'No. You can take orders with no card hardware: customers pay at the truck or by card online. For walk-up orders you keep using the card machine you already have.',
+  ('fa000002-0000-4000-8000-000000000025', 'fa000001-0000-4000-8000-000000000003', 8,
+   'Can I change my menu or mark items as sold out?',
+   'Yes. You can change your menu at any time in Manage › Menu. During service, mark an item sold out in one tap from your dashboard’s stock list, and customers can’t order it. You can also set a stock limit for an event, and the item sells out by itself when it runs out.',
+   null, 'all', null, 'faq-1 seed'),
+  ('fa000002-0000-4000-8000-000000000026', 'fa000001-0000-4000-8000-000000000003', 9,
+   'Can customers order ahead for a later day or an event?',
+   'Yes. Each of your upcoming stops has its own ordering link on your schedule page, and customers can order once you’ve confirmed the stop, picking a collection time. For items that need notice, you choose when pre-orders open (when the stop is confirmed, a set number of days before, or on the day) and an order-by deadline.',
    null, 'all', null, 'faq-1 seed'),
 -- ── Reaching customers ──
   ('fa000002-0000-4000-8000-000000000018', 'fa000001-0000-4000-8000-000000000004', 1,
-   'How do customers find where I’m trading?',
+   'How do customers find out where I’m trading?',
    'Your schedule page shows where and when you’re trading, with ordering for each stop. You can share its link, or put it on a web address you own.',
    null, 'all', null, 'faq-1 seed'),
   ('fa000002-0000-4000-8000-000000000019', 'fa000001-0000-4000-8000-000000000004', 2,
-   'Does HatchGrab answer WhatsApp messages?',
+   'Can HatchGrab automatically reply to customers’ WhatsApp messages?',
    'Yes, on {plansWith.whatsapp_replies}. It auto-replies to questions like “Where are you tonight?” using your own menu and schedule. You connect your own WhatsApp Business number in your settings, and Meta may charge for some messages.',
    null, 'all', null, 'faq-1 seed'),
   ('fa000002-0000-4000-8000-000000000020', 'fa000001-0000-4000-8000-000000000004', 3,
-   'Can HatchGrab make my weekly schedule posts?',
-   'Yes, on {plansWith.schedule_graphics}. It fills your own design with the week’s stops, ready for you to download and post.',
+   'Can HatchGrab help me create social media posts?',
+   'Yes, on {plansWith.schedule_graphics}. It fills your own design with your stops, for the week or a single event, ready for you to download. You post it yourself: nothing is posted automatically.',
    null, 'all', null, 'faq-1 seed'),
   ('fa000002-0000-4000-8000-000000000021', 'fa000001-0000-4000-8000-000000000004', 4,
-   'Can I run more than one van?',
-   'Yes. You can add vans yourself in your settings. Each van beyond those your plan includes is {payg.extraVan} a month on {payg.name}, {pro.extraVan} on {pro.name} and {unlimited.extraVan} on {unlimited.name}. Each van has its own kitchen capacity, collection times and offline settings; your menu and payments are shared.',
-   'Yes. You can add vans yourself in your settings. Each van beyond those your plan includes is {unlimited.extraVan} a month. Each van has its own kitchen capacity, collection times and offline settings; your menu and payments are shared.',
-   'all',
-   'CHECK (Cursor): per-van settings are not fully independent — the menu, the plan, the Stripe account and the ordering link are shared across vans; capacity, collection intervals, offline protection, buzzers, the order-ready step and the printer are per van (lib/van-category-settings.ts). No extra van is charged yet ("TODO: Wire to Stripe billing"; manageSettings.vanBilling.note says it is processed manually), and manageSettings.vans.addConfirm tells every operator the van "will be charged … next billing cycle", even where the price is zero.',
-   'faq-1 seed'),
+   'Can I run more than one food truck or van?',
+   'Yes. You can add vans to your truck yourself in your settings. Each van beyond those your plan includes is {payg.extraVan} a month on {payg.name}, {pro.extraVan} on {pro.name} and {unlimited.extraVan} on {unlimited.name}. Each van has its own capacity, collection times and offline settings; your menu and payments are shared.',
+   'Yes. You can add vans to your truck yourself in your settings. Each van beyond those your plan includes is {unlimited.extraVan} a month. Each van has its own capacity, collection times and offline settings; your menu and payments are shared.', 'all', 'CHECK (Cursor): per-van settings are not fully independent — the menu, the plan, the Stripe account and the ordering link are shared across vans; capacity, collection intervals, offline protection, buzzers, the order-ready step and the printer are per van (lib/van-category-settings.ts). No extra van is charged yet ("TODO: Wire to Stripe billing"; manageSettings.vanBilling.note says it is processed manually), and manageSettings.vans.addConfirm tells every operator the van "will be charged … next billing cycle", even where the price is zero. faq-1b: the answer covers vans under one truck. A second truck with its own menu is a separate truck in HatchGrab, and I couldn’t confirm an operator can add one themselves (trucks are created at signup or by Admin), so the answer doesn’t promise it.', 'faq-1 seed'),
 -- ── About HatchGrab ──
   ('fa000002-0000-4000-8000-000000000022', 'fa000001-0000-4000-8000-000000000005', 1,
    'Which countries is HatchGrab available in?',
@@ -196,7 +198,11 @@ insert into public.faq_items (id, section_id, position, question_en, answer_en, 
    'You control it. For your customers’ details, you’re the controller and HatchGrab is the processor: we use them only to run your ordering, never for our own marketing, and we don’t sell them or share them with other trucks. You can export your orders, with customers’ names, as a spreadsheet from Reports.',
    null, 'all',
    'CHECK (Cursor): please confirm. Sources — Terms §10.1: "you are the controller and we are the processor"; Privacy §2: "the truck is the controller of your order data … We process that data on their behalf, under their instructions"; Privacy §4: "We do not sell this data, use it for our own marketing, or share it with other trucks." The Reports CSV has names, items and totals but not emails or phone numbers, and order details are anonymised after 12 months.',
-   'faq-1 seed')
+   'faq-1 seed'),
+  ('fa000002-0000-4000-8000-000000000027', 'fa000001-0000-4000-8000-000000000005', 4,
+   'What help can I get if something goes wrong?',
+   'Email us at hello@hatchgrab.com, or send us a message from our support page, and we’ll reply by email.',
+   null, 'all', 'CHECK (Cursor): this says only what the site offers today — the support page (/contact) says "Two ways to reach us — either way we will come back to you by email": the address hello@hatchgrab.com, and a form. The page’s words are in every language, but the form inside it (Tally) is in English everywhere (manual §77.12, known gap). The site publishes no hours, response time or phone number (country_settings.support_hours exists but no public page shows it). Tell me the support details you want to promise.', 'faq-1 seed')
 on conflict (id) do nothing;
 
 commit;
