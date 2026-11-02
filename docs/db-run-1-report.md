@@ -1,8 +1,9 @@
 # db-run-1 — run migrations from Claude Code, starting with the FAQ
 
-*2 November 2026. Status: **the FAQ migration is verified live, but I did not run it**. It had already been applied before
-this task, byte-for-byte as committed. **psql is not installed, and can't be with the brief's command, because this Mac has
-no Homebrew.** One decision is needed from you (§5).*
+*2 November 2026. Status: **done.** The FAQ migration is verified live; it had already been applied before this task,
+byte-for-byte as committed, so I didn't run it. psql couldn't be installed (no Homebrew), so on your decision (Q1 → C)
+migrations now run through Node and the `pg` driver via npx (§5). That path is proven with a read-only query. No migration
+was run.*
 
 ## 1 · Setup checks
 
@@ -54,29 +55,69 @@ see), so the grants were read from `pg_class.relacl` instead.
 
 ## 4 · The standing rule
 
-Added to `.cursor/rules/working-rules.mdc` (the always-applied rules file) as "Running migrations (db-run-1)":
-- write the migration, commit it, show the full SQL in chat, run it with psql exactly as the brief gives it, verify
-  read-only, and report;
+`.cursor/rules/working-rules.mdc` (the always-applied rules file), section "Running migrations (db-run-1)", now reads:
+
+- write the migration as a file in `supabase/migrations/`, commit it, show the full SQL in chat, then run the committed file
+  yourself with Node and `pg` through npx (never added to the project):
+  `npx -y -p pg@8.13.1 node scripts/db-migrate.cjs supabase/migrations/<file>.sql`
+  It runs as one transaction that stops on the first error and rolls back. Then verify read-only with the MCP and report;
+- `--probe` is the read-only check that the path works;
 - never `supabase db push`;
-- stop and ask before anything that deletes or updates existing rows in `trucks`, `orders`, `plans`, `plan_prices`,
-  `plan_features` or `country_settings`, or that touches `pizzeria-gusto`;
-- never ad-hoc write SQL outside a committed migration file;
+- **stop and ask** before anything that deletes or updates existing rows in `trucks`, `orders`, `plans`, `plan_prices`,
+  `plan_features` or `country_settings`, or that touches `pizzeria-gusto`. The script refuses such a file unless
+  `--approved-by-dominic` is passed, and that flag is passed only after you've said yes in the session;
+- never ad-hoc write SQL outside a committed file (the script has no "run this string" mode);
 - the read-only MCP stays read-only;
 - never print `SUPABASE_DB_URL` or list `.env.local`'s other keys.
 
-My own memory was updated to match. It had said never to run SQL myself.
+My memory was updated to match (it had said never to run SQL myself).
 
-## 5 · Decision needed: how to get psql
+## 5 · The migration path: Node and pg via npx (your decision, Q1 → C)
 
-The brief's install (`brew install libpq`) needs Homebrew, which isn't here. Installing Homebrew itself needs your admin
-password, which I can't type. The question is in the chat reply. Until it's answered, a migration can be written and
-committed, but not run by me.
+**`scripts/db-migrate.cjs`** (new). It writes to production, so it is in `scripts/harnesses.json`'s `operational_refused`
+group, and no sweep runs it.
+
+- **The driver:** `pg@8.13.1` comes from npx's cache (`npx -y -p pg@8.13.1 …`). The script finds it on npx's PATH entry.
+  It is not in `package.json`, `package-lock.json` or `node_modules`.
+- **The connection:** the script reads `SUPABASE_DB_URL`, that one line of `.env.local` only. It never prints it, and it
+  scrubs the URL, password and user@host from any error message.
+- **TLS:** encrypted, certificate not verified — what psql's `sslmode=require` does.
+- **What it refuses, before connecting:**
+  - any file not under `supabase/migrations/`;
+  - a file not committed, or different from HEAD;
+  - a file that UPDATEs, DELETEs FROM or TRUNCATEs a protected table, or names `pizzeria-gusto`, without
+    `--approved-by-dominic`;
+  - anything but `--probe` or exactly one file.
+- **One transaction, stops on the first error:** the whole file goes as one simple query. Postgres runs a multi-statement
+  simple query as one transaction (or inside the file's own `begin; … commit;`) and runs nothing after an error. The script
+  then sends ROLLBACK and exits non-zero. (So there are no psql `-1` double-transaction warnings.)
+
+**Proof (read-only, no migration run):**
+
+```
+$ npx -y -p pg@8.13.1 node scripts/db-migrate.cjs --probe
+db-migrate --probe: current_user=postgres · now()=2026-11-02T10:41:54.538Z · transaction_read_only=on · server 17.6
+```
+
+It ran `begin read only; select current_user, now(), …; rollback`.
+
+**Refusals, checked offline** (each stopped before any connection):
+
+| Case | Message |
+|---|---|
+| 20261042 (it updates `country_settings`), no approval | "updates/deletes a protected table — STOP and ask Dominic first (then pass --approved-by-dominic)" |
+| `package.json` | "is not a file under supabase/migrations/" |
+| a new, uncommitted `.sql` | "is not committed" |
+| no arguments | the usage line |
 
 ## 6 · Files
 
-- `.cursor/rules/working-rules.mdc`: the standing rule (appended).
+- `scripts/db-migrate.cjs` (new): the runner.
+- `scripts/harnesses.json`: the runner added to `operational_refused`. `_lp-copy-truth-1.cjs`, my copy-truth-1 module that
+  was never registered, added to `shared_modules`. The dry run's other 12 unregistered files predate this work.
+- `.cursor/rules/working-rules.mdc`: the standing rule.
 - `docs/db-run-1-report.md`: this report.
-- No migration, code or data changed.
+- No migration was run, and no data changed.
 
 ## Verify SQL used (read-only)
 

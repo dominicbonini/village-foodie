@@ -193,7 +193,8 @@
       "$why": "Builds a real client and WRITES to production. The runner refuses these by source inspection even if someone lists one.",
       "files": [
         "migrate-from-sheets.cjs",
-        "register-payment-domain.cjs"
+        "register-payment-domain.cjs",
+        "db-migrate.cjs"
       ]
     },
     "operational_read_only": {
@@ -313,6 +314,7 @@
         "_lp-demo2b.cjs",
         "_world-countries-1-fixtures.cjs",
         "_lp-tagline.cjs",
+        "_lp-copy-truth-1.cjs",
         "_lp-world-countries-2.cjs",
         "_legal-translations.cjs",
         "_lp-world-countries-3.cjs"

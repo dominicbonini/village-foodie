@@ -56,12 +56,18 @@ not restart it here.*
 ## Running migrations (db-run-1, 2 November 2026 — Dominic's standing rule)
 
 - **When a prompt includes a migration:** write it as a file in `supabase/migrations/`, commit it, show Dominic the full SQL
-  in chat, then **run it yourself** with psql:
-  `psql "$SUPABASE_DB_URL" -v ON_ERROR_STOP=1 -1 -f supabase/migrations/<file>.sql`
-  (`SUPABASE_DB_URL` lives in `.env.local`, which is git-ignored. Never print its value, never write it anywhere else, and
-  never list `.env.local`'s other keys.) Then **verify read-only** (the Supabase MCP) and report what you saw.
+  in chat, then **run the committed file yourself** with Node and the `pg` driver through npx (never added to the project):
+  `npx -y -p pg@8.13.1 node scripts/db-migrate.cjs supabase/migrations/<file>.sql`
+  It runs the file as **one transaction that stops on the first error** (and rolls back). It refuses any file that isn't
+  committed and identical to HEAD. Then **verify read-only** with the Supabase MCP and report what you saw.
+  - `SUPABASE_DB_URL` lives in `.env.local` (git-ignored); the script reads that one line itself. Never print its value,
+    never write it anywhere else, and never list `.env.local`'s other keys.
+  - `npx -y -p pg@8.13.1 node scripts/db-migrate.cjs --probe` is the read-only check that the path works
+    (`select current_user, now()` in a READ ONLY transaction).
 - **Never `supabase db push`.** The migration history isn't reconciled, and it could re-run old migrations.
 - **STOP and ask Dominic before running anything that deletes or updates existing rows** in `trucks`, `orders`, `plans`,
-  `plan_prices`, `plan_features` or `country_settings`, **or anything touching the truck `pizzeria-gusto`.**
-- **Never run ad-hoc write SQL** outside a committed migration file.
+  `plan_prices`, `plan_features` or `country_settings`, **or anything touching the truck `pizzeria-gusto`.** The script
+  refuses such a file unless `--approved-by-dominic` is passed, and that flag is only ever passed after he has said yes in
+  this session.
+- **Never run ad-hoc write SQL** outside a committed migration file. The script has no "run this string" mode.
 - **The read-only Supabase MCP stays read-only.**
