@@ -1,4 +1,4 @@
-HatchGrab Engineering Reference Manual · V16.8
+HatchGrab Engineering Reference Manual · V16.9
 
 **HatchGrab**
 
@@ -6,9 +6,9 @@ Engineering Reference Manual
 
 *Village Foodie · Food Truck Ordering Platform*
 
-**Version 16.8**
+**Version 16.9**
 
-October 2026
+November 2026
 
 *This document defines the rules, conventions, and architecture decisions for the HatchGrab platform. It is the source of truth for any coding session and must be consulted before making structural changes.*
 
@@ -49,6 +49,138 @@ form — including key names and set/missing checks. It may run the project's ow
 internally (`next build`, the sweep, `tsc`). Configuration is worked out from code.
 
 # Changelog
+
+## V16.9 — 1 November 2026 — **A DEMO THAT SHOWS THE VISITOR'S OWN ORDER ON THE KITCHEN SCREEN, SELF-SERVE SIGNUP SWITCHED ON, THE CHECKER'S TIMEOUTS AND BATCH FAILURES FIXED, THE TAGLINE GONE, EIGHT NEW COUNTRIES (THREE OF THEM AT LAUNCH-READY, FIVE UNLIMITED-ONLY, THE UAE HELD BACK), AND EVERY PAGE, LEGAL DOCUMENT AND EMAIL IN THE USER'S OWN LANGUAGE**
+
+- Applies `docs/demo-2-report.md`, `docs/demo-2b-report.md`, `docs/demo-2c-report.md`, `docs/competitor-check-8-report.md`,
+  `docs/world-countries-1-report.md`, `docs/world-countries-2-report.md`, `docs/world-countries-3-report.md` and
+  `docs/legal-languages-1-report.md`. Facts were checked read-only on 1 Nov (live database, git, curl). ⚠️ **Two of the
+  title's claims are not what the live system shows** (OBSERVED WHEN APPLYING, below): the client signup flag is not in
+  the build being served, and all eight new countries, the UAE included, are switched on.
+- **The demo (demo-2, -2b, -2c):**
+  - email first;
+  - the visitor orders from their own menu as a customer and sees that one order on the kitchen screen, with a three-step
+    guide (phone: order screen → kitchen screen with a speech-bubble coach → a bottom sheet "Start free for 3 months, keep
+    my menu");
+  - no seeded orders anywhere;
+  - uploaded menus kept in a private bucket and visible in Admin › Demos until the demo expires; ten funnel counts;
+  - `/demo/<ref>` now goes to `/try/<slug>`, so no dashboard token appears in a public URL;
+  - G11 closed (the signup button gets the same inputs on every surface).
+- **Why there had been no demo signups:** self-serve signup had never been switched on in Production (`/api/signup`
+  answered 403 `signup_closed`, and the client flag was unset at build), and the signup email's sender
+  (`hello@hatchgrab.com`) was not verified in Brevo. **hatchgrab.com is now verified in Brevo (stated, 31 Oct)**, and both
+  signup variables are set in Vercel Production (stated, 1 Nov). ⚠️ OBSERVED 1 Nov: the live build still reads the
+  client flag unresolved (§49).
+- **The privacy policy** has a demo section (what is collected, Gemini reads the menu, deletion at 24 h / 14 days / 30
+  days after a signup claim, simple counts, outreach demos 30 days), plus matching lines in browser storage, retention
+  and product analytics (PostHog runs on the demo).
+- **The competitor checker (competitor-check-8):**
+  - the 31 Oct quick-pass failure was the leftover 30 Oct batch built with the refused schema (CONFIRMED when applying:
+    the run's notes give the 17-union refusal; one batch is recorded as re-read);
+  - failed batch items are now always logged;
+  - the deep-check limit is 1800 s and a setting; a timed-out check keeps its finished groups and resumes;
+  - one line replaces the per-verification noise; a stray field no longer rejects a whole answer;
+  - only a whole-stage failure exits non-zero; the job allows 350 minutes.
+- **The tagline "Less time booking, more time cooking" is gone** from every page and language (stated, 31 Oct: it doesn't
+  rhyme outside English, "perhaps its better to remove from all for consistency").
+- **Eight new countries,** each in its own language with native prices: BR (pt-BR), MX (es-MX), JP (ja-JP), SG (en-SG),
+  HK (zh-HK), MY (ms-MY), TH (th-TH), AE (ar-AE, right to left).
+  - Built switched off; ⚠️ OBSERVED 1 Nov: all eight switched on through Admin at 17:25 UTC, the UAE included (§49).
+  - Eight new currencies (JPY zero-decimal).
+  - **BR, MX, MY, SG and TH offer Unlimited only,** because Stripe does not let a platform outside those countries take an
+    application fee there; a finished trial drops to Unlimited there.
+- **Every user sees only their own language (stated, 31 Oct):**
+  - the Privacy Policy, Terms and Country-specific terms in all 28 language bases, each at its country's address with a
+    line saying the English version governs;
+  - signup, login, the password pages, 404/error pages, account emails and Stripe's screens localised;
+  - a whole-product audit clean in all 28.
+- **Three legal text fixes (world-countries-3):** Mexico's complaints authority named (the Secretaría Anticorrupción y
+  Buen Gobierno); Terms §3 points at Section 10; Canada's Quebec line says a Canadian French version is not yet available.
+
+| What | Where |
+|---|---|
+| **NEW — the demo as rebuilt (email first, the walkthrough, menus kept, Admin › Demos, retention, signup carry-over)** | **§55** (new subsection at its end) |
+| **NEW — signup and email (Brevo verified, why Brevo, the two flags)**; the demo in the Privacy Policy; the legal documents in every language | **§43** (three new subsections at its end) |
+| **NEW — every user in their own language (the rule, the audit, the decisions)** | **§77.12** (new) |
+| **NEW — offered plans and the trial-end plan per country** | **§81.6** (new) |
+| **NEW — the eight new countries (decisions, prices, Stripe and the platform fee, as data, billing, settings, RTL, terms, migrations)** | **§82.11** (new) |
+| **NEW — the checker after competitor-check-8 (logging, the re-read, 1800 s and resume, validation, exit codes, the job's time, the cost sums)** | **§86.14** (new); §86's heading |
+| Signup off; the sender; G11 | §53.8 item 17, §27 (corrected / struck in place) |
+| Demo seeding; `/demo/<ref>` to the dashboard; demo orders need an email; the retired browser flags | §55, §56 (corrected in place) |
+| Legal pages, sign-in and account emails stay en-GB | §83.8, §84.2 (corrected in place) |
+| The tagline | §38 (corrected in place) |
+| Every ended plan drops to Pay as you go | §81.1, §81.2 (corrected in place) |
+| 14 currency codes; four allergen sets | §82.6, §76.6, §83.4 (corrected in place) |
+| Terms §4 "one plan has no monthly fee" | §43 "Terms §4 and the terms dates" (corrected in place) |
+| Invariants | §35.an-17 … 35.an-25 (appended) |
+| Backlog | §27 (new "Added V16.9" block; three items struck as done, two signup lines annotated); §53.8 item 17 (G11 closed, the flag still open) |
+| Deploy posture | §49 (new current block; V16.8's stays as dated history) |
+| Tooling: the prompt ending, SQL run order, pushing, the new harnesses | §79 (added at its end) |
+
+**SWEEP STATUS (applied 1 November 2026):** _pattern hits: 30 — stale and corrected in place: 6; left as history: 17; not
+stale (a different meaning): 7; outstanding: 0. Found outside the patterns and corrected: 15 (21 corrections in all)._
+- **Pattern 1** (`Less time booking|more time cooking`): 4 found.
+  - 2 corrected: §38's canonical wording and its "Shipped in both slots" line.
+  - 2 left as history: the V9.9 changelog, and §48's dated OBSERVED line about the tagline's colour.
+- **Pattern 2** (`seedDemoOrders|DemoWelcome|DemoLoopComplete|busy Saturday|busy service`): 11 found.
+  - 1 corrected: §56 "re-seeds via `seedDemoOrders`".
+  - 10 left as history: the V13.1, V13.5 and V13.6 changelogs (6), the §35 render anecdote, §35.z's dated instance (2), and
+    the capability-parity fix record.
+- **Pattern 3** (`/demo/<ref>.*dashboard|dashboard/<token>`): 3 found, none in a demo context (the native navigation
+  root cause, two PostHog lines in §48), so not stale. The demo redirect is an out-of-pattern find (§55).
+- **Pattern 4** (`signup_closed|Save my menu`): 2 found.
+  - 1 corrected: §53.8 item 17 (with the OBSERVED client flag; still open).
+  - 1 left as history: the V13.1 changelog.
+- **Pattern 5** (`legal pages stay en-GB|legal.*English only|en-GB only`): 2 found, both "en-GB only" in a different
+  meaning (Pay at the truck wording; a language base's last resort), so not stale. The legal-language claims are
+  out-of-pattern finds (§83.8, §84.2).
+- **Pattern 6** (`600 s|600s`): 2 found, both token lifetimes (Supabase 3600 s; the federation token), so not stale. The
+  manual never recorded the deep check's 600 s limit or the whole-answer rejection, so C8 had nothing to strike; §86.14
+  states the behaviour now.
+- **Pattern 7** (`is_expiry_fallback`): 1 found, corrected (§81.2).
+- **Pattern 8** (`14 codes|'RON'\)`): 5 found.
+  - 1 corrected: §82.6.
+  - 4 left as history: the V16.3 changelog, an older §49 posture, §82.2 and §83.1 (dated live states).
+- **Pattern 9** (`'uk14', 'us9', 'anz', 'ca'\)`): 0 found. The four-set lists are out-of-pattern finds (§76.6, §83.4).
+- **Pattern 10** (`plan with no monthly fee`): 0 found. The Terms §4 summary is an out-of-pattern find (§43).
+- **Found outside the patterns, corrected (15):**
+  - §55: `/demo/<ref>` redirects to `/try/<slug>`;
+  - §55: the V13.6 browser flags (retired with DemoWelcome / DemoLoopComplete);
+  - §56: T2's "DemoUpload navigates the visitor to the dashboard … seeded";
+  - §56: "Seeded vs visitor-placed orders … `/api/orders/submit` requires it";
+  - §83.8 and §84.2: legal pages, sign-in and account emails stay en-GB;
+  - §76.6 and §83.4: four allergen sets;
+  - §81.1: "When any plan ends … Pay as you go";
+  - §43: Terms §4 "one plan has no monthly fee" / "the no-fee plan";
+  - §27: the V11.14 sender item (struck as done);
+  - §27: "Terms and privacy in each country's language" (struck as done);
+  - §27: "Outside Europe (no rows yet)" (struck as done);
+  - §27: the two "BOTH `SIGNUP_PUBLIC` VARIABLES" lines (annotated, not struck: OBSERVED client flag unset).
+
+**OBSERVED WHEN APPLYING (1 November 2026, about 17:30–18:30 UTC — where the live system differs from the delta or adds to it):**
+- ⚠️ **All eight new countries are switched ON, the UAE included.** The delta and world-countries-1 say they were built
+  switched off and that the UAE stays off (stated, 31 Oct). Live: `enabled = true` for BR, HK, JP, MY, MX, TH, AE, SG,
+  written one by one through Admin between 17:25:36 and 17:25:55 UTC on 1 Nov (`updated_by` set), four minutes after the
+  deploy commit. All 44 rows are enabled. `/ae` answers 200 in Arabic, `dir="rtl"`. Recorded as live; whether the UAE
+  is meant to be on is a question for Dominic (§27 Added V16.9).
+- ⚠️ **The client signup flag is not in the build being served.** The delta says both variables are set and deployed
+  (stated, 1 Nov). Live: the demo order page's chunk `/_next/static/chunks/8dcef0fd48703d1a.js` reads
+  `("true"===i.default.env.NEXT_PUBLIC_SIGNUP_PUBLIC||o)&&!!(e||r)`, unresolved — the sign demo-2 used to show it was
+  unset at build. The build is current (world-countries-3's Terms §3 and Mexico wording are live). So the demo still
+  offers "Save my menu". The server flag could not be checked: a validation-failing `POST /api/signup` was refused by the
+  session's permission rules, so `SIGNUP_PUBLIC` is UNVERIFIED.
+- **Migrations:** 20261052, 20261053, 20261054 and 20261055 are all run (every column, the `demo-menus` bucket, the
+  `demo_events` table, `time_up`, the two guard triggers, 24 `plan_prices` rows for the eight, the five with
+  `platform_fee_allowed = false`). **U1 is not visible** (`check_requested_at` null for Clover and Lightspeed): either
+  not run, or already consumed by a deep run.
+- **The 31 Oct quick-pass cause is confirmed:** the run's notes give "Schemas contains too many parameters with union
+  types (17 parameters …) (limit: 16 …)". One batch is in `pass_batches_reread`. The 1 Nov pass checked 40 for $0.02.
+- **`deep_country` is CZ** (it was DE at V16.8); `deep_requested_at` is still 29 Oct 13:32 UTC.
+- **Findings:** 1,262, all pending.
+- **Demo:** 3 `demo_sessions` (the newest 27 Oct), none with a visitor email; `demo_events` 0 rows; no stored menu files;
+  no operator created since 1 Nov.
+- **Git:** `origin/main` = HEAD = `2b625a66` "additional countries" (1 Nov 17:21 UTC), clean; all eight source reports
+  are committed.
 
 ## V16.8 — 29 October 2026 — **AUTOMATIC DATA IMPORTS, A RED CROSS FOR A FAILED LOGIN, DEEP CHECKS COUNTRY BY COUNTRY, THE BIG POS PLAYERS IN EVERY COUNTRY, ONE MASTER LIST OF COMPARISON FEATURES, A COST BLOCK PEOPLE CAN READ, AND A QUICK PASS OF EVERY COUNTRY FOR A FEW DOLLARS**
 
@@ -16343,13 +16475,14 @@ and markup**.
 
 ## 🔴 V11.14 — added 13 August 2026 (night)
 
-- 🔴 **`EMAIL_FROM_ADDRESS` IS UNSET — SELF-SERVE SIGNUP SILENTLY COMPLETES WITHOUT SENDING THE
+- ~~🔴 **`EMAIL_FROM_ADDRESS` IS UNSET — SELF-SERVE SIGNUP SILENTLY COMPLETES WITHOUT SENDING THE
   ACTIVATION LINK.** The signup mailer falls back to `hello@hatchgrab.com`, which the code's own comment
   says Brevo will reject as unverified, and the send result is checked **only to `console.error` it** —
   never thrown. `/api/signup` returns `{ ok: true }` with no email delivered and nothing surfaced. The
   operator sees a successful signup and dead-ends. ⚠️ **NEITHER `SIGNUP_PUBLIC` VARIABLE MAY FLIP UNTIL
   THIS IS FIXED.** The admin route is unaffected — it hand-rolls its own send from the verified
-  `villagefoodie.co.uk` address.
+  `villagefoodie.co.uk` address.~~ ✅ **Done V16.9 — hatchgrab.com is verified in Brevo (stated, 31 Oct),
+  so the default `hello@hatchgrab.com` delivers; `EMAIL_FROM_ADDRESS` is optional (§43).**
 - 🔴 **The temp-password chain.** In priority order: **stop emailing the password** (the console already
   shows it behind a copy button); swap `Math.random()` for `crypto.randomBytes`; make
   `must_change_password` a real server-side gate rather than one client-side redirect. An invite link
@@ -16565,7 +16698,7 @@ All three V11 blockers below are **still open**. Re-stated here only where V11.1
 
 - ~~**🔴 TRIAL NOMINATION.** Still no UI, no route, nothing writing `trial_expires_at`. Provisioning now writes plan `trial` rather than `demo`, which makes the eventual fix smaller; **it does not make this any less blocking**, because a NULL expiry grants the full trial set indefinitely. See the V11 entry below.~~ ✅ **Resolved V16.2 — the trial starts at signup:** `lib/provision-truck.ts` writes `trial_expires_at` = signup + `plans.trial_months`, end of day in the truck's zone (§81.1); admin can start or extend it. There is no nomination step by design.
 - **🔴 THE FOUR UNENFORCED FEATURE GATES.** `auto_accept`, `meal_deals`, `upsells`, `offline_protection` — declared in `lib/features.ts`, no `canAccess` call anywhere. **Unchanged.** *(⚠️ **CORRECTED V11.16 — "four" is a substantial understatement. The live count is 23 declared, 6 gated, 17 UNGATED**, and these four are a subset. See the V11.16 block at the top of §27 for the counting method, which changes the answer.)*
-- **🔴 BOTH `SIGNUP_PUBLIC` VARIABLES.** The server-side gate and the build-time client flag must flip together. **Unchanged.**
+- **🔴 BOTH `SIGNUP_PUBLIC` VARIABLES.** The server-side gate and the build-time client flag must flip together. **Unchanged.** ⛔ **V16.9:** both set in Vercel Production (stated, 1 Nov), but the live build still reads the client flag unresolved (OBSERVED 1 Nov, §49). Not struck until a build with it set is served.
 
 ### 🔴 THE EXPIRY CLIFF — new, and it has dates
 
@@ -16589,7 +16722,7 @@ All three V11 blockers below are **still open**. Re-stated here only where V11.1
 - ~~**🔴 TRIAL NOMINATION DOES NOT EXIST.** No UI, no route, and nothing in application code writes `trial_expires_at` except `lib/provision-truck.ts` setting it to `null` and an admin editing it by hand in the console. There is no nomination screen, no "start my trial" action and no downgrade automation (the only scheduled task is `demo-cleanup`). **Consequence: every self-serve operator is provisioned on plan `demo`, which carries the full TRIAL feature set and never expires — so they have the entire paid product, permanently, for nothing.** The failure mode is one-directional (nobody is over-charged), which is why the wizard already carries copy promising the operator chooses which event starts their trial. That copy is knowingly ahead of the build and is marked as such at its definition in `lib/settings-copy.ts`. **Until nomination ships, opening signup gives the product away.**~~ ✅ **Resolved V16.2 — the trial starts at signup:** `lib/provision-truck.ts` writes `trial_expires_at` = signup + `plans.trial_months`, end of day in the truck's zone (§81.1); admin can start or extend it. There is no nomination step by design.
   > ⚠️ **UPDATED V11.1 — STILL BLOCKING, for a narrower reason.** Provisioning now writes **`trial`**, not `demo` (§13), so the plan value is one a nomination step could act on and the truck is no longer parked on a plan nothing will ever expire. **Everything else in this item stands unchanged: there is still no nomination UI, no route, and nothing that writes `trial_expires_at`.** A NULL expiry grants the full trial set indefinitely (§4), so the practical consequence — an operator holding the whole paid product for nothing, forever — **has not changed at all.** What changed is that the fix is now a nomination screen rather than a nomination screen plus a plan migration.
 - **🔴 FOUR FEATURE GATES ARE DECLARED AND ENFORCED NOWHERE.** `auto_accept`, `meal_deals`, `upsells`, `offline_protection` — in the `Feature` union and the plan sets, with no `canAccess` call anywhere. A Starter truck can use all four today, and provisioning now turns `auto_accept` ON for every new truck. §13.
-- **🔴 BOTH `SIGNUP_PUBLIC` VARIABLES.** The server-side one is the real gate on `/api/signup`; `NEXT_PUBLIC_SIGNUP_PUBLIC` only chooses the client path and is baked at BUILD time. Flipping one without the other either opens the API with no UI or shows a UI the API refuses. ⚠️ An admin session already bypasses the client flag. §13.
+- **🔴 BOTH `SIGNUP_PUBLIC` VARIABLES.** The server-side one is the real gate on `/api/signup`; `NEXT_PUBLIC_SIGNUP_PUBLIC` only chooses the client path and is baked at BUILD time. Flipping one without the other either opens the API with no UI or shows a UI the API refuses. ⚠️ An admin session already bypasses the client flag. §13. ⛔ **V16.9:** set in Vercel Production (stated); the client flag is not in the live build (OBSERVED 1 Nov, §49).
 
 ### Found, reported, not fixed
 
@@ -18051,9 +18184,10 @@ question; the US storefronts; a US testimonial; SMS opt-in. New:
 - 🔴 **Run `20261038`** (the 14 short names): those countries are live with English short names (§84.1).
 - ~~**France's row** (france-1 block B, `20261034`) is still not run; France is the one built language with no live country
   (§84.1).~~ ⛔ Corrected V16.7 — France's row exists and is switched on (OBSERVED 29 Oct: written 23 Oct 21:21 UTC by dominic@hatchgrab.com, fr-FR, EUR, 3 `plan_prices` rows; `/fr` answers 200 and is in the sitemap).
-- **Outside Europe** (no rows yet): Singapore, Hong Kong, Malaysia, UAE (English first), then Brazil, Mexico, Japan,
-  Thailand; India and Indonesia are Stripe invite-only.
-- **Terms and privacy in each country's language** (Dominic, 23 Oct).
+- ~~**Outside Europe** (no rows yet): Singapore, Hong Kong, Malaysia, UAE (English first), then Brazil, Mexico, Japan,
+  Thailand; India and Indonesia are Stripe invite-only.~~ ✅ Done V16.9 — all eight have rows, each in its own language
+  (world-countries-1; §82.11); OBSERVED 1 Nov: all eight are switched on (§49). India and Indonesia stay excluded.
+- ~~**Terms and privacy in each country's language** (Dominic, 23 Oct).~~ ✅ Done V16.9 — all three legal documents in all 28 language bases, English governing (§43).
 - **Contact page:** replace the Tally form (UK wording) with HatchGrab's own contact form that emails Dominic directly, no
   third party, in each language (Dominic, 23 Oct).
 - **Second languages per country:** fr-BE, fr-CH, it-CH, de-LU, sv-FI, Russian (EE, LV), Hungarian (SK, RO),
@@ -18179,6 +18313,44 @@ corrected).*
 
 **Accounts**
 - **Google accounts:** Dominic has three. Consolidate the business tools under one (stated: he wants to tidy up later).
+
+## Added V16.9 — the demo, signup, the checker, eight countries and every user's language (1 November 2026)
+
+- 🔴 **Is the UAE meant to be live?** OBSERVED 1 Nov: all eight new countries were switched on through Admin at 17:25 UTC,
+  the UAE included, against the stated "not sure i want to go live on the UAE until i understand its laws a little
+  more" (31 Oct). If not, switch AE off in Admin › Countries. The RTL conversion below was deferred on the basis that it
+  stays off.
+- 🔴 **The client signup flag is not in the live build** (OBSERVED 1 Nov, §49): redeploy Production without the build
+  cache, then check that a demo shows "Start free for 3 months, keep my menu". Confirm `SIGNUP_PUBLIC` the same way
+  (a new address no longer gets 403).
+- **FAQ workstream — next (stated, 1 Nov: "want to move to FAQ's", in a fresh chat).** The public landing FAQ plus an admin
+  page for editing it (parked since 21 Oct); in every language per 35.an-20.
+- **Subscription billing (Stripe Billing) for Pro and Unlimited in every country** (recommended next big build). No paid
+  plan is billed anywhere yet. The missed-payment rule for the Unlimited-only countries (world-countries-2 G1) goes with
+  it.
+- **Own contact form replacing Tally,** in every language, emailing Dominic directly — mockup first (decided, legal-
+  languages-1 D5). Supersedes the 23 Oct line above.
+- **Privacy wording tidy not yet done (demo-2d was never run):** the demo section still says "We keep anonymous counts";
+  it should say "simple counts", and the two consecutive sentences starting "If you sign up" could be merged. Now needs
+  all 28 translations in the same change (the drift harness).
+- **Switch-on follow-through per new country** (world-countries-1 §6, §9): the Stripe checks — cross-border onboarding
+  enabled, `defaults.currency`, Apple Pay domain, manual capture, Terminal / Tap to Pay availability (F7). Japan and Hong
+  Kong first; then BR, MX, MY, SG, TH (Thailand may need Stripe sales). ⚠️ All eight are already live (OBSERVED 1 Nov),
+  so these checks now come after the switch-on, not before it.
+- **The RTL logical-property conversion** (~430 physical left/right classes in shared components): deferred until the
+  UAE is meant to be live (decision, 1 Nov).
+- **Local payment methods:** Pix, boleto, OXXO, SPEI, Konbini, PayPay, PayNow, GrabPay, FPS, AlipayHK, WeChat Pay, FPX,
+  Touch 'n Go, PromptPay, TrueMoney — with BLIK and the other local wallets already listed.
+- **Points to confirm locally (world-countries-2 G3)** and Japan's one-screen confirmation rule (G4) — no action unless
+  the basket sheet changes.
+- **The three sweep failures that also fail at HEAD:** canada-1 ("postal code (not ZIP)"), schedule-graphics-places ("the
+  Feature gates the tab…"), europe-languages-1 ("de-CH: no ß" in the comparison namespace). Fix them so a real failure
+  can't hide behind them.
+- **`BREVO_API_KEY` as a GitHub secret** for the checker's run email (optional; GitHub › Settings › Secrets and variables ›
+  Actions; never in chat).
+- **U1** (Clover and Lightspeed first in the deep share): not visible live (OBSERVED 1 Nov); run it if they have not been
+  checked for DE.
+- **Half-yen in event pricing** (F6). The en-SG / ja-JP small overrides are done.
 
 # 28. Anti-scraping and rate limiting (V6.3)
 
@@ -21570,6 +21742,22 @@ of this manual).
 - **35.an-15 The quick pass reads only what the public page shows (V16.8).** Hidden features are for deep checks.
 - **35.an-16 Every API request stays under the model's long-context price threshold (V16.8),** where the pass sets it:
   100,000 input tokens for Haiku 5.5.
+- **35.an-17 No platform fee without `platformFeeOn(country)` (V16.9).** No code sends `application_fee_amount` (or computes
+  the platform fee) without asking it; `platform_fee_allowed = false` wins over everything else.
+- **35.an-18 A plan is shown only where its `plan_prices` row is offered (V16.9),** and a country can be switched on only
+  if its trial-end plan is offered there (`plan_prices_world_guard`).
+- **35.an-19 JPY is zero-decimal (V16.9):** its minor unit is one yen on every amount path (Stripe, display, receipts,
+  PDFs, emails, CSV, apps).
+- **35.an-20 Every user sees only their own language (V16.9)** on every page and in everything sent to them; admin pages
+  are the only English-only surface.
+- **35.an-21 English legal text governs, and translations move with it (V16.9):** an English legal edit is incomplete
+  until every translation is redone and the drift harness passes.
+- **35.an-22 No dashboard token in a public URL (V16.9).** The demo is reached by slug (`/try/<slug>`).
+- **35.an-23 Demo data dies with the demo (V16.9):** the email, the stored menu file and the demo go together; the privacy
+  text and the retention constants are tied by a drift check.
+- **35.an-24 `dir="rtl"` only on Arabic pages (V16.9);** every other page has no `dir` attribute.
+- **35.an-25 The checker exits non-zero only for a whole-stage failure (V16.9);** a timed-out check keeps its finished
+  groups.
 
 ## 🔴 iOS PUSH ENTITLEMENT — the §36 audit CONFIRMED, then fixed (V11.4)
 
@@ -24624,15 +24812,18 @@ Three elements were removed from the source by erasing regions of the raster mas
 
 ⚠️ **There is no copy/voice section elsewhere in this manual, so brand copy is recorded here** rather than in a new section of its own.
 
-**Canonical wording — two lines, full stops:**
+~~**Canonical wording — two lines, full stops:**~~ ⛔ **Corrected V16.9 — the tagline is retired** (stated, 31 Oct: it
+does not rhyme outside English, "perhaps its better to remove from all for consistency"). It was removed from the hero,
+every footer, the share card (now the logo alone) and every language's messages (world-countries-1 §0). The lines below
+are history.
 
-> Less time booking.
-> More time cooking.
+> ~~Less time booking.~~
+> ~~More time cooking.~~
 
-Shipped in both slots as `Less time booking.<br />More time cooking.`
+~~Shipped in both slots as `Less time booking.<br />More time cooking.`~~
 
 - **H1** stays the descriptor — *"The ordering system built for food trucks."* First thing seen; states the category. *(Verified in code: the H1 is exactly this, with "food trucks." in the orange accent span.)*
-- **Hero subhead** and **footer** both carry the tagline, **identically**.
+- ~~**Hero subhead** and **footer** both carry the tagline, **identically**.~~ ⛔ Corrected V16.9 — neither carries a tagline; the gap from the headline to the button is 1.8rem on laptop and desktop (world-countries-1 §0).
 
 **Why "Spend" was dropped.** The line works by antithesis — *Less* against *More* in matched clauses of identical shape. A leading verb breaks the parallel before it starts, and nothing is lost because the reader supplies it. With "Spend" it is a sentence; without, it is a slogan.
 
@@ -26297,8 +26488,10 @@ above), so this wants a **proper pass over the terms**, not a paragraph inserted
 ## Terms §4 and the terms dates (V16.2 — 20 October 2026)
 
 - **§4 "Plans, fees and trials" rewritten:**
-  - names no plan, price or trial length (all data); one plan has no monthly fee; the trial length is shown on the site;
-  - a truck moves to the no-fee plan when a trial or plan ends or a payment is 7 days late;
+  - names no plan, price or trial length (all data); ~~one plan has no monthly fee;~~ the trial length is shown on the site;
+  - ~~a truck moves to the no-fee plan when a trial or plan ends or a payment is 7 days late;~~ ⛔ Corrected V16.9
+    (world-countries-2, 1 Nov) — a truck moves to "the plan shown for its country on our pricing page, which in most
+    countries has no monthly fee" when a trial or plan ends or a payment is 7 days late; still no plan named;
   - cancel by contacting us or in the service;
   - "We are not registered for VAT";
   - "we will remind you in the app before your trial ends";
@@ -26347,6 +26540,68 @@ above), so this wants a **proper pass over the terms**, not a paragraph inserted
   - the FI wording (Finland has no fixed phrase);
   - the European terms section's open points (europe-settings §11).
 - **Terms and privacy pages are English only**; translating them is backlog (§27).
+
+## Signup and email (V16.9 — 31 October – 1 November 2026)
+
+- **hatchgrab.com is verified in Brevo (stated, 31 Oct).** `lib/email-signup.ts` sends from
+  `EMAIL_FROM_ADDRESS || hello@hatchgrab.com`, so the default now delivers; setting `EMAIL_FROM_ADDRESS` is optional.
+- **Why Brevo rather than sending directly (planning chat, 31 Oct; Dominic kept Brevo):** a mailbox's SMTP is capped and
+  meant for people, and a self-run mail server is impractical on Vercel and lands in spam. Brevo gives trusted sending
+  signed for the domain, a delivery log (which would have caught the rejected signup emails), bounce/complaint
+  suppression, and the unsubscribe handling the demo's tips tickbox needs before any such email is sent.
+- **`SIGNUP_PUBLIC` and `NEXT_PUBLIC_SIGNUP_PUBLIC` = `true` in Vercel Production (stated: "vercel is set").** The server
+  flag is read at request time by `/api/signup`; the client flag is baked in at **build** time, so a redeploy without the
+  build cache is part of switching it on. ⚠️ **OBSERVED 1 Nov: the build being served still reads the client flag
+  unresolved** (§49), so the demo still offers "Save my menu". The server flag is UNVERIFIED.
+- **Account emails** (password reset, change email, resend verification) are in the operator's language
+  (`localeForOperator`: the truck's country, else the visitor's, else en-GB); the reset link carries `&lang=`
+  (legal-languages-1 §3).
+- **The competitor checker's own run email** is skipped because the GitHub secret `BREVO_API_KEY` is not set (31 Oct
+  log). Dominic may add it (GitHub › Settings › Secrets and variables › Actions); never in chat.
+
+## The demo in the Privacy Policy (V16.9 — demo-2b, demo-2c, 31 October 2026)
+
+- **Where:** the end of section 5, "If you visit our websites", as "**If you try the HatchGrab demo**": the email and why
+  (legitimate interest for the follow-up; consent for tips and news), the menu sent to Google's Gemini service and kept
+  privately, deletion at 24 hours / 14 days / up to 30 days after a signup claim, counts that "once your demo is
+  deleted … can no longer be linked to you", outreach demos 30 days with no email.
+- **Matching lines elsewhere (demo-2c):** "Cookies and browser storage" adds "while you try the demo, which demo orders you
+  placed"; section 7 adds "**Demo data:** 24 hours, or 14 days …; up to 30 days if you sign up from it, or for demos we
+  prepare for a food truck we have contacted"; "Product analytics" adds "It does run on the HatchGrab demo, which shows
+  a sample kitchen screen" (PostHog initialises on `/try/…` and the demo order page, cookieless).
+- **Dates:** `PRIVACY_UPDATED` '31 October 2026'; `TERMS_VERSION` moved to '2026-10-31' with it (then '2026-11-01',
+  world-countries-2). The drift check in `scripts/demo-2.cjs` §10 ties the wording to the constants.
+- **Still to tidy** (demo-2d was never run): "We keep anonymous counts" → "simple counts", and the two consecutive "If you
+  sign up" sentences (§27 Added V16.9).
+
+## The legal documents in every language (V16.9 — legal-languages-1, world-countries-3, 1 November 2026)
+
+- **Rule (stated, 31 Oct):** "a user should always only see their language no matter what page they are on" (35.an-20).
+- **The Privacy Policy, Terms and Country-specific terms are translated** into all 28 language bases, at
+  `/<country>/privacy`, `/<country>/terms` and `/<country>/country-terms` (`app/[country]/(legal)/…`; files
+  `content/legal/<base>/<file>`). Regional locales read their base (de-AT/de-CH/de-LI → de-DE, es-MX → es-ES, nl-BE →
+  nl-NL, el-CY → el-GR, fr-LU → fr-FR); de-CH and de-LI get ß → ss.
+- **The English (en-GB) version governs** and stays at `/privacy`, `/terms`, `/country-terms`, reachable from every
+  country. Each translation says so in one line at the top, linking to it. An English-speaking or switched-off country's
+  address redirects to the English page.
+- **Dates:** a translation shows the English document's own date in the local format (the `{{LAST_UPDATED}}` token);
+  translating never moves `PRIVACY_UPDATED` or `TERMS_VERSION`.
+- **Every link to a legal document** asks `lib/legal.ts` `legalPath(doc, { country, locale })` — English returns the old
+  address, so English pages are byte-identical. Signup's consent links point at the visitor's own language.
+- **The drift harness** (`scripts/legal-languages-1.cjs`, 220): each translation is stamped with the sha256 of its English
+  file and compared for structure, numbers, links, addresses and processors. **Any English legal edit fails it until every
+  translation is redone and re-stamped** (35.an-21).
+- **Decisions on legal-languages-1 §7 (1 Nov):** D1 fixed (Terms §3 now points at Section 10); D2 no native legal review
+  for now (consistent with the 18 Oct no-lawyers decision; revisit if a country brings real customers); D3 es-MX reads
+  the es-ES legal text — accepted; D4 the Canada line reworded ("a Canadian French version is not yet available"); D5 the
+  Tally contact form is to be replaced by HatchGrab's own form in every language — mockup first; D6 DNS field names stay
+  English.
+- **world-countries-3 (1 Nov), in English and all 28 translations:** Mexico's complaints authority is the Secretaría
+  Anticorrupción y Buen Gobierno (Secretariat of Anti-Corruption and Good Governance), which enforces Mexico's Federal Law
+  on the Protection of Personal Data Held by Private Parties (in force since 21 March 2025; verified from Hunton's write-
+  up in the planning chat); Terms §3 "Section 10"; Canada's Quebec line. No date moved (the documents and
+  `TERMS_VERSION` already carried 1 November 2026). OBSERVED live 1 Nov.
+- **The UAE section** names "the UAE Data Office" with no web address (unchanged).
 
 # 44. Commercial model — fees and pricing suppression (V11.4)
 
@@ -28432,7 +28687,63 @@ Recorded so they are not briefed again.
 - **Hero images** exist for /de, /at and /ch (from fixtures).
 - **Fonts:** Greek and Cyrillic pages load Noto Sans; Latin pages never request it (§84.7).
 
-# 49. Deploy posture (current at V16.8; earlier postures below, each dated)
+# 49. Deploy posture (current at V16.9; earlier postures below, each dated)
+
+### 🔴 DEPLOY POSTURE AT V16.9 — EVERYTHING COMMITTED AND PUSHED; MIGRATIONS 20261052–20261055 RUN; ALL EIGHT NEW COUNTRIES SWITCHED ON; THE CLIENT SIGNUP FLAG NOT IN THE LIVE BUILD (1 November 2026)
+
+*Replaces the V16.8 posture below as the current one. It and the earlier postures stay as dated history. Every line is
+OBSERVED on 1 Nov 2026, about 17:30–18:30 UTC, unless marked STATED.*
+
+- **STATED:** "everything is deployed" (Dominic, 1 Nov); hatchgrab.com verified in Brevo (31 Oct); `SIGNUP_PUBLIC` and
+  `NEXT_PUBLIC_SIGNUP_PUBLIC` set to `true` in Vercel Production (1 Nov); migrations 20261054 and 20261055 run before the
+  deploy.
+- **Git (after `git fetch`):**
+  - `git log origin/main -1` = HEAD = `2b625a66` "additional countries" (1 Nov 17:21 UTC); `git status` is clean.
+  - **Commits since V16.8 (`c7242ad8`), all pushed:**
+    - `4492717b` "compete fix" (31 Oct 19:50 UTC): DemoWelcome, DemoLoopComplete and `scripts/demo-welcome-open.cjs` deleted;
+    - `3240c536` "competitor check 8" (31 Oct 19:50): demo-2, demo-2b, demo-2c and competitor-check-8, with 20261052 and
+      20261053;
+    - `2b625a66` "additional countries" (1 Nov 17:21): world-countries-1, -2, -3 and legal-languages-1, with 20261054 and
+      20261055.
+  - **Which commit Vercel serves:** the newest — world-countries-3's wording (Terms §3 "Section 10", Mexico's Secretaría,
+    Canada's line) is live on `/terms` and `/country-terms`.
+- **Public (curl):**
+  - `/uk` 200, no tagline;
+  - `/fr/privacy` 200, `<html lang="fr-FR">`, title "Politique de confidentialité — HatchGrab", "Dernière mise à jour :
+    31 octobre 2026", and the line "Ceci est une traduction. En cas de divergence avec la version anglaise, la version
+    anglaise prévaut.";
+  - `/try/<a slug that does not exist>` 200 with `<meta name="robots" content="noindex, nofollow">`;
+  - `/ae` 200, `<html lang="ar-AE" dir="rtl">`;
+  - `/signup` 200 (the form renders);
+  - ⚠️ **the client signup flag:** the demo order page's chunk `8dcef0fd48703d1a.js` reads
+    `("true"===i.default.env.NEXT_PUBLIC_SIGNUP_PUBLIC||o)&&!!(e||r)` — unresolved, so the flag was **not set when this
+    build was made**, and the demo offers "Save my menu";
+  - **not checked:** `POST /api/signup` with an invalid body (the request was refused by the session's permission rules),
+    so `SIGNUP_PUBLIC` is UNVERIFIED.
+- **Migrations:**
+  - **20261052 run:** `demo_sessions.visitor_email`, `email_given_at`, `marketing_opt_in`, `marketing_opt_in_at`;
+    `demo_cleanup_log.files_deleted`; `demo_events` (0 rows); bucket `demo-menus` (private, 10,485,760 bytes,
+    `image/*`, `application/pdf`, `text/plain`).
+  - **20261053 run:** `deep_time_limit_seconds` (1800), `pass_batches_reread` (1 batch), `competitors.deep_progress` (none
+    in progress), and `time_up` in `competitor_check_runs_stopped_reason_check`.
+  - **U1 not visible:** `check_requested_at` is null for Clover and Lightspeed.
+  - **20261054 and 20261055 run:** `platform_fee_allowed`, `offered`, `is_trial_end`; the currency CHECK lists 22 codes,
+    the allergen CHECK 7 sets, and `platform_fee_allowed OR NOT platform_fee_enabled`; triggers
+    `country_settings_world_guard` and `plan_prices_world_guard`; 24 `plan_prices` rows for the eight (132 in all);
+    `platform_fee_allowed = false` for BR, MX, MY, SG, TH; in those five Pay as you go and Pro not offered and Unlimited
+    the trial-end plan.
+- **`country_settings`:** 44 rows, **all enabled.** ⚠️ **All eight new rows are switched on** (BR, HK, JP, MY, MX, TH, AE,
+  SG, written through Admin between 17:25:36 and 17:25:55 UTC on 1 Nov). The delta and world-countries-1 say they were
+  inserted off and that the UAE stays off (§27 Added V16.9). No truck is in any of the eight yet.
+- **`competitor_check_settings`:** not paused; $8 a day, $90 a month; 15 deep a day; `deep_country` **CZ**
+  (`deep_requested_at` 29 Oct 13:32 UTC); `pass_batch` `msgbatch_019cK8HB6b81Ze3WSeAa5grh` (submitted 1 Nov 09:08 UTC).
+- **`competitor_check_runs`:** 11 in all; October $3.1851, November so far $1.9241.
+  - 31 Oct 08:23: `pass` `error`, 0 checked, $0 — the 30 Oct batch, every item refused for the 17-union schema (notes);
+  - 31 Oct 08:23: `deep` `done`, 7 checked, $1.863; 10:03: `routine` `done`, 4, $0.184;
+  - 1 Nov 09:08: `pass` `done`, 40 checked, $0.0196; 09:08: `deep` `done`, 15, $1.70; 10:36: `routine` `done`, 4, $0.2045.
+- **Findings:** 1,262, all pending.
+- **Demo:** 3 `demo_sessions` (newest 27 Oct), none with a visitor email or the tips tick; no stored menu files; no
+  operator created since 1 Nov.
 
 ### 🔴 DEPLOY POSTURE AT V16.8 — EVERYTHING PUSHED; MIGRATIONS 20261045–20261051 RUN; DATA IMPORTED; THE FIRST NIGHTLY RUN REFUSED BY THE API (30 October 2026)
 
@@ -29438,7 +29749,7 @@ geocoded to a town centroid — six sit on `NR1 1AA`.
 | 14 | **The day-30 reclaim on an outreach demo** (§55) — the cleanup cron's claimed-but-abandoned sweep keys on `created_at < now − 30 days` while an outreach demo's `expires_at` is `created_at + 30 days` | 🔴 **OPEN — both predicates become true in the same hour, so there is no grace at all**, where the 14-day tier has 16 days of slack |
 | 15 | **`max-h-[85vh]`** (not `dvh`) on a KDS card modal | 🔴 **OPEN — pre-existing and shared with Gusto.** On mobile Safari `vh` is the *largest* viewport, so with the URL bar showing 85vh can exceed what is visible |
 | 16 | **The `??` fragment after `resolvePaidStep`** on the dashboard leaves the documented `activeEvent` fallback **inert** | 🔴 **OPEN — harmless today** (`setUpcomingEvents` is only called on a successful fetch, so the list cannot go transiently empty) **but it is a live line that does not do what the comment above it says** |
-| 17 | **`NEXT_PUBLIC_SIGNUP_PUBLIC` is not `'true'`** in at least one environment, so the demo banner offers "Save my menu" rather than signup — and onboarding-spec **G11** rides on the same flag | 🔴 **OPEN — Dominic WANTS prospects able to self-serve.** ⚠️ V11.14 blocks the flip until the signup sender is fixed; close G11 in the same change |
+| 17 | **`NEXT_PUBLIC_SIGNUP_PUBLIC` is not `'true'`** in at least one environment, so the demo banner offers "Save my menu" rather than signup — and onboarding-spec **G11** rides on the same flag | ~~🔴 **OPEN — Dominic WANTS prospects able to self-serve.** ⚠️ V11.14 blocks the flip until the signup sender is fixed; close G11 in the same change~~ ⛔ **Corrected V16.9 —** the sender is fixed (hatchgrab.com verified in Brevo, stated 31 Oct); **G11 is closed** (demo-2b: the button gets the same inputs on every surface); both variables are set in Vercel Production (stated 1 Nov). ⚠️ **OBSERVED 1 Nov: the live build still reads `NEXT_PUBLIC_SIGNUP_PUBLIC` unresolved**, so the deployed demo still offers "Save my menu"; the server flag is UNVERIFIED (§49). 🔴 Still open until a build with the client flag set is served. |
 | 18 | **§35.z's sweep** — "a returned value whose comment claims a guarantee" | 🔴 **OPEN — swept `lib/` only.** `peakPerSlot` was the one member found with no reader; `app/` was not swept |
 
 ---
@@ -29677,7 +29988,8 @@ flag** read by retention, branding and the first-open restart.
 session gate on it). `demo_sessions.public_ref` is the readable URL segment — `/demo/<name-slug>`, unique,
 random-suffixed on collision — and is a **LOOKUP KEY ONLY, NEVER AN ACCESS CREDENTIAL**. Dominic has
 accepted that it is guessable; `dashboard_token` remains the credential, and `/demo/<ref>` resolves one to
-the other server-side and redirects. That route **writes nothing**.
+the other server-side and redirects. ⛔ **Corrected V16.9 — it redirects to `/try/<slug>`, not the dashboard,** so no
+dashboard token ever appears in a public URL (demo-2; 35.an-22). That route **writes nothing**.
 
 **Branding.** `trucks.name` carries the real name; `logo_storage_path` is written from an allowlisted
 source (§14); `qr_code_style` is `branded` — and only once a logo has actually landed, so the branded
@@ -29694,13 +30006,16 @@ name and logo with no demo marking — reachable **only for signed-in users**, b
 any writer may extend it, none may shorten it. ⚠️ It is computed by **application code before the
 insert**, not by a DB default — a retention tier is a code change.
 
-**Demo flags are BROWSER state, not session state (V13.6).** `hg_demo_welcome_<token>` lives in
+~~**Demo flags are BROWSER state, not session state (V13.6).** `hg_demo_welcome_<token>` lives in
 **`sessionStorage`** and `hg_demo_seen_orders_<token>` in **`localStorage`**, both keyed on the dashboard
 token — which survives a rebuild, and is why both once described a board that no longer existed. Anything
 that changes what the board holds must go through `lib/demo-board-build.ts`, which owns both names and the
 replacement test, or the prospect is shown the wrong panel. 🔴 **A reviewer opening a demo to check it
 leaves nothing behind for the prospect**, because the welcome's state dies with the tab — that is the
-requirement the store choice exists to satisfy, and it is why the state is not on `demo_sessions`.
+requirement the store choice exists to satisfy, and it is why the state is not on `demo_sessions`.~~ ⛔ **Corrected
+V16.9 — DemoWelcome and DemoLoopComplete are retired (demo-2), and so are these two flags.** `lib/demo-board-build.ts`
+now holds the walkthrough's order keys and the visitor's email in the tab's `sessionStorage`, keyed by the demo's slug,
+and `forgetRetiredDemoFlags` clears the old flags on a restart. Still browser state, still never on `demo_sessions`.
 
 **Expiry is set at session creation and is monotonic.** `restartDemoService` does **not** extend it; a
 Create Demo re-provision (`touchDemoSession`) or `saveDemoEmail` does. A demo created on 12 September
@@ -29712,13 +30027,74 @@ promote uses, then applies the shadow `excluded: true`. 🔴 **Its failure polic
 on purpose:** it **never** deletes the operator's just-created truck, and records `linked` / `conflict` /
 `failed` on the session instead.
 
+## The demo, as rebuilt (V16.9 — demo-2, demo-2b, demo-2c, 30 October – 1 November 2026)
+
+*The landing demo and the outreach demo share this flow. Detail in `docs/demo-2-report.md`, `docs/demo-2b-report.md`,
+`docs/demo-2c-report.md`.*
+
+- **Decisions (stated, 30 Oct):**
+  - "keep it simple" — no "busy Saturday" scenario;
+  - on a phone, show the order screen, then after ordering the kitchen screen "with a popup or whatever best experience
+    is"; the laptop shows order and kitchen side by side;
+  - mockups: the Claude artifact "Demo walkthrough mockup" (Main = laptop, Phone = phone), not in the repo.
+- **Email first (stated):** "I might remove this later but really need to know who is doing the demo."
+  - "Your email" is required, after the menu fields and before "See sample menu"; the server checks the format again
+    **before** the 5-an-hour build limit, so a typo never spends a build.
+  - The optional "Send me occasional tips and news from HatchGrab" is consent-based and **unticked by default**; it is
+    stored with its time and nothing is sent yet.
+  - Stored on `demo_sessions`: `visitor_email`, `email_given_at`, `marketing_opt_in`, `marketing_opt_in_at` (a CHECK on
+    the email's shape). `visitor_email` is separate from `email` (Save my menu), so giving an address never extends the
+    demo by itself. The link is emailed once the build succeeds (`lib/demo-link-email.ts`, in the demo's language, with
+    `/try/<slug>` and the deletion date; never the token). **Outreach demos ask for no email.**
+- **The walkthrough (`/try/<slug>`, noindex):**
+  - **Step 1, the order page** (demo only): the banner "Demo · this is your menu, the way your customers will see it.
+    Nothing is charged and no emails are sent." and "Step 1 of 3 · Order like one of your customers". **A demo order needs
+    no email**, the name defaults to "Alex", a payment panel replaces the card step, and no email is sent.
+  - **Phone (< 1024 px):** after ordering, `/try/<slug>?view=kitchen` — the kitchen screen with a speech bubble ("Step 2
+    of 3", "Your order just arrived"), the order card with Start cooking → Ready, then a bottom sheet with "Start free for
+    3 months, keep my menu" and "Try another order".
+  - **Laptop (≥ 1024 px):** a three-step bar, the real order page in a phone frame on the left and the kitchen on the
+    right; after Ready, "Your order is ready — collect it at the truck" and a band with "Start free, keep my menu" /
+    "Order again".
+  - **Only the visitor's own orders show:** the order page keeps each new order's key in `sessionStorage`, and
+    `/api/demo/walkthrough` (keyed by slug) returns only those keys on that demo truck. Polling every 3 s plus a
+    postMessage from the framed order page; not Realtime, which would show every order on the truck.
+  - **No seeded orders anywhere:** not on a build, not on T1/T2, not on "Start a new service" (`lib/seed-demo-orders.ts`
+    is kept but no longer called). `DemoWelcome` and `DemoLoopComplete` are retired; `DemoModeBanner` stays one
+    component.
+  - **"Start free"** opens the existing signup wizard (`DemoGetStarted`) with the email pre-filled. With signup off, the
+    same place is the Save-my-menu path with its own label (never "Start free").
+- **Menus kept for Admin (stated):** a copy of each uploaded menu is visible in Admin and deleted when the demo deletes
+  itself. Bucket `demo-menus` (private, 10 MB, images/PDF/text), 60-second signed links; the sweep deletes the files and
+  logs `files_deleted` (`demo_cleanup_log`); deleting a demo truck deletes its files too.
+- **Retention:** 24 h without "Save my menu" (`RETENTION_NO_EMAIL_HOURS`), 14 days with it
+  (`RETENTION_WITH_EMAIL_DAYS`), outreach demos 30 days with no email (`RETENTION_OUTREACH_DAYS`), and a demo claimed by
+  a signup is kept up to 30 days (`CLAIM_GRACE_DAYS`) so its menu can move into the account. The sweep runs hourly
+  (`BATCH_LIMIT = 200`). The privacy text and these constants are tied by a drift check (`scripts/demo-2.cjs` §10).
+- **Signup carry-over:** `/api/signup` claims the demo by token **or by slug** (a slug claim takes only an unclaimed demo,
+  because a slug is more public than a token); `/manage/<token>?import=demo` then pre-loads the stored extraction.
+- **G11 closed (demo-2b):** the signup button gets the same inputs on every surface — the dashboard, the KDS (`isAdmin`
+  from `/api/auth/me`, fetched only on a demo, and `extractionSource`), the demo order page and the walkthrough
+  (`extractionSource`). A sample demo never calls a template menu "your menu".
+- **Admin › Demos (🧪 tab):** columns — created, landing/outreach, email, tips tick, country, truck name (the placeholder
+  hidden), items found, menu file (view/download), visitor ordered, finished walkthrough, started signup, signed up,
+  expires; filters by date and source; **ten funnel tiles** above the table (`build_started`, `build_ok`,
+  `build_failed`, `sample_used`, `menu_viewed`, `order_placed`, `cooking_started`, `ready_pressed`, `signup_started`,
+  `signup_done`; table `demo_events`, written server-side and awaited, a failed count logged once and never failing
+  the request).
+- **`/demo/<ref>` → `/try/<slug>`** (35.an-22).
+- **Migration `20261052_demo_2.sql`:** run by Dominic, "not 100% certain" (stated, 1 Nov). OBSERVED 1 Nov: run — the four
+  columns, `files_deleted`, `demo_events` (0 rows) and the bucket are all present.
+- **Harnesses:** `scripts/demo-2.cjs` (69, including §9 G11 and §10 the privacy drift check); `scripts/demo-2-screens.cjs`
+  (34, WebKit and Chromium at 390 and 1512; needs the dev server).
+
 # 56. Demo restart triggers — T1 (not live) and T2 (first open) (V13.1 — 14 September 2026)
 
 Both reuse `restartDemoService` (`lib/demo-restart.ts`, **triple-guarded** on the `demo-` prefix: the
 route checks the token, the route checks the resolved truck id, the library asserts it again). It deletes
 orders **before** events — `orders.event_id` is `ON DELETE SET NULL`, so the other order would leave every
 order dangling and still counted — clears `slot_capacity` and `production_slot_usage` **by truck, not by
-date**, re-provisions from `demoEventWindow(now)`, re-seeds via `seedDemoOrders`, and **never touches the
+date**, re-provisions from `demoEventWindow(now)`, ~~re-seeds via `seedDemoOrders`,~~ ⛔ Corrected V16.9 — seeds nothing (demo-2: the new service starts empty; `lib/seed-demo-orders.ts` is kept but no longer called), and **never touches the
 menu**.
 
 - **T1 — no live event.** `demoServiceEnded = isDemo && eventsLoaded && !demoBoardLive`. Inverted in
@@ -29730,15 +30106,20 @@ menu**.
   null`, in the SQL rather than in a caller.
 - `demoEventWindow(now)` floors the start to the half hour (0–29 min back, **never ahead**) and ends
   `+3h`, clamped to 23:59. 🧪 built 09:05 → 09:00–12:00; first open 10:40 → **10:30–13:30**.
-- **T2 does not apply to anonymous landing-page demos:** `DemoUpload` navigates the visitor to the
+- **T2 does not apply to anonymous landing-page demos.** ~~`DemoUpload` navigates the visitor to the
   dashboard the instant `/api/demo` answers, so the board was seeded against the clock they are reading it
-  on. Restarting would delete the orders they just watched appear.
+  on. Restarting would delete the orders they just watched appear.~~ ⛔ Corrected V16.9 — the landing demo sends
+  the visitor to `/try/<slug>`, never the dashboard, and nothing is seeded. Opening `/try/<slug>` on an ended service
+  starts a new, empty one (demo-2; §55).
 - **No session row → T2 never fires**, deliberately: without a row nothing can record that the first open
   happened, so a restart would repeat on **every** load.
 - 🔴 **NEITHER TRIGGER MAY BE A GET SIDE EFFECT** — link scanners fetch URLs at send time. Both are
   client-side POSTs after load. `/api/demo/return` remains a GET that writes and is on neither path.
-- **Seeded vs visitor-placed orders are distinguishable** by `customer_email IS NULL` — the seeder never
-  populates it and `/api/orders/submit` requires it. A restart deletes both; accepted, it is a demo.
+- ~~**Seeded vs visitor-placed orders are distinguishable** by `customer_email IS NULL` — the seeder never
+  populates it and `/api/orders/submit` requires it. A restart deletes both; accepted, it is a demo.~~ ⛔ Corrected
+  V16.9 — there are no seeded orders, and a demo order needs no email: the name defaults to "Alex", a payment panel
+  replaces the card step, and no email is sent. The walkthrough tells the visitor's own orders apart by the order keys
+  their browser holds (`sessionStorage`), never by email. A restart deletes them; accepted, it is a demo.
 - ⚠️ **The KDS holds its event and does not follow.** `activeEvent` is a held `selectedEventId` with no
   fallback chain, deliberately — a status- or time-keyed fallback would take a cook's unserved orders off
   an unattended screen. A restart therefore strands an already-open KDS. V13.1 added an **`isDemo`-gated**
@@ -33044,7 +33425,8 @@ languages in §77.*
 
 ## 76.6 Allergens by country
 - **OBSERVED** `lib/allergens.ts` holds ~~two lists~~ ⛔ Corrected V16.3 — ~~three lists (the third is `anz`)~~ ⛔ Corrected V16.4 —
-  four lists (uk14, us9, anz, ca — Health Canada's 13); the DB CHECK allows all four (OBSERVED 22 Oct). Whether the
+  four lists (uk14, us9, anz, ca — Health Canada's 13); the DB CHECK allows all four (OBSERVED 22 Oct). ⛔ Corrected V16.9 —
+  seven: + `jp` (the CAA list), `br` (ANVISA) and `codex`; the CHECK allows all seven (OBSERVED 1 Nov; §82.11). Whether the
   allergen card may stand alone is a per-country setting, `allergen_card_only_allowed` (§83.4):
   - **UK 14:** verbatim, in order;
   - **US 9:** Milk, Eggs, Fish, Crustacean shellfish, Tree nuts, Peanuts, Wheat, Soybeans, Sesame.
@@ -33463,6 +33845,32 @@ revisit when a non-English language is added.
 
 ---
 
+## 77.12 Every user in their own language (V16.9 — legal-languages-1, 1 November 2026)
+
+- **Rule (stated, 31 Oct):** "a user should always only see their language no matter what page they are on." Admin pages
+  (Dominic only) stay English (35.an-20).
+- **What was English and now is not:**
+  - signup, login, forgot and reset password (`proxy.ts` gives them `?lang=` or the visitor's country's language;
+    `lib/i18n/auth-locale.tsx`), and verify-email;
+  - 404 and error pages (`app/not-found.tsx`, `app/error.tsx`, `app/global-error.tsx`; namespace `errorPage` in all 28
+    bases) — until then Next.js's built-in English pages answered;
+  - account emails (§43), and the privacy link in every customer email (its own language);
+  - Stripe's card form and Connect onboarding (`lib/stripe-locale.ts`: es-MX → `es-419`, nb-NO → `nb`; English leaves
+    Stripe on its default);
+  - the built-in Private event type's name, the weekly post's private label, stored dietary tags in Manage's menu, and a
+    font failure's English technical reason (dropped for non-English trucks).
+  - The legal documents: §43.
+- **The audit** (`scripts/legal-languages-1-audit.cjs`, by hand, ~10 minutes at `--jobs 4`): renders ~3,500 views per
+  language (order page, status page, customer emails, WhatsApp, dashboard, KDS, tickets, setup, sign-in, demo, Manage,
+  marketing pages, the PDF) with every country on in fixtures, and fails on an English sentence in a non-English view or
+  another language on an English one. **Clean in all 28.** Every exclusion carries its reason in the summary
+  (`docs/legal-languages-1/audit-summary.json`).
+- **Known gaps, kept:** the contact form (Tally, English; to be replaced, §27); DNS field names in the custom-domain
+  instructions (each provider's own labels, quoted; D6); emails to HatchGrab staff (admin).
+- **Harnesses:** `legal-languages-1.cjs` (220), `legal-languages-1-audit.cjs` (28/28), `legal-languages-1-screens.cjs`
+  (20, WebKit 390: Latin, Greek, Cyrillic, CJK, Arabic), `legal-languages-1-payments.cjs` (3, by hand: the sweep's screen
+  refuses any file naming the payment provider).
+
 # 78. Outreach — instant Send, refusals, template formatting and the screenshot match (V15.9 — 15 October 2026)
 
 From `docs/outreach-screenshot-match-report.md`, `docs/template-formatting-report.md`,
@@ -33761,6 +34169,23 @@ correction note in its history; the hidden Smash and Grab prospect filled.
     - a routine check ≈ $0.19, on the earlier Sonnet settings;
     - a 45-feature Sonnet deep check: about $1.80 by the delta, about $1.65 by comparison-features-1 §6 (estimates;
       §86.12).
+- **Prompt ending for workstreams that may produce SQL (V16.9):** "FINALLY: write your full report to
+  docs/<workstream>-report.md, overwriting whatever is there. Then in chat, give me only a two-line summary, then every
+  NOT RUN SQL block (if any) as fenced blocks, then confirm the file is written, and state the report filename as the LAST
+  SENTENCE of your reply." (1 Nov: the plain ending contradicted the inline-SQL rule, and Cursor rightly stopped to ask.)
+  Read-only queries go in the report, not the chat.
+- **Run order for SQL that the new code reads:** schema block first, then deploy, then rows — but the country loader's
+  tolerance means rows before deploy are safe (they are left out and named on Admin › Countries).
+- **Push carefully while a long prompt is running:** a push sends whatever is committed, so wait for the prompt to finish
+  before committing.
+- **A `NEXT_PUBLIC_*` variable needs a new build.** It is inlined at build time; check the live chunk (an unresolved
+  `env.NEXT_PUBLIC_…` means it was unset at build) rather than the Vercel settings page.
+- **New harnesses (V16.9):** `demo-2.cjs` (69, with the privacy drift check), `demo-2-screens.cjs` (34, browser),
+  `competitor-check-8.cjs` (51), `world-countries-1.cjs` (178) / `-identity` (440, two steps by hand) / `-screens` (43),
+  `world-countries-2.cjs` (47), `world-countries-3.cjs` (12), `legal-languages-1.cjs` (220, the drift harness),
+  `legal-languages-1-audit.cjs` (28/28, by hand), `legal-languages-1-screens.cjs` (20, browser),
+  `legal-languages-1-payments.cjs` (3, by hand — the sweep refuses any file naming the payment provider). The full sweep
+  stands at 172/175, the 3 failures the same as at HEAD (§27).
 ---
 
 # 80. Security (V16.1 — 19 October 2026)
@@ -33806,7 +34231,10 @@ switched on; the 29 European rows are switched off (§83.1).
 - **Trial:** 3 months (`plans.trial_months`), every feature, starts **at signup** (end = signup + N months, 23:59:59
   in the truck's timezone). Existing trucks' end dates were not moved.
 - **When any plan ends** (`trucks.trial_expires_at` in the past) the truck resolves to the **expiry-fallback plan
-  (Pay as you go) with that plan's feature switches**. Read time, no job.
+  (Pay as you go) with that plan's feature switches**. Read time, no job. ⛔ **Corrected V16.9 — unless the truck's
+  country names its own trial-end plan:** a `plan_prices` row with `is_trial_end = true` wins (Unlimited in BR, MX, MY,
+  SG and TH, where Pay as you go and Pro are not offered); elsewhere no row says so and the global fallback applies
+  (§81.6).
 - **Founder / outreach offers (no build):** Unlimited at £49 via the per-truck promo price
   (`plan_price_override_minor = 4900` + an until date); a 4-month trial via admin "Extend trial by 1 month" after
   signup; prospects linked to `/compare?free=4`.
@@ -33826,7 +34254,7 @@ switched on; the 29 European rows are switched off (§83.1).
 
 - **`public.plans`** — one row per plan: `key` PK (`^[a-z][a-z0-9_]*$`), `name`, `description` (no numbers in it),
   `subtitle`, `sort_order`, flags `is_public`, `is_internal`, `is_trial`, `is_signup_default` (exactly one),
-  `is_expiry_fallback` (exactly one; public, active, not a trial), `is_demo` (exactly one), `is_highlighted` (at
+  `is_expiry_fallback` (exactly one; public, active, not a trial — ⛔ V16.9: the fallback only where the truck's country has no `is_trial_end` row, §81.6), `is_demo` (exactly one), `is_highlighted` (at
   most one; public and active), `pay_at_hatch_allowed` (**enforced**), `included_vans` (≥1), `trial_months` (only on
   a trial plan), `active`. Rows: `payg`, `pro`, `unlimited` (public); `trial` (signup default, 3 months), `demo`,
   `tester` (internal). Every plan: `included_vans = 1`, `pay_at_hatch_allowed = true`.
@@ -33937,6 +34365,19 @@ switched on; the 29 European rows are switched off (§83.1).
   The plans PDF masks only a switched-off country. The old footnote "2" magic-string mask is gone (masks keyed by id).
 
 ---
+
+## 81.6 Offered plans and the trial-end plan, per country (V16.9 — world-countries-1, 31 October 2026)
+
+- **`plan_prices.offered`** (default true): a plan is shown only where its row is offered (35.an-18). Pay as you go and Pro
+  are kept but **not offered** in BR, MX, MY, SG and TH, so turning one on later is a single flag.
+- **`plan_prices.is_trial_end`** (default false): the country's own trial-end plan — Unlimited in those five; elsewhere no
+  row says so, and the global `plans.is_expiry_fallback` (Pay as you go) applies. A CHECK refuses an `is_trial_end` row
+  that is not offered.
+- **`plan_prices_world_guard`** (triggers on `country_settings` and `plan_prices`): a country can be switched on only if
+  its trial-end plan is offered there.
+- **A single offered plan renders as one centred card.**
+- **The wording there:** "When your trial ends, Unlimited is <price> a month. We'll be in touch before then to set up
+  payment." (world-countries-2 F1). **No paid plan is billed anywhere yet** — §82.11, §27.
 
 # 82. Countries beyond GB and US, currencies and AI search (V16.3 — 20–21 October 2026)
 
@@ -34113,7 +34554,7 @@ with a hidden test truck; then switch on in Admin › Countries.
   - flags such as `eftposNotice` (AUD).
 - **Everything reads it:** money formatting, decimals, `planMoneyFormatOf`, the eftpos check, admin validation and
   Admin › Countries (the signs beside the fee boxes, and the currency field as a dropdown).
-- **The DB CHECK `country_settings_currency_chk` lists the same 14 codes.** The `currency-registry` harness fails if they
+- **The DB CHECK `country_settings_currency_chk` lists the same codes as the registry** (~~14~~ ⛔ Corrected V16.9 — 22: + BRL, MXN, JPY, SGD, HKD, MYR, AED, THB; OBSERVED 1 Nov; JPY is zero-decimal, §82.11). The `currency-registry` harness fails if they
   differ.
 - **A bad row is left out:** `readAllCountryRows` maps each row on its own. A row with an unusable currency or allergen
   set is left out of every list (menu, router, hreflang, sitemap, signup, admin) and named in a red notice on Admin ›
@@ -34258,6 +34699,53 @@ AU/NZ terms, the AU address state fix, Canada. **Remaining:** the Stripe Connect
 - "Pay at the truck";
 - outside Quebec.
 
+## 82.11 The eight new countries (V16.9 — world-countries-1, -2, -3, 31 October – 1 November 2026)
+
+- **Decisions (stated, 31 Oct):** "build all 8"; the UAE stays switched off — "not sure i want to go live on the UAE until
+  i understand its laws a little more"; "perhaps we just do unlimited in the countries we can't take a % fee for now
+  until we figure out a solution"; the 23 Oct research prices; the local language everywhere (Malay for Malaysia, Arabic
+  for the UAE). ⚠️ **OBSERVED 1 Nov: all eight are switched on, the UAE included** (§49; §27 Added V16.9).
+- **Languages:** BR pt-BR, MX es-MX (sparse over es-ES), JP ja-JP, SG en-SG (sparse over en-GB), HK zh-HK, MY ms-MY, TH
+  th-TH, AE ar-AE (right to left). Each with 0 structural problems in translation-check.
+- **Prices (Pro / Unlimited, research of 23 Oct):** BR R$59 / R$149; MX $349 / $849; JP ¥1,980 / ¥2,980; SG $29 / $59;
+  HK HK$119 / HK$269; MY RM29 / RM69; AE AED59 / AED149; TH ฿199 / ฿449. Pay as you go 0 a month + 0.99% wherever it is
+  offered. Pro allowances: R$8,000, $50,000, ¥250,000, $4,000, HK$15,000, RM4,000, AED8,000, ฿25,000. Display: "RM29" (no
+  space) and the normal-width "¥" (world-countries-2 F5).
+- **Currencies:** eight new registry entries (BRL, MXN, JPY, SGD, HKD, MYR, AED, THB), 22 in all; the CHECK lists the
+  same 22. **JPY is zero-decimal on every amount path** (`toMinor` / `fromMinor`, `toMinorUnits` / `minorDigits`;
+  35.an-19); a percentage uplift on a yen price can carry half a yen in event pricing (F6, open).
+- **Stripe and the platform fee (researched in the planning chat, 31 Oct):** Stripe's own pages say platforms outside
+  Malaysia and Thailand cannot collect application fees on connected accounts there; for Brazil, Mexico and Singapore the
+  same block is reported from Stripe's error text ("Stripe doesn't currently support application fees for platforms in US
+  with connected accounts in BR") and treated the same to be safe. Thailand cross-border Connect may need Stripe sales.
+  The UAE supports direct charges for foreign platforms. Japan and Hong Kong showed no such restriction. India (Stripe
+  invite-only) and Indonesia (no cards) are excluded. Sources: support.stripe.com "stripe-thailand-support-for-
+  marketplace", "connect-availability-for-businesses-located-in-malaysia", "connect-availability-in-the-uae";
+  docs.stripe.com/connect/express-accounts; github.com/unlock-protocol/unlock/issues/12594.
+- **As data:** `country_settings.platform_fee_allowed` (false for BR, MX, MY, SG, TH; a CHECK refuses
+  `platform_fee_enabled` without it); `plan_prices.offered`, `plan_prices.is_trial_end` and the guard trigger (§81.6).
+  Every fee path asks `platformFeeOn(country)`; a static guard fails if any file sends `application_fee_amount` without it
+  (35.an-17).
+- **Billing (important, recommended):** no paid plan is billed anywhere yet, in any country (no subscription or checkout
+  code). In the five Unlimited-only countries a finished trial lands on Unlimited and earns nothing until invoiced.
+  Subscription billing (Stripe Billing) is recommended as the next big build, for every country. A missed payment in
+  those five has no consequence today (world-countries-2 G1); the rule belongs with the billing build.
+- **Country settings:** per world-countries-1 §2 and block B — allergen sets `jp` (the CAA list), `br` (ANVISA) and
+  `codex` (MX, SG, HK, MY, TH, AE); tax wording per country (each truck sets its own rate); card fees are Stripe's standard
+  online rates copied into the in-person fields; Tap to Pay 0 until confirmed.
+- **Right to left (Arabic):** `dir="rtl"` on ar-AE pages only (35.an-24); marketing and customer pages mirror; converting
+  ~430 physical left/right classes in shared components is deferred until the UAE is meant to be live (decision, 1 Nov).
+- **Terms:** §4 now says a trial or failed payment moves the account to "the plan shown for its country on our pricing
+  page, which in most countries has no monthly fee" (no plan named); the Country-specific terms have sections for all
+  eight; Mexico's authority is named (world-countries-3, §43); the UAE Data Office is named without a web address.
+- **Migrations 20261054 (block A, schema) and 20261055 (block B, rows): run by Dominic (stated, 1 Nov), before the
+  deploy.** Running B before the deploy was harmless: the old loader leaves an unreadable row out of every list and names
+  it on Admin › Countries. OBSERVED 1 Nov: both run (the columns, the CHECKs, both triggers, 24 `plan_prices` rows).
+  Switch-on per country was to follow world-countries-1 §9 (Stripe checks first; the UAE off) — but see the OBSERVED
+  line above.
+- **Harnesses:** `world-countries-1.cjs` (178), `world-countries-1-identity.cjs` (440, by hand in two steps),
+  `world-countries-1-screens.cjs` (43, WebKit), `world-countries-2.cjs` (47), `world-countries-3.cjs` (12).
+
 # 83. Addresses, native prices, languages and Europe (V16.4 — 21–22 October 2026)
 
 🔴 **THE RULE (unchanged from §82, extended):** a country is data plus config. Its row and prices are data; its address
@@ -34368,7 +34856,8 @@ code. A country stays switched off until its launch list is done.
   - **False today:** IE, LV, PL, RO, SK (OBSERVED 22 Oct; the same five on 23 Oct). ~~IE is switched on; the other four
     are switched off.~~ ⛔ Corrected V16.5 — all five are switched on (OBSERVED 23 Oct).
 - **Sets:**
-  - uk14 (GB, IE, FR, Europe), us9, anz (AU/NZ), ca (Health Canada, 13);
+  - uk14 (GB, IE, FR, Europe), us9, anz (AU/NZ), ca (Health Canada, 13); ⛔ V16.9: + jp (JP), br (BR), codex (MX, SG,
+    HK, MY, TH, AE) — §82.11;
   - labels are stored in English; non-English locales show them translated (`lib/allergen-label.ts`).
 - **The WhatsApp guard's words are data per language** (`lib/allergen-guard/<lang>.json`, Option B). OBSERVED:
   ~~`en.json` and `fr.json`.~~ ⛔ Corrected V16.5 — 23 lists: en, fr and the 21 European languages (OBSERVED 23 Oct; §84.6). A language with no list fails safe: every menu question gets the allergen reply.
@@ -34437,7 +34926,7 @@ code. A country stays switched off until its launch list is done.
   - structural problems block;
   - English left, glossary, invariants, numbers, length and back-translation drift are flags, for a short table;
   - the glossary JSON is built from `docs/i18n/seo-glossary-eu.md` (`scripts/glossary-build.cjs`).
-- **Known limits:** tickets fold to ASCII; legal pages, sign-in and account emails stay en-GB; stored English
+- **Known limits:** tickets fold to ASCII; ~~legal pages, sign-in and account emails stay en-GB~~ (⛔ Corrected V16.9 — all three are in the user's language: §43, §77.12); stored English
   (cancellation reasons) shows in English.
 
 ## 83.9 France (built; ~~switched off~~ ⛔ Corrected V16.7 — live, §86.1)
@@ -34568,8 +35057,10 @@ examples (europe-languages-2 Stage 0) and, in de-CH, the card button that keeps 
   `currencyLineOf` in `lib/country-settings-types.ts`). English unchanged.
 - Kept in English on purpose in every language: "registered in England and Wales", "six years, as UK law requires", the
   typed word DELETE, and three hard-coded admin labels in `components/admin/*`.
-- Legal pages (terms, privacy), sign-in and account emails remain en-GB (unchanged from §83.8). The contact page is a Tally
-  form with UK wording.
+- ~~Legal pages (terms, privacy), sign-in and account emails remain en-GB (unchanged from §83.8).~~ ⛔ Corrected V16.9 —
+  the legal documents are in all 28 language bases (English governs), and sign-in, the password pages and account emails
+  speak the user's language (§43, §77.12). The contact page is a Tally
+  form with UK wording (the text around it is translated; its replacement is decided, §27 Added V16.9).
 
 ## 84.3 The statutory order buttons
 
@@ -34895,7 +35386,7 @@ verified it. No proposed price is recorded here as decided.
 
 ---
 
-# 86. Comparison pages, search research and the automatic competitor checker (V16.7 — 24–27 October 2026; V16.8 — 29 October 2026, §86.6–§86.13)
+# 86. Comparison pages, search research and the automatic competitor checker (V16.7 — 24–27 October 2026; V16.8 — 29 October 2026, §86.6–§86.13; V16.9 — 31 October 2026, §86.14)
 
 🔴 **THE RULES OF THIS SECTION**
 - **Competitor facts are data** with a source URL and a checked date, never prose in code.
@@ -35341,6 +35832,37 @@ repo files. compare-de-1 and competitor-check-1 were built from the briefs' word
   - the sitemap submission is UNVERIFIED.
 - **DNS** is managed at Namecheap; both verification records were added there.
 - **Vercel Firewall:** Bot Protection off, the AI Bots ruleset on Allow, no custom rules, Attack Challenge Mode off.
+
+## 86.14 The checker after competitor-check-8 (V16.9 — 31 October 2026)
+
+*Detail in `docs/competitor-check-8-report.md`.*
+
+- **The 31 Oct quick-pass failure** was the leftover 30 Oct batch (`msgbatch_01Jb6Zv1SGfDfDEsQPh49oqp`, 40 items) built
+  with the refused 17-union schema — about 85% sure in the report; **CONFIRMED when applying** from the run's notes
+  ("17 parameters with type arrays or anyOf … limit: 16").
+- **Failed batch items are always logged:** a header, the first 5 in full, then counts by error type. An ended batch with
+  failed items from the last 29 days is **re-read once** (`competitor_check_settings.pass_batches_reread`), writing and
+  charging nothing.
+- **The deep-check limit is `deep_time_limit_seconds`** (default 1800, allowed 60–3600), a deadline the check keeps itself:
+  no API call starts after it, and a call still running 3 minutes later is aborted. Routine checks stay at 300 s.
+- **A timed-out deep check keeps the findings of every group it finished** and saves them in `competitors.deep_progress`
+  (per country; 14 days; the same deep request only). The next run asks only for the rest ("RESUMED CHECK …"), writes
+  nothing twice, and clears the progress on completion. The check is marked INCOMPLETE, not a failure.
+- **One line replaces the verifier noise:** "<competitor>: N verifications skipped (out of time)".
+- **Validation per finding:** a stray field (`feature_key`, `feature`, `classification` on the wrong kind) is dropped and
+  counted, an unusable finding is left out with its reason, and the call is kept; a call is rejected only when it has no
+  usable shape or every finding is unusable.
+- **Exit codes:** a run ends `error` (exit 1) only when a stage fails as a whole — a failed login, a collected batch whose
+  every item failed, or every competitor of a run failing outright (35.an-25). A timed-out or incomplete check never does.
+- **The job's time:** `timeout-minutes: 350` in the workflow and `--job-minutes 330`; no check starts with under 10 minutes
+  left, and the run stops with `time_up` (exit 0) for the next night to pick up.
+- **Cost sums (from the report):** worst case about 9 full-limit checks a night and about $7.9 a night; typical about $3 a
+  night, about $90 a month, at the monthly cap. **Decision (recommended, not objected to):** leave the caps ($8 a day, $90
+  a month); a capped night stops cleanly and resumes, so the first deep sweep just takes longer, and spend never passes
+  the $100 credit. After every country's deep check, the 90-day rechecks cost far less.
+- **Migration `20261053_competitor_check_8.sql`:** OBSERVED 1 Nov: run (the two settings, `deep_progress`, `time_up`).
+  The checker reads all of it tolerantly. **U1** (Clover and Lightspeed first in the next deep share) is not visible.
+- **Harness:** `scripts/competitor-check-8.cjs` (51); `competitor-check-1.cjs` 227 with three re-pins.
 
 ---
 
