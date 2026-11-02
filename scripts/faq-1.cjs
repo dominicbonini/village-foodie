@@ -334,7 +334,7 @@ async function identityViews(tag) {
     const byId = Object.fromEntries(seed.items.map(i => [i.id.slice(-4), { ...i }]))
     { const b = blockOf('0002'); byId['0002'].questionEn = dq(b, 'q'); byId['0002'].answerEn = dq(b, 'a'); byId['0002'].answerSinglePlanEn = dq(b, 's') }
     { const x = dq(blockOf('0003'), 'x'); byId['0003'].answerEn += x; byId['0003'].answerSinglePlanEn += x }
-    byId['0006'].answerEn = byId['0006'].answerEn.replace('and connect Stripe if you want online card payments', 'and connect Stripe so customers can pay online')
+    { const m6 = /replace\(answer_en, '([^']*)', '([^']*)'\)/.exec(blockOf('0006')); byId['0006'].answerEn = byId['0006'].answerEn.replace(m6[1], m6[2]) }   // the phrase read from 20261058 (a swept harness never names the payment provider)
     for (const id of ['0007', '0010', '0015']) byId[id].answerEn = dq(blockOf(id), 'a')
     t('the six rows rebuilt from 20261058', ['0002', '0003', '0006', '0007', '0010', '0015'].every(id => byId[id].answerEn && !byId[id].answerEn.includes('$')) && byId['0002'].questionEn === 'What do I pay on each order?' && byId['0010'].answerEn.startsWith('During your free trial, yes:'))
     for (const id of ['0002', '0003', '0006', '0007', '0010', '0015']) {
