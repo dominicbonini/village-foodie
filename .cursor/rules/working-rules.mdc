@@ -50,3 +50,18 @@ not restart it here.*
 | `docs/android.md` | Durable append-only working log: facts, work list, decisions, corrections. | **NEVER overwrite.** Append only. |
 | `docs/android-report.md` | Transient per-task report. | Overwritten every task. |
 | `docs/last-report.md` | Belongs to a **separate parallel workstream**. | **NEVER read, write, or overwrite it.** |
+
+---
+
+## Running migrations (db-run-1, 2 November 2026 — Dominic's standing rule)
+
+- **When a prompt includes a migration:** write it as a file in `supabase/migrations/`, commit it, show Dominic the full SQL
+  in chat, then **run it yourself** with psql:
+  `psql "$SUPABASE_DB_URL" -v ON_ERROR_STOP=1 -1 -f supabase/migrations/<file>.sql`
+  (`SUPABASE_DB_URL` lives in `.env.local`, which is git-ignored. Never print its value, never write it anywhere else, and
+  never list `.env.local`'s other keys.) Then **verify read-only** (the Supabase MCP) and report what you saw.
+- **Never `supabase db push`.** The migration history isn't reconciled, and it could re-run old migrations.
+- **STOP and ask Dominic before running anything that deletes or updates existing rows** in `trucks`, `orders`, `plans`,
+  `plan_prices`, `plan_features` or `country_settings`, **or anything touching the truck `pizzeria-gusto`.**
+- **Never run ad-hoc write SQL** outside a committed migration file.
+- **The read-only Supabase MCP stays read-only.**
