@@ -1,0 +1,88 @@
+{
+ "$why": "faq-translate-fix: ONE recorded Messages API response in the shape the competitor checker's fixtures use (scripts/_competitor-check-1-fixtures.cjs msg): a client tool_use of save_translations whose input follows the strict schema (\"\" where a field does not apply). Hand-built — no live call was ever made. Its text is the faq-2 fixture translations of question …0001 (de-DE, fr-FR, ja-JP, ar-AE), plus four entries that each break one existing check (es-ES a token dropped, it-IT banned wording, nl-NL a typed figure, pl-PL far too short). Token counts are illustrative.",
+ "message": {
+  "id": "msg_fixture_faq_1",
+  "type": "message",
+  "role": "assistant",
+  "model": "claude-sonnet-5-5",
+  "content": [
+   {
+    "type": "text",
+    "text": "Saving the translations."
+   },
+   {
+    "type": "tool_use",
+    "id": "toolu_fixture_faq_1",
+    "name": "save_translations",
+    "input": {
+     "translations": [
+      {
+       "locale": "de-DE",
+       "question": "Was kostet HatchGrab?",
+       "answer": "Jeder Tarif gilt pro Foodtruck und Monat: {payg.name} {payg.price}, {pro.name} {pro.price} und {unlimited.name} {unlimited.price}. {payg.name} berechnet {payg.fee} auf Online-Kartenbestellungen. {pro.name} enthält Ihre ersten {pro.included} an Online-Bestellungen pro Monat und berechnet danach {pro.fee}. {unlimited.name} hat keine HatchGrab-Gebühr auf Ihre Bestellungen. Auf Bestellungen vor Ort fällt nie eine HatchGrab-Gebühr an.",
+       "answer_single_plan": "Es gibt einen Tarif: {unlimited.name}, {unlimited.price} pro Foodtruck und Monat, ohne HatchGrab-Gebühr auf Ihre Bestellungen. Auf Bestellungen vor Ort fällt nie eine HatchGrab-Gebühr an.",
+       "title": ""
+      },
+      {
+       "locale": "fr-FR",
+       "question": "Combien coûte HatchGrab ?",
+       "answer": "Chaque formule est par food truck et par mois : {payg.name} {payg.price}, {pro.name} {pro.price} et {unlimited.name} {unlimited.price}. {payg.name} prélève {payg.fee} sur les commandes en ligne par carte. {pro.name} inclut vos premiers {pro.included} de commandes en ligne chaque mois, puis prélève {pro.fee}. {unlimited.name} ne prélève aucuns frais HatchGrab sur vos commandes. Les commandes au comptoir ne sont jamais soumises à des frais HatchGrab.",
+       "answer_single_plan": "Il existe une seule formule : {unlimited.name}, {unlimited.price} par food truck et par mois, sans frais HatchGrab sur vos commandes. Les commandes au comptoir ne sont jamais soumises à des frais HatchGrab.",
+       "title": ""
+      },
+      {
+       "locale": "ja-JP",
+       "question": "HatchGrabの料金は？",
+       "answer": "各プランはキッチンカーごとの月額です：{payg.name} {payg.price}、{pro.name} {pro.price}、{unlimited.name} {unlimited.price}。{payg.name}はオンラインのカード注文に{payg.fee}かかります。{pro.name}は毎月最初の{pro.included}分のオンライン注文が含まれ、その後は{pro.fee}かかります。{unlimited.name}は注文にHatchGrabの手数料がかかりません。店頭注文にHatchGrabの手数料がかかることはありません。",
+       "answer_single_plan": "プランは{unlimited.name}のみです：キッチンカーごとに月額{unlimited.price}で、注文にHatchGrabの手数料はかかりません。店頭注文にHatchGrabの手数料がかかることはありません。",
+       "title": ""
+      },
+      {
+       "locale": "ar-AE",
+       "question": "كم تكلفة HatchGrab؟",
+       "answer": "كل خطة لكل عربة طعام شهريًا: {payg.name} {payg.price}، و{pro.name} {pro.price}، و{unlimited.name} {unlimited.price}. تفرض {payg.name} رسومًا قدرها {payg.fee} على طلبات البطاقة عبر الإنترنت. تشمل {pro.name} أول {pro.included} من الطلبات عبر الإنترنت كل شهر، ثم تفرض {pro.fee}. لا تفرض {unlimited.name} أي رسوم من HatchGrab على طلباتك. لا تخضع الطلبات الحضورية أبدًا لرسوم HatchGrab.",
+       "answer_single_plan": "هناك خطة واحدة: {unlimited.name}، بسعر {unlimited.price} لكل عربة طعام شهريًا، دون رسوم من HatchGrab على طلباتك. لا تخضع الطلبات الحضورية أبدًا لرسوم HatchGrab.",
+       "title": ""
+      },
+      {
+       "locale": "es-ES",
+       "question": "Combien coûte HatchGrab ?",
+       "answer": "Chaque formule est par food truck et par mois : {payg.name} {payg.price}, {pro.name} {pro.price} et {unlimited.name} {unlimited.price}. {payg.name} prélève {payg.fee} sur les commandes en ligne par carte. {pro.name} inclut vos premiers {pro.included} de commandes en ligne chaque mois, puis prélève . {unlimited.name} ne prélève aucuns frais HatchGrab sur vos commandes. Les commandes au comptoir ne sont jamais soumises à des frais HatchGrab.",
+       "answer_single_plan": "Il existe une seule formule : {unlimited.name}, {unlimited.price} par food truck et par mois, sans frais HatchGrab sur vos commandes. Les commandes au comptoir ne sont jamais soumises à des frais HatchGrab.",
+       "title": ""
+      },
+      {
+       "locale": "it-IT",
+       "question": "Combien coûte HatchGrab ?",
+       "answer": "Chaque formule est par food truck et par mois : {payg.name} {payg.price}, {pro.name} {pro.price} et {unlimited.name} {unlimited.price}. {payg.name} prélève {payg.fee} sur les commandes en ligne par carte. {pro.name} inclut vos premiers {pro.included} de commandes en ligne chaque mois, puis prélève {pro.fee}. {unlimited.name} ne prélève aucuns frais HatchGrab sur vos commandes. Les commandes au comptoir ne sont jamais soumises à des frais HatchGrab. Customers can pay at the truck.",
+       "answer_single_plan": "Il existe une seule formule : {unlimited.name}, {unlimited.price} par food truck et par mois, sans frais HatchGrab sur vos commandes. Les commandes au comptoir ne sont jamais soumises à des frais HatchGrab.",
+       "title": ""
+      },
+      {
+       "locale": "nl-NL",
+       "question": "Combien coûte HatchGrab ?",
+       "answer": "Chaque formule est par food truck et par mois : {payg.name} {payg.price} (30 €), {pro.name} {pro.price} et {unlimited.name} {unlimited.price}. {payg.name} prélève {payg.fee} sur les commandes en ligne par carte. {pro.name} inclut vos premiers {pro.included} de commandes en ligne chaque mois, puis prélève {pro.fee}. {unlimited.name} ne prélève aucuns frais HatchGrab sur vos commandes. Les commandes au comptoir ne sont jamais soumises à des frais HatchGrab.",
+       "answer_single_plan": "Il existe une seule formule : {unlimited.name}, {unlimited.price} par food truck et par mois, sans frais HatchGrab sur vos commandes. Les commandes au comptoir ne sont jamais soumises à des frais HatchGrab.",
+       "title": ""
+      },
+      {
+       "locale": "pl-PL",
+       "question": "Cena?",
+       "answer": "Tak.",
+       "answer_single_plan": "Tak.",
+       "title": ""
+      }
+     ]
+    }
+   }
+  ],
+  "stop_reason": "tool_use",
+  "stop_sequence": null,
+  "usage": {
+   "input_tokens": 3200,
+   "output_tokens": 2900,
+   "cache_creation_input_tokens": 0,
+   "cache_read_input_tokens": 21000
+  }
+ }
+}

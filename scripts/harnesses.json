@@ -191,6 +191,7 @@
     "store-badges-1.cjs",
     "faq-4.cjs",
     "contact-1.cjs",
+    "faq-translate-fix.cjs",
     "copy-truth-1.cjs"
   ],
   "excluded": {

@@ -256,7 +256,9 @@ export interface Recorded<T> { value: T; contents: unknown[][] }
  *  says no more follow. A response cut off at max_tokens is CONTINUED (its complete calls kept, the unfinished one answered
  *  "not recorded"), up to MAX_CONTINUATIONS times. If the conversation still fails, the error carries `partial` — what the
  *  complete calls recorded — and every response's cost is already on deps.meter. */
-export async function converse<T>(deps: CheckerDeps, a: {
+// faq-translate-fix (2 November 2026): it reads only the API, the meter and the clock — the FAQ translator (lib/faq/translator.ts
+// modelCall) passes just those.
+export async function converse<T>(deps: Pick<CheckerDeps, 'api' | 'meter' | 'now'>, a: {
   model: string; system: string | Row[]; user: string | Row[]; tools: Row[]; toolName: string; effort: 'low' | 'medium' | 'high'
   validate(input: unknown): { ok: true; value: T } | { ok: false; errors: string[] }; maxTurns: number; prices: Prices
   /** competitor-check-3: a response already produced (a Message Batch result) — the conversation continues from it. */

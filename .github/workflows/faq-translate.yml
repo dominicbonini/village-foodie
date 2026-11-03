@@ -11,6 +11,8 @@ name: FAQ translate
 # repository VARIABLES: ANTHROPIC_FEDERATION_RULE_ID, ANTHROPIC_ORGANIZATION_ID, ANTHROPIC_SERVICE_ACCOUNT_ID,
 # ANTHROPIC_WORKSPACE_ID. SECRETS (names only): NEXT_PUBLIC_SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY.
 # Nothing stale → the script ends in seconds, before any login or model call. Spend cap per run: max_usd (default 2).
+# faq-translate-fix (2 November 2026): limit (blank = everything) caps the translations a manual run makes — 1 = one question into one
+# language, a cheap test. A refused request (400 invalid_request_error) stops the run at the first call, with one line.
 on:
   schedule:
     - cron: '25 * * * *'          # hourly, at :25 — clear of the competitor check (02:10) and the scrapes
@@ -26,6 +28,10 @@ on:
         description: 'Spend cap for this run, in USD'
         required: false
         default: '2'
+      limit:
+        description: 'At most this many translations (1 = one question into one language). Blank = everything'
+        required: false
+        default: ''
 
 # Two runs never overlap.
 concurrency:
@@ -77,9 +83,11 @@ jobs:
           SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
           DRY_RUN: ${{ github.event.inputs.dry_run }}
           MAX_USD: ${{ github.event.inputs.max_usd }}
+          LIMIT: ${{ github.event.inputs.limit }}
         # Inputs reach the script as environment variables, never pasted into the shell line.
         run: |
           set -euo pipefail
           args=(scripts/faq-translate/main.ts --max-usd "${MAX_USD:-2}")
           if [ "${DRY_RUN:-false}" = "true" ]; then args+=(--dry-run); fi
+          if [ -n "${LIMIT:-}" ]; then args+=(--limit "$LIMIT"); fi
           node scripts/competitor-check/run.mjs "${args[@]}"

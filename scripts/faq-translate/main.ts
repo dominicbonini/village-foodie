@@ -8,6 +8,11 @@
 // --fixtures F    (with --dry-run) reads the questions, sections, translations, plan catalogue and prices from F instead of the
 //                 database — what scripts/faq-2.cjs runs, with no network at all.
 // --max-usd N     the spend cap for this run (default 2): no model call starts once the run has spent it.
+// --limit N       at most N translations this run — one question (or section title) into one language each, in order; limit 1 is
+//                 one question into one language (faq-translate-fix: a cheap test of the whole path).
+// faq-translate-fix (2 November 2026; docs/faq-translate-fix-report.md): the model call is lib/faq/translator.ts modelCall — the
+// competitor checker's converse over the SDK's beta Messages API, as scripts/competitor-check/main.ts calls it: no tool_choice (this
+// model refuses a forced one: "tool_choice: type "tool" and "any" are not supported"), a strict tool, validated, fixed once, nudged.
 // Environment (NAMES only): the Claude API login is Workload Identity Federation, exactly as the competitor checker's
 // (ANTHROPIC_FEDERATION_RULE_ID, ANTHROPIC_ORGANIZATION_ID, ANTHROPIC_SERVICE_ACCOUNT_ID, ANTHROPIC_WORKSPACE_ID and the GitHub OIDC
 // token in ANTHROPIC_IDENTITY_TOKEN_FILE); NEXT_PUBLIC_SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY. No value is ever printed. The
@@ -16,7 +21,7 @@ import fs from 'node:fs'
 import path from 'node:path'
 import Anthropic from '@anthropic-ai/sdk'
 import { createClient } from '@supabase/supabase-js'
-import { runTranslator, TRANSLATOR_MODEL, TRANSLATOR_TOOL, type TranslatorDeps, type LocaleContext, type WriteRow } from '@/lib/faq/translator'
+import { runTranslator, modelCall, TRANSLATOR_MODEL, type TranslatorDeps, type LocaleContext, type WriteRow } from '@/lib/faq/translator'
 import { itemSourceHash, sectionSourceHash } from '@/lib/faq/source-hash'
 import { minRatioOf, type FaqTranslationRow } from '@/lib/faq/translation'
 import { overrideChain, isEnglish, type AppLocale } from '@/lib/i18n/locales'
@@ -94,7 +99,7 @@ async function main() {
   const maxUsd = arg('max-usd') ? Number(arg('max-usd')) : 2
   if (!(maxUsd > 0 && maxUsd <= 50)) throw new Error('--max-usd must be a number above 0 and at most 50')
   const limit = arg('limit') ? Number(arg('limit')) : undefined
-  if (limit !== undefined && !(Number.isInteger(limit) && limit > 0)) throw new Error('--limit must be a whole number above 0')
+  if (limit !== undefined && !(Number.isInteger(limit) && limit > 0)) throw new Error('--limit must be a whole number above 0 (translations: one question into one language each)')
   const log = (s: string) => console.log(s)
 
   let deps: TranslatorDeps
@@ -121,7 +126,8 @@ async function main() {
         return { ...sourcesOf(items, sections), translations: translations.map(translationOf) }
       },
       contextOf: contextFactory(catalog),
-      call: async req => {
+      // faq-translate-fix: the checker's conversation (lib/faq/translator.ts modelCall), priced from the settings read below.
+      call: req => modelCall(async (params, opts) => {
         if (!anthropic) {
           // The login is checked only now — when there is something to translate.
           for (const name of ['ANTHROPIC_FEDERATION_RULE_ID', 'ANTHROPIC_ORGANIZATION_ID', 'ANTHROPIC_SERVICE_ACCOUNT_ID', 'ANTHROPIC_WORKSPACE_ID'])
@@ -129,16 +135,8 @@ async function main() {
           if (process.env.ANTHROPIC_API_KEY) throw new Error('ANTHROPIC_API_KEY is set. Remove it: the translator logs in with Workload Identity Federation.')
           anthropic = new Anthropic({ maxRetries: 5, timeout: 600_000 })
         }
-        const msg = await anthropic.messages.stream({
-          model: TRANSLATOR_MODEL, max_tokens: req.maxTokens,
-          // Every locale's words are the same on every call: cached after the first (prompt caching).
-          system: [{ type: 'text', text: req.system[0] }, { type: 'text', text: req.system[1], cache_control: { type: 'ephemeral' } }],
-          tools: [TRANSLATOR_TOOL as never], tool_choice: { type: 'tool', name: TRANSLATOR_TOOL.name },
-          messages: [{ role: 'user', content: req.user }],
-        } as never).finalMessage()
-        const use = (msg.content as { type: string; input?: { translations?: Row[] } }[]).find(b => b.type === 'tool_use')
-        return { translations: use?.input?.translations ?? [], usage: msg.usage as never, stopReason: (msg as { stop_reason?: string | null }).stop_reason ?? null }
-      },
+        return anthropic.beta.messages.stream(params as never, opts?.signal ? { signal: opts.signal } : undefined).finalMessage() as never
+      }, deps.prices!)(req),
       write: dryRun ? undefined : async (rows: WriteRow[]) => {
         // Replace this question's (or section's) rows for these locales: delete, then insert (the key is generated).
         const first = rows[0]
@@ -170,6 +168,7 @@ async function main() {
     await new Promise(res => setTimeout(res, 65_000))   // past the pages' 60-second cache, so the crawler finds the new text
     await submitIndexNow(faqUrlsFor(countries, report.okLocales), { log })   // faq-4: the FAQ pages, in the languages a row was written ok
   }
+  if (!dryRun && report.stopped === 'invalid_request') { console.error('Stopped: the API refused the request (see the STOPPED line above).'); process.exit(1) }
   if (!dryRun && report.done === 0 && report.jobs > 0 && report.skippedForCap === 0) { console.error('Every model call failed.'); process.exit(1) }
 }
 

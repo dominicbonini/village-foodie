@@ -318,7 +318,9 @@ const faqLd = html => { const m = /<script type="application\/ld\+json">([\s\S]*
     t(`nothing stale → it ends in seconds (${d2.ms} ms) with "Nothing to translate … No model call."`, d2.status === 0 && d2.ms < 10000 && /Nothing to translate: 24 published questions and 5 sections, every translation up to date\. No model call\./.test(d2.stdout), d2.stdout)
   } finally { fs.rmSync(tmp, { force: true }) }
   const main = read('scripts/faq-translate/main.ts')
-  t('the script checks the login only when there is work, refuses an API key, and reads prices from the data', /The login is checked only now/.test(main) && /ANTHROPIC_API_KEY is set\. Remove it/.test(main) && /competitor_check_settings/.test(main) && /cache_control: \{ type: 'ephemeral' \}/.test(main))
+  // ⚠️ RE-PINNED (faq-translate-fix, 2 November 2026): the model call (and its prompt-cache marker) moved into lib/faq/translator.ts
+  // modelCall — the competitor checker's converse; scripts/faq-translate-fix.cjs proves the request.
+  t('the script checks the login only when there is work, refuses an API key, and reads prices from the data', /The login is checked only now/.test(main) && /ANTHROPIC_API_KEY is set\. Remove it/.test(main) && /competitor_check_settings/.test(main) && /cache_control: \{ type: 'ephemeral' \}/.test(read('lib/faq/translator.ts')))
 
   head('8 · the workflow')
   const wfy = read('.github/workflows/faq-translate.yml')
