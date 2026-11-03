@@ -6499,6 +6499,7 @@
       "no": "Nein",
       "partial": "Teilweise",
       "unknown": "Nicht angegeben",
+      "not_mentioned": "Auf der Website nicht erwähnt",
       "withNote": "{word}, {note}",
       "soon": "demnächst",
       "fromPlan": "ab {plan}",
@@ -6507,7 +6508,8 @@
       "setupFee": "{price} einmalig",
       "perMonth": "{price} pro Monat",
       "notInCountry": "nicht in {country}",
-      "flagOff": "Flag noch aus, wird mit Store-Freigabe sichtbar"
+      "flagOff": "Flag noch aus, wird mit Store-Freigabe sichtbar",
+      "notApplicable": "gilt nicht für einen Markt"
     },
     "explained": {
       "title": "Begriffe erklärt"
@@ -6565,6 +6567,11 @@
       "stock": {
         "label": "Ausverkauft und Bestandsgrenzen pro Event",
         "explain": "Gerichte als ausverkauft markieren und festlegen, wie viele pro Event verkauft werden."
+      },
+      "notify": {
+        "label": "Gäste erfahren, wann ihre Bestellung fertig ist",
+        "explain": "Wie Gäste erfahren, dass ihre Bestellung fertig ist: SMS, WhatsApp, E-Mail, Push oder eine Live-Statusseite zur Bestellung.",
+        "ours": "E-Mail, wenn der Schritt „Bestellung fertig“ an ist, und eine Statusseite zur Bestellung; keine SMS, kein WhatsApp, kein Push"
       },
       "allergens": {
         "label": "Allergene auf der Speisekarte",

@@ -18,9 +18,11 @@
 // android_app_available) or a fixed answer in messages. ⛔ No plan, price, allowance, trial length or tier is written here
 // (manual §81). A competitor: its answers in public.competitor_feature_values (the country's own row, else the one for
 // every country) and the entry's plan in public.competitor_plans, followed to its current version when it was edited.
-// 🔴 CELL WORDS COME ONLY FROM A FIXED SET (comparison.cell.yes / no / partial / unknown) plus the short note as advertised;
+// 🔴 CELL WORDS COME ONLY FROM A FIXED SET (comparison.cell.yes / no / partial / not_mentioned / unknown) plus the short note as advertised;
 // the .json twin carries the machine value. 🔴 EVERY AMOUNT HAS ITS UNIT AND PERIOD ("pro Monat", "pro Bestellung",
-// "einmalig", "pro Kartenzahlung"). "Ja" only where the vendor says so.
+// "einmalig", "pro Kartenzahlung"). "Ja" only where the vendor says so. competitor-features-2: "not mentioned on their
+// website" is never shown as No, and a competitor is never marked down for a feature that does not apply to its kind (a
+// street-food market: only discovery and the price rows apply — the other cells say so).
 //
 // ⛔ No Product, Review, Rating or AggregateRating in the JSON-LD: this page compares tools, it does not rate them.
 import type { CountrySettings } from '@/lib/country-settings-types'
@@ -32,7 +34,7 @@ import type { PlanCatalog } from '@/lib/plans'
 import { offerPlans, offerTrialMonths, type OfferPlan } from '@/lib/plan-offer'
 import { isCountedCompetitor, type Competitor, type CompetitorPlan, type ComparisonEntry } from '@/lib/pricing-check'
 import {
-  featuresShownIn, featureWords, ourAnswer, effectiveValue, featuresVerifiedFor, FEATURE_GROUPS,
+  featuresShownIn, featureWords, ourAnswer, effectiveValue, featuresVerifiedFor, appliesToFocus, FEATURE_GROUPS,
   type ComparisonFeature, type FeatureValueRow, type FeatureValue, type FeatureGroup, type PriceKind,
 } from '@/lib/comparison-features'
 import { BRANDS } from '@/lib/brand'
@@ -133,11 +135,13 @@ export function entryPlan(e: Pick<ComparisonEntry, 'primaryPlanId' | 'competitor
 }
 
 /** Public = the entry, its plan and the competitor's features are all verified. */
-export function entryIsPublic(e: ComparisonEntry, competitors: Competitor[], plans: CompetitorPlan[], features?: { values: FeatureValueRow[]; keys: string[] }): boolean {
+export function entryIsPublic(e: ComparisonEntry, competitors: Competitor[], plans: CompetitorPlan[], features?: { values: FeatureValueRow[]; keys: string[]; shown?: readonly ComparisonFeature[] }): boolean {
   const c = competitors.find(x => x.id === e.competitorId)
   const p = entryPlan(e, plans)
+  // competitor-features-2: with the features shown, only those that apply to its kind need their verification.
+  const keys = features?.shown ? features.shown.filter(f => appliesToFocus(f, c?.focus)).map(f => f.key) : features?.keys ?? []
   return !!(e.verifiedAt && p?.verifiedAt && c?.featuresVerifiedAt && isCountedCompetitor(c)
-    && (!features || featuresVerifiedFor(features.values, c.id, e.countryCode, features.keys)))
+    && (!features || featuresVerifiedFor(features.values, c.id, e.countryCode, keys)))
 }
 
 /** "[ … ]" or "[…]" or "[ ... ]" — an unfinished line in the copy. The checklist refuses to go live with one. */
@@ -185,7 +189,9 @@ export function buildComparison(input: ComparisonInput, t: ComparisonT, opts: Vi
   for (const col of columns) {
     if (col.us) continue
     // The competitor's stamp AND every stated answer shown here carries its own (Mark features verified, per country).
-    col.featuresVerified = col.featuresVerified && featuresVerifiedFor(input.values, col.key, settings.countryCode, shownKeys)
+    // competitor-features-2: only the features that apply to its kind (the others are not asked about, nor shown as answers).
+    const focus = compOf.get(col.key)?.focus ?? null
+    col.featuresVerified = col.featuresVerified && featuresVerifiedFor(input.values, col.key, settings.countryCode, shownFeatures.filter(f => appliesToFocus(f, focus)).map(f => f.key))
     col.verified = col.verified && col.featuresVerified
   }
   for (let i = columns.length - 1; i > 0; i--) if (!columns[i].verified && !showAll) columns.splice(i, 1)
@@ -278,6 +284,8 @@ export function buildComparison(input: ComparisonInput, t: ComparisonT, opts: Vi
     const c = compOf.get(col.key)!
     const kind = /(?:^|;)\s*price:([a-z]+)/.exec(f.hatchgrabSource)?.[1] as PriceKind | undefined
     if (kind && PLAN_PRICE.includes(kind)) return rivalPrice(kind, col, c)
+    // competitor-features-2: a feature that does not apply to its kind — neither yes nor no, and never counted against it.
+    if (!appliesToFocus(f, c.focus)) return cell('unknown', t('cell.notApplicable'), c.website, c.featuresCheckedOn, !col.featuresVerified)
     const v = effectiveValue(input.values, c.id, f.key, settings.countryCode)
     // No answer yet: "not stated", dated by the competitor's features check (a cell always has a date and a source).
     if (!v) return cell('unknown', null, c.website, c.featuresCheckedOn, !col.featuresVerified)
@@ -354,7 +362,7 @@ export function buildComparison(input: ComparisonInput, t: ComparisonT, opts: Vi
     fit.oursBody, fit.oursNotBody, ...fit.rivals.map(r => r.text), ...fit.cards.flatMap(c => [c.title, c.body]),
     ...faq.flatMap(f => [f.q, f.a]), t('tldr.body'), t('meta.title'), t('meta.description'), t('h1'),
   ]
-  const allVerified = input.entries.filter(e => e.countryCode === settings.countryCode && entryIsPublic(e, input.competitors, input.plans, { values: input.values, keys: shownKeys })).length
+  const allVerified = input.entries.filter(e => e.countryCode === settings.countryCode && entryIsPublic(e, input.competitors, input.plans, { values: input.values, keys: shownKeys, shown: shownFeatures })).length
   const checklist: ChecklistItem[] = [
     { key: 'apps', label: t('admin.check.apps', { country }), ok: flags.iosApp && flags.androidApp },
     { key: 'verified', label: t('admin.check.verified', { n: allVerified }), ok: allVerified >= 2 },

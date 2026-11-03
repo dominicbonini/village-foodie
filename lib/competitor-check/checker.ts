@@ -42,7 +42,9 @@ import {
 import {
   quoteInPages, normaliseForQuote, fetchedPages, costOf, addSpend, ZERO_SPEND, budgetStop, routineQuota, spreadFirstDates, selectRoutine, selectDeep,
   afterCheck, deepQueueOf, deepTargets, nextDeepCountry, isMultiCountry, scaleTokens, type Prices, type Spend, type SchedRow, type Lifecycle, type QueueCountry,
+  dueFeatures, nextIntervalFor, routineIntervalOf, featureCheckFor, DEFAULT_TIER_INTERVALS, type TierIntervals, type FeatureChecks,
 } from './core'
+import { appliesToFocus, tierOf } from '@/lib/comparison-features'
 import { EXTRACTOR_SYSTEM, VERIFIER_SYSTEM, extractorMessage, verifierMessage, findingGroups, groupKeys, TERMS_KEYS, type StoredPlanForPrompt, type CheckFeature } from './prompts'
 import { effectiveValue, type FeatureValueRow } from '@/lib/comparison-features'
 import { runPass, type BatchApi, type PassBatch, type PassSettings } from './pass'
@@ -57,6 +59,8 @@ export interface CheckSettings {
   deepCountry: string | null; deepQueue: string[]
   /** comparison-features-1: the CHECKED features the extractor is asked about (store.features(), read once per job). */
   features?: CheckFeature[]
+  /** competitor-features-2 (20261062): how often each tier is asked about, in days (absent before it runs: the defaults). */
+  tierIntervals?: TierIntervals
   /** competitor-check-3 (20261049): the quick pass's settings (its own models, share, limits, the batch in flight). */
   pass: PassSettings
   /** competitor-check-5 (20261050): max_tokens per model (competitor_check_settings.max_output_tokens); a model not in it
@@ -85,6 +89,8 @@ export interface CompetitorForCheck extends SchedRow {
   featureValues: FeatureValueRow[]; plans: StoredPlanForPrompt[]
   /** competitor-check-8 (20261053): the groups an earlier, timed-out deep check finished (by country). */
   deepProgress?: Record<string, DeepProgress>
+  /** competitor-features-2 (20261062): when each feature was last asked about (competitor_feature_checks), per country. */
+  featureChecks?: FeatureChecks
 }
 export interface FindingRow {
   run_id: string; competitor_id: string; plan_id: string | null; country_code: string | null; field: Field
@@ -127,6 +133,9 @@ export interface CheckerStore {
   setPassBatch?(batch: PassBatch | null): Promise<void>
   /** competitor-check-8: the failed batches whose errors have been logged — settings.pass_batches_reread only. */
   setPassReread?(ids: string[]): Promise<void>
+  /** competitor-features-2: records that these features were asked about today (competitor_feature_checks — scheduling only;
+   *  clears `rejudge`). Absent before 20261062: nothing is recorded, and every feature stays due. */
+  markFeaturesChecked?(competitorId: string, country: string | null, keys: readonly string[], today: string): Promise<void>
 }
 export interface CheckerDeps {
   /** One Messages API call (the SDK's client.beta.messages.create, or a harness's recorded fixtures). competitor-check-8: with
@@ -215,9 +224,18 @@ export function describeFound(f: RawFinding): string | null {
 
 /** comparison-features-1: the competitor's current answers for the checked keys, as the message shows them (the country's own
  *  row when a country is checked, else the every-country one). */
-export function answersFor(c: Pick<CompetitorForCheck, 'id' | 'featureValues'>, keys: readonly string[], country: string | null): Record<string, { value: string; note: string | null }> {
-  return Object.fromEntries(keys.map(k => { const v = effectiveValue(c.featureValues, c.id, k, country); return [k, { value: v?.value ?? 'unknown', note: v?.note ?? null }] }))
+export function answersFor(c: Pick<CompetitorForCheck, 'id' | 'featureValues' | 'featureChecks'>, keys: readonly string[], country: string | null): Record<string, { value: string; note: string | null; rejudge?: true }> {
+  return Object.fromEntries(keys.map(k => {
+    const v = effectiveValue(c.featureValues, c.id, k, country)
+    // competitor-features-2: a "no" recorded before the "not mentioned" rule says so, and is judged again (the prompt's rule).
+    const rejudge = featureCheckFor(c.featureChecks, country, k)?.rejudge === true && v?.value === 'no'
+    return [k, { value: v?.value ?? 'unknown', note: v?.note ?? null, ...(rejudge ? { rejudge: true as const } : {}) }]
+  }))
 }
+/** competitor-features-2: the features a check of this competitor may ask about at all — checked (the store reads only those), not
+ *  off, and applying to its focus. */
+export const applicableFeatures = (features: readonly CheckFeature[], c: Pick<CompetitorForCheck, 'focus'>) =>
+  features.filter(f => tierOf(f) !== 'off' && appliesToFocus(f, c.focus))
 
 /** The competitor's own domains (website and stored pages); the web tools are limited to these and the app stores. */
 export const domainsOf = (c: Pick<CompetitorForCheck, 'website' | 'checkUrls'>) =>
@@ -380,11 +398,14 @@ export function progressFor(c: Pick<CompetitorForCheck, 'deepProgress'>, country
  *  for the next run, which asks only for the rest — `resume`); its verifications not reached stay not_run. */
 export async function checkCompetitor(deps: CheckerDeps, settings: CheckSettings, c: CompetitorForCheck, depth: 'deep' | 'routine', runId: string, country: string | null = null,
   resume: DeepProgress | null = null):
-  Promise<{ findings: FindingRow[]; spend: Spend; dropped: number; incomplete: string | null; timedOut: boolean; progress: DeepProgress | null; ignored?: Ignored }> {
+  Promise<{ findings: FindingRow[]; spend: Spend; dropped: number; incomplete: string | null; timedOut: boolean; progress: DeepProgress | null; ignored?: Ignored; asked: string[] }> {
   const domains = domainsOf(c)
   const allowed = [...domains, ...APP_STORE_HOSTS]
   const today = ymd(deps.now())
-  const all = settings.features ?? []
+  // competitor-features-2: a ROUTINE check asks only the features that are DUE (each tier on its own interval; a street-food
+  // market only discovery and the commercial ones); a DEEP check — the full check — asks every feature that applies to it.
+  const applicable = applicableFeatures(settings.features ?? [], c)
+  const all = depth === 'routine' ? dueFeatures(applicable, c, country, today, settings.tierIntervals ?? DEFAULT_TIER_INTERVALS) : applicable
   // competitor-check-8: a resumed deep check asks only for the features not yet recorded (and not the prices, once done).
   const before = depth === 'deep' ? resume : null
   const features = before ? all.filter(f => !before.keys.includes(f.key)) : all
@@ -392,7 +413,7 @@ export async function checkCompetitor(deps: CheckerDeps, settings: CheckSettings
   const fetches = country ? COUNTRY_MAX_FETCHES : depth === 'deep' ? 12 : 6
   const searches = country ? Math.ceil(COUNTRY_MAX_FETCHES / 2) : depth === 'deep' ? 6 : 3
   const groups = findingGroups(features, { skipPrices: before?.pricesDone }).length
-  if (before && !groups) return { findings: [], spend: ZERO_SPEND, dropped: 0, incomplete: null, timedOut: false, progress: null }
+  if (before && !groups) return { findings: [], spend: ZERO_SPEND, dropped: 0, incomplete: null, timedOut: false, progress: null, asked: [] }
   let ex: { value: RecordFindingsInput; contents: unknown[][]; spend: Spend }, incomplete: string | null = null, timedOut = false, progress: DeepProgress | null = null
   try { ex = await converse(deps, {
     model: settings.extractorModel, system: EXTRACTOR_SYSTEM, toolName: RECORD_FINDINGS_TOOL.name, prices: settings.prices,
@@ -437,7 +458,7 @@ export async function checkCompetitor(deps: CheckerDeps, settings: CheckSettings
   const spend = addSpend(ex.spend, await secondCheck(deps, { model: settings.verifierModel, prices: settings.prices, pageTokens: 12000, allowed,
     maxTokens: maxOutputTokensFor(settings.verifierModel, settings.maxOutputTokens) }, c, findings,
     row => depth === 'deep' || row.outcome !== 'unchanged' || !row.quote_in_page))
-  return { findings, spend, dropped: dropped + repeats, incomplete, timedOut, progress, ignored: ex.value.ignored }
+  return { findings, spend, dropped: dropped + repeats, incomplete, timedOut, progress, ignored: ex.value.ignored, asked: incomplete ? [] : keys }
 }
 
 /** The extractor's findings as rows, after the rules: a finding about another website, another country, an availability
@@ -569,7 +590,11 @@ async function runOne(deps: CheckerDeps, settings: CheckSettings, mode: Mode, tr
         // competitor-check-8: a timed-out deep check saves the groups it finished; a finished one clears what was saved.
         const rest = (): Record<string, DeepProgress> => { const x = { ...(c.deepProgress ?? {}) }; delete x[pkey]; return x }
         if (r.progress) { c.deepProgress = { ...(c.deepProgress ?? {}), [pkey]: r.progress }; await deps.store.setSchedule(c.id, { deep_progress: c.deepProgress as unknown as Record<string, unknown> }) }
-        if (!r.incomplete) await deps.store.setSchedule(c.id, { ...afterCheck({ checkIntervalDays: c.checkIntervalDays || live.checkIntervalDays, deepCheckedIn: c.deepCheckedIn }, ymd(now), now.toISOString(), depth === 'deep', country),
+        // competitor-features-2: the features it asked about are recorded (their tier's interval starts again; a re-judged "no" is done).
+        if (!r.incomplete && r.asked.length) await deps.store.markFeaturesChecked?.(c.id, country, r.asked, ymd(now))
+        // …and the next check comes after its most frequent tier's interval (the commercial features: 30 days by default).
+        const interval = live.tierIntervals ? nextIntervalFor(live.features ?? [], c.focus, live.tierIntervals, c.checkIntervalDays || live.checkIntervalDays) : (c.checkIntervalDays || live.checkIntervalDays)
+        if (!r.incomplete) await deps.store.setSchedule(c.id, { ...afterCheck({ checkIntervalDays: interval, deepCheckedIn: c.deepCheckedIn }, ymd(now), now.toISOString(), depth === 'deep', country),
           ...(depth === 'deep' && c.deepProgress?.[pkey] ? { deep_progress: rest() as unknown as Record<string, unknown> } : {}) })
       }
     } catch (e) {
@@ -665,13 +690,16 @@ export async function runChecker(deps: CheckerDeps, job: { mode: Mode | 'schedul
     if (job.mode === 'deep') return reports
   }
   // Routine: first check dates for active competitors that have none, spread evenly over the interval.
-  const firstDates = spreadFirstDates(all, today, settings.checkIntervalDays)
+  // competitor-features-2: spread over, and the quota sized for, the most frequent tier's interval (every focus is asked the
+  // commercial features) — no longer the one interval for everything.
+  const routineDays = settings.tierIntervals ? routineIntervalOf(settings.tierIntervals) : settings.checkIntervalDays
+  const firstDates = spreadFirstDates(all, today, routineDays)
   for (const [id, date] of firstDates) {
     const c = all.find(x => x.id === id)!
     c.nextCheckAt = date
     if (!deps.dryRun) await deps.store.setSchedule(id, { next_check_at: date })
   }
-  const quota = job.limit ?? routineQuota(all.filter(c => c.lifecycle === 'active').length, settings.checkIntervalDays)
+  const quota = job.limit ?? routineQuota(all.filter(c => c.lifecycle === 'active').length, routineDays)
   const list = selectRoutine(all, today, quota, deepDone)
   if (list.length) reports.push(await runOne(deps, settings, 'routine', job.trigger, list, spentSoFar()))
   return reports

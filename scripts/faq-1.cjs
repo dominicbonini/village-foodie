@@ -281,8 +281,9 @@ async function identityViews(tag) {
   // ⚠️ RE-PINNED (faq-1c-undo, 2 November 2026): 20261058_faq_1c_undo.sql follows it now (faq-1c's 20261057 ran and was removed from
   // the repo; 20261058 reverses it outside the FAQ). 20261056 is still the one faq-1 file, and nothing else came after it.
   // ⚠️ RE-PINNED (contact-1, 2 November 2026): 20261061 (contact_messages) follows too.
-  t('the faq-1 migration number is unique, and only 20261058, 20261059 (faq-3), 20261060 (faq-2) and 20261061 (contact-1) follow it', fs.readdirSync(path.join(REPO, 'supabase/migrations')).filter(f => f.startsWith('20261056')).length === 1
-    && JSON.stringify(fs.readdirSync(path.join(REPO, 'supabase/migrations')).filter(f => f > '20261056_faq_1.sql' && /^\d{8}/.test(f))) === JSON.stringify(['20261058_faq_1c_undo.sql', '20261059_faq_3.sql', '20261060_faq_2_translations.sql', '20261061_contact_1.sql']))
+  // ⚠️ RE-PINNED (competitor-features-2, 3 November 2026): and 20261062 (tiers, not_mentioned, competitor_feature_checks).
+  t('the faq-1 migration number is unique, and only 20261058, 20261059 (faq-3), 20261060 (faq-2), 20261061 (contact-1) and 20261062 (competitor-features-2) follow it', fs.readdirSync(path.join(REPO, 'supabase/migrations')).filter(f => f.startsWith('20261056')).length === 1
+    && JSON.stringify(fs.readdirSync(path.join(REPO, 'supabase/migrations')).filter(f => f > '20261056_faq_1.sql' && /^\d{8}/.test(f))) === JSON.stringify(['20261058_faq_1c_undo.sql', '20261059_faq_3.sql', '20261060_faq_2_translations.sql', '20261061_contact_1.sql', '20261062_competitor_features_2.sql']))
 
   // ══ 7 ══════════════════════════════════════════════════════════════════════════════════════════════════════════════
   head('7 · the seed')

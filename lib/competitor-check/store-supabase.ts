@@ -11,7 +11,7 @@ import { valueOut, featureWords, type FeatureValueRow } from '@/lib/comparison-f
 import { featuresOrFile } from '@/lib/comparison-features-file'
 import comparisonEn from '@/messages/ns/en-GB/comparison.json'
 import { SCHEDULE_COLUMNS, DEFAULT_DEEP_TIME_LIMIT_S, type CheckerStore, type CheckSettings, type CompetitorForCheck, type DeepProgress } from './checker'
-import { countriesOf, type PassState, type Prices, type QueueCountry } from './core'
+import { countriesOf, tierIntervalsOut, featureCheckKey, type PassState, type Prices, type QueueCountry, type FeatureChecks } from './core'
 import { DEFAULT_PASS, type PassSettings, type PassBatch } from './pass'
 import type { StoredPlanForPrompt } from './prompts'
 
@@ -66,6 +66,8 @@ export function settingsOut(r: Row): CheckSettings {
     // competitor-check-8 (20261053), read tolerantly: before it runs (or out of range), 1800 s.
     deepTimeLimitSeconds: typeof r.deep_time_limit_seconds === 'number' && Number.isInteger(r.deep_time_limit_seconds) && r.deep_time_limit_seconds >= 60 && r.deep_time_limit_seconds <= 3600
       ? r.deep_time_limit_seconds : DEFAULT_DEEP_TIME_LIMIT_S,
+    // competitor-features-2 (20261062), read tolerantly: before it runs, no tiers — the one interval, as before.
+    ...('tier_intervals' in r ? { tierIntervals: tierIntervalsOut(r.tier_intervals) } : {}),
   }
 }
 /** competitor-check-8: competitors.deep_progress — only well-formed entries ({requestedAt, at, pricesDone, keys}) are kept. */
@@ -75,7 +77,7 @@ export function deepProgressOut(v: unknown): Record<string, DeepProgress> {
     && typeof p.pricesDone === 'boolean' && Array.isArray(p.keys) && (p.keys as unknown[]).every(k => typeof k === 'string')
   return Object.fromEntries(Object.entries(v as Row).filter((e): e is [string, DeepProgress] => !!e[1] && typeof e[1] === 'object' && ok(e[1] as Row)))
 }
-export function competitorForCheck(r: Row, plans: Row[], allCodes: readonly string[] = [], values: readonly FeatureValueRow[] = []): CompetitorForCheck {
+export function competitorForCheck(r: Row, plans: Row[], allCodes: readonly string[] = [], values: readonly FeatureValueRow[] = [], checks: Readonly<Record<string, FeatureChecks>> = {}): CompetitorForCheck {
   const own = plans.filter(p => p.competitor_id === r.id)
   const notIn = Array.isArray(r.not_in_countries) ? (r.not_in_countries as string[]) : []
   return {
@@ -90,6 +92,7 @@ export function competitorForCheck(r: Row, plans: Row[], allCodes: readonly stri
     deepCheckedIn: r.deep_checked_in && typeof r.deep_checked_in === 'object' && !Array.isArray(r.deep_checked_in) ? r.deep_checked_in as Record<string, string> : {},
     passState: r.pass_state && typeof r.pass_state === 'object' && !Array.isArray(r.pass_state) ? r.pass_state as PassState : {},   // competitor-check-3
     deepProgress: deepProgressOut(r.deep_progress),   // competitor-check-8
+    featureChecks: checks[String(r.id)] ?? {},         // competitor-features-2
   }
 }
 
@@ -125,18 +128,31 @@ export function supabaseCheckerStore(db: SupabaseClient): CheckerStore {
         values.push(...((data ?? []) as Row[]).map(valueOut))
         if ((data ?? []).length < 1000) break
       }
-      return ((c.data ?? []) as unknown as Row[]).map(r => competitorForCheck(r, plans, allCodes, values))
+      // competitor-features-2: when each feature was last asked about (paged); none while 20261062 has not run (all due).
+      const checks: Record<string, FeatureChecks> = {}
+      for (let from = 0; ; from += 1000) {
+        const { data, error } = await db.from('competitor_feature_checks').select('competitor_id, feature_key, country_code, checked_on, rejudge')
+          .order('competitor_id').order('feature_key').order('country_code').range(from, from + 999)
+        if (error) { if (tableMissing(error)) break; fail('read feature checks', error) }
+        for (const r of (data ?? []) as Row[])
+          (checks[String(r.competitor_id)] ??= {})[featureCheckKey(r.country_code ? String(r.country_code) : null, String(r.feature_key))] = { checkedOn: String(r.checked_on), rejudge: r.rejudge === true }
+        if ((data ?? []).length < 1000) break
+      }
+      return ((c.data ?? []) as unknown as Row[]).map(r => competitorForCheck(r, plans, allCodes, values, checks))
     },
     async features() {
       // The CHECKED features with their English words: an Admin-added one's own, a seeded one's from the en-GB messages.
-      const { data, error } = await db.from('comparison_features').select('key, group_key, sort_order, checked, show_scope, show_countries, hatchgrab_source, labels, explanations, updated_at')
+      const cols = 'key, group_key, sort_order, checked, show_scope, show_countries, hatchgrab_source, labels, explanations, updated_at'
+      // competitor-features-2: with the tier (before 20261062 there is none: every feature is core).
+      const t = await db.from('comparison_features').select(`${cols}, tier`)
+      const { data, error } = missingColumn(t.error) ? await db.from('comparison_features').select(cols) : t
       if (error && !tableMissing(error)) fail('read features', error)
       const msgs = (comparisonEn as unknown as { features?: Record<string, { label?: string; explain?: string }> }).features ?? {}
       // competitor-check-3: with where each shows, and whether its answer comes from the plans (the pass asks only about the
       // features shown on a country's page, and reads prices from the plans).
       return featuresOrFile(error ? null : (data as Row[])).features.filter(f => f.checked)
         .map(f => ({ key: f.key, ...featureWords(f, 'en-GB', k => (k.endsWith('.label') ? msgs[f.key]?.label : msgs[f.key]?.explain) ?? f.key),
-          showScope: f.showScope, showCountries: f.showCountries, fromPlans: /(^|;)\s*price:(monthly|perorder|cardfee|setup)\b/.test(f.hatchgrabSource) }))
+          showScope: f.showScope, showCountries: f.showCountries, fromPlans: /(^|;)\s*price:(monthly|perorder|cardfee|setup)\b/.test(f.hatchgrabSource), tier: f.tier }))
     },
     async spend(today) {
       const month = `${today.slice(0, 7)}-01T00:00:00Z`
@@ -185,6 +201,13 @@ export function supabaseCheckerStore(db: SupabaseClient): CheckerStore {
       const { data, error } = await db.from('country_settings').select('country_code, enabled, comparison_status')
       if (error) fail('read countries', error)
       return ((data ?? []) as Row[]).map(r => ({ code: String(r.country_code), enabled: r.enabled === true, comparisonStatus: (r.comparison_status as string | null) ?? null })) as QueueCountry[]
+    },
+    async markFeaturesChecked(competitorId, country, keys, today) {
+      // Scheduling only (35.an-3): when each was asked about; a re-judged "no" is done. Before 20261062 there is no table.
+      if (!keys.length) return
+      const { error } = await db.from('competitor_feature_checks')
+        .upsert(keys.map(k => ({ competitor_id: competitorId, feature_key: k, country_code: country ?? '', checked_on: today, rejudge: false })), { onConflict: 'competitor_id,feature_key,country_code' })
+      if (error && !tableMissing(error)) fail('record the features checked', error)
     },
     async setPassReread(ids) {
       const { error } = await db.from('competitor_check_settings').update({ pass_batches_reread: ids }).eq('id', true)

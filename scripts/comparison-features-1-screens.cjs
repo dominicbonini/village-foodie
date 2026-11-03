@@ -108,8 +108,9 @@ setTimeout(() => document.documentElement.setAttribute('data-ready', '1'), 400)`
       const fl = await page.evaluate(() => ({ sideways: document.documentElement.scrollWidth > innerWidth + 1, groups: document.querySelectorAll('[data-feature-group]').length,
         rows: document.querySelectorAll('[data-feature]').length, badges: [...new Set([...document.querySelectorAll('[data-our-badge]')].map(e => e.getAttribute('data-our-badge')))],
         ticks: document.querySelectorAll('[data-check-tick]').length, scopes: document.querySelectorAll('[data-scope]').length, add: !!document.querySelector('[data-add-feature]') }))
-      t(`webkit ${width} Feature list: six groups, 45 features, each with HatchGrab's badge, a Check tick and Show on website; Add feature; no sideways scroll`,
-        !errors.length && !fl.sideways && fl.groups === 6 && fl.rows === 45 && fl.ticks === 45 && fl.scopes === 45 && fl.add && ['yes', 'no', 'coming soon'].every(b => fl.badges.includes(b)), { errors, ...fl })
+      // ⚠️ RE-PINNED (competitor-features-2, 3 November 2026): 46 features (notify added).
+      t(`webkit ${width} Feature list: six groups, 46 features, each with HatchGrab's badge, a Check tick and Show on website; Add feature; no sideways scroll`,
+        !errors.length && !fl.sideways && fl.groups === 6 && fl.rows === 46 && fl.ticks === 46 && fl.scopes === 46 && fl.add && ['yes', 'no', 'coming soon'].every(b => fl.badges.includes(b)), { errors, ...fl })
       await page.screenshot({ path: path.join(OUT, `webkit-features-${width}.png`), fullPage: true })
       // 2 · the Customer preview's cost block (Germany)
       await page.click('[data-section="prices"]'); await page.waitForSelector('[data-country="DE"]')

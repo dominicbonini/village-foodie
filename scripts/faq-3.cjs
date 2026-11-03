@@ -41,6 +41,9 @@ const IDENTITY = path.join(REPO, 'scripts/fixtures/faq-3-identity.json')
 // §5's comparison pages are hashed without faq-4's footer FAQ link (scripts/_lp-faq-4.cjs noFaqLink, both sides; faq-4 §6 proves
 // where it shows).
 const { noFaqLink } = require('./_lp-faq-4.cjs')
+// ⚠️ RE-PINNED (competitor-features-2, 3 November 2026): §5's comparison pages are rendered with the feature list as it was — no
+// "notify" row, "payattruck" still shown (scripts/_lp-competitor-features-2.cjs tables; competitor-features-2.cjs proves both).
+const CF2 = require('./_lp-competitor-features-2.cjs')
 
 let pass = 0, fail = 0
 const t = (name, ok, detail) => { if (ok) pass++; else { fail++; console.log(`  ✗ ${name}${detail === undefined ? '' : ' — ' + (typeof detail === 'string' ? detail : JSON.stringify(detail)).slice(0, 400)}`) } }
@@ -67,7 +70,7 @@ async function identitySet() {
   // Comparison pages over compare-de-1's renderer: every visibility and view, the till players, the app flags, the twins, with the
   // FAQ rows in the database too.
   const cmp = await CDE.renderer(kit, 'faq3-cmp')
-  const faqT = FAQ()
+  const faqT = { ...FAQ(), ...CF2.tables() }
   const pages = {
     'de:live': { status: 'live' },
     'de:live:apps': { status: 'live', apps: true },

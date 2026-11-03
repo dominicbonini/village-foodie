@@ -145,6 +145,7 @@
     "no": "No",
     "partial": "Partly",
     "unknown": "Not stated",
+    "not_mentioned": "Not mentioned on their website",
     "withNote": "{word}, {note}",
     "soon": "coming soon",
     "fromPlan": "from {plan}",
@@ -153,7 +154,8 @@
     "setupFee": "{price} one-off",
     "perMonth": "{price} a month",
     "notInCountry": "not in {country}",
-    "flagOff": "flag still off; shown once the stores list it"
+    "flagOff": "flag still off; shown once the stores list it",
+    "notApplicable": "does not apply to a market"
   },
   "explained": {
     "title": "What the features mean"
@@ -211,6 +213,11 @@
     "stock": {
       "label": "Sold-out and stock limits per event",
       "explain": "Mark dishes sold out and set how many of each can be sold at an event."
+    },
+    "notify": {
+      "label": "Customers told when their order is ready",
+      "explain": "How customers hear their order is ready: SMS, WhatsApp, email, push or a live order-status page.",
+      "ours": "email when the order-ready step is on, and an order-status page; no SMS, WhatsApp or push"
     },
     "allergens": {
       "label": "Allergens on the menu",

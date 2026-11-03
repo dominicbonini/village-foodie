@@ -68,9 +68,15 @@ export function supabaseImportStore(db: SupabaseClient): ImportStore {
       if (error) fail('supersede placeholder answers', error)
     },
     async features() {
-      const { data, error } = await db.from('comparison_features').select('key, checked')
+      // competitor-features-2: with the tier — before 20261062 runs there is none to compare, so the import stops (and is tried again).
+      const { data, error } = await db.from('comparison_features').select('key, checked, tier')
+      if (error && /tier/.test(error.message) && missing(error)) fail('read the feature tiers (run supabase/migrations/20261062_competitor_features_2.sql first; nothing was written)', error)
       if (error) { if (missing(error)) return null; fail('read the feature list', error) }
       return (data ?? []) as Row[]
+    },
+    async updateFeature(key, cols) {
+      const { error } = await db.from('comparison_features').update({ ...cols, updated_at: new Date().toISOString() }).eq('key', key)
+      if (error) fail(`re-tier the feature "${key}"`, error)
     },
     async insertFeatures(rows) {
       const { error } = await db.from('comparison_features').insert(rows)

@@ -179,6 +179,7 @@
     "compare-de-1.cjs",
     "competitor-check-1.cjs",
     "competitor-check-8.cjs",
+    "competitor-features-2.cjs",
     "pricing-check-1.cjs",
     "world-countries-1.cjs",
     "world-countries-2.cjs",
@@ -330,7 +331,8 @@
         "_lp-tidy-1.cjs",
         "_lp-world-countries-2.cjs",
         "_legal-translations.cjs",
-        "_lp-world-countries-3.cjs"
+        "_lp-world-countries-3.cjs",
+        "_lp-competitor-features-2.cjs"
       ]
     },
     "fixture_generators": {

@@ -605,9 +605,10 @@ function RivalTable({ v, cur, live, today, busy, post, onEditPlan, onHistory, on
 }
 
 // ── comparison-features-1: HatchGrab's answer and a competitor's, in Admin's English ──────────────────────────────────
-const VALUE_LABEL: Record<FeatureValue, string> = { yes: 'Yes', no: 'No', partial: 'Partly', unknown: 'Not stated' }
-const VALUE_CLS: Record<FeatureValue, string> = { yes: 'bg-emerald-100 text-emerald-800', no: 'bg-red-100 text-red-700', partial: 'bg-amber-100 text-amber-800', unknown: 'bg-slate-100 text-slate-500' }
-const NEXT_VALUE: Record<FeatureValue, FeatureValue> = { yes: 'no', no: 'partial', partial: 'unknown', unknown: 'yes' }
+// competitor-features-2: "not mentioned" — the competitor's own site does not mention it. Never shown, or coloured, as a "No".
+const VALUE_LABEL: Record<FeatureValue, string> = { yes: 'Yes', no: 'No', partial: 'Partly', unknown: 'Not stated', not_mentioned: 'Not mentioned on their website' }
+const VALUE_CLS: Record<FeatureValue, string> = { yes: 'bg-emerald-100 text-emerald-800', no: 'bg-red-100 text-red-700', partial: 'bg-amber-100 text-amber-800', unknown: 'bg-slate-100 text-slate-500', not_mentioned: 'bg-slate-100 text-slate-500' }
+const NEXT_VALUE: Record<FeatureValue, FeatureValue> = { yes: 'no', no: 'partial', partial: 'not_mentioned', not_mentioned: 'unknown', unknown: 'yes' }
 const GROUP_LABEL: Record<FeatureGroup, string> = { ordering: 'Ordering', payments: 'Payments', kitchen: 'Kitchen', marketing: 'Marketing', apps_hardware: 'Apps and hardware', price_contract: 'Price and contract' }
 
 /** HatchGrab's answer for a feature in a country, in English: its value and note (from the plans, the country's flags, a
@@ -622,7 +623,7 @@ function ourText(f: Feat, state: State, country: CountryRow | null): { value: Fe
 }
 
 /** The country's feature matrix: every CHECKED feature that may apply here, HatchGrab's answer, and each of the five cheapest
- *  counted rivals' answers with their note and source. A click on an answer saves a new one (Yes → No → Partly → Not stated);
+ *  counted rivals' answers with their note and source. A click on an answer saves a new one (Yes → No → Partly → Not mentioned → Not stated);
  *  "Mark verified" stamps that rival's current answers for this country. */
 function FeatureMatrix({ v, competitors, code, state, busy, post, title }: { v?: Vol; competitors?: Competitor[]; code: string; state: State; busy: string | null; post: Post; title?: string }) {
   const cols: Competitor[] = competitors ? [...competitors] : []

@@ -132,7 +132,10 @@ const m_FILE_FEATURES_ROWS = () => JSON.parse(fs.readFileSync(path.join(REPO, 'd
   const names = catalog.plans.filter(p => p.isPublic && p.active).sort((a, b) => a.sortOrder - b.sortOrder).map(p => p.name)
   const F = Object.fromEntries(m.FILE_FEATURES.map(f => [f.key, f]))
   const ans = (key, flags = { ios: true, android: true }, charges) => m.cf.ourAnswer(F[key], { catalog, appFlags: flags, charges })
-  t('the shipped list: 45 features in six groups, every one checked', m.FILE_FEATURES.length === 45 && new Set(m.FILE_FEATURES.map(f => f.groupKey)).size === 6 && m.FILE_FEATURES.every(f => f.checked))
+  // ⚠️ RE-PINNED (competitor-features-2, 3 November 2026, docs/competitor-features-2-report.md): 46 features (notify added), each
+  // with a tier; checked = not OFF (allergens, deals, qr, buzzers are off — answers kept, never asked).
+  t('the shipped list: 46 features in six groups, checked exactly when the tier is not off (42)', m.FILE_FEATURES.length === 46 && new Set(m.FILE_FEATURES.map(f => f.groupKey)).size === 6
+    && m.FILE_FEATURES.every(f => f.checked === (f.tier !== 'off')) && m.FILE_FEATURES.filter(f => f.checked).length === 42)
   t(`a plan switch: WhatsApp = Yes from ${names[1]} (the plans whose switch is on)`, ans('whatsapp').value === 'yes' && ans('whatsapp').note.kind === 'plans' && ans('whatsapp').note.plans[0] === names[1], ans('whatsapp'))
   t('…social posts the same; pre-orders on every plan → Yes, no note', ans('social').note?.plans?.[0] === names[1] && ans('preorder').value === 'yes' && ans('preorder').note === null)
   t('built in: own web address, weekly schedule, allergens → Yes', ['domain', 'schedule', 'allergens'].every(k => ans(k).value === 'yes' && ans(k).badge === 'yes'))
@@ -152,7 +155,8 @@ const m_FILE_FEATURES_ROWS = () => JSON.parse(fs.readFileSync(path.join(REPO, 'd
   t('scope "some": PayPal and the fiscal till only in their countries (DE yes, GB no); local payments in PL, not DE; the discovery map in GB only',
     shDE.includes('paypal') && shDE.includes('fiscal') && !shGB.includes('paypal') && !shGB.includes('fiscal') && shPL.includes('localpay') && !shDE.includes('localpay') && shGB.includes('discovery') && !shDE.includes('discovery'))
   const hidden = m.FILE_FEATURES.filter(f => f.showScope === 'hidden').map(f => f.key)
-  t(`hidden features (${hidden.length}) are CHECKED but never shown — in no country`, hidden.length === 13 && m.FILE_FEATURES.filter(f => hidden.includes(f.key)).every(f => f.checked)
+  // ⚠️ RE-PINNED (competitor-features-2): 14 hidden (pay at the truck joins them); the hidden ones not OFF are checked.
+  t(`hidden features (${hidden.length}) are CHECKED (unless off) but never shown — in no country`, hidden.length === 14 && m.FILE_FEATURES.filter(f => hidden.includes(f.key)).every(f => f.checked === (f.tier !== 'off'))
     && ['DE', 'GB', 'PL', 'AT', 'US'].every(c => !m.cf.featuresShownIn(m.FILE_FEATURES, c).some(f => hidden.includes(f.key)))
     && m.cf.featuresCheckedFor(m.FILE_FEATURES, 'DE').some(f => f.key === 'asap'), hidden)
   t('"iPad app" everywhere: the label, and no "iPhone and iPad" left in the code or the comparison messages',

@@ -8,7 +8,10 @@
 //                                     show_countries | 'hidden'), hatchgrab_source (below), and — for a feature added in
 //                                     Admin only — its words per locale (labels, explanations). A SEEDED feature's words are
 //                                     in messages (comparison.features.<key>.label / .explain / .ours).
-//   public.competitor_feature_values  value yes / no / partial / unknown, the note as advertised, quote, source, checked
+//                                     competitor-features-2 (20261062): tier — core / commercial / secondary / off (null = not
+//                                     tiered yet, read as core): how often the checker asks (competitor_check_settings.tier_intervals).
+//   public.competitor_feature_values  value yes / no / partial / unknown / not_mentioned (competitor-features-2: the competitor's
+//                                     own site does not mention it — never shown as a "no"), the note as advertised, quote, source, checked
 //                                     date, verification; country_code null = every country, a country's own row wins there.
 //                                     🔴 Never edited in place: a new row supersedes the old one (the history rule).
 //
@@ -30,15 +33,33 @@ import { includedTaxOf } from '@/lib/address-formats'
 
 export const FEATURE_GROUPS = ['ordering', 'payments', 'kitchen', 'marketing', 'apps_hardware', 'price_contract'] as const
 export type FeatureGroup = (typeof FEATURE_GROUPS)[number]
-export const FEATURE_VALUES = ['yes', 'no', 'partial', 'unknown'] as const
+export const FEATURE_VALUES = ['yes', 'no', 'partial', 'unknown', 'not_mentioned'] as const
 export type FeatureValue = (typeof FEATURE_VALUES)[number]
 export const SHOW_SCOPES = ['all', 'some', 'hidden'] as const
 export type ShowScope = (typeof SHOW_SCOPES)[number]
 export const FEATURE_KEY = /^[a-z][a-z0-9_]{1,30}$/
+/** competitor-features-2: how often the checker asks about a feature — commercial every 30 days, core 90, secondary 180, off never
+ *  (the intervals are competitor_check_settings.tier_intervals). */
+export const FEATURE_TIERS = ['core', 'commercial', 'secondary', 'off'] as const
+export type FeatureTier = (typeof FEATURE_TIERS)[number]
+/** A feature's tier; one not tiered yet (null — an Admin-added feature) is core. */
+export const tierOf = (f: { tier?: FeatureTier | null }): FeatureTier => f.tier ?? 'core'
+/** competitor-features-2: the features that apply to a competitor of this focus — a street-food market (it runs markets, it does not
+ *  sell ordering software) is asked only about discovery and the commercial features, and is never marked down for the rest; every
+ *  other focus (food_truck, nearest_local, pop_up, pos, none) gets the full list. */
+export const FOCUS_ONLY: Readonly<Record<string, { keys: readonly string[]; tiers: readonly FeatureTier[] }>> = {
+  street_food_markets: { keys: ['discovery'], tiers: ['commercial'] },
+}
+export const appliesToFocus = (f: { key: string; tier?: FeatureTier | null }, focus: string | null | undefined): boolean => {
+  const only = focus ? FOCUS_ONLY[focus] : undefined
+  return !only || only.keys.includes(f.key) || only.tiers.includes(tierOf(f))
+}
 
 export interface ComparisonFeature {
   key: string; groupKey: FeatureGroup; sortOrder: number; checked: boolean; showScope: ShowScope; showCountries: string[]
   hatchgrabSource: string
+  /** competitor-features-2: null = not tiered yet (read as core — tierOf). */
+  tier: FeatureTier | null
   /** Only for a feature added in Admin: its words per locale ({"en-GB": …, "de-DE": …}). Empty for a seeded one. */
   labels: Record<string, string>; explanations: Record<string, string>
   updatedAt: string | null
@@ -62,6 +83,7 @@ export function featureOut(r: Row): ComparisonFeature {
     showScope: (SHOW_SCOPES as readonly string[]).includes(String(r.show_scope)) ? r.show_scope as ShowScope : 'hidden',
     showCountries: Array.isArray(r.show_countries) ? (r.show_countries as unknown[]).filter((c): c is string => typeof c === 'string') : [],
     hatchgrabSource: str(r.hatchgrab_source) ?? 'confirm', labels: words(r.labels), explanations: words(r.explanations),
+    tier: (FEATURE_TIERS as readonly string[]).includes(String(r.tier)) ? r.tier as FeatureTier : null,
     updatedAt: str(r.updated_at),
   }
 }

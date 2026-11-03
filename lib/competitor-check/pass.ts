@@ -24,9 +24,9 @@
 import type Anthropic from '@anthropic-ai/sdk'
 import { RECORD_FINDINGS_TOOL, APP_STORE_HOSTS, validateRecordFindings, maxOutputTokensFor, type Classification, type RecordFindingsInput, type Ignored } from './model'
 import { EXTRACTOR_SYSTEM, passFeatureBlock, passCompetitorBlock, classifyMessage, type CheckFeature } from './prompts'
-import { addSpend, ZERO_SPEND, budgetStop, passTargets, type PassItem, type PassState, type Spend } from './core'
+import { addSpend, ZERO_SPEND, budgetStop, passTargets, dueFeatures, DEFAULT_TIER_INTERVALS, type PassItem, type PassState, type Spend } from './core'
 import {
-  converse, rowsFrom, secondCheck, domainsOf, answersFor, loginFailure, allFailedOutright, FINDING_GROUPS, MAX_CONTINUATIONS,
+  converse, rowsFrom, secondCheck, domainsOf, answersFor, applicableFeatures, loginFailure, allFailedOutright, FINDING_GROUPS, MAX_CONTINUATIONS,
   type CheckerDeps, type CheckSettings, type CompetitorForCheck, type FindingRow, type RunReport, type Meter, type Recorded,
 } from './checker'
 
@@ -109,7 +109,9 @@ export function passRequest(c: CompetitorForCheck, item: Pick<PassItem<Competito
   const p = s.pass
   const allowed = [...domainsOf(c), ...APP_STORE_HOSTS]
   const classify = item.kind === 'classify'
-  const feats = classify || !item.country ? [] : visibleFeatures(s.features ?? [], item.country)
+  // competitor-features-2: of those shown on the country's page, only the ones that apply to its focus and are DUE.
+  const feats = classify || !item.country ? []
+    : dueFeatures(visibleFeatures(applicableFeatures(s.features ?? [], c), item.country), c, item.country, today, s.tierIntervals ?? DEFAULT_TIER_INTERVALS)
   let fetches = classify ? 1 : p.maxFetches, searches = classify ? 0 : p.maxSearches
   const system = [{ type: 'text', text: EXTRACTOR_SYSTEM, cache_control: { type: 'ephemeral' } }]
   const keys = [...new Set([...feats.map(f => f.key)])]
@@ -157,7 +159,7 @@ export function classOf(rows: FindingRow[], c: Pick<CompetitorForCheck, 'focus'>
 /** One item: the read (from a batch result, or asked now), the rows, the second check. competitor-check-5: a cut-off answer
  *  is continued; if it still cannot finish, its complete findings are kept and `incomplete` says why. */
 export async function processPassItem(deps: CheckerDeps, s: CheckSettings, item: PassItem<CompetitorForCheck>, runId: string, seed?: Anthropic.Beta.BetaMessage):
-  Promise<{ findings: FindingRow[]; spend: Spend; dropped: number; klass: 'relevant' | 'not_relevant' | 'unclear' | null; incomplete: string | null; ignored?: Ignored }> {
+  Promise<{ findings: FindingRow[]; spend: Spend; dropped: number; klass: 'relevant' | 'not_relevant' | 'unclear' | null; incomplete: string | null; ignored?: Ignored; asked: string[] }> {
   const c = item.row
   const r = passRequest(c, item, s, deps.now().toISOString().slice(0, 10))
   let ex: { value: RecordFindingsInput; contents: unknown[][]; spend: Spend }, incomplete: string | null = null
@@ -177,7 +179,7 @@ export async function processPassItem(deps: CheckerDeps, s: CheckSettings, item:
   const verify = item.kind === 'classify' ? ZERO_SPEND
     : await secondCheck(deps, { model: s.pass.verifierModel, prices: s.prices, pageTokens: s.pass.maxPageTokens, allowed: r.allowed, maxInputTokens: PRICE_STEP_TOKENS,
       maxTokens: maxOutputTokensFor(s.pass.verifierModel, s.maxOutputTokens) }, c, findings, needsSecondCheck)
-  return { findings, spend: addSpend(ex.spend, verify), dropped: dropped + (all.length - findings.length), klass: item.kind === 'classify' && !incomplete ? classOf(findings, c) : null, incomplete, ignored: ex.value.ignored }
+  return { findings, spend: addSpend(ex.spend, verify), dropped: dropped + (all.length - findings.length), klass: item.kind === 'classify' && !incomplete ? classOf(findings, c) : null, incomplete, ignored: ex.value.ignored, asked: r.keys }
 }
 
 /** pass_state after an item: the classification, or the country done. */
@@ -261,6 +263,8 @@ async function writeItem(deps: CheckerDeps, item: PassItem<CompetitorForCheck>, 
   const next = nextPassState(item.row.passState, item, deps.now().toISOString(), out.klass)
   item.row.passState = next
   await deps.store.setSchedule(item.row.id, { pass_state: next as Record<string, unknown> })
+  // competitor-features-2: the features it asked about start their tier's interval again.
+  if (item.kind === 'check' && out.asked.length) await deps.store.markFeaturesChecked?.(item.row.id, item.country, out.asked, deps.now().toISOString().slice(0, 10))
 }
 
 /** The batch's results: each item read from its result (continued one by one only if it needs another turn); an errored,

@@ -3,6 +3,7 @@
 // is also where its URLs must be, because the web fetch tool only fetches URLs that appeared in a user message, a tool
 // result or an earlier fetch/search result (https://platform.claude.com/docs/en/agents-and-tools/tool-use/web-fetch-tool#url-validation).
 import { FIELDS, CLASSIFICATIONS, OUTCOMES, QUOTE_MAX } from './model'
+import type { FeatureTier } from '@/lib/comparison-features'
 
 export const EXTRACTOR_SYSTEM = `You check one competitor of HatchGrab, an online ordering and pre-ordering system for food trucks, against the competitor's OWN website.
 
@@ -15,9 +16,13 @@ Rules — follow all of them:
 6. Record your findings with record_findings as the message says: when it lists groups, one call per group with only that group's findings, "more": true on every call except the last, which has "more": false; otherwise one call with "more": false. Do not call any other tool you were not given.
 
 Fields: ${FIELDS.join(', ')}.
-Features: the message lists the features to check, each with its key and what it means. For each, record field "feature" with its "feature_key", "feature" = yes / no / partial / unknown, and "note" — a short note as advertised, e.g. "add-on, 10 € a month" or "only on the Pro plan" (null if none). "partial" means only part of it, or only on some plans or for an extra charge.
+Features: the message lists the features to check, each with its key and what it means. For each, record field "feature" with its "feature_key", "feature" = yes / no / partial / not_mentioned / unknown, and "note" — a short note as advertised, e.g. "add-on, 10 € a month" or "only on the Pro plan" (null if none). "partial" means only part of it, or only on some plans or for an extra charge.
+- "no" ONLY with a verbatim quote in which the competitor itself says it does not offer it ("no kitchen display", "not available on the Starter plan"). Never answer "no" because a page does not mention it.
+- "not_mentioned": you read its site and it does not mention the feature — outcome "not_stated", no quote.
+- "unknown": the pages that would say could not be read (record those pages as "blocked" or "page_gone").
+- A stored answer marked "rejudge": true was recorded before these rules: answer it again under them, with a finding even when it holds.
 Outcomes: ${OUTCOMES.join(', ')}.
-- "unchanged": the page states the same value as the stored one. "changed": it states a different value. "not_stated": the site does not say.
+- "unchanged": the page states the same value as the stored one. "changed": it states a different value. "not_stated": the site does not say (for a feature: "not_mentioned").
 - "new_plan": a plan the stored data does not have (give its name and price fields). "plan_gone": a stored plan the pricing page no longer offers (quote the current plan list).
 - "new_url": a page worth reading next time (pricing, features, food-truck page, terms, payments) that is not in the stored list; put it in "url".
 - "blocked": a page you could not read (access refused, an error); "page_gone": a stored page that no longer exists and you found no replacement.
@@ -36,10 +41,12 @@ export interface StoredPlanForPrompt { id: string; plan_name: string; country_co
   setup_minor: number; truck_fee_bps: number; truck_fee_fixed_minor: number; customer_fee_bps: number; customer_fee_fixed_minor: number; card_mode: string; card_bps: number | null; card_fixed_minor: number | null; source_url: string | null }
 /** comparison-features-1: a checked feature, as the extractor is asked about it. competitor-check-3: with where it shows (the
  *  quick pass asks only about the features shown on the country's page) and whether its answer comes from the plans. */
-export interface CheckFeature { key: string; label: string; explain: string; showScope?: 'all' | 'some' | 'hidden'; showCountries?: string[]; fromPlans?: boolean }
+export interface CheckFeature { key: string; label: string; explain: string; showScope?: 'all' | 'some' | 'hidden'; showCountries?: string[]; fromPlans?: boolean
+  /** competitor-features-2: how often it is asked about (null / absent = core). */
+  tier?: FeatureTier | null }
 export interface StoredCompetitorForPrompt { name: string; website: string | null; lifecycle: string; focus: string | null; check_urls: string[]
   /** The competitor's current answers, by feature key (for the country checked, when one is). */
-  features: Record<string, { value: string; note: string | null }>; plans: StoredPlanForPrompt[] }
+  features: Record<string, { value: string; note: string | null; rejudge?: true }>; plans: StoredPlanForPrompt[] }
 
 /** global-players-1: the country check's task — for a competitor that sells in several countries, the deep check works on
  *  ONE country at a time, and the stored data in the message is that country's only. */
@@ -79,7 +86,7 @@ export function extractorMessage(c: StoredCompetitorForPrompt, mode: 'deep' | 'r
   if (country) c = { ...c, plans: c.plans.filter(p => p.country_code === country.code) }
   const deepTask = mode === 'deep'
     ? `FULL DEEP CHECK. Read the pricing page(s), the features page(s), the food-truck page if there is one, the terms (for the minimum term) and the payment page. Return a finding for EVERY feature in the list and every stored plan — changed or unchanged — plus any new plans, plans that have gone, and new URLs worth reading next time.${c.lifecycle === 'candidate' ? ' This company is a CANDIDATE: also record one "classification" finding (what it sells) with its quote.' : ''}`
-    : 'ROUTINE CHECK. Check the prices, fees, card rate and the features in the list, and whether plans were added or removed. Return a finding for each stored value that CHANGED, and for each feature whose stored answer is unknown that the site now states, plus new and gone plans.'
+    : 'ROUTINE CHECK. Check the prices, fees, card rate and the features in the list, and whether plans were added or removed. Return a finding for each stored value that CHANGED, for each feature whose stored answer is unknown that the site now states, and for each feature marked "rejudge", plus new and gone plans.'
   const task = country ? `${countryTask(country.code, country.maxFetches)}\n\n${deepTask}` : deepTask
   const urls = c.check_urls.length ? c.check_urls : c.website ? [c.website] : []
   const groups = findingGroups(features, { skipPrices: resume?.pricesDone })

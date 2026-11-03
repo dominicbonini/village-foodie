@@ -177,6 +177,8 @@ function memoryImportStore({ competitors = [], plans = [], entries = [], imports
     // comparison-features-1: the master list and the answers.
     async features() { return db.features === null ? null : db.features.map(f => ({ ...f })) },
     async insertFeatures(rows) { writes.push(['insertFeatures', rows.length]); db.features.push(...rows.map(r => ({ ...r }))) },
+    // competitor-features-2: a feature whose tier the file changed (its tier, checked and where it shows).
+    async updateFeature(key, cols) { writes.push(['updateFeature', key]); Object.assign(db.features.find(f => f.key === key), cols) },
     async featureValues() { return db.values.filter(v => !v.superseded_at).map(v => ({ ...v })) },
     async insertFeatureValues(rows) { writes.push(['insertFeatureValues', rows.length]); db.values.push(...rows.map((r, i) => ({ id: `iv-${db.values.length + i}`, superseded_at: null, ...r }))) },
     async supersedeFeatureValues(ids, at) { for (const v of db.values) if (ids.includes(v.id)) v.superseded_at = at },

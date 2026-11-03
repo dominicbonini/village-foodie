@@ -21,7 +21,7 @@ export const OTHER_FIELDS = ['url', 'classification', 'availability'] as const  
 export const FIELDS = [...PLAN_FIELDS, 'feature', ...OTHER_FIELDS] as const
 export type Field = (typeof FIELDS)[number]
 /** A feature's answer, as stored (competitor_feature_values.value). */
-export const FEATURE_ANSWERS = ['yes', 'no', 'partial', 'unknown'] as const
+export const FEATURE_ANSWERS = ['yes', 'no', 'partial', 'unknown', 'not_mentioned'] as const
 
 // global-players-1 (20261046): 'in_country' / 'not_in_country' — whether it sells to businesses in the country checked.
 export const OUTCOMES = ['changed', 'unchanged', 'new_plan', 'plan_gone', 'new_url', 'classification', 'blocked', 'page_gone', 'not_stated', 'in_country', 'not_in_country'] as const
@@ -68,7 +68,7 @@ export interface RawFinding {
   /** comparison-features-1: for field 'feature' — which feature (a key from the list in the message), its answer, and the
    *  note as advertised ("add-on, 10 € a month"). */
   feature_key: string | null
-  feature: 'yes' | 'no' | 'partial' | 'unknown' | null
+  feature: (typeof FEATURE_ANSWERS)[number] | null
   note: string | null
   classification: Classification | null
   url: string | null
@@ -249,6 +249,13 @@ export const KIND_FIELDS: Readonly<Record<string, (r: Record<string, unknown>) =
   classification: r => r.field === 'classification' || r.outcome === 'classification',
 }
 
+/** competitor-features-2 (35.an-4): does a quote say the competitor does NOT offer something? A "no" needs one — a page that
+ *  merely does not mention the feature is "not_mentioned". Read in the English translation when there is one, else as quoted
+ *  (the languages of the countries on the list). Deliberately broad: it rejects a "no" whose quote has no negation at all. */
+const NEGATION = /\b(no|not|none|never|without|cannot|unavailable|unsupported|excluded|kein\w*|nicht|ohne|nie|pas|aucun\w*|sans|ni|sin|ningún|ninguna|nunca|non|nessun\w*|senza|geen|niet|zonder|nooit|ikke|uden|inte|utan|nie|brak|bez)\b|n['’]t\b/iu
+export const saysNotOffered = (quote: unknown, quoteEn: unknown): boolean =>
+  [quoteEn, quote].some(q => typeof q === 'string' && NEGATION.test(q))
+
 /** Why one finding is unusable (empty: it is usable). Run after the stray fields are dropped. */
 function findingErrors(r: Record<string, unknown>, at: string): string[] {
   const errors: string[] = []
@@ -269,7 +276,9 @@ function findingErrors(r: Record<string, unknown>, at: string): string[] {
   if (inList(r.outcome, QUOTED_OUTCOMES) && (!isStr(r.quote) || !String(r.quote).trim() || !isHttpUrl(r.source_url)))
     errors.push(`${at}: a "${String(r.outcome)}" finding needs a verbatim quote and the page's URL.`)
   if (r.field === 'feature' && (r.feature_key === null || (inList(r.outcome, ['changed', 'unchanged']) && r.feature === null)))
-    errors.push(`${at}: a feature finding needs "feature_key" (from the list) and "feature" (yes / no / partial / unknown).`)
+    errors.push(`${at}: a feature finding needs "feature_key" (from the list) and "feature" (yes / no / partial / not_mentioned / unknown).`)
+  if (r.field === 'feature' && r.feature === 'no' && !saysNotOffered(r.quote, r.quote_en))
+    errors.push(`${at}: "no" needs a verbatim quote in which the competitor says it does not offer this; if its site does not mention it, answer "not_mentioned".`)
   if (r.outcome === 'classification' && r.classification === null) errors.push(`${at}: a classification finding needs "classification".`)
   if (r.outcome === 'new_url' && r.url === null) errors.push(`${at}: a new_url finding needs "url".`)
   if ((r.outcome === 'in_country' || r.outcome === 'not_in_country') !== (r.field === 'availability')) errors.push(`${at}: "in_country" and "not_in_country" go with the field "availability", and only they do.`)
@@ -306,6 +315,9 @@ export function validateRecordFindings(input: unknown): { ok: true; value: Recor
     for (const k of Object.keys(r)) if (!KEYS.includes(k)) { delete r[k]; strayFields++ }
     for (const k of KEYS) if (!(k in r)) r[k] = null   // a missing property reads as "does not apply"; the checks below decide
     for (const [k, belongs] of Object.entries(KIND_FIELDS)) if (r[k] !== null && !belongs(r)) { r[k] = null; strayFields++ }
+    // competitor-features-2: "not mentioned" has no quote — it is the outcome not_stated, whichever outcome came with it; and a
+    // feature its site does not state IS not mentioned.
+    if (r.field === 'feature' && (r.feature === 'not_mentioned' || r.outcome === 'not_stated')) { r.feature = 'not_mentioned'; r.outcome = 'not_stated' }
     const errs = findingErrors(r, at)
     if (errs.length) unusable.push(errs.join(' ')); else kept.push(r as unknown as RawFinding)
   })

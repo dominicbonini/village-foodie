@@ -116,11 +116,13 @@ export async function acceptFinding(pricing: PricingStore, checks: CheckAdminSto
       const v = await newPlanVersion(pricing, old, { ...c.cols, source_url: f.source_url ?? old.source_url }, stamp)
       if (!v.ok) return v
     } else if (feat) {
-      // The answer: the finding's value (an old finding's not_stated is unknown), its note as advertised (an old text
+      // The answer: the finding's value (an old finding's not_stated is unknown, a new one's not_mentioned), its note as advertised (an old text
       // finding's text), its quote and page — a new row, unverified; the competitor's features stamp cleared.
       const text = typeof f.found_value === 'string' && f.found_value.trim() ? f.found_value.trim() : null
-      const value: FeatureValue | null = outcome === 'not_stated' ? 'unknown' : feat.legacyText ? 'unknown'
-        : found.feature === 'not_stated' ? 'unknown' : (['yes', 'no', 'partial', 'unknown'] as const).find(v => v === found.feature) ?? null
+      // competitor-features-2: a feature its site does not mention is not_mentioned (never "no"); an older not_stated finding
+      // without that answer stays unknown.
+      const value: FeatureValue | null = outcome === 'not_stated' ? (found.feature === 'not_mentioned' ? 'not_mentioned' : 'unknown') : feat.legacyText ? 'unknown'
+        : found.feature === 'not_stated' ? 'unknown' : (['yes', 'no', 'partial', 'unknown', 'not_mentioned'] as const).find(v => v === found.feature) ?? null
       if (!value) return refuse(400, 'This finding has no answer (yes / no / partly / not stated) to save.')
       const note = outcome === 'not_stated' ? null : feat.legacyText ? text : typeof found.note === 'string' && found.note.trim() ? found.note.trim() : null
       const w = await writeAnswer(pricing, { competitorId: cid, key: feat.key, countryCode: featCountry, value, note,

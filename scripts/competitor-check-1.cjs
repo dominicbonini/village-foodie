@@ -736,20 +736,23 @@ const read = f => fs.readFileSync(path.join(REPO, f), 'utf8')
     const deps2 = (api, st) => ({ api, store: st, now: () => NOW, log: () => {}, dryRun: false })
     t('the registry has the feature list (kind "features")', FILE[0] && FILE[0].path === 'data/comparison-features/features.json' && L.featuresProblems(doc).length === 0, L.featuresProblems(doc))
     const o1 = await L.runImports(deps, FILE)
-    t('first run: all 45 features added and recorded', o1[0].status === 'imported' && store.db.features.length === 45 && o1[0].counts.added === 45 && store.db.imports[0].result === 'ok', o1)
+    // ⚠️ RE-PINNED (competitor-features-2, 3 November 2026, docs/competitor-features-2-report.md): the list has 46 features
+    // (notify added) in four tiers; the 4 OFF ones are not checked, so only the 42 checked ones make competitors due.
+    t('first run: all 46 features added and recorded', o1[0].status === 'imported' && store.db.features.length === 46 && o1[0].counts.added === 46 && store.db.imports[0].result === 'ok', o1)
     const unknowns = store.db.values.filter(v => v.value === 'unknown')
-    t('every feature added marks each ACTIVE competitor\'s answer "unknown" (none for a candidate; an answer that exists is kept) and every active competitor DUE (next check today)',
-      unknowns.length === 2 * 45 - 1 && !store.db.values.some(v => v.competitor_id === 'c1') && store.db.values.find(v => v.id === 'kept').value === 'yes'
+    t('every CHECKED feature added marks each ACTIVE competitor\'s answer "unknown" (none for a candidate; an answer that exists is kept) and every active competitor DUE (next check today)',
+      unknowns.length === 2 * 42 - 1 && !store.db.values.some(v => v.competitor_id === 'c1') && store.db.values.find(v => v.id === 'kept').value === 'yes'
       && store.db.competitors.filter(c => c.lifecycle === 'active').every(c => c.next_check_at === '2026-10-30') && store.db.competitors.find(c => c.id === 'c1').next_check_at === null, { unknowns: unknowns.length })
     const w = store.writes.length
     t('a rerun of the same file is a no-op', (await L.runImports(deps, FILE))[0].status === 'unchanged' && store.writes.length === w)
     // Admin unticks one; then a new version of the file adds a feature — only the new key is added; Admin's choice stays.
     store.db.features.find(f => f.key === 'asap').checked = false
-    const changed = { ...doc, features: [...doc.features, { key: 'giftcards', group_key: 'payments', sort_order: 99, checked: true, show_scope: 'hidden', show_countries: [], hatchgrab_source: 'confirm' }] }
+    // ⚠️ RE-PINNED (competitor-features-2): every feature in the file has a tier.
+    const changed = { ...doc, features: [...doc.features, { key: 'giftcards', group_key: 'payments', sort_order: 99, tier: 'core', checked: true, show_scope: 'hidden', show_countries: [], hatchgrab_source: 'confirm' }] }
     files['data/comparison-features/features.json'] = Buffer.from(JSON.stringify(changed))
     const o3 = await L.runImports(deps, FILE)
     t('a changed file adds only the new key (and marks competitors due for it); a key already in the list keeps Admin\'s choices', o3[0].status === 'imported' && o3[0].counts.added === 1
-      && store.db.features.length === 46 && store.db.features.find(f => f.key === 'asap').checked === false && store.db.values.filter(v => v.feature_key === 'giftcards').length === 2, o3)
+      && store.db.features.length === 47 && store.db.features.find(f => f.key === 'asap').checked === false && store.db.values.filter(v => v.feature_key === 'giftcards').length === 2, o3)
     const bad = { ...doc, features: [...doc.features, { key: 'Bad Key', group_key: 'nowhere', sort_order: 1, checked: true, show_scope: 'some', show_countries: [], hatchgrab_source: 'guess' }] }
     files['data/comparison-features/features.json'] = Buffer.from(JSON.stringify(bad))
     const fresh = FX.memoryImportStore({ competitors: comps })
@@ -758,7 +761,7 @@ const read = f => fs.readFileSync(path.join(REPO, f), 'utf8')
     let missingTable = null
     try { await L.importFeatures(FX.memoryImportStore({ features: null }), doc, { today: '2026-10-30' }) } catch (e) { missingTable = e.message }
     t('before 20261047 runs, it says which SQL to run', /20261047_comparison_features_1\.sql/.test(missingTable || ''), missingTable)
-    t('Admin\'s line: "Comparison feature list imported 30 Oct: 45 features (45 added) — competitors marked due"', /^Comparison feature list imported 30 Oct: 45 features \(45 added\)/.test(L.importLines([{ file_path: 'data/comparison-features/features.json', sha256: 'a'.repeat(64), imported_at: '2026-10-30T02:11:00Z', result: 'ok', counts: o1[0].counts, message: null }])[2].text))
+    t('Admin\'s line: "Comparison feature list imported 30 Oct: 46 features (46 added) — competitors marked due"', /^Comparison feature list imported 30 Oct: 46 features \(46 added\)/.test(L.importLines([{ file_path: 'data/comparison-features/features.json', sha256: 'a'.repeat(64), imported_at: '2026-10-30T02:11:00Z', result: 'ok', counts: o1[0].counts, message: null }])[2].text))
     files['data/comparison-features/features.json'] = Buffer.from(raw)
 
     // The extractor is asked about every CHECKED feature: its key, label and explanation, in the user message.
@@ -772,7 +775,8 @@ const read = f => fs.readFileSync(path.join(REPO, f), 'utf8')
       L.RECORD_FINDINGS_TOOL.input_schema.properties.findings.items.required.includes('feature_key') && JSON.stringify(L.RECORD_FINDINGS_TOOL.input_schema.properties.findings.items.properties.feature).includes('partial')
       && /field "feature" with its "feature_key"/.test(L.EXTRACTOR_SYSTEM) && L.FIELDS.includes('feature') && !L.FIELDS.includes('pre_orders') && !L.FIELDS.includes('min_term'))
     t('deep asks for EVERY feature in the list; routine for what CHANGED (and unknowns now stated)', /Return a finding for EVERY feature in the list/.test(msg)
-      && /Return a finding for each stored value that CHANGED, and for each feature whose stored answer is unknown/.test(L.extractorMessage({ name: 'x', website: null, lifecycle: 'active', focus: null, check_urls: [], features: {}, plans: [] }, 'routine', '2026-10-30')))
+      // ⚠️ RE-PINNED (competitor-features-2): …and for each "no" marked to be judged again under the not-mentioned rule.
+      && /Return a finding for each stored value that CHANGED, for each feature whose stored answer is unknown that the site now states, and for each feature marked "rejudge"/.test(L.extractorMessage({ name: 'x', website: null, lifecycle: 'active', focus: null, check_urls: [], features: {}, plans: [] }, 'routine', '2026-10-30')))
     t('the finding from the fixture lands as a feature finding (preorder, quote found on the page, both checks confirm)', cs.findings.some(f => f.field === 'feature' && f.found.feature_key === 'preorder' && f.quote_in_page && f.second_check === 'confirmed'))
     // A key the list does not have is dropped (never stored).
     const odd = FX.memoryCheckerStore({ settings: () => settings, competitors: [FX.competitor(42)] })

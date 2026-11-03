@@ -4,6 +4,7 @@
 //   • the budget guard: stop before a competitor that would cross the daily or monthly cap;
 //   • scheduling: who is due, the daily routine quota, and spreading first check dates evenly across the interval;
 //   • competitor-check-2: the deep check COUNTRY BY COUNTRY — the queue, who is in a country, and when to move on.
+import { appliesToFocus, tierOf, type FeatureTier } from '@/lib/comparison-features'   // competitor-features-2: the tiers and the focus rule (pure)
 
 // ── quotes ──────────────────────────────────────────────────────────────────────────────────────────────────────────
 // competitor-check-7 (30 Oct 2026): a quote arrived as "Keine Einrichtungsgeb\u00fchr" — the six characters \u00fc, not "ü"
@@ -201,6 +202,46 @@ export const afterCheck = (row: Pick<SchedRow, 'checkIntervalDays' | 'deepChecke
   ...(deep ? { deep_checked_at: nowIso } : {}),
   ...(deep && country ? { deep_checked_in: { ...(row.deepCheckedIn ?? {}), [country]: nowIso } } : {}),
 })
+
+// ── competitor-features-2: how often each feature is asked about, per tier ─────────────────────────────────────────────
+/** competitor_check_settings.tier_intervals, in days. The off tier is never asked. */
+export interface TierIntervals { commercial: number; core: number; secondary: number }
+/** The defaults the migration writes (20261062) — used only while the column is missing or a value is not a whole number of days. */
+export const DEFAULT_TIER_INTERVALS: TierIntervals = { commercial: 30, core: 90, secondary: 180 }
+export function tierIntervalsOut(v: unknown): TierIntervals {
+  const o = v && typeof v === 'object' && !Array.isArray(v) ? v as Record<string, unknown> : {}
+  const n = (k: keyof TierIntervals) => (typeof o[k] === 'number' && Number.isInteger(o[k]) && (o[k] as number) >= 1 && (o[k] as number) <= 3650 ? o[k] as number : DEFAULT_TIER_INTERVALS[k])
+  return { commercial: n('commercial'), core: n('core'), secondary: n('secondary') }
+}
+/** When a feature was last asked about, per country ('' = every country): competitor_feature_checks (20261062). */
+export interface FeatureCheck { checkedOn: string; rejudge: boolean }
+export type FeatureChecks = Record<string, FeatureCheck>
+export const featureCheckKey = (country: string | null, key: string) => `${country ?? ''}|${key}`
+/** The check row that applies in a country: the country's own, else the every-country one. */
+export const featureCheckFor = (checks: FeatureChecks | undefined, country: string | null, key: string): FeatureCheck | null =>
+  (country ? checks?.[featureCheckKey(country, key)] : undefined) ?? checks?.[featureCheckKey(null, key)] ?? null
+/**
+ * The features a check of this competitor asks about: checked, not off, applying to its focus (a street-food market: discovery and
+ * the commercial features only), and DUE — never asked (a new feature: at once), or last asked at least its tier's interval ago.
+ * An answer from before the "not mentioned" rule (`rejudge`) is due on the same date: it is judged again at its tier's next check.
+ */
+export function dueFeatures<F extends { key: string; tier?: FeatureTier | null }>(features: readonly F[], c: { focus: string | null; featureChecks?: FeatureChecks },
+  country: string | null, today: string, intervals: TierIntervals): F[] {
+  return features.filter(f => {
+    const tier = tierOf(f)
+    if (tier === 'off' || !appliesToFocus(f, c.focus)) return false
+    const last = featureCheckFor(c.featureChecks, country, f.key)
+    return !last || addDays(last.checkedOn, intervals[tier]) <= today
+  })
+}
+/** The days until a competitor's next check: its most frequent tier's interval among the features that apply to it (the commercial
+ *  features are asked of every focus, so 30 days by default) — the "one interval for everything" this replaces. */
+export function nextIntervalFor(features: readonly { key: string; tier?: FeatureTier | null }[], focus: string | null, intervals: TierIntervals, fallback: number): number {
+  const tiers = new Set(features.filter(f => tierOf(f) !== 'off' && appliesToFocus(f, focus)).map(f => tierOf(f) as Exclude<FeatureTier, 'off'>))
+  return tiers.size ? Math.min(...[...tiers].map(t => intervals[t])) : fallback
+}
+/** The routine quota's interval: the most frequent tier's (every focus is asked the commercial features). */
+export const routineIntervalOf = (intervals: TierIntervals) => Math.min(intervals.commercial, intervals.core, intervals.secondary)
 
 // ── competitor-check-2: the deep check, country by country ──────────────────────────────────────────────────────────
 /** The countries mark in a competitor's notes: "countries: DE, AT" (20261044) or "countries: all switched-on"
