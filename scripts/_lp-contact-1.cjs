@@ -13,6 +13,7 @@
 //                        2026-10-31 → 2026-11-02 (PRECISE); and HatchGrab's /contact (GB, US) — STRUCTURAL (contactProof): the
 //                        Tally script and the region from the form heading to the section's end (the Tally iframe) leave, the
 //                        new form takes that region, and every other byte of the page is the same
+/* eslint-disable @typescript-eslint/no-require-imports -- a CommonJS harness module, like every scripts/*.cjs */
 'use strict'
 
 const PARA = '**If you use our contact form**\n\nIf you send us a message through the contact form on the HatchGrab website, we handle it ourselves: we keep your message and the details you enter, and send them to our team by email through Brevo. We use them only to reply to you, and keep them for up to 24 months. To stop the form being misused, we also keep a scrambled version of your IP address with your message.'
@@ -21,6 +22,8 @@ const TERMS_VERSION_OLD = '2026-11-01', TERMS_VERSION_NEW = '2026-11-02'
 
 const once = (s, a, what) => { const n = s.split(a).length - 1; if (n !== 1) throw new Error(`contact-1: ${what} — expected once, found ${n}: ${a.slice(0, 80)}`) }
 function privacyAsBefore(md) {
+  // ⚠️ RE-PINNED (tidy-1, 3 November 2026): tidy-1's later demo-section wording and date are taken back first (newest change first).
+  md = require('./_lp-tidy-1.cjs').asBefore('content/legal/privacy-policy.md', md)
   once(md, `\n\n${PARA}\n\n---\n\n## 6.`, 'the contact-form paragraph')
   once(md, `**Last updated:** ${PRIVACY_DATE_NEW}`, 'the Privacy Policy date')
   return md.replace(`\n\n${PARA}\n\n---\n\n## 6.`, '\n\n---\n\n## 6.').replace(`**Last updated:** ${PRIVACY_DATE_NEW}`, `**Last updated:** ${PRIVACY_DATE_OLD}`)
@@ -37,7 +40,8 @@ const LEGAL_TS_EDITS = [
 const LANDED = (() => { try { const m = /TERMS_VERSION\s*=\s*'(\d{4}-\d{2}-\d{2})'/.exec(require('fs').readFileSync(require('path').join(__dirname, '..', 'lib/legal.ts'), 'utf8')); return !!m && m[1] >= TERMS_VERSION_NEW } catch { return false } })()
 function asBefore(file, text) {
   if (!LANDED) return text
-  if (file === 'content/legal/privacy-policy.md') return privacyAsBefore(text)
+  if (file === 'content/legal/privacy-policy.md') return privacyAsBefore(text)   // tidy-1's change first, inside it
+  if (file === 'lib/legal.ts') text = require('./_lp-tidy-1.cjs').asBefore(file, text)   // ⚠️ RE-PINNED (tidy-1): newest first
   if (file === 'lib/legal.ts') return LEGAL_TS_EDITS.reduce((s, [a, b]) => { once(s, b, 'lib/legal.ts edit'); return s.replace(b, a) }, text)
   return text
 }

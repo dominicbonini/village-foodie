@@ -1,4 +1,4 @@
-<!-- translation-of: privacy-policy.md sha256:fa2e1f9b3b13db7a43d979b81cceb96103d9fcb329d6ba0665d42f761abe003c -->
+<!-- translation-of: privacy-policy.md sha256:def241a5c7e2316baa4c9f2b8737ce3af40a8dcb30f77142217ff498581d447c -->
 # Adatvédelmi tájékoztató
 
 **Utolsó frissítés:** {{LAST_UPDATED}}
@@ -102,9 +102,9 @@ Amikor a HatchGrab weboldalán demót készít, elkérjük az e-mail-címét. Ar
 
 Megőrizzük az Ön által feltöltött étlapot (fényképet, PDF-et vagy beillesztett szöveget) és az abból általunk kiolvasott étlapot is. Elküldjük a Google Gemini szolgáltatásának, hogy kiolvassa az ételeket és az árakat, és megőrizzük, hogy ellenőrizni tudjuk, mennyire volt sikeres ez, és segíteni tudjunk Önnek, ha ezt követően beállítja a HatchGrabet. Nem nyilvánosan tároljuk; csak a HatchGrab munkatársai nyithatják meg.
 
-A demóhoz megadott e-mail-címét, az étlapfájlt és magát a demót a demó lejártakor töröljük: 24 órával a létrehozása után, vagy 14 nap elteltével, ha kéri, hogy őrizzük meg. Ha regisztrál, a demó adatait legfeljebb 30 napig megőrizzük, hogy az étlapja átkerülhessen a fiókjába, majd töröljük. Ha regisztrál, az étlapja átkerül a fiókjába, és ettől kezdve a fiókjára vonatkozó adatvédelmi feltételek érvényesek.
+A demóhoz megadott e-mail-címét, az étlapfájlt és magát a demót a demó lejártakor töröljük: 24 órával a létrehozása után, vagy 14 nap elteltével, ha kéri, hogy őrizzük meg. Ha regisztrál, az étlapja átkerül a fiókjába, és ettől kezdve a fiókjára vonatkozó adatvédelmi feltételek érvényesek; a demó adatait legfeljebb 30 napig megőrizzük, hogy az étlap átkerülhessen, majd töröljük.
 
-Anonim összesítéseket vezetünk arról, hogy a demók meddig jutnak, például „elkészült egy demó” vagy „leadtak egy rendelést”. Ezek nem tartalmaznak e-mail-címet, és miután a demóját töröltük, már nem kapcsolhatók Önhöz.
+Egyszerű összesítéseket vezetünk arról, hogy a demók meddig jutnak, például „elkészült egy demó” vagy „leadtak egy rendelést”. Ezek nem tartalmaznak e-mail-címet, és miután a demóját töröltük, már nem kapcsolhatók Önhöz.
 
 Az általunk megkeresett food truckok számára készített demókat legfeljebb 30 napig őrizzük meg, és ezekhez nem kérünk e-mail-címet.
 

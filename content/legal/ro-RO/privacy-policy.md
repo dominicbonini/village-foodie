@@ -1,4 +1,4 @@
-<!-- translation-of: privacy-policy.md sha256:fa2e1f9b3b13db7a43d979b81cceb96103d9fcb329d6ba0665d42f761abe003c -->
+<!-- translation-of: privacy-policy.md sha256:def241a5c7e2316baa4c9f2b8737ce3af40a8dcb30f77142217ff498581d447c -->
 # Politica de confidențialitate
 
 **Ultima actualizare:** {{LAST_UPDATED}}
@@ -102,9 +102,9 @@ Atunci când construiți un demo de pe site-ul HatchGrab, vă cerem adresa de e-
 
 Păstrăm, de asemenea, meniul pe care îl încărcați (o fotografie, un PDF sau un text lipit) și meniul pe care îl citim din acesta. Îl trimitem serviciului Gemini al Google, pentru ca acesta să poată citi preparatele și prețurile, și îl păstrăm pentru a putea verifica cât de bine a funcționat acest lucru și pentru a vă ajuta dacă veți configura ulterior HatchGrab. Este stocat în mod privat; doar personalul HatchGrab îl poate deschide.
 
-Ștergem adresa de e-mail folosită pentru demo, fișierul meniului și demo-ul propriu-zis la expirarea demo-ului: la 24 de ore după ce îl construiți sau la 14 zile, dacă ne cereți să îl păstrăm. Dacă vă înregistrați, păstrăm înregistrarea demo-ului timp de până la 30 de zile, pentru ca meniul dumneavoastră să poată fi mutat în contul dumneavoastră, apoi o ștergem. Dacă vă înregistrați, meniul dumneavoastră este mutat în contul dumneavoastră, iar de atunci încolo se aplică termenii de confidențialitate ai contului dumneavoastră.
+Ștergem adresa de e-mail folosită pentru demo, fișierul meniului și demo-ul propriu-zis la expirarea demo-ului: la 24 de ore după ce îl construiți sau la 14 zile, dacă ne cereți să îl păstrăm. Dacă vă înregistrați, meniul dumneavoastră este mutat în contul dumneavoastră, iar de atunci încolo se aplică termenii de confidențialitate ai contului dumneavoastră; păstrăm înregistrarea demo-ului timp de până la 30 de zile, pentru ca meniul să poată fi mutat, apoi o ștergem.
 
-Păstrăm numărători anonime privind cât de departe ajung demo-urile, cum ar fi „a fost construit un demo” sau „a fost plasată o comandă”. Acestea nu conțin nicio adresă de e-mail și, odată ce demo-ul dumneavoastră este șters, nu mai pot fi asociate cu dumneavoastră.
+Păstrăm numărători simple privind cât de departe ajung demo-urile, cum ar fi „a fost construit un demo” sau „a fost plasată o comandă”. Acestea nu conțin nicio adresă de e-mail și, odată ce demo-ul dumneavoastră este șters, nu mai pot fi asociate cu dumneavoastră.
 
 Demo-urile pe care le pregătim pentru un food truck pe care l-am contactat sunt păstrate timp de până la 30 de zile și nu solicită o adresă de e-mail.
 

@@ -1,4 +1,4 @@
-<!-- translation-of: privacy-policy.md sha256:fa2e1f9b3b13db7a43d979b81cceb96103d9fcb329d6ba0665d42f761abe003c -->
+<!-- translation-of: privacy-policy.md sha256:def241a5c7e2316baa4c9f2b8737ce3af40a8dcb30f77142217ff498581d447c -->
 # Privaatsuspoliitika
 
 **Viimati uuendatud:** {{LAST_UPDATED}}
@@ -102,9 +102,9 @@ Kui koostate HatchGrabi veebisaidil demo, küsime teie e-posti aadressi. Kasutam
 
 Samuti säilitame teie üles laaditud menüü (foto, PDF või kleebitud tekst) ja menüü, mille me sellest välja loeme. Saadame selle Google’i teenusele Gemini, et see saaks välja lugeda toidud ja hinnad, ning säilitame seda, et saaksime kontrollida, kui hästi see õnnestus, ja aidata teid, kui otsustate HatchGrabi seadistada. Seda säilitatakse privaatselt; avada saavad seda ainult HatchGrabi töötajad.
 
-Kustutame teie demo e-posti aadressi, menüüfaili ja demo enda, kui demo aegub: 24 tundi pärast selle koostamist või 14 päeva pärast, kui palute meil seda säilitada. Kui registreerute, säilitame demo kirjet kuni 30 päeva, et teie menüü saaks teie kontole üle viia, ja seejärel kustutame selle. Kui registreerute, viiakse teie menüü teie kontole ning sellest hetkest kehtivad teie konto privaatsustingimused.
+Kustutame teie demo e-posti aadressi, menüüfaili ja demo enda, kui demo aegub: 24 tundi pärast selle koostamist või 14 päeva pärast, kui palute meil seda säilitada. Kui registreerute, viiakse teie menüü teie kontole ning sellest hetkest kehtivad teie konto privaatsustingimused; demo kirjet säilitame kuni 30 päeva, et menüü saaks üle viia, ja seejärel kustutame selle.
 
-Säilitame anonüümset statistikat selle kohta, kui kaugele demodega jõutakse, näiteks „demo koostati“ või „tellimus esitati“. See ei sisalda e-posti aadressi ja pärast teie demo kustutamist ei saa seda enam teiega seostada.
+Säilitame lihtsat statistikat selle kohta, kui kaugele demodega jõutakse, näiteks „demo koostati“ või „tellimus esitati“. See ei sisalda e-posti aadressi ja pärast teie demo kustutamist ei saa seda enam teiega seostada.
 
 Demosid, mille me koostame toiduautole, kellega oleme ühendust võtnud, säilitatakse kuni 30 päeva ja nende puhul e-posti aadressi ei küsita.
 

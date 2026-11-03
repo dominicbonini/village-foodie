@@ -1,4 +1,4 @@
-<!-- translation-of: privacy-policy.md sha256:fa2e1f9b3b13db7a43d979b81cceb96103d9fcb329d6ba0665d42f761abe003c -->
+<!-- translation-of: privacy-policy.md sha256:def241a5c7e2316baa4c9f2b8737ce3af40a8dcb30f77142217ff498581d447c -->
 # Privacybeleid
 
 **Laatst bijgewerkt:** {{LAST_UPDATED}}
@@ -102,9 +102,9 @@ Wanneer u via de website van HatchGrab een demo maakt, vragen wij om uw e-mailad
 
 Wij bewaren ook het menu dat u uploadt (een foto, pdf of geplakte tekst) en het menu dat wij daaruit uitlezen. Wij sturen het naar de Gemini-dienst van Google, zodat die de gerechten en prijzen kan uitlezen, en wij bewaren het zodat wij kunnen nagaan hoe goed dat heeft gewerkt en u kunnen helpen als u vervolgens HatchGrab instelt. Het wordt privé opgeslagen; alleen medewerkers van HatchGrab kunnen het openen.
 
-Wij verwijderen uw demo-e-mailadres, het menubestand en de demo zelf wanneer de demo verloopt: 24 uur nadat u hem hebt gemaakt, of 14 dagen als u ons vraagt hem te bewaren. Als u zich aanmeldt, bewaren wij het demorecord maximaal 30 dagen, zodat uw menu naar uw account kan worden overgezet, en verwijderen wij het daarna. Als u zich aanmeldt, wordt uw menu naar uw account overgezet en zijn vanaf dat moment de privacyvoorwaarden van uw account van toepassing.
+Wij verwijderen uw demo-e-mailadres, het menubestand en de demo zelf wanneer de demo verloopt: 24 uur nadat u hem hebt gemaakt, of 14 dagen als u ons vraagt hem te bewaren. Als u zich aanmeldt, wordt uw menu naar uw account overgezet en zijn vanaf dat moment de privacyvoorwaarden van uw account van toepassing; wij bewaren het demorecord maximaal 30 dagen, zodat het menu kan worden overgezet, en verwijderen het daarna.
 
-Wij houden anonieme tellingen bij van hoe ver demo's komen, zoals "er is een demo gemaakt" of "er is een bestelling geplaatst". Deze bevatten geen e-mailadres en kunnen, zodra uw demo is verwijderd, niet meer aan u worden gekoppeld.
+Wij houden eenvoudige tellingen bij van hoe ver demo's komen, zoals "er is een demo gemaakt" of "er is een bestelling geplaatst". Deze bevatten geen e-mailadres en kunnen, zodra uw demo is verwijderd, niet meer aan u worden gekoppeld.
 
 Demo's die wij voorbereiden voor een foodtruck waarmee wij contact hebben opgenomen, worden maximaal 30 dagen bewaard en vragen niet om een e-mailadres.
 

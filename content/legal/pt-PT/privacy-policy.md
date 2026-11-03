@@ -1,4 +1,4 @@
-<!-- translation-of: privacy-policy.md sha256:fa2e1f9b3b13db7a43d979b81cceb96103d9fcb329d6ba0665d42f761abe003c -->
+<!-- translation-of: privacy-policy.md sha256:def241a5c7e2316baa4c9f2b8737ce3af40a8dcb30f77142217ff498581d447c -->
 # Política de Privacidade
 
 **Última atualização:** {{LAST_UPDATED}}
@@ -102,9 +102,9 @@ Quando cria uma demonstração a partir do website do HatchGrab, pedimos o seu e
 
 Guardamos também a ementa que carregar (uma fotografia, um PDF ou texto colado) e a ementa que lemos a partir dela. Enviamo-la para o serviço Gemini da Google para que este possa ler os pratos e os preços, e guardamo-la para podermos verificar se isso funcionou bem e ajudá-lo caso venha a configurar o HatchGrab. É guardada de forma privada; só o pessoal do HatchGrab a pode abrir.
 
-Apagamos o seu email da demonstração, o ficheiro da ementa e a própria demonstração quando a demonstração expira: 24 horas depois de a criar, ou 14 dias se nos pedir que a guardemos. Se se registar, guardamos o registo da demonstração durante um máximo de 30 dias para que a sua ementa possa passar para a sua conta, e depois apagamo-lo. Se se registar, a sua ementa passa para a sua conta e, a partir desse momento, aplicam-se os termos de privacidade da sua conta.
+Apagamos o seu email da demonstração, o ficheiro da ementa e a própria demonstração quando a demonstração expira: 24 horas depois de a criar, ou 14 dias se nos pedir que a guardemos. Se se registar, a sua ementa passa para a sua conta e, a partir desse momento, aplicam-se os termos de privacidade da sua conta; guardamos o registo da demonstração durante um máximo de 30 dias para que a ementa possa passar, e depois apagamo-lo.
 
-Mantemos contagens anónimas de até onde chegam as demonstrações, como «foi criada uma demonstração» ou «foi feita uma encomenda». Não contêm nenhum endereço de email e, depois de a sua demonstração ser apagada, deixam de poder ser associadas a si.
+Mantemos contagens simples de até onde chegam as demonstrações, como «foi criada uma demonstração» ou «foi feita uma encomenda». Não contêm nenhum endereço de email e, depois de a sua demonstração ser apagada, deixam de poder ser associadas a si.
 
 As demonstrações que preparamos para um food truck que contactámos são guardadas durante um máximo de 30 dias e não pedem um email.
 

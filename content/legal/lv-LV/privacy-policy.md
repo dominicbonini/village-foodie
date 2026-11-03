@@ -1,4 +1,4 @@
-<!-- translation-of: privacy-policy.md sha256:fa2e1f9b3b13db7a43d979b81cceb96103d9fcb329d6ba0665d42f761abe003c -->
+<!-- translation-of: privacy-policy.md sha256:def241a5c7e2316baa4c9f2b8737ce3af40a8dcb30f77142217ff498581d447c -->
 # Privātuma politika
 
 **Pēdējoreiz atjaunināts:** {{LAST_UPDATED}}
@@ -102,9 +102,9 @@ Kad jūs izveidojat demo HatchGrab tīmekļvietnē, mēs lūdzam jūsu e-pasta a
 
 Mēs glabājam arī ēdienkarti, ko augšupielādējat (fotogrāfiju, PDF vai ielīmētu tekstu), un ēdienkarti, ko no tās nolasām. Mēs to nosūtām Google pakalpojumam Gemini, lai tas varētu nolasīt ēdienus un cenas, un mēs to glabājam, lai varētu pārbaudīt, cik labi tas izdevās, un palīdzēt jums, ja turpināsiet iestatīt HatchGrab. Tā tiek glabāta privāti; to var atvērt tikai HatchGrab darbinieki.
 
-Mēs dzēšam jūsu demo e-pasta adresi, ēdienkartes failu un pašu demo, kad demo derīguma termiņš beidzas: 24 stundas pēc tā izveides vai 14 dienas, ja lūdzat mums to saglabāt. Ja reģistrējaties, mēs glabājam demo ierakstu līdz 30 dienām, lai jūsu ēdienkarti varētu pārcelt uz jūsu kontu, un pēc tam to dzēšam. Ja reģistrējaties, jūsu ēdienkarte tiek pārcelta uz jūsu kontu, un no tā brīža piemēro jūsu konta privātuma noteikumus.
+Mēs dzēšam jūsu demo e-pasta adresi, ēdienkartes failu un pašu demo, kad demo derīguma termiņš beidzas: 24 stundas pēc tā izveides vai 14 dienas, ja lūdzat mums to saglabāt. Ja reģistrējaties, jūsu ēdienkarte tiek pārcelta uz jūsu kontu un no tā brīža piemēro jūsu konta privātuma noteikumus; demo ierakstu mēs glabājam līdz 30 dienām, lai ēdienkarti varētu pārcelt, un pēc tam to dzēšam.
 
-Mēs glabājam anonīmus skaitītājus par to, cik tālu demo nonāk, piemēram, „demo tika izveidots“ vai „tika veikts pasūtījums“. Tajos nav e-pasta adreses, un pēc jūsu demo dzēšanas tos vairs nevar saistīt ar jums.
+Mēs glabājam vienkāršus skaitītājus par to, cik tālu demo nonāk, piemēram, „demo tika izveidots“ vai „tika veikts pasūtījums“. Tajos nav e-pasta adreses, un pēc jūsu demo dzēšanas tos vairs nevar saistīt ar jums.
 
 Demo, ko mēs sagatavojam food truck, ar kuru esam sazinājušies, tiek glabāti līdz 30 dienām, un tajos e-pasta adrese netiek prasīta.
 

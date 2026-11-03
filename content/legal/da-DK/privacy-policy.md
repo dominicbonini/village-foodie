@@ -1,4 +1,4 @@
-<!-- translation-of: privacy-policy.md sha256:fa2e1f9b3b13db7a43d979b81cceb96103d9fcb329d6ba0665d42f761abe003c -->
+<!-- translation-of: privacy-policy.md sha256:def241a5c7e2316baa4c9f2b8737ce3af40a8dcb30f77142217ff498581d447c -->
 # Privatlivspolitik
 
 **Senest opdateret:** {{LAST_UPDATED}}
@@ -102,9 +102,9 @@ Når du bygger en demo fra HatchGrabs websted, beder vi om din e-mailadresse. Vi
 
 Vi gemmer også det menukort, du uploader (et foto, en PDF eller indsat tekst), og det menukort, vi læser ud af det. Vi sender det til Googles Gemini-tjeneste, så den kan læse retterne og priserne, og vi gemmer det, så vi kan kontrollere, hvor godt det fungerede, og hjælpe dig, hvis du går videre og opsætter HatchGrab. Det opbevares privat; kun HatchGrabs medarbejdere kan åbne det.
 
-Vi sletter din demo-e-mail, menukortfilen og selve demoen, når demoen udløber: 24 timer efter, at du har bygget den, eller 14 dage, hvis du beder os om at beholde den. Hvis du tilmelder dig, beholder vi demoregistreringen i op til 30 dage, så dit menukort kan flyttes over i din konto, og sletter den derefter. Hvis du tilmelder dig, flyttes dit menukort over i din konto, og din kontos privatlivsvilkår gælder fra da af.
+Vi sletter din demo-e-mail, menukortfilen og selve demoen, når demoen udløber: 24 timer efter, at du har bygget den, eller 14 dage, hvis du beder os om at beholde den. Hvis du tilmelder dig, flyttes dit menukort over i din konto, og din kontos privatlivsvilkår gælder fra da af; vi beholder demoregistreringen i op til 30 dage, så menukortet kan flyttes over, og sletter den derefter.
 
-Vi fører anonyme optællinger af, hvor langt demoer kommer, såsom "en demo blev bygget" eller "en bestilling blev afgivet". De indeholder ingen e-mailadresse, og når din demo er slettet, kan de ikke længere knyttes til dig.
+Vi fører enkle optællinger af, hvor langt demoer kommer, såsom "en demo blev bygget" eller "en bestilling blev afgivet". De indeholder ingen e-mailadresse, og når din demo er slettet, kan de ikke længere knyttes til dig.
 
 Demoer, som vi forbereder til en foodtruck, vi har kontaktet, opbevares i op til 30 dage og beder ikke om en e-mailadresse.
 

@@ -378,9 +378,10 @@ const gb = () => [snake(SEEDS.gbFromSeed())]
     t('24 hours / 14 days / 30 days for a contacted truck — the policy\'s periods are the retention constants',
       num(ses, 'RETENTION_NO_EMAIL_HOURS') === 24 && num(ses, 'RETENTION_WITH_EMAIL_DAYS') === 14 && num(ses, 'RETENTION_OUTREACH_DAYS') === 30
       && pol.includes('24 hours after you build it, or 14 days if you ask us to keep it') && pol.includes('kept for up to 30 days and do not ask for an email'))
-    t('"If you sign up, we keep the demo record for up to 30 days" — CLAIM_GRACE_DAYS is 30, and the claimed sweep needs BOTH past expiry and older than it',
+    // ⚠️ RE-PINNED (tidy-1, 3 November 2026): the two "If you sign up" sentences were merged (the demo-2d tidy) — same claim, same 30 days.
+    t('"…we keep the demo record for up to 30 days" (after a signup) — CLAIM_GRACE_DAYS is 30, and the claimed sweep needs BOTH past expiry and older than it',
       num(sweep, 'CLAIM_GRACE_DAYS') === 30 && /\.not\('claimed_by_operator_id', 'is', null\)\s*\.lt\('expires_at', new Date\(\)\.toISOString\(\)\)\s*\.lt\('created_at', claimCutoff\)/.test(sweep)
-      && pol.includes('If you sign up, we keep the demo record for up to 30 days so your menu can move into your account, then delete it.'))
+      && pol.includes("If you sign up, your menu moves into your account and your account's privacy terms apply from then on; we keep the demo record for up to 30 days so the menu can move across, then delete it."))
     const credRe = new RegExp((/const CREDENTIAL_ROUTE_RE = \/(.+)\/\n/.exec(prov) || [])[1] || 'x^')
     t('PostHog runs on the demo (/try/<slug>, the demo order page): its credential guard excludes neither — and the policy says so',
       !credRe.test('/try/demo-abc') && !credRe.test('/trucks/demo-abc/order') && credRe.test('/dashboard/x') && !/startsWith\('\/try|\/try\b/.test(prov.split('posthog.init(')[0])

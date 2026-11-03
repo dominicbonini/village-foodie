@@ -1,4 +1,4 @@
-<!-- translation-of: privacy-policy.md sha256:fa2e1f9b3b13db7a43d979b81cceb96103d9fcb329d6ba0665d42f761abe003c -->
+<!-- translation-of: privacy-policy.md sha256:def241a5c7e2316baa4c9f2b8737ce3af40a8dcb30f77142217ff498581d447c -->
 # Personvernerklæring
 
 **Sist oppdatert:** {{LAST_UPDATED}}
@@ -102,9 +102,9 @@ Når du lager en demo fra HatchGrabs nettsted, ber vi om e-postadressen din. Vi 
 
 Vi tar også vare på menyen du laster opp (et bilde, en PDF eller innlimt tekst) og menyen vi leser ut av den. Vi sender den til Googles tjeneste Gemini, slik at den kan lese rettene og prisene, og vi tar vare på den slik at vi kan kontrollere hvor godt det fungerte, og hjelpe deg hvis du går videre og setter opp HatchGrab. Den lagres privat; bare HatchGrabs ansatte kan åpne den.
 
-Vi sletter demo-e-postadressen din, menyfilen og selve demoen når demoen utløper: 24 timer etter at du har laget den, eller 14 dager hvis du ber oss om å ta vare på den. Hvis du registrerer deg, tar vi vare på demooppføringen i opptil 30 dager slik at menyen din kan flyttes over til kontoen din, og deretter sletter vi den. Hvis du registrerer deg, flyttes menyen din over til kontoen din, og personvernvilkårene for kontoen din gjelder fra da av.
+Vi sletter demo-e-postadressen din, menyfilen og selve demoen når demoen utløper: 24 timer etter at du har laget den, eller 14 dager hvis du ber oss om å ta vare på den. Hvis du registrerer deg, flyttes menyen din over til kontoen din, og personvernvilkårene for kontoen din gjelder fra da av; vi tar vare på demooppføringen i opptil 30 dager slik at menyen kan flyttes over, og deretter sletter vi den.
 
-Vi fører anonyme tellinger av hvor langt demoer kommer, for eksempel «en demo ble laget» eller «en bestilling ble lagt inn». De inneholder ingen e-postadresse, og når demoen din er slettet, kan de ikke lenger knyttes til deg.
+Vi fører enkle tellinger av hvor langt demoer kommer, for eksempel «en demo ble laget» eller «en bestilling ble lagt inn». De inneholder ingen e-postadresse, og når demoen din er slettet, kan de ikke lenger knyttes til deg.
 
 Demoer vi lager for en matbil vi har kontaktet, oppbevares i opptil 30 dager og ber ikke om noen e-postadresse.
 

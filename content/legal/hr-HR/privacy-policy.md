@@ -1,4 +1,4 @@
-<!-- translation-of: privacy-policy.md sha256:fa2e1f9b3b13db7a43d979b81cceb96103d9fcb329d6ba0665d42f761abe003c -->
+<!-- translation-of: privacy-policy.md sha256:def241a5c7e2316baa4c9f2b8737ce3af40a8dcb30f77142217ff498581d447c -->
 # Pravila o privatnosti
 
 **Posljednje ažuriranje:** {{LAST_UPDATED}}
@@ -102,9 +102,9 @@ Kada izradite demo na web-stranici HatchGraba, tražimo vašu adresu e-pošte. U
 
 Čuvamo i jelovnik koji učitate (fotografiju, PDF ili zalijepljeni tekst) te jelovnik koji iz njega očitamo. Šaljemo ga Googleovoj usluzi Gemini kako bi očitala jela i cijene, a čuvamo ga kako bismo mogli provjeriti koliko je to dobro uspjelo i pomoći vam ako nastavite s postavljanjem HatchGraba. Pohranjen je privatno; otvoriti ga može samo osoblje HatchGraba.
 
-Vašu e-poštu za demo, datoteku jelovnika i sam demo brišemo kada demo istekne: 24 sata nakon što ga izradite ili 14 dana ako zatražite da ga zadržimo. Ako se registrirate, zapis o demu čuvamo do 30 dana kako bi se vaš jelovnik mogao prenijeti u vaš račun, a zatim ga brišemo. Ako se registrirate, vaš se jelovnik prenosi u vaš račun i od tada se primjenjuju uvjeti privatnosti vašeg računa.
+Vašu e-poštu za demo, datoteku jelovnika i sam demo brišemo kada demo istekne: 24 sata nakon što ga izradite ili 14 dana ako zatražite da ga zadržimo. Ako se registrirate, vaš se jelovnik prenosi u vaš račun i od tada se primjenjuju uvjeti privatnosti vašeg računa; zapis o demu čuvamo do 30 dana kako bi se jelovnik mogao prenijeti, a zatim ga brišemo.
 
-Čuvamo anonimne brojače o tome dokle demo stigne, kao što su „izrađen je demo” ili „predana je narudžba”. Oni ne sadržavaju adresu e-pošte i nakon brisanja vašeg dema više se ne mogu povezati s vama.
+Čuvamo jednostavne brojače o tome dokle demo stigne, kao što su „izrađen je demo” ili „predana je narudžba”. Oni ne sadržavaju adresu e-pošte i nakon brisanja vašeg dema više se ne mogu povezati s vama.
 
 Demo verzije koje pripremamo za food truck kojem smo se obratili čuvamo do 30 dana i za njih se ne traži e-pošta.
 

@@ -1,4 +1,4 @@
-<!-- translation-of: privacy-policy.md sha256:fa2e1f9b3b13db7a43d979b81cceb96103d9fcb329d6ba0665d42f761abe003c -->
+<!-- translation-of: privacy-policy.md sha256:def241a5c7e2316baa4c9f2b8737ce3af40a8dcb30f77142217ff498581d447c -->
 # Dasar Privasi
 
 **Kemas kini terakhir:** {{LAST_UPDATED}}
@@ -102,9 +102,9 @@ Apabila anda membina demo dari laman web HatchGrab, kami meminta alamat e-mel an
 
 Kami juga menyimpan menu yang anda muat naik (foto, PDF atau teks yang ditampal) dan menu yang kami baca daripadanya. Kami menghantarnya kepada perkhidmatan Gemini Google supaya ia dapat membaca hidangan dan harga, dan kami menyimpannya supaya kami dapat menyemak sejauh mana proses itu berjaya dan membantu anda jika anda seterusnya menyediakan HatchGrab. Ia disimpan secara peribadi; hanya kakitangan HatchGrab boleh membukanya.
 
-Kami memadam e-mel demo anda, fail menu dan demo itu sendiri apabila demo tamat tempoh: 24 jam selepas anda membinanya, atau 14 hari jika anda meminta kami menyimpannya. Jika anda mendaftar, kami menyimpan rekod demo sehingga 30 hari supaya menu anda dapat dipindahkan ke dalam akaun anda, kemudian memadamnya. Jika anda mendaftar, menu anda dipindahkan ke dalam akaun anda, dan terma privasi akaun anda terpakai mulai saat itu.
+Kami memadam e-mel demo anda, fail menu dan demo itu sendiri apabila demo tamat tempoh: 24 jam selepas anda membinanya, atau 14 hari jika anda meminta kami menyimpannya. Jika anda mendaftar, menu anda dipindahkan ke dalam akaun anda dan terma privasi akaun anda terpakai mulai saat itu; kami menyimpan rekod demo sehingga 30 hari supaya menu itu dapat dipindahkan, kemudian memadamnya.
 
-Kami menyimpan kiraan tanpa nama tentang sejauh mana demo berjalan, seperti "demo telah dibina" atau "pesanan telah dibuat". Kiraan ini tidak mengandungi alamat e-mel, dan setelah demo anda dipadam, kiraan ini tidak lagi boleh dikaitkan dengan anda.
+Kami menyimpan kiraan ringkas tentang sejauh mana demo berjalan, seperti "demo telah dibina" atau "pesanan telah dibuat". Kiraan ini tidak mengandungi alamat e-mel, dan setelah demo anda dipadam, kiraan ini tidak lagi boleh dikaitkan dengan anda.
 
 Demo yang kami sediakan untuk food truck yang telah kami hubungi disimpan sehingga 30 hari dan tidak meminta e-mel.
 

@@ -86,7 +86,9 @@ const REGIONAL = [['de-AT', 'AT', 'de-DE'], ['de-CH', 'CH', 'de-DE'], ['nl-BE', 
   t('content/legal/country-specific-terms.md is HEAD\'s + world-countries-2\'s eight sections and date, nothing else', W2.asBefore('content/legal/country-specific-terms.md', read('content/legal/country-specific-terms.md')) === atHead('content/legal/country-specific-terms.md'))
   const legal = read('lib/legal.ts'), legalHead = atHead('lib/legal.ts')
   // ⚠️ RE-PINNED (contact-1): PRIVACY_UPDATED 31 October → 2 November 2026 and TERMS_VERSION '2026-11-01' → '2026-11-02', by name.
-  const want = { PRIVACY_UPDATED: /export const PRIVACY_UPDATED = '([^']+)'/.exec(legalHead)[1] === C1.PRIVACY_DATE_OLD ? C1.PRIVACY_DATE_NEW : null, TERMS_UPDATED: W2.NEW_DATE, COUNTRY_TERMS_UPDATED: W2.NEW_DATE, TERMS_VERSION: W2.TERMS_VERSION_NEW === C1.TERMS_VERSION_OLD ? C1.TERMS_VERSION_NEW : null }
+  // ⚠️ RE-PINNED (tidy-1, 3 November 2026): …then 2 → 3 November 2026 and '2026-11-02' → '2026-11-03' (scripts/_lp-tidy-1.cjs), by name.
+  const T1L = require('./_lp-tidy-1.cjs')
+  const want = { PRIVACY_UPDATED: /export const PRIVACY_UPDATED = '([^']+)'/.exec(legalHead)[1] === C1.PRIVACY_DATE_OLD && C1.PRIVACY_DATE_NEW === T1L.PRIVACY_DATE_OLD ? T1L.PRIVACY_DATE_NEW : null, TERMS_UPDATED: W2.NEW_DATE, COUNTRY_TERMS_UPDATED: W2.NEW_DATE, TERMS_VERSION: W2.TERMS_VERSION_NEW === C1.TERMS_VERSION_OLD && C1.TERMS_VERSION_NEW === T1L.TERMS_VERSION_OLD ? T1L.TERMS_VERSION_NEW : null }
   for (const [k, v] of Object.entries(want)) {
     const re = new RegExp(`export const ${k} = '([^']+)'`)
     t(`${k} is '${v}', as before this workstream — translating moves no date`, re.exec(legal)?.[1] === v, re.exec(legal)?.[1])

@@ -1,4 +1,4 @@
-<!-- translation-of: privacy-policy.md sha256:fa2e1f9b3b13db7a43d979b81cceb96103d9fcb329d6ba0665d42f761abe003c -->
+<!-- translation-of: privacy-policy.md sha256:def241a5c7e2316baa4c9f2b8737ce3af40a8dcb30f77142217ff498581d447c -->
 # Zásady ochrany osobních údajů
 
 **Poslední aktualizace:** {{LAST_UPDATED}}
@@ -102,9 +102,9 @@ Když si na webu HatchGrab vytvoříte demo, požádáme vás o e-mailovou adres
 
 Uchováváme také jídelní lístek, který nahrajete (fotografii, PDF nebo vložený text), a jídelní lístek, který z něj načteme. Posíláme ho do služby Gemini od společnosti Google, aby mohla načíst jídla a ceny, a uchováváme ho, abychom mohli ověřit, jak dobře to fungovalo, a pomoci vám, pokud se rozhodnete HatchGrab zřídit. Je uložen soukromě; otevřít ho mohou pouze zaměstnanci HatchGrab.
 
-Váš e-mail k demu, soubor s jídelním lístkem i samotné demo smažeme, jakmile platnost dema vyprší: 24 hodin po jeho vytvoření, nebo po 14 dnech, pokud nás požádáte o jeho uchování. Pokud se zaregistrujete, uchováme záznam dema po dobu až 30 dnů, aby se váš jídelní lístek mohl přesunout do vašeho účtu, a poté ho smažeme. Pokud se zaregistrujete, váš jídelní lístek se přesune do vašeho účtu a od té doby se uplatní podmínky ochrany osobních údajů vašeho účtu.
+Váš e-mail k demu, soubor s jídelním lístkem i samotné demo smažeme, jakmile platnost dema vyprší: 24 hodin po jeho vytvoření, nebo po 14 dnech, pokud nás požádáte o jeho uchování. Pokud se zaregistrujete, váš jídelní lístek se přesune do vašeho účtu a od té doby se uplatní podmínky ochrany osobních údajů vašeho účtu; záznam dema uchováme po dobu až 30 dnů, aby se jídelní lístek mohl přesunout, a poté ho smažeme.
 
-Uchováváme anonymní počty toho, jak daleko se dema dostanou, například „demo bylo vytvořeno“ nebo „byla zadána objednávka“. Neobsahují žádnou e-mailovou adresu a po smazání vašeho dema je již nelze s vámi spojit.
+Uchováváme jednoduché počty toho, jak daleko se dema dostanou, například „demo bylo vytvořeno“ nebo „byla zadána objednávka“. Neobsahují žádnou e-mailovou adresu a po smazání vašeho dema je již nelze s vámi spojit.
 
 Dema, která připravíme pro food truck, který jsme oslovili, uchováváme po dobu až 30 dnů a nevyžadují e-mail.
 

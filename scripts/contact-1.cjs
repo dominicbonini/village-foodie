@@ -406,12 +406,14 @@ const flat = (o, p = '', out = {}) => { for (const [k, v] of Object.entries(o ??
   // ══ 8 ══════════════════════════════════════════════════════════════════════════════════════════════════════════════
   head('8 · the Privacy Policy, its dates, the retention job, the migration')
   const { PARA } = require('./_lp-contact-1.cjs')
-  const en = read('content/legal/privacy-policy.md'), enBase = atBase('content/legal/privacy-policy.md')
+  // ⚠️ RE-PINNED (tidy-1, 3 November 2026): tidy-1's later demo-section wording and date taken back first (scripts/_lp-tidy-1.cjs).
+  const T1L = require('./_lp-tidy-1.cjs')
+  const en = T1L.asBefore('content/legal/privacy-policy.md', read('content/legal/privacy-policy.md')), enBase = atBase('content/legal/privacy-policy.md')
   const rebuilt = enBase.replace('**Last updated:** 31 October 2026', '**Last updated:** 2 November 2026').replace('\n\n---\n\n## 6.', `\n\n${PARA}\n\n---\n\n## 6.`)
   t('the English edit is exactly: the date, and one paragraph at the end of section 5 (after the demo) — nothing else', en === rebuilt)
   t('…Brevo was already a listed processor (section 6), and "Support correspondence: 24 months" already in section 7', /\| Brevo \| Sending transactional email \| European Union \|/.test(enBase) && enBase.includes('- **Support correspondence:** 24 months.'))
   t('…the Privacy Policy named no Tally and no contact form before (so there was no Village Foodie Tally wording to keep)', !/tally|contact form/i.test(enBase))
-  const legal = read('lib/legal.ts')
+  const legal = T1L.asBefore('lib/legal.ts', read('lib/legal.ts'))   // ⚠️ RE-PINNED (tidy-1): its later date and version taken back first
   t('PRIVACY_UPDATED \'2 November 2026\' and TERMS_VERSION \'2026-11-02\' (it moves with the latest document — lib/legal.ts)', /export const PRIVACY_UPDATED = '2 November 2026'/.test(legal) && /export const TERMS_VERSION = '2026-11-02'/.test(legal) && /export const TERMS_UPDATED = '1 November 2026'/.test(legal))
   const L = require('./_legal-translations.cjs')
   for (const l of BASES) {
@@ -419,7 +421,10 @@ const flat = (o, p = '', out = {}) => { for (const [k, v] of Object.entries(o ??
     const sec5 = tr.slice(tr.indexOf('\n## 5.'), tr.indexOf('\n## 6.'))
     const probs = L.compare('privacy-policy.md', tr)
     const old = atBase(`content/legal/${l}/privacy-policy.md`)
-    const added = tr.split('\n').slice(1).filter(x => !old.split('\n').includes(x)).join('\n')
+    // ⚠️ RE-PINNED (tidy-1, 3 November 2026): the lines tidy-1 changed later (the demo section's two paragraphs, in every language) are
+    // not contact-1's — they are the lines that differ from the same translation at 6c29c2e2, the commit before tidy-1.
+    const beforeT1 = execFileSync('git', ['show', `6c29c2e2:content/legal/${l}/privacy-policy.md`], { cwd: REPO }).toString().split('\n')
+    const added = tr.split('\n').slice(1).filter(x => !old.split('\n').includes(x) && beforeT1.includes(x)).join('\n')
     t(`${l}: re-stamped against the new English, the drift check clean, the paragraph (Brevo, 24) at the end of section 5 — the only change`, !probs.length && sec5.includes('Brevo') && /\b24\b/.test(sec5) && /\*\*[^*\n]+\*\*\n\n[^\n]+\n\n---$/.test(sec5.trimEnd()) && added.split('\n').filter(Boolean).length === 2, { probs, added: added.slice(0, 200) })
   }
   const ret = read('lib/order-retention.ts')

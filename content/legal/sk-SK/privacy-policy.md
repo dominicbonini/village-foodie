@@ -1,4 +1,4 @@
-<!-- translation-of: privacy-policy.md sha256:fa2e1f9b3b13db7a43d979b81cceb96103d9fcb329d6ba0665d42f761abe003c -->
+<!-- translation-of: privacy-policy.md sha256:def241a5c7e2316baa4c9f2b8737ce3af40a8dcb30f77142217ff498581d447c -->
 # Zásady ochrany osobných údajov
 
 **Naposledy aktualizované:** {{LAST_UPDATED}}
@@ -102,9 +102,9 @@ Keď si na webovej stránke HatchGrab vytvoríte ukážku, požiadame vás o va�
 
 Uchovávame aj jedálny lístok, ktorý nahráte (fotografiu, PDF alebo vložený text), a jedálny lístok, ktorý z neho načítame. Posielame ho službe Gemini od spoločnosti Google, aby z neho dokázala načítať jedlá a ceny, a uchovávame ho, aby sme mohli skontrolovať, ako dobre to fungovalo, a pomôcť vám, ak sa rozhodnete HatchGrab zaviesť. Je uložený neverejne; otvoriť ho môžu len zamestnanci HatchGrab.
 
-Váš e-mail k ukážke, súbor s jedálnym lístkom aj samotnú ukážku vymažeme, keď platnosť ukážky uplynie: 24 hodín po jej vytvorení alebo 14 dní, ak nás požiadate, aby sme ju ponechali. Ak sa zaregistrujete, záznam o ukážke uchovávame najviac 30 dní, aby sa váš jedálny lístok mohol presunúť do vášho účtu, a potom ho vymažeme. Ak sa zaregistrujete, váš jedálny lístok sa presunie do vášho účtu a odvtedy sa uplatňujú podmienky ochrany súkromia vášho účtu.
+Váš e-mail k ukážke, súbor s jedálnym lístkom aj samotnú ukážku vymažeme, keď platnosť ukážky uplynie: 24 hodín po jej vytvorení alebo 14 dní, ak nás požiadate, aby sme ju ponechali. Ak sa zaregistrujete, váš jedálny lístok sa presunie do vášho účtu a odvtedy sa uplatňujú podmienky ochrany súkromia vášho účtu; záznam o ukážke uchovávame najviac 30 dní, aby sa jedálny lístok mohol presunúť, a potom ho vymažeme.
 
-Uchovávame anonymné počty toho, ako ďaleko sa ukážky dostanú, napríklad „bola vytvorená ukážka“ alebo „bola zadaná objednávka“. Neobsahujú žiadnu e-mailovú adresu a po vymazaní vašej ukážky ich už nemožno spojiť s vami.
+Uchovávame jednoduché počty toho, ako ďaleko sa ukážky dostanú, napríklad „bola vytvorená ukážka“ alebo „bola zadaná objednávka“. Neobsahujú žiadnu e-mailovú adresu a po vymazaní vašej ukážky ich už nemožno spojiť s vami.
 
 Ukážky, ktoré pripravíme pre food truck, ktorý sme oslovili, uchovávame najviac 30 dní a nežiadajú e-mail.
 

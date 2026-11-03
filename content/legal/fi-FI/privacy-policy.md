@@ -1,4 +1,4 @@
-<!-- translation-of: privacy-policy.md sha256:fa2e1f9b3b13db7a43d979b81cceb96103d9fcb329d6ba0665d42f761abe003c -->
+<!-- translation-of: privacy-policy.md sha256:def241a5c7e2316baa4c9f2b8737ce3af40a8dcb30f77142217ff498581d447c -->
 # Tietosuojaseloste
 
 **Päivitetty viimeksi:** {{LAST_UPDATED}}
@@ -102,9 +102,9 @@ Kun luot esittelyn HatchGrabin verkkosivustolla, pyydämme sähköpostiosoitetta
 
 Säilytämme myös lataamasi ruokalistan (valokuvan, PDF-tiedoston tai liitetyn tekstin) ja siitä lukemamme ruokalistan. Lähetämme sen Googlen Gemini-palveluun, jotta se voi lukea ruokalajit ja hinnat, ja säilytämme sen voidaksemme tarkistaa, miten hyvin tämä onnistui, ja auttaaksemme sinua, jos päätät ottaa HatchGrabin käyttöön. Se tallennetaan yksityisesti; vain HatchGrabin henkilöstö voi avata sen.
 
-Poistamme esittelyä varten antamasi sähköpostiosoitteen, ruokalistatiedoston ja itse esittelyn, kun esittely vanhenee: 24 tuntia sen luomisen jälkeen tai 14 päivän kuluttua, jos pyydät meitä säilyttämään sen. Jos rekisteröidyt, säilytämme esittelyn tietueen enintään 30 päivää, jotta ruokalistasi voidaan siirtää tiliisi, ja poistamme sen sitten. Jos rekisteröidyt, ruokalistasi siirtyy tiliisi, ja siitä lähtien sovelletaan tilisi tietosuojaehtoja.
+Poistamme esittelyä varten antamasi sähköpostiosoitteen, ruokalistatiedoston ja itse esittelyn, kun esittely vanhenee: 24 tuntia sen luomisen jälkeen tai 14 päivän kuluttua, jos pyydät meitä säilyttämään sen. Jos rekisteröidyt, ruokalistasi siirtyy tiliisi, ja siitä lähtien sovelletaan tilisi tietosuojaehtoja; säilytämme esittelyn tietueen enintään 30 päivää, jotta ruokalista voidaan siirtää, ja poistamme sen sitten.
 
-Säilytämme anonyymejä laskureita siitä, kuinka pitkälle esittelyissä edetään, kuten ”esittely luotiin” tai ”tilaus tehtiin”. Ne eivät sisällä sähköpostiosoitetta, eikä niitä voida enää yhdistää sinuun sen jälkeen, kun esittelysi on poistettu.
+Säilytämme yksinkertaisia laskureita siitä, kuinka pitkälle esittelyissä edetään, kuten ”esittely luotiin” tai ”tilaus tehtiin”. Ne eivät sisällä sähköpostiosoitetta, eikä niitä voida enää yhdistää sinuun sen jälkeen, kun esittelysi on poistettu.
 
 Esittelyt, jotka valmistelemme ruokarekalle, johon olemme ottaneet yhteyttä, säilytetään enintään 30 päivää, eikä niissä pyydetä sähköpostiosoitetta.
 

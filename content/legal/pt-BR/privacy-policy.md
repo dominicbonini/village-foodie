@@ -1,4 +1,4 @@
-<!-- translation-of: privacy-policy.md sha256:fa2e1f9b3b13db7a43d979b81cceb96103d9fcb329d6ba0665d42f761abe003c -->
+<!-- translation-of: privacy-policy.md sha256:def241a5c7e2316baa4c9f2b8737ce3af40a8dcb30f77142217ff498581d447c -->
 # Política de Privacidade
 
 **Última atualização:** {{LAST_UPDATED}}
@@ -102,9 +102,9 @@ Quando você cria uma demonstração no site do HatchGrab, pedimos o seu endere�
 
 Também guardamos o cardápio que você envia (uma foto, um PDF ou um texto colado) e o cardápio que extraímos dele. Nós o enviamos ao serviço Gemini do Google para que ele possa ler os pratos e os preços, e o guardamos para podermos verificar se isso funcionou bem e ajudar você caso decida configurar o HatchGrab. Ele é armazenado de forma privada; somente a equipe do HatchGrab pode abri-lo.
 
-Excluímos o e-mail da sua demonstração, o arquivo do cardápio e a própria demonstração quando a demonstração expira: 24 horas depois de você criá-la, ou 14 dias se você pedir que a mantenhamos. Se você se cadastrar, mantemos o registro da demonstração por até 30 dias para que o seu cardápio possa ser transferido para a sua conta e, depois, o excluímos. Se você se cadastrar, o seu cardápio é transferido para a sua conta, e os termos de privacidade da sua conta se aplicam a partir de então.
+Excluímos o e-mail da sua demonstração, o arquivo do cardápio e a própria demonstração quando a demonstração expira: 24 horas depois de você criá-la, ou 14 dias se você pedir que a mantenhamos. Se você se cadastrar, o seu cardápio é transferido para a sua conta e os termos de privacidade da sua conta se aplicam a partir de então; mantemos o registro da demonstração por até 30 dias para que o cardápio possa ser transferido e, depois, o excluímos.
 
-Mantemos contagens anônimas de até onde as demonstrações avançam, como “uma demonstração foi criada” ou “um pedido foi feito”. Elas não contêm nenhum endereço de e-mail e, depois que a sua demonstração é excluída, não podem mais ser associadas a você.
+Mantemos contagens simples de até onde as demonstrações avançam, como “uma demonstração foi criada” ou “um pedido foi feito”. Elas não contêm nenhum endereço de e-mail e, depois que a sua demonstração é excluída, não podem mais ser associadas a você.
 
 As demonstrações que preparamos para um food truck com o qual entramos em contato são mantidas por até 30 dias e não pedem e-mail.
 

@@ -1,4 +1,4 @@
-<!-- translation-of: privacy-policy.md sha256:fa2e1f9b3b13db7a43d979b81cceb96103d9fcb329d6ba0665d42f761abe003c -->
+<!-- translation-of: privacy-policy.md sha256:def241a5c7e2316baa4c9f2b8737ce3af40a8dcb30f77142217ff498581d447c -->
 # Politique de confidentialité
 
 **Dernière mise à jour :** {{LAST_UPDATED}}
@@ -102,9 +102,9 @@ Lorsque vous créez une démo depuis le site web de HatchGrab, nous vous demando
 
 Nous conservons également la carte que vous téléversez (une photo, un PDF ou un texte collé) ainsi que la carte que nous en extrayons. Nous l’envoyons au service Gemini de Google afin qu’il puisse lire les plats et les prix, et nous la conservons afin de vérifier la qualité de ce résultat et de vous aider si vous décidez ensuite de mettre en place HatchGrab. Elle est stockée de manière privée ; seul le personnel de HatchGrab peut l’ouvrir.
 
-Nous supprimons l’e-mail de votre démo, le fichier de la carte et la démo elle-même à l’expiration de la démo : 24 heures après sa création, ou 14 jours si vous nous demandez de la conserver. Si vous vous inscrivez, nous conservons l’enregistrement de la démo pendant 30 jours au maximum afin que votre carte puisse être transférée dans votre compte, puis nous le supprimons. Si vous vous inscrivez, votre carte est transférée dans votre compte, et les conditions de confidentialité de votre compte s’appliquent dès lors.
+Nous supprimons l’e-mail de votre démo, le fichier de la carte et la démo elle-même à l’expiration de la démo : 24 heures après sa création, ou 14 jours si vous nous demandez de la conserver. Si vous vous inscrivez, votre carte est transférée dans votre compte et les conditions de confidentialité de votre compte s’appliquent dès lors ; nous conservons l’enregistrement de la démo pendant 30 jours au maximum afin que la carte puisse être transférée, puis nous le supprimons.
 
-Nous conservons des décomptes anonymes de l’avancement des démos, tels que « une démo a été créée » ou « une commande a été passée ». Ils ne contiennent aucune adresse e-mail et, une fois votre démo supprimée, ils ne peuvent plus être rattachés à vous.
+Nous conservons des décomptes simples de l’avancement des démos, tels que « une démo a été créée » ou « une commande a été passée ». Ils ne contiennent aucune adresse e-mail et, une fois votre démo supprimée, ils ne peuvent plus être rattachés à vous.
 
 Les démos que nous préparons pour un food truck que nous avons contacté sont conservées pendant 30 jours au maximum et ne demandent pas d’adresse e-mail.
 

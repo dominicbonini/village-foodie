@@ -1,4 +1,4 @@
-<!-- translation-of: privacy-policy.md sha256:fa2e1f9b3b13db7a43d979b81cceb96103d9fcb329d6ba0665d42f761abe003c -->
+<!-- translation-of: privacy-policy.md sha256:def241a5c7e2316baa4c9f2b8737ce3af40a8dcb30f77142217ff498581d447c -->
 # Datenschutzerklärung
 
 **Zuletzt aktualisiert:** {{LAST_UPDATED}}
@@ -102,9 +102,9 @@ Wenn Sie auf der HatchGrab-Website eine Demo erstellen, fragen wir nach Ihrer E-
 
 Wir speichern außerdem die Speisekarte, die Sie hochladen (ein Foto, ein PDF oder eingefügter Text), und die Speisekarte, die wir daraus auslesen. Wir senden sie an den Gemini-Dienst von Google, damit dieser die Gerichte und Preise auslesen kann, und wir bewahren sie auf, um prüfen zu können, wie gut das funktioniert hat, und um Ihnen zu helfen, wenn Sie HatchGrab anschließend einrichten. Sie wird vertraulich gespeichert; nur HatchGrab-Mitarbeiter können sie öffnen.
 
-Wir löschen Ihre Demo-E-Mail-Adresse, die Speisekartendatei und die Demo selbst, wenn die Demo abläuft: 24 Stunden nach ihrer Erstellung oder nach 14 Tagen, wenn Sie uns bitten, sie aufzubewahren. Wenn Sie sich registrieren, bewahren wir den Demo-Datensatz bis zu 30 Tage lang auf, damit Ihre Speisekarte in Ihr Konto übernommen werden kann, und löschen ihn dann. Wenn Sie sich registrieren, wird Ihre Speisekarte in Ihr Konto übernommen, und ab dann gelten die Datenschutzbestimmungen Ihres Kontos.
+Wir löschen Ihre Demo-E-Mail-Adresse, die Speisekartendatei und die Demo selbst, wenn die Demo abläuft: 24 Stunden nach ihrer Erstellung oder nach 14 Tagen, wenn Sie uns bitten, sie aufzubewahren. Wenn Sie sich registrieren, wird Ihre Speisekarte in Ihr Konto übernommen, und ab dann gelten die Datenschutzbestimmungen Ihres Kontos; den Demo-Datensatz bewahren wir bis zu 30 Tage lang auf, damit die Speisekarte übernommen werden kann, und löschen ihn dann.
 
-Wir führen anonyme Zählungen darüber, wie weit Demos kommen, etwa „eine Demo wurde erstellt“ oder „eine Bestellung wurde aufgegeben“. Sie enthalten keine E-Mail-Adresse und können, sobald Ihre Demo gelöscht ist, nicht mehr mit Ihnen in Verbindung gebracht werden.
+Wir führen einfache Zählungen darüber, wie weit Demos kommen, etwa „eine Demo wurde erstellt“ oder „eine Bestellung wurde aufgegeben“. Sie enthalten keine E-Mail-Adresse und können, sobald Ihre Demo gelöscht ist, nicht mehr mit Ihnen in Verbindung gebracht werden.
 
 Demos, die wir für einen von uns kontaktierten Foodtruck vorbereiten, werden bis zu 30 Tage lang aufbewahrt und fragen nicht nach einer E-Mail-Adresse.
 

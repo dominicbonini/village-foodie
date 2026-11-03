@@ -1,4 +1,4 @@
-<!-- translation-of: privacy-policy.md sha256:fa2e1f9b3b13db7a43d979b81cceb96103d9fcb329d6ba0665d42f761abe003c -->
+<!-- translation-of: privacy-policy.md sha256:def241a5c7e2316baa4c9f2b8737ce3af40a8dcb30f77142217ff498581d447c -->
 # Política de privacidad
 
 **Última actualización:** {{LAST_UPDATED}}
@@ -102,9 +102,9 @@ Cuando crea una demo desde el sitio web de HatchGrab, le pedimos su dirección d
 
 También conservamos la carta que usted sube (una foto, un PDF o un texto pegado) y la carta que extraemos de ella. La enviamos al servicio Gemini de Google para que pueda leer los platos y los precios, y la conservamos para poder comprobar si ha funcionado bien y ayudarle si después decide poner en marcha HatchGrab. Se almacena de forma privada; solo el personal de HatchGrab puede abrirla.
 
-Suprimimos el correo electrónico de su demo, el archivo de la carta y la propia demo cuando la demo caduca: 24 horas después de crearla, o 14 días si nos pide que la conservemos. Si se registra, conservamos el registro de la demo durante un máximo de 30 días para que su carta pueda pasar a su cuenta, y después lo suprimimos. Si se registra, su carta pasa a su cuenta, y a partir de ese momento se aplican las condiciones de privacidad de su cuenta.
+Suprimimos el correo electrónico de su demo, el archivo de la carta y la propia demo cuando la demo caduca: 24 horas después de crearla, o 14 días si nos pide que la conservemos. Si se registra, su carta pasa a su cuenta y a partir de ese momento se aplican las condiciones de privacidad de su cuenta; conservamos el registro de la demo durante un máximo de 30 días para que la carta pueda pasar, y después lo suprimimos.
 
-Conservamos recuentos anónimos de hasta dónde llegan las demos, como «se ha creado una demo» o «se ha hecho un pedido». No contienen ninguna dirección de correo electrónico y, una vez suprimida su demo, ya no pueden vincularse a usted.
+Conservamos recuentos sencillos de hasta dónde llegan las demos, como «se ha creado una demo» o «se ha hecho un pedido». No contienen ninguna dirección de correo electrónico y, una vez suprimida su demo, ya no pueden vincularse a usted.
 
 Las demos que preparamos para un food truck con el que hemos contactado se conservan durante un máximo de 30 días y no piden ningún correo electrónico.
 

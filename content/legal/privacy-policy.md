@@ -1,6 +1,6 @@
 # Privacy Policy
 
-**Last updated:** 2 November 2026
+**Last updated:** 3 November 2026
 
 This policy explains how HatchGrab Ltd ("we", "us", "our") collects and uses personal data across two connected services:
 
@@ -101,9 +101,9 @@ When you build a demo from the HatchGrab website, we ask for your email address.
 
 We also keep the menu you upload (a photo, PDF or pasted text) and the menu we read from it. We send it to Google's Gemini service so it can read the dishes and prices, and we keep it so we can check how well that worked and help you if you go on to set up HatchGrab. It is stored privately; only HatchGrab staff can open it.
 
-We delete your demo email, the menu file and the demo itself when the demo expires: 24 hours after you build it, or 14 days if you ask us to keep it. If you sign up, we keep the demo record for up to 30 days so your menu can move into your account, then delete it. If you sign up, your menu moves into your account, and your account's privacy terms apply from then on.
+We delete your demo email, the menu file and the demo itself when the demo expires: 24 hours after you build it, or 14 days if you ask us to keep it. If you sign up, your menu moves into your account and your account's privacy terms apply from then on; we keep the demo record for up to 30 days so the menu can move across, then delete it.
 
-We keep anonymous counts of how far demos get, such as "a demo was built" or "an order was placed". They contain no email address, and once your demo is deleted they can no longer be linked to you.
+We keep simple counts of how far demos get, such as "a demo was built" or "an order was placed". They contain no email address, and once your demo is deleted they can no longer be linked to you.
 
 Demos we prepare for a food truck we have contacted are kept for up to 30 days and do not ask for an email.
 

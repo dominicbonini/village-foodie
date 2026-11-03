@@ -83,6 +83,28 @@ if (process.argv[2] === 'capture') {
   const withTally = ['app', 'components', 'lib'].flatMap(d => walk(d)).filter(f => /tally\.so/.test(read(f))).sort()
   t('every remaining tally.so is Village Foodie\'s (its /contact branch, the embed, the home page, /hire, the venue page, the truck page behind tally=false on HatchGrab)', JSON.stringify(withTally) === JSON.stringify(['app/contact/ContactForm.tsx', 'app/contact/page.tsx', 'app/hire/page.tsx', 'app/page.tsx', 'app/trucks/[slug]/TruckClient.tsx', 'app/venues/[slug]/VenueClient.tsx']), withTally)
 
+  // ══ 3 ══════════════════════════════════════════════════════════════════════════════════════════════════════════════
+  head('3 · the Privacy Policy\'s demo section: "simple counts", the two "If you sign up" sentences merged — English + 28')
+  const T1 = require('./_lp-tidy-1.cjs')
+  const en = read('content/legal/privacy-policy.md'), enBase = atBase('content/legal/privacy-policy.md')
+  t('the English change is exactly these three edits (taken back, the document is 6c29c2e2\'s byte for byte)', T1.asBefore('content/legal/privacy-policy.md', en) === enBase)
+  const demo = en.slice(en.indexOf('**If you try the HatchGrab demo**'), en.indexOf('**If you use our contact form**'))
+  t('"We keep simple counts" — "anonymous counts" is gone', demo.includes('We keep simple counts of how far demos get') && !/anonymous counts/.test(en))
+  t('one sentence starts "If you sign up" now, with the same two facts (the menu moves and the account\'s terms apply; the record kept up to 30 days, then deleted)', (demo.match(/If you sign up/g) || []).length === 1
+    && demo.includes("If you sign up, your menu moves into your account and your account's privacy terms apply from then on; we keep the demo record for up to 30 days so the menu can move across, then delete it."))
+  t('the rest of the section is unchanged (the counts still "contain no email address" and can no longer be linked to you)', demo.includes('They contain no email address, and once your demo is deleted they can no longer be linked to you.'))
+  const legal = read('lib/legal.ts')
+  t('PRIVACY_UPDATED \'3 November 2026\' and the document\'s own line; TERMS_VERSION \'2026-11-03\' (it moves with the latest document); the Terms\' dates unchanged', /export const PRIVACY_UPDATED = '3 November 2026'/.test(legal) && en.includes('**Last updated:** 3 November 2026')
+    && /export const TERMS_VERSION = '2026-11-03'/.test(legal) && /export const TERMS_UPDATED = '1 November 2026'/.test(legal) && T1.asBefore('lib/legal.ts', legal) === atBase('lib/legal.ts'))
+  const L = require('./_legal-translations.cjs')
+  const BASES = /export const LANGUAGE_BASES[^=]*=\s*\[([^\]]*)\]/.exec(read('lib/i18n/locales.ts'))[1].match(/'[^']+'/g).map(x => x.slice(1, -1))
+  for (const l of BASES) {
+    const tr = read(`content/legal/${l}/privacy-policy.md`), old = atBase(`content/legal/${l}/privacy-policy.md`).split('\n')
+    const changed = tr.split('\n').slice(1).filter(x => !old.includes(x))
+    t(`${l}: re-stamped, the drift check clean; exactly the demo section's two paragraphs changed (the 30 days kept)`, L.compare('privacy-policy.md', tr).length === 0 && changed.length === 2 && changed.some(x => /\b30\b/.test(x)), changed.map(x => x.slice(0, 80)))
+  }
+  t('demo-2\'s drift check reads the merged sentence (still tied to CLAIM_GRACE_DAYS = 30)', read('scripts/demo-2.cjs').includes("we keep the demo record for up to 30 days so the menu can move across, then delete it."))
+
   console.log(`\ntidy-1: ${pass} passed, ${fail} failed`)
   process.exit(fail ? 1 : 0)
 })().catch(e => { console.error(e); process.exit(1) })

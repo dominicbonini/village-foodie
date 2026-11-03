@@ -1,4 +1,4 @@
-<!-- translation-of: privacy-policy.md sha256:fa2e1f9b3b13db7a43d979b81cceb96103d9fcb329d6ba0665d42f761abe003c -->
+<!-- translation-of: privacy-policy.md sha256:def241a5c7e2316baa4c9f2b8737ce3af40a8dcb30f77142217ff498581d447c -->
 # Politika zasebnosti
 
 **Zadnja posodobitev:** {{LAST_UPDATED}}
@@ -102,9 +102,9 @@ Ko na spletnem mestu HatchGrab pripravite predstavitev, vas prosimo za e-poštni
 
 Hranimo tudi jedilnik, ki ga naložite (fotografijo, PDF ali prilepljeno besedilo), in jedilnik, ki ga iz njega preberemo. Pošljemo ga Googlovi storitvi Gemini, da prebere jedi in cene, hranimo pa ga zato, da lahko preverimo, kako dobro je to delovalo, in vam pomagamo, če nato nastavite HatchGrab. Shranjen je zasebno; odpre ga lahko samo osebje HatchGrab.
 
-Vaš e-poštni naslov za predstavitev, datoteko z jedilnikom in samo predstavitev izbrišemo, ko predstavitev poteče: 24 ur po tem, ko jo pripravite, ali po 14 dneh, če nas prosite, da jo ohranimo. Če se registrirate, zapis o predstavitvi hranimo do 30 dni, da se lahko vaš jedilnik prenese v vaš račun, nato ga izbrišemo. Če se registrirate, se vaš jedilnik prenese v vaš račun in od takrat naprej veljajo pogoji zasebnosti vašega računa.
+Vaš e-poštni naslov za predstavitev, datoteko z jedilnikom in samo predstavitev izbrišemo, ko predstavitev poteče: 24 ur po tem, ko jo pripravite, ali po 14 dneh, če nas prosite, da jo ohranimo. Če se registrirate, se vaš jedilnik prenese v vaš račun in od takrat naprej veljajo pogoji zasebnosti vašega računa; zapis o predstavitvi hranimo do 30 dni, da se lahko jedilnik prenese, nato ga izbrišemo.
 
-Hranimo anonimna števila o tem, kako daleč pridejo predstavitve, na primer „predstavitev je bila pripravljena“ ali „naročilo je bilo oddano“. Ne vsebujejo e-poštnega naslova in ko je vaša predstavitev izbrisana, jih ni več mogoče povezati z vami.
+Hranimo preprosta števila o tem, kako daleč pridejo predstavitve, na primer „predstavitev je bila pripravljena“ ali „naročilo je bilo oddano“. Ne vsebujejo e-poštnega naslova in ko je vaša predstavitev izbrisana, jih ni več mogoče povezati z vami.
 
 Predstavitve, ki jih pripravimo za food truck, s katerim smo stopili v stik, hranimo do 30 dni in zanje ne zahtevamo e-poštnega naslova.
 

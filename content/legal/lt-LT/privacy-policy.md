@@ -1,4 +1,4 @@
-<!-- translation-of: privacy-policy.md sha256:fa2e1f9b3b13db7a43d979b81cceb96103d9fcb329d6ba0665d42f761abe003c -->
+<!-- translation-of: privacy-policy.md sha256:def241a5c7e2316baa4c9f2b8737ce3af40a8dcb30f77142217ff498581d447c -->
 # Privatumo politika
 
 **Paskutinį kartą atnaujinta:** {{LAST_UPDATED}}
@@ -102,9 +102,9 @@ Kai HatchGrab svetainėje kuriate demonstracinę versiją, paprašome jūsų el.
 
 Taip pat saugome jūsų įkeltą meniu (nuotrauką, PDF ar įklijuotą tekstą) ir iš jo nuskaitytą meniu. Jį siunčiame Google Gemini paslaugai, kad ji nuskaitytų patiekalus ir kainas, o saugome tam, kad galėtume patikrinti, kaip tai pavyko, ir padėti jums, jei vėliau nuspręsite nustatyti HatchGrab. Jis saugomas privačiai; jį atidaryti gali tik HatchGrab darbuotojai.
 
-Jūsų demonstracinės versijos el. pašto adresą, meniu failą ir pačią demonstracinę versiją ištriname, kai baigiasi demonstracinės versijos galiojimas: praėjus 24 valandoms nuo jos sukūrimo arba po 14 dienų, jei paprašote ją išsaugoti. Jei užsiregistruojate, demonstracinės versijos įrašą saugome iki 30 dienų, kad jūsų meniu galėtų būti perkeltas į jūsų paskyrą, o tada jį ištriname. Jei užsiregistruojate, jūsų meniu perkeliamas į jūsų paskyrą, ir nuo tada taikomos jūsų paskyros privatumo sąlygos.
+Jūsų demonstracinės versijos el. pašto adresą, meniu failą ir pačią demonstracinę versiją ištriname, kai baigiasi demonstracinės versijos galiojimas: praėjus 24 valandoms nuo jos sukūrimo arba po 14 dienų, jei paprašote ją išsaugoti. Jei užsiregistruojate, jūsų meniu perkeliamas į jūsų paskyrą ir nuo tada taikomos jūsų paskyros privatumo sąlygos; demonstracinės versijos įrašą saugome iki 30 dienų, kad meniu galėtų būti perkeltas, o tada jį ištriname.
 
-Saugome anoniminius skaičiavimus, kaip toli pažengia demonstracinės versijos, pavyzdžiui, „sukurta demonstracinė versija“ arba „pateiktas užsakymas“. Juose nėra el. pašto adreso, o ištrynus jūsų demonstracinę versiją jų nebegalima susieti su jumis.
+Saugome paprastus skaičiavimus, kaip toli pažengia demonstracinės versijos, pavyzdžiui, „sukurta demonstracinė versija“ arba „pateiktas užsakymas“. Juose nėra el. pašto adreso, o ištrynus jūsų demonstracinę versiją jų nebegalima susieti su jumis.
 
 Demonstracinės versijos, kurias parengiame food truck, su kuriuo susisiekėme, saugomos iki 30 dienų, ir el. pašto adreso jose neprašoma.
 

@@ -1,4 +1,4 @@
-<!-- translation-of: privacy-policy.md sha256:fa2e1f9b3b13db7a43d979b81cceb96103d9fcb329d6ba0665d42f761abe003c -->
+<!-- translation-of: privacy-policy.md sha256:def241a5c7e2316baa4c9f2b8737ce3af40a8dcb30f77142217ff498581d447c -->
 # Informativa sulla privacy
 
 **Ultimo aggiornamento:** {{LAST_UPDATED}}
@@ -102,9 +102,9 @@ Quando crea una demo dal sito web di HatchGrab, Le chiediamo il Suo indirizzo em
 
 Conserviamo inoltre il menu che carica (una foto, un PDF o un testo incollato) e il menu che ne ricaviamo. Lo inviamo al servizio Gemini di Google affinché possa leggerne i piatti e i prezzi, e lo conserviamo per poter verificare la qualità del risultato e aiutarLa qualora decida poi di configurare HatchGrab. È conservato in forma riservata; solo il personale di HatchGrab può aprirlo.
 
-Cancelliamo la Sua email della demo, il file del menu e la demo stessa alla scadenza della demo: 24 ore dopo la sua creazione, oppure 14 giorni se ci chiede di conservarla. Se si registra, conserviamo il record della demo per un massimo di 30 giorni affinché il Suo menu possa essere trasferito nel Suo account, dopodiché lo cancelliamo. Se si registra, il Suo menu viene trasferito nel Suo account e da quel momento si applicano le condizioni sulla privacy del Suo account.
+Cancelliamo la Sua email della demo, il file del menu e la demo stessa alla scadenza della demo: 24 ore dopo la sua creazione, oppure 14 giorni se ci chiede di conservarla. Se si registra, il Suo menu viene trasferito nel Suo account e da quel momento si applicano le condizioni sulla privacy del Suo account; conserviamo il record della demo per un massimo di 30 giorni affinché il menu possa essere trasferito, dopodiché lo cancelliamo.
 
-Conserviamo conteggi anonimi dei progressi delle demo, come «è stata creata una demo» o «è stato effettuato un ordine». Non contengono alcun indirizzo email e, una volta cancellata la Sua demo, non possono più essere collegati a Lei.
+Conserviamo conteggi semplici dei progressi delle demo, come «è stata creata una demo» o «è stato effettuato un ordine». Non contengono alcun indirizzo email e, una volta cancellata la Sua demo, non possono più essere collegati a Lei.
 
 Le demo che prepariamo per un food truck che abbiamo contattato vengono conservate per un massimo di 30 giorni e non richiedono un indirizzo email.
 

@@ -1,4 +1,4 @@
-<!-- translation-of: privacy-policy.md sha256:fa2e1f9b3b13db7a43d979b81cceb96103d9fcb329d6ba0665d42f761abe003c -->
+<!-- translation-of: privacy-policy.md sha256:def241a5c7e2316baa4c9f2b8737ce3af40a8dcb30f77142217ff498581d447c -->
 # Integritetspolicy
 
 **Senast uppdaterad:** {{LAST_UPDATED}}
@@ -102,9 +102,9 @@ När du skapar en demo från HatchGrabs webbplats ber vi om din e-postadress. Vi
 
 Vi sparar också den meny du laddar upp (ett foto, en PDF eller inklistrad text) och den meny vi läser ut ur den. Vi skickar den till Googles tjänst Gemini så att den kan läsa av rätterna och priserna, och vi sparar den så att vi kan kontrollera hur väl det fungerade och hjälpa dig om du sedan går vidare och sätter upp HatchGrab. Den lagras privat; endast HatchGrabs personal kan öppna den.
 
-Vi raderar din e-postadress för demon, menyfilen och själva demon när demon löper ut: 24 timmar efter att du har skapat den, eller 14 dagar om du ber oss att spara den. Om du registrerar dig sparar vi demouppgifterna i upp till 30 dagar så att din meny kan flyttas in i ditt konto, och raderar dem sedan. Om du registrerar dig flyttas din meny in i ditt konto, och ditt kontos integritetsvillkor gäller från och med då.
+Vi raderar din e-postadress för demon, menyfilen och själva demon när demon löper ut: 24 timmar efter att du har skapat den, eller 14 dagar om du ber oss att spara den. Om du registrerar dig flyttas din meny in i ditt konto, och ditt kontos integritetsvillkor gäller från och med då; vi sparar demouppgifterna i upp till 30 dagar så att menyn kan flyttas in, och raderar dem sedan.
 
-Vi sparar anonyma räkningar av hur långt demor kommer, till exempel ”en demo skapades” eller ”en beställning gjordes”. De innehåller ingen e-postadress, och när din demo har raderats kan de inte längre kopplas till dig.
+Vi sparar enkla räkningar av hur långt demor kommer, till exempel ”en demo skapades” eller ”en beställning gjordes”. De innehåller ingen e-postadress, och när din demo har raderats kan de inte längre kopplas till dig.
 
 Demor som vi förbereder för en foodtruck som vi har kontaktat sparas i upp till 30 dagar och kräver ingen e-postadress.
 

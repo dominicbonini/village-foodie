@@ -1,4 +1,4 @@
-<!-- translation-of: privacy-policy.md sha256:fa2e1f9b3b13db7a43d979b81cceb96103d9fcb329d6ba0665d42f761abe003c -->
+<!-- translation-of: privacy-policy.md sha256:def241a5c7e2316baa4c9f2b8737ce3af40a8dcb30f77142217ff498581d447c -->
 # Polityka prywatności
 
 **Ostatnia aktualizacja:** {{LAST_UPDATED}}
@@ -102,9 +102,9 @@ Gdy tworzą Państwo demo na stronie internetowej HatchGrab, prosimy o podanie a
 
 Przechowujemy również przesłane przez Państwa menu (zdjęcie, plik PDF lub wklejony tekst) oraz menu, które z niego odczytaliśmy. Przesyłamy je do usługi Gemini firmy Google, aby mogła odczytać dania i ceny, i przechowujemy je, aby sprawdzić, jak dobrze to zadziałało, oraz pomóc Państwu, jeśli zdecydują się Państwo następnie uruchomić HatchGrab. Jest ono przechowywane w sposób niepubliczny; dostęp do niego mają wyłącznie pracownicy HatchGrab.
 
-Usuwamy podany przy demo adres e-mail, plik menu i samo demo, gdy demo wygaśnie: 24 godziny po jego utworzeniu albo po 14 dniach, jeśli poproszą Państwo o jego zachowanie. Jeśli zarejestrują się Państwo, przechowujemy rekord demo przez maksymalnie 30 dni, aby Państwa menu mogło zostać przeniesione na Państwa konto, a następnie go usuwamy. Jeśli zarejestrują się Państwo, Państwa menu zostaje przeniesione na Państwa konto i od tej chwili obowiązują zasady prywatności dotyczące konta.
+Usuwamy podany przy demo adres e-mail, plik menu i samo demo, gdy demo wygaśnie: 24 godziny po jego utworzeniu albo po 14 dniach, jeśli poproszą Państwo o jego zachowanie. Jeśli zarejestrują się Państwo, Państwa menu zostaje przeniesione na Państwa konto i od tej chwili obowiązują zasady prywatności dotyczące konta; rekord demo przechowujemy przez maksymalnie 30 dni, aby menu mogło zostać przeniesione, a następnie go usuwamy.
 
-Prowadzimy anonimowe statystyki tego, jak daleko zachodzą poszczególne demo, np. „utworzono demo” lub „złożono zamówienie”. Nie zawierają one adresu e-mail, a po usunięciu Państwa demo nie można ich już powiązać z Państwem.
+Prowadzimy proste statystyki tego, jak daleko zachodzą poszczególne demo, np. „utworzono demo” lub „złożono zamówienie”. Nie zawierają one adresu e-mail, a po usunięciu Państwa demo nie można ich już powiązać z Państwem.
 
 Demo, które przygotowujemy dla food trucka, z którym nawiązaliśmy kontakt, są przechowywane przez maksymalnie 30 dni i nie wymagają podania adresu e-mail.
 
