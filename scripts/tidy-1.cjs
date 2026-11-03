@@ -105,6 +105,15 @@ if (process.argv[2] === 'capture') {
   }
   t('demo-2\'s drift check reads the merged sentence (still tied to CLAIM_GRACE_DAYS = 30)', read('scripts/demo-2.cjs').includes("we keep the demo record for up to 30 days so the menu can move across, then delete it."))
 
+  // ══ 4 ══════════════════════════════════════════════════════════════════════════════════════════════════════════════
+  head('4 · the sweep\'s failures at HEAD — settled (code wrong: fixed; test stale: updated, each with why and which commit)')
+  const ca = JSON.parse(read('messages/en-CA.json')), ch = JSON.parse(read('messages/de-CH.json'))
+  t('canada-1 (CODE): Canadian English says "card terminal" — en-CA now overrides the comparison wording that said "card reader" (7d879790)', ca.comparison?.features?.terminal?.explain === 'The vendor provides a card terminal for payments at the truck.')
+  t('europe-languages-1 (CODE): Swiss German has no "ß" — de-CH now overrides the comparison wording "Größen, Soßen …"', ch.comparison?.features?.options?.explain === 'Grössen, Saucen und Extras, auch Pflichtauswahl.' && !/ß/.test(JSON.stringify(ch)))
+  t('schedule-graphics-places (TEST): lib/pricing-check.ts left the list, stale since a21e868a removed its KEY_FEATURES row', /STALE since a21e868a/.test(read('scripts/schedule-graphics-places.cjs')) && !/schedule_graphics/.test(read('lib/pricing-check.ts')))
+  t('world-countries-1 (TEST): its two tagline harness files excluded, stale since 2b625a66 committed them with the check', /STALE since 2b625a66/.test(read('scripts/world-countries-1.cjs')))
+  t('world-countries-2 (TEST): its "HEAD" is 3240c536 by name, stale since 2b625a66 committed it with its own changes', /git show 3240c536:/.test(read('scripts/world-countries-2.cjs')))
+
   console.log(`\ntidy-1: ${pass} passed, ${fail} failed`)
   process.exit(fail ? 1 : 0)
 })().catch(e => { console.error(e); process.exit(1) })

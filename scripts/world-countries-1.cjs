@@ -84,7 +84,9 @@ const UNLIMITED_ONLY = ['BR', 'MX', 'MY', 'SG', 'TH']
   const allMsgs = fs.readdirSync(path.join(REPO, 'messages')).filter(f => f.endsWith('.json'))
   t(`no locale file (${allMsgs.length}) has landing.hero.tagline or landingFooter.tagline`, allMsgs.every(f => { const m = JSON.parse(read(`messages/${f}`)); return !m.landing?.hero?.tagline && !m.landingFooter?.tagline }))
   t('the hero and the footer render no tagline (no hero-tag / foot-tag, no t(\'…tagline\'))', !/hero-tag|hero\.tagline/.test(read('app/landing/page.tsx').replace(/\{\/\*[\s\S]*?\*\/\}/g, '')) && !/foot-tag|'tagline'/.test(read('components/landing/LandingFooter.tsx').replace(/\{\/\*[\s\S]*?\*\/\}/g, '')))
-  const tagHits = execSync("git grep -l -i 'less time booking' -- ':!docs' ':!scripts/fixtures' ':!scripts/world-countries-1.cjs' ':!scripts/marketing-country-parity.cjs' || true", { cwd: REPO, encoding: 'utf8' }).trim().split('\n').filter(Boolean)
+  // ⚠️ RE-PINNED (tidy-1, 3 November 2026): STALE since 2b625a66, which committed this check together with two harness files that must
+  // name the words — scripts/_lp-tagline.cjs (cuts the tagline from BEFORE's pages) and scripts/world-countries-1-hero.cjs (proves it gone).
+  const tagHits = execSync("git grep -l -i 'less time booking' -- ':!docs' ':!scripts/fixtures' ':!scripts/world-countries-1.cjs' ':!scripts/marketing-country-parity.cjs' ':!scripts/_lp-tagline.cjs' ':!scripts/world-countries-1-hero.cjs' || true", { cwd: REPO, encoding: 'utf8' }).trim().split('\n').filter(Boolean)
   t('no source file outside the reports still carries the words (comments recording the removal aside)', tagHits.every(f => ['app/landing/page.tsx', 'components/landing/LandingFooter.tsx'].includes(f)), tagHits)
   t('the share card (og:image) is re-rendered without it: same file, same 1200×630, now the wordmark alone', (() => { const b = fs.readFileSync(path.join(REPO, 'public/logos/hatchgrab-share-card.png')); return b.readUInt32BE(16) === 1200 && b.readUInt32BE(20) === 630 })())
 

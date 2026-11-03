@@ -260,5 +260,12 @@
   },
   "manageTeam": {
     "phonePlaceholder": "+41 78 123 45 67"
+  },
+  "comparison": {
+    "features": {
+      "options": {
+        "explain": "Grössen, Saucen und Extras, auch Pflichtauswahl."
+      }
+    }
   }
 }

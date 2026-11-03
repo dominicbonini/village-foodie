@@ -1049,7 +1049,8 @@ function runWiringSuite(lib) {
         // ⚠️ RE-PINNED (pricing-check-1, 23 October 2026): Admin › Pricing check's key-features row "Social media posts"
         // reads the key as DATA — lib/pricing-check.ts KEY_FEATURES asks the catalogue which public plans have it on
         // ("Pro & Unlimited"). A display reader, like lib/feature-table.ts; it gates nothing.
-        'lib/pricing-check.ts',
+        // ⚠️ RE-PINNED (tidy-1, 3 November 2026): STALE since a21e868a (29 Oct, "competitor updates") — KEY_FEATURES and its "Social
+        // media posts" row left lib/pricing-check.ts (the comparison master list replaced them), so that file no longer reads the key.
       ]
       return inCode.length === EXPECTED.length && EXPECTED.every(f => inCode.includes(f))
     })())

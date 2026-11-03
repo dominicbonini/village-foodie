@@ -28,7 +28,9 @@ let pass = 0, fail = 0
 const t = (label, ok, detail) => { if (ok) { pass++; console.log('  ✓ ' + label) } else { fail++; console.log('  🔴 ' + label + (detail !== undefined ? `\n      ${typeof detail === 'string' ? detail.slice(0, 900) : JSON.stringify(detail).slice(0, 900)}` : '')) } }
 const head = s => console.log('\n── ' + s + ' ' + '─'.repeat(Math.max(0, 100 - s.length)))
 const read = f => fs.readFileSync(path.join(REPO, f), 'utf8')
-const atHead = f => execSync(`git show HEAD:${f}`, { cwd: REPO, encoding: 'utf8' })
+// ⚠️ RE-PINNED (tidy-1, 3 November 2026): STALE since 2b625a66 committed this harness WITH world-countries-2's changes — "HEAD" meant the
+// tree before them; it is that tree by name, 3240c536 (2b625a66's parent), as legal-languages-1 reads it.
+const atHead = f => execSync(`git show 3240c536:${f}`, { cwd: REPO, encoding: 'utf8' })
 const flat = (o, p = '', out = {}) => { for (const [k, v] of Object.entries(o ?? {})) { const kk = p ? `${p}.${k}` : k; if (typeof v === 'string') out[kk] = v; else flat(v, kk, out) } return out }
 const text = s => String(s ?? '').replace(/<style[\s\S]*?<\/style>/g, ' ').replace(/<script[\s\S]*?<\/script>/g, ' ').replace(/<[^>]+>/g, ' ')
   .replace(/&amp;/g, '&').replace(/&#x27;|&#39;/g, "'").replace(/&quot;/g, '"').replace(/[  ‏‎]/g, ' ').replace(/\s+/g, ' ').trim()
@@ -67,7 +69,7 @@ const UNLIMITED_ONLY = ['BR', 'MX', 'MY', 'SG', 'TH']
   const constOf = k => new RegExp(`export const ${k} = '([^']+)'`).exec(legal)[1]
   t(`each document's own line and its lib/legal.ts date agree: Terms and Country-specific terms ${W2.NEW_DATE}; Privacy unchanged (${constOf('PRIVACY_UPDATED')})`,
     docDate(terms) === W2.NEW_DATE && constOf('TERMS_UPDATED') === W2.NEW_DATE && docDate(country) === W2.NEW_DATE && constOf('COUNTRY_TERMS_UPDATED') === W2.NEW_DATE
-    && docDate(read('content/legal/privacy-policy.md')) === constOf('PRIVACY_UPDATED') && read('content/legal/privacy-policy.md') === atHead('content/legal/privacy-policy.md'))
+    && docDate(read('content/legal/privacy-policy.md')) === constOf('PRIVACY_UPDATED') && W2.asBefore('content/legal/privacy-policy.md', read('content/legal/privacy-policy.md')) === atHead('content/legal/privacy-policy.md'))   // ⚠️ RE-PINNED (tidy-1): contact-1's and tidy-1's later Privacy changes taken back first (the chain)
   const iso = d => new Date(Date.parse(`${d} UTC`)).toISOString().slice(0, 10)
   t(`TERMS_VERSION '${constOf('TERMS_VERSION')}' is the latest of the three documents' dates`, constOf('TERMS_VERSION') === [constOf('PRIVACY_UPDATED'), constOf('TERMS_UPDATED'), constOf('COUNTRY_TERMS_UPDATED')].map(iso).sort().at(-1))
 
