@@ -11,7 +11,7 @@
 | 5 | Cost | **Before ≈ $4.05 a month, after ≈ $8.70 a month** (≈ $12.16 in the first month while it catches up). The arithmetic is in §5. |
 | 6 | Proof | `scripts/competitor-features-2.cjs`, registered: **79 passed, 0 failed.** Full sweep green after one re-pin, with no failures shared with HEAD (§6). |
 
-Commits: `1ecc042d` (the migration) and the commit after it (the code, words, harness and this report).
+Commits: `1ecc042d` (the migration) and `d8414b10` (the code, words, harness and this report).
 
 ## 1 · Tiers in `features.json`
 
