@@ -4,13 +4,13 @@
 
 | # | Item | Outcome | Commit |
 |---|---|---|---|
-| 1 | Village Foodie popup on hatchgrab.com truck pages | **Done.** No Tally on any HatchGrab page now. | 46c31cce |
+| 1 | Village Foodie popup on hatchgrab.com truck pages | **Done.** No Tally on any HatchGrab page now. | 46c31cce, follow-up 19884302 |
 | 2 | App claims without a country check | **Not done, by your decision** ("dont do point 2. apps will be available shortly") | — |
 | 3 | Privacy wording tidy (demo-2d) | **Done**, in English and all 28 translations | fe34c2cb |
 | 4 | The sweep's failures at HEAD | **All settled:** 2 copy fixes, 3 stale tests updated | 80537536 |
 | 5 | pricing-check-1.cjs registration | **Already registered** (since 8fd3ba83); passes 82/82. No change. | (in ec853c94's notes) |
 | 6 | Dead code | **getSlotIndicator removed.** "page 2.tsx" and a trucks.is_test were already gone. slot_capacity is live, so it stays. | ec853c94 |
-| 7 | Node version for Canada's 2026 time-zone changes | **`engines.node` set to "24.x"**; full sweep run under Node 24 | NODE |
+| 7 | Node version for Canada's 2026 time-zone changes | **`engines.node` set to "24.x"**; full sweep run under Node 24 | e3a755b3 |
 
 ## 1 · No Tally on hatchgrab.com truck pages
 
@@ -27,7 +27,9 @@
 
 **Tally is now only on Village Foodie's pages:** its `/contact` branch and embed, the discovery home page, `/hire`, the venue page, and the truck page behind `tally`. On hatchgrab.com, `/` is the landing page and `/hire` and `/venues/<slug>` redirect to Village Foodie (308). **No HatchGrab page loads tally.so** (proved by rendering both hosts and scanning every source file). contact-1's "known exception" is gone; its check now proves that.
 
-**Named re-pin:** `scripts/_lp-tidy-1.cjs` `hgTruck` takes exactly those pieces out of the HatchGrab-host truck view, and throws if any isn't there. It is used in language-phase-1e, language-phase-1e-tidy (and its "discovery on" and "GB unchanged" checks) and plans-data-model. contact-1's source-closure checks exempt exactly the three files tidy-1 changed, since their Village Foodie render is proven byte-identical.
+**Named re-pin:** `scripts/_lp-tidy-1.cjs` `hgTruck` takes exactly those pieces out of the HatchGrab-host truck view, and throws if any isn't there. It is used in language-phase-1e, language-phase-1e-tidy (and its "discovery on" and "GB unchanged" checks), plans-data-model, and us-rehearsal-fixes.
+
+**The follow-up commit (19884302):** the Node 24 sweep found one more harness pinning the HatchGrab-host truck page. us-rehearsal-fixes failed on Node 22 too, so this was item 1, not the Node version. Its harness writes the script tag without `data-strategy`, so `hgTruck` now accepts the tag with or without it, still exactly once. I couldn't fold this into item 1's commit, because rewriting history needs an interactive rebase. contact-1's source-closure checks exempt exactly the three files tidy-1 changed, since their Village Foodie render is proven byte-identical.
 
 ## 2 · App claims: not done (your decision)
 
@@ -116,10 +118,21 @@ It is **already registered** in `scripts/harnesses.json` (in the list since 8fd3
   - **Node 24.13.0** (`/usr/local/bin/node`): tz data 2025b, **missing** too, since that patch predates the changes.
 - **The change:** `package.json` **`"engines": { "node": "24.x" }`**. Vercel then builds on the newest Node 24 patch, which carries 2026e, whatever the dashboard says. If Vercel was already on 24.x, this changes nothing.
 - **Tested:** the full sweep ran under Node 24 (24.13.0), as the brief asked; results below. The local Node 24 is older than the patch Vercel will use, so this tests the major version, not the time-zone data.
+- **canada-2** asserted "no engines field or Node pin added" (canada-2, 22 Oct). It is stale on purpose now, and updated: the only pin is `engines` "24.x", there's still no `.nvmrc`, and there's still no app code for it.
 - **What you need to do in Vercel:** nothing is required, because `engines` overrides the dashboard. Optionally set **Settings → Build and Deployment → Node.js Version → 24.x** so the two agree.
 - **After the next deploy:** check that the build log's first `check-tzdata:` line ends with **"present"**. If it still says "MISSING", the build ran on an older 24 patch: redeploy without the build cache.
 
-SWEEP
+## Final sweep: all green
+
+`node scripts/run-harnesses.cjs` under **Node 24.13.0**, after every item: **all 185 listed harnesses pass, 0 failures** ("✅ every listed harness passed").
+
+- **That includes the six that failed at HEAD before tidy-1:** canada-1, europe-languages-1, schedule-graphics-places, world-countries-1, world-countries-2 and legal-languages-1.
+- **Nothing is left unsettled.**
+- **How it got there:**
+  - the first Node 24 sweep found two failures, both fixed: us-rehearsal-fixes (item 1's follow-up) and canada-2's engines check (item 7);
+  - this final sweep is the run after those fixes;
+  - every harness changed along the way was also run on Node 22.22.3, the local default, and passed.
+- **Lint and types:** `tsc --noEmit` is clean. eslint is clean on every changed file, apart from findings that predate tidy-1: `TruckClient.tsx`'s two `(window as any).Tally` lines and `scripts/demo-2.cjs`'s missing require directive.
 
 ## Files
 
