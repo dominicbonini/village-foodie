@@ -10,7 +10,7 @@
 | 4 | Yen: never round up (F6) | **Done.** A percentage (or fractional amount) on a yen price is rounded **down** to the whole yen, on every path. ¥1,980 + 5% → ¥2,079; ¥999 + 10% → ¥1,098. GBP is byte-identical to before. |
 | — | Proof | `scripts/tidy-2.cjs` (registered): **44 passed, 0 failed.** For the full sweep, see §6. |
 
-Commits: `f9b6f3ea` (the two migrations, committed before they ran) and the commit after it (code, harness, re-pin, this report).
+Commits: `f9b6f3ea` (the two migrations, committed before they ran) and `a5ac83c3` (code, harness, re-pins, this report).
 
 > **Flag — the apps went live as soon as the migration ran.** The deployed site reads the two flags (cached for 60 seconds). So since about 3 November, **every country's live pages already show** the App Store and Google Play badges, the apps sentence, "Web, iOS, Android" in the JSON-LD, and Manage's get-the-app card. No deploy was needed. The badge links open each store's listing; anywhere an app isn't yet in that country's store, the store will say so. You decided they will be there before customers arrive.
 
