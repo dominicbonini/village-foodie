@@ -801,7 +801,7 @@ export async function POST(req: NextRequest) {
        * event it belongs to, so there is nothing to resolve and nothing to be ambiguous about. A null
        * event_id (an old ambiguous walk-up) resolves to menu prices, which is "do not guess".
        * ⚠️ `loadPriceBook` IS UNCHANGED AND IS WHAT THIS CALLS. */
-      const eventBook = await loadEventPriceBook(supabase, truck.id, order.event_id ?? null)
+      const eventBook = await loadEventPriceBook(supabase, truck.id, order.event_id ?? null, truck.currency ?? null)
       const priceBook = eventBook.book
 
       // DISCOUNT resolution. Deliberately NOT filtered on is_active: the order already carries this
@@ -1527,7 +1527,7 @@ export async function POST(req: NextRequest) {
        * event resolves to menu prices, which is exactly "do not guess".
        * ⚠️ `loadPriceBook` IS UNCHANGED AND IS WHAT THIS CALLS. With no event types and no event
        * own-prices, `eventBook.book` IS its return value by reference and `menuPrice` is empty. */
-      const eventBook = await loadEventPriceBook(supabase, truck.id, orderEventId)
+      const eventBook = await loadEventPriceBook(supabase, truck.id, orderEventId, truck.currency ?? null)
       const priceBook = eventBook.book
 
       // An override is a finite, non-negative number and nothing else. A blank editor, a null, a string

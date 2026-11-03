@@ -39,7 +39,7 @@ import {
   PRICE_MODE_VALUES, priceRoundingChoices,
 } from '@/lib/copy/serviceSettings'
 import {
-  amountUnitFor, applyPriceRule, cleanPriceAmount, cleanTypedPrice, priceForItem, toPence, toPounds,
+  amountUnitFor, applyPriceRule, cleanPriceAmount, cleanTypedPrice, priceForItem, toPence, toPounds, wholeUnitsFor,
   type PriceMode, type PriceRounding, type PriceSetup,
 } from '@/lib/event-pricing/price'
 
@@ -297,7 +297,7 @@ export function PriceAmountInput({ mode, value, onCommit, disabled, label, heigh
  * keyboard; a span is not reachable and gives no focus ring.
  */
 export function PriceCell({
-  menuPrice, setup, itemId, typed, onType, onClear, disabled, label, grey, height, showDiff, money,
+  menuPrice, setup: givenSetup, itemId, typed, onType, onClear, disabled, label, grey, height, showDiff, money,
 }: {
   /** The MENU price, in pounds. */
   menuPrice: number
@@ -335,6 +335,8 @@ export function PriceCell({
   const inputRef = useRef<HTMLInputElement | null>(null)
   useEffect(() => { if (editing) inputRef.current?.focus() }, [editing])
 
+  // tidy-2 (F6): a zero-decimal currency (JPY) prices the rule in whole units, rounded down — as the menu and the charge do.
+  const setup = givenSetup && wholeUnitsFor(money?.currency) ? { ...givenSetup, wholeUnits: true } : givenSetup
   const menuPence = toPence(menuPrice)
   const hasTyped = typed !== null && typed !== undefined
   const shownPence = priceForItem(menuPence, setup, itemId)

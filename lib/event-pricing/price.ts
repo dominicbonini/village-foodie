@@ -47,7 +47,7 @@
  * ⚠️ THE ABSENCE OF A RULE IS `null`, WHICH IS A DIFFERENT THING. A type whose switch is off, or an
  * event with no own prices, has no setup at all and resolves to the menu — see `resolvePricing`.
  */
-import { formatMajor, type MoneyFormat } from '@/lib/money-format'
+import { formatMajor, minorDigits, type MoneyFormat } from '@/lib/money-format'
 
 export const PRICE_MODES = ['none', 'add_amount', 'add_pct', 'sub_amount', 'sub_pct'] as const
 export type PriceMode = (typeof PRICE_MODES)[number]
@@ -106,7 +106,17 @@ export interface PriceSetup {
    * already in hand.
    */
   typed: Readonly<Record<string, number>>
+  /**
+   * 🔴 tidy-2 (3 November 2026, F6): THE TRUCK'S CURRENCY HAS NO MINOR UNIT (JPY — `wholeUnitsFor`). The engine works in
+   * hundredths of the major unit for every currency, so "¥999 + 10%" is ¥1,098.90; with this set, the rule's result is
+   * ROUNDED DOWN to the whole yen (¥1,098), so a customer is never charged more than the rule gives. Absent / false for
+   * every two-decimal currency, whose arithmetic is exactly as before.
+   */
+  wholeUnits?: boolean
 }
+
+/** tidy-2: does a rule's result have to be a whole unit of this currency (its registry entry says zero decimals — JPY)? */
+export const wholeUnitsFor = (currency: string | null | undefined): boolean => !!currency && minorDigits(currency) === 0
 
 /** Where an item's price came from. Stored on an order line as `price_basis`. */
 export type PriceBasis = 'event_type' | 'event'
@@ -157,6 +167,9 @@ const halfUp = (x: number): number => Math.floor(x + 0.5)
 /** Nearest whole pound, HALVES UP. £11.50 → £12. Integer arithmetic — no `/100` float. */
 const toNearestPound = (pence: number): number => Math.floor((pence + 50) / 100) * 100
 
+/** tidy-2: DOWN to the whole unit (a zero-decimal currency). ¥1,098.90 → ¥1,098. Integer arithmetic. */
+const toWholeFloor = (pence: number): number => Math.floor(pence / 100) * 100
+
 /** Ceiling to the whole pound. £2.20 → £3; £2.00 stays £2. Integer arithmetic. */
 const toPoundCeiling = (pence: number): number =>
   pence <= 0 ? 0 : (Math.floor((pence - 1) / 100) + 1) * 100
@@ -181,6 +194,9 @@ const toPoundCeiling = (pence: number): number =>
  *      but £12 for 1249.5, and the two-step order is the one the operator is shown.
  *   3. 🔴 **NEVER BELOW £0**, clamped before rounding. `£1.50 − £2.00` is £0, never −£0.50: a
  *      negative line price would flow into `calculateOrderTotal` and subtract money from the bill.
+ *   3a. 🔴 tidy-2 (F6): **A ZERO-DECIMAL CURRENCY (JPY) IS ROUNDED DOWN TO THE WHOLE UNIT** (`setup.wholeUnits`). There is
+ *      no half yen to charge, and rounding it up would charge more than the rule gives: ¥999 + 10% is ¥1,098, never ¥1,099.
+ *      A non-zero price is never floored to ¥0 (rule 5's reason): it stays at the smallest whole unit, ¥1.
  *   4. The pound rounding.
  *   5. 🔴 **ROUNDING NEVER CREATES A FREE ITEM.** `£0.40 − 10%` is 36p, and "nearest £1" on 36p is
  *      £0 — which would hand out free food on a rule the operator read as a small discount. Where
@@ -216,6 +232,8 @@ export function applyPriceRule(menuPence: number, setup: PriceSetup | null | und
   // 3 · never below zero.
   out = Math.max(0, out)
   if (out === 0) return 0
+  // 3a · tidy-2: a zero-decimal currency, DOWN to the whole unit — and never down to free.
+  if (setup.wholeUnits) out = Math.max(100, toWholeFloor(out))
   if (rounding === 'none') return out
 
   // 4 · the pound rounding.
@@ -276,11 +294,13 @@ export interface EventPricingColumns {
 const setupFrom = (
   row: TypePricing | null | undefined,
   typed: Readonly<Record<string, number>>,
+  currency: string | null,
 ): PriceSetup => ({
   mode: normalisePriceMode(row?.price_mode) ?? 'none',
   amount: row?.price_amount === null || row?.price_amount === undefined ? null : numOr(row.price_amount, 0),
   rounding: isPriceRounding(row?.price_rounding) ? row!.price_rounding as PriceRounding : 'none',
   typed,
+  ...(wholeUnitsFor(currency) ? { wholeUnits: true } : {}),
 })
 
 /**
@@ -331,15 +351,17 @@ export const pricingApplies = (p: EventItemPricing): boolean =>
 /**
  * Build the per-event pricing from the two rows.
  * ⚠️ THE EVENT'S RULE COLUMNS ARE NOT A PARAMETER. They cannot be read by accident.
+ * @param currency the TRUCK's currency (trucks.currency) — tidy-2: REQUIRED, so no caller can price a yen rule in hundredths.
  */
 export function resolveEventPricing(
   eventTyped: Readonly<Record<string, number>>,
   type: TypePricing | null | undefined,
   typeTyped: Readonly<Record<string, number>>,
+  currency: string | null,
 ): EventItemPricing {
   return {
     eventTyped,
-    typeSetup: type?.price_change_on === true ? setupFrom(type, typeTyped) : null,
+    typeSetup: type?.price_change_on === true ? setupFrom(type, typeTyped, currency) : null,
   }
 }
 

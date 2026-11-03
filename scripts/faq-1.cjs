@@ -282,8 +282,9 @@ async function identityViews(tag) {
   // the repo; 20261058 reverses it outside the FAQ). 20261056 is still the one faq-1 file, and nothing else came after it.
   // ⚠️ RE-PINNED (contact-1, 2 November 2026): 20261061 (contact_messages) follows too.
   // ⚠️ RE-PINNED (competitor-features-2, 3 November 2026): and 20261062 (tiers, not_mentioned, competitor_feature_checks).
-  t('the faq-1 migration number is unique, and only 20261058, 20261059 (faq-3), 20261060 (faq-2), 20261061 (contact-1) and 20261062 (competitor-features-2) follow it', fs.readdirSync(path.join(REPO, 'supabase/migrations')).filter(f => f.startsWith('20261056')).length === 1
-    && JSON.stringify(fs.readdirSync(path.join(REPO, 'supabase/migrations')).filter(f => f > '20261056_faq_1.sql' && /^\d{8}/.test(f))) === JSON.stringify(['20261058_faq_1c_undo.sql', '20261059_faq_3.sql', '20261060_faq_2_translations.sql', '20261061_contact_1.sql', '20261062_competitor_features_2.sql']))
+  // ⚠️ RE-PINNED (tidy-2, 3 November 2026): and 20261063 / 20261064 (the apps everywhere; Real Thai Food).
+  t('the faq-1 migration number is unique, and only 20261058, 20261059 (faq-3), 20261060 (faq-2), 20261061 (contact-1), 20261062 (competitor-features-2), 20261063 and 20261064 (tidy-2) follow it', fs.readdirSync(path.join(REPO, 'supabase/migrations')).filter(f => f.startsWith('20261056')).length === 1
+    && JSON.stringify(fs.readdirSync(path.join(REPO, 'supabase/migrations')).filter(f => f > '20261056_faq_1.sql' && /^\d{8}/.test(f))) === JSON.stringify(['20261058_faq_1c_undo.sql', '20261059_faq_3.sql', '20261060_faq_2_translations.sql', '20261061_contact_1.sql', '20261062_competitor_features_2.sql', '20261063_tidy_2_apps_everywhere.sql', '20261064_tidy_2_real_thai_food.sql']))
 
   // ══ 7 ══════════════════════════════════════════════════════════════════════════════════════════════════════════════
   head('7 · the seed')

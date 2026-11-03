@@ -44,7 +44,7 @@ import { legalPath } from '@/lib/legal'
 import { MoneyProvider } from '@/components/MoneyContext'
 // Phase 3 screens: tax, a tip and the service fee, SHOWN with the server's own pure engine. The server
 // re-prices on submit; the browser sends only the tip choice.
-import { computeOrderCharges, rulesFromCheckout, applyBps, type CheckoutRules, type TipChoice } from '@/lib/order-charges'
+import { computeOrderCharges, rulesFromCheckout, applyBps, applyBpsDown, type CheckoutRules, type TipChoice } from '@/lib/order-charges'
 import { ChargeRows, FoldedChargeRows } from '@/components/ChargeRows'
 import { formatRateBps, chargeLinesFor, type ChargeLineSource } from '@/lib/order-charge-lines'
 import { DEFAULT_CATEGORY_KEY } from '@/lib/category-key'
@@ -1765,7 +1765,7 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
         {tipPresets.map(bps => (
           <button type="button" key={bps} onClick={() => setTipSel(bps)} className={tipBtn(tipSel === bps)} aria-pressed={tipSel === bps}>
             <span>{formatRateBps(bps)}%</span>
-            <span className="text-xs font-medium text-slate-500">{amountMinor(applyBps(foodMinor, bps))}</span>
+            <span className="text-xs font-medium text-slate-500">{amountMinor((checkout?.roundDown ? applyBpsDown : applyBps)(foodMinor, bps))}</span>
           </button>
         ))}
         <button type="button" onClick={() => setTipSel('other')} className={tipBtn(tipSel === 'other')} aria-pressed={tipSel === 'other'}>{tOrder('otherTip')}</button>

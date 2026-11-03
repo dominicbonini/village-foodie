@@ -21,7 +21,7 @@
  * put real numbers through the real decision with no client at all.
  */
 
-import { applyPriceRule, normalisePriceMode, isPriceRounding, toPounds } from './price'
+import { applyPriceRule, normalisePriceMode, isPriceRounding, toPounds, wholeUnitsFor } from './price'
 import type { PriceSetup, PriceMode, PriceRounding } from './price'
 import type { PricingItem } from './read'
 
@@ -111,9 +111,12 @@ export const oldSetupOf = (
   oldMode: string | null | undefined,
   oldAmount: number | string | null | undefined,
   oldRounding: string | null | undefined,
+  /** tidy-2: the truck's currency — the locked-in price is the one the customer was charged (whole yen for JPY). */
+  currency: string | null,
 ): PriceSetup => ({
   mode: normalisePriceMode(oldMode) ?? 'none',
   amount: oldAmount === null || oldAmount === undefined ? null : Number(oldAmount),
   rounding: isPriceRounding(oldRounding) ? oldRounding : 'none',
   typed: {},
+  ...(wholeUnitsFor(currency) ? { wholeUnits: true } : {}),
 })

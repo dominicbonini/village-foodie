@@ -31,6 +31,7 @@ import { countrySettingsForTruck } from '@/lib/country-settings'
 import { truckPlanFeeBps } from '@/lib/plans-server'
 import type { OrderChargeRules } from '@/lib/order-charges'
 import { regionSalesTax, includedTaxOf } from '@/lib/address-formats'
+import { minorDigits } from '@/lib/money-format'
 
 /** The truck columns the rules read (20261010_17). Every one is optional so a row read before the
  *  migration, or a narrow select, resolves to the defaults rather than failing. */
@@ -94,6 +95,8 @@ export function resolveChargeRules(
     cardFeePayer: truck.card_fee_payer === 'customer' ? 'customer' : 'truck',
     // world-countries-1: switched on AND allowed in the country (platformFeeOn) — never where Stripe forbids an application fee.
     platformFee: platformFeeOn(country) && platformFeeBps !== null ? { bps: platformFeeBps } : null,
+    // tidy-2 (F6): a zero-decimal currency (JPY) — percentage charges round DOWN to the whole unit. Absent everywhere else.
+    ...(minorDigits(country.currency) === 0 ? { roundDown: true as const } : {}),
   }
 }
 

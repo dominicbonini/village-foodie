@@ -390,7 +390,7 @@ export async function GET(
   //    by the id it already has.
   const eventItemPrice: Record<string, number> = {}
   if (effectiveEventId) {
-    const pricing = await readEventPricing(supabase, effectiveEventId)
+    const pricing = await readEventPricing(supabase, effectiveEventId, truck.currency ?? null)
     if (pricingApplies(pricing.resolved)) {
       for (const i of (items || []) as { id: string; price: unknown }[]) {
         const menuPence = toPence(i.price)

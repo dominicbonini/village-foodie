@@ -107,6 +107,8 @@ async function readTypedPrices(
 export async function readEventPricing(
   supabase: SupabaseClient,
   eventId: string | null | undefined,
+  /** tidy-2: the TRUCK's currency (trucks.currency) — a zero-decimal one (JPY) prices a rule in whole units, rounded down. */
+  currency: string | null,
   opts?: { forEditing?: boolean },
 ): Promise<EventPricingRead> {
   if (!eventId) return NO_EVENT_PRICING
@@ -174,7 +176,7 @@ export async function readEventPricing(
 
   return {
     ok: ev.ok && ty.ok,
-    resolved: resolveEventPricing(ev.typed, type, ty.typed),
+    resolved: resolveEventPricing(ev.typed, type, ty.typed, currency),
     typeId: type?.id ?? row.event_type_id ?? null,
     typeName: type?.name ?? null,
     eventColumns,
@@ -343,10 +345,12 @@ export async function loadEventPriceBook(
   supabase: SupabaseClient,
   truckId: string,
   eventId: string | null | undefined,
+  /** tidy-2: the TRUCK's currency (trucks.currency) — required, so a yen rule is never priced in hundredths. */
+  currency: string | null,
 ): Promise<EventPriceBook> {
   const [book, pricing] = await Promise.all([
     loadPriceBook(supabase, truckId),
-    readEventPricing(supabase, eventId),
+    readEventPricing(supabase, eventId, currency),
   ])
 
   /* 🔴 THE EARLY RETURN IS THE IDENTITY PROOF. Same object, empty maps. */
@@ -402,12 +406,14 @@ export async function candidatesChangePrices(
   supabase: SupabaseClient,
   truckId: string,
   candidateEventIds: readonly string[],
+  /** tidy-2: the TRUCK's currency — the same rule the charge uses. */
+  currency: string | null,
 ): Promise<boolean> {
   if (candidateEventIds.length === 0) return false
   const { items } = await loadPricingItems(supabase, truckId)
   if (items.length === 0) return false
   for (const id of candidateEventIds) {
-    const pricing = await readEventPricing(supabase, id)
+    const pricing = await readEventPricing(supabase, id, currency)
     if (pricingDiffersFromMenu(pricing.resolved, items)) return true
   }
   return false

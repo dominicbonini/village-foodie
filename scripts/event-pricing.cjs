@@ -328,8 +328,10 @@ head('1b · TYPED PRICES BEAT THE RULE, AND ARE NEVER ROUNDED')
   /* ⛔ AND THE EVENT'S FOUR RULE COLUMNS CANNOT REACH THE ARITHMETIC. `resolveEventPricing` has no
    * parameter for them, so passing `price_own: true` with a rule has no effect anywhere — asserted
    * because this is the removal, and a reinstated event rule is what would break it. */
+  /* ⚠️ RE-PINNED (tidy-2, 3 November 2026, docs/tidy-2-report.md): a FOURTH parameter, the truck's currency (a zero-decimal one
+   * rounds a rule down to the whole unit). Still none for the event's rule columns. */
   t('⛔ `price_own` + an event rule are UNREAD: the arithmetic has no parameter for them',
-    P.resolveEventPricing.length === 3
+    P.resolveEventPricing.length === 4
     && typeof P.resolvePricing === 'undefined'
     && P.priceAtEvent(1000, ITEM.margherita, ev({}, null, {})).pence === 1000)
   /* ⚠️ A SETUP THAT CHANGES NOTHING IS NOT "MENU PRICES" FOR THE PURPOSE OF THE SUMMARY — the switch
@@ -814,7 +816,8 @@ head('2 · ZERO CHANGE FOR A TRUCK WITH NO TYPES AND NO OWN PRICES')
     /* ⚠️ AND THE PRICING READ IS SEPARATE FROM EVERY NAMED SELECT ON THIS ROUTE, which is the whole
      * reason a 42703 here cannot blank a customer's menu. */
     t('⚠️ the pricing read is its own call, not a column on the truck or event select',
-      /const pricing = await readEventPricing\(supabase, effectiveEventId\)/.test(now)
+      // ⚠️ RE-PINNED (tidy-2): the call also passes the truck's currency.
+      /const pricing = await readEventPricing\(supabase, effectiveEventId, truck\.currency \?\? null\)/.test(now)
       && !/select\('van_id, paused_until[^']*price_/.test(now))
   }
 
@@ -1364,8 +1367,9 @@ head('2 · ZERO CHANGE FOR A TRUCK WITH NO TYPES AND NO OWN PRICES')
     // V9 — the switch is ignored, so a type with its switch OFF still prices
     {
       const V = buildVariant('lib/event-pricing/price.ts',
-        "typeSetup: type?.price_change_on === true ? setupFrom(type, typeTyped) : null,",
-        "typeSetup: type ? setupFrom(type, typeTyped) : null,", 'v9')
+        // ⚠️ RE-PINNED (tidy-2): setupFrom also takes the truck's currency.
+        "typeSetup: type?.price_change_on === true ? setupFrom(type, typeTyped, currency) : null,",
+        "typeSetup: type ? setupFrom(type, typeTyped, currency) : null,", 'v9')
       const detected = !V || !V.price
         || V.price.resolveEventPricing({},
           { price_change_on: false, price_mode: 'add_pct', price_amount: 10, price_rounding: 'none' }, {}).typeSetup !== null

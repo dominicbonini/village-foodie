@@ -583,7 +583,7 @@ export async function POST(req: NextRequest) {
       else if (ids.length > 1) pricingCandidates = ids
     }
     if (pricingCandidates.length > 0
-      && await candidatesChangePrices(supabase, resolvedTruckId, pricingCandidates)) {
+      && await candidatesChangePrices(supabase, resolvedTruckId, pricingCandidates, truck.currency ?? null)) {
       console.error(
         `[submit] REFUSED — ${pricingCandidates.length} events on ${pricingEventDate} for truck `
         + `${resolvedTruckId} and no event_id sent, and event pricing would change prices. `
@@ -639,7 +639,7 @@ export async function POST(req: NextRequest) {
     // For a truck with no event types and no event own-prices, `eventBook.book` IS the object
     // `loadPriceBook` returned, by reference, and `eventBook.menuPrice` is empty — so nothing below
     // stamps a line and the stored row is byte-identical to this route's output before this build.
-    const eventBook = await loadEventPriceBook(supabase, resolvedTruckId, pricingEventId)
+    const eventBook = await loadEventPriceBook(supabase, resolvedTruckId, pricingEventId, truck.currency ?? null)
     const priceBook = eventBook.book
     const repriced = repriceOrder(
       customerItems,

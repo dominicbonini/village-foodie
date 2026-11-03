@@ -97,6 +97,8 @@ const supabase = createClient(process.env.SUPABASE_URL!, process.env.SUPABASE_SE
 type TruckRow = {
   id: string; name: string
   country?: string | null
+  /** tidy-2: the truck's currency (select('*')) — a zero-decimal one (JPY) prices a rule in whole units, rounded down. */
+  currency?: string | null
   plan: string | null
   feature_overrides: Record<string, boolean> | null
   trial_expires_at: string | null
@@ -426,7 +428,7 @@ export async function POST(req: NextRequest) {
     const { data: ev } = await supabase
       .from('truck_events').select('id, status').eq('id', eventId).eq('truck_id', truck.id).maybeSingle()
     if (!ev) return await refuse('event_not_found', 404)
-    const pricing = await readEventPricing(supabase, eventId)
+    const pricing = await readEventPricing(supabase, eventId, truck.currency ?? null)
     const { items } = await loadPricingItems(supabase, truck.id)
     const charged: Record<string, number> = {}
     const fallback: Record<string, number> = {}
@@ -1149,7 +1151,7 @@ export async function POST(req: NextRequest) {
       }
       const freeze = lockedInPrices(
         items,
-        oldSetupOf(row.price_mode, row.price_amount, row.price_rounding),
+        oldSetupOf(row.price_mode, row.price_amount, row.price_rounding, truck.currency ?? null),
         current.typedByTypeId.get(id) ?? {},
       )
       if (freeze.length) {

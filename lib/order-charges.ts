@@ -42,6 +42,10 @@ export interface OrderChargeRules {
   tipping: { presetsBps: number[] } | null
   /** The card surcharge, or null. ⚠️ The resolver always returns null in Phase 3. */
   surcharge: { bps: number; fixedMinor: number } | null
+  /** tidy-2 (3 November 2026, F6): the currency has no minor unit (JPY), so a PERCENTAGE service fee, surcharge or tip is rounded
+   *  DOWN to the whole unit — a customer is never charged a fraction rounded up. Absent for every two-decimal currency, whose
+   *  rules (and rounding, D3) are exactly as before. Tax is not a percentage the business chooses and keeps D3's rounding. */
+  roundDown?: true
   /** Who pays the card fee — the truck's setting. */
   cardFeePayer: 'truck' | 'customer'
   /** The platform fee, when the country switches it on. Never sent to Stripe in Phase 3. */
@@ -126,6 +130,13 @@ function applyRatio(n: number, part: number, whole: number): number {
 }
 /** `n × bps / 10000` — tips, service fees and the platform fee. */
 export const applyBps = (n: number, bps: number): number => applyRatio(n, bps, BPS)
+/** tidy-2: `n × bps / 10000` rounded DOWN — a customer's percentage charge in a zero-decimal currency (rules.roundDown). */
+export function applyBpsDown(n: number, bps: number): number {
+  if (!Number.isSafeInteger(n) || !Number.isSafeInteger(bps) || n < 0 || bps < 0) throw new RangeError(`[order-charges] needs non-negative integers (got ${n}, ${bps})`)
+  const p = n * bps
+  if (!Number.isSafeInteger(p)) throw new RangeError(`[order-charges] ${n} × ${bps} is too large`)
+  return Math.floor(p / BPS)
+}
 /** `n × milli / 100000` — the sales tax rate (8.875 % = 8875). */
 export const applyMilli = (n: number, milli: number): number => applyRatio(n, milli, MILLI)
 
@@ -159,17 +170,19 @@ export function computeOrderCharges(input: ChargeInput): OrderCharges {
   const { foodMinor, rules, channel } = input
   if (!isMinor(foodMinor)) throw new RangeError(`[order-charges] foodMinor must be a non-negative integer (got ${foodMinor})`)
   const online = channel === 'online_card'
+  // tidy-2: a customer's percentage charge — down to the whole unit in a zero-decimal currency, D3's rounding everywhere else.
+  const pctOf = rules.roundDown ? applyBpsDown : applyBps
 
   // ── service fee (online card only; D25 drops it for pay at the truck; never on a walk-up) ──
   let serviceFeeMinor = 0
   if (online && rules.serviceFee) {
-    serviceFeeMinor = applyBps(foodMinor, rules.serviceFee.bps) + rules.serviceFee.fixedMinor
+    serviceFeeMinor = pctOf(foodMinor, rules.serviceFee.bps) + rules.serviceFee.fixedMinor
     if (input.caps?.serviceFeeMinor !== undefined) serviceFeeMinor = Math.min(serviceFeeMinor, input.caps.serviceFeeMinor)
   }
 
   // ── card surcharge (online card only). ⚠️ Always off in Phase 3 — the resolver returns null. ──
   let cardSurchargeMinor = 0
-  if (online && rules.surcharge) cardSurchargeMinor = applyBps(foodMinor, rules.surcharge.bps) + rules.surcharge.fixedMinor
+  if (online && rules.surcharge) cardSurchargeMinor = pctOf(foodMinor, rules.surcharge.bps) + rules.surcharge.fixedMinor
 
   // ── tip (online card only, tipping on; D11–D14) ──
   let tipMinor = 0
@@ -177,7 +190,7 @@ export function computeOrderCharges(input: ChargeInput): OrderCharges {
   const tip = input.tip
   if (online && rules.tipping && tip && tip.kind !== 'none') {
     if (tip.kind === 'percent') {
-      tipMinor = applyBps(foodMinor, tip.bps)
+      tipMinor = pctOf(foodMinor, tip.bps)
       tipPctBps = tip.bps
     } else {
       tipMinor = Math.min(tip.minor, foodMinor)                        // D12: at most 100 % of food
@@ -331,6 +344,8 @@ export interface CheckoutRules {
   /** The service fee a CARD order carries, or null. Never on pay at the truck. */
   serviceFee: { recipient: 'truck' | 'hatchgrab'; bps: number; fixedMinor: number } | null
   tipping: { presetsBps: number[] } | null
+  /** tidy-2: a zero-decimal currency — the page shows a percentage fee or tip rounded DOWN, as the server charges it. */
+  roundDown?: true
 }
 
 /** The page's rules, or null when the page would show nothing new (every UK truck today). */
@@ -340,6 +355,7 @@ export function checkoutRulesFrom(rules: OrderChargeRules): CheckoutRules | null
   return {
     taxInclusive: rules.taxInclusive, taxLabel: rules.taxLabel, taxRateMilli: rules.taxRateMilli,
     feesTaxed: rules.feesTaxed, serviceFee: rules.serviceFee, tipping: rules.tipping,
+    ...(rules.roundDown ? { roundDown: true as const } : {}),
   }
 }
 
@@ -348,5 +364,6 @@ export function rulesFromCheckout(c: CheckoutRules): OrderChargeRules {
   return {
     taxInclusive: c.taxInclusive, taxLabel: c.taxLabel, taxRateMilli: c.taxRateMilli, feesTaxed: c.feesTaxed,
     serviceFee: c.serviceFee, tipping: c.tipping, surcharge: null, cardFeePayer: 'truck', platformFee: null,
+    ...(c.roundDown ? { roundDown: true as const } : {}),
   }
 }
