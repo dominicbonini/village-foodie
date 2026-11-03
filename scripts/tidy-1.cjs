@@ -132,6 +132,14 @@ if (process.argv[2] === 'capture') {
     && /import type \{ SlotTone \} from '@\/lib\/slot-indicator'/.test(read('lib/slot-availability.ts')) && /import type \{ SlotTone \} from '@\/lib\/slot-indicator'/.test(read('lib/slot-display.ts')))
   t('slot_capacity STAYS — it has live callers that write truck data (Manage\'s save_slot_capacity, the event save, demo provisioning and restart)', /if \(action === 'save_slot_capacity'\)/.test(read('app/api/manage/route.ts')) && /from\('slot_capacity'\)/.test(read('lib/provision-demo-event.ts')) && /from\('slot_capacity'\)/.test(read('lib/demo-restart.ts')))
 
+  // ══ 7 ══════════════════════════════════════════════════════════════════════════════════════════════════════════════
+  head('7 · the Node version Vercel builds with, and its time-zone data')
+  const pkg = JSON.parse(read('package.json'))
+  t('package.json engines.node is "24.x" — Vercel builds on the newest Node 24 patch (24.22.1+ carries tzdb 2026e)', pkg.engines?.node === '24.x')
+  t('nothing else pins a version (.nvmrc, vercel.json) that could contradict it', !fs.existsSync(path.join(REPO, '.nvmrc')) && !/node/i.test(JSON.stringify(JSON.parse(read('vercel.json')).functions ?? {})))
+  t('the build still prints the time-zone line first (prebuild → scripts/check-tzdata.cjs), so the Vercel log shows "present" or not', /check-tzdata\.cjs/.test(pkg.scripts?.prebuild ?? ''))
+  console.log(`  (this run: Node ${process.version}, tz data ${process.versions.tz})`)
+
   console.log(`\ntidy-1: ${pass} passed, ${fail} failed`)
   process.exit(fail ? 1 : 0)
 })().catch(e => { console.error(e); process.exit(1) })

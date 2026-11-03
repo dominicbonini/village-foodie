@@ -130,7 +130,9 @@ const WORDS = {
   const run = spawnSync(process.execPath, [path.join(REPO, 'scripts/check-tzdata.cjs')], { encoding: 'utf8' })
   t('run as a script it prints the Node version, ICU and tz data and the verdict, and exits 0 (it never fails a build)', run.status === 0 && new RegExp(`check-tzdata: Node ${process.version.replace(/\./g, '\\.')}, ICU [\\d.]+, tz data \\S+ — the 2026 Canadian time-zone changes are (present|MISSING)`).test(run.stdout), run.stdout)
   t('it runs before every build: package.json prebuild = split-messages, then check-tzdata', JSON.parse(read('package.json')).scripts.prebuild === 'node scripts/split-messages.cjs && node scripts/check-tzdata.cjs')
-  t('no app code changed for it: the runtime\'s tz data is the fix (docs/canada-2-report.md §2); no engines field or Node pin added', !('engines' in JSON.parse(read('package.json'))) && !fs.existsSync(path.join(REPO, '.nvmrc')))
+  // ⚠️ RE-PINNED (tidy-1, 3 November 2026): STALE since tidy-1 item 7 pinned engines.node "24.x" on purpose — so Vercel builds on a Node 24
+  // patch with tzdb 2026e (manual §83.1). Still no .nvmrc and still no app code for it: the runtime's tz data is the fix.
+  t('no app code changed for it: the runtime\'s tz data is the fix (docs/canada-2-report.md §2); the only Node pin is engines "24.x" (tidy-1)', ['undefined', '24.x'].includes(String(JSON.parse(read('package.json')).engines?.node)) && Object.keys(JSON.parse(read('package.json')).engines ?? {}).every(k => k === 'node') && !fs.existsSync(path.join(REPO, '.nvmrc')))
 
   // ══ 3 ════════════════════════════════════════════════════════════════════════════════════════════════════════════
   head('3 · THE TERMS — the Canada section after New Zealand')
