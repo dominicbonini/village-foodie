@@ -110,10 +110,10 @@ export interface Slot {
   too_soon?: boolean
   is_grace?: boolean
   /** Soft-cap remaining (soft_max − current_orders) from /api/slots. Optional because
-   *  the /api/dashboard slot shape omits it — getSlotIndicator derives a fallback. */
+   *  the /api/dashboard slot shape omits it. */
   remaining?: number
   soft_max?: number
-  /** Category-aware engine: resolved traffic-light tone, read by getSlotIndicator. */
+  /** Category-aware engine: resolved traffic-light tone (shown through lib/slot-display.ts). */
   tone?: 'green' | 'amber' | 'red'
   /** Which constraint/category bound the slot (null when green). Diagnostic only. */
   bound_by?: string | null

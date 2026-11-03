@@ -114,6 +114,24 @@ if (process.argv[2] === 'capture') {
   t('world-countries-1 (TEST): its two tagline harness files excluded, stale since 2b625a66 committed them with the check', /STALE since 2b625a66/.test(read('scripts/world-countries-1.cjs')))
   t('world-countries-2 (TEST): its "HEAD" is 3240c536 by name, stale since 2b625a66 committed it with its own changes', /git show 3240c536:/.test(read('scripts/world-countries-2.cjs')))
 
+  // ══ 5 ══════════════════════════════════════════════════════════════════════════════════════════════════════════════
+  head('5 · pricing-check-1.cjs is registered')
+  t('pricing-check-1.cjs is in harnesses.json\'s list (since 8fd3ba83, 29 October) — nothing to add', JSON.parse(read('scripts/harnesses.json')).harnesses.includes('pricing-check-1.cjs'))
+
+  // ══ 6 ══════════════════════════════════════════════════════════════════════════════════════════════════════════════
+  head('6 · dead code — only what is provably unused')
+  const tracked = execFileSync('git', ['ls-files'], { cwd: REPO, encoding: 'utf8' }).split('\n')
+  t('"app/manage/[token]/page 2.tsx" does not exist (not on disk, not tracked) — already gone', !fs.existsSync(path.join(REPO, 'app/manage/[token]/page 2.tsx')) && !tracked.some(f => / 2\.tsx$/.test(f)))
+  const code = f => read(f).replace(/\/\*[\s\S]*?\*\//g, '').replace(/\/\/.*$/gm, '')
+  const src = tracked.filter(f => /^(app|lib|components|hooks)\/.*\.(ts|tsx)$/.test(f) || f === 'proxy.ts')
+  const isTestCode = src.filter(f => /\bis_test\b/.test(code(f)))
+  t('no code reads a trucks.is_test: every is_test in code is outreach_messages\' own column (20260928_outreach_messages.sql)', isTestCode.every(f => /outreach|ProspectWorkspace|ComposeWindow|ProspectTimeline/.test(f))
+    && /is_test boolean not null default false/.test(read('supabase/migrations/20260928_outreach_messages.sql')) && !src.some(f => /trucks?[^\n]{0,80}\bis_test\b/.test(code(f))), isTestCode)
+  t('getSlotIndicator is gone — no definition and no caller anywhere in the code', !src.some(f => /getSlotIndicator/.test(code(f))) && !tracked.filter(f => /^scripts\/.*\.cjs$/.test(f) && f !== 'scripts/tidy-1.cjs').some(f => /getSlotIndicator/.test(read(f))))
+  t('lib/slot-indicator.ts keeps only the SlotTone type its two importers use', /export type SlotTone = 'green' \| 'amber' \| 'red'/.test(read('lib/slot-indicator.ts')) && !/export function/.test(read('lib/slot-indicator.ts'))
+    && /import type \{ SlotTone \} from '@\/lib\/slot-indicator'/.test(read('lib/slot-availability.ts')) && /import type \{ SlotTone \} from '@\/lib\/slot-indicator'/.test(read('lib/slot-display.ts')))
+  t('slot_capacity STAYS — it has live callers that write truck data (Manage\'s save_slot_capacity, the event save, demo provisioning and restart)', /if \(action === 'save_slot_capacity'\)/.test(read('app/api/manage/route.ts')) && /from\('slot_capacity'\)/.test(read('lib/provision-demo-event.ts')) && /from\('slot_capacity'\)/.test(read('lib/demo-restart.ts')))
+
   console.log(`\ntidy-1: ${pass} passed, ${fail} failed`)
   process.exit(fail ? 1 : 0)
 })().catch(e => { console.error(e); process.exit(1) })

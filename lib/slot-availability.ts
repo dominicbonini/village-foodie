@@ -47,7 +47,7 @@ export interface SlotAvailabilityRow {
   /** True for slots after the event end time (grace period for truck only). */
   is_grace: boolean
   // ── category-aware engine additions (new fields, existing ones unchanged) ──
-  /** Resolved traffic-light tone — the worst of (a)/(b). Read by getSlotIndicator. */
+  /** Resolved traffic-light tone — the worst of (a)/(b). Shown through lib/slot-display.ts buildSlotIndicators. */
   tone: SlotTone
   /** Which constraint/category bound the slot (null when green). For diagnostics/report. */
   bound_by: string | null
