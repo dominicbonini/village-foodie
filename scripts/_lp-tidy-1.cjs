@@ -14,7 +14,8 @@
 //                   files' older bytes takes tidy-1 back exactly, by name. termsVersion: a new account's terms_version, the same move.
 /* eslint-disable @typescript-eslint/no-require-imports -- a CommonJS harness module, like every scripts/*.cjs */
 'use strict'
-const TALLY_SCRIPT = '<script data-src="https://tally.so/widgets/embed.js" data-strategy="afterInteractive"></script>'
+// The Tally script as next/script prerenders it — with its data-strategy, or without it where a harness's next/script stub omits it.
+const TALLY_SCRIPT = /<script data-src="https:\/\/tally\.so\/widgets\/embed\.js"(?: data-strategy="afterInteractive")?><\/script>/g
 const FLOATING = /<div class="fixed bottom-6 left-0 right-0 flex justify-center z-40 pointer-events-none"><button class="pointer-events-auto[^"]*">[\s\S]*?<\/button><\/div>/g
 const NEWSLETTER = /<h3 class="text-white font-bold text-lg mb-2">[^<]*<\/h3><p class="text-sm mb-4">[^<]*<\/p><button class="inline-block bg-orange-600 hover:bg-orange-500 text-white font-bold py-2 px-6 rounded-full transition-colors">[^<]*<\/button>/g
 const NO_SPAM = /(<div class="text-\[10px\] mt-2 flex flex-col gap-2 items-center">)<p>[^<]*<\/p>/g
@@ -64,7 +65,7 @@ function sitemapPrivacy(v) {
 const count = (s, re) => (s.match(re) || []).length
 function hgTruck(html) {
   if (typeof html !== 'string') return html
-  if (html.split(TALLY_SCRIPT).length !== 2) throw new Error('tidy-1: the truck page\'s Tally script is not there exactly once')
+  if (count(html, TALLY_SCRIPT) !== 1) throw new Error('tidy-1: the truck page\'s Tally script is not there exactly once')
   const prompts = count(html, FLOATING)
   if (prompts > 1 || count(html, NEWSLETTER) !== prompts || count(html, NO_SPAM) !== prompts) throw new Error(`tidy-1: the weekly-schedule button, the newsletter block and the "no spam" line are not there together (${prompts} / ${count(html, NEWSLETTER)} / ${count(html, NO_SPAM)})`)
   return html.replace(TALLY_SCRIPT, '').replace(FLOATING, '').replace(NEWSLETTER, '').replace(NO_SPAM, '$1')

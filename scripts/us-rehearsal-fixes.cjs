@@ -137,8 +137,12 @@ const cardBefore = () => {
       t(`Village Foodie host, ${label}: byte-identical to BEFORE`, vf[0] === vf[1], textOf(vf[0]).slice(0, 300))
     }
     for (const [label, slug] of [['Gusto-shaped', 'pizzeria-gusto'], ['Pizza Kitchen-shaped (discovery name)', 'pizza-kitchen'], ['Pizza Kitchen-shaped (hidden operator slug)', 'test-kitchen'], ['hidden GB truck with no discovery row', 'hidden-bites']]) {
-      const a = await page('A', HOSTS.hg, slug), b = await page('B', HOSTS.hg, slug)
-      t(`HatchGrab host, ${label}: byte-identical to BEFORE`, a === b, { a: textOf(a).slice(0, 300), b: textOf(b).slice(0, 300) })
+      const a = await page('A', HOSTS.hg, slug)
+      // ⚠️ RE-PINNED (tidy-1, 3 November 2026): on the HatchGrab host the truck page loads no Tally (its script, and on a UK truck the
+      // weekly-schedule button and the newsletter block) — BEFORE through scripts/_lp-tidy-1.cjs hgTruck (PRECISE; it throws if a piece is
+      // not there). Village Foodie's host, above, is still compared byte for byte.
+      const T1 = require('./_lp-tidy-1.cjs'), raw = await page('B', HOSTS.hg, slug); const b = T1.LANDED ? T1.hgTruck(raw) : raw
+      t(`HatchGrab host, ${label}: byte-identical to BEFORE${T1.LANDED ? ' (+ tidy-1: no Tally on hatchgrab.com)' : ''}`, a === b, { a: textOf(a).slice(0, 300), b: textOf(b).slice(0, 300) })
     }
     const hid = textOf(await page('A', HOSTS.hg, 'hidden-bites'))
     t('a hidden truck (show_on_hg false) with no discovery row: "Truck not found"', hid.includes(NOT_FOUND), hid.slice(0, 300))
