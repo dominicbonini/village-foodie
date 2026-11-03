@@ -128,6 +128,8 @@ const NAMED = [
   ...require('./_lp-store-badges-1.cjs').ITEMS.map(P => ({ id: P.id, what: P.what, applies: id => P.views(id), apply: (v, id) => P.apply(id, v) })),
   // ⚠️ RE-PINNED (contact-1, 2 November 2026): the sitemap's /privacy lastmod — PRECISE (scripts/_lp-contact-1.cjs; its /contact item is
   // structural and sits with the other structural proofs below).
+  // ⚠️ RE-PINNED (tidy-1, 3 November 2026): the truck page on the HatchGrab host loads no Tally — PRECISE (scripts/_lp-tidy-1.cjs).
+  ...require('./_lp-tidy-1.cjs').ITEMS.map(P => ({ id: P.id, what: P.what, applies: id => P.views(id), apply: (v, id) => P.apply(id, v) })),
   ...require('./_lp-contact-1.cjs').ITEMS.filter(P => !P.proveWith).map(P => ({ id: P.id, what: P.what, applies: id => P.views(id), apply: (v, id) => P.apply(id, v) })),
 ]
 // ⚠️ RE-PINNED (plans-data-model, Stage A, 19 October 2026): Manage › Billing is ONE data-driven plan card above the frozen comparison
@@ -312,13 +314,16 @@ const DISCOVERY = ['parts/footer|US|html', 'parts/truck|US|html']
   for (const id of DISCOVERY) {
     const ctl = `${id}-discoveryOn`
     t(`${id}: on the checkpoint the control equals the view (the prop did not exist)`, same(BEFORE[ctl], BEFORE[id]))
-    t(`${id}: AFTER's control (discovery on) equals BEFORE's view, byte for byte`, same(AFTER[ctl], BEFORE[id]), firstDiff(BEFORE[id], AFTER[ctl]))
+    // ⚠️ RE-PINNED (tidy-1, 3 November 2026): on the HatchGrab host the truck page loads no Tally — BEFORE's view through hgTruck first.
+    const T1 = require('./_lp-tidy-1.cjs'), was = T1.LANDED && T1.TRUCK_VIEWS.test(id) ? T1.hgTruck(BEFORE[id]) : BEFORE[id]
+    t(`${id}: AFTER's control (discovery on) equals BEFORE's view, byte for byte${was !== BEFORE[id] ? ' (+ tidy-1: no Tally on the HatchGrab host)' : ''}`, same(AFTER[ctl], was), firstDiff(was, AFTER[ctl]))
     const gone = PROMPTS.filter(p => has(BEFORE[id], p))
     t(`${id}: BEFORE showed the prompts (${gone.length} of ${PROMPTS.length})`, gone.length >= 4, PROMPTS.filter(p => !has(BEFORE[id], p)).join(' | '))
     t(`${id}: AFTER shows none of them`, PROMPTS.every(p => !has(AFTER[id], p)), PROMPTS.filter(p => has(AFTER[id], p)).join(' | '))
     t(`${id}: AFTER has no /hire, /trucks or add-business link`, !/href="\/hire"|href="\/trucks"|topic=addBusiness/.test(AFTER[id] || ''))
   }
-  for (const id of ['parts/footer|GB|html', 'parts/truck|GB|html']) t(`${id}: GB unchanged`, same(BEFORE[id], AFTER[id]))
+  // ⚠️ RE-PINNED (tidy-1, 3 November 2026): the GB truck page on the HatchGrab host: BEFORE through hgTruck (no Tally, no newsletter popup).
+  for (const id of ['parts/footer|GB|html', 'parts/truck|GB|html']) { const T1 = require('./_lp-tidy-1.cjs'); const b = T1.LANDED && T1.TRUCK_VIEWS.test(id) ? T1.hgTruck(BEFORE[id]) : BEFORE[id]; t(`${id}: GB unchanged${b !== BEFORE[id] ? ' (+ tidy-1)' : ''}`, same(b, AFTER[id])) }
 
   // ── the demo bounces ──
   head('the demo bounces — straight to the country page, the router’s own answer, no second hop')

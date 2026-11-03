@@ -677,6 +677,10 @@ if (RENDER) {
     // ⚠️ RE-PINNED (contact-1, 2 November 2026): HatchGrab's /contact — STRUCTURAL (scripts/_lp-contact-1.cjs contactProof, on the sides as
     // normalised above): the Tally script and iframe out, HatchGrab's own form in the region from the form heading to the section's end,
     // every other byte the same. Proven, the view counts as unchanged below; scripts/contact-1.cjs proves the form itself.
+    // ⚠️ RE-PINNED (tidy-1, 3 November 2026): the truck page on the HatchGrab host loads no Tally — BEFORE through
+    // scripts/_lp-tidy-1.cjs hgTruck (PRECISE), then compared byte for byte below.
+    const T1 = require('./_lp-tidy-1.cjs')   // eslint-disable-line @typescript-eslint/no-require-imports -- CommonJS harness module (tidy-1)
+    for (const k of keys.filter(k => T1.LANDED && area === 'parts' && T1.TRUCK_VIEWS.test(`parts/${k}`))) N[k] = [N[k][0], T1.hgTruck(N[k][1])]
     const c1Keys = keys.filter(k => C1.LANDED && C1.CONTACT_VIEWS.test(`parts/${k}`) && area === 'parts')
     const c1Bad = []
     for (const k of c1Keys) { const pr = C1.contactProof(N[k][1], N[k][0]); if (pr.ok) N[k] = [N[k][1], N[k][1]]; else c1Bad.push(`${k}: ${pr.problems.join(' · ')}`) }

@@ -150,5 +150,7 @@ export default async function TruckProfilePage({ params }: { params: Promise<{ s
   // languages-1: a non-English truck's page hands its browser the words its client components read (none for English).
   const locale = await localeForTruck({ country });
   return <TruckClient slug={resolvedParams.slug} locale={locale} discovery={country === VILLAGE_FOODIE_COUNTRY} time={await truckTime(row)}
-    {...(operatorHeader ? { operatorHeader } : {})} {...pageSeedProps(locale, 'truckPage')} />;
+    {...(operatorHeader ? { operatorHeader } : {})} {...pageSeedProps(locale, 'truckPage')}
+    // tidy-1 (3 November 2026): no Tally (Village Foodie's newsletter popup) on the HatchGrab host — decided here, on the server.
+    {...(onHatchGrab ? { tally: false } : {})} />;
 }

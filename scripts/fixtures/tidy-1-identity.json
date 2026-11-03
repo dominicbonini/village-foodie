@@ -1,0 +1,14 @@
+{
+ "$why": "tidy-1 §1: sha256 of Village Foodie's truck page (GB, US) as served at 6c29c2e2, by scripts/tidy-1.cjs capture.",
+ "commit": "6c29c2e2",
+ "pages": {
+  "truck:vf:GB": {
+   "html": "1af5a85c7670a003aa4dde91d6a775ee54ed41b37fecdbd18219e1e66432a0de",
+   "tally": 1
+  },
+  "truck:vf:US": {
+   "html": "33a92d26e3bb749ef9abb81b810488b43ef4fe73c54f3f68e553b72d7c5b43e2",
+   "tally": 1
+  }
+ }
+}

@@ -50,19 +50,22 @@ const MapView = dynamic(() => import('@/components/MapView'), {
 // then the feed's operator events for this truck's slug.
 // `seed` (languages-1): a non-English truck's words for this page, from page.tsx (lib/i18n/page-words.ts) — registered before the
 // first render so it matches the server's. Absent for English.
-export default function TruckClient({ slug, locale, discovery = true, time, operatorHeader, seed }: { slug: string; locale?: AppLocale; discovery?: boolean; time?: TimeSettings; operatorHeader?: TruckHeader; seed?: LanguageSeed }) {
+// tidy-1 (3 November 2026): `tally` is false on the HatchGrab host only (page.tsx decides it on the server, from the Host header, as
+// app/contact/page.tsx does): no Tally script and no Village Foodie newsletter popup (form 81xAKx) or its two buttons there. Default
+// true — the Village Foodie page is byte-identical.
+export default function TruckClient({ slug, locale, discovery = true, time, operatorHeader, seed, tally = true }: { slug: string; locale?: AppLocale; discovery?: boolean; time?: TimeSettings; operatorHeader?: TruckHeader; seed?: LanguageSeed; tally?: boolean }) {
   if (seed) for (const [l, words] of Object.entries(seed)) seedLanguage(l, words);
   const around = useAppLocale();
   const active = locale ?? around;
   const i18n = useMemo(() => ({ locale: active, setLocale: () => {} }), [active]);
   return (
     <I18nContext.Provider value={i18n}>
-      <TruckProfile slug={slug} discovery={discovery} time={time} operatorHeader={operatorHeader} />
+      <TruckProfile slug={slug} discovery={discovery} time={time} operatorHeader={operatorHeader} tally={tally} />
     </I18nContext.Provider>
   );
 }
 
-function TruckProfile({ slug, discovery: discoveryProp, time, operatorHeader }: { slug: string; discovery: boolean; time?: TimeSettings; operatorHeader?: TruckHeader }) {
+function TruckProfile({ slug, discovery: discoveryProp, time, operatorHeader, tally }: { slug: string; discovery: boolean; time?: TimeSettings; operatorHeader?: TruckHeader; tally: boolean }) {
   const t = useT('truckPage');
   const posthog = usePostHog();
   const router = useRouter();
@@ -155,7 +158,7 @@ function TruckProfile({ slug, discovery: discoveryProp, time, operatorHeader }: 
 
   return (
     <main className="min-h-screen bg-slate-50 flex flex-col">
-      <Script src="https://tally.so/widgets/embed.js" strategy="afterInteractive" />
+      {tally && <Script src="https://tally.so/widgets/embed.js" strategy="afterInteractive" />}
 
       {/* HEADER */}
       <header className="bg-slate-900 text-white py-3 px-4 sticky top-0 z-50 shadow-md h-[60px] flex items-center">
@@ -417,7 +420,7 @@ function TruckProfile({ slug, discovery: discoveryProp, time, operatorHeader }: 
         )}
       </div>
 
-      {discovery && (
+      {discovery && tally && (
       <div className="fixed bottom-6 left-0 right-0 flex justify-center z-40 pointer-events-none">
         <button 
           onClick={openTallyPopup}
@@ -428,7 +431,7 @@ function TruckProfile({ slug, discovery: discoveryProp, time, operatorHeader }: 
       </div>
       )}
 
-      <Footer onOpenTally={openTallyPopup} discovery={discovery} />
+      <Footer onOpenTally={openTallyPopup} discovery={discovery} newsletter={tally} />
     </main>
   );
 }

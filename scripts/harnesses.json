@@ -192,6 +192,7 @@
     "faq-4.cjs",
     "contact-1.cjs",
     "faq-translate-fix.cjs",
+    "tidy-1.cjs",
     "copy-truth-1.cjs"
   ],
   "excluded": {
@@ -326,6 +327,7 @@
         "_lp-store-badges-1.cjs",
         "_lp-faq-4.cjs",
         "_lp-contact-1.cjs",
+        "_lp-tidy-1.cjs",
         "_lp-world-countries-2.cjs",
         "_legal-translations.cjs",
         "_lp-world-countries-3.cjs"

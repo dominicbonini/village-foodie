@@ -25,7 +25,7 @@ parts/legal|US|meta-privacy	code: metadataBase-www + legal-titles-absolute + seo
 parts/legal|US|meta-terms	code: metadataBase-www + legal-titles-absolute + seo-s1-canonical
 parts/footer|US|html	code: US behaviour — TIDY: Village Foodie’s discovery prompts are hidden for a truck outside GB (the newsletter, the weekly-schedule button, Hire / Add my Business / Truck Directory, the claim links) + words
 parts/truck|US|meta	code: metadataBase-www + us-polish-hg-truck-preview
-parts/truck|US|html	code: US behaviour — TIDY: Village Foodie’s discovery prompts are hidden for a truck outside GB (the newsletter, the weekly-schedule button, Hire / Add my Business / Truck Directory, the claim links) + words
+parts/truck|US|html	code: tidy-1-hg-truck-no-tally + US behaviour — TIDY: Village Foodie’s discovery prompts are hidden for a truck outside GB (the newsletter, the weekly-schedule button, Hire / Add my Business / Truck Directory, the claim links) + words
 parts/truck|US|share	words
 parts/sitemap|US|hatchgrab-usOn	code: sitemap-country + seo-s5-sitemap + pricing-tidy-terms-lastmod + ireland-3-country-terms-lastmod + anz-terms-country-terms-lastmod + demo-2b-privacy-lastmod + world-countries-2-legal-lastmod + about-page-sitemap + copy-truth-1-sitemap-lastmod + contact-1-privacy-lastmod
 parts/pdf|US|html	code: US behaviour — FEATURES: US Letter page (@page size letter, format Letter), US footnote dates + words

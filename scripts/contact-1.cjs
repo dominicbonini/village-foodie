@@ -343,9 +343,10 @@ const flat = (o, p = '', out = {}) => { for (const [k, v] of Object.entries(o ??
   const HR = await kit.bundle('c1-hostredir', "export { crossHostRedirect } from '@/lib/host-redirects'")
   t('…on www.hatchgrab.com, /hire and /venues/<slug> move to Village Foodie (308 in production) and / is the landing page — none of them is served there', ['/hire', '/venues/the-plough-inn'].every(p => HR.crossHostRedirect('www.hatchgrab.com', p, '') === `https://www.villagefoodie.co.uk${p}`)
     && /if \(pathname === '\/'\)/.test(read('proxy.ts')))
-  const tc = read('app/trucks/[slug]/TruckClient.tsx').split('\n')
-  const tallyLines = tc.map((l, i) => (/tally\.so/.test(l) ? i + 1 : 0)).filter(Boolean)
-  t('THE KNOWN EXCEPTION (Dominic, option A): /trucks/<slug> on hatchgrab.com keeps Tally\'s script and its "add your business" popup — TruckClient.tsx:158 (script) and :118 (popup fallback), unchanged since HEAD', JSON.stringify(tallyLines) === '[118,158]' && HR.crossHostRedirect('www.hatchgrab.com', '/trucks/pizza-gusto', '') === null && atBase('app/trucks/[slug]/TruckClient.tsx') === read('app/trucks/[slug]/TruckClient.tsx'), tallyLines)
+  // ⚠️ RE-PINNED (tidy-1, 3 November 2026): the known exception is gone — the truck page loads Tally only where page.tsx does not pass
+  // tally: false, i.e. not on hatchgrab.com (scripts/tidy-1.cjs §1 renders both hosts).
+  const tc = read('app/trucks/[slug]/TruckClient.tsx')
+  t('THE KNOWN EXCEPTION IS GONE (tidy-1): on hatchgrab.com /trucks/<slug> loads no Tally — the script and the newsletter popup sit behind `tally`, which page.tsx sets false there', /\{tally && <Script src="https:\/\/tally\.so\/widgets\/embed\.js"/.test(tc) && /\{\.\.\.\(onHatchGrab \? \{ tally: false \} : \{\}\)\}/.test(read('app/trucks/[slug]/page.tsx')) && HR.crossHostRedirect('www.hatchgrab.com', '/trucks/pizza-gusto', '') === null)
   const pg = read('app/contact/page.tsx')
   t('…the Tally script sits after the HatchGrab branch has returned', pg.indexOf('tally.so') > pg.indexOf('return <HatchGrabContact'))
   const hgc = read('app/contact/HatchGrabContact.tsx')
@@ -367,10 +368,15 @@ const flat = (o, p = '', out = {}) => { for (const [k, v] of Object.entries(o ??
   for (const entry of ['app/venues/[slug]/page.tsx', 'app/trucks/[slug]/page.tsx']) {
     const r = await esbuild.build({ entryPoints: [path.join(REPO, entry)], bundle: true, write: false, metafile: true, platform: 'node', format: 'esm', jsx: 'automatic', logLevel: 'silent', alias: { '@': REPO }, packages: 'external', absWorkingDir: REPO, loader: { '.css': 'empty', '.svg': 'text', '.png': 'empty', '.jpg': 'empty' } })
     const files = Object.keys(r.metafile.inputs).filter(f => !f.includes('node_modules'))
-    const moved = files.filter(f => atBase(f) !== read(f))
+    // ⚠️ RE-PINNED (tidy-1, 3 November 2026): the three files tidy-1 changed (the truck page's `tally`, the footer's `newsletter`, both
+    // defaulting to Village Foodie's page) are exempt — scripts/tidy-1.cjs §1 proves the Village Foodie render byte-identical.
+    const T1_FILES = ['components/Footer.tsx', 'app/trucks/[slug]/TruckClient.tsx', 'app/trucks/[slug]/page.tsx']
+    const moved = files.filter(f => atBase(f) !== read(f) && !T1_FILES.includes(f))
     t(`${entry}: all ${files.length} source files it bundles are byte-identical to ${BASE} — so is every byte it serves`, files.length > 20 && moved.length === 0, moved)
   }
-  t('the contact links themselves are untouched (lib/contact-topics.ts, Footer, TruckClient, VenueClient, ContactForm)', ['lib/contact-topics.ts', 'components/Footer.tsx', 'app/trucks/[slug]/TruckClient.tsx', 'app/venues/[slug]/VenueClient.tsx', 'app/contact/ContactForm.tsx'].every(f => atBase(f) === read(f)))
+  // ⚠️ RE-PINNED (tidy-1): Footer and TruckClient changed later (tidy-1's `newsletter` / `tally`); their links did not.
+  t('the contact links themselves are untouched (lib/contact-topics.ts, VenueClient, ContactForm; Footer and TruckClient keep every contactHref)', ['lib/contact-topics.ts', 'app/venues/[slug]/VenueClient.tsx', 'app/contact/ContactForm.tsx'].every(f => atBase(f) === read(f))
+    && ['components/Footer.tsx', 'app/trucks/[slug]/TruckClient.tsx'].every(f => JSON.stringify(atBase(f).match(/contactHref\([^)]*\)/g)) === JSON.stringify(read(f).match(/contactHref\([^)]*\)/g))))
 
   // ══ 7 ══════════════════════════════════════════════════════════════════════════════════════════════════════════════
   head('7 · the words — en-GB as agreed, 28 bases complete, translation-check')

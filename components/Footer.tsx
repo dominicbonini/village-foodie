@@ -9,17 +9,20 @@ interface FooterProps {
   /** False on the page of a truck outside Village Foodie's market (Language Phase 1e tidy): no newsletter and no
    *  Hire / Add my Business / Truck Directory links. Default true — every Village Foodie page is unchanged. */
   discovery?: boolean;
+  /** tidy-1 (3 November 2026): false on the HatchGrab host's truck page — Village Foodie's newsletter (its Tally popup) is not offered
+   *  there. Default true: every Village Foodie page is unchanged. */
+  newsletter?: boolean;
 }
 
 // Language Phase 1e: the words are `siteFooter`. They follow the page's provider: the truck page provides its
 // truck's country's language (app/trucks/[slug]/TruckClient.tsx); the Village Foodie pages provide none, so they
 // read en-GB — Village Foodie is UK-only and its footer is unchanged. The /contact topic in each link is an id
 // (`contactHref`), never these words.
-export default function Footer({ onOpenTally, discovery = true }: FooterProps) {
+export default function Footer({ onOpenTally, discovery = true, newsletter = true }: FooterProps) {
   const t = useT('siteFooter');
   return (
     <div className="bg-slate-900 text-slate-300 p-6 text-center mt-auto pb-24">
-      {discovery && (
+      {discovery && newsletter && (
         <>
           <h3 className="text-white font-bold text-lg mb-2">{t('title')}</h3>
           <p className="text-sm mb-4">{t('body')}</p>
@@ -34,7 +37,7 @@ export default function Footer({ onOpenTally, discovery = true }: FooterProps) {
       )}
 
       <div className="text-[10px] mt-2 flex flex-col gap-2 items-center">
-        {discovery && <p>{t('noSpam')}</p>}
+        {discovery && newsletter && <p>{t('noSpam')}</p>}
         
         <div className="mt-4 text-center">
            <h4 className="text-xs font-bold text-white mb-2 uppercase tracking-wide">{t('heading')}</h4>
