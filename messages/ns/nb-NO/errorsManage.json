@@ -222,5 +222,6 @@
   "paperwork_not_found": "Det dokumentet finnes ikke lenger. Last inn siden på nytt.",
   "paperwork_bad_details": "Noen av opplysningene stemmer ikke. Sjekk dem og prøv igjen.",
   "paperwork_send_limit": "Du har sendt mange lenker på kort tid. Prøv igjen om en time.",
-  "paperwork_send_failed": "E-posten kunne ikke sendes. Prøv igjen."
+  "paperwork_send_failed": "E-posten kunne ikke sendes. Prøv igjen.",
+  "cost_invalid": "Skriv inn en kostpris på 0 eller mer, eller la feltet stå tomt."
 }

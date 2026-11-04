@@ -170,7 +170,9 @@
     "saved": "✓ Gespeichert",
     "adding": "Wird hinzugefügt…",
     "add": "Artikel hinzufügen",
-    "noGroups": "Noch keine Optionsgruppen – erstellen Sie sie unter Extras & Upselling."
+    "noGroups": "Noch keine Optionsgruppen – erstellen Sie sie unter Extras & Upselling.",
+    "costToMake": "Herstellungskosten",
+    "costHelp": "Optional. Was Sie eine Portion an Zutaten und Verpackung kostet. Wird nur in Ihren Berichten verwendet; Kunden sehen das nie."
   },
   "summary": "{categories, plural, one {# Kategorie} other {# Kategorien}} · {items, plural, one {# Artikel} other {# Artikel}}",
   "confirmDelete": {

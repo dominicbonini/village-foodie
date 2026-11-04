@@ -170,7 +170,9 @@
     "saved": "✓ Disimpan",
     "adding": "Menambah…",
     "add": "Tambah item",
-    "noGroups": "Belum ada kumpulan pilihan — ciptanya dalam Tambahan & cadangan."
+    "noGroups": "Belum ada kumpulan pilihan — ciptanya dalam Tambahan & cadangan.",
+    "costToMake": "Kos penyediaan",
+    "costHelp": "Pilihan. Kos satu hidangan kepada anda untuk bahan dan pembungkusan. Digunakan dalam laporan anda sahaja; pelanggan tidak akan nampak."
   },
   "summary": "{categories, plural, other {# kategori}} · {items, plural, other {# item}}",
   "confirmDelete": {

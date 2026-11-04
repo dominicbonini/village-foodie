@@ -222,5 +222,6 @@
   "paperwork_not_found": "Dokumentet finns inte längre. Ladda om sidan.",
   "paperwork_bad_details": "Några av uppgifterna stämmer inte. Kontrollera dem och försök igen.",
   "paperwork_send_limit": "Du har skickat många länkar på kort tid. Försök igen om en timme.",
-  "paperwork_send_failed": "Mejlet kunde inte skickas. Försök igen."
+  "paperwork_send_failed": "Mejlet kunde inte skickas. Försök igen.",
+  "cost_invalid": "Ange en kostnad på 0 eller mer, eller lämna rutan tom."
 }

@@ -88,5 +88,67 @@
     "unknownCustomer": "Neznano",
     "customerOnline": "Stranka na spletu",
     "placedByTruck": "Oddal food truck"
+  },
+  "presets": {
+    "label": "Obdobje",
+    "custom": "Datumi po izbiri",
+    "thisMonth": "Ta mesec",
+    "lastMonth": "Prejšnji mesec",
+    "lastQuarter": "Prejšnje četrtletje",
+    "lastTaxYear": "Prejšnje davčno leto"
+  },
+  "accounts": {
+    "title": "Za vašega računovodjo",
+    "help": "Prodaja se šteje na dan dogodka. Bruto je to, kar so plačale stranke. Neto je to, kar ostane po vračilih in DDV.",
+    "gross": "Bruto prodaja",
+    "refunds": "Vračila",
+    "net": "Neto prodaja",
+    "taxEstimated": "ocenjeno glede na vašo stopnjo DDV",
+    "taxNone": "Za vaš food truck ni nastavljena stopnja DDV, zato se DDV tukaj ne izračuna.",
+    "byChannel": "Bruto prodaja po kanalih",
+    "byPayment": "Bruto prodaja po načinu plačila",
+    "online": "Splet",
+    "walkUp": "Na mestu",
+    "cardOnline": "Kartica na spletu",
+    "payAtTruck": "Plačilo ob prevzemu",
+    "cost": "Strošek prodanih jedi",
+    "profit": "Dobiček",
+    "coverage": "{total, plural, one {Strošek nastavljen za {withCost} od # prodane jedi} two {Strošek nastavljen za {withCost} od # prodanih jedi} few {Strošek nastavljen za {withCost} od # prodanih jedi} other {Strošek nastavljen za {withCost} od # prodanih jedi}}",
+    "partial": "Jedi brez stroška niso upoštevane v strošku, zato je ta dobiček višji, kot je v resnici. Vsaki jedi dodajte strošek v Jedilniku.",
+    "noCosts": "Nobena jed še nima stroška. Dodajte strošek svojim jedem v Jedilniku, da vidite svoj dobiček.",
+    "byEvent": "Po dogodkih",
+    "event": "Dogodek",
+    "sales": "Neto prodaja",
+    "eventNoProfit": "Pomišljaj pomeni, da vsaj ena tam prodana jed nima stroška.",
+    "downloadOrders": "⬇ Naročila za vašega računovodjo",
+    "downloadEvents": "⬇ Dogodki za vašega računovodjo",
+    "downloadHelp": "Dve preglednici: ena vrstica za vsako naročilo in ena vrstica za vsak dogodek. Odprete ju v programih Excel, Numbers, Xero in QuickBooks."
+  },
+  "accountsCsv": {
+    "header": {
+      "date": "Datum",
+      "time": "Čas",
+      "orderNumber": "Številka naročila",
+      "event": "Dogodek",
+      "channel": "Kanal",
+      "paymentMethod": "Način plačila",
+      "currency": "Valuta",
+      "gross": "Bruto",
+      "tax": "DDV",
+      "taxBasis": "Vir DDV",
+      "net": "Neto",
+      "refunded": "Vrnjeno",
+      "cost": "Strošek",
+      "profit": "Dobiček",
+      "eventDate": "Datum dogodka",
+      "orders": "Naročila",
+      "dishesSold": "Prodane jedi",
+      "dishesWithCost": "Jedi s stroškom"
+    },
+    "taxBasis": {
+      "stored": "shranjeno z naročilom",
+      "estimated": "ocenjeno glede na vašo stopnjo DDV",
+      "none": "stopnja DDV ni nastavljena"
+    }
   }
 }

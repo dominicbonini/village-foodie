@@ -170,7 +170,9 @@
     "saved": "✓ Sparad",
     "adding": "Lägger till…",
     "add": "Lägg till artikel",
-    "noGroups": "Inga tillvalsgrupper än — skapa dem under Tillval & merförsäljning."
+    "noGroups": "Inga tillvalsgrupper än — skapa dem under Tillval & merförsäljning.",
+    "costToMake": "Kostnad per portion",
+    "costHelp": "Valfritt. Vad en portion kostar dig i råvaror och förpackning. Används bara i dina rapporter; kunderna ser det aldrig."
   },
   "summary": "{categories, plural, one {# kategori} other {# kategorier}} · {items, plural, one {# artikel} other {# artiklar}}",
   "confirmDelete": {

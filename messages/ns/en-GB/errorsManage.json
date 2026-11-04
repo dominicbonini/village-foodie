@@ -222,5 +222,6 @@
   "paperwork_not_found": "That document isn’t there any more. Please reload the page.",
   "paperwork_bad_details": "Some of the details aren’t right. Please check them and try again.",
   "paperwork_send_limit": "You’ve sent a lot of links in a short time. Please try again in an hour.",
-  "paperwork_send_failed": "The email couldn’t be sent. Please try again."
+  "paperwork_send_failed": "The email couldn’t be sent. Please try again.",
+  "cost_invalid": "Enter a cost of 0 or more, or leave the box empty."
 }

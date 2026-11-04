@@ -222,5 +222,6 @@
   "paperwork_not_found": "Ez a dokumentum már nem létezik. Kérjük, töltse be újra az oldalt.",
   "paperwork_bad_details": "Néhány adat nem megfelelő. Kérjük, ellenőrizze őket, és próbálja újra.",
   "paperwork_send_limit": "Rövid idő alatt sok linket küldött. Kérjük, egy óra múlva próbálja újra.",
-  "paperwork_send_failed": "Nem sikerült elküldeni az e-mailt. Kérjük, próbálja újra."
+  "paperwork_send_failed": "Nem sikerült elküldeni az e-mailt. Kérjük, próbálja újra.",
+  "cost_invalid": "Adjon meg 0 vagy nagyobb költséget, vagy hagyja üresen a mezőt."
 }

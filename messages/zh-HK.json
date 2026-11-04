@@ -2916,7 +2916,9 @@
       "saved": "✓ 已儲存",
       "adding": "正在加入…",
       "add": "加入食品",
-      "noGroups": "暫時未有選項組別，請到「配料及加購」建立。"
+      "noGroups": "暫時未有選項組別，請到「配料及加購」建立。",
+      "costToMake": "製作成本",
+      "costHelp": "可選填。每份所需的材料及包裝成本。只會用於你的報告，顧客永遠不會看到。"
     },
     "summary": "{categories, plural, other {# 個類別}} · {items, plural, other {# 項食品}}",
     "confirmDelete": {
@@ -3338,7 +3340,8 @@
     "paperwork_not_found": "這份文件已不存在，請重新載入頁面。",
     "paperwork_bad_details": "部分資料不正確，請檢查後再試。",
     "paperwork_send_limit": "你在短時間內傳送了太多連結，請一小時後再試。",
-    "paperwork_send_failed": "未能傳送電郵，請再試一次。"
+    "paperwork_send_failed": "未能傳送電郵，請再試一次。",
+    "cost_invalid": "請輸入 0 或以上的成本，或者留空。"
   },
   "tradeArea": {
     "country_missing": "請選擇你的美食車所在的國家。",
@@ -4091,6 +4094,68 @@
       "unknownCustomer": "不明",
       "customerOnline": "顧客網上落單",
       "placedByTruck": "美食車代落單"
+    },
+    "presets": {
+      "label": "期間",
+      "custom": "自訂日期",
+      "thisMonth": "本月",
+      "lastMonth": "上月",
+      "lastQuarter": "上季",
+      "lastTaxYear": "上一個課稅年度"
+    },
+    "accounts": {
+      "title": "給你的會計師",
+      "help": "銷售按活動當日計算。總額是顧客支付的金額。淨額是扣除退款及稅項後剩下的金額。",
+      "gross": "總銷售額",
+      "refunds": "退款",
+      "net": "淨銷售額",
+      "taxEstimated": "按你的稅率估算",
+      "taxNone": "你的美食車未設定稅率，因此這裏不會計算稅項。",
+      "byChannel": "按渠道劃分的總銷售額",
+      "byPayment": "按付款方式劃分的總銷售額",
+      "online": "網上",
+      "walkUp": "現場",
+      "cardOnline": "網上信用卡",
+      "payAtTruck": "取餐時付款",
+      "cost": "已售菜式成本",
+      "profit": "利潤",
+      "coverage": "{total, plural, other {已售 # 份菜式中，{withCost} 份已設定成本}}",
+      "partial": "未設定成本的菜式不會計入成本，所以這個利潤比實際高。請在「餐牌」為每款菜式加入成本。",
+      "noCosts": "尚未有菜式設定成本。請在「餐牌」為菜式加入成本，以查看利潤。",
+      "byEvent": "按活動",
+      "event": "活動",
+      "sales": "淨銷售額",
+      "eventNoProfit": "顯示「–」代表該活動售出的菜式並非全部已設定成本。",
+      "downloadOrders": "⬇ 給會計師的訂單",
+      "downloadEvents": "⬇ 給會計師的活動",
+      "downloadHelp": "兩個試算表檔案：每張訂單一行，每個活動一行。可用 Excel、Numbers、Xero 及 QuickBooks 開啟。"
+    },
+    "accountsCsv": {
+      "header": {
+        "date": "日期",
+        "time": "時間",
+        "orderNumber": "訂單編號",
+        "event": "活動",
+        "channel": "渠道",
+        "paymentMethod": "付款方式",
+        "currency": "貨幣",
+        "gross": "總額",
+        "tax": "稅項",
+        "taxBasis": "稅項依據",
+        "net": "淨額",
+        "refunded": "已退款",
+        "cost": "成本",
+        "profit": "利潤",
+        "eventDate": "活動日期",
+        "orders": "訂單",
+        "dishesSold": "已售菜式",
+        "dishesWithCost": "已設定成本的菜式"
+      },
+      "taxBasis": {
+        "stored": "隨訂單儲存",
+        "estimated": "按你的稅率估算",
+        "none": "未設定稅率"
+      }
     }
   },
   "socialPosts": {

@@ -222,5 +222,6 @@
   "paperwork_not_found": "Asiakirjaa ei enää löydy. Lataa sivu uudelleen.",
   "paperwork_bad_details": "Osa tiedoista ei ole oikein. Tarkista ne ja yritä uudelleen.",
   "paperwork_send_limit": "Olet lähettänyt paljon linkkejä lyhyessä ajassa. Yritä uudelleen tunnin päästä.",
-  "paperwork_send_failed": "Sähköpostia ei voitu lähettää. Yritä uudelleen."
+  "paperwork_send_failed": "Sähköpostia ei voitu lähettää. Yritä uudelleen.",
+  "cost_invalid": "Anna kustannus, joka on 0 tai enemmän, tai jätä kenttä tyhjäksi."
 }

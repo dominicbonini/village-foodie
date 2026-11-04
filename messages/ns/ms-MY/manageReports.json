@@ -88,5 +88,67 @@
     "unknownCustomer": "Tidak diketahui",
     "customerOnline": "Pelanggan dalam talian",
     "placedByTruck": "Dibuat oleh trak"
+  },
+  "presets": {
+    "label": "Tempoh",
+    "custom": "Tarikh pilihan sendiri",
+    "thisMonth": "Bulan ini",
+    "lastMonth": "Bulan lepas",
+    "lastQuarter": "Suku tahun lepas",
+    "lastTaxYear": "Tahun cukai lepas"
+  },
+  "accounts": {
+    "title": "Untuk akauntan anda",
+    "help": "Jualan dikira pada hari acara. Kasar ialah apa yang dibayar pelanggan. Bersih ialah baki selepas bayaran balik dan cukai.",
+    "gross": "Jualan kasar",
+    "refunds": "Bayaran balik",
+    "net": "Jualan bersih",
+    "taxEstimated": "dianggarkan daripada kadar cukai anda",
+    "taxNone": "Tiada kadar cukai ditetapkan untuk food truck anda, jadi cukai tidak dikira di sini.",
+    "byChannel": "Jualan kasar mengikut saluran",
+    "byPayment": "Jualan kasar mengikut kaedah pembayaran",
+    "online": "Dalam talian",
+    "walkUp": "Walk-in",
+    "cardOnline": "Kad dalam talian",
+    "payAtTruck": "Bayar semasa ambil",
+    "cost": "Kos hidangan terjual",
+    "profit": "Untung",
+    "coverage": "{total, plural, other {Kos ditetapkan untuk {withCost} daripada # hidangan terjual}}",
+    "partial": "Hidangan tanpa kos tidak dikira dalam kos, jadi untung ini lebih tinggi daripada yang sebenarnya. Tambah kos pada setiap hidangan di Menu.",
+    "noCosts": "Belum ada hidangan yang mempunyai kos. Tambah kos pada hidangan anda di Menu untuk melihat untung anda.",
+    "byEvent": "Mengikut acara",
+    "event": "Acara",
+    "sales": "Jualan bersih",
+    "eventNoProfit": "Tanda sengkang bermaksud bukan semua hidangan yang dijual di situ mempunyai kos.",
+    "downloadOrders": "⬇ Pesanan untuk akauntan anda",
+    "downloadEvents": "⬇ Acara untuk akauntan anda",
+    "downloadHelp": "Dua fail hamparan: satu baris untuk setiap pesanan, dan satu baris untuk setiap acara. Fail ini boleh dibuka dalam Excel, Numbers, Xero dan QuickBooks."
+  },
+  "accountsCsv": {
+    "header": {
+      "date": "Tarikh",
+      "time": "Masa",
+      "orderNumber": "Nombor pesanan",
+      "event": "Acara",
+      "channel": "Saluran",
+      "paymentMethod": "Kaedah pembayaran",
+      "currency": "Mata wang",
+      "gross": "Kasar",
+      "tax": "Cukai",
+      "taxBasis": "Asas cukai",
+      "net": "Bersih",
+      "refunded": "Dibayar balik",
+      "cost": "Kos",
+      "profit": "Untung",
+      "eventDate": "Tarikh acara",
+      "orders": "Pesanan",
+      "dishesSold": "Hidangan terjual",
+      "dishesWithCost": "Hidangan dengan kos"
+    },
+    "taxBasis": {
+      "stored": "disimpan bersama pesanan",
+      "estimated": "dianggarkan daripada kadar cukai anda",
+      "none": "tiada kadar cukai ditetapkan"
+    }
   }
 }

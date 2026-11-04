@@ -170,7 +170,9 @@
     "saved": "✓ Shranjeno",
     "adding": "Dodajanje …",
     "add": "Dodaj artikel",
-    "noGroups": "Še ni skupin možnosti — ustvarite jih v zavihku Dodatki in dodatna prodaja."
+    "noGroups": "Še ni skupin možnosti — ustvarite jih v zavihku Dodatki in dodatna prodaja.",
+    "costToMake": "Strošek priprave",
+    "costHelp": "Neobvezno. Koliko vas ena porcija stane v sestavinah in embalaži. Uporablja se samo v vaših poročilih; stranke tega nikoli ne vidijo."
   },
   "summary": "{categories, plural, one {# kategorija} two {# kategoriji} few {# kategorije} other {# kategorij}} · {items, plural, one {# artikel} two {# artikla} few {# artikli} other {# artiklov}}",
   "confirmDelete": {

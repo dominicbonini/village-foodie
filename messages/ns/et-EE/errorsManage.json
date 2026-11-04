@@ -222,5 +222,6 @@
   "paperwork_not_found": "Seda dokumenti pole enam olemas. Laadi leht uuesti.",
   "paperwork_bad_details": "Mõned andmed pole õiged. Kontrolli neid ja proovi uuesti.",
   "paperwork_send_limit": "Oled lühikese aja jooksul saatnud palju linke. Proovi tunni aja pärast uuesti.",
-  "paperwork_send_failed": "E-kirja ei saanud saata. Proovi uuesti."
+  "paperwork_send_failed": "E-kirja ei saanud saata. Proovi uuesti.",
+  "cost_invalid": "Sisesta kulu 0 või rohkem või jäta väli tühjaks."
 }

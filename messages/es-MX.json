@@ -433,7 +433,9 @@
     },
     "item": {
       "createHint": "Completa los datos y luego agrega el producto.",
-      "allergenGateBody": "Abre el recuadro “Configurar / revisar alérgenos” en la pestaña Menú: el asistente te guía para confirmar cada platillo."
+      "allergenGateBody": "Abre el recuadro “Configurar / revisar alérgenos” en la pestaña Menú: el asistente te guía para confirmar cada platillo.",
+      "costToMake": "Costo de preparación",
+      "costHelp": "Opcional. Lo que te cuesta una porción en ingredientes y empaques. Solo se usa en tus reportes; los clientes nunca lo ven."
     }
   },
   "manageMenuImport": {
@@ -503,7 +505,8 @@
     "menu_read_failed": "No se pudo leer el menú; no se guardó nada",
     "wa_no_code": "Meta no devolvió un código de un solo uso. Toca “Configurar” y vuelve a intentarlo.",
     "wa_no_waba": "Meta no devolvió una cuenta de WhatsApp Business. Toca “Configurar” y vuelve a intentarlo.",
-    "wa_code_expired": "Tardó demasiado y el código de un solo uso de Meta expiró. No se guardó nada. Toca “Configurar” y vuelve a hacerlo: solo debería tomarte un minuto."
+    "wa_code_expired": "Tardó demasiado y el código de un solo uso de Meta expiró. No se guardó nada. Toca “Configurar” y vuelve a hacerlo: solo debería tomarte un minuto.",
+    "cost_invalid": "Ingresa un costo de 0 o más, o deja el campo vacío."
   },
   "manageSchedule": {
     "card": {
@@ -568,6 +571,25 @@
     },
     "csv": {
       "deals": "Combos"
+    },
+    "accounts": {
+      "title": "Para tu contador",
+      "profit": "Ganancia",
+      "cost": "Costo de los platillos vendidos",
+      "coverage": "{total, plural, one {Costo indicado en {withCost} de # platillo vendido} many {Costo indicado en {withCost} de # platillos vendidos} other {Costo indicado en {withCost} de # platillos vendidos}}",
+      "partial": "Los platillos sin costo no se incluyen en el costo, así que esta ganancia es mayor de lo que es en realidad. Agrega un costo a cada platillo en la pestaña Menú.",
+      "noCosts": "Todavía ningún platillo tiene costo. Agrega un costo a tus platillos en la pestaña Menú para ver tu ganancia.",
+      "eventNoProfit": "Un guion significa que no todos los platillos vendidos ahí tienen costo.",
+      "downloadOrders": "⬇ Pedidos para tu contador",
+      "downloadEvents": "⬇ Eventos para tu contador"
+    },
+    "accountsCsv": {
+      "header": {
+        "cost": "Costo",
+        "profit": "Ganancia",
+        "dishesSold": "Platillos vendidos",
+        "dishesWithCost": "Platillos con costo"
+      }
     }
   },
   "socialPosts": {

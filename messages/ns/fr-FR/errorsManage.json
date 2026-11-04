@@ -222,5 +222,6 @@
   "paperwork_not_found": "Ce document n’existe plus. Veuillez recharger la page.",
   "paperwork_bad_details": "Certaines informations sont incorrectes. Veuillez les vérifier et réessayer.",
   "paperwork_send_limit": "Vous avez envoyé beaucoup de liens en peu de temps. Veuillez réessayer dans une heure.",
-  "paperwork_send_failed": "L’e-mail n’a pas pu être envoyé. Veuillez réessayer."
+  "paperwork_send_failed": "L’e-mail n’a pas pu être envoyé. Veuillez réessayer.",
+  "cost_invalid": "Saisissez un coût de 0 ou plus, ou laissez la case vide."
 }

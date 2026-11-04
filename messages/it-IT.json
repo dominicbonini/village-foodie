@@ -2916,7 +2916,9 @@
       "saved": "✓ Salvato",
       "adding": "Aggiunta…",
       "add": "Aggiungi prodotto",
-      "noGroups": "Ancora nessun gruppo di opzioni: creali in Extra e upselling."
+      "noGroups": "Ancora nessun gruppo di opzioni: creali in Extra e upselling.",
+      "costToMake": "Costo di produzione",
+      "costHelp": "Facoltativo. Quanto ti costa una porzione tra ingredienti e confezione. Usato solo nei tuoi report; i clienti non lo vedono mai."
     },
     "summary": "{categories, plural, one {# categoria} other {# categorie}} · {items, plural, one {# prodotto} other {# prodotti}}",
     "confirmDelete": {
@@ -3338,7 +3340,8 @@
     "paperwork_not_found": "Questo documento non esiste più. Ricarica la pagina.",
     "paperwork_bad_details": "Alcuni dati non sono corretti. Controllali e riprova.",
     "paperwork_send_limit": "Hai inviato molti link in poco tempo. Riprova tra un’ora.",
-    "paperwork_send_failed": "Non è stato possibile inviare l’email. Riprova."
+    "paperwork_send_failed": "Non è stato possibile inviare l’email. Riprova.",
+    "cost_invalid": "Inserisci un costo pari o superiore a 0, oppure lascia vuoto il campo."
   },
   "tradeArea": {
     "country_missing": "Scegli il paese in cui ha sede il tuo food truck.",
@@ -4091,6 +4094,68 @@
       "unknownCustomer": "Sconosciuto",
       "customerOnline": "Cliente online",
       "placedByTruck": "Inserito dal food truck"
+    },
+    "presets": {
+      "label": "Periodo",
+      "custom": "Date personalizzate",
+      "thisMonth": "Questo mese",
+      "lastMonth": "Mese scorso",
+      "lastQuarter": "Trimestre scorso",
+      "lastTaxYear": "Ultimo anno fiscale"
+    },
+    "accounts": {
+      "title": "Per il tuo commercialista",
+      "help": "Le vendite contano nel giorno dell’evento. Il lordo è quanto hanno pagato i clienti. Il netto è quanto resta dopo rimborsi e imposte.",
+      "gross": "Vendite lorde",
+      "refunds": "Rimborsi",
+      "net": "Vendite nette",
+      "taxEstimated": "stima in base alla tua aliquota",
+      "taxNone": "Per il tuo food truck non è impostata alcuna aliquota, quindi qui non vengono calcolate imposte.",
+      "byChannel": "Vendite lorde per canale",
+      "byPayment": "Vendite lorde per metodo di pagamento",
+      "online": "Online",
+      "walkUp": "Al banco",
+      "cardOnline": "Carta online",
+      "payAtTruck": "Paga al ritiro",
+      "cost": "Costo dei piatti venduti",
+      "profit": "Guadagno",
+      "coverage": "{total, plural, one {Costo impostato per {withCost} di # piatto venduto} many {Costo impostato per {withCost} di # piatti venduti} other {Costo impostato per {withCost} di # piatti venduti}}",
+      "partial": "I piatti senza costo sono esclusi dal costo, quindi questo guadagno risulta più alto di quello reale. Aggiungi un costo a ogni piatto nella scheda Menu.",
+      "noCosts": "Nessun piatto ha ancora un costo. Aggiungi un costo ai tuoi piatti nella scheda Menu per vedere il tuo guadagno.",
+      "byEvent": "Per evento",
+      "event": "Evento",
+      "sales": "Vendite nette",
+      "eventNoProfit": "Un trattino indica che non tutti i piatti venduti lì hanno un costo.",
+      "downloadOrders": "⬇ Ordini per il commercialista",
+      "downloadEvents": "⬇ Eventi per il commercialista",
+      "downloadHelp": "Due fogli di calcolo: una riga per ogni ordine e una riga per ogni evento. Si aprono con Excel, Numbers, Xero e QuickBooks."
+    },
+    "accountsCsv": {
+      "header": {
+        "date": "Data",
+        "time": "Ora",
+        "orderNumber": "Numero d’ordine",
+        "event": "Evento",
+        "channel": "Canale",
+        "paymentMethod": "Metodo di pagamento",
+        "currency": "Valuta",
+        "gross": "Lordo",
+        "tax": "Imposte",
+        "taxBasis": "Calcolo imposte",
+        "net": "Netto",
+        "refunded": "Rimborsato",
+        "cost": "Costo",
+        "profit": "Guadagno",
+        "eventDate": "Data evento",
+        "orders": "Ordini",
+        "dishesSold": "Piatti venduti",
+        "dishesWithCost": "Piatti con costo"
+      },
+      "taxBasis": {
+        "stored": "registrate con l’ordine",
+        "estimated": "stimate in base alla tua aliquota",
+        "none": "nessuna aliquota impostata"
+      }
     }
   },
   "socialPosts": {

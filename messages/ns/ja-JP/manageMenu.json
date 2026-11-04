@@ -170,7 +170,9 @@
     "saved": "✓ 保存しました",
     "adding": "追加中…",
     "add": "商品を追加",
-    "noGroups": "オプショングループはまだありません。「トッピング・追加提案」で作成してください。"
+    "noGroups": "オプショングループはまだありません。「トッピング・追加提案」で作成してください。",
+    "costToMake": "原価",
+    "costHelp": "任意。1食分にかかる材料費と容器・包装代です。レポートでのみ使われ、お客様には表示されません。"
   },
   "summary": "{categories, plural, other {#カテゴリ}} · {items, plural, other {#点}}",
   "confirmDelete": {

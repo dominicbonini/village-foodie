@@ -88,5 +88,67 @@
     "unknownCustomer": "Tundmatu",
     "customerOnline": "Klient veebis",
     "placedByTruck": "Lisas toiduauto"
+  },
+  "presets": {
+    "label": "Periood",
+    "custom": "Valitud kuupäevad",
+    "thisMonth": "See kuu",
+    "lastMonth": "Eelmine kuu",
+    "lastQuarter": "Eelmine kvartal",
+    "lastTaxYear": "Eelmine maksuaasta"
+  },
+  "accounts": {
+    "title": "Sinu raamatupidajale",
+    "help": "Müük arvestatakse ürituse päevale. Bruto on see, mida kliendid maksid. Neto on see, mis jääb alles pärast tagastusi ja maksu.",
+    "gross": "Brutomüük",
+    "refunds": "Tagastused",
+    "net": "Netomüük",
+    "taxEstimated": "hinnatud sinu maksumäära põhjal",
+    "taxNone": "Sinu toiduautole pole maksumäära määratud, seega maksu siin ei arvutata.",
+    "byChannel": "Brutomüük kanalite kaupa",
+    "byPayment": "Brutomüük makseviiside kaupa",
+    "online": "Veebis",
+    "walkUp": "Kohapeal",
+    "cardOnline": "Kaart veebis",
+    "payAtTruck": "Tasumine kättesaamisel",
+    "cost": "Müüdud roogade kulu",
+    "profit": "Kasum",
+    "coverage": "{total, plural, one {Kulu on määratud {withCost} roale # müüdud roast} other {Kulu on määratud {withCost} roale # müüdud roast}}",
+    "partial": "Kuluta road jäetakse kulust välja, seega on see kasum tegelikust suurem. Lisa igale roale kulu vahekaardil Menüü.",
+    "noCosts": "Ühelgi roal pole veel kulu. Lisa oma roogadele kulu vahekaardil Menüü, et näha oma kasumit.",
+    "byEvent": "Ürituste kaupa",
+    "event": "Üritus",
+    "sales": "Netomüük",
+    "eventNoProfit": "Kriips tähendab, et kõigil seal müüdud roogadel pole kulu määratud.",
+    "downloadOrders": "⬇ Tellimused sinu raamatupidajale",
+    "downloadEvents": "⬇ Üritused sinu raamatupidajale",
+    "downloadHelp": "Kaks tabelifaili: üks rida iga tellimuse kohta ja üks rida iga ürituse kohta. Need avanevad programmides Excel, Numbers, Xero ja QuickBooks."
+  },
+  "accountsCsv": {
+    "header": {
+      "date": "Kuupäev",
+      "time": "Kellaaeg",
+      "orderNumber": "Tellimuse number",
+      "event": "Üritus",
+      "channel": "Kanal",
+      "paymentMethod": "Makseviis",
+      "currency": "Valuuta",
+      "gross": "Bruto",
+      "tax": "Maks",
+      "taxBasis": "Maksu allikas",
+      "net": "Neto",
+      "refunded": "Tagastatud",
+      "cost": "Kulu",
+      "profit": "Kasum",
+      "eventDate": "Ürituse kuupäev",
+      "orders": "Tellimused",
+      "dishesSold": "Müüdud road",
+      "dishesWithCost": "Kuluga road"
+    },
+    "taxBasis": {
+      "stored": "salvestatud koos tellimusega",
+      "estimated": "hinnatud sinu maksumäära põhjal",
+      "none": "maksumäära pole määratud"
+    }
   }
 }

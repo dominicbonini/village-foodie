@@ -222,5 +222,6 @@
   "paperwork_not_found": "這份文件已不存在，請重新載入頁面。",
   "paperwork_bad_details": "部分資料不正確，請檢查後再試。",
   "paperwork_send_limit": "你在短時間內傳送了太多連結，請一小時後再試。",
-  "paperwork_send_failed": "未能傳送電郵，請再試一次。"
+  "paperwork_send_failed": "未能傳送電郵，請再試一次。",
+  "cost_invalid": "請輸入 0 或以上的成本，或者留空。"
 }

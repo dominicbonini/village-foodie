@@ -2916,7 +2916,9 @@
       "saved": "✓ Opgeslagen",
       "adding": "Toevoegen…",
       "add": "Item toevoegen",
-      "noGroups": "Nog geen optiegroepen — maak ze aan in Extra’s & upselling."
+      "noGroups": "Nog geen optiegroepen — maak ze aan in Extra’s & upselling.",
+      "costToMake": "Kostprijs",
+      "costHelp": "Optioneel. Wat één portie je kost aan ingrediënten en verpakking. Alleen gebruikt in je rapporten; klanten zien het nooit."
     },
     "summary": "{categories, plural, one {# categorie} other {# categorieën}} · {items, plural, one {# item} other {# items}}",
     "confirmDelete": {
@@ -3338,7 +3340,8 @@
     "paperwork_not_found": "Dat document bestaat niet meer. Laad de pagina opnieuw.",
     "paperwork_bad_details": "Sommige gegevens kloppen niet. Controleer ze en probeer het opnieuw.",
     "paperwork_send_limit": "Je hebt in korte tijd veel links verstuurd. Probeer het over een uur opnieuw.",
-    "paperwork_send_failed": "De e-mail kon niet worden verstuurd. Probeer het opnieuw."
+    "paperwork_send_failed": "De e-mail kon niet worden verstuurd. Probeer het opnieuw.",
+    "cost_invalid": "Vul een kostprijs van 0 of meer in, of laat het vak leeg."
   },
   "tradeArea": {
     "country_missing": "Kies het land waar je foodtruck gevestigd is.",
@@ -4091,6 +4094,68 @@
       "unknownCustomer": "Onbekend",
       "customerOnline": "Klant online",
       "placedByTruck": "Ingevoerd door foodtruck"
+    },
+    "presets": {
+      "label": "Periode",
+      "custom": "Eigen datums",
+      "thisMonth": "Deze maand",
+      "lastMonth": "Vorige maand",
+      "lastQuarter": "Vorig kwartaal",
+      "lastTaxYear": "Vorig belastingjaar"
+    },
+    "accounts": {
+      "title": "Voor je boekhouder",
+      "help": "Verkopen tellen op de dag van het evenement. Bruto is wat klanten hebben betaald. Netto is wat er overblijft na terugbetalingen en btw.",
+      "gross": "Bruto-omzet",
+      "refunds": "Terugbetalingen",
+      "net": "Netto-omzet",
+      "taxEstimated": "geschat op basis van je btw-tarief",
+      "taxNone": "Er is geen btw-tarief ingesteld voor je foodtruck, dus hier wordt geen btw berekend.",
+      "byChannel": "Bruto-omzet per kanaal",
+      "byPayment": "Bruto-omzet per betaalwijze",
+      "online": "Online",
+      "walkUp": "Aan de truck",
+      "cardOnline": "Kaart online",
+      "payAtTruck": "Betaal bij de truck",
+      "cost": "Kosten van verkochte gerechten",
+      "profit": "Winst",
+      "coverage": "{total, plural, one {Kostprijs ingevuld voor {withCost} van # verkocht gerecht} other {Kostprijs ingevuld voor {withCost} van # verkochte gerechten}}",
+      "partial": "Gerechten zonder kostprijs tellen niet mee in de kosten, dus deze winst is hoger dan hij echt is. Vul op het tabblad Menu een kostprijs in voor elk gerecht.",
+      "noCosts": "Nog geen enkel gerecht heeft een kostprijs. Vul op het tabblad Menu een kostprijs in voor je gerechten om je winst te zien.",
+      "byEvent": "Per evenement",
+      "event": "Evenement",
+      "sales": "Netto-omzet",
+      "eventNoProfit": "Een streepje betekent dat niet elk gerecht dat daar is verkocht een kostprijs heeft.",
+      "downloadOrders": "⬇ Bestellingen voor je boekhouder",
+      "downloadEvents": "⬇ Evenementen voor je boekhouder",
+      "downloadHelp": "Twee spreadsheetbestanden: één regel per bestelling en één regel per evenement. Ze openen in Excel, Numbers, Xero en QuickBooks."
+    },
+    "accountsCsv": {
+      "header": {
+        "date": "Datum",
+        "time": "Tijd",
+        "orderNumber": "Bestelnummer",
+        "event": "Evenement",
+        "channel": "Kanaal",
+        "paymentMethod": "Betaalwijze",
+        "currency": "Valuta",
+        "gross": "Bruto",
+        "tax": "Btw",
+        "taxBasis": "Btw-berekening",
+        "net": "Netto",
+        "refunded": "Terugbetaald",
+        "cost": "Kosten",
+        "profit": "Winst",
+        "eventDate": "Datum evenement",
+        "orders": "Bestellingen",
+        "dishesSold": "Verkochte gerechten",
+        "dishesWithCost": "Gerechten met kostprijs"
+      },
+      "taxBasis": {
+        "stored": "opgeslagen bij de bestelling",
+        "estimated": "geschat op basis van je btw-tarief",
+        "none": "geen btw-tarief ingesteld"
+      }
     }
   },
   "socialPosts": {

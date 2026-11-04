@@ -2916,7 +2916,9 @@
       "saved": "✓ Sparad",
       "adding": "Lägger till…",
       "add": "Lägg till artikel",
-      "noGroups": "Inga tillvalsgrupper än — skapa dem under Tillval & merförsäljning."
+      "noGroups": "Inga tillvalsgrupper än — skapa dem under Tillval & merförsäljning.",
+      "costToMake": "Kostnad per portion",
+      "costHelp": "Valfritt. Vad en portion kostar dig i råvaror och förpackning. Används bara i dina rapporter; kunderna ser det aldrig."
     },
     "summary": "{categories, plural, one {# kategori} other {# kategorier}} · {items, plural, one {# artikel} other {# artiklar}}",
     "confirmDelete": {
@@ -3338,7 +3340,8 @@
     "paperwork_not_found": "Dokumentet finns inte längre. Ladda om sidan.",
     "paperwork_bad_details": "Några av uppgifterna stämmer inte. Kontrollera dem och försök igen.",
     "paperwork_send_limit": "Du har skickat många länkar på kort tid. Försök igen om en timme.",
-    "paperwork_send_failed": "Mejlet kunde inte skickas. Försök igen."
+    "paperwork_send_failed": "Mejlet kunde inte skickas. Försök igen.",
+    "cost_invalid": "Ange en kostnad på 0 eller mer, eller lämna rutan tom."
   },
   "tradeArea": {
     "country_missing": "Välj landet där din foodtruck har sin bas.",
@@ -4091,6 +4094,68 @@
       "unknownCustomer": "Okänd",
       "customerOnline": "Kund online",
       "placedByTruck": "Lagd av foodtrucken"
+    },
+    "presets": {
+      "label": "Period",
+      "custom": "Egna datum",
+      "thisMonth": "Den här månaden",
+      "lastMonth": "Förra månaden",
+      "lastQuarter": "Förra kvartalet",
+      "lastTaxYear": "Förra beskattningsåret"
+    },
+    "accounts": {
+      "title": "Till din redovisningskonsult",
+      "help": "Försäljningen räknas på evenemangsdagen. Brutto är vad kunderna betalade. Netto är det som blir kvar efter återbetalningar och moms.",
+      "gross": "Bruttoförsäljning",
+      "refunds": "Återbetalningar",
+      "net": "Nettoförsäljning",
+      "taxEstimated": "uppskattad utifrån din momssats",
+      "taxNone": "Ingen momssats är inställd för din foodtruck, så ingen moms räknas ut här.",
+      "byChannel": "Bruttoförsäljning per kanal",
+      "byPayment": "Bruttoförsäljning per betalsätt",
+      "online": "Online",
+      "walkUp": "På plats",
+      "cardOnline": "Kort online",
+      "payAtTruck": "Betala på plats",
+      "cost": "Kostnad för sålda rätter",
+      "profit": "Vinst",
+      "coverage": "{total, plural, one {Kostnad angiven för {withCost} av # såld rätt} other {Kostnad angiven för {withCost} av # sålda rätter}}",
+      "partial": "Rätter utan kostnad räknas inte med i kostnaden, så vinsten är högre än den egentligen är. Lägg till en kostnad för varje rätt på fliken Meny.",
+      "noCosts": "Ingen rätt har någon kostnad än. Lägg till en kostnad för dina rätter på fliken Meny för att se din vinst.",
+      "byEvent": "Per evenemang",
+      "event": "Evenemang",
+      "sales": "Nettoförsäljning",
+      "eventNoProfit": "Ett streck betyder att inte alla rätter som såldes där har en kostnad.",
+      "downloadOrders": "⬇ Beställningar till din redovisningskonsult",
+      "downloadEvents": "⬇ Evenemang till din redovisningskonsult",
+      "downloadHelp": "Två kalkylbladsfiler: en rad per beställning och en rad per evenemang. De öppnas i Excel, Numbers, Xero och QuickBooks."
+    },
+    "accountsCsv": {
+      "header": {
+        "date": "Datum",
+        "time": "Tid",
+        "orderNumber": "Beställningsnummer",
+        "event": "Evenemang",
+        "channel": "Kanal",
+        "paymentMethod": "Betalsätt",
+        "currency": "Valuta",
+        "gross": "Brutto",
+        "tax": "Moms",
+        "taxBasis": "Momsberäkning",
+        "net": "Netto",
+        "refunded": "Återbetalt",
+        "cost": "Kostnad",
+        "profit": "Vinst",
+        "eventDate": "Evenemangsdatum",
+        "orders": "Beställningar",
+        "dishesSold": "Sålda rätter",
+        "dishesWithCost": "Rätter med kostnad"
+      },
+      "taxBasis": {
+        "stored": "sparad med beställningen",
+        "estimated": "uppskattad utifrån din momssats",
+        "none": "ingen momssats inställd"
+      }
     }
   },
   "socialPosts": {

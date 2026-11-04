@@ -88,5 +88,67 @@
     "unknownCustomer": "Desconhecido",
     "customerOnline": "Cliente online",
     "placedByTruck": "Registada pelo food truck"
+  },
+  "presets": {
+    "label": "Período",
+    "custom": "Datas personalizadas",
+    "thisMonth": "Este mês",
+    "lastMonth": "Mês passado",
+    "lastQuarter": "Último trimestre",
+    "lastTaxYear": "Último ano fiscal"
+  },
+  "accounts": {
+    "title": "Para o seu contabilista",
+    "help": "As vendas contam no dia do evento. O bruto é o que os clientes pagaram. O líquido é o que fica depois dos reembolsos e dos impostos.",
+    "gross": "Vendas brutas",
+    "refunds": "Reembolsos",
+    "net": "Vendas líquidas",
+    "taxEstimated": "estimativa com base na sua taxa de imposto",
+    "taxNone": "Não há uma taxa de imposto definida para o seu food truck, por isso aqui não são calculados impostos.",
+    "byChannel": "Vendas brutas por canal",
+    "byPayment": "Vendas brutas por forma de pagamento",
+    "online": "Online",
+    "walkUp": "Ao balcão",
+    "cardOnline": "Cartão online",
+    "payAtTruck": "Pagar ao levantar",
+    "cost": "Custo dos pratos vendidos",
+    "profit": "Lucro",
+    "coverage": "{total, plural, one {Custo definido para {withCost} de # prato vendido} many {Custo definido para {withCost} de # pratos vendidos} other {Custo definido para {withCost} de # pratos vendidos}}",
+    "partial": "Os pratos sem custo ficam de fora do custo, por isso este lucro é mais alto do que realmente é. Adicione um custo a cada prato no separador Ementa.",
+    "noCosts": "Ainda nenhum prato tem custo. Adicione um custo aos seus pratos no separador Ementa para ver o seu lucro.",
+    "byEvent": "Por evento",
+    "event": "Evento",
+    "sales": "Vendas líquidas",
+    "eventNoProfit": "Um traço significa que nem todos os pratos vendidos aí têm custo.",
+    "downloadOrders": "⬇ Encomendas para o seu contabilista",
+    "downloadEvents": "⬇ Eventos para o seu contabilista",
+    "downloadHelp": "Dois ficheiros de folha de cálculo: uma linha por encomenda e uma linha por evento. Abrem no Excel, Numbers, Xero e QuickBooks."
+  },
+  "accountsCsv": {
+    "header": {
+      "date": "Data",
+      "time": "Hora",
+      "orderNumber": "Número da encomenda",
+      "event": "Evento",
+      "channel": "Canal",
+      "paymentMethod": "Forma de pagamento",
+      "currency": "Moeda",
+      "gross": "Bruto",
+      "tax": "Impostos",
+      "taxBasis": "Cálculo dos impostos",
+      "net": "Líquido",
+      "refunded": "Reembolsado",
+      "cost": "Custo",
+      "profit": "Lucro",
+      "eventDate": "Data do evento",
+      "orders": "Encomendas",
+      "dishesSold": "Pratos vendidos",
+      "dishesWithCost": "Pratos com custo"
+    },
+    "taxBasis": {
+      "stored": "guardado com a encomenda",
+      "estimated": "estimado com base na sua taxa de imposto",
+      "none": "sem taxa de imposto definida"
+    }
   }
 }

@@ -2916,7 +2916,9 @@
       "saved": "✓ Salvat",
       "adding": "Se adaugă…",
       "add": "Adăugați produsul",
-      "noGroups": "Niciun grup de opțiuni încă — creați-le în Extra și sugestii."
+      "noGroups": "Niciun grup de opțiuni încă — creați-le în Extra și sugestii.",
+      "costToMake": "Cost de preparare",
+      "costHelp": "Opțional. Cât vă costă o porție în ingrediente și ambalaj. Se folosește doar în rapoartele dumneavoastră; clienții nu îl văd niciodată."
     },
     "summary": "{categories, plural, one {# categorie} few {# categorii} other {# de categorii}} · {items, plural, one {# produs} few {# produse} other {# de produse}}",
     "confirmDelete": {
@@ -3338,7 +3340,8 @@
     "paperwork_not_found": "Acest document nu mai există. Reîncărcați pagina.",
     "paperwork_bad_details": "Unele detalii nu sunt corecte. Verificați-le și încercați din nou.",
     "paperwork_send_limit": "Ați trimis multe linkuri într-un timp scurt. Încercați din nou peste o oră.",
-    "paperwork_send_failed": "E-mailul nu a putut fi trimis. Încercați din nou."
+    "paperwork_send_failed": "E-mailul nu a putut fi trimis. Încercați din nou.",
+    "cost_invalid": "Introduceți un cost de 0 sau mai mult ori lăsați câmpul gol."
   },
   "tradeArea": {
     "country_missing": "Alegeți țara în care își are sediul food truck-ul dumneavoastră.",
@@ -4091,6 +4094,68 @@
       "unknownCustomer": "Necunoscut",
       "customerOnline": "Client online",
       "placedByTruck": "Plasată de food truck"
+    },
+    "presets": {
+      "label": "Perioadă",
+      "custom": "Date personalizate",
+      "thisMonth": "Luna aceasta",
+      "lastMonth": "Luna trecută",
+      "lastQuarter": "Trimestrul trecut",
+      "lastTaxYear": "Anul fiscal trecut"
+    },
+    "accounts": {
+      "title": "Pentru contabil",
+      "help": "Vânzările se socotesc în ziua evenimentului. Brut înseamnă ce au plătit clienții. Net înseamnă ce rămâne după rambursări și TVA.",
+      "gross": "Vânzări brute",
+      "refunds": "Rambursări",
+      "net": "Vânzări nete",
+      "taxEstimated": "estimată după cota dumneavoastră de TVA",
+      "taxNone": "Food truck-ul dumneavoastră nu are setată o cotă de TVA, așa că aici nu se calculează TVA.",
+      "byChannel": "Vânzări brute pe canal",
+      "byPayment": "Vânzări brute pe metodă de plată",
+      "online": "Online",
+      "walkUp": "La fața locului",
+      "cardOnline": "Card online",
+      "payAtTruck": "Plata la ridicare",
+      "cost": "Costul preparatelor vândute",
+      "profit": "Profit",
+      "coverage": "{total, plural, one {Cost setat pentru {withCost} din # preparat vândut} few {Cost setat pentru {withCost} din # preparate vândute} other {Cost setat pentru {withCost} din # de preparate vândute}}",
+      "partial": "Preparatele fără cost nu sunt incluse în cost, așa că acest profit este mai mare decât în realitate. Adăugați un cost pentru fiecare preparat în Meniu.",
+      "noCosts": "Niciun preparat nu are încă un cost. Adăugați costuri preparatelor în Meniu pentru a vedea profitul.",
+      "byEvent": "Pe evenimente",
+      "event": "Eveniment",
+      "sales": "Vânzări nete",
+      "eventNoProfit": "O liniuță înseamnă că nu toate preparatele vândute acolo au un cost.",
+      "downloadOrders": "⬇ Comenzi pentru contabil",
+      "downloadEvents": "⬇ Evenimente pentru contabil",
+      "downloadHelp": "Două fișiere de tip foaie de calcul: un rând pentru fiecare comandă și un rând pentru fiecare eveniment. Se deschid în Excel, Numbers, Xero și QuickBooks."
+    },
+    "accountsCsv": {
+      "header": {
+        "date": "Data",
+        "time": "Ora",
+        "orderNumber": "Număr comandă",
+        "event": "Eveniment",
+        "channel": "Canal",
+        "paymentMethod": "Metodă de plată",
+        "currency": "Monedă",
+        "gross": "Brut",
+        "tax": "TVA",
+        "taxBasis": "Mod de calcul TVA",
+        "net": "Net",
+        "refunded": "Rambursat",
+        "cost": "Cost",
+        "profit": "Profit",
+        "eventDate": "Data evenimentului",
+        "orders": "Comenzi",
+        "dishesSold": "Preparate vândute",
+        "dishesWithCost": "Preparate cu cost"
+      },
+      "taxBasis": {
+        "stored": "salvată odată cu comanda",
+        "estimated": "estimată după cota dumneavoastră de TVA",
+        "none": "nicio cotă de TVA setată"
+      }
     }
   },
   "socialPosts": {

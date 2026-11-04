@@ -76,5 +76,10 @@
     "detail": {
       "walkup_orders": "Take and manage orders at the truck, paid on your own card terminal."
     }
+  },
+  "manageReports": {
+    "accounts": {
+      "payAtTruck": "Pay at the truck"
+    }
   }
 }

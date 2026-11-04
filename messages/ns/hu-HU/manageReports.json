@@ -88,5 +88,67 @@
     "unknownCustomer": "Ismeretlen",
     "customerOnline": "Vásárló, online",
     "placedByTruck": "A food truck rögzítette"
+  },
+  "presets": {
+    "label": "Időszak",
+    "custom": "Egyéni dátumok",
+    "thisMonth": "Ez a hónap",
+    "lastMonth": "Előző hónap",
+    "lastQuarter": "Előző negyedév",
+    "lastTaxYear": "Előző adóév"
+  },
+  "accounts": {
+    "title": "A könyvelőjének",
+    "help": "Az eladások az esemény napjához számítanak. A bruttó az, amit a vásárlók fizettek. A nettó az, ami a visszatérítések és az adó levonása után marad.",
+    "gross": "Bruttó forgalom",
+    "refunds": "Visszatérítések",
+    "net": "Nettó forgalom",
+    "taxEstimated": "az Ön adókulcsa alapján becsülve",
+    "taxNone": "A food truckjához nincs beállítva adókulcs, ezért itt nem számolunk adót.",
+    "byChannel": "Bruttó forgalom csatornánként",
+    "byPayment": "Bruttó forgalom fizetési mód szerint",
+    "online": "Online",
+    "walkUp": "Helyszíni",
+    "cardOnline": "Online kártyás",
+    "payAtTruck": "Fizetés átvételkor",
+    "cost": "Az eladott ételek költsége",
+    "profit": "Nyereség",
+    "coverage": "{total, plural, one {Költség megadva: {withCost} / # eladott étel} other {Költség megadva: {withCost} / # eladott étel}}",
+    "partial": "A költség nélküli ételek kimaradnak a költségből, így ez a nyereség magasabb a valósnál. Adjon meg költséget minden ételhez az Étlapon.",
+    "noCosts": "Még egyik ételnél sincs megadva költség. Adjon meg költséget az ételeihez az Étlapon, hogy lássa a nyereségét.",
+    "byEvent": "Eseményenként",
+    "event": "Esemény",
+    "sales": "Nettó forgalom",
+    "eventNoProfit": "A „–” jel azt jelenti, hogy nem minden ott eladott ételnek van megadva költsége.",
+    "downloadOrders": "⬇ Rendelések a könyvelőnek",
+    "downloadEvents": "⬇ Események a könyvelőnek",
+    "downloadHelp": "Két táblázatfájl: egy sor minden rendeléshez és egy sor minden eseményhez. Megnyithatók ezekkel: Excel, Numbers, Xero és QuickBooks."
+  },
+  "accountsCsv": {
+    "header": {
+      "date": "Dátum",
+      "time": "Időpont",
+      "orderNumber": "Rendelésszám",
+      "event": "Esemény",
+      "channel": "Csatorna",
+      "paymentMethod": "Fizetési mód",
+      "currency": "Pénznem",
+      "gross": "Bruttó",
+      "tax": "Adó",
+      "taxBasis": "Adó számítása",
+      "net": "Nettó",
+      "refunded": "Visszatérítve",
+      "cost": "Költség",
+      "profit": "Nyereség",
+      "eventDate": "Esemény dátuma",
+      "orders": "Rendelések",
+      "dishesSold": "Eladott ételek",
+      "dishesWithCost": "Költséggel rendelkező ételek"
+    },
+    "taxBasis": {
+      "stored": "a rendeléssel együtt tárolva",
+      "estimated": "az Ön adókulcsa alapján becsülve",
+      "none": "nincs beállítva adókulcs"
+    }
   }
 }

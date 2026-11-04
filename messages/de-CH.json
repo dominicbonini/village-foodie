@@ -279,5 +279,10 @@
     "view": {
       "close": "Schliessen"
     }
+  },
+  "manageReports": {
+    "accounts": {
+      "partial": "Gerichte ohne Kosten fliessen nicht in die Kosten ein, daher ist dieser Gewinn höher als in Wirklichkeit. Hinterlegen Sie für jedes Gericht Kosten im Tab „Speisekarte“."
+    }
   }
 }

@@ -1,0 +1,3 @@
+﻿Event date,Event,Orders,Currency,Gross,Tax,Tax basis,Net,Refunded,Dishes sold,Dishes with a cost,Cost,Profit
+2026-10-17,"The Green, Testville",4,GBP,66.50,0.00,no tax rate set,66.50,0.00,8,7,15.50,
+2026-10-24,"Market Square, Ely",4,GBP,74.50,0.00,no tax rate set,62.50,12.00,7,5,13.70,

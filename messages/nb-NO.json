@@ -2916,7 +2916,9 @@
       "saved": "✓ Lagret",
       "adding": "Legger til…",
       "add": "Legg til vare",
-      "noGroups": "Ingen valggrupper ennå – opprett dem under Tillegg og mersalg."
+      "noGroups": "Ingen valggrupper ennå – opprett dem under Tillegg og mersalg.",
+      "costToMake": "Kostpris",
+      "costHelp": "Valgfritt. Hva én porsjon koster deg i råvarer og emballasje. Brukes bare i rapportene dine; kundene ser det aldri."
     },
     "summary": "{categories, plural, one {# kategori} other {# kategorier}} · {items, plural, one {# vare} other {# varer}}",
     "confirmDelete": {
@@ -3338,7 +3340,8 @@
     "paperwork_not_found": "Det dokumentet finnes ikke lenger. Last inn siden på nytt.",
     "paperwork_bad_details": "Noen av opplysningene stemmer ikke. Sjekk dem og prøv igjen.",
     "paperwork_send_limit": "Du har sendt mange lenker på kort tid. Prøv igjen om en time.",
-    "paperwork_send_failed": "E-posten kunne ikke sendes. Prøv igjen."
+    "paperwork_send_failed": "E-posten kunne ikke sendes. Prøv igjen.",
+    "cost_invalid": "Skriv inn en kostpris på 0 eller mer, eller la feltet stå tomt."
   },
   "tradeArea": {
     "country_missing": "Velg landet matbilen din har base i.",
@@ -4091,6 +4094,68 @@
       "unknownCustomer": "Ukjent",
       "customerOnline": "Kunde på nett",
       "placedByTruck": "Lagt inn av matbilen"
+    },
+    "presets": {
+      "label": "Periode",
+      "custom": "Velg datoer",
+      "thisMonth": "Denne måneden",
+      "lastMonth": "Forrige måned",
+      "lastQuarter": "Forrige kvartal",
+      "lastTaxYear": "Forrige skatteår"
+    },
+    "accounts": {
+      "title": "Til regnskapsføreren din",
+      "help": "Salg regnes på dagen for arrangementet. Brutto er det kundene betalte. Netto er det som er igjen etter refusjoner og mva.",
+      "gross": "Bruttosalg",
+      "refunds": "Refusjoner",
+      "net": "Nettosalg",
+      "taxEstimated": "anslått ut fra mva.-satsen din",
+      "taxNone": "Det er ikke satt noen mva.-sats for matbilen din, så ingen mva. beregnes her.",
+      "byChannel": "Bruttosalg per kanal",
+      "byPayment": "Bruttosalg per betalingsmåte",
+      "online": "På nett",
+      "walkUp": "Ved bilen",
+      "cardOnline": "Kort på nett",
+      "payAtTruck": "Betal ved henting",
+      "cost": "Kostpris for solgte retter",
+      "profit": "Fortjeneste",
+      "coverage": "{total, plural, one {Kostpris satt for {withCost} av # solgt rett} other {Kostpris satt for {withCost} av # solgte retter}}",
+      "partial": "Retter uten kostpris er ikke med i kostnaden, så fortjenesten her er høyere enn den egentlig er. Legg inn en kostpris for hver rett i Meny.",
+      "noCosts": "Ingen retter har kostpris ennå. Legg inn kostpris for rettene dine i Meny for å se fortjenesten.",
+      "byEvent": "Per arrangement",
+      "event": "Arrangement",
+      "sales": "Nettosalg",
+      "eventNoProfit": "En strek betyr at ikke alle rettene som ble solgt der, har kostpris.",
+      "downloadOrders": "⬇ Bestillinger til regnskapsføreren",
+      "downloadEvents": "⬇ Arrangementer til regnskapsføreren",
+      "downloadHelp": "To regnearkfiler: én rad per bestilling og én rad per arrangement. De kan åpnes i Excel, Numbers, Xero og QuickBooks."
+    },
+    "accountsCsv": {
+      "header": {
+        "date": "Dato",
+        "time": "Tid",
+        "orderNumber": "Bestillingsnummer",
+        "event": "Arrangement",
+        "channel": "Kanal",
+        "paymentMethod": "Betalingsmåte",
+        "currency": "Valuta",
+        "gross": "Brutto",
+        "tax": "Mva.",
+        "taxBasis": "Mva.-beregning",
+        "net": "Netto",
+        "refunded": "Refundert",
+        "cost": "Kostpris",
+        "profit": "Fortjeneste",
+        "eventDate": "Arrangementsdato",
+        "orders": "Bestillinger",
+        "dishesSold": "Solgte retter",
+        "dishesWithCost": "Retter med kostpris"
+      },
+      "taxBasis": {
+        "stored": "lagret med bestillingen",
+        "estimated": "anslått ut fra mva.-satsen din",
+        "none": "ingen mva.-sats angitt"
+      }
     }
   },
   "socialPosts": {

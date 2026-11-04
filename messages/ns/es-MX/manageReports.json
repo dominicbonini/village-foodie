@@ -7,5 +7,24 @@
   },
   "csv": {
     "deals": "Combos"
+  },
+  "accounts": {
+    "title": "Para tu contador",
+    "profit": "Ganancia",
+    "cost": "Costo de los platillos vendidos",
+    "coverage": "{total, plural, one {Costo indicado en {withCost} de # platillo vendido} many {Costo indicado en {withCost} de # platillos vendidos} other {Costo indicado en {withCost} de # platillos vendidos}}",
+    "partial": "Los platillos sin costo no se incluyen en el costo, así que esta ganancia es mayor de lo que es en realidad. Agrega un costo a cada platillo en la pestaña Menú.",
+    "noCosts": "Todavía ningún platillo tiene costo. Agrega un costo a tus platillos en la pestaña Menú para ver tu ganancia.",
+    "eventNoProfit": "Un guion significa que no todos los platillos vendidos ahí tienen costo.",
+    "downloadOrders": "⬇ Pedidos para tu contador",
+    "downloadEvents": "⬇ Eventos para tu contador"
+  },
+  "accountsCsv": {
+    "header": {
+      "cost": "Costo",
+      "profit": "Ganancia",
+      "dishesSold": "Platillos vendidos",
+      "dishesWithCost": "Platillos con costo"
+    }
   }
 }

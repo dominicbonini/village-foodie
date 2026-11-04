@@ -2916,7 +2916,9 @@
       "saved": "✓ 保存しました",
       "adding": "追加中…",
       "add": "商品を追加",
-      "noGroups": "オプショングループはまだありません。「トッピング・追加提案」で作成してください。"
+      "noGroups": "オプショングループはまだありません。「トッピング・追加提案」で作成してください。",
+      "costToMake": "原価",
+      "costHelp": "任意。1食分にかかる材料費と容器・包装代です。レポートでのみ使われ、お客様には表示されません。"
     },
     "summary": "{categories, plural, other {#カテゴリ}} · {items, plural, other {#点}}",
     "confirmDelete": {
@@ -3338,7 +3340,8 @@
     "paperwork_not_found": "この書類はすでに存在しません。ページを再読み込みしてください。",
     "paperwork_bad_details": "入力内容に誤りがあります。確認してもう一度お試しください。",
     "paperwork_send_limit": "短時間に多くのリンクを送信しました。1時間後にもう一度お試しください。",
-    "paperwork_send_failed": "メールを送信できませんでした。もう一度お試しください。"
+    "paperwork_send_failed": "メールを送信できませんでした。もう一度お試しください。",
+    "cost_invalid": "0以上の原価を入力するか、空欄のままにしてください。"
   },
   "tradeArea": {
     "country_missing": "キッチンカーの拠点がある国を選んでください。",
@@ -4091,6 +4094,68 @@
       "unknownCustomer": "不明",
       "customerOnline": "お客様（オンライン）",
       "placedByTruck": "キッチンカーが入力"
+    },
+    "presets": {
+      "label": "期間",
+      "custom": "日付を指定",
+      "thisMonth": "今月",
+      "lastMonth": "先月",
+      "lastQuarter": "前四半期",
+      "lastTaxYear": "前の課税年度"
+    },
+    "accounts": {
+      "title": "税理士向けの集計",
+      "help": "売上は出店日に計上されます。総売上はお客様が支払った金額です。純売上は返金と消費税を差し引いた残りです。",
+      "gross": "総売上",
+      "refunds": "返金",
+      "net": "純売上",
+      "taxEstimated": "税率から算出した見込み額",
+      "taxNone": "キッチンカーに税率が設定されていないため、ここでは税額を計算していません。",
+      "byChannel": "チャネル別の総売上",
+      "byPayment": "支払い方法別の総売上",
+      "online": "オンライン",
+      "walkUp": "店頭",
+      "cardOnline": "オンラインカード決済",
+      "payAtTruck": "受け取り時に支払う",
+      "cost": "販売した商品の原価",
+      "profit": "利益",
+      "coverage": "{total, plural, other {販売した#品のうち{withCost}品に原価を設定済み}}",
+      "partial": "原価が未設定の商品は原価に含まれないため、この利益は実際より高くなっています。メニューで各商品に原価を追加してください。",
+      "noCosts": "原価が設定された商品はまだありません。メニューで商品に原価を追加すると、利益が表示されます。",
+      "byEvent": "出店別",
+      "event": "出店",
+      "sales": "純売上",
+      "eventNoProfit": "「–」は、その出店で販売した商品の一部に原価が設定されていないことを表します。",
+      "downloadOrders": "⬇ 税理士向け：注文データ",
+      "downloadEvents": "⬇ 税理士向け：出店データ",
+      "downloadHelp": "表計算ファイル2つ：注文ごとに1行のファイルと、出店ごとに1行のファイルです。Excel、Numbers、Xero、QuickBooksで開けます。"
+    },
+    "accountsCsv": {
+      "header": {
+        "date": "日付",
+        "time": "時刻",
+        "orderNumber": "注文番号",
+        "event": "出店",
+        "channel": "チャネル",
+        "paymentMethod": "支払い方法",
+        "currency": "通貨",
+        "gross": "総額",
+        "tax": "消費税",
+        "taxBasis": "税額の根拠",
+        "net": "純額",
+        "refunded": "返金額",
+        "cost": "原価",
+        "profit": "利益",
+        "eventDate": "出店日",
+        "orders": "注文数",
+        "dishesSold": "販売した商品数",
+        "dishesWithCost": "原価設定済みの商品数"
+      },
+      "taxBasis": {
+        "stored": "注文時に記録",
+        "estimated": "税率から算出した見込み額",
+        "none": "税率未設定"
+      }
     }
   },
   "socialPosts": {

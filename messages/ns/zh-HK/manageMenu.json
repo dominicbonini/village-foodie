@@ -170,7 +170,9 @@
     "saved": "✓ 已儲存",
     "adding": "正在加入…",
     "add": "加入食品",
-    "noGroups": "暫時未有選項組別，請到「配料及加購」建立。"
+    "noGroups": "暫時未有選項組別，請到「配料及加購」建立。",
+    "costToMake": "製作成本",
+    "costHelp": "可選填。每份所需的材料及包裝成本。只會用於你的報告，顧客永遠不會看到。"
   },
   "summary": "{categories, plural, other {# 個類別}} · {items, plural, other {# 項食品}}",
   "confirmDelete": {

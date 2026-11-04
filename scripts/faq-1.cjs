@@ -148,8 +148,14 @@ async function identityViews(tag) {
   head('3 · lib/faq names no plan key or plan name')
   const faqFiles = fs.readdirSync(path.join(REPO, 'lib/faq')).map(f => `lib/faq/${f}`)
   const words = [...publicKeys, ...catalog.plans.filter(p => p.isPublic).map(p => p.name)]
+  // ⚠️ RE-PINNED (costs-accounts-1, 4 November 2026): import-and-cs-fix (489b4f5f) added `ORDINARY_WORDS = { cs: ['Pro'] }` to
+  // lib/faq/translation.ts — Czech "Pro" ("for"), listed BECAUSE it is not a plan name — and its comments say why. That one declaration
+  // and the file's comments are set aside before the grep (the declaration pinned exactly, so a second entry still fails); every other
+  // line of every lib/faq file is checked as before.
+  const ORDINARY = "export const ORDINARY_WORDS: Readonly<Record<string, readonly string[]>> = { cs: ['Pro'] }"
+  t('lib/faq/translation.ts: ORDINARY_WORDS is exactly Czech "Pro" (import-and-cs-fix)', read('lib/faq/translation.ts').split(ORDINARY).length === 2)
   for (const f of faqFiles) {
-    const src = read(f)
+    const src = f === 'lib/faq/translation.ts' ? read(f).replace(ORDINARY, '').replace(/\/\*[\s\S]*?\*\//g, '').replace(/(^|\s)\/\/.*$/gm, '$1') : read(f)
     const hits = words.filter(w => new RegExp(`(^|[^A-Za-z0-9_])${w.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}([^A-Za-z0-9_]|$)`, 'i').test(src))
     t(`${f}: none of ${words.join(', ')}`, hits.length === 0, hits)
     t(`${f}: no internal plan key as a quoted string either`, !catalog.plans.some(p => new RegExp(`['"\`]${p.key}['"\`]`).test(src)))
@@ -283,8 +289,20 @@ async function identityViews(tag) {
   // ⚠️ RE-PINNED (contact-1, 2 November 2026): 20261061 (contact_messages) follows too.
   // ⚠️ RE-PINNED (competitor-features-2, 3 November 2026): and 20261062 (tiers, not_mentioned, competitor_feature_checks).
   // ⚠️ RE-PINNED (tidy-2, 3 November 2026): and 20261063 / 20261064 (the apps everywhere; Real Thai Food).
-  t('the faq-1 migration number is unique, and only 20261058, 20261059 (faq-3), 20261060 (faq-2), 20261061 (contact-1), 20261062 (competitor-features-2), 20261063 and 20261064 (tidy-2) follow it', fs.readdirSync(path.join(REPO, 'supabase/migrations')).filter(f => f.startsWith('20261056')).length === 1
-    && JSON.stringify(fs.readdirSync(path.join(REPO, 'supabase/migrations')).filter(f => f > '20261056_faq_1.sql' && /^\d{8}/.test(f))) === JSON.stringify(['20261058_faq_1c_undo.sql', '20261059_faq_3.sql', '20261060_faq_2_translations.sql', '20261061_contact_1.sql', '20261062_competitor_features_2.sql', '20261063_tidy_2_apps_everywhere.sql', '20261064_tidy_2_real_thai_food.sql']))
+  // ⚠️ RE-PINNED (costs-accounts-1, 4 November 2026): this assertion FAILED AT HEAD (41de9294). It pinned the EXACT list of migrations
+  // after faq-1's, so every later migration that had nothing to do with the FAQ (brand-kit-1's 20261065, paperwork-1's 20261066,
+  // import-and-cs-fix's 20261067) broke it and needed a re-pin. What it guards is unchanged: 20261056 is the one faq-1 file, the
+  // files known to follow it are still there in order, and no LATER file touches the FAQ's tables — the only kind of later
+  // migration that could change what this harness proves.
+  {
+    const MIG = path.join(REPO, 'supabase/migrations')
+    const after = fs.readdirSync(MIG).filter(f => f > '20261056_faq_1.sql' && /^\d{8}/.test(f))
+    const KNOWN = ['20261058_faq_1c_undo.sql', '20261059_faq_3.sql', '20261060_faq_2_translations.sql', '20261061_contact_1.sql', '20261062_competitor_features_2.sql', '20261063_tidy_2_apps_everywhere.sql', '20261064_tidy_2_real_thai_food.sql']
+    const later = after.slice(KNOWN.length)
+    const touchingFaq = later.filter(f => /\bfaq_(items|sections|translations)\b/.test(fs.readFileSync(path.join(MIG, f), 'utf8').replace(/--.*$/gm, '')))
+    t('the faq-1 migration number is unique; 20261058 … 20261064 follow it in order, and no later migration touches the FAQ tables', fs.readdirSync(MIG).filter(f => f.startsWith('20261056')).length === 1
+      && JSON.stringify(after.slice(0, KNOWN.length)) === JSON.stringify(KNOWN) && !touchingFaq.length, { after, touchingFaq })
+  }
 
   // ══ 7 ══════════════════════════════════════════════════════════════════════════════════════════════════════════════
   head('7 · the seed')

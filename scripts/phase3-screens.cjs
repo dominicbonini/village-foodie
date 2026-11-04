@@ -206,7 +206,12 @@ async function main() {
     const isStatus = /^status/.test(k), isMenu = /^menu/.test(k)
     if (isMenu) t(`${k}: …its truck sends preordering_on = true (no override → allowed; Stage A addition)`, got[k] && got[k].body && got[k].body.truck && got[k].body.truck.preordering_on === true, got[k] && got[k].body && got[k].body.truck && got[k].body.truck.preordering_on)
     if (isMenu) t(`${k}: …its truck sends pay_at_hatch_on = true (pro allows Pay at Hatch; Stage A2 addition)`, got[k] && got[k].body && got[k].body.truck && got[k].body.truck.pay_at_hatch_on === true, got[k] && got[k].body && got[k].body.truck && got[k].body.truck.pay_at_hatch_on)
-    const d = diffJson(b, isStatus ? withoutMidnightKeys(got[k]) : isMenu ? withoutPreorderingOn(got[k]) : got[k])
+    // ⚠️ RE-PINNED (costs-accounts-1, 4 November 2026): get_report gained `report.accounts` (one row per order for the "For your
+    // accountant" card, owners and managers only). The report views are compared WITHOUT exactly that key; it is asserted on its own.
+    const isReport = /^report/.test(k)
+    if (isReport) t(`${k}: …its report sends accounts (costs-accounts-1 addition), one row per standing order`, Array.isArray(got[k]?.body?.report?.accounts?.rows) && got[k].body.report.accounts.rows.length === got[k].body.report.orders.length)
+    const withoutAccounts = v => (v && v.body && v.body.report && typeof v.body.report === 'object' ? { ...v, body: { ...v.body, report: Object.fromEntries(Object.entries(v.body.report).filter(([rk]) => rk !== 'accounts')) } } : v)
+    const d = diffJson(b, isStatus ? withoutMidnightKeys(got[k]) : isMenu ? withoutPreorderingOn(got[k]) : isReport ? withoutAccounts(got[k]) : got[k])
     t(`${k}: byte-identical to BEFORE${isStatus ? ' (apart from the two named event-time keys)' : ''}`, d === null, d)
     if (isStatus) t(`${k}: …and it sends the event's start and end times`, got[k] && got[k].body && MIDNIGHT_KEYS.every(x => x in got[k].body), got[k] && got[k].body && MIDNIGHT_KEYS.map(x => got[k].body[x]))
   }

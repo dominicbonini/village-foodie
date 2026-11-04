@@ -88,5 +88,67 @@
     "unknownCustomer": "Nezināms",
     "customerOnline": "Klients tiešsaistē",
     "placedByTruck": "Ievadījis food truck"
+  },
+  "presets": {
+    "label": "Periods",
+    "custom": "Pielāgoti datumi",
+    "thisMonth": "Šis mēnesis",
+    "lastMonth": "Iepriekšējais mēnesis",
+    "lastQuarter": "Iepriekšējais ceturksnis",
+    "lastTaxYear": "Iepriekšējais taksācijas gads"
+  },
+  "accounts": {
+    "title": "Jūsu grāmatvedim",
+    "help": "Pārdošana tiek uzskaitīta pasākuma dienā. Bruto ir tas, ko samaksāja klienti. Neto ir tas, kas paliek pēc atmaksām un nodokļa.",
+    "gross": "Bruto pārdošana",
+    "refunds": "Atmaksas",
+    "net": "Neto pārdošana",
+    "taxEstimated": "aprēķināts pēc jūsu nodokļa likmes",
+    "taxNone": "Jūsu food truck nav iestatīta nodokļa likme, tāpēc nodoklis šeit netiek aprēķināts.",
+    "byChannel": "Bruto pārdošana pa kanāliem",
+    "byPayment": "Bruto pārdošana pa maksājuma veidiem",
+    "online": "Tiešsaistē",
+    "walkUp": "Uz vietas",
+    "cardOnline": "Karte tiešsaistē",
+    "payAtTruck": "Apmaksa saņemot",
+    "cost": "Pārdoto ēdienu izmaksas",
+    "profit": "Peļņa",
+    "coverage": "{total, plural, zero {Izmaksas iestatītas {withCost} no # pārdotajiem ēdieniem} one {Izmaksas iestatītas {withCost} no # pārdotā ēdiena} other {Izmaksas iestatītas {withCost} no # pārdotajiem ēdieniem}}",
+    "partial": "Ēdieni bez izmaksām netiek ieskaitīti izmaksās, tāpēc šī peļņa ir lielāka, nekā ir patiesībā. Pievienojiet izmaksas katram ēdienam sadaļā Ēdienkarte.",
+    "noCosts": "Nevienam ēdienam vēl nav izmaksu. Pievienojiet izmaksas saviem ēdieniem sadaļā Ēdienkarte, lai redzētu savu peļņu.",
+    "byEvent": "Pa pasākumiem",
+    "event": "Pasākums",
+    "sales": "Neto pārdošana",
+    "eventNoProfit": "Svītra nozīmē, ka ne visiem tur pārdotajiem ēdieniem ir izmaksas.",
+    "downloadOrders": "⬇ Pasūtījumi jūsu grāmatvedim",
+    "downloadEvents": "⬇ Pasākumi jūsu grāmatvedim",
+    "downloadHelp": "Divas izklājlapu datnes: viena rinda par katru pasūtījumu un viena rinda par katru pasākumu. Tās var atvērt programmās Excel, Numbers, Xero un QuickBooks."
+  },
+  "accountsCsv": {
+    "header": {
+      "date": "Datums",
+      "time": "Laiks",
+      "orderNumber": "Pasūtījuma numurs",
+      "event": "Pasākums",
+      "channel": "Kanāls",
+      "paymentMethod": "Maksājuma veids",
+      "currency": "Valūta",
+      "gross": "Bruto",
+      "tax": "Nodoklis",
+      "taxBasis": "Nodokļa avots",
+      "net": "Neto",
+      "refunded": "Atmaksāts",
+      "cost": "Izmaksas",
+      "profit": "Peļņa",
+      "eventDate": "Pasākuma datums",
+      "orders": "Pasūtījumi",
+      "dishesSold": "Pārdotie ēdieni",
+      "dishesWithCost": "Ēdieni ar izmaksām"
+    },
+    "taxBasis": {
+      "stored": "saglabāts kopā ar pasūtījumu",
+      "estimated": "aprēķināts pēc jūsu nodokļa likmes",
+      "none": "nodokļa likme nav iestatīta"
+    }
   }
 }

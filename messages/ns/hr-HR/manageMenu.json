@@ -170,7 +170,9 @@
     "saved": "✓ Spremljeno",
     "adding": "Dodavanje…",
     "add": "Dodaj artikl",
-    "noGroups": "Još nema grupa opcija – izradite ih u kartici Dodaci i dodatna ponuda."
+    "noGroups": "Još nema grupa opcija – izradite ih u kartici Dodaci i dodatna ponuda.",
+    "costToMake": "Trošak pripreme",
+    "costHelp": "Neobavezno. Koliko vas jedna porcija stoji u sastojcima i ambalaži. Koristi se samo u vašim izvještajima; kupci to nikad ne vide."
   },
   "summary": "{categories, plural, one {# kategorija} few {# kategorije} other {# kategorija}} · {items, plural, one {# artikl} few {# artikla} other {# artikala}}",
   "confirmDelete": {

@@ -222,5 +222,6 @@
   "paperwork_not_found": "Šio dokumento nebėra. Įkelkite puslapį iš naujo.",
   "paperwork_bad_details": "Kai kurie duomenys neteisingi. Patikrinkite juos ir bandykite dar kartą.",
   "paperwork_send_limit": "Per trumpą laiką išsiuntėte daug nuorodų. Bandykite dar kartą po valandos.",
-  "paperwork_send_failed": "Nepavyko išsiųsti el. laiško. Bandykite dar kartą."
+  "paperwork_send_failed": "Nepavyko išsiųsti el. laiško. Bandykite dar kartą.",
+  "cost_invalid": "Įveskite 0 arba didesnę savikainą arba palikite laukelį tuščią."
 }

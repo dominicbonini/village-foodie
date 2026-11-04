@@ -146,6 +146,9 @@
   "manageReports": {
     "csv": {
       "collectionTime": "Pickup time"
+    },
+    "accounts": {
+      "payAtTruck": "Pay at the truck"
     }
   },
   "manageSettings": {

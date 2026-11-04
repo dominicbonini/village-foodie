@@ -2916,7 +2916,9 @@
       "saved": "✓ Gespeichert",
       "adding": "Wird hinzugefügt…",
       "add": "Artikel hinzufügen",
-      "noGroups": "Noch keine Optionsgruppen – erstellen Sie sie unter Extras & Upselling."
+      "noGroups": "Noch keine Optionsgruppen – erstellen Sie sie unter Extras & Upselling.",
+      "costToMake": "Herstellungskosten",
+      "costHelp": "Optional. Was Sie eine Portion an Zutaten und Verpackung kostet. Wird nur in Ihren Berichten verwendet; Kunden sehen das nie."
     },
     "summary": "{categories, plural, one {# Kategorie} other {# Kategorien}} · {items, plural, one {# Artikel} other {# Artikel}}",
     "confirmDelete": {
@@ -3338,7 +3340,8 @@
     "paperwork_not_found": "Dieses Dokument ist nicht mehr vorhanden. Bitte laden Sie die Seite neu.",
     "paperwork_bad_details": "Einige Angaben sind nicht korrekt. Bitte prüfen Sie sie und versuchen Sie es erneut.",
     "paperwork_send_limit": "Sie haben in kurzer Zeit sehr viele Links gesendet. Bitte versuchen Sie es in einer Stunde erneut.",
-    "paperwork_send_failed": "Die E-Mail konnte nicht gesendet werden. Bitte versuchen Sie es erneut."
+    "paperwork_send_failed": "Die E-Mail konnte nicht gesendet werden. Bitte versuchen Sie es erneut.",
+    "cost_invalid": "Geben Sie Kosten von 0 oder mehr ein oder lassen Sie das Feld leer."
   },
   "tradeArea": {
     "country_missing": "Wählen Sie das Land, in dem Ihr Foodtruck ansässig ist.",
@@ -4091,6 +4094,68 @@
       "unknownCustomer": "Unbekannt",
       "customerOnline": "Kunde online",
       "placedByTruck": "Vom Foodtruck aufgegeben"
+    },
+    "presets": {
+      "label": "Zeitraum",
+      "custom": "Eigener Zeitraum",
+      "thisMonth": "Dieser Monat",
+      "lastMonth": "Letzter Monat",
+      "lastQuarter": "Letztes Quartal",
+      "lastTaxYear": "Letztes Steuerjahr"
+    },
+    "accounts": {
+      "title": "Für Ihre Buchhaltung",
+      "help": "Umsätze zählen am Tag des Events. Brutto ist, was Kunden bezahlt haben. Netto ist, was nach Erstattungen und Steuer übrig bleibt.",
+      "gross": "Bruttoumsatz",
+      "refunds": "Erstattungen",
+      "net": "Nettoumsatz",
+      "taxEstimated": "geschätzt anhand Ihres Steuersatzes",
+      "taxNone": "Für Ihren Foodtruck ist kein Steuersatz hinterlegt, daher wird hier keine Steuer berechnet.",
+      "byChannel": "Bruttoumsatz nach Kanal",
+      "byPayment": "Bruttoumsatz nach Zahlungsart",
+      "online": "Online",
+      "walkUp": "Vor Ort",
+      "cardOnline": "Karte online",
+      "payAtTruck": "Bezahlung bei Abholung",
+      "cost": "Kosten der verkauften Gerichte",
+      "profit": "Gewinn",
+      "coverage": "{total, plural, one {Kosten für {withCost} von # verkauften Gericht hinterlegt} other {Kosten für {withCost} von # verkauften Gerichten hinterlegt}}",
+      "partial": "Gerichte ohne Kosten fließen nicht in die Kosten ein, daher ist dieser Gewinn höher als in Wirklichkeit. Hinterlegen Sie für jedes Gericht Kosten im Tab „Speisekarte“.",
+      "noCosts": "Noch kein Gericht hat Kosten hinterlegt. Hinterlegen Sie im Tab „Speisekarte“ Kosten für Ihre Gerichte, um Ihren Gewinn zu sehen.",
+      "byEvent": "Nach Event",
+      "event": "Event",
+      "sales": "Nettoumsatz",
+      "eventNoProfit": "Ein Strich bedeutet, dass nicht für jedes dort verkaufte Gericht Kosten hinterlegt sind.",
+      "downloadOrders": "⬇ Bestellungen für Ihre Buchhaltung",
+      "downloadEvents": "⬇ Events für Ihre Buchhaltung",
+      "downloadHelp": "Zwei Tabellendateien: eine Zeile pro Bestellung und eine Zeile pro Event. Sie lassen sich in Excel, Numbers, Xero und QuickBooks öffnen."
+    },
+    "accountsCsv": {
+      "header": {
+        "date": "Datum",
+        "time": "Uhrzeit",
+        "orderNumber": "Bestellnummer",
+        "event": "Event",
+        "channel": "Kanal",
+        "paymentMethod": "Zahlungsart",
+        "currency": "Währung",
+        "gross": "Brutto",
+        "tax": "Steuer",
+        "taxBasis": "Steuergrundlage",
+        "net": "Netto",
+        "refunded": "Erstattet",
+        "cost": "Kosten",
+        "profit": "Gewinn",
+        "eventDate": "Eventdatum",
+        "orders": "Bestellungen",
+        "dishesSold": "Verkaufte Gerichte",
+        "dishesWithCost": "Gerichte mit Kosten"
+      },
+      "taxBasis": {
+        "stored": "mit der Bestellung gespeichert",
+        "estimated": "geschätzt anhand Ihres Steuersatzes",
+        "none": "kein Steuersatz hinterlegt"
+      }
     }
   },
   "socialPosts": {

@@ -170,7 +170,9 @@
     "saved": "✓ Saved",
     "adding": "Adding…",
     "add": "Add item",
-    "noGroups": "No option groups yet — create them in Extras & upsells."
+    "noGroups": "No option groups yet — create them in Extras & upsells.",
+    "costToMake": "Cost to make",
+    "costHelp": "Optional. What one portion costs you in ingredients and packaging. Used only in your reports; customers never see it."
   },
   "summary": "{categories, plural, one {# category} other {# categories}} · {items, plural, one {# item} other {# items}}",
   "confirmDelete": {

@@ -2916,7 +2916,9 @@
       "saved": "✓ Gemt",
       "adding": "Tilføjer…",
       "add": "Tilføj vare",
-      "noGroups": "Ingen grupper med valgmuligheder endnu — opret dem under Tilvalg og mersalg."
+      "noGroups": "Ingen grupper med valgmuligheder endnu — opret dem under Tilvalg og mersalg.",
+      "costToMake": "Kostpris",
+      "costHelp": "Valgfrit. Hvad én portion koster dig i råvarer og emballage. Bruges kun i dine rapporter; kunderne ser det aldrig."
     },
     "summary": "{categories, plural, one {# kategori} other {# kategorier}} · {items, plural, one {# vare} other {# varer}}",
     "confirmDelete": {
@@ -3338,7 +3340,8 @@
     "paperwork_not_found": "Det dokument findes ikke længere. Genindlæs siden.",
     "paperwork_bad_details": "Nogle af oplysningerne er ikke rigtige. Tjek dem, og prøv igen.",
     "paperwork_send_limit": "Du har sendt mange links på kort tid. Prøv igen om en time.",
-    "paperwork_send_failed": "E-mailen kunne ikke sendes. Prøv igen."
+    "paperwork_send_failed": "E-mailen kunne ikke sendes. Prøv igen.",
+    "cost_invalid": "Angiv en kostpris på 0 eller mere, eller lad feltet stå tomt."
   },
   "tradeArea": {
     "country_missing": "Vælg det land, din foodtruck har base i.",
@@ -4091,6 +4094,68 @@
       "unknownCustomer": "Ukendt",
       "customerOnline": "Kunde online",
       "placedByTruck": "Oprettet af foodtrucken"
+    },
+    "presets": {
+      "label": "Periode",
+      "custom": "Vælg datoer",
+      "thisMonth": "Denne måned",
+      "lastMonth": "Sidste måned",
+      "lastQuarter": "Sidste kvartal",
+      "lastTaxYear": "Sidste skatteår"
+    },
+    "accounts": {
+      "title": "Til din revisor",
+      "help": "Salg tælles på dagen for arrangementet. Brutto er det, kunderne har betalt. Netto er det, der er tilbage efter refunderinger og moms.",
+      "gross": "Bruttosalg",
+      "refunds": "Refunderinger",
+      "net": "Nettosalg",
+      "taxEstimated": "anslået ud fra din momssats",
+      "taxNone": "Der er ikke angivet en momssats for din foodtruck, så der beregnes ingen moms her.",
+      "byChannel": "Bruttosalg pr. kanal",
+      "byPayment": "Bruttosalg pr. betalingsmåde",
+      "online": "Online",
+      "walkUp": "I lugen",
+      "cardOnline": "Kort online",
+      "payAtTruck": "Betal ved afhentning",
+      "cost": "Kostpris for solgte retter",
+      "profit": "Fortjeneste",
+      "coverage": "{total, plural, one {Kostpris angivet for {withCost} af # solgt ret} other {Kostpris angivet for {withCost} af # solgte retter}}",
+      "partial": "Retter uden kostpris er ikke med i kostprisen, så fortjenesten her er højere, end den i virkeligheden er. Tilføj en kostpris til hver ret under Menukort.",
+      "noCosts": "Ingen retter har en kostpris endnu. Tilføj en kostpris til dine retter under Menukort for at se din fortjeneste.",
+      "byEvent": "Pr. arrangement",
+      "event": "Arrangement",
+      "sales": "Nettosalg",
+      "eventNoProfit": "En streg betyder, at ikke alle retter solgt der har en kostpris.",
+      "downloadOrders": "⬇ Bestillinger til din revisor",
+      "downloadEvents": "⬇ Arrangementer til din revisor",
+      "downloadHelp": "To regnearksfiler: én række for hver bestilling og én række for hvert arrangement. De kan åbnes i Excel, Numbers, Xero og QuickBooks."
+    },
+    "accountsCsv": {
+      "header": {
+        "date": "Dato",
+        "time": "Tidspunkt",
+        "orderNumber": "Ordrenummer",
+        "event": "Arrangement",
+        "channel": "Kanal",
+        "paymentMethod": "Betalingsmåde",
+        "currency": "Valuta",
+        "gross": "Brutto",
+        "tax": "Moms",
+        "taxBasis": "Momsberegning",
+        "net": "Netto",
+        "refunded": "Refunderet",
+        "cost": "Kostpris",
+        "profit": "Fortjeneste",
+        "eventDate": "Arrangementsdato",
+        "orders": "Bestillinger",
+        "dishesSold": "Solgte retter",
+        "dishesWithCost": "Retter med kostpris"
+      },
+      "taxBasis": {
+        "stored": "gemt med bestillingen",
+        "estimated": "anslået ud fra din momssats",
+        "none": "ingen momssats angivet"
+      }
     }
   },
   "socialPosts": {

@@ -222,5 +222,6 @@
   "paperwork_not_found": "Ese documento ya no existe. Vuelve a cargar la página.",
   "paperwork_bad_details": "Algunos datos no son correctos. Revísalos e inténtalo de nuevo.",
   "paperwork_send_limit": "Has enviado muchos enlaces en poco tiempo. Vuelve a intentarlo dentro de una hora.",
-  "paperwork_send_failed": "No se ha podido enviar el email. Inténtalo de nuevo."
+  "paperwork_send_failed": "No se ha podido enviar el email. Inténtalo de nuevo.",
+  "cost_invalid": "Introduce un coste de 0 o más, o deja la casilla vacía."
 }

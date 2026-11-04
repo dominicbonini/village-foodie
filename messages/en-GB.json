@@ -2916,7 +2916,9 @@
       "saved": "✓ Saved",
       "adding": "Adding…",
       "add": "Add item",
-      "noGroups": "No option groups yet — create them in Extras & upsells."
+      "noGroups": "No option groups yet — create them in Extras & upsells.",
+      "costToMake": "Cost to make",
+      "costHelp": "Optional. What one portion costs you in ingredients and packaging. Used only in your reports; customers never see it."
     },
     "summary": "{categories, plural, one {# category} other {# categories}} · {items, plural, one {# item} other {# items}}",
     "confirmDelete": {
@@ -3338,7 +3340,8 @@
     "paperwork_not_found": "That document isn’t there any more. Please reload the page.",
     "paperwork_bad_details": "Some of the details aren’t right. Please check them and try again.",
     "paperwork_send_limit": "You’ve sent a lot of links in a short time. Please try again in an hour.",
-    "paperwork_send_failed": "The email couldn’t be sent. Please try again."
+    "paperwork_send_failed": "The email couldn’t be sent. Please try again.",
+    "cost_invalid": "Enter a cost of 0 or more, or leave the box empty."
   },
   "tradeArea": {
     "country_missing": "Choose the country your truck is based in.",
@@ -4091,6 +4094,68 @@
       "unknownCustomer": "Unknown",
       "customerOnline": "Customer online",
       "placedByTruck": "Placed by truck"
+    },
+    "presets": {
+      "label": "Period",
+      "custom": "Custom dates",
+      "thisMonth": "This month",
+      "lastMonth": "Last month",
+      "lastQuarter": "Last quarter",
+      "lastTaxYear": "Last tax year"
+    },
+    "accounts": {
+      "title": "For your accountant",
+      "help": "Sales count on the day of the event. Gross is what customers paid. Net is what is left after refunds and tax.",
+      "gross": "Gross sales",
+      "refunds": "Refunds",
+      "net": "Net sales",
+      "taxEstimated": "estimated from your tax rate",
+      "taxNone": "No tax rate is set for your truck, so no tax is worked out here.",
+      "byChannel": "Gross sales by channel",
+      "byPayment": "Gross sales by payment",
+      "online": "Online",
+      "walkUp": "Walk-up",
+      "cardOnline": "Card online",
+      "payAtTruck": "Pay at Hatch",
+      "cost": "Cost of dishes sold",
+      "profit": "Profit",
+      "coverage": "{total, plural, one {Cost set for {withCost} of # dish sold} other {Cost set for {withCost} of # dishes sold}}",
+      "partial": "Dishes without a cost are left out of the cost, so this profit is higher than it really is. Add a cost to each dish in Menu.",
+      "noCosts": "No dish has a cost yet. Add a cost to your dishes in Menu to see your profit.",
+      "byEvent": "By event",
+      "event": "Event",
+      "sales": "Net sales",
+      "eventNoProfit": "A dash means not every dish sold there has a cost.",
+      "downloadOrders": "⬇ Orders for your accountant",
+      "downloadEvents": "⬇ Events for your accountant",
+      "downloadHelp": "Two spreadsheet files: one row for each order, and one row for each event. They open in Excel, Numbers, Xero and QuickBooks."
+    },
+    "accountsCsv": {
+      "header": {
+        "date": "Date",
+        "time": "Time",
+        "orderNumber": "Order number",
+        "event": "Event",
+        "channel": "Channel",
+        "paymentMethod": "Payment method",
+        "currency": "Currency",
+        "gross": "Gross",
+        "tax": "Tax",
+        "taxBasis": "Tax basis",
+        "net": "Net",
+        "refunded": "Refunded",
+        "cost": "Cost",
+        "profit": "Profit",
+        "eventDate": "Event date",
+        "orders": "Orders",
+        "dishesSold": "Dishes sold",
+        "dishesWithCost": "Dishes with a cost"
+      },
+      "taxBasis": {
+        "stored": "stored with the order",
+        "estimated": "estimated from your tax rate",
+        "none": "no tax rate set"
+      }
     }
   },
   "socialPosts": {

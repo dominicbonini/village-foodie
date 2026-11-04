@@ -170,7 +170,9 @@
     "saved": "✓ Gemt",
     "adding": "Tilføjer…",
     "add": "Tilføj vare",
-    "noGroups": "Ingen grupper med valgmuligheder endnu — opret dem under Tilvalg og mersalg."
+    "noGroups": "Ingen grupper med valgmuligheder endnu — opret dem under Tilvalg og mersalg.",
+    "costToMake": "Kostpris",
+    "costHelp": "Valgfrit. Hvad én portion koster dig i råvarer og emballage. Bruges kun i dine rapporter; kunderne ser det aldrig."
   },
   "summary": "{categories, plural, one {# kategori} other {# kategorier}} · {items, plural, one {# vare} other {# varer}}",
   "confirmDelete": {

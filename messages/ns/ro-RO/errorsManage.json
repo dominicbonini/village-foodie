@@ -222,5 +222,6 @@
   "paperwork_not_found": "Acest document nu mai există. Reîncărcați pagina.",
   "paperwork_bad_details": "Unele detalii nu sunt corecte. Verificați-le și încercați din nou.",
   "paperwork_send_limit": "Ați trimis multe linkuri într-un timp scurt. Încercați din nou peste o oră.",
-  "paperwork_send_failed": "E-mailul nu a putut fi trimis. Încercați din nou."
+  "paperwork_send_failed": "E-mailul nu a putut fi trimis. Încercați din nou.",
+  "cost_invalid": "Introduceți un cost de 0 sau mai mult ori lăsați câmpul gol."
 }

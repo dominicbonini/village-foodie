@@ -170,7 +170,9 @@
     "saved": "✓ Enregistré",
     "adding": "Ajout…",
     "add": "Ajouter l’article",
-    "noGroups": "Aucun groupe d’options pour l’instant : créez-en dans Suppléments et ventes additionnelles."
+    "noGroups": "Aucun groupe d’options pour l’instant : créez-en dans Suppléments et ventes additionnelles.",
+    "costToMake": "Coût de revient",
+    "costHelp": "Facultatif. Ce que vous coûte une portion en ingrédients et en emballage. Utilisé uniquement dans vos rapports ; les clients ne le voient jamais."
   },
   "summary": "{categories, plural, one {# catégorie} other {# catégories}} · {items, plural, one {# article} other {# articles}}",
   "confirmDelete": {

@@ -170,7 +170,9 @@
     "saved": "✓ Opgeslagen",
     "adding": "Toevoegen…",
     "add": "Item toevoegen",
-    "noGroups": "Nog geen optiegroepen — maak ze aan in Extra’s & upselling."
+    "noGroups": "Nog geen optiegroepen — maak ze aan in Extra’s & upselling.",
+    "costToMake": "Kostprijs",
+    "costHelp": "Optioneel. Wat één portie je kost aan ingrediënten en verpakking. Alleen gebruikt in je rapporten; klanten zien het nooit."
   },
   "summary": "{categories, plural, one {# categorie} other {# categorieën}} · {items, plural, one {# item} other {# items}}",
   "confirmDelete": {

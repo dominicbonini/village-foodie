@@ -222,5 +222,6 @@
   "paperwork_not_found": "Questo documento non esiste più. Ricarica la pagina.",
   "paperwork_bad_details": "Alcuni dati non sono corretti. Controllali e riprova.",
   "paperwork_send_limit": "Hai inviato molti link in poco tempo. Riprova tra un’ora.",
-  "paperwork_send_failed": "Non è stato possibile inviare l’email. Riprova."
+  "paperwork_send_failed": "Non è stato possibile inviare l’email. Riprova.",
+  "cost_invalid": "Inserisci un costo pari o superiore a 0, oppure lascia vuoto il campo."
 }

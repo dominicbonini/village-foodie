@@ -26,6 +26,8 @@
   },
   "item": {
     "createHint": "Completa los datos y luego agrega el producto.",
-    "allergenGateBody": "Abre el recuadro “Configurar / revisar alérgenos” en la pestaña Menú: el asistente te guía para confirmar cada platillo."
+    "allergenGateBody": "Abre el recuadro “Configurar / revisar alérgenos” en la pestaña Menú: el asistente te guía para confirmar cada platillo.",
+    "costToMake": "Costo de preparación",
+    "costHelp": "Opcional. Lo que te cuesta una porción en ingredientes y empaques. Solo se usa en tus reportes; los clientes nunca lo ven."
   }
 }

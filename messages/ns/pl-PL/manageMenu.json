@@ -170,7 +170,9 @@
     "saved": "✓ Zapisano",
     "adding": "Dodawanie…",
     "add": "Dodaj pozycję",
-    "noGroups": "Nie ma jeszcze grup opcji — utwórz je w zakładce Dodatki i dosprzedaż."
+    "noGroups": "Nie ma jeszcze grup opcji — utwórz je w zakładce Dodatki i dosprzedaż.",
+    "costToMake": "Koszt przygotowania",
+    "costHelp": "Opcjonalnie. Ile kosztuje cię jedna porcja w składnikach i opakowaniu. Używane tylko w twoich raportach; klienci nigdy tego nie widzą."
   },
   "summary": "{categories, plural, one {# kategoria} few {# kategorie} many {# kategorii} other {# kategorii}} · {items, plural, one {# pozycja} few {# pozycje} many {# pozycji} other {# pozycji}}",
   "confirmDelete": {

@@ -88,5 +88,67 @@
     "unknownCustomer": "Desconocido",
     "customerOnline": "Cliente online",
     "placedByTruck": "Hecho por el food truck"
+  },
+  "presets": {
+    "label": "Periodo",
+    "custom": "Fechas personalizadas",
+    "thisMonth": "Este mes",
+    "lastMonth": "El mes pasado",
+    "lastQuarter": "El trimestre pasado",
+    "lastTaxYear": "El último ejercicio fiscal"
+  },
+  "accounts": {
+    "title": "Para tu gestoría",
+    "help": "Las ventas cuentan el día del evento. El bruto es lo que pagaron los clientes. El neto es lo que queda tras los reembolsos y los impuestos.",
+    "gross": "Ventas brutas",
+    "refunds": "Reembolsos",
+    "net": "Ventas netas",
+    "taxEstimated": "estimado a partir de tu tipo de impuesto",
+    "taxNone": "Tu food truck no tiene un tipo de impuesto configurado, así que aquí no se calculan impuestos.",
+    "byChannel": "Ventas brutas por canal",
+    "byPayment": "Ventas brutas por forma de pago",
+    "online": "Online",
+    "walkUp": "En ventanilla",
+    "cardOnline": "Tarjeta online",
+    "payAtTruck": "Pago al recoger",
+    "cost": "Coste de los platos vendidos",
+    "profit": "Beneficio",
+    "coverage": "{total, plural, one {Coste indicado en {withCost} de # plato vendido} many {Coste indicado en {withCost} de # platos vendidos} other {Coste indicado en {withCost} de # platos vendidos}}",
+    "partial": "Los platos sin coste no se incluyen en el coste, así que este beneficio es mayor de lo que es en realidad. Añade un coste a cada plato en la pestaña Carta.",
+    "noCosts": "Aún no hay ningún plato con coste. Añade un coste a tus platos en la pestaña Carta para ver tu beneficio.",
+    "byEvent": "Por evento",
+    "event": "Evento",
+    "sales": "Ventas netas",
+    "eventNoProfit": "Un guion significa que no todos los platos vendidos allí tienen coste.",
+    "downloadOrders": "⬇ Pedidos para tu gestoría",
+    "downloadEvents": "⬇ Eventos para tu gestoría",
+    "downloadHelp": "Dos archivos de hoja de cálculo: una fila por pedido y una fila por evento. Se abren en Excel, Numbers, Xero y QuickBooks."
+  },
+  "accountsCsv": {
+    "header": {
+      "date": "Fecha",
+      "time": "Hora",
+      "orderNumber": "Número de pedido",
+      "event": "Evento",
+      "channel": "Canal",
+      "paymentMethod": "Forma de pago",
+      "currency": "Moneda",
+      "gross": "Bruto",
+      "tax": "Impuestos",
+      "taxBasis": "Cálculo de impuestos",
+      "net": "Neto",
+      "refunded": "Reembolsado",
+      "cost": "Coste",
+      "profit": "Beneficio",
+      "eventDate": "Fecha del evento",
+      "orders": "Pedidos",
+      "dishesSold": "Platos vendidos",
+      "dishesWithCost": "Platos con coste"
+    },
+    "taxBasis": {
+      "stored": "guardado con el pedido",
+      "estimated": "estimado a partir de tu tipo de impuesto",
+      "none": "sin tipo de impuesto configurado"
+    }
   }
 }

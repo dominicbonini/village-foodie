@@ -170,7 +170,9 @@
     "saved": "✓ Salvato",
     "adding": "Aggiunta…",
     "add": "Aggiungi prodotto",
-    "noGroups": "Ancora nessun gruppo di opzioni: creali in Extra e upselling."
+    "noGroups": "Ancora nessun gruppo di opzioni: creali in Extra e upselling.",
+    "costToMake": "Costo di produzione",
+    "costHelp": "Facoltativo. Quanto ti costa una porzione tra ingredienti e confezione. Usato solo nei tuoi report; i clienti non lo vedono mai."
   },
   "summary": "{categories, plural, one {# categoria} other {# categorie}} · {items, plural, one {# prodotto} other {# prodotti}}",
   "confirmDelete": {

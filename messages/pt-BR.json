@@ -2916,7 +2916,9 @@
       "saved": "✓ Salvo",
       "adding": "Adicionando…",
       "add": "Adicionar item",
-      "noGroups": "Nenhum grupo de opções ainda — crie em Complementos e sugestões."
+      "noGroups": "Nenhum grupo de opções ainda — crie em Complementos e sugestões.",
+      "costToMake": "Custo de preparo",
+      "costHelp": "Opcional. Quanto uma porção custa para você em ingredientes e embalagem. Usado só nos seus relatórios; os clientes nunca veem."
     },
     "summary": "{categories, plural, one {# categoria} other {# categorias}} · {items, plural, one {# item} other {# itens}}",
     "confirmDelete": {
@@ -3338,7 +3340,8 @@
     "paperwork_not_found": "Esse documento não existe mais. Recarregue a página.",
     "paperwork_bad_details": "Alguns dados não estão certos. Confira e tente de novo.",
     "paperwork_send_limit": "Você enviou muitos links em pouco tempo. Tente de novo daqui a uma hora.",
-    "paperwork_send_failed": "Não foi possível enviar o e-mail. Tente de novo."
+    "paperwork_send_failed": "Não foi possível enviar o e-mail. Tente de novo.",
+    "cost_invalid": "Informe um custo de 0 ou mais, ou deixe o campo em branco."
   },
   "tradeArea": {
     "country_missing": "Escolha o país onde fica seu food truck.",
@@ -4091,6 +4094,68 @@
       "unknownCustomer": "Desconhecido",
       "customerOnline": "Cliente online",
       "placedByTruck": "Feito pelo food truck"
+    },
+    "presets": {
+      "label": "Período",
+      "custom": "Datas personalizadas",
+      "thisMonth": "Este mês",
+      "lastMonth": "Mês passado",
+      "lastQuarter": "Último trimestre",
+      "lastTaxYear": "Último ano fiscal"
+    },
+    "accounts": {
+      "title": "Para o seu contador",
+      "help": "As vendas contam no dia do evento. Bruto é o que os clientes pagaram. Líquido é o que sobra depois dos reembolsos e dos tributos.",
+      "gross": "Vendas brutas",
+      "refunds": "Reembolsos",
+      "net": "Vendas líquidas",
+      "taxEstimated": "estimado pela sua alíquota",
+      "taxNone": "Seu food truck não tem alíquota de tributos definida, então nenhum tributo é calculado aqui.",
+      "byChannel": "Vendas brutas por canal",
+      "byPayment": "Vendas brutas por forma de pagamento",
+      "online": "Online",
+      "walkUp": "Presencial",
+      "cardOnline": "Cartão online",
+      "payAtTruck": "Pague na retirada",
+      "cost": "Custo dos pratos vendidos",
+      "profit": "Lucro",
+      "coverage": "{total, plural, one {Custo definido para {withCost} de # prato vendido} other {Custo definido para {withCost} de # pratos vendidos}}",
+      "partial": "Pratos sem custo ficam fora do custo, então este lucro aparece maior do que realmente é. Adicione um custo a cada prato em Cardápio.",
+      "noCosts": "Nenhum prato tem custo ainda. Adicione um custo aos seus pratos em Cardápio para ver seu lucro.",
+      "byEvent": "Por evento",
+      "event": "Evento",
+      "sales": "Vendas líquidas",
+      "eventNoProfit": "Um traço significa que nem todo prato vendido ali tem custo.",
+      "downloadOrders": "⬇ Pedidos para o seu contador",
+      "downloadEvents": "⬇ Eventos para o seu contador",
+      "downloadHelp": "Dois arquivos de planilha: uma linha para cada pedido e uma linha para cada evento. Eles abrem no Excel, Numbers, Xero e QuickBooks."
+    },
+    "accountsCsv": {
+      "header": {
+        "date": "Data",
+        "time": "Horário",
+        "orderNumber": "Número do pedido",
+        "event": "Evento",
+        "channel": "Canal",
+        "paymentMethod": "Forma de pagamento",
+        "currency": "Moeda",
+        "gross": "Bruto",
+        "tax": "Tributos",
+        "taxBasis": "Origem dos tributos",
+        "net": "Líquido",
+        "refunded": "Reembolsado",
+        "cost": "Custo",
+        "profit": "Lucro",
+        "eventDate": "Data do evento",
+        "orders": "Pedidos",
+        "dishesSold": "Pratos vendidos",
+        "dishesWithCost": "Pratos com custo"
+      },
+      "taxBasis": {
+        "stored": "registrado com o pedido",
+        "estimated": "estimado pela sua alíquota",
+        "none": "sem alíquota definida"
+      }
     }
   },
   "socialPosts": {

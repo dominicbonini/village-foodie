@@ -222,5 +222,6 @@
   "paperwork_not_found": "Tego dokumentu już nie ma. Odśwież stronę.",
   "paperwork_bad_details": "Niektóre dane są nieprawidłowe. Sprawdź je i spróbuj ponownie.",
   "paperwork_send_limit": "W krótkim czasie wysłano wiele linków. Spróbuj ponownie za godzinę.",
-  "paperwork_send_failed": "Nie udało się wysłać e-maila. Spróbuj ponownie."
+  "paperwork_send_failed": "Nie udało się wysłać e-maila. Spróbuj ponownie.",
+  "cost_invalid": "Wpisz koszt równy 0 lub wyższy albo zostaw pole puste."
 }

@@ -491,6 +491,23 @@ const NAMED = [
       views: id => /^shell\/(GB|US)\|/.test(id),
       expect: b => mapStrings(b, x => require('./_lp-paperwork-1.cjs').tabBar(x)) },
   ] : []),
+  // ── ⚠️ RE-PINNED (costs-accounts-1, 4 November 2026, docs/costs-accounts-1-report.md) ──────────────────────────────────────────
+  //    Reports shows the period picker beside the date range (phone and desktop toolbars), and Manage hands MenuTab `canSeeCosts`
+  //    (owners and managers see the item editor's "Cost to make"). PRECISE (scripts/_lp-costs-accounts-1.cjs).
+  ...(require('./_lp-costs-accounts-1.cjs').LANDED ? [
+    { id: 'costs-accounts-1-presets', country: 'both', agent: 'costs-accounts-1 (4 Nov 2026)',
+      what: '⚠️ RE-PINNED (costs-accounts-1, 4 November 2026): Reports\' date-range toolbars gain the period picker (Custom dates selected; This month, Last month, Last quarter, Last tax year) before the two date boxes, on the phone and the desktop. PRECISE: the one select in each place.',
+      views: id => /^reports\/(GB|US)\|tab\|/.test(id),
+      expect: b => mapStrings(b, x => require('./_lp-costs-accounts-1.cjs').presetPicker(x)) },
+    { id: 'costs-accounts-1-menu-prop', country: 'both', agent: 'costs-accounts-1 (4 Nov 2026)',
+      what: '⚠️ RE-PINNED (costs-accounts-1, 4 November 2026): Manage hands MenuTab `canSeeCosts` (true for an owner or manager) after onVerifySuccess. The shell stubs the tab, so its props record the new one. PRECISE.',
+      views: id => /^shell\/(GB|US)\|/.test(id),
+      expect: b => mapStrings(b, x => stProps(x, 'MenuTab', require('./_lp-costs-accounts-1.cjs').menuProp)) },
+    { id: 'costs-accounts-1-report-accounts', country: 'both', agent: 'costs-accounts-1 (4 Nov 2026)',
+      what: '⚠️ RE-PINNED (costs-accounts-1, 4 November 2026): get_report\'s answer gains `report.accounts` (one row per order, for the "For your accountant" card; owners and managers). STRUCTURAL: with exactly that key taken out, F equals the expected answer byte for byte, and its rows are a list.',
+      views: id => /^api\/(GB|US)\|manage\|report\./.test(id),
+      proveWith: (exp, f) => require('./_lp-costs-accounts-1.cjs').proveReportAccounts(exp, f) },
+  ] : []),
   { id: 'seo-s7-badges-lazy', country: 'both', agent: 'seo-fixes (20 Oct 2026)', smokeOnly: true,
     what: '⚠️ RE-PINNED (seo-fixes S7, 20 October 2026): Manage › Settings — the App Store / Google Play badges load lazily: loading="lazy" on both <img>s (after height), their two <link rel="preload" as="image"> gone. PRECISE, GB and US.',
     views: id => /^smoke-settings\/(GB|US)\|[^|]+\|page$/.test(id),

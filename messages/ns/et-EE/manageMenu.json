@@ -170,7 +170,9 @@
     "saved": "✓ Salvestatud",
     "adding": "Lisan…",
     "add": "Lisa toode",
-    "noGroups": "Valikugruppe veel pole — loo need jaotises Lisad ja lisamüük."
+    "noGroups": "Valikugruppe veel pole — loo need jaotises Lisad ja lisamüük.",
+    "costToMake": "Valmistamise kulu",
+    "costHelp": "Valikuline. Kui palju üks portsjon sulle koostisosade ja pakendi peale maksma läheb. Kasutatakse ainult sinu aruannetes; kliendid ei näe seda kunagi."
   },
   "summary": "{categories, plural, one {# kategooria} other {# kategooriat}} · {items, plural, one {# toode} other {# toodet}}",
   "confirmDelete": {

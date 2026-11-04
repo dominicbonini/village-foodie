@@ -170,7 +170,9 @@
     "saved": "✓ Salvo",
     "adding": "Adicionando…",
     "add": "Adicionar item",
-    "noGroups": "Nenhum grupo de opções ainda — crie em Complementos e sugestões."
+    "noGroups": "Nenhum grupo de opções ainda — crie em Complementos e sugestões.",
+    "costToMake": "Custo de preparo",
+    "costHelp": "Opcional. Quanto uma porção custa para você em ingredientes e embalagem. Usado só nos seus relatórios; os clientes nunca veem."
   },
   "summary": "{categories, plural, one {# categoria} other {# categorias}} · {items, plural, one {# item} other {# itens}}",
   "confirmDelete": {

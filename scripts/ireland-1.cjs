@@ -168,7 +168,9 @@ const ROWS = { ieOn: () => [LP1E.GB(), LP1E.US_ON(), IE(true)], ieOff: () => [LP
   const leaves = (o, p = '') => Object.entries(o).flatMap(([k, v]) => (v && typeof v === 'object' ? leaves(v, p + k + '.') : [p + k]))
   // ⚠️ RE-PINNED (anz-1, 21 October 2026): + the two approved "Pay at the truck" words (planFeatures.priceWord.payAtHatch,
   // planPrompt.features.online_ordering_pay_at_hatch.name) — en-GB alone keeps "Pay at Hatch"; scripts/anz-1.cjs §4 holds their text.
-  t('messages/en-IE.json holds exactly six keys (ireland-1\'s four + anz-1\'s two "Pay at the truck" words)', JSON.stringify(leaves(ieFile).sort()) === JSON.stringify(['compare.fee.fixedAria', 'landing.jsonLd.description', 'landing.meta.description', 'planFeatures.priceWord.payAtHatch', 'planPrompt.features.online_ordering_pay_at_hatch.name', 'pricing.footnote']), leaves(ieFile))
+  // ⚠️ RE-PINNED (costs-accounts-1, 4 November 2026): and Reports' "Pay at the truck" payment word (manageReports.accounts.payAtTruck;
+  // en-GB "Pay at Hatch", 35.ak-5) — seven keys.
+  t('messages/en-IE.json holds exactly seven keys (ireland-1\'s four + anz-1\'s two "Pay at the truck" words + costs-accounts-1\'s one)', JSON.stringify(leaves(ieFile).sort()) === JSON.stringify(['compare.fee.fixedAria', 'landing.jsonLd.description', 'landing.meta.description', 'manageReports.accounts.payAtTruck', 'planFeatures.priceWord.payAtHatch', 'planPrompt.features.online_ordering_pay_at_hatch.name', 'pricing.footnote']) && ieFile.manageReports.accounts.payAtTruck === 'Pay at the truck', leaves(ieFile))
   t('sign-up refusals are name-free ("Trucks in that country can’t sign up yet." / "… for that country.")',
     tr('en-GB', 'tradeArea')('country_off', { country: 'United States' }) === 'Trucks in that country can’t sign up yet. Choose another country.'
     && tr('en-GB', 'tradeArea')('zone_unknown', { country: 'United Kingdom' }) === 'That time zone isn’t one we offer for that country. Choose one from the list.')

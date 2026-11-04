@@ -170,7 +170,9 @@
     "saved": "✓ Išsaugota",
     "adding": "Pridedama…",
     "add": "Pridėti patiekalą",
-    "noGroups": "Parinkčių grupių dar nėra — sukurkite jas skiltyje „Priedai ir papildomi pasiūlymai“."
+    "noGroups": "Parinkčių grupių dar nėra — sukurkite jas skiltyje „Priedai ir papildomi pasiūlymai“.",
+    "costToMake": "Gamybos savikaina",
+    "costHelp": "Neprivaloma. Kiek jums kainuoja viena porcija: ingredientai ir pakuotė. Naudojama tik jūsų ataskaitose; klientai jos niekada nemato."
   },
   "summary": "{categories, plural, one {# kategorija} few {# kategorijos} many {# kategorijų} other {# kategorijų}} · {items, plural, one {# patiekalas} few {# patiekalai} many {# patiekalų} other {# patiekalų}}",
   "confirmDelete": {

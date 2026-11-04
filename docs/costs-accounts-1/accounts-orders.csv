@@ -1,0 +1,9 @@
+﻿Date,Time,Order number,Event,Channel,Payment method,Currency,Gross,Tax,Tax basis,Net,Refunded,Cost,Profit
+2026-10-17,12:11,1,"The Green, Testville",Online,Card online,GBP,28.50,0.00,no tax rate set,28.50,0.00,7.30,21.20
+2026-10-17,13:12,2,"The Green, Testville",Online,Card online,GBP,12.00,0.00,no tax rate set,12.00,0.00,3.20,8.80
+2026-10-17,14:13,3,"The Green, Testville",Walk-up,Walk-up,GBP,17.00,0.00,no tax rate set,17.00,0.00,,
+2026-10-17,15:14,4,"The Green, Testville",Online,Pay at Hatch,GBP,9.00,0.00,no tax rate set,9.00,0.00,1.80,7.20
+2026-10-24,16:15,5,"Market Square, Ely",Online,Pay at Hatch,GBP,36.00,0.00,no tax rate set,36.00,0.00,9.60,26.40
+2026-10-24,17:10,6,"Market Square, Ely",Walk-up,Walk-up,GBP,16.50,0.00,no tax rate set,16.50,0.00,4.10,12.40
+2026-10-24,18:11,7,"Market Square, Ely",Online,Pay at Hatch,GBP,10.00,0.00,no tax rate set,10.00,0.00,,
+2026-10-24,19:12,8,"Market Square, Ely",Online,Card online,GBP,12.00,0.00,no tax rate set,0.00,12.00,0.00,0.00

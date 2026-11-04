@@ -170,7 +170,9 @@
     "saved": "✓ Guardado",
     "adding": "A adicionar…",
     "add": "Adicionar artigo",
-    "noGroups": "Ainda não há grupos de opções — crie-os em Extras e vendas adicionais."
+    "noGroups": "Ainda não há grupos de opções — crie-os em Extras e vendas adicionais.",
+    "costToMake": "Custo de produção",
+    "costHelp": "Opcional. Quanto lhe custa uma dose em ingredientes e embalagem. Usado apenas nos seus relatórios; os clientes nunca o veem."
   },
   "summary": "{categories, plural, one {# categoria} other {# categorias}} · {items, plural, one {# artigo} other {# artigos}}",
   "confirmDelete": {

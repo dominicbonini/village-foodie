@@ -170,7 +170,9 @@
     "saved": "✓ Salvat",
     "adding": "Se adaugă…",
     "add": "Adăugați produsul",
-    "noGroups": "Niciun grup de opțiuni încă — creați-le în Extra și sugestii."
+    "noGroups": "Niciun grup de opțiuni încă — creați-le în Extra și sugestii.",
+    "costToMake": "Cost de preparare",
+    "costHelp": "Opțional. Cât vă costă o porție în ingrediente și ambalaj. Se folosește doar în rapoartele dumneavoastră; clienții nu îl văd niciodată."
   },
   "summary": "{categories, plural, one {# categorie} few {# categorii} other {# de categorii}} · {items, plural, one {# produs} few {# produse} other {# de produse}}",
   "confirmDelete": {

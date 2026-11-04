@@ -1,9 +1,9 @@
-# Language Phase 1d Part 2 — every in-scope US view that differs from BEFORE (826471a) (846 US views; 543 changed). Written by scripts/language-phase-1d2.cjs.
+# Language Phase 1d Part 2 — every in-scope US view that differs from BEFORE (826471a) (846 US views; 552 changed). Written by scripts/language-phase-1d2.cjs.
 # view id	why (code: named difference 1 / a named code change; words: the en-US words and moved messages)
 shell/US|shell|loading	words
 shell/US|shell|invalidToken	code: pricing-b-first-load-line
 shell/US|shell|noCountrySettings	words
-shell/US|shell|tab|menu	code: paperwork-1-tab + words
+shell/US|shell|tab|menu	code: paperwork-1-tab+costs-accounts-1-menu-prop + words
 shell/US|shell|tab|schedule	code: paperwork-1-tab + words
 shell/US|shell|tab|social	code: paperwork-1-tab + words
 shell/US|shell|tab|reports	code: paperwork-1-tab + words
@@ -38,7 +38,7 @@ shell/US|shell|notice|missing1	code: paperwork-1-tab + words
 shell/US|shell|notice|missingAll	code: paperwork-1-tab + words
 shell/US|shell|notice|stale	code: us-layout-fix-1-nbsp+paperwork-1-tab + words
 shell/US|shell|notice|staleNoTime	code: paperwork-1-tab + words
-shell/US|shell|notices|all|menu	code: us-layout-fix-1-nbsp+paperwork-1-tab + words
+shell/US|shell|notices|all|menu	code: us-layout-fix-1-nbsp+paperwork-1-tab+costs-accounts-1-menu-prop + words
 shell/US|shell|notices|all|schedule	code: us-layout-fix-1-nbsp+paperwork-1-tab + words
 shell/US|shell|notices|all|social	code: us-layout-fix-1-nbsp+paperwork-1-tab + words
 shell/US|shell|notices|all|reports	code: us-layout-fix-1-nbsp+paperwork-1-tab + words
@@ -50,7 +50,7 @@ shell/US|shell|trialPopup|undated	code: paperwork-1-tab + words
 shell/US|shell|trialPopup|ios	code: paperwork-1-tab + words
 shell/US|shell|profileModal	code: paperwork-1-tab + words
 shell/US|shell|profileModal|saving	code: paperwork-1-tab + words
-shell/US|shell|walkthrough	code: paperwork-1-tab + words
+shell/US|shell|walkthrough	code: paperwork-1-tab+costs-accounts-1-menu-prop + words
 shell/US|shell|toasts	code: paperwork-1-tab + words
 shell/US|billing|trial	code: 1d2-billing-plan-header+1e-us-billing-footnote-dates+plans-billing-plan-card + words
 shell/US|billing|trial|notStarted	code: 1d2-billing-plan-header+1e-us-billing-footnote-dates+plans-billing-plan-card
@@ -99,23 +99,28 @@ shell/US|team|pending	words
 shell/US|team|pending|resending	words
 shell/US|team|pending|cancelling	words
 shell/US|team|handler|cancelChange|ok	words
-reports/US|tab|initialStarter	code: plans-every-plan-every-feature-2
-reports/US|tab|range|orders	code: us-layout-fix-1-nbsp + words
-reports/US|tab|range|items	code: us-layout-fix-1-nbsp + words
-reports/US|tab|range|expanded	code: us-layout-fix-1-nbsp + words
+reports/US|tab|initial	code: costs-accounts-1-presets
+reports/US|tab|initialStarter	code: plans-every-plan-every-feature-2+costs-accounts-1-presets
+reports/US|tab|loading	code: costs-accounts-1-presets
+reports/US|tab|empty	code: costs-accounts-1-presets
+reports/US|tab|range|orders	code: us-layout-fix-1-nbsp+costs-accounts-1-presets + words
+reports/US|tab|range|items	code: us-layout-fix-1-nbsp+costs-accounts-1-presets + words
+reports/US|tab|range|expanded	code: us-layout-fix-1-nbsp+costs-accounts-1-presets + words
 reports/US|tab|range|starter	code: us-layout-fix-1-nbsp+plans-starter-twin + words
 reports/US|tab|event|orders	code: us-layout-fix-1-nbsp + words
 reports/US|tab|event|items	code: us-layout-fix-1-nbsp + words
 reports/US|tab|event|noVenue	code: us-layout-fix-1-nbsp + words
-reports/US|tab|single	code: us-layout-fix-1-nbsp + words
-reports/US|tab|otherOnly	code: us-layout-fix-1-nbsp
+reports/US|tab|single	code: us-layout-fix-1-nbsp+costs-accounts-1-presets + words
+reports/US|tab|otherOnly	code: us-layout-fix-1-nbsp+costs-accounts-1-presets
+reports/US|tab|whatsappOnly	code: costs-accounts-1-presets
 reports/US|tab|vans|all	code: 1d2-us-reports-van-label + words
 reports/US|tab|vans|van1	code: 1d2-us-reports-van-label + words
 reports/US|tab|vans|cafe	code: 1d2-us-reports-van-label + words
 reports/US|tab|vans|unassigned	code: 1d2-us-reports-van-label + words
+reports/US|tab|vans|deletedVan	code: 1d2-us-reports-van-label
 reports/US|tab|vans|oneVan	code: 1d2-us-reports-van-label + words
-reports/US|tab|extras|orders	code: us-layout-fix-1-nbsp + words
-reports/US|tab|extras|items	code: us-layout-fix-1-nbsp + words
+reports/US|tab|extras|orders	code: us-layout-fix-1-nbsp+costs-accounts-1-presets + words
+reports/US|tab|extras|items	code: us-layout-fix-1-nbsp+costs-accounts-1-presets + words
 reports/US|csv|orders|range	code: us-layout-fix-1-nbsp + words
 reports/US|csv|items|range	code: us-layout-fix-1-nbsp + words
 reports/US|csv|orders|event	code: us-layout-fix-1-nbsp + words
@@ -409,6 +414,10 @@ api/US|manage|invite.ok.managerByOwner	words
 api/US|manage|invite.ok.existingAccount	words
 api/US|manage|invite.ok.mailRefused	words
 api/US|manage|removeTeam.managerOnManager	code: named difference 1 (managers_remove_staff_only)
+api/US|manage|report.range	code: costs-accounts-1-report-accounts
+api/US|manage|report.oneDay	code: costs-accounts-1-report-accounts
+api/US|manage|report.event	code: costs-accounts-1-report-accounts
+api/US|manage|report.today	code: costs-accounts-1-report-accounts
 api/US|manage|usualType.notOnPlan	code: named difference 1 (feature_switched_off)
 api/US|manage|usualType.noPlace	code: named difference 1 (sg_place_id_required)
 api/US|manage|usualType.migration	code: named difference 1 (sg_usual_type_migration)

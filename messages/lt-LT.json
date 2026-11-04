@@ -2916,7 +2916,9 @@
       "saved": "✓ Išsaugota",
       "adding": "Pridedama…",
       "add": "Pridėti patiekalą",
-      "noGroups": "Parinkčių grupių dar nėra — sukurkite jas skiltyje „Priedai ir papildomi pasiūlymai“."
+      "noGroups": "Parinkčių grupių dar nėra — sukurkite jas skiltyje „Priedai ir papildomi pasiūlymai“.",
+      "costToMake": "Gamybos savikaina",
+      "costHelp": "Neprivaloma. Kiek jums kainuoja viena porcija: ingredientai ir pakuotė. Naudojama tik jūsų ataskaitose; klientai jos niekada nemato."
     },
     "summary": "{categories, plural, one {# kategorija} few {# kategorijos} many {# kategorijų} other {# kategorijų}} · {items, plural, one {# patiekalas} few {# patiekalai} many {# patiekalų} other {# patiekalų}}",
     "confirmDelete": {
@@ -3338,7 +3340,8 @@
     "paperwork_not_found": "Šio dokumento nebėra. Įkelkite puslapį iš naujo.",
     "paperwork_bad_details": "Kai kurie duomenys neteisingi. Patikrinkite juos ir bandykite dar kartą.",
     "paperwork_send_limit": "Per trumpą laiką išsiuntėte daug nuorodų. Bandykite dar kartą po valandos.",
-    "paperwork_send_failed": "Nepavyko išsiųsti el. laiško. Bandykite dar kartą."
+    "paperwork_send_failed": "Nepavyko išsiųsti el. laiško. Bandykite dar kartą.",
+    "cost_invalid": "Įveskite 0 arba didesnę savikainą arba palikite laukelį tuščią."
   },
   "tradeArea": {
     "country_missing": "Pasirinkite šalį, kurioje įsikūręs jūsų food truck.",
@@ -4091,6 +4094,68 @@
       "unknownCustomer": "Nežinomas",
       "customerOnline": "Klientas internetu",
       "placedByTruck": "Pateikė food truck"
+    },
+    "presets": {
+      "label": "Laikotarpis",
+      "custom": "Pasirinktos datos",
+      "thisMonth": "Šis mėnuo",
+      "lastMonth": "Praėjęs mėnuo",
+      "lastQuarter": "Praėjęs ketvirtis",
+      "lastTaxYear": "Praėję mokestiniai metai"
+    },
+    "accounts": {
+      "title": "Jūsų buhalteriui",
+      "help": "Pardavimai skaičiuojami renginio dieną. Bruto – tai, ką sumokėjo klientai. Neto – tai, kas lieka atėmus grąžinimus ir mokesčius.",
+      "gross": "Bruto pardavimai",
+      "refunds": "Grąžinimai",
+      "net": "Neto pardavimai",
+      "taxEstimated": "apskaičiuota pagal jūsų mokesčio tarifą",
+      "taxNone": "Jūsų maisto furgonui nenustatytas mokesčio tarifas, todėl mokesčiai čia neskaičiuojami.",
+      "byChannel": "Bruto pardavimai pagal kanalą",
+      "byPayment": "Bruto pardavimai pagal mokėjimo būdą",
+      "online": "Internetu",
+      "walkUp": "Vietoje",
+      "cardOnline": "Kortele internetu",
+      "payAtTruck": "Mokėjimas atsiimant",
+      "cost": "Parduotų patiekalų savikaina",
+      "profit": "Pelnas",
+      "coverage": "{total, plural, one {Savikaina nustatyta {withCost} iš # parduoto patiekalo} few {Savikaina nustatyta {withCost} iš # parduotų patiekalų} many {Savikaina nustatyta {withCost} iš # parduoto patiekalo} other {Savikaina nustatyta {withCost} iš # parduotų patiekalų}}",
+      "partial": "Patiekalai be savikainos neįtraukiami į savikainą, todėl šis pelnas didesnis, nei yra iš tikrųjų. Pridėkite savikainą kiekvienam patiekalui skiltyje Meniu.",
+      "noCosts": "Nė vienas patiekalas dar neturi savikainos. Pridėkite savikainą savo patiekalams skiltyje Meniu, kad matytumėte savo pelną.",
+      "byEvent": "Pagal renginį",
+      "event": "Renginys",
+      "sales": "Neto pardavimai",
+      "eventNoProfit": "Brūkšnys reiškia, kad ne visiems ten parduotiems patiekalams nustatyta savikaina.",
+      "downloadOrders": "⬇ Užsakymai jūsų buhalteriui",
+      "downloadEvents": "⬇ Renginiai jūsų buhalteriui",
+      "downloadHelp": "Du skaičiuoklės failai: viena eilutė kiekvienam užsakymui ir viena eilutė kiekvienam renginiui. Juos galima atidaryti programose Excel, Numbers, Xero ir QuickBooks."
+    },
+    "accountsCsv": {
+      "header": {
+        "date": "Data",
+        "time": "Laikas",
+        "orderNumber": "Užsakymo numeris",
+        "event": "Renginys",
+        "channel": "Kanalas",
+        "paymentMethod": "Mokėjimo būdas",
+        "currency": "Valiuta",
+        "gross": "Bruto",
+        "tax": "Mokesčiai",
+        "taxBasis": "Mokesčio šaltinis",
+        "net": "Neto",
+        "refunded": "Grąžinta",
+        "cost": "Savikaina",
+        "profit": "Pelnas",
+        "eventDate": "Renginio data",
+        "orders": "Užsakymai",
+        "dishesSold": "Parduoti patiekalai",
+        "dishesWithCost": "Patiekalai su savikaina"
+      },
+      "taxBasis": {
+        "stored": "išsaugota su užsakymu",
+        "estimated": "apskaičiuota pagal jūsų mokesčio tarifą",
+        "none": "mokesčio tarifas nenustatytas"
+      }
     }
   },
   "socialPosts": {

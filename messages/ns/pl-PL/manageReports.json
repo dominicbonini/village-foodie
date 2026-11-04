@@ -88,5 +88,67 @@
     "unknownCustomer": "Nieznany",
     "customerOnline": "Klient online",
     "placedByTruck": "Złożone przez food truck"
+  },
+  "presets": {
+    "label": "Okres",
+    "custom": "Własne daty",
+    "thisMonth": "Ten miesiąc",
+    "lastMonth": "Poprzedni miesiąc",
+    "lastQuarter": "Poprzedni kwartał",
+    "lastTaxYear": "Poprzedni rok podatkowy"
+  },
+  "accounts": {
+    "title": "Dla księgowości",
+    "help": "Sprzedaż liczy się w dniu wydarzenia. Brutto to kwota zapłacona przez klientów. Netto to kwota, która zostaje po zwrotach i podatku.",
+    "gross": "Sprzedaż brutto",
+    "refunds": "Zwroty",
+    "net": "Sprzedaż netto",
+    "taxEstimated": "szacowany na podstawie twojej stawki podatku",
+    "taxNone": "Twój food truck nie ma ustawionej stawki podatku, więc podatek nie jest tu liczony.",
+    "byChannel": "Sprzedaż brutto wg kanału",
+    "byPayment": "Sprzedaż brutto wg płatności",
+    "online": "Online",
+    "walkUp": "Na miejscu",
+    "cardOnline": "Karta online",
+    "payAtTruck": "Płatność przy odbiorze",
+    "cost": "Koszt sprzedanych dań",
+    "profit": "Zysk",
+    "coverage": "{total, plural, one {Koszt podany dla {withCost} z # sprzedanego dania} few {Koszt podany dla {withCost} z # sprzedanych dań} many {Koszt podany dla {withCost} z # sprzedanych dań} other {Koszt podany dla {withCost} z # sprzedanego dania}}",
+    "partial": "Dania bez podanego kosztu nie są wliczane do kosztów, więc ten zysk jest wyższy niż w rzeczywistości. Dodaj koszt do każdego dania w zakładce Menu.",
+    "noCosts": "Żadne danie nie ma jeszcze podanego kosztu. Dodaj koszty do dań w zakładce Menu, aby zobaczyć zysk.",
+    "byEvent": "Według wydarzeń",
+    "event": "Wydarzenie",
+    "sales": "Sprzedaż netto",
+    "eventNoProfit": "Kreska oznacza, że nie wszystkie sprzedane tam dania mają podany koszt.",
+    "downloadOrders": "⬇ Zamówienia dla księgowości",
+    "downloadEvents": "⬇ Wydarzenia dla księgowości",
+    "downloadHelp": "Dwa pliki arkusza kalkulacyjnego: jeden wiersz na każde zamówienie i jeden wiersz na każde wydarzenie. Otworzysz je w programach Excel, Numbers, Xero i QuickBooks."
+  },
+  "accountsCsv": {
+    "header": {
+      "date": "Data",
+      "time": "Godzina",
+      "orderNumber": "Numer zamówienia",
+      "event": "Wydarzenie",
+      "channel": "Kanał",
+      "paymentMethod": "Metoda płatności",
+      "currency": "Waluta",
+      "gross": "Brutto",
+      "tax": "Podatek",
+      "taxBasis": "Sposób liczenia podatku",
+      "net": "Netto",
+      "refunded": "Zwrócono",
+      "cost": "Koszt",
+      "profit": "Zysk",
+      "eventDate": "Data wydarzenia",
+      "orders": "Zamówienia",
+      "dishesSold": "Sprzedane dania",
+      "dishesWithCost": "Dania z kosztem"
+    },
+    "taxBasis": {
+      "stored": "zapisany z zamówieniem",
+      "estimated": "szacowany na podstawie twojej stawki podatku",
+      "none": "brak ustawionej stawki podatku"
+    }
   }
 }

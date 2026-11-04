@@ -170,7 +170,9 @@
     "saved": "✓ Guardado",
     "adding": "Añadiendo…",
     "add": "Añadir producto",
-    "noGroups": "Aún no hay grupos de opciones: créalos en Extras y ventas sugeridas."
+    "noGroups": "Aún no hay grupos de opciones: créalos en Extras y ventas sugeridas.",
+    "costToMake": "Coste de elaboración",
+    "costHelp": "Opcional. Lo que te cuesta una ración en ingredientes y envases. Solo se usa en tus informes; los clientes nunca lo ven."
   },
   "summary": "{categories, plural, one {# categoría} other {# categorías}} · {items, plural, one {# producto} other {# productos}}",
   "confirmDelete": {

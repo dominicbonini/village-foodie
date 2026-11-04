@@ -2307,6 +2307,17 @@ function runWiringSuite(lib) {
      * ⚠️ ADDING AN ENTRY IS THE EXPENSIVE WAY TO SILENCE THIS GUARD, DELIBERATELY. The cheap way is
      * to leave the line alone. */
     const movedEdits = [
+      // ⚠️ RE-PINNED (costs-accounts-1, 4 November 2026): MenuTab gained `canSeeCosts` (owners and managers see the item editor's
+      // "Cost to make"; staff never do) — its signature and its one mount, scripts/costs-accounts-1.cjs §9. Each is excused only while
+      // the line it became is in the page. (The baseline lines are taken from 719ac91 as the harness reads it.)
+      { was: "function MenuTab({ truck, categories, items, subcategories, token, modifierGroups, modifierOptions, itemModGroups, setItemModGroups, api, reload, showToast, allergenWizardOpen, onCloseAllergenWizard, onOpenAllergenWizard, canEditAllergens, onWalkthroughChoice, onVerifySuccess }: {",
+        reason: 'costs-accounts-1: MenuTab takes canSeeCosts', exact: true,
+        nowIn: 'app/manage/[token]/page.tsx',
+        now: "function MenuTab({ truck, categories, items, subcategories, token, modifierGroups, modifierOptions, itemModGroups, setItemModGroups, api, reload, showToast, allergenWizardOpen, onCloseAllergenWizard, onOpenAllergenWizard, canEditAllergens, onWalkthroughChoice, onVerifySuccess, canSeeCosts = false }: {" },
+      { was: "{activeTab === 'menu' && menuSection === 'items' && <MenuTab      truck={truck} categories={categories} items={items} subcategories={subcategories} token={token} modifierGroups={modifierGroups} modifierOptions={modifierOptions} itemModGroups={itemModGroups} setItemModGroups={setItemModGroups} api={api} reload={refresh} showToast={showToast} allergenWizardOpen={allergenWizardOpen} onCloseAllergenWizard={() => { setAllergenWizardOpen(false); refresh() }} onOpenAllergenWizard={() => setAllergenWizardOpen(true)} canEditAllergens={userRole === 'owner' || isAdmin} onWalkthroughChoice={handleWalkthroughChoice} onVerifySuccess={handleVerifiedEvents} />}",
+        reason: "costs-accounts-1: …and the Menu tab's mount passes canSeeCosts={userRole !== 'staff'}", exact: true,
+        nowIn: 'app/manage/[token]/page.tsx',
+        now: "{activeTab === 'menu' && menuSection === 'items' && <MenuTab      truck={truck} categories={categories} items={items} subcategories={subcategories} token={token} modifierGroups={modifierGroups} modifierOptions={modifierOptions} itemModGroups={itemModGroups} setItemModGroups={setItemModGroups} api={api} reload={refresh} showToast={showToast} allergenWizardOpen={allergenWizardOpen} onCloseAllergenWizard={() => { setAllergenWizardOpen(false); refresh() }} onOpenAllergenWizard={() => setAllergenWizardOpen(true)} canEditAllergens={userRole === 'owner' || isAdmin} onWalkthroughChoice={handleWalkthroughChoice} onVerifySuccess={handleVerifiedEvents} canSeeCosts={userRole !== 'staff'} />}" },
       /* ── legal-languages-1, 1 November 2026 (docs/legal-languages-1-report.md §4.2) — a stored dietary tag is shown in the truck's
        * language (lib/dietary-label.ts), as the order page already did; English shows the stored name exactly as before. ── */
       { was: '{draft.dietary.map(d => <DietaryChip key={d} label={d} />)}', now: '{draft.dietary.map(d => <DietaryChip key={d} label={dietaryLabel(d, wizLocale)} />)}', nowIn: 'app/manage/[token]/page.tsx',

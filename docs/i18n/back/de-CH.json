@@ -96,5 +96,6 @@
  "socialPosts.qlBigPicture": "Big picture",
  "socialPosts.screen.imageTooBig": "This image is {size} MB in size. The limit is 10 MB.",
  "userMenu.close": "Close",
- "weeklyPost.error.tooBig": "This image is {size, number, ::.0 group-off} MB. The upper limit is 10 MB."
+ "weeklyPost.error.tooBig": "This image is {size, number, ::.0 group-off} MB. The upper limit is 10 MB.",
+ "manageReports.accounts.partial": "Dishes without a cost are left out of the cost, so this profit is higher than it really is. Add a cost to each dish in the Menu tab."
 }

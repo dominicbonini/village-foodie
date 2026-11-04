@@ -23,7 +23,11 @@ import { EventAddressFields, RegionInput, placeSubline, postalCodeForSave, useAd
 import { TruckTimeContext, useTruckTime } from '@/components/TruckTimeContext'
 import { moneyFormatOf, planMoneyFormatOf, currencyLineOf, type CountrySettings } from '@/lib/country-settings-types'
 import { maskPriceFor } from '@/lib/pricing'
-import { formatMajor, formatWholeAmount, formatAmount, currencySymbol, type MoneyFormat } from '@/lib/money-format'
+import { formatMajor, formatWholeAmount, formatAmount, currencySymbol, minorDigits, formatMinor, type MoneyFormat } from '@/lib/money-format'
+// costs-accounts-1: Reports' date presets (the tax year is the country's data), the accounts' totals and the accountant's two CSVs.
+import { datePresets, presetOf, PRESET_KEYS, type PresetKey, type TaxYearStart } from '@/lib/accounts/tax-year'
+import { summarise, taxBasisOf, type AccountRow, type Channel, type PaymentMethod, type TaxBasis } from '@/lib/accounts/ledger'
+import { ordersCsv, eventsCsv, type CsvWords } from '@/lib/accounts/csv'
 import { purchaseCtaAllowed } from '@/lib/commerce-policy'
 import { DeleteAccountSection } from '@/components/manage/DeleteAccountSection'
 import { WhereYouTrade } from '@/components/manage/WhereYouTrade'
@@ -1593,7 +1597,7 @@ export default function ManagePage({ params }: { params: Promise<{ token: string
         {/* 🔴 EACH PILL RENDERS THE EXISTING COMPONENT, BODY UNEDITED — same props, same behaviour,
             same plan gating (each of these three already gates its own content where it needs to, and
             none of that is touched). The only change is which of them is on screen. */}
-        {activeTab === 'menu' && menuSection === 'items' && <MenuTab      truck={truck} categories={categories} items={items} subcategories={subcategories} token={token} modifierGroups={modifierGroups} modifierOptions={modifierOptions} itemModGroups={itemModGroups} setItemModGroups={setItemModGroups} api={api} reload={refresh} showToast={showToast} allergenWizardOpen={allergenWizardOpen} onCloseAllergenWizard={() => { setAllergenWizardOpen(false); refresh() }} onOpenAllergenWizard={() => setAllergenWizardOpen(true)} canEditAllergens={userRole === 'owner' || isAdmin} onWalkthroughChoice={handleWalkthroughChoice} onVerifySuccess={handleVerifiedEvents} />}
+        {activeTab === 'menu' && menuSection === 'items' && <MenuTab      truck={truck} categories={categories} items={items} subcategories={subcategories} token={token} modifierGroups={modifierGroups} modifierOptions={modifierOptions} itemModGroups={itemModGroups} setItemModGroups={setItemModGroups} api={api} reload={refresh} showToast={showToast} allergenWizardOpen={allergenWizardOpen} onCloseAllergenWizard={() => { setAllergenWizardOpen(false); refresh() }} onOpenAllergenWizard={() => setAllergenWizardOpen(true)} canEditAllergens={userRole === 'owner' || isAdmin} onWalkthroughChoice={handleWalkthroughChoice} onVerifySuccess={handleVerifiedEvents} canSeeCosts={userRole !== 'staff'} />}
         {activeTab === 'menu' && menuSection === 'extras' && <ModifiersTab categories={categories} items={items} modifierGroups={modifierGroups} modifierOptions={modifierOptions} itemModGroups={itemModGroups} upsellRules={upsellRules} setModifierGroups={setModifierGroups} setModifierOptions={setModifierOptions} setItemModGroups={setItemModGroups} api={api} reload={refresh} showToast={showToast} />}
         {activeTab === 'menu' && menuSection === 'deals' && <DealsTab     categories={categories} bundles={bundles} setBundles={setBundles} api={api} reload={refresh} showToast={showToast} />}
         {/* 🔴 ONE MOUNT. Everything the capacity screen needs — its own vans, the picker, the switch
@@ -2841,7 +2845,7 @@ function AllergenWizardModal({ items, categories, canEdit, onClose, onConfirmRow
   )
 }
 
-function MenuTab({ truck, categories, items, subcategories, token, modifierGroups, modifierOptions, itemModGroups, setItemModGroups, api, reload, showToast, allergenWizardOpen, onCloseAllergenWizard, onOpenAllergenWizard, canEditAllergens, onWalkthroughChoice, onVerifySuccess }: {
+function MenuTab({ truck, categories, items, subcategories, token, modifierGroups, modifierOptions, itemModGroups, setItemModGroups, api, reload, showToast, allergenWizardOpen, onCloseAllergenWizard, onOpenAllergenWizard, canEditAllergens, onWalkthroughChoice, onVerifySuccess, canSeeCosts = false }: {
   truck: Truck; categories: Category[]; items: Item[]; subcategories: Subcategory[]; token: string
   modifierGroups: ModifierGroup[]; modifierOptions: ModifierOption[]; itemModGroups: {menu_item_id:string;group_id:string;excluded_option_ids?:string[]}[]
   setItemModGroups: React.Dispatch<React.SetStateAction<{menu_item_id:string;group_id:string;excluded_option_ids?:string[]}[]>>
@@ -2853,6 +2857,8 @@ function MenuTab({ truck, categories, items, subcategories, token, modifierGroup
   /** T1: hands verified events to the SAME editable modal Settings uses (ScheduleTab's), plus a
    *  completion callback so the wizard can advance itself once they are saved. */
   onVerifySuccess: (events: unknown[], onSaved?: () => void) => void
+  /** costs-accounts-1: owners and managers see (and set) a dish's "Cost to make"; staff never do (the server refuses them too). */
+  canSeeCosts?: boolean
 }) {
   // Stage A2: override → the truck's EFFECTIVE plan's switch → allowed (lib/useFeatures.ts, the plan catalogue).
   const features = useFeatures(truck)
@@ -2884,6 +2890,30 @@ function MenuTab({ truck, categories, items, subcategories, token, modifierGroup
   const optionalGroupsFor = (itemId: string) => groupsForItem(itemId).filter(g => minRequiredForGroup({ ...g, options: [] }) === 0)
   const [editingCat, setEditingCat] = useState<Partial<Category> | null>(categories[0] ? categories[0] as any : null)
   const [editingItem, setEditingItem] = useState<Partial<Item> | null>(null)
+  /* costs-accounts-1: THE OPEN DISH'S "Cost to make" — its own state, never part of the item (upsert_item never sees it). Read
+   * from the private cost history when an existing dish opens; saved on blur through `set_item_cost`, which records it from today
+   * (a past order keeps the cost of its own day). In CREATE mode it is staged and saved once the dish exists. '' = no cost. */
+  // Keyed by the dish it belongs to, so opening another dish shows '' until its own cost arrives (no reset inside an effect).
+  const editingItemId = editingItem?.id ?? null
+  const [costState, setCostState] = useState<{ id: string | null; value: string; saved: string }>({ id: null, value: '', saved: '' })
+  const itemCost = costState.id === editingItemId ? costState.value : ''
+  const itemCostSaved = costState.id === editingItemId ? costState.saved : ''
+  const setItemCost = (value: string) => setCostState(s => ({ id: editingItemId, value, saved: s.id === editingItemId ? s.saved : '' }))
+  useEffect(() => {
+    if (!canSeeCosts || !editingItemId) return
+    let live = true
+    api('get_item_cost', { itemId: editingItemId })
+      .then(r => { if (!live) return; const v = r?.cost == null ? '' : String(r.cost); setCostState({ id: editingItemId, value: v, saved: v }) })
+      .catch(() => {})
+    return () => { live = false }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [editingItemId, canSeeCosts])
+  const saveItemCost = async (itemId: string, value: string) => {
+    const v = value.trim()
+    if (itemId === editingItemId && v === itemCostSaved.trim()) return
+    try { await api('set_item_cost', { itemId, cost: v === '' ? null : v }); setCostState({ id: itemId, value: v, saved: v }); flashSaved() }
+    catch (e) { showToast(e instanceof Error ? e.message : String(e), 'error') }
+  }
   const [deletingItem, setDeletingItem] = useState<Item | null>(null)
   const [saving, setSaving] = useState(false)
   const [uploadingItemPhoto, setUploadingItemPhoto] = useState(false)
@@ -4657,6 +4687,8 @@ function MenuTab({ truck, categories, items, subcategories, token, modifierGroup
       showToast(t('toast.itemAdded'))
       if (saved?.id) {
         setLocalItems(prev => [...prev, saved])
+        // costs-accounts-1: a cost typed before the dish existed is saved now (the read on opening finds it afterwards).
+        if (canSeeCosts && itemCost.trim() !== '') await saveItemCost(saved.id, itemCost)
         setEditingItem(saved)                 // → EDIT mode: options section + per-field auto-save now active
         handleExpandCat(saved.category_id ?? null)
         flashSaved()
@@ -5650,6 +5682,17 @@ function MenuTab({ truck, categories, items, subcategories, token, modifierGroup
                   <p className="text-[10px] text-slate-400 mt-0.5">{tstock('defaultScopeNote')}</p>
                 </div>
               </div>
+
+              {/* costs-accounts-1: "Cost to make" — optional, owners and managers only, in the truck's currency and number form
+                  (the same decimal box as the price). Private: a separate table read only by Manage; customers never see it. */}
+              {canSeeCosts && (
+                <div data-cost-to-make>
+                  <Input label={t('item.costToMake')} {...priceBox.box('cost', itemCost, v => setItemCost(v))}
+                    onBlur={() => { if (editingItem.id) saveItemCost(editingItem.id, itemCost) }}
+                    hint={t('item.costHelp')}
+                    placeholder={decimalForInput((0).toFixed(minorDigits(tabSettings.currency)), tkLocale)} />
+                </div>
+              )}
 
               {/* ── Options offered on this dish (merged §53/3b) — ONE nested list. Each GROUP row is a
                   tick = ASSIGNMENT (toggleGroupForItem → set_item_modifier_group: ticked = group offered
@@ -14948,6 +14991,8 @@ interface ReportData {
   eventsByDate?: Record<string, { venue_name: string | null; town: string | null }>
   itemCategories?: Record<string, string>
   categoryOrder?: string[]
+  /** costs-accounts-1: one row per order (lib/accounts/ledger.ts accountRows), minor units — absent for staff, or if it failed. */
+  accounts?: { rows: AccountRow[]; currency: string; taxLabel: string; taxInclusive: boolean }
 }
 interface RecentEvent { id: string; venue_name: string | null; event_date: string; status: string }
 
@@ -15067,12 +15112,17 @@ function ReportsTab({ truck, api }: { truck: Truck | null; api: (a: string, e?: 
   const [vans, setVans] = useState<{ id: string; name: string }[]>([])
   const [vanFilter, setVanFilter] = useState<VanFilterValue>(VAN_FILTER_ALL)
 
+  // costs-accounts-1: where the country's tax year starts (data; null = 1 January), for the "Last tax year" preset.
+  const [taxYearStart, setTaxYearStart] = useState<TaxYearStart | null>(null)
+
   useEffect(() => {
     api('get_vans').then(r => setVans((r.vans || []).map((v: any) => ({ id: v.id, name: v.name })))).catch(() => {})
     api('get_recent_events').then(r => setRecentEvents(r.events || [])).catch(() => {})
+    api('get_accounts_settings').then(r => setTaxYearStart(r?.taxYearStart ?? null)).catch(() => {})
     if (hasAdvanced) loadReport()
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
+
 
 
   const loadReport = async (from = dateFrom, to = dateTo, eventId = reportEventId, mode = filterMode) => {
@@ -15087,6 +15137,24 @@ function ReportsTab({ truck, api }: { truck: Truck | null; api: (a: string, e?: 
     } catch { setReportData(null) }
     finally { setLoading(false); setReportLoaded(true) }
   }
+
+  /* costs-accounts-1: THE PERIOD PRESETS, beside the existing range pickers. Picking one fills both dates and loads the report;
+   * editing a date by hand makes it "Custom dates" (the picker shows whichever preset the two dates are, else custom). */
+  const presets = datePresets(todayLocal, taxYearStart)
+  const presetNow: PresetKey | 'custom' = presetOf({ from: dateFrom, to: dateTo }, todayLocal, taxYearStart) ?? 'custom'
+  const choosePreset = (k: string) => {
+    if (!(PRESET_KEYS as readonly string[]).includes(k)) return
+    const r = presets[k as PresetKey]
+    setDateFrom(r.from); setDateTo(r.to)
+    loadReport(r.from, r.to, undefined, 'date')
+  }
+  const presetSelect = (cls: string) => (
+    <select aria-label={t('presets.label')} value={presetNow} onChange={e => choosePreset(e.target.value)} data-report-preset
+      className={`border border-slate-200 rounded-xl px-3 py-2 text-sm bg-white ${cls}`}>
+      <option value="custom">{t('presets.custom')}</option>
+      {PRESET_KEYS.map(k => <option key={k} value={k}>{t(`presets.${k}`)}</option>)}
+    </select>
+  )
 
   // ── Client-side derived breakdowns ─────────────────────────────
   const eventsMap: Record<string, { venue_name: string | null; town: string | null; van_id: string | null }> = reportData?.eventsMap ?? {}
@@ -15119,6 +15187,39 @@ function ReportsTab({ truck, api }: { truck: Truck | null; api: (a: string, e?: 
   // order history table) derives from `orders`, so they all narrow together and none can disagree.
   const orders: any[] = allOrders.filter(orderInScope)
   const hasUnassignedEvents = Object.values(eventsMap).some(e => !e.van_id)
+
+  /* ── costs-accounts-1: THE ACCOUNTS, OVER THE SAME ORDERS AS THE SCREEN ─────────────────────────────────────────────────────
+   * The server sends one row per order (lib/accounts/ledger.ts has every rule); the van filter keeps the rows whose EVENT it
+   * keeps — `orderInScope`, the one rule above — and summarise() adds them up. The two CSVs are built from these same rows. */
+  const accounts = reportData?.accounts ?? null
+  const accountRowsInScope = useMemo(() => (accounts?.rows ?? []).filter(r => orderInScope({ event_id: r.eventId })),
+    [accounts, vanFilter, eventsMap]) // eslint-disable-line react-hooks/exhaustive-deps
+  const accountSummary = useMemo(() => summarise(accountRowsInScope), [accountRowsInScope])
+  const accFmt: MoneyFormat = { currency: accounts?.currency ?? truckFmt.currency, locale: truckFmt.locale }
+  const accMoney = (minor: number) => formatMinor(minor, accFmt)
+  /** A deduction (refunds, tax, cost): "−£12.00" — the figure with a minus before the symbol; nothing to take off reads "£0.00". */
+  const accLess = (minor: number) => (minor > 0 ? `\u2212${accMoney(minor)}` : accMoney(0))
+  const eventLabelOf = (eventId: string | null, eventDate: string | null) => {
+    const ev = (eventId ? eventsMap[eventId] : null) ?? (eventDate ? eventsByDate[eventDate] : null)
+    return ev ? ([ev.venue_name, ev.town].filter(Boolean).join(', ') || t('csv.unknownEvent')) : t('csv.unknownEvent')
+  }
+  const paymentWord = (p: PaymentMethod) => t(p === 'card_online' ? 'accounts.cardOnline' : p === 'pay_at_truck' ? 'accounts.payAtTruck' : 'accounts.walkUp')
+  const csvWords: CsvWords = {
+    header: k => t(`accountsCsv.header.${k}`),
+    channel: (c: Channel) => t(c === 'online' ? 'accounts.online' : 'accounts.walkUp'),
+    payment: paymentWord,
+    taxBasis: (b: TaxBasis) => t(`accountsCsv.taxBasis.${b}`),
+    event: eventLabelOf,
+  }
+  const downloadAccounts = (kind: 'orders' | 'events') => {
+    if (!accounts || accountRowsInScope.length === 0) return
+    const csv = kind === 'orders' ? ordersCsv(accountRowsInScope, csvWords) : eventsCsv(accountSummary.events, accounts.currency, csvWords)
+    const scope = filterMode === 'date' ? `${dateFrom}-to-${dateTo}` : `event-${reportEventId}`
+    const blob = new Blob([csv], { type: 'text/csv;charset=utf-8' })
+    const url = URL.createObjectURL(blob)
+    const a = document.createElement('a'); a.href = url; a.download = `accounts-${kind}-${scope}${vanFilterFilenameSuffix(vans, vanFilter)}.csv`
+    a.click(); URL.revokeObjectURL(url)
+  }
 
   const revenueBreakdown = useMemo(() => {
     // Only count revenue from orders that weren't cancelled/rejected
@@ -15324,6 +15425,7 @@ function ReportsTab({ truck, api }: { truck: Truck | null; api: (a: string, e?: 
           </button>
         </div>
         {/* Row 2: filter inputs */}
+        {filterMode === 'date' && presetSelect('w-full')}
         {filterMode === 'date' ? (
           <div className="flex items-center gap-2">
             {/* Language Phase 1d Part 2: ONE message with both pickers inside it (`filter.range`), not a bare "to". */}
@@ -15393,6 +15495,7 @@ function ReportsTab({ truck, api }: { truck: Truck | null; api: (a: string, e?: 
             <div className="flex items-center gap-2" style={{ minHeight: '44px' }}>
               {filterMode === 'date' ? (
                 <>
+                  {presetSelect('flex-shrink-0')}
                   {t.rich('filter.range', {
                     from: () => <input key="from" type="date" value={dateFrom} max={todayLocal} onChange={e => setDateFrom(clampPast(e.target.value))}
                       className="border border-slate-200 rounded-xl px-3 py-2 text-sm bg-white flex-shrink-0" />,
@@ -15614,6 +15717,86 @@ function ReportsTab({ truck, api }: { truck: Truck | null; api: (a: string, e?: 
               )}
             </>
           )}
+
+          {/* ── costs-accounts-1: FOR YOUR ACCOUNTANT — the period's (or the event's) gross, refunds, tax and net, the split by
+              channel and by payment, the cost of the dishes sold and the profit, and the two accountant CSVs. The same card style
+              and rows as the revenue breakdown. Absent for staff (the server sends no accounts). */}
+          {accounts && accountRowsInScope.length > 0 && (() => {
+            const tt = accountSummary.totals
+            const basis = taxBasisOf(tt.taxBases)
+            const row = (label: React.ReactNode, value: string, opts: { bold?: boolean; key?: string } = {}) => (
+              <div key={opts.key} className={`flex justify-between text-sm ${opts.bold ? 'font-semibold border-t border-slate-100 pt-2 mt-1' : ''}`} data-accounts-row={opts.key}>
+                <span className={opts.bold ? 'text-slate-900' : 'text-slate-600'}>{label}</span>
+                <span className={opts.bold ? 'text-slate-900' : 'font-medium text-slate-900'}>{value}</span>
+              </div>
+            )
+            const sub = (label: string) => <p className="text-xs font-medium text-slate-400 uppercase tracking-wide mt-4 mb-2">{label}</p>
+            const anyCost = tt.dishesWithCost > 0
+            return (
+              <div className="bg-white border border-slate-200 rounded-xl p-4" data-accounts>
+                <p className="text-sm font-semibold text-slate-900">{t('accounts.title')}</p>
+                <p className="text-xs text-slate-400 mt-0.5 mb-3">{t('accounts.help')}</p>
+                <div className="space-y-2">
+                  {row(t('accounts.gross'), accMoney(tt.grossMinor), { key: 'gross' })}
+                  {row(t('accounts.refunds'), accLess(tt.refundedMinor), { key: 'refunds' })}
+                  {row(<>{accounts.taxLabel || t('revenue.tax')}{basis === 'estimated' && <span className="text-xs text-slate-400"> · {t('accounts.taxEstimated')}</span>}</>, accLess(tt.taxMinor), { key: 'tax' })}
+                  {row(t('accounts.net'), accMoney(tt.netMinor), { bold: true, key: 'net' })}
+                  {basis === 'none' && <p className="text-xs text-slate-400" data-accounts-tax-none>{t('accounts.taxNone')}</p>}
+                </div>
+                {sub(t('accounts.byChannel'))}
+                <div className="space-y-2">
+                  {row(t('accounts.online'), accMoney(tt.channel.online), { key: 'ch-online' })}
+                  {row(t('accounts.walkUp'), accMoney(tt.channel.walkup), { key: 'ch-walkup' })}
+                </div>
+                {sub(t('accounts.byPayment'))}
+                <div className="space-y-2">
+                  {(['card_online', 'pay_at_truck', 'walkup'] as PaymentMethod[]).map(p => row(paymentWord(p), accMoney(tt.payment[p]), { key: `pay-${p}` }))}
+                </div>
+                <div className="space-y-2 border-t border-slate-100 mt-4 pt-3">
+                  {row(t('accounts.cost'), accLess(tt.costMinor), { key: 'cost' })}
+                  {row(t('accounts.profit'), anyCost ? accMoney(tt.profitMinor) : '—', { bold: true, key: 'profit' })}
+                  <p className="text-xs text-slate-500" data-accounts-coverage>{t('accounts.coverage', { total: tt.dishes, withCost: String(tt.dishesWithCost) })}</p>
+                  {!anyCost
+                    ? <p className="text-xs text-amber-700 bg-amber-50 border border-amber-200 rounded-lg px-2.5 py-1.5" data-accounts-partial="none">{t('accounts.noCosts')}</p>
+                    : tt.dishesWithCost < tt.dishes && <p className="text-xs text-amber-700 bg-amber-50 border border-amber-200 rounded-lg px-2.5 py-1.5" data-accounts-partial="some">{t('accounts.partial')}</p>}
+                </div>
+                {accountSummary.events.length > 1 && (
+                  <>
+                    {sub(t('accounts.byEvent'))}
+                    <table className="w-full table-fixed text-sm" data-accounts-events>
+                      <colgroup><col /><col className="w-20" /><col className="w-20" /><col className="w-20" /></colgroup>
+                      <thead>
+                        <tr className="text-xs text-slate-400 border-b border-slate-100">
+                          <th className="font-medium text-left py-1">{t('accounts.event')}</th>
+                          <th className="font-medium text-right py-1">{t('accounts.sales')}</th>
+                          <th className="font-medium text-right py-1">{t('accountsCsv.header.cost')}</th>
+                          <th className="font-medium text-right py-1">{t('accounts.profit')}</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {accountSummary.events.map(e => (
+                          <tr key={e.key} className="border-b border-slate-50 last:border-0">
+                            <td className="py-1.5 text-slate-700 truncate">{e.eventDate ? `${formatNumericDayMonth(e.eventDate, ts)} · ` : ''}{eventLabelOf(e.eventId, e.eventDate)}</td>
+                            <td className="py-1.5 text-right text-slate-900 tabular-nums">{accMoney(e.netMinor)}</td>
+                            <td className="py-1.5 text-right text-slate-400 tabular-nums">{accMoney(e.costMinor)}</td>
+                            <td className="py-1.5 text-right font-medium text-slate-900 tabular-nums">{e.profitMinor != null ? accMoney(e.profitMinor) : '—'}</td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                    {accountSummary.events.some(e => e.profitMinor == null) && <p className="text-xs text-slate-400 mt-1">{t('accounts.eventNoProfit')}</p>}
+                  </>
+                )}
+                <div className="flex flex-wrap gap-2 mt-4">
+                  <button onClick={() => downloadAccounts('orders')} data-accounts-download="orders"
+                    className="px-4 py-2 border border-slate-200 text-slate-700 text-sm font-medium rounded-xl hover:bg-slate-50 transition-colors">{t('accounts.downloadOrders')}</button>
+                  <button onClick={() => downloadAccounts('events')} data-accounts-download="events"
+                    className="px-4 py-2 border border-slate-200 text-slate-700 text-sm font-medium rounded-xl hover:bg-slate-50 transition-colors">{t('accounts.downloadEvents')}</button>
+                </div>
+                <p className="text-xs text-slate-400 mt-2">{t('accounts.downloadHelp')}</p>
+              </div>
+            )
+          })()}
 
           {/* ── Results table ── desktop = fixed-column grid (# | Date | Time | Channel | Item | Qty |
               Total), no overlap; venue+customer dropped on-screen (still in the CSV). Date = dd/mm/yy,

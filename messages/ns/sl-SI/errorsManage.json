@@ -222,5 +222,6 @@
   "paperwork_not_found": "Tega dokumenta ni več. Osvežite stran.",
   "paperwork_bad_details": "Nekateri podatki niso pravilni. Preverite jih in poskusite znova.",
   "paperwork_send_limit": "V kratkem času ste poslali veliko povezav. Poskusite znova čez eno uro.",
-  "paperwork_send_failed": "E-poštnega sporočila ni bilo mogoče poslati. Poskusite znova."
+  "paperwork_send_failed": "E-poštnega sporočila ni bilo mogoče poslati. Poskusite znova.",
+  "cost_invalid": "Vnesite strošek 0 ali več ali pustite polje prazno."
 }

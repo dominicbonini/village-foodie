@@ -732,6 +732,12 @@ const ALLOWED = [
   // OrderCard.tsx, the KDS Full ticket's row 1). The status badge is one size down and out of flow, pinned top-right above the
   // total — rendered after the total, so the board's text reads "#43 £26.90 Ready" where it read "#43 Ready £26.90". At every
   // instant; the new value must be EXACTLY the BEFORE value with that one ticket's words swapped (found exactly once).
+  // ⚠️ RE-PINNED (costs-accounts-1, 4 November 2026) — NOT A TIME CHANGE: Reports gained the period-preset picker beside the date
+  // range (its five options, in the phone toolbar and the desktop toolbar). At every instant the text must be EXACTLY the BEFORE
+  // value once those five words are taken out, found exactly twice. (Its dates are computed on the truck's day — lib/accounts/
+  // tax-year.ts — and no option text carries a date.)
+  { id: 'CA1', site: 'app/manage/[token]/page.tsx — costs-accounts-1: Reports\' period presets beside the range', moments: Object.keys(MOMENTS), path: /^screens\/reports\|(orders|items)\/text$/,
+    expect: (v, D, after, p, before) => { const w = 'Custom dates This month Last month Last quarter Last tax year '; return typeof before === 'string' && v.split(w).length === 3 && v.split(w).join('') === before } },
   { id: 'L6', site: 'components/dashboard/OrderCard.tsx — us-layout-fix-6-kds-full-badge: the KDS ticket reads "#43 £26.90 Ready"', moments: Object.keys(MOMENTS), path: /^screens\/kds$/,
     expect: (v, D, after, p, before) => { const re = /(#43) (Ready) (£\d+\.\d\d) (Sam Harness)/g; return typeof before === 'string' && (before.match(re) || []).length === 1 && v === before.replace(re, '$1 $3 $2 $4') } },
 ]

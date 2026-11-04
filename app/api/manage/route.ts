@@ -28,6 +28,11 @@ import { type Feature } from '@/lib/features'
 import { featureRefusal } from '@/lib/plan-refusal'
 import { truckCan } from '@/lib/plans'
 import { countrySettingsForTruck, addressFormatForTruck } from '@/lib/country-settings'
+// costs-accounts-1: the private cost history (the ONE module that names it), the accounting rows and the money digits.
+import { readTruckCosts, currentItemCost, setItemCost } from '@/lib/accounts/costs-server'
+import { accountRows, type LedgerOrder, type LedgerPayment } from '@/lib/accounts/ledger'
+import { taxYearStartOf } from '@/lib/accounts/tax-year'
+import { minorDigits } from '@/lib/money-format'
 import { comparisonFlagsOf } from '@/lib/comparison-flags'
 import { getPlanCatalog } from '@/lib/plans-server'
 import { localizePlans } from '@/lib/plan-names'   // languages-1: plan names in the locale's language
@@ -269,6 +274,8 @@ const MANAGE_TAB_ACTIONS: ReadonlySet<string> = new Set([
   // Reports (Language Phase 1d Part 2): neither has a refusal of its own — only the shared token and access checks,
   // which now carry a code. Their answers carry no words (the screen supplies every label from `manageReports`).
   'get_report', 'get_recent_events',
+  // costs-accounts-1: the dish's cost (Menu's item editor) and the report presets' tax year — refusals are `errorsManage` codes.
+  'get_item_cost', 'set_item_cost', 'get_accounts_settings',
   // Payments › Tax, tips and fees (Language Phase 1d Part 2): its own refusals are `errorsManage.charges_*` codes.
   'update_charges',
   // Team (Language Phase 1d Part 2): their own refusals are `errorsManage` codes too, and the invite email is worded in
@@ -3102,27 +3109,78 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ ok: true })
   }
 
+  /* ── costs-accounts-1: A DISH'S COST TO MAKE (Manage › Menu's item editor) ─────────────────────────────────────────────
+   * 🔴 OWNER OR MANAGER ONLY — staff never see what a dish costs. The cost lives in its own private table (with
+   * history), read and written only through lib/accounts/costs-server.ts; it is never in menu_items_db, so nothing that reads
+   * the menu (the public menu API, the order page, the KDS, tickets) can carry it. Amounts in the truck's currency's minor
+   * units (35.an-19: JPY has none). */
+  if (action === 'get_item_cost' || action === 'set_item_cost') {
+    if (requestingUserRole === 'staff') return refuse('insufficient_permissions', 403)
+    const itemId = typeof body.itemId === 'string' ? body.itemId : ''
+    if (!itemId) return refuse('item_not_found', 404)
+    const cs = await countrySettingsForTruck(truck)
+    const digits = minorDigits(cs.currency)
+    if (action === 'get_item_cost') {
+      const c = await currentItemCost(supabase, truck.id, itemId)
+      const minor = c && c.currency === cs.currency ? c.costMinor : null
+      return NextResponse.json({ ok: true, cost: minor === null ? null : minor / 10 ** digits, currency: cs.currency })
+    }
+    // The box's value in MAJOR units ("2.35", or null / '' to clear) → minor units, rounded to the currency's own digits.
+    const raw = body.cost
+    let costMinor: number | null = null
+    if (raw !== null && raw !== undefined && String(raw).trim() !== '') {
+      const n = Number(raw)
+      if (!Number.isFinite(n) || n < 0) return refuse('cost_invalid', 400)
+      costMinor = Math.round(n * 10 ** digits)
+    }
+    const r = await setItemCost(supabase, { truckId: truck.id, itemId, costMinor, currency: cs.currency, today: getLocalDateInTz(await truckTimeZone(truck)), actor: requestingUserId ?? null })
+    if (!r.ok) return refuse(r.code, r.code === 'item_not_found' ? 404 : 400)
+    return NextResponse.json({ ok: true, written: r.written, cost: costMinor === null ? null : costMinor / 10 ** digits })
+  }
+
+  /* costs-accounts-1: where the truck's country's tax year starts, for Reports' "Last tax year" preset. DATA
+   * (country_settings.tax_year_start_month / _day); NULL, or a database without the columns yet, = the calendar year. */
+  if (action === 'get_accounts_settings') {
+    const { data, error } = await supabase.from('country_settings').select('tax_year_start_month, tax_year_start_day').eq('country_code', (await countrySettingsForTruck(truck)).countryCode).maybeSingle()
+    if (error) console.error('[get_accounts_settings] country_settings read failed — the calendar year is used:', error.message)
+    return NextResponse.json({ ok: true, taxYearStart: error ? null : taxYearStartOf(data?.tax_year_start_month, data?.tax_year_start_day) })
+  }
+
   if (action === 'get_report') {
     const { dateFrom, dateTo, eventId } = body
 
-    let query = supabase
-      .from('orders')
-      // customer_email used client-side to infer order type: null = operator-placed, set = customer online
-      // No source/is_manual column exists yet — customer_email IS NULL is the best available signal.
-      // order_key (uuid) is the STABLE React key for the report list — `id` is the per-event DISPLAY
-      // number and is NOT unique across events (a multi-event date would collide keys).
-      // event_id (V9.6): the VAN FILTER selects EVENTS, and an order is in scope iff its event is.
-      // 🔴 orders.van_id is deliberately NOT selected and plays NO part in reporting — it is a KDS
-      // ROUTING field with no accounting meaning (NULL on ~78% of live orders, because the walk-up path
-      // never sets it while the customer path does). Filtering money by it would silently drop revenue.
-      // Phase 3 screens: the snapshot's amounts ride on the same read (named: needs 20261010_17/_18). They are
-      // REMOVED from the rows below unless this range has tax, a tip or a fee to report, so a UK response is
-      // unchanged.
-      .select('order_key, id, customer_name, customer_email, status, slot, total, discount_amt, created_at, items, deals, event_date, event_id, food_minor, tax_minor, tax_rate_milli, tax_label, tip_minor, tip_pct_bps, service_fee_minor, card_surcharge_minor')
-      .eq('truck_id', truck.id)
-      // Reports exclude cancelled/rejected orders (confirmed/collected/etc. only). Revenue already excludes
-      // them client-side (:7008) — this server filter keeps the list + the revenue calc consistent.
-      .not('status', 'in', '(cancelled,rejected)')
+    // costs-accounts-1: the orders are read in PAGES (a tax year passes the API's 1,000-row cap — Gusto alone has ~750 orders,
+    // test-truck-3-2 ~1,800), in a fixed order (placed, then order_key) so no page can repeat or skip a row. The filters below are
+    // recorded in `scopeOrders` and applied to every page, and to the cancelled read the accounts need.
+    // `currency` and `tax_inclusive` ride along for the accounts only and are removed from the rows before the response.
+    const ORDER_COLS = 'order_key, id, customer_name, customer_email, status, slot, total, discount_amt, created_at, items, deals, event_date, event_id, food_minor, tax_minor, tax_rate_milli, tax_label, tip_minor, tip_pct_bps, service_fee_minor, card_surcharge_minor, currency, tax_inclusive'
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any -- a PostgREST builder, as everywhere in this route
+    let scopeOrders = (q: any) => q
+    const readOrders = async (cancelled: boolean): Promise<{ data: any[] | null }> => {   // eslint-disable-line @typescript-eslint/no-explicit-any
+      const out: any[] = []   // eslint-disable-line @typescript-eslint/no-explicit-any
+      for (let from = 0; ; from += 1000) {
+        const base = supabase.from('orders').select(ORDER_COLS).eq('truck_id', truck.id)
+        const { data, error } = await scopeOrders(cancelled ? base.in('status', ['cancelled', 'rejected']) : base.not('status', 'in', '(cancelled,rejected)'))
+          .order('created_at', { ascending: true }).order('order_key', { ascending: true }).range(from, from + 999)
+        if (error) { console.error('[get_report] orders read failed:', error.message); return { data: from === 0 ? null : out } }
+        out.push(...(data ?? []))
+        if (!data || data.length < 1000) return { data: out }
+      }
+    }
+    // The columns (ORDER_COLS), as the single read before costs-accounts-1 had them:
+    // customer_email used client-side to infer order type: null = operator-placed, set = customer online
+    // No source/is_manual column exists yet — customer_email IS NULL is the best available signal.
+    // order_key (uuid) is the STABLE React key for the report list — `id` is the per-event DISPLAY
+    // number and is NOT unique across events (a multi-event date would collide keys).
+    // event_id (V9.6): the VAN FILTER selects EVENTS, and an order is in scope iff its event is.
+    // 🔴 orders.van_id is deliberately NOT selected and plays NO part in reporting — it is a KDS
+    // ROUTING field with no accounting meaning (NULL on ~78% of live orders, because the walk-up path
+    // never sets it while the customer path does). Filtering money by it would silently drop revenue.
+    // Phase 3 screens: the snapshot's amounts ride on the same read (named: needs 20261010_17/_18). They are
+    // REMOVED from the rows below unless this range has tax, a tip or a fee to report, so a UK response is
+    // unchanged.
+    // Reports exclude cancelled/rejected orders (confirmed/collected/etc. only). Revenue already excludes
+    // them client-side (:7008) — this server filter keeps the list + the revenue calc consistent.
 
     // Resolve event date filter and build eventsMap for venue name lookup
     let eventsQuery = supabase
@@ -3142,14 +3200,14 @@ export async function POST(req: NextRequest) {
         // shows ONLY that event's orders. event_date would pull every same-date event's orders → duplicate
         // display numbers (the key=1-7 crash) + wrong report totals on multi-event dates. The eventsQuery
         // (venue lookup) stays by date — it's only used to label rows by event_date.
-        query = query.eq('event_id', eventId)
+        scopeOrders = q => q.eq('event_id', eventId)
         eventsQuery = eventsQuery.eq('event_date', ev.event_date)
       }
     } else if (dateFrom && dateTo) {
-      query = query.gte('event_date', dateFrom).lte('event_date', dateTo)
+      scopeOrders = q => q.gte('event_date', dateFrom).lte('event_date', dateTo)
       eventsQuery = eventsQuery.gte('event_date', dateFrom).lte('event_date', dateTo)
     } else if (dateFrom) {
-      query = query.eq('event_date', dateFrom)
+      scopeOrders = q => q.eq('event_date', dateFrom)
       eventsQuery = eventsQuery.eq('event_date', dateFrom)
     }
 
@@ -3162,7 +3220,7 @@ export async function POST(req: NextRequest) {
     const waStart = new Date(instantOfLocal(waFrom, '00:00', waTz)).toISOString()
     const waEnd   = new Date(instantOfLocal(addDaysYmd(waTo, 1), '00:00', waTz)).toISOString()
     const [{ data: orders }, { data: waLogs }, { data: eventRows }] = await Promise.all([
-      query,
+      readOrders(false),
       supabase
         .from('whatsapp_logs')
         .select('classification, possible_miss')
@@ -3207,7 +3265,8 @@ export async function POST(req: NextRequest) {
     // NAME → category NAME (itemCategories), plus the menu's category order (categoryOrder) for display.
     const [{ data: catRows }, { data: menuRows }] = await Promise.all([
       supabase.from('menu_categories').select('id, name, sort_order').eq('truck_id', truck.id).eq('is_active', true).order('sort_order'),
-      supabase.from('menu_items_db').select('name, category_id').eq('truck_id', truck.id),
+      // costs-accounts-1: id and is_active too, for the accounts' name → dish match (itemCategories reads name and category_id only).
+      supabase.from('menu_items_db').select('id, name, category_id, is_active').eq('truck_id', truck.id),
     ])
     const catById: Record<string, string> = {}
     for (const c of (catRows || [])) catById[c.id] = c.name
@@ -3264,6 +3323,42 @@ export async function POST(req: NextRequest) {
       .sort((a, b) => b.qty - a.qty)
       .slice(0, 10)
 
+    /* ── costs-accounts-1: THE ACCOUNTS — gross, tax, net, refunds, channel, payment, cost and profit, ORDER BY ORDER ────────────
+     * lib/accounts/ledger.ts holds every rule. The screen adds the rows up (after its van filter) and builds both accountant CSVs
+     * from them. Read here because only the server can read the payment ledger and the private cost history. Never for staff
+     * (what a dish costs is the owner's and manager's). A failure leaves `accounts` out and the rest of the report as it was. */
+    let accounts: { rows: ReturnType<typeof accountRows>; currency: string; taxLabel: string; taxInclusive: boolean } | null = null
+    if (requestingUserRole !== 'staff') {
+      try {
+        const cs = await countrySettingsForTruck(truck)
+        const { data: cancelledRows } = await readOrders(true)
+        const all = [...(orders as unknown as LedgerOrder[]), ...((cancelledRows ?? []) as LedgerOrder[])]
+        const keys = all.map(o => o.order_key)
+        const payments: LedgerPayment[] = []
+        for (let i = 0; i < keys.length; i += 150) {
+          const { data: pays, error: payErr } = await supabase.from('order_payments').select('order_key, kind, channel, amount_minor, state').eq('truck_id', truck.id).in('order_key', keys.slice(i, i + 150))
+          if (payErr) throw new Error(`order_payments read: ${payErr.message}`)
+          payments.push(...((pays ?? []) as LedgerPayment[]))
+        }
+        const itemIdByName: Record<string, string> = {}
+        for (const mi of ([...(menuRows || [])] as { id: string; name: string | null; is_active: boolean | null }[]).sort((a, b) => Number(a.is_active === true) - Number(b.is_active === true))) {
+          if (mi.name) itemIdByName[mi.name] = mi.id   // active dishes last, so an active dish wins a shared name
+        }
+        accounts = {
+          rows: accountRows({
+            orders: all, payments, costs: await readTruckCosts(supabase, truck.id), itemIdByName,
+            tax: { inclusive: reportRules.taxInclusive, rateMilli: reportRules.taxRateMilli ?? null },
+            timeZone: waTz, currency: cs.currency,
+          }),
+          currency: cs.currency, taxLabel: reportRules.taxLabel, taxInclusive: reportRules.taxInclusive,
+        }
+      } catch (e) {
+        console.error('[get_report] accounts could not be built — the report goes without them:', e instanceof Error ? e.message : e)
+      }
+    }
+    // The two columns read for the accounts only leave the rows, so `orders` is what it was before costs-accounts-1.
+    for (const o of rows) { delete o.currency; delete o.tax_inclusive }
+
     return NextResponse.json({
       ok: true,
       report: {
@@ -3281,6 +3376,7 @@ export async function POST(req: NextRequest) {
         itemCategories,
         categoryOrder,
         ...(reportCharges ? { charges: reportCharges } : {}),
+        ...(accounts ? { accounts } : {}),
       },
     })
   }

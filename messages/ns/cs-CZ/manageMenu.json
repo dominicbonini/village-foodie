@@ -170,7 +170,9 @@
     "saved": "✓ Uloženo",
     "adding": "Přidávání…",
     "add": "Přidat položku",
-    "noGroups": "Zatím žádné skupiny možností — vytvořte je v sekci Doplňky a nabídky navíc."
+    "noGroups": "Zatím žádné skupiny možností — vytvořte je v sekci Doplňky a nabídky navíc.",
+    "costToMake": "Náklady na přípravu",
+    "costHelp": "Nepovinné. Kolik vás stojí jedna porce za suroviny a obal. Používá se jen ve vašich statistikách; zákazníci to nikdy neuvidí."
   },
   "summary": "{categories, plural, one {# kategorie} few {# kategorie} other {# kategorií}} · {items, plural, one {# položka} few {# položky} other {# položek}}",
   "confirmDelete": {

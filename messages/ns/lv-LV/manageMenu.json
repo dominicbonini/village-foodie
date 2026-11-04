@@ -170,7 +170,9 @@
     "saved": "✓ Saglabāts",
     "adding": "Pievieno…",
     "add": "Pievienot pozīciju",
-    "noGroups": "Vēl nav iespēju grupu — izveidojiet tās sadaļā “Piedevas un papildpiedāvājumi”."
+    "noGroups": "Vēl nav iespēju grupu — izveidojiet tās sadaļā “Piedevas un papildpiedāvājumi”.",
+    "costToMake": "Pagatavošanas izmaksas",
+    "costHelp": "Neobligāti. Cik jums izmaksā viena porcija — sastāvdaļas un iepakojums. Tiek izmantots tikai jūsu atskaitēs; klienti to nekad neredz."
   },
   "summary": "{categories, plural, zero {# kategorijas} one {# kategorija} other {# kategorijas}} · {items, plural, zero {# pozīcijas} one {# pozīcija} other {# pozīcijas}}",
   "confirmDelete": {

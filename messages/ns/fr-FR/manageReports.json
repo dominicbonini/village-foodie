@@ -88,5 +88,67 @@
     "unknownCustomer": "Inconnu",
     "customerOnline": "Client en ligne",
     "placedByTruck": "Passée par le food truck"
+  },
+  "presets": {
+    "label": "Période",
+    "custom": "Dates personnalisées",
+    "thisMonth": "Ce mois-ci",
+    "lastMonth": "Le mois dernier",
+    "lastQuarter": "Le trimestre dernier",
+    "lastTaxYear": "Le dernier exercice fiscal"
+  },
+  "accounts": {
+    "title": "Pour votre comptable",
+    "help": "Les ventes sont comptées le jour de l’événement. Le brut correspond à ce que les clients ont payé. Le net correspond à ce qui reste après les remboursements et les taxes.",
+    "gross": "Ventes brutes",
+    "refunds": "Remboursements",
+    "net": "Ventes nettes",
+    "taxEstimated": "estimation d’après votre taux de taxe",
+    "taxNone": "Aucun taux de taxe n’est défini pour votre food truck, donc aucune taxe n’est calculée ici.",
+    "byChannel": "Ventes brutes par canal",
+    "byPayment": "Ventes brutes par mode de paiement",
+    "online": "En ligne",
+    "walkUp": "Au comptoir",
+    "cardOnline": "Carte en ligne",
+    "payAtTruck": "Paiement sur place",
+    "cost": "Coût des plats vendus",
+    "profit": "Bénéfice",
+    "coverage": "{total, plural, one {Coût renseigné pour {withCost} sur # plat vendu} many {Coût renseigné pour {withCost} sur # plats vendus} other {Coût renseigné pour {withCost} sur # plats vendus}}",
+    "partial": "Les plats sans coût ne sont pas comptés dans le coût, donc ce bénéfice est plus élevé qu’en réalité. Ajoutez un coût à chaque plat dans l’onglet Carte.",
+    "noCosts": "Aucun plat n’a encore de coût. Ajoutez un coût à vos plats dans l’onglet Carte pour voir votre bénéfice.",
+    "byEvent": "Par événement",
+    "event": "Événement",
+    "sales": "Ventes nettes",
+    "eventNoProfit": "Un tiret signifie que certains plats vendus à cet événement n’ont pas de coût.",
+    "downloadOrders": "⬇ Commandes pour votre comptable",
+    "downloadEvents": "⬇ Événements pour votre comptable",
+    "downloadHelp": "Deux fichiers tableur : une ligne par commande et une ligne par événement. Ils s’ouvrent dans Excel, Numbers, Xero et QuickBooks."
+  },
+  "accountsCsv": {
+    "header": {
+      "date": "Date",
+      "time": "Heure",
+      "orderNumber": "Numéro de commande",
+      "event": "Événement",
+      "channel": "Canal",
+      "paymentMethod": "Mode de paiement",
+      "currency": "Devise",
+      "gross": "Brut",
+      "tax": "Taxes",
+      "taxBasis": "Calcul des taxes",
+      "net": "Net",
+      "refunded": "Remboursé",
+      "cost": "Coût",
+      "profit": "Bénéfice",
+      "eventDate": "Date de l’événement",
+      "orders": "Commandes",
+      "dishesSold": "Plats vendus",
+      "dishesWithCost": "Plats avec un coût"
+    },
+    "taxBasis": {
+      "stored": "enregistrées avec la commande",
+      "estimated": "estimées d’après votre taux de taxe",
+      "none": "aucun taux de taxe défini"
+    }
   }
 }

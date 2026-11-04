@@ -222,5 +222,6 @@
   "paperwork_not_found": "Tento dokument už neexistuje. Načítajte, prosím, stránku znova.",
   "paperwork_bad_details": "Niektoré údaje nie sú správne. Skontrolujte ich, prosím, a skúste to znova.",
   "paperwork_send_limit": "Za krátky čas ste poslali veľa odkazov. Skúste to, prosím, znova o hodinu.",
-  "paperwork_send_failed": "E-mail sa nepodarilo odoslať. Skúste to, prosím, znova."
+  "paperwork_send_failed": "E-mail sa nepodarilo odoslať. Skúste to, prosím, znova.",
+  "cost_invalid": "Zadajte náklady 0 alebo viac, alebo pole nechajte prázdne."
 }

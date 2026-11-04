@@ -2916,7 +2916,9 @@
       "saved": "✓ Uložené",
       "adding": "Pridáva sa…",
       "add": "Pridať položku",
-      "noGroups": "Zatiaľ žiadne skupiny možností — vytvorte ich v sekcii Doplnky a ponuky navyše."
+      "noGroups": "Zatiaľ žiadne skupiny možností — vytvorte ich v sekcii Doplnky a ponuky navyše.",
+      "costToMake": "Náklady na prípravu",
+      "costHelp": "Nepovinné. Koľko vás stojí jedna porcia za suroviny a obal. Používa sa iba vo vašich štatistikách; zákazníci to nikdy neuvidia."
     },
     "summary": "{categories, plural, one {# kategória} few {# kategórie} other {# kategórií}} · {items, plural, one {# položka} few {# položky} other {# položiek}}",
     "confirmDelete": {
@@ -3338,7 +3340,8 @@
     "paperwork_not_found": "Tento dokument už neexistuje. Načítajte, prosím, stránku znova.",
     "paperwork_bad_details": "Niektoré údaje nie sú správne. Skontrolujte ich, prosím, a skúste to znova.",
     "paperwork_send_limit": "Za krátky čas ste poslali veľa odkazov. Skúste to, prosím, znova o hodinu.",
-    "paperwork_send_failed": "E-mail sa nepodarilo odoslať. Skúste to, prosím, znova."
+    "paperwork_send_failed": "E-mail sa nepodarilo odoslať. Skúste to, prosím, znova.",
+    "cost_invalid": "Zadajte náklady 0 alebo viac, alebo pole nechajte prázdne."
   },
   "tradeArea": {
     "country_missing": "Vyberte krajinu, v ktorej má váš food truck sídlo.",
@@ -4091,6 +4094,68 @@
       "unknownCustomer": "Neznámy",
       "customerOnline": "Zákazník online",
       "placedByTruck": "Zadal food truck"
+    },
+    "presets": {
+      "label": "Obdobie",
+      "custom": "Vlastné dátumy",
+      "thisMonth": "Tento mesiac",
+      "lastMonth": "Minulý mesiac",
+      "lastQuarter": "Minulý štvrťrok",
+      "lastTaxYear": "Minulý daňový rok"
+    },
+    "accounts": {
+      "title": "Pre účtovníka",
+      "help": "Predaje sa počítajú ku dňu akcie. Hrubé tržby sú to, čo zaplatili zákazníci. Čisté tržby sú to, čo zostane po odpočítaní vrátených peňazí a dane.",
+      "gross": "Hrubé tržby",
+      "refunds": "Vrátené peniaze",
+      "net": "Čisté tržby",
+      "taxEstimated": "odhad podľa vašej sadzby dane",
+      "taxNone": "Váš food truck nemá nastavenú sadzbu dane, preto sa tu daň nepočíta.",
+      "byChannel": "Hrubé tržby podľa kanála",
+      "byPayment": "Hrubé tržby podľa platby",
+      "online": "Online",
+      "walkUp": "Na mieste",
+      "cardOnline": "Kartou online",
+      "payAtTruck": "Platba pri vyzdvihnutí",
+      "cost": "Náklady na predané jedlá",
+      "profit": "Zisk",
+      "coverage": "{total, plural, one {Náklady zadané pri {withCost} z # predaného jedla} few {Náklady zadané pri {withCost} z # predaných jedál} many {Náklady zadané pri {withCost} z # predaného jedla} other {Náklady zadané pri {withCost} z # predaných jedál}}",
+      "partial": "Jedlá bez zadaných nákladov sa do nákladov nezapočítavajú, preto je tento zisk vyšší, ako v skutočnosti je. Doplňte náklady ku každému jedlu v Jedálnom lístku.",
+      "noCosts": "Zatiaľ žiadne jedlo nemá zadané náklady. Doplňte náklady k jedlám v Jedálnom lístku a uvidíte svoj zisk.",
+      "byEvent": "Podľa akcií",
+      "event": "Akcia",
+      "sales": "Čisté tržby",
+      "eventNoProfit": "Pomlčka znamená, že nie všetky jedlá predané na akcii majú zadané náklady.",
+      "downloadOrders": "⬇ Objednávky pre účtovníka",
+      "downloadEvents": "⬇ Akcie pre účtovníka",
+      "downloadHelp": "Dva tabuľkové súbory: jeden riadok za každú objednávku a jeden riadok za každú akciu. Otvoríte ich v programoch Excel, Numbers, Xero a QuickBooks."
+    },
+    "accountsCsv": {
+      "header": {
+        "date": "Dátum",
+        "time": "Čas",
+        "orderNumber": "Číslo objednávky",
+        "event": "Akcia",
+        "channel": "Kanál",
+        "paymentMethod": "Spôsob platby",
+        "currency": "Mena",
+        "gross": "Hrubá suma",
+        "tax": "Daň",
+        "taxBasis": "Výpočet dane",
+        "net": "Čistá suma",
+        "refunded": "Vrátené",
+        "cost": "Náklady",
+        "profit": "Zisk",
+        "eventDate": "Dátum akcie",
+        "orders": "Objednávky",
+        "dishesSold": "Predané jedlá",
+        "dishesWithCost": "Jedlá s nákladmi"
+      },
+      "taxBasis": {
+        "stored": "uložené s objednávkou",
+        "estimated": "odhad podľa vašej sadzby dane",
+        "none": "sadzba dane nie je nastavená"
+      }
     }
   },
   "socialPosts": {

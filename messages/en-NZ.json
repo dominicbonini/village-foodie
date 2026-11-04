@@ -64,5 +64,10 @@
   },
   "truckPage": {
     "shareText": "Check out where {truck} is setting up next! 🚚"
+  },
+  "manageReports": {
+    "accounts": {
+      "payAtTruck": "Pay at the truck"
+    }
   }
 }

@@ -170,7 +170,9 @@
     "saved": "✓ Mentve",
     "adding": "Hozzáadás…",
     "add": "Tétel hozzáadása",
-    "noGroups": "Még nincsenek opciócsoportok — hozza létre őket az Extrák és ráajánlások részben."
+    "noGroups": "Még nincsenek opciócsoportok — hozza létre őket az Extrák és ráajánlások részben.",
+    "costToMake": "Előállítási költség",
+    "costHelp": "Nem kötelező. Mennyibe kerül Önnek egy adag alapanyagban és csomagolásban. Csak a kimutatásaiban jelenik meg; a vásárlók soha nem látják."
   },
   "summary": "{categories, plural, one {# kategória} other {# kategória}} · {items, plural, one {# tétel} other {# tétel}}",
   "confirmDelete": {

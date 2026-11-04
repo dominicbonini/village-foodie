@@ -222,5 +222,6 @@
   "paperwork_not_found": "Dat document bestaat niet meer. Laad de pagina opnieuw.",
   "paperwork_bad_details": "Sommige gegevens kloppen niet. Controleer ze en probeer het opnieuw.",
   "paperwork_send_limit": "Je hebt in korte tijd veel links verstuurd. Probeer het over een uur opnieuw.",
-  "paperwork_send_failed": "De e-mail kon niet worden verstuurd. Probeer het opnieuw."
+  "paperwork_send_failed": "De e-mail kon niet worden verstuurd. Probeer het opnieuw.",
+  "cost_invalid": "Vul een kostprijs van 0 of meer in, of laat het vak leeg."
 }

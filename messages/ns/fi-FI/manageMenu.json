@@ -170,7 +170,9 @@
     "saved": "✓ Tallennettu",
     "adding": "Lisätään…",
     "add": "Lisää tuote",
-    "noGroups": "Ei vielä valintaryhmiä — luo niitä kohdassa Lisävalinnat ja lisämyynti."
+    "noGroups": "Ei vielä valintaryhmiä — luo niitä kohdassa Lisävalinnat ja lisämyynti.",
+    "costToMake": "Valmistuskustannus",
+    "costHelp": "Valinnainen. Mitä yksi annos maksaa sinulle raaka-aineina ja pakkauksina. Käytetään vain raporteissasi; asiakkaat eivät koskaan näe sitä."
   },
   "summary": "{categories, plural, one {# kategoria} other {# kategoriaa}} · {items, plural, one {# tuote} other {# tuotetta}}",
   "confirmDelete": {

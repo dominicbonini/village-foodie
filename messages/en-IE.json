@@ -26,5 +26,10 @@
         "name": "Pay-at-the-truck ordering"
       }
     }
+  },
+  "manageReports": {
+    "accounts": {
+      "payAtTruck": "Pay at the truck"
+    }
   }
 }

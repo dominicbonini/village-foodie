@@ -170,7 +170,9 @@
     "saved": "✓ Lagret",
     "adding": "Legger til…",
     "add": "Legg til vare",
-    "noGroups": "Ingen valggrupper ennå – opprett dem under Tillegg og mersalg."
+    "noGroups": "Ingen valggrupper ennå – opprett dem under Tillegg og mersalg.",
+    "costToMake": "Kostpris",
+    "costHelp": "Valgfritt. Hva én porsjon koster deg i råvarer og emballasje. Brukes bare i rapportene dine; kundene ser det aldri."
   },
   "summary": "{categories, plural, one {# kategori} other {# kategorier}} · {items, plural, one {# vare} other {# varer}}",
   "confirmDelete": {

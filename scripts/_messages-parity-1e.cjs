@@ -247,6 +247,18 @@ for (const id of ['documents_reminders', 'profit_per_event', 'accountant_reports
   NEW_WORDING[`planFeatures.row.${id}.name`] = `features-list-1: the /features row's name (${id})`
   NEW_WORDING[`featuresPage.detail.${id}`] = `features-list-1: the /features row's description (${id})`
 }
+// ⚠️ RE-PINNED (costs-accounts-1, 4 November 2026, docs/costs-accounts-1-report.md): the item editor's "Cost to make" and its help,
+// Reports' period presets, the "For your accountant" card and the two accountant CSVs' headers and cells (manageReports.presets /
+// accounts / accountsCsv), and the cost refusal (errorsManage.cost_invalid). All new wording; scripts/costs-accounts-1.cjs proves
+// where each shows, and that the English variants say "Pay at the truck" where en-GB says "Pay at Hatch" (35.ak-5).
+{
+  const flatKeys = (o, p = '') => Object.entries(o).flatMap(([k, v]) => (v && typeof v === 'object' ? flatKeys(v, `${p}${k}.`) : [`${p}${k}`]))
+  const enGB = JSON.parse(fs.readFileSync(path.join(REPO, 'messages/en-GB.json'), 'utf8'))
+  for (const part of ['presets', 'accounts', 'accountsCsv']) for (const k of flatKeys(enGB.manageReports?.[part] || {}, `manageReports.${part}.`)) NEW_WORDING[k] = `costs-accounts-1: Reports — ${part}`
+  NEW_WORDING['manageMenu.item.costToMake'] = 'costs-accounts-1: the item editor\'s "Cost to make"'
+  NEW_WORDING['manageMenu.item.costHelp'] = 'costs-accounts-1: the item editor\'s help under "Cost to make"'
+  NEW_WORDING['errorsManage.cost_invalid'] = 'costs-accounts-1: the cost refusal'
+}
 /** ⚠️ RE-PINNED (features-page-restore, 20 October 2026): a restored message EDITED on purpose → [ref, the old key, how]:
  *  its en-GB text must be EXACTLY the old text so edited (here: the old text's first sentence). */
 const RESTORED_EDITED = {

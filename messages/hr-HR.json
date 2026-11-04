@@ -2916,7 +2916,9 @@
       "saved": "✓ Spremljeno",
       "adding": "Dodavanje…",
       "add": "Dodaj artikl",
-      "noGroups": "Još nema grupa opcija – izradite ih u kartici Dodaci i dodatna ponuda."
+      "noGroups": "Još nema grupa opcija – izradite ih u kartici Dodaci i dodatna ponuda.",
+      "costToMake": "Trošak pripreme",
+      "costHelp": "Neobavezno. Koliko vas jedna porcija stoji u sastojcima i ambalaži. Koristi se samo u vašim izvještajima; kupci to nikad ne vide."
     },
     "summary": "{categories, plural, one {# kategorija} few {# kategorije} other {# kategorija}} · {items, plural, one {# artikl} few {# artikla} other {# artikala}}",
     "confirmDelete": {
@@ -3338,7 +3340,8 @@
     "paperwork_not_found": "Taj dokument više ne postoji. Osvježite stranicu.",
     "paperwork_bad_details": "Neki podaci nisu ispravni. Provjerite ih i pokušajte ponovno.",
     "paperwork_send_limit": "U kratkom ste vremenu poslali mnogo poveznica. Pokušajte ponovno za sat vremena.",
-    "paperwork_send_failed": "E-poruku nije bilo moguće poslati. Pokušajte ponovno."
+    "paperwork_send_failed": "E-poruku nije bilo moguće poslati. Pokušajte ponovno.",
+    "cost_invalid": "Unesite trošak od 0 ili više ili ostavite polje prazno."
   },
   "tradeArea": {
     "country_missing": "Odaberite zemlju u kojoj je sjedište vašeg food trucka.",
@@ -4091,6 +4094,68 @@
       "unknownCustomer": "Nepoznato",
       "customerOnline": "Kupac online",
       "placedByTruck": "Unio food truck"
+    },
+    "presets": {
+      "label": "Razdoblje",
+      "custom": "Vlastiti datumi",
+      "thisMonth": "Ovaj mjesec",
+      "lastMonth": "Prošli mjesec",
+      "lastQuarter": "Prošlo tromjesečje",
+      "lastTaxYear": "Prošla porezna godina"
+    },
+    "accounts": {
+      "title": "Za vašeg knjigovođu",
+      "help": "Prodaja se računa na dan događaja. Bruto je ono što su kupci platili. Neto je ono što ostane nakon povrata i poreza.",
+      "gross": "Bruto prodaja",
+      "refunds": "Povrati",
+      "net": "Neto prodaja",
+      "taxEstimated": "procijenjeno prema vašoj poreznoj stopi",
+      "taxNone": "Za vaš food truck nije postavljena porezna stopa, pa se porez ovdje ne izračunava.",
+      "byChannel": "Bruto prodaja po kanalu",
+      "byPayment": "Bruto prodaja po načinu plaćanja",
+      "online": "Online",
+      "walkUp": "Na licu mjesta",
+      "cardOnline": "Kartica online",
+      "payAtTruck": "Plaćanje pri preuzimanju",
+      "cost": "Trošak prodanih jela",
+      "profit": "Dobit",
+      "coverage": "{total, plural, one {Trošak postavljen za {withCost} od # prodanog jela} few {Trošak postavljen za {withCost} od # prodana jela} other {Trošak postavljen za {withCost} od # prodanih jela}}",
+      "partial": "Jela bez troška nisu uračunata u trošak, pa je ova dobit veća nego što zapravo jest. Dodajte trošak svakom jelu u Jelovniku.",
+      "noCosts": "Nijedno jelo još nema trošak. Dodajte trošak svojim jelima u Jelovniku da biste vidjeli svoju dobit.",
+      "byEvent": "Po događaju",
+      "event": "Događaj",
+      "sales": "Neto prodaja",
+      "eventNoProfit": "Crtica znači da nije za svako ondje prodano jelo postavljen trošak.",
+      "downloadOrders": "⬇ Narudžbe za vašeg knjigovođu",
+      "downloadEvents": "⬇ Događaji za vašeg knjigovođu",
+      "downloadHelp": "Dvije tablice: jedan redak za svaku narudžbu i jedan redak za svaki događaj. Otvaraju se u programima Excel, Numbers, Xero i QuickBooks."
+    },
+    "accountsCsv": {
+      "header": {
+        "date": "Datum",
+        "time": "Vrijeme",
+        "orderNumber": "Broj narudžbe",
+        "event": "Događaj",
+        "channel": "Kanal",
+        "paymentMethod": "Način plaćanja",
+        "currency": "Valuta",
+        "gross": "Bruto",
+        "tax": "Porez",
+        "taxBasis": "Izvor poreza",
+        "net": "Neto",
+        "refunded": "Vraćeno",
+        "cost": "Trošak",
+        "profit": "Dobit",
+        "eventDate": "Datum događaja",
+        "orders": "Narudžbe",
+        "dishesSold": "Prodana jela",
+        "dishesWithCost": "Jela s troškom"
+      },
+      "taxBasis": {
+        "stored": "spremljeno uz narudžbu",
+        "estimated": "procijenjeno prema vašoj poreznoj stopi",
+        "none": "porezna stopa nije postavljena"
+      }
     }
   },
   "socialPosts": {

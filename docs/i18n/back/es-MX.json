@@ -415,5 +415,21 @@
  "whatsappCustomer.menuSummary": "{opener}We have {summary}. Check out the full menu and place your advance order here: {url} — {truck} {emoji}",
  "featuresPage.detail.documents_reminders": "Keep your certificates in one place, such as food hygiene, insurance and gas safety. We let you know before something falls due and you can send them to the organiser of an event or market with one tap.",
  "planFeatures.row.accountant_reports.name": "Reports for your accountant (contador)",
- "featuresPage.detail.accountant_reports": "Sales, taxes and refunds for any month, quarter or fiscal year, ready to download for your accountant."
+ "featuresPage.detail.accountant_reports": "Sales, taxes and refunds for any month, quarter or fiscal year, ready to download for your accountant.",
+ "errorsManage.cost_invalid": "Enter a cost of 0 or more, or leave the field empty.",
+ "manageMenu.item.costToMake": "Cost to make",
+ "manageMenu.item.costHelp": "Optional. What one portion costs you in ingredients and packaging. Used only in your reports; customers never see it.",
+ "manageReports.accounts.title": "For your accountant",
+ "manageReports.accounts.profit": "Profit",
+ "manageReports.accounts.cost": "Cost of dishes sold",
+ "manageReports.accounts.coverage": "{total, plural, one {Cost set for {withCost} of # dish sold} other {Cost set for {withCost} of # dishes sold}}",
+ "manageReports.accounts.partial": "Dishes without a cost are left out of the cost, so this profit is higher than it really is. Add a cost to each dish in the Menu tab.",
+ "manageReports.accounts.noCosts": "No dish has a cost yet. Add a cost to your dishes in the Menu tab to see your profit.",
+ "manageReports.accounts.eventNoProfit": "A dash means not every dish sold there has a cost.",
+ "manageReports.accounts.downloadOrders": "⬇ Orders for your accountant",
+ "manageReports.accounts.downloadEvents": "⬇ Events for your accountant",
+ "manageReports.accountsCsv.header.cost": "Cost",
+ "manageReports.accountsCsv.header.profit": "Profit",
+ "manageReports.accountsCsv.header.dishesSold": "Dishes sold",
+ "manageReports.accountsCsv.header.dishesWithCost": "Dishes with a cost"
 }

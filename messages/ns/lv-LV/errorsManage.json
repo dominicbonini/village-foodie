@@ -222,5 +222,6 @@
   "paperwork_not_found": "Šī dokumenta vairs nav. Lūdzu, pārlādējiet lapu.",
   "paperwork_bad_details": "Daži dati nav pareizi. Lūdzu, pārbaudiet tos un mēģiniet vēlreiz.",
   "paperwork_send_limit": "Īsā laikā nosūtīts daudz saišu. Lūdzu, mēģiniet vēlreiz pēc stundas.",
-  "paperwork_send_failed": "E-pastu neizdevās nosūtīt. Lūdzu, mēģiniet vēlreiz."
+  "paperwork_send_failed": "E-pastu neizdevās nosūtīt. Lūdzu, mēģiniet vēlreiz.",
+  "cost_invalid": "Ievadiet izmaksas 0 vai vairāk vai atstājiet lauku tukšu."
 }

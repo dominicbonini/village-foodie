@@ -2916,7 +2916,9 @@
       "saved": "✓ Tallennettu",
       "adding": "Lisätään…",
       "add": "Lisää tuote",
-      "noGroups": "Ei vielä valintaryhmiä — luo niitä kohdassa Lisävalinnat ja lisämyynti."
+      "noGroups": "Ei vielä valintaryhmiä — luo niitä kohdassa Lisävalinnat ja lisämyynti.",
+      "costToMake": "Valmistuskustannus",
+      "costHelp": "Valinnainen. Mitä yksi annos maksaa sinulle raaka-aineina ja pakkauksina. Käytetään vain raporteissasi; asiakkaat eivät koskaan näe sitä."
     },
     "summary": "{categories, plural, one {# kategoria} other {# kategoriaa}} · {items, plural, one {# tuote} other {# tuotetta}}",
     "confirmDelete": {
@@ -3338,7 +3340,8 @@
     "paperwork_not_found": "Asiakirjaa ei enää löydy. Lataa sivu uudelleen.",
     "paperwork_bad_details": "Osa tiedoista ei ole oikein. Tarkista ne ja yritä uudelleen.",
     "paperwork_send_limit": "Olet lähettänyt paljon linkkejä lyhyessä ajassa. Yritä uudelleen tunnin päästä.",
-    "paperwork_send_failed": "Sähköpostia ei voitu lähettää. Yritä uudelleen."
+    "paperwork_send_failed": "Sähköpostia ei voitu lähettää. Yritä uudelleen.",
+    "cost_invalid": "Anna kustannus, joka on 0 tai enemmän, tai jätä kenttä tyhjäksi."
   },
   "tradeArea": {
     "country_missing": "Valitse maa, jossa ruokarekkasi toimii.",
@@ -4091,6 +4094,68 @@
       "unknownCustomer": "Tuntematon",
       "customerOnline": "Asiakas verkossa",
       "placedByTruck": "Ruokarekan kirjaama"
+    },
+    "presets": {
+      "label": "Ajanjakso",
+      "custom": "Omat päivämäärät",
+      "thisMonth": "Tämä kuukausi",
+      "lastMonth": "Viime kuukausi",
+      "lastQuarter": "Viime vuosineljännes",
+      "lastTaxYear": "Viime verovuosi"
+    },
+    "accounts": {
+      "title": "Kirjanpitäjällesi",
+      "help": "Myynti lasketaan tapahtumapäivälle. Brutto on se, mitä asiakkaat maksoivat. Netto on se, mitä jää jäljelle palautusten ja ALV:n jälkeen.",
+      "gross": "Bruttomyynti",
+      "refunds": "Palautukset",
+      "net": "Nettomyynti",
+      "taxEstimated": "arvioitu ALV-kantasi perusteella",
+      "taxNone": "Ruokarekallesi ei ole asetettu ALV-kantaa, joten ALV:tä ei lasketa tässä.",
+      "byChannel": "Bruttomyynti kanavittain",
+      "byPayment": "Bruttomyynti maksutavoittain",
+      "online": "Verkossa",
+      "walkUp": "Paikan päällä",
+      "cardOnline": "Kortti verkossa",
+      "payAtTruck": "Maksu noudettaessa",
+      "cost": "Myytyjen annosten kustannus",
+      "profit": "Voitto",
+      "coverage": "{total, plural, one {Kustannus asetettu {withCost} annokselle # myydystä annoksesta} other {Kustannus asetettu {withCost} annokselle # myydystä annoksesta}}",
+      "partial": "Annokset ilman kustannusta jäävät pois kustannuksista, joten tämä voitto on todellista suurempi. Lisää kustannus jokaiselle annokselle kohdassa Ruokalista.",
+      "noCosts": "Yhdellekään annokselle ei ole vielä asetettu kustannusta. Lisää annoksillesi kustannukset kohdassa Ruokalista, niin näet voittosi.",
+      "byEvent": "Tapahtumittain",
+      "event": "Tapahtuma",
+      "sales": "Nettomyynti",
+      "eventNoProfit": "Viiva tarkoittaa, että kaikille siellä myydyille annoksille ei ole asetettu kustannusta.",
+      "downloadOrders": "⬇ Tilaukset kirjanpitäjällesi",
+      "downloadEvents": "⬇ Tapahtumat kirjanpitäjällesi",
+      "downloadHelp": "Kaksi taulukkotiedostoa: yksi rivi jokaisesta tilauksesta ja yksi rivi jokaisesta tapahtumasta. Ne aukeavat ohjelmissa Excel, Numbers, Xero ja QuickBooks."
+    },
+    "accountsCsv": {
+      "header": {
+        "date": "Päivä",
+        "time": "Aika",
+        "orderNumber": "Tilausnumero",
+        "event": "Tapahtuma",
+        "channel": "Kanava",
+        "paymentMethod": "Maksutapa",
+        "currency": "Valuutta",
+        "gross": "Brutto",
+        "tax": "ALV",
+        "taxBasis": "ALV:n lähde",
+        "net": "Netto",
+        "refunded": "Palautettu",
+        "cost": "Kustannus",
+        "profit": "Voitto",
+        "eventDate": "Tapahtumapäivä",
+        "orders": "Tilaukset",
+        "dishesSold": "Myydyt annokset",
+        "dishesWithCost": "Annokset kustannuksella"
+      },
+      "taxBasis": {
+        "stored": "tallennettu tilauksen mukana",
+        "estimated": "arvioitu ALV-kantasi perusteella",
+        "none": "ALV-kantaa ei asetettu"
+      }
     }
   },
   "socialPosts": {

@@ -202,7 +202,7 @@ const UNLIMITED_ONLY = ['BR', 'MX', 'MY', 'SG', 'TH']
       // A sparse English override (as en-IE, en-AU): every key it holds is an en-GB key with the same ICU skeleton.
       const TC = require('./translation-check.cjs'), own = flat(JSON.parse(read(`messages/${L.locale}.json`))), E = flat(EN)
       const bad = Object.entries(own).filter(([k, v]) => !(k in E) || JSON.stringify(TC.skeleton(v).args) !== JSON.stringify(TC.skeleton(E[k]).args) || JSON.stringify(TC.skeleton(v).tags) !== JSON.stringify(TC.skeleton(E[k]).tags))
-      t(`${L.locale}: a sparse override of en-GB (${Object.keys(own).length} keys: "in {country}", "Cents", "Pay at the truck", the +65 phone example), each an en-GB key with its placeholders`, bad.length === 0 && Object.keys(own).length === (L.locale === 'en-SG' ? 22 : 5), bad)
+      t(`${L.locale}: a sparse override of en-GB (${Object.keys(own).length} keys: "in {country}", "Cents", "Pay at the truck", the +65 phone example), each an en-GB key with its placeholders`, bad.length === 0 && Object.keys(own).length === (L.locale === 'en-SG' ? 23 : 5), bad)   // ⚠️ RE-PINNED (costs-accounts-1, 4 Nov 2026): en-SG 22 → 23, Reports' "Pay at the truck" (manageReports.accounts.payAtTruck)
     } else {
       const r = spawnSync(process.execPath, ['scripts/translation-check.cjs', '--locale', L.locale], { cwd: REPO, encoding: 'utf8' })
       t(`${L.locale}: translation-check — 0 structural${PARENT[L.locale] ? ` (over ${PARENT[L.locale]})` : ''}`, r.status === 0 && /\*\*Structural: 0\*\*/.test(r.stdout), r.stdout.slice(-400))

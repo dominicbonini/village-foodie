@@ -88,5 +88,67 @@
     "unknownCustomer": "Desconhecido",
     "customerOnline": "Cliente online",
     "placedByTruck": "Feito pelo food truck"
+  },
+  "presets": {
+    "label": "Período",
+    "custom": "Datas personalizadas",
+    "thisMonth": "Este mês",
+    "lastMonth": "Mês passado",
+    "lastQuarter": "Último trimestre",
+    "lastTaxYear": "Último ano fiscal"
+  },
+  "accounts": {
+    "title": "Para o seu contador",
+    "help": "As vendas contam no dia do evento. Bruto é o que os clientes pagaram. Líquido é o que sobra depois dos reembolsos e dos tributos.",
+    "gross": "Vendas brutas",
+    "refunds": "Reembolsos",
+    "net": "Vendas líquidas",
+    "taxEstimated": "estimado pela sua alíquota",
+    "taxNone": "Seu food truck não tem alíquota de tributos definida, então nenhum tributo é calculado aqui.",
+    "byChannel": "Vendas brutas por canal",
+    "byPayment": "Vendas brutas por forma de pagamento",
+    "online": "Online",
+    "walkUp": "Presencial",
+    "cardOnline": "Cartão online",
+    "payAtTruck": "Pague na retirada",
+    "cost": "Custo dos pratos vendidos",
+    "profit": "Lucro",
+    "coverage": "{total, plural, one {Custo definido para {withCost} de # prato vendido} other {Custo definido para {withCost} de # pratos vendidos}}",
+    "partial": "Pratos sem custo ficam fora do custo, então este lucro aparece maior do que realmente é. Adicione um custo a cada prato em Cardápio.",
+    "noCosts": "Nenhum prato tem custo ainda. Adicione um custo aos seus pratos em Cardápio para ver seu lucro.",
+    "byEvent": "Por evento",
+    "event": "Evento",
+    "sales": "Vendas líquidas",
+    "eventNoProfit": "Um traço significa que nem todo prato vendido ali tem custo.",
+    "downloadOrders": "⬇ Pedidos para o seu contador",
+    "downloadEvents": "⬇ Eventos para o seu contador",
+    "downloadHelp": "Dois arquivos de planilha: uma linha para cada pedido e uma linha para cada evento. Eles abrem no Excel, Numbers, Xero e QuickBooks."
+  },
+  "accountsCsv": {
+    "header": {
+      "date": "Data",
+      "time": "Horário",
+      "orderNumber": "Número do pedido",
+      "event": "Evento",
+      "channel": "Canal",
+      "paymentMethod": "Forma de pagamento",
+      "currency": "Moeda",
+      "gross": "Bruto",
+      "tax": "Tributos",
+      "taxBasis": "Origem dos tributos",
+      "net": "Líquido",
+      "refunded": "Reembolsado",
+      "cost": "Custo",
+      "profit": "Lucro",
+      "eventDate": "Data do evento",
+      "orders": "Pedidos",
+      "dishesSold": "Pratos vendidos",
+      "dishesWithCost": "Pratos com custo"
+    },
+    "taxBasis": {
+      "stored": "registrado com o pedido",
+      "estimated": "estimado pela sua alíquota",
+      "none": "sem alíquota definida"
+    }
   }
 }
