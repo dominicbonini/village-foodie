@@ -8,6 +8,8 @@ import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@supabase/supabase-js'
 import { verifyAdmin } from '@/lib/auth/admin'
 import { runOrderRetention } from '@/lib/order-retention'
+// paperwork-1 (4 November 2026): the daily Paperwork run — expiry reminders and abandoned uploads — after the retention work.
+import { runPaperworkDaily } from '@/lib/paperwork/reminders'
 
 export const runtime = 'nodejs'
 
@@ -29,5 +31,10 @@ export async function GET(req: NextRequest) {
   if (!await authorised(req)) return NextResponse.json({ error: 'Unauthorised' }, { status: 401 })
   const result = await runOrderRetention(supabase)
   if (result.failures.length) console.error('[cron/order-retention] failures:', result.failures.slice(0, 20).join(' | '))
-  return NextResponse.json({ ok: result.failures.length === 0, ...result }, { status: result.failures.length ? 500 : 200 })
+  // paperwork-1: its own step — a failure here is logged and reported, and never stops or hides the retention result.
+  let paperwork: Awaited<ReturnType<typeof runPaperworkDaily>> | { failures: string[] }
+  try { paperwork = await runPaperworkDaily(supabase) } catch (e) { paperwork = { failures: [e instanceof Error ? e.message : String(e)] } }
+  if (paperwork.failures.length) console.error('[cron/order-retention] paperwork failures:', paperwork.failures.slice(0, 20).join(' | '))
+  const failed = result.failures.length > 0 || paperwork.failures.length > 0
+  return NextResponse.json({ ok: !failed, ...result, paperwork }, { status: failed ? 500 : 200 })
 }

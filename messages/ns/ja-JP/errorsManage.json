@@ -215,5 +215,12 @@
   "stripe_request_failed": "Stripeへのリクエストに失敗しました",
   "private_unavailable": "貸切イベントはまだ利用できません。データベースの移行が適用されていません。",
   "private_not_private": "この出店は貸切イベントではありません。",
-  "private_link_off": "この出店では、専用リンクからの注文は無効になっています。"
+  "private_link_off": "この出店では、専用リンクからの注文は無効になっています。",
+  "paperwork_file_too_big": "ファイルが20 MBを超えています。小さいファイルを選択してください。",
+  "paperwork_file_type": "このファイル形式には対応していません。PDF、JPEG、PNG、HEIC、WebPのいずれかのファイルをご利用ください。",
+  "paperwork_upload_failed": "アップロードできませんでした。もう一度お試しください。",
+  "paperwork_not_found": "この書類はすでに存在しません。ページを再読み込みしてください。",
+  "paperwork_bad_details": "入力内容に誤りがあります。確認してもう一度お試しください。",
+  "paperwork_send_limit": "短時間に多くのリンクを送信しました。1時間後にもう一度お試しください。",
+  "paperwork_send_failed": "メールを送信できませんでした。もう一度お試しください。"
 }

@@ -215,5 +215,12 @@
   "stripe_request_failed": "A Stripe-kérés nem sikerült",
   "private_unavailable": "A privát események még nem érhetők el — az adatbázis-migráció még nincs lefuttatva.",
   "private_not_private": "Ez az esemény nem privát.",
-  "private_link_off": "Ennél az eseménynél ki van kapcsolva a privát linken keresztüli rendelés."
+  "private_link_off": "Ennél az eseménynél ki van kapcsolva a privát linken keresztüli rendelés.",
+  "paperwork_file_too_big": "Ez a fájl nagyobb, mint 20 MB. Kérjük, válasszon kisebbet.",
+  "paperwork_file_type": "Ez a fájltípus nem támogatott. Kérjük, PDF, JPEG, PNG, HEIC vagy WebP fájlt használjon.",
+  "paperwork_upload_failed": "A feltöltés nem sikerült. Kérjük, próbálja újra.",
+  "paperwork_not_found": "Ez a dokumentum már nem létezik. Kérjük, töltse be újra az oldalt.",
+  "paperwork_bad_details": "Néhány adat nem megfelelő. Kérjük, ellenőrizze őket, és próbálja újra.",
+  "paperwork_send_limit": "Rövid idő alatt sok linket küldött. Kérjük, egy óra múlva próbálja újra.",
+  "paperwork_send_failed": "Nem sikerült elküldeni az e-mailt. Kérjük, próbálja újra."
 }

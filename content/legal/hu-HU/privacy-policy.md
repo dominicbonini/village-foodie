@@ -1,4 +1,4 @@
-<!-- translation-of: privacy-policy.md sha256:def241a5c7e2316baa4c9f2b8737ce3af40a8dcb30f77142217ff498581d447c -->
+<!-- translation-of: privacy-policy.md sha256:82cea56af67fea07578a2661fce54e9e2af5cb9664f6c18ee064604841ee518c -->
 # Adatvédelmi tájékoztató
 
 **Utolsó frissítés:** {{LAST_UPDATED}}
@@ -66,6 +66,8 @@ Ez a különbségtétel lényeges, ezért érdemes világosan kimondani.
 Ahol jogos érdekre támaszkodunk, érdekünk egy megbízható szolgáltatás működtetése és fejlesztése. Mérlegeltük az Ön jogait, és úgy ítéljük meg, hogy ez az adatkezelés nem élvez elsőbbséget azokkal szemben. Bármikor tiltakozhat — lásd a 8. pontot.
 
 **Biometrikus feloldás.** Ha az alkalmazásban bekapcsolja a Face ID-t, a Touch ID-t vagy az ujjlenyomatos feloldást, az ellenőrzés teljes egészében az Ön eszközén történik, és azt az operációs rendszer kezeli. Biometrikus adatot soha nem kapunk, nem látunk és nem tárolunk. Csak egy igen-vagy-nem eredményt kapunk.
+
+**Megfelelőségi dokumentumok.** Ha tanúsítványait, biztosítási dokumentumait és egyéb megfelelőségi dokumentumait a HatchGrab szolgáltatásban tárolja, tároljuk a fájlokat és a hozzájuk mentett adatokat. Amikor feltölt egy ilyen dokumentumot, elküldjük a Google Gemini szolgáltatásának, ugyanannak, amely az étlapokat is kiolvassa, hogy kitöltse az olyan adatokat, mint például a kiállító és a lejárat időpontja; ezeket Ön ellenőrzi, mielőtt bármi mentésre kerülne. Dokumentumait kizárólag azokkal osztjuk meg, akiknek Ön elküldi őket, lejáró linkeken keresztül, és addig őrizzük meg őket, amíg Ön nem törli őket, vagy meg nem szünteti a fiókját.
 
 ---
 

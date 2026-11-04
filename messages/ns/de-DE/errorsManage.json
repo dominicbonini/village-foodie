@@ -215,5 +215,12 @@
   "stripe_request_failed": "Stripe-Anfrage fehlgeschlagen",
   "private_unavailable": "Private Events sind noch nicht verfügbar – die Datenbankmigration wurde noch nicht ausgeführt.",
   "private_not_private": "Dieses Event ist nicht privat.",
-  "private_link_off": "Bestellungen über den privaten Link sind für dieses Event ausgeschaltet."
+  "private_link_off": "Bestellungen über den privaten Link sind für dieses Event ausgeschaltet.",
+  "paperwork_file_too_big": "Diese Datei ist größer als 20 MB. Bitte wählen Sie eine kleinere.",
+  "paperwork_file_type": "Dieser Dateityp wird nicht akzeptiert. Bitte verwenden Sie eine PDF-, JPEG-, PNG-, HEIC- oder WebP-Datei.",
+  "paperwork_upload_failed": "Das Hochladen hat nicht funktioniert. Bitte versuchen Sie es erneut.",
+  "paperwork_not_found": "Dieses Dokument ist nicht mehr vorhanden. Bitte laden Sie die Seite neu.",
+  "paperwork_bad_details": "Einige Angaben sind nicht korrekt. Bitte prüfen Sie sie und versuchen Sie es erneut.",
+  "paperwork_send_limit": "Sie haben in kurzer Zeit sehr viele Links gesendet. Bitte versuchen Sie es in einer Stunde erneut.",
+  "paperwork_send_failed": "Die E-Mail konnte nicht gesendet werden. Bitte versuchen Sie es erneut."
 }

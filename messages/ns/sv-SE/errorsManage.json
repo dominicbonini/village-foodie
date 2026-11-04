@@ -215,5 +215,12 @@
   "stripe_request_failed": "Begäran till Stripe misslyckades",
   "private_unavailable": "Privata evenemang är inte tillgängliga än – databasmigreringen har inte körts.",
   "private_not_private": "Det här evenemanget är inte privat.",
-  "private_link_off": "Beställning via privat länk är avstängd för det här evenemanget."
+  "private_link_off": "Beställning via privat länk är avstängd för det här evenemanget.",
+  "paperwork_file_too_big": "Filen är större än 20 MB. Välj en mindre fil.",
+  "paperwork_file_type": "Den filtypen accepteras inte. Använd en PDF-, JPEG-, PNG-, HEIC- eller WebP-fil.",
+  "paperwork_upload_failed": "Uppladdningen misslyckades. Försök igen.",
+  "paperwork_not_found": "Dokumentet finns inte längre. Ladda om sidan.",
+  "paperwork_bad_details": "Några av uppgifterna stämmer inte. Kontrollera dem och försök igen.",
+  "paperwork_send_limit": "Du har skickat många länkar på kort tid. Försök igen om en timme.",
+  "paperwork_send_failed": "Mejlet kunde inte skickas. Försök igen."
 }

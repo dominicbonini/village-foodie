@@ -1,4 +1,4 @@
-<!-- translation-of: privacy-policy.md sha256:def241a5c7e2316baa4c9f2b8737ce3af40a8dcb30f77142217ff498581d447c -->
+<!-- translation-of: privacy-policy.md sha256:82cea56af67fea07578a2661fce54e9e2af5cb9664f6c18ee064604841ee518c -->
 # Tietosuojaseloste
 
 **Päivitetty viimeksi:** {{LAST_UPDATED}}
@@ -66,6 +66,8 @@ Tämä ero on tärkeä, joten se kannattaa todeta selvästi.
 Kun käsittely perustuu oikeutettuihin etuihin, etumme on luotettavan palvelun ylläpitäminen ja kehittäminen. Olemme arvioineet oikeutesi emmekä katso, että tämä käsittely syrjäyttää ne. Voit vastustaa käsittelyä milloin tahansa — katso kohta 8.
 
 **Biometrinen lukituksen avaus.** Jos otat sovelluksessa käyttöön Face ID:n, Touch ID:n tai sormenjälkitunnistuksen, tarkistus tapahtuu kokonaan laitteellasi ja sen hoitaa käyttöjärjestelmä. Emme koskaan vastaanota, näe tai tallenna biometrisiä tietoja. Saamme ainoastaan kyllä- tai ei-tuloksen.
+
+**Toimintaan vaadittavat asiakirjat.** Jos säilytät todistuksiasi, vakuutuksiasi ja muita toimintaasi vaadittavia asiakirjoja HatchGrabissa, tallennamme tiedostot ja niiden yhteydessä tallentamasi tiedot. Kun lataat asiakirjan, lähetämme sen Googlen Gemini-palveluun, samaan, joka lukee ruokalistat, jotta se voi täyttää esimerkiksi asiakirjan myöntäjän ja viimeisen voimassaolopäivän; tarkistat tiedot ennen kuin mitään tallennetaan. Asiakirjojasi jaetaan vain niille henkilöille, joille itse päätät lähettää ne, vanhenevien linkkien kautta, ja säilytämme niitä, kunnes poistat ne tai suljet tilisi.
 
 ---
 

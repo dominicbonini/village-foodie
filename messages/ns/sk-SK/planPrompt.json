@@ -113,6 +113,10 @@
     "private_events": {
       "name": "Súkromné akcie",
       "many": "yes"
+    },
+    "paperwork": {
+      "name": "Dokumenty",
+      "many": "yes"
     }
   }
 }

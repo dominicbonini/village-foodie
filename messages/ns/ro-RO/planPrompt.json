@@ -113,6 +113,10 @@
     "private_events": {
       "name": "Evenimentele private",
       "many": "yes"
+    },
+    "paperwork": {
+      "name": "Documentele",
+      "many": "yes"
     }
   }
 }

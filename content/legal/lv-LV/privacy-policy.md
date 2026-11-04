@@ -1,4 +1,4 @@
-<!-- translation-of: privacy-policy.md sha256:def241a5c7e2316baa4c9f2b8737ce3af40a8dcb30f77142217ff498581d447c -->
+<!-- translation-of: privacy-policy.md sha256:82cea56af67fea07578a2661fce54e9e2af5cb9664f6c18ee064604841ee518c -->
 # Privātuma politika
 
 **Pēdējoreiz atjaunināts:** {{LAST_UPDATED}}
@@ -66,6 +66,8 @@ Mēs esam pārzinis attiecībā uz personas datiem, kas aprakstīti 3. un 5. sad
 Ja mēs balstāmies uz leģitīmajām interesēm, mūsu intereses ir uzticama pakalpojuma darbināšana un uzlabošana. Mēs esam izvērtējuši jūsu tiesības un neuzskatām, ka šī apstrāde ir svarīgāka par tām. Jūs jebkurā laikā varat iebilst — skatiet 8. sadaļu.
 
 **Biometriskā atbloķēšana.** Ja lietotnē ieslēdzat Face ID, Touch ID vai atbloķēšanu ar pirkstu nospiedumu, pārbaude notiek pilnībā jūsu ierīcē, un to veic operētājsistēma. Mēs nekad nesaņemam, neredzam un neglabājam biometriskos datus. Mēs saņemam tikai atbildi „jā“ vai „nē“.
+
+**Atbilstības dokumenti.** Ja glabājat savus sertifikātus, apdrošināšanas polises un citus atbilstības dokumentus HatchGrab, mēs glabājam failus un datus, ko saglabājat kopā ar tiem. Kad augšupielādējat dokumentu, mēs to nosūtām Google pakalpojumam Gemini — tam pašam, kas nolasa ēdienkartes —, lai aizpildītu tādus datus kā dokumenta izdevējs un derīguma termiņa beigas; jūs tos pārbaudāt, pirms kaut kas tiek saglabāts. Jūsu dokumenti tiek kopīgoti tikai ar tiem cilvēkiem, kuriem izvēlaties tos nosūtīt, izmantojot saites ar ierobežotu derīguma termiņu, un mēs tos glabājam, līdz jūs tos izdzēšat vai slēdzat savu kontu.
 
 ---
 

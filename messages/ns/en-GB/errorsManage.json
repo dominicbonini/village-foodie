@@ -215,5 +215,12 @@
   "stripe_request_failed": "Stripe request failed",
   "private_unavailable": "Private events are not available yet — the database migration has not been applied.",
   "private_not_private": "This event is not private.",
-  "private_link_off": "Ordering by private link is switched off for this event."
+  "private_link_off": "Ordering by private link is switched off for this event.",
+  "paperwork_file_too_big": "That file is over 20 MB. Please choose a smaller one.",
+  "paperwork_file_type": "That file type isn’t accepted. Please use a PDF, JPEG, PNG, HEIC or WebP file.",
+  "paperwork_upload_failed": "The upload didn’t work. Please try again.",
+  "paperwork_not_found": "That document isn’t there any more. Please reload the page.",
+  "paperwork_bad_details": "Some of the details aren’t right. Please check them and try again.",
+  "paperwork_send_limit": "You’ve sent a lot of links in a short time. Please try again in an hour.",
+  "paperwork_send_failed": "The email couldn’t be sent. Please try again."
 }

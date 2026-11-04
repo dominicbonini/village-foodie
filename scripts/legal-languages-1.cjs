@@ -88,7 +88,9 @@ const REGIONAL = [['de-AT', 'AT', 'de-DE'], ['de-CH', 'CH', 'de-DE'], ['nl-BE', 
   // ⚠️ RE-PINNED (contact-1): PRIVACY_UPDATED 31 October → 2 November 2026 and TERMS_VERSION '2026-11-01' → '2026-11-02', by name.
   // ⚠️ RE-PINNED (tidy-1, 3 November 2026): …then 2 → 3 November 2026 and '2026-11-02' → '2026-11-03' (scripts/_lp-tidy-1.cjs), by name.
   const T1L = require('./_lp-tidy-1.cjs')
-  const want = { PRIVACY_UPDATED: /export const PRIVACY_UPDATED = '([^']+)'/.exec(legalHead)[1] === C1.PRIVACY_DATE_OLD && C1.PRIVACY_DATE_NEW === T1L.PRIVACY_DATE_OLD ? T1L.PRIVACY_DATE_NEW : null, TERMS_UPDATED: W2.NEW_DATE, COUNTRY_TERMS_UPDATED: W2.NEW_DATE, TERMS_VERSION: W2.TERMS_VERSION_NEW === C1.TERMS_VERSION_OLD && C1.TERMS_VERSION_NEW === T1L.TERMS_VERSION_OLD ? T1L.TERMS_VERSION_NEW : null }
+  // ⚠️ RE-PINNED (paperwork-1, 4 November 2026): …then 3 → 4 November 2026 and '2026-11-03' → '2026-11-04' (scripts/_lp-paperwork-1.cjs), by name.
+  const P1L = require('./_lp-paperwork-1.cjs')
+  const want = { PRIVACY_UPDATED: /export const PRIVACY_UPDATED = '([^']+)'/.exec(legalHead)[1] === C1.PRIVACY_DATE_OLD && C1.PRIVACY_DATE_NEW === T1L.PRIVACY_DATE_OLD ? (P1L.LEGAL_LANDED && P1L.PRIVACY_DATE_OLD === T1L.PRIVACY_DATE_NEW ? P1L.PRIVACY_DATE_NEW : T1L.PRIVACY_DATE_NEW) : null, TERMS_UPDATED: W2.NEW_DATE, COUNTRY_TERMS_UPDATED: W2.NEW_DATE, TERMS_VERSION: W2.TERMS_VERSION_NEW === C1.TERMS_VERSION_OLD && C1.TERMS_VERSION_NEW === T1L.TERMS_VERSION_OLD ? (P1L.LEGAL_LANDED && P1L.TERMS_VERSION_OLD === T1L.TERMS_VERSION_NEW ? P1L.TERMS_VERSION_NEW : T1L.TERMS_VERSION_NEW) : null }
   for (const [k, v] of Object.entries(want)) {
     const re = new RegExp(`export const ${k} = '([^']+)'`)
     t(`${k} is '${v}', as before this workstream — translating moves no date`, re.exec(legal)?.[1] === v, re.exec(legal)?.[1])
@@ -261,6 +263,9 @@ const REGIONAL = [['de-AT', 'AT', 'de-DE'], ['de-CH', 'CH', 'de-DE'], ['nl-BE', 
       'app/(legal)/': 'the English legal pages — governing, English by design',
       'app/verify-email/page.tsx': 'the invalid-link branch, which has no account and so no language (English, the default)',
       'app/api/account/request-deletion/route.ts': 'a coded refusal (confirm_mismatch) the screen words in the language',
+      // ⚠️ RE-PINNED (paperwork-1, 4 November 2026): the document-type names given to the AI in its prompt, English like the rest of
+      // the prompt (lib/paperwork/ai-read.ts); nothing a person reads.
+      'app/api/manage/paperwork/route.ts': 'the document-type names in the AI\'s prompt (English, like the prompt); never shown to anyone',
     }
     const hits = execSync(`grep -rlE "translatorFor\\((DEFAULT_LOCALE|'en-GB')" app components lib`, { cwd: REPO, encoding: 'utf8' }).split('\n').filter(Boolean)
     const stray = hits.filter(f => !Object.keys(ALLOWED).some(a => f.startsWith(a)))

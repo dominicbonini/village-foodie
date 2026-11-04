@@ -215,5 +215,12 @@
   "stripe_request_failed": "Stripe-verzoek mislukt",
   "private_unavailable": "Privé-evenementen zijn nog niet beschikbaar — de databasemigratie is nog niet uitgevoerd.",
   "private_not_private": "Dit evenement is niet privé.",
-  "private_link_off": "Bestellen via een privélink staat uit voor dit evenement."
+  "private_link_off": "Bestellen via een privélink staat uit voor dit evenement.",
+  "paperwork_file_too_big": "Dat bestand is groter dan 20 MB. Kies een kleiner bestand.",
+  "paperwork_file_type": "Dat bestandstype wordt niet geaccepteerd. Gebruik een PDF-, JPEG-, PNG-, HEIC- of WebP-bestand.",
+  "paperwork_upload_failed": "Het uploaden is mislukt. Probeer het opnieuw.",
+  "paperwork_not_found": "Dat document bestaat niet meer. Laad de pagina opnieuw.",
+  "paperwork_bad_details": "Sommige gegevens kloppen niet. Controleer ze en probeer het opnieuw.",
+  "paperwork_send_limit": "Je hebt in korte tijd veel links verstuurd. Probeer het over een uur opnieuw.",
+  "paperwork_send_failed": "De e-mail kon niet worden verstuurd. Probeer het opnieuw."
 }

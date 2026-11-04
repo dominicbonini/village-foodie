@@ -61,6 +61,8 @@ export const NAMESPACES = {
     // languages-1 (22 October 2026): the where-you-trade step's heading and button (components/DemoGetStarted.tsx, app/setup/page.tsx).
     'whereYouTrade'],
   manage: ['eventCard', 'menuBadges', 'orderCard', 'paymentActions', 'kitchenModals', 'userMenu', 'nativeShell',
+    // paperwork-1 (4 November 2026): Manage › Documents (components/manage/PaperworkTab.tsx).
+    'paperwork',
     // Language Phase 1c: the cuisine and price controls, the walkthrough, and the where-based step.
     'cuisinePicker', 'priceControls', 'walkthrough', 'whereBased', 'tradeArea',
     // Language Phase 1d (Menu A): the allergen wizard and card, Upsells, Custom extras, Deals.

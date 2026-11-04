@@ -215,5 +215,12 @@
   "stripe_request_failed": "Požadavek na Stripe selhal",
   "private_unavailable": "Soukromé akce zatím nejsou k dispozici — migrace databáze ještě nebyla provedena.",
   "private_not_private": "Tato akce není soukromá.",
-  "private_link_off": "Objednávání přes soukromý odkaz je pro tuto akci vypnuté."
+  "private_link_off": "Objednávání přes soukromý odkaz je pro tuto akci vypnuté.",
+  "paperwork_file_too_big": "Soubor je větší než 20 MB. Vyberte prosím menší.",
+  "paperwork_file_type": "Tento typ souboru není podporován. Použijte prosím soubor PDF, JPEG, PNG, HEIC nebo WebP.",
+  "paperwork_upload_failed": "Nahrání se nezdařilo. Zkuste to prosím znovu.",
+  "paperwork_not_found": "Tento dokument už neexistuje. Načtěte prosím stránku znovu.",
+  "paperwork_bad_details": "Některé údaje nejsou správně. Zkontrolujte je prosím a zkuste to znovu.",
+  "paperwork_send_limit": "Za krátkou dobu jste poslali hodně odkazů. Zkuste to prosím znovu za hodinu.",
+  "paperwork_send_failed": "E-mail se nepodařilo odeslat. Zkuste to prosím znovu."
 }

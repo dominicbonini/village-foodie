@@ -1,0 +1,23 @@
+{
+  "intro": "Keep your certificates in one place. We’ll remind you before anything runs out, and you can send them to an organizer in one go.",
+  "sendToOrganiser": "Send to organizer",
+  "types": {
+    "street_trading_licence": "Street trading license",
+    "trading_licence": "Trading license"
+  },
+  "check": {
+    "footer": "The previous certificate is kept as history. Your files are private: only you, and organizers you send them to, can see them."
+  },
+  "warnings": {
+    "expired": "This expired on {date}. You can still save it, but organizers will see that it has expired."
+  },
+  "send": {
+    "title": "Send to organizer",
+    "email": "Organizer’s email",
+    "footer": "If you renew a certificate, the organizer’s link shows the new one automatically. You’ll see when they open it.",
+    "emailNone": "Enter the organizer’s email."
+  },
+  "sent": {
+    "turnOffConfirm": "Turn off this link? The organizer won’t be able to open it anymore."
+  }
+}

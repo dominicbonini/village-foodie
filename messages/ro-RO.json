@@ -3331,7 +3331,14 @@
     "stripe_request_failed": "Cererea către Stripe a eșuat",
     "private_unavailable": "Evenimentele private nu sunt încă disponibile — migrarea bazei de date nu a fost aplicată.",
     "private_not_private": "Acest eveniment nu este privat.",
-    "private_link_off": "Comenzile prin link privat sunt dezactivate pentru acest eveniment."
+    "private_link_off": "Comenzile prin link privat sunt dezactivate pentru acest eveniment.",
+    "paperwork_file_too_big": "Fișierul depășește 20 MB. Alegeți unul mai mic.",
+    "paperwork_file_type": "Acest tip de fișier nu este acceptat. Folosiți un fișier PDF, JPEG, PNG, HEIC sau WebP.",
+    "paperwork_upload_failed": "Încărcarea nu a reușit. Încercați din nou.",
+    "paperwork_not_found": "Acest document nu mai există. Reîncărcați pagina.",
+    "paperwork_bad_details": "Unele detalii nu sunt corecte. Verificați-le și încercați din nou.",
+    "paperwork_send_limit": "Ați trimis multe linkuri într-un timp scurt. Încercați din nou peste o oră.",
+    "paperwork_send_failed": "E-mailul nu a putut fi trimis. Încercați din nou."
   },
   "tradeArea": {
     "country_missing": "Alegeți țara în care își are sediul food truck-ul dumneavoastră.",
@@ -4828,6 +4835,7 @@
     "tabs": {
       "menu": "Meniu",
       "schedule": "Program",
+      "paperwork": "Documente",
       "social": "Rețele sociale",
       "reports": "Rapoarte",
       "team": "Echipă",
@@ -6029,6 +6037,10 @@
       "private_events": {
         "name": "Evenimentele private",
         "many": "yes"
+      },
+      "paperwork": {
+        "name": "Documentele",
+        "many": "yes"
       }
     }
   },
@@ -6417,6 +6429,183 @@
       "appsSentence": "Există și o aplicație pentru iPad și Android, care continuă să preia comenzile la fața locului dacă pierdeți semnalul.",
       "appsOffline": "Aplicația pentru iPad și Android preia comenzile la fața locului și fără semnal și le trimite când reveniți online; panoul de control web are nevoie de conexiune.",
       "webOffline": "Panoul de control web are nevoie de conexiune pentru a afișa comenzile noi."
+    }
+  },
+  "paperwork": {
+    "title": "Documente",
+    "intro": "Păstrați-vă certificatele într-un singur loc. Vă reamintim înainte să expire ceva și le puteți trimite unui organizator dintr-o singură mișcare.",
+    "loading": "Se încarcă documentele…",
+    "loadFailed": "Documentele nu au putut fi încărcate. Încercați din nou.",
+    "retry": "Încercați din nou",
+    "counts": {
+      "expired": "{count, plural, one {Expirate: #} few {Expirate: #} other {Expirate: #}}",
+      "dueSoon": "{count, plural, one {Expiră curând: #} few {Expiră curând: #} other {Expiră curând: #}}",
+      "missing": "{count, plural, one {Lipsă: #} few {Lipsă: #} other {Lipsă: #}}",
+      "upToDate": "{count, plural, one {La zi: #} few {La zi: #} other {La zi: #}}"
+    },
+    "status": {
+      "upToDate": "La zi",
+      "dueSoon": "Expiră curând",
+      "expired": "Expirat",
+      "upload": "Încărcați"
+    },
+    "line": {
+      "expires": "Expiră la {date}",
+      "expiresIn": "Expiră la {date} · {days, plural, one {peste # zi} few {peste # zile} other {peste # de zile}}",
+      "expiresToday": "Expiră astăzi",
+      "expired": "A expirat la {date}",
+      "reviewBy": "Revizuire până la {date}",
+      "reviewByIn": "Revizuire până la {date} · {days, plural, one {peste # zi} few {peste # zile} other {peste # de zile}}",
+      "reviewOverdue": "Revizuire restantă din {date}",
+      "noExpiry": "Nu expiră",
+      "cover": "Acoperire {amount}",
+      "notUploaded": "Neîncărcat încă"
+    },
+    "select": "Selectați {document}",
+    "add": "+ Adăugați un document",
+    "selected": "{count, plural, one {Selectate: #} few {Selectate: #} other {Selectate: #}}",
+    "sendToOrganiser": "Trimiteți organizatorului",
+    "types": {
+      "food_registration": "Înregistrare sanitar-veterinară",
+      "hygiene_rating": "Calificativ de igienă alimentară",
+      "food_safety_plan": "Plan de siguranță alimentară (HACCP)",
+      "public_liability": "Asigurare de răspundere civilă față de terți",
+      "employers_liability": "Asigurare de răspundere civilă a angajatorului",
+      "gas_safety": "Verificarea instalației de gaz",
+      "pat_test": "Verificare aparate electrice portabile",
+      "fire_safety": "Securitate la incendiu",
+      "risk_assessment": "Evaluarea riscurilor",
+      "allergen_info": "Informații despre alergeni",
+      "street_trading_licence": "Autorizație de comerț stradal",
+      "electrical_safety": "Verificarea instalației electrice",
+      "trading_licence": "Autorizație de funcționare"
+    },
+    "upload": {
+      "title": "Adăugați un document",
+      "intro": "Fotografiați-l sau alegeți o fotografie ori un fișier.",
+      "takePhoto": "Faceți o fotografie",
+      "chooseFile": "Alegeți o fotografie sau un fișier",
+      "accepted": "PDF, JPEG, PNG, HEIC sau WebP, de maximum 20 MB.",
+      "uploading": "Se încarcă… {percent}%",
+      "reading": "Citim documentul…",
+      "tooBig": "Fișierul depășește 20 MB. Alegeți unul mai mic.",
+      "wrongType": "Acest tip de fișier nu este acceptat. Folosiți un fișier PDF, JPEG, PNG, HEIC sau WebP.",
+      "failed": "Încărcarea nu a reușit. Încercați din nou.",
+      "cancel": "Anulați"
+    },
+    "check": {
+      "title": "Verificați detaliile",
+      "aiBanner": "Am preluat aceste informații din document. Verificați dacă sunt corecte înainte de a salva.",
+      "document": "Document",
+      "other": "Altul…",
+      "otherName": "Numele documentului",
+      "issuer": "Emis de",
+      "issued": "Emis la",
+      "expires": "Expiră la",
+      "reviewBy": "Revizuire până la",
+      "nameOnDocument": "Numele de pe document",
+      "cover": "Acoperirea asigurării",
+      "coverHint": "Opțional. Suma acoperită de poliță.",
+      "currency": "Moneda",
+      "save": "Salvați",
+      "saving": "Se salvează…",
+      "cancel": "Anulați",
+      "saved": "Salvat",
+      "footer": "Certificatul anterior este păstrat în istoric. Fișierele dumneavoastră sunt private: doar dumneavoastră și organizatorii cărora le trimiteți le pot vedea.",
+      "needType": "Alegeți documentul sau scrieți-i numele.",
+      "badDates": "Data expirării nu poate fi înaintea datei emiterii."
+    },
+    "warnings": {
+      "notRead": "Nu am putut citi acest document. Completați detaliile manual.",
+      "expired": "Acest document a expirat la {date}. Îl puteți salva în continuare, dar organizatorii vor vedea că a expirat.",
+      "expiresSoon": "{days, plural, =0 {Acest document expiră astăzi. Vă vom reaminti în fiecare săptămână până când este reînnoit.} one {Acest document expiră peste # zi. Vă vom reaminti cu 4 săptămâni înainte, cu 1 săptămână înainte și în ziua expirării.} few {Acest document expiră peste # zile. Vă vom reaminti cu 4 săptămâni înainte, cu 1 săptămână înainte și în ziua expirării.} other {Acest document expiră peste # de zile. Vă vom reaminti cu 4 săptămâni înainte, cu 1 săptămână înainte și în ziua expirării.}}",
+      "nameMismatch": "Numele de pe document, „{name}”, nu pare să fie numele afacerii dumneavoastră. Verificați dacă este documentul corect."
+    },
+    "view": {
+      "close": "Închideți",
+      "open": "Deschideți",
+      "download": "Descărcați",
+      "noPreview": "Acest fișier nu poate fi afișat aici. Deschideți-l sau descărcați-l.",
+      "details": "Detalii",
+      "edit": "Editați detaliile",
+      "renew": "Încărcați o versiune nouă",
+      "earlier": "Versiuni anterioare",
+      "uploaded": "Încărcat la {date}",
+      "delete": "Ștergeți",
+      "deleteConfirm": "Ștergeți acest document și versiunile lui anterioare? Fișierele sunt eliminate, iar documentul dispare din toate linkurile pe care le-ați trimis.",
+      "deleteYes": "Ștergeți",
+      "deleted": "Document șters",
+      "keep": "Păstrați-l"
+    },
+    "send": {
+      "title": "Trimiteți organizatorului",
+      "intro": "Organizatorul primește un e-mail cu un link pentru a vizualiza sau a descărca totul.",
+      "email": "E-mailul organizatorului",
+      "emailHint": "Maximum 5 adrese, separate prin virgulă.",
+      "event": "Eveniment (opțional)",
+      "noEvent": "Niciun eveniment",
+      "documents": "Documente",
+      "message": "Mesaj (opțional)",
+      "messagePlaceholder": "Bună ziua, vă trimitem documentele noastre pentru târg.",
+      "until": "Linkul funcționează până la",
+      "untilAfterEvent": "{date} (a doua zi după eveniment)",
+      "send": "Trimiteți",
+      "sending": "Se trimite…",
+      "footer": "Dacă reînnoiți un certificat, linkul organizatorului îl afișează automat pe cel nou. Veți vedea când organizatorul deschide linkul.",
+      "sent": "Trimis către {emails}",
+      "cancel": "Anulați",
+      "emailNone": "Introduceți e-mailul organizatorului.",
+      "emailInvalid": "„{email}” nu este o adresă de e-mail.",
+      "emailTooMany": "Puteți trimite către maximum 5 adrese odată.",
+      "noDocuments": "Alegeți cel puțin un document.",
+      "untilRange": "Alegeți o dată începând de mâine și până la cel mult 90 de zile de astăzi."
+    },
+    "sent": {
+      "title": "Trimise",
+      "empty": "Nu ați trimis nimic încă.",
+      "to": "Către {emails}",
+      "sentOn": "Trimis la {date}",
+      "opened": "Deschis la {date} · {count, plural, one {# vizualizare} few {# vizualizări} other {# de vizualizări}}",
+      "notOpened": "Nedeschis încă",
+      "until": "Funcționează până la {date}",
+      "expiredOn": "A expirat la {date}",
+      "off": "Dezactivat",
+      "turnOff": "Dezactivați linkul",
+      "turnOffConfirm": "Dezactivați acest link? Organizatorul nu îl va mai putea deschide.",
+      "turnedOff": "Link dezactivat"
+    },
+    "page": {
+      "title": "Documente de la {truck}",
+      "intro": "{truck} a partajat aceste documente cu dumneavoastră.",
+      "view": "Vizualizați",
+      "download": "Descărcați",
+      "downloadAll": "Descărcați tot",
+      "until": "Acest link funcționează până la {date}.",
+      "none": "Momentan nu există documente pe acest link.",
+      "expiredTitle": "Acest link a expirat",
+      "expiredBody": "Acest link a expirat, rugați {truck} să vi-l trimită din nou.",
+      "expiredBodyUnknown": "Acest link a expirat. Rugați firma care l-a trimis să vi-l trimită din nou.",
+      "sharedWith": "Partajat prin HatchGrab"
+    },
+    "email": {
+      "shareSubject": "{truck} v-a trimis documentele sale",
+      "shareHeading": "Documente de la {truck}",
+      "shareIntro": "{truck} a partajat aceste documente cu dumneavoastră.",
+      "event": "Pentru: {event}",
+      "shareButton": "Vizualizați documentele",
+      "shareUntil": "Linkul funcționează până la {date}. Dacă a expirat, rugați {truck} să vi-l trimită din nou.",
+      "shareReply": "Răspundeți la acest e-mail pentru a lua legătura cu {truck}.",
+      "expires": "expiră la {date}",
+      "reviewBy": "revizuire până la {date}",
+      "noExpiry": "nu expiră",
+      "reminderSubject": "{count, plural, one {Un document trebuie reînnoit} few {# documente trebuie reînnoite} other {# de documente trebuie reînnoite}}",
+      "reminderHeading": "Documentele dumneavoastră",
+      "reminderIntro": "Unele documente ale food truck-ului {truck} trebuie reînnoite:",
+      "reminderIn": "{document} expiră la {date} ({days, plural, one {peste # zi} few {peste # zile} other {peste # de zile}})",
+      "reminderToday": "{document} expiră astăzi",
+      "reminderExpired": "{document} a expirat la {date}",
+      "reminderButton": "Deschideți Documente",
+      "reminderFooter": "Vă reamintim cu 4 săptămâni înainte, cu 1 săptămână înainte și în ziua expirării, apoi în fiecare săptămână până când documentul este reînnoit."
     }
   }
 }

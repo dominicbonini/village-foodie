@@ -42,6 +42,8 @@ export const FEATURES = [
   'schedule_graphics',
   'event_types',
   'private_events',
+  // paperwork-1 (4 November 2026): Manage › Paperwork. No plan_features row = ON for every plan; switchable per plan or per truck.
+  'paperwork',
 ] as const
 
 export type Feature = (typeof FEATURES)[number]

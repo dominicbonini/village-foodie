@@ -215,5 +215,12 @@
   "stripe_request_failed": "Zahteva za Stripe ni uspela",
   "private_unavailable": "Zasebni dogodki še niso na voljo — migracija baze podatkov še ni bila uveljavljena.",
   "private_not_private": "Ta dogodek ni zaseben.",
-  "private_link_off": "Naročanje prek zasebne povezave je za ta dogodek izklopljeno."
+  "private_link_off": "Naročanje prek zasebne povezave je za ta dogodek izklopljeno.",
+  "paperwork_file_too_big": "Datoteka je večja od 20 MB. Izberite manjšo.",
+  "paperwork_file_type": "Ta vrsta datoteke ni podprta. Uporabite datoteko PDF, JPEG, PNG, HEIC ali WebP.",
+  "paperwork_upload_failed": "Nalaganje ni uspelo. Poskusite znova.",
+  "paperwork_not_found": "Tega dokumenta ni več. Osvežite stran.",
+  "paperwork_bad_details": "Nekateri podatki niso pravilni. Preverite jih in poskusite znova.",
+  "paperwork_send_limit": "V kratkem času ste poslali veliko povezav. Poskusite znova čez eno uro.",
+  "paperwork_send_failed": "E-poštnega sporočila ni bilo mogoče poslati. Poskusite znova."
 }

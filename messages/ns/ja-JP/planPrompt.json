@@ -113,6 +113,10 @@
     "private_events": {
       "name": "貸切イベント",
       "many": "yes"
+    },
+    "paperwork": {
+      "name": "書類管理",
+      "many": "yes"
     }
   }
 }

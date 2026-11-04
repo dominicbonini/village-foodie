@@ -3331,7 +3331,14 @@
     "stripe_request_failed": "Stripe užklausa nepavyko",
     "private_unavailable": "Privatūs renginiai dar negalimi — duomenų bazės migracija dar neatlikta.",
     "private_not_private": "Šis renginys nėra privatus.",
-    "private_link_off": "Užsakymai per privačią nuorodą šiam renginiui išjungti."
+    "private_link_off": "Užsakymai per privačią nuorodą šiam renginiui išjungti.",
+    "paperwork_file_too_big": "Šis failas didesnis nei 20 MB. Pasirinkite mažesnį.",
+    "paperwork_file_type": "Toks failo tipas nepriimamas. Naudokite PDF, JPEG, PNG, HEIC arba WebP failą.",
+    "paperwork_upload_failed": "Įkelti nepavyko. Bandykite dar kartą.",
+    "paperwork_not_found": "Šio dokumento nebėra. Įkelkite puslapį iš naujo.",
+    "paperwork_bad_details": "Kai kurie duomenys neteisingi. Patikrinkite juos ir bandykite dar kartą.",
+    "paperwork_send_limit": "Per trumpą laiką išsiuntėte daug nuorodų. Bandykite dar kartą po valandos.",
+    "paperwork_send_failed": "Nepavyko išsiųsti el. laiško. Bandykite dar kartą."
   },
   "tradeArea": {
     "country_missing": "Pasirinkite šalį, kurioje įsikūręs jūsų food truck.",
@@ -4828,6 +4835,7 @@
     "tabs": {
       "menu": "Meniu",
       "schedule": "Tvarkaraštis",
+      "paperwork": "Dokumentai",
       "social": "Socialiniai tinklai",
       "reports": "Ataskaitos",
       "team": "Komanda",
@@ -6029,6 +6037,10 @@
       "private_events": {
         "name": "Privatūs renginiai",
         "many": "yes"
+      },
+      "paperwork": {
+        "name": "Dokumentai",
+        "many": "yes"
       }
     }
   },
@@ -6417,6 +6429,183 @@
       "appsSentence": "Taip pat yra programėlė „iPad“ ir „Android“ įrenginiams, kuri toliau priima užsakymus vietoje, net jei dingsta ryšys.",
       "appsOffline": "Programėlė „iPad“ ir „Android“ įrenginiams priima užsakymus vietoje ir be ryšio bei išsiunčia juos, kai vėl prisijungiate; internetiniam valdymo skydeliui reikia ryšio.",
       "webOffline": "Internetiniam valdymo skydeliui reikia ryšio, kad būtų rodomi nauji užsakymai."
+    }
+  },
+  "paperwork": {
+    "title": "Dokumentai",
+    "intro": "Laikykite sertifikatus vienoje vietoje. Priminsime prieš baigiantis bet kurio jų galiojimui, o organizatoriui galėsite juos nusiųsti vienu kartu.",
+    "loading": "Įkeliami jūsų dokumentai…",
+    "loadFailed": "Nepavyko įkelti jūsų dokumentų. Bandykite dar kartą.",
+    "retry": "Bandyti dar kartą",
+    "counts": {
+      "expired": "{count, plural, one {# nebegalioja} few {# nebegalioja} many {# nebegalioja} other {# nebegalioja}}",
+      "dueSoon": "{count, plural, one {# baigia galioti} few {# baigia galioti} many {# baigia galioti} other {# baigia galioti}}",
+      "missing": "{count, plural, one {# trūksta} few {# trūksta} many {# trūksta} other {# trūksta}}",
+      "upToDate": "{count, plural, one {# galioja} few {# galioja} many {# galioja} other {# galioja}}"
+    },
+    "status": {
+      "upToDate": "Galioja",
+      "dueSoon": "Baigia galioti",
+      "expired": "Nebegalioja",
+      "upload": "Įkelti"
+    },
+    "line": {
+      "expires": "Galioja iki {date}",
+      "expiresIn": "Galioja iki {date} · {days, plural, one {liko # diena} few {liko # dienos} many {liko # dienos} other {liko # dienų}}",
+      "expiresToday": "Baigiasi šiandien",
+      "expired": "Nebegalioja nuo {date}",
+      "reviewBy": "Peržiūrėti iki {date}",
+      "reviewByIn": "Peržiūrėti iki {date} · {days, plural, one {liko # diena} few {liko # dienos} many {liko # dienos} other {liko # dienų}}",
+      "reviewOverdue": "Peržiūrėti reikėjo iki {date}",
+      "noExpiry": "Neterminuotas",
+      "cover": "Draudimo suma: {amount}",
+      "notUploaded": "Dar neįkelta"
+    },
+    "select": "Pasirinkti: {document}",
+    "add": "+ Pridėti dokumentą",
+    "selected": "{count, plural, one {Pasirinktas #} few {Pasirinkti #} many {Pasirinkta #} other {Pasirinkta #}}",
+    "sendToOrganiser": "Siųsti organizatoriui",
+    "types": {
+      "food_registration": "Maisto tvarkymo subjekto registracija",
+      "hygiene_rating": "Maisto higienos įvertinimas",
+      "food_safety_plan": "Maisto saugos planas (HACCP)",
+      "public_liability": "Civilinės atsakomybės draudimas",
+      "employers_liability": "Darbdavio civilinės atsakomybės draudimas",
+      "gas_safety": "Dujų įrenginių saugos pažyma",
+      "pat_test": "Nešiojamųjų elektros prietaisų patikra",
+      "fire_safety": "Priešgaisrinė sauga",
+      "risk_assessment": "Rizikos vertinimas",
+      "allergen_info": "Informacija apie alergenus",
+      "street_trading_licence": "Leidimas prekiauti gatvėje",
+      "electrical_safety": "Elektros saugos patikra",
+      "trading_licence": "Leidimas prekiauti"
+    },
+    "upload": {
+      "title": "Pridėti dokumentą",
+      "intro": "Nufotografuokite jį arba pasirinkite nuotrauką ar failą.",
+      "takePhoto": "Nufotografuoti",
+      "chooseFile": "Pasirinkti nuotrauką ar failą",
+      "accepted": "PDF, JPEG, PNG, HEIC arba WebP, iki 20 MB.",
+      "uploading": "Įkeliama… {percent}%",
+      "reading": "Nuskaitomas jūsų dokumentas…",
+      "tooBig": "Šis failas didesnis nei 20 MB. Pasirinkite mažesnį.",
+      "wrongType": "Toks failo tipas nepriimamas. Naudokite PDF, JPEG, PNG, HEIC arba WebP failą.",
+      "failed": "Įkelti nepavyko. Bandykite dar kartą.",
+      "cancel": "Atšaukti"
+    },
+    "check": {
+      "title": "Patikrinkite duomenis",
+      "aiBanner": "Šiuos duomenis nuskaitėme iš jūsų dokumento. Prieš išsaugodami patikrinkite, ar jie teisingi.",
+      "document": "Dokumentas",
+      "other": "Kita…",
+      "otherName": "Dokumento pavadinimas",
+      "issuer": "Išdavė",
+      "issued": "Išduota",
+      "expires": "Galioja iki",
+      "reviewBy": "Peržiūrėti iki",
+      "nameOnDocument": "Vardas ar pavadinimas dokumente",
+      "cover": "Draudimo suma",
+      "coverHint": "Neprivaloma. Suma, kurią apima polisas.",
+      "currency": "Valiuta",
+      "save": "Išsaugoti",
+      "saving": "Išsaugoma…",
+      "cancel": "Atšaukti",
+      "saved": "Išsaugota",
+      "footer": "Ankstesnis sertifikatas lieka istorijoje. Jūsų failai privatūs: juos matote tik jūs ir organizatoriai, kuriems juos nusiunčiate.",
+      "needType": "Pasirinkite dokumentą arba įrašykite jo pavadinimą.",
+      "badDates": "Galiojimo pabaigos data negali būti ankstesnė už išdavimo datą."
+    },
+    "warnings": {
+      "notRead": "Nepavyko nuskaityti šio dokumento. Užpildykite duomenis patys.",
+      "expired": "Šio dokumento galiojimas baigėsi {date}. Vis tiek galite jį išsaugoti, bet organizatoriai matys, kad jis nebegalioja.",
+      "expiresSoon": "{days, plural, =0 {Galiojimas baigiasi šiandien. Kas savaitę priminsime, kol jį atnaujinsite.} one {Galiojimas baigsis po # dienos. Priminsime likus 4 savaitėms, likus 1 savaitei ir tą dieną.} few {Galiojimas baigsis po # dienų. Priminsime likus 4 savaitėms, likus 1 savaitei ir tą dieną.} many {Galiojimas baigsis po # dienos. Priminsime likus 4 savaitėms, likus 1 savaitei ir tą dieną.} other {Galiojimas baigsis po # dienų. Priminsime likus 4 savaitėms, likus 1 savaitei ir tą dieną.}}",
+      "nameMismatch": "Vardas ar pavadinimas dokumente – „{name}“ – nepanašus į jūsų įmonės pavadinimą. Patikrinkite, ar tai tinkamas dokumentas."
+    },
+    "view": {
+      "close": "Uždaryti",
+      "open": "Atidaryti",
+      "download": "Atsisiųsti",
+      "noPreview": "Šio failo čia parodyti negalima. Atidarykite arba atsisiųskite jį.",
+      "details": "Duomenys",
+      "edit": "Redaguoti duomenis",
+      "renew": "Įkelti naują versiją",
+      "earlier": "Ankstesnės versijos",
+      "uploaded": "Įkelta {date}",
+      "delete": "Ištrinti",
+      "deleteConfirm": "Ištrinti šį dokumentą ir ankstesnes jo versijas? Failai bus pašalinti, o dokumentas dings iš visų išsiųstų nuorodų.",
+      "deleteYes": "Ištrinti",
+      "deleted": "Dokumentas ištrintas",
+      "keep": "Palikti"
+    },
+    "send": {
+      "title": "Siųsti organizatoriui",
+      "intro": "Organizatorius gaus el. laišką su nuoroda viskam peržiūrėti ar atsisiųsti.",
+      "email": "Organizatoriaus el. paštas",
+      "emailHint": "Iki 5 adresų, atskirtų kableliais.",
+      "event": "Renginys (neprivaloma)",
+      "noEvent": "Be renginio",
+      "documents": "Dokumentai",
+      "message": "Žinutė (neprivaloma)",
+      "messagePlaceholder": "Sveiki, štai mūsų dokumentai mugei.",
+      "until": "Nuoroda galioja iki",
+      "untilAfterEvent": "{date} (kitą dieną po renginio)",
+      "send": "Siųsti",
+      "sending": "Siunčiama…",
+      "footer": "Jei atnaujinsite sertifikatą, organizatoriaus nuorodoje automatiškai bus rodomas naujasis. Matysite, kada organizatorius ją atidarys.",
+      "sent": "Išsiųsta: {emails}",
+      "cancel": "Atšaukti",
+      "emailNone": "Įveskite organizatoriaus el. pašto adresą.",
+      "emailInvalid": "„{email}“ nėra el. pašto adresas.",
+      "emailTooMany": "Vienu kartu galite siųsti daugiausia 5 adresais.",
+      "noDocuments": "Pasirinkite bent vieną dokumentą.",
+      "untilRange": "Pasirinkite datą nuo rytojaus iki 90 dienų nuo šiandien."
+    },
+    "sent": {
+      "title": "Išsiųsta",
+      "empty": "Kol kas nieko neišsiųsta.",
+      "to": "Kam: {emails}",
+      "sentOn": "Išsiųsta {date}",
+      "opened": "Atidaryta {date} · {count, plural, one {# peržiūra} few {# peržiūros} many {# peržiūros} other {# peržiūrų}}",
+      "notOpened": "Dar neatidaryta",
+      "until": "Galioja iki {date}",
+      "expiredOn": "Nebegalioja nuo {date}",
+      "off": "Išjungta",
+      "turnOff": "Išjungti nuorodą",
+      "turnOffConfirm": "Išjungti šią nuorodą? Organizatorius nebegalės jos atidaryti.",
+      "turnedOff": "Nuoroda išjungta"
+    },
+    "page": {
+      "title": "{truck} dokumentai",
+      "intro": "{truck} pasidalijo su jumis šiais dokumentais.",
+      "view": "Peržiūrėti",
+      "download": "Atsisiųsti",
+      "downloadAll": "Atsisiųsti viską",
+      "until": "Ši nuoroda galioja iki {date}.",
+      "none": "Šioje nuorodoje šiuo metu dokumentų nėra.",
+      "expiredTitle": "Ši nuoroda nebegalioja",
+      "expiredBody": "Ši nuoroda nebegalioja. Paprašykite, kad {truck} atsiųstų ją dar kartą.",
+      "expiredBodyUnknown": "Ši nuoroda nebegalioja. Paprašykite ją atsiuntusios įmonės atsiųsti ją dar kartą.",
+      "sharedWith": "Bendrinta per HatchGrab"
+    },
+    "email": {
+      "shareSubject": "{truck} atsiuntė jums savo dokumentus",
+      "shareHeading": "{truck} dokumentai",
+      "shareIntro": "{truck} pasidalijo su jumis šiais dokumentais.",
+      "event": "Renginys: {event}",
+      "shareButton": "Peržiūrėti dokumentus",
+      "shareUntil": "Nuoroda galioja iki {date}. Jei ji nebegalioja, paprašykite, kad {truck} atsiųstų ją dar kartą.",
+      "shareReply": "Atsakykite į šį laišką, kad susisiektumėte su {truck}.",
+      "expires": "galioja iki {date}",
+      "reviewBy": "peržiūrėti iki {date}",
+      "noExpiry": "neterminuotas",
+      "reminderSubject": "{count, plural, one {Reikia atnaujinti # dokumentą} few {Reikia atnaujinti # dokumentus} many {Reikia atnaujinti # dokumento} other {Reikia atnaujinti # dokumentų}}",
+      "reminderHeading": "Jūsų dokumentai",
+      "reminderIntro": "Kai kuriuos {truck} dokumentus reikia atnaujinti:",
+      "reminderIn": "{document}: galiojimas baigiasi {date} (po {days, plural, one {# dienos} few {# dienų} many {# dienos} other {# dienų}})",
+      "reminderToday": "{document}: galiojimas baigiasi šiandien",
+      "reminderExpired": "{document}: galiojimas baigėsi {date}",
+      "reminderButton": "Atidaryti dokumentus",
+      "reminderFooter": "Primename likus 4 savaitėms, likus 1 savaitei ir tą dieną, o paskui kas savaitę, kol dokumentas atnaujinamas."
     }
   }
 }

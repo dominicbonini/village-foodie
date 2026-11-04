@@ -3331,7 +3331,14 @@
     "stripe_request_failed": "Permintaan Stripe gagal",
     "private_unavailable": "Acara peribadi belum tersedia — migrasi pangkalan data belum dijalankan.",
     "private_not_private": "Acara ini bukan acara peribadi.",
-    "private_link_off": "Pesanan melalui pautan peribadi dimatikan untuk acara ini."
+    "private_link_off": "Pesanan melalui pautan peribadi dimatikan untuk acara ini.",
+    "paperwork_file_too_big": "Fail itu melebihi 20 MB. Sila pilih fail yang lebih kecil.",
+    "paperwork_file_type": "Jenis fail itu tidak diterima. Sila gunakan fail PDF, JPEG, PNG, HEIC atau WebP.",
+    "paperwork_upload_failed": "Muat naik tidak berjaya. Sila cuba lagi.",
+    "paperwork_not_found": "Dokumen itu sudah tiada. Sila muat semula halaman.",
+    "paperwork_bad_details": "Sebahagian butiran tidak betul. Sila semak dan cuba lagi.",
+    "paperwork_send_limit": "Anda telah menghantar banyak pautan dalam masa yang singkat. Sila cuba lagi dalam sejam.",
+    "paperwork_send_failed": "E-mel tidak dapat dihantar. Sila cuba lagi."
   },
   "tradeArea": {
     "country_missing": "Pilih negara tempat trak anda berpangkalan.",
@@ -4828,6 +4835,7 @@
     "tabs": {
       "menu": "Menu",
       "schedule": "Jadual",
+      "paperwork": "Dokumen",
       "social": "Media sosial",
       "reports": "Laporan",
       "team": "Pasukan",
@@ -6001,6 +6009,10 @@
       "private_events": {
         "name": "Acara peribadi",
         "many": "yes"
+      },
+      "paperwork": {
+        "name": "Dokumen",
+        "many": "yes"
       }
     }
   },
@@ -6417,6 +6429,183 @@
       "appsSentence": "Terdapat juga aplikasi iPad dan Android, yang terus menerima pesanan walk-in jika anda hilang isyarat.",
       "appsOffline": "Aplikasi iPad dan Android terus menerima pesanan walk-in tanpa isyarat dan menghantarnya apabila anda kembali dalam talian; papan pemuka web memerlukan sambungan.",
       "webOffline": "Papan pemuka web memerlukan sambungan untuk memaparkan pesanan baharu."
+    }
+  },
+  "paperwork": {
+    "title": "Dokumen",
+    "intro": "Simpan sijil anda di satu tempat. Kami akan mengingatkan anda sebelum apa-apa tamat tempoh, dan anda boleh menghantarnya kepada penganjur sekali gus.",
+    "loading": "Memuatkan dokumen anda…",
+    "loadFailed": "Dokumen anda tidak dapat dimuatkan. Sila cuba lagi.",
+    "retry": "Cuba lagi",
+    "counts": {
+      "expired": "{count, plural, other {# tamat tempoh}}",
+      "dueSoon": "{count, plural, other {# hampir tamat tempoh}}",
+      "missing": "{count, plural, other {# belum ada}}",
+      "upToDate": "{count, plural, other {# masih sah}}"
+    },
+    "status": {
+      "upToDate": "Masih sah",
+      "dueSoon": "Hampir tamat tempoh",
+      "expired": "Tamat tempoh",
+      "upload": "Muat naik"
+    },
+    "line": {
+      "expires": "Tamat tempoh {date}",
+      "expiresIn": "Tamat tempoh {date} · {days, plural, other {dalam # hari}}",
+      "expiresToday": "Tamat tempoh hari ini",
+      "expired": "Telah tamat tempoh pada {date}",
+      "reviewBy": "Semak sebelum {date}",
+      "reviewByIn": "Semak sebelum {date} · {days, plural, other {dalam # hari}}",
+      "reviewOverdue": "Semakan sepatutnya dibuat pada {date}",
+      "noExpiry": "Tiada tarikh tamat tempoh",
+      "cover": "Perlindungan {amount}",
+      "notUploaded": "Belum dimuat naik"
+    },
+    "select": "Pilih {document}",
+    "add": "+ Tambah dokumen",
+    "selected": "{count, plural, other {# dipilih}}",
+    "sendToOrganiser": "Hantar kepada penganjur",
+    "types": {
+      "food_registration": "Pendaftaran perniagaan makanan",
+      "hygiene_rating": "Gred kebersihan makanan",
+      "food_safety_plan": "Pelan keselamatan makanan (HACCP)",
+      "public_liability": "Insurans liabiliti awam",
+      "employers_liability": "Insurans liabiliti majikan",
+      "gas_safety": "Sijil keselamatan gas",
+      "pat_test": "Ujian peralatan elektrik mudah alih (PAT)",
+      "fire_safety": "Keselamatan kebakaran",
+      "risk_assessment": "Penilaian risiko",
+      "allergen_info": "Maklumat alergen",
+      "street_trading_licence": "Lesen penjaja",
+      "electrical_safety": "Ujian keselamatan elektrik",
+      "trading_licence": "Lesen perniagaan"
+    },
+    "upload": {
+      "title": "Tambah dokumen",
+      "intro": "Ambil gambarnya, atau pilih foto atau fail.",
+      "takePhoto": "Ambil gambar",
+      "chooseFile": "Pilih foto atau fail",
+      "accepted": "PDF, JPEG, PNG, HEIC atau WebP, sehingga 20 MB.",
+      "uploading": "Memuat naik… {percent}%",
+      "reading": "Membaca dokumen anda…",
+      "tooBig": "Fail itu melebihi 20 MB. Sila pilih fail yang lebih kecil.",
+      "wrongType": "Jenis fail itu tidak diterima. Sila gunakan fail PDF, JPEG, PNG, HEIC atau WebP.",
+      "failed": "Muat naik tidak berjaya. Sila cuba lagi.",
+      "cancel": "Batal"
+    },
+    "check": {
+      "title": "Semak butiran",
+      "aiBanner": "Kami membaca maklumat ini daripada dokumen anda. Sila pastikan ia betul sebelum menyimpan.",
+      "document": "Dokumen",
+      "other": "Lain-lain…",
+      "otherName": "Nama dokumen",
+      "issuer": "Dikeluarkan oleh",
+      "issued": "Tarikh dikeluarkan",
+      "expires": "Tarikh tamat tempoh",
+      "reviewBy": "Semak sebelum",
+      "nameOnDocument": "Nama pada dokumen",
+      "cover": "Perlindungan insurans",
+      "coverHint": "Pilihan. Jumlah yang dilindungi oleh polisi.",
+      "currency": "Mata wang",
+      "save": "Simpan",
+      "saving": "Menyimpan…",
+      "cancel": "Batal",
+      "saved": "Disimpan",
+      "footer": "Sijil sebelumnya disimpan sebagai sejarah. Fail anda adalah peribadi: hanya anda, dan penganjur yang anda hantarkan, boleh melihatnya.",
+      "needType": "Pilih dokumen, atau namakannya.",
+      "badDates": "Tarikh tamat tempoh tidak boleh lebih awal daripada tarikh dikeluarkan."
+    },
+    "warnings": {
+      "notRead": "Kami tidak dapat membaca dokumen ini. Sila isi butirannya sendiri.",
+      "expired": "Dokumen ini telah tamat tempoh pada {date}. Anda masih boleh menyimpannya, tetapi penganjur akan melihat bahawa ia telah tamat tempoh.",
+      "expiresSoon": "{days, plural, =0 {Dokumen ini tamat tempoh hari ini. Kami akan mengingatkan anda setiap minggu sehingga ia diperbaharui.} other {Dokumen ini tamat tempoh dalam # hari. Kami akan mengingatkan anda 4 minggu sebelum, 1 minggu sebelum dan pada hari itu.}}",
+      "nameMismatch": "Nama padanya, “{name}”, tidak kelihatan seperti nama perniagaan anda. Sila pastikan ini dokumen yang betul."
+    },
+    "view": {
+      "close": "Tutup",
+      "open": "Buka",
+      "download": "Muat turun",
+      "noPreview": "Fail ini tidak dapat dipaparkan di sini. Buka atau muat turunnya.",
+      "details": "Butiran",
+      "edit": "Edit butiran",
+      "renew": "Muat naik versi baharu",
+      "earlier": "Versi terdahulu",
+      "uploaded": "Dimuat naik {date}",
+      "delete": "Padam",
+      "deleteConfirm": "Padam dokumen ini dan versi terdahulunya? Fail akan dibuang, dan dokumen ini akan dikeluarkan daripada mana-mana pautan yang telah anda hantar.",
+      "deleteYes": "Padam",
+      "deleted": "Dokumen dipadam",
+      "keep": "Kekalkan"
+    },
+    "send": {
+      "title": "Hantar kepada penganjur",
+      "intro": "Mereka akan menerima e-mel dengan pautan untuk melihat atau memuat turun semuanya.",
+      "email": "E-mel penganjur",
+      "emailHint": "Sehingga 5 alamat, dipisahkan dengan koma.",
+      "event": "Acara (pilihan)",
+      "noEvent": "Tiada acara",
+      "documents": "Dokumen",
+      "message": "Mesej (pilihan)",
+      "messagePlaceholder": "Hai, berikut dokumen kami untuk bazar ini.",
+      "until": "Pautan berfungsi sehingga",
+      "untilAfterEvent": "{date} (sehari selepas acara)",
+      "send": "Hantar",
+      "sending": "Menghantar…",
+      "footer": "Jika anda memperbaharui sijil, pautan penganjur akan menunjukkan sijil baharu secara automatik. Anda akan melihat apabila mereka membukanya.",
+      "sent": "Dihantar kepada {emails}",
+      "cancel": "Batal",
+      "emailNone": "Masukkan e-mel penganjur.",
+      "emailInvalid": "“{email}” bukan alamat e-mel.",
+      "emailTooMany": "Anda boleh menghantar kepada sehingga 5 alamat sekali gus.",
+      "noDocuments": "Pilih sekurang-kurangnya satu dokumen.",
+      "untilRange": "Pilih tarikh dari esok hingga 90 hari dari hari ini."
+    },
+    "sent": {
+      "title": "Dihantar",
+      "empty": "Belum ada apa-apa yang dihantar.",
+      "to": "Kepada {emails}",
+      "sentOn": "Dihantar {date}",
+      "opened": "Dibuka {date} · {count, plural, other {# kali dilihat}}",
+      "notOpened": "Belum dibuka",
+      "until": "Berfungsi sehingga {date}",
+      "expiredOn": "Tamat tempoh {date}",
+      "off": "Dimatikan",
+      "turnOff": "Matikan pautan",
+      "turnOffConfirm": "Matikan pautan ini? Penganjur tidak akan dapat membukanya lagi.",
+      "turnedOff": "Pautan dimatikan"
+    },
+    "page": {
+      "title": "Dokumen daripada {truck}",
+      "intro": "{truck} telah berkongsi dokumen ini dengan anda.",
+      "view": "Lihat",
+      "download": "Muat turun",
+      "downloadAll": "Muat turun semua",
+      "until": "Pautan ini berfungsi sehingga {date}.",
+      "none": "Tiada dokumen pada pautan ini buat masa ini.",
+      "expiredTitle": "Pautan ini telah tamat tempoh",
+      "expiredBody": "Pautan ini telah tamat tempoh, minta {truck} menghantarnya semula.",
+      "expiredBodyUnknown": "Pautan ini telah tamat tempoh. Sila minta perniagaan yang menghantarnya untuk menghantarnya semula.",
+      "sharedWith": "Dikongsi melalui HatchGrab"
+    },
+    "email": {
+      "shareSubject": "{truck} telah menghantar dokumen mereka kepada anda",
+      "shareHeading": "Dokumen daripada {truck}",
+      "shareIntro": "{truck} telah berkongsi dokumen ini dengan anda.",
+      "event": "Untuk: {event}",
+      "shareButton": "Lihat dokumen",
+      "shareUntil": "Pautan ini berfungsi sehingga {date}. Jika ia telah tamat tempoh, minta {truck} menghantarnya semula.",
+      "shareReply": "Balas e-mel ini untuk menghubungi {truck}.",
+      "expires": "tamat tempoh {date}",
+      "reviewBy": "semak sebelum {date}",
+      "noExpiry": "tiada tarikh tamat tempoh",
+      "reminderSubject": "{count, plural, other {# dokumen perlu diperbaharui}}",
+      "reminderHeading": "Dokumen anda",
+      "reminderIntro": "Beberapa dokumen {truck} perlu diperbaharui:",
+      "reminderIn": "{document} tamat tempoh pada {date} ({days, plural, other {dalam # hari}})",
+      "reminderToday": "{document} tamat tempoh hari ini",
+      "reminderExpired": "{document} telah tamat tempoh pada {date}",
+      "reminderButton": "Buka Dokumen",
+      "reminderFooter": "Kami mengingatkan anda 4 minggu sebelum, 1 minggu sebelum dan pada hari itu, kemudian setiap minggu sehingga ia diperbaharui."
     }
   }
 }

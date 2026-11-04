@@ -371,7 +371,11 @@ const flat = (o, p = '', out = {}) => { for (const [k, v] of Object.entries(o ??
     // ⚠️ RE-PINNED (tidy-1, 3 November 2026): the three files tidy-1 changed (the truck page's `tally`, the footer's `newsletter`, both
     // defaulting to Village Foodie's page) are exempt — scripts/tidy-1.cjs §1 proves the Village Foodie render byte-identical.
     const T1_FILES = ['components/Footer.tsx', 'app/trucks/[slug]/TruckClient.tsx', 'app/trucks/[slug]/page.tsx']
-    const moved = files.filter(f => atBase(f) !== read(f) && !T1_FILES.includes(f))
+    // ⚠️ RE-PINNED (paperwork-1, 4 November 2026): lib/i18n/namespaces.ts gained `paperwork` in Manage's list (no page here reads it);
+    // that one insertion is taken back by name (scripts/_lp-paperwork-1.cjs) and the rest must be byte-identical.
+    const P1N = require('./_lp-paperwork-1.cjs')
+    const now = f => (f === 'lib/i18n/namespaces.ts' ? P1N.namespacesAsBefore(read(f)) : read(f))
+    const moved = files.filter(f => atBase(f) !== now(f) && !T1_FILES.includes(f))
     t(`${entry}: all ${files.length} source files it bundles are byte-identical to ${BASE} — so is every byte it serves`, files.length > 20 && moved.length === 0, moved)
   }
   // ⚠️ RE-PINNED (tidy-1): Footer and TruckClient changed later (tidy-1's `newsletter` / `tally`); their links did not.

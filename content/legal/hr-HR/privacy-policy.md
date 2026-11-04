@@ -1,4 +1,4 @@
-<!-- translation-of: privacy-policy.md sha256:def241a5c7e2316baa4c9f2b8737ce3af40a8dcb30f77142217ff498581d447c -->
+<!-- translation-of: privacy-policy.md sha256:82cea56af67fea07578a2661fce54e9e2af5cb9664f6c18ee064604841ee518c -->
 # Pravila o privatnosti
 
 **Posljednje ažuriranje:** {{LAST_UPDATED}}
@@ -66,6 +66,8 @@ Ova je razlika važna, pa je vrijedi jasno navesti.
 Kada se oslanjamo na legitimne interese, naš je interes upravljati pouzdanom uslugom i poboljšavati je. Razmotrili smo vaša prava i ne smatramo da ova obrada ima prednost pred njima. Prigovor možete uložiti u bilo kojem trenutku — vidjeti odjeljak 8.
 
 **Biometrijsko otključavanje.** Ako u aplikaciji uključite Face ID, Touch ID ili otključavanje otiskom prsta, provjera se u potpunosti odvija na vašem uređaju i obavlja je operacijski sustav. Biometrijske podatke nikad ne primamo, ne vidimo niti pohranjujemo. Primamo samo rezultat „da” ili „ne”.
+
+**Dokumenti o usklađenosti.** Ako u HatchGrabu čuvate svoje potvrde, police osiguranja i druge dokumente o usklađenosti, pohranjujemo datoteke i podatke koje uz njih spremite. Kad učitate takav dokument, šaljemo ga Googleovoj usluzi Gemini, istoj koja očitava jelovnike, kako bi ispunila podatke poput izdavatelja i datuma isteka; vi ih provjeravate prije nego što se išta spremi. Vaši se dokumenti dijele samo s osobama kojima ih odlučite poslati, putem poveznica koje istječu, a čuvamo ih dok ih ne izbrišete ili ne zatvorite svoj račun.
 
 ---
 

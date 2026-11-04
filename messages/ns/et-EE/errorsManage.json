@@ -215,5 +215,12 @@
   "stripe_request_failed": "Stripe’i päring ebaõnnestus",
   "private_unavailable": "Eraüritused pole veel saadaval — andmebaasi migratsiooni pole rakendatud.",
   "private_not_private": "See üritus pole eraüritus.",
-  "private_link_off": "Selle ürituse puhul on privaatlingi kaudu tellimine välja lülitatud."
+  "private_link_off": "Selle ürituse puhul on privaatlingi kaudu tellimine välja lülitatud.",
+  "paperwork_file_too_big": "See fail on üle 20 MB. Vali väiksem fail.",
+  "paperwork_file_type": "Seda failitüüpi ei saa kasutada. Kasuta PDF-, JPEG-, PNG-, HEIC- või WebP-faili.",
+  "paperwork_upload_failed": "Üleslaadimine ebaõnnestus. Proovi uuesti.",
+  "paperwork_not_found": "Seda dokumenti pole enam olemas. Laadi leht uuesti.",
+  "paperwork_bad_details": "Mõned andmed pole õiged. Kontrolli neid ja proovi uuesti.",
+  "paperwork_send_limit": "Oled lühikese aja jooksul saatnud palju linke. Proovi tunni aja pärast uuesti.",
+  "paperwork_send_failed": "E-kirja ei saanud saata. Proovi uuesti."
 }

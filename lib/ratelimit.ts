@@ -293,3 +293,14 @@ export const contactEmailRatelimit = new Ratelimit({
   analytics: true,
   prefix: 'hg_rl_contact_email',
 })
+
+// PAPERWORK tier — Manage › Paperwork's "Send to organiser" (paperwork-1, 4 November 2026). Keyed on the TRUCK (an
+// authenticated operator), like domainInstructionsRatelimit: the question is how much mail one truck may cause. 10 sends an
+// hour (each to at most 5 organisers, so at most 50 emails), rolling. The route fails CLOSED on an Upstash error: a send is
+// never urgent, and an outage must not turn into unlimited mail from our sender.
+export const paperworkSendRatelimit = new Ratelimit({
+  redis: Redis.fromEnv(),
+  limiter: Ratelimit.slidingWindow(10, '1 h'),
+  analytics: true,
+  prefix: 'hg_rl_paperwork_send',
+})

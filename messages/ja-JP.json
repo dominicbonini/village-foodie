@@ -3331,7 +3331,14 @@
     "stripe_request_failed": "Stripeへのリクエストに失敗しました",
     "private_unavailable": "貸切イベントはまだ利用できません。データベースの移行が適用されていません。",
     "private_not_private": "この出店は貸切イベントではありません。",
-    "private_link_off": "この出店では、専用リンクからの注文は無効になっています。"
+    "private_link_off": "この出店では、専用リンクからの注文は無効になっています。",
+    "paperwork_file_too_big": "ファイルが20 MBを超えています。小さいファイルを選択してください。",
+    "paperwork_file_type": "このファイル形式には対応していません。PDF、JPEG、PNG、HEIC、WebPのいずれかのファイルをご利用ください。",
+    "paperwork_upload_failed": "アップロードできませんでした。もう一度お試しください。",
+    "paperwork_not_found": "この書類はすでに存在しません。ページを再読み込みしてください。",
+    "paperwork_bad_details": "入力内容に誤りがあります。確認してもう一度お試しください。",
+    "paperwork_send_limit": "短時間に多くのリンクを送信しました。1時間後にもう一度お試しください。",
+    "paperwork_send_failed": "メールを送信できませんでした。もう一度お試しください。"
   },
   "tradeArea": {
     "country_missing": "キッチンカーの拠点がある国を選んでください。",
@@ -4828,6 +4835,7 @@
     "tabs": {
       "menu": "メニュー",
       "schedule": "出店スケジュール",
+      "paperwork": "書類",
       "social": "SNS",
       "reports": "レポート",
       "team": "チーム",
@@ -6001,6 +6009,10 @@
       "private_events": {
         "name": "貸切イベント",
         "many": "yes"
+      },
+      "paperwork": {
+        "name": "書類管理",
+        "many": "yes"
       }
     }
   },
@@ -6417,6 +6429,183 @@
       "appsSentence": "iPad・Androidアプリもあり、電波が途切れても店頭注文を受け付け続けます。",
       "appsOffline": "iPad・Androidアプリは電波がなくても店頭注文を受け付け、オンラインに戻ったときに送信します。Webダッシュボードには接続が必要です。",
       "webOffline": "新しい注文を表示するには、Webダッシュボードに接続が必要です。"
+    }
+  },
+  "paperwork": {
+    "title": "書類",
+    "intro": "証明書類を一か所で管理できます。期限が切れる前にお知らせし、主催者にまとめて送ることもできます。",
+    "loading": "書類を読み込み中…",
+    "loadFailed": "書類を読み込めませんでした。もう一度お試しください。",
+    "retry": "もう一度試す",
+    "counts": {
+      "expired": "{count, plural, other {期限切れ#件}}",
+      "dueSoon": "{count, plural, other {期限間近#件}}",
+      "missing": "{count, plural, other {未登録#件}}",
+      "upToDate": "{count, plural, other {有効#件}}"
+    },
+    "status": {
+      "upToDate": "有効",
+      "dueSoon": "期限間近",
+      "expired": "期限切れ",
+      "upload": "アップロード"
+    },
+    "line": {
+      "expires": "有効期限 {date}",
+      "expiresIn": "有効期限 {date} · {days, plural, other {あと#日}}",
+      "expiresToday": "今日で期限切れ",
+      "expired": "{date}に期限切れ",
+      "reviewBy": "{date}までに見直し",
+      "reviewByIn": "{date}までに見直し · {days, plural, other {あと#日}}",
+      "reviewOverdue": "見直し期限は{date}でした",
+      "noExpiry": "有効期限なし",
+      "cover": "補償額 {amount}",
+      "notUploaded": "未アップロード"
+    },
+    "select": "{document}を選択",
+    "add": "＋書類を追加",
+    "selected": "{count, plural, other {#件選択中}}",
+    "sendToOrganiser": "主催者に送る",
+    "types": {
+      "food_registration": "食品営業の届出",
+      "hygiene_rating": "食品衛生評価",
+      "food_safety_plan": "衛生管理計画（HACCP）",
+      "public_liability": "賠償責任保険",
+      "employers_liability": "使用者賠償責任保険",
+      "gas_safety": "ガス安全点検証明書",
+      "pat_test": "電気機器の安全点検（PAT）",
+      "fire_safety": "防火安全",
+      "risk_assessment": "リスクアセスメント",
+      "allergen_info": "アレルギー情報",
+      "street_trading_licence": "路上販売許可",
+      "electrical_safety": "電気安全検査",
+      "trading_licence": "営業許可"
+    },
+    "upload": {
+      "title": "書類を追加",
+      "intro": "書類を撮影するか、写真またはファイルを選択してください。",
+      "takePhoto": "写真を撮る",
+      "chooseFile": "写真またはファイルを選択",
+      "accepted": "PDF、JPEG、PNG、HEIC、WebP（20 MBまで）",
+      "uploading": "アップロード中… {percent}%",
+      "reading": "書類を読み取り中…",
+      "tooBig": "ファイルが20 MBを超えています。小さいファイルを選択してください。",
+      "wrongType": "このファイル形式には対応していません。PDF、JPEG、PNG、HEIC、WebPのいずれかのファイルをご利用ください。",
+      "failed": "アップロードできませんでした。もう一度お試しください。",
+      "cancel": "キャンセル"
+    },
+    "check": {
+      "title": "内容の確認",
+      "aiBanner": "書類から読み取った内容です。保存する前に正しいかご確認ください。",
+      "document": "書類",
+      "other": "その他…",
+      "otherName": "書類の名前",
+      "issuer": "発行元",
+      "issued": "発行日",
+      "expires": "有効期限",
+      "reviewBy": "見直し期限",
+      "nameOnDocument": "書類上の名義",
+      "cover": "保険の補償額",
+      "coverHint": "任意。保険で補償される金額です。",
+      "currency": "通貨",
+      "save": "保存",
+      "saving": "保存中…",
+      "cancel": "キャンセル",
+      "saved": "保存しました",
+      "footer": "以前の証明書は履歴として残ります。ファイルは非公開で、ご本人と送付先の主催者のみが閲覧できます。",
+      "needType": "書類を選択するか、名前を入力してください。",
+      "badDates": "有効期限を発行日より前にすることはできません。"
+    },
+    "warnings": {
+      "notRead": "この書類を読み取れませんでした。詳細をご自身で入力してください。",
+      "expired": "この書類は{date}に期限切れになっています。保存はできますが、主催者には期限切れと表示されます。",
+      "expiresSoon": "{days, plural, =0 {この書類は今日で期限が切れます。更新されるまで毎週お知らせします。} other {この書類はあと#日で期限が切れます。4週間前、1週間前、当日にお知らせします。}}",
+      "nameMismatch": "記載の名義「{name}」がお客様の事業者名と一致しないようです。正しい書類かご確認ください。"
+    },
+    "view": {
+      "close": "閉じる",
+      "open": "開く",
+      "download": "ダウンロード",
+      "noPreview": "このファイルはここでは表示できません。開くかダウンロードしてください。",
+      "details": "詳細",
+      "edit": "詳細を編集",
+      "renew": "新しい版をアップロード",
+      "earlier": "以前の版",
+      "uploaded": "{date}にアップロード",
+      "delete": "削除",
+      "deleteConfirm": "この書類と以前の版を削除しますか？ファイルは削除され、送信済みのリンクからも外されます。",
+      "deleteYes": "削除",
+      "deleted": "書類を削除しました",
+      "keep": "残す"
+    },
+    "send": {
+      "title": "主催者に送る",
+      "intro": "主催者には、すべての書類を閲覧・ダウンロードできるリンク付きのメールが届きます。",
+      "email": "主催者のメールアドレス",
+      "emailHint": "5件まで、カンマで区切って入力してください。",
+      "event": "イベント（任意）",
+      "noEvent": "イベントなし",
+      "documents": "書類",
+      "message": "メッセージ（任意）",
+      "messagePlaceholder": "こんにちは。マーケット出店用の書類をお送りします。",
+      "until": "リンクの有効期限",
+      "untilAfterEvent": "{date}（イベントの翌日）",
+      "send": "送信",
+      "sending": "送信中…",
+      "footer": "証明書を更新すると、主催者のリンクにも新しいものが自動的に表示されます。主催者がリンクを開くと、ここで確認できます。",
+      "sent": "{emails}に送信しました",
+      "cancel": "キャンセル",
+      "emailNone": "主催者のメールアドレスを入力してください。",
+      "emailInvalid": "「{email}」はメールアドレスではありません。",
+      "emailTooMany": "一度に送信できるのは5件までです。",
+      "noDocuments": "書類を1つ以上選択してください。",
+      "untilRange": "明日から90日後までの日付を選択してください。"
+    },
+    "sent": {
+      "title": "送信済み",
+      "empty": "まだ何も送信していません。",
+      "to": "宛先：{emails}",
+      "sentOn": "{date}に送信",
+      "opened": "{date}に開封 · {count, plural, other {閲覧#回}}",
+      "notOpened": "未開封",
+      "until": "{date}まで有効",
+      "expiredOn": "{date}に期限切れ",
+      "off": "無効",
+      "turnOff": "リンクを無効にする",
+      "turnOffConfirm": "このリンクを無効にしますか？主催者はリンクを開けなくなります。",
+      "turnedOff": "リンクを無効にしました"
+    },
+    "page": {
+      "title": "{truck}の書類",
+      "intro": "{truck}からこれらの書類が共有されました。",
+      "view": "表示",
+      "download": "ダウンロード",
+      "downloadAll": "すべてダウンロード",
+      "until": "このリンクは{date}まで有効です。",
+      "none": "現在、このリンクに書類はありません。",
+      "expiredTitle": "このリンクは有効期限が切れています",
+      "expiredBody": "このリンクは有効期限が切れています。{truck}に再送を依頼してください。",
+      "expiredBodyUnknown": "このリンクは有効期限が切れています。送信元の事業者に再送を依頼してください。",
+      "sharedWith": "HatchGrabで共有"
+    },
+    "email": {
+      "shareSubject": "{truck}から書類が届きました",
+      "shareHeading": "{truck}の書類",
+      "shareIntro": "{truck}からこれらの書類が共有されました。",
+      "event": "対象：{event}",
+      "shareButton": "書類を見る",
+      "shareUntil": "リンクは{date}まで有効です。有効期限が切れている場合は、{truck}に再送を依頼してください。",
+      "shareReply": "{truck}へのお問い合わせは、このメールに返信してください。",
+      "expires": "有効期限 {date}",
+      "reviewBy": "{date}までに見直し",
+      "noExpiry": "有効期限なし",
+      "reminderSubject": "{count, plural, other {#件の書類の更新が必要です}}",
+      "reminderHeading": "ご登録の書類",
+      "reminderIntro": "{truck}の書類のうち、更新が必要なものがあります：",
+      "reminderIn": "{document}の有効期限は{date}です（{days, plural, other {あと#日}}）",
+      "reminderToday": "{document}の有効期限は今日です",
+      "reminderExpired": "{document}は{date}に期限切れになりました",
+      "reminderButton": "書類を開く",
+      "reminderFooter": "有効期限の4週間前、1週間前、当日にお知らせし、その後は更新されるまで毎週お知らせします。"
     }
   }
 }

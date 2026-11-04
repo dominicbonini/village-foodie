@@ -1,6 +1,6 @@
 # Privacy Policy
 
-**Last updated:** 3 November 2026
+**Last updated:** 4 November 2026
 
 This policy explains how HatchGrab Ltd ("we", "us", "our") collects and uses personal data across two connected services:
 
@@ -65,6 +65,8 @@ This distinction matters, so it is worth stating plainly.
 Where we rely on legitimate interests, our interest is in operating and improving a reliable service. We have considered your rights and do not believe this processing overrides them. You can object at any time — see section 8.
 
 **Biometric unlock.** If you turn on Face ID, Touch ID or fingerprint unlock in the app, the check happens entirely on your device and is handled by the operating system. We never receive, see or store biometric data. We only receive a yes-or-no result.
+
+**Compliance documents.** If you keep your certificates, insurance and other compliance documents in HatchGrab, we store the files and the details you save with them. When you upload one, we send it to Google's Gemini service, the same one that reads menus, to fill in details such as who issued it and when it expires; you check them before anything is saved. Your documents are shared only with the people you choose to send them to, through links that expire, and we keep them until you delete them or close your account.
 
 ---
 

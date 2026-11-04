@@ -3331,7 +3331,14 @@
     "stripe_request_failed": "Požadavek na Stripe selhal",
     "private_unavailable": "Soukromé akce zatím nejsou k dispozici — migrace databáze ještě nebyla provedena.",
     "private_not_private": "Tato akce není soukromá.",
-    "private_link_off": "Objednávání přes soukromý odkaz je pro tuto akci vypnuté."
+    "private_link_off": "Objednávání přes soukromý odkaz je pro tuto akci vypnuté.",
+    "paperwork_file_too_big": "Soubor je větší než 20 MB. Vyberte prosím menší.",
+    "paperwork_file_type": "Tento typ souboru není podporován. Použijte prosím soubor PDF, JPEG, PNG, HEIC nebo WebP.",
+    "paperwork_upload_failed": "Nahrání se nezdařilo. Zkuste to prosím znovu.",
+    "paperwork_not_found": "Tento dokument už neexistuje. Načtěte prosím stránku znovu.",
+    "paperwork_bad_details": "Některé údaje nejsou správně. Zkontrolujte je prosím a zkuste to znovu.",
+    "paperwork_send_limit": "Za krátkou dobu jste poslali hodně odkazů. Zkuste to prosím znovu za hodinu.",
+    "paperwork_send_failed": "E-mail se nepodařilo odeslat. Zkuste to prosím znovu."
   },
   "tradeArea": {
     "country_missing": "Vyberte zemi, ve které má váš food truck sídlo.",
@@ -4828,6 +4835,7 @@
     "tabs": {
       "menu": "Jídelní lístek",
       "schedule": "Rozpis",
+      "paperwork": "Dokumenty",
       "social": "Sociální sítě",
       "reports": "Statistiky",
       "team": "Tým",
@@ -6029,6 +6037,10 @@
       "private_events": {
         "name": "Soukromé akce",
         "many": "yes"
+      },
+      "paperwork": {
+        "name": "Dokumenty",
+        "many": "yes"
       }
     }
   },
@@ -6417,6 +6429,183 @@
       "appsSentence": "K dispozici je také aplikace pro iPad a Android, která dál přijímá objednávky na místě, i když ztratíte signál.",
       "appsOffline": "Aplikace pro iPad a Android přijímá objednávky na místě i bez signálu a odešle je, jakmile budete znovu online; webový přehled potřebuje připojení.",
       "webOffline": "Webový přehled potřebuje připojení, aby zobrazoval nové objednávky."
+    }
+  },
+  "paperwork": {
+    "title": "Dokumenty",
+    "intro": "Mějte své certifikáty na jednom místě. Než něčemu skončí platnost, připomeneme vám to, a organizátorovi je můžete poslat najednou.",
+    "loading": "Načítání dokumentů…",
+    "loadFailed": "Vaše dokumenty se nepodařilo načíst. Zkuste to prosím znovu.",
+    "retry": "Zkusit znovu",
+    "counts": {
+      "expired": "{count, plural, one {# s prošlou platností} few {# s prošlou platností} many {# s prošlou platností} other {# s prošlou platností}}",
+      "dueSoon": "{count, plural, one {# brzy vyprší} few {# brzy vyprší} many {# brzy vyprší} other {# brzy vyprší}}",
+      "missing": "{count, plural, one {# chybí} few {# chybí} many {# chybí} other {# chybí}}",
+      "upToDate": "{count, plural, one {# aktuální} few {# aktuální} many {# aktuálního} other {# aktuálních}}"
+    },
+    "status": {
+      "upToDate": "Aktuální",
+      "dueSoon": "Brzy vyprší",
+      "expired": "Platnost vypršela",
+      "upload": "Nahrát"
+    },
+    "line": {
+      "expires": "Platnost do {date}",
+      "expiresIn": "Platnost do {date} · {days, plural, one {za # den} few {za # dny} many {za # dne} other {za # dní}}",
+      "expiresToday": "Platnost končí dnes",
+      "expired": "Platnost vypršela {date}",
+      "reviewBy": "Přezkoumat do {date}",
+      "reviewByIn": "Přezkoumat do {date} · {days, plural, one {za # den} few {za # dny} many {za # dne} other {za # dní}}",
+      "reviewOverdue": "Přezkoumání bylo potřeba do {date}",
+      "noExpiry": "Bez omezení platnosti",
+      "cover": "Pojistné krytí {amount}",
+      "notUploaded": "Zatím nenahráno"
+    },
+    "select": "Vybrat: {document}",
+    "add": "+ Přidat dokument",
+    "selected": "{count, plural, one {Vybráno: #} few {Vybráno: #} many {Vybráno: #} other {Vybráno: #}}",
+    "sendToOrganiser": "Poslat organizátorovi",
+    "types": {
+      "food_registration": "Registrace potravinářské činnosti",
+      "hygiene_rating": "Hodnocení hygieny potravin",
+      "food_safety_plan": "Plán bezpečnosti potravin (HACCP)",
+      "public_liability": "Pojištění odpovědnosti za škodu",
+      "employers_liability": "Pojištění odpovědnosti zaměstnavatele",
+      "gas_safety": "Revize plynového zařízení",
+      "pat_test": "Revize elektrospotřebičů",
+      "fire_safety": "Požární ochrana",
+      "risk_assessment": "Hodnocení rizik",
+      "allergen_info": "Informace o alergenech",
+      "street_trading_licence": "Povolení k prodeji na veřejném prostranství",
+      "electrical_safety": "Revize elektroinstalace",
+      "trading_licence": "Povolení k prodeji"
+    },
+    "upload": {
+      "title": "Přidat dokument",
+      "intro": "Vyfoťte ho, nebo vyberte fotku či soubor.",
+      "takePhoto": "Vyfotit",
+      "chooseFile": "Vybrat fotku nebo soubor",
+      "accepted": "PDF, JPEG, PNG, HEIC nebo WebP, max. 20 MB.",
+      "uploading": "Nahrávání… {percent} %",
+      "reading": "Načítáme váš dokument…",
+      "tooBig": "Soubor je větší než 20 MB. Vyberte prosím menší.",
+      "wrongType": "Tento typ souboru není podporován. Použijte prosím soubor PDF, JPEG, PNG, HEIC nebo WebP.",
+      "failed": "Nahrání se nezdařilo. Zkuste to prosím znovu.",
+      "cancel": "Zrušit"
+    },
+    "check": {
+      "title": "Zkontrolujte údaje",
+      "aiBanner": "Tyto údaje jsme načetli z vašeho dokumentu. Před uložením prosím zkontrolujte, že jsou správné.",
+      "document": "Dokument",
+      "other": "Jiný…",
+      "otherName": "Název dokumentu",
+      "issuer": "Vydal",
+      "issued": "Datum vydání",
+      "expires": "Platnost do",
+      "reviewBy": "Přezkoumat do",
+      "nameOnDocument": "Jméno na dokumentu",
+      "cover": "Pojistné krytí",
+      "coverHint": "Nepovinné. Částka, kterou pojistka kryje.",
+      "currency": "Měna",
+      "save": "Uložit",
+      "saving": "Ukládání…",
+      "cancel": "Zrušit",
+      "saved": "Uloženo",
+      "footer": "Předchozí certifikát zůstane v historii. Vaše soubory jsou soukromé: vidíte je jen vy a organizátoři, kterým je pošlete.",
+      "needType": "Vyberte dokument, nebo zadejte jeho název.",
+      "badDates": "Datum konce platnosti nemůže být dřív než datum vydání."
+    },
+    "warnings": {
+      "notRead": "Tento dokument se nám nepodařilo přečíst. Vyplňte prosím údaje sami.",
+      "expired": "Platnost vypršela {date}. Dokument můžete uložit i tak, ale organizátoři uvidí, že je neplatný.",
+      "expiresSoon": "{days, plural, =0 {Platnost končí dnes. Každý týden vám to připomeneme, dokud dokument neobnovíte.} one {Platnost vyprší za # den. Připomeneme vám to 4 týdny předem, 1 týden předem a v den konce platnosti.} few {Platnost vyprší za # dny. Připomeneme vám to 4 týdny předem, 1 týden předem a v den konce platnosti.} many {Platnost vyprší za # dne. Připomeneme vám to 4 týdny předem, 1 týden předem a v den konce platnosti.} other {Platnost vyprší za # dní. Připomeneme vám to 4 týdny předem, 1 týden předem a v den konce platnosti.}}",
+      "nameMismatch": "Jméno na dokumentu, „{name}“, nevypadá jako název vaší firmy. Zkontrolujte prosím, že jde o správný dokument."
+    },
+    "view": {
+      "close": "Zavřít",
+      "open": "Otevřít",
+      "download": "Stáhnout",
+      "noPreview": "Tento soubor tu nelze zobrazit. Otevřete ho nebo si ho stáhněte.",
+      "details": "Podrobnosti",
+      "edit": "Upravit údaje",
+      "renew": "Nahrát novou verzi",
+      "earlier": "Starší verze",
+      "uploaded": "Nahráno {date}",
+      "delete": "Smazat",
+      "deleteConfirm": "Smazat tento dokument i jeho starší verze? Soubory se odstraní a dokument zmizí ze všech odkazů, které jste poslali.",
+      "deleteYes": "Smazat",
+      "deleted": "Dokument smazán",
+      "keep": "Ponechat"
+    },
+    "send": {
+      "title": "Poslat organizátorovi",
+      "intro": "Organizátor dostane e-mail s odkazem, kde si vše prohlédne nebo stáhne.",
+      "email": "E-mail organizátora",
+      "emailHint": "Až 5 adres oddělených čárkami.",
+      "event": "Akce (nepovinné)",
+      "noEvent": "Bez akce",
+      "documents": "Dokumenty",
+      "message": "Zpráva (nepovinné)",
+      "messagePlaceholder": "Dobrý den, posíláme naše dokumenty na trh.",
+      "until": "Odkaz platí do",
+      "untilAfterEvent": "{date} (den po akci)",
+      "send": "Odeslat",
+      "sending": "Odesílání…",
+      "footer": "Když certifikát obnovíte, v odkazu organizátora se automaticky zobrazí nový. Uvidíte, kdy ho otevře.",
+      "sent": "Odesláno na {emails}",
+      "cancel": "Zrušit",
+      "emailNone": "Zadejte e-mail organizátora.",
+      "emailInvalid": "„{email}“ není e-mailová adresa.",
+      "emailTooMany": "Najednou můžete poslat až na 5 adres.",
+      "noDocuments": "Vyberte alespoň jeden dokument.",
+      "untilRange": "Vyberte datum od zítřka do 90 dní ode dneška."
+    },
+    "sent": {
+      "title": "Odeslané",
+      "empty": "Zatím nic neodesláno.",
+      "to": "Komu: {emails}",
+      "sentOn": "Odesláno {date}",
+      "opened": "Otevřeno {date} · {count, plural, one {# zobrazení} few {# zobrazení} many {# zobrazení} other {# zobrazení}}",
+      "notOpened": "Zatím neotevřeno",
+      "until": "Platí do {date}",
+      "expiredOn": "Platnost skončila {date}",
+      "off": "Vypnuto",
+      "turnOff": "Vypnout odkaz",
+      "turnOffConfirm": "Vypnout tento odkaz? Organizátor ho už nebude moct otevřít.",
+      "turnedOff": "Odkaz vypnut"
+    },
+    "page": {
+      "title": "Dokumenty od food trucku {truck}",
+      "intro": "Food truck {truck} s vámi sdílí tyto dokumenty.",
+      "view": "Zobrazit",
+      "download": "Stáhnout",
+      "downloadAll": "Stáhnout vše",
+      "until": "Tento odkaz platí do {date}.",
+      "none": "Na tomto odkazu teď nejsou žádné dokumenty.",
+      "expiredTitle": "Platnost odkazu vypršela",
+      "expiredBody": "Platnost tohoto odkazu vypršela, požádejte food truck {truck}, aby ho poslal znovu.",
+      "expiredBodyUnknown": "Platnost tohoto odkazu vypršela. Požádejte prosím firmu, která ho poslala, aby ho poslala znovu.",
+      "sharedWith": "Sdíleno přes HatchGrab"
+    },
+    "email": {
+      "shareSubject": "Food truck {truck} vám poslal své dokumenty",
+      "shareHeading": "Dokumenty od food trucku {truck}",
+      "shareIntro": "Food truck {truck} s vámi sdílí tyto dokumenty.",
+      "event": "Akce: {event}",
+      "shareButton": "Zobrazit dokumenty",
+      "shareUntil": "Odkaz platí do {date}. Pokud už jeho platnost vypršela, požádejte food truck {truck}, aby ho poslal znovu.",
+      "shareReply": "Pokud chcete food truck {truck} kontaktovat, odpovězte na tento e-mail.",
+      "expires": "platnost do {date}",
+      "reviewBy": "přezkoumat do {date}",
+      "noExpiry": "bez omezení platnosti",
+      "reminderSubject": "{count, plural, one {Jeden dokument je potřeba obnovit} few {# dokumenty je potřeba obnovit} many {# dokumentu je potřeba obnovit} other {# dokumentů je potřeba obnovit}}",
+      "reminderHeading": "Vaše dokumenty",
+      "reminderIntro": "Některé dokumenty food trucku {truck} je potřeba obnovit:",
+      "reminderIn": "{document}: platnost končí {date} ({days, plural, one {za # den} few {za # dny} many {za # dne} other {za # dní}})",
+      "reminderToday": "{document}: platnost končí dnes",
+      "reminderExpired": "{document}: platnost skončila {date}",
+      "reminderButton": "Otevřít Dokumenty",
+      "reminderFooter": "Připomínáme 4 týdny předem, 1 týden předem a v den konce platnosti, potom každý týden, dokud dokument neobnovíte."
     }
   }
 }

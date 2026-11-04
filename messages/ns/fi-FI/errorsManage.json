@@ -215,5 +215,12 @@
   "stripe_request_failed": "Stripe-pyyntö epäonnistui",
   "private_unavailable": "Yksityistilaisuudet eivät ole vielä käytettävissä — tietokannan migraatiota ei ole ajettu.",
   "private_not_private": "Tämä tapahtuma ei ole yksityinen.",
-  "private_link_off": "Tilaaminen yksityisellä linkillä on poistettu käytöstä tässä tapahtumassa."
+  "private_link_off": "Tilaaminen yksityisellä linkillä on poistettu käytöstä tässä tapahtumassa.",
+  "paperwork_file_too_big": "Tiedosto on yli 20 MB. Valitse pienempi tiedosto.",
+  "paperwork_file_type": "Tätä tiedostotyyppiä ei hyväksytä. Käytä PDF-, JPEG-, PNG-, HEIC- tai WebP-tiedostoa.",
+  "paperwork_upload_failed": "Lataus epäonnistui. Yritä uudelleen.",
+  "paperwork_not_found": "Asiakirjaa ei enää löydy. Lataa sivu uudelleen.",
+  "paperwork_bad_details": "Osa tiedoista ei ole oikein. Tarkista ne ja yritä uudelleen.",
+  "paperwork_send_limit": "Olet lähettänyt paljon linkkejä lyhyessä ajassa. Yritä uudelleen tunnin päästä.",
+  "paperwork_send_failed": "Sähköpostia ei voitu lähettää. Yritä uudelleen."
 }

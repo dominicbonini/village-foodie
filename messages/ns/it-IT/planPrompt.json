@@ -113,6 +113,10 @@
     "private_events": {
       "name": "Gli eventi privati",
       "many": "yes"
+    },
+    "paperwork": {
+      "name": "La gestione dei documenti",
+      "many": "no"
     }
   }
 }

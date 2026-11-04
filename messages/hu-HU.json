@@ -3331,7 +3331,14 @@
     "stripe_request_failed": "A Stripe-kérés nem sikerült",
     "private_unavailable": "A privát események még nem érhetők el — az adatbázis-migráció még nincs lefuttatva.",
     "private_not_private": "Ez az esemény nem privát.",
-    "private_link_off": "Ennél az eseménynél ki van kapcsolva a privát linken keresztüli rendelés."
+    "private_link_off": "Ennél az eseménynél ki van kapcsolva a privát linken keresztüli rendelés.",
+    "paperwork_file_too_big": "Ez a fájl nagyobb, mint 20 MB. Kérjük, válasszon kisebbet.",
+    "paperwork_file_type": "Ez a fájltípus nem támogatott. Kérjük, PDF, JPEG, PNG, HEIC vagy WebP fájlt használjon.",
+    "paperwork_upload_failed": "A feltöltés nem sikerült. Kérjük, próbálja újra.",
+    "paperwork_not_found": "Ez a dokumentum már nem létezik. Kérjük, töltse be újra az oldalt.",
+    "paperwork_bad_details": "Néhány adat nem megfelelő. Kérjük, ellenőrizze őket, és próbálja újra.",
+    "paperwork_send_limit": "Rövid idő alatt sok linket küldött. Kérjük, egy óra múlva próbálja újra.",
+    "paperwork_send_failed": "Nem sikerült elküldeni az e-mailt. Kérjük, próbálja újra."
   },
   "tradeArea": {
     "country_missing": "Válassza ki, melyik országban működik a food truckja.",
@@ -4828,6 +4835,7 @@
     "tabs": {
       "menu": "Étlap",
       "schedule": "Menetrend",
+      "paperwork": "Dokumentumok",
       "social": "Közösségi média",
       "reports": "Kimutatások",
       "team": "Csapat",
@@ -6029,6 +6037,10 @@
       "private_events": {
         "name": "A privát események",
         "many": "yes"
+      },
+      "paperwork": {
+        "name": "A dokumentumok",
+        "many": "yes"
       }
     }
   },
@@ -6417,6 +6429,183 @@
       "appsSentence": "Van iPad- és Android-alkalmazás is, amely térerő nélkül is tovább fogadja a helyszíni rendeléseket.",
       "appsOffline": "Az iPad- és Android-alkalmazás térerő nélkül is fogadja a helyszíni rendeléseket, és elküldi őket, amint újra online lesz; a webes vezérlőpulthoz kapcsolat kell.",
       "webOffline": "A webes vezérlőpultnak kapcsolat kell az új rendelések megjelenítéséhez."
+    }
+  },
+  "paperwork": {
+    "title": "Dokumentumok",
+    "intro": "Tartsa egy helyen a tanúsítványait. Még a lejáratuk előtt emlékeztetjük, és egy lépésben elküldheti őket egy szervezőnek.",
+    "loading": "Dokumentumok betöltése…",
+    "loadFailed": "Nem sikerült betölteni a dokumentumait. Kérjük, próbálja újra.",
+    "retry": "Próbálja újra",
+    "counts": {
+      "expired": "{count, plural, one {# lejárt} other {# lejárt}}",
+      "dueSoon": "{count, plural, one {# hamarosan lejár} other {# hamarosan lejár}}",
+      "missing": "{count, plural, one {# hiányzik} other {# hiányzik}}",
+      "upToDate": "{count, plural, one {# érvényes} other {# érvényes}}"
+    },
+    "status": {
+      "upToDate": "Érvényes",
+      "dueSoon": "Hamarosan lejár",
+      "expired": "Lejárt",
+      "upload": "Feltöltés"
+    },
+    "line": {
+      "expires": "Lejár: {date}",
+      "expiresIn": "Lejár: {date} · {days, plural, one {# nap múlva} other {# nap múlva}}",
+      "expiresToday": "Ma jár le",
+      "expired": "Lejárt: {date}",
+      "reviewBy": "Felülvizsgálat határideje: {date}",
+      "reviewByIn": "Felülvizsgálat határideje: {date} · {days, plural, one {# nap múlva} other {# nap múlva}}",
+      "reviewOverdue": "A felülvizsgálat esedékes volt: {date}",
+      "noExpiry": "Nem jár le",
+      "cover": "Fedezet: {amount}",
+      "notUploaded": "Még nincs feltöltve"
+    },
+    "select": "Kijelölés: {document}",
+    "add": "+ Dokumentum hozzáadása",
+    "selected": "{count, plural, one {# kijelölve} other {# kijelölve}}",
+    "sendToOrganiser": "Küldés a szervezőnek",
+    "types": {
+      "food_registration": "Élelmiszer-vállalkozás nyilvántartásba vétele",
+      "hygiene_rating": "Élelmiszer-higiéniai minősítés",
+      "food_safety_plan": "Élelmiszer-biztonsági terv (HACCP)",
+      "public_liability": "Általános felelősségbiztosítás",
+      "employers_liability": "Munkáltatói felelősségbiztosítás",
+      "gas_safety": "Gázbiztonsági felülvizsgálat",
+      "pat_test": "Elektromos készülékek felülvizsgálata",
+      "fire_safety": "Tűzvédelem",
+      "risk_assessment": "Kockázatértékelés",
+      "allergen_info": "Allergéninformációk",
+      "street_trading_licence": "Közterület-használati engedély",
+      "electrical_safety": "Villamos biztonsági felülvizsgálat",
+      "trading_licence": "Működési engedély"
+    },
+    "upload": {
+      "title": "Dokumentum hozzáadása",
+      "intro": "Fényképezze le, vagy válasszon ki egy fotót vagy fájlt.",
+      "takePhoto": "Fénykép készítése",
+      "chooseFile": "Fotó vagy fájl kiválasztása",
+      "accepted": "PDF, JPEG, PNG, HEIC vagy WebP, legfeljebb 20 MB.",
+      "uploading": "Feltöltés… {percent}%",
+      "reading": "A dokumentum kiolvasása…",
+      "tooBig": "Ez a fájl nagyobb, mint 20 MB. Kérjük, válasszon kisebbet.",
+      "wrongType": "Ez a fájltípus nem támogatott. Kérjük, PDF, JPEG, PNG, HEIC vagy WebP fájlt használjon.",
+      "failed": "A feltöltés nem sikerült. Kérjük, próbálja újra.",
+      "cancel": "Mégse"
+    },
+    "check": {
+      "title": "Ellenőrizze az adatokat",
+      "aiBanner": "Ezeket az adatokat a dokumentumából olvastuk ki. Mentés előtt kérjük, ellenőrizze, hogy helyesek-e.",
+      "document": "Dokumentum",
+      "other": "Egyéb…",
+      "otherName": "A dokumentum neve",
+      "issuer": "Kiállító",
+      "issued": "Kiállítás dátuma",
+      "expires": "Lejárat",
+      "reviewBy": "Felülvizsgálat határideje",
+      "nameOnDocument": "Név a dokumentumon",
+      "cover": "Biztosítási fedezet",
+      "coverHint": "Nem kötelező. Az az összeg, amelyre a kötvény fedezetet nyújt.",
+      "currency": "Pénznem",
+      "save": "Mentés",
+      "saving": "Mentés…",
+      "cancel": "Mégse",
+      "saved": "Mentve",
+      "footer": "Az előző tanúsítvány az előzmények között marad. A fájljai privátak: csak Ön látja őket, és azok a szervezők, akiknek elküldi.",
+      "needType": "Válassza ki a dokumentumot, vagy adja meg a nevét.",
+      "badDates": "A lejárat dátuma nem lehet korábbi a kiállítás dátumánál."
+    },
+    "warnings": {
+      "notRead": "Nem tudtuk kiolvasni ezt a dokumentumot. Kérjük, töltse ki saját maga az adatokat.",
+      "expired": "Ez a dokumentum lejárt ({date}). Így is mentheti, de a szervezők látni fogják, hogy lejárt.",
+      "expiresSoon": "{days, plural, =0 {Ez ma jár le. Hetente emlékeztetjük, amíg meg nem újítja.} one {Ez # nap múlva lejár. 4 héttel előtte, 1 héttel előtte és a lejárat napján emlékeztetjük.} other {Ez # nap múlva lejár. 4 héttel előtte, 1 héttel előtte és a lejárat napján emlékeztetjük.}}",
+      "nameMismatch": "A rajta szereplő név („{name}”) nem hasonlít a vállalkozása nevére. Kérjük, ellenőrizze, hogy a megfelelő dokumentumról van-e szó."
+    },
+    "view": {
+      "close": "Bezárás",
+      "open": "Megnyitás",
+      "download": "Letöltés",
+      "noPreview": "Ez a fájl itt nem jeleníthető meg. Nyissa meg vagy töltse le.",
+      "details": "Részletek",
+      "edit": "Adatok szerkesztése",
+      "renew": "Új verzió feltöltése",
+      "earlier": "Korábbi verziók",
+      "uploaded": "Feltöltve: {date}",
+      "delete": "Törlés",
+      "deleteConfirm": "Törli ezt a dokumentumot és a korábbi verzióit? A fájlok törlődnek, és a dokumentum lekerül minden elküldött linkről.",
+      "deleteYes": "Törlés",
+      "deleted": "Dokumentum törölve",
+      "keep": "Megtartom"
+    },
+    "send": {
+      "title": "Küldés a szervezőnek",
+      "intro": "A szervező e-mailt kap egy linkkel, ahol mindent megtekinthet vagy letölthet.",
+      "email": "A szervező e-mail-címe",
+      "emailHint": "Legfeljebb 5 cím, vesszővel elválasztva.",
+      "event": "Esemény (nem kötelező)",
+      "noEvent": "Nincs esemény",
+      "documents": "Dokumentumok",
+      "message": "Üzenet (nem kötelező)",
+      "messagePlaceholder": "Jó napot! Itt vannak a dokumentumaink a vásárhoz.",
+      "until": "A link eddig működik",
+      "untilAfterEvent": "{date} (az esemény utáni nap)",
+      "send": "Küldés",
+      "sending": "Küldés…",
+      "footer": "Ha megújít egy tanúsítványt, a szervező linkjén automatikusan az új jelenik meg. Látni fogja, amikor megnyitja.",
+      "sent": "Elküldve: {emails}",
+      "cancel": "Mégse",
+      "emailNone": "Adja meg a szervező e-mail-címét.",
+      "emailInvalid": "„{email}” nem e-mail-cím.",
+      "emailTooMany": "Egyszerre legfeljebb 5 címre küldhet.",
+      "noDocuments": "Válasszon legalább egy dokumentumot.",
+      "untilRange": "Válasszon dátumot holnaptól a mai naptól számított 90 napig."
+    },
+    "sent": {
+      "title": "Elküldve",
+      "empty": "Még nem küldött semmit.",
+      "to": "Címzett: {emails}",
+      "sentOn": "Elküldve: {date}",
+      "opened": "Megnyitva: {date} · {count, plural, one {# megtekintés} other {# megtekintés}}",
+      "notOpened": "Még nem nyitották meg",
+      "until": "Érvényes eddig: {date}",
+      "expiredOn": "Lejárt: {date}",
+      "off": "Kikapcsolva",
+      "turnOff": "Link kikapcsolása",
+      "turnOffConfirm": "Kikapcsolja ezt a linket? A szervező többé nem tudja megnyitni.",
+      "turnedOff": "Link kikapcsolva"
+    },
+    "page": {
+      "title": "Dokumentumok: {truck}",
+      "intro": "{truck} megosztotta Önnel ezeket a dokumentumokat.",
+      "view": "Megtekintés",
+      "download": "Letöltés",
+      "downloadAll": "Összes letöltése",
+      "until": "Ez a link eddig működik: {date}.",
+      "none": "Ezen a linken jelenleg nincs dokumentum.",
+      "expiredTitle": "Ez a link lejárt",
+      "expiredBody": "Ez a link lejárt, kérje, hogy {truck} küldje el újra.",
+      "expiredBodyUnknown": "Ez a link lejárt. Kérjük, kérje meg a küldő vállalkozást, hogy küldje el újra.",
+      "sharedWith": "Megosztás: HatchGrab"
+    },
+    "email": {
+      "shareSubject": "{truck} elküldte Önnek a dokumentumait",
+      "shareHeading": "Dokumentumok: {truck}",
+      "shareIntro": "{truck} megosztotta Önnel ezeket a dokumentumokat.",
+      "event": "Esemény: {event}",
+      "shareButton": "Dokumentumok megtekintése",
+      "shareUntil": "A link eddig működik: {date}. Ha lejárt, kérje, hogy {truck} küldje el újra.",
+      "shareReply": "Ha erre az e-mailre válaszol, {truck} megkapja az üzenetét.",
+      "expires": "lejár: {date}",
+      "reviewBy": "felülvizsgálat: {date}",
+      "noExpiry": "nem jár le",
+      "reminderSubject": "{count, plural, one {Egy dokumentumot meg kell újítani} other {# dokumentumot meg kell újítani}}",
+      "reminderHeading": "Az Ön dokumentumai",
+      "reminderIntro": "Néhány dokumentumot meg kell újítani ({truck}):",
+      "reminderIn": "{document}: lejár {date} ({days, plural, one {# nap múlva} other {# nap múlva}})",
+      "reminderToday": "{document}: ma jár le",
+      "reminderExpired": "{document}: lejárt {date}",
+      "reminderButton": "Dokumentumok megnyitása",
+      "reminderFooter": "4 héttel előtte, 1 héttel előtte és a lejárat napján emlékeztetjük, utána pedig hetente, amíg meg nem újítja."
     }
   }
 }

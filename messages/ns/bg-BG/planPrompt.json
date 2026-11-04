@@ -113,6 +113,10 @@
     "private_events": {
       "name": "Частни събития",
       "many": "yes"
+    },
+    "paperwork": {
+      "name": "Документи",
+      "many": "yes"
     }
   }
 }

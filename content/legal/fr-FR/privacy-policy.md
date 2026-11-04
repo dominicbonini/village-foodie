@@ -1,4 +1,4 @@
-<!-- translation-of: privacy-policy.md sha256:def241a5c7e2316baa4c9f2b8737ce3af40a8dcb30f77142217ff498581d447c -->
+<!-- translation-of: privacy-policy.md sha256:82cea56af67fea07578a2661fce54e9e2af5cb9664f6c18ee064604841ee518c -->
 # Politique de confidentialité
 
 **Dernière mise à jour :** {{LAST_UPDATED}}
@@ -66,6 +66,8 @@ Cette distinction est importante ; il convient donc de l’énoncer clairement.
 Lorsque nous nous fondons sur nos intérêts légitimes, notre intérêt consiste à exploiter et à améliorer un service fiable. Nous avons pris en compte vos droits et n’estimons pas que ce traitement prévaut sur eux. Vous pouvez vous y opposer à tout moment — voir la section 8.
 
 **Déverrouillage biométrique.** Si vous activez Face ID, Touch ID ou le déverrouillage par empreinte digitale dans l’application, la vérification a lieu entièrement sur votre appareil et est gérée par le système d’exploitation. Nous ne recevons, ne voyons ni ne conservons jamais de données biométriques. Nous recevons uniquement un résultat positif ou négatif.
+
+**Documents de conformité.** Si vous conservez vos certificats, attestations d’assurance et autres documents de conformité dans HatchGrab, nous stockons les fichiers ainsi que les informations que vous enregistrez avec eux. Lorsque vous en téléversez un, nous l’envoyons au service Gemini de Google, le même que celui qui lit les cartes, afin de compléter des informations telles que l’organisme qui l’a délivré et sa date d’expiration ; vous les vérifiez avant que quoi que ce soit ne soit enregistré. Vos documents ne sont partagés qu’avec les personnes auxquelles vous choisissez de les envoyer, au moyen de liens qui expirent, et nous les conservons jusqu’à ce que vous les supprimiez ou fermiez votre compte.
 
 ---
 

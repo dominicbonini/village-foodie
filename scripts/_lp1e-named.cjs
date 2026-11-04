@@ -339,6 +339,9 @@ for (const e of require('./_lp-contact-1.cjs').ITEMS) NAMED.push({ id: e.id, wha
 // ⚠️ RE-PINNED (tidy-1, 3 November 2026): the truck page on the HatchGrab host loads no Tally, and the
 // sitemap's /privacy lastmod moves 2026-11-02 → 2026-11-03 — after contact-1's (scripts/_lp-tidy-1.cjs, PRECISE).
 for (const e of require('./_lp-tidy-1.cjs').ITEMS) NAMED.push({ id: e.id, what: e.what, views: e.views, apply: (id, v) => e.apply(id, v) })
+// ⚠️ RE-PINNED (paperwork-1, 4 November 2026): the sitemap's /privacy lastmod moves 2026-11-03 → 2026-11-04 — after tidy-1's
+// (scripts/_lp-paperwork-1.cjs, PRECISE).
+for (const e of require('./_lp-paperwork-1.cjs').ITEMS) NAMED.push({ id: e.id, what: e.what, views: e.views, apply: (id, v) => e.apply(id, v) })
 
 /** BEFORE value of view `id` → { expected, touched: [named ids whose transform changed it] }. */
 // ⚠️ RE-PINNED (plans-data-model, Stage A): an entry with `proveWith` adds `matches(f)` → { ok, problems } — its own

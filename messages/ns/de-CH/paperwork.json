@@ -1,0 +1,11 @@
+{
+  "types": {
+    "street_trading_licence": "Sondernutzungserlaubnis für den Strassenverkauf"
+  },
+  "upload": {
+    "tooBig": "Diese Datei ist grösser als 20 MB. Bitte wählen Sie eine kleinere."
+  },
+  "view": {
+    "close": "Schliessen"
+  }
+}

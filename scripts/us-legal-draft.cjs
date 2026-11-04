@@ -146,7 +146,7 @@ const NAMED = {
     // ⚠️ RE-PINNED (world-countries-2): the RENDERED page is today's document, so its paragraphs and date are read as they are now
     // (read() above gives the older bytes for the byte pins); world-countries-2 re-dated the Terms and the Country-specific terms.
     const W2 = require('./_lp-world-countries-2.cjs')
-    const shownDate = W2.LANDED && doc !== 'privacy' ? W2.NEW_DATE : doc === 'privacy' && require('./_lp-tidy-1.cjs').LEGAL_LANDED ? require('./_lp-tidy-1.cjs').PRIVACY_DATE_NEW : C1.LANDED && doc === 'privacy' ? C1.PRIVACY_DATE_NEW : DOC_DATE[doc]   // ⚠️ RE-PINNED (tidy-1): re-dated 3 November 2026
+    const shownDate = W2.LANDED && doc !== 'privacy' ? W2.NEW_DATE : doc === 'privacy' && require('./_lp-paperwork-1.cjs').LEGAL_LANDED ? require('./_lp-paperwork-1.cjs').PRIVACY_DATE_NEW /* ⚠️ RE-PINNED (paperwork-1): re-dated 4 November 2026 */ : doc === 'privacy' && require('./_lp-tidy-1.cjs').LEGAL_LANDED ? require('./_lp-tidy-1.cjs').PRIVACY_DATE_NEW : C1.LANDED && doc === 'privacy' ? C1.PRIVACY_DATE_NEW : DOC_DATE[doc]   // ⚠️ RE-PINNED (tidy-1): re-dated 3 November 2026
     const paras = fs.readFileSync(path.join(REPO, file), 'utf8').split(/\n\s*\n/).map(words).filter(p => p.length > 30 && !p.startsWith('|'))
     const missing = paras.filter(p => !flat(html).includes(p))
     t(`/${doc} renders every paragraph of its document (${paras.length})`, missing.length === 0, missing.slice(0, 2).join(' · '))

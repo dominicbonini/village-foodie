@@ -215,5 +215,12 @@
   "stripe_request_failed": "Żądanie do Stripe nie powiodło się",
   "private_unavailable": "Wydarzenia prywatne nie są jeszcze dostępne — migracja bazy danych nie została zastosowana.",
   "private_not_private": "To wydarzenie nie jest prywatne.",
-  "private_link_off": "Zamawianie przez prywatny link jest wyłączone dla tego wydarzenia."
+  "private_link_off": "Zamawianie przez prywatny link jest wyłączone dla tego wydarzenia.",
+  "paperwork_file_too_big": "Ten plik ma ponad 20 MB. Wybierz mniejszy.",
+  "paperwork_file_type": "Ten typ pliku nie jest akceptowany. Użyj pliku PDF, JPEG, PNG, HEIC lub WebP.",
+  "paperwork_upload_failed": "Przesyłanie się nie udało. Spróbuj ponownie.",
+  "paperwork_not_found": "Tego dokumentu już nie ma. Odśwież stronę.",
+  "paperwork_bad_details": "Niektóre dane są nieprawidłowe. Sprawdź je i spróbuj ponownie.",
+  "paperwork_send_limit": "W krótkim czasie wysłano wiele linków. Spróbuj ponownie za godzinę.",
+  "paperwork_send_failed": "Nie udało się wysłać e-maila. Spróbuj ponownie."
 }

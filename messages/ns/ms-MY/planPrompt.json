@@ -113,6 +113,10 @@
     "private_events": {
       "name": "Acara peribadi",
       "many": "yes"
+    },
+    "paperwork": {
+      "name": "Dokumen",
+      "many": "yes"
     }
   }
 }

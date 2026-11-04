@@ -1,4 +1,4 @@
-<!-- translation-of: privacy-policy.md sha256:def241a5c7e2316baa4c9f2b8737ce3af40a8dcb30f77142217ff498581d447c -->
+<!-- translation-of: privacy-policy.md sha256:82cea56af67fea07578a2661fce54e9e2af5cb9664f6c18ee064604841ee518c -->
 # Datenschutzerklärung
 
 **Zuletzt aktualisiert:** {{LAST_UPDATED}}
@@ -66,6 +66,8 @@ Diese Unterscheidung ist wichtig, deshalb sagen wir es klar und deutlich.
 Soweit wir uns auf berechtigte Interessen stützen, besteht unser Interesse darin, einen zuverlässigen Dienst zu betreiben und zu verbessern. Wir haben Ihre Rechte berücksichtigt und sind nicht der Auffassung, dass diese Verarbeitung sie überwiegt. Sie können jederzeit widersprechen – siehe Abschnitt 8.
 
 **Entsperren per Biometrie.** Wenn Sie in der App das Entsperren per Face ID, Touch ID oder Fingerabdruck aktivieren, erfolgt die Prüfung vollständig auf Ihrem Gerät und wird vom Betriebssystem durchgeführt. Wir erhalten, sehen oder speichern niemals biometrische Daten. Wir erhalten nur ein Ja-oder-Nein-Ergebnis.
+
+**Nachweisdokumente.** Wenn Sie Ihre Bescheinigungen, Versicherungsnachweise und andere Nachweisdokumente in HatchGrab aufbewahren, speichern wir die Dateien und die Angaben, die Sie dazu hinterlegen. Wenn Sie ein Dokument hochladen, senden wir es an den Gemini-Dienst von Google – denselben Dienst, der Speisekarten ausliest –, um Angaben wie den Aussteller und das Ablaufdatum auszufüllen; Sie prüfen diese, bevor etwas gespeichert wird. Ihre Dokumente werden nur mit den Personen geteilt, denen Sie sie senden möchten, und zwar über Links, die ablaufen, und wir bewahren sie auf, bis Sie sie löschen oder Ihr Konto schließen.
 
 ---
 

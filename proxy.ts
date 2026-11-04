@@ -76,7 +76,11 @@ const isGeneralPublic = (p: string) =>
   // ⚠️ A SINGLE SEGMENT FOR THE PAGE — `/p/<token>` has no deeper child, and matching a prefix would
   // silently pull any future one in. Same discipline as the `/order/` leaf above.
   p === '/p' || /^\/p\/[^/]+$/.test(p) ||
-  p === '/api/private-event'
+  p === '/api/private-event' ||
+  // ── paperwork-1 (4 November 2026): THE ORGANISER'S LINK, FOR THE SAME REASON AS `/p/` ─────────────────────────────
+  // `/docs/<token>` (the page, which counts a view), `/docs/<token>/file/<id>` and `/docs/<token>/all` all read the database
+  // with a token anyone can vary. A PREFIX here, deliberately: every child of `/docs/` is part of that one public action.
+  p.startsWith('/docs/')
 // EMBED (600/min, keyed IP+slug) — the operator-website widget and the endpoint that feeds it.
 // 🔴 BOTH HALVES, DELIBERATELY. The page and its data fetch are one visitor action, so limiting only
 // one of them would leave the other unbounded. It also means one embed view spends TWO tokens; the

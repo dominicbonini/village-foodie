@@ -215,5 +215,12 @@
   "stripe_request_failed": "Stripe užklausa nepavyko",
   "private_unavailable": "Privatūs renginiai dar negalimi — duomenų bazės migracija dar neatlikta.",
   "private_not_private": "Šis renginys nėra privatus.",
-  "private_link_off": "Užsakymai per privačią nuorodą šiam renginiui išjungti."
+  "private_link_off": "Užsakymai per privačią nuorodą šiam renginiui išjungti.",
+  "paperwork_file_too_big": "Šis failas didesnis nei 20 MB. Pasirinkite mažesnį.",
+  "paperwork_file_type": "Toks failo tipas nepriimamas. Naudokite PDF, JPEG, PNG, HEIC arba WebP failą.",
+  "paperwork_upload_failed": "Įkelti nepavyko. Bandykite dar kartą.",
+  "paperwork_not_found": "Šio dokumento nebėra. Įkelkite puslapį iš naujo.",
+  "paperwork_bad_details": "Kai kurie duomenys neteisingi. Patikrinkite juos ir bandykite dar kartą.",
+  "paperwork_send_limit": "Per trumpą laiką išsiuntėte daug nuorodų. Bandykite dar kartą po valandos.",
+  "paperwork_send_failed": "Nepavyko išsiųsti el. laiško. Bandykite dar kartą."
 }

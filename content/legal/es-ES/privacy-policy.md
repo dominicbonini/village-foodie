@@ -1,4 +1,4 @@
-<!-- translation-of: privacy-policy.md sha256:def241a5c7e2316baa4c9f2b8737ce3af40a8dcb30f77142217ff498581d447c -->
+<!-- translation-of: privacy-policy.md sha256:82cea56af67fea07578a2661fce54e9e2af5cb9664f6c18ee064604841ee518c -->
 # Política de privacidad
 
 **Última actualización:** {{LAST_UPDATED}}
@@ -66,6 +66,8 @@ Esta distinción es importante, por lo que conviene exponerla con claridad.
 Cuando nos basamos en intereses legítimos, nuestro interés consiste en operar y mejorar un servicio fiable. Hemos tenido en cuenta sus derechos y no consideramos que este tratamiento prevalezca sobre ellos. Puede oponerse en cualquier momento; véase la sección 8.
 
 **Desbloqueo biométrico.** Si activa Face ID, Touch ID o el desbloqueo por huella dactilar en la aplicación, la comprobación se realiza íntegramente en su dispositivo y la gestiona el sistema operativo. Nunca recibimos, vemos ni almacenamos datos biométricos. Solo recibimos un resultado de sí o no.
+
+**Documentos de cumplimiento normativo.** Si guarda sus certificados, seguros y otros documentos de cumplimiento normativo en HatchGrab, almacenamos los archivos y los datos que usted guarde con ellos. Cuando sube uno, lo enviamos al servicio Gemini de Google, el mismo que lee las cartas, para rellenar datos como quién lo emitió y cuándo caduca; usted los revisa antes de que se guarde nada. Sus documentos solo se comparten con las personas a las que usted decida enviarlos, mediante enlaces que caducan, y los conservamos hasta que usted los elimine o cierre su cuenta.
 
 ---
 

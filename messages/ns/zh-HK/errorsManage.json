@@ -215,5 +215,12 @@
   "stripe_request_failed": "Stripe 請求失敗",
   "private_unavailable": "私人活動暫未推出——資料庫遷移尚未完成。",
   "private_not_private": "這個活動不是私人活動。",
-  "private_link_off": "這個活動已關閉經私人連結落單。"
+  "private_link_off": "這個活動已關閉經私人連結落單。",
+  "paperwork_file_too_big": "檔案超過 20 MB，請選擇較小的檔案。",
+  "paperwork_file_type": "不接受此檔案類型。請使用 PDF、JPEG、PNG、HEIC 或 WebP 檔案。",
+  "paperwork_upload_failed": "上載失敗，請再試一次。",
+  "paperwork_not_found": "這份文件已不存在，請重新載入頁面。",
+  "paperwork_bad_details": "部分資料不正確，請檢查後再試。",
+  "paperwork_send_limit": "你在短時間內傳送了太多連結，請一小時後再試。",
+  "paperwork_send_failed": "未能傳送電郵，請再試一次。"
 }

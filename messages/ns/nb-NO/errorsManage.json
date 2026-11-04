@@ -215,5 +215,12 @@
   "stripe_request_failed": "Forespørselen til Stripe mislyktes",
   "private_unavailable": "Private arrangementer er ikke tilgjengelige ennå – databasemigreringen er ikke kjørt.",
   "private_not_private": "Dette arrangementet er ikke privat.",
-  "private_link_off": "Bestilling via privat lenke er slått av for dette arrangementet."
+  "private_link_off": "Bestilling via privat lenke er slått av for dette arrangementet.",
+  "paperwork_file_too_big": "Filen er over 20 MB. Velg en mindre fil.",
+  "paperwork_file_type": "Den filtypen støttes ikke. Bruk en PDF-, JPEG-, PNG-, HEIC- eller WebP-fil.",
+  "paperwork_upload_failed": "Opplastingen mislyktes. Prøv igjen.",
+  "paperwork_not_found": "Det dokumentet finnes ikke lenger. Last inn siden på nytt.",
+  "paperwork_bad_details": "Noen av opplysningene stemmer ikke. Sjekk dem og prøv igjen.",
+  "paperwork_send_limit": "Du har sendt mange lenker på kort tid. Prøv igjen om en time.",
+  "paperwork_send_failed": "E-posten kunne ikke sendes. Prøv igjen."
 }

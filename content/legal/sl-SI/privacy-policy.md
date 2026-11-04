@@ -1,4 +1,4 @@
-<!-- translation-of: privacy-policy.md sha256:def241a5c7e2316baa4c9f2b8737ce3af40a8dcb30f77142217ff498581d447c -->
+<!-- translation-of: privacy-policy.md sha256:82cea56af67fea07578a2661fce54e9e2af5cb9664f6c18ee064604841ee518c -->
 # Politika zasebnosti
 
 **Zadnja posodobitev:** {{LAST_UPDATED}}
@@ -66,6 +66,8 @@ To razlikovanje je pomembno, zato ga je vredno jasno navesti.
 Kadar se opiramo na zakonite interese, je naš interes v zagotavljanju in izboljševanju zanesljive storitve. Upoštevali smo vaše pravice in menimo, da ta obdelava ne prevlada nad njimi. Ugovor lahko podate kadar koli — glejte razdelek 8.
 
 **Biometrično odklepanje.** Če v aplikaciji vklopite Face ID, Touch ID ali odklepanje s prstnim odtisom, preverjanje poteka v celoti na vaši napravi in ga izvaja operacijski sistem. Biometričnih podatkov nikoli ne prejmemo, ne vidimo in ne shranjujemo. Prejmemo le rezultat da ali ne.
+
+**Dokumenti o skladnosti.** Če v storitvi HatchGrab hranite svoja potrdila, zavarovanja in druge dokumente o skladnosti, shranjujemo datoteke in podatke, ki jih shranite skupaj z njimi. Ko naložite tak dokument, ga pošljemo Googlovi storitvi Gemini, isti, ki bere jedilnike, da izpolni podatke, kot sta izdajatelj in datum poteka; vi jih preverite, preden se kar koli shrani. Vaši dokumenti se delijo samo z osebami, ki jim jih sami pošljete, prek povezav, ki potečejo, hranimo pa jih, dokler jih ne izbrišete ali ne zaprete svojega računa.
 
 ---
 

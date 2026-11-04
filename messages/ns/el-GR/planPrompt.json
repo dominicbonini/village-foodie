@@ -113,6 +113,10 @@
     "private_events": {
       "name": "Οι ιδιωτικές εκδηλώσεις",
       "many": "yes"
+    },
+    "paperwork": {
+      "name": "Τα έγγραφα",
+      "many": "yes"
     }
   }
 }

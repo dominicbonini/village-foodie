@@ -3331,7 +3331,14 @@
     "stripe_request_failed": "Stripe 請求失敗",
     "private_unavailable": "私人活動暫未推出——資料庫遷移尚未完成。",
     "private_not_private": "這個活動不是私人活動。",
-    "private_link_off": "這個活動已關閉經私人連結落單。"
+    "private_link_off": "這個活動已關閉經私人連結落單。",
+    "paperwork_file_too_big": "檔案超過 20 MB，請選擇較小的檔案。",
+    "paperwork_file_type": "不接受此檔案類型。請使用 PDF、JPEG、PNG、HEIC 或 WebP 檔案。",
+    "paperwork_upload_failed": "上載失敗，請再試一次。",
+    "paperwork_not_found": "這份文件已不存在，請重新載入頁面。",
+    "paperwork_bad_details": "部分資料不正確，請檢查後再試。",
+    "paperwork_send_limit": "你在短時間內傳送了太多連結，請一小時後再試。",
+    "paperwork_send_failed": "未能傳送電郵，請再試一次。"
   },
   "tradeArea": {
     "country_missing": "請選擇你的美食車所在的國家。",
@@ -4828,6 +4835,7 @@
     "tabs": {
       "menu": "餐牌",
       "schedule": "出車時間表",
+      "paperwork": "文件",
       "social": "社交媒體",
       "reports": "報告",
       "team": "團隊",
@@ -6001,6 +6009,10 @@
       "private_events": {
         "name": "私人活動",
         "many": "yes"
+      },
+      "paperwork": {
+        "name": "文件管理",
+        "many": "yes"
       }
     }
   },
@@ -6417,6 +6429,183 @@
       "appsSentence": "另有iPad及Android應用程式，即使失去訊號，仍可繼續接收現場訂單。",
       "appsOffline": "iPad及Android應用程式在沒有訊號時仍可接收現場訂單，並在恢復連線後送出；網上控制台則需要連線。",
       "webOffline": "網上控制台需要連線才能顯示新訂單。"
+    }
+  },
+  "paperwork": {
+    "title": "文件",
+    "intro": "將你的證書集中存放。任何文件到期前我們都會提醒你，你亦可以一次過傳送給主辦單位。",
+    "loading": "正在載入你的文件…",
+    "loadFailed": "未能載入你的文件，請再試一次。",
+    "retry": "再試一次",
+    "counts": {
+      "expired": "{count, plural, other {# 份已過期}}",
+      "dueSoon": "{count, plural, other {# 份即將到期}}",
+      "missing": "{count, plural, other {尚欠 # 份}}",
+      "upToDate": "{count, plural, other {# 份有效}}"
+    },
+    "status": {
+      "upToDate": "有效",
+      "dueSoon": "即將到期",
+      "expired": "已過期",
+      "upload": "上載"
+    },
+    "line": {
+      "expires": "{date} 到期",
+      "expiresIn": "{date} 到期 · {days, plural, other {尚餘 # 日}}",
+      "expiresToday": "今日到期",
+      "expired": "已於 {date} 過期",
+      "reviewBy": "請於 {date} 前覆核",
+      "reviewByIn": "請於 {date} 前覆核 · {days, plural, other {尚餘 # 日}}",
+      "reviewOverdue": "原定於 {date} 覆核",
+      "noExpiry": "沒有到期日",
+      "cover": "保額 {amount}",
+      "notUploaded": "尚未上載"
+    },
+    "select": "選擇{document}",
+    "add": "+ 新增文件",
+    "selected": "{count, plural, other {已選 # 份}}",
+    "sendToOrganiser": "傳送給主辦單位",
+    "types": {
+      "food_registration": "食物業登記",
+      "hygiene_rating": "食物衞生評級",
+      "food_safety_plan": "食物安全計劃（HACCP）",
+      "public_liability": "公眾責任保險",
+      "employers_liability": "僱員補償保險",
+      "gas_safety": "氣體安全證書",
+      "pat_test": "便攜式電器安全測試",
+      "fire_safety": "消防安全",
+      "risk_assessment": "風險評估",
+      "allergen_info": "致敏原資料",
+      "street_trading_licence": "小販牌照",
+      "electrical_safety": "電力安全測試",
+      "trading_licence": "營業牌照"
+    },
+    "upload": {
+      "title": "新增文件",
+      "intro": "拍下文件，或選擇相片或檔案。",
+      "takePhoto": "拍照",
+      "chooseFile": "選擇相片或檔案",
+      "accepted": "PDF、JPEG、PNG、HEIC 或 WebP，最大 20 MB。",
+      "uploading": "正在上載… {percent}%",
+      "reading": "正在讀取你的文件…",
+      "tooBig": "檔案超過 20 MB，請選擇較小的檔案。",
+      "wrongType": "不接受此檔案類型。請使用 PDF、JPEG、PNG、HEIC 或 WebP 檔案。",
+      "failed": "上載失敗，請再試一次。",
+      "cancel": "取消"
+    },
+    "check": {
+      "title": "檢查資料",
+      "aiBanner": "以下資料是從你的文件讀取的。儲存前請檢查是否正確。",
+      "document": "文件",
+      "other": "其他…",
+      "otherName": "文件名稱",
+      "issuer": "簽發機構",
+      "issued": "簽發日期",
+      "expires": "到期日",
+      "reviewBy": "覆核日期",
+      "nameOnDocument": "文件上的名稱",
+      "cover": "保險保額",
+      "coverHint": "選填。保單的保障金額。",
+      "currency": "貨幣",
+      "save": "儲存",
+      "saving": "正在儲存…",
+      "cancel": "取消",
+      "saved": "已儲存",
+      "footer": "舊證書會保留作記錄。你的檔案是私人的：只有你和你傳送給的主辦單位才可查看。",
+      "needType": "請選擇文件，或填寫名稱。",
+      "badDates": "到期日不可早於簽發日期。"
+    },
+    "warnings": {
+      "notRead": "未能讀取這份文件，請自行填寫資料。",
+      "expired": "這份文件已於 {date} 過期。你仍可儲存，但主辦單位會看到文件已過期。",
+      "expiresSoon": "{days, plural, =0 {這份文件今日到期。在續期前，我們每星期都會提醒你。} other {這份文件將於 # 日後到期。我們會在到期前 4 星期、前 1 星期及當日提醒你。}}",
+      "nameMismatch": "文件上的名稱「{name}」看來不像你的商號名稱。請檢查是否正確的文件。"
+    },
+    "view": {
+      "close": "關閉",
+      "open": "開啟",
+      "download": "下載",
+      "noPreview": "此檔案無法在這裡顯示，請開啟或下載。",
+      "details": "資料",
+      "edit": "編輯資料",
+      "renew": "上載新版本",
+      "earlier": "舊版本",
+      "uploaded": "於 {date} 上載",
+      "delete": "刪除",
+      "deleteConfirm": "要刪除這份文件及其舊版本嗎？檔案會被移除，文件亦會從你已傳送的所有連結中移除。",
+      "deleteYes": "刪除",
+      "deleted": "已刪除文件",
+      "keep": "保留"
+    },
+    "send": {
+      "title": "傳送給主辦單位",
+      "intro": "對方會收到一封電郵，內附連結，可查看或下載所有文件。",
+      "email": "主辦單位的電郵",
+      "emailHint": "最多 5 個地址，以逗號分隔。",
+      "event": "活動（選填）",
+      "noEvent": "沒有活動",
+      "documents": "文件",
+      "message": "訊息（選填）",
+      "messagePlaceholder": "你好，這是我們參加市集的文件。",
+      "until": "連結有效至",
+      "untilAfterEvent": "{date}（活動翌日）",
+      "send": "傳送",
+      "sending": "正在傳送…",
+      "footer": "如你為證書續期，主辦單位的連結會自動顯示新證書。對方開啟連結時，你會看到。",
+      "sent": "已傳送給 {emails}",
+      "cancel": "取消",
+      "emailNone": "請輸入主辦單位的電郵。",
+      "emailInvalid": "「{email}」不是電郵地址。",
+      "emailTooMany": "每次最多可傳送給 5 個地址。",
+      "noDocuments": "請選擇最少一份文件。",
+      "untilRange": "請選擇由明天起至今日起計 90 日內的日期。"
+    },
+    "sent": {
+      "title": "已傳送",
+      "empty": "尚未傳送任何文件。",
+      "to": "給 {emails}",
+      "sentOn": "於 {date} 傳送",
+      "opened": "於 {date} 開啟 · {count, plural, other {瀏覽 # 次}}",
+      "notOpened": "尚未開啟",
+      "until": "有效至 {date}",
+      "expiredOn": "已於 {date} 過期",
+      "off": "已停用",
+      "turnOff": "停用連結",
+      "turnOffConfirm": "要停用這條連結嗎？主辦單位將無法再開啟。",
+      "turnedOff": "已停用連結"
+    },
+    "page": {
+      "title": "{truck} 的文件",
+      "intro": "{truck} 與你分享了這些文件。",
+      "view": "查看",
+      "download": "下載",
+      "downloadAll": "全部下載",
+      "until": "此連結有效至 {date}。",
+      "none": "此連結目前沒有任何文件。",
+      "expiredTitle": "此連結已過期",
+      "expiredBody": "此連結已過期，請要求 {truck} 再次傳送。",
+      "expiredBodyUnknown": "此連結已過期。請要求傳送連結的商戶再次傳送。",
+      "sharedWith": "經 HatchGrab 分享"
+    },
+    "email": {
+      "shareSubject": "{truck} 向你傳送了他們的文件",
+      "shareHeading": "{truck} 的文件",
+      "shareIntro": "{truck} 與你分享了這些文件。",
+      "event": "活動：{event}",
+      "shareButton": "查看文件",
+      "shareUntil": "連結有效至 {date}。如已過期，請要求 {truck} 再次傳送。",
+      "shareReply": "回覆此電郵即可聯絡 {truck}。",
+      "expires": "{date} 到期",
+      "reviewBy": "請於 {date} 前覆核",
+      "noExpiry": "沒有到期日",
+      "reminderSubject": "{count, plural, other {# 份文件需要續期}}",
+      "reminderHeading": "你的文件",
+      "reminderIntro": "{truck} 有部分文件需要續期：",
+      "reminderIn": "{document}將於 {date} 到期（{days, plural, other {尚餘 # 日}}）",
+      "reminderToday": "{document}今日到期",
+      "reminderExpired": "{document}已於 {date} 過期",
+      "reminderButton": "開啟文件",
+      "reminderFooter": "我們會在到期前 4 星期、前 1 星期及當日提醒你，之後每星期提醒一次，直至續期為止。"
     }
   }
 }

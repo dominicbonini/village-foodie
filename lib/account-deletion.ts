@@ -31,6 +31,7 @@
 // ⚠️ trucks.operator_id is NULLABLE. An unclaimed truck has no account and is unreachable from here —
 // it can only be dealt with as a hard delete or by hand.
 import type { SupabaseClient } from '@supabase/supabase-js'
+import { deleteTruckPaperwork } from '@/lib/paperwork/store'
 
 /** The pending window. Stored on the operator row at request time so changing this never moves an
  *  already-running countdown. */
@@ -59,6 +60,8 @@ export interface AccountDeletionResult {
   ordersAnonymised: number
   staffRemoved: number
   authUsersDeleted: number
+  /** paperwork-1: the truck documents' files removed from storage, their rows, and the links to organisers deleted. */
+  paperwork: { files: number; documents: number; shares: number }
   /** 🔴 Always 0 by construction. Reported so the invariant is visible in the response, not just asserted. */
   paymentsDeleted: 0
 }
@@ -146,6 +149,14 @@ export async function executeAccountDeletion(
     authUsersDeleted++
   }
 
+  // ── 3b. PAPERWORK (paperwork-1, 4 November 2026) — the truck's compliance documents, their files and their links ──
+  // 🔴 DELETED, NOT ANONYMISED: a certificate or an insurance schedule is the truck's own record, not an accounting one, and the
+  // privacy policy says documents are kept "until you delete them or close your account". The truck row survives (step 4), so
+  // nothing would cascade: every file in the private bucket, every document row and every link to organisers goes here.
+  let paperwork = { files: 0, documents: 0, shares: 0 }
+  try { paperwork = await deleteTruckPaperwork(supabase, truckIds) }
+  catch (e) { throw new AccountDeletionError('delete_paperwork', e instanceof Error ? e.message : String(e)) }
+
   // ── 4. TRUCK CONTACT DETAILS — personal data on a retained row ───────────────────────────────────
   // 🔴 THE TRUCK ROW IS RETAINED, because order_payments.truck_id references it with ON DELETE CASCADE:
   // deleting the truck would destroy the ledger just as surely as deleting the orders. Its personal
@@ -186,5 +197,5 @@ export async function executeAccountDeletion(
     authUsersDeleted++
   }
 
-  return { operatorId, truckIds, ordersAnonymised, staffRemoved, authUsersDeleted, paymentsDeleted: 0 }
+  return { operatorId, truckIds, ordersAnonymised, staffRemoved, authUsersDeleted, paperwork, paymentsDeleted: 0 }
 }

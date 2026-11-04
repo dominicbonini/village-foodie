@@ -1,4 +1,4 @@
-<!-- translation-of: privacy-policy.md sha256:def241a5c7e2316baa4c9f2b8737ce3af40a8dcb30f77142217ff498581d447c -->
+<!-- translation-of: privacy-policy.md sha256:82cea56af67fea07578a2661fce54e9e2af5cb9664f6c18ee064604841ee518c -->
 # Personvernerklæring
 
 **Sist oppdatert:** {{LAST_UPDATED}}
@@ -66,6 +66,8 @@ Dette skillet er viktig, så det er verdt å si det helt tydelig.
 Der vi bygger på berettigede interesser, er vår interesse å drive og forbedre en pålitelig tjeneste. Vi har vurdert rettighetene dine og mener ikke at denne behandlingen går foran dem. Du kan når som helst protestere — se punkt 8.
 
 **Biometrisk opplåsing.** Hvis du slår på Face ID, Touch ID eller opplåsing med fingeravtrykk i appen, skjer kontrollen i sin helhet på enheten din og håndteres av operativsystemet. Vi mottar, ser eller lagrer aldri biometriske data. Vi mottar bare et ja- eller nei-svar.
+
+**Dokumentasjon på at regelverket følges.** Hvis du oppbevarer sertifikater, forsikringer og annen dokumentasjon på at du følger regelverket i HatchGrab, lagrer vi filene og opplysningene du lagrer sammen med dem. Når du laster opp et dokument, sender vi det til Googles tjeneste Gemini, den samme som leser menyer, slik at den kan fylle inn opplysninger som hvem som har utstedt det og når det utløper; du sjekker dem før noe blir lagret. Dokumentene dine deles bare med de personene du selv velger å sende dem til, gjennom lenker som utløper, og vi tar vare på dem til du sletter dem eller avslutter kontoen din.
 
 ---
 

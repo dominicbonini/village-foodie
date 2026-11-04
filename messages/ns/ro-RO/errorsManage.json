@@ -215,5 +215,12 @@
   "stripe_request_failed": "Cererea către Stripe a eșuat",
   "private_unavailable": "Evenimentele private nu sunt încă disponibile — migrarea bazei de date nu a fost aplicată.",
   "private_not_private": "Acest eveniment nu este privat.",
-  "private_link_off": "Comenzile prin link privat sunt dezactivate pentru acest eveniment."
+  "private_link_off": "Comenzile prin link privat sunt dezactivate pentru acest eveniment.",
+  "paperwork_file_too_big": "Fișierul depășește 20 MB. Alegeți unul mai mic.",
+  "paperwork_file_type": "Acest tip de fișier nu este acceptat. Folosiți un fișier PDF, JPEG, PNG, HEIC sau WebP.",
+  "paperwork_upload_failed": "Încărcarea nu a reușit. Încercați din nou.",
+  "paperwork_not_found": "Acest document nu mai există. Reîncărcați pagina.",
+  "paperwork_bad_details": "Unele detalii nu sunt corecte. Verificați-le și încercați din nou.",
+  "paperwork_send_limit": "Ați trimis multe linkuri într-un timp scurt. Încercați din nou peste o oră.",
+  "paperwork_send_failed": "E-mailul nu a putut fi trimis. Încercați din nou."
 }

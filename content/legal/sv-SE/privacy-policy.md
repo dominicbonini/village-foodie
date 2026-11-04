@@ -1,4 +1,4 @@
-<!-- translation-of: privacy-policy.md sha256:def241a5c7e2316baa4c9f2b8737ce3af40a8dcb30f77142217ff498581d447c -->
+<!-- translation-of: privacy-policy.md sha256:82cea56af67fea07578a2661fce54e9e2af5cb9664f6c18ee064604841ee518c -->
 # Integritetspolicy
 
 **Senast uppdaterad:** {{LAST_UPDATED}}
@@ -66,6 +66,8 @@ Denna åtskillnad är viktig, så den förtjänar att sägas rakt ut.
 När vi stöder oss på berättigade intressen består vårt intresse i att driva och förbättra en tillförlitlig tjänst. Vi har beaktat dina rättigheter och anser inte att denna behandling väger tyngre än dem. Du kan när som helst invända – se avsnitt 8.
 
 **Biometrisk upplåsning.** Om du aktiverar Face ID, Touch ID eller upplåsning med fingeravtryck i appen sker kontrollen helt på din enhet och hanteras av operativsystemet. Vi tar aldrig emot, ser eller lagrar biometriska uppgifter. Vi får endast ett ja- eller nej-resultat.
+
+**Dokument för regelefterlevnad.** Om du sparar dina intyg, försäkringar och andra dokument för regelefterlevnad i HatchGrab lagrar vi filerna och de uppgifter du sparar med dem. När du laddar upp ett dokument skickar vi det till Googles tjänst Gemini, samma tjänst som läser menyer, för att fylla i uppgifter som vem som har utfärdat det och när det går ut; du kontrollerar uppgifterna innan något sparas. Dina dokument delas bara med de personer som du själv väljer att skicka dem till, via länkar som slutar gälla, och vi sparar dem tills du raderar dem eller avslutar ditt konto.
 
 ---
 

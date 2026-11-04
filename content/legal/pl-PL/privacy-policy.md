@@ -1,4 +1,4 @@
-<!-- translation-of: privacy-policy.md sha256:def241a5c7e2316baa4c9f2b8737ce3af40a8dcb30f77142217ff498581d447c -->
+<!-- translation-of: privacy-policy.md sha256:82cea56af67fea07578a2661fce54e9e2af5cb9664f6c18ee064604841ee518c -->
 # Polityka prywatności
 
 **Ostatnia aktualizacja:** {{LAST_UPDATED}}
@@ -66,6 +66,8 @@ To rozróżnienie ma znaczenie, dlatego warto je jasno przedstawić.
 Gdy opieramy się na prawnie uzasadnionych interesach, naszym interesem jest prowadzenie i ulepszanie niezawodnej usługi. Rozważyliśmy Państwa prawa i nie uważamy, aby to przetwarzanie miało nad nimi pierwszeństwo. Mogą Państwo w każdej chwili wnieść sprzeciw — zob. sekcja 8.
 
 **Odblokowywanie biometryczne.** Jeśli włączą Państwo w aplikacji odblokowywanie za pomocą Face ID, Touch ID lub odcisku palca, weryfikacja odbywa się w całości na Państwa urządzeniu i jest obsługiwana przez system operacyjny. Nigdy nie otrzymujemy, nie widzimy ani nie przechowujemy danych biometrycznych. Otrzymujemy jedynie wynik „tak” lub „nie”.
+
+**Dokumenty potwierdzające zgodność z przepisami.** Jeśli przechowują Państwo w HatchGrab swoje certyfikaty, polisy ubezpieczeniowe i inne dokumenty potwierdzające zgodność z przepisami, przechowujemy pliki oraz dane, które zapiszą Państwo razem z nimi. Gdy przesyłają Państwo taki dokument, przekazujemy go do usługi Gemini firmy Google, tej samej, która odczytuje menu, aby uzupełnić dane, takie jak wystawca dokumentu i data jego wygaśnięcia; sprawdzają je Państwo, zanim cokolwiek zostanie zapisane. Państwa dokumenty są udostępniane wyłącznie osobom, którym zdecydują się Państwo je wysłać, za pomocą linków, które wygasają, a przechowujemy je do czasu, aż je Państwo usuną lub zamkną swoje konto.
 
 ---
 

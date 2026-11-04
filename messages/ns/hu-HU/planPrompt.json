@@ -113,6 +113,10 @@
     "private_events": {
       "name": "A privát események",
       "many": "yes"
+    },
+    "paperwork": {
+      "name": "A dokumentumok",
+      "many": "yes"
     }
   }
 }

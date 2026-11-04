@@ -127,7 +127,8 @@
     "wp_picture_size_unknown": "Die Grösse dieses Bildes konnte nicht gelesen werden.",
     "wp_picture_wrong_shape": "Dieses Bild hat ein anderes Format als Ihr Standardbild ({width}×{height}). Exportieren Sie es in derselben Grösse.",
     "wp_layout_size_unknown": "Die Bildgrösse des Designs ist nicht bekannt.",
-    "wp_box_not_number": "{box, select, heading {Das Feld für die Überschrift hat eine Position oder Grösse, die keine Zahl innerhalb des Bildes ist.} date {Das Feld für das Datum hat eine Position oder Grösse, die keine Zahl innerhalb des Bildes ist.} location {Das Feld für den Ort hat eine Position oder Grösse, die keine Zahl innerhalb des Bildes ist.} time {Das Feld für die Uhrzeit hat eine Position oder Grösse, die keine Zahl innerhalb des Bildes ist.} town {Das Feld für die Stadt hat eine Position oder Grösse, die keine Zahl innerhalb des Bildes ist.} days {Das Feld für die 7 Tage hat eine Position oder Grösse, die keine Zahl innerhalb des Bildes ist.} other {Ihr eigener Text hat eine Position oder Grösse, die keine Zahl innerhalb des Bildes ist.}}"
+    "wp_box_not_number": "{box, select, heading {Das Feld für die Überschrift hat eine Position oder Grösse, die keine Zahl innerhalb des Bildes ist.} date {Das Feld für das Datum hat eine Position oder Grösse, die keine Zahl innerhalb des Bildes ist.} location {Das Feld für den Ort hat eine Position oder Grösse, die keine Zahl innerhalb des Bildes ist.} time {Das Feld für die Uhrzeit hat eine Position oder Grösse, die keine Zahl innerhalb des Bildes ist.} town {Das Feld für die Stadt hat eine Position oder Grösse, die keine Zahl innerhalb des Bildes ist.} days {Das Feld für die 7 Tage hat eine Position oder Grösse, die keine Zahl innerhalb des Bildes ist.} other {Ihr eigener Text hat eine Position oder Grösse, die keine Zahl innerhalb des Bildes ist.}}",
+    "paperwork_file_too_big": "Diese Datei ist grösser als 20 MB. Bitte wählen Sie eine kleinere."
   },
   "manageSchedule": {
     "link": {
@@ -266,6 +267,17 @@
       "options": {
         "explain": "Grössen, Saucen und Extras, auch Pflichtauswahl."
       }
+    }
+  },
+  "paperwork": {
+    "types": {
+      "street_trading_licence": "Sondernutzungserlaubnis für den Strassenverkauf"
+    },
+    "upload": {
+      "tooBig": "Diese Datei ist grösser als 20 MB. Bitte wählen Sie eine kleinere."
+    },
+    "view": {
+      "close": "Schliessen"
     }
   }
 }

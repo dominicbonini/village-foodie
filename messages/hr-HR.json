@@ -3331,7 +3331,14 @@
     "stripe_request_failed": "Zahtjev platformi Stripe nije uspio",
     "private_unavailable": "Privatni događaji još nisu dostupni – migracija baze podataka još nije primijenjena.",
     "private_not_private": "Ovaj događaj nije privatan.",
-    "private_link_off": "Naručivanje putem privatne poveznice isključeno je za ovaj događaj."
+    "private_link_off": "Naručivanje putem privatne poveznice isključeno je za ovaj događaj.",
+    "paperwork_file_too_big": "Ta je datoteka veća od 20 MB. Odaberite manju.",
+    "paperwork_file_type": "Ta vrsta datoteke nije podržana. Upotrijebite datoteku PDF, JPEG, PNG, HEIC ili WebP.",
+    "paperwork_upload_failed": "Učitavanje nije uspjelo. Pokušajte ponovno.",
+    "paperwork_not_found": "Taj dokument više ne postoji. Osvježite stranicu.",
+    "paperwork_bad_details": "Neki podaci nisu ispravni. Provjerite ih i pokušajte ponovno.",
+    "paperwork_send_limit": "U kratkom ste vremenu poslali mnogo poveznica. Pokušajte ponovno za sat vremena.",
+    "paperwork_send_failed": "E-poruku nije bilo moguće poslati. Pokušajte ponovno."
   },
   "tradeArea": {
     "country_missing": "Odaberite zemlju u kojoj je sjedište vašeg food trucka.",
@@ -4828,6 +4835,7 @@
     "tabs": {
       "menu": "Jelovnik",
       "schedule": "Raspored",
+      "paperwork": "Dokumenti",
       "social": "Društvene mreže",
       "reports": "Izvještaji",
       "team": "Tim",
@@ -6029,6 +6037,10 @@
       "private_events": {
         "name": "Privatni događaji",
         "many": "yes"
+      },
+      "paperwork": {
+        "name": "Dokumenti",
+        "many": "yes"
       }
     }
   },
@@ -6417,6 +6429,183 @@
       "appsSentence": "Postoji i aplikacija za iPad i Android, koja nastavlja primati narudžbe na licu mjesta ako izgubite signal.",
       "appsOffline": "Aplikacija za iPad i Android prima narudžbe na licu mjesta i bez signala te ih šalje kad ponovno budete online; web nadzornoj ploči potrebna je veza.",
       "webOffline": "Web nadzornoj ploči potrebna je veza za prikaz novih narudžbi."
+    }
+  },
+  "paperwork": {
+    "title": "Dokumenti",
+    "intro": "Čuvajte svoje potvrde na jednom mjestu. Podsjetit ćemo vas prije nego što nešto istekne, a organizatoru ih možete poslati odjednom.",
+    "loading": "Učitavanje vaših dokumenata…",
+    "loadFailed": "Vaše dokumente nije bilo moguće učitati. Pokušajte ponovno.",
+    "retry": "Pokušaj ponovno",
+    "counts": {
+      "expired": "{count, plural, one {# istekao} few {# istekla} other {# isteklih}}",
+      "dueSoon": "{count, plural, one {# uskoro ističe} few {# uskoro ističu} other {# uskoro ističe}}",
+      "missing": "{count, plural, one {# nedostaje} few {# nedostaju} other {# nedostaje}}",
+      "upToDate": "{count, plural, one {# ažuran} few {# ažurna} other {# ažurnih}}"
+    },
+    "status": {
+      "upToDate": "Ažurno",
+      "dueSoon": "Uskoro ističe",
+      "expired": "Isteklo",
+      "upload": "Učitaj"
+    },
+    "line": {
+      "expires": "Ističe {date}",
+      "expiresIn": "Ističe {date} · {days, plural, one {za # dan} few {za # dana} other {za # dana}}",
+      "expiresToday": "Ističe danas",
+      "expired": "Isteklo {date}",
+      "reviewBy": "Revizija do {date}",
+      "reviewByIn": "Revizija do {date} · {days, plural, one {za # dan} few {za # dana} other {za # dana}}",
+      "reviewOverdue": "Revizija je trebala biti do {date}",
+      "noExpiry": "Bez isteka",
+      "cover": "Pokriće {amount}",
+      "notUploaded": "Još nije učitano"
+    },
+    "select": "Odaberi: {document}",
+    "add": "+ Dodaj dokument",
+    "selected": "{count, plural, one {# odabran} few {# odabrana} other {# odabranih}}",
+    "sendToOrganiser": "Pošalji organizatoru",
+    "types": {
+      "food_registration": "Registracija za poslovanje s hranom",
+      "hygiene_rating": "Ocjena higijene hrane",
+      "food_safety_plan": "Plan sigurnosti hrane (HACCP)",
+      "public_liability": "Osiguranje od odgovornosti prema trećima",
+      "employers_liability": "Osiguranje od odgovornosti poslodavca",
+      "gas_safety": "Potvrda o ispravnosti plinske instalacije",
+      "pat_test": "Ispitivanje prijenosnih električnih uređaja",
+      "fire_safety": "Zaštita od požara",
+      "risk_assessment": "Procjena rizika",
+      "allergen_info": "Podaci o alergenima",
+      "street_trading_licence": "Dozvola za uličnu prodaju",
+      "electrical_safety": "Ispitivanje električne instalacije",
+      "trading_licence": "Dozvola za obavljanje djelatnosti"
+    },
+    "upload": {
+      "title": "Dodaj dokument",
+      "intro": "Fotografirajte ga ili odaberite fotografiju ili datoteku.",
+      "takePhoto": "Fotografiraj",
+      "chooseFile": "Odaberi fotografiju ili datoteku",
+      "accepted": "PDF, JPEG, PNG, HEIC ili WebP, najviše 20 MB.",
+      "uploading": "Učitavanje… {percent}%",
+      "reading": "Čitamo vaš dokument…",
+      "tooBig": "Ta je datoteka veća od 20 MB. Odaberite manju.",
+      "wrongType": "Ta vrsta datoteke nije podržana. Upotrijebite datoteku PDF, JPEG, PNG, HEIC ili WebP.",
+      "failed": "Učitavanje nije uspjelo. Pokušajte ponovno.",
+      "cancel": "Odustani"
+    },
+    "check": {
+      "title": "Provjerite podatke",
+      "aiBanner": "Ovo smo očitali iz vašeg dokumenta. Prije spremanja provjerite je li točno.",
+      "document": "Dokument",
+      "other": "Drugo…",
+      "otherName": "Naziv dokumenta",
+      "issuer": "Izdavatelj",
+      "issued": "Izdano",
+      "expires": "Ističe",
+      "reviewBy": "Revizija do",
+      "nameOnDocument": "Ime na dokumentu",
+      "cover": "Pokriće osiguranja",
+      "coverHint": "Neobavezno. Iznos koji polica pokriva.",
+      "currency": "Valuta",
+      "save": "Spremi",
+      "saving": "Spremanje…",
+      "cancel": "Odustani",
+      "saved": "Spremljeno",
+      "footer": "Prethodna potvrda čuva se u povijesti. Vaše su datoteke privatne: vidite ih samo vi i organizatori kojima ih pošaljete.",
+      "needType": "Odaberite dokument ili upišite njegov naziv.",
+      "badDates": "Datum isteka ne može biti prije datuma izdavanja."
+    },
+    "warnings": {
+      "notRead": "Nismo mogli očitati ovaj dokument. Podatke unesite sami.",
+      "expired": "Ovaj je dokument istekao {date}. I dalje ga možete spremiti, ali organizatori će vidjeti da je istekao.",
+      "expiresSoon": "{days, plural, =0 {Ovaj dokument ističe danas. Podsjećat ćemo vas svaki tjedan dok ga ne obnovite.} one {Ovaj dokument ističe za # dan. Podsjetit ćemo vas 4 tjedna prije, 1 tjedan prije i na dan isteka.} few {Ovaj dokument ističe za # dana. Podsjetit ćemo vas 4 tjedna prije, 1 tjedan prije i na dan isteka.} other {Ovaj dokument ističe za # dana. Podsjetit ćemo vas 4 tjedna prije, 1 tjedan prije i na dan isteka.}}",
+      "nameMismatch": "Ime na dokumentu, „{name}“, ne izgleda kao naziv vašeg poslovanja. Provjerite je li to pravi dokument."
+    },
+    "view": {
+      "close": "Zatvori",
+      "open": "Otvori",
+      "download": "Preuzmi",
+      "noPreview": "Ova se datoteka ne može prikazati ovdje. Otvorite je ili preuzmite.",
+      "details": "Podaci",
+      "edit": "Uredi podatke",
+      "renew": "Učitaj novu verziju",
+      "earlier": "Prethodne verzije",
+      "uploaded": "Učitano {date}",
+      "delete": "Izbriši",
+      "deleteConfirm": "Izbrisati ovaj dokument i njegove prethodne verzije? Datoteke se uklanjaju, a dokument nestaje sa svih poveznica koje ste poslali.",
+      "deleteYes": "Izbriši",
+      "deleted": "Dokument je izbrisan",
+      "keep": "Zadrži"
+    },
+    "send": {
+      "title": "Pošalji organizatoru",
+      "intro": "Organizator dobiva e-poruku s poveznicom za pregled ili preuzimanje svega.",
+      "email": "E-pošta organizatora",
+      "emailHint": "Najviše 5 adresa, odvojenih zarezima.",
+      "event": "Događaj (neobavezno)",
+      "noEvent": "Bez događaja",
+      "documents": "Dokumenti",
+      "message": "Poruka (neobavezno)",
+      "messagePlaceholder": "Pozdrav, šaljemo vam naše dokumente za sajam.",
+      "until": "Poveznica vrijedi do",
+      "untilAfterEvent": "{date} (dan nakon događaja)",
+      "send": "Pošalji",
+      "sending": "Slanje…",
+      "footer": "Ako obnovite potvrdu, poveznica organizatora automatski prikazuje novu. Vidjet ćete kad je organizator otvori.",
+      "sent": "Poslano na {emails}",
+      "cancel": "Odustani",
+      "emailNone": "Unesite e-poštu organizatora.",
+      "emailInvalid": "„{email}“ nije adresa e-pošte.",
+      "emailTooMany": "Odjednom možete poslati na najviše 5 adresa.",
+      "noDocuments": "Odaberite barem jedan dokument.",
+      "untilRange": "Odaberite datum od sutra do najviše 90 dana od danas."
+    },
+    "sent": {
+      "title": "Poslano",
+      "empty": "Još ništa nije poslano.",
+      "to": "Za {emails}",
+      "sentOn": "Poslano {date}",
+      "opened": "Otvorena {date} · {count, plural, one {# pregled} few {# pregleda} other {# pregleda}}",
+      "notOpened": "Još nije otvorena",
+      "until": "Vrijedi do {date}",
+      "expiredOn": "Istekla {date}",
+      "off": "Isključena",
+      "turnOff": "Isključi poveznicu",
+      "turnOffConfirm": "Isključiti ovu poveznicu? Organizator je više neće moći otvoriti.",
+      "turnedOff": "Poveznica je isključena"
+    },
+    "page": {
+      "title": "Dokumenti food trucka {truck}",
+      "intro": "Food truck {truck} podijelio je ove dokumente s vama.",
+      "view": "Pogledaj",
+      "download": "Preuzmi",
+      "downloadAll": "Preuzmi sve",
+      "until": "Ova poveznica vrijedi do {date}.",
+      "none": "Na ovoj poveznici trenutačno nema dokumenata.",
+      "expiredTitle": "Ova je poveznica istekla",
+      "expiredBody": "Ova je poveznica istekla, zamolite food truck {truck} da je ponovno pošalje.",
+      "expiredBodyUnknown": "Ova je poveznica istekla. Zamolite tvrtku koja ju je poslala da je pošalje ponovno.",
+      "sharedWith": "Podijeljeno putem HatchGraba"
+    },
+    "email": {
+      "shareSubject": "Food truck {truck} poslao vam je svoje dokumente",
+      "shareHeading": "Dokumenti food trucka {truck}",
+      "shareIntro": "Food truck {truck} podijelio je ove dokumente s vama.",
+      "event": "Za: {event}",
+      "shareButton": "Pogledaj dokumente",
+      "shareUntil": "Poveznica vrijedi do {date}. Ako je istekla, zamolite food truck {truck} da je ponovno pošalje.",
+      "shareReply": "Odgovorite na ovu e-poruku kako biste kontaktirali food truck {truck}.",
+      "expires": "ističe {date}",
+      "reviewBy": "revizija do {date}",
+      "noExpiry": "bez isteka",
+      "reminderSubject": "{count, plural, one {# dokument treba obnoviti} few {# dokumenta treba obnoviti} other {# dokumenata treba obnoviti}}",
+      "reminderHeading": "Vaši dokumenti",
+      "reminderIntro": "Neke dokumente food trucka {truck} treba obnoviti:",
+      "reminderIn": "{document} ističe {date} ({days, plural, one {za # dan} few {za # dana} other {za # dana}})",
+      "reminderToday": "{document} ističe danas",
+      "reminderExpired": "{document} – rok valjanosti istekao je {date}",
+      "reminderButton": "Otvori Dokumente",
+      "reminderFooter": "Podsjećamo vas 4 tjedna prije, 1 tjedan prije i na dan isteka, a zatim svaki tjedan dok dokument ne obnovite."
     }
   }
 }

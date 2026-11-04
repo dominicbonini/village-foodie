@@ -132,6 +132,9 @@ const NAMED = [
   // ⚠️ RE-PINNED (tidy-1, 3 November 2026): the truck page on the HatchGrab host loads no Tally, and the sitemap's /privacy lastmod
   // 2026-11-02 → 2026-11-03, after contact-1's — PRECISE (scripts/_lp-tidy-1.cjs).
   ...require('./_lp-tidy-1.cjs').ITEMS.map(P => ({ id: P.id, what: P.what, applies: id => P.views(id), apply: (v, id) => P.apply(id, v) })),
+  // ⚠️ RE-PINNED (paperwork-1, 4 November 2026): the sitemap's /privacy lastmod 2026-11-03 → 2026-11-04, after tidy-1's — PRECISE
+  // (scripts/_lp-paperwork-1.cjs).
+  ...require('./_lp-paperwork-1.cjs').ITEMS.map(P => ({ id: P.id, what: P.what, applies: id => P.views(id), apply: (v, id) => P.apply(id, v) })),
 ]
 // ⚠️ RE-PINNED (plans-data-model, Stage A, 19 October 2026): Manage › Billing is ONE data-driven plan card above the frozen comparison
 // table — STRUCTURAL, by the same proof Part 2 and Phase 1e name (scripts/_lp1d2-named.cjs makeBillingProof, one copy):

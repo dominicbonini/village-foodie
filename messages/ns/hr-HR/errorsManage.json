@@ -215,5 +215,12 @@
   "stripe_request_failed": "Zahtjev platformi Stripe nije uspio",
   "private_unavailable": "Privatni događaji još nisu dostupni – migracija baze podataka još nije primijenjena.",
   "private_not_private": "Ovaj događaj nije privatan.",
-  "private_link_off": "Naručivanje putem privatne poveznice isključeno je za ovaj događaj."
+  "private_link_off": "Naručivanje putem privatne poveznice isključeno je za ovaj događaj.",
+  "paperwork_file_too_big": "Ta je datoteka veća od 20 MB. Odaberite manju.",
+  "paperwork_file_type": "Ta vrsta datoteke nije podržana. Upotrijebite datoteku PDF, JPEG, PNG, HEIC ili WebP.",
+  "paperwork_upload_failed": "Učitavanje nije uspjelo. Pokušajte ponovno.",
+  "paperwork_not_found": "Taj dokument više ne postoji. Osvježite stranicu.",
+  "paperwork_bad_details": "Neki podaci nisu ispravni. Provjerite ih i pokušajte ponovno.",
+  "paperwork_send_limit": "U kratkom ste vremenu poslali mnogo poveznica. Pokušajte ponovno za sat vremena.",
+  "paperwork_send_failed": "E-poruku nije bilo moguće poslati. Pokušajte ponovno."
 }

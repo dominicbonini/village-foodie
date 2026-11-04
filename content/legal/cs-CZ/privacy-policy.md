@@ -1,4 +1,4 @@
-<!-- translation-of: privacy-policy.md sha256:def241a5c7e2316baa4c9f2b8737ce3af40a8dcb30f77142217ff498581d447c -->
+<!-- translation-of: privacy-policy.md sha256:82cea56af67fea07578a2661fce54e9e2af5cb9664f6c18ee064604841ee518c -->
 # Zásady ochrany osobních údajů
 
 **Poslední aktualizace:** {{LAST_UPDATED}}
@@ -66,6 +66,8 @@ Toto rozlišení je důležité, a proto je vhodné ho jasně uvést.
 Pokud se opíráme o oprávněné zájmy, je naším zájmem provozovat a zlepšovat spolehlivou službu. Zvážili jsme vaše práva a nedomníváme se, že by nad nimi toto zpracování převažovalo. Proti zpracování můžete kdykoli vznést námitku — viz oddíl 8.
 
 **Biometrické odemknutí.** Pokud v aplikaci zapnete odemykání pomocí Face ID, Touch ID nebo otisku prstu, ověření proběhne výhradně ve vašem zařízení a zajišťuje ho operační systém. Biometrické údaje nikdy nepřijímáme, nevidíme ani neukládáme. Dostáváme pouze výsledek ano, nebo ne.
+
+**Doklady o dodržování předpisů.** Pokud v HatchGrab uchováváte své certifikáty, pojištění a další doklady o dodržování předpisů, ukládáme soubory a údaje, které k nim uložíte. Když některý z nich nahrajete, pošleme ho do služby Gemini od společnosti Google, té samé, která načítá jídelní lístky, aby doplnila údaje, například kdo ho vydal a kdy mu končí platnost; vy je zkontrolujete dříve, než se cokoli uloží. Vaše dokumenty sdílíme pouze s lidmi, kterým se je rozhodnete poslat, a to prostřednictvím odkazů s omezenou platností, a uchováváme je, dokud je nesmažete nebo nezrušíte svůj účet.
 
 ---
 

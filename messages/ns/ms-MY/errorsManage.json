@@ -215,5 +215,12 @@
   "stripe_request_failed": "Permintaan Stripe gagal",
   "private_unavailable": "Acara peribadi belum tersedia — migrasi pangkalan data belum dijalankan.",
   "private_not_private": "Acara ini bukan acara peribadi.",
-  "private_link_off": "Pesanan melalui pautan peribadi dimatikan untuk acara ini."
+  "private_link_off": "Pesanan melalui pautan peribadi dimatikan untuk acara ini.",
+  "paperwork_file_too_big": "Fail itu melebihi 20 MB. Sila pilih fail yang lebih kecil.",
+  "paperwork_file_type": "Jenis fail itu tidak diterima. Sila gunakan fail PDF, JPEG, PNG, HEIC atau WebP.",
+  "paperwork_upload_failed": "Muat naik tidak berjaya. Sila cuba lagi.",
+  "paperwork_not_found": "Dokumen itu sudah tiada. Sila muat semula halaman.",
+  "paperwork_bad_details": "Sebahagian butiran tidak betul. Sila semak dan cuba lagi.",
+  "paperwork_send_limit": "Anda telah menghantar banyak pautan dalam masa yang singkat. Sila cuba lagi dalam sejam.",
+  "paperwork_send_failed": "E-mel tidak dapat dihantar. Sila cuba lagi."
 }

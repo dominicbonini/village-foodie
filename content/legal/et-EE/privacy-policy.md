@@ -1,4 +1,4 @@
-<!-- translation-of: privacy-policy.md sha256:def241a5c7e2316baa4c9f2b8737ce3af40a8dcb30f77142217ff498581d447c -->
+<!-- translation-of: privacy-policy.md sha256:82cea56af67fea07578a2661fce54e9e2af5cb9664f6c18ee064604841ee518c -->
 # Privaatsuspoliitika
 
 **Viimati uuendatud:** {{LAST_UPDATED}}
@@ -66,6 +66,8 @@ See eristus on oluline, seepärast tasub see selgelt välja öelda.
 Kui tugineme õigustatud huvidele, on meie huvi usaldusväärse teenuse osutamine ja täiustamine. Oleme teie õigusi kaalunud ega leia, et see töötlemine kaaluks need üles. Võite igal ajal esitada vastuväite — vt jaotis 8.
 
 **Biomeetriline avamine.** Kui lülitate rakenduses sisse Face ID, Touch ID või sõrmejäljega avamise, toimub kontroll täielikult teie seadmes ja seda teeb operatsioonisüsteem. Me ei saa, näe ega salvesta kunagi biomeetrilisi andmeid. Saame ainult vastuse „jah“ või „ei“.
+
+**Nõuetele vastavust tõendavad dokumendid.** Kui hoiate HatchGrabis oma sertifikaate, kindlustuspoliise ja muid nõuetele vastavust tõendavaid dokumente, säilitame failid ja andmed, mille koos nendega salvestate. Kui laadite dokumendi üles, saadame selle Google’i teenusele Gemini, samale, mis loeb menüüsid, et see täidaks andmed, näiteks kes dokumendi väljastas ja millal see aegub; te kontrollite need üle enne, kui midagi salvestatakse. Teie dokumente jagatakse ainult inimestega, kellele otsustate need saata, aeguvate linkide kaudu, ja me säilitame neid, kuni te need kustutate või oma konto sulgete.
 
 ---
 

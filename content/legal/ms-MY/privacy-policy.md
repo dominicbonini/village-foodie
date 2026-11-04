@@ -1,4 +1,4 @@
-<!-- translation-of: privacy-policy.md sha256:def241a5c7e2316baa4c9f2b8737ce3af40a8dcb30f77142217ff498581d447c -->
+<!-- translation-of: privacy-policy.md sha256:82cea56af67fea07578a2661fce54e9e2af5cb9664f6c18ee064604841ee518c -->
 # Dasar Privasi
 
 **Kemas kini terakhir:** {{LAST_UPDATED}}
@@ -66,6 +66,8 @@ Perbezaan ini penting, maka wajar dinyatakan dengan jelas.
 Apabila kami bergantung pada kepentingan sah, kepentingan kami adalah untuk mengendalikan dan menambah baik perkhidmatan yang boleh dipercayai. Kami telah mempertimbangkan hak anda dan tidak percaya bahawa pemprosesan ini mengatasi hak tersebut. Anda boleh membantah pada bila-bila masa — lihat seksyen 8.
 
 **Buka kunci biometrik.** Jika anda menghidupkan Face ID, Touch ID atau buka kunci cap jari dalam aplikasi, semakan itu berlaku sepenuhnya pada peranti anda dan dikendalikan oleh sistem pengendalian. Kami tidak pernah menerima, melihat atau menyimpan data biometrik. Kami hanya menerima keputusan ya atau tidak.
+
+**Dokumen pematuhan.** Jika anda menyimpan sijil, insurans dan dokumen pematuhan lain anda dalam HatchGrab, kami menyimpan fail tersebut dan butiran yang anda simpan bersamanya. Apabila anda memuat naik dokumen, kami menghantarnya kepada perkhidmatan Gemini Google, iaitu perkhidmatan yang sama yang membaca menu, untuk mengisi butiran seperti siapa yang mengeluarkannya dan bila ia tamat tempoh; anda menyemak butiran itu sebelum apa-apa disimpan. Dokumen anda hanya dikongsi dengan orang yang anda pilih untuk menerimanya, melalui pautan yang akan tamat tempoh, dan kami menyimpannya sehingga anda memadamnya atau menutup akaun anda.
 
 ---
 

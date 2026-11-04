@@ -3331,7 +3331,14 @@
     "stripe_request_failed": "A solicitação ao Stripe falhou",
     "private_unavailable": "Os eventos privados ainda não estão disponíveis — a migração do banco de dados não foi aplicada.",
     "private_not_private": "Este evento não é privado.",
-    "private_link_off": "Os pedidos por link privado estão desativados para este evento."
+    "private_link_off": "Os pedidos por link privado estão desativados para este evento.",
+    "paperwork_file_too_big": "Esse arquivo tem mais de 20 MB. Escolha um menor.",
+    "paperwork_file_type": "Esse tipo de arquivo não é aceito. Use um arquivo PDF, JPEG, PNG, HEIC ou WebP.",
+    "paperwork_upload_failed": "O envio não deu certo. Tente de novo.",
+    "paperwork_not_found": "Esse documento não existe mais. Recarregue a página.",
+    "paperwork_bad_details": "Alguns dados não estão certos. Confira e tente de novo.",
+    "paperwork_send_limit": "Você enviou muitos links em pouco tempo. Tente de novo daqui a uma hora.",
+    "paperwork_send_failed": "Não foi possível enviar o e-mail. Tente de novo."
   },
   "tradeArea": {
     "country_missing": "Escolha o país onde fica seu food truck.",
@@ -4828,6 +4835,7 @@
     "tabs": {
       "menu": "Cardápio",
       "schedule": "Agenda",
+      "paperwork": "Documentos",
       "social": "Redes sociais",
       "reports": "Relatórios",
       "team": "Equipe",
@@ -6001,6 +6009,10 @@
       "private_events": {
         "name": "Os eventos privados",
         "many": "yes"
+      },
+      "paperwork": {
+        "name": "Os documentos",
+        "many": "yes"
       }
     }
   },
@@ -6417,6 +6429,183 @@
       "appsSentence": "Também há um app para iPad e Android, que continua recebendo pedidos no balcão se o sinal cair.",
       "appsOffline": "O app para iPad e Android recebe pedidos no balcão mesmo sem sinal e os envia quando você volta a ficar online; o painel web precisa de conexão.",
       "webOffline": "O painel web precisa de conexão para mostrar os novos pedidos."
+    }
+  },
+  "paperwork": {
+    "title": "Documentos",
+    "intro": "Guarde seus certificados em um só lugar. Avisamos você antes que algum vença, e você pode enviar todos de uma vez para um organizador.",
+    "loading": "Carregando seus documentos…",
+    "loadFailed": "Não foi possível carregar seus documentos. Tente de novo.",
+    "retry": "Tentar de novo",
+    "counts": {
+      "expired": "{count, plural, one {# vencido} many {# vencidos} other {# vencidos}}",
+      "dueSoon": "{count, plural, one {# vence em breve} many {# vencem em breve} other {# vencem em breve}}",
+      "missing": "{count, plural, one {# faltando} many {# faltando} other {# faltando}}",
+      "upToDate": "{count, plural, one {# em dia} many {# em dia} other {# em dia}}"
+    },
+    "status": {
+      "upToDate": "Em dia",
+      "dueSoon": "Vence em breve",
+      "expired": "Vencido",
+      "upload": "Adicionar"
+    },
+    "line": {
+      "expires": "Vence em {date}",
+      "expiresIn": "Vence em {date} · {days, plural, one {em # dia} many {em # de dias} other {em # dias}}",
+      "expiresToday": "Vence hoje",
+      "expired": "Venceu em {date}",
+      "reviewBy": "Revisar até {date}",
+      "reviewByIn": "Revisar até {date} · {days, plural, one {em # dia} many {em # de dias} other {em # dias}}",
+      "reviewOverdue": "Revisão prevista para {date}",
+      "noExpiry": "Sem vencimento",
+      "cover": "Cobertura de {amount}",
+      "notUploaded": "Ainda não enviado"
+    },
+    "select": "Selecionar {document}",
+    "add": "+ Adicionar um documento",
+    "selected": "{count, plural, one {# selecionado} many {# selecionados} other {# selecionados}}",
+    "sendToOrganiser": "Enviar para o organizador",
+    "types": {
+      "food_registration": "Licença sanitária",
+      "hygiene_rating": "Classificação de higiene alimentar",
+      "food_safety_plan": "Plano de segurança dos alimentos (HACCP)",
+      "public_liability": "Seguro de responsabilidade civil",
+      "employers_liability": "Seguro de responsabilidade civil do empregador",
+      "gas_safety": "Laudo de segurança do gás",
+      "pat_test": "Inspeção de aparelhos elétricos portáteis",
+      "fire_safety": "Segurança contra incêndio",
+      "risk_assessment": "Avaliação de riscos",
+      "allergen_info": "Informações sobre alérgenos",
+      "street_trading_licence": "Licença de comércio ambulante",
+      "electrical_safety": "Laudo de segurança elétrica",
+      "trading_licence": "Alvará de funcionamento"
+    },
+    "upload": {
+      "title": "Adicionar um documento",
+      "intro": "Tire uma foto dele ou escolha uma foto ou um arquivo.",
+      "takePhoto": "Tirar uma foto",
+      "chooseFile": "Escolher uma foto ou um arquivo",
+      "accepted": "PDF, JPEG, PNG, HEIC ou WebP, até 20 MB.",
+      "uploading": "Enviando… {percent}%",
+      "reading": "Lendo seu documento…",
+      "tooBig": "Esse arquivo tem mais de 20 MB. Escolha um menor.",
+      "wrongType": "Esse tipo de arquivo não é aceito. Use um arquivo PDF, JPEG, PNG, HEIC ou WebP.",
+      "failed": "O envio não deu certo. Tente de novo.",
+      "cancel": "Cancelar"
+    },
+    "check": {
+      "title": "Confira os dados",
+      "aiBanner": "Lemos estes dados no seu documento. Confira se estão certos antes de salvar.",
+      "document": "Documento",
+      "other": "Outro…",
+      "otherName": "Nome do documento",
+      "issuer": "Emitido por",
+      "issued": "Emitido em",
+      "expires": "Vence em",
+      "reviewBy": "Revisar até",
+      "nameOnDocument": "Nome no documento",
+      "cover": "Cobertura do seguro",
+      "coverHint": "Opcional. O valor que a apólice cobre.",
+      "currency": "Moeda",
+      "save": "Salvar",
+      "saving": "Salvando…",
+      "cancel": "Cancelar",
+      "saved": "Salvo",
+      "footer": "O certificado anterior fica guardado no histórico. Seus arquivos são privados: só você e os organizadores para quem você enviar podem vê-los.",
+      "needType": "Escolha o documento ou dê um nome a ele.",
+      "badDates": "A data de vencimento não pode ser anterior à data de emissão."
+    },
+    "warnings": {
+      "notRead": "Não conseguimos ler este documento. Preencha os dados você mesmo.",
+      "expired": "Este documento venceu em {date}. Você ainda pode salvá-lo, mas os organizadores vão ver que ele está vencido.",
+      "expiresSoon": "{days, plural, =0 {Este documento vence hoje. Vamos avisar você toda semana até ele ser renovado.} one {Este documento vence em # dia. Vamos avisar você 4 semanas antes, 1 semana antes e no dia.} many {Este documento vence em # de dias. Vamos avisar você 4 semanas antes, 1 semana antes e no dia.} other {Este documento vence em # dias. Vamos avisar você 4 semanas antes, 1 semana antes e no dia.}}",
+      "nameMismatch": "O nome que aparece nele, “{name}”, não parece ser o nome da sua empresa. Confira se é o documento certo."
+    },
+    "view": {
+      "close": "Fechar",
+      "open": "Abrir",
+      "download": "Baixar",
+      "noPreview": "Não é possível mostrar este arquivo aqui. Abra ou baixe o arquivo.",
+      "details": "Detalhes",
+      "edit": "Editar dados",
+      "renew": "Enviar uma nova versão",
+      "earlier": "Versões anteriores",
+      "uploaded": "Enviado em {date}",
+      "delete": "Excluir",
+      "deleteConfirm": "Excluir este documento e as versões anteriores? Os arquivos são removidos, e ele sai de todos os links que você enviou.",
+      "deleteYes": "Excluir",
+      "deleted": "Documento excluído",
+      "keep": "Manter"
+    },
+    "send": {
+      "title": "Enviar para o organizador",
+      "intro": "O organizador recebe um e-mail com um link para ver ou baixar tudo.",
+      "email": "E-mail do organizador",
+      "emailHint": "Até 5 endereços, separados por vírgula.",
+      "event": "Evento (opcional)",
+      "noEvent": "Nenhum evento",
+      "documents": "Documentos",
+      "message": "Mensagem (opcional)",
+      "messagePlaceholder": "Olá, seguem nossos documentos para a feira.",
+      "until": "O link funciona até",
+      "untilAfterEvent": "{date} (o dia seguinte ao evento)",
+      "send": "Enviar",
+      "sending": "Enviando…",
+      "footer": "Se você renovar um certificado, o link do organizador mostra o novo automaticamente. Você vai ver quando ele abrir o link.",
+      "sent": "Enviado para {emails}",
+      "cancel": "Cancelar",
+      "emailNone": "Digite o e-mail do organizador.",
+      "emailInvalid": "“{email}” não é um endereço de e-mail.",
+      "emailTooMany": "Você pode enviar para até 5 endereços de uma vez.",
+      "noDocuments": "Escolha pelo menos um documento.",
+      "untilRange": "Escolha uma data entre amanhã e daqui a 90 dias."
+    },
+    "sent": {
+      "title": "Enviados",
+      "empty": "Nada enviado ainda.",
+      "to": "Para {emails}",
+      "sentOn": "Enviado em {date}",
+      "opened": "Aberto em {date} · {count, plural, one {# visualização} many {# de visualizações} other {# visualizações}}",
+      "notOpened": "Ainda não aberto",
+      "until": "Funciona até {date}",
+      "expiredOn": "Expirou em {date}",
+      "off": "Desativado",
+      "turnOff": "Desativar link",
+      "turnOffConfirm": "Desativar este link? O organizador não vai mais conseguir abri-lo.",
+      "turnedOff": "Link desativado"
+    },
+    "page": {
+      "title": "Documentos de {truck}",
+      "intro": "{truck} compartilhou estes documentos com você.",
+      "view": "Ver",
+      "download": "Baixar",
+      "downloadAll": "Baixar tudo",
+      "until": "Este link funciona até {date}.",
+      "none": "No momento, não há documentos neste link.",
+      "expiredTitle": "Este link expirou",
+      "expiredBody": "Este link expirou. Peça para {truck} enviá-lo de novo.",
+      "expiredBodyUnknown": "Este link expirou. Peça para a empresa que o enviou mandar de novo.",
+      "sharedWith": "Compartilhado pelo HatchGrab"
+    },
+    "email": {
+      "shareSubject": "{truck} enviou os documentos para você",
+      "shareHeading": "Documentos de {truck}",
+      "shareIntro": "{truck} compartilhou estes documentos com você.",
+      "event": "Para: {event}",
+      "shareButton": "Ver os documentos",
+      "shareUntil": "O link funciona até {date}. Se ele tiver expirado, peça para {truck} enviar de novo.",
+      "shareReply": "Responda este e-mail para falar com {truck}.",
+      "expires": "vence em {date}",
+      "reviewBy": "revisar até {date}",
+      "noExpiry": "sem vencimento",
+      "reminderSubject": "{count, plural, one {Um documento precisa ser renovado} many {# de documentos precisam ser renovados} other {# documentos precisam ser renovados}}",
+      "reminderHeading": "Seus documentos",
+      "reminderIntro": "Alguns documentos de {truck} precisam ser renovados:",
+      "reminderIn": "{document} vence em {date} ({days, plural, one {em # dia} many {em # de dias} other {em # dias}})",
+      "reminderToday": "{document} vence hoje",
+      "reminderExpired": "{document} venceu em {date}",
+      "reminderButton": "Abrir Documentos",
+      "reminderFooter": "Avisamos você 4 semanas antes, 1 semana antes e no dia, e depois toda semana até ele ser renovado."
     }
   }
 }

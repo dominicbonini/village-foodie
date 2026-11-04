@@ -1,4 +1,4 @@
-<!-- translation-of: privacy-policy.md sha256:def241a5c7e2316baa4c9f2b8737ce3af40a8dcb30f77142217ff498581d447c -->
+<!-- translation-of: privacy-policy.md sha256:82cea56af67fea07578a2661fce54e9e2af5cb9664f6c18ee064604841ee518c -->
 # Privatumo politika
 
 **Paskutinį kartą atnaujinta:** {{LAST_UPDATED}}
@@ -66,6 +66,8 @@ Mes esame 3 ir 5 skyriuose aprašytų asmens duomenų valdytojas. 4 skyriuje apr
 Kai remiamės teisėtais interesais, mūsų interesas yra teikti ir tobulinti patikimą paslaugą. Įvertinome jūsų teises ir manome, kad šis tvarkymas joms nėra viršesnis. Galite bet kada pateikti prieštaravimą — žr. 8 skyrių.
 
 **Biometrinis atrakinimas.** Jei programėlėje įjungiate Face ID, Touch ID ar atrakinimą piršto atspaudu, patikra vyksta tik jūsų įrenginyje, ją atlieka operacinė sistema. Mes niekada negauname, nematome ir nesaugome biometrinių duomenų. Gauname tik atsakymą „taip“ arba „ne“.
+
+**Atitikties dokumentai.** Jei HatchGrab laikote savo sertifikatus, draudimo dokumentus ir kitus atitikties dokumentus, saugome failus ir kartu su jais jūsų išsaugotus duomenis. Kai įkeliate dokumentą, siunčiame jį Google Gemini paslaugai – tai pačiai, kuri nuskaito meniu, – kad ji užpildytų tokius duomenis kaip dokumento išdavėjas ir galiojimo pabaiga; prieš ką nors išsaugant juos patikrinate jūs. Jūsų dokumentai bendrinami tik su tais žmonėmis, kuriems nusprendžiate juos nusiųsti, per nuorodas, kurių galiojimas baigiasi, o saugome juos tol, kol jų neištrinate arba neuždarote paskyros.
 
 ---
 

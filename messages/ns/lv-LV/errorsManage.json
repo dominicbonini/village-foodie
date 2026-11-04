@@ -215,5 +215,12 @@
   "stripe_request_failed": "Stripe pieprasījums neizdevās",
   "private_unavailable": "Privātie pasākumi vēl nav pieejami — datubāzes migrācija nav izpildīta.",
   "private_not_private": "Šis pasākums nav privāts.",
-  "private_link_off": "Pasūtīšana ar privāto saiti šim pasākumam ir izslēgta."
+  "private_link_off": "Pasūtīšana ar privāto saiti šim pasākumam ir izslēgta.",
+  "paperwork_file_too_big": "Šis fails ir lielāks par 20 MB. Lūdzu, izvēlieties mazāku.",
+  "paperwork_file_type": "Šāds faila veids netiek pieņemts. Lūdzu, izmantojiet PDF, JPEG, PNG, HEIC vai WebP failu.",
+  "paperwork_upload_failed": "Augšupielāde neizdevās. Lūdzu, mēģiniet vēlreiz.",
+  "paperwork_not_found": "Šī dokumenta vairs nav. Lūdzu, pārlādējiet lapu.",
+  "paperwork_bad_details": "Daži dati nav pareizi. Lūdzu, pārbaudiet tos un mēģiniet vēlreiz.",
+  "paperwork_send_limit": "Īsā laikā nosūtīts daudz saišu. Lūdzu, mēģiniet vēlreiz pēc stundas.",
+  "paperwork_send_failed": "E-pastu neizdevās nosūtīt. Lūdzu, mēģiniet vēlreiz."
 }

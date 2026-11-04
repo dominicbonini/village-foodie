@@ -1,4 +1,4 @@
-<!-- translation-of: privacy-policy.md sha256:def241a5c7e2316baa4c9f2b8737ce3af40a8dcb30f77142217ff498581d447c -->
+<!-- translation-of: privacy-policy.md sha256:82cea56af67fea07578a2661fce54e9e2af5cb9664f6c18ee064604841ee518c -->
 # Privacybeleid
 
 **Laatst bijgewerkt:** {{LAST_UPDATED}}
@@ -66,6 +66,8 @@ Dit onderscheid is belangrijk, daarom zeggen wij het duidelijk.
 Waar wij ons baseren op gerechtvaardigde belangen, is ons belang het exploiteren en verbeteren van een betrouwbare dienst. Wij hebben uw rechten afgewogen en zijn van mening dat deze verwerking daar niet zwaarder dan weegt. U kunt op elk moment bezwaar maken — zie onderdeel 8.
 
 **Biometrisch ontgrendelen.** Als u Face ID, Touch ID of ontgrendelen met vingerafdruk in de app inschakelt, vindt de controle volledig op uw apparaat plaats en wordt deze door het besturingssysteem afgehandeld. Wij ontvangen, zien of bewaren nooit biometrische gegevens. Wij ontvangen alleen een resultaat ja of nee.
+
+**Nalevingsdocumenten.** Als u uw certificaten, verzekeringen en andere documenten voor de naleving van regels in HatchGrab bewaart, slaan wij de bestanden op, samen met de gegevens die u erbij opslaat. Wanneer u een document uploadt, sturen wij het naar de Gemini-dienst van Google, dezelfde dienst die menu's uitleest, om gegevens in te vullen zoals wie het heeft uitgegeven en wanneer het verloopt; u controleert die gegevens voordat er iets wordt opgeslagen. Uw documenten worden alleen gedeeld met de mensen naar wie u ze zelf stuurt, via links die verlopen, en wij bewaren ze totdat u ze verwijdert of uw account opheft.
 
 ---
 

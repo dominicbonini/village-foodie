@@ -3331,7 +3331,14 @@
     "stripe_request_failed": "Stripe-verzoek mislukt",
     "private_unavailable": "Privé-evenementen zijn nog niet beschikbaar — de databasemigratie is nog niet uitgevoerd.",
     "private_not_private": "Dit evenement is niet privé.",
-    "private_link_off": "Bestellen via een privélink staat uit voor dit evenement."
+    "private_link_off": "Bestellen via een privélink staat uit voor dit evenement.",
+    "paperwork_file_too_big": "Dat bestand is groter dan 20 MB. Kies een kleiner bestand.",
+    "paperwork_file_type": "Dat bestandstype wordt niet geaccepteerd. Gebruik een PDF-, JPEG-, PNG-, HEIC- of WebP-bestand.",
+    "paperwork_upload_failed": "Het uploaden is mislukt. Probeer het opnieuw.",
+    "paperwork_not_found": "Dat document bestaat niet meer. Laad de pagina opnieuw.",
+    "paperwork_bad_details": "Sommige gegevens kloppen niet. Controleer ze en probeer het opnieuw.",
+    "paperwork_send_limit": "Je hebt in korte tijd veel links verstuurd. Probeer het over een uur opnieuw.",
+    "paperwork_send_failed": "De e-mail kon niet worden verstuurd. Probeer het opnieuw."
   },
   "tradeArea": {
     "country_missing": "Kies het land waar je foodtruck gevestigd is.",
@@ -4828,6 +4835,7 @@
     "tabs": {
       "menu": "Menu",
       "schedule": "Planning",
+      "paperwork": "Documenten",
       "social": "Social media",
       "reports": "Rapporten",
       "team": "Team",
@@ -6029,6 +6037,10 @@
       "private_events": {
         "name": "Privé-evenementen",
         "many": "yes"
+      },
+      "paperwork": {
+        "name": "Documenten",
+        "many": "yes"
       }
     }
   },
@@ -6417,6 +6429,183 @@
       "appsSentence": "Er is ook een app voor iPad en Android, die bestellingen aan de truck blijft aannemen als je geen verbinding hebt.",
       "appsOffline": "De app voor iPad en Android blijft bestellingen aan de truck aannemen zonder verbinding en verstuurt ze zodra je weer online bent; het webdashboard heeft een verbinding nodig.",
       "webOffline": "Het webdashboard heeft een verbinding nodig om nieuwe bestellingen te tonen."
+    }
+  },
+  "paperwork": {
+    "title": "Documenten",
+    "intro": "Bewaar je certificaten op één plek. We herinneren je eraan voordat er iets verloopt, en je stuurt ze in één keer naar een organisator.",
+    "loading": "Je documenten laden…",
+    "loadFailed": "Je documenten konden niet worden geladen. Probeer het opnieuw.",
+    "retry": "Opnieuw proberen",
+    "counts": {
+      "expired": "{count, plural, one {# verlopen} other {# verlopen}}",
+      "dueSoon": "{count, plural, one {# bijna verlopen} other {# bijna verlopen}}",
+      "missing": "{count, plural, one {# ontbreekt} other {# ontbreken}}",
+      "upToDate": "{count, plural, one {# actueel} other {# actueel}}"
+    },
+    "status": {
+      "upToDate": "Actueel",
+      "dueSoon": "Bijna verlopen",
+      "expired": "Verlopen",
+      "upload": "Uploaden"
+    },
+    "line": {
+      "expires": "Verloopt op {date}",
+      "expiresIn": "Verloopt op {date} · {days, plural, one {over # dag} other {over # dagen}}",
+      "expiresToday": "Verloopt vandaag",
+      "expired": "Verlopen op {date}",
+      "reviewBy": "Herzien vóór {date}",
+      "reviewByIn": "Herzien vóór {date} · {days, plural, one {over # dag} other {over # dagen}}",
+      "reviewOverdue": "Herziening stond gepland op {date}",
+      "noExpiry": "Verloopt niet",
+      "cover": "Dekking: {amount}",
+      "notUploaded": "Nog niet geüpload"
+    },
+    "select": "{document} selecteren",
+    "add": "+ Document toevoegen",
+    "selected": "{count, plural, one {# geselecteerd} other {# geselecteerd}}",
+    "sendToOrganiser": "Naar organisator sturen",
+    "types": {
+      "food_registration": "Registratie levensmiddelenbedrijf",
+      "hygiene_rating": "Hygiënebeoordeling",
+      "food_safety_plan": "Voedselveiligheidsplan (HACCP)",
+      "public_liability": "Bedrijfsaansprakelijkheidsverzekering",
+      "employers_liability": "Werkgeversaansprakelijkheidsverzekering",
+      "gas_safety": "Gaskeuringscertificaat",
+      "pat_test": "Keuring elektrische apparaten",
+      "fire_safety": "Brandveiligheid",
+      "risk_assessment": "Risicobeoordeling",
+      "allergen_info": "Allergeneninformatie",
+      "street_trading_licence": "Standplaatsvergunning",
+      "electrical_safety": "Keuring elektrische installatie",
+      "trading_licence": "Exploitatievergunning"
+    },
+    "upload": {
+      "title": "Document toevoegen",
+      "intro": "Maak er een foto van, of kies een foto of bestand.",
+      "takePhoto": "Foto maken",
+      "chooseFile": "Foto of bestand kiezen",
+      "accepted": "PDF, JPEG, PNG, HEIC of WebP, tot 20 MB.",
+      "uploading": "Uploaden… {percent}%",
+      "reading": "Je document wordt gelezen…",
+      "tooBig": "Dat bestand is groter dan 20 MB. Kies een kleiner bestand.",
+      "wrongType": "Dat bestandstype wordt niet geaccepteerd. Gebruik een PDF-, JPEG-, PNG-, HEIC- of WebP-bestand.",
+      "failed": "Het uploaden is mislukt. Probeer het opnieuw.",
+      "cancel": "Annuleren"
+    },
+    "check": {
+      "title": "Controleer de gegevens",
+      "aiBanner": "Dit hebben we uit je document gehaald. Controleer of het klopt voordat je opslaat.",
+      "document": "Document",
+      "other": "Anders…",
+      "otherName": "Naam van het document",
+      "issuer": "Uitgegeven door",
+      "issued": "Uitgegeven",
+      "expires": "Verloopt",
+      "reviewBy": "Herzien vóór",
+      "nameOnDocument": "Naam op het document",
+      "cover": "Verzekerd bedrag",
+      "coverHint": "Optioneel. Het bedrag waarvoor de polis dekking biedt.",
+      "currency": "Valuta",
+      "save": "Opslaan",
+      "saving": "Opslaan…",
+      "cancel": "Annuleren",
+      "saved": "Opgeslagen",
+      "footer": "Het vorige certificaat blijft bewaard in de geschiedenis. Je bestanden zijn privé: alleen jij en de organisatoren naar wie je ze stuurt, kunnen ze zien.",
+      "needType": "Kies het document of geef het een naam.",
+      "badDates": "De vervaldatum kan niet vóór de uitgiftedatum liggen."
+    },
+    "warnings": {
+      "notRead": "We konden dit document niet lezen. Vul de gegevens zelf in.",
+      "expired": "Dit is verlopen op {date}. Je kunt het nog steeds opslaan, maar organisatoren zien dan dat het verlopen is.",
+      "expiresSoon": "{days, plural, =0 {Dit verloopt vandaag. We herinneren je er elke week aan tot het is vernieuwd.} one {Dit verloopt over # dag. We herinneren je er 4 weken van tevoren, 1 week van tevoren en op de dag zelf aan.} other {Dit verloopt over # dagen. We herinneren je er 4 weken van tevoren, 1 week van tevoren en op de dag zelf aan.}}",
+      "nameMismatch": "De naam erop, ‘{name}’, lijkt niet op je bedrijfsnaam. Controleer of het het juiste document is."
+    },
+    "view": {
+      "close": "Sluiten",
+      "open": "Openen",
+      "download": "Downloaden",
+      "noPreview": "Dit bestand kan hier niet worden weergegeven. Open of download het.",
+      "details": "Gegevens",
+      "edit": "Gegevens bewerken",
+      "renew": "Nieuwe versie uploaden",
+      "earlier": "Eerdere versies",
+      "uploaded": "Geüpload op {date}",
+      "delete": "Verwijderen",
+      "deleteConfirm": "Dit document en de eerdere versies verwijderen? De bestanden worden verwijderd en het document verdwijnt uit alle links die je hebt verstuurd.",
+      "deleteYes": "Verwijderen",
+      "deleted": "Document verwijderd",
+      "keep": "Behouden"
+    },
+    "send": {
+      "title": "Naar organisator sturen",
+      "intro": "De organisator krijgt een e-mail met een link om alles te bekijken of te downloaden.",
+      "email": "E-mailadres organisator",
+      "emailHint": "Maximaal 5 adressen, gescheiden door komma’s.",
+      "event": "Evenement (optioneel)",
+      "noEvent": "Geen evenement",
+      "documents": "Documenten",
+      "message": "Bericht (optioneel)",
+      "messagePlaceholder": "Hoi, hier zijn onze documenten voor de markt.",
+      "until": "Link werkt tot",
+      "untilAfterEvent": "{date} (de dag na het evenement)",
+      "send": "Versturen",
+      "sending": "Versturen…",
+      "footer": "Als je een certificaat vernieuwt, toont de link van de organisator automatisch het nieuwe. Je ziet wanneer de organisator de link opent.",
+      "sent": "Verstuurd naar {emails}",
+      "cancel": "Annuleren",
+      "emailNone": "Vul het e-mailadres van de organisator in.",
+      "emailInvalid": "‘{email}’ is geen e-mailadres.",
+      "emailTooMany": "Je kunt naar maximaal 5 adressen tegelijk versturen.",
+      "noDocuments": "Kies minstens één document.",
+      "untilRange": "Kies een datum vanaf morgen tot uiterlijk 90 dagen na vandaag."
+    },
+    "sent": {
+      "title": "Verstuurd",
+      "empty": "Nog niets verstuurd.",
+      "to": "Aan {emails}",
+      "sentOn": "Verstuurd op {date}",
+      "opened": "Geopend op {date} · {count, plural, one {# keer bekeken} other {# keer bekeken}}",
+      "notOpened": "Nog niet geopend",
+      "until": "Werkt tot {date}",
+      "expiredOn": "Verlopen op {date}",
+      "off": "Uitgezet",
+      "turnOff": "Link uitzetten",
+      "turnOffConfirm": "Deze link uitzetten? De organisator kan hem dan niet meer openen.",
+      "turnedOff": "Link uitgezet"
+    },
+    "page": {
+      "title": "Documenten van {truck}",
+      "intro": "{truck} heeft deze documenten met je gedeeld.",
+      "view": "Bekijken",
+      "download": "Downloaden",
+      "downloadAll": "Alles downloaden",
+      "until": "Deze link werkt tot {date}.",
+      "none": "Er staan op dit moment geen documenten op deze link.",
+      "expiredTitle": "Deze link is verlopen",
+      "expiredBody": "Deze link is verlopen. Vraag {truck} om hem opnieuw te sturen.",
+      "expiredBodyUnknown": "Deze link is verlopen. Vraag het bedrijf dat hem heeft gestuurd om hem opnieuw te sturen.",
+      "sharedWith": "Gedeeld via HatchGrab"
+    },
+    "email": {
+      "shareSubject": "{truck} heeft documenten met je gedeeld",
+      "shareHeading": "Documenten van {truck}",
+      "shareIntro": "{truck} heeft deze documenten met je gedeeld.",
+      "event": "Voor: {event}",
+      "shareButton": "Documenten bekijken",
+      "shareUntil": "De link werkt tot {date}. Is hij verlopen? Vraag {truck} dan om hem opnieuw te sturen.",
+      "shareReply": "Beantwoord deze e-mail om contact op te nemen met {truck}.",
+      "expires": "verloopt op {date}",
+      "reviewBy": "herzien vóór {date}",
+      "noExpiry": "verloopt niet",
+      "reminderSubject": "{count, plural, one {Een document moet worden vernieuwd} other {# documenten moeten worden vernieuwd}}",
+      "reminderHeading": "Je documenten",
+      "reminderIntro": "Een aantal documenten van {truck} moet worden vernieuwd:",
+      "reminderIn": "{document} verloopt op {date} ({days, plural, one {over # dag} other {over # dagen}})",
+      "reminderToday": "{document} verloopt vandaag",
+      "reminderExpired": "{document} is verlopen op {date}",
+      "reminderButton": "Documenten openen",
+      "reminderFooter": "We sturen je 4 weken van tevoren, 1 week van tevoren en op de dag zelf een herinnering, en daarna elke week tot het is vernieuwd."
     }
   }
 }

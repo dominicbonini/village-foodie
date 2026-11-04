@@ -3331,7 +3331,14 @@
     "stripe_request_failed": "Begäran till Stripe misslyckades",
     "private_unavailable": "Privata evenemang är inte tillgängliga än – databasmigreringen har inte körts.",
     "private_not_private": "Det här evenemanget är inte privat.",
-    "private_link_off": "Beställning via privat länk är avstängd för det här evenemanget."
+    "private_link_off": "Beställning via privat länk är avstängd för det här evenemanget.",
+    "paperwork_file_too_big": "Filen är större än 20 MB. Välj en mindre fil.",
+    "paperwork_file_type": "Den filtypen accepteras inte. Använd en PDF-, JPEG-, PNG-, HEIC- eller WebP-fil.",
+    "paperwork_upload_failed": "Uppladdningen misslyckades. Försök igen.",
+    "paperwork_not_found": "Dokumentet finns inte längre. Ladda om sidan.",
+    "paperwork_bad_details": "Några av uppgifterna stämmer inte. Kontrollera dem och försök igen.",
+    "paperwork_send_limit": "Du har skickat många länkar på kort tid. Försök igen om en timme.",
+    "paperwork_send_failed": "Mejlet kunde inte skickas. Försök igen."
   },
   "tradeArea": {
     "country_missing": "Välj landet där din foodtruck har sin bas.",
@@ -4828,6 +4835,7 @@
     "tabs": {
       "menu": "Meny",
       "schedule": "Schema",
+      "paperwork": "Dokument",
       "social": "Sociala medier",
       "reports": "Rapporter",
       "team": "Team",
@@ -6029,6 +6037,10 @@
       "private_events": {
         "name": "Privata evenemang",
         "many": "yes"
+      },
+      "paperwork": {
+        "name": "Dokument",
+        "many": "yes"
       }
     }
   },
@@ -6417,6 +6429,183 @@
       "appsSentence": "Det finns också en app för iPad och Android, som fortsätter att ta emot beställningar på plats om du tappar täckningen.",
       "appsOffline": "Appen för iPad och Android tar emot beställningar på plats även utan täckning och skickar dem när du är online igen; webböversikten behöver en anslutning.",
       "webOffline": "Webböversikten behöver en anslutning för att visa nya beställningar."
+    }
+  },
+  "paperwork": {
+    "title": "Dokument",
+    "intro": "Samla dina intyg på ett ställe. Vi påminner dig innan något går ut, och du kan skicka allt till en arrangör på en gång.",
+    "loading": "Laddar dina dokument…",
+    "loadFailed": "Det gick inte att ladda dina dokument. Försök igen.",
+    "retry": "Försök igen",
+    "counts": {
+      "expired": "{count, plural, one {# har gått ut} other {# har gått ut}}",
+      "dueSoon": "{count, plural, one {# går snart ut} other {# går snart ut}}",
+      "missing": "{count, plural, one {# saknas} other {# saknas}}",
+      "upToDate": "{count, plural, one {# giltigt} other {# giltiga}}"
+    },
+    "status": {
+      "upToDate": "Giltigt",
+      "dueSoon": "Går snart ut",
+      "expired": "Har gått ut",
+      "upload": "Ladda upp"
+    },
+    "line": {
+      "expires": "Går ut {date}",
+      "expiresIn": "Går ut {date} · {days, plural, one {om # dag} other {om # dagar}}",
+      "expiresToday": "Går ut i dag",
+      "expired": "Gick ut {date}",
+      "reviewBy": "Ses över senast {date}",
+      "reviewByIn": "Ses över senast {date} · {days, plural, one {om # dag} other {om # dagar}}",
+      "reviewOverdue": "Skulle ha setts över {date}",
+      "noExpiry": "Går inte ut",
+      "cover": "Täcker {amount}",
+      "notUploaded": "Inte uppladdat än"
+    },
+    "select": "Välj {document}",
+    "add": "+ Lägg till ett dokument",
+    "selected": "{count, plural, one {# valt} other {# valda}}",
+    "sendToOrganiser": "Skicka till arrangör",
+    "types": {
+      "food_registration": "Registrering av livsmedelsanläggning",
+      "hygiene_rating": "Hygienbetyg",
+      "food_safety_plan": "Egenkontrollprogram (HACCP)",
+      "public_liability": "Ansvarsförsäkring",
+      "employers_liability": "Arbetsgivaransvarsförsäkring",
+      "gas_safety": "Intyg om gasbesiktning",
+      "pat_test": "Kontroll av elektrisk utrustning",
+      "fire_safety": "Brandskydd",
+      "risk_assessment": "Riskbedömning",
+      "allergen_info": "Allergeninformation",
+      "street_trading_licence": "Tillstånd för gatuförsäljning",
+      "electrical_safety": "Elbesiktning",
+      "trading_licence": "Försäljningstillstånd"
+    },
+    "upload": {
+      "title": "Lägg till ett dokument",
+      "intro": "Fota det, eller välj ett foto eller en fil.",
+      "takePhoto": "Ta ett foto",
+      "chooseFile": "Välj ett foto eller en fil",
+      "accepted": "PDF, JPEG, PNG, HEIC eller WebP, upp till 20 MB.",
+      "uploading": "Laddar upp… {percent} %",
+      "reading": "Läser ditt dokument…",
+      "tooBig": "Filen är större än 20 MB. Välj en mindre fil.",
+      "wrongType": "Den filtypen accepteras inte. Använd en PDF-, JPEG-, PNG-, HEIC- eller WebP-fil.",
+      "failed": "Uppladdningen misslyckades. Försök igen.",
+      "cancel": "Avbryt"
+    },
+    "check": {
+      "title": "Kontrollera uppgifterna",
+      "aiBanner": "Vi har läst det här från ditt dokument. Kontrollera att det stämmer innan du sparar.",
+      "document": "Dokument",
+      "other": "Annat…",
+      "otherName": "Dokumentets namn",
+      "issuer": "Utfärdat av",
+      "issued": "Utfärdat",
+      "expires": "Går ut",
+      "reviewBy": "Ses över senast",
+      "nameOnDocument": "Namn på dokumentet",
+      "cover": "Försäkringsbelopp",
+      "coverHint": "Valfritt. Beloppet som försäkringen täcker.",
+      "currency": "Valuta",
+      "save": "Spara",
+      "saving": "Sparar…",
+      "cancel": "Avbryt",
+      "saved": "Sparat",
+      "footer": "Det tidigare intyget sparas i historiken. Dina filer är privata: bara du och de arrangörer du skickar dem till kan se dem.",
+      "needType": "Välj dokumentet eller ge det ett namn.",
+      "badDates": "Utgångsdatumet kan inte vara före utfärdandedatumet."
+    },
+    "warnings": {
+      "notRead": "Vi kunde inte läsa det här dokumentet. Fyll i uppgifterna själv.",
+      "expired": "Det här gick ut {date}. Du kan ändå spara det, men arrangörerna ser att det har gått ut.",
+      "expiresSoon": "{days, plural, =0 {Det här går ut i dag. Vi påminner dig varje vecka tills det har förnyats.} one {Det här går ut om # dag. Vi påminner dig 4 veckor innan, 1 vecka innan och samma dag.} other {Det här går ut om # dagar. Vi påminner dig 4 veckor innan, 1 vecka innan och samma dag.}}",
+      "nameMismatch": "Namnet på det, ”{name}”, ser inte ut som ditt företagsnamn. Kontrollera att det är rätt dokument."
+    },
+    "view": {
+      "close": "Stäng",
+      "open": "Öppna",
+      "download": "Ladda ner",
+      "noPreview": "Filen kan inte visas här. Öppna eller ladda ner den i stället.",
+      "details": "Uppgifter",
+      "edit": "Redigera uppgifter",
+      "renew": "Ladda upp en ny version",
+      "earlier": "Tidigare versioner",
+      "uploaded": "Uppladdat {date}",
+      "delete": "Radera",
+      "deleteConfirm": "Radera det här dokumentet och dess tidigare versioner? Filerna tas bort, och dokumentet försvinner från alla länkar du har skickat.",
+      "deleteYes": "Radera",
+      "deleted": "Dokumentet har raderats",
+      "keep": "Behåll det"
+    },
+    "send": {
+      "title": "Skicka till arrangör",
+      "intro": "Arrangören får ett mejl med en länk för att visa eller ladda ner allt.",
+      "email": "Arrangörens e-postadress",
+      "emailHint": "Upp till 5 adresser, åtskilda med kommatecken.",
+      "event": "Evenemang (valfritt)",
+      "noEvent": "Inget evenemang",
+      "documents": "Dokument",
+      "message": "Meddelande (valfritt)",
+      "messagePlaceholder": "Hej! Här är våra dokument inför marknaden.",
+      "until": "Länken fungerar till",
+      "untilAfterEvent": "{date} (dagen efter evenemanget)",
+      "send": "Skicka",
+      "sending": "Skickar…",
+      "footer": "Om du förnyar ett intyg visar arrangörens länk det nya automatiskt. Du ser när arrangören öppnar länken.",
+      "sent": "Skickat till {emails}",
+      "cancel": "Avbryt",
+      "emailNone": "Ange arrangörens e-postadress.",
+      "emailInvalid": "”{email}” är inte en e-postadress.",
+      "emailTooMany": "Du kan skicka till upp till 5 adresser åt gången.",
+      "noDocuments": "Välj minst ett dokument.",
+      "untilRange": "Välj ett datum från i morgon och upp till 90 dagar framåt."
+    },
+    "sent": {
+      "title": "Skickat",
+      "empty": "Inget skickat än.",
+      "to": "Till {emails}",
+      "sentOn": "Skickat {date}",
+      "opened": "Öppnat {date} · {count, plural, one {# visning} other {# visningar}}",
+      "notOpened": "Inte öppnat än",
+      "until": "Fungerar till {date}",
+      "expiredOn": "Gick ut {date}",
+      "off": "Avstängd",
+      "turnOff": "Stäng av länken",
+      "turnOffConfirm": "Stänga av den här länken? Arrangören kommer inte att kunna öppna den längre.",
+      "turnedOff": "Länken har stängts av"
+    },
+    "page": {
+      "title": "Dokument från {truck}",
+      "intro": "{truck} har delat de här dokumenten med dig.",
+      "view": "Visa",
+      "download": "Ladda ner",
+      "downloadAll": "Ladda ner alla",
+      "until": "Den här länken fungerar till {date}.",
+      "none": "Det finns inga dokument på den här länken just nu.",
+      "expiredTitle": "Länken har gått ut",
+      "expiredBody": "Länken har gått ut. Be {truck} att skicka den igen.",
+      "expiredBodyUnknown": "Länken har gått ut. Be företaget som skickade den att skicka den igen.",
+      "sharedWith": "Delat via HatchGrab"
+    },
+    "email": {
+      "shareSubject": "{truck} har skickat sina dokument till dig",
+      "shareHeading": "Dokument från {truck}",
+      "shareIntro": "{truck} har delat de här dokumenten med dig.",
+      "event": "Gäller: {event}",
+      "shareButton": "Visa dokumenten",
+      "shareUntil": "Länken fungerar till {date}. Om den har gått ut kan du be {truck} att skicka den igen.",
+      "shareReply": "Svara på det här mejlet för att kontakta {truck}.",
+      "expires": "går ut {date}",
+      "reviewBy": "ses över senast {date}",
+      "noExpiry": "går inte ut",
+      "reminderSubject": "{count, plural, one {Ett dokument behöver förnyas} other {# dokument behöver förnyas}}",
+      "reminderHeading": "Dina dokument",
+      "reminderIntro": "Några av dokumenten för {truck} behöver förnyas:",
+      "reminderIn": "{document} går ut {date} ({days, plural, one {om # dag} other {om # dagar}})",
+      "reminderToday": "{document} går ut i dag",
+      "reminderExpired": "{document} gick ut {date}",
+      "reminderButton": "Öppna Dokument",
+      "reminderFooter": "Vi påminner dig 4 veckor innan, 1 vecka innan och samma dag, och sedan varje vecka tills det har förnyats."
     }
   }
 }

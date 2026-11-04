@@ -1,4 +1,4 @@
-<!-- translation-of: privacy-policy.md sha256:def241a5c7e2316baa4c9f2b8737ce3af40a8dcb30f77142217ff498581d447c -->
+<!-- translation-of: privacy-policy.md sha256:82cea56af67fea07578a2661fce54e9e2af5cb9664f6c18ee064604841ee518c -->
 # Privatlivspolitik
 
 **Senest opdateret:** {{LAST_UPDATED}}
@@ -66,6 +66,8 @@ Denne sondring er vigtig, så den bør siges ligeud.
 Hvor vi støtter os på legitime interesser, er vores interesse at drive og forbedre en pålidelig tjeneste. Vi har taget dine rettigheder i betragtning og mener ikke, at denne behandling går forud for dem. Du kan til enhver tid gøre indsigelse — se afsnit 8.
 
 **Biometrisk oplåsning.** Hvis du slår Face ID, Touch ID eller oplåsning med fingeraftryk til i appen, foregår kontrollen udelukkende på din enhed og håndteres af styresystemet. Vi modtager, ser eller gemmer aldrig biometriske data. Vi modtager kun et ja-eller-nej-resultat.
+
+**Dokumentation for regelefterlevelse.** Hvis du opbevarer dine certifikater, forsikringer og andre dokumenter, der viser, at du overholder reglerne, i HatchGrab, gemmer vi filerne og de oplysninger, du gemmer sammen med dem. Når du uploader et dokument, sender vi det til Googles Gemini-tjeneste, den samme som læser menukort, så den kan udfylde oplysninger som f.eks. hvem der har udstedt det, og hvornår det udløber; du tjekker dem, før noget gemmes. Dine dokumenter deles kun med de personer, du selv vælger at sende dem til, via links, der udløber, og vi opbevarer dem, indtil du sletter dem eller lukker din konto.
 
 ---
 

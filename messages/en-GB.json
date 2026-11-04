@@ -3331,7 +3331,14 @@
     "stripe_request_failed": "Stripe request failed",
     "private_unavailable": "Private events are not available yet — the database migration has not been applied.",
     "private_not_private": "This event is not private.",
-    "private_link_off": "Ordering by private link is switched off for this event."
+    "private_link_off": "Ordering by private link is switched off for this event.",
+    "paperwork_file_too_big": "That file is over 20 MB. Please choose a smaller one.",
+    "paperwork_file_type": "That file type isn’t accepted. Please use a PDF, JPEG, PNG, HEIC or WebP file.",
+    "paperwork_upload_failed": "The upload didn’t work. Please try again.",
+    "paperwork_not_found": "That document isn’t there any more. Please reload the page.",
+    "paperwork_bad_details": "Some of the details aren’t right. Please check them and try again.",
+    "paperwork_send_limit": "You’ve sent a lot of links in a short time. Please try again in an hour.",
+    "paperwork_send_failed": "The email couldn’t be sent. Please try again."
   },
   "tradeArea": {
     "country_missing": "Choose the country your truck is based in.",
@@ -4828,6 +4835,7 @@
     "tabs": {
       "menu": "Menu",
       "schedule": "Schedule",
+      "paperwork": "Documents",
       "social": "Social media",
       "reports": "Reports",
       "team": "Team",
@@ -6002,6 +6010,10 @@
       "private_events": {
         "name": "Private events",
         "many": "yes"
+      },
+      "paperwork": {
+        "name": "Documents",
+        "many": "yes"
       }
     }
   },
@@ -6776,6 +6788,183 @@
       "appsSentence": "There’s also an iPad and Android app, which keeps taking walk-up orders if you lose signal.",
       "appsOffline": "The iPad and Android app keeps taking walk-up orders without signal and sends them when you’re back online; the web dashboard needs a connection.",
       "webOffline": "The web dashboard needs a connection to show new orders."
+    }
+  },
+  "paperwork": {
+    "title": "Documents",
+    "intro": "Keep your certificates in one place. We’ll remind you before anything runs out, and you can send them to an organiser in one go.",
+    "loading": "Loading your documents…",
+    "loadFailed": "Your documents couldn’t be loaded. Please try again.",
+    "retry": "Try again",
+    "counts": {
+      "expired": "{count, plural, one {# expired} other {# expired}}",
+      "dueSoon": "{count, plural, one {# due soon} other {# due soon}}",
+      "missing": "{count, plural, one {# missing} other {# missing}}",
+      "upToDate": "{count, plural, one {# up to date} other {# up to date}}"
+    },
+    "status": {
+      "upToDate": "Up to date",
+      "dueSoon": "Due soon",
+      "expired": "Expired",
+      "upload": "Upload"
+    },
+    "line": {
+      "expires": "Expires {date}",
+      "expiresIn": "Expires {date} · {days, plural, one {in # day} other {in # days}}",
+      "expiresToday": "Expires today",
+      "expired": "Expired {date}",
+      "reviewBy": "Review by {date}",
+      "reviewByIn": "Review by {date} · {days, plural, one {in # day} other {in # days}}",
+      "reviewOverdue": "Review was due {date}",
+      "noExpiry": "No expiry",
+      "cover": "{amount} cover",
+      "notUploaded": "Not uploaded yet"
+    },
+    "select": "Select {document}",
+    "add": "+ Add a document",
+    "selected": "{count, plural, one {# selected} other {# selected}}",
+    "sendToOrganiser": "Send to organiser",
+    "types": {
+      "food_registration": "Food business registration",
+      "hygiene_rating": "Food hygiene rating",
+      "food_safety_plan": "Food safety plan (HACCP)",
+      "public_liability": "Public liability insurance",
+      "employers_liability": "Employers’ liability insurance",
+      "gas_safety": "Gas safety certificate",
+      "pat_test": "PAT test",
+      "fire_safety": "Fire safety",
+      "risk_assessment": "Risk assessment",
+      "allergen_info": "Allergen information",
+      "street_trading_licence": "Street trading licence",
+      "electrical_safety": "Electrical safety test",
+      "trading_licence": "Trading licence"
+    },
+    "upload": {
+      "title": "Add a document",
+      "intro": "Take a photo of it, or choose a photo or a file.",
+      "takePhoto": "Take a photo",
+      "chooseFile": "Choose a photo or file",
+      "accepted": "PDF, JPEG, PNG, HEIC or WebP, up to 20 MB.",
+      "uploading": "Uploading… {percent}%",
+      "reading": "Reading your document…",
+      "tooBig": "That file is over 20 MB. Please choose a smaller one.",
+      "wrongType": "That file type isn’t accepted. Please use a PDF, JPEG, PNG, HEIC or WebP file.",
+      "failed": "The upload didn’t work. Please try again.",
+      "cancel": "Cancel"
+    },
+    "check": {
+      "title": "Check the details",
+      "aiBanner": "We read this from your document. Please check it’s right before saving.",
+      "document": "Document",
+      "other": "Other…",
+      "otherName": "Name of the document",
+      "issuer": "Issued by",
+      "issued": "Issued",
+      "expires": "Expires",
+      "reviewBy": "Review by",
+      "nameOnDocument": "Name on the document",
+      "cover": "Insurance cover",
+      "coverHint": "Optional. The amount the policy covers.",
+      "currency": "Currency",
+      "save": "Save",
+      "saving": "Saving…",
+      "cancel": "Cancel",
+      "saved": "Saved",
+      "footer": "The previous certificate is kept as history. Your files are private: only you, and organisers you send them to, can see them.",
+      "needType": "Choose the document, or name it.",
+      "badDates": "The expiry date can’t be before the issue date."
+    },
+    "warnings": {
+      "notRead": "We couldn’t read this document. Please fill in the details yourself.",
+      "expired": "This expired on {date}. You can still save it, but organisers will see that it has expired.",
+      "expiresSoon": "{days, plural, =0 {This expires today. We’ll remind you every week until it’s renewed.} one {This expires in # day. We’ll remind you 4 weeks before, 1 week before and on the day.} other {This expires in # days. We’ll remind you 4 weeks before, 1 week before and on the day.}}",
+      "nameMismatch": "The name on it, “{name}”, doesn’t look like your business name. Please check it’s the right document."
+    },
+    "view": {
+      "close": "Close",
+      "open": "Open",
+      "download": "Download",
+      "noPreview": "This file can’t be shown here. Open it or download it instead.",
+      "details": "Details",
+      "edit": "Edit details",
+      "renew": "Upload a new version",
+      "earlier": "Earlier versions",
+      "uploaded": "Uploaded {date}",
+      "delete": "Delete",
+      "deleteConfirm": "Delete this document and its earlier versions? The files are removed, and it comes off any link you’ve sent.",
+      "deleteYes": "Delete",
+      "deleted": "Document deleted",
+      "keep": "Keep it"
+    },
+    "send": {
+      "title": "Send to organiser",
+      "intro": "They get an email with a link to view or download everything.",
+      "email": "Organiser’s email",
+      "emailHint": "Up to 5 addresses, separated by commas.",
+      "event": "Event (optional)",
+      "noEvent": "No event",
+      "documents": "Documents",
+      "message": "Message (optional)",
+      "messagePlaceholder": "Hi, here are our documents for the market.",
+      "until": "Link works until",
+      "untilAfterEvent": "{date} (the day after the event)",
+      "send": "Send",
+      "sending": "Sending…",
+      "footer": "If you renew a certificate, the organiser’s link shows the new one automatically. You’ll see when they open it.",
+      "sent": "Sent to {emails}",
+      "cancel": "Cancel",
+      "emailNone": "Enter the organiser’s email.",
+      "emailInvalid": "“{email}” isn’t an email address.",
+      "emailTooMany": "You can send to up to 5 addresses at once.",
+      "noDocuments": "Choose at least one document.",
+      "untilRange": "Choose a date from tomorrow up to 90 days from today."
+    },
+    "sent": {
+      "title": "Sent",
+      "empty": "Nothing sent yet.",
+      "to": "To {emails}",
+      "sentOn": "Sent {date}",
+      "opened": "Opened {date} · {count, plural, one {# view} other {# views}}",
+      "notOpened": "Not opened yet",
+      "until": "Works until {date}",
+      "expiredOn": "Expired {date}",
+      "off": "Turned off",
+      "turnOff": "Turn off link",
+      "turnOffConfirm": "Turn off this link? The organiser won’t be able to open it any more.",
+      "turnedOff": "Link turned off"
+    },
+    "page": {
+      "title": "Documents from {truck}",
+      "intro": "{truck} has shared these documents with you.",
+      "view": "View",
+      "download": "Download",
+      "downloadAll": "Download all",
+      "until": "This link works until {date}.",
+      "none": "There are no documents on this link at the moment.",
+      "expiredTitle": "This link has expired",
+      "expiredBody": "This link has expired, ask {truck} to send it again.",
+      "expiredBodyUnknown": "This link has expired. Please ask the business that sent it to send it again.",
+      "sharedWith": "Shared with HatchGrab"
+    },
+    "email": {
+      "shareSubject": "{truck} has sent you their documents",
+      "shareHeading": "Documents from {truck}",
+      "shareIntro": "{truck} has shared these documents with you.",
+      "event": "For: {event}",
+      "shareButton": "View the documents",
+      "shareUntil": "The link works until {date}. If it has expired, ask {truck} to send it again.",
+      "shareReply": "Reply to this email to contact {truck}.",
+      "expires": "expires {date}",
+      "reviewBy": "review by {date}",
+      "noExpiry": "no expiry",
+      "reminderSubject": "{count, plural, one {A document needs renewing} other {# documents need renewing}}",
+      "reminderHeading": "Your documents",
+      "reminderIntro": "Some of {truck}’s documents need renewing:",
+      "reminderIn": "{document} expires on {date} ({days, plural, one {in # day} other {in # days}})",
+      "reminderToday": "{document} expires today",
+      "reminderExpired": "{document} expired on {date}",
+      "reminderButton": "Open Documents",
+      "reminderFooter": "We remind you 4 weeks before, 1 week before and on the day, then every week until it’s renewed."
     }
   }
 }

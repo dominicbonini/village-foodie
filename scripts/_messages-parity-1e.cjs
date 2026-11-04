@@ -229,6 +229,18 @@ const NEW_WORDING = {
   for (const k of ['demoUpload.emailLabel', 'demoUpload.emailNote', 'demoUpload.marketing', 'demoUpload.emailInvalid']) NEW_WORDING[k] = 'demo-2: the upload modal email step'
   NEW_WORDING['demo.walkBanner'] = 'demo-2: the walkthrough banner on the demo order page'
 }
+// ⚠️ RE-PINNED (paperwork-1, 4 November 2026, docs/paperwork-1-report.md): Manage › Documents — a NEW namespace, `paperwork`
+// (the tab, the AI's "Check the details", reminders, the organiser's page and both emails), its seven refusals
+// (`errorsManage.paperwork_*`), the tab's label and the feature's name. All new wording; scripts/paperwork-1.cjs proves where each shows.
+{
+  const flatKeys = (o, p = '') => Object.entries(o).flatMap(([k, v]) => (v && typeof v === 'object' ? flatKeys(v, `${p}${k}.`) : [`${p}${k}`]))
+  const enGB = JSON.parse(fs.readFileSync(path.join(REPO, 'messages/en-GB.json'), 'utf8'))
+  for (const k of flatKeys(enGB.paperwork || {}, 'paperwork.')) NEW_WORDING[k] = 'paperwork-1: Manage › Documents (a new namespace)'
+  for (const k of Object.keys(enGB.errorsManage || {}).filter(k => k.startsWith('paperwork_'))) NEW_WORDING[`errorsManage.${k}`] = 'paperwork-1: a Documents refusal'
+  NEW_WORDING['manageShell.tabs.paperwork'] = 'paperwork-1: the Documents tab'
+  NEW_WORDING['planPrompt.features.paperwork.name'] = 'paperwork-1: the feature\'s name in the plan prompt'
+  NEW_WORDING['planPrompt.features.paperwork.many'] = 'paperwork-1: the feature\'s grammatical number in the plan prompt'
+}
 /** ⚠️ RE-PINNED (features-page-restore, 20 October 2026): a restored message EDITED on purpose → [ref, the old key, how]:
  *  its en-GB text must be EXACTLY the old text so edited (here: the old text's first sentence). */
 const RESTORED_EDITED = {

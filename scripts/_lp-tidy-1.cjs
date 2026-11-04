@@ -41,6 +41,7 @@ const LEGAL_LANDED = (() => { try { const m = /TERMS_VERSION\s*=\s*'(\d{4}-\d{2}
 const once = (s, a, what) => { const n = s.split(a).length - 1; if (n !== 1) throw new Error(`tidy-1: ${what} — expected once, found ${n}: ${a.slice(0, 80)}`) }
 const back = (edits, what) => text => edits.reduce((s, [a, b]) => { once(s, b, what); return s.replace(b, a) }, text)
 function asBefore(file, text) {
+  text = require('./_lp-paperwork-1.cjs').asBefore(file, text)   // ⚠️ RE-PINNED (paperwork-1, 4 November 2026): newest change first
   if (!LEGAL_LANDED) return text
   if (file === 'content/legal/privacy-policy.md') return back(PRIVACY_EDITS, 'Privacy Policy edit')(text)
   if (file === 'lib/legal.ts') return back(LEGAL_TS_EDITS, 'lib/legal.ts edit')(text)

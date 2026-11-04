@@ -583,7 +583,9 @@ if (RENDER) {
   const C1 = require('./_lp-contact-1.cjs')   // eslint-disable-line @typescript-eslint/no-require-imports -- CommonJS harness module (contact-1)
   // ⚠️ RE-PINNED (tidy-1, 3 November 2026): re-dated 3 November 2026 with the demo-section wording (scripts/_lp-tidy-1.cjs).
   const T1L = require('./_lp-tidy-1.cjs')   // eslint-disable-line @typescript-eslint/no-require-imports -- CommonJS harness module (tidy-1)
-  const LEGAL_LASTMOD_OF = { privacy: T1L.LEGAL_LANDED ? T1L.PRIVACY_LASTMOD_NEW : C1.LANDED ? C1.PRIVACY_LASTMOD_NEW : D2B.LANDED ? D2B.PRIVACY_LASTMOD_NEW : LEGAL_LASTMOD, terms: W2.LANDED ? W2.LASTMOD_NEW : '2026-10-20T00:00:00.000Z', 'country-terms': W2.LANDED ? W2.LASTMOD_NEW : ANZT.LANDED ? ANZT.COUNTRY_TERMS_LASTMOD_NEW : IE3.LANDED ? IE3.COUNTRY_TERMS_LASTMOD_NEW : LEGAL_LASTMOD }
+  // ⚠️ RE-PINNED (paperwork-1, 4 November 2026): re-dated 4 November 2026 with the compliance-documents paragraph (scripts/_lp-paperwork-1.cjs).
+  const P1L = require('./_lp-paperwork-1.cjs')   // eslint-disable-line @typescript-eslint/no-require-imports -- CommonJS harness module (paperwork-1)
+  const LEGAL_LASTMOD_OF = { privacy: P1L.LEGAL_LANDED ? P1L.PRIVACY_LASTMOD_NEW : T1L.LEGAL_LANDED ? T1L.PRIVACY_LASTMOD_NEW : C1.LANDED ? C1.PRIVACY_LASTMOD_NEW : D2B.LANDED ? D2B.PRIVACY_LASTMOD_NEW : LEGAL_LASTMOD, terms: W2.LANDED ? W2.LASTMOD_NEW : '2026-10-20T00:00:00.000Z', 'country-terms': W2.LANDED ? W2.LASTMOD_NEW : ANZT.LANDED ? ANZT.COUNTRY_TERMS_LASTMOD_NEW : IE3.LANDED ? IE3.COUNTRY_TERMS_LASTMOD_NEW : LEGAL_LASTMOD }
   /** The seo-fixes named change a view key falls under, as [name, (after, before) → [after', before'] | null]. */
   const seoFixes = (k) => {
     if (/^(landing|features|compare)\|[A-Z]+\|html(-usOn|-cookieUS)?$/.test(k)) return ['SEO-menu + SEO-badges' + (/^landing/.test(k) ? ' + SEO-ld' : '') + ': the country menus\' <ul> + <a role="menuitemradio"> options, the badges\' loading="lazy" (no image preload hints)' + (/^landing/.test(k) ? ', the one @graph JSON-LD' : ''),

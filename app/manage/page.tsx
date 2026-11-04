@@ -31,13 +31,20 @@ const supabaseAdmin = createClient(
   process.env.SUPABASE_SERVICE_ROLE_KEY!,
 )
 
-export default async function ManageIndexPage() {
+/** paperwork-1 (4 November 2026): the one query this page carries on — a known Manage tab (`?tab=paperwork` from a reminder
+ *  email), so a TOKENLESS link can still open the right tab. Anything else is dropped, as before. */
+const CARRIED_TABS = new Set(['menu', 'reports', 'schedule', 'paperwork', 'social', 'team', 'settings', 'payments', 'billing'])
+
+export default async function ManageIndexPage({ searchParams }: { searchParams?: Promise<Record<string, string | string[] | undefined>> }) {
+  const tabParam = (await searchParams)?.tab
+  const tab = typeof tabParam === 'string' && CARRIED_TABS.has(tabParam) ? tabParam : null
+  const suffix = tab ? `?tab=${tab}` : ''
   const supabase = await createSupabaseServerClient()
   const { data: { user } } = await supabase.auth.getUser()
 
   // No session — proxy normally catches this first and carries the return URL. Repeat it here so the
   // route is correct on its own terms rather than depending on middleware ordering.
-  if (!user) redirect('/login?next=/manage')
+  if (!user) redirect(`/login?next=/manage${suffix ? encodeURIComponent(suffix) : ''}`)
 
   const { data: operator } = await supabaseAdmin
     .from('operators')
@@ -54,5 +61,5 @@ export default async function ManageIndexPage() {
   const truck = await resolveOperatorTruck(supabaseAdmin, operator.id)
 
   if (!truck?.dashboard_token) redirect('/setup')
-  redirect(`/manage/${encodeURIComponent(truck.dashboard_token)}`)
+  redirect(`/manage/${encodeURIComponent(truck.dashboard_token)}${suffix}`)
 }

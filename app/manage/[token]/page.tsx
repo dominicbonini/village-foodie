@@ -42,6 +42,7 @@ import { QR_POSTER, posterLogoRect } from '@/lib/generateQRCode'
 import { ChargesCard } from '@/components/manage/ChargesCard'
 import { TakingPaymentPanel } from '@/components/manage/TakingPaymentPanel'
 import { PaymentsTab } from '@/components/manage/PaymentsTab'
+import PaperworkTab from '@/components/manage/PaperworkTab'
 // (No lib/legal import here by design — this page carries no legal links. They live in the account
 //  dropdown, components/dashboard/UserMenu.tsx, which every role reaches. See the note at the foot of
 //  SettingsTab, and lib/legal.ts for the surface list. If a link is ever added to this page, import the
@@ -240,7 +241,7 @@ interface Van { id: string; truck_id: string; name: string; kds_token: string; a
 interface UpsellRule { id: string; trigger_category: string; suggest_category: string; max_suggestions: number; show_at_checkout: boolean }
 interface TeamMember { id: string; email: string; name: string | null; role: 'owner' | 'manager' | 'staff'; accepted_at: string | null; auth_user_id: string | null; van_names?: string[] }
 
-type Tab = 'menu' | 'reports' | 'schedule' | 'social' | 'team' | 'settings' | 'payments' | 'billing'
+type Tab = 'menu' | 'reports' | 'schedule' | 'paperwork' | 'social' | 'team' | 'settings' | 'payments' | 'billing'
 /* 🔴 THE MENU TAB'S THREE SECTIONS. Deals and Extras & Upsells were top-level tabs; all three are
  * about what a customer can order, and splitting them across the tab bar made the operator choose
  * between "my menu" and "things attached to my menu" before they had a reason to.
@@ -961,7 +962,7 @@ export default function ManagePage({ params }: { params: Promise<{ token: string
   useEffect(() => {
     const qs = new URLSearchParams(window.location.search)
     const tabParam = qs.get('tab')
-    const allTabIds: Tab[] = ['menu', 'reports', 'schedule', 'social', 'team', 'settings', 'payments', 'billing']
+    const allTabIds: Tab[] = ['menu', 'reports', 'schedule', 'paperwork', 'social', 'team', 'settings', 'payments', 'billing']
     if (tabParam && allTabIds.includes(tabParam as Tab)) setActiveTab(tabParam as Tab)
     /* 🔴 THE TWO RETIRED TAB KEYS. `?tab=deals` / `?tab=modifiers` now open MENU with that pill
      * selected — the content is still there, one level in. Without this they would fall through to
@@ -1267,6 +1268,10 @@ export default function ManagePage({ params }: { params: Promise<{ token: string
      * badge on this half of the bar is Menu's own allergens `(!)`, which is unchanged. */
     { id: 'reports',   label: t('tabs.reports'),   icon: '📊', roles: ['owner', 'manager'] },
     { id: 'team',      label: t('tabs.team'),      icon: '👥', roles: ['owner', 'manager'] },
+    // paperwork-1 (4 November 2026): the DOCUMENTS tab (internally `paperwork`), just before Settings — Dominic's choice (4 Nov),
+    // not the mockup's place after Schedule. Owners and managers — staff never see a truck's insurance and certificates. Shown only
+    // while the `paperwork` feature is on (override → plan → on; no row = on).
+    { id: 'paperwork', label: t('tabs.paperwork'), icon: '📄', roles: ['owner', 'manager'] },
     { id: 'settings',  label: t('tabs.settings'),  icon: '🔧', roles: ['owner', 'manager'] },
     // 🔴 PAYMENTS — OWNER ONLY, every plan. (Billing used to be hidden from the 'tester' plan by name; since plans-data-model
     // Stage A Billing renders a card for any plan, so both tabs are simply owner-only.)
@@ -1290,6 +1295,9 @@ export default function ManagePage({ params }: { params: Promise<{ token: string
      * it back on, so a tab that opens a refusal would be worse than no tab.
      * 🔴 A truck whose PLAN switches it off (Stage A2, e.g. Pay as you go) DOES see the tab, and it opens on the one
      * upgrade prompt (<FeatureGate> in SocialPosts) naming the plan that has social media posts. */
+    if (tab.id === 'paperwork') {
+      return tab.roles.includes(userRole) && featureAccessView(truck, planCatalog, truck?.country ?? null).can('paperwork')
+    }
     if (tab.id === 'social') {
       return tab.roles.includes(userRole)
         && featureAccessView(truck, planCatalog, truck?.country ?? null).block('schedule_graphics') !== 'override'
@@ -1643,6 +1651,7 @@ export default function ManagePage({ params }: { params: Promise<{ token: string
             <TakingPaymentPanel truck={truck} api={api} showToast={showToast} onTruckUpdate={partial => setTruck(prev => prev ? { ...prev, ...partial } : prev)} />
           </> : null} />}
         {activeTab === 'billing'   && <BillingTab   truck={truck} />}
+        {activeTab === 'paperwork' && <PaperworkTab token={token} showToast={showToast} />}
         </div>
       </main>
 

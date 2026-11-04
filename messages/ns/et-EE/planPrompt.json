@@ -113,6 +113,10 @@
     "private_events": {
       "name": "Eraüritused",
       "many": "yes"
+    },
+    "paperwork": {
+      "name": "Dokumendid",
+      "many": "yes"
     }
   }
 }

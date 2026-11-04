@@ -27,7 +27,7 @@
 
 /** The Manage tabs a link may name. Mirrors `Tab` in app/manage/[token]/page.tsx. */
 export type ManageTab =
-  | 'menu' | 'reports' | 'schedule' | 'social' | 'team' | 'settings' | 'payments' | 'billing'
+  | 'menu' | 'reports' | 'schedule' | 'paperwork' | 'social' | 'team' | 'settings' | 'payments' | 'billing'
 
 /**
  * Schedule's sub-tabs — TWO of them again.

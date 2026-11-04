@@ -16,6 +16,7 @@
 // sequence is atomic. Until then: it THROWS on the first failing step, naming the step, rather than
 // limping on and surfacing a confusing FK error from a later one.
 
+import { deleteTruckPaperwork } from '@/lib/paperwork/store'
 import type { SupabaseClient } from '@supabase/supabase-js'
 
 export class DeleteTruckError extends Error {
@@ -70,6 +71,11 @@ export async function deleteTruckCascade(
     .delete()
     .or(`referring_truck.eq.${truckId},referred_truck.eq.${truckId}`)
   if (refErr) throw new DeleteTruckError('referrals', truckId, refErr.message)
+
+  // paperwork-1 (4 November 2026): the truck's documents are FILES in the private truck-documents bucket. Their rows would go
+  // with the truck (on delete cascade), the files would not — so Paperwork's files, rows and links are removed first.
+  try { await deleteTruckPaperwork(supabase, [truckId]) }
+  catch (e) { throw new DeleteTruckError('paperwork', truckId, e instanceof Error ? e.message : String(e)) }
 
   const { error: truckErr } = await supabase.from('trucks').delete().eq('id', truckId)
   if (truckErr) throw new DeleteTruckError('trucks', truckId, truckErr.message)

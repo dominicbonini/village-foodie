@@ -3331,7 +3331,14 @@
     "stripe_request_failed": "Stripe pieprasījums neizdevās",
     "private_unavailable": "Privātie pasākumi vēl nav pieejami — datubāzes migrācija nav izpildīta.",
     "private_not_private": "Šis pasākums nav privāts.",
-    "private_link_off": "Pasūtīšana ar privāto saiti šim pasākumam ir izslēgta."
+    "private_link_off": "Pasūtīšana ar privāto saiti šim pasākumam ir izslēgta.",
+    "paperwork_file_too_big": "Šis fails ir lielāks par 20 MB. Lūdzu, izvēlieties mazāku.",
+    "paperwork_file_type": "Šāds faila veids netiek pieņemts. Lūdzu, izmantojiet PDF, JPEG, PNG, HEIC vai WebP failu.",
+    "paperwork_upload_failed": "Augšupielāde neizdevās. Lūdzu, mēģiniet vēlreiz.",
+    "paperwork_not_found": "Šī dokumenta vairs nav. Lūdzu, pārlādējiet lapu.",
+    "paperwork_bad_details": "Daži dati nav pareizi. Lūdzu, pārbaudiet tos un mēģiniet vēlreiz.",
+    "paperwork_send_limit": "Īsā laikā nosūtīts daudz saišu. Lūdzu, mēģiniet vēlreiz pēc stundas.",
+    "paperwork_send_failed": "E-pastu neizdevās nosūtīt. Lūdzu, mēģiniet vēlreiz."
   },
   "tradeArea": {
     "country_missing": "Izvēlieties valsti, kurā atrodas jūsu food truck.",
@@ -4828,6 +4835,7 @@
     "tabs": {
       "menu": "Ēdienkarte",
       "schedule": "Grafiks",
+      "paperwork": "Dokumenti",
       "social": "Sociālie tīkli",
       "reports": "Atskaites",
       "team": "Komanda",
@@ -6029,6 +6037,10 @@
       "private_events": {
         "name": "Privāti pasākumi",
         "many": "yes"
+      },
+      "paperwork": {
+        "name": "Dokumenti",
+        "many": "yes"
       }
     }
   },
@@ -6417,6 +6429,183 @@
       "appsSentence": "Ir arī iPad un Android lietotne, kas turpina pieņemt pasūtījumus uz vietas, ja pazūd signāls.",
       "appsOffline": "iPad un Android lietotne pieņem pasūtījumus uz vietas arī bez signāla un nosūta tos, kad atkal esat tiešsaistē; tīmekļa vadības panelim nepieciešams savienojums.",
       "webOffline": "Tīmekļa vadības panelim nepieciešams savienojums, lai rādītu jaunus pasūtījumus."
+    }
+  },
+  "paperwork": {
+    "title": "Dokumenti",
+    "intro": "Glabājiet savus sertifikātus vienuviet. Mēs jums atgādināsim, pirms kaut kam beigsies termiņš, un jūs varēsiet tos vienā reizē nosūtīt organizatoram.",
+    "loading": "Ielādē jūsu dokumentus…",
+    "loadFailed": "Neizdevās ielādēt jūsu dokumentus. Lūdzu, mēģiniet vēlreiz.",
+    "retry": "Mēģināt vēlreiz",
+    "counts": {
+      "expired": "{count, plural, zero {# beigušies} one {# beidzies} other {# beigušies}}",
+      "dueSoon": "{count, plural, zero {# drīz beigsies} one {# drīz beigsies} other {# drīz beigsies}}",
+      "missing": "{count, plural, zero {# trūkst} one {# trūkst} other {# trūkst}}",
+      "upToDate": "{count, plural, zero {# derīgi} one {# derīgs} other {# derīgi}}"
+    },
+    "status": {
+      "upToDate": "Derīgs",
+      "dueSoon": "Drīz beigsies",
+      "expired": "Beidzies",
+      "upload": "Augšupielādēt"
+    },
+    "line": {
+      "expires": "Termiņš beidzas {date}",
+      "expiresIn": "Termiņš beidzas {date} · {days, plural, zero {pēc # dienām} one {pēc # dienas} other {pēc # dienām}}",
+      "expiresToday": "Termiņš beidzas šodien",
+      "expired": "Termiņš beidzās {date}",
+      "reviewBy": "Pārskatīt līdz {date}",
+      "reviewByIn": "Pārskatīt līdz {date} · {days, plural, zero {pēc # dienām} one {pēc # dienas} other {pēc # dienām}}",
+      "reviewOverdue": "Pārskatīt vajadzēja līdz {date}",
+      "noExpiry": "Bez termiņa",
+      "cover": "Segums: {amount}",
+      "notUploaded": "Vēl nav augšupielādēts"
+    },
+    "select": "Atlasīt: {document}",
+    "add": "+ Pievienot dokumentu",
+    "selected": "{count, plural, zero {# atlasīti} one {# atlasīts} other {# atlasīti}}",
+    "sendToOrganiser": "Nosūtīt organizatoram",
+    "types": {
+      "food_registration": "Pārtikas uzņēmuma reģistrācija",
+      "hygiene_rating": "Pārtikas higiēnas vērtējums",
+      "food_safety_plan": "Pārtikas drošības plāns (HACCP)",
+      "public_liability": "Civiltiesiskās atbildības apdrošināšana",
+      "employers_liability": "Darba devēja civiltiesiskās atbildības apdrošināšana",
+      "gas_safety": "Gāzes iekārtu drošības sertifikāts",
+      "pat_test": "Pārnēsājamo elektroierīču pārbaude",
+      "fire_safety": "Ugunsdrošība",
+      "risk_assessment": "Risku novērtējums",
+      "allergen_info": "Informācija par alergēniem",
+      "street_trading_licence": "Ielu tirdzniecības atļauja",
+      "electrical_safety": "Elektrodrošības pārbaude",
+      "trading_licence": "Tirdzniecības atļauja"
+    },
+    "upload": {
+      "title": "Pievienot dokumentu",
+      "intro": "Nofotografējiet to vai izvēlieties fotoattēlu vai failu.",
+      "takePhoto": "Nofotografēt",
+      "chooseFile": "Izvēlēties fotoattēlu vai failu",
+      "accepted": "PDF, JPEG, PNG, HEIC vai WebP, līdz 20 MB.",
+      "uploading": "Augšupielādē… {percent}%",
+      "reading": "Nolasām jūsu dokumentu…",
+      "tooBig": "Šis fails ir lielāks par 20 MB. Lūdzu, izvēlieties mazāku.",
+      "wrongType": "Šāds faila veids netiek pieņemts. Lūdzu, izmantojiet PDF, JPEG, PNG, HEIC vai WebP failu.",
+      "failed": "Augšupielāde neizdevās. Lūdzu, mēģiniet vēlreiz.",
+      "cancel": "Atcelt"
+    },
+    "check": {
+      "title": "Pārbaudiet datus",
+      "aiBanner": "Šos datus nolasījām no jūsu dokumenta. Lūdzu, pirms saglabāšanas pārbaudiet, vai tie ir pareizi.",
+      "document": "Dokuments",
+      "other": "Cits…",
+      "otherName": "Dokumenta nosaukums",
+      "issuer": "Izdevējs",
+      "issued": "Izdots",
+      "expires": "Derīgs līdz",
+      "reviewBy": "Pārskatīt līdz",
+      "nameOnDocument": "Vārds vai nosaukums dokumentā",
+      "cover": "Apdrošināšanas segums",
+      "coverHint": "Neobligāti. Summa, ko sedz polise.",
+      "currency": "Valūta",
+      "save": "Saglabāt",
+      "saving": "Saglabā…",
+      "cancel": "Atcelt",
+      "saved": "Saglabāts",
+      "footer": "Iepriekšējais sertifikāts tiek saglabāts vēsturē. Jūsu faili ir privāti: tos var redzēt tikai jūs un organizatori, kuriem tos nosūtāt.",
+      "needType": "Izvēlieties dokumentu vai ierakstiet tā nosaukumu.",
+      "badDates": "Termiņa beigu datums nevar būt agrāks par izdošanas datumu."
+    },
+    "warnings": {
+      "notRead": "Mēs nevarējām nolasīt šo dokumentu. Lūdzu, aizpildiet datus paši.",
+      "expired": "Šī dokumenta termiņš beidzās {date}. To joprojām var saglabāt, taču organizatori redzēs, ka tā termiņš ir beidzies.",
+      "expiresSoon": "{days, plural, =0 {Termiņš beidzas šodien. Mēs jums atgādināsim katru nedēļu, līdz dokuments tiks atjaunots.} zero {Termiņš beidzas pēc # dienām. Mēs jums atgādināsim 4 nedēļas iepriekš, 1 nedēļu iepriekš un pašā dienā.} one {Termiņš beidzas pēc # dienas. Mēs jums atgādināsim 4 nedēļas iepriekš, 1 nedēļu iepriekš un pašā dienā.} other {Termiņš beidzas pēc # dienām. Mēs jums atgādināsim 4 nedēļas iepriekš, 1 nedēļu iepriekš un pašā dienā.}}",
+      "nameMismatch": "Vārds vai nosaukums dokumentā, “{name}”, neizskatās pēc jūsu uzņēmuma nosaukuma. Lūdzu, pārbaudiet, vai tas ir pareizais dokuments."
+    },
+    "view": {
+      "close": "Aizvērt",
+      "open": "Atvērt",
+      "download": "Lejupielādēt",
+      "noPreview": "Šo failu šeit nevar parādīt. Tā vietā atveriet vai lejupielādējiet to.",
+      "details": "Dati",
+      "edit": "Rediģēt datus",
+      "renew": "Augšupielādēt jaunu versiju",
+      "earlier": "Iepriekšējās versijas",
+      "uploaded": "Augšupielādēts {date}",
+      "delete": "Dzēst",
+      "deleteConfirm": "Dzēst šo dokumentu un tā iepriekšējās versijas? Faili tiks izņemti, un dokuments pazudīs no visām nosūtītajām saitēm.",
+      "deleteYes": "Dzēst",
+      "deleted": "Dokuments izdzēsts",
+      "keep": "Paturēt"
+    },
+    "send": {
+      "title": "Nosūtīt organizatoram",
+      "intro": "Organizators saņems e-pastu ar saiti, kur visu var apskatīt vai lejupielādēt.",
+      "email": "Organizatora e-pasts",
+      "emailHint": "Ne vairāk kā 5 adreses, atdalītas ar komatiem.",
+      "event": "Pasākums (neobligāti)",
+      "noEvent": "Bez pasākuma",
+      "documents": "Dokumenti",
+      "message": "Ziņa (neobligāti)",
+      "messagePlaceholder": "Labdien! Šeit ir mūsu dokumenti tirgum.",
+      "until": "Saite derīga līdz",
+      "untilAfterEvent": "{date} (nākamajā dienā pēc pasākuma)",
+      "send": "Sūtīt",
+      "sending": "Sūta…",
+      "footer": "Ja atjaunosiet sertifikātu, organizatora saitē automātiski būs redzams jaunais. Jūs redzēsiet, kad organizators to atvērs.",
+      "sent": "Nosūtīts: {emails}",
+      "cancel": "Atcelt",
+      "emailNone": "Ievadiet organizatora e-pastu.",
+      "emailInvalid": "“{email}” nav e-pasta adrese.",
+      "emailTooMany": "Vienlaikus var sūtīt ne vairāk kā 5 adresēm.",
+      "noDocuments": "Izvēlieties vismaz vienu dokumentu.",
+      "untilRange": "Izvēlieties datumu no rītdienas līdz 90 dienām no šodienas."
+    },
+    "sent": {
+      "title": "Nosūtītie",
+      "empty": "Vēl nekas nav nosūtīts.",
+      "to": "Kam: {emails}",
+      "sentOn": "Nosūtīts {date}",
+      "opened": "Atvērts {date} · {count, plural, zero {# skatījumi} one {# skatījums} other {# skatījumi}}",
+      "notOpened": "Vēl nav atvērts",
+      "until": "Derīga līdz {date}",
+      "expiredOn": "Termiņš beidzās {date}",
+      "off": "Izslēgta",
+      "turnOff": "Izslēgt saiti",
+      "turnOffConfirm": "Izslēgt šo saiti? Organizators to vairs nevarēs atvērt.",
+      "turnedOff": "Saite izslēgta"
+    },
+    "page": {
+      "title": "{truck} dokumenti",
+      "intro": "{truck} ar jums kopīgoja šos dokumentus.",
+      "view": "Skatīt",
+      "download": "Lejupielādēt",
+      "downloadAll": "Lejupielādēt visus",
+      "until": "Šī saite ir derīga līdz {date}.",
+      "none": "Šajā saitē pašlaik nav neviena dokumenta.",
+      "expiredTitle": "Šīs saites termiņš ir beidzies",
+      "expiredBody": "Šīs saites termiņš ir beidzies. Palūdziet, lai {truck} to nosūta vēlreiz.",
+      "expiredBodyUnknown": "Šīs saites termiņš ir beidzies. Lūdzu, palūdziet uzņēmumam, kas to nosūtīja, nosūtīt to vēlreiz.",
+      "sharedWith": "Kopīgots, izmantojot HatchGrab"
+    },
+    "email": {
+      "shareSubject": "{truck} jums nosūtīja savus dokumentus",
+      "shareHeading": "{truck} dokumenti",
+      "shareIntro": "{truck} ar jums kopīgoja šos dokumentus.",
+      "event": "Pasākumam: {event}",
+      "shareButton": "Skatīt dokumentus",
+      "shareUntil": "Saite ir derīga līdz {date}. Ja tās termiņš ir beidzies, palūdziet, lai {truck} to nosūta vēlreiz.",
+      "shareReply": "Atbildiet uz šo e-pastu, lai sazinātos ar {truck}.",
+      "expires": "termiņš beidzas {date}",
+      "reviewBy": "pārskatīt līdz {date}",
+      "noExpiry": "bez termiņa",
+      "reminderSubject": "{count, plural, zero {# dokumenti jāatjauno} one {# dokuments jāatjauno} other {# dokumenti jāatjauno}}",
+      "reminderHeading": "Jūsu dokumenti",
+      "reminderIntro": "Daži {truck} dokumenti ir jāatjauno:",
+      "reminderIn": "{document}: termiņš beidzas {date} ({days, plural, zero {pēc # dienām} one {pēc # dienas} other {pēc # dienām}})",
+      "reminderToday": "{document}: termiņš beidzas šodien",
+      "reminderExpired": "{document}: termiņš beidzās {date}",
+      "reminderButton": "Atvērt dokumentus",
+      "reminderFooter": "Mēs atgādinām 4 nedēļas iepriekš, 1 nedēļu iepriekš un pašā dienā, pēc tam katru nedēļu, līdz dokuments tiek atjaunots."
     }
   }
 }

@@ -3331,7 +3331,14 @@
     "stripe_request_failed": "Forespørselen til Stripe mislyktes",
     "private_unavailable": "Private arrangementer er ikke tilgjengelige ennå – databasemigreringen er ikke kjørt.",
     "private_not_private": "Dette arrangementet er ikke privat.",
-    "private_link_off": "Bestilling via privat lenke er slått av for dette arrangementet."
+    "private_link_off": "Bestilling via privat lenke er slått av for dette arrangementet.",
+    "paperwork_file_too_big": "Filen er over 20 MB. Velg en mindre fil.",
+    "paperwork_file_type": "Den filtypen støttes ikke. Bruk en PDF-, JPEG-, PNG-, HEIC- eller WebP-fil.",
+    "paperwork_upload_failed": "Opplastingen mislyktes. Prøv igjen.",
+    "paperwork_not_found": "Det dokumentet finnes ikke lenger. Last inn siden på nytt.",
+    "paperwork_bad_details": "Noen av opplysningene stemmer ikke. Sjekk dem og prøv igjen.",
+    "paperwork_send_limit": "Du har sendt mange lenker på kort tid. Prøv igjen om en time.",
+    "paperwork_send_failed": "E-posten kunne ikke sendes. Prøv igjen."
   },
   "tradeArea": {
     "country_missing": "Velg landet matbilen din har base i.",
@@ -4828,6 +4835,7 @@
     "tabs": {
       "menu": "Meny",
       "schedule": "Kalender",
+      "paperwork": "Dokumenter",
       "social": "Sosiale medier",
       "reports": "Rapporter",
       "team": "Team",
@@ -6029,6 +6037,10 @@
       "private_events": {
         "name": "Private arrangementer",
         "many": "yes"
+      },
+      "paperwork": {
+        "name": "Dokumenter",
+        "many": "yes"
       }
     }
   },
@@ -6417,6 +6429,183 @@
       "appsSentence": "Det finnes også en app for iPad og Android, som fortsetter å ta imot bestillinger ved bilen hvis du mister dekningen.",
       "appsOffline": "Appen for iPad og Android tar imot bestillinger ved bilen uten dekning og sender dem når du er på nett igjen; den nettbaserte oversikten trenger tilkobling.",
       "webOffline": "Den nettbaserte oversikten trenger tilkobling for å vise nye bestillinger."
+    }
+  },
+  "paperwork": {
+    "title": "Dokumenter",
+    "intro": "Ha sertifikatene dine samlet på ett sted. Vi minner deg på det før noe går ut, og du kan sende dem til en arrangør på én gang.",
+    "loading": "Laster inn dokumentene dine…",
+    "loadFailed": "Dokumentene dine kunne ikke lastes inn. Prøv igjen.",
+    "retry": "Prøv igjen",
+    "counts": {
+      "expired": "{count, plural, one {# utløpt} other {# utløpt}}",
+      "dueSoon": "{count, plural, one {# går snart ut} other {# går snart ut}}",
+      "missing": "{count, plural, one {# mangler} other {# mangler}}",
+      "upToDate": "{count, plural, one {# gyldig} other {# gyldige}}"
+    },
+    "status": {
+      "upToDate": "Gyldig",
+      "dueSoon": "Går snart ut",
+      "expired": "Utløpt",
+      "upload": "Last opp"
+    },
+    "line": {
+      "expires": "Utløper {date}",
+      "expiresIn": "Utløper {date} · {days, plural, one {om # dag} other {om # dager}}",
+      "expiresToday": "Utløper i dag",
+      "expired": "Utløp {date}",
+      "reviewBy": "Gjennomgås innen {date}",
+      "reviewByIn": "Gjennomgås innen {date} · {days, plural, one {om # dag} other {om # dager}}",
+      "reviewOverdue": "Skulle vært gjennomgått {date}",
+      "noExpiry": "Utløper ikke",
+      "cover": "Dekning: {amount}",
+      "notUploaded": "Ikke lastet opp ennå"
+    },
+    "select": "Velg {document}",
+    "add": "+ Legg til et dokument",
+    "selected": "{count, plural, one {# valgt} other {# valgt}}",
+    "sendToOrganiser": "Send til arrangør",
+    "types": {
+      "food_registration": "Registrering som næringsmiddelvirksomhet",
+      "hygiene_rating": "Tilsynsrapport (smilefjes)",
+      "food_safety_plan": "Internkontroll for mattrygghet (HACCP)",
+      "public_liability": "Ansvarsforsikring",
+      "employers_liability": "Yrkesskadeforsikring",
+      "gas_safety": "Sertifikat for gassanlegg",
+      "pat_test": "Kontroll av elapparater",
+      "fire_safety": "Brannsikkerhet",
+      "risk_assessment": "Risikovurdering",
+      "allergen_info": "Allergeninformasjon",
+      "street_trading_licence": "Tillatelse til gatesalg",
+      "electrical_safety": "Elsikkerhetskontroll",
+      "trading_licence": "Handelstillatelse"
+    },
+    "upload": {
+      "title": "Legg til et dokument",
+      "intro": "Ta et bilde av det, eller velg et bilde eller en fil.",
+      "takePhoto": "Ta et bilde",
+      "chooseFile": "Velg et bilde eller en fil",
+      "accepted": "PDF, JPEG, PNG, HEIC eller WebP, opptil 20 MB.",
+      "uploading": "Laster opp… {percent} %",
+      "reading": "Leser dokumentet ditt…",
+      "tooBig": "Filen er over 20 MB. Velg en mindre fil.",
+      "wrongType": "Den filtypen støttes ikke. Bruk en PDF-, JPEG-, PNG-, HEIC- eller WebP-fil.",
+      "failed": "Opplastingen mislyktes. Prøv igjen.",
+      "cancel": "Avbryt"
+    },
+    "check": {
+      "title": "Sjekk opplysningene",
+      "aiBanner": "Vi har lest dette ut av dokumentet ditt. Sjekk at det stemmer før du lagrer.",
+      "document": "Dokument",
+      "other": "Annet…",
+      "otherName": "Navn på dokumentet",
+      "issuer": "Utstedt av",
+      "issued": "Utstedt",
+      "expires": "Utløper",
+      "reviewBy": "Gjennomgås innen",
+      "nameOnDocument": "Navn på dokumentet",
+      "cover": "Forsikringssum",
+      "coverHint": "Valgfritt. Beløpet forsikringen dekker.",
+      "currency": "Valuta",
+      "save": "Lagre",
+      "saving": "Lagrer…",
+      "cancel": "Avbryt",
+      "saved": "Lagret",
+      "footer": "Det forrige sertifikatet tas vare på som historikk. Filene dine er private: Bare du og arrangørene du sender dem til, kan se dem.",
+      "needType": "Velg dokumentet, eller gi det et navn.",
+      "badDates": "Utløpsdatoen kan ikke være før utstedelsesdatoen."
+    },
+    "warnings": {
+      "notRead": "Vi klarte ikke å lese dette dokumentet. Fyll inn opplysningene selv.",
+      "expired": "Dette gikk ut {date}. Du kan fortsatt lagre det, men arrangørene vil se at det har gått ut.",
+      "expiresSoon": "{days, plural, =0 {Dette går ut i dag. Vi minner deg på det hver uke til det er fornyet.} one {Dette går ut om # dag. Vi minner deg på det 4 uker før, 1 uke før og samme dag.} other {Dette går ut om # dager. Vi minner deg på det 4 uker før, 1 uke før og samme dag.}}",
+      "nameMismatch": "Navnet på det, «{name}», ser ikke ut som navnet på bedriften din. Sjekk at det er riktig dokument."
+    },
+    "view": {
+      "close": "Lukk",
+      "open": "Åpne",
+      "download": "Last ned",
+      "noPreview": "Filen kan ikke vises her. Åpne den eller last den ned i stedet.",
+      "details": "Opplysninger",
+      "edit": "Rediger opplysninger",
+      "renew": "Last opp en ny versjon",
+      "earlier": "Tidligere versjoner",
+      "uploaded": "Lastet opp {date}",
+      "delete": "Slett",
+      "deleteConfirm": "Vil du slette dette dokumentet og de tidligere versjonene? Filene fjernes, og dokumentet forsvinner fra alle lenker du har sendt.",
+      "deleteYes": "Slett",
+      "deleted": "Dokumentet er slettet",
+      "keep": "Behold det"
+    },
+    "send": {
+      "title": "Send til arrangør",
+      "intro": "Arrangøren får en e-post med en lenke for å se eller laste ned alt.",
+      "email": "Arrangørens e-postadresse",
+      "emailHint": "Opptil 5 adresser, skilt med komma.",
+      "event": "Arrangement (valgfritt)",
+      "noEvent": "Ingen arrangement",
+      "documents": "Dokumenter",
+      "message": "Melding (valgfritt)",
+      "messagePlaceholder": "Hei, her er dokumentene våre til markedet.",
+      "until": "Lenken virker til",
+      "untilAfterEvent": "{date} (dagen etter arrangementet)",
+      "send": "Send",
+      "sending": "Sender…",
+      "footer": "Hvis du fornyer et sertifikat, viser arrangørens lenke det nye automatisk. Du ser når arrangøren åpner den.",
+      "sent": "Sendt til {emails}",
+      "cancel": "Avbryt",
+      "emailNone": "Skriv inn arrangørens e-postadresse.",
+      "emailInvalid": "«{email}» er ikke en e-postadresse.",
+      "emailTooMany": "Du kan sende til opptil 5 adresser om gangen.",
+      "noDocuments": "Velg minst ett dokument.",
+      "untilRange": "Velg en dato fra i morgen og opptil 90 dager fram i tid."
+    },
+    "sent": {
+      "title": "Sendt",
+      "empty": "Ingenting sendt ennå.",
+      "to": "Til {emails}",
+      "sentOn": "Sendt {date}",
+      "opened": "Åpnet {date} · {count, plural, one {# visning} other {# visninger}}",
+      "notOpened": "Ikke åpnet ennå",
+      "until": "Virker til {date}",
+      "expiredOn": "Utløp {date}",
+      "off": "Slått av",
+      "turnOff": "Slå av lenken",
+      "turnOffConfirm": "Vil du slå av denne lenken? Arrangøren vil ikke lenger kunne åpne den.",
+      "turnedOff": "Lenken er slått av"
+    },
+    "page": {
+      "title": "Dokumenter fra {truck}",
+      "intro": "{truck} har delt disse dokumentene med deg.",
+      "view": "Vis",
+      "download": "Last ned",
+      "downloadAll": "Last ned alle",
+      "until": "Denne lenken virker til {date}.",
+      "none": "Det er ingen dokumenter på denne lenken akkurat nå.",
+      "expiredTitle": "Denne lenken har utløpt",
+      "expiredBody": "Denne lenken har utløpt. Be {truck} om å sende den på nytt.",
+      "expiredBodyUnknown": "Denne lenken har utløpt. Be bedriften som sendte den, om å sende den på nytt.",
+      "sharedWith": "Delt via HatchGrab"
+    },
+    "email": {
+      "shareSubject": "{truck} har sendt deg dokumentene sine",
+      "shareHeading": "Dokumenter fra {truck}",
+      "shareIntro": "{truck} har delt disse dokumentene med deg.",
+      "event": "Gjelder: {event}",
+      "shareButton": "Se dokumentene",
+      "shareUntil": "Lenken virker til {date}. Hvis den har utløpt, kan du be {truck} om å sende den på nytt.",
+      "shareReply": "Svar på denne e-posten for å kontakte {truck}.",
+      "expires": "utløper {date}",
+      "reviewBy": "gjennomgås innen {date}",
+      "noExpiry": "utløper ikke",
+      "reminderSubject": "{count, plural, one {Et dokument må fornyes} other {# dokumenter må fornyes}}",
+      "reminderHeading": "Dokumentene dine",
+      "reminderIntro": "Noen av dokumentene til {truck} må fornyes:",
+      "reminderIn": "{document} utløper {date} ({days, plural, one {om # dag} other {om # dager}})",
+      "reminderToday": "{document} utløper i dag",
+      "reminderExpired": "{document} utløp {date}",
+      "reminderButton": "Åpne Dokumenter",
+      "reminderFooter": "Vi minner deg på det 4 uker før, 1 uke før og samme dag, og deretter hver uke til det er fornyet."
     }
   }
 }

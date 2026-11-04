@@ -113,6 +113,10 @@
     "private_events": {
       "name": "Privatūs renginiai",
       "many": "yes"
+    },
+    "paperwork": {
+      "name": "Dokumentai",
+      "many": "yes"
     }
   }
 }

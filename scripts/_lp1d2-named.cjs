@@ -482,6 +482,15 @@ const NAMED = [
       views: id => /^shell\/(GB|US)\|shell\|(tab|notices\|all)\|settings$/.test(id),
       expect: b => mapStrings(b, x => stProps(x, 'SettingsTab', p => ('notices' in p && !('appsAvailable' in p) ? { ...p, appsAvailable: { ios: false, android: false } } : p))) },
   ] : []),
+  // ── ⚠️ RE-PINNED (paperwork-1, 4 November 2026, docs/paperwork-1-report.md) ────────────────────────────────────────────────
+  //    Manage's tab bar gains the Documents tab (📄), just before Settings, wherever Settings shows (owners and managers). PRECISE
+  //    (scripts/_lp-paperwork-1.cjs tabBar): the one button inserted, unselected; every other byte the same.
+  ...(require('./_lp-paperwork-1.cjs').TAB_LANDED ? [
+    { id: 'paperwork-1-tab', country: 'both', agent: 'paperwork-1 (4 Nov 2026)',
+      what: '⚠️ RE-PINNED (paperwork-1, 4 November 2026): Manage\'s tab bar shows the Documents tab (📄) just before Settings, for owners and managers — the feature is on for every plan (no plan_features row). PRECISE: the one button, unselected.',
+      views: id => /^shell\/(GB|US)\|/.test(id),
+      expect: b => mapStrings(b, x => require('./_lp-paperwork-1.cjs').tabBar(x)) },
+  ] : []),
   { id: 'seo-s7-badges-lazy', country: 'both', agent: 'seo-fixes (20 Oct 2026)', smokeOnly: true,
     what: '⚠️ RE-PINNED (seo-fixes S7, 20 October 2026): Manage › Settings — the App Store / Google Play badges load lazily: loading="lazy" on both <img>s (after height), their two <link rel="preload" as="image"> gone. PRECISE, GB and US.',
     views: id => /^smoke-settings\/(GB|US)\|[^|]+\|page$/.test(id),

@@ -3331,7 +3331,14 @@
     "stripe_request_failed": "Stripe-pyyntö epäonnistui",
     "private_unavailable": "Yksityistilaisuudet eivät ole vielä käytettävissä — tietokannan migraatiota ei ole ajettu.",
     "private_not_private": "Tämä tapahtuma ei ole yksityinen.",
-    "private_link_off": "Tilaaminen yksityisellä linkillä on poistettu käytöstä tässä tapahtumassa."
+    "private_link_off": "Tilaaminen yksityisellä linkillä on poistettu käytöstä tässä tapahtumassa.",
+    "paperwork_file_too_big": "Tiedosto on yli 20 MB. Valitse pienempi tiedosto.",
+    "paperwork_file_type": "Tätä tiedostotyyppiä ei hyväksytä. Käytä PDF-, JPEG-, PNG-, HEIC- tai WebP-tiedostoa.",
+    "paperwork_upload_failed": "Lataus epäonnistui. Yritä uudelleen.",
+    "paperwork_not_found": "Asiakirjaa ei enää löydy. Lataa sivu uudelleen.",
+    "paperwork_bad_details": "Osa tiedoista ei ole oikein. Tarkista ne ja yritä uudelleen.",
+    "paperwork_send_limit": "Olet lähettänyt paljon linkkejä lyhyessä ajassa. Yritä uudelleen tunnin päästä.",
+    "paperwork_send_failed": "Sähköpostia ei voitu lähettää. Yritä uudelleen."
   },
   "tradeArea": {
     "country_missing": "Valitse maa, jossa ruokarekkasi toimii.",
@@ -4828,6 +4835,7 @@
     "tabs": {
       "menu": "Ruokalista",
       "schedule": "Aikataulu",
+      "paperwork": "Asiakirjat",
       "social": "Some",
       "reports": "Raportit",
       "team": "Tiimi",
@@ -6029,6 +6037,10 @@
       "private_events": {
         "name": "Yksityistilaisuudet",
         "many": "yes"
+      },
+      "paperwork": {
+        "name": "Asiakirjat",
+        "many": "yes"
       }
     }
   },
@@ -6417,6 +6429,183 @@
       "appsSentence": "Lisäksi on iPad- ja Android-sovellus, joka ottaa paikan päällä tehtyjä tilauksia vastaan, vaikka yhteys katkeaisi.",
       "appsOffline": "iPad- ja Android-sovellus ottaa paikan päällä tehtyjä tilauksia vastaan ilman yhteyttä ja lähettää ne, kun olet taas verkossa; selainpohjainen ohjauspaneeli tarvitsee yhteyden.",
       "webOffline": "Selainpohjainen ohjauspaneeli tarvitsee yhteyden näyttääkseen uudet tilaukset."
+    }
+  },
+  "paperwork": {
+    "title": "Asiakirjat",
+    "intro": "Pidä todistuksesi tallessa yhdessä paikassa. Muistutamme sinua, ennen kuin mikään vanhenee, ja voit lähettää ne järjestäjälle kerralla.",
+    "loading": "Ladataan asiakirjojasi…",
+    "loadFailed": "Asiakirjojasi ei voitu ladata. Yritä uudelleen.",
+    "retry": "Yritä uudelleen",
+    "counts": {
+      "expired": "{count, plural, one {# vanhentunut} other {# vanhentunutta}}",
+      "dueSoon": "{count, plural, one {# vanhenee pian} other {# vanhenee pian}}",
+      "missing": "{count, plural, one {# puuttuu} other {# puuttuu}}",
+      "upToDate": "{count, plural, one {# voimassa} other {# voimassa}}"
+    },
+    "status": {
+      "upToDate": "Voimassa",
+      "dueSoon": "Vanhenee pian",
+      "expired": "Vanhentunut",
+      "upload": "Lataa"
+    },
+    "line": {
+      "expires": "Vanhenee {date}",
+      "expiresIn": "Vanhenee {date} · {days, plural, one {# päivän päästä} other {# päivän päästä}}",
+      "expiresToday": "Vanhenee tänään",
+      "expired": "Vanheni {date}",
+      "reviewBy": "Tarkistus {date} mennessä",
+      "reviewByIn": "Tarkistus {date} mennessä · {days, plural, one {# päivän päästä} other {# päivän päästä}}",
+      "reviewOverdue": "Tarkistus erääntyi {date}",
+      "noExpiry": "Ei vanhene",
+      "cover": "Vakuutusmäärä {amount}",
+      "notUploaded": "Ei vielä ladattu"
+    },
+    "select": "Valitse {document}",
+    "add": "+ Lisää asiakirja",
+    "selected": "{count, plural, one {# valittu} other {# valittu}}",
+    "sendToOrganiser": "Lähetä järjestäjälle",
+    "types": {
+      "food_registration": "Elintarvikehuoneiston rekisteröinti",
+      "hygiene_rating": "Oiva-raportti",
+      "food_safety_plan": "Omavalvontasuunnitelma (HACCP)",
+      "public_liability": "Vastuuvakuutus",
+      "employers_liability": "Työtapaturmavakuutus",
+      "gas_safety": "Kaasulaitteiston tarkastustodistus",
+      "pat_test": "Sähkölaitteiden tarkastus",
+      "fire_safety": "Paloturvallisuus",
+      "risk_assessment": "Riskinarviointi",
+      "allergen_info": "Allergeenitiedot",
+      "street_trading_licence": "Katumyyntilupa",
+      "electrical_safety": "Sähköturvallisuustarkastus",
+      "trading_licence": "Myyntilupa"
+    },
+    "upload": {
+      "title": "Lisää asiakirja",
+      "intro": "Ota siitä kuva tai valitse kuva tai tiedosto.",
+      "takePhoto": "Ota kuva",
+      "chooseFile": "Valitse kuva tai tiedosto",
+      "accepted": "PDF, JPEG, PNG, HEIC tai WebP, enintään 20 MB.",
+      "uploading": "Ladataan… {percent} %",
+      "reading": "Luetaan asiakirjaasi…",
+      "tooBig": "Tiedosto on yli 20 MB. Valitse pienempi tiedosto.",
+      "wrongType": "Tätä tiedostotyyppiä ei hyväksytä. Käytä PDF-, JPEG-, PNG-, HEIC- tai WebP-tiedostoa.",
+      "failed": "Lataus epäonnistui. Yritä uudelleen.",
+      "cancel": "Peruuta"
+    },
+    "check": {
+      "title": "Tarkista tiedot",
+      "aiBanner": "Luimme nämä tiedot asiakirjastasi. Tarkista, että ne ovat oikein, ennen kuin tallennat.",
+      "document": "Asiakirja",
+      "other": "Muu…",
+      "otherName": "Asiakirjan nimi",
+      "issuer": "Myöntäjä",
+      "issued": "Myönnetty",
+      "expires": "Vanhenee",
+      "reviewBy": "Tarkistuspäivä",
+      "nameOnDocument": "Nimi asiakirjassa",
+      "cover": "Vakuutusmäärä",
+      "coverHint": "Valinnainen. Summa, jonka vakuutus kattaa.",
+      "currency": "Valuutta",
+      "save": "Tallenna",
+      "saving": "Tallennetaan…",
+      "cancel": "Peruuta",
+      "saved": "Tallennettu",
+      "footer": "Edellinen todistus säilyy historiassa. Tiedostosi ovat yksityisiä: vain sinä ja järjestäjät, joille lähetät ne, näkevät ne.",
+      "needType": "Valitse asiakirja tai anna sille nimi.",
+      "badDates": "Viimeinen voimassaolopäivä ei voi olla ennen myöntämispäivää."
+    },
+    "warnings": {
+      "notRead": "Emme pystyneet lukemaan tätä asiakirjaa. Täytä tiedot itse.",
+      "expired": "Tämä vanheni {date}. Voit silti tallentaa sen, mutta järjestäjät näkevät, että se on vanhentunut.",
+      "expiresSoon": "{days, plural, =0 {Tämä vanhenee tänään. Muistutamme sinua joka viikko, kunnes se on uusittu.} one {Tämä vanhenee # päivän päästä. Muistutamme sinua 4 viikkoa ennen, 1 viikko ennen ja samana päivänä.} other {Tämä vanhenee # päivän päästä. Muistutamme sinua 4 viikkoa ennen, 1 viikko ennen ja samana päivänä.}}",
+      "nameMismatch": "Siinä oleva nimi, ”{name}”, ei näytä yrityksesi nimeltä. Tarkista, että asiakirja on oikea."
+    },
+    "view": {
+      "close": "Sulje",
+      "open": "Avaa",
+      "download": "Lataa",
+      "noPreview": "Tätä tiedostoa ei voi näyttää tässä. Avaa tai lataa se sen sijaan.",
+      "details": "Tiedot",
+      "edit": "Muokkaa tietoja",
+      "renew": "Lataa uusi versio",
+      "earlier": "Aiemmat versiot",
+      "uploaded": "Ladattu {date}",
+      "delete": "Poista",
+      "deleteConfirm": "Poistetaanko tämä asiakirja ja sen aiemmat versiot? Tiedostot poistetaan, ja asiakirja poistuu kaikista lähettämistäsi linkeistä.",
+      "deleteYes": "Poista",
+      "deleted": "Asiakirja poistettu",
+      "keep": "Säilytä"
+    },
+    "send": {
+      "title": "Lähetä järjestäjälle",
+      "intro": "Järjestäjä saa sähköpostin, jossa on linkki kaikkien asiakirjojen katseluun tai lataamiseen.",
+      "email": "Järjestäjän sähköposti",
+      "emailHint": "Enintään 5 osoitetta pilkuilla erotettuina.",
+      "event": "Tapahtuma (valinnainen)",
+      "noEvent": "Ei tapahtumaa",
+      "documents": "Asiakirjat",
+      "message": "Viesti (valinnainen)",
+      "messagePlaceholder": "Hei, tässä ovat asiakirjamme markkinoita varten.",
+      "until": "Linkin voimassaolo päättyy",
+      "untilAfterEvent": "{date} (tapahtumaa seuraava päivä)",
+      "send": "Lähetä",
+      "sending": "Lähetetään…",
+      "footer": "Jos uusit todistuksen, järjestäjän linkki näyttää uuden automaattisesti. Näet, kun järjestäjä avaa linkin.",
+      "sent": "Lähetetty: {emails}",
+      "cancel": "Peruuta",
+      "emailNone": "Anna järjestäjän sähköpostiosoite.",
+      "emailInvalid": "”{email}” ei ole sähköpostiosoite.",
+      "emailTooMany": "Voit lähettää kerralla enintään 5 osoitteeseen.",
+      "noDocuments": "Valitse vähintään yksi asiakirja.",
+      "untilRange": "Valitse päivä huomisesta enintään 90 päivän päähän."
+    },
+    "sent": {
+      "title": "Lähetetyt",
+      "empty": "Ei vielä lähetyksiä.",
+      "to": "Kenelle: {emails}",
+      "sentOn": "Lähetetty {date}",
+      "opened": "Avattu {date} · {count, plural, one {# katselu} other {# katselua}}",
+      "notOpened": "Ei vielä avattu",
+      "until": "Voimassa {date} asti",
+      "expiredOn": "Vanhentui {date}",
+      "off": "Poistettu käytöstä",
+      "turnOff": "Poista linkki käytöstä",
+      "turnOffConfirm": "Poistetaanko tämä linkki käytöstä? Järjestäjä ei voi enää avata sitä.",
+      "turnedOff": "Linkki poistettu käytöstä"
+    },
+    "page": {
+      "title": "Asiakirjat: {truck}",
+      "intro": "{truck} on jakanut nämä asiakirjat kanssasi.",
+      "view": "Näytä",
+      "download": "Lataa",
+      "downloadAll": "Lataa kaikki",
+      "until": "Tämä linkki on voimassa {date} asti.",
+      "none": "Tässä linkissä ei ole tällä hetkellä asiakirjoja.",
+      "expiredTitle": "Tämä linkki on vanhentunut",
+      "expiredBody": "Tämä linkki on vanhentunut. Pyydä uutta linkkiä — {truck} voi lähettää sen uudelleen.",
+      "expiredBodyUnknown": "Tämä linkki on vanhentunut. Pyydä linkin lähettänyttä yritystä lähettämään se uudelleen.",
+      "sharedWith": "Jaettu HatchGrabin kautta"
+    },
+    "email": {
+      "shareSubject": "{truck} lähetti sinulle asiakirjansa",
+      "shareHeading": "Asiakirjat: {truck}",
+      "shareIntro": "{truck} on jakanut nämä asiakirjat kanssasi.",
+      "event": "Tapahtuma: {event}",
+      "shareButton": "Näytä asiakirjat",
+      "shareUntil": "Linkki on voimassa {date} asti. Jos se on vanhentunut, pyydä uutta linkkiä — {truck} voi lähettää sen uudelleen.",
+      "shareReply": "Vastaamalla tähän sähköpostiin tavoitat lähettäjän: {truck}.",
+      "expires": "vanhenee {date}",
+      "reviewBy": "tarkistus {date} mennessä",
+      "noExpiry": "ei vanhene",
+      "reminderSubject": "{count, plural, one {Asiakirja on uusittava} other {# asiakirjaa on uusittava}}",
+      "reminderHeading": "Asiakirjasi",
+      "reminderIntro": "Osa yrityksen {truck} asiakirjoista on uusittava:",
+      "reminderIn": "{document} vanhenee {date} ({days, plural, one {# päivän päästä} other {# päivän päästä}})",
+      "reminderToday": "{document} vanhenee tänään",
+      "reminderExpired": "{document} vanheni {date}",
+      "reminderButton": "Avaa Asiakirjat",
+      "reminderFooter": "Muistutamme sinua 4 viikkoa ennen, 1 viikko ennen ja samana päivänä ja sen jälkeen joka viikko, kunnes asiakirja on uusittu."
     }
   }
 }
