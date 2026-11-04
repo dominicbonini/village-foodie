@@ -1,4 +1,4 @@
-HatchGrab Engineering Reference Manual · V16.9
+HatchGrab Engineering Reference Manual · V16.10
 
 **HatchGrab**
 
@@ -6,7 +6,7 @@ Engineering Reference Manual
 
 *Village Foodie · Food Truck Ordering Platform*
 
-**Version 16.9**
+**Version 16.10**
 
 November 2026
 
@@ -49,6 +49,200 @@ form — including key names and set/missing checks. It may run the project's ow
 internally (`next build`, the sweep, `tsc`). Configuration is worked out from code.
 
 # Changelog
+
+## V16.10 — 3 November 2026 — **THE FAQ IN EVERY LANGUAGE ON ITS OWN PAGE, MIGRATIONS RUN BY CURSOR, HATCHGRAB'S OWN CONTACT FORM, APP BADGES IN EVERY LANGUAGE AND THE APPS ON IN EVERY COUNTRY, SEARCH AND AI FIXES, A LEANER COMPETITOR CHECKER, AND THE PAY AT HATCH MIX-UP UNDONE**
+
+- Applies `docs/faq-1-report.md`, `faq-1b`, `copy-truth-1`, `db-run-1`, `faq-1c`, `faq-1c-undo`, `faq-3`,
+  `faq-2-seo-geo-2`, `store-badges-1`, `faq-4`, `faq-translate-fix`, `contact-1`, `tidy-1`, `tidy-2`,
+  `competitor-features-2`, `brand-kit-1` and `designer-pack-1` (all `docs/<name>-report.md`), plus the planning chat's
+  decisions (the delta). Facts were checked read-only on 3 Nov (live database, `git fetch`, curl of public pages).
+  ⚠️ **One of the title's facts is not yet live** (OBSERVED WHEN APPLYING, below): the checker's new feature list is
+  deployed but not yet imported, so the live table still holds the 45 untiered features.
+- **The FAQ (faq-1, faq-1b, faq-3, faq-2 Part A, faq-4, faq-translate-fix):**
+  - Admin › FAQ (mockup approved 21 Oct, additions approved 1 Nov):
+    - sections, and questions edited in English;
+    - live values (`{pro.price}`, `{trialEnd.name}`, `{plansWith.<feature>}`, `{apps.sentence}` …) resolved per
+      country from data;
+    - an answer for countries that offer only one plan;
+    - "Show in", Draft/Published, private notes with Done, and "Copy feedback for Claude".
+  - Publishing is refused unless the answer reads correctly in every switched-on country.
+  - 26 questions agreed (2 Nov, the list reviewed with ChatGPT) and seeded as drafts.
+    - Dominic published them, deleted "Which countries is HatchGrab available in?" (…0022, 2 Nov 11:13 UTC), and keeps
+      "Can customers pay at the truck…" (…0010) as a draft.
+    - OBSERVED 3 Nov: 25 rows, 24 published.
+  - **Its own page** at `/<country>/faq` (stated, 2 Nov: "it should be a separate page"):
+    - in /features' frame, with a footer link;
+    - FAQPage JSON-LD on that page only;
+    - sitemap and hreflang only where the page has content.
+    - It was briefly on the landing pages (faq-3, faq-2) and is now off them (faq-4).
+  - **Translation is automatic** (stated, 2 Nov: "if i create in the portal in english then it should automatically be
+    translated and rolled out in all other countries without further involvement"):
+    - an hourly GitHub Actions workflow ("FAQ translate", at :25) with the competitor checker's keyless sign-in;
+    - `claude-sonnet-5-5`, a $2 spend cap per run, and a `limit` input for tests.
+    - A question shows in a language only when its translation was made from the current English; otherwise it is hidden
+      there.
+    - The first live run failed (a forced `tool_choice`, refused by the model); fixed by reusing the checker's call
+      (faq-translate-fix).
+    - OBSERVED 3 Nov: `/de/faq` is live in German.
+- **Pay at Hatch (decided 2 Nov, a product design for later):** "during trial they can do pay at hatch but once they sign
+  up they will need to do online payments" (stated).
+  - The product is **unchanged**: Pay at Hatch is still allowed on every plan.
+  - No FAQ answer mentions it (stated: "dont mention pay at hatch as dont want people thinking its available long term").
+  - faq-1c wrongly changed the product (plans data, a Pizzeria Gusto override, the pricing banner in 28 languages).
+    faq-1c-undo put everything back the same day and kept only the FAQ wording (§81.7).
+- **Migrations are run by Cursor (db-run-1, stated 2 Nov: "any sql should be run directly by claude code if possible"):**
+  - committed files only, through `scripts/db-migrate.cjs` (Node and the `pg` driver via npx, one transaction, stops on
+    the first error), using a Session-pooler connection string kept in `.env.local`;
+  - the database password was reset on 2 Nov (nothing else used it, stated);
+  - writes to protected tables, or anything touching Pizzeria Gusto, need Dominic's explicit approval in the prompt;
+  - the read-only MCP stays read-only (§79).
+- **Copy made true (copy-truth-1):**
+  - the trial wording reads its length from data and starts at signup;
+  - the offline line says protection is switched on by the truck;
+  - the add-van message reads the truck's own extra-van price.
+- **App badges (store-badges-1):** each vendor's own badge in all 28 languages (no English fallback was needed), shown by
+  the app flags. The Play link no longer pins English (stated, 2 Nov).
+- **The apps are on in every country (tidy-2, decided 3 Nov):** "it should state the apps thats core feature by the time
+  we get customers they will be available" (stated).
+  - Both app flags are true in all 44 rows. Every app claim (landing, badges, FAQ, Manage card, comparison rows, JSON-LD)
+    follows them.
+  - ⚠️ The store listings themselves are UK-only until Dominic releases them (OBSERVED 3 Nov for iOS: Apple's lookup
+    finds the app in GB only; Android UNVERIFIED).
+- **HatchGrab's own contact form (contact-1, mockup approved 2 Nov):**
+  - three topics; the truck name is required for account help; every word in the page's language;
+  - saved, then emailed through Brevo to `NEXT_PUBLIC_SUPPORT_EMAIL` (hello@hatchgrab.com, set in Vercel on 2 Nov,
+    stated), Reply-To the visitor, no auto-reply;
+  - a trap field, a time check and rate limits; kept 24 months.
+  - Village Foodie keeps Tally (stated: "leave village foodie thats UK only").
+- **Search and AI (faq-2 Part B):**
+  - Village Foodie consumer pages reached on hatchgrab.com redirect or are noindex;
+  - empty venue pages are `noindex, follow`;
+  - `operatingSystem` is per country;
+  - `/llms.txt` has a features list and the English FAQ;
+  - IndexNow runs on every deploy.
+  - Dominic submitted both sitemaps to Google and Bing (stated, 2 Nov) and set both domain redirects to 308 (hatchgrab.com
+    2 Nov, villagefoodie.co.uk 3 Nov, stated; OBSERVED 308 on both, 3 Nov).
+- **Competitor checker (competitor-features-2, the list reviewed with ChatGPT, 3 Nov; brand-kit-1 part 1):**
+  - features tiered core / commercial / secondary / off, checked every 90 / 90 / 180 days (stated, 3 Nov: "once we have
+    the prices, every 90 days is more than enough");
+  - a new `not_mentioned` answer; a `no` only with a negative quote;
+  - street-food markets checked only for discovery and prices;
+  - a new "Customers told when their order is ready" feature;
+  - allergens, meal deals, table QR and buzzers no longer checked;
+  - estimated cost about $3.44 a month (§86.15).
+- **The UAE stays on (stated, 3 Nov),** but no competitor comparison is published there (OBSERVED: `comparison_status`
+  `off`). The checker may keep checking.
+- **Tidy-ups (tidy-1, tidy-2):**
+  - no Tally or Village Foodie popup on HatchGrab truck pages;
+  - the privacy demo wording;
+  - every harness that failed on main fixed (the sweep is green);
+  - `getSlotIndicator` removed;
+  - Node 24 for the Canadian time-zone data;
+  - Real Thai Food on Pay as you go and not a customer;
+  - percentage changes in zero-decimal currencies round down (stated: "if in doubt round down dont want people being
+    overcharged").
+- **Landing redesign:** an outside designer (Figma, about $800, English only, stated 3 Nov) designs, and Dominic
+  implements through Cursor. The brand kit and the designer pack are in `~/Downloads` (brand-kit-1, designer-pack-1).
+  No landing-page changes in the meantime (stated).
+
+| What | Where |
+|---|---|
+| **NEW — the FAQ (tables, live values, the check, Admin, the public page, translation, the question list, decisions)** | **§82.12** (new, at the end of §82, where §82.9 had parked it) |
+| **NEW — search and AI search after faq-2 Part B (redirects, noindex, `operatingSystem`, `/llms.txt`, IndexNow, 308s)** | **§82.13** (new) |
+| **NEW — Pay at Hatch: today and intended; the faq-1c mix-up and its undo** | **§81.7** (new) |
+| **NEW — HatchGrab's own contact form; the app badges and the app flags** | **§48** (two new subsections at its end) |
+| **NEW — the contact form's email (Brevo, retry, retention, the Vercel variables)** | **§43** (new subsection at its end) |
+| **NEW — the checker's tiers, `not_mentioned`, `notify`, the cost** | **§86.15** (new) |
+| **NEW — migrations run by Cursor; tooling and workflow (Part H)** | **§79** (added at its end; its "NOT RUN" rule corrected) |
+| The FAQ parked; the future FAQ | §82.9, §35.ak-7 (corrected in place) |
+| The contact page a Tally form | §84.2, §77.12 known gaps, §43 D5 (corrected in place) |
+| The apps UK-only; `operatingSystem` known gap; the flags "GB true only" | §11, §82.9, §85.6 (corrected in place) |
+| The add-van "next billing cycle" | §40 (corrected in place) |
+| 45 features all checked | §86.10 (corrected in place) |
+| real-thai-food `is_customer`; the statement not run | §12, §16, §81.1 (corrected in place) |
+| Half a yen (F6) | §82.11 (corrected in place) |
+| The apex 307 | §20 (annotated in place), §48 (open items struck) |
+| `sameAs` | §82.9 (the 2 Nov decision added) |
+| Invariants | **§35.ao-1 … 35.ao-8** (new group) |
+| Backlog | §27 (new "Added V16.10" block; FAQ, contact form, privacy tidy, the HEAD failures, half-yen, real-thai-food, the apex 307 struck as done; Node 24 for Canada and `getSlotIndicator` annotated) |
+| Deploy posture | §49 (new current block; V16.9's stays as dated history) |
+
+**SWEEP STATUS (applied 3 November 2026):** _pattern hits: 74 (outside this entry) — stale and corrected in place: 27;
+left as history: 26; not stale (a different meaning, or still true): 21; outstanding: 0. Found outside the patterns and
+corrected: 10 (37 corrections in all)._
+- **Pattern 1** (`FAQ.*(parked|designed but)|future FAQ`): 3 found, 3 corrected: §82.9 (struck), §35.ak-7, and §27's
+  "(parked)" line (struck as done).
+- **Pattern 2** (`Tally`): 12 found.
+  - 5 corrected (HatchGrab's contact form): §27 ×2 (struck as done), §43 D5 (marked done), §77.12's known gap (removed),
+    §84.2.
+  - 4 left as history: a V9.x changelog line, and three dated V11 QA lists in §27.
+  - 3 a different meaning (`primaryTally` ×2, `dealOptionTally`). Village Foodie's Tally is unchanged and stays.
+- **Pattern 3** (`UK App Store only|UK-only on Play|apps are UK-only|not in this country`): 9 found.
+  - 4 corrected: §11's "any statement … is false", struck with its date (2 lines); §27's de-DE `getApp` line; §82.9's
+    `operatingSystem` gap.
+  - 5 still true and left: §36's Play availability, §85.6 (×2) and §86.2 (×2) say the **store listings** are UK-only,
+    which is still the case (Apple lookup OBSERVED 3 Nov: GB only); the flags are a separate fact, recorded beside them.
+- **Pattern 4** (`operator_apps`): 0 found (the column was never built, Q1 → A; §82.12 says so).
+- **Pattern 5** (`free month|first live event`): 5 found, none stale.
+  - 1 changelog line (Gusto's first live event); 4 a different meaning (free months in the calculator and in the
+    platform-fee note).
+  - The manual never recorded C5's signup sentence, so nothing was struck; copy-truth-1 is in the changelog.
+- **Pattern 6** (`pauses automatically`): 0 found. C6's landing wording was never quoted in the manual; it is in the
+  changelog and §48 (the badges subsection names `landing.does.offlineApps`).
+- **Pattern 7** (`next billing cycle`): 1 found, corrected (§40, annotated in its incident narrative).
+- **Pattern 8** (`hl=en`): 0 found (C8 was never recorded; §48 now says the Play link has no `hl`).
+- **Pattern 9** (`90-day interval|one interval`): 2 found, both dated live states (§49's V16.8 posture, §86.1), left as
+  history. C9 was corrected out of pattern in §86.10.
+- **Pattern 10** (`real-thai-food`): 21 found.
+  - 5 corrected: §12 and §16 (`is_customer`, struck), §27 ×2 (struck as done), §81.1.
+  - 11 left as history: 5 changelog lines, 4 dated trial-expiry records, 2 older §49 postures.
+  - 5 a different meaning: a `van_devices` observation, the visibility constants, the VF visibility reversal, the paid-step
+    values, and a PostHog token line.
+- **Pattern 11** (`half a yen|half-yen`): 1 found, corrected (§82.11). §27's "Half-yen" (capital H) is an out-of-pattern
+  find, struck.
+- **Pattern 12** (`\b307\b`): 14 found.
+  - 6 corrected: §20's webhook note (annotated, 2 lines), §27 ×2 (struck as done), §48 ×2 (open items struck).
+  - 6 left as history: 4 changelog lines, an older §49 posture, and a dated V11 QA list.
+  - 2 a different meaning: `/o/` remains a 307, and a PostHog note.
+- **Pattern 13** (`Node 22`): 3 found.
+  - 1 corrected: §27's Canada line, annotated (pending the build log).
+  - 2 a different meaning: the scraper workflow's Node, and "Node 22 strips the types".
+- **Pattern 14** (`getSlotIndicator`): 3 found.
+  - 1 corrected: §27's dead-slot-code line, annotated (`slot_capacity` is live, not vestigial, tidy-1).
+  - 2 left as history: a changelog line and the dated list in the slot rule.
+- **Found outside the patterns, corrected (10):**
+  - §27: the FAQ lines "(§82.9)" and "FAQ workstream — next" (struck as done); "privacy wording tidy" (struck as done);
+    "the three sweep failures at HEAD" (struck as done); "Half-yen" (struck as done); `operatingSystem` on every page
+    (struck as done);
+  - §79: "every database change goes to Dominic as … NOT RUN" (struck: migrations run by Cursor);
+  - §86.10: "45 features, all checked" (annotated);
+  - §82.9: the `sameAs` decision of 2 Nov (added);
+  - §85.6: the app flags "GB true only" (annotated).
+
+**OBSERVED WHEN APPLYING (3 November 2026, about 14:00–14:45 UTC — where the live system differs from the delta or adds to it):**
+- ⚠️ **The checker's new feature list is not imported yet.**
+  - `comparison_features` still holds **45 rows, every `tier` null, no `notify`**. The last import of
+    `data/comparison-features/features.json` is 30 Oct (`b8ccbd51…`).
+  - The importer is the first step of the daily "Competitor check" workflow (02:10 UTC), so it runs on 4 Nov.
+  - `tier_intervals` is already 90/90/180 (brand-kit-1, migration 20261065).
+- ⚠️ **That import will re-tick four features Admin unticked on 2 Nov.**
+  - On 2 Nov, 09:58–10:00 UTC, Admin set `checked = false` on allergens, asap, options, staff and walkup.
+  - The new file (decided 3 Nov) keeps asap and walkup (core) and options and staff (secondary) checked. Their stored
+    tier is null, so the import applies the file's tier, checked and show settings to them.
+  - Allergens is "off" in the file, so it stays unticked, with `show_scope` from the file (`all`).
+  - If Dominic still wants any of them off, or allergens Hidden, he should set it **after** the 4 Nov import; afterwards
+    the import leaves Admin's choices alone (§27 Added V16.10).
+- **FAQ translations are live** (OBSERVED 3 Nov):
+  - 29 `ok` rows (24 questions and 5 section titles) in each of 27 of the 28 language bases (cs-CZ: 28 and 1 failed),
+    plus sparse regional rows;
+  - `/de/faq` answers 200 in German.
+  - ⚠️ **cs-CZ has one `failed` row** ("answer: the plan name "Pro" typed in (plan names come from live values)"), so that
+    question is hidden on the Czech page until the next run translates it cleanly.
+- **`/de/contact` answers 404.** There is no per-country contact route: the German footer's Contact link is
+  `/contact?topic=General%20Enquiry`, and `/contact` carries no `tally.so` (OBSERVED 3 Nov).
+- **The iOS app is listed in the UK store only** (Apple's lookup for id 6803543106, 3 Nov: GB 1; DE, US, JP, IE 0). The
+  flags are on everywhere by decision, so a badge outside the UK leads to an unavailable listing until release (§27).
+- **`contact_messages` exists with 0 rows.**
 
 ## V16.9 — 1 November 2026 — **A DEMO THAT SHOWS THE VISITOR'S OWN ORDER ON THE KITCHEN SCREEN, SELF-SERVE SIGNUP SWITCHED ON, THE CHECKER'S TIMEOUTS AND BATCH FAILURES FIXED, THE TAGLINE GONE, EIGHT NEW COUNTRIES (THREE OF THEM AT LAUNCH-READY, FIVE UNLIMITED-ONLY, THE UAE HELD BACK), AND EVERY PAGE, LEGAL DOCUMENT AND EMAIL IN THE USER'S OWN LANGUAGE**
 
@@ -10379,7 +10573,11 @@ the one clean control case for defects (a) and (b) — **the evidence, not just 
 
 ⛔ **V16.7 — where the apps are available:** the iOS (iPad) app is in the **UK App Store only** (Apple lookup for id
 6803543106, 24 Oct: GB 1 result; US, IE, AU, CA, NZ, DE, PL, SE, NL, DK, NO, CZ 0), and Android is UK-only on Play
-(deliberate since 1 Sep). Any statement that the apps are available to operators in other countries is false (§86.2).
+(deliberate since 1 Sep). ~~Any statement that the apps are available to operators in other countries is false (§86.2).~~
+⛔ **Corrected V16.10 (3 Nov):** by decision ("it should state the apps thats core feature by the time we get customers
+they will be available", stated), both app flags are **true in all 44 countries** (tidy-2, migration 20261063), so every
+app claim (landing, badges, FAQ, Manage card, comparison rows, JSON-LD) now names the apps everywhere. ⚠️ The store
+listings themselves are still UK-only until Dominic releases them (UNVERIFIED, 3 Nov). The flags and every surface: §48.
 
 ## Why native is needed
 
@@ -11609,8 +11807,9 @@ converted into a durable login. **That was the thing that would have survived to
 ✅ **Only two trucks are `is_customer = true`**: Pizzeria Gusto and Real Thai Food. **The
 confirmed-exposed tokens belong to test trucks.**
 
-⚠️ `real-thai-food` carries `is_customer = true` but is a **test truck** — that column is wrong, and
-other logic may key on it. See §16.
+~~⚠️ `real-thai-food` carries `is_customer = true` but is a **test truck** — that column is wrong, and
+other logic may key on it. See §16.~~ ⛔ Corrected V16.10 — `is_customer = false` since 3 Nov (tidy-2, migration
+20261064; plan `payg`, no end date).
 
 ### Every channel the token leaks through — the design, not the instance
 
@@ -12728,9 +12927,11 @@ pass a `truckId` that is used as a fallback rather than a test. **Latent while S
 > code path with zero rows behind it. **`operators` holds nine rows, all recognised**, newest 14
 > August. **Exactly three trucks have a null `operator_id`, all `demo-` prefixed** — which is what made
 > the `/api/manage` prefix carve-out checkable rather than assumed.
-> 🔴 **`is_customer` IS WRONG ON AT LEAST ONE ROW.** `real-thai-food` carries `is_customer = true` and
+> ~~🔴 **`is_customer` IS WRONG ON AT LEAST ONE ROW.** `real-thai-food` carries `is_customer = true` and
 > **is a test truck.** Only two rows are `true` at all — Pizzeria Gusto and Real Thai Food — so **half
-> the "customer" set is mislabelled**, and any logic keying on that column inherits the error.
+> the "customer" set is mislabelled**, and any logic keying on that column inherits the error.~~
+> ⛔ Corrected V16.10 — fixed 3 Nov (tidy-2, migration 20261064): Real Thai Food reads `is_customer = false`, plan
+> `payg`, no end date. Pizzeria Gusto is the one customer row.
 
 > **RULE (V6.5; refs fully removed V7.8 §12) — there is NO `trucks.is_test` column.** Prod verification confirmed `trucks.is_test` does not exist. Code NO LONGER references it anywhere — the discovery/events operator branch was fixed V6.5, and the remaining admin/manage refs were all removed V7.8 §12 (changelog). Declaring or selecting `is_test` errors or silently returns nothing, so NEVER add it back (column or substitute boolean). The "filter test trucks from the public map" effect is achieved via the discovery row `visibility` enum (set a test truck's discovery rows to `hg_only`), NOT a trucks column. See Section 4 (is_test scope) and Section 27.
 
@@ -14834,7 +15035,9 @@ plan, or build the expiry warning.
 
 ### What the investigation turned up on the way — all real, none of them the cause
 
-🔴 **THE APEX DOMAIN 307-REDIRECTS TO `www`, AND WEBHOOK POSTs DO NOT FOLLOW REDIRECTS.** A POST to
+🔴 **THE APEX DOMAIN 307-REDIRECTS TO `www`, AND WEBHOOK POSTs DO NOT FOLLOW REDIRECTS.** (⛔ Corrected V16.10 — the apex
+now answers **308** on both domains, OBSERVED by curl 3 Nov; the lesson stands: register the `www` host with Meta, never a
+redirecting one.) A POST to
 `https://hatchgrab.com/api/webhooks/meta/whatsapp` returns 307 with a `www` Location and **the function is
 never invoked.** **Whichever host is registered with Meta is load-bearing in the same way the DNS TXT
 record is:** if the redirect direction ever flips, inbound dies silently because the function never runs.
@@ -17231,7 +17434,8 @@ A truck-level master switch that gates ALL per-item pre-order config without los
 
 - **KDS pause badge event-sourcing (V6.6)** — the KDS pause badge reads `truck.paused_until` (now null after the move to truck_events); event-source it like the dashboard badge (Section 9 / Section 5).
 
-- **Remove dead slot code (V6.4)** — `getSlotIndicator` / `lib/slot-indicator.ts` and the vestigial `slot_capacity` cache no longer drive the operator dots or placement. Slim once the trial baseline is committed — do NOT remove mid-stack. Likewise the legacy `item_overrides` / `category_stock` tables (Section 30) and the vestigial van/truck pause columns (`trucks.paused_until`, `truck_vans.paused_until`/`online_paused_until`, `trucks.extra_wait_*` — Section 5) are unused by live paths but kept for rollback — remove together post-trial.
+- **Remove dead slot code (V6.4)** — (⛔ V16.10 — tidy-1 item 6: `getSlotIndicator` is removed, `lib/slot-indicator.ts`
+  keeps only `SlotTone`; `slot_capacity` turned out to be **live**, so it stays — not vestigial) `getSlotIndicator` / `lib/slot-indicator.ts` and the vestigial `slot_capacity` cache no longer drive the operator dots or placement. Slim once the trial baseline is committed — do NOT remove mid-stack. Likewise the legacy `item_overrides` / `category_stock` tables (Section 30) and the vestigial van/truck pause columns (`trucks.paused_until`, `truck_vans.paused_until`/`online_paused_until`, `trucks.extra_wait_*` — Section 5) are unused by live paths but kept for rollback — remove together post-trial.
 
 - **Retire the dormant Twilio WhatsApp handler and delete formatWhatsAppOrder dead code (V6.3)** — Meta Cloud API is canonical (Section 20).
 
@@ -18114,9 +18318,10 @@ question; the US storefronts; a US testimonial; SMS opt-in. New:
   ⛔ *V16.3: decided — the company's details go in the email signature (§43).*
 - **Harness date flake** — `demo-rebuild-replace` fails one check on 20 Oct 2026 because its fixture is dated
   "today"; re-date the fixture or pin the clock.
-- **real-thai-food** — the 20 Oct statement (`plan = 'payg'`, `is_customer = false`, no end date) has **not been
+- ~~**real-thai-food** — the 20 Oct statement (`plan = 'payg'`, `is_customer = false`, no end date) has **not been
   run** (OBSERVED 20 Oct 2026: `plan = 'trial'`, `is_customer = true`, `trial_expires_at = 2026-09-30`; it already
-  resolves to Pay as you go because its end date has passed). Optional; Dominic's to run.
+  resolves to Pay as you go because its end date has passed). Optional; Dominic's to run.~~ ✅ Done V16.10 — run 3 Nov
+  (tidy-2, migration 20261064, guarded); OBSERVED: `payg`, `false`, null.
 - **Corrected in place (resolved V16.2):** the US plan prices lines (V15.8, V16.0, V16.1 blocks); the literal price
   copies (§4, §44); the footnote "2" mask (V11.5 list; §44); the Billing empty `demo` tab (§4); the expired-trial
   "every feature denied" rule and the expiry cliff (V11.1, V11.15, V11.19 lists; §4); trial nomination (V11, V11.1);
@@ -18136,10 +18341,11 @@ question; the US storefronts; a US testimonial; SMS opt-in. New:
   word choices.~~ ⛔ Corrected V16.4 — languages-1 built the engine and the per-language guard (§83.8, §83.4); plan names are in each
   language file (`planNames.*`), not a table; French used the glossary's recommendations row (france-1). The languages
   still to add are in the V16.4 block below.
-- **The FAQ workstream** (§82.9).
-- **The apex domain redirect is 307** and should be 308 (a Vercel setting). Still 307, OBSERVED by curl 21 Oct.
-- **The real-thai-food SQL:** still not run (OBSERVED 21 Oct: `plan = 'trial'`, `is_customer = true`,
-  `trial_expires_at = 2026-09-30`).
+- ~~**The FAQ workstream** (§82.9).~~ ✅ Done V16.10 (§82.12).
+- ~~**The apex domain redirect is 307** and should be 308 (a Vercel setting). Still 307, OBSERVED by curl 21 Oct.~~ ✅ Done
+  V16.10 — 308 on both domains (OBSERVED by curl, 3 Nov).
+- ~~**The real-thai-food SQL:** still not run (OBSERVED 21 Oct: `plan = 'trial'`, `is_customer = true`,
+  `trial_expires_at = 2026-09-30`).~~ ✅ Done V16.10 (tidy-2, 20261064).
 - **41 manual lines still describe Starter/Max** (carried from V16.2).
 - **The landing phone cards:** the descenders under "Pay as you go" sit close to the subtitle. Optional 7–8px gap.
 - **`add-order-refresh-inputs`** fails under heavy load and passes alone. Flake; watch.
@@ -18163,12 +18369,14 @@ question; the US storefronts; a US testimonial; SMS opt-in. New:
   sv, nb, fi, et, lv, lt.~~ ⛔ Corrected V16.5 — done (§84.2).
 - **Facts to verify** (europe-settings §14): Latvia's allergen rule, Poland's takeaway VAT, Slovakia's 19 %, Hungary's
   Tap to Pay fee, Gibraltar's UK-card fee, tipping in ES/SE.
-- **The FAQ workstream** (parked).
+- ~~**The FAQ workstream** (parked).~~ ✅ Done V16.10 (§82.12).
 - **Browser harnesses failing before languages-1:** live-text-place, phone-editor, social-posts-render,
   social-tab-6-local.
 - **Not in the delta, found when applying (22 Oct):**
-  - 🔴 **Canada's time zones:** a local build on Node 22.22.3 reports the 2026 Canadian tz changes MISSING. Check the
-    Vercel build log, or move Vercel to Node 24.x, before 1 Nov 2026 (§83.1).
+  - ~~🔴 **Canada's time zones:** a local build on Node 22.22.3 reports the 2026 Canadian tz changes MISSING. Check the
+    Vercel build log, or move Vercel to Node 24.x, before 1 Nov 2026 (§83.1).~~ ⛔ Corrected V16.10 — `engines.node` is
+    `24.x` (tidy-1 item 7, 3 Nov; the sweep passes under Node 24). ⚠️ Pending: Dominic to confirm the Vercel build log's
+    `check-tzdata` line says "present" (§49).
   - **The non-euro European prices** are in the live table as proposed; approval isn't recorded (§83.10).
   - ~~**France has no row:** france-1 block B is not run (§83.1).~~ ⛔ Corrected V16.7 — France's row exists and is switched on (OBSERVED 29 Oct: written 23 Oct 21:21 UTC by dominic@hatchgrab.com, fr-FR, EUR, 3 `plan_prices` rows; `/fr` answers 200 and is in the sitemap).
   - **The Admin › Countries testing rule** still names the Ireland column, and Ireland is now switched on (§76.1). The
@@ -18188,8 +18396,8 @@ question; the US storefronts; a US testimonial; SMS opt-in. New:
   Thailand; India and Indonesia are Stripe invite-only.~~ ✅ Done V16.9 — all eight have rows, each in its own language
   (world-countries-1; §82.11); OBSERVED 1 Nov: all eight are switched on (§49). India and Indonesia stay excluded.
 - ~~**Terms and privacy in each country's language** (Dominic, 23 Oct).~~ ✅ Done V16.9 — all three legal documents in all 28 language bases, English governing (§43).
-- **Contact page:** replace the Tally form (UK wording) with HatchGrab's own contact form that emails Dominic directly, no
-  third party, in each language (Dominic, 23 Oct).
+- ~~**Contact page:** replace the Tally form (UK wording) with HatchGrab's own contact form that emails Dominic directly, no
+  third party, in each language (Dominic, 23 Oct).~~ ✅ Done V16.10 (contact-1, §48).
 - **Second languages per country:** fr-BE, fr-CH, it-CH, de-LU, sv-FI, Russian (EE, LV), Hungarian (SK, RO),
   Turkish/English (CY), Nynorsk (needs a per-visitor or per-truck language choice; mockup first).
 - **Decisions waiting** (europe-languages-2 §13 and europe-languages-1 §13):
@@ -18269,11 +18477,14 @@ question; the US storefronts; a US testimonial; SMS opt-in. New:
 - **Norway:** Stripe's assumed 2.4% + 2 kr card rate looks high against Zettle and SumUp.
 
 **Site and repo**
-- **de-DE `manageSettings.getApp.body`** claims iPhone, iPad and Android. That is false: the apps are UK-only, and the
-  iOS app is the iPad app. Correct it when the stores change.
-- **JSON-LD `operatingSystem: "Web, iOS, Android"`** is on every country page. Outside the UK, the iOS and Android parts
-  aren't true for an operator yet (§82; ai-files-1).
-- **The apex `hatchgrab.com`** still redirects with 307, not 308 (OBSERVED by curl, 29 Oct; a Vercel setting; carried).
+- ~~**de-DE `manageSettings.getApp.body`** claims iPhone, iPad and Android. That is false: the apps are UK-only, and the
+  iOS app is the iPad app. Correct it when the stores change.~~ ⛔ Corrected V16.10 — the app flags are on in every
+  country by decision (3 Nov, §11, §48); the wording stands. The store release is §27 Added V16.10.
+- ~~**JSON-LD `operatingSystem: "Web, iOS, Android"`** is on every country page. Outside the UK, the iOS and Android parts
+  aren't true for an operator yet (§82; ai-files-1).~~ ✅ Done V16.10 — per country from the app flags (faq-2 Part B3),
+  now on everywhere (§82.13).
+- ~~**The apex `hatchgrab.com`** still redirects with 307, not 308 (OBSERVED by curl, 29 Oct; a Vercel setting; carried).~~
+  ✅ Done V16.10 — 308 (OBSERVED 3 Nov).
 - **The GitHub repository `dominicbonini/village-foodie` is public** (27 Oct). Dominic to decide whether that is intended.
 - **Lint** reports 16 existing `<a href="/login">`-style errors twice since the new three-segment route (no new problem).
 - **Load flakes:** `add-order-refresh`, `add-order-refresh-inputs` and `us-polish-batch` time out under full-sweep load
@@ -18323,16 +18534,18 @@ corrected).*
 - 🔴 **The client signup flag is not in the live build** (OBSERVED 1 Nov, §49): redeploy Production without the build
   cache, then check that a demo shows "Start free for 3 months, keep my menu". Confirm `SIGNUP_PUBLIC` the same way
   (a new address no longer gets 403).
-- **FAQ workstream — next (stated, 1 Nov: "want to move to FAQ's", in a fresh chat).** The public landing FAQ plus an admin
-  page for editing it (parked since 21 Oct); in every language per 35.an-20.
+- ~~**FAQ workstream — next (stated, 1 Nov: "want to move to FAQ's", in a fresh chat).** The public landing FAQ plus an admin
+  page for editing it (parked since 21 Oct); in every language per 35.an-20.~~ ✅ Done V16.10 — on its own page per
+  country, translated automatically (§82.12).
 - **Subscription billing (Stripe Billing) for Pro and Unlimited in every country** (recommended next big build). No paid
   plan is billed anywhere yet. The missed-payment rule for the Unlimited-only countries (world-countries-2 G1) goes with
   it.
-- **Own contact form replacing Tally,** in every language, emailing Dominic directly — mockup first (decided, legal-
-  languages-1 D5). Supersedes the 23 Oct line above.
-- **Privacy wording tidy not yet done (demo-2d was never run):** the demo section still says "We keep anonymous counts";
+- ~~**Own contact form replacing Tally,** in every language, emailing Dominic directly — mockup first (decided, legal-
+  languages-1 D5). Supersedes the 23 Oct line above.~~ ✅ Done V16.10 (contact-1, §48).
+- ~~**Privacy wording tidy not yet done (demo-2d was never run):** the demo section still says "We keep anonymous counts";
   it should say "simple counts", and the two consecutive sentences starting "If you sign up" could be merged. Now needs
-  all 28 translations in the same change (the drift harness).
+  all 28 translations in the same change (the drift harness).~~ ✅ Done V16.10 (tidy-1 item 3, in all 28; Privacy
+  Policy dated 3 November 2026).
 - **Switch-on follow-through per new country** (world-countries-1 §6, §9): the Stripe checks — cross-border onboarding
   enabled, `defaults.currency`, Apple Pay domain, manual capture, Terminal / Tap to Pay availability (F7). Japan and Hong
   Kong first; then BR, MX, MY, SG, TH (Thailand may need Stripe sales). ⚠️ All eight are already live (OBSERVED 1 Nov),
@@ -18343,14 +18556,69 @@ corrected).*
   Touch 'n Go, PromptPay, TrueMoney — with BLIK and the other local wallets already listed.
 - **Points to confirm locally (world-countries-2 G3)** and Japan's one-screen confirmation rule (G4) — no action unless
   the basket sheet changes.
-- **The three sweep failures that also fail at HEAD:** canada-1 ("postal code (not ZIP)"), schedule-graphics-places ("the
+- ~~**The three sweep failures that also fail at HEAD:** canada-1 ("postal code (not ZIP)"), schedule-graphics-places ("the
   Feature gates the tab…"), europe-languages-1 ("de-CH: no ß" in the comparison namespace). Fix them so a real failure
-  can't hide behind them.
+  can't hide behind them.~~ ✅ Done V16.10 — all six (these three, world-countries-1, world-countries-2 and
+  legal-languages-1) settled by tidy-1 item 4 and contact-1; the sweep is green.
 - **`BREVO_API_KEY` as a GitHub secret** for the checker's run email (optional; GitHub › Settings › Secrets and variables ›
   Actions; never in chat).
 - **U1** (Clover and Lightspeed first in the deep share): not visible live (OBSERVED 1 Nov); run it if they have not been
   checked for DE.
-- **Half-yen in event pricing** (F6). The en-SG / ja-JP small overrides are done.
+- ~~**Half-yen in event pricing** (F6).~~ ✅ Done V16.10 — zero-decimal currencies round down (tidy-2). The en-SG / ja-JP
+  small overrides are done.
+
+## Added V16.10 — the FAQ, the contact form, the apps everywhere, the checker's tiers and the landing redesign (3 November 2026)
+
+*Struck as done this version, in place above: the FAQ workstream (three lines), HatchGrab's own contact form (two
+lines), the privacy wording tidy, the sweep failures at HEAD (now six, all fixed), half-yen (F6), the real-thai-food
+statement (two lines), and the apex 307 (two lines). Annotated, not struck: Node 24 for Canada (pending the build log),
+and the dead slot code (`getSlotIndicator` removed; `slot_capacity` is live).*
+
+- 🔴 **Before 4 Nov 02:10 UTC, or after — not in between: the checker's feature import** (§49).
+  - The 4 Nov daily run imports the new feature list. It re-ticks asap, walkup, options and staff, which Admin unticked on
+    2 Nov, because their stored tier is null.
+  - If any of them should stay off, untick them **after** that run.
+  - **Allergens:** set "Show on website" to Hidden in Admin, **after** that run too (the import sets its show setting
+    from the file). Dominic; UNVERIFIED.
+- **Pay at Hatch trial-only** (stated, 2 Nov: "a product design i need to implement later"):
+  - switch it off once card details are added;
+  - change the pricing banner and the FAQ, and add a "trial ends soon, connect Stripe" notice, together;
+  - mockup first;
+  - report what a customer sees when Pay at Hatch is off and the truck has no Stripe (§81.7).
+- **Release the apps in every store (Dominic).** The flags are already on.
+  - Until then a badge outside the UK leads to "not available in your country" (OBSERVED 3 Nov for iOS: listed in GB
+    only).
+- **Landing redesign from the designer's Figma:**
+  - build it in stages (the shared header and footer first);
+  - make it language-proof in Cursor (longer text, right to left, one-card pricing);
+  - send the Figma files to the planning chat first.
+  - The designer pack is in `~/Downloads` (designer-pack-1; four operator screenshots were not taken, see the next item).
+- **Test truck Pizza Kitchen:** add upcoming stops and menu photos before the designer's screenshots (Dominic, stated
+  3 Nov). On 3 Nov it had no upcoming events and photos on 4 of 30 dishes.
+  - The dashboard, kitchen screen, Manage › Schedule and the weekly post need an operator login to capture
+    (designer-pack-1).
+- **FAQ translations:** cs-CZ has one `failed` row (a typed plan name, OBSERVED 3 Nov), so that question is hidden in
+  Czech. Watch the next runs clear it; otherwise every language's run is complete (§49).
+- **FAQ support answer:** the hours or reply time to promise, if any (Dominic).
+- **An Admin "competitive gaps" view per country** (only HatchGrab / only competitors / common): doubles as a roadmap
+  tool (recommended); mockup first.
+- **A UK comparison page** ("Hatches Up alternative" searches), using the verified-facts system (recommended).
+- **Profiles and reviews** (LinkedIn, G2, Capterra, Trustpilot; Pizzeria Gusto's review): later (stated, 2 Nov: "not
+  going to get any reviews for now"). `sameAs` keeps the store listings until then.
+- **Ask Nadia and Bogdan** before using their social-media message as a testimonial (recommended).
+- **Open decisions:**
+  - one word for the vehicle in Manage (van or truck);
+  - /features says "Advanced reporting coming soon" while it is on for every plan;
+  - offline protection on by default for new vans (offered, not decided);
+  - the embedded schedule widget has no link back (mockup);
+  - the truck and order page logo links to `/` (left as it is, 2 Nov).
+- **`.cursor/rules/working-rules.mdc`:** remove any step that checks `.env.local` for a variable. db-run-1 confirmed
+  `SUPABASE_DB_URL` was present with a one-key `grep -q`, against the standing `.env*` rule. `db-migrate.cjs` loading it
+  internally is allowed.
+- **The Vercel build log's `check-tzdata` line** should say "present" (Node 24.x for Canada's 2026 time zones; Dominic).
+- **The GitHub repository's visibility** (public on 27 Oct): GitHub pauses scheduled workflows on a public repository
+  after 60 days without commits, which would stop the FAQ translator and the checker silently (UNVERIFIED).
+- **Comparison words** exist only in en-GB and de-DE (carried).
 
 # 28. Anti-scraping and rate limiting (V6.3)
 
@@ -21681,7 +21949,7 @@ of this manual).
 - **35.ak-5** English variants are sparse overrides of en-GB. en-GB keeps "Pay at Hatch"; the others show "Pay at the
   truck".
 - **35.ak-6** HatchGrab's own prices never claim to include a tax HatchGrab isn't registered for.
-- **35.ak-7** Machine-readable copy (`/llms.txt`, JSON-LD, the future FAQ) states only facts read from data or the
+- **35.ak-7** Machine-readable copy (`/llms.txt`, JSON-LD, ~~the future FAQ~~ the FAQ — ⛔ Corrected V16.10, built, §82.12) states only facts read from data or the
   site's own words. Nothing invented: no ratings, no statistics.
 - **35.ak-8** A named robots.txt group repeats every private disallow, because a named group replaces `*`.
 
@@ -21758,6 +22026,27 @@ of this manual).
 - **35.an-24 `dir="rtl"` only on Arabic pages (V16.9);** every other page has no `dir` attribute.
 - **35.an-25 The checker exits non-zero only for a whole-stage failure (V16.9);** a timed-out check keeps its finished
   groups.
+
+## 35.ao 🔴 FAQ, APP FLAGS, MIGRATIONS, ROUNDING, COMPETITOR ANSWERS AND THE CONTACT FORM (V16.10)
+
+- **35.ao-1 A published FAQ answer states facts only through live values,** and must read correctly in every switched-on
+  country; publishing is refused otherwise (`lib/faq/check.ts`, §82.12).
+- **35.ao-2 A translated FAQ question shows only if its translation was made from the current English;** otherwise it is
+  hidden in that language, never shown in English or out of date. Admin and the public pages use one hash function and
+  one rule (`lib/faq/source-hash.ts`, `lib/faq/translation.ts`).
+- **35.ao-3 No published FAQ answer mentions Pay at Hatch, paying at the truck or paying on collection;** the check
+  refuses it (`BANNED_WORDING`), and the translator rejects it in every language.
+- **35.ao-4 The two app flags are the one source for every app claim:** badges, copy, FAQ, Manage card, comparison rows
+  and JSON-LD (`country_settings.ios_app_available` / `android_app_available` through `lib/comparison-flags.ts`, §48).
+- **35.ao-5 Database changes are committed migration files run by `scripts/db-migrate.cjs`,** never ad-hoc writes; writes
+  to the protected tables (trucks, orders, plans, plan_prices, plan_features, country_settings) or anything touching
+  pizzeria-gusto need Dominic's explicit approval in the prompt (§79).
+- **35.ao-6 A percentage change in a zero-decimal currency rounds down,** never up; two-decimal currencies are unchanged.
+  (Event pricing's `PriceSetup.wholeUnits`, and the charges' `roundDown` for a percentage service fee, surcharge or tip;
+  tidy-2.)
+- **35.ao-7 A competitor answer `no` needs a verbatim quote saying the feature isn't offered;** silence is
+  `not_mentioned`, and no public page shows `not_mentioned` as No (§86.15).
+- **35.ao-8 The contact form saves before it emails and never emails the visitor** (§48, §43).
 
 ## 🔴 iOS PUSH ENTITLEMENT — the §36 audit CONFIRMED, then fixed (V11.4)
 
@@ -25652,7 +25941,9 @@ time it was taken.
 
 An **INWARD** sweep — *"enumerate every upgrade-shaped surface in the repo, then check each one's gate
 status"* — found **`showVanBillingModal`** in the Manage Settings tab. It renders *"Adding an additional
-truck costs £29/month and will be added to your next billing cycle"* with a primary button reading
+truck costs £29/month and will be added to your next billing cycle"* (⛔ Corrected V16.10 — copy-truth-1: the message now
+reads the truck's own extra-van price, "An extra van is {price} a month on your plan. We'll be in touch before anything is
+charged." or "Adding a van is free on your plan."; nothing is charged for vans yet) with a primary button reading
 **"Add truck — £29/mo"**, and contains **zero** calls to the predicate. **It returned no hits from the
 outward sweep because it was never connected to it.**
 
@@ -26594,7 +26885,7 @@ above), so this wants a **proper pass over the terms**, not a paragraph inserted
 - **Decisions on legal-languages-1 §7 (1 Nov):** D1 fixed (Terms §3 now points at Section 10); D2 no native legal review
   for now (consistent with the 18 Oct no-lawyers decision; revisit if a country brings real customers); D3 es-MX reads
   the es-ES legal text — accepted; D4 the Canada line reworded ("a Canadian French version is not yet available"); D5 the
-  Tally contact form is to be replaced by HatchGrab's own form in every language — mockup first; D6 DNS field names stay
+  Tally contact form is to be replaced by HatchGrab's own form in every language — mockup first (✅ done V16.10, contact-1, §48); D6 DNS field names stay
   English.
 - **world-countries-3 (1 Nov), in English and all 28 translations:** Mexico's complaints authority is the Secretaría
   Anticorrupción y Buen Gobierno (Secretariat of Anti-Corruption and Good Governance), which enforces Mexico's Federal Law
@@ -26602,6 +26893,19 @@ above), so this wants a **proper pass over the terms**, not a paragraph inserted
   up in the planning chat); Terms §3 "Section 10"; Canada's Quebec line. No date moved (the documents and
   `TERMS_VERSION` already carried 1 November 2026). OBSERVED live 1 Nov.
 - **The UAE section** names "the UAE Data Office" with no web address (unchanged).
+
+### The contact form's email (V16.10 — contact-1, 2 November 2026)
+
+The form itself: §48. The email side:
+- **Brevo,** through the same verified sender as signup (hello@hatchgrab.com). It goes to `NEXT_PUBLIC_SUPPORT_EMAIL`
+  (hello@hatchgrab.com in Vercel, set 2 Nov, stated), Reply-To the visitor. Plain text with UK time; never an auto-reply.
+- **The hourly retry:** `retryContactEmails`, a step of the existing hourly job `/api/cron/demo-cleanup` (`0 * * * *`).
+  It retries `failed` rows and rows still unsent 10 minutes after saving, at most 3 times.
+- **The 24-month deletion:** the daily job `/api/cron/order-retention` (04:30 UTC; `CONTACT_RETENTION_MONTHS = 24` in
+  `lib/order-retention.ts`).
+- **`CONTACT_IP_SALT`:** server-only. It salts the IP hash and signs the render time, and is **Sensitive** in Vercel.
+  Without it the form still works, but stores no IP hash and skips the 3-second check (both logged).
+  `NEXT_PUBLIC_SUPPORT_EMAIL` must **not** be Sensitive: a `NEXT_PUBLIC_` variable is read at build (§79).
 
 # 44. Commercial model — fees and pricing suppression (V11.4)
 
@@ -28632,8 +28936,8 @@ Recorded so they are not briefed again.
   - one priority hero image; 4 font preloads instead of 7; legal markdown sent as a server-built HTML string
     (`lib/static-markup.ts`).
 - **Open:**
-  - apex `hatchgrab.com` → www is a **307** (should be 308 — a Vercel domain setting, Dominic). Still 307, OBSERVED
-    by curl 20 Oct 2026;
+  - ~~apex `hatchgrab.com` → www is a **307** (should be 308 — a Vercel domain setting, Dominic). Still 307, OBSERVED
+    by curl 20 Oct 2026;~~ ⛔ Corrected V16.10 — 308 on both domains (OBSERVED 3 Nov);
   - caching country pages (N5); flags as files; a 699 KB screenshot source.
 
 ## Landing tidy, /features restore and AI search (V16.3 — 20–21 October 2026)
@@ -28653,7 +28957,8 @@ Recorded so they are not briefed again.
   the live robots.txt still blocks GPTBot and ClaudeBot, `/llms.txt` is 404, the JSON-LD still has `areaServed`).~~
   ⛔ Corrected V16.7 — AI search is live: robots.txt allows the named bots and `/llms.txt` is 200 (curl, 22, 24 and 29 Oct;
   §82).
-- **Still open:** the apex `hatchgrab.com` → www is still a **307** (OBSERVED by curl 21 Oct 2026).
+- ~~**Still open:** the apex `hatchgrab.com` → www is still a **307** (OBSERVED by curl 21 Oct 2026).~~ ⛔ Corrected V16.10 —
+  308 (OBSERVED by curl 3 Nov; §82.13).
 
 ## Native prices, /about, the footer country picker and the new country pages (V16.4 — 21–22 October 2026)
 
@@ -28687,7 +28992,131 @@ Recorded so they are not briefed again.
 - **Hero images** exist for /de, /at and /ch (from fixtures).
 - **Fonts:** Greek and Cyrillic pages load Noto Sans; Latin pages never request it (§84.7).
 
-# 49. Deploy posture (current at V16.9; earlier postures below, each dated)
+### HatchGrab's own contact form (V16.10 — contact-1, 2 November 2026; mockup approved 2 Nov)
+
+- **Where:**
+  - the HatchGrab render of `/contact` only (`app/contact/HatchGrabContact.tsx` → `HatchGrabContactForm.tsx`,
+    `contact-form.css`);
+  - the rules in `lib/contact.ts` (shared by browser and server) and `lib/contact-server.ts` (`submitContact`);
+  - `POST /api/contact` (`app/api/contact/route.ts`), HatchGrab host only (any other host 404s).
+  - The Tally script and iframe are gone from HatchGrab. **Village Foodie keeps Tally** (`app/contact/ContactForm.tsx`;
+    stated: "leave village foodie thats UK only").
+  - There is no per-country contact route: footers link `/contact?topic=…`, and `/de/contact` is a 404 (OBSERVED 3 Nov).
+- **The form:**
+  - Three topics: `question` "A question about HatchGrab" (the default), `account` "Help with my account", `other`
+    "Something else".
+  - Required: name (1–100 characters), email (3–254), message (10–5,000). The truck or business name (up to 120) is
+    required only for account help.
+  - Every word is in the page's language. An old Tally `?topic=` value maps to the first topic.
+- **Spam (no captcha):**
+  - a trap field (`website`);
+  - a signed render time (HMAC with `CONTACT_IP_SALT`) that must be at least 3 seconds old.
+  - Either one failing means the bot is "thanked" and nothing is stored, sent or counted.
+  - Rate limits (Upstash, rolling): 5 an hour per IP (salted hash), 20 a day per email. Over a limit is 429; an Upstash
+    error fails open.
+- **Saved first, then emailed** (35.ao-8):
+  - a failed save is a 500;
+  - then Brevo sends **to** `NEXT_PUBLIC_SUPPORT_EMAIL` (hello@hatchgrab.com, set in Vercel on 2 Nov, stated), **from**
+    hello@hatchgrab.com, **Reply-To** the visitor;
+  - subject `[HatchGrab contact] {topic} — {name} ({country}, {language})`;
+  - **no auto-reply**;
+  - a failed send keeps the row (`email_status = 'failed'`) and the visitor is still thanked.
+  - The email side: §43.
+- **The table:** `contact_messages` (`20261061_contact_1.sql`):
+  - columns: topic, name, email, business name, message, country, locale, page path, `ip_hash` (sha256 of salt:IP),
+    `email_status`, `provider_message_id`, `email_attempts`;
+  - RLS on, no policies, `service_role` only.
+  - It was run by hand in the Supabase dashboard at 20:40 UTC on 2 Nov, two minutes before Cursor's run, which found it
+    identical.
+  - OBSERVED 3 Nov: the table exists with 0 rows.
+- **Privacy:** the Policy gained "If you use our contact form" (Brevo, used only to reply, kept up to 24 months, a
+  scrambled IP) in English and all 28 translations (35.an-21).
+- **Decision A reversed:** contact-1 kept `/trucks/<slug>` on hatchgrab.com unchanged (it still loaded Tally). tidy-1
+  item 1 then removed Tally, the floating "Get the weekly schedule" button and the footer newsletter from HatchGrab truck
+  pages (`tally: false` on the HatchGrab host). Village Foodie's truck page is unchanged. OBSERVED 3 Nov: no `tally.so`
+  on hatchgrab.com's truck and contact pages.
+- **Harnesses:** `contact-1.cjs` (191), `contact-1-screens.cjs` (19, browser), `tidy-1.cjs`.
+
+### App badges and the app flags (V16.10 — store-badges-1, 2 November 2026; tidy-2, 3 November 2026)
+
+- **The flags are the one source** (35.ao-4): `country_settings.ios_app_available` and `android_app_available`, read
+  through one cached reader, `lib/comparison-flags.ts` (`comparisonFlags`, `comparisonFlagsOf`, `appsOf`, 60 seconds).
+  Unknown or unreadable means both false.
+- **Every surface that reads them:**
+  - the landing page's offline sentence (`landing.does.offlineApps`) and /features' (both flags);
+  - the footer badges (`components/StoreBadges.tsx`, each app only where its own flag is on; neither means nothing at
+    all);
+  - JSON-LD `operatingSystem` (§82.13);
+  - the FAQ's `{apps.sentence}` / `{apps.offline}` and "Show in: apps" (§82.12);
+  - the comparison rows (iPad, Android) and the "not yet in the stores" clause;
+  - Manage › Settings' get-the-app card (`GET /api/manage` → `appsAvailable`; hidden inside the native apps by design).
+- **The badges:** each vendor's own artwork in all 28 languages:
+  - `public/badges/apple/<locale>.svg` (black) and `public/badges/google/<locale>.png`, downloaded unmodified, with
+    checksums in `scripts/fixtures/store-badges-1-manifest.json` and a README. The English files are untouched.
+  - `lib/store-badge-files.ts` `badgeFor(vendor, locale)` picks the page language's file, else its base's, else English.
+    No language needed the English fallback.
+- **The Play link** no longer pins English: `GOOGLE_PLAY_URL` has no `&hl=en` (stated, 2 Nov). It is also the JSON-LD
+  `sameAs`.
+- **On in every country (tidy-2, decided 3 Nov):** "it should state the apps thats core feature by the time we get
+  customers they will be available" (stated).
+  - Migration `20261063_tidy_2_apps_everywhere.sql` set both flags true in all 44 rows (43 changed; GB already on). It
+    was guarded and approved.
+  - The live site followed within a minute (no deploy needed).
+  - `scripts/tidy-2.cjs` proves every surface above in all 44 countries over the live values.
+  - ⚠️ **The store listings are still UK-only until Dominic releases them** (OBSERVED 3 Nov for iOS: Apple's lookup finds
+    id 6803543106 in GB only; Android UNVERIFIED). Until then a badge outside the UK leads to an unavailable listing
+    (§27 Added V16.10).
+- OBSERVED 3 Nov: `/uk` shows both English badges (Play link without `hl`); `/de` shows `de-DE.svg` and `de-DE.png`.
+- **Harnesses:** `store-badges-1.cjs` (60), `tidy-2.cjs` (44).
+
+# 49. Deploy posture (current at V16.10; earlier postures below, each dated)
+
+### 🔴 DEPLOY POSTURE AT V16.10 — EVERYTHING PUSHED AND DEPLOYED; THE FAQ LIVE IN GERMAN; THE APPS ON IN ALL 44; THE CHECKER'S NEW FEATURE LIST NOT YET IMPORTED (3 November 2026)
+
+*Replaces the V16.9 posture below as the current one; it and the earlier postures stay as dated history. Every line is
+OBSERVED on 3 Nov 2026, about 14:00–14:45 UTC, unless marked STATED.*
+
+- **STATED:** Dominic deployed everything on 3 Nov.
+- **Git (after `git fetch`):** `origin/main` = local `main` = `f67eb787` "designer-pack-1: report" (3 Nov 2026,
+  13:52:14 UTC); 0 ahead, 0 behind; the working tree is clean.
+- **Live checks (curl):**
+  - `/uk/faq` 200, with one FAQPage JSON-LD (24 questions).
+  - `/de/faq` 200, in German (`lang="de-DE"`, "Was kostet HatchGrab?"), so the German translation is live.
+  - `/uk` has no FAQ section and no FAQPage.
+  - `https://www.hatchgrab.com/contact` 200, no `tally.so`. `/de/contact` is **404**: there is no per-country contact
+    route, and the German footer links `/contact?topic=General%20Enquiry`.
+  - The `/uk` footer shows both badges (the English files; the Play link has no `hl`). `/de` shows
+    `/badges/apple/de-DE.svg` and `/badges/google/de-DE.png`.
+  - `curl -I https://hatchgrab.com` → **308** to `https://www.hatchgrab.com/`; `curl -I https://villagefoodie.co.uk` →
+    **308** to `https://www.villagefoodie.co.uk/`.
+  - `/llms.txt` 200: it links `https://www.hatchgrab.com/uk/faq` and has a "Frequently asked questions" section.
+  - Truck pages: `tally.so` is absent on hatchgrab.com and still present on villagefoodie.co.uk (tidy-1 is live).
+  - Apple's lookup for id 6803543106: GB 1 result; DE, US, JP, IE 0.
+- **Read-only SQL (each run, through the read-only connection; results in `docs/manual-v16-10-report.md`):**
+  - **`faq_items`:** 24 published, 1 draft.
+  - **`faq_translations`:**
+    - 29 `ok` rows in each of ar-AE, bg-BG, da-DK, de-DE, el-GR, es-ES, et-EE, fi-FI, fr-FR, hr-HR, hu-HU, it-IT, ja-JP,
+      lt-LT, lv-LV, ms-MY, nb-NO, nl-NL, pl-PL, pt-BR, pt-PT, ro-RO, sk-SK, sl-SI, sv-SE, th-TH and zh-HK;
+    - cs-CZ: 28 `ok` and **1 `failed`** ("answer: the plan name "Pro" typed in (plan names come from live values)");
+    - regional rows: de-CH 4, en-AU 4, en-US 9, es-MX 12, nl-BE 2.
+  - **`contact_messages`:** exists, 0 rows.
+  - **`country_settings`:** 44 rows, **44 with both app flags true**; AE `comparison_status` **off** (only DE is not off:
+    `admin`).
+  - **`competitor_check_settings.tier_intervals`:** `{"core": 90, "secondary": 180, "commercial": 90}`.
+  - **`comparison_features`:** **45 rows, every tier null**: the importer has not run since the deploy (no `notify`; the
+    last features import is 30 Oct, `b8ccbd51…`). It runs as the first step of the daily "Competitor check" workflow,
+    02:10 UTC, so on 4 Nov.
+    - Allergens: `show_scope` `all`, `checked` false (set in Admin 2 Nov 09:58 UTC).
+    - Also unticked in Admin on 2 Nov: asap, options, staff, walkup. The import will re-tick those four (§27 Added
+      V16.10).
+  - **`plans.pay_at_hatch_allowed`:** true for all six plans (payg, pro, unlimited, trial, demo, tester).
+  - **`trucks`:**
+    - real-thai-food: `payg`, `is_customer` false, `trial_expires_at` null, `feature_overrides` `{}`;
+    - pizzeria-gusto: `trial`, `is_customer` true, `trial_expires_at` 2026-12-31 23:59:59+00, `feature_overrides` `{}`.
+- **Migrations since V16.9, all run:**
+  - 20261056 and 20261061 (also by hand, identical);
+  - 20261057 (removed from the repo), 20261058, 20261059, 20261060, 20261062, 20261063, 20261064, 20261065.
+- **Dominic to check:** the Vercel build log's `check-tzdata` line says "present" (Node 24.x).
 
 ### 🔴 DEPLOY POSTURE AT V16.9 — EVERYTHING COMMITTED AND PUSHED; MIGRATIONS 20261052–20261055 RUN; ALL EIGHT NEW COUNTRIES SWITCHED ON; THE CLIENT SIGNUP FLAG NOT IN THE LIVE BUILD (1 November 2026)
 
@@ -33865,7 +34294,8 @@ revisit when a non-English language is added.
   marketing pages, the PDF) with every country on in fixtures, and fails on an English sentence in a non-English view or
   another language on an English one. **Clean in all 28.** Every exclusion carries its reason in the summary
   (`docs/legal-languages-1/audit-summary.json`).
-- **Known gaps, kept:** the contact form (Tally, English; to be replaced, §27); DNS field names in the custom-domain
+- **Known gaps, kept:** ~~the contact form (Tally, English; to be replaced, §27);~~ (⛔ Corrected V16.10 — removed: HatchGrab's
+  own form is in every language, contact-1, §48) DNS field names in the custom-domain
   instructions (each provider's own labels, quoted; D6); emails to HatchGrab staff (admin).
 - **Harnesses:** `legal-languages-1.cjs` (220), `legal-languages-1-audit.cjs` (28/28), `legal-languages-1-screens.cjs`
   (20, WebKit 390: Latin, Greek, Cyrillic, CJK, Arabic), `legal-languages-1-payments.cjs` (3, by hand: the sweep's screen
@@ -34069,7 +34499,9 @@ correction note in its history; the hidden Smash and Grab prospect filled.
   - Neither file holds a token.
 - **Standing rule for prompts:**
   - Cursor may run **read-only** queries through this connection and reports each one inline.
-  - Every database change goes to Dominic as fenced SQL marked NOT RUN ("run now" or "run after deploy").
+  - ~~Every database change goes to Dominic as fenced SQL marked NOT RUN ("run now" or "run after deploy").~~ ⛔ Corrected
+    V16.10 — Cursor runs committed migration files itself with `scripts/db-migrate.cjs` (db-run-1, 2 Nov; end of this
+    section).
 - **Deploying edge functions** (the multi-line key in `.env.local` breaks the CLI's env parser):
   `mv .env.local ~/env.local.bak; supabase functions deploy <name> --project-ref ffphgwonshgxamtvefcv; mv ~/env.local.bak .env.local`
 - **Dry runs (V16.1):** Cursor dry-runs write SQL with `EXPLAIN` through the read-only connection where Postgres
@@ -34186,6 +34618,61 @@ correction note in its history; the hidden Smash and Grab prospect filled.
   `legal-languages-1-audit.cjs` (28/28, by hand), `legal-languages-1-screens.cjs` (20, browser),
   `legal-languages-1-payments.cjs` (3, by hand — the sweep refuses any file naming the payment provider). The full sweep
   stands at 172/175, the 3 failures the same as at HEAD (§27).
+- **Migrations run by Cursor (V16.10 — db-run-1, 2 November 2026; stated: "any sql should be run directly by claude
+  code if possible"):**
+  - **The command:** `npx -y -p pg@8.13.1 node scripts/db-migrate.cjs supabase/migrations/<file>.sql`. The `pg` driver
+    comes from npx's cache, never `package.json`. psql could not be installed (decision Q1 → C).
+  - **How it runs:**
+    - The whole file goes as one simple query, so Postgres runs it as one transaction (or inside the file's own
+      `begin; … commit;`) and stops on the first error; the script then sends ROLLBACK and exits non-zero.
+    - `--probe` is a read-only check of the path (a read-only transaction, rolled back).
+  - **The connection:** a Session-pooler connection string, `SUPABASE_DB_URL`, read by the script alone from `.env.local`.
+    It is never printed and is scrubbed from errors. The database password was reset on 2 Nov; nothing else used it
+    (stated).
+  - **Refused before connecting:**
+    - a file not under `supabase/migrations/`;
+    - a file that is uncommitted or differs from HEAD;
+    - anything other than `--probe` or exactly one file.
+    - There is no "run this string" mode.
+  - **Protected tables:** a file that UPDATEs, DELETEs FROM or TRUNCATEs `trucks`, `orders`, `plans`, `plan_prices`,
+    `plan_features` or `country_settings`, or that names `pizzeria-gusto`, is refused unless `--approved-by-dominic` is
+    passed. That flag is passed only when Dominic's prompt explicitly approves those writes (35.ao-5).
+  - **After every run:** verify read-only with the MCP and report. Never `supabase db push`; never ad-hoc write SQL. The
+    read-only MCP stays read-only.
+  - **The rule** is in `.cursor/rules/working-rules.mdc` ("Running migrations"). The script is in `harnesses.json`'s
+    `operational_refused` group, so no sweep runs it.
+  - **Run by hand too (2 Nov):** 20261056 (the FAQ tables) and 20261061 (`contact_messages`) were also run by hand in the
+    Supabase dashboard, minutes before Cursor's runs. Both were identical, so nothing diverged.
+  - **Since then (all by `db-migrate.cjs`):**
+    - 20261057 (faq-1c, later removed), 20261058, 20261059, 20261060, 20261062 (competitor-features-2);
+    - 20261063 and 20261064 (tidy-2, approved protected-table writes);
+    - 20261065 (brand-kit-1).
+- **Tooling and workflow (V16.10):**
+  - **Migrations:** Cursor runs them (`scripts/db-migrate.cjs`, above). Don't run them by hand in the Supabase dashboard any
+    more (it happened twice on 2 Nov, harmlessly).
+  - **One prompt at a time.** Two ran at once on 3 Nov (tidy-2 and competitor-features-2). Both committed cleanly, but
+    parallel prompts can collide on git locks and commits.
+  - **GitHub workflows run from GitHub's `main`:** push before using "Run workflow".
+  - **A note on wording is not a product change (faq-1c, 2 Nov):**
+    - When Dominic's FAQ note describes how a feature should work, the prompt changes the words only, unless he says to
+      change the product.
+    - When a note implies a product change, ask first (§81.7).
+  - **No landing-page changes in prompts** (standing, restated 3 Nov) until the redesign is built.
+  - **The `.env*` rule, breached by the planning chat on 2 Nov:**
+    - To check the database connection line, it listed `.env.local`'s variable names, printed the connection string with
+      the password masked, and printed one public value.
+    - No secret value was shown and nothing needs rotating, but it is the same class as the October precedents.
+    - No agent, the planning chat included, reads `.env*` in any form.
+  - **Vercel variables:** anything starting `NEXT_PUBLIC_` is never marked Sensitive (it breaks the build's read, as
+    `NEXT_PUBLIC_PRICING_PUBLISHED` did in September). Server secrets such as `CONTACT_IP_SALT` are Sensitive.
+  - **New harnesses (V16.10; counts from the reports):**
+    - FAQ: `faq-1.cjs` (205 at tidy-2), `faq-3.cjs` (167), `faq-2.cjs` (142), `faq-4.cjs` (80), `faq-4-screens.cjs`
+      (10, browser), `faq-translate-fix.cjs` (42);
+    - search and copy: `seo-geo-2.cjs` (89), `copy-truth-1.cjs` (58);
+    - database: the db-run-1 probe (`db-migrate.cjs --probe`, not swept);
+    - badges and contact: `store-badges-1.cjs` (60), `contact-1.cjs` (191), `contact-1-screens.cjs` (19, browser);
+    - tidy-ups and the checker: `tidy-1.cjs`, `tidy-2.cjs` (44), `competitor-features-2.cjs` (79).
+    - The full sweep is **green** (187 registered, 0 failing after tidy-2's re-pins, 3 Nov).
 ---
 
 # 80. Security (V16.1 — 19 October 2026)
@@ -34241,7 +34728,9 @@ switched on; the 29 European rows are switched off (§83.1).
 - **Pizzeria Gusto** (decided 20 Oct): treated like any customer. Its trial ends 31 Dec 2026; if it has not chosen
   a plan it drops to Pay as you go (and loses WhatsApp, social media posts and custom event types).
 - **real-thai-food** is not a customer: `plan = 'payg'`, `is_customer = false`, no end date (the statement was
-  given on 20 Oct — **verify whether it was run** and record the observed row). ⚠️ **OBSERVED 20 Oct 2026: NOT run.**
+  given on 20 Oct — **verify whether it was run** and record the observed row). ~~⚠️ **OBSERVED 20 Oct 2026: NOT run.**~~
+  ⛔ Corrected V16.10 — run 3 Nov (tidy-2, migration 20261064); OBSERVED 3 Nov: `payg`, `false`, null. The rest of this
+  item is the 20 Oct record:
   The row reads `plan = 'trial'`, `is_customer = true`, `trial_expires_at = 2026-09-30`. Because that date has
   passed, it already resolves to Pay as you go with its switches; the statement is still pending (§49, §27).
   ⚠️ **OBSERVED 21 Oct 2026: still NOT run** (the same row).
@@ -34378,6 +34867,36 @@ switched on; the 29 European rows are switched off (§83.1).
 - **A single offered plan renders as one centred card.**
 - **The wording there:** "When your trial ends, Unlimited is <price> a month. We'll be in touch before then to set up
   payment." (world-countries-2 F1). **No paid plan is billed anywhere yet** — §82.11, §27.
+
+## 81.7 Pay at Hatch: today and intended (V16.10 — 2 November 2026)
+
+- **Today (OBSERVED 3 Nov):** Pay at Hatch is allowed on **every plan** (`plans.pay_at_hatch_allowed` is true for payg,
+  pro, unlimited, trial, demo and tester). The landing page's pricing banner sells it ("With Pay at Hatch, customers order
+  ahead and pay when they collect…"). Pizzeria Gusto has no feature overrides.
+- **Intended (stated, 2 Nov):** "during trial they can do pay at hatch but once they sign up they will need to do online
+  payments". So: only during the free trial, off once a truck adds card details.
+  - It is "a product design i need to implement later" (stated). When it is built, change together:
+    - the rule;
+    - the pricing banner;
+    - the FAQ;
+    - a "your trial ends soon, connect Stripe" notice.
+  - Mockup first (§27 Added V16.10).
+- **The mix-up (faq-1c and faq-1c-undo, 2 Nov):**
+  - **What faq-1c did:** it read Dominic's FAQ note as a product change and **changed the product**: migration 20261057,
+    run 11:48 UTC. It changed:
+    - `pay_at_hatch_allowed` false on payg, pro and unlimited;
+    - a Pizzeria Gusto override `{"online_ordering_pay_at_hatch": true}`;
+    - the `payattruck` comparison row's source;
+    - the pricing banner's first sentence in en-GB and all 28 translations, and the dashboard and Manage wording.
+    - Only Real Thai Food lost Pay at Hatch in practice.
+  - **The undo:** faq-1c-undo put everything back about 15 minutes later (migration 20261058: the plans all true, Gusto's
+    overrides `{}`, the row's source restored; the code and messages restored to `069b5b05`). It kept only the FAQ
+    wording. 20261057 and `scripts/faq-1c.cjs` were deleted from the repo.
+  - **The cleanup:** faq-3 then took the remaining trial-only claims out of the kept FAQ answers and returned …0010 to
+    draft.
+  - **The rule this left:** a note on wording is not a product change (§79).
+- **No FAQ answer may mention Pay at Hatch, paying at the truck, or paying on collection** (35.ao-3; the check refuses
+  it, §82.12).
 
 # 82. Countries beyond GB and US, currencies and AI search (V16.3 — 20–21 October 2026)
 
@@ -34640,9 +35159,10 @@ with a hidden test truck; then switch on in Admin › Countries.
 - **JSON-LD:**
   - Organization `legalName` "HatchGrab Ltd" and `addressCountry` GB;
   - SoftwareApplication `operatingSystem` "Web, iOS, Android" and `countriesSupported` (the switched-on countries),
-    replacing the invalid `areaServed`; ⛔ *V16.7 — known gap: `operatingSystem` says "Web, iOS, Android" on every
+    replacing the invalid `areaServed`; ~~⛔ *V16.7 — known gap: `operatingSystem` says "Web, iOS, Android" on every
     country page, but outside the UK the iOS and Android parts aren't true for an operator yet (the apps are UK-only, §86.2;
-    backlog §27).*
+    backlog §27).*~~ ⛔ Corrected V16.10 — `operatingSystem` is per country from the app flags (`operatingSystemsOf`,
+    faq-2 Part B3); with both flags on everywhere since 3 Nov it reads "Web, iOS, Android" in all 44 (§82.13).
   - no rich result until real reviews exist (none invented).
 - ~~⚠️ **NOT LIVE at 21 Oct (OBSERVED by curl):** ai-search-1 is uncommitted. The live `www.hatchgrab.com/robots.txt`
   still disallows GPTBot, ClaudeBot and CCBot; `/llms.txt` is 404; the live JSON-LD still has `areaServed`. All three
@@ -34651,12 +35171,15 @@ with a hidden test truck; then switch on in Admin › Countries.
 - **Off-site work (Dominic):**
   - Bing Webmaster Tools plus the sitemap;
   - Google Search Console resubmit and the Rich Results Test;
-  - LinkedIn, G2, Capterra and Trustpilot profiles, each added to `sameAs` once it exists;
+  - LinkedIn, G2, Capterra and Trustpilot profiles, each added to `sameAs` once it exists (V16.10, decided 2 Nov:
+    until then `sameAs` keeps the App Store and Google Play listings);
   - reviews from real customers.
-- **The FAQ** is designed but parked as its own workstream (§27):
-  - a public accordion on the landing page, with FAQPage JSON-LD;
-  - an Admin › FAQ tab: sections, editable Q&A with data tokens (`{pro.price}`), Draft/Published, private notes, and
-    "Copy feedback for Claude".
+- ~~**The FAQ** is designed but parked as its own workstream (§27):~~
+  - ~~a public accordion on the landing page, with FAQPage JSON-LD;~~
+  - ~~an Admin › FAQ tab: sections, editable Q&A with data tokens (`{pro.price}`), Draft/Published, private notes, and
+    "Copy feedback for Claude".~~
+  ⛔ Corrected V16.10 — **built** (faq-1 … faq-4, 1–2 Nov): Admin › FAQ as designed, and the FAQ on **its own page per
+  country** at `/<country>/faq` with FAQPage JSON-LD there only (not on the landing page). §82.12.
 
 ## 82.10 Per-country launch lists (open)
 
@@ -34713,7 +35236,9 @@ AU/NZ terms, the AU address state fix, Canada. **Remaining:** the Stripe Connect
   space) and the normal-width "¥" (world-countries-2 F5).
 - **Currencies:** eight new registry entries (BRL, MXN, JPY, SGD, HKD, MYR, AED, THB), 22 in all; the CHECK lists the
   same 22. **JPY is zero-decimal on every amount path** (`toMinor` / `fromMinor`, `toMinorUnits` / `minorDigits`;
-  35.an-19); a percentage uplift on a yen price can carry half a yen in event pricing (F6, open).
+  35.an-19); ~~a percentage uplift on a yen price can carry half a yen in event pricing (F6, open).~~ ⛔ Corrected V16.10 —
+  a percentage change (or a fractional amount) in a zero-decimal currency is **rounded down** to the whole unit, on every
+  path (tidy-2; 35.ao-6): ¥999 + 10% is ¥1,098, never ¥1,099. Two-decimal currencies are unchanged.
 - **Stripe and the platform fee (researched in the planning chat, 31 Oct):** Stripe's own pages say platforms outside
   Malaysia and Thailand cannot collect application fees on connected accounts there; for Brazil, Mexico and Singapore the
   same block is reported from Stripe's error text ("Stripe doesn't currently support application fees for platforms in US
@@ -34745,6 +35270,179 @@ AU/NZ terms, the AU address state fix, Canada. **Remaining:** the Stripe Connect
   line above.
 - **Harnesses:** `world-countries-1.cjs` (178), `world-countries-1-identity.cjs` (440, by hand in two steps),
   `world-countries-1-screens.cjs` (43, WebKit), `world-countries-2.cjs` (47), `world-countries-3.cjs` (12).
+
+## 82.12 The FAQ (V16.10 — faq-1, faq-1b, faq-3, faq-2 Part A, faq-4, faq-translate-fix, 1–2 November 2026)
+
+*Built where §82.9 had it parked. The English source is edited in Admin; every country's page shows it in its own language
+with its own live values.*
+
+**Decisions (stated):**
+- **A separate page** ("it should be a separate page", 2 Nov): `/<country>/faq`, not a section on the landing page.
+- **English source only**, translated automatically without Dominic's involvement ("if i create in the portal in english
+  then it should automatically be translated and rolled out in all other countries without further involvement", 2 Nov).
+- **No Pay at Hatch wording** ("dont mention pay at hatch as dont want people thinking its available long term", 2 Nov;
+  35.ao-3, §81.7).
+- **The CHECK notes Cursor left on the seed were accepted when he published.**
+- **No `operator_apps` column** (Q1 → A, 1 Nov): the existing `country_settings.ios_app_available` /
+  `android_app_available` decide every app sentence; Admin › Countries gained an "Apps" group showing them.
+
+**The tables** (RLS on, no policies, grants revoked from anon, authenticated and public; `service_role` only):
+- **`faq_sections`** (`20261056_faq_1.sql`):
+  - `id` uuid PK, `position`, `title_en` (not blank), `created_at`, `updated_at`.
+- **`faq_items`** (`20261056`):
+  - `id`, `section_id` (FK, on delete cascade), `position`, `question_en` (not blank), `answer_en`,
+    `answer_single_plan_en` (nullable);
+  - `show_in` (`all` | `apps` | `plan:<key>`, default `all`);
+  - `status` (`draft` | `published`; a published row must have `published_at`);
+  - `note`, `note_done`, `published_at`, `created_at`, `updated_at` (moves when the texts change, not the notes),
+    `updated_by`.
+  - Seed ids are fixed literals (`fa000001-…` sections, `fa000002-0000-4000-8000-0000000000NN` questions).
+- **`faq_translations`** (`20261060_faq_2_translations.sql`):
+  - `item_id` or `section_id` (exactly one), with `source_id` generated from them; `locale` (`xx-XX`);
+  - `question`, `answer`, `answer_single_plan`, `title`;
+  - `source_hash` (64 hex), `model`, `translated_at`, `status` (`ok` | `failed`; a failed row has a `reason`);
+  - PK (`source_id`, `locale`).
+- **Migrations:**
+  - **20261056:** was run by hand in the Supabase dashboard on 2 Nov. Cursor's db-run-1 found it already applied and
+    identical (§79).
+  - **20261057 (faq-1c):** run 2 Nov 11:48 UTC, then deleted from the repo by the undo; its text stays in git at
+    `142ea9ab`.
+  - **20261058 (the undo), 20261059 (faq-3) and 20261060:** all run by Cursor with `db-migrate.cjs`.
+
+**Live values** (`lib/faq/live-values.ts`; answers only, never in a question; resolved per country in the page's
+language):
+- `{K.name}`, `{K.price}`, `{K.included}`, `{K.fee}`, `{K.extraVan}`, for any plan key K from the catalogue. No plan key
+  or name is typed in `lib/faq`.
+- `{trial.months}`, `{trialEnd.name}`, `{trialEnd.price}` (the trial-end plan, §81.6).
+- `{card.fee}`, `{countries}` (the switched-on countries, as a list in the page's language).
+- `{plansWith.<feature>}` (the offered plans with that feature on; no row means on).
+- `{apps.sentence}` and `{apps.offline}` (both app flags on → the apps phrases; else nothing / the web-only phrase).
+- `{payAtTruck}` still resolves, but is banned in answers (below).
+- Money comes from the same calls as each country's pricing cards (proved for GB, US, IE, DE, JP, BR and SG).
+
+**The per-country check** (`lib/faq/check.ts` `checkItem`; runs in the browser and in the route before publishing and
+before saving a published question):
+- **Runs** each question against every switched-on country (44).
+- **Fails on:** an unknown token, a plan not offered there, a missing value, a stray brace, or a token in a question.
+- **Banned wording** (`BANNED_WORDING`: `{payAtTruck}`, "Pay at Hatch", "pay at the truck", "pay when they collect";
+  case-insensitive, in either answer):
+  - publishing is refused (400, "It can't be published until it reads correctly in every country.");
+  - so is saving a published question;
+  - drafts may hold it.
+- **Fixes offered:** "Add an answer for those countries" and "Show only where <plan> is offered".
+- **The single-plan answer** is used where exactly one plan is offered (BR, MX, MY, SG, TH today) and it is written.
+- **"Show in":** `all`, `apps` (where both app flags are on), or `plan:<key>`.
+
+**Admin › FAQ** (the last tab, "❓ FAQ"):
+- **Files:** `components/admin/FaqTab.tsx`, `app/api/admin/faq/route.ts` (non-admin 403), `lib/admin/faq-store.ts`,
+  `lib/admin/faq-actions.ts`, `lib/faq/feedback.ts`.
+- **What it has:**
+  - sections and questions in English;
+  - Publish/Unpublish;
+  - "MY NOTES" per question with Done (saved without the check);
+  - "Copy feedback for Claude (n)", where n is the notes not Done;
+  - a preview per country and language;
+  - per question: "✓ Translations 28/28 up to date" / "● Translating — within the hour" / "✕ n failed" /
+    "○ Translates when published", counted as only the language bases every visitor locale would actually show
+    (`coveredBases`).
+
+**The public page** (faq-4; `app/[country]/faq/page.tsx` → `app/faq/page.tsx`):
+- **The frame and the list:** in `components/landing/MarketingFrame.tsx` (the /features frame, extracted unchanged), with
+  `<FaqDetails>` (`components/faq/FaqDetails.tsx`).
+- **No content:** a page with nothing to show is a **404**, and is left out of the sitemap, hreflang and the footer link
+  (`faqCountries` / `faqHrefFor` in `lib/faq/public.ts`). A switched-off `/xx/faq` redirects to `/uk/faq`.
+- **The footer link:** "FAQ" beside Features and Pricing on every marketing page that has the shared footer, only where
+  that country's page has content. There is none in the header.
+- **SEO:**
+  - self-canonical;
+  - hreflang only between FAQ pages with content, plus `x-default` → `/faq`;
+  - **FAQPage JSON-LD on this page only** (`faqPageLd`);
+  - the sitemap `lastmod` is the newest publish or translation shown;
+  - `/llms.txt` links `/uk/faq` and keeps its English FAQ list (§82.13).
+- **The landing pages:** the FAQ was on the English landing pages (faq-3), then on every landing page (faq-2 Part A),
+  and was taken off them all (faq-4, 2 Nov). OBSERVED 3 Nov: `/uk` has no FAQ section; `/uk/faq` is 200 with FAQPage
+  JSON-LD (24 questions).
+- **Cache:** 60 s in memory per instance; Admin's route clears it in a `finally` after every POST.
+- **IndexNow:** Admin submits the FAQ pages after a public change (production only); the translator does too after
+  writing `ok` rows.
+
+**Translation** (`.github/workflows/faq-translate.yml` → `scripts/faq-translate/main.ts`; `lib/faq/translator.ts`,
+`lib/faq/translation.ts`, `lib/faq/source-hash.ts`):
+- **When:** hourly at :25, and by "Run workflow".
+- **Inputs:**
+  - `dry_run`;
+  - `max_usd` (the spend cap, $2 a run by default);
+  - `limit` (faq-translate-fix: blank = everything; one translation = one question into one language; questions before
+    section titles).
+- **Sign-in:** Workload Identity Federation, exactly as the competitor checker (35.an-6); it refuses to start if
+  `ANTHROPIC_API_KEY` is set. UNVERIFIED: whether the federation rule allows workflows other than
+  `competitor-check.yml` (the run on 2 Nov signed in, so in practice it does).
+- **The call:** model `claude-sonnet-5-5`, through the checker's own `converse` (no forced `tool_choice` — the first live
+  run on 2 Nov failed on exactly that, every call 400; fixed by faq-translate-fix).
+- **Locales:**
+  - the 28 language bases;
+  - de-CH is derived from de-DE (ß → ss), and de-LI reads de-CH;
+  - a regional variant (en-US, en-IE, en-AU, en-NZ, en-CA, en-MT, en-GI, en-SG, de-AT, nl-BE, el-CY, fr-LU, es-MX) gets a
+    row only where its wording differs.
+- **Rejections:** a translation is stored `failed`, with its reason, and retried on the next run if:
+  - its token counts differ from the English, or a token is added;
+  - it has stray braces;
+  - it has a typed number, a currency symbol or a plan name;
+  - it has Pay at Hatch wording in English or the locale's words;
+  - its length is out of range (0.25–3×; 0.1× for ja/zh), or it is over 4,000 characters;
+  - or it has a token in a question or title.
+- **The freshness rule, one for everyone:**
+  - a question shows in a language only if its `ok` row's `source_hash` equals the hash of the current English
+    (`lib/faq/source-hash.ts`, used by Admin, the public page and the workflow);
+  - otherwise it is hidden there — never shown in English, never out of date (35.ao-2);
+  - the first row down the locale chain decides.
+- **Scheduling caveats:** GitHub's scheduled runs can start late. On a public repository, GitHub pauses scheduled
+  workflows after 60 days without commits. The repository was public on 27 Oct (§27); still UNVERIFIED for this
+  workflow.
+
+**The question list as Dominic left it** (OBSERVED 3 Nov):
+- faq-1b seeded 26 agreed questions (2 Nov, reviewed with ChatGPT) in 5 sections (5 · 4 · 9 · 4 · 4).
+- Dominic published them and deleted …0022 "Which countries is HatchGrab available in?" (2 Nov 11:13 UTC, through Admin).
+- faq-3 returned …0010 "Can customers pay at the truck…" to draft (the Pay at Hatch rule).
+- **Live: 25 rows: 24 published, 1 draft (…0010).**
+
+**Harnesses:**
+- `faq-1.cjs` (205 at faq-4), `faq-3.cjs` (167), `faq-2.cjs` (142);
+- `faq-4.cjs` (80), `faq-4-screens.cjs` (10, browser);
+- `faq-translate-fix.cjs` (42).
+
+## 82.13 Search and AI search after faq-2 Part B (V16.10 — commit `e1c69096`, 2 November 2026)
+
+- **B1 · Redirects and noindex:**
+  - **Village Foodie pages reached on hatchgrab.com:** on www.hatchgrab.com and the apex, `/venues/<slug>`, `/trucks` (the
+    directory) and `/hire` **308** to the same path on www.villagefoodie.co.uk, query kept. The landing preview path on
+    villagefoodie.co.uk 308s to www.hatchgrab.com. `/trucks/<slug>` and `/trucks/<slug>/order` stay where they are
+    (already `noindex` and robots-disallowed).
+    - Files: `lib/host-redirects.ts`, `proxy.ts`, `lib/venue-index.ts`, `vercel.json`.
+  - **Venue pages with no upcoming public event** are `noindex, follow`, decided in `generateMetadata` from the same feed
+    and key as the schedule. On 2 Nov that was 909 of 992 venue pages.
+  - **`/app`, `/setup`, `/forgot-password`, `/reset-password`** send `X-Robots-Tag: noindex` on both hosts.
+- **B2 · Sitemaps:** hatchgrab.com 93 URLs, all 200, indexable and self-canonical; villagefoodie.co.uk 2. Dominic
+  submitted both sitemaps to Google and Bing (stated, 2 Nov).
+- **B3 · `operatingSystem`:** "Web", plus "iOS" and "Android" only where that country's app flag is true
+  (`operatingSystemsOf`, `lib/structured-data.ts`). With both flags on in all 44 countries since 3 Nov (tidy-2), every
+  country reads "Web, iOS, Android". `sameAs` keeps the App Store and Google Play listings until profile links exist
+  (decided 2 Nov).
+- **B4 · `/llms.txt`** (`lib/llms-text.ts`):
+  - a **Features** section (the six landing tiles in English);
+  - **Frequently asked questions**: the 24 published questions as the UK page shows them, resolved for GB;
+  - every country's lines in English with international amounts.
+  - OBSERVED 3 Nov: both are live, and the file links `https://www.hatchgrab.com/uk/faq`.
+- **B5:** the custom-domain "Powered by HatchGrab" credit links to the truck's country page.
+- **B6 · IndexNow:**
+  - the key file is in `public/` (public by design);
+  - `.github/workflows/indexnow.yml` runs on every push to `main`;
+  - it waits for that commit's Vercel production deployment, then `scripts/indexnow/main.ts` submits every sitemap URL
+    that answers 200, is indexable and is self-canonical, per host, logging each response;
+  - the FAQ's Admin route and the translator also submit (§82.12). Shared code: `lib/indexnow.ts`.
+- **The domain redirects are 308 on both domains** (hatchgrab.com set 2 Nov, villagefoodie.co.uk 3 Nov, stated; OBSERVED
+  by curl 3 Nov: `https://hatchgrab.com` and `https://villagefoodie.co.uk` → 308 to `www`).
+- **Harness:** `seo-geo-2.cjs` (89).
 
 # 83. Addresses, native prices, languages and Europe (V16.4 — 21–22 October 2026)
 
@@ -35059,8 +35757,9 @@ examples (europe-languages-2 Stage 0) and, in de-CH, the card button that keeps 
   typed word DELETE, and three hard-coded admin labels in `components/admin/*`.
 - ~~Legal pages (terms, privacy), sign-in and account emails remain en-GB (unchanged from §83.8).~~ ⛔ Corrected V16.9 —
   the legal documents are in all 28 language bases (English governs), and sign-in, the password pages and account emails
-  speak the user's language (§43, §77.12). The contact page is a Tally
-  form with UK wording (the text around it is translated; its replacement is decided, §27 Added V16.9).
+  speak the user's language (§43, §77.12). ~~The contact page is a Tally
+  form with UK wording (the text around it is translated; its replacement is decided, §27 Added V16.9).~~ ⛔ Corrected
+  V16.10 — HatchGrab has its own contact form in every language (contact-1, §48); Village Foodie keeps Tally.
 
 ## 84.3 The statutory order buttons
 
@@ -35359,7 +36058,7 @@ verified it. No proposed price is recorded here as decided.
 - **App availability:** the benchmarks say Android = GB only (Google Play availability is the United Kingdom only, §36).
   ~~Where the iPhone app is sold is **not recorded** (NULL everywhere). Set it per country in Edit country data.~~ ⛔ Corrected V16.7 —
   known: the UK App Store only (Apple lookup for id 6803543106, 24 Oct; §86.2). The benchmarks' column is still NULL; the
-  per-country flags are now `country_settings.ios_app_available` / `android_app_available` (GB true only, §86.3). ⛔ Corrected V16.8 — the benchmarks' app columns are retired; `country_settings` is the one
+  per-country flags are now `country_settings.ios_app_available` / `android_app_available` (~~GB true only, §86.3~~ ⛔ V16.10 — true in all 44 since 3 Nov, §48). ⛔ Corrected V16.8 — the benchmarks' app columns are retired; `country_settings` is the one
   source (§86.10).
 - ~~**France** stays in Planned until its row (`20261034`, block B) is run (§84.1).~~ ⛔ Corrected V16.7 — France's row exists and is switched on (OBSERVED 29 Oct: written 23 Oct 21:21 UTC by dominic@hatchgrab.com, fr-FR, EUR, 3 `plan_prices` rows; `/fr` answers 200 and is in the sitemap).
 
@@ -35724,7 +36423,9 @@ repo files. compare-de-1 and competitor-check-1 were built from the briefs' word
     - history by `superseded_at`, with at most one current row per competitor, feature and country;
     - a country's own row wins over the every-country row.
   - **45 features are seeded through the importer.** OBSERVED 30 Oct: 45, all checked; 28 shown everywhere, 4 in some
-    countries, 13 hidden.
+    countries, 13 hidden. ⛔ Corrected V16.10 — the file now has **46** (`notify` added) in four tiers with **four off**
+    (allergens, deals, qr, buzzers); intervals per tier, not one for all (§86.15). OBSERVED 3 Nov: the live table still
+    holds the 45 untiered rows until the daily import runs (§49).
 - **Decisions (stated, 29 Oct):**
   - seeded features' words live in messages, so they go through the translation pipeline;
   - Admin-added features keep their words per locale in the database, falling back to en-GB;
@@ -35863,6 +36564,62 @@ repo files. compare-de-1 and competitor-check-1 were built from the briefs' word
 - **Migration `20261053_competitor_check_8.sql`:** OBSERVED 1 Nov: run (the two settings, `deep_progress`, `time_up`).
   The checker reads all of it tolerantly. **U1** (Clover and Lightspeed first in the next deep share) is not visible.
 - **Harness:** `scripts/competitor-check-8.cjs` (51); `competitor-check-1.cjs` 227 with three re-pins.
+
+## 86.15 The checker's tiers and "not mentioned" (V16.10 — competitor-features-2 and brand-kit-1, 3 November 2026)
+
+*The list was reviewed with ChatGPT (3 Nov). Code: `data/comparison-features/features.json`, `lib/comparison-features.ts`,
+`lib/competitor-check/` (core, checker, pass, model, prompts, store), `lib/data-import/features.ts`. Migrations 20261062
+and 20261065.*
+
+- **Tiers** (`comparison_features.tier`; set by the automatic importer from the file, never typed in SQL):
+  - **core** (25): every feature shown today, with asap and custfee checked but hidden, plus **`notify`**;
+  - **commercial** (6): monthly, perorder, cardfee, term, setup, trial;
+  - **secondary** (11): options, tips, staff, reports, loyalty, private, igmsg, paymethods, payattruck (all hidden), plus
+    fiscal ("some") and delivery (shown, "collection only");
+  - **off** (4): allergens, deals, qr, buzzers. `checked` is false; their answers are kept and nothing is deleted.
+  - The file has 46 features (42 checked); `checked` must equal `tier !== 'off'`.
+  - The importer applies a feature's tier, checked and show settings **only when its stored tier differs from the
+    file's** (once, after which Admin's choices stay), and makes every active competitor due for a new feature.
+- **How often:** `competitor_check_settings.tier_intervals`, data not code:
+  - **90 / 90 / 180** days for commercial / core / secondary (stated, 3 Nov: "once we have the prices, every 90 days is
+    more than enough");
+  - commercial was 30 in competitor-features-2, and brand-kit-1 set it to 90 (migration 20261065);
+  - off is never asked.
+- **When a feature is due:**
+  - `competitor_feature_checks` (scheduling only, 35.an-3) records when each feature was last asked, per competitor and
+    country;
+  - a feature is due when it has no row, or its tier's interval has passed;
+  - a routine check and the quick pass ask only due features; the deep (full) check asks every one that applies;
+  - a competitor's next check comes after the most frequent tier that applies to it (90 days);
+  - the caps (35.an-5) are unchanged.
+- **Focus:** a **street-food market** is asked only discovery and the commercial features. Every other focus is asked
+  core and secondary too. On comparison pages a market's other cells read "does not apply to a market", never No.
+- **`not_mentioned`** (35.ao-7):
+  - a new answer value (CHECK widened);
+  - `no` only with a verbatim quote in which the competitor says it does not offer the feature (a negation is required in
+    the quote or its translation, or the finding is left out);
+  - `not_mentioned` when the site doesn't mention it;
+  - `unknown` when the pages couldn't be read.
+  - Shown as "Not mentioned on their website" / "Auf der Website nicht erwähnt", in the neutral grey of "Not stated",
+    **never as No**.
+  - **The existing `no` answers** (49 on 3 Nov) were left as they were, and marked `rejudge` so each is judged again at
+    its tier's next check.
+- **`notify` — "Customers told when their order is ready"** (ordering group, shown): HatchGrab's own answer is **Partly**:
+  "email when the order-ready step is on, and an order-status page; no SMS, WhatsApp or push" (German too).
+  - From the code: the ready email is sent at the Ready step (where the event type's `order_ready` step is on).
+  - The order page `/order/<id>/manage` shows the status **when opened**; it doesn't update itself, so the word "live"
+    was dropped.
+  - Nothing sends an SMS or a push; `sendWhatsApp` serves only the inbound auto-replies.
+- **Cost** (brand-kit-1, by competitor-features-2's method on 3 Nov's measurements: routine $0.0830 a check):
+  - 132 active competitors checked every 90 days = 44 checks a month;
+  - each check asks about 36.5 of 42 features;
+  - **≈ $3.44 a month** (≈ $3.65 in the first cycle, while every feature is due at once).
+  - At commercial 30 days it would have been ≈ $7.92.
+- **Focus usage, 3 Nov:** active: 59 food_truck, 64 nearest_local, 5 street_food_markets, 1 pop_up, 3 none.
+- ⚠️ **OBSERVED 3 Nov:** the new file is deployed but **not yet imported**. The daily workflow's first step (02:10 UTC)
+  imports it on 4 Nov, and it will re-tick four features Admin unticked on 2 Nov (§49, §27 Added V16.10).
+- **Harnesses:** `competitor-features-2.cjs` (79); re-pins in competitor-check-1, pricing-check-1, faq-1, faq-3 and
+  comparison-features-1-screens.
 
 ---
 
