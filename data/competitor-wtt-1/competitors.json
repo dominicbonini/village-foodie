@@ -1,0 +1,322 @@
+{
+ "$comment": "competitor-wtt-1 (4 November 2026): What The Truck (whatthetruck.ai, GB), read on its own website on 2026-11-04 (docs/competitor-wtt-1-report.md). Imported automatically, once per version of this file, by the first step of the nightly competitor check (lib/data-import/). Every row source research, UNVERIFIED (35.an-1): nothing is public until an admin verifies it. Each answer carries the vendor’s verbatim quote and its page (35.an-4); \"no\" only with a quote saying it is not offered, silence is not_mentioned (35.ao-7). request_check sets check_requested_at, so the checker re-reads everything with its own quotes. \"evidence\" is for the reviewer; the import does not read it.",
+ "id": "competitor-wtt-1",
+ "checked_on": "2026-11-04",
+ "competitors": [
+  {
+   "id": "3f0b6c2e-8d4a-4b7e-9a51-6e2f1d0c7a93",
+   "name": "What The Truck",
+   "website": "https://whatthetruck.ai",
+   "focus": "food_truck",
+   "lifecycle": "active",
+   "payment_providers": null,
+   "features_checked_on": "2026-11-04",
+   "features_verified_at": null,
+   "notes": "What The Truck Software Ltd (company no. 17365285, registered in England and Wales; registered office in Harrow). Country: GB.",
+   "check_urls": [
+    "https://whatthetruck.ai/",
+    "https://whatthetruck.ai/pricing",
+    "https://whatthetruck.ai/compare",
+    "https://whatthetruck.ai/features/festivals",
+    "https://whatthetruck.ai/features/rocky",
+    "https://whatthetruck.ai/features/loyalty",
+    "https://whatthetruck.ai/features/paperwork",
+    "https://whatthetruck.ai/app",
+    "https://whatthetruck.ai/support",
+    "https://whatthetruck.ai/terms"
+   ],
+   "request_check": true,
+   "answers": [
+    {
+     "key": "preorder",
+     "value": "yes",
+     "quote": "Customers order and pay from your page on their phone, and pick a time to collect.",
+     "source_url": "https://whatthetruck.ai/features/festivals"
+    },
+    {
+     "key": "capacity",
+     "value": "yes",
+     "note": "per-slot limits you set; walk-ups count against them",
+     "quote": "Online pre-orders and walk-ups land on the same cook sheet and share the same per-slot limits, so the hatch never gets swamped.",
+     "source_url": "https://whatthetruck.ai/features/festivals"
+    },
+    {
+     "key": "asap",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "ahead",
+     "value": "not_mentioned",
+     "note": "a page per gig with collection slots; ordering on an earlier day is not stated"
+    },
+    {
+     "key": "schedule",
+     "value": "yes",
+     "note": "recurring gigs",
+     "quote": "Set up recurring gigs once, whether weekly, monthly or the 2nd Friday of the month, and keep the full gig workflow.",
+     "source_url": "https://whatthetruck.ai/compare"
+    },
+    {
+     "key": "walkup",
+     "value": "yes",
+     "quote": "Walk-ups and online pre-orders land in the same queue.",
+     "source_url": "https://whatthetruck.ai/"
+    },
+    {
+     "key": "stock",
+     "value": "yes",
+     "note": "sold out per gig; live stock updates and stock forecasts too",
+     "quote": "Mark an item sold out for this gig and it comes off the online menu and the till together.",
+     "source_url": "https://whatthetruck.ai/features/festivals"
+    },
+    {
+     "key": "notify",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "menuphoto",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "options",
+     "value": "yes",
+     "quote": "Customers browse the menu, add extras, pick a collection slot and pay, even on festival 2G.",
+     "source_url": "https://whatthetruck.ai/"
+    },
+    {
+     "key": "private",
+     "value": "partial",
+     "note": "corporate gigs with invoicing; booking requests not stated",
+     "quote": "Corporate customers order online, and WhatTheTruck! totals the orders and generates the invoice.",
+     "source_url": "https://whatthetruck.ai/compare"
+    },
+    {
+     "key": "cards",
+     "value": "yes",
+     "note": "online card payments; Apple Pay and Google Pay are not named",
+     "quote": "Your first month after you sign up, the card fees are on us, at the hatch and online.",
+     "source_url": "https://whatthetruck.ai/pricing"
+    },
+    {
+     "key": "payattruck",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "localpay",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "paypal",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "custfee",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "tips",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "paymethods",
+     "value": "unknown",
+     "note": "online: card (methods not named); at the hatch: card reader or cash",
+     "quote": "take walk-up orders, by card with a card reader or in cash",
+     "source_url": "https://whatthetruck.ai/"
+    },
+    {
+     "key": "kds",
+     "value": "yes",
+     "quote": "Live kitchen queue: every order, on its own clock",
+     "source_url": "https://whatthetruck.ai/app"
+    },
+    {
+     "key": "tickets",
+     "value": "yes",
+     "quote": "print kitchen tickets and receipts",
+     "source_url": "https://whatthetruck.ai/"
+    },
+    {
+     "key": "offline",
+     "value": "yes",
+     "note": "walk-up orders in the app",
+     "quote": "The app keeps taking walk-up orders offline and syncs them when the signal returns.",
+     "source_url": "https://whatthetruck.ai/support"
+    },
+    {
+     "key": "vans",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "staff",
+     "value": "yes",
+     "note": "staff added to the account; Rocky checks each person’s role",
+     "quote": "including by the staff you add to it, so remove people who should no longer have access",
+     "source_url": "https://whatthetruck.ai/terms"
+    },
+    {
+     "key": "reports",
+     "value": "yes",
+     "quote": "Revenue, COGS and profit per gig and per channel, plus repeat-customer and benchmark analytics, and CSV for the accountant.",
+     "source_url": "https://whatthetruck.ai/"
+    },
+    {
+     "key": "domain",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "whatsapp",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "social",
+     "value": "yes",
+     "note": "AI images and posts; not said to be made from the schedule",
+     "quote": "Create AI images and posts, and WhatTheTruck! shares them across your social channels.",
+     "source_url": "https://whatthetruck.ai/compare"
+    },
+    {
+     "key": "igmsg",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "discovery",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "loyalty",
+     "value": "yes",
+     "quote": "They earn stamps or points towards a reward you choose.",
+     "source_url": "https://whatthetruck.ai/"
+    },
+    {
+     "key": "ipad",
+     "value": "partial",
+     "note": "iPad named for the self-order kiosk only; the operator app is \"for food truck operators and their teams\" (/app)",
+     "quote": "run a self-order kiosk on an iPad",
+     "source_url": "https://whatthetruck.ai/"
+    },
+    {
+     "key": "android",
+     "value": "yes",
+     "note": "the Google Play badge on /app (image text), linking to the operator app ai.whatthetruck.ops",
+     "quote": "Get it on Google Play",
+     "source_url": "https://whatthetruck.ai/app"
+    },
+    {
+     "key": "hardware",
+     "value": "partial",
+     "note": "sold separately; no prices given",
+     "quote": "Card readers and other hardware are bought separately.",
+     "source_url": "https://whatthetruck.ai/pricing"
+    },
+    {
+     "key": "terminal",
+     "value": "partial",
+     "note": "sold separately; no prices given",
+     "quote": "Card readers are bought separately.",
+     "source_url": "https://whatthetruck.ai/"
+    },
+    {
+     "key": "fiscal",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "delivery",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "monthly",
+     "value": "yes",
+     "note": "£0 a month",
+     "quote": "WhatTheTruck! costs nothing a month.",
+     "source_url": "https://whatthetruck.ai/pricing"
+    },
+    {
+     "key": "perorder",
+     "value": "yes",
+     "note": "online 3.95% / 3.75% / 3.50% / 3.25% by yearly online sales (to £75k / £150k / £250k / above), plus VAT at 20% on the platform fee; in person 1.25% / 0.95% / 0.85% / 0.80%; a lower tier needs proof of turnover",
+     "quote": "New accounts start at 1.25% in person and 3.95% online.",
+     "source_url": "https://whatthetruck.ai/pricing"
+    },
+    {
+     "key": "cardfee",
+     "value": "unknown",
+     "note": "not stated: the terms say card payments go through providers you connect, whose fees are set by them; the pricing page says card fees are on us in the Founder 100 month",
+     "quote": "Their fees are set by them.",
+     "source_url": "https://whatthetruck.ai/terms"
+    },
+    {
+     "key": "term",
+     "value": "unknown",
+     "note": "none stated: close the account at any time by email",
+     "quote": "You can stop using the platform and ask us to close your account at any time by writing to",
+     "source_url": "https://whatthetruck.ai/terms"
+    },
+    {
+     "key": "setup",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "trial",
+     "value": "partial",
+     "note": "Founder 100 only (the first 100 trucks to join); there is no monthly fee anyway",
+     "quote": "For your first month after you sign up, we charge no fees on payments you take through WhatTheTruck!",
+     "source_url": "https://whatthetruck.ai/pricing"
+    }
+   ]
+  }
+ ],
+ "plans": [
+  {
+   "id": "b7e41d58-2c9f-4e06-8a3d-91c5f0e2b647",
+   "competitor_id": "3f0b6c2e-8d4a-4b7e-9a51-6e2f1d0c7a93",
+   "country_code": "GB",
+   "plan_name": "No monthly fee (fee per payment)",
+   "currency": "GBP",
+   "price_hidden": false,
+   "monthly_minor": 0,
+   "yearly_only": false,
+   "setup_minor": 0,
+   "truck_fee_bps": 395,
+   "truck_fee_fixed_minor": 0,
+   "customer_fee_bps": 0,
+   "customer_fee_fixed_minor": 0,
+   "card_mode": "unknown",
+   "card_bps": null,
+   "card_fixed_minor": null,
+   "card_rate_assumed": false,
+   "order_cap": null,
+   "included_orders": null,
+   "overage_fixed_minor": null,
+   "vat": "excl",
+   "status": "counted",
+   "unclear": true,
+   "second_hand": false,
+   "source": "research",
+   "source_url": "https://whatthetruck.ai/pricing",
+   "checked_on": "2026-11-04",
+   "verified_at": null,
+   "verified_by": null,
+   "notes": "One plan: no monthly fee; a fee on each payment, by yearly sales in each channel. In person (at the hatch): 1.25% up to £75,000; 0.95% £75,001–£150,000; 0.85% £150,001–£250,000; 0.80% over £250,000. Online (pre-orders): 3.95% / 3.75% / 3.50% / 3.25% on the same bands, before VAT at 20% on the platform fee. New accounts start on the first (top) tier; a lower tier needs proof of turnover. truck_fee_bps holds the online first tier (395). Offer \"Founder 100\": the first 100 trucks pay no fees in their first month (card processing on WhatTheTruck!; UK personal cards). Hardware (card readers, kiosk iPad) is bought separately; no prices given. Card processing included or separate: NOT STATED (pricing: \"card fees are on us\" for the Founder month; terms: providers’ \"fees are set by them\"). Set-up fee: not stated (stored as 0, the column cannot be empty). Contract: none stated; close the account at any time by email (/terms)."
+  }
+ ],
+ "entries": [],
+ "evidence": {
+  "urls_read": [
+   "https://whatthetruck.ai/",
+   "https://whatthetruck.ai/pricing",
+   "https://whatthetruck.ai/compare",
+   "https://whatthetruck.ai/features/festivals",
+   "https://whatthetruck.ai/features/rocky",
+   "https://whatthetruck.ai/features/loyalty",
+   "https://whatthetruck.ai/features/paperwork",
+   "https://whatthetruck.ai/app",
+   "https://whatthetruck.ai/support",
+   "https://whatthetruck.ai/terms"
+  ],
+  "fetched": "2026-11-04, one request at a time with 3-second pauses (35.an-8); all ten answered 200",
+  "app_stores": "App Store lookup id 6805236905: GB 1 result (\"WhatTheTruck!\", seller WHAT THE TRUCK SOFTWARE LTD, iPad supported, 9 iPad screenshots), US 0. Google Play ai.whatthetruck.ops: 200, \"WhatTheTruck!\".",
+  "company": "/support: \"What The Truck Software Ltd, registered in England and Wales no. 17365285. Registered office: … Harrow, United Kingdom …\""
+ }
+}

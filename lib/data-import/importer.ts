@@ -16,6 +16,8 @@ export const DATA_FILES = [
   { path: 'data/global-players/competitors.json', label: 'Global POS players', kind: 'players' },
   // comparison-features-1: the master list of compared features (only missing keys are added).
   { path: 'data/comparison-features/features.json', label: 'Comparison feature list', kind: 'features' },
+  // competitor-wtt-1: What The Truck (GB) — one competitor, its plan and its quoted feature answers, and a check request.
+  { path: 'data/competitor-wtt-1/competitors.json', label: 'What The Truck research', kind: 'research' },
 ] as const
 export type DataFile = (typeof DATA_FILES)[number]
 
@@ -50,8 +52,11 @@ export async function runImports(deps: ImportDeps, files: readonly DataFile[] = 
     try {
       const parsed = JSON.parse(bytes.toString('utf8'))
       const today = now.toISOString().slice(0, 10)
+      // competitor-wtt-1: a research file's quoted answers are checked against the feature list in the database.
+      const featureKeys = f.kind === 'features' || typeof deps.store.features !== 'function' ? undefined
+        : (await deps.store.features())?.map(r => String(r.key))
       const counts = (f.kind === 'features' ? await importFeatures(deps.store, parsed as FeaturesFile, { today })
-        : await importResearch(deps.store, parsed as ResearchFile, { today, path: f.path })) as unknown as Row
+        : await importResearch(deps.store, parsed as ResearchFile, { today, path: f.path, featureKeys, nowIso: now.toISOString() })) as unknown as Row
       await deps.store.recordImport({ file_path: f.path, sha256: sha, imported_at: now.toISOString(), result: 'ok', counts, message: null })
       deps.log(`${f.path}: imported — ${JSON.stringify(counts)}`)
       out.push({ path: f.path, status: 'imported', counts })
@@ -82,7 +87,10 @@ export function importLines(rows: ImportRecord[] | null, files: readonly DataFil
       return { path: f.path, ok: true, text: `${f.label} imported ${shortDay(last.imported_at)}: ${c.competitors} competitors (${c.added} added${matched ? `, ${matched} matched an existing row` : ''}) — the checker finds where each sells, its plans and features` }
     }
     const extra = [c.added < c.competitors ? `${c.competitors - c.added} matched existing competitors${c.upgraded ? `, ${c.upgraded} of them candidates` : ''}` : null,
-      c.plansExisting ? `${c.plansExisting} plan${c.plansExisting === 1 ? ' was' : 's were'} already there` : null].filter(Boolean)
+      c.plansExisting ? `${c.plansExisting} plan${c.plansExisting === 1 ? ' was' : 's were'} already there` : null,
+      // competitor-wtt-1: quoted answers and check requests, when the file had any.
+      c.answersAdded ? `${c.answersAdded} feature answer${c.answersAdded === 1 ? '' : 's'}, unverified` : null,
+      c.checksRequested ? `${c.checksRequested} check${c.checksRequested === 1 ? '' : 's'} requested` : null].filter(Boolean)
     return { path: f.path, ok: true, text: `${f.label} imported ${shortDay(last.imported_at)}: ${c.competitors} competitors, ${c.plans} plans, ${c.entries} entries${extra.length ? ` (${extra.join('; ')})` : ''}` }
   })
 }

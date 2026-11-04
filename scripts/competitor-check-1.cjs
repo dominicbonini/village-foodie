@@ -444,7 +444,9 @@ const read = f => fs.readFileSync(path.join(REPO, f), 'utf8')
     t('before 20261045 runs: it stops with the file to run, importing nothing', /20261045_competitor_check_2\.sql/.test(missing || ''), missing)
     t('the registry starts with data/compare-de-1/competitors.json', L.DATA_FILES[0].path === 'data/compare-de-1/competitors.json')
     const lines = L.importLines([{ file_path: 'data/compare-de-1/competitors.json', sha256: 'a'.repeat(64), imported_at: '2026-10-30T02:11:00Z', result: 'ok', counts: c, message: null }])
-    t('Admin\'s read-only line: "German research imported 30 Oct: 9 competitors, 19 plans, 8 entries (…)"', /^German research imported 30 Oct: 9 competitors, 19 plans, 8 entries \(3 matched existing competitors, 2 of them candidates; 1 plan was already there\)$/.test(lines[0].text), lines)
+    // ⚠️ RE-PINNED (competitor-wtt-1, 4 November 2026, docs/competitor-wtt-1-report.md): the line now also names the feature
+    // answers an import wrote (this fixture's legacy columns give 49); the real 30 Oct German import wrote 0, so its line is unchanged.
+    t('Admin\'s read-only line: "German research imported 30 Oct: 9 competitors, 19 plans, 8 entries (…)"', /^German research imported 30 Oct: 9 competitors, 19 plans, 8 entries \(3 matched existing competitors, 2 of them candidates; 1 plan was already there; 49 feature answers, unverified\)$/.test(lines[0].text), lines)
     t('…a failed import says what failed; before the SQL it says so', /failed — Plans: x/.test(L.importLines([{ file_path: 'data/compare-de-1/competitors.json', sha256: 'b'.repeat(64), imported_at: '2026-10-30T02:11:00Z', result: 'error', counts: {}, message: 'Plans: x.' }])[0].text)
       && /20261045/.test(L.importLines(null)[0].text))
     const tab = read('components/admin/PricingCheckTab.tsx'), route = read('app/api/admin/pricing-check/route.ts'), actions = read('lib/admin/pricing-check-actions.ts')

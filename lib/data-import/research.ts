@@ -18,7 +18,17 @@
 // raises a match to active and never lowers it: an existing match keeps its lifecycle (a not-relevant one — a POS ruled
 // out before the 29 Oct decision — becomes a candidate again), gets focus 'pos' even over another focus (the "upgrade"),
 // and gets the row's "countries: …" in its notes.
-import { hostOf, APP_STORE_HOSTS } from '@/lib/competitor-check/model'
+// competitor-wtt-1 (4 November 2026): a competitor row may also carry
+//   • "answers": [{ key, value, note?, quote?, source_url? }] — feature answers for every country, written with the vendor's
+//     verbatim quote and its page, unverified, with the file's date. The rules are the checker's own: yes / partial / no need
+//     a quote (35.an-4); "no" needs a quote in which the vendor says it is not offered (35.ao-7, `saysNotOffered`); silence is
+//     not_mentioned and carries no quote; unknown carries its reason in the note. A key must be in the feature list. An
+//     answer wins over the same feature's legacy column in the same row, and, like those, is written only where the competitor
+//     has no current answer that says anything (a placeholder is superseded).
+//   • "request_check": true — the import sets check_requested_at, the column Admin's "Check now" sets (35.an-3: the checker
+//     then checks it with its own quotes; a deep check while its country's deep check is running, "Check now" first).
+//   Neither key is a column: both are stripped from the competitor row.
+import { hostOf, APP_STORE_HOSTS, FEATURE_ANSWERS, QUOTE_MAX, saysNotOffered } from '@/lib/competitor-check/model'
 import { COUNTRIES_MARK } from '@/lib/competitor-check/core'
 import { LEGACY_FEATURE_COLUMNS } from '@/lib/comparison-features'
 // comparison-features-1 (29 Oct 2026): a file's feature columns (pre_orders … pay_at_truck, payment_methods, min_term) are
@@ -52,6 +62,39 @@ export interface ResearchCounts {
   plans: number; plansAdded: number; plansExisting: number
   entries: number; entriesAdded: number; entriesExisting: number
   answersAdded?: number
+  /** competitor-wtt-1: competitors whose check this import requested (check_requested_at). */
+  checksRequested?: number
+}
+
+/** competitor-wtt-1: the row keys that are instructions to the importer, never competitor columns. */
+const ROW_ONLY = ['answers', 'request_check']
+const QUOTED = ['yes', 'partial', 'no']
+const str = (v: unknown) => (typeof v === 'string' ? v.trim() : '')
+
+/** competitor-wtt-1: the problems with one competitor's "answers" (empty when it has none, or they can be imported). */
+function answerProblems(who: string, answers: unknown, featureKeys?: readonly string[]): string[] {
+  if (answers == null) return []
+  if (!Array.isArray(answers)) return [`${who}: answers must be a list.`]
+  const out: string[] = []
+  const seen = new Set<string>()
+  for (const a of answers as Row[]) {
+    const key = str(a?.key), value = String(a?.value ?? ''), quote = str(a?.quote), note = str(a?.note)
+    const what = `${who}, answer "${key || '?'}"`
+    if (!/^[a-z][a-z0-9_]{1,30}$/.test(key)) out.push(`${what}: the key is not a feature key.`)
+    else if (!featureKeys) out.push(`${what}: the feature list could not be read, so the key can't be checked.`)
+    else if (!featureKeys.includes(key)) out.push(`${what}: not in the feature list.`)
+    if (seen.has(key)) out.push(`${what}: appears twice.`)
+    seen.add(key)
+    if (!(FEATURE_ANSWERS as readonly string[]).includes(value)) out.push(`${what}: value "${value}" is not one of ${FEATURE_ANSWERS.join(', ')}.`)
+    if (QUOTED.includes(value) && !quote) out.push(`${what}: "${value}" needs the vendor's own words as a quote (35.an-4).`)
+    if (value === 'no' && quote && !saysNotOffered(quote, null)) out.push(`${what}: "no" needs a quote in which the vendor says it is not offered (35.ao-7) — silence is not_mentioned.`)
+    if (value === 'not_mentioned' && quote) out.push(`${what}: not_mentioned is silence — it carries no quote.`)
+    if (value === 'unknown' && !note) out.push(`${what}: unknown needs its reason in the note.`)
+    if (quote && !/^https?:\/\//i.test(str(a?.source_url))) out.push(`${what}: a quote needs the page it is on (source_url).`)
+    if (quote.length > QUOTE_MAX) out.push(`${what}: the quote is longer than ${QUOTE_MAX} characters.`)
+    if (note.length > 300) out.push(`${what}: the note is longer than 300 characters.`)
+  }
+  return out
 }
 
 const TRI = ['yes', 'no', 'unknown']
@@ -66,7 +109,7 @@ const planKey = (cid: unknown, cc: unknown, name: unknown) => `${cid}|${cc}|${na
 const domainOf = (url: unknown) => { const h = hostOf(typeof url === 'string' ? url : null); return h && !(APP_STORE_HOSTS as readonly string[]).includes(h) ? h : null }
 
 /** Every problem with the file, in plain words naming the row — empty when it can be imported. */
-export function researchProblems(file: ResearchFile): string[] {
+export function researchProblems(file: ResearchFile, opts: { featureKeys?: readonly string[] } = {}): string[] {
   if (!file || !Array.isArray(file.competitors) || !Array.isArray(file.plans) || !Array.isArray(file.entries) || !/^\d{4}-\d{2}-\d{2}$/.test(String(file.checked_on)))
     return ['The file is not in the expected shape (checked_on, competitors, plans, entries).']
   const out: string[] = []
@@ -79,6 +122,8 @@ export function researchProblems(file: ResearchFile): string[] {
     if (c.focus != null && !FOCUS.includes(String(c.focus))) out.push(`${who}: focus "${c.focus}" is not one the table allows.`)
     if (c.features_verified_at) out.push(`${who}: arrives verified — research must arrive unverified.`)
     if (c.lifecycle != null && !['active', 'candidate'].includes(String(c.lifecycle))) out.push(`${who}: lifecycle must be active or candidate.`)
+    out.push(...answerProblems(who, c.answers, opts.featureKeys))
+    if (c.request_check != null && typeof c.request_check !== 'boolean') out.push(`${who}: request_check must be true or false.`)
   }
   for (const p of file.plans) {
     const who = `Plan "${names.get(String(p.competitor_id)) ?? p.competitor_id} · ${p.plan_name}" (${p.country_code})`
@@ -108,8 +153,8 @@ export function researchProblems(file: ResearchFile): string[] {
 }
 
 /** Imports the file. Throws (with the step that failed, and what was already written) only when the database refuses a write. */
-export async function importResearch(store: ResearchStore, file: ResearchFile, stamp: { today: string; path: string }): Promise<ResearchCounts> {
-  const problems = researchProblems(file)
+export async function importResearch(store: ResearchStore, file: ResearchFile, stamp: { today: string; path: string; featureKeys?: readonly string[]; nowIso?: string }): Promise<ResearchCounts> {
+  const problems = researchProblems(file, { featureKeys: stamp.featureKeys })
   if (problems.length) throw new Error(`Nothing was written — the file has ${problems.length} problem${problems.length === 1 ? '' : 's'}: ${problems.slice(0, 8).join(' ')}`)
   const counts: ResearchCounts = { competitors: file.competitors.length, added: 0, updated: 0, upgraded: 0, plans: file.plans.length, plansAdded: 0, plansExisting: 0,
     entries: file.entries.length, entriesAdded: 0, entriesExisting: 0 }
@@ -122,19 +167,23 @@ export async function importResearch(store: ResearchStore, file: ResearchFile, s
     ?? existing.filter(r => nameKey(r.name) === nameKey(c.name)).sort((a, b) => rank(a) - rank(b))[0]
     ?? (domainOf(c.website) ? existing.filter(r => domainOf(r.website) === domainOf(c.website)).sort((a, b) => rank(a) - rank(b))[0] : undefined)
   const idOf = new Map<string, string>()
+  const requestedAt = stamp.nowIso ?? new Date().toISOString()
   try {
     for (const c of file.competitors) {
       const match = find(c)
       const fileCandidate = c.lifecycle === 'candidate'
       if (!match) {
         const { features_verified_at: _skip, ...all } = c   // eslint-disable-line @typescript-eslint/no-unused-vars
-        // The retired feature columns never reach the competitors table (they become answers below).
-        const row = Object.fromEntries(Object.entries(all).filter(([k]) => !(k in LEGACY_FEATURE_COLUMNS)))
+        // The retired feature columns never reach the competitors table (they become answers below), nor do the
+        // importer's own instructions (competitor-wtt-1: answers, request_check).
+        const row = Object.fromEntries(Object.entries(all).filter(([k]) => !(k in LEGACY_FEATURE_COLUMNS) && !ROW_ONLY.includes(k)))
         // A candidate row has had no features checked: no checked date, and added_as_candidate (hidden until verified).
         await store.insertCompetitor({ ...row, ...(fileCandidate ? { added_as_candidate: true } : {}),
+          ...(c.request_check === true ? { check_requested_at: requestedAt } : {}),
           features_checked_on: c.features_checked_on ?? (fileCandidate ? null : file.checked_on), features_verified_at: null })
         existing.push({ ...row, lifecycle: fileCandidate ? 'candidate' : 'active' })
         idOf.set(String(c.id), String(c.id)); counts.added++
+        if (c.request_check === true) counts.checksRequested = (counts.checksRequested ?? 0) + 1
         continue
       }
       idOf.set(String(c.id), String(match.id))
@@ -159,6 +208,7 @@ export async function importResearch(store: ResearchStore, file: ResearchFile, s
           cols.notes = COUNTRIES_MARK.test(notes) ? notes.replace(COUNTRIES_MARK, mark) : `${notes ? `${notes} · ` : ''}${stamp.path} · ${mark}`
         if (match.lifecycle === 'not_relevant') { cols.lifecycle = 'candidate'; cols.added_as_candidate = true }
       }
+      if (c.request_check === true) { cols.check_requested_at = requestedAt; counts.checksRequested = (counts.checksRequested ?? 0) + 1 }
       if (Object.keys(cols).length) { await store.updateCompetitor(String(match.id), cols); Object.assign(match, cols); counts.updated++ }
     }
   } catch (e) { throw new Error(`Competitors: ${msg(e)} (already written: ${done()}; the next run carries on).`) }
@@ -171,10 +221,23 @@ export async function importResearch(store: ResearchStore, file: ResearchFile, s
       const fresh: Row[] = [], placeholders: string[] = []
       for (const c of file.competitors) {
         const cid = idOf.get(String(c.id)) ?? String(c.id)
+        // competitor-wtt-1: the row's quoted answers first; they win over a legacy column for the same feature.
+        const answered = new Set<string>()
+        for (const a of (Array.isArray(c.answers) ? c.answers : []) as Row[]) {
+          const key = str(a.key)
+          answered.add(key)
+          const cur = current.find(r => r.competitor_id === cid && r.feature_key === key && r.country_code == null && r.superseded_at == null)
+          if (cur && says(cur)) continue
+          if (cur) placeholders.push(String(cur.id))
+          fresh.push({ competitor_id: cid, feature_key: key, country_code: null, value: a.value, note: str(a.note) || null,
+            quote: str(a.quote) || null, source_url: str(a.source_url) || null,
+            checked_on: c.features_checked_on ?? file.checked_on, verified_at: null, verified_by: null })
+        }
         for (const [col, m] of Object.entries(LEGACY_FEATURE_COLUMNS)) {
           const raw = c[col]
           const note = m.text && typeof raw === 'string' && raw.trim() ? raw.trim().slice(0, 300) : null
           if (m.text ? !note : raw !== 'yes' && raw !== 'no') continue
+          if (answered.has(m.key)) continue
           const cur = current.find(r => r.competitor_id === cid && r.feature_key === m.key && r.country_code == null && r.superseded_at == null)
           if (cur && says(cur)) continue
           if (cur) placeholders.push(String(cur.id))
