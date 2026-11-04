@@ -2,13 +2,13 @@
 
 *4 November 2026.*
 
-- **Committed on `main`:** migration `41de9294`; code `489b4f5f` (this report in the commit after it). Not pushed, not deployed.
-- **Migration 20261067:** run with `scripts/db-migrate.cjs` (one transaction, no error) and verified read-only. It adds two columns and fills them; no tick or show-on-website value was changed.
+- **Committed on `main`:** migration `41de9294`; code `489b4f5f`; report `1c33893a`. After your Q1 answer: migration `2c93bb3c` (20261070) and this updated report. Not pushed, not deployed.
+- **Migrations 20261067** (adds and fills two columns; no value changed) **and 20261070** (your Q1: unticks asap, options and staff): both run with `scripts/db-migrate.cjs` (one transaction each, no error) and verified read-only.
 
 > 🔴 **The import this brief wanted to stop has already run.**
 > - The daily run's first step imported the new feature list on **4 Nov at 09:02 UTC** (data_imports: `457d8f96…`, ok, `retiered 45`).
 > - It ticked **asap, options, staff and walkup** back on. Their show-on-website settings and allergens' untick survived.
-> - This change stops it happening again, but it does not put those four ticks back: that would change stored values, which needs your yes (§4).
+> - This change stops it happening again. **Your Q1 answer (4 Nov): untick asap, options and staff again, and leave walkup ticked** (a core, shown feature in the 3 Nov tiers). Done in migration 20261070 (§4).
 
 | # | Item | Outcome |
 |---|---|---|
@@ -83,8 +83,8 @@ Both CHECKs are in place (`checked_by` / `scope_by` null or admin / file).
 | Feature | Tier | Checked | Shown | Set by |
 |---|---|---|---|---|
 | preorder, capacity, ahead, schedule, stock, notify, menuphoto | core | ✓ | all | file |
-| **walkup** | core | ✓ ⚠️ | all | **admin** (unticked by Admin 2 Nov, re-ticked by the 4 Nov import) |
-| **asap** | core | ✓ ⚠️ | hidden | **admin** (the same) |
+| **walkup** | core | ✓ | all | **admin** (unticked 2 Nov, re-ticked by the 4 Nov import; **left ticked by your Q1**) |
+| **asap** | core | — | hidden | **admin** (unticked again by 20261070, Q1) |
 | cards, kds, tickets, offline, vans, domain, whatsapp, social, ipad, android, hardware, terminal | core | ✓ | all | file |
 | custfee | core | ✓ | hidden | file |
 | localpay | core | ✓ | some: PL, NL, BE, SE, DK, NO, CH | file |
@@ -94,14 +94,14 @@ Both CHECKs are in place (`checked_by` / `scope_by` null or admin / file).
 | delivery | secondary | ✓ | all | file |
 | fiscal | secondary | ✓ | some: DE, AT, CZ, SE, BE, PL, IT, HU | file |
 | tips, payattruck, paymethods, igmsg, loyalty, reports, private | secondary | ✓ | hidden | file |
-| **options**, **staff** | secondary | ✓ ⚠️ | hidden | **admin** (the same) |
+| **options**, **staff** | secondary | — | hidden | **admin** (unticked again by 20261070, Q1) |
 | allergens | off | — | all (its stored answers still show) | admin |
 | deals, qr, buzzers | off | — | hidden | file |
 
-**Totals:**
-- **42 checked, 4 not** (the off tier).
-- **Shown:** 28 everywhere (allergens included), 4 in some countries, 14 hidden.
-- ⚠️ **If you say yes to §4, 38 are checked:** asap, options, staff and walkup become unticked, and nothing about where they show changes.
+**Totals** (read-only, after 20261070):
+- **39 checked, 7 not:** the off tier, plus asap, options and staff.
+- **Shown:** 28 everywhere (allergens included), 4 in some countries, 14 hidden. Nothing about where any of them shows changed.
+- **walkup is ticked and marked as yours** (`checked_by = 'admin'`, from the backfill: you had edited the row). The importer will keep it ticked. If you'd rather a later feature file decide its tick, it can be marked 'file' instead; say if so.
 
 ## 3 · The Czech FAQ failure
 
@@ -131,15 +131,47 @@ Both CHECKs are in place (`checked_by` / `scope_by` null or admin / file).
   - Each hourly retry costs one small model call (one question into one language) and is refused the same way.
   - After the push, the next run's retry passes, and the question shows on the Czech FAQ page.
 
-## 4 · Waiting for your decision
+## 4 · Your decision (Q1) — applied
+
+**Your answer (4 Nov):** "Untick asap, options and staff with a migration (checked → false, marked as mine). Leave walkup ticked — it's a core, shown feature in the 3 Nov tiers."
+
+`supabase/migrations/20261070_import_and_cs_fix_untick.sql`, committed `2c93bb3c`:
 
 ```
-Q1. The 4 Nov 09:02 UTC import ticked asap, options, staff and walkup back on (you had unticked them in Admin on 2 Nov).
-    Their show-on-website settings were kept. From now on the importer never undoes your choices, but these four are still ticked.
-    Shall I untick them again with a migration (only `checked` → false on those four keys; they stay marked as yours)?
-    A) Yes — untick the four (recommended: it is what you set on 2 Nov)
-    B) No — leave them ticked (you can untick them in Admin › Pricing check › Feature list yourself at any time)
+npx -y -p pg@8.13.1 node scripts/db-migrate.cjs supabase/migrations/20261070_import_and_cs_fix_untick.sql
+db-migrate: supabase/migrations/20261070_import_and_cs_fix_untick.sql · sha256 762b522cf0a81dc8 · committed at 2c93bb3c
+db-migrate: supabase/migrations/20261070_import_and_cs_fix_untick.sql applied — one transaction, no error
 ```
+
+```sql
+begin;
+update public.comparison_features
+   set checked = false, checked_by = 'admin', updated_at = now()
+ where key in ('asap', 'options', 'staff') and checked = true;
+commit;
+```
+
+**Verify (read-only):**
+
+```sql
+select key, checked, checked_by, show_scope, scope_by, tier from comparison_features where key in ('asap','options','staff','walkup','allergens') order by key;
+select count(*) filter (where checked) as checked, count(*) filter (where not checked) as unchecked, count(*) filter (where show_scope='all') as shown_all,
+  count(*) filter (where show_scope='some') as shown_some, count(*) filter (where show_scope='hidden') as hidden, count(*) as total from comparison_features;
+```
+
+| key | checked | checked_by | show_scope | scope_by | tier |
+|---|---|---|---|---|---|
+| allergens | false | admin | all | admin | off |
+| asap | **false** | admin | hidden | admin | core |
+| options | **false** | admin | hidden | admin | secondary |
+| staff | **false** | admin | hidden | admin | secondary |
+| walkup | true | admin | all | admin | core |
+
+| checked | unchecked | shown_all | shown_some | hidden | total |
+|---|---|---|---|---|---|
+| 39 | 7 | 28 | 4 | 14 | 46 |
+
+**Effect on the checker:** asap, options and staff are no longer asked about. Their stored answers are kept, and where they show is unchanged.
 
 ## 5 · Proof
 
