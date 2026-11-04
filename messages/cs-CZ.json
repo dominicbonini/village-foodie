@@ -5827,9 +5827,6 @@
       "tap_to_pay": {
         "name": "Platby kartou na vašem telefonu"
       },
-      "advanced_reporting": {
-        "name": "Pokročilé reporty"
-      },
       "sms_order_alerts": {
         "name": "SMS upozornění na objednávky"
       },
@@ -5847,6 +5844,15 @@
       },
       "buzzer_tracking": {
         "name": "Vyvolávací pagery"
+      },
+      "documents_reminders": {
+        "name": "Dokumenty a připomenutí"
+      },
+      "profit_per_event": {
+        "name": "Zisk z každé akce"
+      },
+      "accountant_reports": {
+        "name": "Přehledy pro účetní"
       },
       "ticket_printing": {
         "name": "Tisk kuchyňských lístků"
@@ -6143,7 +6149,9 @@
       "sold_out_toggle": "Označte jakoukoli položku jako vyprodanou jedním klepnutím — zákazníkům okamžitě zešedne.",
       "stock_countdown": "Nastavte počet kusů a ten se s příchozími objednávkami odečítá, dokud se položka automaticky nevyprodá.",
       "buzzer_tracking": "Přiřaďte objednávce číslo vyvolávacího pageru, když ho zákazníkovi předáte, ať víte, který pager patří ke které objednávce.",
-      "advanced_reporting": "Rozdělte tržby podle období, položky a akce a uvidíte, co se opravdu prodává.",
+      "documents_reminders": "Mějte své certifikáty na jednom místě – například k hygieně potravin, pojištění a bezpečnosti plynu. Připomeneme vám je, než cokoli vyprší, a jedním klepnutím je pošlete organizátorovi akce nebo trhu.",
+      "profit_per_event": "Zadejte, kolik vás stojí každé jídlo, a uvidíte, kolik jste na každé akci skutečně vydělali, ne jen tržby.",
+      "accountant_reports": "Prodeje, daně a refundace za libovolný měsíc, čtvrtletí nebo zdaňovací období, připravené ke stažení pro účetní.",
       "tap_to_pay": "Přijímejte platby kartou na podporovaném telefonu, bez samostatného platebního terminálu.",
       "customer_display": "Obrazovka viditelná pro zákazníky, která ukazuje čísla objednávek a kdy jsou hotové.",
       "online_payments": "Přijímejte platbu kartou předem, když zákazníci objednávají online, přes Stripe.",

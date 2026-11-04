@@ -761,6 +761,9 @@
       },
       "tap_to_pay": {
         "name": "Cobra con tu celular"
+      },
+      "accountant_reports": {
+        "name": "Reportes para tu contador"
       }
     },
     "priceWord": {
@@ -796,7 +799,9 @@
       "tap_to_pay": "Cobra con tarjeta desde un celular compatible, sin necesidad de una terminal aparte.",
       "qr_code": "Un código QR imprimible que abre tu menú y tu página de pedidos.",
       "schedule_import": "Llenamos tu agenda automáticamente — desde tu web o desde una foto que ya publicas en Facebook. Tú solo revisas y confirmas.",
-      "whatsapp_auto_replies": "Respuestas automáticas de WhatsApp a las consultas sobre tu menú y tu agenda."
+      "whatsapp_auto_replies": "Respuestas automáticas de WhatsApp a las consultas sobre tu menú y tu agenda.",
+      "documents_reminders": "Guarda tus certificados en un solo lugar, como higiene alimentaria, seguro y seguridad del gas. Te avisamos antes de que venza algo y puedes enviarlos al organizador de un evento o mercado con un toque.",
+      "accountant_reports": "Ventas, impuestos y reembolsos de cualquier mes, trimestre o año fiscal, listos para descargar para tu contador."
     }
   },
   "compare": {

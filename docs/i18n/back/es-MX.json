@@ -412,5 +412,8 @@
  "whatsappCustomer.allergenCaveat": "See the full menu for allergen information — this is an automatic reply.",
  "whatsappCustomer.allergenRedirect": "{opener}Here you can see our full menu and the allergen information: {url} — {truck} {emoji}",
  "whatsappCustomer.menuFallback": "{opener}Check out our full menu here: {url} — {truck} {emoji}",
- "whatsappCustomer.menuSummary": "{opener}We have {summary}. Check out the full menu and place your advance order here: {url} — {truck} {emoji}"
+ "whatsappCustomer.menuSummary": "{opener}We have {summary}. Check out the full menu and place your advance order here: {url} — {truck} {emoji}",
+ "featuresPage.detail.documents_reminders": "Keep your certificates in one place, such as food hygiene, insurance and gas safety. We let you know before something falls due and you can send them to the organiser of an event or market with one tap.",
+ "planFeatures.row.accountant_reports.name": "Reports for your accountant (contador)",
+ "featuresPage.detail.accountant_reports": "Sales, taxes and refunds for any month, quarter or fiscal year, ready to download for your accountant."
 }

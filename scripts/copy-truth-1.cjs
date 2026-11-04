@@ -63,6 +63,7 @@ const LOCALE = { GB: 'en-GB', US: 'en-US', BR: 'pt-BR', JP: 'ja-JP' }
 // _lp-store-badges-1.cjs strip, both sides; the badges follow the app flags now and are proven by scripts/store-badges-1.cjs).
 const SB1 = require('./_lp-store-badges-1.cjs')
 const SG2 = require('./_lp-seo-geo-2.cjs')   // eslint-disable-line @typescript-eslint/no-require-imports -- CommonJS harness module (seo-geo-2)
+const FL1 = require('./_lp-features-list-1.cjs')   // eslint-disable-line @typescript-eslint/no-require-imports -- ⚠️ RE-PINNED (features-list-1): see its uses below
 
 ;(async () => {
   const T = await kit.bundle('ct1-words', [
@@ -173,6 +174,10 @@ const SG2 = require('./_lp-seo-geo-2.cjs')   // eslint-disable-line @typescript-
   // ⚠️ RE-PINNED (seo-geo-2 B4, 2 November 2026): /llms.txt is rebuilt on purpose (Features, the English FAQ, every country's lines in
   // English) — not compared with HEAD any more; scripts/seo-geo-2.cjs §5 proves its content. Here: it carries the new section.
   if (SG2.LANDED) { delete pinned.llms; t('llms: rebuilt by seo-geo-2 B4 (not compared with HEAD; its content is proven by seo-geo-2.cjs) — it carries the Features section', /\n## Features\n/.test(llmsText)) }
+  // ⚠️ RE-PINNED (features-list-1, 4 November 2026): /features' table changed on purpose (three rows in, Advanced reporting out), so
+  // its HEAD pins no longer hold. scripts/features-list-1.cjs (capture / compare) proves every byte of /features outside those rows
+  // identical to the commit before it; the offline description itself is still checked below.
+  if (FL1.LANDED) { for (const cc of ['GB', 'US']) delete pinned[`${cc}/features`]; t('GB/features, US/features: the table changed on purpose by features-list-1 (not compared with HEAD; scripts/features-list-1.cjs proves the rest of the page) — the new rows in, Advanced reporting out', ['GB', 'US'].every(cc => cut[`${cc}/features`].includes('>Documents and reminders<') && cut[`${cc}/features`].includes('>Reports for your accountant<') && !cut[`${cc}/features`].includes('>Advanced reporting<'))) }
   for (const k of Object.keys(pinned)) t(`${k}: identical to HEAD${/landing|features/.test(k) ? ' apart from the offline text' : k === 'sitemap' ? ' apart from lastmod' : ''}`, out[k] === pinned[k], { now: out[k], head: pinned[k] })
   t('the landing offline line is the new sentence everywhere', ['GB', 'US', 'BR', 'JP'].every(cc => cut[`${cc}/landing`].includes(`<p>${newLanding(cc, cc === 'GB')}</p>`)))
   t('GB (both app flags on) keeps the apps sentence: "…Carry on taking orders with the iPhone, iPad and Android app."', cut['GB/landing'].includes('if you lose signal, so customers can’t place orders you won’t see. Carry on taking orders with the iPhone, iPad and Android app.</p>'))
@@ -180,7 +185,8 @@ const SG2 = require('./_lp-seo-geo-2.cjs')   // eslint-disable-line @typescript-
   t('GB /features keeps its apps sentence after the offline description', cut['GB/features'].includes(newFeatures('GB', true)))
   const off = await views('ct1-gb-off', cc => newLanding(cc, false), cc => newFeatures(cc, false), false)
   t('with GB\'s app flags switched off, GB loses the apps sentence too (it follows the flags, not the country)', off.cut['GB/landing'].includes(`<p>${newLanding('GB', false)}</p>`) && !off.cut['GB/landing'].includes(tl('GB')('does.offlineApps')))
-  t('MARKETING_COPY_UPDATED moved to 2026-11-02 (35.aj-8)', W.MARKETING_COPY_UPDATED === '2026-11-02')
+  // ⚠️ RE-PINNED (features-list-1, 4 November 2026): moved on again to 2026-11-04 for the /features table (35.aj-8).
+  t(FL1.LANDED ? 'MARKETING_COPY_UPDATED moved to 2026-11-02 (35.aj-8), then on to 2026-11-04 by features-list-1' : 'MARKETING_COPY_UPDATED moved to 2026-11-02 (35.aj-8)', W.MARKETING_COPY_UPDATED === (FL1.LANDED ? '2026-11-04' : '2026-11-02'))
 
   console.log(`\ncopy-truth-1: ${pass} passed, ${fail} failed`)
   process.exit(fail ? 1 : 0)

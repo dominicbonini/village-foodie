@@ -66,9 +66,6 @@
     "tap_to_pay": {
       "name": "Betalingen ontvangen op je telefoon"
     },
-    "advanced_reporting": {
-      "name": "Uitgebreide rapportage"
-    },
     "sms_order_alerts": {
       "name": "Bestelmeldingen via sms"
     },
@@ -86,6 +83,15 @@
     },
     "buzzer_tracking": {
       "name": "Buzzers koppelen aan bestellingen"
+    },
+    "documents_reminders": {
+      "name": "Documenten en herinneringen"
+    },
+    "profit_per_event": {
+      "name": "Winst per evenement"
+    },
+    "accountant_reports": {
+      "name": "Rapporten voor je boekhouder"
     },
     "ticket_printing": {
       "name": "Keukenbonnen printen"

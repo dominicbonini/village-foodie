@@ -184,7 +184,8 @@ const withFourth = () => {
     tblNames.includes('What you pay Online orders included each month — £4,000 Unlimited HatchGrab fee on online card orders* 0.99% 0.99% above £4,000 0% Walk-up orders Free Free Free Run your service') && !/Pay at Hatch/.test(tblNames), tblNames.slice(0, 400))
   t('three groups in order: Run your service, Online orders, Marketing & automation', inOrder(tt, ['Run your service', 'Online orders', 'Marketing & automation']))
   const rowsIn = count(tbl, 'role="rowheader"')
-  t('every feature row (32) + 3 money rows + 4 group rows', rowsIn === 32 + 3 + 4, rowsIn)
+  // ⚠️ RE-PINNED (features-list-1, 4 November 2026): 34 feature rows (Advanced reporting off; three rows added).
+  t('every feature row (34) + 3 money rows + 4 group rows', rowsIn === 34 + 3 + 4, rowsIn)
   // ⚠️ pricing-tidy (20 October 2026): two disclosures restored — markers on the rows, footnotes under the card-fee one.
   // ⚠️ RE-PINNED (compare-tidy F1, 20 October 2026): the markers follow ROW POSITION — Kitchen ticket printing (Run your
   // service) ¹, WhatsApp auto-replies (Marketing) ², and the footnotes in that order.
@@ -215,11 +216,13 @@ const withFourth = () => {
     const FT = (await ctx.bundle('pp-ft', "export { FEATURE_TABLE } from '@/lib/feature-table'")).FEATURE_TABLE
     t('restore: the old eyebrow "Compare" above the one h1', /<section class="band features-page"><div class="wrap"><p class="eyebrow">Compare<\/p><h1>Everything to run your service, on every plan\.<\/h1>/.test(featGB) && count(featGB, '<h1') === 1)
     const descs = [...tbl.matchAll(/<span class="pt-desc">(.*?)<\/span>/g)].map(m => text(m[1]))
-    t('restore: every capability row (32) has its description, in table order, from featuresPage.detail; the money rows have none',
-      descs.length === 32 && FT.length === 32 && JSON.stringify(descs) === JSON.stringify(FT.map(r => text(msgs.detail[r.id]))), { n: descs.length, first: descs.slice(0, 2) })
+    // ⚠️ RE-PINNED (features-list-1, 4 November 2026, docs/features-list-1-report.md): 34 rows — "Advanced reporting" off, and
+    // Documents and reminders, Profit per event and Reports for your accountant added (scripts/features-list-1.cjs).
+    t('restore: every capability row (34) has its description, in table order, from featuresPage.detail; the money rows have none',
+      descs.length === 34 && FT.length === 34 && JSON.stringify(descs) === JSON.stringify(FT.map(r => text(msgs.detail[r.id]))), { n: descs.length, first: descs.slice(0, 2) })
     const PLANISH = /\b(Starter|Max|Pro|Unlimited|Pay as you go|trial|plan|plans|tier)\b|[0-9£$€%]|first month|allowance|\bfee\b/i
     const bad = [...Object.entries(msgs.detail), ...Object.entries(usMsgs.detail)].filter(([, v]) => PLANISH.test(v))
-    t('restore: no description names a plan, a number, a price, an allowance or a fee (en-GB and en-US)', bad.length === 0 && Object.keys(msgs.detail).length === 32, bad)
+    t('restore: no description names a plan, a number, a price, an allowance or a fee (en-GB and en-US)', bad.length === 0 && Object.keys(msgs.detail).length === 34, bad)   // ⚠️ RE-PINNED (features-list-1): 34
     t('restore: the old cell glyphs — a text ✓ (no drawn tick), the faint —, an italic "Coming soon"', tbl.includes('<span class="pt-yes" aria-label="Included">✓</span>') && !tbl.includes('<svg') && tbl.includes('class="pt-soon"'))
     const featUS = await page('features', 'US')
     t('restore: US — the en-US descriptions ("grays out", "pickup time slot", "inquiries")', /grays out for customers right away/.test(featUS) && /Customers choose a pickup time slot/.test(featUS) && /WhatsApp inquiries/.test(featUS) && !/greys out/.test(featUS))
@@ -293,7 +296,7 @@ const withFourth = () => {
   // ⚠️ RE-PINNED (landing-mobile-tidy, 21 October 2026): the PDF's bar carries the same approved wording as the page.
   t('the cheapest bar', dt.includes('Which plan is cheapest for me? Your online orders each month Under £2,900 → Pay as you go · £2,900 – £8,000 → Pro · Over £8,000 → Unlimited'), dt.match(/Which plan.{0,200}/))
   t('the table: plan columns with "/ month", WHAT YOU PAY, the three groups, every row', inOrder(dt, ['Pay as you go £0 / month', 'Pro £29 / month', 'Unlimited £69 / month', 'What you pay', 'Online orders included each month', '£4,000', 'Unlimited', '0.99% above £4,000', 'Run your service', 'Online orders', 'Marketing & automation'])
-    && count(pdfGB, '<tr><td class="f">') === 32 + 3 && !/Pay at Hatch orders|Online ordering — Pay at Hatch/.test(dt))
+    && count(pdfGB, '<tr><td class="f">') === 34 + 3 /* ⚠️ RE-PINNED (features-list-1): 34 feature rows */ && !/Pay at Hatch orders|Online ordering — Pay at Hatch/.test(dt))
   t('the Pro column is highlighted', count(pdfGB, '<th class="c hl">') === 1 && /<th class="c hl"><div class="th-plan">Pro</.test(pdfGB))
   t('the footnote, and the existing styling (wordmark header, A4, the drawn tick)', FOOTNOTE_GB.test(dt) && pdfGB.includes('size: A4') && pdfGB.includes('class="doc-head"') && pdfGB.includes('<svg class="tick"'))
   t('no retired copy (Starter / Max / allowance heading)', !/\bStarter\b|\bMax\b|Online order allowance/.test(dt))

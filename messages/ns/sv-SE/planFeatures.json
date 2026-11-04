@@ -66,9 +66,6 @@
     "tap_to_pay": {
       "name": "Ta betalt med mobilen"
     },
-    "advanced_reporting": {
-      "name": "Avancerad rapportering"
-    },
     "sms_order_alerts": {
       "name": "SMS-aviseringar om beställningar"
     },
@@ -86,6 +83,15 @@
     },
     "buzzer_tracking": {
       "name": "Pagerhantering"
+    },
+    "documents_reminders": {
+      "name": "Dokument och påminnelser"
+    },
+    "profit_per_event": {
+      "name": "Vinst per evenemang"
+    },
+    "accountant_reports": {
+      "name": "Rapporter till din redovisningskonsult"
     },
     "ticket_printing": {
       "name": "Utskrift av köksbongar"

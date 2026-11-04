@@ -66,9 +66,6 @@
     "tap_to_pay": {
       "name": "Platby kartou na vašem telefonu"
     },
-    "advanced_reporting": {
-      "name": "Pokročilé reporty"
-    },
     "sms_order_alerts": {
       "name": "SMS upozornění na objednávky"
     },
@@ -86,6 +83,15 @@
     },
     "buzzer_tracking": {
       "name": "Vyvolávací pagery"
+    },
+    "documents_reminders": {
+      "name": "Dokumenty a připomenutí"
+    },
+    "profit_per_event": {
+      "name": "Zisk z každé akce"
+    },
+    "accountant_reports": {
+      "name": "Přehledy pro účetní"
     },
     "ticket_printing": {
       "name": "Tisk kuchyňských lístků"

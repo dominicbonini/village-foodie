@@ -66,9 +66,6 @@
     "tap_to_pay": {
       "name": "Maksujen vastaanotto puhelimella"
     },
-    "advanced_reporting": {
-      "name": "Laaja raportointi"
-    },
     "sms_order_alerts": {
       "name": "Tilausilmoitukset tekstiviestillä"
     },
@@ -86,6 +83,15 @@
     },
     "buzzer_tracking": {
       "name": "Summereiden seuranta"
+    },
+    "documents_reminders": {
+      "name": "Asiakirjat ja muistutukset"
+    },
+    "profit_per_event": {
+      "name": "Tuotto tapahtumittain"
+    },
+    "accountant_reports": {
+      "name": "Raportit kirjanpitäjällesi"
     },
     "ticket_printing": {
       "name": "Keittiölappujen tulostus"

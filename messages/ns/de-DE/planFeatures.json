@@ -66,9 +66,6 @@
     "tap_to_pay": {
       "name": "Zahlungen auf dem Smartphone annehmen"
     },
-    "advanced_reporting": {
-      "name": "Erweiterte Auswertungen"
-    },
     "sms_order_alerts": {
       "name": "SMS-Benachrichtigungen"
     },
@@ -86,6 +83,15 @@
     },
     "buzzer_tracking": {
       "name": "Pager-Zuordnung"
+    },
+    "documents_reminders": {
+      "name": "Dokumente und Erinnerungen"
+    },
+    "profit_per_event": {
+      "name": "Gewinn pro Event"
+    },
+    "accountant_reports": {
+      "name": "Berichte für Ihre Steuerberatung"
     },
     "ticket_printing": {
       "name": "Druck von Küchenbons"

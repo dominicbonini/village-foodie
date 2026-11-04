@@ -66,9 +66,6 @@
     "tap_to_pay": {
       "name": "Terima bayaran di telefon anda"
     },
-    "advanced_reporting": {
-      "name": "Laporan lanjutan"
-    },
     "sms_order_alerts": {
       "name": "Makluman pesanan melalui SMS"
     },
@@ -86,6 +83,15 @@
     },
     "buzzer_tracking": {
       "name": "Penjejakan buzzer"
+    },
+    "documents_reminders": {
+      "name": "Dokumen dan peringatan"
+    },
+    "profit_per_event": {
+      "name": "Keuntungan setiap acara"
+    },
+    "accountant_reports": {
+      "name": "Laporan untuk akauntan anda"
     },
     "ticket_printing": {
       "name": "Cetakan tiket dapur"

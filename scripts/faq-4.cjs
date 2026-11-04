@@ -26,6 +26,7 @@ const LP1E = require('./_lp1e-fixtures.cjs')
 const WF = require('./_world-countries-1-fixtures.cjs')
 const SG2 = require('./_lp-seo-geo-2.cjs')
 const SB1 = require('./_lp-store-badges-1.cjs')
+const FL1 = require('./_lp-features-list-1.cjs')   // ⚠️ RE-PINNED (features-list-1): see §4
 const FIX = require('./fixtures/faq-3-rows.json')
 const TR = require('./fixtures/faq-2-translations.json')
 const IDENTITY = path.join(REPO, 'scripts/fixtures/faq-4-identity.json')
@@ -190,7 +191,10 @@ const navOf = html => (/<nav[\s\S]*?<\/nav>/.exec(String(html)) || [''])[0]
   for (const seg of ['uk', 'de']) {
     const r = await renderPage(ctx, M, M.Features, seg, tablesWith(TRANS))
     dump(`features:${seg}`, noFaqLink(r.html))
-    if (want) t(`/${seg}/features: byte-identical to a97c2a58 through the shared frame (MarketingFrame), apart from the footer FAQ link`, sha(noFaqLink(r.html)) === want[`features:${seg}`]?.sha256, { now: sha(noFaqLink(r.html)), head: want[`features:${seg}`] })
+    // ⚠️ RE-PINNED (features-list-1, 4 November 2026): the table's three new rows are put back to the old "Advanced reporting" row
+    // (PRECISE, scripts/_lp-features-list-1.cjs featuresRowsBack) before the comparison; every other byte is still compared.
+    const asBefore = FL1.LANDED ? FL1.featuresRowsBack(noFaqLink(r.html), seg === 'uk' ? 'en-GB' : 'de-DE') : noFaqLink(r.html)
+    if (want) t(`/${seg}/features: byte-identical to a97c2a58 through the shared frame (MarketingFrame), apart from the footer FAQ link${FL1.LANDED ? ' and features-list-1\'s rows' : ''}`, sha(asBefore) === want[`features:${seg}`]?.sha256, { now: sha(asBefore), head: want[`features:${seg}`] })
   }
   t('/features and /faq share one frame (components/landing/MarketingFrame.tsx), not a copy', /<MarketingFrame visitor=\{visitor\}>/.test(read('app/features/page.tsx')) && /<MarketingFrame visitor=\{visitor\}>/.test(read('app/faq/page.tsx')) && !/Archivo\(/.test(read('app/features/page.tsx')) && /<FaqDetails items=\{sec\.items\} className="faq-q" \/>/.test(read('app/faq/page.tsx')))
 

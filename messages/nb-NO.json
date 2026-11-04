@@ -5827,9 +5827,6 @@
       "tap_to_pay": {
         "name": "Ta betalt med telefonen"
       },
-      "advanced_reporting": {
-        "name": "Avansert rapportering"
-      },
       "sms_order_alerts": {
         "name": "SMS-varsler om bestillinger"
       },
@@ -5847,6 +5844,15 @@
       },
       "buzzer_tracking": {
         "name": "Sporing av personsøkere"
+      },
+      "documents_reminders": {
+        "name": "Dokumenter og påminnelser"
+      },
+      "profit_per_event": {
+        "name": "Fortjeneste per arrangement"
+      },
+      "accountant_reports": {
+        "name": "Rapporter til regnskapsføreren din"
       },
       "ticket_printing": {
         "name": "Utskrift av kjøkkenbonger"
@@ -6143,7 +6149,9 @@
       "sold_out_toggle": "Merk en rett som utsolgt med ett trykk — den blir grået ut for kundene med en gang.",
       "stock_countdown": "Angi et lagertall, så telles det ned etter hvert som bestillingene kommer inn, og retten blir automatisk utsolgt.",
       "buzzer_tracking": "Gi bestillingen et personsøkernummer når du deler ut en personsøker, så du vet hvilken personsøker som hører til hvilken bestilling.",
-      "advanced_reporting": "Bryt ned salget etter periode, rett og arrangement for å se hva som virkelig selger.",
+      "documents_reminders": "Samle sertifikatene dine på ett sted, for eksempel mathygiene, forsikring og gassikkerhet. Vi minner deg på det før noe utløper, og du kan sende dem til arrangøren av et arrangement eller et marked med ett trykk.",
+      "profit_per_event": "Legg inn hva hver rett koster deg, og se hva du faktisk tjente på hvert arrangement – ikke bare omsetningen.",
+      "accountant_reports": "Salg, mva. og refusjoner for hvilken som helst måned, kvartal eller regnskapsår, klare til nedlasting for regnskapsføreren din.",
       "tap_to_pay": "Ta imot kortbetaling på en støttet telefon, så du ikke trenger en egen betalingsterminal.",
       "customer_display": "En skjerm kundene ser, som viser bestillingsnumre og når bestillingene er klare.",
       "online_payments": "Ta betalt med kort på forhånd når kundene bestiller på nett, via Stripe.",

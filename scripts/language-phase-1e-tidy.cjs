@@ -121,6 +121,10 @@ const NAMED = [
   // every earlier item, one copy in scripts/_lp-copy-truth-1.cjs.
   // eslint-disable-next-line @typescript-eslint/no-require-imports -- CommonJS harness module (copy-truth-1)
   ...require('./_lp-copy-truth-1.cjs').ITEMS.map(P => ({ id: P.id, what: P.what, applies: id => P.views(id), apply: (v, id) => P.apply(id, v) })),
+  // ⚠️ RE-PINNED (features-list-1, 4 November 2026): the country pages' sitemap lastmod moves on to 2026-11-04. PRECISE, after
+  // copy-truth-1's item, one copy in scripts/_lp-features-list-1.cjs.
+  // eslint-disable-next-line @typescript-eslint/no-require-imports -- CommonJS harness module (features-list-1)
+  ...require('./_lp-features-list-1.cjs').ITEMS.map(P => ({ id: P.id, what: P.what, applies: id => P.views(id), apply: (v, id) => P.apply(id, v) })),
   // ⚠️ RE-PINNED (seo-geo-2 B3, 2 November 2026): the landing JSON-LD's operatingSystem, true per country — one copy in
   // scripts/_lp-seo-geo-2.cjs.
   ...require('./_lp-seo-geo-2.cjs').ITEMS.map(P => ({ id: P.id, what: P.what, applies: id => P.views(id), apply: (v, id) => P.apply(id, v) })),

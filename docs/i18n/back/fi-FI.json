@@ -1973,7 +1973,6 @@
  "eventTypes.typeGone": "This type no longer exists.",
  "eventTypes.vanGone": "This food truck no longer exists.",
  "featuresPage.detail.advance_preordering": "Let customers order for a future day or time before the event.",
- "featuresPage.detail.advanced_reporting": "Break down sales by date range, item and event and see what really sells.",
  "featuresPage.detail.auto_accept": "Online orders are accepted automatically — you don’t need to confirm each one separately.",
  "featuresPage.detail.branded_qr_code": "Add your logo to the QR code.",
  "featuresPage.detail.buzzer_tracking": "Attach a buzzer number to an order when you give a buzzer to a customer, so you know which buzzer belongs to which order.",
@@ -4157,7 +4156,6 @@
  "planFeatures.priceWord.unlimited": "Unlimited",
  "planFeatures.priceWord.zeroPercent": "0%",
  "planFeatures.row.advance_preordering.name": "Pre-orders",
- "planFeatures.row.advanced_reporting.name": "Extensive reporting",
  "planFeatures.row.auto_accept.name": "Automatic acceptance of online orders",
  "planFeatures.row.branded_qr_code.name": "QR code with your own logo",
  "planFeatures.row.buzzer_tracking.name": "Buzzer tracking",
@@ -5351,5 +5349,11 @@
  "errorsManage.paperwork_not_found": "The document can no longer be found. Reload the page.",
  "errorsManage.paperwork_bad_details": "Some of the details are not right. Check them and try again.",
  "errorsManage.paperwork_send_limit": "You have sent a lot of links in a short time. Try again in an hour.",
- "errorsManage.paperwork_send_failed": "The email could not be sent. Try again."
+ "errorsManage.paperwork_send_failed": "The email could not be sent. Try again.",
+ "planFeatures.row.documents_reminders.name": "Documents and reminders",
+ "featuresPage.detail.documents_reminders": "Keep your certificates in one place, such as food hygiene, insurance and gas safety. We remind you before anything expires, and you can send them with one tap to the organiser of an event or market.",
+ "planFeatures.row.profit_per_event.name": "Profit by event",
+ "featuresPage.detail.profit_per_event": "Say what each portion costs you, and see what you really earned at each event – not just sales.",
+ "planFeatures.row.accountant_reports.name": "Reports for your accountant",
+ "featuresPage.detail.accountant_reports": "Sales, taxes and refunds for any month, quarter or tax year, ready to download for your accountant."
 }

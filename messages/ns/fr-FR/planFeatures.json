@@ -66,9 +66,6 @@
     "tap_to_pay": {
       "name": "Encaissement sur votre téléphone"
     },
-    "advanced_reporting": {
-      "name": "Rapports avancés"
-    },
     "sms_order_alerts": {
       "name": "Alertes de commande par SMS"
     },
@@ -86,6 +83,15 @@
     },
     "buzzer_tracking": {
       "name": "Suivi des bipeurs"
+    },
+    "documents_reminders": {
+      "name": "Documents et rappels"
+    },
+    "profit_per_event": {
+      "name": "Bénéfice par événement"
+    },
+    "accountant_reports": {
+      "name": "Rapports pour votre comptable"
     },
     "ticket_printing": {
       "name": "Impression des tickets cuisine"

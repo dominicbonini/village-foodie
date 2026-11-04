@@ -47,5 +47,7 @@ export function countryPageAlternates(page: MarketingPage, code: string, alterna
  * copy-truth-1 (2 November 2026): moved for the offline line on the landing page and /features (offline protection is switched
  * on by the truck, and the apps sentence shows only where the apps are in the stores).
  * faq-3 (2 November 2026): moved for the FAQ section on the English landing pages — the same day, so the value stands.
+ * features-list-1 (4 November 2026): moved for /features — three new rows (Documents and reminders, Profit per event, Reports
+ * for your accountant) and "Advanced reporting" taken off. The landing pages' copy is unchanged; only the sitemap reads this.
  */
-export const MARKETING_COPY_UPDATED = '2026-11-02'
+export const MARKETING_COPY_UPDATED = '2026-11-04'

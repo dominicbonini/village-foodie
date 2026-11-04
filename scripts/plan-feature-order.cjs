@@ -91,11 +91,14 @@ head('2 · the same rows, the same words, the same gates')
 {
   /* 🔴 THE FULL LIST, PINNED BY NAME (en-GB words). ⛔ NOT A COUNT: a count is satisfied by swapping two rows for two others. */
   const EXPECTED = [
+    // ⚠️ RE-PINNED (features-list-1, Dominic, 4 November 2026, docs/features-list-1-report.md): 'Advanced reporting' (coming soon)
+    // removed; 'Documents and reminders', 'Profit per event' and 'Reports for your accountant' after 'Buzzer tracking', the
+    // "Coming soon" rows still last.
     ['run', [
       'Walk-up order processing', 'iPhone, iPad and Android kitchen app', 'Multi-device kitchen sync', 'Multi-user access',
       'Offline order protection', 'Kitchen ticket printing', 'Universal web dashboard', 'Meal deals & upsells',
-      'Instant sold-out toggle', 'Automated stock countdown', 'Buzzer tracking', 'Advanced reporting',
-      'Take payment on your phone', 'Customer-facing display',
+      'Instant sold-out toggle', 'Automated stock countdown', 'Buzzer tracking',
+      'Documents and reminders', 'Profit per event', 'Reports for your accountant', 'Take payment on your phone', 'Customer-facing display',
     ]],
     ['online', [
       // ⚠️ RE-PINNED (Stage B, Dominic, 20 October 2026): no 'Online ordering — Pay at Hatch' row; custom event types last.
@@ -118,9 +121,10 @@ head('2 · the same rows, the same words, the same gates')
   t('⚠️ the groups are RUN / ONLINE / MARKETING, in that order', JSON.stringify(FEATURE_GROUPS) === JSON.stringify(['run', 'online', 'marketing']))
 
   /* 🔴 NO ROW WAS LOST OR GAINED — 32 (the old 33 less 'Online ordering — Pay at Hatch', removed on Dominic's request,
-     20 October 2026), whatever the WhatsApp flag (the flag decides "coming soon", not the row). */
-  t('🔴 the list is 32 rows, with no duplicate id and no duplicate name, and every row has its words (en-GB)',
-    FEATURE_TABLE.length === 32 && new Set(ids).size === ids.length && new Set(ids.map(nameOf)).size === ids.length
+     20 October 2026), whatever the WhatsApp flag (the flag decides "coming soon", not the row).
+     ⚠️ RE-PINNED (features-list-1, 4 November 2026): 34 — one row out (Advanced reporting), three in. */
+  t('🔴 the list is 34 rows, with no duplicate id and no duplicate name, and every row has its words (en-GB)',
+    FEATURE_TABLE.length === 34 && new Set(ids).size === ids.length && new Set(ids.map(nameOf)).size === ids.length
     && ids.every(id => typeof nameOf(id) === 'string' && nameOf(id).length > 0))
 
   /* ⛔ NO PLAN APPEARS IN THE LIST — no plan key and no per-plan cell. Which plan has a row is data. */

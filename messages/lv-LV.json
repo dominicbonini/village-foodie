@@ -5827,9 +5827,6 @@
       "tap_to_pay": {
         "name": "Maksājumu pieņemšana tālrunī"
       },
-      "advanced_reporting": {
-        "name": "Paplašinātas atskaites"
-      },
       "sms_order_alerts": {
         "name": "Pasūtījumu paziņojumi īsziņā"
       },
@@ -5847,6 +5844,15 @@
       },
       "buzzer_tracking": {
         "name": "Peidžeru uzskaite"
+      },
+      "documents_reminders": {
+        "name": "Dokumenti un atgādinājumi"
+      },
+      "profit_per_event": {
+        "name": "Peļņa par katru pasākumu"
+      },
+      "accountant_reports": {
+        "name": "Atskaites jūsu grāmatvedim"
       },
       "ticket_printing": {
         "name": "Virtuves čeku drukāšana"
@@ -6143,7 +6149,9 @@
       "sold_out_toggle": "Atzīmējiet jebkuru pozīciju kā izpārdotu ar vienu pieskārienu — klientiem tā uzreiz kļūst pelēka.",
       "stock_countdown": "Iestatiet krājumu daudzumu, un tas samazinās, ienākot pasūtījumiem, līdz pozīcija automātiski kļūst izpārdota.",
       "buzzer_tracking": "Izsniedzot peidžeri, piešķiriet pasūtījumam peidžera numuru, lai zinātu, kurš peidžeris pieder kuram pasūtījumam.",
-      "advanced_reporting": "Sadaliet pārdošanas datus pēc laika perioda, pozīcijas un pasākuma, lai redzētu, kas patiešām pārdodas.",
+      "documents_reminders": "Glabājiet savus sertifikātus vienuviet, piemēram, par pārtikas higiēnu, apdrošināšanu un gāzes drošību. Mēs atgādināsim, pirms kaut kam beidzas derīguma termiņš, un ar vienu pieskārienu tos varat nosūtīt pasākuma vai tirgus organizatoram.",
+      "profit_per_event": "Norādiet, cik jums izmaksā katrs ēdiens, un redziet, cik patiesībā nopelnījāt katrā pasākumā, ne tikai ieņēmumus.",
+      "accountant_reports": "Pārdošana, nodokļi un atmaksas par jebkuru mēnesi, ceturksni vai taksācijas gadu, gatavas lejupielādei jūsu grāmatvedim.",
       "tap_to_pay": "Pieņemiet karšu maksājumus atbalstītā tālrunī, lai nebūtu vajadzīgs atsevišķs maksājumu terminālis.",
       "customer_display": "Klientiem redzams ekrāns, kurā rādīti pasūtījumu numuri un tas, kad pasūtījumi ir gatavi.",
       "online_payments": "Pieņemiet karšu maksājumus uzreiz, kad klienti pasūta tiešsaistē, izmantojot Stripe.",

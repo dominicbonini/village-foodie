@@ -375,7 +375,11 @@ const flat = (o, p = '', out = {}) => { for (const [k, v] of Object.entries(o ??
     // that one insertion is taken back by name (scripts/_lp-paperwork-1.cjs) and the rest must be byte-identical.
     const P1N = require('./_lp-paperwork-1.cjs')
     const now = f => (f === 'lib/i18n/namespaces.ts' ? P1N.namespacesAsBefore(read(f)) : read(f))
-    const moved = files.filter(f => atBase(f) !== now(f) && !T1_FILES.includes(f))
+    // ⚠️ RE-PINNED (features-list-1, 4 November 2026): the planFeatures / featuresPage message files gained the three /features rows
+    // and lost Advanced reporting (no page here shows them); each must be identical to BASE apart from those rows
+    // (scripts/_lp-features-list-1.cjs nsSameApartFromRows).
+    const FL1 = require('./_lp-features-list-1.cjs')
+    const moved = files.filter(f => atBase(f) !== now(f) && !T1_FILES.includes(f) && !(FL1.LANDED && FL1.nsSameApartFromRows(f, atBase(f), now(f))))
     t(`${entry}: all ${files.length} source files it bundles are byte-identical to ${BASE} — so is every byte it serves`, files.length > 20 && moved.length === 0, moved)
   }
   // ⚠️ RE-PINNED (tidy-1): Footer and TruckClient changed later (tidy-1's `newsletter` / `tally`); their links did not.

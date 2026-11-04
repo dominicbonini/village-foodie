@@ -5827,9 +5827,6 @@
       "tap_to_pay": {
         "name": "Maksujen vastaanotto puhelimella"
       },
-      "advanced_reporting": {
-        "name": "Laaja raportointi"
-      },
       "sms_order_alerts": {
         "name": "Tilausilmoitukset tekstiviestillä"
       },
@@ -5847,6 +5844,15 @@
       },
       "buzzer_tracking": {
         "name": "Summereiden seuranta"
+      },
+      "documents_reminders": {
+        "name": "Asiakirjat ja muistutukset"
+      },
+      "profit_per_event": {
+        "name": "Tuotto tapahtumittain"
+      },
+      "accountant_reports": {
+        "name": "Raportit kirjanpitäjällesi"
       },
       "ticket_printing": {
         "name": "Keittiölappujen tulostus"
@@ -6143,7 +6149,9 @@
       "sold_out_toggle": "Merkitse mikä tahansa tuote loppuunmyydyksi yhdellä napautuksella — se näkyy asiakkaille heti harmaana.",
       "stock_countdown": "Aseta varastomäärä, niin se laskee tilausten myötä ja tuote merkitään automaattisesti loppuunmyydyksi.",
       "buzzer_tracking": "Liitä tilaukseen summerin numero, kun annat summerin asiakkaalle, niin tiedät, mikä summeri kuuluu mihinkin tilaukseen.",
-      "advanced_reporting": "Erittele myynti aikavälin, tuotteen ja tapahtuman mukaan ja näe, mikä oikeasti myy.",
+      "documents_reminders": "Säilytä todistuksesi yhdessä paikassa, kuten elintarvikehygienia, vakuutus ja kaasuturvallisuus. Muistutamme ennen kuin mikään vanhenee, ja voit lähettää ne yhdellä napautuksella tapahtuman tai torin järjestäjälle.",
+      "profit_per_event": "Kerro, mitä kukin annos sinulle maksaa, ja näe, mitä oikeasti tienasit jokaisessa tapahtumassa – et pelkkää myyntiä.",
+      "accountant_reports": "Myynti, verot ja hyvitykset mistä tahansa kuukaudesta, neljännesvuodesta tai verovuodesta, valmiina ladattaviksi kirjanpitäjällesi.",
       "tap_to_pay": "Ota korttimaksuja vastaan tuetulla puhelimella, niin erillistä maksupäätettä ei tarvita.",
       "customer_display": "Asiakkaille näkyvä näyttö, jossa näkyvät tilausnumerot ja milloin tilaukset ovat valmiita.",
       "online_payments": "Ota korttimaksu Stripen kautta etukäteen, kun asiakas tilaa verkossa.",

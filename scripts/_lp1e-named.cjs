@@ -325,6 +325,10 @@ for (const e of require('./_lp-tagline.cjs').ITEMS) NAMED.push({ id: e.id, what:
 // every earlier item, GB and US; one copy in scripts/_lp-copy-truth-1.cjs.
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- CommonJS harness module (copy-truth-1)
 for (const e of require('./_lp-copy-truth-1.cjs').ITEMS) NAMED.push({ id: e.id, what: e.what, views: e.views, apply: (id, v) => e.apply(id, v) })
+// ⚠️ RE-PINNED (features-list-1, 4 November 2026): the country pages' sitemap lastmod moves on to 2026-11-04. PRECISE, after
+// copy-truth-1's item, GB and US; one copy in scripts/_lp-features-list-1.cjs.
+// eslint-disable-next-line @typescript-eslint/no-require-imports -- CommonJS harness module (features-list-1)
+for (const e of require('./_lp-features-list-1.cjs').ITEMS) NAMED.push({ id: e.id, what: e.what, views: e.views, apply: (id, v) => e.apply(id, v) })
 // ⚠️ RE-PINNED (seo-geo-2 B3, 2 November 2026): the landing JSON-LD's operatingSystem, true per country ("Web" in these fixtures).
 // PRECISE, after every earlier item, GB and US; one copy in scripts/_lp-seo-geo-2.cjs.
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- CommonJS harness module (seo-geo-2)

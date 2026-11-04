@@ -554,7 +554,9 @@ if (RENDER) {
   const ccOf = k => (/\|US\|/.test(k) ? 'US' : 'GB')
   const CMP_DESC = 'Compare what your online orders cost you now with a year on HatchGrab — an estimate in a minute.'
   // ⚠️ RE-PINNED (copy-truth-1, 2 November 2026): MARKETING_COPY_UPDATED moved to 2026-11-02 for the offline line (scripts/_lp-copy-truth-1.cjs).
-  const LEGAL_LASTMOD = '2026-10-19T00:00:00.000Z', COPY_LASTMOD = require('./_lp-copy-truth-1.cjs').LANDED ? require('./_lp-copy-truth-1.cjs').LASTMOD_NEW : '2026-10-20T00:00:00.000Z'
+  // ⚠️ RE-PINNED (features-list-1, 4 November 2026): …and to 2026-11-04 for the /features table (scripts/_lp-features-list-1.cjs).
+  // eslint-disable-next-line @typescript-eslint/no-require-imports -- CommonJS harness modules (copy-truth-1, features-list-1)
+  const LEGAL_LASTMOD = '2026-10-19T00:00:00.000Z', COPY_LASTMOD = require('./_lp-features-list-1.cjs').LANDED ? require('./_lp-features-list-1.cjs').LASTMOD_NEW : require('./_lp-copy-truth-1.cjs').LANDED ? require('./_lp-copy-truth-1.cjs').LASTMOD_NEW : '2026-10-20T00:00:00.000Z'
   // ⚠️ RE-PINNED (pricing-tidy, 20 October 2026): the Terms of Service were re-dated 20 October 2026 (§4 edited), so
   // /terms's lastmod is 2026-10-20; /privacy and /country-terms stay 2026-10-19.
   // ⚠️ RE-PINNED (ireland-3, 21 October 2026): the Country-specific terms gained the Ireland section and were re-dated

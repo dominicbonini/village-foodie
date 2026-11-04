@@ -66,9 +66,6 @@
     "tap_to_pay": {
       "name": "Tag imod betaling på din telefon"
     },
-    "advanced_reporting": {
-      "name": "Avancerede rapporter"
-    },
     "sms_order_alerts": {
       "name": "Sms-beskeder om bestillinger"
     },
@@ -86,6 +83,15 @@
     },
     "buzzer_tracking": {
       "name": "Styr på buzzere"
+    },
+    "documents_reminders": {
+      "name": "Dokumenter og påmindelser"
+    },
+    "profit_per_event": {
+      "name": "Fortjeneste pr. arrangement"
+    },
+    "accountant_reports": {
+      "name": "Rapporter til din revisor"
     },
     "ticket_printing": {
       "name": "Udskrivning af køkkenbonner"

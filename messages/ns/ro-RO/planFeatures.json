@@ -66,9 +66,6 @@
     "tap_to_pay": {
       "name": "Încasare cu telefonul"
     },
-    "advanced_reporting": {
-      "name": "Rapoarte avansate"
-    },
     "sms_order_alerts": {
       "name": "Alerte SMS pentru comenzi"
     },
@@ -86,6 +83,15 @@
     },
     "buzzer_tracking": {
       "name": "Urmărirea pagerelor"
+    },
+    "documents_reminders": {
+      "name": "Documente și mementouri"
+    },
+    "profit_per_event": {
+      "name": "Profit pe eveniment"
+    },
+    "accountant_reports": {
+      "name": "Rapoarte pentru contabil"
     },
     "ticket_printing": {
       "name": "Tipărirea bonurilor de bucătărie"

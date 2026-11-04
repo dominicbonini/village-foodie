@@ -5827,9 +5827,6 @@
       "tap_to_pay": {
         "name": "Receba pagamentos no seu celular"
       },
-      "advanced_reporting": {
-        "name": "Relatórios avançados"
-      },
       "sms_order_alerts": {
         "name": "Avisos de pedido por SMS"
       },
@@ -5847,6 +5844,15 @@
       },
       "buzzer_tracking": {
         "name": "Controle de pagers"
+      },
+      "documents_reminders": {
+        "name": "Documentos e lembretes"
+      },
+      "profit_per_event": {
+        "name": "Lucro por evento"
+      },
+      "accountant_reports": {
+        "name": "Relatórios para o seu contador"
       },
       "ticket_printing": {
         "name": "Impressão de comandas da cozinha"
@@ -6115,7 +6121,9 @@
       "sold_out_toggle": "Marque qualquer item como esgotado com um toque — ele fica cinza para os clientes na hora.",
       "stock_countdown": "Defina a quantidade em estoque e ela vai diminuindo conforme os pedidos chegam, até esgotar automaticamente.",
       "buzzer_tracking": "Associe um número de pager ao pedido quando entregar o aparelho, para saber qual pager é de qual pedido.",
-      "advanced_reporting": "Analise as vendas por período, item e evento para ver o que realmente vende.",
+      "documents_reminders": "Guarde seus certificados em um só lugar, como higiene alimentar, seguro e segurança do gás. Avisamos antes que algo vença e você pode enviá-los com um toque ao organizador de um evento ou feira.",
+      "profit_per_event": "Informe quanto custa cada prato e veja quanto você realmente lucrou em cada evento, não só o faturamento.",
+      "accountant_reports": "Vendas, impostos e reembolsos de qualquer mês, trimestre ou ano fiscal, prontos para baixar e enviar ao seu contador.",
       "tap_to_pay": "Receba pagamentos com cartão em um celular compatível, sem precisar de uma maquininha separada.",
       "customer_display": "Uma tela visível para os clientes, mostrando os números dos pedidos e quando estão prontos.",
       "online_payments": "Receba o pagamento com cartão adiantado quando os clientes pedem online, via Stripe.",

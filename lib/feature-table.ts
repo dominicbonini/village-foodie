@@ -71,7 +71,13 @@ export const FEATURE_TABLE: readonly FeatureTableRow[] = [
   { id: 'sold_out_toggle', group: 'run', feature: 'sold_out_toggle' },
   { id: 'stock_countdown', group: 'run', feature: 'stock_countdown' },
   { id: 'buzzer_tracking', group: 'run' },
-  { id: 'advanced_reporting', group: 'run', feature: 'advanced_reporting', comingSoon: true },
+  // features-list-1 (4 November 2026, docs/features-list-1-report.md): three rows after the last hatch-side one, so the "Coming
+  // soon" rows stay at the bottom of the group. Documents follows its plan switch (`paperwork`, on for every plan); the other two
+  // are always included (no switch), like Buzzer tracking. ⛔ "Advanced reporting" (coming soon) was taken off this table the same
+  // day — the `advanced_reporting` plan feature itself is unchanged (lib/features.ts).
+  { id: 'documents_reminders', group: 'run', feature: 'paperwork' },
+  { id: 'profit_per_event', group: 'run' },
+  { id: 'accountant_reports', group: 'run' },
   { id: 'tap_to_pay', group: 'run', comingSoon: true },
   { id: 'customer_display', group: 'run', comingSoon: true },
   // ── ONLINE ORDERS ──

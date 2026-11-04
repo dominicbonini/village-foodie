@@ -66,9 +66,6 @@
     "tap_to_pay": {
       "name": "Mokėjimų priėmimas telefonu"
     },
-    "advanced_reporting": {
-      "name": "Išplėstinės ataskaitos"
-    },
     "sms_order_alerts": {
       "name": "SMS pranešimai apie užsakymus"
     },
@@ -86,6 +83,15 @@
     },
     "buzzer_tracking": {
       "name": "Gaviklių sekimas"
+    },
+    "documents_reminders": {
+      "name": "Dokumentai ir priminimai"
+    },
+    "profit_per_event": {
+      "name": "Pelnas iš kiekvieno renginio"
+    },
+    "accountant_reports": {
+      "name": "Ataskaitos jūsų buhalteriui"
     },
     "ticket_printing": {
       "name": "Virtuvės kvitų spausdinimas"

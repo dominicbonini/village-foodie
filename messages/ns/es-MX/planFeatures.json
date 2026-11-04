@@ -8,6 +8,9 @@
     },
     "tap_to_pay": {
       "name": "Cobra con tu celular"
+    },
+    "accountant_reports": {
+      "name": "Reportes para tu contador"
     }
   },
   "priceWord": {

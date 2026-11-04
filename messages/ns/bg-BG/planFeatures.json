@@ -66,9 +66,6 @@
     "tap_to_pay": {
       "name": "Приемане на плащания с телефона"
     },
-    "advanced_reporting": {
-      "name": "Разширена отчетност"
-    },
     "sms_order_alerts": {
       "name": "SMS известия за поръчки"
     },
@@ -86,6 +83,15 @@
     },
     "buzzer_tracking": {
       "name": "Проследяване на пейджъри"
+    },
+    "documents_reminders": {
+      "name": "Документи и напомняния"
+    },
+    "profit_per_event": {
+      "name": "Печалба за всяко събитие"
+    },
+    "accountant_reports": {
+      "name": "Отчети за вашия счетоводител"
     },
     "ticket_printing": {
       "name": "Печат на кухненски бонове"

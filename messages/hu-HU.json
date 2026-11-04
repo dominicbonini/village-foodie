@@ -5827,9 +5827,6 @@
       "tap_to_pay": {
         "name": "Fizetés elfogadása telefonnal"
       },
-      "advanced_reporting": {
-        "name": "Részletes kimutatások"
-      },
       "sms_order_alerts": {
         "name": "SMS-értesítés rendelésekről"
       },
@@ -5847,6 +5844,15 @@
       },
       "buzzer_tracking": {
         "name": "Vendéghívó csipogók követése"
+      },
+      "documents_reminders": {
+        "name": "Dokumentumok és emlékeztetők"
+      },
+      "profit_per_event": {
+        "name": "Nyereség eseményenként"
+      },
+      "accountant_reports": {
+        "name": "Kimutatások a könyvelőnek"
       },
       "ticket_printing": {
         "name": "Konyhai rendelésjegyek nyomtatása"
@@ -6143,7 +6149,9 @@
       "sold_out_toggle": "Bármely tételt egy koppintással elfogyottnak jelölhet — a vásárlóknál azonnal kiszürkül.",
       "stock_countdown": "Adja meg a készletet: a beérkező rendelésekkel csökken, majd a tétel automatikusan elfogyottra vált.",
       "buzzer_tracking": "Rendeljen csipogószámot a rendeléshez, amikor kiad egy csipogót, így tudja, melyik csipogó melyik rendeléshez tartozik.",
-      "advanced_reporting": "Bontsa le az eladásokat időszak, tétel és esemény szerint, hogy lássa, mi fogy igazán.",
+      "documents_reminders": "Tartsa egy helyen a tanúsítványait, például az élelmiszer-higiéniai, biztosítási és gázbiztonsági igazolásokat. Szólunk, mielőtt bármi lejár, és egy érintéssel elküldheti őket egy rendezvény vagy piac szervezőjének.",
+      "profit_per_event": "Adja meg, mennyibe kerül Önnek egy-egy étel, és lássa, mennyit keresett valójában minden eseményen, nem csak a bevételét.",
+      "accountant_reports": "Eladások, adók és visszatérítések bármely hónapra, negyedévre vagy adóévre, letöltésre készen a könyvelője számára.",
       "tap_to_pay": "Kártyás fizetés elfogadása támogatott telefonon, így nincs szükség külön kártyaterminálra.",
       "customer_display": "A vásárlók számára látható kijelző a rendelésszámokkal, és azzal, hogy melyik rendelés kész.",
       "online_payments": "Kártyás fizetés előre, amikor a vásárlók online rendelnek — a Stripe-on keresztül.",

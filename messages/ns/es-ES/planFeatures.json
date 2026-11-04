@@ -66,9 +66,6 @@
     "tap_to_pay": {
       "name": "Cobra con tu móvil"
     },
-    "advanced_reporting": {
-      "name": "Informes avanzados"
-    },
     "sms_order_alerts": {
       "name": "Avisos de pedido por SMS"
     },
@@ -86,6 +83,15 @@
     },
     "buzzer_tracking": {
       "name": "Control de avisadores"
+    },
+    "documents_reminders": {
+      "name": "Documentos y recordatorios"
+    },
+    "profit_per_event": {
+      "name": "Beneficio por evento"
+    },
+    "accountant_reports": {
+      "name": "Informes para tu gestor"
     },
     "ticket_printing": {
       "name": "Impresión de comandas"

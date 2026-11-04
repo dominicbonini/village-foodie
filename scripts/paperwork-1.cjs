@@ -456,7 +456,10 @@ const { fakeSupabase, MIGRATION, TYPE_ROWS, BYTES, STUBS } = require('./_paperwo
     const drift = BASES.map(l => [l, LT.compare('privacy-policy.md', read(`content/legal/${l}/privacy-policy.md`))]).filter(([, p]) => p.length)
     t('the drift check: all 28 translations re-stamped against the new English and structurally equal', !drift.length, drift.map(([l, p]) => `${l}: ${p[0]}`))
     t('…and each one has a new paragraph in section 3 (one more paragraph than before the change)', BASES.every(l => /Gemini/.test(read(`content/legal/${l}/privacy-policy.md`).split(/\n## 4\./)[0])))
-    t('no landing page touched: no Documents row in the public feature table or the card bullets', !/paperwork/.test(read('lib/feature-table.ts')) && !/paperwork/.test(read('lib/plan-offer.ts')))
+    // ⚠️ RE-PINNED (features-list-1, 4 November 2026, docs/features-list-1-report.md): /features' table gained a "Documents and
+    // reminders" row on purpose (its one `paperwork` mention in lib/feature-table.ts); still no landing page and no card bullet.
+    const ftPaperwork = (read('lib/feature-table.ts').match(/feature: 'paperwork'/g) || []).length
+    t('no landing page touched: no card bullet; the public feature table has only features-list-1\'s "Documents and reminders" row', ftPaperwork === 1 && /\{ id: 'documents_reminders', group: 'run', feature: 'paperwork' \}/.test(read('lib/feature-table.ts')) && !/paperwork/.test(read('lib/feature-table.ts').split('export const BASE_CARD_BULLETS')[1] || 'paperwork') && !/paperwork/.test(read('lib/plan-offer.ts')))
   }
 
   console.log(`\npaperwork-1: ${pass} passed, ${fail} failed`)

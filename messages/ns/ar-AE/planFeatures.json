@@ -66,9 +66,6 @@
     "tap_to_pay": {
       "name": "استلام الدفع على هاتفك"
     },
-    "advanced_reporting": {
-      "name": "تقارير متقدّمة"
-    },
     "sms_order_alerts": {
       "name": "تنبيهات الطلبات عبر الرسائل النصية"
     },
@@ -86,6 +83,15 @@
     },
     "buzzer_tracking": {
       "name": "تتبّع أجهزة النداء"
+    },
+    "documents_reminders": {
+      "name": "المستندات والتذكيرات"
+    },
+    "profit_per_event": {
+      "name": "الربح لكل فعالية"
+    },
+    "accountant_reports": {
+      "name": "تقارير لمحاسبك"
     },
     "ticket_printing": {
       "name": "طباعة تذاكر المطبخ"

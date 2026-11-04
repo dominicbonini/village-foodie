@@ -66,9 +66,6 @@
     "tap_to_pay": {
       "name": "Take payment on your phone"
     },
-    "advanced_reporting": {
-      "name": "Advanced reporting"
-    },
     "sms_order_alerts": {
       "name": "SMS order alerts"
     },
@@ -86,6 +83,15 @@
     },
     "buzzer_tracking": {
       "name": "Buzzer tracking"
+    },
+    "documents_reminders": {
+      "name": "Documents and reminders"
+    },
+    "profit_per_event": {
+      "name": "Profit per event"
+    },
+    "accountant_reports": {
+      "name": "Reports for your accountant"
     },
     "ticket_printing": {
       "name": "Kitchen ticket printing"

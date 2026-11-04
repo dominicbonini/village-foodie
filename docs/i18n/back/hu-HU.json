@@ -1973,7 +1973,6 @@
  "eventTypes.typeGone": "This type no longer exists.",
  "eventTypes.vanGone": "This food truck no longer exists.",
  "featuresPage.detail.advance_preordering": "Customers can order before the event for a later date or time.",
- "featuresPage.detail.advanced_reporting": "Break down sales by period, item and event to see what really sells.",
  "featuresPage.detail.auto_accept": "The system accepts online orders automatically — you don’t need to confirm them one by one.",
  "featuresPage.detail.branded_qr_code": "Put your logo on your QR code.",
  "featuresPage.detail.buzzer_tracking": "Assign a buzzer number to the order when you hand out a buzzer, so you know which buzzer belongs to which order.",
@@ -4157,7 +4156,6 @@
  "planFeatures.priceWord.unlimited": "Unlimited",
  "planFeatures.priceWord.zeroPercent": "0%",
  "planFeatures.row.advance_preordering.name": "Pre-ordering for later times",
- "planFeatures.row.advanced_reporting.name": "Detailed reports",
  "planFeatures.row.auto_accept.name": "Automatic acceptance of online orders",
  "planFeatures.row.branded_qr_code.name": "QR code with your logo",
  "planFeatures.row.buzzer_tracking.name": "Tracking guest-call buzzers",
@@ -5351,5 +5349,11 @@
  "errorsManage.paperwork_not_found": "This document no longer exists. Please reload the page.",
  "errorsManage.paperwork_bad_details": "Some of the details aren't right. Please check them and try again.",
  "errorsManage.paperwork_send_limit": "You've sent a lot of links in a short time. Please try again in an hour.",
- "errorsManage.paperwork_send_failed": "The email couldn't be sent. Please try again."
+ "errorsManage.paperwork_send_failed": "The email couldn't be sent. Please try again.",
+ "planFeatures.row.documents_reminders.name": "Documents and reminders",
+ "featuresPage.detail.documents_reminders": "Keep your certificates in one place, for example the food hygiene, insurance and gas safety certificates. We tell you before anything expires, and with one touch you can send them to the organiser of an event or market.",
+ "planFeatures.row.profit_per_event.name": "Profit per event",
+ "featuresPage.detail.profit_per_event": "Enter what each dish costs you and see how much you really earned at each event, not only your revenue.",
+ "planFeatures.row.accountant_reports.name": "Statements for the accountant",
+ "featuresPage.detail.accountant_reports": "Sales, taxes and refunds for any month, quarter or tax year, ready to download for your accountant."
 }

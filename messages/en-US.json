@@ -922,7 +922,9 @@
       "time_slot_selection": "Customers choose a pickup time slot, spreading demand across your service.",
       "whatsapp_auto_replies": "Auto-reply to WhatsApp inquiries about your menu and schedule.",
       "messenger_instagram_replies": "Same as WhatsApp auto-replies, for Messenger and Instagram inquiries.",
-      "tap_to_pay": "Take card payments on a supported phone, so you don’t need a separate card reader."
+      "tap_to_pay": "Take card payments on a supported phone, so you don’t need a separate card reader.",
+      "documents_reminders": "Save your certificates in one place, such as food hygiene, insurance and gas safety. We remind you before anything expires, and you can send them to an event or market organizer in one tap.",
+      "profit_per_event": "Add what each dish costs you and see what you actually made at every event, not just your sales."
     }
   },
   "planPrompt": {

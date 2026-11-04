@@ -66,9 +66,6 @@
     "tap_to_pay": {
       "name": "รับชำระเงินด้วยโทรศัพท์ของคุณ"
     },
-    "advanced_reporting": {
-      "name": "รายงานขั้นสูง"
-    },
     "sms_order_alerts": {
       "name": "แจ้งเตือนออเดอร์ทาง SMS"
     },
@@ -86,6 +83,15 @@
     },
     "buzzer_tracking": {
       "name": "ติดตามเครื่องเรียกคิว"
+    },
+    "documents_reminders": {
+      "name": "เอกสารและการแจ้งเตือน"
+    },
+    "profit_per_event": {
+      "name": "กำไรต่ออีเวนต์"
+    },
+    "accountant_reports": {
+      "name": "รายงานสำหรับนักบัญชี"
     },
     "ticket_printing": {
       "name": "พิมพ์ใบออเดอร์ในครัว"

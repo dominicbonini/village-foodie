@@ -5827,9 +5827,6 @@
       "tap_to_pay": {
         "name": "Naplata na vašem telefonu"
       },
-      "advanced_reporting": {
-        "name": "Napredni izvještaji"
-      },
       "sms_order_alerts": {
         "name": "SMS obavijesti o narudžbama"
       },
@@ -5847,6 +5844,15 @@
       },
       "buzzer_tracking": {
         "name": "Praćenje pagera"
+      },
+      "documents_reminders": {
+        "name": "Dokumenti i podsjetnici"
+      },
+      "profit_per_event": {
+        "name": "Dobit po događaju"
+      },
+      "accountant_reports": {
+        "name": "Izvješća za vašeg knjigovođu"
       },
       "ticket_printing": {
         "name": "Ispis kuhinjskih listića"
@@ -6143,7 +6149,9 @@
       "sold_out_toggle": "Označite bilo koji artikl kao rasprodan jednim dodirom — kupcima se odmah prikazuje kao nedostupan.",
       "stock_countdown": "Postavite količinu zaliha i ona se smanjuje kako stižu narudžbe, a zatim se artikl automatski označava kao rasprodan.",
       "buzzer_tracking": "Dodijelite narudžbi broj pagera kad ga predate kupcu, pa znate koji pager pripada kojoj narudžbi.",
-      "advanced_reporting": "Razložite prodaju po razdoblju, artiklu i događaju i vidite što se stvarno prodaje.",
+      "documents_reminders": "Čuvajte svoje certifikate na jednom mjestu, primjerice o higijeni hrane, osiguranju i sigurnosti plinskih instalacija. Podsjetit ćemo vas prije nego što nešto istekne, a jednim ih dodirom šaljete organizatoru događaja ili tržnice.",
+      "profit_per_event": "Unesite koliko vas stoji svako jelo i pogledajte koliko ste stvarno zaradili na svakom događaju, a ne samo promet.",
+      "accountant_reports": "Prodaja, porezi i povrati za bilo koji mjesec, tromjesečje ili poreznu godinu, spremni za preuzimanje za vašeg knjigovođu.",
       "tap_to_pay": "Primajte kartična plaćanja na podržanom telefonu, bez zasebnog POS uređaja.",
       "customer_display": "Zaslon koji kupci vide, s brojevima narudžbi i obavijesti kad su spremne.",
       "online_payments": "Naplatite karticom unaprijed kad kupci naručuju online, putem Stripea.",

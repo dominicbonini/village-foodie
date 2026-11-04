@@ -66,9 +66,6 @@
     "tap_to_pay": {
       "name": "用手機收款"
     },
-    "advanced_reporting": {
-      "name": "進階報告"
-    },
     "sms_order_alerts": {
       "name": "短訊訂單通知"
     },
@@ -86,6 +83,15 @@
     },
     "buzzer_tracking": {
       "name": "取餐器追蹤"
+    },
+    "documents_reminders": {
+      "name": "文件與提醒"
+    },
+    "profit_per_event": {
+      "name": "每場活動利潤"
+    },
+    "accountant_reports": {
+      "name": "會計師報表"
     },
     "ticket_printing": {
       "name": "打印廚房單"

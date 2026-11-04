@@ -241,6 +241,12 @@ const NEW_WORDING = {
   NEW_WORDING['planPrompt.features.paperwork.name'] = 'paperwork-1: the feature\'s name in the plan prompt'
   NEW_WORDING['planPrompt.features.paperwork.many'] = 'paperwork-1: the feature\'s grammatical number in the plan prompt'
 }
+// ⚠️ RE-PINNED (features-list-1, 4 November 2026, docs/features-list-1-report.md): three new /features rows — their names and
+// descriptions are new wording (scripts/features-list-1.cjs proves where each shows).
+for (const id of ['documents_reminders', 'profit_per_event', 'accountant_reports']) {
+  NEW_WORDING[`planFeatures.row.${id}.name`] = `features-list-1: the /features row's name (${id})`
+  NEW_WORDING[`featuresPage.detail.${id}`] = `features-list-1: the /features row's description (${id})`
+}
 /** ⚠️ RE-PINNED (features-page-restore, 20 October 2026): a restored message EDITED on purpose → [ref, the old key, how]:
  *  its en-GB text must be EXACTLY the old text so edited (here: the old text's first sentence). */
 const RESTORED_EDITED = {

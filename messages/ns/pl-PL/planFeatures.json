@@ -66,9 +66,6 @@
     "tap_to_pay": {
       "name": "Przyjmowanie płatności telefonem"
     },
-    "advanced_reporting": {
-      "name": "Zaawansowane raporty"
-    },
     "sms_order_alerts": {
       "name": "Powiadomienia SMS o zamówieniach"
     },
@@ -86,6 +83,15 @@
     },
     "buzzer_tracking": {
       "name": "Obsługa pagerów"
+    },
+    "documents_reminders": {
+      "name": "Dokumenty i przypomnienia"
+    },
+    "profit_per_event": {
+      "name": "Zysk z każdego wydarzenia"
+    },
+    "accountant_reports": {
+      "name": "Raporty dla księgowego"
     },
     "ticket_printing": {
       "name": "Drukowanie bonów kuchennych"

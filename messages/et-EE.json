@@ -5827,9 +5827,6 @@
       "tap_to_pay": {
         "name": "Maksete vastuvõtt telefoniga"
       },
-      "advanced_reporting": {
-        "name": "Täpsem aruandlus"
-      },
       "sms_order_alerts": {
         "name": "SMS-teated tellimuste kohta"
       },
@@ -5847,6 +5844,15 @@
       },
       "buzzer_tracking": {
         "name": "Piiparite jälgimine"
+      },
+      "documents_reminders": {
+        "name": "Dokumendid ja meeldetuletused"
+      },
+      "profit_per_event": {
+        "name": "Kasum ürituse kohta"
+      },
+      "accountant_reports": {
+        "name": "Aruanded raamatupidajale"
       },
       "ticket_printing": {
         "name": "Köögitšekkide printimine"
@@ -6143,7 +6149,9 @@
       "sold_out_toggle": "Märgi mis tahes toode ühe puudutusega otsas olevaks — klientidele muutub see kohe halliks.",
       "stock_countdown": "Määra laokogus ja see väheneb tellimuste saabudes; kui kogus lõpeb, märgitakse toode automaatselt otsas olevaks.",
       "buzzer_tracking": "Anna tellimusele piipari number, kui piipari välja annad, et teaksid, milline piipar millisele tellimusele kuulub.",
-      "advanced_reporting": "Jaota müük kuupäevavahemiku, toote ja ürituse järgi, et näha, mis tegelikult müüb.",
+      "documents_reminders": "Hoia oma tunnistused ühes kohas, näiteks toiduhügieeni, kindlustuse ja gaasiohutuse kohta. Anname teada, enne kui midagi aegub, ja saad need ühe puudutusega saata ürituse või turu korraldajale.",
+      "profit_per_event": "Sisesta, kui palju iga roog sulle maksma läheb, ja näe, kui palju sa igal üritusel tegelikult teenisid, mitte ainult käivet.",
+      "accountant_reports": "Müük, maksud ja tagastused mis tahes kuu, kvartali või maksuaasta kohta, valmis allalaadimiseks oma raamatupidajale.",
       "tap_to_pay": "Võta kaardimakseid vastu toetatud telefoniga — eraldi makseterminali pole vaja.",
       "customer_display": "Klientidele nähtav ekraan, mis näitab tellimuste numbreid ja seda, millal need valmis on.",
       "online_payments": "Võta kaardimakse Stripe’i kaudu ette, kui kliendid veebis tellivad.",

@@ -66,9 +66,6 @@
     "tap_to_pay": {
       "name": "Receber pagamentos no seu telemóvel"
     },
-    "advanced_reporting": {
-      "name": "Relatórios avançados"
-    },
     "sms_order_alerts": {
       "name": "Alertas de encomenda por SMS"
     },
@@ -86,6 +83,15 @@
     },
     "buzzer_tracking": {
       "name": "Gestão de pagers"
+    },
+    "documents_reminders": {
+      "name": "Documentos e lembretes"
+    },
+    "profit_per_event": {
+      "name": "Lucro por evento"
+    },
+    "accountant_reports": {
+      "name": "Relatórios para o seu contabilista"
     },
     "ticket_printing": {
       "name": "Impressão de talões da cozinha"

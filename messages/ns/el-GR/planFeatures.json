@@ -66,9 +66,6 @@
     "tap_to_pay": {
       "name": "Πληρωμές με κάρτα στο κινητό σας"
     },
-    "advanced_reporting": {
-      "name": "Προηγμένες αναφορές"
-    },
     "sms_order_alerts": {
       "name": "Ειδοποιήσεις παραγγελιών με SMS"
     },
@@ -86,6 +83,15 @@
     },
     "buzzer_tracking": {
       "name": "Παρακολούθηση βομβητών"
+    },
+    "documents_reminders": {
+      "name": "Έγγραφα και υπενθυμίσεις"
+    },
+    "profit_per_event": {
+      "name": "Κέρδος ανά εκδήλωση"
+    },
+    "accountant_reports": {
+      "name": "Αναφορές για τον λογιστή σας"
     },
     "ticket_printing": {
       "name": "Εκτύπωση δελτίων κουζίνας"

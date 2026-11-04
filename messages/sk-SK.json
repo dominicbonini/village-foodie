@@ -5827,9 +5827,6 @@
       "tap_to_pay": {
         "name": "Platby kartou na vašom telefóne"
       },
-      "advanced_reporting": {
-        "name": "Rozšírené reporty"
-      },
       "sms_order_alerts": {
         "name": "SMS upozornenia na objednávky"
       },
@@ -5847,6 +5844,15 @@
       },
       "buzzer_tracking": {
         "name": "Evidencia bzučiakov"
+      },
+      "documents_reminders": {
+        "name": "Dokumenty a pripomienky"
+      },
+      "profit_per_event": {
+        "name": "Zisk z každej akcie"
+      },
+      "accountant_reports": {
+        "name": "Prehľady pre účtovníka"
       },
       "ticket_printing": {
         "name": "Tlač kuchynských bločkov"
@@ -6143,7 +6149,9 @@
       "sold_out_toggle": "Označte ktorúkoľvek položku ako vypredanú jedným ťuknutím — zákazníkom okamžite zošedne.",
       "stock_countdown": "Nastavte počet kusov a ten sa s prichádzajúcimi objednávkami odpočítava, až sa položka automaticky vypredá.",
       "buzzer_tracking": "Keď zákazníkovi dáte bzučiak, priraďte jeho číslo k objednávke, aby ste vedeli, ktorý bzučiak patrí ku ktorej objednávke.",
-      "advanced_reporting": "Rozložte tržby podľa obdobia, položky a akcie a zistite, čo sa naozaj predáva.",
+      "documents_reminders": "Majte svoje certifikáty na jednom mieste – napríklad o hygiene potravín, poistení a bezpečnosti plynu. Pripomenieme vám ich skôr, než niečo vyprší, a jedným ťuknutím ich pošlete organizátorovi akcie alebo trhu.",
+      "profit_per_event": "Zadajte, koľko vás stojí každé jedlo, a uvidíte, koľko ste na každej akcii naozaj zarobili, nielen tržby.",
+      "accountant_reports": "Predaje, dane a vrátenia peňazí za ľubovoľný mesiac, štvrťrok alebo daňové obdobie, pripravené na stiahnutie pre vášho účtovníka.",
       "tap_to_pay": "Prijímajte platby kartou na podporovanom telefóne, takže nepotrebujete samostatný platobný terminál.",
       "customer_display": "Obrazovka viditeľná pre zákazníkov, ktorá zobrazuje čísla objednávok a to, kedy sú pripravené.",
       "online_payments": "Prijímajte platbu kartou vopred, keď zákazníci objednávajú online — cez Stripe.",

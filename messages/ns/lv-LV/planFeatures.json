@@ -66,9 +66,6 @@
     "tap_to_pay": {
       "name": "Maksājumu pieņemšana tālrunī"
     },
-    "advanced_reporting": {
-      "name": "Paplašinātas atskaites"
-    },
     "sms_order_alerts": {
       "name": "Pasūtījumu paziņojumi īsziņā"
     },
@@ -86,6 +83,15 @@
     },
     "buzzer_tracking": {
       "name": "Peidžeru uzskaite"
+    },
+    "documents_reminders": {
+      "name": "Dokumenti un atgādinājumi"
+    },
+    "profit_per_event": {
+      "name": "Peļņa par katru pasākumu"
+    },
+    "accountant_reports": {
+      "name": "Atskaites jūsu grāmatvedim"
     },
     "ticket_printing": {
       "name": "Virtuves čeku drukāšana"

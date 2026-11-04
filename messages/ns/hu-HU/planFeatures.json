@@ -66,9 +66,6 @@
     "tap_to_pay": {
       "name": "Fizetés elfogadása telefonnal"
     },
-    "advanced_reporting": {
-      "name": "Részletes kimutatások"
-    },
     "sms_order_alerts": {
       "name": "SMS-értesítés rendelésekről"
     },
@@ -86,6 +83,15 @@
     },
     "buzzer_tracking": {
       "name": "Vendéghívó csipogók követése"
+    },
+    "documents_reminders": {
+      "name": "Dokumentumok és emlékeztetők"
+    },
+    "profit_per_event": {
+      "name": "Nyereség eseményenként"
+    },
+    "accountant_reports": {
+      "name": "Kimutatások a könyvelőnek"
     },
     "ticket_printing": {
       "name": "Konyhai rendelésjegyek nyomtatása"

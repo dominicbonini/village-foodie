@@ -5827,9 +5827,6 @@
       "tap_to_pay": {
         "name": "Tag imod betaling på din telefon"
       },
-      "advanced_reporting": {
-        "name": "Avancerede rapporter"
-      },
       "sms_order_alerts": {
         "name": "Sms-beskeder om bestillinger"
       },
@@ -5847,6 +5844,15 @@
       },
       "buzzer_tracking": {
         "name": "Styr på buzzere"
+      },
+      "documents_reminders": {
+        "name": "Dokumenter og påmindelser"
+      },
+      "profit_per_event": {
+        "name": "Fortjeneste pr. arrangement"
+      },
+      "accountant_reports": {
+        "name": "Rapporter til din revisor"
       },
       "ticket_printing": {
         "name": "Udskrivning af køkkenbonner"
@@ -6143,7 +6149,9 @@
       "sold_out_toggle": "Markér en vare som udsolgt med ét tryk — den bliver straks grå for kunderne.",
       "stock_countdown": "Angiv et lagerantal, som tæller ned, efterhånden som bestillingerne kommer ind, og varen bliver automatisk udsolgt.",
       "buzzer_tracking": "Giv en bestilling et buzzernummer, når du deler en buzzer ud, så du ved, hvilken buzzer der hører til hvilken bestilling.",
-      "advanced_reporting": "Del salget op efter periode, vare og arrangement, og se, hvad der virkelig sælger.",
+      "documents_reminders": "Gem dine certifikater ét sted, fx fødevarehygiejne, forsikring og gassikkerhed. Vi minder dig om det, før noget udløber, og du kan sende dem til arrangøren af et arrangement eller et marked med ét tryk.",
+      "profit_per_event": "Angiv, hvad hver ret koster dig, og se, hvad du reelt tjente ved hvert arrangement – ikke kun din omsætning.",
+      "accountant_reports": "Salg, moms og refusioner for enhver måned, ethvert kvartal eller regnskabsår, klar til at downloade til din revisor.",
       "tap_to_pay": "Tag imod kortbetalinger på en understøttet telefon, så du ikke behøver en separat kortterminal.",
       "customer_display": "En skærm, som kunderne kan se, med bestillingsnumre, og hvornår de er klar.",
       "online_payments": "Tag imod kortbetaling på forhånd, når kunderne bestiller online, via Stripe.",

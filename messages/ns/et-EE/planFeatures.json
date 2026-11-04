@@ -66,9 +66,6 @@
     "tap_to_pay": {
       "name": "Maksete vastuvõtt telefoniga"
     },
-    "advanced_reporting": {
-      "name": "Täpsem aruandlus"
-    },
     "sms_order_alerts": {
       "name": "SMS-teated tellimuste kohta"
     },
@@ -86,6 +83,15 @@
     },
     "buzzer_tracking": {
       "name": "Piiparite jälgimine"
+    },
+    "documents_reminders": {
+      "name": "Dokumendid ja meeldetuletused"
+    },
+    "profit_per_event": {
+      "name": "Kasum ürituse kohta"
+    },
+    "accountant_reports": {
+      "name": "Aruanded raamatupidajale"
     },
     "ticket_printing": {
       "name": "Köögitšekkide printimine"

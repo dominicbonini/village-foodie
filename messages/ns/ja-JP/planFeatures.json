@@ -66,9 +66,6 @@
     "tap_to_pay": {
       "name": "スマートフォンで決済を受け付け"
     },
-    "advanced_reporting": {
-      "name": "詳細レポート"
-    },
     "sms_order_alerts": {
       "name": "SMSによる注文通知"
     },
@@ -86,6 +83,15 @@
     },
     "buzzer_tracking": {
       "name": "呼び出しベルの管理"
+    },
+    "documents_reminders": {
+      "name": "書類とリマインダー"
+    },
+    "profit_per_event": {
+      "name": "イベントごとの利益"
+    },
+    "accountant_reports": {
+      "name": "税理士向けレポート"
     },
     "ticket_printing": {
       "name": "キッチン伝票の印刷"

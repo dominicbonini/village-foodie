@@ -66,9 +66,6 @@
     "tap_to_pay": {
       "name": "Incassa con il tuo telefono"
     },
-    "advanced_reporting": {
-      "name": "Report avanzati"
-    },
     "sms_order_alerts": {
       "name": "Avvisi d’ordine via SMS"
     },
@@ -86,6 +83,15 @@
     },
     "buzzer_tracking": {
       "name": "Gestione dei cercapersone"
+    },
+    "documents_reminders": {
+      "name": "Documenti e promemoria"
+    },
+    "profit_per_event": {
+      "name": "Profitto per evento"
+    },
+    "accountant_reports": {
+      "name": "Report per il tuo commercialista"
     },
     "ticket_printing": {
       "name": "Stampa delle comande"

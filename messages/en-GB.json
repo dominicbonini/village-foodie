@@ -5827,9 +5827,6 @@
       "tap_to_pay": {
         "name": "Take payment on your phone"
       },
-      "advanced_reporting": {
-        "name": "Advanced reporting"
-      },
       "sms_order_alerts": {
         "name": "SMS order alerts"
       },
@@ -5847,6 +5844,15 @@
       },
       "buzzer_tracking": {
         "name": "Buzzer tracking"
+      },
+      "documents_reminders": {
+        "name": "Documents and reminders"
+      },
+      "profit_per_event": {
+        "name": "Profit per event"
+      },
+      "accountant_reports": {
+        "name": "Reports for your accountant"
       },
       "ticket_printing": {
         "name": "Kitchen ticket printing"
@@ -6116,7 +6122,9 @@
       "sold_out_toggle": "Mark any item sold out in one tap — it greys out for customers straight away.",
       "stock_countdown": "Set a stock count and it counts down as orders come in, then sells out automatically.",
       "buzzer_tracking": "Give an order a buzzer number when you hand one out, so you know which buzzer belongs to which order.",
-      "advanced_reporting": "Break sales down by date range, item and event to see what’s really selling.",
+      "documents_reminders": "Save your certificates in one place, such as food hygiene, insurance and gas safety. We remind you before anything expires, and you can send them to an event or market organiser in one tap.",
+      "profit_per_event": "Add what each dish costs you and see what you actually made at every event, not just your takings.",
+      "accountant_reports": "Sales, tax and refunds for any month, quarter or tax year, ready to download for your accountant.",
       "tap_to_pay": "Take card payments on a supported phone, so you don’t need a separate card machine.",
       "customer_display": "A screen customers can see showing order numbers and when they’re ready.",
       "online_payments": "Take card payment upfront when customers order online, via Stripe.",

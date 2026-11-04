@@ -66,9 +66,6 @@
     "tap_to_pay": {
       "name": "Naplata na vašem telefonu"
     },
-    "advanced_reporting": {
-      "name": "Napredni izvještaji"
-    },
     "sms_order_alerts": {
       "name": "SMS obavijesti o narudžbama"
     },
@@ -86,6 +83,15 @@
     },
     "buzzer_tracking": {
       "name": "Praćenje pagera"
+    },
+    "documents_reminders": {
+      "name": "Dokumenti i podsjetnici"
+    },
+    "profit_per_event": {
+      "name": "Dobit po događaju"
+    },
+    "accountant_reports": {
+      "name": "Izvješća za vašeg knjigovođu"
     },
     "ticket_printing": {
       "name": "Ispis kuhinjskih listića"
