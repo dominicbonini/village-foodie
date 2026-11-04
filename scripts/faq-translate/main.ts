@@ -23,7 +23,7 @@ import Anthropic from '@anthropic-ai/sdk'
 import { createClient } from '@supabase/supabase-js'
 import { runTranslator, modelCall, TRANSLATOR_MODEL, type TranslatorDeps, type LocaleContext, type WriteRow } from '@/lib/faq/translator'
 import { itemSourceHash, sectionSourceHash } from '@/lib/faq/source-hash'
-import { minRatioOf, type FaqTranslationRow } from '@/lib/faq/translation'
+import { minRatioOf, ordinaryWordsOf, type FaqTranslationRow } from '@/lib/faq/translation'
 import { overrideChain, isEnglish, type AppLocale } from '@/lib/i18n/locales'
 import { localizePlans } from '@/lib/plan-names'
 import { priceText } from '@/lib/price-text'
@@ -72,7 +72,7 @@ function contextFactory(catalog: PlanCatalog): (l: string) => LocaleContext {
       locale, language,
       glossary: [...glossaryOf(locale), `Plan names (never type them — they are tokens): ${own.join(', ')}`],
       samples: SAMPLE_KEYS.map(k => message(locale, k)).filter((s): s is string => !!s),
-      rules: { planNames, bannedLocal: [priceText(PRICE_WORD.payAtHatch, locale)].filter(w => w && w !== PRICE_WORD.payAtHatch), minRatio: minRatioOf(locale) },
+      rules: { planNames, ordinaryWords: ordinaryWordsOf(locale), bannedLocal: [priceText(PRICE_WORD.payAtHatch, locale)].filter(w => w && w !== PRICE_WORD.payAtHatch), minRatio: minRatioOf(locale) },   // ordinaryWords: import-and-cs-fix
     }
     cache.set(locale, c)
     return c

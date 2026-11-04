@@ -69,7 +69,8 @@ export function supabaseImportStore(db: SupabaseClient): ImportStore {
     },
     async features() {
       // competitor-features-2: with the tier — before 20261062 runs there is none to compare, so the import stops (and is tried again).
-      const { data, error } = await db.from('comparison_features').select('key, checked, tier')
+      // import-and-cs-fix: who set the tick and where it shows (20261067), and the row's last Admin editor.
+      const { data, error } = await db.from('comparison_features').select('key, checked, tier, checked_by, scope_by, updated_by')
       if (error && /tier/.test(error.message) && missing(error)) fail('read the feature tiers (run supabase/migrations/20261062_competitor_features_2.sql first; nothing was written)', error)
       if (error) { if (missing(error)) return null; fail('read the feature list', error) }
       return (data ?? []) as Row[]

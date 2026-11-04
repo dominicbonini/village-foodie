@@ -75,10 +75,21 @@ export interface Rules {
   planNames: string[]
   /** Extra banned phrases in the locale (its "Pay at Hatch" words, planFeatures.priceWord.payAtHatch). */
   bannedLocal: string[]
+  /** import-and-cs-fix: the locale's ordinary words that happen to be spelt like a plan name (ORDINARY_WORDS) — never "typed". */
+  ordinaryWords?: string[]
   /** The shortest a translation may be against the English (default 0.25; Japanese and Chinese write far fewer characters —
    *  "Reaching customers" is 集客 — so theirs is lower: minRatioOf). */
   minRatio?: number
 }
+/**
+ * import-and-cs-fix (4 November 2026, docs/import-and-cs-fix-report.md): words of a language that are spelt EXACTLY like a plan name
+ * (case and whole word) but are ordinary words there, so a translation using them has not typed a plan name. By language subtag.
+ * Czech "Pro" is "For" at the start of a sentence ("Pro nejlepší zážitek doporučujeme tablet" — FAQ 7's answer, refused on 4 Nov).
+ * ⚠️ The cost is known and accepted: a Czech translation that typed the plan name "Pro" itself would pass this one check.
+ */
+export const ORDINARY_WORDS: Readonly<Record<string, readonly string[]>> = { cs: ['Pro'] }
+export const ordinaryWordsOf = (locale: string): string[] => [...(ORDINARY_WORDS[locale.split('-')[0]] ?? [])]
+
 /** A locale's shortest sane length against the English. */
 export const minRatioOf = (locale: string): number => (/^(ja|zh)\b/.test(locale) ? 0.1 : 0.25)
 
@@ -94,9 +105,13 @@ export function fieldProblem(field: string, english: string | null, translated: 
   // Typed digits: only the English's own figures, in ASCII ("60 seconds" in question 6). No other digit, in any script.
   const allowed = new Set(bare(english).match(/\d+/g) ?? [])
   for (const d of b.match(/\p{Nd}+/gu) ?? []) if (!/^[0-9]+$/.test(d) || !allowed.has(d)) return `${field}: a typed number "${d}" (prices and figures come from live values)`
-  const sym = b.match(/\p{Sc}/u)
-  if (sym) return `${field}: a currency symbol "${sym[0]}"`
-  for (const n of rules.planNames) if (n && nameRe(n).test(b)) return `${field}: the plan name "${n}" typed in (plan names come from live values)`
+  // import-and-cs-fix: a currency symbol or plan name fails only where the English did not have it outside its {tokens} — like
+  // with like: the same symbol; the same name in the same case, as a whole word — and never a language's own ordinary word.
+  const en = bare(english)
+  const sym = (b.match(/\p{Sc}/gu) ?? []).find(s => !en.includes(s))
+  if (sym) return `${field}: a currency symbol "${sym}"`
+  const ordinary = new Set(rules.ordinaryWords ?? [])
+  for (const n of rules.planNames) if (n && !ordinary.has(n) && nameRe(n).test(b) && !nameRe(n).test(en)) return `${field}: the plan name "${n}" typed in (plan names come from live values)`
   const low = translated.toLowerCase()
   for (const w of [...BANNED_WORDING, ...rules.bannedLocal]) if (w && low.includes(w.toLowerCase())) return `${field}: mentions paying at the truck ("${w}")`
   const ratio = translated.trim().length / english.trim().length, min = rules.minRatio ?? 0.25

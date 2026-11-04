@@ -36,12 +36,13 @@ export async function updateFeature(store: PricingStore, body: Row, stamp: Stamp
   const old = all.find(f => f.key === key)
   if (!old) return refuse(404, 'That feature is not in the list. Reload the page.')
   const cols: Row = {}
-  if ('checked' in body) { if (typeof body.checked !== 'boolean') return refuse(400, 'Check must be on or off.'); cols.checked = body.checked }
+  // import-and-cs-fix: Admin's own choices are marked, so the features importer never undoes them (lib/data-import/features.ts).
+  if ('checked' in body) { if (typeof body.checked !== 'boolean') return refuse(400, 'Check must be on or off.'); cols.checked = body.checked; cols.checked_by = 'admin' }
   if ('showScope' in body) {
     if (!(SHOW_SCOPES as readonly unknown[]).includes(body.showScope)) return refuse(400, 'Show on website is All countries, Some countries or Hidden.')
-    cols.show_scope = body.showScope
+    cols.show_scope = body.showScope; cols.scope_by = 'admin'
   }
-  if ('showCountries' in body) { const c = countries(body.showCountries); if (!c) return refuse(400, 'Countries are two-letter codes.'); cols.show_countries = c }
+  if ('showCountries' in body) { const c = countries(body.showCountries); if (!c) return refuse(400, 'Countries are two-letter codes.'); cols.show_countries = c; cols.scope_by = 'admin' }
   const scope = (cols.show_scope ?? old.show_scope) as ShowScope
   const list = (cols.show_countries ?? old.show_countries ?? []) as string[]
   if (scope === 'some' && !list.length) return refuse(400, 'Pick at least one country, or choose All countries or Hidden.')
@@ -81,7 +82,7 @@ export async function addFeature(store: PricingStore, body: Row, stamp: Stamp): 
   const last = Math.max(0, ...all.filter(f => f.group_key === body.groupKey).map(f => Number(f.sort_order) || 0))
   const saved = await store.insertFeature({
     key, group_key: body.groupKey, sort_order: last + 10, checked: true, show_scope: scope, show_countries: list ?? [],
-    hatchgrab_source: 'confirm', labels, explanations, updated_at: stamp.at, updated_by: stamp.by,
+    hatchgrab_source: 'confirm', labels, explanations, updated_at: stamp.at, updated_by: stamp.by, checked_by: 'admin', scope_by: 'admin',
   })
   const due = store.markFeatureDue ? await store.markFeatureDue(key, stamp.today) : 0
   return { ok: true, data: { feature: featureOut(saved), markedDue: due } }

@@ -2,6 +2,12 @@
 // public.comparison_features (comparison-features-1, 29 October 2026; docs/comparison-features-1-report.md). Run by
 // lib/data-import/importer.ts (kind "features"), once per version of the file.
 //
+// ⛔ CORRECTED (import-and-cs-fix, 4 November 2026, docs/import-and-cs-fix-report.md): the paragraph below let a re-tiering
+// overwrite Admin's choices, and the first tiered import (4 Nov 09:02 UTC) ticked asap, options, staff and walkup back on after
+// Admin had unticked them on 2 Nov. NOW: a re-tiering sets the TIER always, but `checked` only where the file set it last
+// (`checked_by` 'file') and where it shows only where the file set that last (`scope_by` 'file') — never a value Admin set
+// (`'admin'`, or a row Admin touched before those columns existed: `updated_by`). The one exception is an OFF tier: the file's
+// `checked: false` always applies (the checker never asks an off feature). New keys are added as before, marked 'file'.
 // 🔴 MISSING KEYS ARE ADDED; a feature already in the table keeps Admin's choices (checked, where it shows) — UNLESS the file
 // changes its TIER (competitor-features-2, 3 November 2026): the first import of the tiers, or a later re-tiering, also sets
 // `checked` (true unless the tier is off) and where it shows, from the file. A rerun of the same file changes nothing (the tiers
@@ -52,13 +58,25 @@ export async function importFeatures(store: FeaturesStore, file: FeaturesFile, s
   const stored = new Map(have.map(r => [String(r.key), r]))
   const fresh = file.features.filter(f => !stored.has(String(f.key))).map(f => ({
     key: f.key, group_key: f.group_key, sort_order: Number(f.sort_order) || 0, tier: f.tier, checked: f.checked, show_scope: f.show_scope,
-    show_countries: f.show_countries, hatchgrab_source: f.hatchgrab_source,
+    show_countries: f.show_countries, hatchgrab_source: f.hatchgrab_source, checked_by: 'file', scope_by: 'file',
   }))
   // competitor-features-2: a feature whose tier the file changes takes the file's tier, checked and where it shows.
   const retier = file.features.filter(f => stored.has(String(f.key)) && (stored.get(String(f.key))!.tier ?? null) !== f.tier)
   if (fresh.length) await store.insertFeatures(fresh)
-  for (const f of retier) await store.updateFeature(String(f.key), { tier: f.tier, checked: f.checked, show_scope: f.show_scope, show_countries: f.show_countries })
+  for (const f of retier) await store.updateFeature(String(f.key), retierCols(stored.get(String(f.key))!, f))
   let markedDue = 0
   for (const f of fresh) if (f.checked) markedDue += await store.markFeatureDue(String(f.key), stamp.today)
   return { features: file.features.length, added: fresh.length, existing: file.features.length - fresh.length, retiered: retier.length, markedDue }
+}
+
+/** Admin set this value (import-and-cs-fix): its `<x>_by` says 'admin', or — a row from before those columns — Admin touched the
+ *  row at all (`updated_by`), the cautious reading. */
+export const setByAdmin = (row: Row, by: 'checked_by' | 'scope_by') => row[by] === 'admin' || (row[by] == null && row.updated_by != null)
+/** What a re-tiering writes: the tier always; `checked` unless Admin set it (an OFF tier is always unticked); where it shows unless
+ *  Admin set it. PURE. */
+export function retierCols(stored: Row, f: Row): Row {
+  const cols: Row = { tier: f.tier }
+  if (f.tier === 'off' || !setByAdmin(stored, 'checked_by')) { cols.checked = f.tier === 'off' ? false : f.checked; cols.checked_by = 'file' }
+  if (!setByAdmin(stored, 'scope_by')) { cols.show_scope = f.show_scope; cols.show_countries = f.show_countries; cols.scope_by = 'file' }
+  return cols
 }
