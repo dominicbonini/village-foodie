@@ -1,0 +1,62 @@
+[
+ {
+  "loc": "en-GB",
+  "width": 360,
+  "before": 425,
+  "after": 276
+ },
+ {
+  "loc": "en-GB",
+  "width": 430,
+  "before": 425,
+  "after": 276
+ },
+ {
+  "loc": "fr-FR",
+  "width": 360,
+  "before": 380,
+  "after": 276
+ },
+ {
+  "loc": "fr-FR",
+  "width": 430,
+  "before": 380,
+  "after": 276
+ },
+ {
+  "loc": "de-DE",
+  "width": 360,
+  "before": 380,
+  "after": 276
+ },
+ {
+  "loc": "de-DE",
+  "width": 430,
+  "before": 380,
+  "after": 276
+ },
+ {
+  "loc": "ja-JP",
+  "width": 360,
+  "before": 380,
+  "after": 276
+ },
+ {
+  "loc": "ja-JP",
+  "width": 430,
+  "before": 380,
+  "after": 276
+ },
+ {
+  "loc": "ar-AE",
+  "width": 360,
+  "before": 380,
+  "after": 276
+ },
+ {
+  "loc": "ar-AE",
+  "width": 430,
+  "before": 380,
+  "after": 276
+ }
+]
