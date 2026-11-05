@@ -35,7 +35,7 @@ create table if not exists public.truck_review_settings (
 create table if not exists public.review_requests (
   id                 uuid primary key default gen_random_uuid(),
   truck_id           text not null references public.trucks(id) on delete cascade,
-  order_id           text not null references public.orders(id) on delete cascade,
+  order_key          uuid not null references public.orders(order_key) on delete cascade,   -- orders' primary key (orders.id is per event)
   email_hash         text not null check (email_hash ~ '^[0-9a-f]{64}$'),
   locale             text not null,
   completed_at       timestamptz not null,
@@ -48,7 +48,7 @@ create table if not exists public.review_requests (
   unsubscribe_token  text not null check (unsubscribe_token ~ '^[A-Za-z0-9_-]{32}$'),
   created_at         timestamptz not null default now(),
   updated_at         timestamptz not null default now(),
-  constraint review_requests_one_per_order_uq unique (order_id),
+  constraint review_requests_one_per_order_uq unique (order_key),
   constraint review_requests_token_uq unique (unsubscribe_token)
 );
 create index if not exists review_requests_due_idx on public.review_requests (status, due_at);
