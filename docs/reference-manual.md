@@ -1,4 +1,4 @@
-HatchGrab Engineering Reference Manual · V16.10
+HatchGrab Engineering Reference Manual · V16.11
 
 **HatchGrab**
 
@@ -6,7 +6,7 @@ Engineering Reference Manual
 
 *Village Foodie · Food Truck Ordering Platform*
 
-**Version 16.10**
+**Version 16.11**
 
 November 2026
 
@@ -49,6 +49,148 @@ form — including key names and set/missing checks. It may run the project's ow
 internally (`next build`, the sweep, `tsc`). Configuration is worked out from code.
 
 # Changelog
+
+## V16.11 — 5 November 2026 — **DOCUMENTS IN MANAGE, COST PER DISH WITH PROFIT AND ACCOUNTANT REPORTS, THE FEATURE IMPORT THAT KEEPS ADMIN'S CHOICES, AND WHAT THE TRUCK**
+
+- Applies `docs/import-and-cs-fix-report.md`, `competitor-wtt-1`, `paperwork-1`, `costs-accounts-1` and
+  `features-list-1` (all `docs/<name>-report.md`), plus the planning chat's decisions (the delta). Facts were checked
+  read-only on 5 Nov (live database, `git fetch`, curl of public pages).
+  - Everything up to `bf71b9c3` was **pushed on 5 Nov at 07:06 UTC and is live** (OBSERVED, below), although each report
+    says "not pushed".
+  - ⚠️ **Two of the title's facts are not yet complete live** (OBSERVED WHEN APPLYING, below):
+    - What The Truck is not in the database yet; the first checker run after the push imports it.
+    - The Czech FAQ question is still hidden until the next hourly translation run.
+- **What The Truck (competitor-wtt-1, 4 Nov):** a new UK competitor.
+  - **The company:** What The Truck Software Ltd, company no. 17365285; terms dated 7 Oct 2026. Built by former
+    food-truck operators.
+  - **Pricing:** no monthly fee; 1.25% in person and 3.95% + VAT on the fee online. Lower tiers need proof of turnover.
+    The first month is free for the first 100 trucks ("Founder 100").
+  - **What it offers:** a till, kiosk, recipe costing, profit per gig, paperwork, loyalty and an AI assistant. UK only;
+    no testimonials.
+  - **How it was added:** through the research import, UNVERIFIED (35.an-1): 42 answers, 25 of them with quotes found
+    word for word.
+  - Card processing included or separate is **unknown**: its pricing page and terms disagree.
+  - A deep check is requested (`request_check: true`).
+  - Details in §86.16.
+- **The feature import keeps Admin's choices (import-and-cs-fix, 4 Nov):**
+  - `comparison_features.checked_by` / `scope_by` ('admin' or 'file') record who set each feature's tick and where it
+    shows. The importer applies tiers and adds features, but never undoes a value Admin set; an "off" tier still
+    unticks (migration 20261067).
+  - The 4 Nov 09:02 UTC run had already re-ticked asap, options, staff and walkup.
+  - Asap, options and staff are unticked again (stated 4 Nov, migration 20261070). Walkup stays ticked as a core, shown
+    feature (§86.17).
+  - The FAQ translation check no longer mistakes ordinary words that equal a plan name: Czech "pro" means "for" (§82.12).
+- **Manage › Documents (paperwork-1).** The mockup was approved on 4 Nov (stated: "yes thats fine … had meant manage
+  section not admin"). Migration 20261066.
+  - Built as Paperwork, then renamed Documents and placed just before Settings (stated mid-build, 4 Nov).
+  - Per-country default document lists are data (GB 11, a general list of 10).
+  - **Upload with an AI read** (Gemini) that pre-fills type, issuer, dates, name and cover for the truck to check and
+    edit (stated: "AI should be able to interpret and ask them to confirm the details which they can then edit").
+  - View and history, and reminders at 28 / 7 / 0 days, then weekly.
+    - Reminders are email only: the apps' push can only send "order needs confirming".
+  - Sending to organisers through an expiring link that always shows the current version; deletion; and a privacy
+    paragraph in all 28 languages.
+  - On every plan (feature key `paperwork`, no plan rows = on). Details in §50.
+- **Cost per dish, profit and accountant reports (costs-accounts-1).** Stated 4 Nov: "optional cost per dish and
+  accounting is easy to add so do those".
+  - **Cost to make:** an optional cost per dish, with history (`menu_item_costs`), never on any customer surface.
+  - **Profit per period and per event,** with a "Cost set for X of Y dishes sold" line.
+  - **Period presets,** including the country's tax year (`country_settings.tax_year_start_month` / `_day`), and two
+    accountant CSVs.
+  - No new screens (stated: no design time).
+  - Migration 20261068 adds the table and the two country columns. 20261069 holds the GB / AU / NZ tax-year starts, and
+    the follow-up 20261071 holds Hong Kong's. Both have run (OBSERVED).
+  - Details in §19, §17 and §76.10.
+- **/features (features-list-1):**
+  - three rows added after Buzzer tracking: Documents and reminders, Profit per event, Reports for your accountant (the
+    wording agreed on 4 Nov);
+  - the "Advanced reporting (coming soon)" row removed (stated: "these items cover it");
+  - the "Coming soon" rows still last (§81.8).
+- **Planning decisions (3–5 Nov):**
+  - growth and trust: founder-led sales recommended; commission-only agents not now (§44);
+  - no further features that need design for now (stated 4 Nov), with a parked list;
+  - Google review requests and weather per stop, backend first (stated 5 Nov);
+  - the landing and FAQ pages feel slower since the multi-country launch (perf-1, stated 5 Nov);
+  - all in §27 Added V16.11.
+
+| What | Where |
+|---|---|
+| **NEW — What The Truck (the entry, its plan, answers, quotes, the card-fee question, the assessment, their extra capabilities)** | **§86.16** (new); a pointer in §21 |
+| **NEW — the feature import keeps Admin's choices (`checked_by` / `scope_by`, migrations 20261067 and 20261070)** | **§86.17** (new) |
+| **NEW — Manage › Documents (tables, bucket, the AI read, reminders, shares, the organiser page, deletion, privacy)** | **§50** (new subsection at its end) |
+| **NEW — cost per dish, profit and reports for the accountant** | **§19** (new subsection) and **§17** (a dish's cost never reaches the menu API) |
+| **NEW — the tax year per country (`country_settings.tax_year_start_month` / `_day`)** | **§76.10** (new) |
+| **NEW — the /features list after features-list-1** | **§81.8** (new); a pointer in §48 |
+| **NEW — growth and trust (planning decisions, 3–4 Nov)** | **§44** (dated subsection at its end) |
+| **NEW — the new tables, in one place** | **§16** (dated subsection at its end) |
+| The FAQ check and Czech "pro" | §82.12 (added to the rejection rules) |
+| "Advanced reporting — coming soon" | §27 ×2 (struck as done) |
+| The import re-applies the file's ticks | §27 Added V16.10 (struck as done), §86.15 (corrected in place) |
+| Loyalty, paperwork and profit "not offered"; reminders by push; "tax year" = calendar year | not in the manual (sweep: 0 stale hits); recorded here and in the new subsections |
+| Invariants | **§35.ao-9 … 35.ao-12** (appended to 35.ao) |
+| Backlog | §27 (new "Added V16.11" block; the Advanced reporting row ×2, the import that undid Admin's ticks and the Czech FAQ failure struck as done) |
+| Deploy posture | §49 (new current block; V16.10's stays as dated history) |
+| Tooling and workflow (Part H) | §79 (at its end) |
+
+**SWEEP STATUS (applied 5 November 2026):** _pattern hits: 15 (outside this entry) — stale and corrected in place: 4;
+left as history: 7; not stale (a different meaning, or still true): 4; outstanding: 0. Found outside the patterns and
+corrected or added: 2 (6 in all)._
+- **Pattern 1** (`Advanced reporting|advanced_reporting.*coming`): 9 found.
+  - 2 corrected: §27 Added V16.8's "/features says Advanced reporting is coming soon" and §27 Added V16.10's open
+    decision (both struck as done).
+  - 4 left as history: the V6.5 changelog line and three struck V6–V11 lines in §4.
+  - 3 a different meaning or still true: §27's "advanced reporting visualisations" (a later idea), §35's gate post-mortem
+    (the `advanced_reporting` gate), and §86.10's "advanced reporting is not compared" (still true).
+- **Pattern 2** (`paperwork|Paperwork`): 0 found. The manual never said Documents was planned or missing.
+- **Pattern 3** (`cost per dish|recipe cost|profit per`): 0 found.
+- **Pattern 4** (`re-tick|seed.*checked`): 6 found.
+  - 2 corrected:
+    - §27 Added V16.10's "Before 4 Nov 02:10 UTC … the checker's feature import" (struck as done);
+    - §86.15's "it will re-tick four features" (annotated).
+  - 3 left as history: the V16.10 changelog's OBSERVED line, §49's V16.10 posture and §86.10's OBSERVED 30 Oct line.
+  - 1 a different meaning: §64's "Unticked by default" (Add event).
+- **Pattern 5** (`tax year`): 0 found. The manual never said the tax year was the calendar year.
+- **Found outside the patterns:**
+  - corrected: §27 Added V16.10's "FAQ translations: cs-CZ has one `failed` row" (struck as done: fixed in code and
+    pushed; the row clears on the next hourly run);
+  - added: the new tables in §16, so the schema section does not read as complete without them.
+
+**OBSERVED WHEN APPLYING (5 November 2026, about 07:05–07:30 UTC — where the live system differs from the delta or the reports, or adds to them):**
+- **Pushed and deployed.**
+  - `origin/main` moved from `0287d619` to **`bf71b9c3` by a push at 07:06:13 UTC on 5 Nov**. That push carried every
+    commit from competitor-wtt-1 to the costs-accounts-1 report. Each report says "not pushed, not deployed".
+  - `/uk/features` (07:10 UTC) shows the three new rows and no Advanced reporting; `/de/features` no longer has
+    "Erweiterte Auswertungen".
+  - Who pushed is not recorded. Dominic deploys (stated).
+- **20261069 has run** (costs-accounts-1 says it was waiting for Dominic's yes). Live:
+  `country_settings.tax_year_start_month / _day` are GB 4/6, AU 7/1, NZ 4/1, **and HK 4/1**.
+  - HK's row is migration **20261071**, the costs-accounts-1 follow-up (Dominic's Q2 → A).
+  - It is committed locally as `032086f4` (5 Nov 07:09 UTC), **not yet pushed, and already run**.
+- **What The Truck is not in the database yet:**
+  - no competitor matches, and there is no `data_imports` row for `data/competitor-wtt-1/competitors.json`;
+  - the importer runs from GitHub's `main`, and the push came after 4 Nov's run;
+  - the 5 Nov scheduled run had not started by 07:15 UTC (4 Nov's "02:10" run started at 09:02 UTC).
+  - The GB deep check is still current (`deep_country` GB; the last deep run was 4 Nov 09:39–11:35 UTC, 15 checked). So
+    whether What The Truck gets a deep or a routine check depends on whether GB finishes first (competitor-wtt-1 flag 3).
+- **The Czech FAQ question is still hidden:**
+  - the row is `failed` with the same reason, last tried 5 Nov 03:35 UTC, before the push;
+  - no hourly retry is recorded since then (GitHub's scheduled runs start late);
+  - the next run after the push should pass it (UNVERIFIED).
+- **The live ticks are as decided:**
+  - asap, options and staff are unchecked, and walkup is checked, all four marked `checked_by` / `scope_by` 'admin';
+  - allergens is in the off tier, unchecked, 'admin'.
+- **Nothing used yet:** `truck_documents` 0 rows, `document_shares` 0, `menu_item_costs` 0.
+- **Another session is still working:** an uncommitted change to `scripts/costs-accounts-1.cjs` and the local commit
+  `032086f4`. Neither is part of this edit.
+- **Delta facts with no report behind them, recorded as stated or recommended:**
+  - the growth and trust observations, the year-one estimates and the agents decision (§44);
+  - the review and weather plan, the slowness report and the parked list (§27).
+- **Where a report refines the delta:**
+  - **Invariant 35.ao-9:** a past order's profit uses the cost on or before its **event date**. An order from before a
+    dish's first cost uses that first cost (costs-accounts-1 §2, a choice Dominic may change).
+  - **Part H's "untranslated strings":** in the shared tree the sweep failed on the other session's not-yet-registered
+    new keys (messages-parity) and its Manage views (language-phase-1d2). Both pass on HEAD plus one session's work
+    alone (features-list-1 §5).
 
 ## V16.10 — 3 November 2026 — **THE FAQ IN EVERY LANGUAGE ON ITS OWN PAGE, MIGRATIONS RUN BY CURSOR, HATCHGRAB'S OWN CONTACT FORM, APP BADGES IN EVERY LANGUAGE AND THE APPS ON IN EVERY COUNTRY, SEARCH AND AI FIXES, A LEANER COMPETITOR CHECKER, AND THE PAY AT HATCH MIX-UP UNDONE**
 
@@ -13536,6 +13678,16 @@ references anywhere.** They show RLS is survivable; they offer no access pattern
 without an email. See §27.
 
 
+
+## New tables and columns at V16.11 (4 November 2026)
+
+- **`paperwork_document_types`, `truck_documents`, `document_shares`, `document_share_items`,** the function
+  `paperwork_share_viewed` and the private bucket `truck-documents` (migration 20261066; §50).
+- **`menu_item_costs`** (migration 20261068; §19).
+- **`country_settings.tax_year_start_month` / `_day`** (20261068; set by 20261069 and 20261071; §76.10).
+- **`comparison_features.checked_by` / `scope_by`** (20261067; §86.17).
+- Every new table has RLS on, no policy and no grant to anon or authenticated: the service role only.
+
 # 17. Menu API behaviour
 
 - Slug or ID lookup — /api/menu/[truckId] and /api/orders/submit accept slug or UUID. Try slug first, fall back to ID.
@@ -13708,6 +13860,14 @@ continuous scroll makes it immediately visible.
 
 ⚠️ **No truck currently has a menu-level unavailable item**, so sold-out styling in a long scroll is
 untested against real data.
+
+
+## A dish's cost never reaches the menu API (V16.11 — costs-accounts-1)
+
+- **`menu_item_costs` is read and written only by `lib/accounts/costs-server.ts`, imported only by `/api/manage`.**
+- The public menu API, the order page, the KDS, tickets and emails never touch a cost. It is proven with a cost row in
+  the database: the real menu API answers with the dish and no cost.
+- See §19 and 35.ao-9.
 
 # 18. Customer communications and email
 
@@ -13953,6 +14113,57 @@ Status filter excludes 'cancelled' and 'rejected'. Cancelled orders show with op
 > **BOTH OLD STORES ARE LEFT DORMANT, NOT DROPPED** — the manual's established leave-dormant-then-sweep precedent. Keeping them intact through the switchover makes the rollback for the whole rework a **code revert**: no data destroyed, the old readers still find what they expect, the new table simply ignored. Dropping them in the same sitting as the create would make the switchover irreversible on its riskiest day. Two dormant objects cost nothing; an unrollbackable deploy costs a trading day.
 
 > ⚠️ **NOT SWEEPABLE FROM SQL:** the device-local `hg_notify_*` Capacitor Preferences keys live in each device's localStorage. They are retired by the client code that stops reading them — which is why that one-time migration is a precondition above and a **blocker** in §27, not a nicety.
+
+## Cost per dish, profit and reports for the accountant (V16.11 — costs-accounts-1, 4 November 2026)
+
+Stated 4 Nov: "optional cost per dish and accounting is easy to add so do those". **No new screens** (stated: no design
+time): one field in the item editor, one preset picker beside the date range, and one card on Reports ("For your
+accountant").
+
+**Cost per dish:**
+- **"Cost to make"** in Manage › Menu's item editor, for owners and managers only (staff get 403). Help text: "Optional.
+  What one portion costs you in ingredients and packaging. Used only in your reports; customers never see it."
+- It is saved by its own action, `set_item_cost`; `upsert_item` is unchanged and never sees a cost.
+- **`public.menu_item_costs`** (migration 20261068) holds one row per dish per truck-local day: `cost_minor`, currency
+  and `effective_from`.
+- **The history rule:**
+  - a report uses **the cost that applied on each order's event date** (the latest entry on or before it), so changing
+    a cost never rewrites past profit (35.ao-9);
+  - a second change on the same day replaces that day's entry;
+  - clearing the box records "no cost from today" (null), which is never counted as zero;
+  - ⚠️ an order from **before** a dish's first cost uses that first cost (a choice Dominic may change: `costOn`).
+- **Private:** RLS is on, with no policy and no grant. Only `lib/accounts/costs-server.ts` reads or writes the table, and
+  only `/api/manage` imports it (35.ao-9; §17).
+
+**Profit:**
+- Sales, cost of dishes sold, and profit (net sales minus that cost), for the period and per event ("By event").
+- **"Cost set for X of Y dishes sold"** is always shown. Where it is partial, a warning says the profit is higher than it
+  really is.
+- An event, or a CSV row, whose dishes are not all costed shows "—" or a blank for profit.
+- A dish inside a deal counts; modifiers have no cost of their own; cancelled orders have no dishes.
+
+**The accounts:**
+- **Presets:** This month, Last month, Last quarter, and Last tax year, which comes from the country's data (§76.10).
+- **Totals** (`lib/accounts/ledger.ts`):
+  - gross, refunds (the succeeded ledger refunds), tax and net;
+  - gross by channel (online / walk-up) and by payment (card online / Pay at Hatch, "Pay at the truck" in the English
+    variants / walk-up).
+- **Tax is stored or estimated:**
+  - **stored** where the order kept its own (since Phase 3);
+  - otherwise **estimated** from the truck's current rate, and labelled so;
+  - otherwise **none**, which is every UK truck: "No tax rate is set for your truck, so no tax is worked out here."
+  - A refund takes back its share of the tax.
+- **Which orders count:** a cancelled order that took money is counted, so its refund nets to zero. A cancelled order
+  with no money stays out, as in the rest of Reports.
+- **Two CSVs** (`lib/accounts/csv.ts`): `accounts-orders-<range>.csv` and `accounts-events-<range>.csv`.
+  - UTF-8 with a BOM and CRLF; ISO dates and 24-hour times;
+  - plain amounts with a currency column, and a "Tax basis" column;
+  - formula-like cells defused;
+  - **no customer name, email or phone**.
+
+**Also changed:** `get_report` reads in pages, past the 1,000-row cap. The order list is now in the order placed.
+
+**Harnesses:** `costs-accounts-1.cjs` (75) and `costs-accounts-1-screens.cjs` (12, browser).
 
 # 20. Social media and WhatsApp auto-replies
 
@@ -15346,6 +15557,10 @@ weight rather than a feature to preserve.
 - **US card surcharges:** banned in CT, MA, ME, PR; Visa cap 3%; never on debit; more states require fees shown in the price.
 - ⛔ **Corrected V16.6 — the sources are now recorded:** `docs/pricing-research-1-report.md` (46 countries, 23 Oct 2026) and `docs/pricing-research-1/competitors.csv` (232 plans). The four tools above that the research did not price (Hatches Up, Eventifood, EasyEats, RapidOrderz) are in `public.competitors` / `competitor_plans`, with source `manual`, "From the manual (§21), not re-checked". The per-country picture is §85.
 - ~~**Sources:** ⚠️ **none in `docs/` (OBSERVED 20 Oct 2026)** — the delta says to point to `docs/` reports, but a grep of `docs/*.md` for "EasyEats" or "Eventifood" finds only this manual. The figures above are as the delta states them; their sources are unrecorded until a research report is saved.~~
+- **What The Truck (V16.11, 4 Nov 2026):** a new UK competitor built by operators.
+  - No monthly fee; 1.25% in person, 3.95% + VAT on the fee online.
+  - Breadth is its pitch; HatchGrab's advantage is the cost of online orders.
+  - See §86.16.
 
 # 22. Development process
 
@@ -18514,8 +18729,9 @@ corrected).*
 - **The cost block on public pages:** Dominic's decision.
 - **Comparison words in other languages:** the `comparison` namespace exists in en-GB and de-DE only. Translate it before
   any other country's page goes live.
-- **/features says "Advanced reporting" is coming soon,** but `advanced_reporting` is on for every plan in the code.
-  Correct the copy or the switch (not part of comparisons; stated).
+- ~~**/features says "Advanced reporting" is coming soon,** but `advanced_reporting` is on for every plan in the code.
+  Correct the copy or the switch (not part of comparisons; stated).~~ ⛔ Corrected V16.11 — ✅ Done: the row is removed
+  and replaced by Profit per event and Reports for your accountant (features-list-1, §81.8).
 
 **Search**
 - **Search Console:** submit `https://www.hatchgrab.com/sitemap.xml` in the Domain property, if not done. Look at the one
@@ -18574,12 +18790,16 @@ lines), the privacy wording tidy, the sweep failures at HEAD (now six, all fixed
 statement (two lines), and the apex 307 (two lines). Annotated, not struck: Node 24 for Canada (pending the build log),
 and the dead slot code (`getSlotIndicator` removed; `slot_capacity` is live).*
 
-- 🔴 **Before 4 Nov 02:10 UTC, or after — not in between: the checker's feature import** (§49).
+- ~~🔴 **Before 4 Nov 02:10 UTC, or after — not in between: the checker's feature import** (§49).
   - The 4 Nov daily run imports the new feature list. It re-ticks asap, walkup, options and staff, which Admin unticked on
     2 Nov, because their stored tier is null.
   - If any of them should stay off, untick them **after** that run.
   - **Allergens:** set "Show on website" to Hidden in Admin, **after** that run too (the import sets its show setting
-    from the file). Dominic; UNVERIFIED.
+    from the file). Dominic; UNVERIFIED.~~ ⛔ Corrected V16.11 — ✅ Done:
+  - the 4 Nov 09:02 UTC run did re-tick the four;
+  - import-and-cs-fix made the importer keep Admin's choices (`checked_by` / `scope_by`, §86.17);
+  - asap, options and staff are unticked again (20261070); walkup stays ticked (stated 4 Nov);
+  - allergens is off tier, unchecked, `show_scope` `all` (OBSERVED 5 Nov). Hiding it is still Admin's choice.
 - **Pay at Hatch trial-only** (stated, 2 Nov: "a product design i need to implement later"):
   - switch it off once card details are added;
   - change the pricing banner and the FAQ, and add a "trial ends soon, connect Stripe" notice, together;
@@ -18597,8 +18817,10 @@ and the dead slot code (`getSlotIndicator` removed; `slot_capacity` is live).*
   3 Nov). On 3 Nov it had no upcoming events and photos on 4 of 30 dishes.
   - The dashboard, kitchen screen, Manage › Schedule and the weekly post need an operator login to capture
     (designer-pack-1).
-- **FAQ translations:** cs-CZ has one `failed` row (a typed plan name, OBSERVED 3 Nov), so that question is hidden in
-  Czech. Watch the next runs clear it; otherwise every language's run is complete (§49).
+- ~~**FAQ translations:** cs-CZ has one `failed` row (a typed plan name, OBSERVED 3 Nov), so that question is hidden in
+  Czech. Watch the next runs clear it; otherwise every language's run is complete (§49).~~ ⛔ Corrected V16.11 — ✅ fixed in
+  code (import-and-cs-fix: Czech "pro" = "for", §82.12) and pushed 5 Nov 07:06 UTC. OBSERVED 5 Nov 07:15 UTC: still
+  `failed` from its 03:35 try, before the push. Check it clears on the next hourly run.
 - **FAQ support answer:** the hours or reply time to promise, if any (Dominic).
 - **An Admin "competitive gaps" view per country** (only HatchGrab / only competitors / common): doubles as a roadmap
   tool (recommended); mockup first.
@@ -18608,7 +18830,8 @@ and the dead slot code (`getSlotIndicator` removed; `slot_capacity` is live).*
 - **Ask Nadia and Bogdan** before using their social-media message as a testimonial (recommended).
 - **Open decisions:**
   - one word for the vehicle in Manage (van or truck);
-  - /features says "Advanced reporting coming soon" while it is on for every plan;
+  - ~~/features says "Advanced reporting coming soon" while it is on for every plan;~~ ⛔ Corrected V16.11 — ✅ done
+    (features-list-1, §81.8);
   - offline protection on by default for new vans (offered, not decided);
   - the embedded schedule widget has no link back (mockup);
   - the truck and order page logo links to `/` (left as it is, 2 Nov).
@@ -18619,6 +18842,52 @@ and the dead slot code (`getSlotIndicator` removed; `slot_capacity` is live).*
 - **The GitHub repository's visibility** (public on 27 Oct): GitHub pauses scheduled workflows on a public repository
   after 60 days without commits, which would stop the FAQ translator and the checker silently (UNVERIFIED).
 - **Comparison words** exist only in en-GB and de-DE (carried).
+
+## Added V16.11 — Documents, costs and accounts, the import, What The Truck and what's next (5 November 2026)
+
+*Struck as done this version, in place above:*
+- the "Advanced reporting coming soon" row (two lines);
+- the import that undid Admin's ticks;
+- the Czech FAQ failure (fixed and pushed; the row clears on the next hourly run).
+
+*No backlog line existed for Documents, cost per dish and accountant reports, or the faq-1 harness failure. All three are
+done: paperwork-1, costs-accounts-1, and faq-1 fixed by costs-accounts-1 (206 / 0, and no longer re-pinned for
+unrelated migrations).*
+
+- **Google review requests and weather per stop — backend first (stated 5 Nov):**
+  - build the data, settings and logic now, switched off and with no customer-facing change;
+  - Dominic agrees the flow and appearance later.
+  - **Reviews:** a per-truck on / off and the truck's Google review link. The timing is to be decided, probably after the
+    order is complete (stated).
+- **Landing and FAQ pages feel slower since the multi-country launch (stated 5 Nov) — perf-1:**
+  - the planning chat saw every country page set to render on every visit (`force-dynamic`), and the server loading every
+    language's text;
+  - diagnose and fix without changing what the pages show.
+- **No further features that need design for now (stated 4 Nov).** Parked:
+  - loyalty, birthday and win-back messages, vouchers, corporate invoices;
+  - a kiosk, card payments at the hatch, an AI assistant, prep lists;
+  - recurring stops (check whether needed), a UK pitch signal check;
+  - vehicle reminders in Documents (easy, no design).
+- **Documents push reminders** once the apps' push can carry more than "order needs confirming" (a new payload type in
+  `lib/apns.ts`, `lib/fcm.ts` and the app's tap handler; §50).
+- **What The Truck questions:** does their percentage include card processing, and which card reader do they use (§86.16)?
+- **What The Truck's import and check** (OBSERVED 5 Nov: not imported yet):
+  - after the next "Competitor check" run, verify one row, 42 answers (25 quoted) and the plan "GB No monthly fee (fee per
+    payment) 0/395";
+  - check whether it got a deep or a routine check (competitor-wtt-1 §8).
+- **Trust work (recommended):**
+  - HatchGrab social pages with real posts;
+  - Gusto's public recommendation and a case study (ask permission);
+  - a founder photo and direct contact on the site;
+  - company details in the footer (§44).
+- **Commission-only agents:** revisit once about 10 trucks pay (recommended, §44).
+- **Push `032086f4`** (20261071, Hong Kong's tax year): it is committed locally and already run (OBSERVED 5 Nov).
+- **Documents follow-ups from paperwork-1:**
+  - the Privacy Policy's processor row for Gemini still says "menus you upload" (a one-line legal change, if wanted);
+  - "Download all" with several 20 MB files is UNVERIFIED until tried live;
+  - the Documents screens are not yet tried on a device.
+- **Profit before a dish's first cost:** today an earlier order uses the first cost. "No cost before the first entry" is
+  a one-line change in `costOn`; Dominic's choice (§19).
 
 # 28. Anti-scraping and rate limiting (V6.3)
 
@@ -22027,7 +22296,7 @@ of this manual).
 - **35.an-25 The checker exits non-zero only for a whole-stage failure (V16.9);** a timed-out check keeps its finished
   groups.
 
-## 35.ao 🔴 FAQ, APP FLAGS, MIGRATIONS, ROUNDING, COMPETITOR ANSWERS AND THE CONTACT FORM (V16.10)
+## 35.ao 🔴 FAQ, APP FLAGS, MIGRATIONS, ROUNDING, COMPETITOR ANSWERS AND THE CONTACT FORM (V16.10); COSTS, THE FEATURE IMPORT AND DOCUMENTS (V16.11)
 
 - **35.ao-1 A published FAQ answer states facts only through live values,** and must read correctly in every switched-on
   country; publishing is refused otherwise (`lib/faq/check.ts`, §82.12).
@@ -22047,6 +22316,18 @@ of this manual).
 - **35.ao-7 A competitor answer `no` needs a verbatim quote saying the feature isn't offered;** silence is
   `not_mentioned`, and no public page shows `not_mentioned` as No (§86.15).
 - **35.ao-8 The contact form saves before it emails and never emails the visitor** (§48, §43).
+- **35.ao-9 A dish's cost never reaches a customer surface** (order page, public menu API, KDS, tickets, emails). Only
+  `lib/accounts/costs-server.ts` touches `menu_item_costs`, and only `/api/manage` imports it.
+  - The profit of a past order uses the cost that applied on its event date: the latest entry on or before it.
+  - An order from before a dish's first cost uses that first cost (V16.11; §19, §17).
+- **35.ao-10 The feature import never undoes a choice made in Admin:**
+  - it changes `checked` or the show settings only where `checked_by` / `scope_by` is 'file';
+  - "off"-tier features are still unchecked (V16.11; §86.17).
+- **35.ao-11 A shared document link always shows the current version, expires, can be revoked, and is never indexed or
+  cached.** `/docs/<token>` is `noindex` and `private, no-store`, and stays out of the sitemap, `/llms.txt` and hreflang
+  (V16.11; §50).
+- **35.ao-12 An AI read of a document is a suggestion:** nothing is saved until the truck confirms in "Check the details".
+  A pending upload is never listed, shared or reminded (V16.11; §50).
 
 ## 🔴 iOS PUSH ENTITLEMENT — the §36 audit CONFIRMED, then fixed (V11.4)
 
@@ -27254,6 +27535,36 @@ non-commercial tiers get an allowance · what the plan footnote should claim · 
 early-return's expiry condition · the UTC date reference · the URL-normalisation triplication · the
 WhatsApp token-storage question to Meta · ICO registration.
 
+## Growth and trust (V16.11 — planning decisions, 3–4 November 2026)
+
+**What Dominic sees (stated):**
+- Outreach emails do arrive, and some trucks replied.
+- Very few demos were ever created, so the signup bug did not cause the low results.
+- **Trust:**
+  - After Pizzeria Gusto mentioned HatchGrab, a truck asked on social media whether anyone knew it.
+  - That truck never got in touch: "clearly a trust issue as too new".
+
+**Recommended focus (the planning chat's advice, not yet a decision):**
+- **Founder-led sales in the UK:**
+  - personal demos of the truck's own menu;
+  - market visits;
+  - warm introductions through Pizzeria Gusto.
+- **Trust signals:**
+  - a visible founder and social presence;
+  - a Gusto case study (with permission);
+  - company details on the site;
+  - referral partners who already sell to trucks.
+- **Year-one estimates** (best guesses, not forecasts):
+  - organic search alone, roughly 5–25 paying trucks;
+  - with founder-led sales, roughly 20–60.
+
+**Commission-only sales agents** (stated idea, 3 Nov: an initial fee plus about 15% for two years):
+- **Not now (recommended):** the per-truck value is too low to attract good agents, and the pitch isn't proven yet.
+- **Revisit** with a UK / US bounty plus recurring commission once about 10 trucks pay.
+- **Before appointing agents abroad,** check commercial-agent law.
+
+The trust work is in §27 Added V16.11.
+
 # 45. Offline payments and the conflict signal (V11.4)
 
 ## 🔴 A DESIGN DECISION WAS MADE AND REVERSED — the reversal is the record
@@ -29069,7 +29380,60 @@ Recorded so they are not briefed again.
 - OBSERVED 3 Nov: `/uk` shows both English badges (Play link without `hl`); `/de` shows `de-DE.svg` and `de-DE.png`.
 - **Harnesses:** `store-badges-1.cjs` (60), `tidy-2.cjs` (44).
 
-# 49. Deploy posture (current at V16.10; earlier postures below, each dated)
+### /features rows (V16.11 — features-list-1, 4 November 2026)
+
+- Three rows were added to the plan table: Documents and reminders, Profit per event, Reports for your accountant.
+- "Advanced reporting (coming soon)" was removed.
+- No landing-page change: the landing pages are byte-identical to the commit before.
+- See §81.8.
+
+# 49. Deploy posture (current at V16.11; earlier postures below, each dated)
+
+### 🔴 DEPLOY POSTURE AT V16.11 — PUSHED AND LIVE TO `bf71b9c3`; ONE LOCAL COMMIT (THE HK TAX YEAR, ALREADY RUN); MIGRATIONS 20261066–20261071 ALL RUN; WHAT THE TRUCK NOT YET IMPORTED (5 November 2026)
+
+*Replaces the V16.10 posture below as the current one; it and the earlier postures stay as dated history. Every line is
+OBSERVED on 5 Nov 2026, about 07:05–07:30 UTC, unless marked STATED.*
+
+- **STATED:** Dominic deploys.
+- **Git (after `git fetch`):**
+  - `origin/main` = **`bf71b9c3`** "costs-accounts-1: report…", pushed **5 Nov 07:06:13 UTC** (from `0287d619`, 4 Nov
+    08:54);
+  - local `main` is **1 ahead**: `032086f4` "costs-accounts-1: migration 20261071 — Hong Kong's tax year starts 1 April";
+  - the working tree has another session's uncommitted `scripts/costs-accounts-1.cjs`.
+- **Commits pushed since V16.10's posture (`f67eb787`):**
+  - `0287d619` (the V16.10 manual);
+  - competitor-wtt-1 `33ab38bc`, `fbca87ba`;
+  - paperwork-1 `b5dde5f8`, `6249530d`, `e2e3f76c`;
+  - import-and-cs-fix `41de9294`, `489b4f5f`, `1c33893a`, `2c93bb3c`, `56250fcd`;
+  - costs-accounts-1 `8b32036f`, `05200885`, `bf71b9c3`;
+  - features-list-1 `7dba813c`, `f37fbc8f`, `eae7a7ca`.
+- **Live checks (curl, after the deploy):**
+  - `/uk/features` 200 shows "Documents and reminders", "Profit per event" and "Reports for your accountant", and no
+    "Advanced reporting";
+  - `/de/features` 200 has no "Erweiterte Auswertungen".
+- **Migrations (read-only SQL; results in `docs/manual-v16-11-report.md`).** No run ledger exists, so each was judged
+  from its effects:
+  - **20261066** (paperwork-1) **run:** the four tables exist; the types are GB 11 and general 10. `truck_documents` and
+    `document_shares` have 0 rows.
+  - **20261067** (import-and-cs-fix) **run:** `checked_by` and `scope_by` exist.
+  - **20261068** (costs-accounts-1) **run:** `menu_item_costs` exists with 0 rows; the two tax-year columns exist.
+  - **20261069** **run** (each report said it waited for Dominic's yes): GB 4/6, AU 7/1, NZ 4/1.
+  - **20261070** (Q1) **run:** asap, options and staff are unchecked, 'admin'.
+  - **20261071** (HK, not pushed) **run:** HK 4/1.
+- **`comparison_features`:**
+  - asap, options and staff are `checked` false, `checked_by` / `scope_by` 'admin', hidden;
+  - walkup is `checked` true, 'admin', shown everywhere;
+  - allergens is off tier, `checked` false, 'admin', `show_scope` `all`.
+- **What The Truck:**
+  - **not in `competitors`**, and no `data_imports` row for its file;
+  - the last import is 4 Nov 09:02 UTC (`features.json`);
+  - the last checker runs were 4 Nov: the pass at 09:03, deep at 09:39 (15) and routine at 11:35;
+  - `deep_country` is still GB, so it imports on the first run after the push (§86.16).
+- **The FAQ:** cs-CZ has 28 `ok` and 1 `failed`, last tried 03:35 UTC, before the push (§82.12).
+- **Dominic to check:**
+  - push `032086f4`;
+  - after the next checker run, What The Truck's row and its check;
+  - after the next hourly FAQ run, the Czech question.
 
 ### 🔴 DEPLOY POSTURE AT V16.10 — EVERYTHING PUSHED AND DEPLOYED; THE FAQ LIVE IN GERMAN; THE APPS ON IN ALL 44; THE CHECKER'S NEW FEATURE LIST NOT YET IMPORTED (3 November 2026)
 
@@ -29575,6 +29939,86 @@ extracted. **Enumerate by the upload call site, not by where you expect the cont
 
 ⚠️ **Hooks cannot be called inside the map that renders a list**, so a per-slot drag state forces the
 slot to become a component. **That is the bulk of such work, not the drop handler.**
+
+### Manage › Documents (V16.11 — paperwork-1, 4 November 2026; mockup approved 4 Nov)
+
+Built as "Paperwork" and renamed **Documents** mid-build (stated 4 Nov: "rename paperwork to Documents and before
+settings").
+- Every word a truck or organiser sees says Documents: the tab, the title, the feature's name, and the reminder email.
+- The tab is 📄, **just before Settings**, for owners and managers only; staff are refused at the route and get no tab.
+- **Internal names stay `paperwork`:** the feature key, the message namespace, `/api/manage/paperwork`,
+  `?tab=paperwork`, `components/manage/PaperworkTab.tsx` and `lib/paperwork/`.
+- **On every plan:** the feature key `paperwork` has no plan row, so it is on. A plan row or a truck override can switch it
+  off.
+
+**The data (migration 20261066):**
+- **The tables:**
+  - **`paperwork_document_types`:** key, `country_code` (null = the general list), position, `has_expiry`,
+    `date_label` (`expires` / `review_by`).
+  - **`truck_documents`:**
+    - type or custom name, issuer, dates, name on the document, cover and currency;
+    - `storage_path`, mime, size (≤ 20 MB), `ai_extracted`;
+    - status `pending` / `current` / `superseded` / `deleted`, and the reminder bookkeeping;
+    - **at most one current document per truck and type** (a unique index).
+  - **`document_shares`:** a 32-character token, 1–5 organiser emails, an optional event, `expires_at` (≤ 91 days),
+    `revoked_at`, `first_opened_at`, `view_count`.
+  - **`document_share_items`:** a type key, so a renewal shows by itself, or a custom document.
+  - **`paperwork_share_viewed(token)`:** service role only.
+- **The lists:** GB has its own 11 types; every other country gets the general list of 10.
+- **The bucket:** `truck-documents` is private, 20 MB, pdf / jpeg / png / heic / heif / webp, with no storage policy.
+- RLS is on with no policy and no grant to anon or authenticated (OBSERVED 4 Nov).
+- **`pending`** (added to the brief's shape): the file is stored before Save, so a failed AI read keeps it. A pending row
+  is never listed, shared or reminded, and is swept with its file after 24 hours.
+
+**Upload and the AI read** (`lib/paperwork/ai-read.ts`):
+- **The upload:**
+  - the browser PUTs the file to a signed storage URL (Vercel's 4.5 MB request limit);
+  - the server checks the type from the stored bytes and converts HEIC to JPEG (`heic-convert` 2.1.0, server only; its
+    decoder is LGPL-3.0);
+  - it then asks Gemini `gemini-2.5-flash`, the menu reader's model and retry rule, for the type, issuer, dates, name on
+    the document, and cover with currency, each with a confidence.
+- **The checks:** every value is checked before the screen sees it. An unknown type becomes "Other…", and an impossible
+  date is dropped. What was read is kept in `ai_extracted`, for support only.
+- **Check the details:**
+  - every field is pre-filled and editable;
+  - warnings update as you edit: unreadable, expired, expiring within 30 days, a name that doesn't look like the
+    business;
+  - **nothing is saved until the truck presses Save** (35.ao-12).
+- **Renewal:** a new document of the same type supersedes the current one, which is kept as history.
+
+**Reminders** (`lib/paperwork/reminders.ts`, a step of the 04:30 UTC `/api/cron/order-retention` run):
+- **Stages, in the truck's own calendar:** 28 days, 7 days, on the day, then weekly. Each stage is sent once, and only
+  when it is later than the last one recorded.
+- **One email per truck per day,** in its language. It links to `/manage?tab=paperwork` without a token.
+- **Skipped:** demo trucks, inactive trucks, trucks with no contact email, and trucks with Documents switched off.
+- **Email only:** `lib/apns.ts` and `lib/fcm.ts` send one fixed payload ("order needs confirming"). A reminder push needs
+  a new payload type in both senders and the app (§27).
+
+**Sending to organisers:**
+- **The form:** up to 5 emails; the link works until the day after the event, otherwise 14 days (at most 90).
+- **The email:** one per organiser, "<Truck> via HatchGrab", Reply-To the truck.
+- **Rate limit:** 10 sends an hour per truck (Upstash). It fails closed.
+- **`/docs/<token>`** (35.ao-11):
+  - **always the current version of each type;**
+  - `noindex`, and `Cache-Control: private, no-store` (`vercel.json`);
+  - metered like `/p/`; not in the sitemap, `/llms.txt` or hreflang;
+  - an expired, turned-off or junk link reads "This link has expired…";
+  - Download all is a streamed ZIP;
+  - only `first_opened_at` and `view_count` are recorded.
+- **Files** redirect to 5-minute signed links. **The Sent list** shows opened or not, and has Turn off link.
+
+**Deletion and privacy:**
+- **Delete:**
+  - removes the files and clears every detail on the rows, which stay as `deleted`;
+  - takes the document off live links.
+  - ⚠️ Storage can serve a just-deleted file for a short while (OBSERVED 4 Nov), but no new link is issued.
+- **Account deletion** (`lib/account-deletion.ts`, step 3b) and the hard delete remove every file, document and link.
+- **The Privacy Policy** gained a "Compliance documents" paragraph in section 3, in English and all 28 translations
+  (`PRIVACY_UPDATED` 4 November 2026; `TERMS_VERSION` '2026-11-04').
+- Access uses the same deny-by-default check as `/api/manage` (`resolveTruckAccess`, moved to `lib/truck-access.ts`).
+
+**Harnesses:** `paperwork-1.cjs` (114) and `paperwork-1-screens.cjs` (21, browser). Live smoke test on `test-truck` (4
+Nov): every step worked, and it left nothing behind.
 
 ---
 
@@ -34036,6 +34480,18 @@ under "Decisions" below):
   spreadsheet export and import for translators is a small job for when it's needed.
 
 
+## 76.10 The tax year per country (V16.11 — costs-accounts-1, 4–5 November 2026)
+
+- **`country_settings.tax_year_start_month` / `tax_year_start_day`** (migration 20261068), both null or both set (day
+  1–28, a CHECK). Null means the calendar year.
+- They are read by `get_accounts_settings` for Reports' "Last tax year" preset (`lib/accounts/tax-year.ts`). Nothing
+  per country is in code or components.
+- **Set (OBSERVED 5 Nov):** GB 6 April (20261069), AU 1 July (20261069), NZ 1 April (20261069), HK 1 April (20261071,
+  Dominic's Q2 → A). Every other country uses the calendar year.
+- Both migrations wrote to a protected table, so each needed Dominic's explicit yes (35.ao-5); costs-accounts-1 waited
+  for it.
+
+
 ---
 
 # 77. Languages (V15.8 — 14 October 2026)
@@ -34673,6 +35129,35 @@ correction note in its history; the hidden Smash and Grab prospect filled.
     - badges and contact: `store-badges-1.cjs` (60), `contact-1.cjs` (191), `contact-1-screens.cjs` (19, browser);
     - tidy-ups and the checker: `tidy-1.cjs`, `tidy-2.cjs` (44), `competitor-features-2.cjs` (79).
     - The full sweep is **green** (187 registered, 0 failing after tidy-2's re-pins, 3 Nov).
+- **Tooling and workflow (V16.11):**
+  - **Two sessions ran at once again (4 Nov):** costs-accounts-1 alongside import-and-cs-fix and features-list-1, in the
+    same checkout.
+    - They agreed the commit order by message: features-list-1 first (`7dba813c`), then costs-accounts-1 rebased onto it
+      (`05200885`).
+    - Each staged only its own lines in the shared files (messages, back-translations, `harnesses.json`), so neither
+      commit dropped the other's.
+    - In the shared tree the sweep failed on the other session's uncommitted work: its new keys not yet registered
+      (messages-parity) and its Manage views (language-phase-1d2). Both passed on HEAD plus one session's work alone.
+    - One fixture line was reset by the other session while syncing, and regenerated (`eae7a7ca`).
+    - **Keep to one prompt at a time.**
+  - **A prompt's referenced report must exist.** competitor-wtt-1 found `import-and-cs-fix-report.md` missing because
+    that prompt had not been run yet. The planning chat should check before sequencing prompts that depend on each other.
+  - **Writes to `country_settings` need Dominic's explicit yes in the prompt** (35.ao-5).
+    - costs-accounts-1 committed 20261069 and did not run it without that yes.
+    - OBSERVED 5 Nov: it has since run, and the Hong Kong follow-up 20261071 was approved (Q2 → A).
+  - **A long-pinned harness list breaks on every unrelated migration.** faq-1 pinned the exact migrations after its own
+    and failed at HEAD from 20261065 onward. costs-accounts-1 changed it to check that no later migration touches the
+    FAQ tables, so it won't need re-pinning again.
+  - **New harnesses (V16.11; counts from the reports):**
+    - `competitor-wtt-1.cjs` (42), `import-and-cs-fix.cjs` (33);
+    - `paperwork-1.cjs` (114), `paperwork-1-screens.cjs` (21, browser);
+    - `costs-accounts-1.cjs` (75), `costs-accounts-1-screens.cjs` (12, browser);
+    - `features-list-1.cjs` (16; `capture` / `compare` by hand in a HEAD worktree);
+    - `faq-1.cjs` is now 206.
+  - **The sweep:** 192 registered.
+    - costs-accounts-1's clean-worktree sweep: 188 passed. Three need a build and passed in the shared tree; one is the
+      known load flake (`add-order-refresh-inputs`), which passes alone.
+    - features-list-1: none of its sweep failures were its own once re-pinned.
 ---
 
 # 80. Security (V16.1 — 19 October 2026)
@@ -34897,6 +35382,26 @@ switched on; the 29 European rows are switched off (§83.1).
   - **The rule this left:** a note on wording is not a product change (§79).
 - **No FAQ answer may mention Pay at Hatch, paying at the truck, or paying on collection** (35.ao-3; the check refuses
   it, §82.12).
+
+## 81.8 The /features list after features-list-1 (V16.11 — 4 November 2026)
+
+- **"Running your service"** now reads: … Automated stock countdown · Buzzer tracking · **Documents and reminders** ·
+  **Profit per event** · **Reports for your accountant** · Tap to pay *(Coming soon)* · Customer display *(Coming soon)*.
+  - The three rows sit after the last built row, so the "Coming soon" rows stay at the bottom, as Dominic asked.
+  - The wording was agreed on 4 Nov.
+- **"Advanced reporting (coming soon)" is gone** (stated: "these items cover it"). The `advanced_reporting` plan feature
+  itself is unchanged.
+- **The switches:**
+  - Documents follows its plan switch (`paperwork`, on for every plan).
+  - Profit per event and Reports for your accountant have no switch, so they are ✓ on every plan.
+  - `lib/feature-table.ts` has 34 rows.
+- **Where it shows:** the one table feeds /features, Manage › Billing, the plans PDF and the outreach attachment PDF.
+- **Translations:** all 28 bases. en-US says "organizer" and "sales" (not the UK-only "takings"); es-MX says "contador"
+  and "venza".
+- `MARKETING_COPY_UPDATED` is '2026-11-04'; it moves only the sitemap `lastmod`.
+- **Harness:** `features-list-1.cjs` (16). Its `capture` / `compare` modes prove the landing pages and every byte of
+  /features outside these rows identical to the commit before.
+- OBSERVED live, 5 Nov: `/uk/features` shows the three rows and no Advanced reporting.
 
 # 82. Countries beyond GB and US, currencies and AI search (V16.3 — 20–21 October 2026)
 
@@ -35391,6 +35896,13 @@ before saving a published question):
   - it has Pay at Hatch wording in English or the locale's words;
   - its length is out of range (0.25–3×; 0.1× for ja/zh), or it is over 4,000 characters;
   - or it has a token in a question or title.
+- **Ordinary words (V16.11 — import-and-cs-fix, 4 Nov):**
+  - A plan name, a digit or a currency symbol now fails only where the English did not have it outside its `{tokens}`,
+    compared like with like.
+  - A language's own ordinary words spelt like a plan name never count: `ORDINARY_WORDS`, today only Czech `'Pro'` ("for").
+  - ⚠️ The known cost: a Czech translation that typed the plan name "Pro" itself would pass this one check.
+  - The cs-CZ row "Do I need an iPad, card reader or special equipment?" failed only for "Pro nejlepší zážitek…".
+    OBSERVED 5 Nov: still `failed` from its last try at 03:35 UTC, before the push; the next hourly run clears it.
 - **The freshness rule, one for everyone:**
   - a question shows in a language only if its `ok` row's `source_hash` equals the hash of the current English
     (`lib/faq/source-hash.ts`, used by Admin, the public page and the workflow);
@@ -36617,9 +37129,121 @@ and 20261065.*
   - At commercial 30 days it would have been ≈ $7.92.
 - **Focus usage, 3 Nov:** active: 59 food_truck, 64 nearest_local, 5 street_food_markets, 1 pop_up, 3 none.
 - ⚠️ **OBSERVED 3 Nov:** the new file is deployed but **not yet imported**. The daily workflow's first step (02:10 UTC)
-  imports it on 4 Nov, and it will re-tick four features Admin unticked on 2 Nov (§49, §27 Added V16.10).
+  imports it on 4 Nov, and it will re-tick four features Admin unticked on 2 Nov (§49, §27 Added V16.10). ⛔ Corrected
+  V16.11 — it did (4 Nov 09:02 UTC). The importer now keeps Admin's choices, and asap, options and staff are unticked
+  again (§86.17).
 - **Harnesses:** `competitor-features-2.cjs` (79); re-pins in competitor-check-1, pricing-check-1, faq-1, faq-3 and
   comparison-features-1-screens.
+
+## 86.16 What The Truck (V16.11 — competitor-wtt-1, 4 November 2026)
+
+**Who:** What The Truck Software Ltd, company no. 17365285, registered in England and Wales, registered office in
+Harrow; terms dated 7 Oct 2026; built by former food-truck operators (UK only; no testimonials). `https://whatthetruck.ai`.
+
+**How it was added:**
+- Through the research importer: `data/competitor-wtt-1/competitors.json`, registered last in `DATA_FILES` as "What
+  The Truck research". Everything arrives **UNVERIFIED** (35.an-1).
+- No migration and no public change: GB comparison is `off`, and the file adds no comparison entry.
+- ⚠️ **Not imported yet** (OBSERVED 5 Nov): the code was pushed on 5 Nov at 07:06 UTC, and the importer runs at the
+  start of the daily "Competitor check" workflow, from GitHub's `main`.
+
+**The competitor row:**
+- focus `food_truck`, active;
+- the company in its note;
+- `check_urls`: the ten pages read (/, /pricing, /compare, /features/festivals, /features/rocky, /features/loyalty,
+  /features/paperwork, /app, /support, /terms);
+- `request_check: true`, so the import sets `check_requested_at`, the column Admin's "Check now" sets.
+- **Deep or routine:**
+  - If the GB deep check is still running when it is imported, the deep share takes it first (`deepTargets`): a deep
+    check, where every finding gets a second check.
+  - If GB has finished, the request gives a routine check that still asks all 42 features.
+
+**The plan** (one GB `competitor_plans` row; the name "No monthly fee (fee per payment)" is ours, the site names no plan):
+- £0 a month; `truck_fee_bps` **395**: the online first tier, which every new account starts on;
+- VAT `excl`: "*Online rates are shown before VAT on the platform fee. The platform fee for online ordering is subject
+  to VAT at 20%.";
+- `card_mode` `unknown`, `unclear` true; `setup_minor` 0 because the column is NOT NULL (not stated on the site);
+- **the note carries every tier:**
+  - in person 1.25% up to £75,000, then 0.95%, 0.85% and 0.80%;
+  - online 3.95% / 3.75% / 3.50% / 3.25% on the same bands, before VAT;
+  - a lower tier needs proof of turnover;
+  - "Founder 100": the first 100 trucks pay no fees in their first month;
+  - hardware is bought separately;
+  - no contract (close the account at any time by email).
+
+**The answers:** 42, one per checked feature.
+- 17 yes, 5 partial, 17 `not_mentioned`, 3 unknown, 0 no.
+- **25 carry a verbatim quote, all 25 found on the pages** after the checker's normalisation; `android`'s is the Play
+  badge's `alt` text.
+- `term` is `unknown` with a note, not `no`: a `no` needs a negative quote (35.ao-7).
+- Two yes answers are wider than our labels, each with a note: `cards` (Apple Pay and Google Pay are not named) and
+  `social` (AI posts, not made from a schedule).
+- `ipad` is partial per the site (kiosk only); the App Store listing (GB) shows iPad screenshots.
+
+**🔴 The open card-fee question (NOT STATED):**
+- /pricing says "the card fees are on us" (Founder 100 month only).
+- The FAQ says the business "earns … through a payment processing fee on your sales", which reads as bundled.
+- /terms says card payments go through "third party payment providers that you connect … Their fees are set by them",
+  which reads as separate.
+- Open in §27: does their percentage include card processing, and which card reader do they use?
+
+**The planning chat's assessment (3–4 Nov):**
+- **HatchGrab's clearest advantage is the cost of online orders:**
+  - about **4.74%** for a new truck there (3.95% + VAT on the fee);
+  - against **0.99%** on Pay as you go, or **£0** on Unlimited;
+  - and no fee on walk-ups.
+- **Theirs is breadth:** "everything for running a truck, built by operators".
+
+**Their capabilities that are not in our feature list** (report only; no features added):
+- a till / card at the hatch (EPOS);
+- a self-order kiosk on an iPad;
+- recipe costing and profit per gig;
+- certificates with reminders (28 days, a week, on the day, then weekly) and packs for organisers;
+- Google review requests;
+- birthday and win-back messages, and voucher campaigns;
+- corporate invoicing;
+- a pitch mobile-coverage check;
+- an AI assistant ("Rocky");
+- dynamic pricing (HatchGrab's event pricing already does this).
+- Also seen: weather-aware sales and stock forecasts, van stock lists, vehicle dates (MOT, gas, PAT) with reminders, AI
+  reading of certificates, 21 storefront themes, next-business-day payouts.
+- Their /compare page compares them with Grafterr, Hatches Up and Square; HatchGrab is not named.
+
+**The importer gained two instruction keys** (`lib/data-import/research.ts`; neither is a column):
+- **`answers`,** checked by the checker's own rules before anything is written:
+  - yes / partial / no need a quote, and `no` needs a negation;
+  - `not_mentioned` has no quote, and `unknown` gives its reason;
+  - the key must be in the feature list, a quote needs its page, and quotes are at most 200 characters;
+  - one bad answer refuses the whole file.
+- **`request_check`.**
+- **Harness:** `competitor-wtt-1.cjs` (42).
+
+## 86.17 The feature import keeps Admin's choices (V16.11 — import-and-cs-fix, 4 November 2026)
+
+**What happened:**
+- `lib/data-import/features.ts` re-applied the file's `checked`, `show_scope` and `show_countries` whenever a feature's
+  tier changed.
+- On 4 Nov every stored tier was null, so the first tiered import (4 Nov 09:02 UTC, `retiered 45`) re-ticked asap,
+  options, staff and walkup, which Admin had unticked on 2 Nov.
+
+**Now (migration 20261067):**
+- **Two new columns:** `comparison_features.checked_by` and `scope_by`, each 'admin' or 'file' (CHECK).
+- **A re-tiering always sets the tier.** It changes `checked` only where `checked_by` is 'file', and the show settings
+  only where `scope_by` is 'file' (`retierCols`).
+- **An "off" tier still unticks,** even a feature Admin ticked: the checker never asks an off feature.
+- **New features are added as 'file'.**
+- **Admin marks its own changes** (`lib/admin/feature-actions.ts`): ticking sets `checked_by`, changing where it shows
+  sets `scope_by`, and an added feature is 'admin' on both.
+- **The backfill:** a row Admin had touched (`updated_by` not null) is 'admin' for both, the cautious reading.
+- **A rerun of the same file writes nothing** (recorded by sha256).
+
+**Dominic's Q1 (4 Nov), migration 20261070:**
+- asap, options and staff unticked again (`checked_by` 'admin');
+- walkup left ticked, as a core, shown feature in the 3 Nov tiers.
+- OBSERVED 5 Nov: 39 checked, 7 not (the off tier, plus asap, options and staff); allergens, asap, options, staff and
+  walkup are 'admin', the rest 'file'.
+
+**Harness:** `import-and-cs-fix.cjs` (33). It also covers the FAQ check's ordinary words (§82.12).
 
 ---
 
