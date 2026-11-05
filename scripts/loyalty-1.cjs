@@ -398,7 +398,8 @@ function world(over = {}) {
     const crons = JSON.parse(read('vercel.json')).crons
     t('registered in vercel.json\'s crons (the scheduler every other job uses), every 10 minutes', crons.filter(c => c.path === '/api/cron/loyalty-stamps').length === 1 && crons.find(c => c.path === '/api/cron/loyalty-stamps').schedule === '*/10 * * * *')
     const route = read('app/api/cron/loyalty-stamps/route.ts')
-    t('the route has the other crons\' gate (CRON_SECRET bearer or an admin) and runs on the service role', /Bearer \$\{secret\}/.test(route) && /verifyAdmin\(req\)/.test(route) && /SUPABASE_SERVICE_ROLE_KEY/.test(route))
+    const clientLine = s => (s.match(/const db = .*persistSession: false \} \}\)/) || [null])[0]
+    t('the route has the other crons\' gate (CRON_SECRET bearer or an admin) and the SAME service-role client line as the review-requests cron', /Bearer \$\{secret\}/.test(route) && /verifyAdmin\(req\)/.test(route) && !!clientLine(route) && clientLine(route) === clientLine(read('app/api/cron/review-requests/route.ts')))
   }
 
   // ══ 12 ══
@@ -438,9 +439,13 @@ function world(over = {}) {
     t('🔴 docs/reference-manual.md, messages/, lib/i18n/, app/landing/, components/landing/, components/legal/ are in none of loyalty-1\'s commits', !committed.some(f => /^(docs\/reference-manual\.md|messages\/|lib\/i18n\/|app\/landing\/|components\/landing\/|components\/legal\/|content\/legal\/)/.test(f)))
     const importers = execFileSync('git', ['grep', '--untracked', '-l', '-E', '@/lib/loyalty/', '--', 'app', 'lib', 'components'], { cwd: REPO }).toString().trim().split('\n').sort()
     t('🔴 only the new cron route, the retention job and account deletion import lib/loyalty — no order placement, dashboard action, status change, payment code, checkout or customer page', J(importers) === J(['app/api/cron/loyalty-stamps/route.ts', 'lib/account-deletion.ts', 'lib/order-retention.ts']), importers)
-    const UNTOUCHED = ['app/api/orders', 'app/api/dashboard/action/route.ts', 'app/api/payments', 'app/api/stripe', 'app/api/webhooks', 'lib/payments', 'lib/stripe', 'lib/orders', 'lib/order-charges.ts', 'lib/order-repricing.ts', 'proxy.ts']
-    const diff = execFileSync('git', ['diff', '--name-only', BASE, '--', ...UNTOUCHED], { cwd: REPO }).toString().trim()
-    t('the order, dashboard-action, payment, Stripe and webhook code is byte-identical to before loyalty-1', diff === '', diff)
+    // (a) of everything loyalty-1 committed, nothing under app/api or lib is outside its own files; (b) the order, dashboard-action,
+    // payment and webhook code, the order pages and proxy.ts are byte-identical to before loyalty-1, committed or not
+    const OWN = /^(app\/api\/cron\/loyalty-stamps\/|lib\/loyalty\/|lib\/order-retention\.ts$|lib\/account-deletion\.ts$)/
+    const outside = committed.filter(f => /^(app\/|lib\/|components\/|proxy\.ts$)/.test(f) && !OWN.test(f))
+    const CRITICAL = ['app/api/orders', 'app/api/dashboard', 'app/api/payments', 'app/api/webhooks', 'lib/payments', 'lib/orders', 'lib/order-charges.ts', 'lib/order-repricing.ts', 'lib/order-calculations.ts', 'app/order', 'app/o', 'proxy.ts']
+    const critical = execFileSync('git', ['diff', '--name-only', BASE, '--', ...CRITICAL], { cwd: REPO }).toString().trim().split('\n').filter(Boolean)
+    t('🔴 order placement, the dashboard action route (status changes), the payment and webhook code, the customer order pages and proxy.ts: byte-identical to before loyalty-1; nothing else under app/ or lib/ committed', !outside.length && !critical.length, { outside, critical })
     const src = ['lib/loyalty/model.ts', 'lib/loyalty/run.ts', 'lib/loyalty/service.ts', 'lib/loyalty/store.ts', 'lib/loyalty/retention.ts', 'app/api/cron/loyalty-stamps/route.ts'].map(read).join('\n')
     const store = read('lib/loyalty/store.ts')
     t('the store writes only the loyalty tables: no insert / update / delete anywhere; the only upsert is the truck\'s settings', !/\.(insert|update|delete)\(/.test(store) && (store.match(/\.upsert\(/g) || []).length === 1 && /from\('truck_loyalty_settings'\)\.upsert/.test(store))
