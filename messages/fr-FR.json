@@ -6680,5 +6680,21 @@
       "reminderButton": "Ouvrir Documents",
       "reminderFooter": "Nous vous prévenons 4 semaines avant, 1 semaine avant et le jour même, puis chaque semaine jusqu’au renouvellement."
     }
+  },
+  "emailReview": {
+    "subject": "Comment s’est passée votre commande chez {truck} ?",
+    "heading": "Merci d’avoir commandé chez {truck}",
+    "body": "Votre avis honnête sur Google serait précieux pour {truck}. Cela ne prend qu’une minute et aide d’autres personnes à découvrir ce food truck.",
+    "button": "Laisser un avis sur Google",
+    "linkText": "Laisser un avis sur Google : {url}",
+    "from": "Cet e-mail vous est envoyé par {truck} via HatchGrab, suite à votre commande.",
+    "unsubscribeLead": "Vous ne souhaitez pas recevoir de demandes d’avis de la part de {truck} ?",
+    "unsubscribeLink": "Se désabonner",
+    "unsubscribeText": "Se désabonner : {url}",
+    "unsubscribed": {
+      "title": "Désabonnement confirmé",
+      "body": "{truck} ne vous enverra plus de demandes d’avis.",
+      "invalid": "Ce lien de désabonnement n’est pas valide."
+    }
   }
 }

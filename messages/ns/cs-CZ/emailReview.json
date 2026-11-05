@@ -1,0 +1,16 @@
+{
+  "subject": "Jak se vám líbila objednávka z food trucku {truck}?",
+  "heading": "{truck} děkuje za vaši objednávku",
+  "body": "{truck} ocení vaši upřímnou recenzi na Google. Zabere to jen minutu a ostatním lidem to pomůže tento food truck najít.",
+  "button": "Napsat recenzi na Google",
+  "linkText": "Napsat recenzi na Google: {url}",
+  "from": "Tento e-mail vám posílá {truck} přes HatchGrab na základě vaší objednávky.",
+  "unsubscribeLead": "Nechcete dostávat žádosti o recenzi od food trucku {truck}?",
+  "unsubscribeLink": "Odhlásit odběr",
+  "unsubscribeText": "Odhlásit odběr: {url}",
+  "unsubscribed": {
+    "title": "Odběr byl odhlášen",
+    "body": "{truck} vám už nebude posílat žádosti o recenzi.",
+    "invalid": "Tento odkaz pro odhlášení není platný."
+  }
+}

@@ -5410,5 +5410,17 @@
  "manageReports.accountsCsv.header.dishesWithCost": "Dishes with a cost",
  "manageReports.accountsCsv.taxBasis.stored": "stored with the order",
  "manageReports.accountsCsv.taxBasis.estimated": "estimated from your tax rate",
- "manageReports.accountsCsv.taxBasis.none": "no tax rate set"
+ "manageReports.accountsCsv.taxBasis.none": "no tax rate set",
+ "emailReview.subject": "How was your order from {truck}?",
+ "emailReview.heading": "Thanks for ordering from {truck}",
+ "emailReview.body": "{truck} would appreciate an honest review on Google. It only takes a minute and helps others find the food truck.",
+ "emailReview.button": "Write a review on Google",
+ "emailReview.linkText": "Write a review on Google: {url}",
+ "emailReview.from": "This email comes from {truck} and is sent via HatchGrab because you have ordered from there.",
+ "emailReview.unsubscribeLead": "Don’t you want to get requests for reviews from {truck}?",
+ "emailReview.unsubscribeLink": "Unsubscribe yourself",
+ "emailReview.unsubscribeText": "Unsubscribe yourself: {url}",
+ "emailReview.unsubscribed.title": "You are unsubscribed",
+ "emailReview.unsubscribed.body": "{truck} no longer sends requests for reviews to you.",
+ "emailReview.unsubscribed.invalid": "This unsubscribe link is not valid."
 }

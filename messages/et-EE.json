@@ -6680,5 +6680,21 @@
       "reminderButton": "Ava Dokumendid",
       "reminderFooter": "Tuletame meelde 4 nädalat enne, 1 nädal enne ja samal päeval ning seejärel iga nädal, kuni dokument on uuendatud."
     }
+  },
+  "emailReview": {
+    "subject": "{truck}: kuidas sinu tellimusega läks?",
+    "heading": "{truck} tänab sind tellimuse eest",
+    "body": "{truck} oleks tänulik ausa arvustuse eest Google’is. See võtab vaid minuti ja aitab teistel toiduauto üles leida.",
+    "button": "Jäta Google’is arvustus",
+    "linkText": "Jäta Google’is arvustus: {url}",
+    "from": "Selle e-kirja saatis {truck} HatchGrabi kaudu, sest tellisid sealt.",
+    "unsubscribeLead": "Ei soovi, et {truck} saadaks sulle arvustuspalveid?",
+    "unsubscribeLink": "Loobu kirjadest",
+    "unsubscribeText": "Loobu kirjadest: {url}",
+    "unsubscribed": {
+      "title": "Oled kirjadest loobunud",
+      "body": "{truck} ei saada sulle enam arvustuspalveid.",
+      "invalid": "See loobumislink ei kehti."
+    }
   }
 }

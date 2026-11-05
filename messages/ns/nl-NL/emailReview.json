@@ -1,0 +1,16 @@
+{
+  "subject": "Hoe was je bestelling bij {truck}?",
+  "heading": "Bedankt voor je bestelling bij {truck}",
+  "body": "{truck} zou een eerlijke review op Google erg waarderen. Het kost maar een minuutje en helpt anderen om deze foodtruck te vinden.",
+  "button": "Schrijf een review op Google",
+  "linkText": "Schrijf een review op Google: {url}",
+  "from": "Deze e-mail komt van {truck} en is via HatchGrab verstuurd omdat je daar hebt besteld.",
+  "unsubscribeLead": "Wil je geen reviewverzoeken van {truck} ontvangen?",
+  "unsubscribeLink": "Afmelden",
+  "unsubscribeText": "Afmelden: {url}",
+  "unsubscribed": {
+    "title": "Je bent afgemeld",
+    "body": "{truck} stuurt je geen reviewverzoeken meer.",
+    "invalid": "Deze afmeldlink is niet geldig."
+  }
+}

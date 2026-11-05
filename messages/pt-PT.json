@@ -6680,5 +6680,21 @@
       "reminderButton": "Abrir Documentos",
       "reminderFooter": "Lembramo-lo 4 semanas antes, 1 semana antes e no próprio dia e, depois, todas as semanas até ser renovado."
     }
+  },
+  "emailReview": {
+    "subject": "Como correu a sua encomenda a {truck}?",
+    "heading": "Obrigado por encomendar a {truck}",
+    "body": "{truck} agradeceria uma avaliação sincera no Google. Demora apenas um minuto e ajuda outras pessoas a descobrir este food truck.",
+    "button": "Deixar uma avaliação no Google",
+    "linkText": "Deixar uma avaliação no Google: {url}",
+    "from": "Este email é enviado por {truck} via HatchGrab, porque fez uma encomenda.",
+    "unsubscribeLead": "Não quer receber pedidos de avaliação de {truck}?",
+    "unsubscribeLink": "Cancelar subscrição",
+    "unsubscribeText": "Cancelar subscrição: {url}",
+    "unsubscribed": {
+      "title": "Subscrição cancelada",
+      "body": "{truck} deixará de lhe enviar pedidos de avaliação.",
+      "invalid": "Este link para cancelar a subscrição não é válido."
+    }
   }
 }

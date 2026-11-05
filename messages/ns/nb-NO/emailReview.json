@@ -1,0 +1,16 @@
+{
+  "subject": "Hvordan var bestillingen din fra {truck}?",
+  "heading": "Takk for at du bestilte fra {truck}",
+  "body": "{truck} vil sette stor pris på en ærlig anmeldelse på Google. Det tar bare et minutt og hjelper andre med å finne matbilen.",
+  "button": "Skriv en anmeldelse på Google",
+  "linkText": "Skriv en anmeldelse på Google: {url}",
+  "from": "Denne e-posten er fra {truck} og sendt via HatchGrab fordi du har bestilt derfra.",
+  "unsubscribeLead": "Vil du ikke få forespørsler om anmeldelser fra {truck}?",
+  "unsubscribeLink": "Meld deg av",
+  "unsubscribeText": "Meld deg av: {url}",
+  "unsubscribed": {
+    "title": "Du er meldt av",
+    "body": "{truck} sender deg ikke flere forespørsler om anmeldelser.",
+    "invalid": "Denne avmeldingslenken er ikke gyldig."
+  }
+}

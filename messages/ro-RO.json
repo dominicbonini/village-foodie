@@ -6680,5 +6680,21 @@
       "reminderButton": "Deschideți Documente",
       "reminderFooter": "Vă reamintim cu 4 săptămâni înainte, cu 1 săptămână înainte și în ziua expirării, apoi în fiecare săptămână până când documentul este reînnoit."
     }
+  },
+  "emailReview": {
+    "subject": "Cum a fost comanda dumneavoastră de la {truck}?",
+    "heading": "Vă mulțumim că ați comandat de la {truck}",
+    "body": "{truck} ar aprecia o recenzie sinceră pe Google. Durează doar un minut și îi ajută pe alții să descopere acest food truck.",
+    "button": "Lăsați o recenzie pe Google",
+    "linkText": "Lăsați o recenzie pe Google: {url}",
+    "from": "Acest e-mail vă este trimis de {truck} prin HatchGrab, în urma comenzii dumneavoastră.",
+    "unsubscribeLead": "Nu doriți să primiți solicitări de recenzii de la {truck}?",
+    "unsubscribeLink": "Dezabonare",
+    "unsubscribeText": "Dezabonare: {url}",
+    "unsubscribed": {
+      "title": "V-ați dezabonat",
+      "body": "{truck} nu vă va mai trimite solicitări de recenzii.",
+      "invalid": "Acest link de dezabonare nu este valid."
+    }
   }
 }

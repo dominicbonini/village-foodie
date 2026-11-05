@@ -1,0 +1,16 @@
+{
+  "subject": "How was your order from {truck}?",
+  "heading": "Thanks for ordering from {truck}",
+  "body": "{truck} would be grateful for an honest review on Google. It only takes a minute, and it helps other people find them.",
+  "button": "Leave a review on Google",
+  "linkText": "Leave a review on Google: {url}",
+  "from": "This email is from {truck}, sent through HatchGrab because you ordered from them.",
+  "unsubscribeLead": "Don’t want review requests from {truck}?",
+  "unsubscribeLink": "Unsubscribe",
+  "unsubscribeText": "Unsubscribe: {url}",
+  "unsubscribed": {
+    "title": "You’re unsubscribed",
+    "body": "{truck} won’t send you review requests any more.",
+    "invalid": "This unsubscribe link isn’t valid."
+  }
+}

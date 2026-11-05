@@ -1,0 +1,16 @@
+{
+  "subject": "{truck}: jak oceniasz swoje zamówienie?",
+  "heading": "{truck} dziękuje za zamówienie",
+  "body": "Food truck {truck} będzie wdzięczny za szczerą opinię w Google. To zajmie tylko minutę, a innym osobom pomoże go znaleźć.",
+  "button": "Wystaw opinię w Google",
+  "linkText": "Wystaw opinię w Google: {url}",
+  "from": "Ten e-mail wysyła {truck} za pośrednictwem HatchGrab w związku z twoim zamówieniem.",
+  "unsubscribeLead": "Nie chcesz dostawać próśb o opinię od food trucka {truck}?",
+  "unsubscribeLink": "Wypisz się",
+  "unsubscribeText": "Wypisz się: {url}",
+  "unsubscribed": {
+    "title": "Wypisano cię",
+    "body": "{truck} nie będzie już wysyłać ci próśb o opinię.",
+    "invalid": "Ten link do wypisania się jest nieprawidłowy."
+  }
+}

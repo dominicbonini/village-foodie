@@ -7066,5 +7066,21 @@
       "reminderButton": "Dokumente öffnen",
       "reminderFooter": "Wir erinnern Sie 4 Wochen vorher, 1 Woche vorher und am Tag selbst – danach jede Woche, bis das Dokument erneuert ist."
     }
+  },
+  "emailReview": {
+    "subject": "Wie war Ihre Bestellung bei {truck}?",
+    "heading": "Danke für Ihre Bestellung bei {truck}",
+    "body": "{truck} wäre Ihnen für eine ehrliche Bewertung auf Google dankbar. Das dauert nur eine Minute und hilft anderen, den Foodtruck zu finden.",
+    "button": "Auf Google bewerten",
+    "linkText": "Auf Google bewerten: {url}",
+    "from": "Diese E-Mail stammt von {truck} und wurde über HatchGrab gesendet, weil Sie dort bestellt haben.",
+    "unsubscribeLead": "Sie möchten keine Bewertungsanfragen von {truck} erhalten?",
+    "unsubscribeLink": "Abmelden",
+    "unsubscribeText": "Abmelden: {url}",
+    "unsubscribed": {
+      "title": "Sie sind abgemeldet",
+      "body": "{truck} sendet Ihnen keine Bewertungsanfragen mehr.",
+      "invalid": "Dieser Abmeldelink ist ungültig."
+    }
   }
 }

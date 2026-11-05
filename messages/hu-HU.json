@@ -6680,5 +6680,21 @@
       "reminderButton": "Dokumentumok megnyitása",
       "reminderFooter": "4 héttel előtte, 1 héttel előtte és a lejárat napján emlékeztetjük, utána pedig hetente, amíg meg nem újítja."
     }
+  },
+  "emailReview": {
+    "subject": "{truck}: milyen volt a rendelése?",
+    "heading": "{truck} köszöni a rendelését",
+    "body": "{truck} hálás lenne egy őszinte Google-értékelésért. Csak egy percet vesz igénybe, és segít másoknak is rátalálni a food truckra.",
+    "button": "Értékelés írása a Google-on",
+    "linkText": "Értékelés írása a Google-on: {url}",
+    "from": "Ezt az e-mailt {truck} küldte a HatchGrab rendszerén keresztül, mert Ön náluk rendelt.",
+    "unsubscribeLead": "{truck}: nem szeretne értékelési kéréseket kapni?",
+    "unsubscribeLink": "Leiratkozás",
+    "unsubscribeText": "Leiratkozás: {url}",
+    "unsubscribed": {
+      "title": "Sikeresen leiratkozott",
+      "body": "{truck} többé nem küld Önnek értékelési kérést.",
+      "invalid": "Ez a leiratkozási link érvénytelen."
+    }
   }
 }

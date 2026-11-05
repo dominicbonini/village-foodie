@@ -1,0 +1,16 @@
+{
+  "subject": "{truck}: koks buvo jūsų užsakymas?",
+  "heading": "{truck} dėkoja jums už užsakymą",
+  "body": "{truck} kviečia jus palikti sąžiningą atsiliepimą Google. Tai užtrunka vos minutę, o kitiems padeda atrasti šį food truck.",
+  "button": "Palikti atsiliepimą Google",
+  "linkText": "Palikti atsiliepimą Google: {url}",
+  "from": "Šį laišką siunčia {truck} per HatchGrab, nes pateikėte ten užsakymą.",
+  "unsubscribeLead": "Nenorite, kad {truck} siųstų jums prašymus palikti atsiliepimą?",
+  "unsubscribeLink": "Atsisakyti prenumeratos",
+  "unsubscribeText": "Atsisakyti prenumeratos: {url}",
+  "unsubscribed": {
+    "title": "Prenumeratos atsisakyta",
+    "body": "{truck} nebesiųs jums prašymų palikti atsiliepimą.",
+    "invalid": "Ši prenumeratos atsisakymo nuoroda negalioja."
+  }
+}

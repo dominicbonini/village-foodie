@@ -259,6 +259,13 @@ for (const id of ['documents_reminders', 'profit_per_event', 'accountant_reports
   NEW_WORDING['manageMenu.item.costHelp'] = 'costs-accounts-1: the item editor\'s help under "Cost to make"'
   NEW_WORDING['errorsManage.cost_invalid'] = 'costs-accounts-1: the cost refusal'
 }
+// ⚠️ RE-PINNED (reviews-weather-1, 5 November 2026, docs/reviews-weather-1-report.md): the Google review request email and its
+// unsubscribe confirmation — a NEW namespace, `emailReview`, all new wording (switched off; scripts/reviews-weather-1.cjs proves it).
+{
+  const flatKeys = (o, p = '') => Object.entries(o).flatMap(([k, v]) => (v && typeof v === 'object' ? flatKeys(v, `${p}${k}.`) : [`${p}${k}`]))
+  const enGB = JSON.parse(fs.readFileSync(path.join(REPO, 'messages/en-GB.json'), 'utf8'))
+  for (const k of flatKeys(enGB.emailReview || {}, 'emailReview.')) NEW_WORDING[k] = 'reviews-weather-1: the review request email (a new namespace)'
+}
 /** ⚠️ RE-PINNED (features-page-restore, 20 October 2026): a restored message EDITED on purpose → [ref, the old key, how]:
  *  its en-GB text must be EXACTLY the old text so edited (here: the old text's first sentence). */
 const RESTORED_EDITED = {

@@ -1,0 +1,16 @@
+{
+  "subject": "Hur var din beställning från {truck}?",
+  "heading": "Tack för att du beställde från {truck}",
+  "body": "{truck} skulle uppskatta ett ärligt omdöme på Google. Det tar bara en minut och hjälper andra att hitta foodtrucken.",
+  "button": "Skriv ett omdöme på Google",
+  "linkText": "Skriv ett omdöme på Google: {url}",
+  "from": "Det här mejlet kommer från {truck} och skickas via HatchGrab eftersom du har beställt därifrån.",
+  "unsubscribeLead": "Vill du inte få förfrågningar om omdömen från {truck}?",
+  "unsubscribeLink": "Avregistrera dig",
+  "unsubscribeText": "Avregistrera dig: {url}",
+  "unsubscribed": {
+    "title": "Du är avregistrerad",
+    "body": "{truck} skickar inte längre förfrågningar om omdömen till dig.",
+    "invalid": "Den här avregistreringslänken är inte giltig."
+  }
+}

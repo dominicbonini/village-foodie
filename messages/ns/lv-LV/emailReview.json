@@ -1,0 +1,16 @@
+{
+  "subject": "{truck}: kāds bija jūsu pasūtījums?",
+  "heading": "{truck} pateicas par jūsu pasūtījumu",
+  "body": "{truck} lūdz jūs atstāt godīgu atsauksmi Google. Tas aizņem tikai minūti un palīdz citiem to atrast.",
+  "button": "Atstāt atsauksmi Google",
+  "linkText": "Atstāt atsauksmi Google: {url}",
+  "from": "Šo e-pastu sūta {truck}, izmantojot HatchGrab, jo jūs tur veicāt pasūtījumu.",
+  "unsubscribeLead": "Nevēlaties, lai {truck} jums sūta atsauksmju pieprasījumus?",
+  "unsubscribeLink": "Atrakstīties",
+  "unsubscribeText": "Atrakstīties: {url}",
+  "unsubscribed": {
+    "title": "Atrakstīšanās veikta",
+    "body": "{truck} jums vairs nesūtīs atsauksmju pieprasījumus.",
+    "invalid": "Šī atrakstīšanās saite nav derīga."
+  }
+}

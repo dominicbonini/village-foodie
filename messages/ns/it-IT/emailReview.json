@@ -1,0 +1,16 @@
+{
+  "subject": "Com’è andato il tuo ordine da {truck}?",
+  "heading": "Grazie per aver ordinato da {truck}",
+  "body": "Una tua recensione sincera su Google sarebbe molto apprezzata da {truck}. Ci vuole solo un minuto e aiuta altre persone a scoprire questo food truck.",
+  "button": "Lascia una recensione su Google",
+  "linkText": "Lascia una recensione su Google: {url}",
+  "from": "Questa email ti è stata inviata da {truck} tramite HatchGrab perché hai effettuato un ordine.",
+  "unsubscribeLead": "Non vuoi ricevere richieste di recensione da {truck}?",
+  "unsubscribeLink": "Annulla iscrizione",
+  "unsubscribeText": "Annulla iscrizione: {url}",
+  "unsubscribed": {
+    "title": "Iscrizione annullata",
+    "body": "{truck} non ti invierà più richieste di recensione.",
+    "invalid": "Questo link per annullare l’iscrizione non è valido."
+  }
+}

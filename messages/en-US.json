@@ -972,5 +972,10 @@
     "sent": {
       "turnOffConfirm": "Turn off this link? The organizer won’t be able to open it anymore."
     }
+  },
+  "emailReview": {
+    "unsubscribed": {
+      "body": "{truck} won’t send you review requests anymore."
+    }
   }
 }

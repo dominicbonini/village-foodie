@@ -6680,5 +6680,21 @@
       "reminderButton": "Avaa Asiakirjat",
       "reminderFooter": "Muistutamme sinua 4 viikkoa ennen, 1 viikko ennen ja samana päivänä ja sen jälkeen joka viikko, kunnes asiakirja on uusittu."
     }
+  },
+  "emailReview": {
+    "subject": "{truck}: millainen tilauksesi oli?",
+    "heading": "{truck} kiittää tilauksestasi",
+    "body": "{truck} olisi kiitollinen rehellisestä Google-arvostelusta. Se vie vain minuutin ja auttaa muitakin löytämään ruokarekan.",
+    "button": "Jätä Google-arvostelu",
+    "linkText": "Jätä Google-arvostelu: {url}",
+    "from": "Tämän sähköpostin lähetti {truck} HatchGrab-palvelun kautta, koska tilasit sieltä.",
+    "unsubscribeLead": "Etkö halua, että {truck} lähettää sinulle arvostelupyyntöjä?",
+    "unsubscribeLink": "Peru viestit",
+    "unsubscribeText": "Peru viestit: {url}",
+    "unsubscribed": {
+      "title": "Et saa enää näitä viestejä",
+      "body": "{truck} ei enää lähetä sinulle arvostelupyyntöjä.",
+      "invalid": "Tämä peruutuslinkki ei ole voimassa."
+    }
   }
 }

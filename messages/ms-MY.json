@@ -6680,5 +6680,21 @@
       "reminderButton": "Buka Dokumen",
       "reminderFooter": "Kami mengingatkan anda 4 minggu sebelum, 1 minggu sebelum dan pada hari itu, kemudian setiap minggu sehingga ia diperbaharui."
     }
+  },
+  "emailReview": {
+    "subject": "Bagaimana pesanan anda daripada {truck}?",
+    "heading": "Terima kasih kerana memesan daripada {truck}",
+    "body": "{truck} amat menghargai ulasan yang jujur di Google. Ia hanya mengambil masa seminit dan membantu orang lain menemui mereka.",
+    "button": "Tulis ulasan di Google",
+    "linkText": "Tulis ulasan di Google: {url}",
+    "from": "E-mel ini daripada {truck}, dihantar melalui HatchGrab kerana anda telah membuat pesanan daripada mereka.",
+    "unsubscribeLead": "Tidak mahu menerima permintaan ulasan daripada {truck}?",
+    "unsubscribeLink": "Berhenti melanggan",
+    "unsubscribeText": "Berhenti melanggan: {url}",
+    "unsubscribed": {
+      "title": "Anda telah berhenti melanggan",
+      "body": "{truck} tidak akan menghantar permintaan ulasan kepada anda lagi.",
+      "invalid": "Pautan berhenti melanggan ini tidak sah."
+    }
   }
 }

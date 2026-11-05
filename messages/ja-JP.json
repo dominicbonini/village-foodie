@@ -6680,5 +6680,21 @@
       "reminderButton": "書類を開く",
       "reminderFooter": "有効期限の4週間前、1週間前、当日にお知らせし、その後は更新されるまで毎週お知らせします。"
     }
+  },
+  "emailReview": {
+    "subject": "{truck}でのご注文はいかがでしたか？",
+    "heading": "{truck}をご利用いただきありがとうございます",
+    "body": "{truck}では、Googleでの率直なレビューをお待ちしています。ほんの一分ほどで済み、ほかの方がお店を見つける手助けになります。",
+    "button": "Googleでレビューを書く",
+    "linkText": "Googleでレビューを書く：{url}",
+    "from": "このメールは{truck}からのもので、ご注文いただいた方にHatchGrabを通じてお送りしています。",
+    "unsubscribeLead": "{truck}からのレビュー依頼が不要ですか？",
+    "unsubscribeLink": "配信停止",
+    "unsubscribeText": "配信停止：{url}",
+    "unsubscribed": {
+      "title": "配信を停止しました",
+      "body": "今後、{truck}からレビュー依頼が届くことはありません。",
+      "invalid": "この配信停止リンクは無効です。"
+    }
   }
 }

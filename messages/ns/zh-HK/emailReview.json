@@ -1,0 +1,16 @@
+{
+  "subject": "你在 {truck} 的訂單感覺如何？",
+  "heading": "多謝你向 {truck} 落單",
+  "body": "如你能在 Google 留下真實評價，{truck} 將不勝感激。只需一分鐘，還能幫助更多人找到這架美食車。",
+  "button": "在 Google 留下評價",
+  "linkText": "在 Google 留下評價：{url}",
+  "from": "此電郵由 {truck} 透過 HatchGrab 發送，因為你曾向他們落單。",
+  "unsubscribeLead": "不想再收到 {truck} 的評價邀請？",
+  "unsubscribeLink": "取消訂閱",
+  "unsubscribeText": "取消訂閱：{url}",
+  "unsubscribed": {
+    "title": "你已取消訂閱",
+    "body": "{truck} 不會再向你發送評價邀請。",
+    "invalid": "這條取消訂閱連結無效。"
+  }
+}
