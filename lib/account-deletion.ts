@@ -32,6 +32,7 @@
 // it can only be dealt with as a hard delete or by hand.
 import type { SupabaseClient } from '@supabase/supabase-js'
 import { deleteTruckPaperwork } from '@/lib/paperwork/store'
+import { deleteTruckLoyalty } from '@/lib/loyalty/retention'
 
 /** The pending window. Stored on the operator row at request time so changing this never moves an
  *  already-running countdown. */
@@ -62,6 +63,8 @@ export interface AccountDeletionResult {
   authUsersDeleted: number
   /** paperwork-1: the truck documents' files removed from storage, their rows, and the links to organisers deleted. */
   paperwork: { files: number; documents: number; shares: number }
+  /** loyalty-1: the trucks' loyalty cards (their stamps and rewards cascade) and loyalty settings deleted. */
+  loyalty: { cards: number; settings: number }
   /** 🔴 Always 0 by construction. Reported so the invariant is visible in the response, not just asserted. */
   paymentsDeleted: 0
 }
@@ -157,6 +160,13 @@ export async function executeAccountDeletion(
   try { paperwork = await deleteTruckPaperwork(supabase, truckIds) }
   catch (e) { throw new AccountDeletionError('delete_paperwork', e instanceof Error ? e.message : String(e)) }
 
+  // ── 3c. LOYALTY (loyalty-1, 5 November 2026) — the trucks' stamp cards and loyalty settings ──
+  // 🔴 DELETED: a card is the truck's customers' salted email keys and their stamps; with the account closed nothing may keep them.
+  // The truck row survives (step 4), so nothing would cascade on its own.
+  let loyalty = { cards: 0, settings: 0 }
+  try { loyalty = await deleteTruckLoyalty(supabase, truckIds) }
+  catch (e) { throw new AccountDeletionError('delete_loyalty', e instanceof Error ? e.message : String(e)) }
+
   // ── 4. TRUCK CONTACT DETAILS — personal data on a retained row ───────────────────────────────────
   // 🔴 THE TRUCK ROW IS RETAINED, because order_payments.truck_id references it with ON DELETE CASCADE:
   // deleting the truck would destroy the ledger just as surely as deleting the orders. Its personal
@@ -197,5 +207,5 @@ export async function executeAccountDeletion(
     authUsersDeleted++
   }
 
-  return { operatorId, truckIds, ordersAnonymised, staffRemoved, authUsersDeleted, paperwork, paymentsDeleted: 0 }
+  return { operatorId, truckIds, ordersAnonymised, staffRemoved, authUsersDeleted, paperwork, loyalty, paymentsDeleted: 0 }
 }

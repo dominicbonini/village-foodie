@@ -150,6 +150,10 @@
     {
       "path": "/api/cron/order-retention",
       "schedule": "30 4 * * *"
+    },
+    {
+      "path": "/api/cron/loyalty-stamps",
+      "schedule": "*/10 * * * *"
     }
   ]
 }

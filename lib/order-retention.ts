@@ -23,7 +23,10 @@
 // deleted row is not there to delete twice.
 // contact-1 (2 November 2026; privacy section 7, "Support correspondence: 24 months"): it also DELETES every
 // `contact_messages` row (HatchGrab's own contact form) created more than CONTACT_RETENTION_MONTHS ago — the whole row.
+// loyalty-1 (5 November 2026): and the loyalty tables past 12 months — old stamps, finished rewards and cards with no stamp for
+// 12 months (lib/loyalty/retention.ts says exactly what), so no loyalty row still ties an anonymised order to a customer.
 import type { SupabaseClient } from '@supabase/supabase-js'
+import { purgeOldLoyalty, type LoyaltyPurgeResult } from '@/lib/loyalty/retention'
 
 export const RETENTION_MONTHS = 12
 /** Work per run: bounded, so one run cannot outlive its timeout; the next day's run takes the rest. */
@@ -92,7 +95,10 @@ export function retentionPatch(row: Row, nameEmpty: '' | null): Record<string, u
 
 export interface RetentionResult {
   cutoff: string; ordersExamined: number; ordersCleared: number; draftsExamined: number; draftsCleared: number; draftsPurged: number | null
-  whatsappLogsDeleted: number; messagesDeleted: number; contactMessagesDeleted: number; failures: string[]
+  whatsappLogsDeleted: number; messagesDeleted: number; contactMessagesDeleted: number
+  /** loyalty-1: stamps, finished rewards and idle cards past 12 months, deleted. */
+  loyalty: LoyaltyPurgeResult
+  failures: string[]
 }
 
 const COLS = 'order_key, created_at, customer_name, customer_email, customer_phone, notes, items, deals'
@@ -163,8 +169,10 @@ export async function runOrderRetention(supabase: SupabaseClient, now: Date = ne
   const messagesDeleted = await deleteOld(supabase, 'messages', cutoff.toISOString(), failures)
   // 5 · contact-1: the contact form's messages past 24 months
   const contactMessagesDeleted = await deleteOld(supabase, 'contact_messages', retentionCutoff(now, CONTACT_RETENTION_MONTHS).toISOString(), failures)
+  // 6 · loyalty-1: the loyalty tables past 12 months
+  const loyalty = await purgeOldLoyalty(supabase, cutoff.toISOString(), RETENTION_BATCH, RETENTION_MAX_PER_RUN, failures)
   return {
     cutoff: cutoff.toISOString(), ordersExamined: o.examined, ordersCleared: o.cleared, draftsExamined: d.examined, draftsCleared: d.cleared,
-    draftsPurged, whatsappLogsDeleted, messagesDeleted, contactMessagesDeleted, failures,
+    draftsPurged, whatsappLogsDeleted, messagesDeleted, contactMessagesDeleted, loyalty, failures,
   }
 }

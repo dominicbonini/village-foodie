@@ -432,8 +432,12 @@ const STUBS = {
   const msgDiff = execFileSync('git', ['diff', BASE, '--', 'messages/en-GB.json'], { cwd: REPO }).toString()
   t('messages: only the new emailReview namespace added (no existing word changed)', !/^-\s+"/m.test(msgDiff) && /\+\s+"emailReview": \{/.test(msgDiff))
   const importers = execFileSync('git', ['grep', '--untracked', '-l', '-E', "@/lib/(reviews|weather)/", '--', 'app', 'lib', 'components'], { cwd: REPO }).toString().trim().split('\n').sort()
-  t('only the four new routes (and the libraries themselves) import lib/reviews or lib/weather', importers.every(f => /^(lib\/reviews\/|lib\/weather\/|app\/api\/cron\/review-requests\/|app\/api\/cron\/weather\/|app\/api\/manage\/weather\/|app\/api\/reviews\/unsubscribe\/)/.test(f)), importers)
-  t('lib/email.ts, the order and dashboard routes and every page are byte-identical to before', ['lib/email.ts', 'app/api/dashboard/action/route.ts', 'app/api/manage/route.ts', 'vercel.json', 'proxy.ts'].every(f => execFileSync('git', ['diff', '--name-only', BASE, '--', f], { cwd: REPO }).toString().trim() === ''))
+  // ⚠️ RE-PINNED (loyalty-1, 5 November 2026, docs/loyalty-1-report.md): loyalty is told to identify the customer with THIS work's salted
+  // email hash (one customer key per truck across reviews and loyalty), so lib/loyalty/model.ts imports lib/reviews/model — allowed, and
+  // only that file. And the byte-identical check compared BASE with the WORKING TREE, so loyalty-1's new cron in vercel.json read as this
+  // work's; it now compares BASE with this work's own last commit (7bc53b81), as the changed-files check above already does.
+  t('only the four new routes (and the libraries themselves) import lib/reviews or lib/weather', importers.every(f => /^(lib\/reviews\/|lib\/weather\/|app\/api\/cron\/review-requests\/|app\/api\/cron\/weather\/|app\/api\/manage\/weather\/|app\/api\/reviews\/unsubscribe\/|lib\/loyalty\/model\.ts$)/.test(f)), importers)
+  t('lib/email.ts, the order and dashboard routes and every page are byte-identical to before', ['lib/email.ts', 'app/api/dashboard/action/route.ts', 'app/api/manage/route.ts', 'vercel.json', 'proxy.ts'].every(f => execFileSync('git', ['diff', '--name-only', BASE, '7bc53b81', '--', f], { cwd: REPO }).toString().trim() === ''))
 
   console.log(`\nreviews-weather-1: ${pass} passed, ${fail} failed`)
   process.exit(fail ? 1 : 0)
