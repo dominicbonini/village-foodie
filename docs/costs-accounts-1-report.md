@@ -6,34 +6,23 @@
 - **Another session was working in the same files at the same time** (features-list-1, the /features table). We agreed the order by message and neither commit carries the other's lines (§7).
 - **No new screen or layout.** One field in the existing item editor; one preset picker beside the existing date range; one card on Reports, in the same style as "Revenue breakdown".
 - **Migration 20261068** (the cost table and two country columns) was run and verified read-only.
-- **Migration 20261069** (GB, AU and NZ tax-year starts) is committed but **not run**. It writes to `country_settings`, a protected table, and the run was refused without your explicit yes (Question 1). Until it runs, every country's "Last tax year" is the calendar year.
+- **Migrations 20261069** (GB 6 April, AU 1 July, NZ 1 April) **and 20261071** (HK 1 April): run on 5 November with your explicit approval, and verified read-only. Exactly those four rows carry a tax-year start; every other country is the calendar year (§8).
 
 | # | Item | Outcome |
 |---|---|---|
 | 0 | Diagnosis | Done (§1). |
 | 1 | Cost per dish | **Done.** "Cost to make" in the item editor, owners and managers only, with history (`menu_item_costs`). Private: proven absent from the public menu API, the order page, the KDS and tickets (§2, §6). |
 | 2 | Profit in Reports | **Done.** Sales, cost of dishes sold and profit for the period and per event, with "Cost set for X of Y dishes sold" and a warning when it is partial (§3). |
-| 3 | Accounting | **Done, except the GB/AU/NZ tax-year data (Question 1).** Presets, totals split by channel and payment, tax stored vs estimated, two CSVs (§4). |
+| 3 | Accounting | **Done.** Presets (the tax year from country_settings: GB, AU, NZ and HK set), totals split by channel and payment, tax stored vs estimated, two CSVs (§4). |
 | 4 | faq-1 | **Fixed (test only).** Two causes, explained in §5. |
-| 5 | Proof | `scripts/costs-accounts-1.cjs` (registered): **75 passed, 0 failed**. `scripts/costs-accounts-1-screens.cjs` (WebKit, by hand): **12 passed, 0 failed**. Full sweep: **188 of 192 pass; the other 4 pass when run on their own** (§6). Nothing fails at HEAD now: faq-1 did, and it is fixed. |
+| 5 | Proof | `scripts/costs-accounts-1.cjs` (registered): **77 passed, 0 failed**. `scripts/costs-accounts-1-screens.cjs` (WebKit, by hand): **12 passed, 0 failed**. Full sweep: **188 of 192 pass; the other 4 pass when run on their own** (§6). Nothing fails at HEAD now: faq-1 did, and it is fixed. |
 
-## Questions
+## Questions — answered 5 November 2026
 
-```
-1. Run migration 20261069 (tax-year starts)?
-   It sets country_settings.tax_year_start_month / _day for GB (6 April), AU (1 July) and NZ (1 April), the values in your brief.
-   It touches only those two new columns of those three rows. The migration runner refuses any write to country_settings
-   without your explicit approval, and the automatic permission check stopped me passing --approved-by-dominic on the
-   strength of the brief alone.
-   Until it runs, "Last tax year" is 1 January to 31 December everywhere, which is wrong for GB, AU and NZ.
-   A) Yes, run it as committed (recommended)
-   B) No, leave it
+1. Run migration 20261069 (GB 6 April, AU 1 July, NZ 1 April)? **A — run as committed.** Done.
+2. Hong Kong's tax year (1 April to 31 March)? **A — add it in a follow-up migration and run it.** Done: 20261071.
 
-2. Hong Kong's tax year runs 1 April to 31 March. Your brief did not name it, so it is not in 20261069 and HK uses the
-   calendar year. Every other switched-on country's tax year is the calendar year as far as I know.
-   A) Add HK (1 April) in a follow-up migration (recommended)
-   B) Leave HK on the calendar year
-```
+You gave explicit approval for both `country_settings` writes. Every other switched-on country's tax year is the calendar year as far as I know, so they stay NULL.
 
 ## 1 · Diagnosis (read-only, before any change)
 
@@ -146,8 +135,8 @@ Date,Time,Order number,Event,Channel,Payment method,Currency,Gross,Tax,Tax basis
 
 ## 6 · Proof
 
-**`scripts/costs-accounts-1.cjs`** (registered; no network, no database): **75 passed, 0 failed.** It runs the real `/api/manage` route over an in-memory database.
-- **1 · Migrations:** the table's privacy; one row per dish per day; 20261068 writes no row; 20261069 writes only GB/AU/NZ's two new columns.
+**`scripts/costs-accounts-1.cjs`** (registered; no network, no database): **77 passed, 0 failed** (75 when the sweep ran; HK's two checks were added after). It runs the real `/api/manage` route over an in-memory database.
+- **1 · Migrations:** the table's privacy; one row per dish per day; 20261068 writes no row; 20261069 writes only GB/AU/NZ's two new columns; 20261071 only HK's.
 - **2 · Presets:** GB on 4 Nov 2026 → 2025-04-06 … 2026-04-05, and the 5/6 April edge; US → 2025-01-01 … 2025-12-31; AU → 2025-07-01 … 2026-06-30; NZ; month, quarter and leap-February rollovers; no per-country code in the screen.
 - **3 · Cost history:** an order on 20 Oct uses the 1 Oct cost; one on 3 Nov uses the 1 Nov cost; a cost cleared is "no cost", not zero; a cost in another currency is not used.
 - **4 · Partial costs:** the X-of-Y wording (singular and plural); profit null for an incomplete order or event; the warnings.
@@ -273,7 +262,13 @@ cs_rows_set       0
 cost_rows         0
 ```
 
-**20261069 — committed, NOT run (Question 1).** The runner, without the approval flag, refuses it as a write to a protected table. The run with `--approved-by-dominic` was blocked by the session's permission check, which wants your explicit yes.
+**20261069 — run 5 November 2026 with your approval (question 1 → A).** Earlier the runner had refused it without the approval flag, and the session's permission check had blocked the flag until you said yes.
+
+```
+npx -y -p pg@8.13.1 node scripts/db-migrate.cjs supabase/migrations/20261069_costs_accounts_1_tax_years.sql --approved-by-dominic
+db-migrate: supabase/migrations/20261069_costs_accounts_1_tax_years.sql · sha256 38d55218ea16b964 · committed at 8b32036f
+db-migrate: supabase/migrations/20261069_costs_accounts_1_tax_years.sql applied — one transaction, no error
+```
 
 ```sql
 begin;
@@ -285,17 +280,51 @@ update public.country_settings set tax_year_start_month = 4, tax_year_start_day 
 commit;
 ```
 
-Verify, after it runs (read-only):
+**20261071 — Hong Kong, written, committed (`032086f4`) and run 5 November 2026 with your approval (question 2 → A).** Number 20261070 was taken by import-and-cs-fix.
+
+```
+npx -y -p pg@8.13.1 node scripts/db-migrate.cjs supabase/migrations/20261071_costs_accounts_1_hk_tax_year.sql --approved-by-dominic
+db-migrate: supabase/migrations/20261071_costs_accounts_1_hk_tax_year.sql · sha256 df51480c1c4a7721 · committed at 032086f4
+db-migrate: supabase/migrations/20261071_costs_accounts_1_hk_tax_year.sql applied — one transaction, no error
+```
+
+```sql
+begin;
+
+update public.country_settings set tax_year_start_month = 4, tax_year_start_day = 1 where country_code = 'HK';
+
+commit;
+```
+
+**Verify (read-only, MCP), after both:**
 
 ```sql
 select country_code, tax_year_start_month, tax_year_start_day from country_settings where tax_year_start_month is not null order by 1;
--- expected: AU 7 1 · GB 4 6 · NZ 4 1
 ```
+
+```
+AU  7  1
+GB  4  6
+HK  4  1
+NZ  4  1
+```
+
+```sql
+select count(*) as rows_with_start, (select count(*) from country_settings) as all_rows,
+  max(updated_at) filter (where country_code in ('GB','AU','NZ','HK')) as latest_updated_at_of_the_four
+from country_settings where tax_year_start_month is not null;
+```
+
+```
+rows_with_start 4 · all_rows 44 · latest_updated_at_of_the_four 2026-11-01 17:25:37.278+00
+```
+
+So 4 of the 44 rows carry a start. The four rows' `updated_at` is from before this work, so nothing else on them changed.
 
 ## 9 · Files
 
 **New:**
-- `supabase/migrations/20261068_costs_accounts_1.sql`, `20261069_costs_accounts_1_tax_years.sql`;
+- `supabase/migrations/20261068_costs_accounts_1.sql`, `20261069_costs_accounts_1_tax_years.sql`, `20261071_costs_accounts_1_hk_tax_year.sql`;
 - `lib/accounts/tax-year.ts`, `ledger.ts`, `csv.ts` (pure), `costs-server.ts` (server only);
 - `scripts/costs-accounts-1.cjs`, `scripts/costs-accounts-1-screens.cjs`, `scripts/_lp-costs-accounts-1.cjs`;
 - `docs/costs-accounts-1/` (4 screenshots, 2 sample CSVs).
@@ -321,3 +350,11 @@ commit;
 ```
 
 **In code:** revert the build commit. Dropping the table deletes every cost operators have entered.
+
+To take back only the four tax-year starts (20261069 and 20261071), leaving the columns. ⛔ DO NOT RUN unless Dominic asks:
+
+```sql
+begin;
+update public.country_settings set tax_year_start_month = null, tax_year_start_day = null where country_code in ('GB', 'AU', 'NZ', 'HK');
+commit;
+```

@@ -5,7 +5,7 @@
 //
 // What it proves, in order:
 //    1 · the migrations: menu_item_costs private (RLS on, no policy, nothing for anon/authenticated), one row per dish per day; the
-//        tax-year columns added with no row written in 20261068; 20261069 writes only GB, AU and NZ's two new columns;
+//        tax-year columns added with no row written in 20261068; 20261069 writes only GB, AU and NZ's two new columns; 20261071 only HK's;
 //    2 · the tax-year presets for GB (6 April), US (calendar year) and AU (1 July) — and NZ, and "no entry" = calendar year;
 //    3 · cost history: an old order uses the old cost, a new order the new one; a cleared cost is "no cost", never zero;
 //    4 · the partial-cost wording: "Cost set for X of Y dishes sold", profit null for an incomplete order or event;
@@ -68,7 +68,11 @@ const stripComments = s => s.replace(/--.*$/gm, '')
     const ups = [...b.matchAll(/update public\.country_settings set (.*?) where country_code = '([A-Z]{2})';/g)].map(m => [m[2], m[1]])
     t('20261069 writes only GB 6 April, AU 1 July, NZ 1 April — the two new columns, nothing else', JSON.stringify(ups) === JSON.stringify([['GB', 'tax_year_start_month = 4, tax_year_start_day = 6'], ['AU', 'tax_year_start_month = 7, tax_year_start_day = 1'], ['NZ', 'tax_year_start_month = 4, tax_year_start_day = 1']])
       && (b.match(/\bupdate\b/gi) || []).length === 3 && !/insert|delete|alter/i.test(b), ups)
-    t('both are one transaction', [a, b].every(x => /^begin;/m.test(x) && /^commit;/m.test(x)))
+    // ⚠️ costs-accounts-1 follow-up (5 November 2026, Dominic's Q2 → A): Hong Kong's tax year starts 1 April — its own file, 20261071.
+    const c = stripComments(read('supabase/migrations/20261071_costs_accounts_1_hk_tax_year.sql'))
+    t('20261071 writes only HK 1 April — the two new columns, nothing else', JSON.stringify([...c.matchAll(/update public\.country_settings set (.*?) where country_code = '([A-Z]{2})';/g)].map(m => [m[2], m[1]])) === JSON.stringify([['HK', 'tax_year_start_month = 4, tax_year_start_day = 1']])
+      && (c.match(/\bupdate\b/gi) || []).length === 1 && !/insert|delete|alter/i.test(c))
+    t('all three are one transaction', [a, b, c].every(x => /^begin;/m.test(x) && /^commit;/m.test(x)))
   }
 
   // ── 2 · tax-year presets ──────────────────────────────────────────────────────────────────────────────────────────────
@@ -83,6 +87,7 @@ const stripComments = s => s.replace(/--.*$/gm, '')
     t('US (no entry): last tax year 2025-01-01 … 2025-12-31', US === null && eq(p('2026-11-04', US).lastTaxYear, '2025-01-01', '2025-12-31'))
     t('AU on 4 Nov 2026: 2025-07-01 … 2026-06-30; on 30 Jun 2026: 2024-07-01 … 2025-06-30', eq(p('2026-11-04', AU).lastTaxYear, '2025-07-01', '2026-06-30') && eq(p('2026-06-30', AU).lastTaxYear, '2024-07-01', '2025-06-30'))
     t('NZ on 4 Nov 2026: 2025-04-01 … 2026-03-31', eq(p('2026-11-04', NZ).lastTaxYear, '2025-04-01', '2026-03-31'))
+    t('HK (1 April, from 20261071) on 4 Nov 2026: 2025-04-01 … 2026-03-31', eq(p('2026-11-04', TY.taxYearStartOf(4, 1)).lastTaxYear, '2025-04-01', '2026-03-31'))
     t('this month 2026-11-01 … today; last month 2026-10-01 … 2026-10-31; last quarter 2026-07-01 … 2026-09-30',
       eq(p('2026-11-04', GB).thisMonth, '2026-11-01', '2026-11-04') && eq(p('2026-11-04', GB).lastMonth, '2026-10-01', '2026-10-31') && eq(p('2026-11-04', GB).lastQuarter, '2026-07-01', '2026-09-30'))
     t('January rolls back a year: last month 2025-12, last quarter 2025-10-01 … 2025-12-31; February ends on the 28th/29th',
