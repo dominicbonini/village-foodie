@@ -226,8 +226,10 @@ const json = f => JSON.parse(read(f))
     let diff = ''
     try { diff = execFileSync('git', ['diff', '--stat', BEFORE, '--', ...PATHS], { cwd: REPO, encoding: 'utf8' }) } catch (e) { diff = String(e) }
     t(`${PATHS.length} ordering, payment, KDS, dashboard, Manage and proxy paths: no change against ${BEFORE}`, diff.trim() === '', diff)
+    // ⚠️ RE-PINNED (loyalty-1, 5 November 2026, docs/loyalty-1-report.md): this compared BEFORE with the WORKING TREE, so loyalty-1's
+    // lib/loyalty/ and its two privacy hooks read as perf-1's. It now compares BEFORE with perf-1's own last commit (5622370d, its report).
     t('the shared modules that did change are exactly the reviewed list (i18n loading, localizePlans, the four readers)', (() => {
-      const changed = execFileSync('git', ['diff', '--name-only', BEFORE, '--', 'lib'], { cwd: REPO, encoding: 'utf8' }).trim().split('\n').filter(f => !f.startsWith('lib/i18n/catalog/'))
+      const changed = execFileSync('git', ['diff', '--name-only', BEFORE, '5622370d', '--', 'lib'], { cwd: REPO, encoding: 'utf8' }).trim().split('\n').filter(f => !f.startsWith('lib/i18n/catalog/'))
       return JSON.stringify(changed.sort()) === JSON.stringify(['lib/comparison-flags.ts', 'lib/country-settings.ts', 'lib/faq/public-cache.ts', 'lib/faq/public.ts', 'lib/i18n/locale-files.ts', 'lib/i18n/messages.ts', 'lib/i18n/registry.ts', 'lib/marketing-cache.ts', 'lib/marketing-render.ts', 'lib/marketing-tags.ts', 'lib/plan-names.ts', 'lib/plans-server.ts', 'lib/revalidate-secret.ts'])
     })())
   }
