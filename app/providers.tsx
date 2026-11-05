@@ -3,6 +3,7 @@ import posthog from 'posthog-js'
 import { PostHogProvider } from 'posthog-js/react'
 import { usePathname } from 'next/navigation'
 import { isCustomHost } from '@/lib/custom-host'
+import { isPublicPagePath, isPublicWebVitals } from '@/lib/public-page'
 
 /**
  * ── /embed IS THE ONE ROUTE THAT MUST NOT INITIALISE POSTHOG ────────────────────────────────────
@@ -84,6 +85,14 @@ function isCredentialPath(pathname?: string | null): boolean {
 const IS_CREDENTIAL_ENTRY =
   typeof window !== 'undefined' && isCredentialPath(window.location.pathname)
 
+/**
+ * cwv-1 (5 November 2026, docs/cwv-1-report.md): THE VISIT STARTED ON A PUBLIC HATCHGRAB PAGE — a country's landing, /features, /faq,
+ * /compare, a comparison page, a legal document, /about or /contact (lib/public-page.ts). Read ONCE, at module evaluation, like the
+ * guards above. It only switches on web-vitals capture below; it changes nothing else, and on every other entry it is false.
+ */
+const IS_PUBLIC_ENTRY =
+  typeof window !== 'undefined' && window.location.hostname.includes('hatchgrab') && isPublicPagePath(window.location.pathname)
+
 if (typeof window !== 'undefined' && !IS_EMBED_ENTRY && !IS_CUSTOM_HOST_ENTRY && !IS_CREDENTIAL_ENTRY) {
   posthog.init(process.env.NEXT_PUBLIC_POSTHOG_KEY!, {
     api_host: process.env.NEXT_PUBLIC_POSTHOG_HOST,
@@ -116,7 +125,12 @@ if (typeof window !== 'undefined' && !IS_EMBED_ENTRY && !IS_CUSTOM_HOST_ENTRY &&
         try { path = new URL(props.$current_url).pathname } catch { path = '' }
       }
       // 🔴 Dropped here = never queued, never sent. Not "captured but filtered later".
-      return isCredentialPath(path) ? null : event
+      if (isCredentialPath(path)) return null
+      // cwv-1 (5 November 2026): speed measurements are for the public HatchGrab pages only. A visitor who entered on one and went
+      // on, in the same tab, to /signup or the demo keeps the same PostHog — its measurements there are dropped here.
+      // 🔴 Both the event's address and every measurement's own address are checked (lib/public-page.ts says why).
+      if (event.event === '$web_vitals' && !isPublicWebVitals(path, props)) return null
+      return event
     },
     // 🔴 EXPLICIT, BECAUSE THE DEFAULT IS `false` AND THE REAL SWITCH IS IN A DASHBOARD WE CANNOT READ.
     // posthog-js 1.386.6 ships `disable_session_recording: !1` — recording is then gated by a
@@ -133,6 +147,13 @@ if (typeof window !== 'undefined' && !IS_EMBED_ENTRY && !IS_CUSTOM_HOST_ENTRY &&
     // counts read higher and a returning visitor is not recognised. The app reads no feature flags and calls no
     // identify(), and session recording is off (above), so nothing else moves.
     persistence: 'memory',
+    // cwv-1 (5 November 2026, docs/cwv-1-report.md): REAL VISITORS' PAGE SPEED (LCP, INP, CLS), on the public HatchGrab pages ONLY.
+    // IS_PUBLIC_ENTRY (above) is true only for a visit that starts on a public page; on every other entry this spreads nothing and
+    // PostHog starts exactly as before. 0–2 `$web_vitals` events per page load (posthog-js buffers a page's metrics and sends them
+    // 5 s after the first; INP and CLS arrive when the tab is hidden; there is no flush on unload), carrying $pathname and $current_url
+    // like every event. Whatever the project's own web-vitals switch in PostHog's settings says, this client setting wins, for these
+    // entries only; before_send (above) drops any `$web_vitals` that is not wholly a public page's, whichever switch produced it.
+    ...(IS_PUBLIC_ENTRY ? { capture_performance: { web_vitals: true, web_vitals_allowed_metrics: ['LCP', 'INP', 'CLS'] as ('LCP' | 'INP' | 'CLS')[] } } : {}),
   })
 }
 

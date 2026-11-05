@@ -263,7 +263,11 @@ export function permanentRedirect(to) { const e = new Error('redirect'); e.to = 
     // ⚠️ RE-PINNED (faq-4, 2 November 2026): /features' fonts moved, unchanged, into the frame it shares with /faq (components/landing/MarketingFrame.tsx).
     // ⚠️ RE-PINNED (site-chrome-1, 5 November 2026): the public pages' fonts are declared ONCE, in components/landing/MarketingFrame.tsx.
     && (require('./_lp-site-chrome-1.cjs').LANDED   // eslint-disable-line @typescript-eslint/no-require-imports -- CommonJS harness module (site-chrome-1)
-      ? /Courier_Prime\(\{[^}]*preload: false/.test(read('components/landing/MarketingFrame.tsx')) && !/Archivo\(\{[^}]*preload: false/.test(read('components/landing/MarketingFrame.tsx'))
+      // ⚠️ RE-PINNED (cwv-1, 5 November 2026): Archivo is TWO instances now — the upright one (with `--font-archivo`) is preloaded as
+      // before; its italic (below-the-fold text only) is declared with `preload: false`. scripts/cwv-1.cjs checks the pair in full.
+      ? /Courier_Prime\(\{[^}]*preload: false/.test(read('components/landing/MarketingFrame.tsx'))
+        && /const archivo = Archivo\(\{ subsets: \['latin'\], style: \['normal'\], variable: '--font-archivo', display: 'swap' \}\)/.test(read('components/landing/MarketingFrame.tsx'))
+        && /const archivoItalic = Archivo\(\{[^}]*style: \['italic'\][^}]*preload: false/.test(read('components/landing/MarketingFrame.tsx'))
         && ['app/landing/page.tsx', 'app/compare/page.tsx', 'app/contact/HatchGrabContact.tsx'].every(f => !/Courier_Prime\(|Archivo\(/.test(read(f)))
       : ['app/landing/page.tsx', 'components/landing/MarketingFrame.tsx', 'app/compare/page.tsx', 'app/contact/HatchGrabContact.tsx'].every(f => /Courier_Prime\(\{[^}]*preload: false/.test(read(f)) && !/Archivo\(\{[^}]*preload: false/.test(read(f)))))
 

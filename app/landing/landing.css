@@ -1192,3 +1192,17 @@ html:has(.hg-landing) { scroll-behavior: smooth; }
   --display: 'Archivo', var(--font-script-ar), 'Archivo Fallback', system-ui, sans-serif;
   --body: 'Public Sans', var(--font-script-ar), 'Public Sans Fallback', system-ui, sans-serif;
 }
+
+/* ── cwv-1 (5 November 2026, Dominic's 1A then B; docs/cwv-1-report.md §3): NOTHING WIDER THAN THE PHONE ON THE CZECH AND GREEK PAGES.
+   Measured with the real fonts at 360px: /cz scrolled sideways by 9px — the first cheapest-plan band ("Méně než 70 600 Kč → Bez
+   měsíčního poplatku", 369px; `.cheap-band` never wraps) — and /gr and /cy by 12px, the same band (371px). On /gr and /cy the hero
+   was also held 386px wide, below about 390px, by its orange button ("Ανέβασμα του καταλόγου μου →"), which never wraps
+   (`.hero-cta-row .btn-lg`, above) — not by the heading, which needs no rule of its own. Every other country's landing fits (all 44 checked).
+   • ≤400px ONLY, and only under :lang(cs) / :lang(el) (Greek = /gr and /cy): no other language's page and no wider screen meets these rules.
+   • The bands may wrap at a space (the plan name moves to a second line).
+   • The Greek hero button may wrap to two lines; from about 390px up it still fits on one, so nothing changes there.
+   Nothing else changes; scripts/cwv-1.cjs pins the block. */
+@media (max-width: 400px) {
+  :root:lang(el) .hg-landing .hero-cta-row .btn-lg { white-space: normal; }
+  :root:is(:lang(cs), :lang(el)) .hg-landing .cheap-band { white-space: normal; }
+}

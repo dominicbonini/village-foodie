@@ -189,6 +189,7 @@
     "loyalty-1.cjs",
     "site-chrome-1.cjs",
     "perf-1.cjs",
+    "cwv-1.cjs",
     "costs-accounts-1.cjs",
     "pricing-check-1.cjs",
     "world-countries-1.cjs",

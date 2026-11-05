@@ -34,7 +34,15 @@ import type { VisitorCountry } from '@/lib/visitor-country'
 import '@/app/landing/landing.css'
 
 // Self-hosted, non-render-blocking — as the landing page. seo-fixes S7: --ticket is declared but not preloaded.
-const archivo = Archivo({ subsets: ['latin'], style: ['normal', 'italic'], variable: '--font-archivo', display: 'swap' })
+// cwv-1 (5 November 2026): Archivo's ITALIC is its own instance, declared but NOT preloaded. Only below-the-fold text uses it (the
+// testimonial, its quote mark, the "how it works" numbers — landing.css), and its 38 KB preload competed with the first screen's CSS
+// and upright fonts on a phone. Both instances declare the same family, "Archivo", so `var(--display)` with `font-style: italic` still
+// draws Archivo Italic: the same file, the same pixels once it has loaded. No `variable` and no fallback face of its own — the upright
+// instance's `--font-archivo` ("Archivo", "Archivo Fallback") is unchanged. next/font needs every call assigned to a module const; the
+// italic's is never read (its @font-face is the whole point), hence the lint line.
+const archivo = Archivo({ subsets: ['latin'], style: ['normal'], variable: '--font-archivo', display: 'swap' })
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+const archivoItalic = Archivo({ subsets: ['latin'], style: ['italic'], display: 'swap', preload: false, adjustFontFallback: false })
 const publicSans = Public_Sans({ subsets: ['latin'], variable: '--font-public-sans', display: 'swap' })
 const courierPrime = Courier_Prime({ subsets: ['latin'], weight: ['400', '700'], variable: '--font-courier-prime', display: 'swap', preload: false })
 const CHROME = `hg-landing ${archivo.variable} ${publicSans.variable} ${courierPrime.variable}`

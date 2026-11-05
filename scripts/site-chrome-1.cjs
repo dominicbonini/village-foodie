@@ -164,7 +164,9 @@ if (mode === 'capture' || mode === 'compare') {
   t('"Features · Pricing · FAQ · About / Privacy · Terms · Contact · GB ⌄": the last five items counted from the end, About left in the first row', /:nth-last-child\(5\), \.hg-landing \.foot-links > :nth-last-child\(4\),\n  \.hg-landing \.foot-links > :nth-last-child\(2\), \.hg-landing \.foot-links > :nth-last-child\(1\) \{ order: 1; \}/.test(block))
   t('tighter: footer 2rem / 1.6rem; .foot-grid .9rem; .foot-right 1rem; .foot-base 1.4rem / .9rem', /footer \{ padding: 2rem 0 1\.6rem; \}/.test(block) && /\.foot-grid \{ gap: \.9rem; \}/.test(block) && /\.foot-right \{ gap: 1rem; align-self: stretch; \}/.test(block) && /\.foot-base \{ margin-top: 1\.4rem; padding-top: \.9rem; \}/.test(block))
   t('Apple\'s badge clear space (10px) on every side: 16px above, 20px between, 22px below, ≥ 14px to the brand block', /\.foot-apps \{ display: flex; flex-wrap: wrap; gap: 1\.25rem; \}/.test(css) && 16 >= 10 && 0.9 * 16 >= 10)
-  const outside = s => s.replace(/@media\(max-width:720px\)\{[\s\S]*?\n\}\n/g, '')
+  // ⚠️ RE-PINNED (cwv-1, 5 November 2026): cwv-1 APPENDED one block to landing.css — its comment, then rules for ≤400px Czech / Greek
+  // pages only (scripts/cwv-1.cjs pins it, and that everything before it is byte-identical). Only that appended tail is set aside here.
+  const outside = s => s.replace(/\n\/\* ── cwv-1 \(5 November 2026[\s\S]*$/, '').replace(/@media\(max-width:720px\)\{[\s\S]*?\n\}\n/g, '')
   t('🔴 desktop unchanged: every rule outside the ≤720px blocks is byte-identical to before', outside(css) === outside(cssBefore))
   const markupNow = read('components/landing/LandingFooter.tsx'), markupBefore = git('show', `${BEFORE}:components/landing/LandingFooter.tsx`)
   t('the footer\'s markup and item order are unchanged (React\'s ids depend on it)', markupNow === markupBefore && read('components/landing/LandingNav.tsx') === git('show', `${BEFORE}:components/landing/LandingNav.tsx`))
