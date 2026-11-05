@@ -5599,8 +5599,7 @@
       "whatsappSoonTitle": "Samodejni odgovori v WhatsAppu <soon>Kmalu</soon>",
       "whatsappSoonBody": "„Kje ste nocoj?“ „Katere sladice imate?“ Kmalu se bo na sporočila v WhatsAppu odgovarjalo namesto vas, medtem ko se peljete na prodajno mesto ali stojite za žarom. Sledita Messenger in Instagram.",
       "offlineTitle": "Ni signala? Strezite naprej.",
-      "offlineBody": "Vklopite zaščito naročil brez povezave in spletno naročanje se samodejno ustavi, če izgubite signal, da kupci ne morejo oddati naročil, ki jih ne bi videli.",
-      "offlineApps": "Naročila še naprej sprejemajte z aplikacijo za iPhone, iPad in Android.",
+      "offlineBody": "Če izgubite signal, se spletno naročanje samodejno ustavi, da kupci ne morejo oddati naročil, ki jih ne bi videli. Naročila še naprej sprejemajte z aplikacijo za iPhone, iPad in Android.",
       "slotsBody": "Kupci naročijo vnaprej in izberejo čas prevzema. Krajše vrste in hrana, ki je pripravljena, ko pridejo."
     },
     "steps": {
@@ -6207,7 +6206,7 @@
       "kitchen_app": "Najcelovitejši način dela s HatchGrab: kuhinjski zaslon v živo in edini način, da naročila sprejemate tudi, ko izgubite signal.",
       "multi_device_kitchen": "Uporabljajte več zaslonov — pri pultu in v kuhinji — ki vsi prikazujejo ista naročila v živo.",
       "multi_user_access": "Osebju dodelite lastne prijave z ustrezno ravnjo dostopa.",
-      "offline_protection": "Vklopite zaščito naročil brez povezave in spletno naročanje se samodejno ustavi, če izgubite signal, da kupci ne morejo oddati naročil, ki jih ne bi videli.",
+      "offline_protection": "Če izgubite signal, se spletno naročanje ustavi, da kupci ne morejo oddati naročil, ki jih ne bi videli. Z aplikacijo za iPhone, iPad in Android sprejemate naročila tudi brez povezave; spletna nadzorna plošča potrebuje povezavo.",
       "ticket_printing": "Tiskajte listke naročil na tiskalnik Bluetooth ali žični tiskalnik v kuhinji.",
       "web_dashboard": "Upravljajte prodajo v brskalniku na katerem koli telefonu, tablici ali prenosniku.",
       "meal_deals_upsells": "Združite artikle v menije in pri zaključku naročila ponudite dodatke, da povečate povprečno vrednost naročila.",
@@ -6238,7 +6237,6 @@
       "sms_order_alerts": "Kupcem samodejno pošljite SMS, ko je njihovo naročilo pripravljeno.",
       "loyalty_stamp_cards": "Nagradite stalne kupce z digitalnimi karticami z žigi — žigi se zbirajo in unovčijo samodejno."
     },
-    "offlineApps": "Z aplikacijo za iPhone, iPad in Android sprejemate naročila tudi brez povezave; spletna nadzorna plošča potrebuje povezavo.",
     "metaTitle": "Primerjava paketov in funkcij — HatchGrab {country}"
   },
   "compare": {

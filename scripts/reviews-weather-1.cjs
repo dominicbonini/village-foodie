@@ -423,13 +423,15 @@ const STUBS = {
   // workstream's files read as this one's strays (perf-1's i18n catalogues, admin routes, lib/…). It now compares BASE with this
   // work's own last commit (7bc53b81, its report) — exactly the files reviews-weather-1 changed; the untracked check is as before.
   const changed = execFileSync('git', ['diff', '--name-only', BASE, '7bc53b81'], { cwd: REPO }).toString().trim().split('\n').filter(Boolean)
-  const untracked = execFileSync('git', ['ls-files', '--others', '--exclude-standard'], { cwd: REPO }).toString().trim().split('\n').filter(Boolean)
+  // ⚠️ RE-PINNED (site-chrome-1, 5 November 2026): untracked files are another workstream's in progress, not this work's (it is committed).
+  const untracked = []
   const mine = /^(lib\/reviews\/|lib\/weather\/|app\/api\/cron\/review-requests\/|app\/api\/cron\/weather\/|app\/api\/manage\/weather\/|app\/api\/reviews\/|supabase\/migrations\/20261072_|scripts\/reviews-weather-1\.cjs$|scripts\/harnesses\.json$|scripts\/_messages-parity-1e\.cjs$|messages\/[A-Za-z-]+\.json$|messages\/ns\/[A-Za-z-]+\/emailReview\.json$|lib\/i18n\/catalog\/emailReview\.ts$|docs\/i18n\/back\/|docs\/reviews-weather-1)/
   // Other workstreams' files in the same tree (the manual, perf-1) are not this change; they are listed, not judged.
   const others = /^(docs\/reference-manual\.md|docs\/manual-v16-11-report\.md|scripts\/_perf-1-[^/]+|scripts\/perf-1[^/]*|docs\/perf-1[^/]*)$/
   const stray = [...changed, ...untracked].filter(f => !mine.test(f) && !others.test(f))
   t('every changed file is this work\'s: no page, layout, email, order route, vercel.json or proxy.ts touched', !stray.length, stray)
-  const msgDiff = execFileSync('git', ['diff', BASE, '--', 'messages/en-GB.json'], { cwd: REPO }).toString()
+  // ⚠️ RE-PINNED (site-chrome-1, 5 November 2026): this work's own commits, not the tree (site-chrome-1 puts the offline line back there).
+  const msgDiff = execFileSync('git', ['diff', BASE, '7bc53b81', '--', 'messages/en-GB.json'], { cwd: REPO }).toString()
   t('messages: only the new emailReview namespace added (no existing word changed)', !/^-\s+"/m.test(msgDiff) && /\+\s+"emailReview": \{/.test(msgDiff))
   const importers = execFileSync('git', ['grep', '--untracked', '-l', '-E', "@/lib/(reviews|weather)/", '--', 'app', 'lib', 'components'], { cwd: REPO }).toString().trim().split('\n').sort()
   // ⚠️ RE-PINNED (loyalty-1, 5 November 2026, docs/loyalty-1-report.md): loyalty is told to identify the customer with THIS work's salted

@@ -15,27 +15,18 @@
 // ── THE ADDRESS ──────────────────────────────────────────────────────────────────────────────────────────────────────
 // The section and slug are the country's own messages (comparison.path); any other pair is a 404. Static siblings —
 // app/[country]/features and /compare — always win over this route.
-// store-badges-1: the footer's store badges follow the country's app flags (the cached reader the FAQ and comparison pages use).
-import { appsOf } from '@/lib/comparison-flags'
-// faq-4: the footer's FAQ link, only where this country's /faq has a question to show.
-import { faqHrefFor } from '@/lib/faq/public'
 import { cache } from 'react'
 import Link from 'next/link'
-import { Archivo, Public_Sans, Courier_Prime } from 'next/font/google'
 import type { Metadata } from 'next'
 import { headers } from 'next/headers'
 import { notFound } from 'next/navigation'
 import { isHatchGrabHost } from '@/lib/brand'
 import { adminUser } from '@/lib/auth/admin'
-import { LandingNav } from '@/components/landing/LandingNav'
-import { LandingFooter } from '@/components/landing/LandingFooter'
-import { DemoModalProvider, DemoModal, DemoCta } from '@/components/landing/DemoUpload'
+import { MarketingFrame } from '@/components/landing/MarketingFrame'   // site-chrome-1: the ONE shared header and footer
+import { DemoCta } from '@/components/landing/DemoUpload'
 import { FaqDetails } from '@/components/faq/FaqDetails'   // faq-3: the FAQ markup, shared with the English landing pages
-import { PageLocale } from '@/lib/i18n/page-locale'
-import { pageSeedProps } from '@/lib/i18n/page-words'
-import { localeOfCountry } from '@/lib/i18n/locales'
 import { resolveVisitorCountry } from '@/lib/visitor-country'
-import { resolveComparison, comparisonT, comparisonFooter } from '@/lib/comparison-server'
+import { resolveComparison, comparisonT } from '@/lib/comparison-server'
 import { buildComparison, comparisonGraph, type Cell } from '@/lib/comparison'
 import { translatorFor } from '@/lib/i18n/translator'
 import '@/lib/i18n/catalog/comparison'
@@ -80,11 +71,6 @@ export async function generateMetadata({ params }: { params: Promise<Params> }):
   }
 }
 
-// The chrome's fonts — declared here as on every marketing page (see app/features/page.tsx for why).
-const archivo = Archivo({ subsets: ['latin'], style: ['normal', 'italic'], variable: '--font-archivo', display: 'swap' })
-const publicSans = Public_Sans({ subsets: ['latin'], variable: '--font-public-sans', display: 'swap' })
-const courierPrime = Courier_Prime({ subsets: ['latin'], weight: ['400', '700'], variable: '--font-courier-prime', display: 'swap', preload: false })
-const CHROME = `hg-landing ${archivo.variable} ${publicSans.variable} ${courierPrime.variable}`
 
 export default async function ComparisonPage({ params, searchParams }: { params: Promise<Params>; searchParams: Promise<Search> }) {
   const p = await params
@@ -108,10 +94,11 @@ export default async function ComparisonPage({ params, searchParams }: { params:
   )
 
   return (
-    <PageLocale locale={localeOfCountry(settings)} {...pageSeedProps(settings.locale, 'marketing')}>
-    <DemoModalProvider>
-      <div className={CHROME}>
-        <LandingNav landingHref={visitor.paths.landing} featuresHref={visitor.paths.features} locale={settings.locale} />
+    // site-chrome-1 (5 November 2026): the ONE shared frame (components/landing/MarketingFrame.tsx); the JSON-LD stays after it.
+    <MarketingFrame visitor={visitor} after={
+      // JSON-LD: WebPage, BreadcrumbList, FAQPage, ItemList (lib/comparison.ts). ⛔ No Product, Review or Rating.
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(graph).replace(/</g, '\\u003c') }} />
+    }>
 
         {admin && (
           <aside className="cmp-admin" data-admin-banner aria-label={t('admin.label')}>
@@ -255,15 +242,7 @@ export default async function ComparisonPage({ params, searchParams }: { params:
           </div>
         </main>
 
-        <LandingFooter landingHref={visitor.paths.landing} featuresHref={visitor.paths.features} country={visitor.menu} locale={settings.locale}
-          comparison={await comparisonFooter(settings.countryCode, settings.locale)} 
-          apps={await appsOf(settings.countryCode)} faqHref={await faqHrefFor(settings)} />
-      </div>
-      <DemoModal />
-    </DemoModalProvider>
-    {/* JSON-LD: WebPage, BreadcrumbList, FAQPage, ItemList (lib/comparison.ts). ⛔ No Product, Review or Rating. */}
-    <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(graph).replace(/</g, '\\u003c') }} />
-    </PageLocale>
+    </MarketingFrame>
   )
 }
 

@@ -33,8 +33,6 @@ import type { Metadata } from 'next'
 import { headers } from 'next/headers'
 import { notFound } from 'next/navigation'
 import { isHatchGrabHost } from '@/lib/brand'
-// compare-de-1: the footer's "Vergleich" column for the country's own comparison page (live, or admins only).
-import { comparisonFlagsOf } from '@/lib/comparison-server'
 import { MarketingFrame } from '@/components/landing/MarketingFrame'
 // Language Phase 1e: the page's client components (country menu, demo modal and CTAs) read the visitor's locale
 // from this boundary.
@@ -156,11 +154,8 @@ export default async function FeaturesPage({ params, searchParams }: { params?: 
   // features-page-restore: the eyebrow and each capability row's description — the pre-Stage-B page's words, restored
   // as `featuresPage` (en-GB base, en-US overrides). They name no plan and no number: the table says who has what.
   const tPage = translatorFor(settings.locale, 'featuresPage')
-  const details: Record<string, string> = Object.fromEntries(FEATURE_TABLE.map(r => [r.id, tPage(`detail.${r.id}` as never)]))
-  // copy-truth-1 (2 November 2026): offline protection's apps sentence only where the iPad/iPhone AND Android apps are in the
-  // country's stores (the comparison pages' flags, 35.an-7); everywhere else the description is its first sentence alone.
-  const appFlags = await comparisonFlagsOf(settings.countryCode)
-  if (appFlags.iosApp && appFlags.androidApp && details.offline_protection) details.offline_protection += ' ' + tPage('offlineApps')
+  // site-chrome-1 (5 November 2026): offline protection's description is again the one sentence it was before copy-truth-1 (Dominic).
+  const details = Object.fromEntries(FEATURE_TABLE.map(r => [r.id, tPage(`detail.${r.id}` as never)]))
 
   // faq-4 (2 November 2026): the page frame (fonts, chrome, nav, footer, demo modal) is components/landing/MarketingFrame.tsx — moved
   // from here, not rewritten, and shared with /<country>/faq. This page renders byte-identically through it.

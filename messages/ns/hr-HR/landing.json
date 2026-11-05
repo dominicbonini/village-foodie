@@ -36,8 +36,7 @@
     "whatsappSoonTitle": "Automatski odgovori na WhatsAppu <soon>Uskoro</soon>",
     "whatsappSoonBody": "„Gdje ste večeras?“ „Koje deserte imate?“ Uskoro će poruke na vašem WhatsAppu dobivati odgovor dok vozite prema lokaciji ili stojite za roštiljem. Messenger i Instagram slijede.",
     "offlineTitle": "Nema signala? Nastavite posluživati.",
-    "offlineBody": "Uključite zaštitu narudžbi izvan mreže i online naručivanje automatski se pauzira ako izgubite signal, kako kupci ne bi slali narudžbe koje nećete vidjeti.",
-    "offlineApps": "Nastavite primati narudžbe u aplikaciji za iPhone, iPad i Android.",
+    "offlineBody": "Ako izgubite signal, online naručivanje automatski se pauzira kako kupci ne bi slali narudžbe koje nećete vidjeti. Nastavite primati narudžbe u aplikaciji za iPhone, iPad i Android.",
     "slotsBody": "Kupci naručuju unaprijed i biraju vrijeme preuzimanja. Manje redova, a hrana je spremna kad stignu."
   },
   "steps": {

@@ -1,4 +1,4 @@
-# Language Phase 2 — every US view that differs from BEFORE (2083 US views; 1322 changed). Written by scripts/language-phase-2.cjs.
+# Language Phase 2 — every US view that differs from BEFORE (2083 US views; 1368 changed). Written by scripts/language-phase-2.cjs.
 # view id	why (named code change in F, or words only)
 1a/orderPage/US|loading	words
 1a/orderPage/US|eventsError	words
@@ -1105,24 +1105,52 @@
 1c/api/US|save-email|noBrevo	code: P2-save-email-date-US
 1c/api/US|deletion|post|ok	code: P2-deletion-email-date + words
 1c/api/US|deletion|post|okNoTrucks	code: P2-deletion-email-date + words
-1c/auth/US|signup|empty	words
-1c/auth/US|signup|empty|demo	words
-1c/auth/US|signup|typing|noAt	words
-1c/auth/US|signup|typing|short	words
-1c/auth/US|signup|typing|ready	words
-1c/auth/US|signup|typing|marketing	words
-1c/auth/US|signup|typing|promo	words
-1c/auth/US|signup|busy	words
-1c/auth/US|signup|error	words
-1c/auth/US|signup|error|existing	words
-1c/auth/US|login|loading	words
-1c/auth/US|forgot|empty	words
-1c/auth/US|forgot|typing	words
-1c/auth/US|forgot|sending	words
-1c/auth/US|forgot|sent	words
-1c/auth/US|reset|token|saving	words
-1c/auth/US|reset|firstLogin|saving	words
+1c/auth/US|signup|empty	code: site-chrome-1-flow-logo + words
+1c/auth/US|signup|empty|demo	code: site-chrome-1-flow-logo + words
+1c/auth/US|signup|typing|noAt	code: site-chrome-1-flow-logo + words
+1c/auth/US|signup|typing|short	code: site-chrome-1-flow-logo + words
+1c/auth/US|signup|typing|ready	code: site-chrome-1-flow-logo + words
+1c/auth/US|signup|typing|marketing	code: site-chrome-1-flow-logo + words
+1c/auth/US|signup|typing|promo	code: site-chrome-1-flow-logo + words
+1c/auth/US|signup|busy	code: site-chrome-1-flow-logo + words
+1c/auth/US|signup|error	code: site-chrome-1-flow-logo + words
+1c/auth/US|signup|error|existing	code: site-chrome-1-flow-logo + words
+1c/auth/US|login|empty	code: site-chrome-1-flow-logo
+1c/auth/US|login|typing	code: site-chrome-1-flow-logo
+1c/auth/US|login|loading	code: site-chrome-1-flow-logo + words
+1c/auth/US|login|error	code: site-chrome-1-flow-logo
+1c/auth/US|login|passwordReset	code: site-chrome-1-flow-logo
+1c/auth/US|login|passwordReset|dismissed	code: site-chrome-1-flow-logo
+1c/auth/US|login|emailChanged	code: site-chrome-1-flow-logo
+1c/auth/US|login|signedUp	code: site-chrome-1-flow-logo
+1c/auth/US|login|both	code: site-chrome-1-flow-logo
+1c/auth/US|login|host|hatchgrab	code: site-chrome-1-flow-logo
+1c/auth/US|login|host|other	code: site-chrome-1-flow-logo
+1c/auth/US|forgot|empty	code: site-chrome-1-flow-logo + words
+1c/auth/US|forgot|typing	code: site-chrome-1-flow-logo + words
+1c/auth/US|forgot|sending	code: site-chrome-1-flow-logo + words
+1c/auth/US|forgot|sent	code: site-chrome-1-flow-logo + words
+1c/auth/US|reset|token|empty	code: site-chrome-1-flow-logo
+1c/auth/US|reset|token|typing	code: site-chrome-1-flow-logo
+1c/auth/US|reset|token|saving	code: site-chrome-1-flow-logo + words
+1c/auth/US|reset|token|error	code: site-chrome-1-flow-logo
+1c/auth/US|reset|firstLogin|empty	code: site-chrome-1-flow-logo
+1c/auth/US|reset|firstLogin|typing	code: site-chrome-1-flow-logo
+1c/auth/US|reset|firstLogin|saving	code: site-chrome-1-flow-logo + words
+1c/auth/US|reset|firstLogin|error	code: site-chrome-1-flow-logo
+1c/auth/US|reset|both	code: site-chrome-1-flow-logo
+1c/auth/US|verifySuccess|plain	code: site-chrome-1-flow-logo
+1c/auth/US|verifySuccess|escaped	code: site-chrome-1-flow-logo
 1c/auth/US|submit|reset|short	words
+1c/auth/US|verify|unknown	code: site-chrome-1-flow-logo
+1c/auth/US|verify|verified	code: site-chrome-1-flow-logo
+1c/auth/US|verify|expired	code: site-chrome-1-flow-logo
+1c/auth/US|verify|noOperator	code: site-chrome-1-flow-logo
+1c/auth/US|verify|conflict	code: site-chrome-1-flow-logo
+1c/auth/US|verify|operatorWriteFailed	code: site-chrome-1-flow-logo
+1c/auth/US|verify|authWriteFailed	code: site-chrome-1-flow-logo
+1c/auth/US|verify|success	code: site-chrome-1-flow-logo
+1c/auth/US|verify|success|truckUsersFailed	code: site-chrome-1-flow-logo
 1c/auth/US|mail|verify|named|truck	words
 1c/auth/US|mail|welcome|named|truck	words
 1c/auth/US|mail|verify|named|escaped	words
@@ -1242,22 +1270,40 @@
 1c/goLive/US|walkthrough|manager|3|settings	words
 1c/goLive/US|walkthrough|phone|0	words
 1c/goLive/US|manageDone|setup	words
-1c/setup/US|page|identity|plain	words
-1c/setup/US|page|identity|verify=ok	words
-1c/setup/US|page|based|verify=expired	words
-1c/setup/US|page|identity|verify=expired	words
-1c/setup/US|page|based|verify=invalid	words
-1c/setup/US|page|identity|verify=invalid	words
-1c/setup/US|page|identity|verify=other	words
-1c/setup/US|page|identity|named	words
-1c/setup/US|page|identity|oneChar	words
-1c/setup/US|page|identity|phone	words
-1c/setup/US|page|identity|whatsapp	words
-1c/setup/US|page|identity|busy	words
-1c/setup/US|page|identity|phoneRequired	words
-1c/setup/US|page|identity|serverError	words
-1c/setup/US|page|identity|otherCountry	words
-1c/setup/US|page|identity|noCountries	words
+1c/setup/US|page|checking	code: site-chrome-1-flow-logo
+1c/setup/US|page|based|plain	code: site-chrome-1-flow-logo
+1c/setup/US|page|identity|plain	code: site-chrome-1-flow-logo + words
+1c/setup/US|page|based|verify=ok	code: site-chrome-1-flow-logo
+1c/setup/US|page|identity|verify=ok	code: site-chrome-1-flow-logo + words
+1c/setup/US|page|based|verify=expired	code: site-chrome-1-flow-logo + words
+1c/setup/US|page|identity|verify=expired	code: site-chrome-1-flow-logo + words
+1c/setup/US|page|based|verify=invalid	code: site-chrome-1-flow-logo + words
+1c/setup/US|page|identity|verify=invalid	code: site-chrome-1-flow-logo + words
+1c/setup/US|page|based|verify=other	code: site-chrome-1-flow-logo
+1c/setup/US|page|identity|verify=other	code: site-chrome-1-flow-logo + words
+1c/setup/US|page|based|loading	code: site-chrome-1-flow-logo
+1c/setup/US|page|based|countriesFailed	code: site-chrome-1-flow-logo
+1c/setup/US|page|based|countriesServerError	code: site-chrome-1-flow-logo
+1c/setup/US|page|based|guessFallback	code: site-chrome-1-flow-logo
+1c/setup/US|page|based|guessOther	code: site-chrome-1-flow-logo
+1c/setup/US|page|based|chosenOther	code: site-chrome-1-flow-logo
+1c/setup/US|page|based|chosenUS|zone	code: site-chrome-1-flow-logo
+1c/setup/US|page|based|chosenGB|town	code: site-chrome-1-flow-logo
+1c/setup/US|page|based|errors|noTown	code: site-chrome-1-flow-logo
+1c/setup/US|page|based|errors|townTooLong	code: site-chrome-1-flow-logo
+1c/setup/US|page|based|errors|badZone	code: site-chrome-1-flow-logo
+1c/setup/US|page|based|errors|badZoneNoTown	code: site-chrome-1-flow-logo
+1c/setup/US|page|based|errors|noCountry	code: site-chrome-1-flow-logo
+1c/setup/US|page|based|errors|ok	code: site-chrome-1-flow-logo
+1c/setup/US|page|identity|named	code: site-chrome-1-flow-logo + words
+1c/setup/US|page|identity|oneChar	code: site-chrome-1-flow-logo + words
+1c/setup/US|page|identity|phone	code: site-chrome-1-flow-logo + words
+1c/setup/US|page|identity|whatsapp	code: site-chrome-1-flow-logo + words
+1c/setup/US|page|identity|busy	code: site-chrome-1-flow-logo + words
+1c/setup/US|page|identity|phoneRequired	code: site-chrome-1-flow-logo + words
+1c/setup/US|page|identity|serverError	code: site-chrome-1-flow-logo + words
+1c/setup/US|page|identity|otherCountry	code: site-chrome-1-flow-logo + words
+1c/setup/US|page|identity|noCountries	code: site-chrome-1-flow-logo + words
 1c/setup/US|step|allErrors	code: 1d-setup-step-fixture
 1c/setup/US|price|cell|big	code: us-polish-thousands-separators
 1c/setup/US|provision|operator|minimal	code: plans-a2-trial-expires-at + words

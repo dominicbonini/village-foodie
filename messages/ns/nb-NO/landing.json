@@ -36,8 +36,7 @@
     "whatsappSoonTitle": "Automatiske svar på WhatsApp <soon>Kommer snart</soon>",
     "whatsappSoonBody": "«Hvor står dere i kveld?» «Hvilke desserter har dere?» Snart blir WhatsApp-meldingene dine besvart mens du kjører til standplassen eller står ved grillen. Messenger og Instagram følger etter.",
     "offlineTitle": "Ingen dekning? Fortsett å servere.",
-    "offlineBody": "Slå på beskyttelse ved frakobling, så settes nettbestillingen automatisk på pause hvis du mister dekningen, slik at kundene ikke kan legge inn bestillinger du ikke ser.",
-    "offlineApps": "Fortsett å ta imot bestillinger med appen for iPhone, iPad og Android.",
+    "offlineBody": "Mister du dekningen, settes nettbestillingen automatisk på pause, så kundene ikke kan legge inn bestillinger du ikke ser. Fortsett å ta imot bestillinger med appen for iPhone, iPad og Android.",
     "slotsBody": "Kundene forhåndsbestiller, velger hentetid og slipper køen. Maten er klar når de kommer."
   },
   "steps": {

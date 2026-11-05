@@ -1,4 +1,4 @@
-HatchGrab Engineering Reference Manual · V16.11
+HatchGrab Engineering Reference Manual · V16.12
 
 **HatchGrab**
 
@@ -6,7 +6,7 @@ Engineering Reference Manual
 
 *Village Foodie · Food Truck Ordering Platform*
 
-**Version 16.11**
+**Version 16.12**
 
 November 2026
 
@@ -49,6 +49,10 @@ form — including key names and set/missing checks. It may run the project's ow
 internally (`next build`, the sweep, `tsc`). Configuration is worked out from code.
 
 # Changelog
+
+## V16.12 — 5 November 2026 — **ONE HEADER AND ONE FOOTER FOR EVERY PUBLIC PAGE, THE PHONE FOOTER FOUR TO A ROW, AND THE OFFLINE LINE PUT BACK**
+
+- site-chrome-1 (`docs/site-chrome-1-report.md`): every public HatchGrab page renders the landing's header and footer through one wrapper (35.ao-13, §48); the focused flows' logo links home; the phone footer is four to a row; the landing's offline line and /features' offline description are again the sentences they were before copy-truth-1 (Dominic, 5 Nov).
 
 ## V16.11 — 5 November 2026 — **DOCUMENTS IN MANAGE, COST PER DISH WITH PROFIT AND ACCOUNTANT REPORTS, THE FEATURE IMPORT THAT KEEPS ADMIN'S CHOICES, AND WHAT THE TRUCK**
 
@@ -22328,6 +22332,13 @@ of this manual).
   (V16.11; §50).
 - **35.ao-12 An AI read of a document is a suggestion:** nothing is saved until the truck confirms in "Check the details".
   A pending upload is never listed, shared or reminded (V16.11; §50).
+- **35.ao-13 Every public HatchGrab page (landing, features, FAQ, about, compare, contact, legal and any new public page) renders the
+  ONE shared header (logo → home, Upload menu, Log in) and the ONE shared footer, through the shared wrapper — never its own copy —
+  except inside the native app, where legal pages keep the logo-only, link-free header (App Review 2.1 / 3.1.1).** Focused flows
+  (signup, login, password, verify, setup, demo) show a logo-only header that links home and no footer. Manage, dashboard, Admin, KDS,
+  customer ordering pages, embeds, custom domains and the Village Foodie host keep their own chrome. Mobile footer: four equal columns,
+  44px tap targets, labels wrap rather than overflow. (V16.12, site-chrome-1; the wrapper is `components/landing/MarketingFrame.tsx`,
+  the flows' logo `components/shared/FlowLogo.tsx`, the in-app test the web view's `HatchGrabNativeApp` user agent; §48.)
 
 ## 🔴 iOS PUSH ENTITLEMENT — the §36 audit CONFIRMED, then fixed (V11.4)
 
@@ -29386,6 +29397,33 @@ Recorded so they are not briefed again.
 - "Advanced reporting (coming soon)" was removed.
 - No landing-page change: the landing pages are byte-identical to the commit before.
 - See §81.8.
+
+### One header and one footer for every public page (V16.12 — site-chrome-1, 5 November 2026)
+
+- **The rule is 35.ao-13.** Every public HatchGrab page renders through `components/landing/MarketingFrame.tsx`. It owns the language
+  boundary, the demo modal, the `.hg-landing` chrome with its fonts and stylesheet, the landing's nav and the landing's footer.
+- **Three shapes, each byte-identical to the frame its pages had inline:**
+  - `page`: /features, /faq, /about, the comparison pages and /contact;
+  - `landing`: the landing (`hg-hero-watch`, `ctaFirst`, bare `#pricing`);
+  - `split`: the content outside `.hg-landing`, used by /compare and the legal pages.
+  - 🔴 The element tree keeps each page's old shape, because React's generated ids (the country menu's `aria-controls`) follow it.
+- **The legal pages:**
+  - On the web on HatchGrab, the shared chrome, with the chrome's words in the document's language.
+  - **Inside the native app** (the web view's `HatchGrabNativeApp` user agent, which `proxy.ts` already reads) **and on Village
+    Foodie's host**, `components/legal/LegalChrome.tsx` exactly as before.
+  - The Terms page links "Country terms" from its top, because that link lived in the old legal footer.
+- **The focused flows' wordmark links home** (`components/shared/FlowLogo.tsx`; inert in the app). Forgot-password, verify-email and
+  the demo walkthrough gained it.
+- **The phone footer (≤720px, CSS only, markup and order unchanged):**
+  - four equal columns, 44px tap targets, labels that wrap;
+  - About is moved up by `order`, so the row reads Features · Pricing · FAQ · About / Privacy · Terms · Contact · country;
+  - tighter spacing, with Apple's badge clear space kept.
+- **The offline sentence was restored on 5 Nov 2026 at Dominic's request.**
+  - The landing's `does.offlineBody` and /features' `detail.offline_protection` are again 7e1effa7^'s words in every language
+    ("If you lose signal, online ordering pauses automatically… Carry on taking orders with the iPhone, iPad and Android app.").
+  - The store-flag sentences and the code that appended them are gone.
+  - ⚠️ **A known wording gap Dominic has accepted for now:** offline protection is OFF until a truck switches it on, but the sentence
+    reads as if it always happens.
 
 # 49. Deploy posture (current at V16.11; earlier postures below, each dated)
 

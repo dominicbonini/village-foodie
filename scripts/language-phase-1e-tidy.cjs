@@ -139,6 +139,9 @@ const NAMED = [
   // ⚠️ RE-PINNED (paperwork-1, 4 November 2026): the sitemap's /privacy lastmod 2026-11-03 → 2026-11-04, after tidy-1's — PRECISE
   // (scripts/_lp-paperwork-1.cjs).
   ...require('./_lp-paperwork-1.cjs').ITEMS.map(P => ({ id: P.id, what: P.what, applies: id => P.views(id), apply: (v, id) => P.apply(id, v) })),
+  // ⚠️ RE-PINNED (site-chrome-1, 5 November 2026): the sitemap's country-page lastmod moves to 2026-11-05 (PRECISE; scripts/_lp-site-chrome-1.cjs).
+  // eslint-disable-next-line @typescript-eslint/no-require-imports -- CommonJS harness module (site-chrome-1)
+  ...require('./_lp-site-chrome-1.cjs').ITEMS.filter(P => !P.proveWith).map(P => ({ id: P.id, what: P.what, applies: id => P.views(id), apply: (v, id) => P.apply(id, v) })),
 ]
 // ⚠️ RE-PINNED (plans-data-model, Stage A, 19 October 2026): Manage › Billing is ONE data-driven plan card above the frozen comparison
 // table — STRUCTURAL, by the same proof Part 2 and Phase 1e name (scripts/_lp1d2-named.cjs makeBillingProof, one copy):
@@ -161,6 +164,10 @@ const STAGE_B_VIEWS = [
   // ⚠️ RE-PINNED (contact-1, 2 November 2026): HatchGrab's /contact — the Tally embed out, HatchGrab's own form in, every other byte the
   // same (scripts/_lp-contact-1.cjs contactProof; scripts/contact-1.cjs proves the form).
   [require('./_lp-contact-1.cjs').CONTACT_VIEWS, 'contact-1-form', require('./_lp-contact-1.cjs').contactProof],
+  // ⚠️ RE-PINNED (site-chrome-1, 5 November 2026): the legal pages' web chrome is the ONE shared header and footer; the document body the
+  // same (scripts/_lp-site-chrome-1.cjs legalProof; scripts/site-chrome-1.cjs proves the chrome, in the app and on Village Foodie too).
+  // eslint-disable-next-line @typescript-eslint/no-require-imports -- CommonJS harness module (site-chrome-1)
+  [require('./_lp-site-chrome-1.cjs').LEGAL_VIEWS, 'site-chrome-1-legal-chrome', require('./_lp-site-chrome-1.cjs').legalProof],
 ]
 if (STAGE_B.LANDED) NAMED.push({ id: 'pricing-b-features-description', what: 'Stage B — THE ONE SEO change: /features’s description names the catalogue’s public plans and the trial’s months; titles, canonicals, hreflang, robots and og:url unchanged',
   applies: id => /^pages\/features\|(GB|US)\|meta(?!-usOff)/.test(id), apply: (v, id) => STAGE_B.featuresDescription(v, ccOf(id) === 'US' ? 'en-US' : 'en-GB') })
@@ -353,7 +360,10 @@ const DISCOVERY = ['parts/footer|US|html', 'parts/truck|US|html']
   const year = now => Number(new Intl.DateTimeFormat('en-GB', { timeZone: 'Europe/London', year: 'numeric' }).format(now))
   t('the year turns at London midnight: 31 Dec 2026 23:59 UTC → 2026, 1 Jan 2027 00:00 UTC → 2027, 31 Dec 2026 23:30 in New York (04:30 UTC) → 2027',
     year(new Date('2026-12-31T23:59:00Z')) === 2026 && year(new Date('2027-01-01T00:00:00Z')) === 2027 && year(new Date('2027-01-01T04:30:00Z')) === 2027)
-  for (const f of ['components/landing/LandingFooter.tsx', 'app/contact/HatchGrabContact.tsx']) t(`${f} renders t('copyright', { year: copyrightYear() })`, fs.readFileSync(path.join(REPO, f), 'utf8').includes("t('copyright', { year: copyrightYear() })"))
+  // ⚠️ RE-PINNED (site-chrome-1, 5 November 2026): /contact's own footer is gone — it renders the ONE shared footer (LandingFooter, through
+  // components/landing/MarketingFrame.tsx), so the copyright line has one home.
+  for (const f of ['components/landing/LandingFooter.tsx', ...(require('./_lp-site-chrome-1.cjs').LANDED ? [] : ['app/contact/HatchGrabContact.tsx'])]) t(`${f} renders t('copyright', { year: copyrightYear() })`, fs.readFileSync(path.join(REPO, f), 'utf8').includes("t('copyright', { year: copyrightYear() })"))   // eslint-disable-line @typescript-eslint/no-require-imports -- CommonJS harness module (site-chrome-1)
+  if (require('./_lp-site-chrome-1.cjs').LANDED) t('/contact renders the shared footer (its own copyright line is gone with its own footer)', /<MarketingFrame visitor=\{visitor\}>/.test(fs.readFileSync(path.join(REPO, 'app/contact/HatchGrabContact.tsx'), 'utf8')) && !/copyrightYear/.test(fs.readFileSync(path.join(REPO, 'app/contact/HatchGrabContact.tsx'), 'utf8')))   // eslint-disable-line @typescript-eslint/no-require-imports -- CommonJS harness module (site-chrome-1)
   for (const ns of ['landingFooter', 'contactPage']) t(`${ns}.copyright is “© {year} HatchGrab” (no typed year)`, gbWords[ns].copyright === '© {year} HatchGrab' && !((usWords[ns] || {}).copyright))
   t('the rendered GB landing still reads “© 2026 HatchGrab” at the fixture clock (2026)', /© 2026 HatchGrab/.test(AFTER['pages/landing|GB|html'] || ''))
 

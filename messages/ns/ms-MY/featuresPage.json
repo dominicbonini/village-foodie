@@ -5,7 +5,7 @@
     "kitchen_app": "Cara paling lengkap untuk menggunakan HatchGrab: skrin dapur secara langsung, serta satu-satunya cara untuk terus menerima pesanan apabila tiada liputan.",
     "multi_device_kitchen": "Gunakan beberapa skrin — kaunter hadapan dan dapur — semuanya memaparkan pesanan langsung yang sama.",
     "multi_user_access": "Beri kakitangan log masuk mereka sendiri dengan tahap akses yang sesuai.",
-    "offline_protection": "Hidupkan perlindungan pesanan luar talian dan pesanan dalam talian dihentikan seketika secara automatik jika anda hilang isyarat, supaya pelanggan tidak boleh membuat pesanan yang anda tidak nampak.",
+    "offline_protection": "Jika tiada liputan, pesanan dalam talian dijeda supaya pelanggan tidak boleh membuat pesanan yang anda tidak nampak. Aplikasi iPhone, iPad dan Android membolehkan anda terus menerima pesanan secara luar talian; papan pemuka web memerlukan sambungan.",
     "ticket_printing": "Cetak tiket pesanan ke pencetak Bluetooth atau berwayar di dapur.",
     "web_dashboard": "Jalankan perkhidmatan anda daripada pelayar di mana-mana telefon, tablet atau komputer riba.",
     "meal_deals_upsells": "Gabungkan item menjadi set kombo dan tawarkan tambahan semasa pembayaran untuk meningkatkan purata nilai pesanan.",
@@ -36,6 +36,5 @@
     "sms_order_alerts": "Hantar SMS kepada pelanggan secara automatik apabila pesanan mereka siap.",
     "loyalty_stamp_cards": "Ganjari pelanggan tetap dengan kad cop digital — dikumpul dan ditebus secara automatik."
   },
-  "offlineApps": "Aplikasi iPhone, iPad dan Android membolehkan anda terus menerima pesanan secara luar talian; papan pemuka web memerlukan sambungan.",
   "metaTitle": "Perbandingan pelan & ciri — HatchGrab {country}"
 }

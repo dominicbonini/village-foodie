@@ -89,7 +89,9 @@ const ROWS = () => WF.rowsWith(WF.WORLD).map(r => {
       const locale = liveOf[cc].locale
       let html = ''
       try { html = await withReq(() => ctx.prerender(kit.h(M.Landing, { params: Promise.resolve({ country: seg }), searchParams: Promise.resolve({}) }))) } catch (e) { missing.errors.push(`${cc}: ${e.message}`); continue }
-      const sentence = M.translatorFor(locale, 'landing')('does.offlineApps')
+      // ⚠️ RE-PINNED (site-chrome-1, 5 November 2026, Dominic): the offline line is put back to its pre-copy-truth-1 sentence, which itself
+      // ends with the apps ("…with the iPhone, iPad and Android app.") — there is no separate offlineApps sentence any more.
+      const sentence = require('./_lp-site-chrome-1.cjs').LANDED ? M.translatorFor(locale, 'landing')('does.offlineBody') : M.translatorFor(locale, 'landing')('does.offlineApps')   // eslint-disable-line @typescript-eslint/no-require-imports -- CommonJS harness module (site-chrome-1)
       if (!squash(text(html)).includes(squash(sentence))) missing.offline.push(cc)
       const foot = (/<footer[\s\S]*?<\/footer>/.exec(html) || [''])[0]
       const srcs = [...foot.matchAll(/class="foot-badge"[^>]*><img src="([^"]+)"/g)].map(m => m[1])

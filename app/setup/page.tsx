@@ -22,7 +22,7 @@
 
 import { Suspense, useEffect, useState } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
-import { HatchGrabWordmark } from '@/components/brand/HatchGrabWordmark'
+import { FlowLogo } from '@/components/shared/FlowLogo'   // site-chrome-1: the focused flows' logo, linking home (inert in the app)
 // ── 🔴 THE SAME VALIDATOR THE SERVER USES, AND THE SAME ONE THE DEMO MODAL USES. ──────────────────
 // app/api/setup/route.ts:13 imports this exact function and rejects on it at :74; components/
 // DemoGetStarted.tsx:53 imports it for the identical field. Three callers, one rule — so this form
@@ -206,7 +206,7 @@ function SetupWizard() {
       <div className="h-dvh flex flex-col bg-slate-50">
         <header className="bg-slate-900 px-4 py-3 shrink-0">
           <div className="max-w-lg mx-auto flex items-center justify-between">
-            <HatchGrabWordmark variant="dark" />
+            <FlowLogo variant="header" />
             <span className="text-xs text-slate-400">{t('settingUp')}</span>
           </div>
         </header>
@@ -222,7 +222,7 @@ function SetupWizard() {
       {/* HEADER — shrink-0 */}
       <header className="bg-slate-900 px-4 py-3 shrink-0">
         <div className="max-w-lg mx-auto flex items-center justify-between">
-          <HatchGrabWordmark variant="dark" />
+          <FlowLogo variant="header" />
           <span className="text-xs text-slate-400">{t('settingUp')}</span>
         </div>
       </header>

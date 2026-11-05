@@ -99,7 +99,10 @@ export default async function ContactPage({ searchParams }: { searchParams: Sear
     const { HatchGrabContact } = await import('./HatchGrabContact');
     // contact-1: ?topic= picks the form's first choice (lib/contact.ts topicFromParam — Tally's old values and anything
     // unrecognised are the first topic); ?venue= / ?truck= are Village Foodie's and are not read here.
-    return <HatchGrabContact {...await hatchGrabPlace(searchParams)} topic={topicFromParam((await searchParams)?.topic)} />;
+    // site-chrome-1 (5 November 2026): the visitor's country for the shared header and footer (components/landing/MarketingFrame.tsx),
+    // resolved the way the marketing pages resolve it. Null if the country list cannot be read — the page still renders.
+    const visitor = await resolveVisitorCountry((await searchParams)?.country).catch(() => null);
+    return <HatchGrabContact {...await hatchGrabPlace(searchParams)} visitor={visitor} topic={topicFromParam((await searchParams)?.topic)} />;
   }
 
   return (

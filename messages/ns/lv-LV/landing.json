@@ -36,8 +36,7 @@
     "whatsappSoonTitle": "WhatsApp automātiskās atbildes <soon>Drīzumā</soon>",
     "whatsappSoonBody": "“Kur jūs esat šovakar?” “Kādi deserti jums ir?” Drīz jūsu WhatsApp saņems atbildes, kamēr jūs braucat uz tirdzniecības vietu vai stāvat pie grila. Pēc tam Messenger un Instagram.",
     "offlineTitle": "Nav signāla? Turpiniet strādāt.",
-    "offlineBody": "Ieslēdziet pasūtījumu aizsardzību bezsaistē, un pasūtīšana tiešsaistē automātiski tiek apturēta, ja pazūd signāls, lai klienti nevarētu veikt pasūtījumus, ko jūs neredzēsiet.",
-    "offlineApps": "Turpiniet pieņemt pasūtījumus ar iPhone, iPad un Android lietotni.",
+    "offlineBody": "Ja pazūd signāls, pasūtīšana tiešsaistē automātiski tiek apturēta, lai klienti nevarētu veikt pasūtījumus, ko jūs neredzēsiet. Turpiniet pieņemt pasūtījumus ar iPhone, iPad un Android lietotni.",
     "slotsBody": "Klienti pasūta iepriekš un izvēlas saņemšanas laiku. Mazāk rindu, un ēdiens ir gatavs, kad viņi ierodas."
   },
   "steps": {

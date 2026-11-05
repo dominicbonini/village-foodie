@@ -70,6 +70,8 @@ export function legalPage(doc: LegalDoc) {
         html={renderLegalMarkdownHtml(src.md)}
         locale={locale}
         contactHref={`/contact?country=${country}`}
+        // site-chrome-1: the Terms page links the same country's country-specific terms from its top.
+        countryTermsHref={doc === 'terms' ? legalPath('country-terms', { country, locale }) : undefined}
         note={t.rich('translationNote', { link: c => <a href={LEGAL_DOC_PATH[doc]} lang="en-GB" hrefLang="en-GB">{c}</a> })}
       />
     )

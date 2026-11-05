@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import { useT } from '@/lib/i18n/use-t'
 import '@/lib/i18n/catalog/auth'
+import { FlowLogo } from '@/components/shared/FlowLogo'   // site-chrome-1: the focused flows' logo, linking home (inert in the app)
 
 export default function ForgotPasswordPage() {
   // Language Phase 1c: `auth.forgot`. Nobody is known yet and this route has no provider, so en-GB (DEFAULT_LOCALE).
@@ -34,6 +35,7 @@ export default function ForgotPasswordPage() {
                       justify-center p-4">
         <div className="bg-white rounded-2xl border border-slate-100
                         p-8 max-w-sm w-full text-center">
+          <FlowLogo variant="card" />
           <div className="text-3xl mb-4">📧</div>
           <h2 className="text-lg font-semibold text-slate-900 mb-2">
             {t('sentTitle')}
@@ -52,6 +54,7 @@ export default function ForgotPasswordPage() {
       <div className="bg-white rounded-2xl border border-slate-100
                       p-8 max-w-sm w-full flex flex-col gap-6">
         <div className="text-center">
+          <FlowLogo variant="card" />
           <h1 className="text-xl font-semibold text-slate-900">
             {t('title')}
           </h1>

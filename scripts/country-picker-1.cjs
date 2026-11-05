@@ -109,7 +109,7 @@ const dec = s => String(s).replace(/&amp;/g, '&').replace(/&#x27;/g, "'").replac
   t('closed = display:none; the box is fixed over a dimmed page; max-height the window, scrolling inside', /\.hg-landing \.cc-dlg-closed \{ display: none; \}/.test(css) && /\.hg-landing \.cc-dlg \{ position: fixed; inset: 0;[^}]*background: rgba\(/.test(css)
     && /\.hg-landing \.cc-box \{[^}]*max-height: calc\(100dvh - 32px\); overflow-y: auto;/.test(css))
   t('three columns; at ≤720px two, the code hidden, 44px rows, and the trigger on its own centred line', /\.hg-landing \.cc-list \{[^}]*grid-template-columns: repeat\(3, minmax\(0, 1fr\)\)/.test(css)
-    && /@media\(max-width:720px\)\{[^@]*\.cc-list \{ grid-template-columns: repeat\(2, minmax\(0, 1fr\)\)[^@]*\.cc-item-code \{ display: none; \}/.test(css) && /\.foot-links \.cc \{ grid-column: 1 \/ -1; \}/.test(css))
+    && /@media\(max-width:720px\)\{[^@]*\.cc-list \{ grid-template-columns: repeat\(2, minmax\(0, 1fr\)\)[^@]*\.cc-item-code \{ display: none; \}/.test(css) && (/* ⚠️ RE-PINNED (site-chrome-1, 5 Nov 2026, Dominic): the trigger is an ordinary cell of the phone footer's four-column row now — its own line is gone on purpose (scripts/site-chrome-1.cjs §4) */ require('./_lp-site-chrome-1.cjs').LANDED ? !/\.foot-links \.cc \{ grid-column: 1 \/ -1; \}/.test(css) : /\.foot-links \.cc \{ grid-column: 1 \/ -1; \}/.test(css)))   // eslint-disable-line @typescript-eslint/no-require-imports -- CommonJS harness module (site-chrome-1)
   t('the old dropdown\'s rules are gone (.cc-menu, .cc-menu-closed)', !/\.cc-menu/.test(css))
 
   head('5 · hreflang and the sitemap — unchanged')

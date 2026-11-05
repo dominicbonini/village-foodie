@@ -36,8 +36,7 @@
     "whatsappSoonTitle": "Respostas automáticas do WhatsApp <soon>Em breve</soon>",
     "whatsappSoonBody": "«Onde estão hoje à noite?» «Que sobremesas têm?» Em breve, o seu WhatsApp vai responder enquanto conduz até ao local ou está à grelha. Seguem-se o Messenger e o Instagram.",
     "offlineTitle": "Sem rede? Continue a servir.",
-    "offlineBody": "Ative a proteção de encomendas sem ligação e as encomendas online são pausadas automaticamente se perder a rede, para que os clientes não façam encomendas que não vai ver.",
-    "offlineApps": "Continue a receber encomendas com a app para iPhone, iPad e Android.",
+    "offlineBody": "Se perder a rede, as encomendas online são pausadas automaticamente, para que os clientes não façam encomendas que não vai ver. Continue a receber encomendas com a app para iPhone, iPad e Android.",
     "slotsBody": "Os clientes encomendam com antecedência e escolhem uma hora de levantamento. Menos filas, e a comida pronta quando chegam."
   },
   "steps": {

@@ -5599,8 +5599,7 @@
       "whatsappSoonTitle": "Respostas automáticas no WhatsApp <soon>Em breve</soon>",
       "whatsappSoonBody": "“Onde vocês vão estar hoje à noite?” “Quais sobremesas vocês têm?” Em breve, seu WhatsApp vai ser respondido enquanto você dirige até o ponto ou está na chapa. Messenger e Instagram logo depois.",
       "offlineTitle": "Sem sinal? Continue atendendo.",
-      "offlineBody": "Ative a proteção de pedidos offline e os pedidos online são pausados automaticamente se o sinal cair, para que os clientes não façam pedidos que você não vai ver.",
-      "offlineApps": "Continue recebendo pedidos com o app para iPhone, iPad e Android.",
+      "offlineBody": "Se o sinal cair, os pedidos online são pausados automaticamente para que os clientes não façam pedidos que você não vai ver. Continue recebendo pedidos com o app para iPhone, iPad e Android.",
       "slotsBody": "Os clientes pedem antecipado e escolhem um horário de retirada. Menos fila, e a comida pronta quando eles chegam."
     },
     "steps": {
@@ -6179,7 +6178,7 @@
       "kitchen_app": "O jeito mais completo de usar o HatchGrab: uma tela da cozinha em tempo real, e a única forma de continuar recebendo pedidos quando o sinal cai.",
       "multi_device_kitchen": "Use várias telas — balcão e cozinha — todas mostrando os mesmos pedidos em tempo real.",
       "multi_user_access": "Dê à sua equipe logins próprios, com o nível de acesso certo.",
-      "offline_protection": "Ative a proteção de pedidos offline e os pedidos online são pausados automaticamente se o sinal cair, para que os clientes não façam pedidos que você não vai ver.",
+      "offline_protection": "Se o sinal cair, os pedidos online são pausados para que os clientes não façam pedidos que você não vai ver. O app para iPhone, iPad e Android continua recebendo pedidos offline; o painel web precisa de conexão.",
       "ticket_printing": "Imprima as comandas dos pedidos em uma impressora Bluetooth ou com fio na cozinha.",
       "web_dashboard": "Gerencie seu turno pelo navegador de qualquer celular, tablet ou notebook.",
       "meal_deals_upsells": "Junte itens em combos e ofereça adicionais na finalização do pedido para aumentar o ticket médio.",
@@ -6210,7 +6209,6 @@
       "sms_order_alerts": "Avise os clientes por SMS automaticamente quando o pedido estiver pronto.",
       "loyalty_stamp_cards": "Recompense clientes fiéis com cartões fidelidade digitais — carimbos acumulados e resgatados automaticamente."
     },
-    "offlineApps": "O app para iPhone, iPad e Android continua recebendo pedidos offline; o painel web precisa de conexão.",
     "metaTitle": "Planos e recursos comparados — HatchGrab {country}"
   },
   "compare": {

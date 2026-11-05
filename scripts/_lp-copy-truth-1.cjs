@@ -30,8 +30,14 @@ const OLD_FEATURES = 'If you lose signal, online ordering pauses so customers ca
 const LASTMOD_NEW = '2026-11-02T00:00:00.000Z'
 const COUNTRY_PAGE = /^https:\/\/www\.hatchgrab\.com\/[a-z]{2}(\/features)?$/
 
+/** ⚠️ RE-PINNED (site-chrome-1, 5 November 2026, Dominic): the offline sentences are PUT BACK — the landing's and /features' words are
+ *  again the old text above, so a BEFORE snapshot that holds it already says what today's page says. When that is so, `offline` is the
+ *  identity and `offlineMust` only checks its anchor (the old text is still there). Read from en-GB's own words, not a date. */
+const OFFLINE_PUT_BACK = (() => { try { return JSON.parse(fs.readFileSync(path.join(REPO, 'messages/en-GB.json'), 'utf8')).landing.does.offlineBody === OLD_LANDING[0] } catch { return false } })()
+
 /** Any JSON value with the old offline text replaced by the new first sentence (HTML and captured text alike). */
 function offline(v) {
+  if (OFFLINE_PUT_BACK) return v
   if (typeof v === 'string') return [...OLD_LANDING, OLD_FEATURES].reduce((s, o) => s.split(o).join(NEW_FIRST), v)
   if (Array.isArray(v)) return v.map(offline)
   if (v && typeof v === 'object') return Object.fromEntries(Object.entries(v).map(([k, x]) => [k, offline(x)]))
@@ -70,4 +76,4 @@ const ITEMS = !LANDED ? [] : [
     apply: (id, v) => sitemap(v) },
 ]
 
-module.exports = { LANDED, NEW_FIRST, OLD_LANDING, OLD_FEATURES, LASTMOD_NEW, offline, offlineMust, sitemap, ITEMS }
+module.exports = { OFFLINE_PUT_BACK, LANDED, NEW_FIRST, OLD_LANDING, OLD_FEATURES, LASTMOD_NEW, offline, offlineMust, sitemap, ITEMS }

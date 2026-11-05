@@ -36,8 +36,7 @@
     "whatsappSoonTitle": "WhatsAppi automaatvastused <soon>Tulekul</soon>",
     "whatsappSoonBody": "„Kus te täna õhtul olete?“ „Milliseid magustoite teil on?“ Peagi vastatakse sinu WhatsAppi sõnumitele sel ajal, kui sõidad müügikohta või seisad grilli taga. Messenger ja Instagram järgnevad.",
     "offlineTitle": "Levi pole? Teeninda edasi.",
-    "offlineBody": "Lülita sisse tellimuste võrguühenduseta kaitse ja veebitellimine peatub automaatselt, kui levi kaob, et kliendid ei saaks esitada tellimusi, mida sa ei näe.",
-    "offlineApps": "Jätka tellimuste vastuvõtmist iPhone’i, iPadi ja Androidi rakendusega.",
+    "offlineBody": "Kui levi kaob, peatub veebitellimine automaatselt, et kliendid ei saaks esitada tellimusi, mida sa ei näe. Jätka tellimuste vastuvõtmist iPhone’i, iPadi ja Androidi rakendusega.",
     "slotsBody": "Kliendid tellivad ette ja valivad kättesaamise aja. Vähem järjekordi ja toit on valmis, kui nad saabuvad."
   },
   "steps": {

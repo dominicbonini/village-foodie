@@ -22,20 +22,11 @@
 // ungates before pricing publishes, unpublished prices would otherwise become public with no error and
 // no warning. ⚠️ THE LAYOUT RUNS FIRST AND IS STRICTER, so while the landing stays gated a non-admin is
 // stopped there even with the flag set.
-// store-badges-1: the footer's store badges follow the country's app flags (the cached reader the FAQ and comparison pages use).
-import { appsOf } from '@/lib/comparison-flags'
-// faq-4: the footer's FAQ link, only where this country's /faq has a question to show.
-import { faqHrefFor } from '@/lib/faq/public'
-import { Archivo, Public_Sans, Courier_Prime } from 'next/font/google'
 import type { Metadata, ResolvingMetadata } from 'next'
 import { headers } from 'next/headers'
 import { notFound } from 'next/navigation'
 import { isHatchGrabHost } from '@/lib/brand'
-import { LandingNav } from '@/components/landing/LandingNav'
-import { LandingFooter } from '@/components/landing/LandingFooter'
-// compare-de-1: the footer's "Vergleich" column for the country's own comparison page (live, or admins only).
-import { comparisonFooter } from '@/lib/comparison-server'
-import { DemoModalProvider, DemoModal } from '@/components/landing/DemoUpload'   // client children — the public demo entry point
+import { MarketingFrame } from '@/components/landing/MarketingFrame'   // site-chrome-1: the ONE shared header and footer
 import CostComparison from './CostComparison'
 import { translatorFor } from '@/lib/i18n/translator'
 import '@/lib/i18n/catalog/compare'
@@ -50,10 +41,6 @@ import { resolveVisitorCountry } from '@/lib/visitor-country'
 // Language Phase 1e: the calculator's words are read in THIS country's locale, handed down — CostComparison never
 // resolves a country or a language itself.
 import { localeOfCountry } from '@/lib/i18n/locales'
-// …and the page's other client components (country menu, demo modal and CTAs) read the same locale from this boundary.
-import { PageLocale } from '@/lib/i18n/page-locale'
-// languages-1: a non-English page hands its browser the words its client components read (none for English).
-import { pageSeedProps } from '@/lib/i18n/page-words'
 import { marketingCountry, countryPageAlternates } from '@/lib/marketing-meta'
 import '../landing/landing.css'
 
@@ -112,24 +99,12 @@ async function onHatchGrab(): Promise<boolean> {
   return isHatchGrabHost(headersList.get('host') || '')
 }
 
-// ── 🔴 DECLARED HERE, NOT IMPORTED FROM THE LANDING PAGE. ───────────────────────────────────────────
-// landing.css reads --font-archivo / --font-public-sans / --font-courier-prime, and those variables are
-// set by the class each next/font instance generates. Moving the landing's declarations into a shared
-// module would change the class names in ITS rendered markup, which is the one thing this task must not
-// do. Two instances of the same config share the same CSS variable NAMES, so the chrome styles
-// identically; next/font deduplicates the font files themselves.
-const archivo = Archivo({ subsets: ['latin'], style: ['normal', 'italic'], variable: '--font-archivo', display: 'swap' })
-const publicSans = Public_Sans({ subsets: ['latin'], variable: '--font-public-sans', display: 'swap' })
-// seo-fixes S7 (20 October 2026): declared and loaded when used (--ticket), but NOT preloaded — nothing above the fold uses it.
-const courierPrime = Courier_Prime({ subsets: ['latin'], weight: ['400', '700'], variable: '--font-courier-prime', display: 'swap', preload: false })
+// site-chrome-1 (5 November 2026): the chrome's fonts are declared once, in components/landing/MarketingFrame.tsx.
 
-// 🔴 THE `.hg-landing` WRAPPER GOES ROUND THE CHROME ONLY — NEVER ROUND THE CALCULATOR.
-// All 195 rules in landing.css are scoped under `.hg-landing`, and one of them is `.hg-landing * {
-// margin: 0 }`. That single rule would strip every Tailwind margin in the calculator — `mt-3`, `mt-5`,
-// and the `space-y-3` stacks, which are implemented as margins on children. The landing's own footer
-// comment records this happening once already: `mx-auto` there was "silently doing NOTHING" for exactly
-// this reason. So the chrome is wrapped twice, above and below, and the calculator sits outside both.
-const CHROME = `hg-landing ${archivo.variable} ${publicSans.variable} ${courierPrime.variable}`
+// 🔴 THE `.hg-landing` WRAPPER GOES ROUND THE CHROME ONLY — NEVER ROUND THE CALCULATOR (MarketingFrame's "split" shape).
+// All rules in landing.css are scoped under `.hg-landing`, and one of them is `.hg-landing * { margin: 0 }`. That single rule
+// would strip every Tailwind margin in the calculator — `mt-3`, `mt-5`, and the `space-y-3` stacks. So the chrome is wrapped
+// twice, above and below, and the calculator sits outside both.
 
 export default async function CostPage({ params, searchParams }: { params?: Promise<{ country?: string }>; searchParams: Promise<Record<string, string | string[] | undefined>> }) {
   // ── 🔴 GATE 1 OF 2: THE BRAND. THIS PAGE DOES NOT EXIST ON VILLAGE FOODIE. ────────────────────
@@ -196,35 +171,10 @@ export default async function CostPage({ params, searchParams }: { params?: Prom
   // under it their own `open` state, and the modal mounted here would never see it — the CTA would look
   // dead. CostComparison.tsx deliberately renders neither.
   return (
-    <PageLocale locale={localeOfCountry(settings)} {...pageSeedProps(settings.locale, 'marketing')}>
-    <DemoModalProvider>
-      {/* 🔴 `chrome-nav-only` IS WHAT MAKES THE NAV STICK, AND IT IS NOT COSMETIC.
-          `.hg-landing nav` is `position: sticky; top: 0`, and a sticky element only travels inside its
-          PARENT'S box. On the landing that parent is the whole page. Here it was this div — which
-          contains nothing but the nav, so it was exactly 72px tall (measured) and the nav scrolled away
-          on the first pixel. The class sets `display: contents` (landing.css), so this wrapper generates
-          no box and the nav's containing block becomes the page, as on the landing.
-          ⚠️ THE OBVIOUS FIX — one `.hg-landing` round the whole page — IS THE ONE THING THIS FILE MUST
-          NOT DO. See the CHROME comment above: the scoped reset would strip every margin and padding in
-          the calculator. That is why the wrapper is split in the first place, and why the fix had to be
-          to the wrapper rather than to the structure. */}
-      <div className={`${CHROME} chrome-nav-only`}>
-        {/* ⚠️ CHROME, NOT A FOURTH CTA. The page already carries three calls to action — the hero pair
-            and the one under the small print — so this one deliberately keeps the nav's own appearance
-            (`btn btn-primary nav-cta`, supplied by LandingNav) rather than competing with them. It
-            performs the same action as the page's primary CTA.
-            🔴 NO `cta` PROP, AND THAT IS THE CHANGE. LandingNav's default branch renders
-            <DemoCta className="btn btn-primary nav-cta"> with "Upload my menu →" / "Upload menu" — the
-            SAME COMPONENT the landing's own nav renders, byte-identical markup and classes, not a copy.
-            ⚠️ That default is also what supplies the short label: below 640px the nav swaps `.cta-full`
-            for `.cta-short` and `.nav-r .btn` is `white-space: nowrap`, so the mobile label must drop the
-            arrow. Passing a `cta` again would put the burden of remembering that back on this file. */}
-        {/* ⚠️ `landingHref` IS NOT OPTIONAL IN PRACTICE ON A CHILD ROUTE. Without it the nav's logo and
-            its Pricing link are bare fragments that resolve against THIS page and silently do nothing —
-            see the table in LandingNav.tsx. '/landing' is used rather than '/' because '/' is only the
-            landing on a hatchgrab host. */}
-        <LandingNav landingHref={visitor.paths.landing} featuresHref={visitor.paths.features} locale={settings.locale} />
-      </div>
+    // site-chrome-1 (5 November 2026): the ONE shared frame (components/landing/MarketingFrame.tsx), its "split" shape: the nav in
+    // `chrome-nav-only` (so it stays sticky), the calculator OUTSIDE `.hg-landing` (its reset would strip every margin and padding
+    // in it), then the footer and the one demo modal — exactly the structure this page had inline.
+    <MarketingFrame visitor={visitor} variant="split">
 
       {/* native-prices (22 October 2026): where the country's currency symbol is shared, the line naming it — written here, on
           the server, so the calculator loads no second message catalogue. Passed ONLY when there is one, so a GB, US or IE
@@ -232,16 +182,6 @@ export default async function CostPage({ params, searchParams }: { params?: Prom
       <CostComparison settings={settings} catalog={catalog} locale={localeOfCountry(settings)} freeMonthsOverride={freeMonthsOverride}
         {...(currencyLineOf(settings) ? { currencyLine: translatorFor(settings.locale, 'pricing')('currencyLine', currencyLineOf(settings)!) } : {})} />
 
-      <div className={CHROME}>
-        <LandingFooter landingHref={visitor.paths.landing} featuresHref={visitor.paths.features} country={visitor.menu} locale={settings.locale} comparison={await comparisonFooter(settings.countryCode, settings.locale)} 
-          apps={await appsOf(settings.countryCode)} faqHref={await faqHrefFor(settings)} />
-      </div>
-
-      {/* Mounted ONCE — all three CTAs above drive this one instance. Same placement as
-          app/landing/page.tsx. It portals to document.body, so it is deliberately OUTSIDE `.hg-landing`
-          and brings its own tokens via `hg-demo-modal`. */}
-      <DemoModal />
-    </DemoModalProvider>
-    </PageLocale>
+    </MarketingFrame>
   )
 }

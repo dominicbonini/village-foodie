@@ -36,8 +36,7 @@
     "whatsappSoonTitle": "WhatsApp automatikus válaszok <soon>Hamarosan</soon>",
     "whatsappSoonBody": "„Hol lesznek ma este?” „Milyen desszertjeik vannak?” Hamarosan a WhatsAppon érkező kérdésekre akkor is születik válasz, amikor Ön éppen a helyszínre vezet vagy a grill mellett áll. Utána jön a Messenger és az Instagram.",
     "offlineTitle": "Nincs térerő? Szolgáljon ki tovább.",
-    "offlineBody": "Kapcsolja be az offline rendelésvédelmet, és ha megszűnik a térerő, az online rendelés automatikusan szünetel, így a vásárlók nem adhatnak le olyan rendelést, amelyet Ön nem látna.",
-    "offlineApps": "A rendelésfelvételt folytathatja az iPhone-, iPad- és Android-alkalmazással.",
+    "offlineBody": "Ha megszűnik a térerő, az online rendelés automatikusan szünetel, így a vásárlók nem adhatnak le olyan rendelést, amelyet Ön nem látna. A rendelésfelvételt folytathatja az iPhone-, iPad- és Android-alkalmazással.",
     "slotsBody": "A vásárlók előre rendelnek, és átvételi időt választanak. Rövidebb sorok, és az étel kész, mire megérkeznek."
   },
   "steps": {

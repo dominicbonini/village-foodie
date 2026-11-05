@@ -17,6 +17,9 @@ import { Suspense, useState } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { createSupabaseBrowserClient } from '@/lib/supabase/client'
 import { HatchGrabWordmark } from '@/components/brand/HatchGrabWordmark'
+// site-chrome-1: the logo links home (inert inside the app) — the focused flows' rule (components/shared/FlowLogo.tsx).
+import { BrandHomeLink } from '@/components/shared/BrandHomeLink'
+import { HOME_HREF } from '@/components/shared/FlowLogo'
 import { useLegalPath } from '@/lib/i18n/use-legal-path'
 import { useT } from '@/lib/i18n/use-t'
 import { useTrialMonths } from '@/lib/trial-months'
@@ -81,7 +84,7 @@ function SignupForm() {
     <div className="min-h-dvh bg-[#111827] flex items-center justify-center p-4">
       <div className="bg-white rounded-2xl border border-slate-100 shadow-xl w-full max-w-sm p-8 flex flex-col gap-6">
         <div className="text-center">
-          <div className="flex justify-center mb-4"><HatchGrabWordmark /></div>
+          <div className="flex justify-center mb-4"><BrandHomeLink href={HOME_HREF} kind="branding" className="inline-flex hover:opacity-80 transition-opacity" nativeClassName="inline-flex"><HatchGrabWordmark /></BrandHomeLink></div>
           <h1 className="text-xl font-black text-slate-900">{t('title')}</h1>
           <p className="text-sm text-slate-500 mt-1">
             {/* copy-truth-1: the trial's length is data (plans.trial_months) and it starts at signup; 0 = not known, no number shown. */}

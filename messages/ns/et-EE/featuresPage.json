@@ -5,7 +5,7 @@
     "kitchen_app": "Kõige täielikum viis HatchGrabi kasutamiseks: reaalajas köögiekraan ning ainus võimalus tellimusi vastu võtta ka siis, kui levi kaob.",
     "multi_device_kitchen": "Kasuta mitut ekraani — leti ääres ja köögis — ning kõik näitavad samu tellimusi reaalajas.",
     "multi_user_access": "Anna töötajatele oma kasutajakontod sobiva ligipääsutasemega.",
-    "offline_protection": "Lülita sisse tellimuste võrguühenduseta kaitse ja veebitellimine peatub automaatselt, kui levi kaob, et kliendid ei saaks esitada tellimusi, mida sa ei näe.",
+    "offline_protection": "Kui levi kaob, peatub veebitellimine, et kliendid ei saaks esitada tellimusi, mida sa ei näe. iPhone’i, iPadi ja Androidi rakendusega saad tellimusi vastu võtta ka võrguühenduseta; veebitöölaud vajab ühendust.",
     "ticket_printing": "Prindi tellimuste tšekid köögis Bluetooth- või juhtmega printerisse.",
     "web_dashboard": "Juhi vahetust mis tahes telefoni, tahvelarvuti või sülearvuti brauserist.",
     "meal_deals_upsells": "Koonda tooted komplektideks ja paku kassas lisasid, et tõsta keskmise tellimuse väärtust.",
@@ -36,6 +36,5 @@
     "sms_order_alerts": "Saada klientidele automaatselt SMS, kui nende tellimus on valmis.",
     "loyalty_stamp_cards": "Premeeri püsikliente digitaalsete templikaartidega — templid kogutakse ja lunastatakse automaatselt."
   },
-  "offlineApps": "iPhone’i, iPadi ja Androidi rakendusega saad tellimusi vastu võtta ka võrguühenduseta; veebitöölaud vajab ühendust.",
   "metaTitle": "Paketid ja funktsioonid võrdluses — HatchGrab {country}"
 }

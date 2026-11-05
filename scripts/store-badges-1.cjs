@@ -112,7 +112,7 @@ function badgesOf(html) {
   if (!fs.existsSync(IDENTITY)) t('scripts/fixtures/store-badges-1-identity.json exists (captured at HEAD)', false)
   else {
     const want = JSON.parse(fs.readFileSync(IDENTITY, 'utf8'))
-    const now = await render('uk', rowsWith(c => (c === 'GB' ? [true, true] : [false, false])))
+    const now = require('./_lp-site-chrome-1.cjs').asCopyTruth(await render('uk', rowsWith(c => (c === 'GB' ? [true, true] : [false, false]))))   // eslint-disable-line @typescript-eslint/no-require-imports -- ⚠️ RE-PINNED (site-chrome-1): today's offline sentence written as copy-truth-1 wrote it (scripts/_lp-site-chrome-1.cjs asCopyTruth)
     const before = fs.readFileSync(IDENTITY.replace(/\.json$/, '.uk.html'), 'utf8')
     t('the HEAD capture is the one recorded (sha256)', sha(before) === want.uk.sha256)
     const PLAY = 'play.google.com/store/apps/details?id=com.hatchgrab.app'

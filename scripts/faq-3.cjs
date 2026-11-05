@@ -49,6 +49,7 @@ let pass = 0, fail = 0
 const t = (name, ok, detail) => { if (ok) pass++; else { fail++; console.log(`  ✗ ${name}${detail === undefined ? '' : ' — ' + (typeof detail === 'string' ? detail : JSON.stringify(detail)).slice(0, 400)}`) } }
 const head = s => console.log(`\n── ${s}`)
 const sha = s => crypto.createHash('sha256').update(String(s)).digest('hex')
+const SCX = h => require('./_lp-site-chrome-1.cjs').asCopyTruth(h)   // eslint-disable-line @typescript-eslint/no-require-imports -- ⚠️ RE-PINNED (site-chrome-1): today's offline sentence written as copy-truth-1 wrote it (scripts/_lp-site-chrome-1.cjs asCopyTruth)
 const FAQ = () => JSON.parse(JSON.stringify({ faq_sections: FIX.faq_sections, faq_items: FIX.faq_items }))
 
 // ── §5's set: rendered identically at HEAD (capture) and here ──────────────────────────────────────────────────────────────────
@@ -60,12 +61,12 @@ async function identitySet() {
   // GB and US first, with NO FAQ rows: the empty FAQ renders nothing, so the page is HEAD's.
   for (const seg of ['uk', 'us']) {
     const r = await kit.quietAsync(() => wf.page('landing', seg, rows))
-    out[`landing:${seg}:no-faq`] = { html: sha(SB1.strip(SG2.asBefore(r.html))), meta: sha(JSON.stringify(r.meta)), redirectedTo: r.redirectedTo }
+    out[`landing:${seg}:no-faq`] = { html: sha(SB1.strip(SG2.asBefore(SCX(r.html)))), meta: sha(JSON.stringify(r.meta)), redirectedTo: r.redirectedTo }
   }
   Object.assign(wf.tables, FAQ())   // the renderer's own tables object — every request after this holds the FAQ rows
   for (const seg of ['de', 'fr', 'br', 'jp']) {
     const r = await kit.quietAsync(() => wf.page('landing', seg, rows))
-    out[`landing:${seg}`] = { html: sha(SB1.strip(SG2.asBefore(r.html))), meta: sha(JSON.stringify(r.meta)), redirectedTo: r.redirectedTo }
+    out[`landing:${seg}`] = { html: sha(SB1.strip(SG2.asBefore(SCX(r.html)))), meta: sha(JSON.stringify(r.meta)), redirectedTo: r.redirectedTo }
   }
   // Comparison pages over compare-de-1's renderer: every visibility and view, the till players, the app flags, the twins, with the
   // FAQ rows in the database too.
@@ -82,7 +83,7 @@ async function identitySet() {
   }
   for (const [k, o] of Object.entries(pages)) {
     const r = await kit.quietAsync(() => cmp.page({ ...o, tables: { ...faqT, ...(o.tables || {}) } }))
-    out[`comparison:${k}`] = { html: sha(SB1.strip(SG2.asBefore(r.html))), meta: sha(JSON.stringify(r.meta)), notFound: r.notFound, empty: !r.html }
+    out[`comparison:${k}`] = { html: sha(SB1.strip(SG2.asBefore(SCX(r.html)))), meta: sha(JSON.stringify(r.meta)), notFound: r.notFound, empty: !r.html }
   }
   for (const f of ['md', 'json']) {
     const r = await kit.quietAsync(() => cmp.twin(f, { status: 'live', tables: faqT }))
@@ -96,7 +97,7 @@ async function identitySet() {
     const meta = await cmp.M.generateMetadata(args)
     return { meta, html: await cmp.ctx.prerender(kit.h(cmp.M.default, args)) }
   }))
-  out['comparison:gb:live'] = { html: sha(SB1.strip(noFaqLink(gb.html))), meta: sha(JSON.stringify(gb.meta)) }
+  out['comparison:gb:live'] = { html: sha(SB1.strip(noFaqLink(SCX(gb.html)))), meta: sha(JSON.stringify(gb.meta)) }
   return out
 }
 

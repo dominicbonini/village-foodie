@@ -22,25 +22,19 @@
 // ── 🔴 THE FORM IS HATCHGRAB'S OWN (contact-1, 2 November 2026; docs/contact-1-report.md) ────────────
 // The Tally embed (and its script) left this render: ./HatchGrabContactForm.tsx posts to /api/contact, every word in the visitor's
 // language. Village Foodie's render keeps Tally (page.tsx, ./ContactForm.tsx) — unchanged.
-import { Archivo, Public_Sans, Courier_Prime } from 'next/font/google'
-import { HEADER_BG } from '@/lib/brand'
-import { HatchGrabWordmark } from '@/components/brand/HatchGrabWordmark'
-import { legalPath, copyrightYear } from '@/lib/legal'
-import { ABOUT_PATH } from '@/lib/about'
+import { legalPath } from '@/lib/legal'
 import { HatchGrabContactForm, type ContactFormWords } from './HatchGrabContactForm'
 import { contactRenderToken } from '@/lib/contact-server'
 import { CONTACT_LIMITS, CONTACT_TOPICS, type ContactTopic } from '@/lib/contact'
 import { translatorFor } from '@/lib/i18n/translator'
 import type { AppLocale } from '@/lib/i18n/locales'
+import type { VisitorCountry } from '@/lib/visitor-country'
+// site-chrome-1 (5 November 2026): the ONE shared header and footer of every public HatchGrab page (logo → home, Upload menu,
+// Log in; the landing's footer with its country menu, badges and links) — this page's own nav and three-link footer are gone.
+import { MarketingFrame } from '@/components/landing/MarketingFrame'
 import '@/lib/i18n/catalog/contactPage'
 import '../landing/landing.css'
 import './contact-form.css'
-
-// The same three faces the landing page loads, mapped to the same CSS vars the stylesheet expects.
-const archivo = Archivo({ subsets: ['latin'], style: ['normal', 'italic'], variable: '--font-archivo', display: 'swap' })
-const publicSans = Public_Sans({ subsets: ['latin'], variable: '--font-public-sans', display: 'swap' })
-// seo-fixes S7 (20 October 2026): declared and loaded when used (--ticket), but NOT preloaded — nothing above the fold uses it.
-const courierPrime = Courier_Prime({ subsets: ['latin'], weight: ['400', '700'], variable: '--font-courier-prime', display: 'swap', preload: false })
 
 // The support mailbox. An address, not a word: the same in every language, so it is not in messages.
 const SUPPORT_EMAIL = 'hello@hatchgrab.com'
@@ -70,24 +64,10 @@ export function contactFormWords(locale: AppLocale): ContactFormWords {
 
 /** Language Phase 1e: the words are `contactPage`, in the visitor's country's language (page.tsx resolves it).
  *  contact-1: `topic` is the form's first choice (page.tsx maps ?topic=, lib/contact.ts topicFromParam). */
-export function HatchGrabContact({ locale, country = null, topic = CONTACT_TOPICS[0] }: { locale: AppLocale; country?: string | null; topic?: ContactTopic }) {
+export function HatchGrabContact({ locale, country = null, topic = CONTACT_TOPICS[0], visitor = null }: { locale: AppLocale; country?: string | null; topic?: ContactTopic; visitor?: VisitorCountry | null }) {
   const t = translatorFor(locale, 'contactPage')
   return (
-    <div className={`hg-landing ${archivo.variable} ${publicSans.variable} ${courierPrime.variable}`}>
-      {/* ============ NAV ============ same slate bg, same fixed height, same container as /landing. */}
-      <nav className={HEADER_BG}>
-        <div className="nav-in">
-          {/* ⚠️ THE WORDMARK DOES NOT LINK, DELIBERATELY. On this domain `/` is the landing behind an
-              admin gate, and a non-admin who taps it is bounced straight back here. The landing page's
-              own nav logo points at `#` for a related reason. Identity, not a control. */}
-          <span className="nav-logo" aria-label="HatchGrab">
-            <HatchGrabWordmark variant="dark" className="h-8 w-auto sm:w-[168px] sm:h-auto" />
-          </span>
-          <div className="nav-r">
-            <a href="/login" className="btn btn-ghost">{t('logIn')}</a>
-          </div>
-        </div>
-      </nav>
+    <Frame visitor={visitor}>
 
       <section>
         <div className="wrap">
@@ -193,21 +173,12 @@ export function HatchGrabContact({ locale, country = null, topic = CONTACT_TOPIC
         </div>
       </section>
 
-      {/* ============ FOOTER ============ */}
-      <footer className={HEADER_BG}>
-        <div className="wrap">
-          <div className="foot-links">
-            {/* legal-languages-1: the documents in the visitor's language (English pages: /privacy, /terms, as before). */}
-            <a href={legalPath('privacy', { country, locale })}>{t('privacy')}</a>
-            <a href={legalPath('terms', { country, locale })}>{t('terms')}</a>
-            {/* about-page (22 October 2026): this footer is HatchGrab's only (Village Foodie's /contact has its own). */}
-            <a href={ABOUT_PATH}>{t('about')}</a>
-          </div>
-          <div className="foot-base">
-            <span>{t('copyright', { year: copyrightYear() })}</span>
-          </div>
-        </div>
-      </footer>
-    </div>
+    </Frame>
   )
+}
+
+/** The shared frame. ⚠️ A support page must never fail on the country lookup (page.tsx): with no visitor the page renders inside a
+ *  bare `.hg-landing` box, without the nav and footer, rather than not at all. */
+function Frame({ visitor, children }: { visitor: VisitorCountry | null; children: React.ReactNode }) {
+  return visitor ? <MarketingFrame visitor={visitor}>{children}</MarketingFrame> : <div className="hg-landing">{children}</div>
 }

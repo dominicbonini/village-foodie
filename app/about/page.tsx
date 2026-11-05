@@ -17,24 +17,11 @@
 // ── 🔴 THE PHOTO ─────────────────────────────────────────────────────────────────────────────────────────────────────────
 // public/about/dominic.jpg when the file exists (lib/about-server.ts); otherwise NOTHING is rendered — no box, no alt text —
 // and the story takes the full width. A plain <img>: one small local file, and next/image would need its dimensions.
-// store-badges-1: the footer's store badges follow the country's app flags (the cached reader the FAQ and comparison pages use).
-import { appsOf } from '@/lib/comparison-flags'
-// faq-4: the footer's FAQ link, only where this country's /faq has a question to show.
-import { faqHrefFor } from '@/lib/faq/public'
-import { Archivo, Public_Sans, Courier_Prime } from 'next/font/google'
 import type { Metadata } from 'next'
 import { headers } from 'next/headers'
 import { notFound } from 'next/navigation'
 import { isHatchGrabHost } from '@/lib/brand'
-import { LandingNav } from '@/components/landing/LandingNav'
-import { LandingFooter } from '@/components/landing/LandingFooter'
-// compare-de-1: the footer's "Vergleich" column for the country's own comparison page (live, or admins only).
-import { comparisonFooter } from '@/lib/comparison-server'
-import { DemoModalProvider, DemoModal } from '@/components/landing/DemoUpload'   // client children — the chrome's CTA
-import { PageLocale } from '@/lib/i18n/page-locale'
-// languages-1: a non-English page hands its browser the words its client components read (none for English).
-import { pageSeedProps } from '@/lib/i18n/page-words'
-import { localeOfCountry } from '@/lib/i18n/locales'
+import { MarketingFrame } from '@/components/landing/MarketingFrame'   // site-chrome-1: the ONE shared header and footer
 import { translatorFor } from '@/lib/i18n/translator'
 import '@/lib/i18n/catalog/aboutPage'
 import { resolveVisitorCountry } from '@/lib/visitor-country'
@@ -73,11 +60,6 @@ export async function generateMetadata({ searchParams }: { searchParams: SearchP
   }
 }
 
-// Declared here as on /features: landing.css reads the three font variables these classes set.
-const archivo = Archivo({ subsets: ['latin'], style: ['normal', 'italic'], variable: '--font-archivo', display: 'swap' })
-const publicSans = Public_Sans({ subsets: ['latin'], variable: '--font-public-sans', display: 'swap' })
-const courierPrime = Courier_Prime({ subsets: ['latin'], weight: ['400', '700'], variable: '--font-courier-prime', display: 'swap', preload: false })
-const CHROME = `hg-landing ${archivo.variable} ${publicSans.variable} ${courierPrime.variable}`
 
 export default async function AboutPage({ searchParams }: { searchParams: SearchParams }) {
   if (!(await onHatchGrab())) {
@@ -98,10 +80,8 @@ export default async function AboutPage({ searchParams }: { searchParams: Search
   })
 
   return (
-    <PageLocale locale={localeOfCountry(settings)} {...pageSeedProps(settings.locale, 'marketing')}>
-    <DemoModalProvider>
-      <div className={CHROME}>
-        <LandingNav landingHref={visitor.paths.landing} featuresHref={visitor.paths.features} locale={settings.locale} />
+    // site-chrome-1 (5 November 2026): the ONE shared frame (components/landing/MarketingFrame.tsx) — nav, footer, demo modal.
+    <MarketingFrame visitor={visitor}>
 
         <section className="about-page">
           <div className="wrap">
@@ -132,13 +112,6 @@ export default async function AboutPage({ searchParams }: { searchParams: Search
           <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(graph) }} />
         </section>
 
-        <LandingFooter landingHref={visitor.paths.landing} featuresHref={visitor.paths.features} country={visitor.menu} locale={settings.locale} comparison={await comparisonFooter(settings.countryCode, settings.locale)} 
-          apps={await appsOf(settings.countryCode)} faqHref={await faqHrefFor(settings)} />
-      </div>
-
-      {/* Mounted once, outside `.hg-landing` — the nav's CTA drives it (as on /features). */}
-      <DemoModal />
-    </DemoModalProvider>
-    </PageLocale>
+    </MarketingFrame>
   )
 }

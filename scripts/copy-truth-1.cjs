@@ -102,8 +102,18 @@ const FL1 = require('./_lp-features-list-1.cjs')   // eslint-disable-line @types
   const OLD = JSON.parse(read('scripts/fixtures/copy-truth-1-old.json')).old
   const allMessages = msgFiles.map(f => read(`messages/${f}`)).join('\n') + fs.readdirSync(path.join(REPO, 'messages/ns')).flatMap(l => fs.readdirSync(path.join(REPO, 'messages/ns', l)).map(f => read(`messages/ns/${l}/${f}`))).join('\n')
   let oldCount = 0; const left = []
-  for (const [loc, kv] of Object.entries(OLD)) for (const [k, v] of Object.entries(kv)) { oldCount++; if (allMessages.includes(JSON.stringify(v).slice(1, -1))) left.push(`${loc} ${k}`) }
-  t(`every changed key's old text (${oldCount} strings in ${Object.keys(OLD).length} locales) is in no messages file`, oldCount > 250 && left.length === 0, left)
+  // ⚠️ RE-PINNED (site-chrome-1, 5 November 2026, Dominic): the OFFLINE sentences are put back (landing.does.offlineBody,
+  // featuresPage.detail.offline_protection — 7e1effa7^'s words again; the offlineApps keys gone). Their old text is SUPPOSED to be there
+  // now, so they leave this check and the next one proves them back; the trial line and the add-van words are still checked here.
+  const PUT_BACK = require('./_lp-copy-truth-1.cjs').OFFLINE_PUT_BACK   // eslint-disable-line @typescript-eslint/no-require-imports -- CommonJS harness module (site-chrome-1)
+  const OFFLINE_KEYS = /^(landing\.does\.offline(Body|Apps)|featuresPage\.(detail\.offline_protection|offlineApps))$/
+  for (const [loc, kv] of Object.entries(OLD)) for (const [k, v] of Object.entries(kv)) { if (PUT_BACK && OFFLINE_KEYS.test(k)) continue; oldCount++; if (allMessages.includes(JSON.stringify(v).slice(1, -1))) left.push(`${loc} ${k}`) }
+  t(`every changed key's old text (${oldCount} strings in ${Object.keys(OLD).length} locales${PUT_BACK ? '; the offline keys aside — put back by site-chrome-1' : ''}) is in no messages file`, oldCount > (PUT_BACK ? 150 : 250) && left.length === 0, left)
+  if (PUT_BACK) {
+    const back = []
+    for (const [loc, kv] of Object.entries(OLD)) for (const k of ['landing.does.offlineBody', 'featuresPage.detail.offline_protection']) if (kv[k] !== undefined && get(JSON.parse(read(`messages/${loc}.json`)), k) !== kv[k]) back.push(`${loc} ${k}`)
+    t('site-chrome-1: the offline sentences are back — each locale\'s old landing.does.offlineBody and featuresPage.detail.offline_protection, exactly', !back.length, back)
+  }
   // The English claims, searched in every message file and every code file (comments included).
   const PATTERNS = [/\bfree month\b/i, /first live event/i, /pick your first/i, /until you go live/i, /decide to go live/i, /next billing cycle/i,
     /charged as an add-on/i, /confirmation email within 24 hours/i, /online ordering pauses automatically so customers/i,
@@ -113,6 +123,7 @@ const FL1 = require('./_lp-features-list-1.cjs')   // eslint-disable-line @types
   for (const d of ['app', 'components', 'lib']) walk(d)
   const enText = read('messages/en-GB.json') + read('messages/en-US.json') + ['en-IE', 'en-AU', 'en-NZ', 'en-CA', 'en-MT', 'en-GI', 'en-SG'].map(l => read(`messages/${l}.json`)).join('')
   for (const re of PATTERNS) {
+    if (PUT_BACK && /online ordering pauses/.test(re.source)) { t(`"${re.source}" is back in en-GB (site-chrome-1 put the offline sentence back)`, re.test(read('messages/en-GB.json'))); continue }
     const inCode = codeFiles.filter(f => re.test(read(f)))
     t(`"${re.source}" is in no English message file and no file under app/, components/ or lib/`, !re.test(enText) && inCode.length === 0, inCode)
   }
@@ -167,8 +178,9 @@ const FL1 = require('./_lp-features-list-1.cjs')   // eslint-disable-line @types
   // ══ 5 ══════════════════════════════════════════════════════════════════════════════════════════════════════════════
   head('5 · nothing else on the public pages changes')
   const tl = cc => T.translatorFor(LOCALE[cc], 'landing'), tf = cc => T.translatorFor(LOCALE[cc], 'featuresPage')
-  const newLanding = (cc, apps) => tl(cc)('does.offlineBody') + (apps ? ' ' + tl(cc)('does.offlineApps') : '')
-  const newFeatures = (cc, apps) => tf(cc)('detail.offline_protection') + (apps ? ' ' + tf(cc)('offlineApps') : '')
+  // ⚠️ RE-PINNED (site-chrome-1): with the sentences put back there is no apps sentence to add — the one sentence already names the apps.
+  const newLanding = (cc, apps) => tl(cc)('does.offlineBody') + (apps && !PUT_BACK ? ' ' + tl(cc)('does.offlineApps') : '')
+  const newFeatures = (cc, apps) => tf(cc)('detail.offline_protection') + (apps && !PUT_BACK ? ' ' + tf(cc)('offlineApps') : '')
   const pinned = JSON.parse(read(HEAD_FILE))
   const { out, cut, llmsText } = await views('ct1-now', cc => newLanding(cc, cc === 'GB'), cc => newFeatures(cc, cc === 'GB'))
   // ⚠️ RE-PINNED (seo-geo-2 B4, 2 November 2026): /llms.txt is rebuilt on purpose (Features, the English FAQ, every country's lines in
@@ -179,14 +191,22 @@ const FL1 = require('./_lp-features-list-1.cjs')   // eslint-disable-line @types
   // identical to the commit before it; the offline description itself is still checked below.
   if (FL1.LANDED) { for (const cc of ['GB', 'US']) delete pinned[`${cc}/features`]; t('GB/features, US/features: the table changed on purpose by features-list-1 (not compared with HEAD; scripts/features-list-1.cjs proves the rest of the page) — the new rows in, Advanced reporting out', ['GB', 'US'].every(cc => cut[`${cc}/features`].includes('>Documents and reminders<') && cut[`${cc}/features`].includes('>Reports for your accountant<') && !cut[`${cc}/features`].includes('>Advanced reporting<'))) }
   for (const k of Object.keys(pinned)) t(`${k}: identical to HEAD${/landing|features/.test(k) ? ' apart from the offline text' : k === 'sitemap' ? ' apart from lastmod' : ''}`, out[k] === pinned[k], { now: out[k], head: pinned[k] })
-  t('the landing offline line is the new sentence everywhere', ['GB', 'US', 'BR', 'JP'].every(cc => cut[`${cc}/landing`].includes(`<p>${newLanding(cc, cc === 'GB')}</p>`)))
-  t('GB (both app flags on) keeps the apps sentence: "…Carry on taking orders with the iPhone, iPad and Android app."', cut['GB/landing'].includes('if you lose signal, so customers can’t place orders you won’t see. Carry on taking orders with the iPhone, iPad and Android app.</p>'))
-  t('US, BR and JP (flags off) carry no apps sentence on the landing page, nor the US on /features', ['US', 'BR', 'JP'].every(cc => !cut[`${cc}/landing`].includes(tl(cc)('does.offlineApps'))) && !cut['US/features'].includes(tf('US')('offlineApps')))
-  t('GB /features keeps its apps sentence after the offline description', cut['GB/features'].includes(newFeatures('GB', true)))
-  const off = await views('ct1-gb-off', cc => newLanding(cc, false), cc => newFeatures(cc, false), false)
-  t('with GB\'s app flags switched off, GB loses the apps sentence too (it follows the flags, not the country)', off.cut['GB/landing'].includes(`<p>${newLanding('GB', false)}</p>`) && !off.cut['GB/landing'].includes(tl('GB')('does.offlineApps')))
+  if (PUT_BACK) {
+    // ⚠️ RE-PINNED (site-chrome-1, 5 November 2026, Dominic): the one restored sentence everywhere, whatever the store flags.
+    t('site-chrome-1: the landing\'s offline line is the restored sentence in GB, US, BR and JP, whatever the store flags', ['GB', 'US', 'BR', 'JP'].every(cc => cut[`${cc}/landing`].includes(`<p>${newLanding(cc, false)}</p>`)))
+    t('site-chrome-1: /features\' offline description is the restored sentence (GB, US)', ['GB', 'US'].every(cc => cut[`${cc}/features`].includes(newFeatures(cc, false))))
+    const off = await views('ct1-gb-off', cc => newLanding(cc, false), cc => newFeatures(cc, false), false)
+    t('site-chrome-1: with GB\'s app flags switched off the sentence is the same (it no longer follows the flags)', off.cut['GB/landing'].includes(`<p>${newLanding('GB', false)}</p>`))
+  } else {
+    t('the landing offline line is the new sentence everywhere', ['GB', 'US', 'BR', 'JP'].every(cc => cut[`${cc}/landing`].includes(`<p>${newLanding(cc, cc === 'GB')}</p>`)))
+    t('GB (both app flags on) keeps the apps sentence: "…Carry on taking orders with the iPhone, iPad and Android app."', cut['GB/landing'].includes('if you lose signal, so customers can’t place orders you won’t see. Carry on taking orders with the iPhone, iPad and Android app.</p>'))
+    t('US, BR and JP (flags off) carry no apps sentence on the landing page, nor the US on /features', ['US', 'BR', 'JP'].every(cc => !cut[`${cc}/landing`].includes(tl(cc)('does.offlineApps'))) && !cut['US/features'].includes(tf('US')('offlineApps')))
+    t('GB /features keeps its apps sentence after the offline description', cut['GB/features'].includes(newFeatures('GB', true)))
+    const off = await views('ct1-gb-off', cc => newLanding(cc, false), cc => newFeatures(cc, false), false)
+    t('with GB\'s app flags switched off, GB loses the apps sentence too (it follows the flags, not the country)', off.cut['GB/landing'].includes(`<p>${newLanding('GB', false)}</p>`) && !off.cut['GB/landing'].includes(tl('GB')('does.offlineApps')))
+  }
   // ⚠️ RE-PINNED (features-list-1, 4 November 2026): moved on again to 2026-11-04 for the /features table (35.aj-8).
-  t(FL1.LANDED ? 'MARKETING_COPY_UPDATED moved to 2026-11-02 (35.aj-8), then on to 2026-11-04 by features-list-1' : 'MARKETING_COPY_UPDATED moved to 2026-11-02 (35.aj-8)', W.MARKETING_COPY_UPDATED === (FL1.LANDED ? '2026-11-04' : '2026-11-02'))
+  t(FL1.LANDED ? 'MARKETING_COPY_UPDATED moved to 2026-11-02 (35.aj-8), then on to 2026-11-04 by features-list-1' : 'MARKETING_COPY_UPDATED moved to 2026-11-02 (35.aj-8)', (require('./_lp-site-chrome-1.cjs').COPY_LANDED ? W.MARKETING_COPY_UPDATED >= '2026-11-05' : W.MARKETING_COPY_UPDATED === (FL1.LANDED ? '2026-11-04' : '2026-11-02')))   // eslint-disable-line @typescript-eslint/no-require-imports -- ⚠️ RE-PINNED (site-chrome-1): moved on to 2026-11-05
 
   console.log(`\ncopy-truth-1: ${pass} passed, ${fail} failed`)
   process.exit(fail ? 1 : 0)

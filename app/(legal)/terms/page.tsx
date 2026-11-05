@@ -18,7 +18,7 @@ import { renderLegalMarkdownHtml } from '@/lib/legal-markdown-html'   // seo-fix
 import { DEFAULT_LOCALE } from '@/lib/i18n/locales'
 import { translatorFor } from '@/lib/i18n/translator'
 import { ownUrlMetadata } from '@/lib/site-metadata'
-import { TERMS_PATH } from '@/lib/legal'
+import { TERMS_PATH, COUNTRY_TERMS_PATH } from '@/lib/legal'
 import '@/lib/i18n/catalog/legalChrome'
 
 // Language Phase 1e: `legalChrome.meta`, en-GB (app/(legal)/layout.tsx says why). Read at build time, like the text.
@@ -42,5 +42,6 @@ const SOURCE = fs.readFileSync(
 )
 
 export default function TermsPage() {
-  return <LegalPage html={renderLegalMarkdownHtml(SOURCE)} />
+  // site-chrome-1: the country-specific terms, linked from the top (they were in the legal footer the shared footer replaced).
+  return <LegalPage html={renderLegalMarkdownHtml(SOURCE)} countryTermsHref={COUNTRY_TERMS_PATH} />
 }

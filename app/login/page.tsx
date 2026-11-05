@@ -5,7 +5,7 @@ import { useRouter, useSearchParams } from 'next/navigation'
 import { createSupabaseBrowserClient } from '@/lib/supabase/client'
 import { isNativeApp } from '@/lib/native/device'
 import { getNativeSupabase } from '@/lib/native/session'
-import { HATCHGRAB_WORDMARK_SVG } from '@/lib/brand'
+import { FlowLogo } from '@/components/shared/FlowLogo'   // site-chrome-1: the focused flows' logo, linking home (inert in the app)
 import { useT } from '@/lib/i18n/use-t'
 import '@/lib/i18n/catalog/auth'
 
@@ -94,13 +94,7 @@ function LoginForm() {
               reservation (post-crop). ⚠️ h-12 w-auto means the RENDERED WIDTH grows ~191px → ~218px now the
               artwork is tight-cropped — still well inside the card's 320px content box, and mx-auto keeps
               it centred. */}
-          <img
-            src={HATCHGRAB_WORDMARK_SVG}
-            alt="HatchGrab"
-            width={191}
-            height={42}
-            className="h-12 w-auto mx-auto mb-4"
-          />
+          <FlowLogo variant="card" />
           <h1 className="text-xl font-semibold text-slate-900">
             {t('title')}
           </h1>

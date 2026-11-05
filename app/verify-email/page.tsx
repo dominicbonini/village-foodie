@@ -7,6 +7,7 @@ import { translatorFor } from '@/lib/i18n/translator'
 import { localeForTruck } from '@/lib/i18n/server-locale'
 import { DEFAULT_LOCALE, type AppLocale } from '@/lib/i18n/locales'
 import '@/lib/i18n/catalog/auth'
+import { FlowLogo } from '@/components/shared/FlowLogo'   // site-chrome-1: the focused flows' logo, linking home (inert in the app)
 
 const supabase = createClient(
   process.env.SUPABASE_URL!,
@@ -35,6 +36,7 @@ function ErrorUI({ title, message, login }: { title: string; message: string; lo
   return (
     <div className="min-h-screen flex items-center justify-center p-4 bg-slate-50">
       <div className="text-center bg-white rounded-2xl p-8 shadow-sm max-w-sm w-full">
+        <FlowLogo variant="card" />
         <div className="text-4xl mb-4">❌</div>
         <p className="text-lg font-semibold text-slate-900">{title}</p>
         <p className="text-sm text-slate-500 mt-2">{message}</p>
@@ -63,6 +65,7 @@ export default async function VerifyEmailPage({
     return (
       <div className="min-h-screen flex items-center justify-center p-4 bg-slate-50">
         <div className="text-center bg-white rounded-2xl p-8 shadow-sm max-w-sm w-full">
+          <FlowLogo variant="card" />
           <div className="text-4xl mb-4">❌</div>
           <p className="text-lg font-semibold text-slate-900">{t('invalidTitle')}</p>
           <p className="text-sm text-slate-500 mt-2">{t('invalidBody')}</p>
@@ -80,6 +83,7 @@ export default async function VerifyEmailPage({
     return (
       <div className="min-h-screen flex items-center justify-center p-4 bg-slate-50">
         <div className="text-center bg-white rounded-2xl p-8 shadow-sm max-w-sm w-full">
+          <FlowLogo variant="card" />
           <div className="text-4xl mb-4">✅</div>
           <p className="text-lg font-semibold text-slate-900">{t('verifiedTitle')}</p>
           <p className="text-sm text-slate-500 mt-2">{t('verifiedBody')}</p>
@@ -93,6 +97,7 @@ export default async function VerifyEmailPage({
     return (
       <div className="min-h-screen flex items-center justify-center p-4 bg-slate-50">
         <div className="text-center bg-white rounded-2xl p-8 shadow-sm max-w-sm w-full">
+          <FlowLogo variant="card" />
           <div className="text-4xl mb-4">⏰</div>
           <p className="text-lg font-semibold text-slate-900">{t('expiredTitle')}</p>
           <p className="text-sm text-slate-500 mt-2">{t('expiredBody')}</p>

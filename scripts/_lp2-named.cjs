@@ -640,6 +640,14 @@ const NAMED = [
     what: '⚠️ RE-PINNED (ireland-1, 20 October 2026): the same date change on the return VISIT, which clears the demo day it is about to build BY DATE (provisionDemoEvent replaceExisting). The clock’s date used to be the build’s day, so the visit deleted the build’s event, its orders and its production_slot_usage; LATER’s date has none of them, so they now STAY (as on any real next-day return visit, where `now` and the clock already agreed). PRECISE, from the BEFORE visit and the BEFORE build (scripts/fixtures/language-phase-1c-before/demo.json.gz, through the named changes above): the dates shifted as in ie1-demo-date-from-now; the build-day deletes gone (orders and truck_events) or empty (production_slot_usage); the build’s event, orders and slot usage kept ahead of the new ones. ⚠️ FIXTURE ARTEFACT, not product: the harness’s randomUUID stub restarts per run, so the visit’s order_keys repeat the build’s and each reservation update (…eq(\'order_key\').eq(\'truck_id\')) also lands on the build’s order with that key — its ids list that order first and the kept order carries the patch. Real order_keys are random UUIDs.',
     views: id => /^1c\/demo\/(GB|US)\|rows\|return\|visit$/.test(id),
     expect: (b, id) => ie1Visit(b, id) },
+
+  // ── ⚠️ RE-PINNED (site-chrome-1, 5 November 2026; scripts/_lp-site-chrome-1.cjs) ─────────────────────────────────────────────
+  { id: 'site-chrome-1-flow-logo', part: 'site-chrome-1 (5 Nov 2026)', country: 'both',
+    what: '⚠️ RE-PINNED (site-chrome-1, 5 November 2026, manual 35.ao-13): the focused flows\' wordmark links home (components/shared/FlowLogo.tsx) — /login and /reset-password wrap their card wordmark in a link, /signup and /setup wrap theirs, /forgot-password and /verify-email gain the card wordmark (and React\'s preload for a first image). PRECISE: every other byte of each view is BEFORE\'s',
+    // eslint-disable-next-line @typescript-eslint/no-require-imports -- CommonJS harness module (site-chrome-1)
+    views: id => require('./_lp-site-chrome-1.cjs').LANDED && require('./_lp-site-chrome-1.cjs').flowPageOf(id) !== null,
+    // eslint-disable-next-line @typescript-eslint/no-require-imports -- CommonJS harness module (site-chrome-1)
+    expect: (b, id) => require('./_lp-site-chrome-1.cjs').flowLogo(b, id) },
 ]
 
 // ── ⚠️ RE-PINNED (ireland-1, 20 October 2026): helpers for the ie1-demo-* entries ─────────────────────────────────────────

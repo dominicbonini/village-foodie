@@ -5599,8 +5599,7 @@
       "whatsappSoonTitle": "WhatsApp auto-replies <soon>Coming soon</soon>",
       "whatsappSoonBody": "“Where are you tonight?” “What desserts do you have?” Soon your WhatsApp will get answered while you’re driving to the pitch or at the grill. Messenger and Instagram to follow.",
       "offlineTitle": "No signal? Keep serving.",
-      "offlineBody": "Switch on offline protection and online ordering pauses automatically if you lose signal, so customers can’t place orders you won’t see.",
-      "offlineApps": "Carry on taking orders with the iPhone, iPad and Android app.",
+      "offlineBody": "If you lose signal, online ordering pauses automatically so customers can’t place orders you won’t see. Carry on taking orders with the iPhone, iPad and Android app.",
       "slotsBody": "Customers order ahead and pick a collection time. Fewer queues, and food ready when they arrive."
     },
     "steps": {
@@ -6180,7 +6179,7 @@
       "kitchen_app": "The fullest way to run HatchGrab: a live kitchen screen, plus the only way to keep taking orders when you lose signal.",
       "multi_device_kitchen": "Run several screens — front counter and kitchen — all showing the same live orders.",
       "multi_user_access": "Give staff their own logins with the right level of access.",
-      "offline_protection": "Switch on offline protection and online ordering pauses automatically if you lose signal, so customers can’t place orders you won’t see.",
+      "offline_protection": "If you lose signal, online ordering pauses so customers can’t place orders you won’t see. The iPhone, iPad and Android app keeps you taking orders offline; the web dashboard needs a connection.",
       "ticket_printing": "Print order tickets to a Bluetooth or wired printer in the kitchen.",
       "web_dashboard": "Run your service from any phone, tablet or laptop browser.",
       "meal_deals_upsells": "Bundle items into deals and offer add-ons at checkout to lift the average order.",
@@ -6211,7 +6210,6 @@
       "sms_order_alerts": "Text customers automatically when their order’s ready.",
       "loyalty_stamp_cards": "Reward repeat customers with digital stamp cards — collected and redeemed automatically."
     },
-    "offlineApps": "The iPhone, iPad and Android app keeps you taking orders offline; the web dashboard needs a connection.",
     "metaTitle": "Plans & features compared — HatchGrab {country}"
   },
   "compare": {

@@ -5599,8 +5599,7 @@
       "whatsappSoonTitle": "Risposte automatiche WhatsApp <soon>In arrivo</soon>",
       "whatsappSoonBody": "«Dove siete stasera?» «Che dolci avete?» Presto il tuo WhatsApp risponderà mentre guidi verso la postazione o sei alla piastra. Seguiranno Messenger e Instagram.",
       "offlineTitle": "Niente segnale? Continua a servire.",
-      "offlineBody": "Attiva la protezione ordini offline e gli ordini online si mettono in pausa automaticamente se perdi il segnale, così i clienti non possono inviare ordini che non vedresti.",
-      "offlineApps": "Continua a prendere ordini con l’app per iPhone, iPad e Android.",
+      "offlineBody": "Se perdi il segnale, gli ordini online si mettono in pausa automaticamente, così i clienti non possono inviare ordini che non vedresti. Continua a prendere ordini con l’app per iPhone, iPad e Android.",
       "slotsBody": "I clienti ordinano in anticipo e scelgono un orario di ritiro. Meno code e cibo pronto al loro arrivo."
     },
     "steps": {
@@ -6207,7 +6206,7 @@
       "kitchen_app": "Il modo più completo di usare HatchGrab: un monitor cucina in tempo reale, e l’unico modo per continuare a prendere ordini quando perdi il segnale.",
       "multi_device_kitchen": "Usa più schermi — banco e cucina — che mostrano tutti gli stessi ordini in tempo reale.",
       "multi_user_access": "Dai al tuo staff accessi personali con il giusto livello di permessi.",
-      "offline_protection": "Attiva la protezione ordini offline e gli ordini online si mettono in pausa automaticamente se perdi il segnale, così i clienti non possono inviare ordini che non vedresti.",
+      "offline_protection": "Se perdi il segnale, gli ordini online si mettono in pausa, così i clienti non possono inviare ordini che non vedresti. L’app per iPhone, iPad e Android ti permette di continuare a prendere ordini offline; la dashboard web richiede una connessione.",
       "ticket_printing": "Stampa le comande su una stampante Bluetooth o via cavo in cucina.",
       "web_dashboard": "Gestisci il servizio dal browser di qualsiasi telefono, tablet o portatile.",
       "meal_deals_upsells": "Raggruppa i piatti in menu combo e proponi extra al momento del pagamento per aumentare lo scontrino medio.",
@@ -6238,7 +6237,6 @@
       "sms_order_alerts": "Avvisa automaticamente i clienti via SMS quando il loro ordine è pronto.",
       "loyalty_stamp_cards": "Premia i clienti abituali con carte fedeltà digitali — timbri raccolti e premi riscattati in automatico."
     },
-    "offlineApps": "L’app per iPhone, iPad e Android ti permette di continuare a prendere ordini offline; la dashboard web richiede una connessione.",
     "metaTitle": "Piani e funzioni a confronto — HatchGrab {country}"
   },
   "compare": {

@@ -49,5 +49,7 @@ export function countryPageAlternates(page: MarketingPage, code: string, alterna
  * faq-3 (2 November 2026): moved for the FAQ section on the English landing pages — the same day, so the value stands.
  * features-list-1 (4 November 2026): moved for /features — three new rows (Documents and reminders, Profit per event, Reports
  * for your accountant) and "Advanced reporting" taken off. The landing pages' copy is unchanged; only the sitemap reads this.
+ * site-chrome-1 (5 November 2026): moved — the landing's offline line and /features' offline description put back as they were
+ * before copy-truth-1 (Dominic's request), and every public page's header and footer made the landing's own.
  */
-export const MARKETING_COPY_UPDATED = '2026-11-04'
+export const MARKETING_COPY_UPDATED = '2026-11-05'

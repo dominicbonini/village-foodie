@@ -5599,8 +5599,7 @@
       "whatsappSoonTitle": "Automatické odpovede pre WhatsApp <soon>Už čoskoro</soon>",
       "whatsappSoonBody": "„Kde ste dnes večer?“ „Aké máte dezerty?“ Čoskoro sa na správy cez WhatsApp bude odpovedať, kým šoférujete na stanovište alebo stojíte pri grile. Messenger a Instagram budú nasledovať.",
       "offlineTitle": "Bez signálu? Predávajte ďalej.",
-      "offlineBody": "Zapnite ochranu objednávok offline a online objednávanie sa automaticky pozastaví, ak stratíte signál, aby zákazníci nemohli zadávať objednávky, ktoré by ste nevideli.",
-      "offlineApps": "Objednávky prijímajte ďalej v aplikácii pre iPhone, iPad a Android.",
+      "offlineBody": "Ak stratíte signál, online objednávanie sa automaticky pozastaví, aby zákazníci nemohli zadávať objednávky, ktoré by ste nevideli. Objednávky prijímajte ďalej v aplikácii pre iPhone, iPad a Android.",
       "slotsBody": "Zákazníci si objednajú vopred a vyberú si čas vyzdvihnutia. Kratšie rady a jedlo hotové, keď prídu."
     },
     "steps": {
@@ -6207,7 +6206,7 @@
       "kitchen_app": "Najkompletnejší spôsob, ako používať HatchGrab: živá kuchynská obrazovka a zároveň jediný spôsob, ako prijímať objednávky aj pri výpadku signálu.",
       "multi_device_kitchen": "Používajte viac obrazoviek — pri okienku aj v kuchyni — a na všetkých uvidíte rovnaké aktuálne objednávky.",
       "multi_user_access": "Dajte zamestnancom vlastné prihlasovacie údaje so správnou úrovňou prístupu.",
-      "offline_protection": "Zapnite ochranu objednávok offline a online objednávanie sa automaticky pozastaví, ak stratíte signál, aby zákazníci nemohli zadávať objednávky, ktoré by ste nevideli.",
+      "offline_protection": "Ak stratíte signál, online objednávanie sa pozastaví, aby zákazníci nemohli zadávať objednávky, ktoré by ste nevideli. Aplikácia pre iPhone, iPad a Android vám umožní prijímať objednávky aj offline; webový prehľad potrebuje pripojenie.",
       "ticket_printing": "Tlačte bločky objednávok na Bluetooth alebo káblovej tlačiarni v kuchyni.",
       "web_dashboard": "Riaďte prevádzku z prehliadača na akomkoľvek telefóne, tablete či notebooku.",
       "meal_deals_upsells": "Spojte položky do menu a pri objednávke ponúknite doplnky, aby ste zvýšili priemernú hodnotu objednávky.",
@@ -6238,7 +6237,6 @@
       "sms_order_alerts": "Automaticky pošlite zákazníkom SMS, keď je ich objednávka pripravená.",
       "loyalty_stamp_cards": "Odmeňte stálych zákazníkov digitálnymi kartičkami s pečiatkami — pečiatky sa zbierajú aj uplatňujú automaticky."
     },
-    "offlineApps": "Aplikácia pre iPhone, iPad a Android vám umožní prijímať objednávky aj offline; webový prehľad potrebuje pripojenie.",
     "metaTitle": "Porovnanie plánov a funkcií — HatchGrab {country}"
   },
   "compare": {

@@ -34,6 +34,7 @@ let pass = 0, fail = 0
 const t = (label, ok, d) => { if (ok) pass++; else { fail++; console.log('  🔴 ' + label + (d !== undefined ? `\n      ${String(typeof d === 'string' ? d : JSON.stringify(d)).slice(0, 700)}` : '')) } }
 const head = s => console.log('\n' + s)
 const sha = s => crypto.createHash('sha256').update(String(s ?? 'null')).digest('hex')
+const SCX = h => require('./_lp-site-chrome-1.cjs').asCopyTruth(h)   // eslint-disable-line @typescript-eslint/no-require-imports -- ⚠️ RE-PINNED (site-chrome-1): today's offline sentence written as copy-truth-1 wrote it (scripts/_lp-site-chrome-1.cjs asCopyTruth)
 // ⚠️ RE-PINNED (store-badges-1, 2 November 2026): hashed with the footer's store badges and the Play URL's &hl=en taken out (scripts/
 // _lp-store-badges-1.cjs strip, both sides; the badges follow the app flags now and are proven by scripts/store-badges-1.cjs).
 const SB1 = require('./_lp-store-badges-1.cjs')
@@ -48,7 +49,7 @@ async function identityViews(tag) {
     const P = await kit.quietAsync(() => R.page('landing', seg, rows))
     // ⚠️ RE-PINNED (seo-geo-2 B3, 2 November 2026): hashed as HEAD rendered it — operatingSystem set back to "Web, iOS, Android"
     // where seo-geo-2 made it "Web" (scripts/_lp-seo-geo-2.cjs asBefore; seo-geo-2.cjs proves the value per country).
-    out[`${cc}/landing`] = sha(SB1.strip(SG2.asBefore(P.html))) + ':' + sha(JSON.stringify(P.meta))
+    out[`${cc}/landing`] = sha(SB1.strip(SG2.asBefore(SCX(P.html)))) + ':' + sha(JSON.stringify(P.meta))
   }
   // ⚠️ RE-PINNED (seo-geo-2 B4): /llms.txt is rebuilt on purpose — not compared with HEAD on a tree with seo-geo-2 (its content is
   // proven by seo-geo-2.cjs §5); captured as before on an older tree.

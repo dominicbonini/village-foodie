@@ -149,9 +149,14 @@ const REGIONAL = [['de-AT', 'AT', 'de-DE'], ['de-CH', 'CH', 'de-DE'], ['nl-BE', 
       const firstHeading = (/^# (.+)$/m.exec(L.body(fs.readFileSync(L.translationPath(base, FILE[doc]), 'utf8'))) || [])[1] ?? ''
       const swiss = locale === 'de-CH'
       const squash = x => x.replace(/\s+/g, '')   // a tag becomes a space in text(): 'anglaise</a>,' → 'anglaise ,'
+      const SC1_LANDED = require('./_lp-site-chrome-1.cjs').LANDED   // eslint-disable-line @typescript-eslint/no-require-imports -- CommonJS harness module (site-chrome-1)
       const ok = !r.redirectedTo && squash(text(html)).includes(squash(note)) && html.includes(`href="/${doc === 'country-terms' ? 'country-terms' : doc}"`) && text(html).includes(date)
         && text(html).includes(text(swiss ? firstHeading.replace(/ß/g, 'ss') : firstHeading)) && !html.includes('{{LAST_UPDATED}}') && !html.includes('translation-of:')
-        && html.includes(`href="/${seg}/privacy"`) && html.includes(`href="/${seg}/terms"`) && html.includes(`href="/${seg}/country-terms"`) && html.includes(`href="/contact?country=${cc}"`)
+        // ⚠️ RE-PINNED (site-chrome-1, 5 November 2026, manual 35.ao-13): on the web the legal pages wear the ONE shared footer, whose links
+        // are Privacy and Terms in the country's language (not Country terms); the country-specific terms are linked from the TOP of the
+        // Terms page instead, and "Get in touch" still carries the country. (Inside the app the old footer stays — scripts/site-chrome-1.cjs.)
+        && html.includes(`href="/${seg}/privacy"`) && html.includes(`href="/${seg}/terms"`) && html.includes(`href="/contact?country=${cc}"`)
+        && (!SC1_LANDED ? html.includes(`href="/${seg}/country-terms"`) : doc !== 'terms' || html.includes(`data-country-terms-link="true"><a href="/${seg}/country-terms"`))
         && (!swiss || !/ß/.test(text(html)))
       const metaOk = r.meta?.title?.absolute === tr(`meta.${doc === 'privacy' ? 'privacyTitle' : doc === 'terms' ? 'termsTitle' : 'countryTermsTitle'}`)
         && r.meta?.alternates?.canonical === `https://www.hatchgrab.com/${seg}/${doc}` && r.meta?.alternates?.languages?.['x-default'] === `https://www.hatchgrab.com/${doc}`

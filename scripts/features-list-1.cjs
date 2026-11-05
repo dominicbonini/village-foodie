@@ -123,7 +123,8 @@ if (mode === 'capture' || mode === 'compare') {
   }
 
   head('3 · the copy date')
-  t('MARKETING_COPY_UPDATED is 2026-11-04 (35.aj-8), read by the sitemap only', /export const MARKETING_COPY_UPDATED = '2026-11-04'/.test(read('lib/marketing-meta.ts'))
+  // ⚠️ RE-PINNED (site-chrome-1, 5 November 2026): moved on again, to 2026-11-05 (the offline line put back) — 2026-11-04 or later.
+  t('MARKETING_COPY_UPDATED is 2026-11-04 or later (35.aj-8), read by the sitemap only', (/export const MARKETING_COPY_UPDATED = '(\d{4}-\d{2}-\d{2})'/.exec(read('lib/marketing-meta.ts')) || [])[1] >= '2026-11-04'
     && execFileSync('git', ['grep', '-l', 'MARKETING_COPY_UPDATED', '--', 'app', 'lib', 'components'], { cwd: REPO }).toString().trim().split('\n').sort().join() === 'app/sitemap.ts,lib/marketing-meta.ts')
 
   console.log(`\nfeatures-list-1: ${pass} passed, ${fail} failed`)

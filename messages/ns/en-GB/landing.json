@@ -36,8 +36,7 @@
     "whatsappSoonTitle": "WhatsApp auto-replies <soon>Coming soon</soon>",
     "whatsappSoonBody": "“Where are you tonight?” “What desserts do you have?” Soon your WhatsApp will get answered while you’re driving to the pitch or at the grill. Messenger and Instagram to follow.",
     "offlineTitle": "No signal? Keep serving.",
-    "offlineBody": "Switch on offline protection and online ordering pauses automatically if you lose signal, so customers can’t place orders you won’t see.",
-    "offlineApps": "Carry on taking orders with the iPhone, iPad and Android app.",
+    "offlineBody": "If you lose signal, online ordering pauses automatically so customers can’t place orders you won’t see. Carry on taking orders with the iPhone, iPad and Android app.",
     "slotsBody": "Customers order ahead and pick a collection time. Fewer queues, and food ready when they arrive."
   },
   "steps": {

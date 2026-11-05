@@ -5599,8 +5599,7 @@
       "whatsappSoonTitle": "Răspunsuri automate pe WhatsApp <soon>În curând</soon>",
       "whatsappSoonBody": "„Unde sunteți diseară?” „Ce deserturi aveți?” În curând, mesajele de pe WhatsApp vor primi răspuns în timp ce conduceți spre locație sau stați la grătar. Urmează Messenger și Instagram.",
       "offlineTitle": "Fără semnal? Serviți în continuare.",
-      "offlineBody": "Activați protecția comenzilor offline și comenzile online se pun automat pe pauză dacă pierdeți semnalul, ca clienții să nu plaseze comenzi pe care nu le-ați vedea.",
-      "offlineApps": "Continuați să primiți comenzi cu aplicația pentru iPhone, iPad și Android.",
+      "offlineBody": "Dacă pierdeți semnalul, comenzile online se pun automat pe pauză, ca clienții să nu plaseze comenzi pe care nu le-ați vedea. Continuați să primiți comenzi cu aplicația pentru iPhone, iPad și Android.",
       "slotsBody": "Clienții comandă în avans și aleg ora de ridicare. Cozi mai scurte și mâncare gata când ajung."
     },
     "steps": {
@@ -6207,7 +6206,7 @@
       "kitchen_app": "Cel mai complet mod de a folosi HatchGrab: un ecran de bucătărie live, plus singura cale de a primi comenzi în continuare când pierdeți semnalul.",
       "multi_device_kitchen": "Folosiți mai multe ecrane — la tejghea și în bucătărie — toate cu aceleași comenzi live.",
       "multi_user_access": "Dați personalului conturi proprii, cu nivelul potrivit de acces.",
-      "offline_protection": "Activați protecția comenzilor offline și comenzile online se pun automat pe pauză dacă pierdeți semnalul, ca clienții să nu plaseze comenzi pe care nu le-ați vedea.",
+      "offline_protection": "Dacă pierdeți semnalul, comenzile online se pun pe pauză, ca clienții să nu plaseze comenzi pe care nu le-ați vedea. Aplicația pentru iPhone, iPad și Android vă permite să primiți comenzi și offline; panoul de control web are nevoie de conexiune.",
       "ticket_printing": "Tipăriți bonurile de comandă pe o imprimantă Bluetooth sau cu fir din bucătărie.",
       "web_dashboard": "Gestionați serviciul din browserul oricărui telefon, tabletă sau laptop.",
       "meal_deals_upsells": "Grupați produsele în combo-uri și oferiți produse suplimentare la finalizarea comenzii, ca să creșteți valoarea medie a comenzii.",
@@ -6238,7 +6237,6 @@
       "sms_order_alerts": "Trimiteți automat un SMS clienților când comanda lor este gata.",
       "loyalty_stamp_cards": "Recompensați clienții fideli cu carduri digitale de fidelitate cu ștampile — colectate și folosite automat."
     },
-    "offlineApps": "Aplicația pentru iPhone, iPad și Android vă permite să primiți comenzi și offline; panoul de control web are nevoie de conexiune.",
     "metaTitle": "Planuri și funcții comparate — HatchGrab {country}"
   },
   "compare": {

@@ -64,6 +64,11 @@ function formRegion(html) {
 function contactProof(before, after) {
   const problems = []
   if (typeof before !== 'string' || typeof after !== 'string') return { ok: false, problems: ['not HTML'] }
+  // ⚠️ RE-PINNED (site-chrome-1, 5 November 2026): /contact wears the ONE shared header and footer. Its chrome is swapped back to BEFORE's
+  // (scripts/_lp-site-chrome-1.cjs contactChromeBack, which checks it is the shared frame's) so this proof still compares every byte of
+  // the page's body.
+  const SC1 = require('./_lp-site-chrome-1.cjs')   // eslint-disable-line @typescript-eslint/no-require-imports -- CommonJS harness module (site-chrome-1)
+  if (SC1.LANDED) { const sw = SC1.contactChromeBack(before, after, TALLY_SCRIPT); problems.push(...sw.problems); after = sw.after }
   if (before.split(TALLY_SCRIPT).length !== 2) problems.push('BEFORE: the Tally script is not there exactly once')
   const b = formRegion(before.replace(TALLY_SCRIPT, '')), a = formRegion(after)
   if (!b || !a) return { ok: false, problems: [...problems, 'the form region (the second .does-item to </section>) was not found'] }

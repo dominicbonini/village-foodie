@@ -346,6 +346,10 @@ for (const e of require('./_lp-tidy-1.cjs').ITEMS) NAMED.push({ id: e.id, what: 
 // ⚠️ RE-PINNED (paperwork-1, 4 November 2026): the sitemap's /privacy lastmod moves 2026-11-03 → 2026-11-04 — after tidy-1's
 // (scripts/_lp-paperwork-1.cjs, PRECISE).
 for (const e of require('./_lp-paperwork-1.cjs').ITEMS) NAMED.push({ id: e.id, what: e.what, views: e.views, apply: (id, v) => e.apply(id, v) })
+// ⚠️ RE-PINNED (site-chrome-1, 5 November 2026): the sitemap's country-page lastmod moves to 2026-11-05 (PRECISE, after features-list-1's),
+// and the legal pages' web chrome is the ONE shared header and footer (STRUCTURAL); one copy in scripts/_lp-site-chrome-1.cjs.
+// eslint-disable-next-line @typescript-eslint/no-require-imports -- CommonJS harness module (site-chrome-1)
+for (const e of require('./_lp-site-chrome-1.cjs').ITEMS) NAMED.push({ id: e.id, what: e.what, views: e.views, apply: (id, v) => e.apply(id, v), ...(e.proveWith ? { proveWith: e.proveWith } : {}) })
 
 /** BEFORE value of view `id` → { expected, touched: [named ids whose transform changed it] }. */
 // ⚠️ RE-PINNED (plans-data-model, Stage A): an entry with `proveWith` adds `matches(f)` → { ok, problems } — its own

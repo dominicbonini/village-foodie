@@ -5,7 +5,7 @@
     "kitchen_app": "La forma más completa de usar HatchGrab: una pantalla de cocina (KDS) en directo, y la única manera de seguir tomando pedidos cuando te quedas sin cobertura.",
     "multi_device_kitchen": "Usa varias pantallas — mostrador y cocina — con los mismos pedidos en directo.",
     "multi_user_access": "Da a tu equipo su propio acceso con el nivel de permisos adecuado.",
-    "offline_protection": "Activa la protección de pedidos sin conexión y los pedidos online se pausan solos si te quedas sin cobertura, para que nadie haga pedidos que no vas a ver.",
+    "offline_protection": "Si te quedas sin cobertura, los pedidos online se pausan para que nadie haga pedidos que no vas a ver. La app para iPhone, iPad y Android te permite seguir tomando pedidos sin conexión; el panel web necesita conexión.",
     "ticket_printing": "Imprime las comandas en una impresora Bluetooth o con cable en la cocina.",
     "web_dashboard": "Gestiona tu servicio desde el navegador de cualquier móvil, tablet u ordenador portátil.",
     "meal_deals_upsells": "Agrupa platos en menús y ofrece extras al pagar para subir el ticket medio.",
@@ -36,6 +36,5 @@
     "sms_order_alerts": "Avisa a los clientes por SMS automáticamente cuando su pedido está listo.",
     "loyalty_stamp_cards": "Premia a los clientes que repiten con tarjetas de sellos digitales — los sellos se suman y se canjean automáticamente."
   },
-  "offlineApps": "La app para iPhone, iPad y Android te permite seguir tomando pedidos sin conexión; el panel web necesita conexión.",
   "metaTitle": "Planes y funciones comparados — HatchGrab {country}"
 }

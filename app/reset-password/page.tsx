@@ -2,7 +2,7 @@
 
 import { useState, Suspense } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
-import { HATCHGRAB_WORDMARK_SVG } from '@/lib/brand'
+import { FlowLogo } from '@/components/shared/FlowLogo'   // site-chrome-1: the focused flows' logo, linking home (inert in the app)
 import { useT } from '@/lib/i18n/use-t'
 import '@/lib/i18n/catalog/auth'
 import { errorText } from '@/lib/i18n/customer-errors'
@@ -113,13 +113,7 @@ function ResetPasswordForm() {
         <div className="text-center">
           {/* HatchGrab wordmark — identical case to /login and /signup: dark page, WHITE CARD, so the
               NAVY variant is correct. h-12 (48px) preserved so nothing shifts. */}
-          <img
-            src={HATCHGRAB_WORDMARK_SVG}
-            alt="HatchGrab"
-            width={191}
-            height={42}
-            className="h-12 w-auto mx-auto mb-4"
-          />
+          <FlowLogo variant="card" />
           <h1 className="text-xl font-semibold text-slate-900">
             {isFirstLogin ? t('titleFirstLogin') : t('titleReset')}
           </h1>

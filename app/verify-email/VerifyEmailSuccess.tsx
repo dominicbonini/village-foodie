@@ -5,6 +5,7 @@ import { createSupabaseBrowserClient } from '@/lib/supabase/client'
 import { I18nContext, useT } from '@/lib/i18n/use-t'
 import { DEFAULT_LOCALE, type AppLocale } from '@/lib/i18n/locales'
 import '@/lib/i18n/catalog/auth'
+import { FlowLogo } from '@/components/shared/FlowLogo'   // site-chrome-1: the focused flows' logo, linking home (inert in the app)
 
 // Language Phase 1c: the words are `auth.verifyEmail`, in the locale the page resolved on the server (the operator's
 // truck's, else en-GB). This route has no provider, so the locale is handed down and provided here.
@@ -29,6 +30,7 @@ function Updated({ newEmail }: { newEmail: string }) {
   return (
     <div className="min-h-screen flex items-center justify-center p-4 bg-slate-50">
       <div className="text-center bg-white rounded-2xl p-8 shadow-sm max-w-sm w-full">
+        <FlowLogo variant="card" />
         <div className="text-4xl mb-4">✅</div>
         <p className="text-lg font-semibold text-slate-900">{t('successTitle')}</p>
         <p className="text-sm text-slate-500 mt-2">

@@ -1059,6 +1059,25 @@ html:has(.hg-landing) { scroll-behavior: smooth; }
   .hg-landing .foot-right { align-items: center; }
   .hg-landing .foot-apps { justify-content: center; }
   .hg-landing .foot-base { flex-direction: column; align-items: center; text-align: center; }
+  /* ── site-chrome-1 (5 November 2026, Dominic): THE PHONE FOOTER, TIGHTER — FOUR TO A ROW. CSS ONLY: the markup and its item
+     order are unchanged (React's generated ids depend on that order). Desktop (>720px) has none of these rules.
+     • Four equal columns, centred, an 8px column gap and no row gap; every item a 44px-tall tap target, its label centred
+       and allowed to wrap onto two lines inside its column (never overflowing, never cut short with an ellipsis).
+     • The reading order is "Features · Pricing · FAQ · About / Privacy · Terms · Contact · GB ⌄": About is moved up by
+       `order`, counted FROM THE END of the row — the last five items are always Privacy, Terms, About, Contact and the
+       country menu (LandingFooter.tsx), and FAQ may be absent at the front, so the items simply flow with no gap.
+       ⚠️ `order` moves the painting only: a screen reader and the Tab key still meet Privacy and Terms before About.
+     • Tighter spacing: the footer's padding, the gaps and the base row's margin. Apple's clear space round the badge
+       (a quarter of its 40px height = 10px) still holds on every side: 1rem above it (.foot-right's gap), 1.25rem between
+       two badges (.foot-apps), and the base row's 1.4rem margin below. */
+  .hg-landing footer { padding: 2rem 0 1.6rem; }
+  .hg-landing .foot-grid { gap: .9rem; }
+  .hg-landing .foot-right { gap: 1rem; align-self: stretch; }
+  .hg-landing .foot-links { grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 0 8px; justify-items: stretch; text-align: center; }
+  .hg-landing .foot-links > a, .hg-landing .foot-links > .cc { display: flex; align-items: center; justify-content: center; min-width: 0; min-height: 44px; line-height: 1.2; overflow-wrap: anywhere; hyphens: auto; }
+  .hg-landing .foot-links > :nth-last-child(5), .hg-landing .foot-links > :nth-last-child(4),
+  .hg-landing .foot-links > :nth-last-child(2), .hg-landing .foot-links > :nth-last-child(1) { order: 1; }
+  .hg-landing .foot-base { margin-top: 1.4rem; padding-top: .9rem; }
 }
 
 /* ---------- MOBILE (≤720px) section-header alignment pass ---------- */
@@ -1112,8 +1131,8 @@ html:has(.hg-landing) { scroll-behavior: smooth; }
 .hg-landing .cc-item-tick { display: inline-flex; width: 16px; flex-shrink: 0; }
 .hg-landing .cc-tick { color: var(--orange-deep); }
 @media(max-width:720px){
-  /* the trigger: its own centred line under the 3 + 3 links, with a 44px touch target */
-  .hg-landing .foot-links .cc { grid-column: 1 / -1; }
+  /* the trigger: a 44px touch target. site-chrome-1 (5 November 2026): an ordinary cell of the four-column row now (it had
+     its own line under the links, `grid-column: 1 / -1`) — the footer block above. */
   .hg-landing .cc-btn { min-height: 44px; }
   .hg-landing .cc-box { padding: 1.25rem 1rem 1rem; }
   .hg-landing .cc-list { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: .1rem .4rem; }

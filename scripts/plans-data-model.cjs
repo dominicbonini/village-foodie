@@ -556,7 +556,7 @@ if (RENDER) {
   // ⚠️ RE-PINNED (copy-truth-1, 2 November 2026): MARKETING_COPY_UPDATED moved to 2026-11-02 for the offline line (scripts/_lp-copy-truth-1.cjs).
   // ⚠️ RE-PINNED (features-list-1, 4 November 2026): …and to 2026-11-04 for the /features table (scripts/_lp-features-list-1.cjs).
   // eslint-disable-next-line @typescript-eslint/no-require-imports -- CommonJS harness modules (copy-truth-1, features-list-1)
-  const LEGAL_LASTMOD = '2026-10-19T00:00:00.000Z', COPY_LASTMOD = require('./_lp-features-list-1.cjs').LANDED ? require('./_lp-features-list-1.cjs').LASTMOD_NEW : require('./_lp-copy-truth-1.cjs').LANDED ? require('./_lp-copy-truth-1.cjs').LASTMOD_NEW : '2026-10-20T00:00:00.000Z'
+  const LEGAL_LASTMOD = '2026-10-19T00:00:00.000Z', COPY_LASTMOD = require('./_lp-site-chrome-1.cjs').COPY_LANDED ? require('./_lp-site-chrome-1.cjs').LASTMOD_NEW : require('./_lp-features-list-1.cjs').LANDED ? require('./_lp-features-list-1.cjs').LASTMOD_NEW : require('./_lp-copy-truth-1.cjs').LANDED ? require('./_lp-copy-truth-1.cjs').LASTMOD_NEW : '2026-10-20T00:00:00.000Z'
   // ⚠️ RE-PINNED (pricing-tidy, 20 October 2026): the Terms of Service were re-dated 20 October 2026 (§4 edited), so
   // /terms's lastmod is 2026-10-20; /privacy and /country-terms stay 2026-10-19.
   // ⚠️ RE-PINNED (ireland-3, 21 October 2026): the Country-specific terms gained the Ireland section and were re-dated
@@ -691,6 +691,12 @@ if (RENDER) {
     const c1Bad = []
     for (const k of c1Keys) { const pr = C1.contactProof(N[k][1], N[k][0]); if (pr.ok) N[k] = [N[k][1], N[k][1]]; else c1Bad.push(`${k}: ${pr.problems.join(' · ')}`) }
     if (c1Keys.length) t(`${area}: contact-1 — /contact's Tally embed replaced by HatchGrab's own form, every other byte the same (${c1Keys.length} views)`, c1Bad.length === 0, c1Bad.join(' | '))
+    // ⚠️ RE-PINNED (site-chrome-1, 5 November 2026): the legal pages' web chrome is the ONE shared header and footer — STRUCTURAL
+    // (scripts/_lp-site-chrome-1.cjs legalProof: the document body byte-identical inside the shared frame); proven, the view counts as unchanged.
+    const SC1 = require('./_lp-site-chrome-1.cjs')   // eslint-disable-line @typescript-eslint/no-require-imports -- CommonJS harness module (site-chrome-1)
+    const scKeys = keys.filter(k => SC1.LANDED && area === 'parts' && SC1.LEGAL_VIEWS.test(`parts/${k}`)), scBad = []
+    for (const k of scKeys) { const pr = SC1.legalProof(N[k][1], N[k][0]); if (pr.ok) N[k] = [N[k][1], N[k][1]]; else scBad.push(`${k}: ${pr.problems.join(' · ')}`) }
+    if (scKeys.length) t(`${area}: site-chrome-1 — the legal pages wear the shared header and footer, the document body the same (${scKeys.length} views)`, scBad.length === 0, scBad.join(' | '))
     const identical = keys.filter(k => !stageB(k))
     const diff = identical.filter(k => JSON.stringify(N[k][0]) !== JSON.stringify(N[k][1]))
     t(`${area}: every view Stage B does not touch is byte-identical, seo-fixes' named changes aside (${identical.length} views: ${[...new Set(identical.map(k => k.split('|')[0]))].join(', ')})`, diff.length === 0, diff.join(', '))
@@ -701,7 +707,9 @@ if (RENDER) {
       t(`${area}: ${n} (${ks.length} views)`, bad.length === 0, bad.join(', '))
     }
   }
-  if (CT1.LANDED) t('copy-truth-1: the landing\'s offline line is the one named change in the BEFORE pages that held it (scripts/_lp-copy-truth-1.cjs)', ct1Moved >= 3, ct1Moved)
+  // ⚠️ RE-PINNED (site-chrome-1, 5 November 2026): the offline line is put back, so the BEFORE pages' old text is today's — nothing moves.
+  if (CT1.LANDED && !CT1.OFFLINE_PUT_BACK) t('copy-truth-1: the landing\'s offline line is the one named change in the BEFORE pages that held it (scripts/_lp-copy-truth-1.cjs)', ct1Moved >= 3, ct1Moved)
+  if (CT1.OFFLINE_PUT_BACK) t('site-chrome-1: the offline line is put back — the BEFORE landing pages\' old sentence is today\'s, so copy-truth-1\'s transform moves nothing', ct1Moved === 0, ct1Moved)
 
   // Billing: the frozen matrix is REPLACED by the one <PlanTable> in every view that had it (rendered proof of the table
   // itself: scripts/pricing-pages.cjs). The highlighted column is the truck's effective plan when that plan is public.

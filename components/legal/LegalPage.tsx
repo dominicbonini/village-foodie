@@ -16,7 +16,7 @@ import { DEFAULT_LOCALE, type AppLocale } from '@/lib/i18n/locales'
 import { translatorFor } from '@/lib/i18n/translator'
 import '@/lib/i18n/catalog/legalChrome'
 
-export function LegalPage({ title, updated, html, children, locale, note, contactHref = '/contact' }: {
+export function LegalPage({ title, updated, html, children, locale, note, contactHref = '/contact', countryTermsHref }: {
   /** ⚠️ OPTIONAL SINCE THE REAL DOCUMENTS LANDED. Both carry their own `# Heading` and
    *  `**Last updated:**` line in the source markdown, and legal copy must not be reordered or restated —
    *  so the page renders the document's own, and passes neither of these. They remain for any future
@@ -35,6 +35,9 @@ export function LegalPage({ title, updated, html, children, locale, note, contac
   note?: React.ReactNode
   /** legal-languages-1: "Get in touch" in the translation's country. '/contact' for the English documents, as before. */
   contactHref?: string
+  /** site-chrome-1 (5 November 2026): the Terms page's link to the country-specific terms, one line at the top — it was in the
+   *  legal footer, which the shared footer replaced on the web. Its words are the footer's ("Country terms", legalChrome). */
+  countryTermsHref?: string
 }) {
   // Language Phase 1e: `legalChrome`, en-GB — the same rule as app/(legal)/layout.tsx (UK documents; this is a
   // server component, so it asks translatorFor rather than useT). legal-languages-1: a translation's own language.
@@ -47,6 +50,7 @@ export function LegalPage({ title, updated, html, children, locale, note, contac
       <article className="max-w-2xl mx-auto bg-white rounded-2xl border border-slate-200 px-6 py-8 sm:px-10 sm:py-10">
           {/* legal-languages-1: a translation says so first, and links to the governing English page. */}
           {note && <p className="mb-6 rounded-xl bg-slate-50 border border-slate-200 px-4 py-3 text-xs text-slate-600 [&_a]:text-orange-600 [&_a]:underline">{note}</p>}
+          {countryTermsHref && <p className="mb-6 text-sm" data-country-terms-link><a href={countryTermsHref} className="text-orange-600 underline">{t('countryTerms')}</a></p>}
           {title && <h1 className="text-2xl font-black text-slate-900">{title}</h1>}
           {updated && <p className="text-xs text-slate-400 mt-1 mb-6">{t('lastUpdated', { date: updated })}</p>}
           {/* `space-y` rather than a prose plugin — the project has no typography plugin and this needs to

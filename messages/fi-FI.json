@@ -5599,8 +5599,7 @@
       "whatsappSoonTitle": "WhatsAppin automaattiset vastaukset <soon>Tulossa pian</soon>",
       "whatsappSoonBody": "”Missä olette tänä iltana?” ”Mitä jälkiruokia teillä on?” Pian WhatsAppiisi vastataan, kun ajat myyntipaikalle tai seisot grillin ääressä. Messenger ja Instagram seuraavat perässä.",
       "offlineTitle": "Ei kenttää? Jatka myyntiä.",
-      "offlineBody": "Ota tilausten offline-suojaus käyttöön, niin verkkotilaukset keskeytyvät automaattisesti, jos yhteys katkeaa, jotta asiakkaat eivät voi tehdä tilauksia, joita et näe.",
-      "offlineApps": "Jatka tilausten vastaanottamista iPhone-, iPad- ja Android-sovelluksella.",
+      "offlineBody": "Jos yhteys katkeaa, verkkotilaukset keskeytyvät automaattisesti, jotta asiakkaat eivät voi tehdä tilauksia, joita et näe. Jatka tilausten vastaanottamista iPhone-, iPad- ja Android-sovelluksella.",
       "slotsBody": "Asiakkaat tilaavat etukäteen ja valitsevat noutoajan. Vähemmän jonoja, ja ruoka on valmiina, kun he saapuvat."
     },
     "steps": {
@@ -6207,7 +6206,7 @@
       "kitchen_app": "Kattavin tapa käyttää HatchGrabia: reaaliaikainen keittiönäyttö ja ainoa tapa jatkaa tilausten vastaanottamista, kun yhteys katkeaa.",
       "multi_device_kitchen": "Käytä useita näyttöjä — tiskillä ja keittiössä — jotka kaikki näyttävät samat tilaukset reaaliajassa.",
       "multi_user_access": "Anna henkilökunnalle omat tunnukset ja sopivat käyttöoikeudet.",
-      "offline_protection": "Ota tilausten offline-suojaus käyttöön, niin verkkotilaukset keskeytyvät automaattisesti, jos yhteys katkeaa, jotta asiakkaat eivät voi tehdä tilauksia, joita et näe.",
+      "offline_protection": "Jos yhteys katkeaa, verkkotilaukset keskeytyvät, jotta asiakkaat eivät voi tehdä tilauksia, joita et näe. iPhone-, iPad- ja Android-sovelluksella voit jatkaa tilausten vastaanottamista ilman yhteyttä; selainpohjainen ohjauspaneeli tarvitsee yhteyden.",
       "ticket_printing": "Tulosta keittiölaput keittiön Bluetooth- tai langalliseen tulostimeen.",
       "web_dashboard": "Pyöritä myyntivuoroa minkä tahansa puhelimen, tabletin tai läppärin selaimella.",
       "meal_deals_upsells": "Kokoa tuotteista aterioita ja tarjoa lisäyksiä kassalla, niin keskiostos kasvaa.",
@@ -6238,7 +6237,6 @@
       "sms_order_alerts": "Lähetä asiakkaille automaattisesti tekstiviesti, kun tilaus on valmis.",
       "loyalty_stamp_cards": "Palkitse kanta-asiakkaat digitaalisilla leimakorteilla — leimat kerätään ja lunastetaan automaattisesti."
     },
-    "offlineApps": "iPhone-, iPad- ja Android-sovelluksella voit jatkaa tilausten vastaanottamista ilman yhteyttä; selainpohjainen ohjauspaneeli tarvitsee yhteyden.",
     "metaTitle": "Paketit ja ominaisuudet vertailussa — HatchGrab {country}"
   },
   "compare": {

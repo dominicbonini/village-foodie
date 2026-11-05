@@ -5,7 +5,7 @@
     "kitchen_app": "Det mest kompletta sättet att köra HatchGrab: en live-köksskärm, och det enda sättet att fortsätta ta emot beställningar när du tappar täckningen.",
     "multi_device_kitchen": "Kör flera skärmar – vid disken och i köket – som alla visar samma beställningar i realtid.",
     "multi_user_access": "Ge personalen egna inloggningar med rätt behörighet.",
-    "offline_protection": "Slå på skyddet för beställningar offline så pausas onlinebeställningen automatiskt om du tappar täckningen, så att kunderna inte kan lägga beställningar som du inte ser.",
+    "offline_protection": "Om du tappar täckningen pausas onlinebeställningen, så att kunderna inte kan lägga beställningar som du inte ser. Appen för iPhone, iPad och Android låter dig fortsätta ta emot beställningar offline; översikten på webben kräver uppkoppling.",
     "ticket_printing": "Skriv ut beställningsbongar på en Bluetooth- eller kabelansluten skrivare i köket.",
     "web_dashboard": "Driv din servering från webbläsaren i valfri mobil, surfplatta eller laptop.",
     "meal_deals_upsells": "Sätt ihop rätter till måltider och erbjud tillval i kassan för att höja snittordern.",
@@ -36,6 +36,5 @@
     "sms_order_alerts": "Skicka automatiskt ett sms till kunderna när beställningen är klar.",
     "loyalty_stamp_cards": "Belöna återkommande kunder med digitala stämpelkort – stämplar samlas och löses in automatiskt."
   },
-  "offlineApps": "Appen för iPhone, iPad och Android låter dig fortsätta ta emot beställningar offline; översikten på webben kräver uppkoppling.",
   "metaTitle": "Abonnemang och funktioner jämförda – HatchGrab {country}"
 }

@@ -21,22 +21,13 @@
 // component, self-hosted fonts via next/font, the Gusto logo via next/image. Touches nothing else.
 import type { Metadata } from 'next'
 import Image from 'next/image'
-import { Archivo, Public_Sans, Courier_Prime } from 'next/font/google'
-import { DemoModalProvider, DemoCta, DemoModal } from '@/components/landing/DemoUpload'   // client children — the public demo entry point
-// Language Phase 1e: the page's client components (country menu, demo modal and CTAs) read the visitor's locale
-// from this boundary.
-import { PageLocale } from '@/lib/i18n/page-locale'
-// languages-1: a non-English page hands its browser the words its client components read (none for English).
-import { pageSeedProps } from '@/lib/i18n/page-words'
-import { localeOfCountry } from '@/lib/i18n/locales'
-// Chrome EXTRACTED 23 August 2026 so the cost comparison (now /compare) renders the same nav and footer
-// from one definition.
-// 🔴 MOVED, NOT REWRITTEN — proven byte-identical; see docs/cost-comparison-chrome-report.md §1.
-import { LandingNav } from '@/components/landing/LandingNav'
+import { DemoCta } from '@/components/landing/DemoUpload'   // client children — the public demo entry point
+// site-chrome-1 (5 November 2026): the page's language boundary, the demo modal, the fonts, the nav and the footer are the ONE
+// shared frame (components/landing/MarketingFrame.tsx, variant "landing") — byte-identical to the inline frame it replaces.
+import { MarketingFrame } from '@/components/landing/MarketingFrame'
 import { HeroCtaWatcher } from '@/components/landing/HeroCtaWatcher'   // client: drives the header CTA's mobile reveal
-import { LandingFooter } from '@/components/landing/LandingFooter'
-// compare-de-1: the footer's "Vergleich" column for the country's own comparison page (live, or admins only).
-import { comparisonFooter, comparisonFlagsOf } from '@/lib/comparison-server'
+// The store flags (country_settings, 35.an-7) for the JSON-LD's apps.
+import { comparisonFlagsOf } from '@/lib/comparison-server'
 // ══ 🔴 THIS IMPORT IS SMALLER THAN IT WAS, AND IT MUST NOT BECOME EMPTY (6 October 2026) ══════════
 // FEATURE_SECTIONS, FOOTNOTES, TRANSACTION_ROWS and `type FeatureValue` went to
 // components/landing/FeatureComparison.tsx with the comparison table, and the whole
@@ -60,7 +51,6 @@ import { marketingCountry, countryPageAlternates } from '@/lib/marketing-meta'
 // seo-fixes M5 + S9: the JSON-LD graph (Organization, WebSite, SoftwareApplication + Offers), built from data.
 import { landingGraph } from '@/lib/structured-data'
 // faq-4 (2 November 2026): the FAQ is its own page (/<country>/faq); the landing only links to it from the footer.
-import { faqHrefFor } from '@/lib/faq/public'
 import { aboutPhotoUrl } from '@/lib/about-server'
 import { HATCHGRAB_ORIGIN, countryPagePath } from '@/lib/marketing-country'
 import { BRANDS } from '@/lib/brand'
@@ -82,12 +72,7 @@ import {
 import './landing.css'
 import { markMarketingRender } from '@/lib/marketing-render'   // perf-1
 
-// Self-hosted, non-render-blocking (no Google Fonts <link>). Exposed as CSS vars the stylesheet maps
-// to --display / --body / --ticket.
-const archivo = Archivo({ subsets: ['latin'], style: ['normal', 'italic'], variable: '--font-archivo', display: 'swap' })
-const publicSans = Public_Sans({ subsets: ['latin'], variable: '--font-public-sans', display: 'swap' })
-// seo-fixes S7 (20 October 2026): declared and loaded when used (--ticket), but NOT preloaded — nothing above the fold uses it.
-const courierPrime = Courier_Prime({ subsets: ['latin'], weight: ['400', '700'], variable: '--font-courier-prime', display: 'swap', preload: false })
+// site-chrome-1: the self-hosted fonts are declared once, in components/landing/MarketingFrame.tsx.
 
 // 🔴 US readiness (D37): the tags name the visitor's country — lib/marketing-meta.ts. For GB every value is the
 // literal this page carried before ("UK", en_GB), byte-identical.
@@ -226,30 +211,15 @@ export default async function LandingPage({ params, searchParams }: { params?: P
   // 🔴 THE PIZZERIA GUSTO TESTIMONIAL AND AWARD ARE A UK TRUCK'S WORDS ABOUT UK VILLAGES — shown to GB visitors
   // only (Language Phase 1e). Decided by the page's country code, never by a word.
   const showTestimonial = s.countryCode === 'GB'
-  // copy-truth-1 (2 November 2026): the apps sentence after the offline line only where the iPad/iPhone AND Android apps are in
-  // the country's stores (country_settings.ios_app_available / android_app_available, the comparison pages' flags, 35.an-7).
+  // The country's store flags (country_settings.ios_app_available / android_app_available, 35.an-7): the JSON-LD's apps.
+  // site-chrome-1 (5 November 2026): the offline line is again the one sentence it was before copy-truth-1 (Dominic, 5 Nov).
   const appFlags = await comparisonFlagsOf(s.countryCode)
-  const appsHere = appFlags.iosApp && appFlags.androidApp
   return (
-    // DemoModalProvider is a CLIENT component taking server-rendered children — that's what lets every
-    // CTA below open one shared modal without the page itself becoming a client component.
-    <PageLocale locale={localeOfCountry(s)} {...pageSeedProps(s.locale, 'marketing')}>
-    <DemoModalProvider>
-    {/* 🔴 `hg-hero-watch` IS THE LANDING-ONLY SCOPE FOR THE HEADER-CTA REVEAL, AND IT IS RENDERED ON THE
-        SERVER SO THE BUTTON IS HIDDEN IN THE FIRST PAINT. Every rule behind the reveal is written
-        `.hg-landing.hg-hero-watch …`, so /compare — which renders the SAME <LandingNav /> inside a
-        `.hg-landing` wrapper of its own and has no hero button to observe — never matches them and its
-        header CTA stays visible at every width, exactly as it is today. */}
-    <div className={`hg-landing hg-hero-watch ${archivo.variable} ${publicSans.variable} ${courierPrime.variable}`}>
-
-      {/* ============ NAV ============ (slate bg = HEADER_BG from lib/brand.ts) */}
-      {/* 🔴 `ctaFirst` IS THE LANDING'S ORDER ONLY, AND IT IS A DOM CHANGE RATHER THAN A CSS ONE ON
-          PURPOSE. Below 640px "Log in" must sit flush against the content's right edge with the header
-          CTA to its LEFT. `order:` on the flex row would have done it without touching this file — and
-          would have left the DOM reading "Log in, Upload menu" while the eye reads "Upload menu, Log in".
-          Keeping those two in step is the requirement, so the ELEMENTS move, not their painted order.
-          ⚠️ /compare renders the same <LandingNav /> WITHOUT this prop and is byte-identical. */}
-      <LandingNav ctaFirst featuresHref={visitor.paths.features} locale={s.locale} />
+    // site-chrome-1 (5 November 2026): THE ONE SHARED FRAME — the language boundary, the demo modal (one instance, every DemoCta
+    // below drives it), `hg-landing hg-hero-watch` with the fonts (the header-CTA reveal's landing-only scope, server-rendered so
+    // the button is hidden in the first paint), the nav in the landing's own order (`ctaFirst`, below 640px "Log in" sits flush
+    // right with the header CTA to its left) and the footer (store-badges-1's flags, faq-4's FAQ link).
+    <MarketingFrame visitor={visitor} variant="landing">
 
       {/* ============ HERO ============ */}
       <header className="hero">
@@ -476,7 +446,7 @@ export default async function LandingPage({ params, searchParams }: { params?: P
                 the sentence is present tense like every other claim on this page. The three platforms are
                 COMBINED into the existing sentence rather than given a line of their own: they are one app
                 on three devices, and a separate line would read as a separate product. */}
-            <div className="does-item"><h3><TileIcon icon={WifiOff} /><span>{t('does.offlineTitle')}</span></h3><p>{t('does.offlineBody') + (appsHere ? ' ' + t('does.offlineApps') : '')}</p></div>
+            <div className="does-item"><h3><TileIcon icon={WifiOff} /><span>{t('does.offlineTitle')}</span></h3><p>{t('does.offlineBody')}</p></div>
             {/* 🔴 THE NOT-LIVE TILE, AND IT IS LAST ON PURPOSE. Production at 08ac368 carried it here,
                 after "No signal? Keep serving." — a capability that has not shipped does not sit among
                 five that have. Flipping WHATSAPP_LIVE moves it up to fifth (above) in the same edit.
@@ -693,13 +663,6 @@ export default async function LandingPage({ params, searchParams }: { params?: P
         </div>
       </section>
 
-      {/* ============ FOOTER ============ (slate bg = HEADER_BG from lib/brand.ts) */}
-      {/* store-badges-1: the badges follow the country's app flags. faq-4: the FAQ link only where this country's /faq has content. */}
-      <LandingFooter featuresHref={visitor.paths.features} country={visitor.menu} locale={s.locale} comparison={await comparisonFooter(s.countryCode, s.locale)} apps={{ ios: appFlags.iosApp, android: appFlags.androidApp }} faqHref={await faqHrefFor(s)} />
-      {/* Mounted ONCE — every DemoCta above drives this one instance. */}
-      <DemoModal />
-    </div>
-    </DemoModalProvider>
-    </PageLocale>
+    </MarketingFrame>
   )
 }

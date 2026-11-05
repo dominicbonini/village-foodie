@@ -23,6 +23,7 @@ import { formatTime, type TimeSettings } from '@/lib/time-utils'
 import { demoWalkOrders, addDemoWalkOrder, clearDemoWalkOrders, demoEmailFor } from '@/lib/demo-board-build'
 import '@/lib/i18n/catalog/demoWalk'
 import '@/lib/i18n/catalog/demo'
+import { FlowLogo } from '@/components/shared/FlowLogo'   // site-chrome-1: the focused flows' logo, linking home (inert in the app)
 
 export const WIDE_QUERY = '(min-width: 1024px)'
 const POLL_MS = 3000
@@ -175,6 +176,8 @@ export function DemoWalkthrough({ slug }: { slug: string }) {
     const showPhoneReady = !!latest && step === 4 && seenReady !== latest.orderKey
     return (
       <div className="min-h-dvh bg-slate-100 flex flex-col" data-walkthrough="wide">
+        {/* site-chrome-1 (5 November 2026): the focused flows' logo-only header — the wordmark links home (inert in the app). */}
+        <header className="bg-slate-900 px-4 py-3 shrink-0" data-flow-header><FlowLogo variant="header" /></header>
         <DemoModeBanner message={tDemo('walkBanner')} />
         <StepBar step={step} labels={[t('barOrder'), t('barArrives'), t('barReady')]} />
         <div className="flex-1 w-full max-w-6xl mx-auto px-6 py-6 grid grid-cols-[400px_1fr] gap-8 items-start">
@@ -225,6 +228,8 @@ export function DemoWalkthrough({ slug }: { slug: string }) {
   // ── PHONE: the kitchen screen, a speech bubble above the order, then the bottom sheet ──────────────
   return (
     <div className="min-h-dvh bg-slate-900 flex flex-col" data-walkthrough="phone">
+      {/* site-chrome-1 (5 November 2026): the focused flows' logo-only header — the wordmark links home (inert in the app). */}
+      <header className="bg-slate-900 px-4 py-3 shrink-0" data-flow-header><FlowLogo variant="header" /></header>
       <DemoModeBanner />
       <div className="flex-1 px-4 py-5 pb-72">
         <p className="text-xs font-black uppercase tracking-wide text-slate-400 mb-3">{t('kitchenLabel')}</p>

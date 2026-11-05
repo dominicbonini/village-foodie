@@ -5,7 +5,7 @@
     "kitchen_app": "Die umfassendste Art, HatchGrab zu nutzen: ein Live-Küchenmonitor – und die einzige Möglichkeit, auch ohne Empfang weiter Bestellungen anzunehmen.",
     "multi_device_kitchen": "Mehrere Bildschirme betreiben – Theke und Küche –, die alle dieselben Live-Bestellungen zeigen.",
     "multi_user_access": "Geben Sie Ihrem Team eigene Logins mit den passenden Zugriffsrechten.",
-    "offline_protection": "Schalten Sie den Offline-Bestellschutz ein, dann werden Online-Bestellungen automatisch pausiert, wenn Sie den Empfang verlieren, damit Kunden keine Bestellungen aufgeben, die Sie nicht sehen.",
+    "offline_protection": "Wenn Sie den Empfang verlieren, werden Online-Bestellungen pausiert, damit Kunden keine Bestellungen aufgeben, die Sie nicht sehen. Mit der App für iPhone, iPad und Android nehmen Sie offline weiter Bestellungen an; das Web-Dashboard braucht eine Verbindung.",
     "ticket_printing": "Bestellbons auf einem Bluetooth- oder kabelgebundenen Drucker in der Küche drucken.",
     "web_dashboard": "Steuern Sie Ihren Betrieb im Browser auf jedem Smartphone, Tablet oder Laptop.",
     "meal_deals_upsells": "Bündeln Sie Gerichte zu Menüs und bieten Sie beim Bestellabschluss Extras an, um den durchschnittlichen Bestellwert zu steigern.",
@@ -36,6 +36,5 @@
     "sms_order_alerts": "Kunden automatisch per SMS benachrichtigen, wenn ihre Bestellung fertig ist.",
     "loyalty_stamp_cards": "Belohnen Sie Stammkunden mit digitalen Stempelkarten – Stempel werden automatisch gesammelt und eingelöst."
   },
-  "offlineApps": "Mit der App für iPhone, iPad und Android nehmen Sie offline weiter Bestellungen an; das Web-Dashboard braucht eine Verbindung.",
   "metaTitle": "Tarife & Funktionen im Vergleich – HatchGrab {country}"
 }

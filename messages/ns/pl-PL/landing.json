@@ -36,8 +36,7 @@
     "whatsappSoonTitle": "Automatyczne odpowiedzi WhatsApp <soon>Wkrótce</soon>",
     "whatsappSoonBody": "„Gdzie jesteście dziś wieczorem?” „Jakie macie desery?” Wkrótce twój WhatsApp będzie odpowiadać, gdy jedziesz na miejsce albo stoisz przy grillu. Messenger i Instagram w następnej kolejności.",
     "offlineTitle": "Brak zasięgu? Obsługuj dalej.",
-    "offlineBody": "Włącz ochronę zamówień offline, a zamówienia online automatycznie się wstrzymają, gdy stracisz zasięg, więc klienci nie złożą zamówień, których nie zobaczysz.",
-    "offlineApps": "Przyjmuj dalej zamówienia w aplikacji na iPhone, iPad i Android.",
+    "offlineBody": "Gdy stracisz zasięg, zamówienia online automatycznie się wstrzymują, więc klienci nie złożą zamówień, których nie zobaczysz. Przyjmuj dalej zamówienia w aplikacji na iPhone, iPad i Android.",
     "slotsBody": "Klienci zamawiają z wyprzedzeniem i wybierają godzinę odbioru. Krótsze kolejki, a jedzenie czeka gotowe, gdy przychodzą."
   },
   "steps": {

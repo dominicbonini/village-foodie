@@ -57,13 +57,14 @@ async function identitySet() {
     for (const seg of SEGS) {
       const r = await kit.quietAsync(() => wf.page('landing', seg, rows))
       const os = (/"operatingSystem":"([^"]*)"/.exec(r.html) || [])[1] ?? null
-      const html = F4.noLandingFaq(F4.noFaqLink(r.html))   // ⚠️ RE-PINNED (faq-4)
+      const html = F4.noLandingFaq(F4.noFaqLink(SCX(r.html)))   // ⚠️ RE-PINNED (faq-4; site-chrome-1)
       out[`landing:${seg}`] = { html: sha(SB1.strip(html)), htmlWithoutOs: sha(withoutOs(SB1.strip(html))), meta: sha(JSON.stringify(r.meta)), os }
     }
   } finally { console.info = info }
   return out
 }
 function sha(s) { return crypto.createHash('sha256').update(String(s)).digest('hex') }
+const SCX = h => require('./_lp-site-chrome-1.cjs').asCopyTruth(h)   // eslint-disable-line @typescript-eslint/no-require-imports -- ⚠️ RE-PINNED (site-chrome-1): today's offline sentence written as copy-truth-1 wrote it (scripts/_lp-site-chrome-1.cjs asCopyTruth)
 if (process.argv[2] === 'capture') {
   (async () => {
     const out = await identitySet()

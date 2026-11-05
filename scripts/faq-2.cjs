@@ -49,6 +49,7 @@ let pass = 0, fail = 0
 const t = (name, ok, detail) => { if (ok) pass++; else { fail++; console.log(`  ✗ ${name}${detail === undefined ? '' : ' — ' + (typeof detail === 'string' ? detail : JSON.stringify(detail)).slice(0, 500)}`) } }
 const head = s => console.log(`\n── ${s}`)
 const sha = s => crypto.createHash('sha256').update(String(s)).digest('hex')
+const SCX = h => require('./_lp-site-chrome-1.cjs').asCopyTruth(h)   // eslint-disable-line @typescript-eslint/no-require-imports -- ⚠️ RE-PINNED (site-chrome-1): today's offline sentence written as copy-truth-1 wrote it (scripts/_lp-site-chrome-1.cjs asCopyTruth)
 const FAQ = () => JSON.parse(JSON.stringify({ faq_sections: FIX.faq_sections, faq_items: FIX.faq_items }))
 const read = f => fs.readFileSync(path.join(REPO, f), 'utf8')
 
@@ -61,7 +62,7 @@ async function identitySet() {
   const info = console.info; console.info = () => {}
   for (const seg of ['uk', 'us', 'ie', 'de', 'fr', 'jp', 'ae']) {
     const r = await kit.quietAsync(() => wf.page('landing', seg, rows))
-    out[`landing:${seg}`] = { html: sha(SB1.strip(SG2.asBefore(F4.noLandingFaq(F4.noFaqLink(r.html))))), meta: sha(JSON.stringify(r.meta)), redirectedTo: r.redirectedTo }
+    out[`landing:${seg}`] = { html: sha(SB1.strip(SG2.asBefore(F4.noLandingFaq(F4.noFaqLink(SCX(r.html)))))), meta: sha(JSON.stringify(r.meta)), redirectedTo: r.redirectedTo }
   }
   console.info = info
   return out

@@ -35,12 +35,13 @@ let pass = 0, fail = 0
 const t = (name, ok, detail) => { if (ok) pass++; else { fail++; console.log(`  ✗ ${name}${detail === undefined ? '' : ' — ' + (typeof detail === 'string' ? detail : JSON.stringify(detail)).slice(0, 500)}`) } }
 const head = s => console.log(`\n── ${s}`)
 const sha = s => crypto.createHash('sha256').update(String(s)).digest('hex')
+const SCX = h => require('./_lp-site-chrome-1.cjs').asCopyTruth(h)   // eslint-disable-line @typescript-eslint/no-require-imports -- ⚠️ RE-PINNED (site-chrome-1): today's offline sentence written as copy-truth-1 wrote it (scripts/_lp-site-chrome-1.cjs asCopyTruth)
 const read = f => fs.readFileSync(path.join(REPO, f), 'utf8')
 const FAQ = () => JSON.parse(JSON.stringify({ faq_sections: FIX.faq_sections, faq_items: FIX.faq_items }))
 /** The footer's FAQ link (faq-4), taken out — for comparing with a tree that had none (scripts/_lp-faq-4.cjs, shared). */
 const { noFaqLink } = require('./_lp-faq-4.cjs')
 /** A landing page as before faq-3 would render it, apart from the later named changes (both sides). */
-const N = h => SB1.strip(SG2.asBefore(noFaqLink(h)))
+const N = h => SB1.strip(SG2.asBefore(noFaqLink(SCX(h))))
 /** FAQ4_DUMP=<dir>: write each compared page (normalised) there, for a diff. */
 const dump = (key, h) => { if (process.env.FAQ4_DUMP) { fs.mkdirSync(process.env.FAQ4_DUMP, { recursive: true }); fs.writeFileSync(path.join(process.env.FAQ4_DUMP, key.replace(':', '-') + '.html'), String(h).replace(/></g, '>\n<')) } }
 
@@ -193,7 +194,7 @@ const navOf = html => (/<nav[\s\S]*?<\/nav>/.exec(String(html)) || [''])[0]
     dump(`features:${seg}`, noFaqLink(r.html))
     // ⚠️ RE-PINNED (features-list-1, 4 November 2026): the table's three new rows are put back to the old "Advanced reporting" row
     // (PRECISE, scripts/_lp-features-list-1.cjs featuresRowsBack) before the comparison; every other byte is still compared.
-    const asBefore = FL1.LANDED ? FL1.featuresRowsBack(noFaqLink(r.html), seg === 'uk' ? 'en-GB' : 'de-DE') : noFaqLink(r.html)
+    const asBefore = FL1.LANDED ? FL1.featuresRowsBack(noFaqLink(SCX(r.html)), seg === 'uk' ? 'en-GB' : 'de-DE') : noFaqLink(SCX(r.html))
     if (want) t(`/${seg}/features: byte-identical to a97c2a58 through the shared frame (MarketingFrame), apart from the footer FAQ link${FL1.LANDED ? ' and features-list-1\'s rows' : ''}`, sha(asBefore) === want[`features:${seg}`]?.sha256, { now: sha(asBefore), head: want[`features:${seg}`] })
   }
   t('/features and /faq share one frame (components/landing/MarketingFrame.tsx), not a copy', /<MarketingFrame visitor=\{visitor\}>/.test(read('app/features/page.tsx')) && /<MarketingFrame visitor=\{visitor\}>/.test(read('app/faq/page.tsx')) && !/Archivo\(/.test(read('app/features/page.tsx')) && /<FaqDetails items=\{sec\.items\} className="faq-q" \/>/.test(read('app/faq/page.tsx')))

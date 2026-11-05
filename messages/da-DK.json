@@ -5599,8 +5599,7 @@
       "whatsappSoonTitle": "Automatiske svar på WhatsApp <soon>Kommer snart</soon>",
       "whatsappSoonBody": "»Hvor holder I i aften?« »Hvilke desserter har I?« Snart bliver din WhatsApp besvaret, mens du kører til stadepladsen eller står ved grillen. Messenger og Instagram følger efter.",
       "offlineTitle": "Intet signal? Bliv ved med at servere.",
-      "offlineBody": "Slå offlinebeskyttelse af bestillinger til, så sættes onlinebestilling automatisk på pause, hvis du mister signalet, så kunderne ikke kan afgive bestillinger, du ikke ser.",
-      "offlineApps": "Bliv ved med at tage imod bestillinger med appen til iPhone, iPad og Android.",
+      "offlineBody": "Hvis du mister signalet, sættes onlinebestilling automatisk på pause, så kunderne ikke kan afgive bestillinger, du ikke ser. Bliv ved med at tage imod bestillinger med appen til iPhone, iPad og Android.",
       "slotsBody": "Kunderne forudbestiller og vælger en afhentningstid. Kortere køer, og maden er klar, når de kommer."
     },
     "steps": {
@@ -6207,7 +6206,7 @@
       "kitchen_app": "Den mest komplette måde at køre HatchGrab på: en live køkkenskærm og den eneste måde at blive ved med at tage imod bestillinger, når du mister signalet.",
       "multi_device_kitchen": "Kør flere skærme — ved disken og i køkkenet — som alle viser de samme bestillinger live.",
       "multi_user_access": "Giv dine medarbejdere deres egne logins med det rette adgangsniveau.",
-      "offline_protection": "Slå offlinebeskyttelse af bestillinger til, så sættes onlinebestilling automatisk på pause, hvis du mister signalet, så kunderne ikke kan afgive bestillinger, du ikke ser.",
+      "offline_protection": "Hvis du mister signalet, sættes onlinebestilling på pause, så kunderne ikke kan afgive bestillinger, du ikke ser. Appen til iPhone, iPad og Android lader dig tage imod bestillinger offline; webdashboardet kræver forbindelse.",
       "ticket_printing": "Udskriv bonner på en Bluetooth- eller kablet printer i køkkenet.",
       "web_dashboard": "Kør din service fra browseren på enhver telefon, tablet eller bærbar.",
       "meal_deals_upsells": "Saml retter i menuer, og tilbyd tilvalg ved betalingen for at hæve den gennemsnitlige ordreværdi.",
@@ -6238,7 +6237,6 @@
       "sms_order_alerts": "Send automatisk en sms til kunderne, når deres bestilling er klar.",
       "loyalty_stamp_cards": "Beløn faste kunder med digitale stempelkort — stemplet og indløst automatisk."
     },
-    "offlineApps": "Appen til iPhone, iPad og Android lader dig tage imod bestillinger offline; webdashboardet kræver forbindelse.",
     "metaTitle": "Abonnementer og funktioner sammenlignet — HatchGrab {country}"
   },
   "compare": {

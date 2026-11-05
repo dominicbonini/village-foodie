@@ -36,8 +36,7 @@
     "whatsappSoonTitle": "Réponses automatiques WhatsApp <soon>Bientôt</soon>",
     "whatsappSoonBody": "« Vous êtes où ce soir ? » « Vous avez quoi comme desserts ? » Bientôt, votre WhatsApp répondra pendant que vous roulez vers votre emplacement ou que vous êtes au grill. Messenger et Instagram suivront.",
     "offlineTitle": "Pas de réseau ? Continuez à servir.",
-    "offlineBody": "Activez la protection des commandes hors ligne et la commande en ligne se met automatiquement en pause si vous perdez le réseau, pour que les clients ne passent pas de commandes que vous ne verriez pas.",
-    "offlineApps": "Continuez à prendre des commandes avec l’app iPhone, iPad et Android.",
+    "offlineBody": "Si vous perdez le réseau, la commande en ligne se met automatiquement en pause pour que les clients ne passent pas de commandes que vous ne verriez pas. Continuez à prendre des commandes avec l’app iPhone, iPad et Android.",
     "slotsBody": "Les clients commandent à l’avance et choisissent leur heure de retrait. Moins de file d’attente, et des plats prêts à leur arrivée."
   },
   "steps": {
