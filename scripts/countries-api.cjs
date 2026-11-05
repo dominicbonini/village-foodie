@@ -432,7 +432,9 @@ function makeStore(seed, trucks, opts = {}) {
     t(`🔴 no message names a column (${all.length} messages checked)`, all.length > 30 && all.every(m => !/\b[a-z]+_[a-z_]+\b/.test(m) && !/country_settings|minor|_pct/.test(m)))
     const route = fs.readFileSync(path.join(REPO, 'app/api/admin/countries/route.ts'), 'utf8').replace(/\/\/.*$/gm, '')
     t('🔴 the route answers a non-admin with 404 before anything else', /const user = await adminUser\(req\)\s*\n\s*if \(!user\) return notFound\(\)/.test(route))
-    t('🔴 …clears the loader\'s cache after every successful write', /if \(writes && r\.ok\) clearCountrySettingsCache\(\)/.test(route)
+    // ⚠️ RE-PINNED (perf-1, 5 November 2026, docs/perf-1-report.md): the same clear, now in a block that also expires the marketing
+    // pages' cached country data (revalidateMarketing — scripts/perf-1.cjs §5).
+    t('🔴 …clears the loader\'s cache after every successful write (and, perf-1, expires the marketing pages\' country data)', /if \(writes && r\.ok\) \{\s*\n\s*clearCountrySettingsCache\(\)\s*\n\s*revalidateMarketing\(\[MARKETING_TAGS\.countries\], 'admin\/countries'\)\s*\n\s*\}/.test(route)
       && (route.match(/, true\)/g) || []).length === 3)
     t('…never passes a database error through', /That could not be saved just now\. Nothing was changed/.test(route))
     t('…and the store it uses is the service-role one, server-only', /import 'server-only'/.test(fs.readFileSync(path.join(REPO, 'lib/admin/country-store.ts'), 'utf8')))

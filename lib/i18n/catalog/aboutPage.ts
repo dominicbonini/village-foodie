@@ -3,63 +3,64 @@
 import base from '@/messages/ns/en-GB/aboutPage.json'
 import enUS from '@/messages/ns/en-US/aboutPage.json'
 import enAU from '@/messages/ns/en-AU/aboutPage.json'
-import { registerNamespace, registerLanguage } from '@/lib/i18n/registry'
+import { registerNamespace, registerLanguage, serverWords } from '@/lib/i18n/registry'
 
 registerNamespace('aboutPage', base, { 'en-US': enUS, 'en-AU': enAU })
-// languages-1: each non-English language — on the server now; in the browser only when a page is in that language.
+// languages-1: each non-English language only when a page is in that language — perf-1: on the server too (serverWords: a
+// synchronous require, run the first time the language is asked for), in the browser as a chunk loaded on demand.
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('aboutPage', 'fr-FR', typeof window === 'undefined' ? require('@/messages/ns/fr-FR/aboutPage.json') : () => import('@/messages/ns/fr-FR/aboutPage.json'))
+registerLanguage('aboutPage', 'fr-FR', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/fr-FR/aboutPage.json')) : () => import('@/messages/ns/fr-FR/aboutPage.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('aboutPage', 'de-DE', typeof window === 'undefined' ? require('@/messages/ns/de-DE/aboutPage.json') : () => import('@/messages/ns/de-DE/aboutPage.json'))
+registerLanguage('aboutPage', 'de-DE', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/de-DE/aboutPage.json')) : () => import('@/messages/ns/de-DE/aboutPage.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('aboutPage', 'es-ES', typeof window === 'undefined' ? require('@/messages/ns/es-ES/aboutPage.json') : () => import('@/messages/ns/es-ES/aboutPage.json'))
+registerLanguage('aboutPage', 'es-ES', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/es-ES/aboutPage.json')) : () => import('@/messages/ns/es-ES/aboutPage.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('aboutPage', 'it-IT', typeof window === 'undefined' ? require('@/messages/ns/it-IT/aboutPage.json') : () => import('@/messages/ns/it-IT/aboutPage.json'))
+registerLanguage('aboutPage', 'it-IT', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/it-IT/aboutPage.json')) : () => import('@/messages/ns/it-IT/aboutPage.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('aboutPage', 'pt-PT', typeof window === 'undefined' ? require('@/messages/ns/pt-PT/aboutPage.json') : () => import('@/messages/ns/pt-PT/aboutPage.json'))
+registerLanguage('aboutPage', 'pt-PT', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/pt-PT/aboutPage.json')) : () => import('@/messages/ns/pt-PT/aboutPage.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('aboutPage', 'nl-NL', typeof window === 'undefined' ? require('@/messages/ns/nl-NL/aboutPage.json') : () => import('@/messages/ns/nl-NL/aboutPage.json'))
+registerLanguage('aboutPage', 'nl-NL', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/nl-NL/aboutPage.json')) : () => import('@/messages/ns/nl-NL/aboutPage.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('aboutPage', 'sv-SE', typeof window === 'undefined' ? require('@/messages/ns/sv-SE/aboutPage.json') : () => import('@/messages/ns/sv-SE/aboutPage.json'))
+registerLanguage('aboutPage', 'sv-SE', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/sv-SE/aboutPage.json')) : () => import('@/messages/ns/sv-SE/aboutPage.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('aboutPage', 'da-DK', typeof window === 'undefined' ? require('@/messages/ns/da-DK/aboutPage.json') : () => import('@/messages/ns/da-DK/aboutPage.json'))
+registerLanguage('aboutPage', 'da-DK', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/da-DK/aboutPage.json')) : () => import('@/messages/ns/da-DK/aboutPage.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('aboutPage', 'nb-NO', typeof window === 'undefined' ? require('@/messages/ns/nb-NO/aboutPage.json') : () => import('@/messages/ns/nb-NO/aboutPage.json'))
+registerLanguage('aboutPage', 'nb-NO', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/nb-NO/aboutPage.json')) : () => import('@/messages/ns/nb-NO/aboutPage.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('aboutPage', 'pl-PL', typeof window === 'undefined' ? require('@/messages/ns/pl-PL/aboutPage.json') : () => import('@/messages/ns/pl-PL/aboutPage.json'))
+registerLanguage('aboutPage', 'pl-PL', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/pl-PL/aboutPage.json')) : () => import('@/messages/ns/pl-PL/aboutPage.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('aboutPage', 'cs-CZ', typeof window === 'undefined' ? require('@/messages/ns/cs-CZ/aboutPage.json') : () => import('@/messages/ns/cs-CZ/aboutPage.json'))
+registerLanguage('aboutPage', 'cs-CZ', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/cs-CZ/aboutPage.json')) : () => import('@/messages/ns/cs-CZ/aboutPage.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('aboutPage', 'hu-HU', typeof window === 'undefined' ? require('@/messages/ns/hu-HU/aboutPage.json') : () => import('@/messages/ns/hu-HU/aboutPage.json'))
+registerLanguage('aboutPage', 'hu-HU', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/hu-HU/aboutPage.json')) : () => import('@/messages/ns/hu-HU/aboutPage.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('aboutPage', 'sk-SK', typeof window === 'undefined' ? require('@/messages/ns/sk-SK/aboutPage.json') : () => import('@/messages/ns/sk-SK/aboutPage.json'))
+registerLanguage('aboutPage', 'sk-SK', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/sk-SK/aboutPage.json')) : () => import('@/messages/ns/sk-SK/aboutPage.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('aboutPage', 'ro-RO', typeof window === 'undefined' ? require('@/messages/ns/ro-RO/aboutPage.json') : () => import('@/messages/ns/ro-RO/aboutPage.json'))
+registerLanguage('aboutPage', 'ro-RO', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/ro-RO/aboutPage.json')) : () => import('@/messages/ns/ro-RO/aboutPage.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('aboutPage', 'hr-HR', typeof window === 'undefined' ? require('@/messages/ns/hr-HR/aboutPage.json') : () => import('@/messages/ns/hr-HR/aboutPage.json'))
+registerLanguage('aboutPage', 'hr-HR', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/hr-HR/aboutPage.json')) : () => import('@/messages/ns/hr-HR/aboutPage.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('aboutPage', 'sl-SI', typeof window === 'undefined' ? require('@/messages/ns/sl-SI/aboutPage.json') : () => import('@/messages/ns/sl-SI/aboutPage.json'))
+registerLanguage('aboutPage', 'sl-SI', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/sl-SI/aboutPage.json')) : () => import('@/messages/ns/sl-SI/aboutPage.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('aboutPage', 'fi-FI', typeof window === 'undefined' ? require('@/messages/ns/fi-FI/aboutPage.json') : () => import('@/messages/ns/fi-FI/aboutPage.json'))
+registerLanguage('aboutPage', 'fi-FI', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/fi-FI/aboutPage.json')) : () => import('@/messages/ns/fi-FI/aboutPage.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('aboutPage', 'et-EE', typeof window === 'undefined' ? require('@/messages/ns/et-EE/aboutPage.json') : () => import('@/messages/ns/et-EE/aboutPage.json'))
+registerLanguage('aboutPage', 'et-EE', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/et-EE/aboutPage.json')) : () => import('@/messages/ns/et-EE/aboutPage.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('aboutPage', 'lv-LV', typeof window === 'undefined' ? require('@/messages/ns/lv-LV/aboutPage.json') : () => import('@/messages/ns/lv-LV/aboutPage.json'))
+registerLanguage('aboutPage', 'lv-LV', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/lv-LV/aboutPage.json')) : () => import('@/messages/ns/lv-LV/aboutPage.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('aboutPage', 'lt-LT', typeof window === 'undefined' ? require('@/messages/ns/lt-LT/aboutPage.json') : () => import('@/messages/ns/lt-LT/aboutPage.json'))
+registerLanguage('aboutPage', 'lt-LT', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/lt-LT/aboutPage.json')) : () => import('@/messages/ns/lt-LT/aboutPage.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('aboutPage', 'el-GR', typeof window === 'undefined' ? require('@/messages/ns/el-GR/aboutPage.json') : () => import('@/messages/ns/el-GR/aboutPage.json'))
+registerLanguage('aboutPage', 'el-GR', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/el-GR/aboutPage.json')) : () => import('@/messages/ns/el-GR/aboutPage.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('aboutPage', 'bg-BG', typeof window === 'undefined' ? require('@/messages/ns/bg-BG/aboutPage.json') : () => import('@/messages/ns/bg-BG/aboutPage.json'))
+registerLanguage('aboutPage', 'bg-BG', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/bg-BG/aboutPage.json')) : () => import('@/messages/ns/bg-BG/aboutPage.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('aboutPage', 'pt-BR', typeof window === 'undefined' ? require('@/messages/ns/pt-BR/aboutPage.json') : () => import('@/messages/ns/pt-BR/aboutPage.json'))
+registerLanguage('aboutPage', 'pt-BR', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/pt-BR/aboutPage.json')) : () => import('@/messages/ns/pt-BR/aboutPage.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('aboutPage', 'ms-MY', typeof window === 'undefined' ? require('@/messages/ns/ms-MY/aboutPage.json') : () => import('@/messages/ns/ms-MY/aboutPage.json'))
+registerLanguage('aboutPage', 'ms-MY', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/ms-MY/aboutPage.json')) : () => import('@/messages/ns/ms-MY/aboutPage.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('aboutPage', 'ja-JP', typeof window === 'undefined' ? require('@/messages/ns/ja-JP/aboutPage.json') : () => import('@/messages/ns/ja-JP/aboutPage.json'))
+registerLanguage('aboutPage', 'ja-JP', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/ja-JP/aboutPage.json')) : () => import('@/messages/ns/ja-JP/aboutPage.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('aboutPage', 'zh-HK', typeof window === 'undefined' ? require('@/messages/ns/zh-HK/aboutPage.json') : () => import('@/messages/ns/zh-HK/aboutPage.json'))
+registerLanguage('aboutPage', 'zh-HK', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/zh-HK/aboutPage.json')) : () => import('@/messages/ns/zh-HK/aboutPage.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('aboutPage', 'th-TH', typeof window === 'undefined' ? require('@/messages/ns/th-TH/aboutPage.json') : () => import('@/messages/ns/th-TH/aboutPage.json'))
+registerLanguage('aboutPage', 'th-TH', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/th-TH/aboutPage.json')) : () => import('@/messages/ns/th-TH/aboutPage.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('aboutPage', 'ar-AE', typeof window === 'undefined' ? require('@/messages/ns/ar-AE/aboutPage.json') : () => import('@/messages/ns/ar-AE/aboutPage.json'))
+registerLanguage('aboutPage', 'ar-AE', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/ar-AE/aboutPage.json')) : () => import('@/messages/ns/ar-AE/aboutPage.json'))

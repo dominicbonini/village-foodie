@@ -6,67 +6,68 @@ import enIE from '@/messages/ns/en-IE/manageReports.json'
 import enAU from '@/messages/ns/en-AU/manageReports.json'
 import enNZ from '@/messages/ns/en-NZ/manageReports.json'
 import enSG from '@/messages/ns/en-SG/manageReports.json'
-import { registerNamespace, registerLanguage } from '@/lib/i18n/registry'
+import { registerNamespace, registerLanguage, serverWords } from '@/lib/i18n/registry'
 
 registerNamespace('manageReports', base, { 'en-US': enUS, 'en-IE': enIE, 'en-AU': enAU, 'en-NZ': enNZ, 'en-SG': enSG })
-// languages-1: each non-English language — on the server now; in the browser only when a page is in that language.
+// languages-1: each non-English language only when a page is in that language — perf-1: on the server too (serverWords: a
+// synchronous require, run the first time the language is asked for), in the browser as a chunk loaded on demand.
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('manageReports', 'fr-FR', typeof window === 'undefined' ? require('@/messages/ns/fr-FR/manageReports.json') : () => import('@/messages/ns/fr-FR/manageReports.json'))
+registerLanguage('manageReports', 'fr-FR', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/fr-FR/manageReports.json')) : () => import('@/messages/ns/fr-FR/manageReports.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('manageReports', 'de-DE', typeof window === 'undefined' ? require('@/messages/ns/de-DE/manageReports.json') : () => import('@/messages/ns/de-DE/manageReports.json'))
+registerLanguage('manageReports', 'de-DE', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/de-DE/manageReports.json')) : () => import('@/messages/ns/de-DE/manageReports.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('manageReports', 'de-CH', typeof window === 'undefined' ? require('@/messages/ns/de-CH/manageReports.json') : () => import('@/messages/ns/de-CH/manageReports.json'))
+registerLanguage('manageReports', 'de-CH', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/de-CH/manageReports.json')) : () => import('@/messages/ns/de-CH/manageReports.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('manageReports', 'es-ES', typeof window === 'undefined' ? require('@/messages/ns/es-ES/manageReports.json') : () => import('@/messages/ns/es-ES/manageReports.json'))
+registerLanguage('manageReports', 'es-ES', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/es-ES/manageReports.json')) : () => import('@/messages/ns/es-ES/manageReports.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('manageReports', 'it-IT', typeof window === 'undefined' ? require('@/messages/ns/it-IT/manageReports.json') : () => import('@/messages/ns/it-IT/manageReports.json'))
+registerLanguage('manageReports', 'it-IT', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/it-IT/manageReports.json')) : () => import('@/messages/ns/it-IT/manageReports.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('manageReports', 'pt-PT', typeof window === 'undefined' ? require('@/messages/ns/pt-PT/manageReports.json') : () => import('@/messages/ns/pt-PT/manageReports.json'))
+registerLanguage('manageReports', 'pt-PT', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/pt-PT/manageReports.json')) : () => import('@/messages/ns/pt-PT/manageReports.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('manageReports', 'nl-NL', typeof window === 'undefined' ? require('@/messages/ns/nl-NL/manageReports.json') : () => import('@/messages/ns/nl-NL/manageReports.json'))
+registerLanguage('manageReports', 'nl-NL', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/nl-NL/manageReports.json')) : () => import('@/messages/ns/nl-NL/manageReports.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('manageReports', 'sv-SE', typeof window === 'undefined' ? require('@/messages/ns/sv-SE/manageReports.json') : () => import('@/messages/ns/sv-SE/manageReports.json'))
+registerLanguage('manageReports', 'sv-SE', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/sv-SE/manageReports.json')) : () => import('@/messages/ns/sv-SE/manageReports.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('manageReports', 'da-DK', typeof window === 'undefined' ? require('@/messages/ns/da-DK/manageReports.json') : () => import('@/messages/ns/da-DK/manageReports.json'))
+registerLanguage('manageReports', 'da-DK', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/da-DK/manageReports.json')) : () => import('@/messages/ns/da-DK/manageReports.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('manageReports', 'nb-NO', typeof window === 'undefined' ? require('@/messages/ns/nb-NO/manageReports.json') : () => import('@/messages/ns/nb-NO/manageReports.json'))
+registerLanguage('manageReports', 'nb-NO', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/nb-NO/manageReports.json')) : () => import('@/messages/ns/nb-NO/manageReports.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('manageReports', 'pl-PL', typeof window === 'undefined' ? require('@/messages/ns/pl-PL/manageReports.json') : () => import('@/messages/ns/pl-PL/manageReports.json'))
+registerLanguage('manageReports', 'pl-PL', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/pl-PL/manageReports.json')) : () => import('@/messages/ns/pl-PL/manageReports.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('manageReports', 'cs-CZ', typeof window === 'undefined' ? require('@/messages/ns/cs-CZ/manageReports.json') : () => import('@/messages/ns/cs-CZ/manageReports.json'))
+registerLanguage('manageReports', 'cs-CZ', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/cs-CZ/manageReports.json')) : () => import('@/messages/ns/cs-CZ/manageReports.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('manageReports', 'hu-HU', typeof window === 'undefined' ? require('@/messages/ns/hu-HU/manageReports.json') : () => import('@/messages/ns/hu-HU/manageReports.json'))
+registerLanguage('manageReports', 'hu-HU', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/hu-HU/manageReports.json')) : () => import('@/messages/ns/hu-HU/manageReports.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('manageReports', 'sk-SK', typeof window === 'undefined' ? require('@/messages/ns/sk-SK/manageReports.json') : () => import('@/messages/ns/sk-SK/manageReports.json'))
+registerLanguage('manageReports', 'sk-SK', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/sk-SK/manageReports.json')) : () => import('@/messages/ns/sk-SK/manageReports.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('manageReports', 'ro-RO', typeof window === 'undefined' ? require('@/messages/ns/ro-RO/manageReports.json') : () => import('@/messages/ns/ro-RO/manageReports.json'))
+registerLanguage('manageReports', 'ro-RO', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/ro-RO/manageReports.json')) : () => import('@/messages/ns/ro-RO/manageReports.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('manageReports', 'hr-HR', typeof window === 'undefined' ? require('@/messages/ns/hr-HR/manageReports.json') : () => import('@/messages/ns/hr-HR/manageReports.json'))
+registerLanguage('manageReports', 'hr-HR', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/hr-HR/manageReports.json')) : () => import('@/messages/ns/hr-HR/manageReports.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('manageReports', 'sl-SI', typeof window === 'undefined' ? require('@/messages/ns/sl-SI/manageReports.json') : () => import('@/messages/ns/sl-SI/manageReports.json'))
+registerLanguage('manageReports', 'sl-SI', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/sl-SI/manageReports.json')) : () => import('@/messages/ns/sl-SI/manageReports.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('manageReports', 'fi-FI', typeof window === 'undefined' ? require('@/messages/ns/fi-FI/manageReports.json') : () => import('@/messages/ns/fi-FI/manageReports.json'))
+registerLanguage('manageReports', 'fi-FI', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/fi-FI/manageReports.json')) : () => import('@/messages/ns/fi-FI/manageReports.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('manageReports', 'et-EE', typeof window === 'undefined' ? require('@/messages/ns/et-EE/manageReports.json') : () => import('@/messages/ns/et-EE/manageReports.json'))
+registerLanguage('manageReports', 'et-EE', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/et-EE/manageReports.json')) : () => import('@/messages/ns/et-EE/manageReports.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('manageReports', 'lv-LV', typeof window === 'undefined' ? require('@/messages/ns/lv-LV/manageReports.json') : () => import('@/messages/ns/lv-LV/manageReports.json'))
+registerLanguage('manageReports', 'lv-LV', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/lv-LV/manageReports.json')) : () => import('@/messages/ns/lv-LV/manageReports.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('manageReports', 'lt-LT', typeof window === 'undefined' ? require('@/messages/ns/lt-LT/manageReports.json') : () => import('@/messages/ns/lt-LT/manageReports.json'))
+registerLanguage('manageReports', 'lt-LT', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/lt-LT/manageReports.json')) : () => import('@/messages/ns/lt-LT/manageReports.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('manageReports', 'el-GR', typeof window === 'undefined' ? require('@/messages/ns/el-GR/manageReports.json') : () => import('@/messages/ns/el-GR/manageReports.json'))
+registerLanguage('manageReports', 'el-GR', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/el-GR/manageReports.json')) : () => import('@/messages/ns/el-GR/manageReports.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('manageReports', 'bg-BG', typeof window === 'undefined' ? require('@/messages/ns/bg-BG/manageReports.json') : () => import('@/messages/ns/bg-BG/manageReports.json'))
+registerLanguage('manageReports', 'bg-BG', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/bg-BG/manageReports.json')) : () => import('@/messages/ns/bg-BG/manageReports.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('manageReports', 'es-MX', typeof window === 'undefined' ? require('@/messages/ns/es-MX/manageReports.json') : () => import('@/messages/ns/es-MX/manageReports.json'))
+registerLanguage('manageReports', 'es-MX', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/es-MX/manageReports.json')) : () => import('@/messages/ns/es-MX/manageReports.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('manageReports', 'pt-BR', typeof window === 'undefined' ? require('@/messages/ns/pt-BR/manageReports.json') : () => import('@/messages/ns/pt-BR/manageReports.json'))
+registerLanguage('manageReports', 'pt-BR', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/pt-BR/manageReports.json')) : () => import('@/messages/ns/pt-BR/manageReports.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('manageReports', 'ms-MY', typeof window === 'undefined' ? require('@/messages/ns/ms-MY/manageReports.json') : () => import('@/messages/ns/ms-MY/manageReports.json'))
+registerLanguage('manageReports', 'ms-MY', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/ms-MY/manageReports.json')) : () => import('@/messages/ns/ms-MY/manageReports.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('manageReports', 'ja-JP', typeof window === 'undefined' ? require('@/messages/ns/ja-JP/manageReports.json') : () => import('@/messages/ns/ja-JP/manageReports.json'))
+registerLanguage('manageReports', 'ja-JP', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/ja-JP/manageReports.json')) : () => import('@/messages/ns/ja-JP/manageReports.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('manageReports', 'zh-HK', typeof window === 'undefined' ? require('@/messages/ns/zh-HK/manageReports.json') : () => import('@/messages/ns/zh-HK/manageReports.json'))
+registerLanguage('manageReports', 'zh-HK', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/zh-HK/manageReports.json')) : () => import('@/messages/ns/zh-HK/manageReports.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('manageReports', 'th-TH', typeof window === 'undefined' ? require('@/messages/ns/th-TH/manageReports.json') : () => import('@/messages/ns/th-TH/manageReports.json'))
+registerLanguage('manageReports', 'th-TH', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/th-TH/manageReports.json')) : () => import('@/messages/ns/th-TH/manageReports.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('manageReports', 'ar-AE', typeof window === 'undefined' ? require('@/messages/ns/ar-AE/manageReports.json') : () => import('@/messages/ns/ar-AE/manageReports.json'))
+registerLanguage('manageReports', 'ar-AE', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/ar-AE/manageReports.json')) : () => import('@/messages/ns/ar-AE/manageReports.json'))

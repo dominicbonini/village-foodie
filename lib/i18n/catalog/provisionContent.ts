@@ -2,65 +2,66 @@
 // Import this module (`import '@/lib/i18n/catalog/provisionContent'`) in any file that reads the "provisionContent" namespace.
 import base from '@/messages/ns/en-GB/provisionContent.json'
 import enUS from '@/messages/ns/en-US/provisionContent.json'
-import { registerNamespace, registerLanguage } from '@/lib/i18n/registry'
+import { registerNamespace, registerLanguage, serverWords } from '@/lib/i18n/registry'
 
 registerNamespace('provisionContent', base, { 'en-US': enUS })
-// languages-1: each non-English language — on the server now; in the browser only when a page is in that language.
+// languages-1: each non-English language only when a page is in that language — perf-1: on the server too (serverWords: a
+// synchronous require, run the first time the language is asked for), in the browser as a chunk loaded on demand.
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('provisionContent', 'fr-FR', typeof window === 'undefined' ? require('@/messages/ns/fr-FR/provisionContent.json') : () => import('@/messages/ns/fr-FR/provisionContent.json'))
+registerLanguage('provisionContent', 'fr-FR', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/fr-FR/provisionContent.json')) : () => import('@/messages/ns/fr-FR/provisionContent.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('provisionContent', 'de-DE', typeof window === 'undefined' ? require('@/messages/ns/de-DE/provisionContent.json') : () => import('@/messages/ns/de-DE/provisionContent.json'))
+registerLanguage('provisionContent', 'de-DE', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/de-DE/provisionContent.json')) : () => import('@/messages/ns/de-DE/provisionContent.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('provisionContent', 'es-ES', typeof window === 'undefined' ? require('@/messages/ns/es-ES/provisionContent.json') : () => import('@/messages/ns/es-ES/provisionContent.json'))
+registerLanguage('provisionContent', 'es-ES', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/es-ES/provisionContent.json')) : () => import('@/messages/ns/es-ES/provisionContent.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('provisionContent', 'it-IT', typeof window === 'undefined' ? require('@/messages/ns/it-IT/provisionContent.json') : () => import('@/messages/ns/it-IT/provisionContent.json'))
+registerLanguage('provisionContent', 'it-IT', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/it-IT/provisionContent.json')) : () => import('@/messages/ns/it-IT/provisionContent.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('provisionContent', 'pt-PT', typeof window === 'undefined' ? require('@/messages/ns/pt-PT/provisionContent.json') : () => import('@/messages/ns/pt-PT/provisionContent.json'))
+registerLanguage('provisionContent', 'pt-PT', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/pt-PT/provisionContent.json')) : () => import('@/messages/ns/pt-PT/provisionContent.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('provisionContent', 'nl-NL', typeof window === 'undefined' ? require('@/messages/ns/nl-NL/provisionContent.json') : () => import('@/messages/ns/nl-NL/provisionContent.json'))
+registerLanguage('provisionContent', 'nl-NL', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/nl-NL/provisionContent.json')) : () => import('@/messages/ns/nl-NL/provisionContent.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('provisionContent', 'sv-SE', typeof window === 'undefined' ? require('@/messages/ns/sv-SE/provisionContent.json') : () => import('@/messages/ns/sv-SE/provisionContent.json'))
+registerLanguage('provisionContent', 'sv-SE', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/sv-SE/provisionContent.json')) : () => import('@/messages/ns/sv-SE/provisionContent.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('provisionContent', 'da-DK', typeof window === 'undefined' ? require('@/messages/ns/da-DK/provisionContent.json') : () => import('@/messages/ns/da-DK/provisionContent.json'))
+registerLanguage('provisionContent', 'da-DK', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/da-DK/provisionContent.json')) : () => import('@/messages/ns/da-DK/provisionContent.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('provisionContent', 'nb-NO', typeof window === 'undefined' ? require('@/messages/ns/nb-NO/provisionContent.json') : () => import('@/messages/ns/nb-NO/provisionContent.json'))
+registerLanguage('provisionContent', 'nb-NO', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/nb-NO/provisionContent.json')) : () => import('@/messages/ns/nb-NO/provisionContent.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('provisionContent', 'pl-PL', typeof window === 'undefined' ? require('@/messages/ns/pl-PL/provisionContent.json') : () => import('@/messages/ns/pl-PL/provisionContent.json'))
+registerLanguage('provisionContent', 'pl-PL', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/pl-PL/provisionContent.json')) : () => import('@/messages/ns/pl-PL/provisionContent.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('provisionContent', 'cs-CZ', typeof window === 'undefined' ? require('@/messages/ns/cs-CZ/provisionContent.json') : () => import('@/messages/ns/cs-CZ/provisionContent.json'))
+registerLanguage('provisionContent', 'cs-CZ', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/cs-CZ/provisionContent.json')) : () => import('@/messages/ns/cs-CZ/provisionContent.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('provisionContent', 'hu-HU', typeof window === 'undefined' ? require('@/messages/ns/hu-HU/provisionContent.json') : () => import('@/messages/ns/hu-HU/provisionContent.json'))
+registerLanguage('provisionContent', 'hu-HU', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/hu-HU/provisionContent.json')) : () => import('@/messages/ns/hu-HU/provisionContent.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('provisionContent', 'sk-SK', typeof window === 'undefined' ? require('@/messages/ns/sk-SK/provisionContent.json') : () => import('@/messages/ns/sk-SK/provisionContent.json'))
+registerLanguage('provisionContent', 'sk-SK', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/sk-SK/provisionContent.json')) : () => import('@/messages/ns/sk-SK/provisionContent.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('provisionContent', 'ro-RO', typeof window === 'undefined' ? require('@/messages/ns/ro-RO/provisionContent.json') : () => import('@/messages/ns/ro-RO/provisionContent.json'))
+registerLanguage('provisionContent', 'ro-RO', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/ro-RO/provisionContent.json')) : () => import('@/messages/ns/ro-RO/provisionContent.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('provisionContent', 'hr-HR', typeof window === 'undefined' ? require('@/messages/ns/hr-HR/provisionContent.json') : () => import('@/messages/ns/hr-HR/provisionContent.json'))
+registerLanguage('provisionContent', 'hr-HR', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/hr-HR/provisionContent.json')) : () => import('@/messages/ns/hr-HR/provisionContent.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('provisionContent', 'sl-SI', typeof window === 'undefined' ? require('@/messages/ns/sl-SI/provisionContent.json') : () => import('@/messages/ns/sl-SI/provisionContent.json'))
+registerLanguage('provisionContent', 'sl-SI', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/sl-SI/provisionContent.json')) : () => import('@/messages/ns/sl-SI/provisionContent.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('provisionContent', 'fi-FI', typeof window === 'undefined' ? require('@/messages/ns/fi-FI/provisionContent.json') : () => import('@/messages/ns/fi-FI/provisionContent.json'))
+registerLanguage('provisionContent', 'fi-FI', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/fi-FI/provisionContent.json')) : () => import('@/messages/ns/fi-FI/provisionContent.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('provisionContent', 'et-EE', typeof window === 'undefined' ? require('@/messages/ns/et-EE/provisionContent.json') : () => import('@/messages/ns/et-EE/provisionContent.json'))
+registerLanguage('provisionContent', 'et-EE', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/et-EE/provisionContent.json')) : () => import('@/messages/ns/et-EE/provisionContent.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('provisionContent', 'lv-LV', typeof window === 'undefined' ? require('@/messages/ns/lv-LV/provisionContent.json') : () => import('@/messages/ns/lv-LV/provisionContent.json'))
+registerLanguage('provisionContent', 'lv-LV', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/lv-LV/provisionContent.json')) : () => import('@/messages/ns/lv-LV/provisionContent.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('provisionContent', 'lt-LT', typeof window === 'undefined' ? require('@/messages/ns/lt-LT/provisionContent.json') : () => import('@/messages/ns/lt-LT/provisionContent.json'))
+registerLanguage('provisionContent', 'lt-LT', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/lt-LT/provisionContent.json')) : () => import('@/messages/ns/lt-LT/provisionContent.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('provisionContent', 'el-GR', typeof window === 'undefined' ? require('@/messages/ns/el-GR/provisionContent.json') : () => import('@/messages/ns/el-GR/provisionContent.json'))
+registerLanguage('provisionContent', 'el-GR', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/el-GR/provisionContent.json')) : () => import('@/messages/ns/el-GR/provisionContent.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('provisionContent', 'bg-BG', typeof window === 'undefined' ? require('@/messages/ns/bg-BG/provisionContent.json') : () => import('@/messages/ns/bg-BG/provisionContent.json'))
+registerLanguage('provisionContent', 'bg-BG', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/bg-BG/provisionContent.json')) : () => import('@/messages/ns/bg-BG/provisionContent.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('provisionContent', 'es-MX', typeof window === 'undefined' ? require('@/messages/ns/es-MX/provisionContent.json') : () => import('@/messages/ns/es-MX/provisionContent.json'))
+registerLanguage('provisionContent', 'es-MX', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/es-MX/provisionContent.json')) : () => import('@/messages/ns/es-MX/provisionContent.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('provisionContent', 'pt-BR', typeof window === 'undefined' ? require('@/messages/ns/pt-BR/provisionContent.json') : () => import('@/messages/ns/pt-BR/provisionContent.json'))
+registerLanguage('provisionContent', 'pt-BR', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/pt-BR/provisionContent.json')) : () => import('@/messages/ns/pt-BR/provisionContent.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('provisionContent', 'ms-MY', typeof window === 'undefined' ? require('@/messages/ns/ms-MY/provisionContent.json') : () => import('@/messages/ns/ms-MY/provisionContent.json'))
+registerLanguage('provisionContent', 'ms-MY', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/ms-MY/provisionContent.json')) : () => import('@/messages/ns/ms-MY/provisionContent.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('provisionContent', 'ja-JP', typeof window === 'undefined' ? require('@/messages/ns/ja-JP/provisionContent.json') : () => import('@/messages/ns/ja-JP/provisionContent.json'))
+registerLanguage('provisionContent', 'ja-JP', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/ja-JP/provisionContent.json')) : () => import('@/messages/ns/ja-JP/provisionContent.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('provisionContent', 'zh-HK', typeof window === 'undefined' ? require('@/messages/ns/zh-HK/provisionContent.json') : () => import('@/messages/ns/zh-HK/provisionContent.json'))
+registerLanguage('provisionContent', 'zh-HK', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/zh-HK/provisionContent.json')) : () => import('@/messages/ns/zh-HK/provisionContent.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('provisionContent', 'th-TH', typeof window === 'undefined' ? require('@/messages/ns/th-TH/provisionContent.json') : () => import('@/messages/ns/th-TH/provisionContent.json'))
+registerLanguage('provisionContent', 'th-TH', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/th-TH/provisionContent.json')) : () => import('@/messages/ns/th-TH/provisionContent.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('provisionContent', 'ar-AE', typeof window === 'undefined' ? require('@/messages/ns/ar-AE/provisionContent.json') : () => import('@/messages/ns/ar-AE/provisionContent.json'))
+registerLanguage('provisionContent', 'ar-AE', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/ar-AE/provisionContent.json')) : () => import('@/messages/ns/ar-AE/provisionContent.json'))

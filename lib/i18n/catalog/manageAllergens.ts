@@ -2,67 +2,68 @@
 // Import this module (`import '@/lib/i18n/catalog/manageAllergens'`) in any file that reads the "manageAllergens" namespace.
 import base from '@/messages/ns/en-GB/manageAllergens.json'
 import enUS from '@/messages/ns/en-US/manageAllergens.json'
-import { registerNamespace, registerLanguage } from '@/lib/i18n/registry'
+import { registerNamespace, registerLanguage, serverWords } from '@/lib/i18n/registry'
 
 registerNamespace('manageAllergens', base, { 'en-US': enUS })
-// languages-1: each non-English language — on the server now; in the browser only when a page is in that language.
+// languages-1: each non-English language only when a page is in that language — perf-1: on the server too (serverWords: a
+// synchronous require, run the first time the language is asked for), in the browser as a chunk loaded on demand.
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('manageAllergens', 'fr-FR', typeof window === 'undefined' ? require('@/messages/ns/fr-FR/manageAllergens.json') : () => import('@/messages/ns/fr-FR/manageAllergens.json'))
+registerLanguage('manageAllergens', 'fr-FR', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/fr-FR/manageAllergens.json')) : () => import('@/messages/ns/fr-FR/manageAllergens.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('manageAllergens', 'de-DE', typeof window === 'undefined' ? require('@/messages/ns/de-DE/manageAllergens.json') : () => import('@/messages/ns/de-DE/manageAllergens.json'))
+registerLanguage('manageAllergens', 'de-DE', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/de-DE/manageAllergens.json')) : () => import('@/messages/ns/de-DE/manageAllergens.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('manageAllergens', 'de-CH', typeof window === 'undefined' ? require('@/messages/ns/de-CH/manageAllergens.json') : () => import('@/messages/ns/de-CH/manageAllergens.json'))
+registerLanguage('manageAllergens', 'de-CH', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/de-CH/manageAllergens.json')) : () => import('@/messages/ns/de-CH/manageAllergens.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('manageAllergens', 'es-ES', typeof window === 'undefined' ? require('@/messages/ns/es-ES/manageAllergens.json') : () => import('@/messages/ns/es-ES/manageAllergens.json'))
+registerLanguage('manageAllergens', 'es-ES', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/es-ES/manageAllergens.json')) : () => import('@/messages/ns/es-ES/manageAllergens.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('manageAllergens', 'it-IT', typeof window === 'undefined' ? require('@/messages/ns/it-IT/manageAllergens.json') : () => import('@/messages/ns/it-IT/manageAllergens.json'))
+registerLanguage('manageAllergens', 'it-IT', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/it-IT/manageAllergens.json')) : () => import('@/messages/ns/it-IT/manageAllergens.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('manageAllergens', 'pt-PT', typeof window === 'undefined' ? require('@/messages/ns/pt-PT/manageAllergens.json') : () => import('@/messages/ns/pt-PT/manageAllergens.json'))
+registerLanguage('manageAllergens', 'pt-PT', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/pt-PT/manageAllergens.json')) : () => import('@/messages/ns/pt-PT/manageAllergens.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('manageAllergens', 'nl-NL', typeof window === 'undefined' ? require('@/messages/ns/nl-NL/manageAllergens.json') : () => import('@/messages/ns/nl-NL/manageAllergens.json'))
+registerLanguage('manageAllergens', 'nl-NL', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/nl-NL/manageAllergens.json')) : () => import('@/messages/ns/nl-NL/manageAllergens.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('manageAllergens', 'sv-SE', typeof window === 'undefined' ? require('@/messages/ns/sv-SE/manageAllergens.json') : () => import('@/messages/ns/sv-SE/manageAllergens.json'))
+registerLanguage('manageAllergens', 'sv-SE', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/sv-SE/manageAllergens.json')) : () => import('@/messages/ns/sv-SE/manageAllergens.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('manageAllergens', 'da-DK', typeof window === 'undefined' ? require('@/messages/ns/da-DK/manageAllergens.json') : () => import('@/messages/ns/da-DK/manageAllergens.json'))
+registerLanguage('manageAllergens', 'da-DK', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/da-DK/manageAllergens.json')) : () => import('@/messages/ns/da-DK/manageAllergens.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('manageAllergens', 'nb-NO', typeof window === 'undefined' ? require('@/messages/ns/nb-NO/manageAllergens.json') : () => import('@/messages/ns/nb-NO/manageAllergens.json'))
+registerLanguage('manageAllergens', 'nb-NO', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/nb-NO/manageAllergens.json')) : () => import('@/messages/ns/nb-NO/manageAllergens.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('manageAllergens', 'pl-PL', typeof window === 'undefined' ? require('@/messages/ns/pl-PL/manageAllergens.json') : () => import('@/messages/ns/pl-PL/manageAllergens.json'))
+registerLanguage('manageAllergens', 'pl-PL', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/pl-PL/manageAllergens.json')) : () => import('@/messages/ns/pl-PL/manageAllergens.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('manageAllergens', 'cs-CZ', typeof window === 'undefined' ? require('@/messages/ns/cs-CZ/manageAllergens.json') : () => import('@/messages/ns/cs-CZ/manageAllergens.json'))
+registerLanguage('manageAllergens', 'cs-CZ', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/cs-CZ/manageAllergens.json')) : () => import('@/messages/ns/cs-CZ/manageAllergens.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('manageAllergens', 'hu-HU', typeof window === 'undefined' ? require('@/messages/ns/hu-HU/manageAllergens.json') : () => import('@/messages/ns/hu-HU/manageAllergens.json'))
+registerLanguage('manageAllergens', 'hu-HU', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/hu-HU/manageAllergens.json')) : () => import('@/messages/ns/hu-HU/manageAllergens.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('manageAllergens', 'sk-SK', typeof window === 'undefined' ? require('@/messages/ns/sk-SK/manageAllergens.json') : () => import('@/messages/ns/sk-SK/manageAllergens.json'))
+registerLanguage('manageAllergens', 'sk-SK', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/sk-SK/manageAllergens.json')) : () => import('@/messages/ns/sk-SK/manageAllergens.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('manageAllergens', 'ro-RO', typeof window === 'undefined' ? require('@/messages/ns/ro-RO/manageAllergens.json') : () => import('@/messages/ns/ro-RO/manageAllergens.json'))
+registerLanguage('manageAllergens', 'ro-RO', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/ro-RO/manageAllergens.json')) : () => import('@/messages/ns/ro-RO/manageAllergens.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('manageAllergens', 'hr-HR', typeof window === 'undefined' ? require('@/messages/ns/hr-HR/manageAllergens.json') : () => import('@/messages/ns/hr-HR/manageAllergens.json'))
+registerLanguage('manageAllergens', 'hr-HR', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/hr-HR/manageAllergens.json')) : () => import('@/messages/ns/hr-HR/manageAllergens.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('manageAllergens', 'sl-SI', typeof window === 'undefined' ? require('@/messages/ns/sl-SI/manageAllergens.json') : () => import('@/messages/ns/sl-SI/manageAllergens.json'))
+registerLanguage('manageAllergens', 'sl-SI', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/sl-SI/manageAllergens.json')) : () => import('@/messages/ns/sl-SI/manageAllergens.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('manageAllergens', 'fi-FI', typeof window === 'undefined' ? require('@/messages/ns/fi-FI/manageAllergens.json') : () => import('@/messages/ns/fi-FI/manageAllergens.json'))
+registerLanguage('manageAllergens', 'fi-FI', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/fi-FI/manageAllergens.json')) : () => import('@/messages/ns/fi-FI/manageAllergens.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('manageAllergens', 'et-EE', typeof window === 'undefined' ? require('@/messages/ns/et-EE/manageAllergens.json') : () => import('@/messages/ns/et-EE/manageAllergens.json'))
+registerLanguage('manageAllergens', 'et-EE', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/et-EE/manageAllergens.json')) : () => import('@/messages/ns/et-EE/manageAllergens.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('manageAllergens', 'lv-LV', typeof window === 'undefined' ? require('@/messages/ns/lv-LV/manageAllergens.json') : () => import('@/messages/ns/lv-LV/manageAllergens.json'))
+registerLanguage('manageAllergens', 'lv-LV', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/lv-LV/manageAllergens.json')) : () => import('@/messages/ns/lv-LV/manageAllergens.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('manageAllergens', 'lt-LT', typeof window === 'undefined' ? require('@/messages/ns/lt-LT/manageAllergens.json') : () => import('@/messages/ns/lt-LT/manageAllergens.json'))
+registerLanguage('manageAllergens', 'lt-LT', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/lt-LT/manageAllergens.json')) : () => import('@/messages/ns/lt-LT/manageAllergens.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('manageAllergens', 'el-GR', typeof window === 'undefined' ? require('@/messages/ns/el-GR/manageAllergens.json') : () => import('@/messages/ns/el-GR/manageAllergens.json'))
+registerLanguage('manageAllergens', 'el-GR', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/el-GR/manageAllergens.json')) : () => import('@/messages/ns/el-GR/manageAllergens.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('manageAllergens', 'bg-BG', typeof window === 'undefined' ? require('@/messages/ns/bg-BG/manageAllergens.json') : () => import('@/messages/ns/bg-BG/manageAllergens.json'))
+registerLanguage('manageAllergens', 'bg-BG', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/bg-BG/manageAllergens.json')) : () => import('@/messages/ns/bg-BG/manageAllergens.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('manageAllergens', 'es-MX', typeof window === 'undefined' ? require('@/messages/ns/es-MX/manageAllergens.json') : () => import('@/messages/ns/es-MX/manageAllergens.json'))
+registerLanguage('manageAllergens', 'es-MX', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/es-MX/manageAllergens.json')) : () => import('@/messages/ns/es-MX/manageAllergens.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('manageAllergens', 'pt-BR', typeof window === 'undefined' ? require('@/messages/ns/pt-BR/manageAllergens.json') : () => import('@/messages/ns/pt-BR/manageAllergens.json'))
+registerLanguage('manageAllergens', 'pt-BR', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/pt-BR/manageAllergens.json')) : () => import('@/messages/ns/pt-BR/manageAllergens.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('manageAllergens', 'ms-MY', typeof window === 'undefined' ? require('@/messages/ns/ms-MY/manageAllergens.json') : () => import('@/messages/ns/ms-MY/manageAllergens.json'))
+registerLanguage('manageAllergens', 'ms-MY', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/ms-MY/manageAllergens.json')) : () => import('@/messages/ns/ms-MY/manageAllergens.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('manageAllergens', 'ja-JP', typeof window === 'undefined' ? require('@/messages/ns/ja-JP/manageAllergens.json') : () => import('@/messages/ns/ja-JP/manageAllergens.json'))
+registerLanguage('manageAllergens', 'ja-JP', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/ja-JP/manageAllergens.json')) : () => import('@/messages/ns/ja-JP/manageAllergens.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('manageAllergens', 'zh-HK', typeof window === 'undefined' ? require('@/messages/ns/zh-HK/manageAllergens.json') : () => import('@/messages/ns/zh-HK/manageAllergens.json'))
+registerLanguage('manageAllergens', 'zh-HK', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/zh-HK/manageAllergens.json')) : () => import('@/messages/ns/zh-HK/manageAllergens.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('manageAllergens', 'th-TH', typeof window === 'undefined' ? require('@/messages/ns/th-TH/manageAllergens.json') : () => import('@/messages/ns/th-TH/manageAllergens.json'))
+registerLanguage('manageAllergens', 'th-TH', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/th-TH/manageAllergens.json')) : () => import('@/messages/ns/th-TH/manageAllergens.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('manageAllergens', 'ar-AE', typeof window === 'undefined' ? require('@/messages/ns/ar-AE/manageAllergens.json') : () => import('@/messages/ns/ar-AE/manageAllergens.json'))
+registerLanguage('manageAllergens', 'ar-AE', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/ar-AE/manageAllergens.json')) : () => import('@/messages/ns/ar-AE/manageAllergens.json'))

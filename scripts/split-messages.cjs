@@ -18,8 +18,10 @@
 //
 // 🔴 languages-1 (22 October 2026, docs/languages-1-report.md §1): THE LOCALE LIST IS READ FROM lib/i18n/locales.ts — the one
 // place it is written. A NON-ENGLISH base (LANGUAGE_BASES) gets a namespace file for every namespace its file has, and the
-// catalog module registers it with registerLanguage(): on the server at once (a plain require — the server always has every
-// word), in the browser only as a loader that runs when a page is in that language. Next replaces `typeof window` at build
+// catalog module registers it with registerLanguage(): ~~on the server at once (a plain require — the server always has every
+// word)~~ ⛔ perf-1 (5 November 2026): on the server as `serverWords(() => require(…))`, a synchronous loader run the first time
+// that language is asked for (so a cold server starts with English only); in the browser only as a loader that runs when a page
+// is in that language. Next replaces `typeof window` at build
 // time, so the browser bundle never contains the require — an English page carries no other language. With no base locale
 // (today) every catalog module is exactly as before.
 const fs = require('fs'); const path = require('path')
@@ -71,14 +73,15 @@ for (const ns of Object.keys(base).map(ident)) {
     `// Import this module (\`import '@/lib/i18n/catalog/${ns}'\`) in any file that reads the "${ns}" namespace.`,
     `import base from '@/messages/ns/en-GB/${ns}.json'`,
     ...used.map(l => `import ${varOf(l)} from '@/messages/ns/${l}/${ns}.json'`),
-    `import { registerNamespace${langs.length ? ', registerLanguage' : ''} } from '@/lib/i18n/registry'`,
+    `import { registerNamespace${langs.length ? ', registerLanguage, serverWords' : ''} } from '@/lib/i18n/registry'`,
     ``,
     `registerNamespace('${ns}', base, { ${used.map(l => `'${l}': ${varOf(l)}`).join(', ')} })`,
     ...(langs.length ? [
-      `// languages-1: each non-English language — on the server now; in the browser only when a page is in that language.`,
+      `// languages-1: each non-English language only when a page is in that language — perf-1: on the server too (serverWords: a`,
+      `// synchronous require, run the first time the language is asked for), in the browser as a chunk loaded on demand.`,
       ...langs.map(l => [
         `// eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle`,
-        `registerLanguage('${ns}', '${l}', typeof window === 'undefined' ? require('@/messages/ns/${l}/${ns}.json') : () => import('@/messages/ns/${l}/${ns}.json'))`,
+        `registerLanguage('${ns}', '${l}', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/${l}/${ns}.json')) : () => import('@/messages/ns/${l}/${ns}.json'))`,
       ].join('\n')),
     ] : []),
     ``,
@@ -95,10 +98,13 @@ want.set('lib/i18n/locale-files.ts', [
   `import type { AppLocale } from './locales'`,
   ...(OTHERS.some(l => !l.startsWith('en-')) ? [
     `/* eslint-disable @typescript-eslint/no-require-imports -- untyped on purpose (see scripts/split-messages.cjs) */`,
-    ...OTHERS.filter(l => !l.startsWith('en-')).map(l => `const ${varOf(l)}: unknown = require('@/messages/${l}.json')`),
+    // perf-1 (5 November 2026, docs/perf-1-report.md): a LOADER, not the file — required the first time a request asks for that
+    // language (lib/i18n/messages.ts messagesFor), so a server starts with the English files only.
+    ...OTHERS.filter(l => !l.startsWith('en-')).map(l => `const ${varOf(l)} = (): unknown => require('@/messages/${l}.json')`),
     `/* eslint-enable @typescript-eslint/no-require-imports */`,
   ] : []),
   ``,
+  `/** An English file itself, or (perf-1) a loader for a non-English one — lib/i18n/messages.ts calls it the first time. */`,
   `export const LOCALE_FILES: Partial<Record<AppLocale, unknown>> = { ${OTHERS.map(l => `'${l}': ${varOf(l)}`).join(', ')} }`,
   ``,
 ].join('\n'))

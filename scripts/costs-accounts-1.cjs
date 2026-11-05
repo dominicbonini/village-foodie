@@ -319,10 +319,23 @@ const stripComments = s => s.replace(/--.*$/gm, '')
     const PATHS = ['app/api/orders', 'app/api/menu', 'app/api/dashboard', 'app/api/kds', 'app/api/webhooks', 'app/order', 'app/o', 'app/kds', 'app/dashboard', 'app/trucks', 'app/embed', 'components/dashboard', 'components/embed', 'lib/payments', 'lib/printing', 'lib/orders',
       'lib/order-charges.ts', 'lib/order-charge-rules.ts', 'lib/order-charge-lines.ts', 'lib/order-calculations.ts', 'lib/order-utils.ts', 'lib/order-repricing.ts', 'lib/menu-loader.ts', 'lib/slot-bookings.ts', 'lib/country-settings.ts', 'lib/country-settings-types.ts', 'lib/money-format.ts', 'supabase/functions']
       .filter(p => fs.existsSync(path.join(REPO, p)))
+    // ⚠️ RE-PINNED (perf-1, 5 November 2026, docs/perf-1-report.md): lib/country-settings.ts gained perf-1's marketing branch (a
+    // marketing page's render reads the tagged cache; every other caller, ordering included, reads exactly as before). It is compared on
+    // its own below, with exactly perf-1's four lines taken out; every other path must still be unchanged.
+    const PERF1_CS = 'lib/country-settings.ts'
+    const PATHS_REST = PATHS.filter(p => p !== PERF1_CS)
     let diff = ''
-    try { diff = execFileSync('git', ['diff', '--stat', BEFORE, '--', ...PATHS], { cwd: REPO, encoding: 'utf8' }) } catch (e) { diff = String(e) }
-    const untracked = execFileSync('git', ['ls-files', '--others', '--exclude-standard', '--', ...PATHS], { cwd: REPO, encoding: 'utf8' }).trim()
+    try { diff = execFileSync('git', ['diff', '--stat', BEFORE, '--', ...PATHS_REST], { cwd: REPO, encoding: 'utf8' }) } catch (e) { diff = String(e) }
+    const untracked = execFileSync('git', ['ls-files', '--others', '--exclude-standard', '--', ...PATHS_REST], { cwd: REPO, encoding: 'utf8' }).trim()
     t(`${PATHS.length} order, payment, menu, KDS, dashboard and ticket paths: no change against ${BEFORE} (working tree)`, PATHS.length >= 20 && diff.trim() === '' && untracked === '', diff + untracked)
+    const PERF1_LINES = [
+      "import { isMarketingRender } from '@/lib/marketing-render'   // perf-1: a marketing page's render reads the tagged shared cache",
+      "  // perf-1 (5 November 2026): a marketing page's render reads the tagged shared cache (lib/marketing-cache.ts); every other caller,",
+      "  // the proxy included, keeps the 60-second copy below exactly as before.",
+      "  if (isMarketingRender()) return (await import('@/lib/marketing-cache')).marketingCountryList()",
+    ]
+    const csNow = read(PERF1_CS).split('\n'), taken = csNow.filter(l => PERF1_LINES.includes(l))
+    t(`${PERF1_CS}: byte-identical to ${BEFORE} once perf-1's four lines (its marketing branch) are taken out`, taken.length === 4 && csNow.filter(l => !PERF1_LINES.includes(l)).join('\n') === gitShow(PERF1_CS))
     const block = s => s.slice(s.indexOf("  if (action === 'upsert_item') {"), s.indexOf("  if (action === 'delete_item') {"))
     t('the upsert_item handler is byte-identical (the cost never rides on the item)', block(read('app/api/manage/route.ts')) === block(gitShow('app/api/manage/route.ts')) && block(read('app/api/manage/route.ts')).length > 1000)
   }

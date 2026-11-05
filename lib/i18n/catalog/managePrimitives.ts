@@ -2,65 +2,66 @@
 // Import this module (`import '@/lib/i18n/catalog/managePrimitives'`) in any file that reads the "managePrimitives" namespace.
 import base from '@/messages/ns/en-GB/managePrimitives.json'
 import enUS from '@/messages/ns/en-US/managePrimitives.json'
-import { registerNamespace, registerLanguage } from '@/lib/i18n/registry'
+import { registerNamespace, registerLanguage, serverWords } from '@/lib/i18n/registry'
 
 registerNamespace('managePrimitives', base, { 'en-US': enUS })
-// languages-1: each non-English language — on the server now; in the browser only when a page is in that language.
+// languages-1: each non-English language only when a page is in that language — perf-1: on the server too (serverWords: a
+// synchronous require, run the first time the language is asked for), in the browser as a chunk loaded on demand.
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('managePrimitives', 'fr-FR', typeof window === 'undefined' ? require('@/messages/ns/fr-FR/managePrimitives.json') : () => import('@/messages/ns/fr-FR/managePrimitives.json'))
+registerLanguage('managePrimitives', 'fr-FR', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/fr-FR/managePrimitives.json')) : () => import('@/messages/ns/fr-FR/managePrimitives.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('managePrimitives', 'de-DE', typeof window === 'undefined' ? require('@/messages/ns/de-DE/managePrimitives.json') : () => import('@/messages/ns/de-DE/managePrimitives.json'))
+registerLanguage('managePrimitives', 'de-DE', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/de-DE/managePrimitives.json')) : () => import('@/messages/ns/de-DE/managePrimitives.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('managePrimitives', 'es-ES', typeof window === 'undefined' ? require('@/messages/ns/es-ES/managePrimitives.json') : () => import('@/messages/ns/es-ES/managePrimitives.json'))
+registerLanguage('managePrimitives', 'es-ES', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/es-ES/managePrimitives.json')) : () => import('@/messages/ns/es-ES/managePrimitives.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('managePrimitives', 'it-IT', typeof window === 'undefined' ? require('@/messages/ns/it-IT/managePrimitives.json') : () => import('@/messages/ns/it-IT/managePrimitives.json'))
+registerLanguage('managePrimitives', 'it-IT', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/it-IT/managePrimitives.json')) : () => import('@/messages/ns/it-IT/managePrimitives.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('managePrimitives', 'pt-PT', typeof window === 'undefined' ? require('@/messages/ns/pt-PT/managePrimitives.json') : () => import('@/messages/ns/pt-PT/managePrimitives.json'))
+registerLanguage('managePrimitives', 'pt-PT', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/pt-PT/managePrimitives.json')) : () => import('@/messages/ns/pt-PT/managePrimitives.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('managePrimitives', 'nl-NL', typeof window === 'undefined' ? require('@/messages/ns/nl-NL/managePrimitives.json') : () => import('@/messages/ns/nl-NL/managePrimitives.json'))
+registerLanguage('managePrimitives', 'nl-NL', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/nl-NL/managePrimitives.json')) : () => import('@/messages/ns/nl-NL/managePrimitives.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('managePrimitives', 'sv-SE', typeof window === 'undefined' ? require('@/messages/ns/sv-SE/managePrimitives.json') : () => import('@/messages/ns/sv-SE/managePrimitives.json'))
+registerLanguage('managePrimitives', 'sv-SE', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/sv-SE/managePrimitives.json')) : () => import('@/messages/ns/sv-SE/managePrimitives.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('managePrimitives', 'da-DK', typeof window === 'undefined' ? require('@/messages/ns/da-DK/managePrimitives.json') : () => import('@/messages/ns/da-DK/managePrimitives.json'))
+registerLanguage('managePrimitives', 'da-DK', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/da-DK/managePrimitives.json')) : () => import('@/messages/ns/da-DK/managePrimitives.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('managePrimitives', 'nb-NO', typeof window === 'undefined' ? require('@/messages/ns/nb-NO/managePrimitives.json') : () => import('@/messages/ns/nb-NO/managePrimitives.json'))
+registerLanguage('managePrimitives', 'nb-NO', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/nb-NO/managePrimitives.json')) : () => import('@/messages/ns/nb-NO/managePrimitives.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('managePrimitives', 'pl-PL', typeof window === 'undefined' ? require('@/messages/ns/pl-PL/managePrimitives.json') : () => import('@/messages/ns/pl-PL/managePrimitives.json'))
+registerLanguage('managePrimitives', 'pl-PL', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/pl-PL/managePrimitives.json')) : () => import('@/messages/ns/pl-PL/managePrimitives.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('managePrimitives', 'cs-CZ', typeof window === 'undefined' ? require('@/messages/ns/cs-CZ/managePrimitives.json') : () => import('@/messages/ns/cs-CZ/managePrimitives.json'))
+registerLanguage('managePrimitives', 'cs-CZ', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/cs-CZ/managePrimitives.json')) : () => import('@/messages/ns/cs-CZ/managePrimitives.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('managePrimitives', 'hu-HU', typeof window === 'undefined' ? require('@/messages/ns/hu-HU/managePrimitives.json') : () => import('@/messages/ns/hu-HU/managePrimitives.json'))
+registerLanguage('managePrimitives', 'hu-HU', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/hu-HU/managePrimitives.json')) : () => import('@/messages/ns/hu-HU/managePrimitives.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('managePrimitives', 'sk-SK', typeof window === 'undefined' ? require('@/messages/ns/sk-SK/managePrimitives.json') : () => import('@/messages/ns/sk-SK/managePrimitives.json'))
+registerLanguage('managePrimitives', 'sk-SK', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/sk-SK/managePrimitives.json')) : () => import('@/messages/ns/sk-SK/managePrimitives.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('managePrimitives', 'ro-RO', typeof window === 'undefined' ? require('@/messages/ns/ro-RO/managePrimitives.json') : () => import('@/messages/ns/ro-RO/managePrimitives.json'))
+registerLanguage('managePrimitives', 'ro-RO', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/ro-RO/managePrimitives.json')) : () => import('@/messages/ns/ro-RO/managePrimitives.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('managePrimitives', 'hr-HR', typeof window === 'undefined' ? require('@/messages/ns/hr-HR/managePrimitives.json') : () => import('@/messages/ns/hr-HR/managePrimitives.json'))
+registerLanguage('managePrimitives', 'hr-HR', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/hr-HR/managePrimitives.json')) : () => import('@/messages/ns/hr-HR/managePrimitives.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('managePrimitives', 'sl-SI', typeof window === 'undefined' ? require('@/messages/ns/sl-SI/managePrimitives.json') : () => import('@/messages/ns/sl-SI/managePrimitives.json'))
+registerLanguage('managePrimitives', 'sl-SI', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/sl-SI/managePrimitives.json')) : () => import('@/messages/ns/sl-SI/managePrimitives.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('managePrimitives', 'fi-FI', typeof window === 'undefined' ? require('@/messages/ns/fi-FI/managePrimitives.json') : () => import('@/messages/ns/fi-FI/managePrimitives.json'))
+registerLanguage('managePrimitives', 'fi-FI', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/fi-FI/managePrimitives.json')) : () => import('@/messages/ns/fi-FI/managePrimitives.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('managePrimitives', 'et-EE', typeof window === 'undefined' ? require('@/messages/ns/et-EE/managePrimitives.json') : () => import('@/messages/ns/et-EE/managePrimitives.json'))
+registerLanguage('managePrimitives', 'et-EE', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/et-EE/managePrimitives.json')) : () => import('@/messages/ns/et-EE/managePrimitives.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('managePrimitives', 'lv-LV', typeof window === 'undefined' ? require('@/messages/ns/lv-LV/managePrimitives.json') : () => import('@/messages/ns/lv-LV/managePrimitives.json'))
+registerLanguage('managePrimitives', 'lv-LV', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/lv-LV/managePrimitives.json')) : () => import('@/messages/ns/lv-LV/managePrimitives.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('managePrimitives', 'lt-LT', typeof window === 'undefined' ? require('@/messages/ns/lt-LT/managePrimitives.json') : () => import('@/messages/ns/lt-LT/managePrimitives.json'))
+registerLanguage('managePrimitives', 'lt-LT', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/lt-LT/managePrimitives.json')) : () => import('@/messages/ns/lt-LT/managePrimitives.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('managePrimitives', 'el-GR', typeof window === 'undefined' ? require('@/messages/ns/el-GR/managePrimitives.json') : () => import('@/messages/ns/el-GR/managePrimitives.json'))
+registerLanguage('managePrimitives', 'el-GR', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/el-GR/managePrimitives.json')) : () => import('@/messages/ns/el-GR/managePrimitives.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('managePrimitives', 'bg-BG', typeof window === 'undefined' ? require('@/messages/ns/bg-BG/managePrimitives.json') : () => import('@/messages/ns/bg-BG/managePrimitives.json'))
+registerLanguage('managePrimitives', 'bg-BG', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/bg-BG/managePrimitives.json')) : () => import('@/messages/ns/bg-BG/managePrimitives.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('managePrimitives', 'es-MX', typeof window === 'undefined' ? require('@/messages/ns/es-MX/managePrimitives.json') : () => import('@/messages/ns/es-MX/managePrimitives.json'))
+registerLanguage('managePrimitives', 'es-MX', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/es-MX/managePrimitives.json')) : () => import('@/messages/ns/es-MX/managePrimitives.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('managePrimitives', 'pt-BR', typeof window === 'undefined' ? require('@/messages/ns/pt-BR/managePrimitives.json') : () => import('@/messages/ns/pt-BR/managePrimitives.json'))
+registerLanguage('managePrimitives', 'pt-BR', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/pt-BR/managePrimitives.json')) : () => import('@/messages/ns/pt-BR/managePrimitives.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('managePrimitives', 'ms-MY', typeof window === 'undefined' ? require('@/messages/ns/ms-MY/managePrimitives.json') : () => import('@/messages/ns/ms-MY/managePrimitives.json'))
+registerLanguage('managePrimitives', 'ms-MY', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/ms-MY/managePrimitives.json')) : () => import('@/messages/ns/ms-MY/managePrimitives.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('managePrimitives', 'ja-JP', typeof window === 'undefined' ? require('@/messages/ns/ja-JP/managePrimitives.json') : () => import('@/messages/ns/ja-JP/managePrimitives.json'))
+registerLanguage('managePrimitives', 'ja-JP', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/ja-JP/managePrimitives.json')) : () => import('@/messages/ns/ja-JP/managePrimitives.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('managePrimitives', 'zh-HK', typeof window === 'undefined' ? require('@/messages/ns/zh-HK/managePrimitives.json') : () => import('@/messages/ns/zh-HK/managePrimitives.json'))
+registerLanguage('managePrimitives', 'zh-HK', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/zh-HK/managePrimitives.json')) : () => import('@/messages/ns/zh-HK/managePrimitives.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('managePrimitives', 'th-TH', typeof window === 'undefined' ? require('@/messages/ns/th-TH/managePrimitives.json') : () => import('@/messages/ns/th-TH/managePrimitives.json'))
+registerLanguage('managePrimitives', 'th-TH', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/th-TH/managePrimitives.json')) : () => import('@/messages/ns/th-TH/managePrimitives.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('managePrimitives', 'ar-AE', typeof window === 'undefined' ? require('@/messages/ns/ar-AE/managePrimitives.json') : () => import('@/messages/ns/ar-AE/managePrimitives.json'))
+registerLanguage('managePrimitives', 'ar-AE', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/ar-AE/managePrimitives.json')) : () => import('@/messages/ns/ar-AE/managePrimitives.json'))

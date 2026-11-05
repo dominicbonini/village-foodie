@@ -2,63 +2,64 @@
 // Import this module (`import '@/lib/i18n/catalog/whereYouTrade'`) in any file that reads the "whereYouTrade" namespace.
 import base from '@/messages/ns/en-GB/whereYouTrade.json'
 import enUS from '@/messages/ns/en-US/whereYouTrade.json'
-import { registerNamespace, registerLanguage } from '@/lib/i18n/registry'
+import { registerNamespace, registerLanguage, serverWords } from '@/lib/i18n/registry'
 
 registerNamespace('whereYouTrade', base, { 'en-US': enUS })
-// languages-1: each non-English language — on the server now; in the browser only when a page is in that language.
+// languages-1: each non-English language only when a page is in that language — perf-1: on the server too (serverWords: a
+// synchronous require, run the first time the language is asked for), in the browser as a chunk loaded on demand.
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('whereYouTrade', 'fr-FR', typeof window === 'undefined' ? require('@/messages/ns/fr-FR/whereYouTrade.json') : () => import('@/messages/ns/fr-FR/whereYouTrade.json'))
+registerLanguage('whereYouTrade', 'fr-FR', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/fr-FR/whereYouTrade.json')) : () => import('@/messages/ns/fr-FR/whereYouTrade.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('whereYouTrade', 'de-DE', typeof window === 'undefined' ? require('@/messages/ns/de-DE/whereYouTrade.json') : () => import('@/messages/ns/de-DE/whereYouTrade.json'))
+registerLanguage('whereYouTrade', 'de-DE', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/de-DE/whereYouTrade.json')) : () => import('@/messages/ns/de-DE/whereYouTrade.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('whereYouTrade', 'es-ES', typeof window === 'undefined' ? require('@/messages/ns/es-ES/whereYouTrade.json') : () => import('@/messages/ns/es-ES/whereYouTrade.json'))
+registerLanguage('whereYouTrade', 'es-ES', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/es-ES/whereYouTrade.json')) : () => import('@/messages/ns/es-ES/whereYouTrade.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('whereYouTrade', 'it-IT', typeof window === 'undefined' ? require('@/messages/ns/it-IT/whereYouTrade.json') : () => import('@/messages/ns/it-IT/whereYouTrade.json'))
+registerLanguage('whereYouTrade', 'it-IT', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/it-IT/whereYouTrade.json')) : () => import('@/messages/ns/it-IT/whereYouTrade.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('whereYouTrade', 'pt-PT', typeof window === 'undefined' ? require('@/messages/ns/pt-PT/whereYouTrade.json') : () => import('@/messages/ns/pt-PT/whereYouTrade.json'))
+registerLanguage('whereYouTrade', 'pt-PT', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/pt-PT/whereYouTrade.json')) : () => import('@/messages/ns/pt-PT/whereYouTrade.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('whereYouTrade', 'nl-NL', typeof window === 'undefined' ? require('@/messages/ns/nl-NL/whereYouTrade.json') : () => import('@/messages/ns/nl-NL/whereYouTrade.json'))
+registerLanguage('whereYouTrade', 'nl-NL', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/nl-NL/whereYouTrade.json')) : () => import('@/messages/ns/nl-NL/whereYouTrade.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('whereYouTrade', 'sv-SE', typeof window === 'undefined' ? require('@/messages/ns/sv-SE/whereYouTrade.json') : () => import('@/messages/ns/sv-SE/whereYouTrade.json'))
+registerLanguage('whereYouTrade', 'sv-SE', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/sv-SE/whereYouTrade.json')) : () => import('@/messages/ns/sv-SE/whereYouTrade.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('whereYouTrade', 'da-DK', typeof window === 'undefined' ? require('@/messages/ns/da-DK/whereYouTrade.json') : () => import('@/messages/ns/da-DK/whereYouTrade.json'))
+registerLanguage('whereYouTrade', 'da-DK', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/da-DK/whereYouTrade.json')) : () => import('@/messages/ns/da-DK/whereYouTrade.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('whereYouTrade', 'nb-NO', typeof window === 'undefined' ? require('@/messages/ns/nb-NO/whereYouTrade.json') : () => import('@/messages/ns/nb-NO/whereYouTrade.json'))
+registerLanguage('whereYouTrade', 'nb-NO', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/nb-NO/whereYouTrade.json')) : () => import('@/messages/ns/nb-NO/whereYouTrade.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('whereYouTrade', 'pl-PL', typeof window === 'undefined' ? require('@/messages/ns/pl-PL/whereYouTrade.json') : () => import('@/messages/ns/pl-PL/whereYouTrade.json'))
+registerLanguage('whereYouTrade', 'pl-PL', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/pl-PL/whereYouTrade.json')) : () => import('@/messages/ns/pl-PL/whereYouTrade.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('whereYouTrade', 'cs-CZ', typeof window === 'undefined' ? require('@/messages/ns/cs-CZ/whereYouTrade.json') : () => import('@/messages/ns/cs-CZ/whereYouTrade.json'))
+registerLanguage('whereYouTrade', 'cs-CZ', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/cs-CZ/whereYouTrade.json')) : () => import('@/messages/ns/cs-CZ/whereYouTrade.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('whereYouTrade', 'hu-HU', typeof window === 'undefined' ? require('@/messages/ns/hu-HU/whereYouTrade.json') : () => import('@/messages/ns/hu-HU/whereYouTrade.json'))
+registerLanguage('whereYouTrade', 'hu-HU', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/hu-HU/whereYouTrade.json')) : () => import('@/messages/ns/hu-HU/whereYouTrade.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('whereYouTrade', 'sk-SK', typeof window === 'undefined' ? require('@/messages/ns/sk-SK/whereYouTrade.json') : () => import('@/messages/ns/sk-SK/whereYouTrade.json'))
+registerLanguage('whereYouTrade', 'sk-SK', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/sk-SK/whereYouTrade.json')) : () => import('@/messages/ns/sk-SK/whereYouTrade.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('whereYouTrade', 'ro-RO', typeof window === 'undefined' ? require('@/messages/ns/ro-RO/whereYouTrade.json') : () => import('@/messages/ns/ro-RO/whereYouTrade.json'))
+registerLanguage('whereYouTrade', 'ro-RO', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/ro-RO/whereYouTrade.json')) : () => import('@/messages/ns/ro-RO/whereYouTrade.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('whereYouTrade', 'hr-HR', typeof window === 'undefined' ? require('@/messages/ns/hr-HR/whereYouTrade.json') : () => import('@/messages/ns/hr-HR/whereYouTrade.json'))
+registerLanguage('whereYouTrade', 'hr-HR', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/hr-HR/whereYouTrade.json')) : () => import('@/messages/ns/hr-HR/whereYouTrade.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('whereYouTrade', 'sl-SI', typeof window === 'undefined' ? require('@/messages/ns/sl-SI/whereYouTrade.json') : () => import('@/messages/ns/sl-SI/whereYouTrade.json'))
+registerLanguage('whereYouTrade', 'sl-SI', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/sl-SI/whereYouTrade.json')) : () => import('@/messages/ns/sl-SI/whereYouTrade.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('whereYouTrade', 'fi-FI', typeof window === 'undefined' ? require('@/messages/ns/fi-FI/whereYouTrade.json') : () => import('@/messages/ns/fi-FI/whereYouTrade.json'))
+registerLanguage('whereYouTrade', 'fi-FI', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/fi-FI/whereYouTrade.json')) : () => import('@/messages/ns/fi-FI/whereYouTrade.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('whereYouTrade', 'et-EE', typeof window === 'undefined' ? require('@/messages/ns/et-EE/whereYouTrade.json') : () => import('@/messages/ns/et-EE/whereYouTrade.json'))
+registerLanguage('whereYouTrade', 'et-EE', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/et-EE/whereYouTrade.json')) : () => import('@/messages/ns/et-EE/whereYouTrade.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('whereYouTrade', 'lv-LV', typeof window === 'undefined' ? require('@/messages/ns/lv-LV/whereYouTrade.json') : () => import('@/messages/ns/lv-LV/whereYouTrade.json'))
+registerLanguage('whereYouTrade', 'lv-LV', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/lv-LV/whereYouTrade.json')) : () => import('@/messages/ns/lv-LV/whereYouTrade.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('whereYouTrade', 'lt-LT', typeof window === 'undefined' ? require('@/messages/ns/lt-LT/whereYouTrade.json') : () => import('@/messages/ns/lt-LT/whereYouTrade.json'))
+registerLanguage('whereYouTrade', 'lt-LT', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/lt-LT/whereYouTrade.json')) : () => import('@/messages/ns/lt-LT/whereYouTrade.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('whereYouTrade', 'el-GR', typeof window === 'undefined' ? require('@/messages/ns/el-GR/whereYouTrade.json') : () => import('@/messages/ns/el-GR/whereYouTrade.json'))
+registerLanguage('whereYouTrade', 'el-GR', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/el-GR/whereYouTrade.json')) : () => import('@/messages/ns/el-GR/whereYouTrade.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('whereYouTrade', 'bg-BG', typeof window === 'undefined' ? require('@/messages/ns/bg-BG/whereYouTrade.json') : () => import('@/messages/ns/bg-BG/whereYouTrade.json'))
+registerLanguage('whereYouTrade', 'bg-BG', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/bg-BG/whereYouTrade.json')) : () => import('@/messages/ns/bg-BG/whereYouTrade.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('whereYouTrade', 'pt-BR', typeof window === 'undefined' ? require('@/messages/ns/pt-BR/whereYouTrade.json') : () => import('@/messages/ns/pt-BR/whereYouTrade.json'))
+registerLanguage('whereYouTrade', 'pt-BR', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/pt-BR/whereYouTrade.json')) : () => import('@/messages/ns/pt-BR/whereYouTrade.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('whereYouTrade', 'ms-MY', typeof window === 'undefined' ? require('@/messages/ns/ms-MY/whereYouTrade.json') : () => import('@/messages/ns/ms-MY/whereYouTrade.json'))
+registerLanguage('whereYouTrade', 'ms-MY', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/ms-MY/whereYouTrade.json')) : () => import('@/messages/ns/ms-MY/whereYouTrade.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('whereYouTrade', 'ja-JP', typeof window === 'undefined' ? require('@/messages/ns/ja-JP/whereYouTrade.json') : () => import('@/messages/ns/ja-JP/whereYouTrade.json'))
+registerLanguage('whereYouTrade', 'ja-JP', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/ja-JP/whereYouTrade.json')) : () => import('@/messages/ns/ja-JP/whereYouTrade.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('whereYouTrade', 'zh-HK', typeof window === 'undefined' ? require('@/messages/ns/zh-HK/whereYouTrade.json') : () => import('@/messages/ns/zh-HK/whereYouTrade.json'))
+registerLanguage('whereYouTrade', 'zh-HK', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/zh-HK/whereYouTrade.json')) : () => import('@/messages/ns/zh-HK/whereYouTrade.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('whereYouTrade', 'th-TH', typeof window === 'undefined' ? require('@/messages/ns/th-TH/whereYouTrade.json') : () => import('@/messages/ns/th-TH/whereYouTrade.json'))
+registerLanguage('whereYouTrade', 'th-TH', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/th-TH/whereYouTrade.json')) : () => import('@/messages/ns/th-TH/whereYouTrade.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('whereYouTrade', 'ar-AE', typeof window === 'undefined' ? require('@/messages/ns/ar-AE/whereYouTrade.json') : () => import('@/messages/ns/ar-AE/whereYouTrade.json'))
+registerLanguage('whereYouTrade', 'ar-AE', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/ar-AE/whereYouTrade.json')) : () => import('@/messages/ns/ar-AE/whereYouTrade.json'))

@@ -2,65 +2,66 @@
 // Import this module (`import '@/lib/i18n/catalog/cuisinePicker'`) in any file that reads the "cuisinePicker" namespace.
 import base from '@/messages/ns/en-GB/cuisinePicker.json'
 import enUS from '@/messages/ns/en-US/cuisinePicker.json'
-import { registerNamespace, registerLanguage } from '@/lib/i18n/registry'
+import { registerNamespace, registerLanguage, serverWords } from '@/lib/i18n/registry'
 
 registerNamespace('cuisinePicker', base, { 'en-US': enUS })
-// languages-1: each non-English language — on the server now; in the browser only when a page is in that language.
+// languages-1: each non-English language only when a page is in that language — perf-1: on the server too (serverWords: a
+// synchronous require, run the first time the language is asked for), in the browser as a chunk loaded on demand.
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('cuisinePicker', 'fr-FR', typeof window === 'undefined' ? require('@/messages/ns/fr-FR/cuisinePicker.json') : () => import('@/messages/ns/fr-FR/cuisinePicker.json'))
+registerLanguage('cuisinePicker', 'fr-FR', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/fr-FR/cuisinePicker.json')) : () => import('@/messages/ns/fr-FR/cuisinePicker.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('cuisinePicker', 'de-DE', typeof window === 'undefined' ? require('@/messages/ns/de-DE/cuisinePicker.json') : () => import('@/messages/ns/de-DE/cuisinePicker.json'))
+registerLanguage('cuisinePicker', 'de-DE', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/de-DE/cuisinePicker.json')) : () => import('@/messages/ns/de-DE/cuisinePicker.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('cuisinePicker', 'es-ES', typeof window === 'undefined' ? require('@/messages/ns/es-ES/cuisinePicker.json') : () => import('@/messages/ns/es-ES/cuisinePicker.json'))
+registerLanguage('cuisinePicker', 'es-ES', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/es-ES/cuisinePicker.json')) : () => import('@/messages/ns/es-ES/cuisinePicker.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('cuisinePicker', 'it-IT', typeof window === 'undefined' ? require('@/messages/ns/it-IT/cuisinePicker.json') : () => import('@/messages/ns/it-IT/cuisinePicker.json'))
+registerLanguage('cuisinePicker', 'it-IT', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/it-IT/cuisinePicker.json')) : () => import('@/messages/ns/it-IT/cuisinePicker.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('cuisinePicker', 'pt-PT', typeof window === 'undefined' ? require('@/messages/ns/pt-PT/cuisinePicker.json') : () => import('@/messages/ns/pt-PT/cuisinePicker.json'))
+registerLanguage('cuisinePicker', 'pt-PT', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/pt-PT/cuisinePicker.json')) : () => import('@/messages/ns/pt-PT/cuisinePicker.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('cuisinePicker', 'nl-NL', typeof window === 'undefined' ? require('@/messages/ns/nl-NL/cuisinePicker.json') : () => import('@/messages/ns/nl-NL/cuisinePicker.json'))
+registerLanguage('cuisinePicker', 'nl-NL', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/nl-NL/cuisinePicker.json')) : () => import('@/messages/ns/nl-NL/cuisinePicker.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('cuisinePicker', 'sv-SE', typeof window === 'undefined' ? require('@/messages/ns/sv-SE/cuisinePicker.json') : () => import('@/messages/ns/sv-SE/cuisinePicker.json'))
+registerLanguage('cuisinePicker', 'sv-SE', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/sv-SE/cuisinePicker.json')) : () => import('@/messages/ns/sv-SE/cuisinePicker.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('cuisinePicker', 'da-DK', typeof window === 'undefined' ? require('@/messages/ns/da-DK/cuisinePicker.json') : () => import('@/messages/ns/da-DK/cuisinePicker.json'))
+registerLanguage('cuisinePicker', 'da-DK', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/da-DK/cuisinePicker.json')) : () => import('@/messages/ns/da-DK/cuisinePicker.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('cuisinePicker', 'nb-NO', typeof window === 'undefined' ? require('@/messages/ns/nb-NO/cuisinePicker.json') : () => import('@/messages/ns/nb-NO/cuisinePicker.json'))
+registerLanguage('cuisinePicker', 'nb-NO', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/nb-NO/cuisinePicker.json')) : () => import('@/messages/ns/nb-NO/cuisinePicker.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('cuisinePicker', 'pl-PL', typeof window === 'undefined' ? require('@/messages/ns/pl-PL/cuisinePicker.json') : () => import('@/messages/ns/pl-PL/cuisinePicker.json'))
+registerLanguage('cuisinePicker', 'pl-PL', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/pl-PL/cuisinePicker.json')) : () => import('@/messages/ns/pl-PL/cuisinePicker.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('cuisinePicker', 'cs-CZ', typeof window === 'undefined' ? require('@/messages/ns/cs-CZ/cuisinePicker.json') : () => import('@/messages/ns/cs-CZ/cuisinePicker.json'))
+registerLanguage('cuisinePicker', 'cs-CZ', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/cs-CZ/cuisinePicker.json')) : () => import('@/messages/ns/cs-CZ/cuisinePicker.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('cuisinePicker', 'hu-HU', typeof window === 'undefined' ? require('@/messages/ns/hu-HU/cuisinePicker.json') : () => import('@/messages/ns/hu-HU/cuisinePicker.json'))
+registerLanguage('cuisinePicker', 'hu-HU', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/hu-HU/cuisinePicker.json')) : () => import('@/messages/ns/hu-HU/cuisinePicker.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('cuisinePicker', 'sk-SK', typeof window === 'undefined' ? require('@/messages/ns/sk-SK/cuisinePicker.json') : () => import('@/messages/ns/sk-SK/cuisinePicker.json'))
+registerLanguage('cuisinePicker', 'sk-SK', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/sk-SK/cuisinePicker.json')) : () => import('@/messages/ns/sk-SK/cuisinePicker.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('cuisinePicker', 'ro-RO', typeof window === 'undefined' ? require('@/messages/ns/ro-RO/cuisinePicker.json') : () => import('@/messages/ns/ro-RO/cuisinePicker.json'))
+registerLanguage('cuisinePicker', 'ro-RO', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/ro-RO/cuisinePicker.json')) : () => import('@/messages/ns/ro-RO/cuisinePicker.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('cuisinePicker', 'hr-HR', typeof window === 'undefined' ? require('@/messages/ns/hr-HR/cuisinePicker.json') : () => import('@/messages/ns/hr-HR/cuisinePicker.json'))
+registerLanguage('cuisinePicker', 'hr-HR', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/hr-HR/cuisinePicker.json')) : () => import('@/messages/ns/hr-HR/cuisinePicker.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('cuisinePicker', 'sl-SI', typeof window === 'undefined' ? require('@/messages/ns/sl-SI/cuisinePicker.json') : () => import('@/messages/ns/sl-SI/cuisinePicker.json'))
+registerLanguage('cuisinePicker', 'sl-SI', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/sl-SI/cuisinePicker.json')) : () => import('@/messages/ns/sl-SI/cuisinePicker.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('cuisinePicker', 'fi-FI', typeof window === 'undefined' ? require('@/messages/ns/fi-FI/cuisinePicker.json') : () => import('@/messages/ns/fi-FI/cuisinePicker.json'))
+registerLanguage('cuisinePicker', 'fi-FI', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/fi-FI/cuisinePicker.json')) : () => import('@/messages/ns/fi-FI/cuisinePicker.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('cuisinePicker', 'et-EE', typeof window === 'undefined' ? require('@/messages/ns/et-EE/cuisinePicker.json') : () => import('@/messages/ns/et-EE/cuisinePicker.json'))
+registerLanguage('cuisinePicker', 'et-EE', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/et-EE/cuisinePicker.json')) : () => import('@/messages/ns/et-EE/cuisinePicker.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('cuisinePicker', 'lv-LV', typeof window === 'undefined' ? require('@/messages/ns/lv-LV/cuisinePicker.json') : () => import('@/messages/ns/lv-LV/cuisinePicker.json'))
+registerLanguage('cuisinePicker', 'lv-LV', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/lv-LV/cuisinePicker.json')) : () => import('@/messages/ns/lv-LV/cuisinePicker.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('cuisinePicker', 'lt-LT', typeof window === 'undefined' ? require('@/messages/ns/lt-LT/cuisinePicker.json') : () => import('@/messages/ns/lt-LT/cuisinePicker.json'))
+registerLanguage('cuisinePicker', 'lt-LT', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/lt-LT/cuisinePicker.json')) : () => import('@/messages/ns/lt-LT/cuisinePicker.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('cuisinePicker', 'el-GR', typeof window === 'undefined' ? require('@/messages/ns/el-GR/cuisinePicker.json') : () => import('@/messages/ns/el-GR/cuisinePicker.json'))
+registerLanguage('cuisinePicker', 'el-GR', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/el-GR/cuisinePicker.json')) : () => import('@/messages/ns/el-GR/cuisinePicker.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('cuisinePicker', 'bg-BG', typeof window === 'undefined' ? require('@/messages/ns/bg-BG/cuisinePicker.json') : () => import('@/messages/ns/bg-BG/cuisinePicker.json'))
+registerLanguage('cuisinePicker', 'bg-BG', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/bg-BG/cuisinePicker.json')) : () => import('@/messages/ns/bg-BG/cuisinePicker.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('cuisinePicker', 'es-MX', typeof window === 'undefined' ? require('@/messages/ns/es-MX/cuisinePicker.json') : () => import('@/messages/ns/es-MX/cuisinePicker.json'))
+registerLanguage('cuisinePicker', 'es-MX', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/es-MX/cuisinePicker.json')) : () => import('@/messages/ns/es-MX/cuisinePicker.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('cuisinePicker', 'pt-BR', typeof window === 'undefined' ? require('@/messages/ns/pt-BR/cuisinePicker.json') : () => import('@/messages/ns/pt-BR/cuisinePicker.json'))
+registerLanguage('cuisinePicker', 'pt-BR', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/pt-BR/cuisinePicker.json')) : () => import('@/messages/ns/pt-BR/cuisinePicker.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('cuisinePicker', 'ms-MY', typeof window === 'undefined' ? require('@/messages/ns/ms-MY/cuisinePicker.json') : () => import('@/messages/ns/ms-MY/cuisinePicker.json'))
+registerLanguage('cuisinePicker', 'ms-MY', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/ms-MY/cuisinePicker.json')) : () => import('@/messages/ns/ms-MY/cuisinePicker.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('cuisinePicker', 'ja-JP', typeof window === 'undefined' ? require('@/messages/ns/ja-JP/cuisinePicker.json') : () => import('@/messages/ns/ja-JP/cuisinePicker.json'))
+registerLanguage('cuisinePicker', 'ja-JP', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/ja-JP/cuisinePicker.json')) : () => import('@/messages/ns/ja-JP/cuisinePicker.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('cuisinePicker', 'zh-HK', typeof window === 'undefined' ? require('@/messages/ns/zh-HK/cuisinePicker.json') : () => import('@/messages/ns/zh-HK/cuisinePicker.json'))
+registerLanguage('cuisinePicker', 'zh-HK', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/zh-HK/cuisinePicker.json')) : () => import('@/messages/ns/zh-HK/cuisinePicker.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('cuisinePicker', 'th-TH', typeof window === 'undefined' ? require('@/messages/ns/th-TH/cuisinePicker.json') : () => import('@/messages/ns/th-TH/cuisinePicker.json'))
+registerLanguage('cuisinePicker', 'th-TH', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/th-TH/cuisinePicker.json')) : () => import('@/messages/ns/th-TH/cuisinePicker.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('cuisinePicker', 'ar-AE', typeof window === 'undefined' ? require('@/messages/ns/ar-AE/cuisinePicker.json') : () => import('@/messages/ns/ar-AE/cuisinePicker.json'))
+registerLanguage('cuisinePicker', 'ar-AE', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/ar-AE/cuisinePicker.json')) : () => import('@/messages/ns/ar-AE/cuisinePicker.json'))

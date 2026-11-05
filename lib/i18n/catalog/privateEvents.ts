@@ -3,65 +3,66 @@
 import base from '@/messages/ns/en-GB/privateEvents.json'
 import enUS from '@/messages/ns/en-US/privateEvents.json'
 import enCA from '@/messages/ns/en-CA/privateEvents.json'
-import { registerNamespace, registerLanguage } from '@/lib/i18n/registry'
+import { registerNamespace, registerLanguage, serverWords } from '@/lib/i18n/registry'
 
 registerNamespace('privateEvents', base, { 'en-US': enUS, 'en-CA': enCA })
-// languages-1: each non-English language — on the server now; in the browser only when a page is in that language.
+// languages-1: each non-English language only when a page is in that language — perf-1: on the server too (serverWords: a
+// synchronous require, run the first time the language is asked for), in the browser as a chunk loaded on demand.
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('privateEvents', 'fr-FR', typeof window === 'undefined' ? require('@/messages/ns/fr-FR/privateEvents.json') : () => import('@/messages/ns/fr-FR/privateEvents.json'))
+registerLanguage('privateEvents', 'fr-FR', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/fr-FR/privateEvents.json')) : () => import('@/messages/ns/fr-FR/privateEvents.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('privateEvents', 'de-DE', typeof window === 'undefined' ? require('@/messages/ns/de-DE/privateEvents.json') : () => import('@/messages/ns/de-DE/privateEvents.json'))
+registerLanguage('privateEvents', 'de-DE', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/de-DE/privateEvents.json')) : () => import('@/messages/ns/de-DE/privateEvents.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('privateEvents', 'es-ES', typeof window === 'undefined' ? require('@/messages/ns/es-ES/privateEvents.json') : () => import('@/messages/ns/es-ES/privateEvents.json'))
+registerLanguage('privateEvents', 'es-ES', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/es-ES/privateEvents.json')) : () => import('@/messages/ns/es-ES/privateEvents.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('privateEvents', 'it-IT', typeof window === 'undefined' ? require('@/messages/ns/it-IT/privateEvents.json') : () => import('@/messages/ns/it-IT/privateEvents.json'))
+registerLanguage('privateEvents', 'it-IT', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/it-IT/privateEvents.json')) : () => import('@/messages/ns/it-IT/privateEvents.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('privateEvents', 'pt-PT', typeof window === 'undefined' ? require('@/messages/ns/pt-PT/privateEvents.json') : () => import('@/messages/ns/pt-PT/privateEvents.json'))
+registerLanguage('privateEvents', 'pt-PT', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/pt-PT/privateEvents.json')) : () => import('@/messages/ns/pt-PT/privateEvents.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('privateEvents', 'nl-NL', typeof window === 'undefined' ? require('@/messages/ns/nl-NL/privateEvents.json') : () => import('@/messages/ns/nl-NL/privateEvents.json'))
+registerLanguage('privateEvents', 'nl-NL', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/nl-NL/privateEvents.json')) : () => import('@/messages/ns/nl-NL/privateEvents.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('privateEvents', 'sv-SE', typeof window === 'undefined' ? require('@/messages/ns/sv-SE/privateEvents.json') : () => import('@/messages/ns/sv-SE/privateEvents.json'))
+registerLanguage('privateEvents', 'sv-SE', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/sv-SE/privateEvents.json')) : () => import('@/messages/ns/sv-SE/privateEvents.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('privateEvents', 'da-DK', typeof window === 'undefined' ? require('@/messages/ns/da-DK/privateEvents.json') : () => import('@/messages/ns/da-DK/privateEvents.json'))
+registerLanguage('privateEvents', 'da-DK', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/da-DK/privateEvents.json')) : () => import('@/messages/ns/da-DK/privateEvents.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('privateEvents', 'nb-NO', typeof window === 'undefined' ? require('@/messages/ns/nb-NO/privateEvents.json') : () => import('@/messages/ns/nb-NO/privateEvents.json'))
+registerLanguage('privateEvents', 'nb-NO', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/nb-NO/privateEvents.json')) : () => import('@/messages/ns/nb-NO/privateEvents.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('privateEvents', 'pl-PL', typeof window === 'undefined' ? require('@/messages/ns/pl-PL/privateEvents.json') : () => import('@/messages/ns/pl-PL/privateEvents.json'))
+registerLanguage('privateEvents', 'pl-PL', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/pl-PL/privateEvents.json')) : () => import('@/messages/ns/pl-PL/privateEvents.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('privateEvents', 'cs-CZ', typeof window === 'undefined' ? require('@/messages/ns/cs-CZ/privateEvents.json') : () => import('@/messages/ns/cs-CZ/privateEvents.json'))
+registerLanguage('privateEvents', 'cs-CZ', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/cs-CZ/privateEvents.json')) : () => import('@/messages/ns/cs-CZ/privateEvents.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('privateEvents', 'hu-HU', typeof window === 'undefined' ? require('@/messages/ns/hu-HU/privateEvents.json') : () => import('@/messages/ns/hu-HU/privateEvents.json'))
+registerLanguage('privateEvents', 'hu-HU', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/hu-HU/privateEvents.json')) : () => import('@/messages/ns/hu-HU/privateEvents.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('privateEvents', 'sk-SK', typeof window === 'undefined' ? require('@/messages/ns/sk-SK/privateEvents.json') : () => import('@/messages/ns/sk-SK/privateEvents.json'))
+registerLanguage('privateEvents', 'sk-SK', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/sk-SK/privateEvents.json')) : () => import('@/messages/ns/sk-SK/privateEvents.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('privateEvents', 'ro-RO', typeof window === 'undefined' ? require('@/messages/ns/ro-RO/privateEvents.json') : () => import('@/messages/ns/ro-RO/privateEvents.json'))
+registerLanguage('privateEvents', 'ro-RO', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/ro-RO/privateEvents.json')) : () => import('@/messages/ns/ro-RO/privateEvents.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('privateEvents', 'hr-HR', typeof window === 'undefined' ? require('@/messages/ns/hr-HR/privateEvents.json') : () => import('@/messages/ns/hr-HR/privateEvents.json'))
+registerLanguage('privateEvents', 'hr-HR', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/hr-HR/privateEvents.json')) : () => import('@/messages/ns/hr-HR/privateEvents.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('privateEvents', 'sl-SI', typeof window === 'undefined' ? require('@/messages/ns/sl-SI/privateEvents.json') : () => import('@/messages/ns/sl-SI/privateEvents.json'))
+registerLanguage('privateEvents', 'sl-SI', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/sl-SI/privateEvents.json')) : () => import('@/messages/ns/sl-SI/privateEvents.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('privateEvents', 'fi-FI', typeof window === 'undefined' ? require('@/messages/ns/fi-FI/privateEvents.json') : () => import('@/messages/ns/fi-FI/privateEvents.json'))
+registerLanguage('privateEvents', 'fi-FI', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/fi-FI/privateEvents.json')) : () => import('@/messages/ns/fi-FI/privateEvents.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('privateEvents', 'et-EE', typeof window === 'undefined' ? require('@/messages/ns/et-EE/privateEvents.json') : () => import('@/messages/ns/et-EE/privateEvents.json'))
+registerLanguage('privateEvents', 'et-EE', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/et-EE/privateEvents.json')) : () => import('@/messages/ns/et-EE/privateEvents.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('privateEvents', 'lv-LV', typeof window === 'undefined' ? require('@/messages/ns/lv-LV/privateEvents.json') : () => import('@/messages/ns/lv-LV/privateEvents.json'))
+registerLanguage('privateEvents', 'lv-LV', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/lv-LV/privateEvents.json')) : () => import('@/messages/ns/lv-LV/privateEvents.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('privateEvents', 'lt-LT', typeof window === 'undefined' ? require('@/messages/ns/lt-LT/privateEvents.json') : () => import('@/messages/ns/lt-LT/privateEvents.json'))
+registerLanguage('privateEvents', 'lt-LT', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/lt-LT/privateEvents.json')) : () => import('@/messages/ns/lt-LT/privateEvents.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('privateEvents', 'el-GR', typeof window === 'undefined' ? require('@/messages/ns/el-GR/privateEvents.json') : () => import('@/messages/ns/el-GR/privateEvents.json'))
+registerLanguage('privateEvents', 'el-GR', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/el-GR/privateEvents.json')) : () => import('@/messages/ns/el-GR/privateEvents.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('privateEvents', 'bg-BG', typeof window === 'undefined' ? require('@/messages/ns/bg-BG/privateEvents.json') : () => import('@/messages/ns/bg-BG/privateEvents.json'))
+registerLanguage('privateEvents', 'bg-BG', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/bg-BG/privateEvents.json')) : () => import('@/messages/ns/bg-BG/privateEvents.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('privateEvents', 'es-MX', typeof window === 'undefined' ? require('@/messages/ns/es-MX/privateEvents.json') : () => import('@/messages/ns/es-MX/privateEvents.json'))
+registerLanguage('privateEvents', 'es-MX', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/es-MX/privateEvents.json')) : () => import('@/messages/ns/es-MX/privateEvents.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('privateEvents', 'pt-BR', typeof window === 'undefined' ? require('@/messages/ns/pt-BR/privateEvents.json') : () => import('@/messages/ns/pt-BR/privateEvents.json'))
+registerLanguage('privateEvents', 'pt-BR', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/pt-BR/privateEvents.json')) : () => import('@/messages/ns/pt-BR/privateEvents.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('privateEvents', 'ms-MY', typeof window === 'undefined' ? require('@/messages/ns/ms-MY/privateEvents.json') : () => import('@/messages/ns/ms-MY/privateEvents.json'))
+registerLanguage('privateEvents', 'ms-MY', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/ms-MY/privateEvents.json')) : () => import('@/messages/ns/ms-MY/privateEvents.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('privateEvents', 'ja-JP', typeof window === 'undefined' ? require('@/messages/ns/ja-JP/privateEvents.json') : () => import('@/messages/ns/ja-JP/privateEvents.json'))
+registerLanguage('privateEvents', 'ja-JP', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/ja-JP/privateEvents.json')) : () => import('@/messages/ns/ja-JP/privateEvents.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('privateEvents', 'zh-HK', typeof window === 'undefined' ? require('@/messages/ns/zh-HK/privateEvents.json') : () => import('@/messages/ns/zh-HK/privateEvents.json'))
+registerLanguage('privateEvents', 'zh-HK', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/zh-HK/privateEvents.json')) : () => import('@/messages/ns/zh-HK/privateEvents.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('privateEvents', 'th-TH', typeof window === 'undefined' ? require('@/messages/ns/th-TH/privateEvents.json') : () => import('@/messages/ns/th-TH/privateEvents.json'))
+registerLanguage('privateEvents', 'th-TH', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/th-TH/privateEvents.json')) : () => import('@/messages/ns/th-TH/privateEvents.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('privateEvents', 'ar-AE', typeof window === 'undefined' ? require('@/messages/ns/ar-AE/privateEvents.json') : () => import('@/messages/ns/ar-AE/privateEvents.json'))
+registerLanguage('privateEvents', 'ar-AE', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/ar-AE/privateEvents.json')) : () => import('@/messages/ns/ar-AE/privateEvents.json'))

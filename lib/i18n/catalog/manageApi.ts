@@ -2,63 +2,64 @@
 // Import this module (`import '@/lib/i18n/catalog/manageApi'`) in any file that reads the "manageApi" namespace.
 import base from '@/messages/ns/en-GB/manageApi.json'
 import enUS from '@/messages/ns/en-US/manageApi.json'
-import { registerNamespace, registerLanguage } from '@/lib/i18n/registry'
+import { registerNamespace, registerLanguage, serverWords } from '@/lib/i18n/registry'
 
 registerNamespace('manageApi', base, { 'en-US': enUS })
-// languages-1: each non-English language — on the server now; in the browser only when a page is in that language.
+// languages-1: each non-English language only when a page is in that language — perf-1: on the server too (serverWords: a
+// synchronous require, run the first time the language is asked for), in the browser as a chunk loaded on demand.
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('manageApi', 'fr-FR', typeof window === 'undefined' ? require('@/messages/ns/fr-FR/manageApi.json') : () => import('@/messages/ns/fr-FR/manageApi.json'))
+registerLanguage('manageApi', 'fr-FR', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/fr-FR/manageApi.json')) : () => import('@/messages/ns/fr-FR/manageApi.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('manageApi', 'de-DE', typeof window === 'undefined' ? require('@/messages/ns/de-DE/manageApi.json') : () => import('@/messages/ns/de-DE/manageApi.json'))
+registerLanguage('manageApi', 'de-DE', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/de-DE/manageApi.json')) : () => import('@/messages/ns/de-DE/manageApi.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('manageApi', 'es-ES', typeof window === 'undefined' ? require('@/messages/ns/es-ES/manageApi.json') : () => import('@/messages/ns/es-ES/manageApi.json'))
+registerLanguage('manageApi', 'es-ES', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/es-ES/manageApi.json')) : () => import('@/messages/ns/es-ES/manageApi.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('manageApi', 'it-IT', typeof window === 'undefined' ? require('@/messages/ns/it-IT/manageApi.json') : () => import('@/messages/ns/it-IT/manageApi.json'))
+registerLanguage('manageApi', 'it-IT', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/it-IT/manageApi.json')) : () => import('@/messages/ns/it-IT/manageApi.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('manageApi', 'pt-PT', typeof window === 'undefined' ? require('@/messages/ns/pt-PT/manageApi.json') : () => import('@/messages/ns/pt-PT/manageApi.json'))
+registerLanguage('manageApi', 'pt-PT', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/pt-PT/manageApi.json')) : () => import('@/messages/ns/pt-PT/manageApi.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('manageApi', 'nl-NL', typeof window === 'undefined' ? require('@/messages/ns/nl-NL/manageApi.json') : () => import('@/messages/ns/nl-NL/manageApi.json'))
+registerLanguage('manageApi', 'nl-NL', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/nl-NL/manageApi.json')) : () => import('@/messages/ns/nl-NL/manageApi.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('manageApi', 'sv-SE', typeof window === 'undefined' ? require('@/messages/ns/sv-SE/manageApi.json') : () => import('@/messages/ns/sv-SE/manageApi.json'))
+registerLanguage('manageApi', 'sv-SE', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/sv-SE/manageApi.json')) : () => import('@/messages/ns/sv-SE/manageApi.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('manageApi', 'da-DK', typeof window === 'undefined' ? require('@/messages/ns/da-DK/manageApi.json') : () => import('@/messages/ns/da-DK/manageApi.json'))
+registerLanguage('manageApi', 'da-DK', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/da-DK/manageApi.json')) : () => import('@/messages/ns/da-DK/manageApi.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('manageApi', 'nb-NO', typeof window === 'undefined' ? require('@/messages/ns/nb-NO/manageApi.json') : () => import('@/messages/ns/nb-NO/manageApi.json'))
+registerLanguage('manageApi', 'nb-NO', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/nb-NO/manageApi.json')) : () => import('@/messages/ns/nb-NO/manageApi.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('manageApi', 'pl-PL', typeof window === 'undefined' ? require('@/messages/ns/pl-PL/manageApi.json') : () => import('@/messages/ns/pl-PL/manageApi.json'))
+registerLanguage('manageApi', 'pl-PL', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/pl-PL/manageApi.json')) : () => import('@/messages/ns/pl-PL/manageApi.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('manageApi', 'cs-CZ', typeof window === 'undefined' ? require('@/messages/ns/cs-CZ/manageApi.json') : () => import('@/messages/ns/cs-CZ/manageApi.json'))
+registerLanguage('manageApi', 'cs-CZ', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/cs-CZ/manageApi.json')) : () => import('@/messages/ns/cs-CZ/manageApi.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('manageApi', 'hu-HU', typeof window === 'undefined' ? require('@/messages/ns/hu-HU/manageApi.json') : () => import('@/messages/ns/hu-HU/manageApi.json'))
+registerLanguage('manageApi', 'hu-HU', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/hu-HU/manageApi.json')) : () => import('@/messages/ns/hu-HU/manageApi.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('manageApi', 'sk-SK', typeof window === 'undefined' ? require('@/messages/ns/sk-SK/manageApi.json') : () => import('@/messages/ns/sk-SK/manageApi.json'))
+registerLanguage('manageApi', 'sk-SK', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/sk-SK/manageApi.json')) : () => import('@/messages/ns/sk-SK/manageApi.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('manageApi', 'ro-RO', typeof window === 'undefined' ? require('@/messages/ns/ro-RO/manageApi.json') : () => import('@/messages/ns/ro-RO/manageApi.json'))
+registerLanguage('manageApi', 'ro-RO', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/ro-RO/manageApi.json')) : () => import('@/messages/ns/ro-RO/manageApi.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('manageApi', 'hr-HR', typeof window === 'undefined' ? require('@/messages/ns/hr-HR/manageApi.json') : () => import('@/messages/ns/hr-HR/manageApi.json'))
+registerLanguage('manageApi', 'hr-HR', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/hr-HR/manageApi.json')) : () => import('@/messages/ns/hr-HR/manageApi.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('manageApi', 'sl-SI', typeof window === 'undefined' ? require('@/messages/ns/sl-SI/manageApi.json') : () => import('@/messages/ns/sl-SI/manageApi.json'))
+registerLanguage('manageApi', 'sl-SI', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/sl-SI/manageApi.json')) : () => import('@/messages/ns/sl-SI/manageApi.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('manageApi', 'fi-FI', typeof window === 'undefined' ? require('@/messages/ns/fi-FI/manageApi.json') : () => import('@/messages/ns/fi-FI/manageApi.json'))
+registerLanguage('manageApi', 'fi-FI', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/fi-FI/manageApi.json')) : () => import('@/messages/ns/fi-FI/manageApi.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('manageApi', 'et-EE', typeof window === 'undefined' ? require('@/messages/ns/et-EE/manageApi.json') : () => import('@/messages/ns/et-EE/manageApi.json'))
+registerLanguage('manageApi', 'et-EE', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/et-EE/manageApi.json')) : () => import('@/messages/ns/et-EE/manageApi.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('manageApi', 'lv-LV', typeof window === 'undefined' ? require('@/messages/ns/lv-LV/manageApi.json') : () => import('@/messages/ns/lv-LV/manageApi.json'))
+registerLanguage('manageApi', 'lv-LV', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/lv-LV/manageApi.json')) : () => import('@/messages/ns/lv-LV/manageApi.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('manageApi', 'lt-LT', typeof window === 'undefined' ? require('@/messages/ns/lt-LT/manageApi.json') : () => import('@/messages/ns/lt-LT/manageApi.json'))
+registerLanguage('manageApi', 'lt-LT', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/lt-LT/manageApi.json')) : () => import('@/messages/ns/lt-LT/manageApi.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('manageApi', 'el-GR', typeof window === 'undefined' ? require('@/messages/ns/el-GR/manageApi.json') : () => import('@/messages/ns/el-GR/manageApi.json'))
+registerLanguage('manageApi', 'el-GR', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/el-GR/manageApi.json')) : () => import('@/messages/ns/el-GR/manageApi.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('manageApi', 'bg-BG', typeof window === 'undefined' ? require('@/messages/ns/bg-BG/manageApi.json') : () => import('@/messages/ns/bg-BG/manageApi.json'))
+registerLanguage('manageApi', 'bg-BG', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/bg-BG/manageApi.json')) : () => import('@/messages/ns/bg-BG/manageApi.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('manageApi', 'pt-BR', typeof window === 'undefined' ? require('@/messages/ns/pt-BR/manageApi.json') : () => import('@/messages/ns/pt-BR/manageApi.json'))
+registerLanguage('manageApi', 'pt-BR', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/pt-BR/manageApi.json')) : () => import('@/messages/ns/pt-BR/manageApi.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('manageApi', 'ms-MY', typeof window === 'undefined' ? require('@/messages/ns/ms-MY/manageApi.json') : () => import('@/messages/ns/ms-MY/manageApi.json'))
+registerLanguage('manageApi', 'ms-MY', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/ms-MY/manageApi.json')) : () => import('@/messages/ns/ms-MY/manageApi.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('manageApi', 'ja-JP', typeof window === 'undefined' ? require('@/messages/ns/ja-JP/manageApi.json') : () => import('@/messages/ns/ja-JP/manageApi.json'))
+registerLanguage('manageApi', 'ja-JP', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/ja-JP/manageApi.json')) : () => import('@/messages/ns/ja-JP/manageApi.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('manageApi', 'zh-HK', typeof window === 'undefined' ? require('@/messages/ns/zh-HK/manageApi.json') : () => import('@/messages/ns/zh-HK/manageApi.json'))
+registerLanguage('manageApi', 'zh-HK', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/zh-HK/manageApi.json')) : () => import('@/messages/ns/zh-HK/manageApi.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('manageApi', 'th-TH', typeof window === 'undefined' ? require('@/messages/ns/th-TH/manageApi.json') : () => import('@/messages/ns/th-TH/manageApi.json'))
+registerLanguage('manageApi', 'th-TH', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/th-TH/manageApi.json')) : () => import('@/messages/ns/th-TH/manageApi.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('manageApi', 'ar-AE', typeof window === 'undefined' ? require('@/messages/ns/ar-AE/manageApi.json') : () => import('@/messages/ns/ar-AE/manageApi.json'))
+registerLanguage('manageApi', 'ar-AE', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/ar-AE/manageApi.json')) : () => import('@/messages/ns/ar-AE/manageApi.json'))

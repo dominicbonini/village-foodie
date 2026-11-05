@@ -2,63 +2,64 @@
 // Import this module (`import '@/lib/i18n/catalog/legalChrome'`) in any file that reads the "legalChrome" namespace.
 import base from '@/messages/ns/en-GB/legalChrome.json'
 import enUS from '@/messages/ns/en-US/legalChrome.json'
-import { registerNamespace, registerLanguage } from '@/lib/i18n/registry'
+import { registerNamespace, registerLanguage, serverWords } from '@/lib/i18n/registry'
 
 registerNamespace('legalChrome', base, { 'en-US': enUS })
-// languages-1: each non-English language — on the server now; in the browser only when a page is in that language.
+// languages-1: each non-English language only when a page is in that language — perf-1: on the server too (serverWords: a
+// synchronous require, run the first time the language is asked for), in the browser as a chunk loaded on demand.
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('legalChrome', 'fr-FR', typeof window === 'undefined' ? require('@/messages/ns/fr-FR/legalChrome.json') : () => import('@/messages/ns/fr-FR/legalChrome.json'))
+registerLanguage('legalChrome', 'fr-FR', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/fr-FR/legalChrome.json')) : () => import('@/messages/ns/fr-FR/legalChrome.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('legalChrome', 'de-DE', typeof window === 'undefined' ? require('@/messages/ns/de-DE/legalChrome.json') : () => import('@/messages/ns/de-DE/legalChrome.json'))
+registerLanguage('legalChrome', 'de-DE', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/de-DE/legalChrome.json')) : () => import('@/messages/ns/de-DE/legalChrome.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('legalChrome', 'es-ES', typeof window === 'undefined' ? require('@/messages/ns/es-ES/legalChrome.json') : () => import('@/messages/ns/es-ES/legalChrome.json'))
+registerLanguage('legalChrome', 'es-ES', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/es-ES/legalChrome.json')) : () => import('@/messages/ns/es-ES/legalChrome.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('legalChrome', 'it-IT', typeof window === 'undefined' ? require('@/messages/ns/it-IT/legalChrome.json') : () => import('@/messages/ns/it-IT/legalChrome.json'))
+registerLanguage('legalChrome', 'it-IT', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/it-IT/legalChrome.json')) : () => import('@/messages/ns/it-IT/legalChrome.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('legalChrome', 'pt-PT', typeof window === 'undefined' ? require('@/messages/ns/pt-PT/legalChrome.json') : () => import('@/messages/ns/pt-PT/legalChrome.json'))
+registerLanguage('legalChrome', 'pt-PT', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/pt-PT/legalChrome.json')) : () => import('@/messages/ns/pt-PT/legalChrome.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('legalChrome', 'nl-NL', typeof window === 'undefined' ? require('@/messages/ns/nl-NL/legalChrome.json') : () => import('@/messages/ns/nl-NL/legalChrome.json'))
+registerLanguage('legalChrome', 'nl-NL', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/nl-NL/legalChrome.json')) : () => import('@/messages/ns/nl-NL/legalChrome.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('legalChrome', 'sv-SE', typeof window === 'undefined' ? require('@/messages/ns/sv-SE/legalChrome.json') : () => import('@/messages/ns/sv-SE/legalChrome.json'))
+registerLanguage('legalChrome', 'sv-SE', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/sv-SE/legalChrome.json')) : () => import('@/messages/ns/sv-SE/legalChrome.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('legalChrome', 'da-DK', typeof window === 'undefined' ? require('@/messages/ns/da-DK/legalChrome.json') : () => import('@/messages/ns/da-DK/legalChrome.json'))
+registerLanguage('legalChrome', 'da-DK', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/da-DK/legalChrome.json')) : () => import('@/messages/ns/da-DK/legalChrome.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('legalChrome', 'nb-NO', typeof window === 'undefined' ? require('@/messages/ns/nb-NO/legalChrome.json') : () => import('@/messages/ns/nb-NO/legalChrome.json'))
+registerLanguage('legalChrome', 'nb-NO', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/nb-NO/legalChrome.json')) : () => import('@/messages/ns/nb-NO/legalChrome.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('legalChrome', 'pl-PL', typeof window === 'undefined' ? require('@/messages/ns/pl-PL/legalChrome.json') : () => import('@/messages/ns/pl-PL/legalChrome.json'))
+registerLanguage('legalChrome', 'pl-PL', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/pl-PL/legalChrome.json')) : () => import('@/messages/ns/pl-PL/legalChrome.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('legalChrome', 'cs-CZ', typeof window === 'undefined' ? require('@/messages/ns/cs-CZ/legalChrome.json') : () => import('@/messages/ns/cs-CZ/legalChrome.json'))
+registerLanguage('legalChrome', 'cs-CZ', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/cs-CZ/legalChrome.json')) : () => import('@/messages/ns/cs-CZ/legalChrome.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('legalChrome', 'hu-HU', typeof window === 'undefined' ? require('@/messages/ns/hu-HU/legalChrome.json') : () => import('@/messages/ns/hu-HU/legalChrome.json'))
+registerLanguage('legalChrome', 'hu-HU', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/hu-HU/legalChrome.json')) : () => import('@/messages/ns/hu-HU/legalChrome.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('legalChrome', 'sk-SK', typeof window === 'undefined' ? require('@/messages/ns/sk-SK/legalChrome.json') : () => import('@/messages/ns/sk-SK/legalChrome.json'))
+registerLanguage('legalChrome', 'sk-SK', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/sk-SK/legalChrome.json')) : () => import('@/messages/ns/sk-SK/legalChrome.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('legalChrome', 'ro-RO', typeof window === 'undefined' ? require('@/messages/ns/ro-RO/legalChrome.json') : () => import('@/messages/ns/ro-RO/legalChrome.json'))
+registerLanguage('legalChrome', 'ro-RO', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/ro-RO/legalChrome.json')) : () => import('@/messages/ns/ro-RO/legalChrome.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('legalChrome', 'hr-HR', typeof window === 'undefined' ? require('@/messages/ns/hr-HR/legalChrome.json') : () => import('@/messages/ns/hr-HR/legalChrome.json'))
+registerLanguage('legalChrome', 'hr-HR', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/hr-HR/legalChrome.json')) : () => import('@/messages/ns/hr-HR/legalChrome.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('legalChrome', 'sl-SI', typeof window === 'undefined' ? require('@/messages/ns/sl-SI/legalChrome.json') : () => import('@/messages/ns/sl-SI/legalChrome.json'))
+registerLanguage('legalChrome', 'sl-SI', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/sl-SI/legalChrome.json')) : () => import('@/messages/ns/sl-SI/legalChrome.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('legalChrome', 'fi-FI', typeof window === 'undefined' ? require('@/messages/ns/fi-FI/legalChrome.json') : () => import('@/messages/ns/fi-FI/legalChrome.json'))
+registerLanguage('legalChrome', 'fi-FI', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/fi-FI/legalChrome.json')) : () => import('@/messages/ns/fi-FI/legalChrome.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('legalChrome', 'et-EE', typeof window === 'undefined' ? require('@/messages/ns/et-EE/legalChrome.json') : () => import('@/messages/ns/et-EE/legalChrome.json'))
+registerLanguage('legalChrome', 'et-EE', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/et-EE/legalChrome.json')) : () => import('@/messages/ns/et-EE/legalChrome.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('legalChrome', 'lv-LV', typeof window === 'undefined' ? require('@/messages/ns/lv-LV/legalChrome.json') : () => import('@/messages/ns/lv-LV/legalChrome.json'))
+registerLanguage('legalChrome', 'lv-LV', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/lv-LV/legalChrome.json')) : () => import('@/messages/ns/lv-LV/legalChrome.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('legalChrome', 'lt-LT', typeof window === 'undefined' ? require('@/messages/ns/lt-LT/legalChrome.json') : () => import('@/messages/ns/lt-LT/legalChrome.json'))
+registerLanguage('legalChrome', 'lt-LT', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/lt-LT/legalChrome.json')) : () => import('@/messages/ns/lt-LT/legalChrome.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('legalChrome', 'el-GR', typeof window === 'undefined' ? require('@/messages/ns/el-GR/legalChrome.json') : () => import('@/messages/ns/el-GR/legalChrome.json'))
+registerLanguage('legalChrome', 'el-GR', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/el-GR/legalChrome.json')) : () => import('@/messages/ns/el-GR/legalChrome.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('legalChrome', 'bg-BG', typeof window === 'undefined' ? require('@/messages/ns/bg-BG/legalChrome.json') : () => import('@/messages/ns/bg-BG/legalChrome.json'))
+registerLanguage('legalChrome', 'bg-BG', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/bg-BG/legalChrome.json')) : () => import('@/messages/ns/bg-BG/legalChrome.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('legalChrome', 'pt-BR', typeof window === 'undefined' ? require('@/messages/ns/pt-BR/legalChrome.json') : () => import('@/messages/ns/pt-BR/legalChrome.json'))
+registerLanguage('legalChrome', 'pt-BR', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/pt-BR/legalChrome.json')) : () => import('@/messages/ns/pt-BR/legalChrome.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('legalChrome', 'ms-MY', typeof window === 'undefined' ? require('@/messages/ns/ms-MY/legalChrome.json') : () => import('@/messages/ns/ms-MY/legalChrome.json'))
+registerLanguage('legalChrome', 'ms-MY', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/ms-MY/legalChrome.json')) : () => import('@/messages/ns/ms-MY/legalChrome.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('legalChrome', 'ja-JP', typeof window === 'undefined' ? require('@/messages/ns/ja-JP/legalChrome.json') : () => import('@/messages/ns/ja-JP/legalChrome.json'))
+registerLanguage('legalChrome', 'ja-JP', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/ja-JP/legalChrome.json')) : () => import('@/messages/ns/ja-JP/legalChrome.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('legalChrome', 'zh-HK', typeof window === 'undefined' ? require('@/messages/ns/zh-HK/legalChrome.json') : () => import('@/messages/ns/zh-HK/legalChrome.json'))
+registerLanguage('legalChrome', 'zh-HK', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/zh-HK/legalChrome.json')) : () => import('@/messages/ns/zh-HK/legalChrome.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('legalChrome', 'th-TH', typeof window === 'undefined' ? require('@/messages/ns/th-TH/legalChrome.json') : () => import('@/messages/ns/th-TH/legalChrome.json'))
+registerLanguage('legalChrome', 'th-TH', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/th-TH/legalChrome.json')) : () => import('@/messages/ns/th-TH/legalChrome.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('legalChrome', 'ar-AE', typeof window === 'undefined' ? require('@/messages/ns/ar-AE/legalChrome.json') : () => import('@/messages/ns/ar-AE/legalChrome.json'))
+registerLanguage('legalChrome', 'ar-AE', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/ar-AE/legalChrome.json')) : () => import('@/messages/ns/ar-AE/legalChrome.json'))

@@ -2,65 +2,66 @@
 // Import this module (`import '@/lib/i18n/catalog/deleteAccount'`) in any file that reads the "deleteAccount" namespace.
 import base from '@/messages/ns/en-GB/deleteAccount.json'
 import enUS from '@/messages/ns/en-US/deleteAccount.json'
-import { registerNamespace, registerLanguage } from '@/lib/i18n/registry'
+import { registerNamespace, registerLanguage, serverWords } from '@/lib/i18n/registry'
 
 registerNamespace('deleteAccount', base, { 'en-US': enUS })
-// languages-1: each non-English language — on the server now; in the browser only when a page is in that language.
+// languages-1: each non-English language only when a page is in that language — perf-1: on the server too (serverWords: a
+// synchronous require, run the first time the language is asked for), in the browser as a chunk loaded on demand.
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('deleteAccount', 'fr-FR', typeof window === 'undefined' ? require('@/messages/ns/fr-FR/deleteAccount.json') : () => import('@/messages/ns/fr-FR/deleteAccount.json'))
+registerLanguage('deleteAccount', 'fr-FR', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/fr-FR/deleteAccount.json')) : () => import('@/messages/ns/fr-FR/deleteAccount.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('deleteAccount', 'de-DE', typeof window === 'undefined' ? require('@/messages/ns/de-DE/deleteAccount.json') : () => import('@/messages/ns/de-DE/deleteAccount.json'))
+registerLanguage('deleteAccount', 'de-DE', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/de-DE/deleteAccount.json')) : () => import('@/messages/ns/de-DE/deleteAccount.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('deleteAccount', 'de-CH', typeof window === 'undefined' ? require('@/messages/ns/de-CH/deleteAccount.json') : () => import('@/messages/ns/de-CH/deleteAccount.json'))
+registerLanguage('deleteAccount', 'de-CH', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/de-CH/deleteAccount.json')) : () => import('@/messages/ns/de-CH/deleteAccount.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('deleteAccount', 'es-ES', typeof window === 'undefined' ? require('@/messages/ns/es-ES/deleteAccount.json') : () => import('@/messages/ns/es-ES/deleteAccount.json'))
+registerLanguage('deleteAccount', 'es-ES', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/es-ES/deleteAccount.json')) : () => import('@/messages/ns/es-ES/deleteAccount.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('deleteAccount', 'it-IT', typeof window === 'undefined' ? require('@/messages/ns/it-IT/deleteAccount.json') : () => import('@/messages/ns/it-IT/deleteAccount.json'))
+registerLanguage('deleteAccount', 'it-IT', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/it-IT/deleteAccount.json')) : () => import('@/messages/ns/it-IT/deleteAccount.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('deleteAccount', 'pt-PT', typeof window === 'undefined' ? require('@/messages/ns/pt-PT/deleteAccount.json') : () => import('@/messages/ns/pt-PT/deleteAccount.json'))
+registerLanguage('deleteAccount', 'pt-PT', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/pt-PT/deleteAccount.json')) : () => import('@/messages/ns/pt-PT/deleteAccount.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('deleteAccount', 'nl-NL', typeof window === 'undefined' ? require('@/messages/ns/nl-NL/deleteAccount.json') : () => import('@/messages/ns/nl-NL/deleteAccount.json'))
+registerLanguage('deleteAccount', 'nl-NL', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/nl-NL/deleteAccount.json')) : () => import('@/messages/ns/nl-NL/deleteAccount.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('deleteAccount', 'sv-SE', typeof window === 'undefined' ? require('@/messages/ns/sv-SE/deleteAccount.json') : () => import('@/messages/ns/sv-SE/deleteAccount.json'))
+registerLanguage('deleteAccount', 'sv-SE', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/sv-SE/deleteAccount.json')) : () => import('@/messages/ns/sv-SE/deleteAccount.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('deleteAccount', 'da-DK', typeof window === 'undefined' ? require('@/messages/ns/da-DK/deleteAccount.json') : () => import('@/messages/ns/da-DK/deleteAccount.json'))
+registerLanguage('deleteAccount', 'da-DK', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/da-DK/deleteAccount.json')) : () => import('@/messages/ns/da-DK/deleteAccount.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('deleteAccount', 'nb-NO', typeof window === 'undefined' ? require('@/messages/ns/nb-NO/deleteAccount.json') : () => import('@/messages/ns/nb-NO/deleteAccount.json'))
+registerLanguage('deleteAccount', 'nb-NO', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/nb-NO/deleteAccount.json')) : () => import('@/messages/ns/nb-NO/deleteAccount.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('deleteAccount', 'pl-PL', typeof window === 'undefined' ? require('@/messages/ns/pl-PL/deleteAccount.json') : () => import('@/messages/ns/pl-PL/deleteAccount.json'))
+registerLanguage('deleteAccount', 'pl-PL', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/pl-PL/deleteAccount.json')) : () => import('@/messages/ns/pl-PL/deleteAccount.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('deleteAccount', 'cs-CZ', typeof window === 'undefined' ? require('@/messages/ns/cs-CZ/deleteAccount.json') : () => import('@/messages/ns/cs-CZ/deleteAccount.json'))
+registerLanguage('deleteAccount', 'cs-CZ', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/cs-CZ/deleteAccount.json')) : () => import('@/messages/ns/cs-CZ/deleteAccount.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('deleteAccount', 'hu-HU', typeof window === 'undefined' ? require('@/messages/ns/hu-HU/deleteAccount.json') : () => import('@/messages/ns/hu-HU/deleteAccount.json'))
+registerLanguage('deleteAccount', 'hu-HU', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/hu-HU/deleteAccount.json')) : () => import('@/messages/ns/hu-HU/deleteAccount.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('deleteAccount', 'sk-SK', typeof window === 'undefined' ? require('@/messages/ns/sk-SK/deleteAccount.json') : () => import('@/messages/ns/sk-SK/deleteAccount.json'))
+registerLanguage('deleteAccount', 'sk-SK', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/sk-SK/deleteAccount.json')) : () => import('@/messages/ns/sk-SK/deleteAccount.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('deleteAccount', 'ro-RO', typeof window === 'undefined' ? require('@/messages/ns/ro-RO/deleteAccount.json') : () => import('@/messages/ns/ro-RO/deleteAccount.json'))
+registerLanguage('deleteAccount', 'ro-RO', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/ro-RO/deleteAccount.json')) : () => import('@/messages/ns/ro-RO/deleteAccount.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('deleteAccount', 'hr-HR', typeof window === 'undefined' ? require('@/messages/ns/hr-HR/deleteAccount.json') : () => import('@/messages/ns/hr-HR/deleteAccount.json'))
+registerLanguage('deleteAccount', 'hr-HR', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/hr-HR/deleteAccount.json')) : () => import('@/messages/ns/hr-HR/deleteAccount.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('deleteAccount', 'sl-SI', typeof window === 'undefined' ? require('@/messages/ns/sl-SI/deleteAccount.json') : () => import('@/messages/ns/sl-SI/deleteAccount.json'))
+registerLanguage('deleteAccount', 'sl-SI', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/sl-SI/deleteAccount.json')) : () => import('@/messages/ns/sl-SI/deleteAccount.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('deleteAccount', 'fi-FI', typeof window === 'undefined' ? require('@/messages/ns/fi-FI/deleteAccount.json') : () => import('@/messages/ns/fi-FI/deleteAccount.json'))
+registerLanguage('deleteAccount', 'fi-FI', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/fi-FI/deleteAccount.json')) : () => import('@/messages/ns/fi-FI/deleteAccount.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('deleteAccount', 'et-EE', typeof window === 'undefined' ? require('@/messages/ns/et-EE/deleteAccount.json') : () => import('@/messages/ns/et-EE/deleteAccount.json'))
+registerLanguage('deleteAccount', 'et-EE', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/et-EE/deleteAccount.json')) : () => import('@/messages/ns/et-EE/deleteAccount.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('deleteAccount', 'lv-LV', typeof window === 'undefined' ? require('@/messages/ns/lv-LV/deleteAccount.json') : () => import('@/messages/ns/lv-LV/deleteAccount.json'))
+registerLanguage('deleteAccount', 'lv-LV', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/lv-LV/deleteAccount.json')) : () => import('@/messages/ns/lv-LV/deleteAccount.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('deleteAccount', 'lt-LT', typeof window === 'undefined' ? require('@/messages/ns/lt-LT/deleteAccount.json') : () => import('@/messages/ns/lt-LT/deleteAccount.json'))
+registerLanguage('deleteAccount', 'lt-LT', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/lt-LT/deleteAccount.json')) : () => import('@/messages/ns/lt-LT/deleteAccount.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('deleteAccount', 'el-GR', typeof window === 'undefined' ? require('@/messages/ns/el-GR/deleteAccount.json') : () => import('@/messages/ns/el-GR/deleteAccount.json'))
+registerLanguage('deleteAccount', 'el-GR', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/el-GR/deleteAccount.json')) : () => import('@/messages/ns/el-GR/deleteAccount.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('deleteAccount', 'bg-BG', typeof window === 'undefined' ? require('@/messages/ns/bg-BG/deleteAccount.json') : () => import('@/messages/ns/bg-BG/deleteAccount.json'))
+registerLanguage('deleteAccount', 'bg-BG', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/bg-BG/deleteAccount.json')) : () => import('@/messages/ns/bg-BG/deleteAccount.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('deleteAccount', 'pt-BR', typeof window === 'undefined' ? require('@/messages/ns/pt-BR/deleteAccount.json') : () => import('@/messages/ns/pt-BR/deleteAccount.json'))
+registerLanguage('deleteAccount', 'pt-BR', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/pt-BR/deleteAccount.json')) : () => import('@/messages/ns/pt-BR/deleteAccount.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('deleteAccount', 'ms-MY', typeof window === 'undefined' ? require('@/messages/ns/ms-MY/deleteAccount.json') : () => import('@/messages/ns/ms-MY/deleteAccount.json'))
+registerLanguage('deleteAccount', 'ms-MY', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/ms-MY/deleteAccount.json')) : () => import('@/messages/ns/ms-MY/deleteAccount.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('deleteAccount', 'ja-JP', typeof window === 'undefined' ? require('@/messages/ns/ja-JP/deleteAccount.json') : () => import('@/messages/ns/ja-JP/deleteAccount.json'))
+registerLanguage('deleteAccount', 'ja-JP', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/ja-JP/deleteAccount.json')) : () => import('@/messages/ns/ja-JP/deleteAccount.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('deleteAccount', 'zh-HK', typeof window === 'undefined' ? require('@/messages/ns/zh-HK/deleteAccount.json') : () => import('@/messages/ns/zh-HK/deleteAccount.json'))
+registerLanguage('deleteAccount', 'zh-HK', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/zh-HK/deleteAccount.json')) : () => import('@/messages/ns/zh-HK/deleteAccount.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('deleteAccount', 'th-TH', typeof window === 'undefined' ? require('@/messages/ns/th-TH/deleteAccount.json') : () => import('@/messages/ns/th-TH/deleteAccount.json'))
+registerLanguage('deleteAccount', 'th-TH', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/th-TH/deleteAccount.json')) : () => import('@/messages/ns/th-TH/deleteAccount.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('deleteAccount', 'ar-AE', typeof window === 'undefined' ? require('@/messages/ns/ar-AE/deleteAccount.json') : () => import('@/messages/ns/ar-AE/deleteAccount.json'))
+registerLanguage('deleteAccount', 'ar-AE', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/ar-AE/deleteAccount.json')) : () => import('@/messages/ns/ar-AE/deleteAccount.json'))

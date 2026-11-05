@@ -7,71 +7,72 @@ import enAU from '@/messages/ns/en-AU/pricing.json'
 import enNZ from '@/messages/ns/en-NZ/pricing.json'
 import enCA from '@/messages/ns/en-CA/pricing.json'
 import enSG from '@/messages/ns/en-SG/pricing.json'
-import { registerNamespace, registerLanguage } from '@/lib/i18n/registry'
+import { registerNamespace, registerLanguage, serverWords } from '@/lib/i18n/registry'
 
 registerNamespace('pricing', base, { 'en-US': enUS, 'en-IE': enIE, 'en-AU': enAU, 'en-NZ': enNZ, 'en-CA': enCA, 'en-SG': enSG })
-// languages-1: each non-English language — on the server now; in the browser only when a page is in that language.
+// languages-1: each non-English language only when a page is in that language — perf-1: on the server too (serverWords: a
+// synchronous require, run the first time the language is asked for), in the browser as a chunk loaded on demand.
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('pricing', 'fr-FR', typeof window === 'undefined' ? require('@/messages/ns/fr-FR/pricing.json') : () => import('@/messages/ns/fr-FR/pricing.json'))
+registerLanguage('pricing', 'fr-FR', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/fr-FR/pricing.json')) : () => import('@/messages/ns/fr-FR/pricing.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('pricing', 'de-DE', typeof window === 'undefined' ? require('@/messages/ns/de-DE/pricing.json') : () => import('@/messages/ns/de-DE/pricing.json'))
+registerLanguage('pricing', 'de-DE', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/de-DE/pricing.json')) : () => import('@/messages/ns/de-DE/pricing.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('pricing', 'de-AT', typeof window === 'undefined' ? require('@/messages/ns/de-AT/pricing.json') : () => import('@/messages/ns/de-AT/pricing.json'))
+registerLanguage('pricing', 'de-AT', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/de-AT/pricing.json')) : () => import('@/messages/ns/de-AT/pricing.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('pricing', 'de-CH', typeof window === 'undefined' ? require('@/messages/ns/de-CH/pricing.json') : () => import('@/messages/ns/de-CH/pricing.json'))
+registerLanguage('pricing', 'de-CH', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/de-CH/pricing.json')) : () => import('@/messages/ns/de-CH/pricing.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('pricing', 'es-ES', typeof window === 'undefined' ? require('@/messages/ns/es-ES/pricing.json') : () => import('@/messages/ns/es-ES/pricing.json'))
+registerLanguage('pricing', 'es-ES', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/es-ES/pricing.json')) : () => import('@/messages/ns/es-ES/pricing.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('pricing', 'it-IT', typeof window === 'undefined' ? require('@/messages/ns/it-IT/pricing.json') : () => import('@/messages/ns/it-IT/pricing.json'))
+registerLanguage('pricing', 'it-IT', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/it-IT/pricing.json')) : () => import('@/messages/ns/it-IT/pricing.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('pricing', 'pt-PT', typeof window === 'undefined' ? require('@/messages/ns/pt-PT/pricing.json') : () => import('@/messages/ns/pt-PT/pricing.json'))
+registerLanguage('pricing', 'pt-PT', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/pt-PT/pricing.json')) : () => import('@/messages/ns/pt-PT/pricing.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('pricing', 'nl-NL', typeof window === 'undefined' ? require('@/messages/ns/nl-NL/pricing.json') : () => import('@/messages/ns/nl-NL/pricing.json'))
+registerLanguage('pricing', 'nl-NL', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/nl-NL/pricing.json')) : () => import('@/messages/ns/nl-NL/pricing.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('pricing', 'nl-BE', typeof window === 'undefined' ? require('@/messages/ns/nl-BE/pricing.json') : () => import('@/messages/ns/nl-BE/pricing.json'))
+registerLanguage('pricing', 'nl-BE', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/nl-BE/pricing.json')) : () => import('@/messages/ns/nl-BE/pricing.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('pricing', 'sv-SE', typeof window === 'undefined' ? require('@/messages/ns/sv-SE/pricing.json') : () => import('@/messages/ns/sv-SE/pricing.json'))
+registerLanguage('pricing', 'sv-SE', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/sv-SE/pricing.json')) : () => import('@/messages/ns/sv-SE/pricing.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('pricing', 'da-DK', typeof window === 'undefined' ? require('@/messages/ns/da-DK/pricing.json') : () => import('@/messages/ns/da-DK/pricing.json'))
+registerLanguage('pricing', 'da-DK', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/da-DK/pricing.json')) : () => import('@/messages/ns/da-DK/pricing.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('pricing', 'nb-NO', typeof window === 'undefined' ? require('@/messages/ns/nb-NO/pricing.json') : () => import('@/messages/ns/nb-NO/pricing.json'))
+registerLanguage('pricing', 'nb-NO', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/nb-NO/pricing.json')) : () => import('@/messages/ns/nb-NO/pricing.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('pricing', 'pl-PL', typeof window === 'undefined' ? require('@/messages/ns/pl-PL/pricing.json') : () => import('@/messages/ns/pl-PL/pricing.json'))
+registerLanguage('pricing', 'pl-PL', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/pl-PL/pricing.json')) : () => import('@/messages/ns/pl-PL/pricing.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('pricing', 'cs-CZ', typeof window === 'undefined' ? require('@/messages/ns/cs-CZ/pricing.json') : () => import('@/messages/ns/cs-CZ/pricing.json'))
+registerLanguage('pricing', 'cs-CZ', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/cs-CZ/pricing.json')) : () => import('@/messages/ns/cs-CZ/pricing.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('pricing', 'hu-HU', typeof window === 'undefined' ? require('@/messages/ns/hu-HU/pricing.json') : () => import('@/messages/ns/hu-HU/pricing.json'))
+registerLanguage('pricing', 'hu-HU', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/hu-HU/pricing.json')) : () => import('@/messages/ns/hu-HU/pricing.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('pricing', 'sk-SK', typeof window === 'undefined' ? require('@/messages/ns/sk-SK/pricing.json') : () => import('@/messages/ns/sk-SK/pricing.json'))
+registerLanguage('pricing', 'sk-SK', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/sk-SK/pricing.json')) : () => import('@/messages/ns/sk-SK/pricing.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('pricing', 'ro-RO', typeof window === 'undefined' ? require('@/messages/ns/ro-RO/pricing.json') : () => import('@/messages/ns/ro-RO/pricing.json'))
+registerLanguage('pricing', 'ro-RO', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/ro-RO/pricing.json')) : () => import('@/messages/ns/ro-RO/pricing.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('pricing', 'hr-HR', typeof window === 'undefined' ? require('@/messages/ns/hr-HR/pricing.json') : () => import('@/messages/ns/hr-HR/pricing.json'))
+registerLanguage('pricing', 'hr-HR', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/hr-HR/pricing.json')) : () => import('@/messages/ns/hr-HR/pricing.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('pricing', 'sl-SI', typeof window === 'undefined' ? require('@/messages/ns/sl-SI/pricing.json') : () => import('@/messages/ns/sl-SI/pricing.json'))
+registerLanguage('pricing', 'sl-SI', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/sl-SI/pricing.json')) : () => import('@/messages/ns/sl-SI/pricing.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('pricing', 'fi-FI', typeof window === 'undefined' ? require('@/messages/ns/fi-FI/pricing.json') : () => import('@/messages/ns/fi-FI/pricing.json'))
+registerLanguage('pricing', 'fi-FI', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/fi-FI/pricing.json')) : () => import('@/messages/ns/fi-FI/pricing.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('pricing', 'et-EE', typeof window === 'undefined' ? require('@/messages/ns/et-EE/pricing.json') : () => import('@/messages/ns/et-EE/pricing.json'))
+registerLanguage('pricing', 'et-EE', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/et-EE/pricing.json')) : () => import('@/messages/ns/et-EE/pricing.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('pricing', 'lv-LV', typeof window === 'undefined' ? require('@/messages/ns/lv-LV/pricing.json') : () => import('@/messages/ns/lv-LV/pricing.json'))
+registerLanguage('pricing', 'lv-LV', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/lv-LV/pricing.json')) : () => import('@/messages/ns/lv-LV/pricing.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('pricing', 'lt-LT', typeof window === 'undefined' ? require('@/messages/ns/lt-LT/pricing.json') : () => import('@/messages/ns/lt-LT/pricing.json'))
+registerLanguage('pricing', 'lt-LT', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/lt-LT/pricing.json')) : () => import('@/messages/ns/lt-LT/pricing.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('pricing', 'el-GR', typeof window === 'undefined' ? require('@/messages/ns/el-GR/pricing.json') : () => import('@/messages/ns/el-GR/pricing.json'))
+registerLanguage('pricing', 'el-GR', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/el-GR/pricing.json')) : () => import('@/messages/ns/el-GR/pricing.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('pricing', 'bg-BG', typeof window === 'undefined' ? require('@/messages/ns/bg-BG/pricing.json') : () => import('@/messages/ns/bg-BG/pricing.json'))
+registerLanguage('pricing', 'bg-BG', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/bg-BG/pricing.json')) : () => import('@/messages/ns/bg-BG/pricing.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('pricing', 'es-MX', typeof window === 'undefined' ? require('@/messages/ns/es-MX/pricing.json') : () => import('@/messages/ns/es-MX/pricing.json'))
+registerLanguage('pricing', 'es-MX', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/es-MX/pricing.json')) : () => import('@/messages/ns/es-MX/pricing.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('pricing', 'pt-BR', typeof window === 'undefined' ? require('@/messages/ns/pt-BR/pricing.json') : () => import('@/messages/ns/pt-BR/pricing.json'))
+registerLanguage('pricing', 'pt-BR', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/pt-BR/pricing.json')) : () => import('@/messages/ns/pt-BR/pricing.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('pricing', 'ms-MY', typeof window === 'undefined' ? require('@/messages/ns/ms-MY/pricing.json') : () => import('@/messages/ns/ms-MY/pricing.json'))
+registerLanguage('pricing', 'ms-MY', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/ms-MY/pricing.json')) : () => import('@/messages/ns/ms-MY/pricing.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('pricing', 'ja-JP', typeof window === 'undefined' ? require('@/messages/ns/ja-JP/pricing.json') : () => import('@/messages/ns/ja-JP/pricing.json'))
+registerLanguage('pricing', 'ja-JP', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/ja-JP/pricing.json')) : () => import('@/messages/ns/ja-JP/pricing.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('pricing', 'zh-HK', typeof window === 'undefined' ? require('@/messages/ns/zh-HK/pricing.json') : () => import('@/messages/ns/zh-HK/pricing.json'))
+registerLanguage('pricing', 'zh-HK', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/zh-HK/pricing.json')) : () => import('@/messages/ns/zh-HK/pricing.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('pricing', 'th-TH', typeof window === 'undefined' ? require('@/messages/ns/th-TH/pricing.json') : () => import('@/messages/ns/th-TH/pricing.json'))
+registerLanguage('pricing', 'th-TH', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/th-TH/pricing.json')) : () => import('@/messages/ns/th-TH/pricing.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('pricing', 'ar-AE', typeof window === 'undefined' ? require('@/messages/ns/ar-AE/pricing.json') : () => import('@/messages/ns/ar-AE/pricing.json'))
+registerLanguage('pricing', 'ar-AE', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/ar-AE/pricing.json')) : () => import('@/messages/ns/ar-AE/pricing.json'))

@@ -19,6 +19,8 @@
 // ONE TRANSACTION: the whole file is sent as one simple query. Postgres runs a multi-statement simple query as a single
 // transaction (or inside the file's own begin; … commit;), stops at the first error and runs nothing after it; the runner then
 // sends ROLLBACK and exits non-zero. TLS: encrypted without certificate verification — what psql's sslmode=require does.
+// perf-1 (5 November 2026): after a file APPLIES, it asks the site to refresh the marketing pages' cached data
+// (scripts/revalidate-pages.cjs, REVALIDATE_SECRET from process.env). Missing or unreachable → a WARNING line; it never fails a run.
 /* eslint-disable @typescript-eslint/no-require-imports -- a CommonJS operational script, like every scripts/*.cjs */
 'use strict'
 const fs = require('fs')
@@ -112,6 +114,13 @@ async function main() {
     process.exitCode = 1
   } finally {
     try { await client.end() } catch { /* already closed */ }
+  }
+  // perf-1 (5 November 2026, docs/perf-1-report.md): after a migration that APPLIED, ask the site to refresh the marketing pages'
+  // cached data (every tag — a migration can touch countries, plans or the FAQ). Read from process.env only (REVALIDATE_SECRET,
+  // REVALIDATE_BASE_URL); a missing secret or an unreachable site is one WARNING line — never a failure, never a changed exit code.
+  if (!probe && !process.exitCode) {
+    try { await require('./revalidate-pages.cjs').revalidatePages(undefined, { why: `migration ${rel}`, log: m => console.log(`db-migrate: ${m}`) }) }
+    catch (e) { console.log(`db-migrate: WARNING — the pages could not be told about ${rel}: ${e && e.message ? e.message : e}`) }
   }
 }
 

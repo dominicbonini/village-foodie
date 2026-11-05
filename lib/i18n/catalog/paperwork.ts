@@ -2,65 +2,66 @@
 // Import this module (`import '@/lib/i18n/catalog/paperwork'`) in any file that reads the "paperwork" namespace.
 import base from '@/messages/ns/en-GB/paperwork.json'
 import enUS from '@/messages/ns/en-US/paperwork.json'
-import { registerNamespace, registerLanguage } from '@/lib/i18n/registry'
+import { registerNamespace, registerLanguage, serverWords } from '@/lib/i18n/registry'
 
 registerNamespace('paperwork', base, { 'en-US': enUS })
-// languages-1: each non-English language — on the server now; in the browser only when a page is in that language.
+// languages-1: each non-English language only when a page is in that language — perf-1: on the server too (serverWords: a
+// synchronous require, run the first time the language is asked for), in the browser as a chunk loaded on demand.
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('paperwork', 'fr-FR', typeof window === 'undefined' ? require('@/messages/ns/fr-FR/paperwork.json') : () => import('@/messages/ns/fr-FR/paperwork.json'))
+registerLanguage('paperwork', 'fr-FR', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/fr-FR/paperwork.json')) : () => import('@/messages/ns/fr-FR/paperwork.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('paperwork', 'de-DE', typeof window === 'undefined' ? require('@/messages/ns/de-DE/paperwork.json') : () => import('@/messages/ns/de-DE/paperwork.json'))
+registerLanguage('paperwork', 'de-DE', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/de-DE/paperwork.json')) : () => import('@/messages/ns/de-DE/paperwork.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('paperwork', 'de-CH', typeof window === 'undefined' ? require('@/messages/ns/de-CH/paperwork.json') : () => import('@/messages/ns/de-CH/paperwork.json'))
+registerLanguage('paperwork', 'de-CH', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/de-CH/paperwork.json')) : () => import('@/messages/ns/de-CH/paperwork.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('paperwork', 'es-ES', typeof window === 'undefined' ? require('@/messages/ns/es-ES/paperwork.json') : () => import('@/messages/ns/es-ES/paperwork.json'))
+registerLanguage('paperwork', 'es-ES', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/es-ES/paperwork.json')) : () => import('@/messages/ns/es-ES/paperwork.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('paperwork', 'it-IT', typeof window === 'undefined' ? require('@/messages/ns/it-IT/paperwork.json') : () => import('@/messages/ns/it-IT/paperwork.json'))
+registerLanguage('paperwork', 'it-IT', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/it-IT/paperwork.json')) : () => import('@/messages/ns/it-IT/paperwork.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('paperwork', 'pt-PT', typeof window === 'undefined' ? require('@/messages/ns/pt-PT/paperwork.json') : () => import('@/messages/ns/pt-PT/paperwork.json'))
+registerLanguage('paperwork', 'pt-PT', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/pt-PT/paperwork.json')) : () => import('@/messages/ns/pt-PT/paperwork.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('paperwork', 'nl-NL', typeof window === 'undefined' ? require('@/messages/ns/nl-NL/paperwork.json') : () => import('@/messages/ns/nl-NL/paperwork.json'))
+registerLanguage('paperwork', 'nl-NL', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/nl-NL/paperwork.json')) : () => import('@/messages/ns/nl-NL/paperwork.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('paperwork', 'sv-SE', typeof window === 'undefined' ? require('@/messages/ns/sv-SE/paperwork.json') : () => import('@/messages/ns/sv-SE/paperwork.json'))
+registerLanguage('paperwork', 'sv-SE', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/sv-SE/paperwork.json')) : () => import('@/messages/ns/sv-SE/paperwork.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('paperwork', 'da-DK', typeof window === 'undefined' ? require('@/messages/ns/da-DK/paperwork.json') : () => import('@/messages/ns/da-DK/paperwork.json'))
+registerLanguage('paperwork', 'da-DK', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/da-DK/paperwork.json')) : () => import('@/messages/ns/da-DK/paperwork.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('paperwork', 'nb-NO', typeof window === 'undefined' ? require('@/messages/ns/nb-NO/paperwork.json') : () => import('@/messages/ns/nb-NO/paperwork.json'))
+registerLanguage('paperwork', 'nb-NO', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/nb-NO/paperwork.json')) : () => import('@/messages/ns/nb-NO/paperwork.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('paperwork', 'pl-PL', typeof window === 'undefined' ? require('@/messages/ns/pl-PL/paperwork.json') : () => import('@/messages/ns/pl-PL/paperwork.json'))
+registerLanguage('paperwork', 'pl-PL', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/pl-PL/paperwork.json')) : () => import('@/messages/ns/pl-PL/paperwork.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('paperwork', 'cs-CZ', typeof window === 'undefined' ? require('@/messages/ns/cs-CZ/paperwork.json') : () => import('@/messages/ns/cs-CZ/paperwork.json'))
+registerLanguage('paperwork', 'cs-CZ', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/cs-CZ/paperwork.json')) : () => import('@/messages/ns/cs-CZ/paperwork.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('paperwork', 'hu-HU', typeof window === 'undefined' ? require('@/messages/ns/hu-HU/paperwork.json') : () => import('@/messages/ns/hu-HU/paperwork.json'))
+registerLanguage('paperwork', 'hu-HU', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/hu-HU/paperwork.json')) : () => import('@/messages/ns/hu-HU/paperwork.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('paperwork', 'sk-SK', typeof window === 'undefined' ? require('@/messages/ns/sk-SK/paperwork.json') : () => import('@/messages/ns/sk-SK/paperwork.json'))
+registerLanguage('paperwork', 'sk-SK', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/sk-SK/paperwork.json')) : () => import('@/messages/ns/sk-SK/paperwork.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('paperwork', 'ro-RO', typeof window === 'undefined' ? require('@/messages/ns/ro-RO/paperwork.json') : () => import('@/messages/ns/ro-RO/paperwork.json'))
+registerLanguage('paperwork', 'ro-RO', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/ro-RO/paperwork.json')) : () => import('@/messages/ns/ro-RO/paperwork.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('paperwork', 'hr-HR', typeof window === 'undefined' ? require('@/messages/ns/hr-HR/paperwork.json') : () => import('@/messages/ns/hr-HR/paperwork.json'))
+registerLanguage('paperwork', 'hr-HR', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/hr-HR/paperwork.json')) : () => import('@/messages/ns/hr-HR/paperwork.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('paperwork', 'sl-SI', typeof window === 'undefined' ? require('@/messages/ns/sl-SI/paperwork.json') : () => import('@/messages/ns/sl-SI/paperwork.json'))
+registerLanguage('paperwork', 'sl-SI', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/sl-SI/paperwork.json')) : () => import('@/messages/ns/sl-SI/paperwork.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('paperwork', 'fi-FI', typeof window === 'undefined' ? require('@/messages/ns/fi-FI/paperwork.json') : () => import('@/messages/ns/fi-FI/paperwork.json'))
+registerLanguage('paperwork', 'fi-FI', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/fi-FI/paperwork.json')) : () => import('@/messages/ns/fi-FI/paperwork.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('paperwork', 'et-EE', typeof window === 'undefined' ? require('@/messages/ns/et-EE/paperwork.json') : () => import('@/messages/ns/et-EE/paperwork.json'))
+registerLanguage('paperwork', 'et-EE', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/et-EE/paperwork.json')) : () => import('@/messages/ns/et-EE/paperwork.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('paperwork', 'lv-LV', typeof window === 'undefined' ? require('@/messages/ns/lv-LV/paperwork.json') : () => import('@/messages/ns/lv-LV/paperwork.json'))
+registerLanguage('paperwork', 'lv-LV', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/lv-LV/paperwork.json')) : () => import('@/messages/ns/lv-LV/paperwork.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('paperwork', 'lt-LT', typeof window === 'undefined' ? require('@/messages/ns/lt-LT/paperwork.json') : () => import('@/messages/ns/lt-LT/paperwork.json'))
+registerLanguage('paperwork', 'lt-LT', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/lt-LT/paperwork.json')) : () => import('@/messages/ns/lt-LT/paperwork.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('paperwork', 'el-GR', typeof window === 'undefined' ? require('@/messages/ns/el-GR/paperwork.json') : () => import('@/messages/ns/el-GR/paperwork.json'))
+registerLanguage('paperwork', 'el-GR', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/el-GR/paperwork.json')) : () => import('@/messages/ns/el-GR/paperwork.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('paperwork', 'bg-BG', typeof window === 'undefined' ? require('@/messages/ns/bg-BG/paperwork.json') : () => import('@/messages/ns/bg-BG/paperwork.json'))
+registerLanguage('paperwork', 'bg-BG', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/bg-BG/paperwork.json')) : () => import('@/messages/ns/bg-BG/paperwork.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('paperwork', 'pt-BR', typeof window === 'undefined' ? require('@/messages/ns/pt-BR/paperwork.json') : () => import('@/messages/ns/pt-BR/paperwork.json'))
+registerLanguage('paperwork', 'pt-BR', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/pt-BR/paperwork.json')) : () => import('@/messages/ns/pt-BR/paperwork.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('paperwork', 'ms-MY', typeof window === 'undefined' ? require('@/messages/ns/ms-MY/paperwork.json') : () => import('@/messages/ns/ms-MY/paperwork.json'))
+registerLanguage('paperwork', 'ms-MY', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/ms-MY/paperwork.json')) : () => import('@/messages/ns/ms-MY/paperwork.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('paperwork', 'ja-JP', typeof window === 'undefined' ? require('@/messages/ns/ja-JP/paperwork.json') : () => import('@/messages/ns/ja-JP/paperwork.json'))
+registerLanguage('paperwork', 'ja-JP', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/ja-JP/paperwork.json')) : () => import('@/messages/ns/ja-JP/paperwork.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('paperwork', 'zh-HK', typeof window === 'undefined' ? require('@/messages/ns/zh-HK/paperwork.json') : () => import('@/messages/ns/zh-HK/paperwork.json'))
+registerLanguage('paperwork', 'zh-HK', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/zh-HK/paperwork.json')) : () => import('@/messages/ns/zh-HK/paperwork.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('paperwork', 'th-TH', typeof window === 'undefined' ? require('@/messages/ns/th-TH/paperwork.json') : () => import('@/messages/ns/th-TH/paperwork.json'))
+registerLanguage('paperwork', 'th-TH', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/th-TH/paperwork.json')) : () => import('@/messages/ns/th-TH/paperwork.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('paperwork', 'ar-AE', typeof window === 'undefined' ? require('@/messages/ns/ar-AE/paperwork.json') : () => import('@/messages/ns/ar-AE/paperwork.json'))
+registerLanguage('paperwork', 'ar-AE', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/ar-AE/paperwork.json')) : () => import('@/messages/ns/ar-AE/paperwork.json'))

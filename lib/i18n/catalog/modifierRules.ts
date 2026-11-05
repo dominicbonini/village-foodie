@@ -2,63 +2,64 @@
 // Import this module (`import '@/lib/i18n/catalog/modifierRules'`) in any file that reads the "modifierRules" namespace.
 import base from '@/messages/ns/en-GB/modifierRules.json'
 import enUS from '@/messages/ns/en-US/modifierRules.json'
-import { registerNamespace, registerLanguage } from '@/lib/i18n/registry'
+import { registerNamespace, registerLanguage, serverWords } from '@/lib/i18n/registry'
 
 registerNamespace('modifierRules', base, { 'en-US': enUS })
-// languages-1: each non-English language — on the server now; in the browser only when a page is in that language.
+// languages-1: each non-English language only when a page is in that language — perf-1: on the server too (serverWords: a
+// synchronous require, run the first time the language is asked for), in the browser as a chunk loaded on demand.
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('modifierRules', 'fr-FR', typeof window === 'undefined' ? require('@/messages/ns/fr-FR/modifierRules.json') : () => import('@/messages/ns/fr-FR/modifierRules.json'))
+registerLanguage('modifierRules', 'fr-FR', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/fr-FR/modifierRules.json')) : () => import('@/messages/ns/fr-FR/modifierRules.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('modifierRules', 'de-DE', typeof window === 'undefined' ? require('@/messages/ns/de-DE/modifierRules.json') : () => import('@/messages/ns/de-DE/modifierRules.json'))
+registerLanguage('modifierRules', 'de-DE', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/de-DE/modifierRules.json')) : () => import('@/messages/ns/de-DE/modifierRules.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('modifierRules', 'es-ES', typeof window === 'undefined' ? require('@/messages/ns/es-ES/modifierRules.json') : () => import('@/messages/ns/es-ES/modifierRules.json'))
+registerLanguage('modifierRules', 'es-ES', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/es-ES/modifierRules.json')) : () => import('@/messages/ns/es-ES/modifierRules.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('modifierRules', 'it-IT', typeof window === 'undefined' ? require('@/messages/ns/it-IT/modifierRules.json') : () => import('@/messages/ns/it-IT/modifierRules.json'))
+registerLanguage('modifierRules', 'it-IT', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/it-IT/modifierRules.json')) : () => import('@/messages/ns/it-IT/modifierRules.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('modifierRules', 'pt-PT', typeof window === 'undefined' ? require('@/messages/ns/pt-PT/modifierRules.json') : () => import('@/messages/ns/pt-PT/modifierRules.json'))
+registerLanguage('modifierRules', 'pt-PT', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/pt-PT/modifierRules.json')) : () => import('@/messages/ns/pt-PT/modifierRules.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('modifierRules', 'nl-NL', typeof window === 'undefined' ? require('@/messages/ns/nl-NL/modifierRules.json') : () => import('@/messages/ns/nl-NL/modifierRules.json'))
+registerLanguage('modifierRules', 'nl-NL', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/nl-NL/modifierRules.json')) : () => import('@/messages/ns/nl-NL/modifierRules.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('modifierRules', 'sv-SE', typeof window === 'undefined' ? require('@/messages/ns/sv-SE/modifierRules.json') : () => import('@/messages/ns/sv-SE/modifierRules.json'))
+registerLanguage('modifierRules', 'sv-SE', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/sv-SE/modifierRules.json')) : () => import('@/messages/ns/sv-SE/modifierRules.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('modifierRules', 'da-DK', typeof window === 'undefined' ? require('@/messages/ns/da-DK/modifierRules.json') : () => import('@/messages/ns/da-DK/modifierRules.json'))
+registerLanguage('modifierRules', 'da-DK', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/da-DK/modifierRules.json')) : () => import('@/messages/ns/da-DK/modifierRules.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('modifierRules', 'nb-NO', typeof window === 'undefined' ? require('@/messages/ns/nb-NO/modifierRules.json') : () => import('@/messages/ns/nb-NO/modifierRules.json'))
+registerLanguage('modifierRules', 'nb-NO', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/nb-NO/modifierRules.json')) : () => import('@/messages/ns/nb-NO/modifierRules.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('modifierRules', 'pl-PL', typeof window === 'undefined' ? require('@/messages/ns/pl-PL/modifierRules.json') : () => import('@/messages/ns/pl-PL/modifierRules.json'))
+registerLanguage('modifierRules', 'pl-PL', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/pl-PL/modifierRules.json')) : () => import('@/messages/ns/pl-PL/modifierRules.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('modifierRules', 'cs-CZ', typeof window === 'undefined' ? require('@/messages/ns/cs-CZ/modifierRules.json') : () => import('@/messages/ns/cs-CZ/modifierRules.json'))
+registerLanguage('modifierRules', 'cs-CZ', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/cs-CZ/modifierRules.json')) : () => import('@/messages/ns/cs-CZ/modifierRules.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('modifierRules', 'hu-HU', typeof window === 'undefined' ? require('@/messages/ns/hu-HU/modifierRules.json') : () => import('@/messages/ns/hu-HU/modifierRules.json'))
+registerLanguage('modifierRules', 'hu-HU', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/hu-HU/modifierRules.json')) : () => import('@/messages/ns/hu-HU/modifierRules.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('modifierRules', 'sk-SK', typeof window === 'undefined' ? require('@/messages/ns/sk-SK/modifierRules.json') : () => import('@/messages/ns/sk-SK/modifierRules.json'))
+registerLanguage('modifierRules', 'sk-SK', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/sk-SK/modifierRules.json')) : () => import('@/messages/ns/sk-SK/modifierRules.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('modifierRules', 'ro-RO', typeof window === 'undefined' ? require('@/messages/ns/ro-RO/modifierRules.json') : () => import('@/messages/ns/ro-RO/modifierRules.json'))
+registerLanguage('modifierRules', 'ro-RO', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/ro-RO/modifierRules.json')) : () => import('@/messages/ns/ro-RO/modifierRules.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('modifierRules', 'hr-HR', typeof window === 'undefined' ? require('@/messages/ns/hr-HR/modifierRules.json') : () => import('@/messages/ns/hr-HR/modifierRules.json'))
+registerLanguage('modifierRules', 'hr-HR', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/hr-HR/modifierRules.json')) : () => import('@/messages/ns/hr-HR/modifierRules.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('modifierRules', 'sl-SI', typeof window === 'undefined' ? require('@/messages/ns/sl-SI/modifierRules.json') : () => import('@/messages/ns/sl-SI/modifierRules.json'))
+registerLanguage('modifierRules', 'sl-SI', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/sl-SI/modifierRules.json')) : () => import('@/messages/ns/sl-SI/modifierRules.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('modifierRules', 'fi-FI', typeof window === 'undefined' ? require('@/messages/ns/fi-FI/modifierRules.json') : () => import('@/messages/ns/fi-FI/modifierRules.json'))
+registerLanguage('modifierRules', 'fi-FI', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/fi-FI/modifierRules.json')) : () => import('@/messages/ns/fi-FI/modifierRules.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('modifierRules', 'et-EE', typeof window === 'undefined' ? require('@/messages/ns/et-EE/modifierRules.json') : () => import('@/messages/ns/et-EE/modifierRules.json'))
+registerLanguage('modifierRules', 'et-EE', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/et-EE/modifierRules.json')) : () => import('@/messages/ns/et-EE/modifierRules.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('modifierRules', 'lv-LV', typeof window === 'undefined' ? require('@/messages/ns/lv-LV/modifierRules.json') : () => import('@/messages/ns/lv-LV/modifierRules.json'))
+registerLanguage('modifierRules', 'lv-LV', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/lv-LV/modifierRules.json')) : () => import('@/messages/ns/lv-LV/modifierRules.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('modifierRules', 'lt-LT', typeof window === 'undefined' ? require('@/messages/ns/lt-LT/modifierRules.json') : () => import('@/messages/ns/lt-LT/modifierRules.json'))
+registerLanguage('modifierRules', 'lt-LT', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/lt-LT/modifierRules.json')) : () => import('@/messages/ns/lt-LT/modifierRules.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('modifierRules', 'el-GR', typeof window === 'undefined' ? require('@/messages/ns/el-GR/modifierRules.json') : () => import('@/messages/ns/el-GR/modifierRules.json'))
+registerLanguage('modifierRules', 'el-GR', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/el-GR/modifierRules.json')) : () => import('@/messages/ns/el-GR/modifierRules.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('modifierRules', 'bg-BG', typeof window === 'undefined' ? require('@/messages/ns/bg-BG/modifierRules.json') : () => import('@/messages/ns/bg-BG/modifierRules.json'))
+registerLanguage('modifierRules', 'bg-BG', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/bg-BG/modifierRules.json')) : () => import('@/messages/ns/bg-BG/modifierRules.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('modifierRules', 'pt-BR', typeof window === 'undefined' ? require('@/messages/ns/pt-BR/modifierRules.json') : () => import('@/messages/ns/pt-BR/modifierRules.json'))
+registerLanguage('modifierRules', 'pt-BR', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/pt-BR/modifierRules.json')) : () => import('@/messages/ns/pt-BR/modifierRules.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('modifierRules', 'ms-MY', typeof window === 'undefined' ? require('@/messages/ns/ms-MY/modifierRules.json') : () => import('@/messages/ns/ms-MY/modifierRules.json'))
+registerLanguage('modifierRules', 'ms-MY', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/ms-MY/modifierRules.json')) : () => import('@/messages/ns/ms-MY/modifierRules.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('modifierRules', 'ja-JP', typeof window === 'undefined' ? require('@/messages/ns/ja-JP/modifierRules.json') : () => import('@/messages/ns/ja-JP/modifierRules.json'))
+registerLanguage('modifierRules', 'ja-JP', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/ja-JP/modifierRules.json')) : () => import('@/messages/ns/ja-JP/modifierRules.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('modifierRules', 'zh-HK', typeof window === 'undefined' ? require('@/messages/ns/zh-HK/modifierRules.json') : () => import('@/messages/ns/zh-HK/modifierRules.json'))
+registerLanguage('modifierRules', 'zh-HK', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/zh-HK/modifierRules.json')) : () => import('@/messages/ns/zh-HK/modifierRules.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('modifierRules', 'th-TH', typeof window === 'undefined' ? require('@/messages/ns/th-TH/modifierRules.json') : () => import('@/messages/ns/th-TH/modifierRules.json'))
+registerLanguage('modifierRules', 'th-TH', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/th-TH/modifierRules.json')) : () => import('@/messages/ns/th-TH/modifierRules.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('modifierRules', 'ar-AE', typeof window === 'undefined' ? require('@/messages/ns/ar-AE/modifierRules.json') : () => import('@/messages/ns/ar-AE/modifierRules.json'))
+registerLanguage('modifierRules', 'ar-AE', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/ar-AE/modifierRules.json')) : () => import('@/messages/ns/ar-AE/modifierRules.json'))

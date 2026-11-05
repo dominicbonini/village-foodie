@@ -4,65 +4,66 @@ import base from '@/messages/ns/en-GB/completionSettings.json'
 import enUS from '@/messages/ns/en-US/completionSettings.json'
 import enAU from '@/messages/ns/en-AU/completionSettings.json'
 import enSG from '@/messages/ns/en-SG/completionSettings.json'
-import { registerNamespace, registerLanguage } from '@/lib/i18n/registry'
+import { registerNamespace, registerLanguage, serverWords } from '@/lib/i18n/registry'
 
 registerNamespace('completionSettings', base, { 'en-US': enUS, 'en-AU': enAU, 'en-SG': enSG })
-// languages-1: each non-English language — on the server now; in the browser only when a page is in that language.
+// languages-1: each non-English language only when a page is in that language — perf-1: on the server too (serverWords: a
+// synchronous require, run the first time the language is asked for), in the browser as a chunk loaded on demand.
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('completionSettings', 'fr-FR', typeof window === 'undefined' ? require('@/messages/ns/fr-FR/completionSettings.json') : () => import('@/messages/ns/fr-FR/completionSettings.json'))
+registerLanguage('completionSettings', 'fr-FR', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/fr-FR/completionSettings.json')) : () => import('@/messages/ns/fr-FR/completionSettings.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('completionSettings', 'de-DE', typeof window === 'undefined' ? require('@/messages/ns/de-DE/completionSettings.json') : () => import('@/messages/ns/de-DE/completionSettings.json'))
+registerLanguage('completionSettings', 'de-DE', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/de-DE/completionSettings.json')) : () => import('@/messages/ns/de-DE/completionSettings.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('completionSettings', 'de-CH', typeof window === 'undefined' ? require('@/messages/ns/de-CH/completionSettings.json') : () => import('@/messages/ns/de-CH/completionSettings.json'))
+registerLanguage('completionSettings', 'de-CH', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/de-CH/completionSettings.json')) : () => import('@/messages/ns/de-CH/completionSettings.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('completionSettings', 'es-ES', typeof window === 'undefined' ? require('@/messages/ns/es-ES/completionSettings.json') : () => import('@/messages/ns/es-ES/completionSettings.json'))
+registerLanguage('completionSettings', 'es-ES', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/es-ES/completionSettings.json')) : () => import('@/messages/ns/es-ES/completionSettings.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('completionSettings', 'it-IT', typeof window === 'undefined' ? require('@/messages/ns/it-IT/completionSettings.json') : () => import('@/messages/ns/it-IT/completionSettings.json'))
+registerLanguage('completionSettings', 'it-IT', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/it-IT/completionSettings.json')) : () => import('@/messages/ns/it-IT/completionSettings.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('completionSettings', 'pt-PT', typeof window === 'undefined' ? require('@/messages/ns/pt-PT/completionSettings.json') : () => import('@/messages/ns/pt-PT/completionSettings.json'))
+registerLanguage('completionSettings', 'pt-PT', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/pt-PT/completionSettings.json')) : () => import('@/messages/ns/pt-PT/completionSettings.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('completionSettings', 'nl-NL', typeof window === 'undefined' ? require('@/messages/ns/nl-NL/completionSettings.json') : () => import('@/messages/ns/nl-NL/completionSettings.json'))
+registerLanguage('completionSettings', 'nl-NL', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/nl-NL/completionSettings.json')) : () => import('@/messages/ns/nl-NL/completionSettings.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('completionSettings', 'sv-SE', typeof window === 'undefined' ? require('@/messages/ns/sv-SE/completionSettings.json') : () => import('@/messages/ns/sv-SE/completionSettings.json'))
+registerLanguage('completionSettings', 'sv-SE', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/sv-SE/completionSettings.json')) : () => import('@/messages/ns/sv-SE/completionSettings.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('completionSettings', 'da-DK', typeof window === 'undefined' ? require('@/messages/ns/da-DK/completionSettings.json') : () => import('@/messages/ns/da-DK/completionSettings.json'))
+registerLanguage('completionSettings', 'da-DK', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/da-DK/completionSettings.json')) : () => import('@/messages/ns/da-DK/completionSettings.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('completionSettings', 'nb-NO', typeof window === 'undefined' ? require('@/messages/ns/nb-NO/completionSettings.json') : () => import('@/messages/ns/nb-NO/completionSettings.json'))
+registerLanguage('completionSettings', 'nb-NO', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/nb-NO/completionSettings.json')) : () => import('@/messages/ns/nb-NO/completionSettings.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('completionSettings', 'pl-PL', typeof window === 'undefined' ? require('@/messages/ns/pl-PL/completionSettings.json') : () => import('@/messages/ns/pl-PL/completionSettings.json'))
+registerLanguage('completionSettings', 'pl-PL', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/pl-PL/completionSettings.json')) : () => import('@/messages/ns/pl-PL/completionSettings.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('completionSettings', 'cs-CZ', typeof window === 'undefined' ? require('@/messages/ns/cs-CZ/completionSettings.json') : () => import('@/messages/ns/cs-CZ/completionSettings.json'))
+registerLanguage('completionSettings', 'cs-CZ', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/cs-CZ/completionSettings.json')) : () => import('@/messages/ns/cs-CZ/completionSettings.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('completionSettings', 'hu-HU', typeof window === 'undefined' ? require('@/messages/ns/hu-HU/completionSettings.json') : () => import('@/messages/ns/hu-HU/completionSettings.json'))
+registerLanguage('completionSettings', 'hu-HU', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/hu-HU/completionSettings.json')) : () => import('@/messages/ns/hu-HU/completionSettings.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('completionSettings', 'sk-SK', typeof window === 'undefined' ? require('@/messages/ns/sk-SK/completionSettings.json') : () => import('@/messages/ns/sk-SK/completionSettings.json'))
+registerLanguage('completionSettings', 'sk-SK', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/sk-SK/completionSettings.json')) : () => import('@/messages/ns/sk-SK/completionSettings.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('completionSettings', 'ro-RO', typeof window === 'undefined' ? require('@/messages/ns/ro-RO/completionSettings.json') : () => import('@/messages/ns/ro-RO/completionSettings.json'))
+registerLanguage('completionSettings', 'ro-RO', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/ro-RO/completionSettings.json')) : () => import('@/messages/ns/ro-RO/completionSettings.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('completionSettings', 'hr-HR', typeof window === 'undefined' ? require('@/messages/ns/hr-HR/completionSettings.json') : () => import('@/messages/ns/hr-HR/completionSettings.json'))
+registerLanguage('completionSettings', 'hr-HR', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/hr-HR/completionSettings.json')) : () => import('@/messages/ns/hr-HR/completionSettings.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('completionSettings', 'sl-SI', typeof window === 'undefined' ? require('@/messages/ns/sl-SI/completionSettings.json') : () => import('@/messages/ns/sl-SI/completionSettings.json'))
+registerLanguage('completionSettings', 'sl-SI', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/sl-SI/completionSettings.json')) : () => import('@/messages/ns/sl-SI/completionSettings.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('completionSettings', 'fi-FI', typeof window === 'undefined' ? require('@/messages/ns/fi-FI/completionSettings.json') : () => import('@/messages/ns/fi-FI/completionSettings.json'))
+registerLanguage('completionSettings', 'fi-FI', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/fi-FI/completionSettings.json')) : () => import('@/messages/ns/fi-FI/completionSettings.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('completionSettings', 'et-EE', typeof window === 'undefined' ? require('@/messages/ns/et-EE/completionSettings.json') : () => import('@/messages/ns/et-EE/completionSettings.json'))
+registerLanguage('completionSettings', 'et-EE', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/et-EE/completionSettings.json')) : () => import('@/messages/ns/et-EE/completionSettings.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('completionSettings', 'lv-LV', typeof window === 'undefined' ? require('@/messages/ns/lv-LV/completionSettings.json') : () => import('@/messages/ns/lv-LV/completionSettings.json'))
+registerLanguage('completionSettings', 'lv-LV', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/lv-LV/completionSettings.json')) : () => import('@/messages/ns/lv-LV/completionSettings.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('completionSettings', 'lt-LT', typeof window === 'undefined' ? require('@/messages/ns/lt-LT/completionSettings.json') : () => import('@/messages/ns/lt-LT/completionSettings.json'))
+registerLanguage('completionSettings', 'lt-LT', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/lt-LT/completionSettings.json')) : () => import('@/messages/ns/lt-LT/completionSettings.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('completionSettings', 'el-GR', typeof window === 'undefined' ? require('@/messages/ns/el-GR/completionSettings.json') : () => import('@/messages/ns/el-GR/completionSettings.json'))
+registerLanguage('completionSettings', 'el-GR', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/el-GR/completionSettings.json')) : () => import('@/messages/ns/el-GR/completionSettings.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('completionSettings', 'bg-BG', typeof window === 'undefined' ? require('@/messages/ns/bg-BG/completionSettings.json') : () => import('@/messages/ns/bg-BG/completionSettings.json'))
+registerLanguage('completionSettings', 'bg-BG', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/bg-BG/completionSettings.json')) : () => import('@/messages/ns/bg-BG/completionSettings.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('completionSettings', 'pt-BR', typeof window === 'undefined' ? require('@/messages/ns/pt-BR/completionSettings.json') : () => import('@/messages/ns/pt-BR/completionSettings.json'))
+registerLanguage('completionSettings', 'pt-BR', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/pt-BR/completionSettings.json')) : () => import('@/messages/ns/pt-BR/completionSettings.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('completionSettings', 'ms-MY', typeof window === 'undefined' ? require('@/messages/ns/ms-MY/completionSettings.json') : () => import('@/messages/ns/ms-MY/completionSettings.json'))
+registerLanguage('completionSettings', 'ms-MY', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/ms-MY/completionSettings.json')) : () => import('@/messages/ns/ms-MY/completionSettings.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('completionSettings', 'ja-JP', typeof window === 'undefined' ? require('@/messages/ns/ja-JP/completionSettings.json') : () => import('@/messages/ns/ja-JP/completionSettings.json'))
+registerLanguage('completionSettings', 'ja-JP', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/ja-JP/completionSettings.json')) : () => import('@/messages/ns/ja-JP/completionSettings.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('completionSettings', 'zh-HK', typeof window === 'undefined' ? require('@/messages/ns/zh-HK/completionSettings.json') : () => import('@/messages/ns/zh-HK/completionSettings.json'))
+registerLanguage('completionSettings', 'zh-HK', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/zh-HK/completionSettings.json')) : () => import('@/messages/ns/zh-HK/completionSettings.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('completionSettings', 'th-TH', typeof window === 'undefined' ? require('@/messages/ns/th-TH/completionSettings.json') : () => import('@/messages/ns/th-TH/completionSettings.json'))
+registerLanguage('completionSettings', 'th-TH', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/th-TH/completionSettings.json')) : () => import('@/messages/ns/th-TH/completionSettings.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('completionSettings', 'ar-AE', typeof window === 'undefined' ? require('@/messages/ns/ar-AE/completionSettings.json') : () => import('@/messages/ns/ar-AE/completionSettings.json'))
+registerLanguage('completionSettings', 'ar-AE', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/ar-AE/completionSettings.json')) : () => import('@/messages/ns/ar-AE/completionSettings.json'))

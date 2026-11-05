@@ -18,6 +18,7 @@ import type { CountrySettings } from '@/lib/country-settings-types'
 import { CURRENCY_CODES } from '@/lib/currencies'
 import { ACCEPTED_ADDRESS_FORMAT_VALUES, addressFormatKeyOf, type AddressFormatKey } from '@/lib/address-formats'
 import { ALLERGEN_SETS } from '@/lib/allergens'
+import { isMarketingRender } from '@/lib/marketing-render'   // perf-1: a marketing page's render reads the tagged shared cache
 
 const TTL_MS = 60_000
 const cache = new Map<string, { at: number; value: CountrySettings }>()
@@ -262,6 +263,9 @@ export async function readAllCountryRows(): Promise<{ countries: CountrySettings
  * request (the marketing pages' country menu, the signup step's list). The admin page keeps the uncached read.
  */
 export async function listCountrySettingsCached(): Promise<CountrySettings[]> {
+  // perf-1 (5 November 2026): a marketing page's render reads the tagged shared cache (lib/marketing-cache.ts); every other caller,
+  // the proxy included, keeps the 60-second copy below exactly as before.
+  if (isMarketingRender()) return (await import('@/lib/marketing-cache')).marketingCountryList()
   if (listCache && Date.now() - listCache.at < TTL_MS) return listCache.value
   const value = await listCountrySettings()
   listCache = { at: Date.now(), value }

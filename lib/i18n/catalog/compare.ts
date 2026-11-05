@@ -8,71 +8,72 @@ import enNZ from '@/messages/ns/en-NZ/compare.json'
 import enCA from '@/messages/ns/en-CA/compare.json'
 import enGI from '@/messages/ns/en-GI/compare.json'
 import enSG from '@/messages/ns/en-SG/compare.json'
-import { registerNamespace, registerLanguage } from '@/lib/i18n/registry'
+import { registerNamespace, registerLanguage, serverWords } from '@/lib/i18n/registry'
 
 registerNamespace('compare', base, { 'en-US': enUS, 'en-IE': enIE, 'en-AU': enAU, 'en-NZ': enNZ, 'en-CA': enCA, 'en-GI': enGI, 'en-SG': enSG })
-// languages-1: each non-English language — on the server now; in the browser only when a page is in that language.
+// languages-1: each non-English language only when a page is in that language — perf-1: on the server too (serverWords: a
+// synchronous require, run the first time the language is asked for), in the browser as a chunk loaded on demand.
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('compare', 'fr-FR', typeof window === 'undefined' ? require('@/messages/ns/fr-FR/compare.json') : () => import('@/messages/ns/fr-FR/compare.json'))
+registerLanguage('compare', 'fr-FR', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/fr-FR/compare.json')) : () => import('@/messages/ns/fr-FR/compare.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('compare', 'de-DE', typeof window === 'undefined' ? require('@/messages/ns/de-DE/compare.json') : () => import('@/messages/ns/de-DE/compare.json'))
+registerLanguage('compare', 'de-DE', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/de-DE/compare.json')) : () => import('@/messages/ns/de-DE/compare.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('compare', 'de-AT', typeof window === 'undefined' ? require('@/messages/ns/de-AT/compare.json') : () => import('@/messages/ns/de-AT/compare.json'))
+registerLanguage('compare', 'de-AT', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/de-AT/compare.json')) : () => import('@/messages/ns/de-AT/compare.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('compare', 'de-CH', typeof window === 'undefined' ? require('@/messages/ns/de-CH/compare.json') : () => import('@/messages/ns/de-CH/compare.json'))
+registerLanguage('compare', 'de-CH', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/de-CH/compare.json')) : () => import('@/messages/ns/de-CH/compare.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('compare', 'es-ES', typeof window === 'undefined' ? require('@/messages/ns/es-ES/compare.json') : () => import('@/messages/ns/es-ES/compare.json'))
+registerLanguage('compare', 'es-ES', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/es-ES/compare.json')) : () => import('@/messages/ns/es-ES/compare.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('compare', 'it-IT', typeof window === 'undefined' ? require('@/messages/ns/it-IT/compare.json') : () => import('@/messages/ns/it-IT/compare.json'))
+registerLanguage('compare', 'it-IT', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/it-IT/compare.json')) : () => import('@/messages/ns/it-IT/compare.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('compare', 'pt-PT', typeof window === 'undefined' ? require('@/messages/ns/pt-PT/compare.json') : () => import('@/messages/ns/pt-PT/compare.json'))
+registerLanguage('compare', 'pt-PT', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/pt-PT/compare.json')) : () => import('@/messages/ns/pt-PT/compare.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('compare', 'nl-NL', typeof window === 'undefined' ? require('@/messages/ns/nl-NL/compare.json') : () => import('@/messages/ns/nl-NL/compare.json'))
+registerLanguage('compare', 'nl-NL', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/nl-NL/compare.json')) : () => import('@/messages/ns/nl-NL/compare.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('compare', 'nl-BE', typeof window === 'undefined' ? require('@/messages/ns/nl-BE/compare.json') : () => import('@/messages/ns/nl-BE/compare.json'))
+registerLanguage('compare', 'nl-BE', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/nl-BE/compare.json')) : () => import('@/messages/ns/nl-BE/compare.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('compare', 'sv-SE', typeof window === 'undefined' ? require('@/messages/ns/sv-SE/compare.json') : () => import('@/messages/ns/sv-SE/compare.json'))
+registerLanguage('compare', 'sv-SE', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/sv-SE/compare.json')) : () => import('@/messages/ns/sv-SE/compare.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('compare', 'da-DK', typeof window === 'undefined' ? require('@/messages/ns/da-DK/compare.json') : () => import('@/messages/ns/da-DK/compare.json'))
+registerLanguage('compare', 'da-DK', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/da-DK/compare.json')) : () => import('@/messages/ns/da-DK/compare.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('compare', 'nb-NO', typeof window === 'undefined' ? require('@/messages/ns/nb-NO/compare.json') : () => import('@/messages/ns/nb-NO/compare.json'))
+registerLanguage('compare', 'nb-NO', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/nb-NO/compare.json')) : () => import('@/messages/ns/nb-NO/compare.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('compare', 'pl-PL', typeof window === 'undefined' ? require('@/messages/ns/pl-PL/compare.json') : () => import('@/messages/ns/pl-PL/compare.json'))
+registerLanguage('compare', 'pl-PL', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/pl-PL/compare.json')) : () => import('@/messages/ns/pl-PL/compare.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('compare', 'cs-CZ', typeof window === 'undefined' ? require('@/messages/ns/cs-CZ/compare.json') : () => import('@/messages/ns/cs-CZ/compare.json'))
+registerLanguage('compare', 'cs-CZ', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/cs-CZ/compare.json')) : () => import('@/messages/ns/cs-CZ/compare.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('compare', 'hu-HU', typeof window === 'undefined' ? require('@/messages/ns/hu-HU/compare.json') : () => import('@/messages/ns/hu-HU/compare.json'))
+registerLanguage('compare', 'hu-HU', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/hu-HU/compare.json')) : () => import('@/messages/ns/hu-HU/compare.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('compare', 'sk-SK', typeof window === 'undefined' ? require('@/messages/ns/sk-SK/compare.json') : () => import('@/messages/ns/sk-SK/compare.json'))
+registerLanguage('compare', 'sk-SK', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/sk-SK/compare.json')) : () => import('@/messages/ns/sk-SK/compare.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('compare', 'ro-RO', typeof window === 'undefined' ? require('@/messages/ns/ro-RO/compare.json') : () => import('@/messages/ns/ro-RO/compare.json'))
+registerLanguage('compare', 'ro-RO', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/ro-RO/compare.json')) : () => import('@/messages/ns/ro-RO/compare.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('compare', 'hr-HR', typeof window === 'undefined' ? require('@/messages/ns/hr-HR/compare.json') : () => import('@/messages/ns/hr-HR/compare.json'))
+registerLanguage('compare', 'hr-HR', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/hr-HR/compare.json')) : () => import('@/messages/ns/hr-HR/compare.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('compare', 'sl-SI', typeof window === 'undefined' ? require('@/messages/ns/sl-SI/compare.json') : () => import('@/messages/ns/sl-SI/compare.json'))
+registerLanguage('compare', 'sl-SI', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/sl-SI/compare.json')) : () => import('@/messages/ns/sl-SI/compare.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('compare', 'fi-FI', typeof window === 'undefined' ? require('@/messages/ns/fi-FI/compare.json') : () => import('@/messages/ns/fi-FI/compare.json'))
+registerLanguage('compare', 'fi-FI', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/fi-FI/compare.json')) : () => import('@/messages/ns/fi-FI/compare.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('compare', 'et-EE', typeof window === 'undefined' ? require('@/messages/ns/et-EE/compare.json') : () => import('@/messages/ns/et-EE/compare.json'))
+registerLanguage('compare', 'et-EE', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/et-EE/compare.json')) : () => import('@/messages/ns/et-EE/compare.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('compare', 'lv-LV', typeof window === 'undefined' ? require('@/messages/ns/lv-LV/compare.json') : () => import('@/messages/ns/lv-LV/compare.json'))
+registerLanguage('compare', 'lv-LV', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/lv-LV/compare.json')) : () => import('@/messages/ns/lv-LV/compare.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('compare', 'lt-LT', typeof window === 'undefined' ? require('@/messages/ns/lt-LT/compare.json') : () => import('@/messages/ns/lt-LT/compare.json'))
+registerLanguage('compare', 'lt-LT', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/lt-LT/compare.json')) : () => import('@/messages/ns/lt-LT/compare.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('compare', 'el-GR', typeof window === 'undefined' ? require('@/messages/ns/el-GR/compare.json') : () => import('@/messages/ns/el-GR/compare.json'))
+registerLanguage('compare', 'el-GR', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/el-GR/compare.json')) : () => import('@/messages/ns/el-GR/compare.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('compare', 'bg-BG', typeof window === 'undefined' ? require('@/messages/ns/bg-BG/compare.json') : () => import('@/messages/ns/bg-BG/compare.json'))
+registerLanguage('compare', 'bg-BG', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/bg-BG/compare.json')) : () => import('@/messages/ns/bg-BG/compare.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('compare', 'es-MX', typeof window === 'undefined' ? require('@/messages/ns/es-MX/compare.json') : () => import('@/messages/ns/es-MX/compare.json'))
+registerLanguage('compare', 'es-MX', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/es-MX/compare.json')) : () => import('@/messages/ns/es-MX/compare.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('compare', 'pt-BR', typeof window === 'undefined' ? require('@/messages/ns/pt-BR/compare.json') : () => import('@/messages/ns/pt-BR/compare.json'))
+registerLanguage('compare', 'pt-BR', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/pt-BR/compare.json')) : () => import('@/messages/ns/pt-BR/compare.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('compare', 'ms-MY', typeof window === 'undefined' ? require('@/messages/ns/ms-MY/compare.json') : () => import('@/messages/ns/ms-MY/compare.json'))
+registerLanguage('compare', 'ms-MY', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/ms-MY/compare.json')) : () => import('@/messages/ns/ms-MY/compare.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('compare', 'ja-JP', typeof window === 'undefined' ? require('@/messages/ns/ja-JP/compare.json') : () => import('@/messages/ns/ja-JP/compare.json'))
+registerLanguage('compare', 'ja-JP', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/ja-JP/compare.json')) : () => import('@/messages/ns/ja-JP/compare.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('compare', 'zh-HK', typeof window === 'undefined' ? require('@/messages/ns/zh-HK/compare.json') : () => import('@/messages/ns/zh-HK/compare.json'))
+registerLanguage('compare', 'zh-HK', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/zh-HK/compare.json')) : () => import('@/messages/ns/zh-HK/compare.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('compare', 'th-TH', typeof window === 'undefined' ? require('@/messages/ns/th-TH/compare.json') : () => import('@/messages/ns/th-TH/compare.json'))
+registerLanguage('compare', 'th-TH', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/th-TH/compare.json')) : () => import('@/messages/ns/th-TH/compare.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('compare', 'ar-AE', typeof window === 'undefined' ? require('@/messages/ns/ar-AE/compare.json') : () => import('@/messages/ns/ar-AE/compare.json'))
+registerLanguage('compare', 'ar-AE', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/ar-AE/compare.json')) : () => import('@/messages/ns/ar-AE/compare.json'))

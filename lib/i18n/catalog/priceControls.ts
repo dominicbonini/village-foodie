@@ -2,63 +2,64 @@
 // Import this module (`import '@/lib/i18n/catalog/priceControls'`) in any file that reads the "priceControls" namespace.
 import base from '@/messages/ns/en-GB/priceControls.json'
 import enUS from '@/messages/ns/en-US/priceControls.json'
-import { registerNamespace, registerLanguage } from '@/lib/i18n/registry'
+import { registerNamespace, registerLanguage, serverWords } from '@/lib/i18n/registry'
 
 registerNamespace('priceControls', base, { 'en-US': enUS })
-// languages-1: each non-English language — on the server now; in the browser only when a page is in that language.
+// languages-1: each non-English language only when a page is in that language — perf-1: on the server too (serverWords: a
+// synchronous require, run the first time the language is asked for), in the browser as a chunk loaded on demand.
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('priceControls', 'fr-FR', typeof window === 'undefined' ? require('@/messages/ns/fr-FR/priceControls.json') : () => import('@/messages/ns/fr-FR/priceControls.json'))
+registerLanguage('priceControls', 'fr-FR', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/fr-FR/priceControls.json')) : () => import('@/messages/ns/fr-FR/priceControls.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('priceControls', 'de-DE', typeof window === 'undefined' ? require('@/messages/ns/de-DE/priceControls.json') : () => import('@/messages/ns/de-DE/priceControls.json'))
+registerLanguage('priceControls', 'de-DE', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/de-DE/priceControls.json')) : () => import('@/messages/ns/de-DE/priceControls.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('priceControls', 'es-ES', typeof window === 'undefined' ? require('@/messages/ns/es-ES/priceControls.json') : () => import('@/messages/ns/es-ES/priceControls.json'))
+registerLanguage('priceControls', 'es-ES', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/es-ES/priceControls.json')) : () => import('@/messages/ns/es-ES/priceControls.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('priceControls', 'it-IT', typeof window === 'undefined' ? require('@/messages/ns/it-IT/priceControls.json') : () => import('@/messages/ns/it-IT/priceControls.json'))
+registerLanguage('priceControls', 'it-IT', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/it-IT/priceControls.json')) : () => import('@/messages/ns/it-IT/priceControls.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('priceControls', 'pt-PT', typeof window === 'undefined' ? require('@/messages/ns/pt-PT/priceControls.json') : () => import('@/messages/ns/pt-PT/priceControls.json'))
+registerLanguage('priceControls', 'pt-PT', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/pt-PT/priceControls.json')) : () => import('@/messages/ns/pt-PT/priceControls.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('priceControls', 'nl-NL', typeof window === 'undefined' ? require('@/messages/ns/nl-NL/priceControls.json') : () => import('@/messages/ns/nl-NL/priceControls.json'))
+registerLanguage('priceControls', 'nl-NL', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/nl-NL/priceControls.json')) : () => import('@/messages/ns/nl-NL/priceControls.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('priceControls', 'sv-SE', typeof window === 'undefined' ? require('@/messages/ns/sv-SE/priceControls.json') : () => import('@/messages/ns/sv-SE/priceControls.json'))
+registerLanguage('priceControls', 'sv-SE', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/sv-SE/priceControls.json')) : () => import('@/messages/ns/sv-SE/priceControls.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('priceControls', 'da-DK', typeof window === 'undefined' ? require('@/messages/ns/da-DK/priceControls.json') : () => import('@/messages/ns/da-DK/priceControls.json'))
+registerLanguage('priceControls', 'da-DK', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/da-DK/priceControls.json')) : () => import('@/messages/ns/da-DK/priceControls.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('priceControls', 'nb-NO', typeof window === 'undefined' ? require('@/messages/ns/nb-NO/priceControls.json') : () => import('@/messages/ns/nb-NO/priceControls.json'))
+registerLanguage('priceControls', 'nb-NO', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/nb-NO/priceControls.json')) : () => import('@/messages/ns/nb-NO/priceControls.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('priceControls', 'pl-PL', typeof window === 'undefined' ? require('@/messages/ns/pl-PL/priceControls.json') : () => import('@/messages/ns/pl-PL/priceControls.json'))
+registerLanguage('priceControls', 'pl-PL', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/pl-PL/priceControls.json')) : () => import('@/messages/ns/pl-PL/priceControls.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('priceControls', 'cs-CZ', typeof window === 'undefined' ? require('@/messages/ns/cs-CZ/priceControls.json') : () => import('@/messages/ns/cs-CZ/priceControls.json'))
+registerLanguage('priceControls', 'cs-CZ', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/cs-CZ/priceControls.json')) : () => import('@/messages/ns/cs-CZ/priceControls.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('priceControls', 'hu-HU', typeof window === 'undefined' ? require('@/messages/ns/hu-HU/priceControls.json') : () => import('@/messages/ns/hu-HU/priceControls.json'))
+registerLanguage('priceControls', 'hu-HU', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/hu-HU/priceControls.json')) : () => import('@/messages/ns/hu-HU/priceControls.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('priceControls', 'sk-SK', typeof window === 'undefined' ? require('@/messages/ns/sk-SK/priceControls.json') : () => import('@/messages/ns/sk-SK/priceControls.json'))
+registerLanguage('priceControls', 'sk-SK', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/sk-SK/priceControls.json')) : () => import('@/messages/ns/sk-SK/priceControls.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('priceControls', 'ro-RO', typeof window === 'undefined' ? require('@/messages/ns/ro-RO/priceControls.json') : () => import('@/messages/ns/ro-RO/priceControls.json'))
+registerLanguage('priceControls', 'ro-RO', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/ro-RO/priceControls.json')) : () => import('@/messages/ns/ro-RO/priceControls.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('priceControls', 'hr-HR', typeof window === 'undefined' ? require('@/messages/ns/hr-HR/priceControls.json') : () => import('@/messages/ns/hr-HR/priceControls.json'))
+registerLanguage('priceControls', 'hr-HR', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/hr-HR/priceControls.json')) : () => import('@/messages/ns/hr-HR/priceControls.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('priceControls', 'sl-SI', typeof window === 'undefined' ? require('@/messages/ns/sl-SI/priceControls.json') : () => import('@/messages/ns/sl-SI/priceControls.json'))
+registerLanguage('priceControls', 'sl-SI', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/sl-SI/priceControls.json')) : () => import('@/messages/ns/sl-SI/priceControls.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('priceControls', 'fi-FI', typeof window === 'undefined' ? require('@/messages/ns/fi-FI/priceControls.json') : () => import('@/messages/ns/fi-FI/priceControls.json'))
+registerLanguage('priceControls', 'fi-FI', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/fi-FI/priceControls.json')) : () => import('@/messages/ns/fi-FI/priceControls.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('priceControls', 'et-EE', typeof window === 'undefined' ? require('@/messages/ns/et-EE/priceControls.json') : () => import('@/messages/ns/et-EE/priceControls.json'))
+registerLanguage('priceControls', 'et-EE', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/et-EE/priceControls.json')) : () => import('@/messages/ns/et-EE/priceControls.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('priceControls', 'lv-LV', typeof window === 'undefined' ? require('@/messages/ns/lv-LV/priceControls.json') : () => import('@/messages/ns/lv-LV/priceControls.json'))
+registerLanguage('priceControls', 'lv-LV', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/lv-LV/priceControls.json')) : () => import('@/messages/ns/lv-LV/priceControls.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('priceControls', 'lt-LT', typeof window === 'undefined' ? require('@/messages/ns/lt-LT/priceControls.json') : () => import('@/messages/ns/lt-LT/priceControls.json'))
+registerLanguage('priceControls', 'lt-LT', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/lt-LT/priceControls.json')) : () => import('@/messages/ns/lt-LT/priceControls.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('priceControls', 'el-GR', typeof window === 'undefined' ? require('@/messages/ns/el-GR/priceControls.json') : () => import('@/messages/ns/el-GR/priceControls.json'))
+registerLanguage('priceControls', 'el-GR', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/el-GR/priceControls.json')) : () => import('@/messages/ns/el-GR/priceControls.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('priceControls', 'bg-BG', typeof window === 'undefined' ? require('@/messages/ns/bg-BG/priceControls.json') : () => import('@/messages/ns/bg-BG/priceControls.json'))
+registerLanguage('priceControls', 'bg-BG', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/bg-BG/priceControls.json')) : () => import('@/messages/ns/bg-BG/priceControls.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('priceControls', 'pt-BR', typeof window === 'undefined' ? require('@/messages/ns/pt-BR/priceControls.json') : () => import('@/messages/ns/pt-BR/priceControls.json'))
+registerLanguage('priceControls', 'pt-BR', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/pt-BR/priceControls.json')) : () => import('@/messages/ns/pt-BR/priceControls.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('priceControls', 'ms-MY', typeof window === 'undefined' ? require('@/messages/ns/ms-MY/priceControls.json') : () => import('@/messages/ns/ms-MY/priceControls.json'))
+registerLanguage('priceControls', 'ms-MY', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/ms-MY/priceControls.json')) : () => import('@/messages/ns/ms-MY/priceControls.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('priceControls', 'ja-JP', typeof window === 'undefined' ? require('@/messages/ns/ja-JP/priceControls.json') : () => import('@/messages/ns/ja-JP/priceControls.json'))
+registerLanguage('priceControls', 'ja-JP', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/ja-JP/priceControls.json')) : () => import('@/messages/ns/ja-JP/priceControls.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('priceControls', 'zh-HK', typeof window === 'undefined' ? require('@/messages/ns/zh-HK/priceControls.json') : () => import('@/messages/ns/zh-HK/priceControls.json'))
+registerLanguage('priceControls', 'zh-HK', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/zh-HK/priceControls.json')) : () => import('@/messages/ns/zh-HK/priceControls.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('priceControls', 'th-TH', typeof window === 'undefined' ? require('@/messages/ns/th-TH/priceControls.json') : () => import('@/messages/ns/th-TH/priceControls.json'))
+registerLanguage('priceControls', 'th-TH', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/th-TH/priceControls.json')) : () => import('@/messages/ns/th-TH/priceControls.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('priceControls', 'ar-AE', typeof window === 'undefined' ? require('@/messages/ns/ar-AE/priceControls.json') : () => import('@/messages/ns/ar-AE/priceControls.json'))
+registerLanguage('priceControls', 'ar-AE', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/ar-AE/priceControls.json')) : () => import('@/messages/ns/ar-AE/priceControls.json'))

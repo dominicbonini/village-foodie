@@ -81,8 +81,10 @@ const XX = P.pseudoTree(EN)
     const nsFiles = fs.readdirSync(path.join(mini, 'messages/ns/eo-XA'))
     t(`with eo-XA as a base: a namespace file for every one of en-GB's ${Object.keys(EN).length} namespaces`, nsFiles.length === Object.keys(EN).length, `${nsFiles.length} · ${r.stdout}`)
     const order = fs.readFileSync(path.join(mini, 'lib/i18n/catalog/order.ts'), 'utf8')
-    t("its catalog line: the server requires the words, the browser gets a loader — `typeof window === 'undefined' ? require(…) : () => import(…)`",
-      order.includes("registerLanguage('order', 'eo-XA', typeof window === 'undefined' ? require('@/messages/ns/eo-XA/order.json') : () => import('@/messages/ns/eo-XA/order.json'))"), order)
+    // ⚠️ RE-PINNED (perf-1, 5 November 2026, docs/perf-1-report.md): the server's copy is a LOADER now — `serverWords(() => require(…))`,
+    // run the first time the language is asked for (scripts/perf-1.cjs §1 proves the words are unchanged); the browser's is unchanged.
+    t("its catalog line: the server gets a loader of the words (perf-1), the browser gets a loader — `typeof window === 'undefined' ? serverWords(() => require(…)) : () => import(…)`",
+      order.includes("registerLanguage('order', 'eo-XA', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/eo-XA/order.json')) : () => import('@/messages/ns/eo-XA/order.json'))"), order)
     // Take the language's own additions back out (its header mention, its import name, its lines) — what is left must be the
     // repo's module exactly.
     // ⚠️ RE-PINNED (france-1, 22 October 2026): the repo's modules carry fr-FR's lines now, so ONLY eo-XA's are taken out (its
@@ -91,7 +93,8 @@ const XX = P.pseudoTree(EN)
     const englishPartSame = catalogs.filter(f => withoutLanguage(fs.readFileSync(path.join(mini, 'lib/i18n/catalog', f), 'utf8')) !== read(`lib/i18n/catalog/${f}`))
     t('every catalog module still registers its English words exactly as before (the language lines are only ADDED)', englishPartSame.length === 0, englishPartSame.slice(0, 5))
     // ⚠️ RE-PINNED (europe-languages-1): a non-English whole file is read untyped (require), so the editor's TS server does not infer it.
-    t('lib/i18n/locale-files.ts gains eo-XA for the server', fs.readFileSync(path.join(mini, 'lib/i18n/locale-files.ts'), 'utf8').includes("const eoXA: unknown = require('@/messages/eo-XA.json')"))
+    // ⚠️ RE-PINNED (perf-1, 5 November 2026): a loader, required the first time a request asks for the language.
+    t('lib/i18n/locale-files.ts gains eo-XA for the server (perf-1: as a loader)', fs.readFileSync(path.join(mini, 'lib/i18n/locale-files.ts'), 'utf8').includes("const eoXA = (): unknown => require('@/messages/eo-XA.json')"))
   } finally { fs.rmSync(mini, { recursive: true, force: true }) }
 
   // ══ 2 ══════════════════════════════════════════════════════════════════════════════════════════════════════════════

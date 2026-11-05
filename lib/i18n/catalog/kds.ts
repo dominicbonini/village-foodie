@@ -4,67 +4,68 @@ import base from '@/messages/ns/en-GB/kds.json'
 import enUS from '@/messages/ns/en-US/kds.json'
 import enCA from '@/messages/ns/en-CA/kds.json'
 import enSG from '@/messages/ns/en-SG/kds.json'
-import { registerNamespace, registerLanguage } from '@/lib/i18n/registry'
+import { registerNamespace, registerLanguage, serverWords } from '@/lib/i18n/registry'
 
 registerNamespace('kds', base, { 'en-US': enUS, 'en-CA': enCA, 'en-SG': enSG })
-// languages-1: each non-English language — on the server now; in the browser only when a page is in that language.
+// languages-1: each non-English language only when a page is in that language — perf-1: on the server too (serverWords: a
+// synchronous require, run the first time the language is asked for), in the browser as a chunk loaded on demand.
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('kds', 'fr-FR', typeof window === 'undefined' ? require('@/messages/ns/fr-FR/kds.json') : () => import('@/messages/ns/fr-FR/kds.json'))
+registerLanguage('kds', 'fr-FR', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/fr-FR/kds.json')) : () => import('@/messages/ns/fr-FR/kds.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('kds', 'de-DE', typeof window === 'undefined' ? require('@/messages/ns/de-DE/kds.json') : () => import('@/messages/ns/de-DE/kds.json'))
+registerLanguage('kds', 'de-DE', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/de-DE/kds.json')) : () => import('@/messages/ns/de-DE/kds.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('kds', 'de-CH', typeof window === 'undefined' ? require('@/messages/ns/de-CH/kds.json') : () => import('@/messages/ns/de-CH/kds.json'))
+registerLanguage('kds', 'de-CH', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/de-CH/kds.json')) : () => import('@/messages/ns/de-CH/kds.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('kds', 'es-ES', typeof window === 'undefined' ? require('@/messages/ns/es-ES/kds.json') : () => import('@/messages/ns/es-ES/kds.json'))
+registerLanguage('kds', 'es-ES', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/es-ES/kds.json')) : () => import('@/messages/ns/es-ES/kds.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('kds', 'it-IT', typeof window === 'undefined' ? require('@/messages/ns/it-IT/kds.json') : () => import('@/messages/ns/it-IT/kds.json'))
+registerLanguage('kds', 'it-IT', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/it-IT/kds.json')) : () => import('@/messages/ns/it-IT/kds.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('kds', 'pt-PT', typeof window === 'undefined' ? require('@/messages/ns/pt-PT/kds.json') : () => import('@/messages/ns/pt-PT/kds.json'))
+registerLanguage('kds', 'pt-PT', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/pt-PT/kds.json')) : () => import('@/messages/ns/pt-PT/kds.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('kds', 'nl-NL', typeof window === 'undefined' ? require('@/messages/ns/nl-NL/kds.json') : () => import('@/messages/ns/nl-NL/kds.json'))
+registerLanguage('kds', 'nl-NL', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/nl-NL/kds.json')) : () => import('@/messages/ns/nl-NL/kds.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('kds', 'sv-SE', typeof window === 'undefined' ? require('@/messages/ns/sv-SE/kds.json') : () => import('@/messages/ns/sv-SE/kds.json'))
+registerLanguage('kds', 'sv-SE', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/sv-SE/kds.json')) : () => import('@/messages/ns/sv-SE/kds.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('kds', 'da-DK', typeof window === 'undefined' ? require('@/messages/ns/da-DK/kds.json') : () => import('@/messages/ns/da-DK/kds.json'))
+registerLanguage('kds', 'da-DK', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/da-DK/kds.json')) : () => import('@/messages/ns/da-DK/kds.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('kds', 'nb-NO', typeof window === 'undefined' ? require('@/messages/ns/nb-NO/kds.json') : () => import('@/messages/ns/nb-NO/kds.json'))
+registerLanguage('kds', 'nb-NO', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/nb-NO/kds.json')) : () => import('@/messages/ns/nb-NO/kds.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('kds', 'pl-PL', typeof window === 'undefined' ? require('@/messages/ns/pl-PL/kds.json') : () => import('@/messages/ns/pl-PL/kds.json'))
+registerLanguage('kds', 'pl-PL', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/pl-PL/kds.json')) : () => import('@/messages/ns/pl-PL/kds.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('kds', 'cs-CZ', typeof window === 'undefined' ? require('@/messages/ns/cs-CZ/kds.json') : () => import('@/messages/ns/cs-CZ/kds.json'))
+registerLanguage('kds', 'cs-CZ', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/cs-CZ/kds.json')) : () => import('@/messages/ns/cs-CZ/kds.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('kds', 'hu-HU', typeof window === 'undefined' ? require('@/messages/ns/hu-HU/kds.json') : () => import('@/messages/ns/hu-HU/kds.json'))
+registerLanguage('kds', 'hu-HU', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/hu-HU/kds.json')) : () => import('@/messages/ns/hu-HU/kds.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('kds', 'sk-SK', typeof window === 'undefined' ? require('@/messages/ns/sk-SK/kds.json') : () => import('@/messages/ns/sk-SK/kds.json'))
+registerLanguage('kds', 'sk-SK', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/sk-SK/kds.json')) : () => import('@/messages/ns/sk-SK/kds.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('kds', 'ro-RO', typeof window === 'undefined' ? require('@/messages/ns/ro-RO/kds.json') : () => import('@/messages/ns/ro-RO/kds.json'))
+registerLanguage('kds', 'ro-RO', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/ro-RO/kds.json')) : () => import('@/messages/ns/ro-RO/kds.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('kds', 'hr-HR', typeof window === 'undefined' ? require('@/messages/ns/hr-HR/kds.json') : () => import('@/messages/ns/hr-HR/kds.json'))
+registerLanguage('kds', 'hr-HR', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/hr-HR/kds.json')) : () => import('@/messages/ns/hr-HR/kds.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('kds', 'sl-SI', typeof window === 'undefined' ? require('@/messages/ns/sl-SI/kds.json') : () => import('@/messages/ns/sl-SI/kds.json'))
+registerLanguage('kds', 'sl-SI', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/sl-SI/kds.json')) : () => import('@/messages/ns/sl-SI/kds.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('kds', 'fi-FI', typeof window === 'undefined' ? require('@/messages/ns/fi-FI/kds.json') : () => import('@/messages/ns/fi-FI/kds.json'))
+registerLanguage('kds', 'fi-FI', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/fi-FI/kds.json')) : () => import('@/messages/ns/fi-FI/kds.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('kds', 'et-EE', typeof window === 'undefined' ? require('@/messages/ns/et-EE/kds.json') : () => import('@/messages/ns/et-EE/kds.json'))
+registerLanguage('kds', 'et-EE', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/et-EE/kds.json')) : () => import('@/messages/ns/et-EE/kds.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('kds', 'lv-LV', typeof window === 'undefined' ? require('@/messages/ns/lv-LV/kds.json') : () => import('@/messages/ns/lv-LV/kds.json'))
+registerLanguage('kds', 'lv-LV', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/lv-LV/kds.json')) : () => import('@/messages/ns/lv-LV/kds.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('kds', 'lt-LT', typeof window === 'undefined' ? require('@/messages/ns/lt-LT/kds.json') : () => import('@/messages/ns/lt-LT/kds.json'))
+registerLanguage('kds', 'lt-LT', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/lt-LT/kds.json')) : () => import('@/messages/ns/lt-LT/kds.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('kds', 'el-GR', typeof window === 'undefined' ? require('@/messages/ns/el-GR/kds.json') : () => import('@/messages/ns/el-GR/kds.json'))
+registerLanguage('kds', 'el-GR', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/el-GR/kds.json')) : () => import('@/messages/ns/el-GR/kds.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('kds', 'bg-BG', typeof window === 'undefined' ? require('@/messages/ns/bg-BG/kds.json') : () => import('@/messages/ns/bg-BG/kds.json'))
+registerLanguage('kds', 'bg-BG', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/bg-BG/kds.json')) : () => import('@/messages/ns/bg-BG/kds.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('kds', 'es-MX', typeof window === 'undefined' ? require('@/messages/ns/es-MX/kds.json') : () => import('@/messages/ns/es-MX/kds.json'))
+registerLanguage('kds', 'es-MX', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/es-MX/kds.json')) : () => import('@/messages/ns/es-MX/kds.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('kds', 'pt-BR', typeof window === 'undefined' ? require('@/messages/ns/pt-BR/kds.json') : () => import('@/messages/ns/pt-BR/kds.json'))
+registerLanguage('kds', 'pt-BR', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/pt-BR/kds.json')) : () => import('@/messages/ns/pt-BR/kds.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('kds', 'ms-MY', typeof window === 'undefined' ? require('@/messages/ns/ms-MY/kds.json') : () => import('@/messages/ns/ms-MY/kds.json'))
+registerLanguage('kds', 'ms-MY', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/ms-MY/kds.json')) : () => import('@/messages/ns/ms-MY/kds.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('kds', 'ja-JP', typeof window === 'undefined' ? require('@/messages/ns/ja-JP/kds.json') : () => import('@/messages/ns/ja-JP/kds.json'))
+registerLanguage('kds', 'ja-JP', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/ja-JP/kds.json')) : () => import('@/messages/ns/ja-JP/kds.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('kds', 'zh-HK', typeof window === 'undefined' ? require('@/messages/ns/zh-HK/kds.json') : () => import('@/messages/ns/zh-HK/kds.json'))
+registerLanguage('kds', 'zh-HK', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/zh-HK/kds.json')) : () => import('@/messages/ns/zh-HK/kds.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('kds', 'th-TH', typeof window === 'undefined' ? require('@/messages/ns/th-TH/kds.json') : () => import('@/messages/ns/th-TH/kds.json'))
+registerLanguage('kds', 'th-TH', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/th-TH/kds.json')) : () => import('@/messages/ns/th-TH/kds.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('kds', 'ar-AE', typeof window === 'undefined' ? require('@/messages/ns/ar-AE/kds.json') : () => import('@/messages/ns/ar-AE/kds.json'))
+registerLanguage('kds', 'ar-AE', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/ar-AE/kds.json')) : () => import('@/messages/ns/ar-AE/kds.json'))

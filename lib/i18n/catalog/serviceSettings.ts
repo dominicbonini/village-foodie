@@ -3,65 +3,66 @@
 import base from '@/messages/ns/en-GB/serviceSettings.json'
 import enUS from '@/messages/ns/en-US/serviceSettings.json'
 import enAU from '@/messages/ns/en-AU/serviceSettings.json'
-import { registerNamespace, registerLanguage } from '@/lib/i18n/registry'
+import { registerNamespace, registerLanguage, serverWords } from '@/lib/i18n/registry'
 
 registerNamespace('serviceSettings', base, { 'en-US': enUS, 'en-AU': enAU })
-// languages-1: each non-English language — on the server now; in the browser only when a page is in that language.
+// languages-1: each non-English language only when a page is in that language — perf-1: on the server too (serverWords: a
+// synchronous require, run the first time the language is asked for), in the browser as a chunk loaded on demand.
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('serviceSettings', 'fr-FR', typeof window === 'undefined' ? require('@/messages/ns/fr-FR/serviceSettings.json') : () => import('@/messages/ns/fr-FR/serviceSettings.json'))
+registerLanguage('serviceSettings', 'fr-FR', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/fr-FR/serviceSettings.json')) : () => import('@/messages/ns/fr-FR/serviceSettings.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('serviceSettings', 'de-DE', typeof window === 'undefined' ? require('@/messages/ns/de-DE/serviceSettings.json') : () => import('@/messages/ns/de-DE/serviceSettings.json'))
+registerLanguage('serviceSettings', 'de-DE', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/de-DE/serviceSettings.json')) : () => import('@/messages/ns/de-DE/serviceSettings.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('serviceSettings', 'es-ES', typeof window === 'undefined' ? require('@/messages/ns/es-ES/serviceSettings.json') : () => import('@/messages/ns/es-ES/serviceSettings.json'))
+registerLanguage('serviceSettings', 'es-ES', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/es-ES/serviceSettings.json')) : () => import('@/messages/ns/es-ES/serviceSettings.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('serviceSettings', 'it-IT', typeof window === 'undefined' ? require('@/messages/ns/it-IT/serviceSettings.json') : () => import('@/messages/ns/it-IT/serviceSettings.json'))
+registerLanguage('serviceSettings', 'it-IT', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/it-IT/serviceSettings.json')) : () => import('@/messages/ns/it-IT/serviceSettings.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('serviceSettings', 'pt-PT', typeof window === 'undefined' ? require('@/messages/ns/pt-PT/serviceSettings.json') : () => import('@/messages/ns/pt-PT/serviceSettings.json'))
+registerLanguage('serviceSettings', 'pt-PT', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/pt-PT/serviceSettings.json')) : () => import('@/messages/ns/pt-PT/serviceSettings.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('serviceSettings', 'nl-NL', typeof window === 'undefined' ? require('@/messages/ns/nl-NL/serviceSettings.json') : () => import('@/messages/ns/nl-NL/serviceSettings.json'))
+registerLanguage('serviceSettings', 'nl-NL', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/nl-NL/serviceSettings.json')) : () => import('@/messages/ns/nl-NL/serviceSettings.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('serviceSettings', 'sv-SE', typeof window === 'undefined' ? require('@/messages/ns/sv-SE/serviceSettings.json') : () => import('@/messages/ns/sv-SE/serviceSettings.json'))
+registerLanguage('serviceSettings', 'sv-SE', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/sv-SE/serviceSettings.json')) : () => import('@/messages/ns/sv-SE/serviceSettings.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('serviceSettings', 'da-DK', typeof window === 'undefined' ? require('@/messages/ns/da-DK/serviceSettings.json') : () => import('@/messages/ns/da-DK/serviceSettings.json'))
+registerLanguage('serviceSettings', 'da-DK', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/da-DK/serviceSettings.json')) : () => import('@/messages/ns/da-DK/serviceSettings.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('serviceSettings', 'nb-NO', typeof window === 'undefined' ? require('@/messages/ns/nb-NO/serviceSettings.json') : () => import('@/messages/ns/nb-NO/serviceSettings.json'))
+registerLanguage('serviceSettings', 'nb-NO', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/nb-NO/serviceSettings.json')) : () => import('@/messages/ns/nb-NO/serviceSettings.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('serviceSettings', 'pl-PL', typeof window === 'undefined' ? require('@/messages/ns/pl-PL/serviceSettings.json') : () => import('@/messages/ns/pl-PL/serviceSettings.json'))
+registerLanguage('serviceSettings', 'pl-PL', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/pl-PL/serviceSettings.json')) : () => import('@/messages/ns/pl-PL/serviceSettings.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('serviceSettings', 'cs-CZ', typeof window === 'undefined' ? require('@/messages/ns/cs-CZ/serviceSettings.json') : () => import('@/messages/ns/cs-CZ/serviceSettings.json'))
+registerLanguage('serviceSettings', 'cs-CZ', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/cs-CZ/serviceSettings.json')) : () => import('@/messages/ns/cs-CZ/serviceSettings.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('serviceSettings', 'hu-HU', typeof window === 'undefined' ? require('@/messages/ns/hu-HU/serviceSettings.json') : () => import('@/messages/ns/hu-HU/serviceSettings.json'))
+registerLanguage('serviceSettings', 'hu-HU', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/hu-HU/serviceSettings.json')) : () => import('@/messages/ns/hu-HU/serviceSettings.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('serviceSettings', 'sk-SK', typeof window === 'undefined' ? require('@/messages/ns/sk-SK/serviceSettings.json') : () => import('@/messages/ns/sk-SK/serviceSettings.json'))
+registerLanguage('serviceSettings', 'sk-SK', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/sk-SK/serviceSettings.json')) : () => import('@/messages/ns/sk-SK/serviceSettings.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('serviceSettings', 'ro-RO', typeof window === 'undefined' ? require('@/messages/ns/ro-RO/serviceSettings.json') : () => import('@/messages/ns/ro-RO/serviceSettings.json'))
+registerLanguage('serviceSettings', 'ro-RO', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/ro-RO/serviceSettings.json')) : () => import('@/messages/ns/ro-RO/serviceSettings.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('serviceSettings', 'hr-HR', typeof window === 'undefined' ? require('@/messages/ns/hr-HR/serviceSettings.json') : () => import('@/messages/ns/hr-HR/serviceSettings.json'))
+registerLanguage('serviceSettings', 'hr-HR', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/hr-HR/serviceSettings.json')) : () => import('@/messages/ns/hr-HR/serviceSettings.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('serviceSettings', 'sl-SI', typeof window === 'undefined' ? require('@/messages/ns/sl-SI/serviceSettings.json') : () => import('@/messages/ns/sl-SI/serviceSettings.json'))
+registerLanguage('serviceSettings', 'sl-SI', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/sl-SI/serviceSettings.json')) : () => import('@/messages/ns/sl-SI/serviceSettings.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('serviceSettings', 'fi-FI', typeof window === 'undefined' ? require('@/messages/ns/fi-FI/serviceSettings.json') : () => import('@/messages/ns/fi-FI/serviceSettings.json'))
+registerLanguage('serviceSettings', 'fi-FI', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/fi-FI/serviceSettings.json')) : () => import('@/messages/ns/fi-FI/serviceSettings.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('serviceSettings', 'et-EE', typeof window === 'undefined' ? require('@/messages/ns/et-EE/serviceSettings.json') : () => import('@/messages/ns/et-EE/serviceSettings.json'))
+registerLanguage('serviceSettings', 'et-EE', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/et-EE/serviceSettings.json')) : () => import('@/messages/ns/et-EE/serviceSettings.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('serviceSettings', 'lv-LV', typeof window === 'undefined' ? require('@/messages/ns/lv-LV/serviceSettings.json') : () => import('@/messages/ns/lv-LV/serviceSettings.json'))
+registerLanguage('serviceSettings', 'lv-LV', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/lv-LV/serviceSettings.json')) : () => import('@/messages/ns/lv-LV/serviceSettings.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('serviceSettings', 'lt-LT', typeof window === 'undefined' ? require('@/messages/ns/lt-LT/serviceSettings.json') : () => import('@/messages/ns/lt-LT/serviceSettings.json'))
+registerLanguage('serviceSettings', 'lt-LT', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/lt-LT/serviceSettings.json')) : () => import('@/messages/ns/lt-LT/serviceSettings.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('serviceSettings', 'el-GR', typeof window === 'undefined' ? require('@/messages/ns/el-GR/serviceSettings.json') : () => import('@/messages/ns/el-GR/serviceSettings.json'))
+registerLanguage('serviceSettings', 'el-GR', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/el-GR/serviceSettings.json')) : () => import('@/messages/ns/el-GR/serviceSettings.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('serviceSettings', 'bg-BG', typeof window === 'undefined' ? require('@/messages/ns/bg-BG/serviceSettings.json') : () => import('@/messages/ns/bg-BG/serviceSettings.json'))
+registerLanguage('serviceSettings', 'bg-BG', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/bg-BG/serviceSettings.json')) : () => import('@/messages/ns/bg-BG/serviceSettings.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('serviceSettings', 'es-MX', typeof window === 'undefined' ? require('@/messages/ns/es-MX/serviceSettings.json') : () => import('@/messages/ns/es-MX/serviceSettings.json'))
+registerLanguage('serviceSettings', 'es-MX', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/es-MX/serviceSettings.json')) : () => import('@/messages/ns/es-MX/serviceSettings.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('serviceSettings', 'pt-BR', typeof window === 'undefined' ? require('@/messages/ns/pt-BR/serviceSettings.json') : () => import('@/messages/ns/pt-BR/serviceSettings.json'))
+registerLanguage('serviceSettings', 'pt-BR', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/pt-BR/serviceSettings.json')) : () => import('@/messages/ns/pt-BR/serviceSettings.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('serviceSettings', 'ms-MY', typeof window === 'undefined' ? require('@/messages/ns/ms-MY/serviceSettings.json') : () => import('@/messages/ns/ms-MY/serviceSettings.json'))
+registerLanguage('serviceSettings', 'ms-MY', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/ms-MY/serviceSettings.json')) : () => import('@/messages/ns/ms-MY/serviceSettings.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('serviceSettings', 'ja-JP', typeof window === 'undefined' ? require('@/messages/ns/ja-JP/serviceSettings.json') : () => import('@/messages/ns/ja-JP/serviceSettings.json'))
+registerLanguage('serviceSettings', 'ja-JP', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/ja-JP/serviceSettings.json')) : () => import('@/messages/ns/ja-JP/serviceSettings.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('serviceSettings', 'zh-HK', typeof window === 'undefined' ? require('@/messages/ns/zh-HK/serviceSettings.json') : () => import('@/messages/ns/zh-HK/serviceSettings.json'))
+registerLanguage('serviceSettings', 'zh-HK', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/zh-HK/serviceSettings.json')) : () => import('@/messages/ns/zh-HK/serviceSettings.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('serviceSettings', 'th-TH', typeof window === 'undefined' ? require('@/messages/ns/th-TH/serviceSettings.json') : () => import('@/messages/ns/th-TH/serviceSettings.json'))
+registerLanguage('serviceSettings', 'th-TH', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/th-TH/serviceSettings.json')) : () => import('@/messages/ns/th-TH/serviceSettings.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('serviceSettings', 'ar-AE', typeof window === 'undefined' ? require('@/messages/ns/ar-AE/serviceSettings.json') : () => import('@/messages/ns/ar-AE/serviceSettings.json'))
+registerLanguage('serviceSettings', 'ar-AE', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/ar-AE/serviceSettings.json')) : () => import('@/messages/ns/ar-AE/serviceSettings.json'))

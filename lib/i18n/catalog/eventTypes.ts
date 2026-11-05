@@ -3,67 +3,68 @@
 import base from '@/messages/ns/en-GB/eventTypes.json'
 import enUS from '@/messages/ns/en-US/eventTypes.json'
 import enAU from '@/messages/ns/en-AU/eventTypes.json'
-import { registerNamespace, registerLanguage } from '@/lib/i18n/registry'
+import { registerNamespace, registerLanguage, serverWords } from '@/lib/i18n/registry'
 
 registerNamespace('eventTypes', base, { 'en-US': enUS, 'en-AU': enAU })
-// languages-1: each non-English language — on the server now; in the browser only when a page is in that language.
+// languages-1: each non-English language only when a page is in that language — perf-1: on the server too (serverWords: a
+// synchronous require, run the first time the language is asked for), in the browser as a chunk loaded on demand.
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('eventTypes', 'fr-FR', typeof window === 'undefined' ? require('@/messages/ns/fr-FR/eventTypes.json') : () => import('@/messages/ns/fr-FR/eventTypes.json'))
+registerLanguage('eventTypes', 'fr-FR', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/fr-FR/eventTypes.json')) : () => import('@/messages/ns/fr-FR/eventTypes.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('eventTypes', 'de-DE', typeof window === 'undefined' ? require('@/messages/ns/de-DE/eventTypes.json') : () => import('@/messages/ns/de-DE/eventTypes.json'))
+registerLanguage('eventTypes', 'de-DE', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/de-DE/eventTypes.json')) : () => import('@/messages/ns/de-DE/eventTypes.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('eventTypes', 'de-CH', typeof window === 'undefined' ? require('@/messages/ns/de-CH/eventTypes.json') : () => import('@/messages/ns/de-CH/eventTypes.json'))
+registerLanguage('eventTypes', 'de-CH', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/de-CH/eventTypes.json')) : () => import('@/messages/ns/de-CH/eventTypes.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('eventTypes', 'es-ES', typeof window === 'undefined' ? require('@/messages/ns/es-ES/eventTypes.json') : () => import('@/messages/ns/es-ES/eventTypes.json'))
+registerLanguage('eventTypes', 'es-ES', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/es-ES/eventTypes.json')) : () => import('@/messages/ns/es-ES/eventTypes.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('eventTypes', 'it-IT', typeof window === 'undefined' ? require('@/messages/ns/it-IT/eventTypes.json') : () => import('@/messages/ns/it-IT/eventTypes.json'))
+registerLanguage('eventTypes', 'it-IT', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/it-IT/eventTypes.json')) : () => import('@/messages/ns/it-IT/eventTypes.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('eventTypes', 'pt-PT', typeof window === 'undefined' ? require('@/messages/ns/pt-PT/eventTypes.json') : () => import('@/messages/ns/pt-PT/eventTypes.json'))
+registerLanguage('eventTypes', 'pt-PT', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/pt-PT/eventTypes.json')) : () => import('@/messages/ns/pt-PT/eventTypes.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('eventTypes', 'nl-NL', typeof window === 'undefined' ? require('@/messages/ns/nl-NL/eventTypes.json') : () => import('@/messages/ns/nl-NL/eventTypes.json'))
+registerLanguage('eventTypes', 'nl-NL', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/nl-NL/eventTypes.json')) : () => import('@/messages/ns/nl-NL/eventTypes.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('eventTypes', 'sv-SE', typeof window === 'undefined' ? require('@/messages/ns/sv-SE/eventTypes.json') : () => import('@/messages/ns/sv-SE/eventTypes.json'))
+registerLanguage('eventTypes', 'sv-SE', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/sv-SE/eventTypes.json')) : () => import('@/messages/ns/sv-SE/eventTypes.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('eventTypes', 'da-DK', typeof window === 'undefined' ? require('@/messages/ns/da-DK/eventTypes.json') : () => import('@/messages/ns/da-DK/eventTypes.json'))
+registerLanguage('eventTypes', 'da-DK', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/da-DK/eventTypes.json')) : () => import('@/messages/ns/da-DK/eventTypes.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('eventTypes', 'nb-NO', typeof window === 'undefined' ? require('@/messages/ns/nb-NO/eventTypes.json') : () => import('@/messages/ns/nb-NO/eventTypes.json'))
+registerLanguage('eventTypes', 'nb-NO', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/nb-NO/eventTypes.json')) : () => import('@/messages/ns/nb-NO/eventTypes.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('eventTypes', 'pl-PL', typeof window === 'undefined' ? require('@/messages/ns/pl-PL/eventTypes.json') : () => import('@/messages/ns/pl-PL/eventTypes.json'))
+registerLanguage('eventTypes', 'pl-PL', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/pl-PL/eventTypes.json')) : () => import('@/messages/ns/pl-PL/eventTypes.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('eventTypes', 'cs-CZ', typeof window === 'undefined' ? require('@/messages/ns/cs-CZ/eventTypes.json') : () => import('@/messages/ns/cs-CZ/eventTypes.json'))
+registerLanguage('eventTypes', 'cs-CZ', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/cs-CZ/eventTypes.json')) : () => import('@/messages/ns/cs-CZ/eventTypes.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('eventTypes', 'hu-HU', typeof window === 'undefined' ? require('@/messages/ns/hu-HU/eventTypes.json') : () => import('@/messages/ns/hu-HU/eventTypes.json'))
+registerLanguage('eventTypes', 'hu-HU', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/hu-HU/eventTypes.json')) : () => import('@/messages/ns/hu-HU/eventTypes.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('eventTypes', 'sk-SK', typeof window === 'undefined' ? require('@/messages/ns/sk-SK/eventTypes.json') : () => import('@/messages/ns/sk-SK/eventTypes.json'))
+registerLanguage('eventTypes', 'sk-SK', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/sk-SK/eventTypes.json')) : () => import('@/messages/ns/sk-SK/eventTypes.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('eventTypes', 'ro-RO', typeof window === 'undefined' ? require('@/messages/ns/ro-RO/eventTypes.json') : () => import('@/messages/ns/ro-RO/eventTypes.json'))
+registerLanguage('eventTypes', 'ro-RO', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/ro-RO/eventTypes.json')) : () => import('@/messages/ns/ro-RO/eventTypes.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('eventTypes', 'hr-HR', typeof window === 'undefined' ? require('@/messages/ns/hr-HR/eventTypes.json') : () => import('@/messages/ns/hr-HR/eventTypes.json'))
+registerLanguage('eventTypes', 'hr-HR', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/hr-HR/eventTypes.json')) : () => import('@/messages/ns/hr-HR/eventTypes.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('eventTypes', 'sl-SI', typeof window === 'undefined' ? require('@/messages/ns/sl-SI/eventTypes.json') : () => import('@/messages/ns/sl-SI/eventTypes.json'))
+registerLanguage('eventTypes', 'sl-SI', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/sl-SI/eventTypes.json')) : () => import('@/messages/ns/sl-SI/eventTypes.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('eventTypes', 'fi-FI', typeof window === 'undefined' ? require('@/messages/ns/fi-FI/eventTypes.json') : () => import('@/messages/ns/fi-FI/eventTypes.json'))
+registerLanguage('eventTypes', 'fi-FI', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/fi-FI/eventTypes.json')) : () => import('@/messages/ns/fi-FI/eventTypes.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('eventTypes', 'et-EE', typeof window === 'undefined' ? require('@/messages/ns/et-EE/eventTypes.json') : () => import('@/messages/ns/et-EE/eventTypes.json'))
+registerLanguage('eventTypes', 'et-EE', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/et-EE/eventTypes.json')) : () => import('@/messages/ns/et-EE/eventTypes.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('eventTypes', 'lv-LV', typeof window === 'undefined' ? require('@/messages/ns/lv-LV/eventTypes.json') : () => import('@/messages/ns/lv-LV/eventTypes.json'))
+registerLanguage('eventTypes', 'lv-LV', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/lv-LV/eventTypes.json')) : () => import('@/messages/ns/lv-LV/eventTypes.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('eventTypes', 'lt-LT', typeof window === 'undefined' ? require('@/messages/ns/lt-LT/eventTypes.json') : () => import('@/messages/ns/lt-LT/eventTypes.json'))
+registerLanguage('eventTypes', 'lt-LT', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/lt-LT/eventTypes.json')) : () => import('@/messages/ns/lt-LT/eventTypes.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('eventTypes', 'el-GR', typeof window === 'undefined' ? require('@/messages/ns/el-GR/eventTypes.json') : () => import('@/messages/ns/el-GR/eventTypes.json'))
+registerLanguage('eventTypes', 'el-GR', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/el-GR/eventTypes.json')) : () => import('@/messages/ns/el-GR/eventTypes.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('eventTypes', 'bg-BG', typeof window === 'undefined' ? require('@/messages/ns/bg-BG/eventTypes.json') : () => import('@/messages/ns/bg-BG/eventTypes.json'))
+registerLanguage('eventTypes', 'bg-BG', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/bg-BG/eventTypes.json')) : () => import('@/messages/ns/bg-BG/eventTypes.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('eventTypes', 'es-MX', typeof window === 'undefined' ? require('@/messages/ns/es-MX/eventTypes.json') : () => import('@/messages/ns/es-MX/eventTypes.json'))
+registerLanguage('eventTypes', 'es-MX', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/es-MX/eventTypes.json')) : () => import('@/messages/ns/es-MX/eventTypes.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('eventTypes', 'pt-BR', typeof window === 'undefined' ? require('@/messages/ns/pt-BR/eventTypes.json') : () => import('@/messages/ns/pt-BR/eventTypes.json'))
+registerLanguage('eventTypes', 'pt-BR', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/pt-BR/eventTypes.json')) : () => import('@/messages/ns/pt-BR/eventTypes.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('eventTypes', 'ms-MY', typeof window === 'undefined' ? require('@/messages/ns/ms-MY/eventTypes.json') : () => import('@/messages/ns/ms-MY/eventTypes.json'))
+registerLanguage('eventTypes', 'ms-MY', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/ms-MY/eventTypes.json')) : () => import('@/messages/ns/ms-MY/eventTypes.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('eventTypes', 'ja-JP', typeof window === 'undefined' ? require('@/messages/ns/ja-JP/eventTypes.json') : () => import('@/messages/ns/ja-JP/eventTypes.json'))
+registerLanguage('eventTypes', 'ja-JP', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/ja-JP/eventTypes.json')) : () => import('@/messages/ns/ja-JP/eventTypes.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('eventTypes', 'zh-HK', typeof window === 'undefined' ? require('@/messages/ns/zh-HK/eventTypes.json') : () => import('@/messages/ns/zh-HK/eventTypes.json'))
+registerLanguage('eventTypes', 'zh-HK', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/zh-HK/eventTypes.json')) : () => import('@/messages/ns/zh-HK/eventTypes.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('eventTypes', 'th-TH', typeof window === 'undefined' ? require('@/messages/ns/th-TH/eventTypes.json') : () => import('@/messages/ns/th-TH/eventTypes.json'))
+registerLanguage('eventTypes', 'th-TH', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/th-TH/eventTypes.json')) : () => import('@/messages/ns/th-TH/eventTypes.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('eventTypes', 'ar-AE', typeof window === 'undefined' ? require('@/messages/ns/ar-AE/eventTypes.json') : () => import('@/messages/ns/ar-AE/eventTypes.json'))
+registerLanguage('eventTypes', 'ar-AE', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/ar-AE/eventTypes.json')) : () => import('@/messages/ns/ar-AE/eventTypes.json'))

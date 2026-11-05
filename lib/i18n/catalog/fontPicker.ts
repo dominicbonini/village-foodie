@@ -3,65 +3,66 @@
 import base from '@/messages/ns/en-GB/fontPicker.json'
 import enUS from '@/messages/ns/en-US/fontPicker.json'
 import enCA from '@/messages/ns/en-CA/fontPicker.json'
-import { registerNamespace, registerLanguage } from '@/lib/i18n/registry'
+import { registerNamespace, registerLanguage, serverWords } from '@/lib/i18n/registry'
 
 registerNamespace('fontPicker', base, { 'en-US': enUS, 'en-CA': enCA })
-// languages-1: each non-English language — on the server now; in the browser only when a page is in that language.
+// languages-1: each non-English language only when a page is in that language — perf-1: on the server too (serverWords: a
+// synchronous require, run the first time the language is asked for), in the browser as a chunk loaded on demand.
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('fontPicker', 'fr-FR', typeof window === 'undefined' ? require('@/messages/ns/fr-FR/fontPicker.json') : () => import('@/messages/ns/fr-FR/fontPicker.json'))
+registerLanguage('fontPicker', 'fr-FR', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/fr-FR/fontPicker.json')) : () => import('@/messages/ns/fr-FR/fontPicker.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('fontPicker', 'de-DE', typeof window === 'undefined' ? require('@/messages/ns/de-DE/fontPicker.json') : () => import('@/messages/ns/de-DE/fontPicker.json'))
+registerLanguage('fontPicker', 'de-DE', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/de-DE/fontPicker.json')) : () => import('@/messages/ns/de-DE/fontPicker.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('fontPicker', 'de-CH', typeof window === 'undefined' ? require('@/messages/ns/de-CH/fontPicker.json') : () => import('@/messages/ns/de-CH/fontPicker.json'))
+registerLanguage('fontPicker', 'de-CH', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/de-CH/fontPicker.json')) : () => import('@/messages/ns/de-CH/fontPicker.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('fontPicker', 'es-ES', typeof window === 'undefined' ? require('@/messages/ns/es-ES/fontPicker.json') : () => import('@/messages/ns/es-ES/fontPicker.json'))
+registerLanguage('fontPicker', 'es-ES', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/es-ES/fontPicker.json')) : () => import('@/messages/ns/es-ES/fontPicker.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('fontPicker', 'it-IT', typeof window === 'undefined' ? require('@/messages/ns/it-IT/fontPicker.json') : () => import('@/messages/ns/it-IT/fontPicker.json'))
+registerLanguage('fontPicker', 'it-IT', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/it-IT/fontPicker.json')) : () => import('@/messages/ns/it-IT/fontPicker.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('fontPicker', 'pt-PT', typeof window === 'undefined' ? require('@/messages/ns/pt-PT/fontPicker.json') : () => import('@/messages/ns/pt-PT/fontPicker.json'))
+registerLanguage('fontPicker', 'pt-PT', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/pt-PT/fontPicker.json')) : () => import('@/messages/ns/pt-PT/fontPicker.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('fontPicker', 'nl-NL', typeof window === 'undefined' ? require('@/messages/ns/nl-NL/fontPicker.json') : () => import('@/messages/ns/nl-NL/fontPicker.json'))
+registerLanguage('fontPicker', 'nl-NL', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/nl-NL/fontPicker.json')) : () => import('@/messages/ns/nl-NL/fontPicker.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('fontPicker', 'sv-SE', typeof window === 'undefined' ? require('@/messages/ns/sv-SE/fontPicker.json') : () => import('@/messages/ns/sv-SE/fontPicker.json'))
+registerLanguage('fontPicker', 'sv-SE', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/sv-SE/fontPicker.json')) : () => import('@/messages/ns/sv-SE/fontPicker.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('fontPicker', 'da-DK', typeof window === 'undefined' ? require('@/messages/ns/da-DK/fontPicker.json') : () => import('@/messages/ns/da-DK/fontPicker.json'))
+registerLanguage('fontPicker', 'da-DK', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/da-DK/fontPicker.json')) : () => import('@/messages/ns/da-DK/fontPicker.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('fontPicker', 'nb-NO', typeof window === 'undefined' ? require('@/messages/ns/nb-NO/fontPicker.json') : () => import('@/messages/ns/nb-NO/fontPicker.json'))
+registerLanguage('fontPicker', 'nb-NO', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/nb-NO/fontPicker.json')) : () => import('@/messages/ns/nb-NO/fontPicker.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('fontPicker', 'pl-PL', typeof window === 'undefined' ? require('@/messages/ns/pl-PL/fontPicker.json') : () => import('@/messages/ns/pl-PL/fontPicker.json'))
+registerLanguage('fontPicker', 'pl-PL', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/pl-PL/fontPicker.json')) : () => import('@/messages/ns/pl-PL/fontPicker.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('fontPicker', 'cs-CZ', typeof window === 'undefined' ? require('@/messages/ns/cs-CZ/fontPicker.json') : () => import('@/messages/ns/cs-CZ/fontPicker.json'))
+registerLanguage('fontPicker', 'cs-CZ', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/cs-CZ/fontPicker.json')) : () => import('@/messages/ns/cs-CZ/fontPicker.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('fontPicker', 'hu-HU', typeof window === 'undefined' ? require('@/messages/ns/hu-HU/fontPicker.json') : () => import('@/messages/ns/hu-HU/fontPicker.json'))
+registerLanguage('fontPicker', 'hu-HU', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/hu-HU/fontPicker.json')) : () => import('@/messages/ns/hu-HU/fontPicker.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('fontPicker', 'sk-SK', typeof window === 'undefined' ? require('@/messages/ns/sk-SK/fontPicker.json') : () => import('@/messages/ns/sk-SK/fontPicker.json'))
+registerLanguage('fontPicker', 'sk-SK', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/sk-SK/fontPicker.json')) : () => import('@/messages/ns/sk-SK/fontPicker.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('fontPicker', 'ro-RO', typeof window === 'undefined' ? require('@/messages/ns/ro-RO/fontPicker.json') : () => import('@/messages/ns/ro-RO/fontPicker.json'))
+registerLanguage('fontPicker', 'ro-RO', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/ro-RO/fontPicker.json')) : () => import('@/messages/ns/ro-RO/fontPicker.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('fontPicker', 'hr-HR', typeof window === 'undefined' ? require('@/messages/ns/hr-HR/fontPicker.json') : () => import('@/messages/ns/hr-HR/fontPicker.json'))
+registerLanguage('fontPicker', 'hr-HR', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/hr-HR/fontPicker.json')) : () => import('@/messages/ns/hr-HR/fontPicker.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('fontPicker', 'sl-SI', typeof window === 'undefined' ? require('@/messages/ns/sl-SI/fontPicker.json') : () => import('@/messages/ns/sl-SI/fontPicker.json'))
+registerLanguage('fontPicker', 'sl-SI', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/sl-SI/fontPicker.json')) : () => import('@/messages/ns/sl-SI/fontPicker.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('fontPicker', 'fi-FI', typeof window === 'undefined' ? require('@/messages/ns/fi-FI/fontPicker.json') : () => import('@/messages/ns/fi-FI/fontPicker.json'))
+registerLanguage('fontPicker', 'fi-FI', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/fi-FI/fontPicker.json')) : () => import('@/messages/ns/fi-FI/fontPicker.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('fontPicker', 'et-EE', typeof window === 'undefined' ? require('@/messages/ns/et-EE/fontPicker.json') : () => import('@/messages/ns/et-EE/fontPicker.json'))
+registerLanguage('fontPicker', 'et-EE', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/et-EE/fontPicker.json')) : () => import('@/messages/ns/et-EE/fontPicker.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('fontPicker', 'lv-LV', typeof window === 'undefined' ? require('@/messages/ns/lv-LV/fontPicker.json') : () => import('@/messages/ns/lv-LV/fontPicker.json'))
+registerLanguage('fontPicker', 'lv-LV', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/lv-LV/fontPicker.json')) : () => import('@/messages/ns/lv-LV/fontPicker.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('fontPicker', 'lt-LT', typeof window === 'undefined' ? require('@/messages/ns/lt-LT/fontPicker.json') : () => import('@/messages/ns/lt-LT/fontPicker.json'))
+registerLanguage('fontPicker', 'lt-LT', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/lt-LT/fontPicker.json')) : () => import('@/messages/ns/lt-LT/fontPicker.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('fontPicker', 'el-GR', typeof window === 'undefined' ? require('@/messages/ns/el-GR/fontPicker.json') : () => import('@/messages/ns/el-GR/fontPicker.json'))
+registerLanguage('fontPicker', 'el-GR', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/el-GR/fontPicker.json')) : () => import('@/messages/ns/el-GR/fontPicker.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('fontPicker', 'bg-BG', typeof window === 'undefined' ? require('@/messages/ns/bg-BG/fontPicker.json') : () => import('@/messages/ns/bg-BG/fontPicker.json'))
+registerLanguage('fontPicker', 'bg-BG', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/bg-BG/fontPicker.json')) : () => import('@/messages/ns/bg-BG/fontPicker.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('fontPicker', 'pt-BR', typeof window === 'undefined' ? require('@/messages/ns/pt-BR/fontPicker.json') : () => import('@/messages/ns/pt-BR/fontPicker.json'))
+registerLanguage('fontPicker', 'pt-BR', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/pt-BR/fontPicker.json')) : () => import('@/messages/ns/pt-BR/fontPicker.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('fontPicker', 'ms-MY', typeof window === 'undefined' ? require('@/messages/ns/ms-MY/fontPicker.json') : () => import('@/messages/ns/ms-MY/fontPicker.json'))
+registerLanguage('fontPicker', 'ms-MY', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/ms-MY/fontPicker.json')) : () => import('@/messages/ns/ms-MY/fontPicker.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('fontPicker', 'ja-JP', typeof window === 'undefined' ? require('@/messages/ns/ja-JP/fontPicker.json') : () => import('@/messages/ns/ja-JP/fontPicker.json'))
+registerLanguage('fontPicker', 'ja-JP', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/ja-JP/fontPicker.json')) : () => import('@/messages/ns/ja-JP/fontPicker.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('fontPicker', 'zh-HK', typeof window === 'undefined' ? require('@/messages/ns/zh-HK/fontPicker.json') : () => import('@/messages/ns/zh-HK/fontPicker.json'))
+registerLanguage('fontPicker', 'zh-HK', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/zh-HK/fontPicker.json')) : () => import('@/messages/ns/zh-HK/fontPicker.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('fontPicker', 'th-TH', typeof window === 'undefined' ? require('@/messages/ns/th-TH/fontPicker.json') : () => import('@/messages/ns/th-TH/fontPicker.json'))
+registerLanguage('fontPicker', 'th-TH', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/th-TH/fontPicker.json')) : () => import('@/messages/ns/th-TH/fontPicker.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('fontPicker', 'ar-AE', typeof window === 'undefined' ? require('@/messages/ns/ar-AE/fontPicker.json') : () => import('@/messages/ns/ar-AE/fontPicker.json'))
+registerLanguage('fontPicker', 'ar-AE', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/ar-AE/fontPicker.json')) : () => import('@/messages/ns/ar-AE/fontPicker.json'))

@@ -2,67 +2,68 @@
 // Import this module (`import '@/lib/i18n/catalog/manageScheduleVerify'`) in any file that reads the "manageScheduleVerify" namespace.
 import base from '@/messages/ns/en-GB/manageScheduleVerify.json'
 import enUS from '@/messages/ns/en-US/manageScheduleVerify.json'
-import { registerNamespace, registerLanguage } from '@/lib/i18n/registry'
+import { registerNamespace, registerLanguage, serverWords } from '@/lib/i18n/registry'
 
 registerNamespace('manageScheduleVerify', base, { 'en-US': enUS })
-// languages-1: each non-English language — on the server now; in the browser only when a page is in that language.
+// languages-1: each non-English language only when a page is in that language — perf-1: on the server too (serverWords: a
+// synchronous require, run the first time the language is asked for), in the browser as a chunk loaded on demand.
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('manageScheduleVerify', 'fr-FR', typeof window === 'undefined' ? require('@/messages/ns/fr-FR/manageScheduleVerify.json') : () => import('@/messages/ns/fr-FR/manageScheduleVerify.json'))
+registerLanguage('manageScheduleVerify', 'fr-FR', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/fr-FR/manageScheduleVerify.json')) : () => import('@/messages/ns/fr-FR/manageScheduleVerify.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('manageScheduleVerify', 'de-DE', typeof window === 'undefined' ? require('@/messages/ns/de-DE/manageScheduleVerify.json') : () => import('@/messages/ns/de-DE/manageScheduleVerify.json'))
+registerLanguage('manageScheduleVerify', 'de-DE', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/de-DE/manageScheduleVerify.json')) : () => import('@/messages/ns/de-DE/manageScheduleVerify.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('manageScheduleVerify', 'es-ES', typeof window === 'undefined' ? require('@/messages/ns/es-ES/manageScheduleVerify.json') : () => import('@/messages/ns/es-ES/manageScheduleVerify.json'))
+registerLanguage('manageScheduleVerify', 'es-ES', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/es-ES/manageScheduleVerify.json')) : () => import('@/messages/ns/es-ES/manageScheduleVerify.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('manageScheduleVerify', 'it-IT', typeof window === 'undefined' ? require('@/messages/ns/it-IT/manageScheduleVerify.json') : () => import('@/messages/ns/it-IT/manageScheduleVerify.json'))
+registerLanguage('manageScheduleVerify', 'it-IT', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/it-IT/manageScheduleVerify.json')) : () => import('@/messages/ns/it-IT/manageScheduleVerify.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('manageScheduleVerify', 'pt-PT', typeof window === 'undefined' ? require('@/messages/ns/pt-PT/manageScheduleVerify.json') : () => import('@/messages/ns/pt-PT/manageScheduleVerify.json'))
+registerLanguage('manageScheduleVerify', 'pt-PT', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/pt-PT/manageScheduleVerify.json')) : () => import('@/messages/ns/pt-PT/manageScheduleVerify.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('manageScheduleVerify', 'nl-NL', typeof window === 'undefined' ? require('@/messages/ns/nl-NL/manageScheduleVerify.json') : () => import('@/messages/ns/nl-NL/manageScheduleVerify.json'))
+registerLanguage('manageScheduleVerify', 'nl-NL', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/nl-NL/manageScheduleVerify.json')) : () => import('@/messages/ns/nl-NL/manageScheduleVerify.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('manageScheduleVerify', 'sv-SE', typeof window === 'undefined' ? require('@/messages/ns/sv-SE/manageScheduleVerify.json') : () => import('@/messages/ns/sv-SE/manageScheduleVerify.json'))
+registerLanguage('manageScheduleVerify', 'sv-SE', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/sv-SE/manageScheduleVerify.json')) : () => import('@/messages/ns/sv-SE/manageScheduleVerify.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('manageScheduleVerify', 'da-DK', typeof window === 'undefined' ? require('@/messages/ns/da-DK/manageScheduleVerify.json') : () => import('@/messages/ns/da-DK/manageScheduleVerify.json'))
+registerLanguage('manageScheduleVerify', 'da-DK', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/da-DK/manageScheduleVerify.json')) : () => import('@/messages/ns/da-DK/manageScheduleVerify.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('manageScheduleVerify', 'nb-NO', typeof window === 'undefined' ? require('@/messages/ns/nb-NO/manageScheduleVerify.json') : () => import('@/messages/ns/nb-NO/manageScheduleVerify.json'))
+registerLanguage('manageScheduleVerify', 'nb-NO', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/nb-NO/manageScheduleVerify.json')) : () => import('@/messages/ns/nb-NO/manageScheduleVerify.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('manageScheduleVerify', 'pl-PL', typeof window === 'undefined' ? require('@/messages/ns/pl-PL/manageScheduleVerify.json') : () => import('@/messages/ns/pl-PL/manageScheduleVerify.json'))
+registerLanguage('manageScheduleVerify', 'pl-PL', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/pl-PL/manageScheduleVerify.json')) : () => import('@/messages/ns/pl-PL/manageScheduleVerify.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('manageScheduleVerify', 'cs-CZ', typeof window === 'undefined' ? require('@/messages/ns/cs-CZ/manageScheduleVerify.json') : () => import('@/messages/ns/cs-CZ/manageScheduleVerify.json'))
+registerLanguage('manageScheduleVerify', 'cs-CZ', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/cs-CZ/manageScheduleVerify.json')) : () => import('@/messages/ns/cs-CZ/manageScheduleVerify.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('manageScheduleVerify', 'hu-HU', typeof window === 'undefined' ? require('@/messages/ns/hu-HU/manageScheduleVerify.json') : () => import('@/messages/ns/hu-HU/manageScheduleVerify.json'))
+registerLanguage('manageScheduleVerify', 'hu-HU', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/hu-HU/manageScheduleVerify.json')) : () => import('@/messages/ns/hu-HU/manageScheduleVerify.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('manageScheduleVerify', 'sk-SK', typeof window === 'undefined' ? require('@/messages/ns/sk-SK/manageScheduleVerify.json') : () => import('@/messages/ns/sk-SK/manageScheduleVerify.json'))
+registerLanguage('manageScheduleVerify', 'sk-SK', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/sk-SK/manageScheduleVerify.json')) : () => import('@/messages/ns/sk-SK/manageScheduleVerify.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('manageScheduleVerify', 'ro-RO', typeof window === 'undefined' ? require('@/messages/ns/ro-RO/manageScheduleVerify.json') : () => import('@/messages/ns/ro-RO/manageScheduleVerify.json'))
+registerLanguage('manageScheduleVerify', 'ro-RO', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/ro-RO/manageScheduleVerify.json')) : () => import('@/messages/ns/ro-RO/manageScheduleVerify.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('manageScheduleVerify', 'hr-HR', typeof window === 'undefined' ? require('@/messages/ns/hr-HR/manageScheduleVerify.json') : () => import('@/messages/ns/hr-HR/manageScheduleVerify.json'))
+registerLanguage('manageScheduleVerify', 'hr-HR', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/hr-HR/manageScheduleVerify.json')) : () => import('@/messages/ns/hr-HR/manageScheduleVerify.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('manageScheduleVerify', 'sl-SI', typeof window === 'undefined' ? require('@/messages/ns/sl-SI/manageScheduleVerify.json') : () => import('@/messages/ns/sl-SI/manageScheduleVerify.json'))
+registerLanguage('manageScheduleVerify', 'sl-SI', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/sl-SI/manageScheduleVerify.json')) : () => import('@/messages/ns/sl-SI/manageScheduleVerify.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('manageScheduleVerify', 'fi-FI', typeof window === 'undefined' ? require('@/messages/ns/fi-FI/manageScheduleVerify.json') : () => import('@/messages/ns/fi-FI/manageScheduleVerify.json'))
+registerLanguage('manageScheduleVerify', 'fi-FI', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/fi-FI/manageScheduleVerify.json')) : () => import('@/messages/ns/fi-FI/manageScheduleVerify.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('manageScheduleVerify', 'et-EE', typeof window === 'undefined' ? require('@/messages/ns/et-EE/manageScheduleVerify.json') : () => import('@/messages/ns/et-EE/manageScheduleVerify.json'))
+registerLanguage('manageScheduleVerify', 'et-EE', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/et-EE/manageScheduleVerify.json')) : () => import('@/messages/ns/et-EE/manageScheduleVerify.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('manageScheduleVerify', 'lv-LV', typeof window === 'undefined' ? require('@/messages/ns/lv-LV/manageScheduleVerify.json') : () => import('@/messages/ns/lv-LV/manageScheduleVerify.json'))
+registerLanguage('manageScheduleVerify', 'lv-LV', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/lv-LV/manageScheduleVerify.json')) : () => import('@/messages/ns/lv-LV/manageScheduleVerify.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('manageScheduleVerify', 'lt-LT', typeof window === 'undefined' ? require('@/messages/ns/lt-LT/manageScheduleVerify.json') : () => import('@/messages/ns/lt-LT/manageScheduleVerify.json'))
+registerLanguage('manageScheduleVerify', 'lt-LT', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/lt-LT/manageScheduleVerify.json')) : () => import('@/messages/ns/lt-LT/manageScheduleVerify.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('manageScheduleVerify', 'el-GR', typeof window === 'undefined' ? require('@/messages/ns/el-GR/manageScheduleVerify.json') : () => import('@/messages/ns/el-GR/manageScheduleVerify.json'))
+registerLanguage('manageScheduleVerify', 'el-GR', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/el-GR/manageScheduleVerify.json')) : () => import('@/messages/ns/el-GR/manageScheduleVerify.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('manageScheduleVerify', 'bg-BG', typeof window === 'undefined' ? require('@/messages/ns/bg-BG/manageScheduleVerify.json') : () => import('@/messages/ns/bg-BG/manageScheduleVerify.json'))
+registerLanguage('manageScheduleVerify', 'bg-BG', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/bg-BG/manageScheduleVerify.json')) : () => import('@/messages/ns/bg-BG/manageScheduleVerify.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('manageScheduleVerify', 'fr-LU', typeof window === 'undefined' ? require('@/messages/ns/fr-LU/manageScheduleVerify.json') : () => import('@/messages/ns/fr-LU/manageScheduleVerify.json'))
+registerLanguage('manageScheduleVerify', 'fr-LU', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/fr-LU/manageScheduleVerify.json')) : () => import('@/messages/ns/fr-LU/manageScheduleVerify.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('manageScheduleVerify', 'es-MX', typeof window === 'undefined' ? require('@/messages/ns/es-MX/manageScheduleVerify.json') : () => import('@/messages/ns/es-MX/manageScheduleVerify.json'))
+registerLanguage('manageScheduleVerify', 'es-MX', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/es-MX/manageScheduleVerify.json')) : () => import('@/messages/ns/es-MX/manageScheduleVerify.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('manageScheduleVerify', 'pt-BR', typeof window === 'undefined' ? require('@/messages/ns/pt-BR/manageScheduleVerify.json') : () => import('@/messages/ns/pt-BR/manageScheduleVerify.json'))
+registerLanguage('manageScheduleVerify', 'pt-BR', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/pt-BR/manageScheduleVerify.json')) : () => import('@/messages/ns/pt-BR/manageScheduleVerify.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('manageScheduleVerify', 'ms-MY', typeof window === 'undefined' ? require('@/messages/ns/ms-MY/manageScheduleVerify.json') : () => import('@/messages/ns/ms-MY/manageScheduleVerify.json'))
+registerLanguage('manageScheduleVerify', 'ms-MY', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/ms-MY/manageScheduleVerify.json')) : () => import('@/messages/ns/ms-MY/manageScheduleVerify.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('manageScheduleVerify', 'ja-JP', typeof window === 'undefined' ? require('@/messages/ns/ja-JP/manageScheduleVerify.json') : () => import('@/messages/ns/ja-JP/manageScheduleVerify.json'))
+registerLanguage('manageScheduleVerify', 'ja-JP', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/ja-JP/manageScheduleVerify.json')) : () => import('@/messages/ns/ja-JP/manageScheduleVerify.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('manageScheduleVerify', 'zh-HK', typeof window === 'undefined' ? require('@/messages/ns/zh-HK/manageScheduleVerify.json') : () => import('@/messages/ns/zh-HK/manageScheduleVerify.json'))
+registerLanguage('manageScheduleVerify', 'zh-HK', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/zh-HK/manageScheduleVerify.json')) : () => import('@/messages/ns/zh-HK/manageScheduleVerify.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('manageScheduleVerify', 'th-TH', typeof window === 'undefined' ? require('@/messages/ns/th-TH/manageScheduleVerify.json') : () => import('@/messages/ns/th-TH/manageScheduleVerify.json'))
+registerLanguage('manageScheduleVerify', 'th-TH', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/th-TH/manageScheduleVerify.json')) : () => import('@/messages/ns/th-TH/manageScheduleVerify.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('manageScheduleVerify', 'ar-AE', typeof window === 'undefined' ? require('@/messages/ns/ar-AE/manageScheduleVerify.json') : () => import('@/messages/ns/ar-AE/manageScheduleVerify.json'))
+registerLanguage('manageScheduleVerify', 'ar-AE', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/ar-AE/manageScheduleVerify.json')) : () => import('@/messages/ns/ar-AE/manageScheduleVerify.json'))

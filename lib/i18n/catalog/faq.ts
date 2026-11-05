@@ -2,63 +2,64 @@
 // Import this module (`import '@/lib/i18n/catalog/faq'`) in any file that reads the "faq" namespace.
 import base from '@/messages/ns/en-GB/faq.json'
 import enUS from '@/messages/ns/en-US/faq.json'
-import { registerNamespace, registerLanguage } from '@/lib/i18n/registry'
+import { registerNamespace, registerLanguage, serverWords } from '@/lib/i18n/registry'
 
 registerNamespace('faq', base, { 'en-US': enUS })
-// languages-1: each non-English language — on the server now; in the browser only when a page is in that language.
+// languages-1: each non-English language only when a page is in that language — perf-1: on the server too (serverWords: a
+// synchronous require, run the first time the language is asked for), in the browser as a chunk loaded on demand.
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('faq', 'fr-FR', typeof window === 'undefined' ? require('@/messages/ns/fr-FR/faq.json') : () => import('@/messages/ns/fr-FR/faq.json'))
+registerLanguage('faq', 'fr-FR', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/fr-FR/faq.json')) : () => import('@/messages/ns/fr-FR/faq.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('faq', 'de-DE', typeof window === 'undefined' ? require('@/messages/ns/de-DE/faq.json') : () => import('@/messages/ns/de-DE/faq.json'))
+registerLanguage('faq', 'de-DE', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/de-DE/faq.json')) : () => import('@/messages/ns/de-DE/faq.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('faq', 'es-ES', typeof window === 'undefined' ? require('@/messages/ns/es-ES/faq.json') : () => import('@/messages/ns/es-ES/faq.json'))
+registerLanguage('faq', 'es-ES', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/es-ES/faq.json')) : () => import('@/messages/ns/es-ES/faq.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('faq', 'it-IT', typeof window === 'undefined' ? require('@/messages/ns/it-IT/faq.json') : () => import('@/messages/ns/it-IT/faq.json'))
+registerLanguage('faq', 'it-IT', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/it-IT/faq.json')) : () => import('@/messages/ns/it-IT/faq.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('faq', 'pt-PT', typeof window === 'undefined' ? require('@/messages/ns/pt-PT/faq.json') : () => import('@/messages/ns/pt-PT/faq.json'))
+registerLanguage('faq', 'pt-PT', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/pt-PT/faq.json')) : () => import('@/messages/ns/pt-PT/faq.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('faq', 'nl-NL', typeof window === 'undefined' ? require('@/messages/ns/nl-NL/faq.json') : () => import('@/messages/ns/nl-NL/faq.json'))
+registerLanguage('faq', 'nl-NL', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/nl-NL/faq.json')) : () => import('@/messages/ns/nl-NL/faq.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('faq', 'sv-SE', typeof window === 'undefined' ? require('@/messages/ns/sv-SE/faq.json') : () => import('@/messages/ns/sv-SE/faq.json'))
+registerLanguage('faq', 'sv-SE', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/sv-SE/faq.json')) : () => import('@/messages/ns/sv-SE/faq.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('faq', 'da-DK', typeof window === 'undefined' ? require('@/messages/ns/da-DK/faq.json') : () => import('@/messages/ns/da-DK/faq.json'))
+registerLanguage('faq', 'da-DK', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/da-DK/faq.json')) : () => import('@/messages/ns/da-DK/faq.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('faq', 'nb-NO', typeof window === 'undefined' ? require('@/messages/ns/nb-NO/faq.json') : () => import('@/messages/ns/nb-NO/faq.json'))
+registerLanguage('faq', 'nb-NO', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/nb-NO/faq.json')) : () => import('@/messages/ns/nb-NO/faq.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('faq', 'pl-PL', typeof window === 'undefined' ? require('@/messages/ns/pl-PL/faq.json') : () => import('@/messages/ns/pl-PL/faq.json'))
+registerLanguage('faq', 'pl-PL', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/pl-PL/faq.json')) : () => import('@/messages/ns/pl-PL/faq.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('faq', 'cs-CZ', typeof window === 'undefined' ? require('@/messages/ns/cs-CZ/faq.json') : () => import('@/messages/ns/cs-CZ/faq.json'))
+registerLanguage('faq', 'cs-CZ', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/cs-CZ/faq.json')) : () => import('@/messages/ns/cs-CZ/faq.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('faq', 'hu-HU', typeof window === 'undefined' ? require('@/messages/ns/hu-HU/faq.json') : () => import('@/messages/ns/hu-HU/faq.json'))
+registerLanguage('faq', 'hu-HU', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/hu-HU/faq.json')) : () => import('@/messages/ns/hu-HU/faq.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('faq', 'sk-SK', typeof window === 'undefined' ? require('@/messages/ns/sk-SK/faq.json') : () => import('@/messages/ns/sk-SK/faq.json'))
+registerLanguage('faq', 'sk-SK', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/sk-SK/faq.json')) : () => import('@/messages/ns/sk-SK/faq.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('faq', 'ro-RO', typeof window === 'undefined' ? require('@/messages/ns/ro-RO/faq.json') : () => import('@/messages/ns/ro-RO/faq.json'))
+registerLanguage('faq', 'ro-RO', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/ro-RO/faq.json')) : () => import('@/messages/ns/ro-RO/faq.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('faq', 'hr-HR', typeof window === 'undefined' ? require('@/messages/ns/hr-HR/faq.json') : () => import('@/messages/ns/hr-HR/faq.json'))
+registerLanguage('faq', 'hr-HR', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/hr-HR/faq.json')) : () => import('@/messages/ns/hr-HR/faq.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('faq', 'sl-SI', typeof window === 'undefined' ? require('@/messages/ns/sl-SI/faq.json') : () => import('@/messages/ns/sl-SI/faq.json'))
+registerLanguage('faq', 'sl-SI', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/sl-SI/faq.json')) : () => import('@/messages/ns/sl-SI/faq.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('faq', 'fi-FI', typeof window === 'undefined' ? require('@/messages/ns/fi-FI/faq.json') : () => import('@/messages/ns/fi-FI/faq.json'))
+registerLanguage('faq', 'fi-FI', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/fi-FI/faq.json')) : () => import('@/messages/ns/fi-FI/faq.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('faq', 'et-EE', typeof window === 'undefined' ? require('@/messages/ns/et-EE/faq.json') : () => import('@/messages/ns/et-EE/faq.json'))
+registerLanguage('faq', 'et-EE', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/et-EE/faq.json')) : () => import('@/messages/ns/et-EE/faq.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('faq', 'lv-LV', typeof window === 'undefined' ? require('@/messages/ns/lv-LV/faq.json') : () => import('@/messages/ns/lv-LV/faq.json'))
+registerLanguage('faq', 'lv-LV', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/lv-LV/faq.json')) : () => import('@/messages/ns/lv-LV/faq.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('faq', 'lt-LT', typeof window === 'undefined' ? require('@/messages/ns/lt-LT/faq.json') : () => import('@/messages/ns/lt-LT/faq.json'))
+registerLanguage('faq', 'lt-LT', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/lt-LT/faq.json')) : () => import('@/messages/ns/lt-LT/faq.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('faq', 'el-GR', typeof window === 'undefined' ? require('@/messages/ns/el-GR/faq.json') : () => import('@/messages/ns/el-GR/faq.json'))
+registerLanguage('faq', 'el-GR', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/el-GR/faq.json')) : () => import('@/messages/ns/el-GR/faq.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('faq', 'bg-BG', typeof window === 'undefined' ? require('@/messages/ns/bg-BG/faq.json') : () => import('@/messages/ns/bg-BG/faq.json'))
+registerLanguage('faq', 'bg-BG', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/bg-BG/faq.json')) : () => import('@/messages/ns/bg-BG/faq.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('faq', 'pt-BR', typeof window === 'undefined' ? require('@/messages/ns/pt-BR/faq.json') : () => import('@/messages/ns/pt-BR/faq.json'))
+registerLanguage('faq', 'pt-BR', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/pt-BR/faq.json')) : () => import('@/messages/ns/pt-BR/faq.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('faq', 'ms-MY', typeof window === 'undefined' ? require('@/messages/ns/ms-MY/faq.json') : () => import('@/messages/ns/ms-MY/faq.json'))
+registerLanguage('faq', 'ms-MY', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/ms-MY/faq.json')) : () => import('@/messages/ns/ms-MY/faq.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('faq', 'ja-JP', typeof window === 'undefined' ? require('@/messages/ns/ja-JP/faq.json') : () => import('@/messages/ns/ja-JP/faq.json'))
+registerLanguage('faq', 'ja-JP', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/ja-JP/faq.json')) : () => import('@/messages/ns/ja-JP/faq.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('faq', 'zh-HK', typeof window === 'undefined' ? require('@/messages/ns/zh-HK/faq.json') : () => import('@/messages/ns/zh-HK/faq.json'))
+registerLanguage('faq', 'zh-HK', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/zh-HK/faq.json')) : () => import('@/messages/ns/zh-HK/faq.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('faq', 'th-TH', typeof window === 'undefined' ? require('@/messages/ns/th-TH/faq.json') : () => import('@/messages/ns/th-TH/faq.json'))
+registerLanguage('faq', 'th-TH', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/th-TH/faq.json')) : () => import('@/messages/ns/th-TH/faq.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('faq', 'ar-AE', typeof window === 'undefined' ? require('@/messages/ns/ar-AE/faq.json') : () => import('@/messages/ns/ar-AE/faq.json'))
+registerLanguage('faq', 'ar-AE', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/ar-AE/faq.json')) : () => import('@/messages/ns/ar-AE/faq.json'))

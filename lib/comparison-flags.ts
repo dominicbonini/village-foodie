@@ -4,6 +4,7 @@
 import 'server-only'
 import { isComparisonStatus, type ComparisonFlags } from '@/lib/comparison-types'
 import { countryOfSegment } from '@/lib/marketing-country'
+import { isMarketingRender } from '@/lib/marketing-render'   // perf-1: a marketing page's render reads the tagged shared cache
 
 const TTL_MS = 60_000
 let flagsCache: { at: number; value: Map<string, ComparisonFlags> } | null = null
@@ -13,10 +14,27 @@ export function clearComparisonCache(): void { flagsCache = null }
 
 const OFF = (countryCode: string): ComparisonFlags => ({ countryCode, status: 'off', iosApp: false, androidApp: false })
 
+/** perf-1: the switches from country_settings rows (the one mapping, shared by the read below and lib/marketing-cache.ts). */
+export function flagsFromRows(rows: unknown[]): Map<string, ComparisonFlags> {
+  const value = new Map<string, ComparisonFlags>()
+  for (const r of rows as { country_code: string; comparison_status: unknown; ios_app_available: unknown; android_app_available: unknown }[]) {
+    value.set(r.country_code, {
+      countryCode: r.country_code, status: isComparisonStatus(r.comparison_status) ? r.comparison_status : 'off',
+      iosApp: r.ios_app_available === true, androidApp: r.android_app_available === true,
+    })
+  }
+  return value
+}
+
 /** Every country's comparison switches. Never throws: a failed read is logged and every country reads 'off'. */
 export async function comparisonFlags(): Promise<Map<string, ComparisonFlags>> {
+  // perf-1 (5 November 2026): a marketing page's render reads the tagged shared cache (lib/marketing-cache.ts). A failed read there
+  // is never kept; it falls through to the read below, which answers as it always has (logged, every country off).
+  if (isMarketingRender()) {
+    try { return new Map((await (await import('@/lib/marketing-cache')).marketingComparisonEntries())) } catch { /* answered below, as before */ }
+  }
   if (flagsCache && Date.now() - flagsCache.at < TTL_MS) return flagsCache.value
-  const value = new Map<string, ComparisonFlags>()
+  let value = new Map<string, ComparisonFlags>()
   try {
     const { supabase } = await import('@/lib/supabase')
     const { data, error } = await supabase.from('country_settings').select('country_code, comparison_status, ios_app_available, android_app_available')
@@ -24,12 +42,7 @@ export async function comparisonFlags(): Promise<Map<string, ComparisonFlags>> {
       // 42703: 20261042 has not run — every country is off, which is not an error.
       if (error.code !== '42703' && !/column .* does not exist/i.test(error.message)) console.error('[comparison] could not read the comparison switches:', error.message)
     } else {
-      for (const r of (data ?? []) as { country_code: string; comparison_status: unknown; ios_app_available: unknown; android_app_available: unknown }[]) {
-        value.set(r.country_code, {
-          countryCode: r.country_code, status: isComparisonStatus(r.comparison_status) ? r.comparison_status : 'off',
-          iosApp: r.ios_app_available === true, androidApp: r.android_app_available === true,
-        })
-      }
+      value = flagsFromRows(data ?? [])
     }
   } catch (e) { console.error('[comparison] could not read the comparison switches:', e instanceof Error ? e.message : e) }
   flagsCache = { at: Date.now(), value }

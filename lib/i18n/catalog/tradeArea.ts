@@ -2,63 +2,64 @@
 // Import this module (`import '@/lib/i18n/catalog/tradeArea'`) in any file that reads the "tradeArea" namespace.
 import base from '@/messages/ns/en-GB/tradeArea.json'
 import enUS from '@/messages/ns/en-US/tradeArea.json'
-import { registerNamespace, registerLanguage } from '@/lib/i18n/registry'
+import { registerNamespace, registerLanguage, serverWords } from '@/lib/i18n/registry'
 
 registerNamespace('tradeArea', base, { 'en-US': enUS })
-// languages-1: each non-English language — on the server now; in the browser only when a page is in that language.
+// languages-1: each non-English language only when a page is in that language — perf-1: on the server too (serverWords: a
+// synchronous require, run the first time the language is asked for), in the browser as a chunk loaded on demand.
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('tradeArea', 'fr-FR', typeof window === 'undefined' ? require('@/messages/ns/fr-FR/tradeArea.json') : () => import('@/messages/ns/fr-FR/tradeArea.json'))
+registerLanguage('tradeArea', 'fr-FR', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/fr-FR/tradeArea.json')) : () => import('@/messages/ns/fr-FR/tradeArea.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('tradeArea', 'de-DE', typeof window === 'undefined' ? require('@/messages/ns/de-DE/tradeArea.json') : () => import('@/messages/ns/de-DE/tradeArea.json'))
+registerLanguage('tradeArea', 'de-DE', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/de-DE/tradeArea.json')) : () => import('@/messages/ns/de-DE/tradeArea.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('tradeArea', 'es-ES', typeof window === 'undefined' ? require('@/messages/ns/es-ES/tradeArea.json') : () => import('@/messages/ns/es-ES/tradeArea.json'))
+registerLanguage('tradeArea', 'es-ES', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/es-ES/tradeArea.json')) : () => import('@/messages/ns/es-ES/tradeArea.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('tradeArea', 'it-IT', typeof window === 'undefined' ? require('@/messages/ns/it-IT/tradeArea.json') : () => import('@/messages/ns/it-IT/tradeArea.json'))
+registerLanguage('tradeArea', 'it-IT', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/it-IT/tradeArea.json')) : () => import('@/messages/ns/it-IT/tradeArea.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('tradeArea', 'pt-PT', typeof window === 'undefined' ? require('@/messages/ns/pt-PT/tradeArea.json') : () => import('@/messages/ns/pt-PT/tradeArea.json'))
+registerLanguage('tradeArea', 'pt-PT', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/pt-PT/tradeArea.json')) : () => import('@/messages/ns/pt-PT/tradeArea.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('tradeArea', 'nl-NL', typeof window === 'undefined' ? require('@/messages/ns/nl-NL/tradeArea.json') : () => import('@/messages/ns/nl-NL/tradeArea.json'))
+registerLanguage('tradeArea', 'nl-NL', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/nl-NL/tradeArea.json')) : () => import('@/messages/ns/nl-NL/tradeArea.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('tradeArea', 'sv-SE', typeof window === 'undefined' ? require('@/messages/ns/sv-SE/tradeArea.json') : () => import('@/messages/ns/sv-SE/tradeArea.json'))
+registerLanguage('tradeArea', 'sv-SE', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/sv-SE/tradeArea.json')) : () => import('@/messages/ns/sv-SE/tradeArea.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('tradeArea', 'da-DK', typeof window === 'undefined' ? require('@/messages/ns/da-DK/tradeArea.json') : () => import('@/messages/ns/da-DK/tradeArea.json'))
+registerLanguage('tradeArea', 'da-DK', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/da-DK/tradeArea.json')) : () => import('@/messages/ns/da-DK/tradeArea.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('tradeArea', 'nb-NO', typeof window === 'undefined' ? require('@/messages/ns/nb-NO/tradeArea.json') : () => import('@/messages/ns/nb-NO/tradeArea.json'))
+registerLanguage('tradeArea', 'nb-NO', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/nb-NO/tradeArea.json')) : () => import('@/messages/ns/nb-NO/tradeArea.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('tradeArea', 'pl-PL', typeof window === 'undefined' ? require('@/messages/ns/pl-PL/tradeArea.json') : () => import('@/messages/ns/pl-PL/tradeArea.json'))
+registerLanguage('tradeArea', 'pl-PL', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/pl-PL/tradeArea.json')) : () => import('@/messages/ns/pl-PL/tradeArea.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('tradeArea', 'cs-CZ', typeof window === 'undefined' ? require('@/messages/ns/cs-CZ/tradeArea.json') : () => import('@/messages/ns/cs-CZ/tradeArea.json'))
+registerLanguage('tradeArea', 'cs-CZ', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/cs-CZ/tradeArea.json')) : () => import('@/messages/ns/cs-CZ/tradeArea.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('tradeArea', 'hu-HU', typeof window === 'undefined' ? require('@/messages/ns/hu-HU/tradeArea.json') : () => import('@/messages/ns/hu-HU/tradeArea.json'))
+registerLanguage('tradeArea', 'hu-HU', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/hu-HU/tradeArea.json')) : () => import('@/messages/ns/hu-HU/tradeArea.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('tradeArea', 'sk-SK', typeof window === 'undefined' ? require('@/messages/ns/sk-SK/tradeArea.json') : () => import('@/messages/ns/sk-SK/tradeArea.json'))
+registerLanguage('tradeArea', 'sk-SK', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/sk-SK/tradeArea.json')) : () => import('@/messages/ns/sk-SK/tradeArea.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('tradeArea', 'ro-RO', typeof window === 'undefined' ? require('@/messages/ns/ro-RO/tradeArea.json') : () => import('@/messages/ns/ro-RO/tradeArea.json'))
+registerLanguage('tradeArea', 'ro-RO', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/ro-RO/tradeArea.json')) : () => import('@/messages/ns/ro-RO/tradeArea.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('tradeArea', 'hr-HR', typeof window === 'undefined' ? require('@/messages/ns/hr-HR/tradeArea.json') : () => import('@/messages/ns/hr-HR/tradeArea.json'))
+registerLanguage('tradeArea', 'hr-HR', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/hr-HR/tradeArea.json')) : () => import('@/messages/ns/hr-HR/tradeArea.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('tradeArea', 'sl-SI', typeof window === 'undefined' ? require('@/messages/ns/sl-SI/tradeArea.json') : () => import('@/messages/ns/sl-SI/tradeArea.json'))
+registerLanguage('tradeArea', 'sl-SI', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/sl-SI/tradeArea.json')) : () => import('@/messages/ns/sl-SI/tradeArea.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('tradeArea', 'fi-FI', typeof window === 'undefined' ? require('@/messages/ns/fi-FI/tradeArea.json') : () => import('@/messages/ns/fi-FI/tradeArea.json'))
+registerLanguage('tradeArea', 'fi-FI', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/fi-FI/tradeArea.json')) : () => import('@/messages/ns/fi-FI/tradeArea.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('tradeArea', 'et-EE', typeof window === 'undefined' ? require('@/messages/ns/et-EE/tradeArea.json') : () => import('@/messages/ns/et-EE/tradeArea.json'))
+registerLanguage('tradeArea', 'et-EE', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/et-EE/tradeArea.json')) : () => import('@/messages/ns/et-EE/tradeArea.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('tradeArea', 'lv-LV', typeof window === 'undefined' ? require('@/messages/ns/lv-LV/tradeArea.json') : () => import('@/messages/ns/lv-LV/tradeArea.json'))
+registerLanguage('tradeArea', 'lv-LV', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/lv-LV/tradeArea.json')) : () => import('@/messages/ns/lv-LV/tradeArea.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('tradeArea', 'lt-LT', typeof window === 'undefined' ? require('@/messages/ns/lt-LT/tradeArea.json') : () => import('@/messages/ns/lt-LT/tradeArea.json'))
+registerLanguage('tradeArea', 'lt-LT', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/lt-LT/tradeArea.json')) : () => import('@/messages/ns/lt-LT/tradeArea.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('tradeArea', 'el-GR', typeof window === 'undefined' ? require('@/messages/ns/el-GR/tradeArea.json') : () => import('@/messages/ns/el-GR/tradeArea.json'))
+registerLanguage('tradeArea', 'el-GR', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/el-GR/tradeArea.json')) : () => import('@/messages/ns/el-GR/tradeArea.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('tradeArea', 'bg-BG', typeof window === 'undefined' ? require('@/messages/ns/bg-BG/tradeArea.json') : () => import('@/messages/ns/bg-BG/tradeArea.json'))
+registerLanguage('tradeArea', 'bg-BG', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/bg-BG/tradeArea.json')) : () => import('@/messages/ns/bg-BG/tradeArea.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('tradeArea', 'pt-BR', typeof window === 'undefined' ? require('@/messages/ns/pt-BR/tradeArea.json') : () => import('@/messages/ns/pt-BR/tradeArea.json'))
+registerLanguage('tradeArea', 'pt-BR', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/pt-BR/tradeArea.json')) : () => import('@/messages/ns/pt-BR/tradeArea.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('tradeArea', 'ms-MY', typeof window === 'undefined' ? require('@/messages/ns/ms-MY/tradeArea.json') : () => import('@/messages/ns/ms-MY/tradeArea.json'))
+registerLanguage('tradeArea', 'ms-MY', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/ms-MY/tradeArea.json')) : () => import('@/messages/ns/ms-MY/tradeArea.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('tradeArea', 'ja-JP', typeof window === 'undefined' ? require('@/messages/ns/ja-JP/tradeArea.json') : () => import('@/messages/ns/ja-JP/tradeArea.json'))
+registerLanguage('tradeArea', 'ja-JP', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/ja-JP/tradeArea.json')) : () => import('@/messages/ns/ja-JP/tradeArea.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('tradeArea', 'zh-HK', typeof window === 'undefined' ? require('@/messages/ns/zh-HK/tradeArea.json') : () => import('@/messages/ns/zh-HK/tradeArea.json'))
+registerLanguage('tradeArea', 'zh-HK', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/zh-HK/tradeArea.json')) : () => import('@/messages/ns/zh-HK/tradeArea.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('tradeArea', 'th-TH', typeof window === 'undefined' ? require('@/messages/ns/th-TH/tradeArea.json') : () => import('@/messages/ns/th-TH/tradeArea.json'))
+registerLanguage('tradeArea', 'th-TH', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/th-TH/tradeArea.json')) : () => import('@/messages/ns/th-TH/tradeArea.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('tradeArea', 'ar-AE', typeof window === 'undefined' ? require('@/messages/ns/ar-AE/tradeArea.json') : () => import('@/messages/ns/ar-AE/tradeArea.json'))
+registerLanguage('tradeArea', 'ar-AE', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/ar-AE/tradeArea.json')) : () => import('@/messages/ns/ar-AE/tradeArea.json'))

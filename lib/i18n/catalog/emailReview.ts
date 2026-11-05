@@ -2,63 +2,64 @@
 // Import this module (`import '@/lib/i18n/catalog/emailReview'`) in any file that reads the "emailReview" namespace.
 import base from '@/messages/ns/en-GB/emailReview.json'
 import enUS from '@/messages/ns/en-US/emailReview.json'
-import { registerNamespace, registerLanguage } from '@/lib/i18n/registry'
+import { registerNamespace, registerLanguage, serverWords } from '@/lib/i18n/registry'
 
 registerNamespace('emailReview', base, { 'en-US': enUS })
-// languages-1: each non-English language — on the server now; in the browser only when a page is in that language.
+// languages-1: each non-English language only when a page is in that language — perf-1: on the server too (serverWords: a
+// synchronous require, run the first time the language is asked for), in the browser as a chunk loaded on demand.
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('emailReview', 'fr-FR', typeof window === 'undefined' ? require('@/messages/ns/fr-FR/emailReview.json') : () => import('@/messages/ns/fr-FR/emailReview.json'))
+registerLanguage('emailReview', 'fr-FR', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/fr-FR/emailReview.json')) : () => import('@/messages/ns/fr-FR/emailReview.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('emailReview', 'de-DE', typeof window === 'undefined' ? require('@/messages/ns/de-DE/emailReview.json') : () => import('@/messages/ns/de-DE/emailReview.json'))
+registerLanguage('emailReview', 'de-DE', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/de-DE/emailReview.json')) : () => import('@/messages/ns/de-DE/emailReview.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('emailReview', 'es-ES', typeof window === 'undefined' ? require('@/messages/ns/es-ES/emailReview.json') : () => import('@/messages/ns/es-ES/emailReview.json'))
+registerLanguage('emailReview', 'es-ES', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/es-ES/emailReview.json')) : () => import('@/messages/ns/es-ES/emailReview.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('emailReview', 'it-IT', typeof window === 'undefined' ? require('@/messages/ns/it-IT/emailReview.json') : () => import('@/messages/ns/it-IT/emailReview.json'))
+registerLanguage('emailReview', 'it-IT', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/it-IT/emailReview.json')) : () => import('@/messages/ns/it-IT/emailReview.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('emailReview', 'pt-PT', typeof window === 'undefined' ? require('@/messages/ns/pt-PT/emailReview.json') : () => import('@/messages/ns/pt-PT/emailReview.json'))
+registerLanguage('emailReview', 'pt-PT', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/pt-PT/emailReview.json')) : () => import('@/messages/ns/pt-PT/emailReview.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('emailReview', 'nl-NL', typeof window === 'undefined' ? require('@/messages/ns/nl-NL/emailReview.json') : () => import('@/messages/ns/nl-NL/emailReview.json'))
+registerLanguage('emailReview', 'nl-NL', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/nl-NL/emailReview.json')) : () => import('@/messages/ns/nl-NL/emailReview.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('emailReview', 'sv-SE', typeof window === 'undefined' ? require('@/messages/ns/sv-SE/emailReview.json') : () => import('@/messages/ns/sv-SE/emailReview.json'))
+registerLanguage('emailReview', 'sv-SE', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/sv-SE/emailReview.json')) : () => import('@/messages/ns/sv-SE/emailReview.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('emailReview', 'da-DK', typeof window === 'undefined' ? require('@/messages/ns/da-DK/emailReview.json') : () => import('@/messages/ns/da-DK/emailReview.json'))
+registerLanguage('emailReview', 'da-DK', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/da-DK/emailReview.json')) : () => import('@/messages/ns/da-DK/emailReview.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('emailReview', 'nb-NO', typeof window === 'undefined' ? require('@/messages/ns/nb-NO/emailReview.json') : () => import('@/messages/ns/nb-NO/emailReview.json'))
+registerLanguage('emailReview', 'nb-NO', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/nb-NO/emailReview.json')) : () => import('@/messages/ns/nb-NO/emailReview.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('emailReview', 'pl-PL', typeof window === 'undefined' ? require('@/messages/ns/pl-PL/emailReview.json') : () => import('@/messages/ns/pl-PL/emailReview.json'))
+registerLanguage('emailReview', 'pl-PL', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/pl-PL/emailReview.json')) : () => import('@/messages/ns/pl-PL/emailReview.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('emailReview', 'cs-CZ', typeof window === 'undefined' ? require('@/messages/ns/cs-CZ/emailReview.json') : () => import('@/messages/ns/cs-CZ/emailReview.json'))
+registerLanguage('emailReview', 'cs-CZ', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/cs-CZ/emailReview.json')) : () => import('@/messages/ns/cs-CZ/emailReview.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('emailReview', 'hu-HU', typeof window === 'undefined' ? require('@/messages/ns/hu-HU/emailReview.json') : () => import('@/messages/ns/hu-HU/emailReview.json'))
+registerLanguage('emailReview', 'hu-HU', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/hu-HU/emailReview.json')) : () => import('@/messages/ns/hu-HU/emailReview.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('emailReview', 'sk-SK', typeof window === 'undefined' ? require('@/messages/ns/sk-SK/emailReview.json') : () => import('@/messages/ns/sk-SK/emailReview.json'))
+registerLanguage('emailReview', 'sk-SK', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/sk-SK/emailReview.json')) : () => import('@/messages/ns/sk-SK/emailReview.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('emailReview', 'ro-RO', typeof window === 'undefined' ? require('@/messages/ns/ro-RO/emailReview.json') : () => import('@/messages/ns/ro-RO/emailReview.json'))
+registerLanguage('emailReview', 'ro-RO', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/ro-RO/emailReview.json')) : () => import('@/messages/ns/ro-RO/emailReview.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('emailReview', 'hr-HR', typeof window === 'undefined' ? require('@/messages/ns/hr-HR/emailReview.json') : () => import('@/messages/ns/hr-HR/emailReview.json'))
+registerLanguage('emailReview', 'hr-HR', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/hr-HR/emailReview.json')) : () => import('@/messages/ns/hr-HR/emailReview.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('emailReview', 'sl-SI', typeof window === 'undefined' ? require('@/messages/ns/sl-SI/emailReview.json') : () => import('@/messages/ns/sl-SI/emailReview.json'))
+registerLanguage('emailReview', 'sl-SI', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/sl-SI/emailReview.json')) : () => import('@/messages/ns/sl-SI/emailReview.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('emailReview', 'fi-FI', typeof window === 'undefined' ? require('@/messages/ns/fi-FI/emailReview.json') : () => import('@/messages/ns/fi-FI/emailReview.json'))
+registerLanguage('emailReview', 'fi-FI', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/fi-FI/emailReview.json')) : () => import('@/messages/ns/fi-FI/emailReview.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('emailReview', 'et-EE', typeof window === 'undefined' ? require('@/messages/ns/et-EE/emailReview.json') : () => import('@/messages/ns/et-EE/emailReview.json'))
+registerLanguage('emailReview', 'et-EE', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/et-EE/emailReview.json')) : () => import('@/messages/ns/et-EE/emailReview.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('emailReview', 'lv-LV', typeof window === 'undefined' ? require('@/messages/ns/lv-LV/emailReview.json') : () => import('@/messages/ns/lv-LV/emailReview.json'))
+registerLanguage('emailReview', 'lv-LV', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/lv-LV/emailReview.json')) : () => import('@/messages/ns/lv-LV/emailReview.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('emailReview', 'lt-LT', typeof window === 'undefined' ? require('@/messages/ns/lt-LT/emailReview.json') : () => import('@/messages/ns/lt-LT/emailReview.json'))
+registerLanguage('emailReview', 'lt-LT', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/lt-LT/emailReview.json')) : () => import('@/messages/ns/lt-LT/emailReview.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('emailReview', 'el-GR', typeof window === 'undefined' ? require('@/messages/ns/el-GR/emailReview.json') : () => import('@/messages/ns/el-GR/emailReview.json'))
+registerLanguage('emailReview', 'el-GR', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/el-GR/emailReview.json')) : () => import('@/messages/ns/el-GR/emailReview.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('emailReview', 'bg-BG', typeof window === 'undefined' ? require('@/messages/ns/bg-BG/emailReview.json') : () => import('@/messages/ns/bg-BG/emailReview.json'))
+registerLanguage('emailReview', 'bg-BG', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/bg-BG/emailReview.json')) : () => import('@/messages/ns/bg-BG/emailReview.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('emailReview', 'pt-BR', typeof window === 'undefined' ? require('@/messages/ns/pt-BR/emailReview.json') : () => import('@/messages/ns/pt-BR/emailReview.json'))
+registerLanguage('emailReview', 'pt-BR', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/pt-BR/emailReview.json')) : () => import('@/messages/ns/pt-BR/emailReview.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('emailReview', 'ms-MY', typeof window === 'undefined' ? require('@/messages/ns/ms-MY/emailReview.json') : () => import('@/messages/ns/ms-MY/emailReview.json'))
+registerLanguage('emailReview', 'ms-MY', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/ms-MY/emailReview.json')) : () => import('@/messages/ns/ms-MY/emailReview.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('emailReview', 'ja-JP', typeof window === 'undefined' ? require('@/messages/ns/ja-JP/emailReview.json') : () => import('@/messages/ns/ja-JP/emailReview.json'))
+registerLanguage('emailReview', 'ja-JP', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/ja-JP/emailReview.json')) : () => import('@/messages/ns/ja-JP/emailReview.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('emailReview', 'zh-HK', typeof window === 'undefined' ? require('@/messages/ns/zh-HK/emailReview.json') : () => import('@/messages/ns/zh-HK/emailReview.json'))
+registerLanguage('emailReview', 'zh-HK', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/zh-HK/emailReview.json')) : () => import('@/messages/ns/zh-HK/emailReview.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('emailReview', 'th-TH', typeof window === 'undefined' ? require('@/messages/ns/th-TH/emailReview.json') : () => import('@/messages/ns/th-TH/emailReview.json'))
+registerLanguage('emailReview', 'th-TH', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/th-TH/emailReview.json')) : () => import('@/messages/ns/th-TH/emailReview.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('emailReview', 'ar-AE', typeof window === 'undefined' ? require('@/messages/ns/ar-AE/emailReview.json') : () => import('@/messages/ns/ar-AE/emailReview.json'))
+registerLanguage('emailReview', 'ar-AE', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/ar-AE/emailReview.json')) : () => import('@/messages/ns/ar-AE/emailReview.json'))

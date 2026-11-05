@@ -4,65 +4,66 @@ import base from '@/messages/ns/en-GB/nativeShell.json'
 import enUS from '@/messages/ns/en-US/nativeShell.json'
 import enAU from '@/messages/ns/en-AU/nativeShell.json'
 import enCA from '@/messages/ns/en-CA/nativeShell.json'
-import { registerNamespace, registerLanguage } from '@/lib/i18n/registry'
+import { registerNamespace, registerLanguage, serverWords } from '@/lib/i18n/registry'
 
 registerNamespace('nativeShell', base, { 'en-US': enUS, 'en-AU': enAU, 'en-CA': enCA })
-// languages-1: each non-English language — on the server now; in the browser only when a page is in that language.
+// languages-1: each non-English language only when a page is in that language — perf-1: on the server too (serverWords: a
+// synchronous require, run the first time the language is asked for), in the browser as a chunk loaded on demand.
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('nativeShell', 'fr-FR', typeof window === 'undefined' ? require('@/messages/ns/fr-FR/nativeShell.json') : () => import('@/messages/ns/fr-FR/nativeShell.json'))
+registerLanguage('nativeShell', 'fr-FR', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/fr-FR/nativeShell.json')) : () => import('@/messages/ns/fr-FR/nativeShell.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('nativeShell', 'de-DE', typeof window === 'undefined' ? require('@/messages/ns/de-DE/nativeShell.json') : () => import('@/messages/ns/de-DE/nativeShell.json'))
+registerLanguage('nativeShell', 'de-DE', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/de-DE/nativeShell.json')) : () => import('@/messages/ns/de-DE/nativeShell.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('nativeShell', 'es-ES', typeof window === 'undefined' ? require('@/messages/ns/es-ES/nativeShell.json') : () => import('@/messages/ns/es-ES/nativeShell.json'))
+registerLanguage('nativeShell', 'es-ES', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/es-ES/nativeShell.json')) : () => import('@/messages/ns/es-ES/nativeShell.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('nativeShell', 'it-IT', typeof window === 'undefined' ? require('@/messages/ns/it-IT/nativeShell.json') : () => import('@/messages/ns/it-IT/nativeShell.json'))
+registerLanguage('nativeShell', 'it-IT', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/it-IT/nativeShell.json')) : () => import('@/messages/ns/it-IT/nativeShell.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('nativeShell', 'pt-PT', typeof window === 'undefined' ? require('@/messages/ns/pt-PT/nativeShell.json') : () => import('@/messages/ns/pt-PT/nativeShell.json'))
+registerLanguage('nativeShell', 'pt-PT', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/pt-PT/nativeShell.json')) : () => import('@/messages/ns/pt-PT/nativeShell.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('nativeShell', 'nl-NL', typeof window === 'undefined' ? require('@/messages/ns/nl-NL/nativeShell.json') : () => import('@/messages/ns/nl-NL/nativeShell.json'))
+registerLanguage('nativeShell', 'nl-NL', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/nl-NL/nativeShell.json')) : () => import('@/messages/ns/nl-NL/nativeShell.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('nativeShell', 'sv-SE', typeof window === 'undefined' ? require('@/messages/ns/sv-SE/nativeShell.json') : () => import('@/messages/ns/sv-SE/nativeShell.json'))
+registerLanguage('nativeShell', 'sv-SE', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/sv-SE/nativeShell.json')) : () => import('@/messages/ns/sv-SE/nativeShell.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('nativeShell', 'da-DK', typeof window === 'undefined' ? require('@/messages/ns/da-DK/nativeShell.json') : () => import('@/messages/ns/da-DK/nativeShell.json'))
+registerLanguage('nativeShell', 'da-DK', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/da-DK/nativeShell.json')) : () => import('@/messages/ns/da-DK/nativeShell.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('nativeShell', 'nb-NO', typeof window === 'undefined' ? require('@/messages/ns/nb-NO/nativeShell.json') : () => import('@/messages/ns/nb-NO/nativeShell.json'))
+registerLanguage('nativeShell', 'nb-NO', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/nb-NO/nativeShell.json')) : () => import('@/messages/ns/nb-NO/nativeShell.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('nativeShell', 'pl-PL', typeof window === 'undefined' ? require('@/messages/ns/pl-PL/nativeShell.json') : () => import('@/messages/ns/pl-PL/nativeShell.json'))
+registerLanguage('nativeShell', 'pl-PL', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/pl-PL/nativeShell.json')) : () => import('@/messages/ns/pl-PL/nativeShell.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('nativeShell', 'cs-CZ', typeof window === 'undefined' ? require('@/messages/ns/cs-CZ/nativeShell.json') : () => import('@/messages/ns/cs-CZ/nativeShell.json'))
+registerLanguage('nativeShell', 'cs-CZ', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/cs-CZ/nativeShell.json')) : () => import('@/messages/ns/cs-CZ/nativeShell.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('nativeShell', 'hu-HU', typeof window === 'undefined' ? require('@/messages/ns/hu-HU/nativeShell.json') : () => import('@/messages/ns/hu-HU/nativeShell.json'))
+registerLanguage('nativeShell', 'hu-HU', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/hu-HU/nativeShell.json')) : () => import('@/messages/ns/hu-HU/nativeShell.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('nativeShell', 'sk-SK', typeof window === 'undefined' ? require('@/messages/ns/sk-SK/nativeShell.json') : () => import('@/messages/ns/sk-SK/nativeShell.json'))
+registerLanguage('nativeShell', 'sk-SK', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/sk-SK/nativeShell.json')) : () => import('@/messages/ns/sk-SK/nativeShell.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('nativeShell', 'ro-RO', typeof window === 'undefined' ? require('@/messages/ns/ro-RO/nativeShell.json') : () => import('@/messages/ns/ro-RO/nativeShell.json'))
+registerLanguage('nativeShell', 'ro-RO', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/ro-RO/nativeShell.json')) : () => import('@/messages/ns/ro-RO/nativeShell.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('nativeShell', 'hr-HR', typeof window === 'undefined' ? require('@/messages/ns/hr-HR/nativeShell.json') : () => import('@/messages/ns/hr-HR/nativeShell.json'))
+registerLanguage('nativeShell', 'hr-HR', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/hr-HR/nativeShell.json')) : () => import('@/messages/ns/hr-HR/nativeShell.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('nativeShell', 'sl-SI', typeof window === 'undefined' ? require('@/messages/ns/sl-SI/nativeShell.json') : () => import('@/messages/ns/sl-SI/nativeShell.json'))
+registerLanguage('nativeShell', 'sl-SI', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/sl-SI/nativeShell.json')) : () => import('@/messages/ns/sl-SI/nativeShell.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('nativeShell', 'fi-FI', typeof window === 'undefined' ? require('@/messages/ns/fi-FI/nativeShell.json') : () => import('@/messages/ns/fi-FI/nativeShell.json'))
+registerLanguage('nativeShell', 'fi-FI', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/fi-FI/nativeShell.json')) : () => import('@/messages/ns/fi-FI/nativeShell.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('nativeShell', 'et-EE', typeof window === 'undefined' ? require('@/messages/ns/et-EE/nativeShell.json') : () => import('@/messages/ns/et-EE/nativeShell.json'))
+registerLanguage('nativeShell', 'et-EE', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/et-EE/nativeShell.json')) : () => import('@/messages/ns/et-EE/nativeShell.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('nativeShell', 'lv-LV', typeof window === 'undefined' ? require('@/messages/ns/lv-LV/nativeShell.json') : () => import('@/messages/ns/lv-LV/nativeShell.json'))
+registerLanguage('nativeShell', 'lv-LV', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/lv-LV/nativeShell.json')) : () => import('@/messages/ns/lv-LV/nativeShell.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('nativeShell', 'lt-LT', typeof window === 'undefined' ? require('@/messages/ns/lt-LT/nativeShell.json') : () => import('@/messages/ns/lt-LT/nativeShell.json'))
+registerLanguage('nativeShell', 'lt-LT', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/lt-LT/nativeShell.json')) : () => import('@/messages/ns/lt-LT/nativeShell.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('nativeShell', 'el-GR', typeof window === 'undefined' ? require('@/messages/ns/el-GR/nativeShell.json') : () => import('@/messages/ns/el-GR/nativeShell.json'))
+registerLanguage('nativeShell', 'el-GR', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/el-GR/nativeShell.json')) : () => import('@/messages/ns/el-GR/nativeShell.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('nativeShell', 'bg-BG', typeof window === 'undefined' ? require('@/messages/ns/bg-BG/nativeShell.json') : () => import('@/messages/ns/bg-BG/nativeShell.json'))
+registerLanguage('nativeShell', 'bg-BG', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/bg-BG/nativeShell.json')) : () => import('@/messages/ns/bg-BG/nativeShell.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('nativeShell', 'es-MX', typeof window === 'undefined' ? require('@/messages/ns/es-MX/nativeShell.json') : () => import('@/messages/ns/es-MX/nativeShell.json'))
+registerLanguage('nativeShell', 'es-MX', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/es-MX/nativeShell.json')) : () => import('@/messages/ns/es-MX/nativeShell.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('nativeShell', 'pt-BR', typeof window === 'undefined' ? require('@/messages/ns/pt-BR/nativeShell.json') : () => import('@/messages/ns/pt-BR/nativeShell.json'))
+registerLanguage('nativeShell', 'pt-BR', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/pt-BR/nativeShell.json')) : () => import('@/messages/ns/pt-BR/nativeShell.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('nativeShell', 'ms-MY', typeof window === 'undefined' ? require('@/messages/ns/ms-MY/nativeShell.json') : () => import('@/messages/ns/ms-MY/nativeShell.json'))
+registerLanguage('nativeShell', 'ms-MY', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/ms-MY/nativeShell.json')) : () => import('@/messages/ns/ms-MY/nativeShell.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('nativeShell', 'ja-JP', typeof window === 'undefined' ? require('@/messages/ns/ja-JP/nativeShell.json') : () => import('@/messages/ns/ja-JP/nativeShell.json'))
+registerLanguage('nativeShell', 'ja-JP', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/ja-JP/nativeShell.json')) : () => import('@/messages/ns/ja-JP/nativeShell.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('nativeShell', 'zh-HK', typeof window === 'undefined' ? require('@/messages/ns/zh-HK/nativeShell.json') : () => import('@/messages/ns/zh-HK/nativeShell.json'))
+registerLanguage('nativeShell', 'zh-HK', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/zh-HK/nativeShell.json')) : () => import('@/messages/ns/zh-HK/nativeShell.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('nativeShell', 'th-TH', typeof window === 'undefined' ? require('@/messages/ns/th-TH/nativeShell.json') : () => import('@/messages/ns/th-TH/nativeShell.json'))
+registerLanguage('nativeShell', 'th-TH', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/th-TH/nativeShell.json')) : () => import('@/messages/ns/th-TH/nativeShell.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('nativeShell', 'ar-AE', typeof window === 'undefined' ? require('@/messages/ns/ar-AE/nativeShell.json') : () => import('@/messages/ns/ar-AE/nativeShell.json'))
+registerLanguage('nativeShell', 'ar-AE', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/ar-AE/nativeShell.json')) : () => import('@/messages/ns/ar-AE/nativeShell.json'))

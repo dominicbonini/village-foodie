@@ -419,7 +419,10 @@ const STUBS = {
   // ══ 13 ══
   head('13 · nothing live touched')
   const BASE = 'bd17d482~1'
-  const changed = execFileSync('git', ['diff', '--name-only', BASE], { cwd: REPO }).toString().trim().split('\n').filter(Boolean)
+  // ⚠️ RE-PINNED (perf-1, 5 November 2026, docs/perf-1-report.md): this compared BASE with the WORKING TREE, so every later
+  // workstream's files read as this one's strays (perf-1's i18n catalogues, admin routes, lib/…). It now compares BASE with this
+  // work's own last commit (7bc53b81, its report) — exactly the files reviews-weather-1 changed; the untracked check is as before.
+  const changed = execFileSync('git', ['diff', '--name-only', BASE, '7bc53b81'], { cwd: REPO }).toString().trim().split('\n').filter(Boolean)
   const untracked = execFileSync('git', ['ls-files', '--others', '--exclude-standard'], { cwd: REPO }).toString().trim().split('\n').filter(Boolean)
   const mine = /^(lib\/reviews\/|lib\/weather\/|app\/api\/cron\/review-requests\/|app\/api\/cron\/weather\/|app\/api\/manage\/weather\/|app\/api\/reviews\/|supabase\/migrations\/20261072_|scripts\/reviews-weather-1\.cjs$|scripts\/harnesses\.json$|scripts\/_messages-parity-1e\.cjs$|messages\/[A-Za-z-]+\.json$|messages\/ns\/[A-Za-z-]+\/emailReview\.json$|lib\/i18n\/catalog\/emailReview\.ts$|docs\/i18n\/back\/|docs\/reviews-weather-1)/
   // Other workstreams' files in the same tree (the manual, perf-1) are not this change; they are listed, not judged.

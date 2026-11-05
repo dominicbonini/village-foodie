@@ -4,69 +4,70 @@ import base from '@/messages/ns/en-GB/manageSettings.json'
 import enUS from '@/messages/ns/en-US/manageSettings.json'
 import enAU from '@/messages/ns/en-AU/manageSettings.json'
 import enSG from '@/messages/ns/en-SG/manageSettings.json'
-import { registerNamespace, registerLanguage } from '@/lib/i18n/registry'
+import { registerNamespace, registerLanguage, serverWords } from '@/lib/i18n/registry'
 
 registerNamespace('manageSettings', base, { 'en-US': enUS, 'en-AU': enAU, 'en-SG': enSG })
-// languages-1: each non-English language — on the server now; in the browser only when a page is in that language.
+// languages-1: each non-English language only when a page is in that language — perf-1: on the server too (serverWords: a
+// synchronous require, run the first time the language is asked for), in the browser as a chunk loaded on demand.
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('manageSettings', 'fr-FR', typeof window === 'undefined' ? require('@/messages/ns/fr-FR/manageSettings.json') : () => import('@/messages/ns/fr-FR/manageSettings.json'))
+registerLanguage('manageSettings', 'fr-FR', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/fr-FR/manageSettings.json')) : () => import('@/messages/ns/fr-FR/manageSettings.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('manageSettings', 'de-DE', typeof window === 'undefined' ? require('@/messages/ns/de-DE/manageSettings.json') : () => import('@/messages/ns/de-DE/manageSettings.json'))
+registerLanguage('manageSettings', 'de-DE', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/de-DE/manageSettings.json')) : () => import('@/messages/ns/de-DE/manageSettings.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('manageSettings', 'de-CH', typeof window === 'undefined' ? require('@/messages/ns/de-CH/manageSettings.json') : () => import('@/messages/ns/de-CH/manageSettings.json'))
+registerLanguage('manageSettings', 'de-CH', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/de-CH/manageSettings.json')) : () => import('@/messages/ns/de-CH/manageSettings.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('manageSettings', 'es-ES', typeof window === 'undefined' ? require('@/messages/ns/es-ES/manageSettings.json') : () => import('@/messages/ns/es-ES/manageSettings.json'))
+registerLanguage('manageSettings', 'es-ES', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/es-ES/manageSettings.json')) : () => import('@/messages/ns/es-ES/manageSettings.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('manageSettings', 'it-IT', typeof window === 'undefined' ? require('@/messages/ns/it-IT/manageSettings.json') : () => import('@/messages/ns/it-IT/manageSettings.json'))
+registerLanguage('manageSettings', 'it-IT', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/it-IT/manageSettings.json')) : () => import('@/messages/ns/it-IT/manageSettings.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('manageSettings', 'pt-PT', typeof window === 'undefined' ? require('@/messages/ns/pt-PT/manageSettings.json') : () => import('@/messages/ns/pt-PT/manageSettings.json'))
+registerLanguage('manageSettings', 'pt-PT', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/pt-PT/manageSettings.json')) : () => import('@/messages/ns/pt-PT/manageSettings.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('manageSettings', 'nl-NL', typeof window === 'undefined' ? require('@/messages/ns/nl-NL/manageSettings.json') : () => import('@/messages/ns/nl-NL/manageSettings.json'))
+registerLanguage('manageSettings', 'nl-NL', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/nl-NL/manageSettings.json')) : () => import('@/messages/ns/nl-NL/manageSettings.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('manageSettings', 'sv-SE', typeof window === 'undefined' ? require('@/messages/ns/sv-SE/manageSettings.json') : () => import('@/messages/ns/sv-SE/manageSettings.json'))
+registerLanguage('manageSettings', 'sv-SE', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/sv-SE/manageSettings.json')) : () => import('@/messages/ns/sv-SE/manageSettings.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('manageSettings', 'da-DK', typeof window === 'undefined' ? require('@/messages/ns/da-DK/manageSettings.json') : () => import('@/messages/ns/da-DK/manageSettings.json'))
+registerLanguage('manageSettings', 'da-DK', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/da-DK/manageSettings.json')) : () => import('@/messages/ns/da-DK/manageSettings.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('manageSettings', 'nb-NO', typeof window === 'undefined' ? require('@/messages/ns/nb-NO/manageSettings.json') : () => import('@/messages/ns/nb-NO/manageSettings.json'))
+registerLanguage('manageSettings', 'nb-NO', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/nb-NO/manageSettings.json')) : () => import('@/messages/ns/nb-NO/manageSettings.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('manageSettings', 'pl-PL', typeof window === 'undefined' ? require('@/messages/ns/pl-PL/manageSettings.json') : () => import('@/messages/ns/pl-PL/manageSettings.json'))
+registerLanguage('manageSettings', 'pl-PL', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/pl-PL/manageSettings.json')) : () => import('@/messages/ns/pl-PL/manageSettings.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('manageSettings', 'cs-CZ', typeof window === 'undefined' ? require('@/messages/ns/cs-CZ/manageSettings.json') : () => import('@/messages/ns/cs-CZ/manageSettings.json'))
+registerLanguage('manageSettings', 'cs-CZ', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/cs-CZ/manageSettings.json')) : () => import('@/messages/ns/cs-CZ/manageSettings.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('manageSettings', 'hu-HU', typeof window === 'undefined' ? require('@/messages/ns/hu-HU/manageSettings.json') : () => import('@/messages/ns/hu-HU/manageSettings.json'))
+registerLanguage('manageSettings', 'hu-HU', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/hu-HU/manageSettings.json')) : () => import('@/messages/ns/hu-HU/manageSettings.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('manageSettings', 'sk-SK', typeof window === 'undefined' ? require('@/messages/ns/sk-SK/manageSettings.json') : () => import('@/messages/ns/sk-SK/manageSettings.json'))
+registerLanguage('manageSettings', 'sk-SK', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/sk-SK/manageSettings.json')) : () => import('@/messages/ns/sk-SK/manageSettings.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('manageSettings', 'ro-RO', typeof window === 'undefined' ? require('@/messages/ns/ro-RO/manageSettings.json') : () => import('@/messages/ns/ro-RO/manageSettings.json'))
+registerLanguage('manageSettings', 'ro-RO', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/ro-RO/manageSettings.json')) : () => import('@/messages/ns/ro-RO/manageSettings.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('manageSettings', 'hr-HR', typeof window === 'undefined' ? require('@/messages/ns/hr-HR/manageSettings.json') : () => import('@/messages/ns/hr-HR/manageSettings.json'))
+registerLanguage('manageSettings', 'hr-HR', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/hr-HR/manageSettings.json')) : () => import('@/messages/ns/hr-HR/manageSettings.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('manageSettings', 'sl-SI', typeof window === 'undefined' ? require('@/messages/ns/sl-SI/manageSettings.json') : () => import('@/messages/ns/sl-SI/manageSettings.json'))
+registerLanguage('manageSettings', 'sl-SI', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/sl-SI/manageSettings.json')) : () => import('@/messages/ns/sl-SI/manageSettings.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('manageSettings', 'fi-FI', typeof window === 'undefined' ? require('@/messages/ns/fi-FI/manageSettings.json') : () => import('@/messages/ns/fi-FI/manageSettings.json'))
+registerLanguage('manageSettings', 'fi-FI', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/fi-FI/manageSettings.json')) : () => import('@/messages/ns/fi-FI/manageSettings.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('manageSettings', 'et-EE', typeof window === 'undefined' ? require('@/messages/ns/et-EE/manageSettings.json') : () => import('@/messages/ns/et-EE/manageSettings.json'))
+registerLanguage('manageSettings', 'et-EE', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/et-EE/manageSettings.json')) : () => import('@/messages/ns/et-EE/manageSettings.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('manageSettings', 'lv-LV', typeof window === 'undefined' ? require('@/messages/ns/lv-LV/manageSettings.json') : () => import('@/messages/ns/lv-LV/manageSettings.json'))
+registerLanguage('manageSettings', 'lv-LV', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/lv-LV/manageSettings.json')) : () => import('@/messages/ns/lv-LV/manageSettings.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('manageSettings', 'lt-LT', typeof window === 'undefined' ? require('@/messages/ns/lt-LT/manageSettings.json') : () => import('@/messages/ns/lt-LT/manageSettings.json'))
+registerLanguage('manageSettings', 'lt-LT', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/lt-LT/manageSettings.json')) : () => import('@/messages/ns/lt-LT/manageSettings.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('manageSettings', 'el-GR', typeof window === 'undefined' ? require('@/messages/ns/el-GR/manageSettings.json') : () => import('@/messages/ns/el-GR/manageSettings.json'))
+registerLanguage('manageSettings', 'el-GR', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/el-GR/manageSettings.json')) : () => import('@/messages/ns/el-GR/manageSettings.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('manageSettings', 'bg-BG', typeof window === 'undefined' ? require('@/messages/ns/bg-BG/manageSettings.json') : () => import('@/messages/ns/bg-BG/manageSettings.json'))
+registerLanguage('manageSettings', 'bg-BG', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/bg-BG/manageSettings.json')) : () => import('@/messages/ns/bg-BG/manageSettings.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('manageSettings', 'fr-LU', typeof window === 'undefined' ? require('@/messages/ns/fr-LU/manageSettings.json') : () => import('@/messages/ns/fr-LU/manageSettings.json'))
+registerLanguage('manageSettings', 'fr-LU', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/fr-LU/manageSettings.json')) : () => import('@/messages/ns/fr-LU/manageSettings.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('manageSettings', 'es-MX', typeof window === 'undefined' ? require('@/messages/ns/es-MX/manageSettings.json') : () => import('@/messages/ns/es-MX/manageSettings.json'))
+registerLanguage('manageSettings', 'es-MX', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/es-MX/manageSettings.json')) : () => import('@/messages/ns/es-MX/manageSettings.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('manageSettings', 'pt-BR', typeof window === 'undefined' ? require('@/messages/ns/pt-BR/manageSettings.json') : () => import('@/messages/ns/pt-BR/manageSettings.json'))
+registerLanguage('manageSettings', 'pt-BR', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/pt-BR/manageSettings.json')) : () => import('@/messages/ns/pt-BR/manageSettings.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('manageSettings', 'ms-MY', typeof window === 'undefined' ? require('@/messages/ns/ms-MY/manageSettings.json') : () => import('@/messages/ns/ms-MY/manageSettings.json'))
+registerLanguage('manageSettings', 'ms-MY', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/ms-MY/manageSettings.json')) : () => import('@/messages/ns/ms-MY/manageSettings.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('manageSettings', 'ja-JP', typeof window === 'undefined' ? require('@/messages/ns/ja-JP/manageSettings.json') : () => import('@/messages/ns/ja-JP/manageSettings.json'))
+registerLanguage('manageSettings', 'ja-JP', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/ja-JP/manageSettings.json')) : () => import('@/messages/ns/ja-JP/manageSettings.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('manageSettings', 'zh-HK', typeof window === 'undefined' ? require('@/messages/ns/zh-HK/manageSettings.json') : () => import('@/messages/ns/zh-HK/manageSettings.json'))
+registerLanguage('manageSettings', 'zh-HK', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/zh-HK/manageSettings.json')) : () => import('@/messages/ns/zh-HK/manageSettings.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('manageSettings', 'th-TH', typeof window === 'undefined' ? require('@/messages/ns/th-TH/manageSettings.json') : () => import('@/messages/ns/th-TH/manageSettings.json'))
+registerLanguage('manageSettings', 'th-TH', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/th-TH/manageSettings.json')) : () => import('@/messages/ns/th-TH/manageSettings.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('manageSettings', 'ar-AE', typeof window === 'undefined' ? require('@/messages/ns/ar-AE/manageSettings.json') : () => import('@/messages/ns/ar-AE/manageSettings.json'))
+registerLanguage('manageSettings', 'ar-AE', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/ar-AE/manageSettings.json')) : () => import('@/messages/ns/ar-AE/manageSettings.json'))

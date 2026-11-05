@@ -28,8 +28,18 @@ const ENTRIES = new Map<string, Entry>()
 const MERGED = new Map<string, Tree>()
 
 type Loader = () => Promise<unknown>
-/** languages-1: locale → namespace → its words (a Tree) or, in the browser until it is needed, a loader. */
-const LANGUAGES = new Map<string, Map<string, Tree | Loader>>()
+/* perf-1 (5 November 2026, docs/perf-1-report.md): ON THE SERVER, A LANGUAGE IS READ THE FIRST TIME IT IS ASKED FOR. The catalog
+ * modules used to `require` every language's words for every namespace as they loaded, so a cold server parsed all 28 languages
+ * before its first answer. They now hand over `serverWords(() => require(…))`: a SYNCHRONOUS loader (the server renders
+ * synchronously), run by `wordsOf` the first time a page asks for that language — with the same words, so every answer is the same.
+ * The browser side is unchanged (an async loader, run when a page is in that language). */
+const SERVER_WORDS = Symbol.for('hatchgrab.serverWords')
+interface ServerWords { readonly [SERVER_WORDS]: () => unknown }
+/** perf-1: wrap the server's `require` of a language's words, so the registry runs it only when that language is needed. */
+export function serverWords(load: () => unknown): ServerWords { return { [SERVER_WORDS]: load } }
+const isServerWords = (x: unknown): x is ServerWords => typeof x === 'object' && x !== null && SERVER_WORDS in x
+/** languages-1: locale → namespace → its words (a Tree) or, until it is needed, a loader (the browser's) or perf-1's server one. */
+const LANGUAGES = new Map<string, Map<string, Tree | Loader | ServerWords>>()
 const LOADING = new Map<string, Promise<void>>()
 /** languages-1: the languages a page in this browser has asked for — a namespace registered later (a lazily loaded screen)
  *  loads at once if its language is one of them. */
@@ -37,9 +47,19 @@ const ACTIVE = new Set<string>()
 let version = 0
 const listeners = new Set<() => void>()
 
-const isBranch = (x: unknown): x is Tree => typeof x === 'object' && x !== null && !Array.isArray(x)
+const isBranch = (x: unknown): x is Tree => typeof x === 'object' && x !== null && !Array.isArray(x) && !isServerWords(x)
 /** A JSON module as a bundler hands it over: the tree itself, or `{ default: tree }`. */
 const treeOf = (m: unknown): Tree => (isBranch(m) && isBranch((m as { default?: unknown }).default) && Object.keys(m).every(k => k === 'default' || k === '__esModule') ? (m as { default: Tree }).default : m as Tree)
+
+/** perf-1: a language's words for a namespace as they stand — a server loader is run here, once, and replaced by its words. */
+function wordsOf(locale: string, namespace: string): Tree | Loader | undefined {
+  const byNs = LANGUAGES.get(locale)
+  const w = byNs?.get(namespace)
+  if (!isServerWords(w)) return w
+  const tree = treeOf(w[SERVER_WORDS]())
+  byNs!.set(namespace, tree)
+  return tree
+}
 
 function invalidate(namespace: string) {
   for (const k of [...MERGED.keys()]) if (k.endsWith(`|${namespace}`)) MERGED.delete(k)
@@ -60,7 +80,9 @@ export function registerNamespace(namespace: string, base: unknown, overrides: P
 export function registerLanguage(namespace: string, locale: string, words: unknown): void {
   let byNs = LANGUAGES.get(locale)
   if (!byNs) { byNs = new Map(); LANGUAGES.set(locale, byNs) }
-  if (typeof words === 'function') {
+  if (isServerWords(words)) {
+    if (!isBranch(byNs.get(namespace))) { byNs.set(namespace, words); invalidate(namespace) }
+  } else if (typeof words === 'function') {
     if (!isBranch(byNs.get(namespace))) byNs.set(namespace, words as Loader)
     if (ACTIVE.has(locale)) void loadNamespace(locale, namespace)
   } else {
@@ -70,7 +92,7 @@ export function registerLanguage(namespace: string, locale: string, words: unkno
 }
 
 function loadNamespace(locale: string, namespace: string): Promise<void> {
-  const src = LANGUAGES.get(locale)?.get(namespace)
+  const src = wordsOf(locale, namespace)
   if (typeof src !== 'function') return Promise.resolve()
   const key = `${locale}|${namespace}`
   let p = LOADING.get(key)
@@ -112,7 +134,7 @@ export function languageWords(tag: string | null | undefined, namespaces: readon
   for (const l of overrideChain(resolveLocale(tag))) {
     const byNs = LANGUAGES.get(l)
     if (!byNs) continue
-    for (const ns of namespaces) { const w = byNs.get(ns); if (isBranch(w)) (out[l] ??= {})[ns] = w }
+    for (const ns of namespaces) { const w = wordsOf(l, ns); if (isBranch(w)) (out[l] ??= {})[ns] = w }
   }
   return out
 }
@@ -139,7 +161,7 @@ export function namespaceMessages(locale: string | null | undefined, namespace: 
     const overs = overrideChain(l).map(x => {
       const english = e.overrides[x]
       if (english) return english
-      const lang = LANGUAGES.get(x)?.get(namespace)
+      const lang = wordsOf(x, namespace)
       if (typeof lang === 'function') { complete = false; if (ACTIVE.has(x)) void loadNamespace(x, namespace); return undefined }
       return lang
     }).filter((o): o is Tree => !!o && Object.keys(o).length > 0)
@@ -154,4 +176,12 @@ export function messagesOf(locale: string | null | undefined, namespaces: readon
   const out: Tree = {}
   for (const ns of namespaces) { const m = namespaceMessages(locale, ns); if (m) out[ns] = m }
   return out as unknown as Messages
+}
+
+/** perf-1: which namespaces of a locale's words are loaded so far (the rest are still loaders) — read-only, for scripts/perf-1.cjs. */
+export function loadedNamespaces(locale: string): { loaded: string[]; waiting: string[] } {
+  const byNs = LANGUAGES.get(locale)
+  const loaded: string[] = [], waiting: string[] = []
+  for (const [ns, w] of byNs ?? []) (isBranch(w) ? loaded : waiting).push(ns)
+  return { loaded: loaded.sort(), waiting: waiting.sort() }
 }

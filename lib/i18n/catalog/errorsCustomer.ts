@@ -4,67 +4,68 @@ import base from '@/messages/ns/en-GB/errorsCustomer.json'
 import enUS from '@/messages/ns/en-US/errorsCustomer.json'
 import enAU from '@/messages/ns/en-AU/errorsCustomer.json'
 import enCA from '@/messages/ns/en-CA/errorsCustomer.json'
-import { registerNamespace, registerLanguage } from '@/lib/i18n/registry'
+import { registerNamespace, registerLanguage, serverWords } from '@/lib/i18n/registry'
 
 registerNamespace('errorsCustomer', base, { 'en-US': enUS, 'en-AU': enAU, 'en-CA': enCA })
-// languages-1: each non-English language — on the server now; in the browser only when a page is in that language.
+// languages-1: each non-English language only when a page is in that language — perf-1: on the server too (serverWords: a
+// synchronous require, run the first time the language is asked for), in the browser as a chunk loaded on demand.
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('errorsCustomer', 'fr-FR', typeof window === 'undefined' ? require('@/messages/ns/fr-FR/errorsCustomer.json') : () => import('@/messages/ns/fr-FR/errorsCustomer.json'))
+registerLanguage('errorsCustomer', 'fr-FR', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/fr-FR/errorsCustomer.json')) : () => import('@/messages/ns/fr-FR/errorsCustomer.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('errorsCustomer', 'de-DE', typeof window === 'undefined' ? require('@/messages/ns/de-DE/errorsCustomer.json') : () => import('@/messages/ns/de-DE/errorsCustomer.json'))
+registerLanguage('errorsCustomer', 'de-DE', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/de-DE/errorsCustomer.json')) : () => import('@/messages/ns/de-DE/errorsCustomer.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('errorsCustomer', 'es-ES', typeof window === 'undefined' ? require('@/messages/ns/es-ES/errorsCustomer.json') : () => import('@/messages/ns/es-ES/errorsCustomer.json'))
+registerLanguage('errorsCustomer', 'es-ES', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/es-ES/errorsCustomer.json')) : () => import('@/messages/ns/es-ES/errorsCustomer.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('errorsCustomer', 'it-IT', typeof window === 'undefined' ? require('@/messages/ns/it-IT/errorsCustomer.json') : () => import('@/messages/ns/it-IT/errorsCustomer.json'))
+registerLanguage('errorsCustomer', 'it-IT', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/it-IT/errorsCustomer.json')) : () => import('@/messages/ns/it-IT/errorsCustomer.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('errorsCustomer', 'pt-PT', typeof window === 'undefined' ? require('@/messages/ns/pt-PT/errorsCustomer.json') : () => import('@/messages/ns/pt-PT/errorsCustomer.json'))
+registerLanguage('errorsCustomer', 'pt-PT', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/pt-PT/errorsCustomer.json')) : () => import('@/messages/ns/pt-PT/errorsCustomer.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('errorsCustomer', 'nl-NL', typeof window === 'undefined' ? require('@/messages/ns/nl-NL/errorsCustomer.json') : () => import('@/messages/ns/nl-NL/errorsCustomer.json'))
+registerLanguage('errorsCustomer', 'nl-NL', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/nl-NL/errorsCustomer.json')) : () => import('@/messages/ns/nl-NL/errorsCustomer.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('errorsCustomer', 'nl-BE', typeof window === 'undefined' ? require('@/messages/ns/nl-BE/errorsCustomer.json') : () => import('@/messages/ns/nl-BE/errorsCustomer.json'))
+registerLanguage('errorsCustomer', 'nl-BE', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/nl-BE/errorsCustomer.json')) : () => import('@/messages/ns/nl-BE/errorsCustomer.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('errorsCustomer', 'sv-SE', typeof window === 'undefined' ? require('@/messages/ns/sv-SE/errorsCustomer.json') : () => import('@/messages/ns/sv-SE/errorsCustomer.json'))
+registerLanguage('errorsCustomer', 'sv-SE', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/sv-SE/errorsCustomer.json')) : () => import('@/messages/ns/sv-SE/errorsCustomer.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('errorsCustomer', 'da-DK', typeof window === 'undefined' ? require('@/messages/ns/da-DK/errorsCustomer.json') : () => import('@/messages/ns/da-DK/errorsCustomer.json'))
+registerLanguage('errorsCustomer', 'da-DK', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/da-DK/errorsCustomer.json')) : () => import('@/messages/ns/da-DK/errorsCustomer.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('errorsCustomer', 'nb-NO', typeof window === 'undefined' ? require('@/messages/ns/nb-NO/errorsCustomer.json') : () => import('@/messages/ns/nb-NO/errorsCustomer.json'))
+registerLanguage('errorsCustomer', 'nb-NO', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/nb-NO/errorsCustomer.json')) : () => import('@/messages/ns/nb-NO/errorsCustomer.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('errorsCustomer', 'pl-PL', typeof window === 'undefined' ? require('@/messages/ns/pl-PL/errorsCustomer.json') : () => import('@/messages/ns/pl-PL/errorsCustomer.json'))
+registerLanguage('errorsCustomer', 'pl-PL', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/pl-PL/errorsCustomer.json')) : () => import('@/messages/ns/pl-PL/errorsCustomer.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('errorsCustomer', 'cs-CZ', typeof window === 'undefined' ? require('@/messages/ns/cs-CZ/errorsCustomer.json') : () => import('@/messages/ns/cs-CZ/errorsCustomer.json'))
+registerLanguage('errorsCustomer', 'cs-CZ', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/cs-CZ/errorsCustomer.json')) : () => import('@/messages/ns/cs-CZ/errorsCustomer.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('errorsCustomer', 'hu-HU', typeof window === 'undefined' ? require('@/messages/ns/hu-HU/errorsCustomer.json') : () => import('@/messages/ns/hu-HU/errorsCustomer.json'))
+registerLanguage('errorsCustomer', 'hu-HU', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/hu-HU/errorsCustomer.json')) : () => import('@/messages/ns/hu-HU/errorsCustomer.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('errorsCustomer', 'sk-SK', typeof window === 'undefined' ? require('@/messages/ns/sk-SK/errorsCustomer.json') : () => import('@/messages/ns/sk-SK/errorsCustomer.json'))
+registerLanguage('errorsCustomer', 'sk-SK', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/sk-SK/errorsCustomer.json')) : () => import('@/messages/ns/sk-SK/errorsCustomer.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('errorsCustomer', 'ro-RO', typeof window === 'undefined' ? require('@/messages/ns/ro-RO/errorsCustomer.json') : () => import('@/messages/ns/ro-RO/errorsCustomer.json'))
+registerLanguage('errorsCustomer', 'ro-RO', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/ro-RO/errorsCustomer.json')) : () => import('@/messages/ns/ro-RO/errorsCustomer.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('errorsCustomer', 'hr-HR', typeof window === 'undefined' ? require('@/messages/ns/hr-HR/errorsCustomer.json') : () => import('@/messages/ns/hr-HR/errorsCustomer.json'))
+registerLanguage('errorsCustomer', 'hr-HR', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/hr-HR/errorsCustomer.json')) : () => import('@/messages/ns/hr-HR/errorsCustomer.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('errorsCustomer', 'sl-SI', typeof window === 'undefined' ? require('@/messages/ns/sl-SI/errorsCustomer.json') : () => import('@/messages/ns/sl-SI/errorsCustomer.json'))
+registerLanguage('errorsCustomer', 'sl-SI', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/sl-SI/errorsCustomer.json')) : () => import('@/messages/ns/sl-SI/errorsCustomer.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('errorsCustomer', 'fi-FI', typeof window === 'undefined' ? require('@/messages/ns/fi-FI/errorsCustomer.json') : () => import('@/messages/ns/fi-FI/errorsCustomer.json'))
+registerLanguage('errorsCustomer', 'fi-FI', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/fi-FI/errorsCustomer.json')) : () => import('@/messages/ns/fi-FI/errorsCustomer.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('errorsCustomer', 'et-EE', typeof window === 'undefined' ? require('@/messages/ns/et-EE/errorsCustomer.json') : () => import('@/messages/ns/et-EE/errorsCustomer.json'))
+registerLanguage('errorsCustomer', 'et-EE', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/et-EE/errorsCustomer.json')) : () => import('@/messages/ns/et-EE/errorsCustomer.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('errorsCustomer', 'lv-LV', typeof window === 'undefined' ? require('@/messages/ns/lv-LV/errorsCustomer.json') : () => import('@/messages/ns/lv-LV/errorsCustomer.json'))
+registerLanguage('errorsCustomer', 'lv-LV', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/lv-LV/errorsCustomer.json')) : () => import('@/messages/ns/lv-LV/errorsCustomer.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('errorsCustomer', 'lt-LT', typeof window === 'undefined' ? require('@/messages/ns/lt-LT/errorsCustomer.json') : () => import('@/messages/ns/lt-LT/errorsCustomer.json'))
+registerLanguage('errorsCustomer', 'lt-LT', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/lt-LT/errorsCustomer.json')) : () => import('@/messages/ns/lt-LT/errorsCustomer.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('errorsCustomer', 'el-GR', typeof window === 'undefined' ? require('@/messages/ns/el-GR/errorsCustomer.json') : () => import('@/messages/ns/el-GR/errorsCustomer.json'))
+registerLanguage('errorsCustomer', 'el-GR', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/el-GR/errorsCustomer.json')) : () => import('@/messages/ns/el-GR/errorsCustomer.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('errorsCustomer', 'bg-BG', typeof window === 'undefined' ? require('@/messages/ns/bg-BG/errorsCustomer.json') : () => import('@/messages/ns/bg-BG/errorsCustomer.json'))
+registerLanguage('errorsCustomer', 'bg-BG', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/bg-BG/errorsCustomer.json')) : () => import('@/messages/ns/bg-BG/errorsCustomer.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('errorsCustomer', 'es-MX', typeof window === 'undefined' ? require('@/messages/ns/es-MX/errorsCustomer.json') : () => import('@/messages/ns/es-MX/errorsCustomer.json'))
+registerLanguage('errorsCustomer', 'es-MX', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/es-MX/errorsCustomer.json')) : () => import('@/messages/ns/es-MX/errorsCustomer.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('errorsCustomer', 'pt-BR', typeof window === 'undefined' ? require('@/messages/ns/pt-BR/errorsCustomer.json') : () => import('@/messages/ns/pt-BR/errorsCustomer.json'))
+registerLanguage('errorsCustomer', 'pt-BR', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/pt-BR/errorsCustomer.json')) : () => import('@/messages/ns/pt-BR/errorsCustomer.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('errorsCustomer', 'ms-MY', typeof window === 'undefined' ? require('@/messages/ns/ms-MY/errorsCustomer.json') : () => import('@/messages/ns/ms-MY/errorsCustomer.json'))
+registerLanguage('errorsCustomer', 'ms-MY', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/ms-MY/errorsCustomer.json')) : () => import('@/messages/ns/ms-MY/errorsCustomer.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('errorsCustomer', 'ja-JP', typeof window === 'undefined' ? require('@/messages/ns/ja-JP/errorsCustomer.json') : () => import('@/messages/ns/ja-JP/errorsCustomer.json'))
+registerLanguage('errorsCustomer', 'ja-JP', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/ja-JP/errorsCustomer.json')) : () => import('@/messages/ns/ja-JP/errorsCustomer.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('errorsCustomer', 'zh-HK', typeof window === 'undefined' ? require('@/messages/ns/zh-HK/errorsCustomer.json') : () => import('@/messages/ns/zh-HK/errorsCustomer.json'))
+registerLanguage('errorsCustomer', 'zh-HK', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/zh-HK/errorsCustomer.json')) : () => import('@/messages/ns/zh-HK/errorsCustomer.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('errorsCustomer', 'th-TH', typeof window === 'undefined' ? require('@/messages/ns/th-TH/errorsCustomer.json') : () => import('@/messages/ns/th-TH/errorsCustomer.json'))
+registerLanguage('errorsCustomer', 'th-TH', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/th-TH/errorsCustomer.json')) : () => import('@/messages/ns/th-TH/errorsCustomer.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('errorsCustomer', 'ar-AE', typeof window === 'undefined' ? require('@/messages/ns/ar-AE/errorsCustomer.json') : () => import('@/messages/ns/ar-AE/errorsCustomer.json'))
+registerLanguage('errorsCustomer', 'ar-AE', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/ar-AE/errorsCustomer.json')) : () => import('@/messages/ns/ar-AE/errorsCustomer.json'))

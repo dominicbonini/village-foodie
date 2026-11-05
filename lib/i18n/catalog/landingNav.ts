@@ -2,65 +2,66 @@
 // Import this module (`import '@/lib/i18n/catalog/landingNav'`) in any file that reads the "landingNav" namespace.
 import base from '@/messages/ns/en-GB/landingNav.json'
 import enUS from '@/messages/ns/en-US/landingNav.json'
-import { registerNamespace, registerLanguage } from '@/lib/i18n/registry'
+import { registerNamespace, registerLanguage, serverWords } from '@/lib/i18n/registry'
 
 registerNamespace('landingNav', base, { 'en-US': enUS })
-// languages-1: each non-English language — on the server now; in the browser only when a page is in that language.
+// languages-1: each non-English language only when a page is in that language — perf-1: on the server too (serverWords: a
+// synchronous require, run the first time the language is asked for), in the browser as a chunk loaded on demand.
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('landingNav', 'fr-FR', typeof window === 'undefined' ? require('@/messages/ns/fr-FR/landingNav.json') : () => import('@/messages/ns/fr-FR/landingNav.json'))
+registerLanguage('landingNav', 'fr-FR', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/fr-FR/landingNav.json')) : () => import('@/messages/ns/fr-FR/landingNav.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('landingNav', 'de-DE', typeof window === 'undefined' ? require('@/messages/ns/de-DE/landingNav.json') : () => import('@/messages/ns/de-DE/landingNav.json'))
+registerLanguage('landingNav', 'de-DE', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/de-DE/landingNav.json')) : () => import('@/messages/ns/de-DE/landingNav.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('landingNav', 'es-ES', typeof window === 'undefined' ? require('@/messages/ns/es-ES/landingNav.json') : () => import('@/messages/ns/es-ES/landingNav.json'))
+registerLanguage('landingNav', 'es-ES', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/es-ES/landingNav.json')) : () => import('@/messages/ns/es-ES/landingNav.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('landingNav', 'it-IT', typeof window === 'undefined' ? require('@/messages/ns/it-IT/landingNav.json') : () => import('@/messages/ns/it-IT/landingNav.json'))
+registerLanguage('landingNav', 'it-IT', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/it-IT/landingNav.json')) : () => import('@/messages/ns/it-IT/landingNav.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('landingNav', 'pt-PT', typeof window === 'undefined' ? require('@/messages/ns/pt-PT/landingNav.json') : () => import('@/messages/ns/pt-PT/landingNav.json'))
+registerLanguage('landingNav', 'pt-PT', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/pt-PT/landingNav.json')) : () => import('@/messages/ns/pt-PT/landingNav.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('landingNav', 'nl-NL', typeof window === 'undefined' ? require('@/messages/ns/nl-NL/landingNav.json') : () => import('@/messages/ns/nl-NL/landingNav.json'))
+registerLanguage('landingNav', 'nl-NL', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/nl-NL/landingNav.json')) : () => import('@/messages/ns/nl-NL/landingNav.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('landingNav', 'sv-SE', typeof window === 'undefined' ? require('@/messages/ns/sv-SE/landingNav.json') : () => import('@/messages/ns/sv-SE/landingNav.json'))
+registerLanguage('landingNav', 'sv-SE', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/sv-SE/landingNav.json')) : () => import('@/messages/ns/sv-SE/landingNav.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('landingNav', 'da-DK', typeof window === 'undefined' ? require('@/messages/ns/da-DK/landingNav.json') : () => import('@/messages/ns/da-DK/landingNav.json'))
+registerLanguage('landingNav', 'da-DK', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/da-DK/landingNav.json')) : () => import('@/messages/ns/da-DK/landingNav.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('landingNav', 'nb-NO', typeof window === 'undefined' ? require('@/messages/ns/nb-NO/landingNav.json') : () => import('@/messages/ns/nb-NO/landingNav.json'))
+registerLanguage('landingNav', 'nb-NO', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/nb-NO/landingNav.json')) : () => import('@/messages/ns/nb-NO/landingNav.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('landingNav', 'pl-PL', typeof window === 'undefined' ? require('@/messages/ns/pl-PL/landingNav.json') : () => import('@/messages/ns/pl-PL/landingNav.json'))
+registerLanguage('landingNav', 'pl-PL', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/pl-PL/landingNav.json')) : () => import('@/messages/ns/pl-PL/landingNav.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('landingNav', 'cs-CZ', typeof window === 'undefined' ? require('@/messages/ns/cs-CZ/landingNav.json') : () => import('@/messages/ns/cs-CZ/landingNav.json'))
+registerLanguage('landingNav', 'cs-CZ', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/cs-CZ/landingNav.json')) : () => import('@/messages/ns/cs-CZ/landingNav.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('landingNav', 'hu-HU', typeof window === 'undefined' ? require('@/messages/ns/hu-HU/landingNav.json') : () => import('@/messages/ns/hu-HU/landingNav.json'))
+registerLanguage('landingNav', 'hu-HU', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/hu-HU/landingNav.json')) : () => import('@/messages/ns/hu-HU/landingNav.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('landingNav', 'sk-SK', typeof window === 'undefined' ? require('@/messages/ns/sk-SK/landingNav.json') : () => import('@/messages/ns/sk-SK/landingNav.json'))
+registerLanguage('landingNav', 'sk-SK', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/sk-SK/landingNav.json')) : () => import('@/messages/ns/sk-SK/landingNav.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('landingNav', 'ro-RO', typeof window === 'undefined' ? require('@/messages/ns/ro-RO/landingNav.json') : () => import('@/messages/ns/ro-RO/landingNav.json'))
+registerLanguage('landingNav', 'ro-RO', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/ro-RO/landingNav.json')) : () => import('@/messages/ns/ro-RO/landingNav.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('landingNav', 'hr-HR', typeof window === 'undefined' ? require('@/messages/ns/hr-HR/landingNav.json') : () => import('@/messages/ns/hr-HR/landingNav.json'))
+registerLanguage('landingNav', 'hr-HR', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/hr-HR/landingNav.json')) : () => import('@/messages/ns/hr-HR/landingNav.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('landingNav', 'sl-SI', typeof window === 'undefined' ? require('@/messages/ns/sl-SI/landingNav.json') : () => import('@/messages/ns/sl-SI/landingNav.json'))
+registerLanguage('landingNav', 'sl-SI', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/sl-SI/landingNav.json')) : () => import('@/messages/ns/sl-SI/landingNav.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('landingNav', 'fi-FI', typeof window === 'undefined' ? require('@/messages/ns/fi-FI/landingNav.json') : () => import('@/messages/ns/fi-FI/landingNav.json'))
+registerLanguage('landingNav', 'fi-FI', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/fi-FI/landingNav.json')) : () => import('@/messages/ns/fi-FI/landingNav.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('landingNav', 'et-EE', typeof window === 'undefined' ? require('@/messages/ns/et-EE/landingNav.json') : () => import('@/messages/ns/et-EE/landingNav.json'))
+registerLanguage('landingNav', 'et-EE', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/et-EE/landingNav.json')) : () => import('@/messages/ns/et-EE/landingNav.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('landingNav', 'lv-LV', typeof window === 'undefined' ? require('@/messages/ns/lv-LV/landingNav.json') : () => import('@/messages/ns/lv-LV/landingNav.json'))
+registerLanguage('landingNav', 'lv-LV', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/lv-LV/landingNav.json')) : () => import('@/messages/ns/lv-LV/landingNav.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('landingNav', 'lt-LT', typeof window === 'undefined' ? require('@/messages/ns/lt-LT/landingNav.json') : () => import('@/messages/ns/lt-LT/landingNav.json'))
+registerLanguage('landingNav', 'lt-LT', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/lt-LT/landingNav.json')) : () => import('@/messages/ns/lt-LT/landingNav.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('landingNav', 'el-GR', typeof window === 'undefined' ? require('@/messages/ns/el-GR/landingNav.json') : () => import('@/messages/ns/el-GR/landingNav.json'))
+registerLanguage('landingNav', 'el-GR', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/el-GR/landingNav.json')) : () => import('@/messages/ns/el-GR/landingNav.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('landingNav', 'bg-BG', typeof window === 'undefined' ? require('@/messages/ns/bg-BG/landingNav.json') : () => import('@/messages/ns/bg-BG/landingNav.json'))
+registerLanguage('landingNav', 'bg-BG', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/bg-BG/landingNav.json')) : () => import('@/messages/ns/bg-BG/landingNav.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('landingNav', 'es-MX', typeof window === 'undefined' ? require('@/messages/ns/es-MX/landingNav.json') : () => import('@/messages/ns/es-MX/landingNav.json'))
+registerLanguage('landingNav', 'es-MX', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/es-MX/landingNav.json')) : () => import('@/messages/ns/es-MX/landingNav.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('landingNav', 'pt-BR', typeof window === 'undefined' ? require('@/messages/ns/pt-BR/landingNav.json') : () => import('@/messages/ns/pt-BR/landingNav.json'))
+registerLanguage('landingNav', 'pt-BR', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/pt-BR/landingNav.json')) : () => import('@/messages/ns/pt-BR/landingNav.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('landingNav', 'ms-MY', typeof window === 'undefined' ? require('@/messages/ns/ms-MY/landingNav.json') : () => import('@/messages/ns/ms-MY/landingNav.json'))
+registerLanguage('landingNav', 'ms-MY', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/ms-MY/landingNav.json')) : () => import('@/messages/ns/ms-MY/landingNav.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('landingNav', 'ja-JP', typeof window === 'undefined' ? require('@/messages/ns/ja-JP/landingNav.json') : () => import('@/messages/ns/ja-JP/landingNav.json'))
+registerLanguage('landingNav', 'ja-JP', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/ja-JP/landingNav.json')) : () => import('@/messages/ns/ja-JP/landingNav.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('landingNav', 'zh-HK', typeof window === 'undefined' ? require('@/messages/ns/zh-HK/landingNav.json') : () => import('@/messages/ns/zh-HK/landingNav.json'))
+registerLanguage('landingNav', 'zh-HK', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/zh-HK/landingNav.json')) : () => import('@/messages/ns/zh-HK/landingNav.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('landingNav', 'th-TH', typeof window === 'undefined' ? require('@/messages/ns/th-TH/landingNav.json') : () => import('@/messages/ns/th-TH/landingNav.json'))
+registerLanguage('landingNav', 'th-TH', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/th-TH/landingNav.json')) : () => import('@/messages/ns/th-TH/landingNav.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('landingNav', 'ar-AE', typeof window === 'undefined' ? require('@/messages/ns/ar-AE/landingNav.json') : () => import('@/messages/ns/ar-AE/landingNav.json'))
+registerLanguage('landingNav', 'ar-AE', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/ar-AE/landingNav.json')) : () => import('@/messages/ns/ar-AE/landingNav.json'))

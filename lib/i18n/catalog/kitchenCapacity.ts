@@ -3,67 +3,68 @@
 import base from '@/messages/ns/en-GB/kitchenCapacity.json'
 import enUS from '@/messages/ns/en-US/kitchenCapacity.json'
 import enAU from '@/messages/ns/en-AU/kitchenCapacity.json'
-import { registerNamespace, registerLanguage } from '@/lib/i18n/registry'
+import { registerNamespace, registerLanguage, serverWords } from '@/lib/i18n/registry'
 
 registerNamespace('kitchenCapacity', base, { 'en-US': enUS, 'en-AU': enAU })
-// languages-1: each non-English language — on the server now; in the browser only when a page is in that language.
+// languages-1: each non-English language only when a page is in that language — perf-1: on the server too (serverWords: a
+// synchronous require, run the first time the language is asked for), in the browser as a chunk loaded on demand.
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('kitchenCapacity', 'fr-FR', typeof window === 'undefined' ? require('@/messages/ns/fr-FR/kitchenCapacity.json') : () => import('@/messages/ns/fr-FR/kitchenCapacity.json'))
+registerLanguage('kitchenCapacity', 'fr-FR', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/fr-FR/kitchenCapacity.json')) : () => import('@/messages/ns/fr-FR/kitchenCapacity.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('kitchenCapacity', 'de-DE', typeof window === 'undefined' ? require('@/messages/ns/de-DE/kitchenCapacity.json') : () => import('@/messages/ns/de-DE/kitchenCapacity.json'))
+registerLanguage('kitchenCapacity', 'de-DE', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/de-DE/kitchenCapacity.json')) : () => import('@/messages/ns/de-DE/kitchenCapacity.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('kitchenCapacity', 'de-CH', typeof window === 'undefined' ? require('@/messages/ns/de-CH/kitchenCapacity.json') : () => import('@/messages/ns/de-CH/kitchenCapacity.json'))
+registerLanguage('kitchenCapacity', 'de-CH', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/de-CH/kitchenCapacity.json')) : () => import('@/messages/ns/de-CH/kitchenCapacity.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('kitchenCapacity', 'es-ES', typeof window === 'undefined' ? require('@/messages/ns/es-ES/kitchenCapacity.json') : () => import('@/messages/ns/es-ES/kitchenCapacity.json'))
+registerLanguage('kitchenCapacity', 'es-ES', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/es-ES/kitchenCapacity.json')) : () => import('@/messages/ns/es-ES/kitchenCapacity.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('kitchenCapacity', 'it-IT', typeof window === 'undefined' ? require('@/messages/ns/it-IT/kitchenCapacity.json') : () => import('@/messages/ns/it-IT/kitchenCapacity.json'))
+registerLanguage('kitchenCapacity', 'it-IT', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/it-IT/kitchenCapacity.json')) : () => import('@/messages/ns/it-IT/kitchenCapacity.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('kitchenCapacity', 'pt-PT', typeof window === 'undefined' ? require('@/messages/ns/pt-PT/kitchenCapacity.json') : () => import('@/messages/ns/pt-PT/kitchenCapacity.json'))
+registerLanguage('kitchenCapacity', 'pt-PT', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/pt-PT/kitchenCapacity.json')) : () => import('@/messages/ns/pt-PT/kitchenCapacity.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('kitchenCapacity', 'nl-NL', typeof window === 'undefined' ? require('@/messages/ns/nl-NL/kitchenCapacity.json') : () => import('@/messages/ns/nl-NL/kitchenCapacity.json'))
+registerLanguage('kitchenCapacity', 'nl-NL', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/nl-NL/kitchenCapacity.json')) : () => import('@/messages/ns/nl-NL/kitchenCapacity.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('kitchenCapacity', 'sv-SE', typeof window === 'undefined' ? require('@/messages/ns/sv-SE/kitchenCapacity.json') : () => import('@/messages/ns/sv-SE/kitchenCapacity.json'))
+registerLanguage('kitchenCapacity', 'sv-SE', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/sv-SE/kitchenCapacity.json')) : () => import('@/messages/ns/sv-SE/kitchenCapacity.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('kitchenCapacity', 'da-DK', typeof window === 'undefined' ? require('@/messages/ns/da-DK/kitchenCapacity.json') : () => import('@/messages/ns/da-DK/kitchenCapacity.json'))
+registerLanguage('kitchenCapacity', 'da-DK', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/da-DK/kitchenCapacity.json')) : () => import('@/messages/ns/da-DK/kitchenCapacity.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('kitchenCapacity', 'nb-NO', typeof window === 'undefined' ? require('@/messages/ns/nb-NO/kitchenCapacity.json') : () => import('@/messages/ns/nb-NO/kitchenCapacity.json'))
+registerLanguage('kitchenCapacity', 'nb-NO', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/nb-NO/kitchenCapacity.json')) : () => import('@/messages/ns/nb-NO/kitchenCapacity.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('kitchenCapacity', 'pl-PL', typeof window === 'undefined' ? require('@/messages/ns/pl-PL/kitchenCapacity.json') : () => import('@/messages/ns/pl-PL/kitchenCapacity.json'))
+registerLanguage('kitchenCapacity', 'pl-PL', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/pl-PL/kitchenCapacity.json')) : () => import('@/messages/ns/pl-PL/kitchenCapacity.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('kitchenCapacity', 'cs-CZ', typeof window === 'undefined' ? require('@/messages/ns/cs-CZ/kitchenCapacity.json') : () => import('@/messages/ns/cs-CZ/kitchenCapacity.json'))
+registerLanguage('kitchenCapacity', 'cs-CZ', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/cs-CZ/kitchenCapacity.json')) : () => import('@/messages/ns/cs-CZ/kitchenCapacity.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('kitchenCapacity', 'hu-HU', typeof window === 'undefined' ? require('@/messages/ns/hu-HU/kitchenCapacity.json') : () => import('@/messages/ns/hu-HU/kitchenCapacity.json'))
+registerLanguage('kitchenCapacity', 'hu-HU', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/hu-HU/kitchenCapacity.json')) : () => import('@/messages/ns/hu-HU/kitchenCapacity.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('kitchenCapacity', 'sk-SK', typeof window === 'undefined' ? require('@/messages/ns/sk-SK/kitchenCapacity.json') : () => import('@/messages/ns/sk-SK/kitchenCapacity.json'))
+registerLanguage('kitchenCapacity', 'sk-SK', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/sk-SK/kitchenCapacity.json')) : () => import('@/messages/ns/sk-SK/kitchenCapacity.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('kitchenCapacity', 'ro-RO', typeof window === 'undefined' ? require('@/messages/ns/ro-RO/kitchenCapacity.json') : () => import('@/messages/ns/ro-RO/kitchenCapacity.json'))
+registerLanguage('kitchenCapacity', 'ro-RO', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/ro-RO/kitchenCapacity.json')) : () => import('@/messages/ns/ro-RO/kitchenCapacity.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('kitchenCapacity', 'hr-HR', typeof window === 'undefined' ? require('@/messages/ns/hr-HR/kitchenCapacity.json') : () => import('@/messages/ns/hr-HR/kitchenCapacity.json'))
+registerLanguage('kitchenCapacity', 'hr-HR', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/hr-HR/kitchenCapacity.json')) : () => import('@/messages/ns/hr-HR/kitchenCapacity.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('kitchenCapacity', 'sl-SI', typeof window === 'undefined' ? require('@/messages/ns/sl-SI/kitchenCapacity.json') : () => import('@/messages/ns/sl-SI/kitchenCapacity.json'))
+registerLanguage('kitchenCapacity', 'sl-SI', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/sl-SI/kitchenCapacity.json')) : () => import('@/messages/ns/sl-SI/kitchenCapacity.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('kitchenCapacity', 'fi-FI', typeof window === 'undefined' ? require('@/messages/ns/fi-FI/kitchenCapacity.json') : () => import('@/messages/ns/fi-FI/kitchenCapacity.json'))
+registerLanguage('kitchenCapacity', 'fi-FI', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/fi-FI/kitchenCapacity.json')) : () => import('@/messages/ns/fi-FI/kitchenCapacity.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('kitchenCapacity', 'et-EE', typeof window === 'undefined' ? require('@/messages/ns/et-EE/kitchenCapacity.json') : () => import('@/messages/ns/et-EE/kitchenCapacity.json'))
+registerLanguage('kitchenCapacity', 'et-EE', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/et-EE/kitchenCapacity.json')) : () => import('@/messages/ns/et-EE/kitchenCapacity.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('kitchenCapacity', 'lv-LV', typeof window === 'undefined' ? require('@/messages/ns/lv-LV/kitchenCapacity.json') : () => import('@/messages/ns/lv-LV/kitchenCapacity.json'))
+registerLanguage('kitchenCapacity', 'lv-LV', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/lv-LV/kitchenCapacity.json')) : () => import('@/messages/ns/lv-LV/kitchenCapacity.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('kitchenCapacity', 'lt-LT', typeof window === 'undefined' ? require('@/messages/ns/lt-LT/kitchenCapacity.json') : () => import('@/messages/ns/lt-LT/kitchenCapacity.json'))
+registerLanguage('kitchenCapacity', 'lt-LT', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/lt-LT/kitchenCapacity.json')) : () => import('@/messages/ns/lt-LT/kitchenCapacity.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('kitchenCapacity', 'el-GR', typeof window === 'undefined' ? require('@/messages/ns/el-GR/kitchenCapacity.json') : () => import('@/messages/ns/el-GR/kitchenCapacity.json'))
+registerLanguage('kitchenCapacity', 'el-GR', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/el-GR/kitchenCapacity.json')) : () => import('@/messages/ns/el-GR/kitchenCapacity.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('kitchenCapacity', 'bg-BG', typeof window === 'undefined' ? require('@/messages/ns/bg-BG/kitchenCapacity.json') : () => import('@/messages/ns/bg-BG/kitchenCapacity.json'))
+registerLanguage('kitchenCapacity', 'bg-BG', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/bg-BG/kitchenCapacity.json')) : () => import('@/messages/ns/bg-BG/kitchenCapacity.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('kitchenCapacity', 'es-MX', typeof window === 'undefined' ? require('@/messages/ns/es-MX/kitchenCapacity.json') : () => import('@/messages/ns/es-MX/kitchenCapacity.json'))
+registerLanguage('kitchenCapacity', 'es-MX', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/es-MX/kitchenCapacity.json')) : () => import('@/messages/ns/es-MX/kitchenCapacity.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('kitchenCapacity', 'pt-BR', typeof window === 'undefined' ? require('@/messages/ns/pt-BR/kitchenCapacity.json') : () => import('@/messages/ns/pt-BR/kitchenCapacity.json'))
+registerLanguage('kitchenCapacity', 'pt-BR', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/pt-BR/kitchenCapacity.json')) : () => import('@/messages/ns/pt-BR/kitchenCapacity.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('kitchenCapacity', 'ms-MY', typeof window === 'undefined' ? require('@/messages/ns/ms-MY/kitchenCapacity.json') : () => import('@/messages/ns/ms-MY/kitchenCapacity.json'))
+registerLanguage('kitchenCapacity', 'ms-MY', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/ms-MY/kitchenCapacity.json')) : () => import('@/messages/ns/ms-MY/kitchenCapacity.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('kitchenCapacity', 'ja-JP', typeof window === 'undefined' ? require('@/messages/ns/ja-JP/kitchenCapacity.json') : () => import('@/messages/ns/ja-JP/kitchenCapacity.json'))
+registerLanguage('kitchenCapacity', 'ja-JP', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/ja-JP/kitchenCapacity.json')) : () => import('@/messages/ns/ja-JP/kitchenCapacity.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('kitchenCapacity', 'zh-HK', typeof window === 'undefined' ? require('@/messages/ns/zh-HK/kitchenCapacity.json') : () => import('@/messages/ns/zh-HK/kitchenCapacity.json'))
+registerLanguage('kitchenCapacity', 'zh-HK', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/zh-HK/kitchenCapacity.json')) : () => import('@/messages/ns/zh-HK/kitchenCapacity.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('kitchenCapacity', 'th-TH', typeof window === 'undefined' ? require('@/messages/ns/th-TH/kitchenCapacity.json') : () => import('@/messages/ns/th-TH/kitchenCapacity.json'))
+registerLanguage('kitchenCapacity', 'th-TH', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/th-TH/kitchenCapacity.json')) : () => import('@/messages/ns/th-TH/kitchenCapacity.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('kitchenCapacity', 'ar-AE', typeof window === 'undefined' ? require('@/messages/ns/ar-AE/kitchenCapacity.json') : () => import('@/messages/ns/ar-AE/kitchenCapacity.json'))
+registerLanguage('kitchenCapacity', 'ar-AE', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/ar-AE/kitchenCapacity.json')) : () => import('@/messages/ns/ar-AE/kitchenCapacity.json'))

@@ -3,13 +3,14 @@ name: FAQ translate
 # faq-2 (2 November 2026, docs/faq-2-seo-geo-2-report.md Part A): translates every PUBLISHED FAQ question and section whose
 # translation is missing, out of date (its source_hash no longer matches the English) or failed, into every language base the site
 # uses (lib/i18n/locales.ts) and the regional variants whose wording truly differs. Writes only public.faq_translations; the
-# country pages show a new translation within a minute (their 60-second cache), with no deploy.
+# country pages show a new translation on the next request once the run has called /api/revalidate (perf-1: SECRET
+# REVALIDATE_SECRET), else within 5 minutes (their cached data's expiry), with no deploy.
 #
 # ⚠️ SCHEDULED WORKFLOWS RUN ONLY FROM THE DEFAULT BRANCH: nothing runs on the timer until this file is on main on GitHub.
 # 🔴 CLAUDE API LOGIN: Workload Identity Federation, exactly as competitor-check.yml — no API key anywhere. The job asks GitHub for
 # an OIDC token (audience https://api.anthropic.com), keeps it fresh in /tmp/gha-jwt, and the SDK exchanges it using the same four
 # repository VARIABLES: ANTHROPIC_FEDERATION_RULE_ID, ANTHROPIC_ORGANIZATION_ID, ANTHROPIC_SERVICE_ACCOUNT_ID,
-# ANTHROPIC_WORKSPACE_ID. SECRETS (names only): NEXT_PUBLIC_SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY.
+# ANTHROPIC_WORKSPACE_ID. SECRETS (names only): NEXT_PUBLIC_SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY and (perf-1) REVALIDATE_SECRET.
 # Nothing stale → the script ends in seconds, before any login or model call. Spend cap per run: max_usd (default 2).
 # faq-translate-fix (2 November 2026): limit (blank = everything) caps the translations a manual run makes — 1 = one question into one
 # language, a cheap test. A refused request (400 invalid_request_error) stops the run at the first call, with one line.
@@ -81,6 +82,9 @@ jobs:
         env:
           NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
           SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+          # perf-1 (5 November 2026): after a run that wrote, the script asks the site to refresh the FAQ's cached data
+          # (POST /api/revalidate). Not set → one warning line and the pages show the change within 5 minutes; it never fails the run.
+          REVALIDATE_SECRET: ${{ secrets.REVALIDATE_SECRET }}
           DRY_RUN: ${{ github.event.inputs.dry_run }}
           MAX_USD: ${{ github.event.inputs.max_usd }}
           LIMIT: ${{ github.event.inputs.limit }}

@@ -2,65 +2,66 @@
 // Import this module (`import '@/lib/i18n/catalog/demoSaveEmail'`) in any file that reads the "demoSaveEmail" namespace.
 import base from '@/messages/ns/en-GB/demoSaveEmail.json'
 import enUS from '@/messages/ns/en-US/demoSaveEmail.json'
-import { registerNamespace, registerLanguage } from '@/lib/i18n/registry'
+import { registerNamespace, registerLanguage, serverWords } from '@/lib/i18n/registry'
 
 registerNamespace('demoSaveEmail', base, { 'en-US': enUS })
-// languages-1: each non-English language — on the server now; in the browser only when a page is in that language.
+// languages-1: each non-English language only when a page is in that language — perf-1: on the server too (serverWords: a
+// synchronous require, run the first time the language is asked for), in the browser as a chunk loaded on demand.
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('demoSaveEmail', 'fr-FR', typeof window === 'undefined' ? require('@/messages/ns/fr-FR/demoSaveEmail.json') : () => import('@/messages/ns/fr-FR/demoSaveEmail.json'))
+registerLanguage('demoSaveEmail', 'fr-FR', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/fr-FR/demoSaveEmail.json')) : () => import('@/messages/ns/fr-FR/demoSaveEmail.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('demoSaveEmail', 'de-DE', typeof window === 'undefined' ? require('@/messages/ns/de-DE/demoSaveEmail.json') : () => import('@/messages/ns/de-DE/demoSaveEmail.json'))
+registerLanguage('demoSaveEmail', 'de-DE', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/de-DE/demoSaveEmail.json')) : () => import('@/messages/ns/de-DE/demoSaveEmail.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('demoSaveEmail', 'es-ES', typeof window === 'undefined' ? require('@/messages/ns/es-ES/demoSaveEmail.json') : () => import('@/messages/ns/es-ES/demoSaveEmail.json'))
+registerLanguage('demoSaveEmail', 'es-ES', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/es-ES/demoSaveEmail.json')) : () => import('@/messages/ns/es-ES/demoSaveEmail.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('demoSaveEmail', 'it-IT', typeof window === 'undefined' ? require('@/messages/ns/it-IT/demoSaveEmail.json') : () => import('@/messages/ns/it-IT/demoSaveEmail.json'))
+registerLanguage('demoSaveEmail', 'it-IT', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/it-IT/demoSaveEmail.json')) : () => import('@/messages/ns/it-IT/demoSaveEmail.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('demoSaveEmail', 'pt-PT', typeof window === 'undefined' ? require('@/messages/ns/pt-PT/demoSaveEmail.json') : () => import('@/messages/ns/pt-PT/demoSaveEmail.json'))
+registerLanguage('demoSaveEmail', 'pt-PT', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/pt-PT/demoSaveEmail.json')) : () => import('@/messages/ns/pt-PT/demoSaveEmail.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('demoSaveEmail', 'nl-NL', typeof window === 'undefined' ? require('@/messages/ns/nl-NL/demoSaveEmail.json') : () => import('@/messages/ns/nl-NL/demoSaveEmail.json'))
+registerLanguage('demoSaveEmail', 'nl-NL', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/nl-NL/demoSaveEmail.json')) : () => import('@/messages/ns/nl-NL/demoSaveEmail.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('demoSaveEmail', 'sv-SE', typeof window === 'undefined' ? require('@/messages/ns/sv-SE/demoSaveEmail.json') : () => import('@/messages/ns/sv-SE/demoSaveEmail.json'))
+registerLanguage('demoSaveEmail', 'sv-SE', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/sv-SE/demoSaveEmail.json')) : () => import('@/messages/ns/sv-SE/demoSaveEmail.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('demoSaveEmail', 'da-DK', typeof window === 'undefined' ? require('@/messages/ns/da-DK/demoSaveEmail.json') : () => import('@/messages/ns/da-DK/demoSaveEmail.json'))
+registerLanguage('demoSaveEmail', 'da-DK', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/da-DK/demoSaveEmail.json')) : () => import('@/messages/ns/da-DK/demoSaveEmail.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('demoSaveEmail', 'nb-NO', typeof window === 'undefined' ? require('@/messages/ns/nb-NO/demoSaveEmail.json') : () => import('@/messages/ns/nb-NO/demoSaveEmail.json'))
+registerLanguage('demoSaveEmail', 'nb-NO', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/nb-NO/demoSaveEmail.json')) : () => import('@/messages/ns/nb-NO/demoSaveEmail.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('demoSaveEmail', 'pl-PL', typeof window === 'undefined' ? require('@/messages/ns/pl-PL/demoSaveEmail.json') : () => import('@/messages/ns/pl-PL/demoSaveEmail.json'))
+registerLanguage('demoSaveEmail', 'pl-PL', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/pl-PL/demoSaveEmail.json')) : () => import('@/messages/ns/pl-PL/demoSaveEmail.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('demoSaveEmail', 'cs-CZ', typeof window === 'undefined' ? require('@/messages/ns/cs-CZ/demoSaveEmail.json') : () => import('@/messages/ns/cs-CZ/demoSaveEmail.json'))
+registerLanguage('demoSaveEmail', 'cs-CZ', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/cs-CZ/demoSaveEmail.json')) : () => import('@/messages/ns/cs-CZ/demoSaveEmail.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('demoSaveEmail', 'hu-HU', typeof window === 'undefined' ? require('@/messages/ns/hu-HU/demoSaveEmail.json') : () => import('@/messages/ns/hu-HU/demoSaveEmail.json'))
+registerLanguage('demoSaveEmail', 'hu-HU', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/hu-HU/demoSaveEmail.json')) : () => import('@/messages/ns/hu-HU/demoSaveEmail.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('demoSaveEmail', 'sk-SK', typeof window === 'undefined' ? require('@/messages/ns/sk-SK/demoSaveEmail.json') : () => import('@/messages/ns/sk-SK/demoSaveEmail.json'))
+registerLanguage('demoSaveEmail', 'sk-SK', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/sk-SK/demoSaveEmail.json')) : () => import('@/messages/ns/sk-SK/demoSaveEmail.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('demoSaveEmail', 'ro-RO', typeof window === 'undefined' ? require('@/messages/ns/ro-RO/demoSaveEmail.json') : () => import('@/messages/ns/ro-RO/demoSaveEmail.json'))
+registerLanguage('demoSaveEmail', 'ro-RO', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/ro-RO/demoSaveEmail.json')) : () => import('@/messages/ns/ro-RO/demoSaveEmail.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('demoSaveEmail', 'hr-HR', typeof window === 'undefined' ? require('@/messages/ns/hr-HR/demoSaveEmail.json') : () => import('@/messages/ns/hr-HR/demoSaveEmail.json'))
+registerLanguage('demoSaveEmail', 'hr-HR', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/hr-HR/demoSaveEmail.json')) : () => import('@/messages/ns/hr-HR/demoSaveEmail.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('demoSaveEmail', 'sl-SI', typeof window === 'undefined' ? require('@/messages/ns/sl-SI/demoSaveEmail.json') : () => import('@/messages/ns/sl-SI/demoSaveEmail.json'))
+registerLanguage('demoSaveEmail', 'sl-SI', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/sl-SI/demoSaveEmail.json')) : () => import('@/messages/ns/sl-SI/demoSaveEmail.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('demoSaveEmail', 'fi-FI', typeof window === 'undefined' ? require('@/messages/ns/fi-FI/demoSaveEmail.json') : () => import('@/messages/ns/fi-FI/demoSaveEmail.json'))
+registerLanguage('demoSaveEmail', 'fi-FI', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/fi-FI/demoSaveEmail.json')) : () => import('@/messages/ns/fi-FI/demoSaveEmail.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('demoSaveEmail', 'et-EE', typeof window === 'undefined' ? require('@/messages/ns/et-EE/demoSaveEmail.json') : () => import('@/messages/ns/et-EE/demoSaveEmail.json'))
+registerLanguage('demoSaveEmail', 'et-EE', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/et-EE/demoSaveEmail.json')) : () => import('@/messages/ns/et-EE/demoSaveEmail.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('demoSaveEmail', 'lv-LV', typeof window === 'undefined' ? require('@/messages/ns/lv-LV/demoSaveEmail.json') : () => import('@/messages/ns/lv-LV/demoSaveEmail.json'))
+registerLanguage('demoSaveEmail', 'lv-LV', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/lv-LV/demoSaveEmail.json')) : () => import('@/messages/ns/lv-LV/demoSaveEmail.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('demoSaveEmail', 'lt-LT', typeof window === 'undefined' ? require('@/messages/ns/lt-LT/demoSaveEmail.json') : () => import('@/messages/ns/lt-LT/demoSaveEmail.json'))
+registerLanguage('demoSaveEmail', 'lt-LT', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/lt-LT/demoSaveEmail.json')) : () => import('@/messages/ns/lt-LT/demoSaveEmail.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('demoSaveEmail', 'el-GR', typeof window === 'undefined' ? require('@/messages/ns/el-GR/demoSaveEmail.json') : () => import('@/messages/ns/el-GR/demoSaveEmail.json'))
+registerLanguage('demoSaveEmail', 'el-GR', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/el-GR/demoSaveEmail.json')) : () => import('@/messages/ns/el-GR/demoSaveEmail.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('demoSaveEmail', 'bg-BG', typeof window === 'undefined' ? require('@/messages/ns/bg-BG/demoSaveEmail.json') : () => import('@/messages/ns/bg-BG/demoSaveEmail.json'))
+registerLanguage('demoSaveEmail', 'bg-BG', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/bg-BG/demoSaveEmail.json')) : () => import('@/messages/ns/bg-BG/demoSaveEmail.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('demoSaveEmail', 'es-MX', typeof window === 'undefined' ? require('@/messages/ns/es-MX/demoSaveEmail.json') : () => import('@/messages/ns/es-MX/demoSaveEmail.json'))
+registerLanguage('demoSaveEmail', 'es-MX', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/es-MX/demoSaveEmail.json')) : () => import('@/messages/ns/es-MX/demoSaveEmail.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('demoSaveEmail', 'pt-BR', typeof window === 'undefined' ? require('@/messages/ns/pt-BR/demoSaveEmail.json') : () => import('@/messages/ns/pt-BR/demoSaveEmail.json'))
+registerLanguage('demoSaveEmail', 'pt-BR', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/pt-BR/demoSaveEmail.json')) : () => import('@/messages/ns/pt-BR/demoSaveEmail.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('demoSaveEmail', 'ms-MY', typeof window === 'undefined' ? require('@/messages/ns/ms-MY/demoSaveEmail.json') : () => import('@/messages/ns/ms-MY/demoSaveEmail.json'))
+registerLanguage('demoSaveEmail', 'ms-MY', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/ms-MY/demoSaveEmail.json')) : () => import('@/messages/ns/ms-MY/demoSaveEmail.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('demoSaveEmail', 'ja-JP', typeof window === 'undefined' ? require('@/messages/ns/ja-JP/demoSaveEmail.json') : () => import('@/messages/ns/ja-JP/demoSaveEmail.json'))
+registerLanguage('demoSaveEmail', 'ja-JP', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/ja-JP/demoSaveEmail.json')) : () => import('@/messages/ns/ja-JP/demoSaveEmail.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('demoSaveEmail', 'zh-HK', typeof window === 'undefined' ? require('@/messages/ns/zh-HK/demoSaveEmail.json') : () => import('@/messages/ns/zh-HK/demoSaveEmail.json'))
+registerLanguage('demoSaveEmail', 'zh-HK', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/zh-HK/demoSaveEmail.json')) : () => import('@/messages/ns/zh-HK/demoSaveEmail.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('demoSaveEmail', 'th-TH', typeof window === 'undefined' ? require('@/messages/ns/th-TH/demoSaveEmail.json') : () => import('@/messages/ns/th-TH/demoSaveEmail.json'))
+registerLanguage('demoSaveEmail', 'th-TH', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/th-TH/demoSaveEmail.json')) : () => import('@/messages/ns/th-TH/demoSaveEmail.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('demoSaveEmail', 'ar-AE', typeof window === 'undefined' ? require('@/messages/ns/ar-AE/demoSaveEmail.json') : () => import('@/messages/ns/ar-AE/demoSaveEmail.json'))
+registerLanguage('demoSaveEmail', 'ar-AE', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/ar-AE/demoSaveEmail.json')) : () => import('@/messages/ns/ar-AE/demoSaveEmail.json'))

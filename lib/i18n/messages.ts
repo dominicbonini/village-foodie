@@ -17,7 +17,16 @@ import { LOCALE_FILES } from './locale-files'
 
 export { deepMerge }
 
-const OVERRIDES = LOCALE_FILES as Partial<Record<AppLocale, Tree>>
+// perf-1 (5 November 2026, docs/perf-1-report.md): a non-English file is a LOADER (lib/i18n/locale-files.ts), run the first time a
+// request asks for that language — so a cold server holds the English files only. Its words, once loaded, are kept here.
+const OVERRIDES = { ...LOCALE_FILES } as Partial<Record<AppLocale, unknown>>
+const fileOf = (l: AppLocale): Tree | undefined => {
+  const f = OVERRIDES[l]
+  if (typeof f !== 'function') return f as Tree | undefined
+  const tree = (f as () => unknown)() as Tree
+  OVERRIDES[l] = tree
+  return tree
+}
 const CACHE = new Map<AppLocale, Messages>()
 
 /** Every message for a locale: en-GB itself, or en-GB with that locale's file merged over it — and, for a locale written
@@ -26,7 +35,7 @@ export function messagesFor(locale: string | null | undefined): Messages {
   const l = resolveLocale(locale)
   let m = CACHE.get(l)
   if (!m) {
-    const overs = overrideChain(l).map(x => OVERRIDES[x]).filter((o): o is Tree => !!o)
+    const overs = overrideChain(l).map(x => fileOf(x)).filter((o): o is Tree => !!o)
     m = (overs.length ? overs.reduce((acc, o) => deepMerge(acc, o), enGB as Tree) : enGB) as Messages
     CACHE.set(l, m)
   }
@@ -40,3 +49,9 @@ export function pickNamespaces(messages: Messages, namespaces: readonly string[]
 }
 
 export const BASE_MESSAGES: Messages = messagesFor(DEFAULT_LOCALE)
+
+/** perf-1: the authored non-English files loaded so far (each is required the first time a request asks for its language) —
+ *  read-only, for scripts/perf-1.cjs. */
+export function loadedLocaleFiles(): string[] {
+  return (Object.keys(OVERRIDES) as AppLocale[]).filter(l => !l.startsWith('en-') && typeof OVERRIDES[l] !== 'function').sort()
+}

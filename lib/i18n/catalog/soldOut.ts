@@ -2,63 +2,64 @@
 // Import this module (`import '@/lib/i18n/catalog/soldOut'`) in any file that reads the "soldOut" namespace.
 import base from '@/messages/ns/en-GB/soldOut.json'
 import enUS from '@/messages/ns/en-US/soldOut.json'
-import { registerNamespace, registerLanguage } from '@/lib/i18n/registry'
+import { registerNamespace, registerLanguage, serverWords } from '@/lib/i18n/registry'
 
 registerNamespace('soldOut', base, { 'en-US': enUS })
-// languages-1: each non-English language — on the server now; in the browser only when a page is in that language.
+// languages-1: each non-English language only when a page is in that language — perf-1: on the server too (serverWords: a
+// synchronous require, run the first time the language is asked for), in the browser as a chunk loaded on demand.
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('soldOut', 'fr-FR', typeof window === 'undefined' ? require('@/messages/ns/fr-FR/soldOut.json') : () => import('@/messages/ns/fr-FR/soldOut.json'))
+registerLanguage('soldOut', 'fr-FR', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/fr-FR/soldOut.json')) : () => import('@/messages/ns/fr-FR/soldOut.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('soldOut', 'de-DE', typeof window === 'undefined' ? require('@/messages/ns/de-DE/soldOut.json') : () => import('@/messages/ns/de-DE/soldOut.json'))
+registerLanguage('soldOut', 'de-DE', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/de-DE/soldOut.json')) : () => import('@/messages/ns/de-DE/soldOut.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('soldOut', 'es-ES', typeof window === 'undefined' ? require('@/messages/ns/es-ES/soldOut.json') : () => import('@/messages/ns/es-ES/soldOut.json'))
+registerLanguage('soldOut', 'es-ES', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/es-ES/soldOut.json')) : () => import('@/messages/ns/es-ES/soldOut.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('soldOut', 'it-IT', typeof window === 'undefined' ? require('@/messages/ns/it-IT/soldOut.json') : () => import('@/messages/ns/it-IT/soldOut.json'))
+registerLanguage('soldOut', 'it-IT', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/it-IT/soldOut.json')) : () => import('@/messages/ns/it-IT/soldOut.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('soldOut', 'pt-PT', typeof window === 'undefined' ? require('@/messages/ns/pt-PT/soldOut.json') : () => import('@/messages/ns/pt-PT/soldOut.json'))
+registerLanguage('soldOut', 'pt-PT', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/pt-PT/soldOut.json')) : () => import('@/messages/ns/pt-PT/soldOut.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('soldOut', 'nl-NL', typeof window === 'undefined' ? require('@/messages/ns/nl-NL/soldOut.json') : () => import('@/messages/ns/nl-NL/soldOut.json'))
+registerLanguage('soldOut', 'nl-NL', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/nl-NL/soldOut.json')) : () => import('@/messages/ns/nl-NL/soldOut.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('soldOut', 'sv-SE', typeof window === 'undefined' ? require('@/messages/ns/sv-SE/soldOut.json') : () => import('@/messages/ns/sv-SE/soldOut.json'))
+registerLanguage('soldOut', 'sv-SE', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/sv-SE/soldOut.json')) : () => import('@/messages/ns/sv-SE/soldOut.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('soldOut', 'da-DK', typeof window === 'undefined' ? require('@/messages/ns/da-DK/soldOut.json') : () => import('@/messages/ns/da-DK/soldOut.json'))
+registerLanguage('soldOut', 'da-DK', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/da-DK/soldOut.json')) : () => import('@/messages/ns/da-DK/soldOut.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('soldOut', 'nb-NO', typeof window === 'undefined' ? require('@/messages/ns/nb-NO/soldOut.json') : () => import('@/messages/ns/nb-NO/soldOut.json'))
+registerLanguage('soldOut', 'nb-NO', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/nb-NO/soldOut.json')) : () => import('@/messages/ns/nb-NO/soldOut.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('soldOut', 'pl-PL', typeof window === 'undefined' ? require('@/messages/ns/pl-PL/soldOut.json') : () => import('@/messages/ns/pl-PL/soldOut.json'))
+registerLanguage('soldOut', 'pl-PL', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/pl-PL/soldOut.json')) : () => import('@/messages/ns/pl-PL/soldOut.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('soldOut', 'cs-CZ', typeof window === 'undefined' ? require('@/messages/ns/cs-CZ/soldOut.json') : () => import('@/messages/ns/cs-CZ/soldOut.json'))
+registerLanguage('soldOut', 'cs-CZ', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/cs-CZ/soldOut.json')) : () => import('@/messages/ns/cs-CZ/soldOut.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('soldOut', 'hu-HU', typeof window === 'undefined' ? require('@/messages/ns/hu-HU/soldOut.json') : () => import('@/messages/ns/hu-HU/soldOut.json'))
+registerLanguage('soldOut', 'hu-HU', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/hu-HU/soldOut.json')) : () => import('@/messages/ns/hu-HU/soldOut.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('soldOut', 'sk-SK', typeof window === 'undefined' ? require('@/messages/ns/sk-SK/soldOut.json') : () => import('@/messages/ns/sk-SK/soldOut.json'))
+registerLanguage('soldOut', 'sk-SK', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/sk-SK/soldOut.json')) : () => import('@/messages/ns/sk-SK/soldOut.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('soldOut', 'ro-RO', typeof window === 'undefined' ? require('@/messages/ns/ro-RO/soldOut.json') : () => import('@/messages/ns/ro-RO/soldOut.json'))
+registerLanguage('soldOut', 'ro-RO', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/ro-RO/soldOut.json')) : () => import('@/messages/ns/ro-RO/soldOut.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('soldOut', 'hr-HR', typeof window === 'undefined' ? require('@/messages/ns/hr-HR/soldOut.json') : () => import('@/messages/ns/hr-HR/soldOut.json'))
+registerLanguage('soldOut', 'hr-HR', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/hr-HR/soldOut.json')) : () => import('@/messages/ns/hr-HR/soldOut.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('soldOut', 'sl-SI', typeof window === 'undefined' ? require('@/messages/ns/sl-SI/soldOut.json') : () => import('@/messages/ns/sl-SI/soldOut.json'))
+registerLanguage('soldOut', 'sl-SI', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/sl-SI/soldOut.json')) : () => import('@/messages/ns/sl-SI/soldOut.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('soldOut', 'fi-FI', typeof window === 'undefined' ? require('@/messages/ns/fi-FI/soldOut.json') : () => import('@/messages/ns/fi-FI/soldOut.json'))
+registerLanguage('soldOut', 'fi-FI', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/fi-FI/soldOut.json')) : () => import('@/messages/ns/fi-FI/soldOut.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('soldOut', 'et-EE', typeof window === 'undefined' ? require('@/messages/ns/et-EE/soldOut.json') : () => import('@/messages/ns/et-EE/soldOut.json'))
+registerLanguage('soldOut', 'et-EE', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/et-EE/soldOut.json')) : () => import('@/messages/ns/et-EE/soldOut.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('soldOut', 'lv-LV', typeof window === 'undefined' ? require('@/messages/ns/lv-LV/soldOut.json') : () => import('@/messages/ns/lv-LV/soldOut.json'))
+registerLanguage('soldOut', 'lv-LV', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/lv-LV/soldOut.json')) : () => import('@/messages/ns/lv-LV/soldOut.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('soldOut', 'lt-LT', typeof window === 'undefined' ? require('@/messages/ns/lt-LT/soldOut.json') : () => import('@/messages/ns/lt-LT/soldOut.json'))
+registerLanguage('soldOut', 'lt-LT', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/lt-LT/soldOut.json')) : () => import('@/messages/ns/lt-LT/soldOut.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('soldOut', 'el-GR', typeof window === 'undefined' ? require('@/messages/ns/el-GR/soldOut.json') : () => import('@/messages/ns/el-GR/soldOut.json'))
+registerLanguage('soldOut', 'el-GR', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/el-GR/soldOut.json')) : () => import('@/messages/ns/el-GR/soldOut.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('soldOut', 'bg-BG', typeof window === 'undefined' ? require('@/messages/ns/bg-BG/soldOut.json') : () => import('@/messages/ns/bg-BG/soldOut.json'))
+registerLanguage('soldOut', 'bg-BG', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/bg-BG/soldOut.json')) : () => import('@/messages/ns/bg-BG/soldOut.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('soldOut', 'pt-BR', typeof window === 'undefined' ? require('@/messages/ns/pt-BR/soldOut.json') : () => import('@/messages/ns/pt-BR/soldOut.json'))
+registerLanguage('soldOut', 'pt-BR', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/pt-BR/soldOut.json')) : () => import('@/messages/ns/pt-BR/soldOut.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('soldOut', 'ms-MY', typeof window === 'undefined' ? require('@/messages/ns/ms-MY/soldOut.json') : () => import('@/messages/ns/ms-MY/soldOut.json'))
+registerLanguage('soldOut', 'ms-MY', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/ms-MY/soldOut.json')) : () => import('@/messages/ns/ms-MY/soldOut.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('soldOut', 'ja-JP', typeof window === 'undefined' ? require('@/messages/ns/ja-JP/soldOut.json') : () => import('@/messages/ns/ja-JP/soldOut.json'))
+registerLanguage('soldOut', 'ja-JP', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/ja-JP/soldOut.json')) : () => import('@/messages/ns/ja-JP/soldOut.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('soldOut', 'zh-HK', typeof window === 'undefined' ? require('@/messages/ns/zh-HK/soldOut.json') : () => import('@/messages/ns/zh-HK/soldOut.json'))
+registerLanguage('soldOut', 'zh-HK', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/zh-HK/soldOut.json')) : () => import('@/messages/ns/zh-HK/soldOut.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('soldOut', 'th-TH', typeof window === 'undefined' ? require('@/messages/ns/th-TH/soldOut.json') : () => import('@/messages/ns/th-TH/soldOut.json'))
+registerLanguage('soldOut', 'th-TH', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/th-TH/soldOut.json')) : () => import('@/messages/ns/th-TH/soldOut.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('soldOut', 'ar-AE', typeof window === 'undefined' ? require('@/messages/ns/ar-AE/soldOut.json') : () => import('@/messages/ns/ar-AE/soldOut.json'))
+registerLanguage('soldOut', 'ar-AE', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/ar-AE/soldOut.json')) : () => import('@/messages/ns/ar-AE/soldOut.json'))

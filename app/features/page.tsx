@@ -56,12 +56,14 @@ import '@/lib/i18n/catalog/featuresPage'
 import { resolveVisitorCountry } from '@/lib/visitor-country'
 import { marketingCountry, countryPageAlternates } from '@/lib/marketing-meta'
 import '../landing/landing.css'
+import { markMarketingRender } from '@/lib/marketing-render'   // perf-1
 
 export const dynamic = 'force-dynamic'
 
 // 🔴 US readiness (D37): the tags name the visitor's country — lib/marketing-meta.ts. For GB every value is the
 // literal this page carried before ("UK", en_GB), byte-identical.
 export async function generateMetadata({ params, searchParams }: { params?: Promise<{ country?: string }>; searchParams: Promise<Record<string, string | string[] | undefined>> }): Promise<Metadata> {
+  markMarketingRender()   // perf-1: this render reads the marketing pages' tagged shared cache (lib/marketing-render.ts)
   // 🔴 The brand gate first, as the page does — no country is read for a host this route does not serve.
   if (!(await onHatchGrab())) {
     notFound()
@@ -130,6 +132,7 @@ async function onHatchGrab(): Promise<boolean> {
 // three declarations for the same reason.
 
 export default async function FeaturesPage({ params, searchParams }: { params?: Promise<{ country?: string }>; searchParams: Promise<Record<string, string | string[] | undefined>> }) {
+  markMarketingRender()   // perf-1: this render reads the marketing pages' tagged shared cache (lib/marketing-render.ts)
   // ── 🔴 THE BRAND GATE. THIS PAGE DOES NOT EXIST ON VILLAGE FOODIE. See the header note.
   // ⚠️ FIRST, AND IT NEEDS ONLY A HEADER — a visitor on the wrong brand never costs a round trip.
   if (!(await onHatchGrab())) {

@@ -2,65 +2,66 @@
 // Import this module (`import '@/lib/i18n/catalog/manageCharges'`) in any file that reads the "manageCharges" namespace.
 import base from '@/messages/ns/en-GB/manageCharges.json'
 import enUS from '@/messages/ns/en-US/manageCharges.json'
-import { registerNamespace, registerLanguage } from '@/lib/i18n/registry'
+import { registerNamespace, registerLanguage, serverWords } from '@/lib/i18n/registry'
 
 registerNamespace('manageCharges', base, { 'en-US': enUS })
-// languages-1: each non-English language — on the server now; in the browser only when a page is in that language.
+// languages-1: each non-English language only when a page is in that language — perf-1: on the server too (serverWords: a
+// synchronous require, run the first time the language is asked for), in the browser as a chunk loaded on demand.
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('manageCharges', 'fr-FR', typeof window === 'undefined' ? require('@/messages/ns/fr-FR/manageCharges.json') : () => import('@/messages/ns/fr-FR/manageCharges.json'))
+registerLanguage('manageCharges', 'fr-FR', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/fr-FR/manageCharges.json')) : () => import('@/messages/ns/fr-FR/manageCharges.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('manageCharges', 'de-DE', typeof window === 'undefined' ? require('@/messages/ns/de-DE/manageCharges.json') : () => import('@/messages/ns/de-DE/manageCharges.json'))
+registerLanguage('manageCharges', 'de-DE', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/de-DE/manageCharges.json')) : () => import('@/messages/ns/de-DE/manageCharges.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('manageCharges', 'es-ES', typeof window === 'undefined' ? require('@/messages/ns/es-ES/manageCharges.json') : () => import('@/messages/ns/es-ES/manageCharges.json'))
+registerLanguage('manageCharges', 'es-ES', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/es-ES/manageCharges.json')) : () => import('@/messages/ns/es-ES/manageCharges.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('manageCharges', 'it-IT', typeof window === 'undefined' ? require('@/messages/ns/it-IT/manageCharges.json') : () => import('@/messages/ns/it-IT/manageCharges.json'))
+registerLanguage('manageCharges', 'it-IT', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/it-IT/manageCharges.json')) : () => import('@/messages/ns/it-IT/manageCharges.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('manageCharges', 'pt-PT', typeof window === 'undefined' ? require('@/messages/ns/pt-PT/manageCharges.json') : () => import('@/messages/ns/pt-PT/manageCharges.json'))
+registerLanguage('manageCharges', 'pt-PT', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/pt-PT/manageCharges.json')) : () => import('@/messages/ns/pt-PT/manageCharges.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('manageCharges', 'nl-NL', typeof window === 'undefined' ? require('@/messages/ns/nl-NL/manageCharges.json') : () => import('@/messages/ns/nl-NL/manageCharges.json'))
+registerLanguage('manageCharges', 'nl-NL', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/nl-NL/manageCharges.json')) : () => import('@/messages/ns/nl-NL/manageCharges.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('manageCharges', 'sv-SE', typeof window === 'undefined' ? require('@/messages/ns/sv-SE/manageCharges.json') : () => import('@/messages/ns/sv-SE/manageCharges.json'))
+registerLanguage('manageCharges', 'sv-SE', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/sv-SE/manageCharges.json')) : () => import('@/messages/ns/sv-SE/manageCharges.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('manageCharges', 'da-DK', typeof window === 'undefined' ? require('@/messages/ns/da-DK/manageCharges.json') : () => import('@/messages/ns/da-DK/manageCharges.json'))
+registerLanguage('manageCharges', 'da-DK', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/da-DK/manageCharges.json')) : () => import('@/messages/ns/da-DK/manageCharges.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('manageCharges', 'nb-NO', typeof window === 'undefined' ? require('@/messages/ns/nb-NO/manageCharges.json') : () => import('@/messages/ns/nb-NO/manageCharges.json'))
+registerLanguage('manageCharges', 'nb-NO', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/nb-NO/manageCharges.json')) : () => import('@/messages/ns/nb-NO/manageCharges.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('manageCharges', 'pl-PL', typeof window === 'undefined' ? require('@/messages/ns/pl-PL/manageCharges.json') : () => import('@/messages/ns/pl-PL/manageCharges.json'))
+registerLanguage('manageCharges', 'pl-PL', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/pl-PL/manageCharges.json')) : () => import('@/messages/ns/pl-PL/manageCharges.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('manageCharges', 'cs-CZ', typeof window === 'undefined' ? require('@/messages/ns/cs-CZ/manageCharges.json') : () => import('@/messages/ns/cs-CZ/manageCharges.json'))
+registerLanguage('manageCharges', 'cs-CZ', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/cs-CZ/manageCharges.json')) : () => import('@/messages/ns/cs-CZ/manageCharges.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('manageCharges', 'hu-HU', typeof window === 'undefined' ? require('@/messages/ns/hu-HU/manageCharges.json') : () => import('@/messages/ns/hu-HU/manageCharges.json'))
+registerLanguage('manageCharges', 'hu-HU', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/hu-HU/manageCharges.json')) : () => import('@/messages/ns/hu-HU/manageCharges.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('manageCharges', 'sk-SK', typeof window === 'undefined' ? require('@/messages/ns/sk-SK/manageCharges.json') : () => import('@/messages/ns/sk-SK/manageCharges.json'))
+registerLanguage('manageCharges', 'sk-SK', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/sk-SK/manageCharges.json')) : () => import('@/messages/ns/sk-SK/manageCharges.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('manageCharges', 'ro-RO', typeof window === 'undefined' ? require('@/messages/ns/ro-RO/manageCharges.json') : () => import('@/messages/ns/ro-RO/manageCharges.json'))
+registerLanguage('manageCharges', 'ro-RO', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/ro-RO/manageCharges.json')) : () => import('@/messages/ns/ro-RO/manageCharges.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('manageCharges', 'hr-HR', typeof window === 'undefined' ? require('@/messages/ns/hr-HR/manageCharges.json') : () => import('@/messages/ns/hr-HR/manageCharges.json'))
+registerLanguage('manageCharges', 'hr-HR', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/hr-HR/manageCharges.json')) : () => import('@/messages/ns/hr-HR/manageCharges.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('manageCharges', 'sl-SI', typeof window === 'undefined' ? require('@/messages/ns/sl-SI/manageCharges.json') : () => import('@/messages/ns/sl-SI/manageCharges.json'))
+registerLanguage('manageCharges', 'sl-SI', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/sl-SI/manageCharges.json')) : () => import('@/messages/ns/sl-SI/manageCharges.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('manageCharges', 'fi-FI', typeof window === 'undefined' ? require('@/messages/ns/fi-FI/manageCharges.json') : () => import('@/messages/ns/fi-FI/manageCharges.json'))
+registerLanguage('manageCharges', 'fi-FI', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/fi-FI/manageCharges.json')) : () => import('@/messages/ns/fi-FI/manageCharges.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('manageCharges', 'et-EE', typeof window === 'undefined' ? require('@/messages/ns/et-EE/manageCharges.json') : () => import('@/messages/ns/et-EE/manageCharges.json'))
+registerLanguage('manageCharges', 'et-EE', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/et-EE/manageCharges.json')) : () => import('@/messages/ns/et-EE/manageCharges.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('manageCharges', 'lv-LV', typeof window === 'undefined' ? require('@/messages/ns/lv-LV/manageCharges.json') : () => import('@/messages/ns/lv-LV/manageCharges.json'))
+registerLanguage('manageCharges', 'lv-LV', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/lv-LV/manageCharges.json')) : () => import('@/messages/ns/lv-LV/manageCharges.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('manageCharges', 'lt-LT', typeof window === 'undefined' ? require('@/messages/ns/lt-LT/manageCharges.json') : () => import('@/messages/ns/lt-LT/manageCharges.json'))
+registerLanguage('manageCharges', 'lt-LT', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/lt-LT/manageCharges.json')) : () => import('@/messages/ns/lt-LT/manageCharges.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('manageCharges', 'el-GR', typeof window === 'undefined' ? require('@/messages/ns/el-GR/manageCharges.json') : () => import('@/messages/ns/el-GR/manageCharges.json'))
+registerLanguage('manageCharges', 'el-GR', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/el-GR/manageCharges.json')) : () => import('@/messages/ns/el-GR/manageCharges.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('manageCharges', 'bg-BG', typeof window === 'undefined' ? require('@/messages/ns/bg-BG/manageCharges.json') : () => import('@/messages/ns/bg-BG/manageCharges.json'))
+registerLanguage('manageCharges', 'bg-BG', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/bg-BG/manageCharges.json')) : () => import('@/messages/ns/bg-BG/manageCharges.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('manageCharges', 'es-MX', typeof window === 'undefined' ? require('@/messages/ns/es-MX/manageCharges.json') : () => import('@/messages/ns/es-MX/manageCharges.json'))
+registerLanguage('manageCharges', 'es-MX', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/es-MX/manageCharges.json')) : () => import('@/messages/ns/es-MX/manageCharges.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('manageCharges', 'pt-BR', typeof window === 'undefined' ? require('@/messages/ns/pt-BR/manageCharges.json') : () => import('@/messages/ns/pt-BR/manageCharges.json'))
+registerLanguage('manageCharges', 'pt-BR', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/pt-BR/manageCharges.json')) : () => import('@/messages/ns/pt-BR/manageCharges.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('manageCharges', 'ms-MY', typeof window === 'undefined' ? require('@/messages/ns/ms-MY/manageCharges.json') : () => import('@/messages/ns/ms-MY/manageCharges.json'))
+registerLanguage('manageCharges', 'ms-MY', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/ms-MY/manageCharges.json')) : () => import('@/messages/ns/ms-MY/manageCharges.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('manageCharges', 'ja-JP', typeof window === 'undefined' ? require('@/messages/ns/ja-JP/manageCharges.json') : () => import('@/messages/ns/ja-JP/manageCharges.json'))
+registerLanguage('manageCharges', 'ja-JP', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/ja-JP/manageCharges.json')) : () => import('@/messages/ns/ja-JP/manageCharges.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('manageCharges', 'zh-HK', typeof window === 'undefined' ? require('@/messages/ns/zh-HK/manageCharges.json') : () => import('@/messages/ns/zh-HK/manageCharges.json'))
+registerLanguage('manageCharges', 'zh-HK', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/zh-HK/manageCharges.json')) : () => import('@/messages/ns/zh-HK/manageCharges.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('manageCharges', 'th-TH', typeof window === 'undefined' ? require('@/messages/ns/th-TH/manageCharges.json') : () => import('@/messages/ns/th-TH/manageCharges.json'))
+registerLanguage('manageCharges', 'th-TH', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/th-TH/manageCharges.json')) : () => import('@/messages/ns/th-TH/manageCharges.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('manageCharges', 'ar-AE', typeof window === 'undefined' ? require('@/messages/ns/ar-AE/manageCharges.json') : () => import('@/messages/ns/ar-AE/manageCharges.json'))
+registerLanguage('manageCharges', 'ar-AE', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/ar-AE/manageCharges.json')) : () => import('@/messages/ns/ar-AE/manageCharges.json'))

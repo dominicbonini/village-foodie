@@ -2,63 +2,64 @@
 // Import this module (`import '@/lib/i18n/catalog/embed'`) in any file that reads the "embed" namespace.
 import base from '@/messages/ns/en-GB/embed.json'
 import enUS from '@/messages/ns/en-US/embed.json'
-import { registerNamespace, registerLanguage } from '@/lib/i18n/registry'
+import { registerNamespace, registerLanguage, serverWords } from '@/lib/i18n/registry'
 
 registerNamespace('embed', base, { 'en-US': enUS })
-// languages-1: each non-English language — on the server now; in the browser only when a page is in that language.
+// languages-1: each non-English language only when a page is in that language — perf-1: on the server too (serverWords: a
+// synchronous require, run the first time the language is asked for), in the browser as a chunk loaded on demand.
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('embed', 'fr-FR', typeof window === 'undefined' ? require('@/messages/ns/fr-FR/embed.json') : () => import('@/messages/ns/fr-FR/embed.json'))
+registerLanguage('embed', 'fr-FR', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/fr-FR/embed.json')) : () => import('@/messages/ns/fr-FR/embed.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('embed', 'de-DE', typeof window === 'undefined' ? require('@/messages/ns/de-DE/embed.json') : () => import('@/messages/ns/de-DE/embed.json'))
+registerLanguage('embed', 'de-DE', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/de-DE/embed.json')) : () => import('@/messages/ns/de-DE/embed.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('embed', 'es-ES', typeof window === 'undefined' ? require('@/messages/ns/es-ES/embed.json') : () => import('@/messages/ns/es-ES/embed.json'))
+registerLanguage('embed', 'es-ES', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/es-ES/embed.json')) : () => import('@/messages/ns/es-ES/embed.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('embed', 'it-IT', typeof window === 'undefined' ? require('@/messages/ns/it-IT/embed.json') : () => import('@/messages/ns/it-IT/embed.json'))
+registerLanguage('embed', 'it-IT', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/it-IT/embed.json')) : () => import('@/messages/ns/it-IT/embed.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('embed', 'pt-PT', typeof window === 'undefined' ? require('@/messages/ns/pt-PT/embed.json') : () => import('@/messages/ns/pt-PT/embed.json'))
+registerLanguage('embed', 'pt-PT', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/pt-PT/embed.json')) : () => import('@/messages/ns/pt-PT/embed.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('embed', 'nl-NL', typeof window === 'undefined' ? require('@/messages/ns/nl-NL/embed.json') : () => import('@/messages/ns/nl-NL/embed.json'))
+registerLanguage('embed', 'nl-NL', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/nl-NL/embed.json')) : () => import('@/messages/ns/nl-NL/embed.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('embed', 'sv-SE', typeof window === 'undefined' ? require('@/messages/ns/sv-SE/embed.json') : () => import('@/messages/ns/sv-SE/embed.json'))
+registerLanguage('embed', 'sv-SE', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/sv-SE/embed.json')) : () => import('@/messages/ns/sv-SE/embed.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('embed', 'da-DK', typeof window === 'undefined' ? require('@/messages/ns/da-DK/embed.json') : () => import('@/messages/ns/da-DK/embed.json'))
+registerLanguage('embed', 'da-DK', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/da-DK/embed.json')) : () => import('@/messages/ns/da-DK/embed.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('embed', 'nb-NO', typeof window === 'undefined' ? require('@/messages/ns/nb-NO/embed.json') : () => import('@/messages/ns/nb-NO/embed.json'))
+registerLanguage('embed', 'nb-NO', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/nb-NO/embed.json')) : () => import('@/messages/ns/nb-NO/embed.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('embed', 'pl-PL', typeof window === 'undefined' ? require('@/messages/ns/pl-PL/embed.json') : () => import('@/messages/ns/pl-PL/embed.json'))
+registerLanguage('embed', 'pl-PL', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/pl-PL/embed.json')) : () => import('@/messages/ns/pl-PL/embed.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('embed', 'cs-CZ', typeof window === 'undefined' ? require('@/messages/ns/cs-CZ/embed.json') : () => import('@/messages/ns/cs-CZ/embed.json'))
+registerLanguage('embed', 'cs-CZ', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/cs-CZ/embed.json')) : () => import('@/messages/ns/cs-CZ/embed.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('embed', 'hu-HU', typeof window === 'undefined' ? require('@/messages/ns/hu-HU/embed.json') : () => import('@/messages/ns/hu-HU/embed.json'))
+registerLanguage('embed', 'hu-HU', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/hu-HU/embed.json')) : () => import('@/messages/ns/hu-HU/embed.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('embed', 'sk-SK', typeof window === 'undefined' ? require('@/messages/ns/sk-SK/embed.json') : () => import('@/messages/ns/sk-SK/embed.json'))
+registerLanguage('embed', 'sk-SK', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/sk-SK/embed.json')) : () => import('@/messages/ns/sk-SK/embed.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('embed', 'ro-RO', typeof window === 'undefined' ? require('@/messages/ns/ro-RO/embed.json') : () => import('@/messages/ns/ro-RO/embed.json'))
+registerLanguage('embed', 'ro-RO', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/ro-RO/embed.json')) : () => import('@/messages/ns/ro-RO/embed.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('embed', 'hr-HR', typeof window === 'undefined' ? require('@/messages/ns/hr-HR/embed.json') : () => import('@/messages/ns/hr-HR/embed.json'))
+registerLanguage('embed', 'hr-HR', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/hr-HR/embed.json')) : () => import('@/messages/ns/hr-HR/embed.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('embed', 'sl-SI', typeof window === 'undefined' ? require('@/messages/ns/sl-SI/embed.json') : () => import('@/messages/ns/sl-SI/embed.json'))
+registerLanguage('embed', 'sl-SI', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/sl-SI/embed.json')) : () => import('@/messages/ns/sl-SI/embed.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('embed', 'fi-FI', typeof window === 'undefined' ? require('@/messages/ns/fi-FI/embed.json') : () => import('@/messages/ns/fi-FI/embed.json'))
+registerLanguage('embed', 'fi-FI', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/fi-FI/embed.json')) : () => import('@/messages/ns/fi-FI/embed.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('embed', 'et-EE', typeof window === 'undefined' ? require('@/messages/ns/et-EE/embed.json') : () => import('@/messages/ns/et-EE/embed.json'))
+registerLanguage('embed', 'et-EE', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/et-EE/embed.json')) : () => import('@/messages/ns/et-EE/embed.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('embed', 'lv-LV', typeof window === 'undefined' ? require('@/messages/ns/lv-LV/embed.json') : () => import('@/messages/ns/lv-LV/embed.json'))
+registerLanguage('embed', 'lv-LV', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/lv-LV/embed.json')) : () => import('@/messages/ns/lv-LV/embed.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('embed', 'lt-LT', typeof window === 'undefined' ? require('@/messages/ns/lt-LT/embed.json') : () => import('@/messages/ns/lt-LT/embed.json'))
+registerLanguage('embed', 'lt-LT', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/lt-LT/embed.json')) : () => import('@/messages/ns/lt-LT/embed.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('embed', 'el-GR', typeof window === 'undefined' ? require('@/messages/ns/el-GR/embed.json') : () => import('@/messages/ns/el-GR/embed.json'))
+registerLanguage('embed', 'el-GR', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/el-GR/embed.json')) : () => import('@/messages/ns/el-GR/embed.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('embed', 'bg-BG', typeof window === 'undefined' ? require('@/messages/ns/bg-BG/embed.json') : () => import('@/messages/ns/bg-BG/embed.json'))
+registerLanguage('embed', 'bg-BG', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/bg-BG/embed.json')) : () => import('@/messages/ns/bg-BG/embed.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('embed', 'pt-BR', typeof window === 'undefined' ? require('@/messages/ns/pt-BR/embed.json') : () => import('@/messages/ns/pt-BR/embed.json'))
+registerLanguage('embed', 'pt-BR', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/pt-BR/embed.json')) : () => import('@/messages/ns/pt-BR/embed.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('embed', 'ms-MY', typeof window === 'undefined' ? require('@/messages/ns/ms-MY/embed.json') : () => import('@/messages/ns/ms-MY/embed.json'))
+registerLanguage('embed', 'ms-MY', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/ms-MY/embed.json')) : () => import('@/messages/ns/ms-MY/embed.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('embed', 'ja-JP', typeof window === 'undefined' ? require('@/messages/ns/ja-JP/embed.json') : () => import('@/messages/ns/ja-JP/embed.json'))
+registerLanguage('embed', 'ja-JP', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/ja-JP/embed.json')) : () => import('@/messages/ns/ja-JP/embed.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('embed', 'zh-HK', typeof window === 'undefined' ? require('@/messages/ns/zh-HK/embed.json') : () => import('@/messages/ns/zh-HK/embed.json'))
+registerLanguage('embed', 'zh-HK', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/zh-HK/embed.json')) : () => import('@/messages/ns/zh-HK/embed.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('embed', 'th-TH', typeof window === 'undefined' ? require('@/messages/ns/th-TH/embed.json') : () => import('@/messages/ns/th-TH/embed.json'))
+registerLanguage('embed', 'th-TH', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/th-TH/embed.json')) : () => import('@/messages/ns/th-TH/embed.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('embed', 'ar-AE', typeof window === 'undefined' ? require('@/messages/ns/ar-AE/embed.json') : () => import('@/messages/ns/ar-AE/embed.json'))
+registerLanguage('embed', 'ar-AE', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/ar-AE/embed.json')) : () => import('@/messages/ns/ar-AE/embed.json'))

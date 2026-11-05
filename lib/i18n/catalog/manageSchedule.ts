@@ -3,67 +3,68 @@
 import base from '@/messages/ns/en-GB/manageSchedule.json'
 import enUS from '@/messages/ns/en-US/manageSchedule.json'
 import enCA from '@/messages/ns/en-CA/manageSchedule.json'
-import { registerNamespace, registerLanguage } from '@/lib/i18n/registry'
+import { registerNamespace, registerLanguage, serverWords } from '@/lib/i18n/registry'
 
 registerNamespace('manageSchedule', base, { 'en-US': enUS, 'en-CA': enCA })
-// languages-1: each non-English language — on the server now; in the browser only when a page is in that language.
+// languages-1: each non-English language only when a page is in that language — perf-1: on the server too (serverWords: a
+// synchronous require, run the first time the language is asked for), in the browser as a chunk loaded on demand.
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('manageSchedule', 'fr-FR', typeof window === 'undefined' ? require('@/messages/ns/fr-FR/manageSchedule.json') : () => import('@/messages/ns/fr-FR/manageSchedule.json'))
+registerLanguage('manageSchedule', 'fr-FR', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/fr-FR/manageSchedule.json')) : () => import('@/messages/ns/fr-FR/manageSchedule.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('manageSchedule', 'de-DE', typeof window === 'undefined' ? require('@/messages/ns/de-DE/manageSchedule.json') : () => import('@/messages/ns/de-DE/manageSchedule.json'))
+registerLanguage('manageSchedule', 'de-DE', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/de-DE/manageSchedule.json')) : () => import('@/messages/ns/de-DE/manageSchedule.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('manageSchedule', 'de-CH', typeof window === 'undefined' ? require('@/messages/ns/de-CH/manageSchedule.json') : () => import('@/messages/ns/de-CH/manageSchedule.json'))
+registerLanguage('manageSchedule', 'de-CH', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/de-CH/manageSchedule.json')) : () => import('@/messages/ns/de-CH/manageSchedule.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('manageSchedule', 'es-ES', typeof window === 'undefined' ? require('@/messages/ns/es-ES/manageSchedule.json') : () => import('@/messages/ns/es-ES/manageSchedule.json'))
+registerLanguage('manageSchedule', 'es-ES', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/es-ES/manageSchedule.json')) : () => import('@/messages/ns/es-ES/manageSchedule.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('manageSchedule', 'it-IT', typeof window === 'undefined' ? require('@/messages/ns/it-IT/manageSchedule.json') : () => import('@/messages/ns/it-IT/manageSchedule.json'))
+registerLanguage('manageSchedule', 'it-IT', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/it-IT/manageSchedule.json')) : () => import('@/messages/ns/it-IT/manageSchedule.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('manageSchedule', 'pt-PT', typeof window === 'undefined' ? require('@/messages/ns/pt-PT/manageSchedule.json') : () => import('@/messages/ns/pt-PT/manageSchedule.json'))
+registerLanguage('manageSchedule', 'pt-PT', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/pt-PT/manageSchedule.json')) : () => import('@/messages/ns/pt-PT/manageSchedule.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('manageSchedule', 'nl-NL', typeof window === 'undefined' ? require('@/messages/ns/nl-NL/manageSchedule.json') : () => import('@/messages/ns/nl-NL/manageSchedule.json'))
+registerLanguage('manageSchedule', 'nl-NL', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/nl-NL/manageSchedule.json')) : () => import('@/messages/ns/nl-NL/manageSchedule.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('manageSchedule', 'sv-SE', typeof window === 'undefined' ? require('@/messages/ns/sv-SE/manageSchedule.json') : () => import('@/messages/ns/sv-SE/manageSchedule.json'))
+registerLanguage('manageSchedule', 'sv-SE', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/sv-SE/manageSchedule.json')) : () => import('@/messages/ns/sv-SE/manageSchedule.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('manageSchedule', 'da-DK', typeof window === 'undefined' ? require('@/messages/ns/da-DK/manageSchedule.json') : () => import('@/messages/ns/da-DK/manageSchedule.json'))
+registerLanguage('manageSchedule', 'da-DK', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/da-DK/manageSchedule.json')) : () => import('@/messages/ns/da-DK/manageSchedule.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('manageSchedule', 'nb-NO', typeof window === 'undefined' ? require('@/messages/ns/nb-NO/manageSchedule.json') : () => import('@/messages/ns/nb-NO/manageSchedule.json'))
+registerLanguage('manageSchedule', 'nb-NO', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/nb-NO/manageSchedule.json')) : () => import('@/messages/ns/nb-NO/manageSchedule.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('manageSchedule', 'pl-PL', typeof window === 'undefined' ? require('@/messages/ns/pl-PL/manageSchedule.json') : () => import('@/messages/ns/pl-PL/manageSchedule.json'))
+registerLanguage('manageSchedule', 'pl-PL', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/pl-PL/manageSchedule.json')) : () => import('@/messages/ns/pl-PL/manageSchedule.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('manageSchedule', 'cs-CZ', typeof window === 'undefined' ? require('@/messages/ns/cs-CZ/manageSchedule.json') : () => import('@/messages/ns/cs-CZ/manageSchedule.json'))
+registerLanguage('manageSchedule', 'cs-CZ', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/cs-CZ/manageSchedule.json')) : () => import('@/messages/ns/cs-CZ/manageSchedule.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('manageSchedule', 'hu-HU', typeof window === 'undefined' ? require('@/messages/ns/hu-HU/manageSchedule.json') : () => import('@/messages/ns/hu-HU/manageSchedule.json'))
+registerLanguage('manageSchedule', 'hu-HU', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/hu-HU/manageSchedule.json')) : () => import('@/messages/ns/hu-HU/manageSchedule.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('manageSchedule', 'sk-SK', typeof window === 'undefined' ? require('@/messages/ns/sk-SK/manageSchedule.json') : () => import('@/messages/ns/sk-SK/manageSchedule.json'))
+registerLanguage('manageSchedule', 'sk-SK', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/sk-SK/manageSchedule.json')) : () => import('@/messages/ns/sk-SK/manageSchedule.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('manageSchedule', 'ro-RO', typeof window === 'undefined' ? require('@/messages/ns/ro-RO/manageSchedule.json') : () => import('@/messages/ns/ro-RO/manageSchedule.json'))
+registerLanguage('manageSchedule', 'ro-RO', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/ro-RO/manageSchedule.json')) : () => import('@/messages/ns/ro-RO/manageSchedule.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('manageSchedule', 'hr-HR', typeof window === 'undefined' ? require('@/messages/ns/hr-HR/manageSchedule.json') : () => import('@/messages/ns/hr-HR/manageSchedule.json'))
+registerLanguage('manageSchedule', 'hr-HR', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/hr-HR/manageSchedule.json')) : () => import('@/messages/ns/hr-HR/manageSchedule.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('manageSchedule', 'sl-SI', typeof window === 'undefined' ? require('@/messages/ns/sl-SI/manageSchedule.json') : () => import('@/messages/ns/sl-SI/manageSchedule.json'))
+registerLanguage('manageSchedule', 'sl-SI', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/sl-SI/manageSchedule.json')) : () => import('@/messages/ns/sl-SI/manageSchedule.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('manageSchedule', 'fi-FI', typeof window === 'undefined' ? require('@/messages/ns/fi-FI/manageSchedule.json') : () => import('@/messages/ns/fi-FI/manageSchedule.json'))
+registerLanguage('manageSchedule', 'fi-FI', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/fi-FI/manageSchedule.json')) : () => import('@/messages/ns/fi-FI/manageSchedule.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('manageSchedule', 'et-EE', typeof window === 'undefined' ? require('@/messages/ns/et-EE/manageSchedule.json') : () => import('@/messages/ns/et-EE/manageSchedule.json'))
+registerLanguage('manageSchedule', 'et-EE', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/et-EE/manageSchedule.json')) : () => import('@/messages/ns/et-EE/manageSchedule.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('manageSchedule', 'lv-LV', typeof window === 'undefined' ? require('@/messages/ns/lv-LV/manageSchedule.json') : () => import('@/messages/ns/lv-LV/manageSchedule.json'))
+registerLanguage('manageSchedule', 'lv-LV', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/lv-LV/manageSchedule.json')) : () => import('@/messages/ns/lv-LV/manageSchedule.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('manageSchedule', 'lt-LT', typeof window === 'undefined' ? require('@/messages/ns/lt-LT/manageSchedule.json') : () => import('@/messages/ns/lt-LT/manageSchedule.json'))
+registerLanguage('manageSchedule', 'lt-LT', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/lt-LT/manageSchedule.json')) : () => import('@/messages/ns/lt-LT/manageSchedule.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('manageSchedule', 'el-GR', typeof window === 'undefined' ? require('@/messages/ns/el-GR/manageSchedule.json') : () => import('@/messages/ns/el-GR/manageSchedule.json'))
+registerLanguage('manageSchedule', 'el-GR', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/el-GR/manageSchedule.json')) : () => import('@/messages/ns/el-GR/manageSchedule.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('manageSchedule', 'bg-BG', typeof window === 'undefined' ? require('@/messages/ns/bg-BG/manageSchedule.json') : () => import('@/messages/ns/bg-BG/manageSchedule.json'))
+registerLanguage('manageSchedule', 'bg-BG', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/bg-BG/manageSchedule.json')) : () => import('@/messages/ns/bg-BG/manageSchedule.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('manageSchedule', 'es-MX', typeof window === 'undefined' ? require('@/messages/ns/es-MX/manageSchedule.json') : () => import('@/messages/ns/es-MX/manageSchedule.json'))
+registerLanguage('manageSchedule', 'es-MX', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/es-MX/manageSchedule.json')) : () => import('@/messages/ns/es-MX/manageSchedule.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('manageSchedule', 'pt-BR', typeof window === 'undefined' ? require('@/messages/ns/pt-BR/manageSchedule.json') : () => import('@/messages/ns/pt-BR/manageSchedule.json'))
+registerLanguage('manageSchedule', 'pt-BR', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/pt-BR/manageSchedule.json')) : () => import('@/messages/ns/pt-BR/manageSchedule.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('manageSchedule', 'ms-MY', typeof window === 'undefined' ? require('@/messages/ns/ms-MY/manageSchedule.json') : () => import('@/messages/ns/ms-MY/manageSchedule.json'))
+registerLanguage('manageSchedule', 'ms-MY', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/ms-MY/manageSchedule.json')) : () => import('@/messages/ns/ms-MY/manageSchedule.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('manageSchedule', 'ja-JP', typeof window === 'undefined' ? require('@/messages/ns/ja-JP/manageSchedule.json') : () => import('@/messages/ns/ja-JP/manageSchedule.json'))
+registerLanguage('manageSchedule', 'ja-JP', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/ja-JP/manageSchedule.json')) : () => import('@/messages/ns/ja-JP/manageSchedule.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('manageSchedule', 'zh-HK', typeof window === 'undefined' ? require('@/messages/ns/zh-HK/manageSchedule.json') : () => import('@/messages/ns/zh-HK/manageSchedule.json'))
+registerLanguage('manageSchedule', 'zh-HK', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/zh-HK/manageSchedule.json')) : () => import('@/messages/ns/zh-HK/manageSchedule.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('manageSchedule', 'th-TH', typeof window === 'undefined' ? require('@/messages/ns/th-TH/manageSchedule.json') : () => import('@/messages/ns/th-TH/manageSchedule.json'))
+registerLanguage('manageSchedule', 'th-TH', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/th-TH/manageSchedule.json')) : () => import('@/messages/ns/th-TH/manageSchedule.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('manageSchedule', 'ar-AE', typeof window === 'undefined' ? require('@/messages/ns/ar-AE/manageSchedule.json') : () => import('@/messages/ns/ar-AE/manageSchedule.json'))
+registerLanguage('manageSchedule', 'ar-AE', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/ar-AE/manageSchedule.json')) : () => import('@/messages/ns/ar-AE/manageSchedule.json'))

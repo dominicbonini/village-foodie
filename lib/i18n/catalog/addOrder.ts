@@ -6,69 +6,70 @@ import enAU from '@/messages/ns/en-AU/addOrder.json'
 import enNZ from '@/messages/ns/en-NZ/addOrder.json'
 import enCA from '@/messages/ns/en-CA/addOrder.json'
 import enSG from '@/messages/ns/en-SG/addOrder.json'
-import { registerNamespace, registerLanguage } from '@/lib/i18n/registry'
+import { registerNamespace, registerLanguage, serverWords } from '@/lib/i18n/registry'
 
 registerNamespace('addOrder', base, { 'en-US': enUS, 'en-AU': enAU, 'en-NZ': enNZ, 'en-CA': enCA, 'en-SG': enSG })
-// languages-1: each non-English language — on the server now; in the browser only when a page is in that language.
+// languages-1: each non-English language only when a page is in that language — perf-1: on the server too (serverWords: a
+// synchronous require, run the first time the language is asked for), in the browser as a chunk loaded on demand.
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('addOrder', 'fr-FR', typeof window === 'undefined' ? require('@/messages/ns/fr-FR/addOrder.json') : () => import('@/messages/ns/fr-FR/addOrder.json'))
+registerLanguage('addOrder', 'fr-FR', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/fr-FR/addOrder.json')) : () => import('@/messages/ns/fr-FR/addOrder.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('addOrder', 'de-DE', typeof window === 'undefined' ? require('@/messages/ns/de-DE/addOrder.json') : () => import('@/messages/ns/de-DE/addOrder.json'))
+registerLanguage('addOrder', 'de-DE', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/de-DE/addOrder.json')) : () => import('@/messages/ns/de-DE/addOrder.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('addOrder', 'de-CH', typeof window === 'undefined' ? require('@/messages/ns/de-CH/addOrder.json') : () => import('@/messages/ns/de-CH/addOrder.json'))
+registerLanguage('addOrder', 'de-CH', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/de-CH/addOrder.json')) : () => import('@/messages/ns/de-CH/addOrder.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('addOrder', 'es-ES', typeof window === 'undefined' ? require('@/messages/ns/es-ES/addOrder.json') : () => import('@/messages/ns/es-ES/addOrder.json'))
+registerLanguage('addOrder', 'es-ES', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/es-ES/addOrder.json')) : () => import('@/messages/ns/es-ES/addOrder.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('addOrder', 'it-IT', typeof window === 'undefined' ? require('@/messages/ns/it-IT/addOrder.json') : () => import('@/messages/ns/it-IT/addOrder.json'))
+registerLanguage('addOrder', 'it-IT', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/it-IT/addOrder.json')) : () => import('@/messages/ns/it-IT/addOrder.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('addOrder', 'pt-PT', typeof window === 'undefined' ? require('@/messages/ns/pt-PT/addOrder.json') : () => import('@/messages/ns/pt-PT/addOrder.json'))
+registerLanguage('addOrder', 'pt-PT', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/pt-PT/addOrder.json')) : () => import('@/messages/ns/pt-PT/addOrder.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('addOrder', 'nl-NL', typeof window === 'undefined' ? require('@/messages/ns/nl-NL/addOrder.json') : () => import('@/messages/ns/nl-NL/addOrder.json'))
+registerLanguage('addOrder', 'nl-NL', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/nl-NL/addOrder.json')) : () => import('@/messages/ns/nl-NL/addOrder.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('addOrder', 'nl-BE', typeof window === 'undefined' ? require('@/messages/ns/nl-BE/addOrder.json') : () => import('@/messages/ns/nl-BE/addOrder.json'))
+registerLanguage('addOrder', 'nl-BE', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/nl-BE/addOrder.json')) : () => import('@/messages/ns/nl-BE/addOrder.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('addOrder', 'sv-SE', typeof window === 'undefined' ? require('@/messages/ns/sv-SE/addOrder.json') : () => import('@/messages/ns/sv-SE/addOrder.json'))
+registerLanguage('addOrder', 'sv-SE', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/sv-SE/addOrder.json')) : () => import('@/messages/ns/sv-SE/addOrder.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('addOrder', 'da-DK', typeof window === 'undefined' ? require('@/messages/ns/da-DK/addOrder.json') : () => import('@/messages/ns/da-DK/addOrder.json'))
+registerLanguage('addOrder', 'da-DK', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/da-DK/addOrder.json')) : () => import('@/messages/ns/da-DK/addOrder.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('addOrder', 'nb-NO', typeof window === 'undefined' ? require('@/messages/ns/nb-NO/addOrder.json') : () => import('@/messages/ns/nb-NO/addOrder.json'))
+registerLanguage('addOrder', 'nb-NO', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/nb-NO/addOrder.json')) : () => import('@/messages/ns/nb-NO/addOrder.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('addOrder', 'pl-PL', typeof window === 'undefined' ? require('@/messages/ns/pl-PL/addOrder.json') : () => import('@/messages/ns/pl-PL/addOrder.json'))
+registerLanguage('addOrder', 'pl-PL', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/pl-PL/addOrder.json')) : () => import('@/messages/ns/pl-PL/addOrder.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('addOrder', 'cs-CZ', typeof window === 'undefined' ? require('@/messages/ns/cs-CZ/addOrder.json') : () => import('@/messages/ns/cs-CZ/addOrder.json'))
+registerLanguage('addOrder', 'cs-CZ', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/cs-CZ/addOrder.json')) : () => import('@/messages/ns/cs-CZ/addOrder.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('addOrder', 'hu-HU', typeof window === 'undefined' ? require('@/messages/ns/hu-HU/addOrder.json') : () => import('@/messages/ns/hu-HU/addOrder.json'))
+registerLanguage('addOrder', 'hu-HU', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/hu-HU/addOrder.json')) : () => import('@/messages/ns/hu-HU/addOrder.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('addOrder', 'sk-SK', typeof window === 'undefined' ? require('@/messages/ns/sk-SK/addOrder.json') : () => import('@/messages/ns/sk-SK/addOrder.json'))
+registerLanguage('addOrder', 'sk-SK', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/sk-SK/addOrder.json')) : () => import('@/messages/ns/sk-SK/addOrder.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('addOrder', 'ro-RO', typeof window === 'undefined' ? require('@/messages/ns/ro-RO/addOrder.json') : () => import('@/messages/ns/ro-RO/addOrder.json'))
+registerLanguage('addOrder', 'ro-RO', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/ro-RO/addOrder.json')) : () => import('@/messages/ns/ro-RO/addOrder.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('addOrder', 'hr-HR', typeof window === 'undefined' ? require('@/messages/ns/hr-HR/addOrder.json') : () => import('@/messages/ns/hr-HR/addOrder.json'))
+registerLanguage('addOrder', 'hr-HR', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/hr-HR/addOrder.json')) : () => import('@/messages/ns/hr-HR/addOrder.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('addOrder', 'sl-SI', typeof window === 'undefined' ? require('@/messages/ns/sl-SI/addOrder.json') : () => import('@/messages/ns/sl-SI/addOrder.json'))
+registerLanguage('addOrder', 'sl-SI', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/sl-SI/addOrder.json')) : () => import('@/messages/ns/sl-SI/addOrder.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('addOrder', 'fi-FI', typeof window === 'undefined' ? require('@/messages/ns/fi-FI/addOrder.json') : () => import('@/messages/ns/fi-FI/addOrder.json'))
+registerLanguage('addOrder', 'fi-FI', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/fi-FI/addOrder.json')) : () => import('@/messages/ns/fi-FI/addOrder.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('addOrder', 'et-EE', typeof window === 'undefined' ? require('@/messages/ns/et-EE/addOrder.json') : () => import('@/messages/ns/et-EE/addOrder.json'))
+registerLanguage('addOrder', 'et-EE', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/et-EE/addOrder.json')) : () => import('@/messages/ns/et-EE/addOrder.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('addOrder', 'lv-LV', typeof window === 'undefined' ? require('@/messages/ns/lv-LV/addOrder.json') : () => import('@/messages/ns/lv-LV/addOrder.json'))
+registerLanguage('addOrder', 'lv-LV', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/lv-LV/addOrder.json')) : () => import('@/messages/ns/lv-LV/addOrder.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('addOrder', 'lt-LT', typeof window === 'undefined' ? require('@/messages/ns/lt-LT/addOrder.json') : () => import('@/messages/ns/lt-LT/addOrder.json'))
+registerLanguage('addOrder', 'lt-LT', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/lt-LT/addOrder.json')) : () => import('@/messages/ns/lt-LT/addOrder.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('addOrder', 'el-GR', typeof window === 'undefined' ? require('@/messages/ns/el-GR/addOrder.json') : () => import('@/messages/ns/el-GR/addOrder.json'))
+registerLanguage('addOrder', 'el-GR', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/el-GR/addOrder.json')) : () => import('@/messages/ns/el-GR/addOrder.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('addOrder', 'bg-BG', typeof window === 'undefined' ? require('@/messages/ns/bg-BG/addOrder.json') : () => import('@/messages/ns/bg-BG/addOrder.json'))
+registerLanguage('addOrder', 'bg-BG', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/bg-BG/addOrder.json')) : () => import('@/messages/ns/bg-BG/addOrder.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('addOrder', 'es-MX', typeof window === 'undefined' ? require('@/messages/ns/es-MX/addOrder.json') : () => import('@/messages/ns/es-MX/addOrder.json'))
+registerLanguage('addOrder', 'es-MX', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/es-MX/addOrder.json')) : () => import('@/messages/ns/es-MX/addOrder.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('addOrder', 'pt-BR', typeof window === 'undefined' ? require('@/messages/ns/pt-BR/addOrder.json') : () => import('@/messages/ns/pt-BR/addOrder.json'))
+registerLanguage('addOrder', 'pt-BR', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/pt-BR/addOrder.json')) : () => import('@/messages/ns/pt-BR/addOrder.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('addOrder', 'ms-MY', typeof window === 'undefined' ? require('@/messages/ns/ms-MY/addOrder.json') : () => import('@/messages/ns/ms-MY/addOrder.json'))
+registerLanguage('addOrder', 'ms-MY', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/ms-MY/addOrder.json')) : () => import('@/messages/ns/ms-MY/addOrder.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('addOrder', 'ja-JP', typeof window === 'undefined' ? require('@/messages/ns/ja-JP/addOrder.json') : () => import('@/messages/ns/ja-JP/addOrder.json'))
+registerLanguage('addOrder', 'ja-JP', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/ja-JP/addOrder.json')) : () => import('@/messages/ns/ja-JP/addOrder.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('addOrder', 'zh-HK', typeof window === 'undefined' ? require('@/messages/ns/zh-HK/addOrder.json') : () => import('@/messages/ns/zh-HK/addOrder.json'))
+registerLanguage('addOrder', 'zh-HK', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/zh-HK/addOrder.json')) : () => import('@/messages/ns/zh-HK/addOrder.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('addOrder', 'th-TH', typeof window === 'undefined' ? require('@/messages/ns/th-TH/addOrder.json') : () => import('@/messages/ns/th-TH/addOrder.json'))
+registerLanguage('addOrder', 'th-TH', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/th-TH/addOrder.json')) : () => import('@/messages/ns/th-TH/addOrder.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('addOrder', 'ar-AE', typeof window === 'undefined' ? require('@/messages/ns/ar-AE/addOrder.json') : () => import('@/messages/ns/ar-AE/addOrder.json'))
+registerLanguage('addOrder', 'ar-AE', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/ar-AE/addOrder.json')) : () => import('@/messages/ns/ar-AE/addOrder.json'))

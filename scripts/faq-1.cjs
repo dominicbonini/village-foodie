@@ -162,7 +162,9 @@ async function identityViews(tag) {
   }
   // ⚠️ RE-PINNED (faq-3): lib/faq/public.ts, the public FAQ's loader — it names no plan either (this same grep covers it).
   // ⚠️ RE-PINNED (faq-2): + translation.ts, source-hash.ts and translator.ts (the FAQ in every language) — the same grep covers them.
-  t('seven files in lib/faq (faq-3: public.ts; faq-2: translation.ts, source-hash.ts, translator.ts)', faqFiles.length === 7 && ['lib/faq/public.ts', 'lib/faq/translation.ts', 'lib/faq/source-hash.ts', 'lib/faq/translator.ts'].every(f => faqFiles.includes(f)), faqFiles)
+  // ⚠️ RE-PINNED (perf-1, 5 November 2026, docs/perf-1-report.md): + public-cache.ts, the public FAQ's reads in the marketing pages' tagged
+  // shared cache (read only by public.ts, only during a marketing render) — the same grep above covers it (it names no plan).
+  t('eight files in lib/faq (faq-3: public.ts; faq-2: translation.ts, source-hash.ts, translator.ts; perf-1: public-cache.ts)', faqFiles.length === 8 && ['lib/faq/public.ts', 'lib/faq/translation.ts', 'lib/faq/source-hash.ts', 'lib/faq/translator.ts', 'lib/faq/public-cache.ts'].every(f => faqFiles.includes(f)), faqFiles)
 
   // ══ 4 ══════════════════════════════════════════════════════════════════════════════════════════════════════════════
   head('4 · Copy feedback for Claude')
@@ -368,7 +370,9 @@ async function identityViews(tag) {
     'app/llms.txt/route.ts', 'lib/llms-text.ts',
     // ⚠️ RE-PINNED (faq-4): the FAQ is its own page, app/faq/page.tsx; the sitemap lists it and the marketing pages' footers link it
     // (faqHrefFor) where it has content. scripts/faq-4.cjs proves the page, the sitemap and the footer link.
-    'app/faq/page.tsx', 'app/sitemap.ts', 'components/landing/MarketingFrame.tsx', 'app/about/page.tsx', 'app/compare/page.tsx', 'app/[country]/[section]/[slug]/page.tsx'])
+    'app/faq/page.tsx', 'app/sitemap.ts', 'components/landing/MarketingFrame.tsx', 'app/about/page.tsx', 'app/compare/page.tsx', 'app/[country]/[section]/[slug]/page.tsx',
+    // ⚠️ RE-PINNED (perf-1, 5 November 2026): lib/faq/public-cache.ts (the FAQ's cached reads) imports lib/faq/public.ts, its own module.
+    'lib/faq/public-cache.ts'])
   t('only Admin › FAQ, its server code and the English landing page (faq-3) import lib/faq or the faq messages', importers.every(f => allowed.has(f)), importers.filter(f => !allowed.has(f)))
   t('the admin page mounts it as the last tab', /pricing:[^\n]*\n[\s\S]*demos:[^\n]*\n[^\n]*\n\s*faq:\s*\{ icon: '❓', label: 'FAQ' \},\n\} as const/.test(read('app/admin/page.tsx')))
   t('faq.phrases.* is in en-GB only for now (Dominic, 1 Nov: English until approved)', (() => { const d = JSON.parse(read('messages/en-GB.json')).faq?.phrases; return d && Object.keys(d).join() === 'appsSentence,appsOffline,webOffline' })())

@@ -60,8 +60,7 @@ not restart it here.*
   `npx -y -p pg@8.13.1 node scripts/db-migrate.cjs supabase/migrations/<file>.sql`
   It runs the file as **one transaction that stops on the first error** (and rolls back). It refuses any file that isn't
   committed and identical to HEAD. Then **verify read-only** with the Supabase MCP and report what you saw.
-  - `SUPABASE_DB_URL` lives in `.env.local` (git-ignored); the script reads that one line itself. Never print its value,
-    never write it anywhere else, and never list `.env.local`'s other keys.
+  - Never open, read, list, parse or test any `.env*` file in any form (Dominic's standing rule, 5 November 2026); the script reads its own connection string.
   - `npx -y -p pg@8.13.1 node scripts/db-migrate.cjs --probe` is the read-only check that the path works
     (`select current_user, now()` in a READ ONLY transaction).
 - **Never `supabase db push`.** The migration history isn't reconciled, and it could re-run old migrations.

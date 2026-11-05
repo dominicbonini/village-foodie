@@ -2,63 +2,64 @@
 // Import this module (`import '@/lib/i18n/catalog/errorPage'`) in any file that reads the "errorPage" namespace.
 import base from '@/messages/ns/en-GB/errorPage.json'
 import enUS from '@/messages/ns/en-US/errorPage.json'
-import { registerNamespace, registerLanguage } from '@/lib/i18n/registry'
+import { registerNamespace, registerLanguage, serverWords } from '@/lib/i18n/registry'
 
 registerNamespace('errorPage', base, { 'en-US': enUS })
-// languages-1: each non-English language — on the server now; in the browser only when a page is in that language.
+// languages-1: each non-English language only when a page is in that language — perf-1: on the server too (serverWords: a
+// synchronous require, run the first time the language is asked for), in the browser as a chunk loaded on demand.
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('errorPage', 'fr-FR', typeof window === 'undefined' ? require('@/messages/ns/fr-FR/errorPage.json') : () => import('@/messages/ns/fr-FR/errorPage.json'))
+registerLanguage('errorPage', 'fr-FR', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/fr-FR/errorPage.json')) : () => import('@/messages/ns/fr-FR/errorPage.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('errorPage', 'de-DE', typeof window === 'undefined' ? require('@/messages/ns/de-DE/errorPage.json') : () => import('@/messages/ns/de-DE/errorPage.json'))
+registerLanguage('errorPage', 'de-DE', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/de-DE/errorPage.json')) : () => import('@/messages/ns/de-DE/errorPage.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('errorPage', 'es-ES', typeof window === 'undefined' ? require('@/messages/ns/es-ES/errorPage.json') : () => import('@/messages/ns/es-ES/errorPage.json'))
+registerLanguage('errorPage', 'es-ES', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/es-ES/errorPage.json')) : () => import('@/messages/ns/es-ES/errorPage.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('errorPage', 'it-IT', typeof window === 'undefined' ? require('@/messages/ns/it-IT/errorPage.json') : () => import('@/messages/ns/it-IT/errorPage.json'))
+registerLanguage('errorPage', 'it-IT', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/it-IT/errorPage.json')) : () => import('@/messages/ns/it-IT/errorPage.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('errorPage', 'pt-PT', typeof window === 'undefined' ? require('@/messages/ns/pt-PT/errorPage.json') : () => import('@/messages/ns/pt-PT/errorPage.json'))
+registerLanguage('errorPage', 'pt-PT', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/pt-PT/errorPage.json')) : () => import('@/messages/ns/pt-PT/errorPage.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('errorPage', 'nl-NL', typeof window === 'undefined' ? require('@/messages/ns/nl-NL/errorPage.json') : () => import('@/messages/ns/nl-NL/errorPage.json'))
+registerLanguage('errorPage', 'nl-NL', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/nl-NL/errorPage.json')) : () => import('@/messages/ns/nl-NL/errorPage.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('errorPage', 'sv-SE', typeof window === 'undefined' ? require('@/messages/ns/sv-SE/errorPage.json') : () => import('@/messages/ns/sv-SE/errorPage.json'))
+registerLanguage('errorPage', 'sv-SE', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/sv-SE/errorPage.json')) : () => import('@/messages/ns/sv-SE/errorPage.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('errorPage', 'da-DK', typeof window === 'undefined' ? require('@/messages/ns/da-DK/errorPage.json') : () => import('@/messages/ns/da-DK/errorPage.json'))
+registerLanguage('errorPage', 'da-DK', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/da-DK/errorPage.json')) : () => import('@/messages/ns/da-DK/errorPage.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('errorPage', 'nb-NO', typeof window === 'undefined' ? require('@/messages/ns/nb-NO/errorPage.json') : () => import('@/messages/ns/nb-NO/errorPage.json'))
+registerLanguage('errorPage', 'nb-NO', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/nb-NO/errorPage.json')) : () => import('@/messages/ns/nb-NO/errorPage.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('errorPage', 'pl-PL', typeof window === 'undefined' ? require('@/messages/ns/pl-PL/errorPage.json') : () => import('@/messages/ns/pl-PL/errorPage.json'))
+registerLanguage('errorPage', 'pl-PL', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/pl-PL/errorPage.json')) : () => import('@/messages/ns/pl-PL/errorPage.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('errorPage', 'cs-CZ', typeof window === 'undefined' ? require('@/messages/ns/cs-CZ/errorPage.json') : () => import('@/messages/ns/cs-CZ/errorPage.json'))
+registerLanguage('errorPage', 'cs-CZ', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/cs-CZ/errorPage.json')) : () => import('@/messages/ns/cs-CZ/errorPage.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('errorPage', 'hu-HU', typeof window === 'undefined' ? require('@/messages/ns/hu-HU/errorPage.json') : () => import('@/messages/ns/hu-HU/errorPage.json'))
+registerLanguage('errorPage', 'hu-HU', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/hu-HU/errorPage.json')) : () => import('@/messages/ns/hu-HU/errorPage.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('errorPage', 'sk-SK', typeof window === 'undefined' ? require('@/messages/ns/sk-SK/errorPage.json') : () => import('@/messages/ns/sk-SK/errorPage.json'))
+registerLanguage('errorPage', 'sk-SK', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/sk-SK/errorPage.json')) : () => import('@/messages/ns/sk-SK/errorPage.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('errorPage', 'ro-RO', typeof window === 'undefined' ? require('@/messages/ns/ro-RO/errorPage.json') : () => import('@/messages/ns/ro-RO/errorPage.json'))
+registerLanguage('errorPage', 'ro-RO', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/ro-RO/errorPage.json')) : () => import('@/messages/ns/ro-RO/errorPage.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('errorPage', 'hr-HR', typeof window === 'undefined' ? require('@/messages/ns/hr-HR/errorPage.json') : () => import('@/messages/ns/hr-HR/errorPage.json'))
+registerLanguage('errorPage', 'hr-HR', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/hr-HR/errorPage.json')) : () => import('@/messages/ns/hr-HR/errorPage.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('errorPage', 'sl-SI', typeof window === 'undefined' ? require('@/messages/ns/sl-SI/errorPage.json') : () => import('@/messages/ns/sl-SI/errorPage.json'))
+registerLanguage('errorPage', 'sl-SI', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/sl-SI/errorPage.json')) : () => import('@/messages/ns/sl-SI/errorPage.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('errorPage', 'fi-FI', typeof window === 'undefined' ? require('@/messages/ns/fi-FI/errorPage.json') : () => import('@/messages/ns/fi-FI/errorPage.json'))
+registerLanguage('errorPage', 'fi-FI', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/fi-FI/errorPage.json')) : () => import('@/messages/ns/fi-FI/errorPage.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('errorPage', 'et-EE', typeof window === 'undefined' ? require('@/messages/ns/et-EE/errorPage.json') : () => import('@/messages/ns/et-EE/errorPage.json'))
+registerLanguage('errorPage', 'et-EE', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/et-EE/errorPage.json')) : () => import('@/messages/ns/et-EE/errorPage.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('errorPage', 'lv-LV', typeof window === 'undefined' ? require('@/messages/ns/lv-LV/errorPage.json') : () => import('@/messages/ns/lv-LV/errorPage.json'))
+registerLanguage('errorPage', 'lv-LV', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/lv-LV/errorPage.json')) : () => import('@/messages/ns/lv-LV/errorPage.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('errorPage', 'lt-LT', typeof window === 'undefined' ? require('@/messages/ns/lt-LT/errorPage.json') : () => import('@/messages/ns/lt-LT/errorPage.json'))
+registerLanguage('errorPage', 'lt-LT', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/lt-LT/errorPage.json')) : () => import('@/messages/ns/lt-LT/errorPage.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('errorPage', 'el-GR', typeof window === 'undefined' ? require('@/messages/ns/el-GR/errorPage.json') : () => import('@/messages/ns/el-GR/errorPage.json'))
+registerLanguage('errorPage', 'el-GR', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/el-GR/errorPage.json')) : () => import('@/messages/ns/el-GR/errorPage.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('errorPage', 'bg-BG', typeof window === 'undefined' ? require('@/messages/ns/bg-BG/errorPage.json') : () => import('@/messages/ns/bg-BG/errorPage.json'))
+registerLanguage('errorPage', 'bg-BG', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/bg-BG/errorPage.json')) : () => import('@/messages/ns/bg-BG/errorPage.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('errorPage', 'pt-BR', typeof window === 'undefined' ? require('@/messages/ns/pt-BR/errorPage.json') : () => import('@/messages/ns/pt-BR/errorPage.json'))
+registerLanguage('errorPage', 'pt-BR', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/pt-BR/errorPage.json')) : () => import('@/messages/ns/pt-BR/errorPage.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('errorPage', 'ms-MY', typeof window === 'undefined' ? require('@/messages/ns/ms-MY/errorPage.json') : () => import('@/messages/ns/ms-MY/errorPage.json'))
+registerLanguage('errorPage', 'ms-MY', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/ms-MY/errorPage.json')) : () => import('@/messages/ns/ms-MY/errorPage.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('errorPage', 'ja-JP', typeof window === 'undefined' ? require('@/messages/ns/ja-JP/errorPage.json') : () => import('@/messages/ns/ja-JP/errorPage.json'))
+registerLanguage('errorPage', 'ja-JP', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/ja-JP/errorPage.json')) : () => import('@/messages/ns/ja-JP/errorPage.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('errorPage', 'zh-HK', typeof window === 'undefined' ? require('@/messages/ns/zh-HK/errorPage.json') : () => import('@/messages/ns/zh-HK/errorPage.json'))
+registerLanguage('errorPage', 'zh-HK', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/zh-HK/errorPage.json')) : () => import('@/messages/ns/zh-HK/errorPage.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('errorPage', 'th-TH', typeof window === 'undefined' ? require('@/messages/ns/th-TH/errorPage.json') : () => import('@/messages/ns/th-TH/errorPage.json'))
+registerLanguage('errorPage', 'th-TH', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/th-TH/errorPage.json')) : () => import('@/messages/ns/th-TH/errorPage.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('errorPage', 'ar-AE', typeof window === 'undefined' ? require('@/messages/ns/ar-AE/errorPage.json') : () => import('@/messages/ns/ar-AE/errorPage.json'))
+registerLanguage('errorPage', 'ar-AE', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/ar-AE/errorPage.json')) : () => import('@/messages/ns/ar-AE/errorPage.json'))

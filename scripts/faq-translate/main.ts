@@ -159,6 +159,13 @@ async function main() {
     deps.prices = prices
   }
   const report = await runTranslator(deps, { dryRun, maxUsd, limit })
+  // perf-1 (5 November 2026, docs/perf-1-report.md): a run that wrote or removed a translation asks the site to refresh the FAQ's
+  // cached data (POST /api/revalidate, REVALIDATE_SECRET from process.env). Missing or unreachable → one WARNING line; never a failure.
+  if (!dryRun && !fixtures && (report.done > 0 || report.removed > 0)) {
+    // eslint-disable-next-line @typescript-eslint/no-require-imports -- a CommonJS helper shared with scripts/db-migrate.cjs
+    const { revalidatePages } = require('../revalidate-pages.cjs') as { revalidatePages: (tags: string[], o: { why: string; log: (m: string) => void }) => Promise<boolean> }
+    await revalidatePages(['marketing-faq'], { why: 'faq-translate', log })
+  }
   // faq-2-seo-geo-2 B6 / faq-4: the FAQ pages this run changed (the switched-on countries whose page language reads a locale written
   // ok — so the page has content) go to IndexNow — never in a dry run. Their 60-second cache shows the rows by then; a failed submission is only logged.
   if (!dryRun && !fixtures && report.okLocales.length) {

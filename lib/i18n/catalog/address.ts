@@ -2,63 +2,64 @@
 // Import this module (`import '@/lib/i18n/catalog/address'`) in any file that reads the "address" namespace.
 import base from '@/messages/ns/en-GB/address.json'
 import enUS from '@/messages/ns/en-US/address.json'
-import { registerNamespace, registerLanguage } from '@/lib/i18n/registry'
+import { registerNamespace, registerLanguage, serverWords } from '@/lib/i18n/registry'
 
 registerNamespace('address', base, { 'en-US': enUS })
-// languages-1: each non-English language — on the server now; in the browser only when a page is in that language.
+// languages-1: each non-English language only when a page is in that language — perf-1: on the server too (serverWords: a
+// synchronous require, run the first time the language is asked for), in the browser as a chunk loaded on demand.
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('address', 'fr-FR', typeof window === 'undefined' ? require('@/messages/ns/fr-FR/address.json') : () => import('@/messages/ns/fr-FR/address.json'))
+registerLanguage('address', 'fr-FR', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/fr-FR/address.json')) : () => import('@/messages/ns/fr-FR/address.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('address', 'de-DE', typeof window === 'undefined' ? require('@/messages/ns/de-DE/address.json') : () => import('@/messages/ns/de-DE/address.json'))
+registerLanguage('address', 'de-DE', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/de-DE/address.json')) : () => import('@/messages/ns/de-DE/address.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('address', 'es-ES', typeof window === 'undefined' ? require('@/messages/ns/es-ES/address.json') : () => import('@/messages/ns/es-ES/address.json'))
+registerLanguage('address', 'es-ES', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/es-ES/address.json')) : () => import('@/messages/ns/es-ES/address.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('address', 'it-IT', typeof window === 'undefined' ? require('@/messages/ns/it-IT/address.json') : () => import('@/messages/ns/it-IT/address.json'))
+registerLanguage('address', 'it-IT', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/it-IT/address.json')) : () => import('@/messages/ns/it-IT/address.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('address', 'pt-PT', typeof window === 'undefined' ? require('@/messages/ns/pt-PT/address.json') : () => import('@/messages/ns/pt-PT/address.json'))
+registerLanguage('address', 'pt-PT', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/pt-PT/address.json')) : () => import('@/messages/ns/pt-PT/address.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('address', 'nl-NL', typeof window === 'undefined' ? require('@/messages/ns/nl-NL/address.json') : () => import('@/messages/ns/nl-NL/address.json'))
+registerLanguage('address', 'nl-NL', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/nl-NL/address.json')) : () => import('@/messages/ns/nl-NL/address.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('address', 'sv-SE', typeof window === 'undefined' ? require('@/messages/ns/sv-SE/address.json') : () => import('@/messages/ns/sv-SE/address.json'))
+registerLanguage('address', 'sv-SE', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/sv-SE/address.json')) : () => import('@/messages/ns/sv-SE/address.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('address', 'da-DK', typeof window === 'undefined' ? require('@/messages/ns/da-DK/address.json') : () => import('@/messages/ns/da-DK/address.json'))
+registerLanguage('address', 'da-DK', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/da-DK/address.json')) : () => import('@/messages/ns/da-DK/address.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('address', 'nb-NO', typeof window === 'undefined' ? require('@/messages/ns/nb-NO/address.json') : () => import('@/messages/ns/nb-NO/address.json'))
+registerLanguage('address', 'nb-NO', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/nb-NO/address.json')) : () => import('@/messages/ns/nb-NO/address.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('address', 'pl-PL', typeof window === 'undefined' ? require('@/messages/ns/pl-PL/address.json') : () => import('@/messages/ns/pl-PL/address.json'))
+registerLanguage('address', 'pl-PL', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/pl-PL/address.json')) : () => import('@/messages/ns/pl-PL/address.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('address', 'cs-CZ', typeof window === 'undefined' ? require('@/messages/ns/cs-CZ/address.json') : () => import('@/messages/ns/cs-CZ/address.json'))
+registerLanguage('address', 'cs-CZ', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/cs-CZ/address.json')) : () => import('@/messages/ns/cs-CZ/address.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('address', 'hu-HU', typeof window === 'undefined' ? require('@/messages/ns/hu-HU/address.json') : () => import('@/messages/ns/hu-HU/address.json'))
+registerLanguage('address', 'hu-HU', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/hu-HU/address.json')) : () => import('@/messages/ns/hu-HU/address.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('address', 'sk-SK', typeof window === 'undefined' ? require('@/messages/ns/sk-SK/address.json') : () => import('@/messages/ns/sk-SK/address.json'))
+registerLanguage('address', 'sk-SK', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/sk-SK/address.json')) : () => import('@/messages/ns/sk-SK/address.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('address', 'ro-RO', typeof window === 'undefined' ? require('@/messages/ns/ro-RO/address.json') : () => import('@/messages/ns/ro-RO/address.json'))
+registerLanguage('address', 'ro-RO', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/ro-RO/address.json')) : () => import('@/messages/ns/ro-RO/address.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('address', 'hr-HR', typeof window === 'undefined' ? require('@/messages/ns/hr-HR/address.json') : () => import('@/messages/ns/hr-HR/address.json'))
+registerLanguage('address', 'hr-HR', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/hr-HR/address.json')) : () => import('@/messages/ns/hr-HR/address.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('address', 'sl-SI', typeof window === 'undefined' ? require('@/messages/ns/sl-SI/address.json') : () => import('@/messages/ns/sl-SI/address.json'))
+registerLanguage('address', 'sl-SI', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/sl-SI/address.json')) : () => import('@/messages/ns/sl-SI/address.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('address', 'fi-FI', typeof window === 'undefined' ? require('@/messages/ns/fi-FI/address.json') : () => import('@/messages/ns/fi-FI/address.json'))
+registerLanguage('address', 'fi-FI', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/fi-FI/address.json')) : () => import('@/messages/ns/fi-FI/address.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('address', 'et-EE', typeof window === 'undefined' ? require('@/messages/ns/et-EE/address.json') : () => import('@/messages/ns/et-EE/address.json'))
+registerLanguage('address', 'et-EE', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/et-EE/address.json')) : () => import('@/messages/ns/et-EE/address.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('address', 'lv-LV', typeof window === 'undefined' ? require('@/messages/ns/lv-LV/address.json') : () => import('@/messages/ns/lv-LV/address.json'))
+registerLanguage('address', 'lv-LV', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/lv-LV/address.json')) : () => import('@/messages/ns/lv-LV/address.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('address', 'lt-LT', typeof window === 'undefined' ? require('@/messages/ns/lt-LT/address.json') : () => import('@/messages/ns/lt-LT/address.json'))
+registerLanguage('address', 'lt-LT', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/lt-LT/address.json')) : () => import('@/messages/ns/lt-LT/address.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('address', 'el-GR', typeof window === 'undefined' ? require('@/messages/ns/el-GR/address.json') : () => import('@/messages/ns/el-GR/address.json'))
+registerLanguage('address', 'el-GR', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/el-GR/address.json')) : () => import('@/messages/ns/el-GR/address.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('address', 'bg-BG', typeof window === 'undefined' ? require('@/messages/ns/bg-BG/address.json') : () => import('@/messages/ns/bg-BG/address.json'))
+registerLanguage('address', 'bg-BG', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/bg-BG/address.json')) : () => import('@/messages/ns/bg-BG/address.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('address', 'pt-BR', typeof window === 'undefined' ? require('@/messages/ns/pt-BR/address.json') : () => import('@/messages/ns/pt-BR/address.json'))
+registerLanguage('address', 'pt-BR', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/pt-BR/address.json')) : () => import('@/messages/ns/pt-BR/address.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('address', 'ms-MY', typeof window === 'undefined' ? require('@/messages/ns/ms-MY/address.json') : () => import('@/messages/ns/ms-MY/address.json'))
+registerLanguage('address', 'ms-MY', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/ms-MY/address.json')) : () => import('@/messages/ns/ms-MY/address.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('address', 'ja-JP', typeof window === 'undefined' ? require('@/messages/ns/ja-JP/address.json') : () => import('@/messages/ns/ja-JP/address.json'))
+registerLanguage('address', 'ja-JP', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/ja-JP/address.json')) : () => import('@/messages/ns/ja-JP/address.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('address', 'zh-HK', typeof window === 'undefined' ? require('@/messages/ns/zh-HK/address.json') : () => import('@/messages/ns/zh-HK/address.json'))
+registerLanguage('address', 'zh-HK', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/zh-HK/address.json')) : () => import('@/messages/ns/zh-HK/address.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('address', 'th-TH', typeof window === 'undefined' ? require('@/messages/ns/th-TH/address.json') : () => import('@/messages/ns/th-TH/address.json'))
+registerLanguage('address', 'th-TH', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/th-TH/address.json')) : () => import('@/messages/ns/th-TH/address.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('address', 'ar-AE', typeof window === 'undefined' ? require('@/messages/ns/ar-AE/address.json') : () => import('@/messages/ns/ar-AE/address.json'))
+registerLanguage('address', 'ar-AE', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/ar-AE/address.json')) : () => import('@/messages/ns/ar-AE/address.json'))

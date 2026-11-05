@@ -3,63 +3,64 @@
 import base from '@/messages/ns/en-GB/settingsCopy.json'
 import enUS from '@/messages/ns/en-US/settingsCopy.json'
 import enAU from '@/messages/ns/en-AU/settingsCopy.json'
-import { registerNamespace, registerLanguage } from '@/lib/i18n/registry'
+import { registerNamespace, registerLanguage, serverWords } from '@/lib/i18n/registry'
 
 registerNamespace('settingsCopy', base, { 'en-US': enUS, 'en-AU': enAU })
-// languages-1: each non-English language — on the server now; in the browser only when a page is in that language.
+// languages-1: each non-English language only when a page is in that language — perf-1: on the server too (serverWords: a
+// synchronous require, run the first time the language is asked for), in the browser as a chunk loaded on demand.
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('settingsCopy', 'fr-FR', typeof window === 'undefined' ? require('@/messages/ns/fr-FR/settingsCopy.json') : () => import('@/messages/ns/fr-FR/settingsCopy.json'))
+registerLanguage('settingsCopy', 'fr-FR', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/fr-FR/settingsCopy.json')) : () => import('@/messages/ns/fr-FR/settingsCopy.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('settingsCopy', 'de-DE', typeof window === 'undefined' ? require('@/messages/ns/de-DE/settingsCopy.json') : () => import('@/messages/ns/de-DE/settingsCopy.json'))
+registerLanguage('settingsCopy', 'de-DE', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/de-DE/settingsCopy.json')) : () => import('@/messages/ns/de-DE/settingsCopy.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('settingsCopy', 'es-ES', typeof window === 'undefined' ? require('@/messages/ns/es-ES/settingsCopy.json') : () => import('@/messages/ns/es-ES/settingsCopy.json'))
+registerLanguage('settingsCopy', 'es-ES', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/es-ES/settingsCopy.json')) : () => import('@/messages/ns/es-ES/settingsCopy.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('settingsCopy', 'it-IT', typeof window === 'undefined' ? require('@/messages/ns/it-IT/settingsCopy.json') : () => import('@/messages/ns/it-IT/settingsCopy.json'))
+registerLanguage('settingsCopy', 'it-IT', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/it-IT/settingsCopy.json')) : () => import('@/messages/ns/it-IT/settingsCopy.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('settingsCopy', 'pt-PT', typeof window === 'undefined' ? require('@/messages/ns/pt-PT/settingsCopy.json') : () => import('@/messages/ns/pt-PT/settingsCopy.json'))
+registerLanguage('settingsCopy', 'pt-PT', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/pt-PT/settingsCopy.json')) : () => import('@/messages/ns/pt-PT/settingsCopy.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('settingsCopy', 'nl-NL', typeof window === 'undefined' ? require('@/messages/ns/nl-NL/settingsCopy.json') : () => import('@/messages/ns/nl-NL/settingsCopy.json'))
+registerLanguage('settingsCopy', 'nl-NL', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/nl-NL/settingsCopy.json')) : () => import('@/messages/ns/nl-NL/settingsCopy.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('settingsCopy', 'sv-SE', typeof window === 'undefined' ? require('@/messages/ns/sv-SE/settingsCopy.json') : () => import('@/messages/ns/sv-SE/settingsCopy.json'))
+registerLanguage('settingsCopy', 'sv-SE', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/sv-SE/settingsCopy.json')) : () => import('@/messages/ns/sv-SE/settingsCopy.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('settingsCopy', 'da-DK', typeof window === 'undefined' ? require('@/messages/ns/da-DK/settingsCopy.json') : () => import('@/messages/ns/da-DK/settingsCopy.json'))
+registerLanguage('settingsCopy', 'da-DK', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/da-DK/settingsCopy.json')) : () => import('@/messages/ns/da-DK/settingsCopy.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('settingsCopy', 'nb-NO', typeof window === 'undefined' ? require('@/messages/ns/nb-NO/settingsCopy.json') : () => import('@/messages/ns/nb-NO/settingsCopy.json'))
+registerLanguage('settingsCopy', 'nb-NO', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/nb-NO/settingsCopy.json')) : () => import('@/messages/ns/nb-NO/settingsCopy.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('settingsCopy', 'pl-PL', typeof window === 'undefined' ? require('@/messages/ns/pl-PL/settingsCopy.json') : () => import('@/messages/ns/pl-PL/settingsCopy.json'))
+registerLanguage('settingsCopy', 'pl-PL', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/pl-PL/settingsCopy.json')) : () => import('@/messages/ns/pl-PL/settingsCopy.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('settingsCopy', 'cs-CZ', typeof window === 'undefined' ? require('@/messages/ns/cs-CZ/settingsCopy.json') : () => import('@/messages/ns/cs-CZ/settingsCopy.json'))
+registerLanguage('settingsCopy', 'cs-CZ', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/cs-CZ/settingsCopy.json')) : () => import('@/messages/ns/cs-CZ/settingsCopy.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('settingsCopy', 'hu-HU', typeof window === 'undefined' ? require('@/messages/ns/hu-HU/settingsCopy.json') : () => import('@/messages/ns/hu-HU/settingsCopy.json'))
+registerLanguage('settingsCopy', 'hu-HU', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/hu-HU/settingsCopy.json')) : () => import('@/messages/ns/hu-HU/settingsCopy.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('settingsCopy', 'sk-SK', typeof window === 'undefined' ? require('@/messages/ns/sk-SK/settingsCopy.json') : () => import('@/messages/ns/sk-SK/settingsCopy.json'))
+registerLanguage('settingsCopy', 'sk-SK', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/sk-SK/settingsCopy.json')) : () => import('@/messages/ns/sk-SK/settingsCopy.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('settingsCopy', 'ro-RO', typeof window === 'undefined' ? require('@/messages/ns/ro-RO/settingsCopy.json') : () => import('@/messages/ns/ro-RO/settingsCopy.json'))
+registerLanguage('settingsCopy', 'ro-RO', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/ro-RO/settingsCopy.json')) : () => import('@/messages/ns/ro-RO/settingsCopy.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('settingsCopy', 'hr-HR', typeof window === 'undefined' ? require('@/messages/ns/hr-HR/settingsCopy.json') : () => import('@/messages/ns/hr-HR/settingsCopy.json'))
+registerLanguage('settingsCopy', 'hr-HR', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/hr-HR/settingsCopy.json')) : () => import('@/messages/ns/hr-HR/settingsCopy.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('settingsCopy', 'sl-SI', typeof window === 'undefined' ? require('@/messages/ns/sl-SI/settingsCopy.json') : () => import('@/messages/ns/sl-SI/settingsCopy.json'))
+registerLanguage('settingsCopy', 'sl-SI', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/sl-SI/settingsCopy.json')) : () => import('@/messages/ns/sl-SI/settingsCopy.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('settingsCopy', 'fi-FI', typeof window === 'undefined' ? require('@/messages/ns/fi-FI/settingsCopy.json') : () => import('@/messages/ns/fi-FI/settingsCopy.json'))
+registerLanguage('settingsCopy', 'fi-FI', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/fi-FI/settingsCopy.json')) : () => import('@/messages/ns/fi-FI/settingsCopy.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('settingsCopy', 'et-EE', typeof window === 'undefined' ? require('@/messages/ns/et-EE/settingsCopy.json') : () => import('@/messages/ns/et-EE/settingsCopy.json'))
+registerLanguage('settingsCopy', 'et-EE', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/et-EE/settingsCopy.json')) : () => import('@/messages/ns/et-EE/settingsCopy.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('settingsCopy', 'lv-LV', typeof window === 'undefined' ? require('@/messages/ns/lv-LV/settingsCopy.json') : () => import('@/messages/ns/lv-LV/settingsCopy.json'))
+registerLanguage('settingsCopy', 'lv-LV', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/lv-LV/settingsCopy.json')) : () => import('@/messages/ns/lv-LV/settingsCopy.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('settingsCopy', 'lt-LT', typeof window === 'undefined' ? require('@/messages/ns/lt-LT/settingsCopy.json') : () => import('@/messages/ns/lt-LT/settingsCopy.json'))
+registerLanguage('settingsCopy', 'lt-LT', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/lt-LT/settingsCopy.json')) : () => import('@/messages/ns/lt-LT/settingsCopy.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('settingsCopy', 'el-GR', typeof window === 'undefined' ? require('@/messages/ns/el-GR/settingsCopy.json') : () => import('@/messages/ns/el-GR/settingsCopy.json'))
+registerLanguage('settingsCopy', 'el-GR', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/el-GR/settingsCopy.json')) : () => import('@/messages/ns/el-GR/settingsCopy.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('settingsCopy', 'bg-BG', typeof window === 'undefined' ? require('@/messages/ns/bg-BG/settingsCopy.json') : () => import('@/messages/ns/bg-BG/settingsCopy.json'))
+registerLanguage('settingsCopy', 'bg-BG', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/bg-BG/settingsCopy.json')) : () => import('@/messages/ns/bg-BG/settingsCopy.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('settingsCopy', 'pt-BR', typeof window === 'undefined' ? require('@/messages/ns/pt-BR/settingsCopy.json') : () => import('@/messages/ns/pt-BR/settingsCopy.json'))
+registerLanguage('settingsCopy', 'pt-BR', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/pt-BR/settingsCopy.json')) : () => import('@/messages/ns/pt-BR/settingsCopy.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('settingsCopy', 'ms-MY', typeof window === 'undefined' ? require('@/messages/ns/ms-MY/settingsCopy.json') : () => import('@/messages/ns/ms-MY/settingsCopy.json'))
+registerLanguage('settingsCopy', 'ms-MY', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/ms-MY/settingsCopy.json')) : () => import('@/messages/ns/ms-MY/settingsCopy.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('settingsCopy', 'ja-JP', typeof window === 'undefined' ? require('@/messages/ns/ja-JP/settingsCopy.json') : () => import('@/messages/ns/ja-JP/settingsCopy.json'))
+registerLanguage('settingsCopy', 'ja-JP', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/ja-JP/settingsCopy.json')) : () => import('@/messages/ns/ja-JP/settingsCopy.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('settingsCopy', 'zh-HK', typeof window === 'undefined' ? require('@/messages/ns/zh-HK/settingsCopy.json') : () => import('@/messages/ns/zh-HK/settingsCopy.json'))
+registerLanguage('settingsCopy', 'zh-HK', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/zh-HK/settingsCopy.json')) : () => import('@/messages/ns/zh-HK/settingsCopy.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('settingsCopy', 'th-TH', typeof window === 'undefined' ? require('@/messages/ns/th-TH/settingsCopy.json') : () => import('@/messages/ns/th-TH/settingsCopy.json'))
+registerLanguage('settingsCopy', 'th-TH', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/th-TH/settingsCopy.json')) : () => import('@/messages/ns/th-TH/settingsCopy.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('settingsCopy', 'ar-AE', typeof window === 'undefined' ? require('@/messages/ns/ar-AE/settingsCopy.json') : () => import('@/messages/ns/ar-AE/settingsCopy.json'))
+registerLanguage('settingsCopy', 'ar-AE', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/ar-AE/settingsCopy.json')) : () => import('@/messages/ns/ar-AE/settingsCopy.json'))

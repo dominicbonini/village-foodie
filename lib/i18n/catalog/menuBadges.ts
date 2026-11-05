@@ -2,65 +2,66 @@
 // Import this module (`import '@/lib/i18n/catalog/menuBadges'`) in any file that reads the "menuBadges" namespace.
 import base from '@/messages/ns/en-GB/menuBadges.json'
 import enUS from '@/messages/ns/en-US/menuBadges.json'
-import { registerNamespace, registerLanguage } from '@/lib/i18n/registry'
+import { registerNamespace, registerLanguage, serverWords } from '@/lib/i18n/registry'
 
 registerNamespace('menuBadges', base, { 'en-US': enUS })
-// languages-1: each non-English language — on the server now; in the browser only when a page is in that language.
+// languages-1: each non-English language only when a page is in that language — perf-1: on the server too (serverWords: a
+// synchronous require, run the first time the language is asked for), in the browser as a chunk loaded on demand.
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('menuBadges', 'fr-FR', typeof window === 'undefined' ? require('@/messages/ns/fr-FR/menuBadges.json') : () => import('@/messages/ns/fr-FR/menuBadges.json'))
+registerLanguage('menuBadges', 'fr-FR', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/fr-FR/menuBadges.json')) : () => import('@/messages/ns/fr-FR/menuBadges.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('menuBadges', 'de-DE', typeof window === 'undefined' ? require('@/messages/ns/de-DE/menuBadges.json') : () => import('@/messages/ns/de-DE/menuBadges.json'))
+registerLanguage('menuBadges', 'de-DE', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/de-DE/menuBadges.json')) : () => import('@/messages/ns/de-DE/menuBadges.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('menuBadges', 'es-ES', typeof window === 'undefined' ? require('@/messages/ns/es-ES/menuBadges.json') : () => import('@/messages/ns/es-ES/menuBadges.json'))
+registerLanguage('menuBadges', 'es-ES', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/es-ES/menuBadges.json')) : () => import('@/messages/ns/es-ES/menuBadges.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('menuBadges', 'it-IT', typeof window === 'undefined' ? require('@/messages/ns/it-IT/menuBadges.json') : () => import('@/messages/ns/it-IT/menuBadges.json'))
+registerLanguage('menuBadges', 'it-IT', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/it-IT/menuBadges.json')) : () => import('@/messages/ns/it-IT/menuBadges.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('menuBadges', 'pt-PT', typeof window === 'undefined' ? require('@/messages/ns/pt-PT/menuBadges.json') : () => import('@/messages/ns/pt-PT/menuBadges.json'))
+registerLanguage('menuBadges', 'pt-PT', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/pt-PT/menuBadges.json')) : () => import('@/messages/ns/pt-PT/menuBadges.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('menuBadges', 'nl-NL', typeof window === 'undefined' ? require('@/messages/ns/nl-NL/menuBadges.json') : () => import('@/messages/ns/nl-NL/menuBadges.json'))
+registerLanguage('menuBadges', 'nl-NL', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/nl-NL/menuBadges.json')) : () => import('@/messages/ns/nl-NL/menuBadges.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('menuBadges', 'sv-SE', typeof window === 'undefined' ? require('@/messages/ns/sv-SE/menuBadges.json') : () => import('@/messages/ns/sv-SE/menuBadges.json'))
+registerLanguage('menuBadges', 'sv-SE', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/sv-SE/menuBadges.json')) : () => import('@/messages/ns/sv-SE/menuBadges.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('menuBadges', 'da-DK', typeof window === 'undefined' ? require('@/messages/ns/da-DK/menuBadges.json') : () => import('@/messages/ns/da-DK/menuBadges.json'))
+registerLanguage('menuBadges', 'da-DK', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/da-DK/menuBadges.json')) : () => import('@/messages/ns/da-DK/menuBadges.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('menuBadges', 'nb-NO', typeof window === 'undefined' ? require('@/messages/ns/nb-NO/menuBadges.json') : () => import('@/messages/ns/nb-NO/menuBadges.json'))
+registerLanguage('menuBadges', 'nb-NO', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/nb-NO/menuBadges.json')) : () => import('@/messages/ns/nb-NO/menuBadges.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('menuBadges', 'pl-PL', typeof window === 'undefined' ? require('@/messages/ns/pl-PL/menuBadges.json') : () => import('@/messages/ns/pl-PL/menuBadges.json'))
+registerLanguage('menuBadges', 'pl-PL', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/pl-PL/menuBadges.json')) : () => import('@/messages/ns/pl-PL/menuBadges.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('menuBadges', 'cs-CZ', typeof window === 'undefined' ? require('@/messages/ns/cs-CZ/menuBadges.json') : () => import('@/messages/ns/cs-CZ/menuBadges.json'))
+registerLanguage('menuBadges', 'cs-CZ', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/cs-CZ/menuBadges.json')) : () => import('@/messages/ns/cs-CZ/menuBadges.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('menuBadges', 'hu-HU', typeof window === 'undefined' ? require('@/messages/ns/hu-HU/menuBadges.json') : () => import('@/messages/ns/hu-HU/menuBadges.json'))
+registerLanguage('menuBadges', 'hu-HU', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/hu-HU/menuBadges.json')) : () => import('@/messages/ns/hu-HU/menuBadges.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('menuBadges', 'sk-SK', typeof window === 'undefined' ? require('@/messages/ns/sk-SK/menuBadges.json') : () => import('@/messages/ns/sk-SK/menuBadges.json'))
+registerLanguage('menuBadges', 'sk-SK', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/sk-SK/menuBadges.json')) : () => import('@/messages/ns/sk-SK/menuBadges.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('menuBadges', 'ro-RO', typeof window === 'undefined' ? require('@/messages/ns/ro-RO/menuBadges.json') : () => import('@/messages/ns/ro-RO/menuBadges.json'))
+registerLanguage('menuBadges', 'ro-RO', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/ro-RO/menuBadges.json')) : () => import('@/messages/ns/ro-RO/menuBadges.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('menuBadges', 'hr-HR', typeof window === 'undefined' ? require('@/messages/ns/hr-HR/menuBadges.json') : () => import('@/messages/ns/hr-HR/menuBadges.json'))
+registerLanguage('menuBadges', 'hr-HR', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/hr-HR/menuBadges.json')) : () => import('@/messages/ns/hr-HR/menuBadges.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('menuBadges', 'sl-SI', typeof window === 'undefined' ? require('@/messages/ns/sl-SI/menuBadges.json') : () => import('@/messages/ns/sl-SI/menuBadges.json'))
+registerLanguage('menuBadges', 'sl-SI', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/sl-SI/menuBadges.json')) : () => import('@/messages/ns/sl-SI/menuBadges.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('menuBadges', 'fi-FI', typeof window === 'undefined' ? require('@/messages/ns/fi-FI/menuBadges.json') : () => import('@/messages/ns/fi-FI/menuBadges.json'))
+registerLanguage('menuBadges', 'fi-FI', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/fi-FI/menuBadges.json')) : () => import('@/messages/ns/fi-FI/menuBadges.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('menuBadges', 'et-EE', typeof window === 'undefined' ? require('@/messages/ns/et-EE/menuBadges.json') : () => import('@/messages/ns/et-EE/menuBadges.json'))
+registerLanguage('menuBadges', 'et-EE', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/et-EE/menuBadges.json')) : () => import('@/messages/ns/et-EE/menuBadges.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('menuBadges', 'lv-LV', typeof window === 'undefined' ? require('@/messages/ns/lv-LV/menuBadges.json') : () => import('@/messages/ns/lv-LV/menuBadges.json'))
+registerLanguage('menuBadges', 'lv-LV', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/lv-LV/menuBadges.json')) : () => import('@/messages/ns/lv-LV/menuBadges.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('menuBadges', 'lt-LT', typeof window === 'undefined' ? require('@/messages/ns/lt-LT/menuBadges.json') : () => import('@/messages/ns/lt-LT/menuBadges.json'))
+registerLanguage('menuBadges', 'lt-LT', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/lt-LT/menuBadges.json')) : () => import('@/messages/ns/lt-LT/menuBadges.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('menuBadges', 'el-GR', typeof window === 'undefined' ? require('@/messages/ns/el-GR/menuBadges.json') : () => import('@/messages/ns/el-GR/menuBadges.json'))
+registerLanguage('menuBadges', 'el-GR', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/el-GR/menuBadges.json')) : () => import('@/messages/ns/el-GR/menuBadges.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('menuBadges', 'bg-BG', typeof window === 'undefined' ? require('@/messages/ns/bg-BG/menuBadges.json') : () => import('@/messages/ns/bg-BG/menuBadges.json'))
+registerLanguage('menuBadges', 'bg-BG', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/bg-BG/menuBadges.json')) : () => import('@/messages/ns/bg-BG/menuBadges.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('menuBadges', 'es-MX', typeof window === 'undefined' ? require('@/messages/ns/es-MX/menuBadges.json') : () => import('@/messages/ns/es-MX/menuBadges.json'))
+registerLanguage('menuBadges', 'es-MX', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/es-MX/menuBadges.json')) : () => import('@/messages/ns/es-MX/menuBadges.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('menuBadges', 'pt-BR', typeof window === 'undefined' ? require('@/messages/ns/pt-BR/menuBadges.json') : () => import('@/messages/ns/pt-BR/menuBadges.json'))
+registerLanguage('menuBadges', 'pt-BR', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/pt-BR/menuBadges.json')) : () => import('@/messages/ns/pt-BR/menuBadges.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('menuBadges', 'ms-MY', typeof window === 'undefined' ? require('@/messages/ns/ms-MY/menuBadges.json') : () => import('@/messages/ns/ms-MY/menuBadges.json'))
+registerLanguage('menuBadges', 'ms-MY', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/ms-MY/menuBadges.json')) : () => import('@/messages/ns/ms-MY/menuBadges.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('menuBadges', 'ja-JP', typeof window === 'undefined' ? require('@/messages/ns/ja-JP/menuBadges.json') : () => import('@/messages/ns/ja-JP/menuBadges.json'))
+registerLanguage('menuBadges', 'ja-JP', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/ja-JP/menuBadges.json')) : () => import('@/messages/ns/ja-JP/menuBadges.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('menuBadges', 'zh-HK', typeof window === 'undefined' ? require('@/messages/ns/zh-HK/menuBadges.json') : () => import('@/messages/ns/zh-HK/menuBadges.json'))
+registerLanguage('menuBadges', 'zh-HK', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/zh-HK/menuBadges.json')) : () => import('@/messages/ns/zh-HK/menuBadges.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('menuBadges', 'th-TH', typeof window === 'undefined' ? require('@/messages/ns/th-TH/menuBadges.json') : () => import('@/messages/ns/th-TH/menuBadges.json'))
+registerLanguage('menuBadges', 'th-TH', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/th-TH/menuBadges.json')) : () => import('@/messages/ns/th-TH/menuBadges.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('menuBadges', 'ar-AE', typeof window === 'undefined' ? require('@/messages/ns/ar-AE/menuBadges.json') : () => import('@/messages/ns/ar-AE/menuBadges.json'))
+registerLanguage('menuBadges', 'ar-AE', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/ar-AE/menuBadges.json')) : () => import('@/messages/ns/ar-AE/menuBadges.json'))

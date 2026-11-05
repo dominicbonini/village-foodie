@@ -3,65 +3,66 @@
 import base from '@/messages/ns/en-GB/goLive.json'
 import enUS from '@/messages/ns/en-US/goLive.json'
 import enAU from '@/messages/ns/en-AU/goLive.json'
-import { registerNamespace, registerLanguage } from '@/lib/i18n/registry'
+import { registerNamespace, registerLanguage, serverWords } from '@/lib/i18n/registry'
 
 registerNamespace('goLive', base, { 'en-US': enUS, 'en-AU': enAU })
-// languages-1: each non-English language — on the server now; in the browser only when a page is in that language.
+// languages-1: each non-English language only when a page is in that language — perf-1: on the server too (serverWords: a
+// synchronous require, run the first time the language is asked for), in the browser as a chunk loaded on demand.
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('goLive', 'fr-FR', typeof window === 'undefined' ? require('@/messages/ns/fr-FR/goLive.json') : () => import('@/messages/ns/fr-FR/goLive.json'))
+registerLanguage('goLive', 'fr-FR', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/fr-FR/goLive.json')) : () => import('@/messages/ns/fr-FR/goLive.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('goLive', 'de-DE', typeof window === 'undefined' ? require('@/messages/ns/de-DE/goLive.json') : () => import('@/messages/ns/de-DE/goLive.json'))
+registerLanguage('goLive', 'de-DE', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/de-DE/goLive.json')) : () => import('@/messages/ns/de-DE/goLive.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('goLive', 'es-ES', typeof window === 'undefined' ? require('@/messages/ns/es-ES/goLive.json') : () => import('@/messages/ns/es-ES/goLive.json'))
+registerLanguage('goLive', 'es-ES', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/es-ES/goLive.json')) : () => import('@/messages/ns/es-ES/goLive.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('goLive', 'it-IT', typeof window === 'undefined' ? require('@/messages/ns/it-IT/goLive.json') : () => import('@/messages/ns/it-IT/goLive.json'))
+registerLanguage('goLive', 'it-IT', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/it-IT/goLive.json')) : () => import('@/messages/ns/it-IT/goLive.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('goLive', 'pt-PT', typeof window === 'undefined' ? require('@/messages/ns/pt-PT/goLive.json') : () => import('@/messages/ns/pt-PT/goLive.json'))
+registerLanguage('goLive', 'pt-PT', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/pt-PT/goLive.json')) : () => import('@/messages/ns/pt-PT/goLive.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('goLive', 'nl-NL', typeof window === 'undefined' ? require('@/messages/ns/nl-NL/goLive.json') : () => import('@/messages/ns/nl-NL/goLive.json'))
+registerLanguage('goLive', 'nl-NL', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/nl-NL/goLive.json')) : () => import('@/messages/ns/nl-NL/goLive.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('goLive', 'sv-SE', typeof window === 'undefined' ? require('@/messages/ns/sv-SE/goLive.json') : () => import('@/messages/ns/sv-SE/goLive.json'))
+registerLanguage('goLive', 'sv-SE', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/sv-SE/goLive.json')) : () => import('@/messages/ns/sv-SE/goLive.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('goLive', 'da-DK', typeof window === 'undefined' ? require('@/messages/ns/da-DK/goLive.json') : () => import('@/messages/ns/da-DK/goLive.json'))
+registerLanguage('goLive', 'da-DK', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/da-DK/goLive.json')) : () => import('@/messages/ns/da-DK/goLive.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('goLive', 'nb-NO', typeof window === 'undefined' ? require('@/messages/ns/nb-NO/goLive.json') : () => import('@/messages/ns/nb-NO/goLive.json'))
+registerLanguage('goLive', 'nb-NO', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/nb-NO/goLive.json')) : () => import('@/messages/ns/nb-NO/goLive.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('goLive', 'pl-PL', typeof window === 'undefined' ? require('@/messages/ns/pl-PL/goLive.json') : () => import('@/messages/ns/pl-PL/goLive.json'))
+registerLanguage('goLive', 'pl-PL', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/pl-PL/goLive.json')) : () => import('@/messages/ns/pl-PL/goLive.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('goLive', 'cs-CZ', typeof window === 'undefined' ? require('@/messages/ns/cs-CZ/goLive.json') : () => import('@/messages/ns/cs-CZ/goLive.json'))
+registerLanguage('goLive', 'cs-CZ', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/cs-CZ/goLive.json')) : () => import('@/messages/ns/cs-CZ/goLive.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('goLive', 'hu-HU', typeof window === 'undefined' ? require('@/messages/ns/hu-HU/goLive.json') : () => import('@/messages/ns/hu-HU/goLive.json'))
+registerLanguage('goLive', 'hu-HU', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/hu-HU/goLive.json')) : () => import('@/messages/ns/hu-HU/goLive.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('goLive', 'sk-SK', typeof window === 'undefined' ? require('@/messages/ns/sk-SK/goLive.json') : () => import('@/messages/ns/sk-SK/goLive.json'))
+registerLanguage('goLive', 'sk-SK', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/sk-SK/goLive.json')) : () => import('@/messages/ns/sk-SK/goLive.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('goLive', 'ro-RO', typeof window === 'undefined' ? require('@/messages/ns/ro-RO/goLive.json') : () => import('@/messages/ns/ro-RO/goLive.json'))
+registerLanguage('goLive', 'ro-RO', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/ro-RO/goLive.json')) : () => import('@/messages/ns/ro-RO/goLive.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('goLive', 'hr-HR', typeof window === 'undefined' ? require('@/messages/ns/hr-HR/goLive.json') : () => import('@/messages/ns/hr-HR/goLive.json'))
+registerLanguage('goLive', 'hr-HR', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/hr-HR/goLive.json')) : () => import('@/messages/ns/hr-HR/goLive.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('goLive', 'sl-SI', typeof window === 'undefined' ? require('@/messages/ns/sl-SI/goLive.json') : () => import('@/messages/ns/sl-SI/goLive.json'))
+registerLanguage('goLive', 'sl-SI', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/sl-SI/goLive.json')) : () => import('@/messages/ns/sl-SI/goLive.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('goLive', 'fi-FI', typeof window === 'undefined' ? require('@/messages/ns/fi-FI/goLive.json') : () => import('@/messages/ns/fi-FI/goLive.json'))
+registerLanguage('goLive', 'fi-FI', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/fi-FI/goLive.json')) : () => import('@/messages/ns/fi-FI/goLive.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('goLive', 'et-EE', typeof window === 'undefined' ? require('@/messages/ns/et-EE/goLive.json') : () => import('@/messages/ns/et-EE/goLive.json'))
+registerLanguage('goLive', 'et-EE', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/et-EE/goLive.json')) : () => import('@/messages/ns/et-EE/goLive.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('goLive', 'lv-LV', typeof window === 'undefined' ? require('@/messages/ns/lv-LV/goLive.json') : () => import('@/messages/ns/lv-LV/goLive.json'))
+registerLanguage('goLive', 'lv-LV', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/lv-LV/goLive.json')) : () => import('@/messages/ns/lv-LV/goLive.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('goLive', 'lt-LT', typeof window === 'undefined' ? require('@/messages/ns/lt-LT/goLive.json') : () => import('@/messages/ns/lt-LT/goLive.json'))
+registerLanguage('goLive', 'lt-LT', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/lt-LT/goLive.json')) : () => import('@/messages/ns/lt-LT/goLive.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('goLive', 'el-GR', typeof window === 'undefined' ? require('@/messages/ns/el-GR/goLive.json') : () => import('@/messages/ns/el-GR/goLive.json'))
+registerLanguage('goLive', 'el-GR', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/el-GR/goLive.json')) : () => import('@/messages/ns/el-GR/goLive.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('goLive', 'bg-BG', typeof window === 'undefined' ? require('@/messages/ns/bg-BG/goLive.json') : () => import('@/messages/ns/bg-BG/goLive.json'))
+registerLanguage('goLive', 'bg-BG', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/bg-BG/goLive.json')) : () => import('@/messages/ns/bg-BG/goLive.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('goLive', 'es-MX', typeof window === 'undefined' ? require('@/messages/ns/es-MX/goLive.json') : () => import('@/messages/ns/es-MX/goLive.json'))
+registerLanguage('goLive', 'es-MX', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/es-MX/goLive.json')) : () => import('@/messages/ns/es-MX/goLive.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('goLive', 'pt-BR', typeof window === 'undefined' ? require('@/messages/ns/pt-BR/goLive.json') : () => import('@/messages/ns/pt-BR/goLive.json'))
+registerLanguage('goLive', 'pt-BR', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/pt-BR/goLive.json')) : () => import('@/messages/ns/pt-BR/goLive.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('goLive', 'ms-MY', typeof window === 'undefined' ? require('@/messages/ns/ms-MY/goLive.json') : () => import('@/messages/ns/ms-MY/goLive.json'))
+registerLanguage('goLive', 'ms-MY', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/ms-MY/goLive.json')) : () => import('@/messages/ns/ms-MY/goLive.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('goLive', 'ja-JP', typeof window === 'undefined' ? require('@/messages/ns/ja-JP/goLive.json') : () => import('@/messages/ns/ja-JP/goLive.json'))
+registerLanguage('goLive', 'ja-JP', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/ja-JP/goLive.json')) : () => import('@/messages/ns/ja-JP/goLive.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('goLive', 'zh-HK', typeof window === 'undefined' ? require('@/messages/ns/zh-HK/goLive.json') : () => import('@/messages/ns/zh-HK/goLive.json'))
+registerLanguage('goLive', 'zh-HK', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/zh-HK/goLive.json')) : () => import('@/messages/ns/zh-HK/goLive.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('goLive', 'th-TH', typeof window === 'undefined' ? require('@/messages/ns/th-TH/goLive.json') : () => import('@/messages/ns/th-TH/goLive.json'))
+registerLanguage('goLive', 'th-TH', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/th-TH/goLive.json')) : () => import('@/messages/ns/th-TH/goLive.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('goLive', 'ar-AE', typeof window === 'undefined' ? require('@/messages/ns/ar-AE/goLive.json') : () => import('@/messages/ns/ar-AE/goLive.json'))
+registerLanguage('goLive', 'ar-AE', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/ar-AE/goLive.json')) : () => import('@/messages/ns/ar-AE/goLive.json'))

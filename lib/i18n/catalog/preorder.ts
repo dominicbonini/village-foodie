@@ -2,63 +2,64 @@
 // Import this module (`import '@/lib/i18n/catalog/preorder'`) in any file that reads the "preorder" namespace.
 import base from '@/messages/ns/en-GB/preorder.json'
 import enUS from '@/messages/ns/en-US/preorder.json'
-import { registerNamespace, registerLanguage } from '@/lib/i18n/registry'
+import { registerNamespace, registerLanguage, serverWords } from '@/lib/i18n/registry'
 
 registerNamespace('preorder', base, { 'en-US': enUS })
-// languages-1: each non-English language — on the server now; in the browser only when a page is in that language.
+// languages-1: each non-English language only when a page is in that language — perf-1: on the server too (serverWords: a
+// synchronous require, run the first time the language is asked for), in the browser as a chunk loaded on demand.
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('preorder', 'fr-FR', typeof window === 'undefined' ? require('@/messages/ns/fr-FR/preorder.json') : () => import('@/messages/ns/fr-FR/preorder.json'))
+registerLanguage('preorder', 'fr-FR', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/fr-FR/preorder.json')) : () => import('@/messages/ns/fr-FR/preorder.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('preorder', 'de-DE', typeof window === 'undefined' ? require('@/messages/ns/de-DE/preorder.json') : () => import('@/messages/ns/de-DE/preorder.json'))
+registerLanguage('preorder', 'de-DE', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/de-DE/preorder.json')) : () => import('@/messages/ns/de-DE/preorder.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('preorder', 'es-ES', typeof window === 'undefined' ? require('@/messages/ns/es-ES/preorder.json') : () => import('@/messages/ns/es-ES/preorder.json'))
+registerLanguage('preorder', 'es-ES', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/es-ES/preorder.json')) : () => import('@/messages/ns/es-ES/preorder.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('preorder', 'it-IT', typeof window === 'undefined' ? require('@/messages/ns/it-IT/preorder.json') : () => import('@/messages/ns/it-IT/preorder.json'))
+registerLanguage('preorder', 'it-IT', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/it-IT/preorder.json')) : () => import('@/messages/ns/it-IT/preorder.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('preorder', 'pt-PT', typeof window === 'undefined' ? require('@/messages/ns/pt-PT/preorder.json') : () => import('@/messages/ns/pt-PT/preorder.json'))
+registerLanguage('preorder', 'pt-PT', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/pt-PT/preorder.json')) : () => import('@/messages/ns/pt-PT/preorder.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('preorder', 'nl-NL', typeof window === 'undefined' ? require('@/messages/ns/nl-NL/preorder.json') : () => import('@/messages/ns/nl-NL/preorder.json'))
+registerLanguage('preorder', 'nl-NL', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/nl-NL/preorder.json')) : () => import('@/messages/ns/nl-NL/preorder.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('preorder', 'sv-SE', typeof window === 'undefined' ? require('@/messages/ns/sv-SE/preorder.json') : () => import('@/messages/ns/sv-SE/preorder.json'))
+registerLanguage('preorder', 'sv-SE', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/sv-SE/preorder.json')) : () => import('@/messages/ns/sv-SE/preorder.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('preorder', 'da-DK', typeof window === 'undefined' ? require('@/messages/ns/da-DK/preorder.json') : () => import('@/messages/ns/da-DK/preorder.json'))
+registerLanguage('preorder', 'da-DK', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/da-DK/preorder.json')) : () => import('@/messages/ns/da-DK/preorder.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('preorder', 'nb-NO', typeof window === 'undefined' ? require('@/messages/ns/nb-NO/preorder.json') : () => import('@/messages/ns/nb-NO/preorder.json'))
+registerLanguage('preorder', 'nb-NO', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/nb-NO/preorder.json')) : () => import('@/messages/ns/nb-NO/preorder.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('preorder', 'pl-PL', typeof window === 'undefined' ? require('@/messages/ns/pl-PL/preorder.json') : () => import('@/messages/ns/pl-PL/preorder.json'))
+registerLanguage('preorder', 'pl-PL', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/pl-PL/preorder.json')) : () => import('@/messages/ns/pl-PL/preorder.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('preorder', 'cs-CZ', typeof window === 'undefined' ? require('@/messages/ns/cs-CZ/preorder.json') : () => import('@/messages/ns/cs-CZ/preorder.json'))
+registerLanguage('preorder', 'cs-CZ', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/cs-CZ/preorder.json')) : () => import('@/messages/ns/cs-CZ/preorder.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('preorder', 'hu-HU', typeof window === 'undefined' ? require('@/messages/ns/hu-HU/preorder.json') : () => import('@/messages/ns/hu-HU/preorder.json'))
+registerLanguage('preorder', 'hu-HU', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/hu-HU/preorder.json')) : () => import('@/messages/ns/hu-HU/preorder.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('preorder', 'sk-SK', typeof window === 'undefined' ? require('@/messages/ns/sk-SK/preorder.json') : () => import('@/messages/ns/sk-SK/preorder.json'))
+registerLanguage('preorder', 'sk-SK', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/sk-SK/preorder.json')) : () => import('@/messages/ns/sk-SK/preorder.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('preorder', 'ro-RO', typeof window === 'undefined' ? require('@/messages/ns/ro-RO/preorder.json') : () => import('@/messages/ns/ro-RO/preorder.json'))
+registerLanguage('preorder', 'ro-RO', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/ro-RO/preorder.json')) : () => import('@/messages/ns/ro-RO/preorder.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('preorder', 'hr-HR', typeof window === 'undefined' ? require('@/messages/ns/hr-HR/preorder.json') : () => import('@/messages/ns/hr-HR/preorder.json'))
+registerLanguage('preorder', 'hr-HR', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/hr-HR/preorder.json')) : () => import('@/messages/ns/hr-HR/preorder.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('preorder', 'sl-SI', typeof window === 'undefined' ? require('@/messages/ns/sl-SI/preorder.json') : () => import('@/messages/ns/sl-SI/preorder.json'))
+registerLanguage('preorder', 'sl-SI', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/sl-SI/preorder.json')) : () => import('@/messages/ns/sl-SI/preorder.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('preorder', 'fi-FI', typeof window === 'undefined' ? require('@/messages/ns/fi-FI/preorder.json') : () => import('@/messages/ns/fi-FI/preorder.json'))
+registerLanguage('preorder', 'fi-FI', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/fi-FI/preorder.json')) : () => import('@/messages/ns/fi-FI/preorder.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('preorder', 'et-EE', typeof window === 'undefined' ? require('@/messages/ns/et-EE/preorder.json') : () => import('@/messages/ns/et-EE/preorder.json'))
+registerLanguage('preorder', 'et-EE', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/et-EE/preorder.json')) : () => import('@/messages/ns/et-EE/preorder.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('preorder', 'lv-LV', typeof window === 'undefined' ? require('@/messages/ns/lv-LV/preorder.json') : () => import('@/messages/ns/lv-LV/preorder.json'))
+registerLanguage('preorder', 'lv-LV', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/lv-LV/preorder.json')) : () => import('@/messages/ns/lv-LV/preorder.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('preorder', 'lt-LT', typeof window === 'undefined' ? require('@/messages/ns/lt-LT/preorder.json') : () => import('@/messages/ns/lt-LT/preorder.json'))
+registerLanguage('preorder', 'lt-LT', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/lt-LT/preorder.json')) : () => import('@/messages/ns/lt-LT/preorder.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('preorder', 'el-GR', typeof window === 'undefined' ? require('@/messages/ns/el-GR/preorder.json') : () => import('@/messages/ns/el-GR/preorder.json'))
+registerLanguage('preorder', 'el-GR', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/el-GR/preorder.json')) : () => import('@/messages/ns/el-GR/preorder.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('preorder', 'bg-BG', typeof window === 'undefined' ? require('@/messages/ns/bg-BG/preorder.json') : () => import('@/messages/ns/bg-BG/preorder.json'))
+registerLanguage('preorder', 'bg-BG', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/bg-BG/preorder.json')) : () => import('@/messages/ns/bg-BG/preorder.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('preorder', 'pt-BR', typeof window === 'undefined' ? require('@/messages/ns/pt-BR/preorder.json') : () => import('@/messages/ns/pt-BR/preorder.json'))
+registerLanguage('preorder', 'pt-BR', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/pt-BR/preorder.json')) : () => import('@/messages/ns/pt-BR/preorder.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('preorder', 'ms-MY', typeof window === 'undefined' ? require('@/messages/ns/ms-MY/preorder.json') : () => import('@/messages/ns/ms-MY/preorder.json'))
+registerLanguage('preorder', 'ms-MY', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/ms-MY/preorder.json')) : () => import('@/messages/ns/ms-MY/preorder.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('preorder', 'ja-JP', typeof window === 'undefined' ? require('@/messages/ns/ja-JP/preorder.json') : () => import('@/messages/ns/ja-JP/preorder.json'))
+registerLanguage('preorder', 'ja-JP', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/ja-JP/preorder.json')) : () => import('@/messages/ns/ja-JP/preorder.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('preorder', 'zh-HK', typeof window === 'undefined' ? require('@/messages/ns/zh-HK/preorder.json') : () => import('@/messages/ns/zh-HK/preorder.json'))
+registerLanguage('preorder', 'zh-HK', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/zh-HK/preorder.json')) : () => import('@/messages/ns/zh-HK/preorder.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('preorder', 'th-TH', typeof window === 'undefined' ? require('@/messages/ns/th-TH/preorder.json') : () => import('@/messages/ns/th-TH/preorder.json'))
+registerLanguage('preorder', 'th-TH', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/th-TH/preorder.json')) : () => import('@/messages/ns/th-TH/preorder.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('preorder', 'ar-AE', typeof window === 'undefined' ? require('@/messages/ns/ar-AE/preorder.json') : () => import('@/messages/ns/ar-AE/preorder.json'))
+registerLanguage('preorder', 'ar-AE', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/ar-AE/preorder.json')) : () => import('@/messages/ns/ar-AE/preorder.json'))

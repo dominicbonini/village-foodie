@@ -7,6 +7,7 @@
 // THROWS — it never invents a plan. ⚠️ A feature switch naming no code feature is the one exception (Stage B, decision 1):
 // it is IGNORED and logged, and Admin shows it — one typo must not take every page down.
 import { mapPlanRow, mapPriceRow, mapFeatureRow, catalogProblems, splitUnknownFeatures, effectivePlan, planPriceFor, PLAN_COLUMNS, PLAN_PRICE_COLUMNS, PLAN_PRICE_COLUMNS_WC1, PLAN_FEATURE_COLUMNS, type PlanCatalog } from '@/lib/plans'
+import { isMarketingRender } from '@/lib/marketing-render'   // perf-1: a marketing page's render reads the tagged shared cache
 
 const TTL_MS = 60_000
 let cache: { at: number; value: PlanCatalog } | null = null
@@ -14,6 +15,9 @@ let cache: { at: number; value: PlanCatalog } | null = null
 /** The whole catalogue (plans in sort order, every price row, every feature switch). Throws on a failed read or an
  *  unsound catalogue. */
 export async function getPlanCatalog(): Promise<PlanCatalog> {
+  // perf-1 (5 November 2026): a marketing page's render reads the tagged shared cache (lib/marketing-cache.ts); every other caller
+  // keeps the 60-second copy below exactly as before.
+  if (isMarketingRender()) return (await import('@/lib/marketing-cache')).marketingPlanCatalog()
   if (cache && Date.now() - cache.at < TTL_MS) return cache.value
   // ⚠️ IMPORTED HERE, NOT AT THE TOP, for the reason lib/country-settings.ts gives: lib/supabase.ts builds the
   // service-role client at module load, and modules that only NAME this loader must be loadable without a database.

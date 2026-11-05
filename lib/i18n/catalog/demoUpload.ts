@@ -2,69 +2,70 @@
 // Import this module (`import '@/lib/i18n/catalog/demoUpload'`) in any file that reads the "demoUpload" namespace.
 import base from '@/messages/ns/en-GB/demoUpload.json'
 import enUS from '@/messages/ns/en-US/demoUpload.json'
-import { registerNamespace, registerLanguage } from '@/lib/i18n/registry'
+import { registerNamespace, registerLanguage, serverWords } from '@/lib/i18n/registry'
 
 registerNamespace('demoUpload', base, { 'en-US': enUS })
-// languages-1: each non-English language — on the server now; in the browser only when a page is in that language.
+// languages-1: each non-English language only when a page is in that language — perf-1: on the server too (serverWords: a
+// synchronous require, run the first time the language is asked for), in the browser as a chunk loaded on demand.
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('demoUpload', 'fr-FR', typeof window === 'undefined' ? require('@/messages/ns/fr-FR/demoUpload.json') : () => import('@/messages/ns/fr-FR/demoUpload.json'))
+registerLanguage('demoUpload', 'fr-FR', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/fr-FR/demoUpload.json')) : () => import('@/messages/ns/fr-FR/demoUpload.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('demoUpload', 'de-DE', typeof window === 'undefined' ? require('@/messages/ns/de-DE/demoUpload.json') : () => import('@/messages/ns/de-DE/demoUpload.json'))
+registerLanguage('demoUpload', 'de-DE', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/de-DE/demoUpload.json')) : () => import('@/messages/ns/de-DE/demoUpload.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('demoUpload', 'de-CH', typeof window === 'undefined' ? require('@/messages/ns/de-CH/demoUpload.json') : () => import('@/messages/ns/de-CH/demoUpload.json'))
+registerLanguage('demoUpload', 'de-CH', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/de-CH/demoUpload.json')) : () => import('@/messages/ns/de-CH/demoUpload.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('demoUpload', 'es-ES', typeof window === 'undefined' ? require('@/messages/ns/es-ES/demoUpload.json') : () => import('@/messages/ns/es-ES/demoUpload.json'))
+registerLanguage('demoUpload', 'es-ES', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/es-ES/demoUpload.json')) : () => import('@/messages/ns/es-ES/demoUpload.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('demoUpload', 'it-IT', typeof window === 'undefined' ? require('@/messages/ns/it-IT/demoUpload.json') : () => import('@/messages/ns/it-IT/demoUpload.json'))
+registerLanguage('demoUpload', 'it-IT', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/it-IT/demoUpload.json')) : () => import('@/messages/ns/it-IT/demoUpload.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('demoUpload', 'pt-PT', typeof window === 'undefined' ? require('@/messages/ns/pt-PT/demoUpload.json') : () => import('@/messages/ns/pt-PT/demoUpload.json'))
+registerLanguage('demoUpload', 'pt-PT', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/pt-PT/demoUpload.json')) : () => import('@/messages/ns/pt-PT/demoUpload.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('demoUpload', 'nl-NL', typeof window === 'undefined' ? require('@/messages/ns/nl-NL/demoUpload.json') : () => import('@/messages/ns/nl-NL/demoUpload.json'))
+registerLanguage('demoUpload', 'nl-NL', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/nl-NL/demoUpload.json')) : () => import('@/messages/ns/nl-NL/demoUpload.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('demoUpload', 'sv-SE', typeof window === 'undefined' ? require('@/messages/ns/sv-SE/demoUpload.json') : () => import('@/messages/ns/sv-SE/demoUpload.json'))
+registerLanguage('demoUpload', 'sv-SE', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/sv-SE/demoUpload.json')) : () => import('@/messages/ns/sv-SE/demoUpload.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('demoUpload', 'da-DK', typeof window === 'undefined' ? require('@/messages/ns/da-DK/demoUpload.json') : () => import('@/messages/ns/da-DK/demoUpload.json'))
+registerLanguage('demoUpload', 'da-DK', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/da-DK/demoUpload.json')) : () => import('@/messages/ns/da-DK/demoUpload.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('demoUpload', 'nb-NO', typeof window === 'undefined' ? require('@/messages/ns/nb-NO/demoUpload.json') : () => import('@/messages/ns/nb-NO/demoUpload.json'))
+registerLanguage('demoUpload', 'nb-NO', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/nb-NO/demoUpload.json')) : () => import('@/messages/ns/nb-NO/demoUpload.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('demoUpload', 'pl-PL', typeof window === 'undefined' ? require('@/messages/ns/pl-PL/demoUpload.json') : () => import('@/messages/ns/pl-PL/demoUpload.json'))
+registerLanguage('demoUpload', 'pl-PL', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/pl-PL/demoUpload.json')) : () => import('@/messages/ns/pl-PL/demoUpload.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('demoUpload', 'cs-CZ', typeof window === 'undefined' ? require('@/messages/ns/cs-CZ/demoUpload.json') : () => import('@/messages/ns/cs-CZ/demoUpload.json'))
+registerLanguage('demoUpload', 'cs-CZ', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/cs-CZ/demoUpload.json')) : () => import('@/messages/ns/cs-CZ/demoUpload.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('demoUpload', 'hu-HU', typeof window === 'undefined' ? require('@/messages/ns/hu-HU/demoUpload.json') : () => import('@/messages/ns/hu-HU/demoUpload.json'))
+registerLanguage('demoUpload', 'hu-HU', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/hu-HU/demoUpload.json')) : () => import('@/messages/ns/hu-HU/demoUpload.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('demoUpload', 'sk-SK', typeof window === 'undefined' ? require('@/messages/ns/sk-SK/demoUpload.json') : () => import('@/messages/ns/sk-SK/demoUpload.json'))
+registerLanguage('demoUpload', 'sk-SK', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/sk-SK/demoUpload.json')) : () => import('@/messages/ns/sk-SK/demoUpload.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('demoUpload', 'ro-RO', typeof window === 'undefined' ? require('@/messages/ns/ro-RO/demoUpload.json') : () => import('@/messages/ns/ro-RO/demoUpload.json'))
+registerLanguage('demoUpload', 'ro-RO', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/ro-RO/demoUpload.json')) : () => import('@/messages/ns/ro-RO/demoUpload.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('demoUpload', 'hr-HR', typeof window === 'undefined' ? require('@/messages/ns/hr-HR/demoUpload.json') : () => import('@/messages/ns/hr-HR/demoUpload.json'))
+registerLanguage('demoUpload', 'hr-HR', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/hr-HR/demoUpload.json')) : () => import('@/messages/ns/hr-HR/demoUpload.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('demoUpload', 'sl-SI', typeof window === 'undefined' ? require('@/messages/ns/sl-SI/demoUpload.json') : () => import('@/messages/ns/sl-SI/demoUpload.json'))
+registerLanguage('demoUpload', 'sl-SI', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/sl-SI/demoUpload.json')) : () => import('@/messages/ns/sl-SI/demoUpload.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('demoUpload', 'fi-FI', typeof window === 'undefined' ? require('@/messages/ns/fi-FI/demoUpload.json') : () => import('@/messages/ns/fi-FI/demoUpload.json'))
+registerLanguage('demoUpload', 'fi-FI', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/fi-FI/demoUpload.json')) : () => import('@/messages/ns/fi-FI/demoUpload.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('demoUpload', 'et-EE', typeof window === 'undefined' ? require('@/messages/ns/et-EE/demoUpload.json') : () => import('@/messages/ns/et-EE/demoUpload.json'))
+registerLanguage('demoUpload', 'et-EE', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/et-EE/demoUpload.json')) : () => import('@/messages/ns/et-EE/demoUpload.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('demoUpload', 'lv-LV', typeof window === 'undefined' ? require('@/messages/ns/lv-LV/demoUpload.json') : () => import('@/messages/ns/lv-LV/demoUpload.json'))
+registerLanguage('demoUpload', 'lv-LV', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/lv-LV/demoUpload.json')) : () => import('@/messages/ns/lv-LV/demoUpload.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('demoUpload', 'lt-LT', typeof window === 'undefined' ? require('@/messages/ns/lt-LT/demoUpload.json') : () => import('@/messages/ns/lt-LT/demoUpload.json'))
+registerLanguage('demoUpload', 'lt-LT', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/lt-LT/demoUpload.json')) : () => import('@/messages/ns/lt-LT/demoUpload.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('demoUpload', 'el-GR', typeof window === 'undefined' ? require('@/messages/ns/el-GR/demoUpload.json') : () => import('@/messages/ns/el-GR/demoUpload.json'))
+registerLanguage('demoUpload', 'el-GR', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/el-GR/demoUpload.json')) : () => import('@/messages/ns/el-GR/demoUpload.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('demoUpload', 'bg-BG', typeof window === 'undefined' ? require('@/messages/ns/bg-BG/demoUpload.json') : () => import('@/messages/ns/bg-BG/demoUpload.json'))
+registerLanguage('demoUpload', 'bg-BG', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/bg-BG/demoUpload.json')) : () => import('@/messages/ns/bg-BG/demoUpload.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('demoUpload', 'fr-LU', typeof window === 'undefined' ? require('@/messages/ns/fr-LU/demoUpload.json') : () => import('@/messages/ns/fr-LU/demoUpload.json'))
+registerLanguage('demoUpload', 'fr-LU', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/fr-LU/demoUpload.json')) : () => import('@/messages/ns/fr-LU/demoUpload.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('demoUpload', 'es-MX', typeof window === 'undefined' ? require('@/messages/ns/es-MX/demoUpload.json') : () => import('@/messages/ns/es-MX/demoUpload.json'))
+registerLanguage('demoUpload', 'es-MX', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/es-MX/demoUpload.json')) : () => import('@/messages/ns/es-MX/demoUpload.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('demoUpload', 'pt-BR', typeof window === 'undefined' ? require('@/messages/ns/pt-BR/demoUpload.json') : () => import('@/messages/ns/pt-BR/demoUpload.json'))
+registerLanguage('demoUpload', 'pt-BR', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/pt-BR/demoUpload.json')) : () => import('@/messages/ns/pt-BR/demoUpload.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('demoUpload', 'ms-MY', typeof window === 'undefined' ? require('@/messages/ns/ms-MY/demoUpload.json') : () => import('@/messages/ns/ms-MY/demoUpload.json'))
+registerLanguage('demoUpload', 'ms-MY', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/ms-MY/demoUpload.json')) : () => import('@/messages/ns/ms-MY/demoUpload.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('demoUpload', 'ja-JP', typeof window === 'undefined' ? require('@/messages/ns/ja-JP/demoUpload.json') : () => import('@/messages/ns/ja-JP/demoUpload.json'))
+registerLanguage('demoUpload', 'ja-JP', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/ja-JP/demoUpload.json')) : () => import('@/messages/ns/ja-JP/demoUpload.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('demoUpload', 'zh-HK', typeof window === 'undefined' ? require('@/messages/ns/zh-HK/demoUpload.json') : () => import('@/messages/ns/zh-HK/demoUpload.json'))
+registerLanguage('demoUpload', 'zh-HK', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/zh-HK/demoUpload.json')) : () => import('@/messages/ns/zh-HK/demoUpload.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('demoUpload', 'th-TH', typeof window === 'undefined' ? require('@/messages/ns/th-TH/demoUpload.json') : () => import('@/messages/ns/th-TH/demoUpload.json'))
+registerLanguage('demoUpload', 'th-TH', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/th-TH/demoUpload.json')) : () => import('@/messages/ns/th-TH/demoUpload.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('demoUpload', 'ar-AE', typeof window === 'undefined' ? require('@/messages/ns/ar-AE/demoUpload.json') : () => import('@/messages/ns/ar-AE/demoUpload.json'))
+registerLanguage('demoUpload', 'ar-AE', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/ar-AE/demoUpload.json')) : () => import('@/messages/ns/ar-AE/demoUpload.json'))

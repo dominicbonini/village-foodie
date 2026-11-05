@@ -2,63 +2,64 @@
 // Import this module (`import '@/lib/i18n/catalog/whereBased'`) in any file that reads the "whereBased" namespace.
 import base from '@/messages/ns/en-GB/whereBased.json'
 import enUS from '@/messages/ns/en-US/whereBased.json'
-import { registerNamespace, registerLanguage } from '@/lib/i18n/registry'
+import { registerNamespace, registerLanguage, serverWords } from '@/lib/i18n/registry'
 
 registerNamespace('whereBased', base, { 'en-US': enUS })
-// languages-1: each non-English language — on the server now; in the browser only when a page is in that language.
+// languages-1: each non-English language only when a page is in that language — perf-1: on the server too (serverWords: a
+// synchronous require, run the first time the language is asked for), in the browser as a chunk loaded on demand.
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('whereBased', 'fr-FR', typeof window === 'undefined' ? require('@/messages/ns/fr-FR/whereBased.json') : () => import('@/messages/ns/fr-FR/whereBased.json'))
+registerLanguage('whereBased', 'fr-FR', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/fr-FR/whereBased.json')) : () => import('@/messages/ns/fr-FR/whereBased.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('whereBased', 'de-DE', typeof window === 'undefined' ? require('@/messages/ns/de-DE/whereBased.json') : () => import('@/messages/ns/de-DE/whereBased.json'))
+registerLanguage('whereBased', 'de-DE', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/de-DE/whereBased.json')) : () => import('@/messages/ns/de-DE/whereBased.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('whereBased', 'es-ES', typeof window === 'undefined' ? require('@/messages/ns/es-ES/whereBased.json') : () => import('@/messages/ns/es-ES/whereBased.json'))
+registerLanguage('whereBased', 'es-ES', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/es-ES/whereBased.json')) : () => import('@/messages/ns/es-ES/whereBased.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('whereBased', 'it-IT', typeof window === 'undefined' ? require('@/messages/ns/it-IT/whereBased.json') : () => import('@/messages/ns/it-IT/whereBased.json'))
+registerLanguage('whereBased', 'it-IT', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/it-IT/whereBased.json')) : () => import('@/messages/ns/it-IT/whereBased.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('whereBased', 'pt-PT', typeof window === 'undefined' ? require('@/messages/ns/pt-PT/whereBased.json') : () => import('@/messages/ns/pt-PT/whereBased.json'))
+registerLanguage('whereBased', 'pt-PT', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/pt-PT/whereBased.json')) : () => import('@/messages/ns/pt-PT/whereBased.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('whereBased', 'nl-NL', typeof window === 'undefined' ? require('@/messages/ns/nl-NL/whereBased.json') : () => import('@/messages/ns/nl-NL/whereBased.json'))
+registerLanguage('whereBased', 'nl-NL', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/nl-NL/whereBased.json')) : () => import('@/messages/ns/nl-NL/whereBased.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('whereBased', 'sv-SE', typeof window === 'undefined' ? require('@/messages/ns/sv-SE/whereBased.json') : () => import('@/messages/ns/sv-SE/whereBased.json'))
+registerLanguage('whereBased', 'sv-SE', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/sv-SE/whereBased.json')) : () => import('@/messages/ns/sv-SE/whereBased.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('whereBased', 'da-DK', typeof window === 'undefined' ? require('@/messages/ns/da-DK/whereBased.json') : () => import('@/messages/ns/da-DK/whereBased.json'))
+registerLanguage('whereBased', 'da-DK', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/da-DK/whereBased.json')) : () => import('@/messages/ns/da-DK/whereBased.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('whereBased', 'nb-NO', typeof window === 'undefined' ? require('@/messages/ns/nb-NO/whereBased.json') : () => import('@/messages/ns/nb-NO/whereBased.json'))
+registerLanguage('whereBased', 'nb-NO', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/nb-NO/whereBased.json')) : () => import('@/messages/ns/nb-NO/whereBased.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('whereBased', 'pl-PL', typeof window === 'undefined' ? require('@/messages/ns/pl-PL/whereBased.json') : () => import('@/messages/ns/pl-PL/whereBased.json'))
+registerLanguage('whereBased', 'pl-PL', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/pl-PL/whereBased.json')) : () => import('@/messages/ns/pl-PL/whereBased.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('whereBased', 'cs-CZ', typeof window === 'undefined' ? require('@/messages/ns/cs-CZ/whereBased.json') : () => import('@/messages/ns/cs-CZ/whereBased.json'))
+registerLanguage('whereBased', 'cs-CZ', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/cs-CZ/whereBased.json')) : () => import('@/messages/ns/cs-CZ/whereBased.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('whereBased', 'hu-HU', typeof window === 'undefined' ? require('@/messages/ns/hu-HU/whereBased.json') : () => import('@/messages/ns/hu-HU/whereBased.json'))
+registerLanguage('whereBased', 'hu-HU', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/hu-HU/whereBased.json')) : () => import('@/messages/ns/hu-HU/whereBased.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('whereBased', 'sk-SK', typeof window === 'undefined' ? require('@/messages/ns/sk-SK/whereBased.json') : () => import('@/messages/ns/sk-SK/whereBased.json'))
+registerLanguage('whereBased', 'sk-SK', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/sk-SK/whereBased.json')) : () => import('@/messages/ns/sk-SK/whereBased.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('whereBased', 'ro-RO', typeof window === 'undefined' ? require('@/messages/ns/ro-RO/whereBased.json') : () => import('@/messages/ns/ro-RO/whereBased.json'))
+registerLanguage('whereBased', 'ro-RO', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/ro-RO/whereBased.json')) : () => import('@/messages/ns/ro-RO/whereBased.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('whereBased', 'hr-HR', typeof window === 'undefined' ? require('@/messages/ns/hr-HR/whereBased.json') : () => import('@/messages/ns/hr-HR/whereBased.json'))
+registerLanguage('whereBased', 'hr-HR', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/hr-HR/whereBased.json')) : () => import('@/messages/ns/hr-HR/whereBased.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('whereBased', 'sl-SI', typeof window === 'undefined' ? require('@/messages/ns/sl-SI/whereBased.json') : () => import('@/messages/ns/sl-SI/whereBased.json'))
+registerLanguage('whereBased', 'sl-SI', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/sl-SI/whereBased.json')) : () => import('@/messages/ns/sl-SI/whereBased.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('whereBased', 'fi-FI', typeof window === 'undefined' ? require('@/messages/ns/fi-FI/whereBased.json') : () => import('@/messages/ns/fi-FI/whereBased.json'))
+registerLanguage('whereBased', 'fi-FI', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/fi-FI/whereBased.json')) : () => import('@/messages/ns/fi-FI/whereBased.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('whereBased', 'et-EE', typeof window === 'undefined' ? require('@/messages/ns/et-EE/whereBased.json') : () => import('@/messages/ns/et-EE/whereBased.json'))
+registerLanguage('whereBased', 'et-EE', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/et-EE/whereBased.json')) : () => import('@/messages/ns/et-EE/whereBased.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('whereBased', 'lv-LV', typeof window === 'undefined' ? require('@/messages/ns/lv-LV/whereBased.json') : () => import('@/messages/ns/lv-LV/whereBased.json'))
+registerLanguage('whereBased', 'lv-LV', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/lv-LV/whereBased.json')) : () => import('@/messages/ns/lv-LV/whereBased.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('whereBased', 'lt-LT', typeof window === 'undefined' ? require('@/messages/ns/lt-LT/whereBased.json') : () => import('@/messages/ns/lt-LT/whereBased.json'))
+registerLanguage('whereBased', 'lt-LT', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/lt-LT/whereBased.json')) : () => import('@/messages/ns/lt-LT/whereBased.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('whereBased', 'el-GR', typeof window === 'undefined' ? require('@/messages/ns/el-GR/whereBased.json') : () => import('@/messages/ns/el-GR/whereBased.json'))
+registerLanguage('whereBased', 'el-GR', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/el-GR/whereBased.json')) : () => import('@/messages/ns/el-GR/whereBased.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('whereBased', 'bg-BG', typeof window === 'undefined' ? require('@/messages/ns/bg-BG/whereBased.json') : () => import('@/messages/ns/bg-BG/whereBased.json'))
+registerLanguage('whereBased', 'bg-BG', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/bg-BG/whereBased.json')) : () => import('@/messages/ns/bg-BG/whereBased.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('whereBased', 'pt-BR', typeof window === 'undefined' ? require('@/messages/ns/pt-BR/whereBased.json') : () => import('@/messages/ns/pt-BR/whereBased.json'))
+registerLanguage('whereBased', 'pt-BR', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/pt-BR/whereBased.json')) : () => import('@/messages/ns/pt-BR/whereBased.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('whereBased', 'ms-MY', typeof window === 'undefined' ? require('@/messages/ns/ms-MY/whereBased.json') : () => import('@/messages/ns/ms-MY/whereBased.json'))
+registerLanguage('whereBased', 'ms-MY', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/ms-MY/whereBased.json')) : () => import('@/messages/ns/ms-MY/whereBased.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('whereBased', 'ja-JP', typeof window === 'undefined' ? require('@/messages/ns/ja-JP/whereBased.json') : () => import('@/messages/ns/ja-JP/whereBased.json'))
+registerLanguage('whereBased', 'ja-JP', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/ja-JP/whereBased.json')) : () => import('@/messages/ns/ja-JP/whereBased.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('whereBased', 'zh-HK', typeof window === 'undefined' ? require('@/messages/ns/zh-HK/whereBased.json') : () => import('@/messages/ns/zh-HK/whereBased.json'))
+registerLanguage('whereBased', 'zh-HK', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/zh-HK/whereBased.json')) : () => import('@/messages/ns/zh-HK/whereBased.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('whereBased', 'th-TH', typeof window === 'undefined' ? require('@/messages/ns/th-TH/whereBased.json') : () => import('@/messages/ns/th-TH/whereBased.json'))
+registerLanguage('whereBased', 'th-TH', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/th-TH/whereBased.json')) : () => import('@/messages/ns/th-TH/whereBased.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('whereBased', 'ar-AE', typeof window === 'undefined' ? require('@/messages/ns/ar-AE/whereBased.json') : () => import('@/messages/ns/ar-AE/whereBased.json'))
+registerLanguage('whereBased', 'ar-AE', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/ar-AE/whereBased.json')) : () => import('@/messages/ns/ar-AE/whereBased.json'))

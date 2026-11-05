@@ -2,67 +2,68 @@
 // Import this module (`import '@/lib/i18n/catalog/manageShell'`) in any file that reads the "manageShell" namespace.
 import base from '@/messages/ns/en-GB/manageShell.json'
 import enUS from '@/messages/ns/en-US/manageShell.json'
-import { registerNamespace, registerLanguage } from '@/lib/i18n/registry'
+import { registerNamespace, registerLanguage, serverWords } from '@/lib/i18n/registry'
 
 registerNamespace('manageShell', base, { 'en-US': enUS })
-// languages-1: each non-English language — on the server now; in the browser only when a page is in that language.
+// languages-1: each non-English language only when a page is in that language — perf-1: on the server too (serverWords: a
+// synchronous require, run the first time the language is asked for), in the browser as a chunk loaded on demand.
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('manageShell', 'fr-FR', typeof window === 'undefined' ? require('@/messages/ns/fr-FR/manageShell.json') : () => import('@/messages/ns/fr-FR/manageShell.json'))
+registerLanguage('manageShell', 'fr-FR', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/fr-FR/manageShell.json')) : () => import('@/messages/ns/fr-FR/manageShell.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('manageShell', 'de-DE', typeof window === 'undefined' ? require('@/messages/ns/de-DE/manageShell.json') : () => import('@/messages/ns/de-DE/manageShell.json'))
+registerLanguage('manageShell', 'de-DE', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/de-DE/manageShell.json')) : () => import('@/messages/ns/de-DE/manageShell.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('manageShell', 'de-CH', typeof window === 'undefined' ? require('@/messages/ns/de-CH/manageShell.json') : () => import('@/messages/ns/de-CH/manageShell.json'))
+registerLanguage('manageShell', 'de-CH', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/de-CH/manageShell.json')) : () => import('@/messages/ns/de-CH/manageShell.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('manageShell', 'es-ES', typeof window === 'undefined' ? require('@/messages/ns/es-ES/manageShell.json') : () => import('@/messages/ns/es-ES/manageShell.json'))
+registerLanguage('manageShell', 'es-ES', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/es-ES/manageShell.json')) : () => import('@/messages/ns/es-ES/manageShell.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('manageShell', 'it-IT', typeof window === 'undefined' ? require('@/messages/ns/it-IT/manageShell.json') : () => import('@/messages/ns/it-IT/manageShell.json'))
+registerLanguage('manageShell', 'it-IT', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/it-IT/manageShell.json')) : () => import('@/messages/ns/it-IT/manageShell.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('manageShell', 'pt-PT', typeof window === 'undefined' ? require('@/messages/ns/pt-PT/manageShell.json') : () => import('@/messages/ns/pt-PT/manageShell.json'))
+registerLanguage('manageShell', 'pt-PT', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/pt-PT/manageShell.json')) : () => import('@/messages/ns/pt-PT/manageShell.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('manageShell', 'nl-NL', typeof window === 'undefined' ? require('@/messages/ns/nl-NL/manageShell.json') : () => import('@/messages/ns/nl-NL/manageShell.json'))
+registerLanguage('manageShell', 'nl-NL', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/nl-NL/manageShell.json')) : () => import('@/messages/ns/nl-NL/manageShell.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('manageShell', 'sv-SE', typeof window === 'undefined' ? require('@/messages/ns/sv-SE/manageShell.json') : () => import('@/messages/ns/sv-SE/manageShell.json'))
+registerLanguage('manageShell', 'sv-SE', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/sv-SE/manageShell.json')) : () => import('@/messages/ns/sv-SE/manageShell.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('manageShell', 'da-DK', typeof window === 'undefined' ? require('@/messages/ns/da-DK/manageShell.json') : () => import('@/messages/ns/da-DK/manageShell.json'))
+registerLanguage('manageShell', 'da-DK', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/da-DK/manageShell.json')) : () => import('@/messages/ns/da-DK/manageShell.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('manageShell', 'nb-NO', typeof window === 'undefined' ? require('@/messages/ns/nb-NO/manageShell.json') : () => import('@/messages/ns/nb-NO/manageShell.json'))
+registerLanguage('manageShell', 'nb-NO', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/nb-NO/manageShell.json')) : () => import('@/messages/ns/nb-NO/manageShell.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('manageShell', 'pl-PL', typeof window === 'undefined' ? require('@/messages/ns/pl-PL/manageShell.json') : () => import('@/messages/ns/pl-PL/manageShell.json'))
+registerLanguage('manageShell', 'pl-PL', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/pl-PL/manageShell.json')) : () => import('@/messages/ns/pl-PL/manageShell.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('manageShell', 'cs-CZ', typeof window === 'undefined' ? require('@/messages/ns/cs-CZ/manageShell.json') : () => import('@/messages/ns/cs-CZ/manageShell.json'))
+registerLanguage('manageShell', 'cs-CZ', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/cs-CZ/manageShell.json')) : () => import('@/messages/ns/cs-CZ/manageShell.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('manageShell', 'hu-HU', typeof window === 'undefined' ? require('@/messages/ns/hu-HU/manageShell.json') : () => import('@/messages/ns/hu-HU/manageShell.json'))
+registerLanguage('manageShell', 'hu-HU', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/hu-HU/manageShell.json')) : () => import('@/messages/ns/hu-HU/manageShell.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('manageShell', 'sk-SK', typeof window === 'undefined' ? require('@/messages/ns/sk-SK/manageShell.json') : () => import('@/messages/ns/sk-SK/manageShell.json'))
+registerLanguage('manageShell', 'sk-SK', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/sk-SK/manageShell.json')) : () => import('@/messages/ns/sk-SK/manageShell.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('manageShell', 'ro-RO', typeof window === 'undefined' ? require('@/messages/ns/ro-RO/manageShell.json') : () => import('@/messages/ns/ro-RO/manageShell.json'))
+registerLanguage('manageShell', 'ro-RO', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/ro-RO/manageShell.json')) : () => import('@/messages/ns/ro-RO/manageShell.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('manageShell', 'hr-HR', typeof window === 'undefined' ? require('@/messages/ns/hr-HR/manageShell.json') : () => import('@/messages/ns/hr-HR/manageShell.json'))
+registerLanguage('manageShell', 'hr-HR', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/hr-HR/manageShell.json')) : () => import('@/messages/ns/hr-HR/manageShell.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('manageShell', 'sl-SI', typeof window === 'undefined' ? require('@/messages/ns/sl-SI/manageShell.json') : () => import('@/messages/ns/sl-SI/manageShell.json'))
+registerLanguage('manageShell', 'sl-SI', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/sl-SI/manageShell.json')) : () => import('@/messages/ns/sl-SI/manageShell.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('manageShell', 'fi-FI', typeof window === 'undefined' ? require('@/messages/ns/fi-FI/manageShell.json') : () => import('@/messages/ns/fi-FI/manageShell.json'))
+registerLanguage('manageShell', 'fi-FI', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/fi-FI/manageShell.json')) : () => import('@/messages/ns/fi-FI/manageShell.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('manageShell', 'et-EE', typeof window === 'undefined' ? require('@/messages/ns/et-EE/manageShell.json') : () => import('@/messages/ns/et-EE/manageShell.json'))
+registerLanguage('manageShell', 'et-EE', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/et-EE/manageShell.json')) : () => import('@/messages/ns/et-EE/manageShell.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('manageShell', 'lv-LV', typeof window === 'undefined' ? require('@/messages/ns/lv-LV/manageShell.json') : () => import('@/messages/ns/lv-LV/manageShell.json'))
+registerLanguage('manageShell', 'lv-LV', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/lv-LV/manageShell.json')) : () => import('@/messages/ns/lv-LV/manageShell.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('manageShell', 'lt-LT', typeof window === 'undefined' ? require('@/messages/ns/lt-LT/manageShell.json') : () => import('@/messages/ns/lt-LT/manageShell.json'))
+registerLanguage('manageShell', 'lt-LT', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/lt-LT/manageShell.json')) : () => import('@/messages/ns/lt-LT/manageShell.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('manageShell', 'el-GR', typeof window === 'undefined' ? require('@/messages/ns/el-GR/manageShell.json') : () => import('@/messages/ns/el-GR/manageShell.json'))
+registerLanguage('manageShell', 'el-GR', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/el-GR/manageShell.json')) : () => import('@/messages/ns/el-GR/manageShell.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('manageShell', 'bg-BG', typeof window === 'undefined' ? require('@/messages/ns/bg-BG/manageShell.json') : () => import('@/messages/ns/bg-BG/manageShell.json'))
+registerLanguage('manageShell', 'bg-BG', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/bg-BG/manageShell.json')) : () => import('@/messages/ns/bg-BG/manageShell.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('manageShell', 'es-MX', typeof window === 'undefined' ? require('@/messages/ns/es-MX/manageShell.json') : () => import('@/messages/ns/es-MX/manageShell.json'))
+registerLanguage('manageShell', 'es-MX', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/es-MX/manageShell.json')) : () => import('@/messages/ns/es-MX/manageShell.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('manageShell', 'pt-BR', typeof window === 'undefined' ? require('@/messages/ns/pt-BR/manageShell.json') : () => import('@/messages/ns/pt-BR/manageShell.json'))
+registerLanguage('manageShell', 'pt-BR', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/pt-BR/manageShell.json')) : () => import('@/messages/ns/pt-BR/manageShell.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('manageShell', 'ms-MY', typeof window === 'undefined' ? require('@/messages/ns/ms-MY/manageShell.json') : () => import('@/messages/ns/ms-MY/manageShell.json'))
+registerLanguage('manageShell', 'ms-MY', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/ms-MY/manageShell.json')) : () => import('@/messages/ns/ms-MY/manageShell.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('manageShell', 'ja-JP', typeof window === 'undefined' ? require('@/messages/ns/ja-JP/manageShell.json') : () => import('@/messages/ns/ja-JP/manageShell.json'))
+registerLanguage('manageShell', 'ja-JP', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/ja-JP/manageShell.json')) : () => import('@/messages/ns/ja-JP/manageShell.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('manageShell', 'zh-HK', typeof window === 'undefined' ? require('@/messages/ns/zh-HK/manageShell.json') : () => import('@/messages/ns/zh-HK/manageShell.json'))
+registerLanguage('manageShell', 'zh-HK', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/zh-HK/manageShell.json')) : () => import('@/messages/ns/zh-HK/manageShell.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('manageShell', 'th-TH', typeof window === 'undefined' ? require('@/messages/ns/th-TH/manageShell.json') : () => import('@/messages/ns/th-TH/manageShell.json'))
+registerLanguage('manageShell', 'th-TH', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/th-TH/manageShell.json')) : () => import('@/messages/ns/th-TH/manageShell.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('manageShell', 'ar-AE', typeof window === 'undefined' ? require('@/messages/ns/ar-AE/manageShell.json') : () => import('@/messages/ns/ar-AE/manageShell.json'))
+registerLanguage('manageShell', 'ar-AE', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/ar-AE/manageShell.json')) : () => import('@/messages/ns/ar-AE/manageShell.json'))

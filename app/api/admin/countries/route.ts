@@ -18,6 +18,8 @@ import { clearCountrySettingsCache } from '@/lib/country-settings'
 import { serviceCountryStore } from '@/lib/admin/country-store'
 import { listCountries, saveCountry, addCountry, removeCountry, type ActionResult } from '@/lib/admin/country-actions'
 import { MARKETING_COUNTRY } from '@/lib/marketing-country'
+import { revalidateMarketing } from '@/lib/marketing-cache'   // perf-1: the marketing pages' cached data, expired on a write
+import { MARKETING_TAGS } from '@/lib/marketing-tags'
 
 export const dynamic = 'force-dynamic'
 
@@ -34,7 +36,11 @@ async function guarded<T>(req: NextRequest, run: (stamp: { by: string; at: strin
   if (!user) return notFound()
   try {
     const r = await run({ by: user.email ?? user.id, at: new Date().toISOString() })
-    if (writes && r.ok) clearCountrySettingsCache()
+    if (writes && r.ok) {
+      clearCountrySettingsCache()
+      // perf-1: a country saved, added, switched on or off, or removed — the marketing pages read it on the very next request.
+      revalidateMarketing([MARKETING_TAGS.countries], 'admin/countries')
+    }
     return reply(r)
   } catch (e) {
     console.error('[admin/countries]', e instanceof Error ? e.message : e)

@@ -13,6 +13,8 @@ import { adminUser } from '@/lib/auth/admin'
 import { clearCountrySettingsCache, listCountrySettings } from '@/lib/country-settings'
 import { clearComparisonCache, comparisonFlags, comparisonPath } from '@/lib/comparison-server'
 import { isComparisonStatus } from '@/lib/comparison-types'
+import { revalidateMarketing } from '@/lib/marketing-cache'   // perf-1: the marketing pages' cached data, expired on a write
+import { MARKETING_TAGS } from '@/lib/marketing-tags'
 
 export const dynamic = 'force-dynamic'
 
@@ -57,6 +59,8 @@ export async function PATCH(req: NextRequest) {
     if (error) throw new Error(error.message)
     if (!data || data.length !== 1) return NextResponse.json({ error: 'That country is gone. Reload the page.' }, { status: 404 })
     clearComparisonCache(); clearCountrySettingsCache()
+    // perf-1: the comparison status is a country setting the marketing pages read (their comparison links, hreflang).
+    revalidateMarketing([MARKETING_TAGS.countries], 'admin/countries/comparison')
     return NextResponse.json({ code, status: b.status })
   } catch (e) {
     console.error('[admin/countries/comparison]', e instanceof Error ? e.message : e)

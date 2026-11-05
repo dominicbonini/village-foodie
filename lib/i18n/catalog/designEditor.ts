@@ -3,69 +3,70 @@
 import base from '@/messages/ns/en-GB/designEditor.json'
 import enUS from '@/messages/ns/en-US/designEditor.json'
 import enCA from '@/messages/ns/en-CA/designEditor.json'
-import { registerNamespace, registerLanguage } from '@/lib/i18n/registry'
+import { registerNamespace, registerLanguage, serverWords } from '@/lib/i18n/registry'
 
 registerNamespace('designEditor', base, { 'en-US': enUS, 'en-CA': enCA })
-// languages-1: each non-English language — on the server now; in the browser only when a page is in that language.
+// languages-1: each non-English language only when a page is in that language — perf-1: on the server too (serverWords: a
+// synchronous require, run the first time the language is asked for), in the browser as a chunk loaded on demand.
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('designEditor', 'fr-FR', typeof window === 'undefined' ? require('@/messages/ns/fr-FR/designEditor.json') : () => import('@/messages/ns/fr-FR/designEditor.json'))
+registerLanguage('designEditor', 'fr-FR', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/fr-FR/designEditor.json')) : () => import('@/messages/ns/fr-FR/designEditor.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('designEditor', 'de-DE', typeof window === 'undefined' ? require('@/messages/ns/de-DE/designEditor.json') : () => import('@/messages/ns/de-DE/designEditor.json'))
+registerLanguage('designEditor', 'de-DE', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/de-DE/designEditor.json')) : () => import('@/messages/ns/de-DE/designEditor.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('designEditor', 'de-CH', typeof window === 'undefined' ? require('@/messages/ns/de-CH/designEditor.json') : () => import('@/messages/ns/de-CH/designEditor.json'))
+registerLanguage('designEditor', 'de-CH', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/de-CH/designEditor.json')) : () => import('@/messages/ns/de-CH/designEditor.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('designEditor', 'es-ES', typeof window === 'undefined' ? require('@/messages/ns/es-ES/designEditor.json') : () => import('@/messages/ns/es-ES/designEditor.json'))
+registerLanguage('designEditor', 'es-ES', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/es-ES/designEditor.json')) : () => import('@/messages/ns/es-ES/designEditor.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('designEditor', 'it-IT', typeof window === 'undefined' ? require('@/messages/ns/it-IT/designEditor.json') : () => import('@/messages/ns/it-IT/designEditor.json'))
+registerLanguage('designEditor', 'it-IT', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/it-IT/designEditor.json')) : () => import('@/messages/ns/it-IT/designEditor.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('designEditor', 'pt-PT', typeof window === 'undefined' ? require('@/messages/ns/pt-PT/designEditor.json') : () => import('@/messages/ns/pt-PT/designEditor.json'))
+registerLanguage('designEditor', 'pt-PT', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/pt-PT/designEditor.json')) : () => import('@/messages/ns/pt-PT/designEditor.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('designEditor', 'nl-NL', typeof window === 'undefined' ? require('@/messages/ns/nl-NL/designEditor.json') : () => import('@/messages/ns/nl-NL/designEditor.json'))
+registerLanguage('designEditor', 'nl-NL', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/nl-NL/designEditor.json')) : () => import('@/messages/ns/nl-NL/designEditor.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('designEditor', 'sv-SE', typeof window === 'undefined' ? require('@/messages/ns/sv-SE/designEditor.json') : () => import('@/messages/ns/sv-SE/designEditor.json'))
+registerLanguage('designEditor', 'sv-SE', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/sv-SE/designEditor.json')) : () => import('@/messages/ns/sv-SE/designEditor.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('designEditor', 'da-DK', typeof window === 'undefined' ? require('@/messages/ns/da-DK/designEditor.json') : () => import('@/messages/ns/da-DK/designEditor.json'))
+registerLanguage('designEditor', 'da-DK', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/da-DK/designEditor.json')) : () => import('@/messages/ns/da-DK/designEditor.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('designEditor', 'nb-NO', typeof window === 'undefined' ? require('@/messages/ns/nb-NO/designEditor.json') : () => import('@/messages/ns/nb-NO/designEditor.json'))
+registerLanguage('designEditor', 'nb-NO', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/nb-NO/designEditor.json')) : () => import('@/messages/ns/nb-NO/designEditor.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('designEditor', 'pl-PL', typeof window === 'undefined' ? require('@/messages/ns/pl-PL/designEditor.json') : () => import('@/messages/ns/pl-PL/designEditor.json'))
+registerLanguage('designEditor', 'pl-PL', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/pl-PL/designEditor.json')) : () => import('@/messages/ns/pl-PL/designEditor.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('designEditor', 'cs-CZ', typeof window === 'undefined' ? require('@/messages/ns/cs-CZ/designEditor.json') : () => import('@/messages/ns/cs-CZ/designEditor.json'))
+registerLanguage('designEditor', 'cs-CZ', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/cs-CZ/designEditor.json')) : () => import('@/messages/ns/cs-CZ/designEditor.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('designEditor', 'hu-HU', typeof window === 'undefined' ? require('@/messages/ns/hu-HU/designEditor.json') : () => import('@/messages/ns/hu-HU/designEditor.json'))
+registerLanguage('designEditor', 'hu-HU', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/hu-HU/designEditor.json')) : () => import('@/messages/ns/hu-HU/designEditor.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('designEditor', 'sk-SK', typeof window === 'undefined' ? require('@/messages/ns/sk-SK/designEditor.json') : () => import('@/messages/ns/sk-SK/designEditor.json'))
+registerLanguage('designEditor', 'sk-SK', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/sk-SK/designEditor.json')) : () => import('@/messages/ns/sk-SK/designEditor.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('designEditor', 'ro-RO', typeof window === 'undefined' ? require('@/messages/ns/ro-RO/designEditor.json') : () => import('@/messages/ns/ro-RO/designEditor.json'))
+registerLanguage('designEditor', 'ro-RO', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/ro-RO/designEditor.json')) : () => import('@/messages/ns/ro-RO/designEditor.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('designEditor', 'hr-HR', typeof window === 'undefined' ? require('@/messages/ns/hr-HR/designEditor.json') : () => import('@/messages/ns/hr-HR/designEditor.json'))
+registerLanguage('designEditor', 'hr-HR', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/hr-HR/designEditor.json')) : () => import('@/messages/ns/hr-HR/designEditor.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('designEditor', 'sl-SI', typeof window === 'undefined' ? require('@/messages/ns/sl-SI/designEditor.json') : () => import('@/messages/ns/sl-SI/designEditor.json'))
+registerLanguage('designEditor', 'sl-SI', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/sl-SI/designEditor.json')) : () => import('@/messages/ns/sl-SI/designEditor.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('designEditor', 'fi-FI', typeof window === 'undefined' ? require('@/messages/ns/fi-FI/designEditor.json') : () => import('@/messages/ns/fi-FI/designEditor.json'))
+registerLanguage('designEditor', 'fi-FI', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/fi-FI/designEditor.json')) : () => import('@/messages/ns/fi-FI/designEditor.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('designEditor', 'et-EE', typeof window === 'undefined' ? require('@/messages/ns/et-EE/designEditor.json') : () => import('@/messages/ns/et-EE/designEditor.json'))
+registerLanguage('designEditor', 'et-EE', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/et-EE/designEditor.json')) : () => import('@/messages/ns/et-EE/designEditor.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('designEditor', 'lv-LV', typeof window === 'undefined' ? require('@/messages/ns/lv-LV/designEditor.json') : () => import('@/messages/ns/lv-LV/designEditor.json'))
+registerLanguage('designEditor', 'lv-LV', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/lv-LV/designEditor.json')) : () => import('@/messages/ns/lv-LV/designEditor.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('designEditor', 'lt-LT', typeof window === 'undefined' ? require('@/messages/ns/lt-LT/designEditor.json') : () => import('@/messages/ns/lt-LT/designEditor.json'))
+registerLanguage('designEditor', 'lt-LT', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/lt-LT/designEditor.json')) : () => import('@/messages/ns/lt-LT/designEditor.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('designEditor', 'el-GR', typeof window === 'undefined' ? require('@/messages/ns/el-GR/designEditor.json') : () => import('@/messages/ns/el-GR/designEditor.json'))
+registerLanguage('designEditor', 'el-GR', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/el-GR/designEditor.json')) : () => import('@/messages/ns/el-GR/designEditor.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('designEditor', 'bg-BG', typeof window === 'undefined' ? require('@/messages/ns/bg-BG/designEditor.json') : () => import('@/messages/ns/bg-BG/designEditor.json'))
+registerLanguage('designEditor', 'bg-BG', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/bg-BG/designEditor.json')) : () => import('@/messages/ns/bg-BG/designEditor.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('designEditor', 'fr-LU', typeof window === 'undefined' ? require('@/messages/ns/fr-LU/designEditor.json') : () => import('@/messages/ns/fr-LU/designEditor.json'))
+registerLanguage('designEditor', 'fr-LU', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/fr-LU/designEditor.json')) : () => import('@/messages/ns/fr-LU/designEditor.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('designEditor', 'es-MX', typeof window === 'undefined' ? require('@/messages/ns/es-MX/designEditor.json') : () => import('@/messages/ns/es-MX/designEditor.json'))
+registerLanguage('designEditor', 'es-MX', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/es-MX/designEditor.json')) : () => import('@/messages/ns/es-MX/designEditor.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('designEditor', 'pt-BR', typeof window === 'undefined' ? require('@/messages/ns/pt-BR/designEditor.json') : () => import('@/messages/ns/pt-BR/designEditor.json'))
+registerLanguage('designEditor', 'pt-BR', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/pt-BR/designEditor.json')) : () => import('@/messages/ns/pt-BR/designEditor.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('designEditor', 'ms-MY', typeof window === 'undefined' ? require('@/messages/ns/ms-MY/designEditor.json') : () => import('@/messages/ns/ms-MY/designEditor.json'))
+registerLanguage('designEditor', 'ms-MY', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/ms-MY/designEditor.json')) : () => import('@/messages/ns/ms-MY/designEditor.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('designEditor', 'ja-JP', typeof window === 'undefined' ? require('@/messages/ns/ja-JP/designEditor.json') : () => import('@/messages/ns/ja-JP/designEditor.json'))
+registerLanguage('designEditor', 'ja-JP', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/ja-JP/designEditor.json')) : () => import('@/messages/ns/ja-JP/designEditor.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('designEditor', 'zh-HK', typeof window === 'undefined' ? require('@/messages/ns/zh-HK/designEditor.json') : () => import('@/messages/ns/zh-HK/designEditor.json'))
+registerLanguage('designEditor', 'zh-HK', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/zh-HK/designEditor.json')) : () => import('@/messages/ns/zh-HK/designEditor.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('designEditor', 'th-TH', typeof window === 'undefined' ? require('@/messages/ns/th-TH/designEditor.json') : () => import('@/messages/ns/th-TH/designEditor.json'))
+registerLanguage('designEditor', 'th-TH', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/th-TH/designEditor.json')) : () => import('@/messages/ns/th-TH/designEditor.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('designEditor', 'ar-AE', typeof window === 'undefined' ? require('@/messages/ns/ar-AE/designEditor.json') : () => import('@/messages/ns/ar-AE/designEditor.json'))
+registerLanguage('designEditor', 'ar-AE', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/ar-AE/designEditor.json')) : () => import('@/messages/ns/ar-AE/designEditor.json'))

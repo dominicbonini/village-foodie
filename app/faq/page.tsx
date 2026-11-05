@@ -26,6 +26,7 @@ import { translatorFor } from '@/lib/i18n/translator'
 import '@/lib/i18n/catalog/landing'
 import '../landing/landing.css'
 import './faq.css'
+import { markMarketingRender } from '@/lib/marketing-render'   // perf-1
 
 export const dynamic = 'force-dynamic'
 
@@ -47,6 +48,7 @@ async function load({ params, searchParams }: Props) {
 }
 
 export async function generateMetadata(props: Props): Promise<Metadata> {
+  markMarketingRender()   // perf-1: this render reads the marketing pages' tagged shared cache (lib/marketing-render.ts)
   const { visitor, at, canonical } = await load(props)
   const t = translatorFor(visitor.settings.locale, 'landing')
   const title = t('faq.metaTitle'), description = t('faq.metaDescription')
@@ -65,6 +67,7 @@ export async function generateMetadata(props: Props): Promise<Metadata> {
 }
 
 export default async function FaqPage(props: Props) {
+  markMarketingRender()   // perf-1: this render reads the marketing pages' tagged shared cache (lib/marketing-render.ts)
   const { visitor, data, canonical } = await load(props)
   const settings = visitor.settings
   const t = translatorFor(settings.locale, 'landing')

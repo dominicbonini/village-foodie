@@ -80,6 +80,7 @@ import {
   Clock, Gauge, MonitorSmartphone, Image as ImageIcon, MessageCircle, WifiOff,
 } from 'lucide-react'
 import './landing.css'
+import { markMarketingRender } from '@/lib/marketing-render'   // perf-1
 
 // Self-hosted, non-render-blocking (no Google Fonts <link>). Exposed as CSS vars the stylesheet maps
 // to --display / --body / --ticket.
@@ -91,6 +92,7 @@ const courierPrime = Courier_Prime({ subsets: ['latin'], weight: ['400', '700'],
 // 🔴 US readiness (D37): the tags name the visitor's country — lib/marketing-meta.ts. For GB every value is the
 // literal this page carried before ("UK", en_GB), byte-identical.
 export async function generateMetadata({ params, searchParams }: { params?: Promise<{ country?: string }>; searchParams: Promise<Record<string, string | string[] | undefined>> }): Promise<Metadata> {
+  markMarketingRender()   // perf-1: this render reads the marketing pages' tagged shared cache (lib/marketing-render.ts)
   // Language Phase 1e: at a COUNTRY address (/uk, /us — app/[country]/page.tsx) the country is the address's.
   const visitor = await resolveVisitorCountry((await searchParams)?.country, { segment: (await params)?.country, page: 'landing' })
   const c = marketingCountry(visitor.settings)
@@ -200,6 +202,7 @@ function TileIcon({ icon: Icon }: { icon: typeof Clock }) {
 }
 
 export default async function LandingPage({ params, searchParams }: { params?: Promise<{ country?: string }>; searchParams: Promise<Record<string, string | string[] | undefined>> }) {
+  markMarketingRender()   // perf-1: this render reads the marketing pages' tagged shared cache (lib/marketing-render.ts)
   // 🔴 ONE READ, SERVER-SIDE, AND LOUD: a missing row or an undecided price throws here rather than
   // rendering a pricing section with a borrowed or blank figure.
   // Phase 2D-1: the VISITOR'S country (?country → hg_country cookie → x-vercel-ip-country → GB, switched-on

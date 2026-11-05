@@ -2,65 +2,66 @@
 // Import this module (`import '@/lib/i18n/catalog/manageExtras'`) in any file that reads the "manageExtras" namespace.
 import base from '@/messages/ns/en-GB/manageExtras.json'
 import enUS from '@/messages/ns/en-US/manageExtras.json'
-import { registerNamespace, registerLanguage } from '@/lib/i18n/registry'
+import { registerNamespace, registerLanguage, serverWords } from '@/lib/i18n/registry'
 
 registerNamespace('manageExtras', base, { 'en-US': enUS })
-// languages-1: each non-English language — on the server now; in the browser only when a page is in that language.
+// languages-1: each non-English language only when a page is in that language — perf-1: on the server too (serverWords: a
+// synchronous require, run the first time the language is asked for), in the browser as a chunk loaded on demand.
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('manageExtras', 'fr-FR', typeof window === 'undefined' ? require('@/messages/ns/fr-FR/manageExtras.json') : () => import('@/messages/ns/fr-FR/manageExtras.json'))
+registerLanguage('manageExtras', 'fr-FR', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/fr-FR/manageExtras.json')) : () => import('@/messages/ns/fr-FR/manageExtras.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('manageExtras', 'de-DE', typeof window === 'undefined' ? require('@/messages/ns/de-DE/manageExtras.json') : () => import('@/messages/ns/de-DE/manageExtras.json'))
+registerLanguage('manageExtras', 'de-DE', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/de-DE/manageExtras.json')) : () => import('@/messages/ns/de-DE/manageExtras.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('manageExtras', 'es-ES', typeof window === 'undefined' ? require('@/messages/ns/es-ES/manageExtras.json') : () => import('@/messages/ns/es-ES/manageExtras.json'))
+registerLanguage('manageExtras', 'es-ES', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/es-ES/manageExtras.json')) : () => import('@/messages/ns/es-ES/manageExtras.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('manageExtras', 'it-IT', typeof window === 'undefined' ? require('@/messages/ns/it-IT/manageExtras.json') : () => import('@/messages/ns/it-IT/manageExtras.json'))
+registerLanguage('manageExtras', 'it-IT', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/it-IT/manageExtras.json')) : () => import('@/messages/ns/it-IT/manageExtras.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('manageExtras', 'pt-PT', typeof window === 'undefined' ? require('@/messages/ns/pt-PT/manageExtras.json') : () => import('@/messages/ns/pt-PT/manageExtras.json'))
+registerLanguage('manageExtras', 'pt-PT', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/pt-PT/manageExtras.json')) : () => import('@/messages/ns/pt-PT/manageExtras.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('manageExtras', 'nl-NL', typeof window === 'undefined' ? require('@/messages/ns/nl-NL/manageExtras.json') : () => import('@/messages/ns/nl-NL/manageExtras.json'))
+registerLanguage('manageExtras', 'nl-NL', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/nl-NL/manageExtras.json')) : () => import('@/messages/ns/nl-NL/manageExtras.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('manageExtras', 'sv-SE', typeof window === 'undefined' ? require('@/messages/ns/sv-SE/manageExtras.json') : () => import('@/messages/ns/sv-SE/manageExtras.json'))
+registerLanguage('manageExtras', 'sv-SE', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/sv-SE/manageExtras.json')) : () => import('@/messages/ns/sv-SE/manageExtras.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('manageExtras', 'da-DK', typeof window === 'undefined' ? require('@/messages/ns/da-DK/manageExtras.json') : () => import('@/messages/ns/da-DK/manageExtras.json'))
+registerLanguage('manageExtras', 'da-DK', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/da-DK/manageExtras.json')) : () => import('@/messages/ns/da-DK/manageExtras.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('manageExtras', 'nb-NO', typeof window === 'undefined' ? require('@/messages/ns/nb-NO/manageExtras.json') : () => import('@/messages/ns/nb-NO/manageExtras.json'))
+registerLanguage('manageExtras', 'nb-NO', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/nb-NO/manageExtras.json')) : () => import('@/messages/ns/nb-NO/manageExtras.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('manageExtras', 'pl-PL', typeof window === 'undefined' ? require('@/messages/ns/pl-PL/manageExtras.json') : () => import('@/messages/ns/pl-PL/manageExtras.json'))
+registerLanguage('manageExtras', 'pl-PL', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/pl-PL/manageExtras.json')) : () => import('@/messages/ns/pl-PL/manageExtras.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('manageExtras', 'cs-CZ', typeof window === 'undefined' ? require('@/messages/ns/cs-CZ/manageExtras.json') : () => import('@/messages/ns/cs-CZ/manageExtras.json'))
+registerLanguage('manageExtras', 'cs-CZ', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/cs-CZ/manageExtras.json')) : () => import('@/messages/ns/cs-CZ/manageExtras.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('manageExtras', 'hu-HU', typeof window === 'undefined' ? require('@/messages/ns/hu-HU/manageExtras.json') : () => import('@/messages/ns/hu-HU/manageExtras.json'))
+registerLanguage('manageExtras', 'hu-HU', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/hu-HU/manageExtras.json')) : () => import('@/messages/ns/hu-HU/manageExtras.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('manageExtras', 'sk-SK', typeof window === 'undefined' ? require('@/messages/ns/sk-SK/manageExtras.json') : () => import('@/messages/ns/sk-SK/manageExtras.json'))
+registerLanguage('manageExtras', 'sk-SK', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/sk-SK/manageExtras.json')) : () => import('@/messages/ns/sk-SK/manageExtras.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('manageExtras', 'ro-RO', typeof window === 'undefined' ? require('@/messages/ns/ro-RO/manageExtras.json') : () => import('@/messages/ns/ro-RO/manageExtras.json'))
+registerLanguage('manageExtras', 'ro-RO', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/ro-RO/manageExtras.json')) : () => import('@/messages/ns/ro-RO/manageExtras.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('manageExtras', 'hr-HR', typeof window === 'undefined' ? require('@/messages/ns/hr-HR/manageExtras.json') : () => import('@/messages/ns/hr-HR/manageExtras.json'))
+registerLanguage('manageExtras', 'hr-HR', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/hr-HR/manageExtras.json')) : () => import('@/messages/ns/hr-HR/manageExtras.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('manageExtras', 'sl-SI', typeof window === 'undefined' ? require('@/messages/ns/sl-SI/manageExtras.json') : () => import('@/messages/ns/sl-SI/manageExtras.json'))
+registerLanguage('manageExtras', 'sl-SI', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/sl-SI/manageExtras.json')) : () => import('@/messages/ns/sl-SI/manageExtras.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('manageExtras', 'fi-FI', typeof window === 'undefined' ? require('@/messages/ns/fi-FI/manageExtras.json') : () => import('@/messages/ns/fi-FI/manageExtras.json'))
+registerLanguage('manageExtras', 'fi-FI', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/fi-FI/manageExtras.json')) : () => import('@/messages/ns/fi-FI/manageExtras.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('manageExtras', 'et-EE', typeof window === 'undefined' ? require('@/messages/ns/et-EE/manageExtras.json') : () => import('@/messages/ns/et-EE/manageExtras.json'))
+registerLanguage('manageExtras', 'et-EE', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/et-EE/manageExtras.json')) : () => import('@/messages/ns/et-EE/manageExtras.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('manageExtras', 'lv-LV', typeof window === 'undefined' ? require('@/messages/ns/lv-LV/manageExtras.json') : () => import('@/messages/ns/lv-LV/manageExtras.json'))
+registerLanguage('manageExtras', 'lv-LV', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/lv-LV/manageExtras.json')) : () => import('@/messages/ns/lv-LV/manageExtras.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('manageExtras', 'lt-LT', typeof window === 'undefined' ? require('@/messages/ns/lt-LT/manageExtras.json') : () => import('@/messages/ns/lt-LT/manageExtras.json'))
+registerLanguage('manageExtras', 'lt-LT', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/lt-LT/manageExtras.json')) : () => import('@/messages/ns/lt-LT/manageExtras.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('manageExtras', 'el-GR', typeof window === 'undefined' ? require('@/messages/ns/el-GR/manageExtras.json') : () => import('@/messages/ns/el-GR/manageExtras.json'))
+registerLanguage('manageExtras', 'el-GR', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/el-GR/manageExtras.json')) : () => import('@/messages/ns/el-GR/manageExtras.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('manageExtras', 'bg-BG', typeof window === 'undefined' ? require('@/messages/ns/bg-BG/manageExtras.json') : () => import('@/messages/ns/bg-BG/manageExtras.json'))
+registerLanguage('manageExtras', 'bg-BG', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/bg-BG/manageExtras.json')) : () => import('@/messages/ns/bg-BG/manageExtras.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('manageExtras', 'es-MX', typeof window === 'undefined' ? require('@/messages/ns/es-MX/manageExtras.json') : () => import('@/messages/ns/es-MX/manageExtras.json'))
+registerLanguage('manageExtras', 'es-MX', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/es-MX/manageExtras.json')) : () => import('@/messages/ns/es-MX/manageExtras.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('manageExtras', 'pt-BR', typeof window === 'undefined' ? require('@/messages/ns/pt-BR/manageExtras.json') : () => import('@/messages/ns/pt-BR/manageExtras.json'))
+registerLanguage('manageExtras', 'pt-BR', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/pt-BR/manageExtras.json')) : () => import('@/messages/ns/pt-BR/manageExtras.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('manageExtras', 'ms-MY', typeof window === 'undefined' ? require('@/messages/ns/ms-MY/manageExtras.json') : () => import('@/messages/ns/ms-MY/manageExtras.json'))
+registerLanguage('manageExtras', 'ms-MY', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/ms-MY/manageExtras.json')) : () => import('@/messages/ns/ms-MY/manageExtras.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('manageExtras', 'ja-JP', typeof window === 'undefined' ? require('@/messages/ns/ja-JP/manageExtras.json') : () => import('@/messages/ns/ja-JP/manageExtras.json'))
+registerLanguage('manageExtras', 'ja-JP', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/ja-JP/manageExtras.json')) : () => import('@/messages/ns/ja-JP/manageExtras.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('manageExtras', 'zh-HK', typeof window === 'undefined' ? require('@/messages/ns/zh-HK/manageExtras.json') : () => import('@/messages/ns/zh-HK/manageExtras.json'))
+registerLanguage('manageExtras', 'zh-HK', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/zh-HK/manageExtras.json')) : () => import('@/messages/ns/zh-HK/manageExtras.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('manageExtras', 'th-TH', typeof window === 'undefined' ? require('@/messages/ns/th-TH/manageExtras.json') : () => import('@/messages/ns/th-TH/manageExtras.json'))
+registerLanguage('manageExtras', 'th-TH', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/th-TH/manageExtras.json')) : () => import('@/messages/ns/th-TH/manageExtras.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('manageExtras', 'ar-AE', typeof window === 'undefined' ? require('@/messages/ns/ar-AE/manageExtras.json') : () => import('@/messages/ns/ar-AE/manageExtras.json'))
+registerLanguage('manageExtras', 'ar-AE', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/ar-AE/manageExtras.json')) : () => import('@/messages/ns/ar-AE/manageExtras.json'))

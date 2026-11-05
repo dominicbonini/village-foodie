@@ -2,67 +2,68 @@
 // Import this module (`import '@/lib/i18n/catalog/auth'`) in any file that reads the "auth" namespace.
 import base from '@/messages/ns/en-GB/auth.json'
 import enUS from '@/messages/ns/en-US/auth.json'
-import { registerNamespace, registerLanguage } from '@/lib/i18n/registry'
+import { registerNamespace, registerLanguage, serverWords } from '@/lib/i18n/registry'
 
 registerNamespace('auth', base, { 'en-US': enUS })
-// languages-1: each non-English language — on the server now; in the browser only when a page is in that language.
+// languages-1: each non-English language only when a page is in that language — perf-1: on the server too (serverWords: a
+// synchronous require, run the first time the language is asked for), in the browser as a chunk loaded on demand.
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('auth', 'fr-FR', typeof window === 'undefined' ? require('@/messages/ns/fr-FR/auth.json') : () => import('@/messages/ns/fr-FR/auth.json'))
+registerLanguage('auth', 'fr-FR', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/fr-FR/auth.json')) : () => import('@/messages/ns/fr-FR/auth.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('auth', 'de-DE', typeof window === 'undefined' ? require('@/messages/ns/de-DE/auth.json') : () => import('@/messages/ns/de-DE/auth.json'))
+registerLanguage('auth', 'de-DE', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/de-DE/auth.json')) : () => import('@/messages/ns/de-DE/auth.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('auth', 'es-ES', typeof window === 'undefined' ? require('@/messages/ns/es-ES/auth.json') : () => import('@/messages/ns/es-ES/auth.json'))
+registerLanguage('auth', 'es-ES', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/es-ES/auth.json')) : () => import('@/messages/ns/es-ES/auth.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('auth', 'it-IT', typeof window === 'undefined' ? require('@/messages/ns/it-IT/auth.json') : () => import('@/messages/ns/it-IT/auth.json'))
+registerLanguage('auth', 'it-IT', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/it-IT/auth.json')) : () => import('@/messages/ns/it-IT/auth.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('auth', 'pt-PT', typeof window === 'undefined' ? require('@/messages/ns/pt-PT/auth.json') : () => import('@/messages/ns/pt-PT/auth.json'))
+registerLanguage('auth', 'pt-PT', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/pt-PT/auth.json')) : () => import('@/messages/ns/pt-PT/auth.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('auth', 'nl-NL', typeof window === 'undefined' ? require('@/messages/ns/nl-NL/auth.json') : () => import('@/messages/ns/nl-NL/auth.json'))
+registerLanguage('auth', 'nl-NL', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/nl-NL/auth.json')) : () => import('@/messages/ns/nl-NL/auth.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('auth', 'sv-SE', typeof window === 'undefined' ? require('@/messages/ns/sv-SE/auth.json') : () => import('@/messages/ns/sv-SE/auth.json'))
+registerLanguage('auth', 'sv-SE', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/sv-SE/auth.json')) : () => import('@/messages/ns/sv-SE/auth.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('auth', 'da-DK', typeof window === 'undefined' ? require('@/messages/ns/da-DK/auth.json') : () => import('@/messages/ns/da-DK/auth.json'))
+registerLanguage('auth', 'da-DK', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/da-DK/auth.json')) : () => import('@/messages/ns/da-DK/auth.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('auth', 'nb-NO', typeof window === 'undefined' ? require('@/messages/ns/nb-NO/auth.json') : () => import('@/messages/ns/nb-NO/auth.json'))
+registerLanguage('auth', 'nb-NO', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/nb-NO/auth.json')) : () => import('@/messages/ns/nb-NO/auth.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('auth', 'pl-PL', typeof window === 'undefined' ? require('@/messages/ns/pl-PL/auth.json') : () => import('@/messages/ns/pl-PL/auth.json'))
+registerLanguage('auth', 'pl-PL', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/pl-PL/auth.json')) : () => import('@/messages/ns/pl-PL/auth.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('auth', 'cs-CZ', typeof window === 'undefined' ? require('@/messages/ns/cs-CZ/auth.json') : () => import('@/messages/ns/cs-CZ/auth.json'))
+registerLanguage('auth', 'cs-CZ', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/cs-CZ/auth.json')) : () => import('@/messages/ns/cs-CZ/auth.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('auth', 'hu-HU', typeof window === 'undefined' ? require('@/messages/ns/hu-HU/auth.json') : () => import('@/messages/ns/hu-HU/auth.json'))
+registerLanguage('auth', 'hu-HU', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/hu-HU/auth.json')) : () => import('@/messages/ns/hu-HU/auth.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('auth', 'sk-SK', typeof window === 'undefined' ? require('@/messages/ns/sk-SK/auth.json') : () => import('@/messages/ns/sk-SK/auth.json'))
+registerLanguage('auth', 'sk-SK', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/sk-SK/auth.json')) : () => import('@/messages/ns/sk-SK/auth.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('auth', 'ro-RO', typeof window === 'undefined' ? require('@/messages/ns/ro-RO/auth.json') : () => import('@/messages/ns/ro-RO/auth.json'))
+registerLanguage('auth', 'ro-RO', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/ro-RO/auth.json')) : () => import('@/messages/ns/ro-RO/auth.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('auth', 'hr-HR', typeof window === 'undefined' ? require('@/messages/ns/hr-HR/auth.json') : () => import('@/messages/ns/hr-HR/auth.json'))
+registerLanguage('auth', 'hr-HR', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/hr-HR/auth.json')) : () => import('@/messages/ns/hr-HR/auth.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('auth', 'sl-SI', typeof window === 'undefined' ? require('@/messages/ns/sl-SI/auth.json') : () => import('@/messages/ns/sl-SI/auth.json'))
+registerLanguage('auth', 'sl-SI', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/sl-SI/auth.json')) : () => import('@/messages/ns/sl-SI/auth.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('auth', 'fi-FI', typeof window === 'undefined' ? require('@/messages/ns/fi-FI/auth.json') : () => import('@/messages/ns/fi-FI/auth.json'))
+registerLanguage('auth', 'fi-FI', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/fi-FI/auth.json')) : () => import('@/messages/ns/fi-FI/auth.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('auth', 'et-EE', typeof window === 'undefined' ? require('@/messages/ns/et-EE/auth.json') : () => import('@/messages/ns/et-EE/auth.json'))
+registerLanguage('auth', 'et-EE', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/et-EE/auth.json')) : () => import('@/messages/ns/et-EE/auth.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('auth', 'lv-LV', typeof window === 'undefined' ? require('@/messages/ns/lv-LV/auth.json') : () => import('@/messages/ns/lv-LV/auth.json'))
+registerLanguage('auth', 'lv-LV', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/lv-LV/auth.json')) : () => import('@/messages/ns/lv-LV/auth.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('auth', 'lt-LT', typeof window === 'undefined' ? require('@/messages/ns/lt-LT/auth.json') : () => import('@/messages/ns/lt-LT/auth.json'))
+registerLanguage('auth', 'lt-LT', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/lt-LT/auth.json')) : () => import('@/messages/ns/lt-LT/auth.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('auth', 'el-GR', typeof window === 'undefined' ? require('@/messages/ns/el-GR/auth.json') : () => import('@/messages/ns/el-GR/auth.json'))
+registerLanguage('auth', 'el-GR', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/el-GR/auth.json')) : () => import('@/messages/ns/el-GR/auth.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('auth', 'bg-BG', typeof window === 'undefined' ? require('@/messages/ns/bg-BG/auth.json') : () => import('@/messages/ns/bg-BG/auth.json'))
+registerLanguage('auth', 'bg-BG', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/bg-BG/auth.json')) : () => import('@/messages/ns/bg-BG/auth.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('auth', 'fr-LU', typeof window === 'undefined' ? require('@/messages/ns/fr-LU/auth.json') : () => import('@/messages/ns/fr-LU/auth.json'))
+registerLanguage('auth', 'fr-LU', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/fr-LU/auth.json')) : () => import('@/messages/ns/fr-LU/auth.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('auth', 'es-MX', typeof window === 'undefined' ? require('@/messages/ns/es-MX/auth.json') : () => import('@/messages/ns/es-MX/auth.json'))
+registerLanguage('auth', 'es-MX', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/es-MX/auth.json')) : () => import('@/messages/ns/es-MX/auth.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('auth', 'pt-BR', typeof window === 'undefined' ? require('@/messages/ns/pt-BR/auth.json') : () => import('@/messages/ns/pt-BR/auth.json'))
+registerLanguage('auth', 'pt-BR', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/pt-BR/auth.json')) : () => import('@/messages/ns/pt-BR/auth.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('auth', 'ms-MY', typeof window === 'undefined' ? require('@/messages/ns/ms-MY/auth.json') : () => import('@/messages/ns/ms-MY/auth.json'))
+registerLanguage('auth', 'ms-MY', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/ms-MY/auth.json')) : () => import('@/messages/ns/ms-MY/auth.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('auth', 'ja-JP', typeof window === 'undefined' ? require('@/messages/ns/ja-JP/auth.json') : () => import('@/messages/ns/ja-JP/auth.json'))
+registerLanguage('auth', 'ja-JP', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/ja-JP/auth.json')) : () => import('@/messages/ns/ja-JP/auth.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('auth', 'zh-HK', typeof window === 'undefined' ? require('@/messages/ns/zh-HK/auth.json') : () => import('@/messages/ns/zh-HK/auth.json'))
+registerLanguage('auth', 'zh-HK', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/zh-HK/auth.json')) : () => import('@/messages/ns/zh-HK/auth.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('auth', 'th-TH', typeof window === 'undefined' ? require('@/messages/ns/th-TH/auth.json') : () => import('@/messages/ns/th-TH/auth.json'))
+registerLanguage('auth', 'th-TH', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/th-TH/auth.json')) : () => import('@/messages/ns/th-TH/auth.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('auth', 'ar-AE', typeof window === 'undefined' ? require('@/messages/ns/ar-AE/auth.json') : () => import('@/messages/ns/ar-AE/auth.json'))
+registerLanguage('auth', 'ar-AE', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/ar-AE/auth.json')) : () => import('@/messages/ns/ar-AE/auth.json'))

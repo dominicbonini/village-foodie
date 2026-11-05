@@ -2,67 +2,68 @@
 // Import this module (`import '@/lib/i18n/catalog/eventPost'`) in any file that reads the "eventPost" namespace.
 import base from '@/messages/ns/en-GB/eventPost.json'
 import enUS from '@/messages/ns/en-US/eventPost.json'
-import { registerNamespace, registerLanguage } from '@/lib/i18n/registry'
+import { registerNamespace, registerLanguage, serverWords } from '@/lib/i18n/registry'
 
 registerNamespace('eventPost', base, { 'en-US': enUS })
-// languages-1: each non-English language — on the server now; in the browser only when a page is in that language.
+// languages-1: each non-English language only when a page is in that language — perf-1: on the server too (serverWords: a
+// synchronous require, run the first time the language is asked for), in the browser as a chunk loaded on demand.
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('eventPost', 'fr-FR', typeof window === 'undefined' ? require('@/messages/ns/fr-FR/eventPost.json') : () => import('@/messages/ns/fr-FR/eventPost.json'))
+registerLanguage('eventPost', 'fr-FR', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/fr-FR/eventPost.json')) : () => import('@/messages/ns/fr-FR/eventPost.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('eventPost', 'de-DE', typeof window === 'undefined' ? require('@/messages/ns/de-DE/eventPost.json') : () => import('@/messages/ns/de-DE/eventPost.json'))
+registerLanguage('eventPost', 'de-DE', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/de-DE/eventPost.json')) : () => import('@/messages/ns/de-DE/eventPost.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('eventPost', 'de-CH', typeof window === 'undefined' ? require('@/messages/ns/de-CH/eventPost.json') : () => import('@/messages/ns/de-CH/eventPost.json'))
+registerLanguage('eventPost', 'de-CH', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/de-CH/eventPost.json')) : () => import('@/messages/ns/de-CH/eventPost.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('eventPost', 'es-ES', typeof window === 'undefined' ? require('@/messages/ns/es-ES/eventPost.json') : () => import('@/messages/ns/es-ES/eventPost.json'))
+registerLanguage('eventPost', 'es-ES', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/es-ES/eventPost.json')) : () => import('@/messages/ns/es-ES/eventPost.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('eventPost', 'it-IT', typeof window === 'undefined' ? require('@/messages/ns/it-IT/eventPost.json') : () => import('@/messages/ns/it-IT/eventPost.json'))
+registerLanguage('eventPost', 'it-IT', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/it-IT/eventPost.json')) : () => import('@/messages/ns/it-IT/eventPost.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('eventPost', 'pt-PT', typeof window === 'undefined' ? require('@/messages/ns/pt-PT/eventPost.json') : () => import('@/messages/ns/pt-PT/eventPost.json'))
+registerLanguage('eventPost', 'pt-PT', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/pt-PT/eventPost.json')) : () => import('@/messages/ns/pt-PT/eventPost.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('eventPost', 'nl-NL', typeof window === 'undefined' ? require('@/messages/ns/nl-NL/eventPost.json') : () => import('@/messages/ns/nl-NL/eventPost.json'))
+registerLanguage('eventPost', 'nl-NL', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/nl-NL/eventPost.json')) : () => import('@/messages/ns/nl-NL/eventPost.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('eventPost', 'sv-SE', typeof window === 'undefined' ? require('@/messages/ns/sv-SE/eventPost.json') : () => import('@/messages/ns/sv-SE/eventPost.json'))
+registerLanguage('eventPost', 'sv-SE', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/sv-SE/eventPost.json')) : () => import('@/messages/ns/sv-SE/eventPost.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('eventPost', 'da-DK', typeof window === 'undefined' ? require('@/messages/ns/da-DK/eventPost.json') : () => import('@/messages/ns/da-DK/eventPost.json'))
+registerLanguage('eventPost', 'da-DK', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/da-DK/eventPost.json')) : () => import('@/messages/ns/da-DK/eventPost.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('eventPost', 'nb-NO', typeof window === 'undefined' ? require('@/messages/ns/nb-NO/eventPost.json') : () => import('@/messages/ns/nb-NO/eventPost.json'))
+registerLanguage('eventPost', 'nb-NO', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/nb-NO/eventPost.json')) : () => import('@/messages/ns/nb-NO/eventPost.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('eventPost', 'pl-PL', typeof window === 'undefined' ? require('@/messages/ns/pl-PL/eventPost.json') : () => import('@/messages/ns/pl-PL/eventPost.json'))
+registerLanguage('eventPost', 'pl-PL', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/pl-PL/eventPost.json')) : () => import('@/messages/ns/pl-PL/eventPost.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('eventPost', 'cs-CZ', typeof window === 'undefined' ? require('@/messages/ns/cs-CZ/eventPost.json') : () => import('@/messages/ns/cs-CZ/eventPost.json'))
+registerLanguage('eventPost', 'cs-CZ', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/cs-CZ/eventPost.json')) : () => import('@/messages/ns/cs-CZ/eventPost.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('eventPost', 'hu-HU', typeof window === 'undefined' ? require('@/messages/ns/hu-HU/eventPost.json') : () => import('@/messages/ns/hu-HU/eventPost.json'))
+registerLanguage('eventPost', 'hu-HU', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/hu-HU/eventPost.json')) : () => import('@/messages/ns/hu-HU/eventPost.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('eventPost', 'sk-SK', typeof window === 'undefined' ? require('@/messages/ns/sk-SK/eventPost.json') : () => import('@/messages/ns/sk-SK/eventPost.json'))
+registerLanguage('eventPost', 'sk-SK', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/sk-SK/eventPost.json')) : () => import('@/messages/ns/sk-SK/eventPost.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('eventPost', 'ro-RO', typeof window === 'undefined' ? require('@/messages/ns/ro-RO/eventPost.json') : () => import('@/messages/ns/ro-RO/eventPost.json'))
+registerLanguage('eventPost', 'ro-RO', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/ro-RO/eventPost.json')) : () => import('@/messages/ns/ro-RO/eventPost.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('eventPost', 'hr-HR', typeof window === 'undefined' ? require('@/messages/ns/hr-HR/eventPost.json') : () => import('@/messages/ns/hr-HR/eventPost.json'))
+registerLanguage('eventPost', 'hr-HR', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/hr-HR/eventPost.json')) : () => import('@/messages/ns/hr-HR/eventPost.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('eventPost', 'sl-SI', typeof window === 'undefined' ? require('@/messages/ns/sl-SI/eventPost.json') : () => import('@/messages/ns/sl-SI/eventPost.json'))
+registerLanguage('eventPost', 'sl-SI', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/sl-SI/eventPost.json')) : () => import('@/messages/ns/sl-SI/eventPost.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('eventPost', 'fi-FI', typeof window === 'undefined' ? require('@/messages/ns/fi-FI/eventPost.json') : () => import('@/messages/ns/fi-FI/eventPost.json'))
+registerLanguage('eventPost', 'fi-FI', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/fi-FI/eventPost.json')) : () => import('@/messages/ns/fi-FI/eventPost.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('eventPost', 'et-EE', typeof window === 'undefined' ? require('@/messages/ns/et-EE/eventPost.json') : () => import('@/messages/ns/et-EE/eventPost.json'))
+registerLanguage('eventPost', 'et-EE', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/et-EE/eventPost.json')) : () => import('@/messages/ns/et-EE/eventPost.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('eventPost', 'lv-LV', typeof window === 'undefined' ? require('@/messages/ns/lv-LV/eventPost.json') : () => import('@/messages/ns/lv-LV/eventPost.json'))
+registerLanguage('eventPost', 'lv-LV', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/lv-LV/eventPost.json')) : () => import('@/messages/ns/lv-LV/eventPost.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('eventPost', 'lt-LT', typeof window === 'undefined' ? require('@/messages/ns/lt-LT/eventPost.json') : () => import('@/messages/ns/lt-LT/eventPost.json'))
+registerLanguage('eventPost', 'lt-LT', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/lt-LT/eventPost.json')) : () => import('@/messages/ns/lt-LT/eventPost.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('eventPost', 'el-GR', typeof window === 'undefined' ? require('@/messages/ns/el-GR/eventPost.json') : () => import('@/messages/ns/el-GR/eventPost.json'))
+registerLanguage('eventPost', 'el-GR', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/el-GR/eventPost.json')) : () => import('@/messages/ns/el-GR/eventPost.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('eventPost', 'bg-BG', typeof window === 'undefined' ? require('@/messages/ns/bg-BG/eventPost.json') : () => import('@/messages/ns/bg-BG/eventPost.json'))
+registerLanguage('eventPost', 'bg-BG', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/bg-BG/eventPost.json')) : () => import('@/messages/ns/bg-BG/eventPost.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('eventPost', 'es-MX', typeof window === 'undefined' ? require('@/messages/ns/es-MX/eventPost.json') : () => import('@/messages/ns/es-MX/eventPost.json'))
+registerLanguage('eventPost', 'es-MX', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/es-MX/eventPost.json')) : () => import('@/messages/ns/es-MX/eventPost.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('eventPost', 'pt-BR', typeof window === 'undefined' ? require('@/messages/ns/pt-BR/eventPost.json') : () => import('@/messages/ns/pt-BR/eventPost.json'))
+registerLanguage('eventPost', 'pt-BR', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/pt-BR/eventPost.json')) : () => import('@/messages/ns/pt-BR/eventPost.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('eventPost', 'ms-MY', typeof window === 'undefined' ? require('@/messages/ns/ms-MY/eventPost.json') : () => import('@/messages/ns/ms-MY/eventPost.json'))
+registerLanguage('eventPost', 'ms-MY', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/ms-MY/eventPost.json')) : () => import('@/messages/ns/ms-MY/eventPost.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('eventPost', 'ja-JP', typeof window === 'undefined' ? require('@/messages/ns/ja-JP/eventPost.json') : () => import('@/messages/ns/ja-JP/eventPost.json'))
+registerLanguage('eventPost', 'ja-JP', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/ja-JP/eventPost.json')) : () => import('@/messages/ns/ja-JP/eventPost.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('eventPost', 'zh-HK', typeof window === 'undefined' ? require('@/messages/ns/zh-HK/eventPost.json') : () => import('@/messages/ns/zh-HK/eventPost.json'))
+registerLanguage('eventPost', 'zh-HK', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/zh-HK/eventPost.json')) : () => import('@/messages/ns/zh-HK/eventPost.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('eventPost', 'th-TH', typeof window === 'undefined' ? require('@/messages/ns/th-TH/eventPost.json') : () => import('@/messages/ns/th-TH/eventPost.json'))
+registerLanguage('eventPost', 'th-TH', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/th-TH/eventPost.json')) : () => import('@/messages/ns/th-TH/eventPost.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('eventPost', 'ar-AE', typeof window === 'undefined' ? require('@/messages/ns/ar-AE/eventPost.json') : () => import('@/messages/ns/ar-AE/eventPost.json'))
+registerLanguage('eventPost', 'ar-AE', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/ar-AE/eventPost.json')) : () => import('@/messages/ns/ar-AE/eventPost.json'))

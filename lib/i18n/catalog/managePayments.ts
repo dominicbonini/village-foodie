@@ -6,67 +6,68 @@ import enAU from '@/messages/ns/en-AU/managePayments.json'
 import enNZ from '@/messages/ns/en-NZ/managePayments.json'
 import enCA from '@/messages/ns/en-CA/managePayments.json'
 import enSG from '@/messages/ns/en-SG/managePayments.json'
-import { registerNamespace, registerLanguage } from '@/lib/i18n/registry'
+import { registerNamespace, registerLanguage, serverWords } from '@/lib/i18n/registry'
 
 registerNamespace('managePayments', base, { 'en-US': enUS, 'en-AU': enAU, 'en-NZ': enNZ, 'en-CA': enCA, 'en-SG': enSG })
-// languages-1: each non-English language — on the server now; in the browser only when a page is in that language.
+// languages-1: each non-English language only when a page is in that language — perf-1: on the server too (serverWords: a
+// synchronous require, run the first time the language is asked for), in the browser as a chunk loaded on demand.
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('managePayments', 'fr-FR', typeof window === 'undefined' ? require('@/messages/ns/fr-FR/managePayments.json') : () => import('@/messages/ns/fr-FR/managePayments.json'))
+registerLanguage('managePayments', 'fr-FR', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/fr-FR/managePayments.json')) : () => import('@/messages/ns/fr-FR/managePayments.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('managePayments', 'de-DE', typeof window === 'undefined' ? require('@/messages/ns/de-DE/managePayments.json') : () => import('@/messages/ns/de-DE/managePayments.json'))
+registerLanguage('managePayments', 'de-DE', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/de-DE/managePayments.json')) : () => import('@/messages/ns/de-DE/managePayments.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('managePayments', 'es-ES', typeof window === 'undefined' ? require('@/messages/ns/es-ES/managePayments.json') : () => import('@/messages/ns/es-ES/managePayments.json'))
+registerLanguage('managePayments', 'es-ES', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/es-ES/managePayments.json')) : () => import('@/messages/ns/es-ES/managePayments.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('managePayments', 'it-IT', typeof window === 'undefined' ? require('@/messages/ns/it-IT/managePayments.json') : () => import('@/messages/ns/it-IT/managePayments.json'))
+registerLanguage('managePayments', 'it-IT', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/it-IT/managePayments.json')) : () => import('@/messages/ns/it-IT/managePayments.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('managePayments', 'pt-PT', typeof window === 'undefined' ? require('@/messages/ns/pt-PT/managePayments.json') : () => import('@/messages/ns/pt-PT/managePayments.json'))
+registerLanguage('managePayments', 'pt-PT', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/pt-PT/managePayments.json')) : () => import('@/messages/ns/pt-PT/managePayments.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('managePayments', 'nl-NL', typeof window === 'undefined' ? require('@/messages/ns/nl-NL/managePayments.json') : () => import('@/messages/ns/nl-NL/managePayments.json'))
+registerLanguage('managePayments', 'nl-NL', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/nl-NL/managePayments.json')) : () => import('@/messages/ns/nl-NL/managePayments.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('managePayments', 'nl-BE', typeof window === 'undefined' ? require('@/messages/ns/nl-BE/managePayments.json') : () => import('@/messages/ns/nl-BE/managePayments.json'))
+registerLanguage('managePayments', 'nl-BE', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/nl-BE/managePayments.json')) : () => import('@/messages/ns/nl-BE/managePayments.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('managePayments', 'sv-SE', typeof window === 'undefined' ? require('@/messages/ns/sv-SE/managePayments.json') : () => import('@/messages/ns/sv-SE/managePayments.json'))
+registerLanguage('managePayments', 'sv-SE', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/sv-SE/managePayments.json')) : () => import('@/messages/ns/sv-SE/managePayments.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('managePayments', 'da-DK', typeof window === 'undefined' ? require('@/messages/ns/da-DK/managePayments.json') : () => import('@/messages/ns/da-DK/managePayments.json'))
+registerLanguage('managePayments', 'da-DK', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/da-DK/managePayments.json')) : () => import('@/messages/ns/da-DK/managePayments.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('managePayments', 'nb-NO', typeof window === 'undefined' ? require('@/messages/ns/nb-NO/managePayments.json') : () => import('@/messages/ns/nb-NO/managePayments.json'))
+registerLanguage('managePayments', 'nb-NO', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/nb-NO/managePayments.json')) : () => import('@/messages/ns/nb-NO/managePayments.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('managePayments', 'pl-PL', typeof window === 'undefined' ? require('@/messages/ns/pl-PL/managePayments.json') : () => import('@/messages/ns/pl-PL/managePayments.json'))
+registerLanguage('managePayments', 'pl-PL', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/pl-PL/managePayments.json')) : () => import('@/messages/ns/pl-PL/managePayments.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('managePayments', 'cs-CZ', typeof window === 'undefined' ? require('@/messages/ns/cs-CZ/managePayments.json') : () => import('@/messages/ns/cs-CZ/managePayments.json'))
+registerLanguage('managePayments', 'cs-CZ', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/cs-CZ/managePayments.json')) : () => import('@/messages/ns/cs-CZ/managePayments.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('managePayments', 'hu-HU', typeof window === 'undefined' ? require('@/messages/ns/hu-HU/managePayments.json') : () => import('@/messages/ns/hu-HU/managePayments.json'))
+registerLanguage('managePayments', 'hu-HU', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/hu-HU/managePayments.json')) : () => import('@/messages/ns/hu-HU/managePayments.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('managePayments', 'sk-SK', typeof window === 'undefined' ? require('@/messages/ns/sk-SK/managePayments.json') : () => import('@/messages/ns/sk-SK/managePayments.json'))
+registerLanguage('managePayments', 'sk-SK', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/sk-SK/managePayments.json')) : () => import('@/messages/ns/sk-SK/managePayments.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('managePayments', 'ro-RO', typeof window === 'undefined' ? require('@/messages/ns/ro-RO/managePayments.json') : () => import('@/messages/ns/ro-RO/managePayments.json'))
+registerLanguage('managePayments', 'ro-RO', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/ro-RO/managePayments.json')) : () => import('@/messages/ns/ro-RO/managePayments.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('managePayments', 'hr-HR', typeof window === 'undefined' ? require('@/messages/ns/hr-HR/managePayments.json') : () => import('@/messages/ns/hr-HR/managePayments.json'))
+registerLanguage('managePayments', 'hr-HR', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/hr-HR/managePayments.json')) : () => import('@/messages/ns/hr-HR/managePayments.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('managePayments', 'sl-SI', typeof window === 'undefined' ? require('@/messages/ns/sl-SI/managePayments.json') : () => import('@/messages/ns/sl-SI/managePayments.json'))
+registerLanguage('managePayments', 'sl-SI', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/sl-SI/managePayments.json')) : () => import('@/messages/ns/sl-SI/managePayments.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('managePayments', 'fi-FI', typeof window === 'undefined' ? require('@/messages/ns/fi-FI/managePayments.json') : () => import('@/messages/ns/fi-FI/managePayments.json'))
+registerLanguage('managePayments', 'fi-FI', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/fi-FI/managePayments.json')) : () => import('@/messages/ns/fi-FI/managePayments.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('managePayments', 'et-EE', typeof window === 'undefined' ? require('@/messages/ns/et-EE/managePayments.json') : () => import('@/messages/ns/et-EE/managePayments.json'))
+registerLanguage('managePayments', 'et-EE', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/et-EE/managePayments.json')) : () => import('@/messages/ns/et-EE/managePayments.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('managePayments', 'lv-LV', typeof window === 'undefined' ? require('@/messages/ns/lv-LV/managePayments.json') : () => import('@/messages/ns/lv-LV/managePayments.json'))
+registerLanguage('managePayments', 'lv-LV', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/lv-LV/managePayments.json')) : () => import('@/messages/ns/lv-LV/managePayments.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('managePayments', 'lt-LT', typeof window === 'undefined' ? require('@/messages/ns/lt-LT/managePayments.json') : () => import('@/messages/ns/lt-LT/managePayments.json'))
+registerLanguage('managePayments', 'lt-LT', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/lt-LT/managePayments.json')) : () => import('@/messages/ns/lt-LT/managePayments.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('managePayments', 'el-GR', typeof window === 'undefined' ? require('@/messages/ns/el-GR/managePayments.json') : () => import('@/messages/ns/el-GR/managePayments.json'))
+registerLanguage('managePayments', 'el-GR', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/el-GR/managePayments.json')) : () => import('@/messages/ns/el-GR/managePayments.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('managePayments', 'bg-BG', typeof window === 'undefined' ? require('@/messages/ns/bg-BG/managePayments.json') : () => import('@/messages/ns/bg-BG/managePayments.json'))
+registerLanguage('managePayments', 'bg-BG', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/bg-BG/managePayments.json')) : () => import('@/messages/ns/bg-BG/managePayments.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('managePayments', 'es-MX', typeof window === 'undefined' ? require('@/messages/ns/es-MX/managePayments.json') : () => import('@/messages/ns/es-MX/managePayments.json'))
+registerLanguage('managePayments', 'es-MX', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/es-MX/managePayments.json')) : () => import('@/messages/ns/es-MX/managePayments.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('managePayments', 'pt-BR', typeof window === 'undefined' ? require('@/messages/ns/pt-BR/managePayments.json') : () => import('@/messages/ns/pt-BR/managePayments.json'))
+registerLanguage('managePayments', 'pt-BR', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/pt-BR/managePayments.json')) : () => import('@/messages/ns/pt-BR/managePayments.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('managePayments', 'ms-MY', typeof window === 'undefined' ? require('@/messages/ns/ms-MY/managePayments.json') : () => import('@/messages/ns/ms-MY/managePayments.json'))
+registerLanguage('managePayments', 'ms-MY', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/ms-MY/managePayments.json')) : () => import('@/messages/ns/ms-MY/managePayments.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('managePayments', 'ja-JP', typeof window === 'undefined' ? require('@/messages/ns/ja-JP/managePayments.json') : () => import('@/messages/ns/ja-JP/managePayments.json'))
+registerLanguage('managePayments', 'ja-JP', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/ja-JP/managePayments.json')) : () => import('@/messages/ns/ja-JP/managePayments.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('managePayments', 'zh-HK', typeof window === 'undefined' ? require('@/messages/ns/zh-HK/managePayments.json') : () => import('@/messages/ns/zh-HK/managePayments.json'))
+registerLanguage('managePayments', 'zh-HK', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/zh-HK/managePayments.json')) : () => import('@/messages/ns/zh-HK/managePayments.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('managePayments', 'th-TH', typeof window === 'undefined' ? require('@/messages/ns/th-TH/managePayments.json') : () => import('@/messages/ns/th-TH/managePayments.json'))
+registerLanguage('managePayments', 'th-TH', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/th-TH/managePayments.json')) : () => import('@/messages/ns/th-TH/managePayments.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('managePayments', 'ar-AE', typeof window === 'undefined' ? require('@/messages/ns/ar-AE/managePayments.json') : () => import('@/messages/ns/ar-AE/managePayments.json'))
+registerLanguage('managePayments', 'ar-AE', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/ar-AE/managePayments.json')) : () => import('@/messages/ns/ar-AE/managePayments.json'))

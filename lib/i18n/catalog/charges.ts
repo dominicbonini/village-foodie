@@ -2,63 +2,64 @@
 // Import this module (`import '@/lib/i18n/catalog/charges'`) in any file that reads the "charges" namespace.
 import base from '@/messages/ns/en-GB/charges.json'
 import enUS from '@/messages/ns/en-US/charges.json'
-import { registerNamespace, registerLanguage } from '@/lib/i18n/registry'
+import { registerNamespace, registerLanguage, serverWords } from '@/lib/i18n/registry'
 
 registerNamespace('charges', base, { 'en-US': enUS })
-// languages-1: each non-English language — on the server now; in the browser only when a page is in that language.
+// languages-1: each non-English language only when a page is in that language — perf-1: on the server too (serverWords: a
+// synchronous require, run the first time the language is asked for), in the browser as a chunk loaded on demand.
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('charges', 'fr-FR', typeof window === 'undefined' ? require('@/messages/ns/fr-FR/charges.json') : () => import('@/messages/ns/fr-FR/charges.json'))
+registerLanguage('charges', 'fr-FR', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/fr-FR/charges.json')) : () => import('@/messages/ns/fr-FR/charges.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('charges', 'de-DE', typeof window === 'undefined' ? require('@/messages/ns/de-DE/charges.json') : () => import('@/messages/ns/de-DE/charges.json'))
+registerLanguage('charges', 'de-DE', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/de-DE/charges.json')) : () => import('@/messages/ns/de-DE/charges.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('charges', 'es-ES', typeof window === 'undefined' ? require('@/messages/ns/es-ES/charges.json') : () => import('@/messages/ns/es-ES/charges.json'))
+registerLanguage('charges', 'es-ES', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/es-ES/charges.json')) : () => import('@/messages/ns/es-ES/charges.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('charges', 'it-IT', typeof window === 'undefined' ? require('@/messages/ns/it-IT/charges.json') : () => import('@/messages/ns/it-IT/charges.json'))
+registerLanguage('charges', 'it-IT', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/it-IT/charges.json')) : () => import('@/messages/ns/it-IT/charges.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('charges', 'pt-PT', typeof window === 'undefined' ? require('@/messages/ns/pt-PT/charges.json') : () => import('@/messages/ns/pt-PT/charges.json'))
+registerLanguage('charges', 'pt-PT', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/pt-PT/charges.json')) : () => import('@/messages/ns/pt-PT/charges.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('charges', 'nl-NL', typeof window === 'undefined' ? require('@/messages/ns/nl-NL/charges.json') : () => import('@/messages/ns/nl-NL/charges.json'))
+registerLanguage('charges', 'nl-NL', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/nl-NL/charges.json')) : () => import('@/messages/ns/nl-NL/charges.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('charges', 'sv-SE', typeof window === 'undefined' ? require('@/messages/ns/sv-SE/charges.json') : () => import('@/messages/ns/sv-SE/charges.json'))
+registerLanguage('charges', 'sv-SE', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/sv-SE/charges.json')) : () => import('@/messages/ns/sv-SE/charges.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('charges', 'da-DK', typeof window === 'undefined' ? require('@/messages/ns/da-DK/charges.json') : () => import('@/messages/ns/da-DK/charges.json'))
+registerLanguage('charges', 'da-DK', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/da-DK/charges.json')) : () => import('@/messages/ns/da-DK/charges.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('charges', 'nb-NO', typeof window === 'undefined' ? require('@/messages/ns/nb-NO/charges.json') : () => import('@/messages/ns/nb-NO/charges.json'))
+registerLanguage('charges', 'nb-NO', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/nb-NO/charges.json')) : () => import('@/messages/ns/nb-NO/charges.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('charges', 'pl-PL', typeof window === 'undefined' ? require('@/messages/ns/pl-PL/charges.json') : () => import('@/messages/ns/pl-PL/charges.json'))
+registerLanguage('charges', 'pl-PL', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/pl-PL/charges.json')) : () => import('@/messages/ns/pl-PL/charges.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('charges', 'cs-CZ', typeof window === 'undefined' ? require('@/messages/ns/cs-CZ/charges.json') : () => import('@/messages/ns/cs-CZ/charges.json'))
+registerLanguage('charges', 'cs-CZ', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/cs-CZ/charges.json')) : () => import('@/messages/ns/cs-CZ/charges.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('charges', 'hu-HU', typeof window === 'undefined' ? require('@/messages/ns/hu-HU/charges.json') : () => import('@/messages/ns/hu-HU/charges.json'))
+registerLanguage('charges', 'hu-HU', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/hu-HU/charges.json')) : () => import('@/messages/ns/hu-HU/charges.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('charges', 'sk-SK', typeof window === 'undefined' ? require('@/messages/ns/sk-SK/charges.json') : () => import('@/messages/ns/sk-SK/charges.json'))
+registerLanguage('charges', 'sk-SK', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/sk-SK/charges.json')) : () => import('@/messages/ns/sk-SK/charges.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('charges', 'ro-RO', typeof window === 'undefined' ? require('@/messages/ns/ro-RO/charges.json') : () => import('@/messages/ns/ro-RO/charges.json'))
+registerLanguage('charges', 'ro-RO', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/ro-RO/charges.json')) : () => import('@/messages/ns/ro-RO/charges.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('charges', 'hr-HR', typeof window === 'undefined' ? require('@/messages/ns/hr-HR/charges.json') : () => import('@/messages/ns/hr-HR/charges.json'))
+registerLanguage('charges', 'hr-HR', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/hr-HR/charges.json')) : () => import('@/messages/ns/hr-HR/charges.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('charges', 'sl-SI', typeof window === 'undefined' ? require('@/messages/ns/sl-SI/charges.json') : () => import('@/messages/ns/sl-SI/charges.json'))
+registerLanguage('charges', 'sl-SI', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/sl-SI/charges.json')) : () => import('@/messages/ns/sl-SI/charges.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('charges', 'fi-FI', typeof window === 'undefined' ? require('@/messages/ns/fi-FI/charges.json') : () => import('@/messages/ns/fi-FI/charges.json'))
+registerLanguage('charges', 'fi-FI', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/fi-FI/charges.json')) : () => import('@/messages/ns/fi-FI/charges.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('charges', 'et-EE', typeof window === 'undefined' ? require('@/messages/ns/et-EE/charges.json') : () => import('@/messages/ns/et-EE/charges.json'))
+registerLanguage('charges', 'et-EE', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/et-EE/charges.json')) : () => import('@/messages/ns/et-EE/charges.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('charges', 'lv-LV', typeof window === 'undefined' ? require('@/messages/ns/lv-LV/charges.json') : () => import('@/messages/ns/lv-LV/charges.json'))
+registerLanguage('charges', 'lv-LV', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/lv-LV/charges.json')) : () => import('@/messages/ns/lv-LV/charges.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('charges', 'lt-LT', typeof window === 'undefined' ? require('@/messages/ns/lt-LT/charges.json') : () => import('@/messages/ns/lt-LT/charges.json'))
+registerLanguage('charges', 'lt-LT', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/lt-LT/charges.json')) : () => import('@/messages/ns/lt-LT/charges.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('charges', 'el-GR', typeof window === 'undefined' ? require('@/messages/ns/el-GR/charges.json') : () => import('@/messages/ns/el-GR/charges.json'))
+registerLanguage('charges', 'el-GR', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/el-GR/charges.json')) : () => import('@/messages/ns/el-GR/charges.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('charges', 'bg-BG', typeof window === 'undefined' ? require('@/messages/ns/bg-BG/charges.json') : () => import('@/messages/ns/bg-BG/charges.json'))
+registerLanguage('charges', 'bg-BG', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/bg-BG/charges.json')) : () => import('@/messages/ns/bg-BG/charges.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('charges', 'pt-BR', typeof window === 'undefined' ? require('@/messages/ns/pt-BR/charges.json') : () => import('@/messages/ns/pt-BR/charges.json'))
+registerLanguage('charges', 'pt-BR', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/pt-BR/charges.json')) : () => import('@/messages/ns/pt-BR/charges.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('charges', 'ms-MY', typeof window === 'undefined' ? require('@/messages/ns/ms-MY/charges.json') : () => import('@/messages/ns/ms-MY/charges.json'))
+registerLanguage('charges', 'ms-MY', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/ms-MY/charges.json')) : () => import('@/messages/ns/ms-MY/charges.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('charges', 'ja-JP', typeof window === 'undefined' ? require('@/messages/ns/ja-JP/charges.json') : () => import('@/messages/ns/ja-JP/charges.json'))
+registerLanguage('charges', 'ja-JP', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/ja-JP/charges.json')) : () => import('@/messages/ns/ja-JP/charges.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('charges', 'zh-HK', typeof window === 'undefined' ? require('@/messages/ns/zh-HK/charges.json') : () => import('@/messages/ns/zh-HK/charges.json'))
+registerLanguage('charges', 'zh-HK', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/zh-HK/charges.json')) : () => import('@/messages/ns/zh-HK/charges.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('charges', 'th-TH', typeof window === 'undefined' ? require('@/messages/ns/th-TH/charges.json') : () => import('@/messages/ns/th-TH/charges.json'))
+registerLanguage('charges', 'th-TH', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/th-TH/charges.json')) : () => import('@/messages/ns/th-TH/charges.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('charges', 'ar-AE', typeof window === 'undefined' ? require('@/messages/ns/ar-AE/charges.json') : () => import('@/messages/ns/ar-AE/charges.json'))
+registerLanguage('charges', 'ar-AE', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/ar-AE/charges.json')) : () => import('@/messages/ns/ar-AE/charges.json'))

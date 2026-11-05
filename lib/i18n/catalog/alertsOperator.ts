@@ -2,63 +2,64 @@
 // Import this module (`import '@/lib/i18n/catalog/alertsOperator'`) in any file that reads the "alertsOperator" namespace.
 import base from '@/messages/ns/en-GB/alertsOperator.json'
 import enUS from '@/messages/ns/en-US/alertsOperator.json'
-import { registerNamespace, registerLanguage } from '@/lib/i18n/registry'
+import { registerNamespace, registerLanguage, serverWords } from '@/lib/i18n/registry'
 
 registerNamespace('alertsOperator', base, { 'en-US': enUS })
-// languages-1: each non-English language — on the server now; in the browser only when a page is in that language.
+// languages-1: each non-English language only when a page is in that language — perf-1: on the server too (serverWords: a
+// synchronous require, run the first time the language is asked for), in the browser as a chunk loaded on demand.
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('alertsOperator', 'fr-FR', typeof window === 'undefined' ? require('@/messages/ns/fr-FR/alertsOperator.json') : () => import('@/messages/ns/fr-FR/alertsOperator.json'))
+registerLanguage('alertsOperator', 'fr-FR', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/fr-FR/alertsOperator.json')) : () => import('@/messages/ns/fr-FR/alertsOperator.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('alertsOperator', 'de-DE', typeof window === 'undefined' ? require('@/messages/ns/de-DE/alertsOperator.json') : () => import('@/messages/ns/de-DE/alertsOperator.json'))
+registerLanguage('alertsOperator', 'de-DE', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/de-DE/alertsOperator.json')) : () => import('@/messages/ns/de-DE/alertsOperator.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('alertsOperator', 'es-ES', typeof window === 'undefined' ? require('@/messages/ns/es-ES/alertsOperator.json') : () => import('@/messages/ns/es-ES/alertsOperator.json'))
+registerLanguage('alertsOperator', 'es-ES', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/es-ES/alertsOperator.json')) : () => import('@/messages/ns/es-ES/alertsOperator.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('alertsOperator', 'it-IT', typeof window === 'undefined' ? require('@/messages/ns/it-IT/alertsOperator.json') : () => import('@/messages/ns/it-IT/alertsOperator.json'))
+registerLanguage('alertsOperator', 'it-IT', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/it-IT/alertsOperator.json')) : () => import('@/messages/ns/it-IT/alertsOperator.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('alertsOperator', 'pt-PT', typeof window === 'undefined' ? require('@/messages/ns/pt-PT/alertsOperator.json') : () => import('@/messages/ns/pt-PT/alertsOperator.json'))
+registerLanguage('alertsOperator', 'pt-PT', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/pt-PT/alertsOperator.json')) : () => import('@/messages/ns/pt-PT/alertsOperator.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('alertsOperator', 'nl-NL', typeof window === 'undefined' ? require('@/messages/ns/nl-NL/alertsOperator.json') : () => import('@/messages/ns/nl-NL/alertsOperator.json'))
+registerLanguage('alertsOperator', 'nl-NL', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/nl-NL/alertsOperator.json')) : () => import('@/messages/ns/nl-NL/alertsOperator.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('alertsOperator', 'sv-SE', typeof window === 'undefined' ? require('@/messages/ns/sv-SE/alertsOperator.json') : () => import('@/messages/ns/sv-SE/alertsOperator.json'))
+registerLanguage('alertsOperator', 'sv-SE', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/sv-SE/alertsOperator.json')) : () => import('@/messages/ns/sv-SE/alertsOperator.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('alertsOperator', 'da-DK', typeof window === 'undefined' ? require('@/messages/ns/da-DK/alertsOperator.json') : () => import('@/messages/ns/da-DK/alertsOperator.json'))
+registerLanguage('alertsOperator', 'da-DK', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/da-DK/alertsOperator.json')) : () => import('@/messages/ns/da-DK/alertsOperator.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('alertsOperator', 'nb-NO', typeof window === 'undefined' ? require('@/messages/ns/nb-NO/alertsOperator.json') : () => import('@/messages/ns/nb-NO/alertsOperator.json'))
+registerLanguage('alertsOperator', 'nb-NO', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/nb-NO/alertsOperator.json')) : () => import('@/messages/ns/nb-NO/alertsOperator.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('alertsOperator', 'pl-PL', typeof window === 'undefined' ? require('@/messages/ns/pl-PL/alertsOperator.json') : () => import('@/messages/ns/pl-PL/alertsOperator.json'))
+registerLanguage('alertsOperator', 'pl-PL', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/pl-PL/alertsOperator.json')) : () => import('@/messages/ns/pl-PL/alertsOperator.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('alertsOperator', 'cs-CZ', typeof window === 'undefined' ? require('@/messages/ns/cs-CZ/alertsOperator.json') : () => import('@/messages/ns/cs-CZ/alertsOperator.json'))
+registerLanguage('alertsOperator', 'cs-CZ', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/cs-CZ/alertsOperator.json')) : () => import('@/messages/ns/cs-CZ/alertsOperator.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('alertsOperator', 'hu-HU', typeof window === 'undefined' ? require('@/messages/ns/hu-HU/alertsOperator.json') : () => import('@/messages/ns/hu-HU/alertsOperator.json'))
+registerLanguage('alertsOperator', 'hu-HU', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/hu-HU/alertsOperator.json')) : () => import('@/messages/ns/hu-HU/alertsOperator.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('alertsOperator', 'sk-SK', typeof window === 'undefined' ? require('@/messages/ns/sk-SK/alertsOperator.json') : () => import('@/messages/ns/sk-SK/alertsOperator.json'))
+registerLanguage('alertsOperator', 'sk-SK', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/sk-SK/alertsOperator.json')) : () => import('@/messages/ns/sk-SK/alertsOperator.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('alertsOperator', 'ro-RO', typeof window === 'undefined' ? require('@/messages/ns/ro-RO/alertsOperator.json') : () => import('@/messages/ns/ro-RO/alertsOperator.json'))
+registerLanguage('alertsOperator', 'ro-RO', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/ro-RO/alertsOperator.json')) : () => import('@/messages/ns/ro-RO/alertsOperator.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('alertsOperator', 'hr-HR', typeof window === 'undefined' ? require('@/messages/ns/hr-HR/alertsOperator.json') : () => import('@/messages/ns/hr-HR/alertsOperator.json'))
+registerLanguage('alertsOperator', 'hr-HR', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/hr-HR/alertsOperator.json')) : () => import('@/messages/ns/hr-HR/alertsOperator.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('alertsOperator', 'sl-SI', typeof window === 'undefined' ? require('@/messages/ns/sl-SI/alertsOperator.json') : () => import('@/messages/ns/sl-SI/alertsOperator.json'))
+registerLanguage('alertsOperator', 'sl-SI', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/sl-SI/alertsOperator.json')) : () => import('@/messages/ns/sl-SI/alertsOperator.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('alertsOperator', 'fi-FI', typeof window === 'undefined' ? require('@/messages/ns/fi-FI/alertsOperator.json') : () => import('@/messages/ns/fi-FI/alertsOperator.json'))
+registerLanguage('alertsOperator', 'fi-FI', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/fi-FI/alertsOperator.json')) : () => import('@/messages/ns/fi-FI/alertsOperator.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('alertsOperator', 'et-EE', typeof window === 'undefined' ? require('@/messages/ns/et-EE/alertsOperator.json') : () => import('@/messages/ns/et-EE/alertsOperator.json'))
+registerLanguage('alertsOperator', 'et-EE', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/et-EE/alertsOperator.json')) : () => import('@/messages/ns/et-EE/alertsOperator.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('alertsOperator', 'lv-LV', typeof window === 'undefined' ? require('@/messages/ns/lv-LV/alertsOperator.json') : () => import('@/messages/ns/lv-LV/alertsOperator.json'))
+registerLanguage('alertsOperator', 'lv-LV', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/lv-LV/alertsOperator.json')) : () => import('@/messages/ns/lv-LV/alertsOperator.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('alertsOperator', 'lt-LT', typeof window === 'undefined' ? require('@/messages/ns/lt-LT/alertsOperator.json') : () => import('@/messages/ns/lt-LT/alertsOperator.json'))
+registerLanguage('alertsOperator', 'lt-LT', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/lt-LT/alertsOperator.json')) : () => import('@/messages/ns/lt-LT/alertsOperator.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('alertsOperator', 'el-GR', typeof window === 'undefined' ? require('@/messages/ns/el-GR/alertsOperator.json') : () => import('@/messages/ns/el-GR/alertsOperator.json'))
+registerLanguage('alertsOperator', 'el-GR', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/el-GR/alertsOperator.json')) : () => import('@/messages/ns/el-GR/alertsOperator.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('alertsOperator', 'bg-BG', typeof window === 'undefined' ? require('@/messages/ns/bg-BG/alertsOperator.json') : () => import('@/messages/ns/bg-BG/alertsOperator.json'))
+registerLanguage('alertsOperator', 'bg-BG', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/bg-BG/alertsOperator.json')) : () => import('@/messages/ns/bg-BG/alertsOperator.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('alertsOperator', 'pt-BR', typeof window === 'undefined' ? require('@/messages/ns/pt-BR/alertsOperator.json') : () => import('@/messages/ns/pt-BR/alertsOperator.json'))
+registerLanguage('alertsOperator', 'pt-BR', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/pt-BR/alertsOperator.json')) : () => import('@/messages/ns/pt-BR/alertsOperator.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('alertsOperator', 'ms-MY', typeof window === 'undefined' ? require('@/messages/ns/ms-MY/alertsOperator.json') : () => import('@/messages/ns/ms-MY/alertsOperator.json'))
+registerLanguage('alertsOperator', 'ms-MY', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/ms-MY/alertsOperator.json')) : () => import('@/messages/ns/ms-MY/alertsOperator.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('alertsOperator', 'ja-JP', typeof window === 'undefined' ? require('@/messages/ns/ja-JP/alertsOperator.json') : () => import('@/messages/ns/ja-JP/alertsOperator.json'))
+registerLanguage('alertsOperator', 'ja-JP', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/ja-JP/alertsOperator.json')) : () => import('@/messages/ns/ja-JP/alertsOperator.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('alertsOperator', 'zh-HK', typeof window === 'undefined' ? require('@/messages/ns/zh-HK/alertsOperator.json') : () => import('@/messages/ns/zh-HK/alertsOperator.json'))
+registerLanguage('alertsOperator', 'zh-HK', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/zh-HK/alertsOperator.json')) : () => import('@/messages/ns/zh-HK/alertsOperator.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('alertsOperator', 'th-TH', typeof window === 'undefined' ? require('@/messages/ns/th-TH/alertsOperator.json') : () => import('@/messages/ns/th-TH/alertsOperator.json'))
+registerLanguage('alertsOperator', 'th-TH', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/th-TH/alertsOperator.json')) : () => import('@/messages/ns/th-TH/alertsOperator.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('alertsOperator', 'ar-AE', typeof window === 'undefined' ? require('@/messages/ns/ar-AE/alertsOperator.json') : () => import('@/messages/ns/ar-AE/alertsOperator.json'))
+registerLanguage('alertsOperator', 'ar-AE', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/ar-AE/alertsOperator.json')) : () => import('@/messages/ns/ar-AE/alertsOperator.json'))

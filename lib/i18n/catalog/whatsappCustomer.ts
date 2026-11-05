@@ -2,65 +2,66 @@
 // Import this module (`import '@/lib/i18n/catalog/whatsappCustomer'`) in any file that reads the "whatsappCustomer" namespace.
 import base from '@/messages/ns/en-GB/whatsappCustomer.json'
 import enUS from '@/messages/ns/en-US/whatsappCustomer.json'
-import { registerNamespace, registerLanguage } from '@/lib/i18n/registry'
+import { registerNamespace, registerLanguage, serverWords } from '@/lib/i18n/registry'
 
 registerNamespace('whatsappCustomer', base, { 'en-US': enUS })
-// languages-1: each non-English language — on the server now; in the browser only when a page is in that language.
+// languages-1: each non-English language only when a page is in that language — perf-1: on the server too (serverWords: a
+// synchronous require, run the first time the language is asked for), in the browser as a chunk loaded on demand.
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('whatsappCustomer', 'fr-FR', typeof window === 'undefined' ? require('@/messages/ns/fr-FR/whatsappCustomer.json') : () => import('@/messages/ns/fr-FR/whatsappCustomer.json'))
+registerLanguage('whatsappCustomer', 'fr-FR', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/fr-FR/whatsappCustomer.json')) : () => import('@/messages/ns/fr-FR/whatsappCustomer.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('whatsappCustomer', 'de-DE', typeof window === 'undefined' ? require('@/messages/ns/de-DE/whatsappCustomer.json') : () => import('@/messages/ns/de-DE/whatsappCustomer.json'))
+registerLanguage('whatsappCustomer', 'de-DE', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/de-DE/whatsappCustomer.json')) : () => import('@/messages/ns/de-DE/whatsappCustomer.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('whatsappCustomer', 'es-ES', typeof window === 'undefined' ? require('@/messages/ns/es-ES/whatsappCustomer.json') : () => import('@/messages/ns/es-ES/whatsappCustomer.json'))
+registerLanguage('whatsappCustomer', 'es-ES', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/es-ES/whatsappCustomer.json')) : () => import('@/messages/ns/es-ES/whatsappCustomer.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('whatsappCustomer', 'it-IT', typeof window === 'undefined' ? require('@/messages/ns/it-IT/whatsappCustomer.json') : () => import('@/messages/ns/it-IT/whatsappCustomer.json'))
+registerLanguage('whatsappCustomer', 'it-IT', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/it-IT/whatsappCustomer.json')) : () => import('@/messages/ns/it-IT/whatsappCustomer.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('whatsappCustomer', 'pt-PT', typeof window === 'undefined' ? require('@/messages/ns/pt-PT/whatsappCustomer.json') : () => import('@/messages/ns/pt-PT/whatsappCustomer.json'))
+registerLanguage('whatsappCustomer', 'pt-PT', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/pt-PT/whatsappCustomer.json')) : () => import('@/messages/ns/pt-PT/whatsappCustomer.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('whatsappCustomer', 'nl-NL', typeof window === 'undefined' ? require('@/messages/ns/nl-NL/whatsappCustomer.json') : () => import('@/messages/ns/nl-NL/whatsappCustomer.json'))
+registerLanguage('whatsappCustomer', 'nl-NL', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/nl-NL/whatsappCustomer.json')) : () => import('@/messages/ns/nl-NL/whatsappCustomer.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('whatsappCustomer', 'sv-SE', typeof window === 'undefined' ? require('@/messages/ns/sv-SE/whatsappCustomer.json') : () => import('@/messages/ns/sv-SE/whatsappCustomer.json'))
+registerLanguage('whatsappCustomer', 'sv-SE', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/sv-SE/whatsappCustomer.json')) : () => import('@/messages/ns/sv-SE/whatsappCustomer.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('whatsappCustomer', 'da-DK', typeof window === 'undefined' ? require('@/messages/ns/da-DK/whatsappCustomer.json') : () => import('@/messages/ns/da-DK/whatsappCustomer.json'))
+registerLanguage('whatsappCustomer', 'da-DK', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/da-DK/whatsappCustomer.json')) : () => import('@/messages/ns/da-DK/whatsappCustomer.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('whatsappCustomer', 'nb-NO', typeof window === 'undefined' ? require('@/messages/ns/nb-NO/whatsappCustomer.json') : () => import('@/messages/ns/nb-NO/whatsappCustomer.json'))
+registerLanguage('whatsappCustomer', 'nb-NO', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/nb-NO/whatsappCustomer.json')) : () => import('@/messages/ns/nb-NO/whatsappCustomer.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('whatsappCustomer', 'pl-PL', typeof window === 'undefined' ? require('@/messages/ns/pl-PL/whatsappCustomer.json') : () => import('@/messages/ns/pl-PL/whatsappCustomer.json'))
+registerLanguage('whatsappCustomer', 'pl-PL', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/pl-PL/whatsappCustomer.json')) : () => import('@/messages/ns/pl-PL/whatsappCustomer.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('whatsappCustomer', 'cs-CZ', typeof window === 'undefined' ? require('@/messages/ns/cs-CZ/whatsappCustomer.json') : () => import('@/messages/ns/cs-CZ/whatsappCustomer.json'))
+registerLanguage('whatsappCustomer', 'cs-CZ', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/cs-CZ/whatsappCustomer.json')) : () => import('@/messages/ns/cs-CZ/whatsappCustomer.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('whatsappCustomer', 'hu-HU', typeof window === 'undefined' ? require('@/messages/ns/hu-HU/whatsappCustomer.json') : () => import('@/messages/ns/hu-HU/whatsappCustomer.json'))
+registerLanguage('whatsappCustomer', 'hu-HU', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/hu-HU/whatsappCustomer.json')) : () => import('@/messages/ns/hu-HU/whatsappCustomer.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('whatsappCustomer', 'sk-SK', typeof window === 'undefined' ? require('@/messages/ns/sk-SK/whatsappCustomer.json') : () => import('@/messages/ns/sk-SK/whatsappCustomer.json'))
+registerLanguage('whatsappCustomer', 'sk-SK', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/sk-SK/whatsappCustomer.json')) : () => import('@/messages/ns/sk-SK/whatsappCustomer.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('whatsappCustomer', 'ro-RO', typeof window === 'undefined' ? require('@/messages/ns/ro-RO/whatsappCustomer.json') : () => import('@/messages/ns/ro-RO/whatsappCustomer.json'))
+registerLanguage('whatsappCustomer', 'ro-RO', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/ro-RO/whatsappCustomer.json')) : () => import('@/messages/ns/ro-RO/whatsappCustomer.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('whatsappCustomer', 'hr-HR', typeof window === 'undefined' ? require('@/messages/ns/hr-HR/whatsappCustomer.json') : () => import('@/messages/ns/hr-HR/whatsappCustomer.json'))
+registerLanguage('whatsappCustomer', 'hr-HR', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/hr-HR/whatsappCustomer.json')) : () => import('@/messages/ns/hr-HR/whatsappCustomer.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('whatsappCustomer', 'sl-SI', typeof window === 'undefined' ? require('@/messages/ns/sl-SI/whatsappCustomer.json') : () => import('@/messages/ns/sl-SI/whatsappCustomer.json'))
+registerLanguage('whatsappCustomer', 'sl-SI', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/sl-SI/whatsappCustomer.json')) : () => import('@/messages/ns/sl-SI/whatsappCustomer.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('whatsappCustomer', 'fi-FI', typeof window === 'undefined' ? require('@/messages/ns/fi-FI/whatsappCustomer.json') : () => import('@/messages/ns/fi-FI/whatsappCustomer.json'))
+registerLanguage('whatsappCustomer', 'fi-FI', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/fi-FI/whatsappCustomer.json')) : () => import('@/messages/ns/fi-FI/whatsappCustomer.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('whatsappCustomer', 'et-EE', typeof window === 'undefined' ? require('@/messages/ns/et-EE/whatsappCustomer.json') : () => import('@/messages/ns/et-EE/whatsappCustomer.json'))
+registerLanguage('whatsappCustomer', 'et-EE', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/et-EE/whatsappCustomer.json')) : () => import('@/messages/ns/et-EE/whatsappCustomer.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('whatsappCustomer', 'lv-LV', typeof window === 'undefined' ? require('@/messages/ns/lv-LV/whatsappCustomer.json') : () => import('@/messages/ns/lv-LV/whatsappCustomer.json'))
+registerLanguage('whatsappCustomer', 'lv-LV', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/lv-LV/whatsappCustomer.json')) : () => import('@/messages/ns/lv-LV/whatsappCustomer.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('whatsappCustomer', 'lt-LT', typeof window === 'undefined' ? require('@/messages/ns/lt-LT/whatsappCustomer.json') : () => import('@/messages/ns/lt-LT/whatsappCustomer.json'))
+registerLanguage('whatsappCustomer', 'lt-LT', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/lt-LT/whatsappCustomer.json')) : () => import('@/messages/ns/lt-LT/whatsappCustomer.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('whatsappCustomer', 'el-GR', typeof window === 'undefined' ? require('@/messages/ns/el-GR/whatsappCustomer.json') : () => import('@/messages/ns/el-GR/whatsappCustomer.json'))
+registerLanguage('whatsappCustomer', 'el-GR', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/el-GR/whatsappCustomer.json')) : () => import('@/messages/ns/el-GR/whatsappCustomer.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('whatsappCustomer', 'bg-BG', typeof window === 'undefined' ? require('@/messages/ns/bg-BG/whatsappCustomer.json') : () => import('@/messages/ns/bg-BG/whatsappCustomer.json'))
+registerLanguage('whatsappCustomer', 'bg-BG', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/bg-BG/whatsappCustomer.json')) : () => import('@/messages/ns/bg-BG/whatsappCustomer.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('whatsappCustomer', 'es-MX', typeof window === 'undefined' ? require('@/messages/ns/es-MX/whatsappCustomer.json') : () => import('@/messages/ns/es-MX/whatsappCustomer.json'))
+registerLanguage('whatsappCustomer', 'es-MX', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/es-MX/whatsappCustomer.json')) : () => import('@/messages/ns/es-MX/whatsappCustomer.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('whatsappCustomer', 'pt-BR', typeof window === 'undefined' ? require('@/messages/ns/pt-BR/whatsappCustomer.json') : () => import('@/messages/ns/pt-BR/whatsappCustomer.json'))
+registerLanguage('whatsappCustomer', 'pt-BR', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/pt-BR/whatsappCustomer.json')) : () => import('@/messages/ns/pt-BR/whatsappCustomer.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('whatsappCustomer', 'ms-MY', typeof window === 'undefined' ? require('@/messages/ns/ms-MY/whatsappCustomer.json') : () => import('@/messages/ns/ms-MY/whatsappCustomer.json'))
+registerLanguage('whatsappCustomer', 'ms-MY', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/ms-MY/whatsappCustomer.json')) : () => import('@/messages/ns/ms-MY/whatsappCustomer.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('whatsappCustomer', 'ja-JP', typeof window === 'undefined' ? require('@/messages/ns/ja-JP/whatsappCustomer.json') : () => import('@/messages/ns/ja-JP/whatsappCustomer.json'))
+registerLanguage('whatsappCustomer', 'ja-JP', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/ja-JP/whatsappCustomer.json')) : () => import('@/messages/ns/ja-JP/whatsappCustomer.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('whatsappCustomer', 'zh-HK', typeof window === 'undefined' ? require('@/messages/ns/zh-HK/whatsappCustomer.json') : () => import('@/messages/ns/zh-HK/whatsappCustomer.json'))
+registerLanguage('whatsappCustomer', 'zh-HK', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/zh-HK/whatsappCustomer.json')) : () => import('@/messages/ns/zh-HK/whatsappCustomer.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('whatsappCustomer', 'th-TH', typeof window === 'undefined' ? require('@/messages/ns/th-TH/whatsappCustomer.json') : () => import('@/messages/ns/th-TH/whatsappCustomer.json'))
+registerLanguage('whatsappCustomer', 'th-TH', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/th-TH/whatsappCustomer.json')) : () => import('@/messages/ns/th-TH/whatsappCustomer.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('whatsappCustomer', 'ar-AE', typeof window === 'undefined' ? require('@/messages/ns/ar-AE/whatsappCustomer.json') : () => import('@/messages/ns/ar-AE/whatsappCustomer.json'))
+registerLanguage('whatsappCustomer', 'ar-AE', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/ar-AE/whatsappCustomer.json')) : () => import('@/messages/ns/ar-AE/whatsappCustomer.json'))

@@ -2,63 +2,64 @@
 // Import this module (`import '@/lib/i18n/catalog/copyButton'`) in any file that reads the "copyButton" namespace.
 import base from '@/messages/ns/en-GB/copyButton.json'
 import enUS from '@/messages/ns/en-US/copyButton.json'
-import { registerNamespace, registerLanguage } from '@/lib/i18n/registry'
+import { registerNamespace, registerLanguage, serverWords } from '@/lib/i18n/registry'
 
 registerNamespace('copyButton', base, { 'en-US': enUS })
-// languages-1: each non-English language — on the server now; in the browser only when a page is in that language.
+// languages-1: each non-English language only when a page is in that language — perf-1: on the server too (serverWords: a
+// synchronous require, run the first time the language is asked for), in the browser as a chunk loaded on demand.
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('copyButton', 'fr-FR', typeof window === 'undefined' ? require('@/messages/ns/fr-FR/copyButton.json') : () => import('@/messages/ns/fr-FR/copyButton.json'))
+registerLanguage('copyButton', 'fr-FR', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/fr-FR/copyButton.json')) : () => import('@/messages/ns/fr-FR/copyButton.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('copyButton', 'de-DE', typeof window === 'undefined' ? require('@/messages/ns/de-DE/copyButton.json') : () => import('@/messages/ns/de-DE/copyButton.json'))
+registerLanguage('copyButton', 'de-DE', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/de-DE/copyButton.json')) : () => import('@/messages/ns/de-DE/copyButton.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('copyButton', 'es-ES', typeof window === 'undefined' ? require('@/messages/ns/es-ES/copyButton.json') : () => import('@/messages/ns/es-ES/copyButton.json'))
+registerLanguage('copyButton', 'es-ES', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/es-ES/copyButton.json')) : () => import('@/messages/ns/es-ES/copyButton.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('copyButton', 'it-IT', typeof window === 'undefined' ? require('@/messages/ns/it-IT/copyButton.json') : () => import('@/messages/ns/it-IT/copyButton.json'))
+registerLanguage('copyButton', 'it-IT', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/it-IT/copyButton.json')) : () => import('@/messages/ns/it-IT/copyButton.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('copyButton', 'pt-PT', typeof window === 'undefined' ? require('@/messages/ns/pt-PT/copyButton.json') : () => import('@/messages/ns/pt-PT/copyButton.json'))
+registerLanguage('copyButton', 'pt-PT', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/pt-PT/copyButton.json')) : () => import('@/messages/ns/pt-PT/copyButton.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('copyButton', 'nl-NL', typeof window === 'undefined' ? require('@/messages/ns/nl-NL/copyButton.json') : () => import('@/messages/ns/nl-NL/copyButton.json'))
+registerLanguage('copyButton', 'nl-NL', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/nl-NL/copyButton.json')) : () => import('@/messages/ns/nl-NL/copyButton.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('copyButton', 'sv-SE', typeof window === 'undefined' ? require('@/messages/ns/sv-SE/copyButton.json') : () => import('@/messages/ns/sv-SE/copyButton.json'))
+registerLanguage('copyButton', 'sv-SE', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/sv-SE/copyButton.json')) : () => import('@/messages/ns/sv-SE/copyButton.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('copyButton', 'da-DK', typeof window === 'undefined' ? require('@/messages/ns/da-DK/copyButton.json') : () => import('@/messages/ns/da-DK/copyButton.json'))
+registerLanguage('copyButton', 'da-DK', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/da-DK/copyButton.json')) : () => import('@/messages/ns/da-DK/copyButton.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('copyButton', 'nb-NO', typeof window === 'undefined' ? require('@/messages/ns/nb-NO/copyButton.json') : () => import('@/messages/ns/nb-NO/copyButton.json'))
+registerLanguage('copyButton', 'nb-NO', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/nb-NO/copyButton.json')) : () => import('@/messages/ns/nb-NO/copyButton.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('copyButton', 'pl-PL', typeof window === 'undefined' ? require('@/messages/ns/pl-PL/copyButton.json') : () => import('@/messages/ns/pl-PL/copyButton.json'))
+registerLanguage('copyButton', 'pl-PL', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/pl-PL/copyButton.json')) : () => import('@/messages/ns/pl-PL/copyButton.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('copyButton', 'cs-CZ', typeof window === 'undefined' ? require('@/messages/ns/cs-CZ/copyButton.json') : () => import('@/messages/ns/cs-CZ/copyButton.json'))
+registerLanguage('copyButton', 'cs-CZ', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/cs-CZ/copyButton.json')) : () => import('@/messages/ns/cs-CZ/copyButton.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('copyButton', 'hu-HU', typeof window === 'undefined' ? require('@/messages/ns/hu-HU/copyButton.json') : () => import('@/messages/ns/hu-HU/copyButton.json'))
+registerLanguage('copyButton', 'hu-HU', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/hu-HU/copyButton.json')) : () => import('@/messages/ns/hu-HU/copyButton.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('copyButton', 'sk-SK', typeof window === 'undefined' ? require('@/messages/ns/sk-SK/copyButton.json') : () => import('@/messages/ns/sk-SK/copyButton.json'))
+registerLanguage('copyButton', 'sk-SK', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/sk-SK/copyButton.json')) : () => import('@/messages/ns/sk-SK/copyButton.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('copyButton', 'ro-RO', typeof window === 'undefined' ? require('@/messages/ns/ro-RO/copyButton.json') : () => import('@/messages/ns/ro-RO/copyButton.json'))
+registerLanguage('copyButton', 'ro-RO', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/ro-RO/copyButton.json')) : () => import('@/messages/ns/ro-RO/copyButton.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('copyButton', 'hr-HR', typeof window === 'undefined' ? require('@/messages/ns/hr-HR/copyButton.json') : () => import('@/messages/ns/hr-HR/copyButton.json'))
+registerLanguage('copyButton', 'hr-HR', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/hr-HR/copyButton.json')) : () => import('@/messages/ns/hr-HR/copyButton.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('copyButton', 'sl-SI', typeof window === 'undefined' ? require('@/messages/ns/sl-SI/copyButton.json') : () => import('@/messages/ns/sl-SI/copyButton.json'))
+registerLanguage('copyButton', 'sl-SI', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/sl-SI/copyButton.json')) : () => import('@/messages/ns/sl-SI/copyButton.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('copyButton', 'fi-FI', typeof window === 'undefined' ? require('@/messages/ns/fi-FI/copyButton.json') : () => import('@/messages/ns/fi-FI/copyButton.json'))
+registerLanguage('copyButton', 'fi-FI', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/fi-FI/copyButton.json')) : () => import('@/messages/ns/fi-FI/copyButton.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('copyButton', 'et-EE', typeof window === 'undefined' ? require('@/messages/ns/et-EE/copyButton.json') : () => import('@/messages/ns/et-EE/copyButton.json'))
+registerLanguage('copyButton', 'et-EE', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/et-EE/copyButton.json')) : () => import('@/messages/ns/et-EE/copyButton.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('copyButton', 'lv-LV', typeof window === 'undefined' ? require('@/messages/ns/lv-LV/copyButton.json') : () => import('@/messages/ns/lv-LV/copyButton.json'))
+registerLanguage('copyButton', 'lv-LV', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/lv-LV/copyButton.json')) : () => import('@/messages/ns/lv-LV/copyButton.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('copyButton', 'lt-LT', typeof window === 'undefined' ? require('@/messages/ns/lt-LT/copyButton.json') : () => import('@/messages/ns/lt-LT/copyButton.json'))
+registerLanguage('copyButton', 'lt-LT', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/lt-LT/copyButton.json')) : () => import('@/messages/ns/lt-LT/copyButton.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('copyButton', 'el-GR', typeof window === 'undefined' ? require('@/messages/ns/el-GR/copyButton.json') : () => import('@/messages/ns/el-GR/copyButton.json'))
+registerLanguage('copyButton', 'el-GR', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/el-GR/copyButton.json')) : () => import('@/messages/ns/el-GR/copyButton.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('copyButton', 'bg-BG', typeof window === 'undefined' ? require('@/messages/ns/bg-BG/copyButton.json') : () => import('@/messages/ns/bg-BG/copyButton.json'))
+registerLanguage('copyButton', 'bg-BG', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/bg-BG/copyButton.json')) : () => import('@/messages/ns/bg-BG/copyButton.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('copyButton', 'pt-BR', typeof window === 'undefined' ? require('@/messages/ns/pt-BR/copyButton.json') : () => import('@/messages/ns/pt-BR/copyButton.json'))
+registerLanguage('copyButton', 'pt-BR', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/pt-BR/copyButton.json')) : () => import('@/messages/ns/pt-BR/copyButton.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('copyButton', 'ms-MY', typeof window === 'undefined' ? require('@/messages/ns/ms-MY/copyButton.json') : () => import('@/messages/ns/ms-MY/copyButton.json'))
+registerLanguage('copyButton', 'ms-MY', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/ms-MY/copyButton.json')) : () => import('@/messages/ns/ms-MY/copyButton.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('copyButton', 'ja-JP', typeof window === 'undefined' ? require('@/messages/ns/ja-JP/copyButton.json') : () => import('@/messages/ns/ja-JP/copyButton.json'))
+registerLanguage('copyButton', 'ja-JP', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/ja-JP/copyButton.json')) : () => import('@/messages/ns/ja-JP/copyButton.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('copyButton', 'zh-HK', typeof window === 'undefined' ? require('@/messages/ns/zh-HK/copyButton.json') : () => import('@/messages/ns/zh-HK/copyButton.json'))
+registerLanguage('copyButton', 'zh-HK', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/zh-HK/copyButton.json')) : () => import('@/messages/ns/zh-HK/copyButton.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('copyButton', 'th-TH', typeof window === 'undefined' ? require('@/messages/ns/th-TH/copyButton.json') : () => import('@/messages/ns/th-TH/copyButton.json'))
+registerLanguage('copyButton', 'th-TH', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/th-TH/copyButton.json')) : () => import('@/messages/ns/th-TH/copyButton.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('copyButton', 'ar-AE', typeof window === 'undefined' ? require('@/messages/ns/ar-AE/copyButton.json') : () => import('@/messages/ns/ar-AE/copyButton.json'))
+registerLanguage('copyButton', 'ar-AE', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/ar-AE/copyButton.json')) : () => import('@/messages/ns/ar-AE/copyButton.json'))

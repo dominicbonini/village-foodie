@@ -2,63 +2,64 @@
 // Import this module (`import '@/lib/i18n/catalog/offlineProtection'`) in any file that reads the "offlineProtection" namespace.
 import base from '@/messages/ns/en-GB/offlineProtection.json'
 import enUS from '@/messages/ns/en-US/offlineProtection.json'
-import { registerNamespace, registerLanguage } from '@/lib/i18n/registry'
+import { registerNamespace, registerLanguage, serverWords } from '@/lib/i18n/registry'
 
 registerNamespace('offlineProtection', base, { 'en-US': enUS })
-// languages-1: each non-English language — on the server now; in the browser only when a page is in that language.
+// languages-1: each non-English language only when a page is in that language — perf-1: on the server too (serverWords: a
+// synchronous require, run the first time the language is asked for), in the browser as a chunk loaded on demand.
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('offlineProtection', 'fr-FR', typeof window === 'undefined' ? require('@/messages/ns/fr-FR/offlineProtection.json') : () => import('@/messages/ns/fr-FR/offlineProtection.json'))
+registerLanguage('offlineProtection', 'fr-FR', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/fr-FR/offlineProtection.json')) : () => import('@/messages/ns/fr-FR/offlineProtection.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('offlineProtection', 'de-DE', typeof window === 'undefined' ? require('@/messages/ns/de-DE/offlineProtection.json') : () => import('@/messages/ns/de-DE/offlineProtection.json'))
+registerLanguage('offlineProtection', 'de-DE', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/de-DE/offlineProtection.json')) : () => import('@/messages/ns/de-DE/offlineProtection.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('offlineProtection', 'es-ES', typeof window === 'undefined' ? require('@/messages/ns/es-ES/offlineProtection.json') : () => import('@/messages/ns/es-ES/offlineProtection.json'))
+registerLanguage('offlineProtection', 'es-ES', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/es-ES/offlineProtection.json')) : () => import('@/messages/ns/es-ES/offlineProtection.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('offlineProtection', 'it-IT', typeof window === 'undefined' ? require('@/messages/ns/it-IT/offlineProtection.json') : () => import('@/messages/ns/it-IT/offlineProtection.json'))
+registerLanguage('offlineProtection', 'it-IT', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/it-IT/offlineProtection.json')) : () => import('@/messages/ns/it-IT/offlineProtection.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('offlineProtection', 'pt-PT', typeof window === 'undefined' ? require('@/messages/ns/pt-PT/offlineProtection.json') : () => import('@/messages/ns/pt-PT/offlineProtection.json'))
+registerLanguage('offlineProtection', 'pt-PT', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/pt-PT/offlineProtection.json')) : () => import('@/messages/ns/pt-PT/offlineProtection.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('offlineProtection', 'nl-NL', typeof window === 'undefined' ? require('@/messages/ns/nl-NL/offlineProtection.json') : () => import('@/messages/ns/nl-NL/offlineProtection.json'))
+registerLanguage('offlineProtection', 'nl-NL', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/nl-NL/offlineProtection.json')) : () => import('@/messages/ns/nl-NL/offlineProtection.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('offlineProtection', 'sv-SE', typeof window === 'undefined' ? require('@/messages/ns/sv-SE/offlineProtection.json') : () => import('@/messages/ns/sv-SE/offlineProtection.json'))
+registerLanguage('offlineProtection', 'sv-SE', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/sv-SE/offlineProtection.json')) : () => import('@/messages/ns/sv-SE/offlineProtection.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('offlineProtection', 'da-DK', typeof window === 'undefined' ? require('@/messages/ns/da-DK/offlineProtection.json') : () => import('@/messages/ns/da-DK/offlineProtection.json'))
+registerLanguage('offlineProtection', 'da-DK', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/da-DK/offlineProtection.json')) : () => import('@/messages/ns/da-DK/offlineProtection.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('offlineProtection', 'nb-NO', typeof window === 'undefined' ? require('@/messages/ns/nb-NO/offlineProtection.json') : () => import('@/messages/ns/nb-NO/offlineProtection.json'))
+registerLanguage('offlineProtection', 'nb-NO', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/nb-NO/offlineProtection.json')) : () => import('@/messages/ns/nb-NO/offlineProtection.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('offlineProtection', 'pl-PL', typeof window === 'undefined' ? require('@/messages/ns/pl-PL/offlineProtection.json') : () => import('@/messages/ns/pl-PL/offlineProtection.json'))
+registerLanguage('offlineProtection', 'pl-PL', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/pl-PL/offlineProtection.json')) : () => import('@/messages/ns/pl-PL/offlineProtection.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('offlineProtection', 'cs-CZ', typeof window === 'undefined' ? require('@/messages/ns/cs-CZ/offlineProtection.json') : () => import('@/messages/ns/cs-CZ/offlineProtection.json'))
+registerLanguage('offlineProtection', 'cs-CZ', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/cs-CZ/offlineProtection.json')) : () => import('@/messages/ns/cs-CZ/offlineProtection.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('offlineProtection', 'hu-HU', typeof window === 'undefined' ? require('@/messages/ns/hu-HU/offlineProtection.json') : () => import('@/messages/ns/hu-HU/offlineProtection.json'))
+registerLanguage('offlineProtection', 'hu-HU', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/hu-HU/offlineProtection.json')) : () => import('@/messages/ns/hu-HU/offlineProtection.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('offlineProtection', 'sk-SK', typeof window === 'undefined' ? require('@/messages/ns/sk-SK/offlineProtection.json') : () => import('@/messages/ns/sk-SK/offlineProtection.json'))
+registerLanguage('offlineProtection', 'sk-SK', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/sk-SK/offlineProtection.json')) : () => import('@/messages/ns/sk-SK/offlineProtection.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('offlineProtection', 'ro-RO', typeof window === 'undefined' ? require('@/messages/ns/ro-RO/offlineProtection.json') : () => import('@/messages/ns/ro-RO/offlineProtection.json'))
+registerLanguage('offlineProtection', 'ro-RO', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/ro-RO/offlineProtection.json')) : () => import('@/messages/ns/ro-RO/offlineProtection.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('offlineProtection', 'hr-HR', typeof window === 'undefined' ? require('@/messages/ns/hr-HR/offlineProtection.json') : () => import('@/messages/ns/hr-HR/offlineProtection.json'))
+registerLanguage('offlineProtection', 'hr-HR', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/hr-HR/offlineProtection.json')) : () => import('@/messages/ns/hr-HR/offlineProtection.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('offlineProtection', 'sl-SI', typeof window === 'undefined' ? require('@/messages/ns/sl-SI/offlineProtection.json') : () => import('@/messages/ns/sl-SI/offlineProtection.json'))
+registerLanguage('offlineProtection', 'sl-SI', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/sl-SI/offlineProtection.json')) : () => import('@/messages/ns/sl-SI/offlineProtection.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('offlineProtection', 'fi-FI', typeof window === 'undefined' ? require('@/messages/ns/fi-FI/offlineProtection.json') : () => import('@/messages/ns/fi-FI/offlineProtection.json'))
+registerLanguage('offlineProtection', 'fi-FI', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/fi-FI/offlineProtection.json')) : () => import('@/messages/ns/fi-FI/offlineProtection.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('offlineProtection', 'et-EE', typeof window === 'undefined' ? require('@/messages/ns/et-EE/offlineProtection.json') : () => import('@/messages/ns/et-EE/offlineProtection.json'))
+registerLanguage('offlineProtection', 'et-EE', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/et-EE/offlineProtection.json')) : () => import('@/messages/ns/et-EE/offlineProtection.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('offlineProtection', 'lv-LV', typeof window === 'undefined' ? require('@/messages/ns/lv-LV/offlineProtection.json') : () => import('@/messages/ns/lv-LV/offlineProtection.json'))
+registerLanguage('offlineProtection', 'lv-LV', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/lv-LV/offlineProtection.json')) : () => import('@/messages/ns/lv-LV/offlineProtection.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('offlineProtection', 'lt-LT', typeof window === 'undefined' ? require('@/messages/ns/lt-LT/offlineProtection.json') : () => import('@/messages/ns/lt-LT/offlineProtection.json'))
+registerLanguage('offlineProtection', 'lt-LT', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/lt-LT/offlineProtection.json')) : () => import('@/messages/ns/lt-LT/offlineProtection.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('offlineProtection', 'el-GR', typeof window === 'undefined' ? require('@/messages/ns/el-GR/offlineProtection.json') : () => import('@/messages/ns/el-GR/offlineProtection.json'))
+registerLanguage('offlineProtection', 'el-GR', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/el-GR/offlineProtection.json')) : () => import('@/messages/ns/el-GR/offlineProtection.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('offlineProtection', 'bg-BG', typeof window === 'undefined' ? require('@/messages/ns/bg-BG/offlineProtection.json') : () => import('@/messages/ns/bg-BG/offlineProtection.json'))
+registerLanguage('offlineProtection', 'bg-BG', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/bg-BG/offlineProtection.json')) : () => import('@/messages/ns/bg-BG/offlineProtection.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('offlineProtection', 'pt-BR', typeof window === 'undefined' ? require('@/messages/ns/pt-BR/offlineProtection.json') : () => import('@/messages/ns/pt-BR/offlineProtection.json'))
+registerLanguage('offlineProtection', 'pt-BR', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/pt-BR/offlineProtection.json')) : () => import('@/messages/ns/pt-BR/offlineProtection.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('offlineProtection', 'ms-MY', typeof window === 'undefined' ? require('@/messages/ns/ms-MY/offlineProtection.json') : () => import('@/messages/ns/ms-MY/offlineProtection.json'))
+registerLanguage('offlineProtection', 'ms-MY', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/ms-MY/offlineProtection.json')) : () => import('@/messages/ns/ms-MY/offlineProtection.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('offlineProtection', 'ja-JP', typeof window === 'undefined' ? require('@/messages/ns/ja-JP/offlineProtection.json') : () => import('@/messages/ns/ja-JP/offlineProtection.json'))
+registerLanguage('offlineProtection', 'ja-JP', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/ja-JP/offlineProtection.json')) : () => import('@/messages/ns/ja-JP/offlineProtection.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('offlineProtection', 'zh-HK', typeof window === 'undefined' ? require('@/messages/ns/zh-HK/offlineProtection.json') : () => import('@/messages/ns/zh-HK/offlineProtection.json'))
+registerLanguage('offlineProtection', 'zh-HK', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/zh-HK/offlineProtection.json')) : () => import('@/messages/ns/zh-HK/offlineProtection.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('offlineProtection', 'th-TH', typeof window === 'undefined' ? require('@/messages/ns/th-TH/offlineProtection.json') : () => import('@/messages/ns/th-TH/offlineProtection.json'))
+registerLanguage('offlineProtection', 'th-TH', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/th-TH/offlineProtection.json')) : () => import('@/messages/ns/th-TH/offlineProtection.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('offlineProtection', 'ar-AE', typeof window === 'undefined' ? require('@/messages/ns/ar-AE/offlineProtection.json') : () => import('@/messages/ns/ar-AE/offlineProtection.json'))
+registerLanguage('offlineProtection', 'ar-AE', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/ar-AE/offlineProtection.json')) : () => import('@/messages/ns/ar-AE/offlineProtection.json'))

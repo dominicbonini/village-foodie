@@ -2,65 +2,66 @@
 // Import this module (`import '@/lib/i18n/catalog/buzzer'`) in any file that reads the "buzzer" namespace.
 import base from '@/messages/ns/en-GB/buzzer.json'
 import enUS from '@/messages/ns/en-US/buzzer.json'
-import { registerNamespace, registerLanguage } from '@/lib/i18n/registry'
+import { registerNamespace, registerLanguage, serverWords } from '@/lib/i18n/registry'
 
 registerNamespace('buzzer', base, { 'en-US': enUS })
-// languages-1: each non-English language — on the server now; in the browser only when a page is in that language.
+// languages-1: each non-English language only when a page is in that language — perf-1: on the server too (serverWords: a
+// synchronous require, run the first time the language is asked for), in the browser as a chunk loaded on demand.
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('buzzer', 'fr-FR', typeof window === 'undefined' ? require('@/messages/ns/fr-FR/buzzer.json') : () => import('@/messages/ns/fr-FR/buzzer.json'))
+registerLanguage('buzzer', 'fr-FR', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/fr-FR/buzzer.json')) : () => import('@/messages/ns/fr-FR/buzzer.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('buzzer', 'de-DE', typeof window === 'undefined' ? require('@/messages/ns/de-DE/buzzer.json') : () => import('@/messages/ns/de-DE/buzzer.json'))
+registerLanguage('buzzer', 'de-DE', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/de-DE/buzzer.json')) : () => import('@/messages/ns/de-DE/buzzer.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('buzzer', 'es-ES', typeof window === 'undefined' ? require('@/messages/ns/es-ES/buzzer.json') : () => import('@/messages/ns/es-ES/buzzer.json'))
+registerLanguage('buzzer', 'es-ES', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/es-ES/buzzer.json')) : () => import('@/messages/ns/es-ES/buzzer.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('buzzer', 'it-IT', typeof window === 'undefined' ? require('@/messages/ns/it-IT/buzzer.json') : () => import('@/messages/ns/it-IT/buzzer.json'))
+registerLanguage('buzzer', 'it-IT', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/it-IT/buzzer.json')) : () => import('@/messages/ns/it-IT/buzzer.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('buzzer', 'pt-PT', typeof window === 'undefined' ? require('@/messages/ns/pt-PT/buzzer.json') : () => import('@/messages/ns/pt-PT/buzzer.json'))
+registerLanguage('buzzer', 'pt-PT', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/pt-PT/buzzer.json')) : () => import('@/messages/ns/pt-PT/buzzer.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('buzzer', 'nl-NL', typeof window === 'undefined' ? require('@/messages/ns/nl-NL/buzzer.json') : () => import('@/messages/ns/nl-NL/buzzer.json'))
+registerLanguage('buzzer', 'nl-NL', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/nl-NL/buzzer.json')) : () => import('@/messages/ns/nl-NL/buzzer.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('buzzer', 'sv-SE', typeof window === 'undefined' ? require('@/messages/ns/sv-SE/buzzer.json') : () => import('@/messages/ns/sv-SE/buzzer.json'))
+registerLanguage('buzzer', 'sv-SE', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/sv-SE/buzzer.json')) : () => import('@/messages/ns/sv-SE/buzzer.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('buzzer', 'da-DK', typeof window === 'undefined' ? require('@/messages/ns/da-DK/buzzer.json') : () => import('@/messages/ns/da-DK/buzzer.json'))
+registerLanguage('buzzer', 'da-DK', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/da-DK/buzzer.json')) : () => import('@/messages/ns/da-DK/buzzer.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('buzzer', 'nb-NO', typeof window === 'undefined' ? require('@/messages/ns/nb-NO/buzzer.json') : () => import('@/messages/ns/nb-NO/buzzer.json'))
+registerLanguage('buzzer', 'nb-NO', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/nb-NO/buzzer.json')) : () => import('@/messages/ns/nb-NO/buzzer.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('buzzer', 'pl-PL', typeof window === 'undefined' ? require('@/messages/ns/pl-PL/buzzer.json') : () => import('@/messages/ns/pl-PL/buzzer.json'))
+registerLanguage('buzzer', 'pl-PL', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/pl-PL/buzzer.json')) : () => import('@/messages/ns/pl-PL/buzzer.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('buzzer', 'cs-CZ', typeof window === 'undefined' ? require('@/messages/ns/cs-CZ/buzzer.json') : () => import('@/messages/ns/cs-CZ/buzzer.json'))
+registerLanguage('buzzer', 'cs-CZ', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/cs-CZ/buzzer.json')) : () => import('@/messages/ns/cs-CZ/buzzer.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('buzzer', 'hu-HU', typeof window === 'undefined' ? require('@/messages/ns/hu-HU/buzzer.json') : () => import('@/messages/ns/hu-HU/buzzer.json'))
+registerLanguage('buzzer', 'hu-HU', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/hu-HU/buzzer.json')) : () => import('@/messages/ns/hu-HU/buzzer.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('buzzer', 'sk-SK', typeof window === 'undefined' ? require('@/messages/ns/sk-SK/buzzer.json') : () => import('@/messages/ns/sk-SK/buzzer.json'))
+registerLanguage('buzzer', 'sk-SK', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/sk-SK/buzzer.json')) : () => import('@/messages/ns/sk-SK/buzzer.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('buzzer', 'ro-RO', typeof window === 'undefined' ? require('@/messages/ns/ro-RO/buzzer.json') : () => import('@/messages/ns/ro-RO/buzzer.json'))
+registerLanguage('buzzer', 'ro-RO', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/ro-RO/buzzer.json')) : () => import('@/messages/ns/ro-RO/buzzer.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('buzzer', 'hr-HR', typeof window === 'undefined' ? require('@/messages/ns/hr-HR/buzzer.json') : () => import('@/messages/ns/hr-HR/buzzer.json'))
+registerLanguage('buzzer', 'hr-HR', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/hr-HR/buzzer.json')) : () => import('@/messages/ns/hr-HR/buzzer.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('buzzer', 'sl-SI', typeof window === 'undefined' ? require('@/messages/ns/sl-SI/buzzer.json') : () => import('@/messages/ns/sl-SI/buzzer.json'))
+registerLanguage('buzzer', 'sl-SI', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/sl-SI/buzzer.json')) : () => import('@/messages/ns/sl-SI/buzzer.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('buzzer', 'fi-FI', typeof window === 'undefined' ? require('@/messages/ns/fi-FI/buzzer.json') : () => import('@/messages/ns/fi-FI/buzzer.json'))
+registerLanguage('buzzer', 'fi-FI', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/fi-FI/buzzer.json')) : () => import('@/messages/ns/fi-FI/buzzer.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('buzzer', 'et-EE', typeof window === 'undefined' ? require('@/messages/ns/et-EE/buzzer.json') : () => import('@/messages/ns/et-EE/buzzer.json'))
+registerLanguage('buzzer', 'et-EE', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/et-EE/buzzer.json')) : () => import('@/messages/ns/et-EE/buzzer.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('buzzer', 'lv-LV', typeof window === 'undefined' ? require('@/messages/ns/lv-LV/buzzer.json') : () => import('@/messages/ns/lv-LV/buzzer.json'))
+registerLanguage('buzzer', 'lv-LV', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/lv-LV/buzzer.json')) : () => import('@/messages/ns/lv-LV/buzzer.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('buzzer', 'lt-LT', typeof window === 'undefined' ? require('@/messages/ns/lt-LT/buzzer.json') : () => import('@/messages/ns/lt-LT/buzzer.json'))
+registerLanguage('buzzer', 'lt-LT', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/lt-LT/buzzer.json')) : () => import('@/messages/ns/lt-LT/buzzer.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('buzzer', 'el-GR', typeof window === 'undefined' ? require('@/messages/ns/el-GR/buzzer.json') : () => import('@/messages/ns/el-GR/buzzer.json'))
+registerLanguage('buzzer', 'el-GR', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/el-GR/buzzer.json')) : () => import('@/messages/ns/el-GR/buzzer.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('buzzer', 'bg-BG', typeof window === 'undefined' ? require('@/messages/ns/bg-BG/buzzer.json') : () => import('@/messages/ns/bg-BG/buzzer.json'))
+registerLanguage('buzzer', 'bg-BG', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/bg-BG/buzzer.json')) : () => import('@/messages/ns/bg-BG/buzzer.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('buzzer', 'es-MX', typeof window === 'undefined' ? require('@/messages/ns/es-MX/buzzer.json') : () => import('@/messages/ns/es-MX/buzzer.json'))
+registerLanguage('buzzer', 'es-MX', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/es-MX/buzzer.json')) : () => import('@/messages/ns/es-MX/buzzer.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('buzzer', 'pt-BR', typeof window === 'undefined' ? require('@/messages/ns/pt-BR/buzzer.json') : () => import('@/messages/ns/pt-BR/buzzer.json'))
+registerLanguage('buzzer', 'pt-BR', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/pt-BR/buzzer.json')) : () => import('@/messages/ns/pt-BR/buzzer.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('buzzer', 'ms-MY', typeof window === 'undefined' ? require('@/messages/ns/ms-MY/buzzer.json') : () => import('@/messages/ns/ms-MY/buzzer.json'))
+registerLanguage('buzzer', 'ms-MY', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/ms-MY/buzzer.json')) : () => import('@/messages/ns/ms-MY/buzzer.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('buzzer', 'ja-JP', typeof window === 'undefined' ? require('@/messages/ns/ja-JP/buzzer.json') : () => import('@/messages/ns/ja-JP/buzzer.json'))
+registerLanguage('buzzer', 'ja-JP', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/ja-JP/buzzer.json')) : () => import('@/messages/ns/ja-JP/buzzer.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('buzzer', 'zh-HK', typeof window === 'undefined' ? require('@/messages/ns/zh-HK/buzzer.json') : () => import('@/messages/ns/zh-HK/buzzer.json'))
+registerLanguage('buzzer', 'zh-HK', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/zh-HK/buzzer.json')) : () => import('@/messages/ns/zh-HK/buzzer.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('buzzer', 'th-TH', typeof window === 'undefined' ? require('@/messages/ns/th-TH/buzzer.json') : () => import('@/messages/ns/th-TH/buzzer.json'))
+registerLanguage('buzzer', 'th-TH', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/th-TH/buzzer.json')) : () => import('@/messages/ns/th-TH/buzzer.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('buzzer', 'ar-AE', typeof window === 'undefined' ? require('@/messages/ns/ar-AE/buzzer.json') : () => import('@/messages/ns/ar-AE/buzzer.json'))
+registerLanguage('buzzer', 'ar-AE', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/ar-AE/buzzer.json')) : () => import('@/messages/ns/ar-AE/buzzer.json'))

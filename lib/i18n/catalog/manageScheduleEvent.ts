@@ -2,67 +2,68 @@
 // Import this module (`import '@/lib/i18n/catalog/manageScheduleEvent'`) in any file that reads the "manageScheduleEvent" namespace.
 import base from '@/messages/ns/en-GB/manageScheduleEvent.json'
 import enUS from '@/messages/ns/en-US/manageScheduleEvent.json'
-import { registerNamespace, registerLanguage } from '@/lib/i18n/registry'
+import { registerNamespace, registerLanguage, serverWords } from '@/lib/i18n/registry'
 
 registerNamespace('manageScheduleEvent', base, { 'en-US': enUS })
-// languages-1: each non-English language — on the server now; in the browser only when a page is in that language.
+// languages-1: each non-English language only when a page is in that language — perf-1: on the server too (serverWords: a
+// synchronous require, run the first time the language is asked for), in the browser as a chunk loaded on demand.
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('manageScheduleEvent', 'fr-FR', typeof window === 'undefined' ? require('@/messages/ns/fr-FR/manageScheduleEvent.json') : () => import('@/messages/ns/fr-FR/manageScheduleEvent.json'))
+registerLanguage('manageScheduleEvent', 'fr-FR', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/fr-FR/manageScheduleEvent.json')) : () => import('@/messages/ns/fr-FR/manageScheduleEvent.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('manageScheduleEvent', 'de-DE', typeof window === 'undefined' ? require('@/messages/ns/de-DE/manageScheduleEvent.json') : () => import('@/messages/ns/de-DE/manageScheduleEvent.json'))
+registerLanguage('manageScheduleEvent', 'de-DE', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/de-DE/manageScheduleEvent.json')) : () => import('@/messages/ns/de-DE/manageScheduleEvent.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('manageScheduleEvent', 'de-CH', typeof window === 'undefined' ? require('@/messages/ns/de-CH/manageScheduleEvent.json') : () => import('@/messages/ns/de-CH/manageScheduleEvent.json'))
+registerLanguage('manageScheduleEvent', 'de-CH', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/de-CH/manageScheduleEvent.json')) : () => import('@/messages/ns/de-CH/manageScheduleEvent.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('manageScheduleEvent', 'es-ES', typeof window === 'undefined' ? require('@/messages/ns/es-ES/manageScheduleEvent.json') : () => import('@/messages/ns/es-ES/manageScheduleEvent.json'))
+registerLanguage('manageScheduleEvent', 'es-ES', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/es-ES/manageScheduleEvent.json')) : () => import('@/messages/ns/es-ES/manageScheduleEvent.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('manageScheduleEvent', 'it-IT', typeof window === 'undefined' ? require('@/messages/ns/it-IT/manageScheduleEvent.json') : () => import('@/messages/ns/it-IT/manageScheduleEvent.json'))
+registerLanguage('manageScheduleEvent', 'it-IT', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/it-IT/manageScheduleEvent.json')) : () => import('@/messages/ns/it-IT/manageScheduleEvent.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('manageScheduleEvent', 'pt-PT', typeof window === 'undefined' ? require('@/messages/ns/pt-PT/manageScheduleEvent.json') : () => import('@/messages/ns/pt-PT/manageScheduleEvent.json'))
+registerLanguage('manageScheduleEvent', 'pt-PT', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/pt-PT/manageScheduleEvent.json')) : () => import('@/messages/ns/pt-PT/manageScheduleEvent.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('manageScheduleEvent', 'nl-NL', typeof window === 'undefined' ? require('@/messages/ns/nl-NL/manageScheduleEvent.json') : () => import('@/messages/ns/nl-NL/manageScheduleEvent.json'))
+registerLanguage('manageScheduleEvent', 'nl-NL', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/nl-NL/manageScheduleEvent.json')) : () => import('@/messages/ns/nl-NL/manageScheduleEvent.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('manageScheduleEvent', 'sv-SE', typeof window === 'undefined' ? require('@/messages/ns/sv-SE/manageScheduleEvent.json') : () => import('@/messages/ns/sv-SE/manageScheduleEvent.json'))
+registerLanguage('manageScheduleEvent', 'sv-SE', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/sv-SE/manageScheduleEvent.json')) : () => import('@/messages/ns/sv-SE/manageScheduleEvent.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('manageScheduleEvent', 'da-DK', typeof window === 'undefined' ? require('@/messages/ns/da-DK/manageScheduleEvent.json') : () => import('@/messages/ns/da-DK/manageScheduleEvent.json'))
+registerLanguage('manageScheduleEvent', 'da-DK', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/da-DK/manageScheduleEvent.json')) : () => import('@/messages/ns/da-DK/manageScheduleEvent.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('manageScheduleEvent', 'nb-NO', typeof window === 'undefined' ? require('@/messages/ns/nb-NO/manageScheduleEvent.json') : () => import('@/messages/ns/nb-NO/manageScheduleEvent.json'))
+registerLanguage('manageScheduleEvent', 'nb-NO', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/nb-NO/manageScheduleEvent.json')) : () => import('@/messages/ns/nb-NO/manageScheduleEvent.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('manageScheduleEvent', 'pl-PL', typeof window === 'undefined' ? require('@/messages/ns/pl-PL/manageScheduleEvent.json') : () => import('@/messages/ns/pl-PL/manageScheduleEvent.json'))
+registerLanguage('manageScheduleEvent', 'pl-PL', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/pl-PL/manageScheduleEvent.json')) : () => import('@/messages/ns/pl-PL/manageScheduleEvent.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('manageScheduleEvent', 'cs-CZ', typeof window === 'undefined' ? require('@/messages/ns/cs-CZ/manageScheduleEvent.json') : () => import('@/messages/ns/cs-CZ/manageScheduleEvent.json'))
+registerLanguage('manageScheduleEvent', 'cs-CZ', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/cs-CZ/manageScheduleEvent.json')) : () => import('@/messages/ns/cs-CZ/manageScheduleEvent.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('manageScheduleEvent', 'hu-HU', typeof window === 'undefined' ? require('@/messages/ns/hu-HU/manageScheduleEvent.json') : () => import('@/messages/ns/hu-HU/manageScheduleEvent.json'))
+registerLanguage('manageScheduleEvent', 'hu-HU', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/hu-HU/manageScheduleEvent.json')) : () => import('@/messages/ns/hu-HU/manageScheduleEvent.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('manageScheduleEvent', 'sk-SK', typeof window === 'undefined' ? require('@/messages/ns/sk-SK/manageScheduleEvent.json') : () => import('@/messages/ns/sk-SK/manageScheduleEvent.json'))
+registerLanguage('manageScheduleEvent', 'sk-SK', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/sk-SK/manageScheduleEvent.json')) : () => import('@/messages/ns/sk-SK/manageScheduleEvent.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('manageScheduleEvent', 'ro-RO', typeof window === 'undefined' ? require('@/messages/ns/ro-RO/manageScheduleEvent.json') : () => import('@/messages/ns/ro-RO/manageScheduleEvent.json'))
+registerLanguage('manageScheduleEvent', 'ro-RO', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/ro-RO/manageScheduleEvent.json')) : () => import('@/messages/ns/ro-RO/manageScheduleEvent.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('manageScheduleEvent', 'hr-HR', typeof window === 'undefined' ? require('@/messages/ns/hr-HR/manageScheduleEvent.json') : () => import('@/messages/ns/hr-HR/manageScheduleEvent.json'))
+registerLanguage('manageScheduleEvent', 'hr-HR', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/hr-HR/manageScheduleEvent.json')) : () => import('@/messages/ns/hr-HR/manageScheduleEvent.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('manageScheduleEvent', 'sl-SI', typeof window === 'undefined' ? require('@/messages/ns/sl-SI/manageScheduleEvent.json') : () => import('@/messages/ns/sl-SI/manageScheduleEvent.json'))
+registerLanguage('manageScheduleEvent', 'sl-SI', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/sl-SI/manageScheduleEvent.json')) : () => import('@/messages/ns/sl-SI/manageScheduleEvent.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('manageScheduleEvent', 'fi-FI', typeof window === 'undefined' ? require('@/messages/ns/fi-FI/manageScheduleEvent.json') : () => import('@/messages/ns/fi-FI/manageScheduleEvent.json'))
+registerLanguage('manageScheduleEvent', 'fi-FI', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/fi-FI/manageScheduleEvent.json')) : () => import('@/messages/ns/fi-FI/manageScheduleEvent.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('manageScheduleEvent', 'et-EE', typeof window === 'undefined' ? require('@/messages/ns/et-EE/manageScheduleEvent.json') : () => import('@/messages/ns/et-EE/manageScheduleEvent.json'))
+registerLanguage('manageScheduleEvent', 'et-EE', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/et-EE/manageScheduleEvent.json')) : () => import('@/messages/ns/et-EE/manageScheduleEvent.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('manageScheduleEvent', 'lv-LV', typeof window === 'undefined' ? require('@/messages/ns/lv-LV/manageScheduleEvent.json') : () => import('@/messages/ns/lv-LV/manageScheduleEvent.json'))
+registerLanguage('manageScheduleEvent', 'lv-LV', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/lv-LV/manageScheduleEvent.json')) : () => import('@/messages/ns/lv-LV/manageScheduleEvent.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('manageScheduleEvent', 'lt-LT', typeof window === 'undefined' ? require('@/messages/ns/lt-LT/manageScheduleEvent.json') : () => import('@/messages/ns/lt-LT/manageScheduleEvent.json'))
+registerLanguage('manageScheduleEvent', 'lt-LT', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/lt-LT/manageScheduleEvent.json')) : () => import('@/messages/ns/lt-LT/manageScheduleEvent.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('manageScheduleEvent', 'el-GR', typeof window === 'undefined' ? require('@/messages/ns/el-GR/manageScheduleEvent.json') : () => import('@/messages/ns/el-GR/manageScheduleEvent.json'))
+registerLanguage('manageScheduleEvent', 'el-GR', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/el-GR/manageScheduleEvent.json')) : () => import('@/messages/ns/el-GR/manageScheduleEvent.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('manageScheduleEvent', 'bg-BG', typeof window === 'undefined' ? require('@/messages/ns/bg-BG/manageScheduleEvent.json') : () => import('@/messages/ns/bg-BG/manageScheduleEvent.json'))
+registerLanguage('manageScheduleEvent', 'bg-BG', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/bg-BG/manageScheduleEvent.json')) : () => import('@/messages/ns/bg-BG/manageScheduleEvent.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('manageScheduleEvent', 'es-MX', typeof window === 'undefined' ? require('@/messages/ns/es-MX/manageScheduleEvent.json') : () => import('@/messages/ns/es-MX/manageScheduleEvent.json'))
+registerLanguage('manageScheduleEvent', 'es-MX', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/es-MX/manageScheduleEvent.json')) : () => import('@/messages/ns/es-MX/manageScheduleEvent.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('manageScheduleEvent', 'pt-BR', typeof window === 'undefined' ? require('@/messages/ns/pt-BR/manageScheduleEvent.json') : () => import('@/messages/ns/pt-BR/manageScheduleEvent.json'))
+registerLanguage('manageScheduleEvent', 'pt-BR', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/pt-BR/manageScheduleEvent.json')) : () => import('@/messages/ns/pt-BR/manageScheduleEvent.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('manageScheduleEvent', 'ms-MY', typeof window === 'undefined' ? require('@/messages/ns/ms-MY/manageScheduleEvent.json') : () => import('@/messages/ns/ms-MY/manageScheduleEvent.json'))
+registerLanguage('manageScheduleEvent', 'ms-MY', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/ms-MY/manageScheduleEvent.json')) : () => import('@/messages/ns/ms-MY/manageScheduleEvent.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('manageScheduleEvent', 'ja-JP', typeof window === 'undefined' ? require('@/messages/ns/ja-JP/manageScheduleEvent.json') : () => import('@/messages/ns/ja-JP/manageScheduleEvent.json'))
+registerLanguage('manageScheduleEvent', 'ja-JP', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/ja-JP/manageScheduleEvent.json')) : () => import('@/messages/ns/ja-JP/manageScheduleEvent.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('manageScheduleEvent', 'zh-HK', typeof window === 'undefined' ? require('@/messages/ns/zh-HK/manageScheduleEvent.json') : () => import('@/messages/ns/zh-HK/manageScheduleEvent.json'))
+registerLanguage('manageScheduleEvent', 'zh-HK', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/zh-HK/manageScheduleEvent.json')) : () => import('@/messages/ns/zh-HK/manageScheduleEvent.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('manageScheduleEvent', 'th-TH', typeof window === 'undefined' ? require('@/messages/ns/th-TH/manageScheduleEvent.json') : () => import('@/messages/ns/th-TH/manageScheduleEvent.json'))
+registerLanguage('manageScheduleEvent', 'th-TH', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/th-TH/manageScheduleEvent.json')) : () => import('@/messages/ns/th-TH/manageScheduleEvent.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('manageScheduleEvent', 'ar-AE', typeof window === 'undefined' ? require('@/messages/ns/ar-AE/manageScheduleEvent.json') : () => import('@/messages/ns/ar-AE/manageScheduleEvent.json'))
+registerLanguage('manageScheduleEvent', 'ar-AE', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/ar-AE/manageScheduleEvent.json')) : () => import('@/messages/ns/ar-AE/manageScheduleEvent.json'))

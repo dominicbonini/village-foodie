@@ -3,65 +3,66 @@
 import base from '@/messages/ns/en-GB/captions.json'
 import enUS from '@/messages/ns/en-US/captions.json'
 import enCA from '@/messages/ns/en-CA/captions.json'
-import { registerNamespace, registerLanguage } from '@/lib/i18n/registry'
+import { registerNamespace, registerLanguage, serverWords } from '@/lib/i18n/registry'
 
 registerNamespace('captions', base, { 'en-US': enUS, 'en-CA': enCA })
-// languages-1: each non-English language — on the server now; in the browser only when a page is in that language.
+// languages-1: each non-English language only when a page is in that language — perf-1: on the server too (serverWords: a
+// synchronous require, run the first time the language is asked for), in the browser as a chunk loaded on demand.
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('captions', 'fr-FR', typeof window === 'undefined' ? require('@/messages/ns/fr-FR/captions.json') : () => import('@/messages/ns/fr-FR/captions.json'))
+registerLanguage('captions', 'fr-FR', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/fr-FR/captions.json')) : () => import('@/messages/ns/fr-FR/captions.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('captions', 'de-DE', typeof window === 'undefined' ? require('@/messages/ns/de-DE/captions.json') : () => import('@/messages/ns/de-DE/captions.json'))
+registerLanguage('captions', 'de-DE', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/de-DE/captions.json')) : () => import('@/messages/ns/de-DE/captions.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('captions', 'es-ES', typeof window === 'undefined' ? require('@/messages/ns/es-ES/captions.json') : () => import('@/messages/ns/es-ES/captions.json'))
+registerLanguage('captions', 'es-ES', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/es-ES/captions.json')) : () => import('@/messages/ns/es-ES/captions.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('captions', 'it-IT', typeof window === 'undefined' ? require('@/messages/ns/it-IT/captions.json') : () => import('@/messages/ns/it-IT/captions.json'))
+registerLanguage('captions', 'it-IT', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/it-IT/captions.json')) : () => import('@/messages/ns/it-IT/captions.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('captions', 'pt-PT', typeof window === 'undefined' ? require('@/messages/ns/pt-PT/captions.json') : () => import('@/messages/ns/pt-PT/captions.json'))
+registerLanguage('captions', 'pt-PT', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/pt-PT/captions.json')) : () => import('@/messages/ns/pt-PT/captions.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('captions', 'nl-NL', typeof window === 'undefined' ? require('@/messages/ns/nl-NL/captions.json') : () => import('@/messages/ns/nl-NL/captions.json'))
+registerLanguage('captions', 'nl-NL', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/nl-NL/captions.json')) : () => import('@/messages/ns/nl-NL/captions.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('captions', 'sv-SE', typeof window === 'undefined' ? require('@/messages/ns/sv-SE/captions.json') : () => import('@/messages/ns/sv-SE/captions.json'))
+registerLanguage('captions', 'sv-SE', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/sv-SE/captions.json')) : () => import('@/messages/ns/sv-SE/captions.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('captions', 'da-DK', typeof window === 'undefined' ? require('@/messages/ns/da-DK/captions.json') : () => import('@/messages/ns/da-DK/captions.json'))
+registerLanguage('captions', 'da-DK', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/da-DK/captions.json')) : () => import('@/messages/ns/da-DK/captions.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('captions', 'nb-NO', typeof window === 'undefined' ? require('@/messages/ns/nb-NO/captions.json') : () => import('@/messages/ns/nb-NO/captions.json'))
+registerLanguage('captions', 'nb-NO', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/nb-NO/captions.json')) : () => import('@/messages/ns/nb-NO/captions.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('captions', 'pl-PL', typeof window === 'undefined' ? require('@/messages/ns/pl-PL/captions.json') : () => import('@/messages/ns/pl-PL/captions.json'))
+registerLanguage('captions', 'pl-PL', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/pl-PL/captions.json')) : () => import('@/messages/ns/pl-PL/captions.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('captions', 'cs-CZ', typeof window === 'undefined' ? require('@/messages/ns/cs-CZ/captions.json') : () => import('@/messages/ns/cs-CZ/captions.json'))
+registerLanguage('captions', 'cs-CZ', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/cs-CZ/captions.json')) : () => import('@/messages/ns/cs-CZ/captions.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('captions', 'hu-HU', typeof window === 'undefined' ? require('@/messages/ns/hu-HU/captions.json') : () => import('@/messages/ns/hu-HU/captions.json'))
+registerLanguage('captions', 'hu-HU', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/hu-HU/captions.json')) : () => import('@/messages/ns/hu-HU/captions.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('captions', 'sk-SK', typeof window === 'undefined' ? require('@/messages/ns/sk-SK/captions.json') : () => import('@/messages/ns/sk-SK/captions.json'))
+registerLanguage('captions', 'sk-SK', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/sk-SK/captions.json')) : () => import('@/messages/ns/sk-SK/captions.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('captions', 'ro-RO', typeof window === 'undefined' ? require('@/messages/ns/ro-RO/captions.json') : () => import('@/messages/ns/ro-RO/captions.json'))
+registerLanguage('captions', 'ro-RO', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/ro-RO/captions.json')) : () => import('@/messages/ns/ro-RO/captions.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('captions', 'hr-HR', typeof window === 'undefined' ? require('@/messages/ns/hr-HR/captions.json') : () => import('@/messages/ns/hr-HR/captions.json'))
+registerLanguage('captions', 'hr-HR', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/hr-HR/captions.json')) : () => import('@/messages/ns/hr-HR/captions.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('captions', 'sl-SI', typeof window === 'undefined' ? require('@/messages/ns/sl-SI/captions.json') : () => import('@/messages/ns/sl-SI/captions.json'))
+registerLanguage('captions', 'sl-SI', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/sl-SI/captions.json')) : () => import('@/messages/ns/sl-SI/captions.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('captions', 'fi-FI', typeof window === 'undefined' ? require('@/messages/ns/fi-FI/captions.json') : () => import('@/messages/ns/fi-FI/captions.json'))
+registerLanguage('captions', 'fi-FI', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/fi-FI/captions.json')) : () => import('@/messages/ns/fi-FI/captions.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('captions', 'et-EE', typeof window === 'undefined' ? require('@/messages/ns/et-EE/captions.json') : () => import('@/messages/ns/et-EE/captions.json'))
+registerLanguage('captions', 'et-EE', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/et-EE/captions.json')) : () => import('@/messages/ns/et-EE/captions.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('captions', 'lv-LV', typeof window === 'undefined' ? require('@/messages/ns/lv-LV/captions.json') : () => import('@/messages/ns/lv-LV/captions.json'))
+registerLanguage('captions', 'lv-LV', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/lv-LV/captions.json')) : () => import('@/messages/ns/lv-LV/captions.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('captions', 'lt-LT', typeof window === 'undefined' ? require('@/messages/ns/lt-LT/captions.json') : () => import('@/messages/ns/lt-LT/captions.json'))
+registerLanguage('captions', 'lt-LT', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/lt-LT/captions.json')) : () => import('@/messages/ns/lt-LT/captions.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('captions', 'el-GR', typeof window === 'undefined' ? require('@/messages/ns/el-GR/captions.json') : () => import('@/messages/ns/el-GR/captions.json'))
+registerLanguage('captions', 'el-GR', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/el-GR/captions.json')) : () => import('@/messages/ns/el-GR/captions.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('captions', 'bg-BG', typeof window === 'undefined' ? require('@/messages/ns/bg-BG/captions.json') : () => import('@/messages/ns/bg-BG/captions.json'))
+registerLanguage('captions', 'bg-BG', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/bg-BG/captions.json')) : () => import('@/messages/ns/bg-BG/captions.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('captions', 'es-MX', typeof window === 'undefined' ? require('@/messages/ns/es-MX/captions.json') : () => import('@/messages/ns/es-MX/captions.json'))
+registerLanguage('captions', 'es-MX', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/es-MX/captions.json')) : () => import('@/messages/ns/es-MX/captions.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('captions', 'pt-BR', typeof window === 'undefined' ? require('@/messages/ns/pt-BR/captions.json') : () => import('@/messages/ns/pt-BR/captions.json'))
+registerLanguage('captions', 'pt-BR', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/pt-BR/captions.json')) : () => import('@/messages/ns/pt-BR/captions.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('captions', 'ms-MY', typeof window === 'undefined' ? require('@/messages/ns/ms-MY/captions.json') : () => import('@/messages/ns/ms-MY/captions.json'))
+registerLanguage('captions', 'ms-MY', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/ms-MY/captions.json')) : () => import('@/messages/ns/ms-MY/captions.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('captions', 'ja-JP', typeof window === 'undefined' ? require('@/messages/ns/ja-JP/captions.json') : () => import('@/messages/ns/ja-JP/captions.json'))
+registerLanguage('captions', 'ja-JP', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/ja-JP/captions.json')) : () => import('@/messages/ns/ja-JP/captions.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('captions', 'zh-HK', typeof window === 'undefined' ? require('@/messages/ns/zh-HK/captions.json') : () => import('@/messages/ns/zh-HK/captions.json'))
+registerLanguage('captions', 'zh-HK', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/zh-HK/captions.json')) : () => import('@/messages/ns/zh-HK/captions.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('captions', 'th-TH', typeof window === 'undefined' ? require('@/messages/ns/th-TH/captions.json') : () => import('@/messages/ns/th-TH/captions.json'))
+registerLanguage('captions', 'th-TH', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/th-TH/captions.json')) : () => import('@/messages/ns/th-TH/captions.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('captions', 'ar-AE', typeof window === 'undefined' ? require('@/messages/ns/ar-AE/captions.json') : () => import('@/messages/ns/ar-AE/captions.json'))
+registerLanguage('captions', 'ar-AE', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/ar-AE/captions.json')) : () => import('@/messages/ns/ar-AE/captions.json'))

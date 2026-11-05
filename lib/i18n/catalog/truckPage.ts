@@ -4,65 +4,66 @@ import base from '@/messages/ns/en-GB/truckPage.json'
 import enUS from '@/messages/ns/en-US/truckPage.json'
 import enAU from '@/messages/ns/en-AU/truckPage.json'
 import enNZ from '@/messages/ns/en-NZ/truckPage.json'
-import { registerNamespace, registerLanguage } from '@/lib/i18n/registry'
+import { registerNamespace, registerLanguage, serverWords } from '@/lib/i18n/registry'
 
 registerNamespace('truckPage', base, { 'en-US': enUS, 'en-AU': enAU, 'en-NZ': enNZ })
-// languages-1: each non-English language — on the server now; in the browser only when a page is in that language.
+// languages-1: each non-English language only when a page is in that language — perf-1: on the server too (serverWords: a
+// synchronous require, run the first time the language is asked for), in the browser as a chunk loaded on demand.
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('truckPage', 'fr-FR', typeof window === 'undefined' ? require('@/messages/ns/fr-FR/truckPage.json') : () => import('@/messages/ns/fr-FR/truckPage.json'))
+registerLanguage('truckPage', 'fr-FR', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/fr-FR/truckPage.json')) : () => import('@/messages/ns/fr-FR/truckPage.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('truckPage', 'de-DE', typeof window === 'undefined' ? require('@/messages/ns/de-DE/truckPage.json') : () => import('@/messages/ns/de-DE/truckPage.json'))
+registerLanguage('truckPage', 'de-DE', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/de-DE/truckPage.json')) : () => import('@/messages/ns/de-DE/truckPage.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('truckPage', 'es-ES', typeof window === 'undefined' ? require('@/messages/ns/es-ES/truckPage.json') : () => import('@/messages/ns/es-ES/truckPage.json'))
+registerLanguage('truckPage', 'es-ES', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/es-ES/truckPage.json')) : () => import('@/messages/ns/es-ES/truckPage.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('truckPage', 'it-IT', typeof window === 'undefined' ? require('@/messages/ns/it-IT/truckPage.json') : () => import('@/messages/ns/it-IT/truckPage.json'))
+registerLanguage('truckPage', 'it-IT', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/it-IT/truckPage.json')) : () => import('@/messages/ns/it-IT/truckPage.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('truckPage', 'pt-PT', typeof window === 'undefined' ? require('@/messages/ns/pt-PT/truckPage.json') : () => import('@/messages/ns/pt-PT/truckPage.json'))
+registerLanguage('truckPage', 'pt-PT', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/pt-PT/truckPage.json')) : () => import('@/messages/ns/pt-PT/truckPage.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('truckPage', 'nl-NL', typeof window === 'undefined' ? require('@/messages/ns/nl-NL/truckPage.json') : () => import('@/messages/ns/nl-NL/truckPage.json'))
+registerLanguage('truckPage', 'nl-NL', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/nl-NL/truckPage.json')) : () => import('@/messages/ns/nl-NL/truckPage.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('truckPage', 'sv-SE', typeof window === 'undefined' ? require('@/messages/ns/sv-SE/truckPage.json') : () => import('@/messages/ns/sv-SE/truckPage.json'))
+registerLanguage('truckPage', 'sv-SE', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/sv-SE/truckPage.json')) : () => import('@/messages/ns/sv-SE/truckPage.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('truckPage', 'da-DK', typeof window === 'undefined' ? require('@/messages/ns/da-DK/truckPage.json') : () => import('@/messages/ns/da-DK/truckPage.json'))
+registerLanguage('truckPage', 'da-DK', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/da-DK/truckPage.json')) : () => import('@/messages/ns/da-DK/truckPage.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('truckPage', 'nb-NO', typeof window === 'undefined' ? require('@/messages/ns/nb-NO/truckPage.json') : () => import('@/messages/ns/nb-NO/truckPage.json'))
+registerLanguage('truckPage', 'nb-NO', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/nb-NO/truckPage.json')) : () => import('@/messages/ns/nb-NO/truckPage.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('truckPage', 'pl-PL', typeof window === 'undefined' ? require('@/messages/ns/pl-PL/truckPage.json') : () => import('@/messages/ns/pl-PL/truckPage.json'))
+registerLanguage('truckPage', 'pl-PL', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/pl-PL/truckPage.json')) : () => import('@/messages/ns/pl-PL/truckPage.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('truckPage', 'cs-CZ', typeof window === 'undefined' ? require('@/messages/ns/cs-CZ/truckPage.json') : () => import('@/messages/ns/cs-CZ/truckPage.json'))
+registerLanguage('truckPage', 'cs-CZ', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/cs-CZ/truckPage.json')) : () => import('@/messages/ns/cs-CZ/truckPage.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('truckPage', 'hu-HU', typeof window === 'undefined' ? require('@/messages/ns/hu-HU/truckPage.json') : () => import('@/messages/ns/hu-HU/truckPage.json'))
+registerLanguage('truckPage', 'hu-HU', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/hu-HU/truckPage.json')) : () => import('@/messages/ns/hu-HU/truckPage.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('truckPage', 'sk-SK', typeof window === 'undefined' ? require('@/messages/ns/sk-SK/truckPage.json') : () => import('@/messages/ns/sk-SK/truckPage.json'))
+registerLanguage('truckPage', 'sk-SK', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/sk-SK/truckPage.json')) : () => import('@/messages/ns/sk-SK/truckPage.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('truckPage', 'ro-RO', typeof window === 'undefined' ? require('@/messages/ns/ro-RO/truckPage.json') : () => import('@/messages/ns/ro-RO/truckPage.json'))
+registerLanguage('truckPage', 'ro-RO', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/ro-RO/truckPage.json')) : () => import('@/messages/ns/ro-RO/truckPage.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('truckPage', 'hr-HR', typeof window === 'undefined' ? require('@/messages/ns/hr-HR/truckPage.json') : () => import('@/messages/ns/hr-HR/truckPage.json'))
+registerLanguage('truckPage', 'hr-HR', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/hr-HR/truckPage.json')) : () => import('@/messages/ns/hr-HR/truckPage.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('truckPage', 'sl-SI', typeof window === 'undefined' ? require('@/messages/ns/sl-SI/truckPage.json') : () => import('@/messages/ns/sl-SI/truckPage.json'))
+registerLanguage('truckPage', 'sl-SI', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/sl-SI/truckPage.json')) : () => import('@/messages/ns/sl-SI/truckPage.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('truckPage', 'fi-FI', typeof window === 'undefined' ? require('@/messages/ns/fi-FI/truckPage.json') : () => import('@/messages/ns/fi-FI/truckPage.json'))
+registerLanguage('truckPage', 'fi-FI', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/fi-FI/truckPage.json')) : () => import('@/messages/ns/fi-FI/truckPage.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('truckPage', 'et-EE', typeof window === 'undefined' ? require('@/messages/ns/et-EE/truckPage.json') : () => import('@/messages/ns/et-EE/truckPage.json'))
+registerLanguage('truckPage', 'et-EE', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/et-EE/truckPage.json')) : () => import('@/messages/ns/et-EE/truckPage.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('truckPage', 'lv-LV', typeof window === 'undefined' ? require('@/messages/ns/lv-LV/truckPage.json') : () => import('@/messages/ns/lv-LV/truckPage.json'))
+registerLanguage('truckPage', 'lv-LV', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/lv-LV/truckPage.json')) : () => import('@/messages/ns/lv-LV/truckPage.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('truckPage', 'lt-LT', typeof window === 'undefined' ? require('@/messages/ns/lt-LT/truckPage.json') : () => import('@/messages/ns/lt-LT/truckPage.json'))
+registerLanguage('truckPage', 'lt-LT', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/lt-LT/truckPage.json')) : () => import('@/messages/ns/lt-LT/truckPage.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('truckPage', 'el-GR', typeof window === 'undefined' ? require('@/messages/ns/el-GR/truckPage.json') : () => import('@/messages/ns/el-GR/truckPage.json'))
+registerLanguage('truckPage', 'el-GR', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/el-GR/truckPage.json')) : () => import('@/messages/ns/el-GR/truckPage.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('truckPage', 'bg-BG', typeof window === 'undefined' ? require('@/messages/ns/bg-BG/truckPage.json') : () => import('@/messages/ns/bg-BG/truckPage.json'))
+registerLanguage('truckPage', 'bg-BG', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/bg-BG/truckPage.json')) : () => import('@/messages/ns/bg-BG/truckPage.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('truckPage', 'es-MX', typeof window === 'undefined' ? require('@/messages/ns/es-MX/truckPage.json') : () => import('@/messages/ns/es-MX/truckPage.json'))
+registerLanguage('truckPage', 'es-MX', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/es-MX/truckPage.json')) : () => import('@/messages/ns/es-MX/truckPage.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('truckPage', 'pt-BR', typeof window === 'undefined' ? require('@/messages/ns/pt-BR/truckPage.json') : () => import('@/messages/ns/pt-BR/truckPage.json'))
+registerLanguage('truckPage', 'pt-BR', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/pt-BR/truckPage.json')) : () => import('@/messages/ns/pt-BR/truckPage.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('truckPage', 'ms-MY', typeof window === 'undefined' ? require('@/messages/ns/ms-MY/truckPage.json') : () => import('@/messages/ns/ms-MY/truckPage.json'))
+registerLanguage('truckPage', 'ms-MY', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/ms-MY/truckPage.json')) : () => import('@/messages/ns/ms-MY/truckPage.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('truckPage', 'ja-JP', typeof window === 'undefined' ? require('@/messages/ns/ja-JP/truckPage.json') : () => import('@/messages/ns/ja-JP/truckPage.json'))
+registerLanguage('truckPage', 'ja-JP', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/ja-JP/truckPage.json')) : () => import('@/messages/ns/ja-JP/truckPage.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('truckPage', 'zh-HK', typeof window === 'undefined' ? require('@/messages/ns/zh-HK/truckPage.json') : () => import('@/messages/ns/zh-HK/truckPage.json'))
+registerLanguage('truckPage', 'zh-HK', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/zh-HK/truckPage.json')) : () => import('@/messages/ns/zh-HK/truckPage.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('truckPage', 'th-TH', typeof window === 'undefined' ? require('@/messages/ns/th-TH/truckPage.json') : () => import('@/messages/ns/th-TH/truckPage.json'))
+registerLanguage('truckPage', 'th-TH', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/th-TH/truckPage.json')) : () => import('@/messages/ns/th-TH/truckPage.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('truckPage', 'ar-AE', typeof window === 'undefined' ? require('@/messages/ns/ar-AE/truckPage.json') : () => import('@/messages/ns/ar-AE/truckPage.json'))
+registerLanguage('truckPage', 'ar-AE', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/ar-AE/truckPage.json')) : () => import('@/messages/ns/ar-AE/truckPage.json'))

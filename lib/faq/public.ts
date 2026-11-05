@@ -33,6 +33,7 @@ import { checkItem } from '@/lib/faq/check'
 import { shownRow, type FaqTranslationRow } from '@/lib/faq/translation'
 import { itemSourceHash, sectionSourceHash } from '@/lib/faq/source-hash'
 import type { FaqPair } from '@/lib/structured-data'
+import { isMarketingRender } from '@/lib/marketing-render'   // perf-1: a marketing page's render reads the tagged shared cache
 
 /** One section as the page shows it: its title (a small label) and its visible questions. */
 export interface PublicFaqSection { title: string; items: FaqPair[] }
@@ -41,7 +42,7 @@ export type PublicFaq = PublicFaqSection[]
 export interface FaqPageData { sections: PublicFaq; updatedAt: string | null }
 
 type Row = Record<string, unknown>
-interface Published { translations: FaqTranslationRow[]; sections: { id: string; position: number; title: string }[]; items: { id: string; sectionId: string; position: number; questionEn: string; answerEn: string; answerSinglePlanEn: string | null; showIn: string; publishedAt: string | null }[] }
+export interface Published { translations: FaqTranslationRow[]; sections: { id: string; position: number; title: string }[]; items: { id: string; sectionId: string; position: number; questionEn: string; answerEn: string; answerSinglePlanEn: string | null; showIn: string; publishedAt: string | null }[] }
 
 const TTL_MS = 60_000
 let rowsCache: { at: number; value: Published } | null = null
@@ -57,7 +58,20 @@ const byPosition = (a: { position: number }, b: { position: number }) => a.posit
 
 /** The published questions and every section, in Admin's order. Throws on a failed read (the caller logs it). */
 async function published(): Promise<Published> {
+  // perf-1 (5 November 2026): a marketing page's render reads the tagged shared cache (lib/marketing-cache.ts). A failed read there is
+  // never kept; it falls through to the read below, which answers as it always has.
+  if (isMarketingRender()) {
+    try { return await (await import('@/lib/faq/public-cache')).marketingFaqRows() } catch { /* answered below, as before */ }
+  }
   if (rowsCache && Date.now() - rowsCache.at < TTL_MS) return rowsCache.value
+  const value = await readPublished(false)
+  rowsCache = { at: Date.now(), value }
+  return value
+}
+
+/** perf-1: the read itself, uncached. `strict` (the shared cache's read): an unreadable translations table THROWS rather than
+ *  reading empty, so a failure is never kept; otherwise it is logged and the translations read empty, exactly as before. */
+export async function readPublished(strict: boolean): Promise<Published> {
   const { supabase } = await import('@/lib/supabase')
   const [s, i, tr] = await Promise.all([
     supabase.from('faq_sections').select('id, position, title_en'),
@@ -67,6 +81,7 @@ async function published(): Promise<Published> {
   if (s.error) throw new Error(`sections: ${s.error.message}`)
   if (i.error) throw new Error(`questions: ${i.error.message}`)
   // faq-2: an unreadable translations table leaves every non-English page without the FAQ (English pages are unaffected).
+  if (tr.error && strict) throw new Error(`translations: ${tr.error.message}`)
   if (tr.error) console.error('[faq] could not read the translations; non-English pages show no FAQ:', tr.error.message)
   const value: Published = {
     translations: tr.error ? [] : ((tr.data ?? []) as Row[]).map(r => ({
@@ -83,7 +98,6 @@ async function published(): Promise<Published> {
       publishedAt: typeof r.published_at === 'string' ? r.published_at : null,
     })).sort(byPosition),
   }
-  rowsCache = { at: Date.now(), value }
   return value
 }
 
@@ -104,6 +118,11 @@ async function world(): Promise<FaqWorld> {
 export async function faqPage(settings: CountrySettings): Promise<FaqPageData | null> {
   const code = settings.countryCode
   const locale = settings.locale
+  // perf-1 (5 November 2026): a marketing page's render reads the tagged shared cache, by country and locale only. A failed read there
+  // is never kept; it falls through to the read below, which answers as it always has.
+  if (isMarketingRender()) {
+    try { return await (await import('@/lib/faq/public-cache')).marketingFaqPage(code, locale) } catch { /* answered below, as before */ }
+  }
   const hit = pageCache.get(code)
   if (hit && Date.now() - hit.at < TTL_MS) return hit.value
   let rows: Published, w: FaqWorld
@@ -113,6 +132,32 @@ export async function faqPage(settings: CountrySettings): Promise<FaqPageData | 
     console.error('[faq] could not read the FAQ; the FAQ page shows none:', e instanceof Error ? e.message : e)
     return null
   }
+  const value = resolveFaqPage(settings, rows, w)
+  pageCache.set(code, { at: Date.now(), value })
+  return value
+}
+
+/** perf-1: a country's FAQ page for the shared cache — by its code and locale only (its settings are read from the country list).
+ *  Strict: a failed read THROWS (never kept), as does a country the list doesn't hold. */
+export async function computeFaqPage(code: string, locale: string): Promise<FaqPageData | null> {
+  // 🔴 EVERY input read STRICTLY (each throws on a failed read): through published()/world() a failure would come back as a degraded
+  // answer (no translations, every comparison switch off) and the resolved page would be cached with it (proved by scripts/perf-1-local.cjs §5).
+  const [mc, fc] = await Promise.all([import('@/lib/marketing-cache'), import('@/lib/faq/public-cache')])
+  const [countries, rows, catalog, flags] = await Promise.all([mc.marketingCountryList(), fc.marketingFaqRows(), mc.marketingPlanCatalog(), mc.marketingComparisonEntries()])
+  const settings = countries.find(c => c.countryCode === code && c.locale === locale)
+  if (!settings) throw new Error(`[faq] ${code} (${locale}) is not in the country list`)
+  const byCode = new Map(flags)
+  const w: FaqWorld = {
+    catalog,
+    countries: countries.filter(c => c.enabled).map(c => { const f = byCode.get(c.countryCode); return { settings: c, apps: !!f?.iosApp && !!f?.androidApp } }),
+  }
+  return resolveFaqPage(settings, rows, w)
+}
+
+/** The page itself from the rows and the world — the same lines as before perf-1, moved, so both reads share them. */
+function resolveFaqPage(settings: CountrySettings, rows: Published, w: FaqWorld): FaqPageData | null {
+  const code = settings.countryCode
+  const locale = settings.locale
   const country: FaqCountry = w.countries.find(c => c.settings.countryCode === code) ?? { settings, apps: false }
   const rowsOf = (key: 'itemId' | 'sectionId', id: string) => rows.translations.filter(t => t[key] === id)
   const out: PublicFaq = []
@@ -142,9 +187,7 @@ export async function faqPage(settings: CountrySettings): Promise<FaqPageData | 
   }
   // One line per page (not one per question) for what has no up-to-date translation yet — the translator's backlog.
   if (untranslated.length) console.info(`[faq] ${code}: ${untranslated.length} question(s) have no up-to-date ${locale} translation — hidden here: ${untranslated.map(id => `…${id.slice(-4)}`).join(', ')}`)
-  const value = out.length ? { sections: out, updatedAt } : null
-  pageCache.set(code, { at: Date.now(), value })
-  return value
+  return out.length ? { sections: out, updatedAt } : null
 }
 
 /** The FAQ's sections alone (/llms.txt's English FAQ reads the UK page's). */
@@ -161,10 +204,27 @@ export async function faqHrefFor(settings: CountrySettings): Promise<string | un
 /** faq-4: every switched-on country (with an address) whose FAQ page has content, with its locale and lastmod — the sitemap and the
  *  FAQ pages' hreflang name only these. */
 export async function faqCountries(): Promise<{ code: string; locale: string; updatedAt: string | null }[]> {
+  // perf-1 (5 November 2026): a marketing page's render reads the tagged shared cache (the FAQ pages' hreflang set). A failed read
+  // there is never kept; it falls through to the read below, which answers as it always has.
+  if (isMarketingRender()) {
+    try { return await (await import('@/lib/faq/public-cache')).marketingFaqCountries() } catch { /* answered below, as before */ }
+  }
   const all = await listCountrySettingsCached().catch(() => [])
   const out: { code: string; locale: string; updatedAt: string | null }[] = []
   for (const c of all.filter(x => x.enabled && countryPagePath(x.countryCode, 'faq'))) {
     const page = await faqPage(c)
+    if (page) out.push({ code: c.countryCode, locale: c.locale, updatedAt: page.updatedAt })
+  }
+  return out
+}
+
+/** perf-1: the same list for the shared cache. Strict: a failed read of the countries or of any country's FAQ THROWS (never kept). */
+export async function computeFaqCountries(): Promise<{ code: string; locale: string; updatedAt: string | null }[]> {
+  const [{ marketingCountryList }, { marketingFaqPage }] = await Promise.all([import('@/lib/marketing-cache'), import('@/lib/faq/public-cache')])
+  const all = await marketingCountryList()
+  const out: { code: string; locale: string; updatedAt: string | null }[] = []
+  for (const c of all.filter(x => x.enabled && countryPagePath(x.countryCode, 'faq'))) {
+    const page = await marketingFaqPage(c.countryCode, c.locale)
     if (page) out.push({ code: c.countryCode, locale: c.locale, updatedAt: page.updatedAt })
   }
   return out

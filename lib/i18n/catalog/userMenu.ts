@@ -2,65 +2,66 @@
 // Import this module (`import '@/lib/i18n/catalog/userMenu'`) in any file that reads the "userMenu" namespace.
 import base from '@/messages/ns/en-GB/userMenu.json'
 import enUS from '@/messages/ns/en-US/userMenu.json'
-import { registerNamespace, registerLanguage } from '@/lib/i18n/registry'
+import { registerNamespace, registerLanguage, serverWords } from '@/lib/i18n/registry'
 
 registerNamespace('userMenu', base, { 'en-US': enUS })
-// languages-1: each non-English language — on the server now; in the browser only when a page is in that language.
+// languages-1: each non-English language only when a page is in that language — perf-1: on the server too (serverWords: a
+// synchronous require, run the first time the language is asked for), in the browser as a chunk loaded on demand.
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('userMenu', 'fr-FR', typeof window === 'undefined' ? require('@/messages/ns/fr-FR/userMenu.json') : () => import('@/messages/ns/fr-FR/userMenu.json'))
+registerLanguage('userMenu', 'fr-FR', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/fr-FR/userMenu.json')) : () => import('@/messages/ns/fr-FR/userMenu.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('userMenu', 'de-DE', typeof window === 'undefined' ? require('@/messages/ns/de-DE/userMenu.json') : () => import('@/messages/ns/de-DE/userMenu.json'))
+registerLanguage('userMenu', 'de-DE', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/de-DE/userMenu.json')) : () => import('@/messages/ns/de-DE/userMenu.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('userMenu', 'de-CH', typeof window === 'undefined' ? require('@/messages/ns/de-CH/userMenu.json') : () => import('@/messages/ns/de-CH/userMenu.json'))
+registerLanguage('userMenu', 'de-CH', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/de-CH/userMenu.json')) : () => import('@/messages/ns/de-CH/userMenu.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('userMenu', 'es-ES', typeof window === 'undefined' ? require('@/messages/ns/es-ES/userMenu.json') : () => import('@/messages/ns/es-ES/userMenu.json'))
+registerLanguage('userMenu', 'es-ES', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/es-ES/userMenu.json')) : () => import('@/messages/ns/es-ES/userMenu.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('userMenu', 'it-IT', typeof window === 'undefined' ? require('@/messages/ns/it-IT/userMenu.json') : () => import('@/messages/ns/it-IT/userMenu.json'))
+registerLanguage('userMenu', 'it-IT', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/it-IT/userMenu.json')) : () => import('@/messages/ns/it-IT/userMenu.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('userMenu', 'pt-PT', typeof window === 'undefined' ? require('@/messages/ns/pt-PT/userMenu.json') : () => import('@/messages/ns/pt-PT/userMenu.json'))
+registerLanguage('userMenu', 'pt-PT', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/pt-PT/userMenu.json')) : () => import('@/messages/ns/pt-PT/userMenu.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('userMenu', 'nl-NL', typeof window === 'undefined' ? require('@/messages/ns/nl-NL/userMenu.json') : () => import('@/messages/ns/nl-NL/userMenu.json'))
+registerLanguage('userMenu', 'nl-NL', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/nl-NL/userMenu.json')) : () => import('@/messages/ns/nl-NL/userMenu.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('userMenu', 'sv-SE', typeof window === 'undefined' ? require('@/messages/ns/sv-SE/userMenu.json') : () => import('@/messages/ns/sv-SE/userMenu.json'))
+registerLanguage('userMenu', 'sv-SE', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/sv-SE/userMenu.json')) : () => import('@/messages/ns/sv-SE/userMenu.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('userMenu', 'da-DK', typeof window === 'undefined' ? require('@/messages/ns/da-DK/userMenu.json') : () => import('@/messages/ns/da-DK/userMenu.json'))
+registerLanguage('userMenu', 'da-DK', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/da-DK/userMenu.json')) : () => import('@/messages/ns/da-DK/userMenu.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('userMenu', 'nb-NO', typeof window === 'undefined' ? require('@/messages/ns/nb-NO/userMenu.json') : () => import('@/messages/ns/nb-NO/userMenu.json'))
+registerLanguage('userMenu', 'nb-NO', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/nb-NO/userMenu.json')) : () => import('@/messages/ns/nb-NO/userMenu.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('userMenu', 'pl-PL', typeof window === 'undefined' ? require('@/messages/ns/pl-PL/userMenu.json') : () => import('@/messages/ns/pl-PL/userMenu.json'))
+registerLanguage('userMenu', 'pl-PL', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/pl-PL/userMenu.json')) : () => import('@/messages/ns/pl-PL/userMenu.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('userMenu', 'cs-CZ', typeof window === 'undefined' ? require('@/messages/ns/cs-CZ/userMenu.json') : () => import('@/messages/ns/cs-CZ/userMenu.json'))
+registerLanguage('userMenu', 'cs-CZ', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/cs-CZ/userMenu.json')) : () => import('@/messages/ns/cs-CZ/userMenu.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('userMenu', 'hu-HU', typeof window === 'undefined' ? require('@/messages/ns/hu-HU/userMenu.json') : () => import('@/messages/ns/hu-HU/userMenu.json'))
+registerLanguage('userMenu', 'hu-HU', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/hu-HU/userMenu.json')) : () => import('@/messages/ns/hu-HU/userMenu.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('userMenu', 'sk-SK', typeof window === 'undefined' ? require('@/messages/ns/sk-SK/userMenu.json') : () => import('@/messages/ns/sk-SK/userMenu.json'))
+registerLanguage('userMenu', 'sk-SK', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/sk-SK/userMenu.json')) : () => import('@/messages/ns/sk-SK/userMenu.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('userMenu', 'ro-RO', typeof window === 'undefined' ? require('@/messages/ns/ro-RO/userMenu.json') : () => import('@/messages/ns/ro-RO/userMenu.json'))
+registerLanguage('userMenu', 'ro-RO', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/ro-RO/userMenu.json')) : () => import('@/messages/ns/ro-RO/userMenu.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('userMenu', 'hr-HR', typeof window === 'undefined' ? require('@/messages/ns/hr-HR/userMenu.json') : () => import('@/messages/ns/hr-HR/userMenu.json'))
+registerLanguage('userMenu', 'hr-HR', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/hr-HR/userMenu.json')) : () => import('@/messages/ns/hr-HR/userMenu.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('userMenu', 'sl-SI', typeof window === 'undefined' ? require('@/messages/ns/sl-SI/userMenu.json') : () => import('@/messages/ns/sl-SI/userMenu.json'))
+registerLanguage('userMenu', 'sl-SI', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/sl-SI/userMenu.json')) : () => import('@/messages/ns/sl-SI/userMenu.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('userMenu', 'fi-FI', typeof window === 'undefined' ? require('@/messages/ns/fi-FI/userMenu.json') : () => import('@/messages/ns/fi-FI/userMenu.json'))
+registerLanguage('userMenu', 'fi-FI', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/fi-FI/userMenu.json')) : () => import('@/messages/ns/fi-FI/userMenu.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('userMenu', 'et-EE', typeof window === 'undefined' ? require('@/messages/ns/et-EE/userMenu.json') : () => import('@/messages/ns/et-EE/userMenu.json'))
+registerLanguage('userMenu', 'et-EE', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/et-EE/userMenu.json')) : () => import('@/messages/ns/et-EE/userMenu.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('userMenu', 'lv-LV', typeof window === 'undefined' ? require('@/messages/ns/lv-LV/userMenu.json') : () => import('@/messages/ns/lv-LV/userMenu.json'))
+registerLanguage('userMenu', 'lv-LV', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/lv-LV/userMenu.json')) : () => import('@/messages/ns/lv-LV/userMenu.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('userMenu', 'lt-LT', typeof window === 'undefined' ? require('@/messages/ns/lt-LT/userMenu.json') : () => import('@/messages/ns/lt-LT/userMenu.json'))
+registerLanguage('userMenu', 'lt-LT', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/lt-LT/userMenu.json')) : () => import('@/messages/ns/lt-LT/userMenu.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('userMenu', 'el-GR', typeof window === 'undefined' ? require('@/messages/ns/el-GR/userMenu.json') : () => import('@/messages/ns/el-GR/userMenu.json'))
+registerLanguage('userMenu', 'el-GR', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/el-GR/userMenu.json')) : () => import('@/messages/ns/el-GR/userMenu.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('userMenu', 'bg-BG', typeof window === 'undefined' ? require('@/messages/ns/bg-BG/userMenu.json') : () => import('@/messages/ns/bg-BG/userMenu.json'))
+registerLanguage('userMenu', 'bg-BG', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/bg-BG/userMenu.json')) : () => import('@/messages/ns/bg-BG/userMenu.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('userMenu', 'pt-BR', typeof window === 'undefined' ? require('@/messages/ns/pt-BR/userMenu.json') : () => import('@/messages/ns/pt-BR/userMenu.json'))
+registerLanguage('userMenu', 'pt-BR', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/pt-BR/userMenu.json')) : () => import('@/messages/ns/pt-BR/userMenu.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('userMenu', 'ms-MY', typeof window === 'undefined' ? require('@/messages/ns/ms-MY/userMenu.json') : () => import('@/messages/ns/ms-MY/userMenu.json'))
+registerLanguage('userMenu', 'ms-MY', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/ms-MY/userMenu.json')) : () => import('@/messages/ns/ms-MY/userMenu.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('userMenu', 'ja-JP', typeof window === 'undefined' ? require('@/messages/ns/ja-JP/userMenu.json') : () => import('@/messages/ns/ja-JP/userMenu.json'))
+registerLanguage('userMenu', 'ja-JP', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/ja-JP/userMenu.json')) : () => import('@/messages/ns/ja-JP/userMenu.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('userMenu', 'zh-HK', typeof window === 'undefined' ? require('@/messages/ns/zh-HK/userMenu.json') : () => import('@/messages/ns/zh-HK/userMenu.json'))
+registerLanguage('userMenu', 'zh-HK', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/zh-HK/userMenu.json')) : () => import('@/messages/ns/zh-HK/userMenu.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('userMenu', 'th-TH', typeof window === 'undefined' ? require('@/messages/ns/th-TH/userMenu.json') : () => import('@/messages/ns/th-TH/userMenu.json'))
+registerLanguage('userMenu', 'th-TH', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/th-TH/userMenu.json')) : () => import('@/messages/ns/th-TH/userMenu.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('userMenu', 'ar-AE', typeof window === 'undefined' ? require('@/messages/ns/ar-AE/userMenu.json') : () => import('@/messages/ns/ar-AE/userMenu.json'))
+registerLanguage('userMenu', 'ar-AE', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/ar-AE/userMenu.json')) : () => import('@/messages/ns/ar-AE/userMenu.json'))

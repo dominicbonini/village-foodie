@@ -4,67 +4,68 @@ import base from '@/messages/ns/en-GB/weeklyPost.json'
 import enUS from '@/messages/ns/en-US/weeklyPost.json'
 import enAU from '@/messages/ns/en-AU/weeklyPost.json'
 import enCA from '@/messages/ns/en-CA/weeklyPost.json'
-import { registerNamespace, registerLanguage } from '@/lib/i18n/registry'
+import { registerNamespace, registerLanguage, serverWords } from '@/lib/i18n/registry'
 
 registerNamespace('weeklyPost', base, { 'en-US': enUS, 'en-AU': enAU, 'en-CA': enCA })
-// languages-1: each non-English language — on the server now; in the browser only when a page is in that language.
+// languages-1: each non-English language only when a page is in that language — perf-1: on the server too (serverWords: a
+// synchronous require, run the first time the language is asked for), in the browser as a chunk loaded on demand.
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('weeklyPost', 'fr-FR', typeof window === 'undefined' ? require('@/messages/ns/fr-FR/weeklyPost.json') : () => import('@/messages/ns/fr-FR/weeklyPost.json'))
+registerLanguage('weeklyPost', 'fr-FR', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/fr-FR/weeklyPost.json')) : () => import('@/messages/ns/fr-FR/weeklyPost.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('weeklyPost', 'de-DE', typeof window === 'undefined' ? require('@/messages/ns/de-DE/weeklyPost.json') : () => import('@/messages/ns/de-DE/weeklyPost.json'))
+registerLanguage('weeklyPost', 'de-DE', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/de-DE/weeklyPost.json')) : () => import('@/messages/ns/de-DE/weeklyPost.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('weeklyPost', 'de-CH', typeof window === 'undefined' ? require('@/messages/ns/de-CH/weeklyPost.json') : () => import('@/messages/ns/de-CH/weeklyPost.json'))
+registerLanguage('weeklyPost', 'de-CH', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/de-CH/weeklyPost.json')) : () => import('@/messages/ns/de-CH/weeklyPost.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('weeklyPost', 'es-ES', typeof window === 'undefined' ? require('@/messages/ns/es-ES/weeklyPost.json') : () => import('@/messages/ns/es-ES/weeklyPost.json'))
+registerLanguage('weeklyPost', 'es-ES', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/es-ES/weeklyPost.json')) : () => import('@/messages/ns/es-ES/weeklyPost.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('weeklyPost', 'it-IT', typeof window === 'undefined' ? require('@/messages/ns/it-IT/weeklyPost.json') : () => import('@/messages/ns/it-IT/weeklyPost.json'))
+registerLanguage('weeklyPost', 'it-IT', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/it-IT/weeklyPost.json')) : () => import('@/messages/ns/it-IT/weeklyPost.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('weeklyPost', 'pt-PT', typeof window === 'undefined' ? require('@/messages/ns/pt-PT/weeklyPost.json') : () => import('@/messages/ns/pt-PT/weeklyPost.json'))
+registerLanguage('weeklyPost', 'pt-PT', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/pt-PT/weeklyPost.json')) : () => import('@/messages/ns/pt-PT/weeklyPost.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('weeklyPost', 'nl-NL', typeof window === 'undefined' ? require('@/messages/ns/nl-NL/weeklyPost.json') : () => import('@/messages/ns/nl-NL/weeklyPost.json'))
+registerLanguage('weeklyPost', 'nl-NL', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/nl-NL/weeklyPost.json')) : () => import('@/messages/ns/nl-NL/weeklyPost.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('weeklyPost', 'sv-SE', typeof window === 'undefined' ? require('@/messages/ns/sv-SE/weeklyPost.json') : () => import('@/messages/ns/sv-SE/weeklyPost.json'))
+registerLanguage('weeklyPost', 'sv-SE', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/sv-SE/weeklyPost.json')) : () => import('@/messages/ns/sv-SE/weeklyPost.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('weeklyPost', 'da-DK', typeof window === 'undefined' ? require('@/messages/ns/da-DK/weeklyPost.json') : () => import('@/messages/ns/da-DK/weeklyPost.json'))
+registerLanguage('weeklyPost', 'da-DK', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/da-DK/weeklyPost.json')) : () => import('@/messages/ns/da-DK/weeklyPost.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('weeklyPost', 'nb-NO', typeof window === 'undefined' ? require('@/messages/ns/nb-NO/weeklyPost.json') : () => import('@/messages/ns/nb-NO/weeklyPost.json'))
+registerLanguage('weeklyPost', 'nb-NO', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/nb-NO/weeklyPost.json')) : () => import('@/messages/ns/nb-NO/weeklyPost.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('weeklyPost', 'pl-PL', typeof window === 'undefined' ? require('@/messages/ns/pl-PL/weeklyPost.json') : () => import('@/messages/ns/pl-PL/weeklyPost.json'))
+registerLanguage('weeklyPost', 'pl-PL', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/pl-PL/weeklyPost.json')) : () => import('@/messages/ns/pl-PL/weeklyPost.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('weeklyPost', 'cs-CZ', typeof window === 'undefined' ? require('@/messages/ns/cs-CZ/weeklyPost.json') : () => import('@/messages/ns/cs-CZ/weeklyPost.json'))
+registerLanguage('weeklyPost', 'cs-CZ', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/cs-CZ/weeklyPost.json')) : () => import('@/messages/ns/cs-CZ/weeklyPost.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('weeklyPost', 'hu-HU', typeof window === 'undefined' ? require('@/messages/ns/hu-HU/weeklyPost.json') : () => import('@/messages/ns/hu-HU/weeklyPost.json'))
+registerLanguage('weeklyPost', 'hu-HU', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/hu-HU/weeklyPost.json')) : () => import('@/messages/ns/hu-HU/weeklyPost.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('weeklyPost', 'sk-SK', typeof window === 'undefined' ? require('@/messages/ns/sk-SK/weeklyPost.json') : () => import('@/messages/ns/sk-SK/weeklyPost.json'))
+registerLanguage('weeklyPost', 'sk-SK', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/sk-SK/weeklyPost.json')) : () => import('@/messages/ns/sk-SK/weeklyPost.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('weeklyPost', 'ro-RO', typeof window === 'undefined' ? require('@/messages/ns/ro-RO/weeklyPost.json') : () => import('@/messages/ns/ro-RO/weeklyPost.json'))
+registerLanguage('weeklyPost', 'ro-RO', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/ro-RO/weeklyPost.json')) : () => import('@/messages/ns/ro-RO/weeklyPost.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('weeklyPost', 'hr-HR', typeof window === 'undefined' ? require('@/messages/ns/hr-HR/weeklyPost.json') : () => import('@/messages/ns/hr-HR/weeklyPost.json'))
+registerLanguage('weeklyPost', 'hr-HR', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/hr-HR/weeklyPost.json')) : () => import('@/messages/ns/hr-HR/weeklyPost.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('weeklyPost', 'sl-SI', typeof window === 'undefined' ? require('@/messages/ns/sl-SI/weeklyPost.json') : () => import('@/messages/ns/sl-SI/weeklyPost.json'))
+registerLanguage('weeklyPost', 'sl-SI', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/sl-SI/weeklyPost.json')) : () => import('@/messages/ns/sl-SI/weeklyPost.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('weeklyPost', 'fi-FI', typeof window === 'undefined' ? require('@/messages/ns/fi-FI/weeklyPost.json') : () => import('@/messages/ns/fi-FI/weeklyPost.json'))
+registerLanguage('weeklyPost', 'fi-FI', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/fi-FI/weeklyPost.json')) : () => import('@/messages/ns/fi-FI/weeklyPost.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('weeklyPost', 'et-EE', typeof window === 'undefined' ? require('@/messages/ns/et-EE/weeklyPost.json') : () => import('@/messages/ns/et-EE/weeklyPost.json'))
+registerLanguage('weeklyPost', 'et-EE', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/et-EE/weeklyPost.json')) : () => import('@/messages/ns/et-EE/weeklyPost.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('weeklyPost', 'lv-LV', typeof window === 'undefined' ? require('@/messages/ns/lv-LV/weeklyPost.json') : () => import('@/messages/ns/lv-LV/weeklyPost.json'))
+registerLanguage('weeklyPost', 'lv-LV', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/lv-LV/weeklyPost.json')) : () => import('@/messages/ns/lv-LV/weeklyPost.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('weeklyPost', 'lt-LT', typeof window === 'undefined' ? require('@/messages/ns/lt-LT/weeklyPost.json') : () => import('@/messages/ns/lt-LT/weeklyPost.json'))
+registerLanguage('weeklyPost', 'lt-LT', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/lt-LT/weeklyPost.json')) : () => import('@/messages/ns/lt-LT/weeklyPost.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('weeklyPost', 'el-GR', typeof window === 'undefined' ? require('@/messages/ns/el-GR/weeklyPost.json') : () => import('@/messages/ns/el-GR/weeklyPost.json'))
+registerLanguage('weeklyPost', 'el-GR', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/el-GR/weeklyPost.json')) : () => import('@/messages/ns/el-GR/weeklyPost.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('weeklyPost', 'bg-BG', typeof window === 'undefined' ? require('@/messages/ns/bg-BG/weeklyPost.json') : () => import('@/messages/ns/bg-BG/weeklyPost.json'))
+registerLanguage('weeklyPost', 'bg-BG', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/bg-BG/weeklyPost.json')) : () => import('@/messages/ns/bg-BG/weeklyPost.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('weeklyPost', 'es-MX', typeof window === 'undefined' ? require('@/messages/ns/es-MX/weeklyPost.json') : () => import('@/messages/ns/es-MX/weeklyPost.json'))
+registerLanguage('weeklyPost', 'es-MX', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/es-MX/weeklyPost.json')) : () => import('@/messages/ns/es-MX/weeklyPost.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('weeklyPost', 'pt-BR', typeof window === 'undefined' ? require('@/messages/ns/pt-BR/weeklyPost.json') : () => import('@/messages/ns/pt-BR/weeklyPost.json'))
+registerLanguage('weeklyPost', 'pt-BR', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/pt-BR/weeklyPost.json')) : () => import('@/messages/ns/pt-BR/weeklyPost.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('weeklyPost', 'ms-MY', typeof window === 'undefined' ? require('@/messages/ns/ms-MY/weeklyPost.json') : () => import('@/messages/ns/ms-MY/weeklyPost.json'))
+registerLanguage('weeklyPost', 'ms-MY', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/ms-MY/weeklyPost.json')) : () => import('@/messages/ns/ms-MY/weeklyPost.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('weeklyPost', 'ja-JP', typeof window === 'undefined' ? require('@/messages/ns/ja-JP/weeklyPost.json') : () => import('@/messages/ns/ja-JP/weeklyPost.json'))
+registerLanguage('weeklyPost', 'ja-JP', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/ja-JP/weeklyPost.json')) : () => import('@/messages/ns/ja-JP/weeklyPost.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('weeklyPost', 'zh-HK', typeof window === 'undefined' ? require('@/messages/ns/zh-HK/weeklyPost.json') : () => import('@/messages/ns/zh-HK/weeklyPost.json'))
+registerLanguage('weeklyPost', 'zh-HK', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/zh-HK/weeklyPost.json')) : () => import('@/messages/ns/zh-HK/weeklyPost.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('weeklyPost', 'th-TH', typeof window === 'undefined' ? require('@/messages/ns/th-TH/weeklyPost.json') : () => import('@/messages/ns/th-TH/weeklyPost.json'))
+registerLanguage('weeklyPost', 'th-TH', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/th-TH/weeklyPost.json')) : () => import('@/messages/ns/th-TH/weeklyPost.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('weeklyPost', 'ar-AE', typeof window === 'undefined' ? require('@/messages/ns/ar-AE/weeklyPost.json') : () => import('@/messages/ns/ar-AE/weeklyPost.json'))
+registerLanguage('weeklyPost', 'ar-AE', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/ar-AE/weeklyPost.json')) : () => import('@/messages/ns/ar-AE/weeklyPost.json'))

@@ -2,63 +2,64 @@
 // Import this module (`import '@/lib/i18n/catalog/takingPayment'`) in any file that reads the "takingPayment" namespace.
 import base from '@/messages/ns/en-GB/takingPayment.json'
 import enUS from '@/messages/ns/en-US/takingPayment.json'
-import { registerNamespace, registerLanguage } from '@/lib/i18n/registry'
+import { registerNamespace, registerLanguage, serverWords } from '@/lib/i18n/registry'
 
 registerNamespace('takingPayment', base, { 'en-US': enUS })
-// languages-1: each non-English language — on the server now; in the browser only when a page is in that language.
+// languages-1: each non-English language only when a page is in that language — perf-1: on the server too (serverWords: a
+// synchronous require, run the first time the language is asked for), in the browser as a chunk loaded on demand.
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('takingPayment', 'fr-FR', typeof window === 'undefined' ? require('@/messages/ns/fr-FR/takingPayment.json') : () => import('@/messages/ns/fr-FR/takingPayment.json'))
+registerLanguage('takingPayment', 'fr-FR', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/fr-FR/takingPayment.json')) : () => import('@/messages/ns/fr-FR/takingPayment.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('takingPayment', 'de-DE', typeof window === 'undefined' ? require('@/messages/ns/de-DE/takingPayment.json') : () => import('@/messages/ns/de-DE/takingPayment.json'))
+registerLanguage('takingPayment', 'de-DE', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/de-DE/takingPayment.json')) : () => import('@/messages/ns/de-DE/takingPayment.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('takingPayment', 'es-ES', typeof window === 'undefined' ? require('@/messages/ns/es-ES/takingPayment.json') : () => import('@/messages/ns/es-ES/takingPayment.json'))
+registerLanguage('takingPayment', 'es-ES', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/es-ES/takingPayment.json')) : () => import('@/messages/ns/es-ES/takingPayment.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('takingPayment', 'it-IT', typeof window === 'undefined' ? require('@/messages/ns/it-IT/takingPayment.json') : () => import('@/messages/ns/it-IT/takingPayment.json'))
+registerLanguage('takingPayment', 'it-IT', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/it-IT/takingPayment.json')) : () => import('@/messages/ns/it-IT/takingPayment.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('takingPayment', 'pt-PT', typeof window === 'undefined' ? require('@/messages/ns/pt-PT/takingPayment.json') : () => import('@/messages/ns/pt-PT/takingPayment.json'))
+registerLanguage('takingPayment', 'pt-PT', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/pt-PT/takingPayment.json')) : () => import('@/messages/ns/pt-PT/takingPayment.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('takingPayment', 'nl-NL', typeof window === 'undefined' ? require('@/messages/ns/nl-NL/takingPayment.json') : () => import('@/messages/ns/nl-NL/takingPayment.json'))
+registerLanguage('takingPayment', 'nl-NL', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/nl-NL/takingPayment.json')) : () => import('@/messages/ns/nl-NL/takingPayment.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('takingPayment', 'sv-SE', typeof window === 'undefined' ? require('@/messages/ns/sv-SE/takingPayment.json') : () => import('@/messages/ns/sv-SE/takingPayment.json'))
+registerLanguage('takingPayment', 'sv-SE', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/sv-SE/takingPayment.json')) : () => import('@/messages/ns/sv-SE/takingPayment.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('takingPayment', 'da-DK', typeof window === 'undefined' ? require('@/messages/ns/da-DK/takingPayment.json') : () => import('@/messages/ns/da-DK/takingPayment.json'))
+registerLanguage('takingPayment', 'da-DK', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/da-DK/takingPayment.json')) : () => import('@/messages/ns/da-DK/takingPayment.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('takingPayment', 'nb-NO', typeof window === 'undefined' ? require('@/messages/ns/nb-NO/takingPayment.json') : () => import('@/messages/ns/nb-NO/takingPayment.json'))
+registerLanguage('takingPayment', 'nb-NO', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/nb-NO/takingPayment.json')) : () => import('@/messages/ns/nb-NO/takingPayment.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('takingPayment', 'pl-PL', typeof window === 'undefined' ? require('@/messages/ns/pl-PL/takingPayment.json') : () => import('@/messages/ns/pl-PL/takingPayment.json'))
+registerLanguage('takingPayment', 'pl-PL', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/pl-PL/takingPayment.json')) : () => import('@/messages/ns/pl-PL/takingPayment.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('takingPayment', 'cs-CZ', typeof window === 'undefined' ? require('@/messages/ns/cs-CZ/takingPayment.json') : () => import('@/messages/ns/cs-CZ/takingPayment.json'))
+registerLanguage('takingPayment', 'cs-CZ', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/cs-CZ/takingPayment.json')) : () => import('@/messages/ns/cs-CZ/takingPayment.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('takingPayment', 'hu-HU', typeof window === 'undefined' ? require('@/messages/ns/hu-HU/takingPayment.json') : () => import('@/messages/ns/hu-HU/takingPayment.json'))
+registerLanguage('takingPayment', 'hu-HU', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/hu-HU/takingPayment.json')) : () => import('@/messages/ns/hu-HU/takingPayment.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('takingPayment', 'sk-SK', typeof window === 'undefined' ? require('@/messages/ns/sk-SK/takingPayment.json') : () => import('@/messages/ns/sk-SK/takingPayment.json'))
+registerLanguage('takingPayment', 'sk-SK', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/sk-SK/takingPayment.json')) : () => import('@/messages/ns/sk-SK/takingPayment.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('takingPayment', 'ro-RO', typeof window === 'undefined' ? require('@/messages/ns/ro-RO/takingPayment.json') : () => import('@/messages/ns/ro-RO/takingPayment.json'))
+registerLanguage('takingPayment', 'ro-RO', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/ro-RO/takingPayment.json')) : () => import('@/messages/ns/ro-RO/takingPayment.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('takingPayment', 'hr-HR', typeof window === 'undefined' ? require('@/messages/ns/hr-HR/takingPayment.json') : () => import('@/messages/ns/hr-HR/takingPayment.json'))
+registerLanguage('takingPayment', 'hr-HR', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/hr-HR/takingPayment.json')) : () => import('@/messages/ns/hr-HR/takingPayment.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('takingPayment', 'sl-SI', typeof window === 'undefined' ? require('@/messages/ns/sl-SI/takingPayment.json') : () => import('@/messages/ns/sl-SI/takingPayment.json'))
+registerLanguage('takingPayment', 'sl-SI', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/sl-SI/takingPayment.json')) : () => import('@/messages/ns/sl-SI/takingPayment.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('takingPayment', 'fi-FI', typeof window === 'undefined' ? require('@/messages/ns/fi-FI/takingPayment.json') : () => import('@/messages/ns/fi-FI/takingPayment.json'))
+registerLanguage('takingPayment', 'fi-FI', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/fi-FI/takingPayment.json')) : () => import('@/messages/ns/fi-FI/takingPayment.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('takingPayment', 'et-EE', typeof window === 'undefined' ? require('@/messages/ns/et-EE/takingPayment.json') : () => import('@/messages/ns/et-EE/takingPayment.json'))
+registerLanguage('takingPayment', 'et-EE', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/et-EE/takingPayment.json')) : () => import('@/messages/ns/et-EE/takingPayment.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('takingPayment', 'lv-LV', typeof window === 'undefined' ? require('@/messages/ns/lv-LV/takingPayment.json') : () => import('@/messages/ns/lv-LV/takingPayment.json'))
+registerLanguage('takingPayment', 'lv-LV', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/lv-LV/takingPayment.json')) : () => import('@/messages/ns/lv-LV/takingPayment.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('takingPayment', 'lt-LT', typeof window === 'undefined' ? require('@/messages/ns/lt-LT/takingPayment.json') : () => import('@/messages/ns/lt-LT/takingPayment.json'))
+registerLanguage('takingPayment', 'lt-LT', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/lt-LT/takingPayment.json')) : () => import('@/messages/ns/lt-LT/takingPayment.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('takingPayment', 'el-GR', typeof window === 'undefined' ? require('@/messages/ns/el-GR/takingPayment.json') : () => import('@/messages/ns/el-GR/takingPayment.json'))
+registerLanguage('takingPayment', 'el-GR', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/el-GR/takingPayment.json')) : () => import('@/messages/ns/el-GR/takingPayment.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('takingPayment', 'bg-BG', typeof window === 'undefined' ? require('@/messages/ns/bg-BG/takingPayment.json') : () => import('@/messages/ns/bg-BG/takingPayment.json'))
+registerLanguage('takingPayment', 'bg-BG', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/bg-BG/takingPayment.json')) : () => import('@/messages/ns/bg-BG/takingPayment.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('takingPayment', 'pt-BR', typeof window === 'undefined' ? require('@/messages/ns/pt-BR/takingPayment.json') : () => import('@/messages/ns/pt-BR/takingPayment.json'))
+registerLanguage('takingPayment', 'pt-BR', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/pt-BR/takingPayment.json')) : () => import('@/messages/ns/pt-BR/takingPayment.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('takingPayment', 'ms-MY', typeof window === 'undefined' ? require('@/messages/ns/ms-MY/takingPayment.json') : () => import('@/messages/ns/ms-MY/takingPayment.json'))
+registerLanguage('takingPayment', 'ms-MY', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/ms-MY/takingPayment.json')) : () => import('@/messages/ns/ms-MY/takingPayment.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('takingPayment', 'ja-JP', typeof window === 'undefined' ? require('@/messages/ns/ja-JP/takingPayment.json') : () => import('@/messages/ns/ja-JP/takingPayment.json'))
+registerLanguage('takingPayment', 'ja-JP', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/ja-JP/takingPayment.json')) : () => import('@/messages/ns/ja-JP/takingPayment.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('takingPayment', 'zh-HK', typeof window === 'undefined' ? require('@/messages/ns/zh-HK/takingPayment.json') : () => import('@/messages/ns/zh-HK/takingPayment.json'))
+registerLanguage('takingPayment', 'zh-HK', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/zh-HK/takingPayment.json')) : () => import('@/messages/ns/zh-HK/takingPayment.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('takingPayment', 'th-TH', typeof window === 'undefined' ? require('@/messages/ns/th-TH/takingPayment.json') : () => import('@/messages/ns/th-TH/takingPayment.json'))
+registerLanguage('takingPayment', 'th-TH', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/th-TH/takingPayment.json')) : () => import('@/messages/ns/th-TH/takingPayment.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('takingPayment', 'ar-AE', typeof window === 'undefined' ? require('@/messages/ns/ar-AE/takingPayment.json') : () => import('@/messages/ns/ar-AE/takingPayment.json'))
+registerLanguage('takingPayment', 'ar-AE', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/ar-AE/takingPayment.json')) : () => import('@/messages/ns/ar-AE/takingPayment.json'))

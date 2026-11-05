@@ -366,7 +366,10 @@ const flat = (o, p = '', out = {}) => { for (const [k, v] of Object.entries(o ??
   }
   const esbuild = require(path.join(REPO, 'node_modules/esbuild'))
   for (const entry of ['app/venues/[slug]/page.tsx', 'app/trucks/[slug]/page.tsx']) {
-    const r = await esbuild.build({ entryPoints: [path.join(REPO, entry)], bundle: true, write: false, metafile: true, platform: 'node', format: 'esm', jsx: 'automatic', logLevel: 'silent', alias: { '@': REPO }, packages: 'external', absWorkingDir: REPO, loader: { '.css': 'empty', '.svg': 'text', '.png': 'empty', '.jpg': 'empty' } })
+    // ⚠️ RE-PINNED (perf-1, 5 November 2026): the shared readers reach perf-1's tagged cache only through a DYNAMIC import taken during a
+    // marketing render (lib/marketing-render.ts), which these pages never are — so that branch is kept out of the graph, as at runtime.
+    const perf1Cache = { name: 'perf-1-cache', setup(b) { b.onResolve({ filter: /^@\/lib\/(marketing-cache|faq\/public-cache)$/ }, a => ({ path: a.path, external: true })) } }
+    const r = await esbuild.build({ entryPoints: [path.join(REPO, entry)], bundle: true, write: false, metafile: true, platform: 'node', format: 'esm', jsx: 'automatic', logLevel: 'silent', alias: { '@': REPO }, packages: 'external', absWorkingDir: REPO, loader: { '.css': 'empty', '.svg': 'text', '.png': 'empty', '.jpg': 'empty' }, plugins: [perf1Cache] })
     const files = Object.keys(r.metafile.inputs).filter(f => !f.includes('node_modules'))
     // ⚠️ RE-PINNED (tidy-1, 3 November 2026): the three files tidy-1 changed (the truck page's `tally`, the footer's `newsletter`, both
     // defaulting to Village Foodie's page) are exempt — scripts/tidy-1.cjs §1 proves the Village Foodie render byte-identical.
@@ -379,7 +382,13 @@ const flat = (o, p = '', out = {}) => { for (const [k, v] of Object.entries(o ??
     // and lost Advanced reporting (no page here shows them); each must be identical to BASE apart from those rows
     // (scripts/_lp-features-list-1.cjs nsSameApartFromRows).
     const FL1 = require('./_lp-features-list-1.cjs')
-    const moved = files.filter(f => atBase(f) !== now(f) && !T1_FILES.includes(f) && !(FL1.LANDED && FL1.nsSameApartFromRows(f, atBase(f), now(f))))
+    // ⚠️ RE-PINNED (perf-1, 5 November 2026, docs/perf-1-report.md): perf-1 changed shared modules these pages bundle (the i18n registry
+    // and its generated catalogues — a language read on demand; localizePlans; the readers' marketing branch) and added five. Its new
+    // files are exempt by name; a file it changed is judged AS IT STOOD JUST BEFORE perf-1 (scripts/_lp-perf-1.cjs beforePerf1), so
+    // every other rule above still holds for it. The rendered pages above are still byte-identical; scripts/perf-1.cjs proves the rest.
+    const PF1 = require('./_lp-perf-1.cjs')
+    const nowOf = f => (PF1.LANDED && PF1.changedFiles().has(f) ? (f === 'lib/i18n/namespaces.ts' ? P1N.namespacesAsBefore(PF1.beforePerf1(f)) : PF1.beforePerf1(f)) : now(f))
+    const moved = files.filter(f => !(PF1.LANDED && PF1.NEW_FILES.includes(f)) && atBase(f) !== nowOf(f) && !T1_FILES.includes(f) && !(FL1.LANDED && FL1.nsSameApartFromRows(f, atBase(f), nowOf(f))))
     t(`${entry}: all ${files.length} source files it bundles are byte-identical to ${BASE} — so is every byte it serves`, files.length > 20 && moved.length === 0, moved)
   }
   // ⚠️ RE-PINNED (tidy-1): Footer and TruckClient changed later (tidy-1's `newsletter` / `tally`); their links did not.

@@ -3,67 +3,68 @@
 import base from '@/messages/ns/en-GB/socialPosts.json'
 import enUS from '@/messages/ns/en-US/socialPosts.json'
 import enCA from '@/messages/ns/en-CA/socialPosts.json'
-import { registerNamespace, registerLanguage } from '@/lib/i18n/registry'
+import { registerNamespace, registerLanguage, serverWords } from '@/lib/i18n/registry'
 
 registerNamespace('socialPosts', base, { 'en-US': enUS, 'en-CA': enCA })
-// languages-1: each non-English language — on the server now; in the browser only when a page is in that language.
+// languages-1: each non-English language only when a page is in that language — perf-1: on the server too (serverWords: a
+// synchronous require, run the first time the language is asked for), in the browser as a chunk loaded on demand.
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('socialPosts', 'fr-FR', typeof window === 'undefined' ? require('@/messages/ns/fr-FR/socialPosts.json') : () => import('@/messages/ns/fr-FR/socialPosts.json'))
+registerLanguage('socialPosts', 'fr-FR', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/fr-FR/socialPosts.json')) : () => import('@/messages/ns/fr-FR/socialPosts.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('socialPosts', 'de-DE', typeof window === 'undefined' ? require('@/messages/ns/de-DE/socialPosts.json') : () => import('@/messages/ns/de-DE/socialPosts.json'))
+registerLanguage('socialPosts', 'de-DE', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/de-DE/socialPosts.json')) : () => import('@/messages/ns/de-DE/socialPosts.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('socialPosts', 'de-CH', typeof window === 'undefined' ? require('@/messages/ns/de-CH/socialPosts.json') : () => import('@/messages/ns/de-CH/socialPosts.json'))
+registerLanguage('socialPosts', 'de-CH', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/de-CH/socialPosts.json')) : () => import('@/messages/ns/de-CH/socialPosts.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('socialPosts', 'es-ES', typeof window === 'undefined' ? require('@/messages/ns/es-ES/socialPosts.json') : () => import('@/messages/ns/es-ES/socialPosts.json'))
+registerLanguage('socialPosts', 'es-ES', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/es-ES/socialPosts.json')) : () => import('@/messages/ns/es-ES/socialPosts.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('socialPosts', 'it-IT', typeof window === 'undefined' ? require('@/messages/ns/it-IT/socialPosts.json') : () => import('@/messages/ns/it-IT/socialPosts.json'))
+registerLanguage('socialPosts', 'it-IT', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/it-IT/socialPosts.json')) : () => import('@/messages/ns/it-IT/socialPosts.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('socialPosts', 'pt-PT', typeof window === 'undefined' ? require('@/messages/ns/pt-PT/socialPosts.json') : () => import('@/messages/ns/pt-PT/socialPosts.json'))
+registerLanguage('socialPosts', 'pt-PT', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/pt-PT/socialPosts.json')) : () => import('@/messages/ns/pt-PT/socialPosts.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('socialPosts', 'nl-NL', typeof window === 'undefined' ? require('@/messages/ns/nl-NL/socialPosts.json') : () => import('@/messages/ns/nl-NL/socialPosts.json'))
+registerLanguage('socialPosts', 'nl-NL', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/nl-NL/socialPosts.json')) : () => import('@/messages/ns/nl-NL/socialPosts.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('socialPosts', 'sv-SE', typeof window === 'undefined' ? require('@/messages/ns/sv-SE/socialPosts.json') : () => import('@/messages/ns/sv-SE/socialPosts.json'))
+registerLanguage('socialPosts', 'sv-SE', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/sv-SE/socialPosts.json')) : () => import('@/messages/ns/sv-SE/socialPosts.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('socialPosts', 'da-DK', typeof window === 'undefined' ? require('@/messages/ns/da-DK/socialPosts.json') : () => import('@/messages/ns/da-DK/socialPosts.json'))
+registerLanguage('socialPosts', 'da-DK', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/da-DK/socialPosts.json')) : () => import('@/messages/ns/da-DK/socialPosts.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('socialPosts', 'nb-NO', typeof window === 'undefined' ? require('@/messages/ns/nb-NO/socialPosts.json') : () => import('@/messages/ns/nb-NO/socialPosts.json'))
+registerLanguage('socialPosts', 'nb-NO', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/nb-NO/socialPosts.json')) : () => import('@/messages/ns/nb-NO/socialPosts.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('socialPosts', 'pl-PL', typeof window === 'undefined' ? require('@/messages/ns/pl-PL/socialPosts.json') : () => import('@/messages/ns/pl-PL/socialPosts.json'))
+registerLanguage('socialPosts', 'pl-PL', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/pl-PL/socialPosts.json')) : () => import('@/messages/ns/pl-PL/socialPosts.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('socialPosts', 'cs-CZ', typeof window === 'undefined' ? require('@/messages/ns/cs-CZ/socialPosts.json') : () => import('@/messages/ns/cs-CZ/socialPosts.json'))
+registerLanguage('socialPosts', 'cs-CZ', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/cs-CZ/socialPosts.json')) : () => import('@/messages/ns/cs-CZ/socialPosts.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('socialPosts', 'hu-HU', typeof window === 'undefined' ? require('@/messages/ns/hu-HU/socialPosts.json') : () => import('@/messages/ns/hu-HU/socialPosts.json'))
+registerLanguage('socialPosts', 'hu-HU', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/hu-HU/socialPosts.json')) : () => import('@/messages/ns/hu-HU/socialPosts.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('socialPosts', 'sk-SK', typeof window === 'undefined' ? require('@/messages/ns/sk-SK/socialPosts.json') : () => import('@/messages/ns/sk-SK/socialPosts.json'))
+registerLanguage('socialPosts', 'sk-SK', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/sk-SK/socialPosts.json')) : () => import('@/messages/ns/sk-SK/socialPosts.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('socialPosts', 'ro-RO', typeof window === 'undefined' ? require('@/messages/ns/ro-RO/socialPosts.json') : () => import('@/messages/ns/ro-RO/socialPosts.json'))
+registerLanguage('socialPosts', 'ro-RO', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/ro-RO/socialPosts.json')) : () => import('@/messages/ns/ro-RO/socialPosts.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('socialPosts', 'hr-HR', typeof window === 'undefined' ? require('@/messages/ns/hr-HR/socialPosts.json') : () => import('@/messages/ns/hr-HR/socialPosts.json'))
+registerLanguage('socialPosts', 'hr-HR', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/hr-HR/socialPosts.json')) : () => import('@/messages/ns/hr-HR/socialPosts.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('socialPosts', 'sl-SI', typeof window === 'undefined' ? require('@/messages/ns/sl-SI/socialPosts.json') : () => import('@/messages/ns/sl-SI/socialPosts.json'))
+registerLanguage('socialPosts', 'sl-SI', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/sl-SI/socialPosts.json')) : () => import('@/messages/ns/sl-SI/socialPosts.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('socialPosts', 'fi-FI', typeof window === 'undefined' ? require('@/messages/ns/fi-FI/socialPosts.json') : () => import('@/messages/ns/fi-FI/socialPosts.json'))
+registerLanguage('socialPosts', 'fi-FI', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/fi-FI/socialPosts.json')) : () => import('@/messages/ns/fi-FI/socialPosts.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('socialPosts', 'et-EE', typeof window === 'undefined' ? require('@/messages/ns/et-EE/socialPosts.json') : () => import('@/messages/ns/et-EE/socialPosts.json'))
+registerLanguage('socialPosts', 'et-EE', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/et-EE/socialPosts.json')) : () => import('@/messages/ns/et-EE/socialPosts.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('socialPosts', 'lv-LV', typeof window === 'undefined' ? require('@/messages/ns/lv-LV/socialPosts.json') : () => import('@/messages/ns/lv-LV/socialPosts.json'))
+registerLanguage('socialPosts', 'lv-LV', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/lv-LV/socialPosts.json')) : () => import('@/messages/ns/lv-LV/socialPosts.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('socialPosts', 'lt-LT', typeof window === 'undefined' ? require('@/messages/ns/lt-LT/socialPosts.json') : () => import('@/messages/ns/lt-LT/socialPosts.json'))
+registerLanguage('socialPosts', 'lt-LT', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/lt-LT/socialPosts.json')) : () => import('@/messages/ns/lt-LT/socialPosts.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('socialPosts', 'el-GR', typeof window === 'undefined' ? require('@/messages/ns/el-GR/socialPosts.json') : () => import('@/messages/ns/el-GR/socialPosts.json'))
+registerLanguage('socialPosts', 'el-GR', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/el-GR/socialPosts.json')) : () => import('@/messages/ns/el-GR/socialPosts.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('socialPosts', 'bg-BG', typeof window === 'undefined' ? require('@/messages/ns/bg-BG/socialPosts.json') : () => import('@/messages/ns/bg-BG/socialPosts.json'))
+registerLanguage('socialPosts', 'bg-BG', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/bg-BG/socialPosts.json')) : () => import('@/messages/ns/bg-BG/socialPosts.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('socialPosts', 'es-MX', typeof window === 'undefined' ? require('@/messages/ns/es-MX/socialPosts.json') : () => import('@/messages/ns/es-MX/socialPosts.json'))
+registerLanguage('socialPosts', 'es-MX', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/es-MX/socialPosts.json')) : () => import('@/messages/ns/es-MX/socialPosts.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('socialPosts', 'pt-BR', typeof window === 'undefined' ? require('@/messages/ns/pt-BR/socialPosts.json') : () => import('@/messages/ns/pt-BR/socialPosts.json'))
+registerLanguage('socialPosts', 'pt-BR', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/pt-BR/socialPosts.json')) : () => import('@/messages/ns/pt-BR/socialPosts.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('socialPosts', 'ms-MY', typeof window === 'undefined' ? require('@/messages/ns/ms-MY/socialPosts.json') : () => import('@/messages/ns/ms-MY/socialPosts.json'))
+registerLanguage('socialPosts', 'ms-MY', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/ms-MY/socialPosts.json')) : () => import('@/messages/ns/ms-MY/socialPosts.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('socialPosts', 'ja-JP', typeof window === 'undefined' ? require('@/messages/ns/ja-JP/socialPosts.json') : () => import('@/messages/ns/ja-JP/socialPosts.json'))
+registerLanguage('socialPosts', 'ja-JP', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/ja-JP/socialPosts.json')) : () => import('@/messages/ns/ja-JP/socialPosts.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('socialPosts', 'zh-HK', typeof window === 'undefined' ? require('@/messages/ns/zh-HK/socialPosts.json') : () => import('@/messages/ns/zh-HK/socialPosts.json'))
+registerLanguage('socialPosts', 'zh-HK', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/zh-HK/socialPosts.json')) : () => import('@/messages/ns/zh-HK/socialPosts.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('socialPosts', 'th-TH', typeof window === 'undefined' ? require('@/messages/ns/th-TH/socialPosts.json') : () => import('@/messages/ns/th-TH/socialPosts.json'))
+registerLanguage('socialPosts', 'th-TH', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/th-TH/socialPosts.json')) : () => import('@/messages/ns/th-TH/socialPosts.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('socialPosts', 'ar-AE', typeof window === 'undefined' ? require('@/messages/ns/ar-AE/socialPosts.json') : () => import('@/messages/ns/ar-AE/socialPosts.json'))
+registerLanguage('socialPosts', 'ar-AE', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/ar-AE/socialPosts.json')) : () => import('@/messages/ns/ar-AE/socialPosts.json'))

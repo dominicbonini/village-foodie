@@ -3,63 +3,64 @@
 import base from '@/messages/ns/en-GB/ticket.json'
 import enUS from '@/messages/ns/en-US/ticket.json'
 import enAU from '@/messages/ns/en-AU/ticket.json'
-import { registerNamespace, registerLanguage } from '@/lib/i18n/registry'
+import { registerNamespace, registerLanguage, serverWords } from '@/lib/i18n/registry'
 
 registerNamespace('ticket', base, { 'en-US': enUS, 'en-AU': enAU })
-// languages-1: each non-English language — on the server now; in the browser only when a page is in that language.
+// languages-1: each non-English language only when a page is in that language — perf-1: on the server too (serverWords: a
+// synchronous require, run the first time the language is asked for), in the browser as a chunk loaded on demand.
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('ticket', 'fr-FR', typeof window === 'undefined' ? require('@/messages/ns/fr-FR/ticket.json') : () => import('@/messages/ns/fr-FR/ticket.json'))
+registerLanguage('ticket', 'fr-FR', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/fr-FR/ticket.json')) : () => import('@/messages/ns/fr-FR/ticket.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('ticket', 'de-DE', typeof window === 'undefined' ? require('@/messages/ns/de-DE/ticket.json') : () => import('@/messages/ns/de-DE/ticket.json'))
+registerLanguage('ticket', 'de-DE', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/de-DE/ticket.json')) : () => import('@/messages/ns/de-DE/ticket.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('ticket', 'es-ES', typeof window === 'undefined' ? require('@/messages/ns/es-ES/ticket.json') : () => import('@/messages/ns/es-ES/ticket.json'))
+registerLanguage('ticket', 'es-ES', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/es-ES/ticket.json')) : () => import('@/messages/ns/es-ES/ticket.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('ticket', 'it-IT', typeof window === 'undefined' ? require('@/messages/ns/it-IT/ticket.json') : () => import('@/messages/ns/it-IT/ticket.json'))
+registerLanguage('ticket', 'it-IT', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/it-IT/ticket.json')) : () => import('@/messages/ns/it-IT/ticket.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('ticket', 'pt-PT', typeof window === 'undefined' ? require('@/messages/ns/pt-PT/ticket.json') : () => import('@/messages/ns/pt-PT/ticket.json'))
+registerLanguage('ticket', 'pt-PT', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/pt-PT/ticket.json')) : () => import('@/messages/ns/pt-PT/ticket.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('ticket', 'nl-NL', typeof window === 'undefined' ? require('@/messages/ns/nl-NL/ticket.json') : () => import('@/messages/ns/nl-NL/ticket.json'))
+registerLanguage('ticket', 'nl-NL', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/nl-NL/ticket.json')) : () => import('@/messages/ns/nl-NL/ticket.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('ticket', 'sv-SE', typeof window === 'undefined' ? require('@/messages/ns/sv-SE/ticket.json') : () => import('@/messages/ns/sv-SE/ticket.json'))
+registerLanguage('ticket', 'sv-SE', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/sv-SE/ticket.json')) : () => import('@/messages/ns/sv-SE/ticket.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('ticket', 'da-DK', typeof window === 'undefined' ? require('@/messages/ns/da-DK/ticket.json') : () => import('@/messages/ns/da-DK/ticket.json'))
+registerLanguage('ticket', 'da-DK', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/da-DK/ticket.json')) : () => import('@/messages/ns/da-DK/ticket.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('ticket', 'nb-NO', typeof window === 'undefined' ? require('@/messages/ns/nb-NO/ticket.json') : () => import('@/messages/ns/nb-NO/ticket.json'))
+registerLanguage('ticket', 'nb-NO', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/nb-NO/ticket.json')) : () => import('@/messages/ns/nb-NO/ticket.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('ticket', 'pl-PL', typeof window === 'undefined' ? require('@/messages/ns/pl-PL/ticket.json') : () => import('@/messages/ns/pl-PL/ticket.json'))
+registerLanguage('ticket', 'pl-PL', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/pl-PL/ticket.json')) : () => import('@/messages/ns/pl-PL/ticket.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('ticket', 'cs-CZ', typeof window === 'undefined' ? require('@/messages/ns/cs-CZ/ticket.json') : () => import('@/messages/ns/cs-CZ/ticket.json'))
+registerLanguage('ticket', 'cs-CZ', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/cs-CZ/ticket.json')) : () => import('@/messages/ns/cs-CZ/ticket.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('ticket', 'hu-HU', typeof window === 'undefined' ? require('@/messages/ns/hu-HU/ticket.json') : () => import('@/messages/ns/hu-HU/ticket.json'))
+registerLanguage('ticket', 'hu-HU', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/hu-HU/ticket.json')) : () => import('@/messages/ns/hu-HU/ticket.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('ticket', 'sk-SK', typeof window === 'undefined' ? require('@/messages/ns/sk-SK/ticket.json') : () => import('@/messages/ns/sk-SK/ticket.json'))
+registerLanguage('ticket', 'sk-SK', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/sk-SK/ticket.json')) : () => import('@/messages/ns/sk-SK/ticket.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('ticket', 'ro-RO', typeof window === 'undefined' ? require('@/messages/ns/ro-RO/ticket.json') : () => import('@/messages/ns/ro-RO/ticket.json'))
+registerLanguage('ticket', 'ro-RO', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/ro-RO/ticket.json')) : () => import('@/messages/ns/ro-RO/ticket.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('ticket', 'hr-HR', typeof window === 'undefined' ? require('@/messages/ns/hr-HR/ticket.json') : () => import('@/messages/ns/hr-HR/ticket.json'))
+registerLanguage('ticket', 'hr-HR', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/hr-HR/ticket.json')) : () => import('@/messages/ns/hr-HR/ticket.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('ticket', 'sl-SI', typeof window === 'undefined' ? require('@/messages/ns/sl-SI/ticket.json') : () => import('@/messages/ns/sl-SI/ticket.json'))
+registerLanguage('ticket', 'sl-SI', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/sl-SI/ticket.json')) : () => import('@/messages/ns/sl-SI/ticket.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('ticket', 'fi-FI', typeof window === 'undefined' ? require('@/messages/ns/fi-FI/ticket.json') : () => import('@/messages/ns/fi-FI/ticket.json'))
+registerLanguage('ticket', 'fi-FI', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/fi-FI/ticket.json')) : () => import('@/messages/ns/fi-FI/ticket.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('ticket', 'et-EE', typeof window === 'undefined' ? require('@/messages/ns/et-EE/ticket.json') : () => import('@/messages/ns/et-EE/ticket.json'))
+registerLanguage('ticket', 'et-EE', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/et-EE/ticket.json')) : () => import('@/messages/ns/et-EE/ticket.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('ticket', 'lv-LV', typeof window === 'undefined' ? require('@/messages/ns/lv-LV/ticket.json') : () => import('@/messages/ns/lv-LV/ticket.json'))
+registerLanguage('ticket', 'lv-LV', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/lv-LV/ticket.json')) : () => import('@/messages/ns/lv-LV/ticket.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('ticket', 'lt-LT', typeof window === 'undefined' ? require('@/messages/ns/lt-LT/ticket.json') : () => import('@/messages/ns/lt-LT/ticket.json'))
+registerLanguage('ticket', 'lt-LT', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/lt-LT/ticket.json')) : () => import('@/messages/ns/lt-LT/ticket.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('ticket', 'el-GR', typeof window === 'undefined' ? require('@/messages/ns/el-GR/ticket.json') : () => import('@/messages/ns/el-GR/ticket.json'))
+registerLanguage('ticket', 'el-GR', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/el-GR/ticket.json')) : () => import('@/messages/ns/el-GR/ticket.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('ticket', 'bg-BG', typeof window === 'undefined' ? require('@/messages/ns/bg-BG/ticket.json') : () => import('@/messages/ns/bg-BG/ticket.json'))
+registerLanguage('ticket', 'bg-BG', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/bg-BG/ticket.json')) : () => import('@/messages/ns/bg-BG/ticket.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('ticket', 'pt-BR', typeof window === 'undefined' ? require('@/messages/ns/pt-BR/ticket.json') : () => import('@/messages/ns/pt-BR/ticket.json'))
+registerLanguage('ticket', 'pt-BR', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/pt-BR/ticket.json')) : () => import('@/messages/ns/pt-BR/ticket.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('ticket', 'ms-MY', typeof window === 'undefined' ? require('@/messages/ns/ms-MY/ticket.json') : () => import('@/messages/ns/ms-MY/ticket.json'))
+registerLanguage('ticket', 'ms-MY', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/ms-MY/ticket.json')) : () => import('@/messages/ns/ms-MY/ticket.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('ticket', 'ja-JP', typeof window === 'undefined' ? require('@/messages/ns/ja-JP/ticket.json') : () => import('@/messages/ns/ja-JP/ticket.json'))
+registerLanguage('ticket', 'ja-JP', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/ja-JP/ticket.json')) : () => import('@/messages/ns/ja-JP/ticket.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('ticket', 'zh-HK', typeof window === 'undefined' ? require('@/messages/ns/zh-HK/ticket.json') : () => import('@/messages/ns/zh-HK/ticket.json'))
+registerLanguage('ticket', 'zh-HK', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/zh-HK/ticket.json')) : () => import('@/messages/ns/zh-HK/ticket.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('ticket', 'th-TH', typeof window === 'undefined' ? require('@/messages/ns/th-TH/ticket.json') : () => import('@/messages/ns/th-TH/ticket.json'))
+registerLanguage('ticket', 'th-TH', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/th-TH/ticket.json')) : () => import('@/messages/ns/th-TH/ticket.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('ticket', 'ar-AE', typeof window === 'undefined' ? require('@/messages/ns/ar-AE/ticket.json') : () => import('@/messages/ns/ar-AE/ticket.json'))
+registerLanguage('ticket', 'ar-AE', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/ar-AE/ticket.json')) : () => import('@/messages/ns/ar-AE/ticket.json'))

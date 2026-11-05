@@ -2,67 +2,68 @@
 // Import this module (`import '@/lib/i18n/catalog/planNames'`) in any file that reads the "planNames" namespace.
 import base from '@/messages/ns/en-GB/planNames.json'
 import enUS from '@/messages/ns/en-US/planNames.json'
-import { registerNamespace, registerLanguage } from '@/lib/i18n/registry'
+import { registerNamespace, registerLanguage, serverWords } from '@/lib/i18n/registry'
 
 registerNamespace('planNames', base, { 'en-US': enUS })
-// languages-1: each non-English language — on the server now; in the browser only when a page is in that language.
+// languages-1: each non-English language only when a page is in that language — perf-1: on the server too (serverWords: a
+// synchronous require, run the first time the language is asked for), in the browser as a chunk loaded on demand.
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('planNames', 'fr-FR', typeof window === 'undefined' ? require('@/messages/ns/fr-FR/planNames.json') : () => import('@/messages/ns/fr-FR/planNames.json'))
+registerLanguage('planNames', 'fr-FR', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/fr-FR/planNames.json')) : () => import('@/messages/ns/fr-FR/planNames.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('planNames', 'de-DE', typeof window === 'undefined' ? require('@/messages/ns/de-DE/planNames.json') : () => import('@/messages/ns/de-DE/planNames.json'))
+registerLanguage('planNames', 'de-DE', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/de-DE/planNames.json')) : () => import('@/messages/ns/de-DE/planNames.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('planNames', 'de-CH', typeof window === 'undefined' ? require('@/messages/ns/de-CH/planNames.json') : () => import('@/messages/ns/de-CH/planNames.json'))
+registerLanguage('planNames', 'de-CH', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/de-CH/planNames.json')) : () => import('@/messages/ns/de-CH/planNames.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('planNames', 'es-ES', typeof window === 'undefined' ? require('@/messages/ns/es-ES/planNames.json') : () => import('@/messages/ns/es-ES/planNames.json'))
+registerLanguage('planNames', 'es-ES', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/es-ES/planNames.json')) : () => import('@/messages/ns/es-ES/planNames.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('planNames', 'it-IT', typeof window === 'undefined' ? require('@/messages/ns/it-IT/planNames.json') : () => import('@/messages/ns/it-IT/planNames.json'))
+registerLanguage('planNames', 'it-IT', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/it-IT/planNames.json')) : () => import('@/messages/ns/it-IT/planNames.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('planNames', 'pt-PT', typeof window === 'undefined' ? require('@/messages/ns/pt-PT/planNames.json') : () => import('@/messages/ns/pt-PT/planNames.json'))
+registerLanguage('planNames', 'pt-PT', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/pt-PT/planNames.json')) : () => import('@/messages/ns/pt-PT/planNames.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('planNames', 'nl-NL', typeof window === 'undefined' ? require('@/messages/ns/nl-NL/planNames.json') : () => import('@/messages/ns/nl-NL/planNames.json'))
+registerLanguage('planNames', 'nl-NL', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/nl-NL/planNames.json')) : () => import('@/messages/ns/nl-NL/planNames.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('planNames', 'sv-SE', typeof window === 'undefined' ? require('@/messages/ns/sv-SE/planNames.json') : () => import('@/messages/ns/sv-SE/planNames.json'))
+registerLanguage('planNames', 'sv-SE', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/sv-SE/planNames.json')) : () => import('@/messages/ns/sv-SE/planNames.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('planNames', 'da-DK', typeof window === 'undefined' ? require('@/messages/ns/da-DK/planNames.json') : () => import('@/messages/ns/da-DK/planNames.json'))
+registerLanguage('planNames', 'da-DK', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/da-DK/planNames.json')) : () => import('@/messages/ns/da-DK/planNames.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('planNames', 'nb-NO', typeof window === 'undefined' ? require('@/messages/ns/nb-NO/planNames.json') : () => import('@/messages/ns/nb-NO/planNames.json'))
+registerLanguage('planNames', 'nb-NO', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/nb-NO/planNames.json')) : () => import('@/messages/ns/nb-NO/planNames.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('planNames', 'pl-PL', typeof window === 'undefined' ? require('@/messages/ns/pl-PL/planNames.json') : () => import('@/messages/ns/pl-PL/planNames.json'))
+registerLanguage('planNames', 'pl-PL', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/pl-PL/planNames.json')) : () => import('@/messages/ns/pl-PL/planNames.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('planNames', 'cs-CZ', typeof window === 'undefined' ? require('@/messages/ns/cs-CZ/planNames.json') : () => import('@/messages/ns/cs-CZ/planNames.json'))
+registerLanguage('planNames', 'cs-CZ', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/cs-CZ/planNames.json')) : () => import('@/messages/ns/cs-CZ/planNames.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('planNames', 'hu-HU', typeof window === 'undefined' ? require('@/messages/ns/hu-HU/planNames.json') : () => import('@/messages/ns/hu-HU/planNames.json'))
+registerLanguage('planNames', 'hu-HU', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/hu-HU/planNames.json')) : () => import('@/messages/ns/hu-HU/planNames.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('planNames', 'sk-SK', typeof window === 'undefined' ? require('@/messages/ns/sk-SK/planNames.json') : () => import('@/messages/ns/sk-SK/planNames.json'))
+registerLanguage('planNames', 'sk-SK', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/sk-SK/planNames.json')) : () => import('@/messages/ns/sk-SK/planNames.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('planNames', 'ro-RO', typeof window === 'undefined' ? require('@/messages/ns/ro-RO/planNames.json') : () => import('@/messages/ns/ro-RO/planNames.json'))
+registerLanguage('planNames', 'ro-RO', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/ro-RO/planNames.json')) : () => import('@/messages/ns/ro-RO/planNames.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('planNames', 'hr-HR', typeof window === 'undefined' ? require('@/messages/ns/hr-HR/planNames.json') : () => import('@/messages/ns/hr-HR/planNames.json'))
+registerLanguage('planNames', 'hr-HR', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/hr-HR/planNames.json')) : () => import('@/messages/ns/hr-HR/planNames.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('planNames', 'sl-SI', typeof window === 'undefined' ? require('@/messages/ns/sl-SI/planNames.json') : () => import('@/messages/ns/sl-SI/planNames.json'))
+registerLanguage('planNames', 'sl-SI', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/sl-SI/planNames.json')) : () => import('@/messages/ns/sl-SI/planNames.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('planNames', 'fi-FI', typeof window === 'undefined' ? require('@/messages/ns/fi-FI/planNames.json') : () => import('@/messages/ns/fi-FI/planNames.json'))
+registerLanguage('planNames', 'fi-FI', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/fi-FI/planNames.json')) : () => import('@/messages/ns/fi-FI/planNames.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('planNames', 'et-EE', typeof window === 'undefined' ? require('@/messages/ns/et-EE/planNames.json') : () => import('@/messages/ns/et-EE/planNames.json'))
+registerLanguage('planNames', 'et-EE', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/et-EE/planNames.json')) : () => import('@/messages/ns/et-EE/planNames.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('planNames', 'lv-LV', typeof window === 'undefined' ? require('@/messages/ns/lv-LV/planNames.json') : () => import('@/messages/ns/lv-LV/planNames.json'))
+registerLanguage('planNames', 'lv-LV', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/lv-LV/planNames.json')) : () => import('@/messages/ns/lv-LV/planNames.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('planNames', 'lt-LT', typeof window === 'undefined' ? require('@/messages/ns/lt-LT/planNames.json') : () => import('@/messages/ns/lt-LT/planNames.json'))
+registerLanguage('planNames', 'lt-LT', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/lt-LT/planNames.json')) : () => import('@/messages/ns/lt-LT/planNames.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('planNames', 'el-GR', typeof window === 'undefined' ? require('@/messages/ns/el-GR/planNames.json') : () => import('@/messages/ns/el-GR/planNames.json'))
+registerLanguage('planNames', 'el-GR', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/el-GR/planNames.json')) : () => import('@/messages/ns/el-GR/planNames.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('planNames', 'bg-BG', typeof window === 'undefined' ? require('@/messages/ns/bg-BG/planNames.json') : () => import('@/messages/ns/bg-BG/planNames.json'))
+registerLanguage('planNames', 'bg-BG', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/bg-BG/planNames.json')) : () => import('@/messages/ns/bg-BG/planNames.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('planNames', 'es-MX', typeof window === 'undefined' ? require('@/messages/ns/es-MX/planNames.json') : () => import('@/messages/ns/es-MX/planNames.json'))
+registerLanguage('planNames', 'es-MX', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/es-MX/planNames.json')) : () => import('@/messages/ns/es-MX/planNames.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('planNames', 'pt-BR', typeof window === 'undefined' ? require('@/messages/ns/pt-BR/planNames.json') : () => import('@/messages/ns/pt-BR/planNames.json'))
+registerLanguage('planNames', 'pt-BR', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/pt-BR/planNames.json')) : () => import('@/messages/ns/pt-BR/planNames.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('planNames', 'ms-MY', typeof window === 'undefined' ? require('@/messages/ns/ms-MY/planNames.json') : () => import('@/messages/ns/ms-MY/planNames.json'))
+registerLanguage('planNames', 'ms-MY', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/ms-MY/planNames.json')) : () => import('@/messages/ns/ms-MY/planNames.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('planNames', 'ja-JP', typeof window === 'undefined' ? require('@/messages/ns/ja-JP/planNames.json') : () => import('@/messages/ns/ja-JP/planNames.json'))
+registerLanguage('planNames', 'ja-JP', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/ja-JP/planNames.json')) : () => import('@/messages/ns/ja-JP/planNames.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('planNames', 'zh-HK', typeof window === 'undefined' ? require('@/messages/ns/zh-HK/planNames.json') : () => import('@/messages/ns/zh-HK/planNames.json'))
+registerLanguage('planNames', 'zh-HK', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/zh-HK/planNames.json')) : () => import('@/messages/ns/zh-HK/planNames.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('planNames', 'th-TH', typeof window === 'undefined' ? require('@/messages/ns/th-TH/planNames.json') : () => import('@/messages/ns/th-TH/planNames.json'))
+registerLanguage('planNames', 'th-TH', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/th-TH/planNames.json')) : () => import('@/messages/ns/th-TH/planNames.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('planNames', 'ar-AE', typeof window === 'undefined' ? require('@/messages/ns/ar-AE/planNames.json') : () => import('@/messages/ns/ar-AE/planNames.json'))
+registerLanguage('planNames', 'ar-AE', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/ar-AE/planNames.json')) : () => import('@/messages/ns/ar-AE/planNames.json'))

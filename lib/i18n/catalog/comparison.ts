@@ -3,11 +3,12 @@
 import base from '@/messages/ns/en-GB/comparison.json'
 import enUS from '@/messages/ns/en-US/comparison.json'
 import enCA from '@/messages/ns/en-CA/comparison.json'
-import { registerNamespace, registerLanguage } from '@/lib/i18n/registry'
+import { registerNamespace, registerLanguage, serverWords } from '@/lib/i18n/registry'
 
 registerNamespace('comparison', base, { 'en-US': enUS, 'en-CA': enCA })
-// languages-1: each non-English language — on the server now; in the browser only when a page is in that language.
+// languages-1: each non-English language only when a page is in that language — perf-1: on the server too (serverWords: a
+// synchronous require, run the first time the language is asked for), in the browser as a chunk loaded on demand.
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('comparison', 'de-DE', typeof window === 'undefined' ? require('@/messages/ns/de-DE/comparison.json') : () => import('@/messages/ns/de-DE/comparison.json'))
+registerLanguage('comparison', 'de-DE', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/de-DE/comparison.json')) : () => import('@/messages/ns/de-DE/comparison.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('comparison', 'de-CH', typeof window === 'undefined' ? require('@/messages/ns/de-CH/comparison.json') : () => import('@/messages/ns/de-CH/comparison.json'))
+registerLanguage('comparison', 'de-CH', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/de-CH/comparison.json')) : () => import('@/messages/ns/de-CH/comparison.json'))

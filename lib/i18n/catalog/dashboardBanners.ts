@@ -2,65 +2,66 @@
 // Import this module (`import '@/lib/i18n/catalog/dashboardBanners'`) in any file that reads the "dashboardBanners" namespace.
 import base from '@/messages/ns/en-GB/dashboardBanners.json'
 import enUS from '@/messages/ns/en-US/dashboardBanners.json'
-import { registerNamespace, registerLanguage } from '@/lib/i18n/registry'
+import { registerNamespace, registerLanguage, serverWords } from '@/lib/i18n/registry'
 
 registerNamespace('dashboardBanners', base, { 'en-US': enUS })
-// languages-1: each non-English language — on the server now; in the browser only when a page is in that language.
+// languages-1: each non-English language only when a page is in that language — perf-1: on the server too (serverWords: a
+// synchronous require, run the first time the language is asked for), in the browser as a chunk loaded on demand.
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('dashboardBanners', 'fr-FR', typeof window === 'undefined' ? require('@/messages/ns/fr-FR/dashboardBanners.json') : () => import('@/messages/ns/fr-FR/dashboardBanners.json'))
+registerLanguage('dashboardBanners', 'fr-FR', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/fr-FR/dashboardBanners.json')) : () => import('@/messages/ns/fr-FR/dashboardBanners.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('dashboardBanners', 'de-DE', typeof window === 'undefined' ? require('@/messages/ns/de-DE/dashboardBanners.json') : () => import('@/messages/ns/de-DE/dashboardBanners.json'))
+registerLanguage('dashboardBanners', 'de-DE', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/de-DE/dashboardBanners.json')) : () => import('@/messages/ns/de-DE/dashboardBanners.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('dashboardBanners', 'de-CH', typeof window === 'undefined' ? require('@/messages/ns/de-CH/dashboardBanners.json') : () => import('@/messages/ns/de-CH/dashboardBanners.json'))
+registerLanguage('dashboardBanners', 'de-CH', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/de-CH/dashboardBanners.json')) : () => import('@/messages/ns/de-CH/dashboardBanners.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('dashboardBanners', 'es-ES', typeof window === 'undefined' ? require('@/messages/ns/es-ES/dashboardBanners.json') : () => import('@/messages/ns/es-ES/dashboardBanners.json'))
+registerLanguage('dashboardBanners', 'es-ES', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/es-ES/dashboardBanners.json')) : () => import('@/messages/ns/es-ES/dashboardBanners.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('dashboardBanners', 'it-IT', typeof window === 'undefined' ? require('@/messages/ns/it-IT/dashboardBanners.json') : () => import('@/messages/ns/it-IT/dashboardBanners.json'))
+registerLanguage('dashboardBanners', 'it-IT', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/it-IT/dashboardBanners.json')) : () => import('@/messages/ns/it-IT/dashboardBanners.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('dashboardBanners', 'pt-PT', typeof window === 'undefined' ? require('@/messages/ns/pt-PT/dashboardBanners.json') : () => import('@/messages/ns/pt-PT/dashboardBanners.json'))
+registerLanguage('dashboardBanners', 'pt-PT', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/pt-PT/dashboardBanners.json')) : () => import('@/messages/ns/pt-PT/dashboardBanners.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('dashboardBanners', 'nl-NL', typeof window === 'undefined' ? require('@/messages/ns/nl-NL/dashboardBanners.json') : () => import('@/messages/ns/nl-NL/dashboardBanners.json'))
+registerLanguage('dashboardBanners', 'nl-NL', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/nl-NL/dashboardBanners.json')) : () => import('@/messages/ns/nl-NL/dashboardBanners.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('dashboardBanners', 'sv-SE', typeof window === 'undefined' ? require('@/messages/ns/sv-SE/dashboardBanners.json') : () => import('@/messages/ns/sv-SE/dashboardBanners.json'))
+registerLanguage('dashboardBanners', 'sv-SE', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/sv-SE/dashboardBanners.json')) : () => import('@/messages/ns/sv-SE/dashboardBanners.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('dashboardBanners', 'da-DK', typeof window === 'undefined' ? require('@/messages/ns/da-DK/dashboardBanners.json') : () => import('@/messages/ns/da-DK/dashboardBanners.json'))
+registerLanguage('dashboardBanners', 'da-DK', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/da-DK/dashboardBanners.json')) : () => import('@/messages/ns/da-DK/dashboardBanners.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('dashboardBanners', 'nb-NO', typeof window === 'undefined' ? require('@/messages/ns/nb-NO/dashboardBanners.json') : () => import('@/messages/ns/nb-NO/dashboardBanners.json'))
+registerLanguage('dashboardBanners', 'nb-NO', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/nb-NO/dashboardBanners.json')) : () => import('@/messages/ns/nb-NO/dashboardBanners.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('dashboardBanners', 'pl-PL', typeof window === 'undefined' ? require('@/messages/ns/pl-PL/dashboardBanners.json') : () => import('@/messages/ns/pl-PL/dashboardBanners.json'))
+registerLanguage('dashboardBanners', 'pl-PL', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/pl-PL/dashboardBanners.json')) : () => import('@/messages/ns/pl-PL/dashboardBanners.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('dashboardBanners', 'cs-CZ', typeof window === 'undefined' ? require('@/messages/ns/cs-CZ/dashboardBanners.json') : () => import('@/messages/ns/cs-CZ/dashboardBanners.json'))
+registerLanguage('dashboardBanners', 'cs-CZ', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/cs-CZ/dashboardBanners.json')) : () => import('@/messages/ns/cs-CZ/dashboardBanners.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('dashboardBanners', 'hu-HU', typeof window === 'undefined' ? require('@/messages/ns/hu-HU/dashboardBanners.json') : () => import('@/messages/ns/hu-HU/dashboardBanners.json'))
+registerLanguage('dashboardBanners', 'hu-HU', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/hu-HU/dashboardBanners.json')) : () => import('@/messages/ns/hu-HU/dashboardBanners.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('dashboardBanners', 'sk-SK', typeof window === 'undefined' ? require('@/messages/ns/sk-SK/dashboardBanners.json') : () => import('@/messages/ns/sk-SK/dashboardBanners.json'))
+registerLanguage('dashboardBanners', 'sk-SK', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/sk-SK/dashboardBanners.json')) : () => import('@/messages/ns/sk-SK/dashboardBanners.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('dashboardBanners', 'ro-RO', typeof window === 'undefined' ? require('@/messages/ns/ro-RO/dashboardBanners.json') : () => import('@/messages/ns/ro-RO/dashboardBanners.json'))
+registerLanguage('dashboardBanners', 'ro-RO', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/ro-RO/dashboardBanners.json')) : () => import('@/messages/ns/ro-RO/dashboardBanners.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('dashboardBanners', 'hr-HR', typeof window === 'undefined' ? require('@/messages/ns/hr-HR/dashboardBanners.json') : () => import('@/messages/ns/hr-HR/dashboardBanners.json'))
+registerLanguage('dashboardBanners', 'hr-HR', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/hr-HR/dashboardBanners.json')) : () => import('@/messages/ns/hr-HR/dashboardBanners.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('dashboardBanners', 'sl-SI', typeof window === 'undefined' ? require('@/messages/ns/sl-SI/dashboardBanners.json') : () => import('@/messages/ns/sl-SI/dashboardBanners.json'))
+registerLanguage('dashboardBanners', 'sl-SI', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/sl-SI/dashboardBanners.json')) : () => import('@/messages/ns/sl-SI/dashboardBanners.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('dashboardBanners', 'fi-FI', typeof window === 'undefined' ? require('@/messages/ns/fi-FI/dashboardBanners.json') : () => import('@/messages/ns/fi-FI/dashboardBanners.json'))
+registerLanguage('dashboardBanners', 'fi-FI', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/fi-FI/dashboardBanners.json')) : () => import('@/messages/ns/fi-FI/dashboardBanners.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('dashboardBanners', 'et-EE', typeof window === 'undefined' ? require('@/messages/ns/et-EE/dashboardBanners.json') : () => import('@/messages/ns/et-EE/dashboardBanners.json'))
+registerLanguage('dashboardBanners', 'et-EE', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/et-EE/dashboardBanners.json')) : () => import('@/messages/ns/et-EE/dashboardBanners.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('dashboardBanners', 'lv-LV', typeof window === 'undefined' ? require('@/messages/ns/lv-LV/dashboardBanners.json') : () => import('@/messages/ns/lv-LV/dashboardBanners.json'))
+registerLanguage('dashboardBanners', 'lv-LV', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/lv-LV/dashboardBanners.json')) : () => import('@/messages/ns/lv-LV/dashboardBanners.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('dashboardBanners', 'lt-LT', typeof window === 'undefined' ? require('@/messages/ns/lt-LT/dashboardBanners.json') : () => import('@/messages/ns/lt-LT/dashboardBanners.json'))
+registerLanguage('dashboardBanners', 'lt-LT', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/lt-LT/dashboardBanners.json')) : () => import('@/messages/ns/lt-LT/dashboardBanners.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('dashboardBanners', 'el-GR', typeof window === 'undefined' ? require('@/messages/ns/el-GR/dashboardBanners.json') : () => import('@/messages/ns/el-GR/dashboardBanners.json'))
+registerLanguage('dashboardBanners', 'el-GR', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/el-GR/dashboardBanners.json')) : () => import('@/messages/ns/el-GR/dashboardBanners.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('dashboardBanners', 'bg-BG', typeof window === 'undefined' ? require('@/messages/ns/bg-BG/dashboardBanners.json') : () => import('@/messages/ns/bg-BG/dashboardBanners.json'))
+registerLanguage('dashboardBanners', 'bg-BG', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/bg-BG/dashboardBanners.json')) : () => import('@/messages/ns/bg-BG/dashboardBanners.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('dashboardBanners', 'pt-BR', typeof window === 'undefined' ? require('@/messages/ns/pt-BR/dashboardBanners.json') : () => import('@/messages/ns/pt-BR/dashboardBanners.json'))
+registerLanguage('dashboardBanners', 'pt-BR', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/pt-BR/dashboardBanners.json')) : () => import('@/messages/ns/pt-BR/dashboardBanners.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('dashboardBanners', 'ms-MY', typeof window === 'undefined' ? require('@/messages/ns/ms-MY/dashboardBanners.json') : () => import('@/messages/ns/ms-MY/dashboardBanners.json'))
+registerLanguage('dashboardBanners', 'ms-MY', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/ms-MY/dashboardBanners.json')) : () => import('@/messages/ns/ms-MY/dashboardBanners.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('dashboardBanners', 'ja-JP', typeof window === 'undefined' ? require('@/messages/ns/ja-JP/dashboardBanners.json') : () => import('@/messages/ns/ja-JP/dashboardBanners.json'))
+registerLanguage('dashboardBanners', 'ja-JP', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/ja-JP/dashboardBanners.json')) : () => import('@/messages/ns/ja-JP/dashboardBanners.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('dashboardBanners', 'zh-HK', typeof window === 'undefined' ? require('@/messages/ns/zh-HK/dashboardBanners.json') : () => import('@/messages/ns/zh-HK/dashboardBanners.json'))
+registerLanguage('dashboardBanners', 'zh-HK', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/zh-HK/dashboardBanners.json')) : () => import('@/messages/ns/zh-HK/dashboardBanners.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('dashboardBanners', 'th-TH', typeof window === 'undefined' ? require('@/messages/ns/th-TH/dashboardBanners.json') : () => import('@/messages/ns/th-TH/dashboardBanners.json'))
+registerLanguage('dashboardBanners', 'th-TH', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/th-TH/dashboardBanners.json')) : () => import('@/messages/ns/th-TH/dashboardBanners.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('dashboardBanners', 'ar-AE', typeof window === 'undefined' ? require('@/messages/ns/ar-AE/dashboardBanners.json') : () => import('@/messages/ns/ar-AE/dashboardBanners.json'))
+registerLanguage('dashboardBanners', 'ar-AE', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/ar-AE/dashboardBanners.json')) : () => import('@/messages/ns/ar-AE/dashboardBanners.json'))

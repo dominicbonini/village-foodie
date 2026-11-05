@@ -20,6 +20,8 @@ import { clearPublicFaqCache, faqCountries } from '@/lib/faq/public'
 import { submitIndexNow, faqUrlsFor } from '@/lib/indexnow'
 import { listCountrySettingsCached } from '@/lib/country-settings'
 import { keepAlive } from '@/lib/runtime/after-response'
+import { revalidateMarketing } from '@/lib/marketing-cache'   // perf-1: the marketing pages' cached data, expired on a write
+import { MARKETING_TAGS } from '@/lib/marketing-tags'
 
 export const dynamic = 'force-dynamic'
 
@@ -56,6 +58,9 @@ export async function POST(req: NextRequest) {
     })
   } finally {
     clearPublicFaqCache()
+    // perf-1: every Admin › FAQ write (a save, a publish, an unpublish, a move, a delete) — the FAQ pages, their hreflang and the
+    // landing page's FAQ read it on the very next request. Harmless after a refused or failed write (the data is re-read, unchanged).
+    revalidateMarketing([MARKETING_TAGS.faq], 'admin/faq')
     if (publicChange && process.env.VERCEL_ENV === 'production') {
       keepAlive(async () => {
         // faq-4: the FAQ pages — after the clear above, only the countries whose /faq still has a question to show (never a 404).

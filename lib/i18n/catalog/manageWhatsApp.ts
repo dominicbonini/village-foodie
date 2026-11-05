@@ -2,67 +2,68 @@
 // Import this module (`import '@/lib/i18n/catalog/manageWhatsApp'`) in any file that reads the "manageWhatsApp" namespace.
 import base from '@/messages/ns/en-GB/manageWhatsApp.json'
 import enUS from '@/messages/ns/en-US/manageWhatsApp.json'
-import { registerNamespace, registerLanguage } from '@/lib/i18n/registry'
+import { registerNamespace, registerLanguage, serverWords } from '@/lib/i18n/registry'
 
 registerNamespace('manageWhatsApp', base, { 'en-US': enUS })
-// languages-1: each non-English language — on the server now; in the browser only when a page is in that language.
+// languages-1: each non-English language only when a page is in that language — perf-1: on the server too (serverWords: a
+// synchronous require, run the first time the language is asked for), in the browser as a chunk loaded on demand.
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('manageWhatsApp', 'fr-FR', typeof window === 'undefined' ? require('@/messages/ns/fr-FR/manageWhatsApp.json') : () => import('@/messages/ns/fr-FR/manageWhatsApp.json'))
+registerLanguage('manageWhatsApp', 'fr-FR', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/fr-FR/manageWhatsApp.json')) : () => import('@/messages/ns/fr-FR/manageWhatsApp.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('manageWhatsApp', 'de-DE', typeof window === 'undefined' ? require('@/messages/ns/de-DE/manageWhatsApp.json') : () => import('@/messages/ns/de-DE/manageWhatsApp.json'))
+registerLanguage('manageWhatsApp', 'de-DE', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/de-DE/manageWhatsApp.json')) : () => import('@/messages/ns/de-DE/manageWhatsApp.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('manageWhatsApp', 'de-CH', typeof window === 'undefined' ? require('@/messages/ns/de-CH/manageWhatsApp.json') : () => import('@/messages/ns/de-CH/manageWhatsApp.json'))
+registerLanguage('manageWhatsApp', 'de-CH', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/de-CH/manageWhatsApp.json')) : () => import('@/messages/ns/de-CH/manageWhatsApp.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('manageWhatsApp', 'es-ES', typeof window === 'undefined' ? require('@/messages/ns/es-ES/manageWhatsApp.json') : () => import('@/messages/ns/es-ES/manageWhatsApp.json'))
+registerLanguage('manageWhatsApp', 'es-ES', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/es-ES/manageWhatsApp.json')) : () => import('@/messages/ns/es-ES/manageWhatsApp.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('manageWhatsApp', 'it-IT', typeof window === 'undefined' ? require('@/messages/ns/it-IT/manageWhatsApp.json') : () => import('@/messages/ns/it-IT/manageWhatsApp.json'))
+registerLanguage('manageWhatsApp', 'it-IT', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/it-IT/manageWhatsApp.json')) : () => import('@/messages/ns/it-IT/manageWhatsApp.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('manageWhatsApp', 'pt-PT', typeof window === 'undefined' ? require('@/messages/ns/pt-PT/manageWhatsApp.json') : () => import('@/messages/ns/pt-PT/manageWhatsApp.json'))
+registerLanguage('manageWhatsApp', 'pt-PT', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/pt-PT/manageWhatsApp.json')) : () => import('@/messages/ns/pt-PT/manageWhatsApp.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('manageWhatsApp', 'nl-NL', typeof window === 'undefined' ? require('@/messages/ns/nl-NL/manageWhatsApp.json') : () => import('@/messages/ns/nl-NL/manageWhatsApp.json'))
+registerLanguage('manageWhatsApp', 'nl-NL', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/nl-NL/manageWhatsApp.json')) : () => import('@/messages/ns/nl-NL/manageWhatsApp.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('manageWhatsApp', 'sv-SE', typeof window === 'undefined' ? require('@/messages/ns/sv-SE/manageWhatsApp.json') : () => import('@/messages/ns/sv-SE/manageWhatsApp.json'))
+registerLanguage('manageWhatsApp', 'sv-SE', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/sv-SE/manageWhatsApp.json')) : () => import('@/messages/ns/sv-SE/manageWhatsApp.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('manageWhatsApp', 'da-DK', typeof window === 'undefined' ? require('@/messages/ns/da-DK/manageWhatsApp.json') : () => import('@/messages/ns/da-DK/manageWhatsApp.json'))
+registerLanguage('manageWhatsApp', 'da-DK', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/da-DK/manageWhatsApp.json')) : () => import('@/messages/ns/da-DK/manageWhatsApp.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('manageWhatsApp', 'nb-NO', typeof window === 'undefined' ? require('@/messages/ns/nb-NO/manageWhatsApp.json') : () => import('@/messages/ns/nb-NO/manageWhatsApp.json'))
+registerLanguage('manageWhatsApp', 'nb-NO', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/nb-NO/manageWhatsApp.json')) : () => import('@/messages/ns/nb-NO/manageWhatsApp.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('manageWhatsApp', 'pl-PL', typeof window === 'undefined' ? require('@/messages/ns/pl-PL/manageWhatsApp.json') : () => import('@/messages/ns/pl-PL/manageWhatsApp.json'))
+registerLanguage('manageWhatsApp', 'pl-PL', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/pl-PL/manageWhatsApp.json')) : () => import('@/messages/ns/pl-PL/manageWhatsApp.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('manageWhatsApp', 'cs-CZ', typeof window === 'undefined' ? require('@/messages/ns/cs-CZ/manageWhatsApp.json') : () => import('@/messages/ns/cs-CZ/manageWhatsApp.json'))
+registerLanguage('manageWhatsApp', 'cs-CZ', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/cs-CZ/manageWhatsApp.json')) : () => import('@/messages/ns/cs-CZ/manageWhatsApp.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('manageWhatsApp', 'hu-HU', typeof window === 'undefined' ? require('@/messages/ns/hu-HU/manageWhatsApp.json') : () => import('@/messages/ns/hu-HU/manageWhatsApp.json'))
+registerLanguage('manageWhatsApp', 'hu-HU', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/hu-HU/manageWhatsApp.json')) : () => import('@/messages/ns/hu-HU/manageWhatsApp.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('manageWhatsApp', 'sk-SK', typeof window === 'undefined' ? require('@/messages/ns/sk-SK/manageWhatsApp.json') : () => import('@/messages/ns/sk-SK/manageWhatsApp.json'))
+registerLanguage('manageWhatsApp', 'sk-SK', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/sk-SK/manageWhatsApp.json')) : () => import('@/messages/ns/sk-SK/manageWhatsApp.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('manageWhatsApp', 'ro-RO', typeof window === 'undefined' ? require('@/messages/ns/ro-RO/manageWhatsApp.json') : () => import('@/messages/ns/ro-RO/manageWhatsApp.json'))
+registerLanguage('manageWhatsApp', 'ro-RO', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/ro-RO/manageWhatsApp.json')) : () => import('@/messages/ns/ro-RO/manageWhatsApp.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('manageWhatsApp', 'hr-HR', typeof window === 'undefined' ? require('@/messages/ns/hr-HR/manageWhatsApp.json') : () => import('@/messages/ns/hr-HR/manageWhatsApp.json'))
+registerLanguage('manageWhatsApp', 'hr-HR', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/hr-HR/manageWhatsApp.json')) : () => import('@/messages/ns/hr-HR/manageWhatsApp.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('manageWhatsApp', 'sl-SI', typeof window === 'undefined' ? require('@/messages/ns/sl-SI/manageWhatsApp.json') : () => import('@/messages/ns/sl-SI/manageWhatsApp.json'))
+registerLanguage('manageWhatsApp', 'sl-SI', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/sl-SI/manageWhatsApp.json')) : () => import('@/messages/ns/sl-SI/manageWhatsApp.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('manageWhatsApp', 'fi-FI', typeof window === 'undefined' ? require('@/messages/ns/fi-FI/manageWhatsApp.json') : () => import('@/messages/ns/fi-FI/manageWhatsApp.json'))
+registerLanguage('manageWhatsApp', 'fi-FI', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/fi-FI/manageWhatsApp.json')) : () => import('@/messages/ns/fi-FI/manageWhatsApp.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('manageWhatsApp', 'et-EE', typeof window === 'undefined' ? require('@/messages/ns/et-EE/manageWhatsApp.json') : () => import('@/messages/ns/et-EE/manageWhatsApp.json'))
+registerLanguage('manageWhatsApp', 'et-EE', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/et-EE/manageWhatsApp.json')) : () => import('@/messages/ns/et-EE/manageWhatsApp.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('manageWhatsApp', 'lv-LV', typeof window === 'undefined' ? require('@/messages/ns/lv-LV/manageWhatsApp.json') : () => import('@/messages/ns/lv-LV/manageWhatsApp.json'))
+registerLanguage('manageWhatsApp', 'lv-LV', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/lv-LV/manageWhatsApp.json')) : () => import('@/messages/ns/lv-LV/manageWhatsApp.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('manageWhatsApp', 'lt-LT', typeof window === 'undefined' ? require('@/messages/ns/lt-LT/manageWhatsApp.json') : () => import('@/messages/ns/lt-LT/manageWhatsApp.json'))
+registerLanguage('manageWhatsApp', 'lt-LT', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/lt-LT/manageWhatsApp.json')) : () => import('@/messages/ns/lt-LT/manageWhatsApp.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('manageWhatsApp', 'el-GR', typeof window === 'undefined' ? require('@/messages/ns/el-GR/manageWhatsApp.json') : () => import('@/messages/ns/el-GR/manageWhatsApp.json'))
+registerLanguage('manageWhatsApp', 'el-GR', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/el-GR/manageWhatsApp.json')) : () => import('@/messages/ns/el-GR/manageWhatsApp.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('manageWhatsApp', 'bg-BG', typeof window === 'undefined' ? require('@/messages/ns/bg-BG/manageWhatsApp.json') : () => import('@/messages/ns/bg-BG/manageWhatsApp.json'))
+registerLanguage('manageWhatsApp', 'bg-BG', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/bg-BG/manageWhatsApp.json')) : () => import('@/messages/ns/bg-BG/manageWhatsApp.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('manageWhatsApp', 'es-MX', typeof window === 'undefined' ? require('@/messages/ns/es-MX/manageWhatsApp.json') : () => import('@/messages/ns/es-MX/manageWhatsApp.json'))
+registerLanguage('manageWhatsApp', 'es-MX', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/es-MX/manageWhatsApp.json')) : () => import('@/messages/ns/es-MX/manageWhatsApp.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('manageWhatsApp', 'pt-BR', typeof window === 'undefined' ? require('@/messages/ns/pt-BR/manageWhatsApp.json') : () => import('@/messages/ns/pt-BR/manageWhatsApp.json'))
+registerLanguage('manageWhatsApp', 'pt-BR', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/pt-BR/manageWhatsApp.json')) : () => import('@/messages/ns/pt-BR/manageWhatsApp.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('manageWhatsApp', 'ms-MY', typeof window === 'undefined' ? require('@/messages/ns/ms-MY/manageWhatsApp.json') : () => import('@/messages/ns/ms-MY/manageWhatsApp.json'))
+registerLanguage('manageWhatsApp', 'ms-MY', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/ms-MY/manageWhatsApp.json')) : () => import('@/messages/ns/ms-MY/manageWhatsApp.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('manageWhatsApp', 'ja-JP', typeof window === 'undefined' ? require('@/messages/ns/ja-JP/manageWhatsApp.json') : () => import('@/messages/ns/ja-JP/manageWhatsApp.json'))
+registerLanguage('manageWhatsApp', 'ja-JP', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/ja-JP/manageWhatsApp.json')) : () => import('@/messages/ns/ja-JP/manageWhatsApp.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('manageWhatsApp', 'zh-HK', typeof window === 'undefined' ? require('@/messages/ns/zh-HK/manageWhatsApp.json') : () => import('@/messages/ns/zh-HK/manageWhatsApp.json'))
+registerLanguage('manageWhatsApp', 'zh-HK', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/zh-HK/manageWhatsApp.json')) : () => import('@/messages/ns/zh-HK/manageWhatsApp.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('manageWhatsApp', 'th-TH', typeof window === 'undefined' ? require('@/messages/ns/th-TH/manageWhatsApp.json') : () => import('@/messages/ns/th-TH/manageWhatsApp.json'))
+registerLanguage('manageWhatsApp', 'th-TH', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/th-TH/manageWhatsApp.json')) : () => import('@/messages/ns/th-TH/manageWhatsApp.json'))
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- the server's copy; Next drops this branch from the browser bundle
-registerLanguage('manageWhatsApp', 'ar-AE', typeof window === 'undefined' ? require('@/messages/ns/ar-AE/manageWhatsApp.json') : () => import('@/messages/ns/ar-AE/manageWhatsApp.json'))
+registerLanguage('manageWhatsApp', 'ar-AE', typeof window === 'undefined' ? serverWords(() => require('@/messages/ns/ar-AE/manageWhatsApp.json')) : () => import('@/messages/ns/ar-AE/manageWhatsApp.json'))
