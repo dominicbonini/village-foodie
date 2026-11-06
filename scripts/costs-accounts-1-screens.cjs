@@ -20,8 +20,8 @@ const t = (label, ok, detail) => { if (ok) { pass++; console.log('  ✓ ' + labe
 async function css() {
   const postcss = require(require.resolve('postcss', { paths: [REPO] }))
   const tw = require(require.resolve('@tailwindcss/postcss', { paths: [REPO] }))
-  const src = fs.readFileSync(path.join(REPO, 'app/globals.css'), 'utf8').replace(/@import "leaflet[^"]*";\n?/, '')
-  return (await postcss([tw({ base: REPO })]).process(src, { from: path.join(REPO, 'app/globals.css') })).css
+  const src = fs.readFileSync(path.join(REPO, 'app/(app)/globals.css'), 'utf8').replace(/@import "leaflet[^"]*";\n?/, '')
+  return (await postcss([tw({ base: REPO })]).process(src, { from: path.join(REPO, 'app/(app)/globals.css') })).css
 }
 
 const STUBS = {
@@ -33,7 +33,7 @@ async function bundle(entrySrc) {
   const esbuild = require(path.join(REPO, 'node_modules/esbuild'))
   const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'hg-ca1-'))
   const entry = path.join(dir, 'entry.tsx'); fs.writeFileSync(entry, entrySrc)
-  const MANAGE = path.join(REPO, 'app/manage/[token]/page.tsx')
+  const MANAGE = path.join(REPO, 'app/(app)/manage/[token]/page.tsx')
   await esbuild.build({
     entryPoints: [entry], bundle: true, outfile: path.join(dir, 'bundle.js'), format: 'iife', platform: 'browser',
     jsx: 'automatic', target: 'es2020', logLevel: 'error', alias: { '@': REPO }, nodePaths: [path.join(REPO, 'node_modules')],
@@ -43,7 +43,7 @@ async function bundle(entrySrc) {
       b.onResolve({ filter: /^next\/(navigation|link|image)$/ }, a => ({ path: a.path, namespace: 'stub' }))
       b.onLoad({ filter: /.*/, namespace: 'stub' }, a => ({ contents: STUBS[a.path], loader: 'js', resolveDir: REPO }))
       // Neither tab is exported by the Manage page; expose both for this photograph only.
-      b.onLoad({ filter: /app\/manage\/\[token\]\/page\.tsx$/ }, a => (a.path === MANAGE
+      b.onLoad({ filter: /app\/\(app\)\/manage\/\[token\]\/page\.tsx$/ }, a => (a.path === MANAGE
         ? { contents: fs.readFileSync(MANAGE, 'utf8') + '\nexport { ReportsTab, MenuTab }\n', loader: 'tsx', resolveDir: path.dirname(MANAGE) } : undefined))
     } }],
   })
@@ -51,7 +51,7 @@ async function bundle(entrySrc) {
 }
 
 const ENTRY = `import { createRoot } from 'react-dom/client'
-import { ReportsTab, MenuTab } from '@/app/manage/[token]/page'
+import { ReportsTab, MenuTab } from '@/app/(app)/manage/[token]/page'
 import { CountrySettingsProvider } from '@/components/CountrySettingsProvider'
 import { TruckTimeContext } from '@/components/TruckTimeContext'
 import { LEGACY_UK_TIME_SETTINGS } from '@/lib/time-utils'

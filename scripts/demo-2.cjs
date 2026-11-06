@@ -231,7 +231,7 @@ const gb = () => [snake(SEEDS.gbFromSeed())]
     t('submit: a demo order needs no email — keyed on the demo- identifier, CONFIRMED on the truck\'s own id, stored as null, counted',
       /const demoRequest = isDemoIdentifier\(String\(truckId \?\? ''\)\)/.test(sub) && /\(!customerEmail && !demoRequest\)/.test(sub)
       && /if \(!customerEmail && !isDemoTruck\) \{/.test(sub) && /customer_email: customerEmail \|\| null/.test(sub) && /event: 'order_placed'/.test(sub))
-    const op = read('app/trucks/[slug]/order/page.tsx')
+    const op = read('app/(app)/trucks/[slug]/order/page.tsx')
     t('order page: no email field on a demo; name optional with "Alex" standing in', /\{!isDemo && <Fld label=\{tOrder\('emailLabel'\)\}/.test(op) && /customerName: isDemo \? \(name\.trim\(\) \|\| tWalk\('defaultName'\)\)/.test(op)
       && /customerEmail: isDemo \? '' : email/.test(op) && (op.match(/\(!isDemo && \(!name \|\| !emailValid\)\)/g) || []).length === 3)
     t('…the payment panel in place of the card step, the step label, and the banner sentence', /data-demo-payment/.test(op) && /tWalk\('paymentPanel'\)/.test(op) && /tWalk\('step1'\)/.test(op) && /message=\{tDemo\('walkBanner'\)\}/.test(op))
@@ -263,7 +263,7 @@ const gb = () => [snake(SEEDS.gbFromSeed())]
     const evSrc = read('lib/demo-events.ts')
     t('demo_events rows carry the demo id, step, source and time — no email, no token (and the migration agrees)', /demo_id: row\.demoId, event: row\.event, source/.test(evSrc)
       && !/email|token/.test((read('supabase/migrations/20261052_demo_2.sql').match(/create table if not exists public\.demo_events \(([\s\S]*?)\);/) || [])[1] || 'email'))
-    const walk = read('components/demo/DemoWalkthrough.tsx') + read('app/try/[slug]/page.tsx') + read('app/api/demo/walkthrough/route.ts')
+    const walk = read('components/demo/DemoWalkthrough.tsx') + read('app/(app)/try/[slug]/page.tsx') + read('app/api/demo/walkthrough/route.ts')
     t('the walkthrough (page, component, API) never reads or holds a dashboard token', !/dashboard_token|dashboardToken|\/dashboard\//.test(walk.replace(/\/\/.*$/gm, '')))
     t('the landing modal goes to the redirect the route gives (/try/<slug>), which no longer names the dashboard', /redirectTo: `\/try\/\$\{encodeURIComponent\(result\.slug\)\}`/.test(read('app/api/demo/route.ts')) && !/redirectTo: `\/dashboard/.test(read('app/api/demo/route.ts')))
   }
@@ -346,8 +346,8 @@ const gb = () => [snake(SEEDS.gbFromSeed())]
   // ── §9 · G11 (demo-2b, 31 October 2026, docs/demo-2b-report.md) ──
   head('9 · G11 — the demo\'s signup button gets the same inputs on every surface (KDS, dashboard, order page, walkthrough)')
   {
-    const kds = read('app/dashboard/[token]/kds/page.tsx'), dash = read('app/dashboard/[token]/page.tsx')
-    const order = read('app/trucks/[slug]/order/page.tsx'), walk = read('components/demo/DemoWalkthrough.tsx')
+    const kds = read('app/(app)/dashboard/[token]/kds/page.tsx'), dash = read('app/(app)/dashboard/[token]/page.tsx')
+    const order = read('app/(app)/trucks/[slug]/order/page.tsx'), walk = read('components/demo/DemoWalkthrough.tsx')
     t('the KDS mounts DemoGetStarted with isAdmin and the demo\'s extraction source, as the dashboard does',
       /<DemoGetStarted token=\{token\} isAdmin=\{isAdmin\} extractionSource=\{demoExtractionSource\}/.test(kds) && /<DemoGetStarted token=\{token\} isAdmin=\{isAdmin\} extractionSource=\{demoSession\?\.extraction_source\?\?null\}/.test(dash))
     t('…the KDS reads the extraction source from the /api/dashboard demo block it already fetches, and asks /api/auth/me ONLY on a demo',
@@ -373,7 +373,7 @@ const gb = () => [snake(SEEDS.gbFromSeed())]
   // ── §10 · demo-2c (31 October 2026, docs/demo-2c-report.md): the privacy text's demo claims are what the code does ──
   head('10 · the privacy policy\'s demo sentences match the code (retention, the claimed-demo grace, PostHog on the demo)')
   {
-    const pol = read('content/legal/privacy-policy.md'), ses = read('lib/demo-session.ts'), sweep = read('app/api/cron/demo-cleanup/route.ts'), prov = read('app/providers.tsx')
+    const pol = read('content/legal/privacy-policy.md'), ses = read('lib/demo-session.ts'), sweep = read('app/api/cron/demo-cleanup/route.ts'), prov = read('app/(app)/providers.tsx')
     const num = (src, name) => Number((new RegExp(`const ${name} = (\\d+)`).exec(src) || [])[1])
     t('24 hours / 14 days / 30 days for a contacted truck — the policy\'s periods are the retention constants',
       num(ses, 'RETENTION_NO_EMAIL_HOURS') === 24 && num(ses, 'RETENTION_WITH_EMAIL_DAYS') === 14 && num(ses, 'RETENTION_OUTREACH_DAYS') === 30

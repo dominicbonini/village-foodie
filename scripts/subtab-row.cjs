@@ -30,7 +30,7 @@ const path = require('path')
 const REPO = path.resolve(__dirname, '..')
 const read = (p) => fs.readFileSync(path.join(REPO, p), 'utf8')
 
-const PAGE = read('app/manage/[token]/page.tsx')
+const PAGE = read('app/(app)/manage/[token]/page.tsx')
 const UI = read('components/manage/EventTypes.tsx')
 const COPY = read('lib/copy/serviceSettings.ts')
 

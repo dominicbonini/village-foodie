@@ -28,7 +28,7 @@ const OUT = path.resolve(process.argv[2] || ''); if (!process.argv[2]) { console
 fs.mkdirSync(OUT, { recursive: true })
 const only = process.argv[3]
 const SIZES = [[810, 1080], [1180, 820], [800, 1280], [1280, 800]]
-const D = 'app/dashboard/[token]/page.tsx', AP = 'components/dashboard/AddOrderPanel.tsx', K = 'app/dashboard/[token]/kds/page.tsx'
+const D = 'app/(app)/dashboard/[token]/page.tsx', AP = 'components/dashboard/AddOrderPanel.tsx', K = 'app/(app)/dashboard/[token]/kds/page.tsx'
 const OC = 'components/dashboard/OrderCard.tsx', DL = 'components/dashboard/DayLoadStrip.tsx'
 const src = f => fs.readFileSync(path.join(REPO, f), 'utf8')
 const names = f => [...new Set([...src(f).matchAll(/const\s*\[\s*([a-zA-Z]+)\s*,\s*set[A-Za-z]+\s*\]\s*=\s*useState/g)].map(m => m[1]))]

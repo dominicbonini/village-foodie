@@ -16,8 +16,8 @@
 // Fixtures only: Pizza Kitchen ('test-truck'). Nothing reaches a database or the network.
 const path = require('path'); const fs = require('fs')
 
-const DASH = 'app/dashboard/[token]/page.tsx'
-const KDS = 'app/dashboard/[token]/kds/page.tsx'
+const DASH = 'app/(app)/dashboard/[token]/page.tsx'
+const KDS = 'app/(app)/dashboard/[token]/kds/page.tsx'
 const CARD = 'components/dashboard/OrderCard.tsx'
 const ADD = 'components/dashboard/AddOrderPanel.tsx'
 const FINISH = 'components/shared/EventFinishTimeModal.tsx'

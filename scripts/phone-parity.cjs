@@ -101,7 +101,7 @@ const GB_TS = { timeZone: 'Europe/London', locale: 'en-GB', timeFormat: '24h', d
 let ui
 async function uiBundles() {
   if (ui) return ui
-  const OP = 'app/trucks/[slug]/order/page.tsx', SETUP = 'app/setup/page.tsx'
+  const OP = 'app/(app)/trucks/[slug]/order/page.tsx', SETUP = 'app/(app)/setup/page.tsx'
   ui = {
     op: await kit.bundle('op', `export { default as OrderPage } from '@/${OP}'`, { patches: [
       { file: OP, states: ['truck', 'menu', 'events', 'event', 'eventLoading', 'loading', 'basket', 'formSheetOpen', 'availableSlots', 'phone', 'name', 'email'] },
@@ -277,11 +277,11 @@ async function checkAfter() {
   for (const [f, re] of [
     // Language Phase 1a: the order page passes its language, and the placeholder's "e.g. " is a message around the
     // same example — still the truck's country's (docs/language-phase-1a-report.md).
-    ['app/trucks/[slug]/order/page.tsx', /phoneErrorMessage\('mobile', pagePhone, pageLocale\)/], ['app/trucks/[slug]/order/page.tsx', /placeholder=\{phonePlaceholder\(pagePhone\) && tOrder\('phonePlaceholder', \{ example: phonePlaceholder\(pagePhone\) \}\)\}/],
+    ['app/(app)/trucks/[slug]/order/page.tsx', /phoneErrorMessage\('mobile', pagePhone, pageLocale\)/], ['app/(app)/trucks/[slug]/order/page.tsx', /placeholder=\{phonePlaceholder\(pagePhone\) && tOrder\('phonePlaceholder', \{ example: phonePlaceholder\(pagePhone\) \}\)\}/],
     // ⚠️ RE-PINNED (Language Phase 1d): Manage's phone box now also passes the truck's locale (useTruckTime().locale),
     // so the words follow the truck's language — still from the truck's own settings (phoneCopy), the property pinned.
-    ['app/manage/[token]/page.tsx', /phoneErrorMessage\('phone', phoneCopy, ts\.locale\)/], ['app/manage/[token]/page.tsx', /placeholder=\{phonePlaceholder\(phoneCopy\)\}/],
-    ['app/setup/page.tsx', /phoneErrorMessage\('phone_number', phoneCopy\)/], ['app/setup/page.tsx', /placeholder=\{phonePlaceholder\(phoneCopy\)\}/],
+    ['app/(app)/manage/[token]/page.tsx', /phoneErrorMessage\('phone', phoneCopy, ts\.locale\)/], ['app/(app)/manage/[token]/page.tsx', /placeholder=\{phonePlaceholder\(phoneCopy\)\}/],
+    ['app/(app)/setup/page.tsx', /phoneErrorMessage\('phone_number', phoneCopy\)/], ['app/(app)/setup/page.tsx', /placeholder=\{phonePlaceholder\(phoneCopy\)\}/],
     // Phase 2D-1: the demo modal words its box from the CHOSEN country (signupPhone), and the API from the chosen row.
     // Re-pinned 15 October 2026 (docs/language-phase-1c-report.md): the modal now holds the malformed-number error as
     // the code 'phoneInvalid' and words it at render, in the wizard's language — still from the CHOSEN country (signupPhone).
@@ -343,9 +343,9 @@ async function checkAfter() {
   modeOk("'off' accepts \"abc\"", PHN.isPlausiblePhone('abc', 'GB', 'off'))
   modeOk("'off' still refuses empty (the caller decides optional)", !PHN.isPlausiblePhone('', 'GB', 'off') && !PHN.isPlausiblePhone('   ', 'GB', 'off'))
   modeOk("links are unchanged by the mode: an unparseable number simply has no link", PHN.phoneLinkDigits('abc', 'GB') === null && PHN.phoneLinkDigits('07380 736226', 'GB') === '447380736226')
-  for (const [f, re] of [['app/trucks/[slug]/order/page.tsx', /isPlausiblePhone\(phone, pagePhone\.phoneCountry, pagePhone\.phoneCheck\)/],
-    ['app/manage/[token]/page.tsx', /isPlausiblePhone\(form\.contact_phone \|\| '', phoneCopy\.phoneCountry, phoneCopy\.phoneCheck\)/],
-    ['app/setup/page.tsx', /isPlausiblePhone\(contactPhone, phoneCopy\.phoneCountry, phoneCopy\.phoneCheck\)/],
+  for (const [f, re] of [['app/(app)/trucks/[slug]/order/page.tsx', /isPlausiblePhone\(phone, pagePhone\.phoneCountry, pagePhone\.phoneCheck\)/],
+    ['app/(app)/manage/[token]/page.tsx', /isPlausiblePhone\(form\.contact_phone \|\| '', phoneCopy\.phoneCountry, phoneCopy\.phoneCheck\)/],
+    ['app/(app)/setup/page.tsx', /isPlausiblePhone\(contactPhone, phoneCopy\.phoneCountry, phoneCopy\.phoneCheck\)/],
     ['components/DemoGetStarted.tsx', /isPlausiblePhone\(contactPhone, signupPhone\.phoneCountry, signupPhone\.phoneCheck\)/],
     ['app/api/setup/route.ts', /isPlausiblePhone\(contactPhone, signupPhone\.phoneCountry, signupPhone\.phoneCheck\)/]])
     modeOk(`${f} passes the mode from settings`, re.test(read(f)))

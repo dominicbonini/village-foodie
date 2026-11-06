@@ -61,7 +61,7 @@ async function main() {
   const R = (await kit.bundle('shots-engine2', "export * as R from '@/lib/order-charge-rules'")).R
   const usC = { ...SEEDS.usFromSeed(), serviceFeeTruckMaxBps: 400, serviceFeeTruckMaxFixedMinor: 50 }
   const CHECKOUT = E.checkoutRulesFrom(R.resolveChargeRules(usC, { country: 'US', tax_rate_milli: 8250, service_fee_enabled: true, service_fee_bps: 300, service_fee_fixed_minor: 30 }))
-  const OP = 'app/trucks/[slug]/order/page.tsx'
+  const OP = 'app/(app)/trucks/[slug]/order/page.tsx'
   const page = await kit.bundle('shots-orderpage', `export { default as OrderPage } from '@/${OP}'`, {
     patches: [{ file: OP, states: ['truck', 'menu', 'events', 'event', 'eventLoading', 'loading', 'basket', 'appliedDeals', 'formSheetOpen', 'payByCard', 'tipSel', 'tipOther',
       'summaryExpanded', 'sheetSummaryExpanded', 'name', 'email'] }, { file: OP, from: 'const { slug } = use(params)', to: 'const { slug } = params' }],

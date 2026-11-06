@@ -290,7 +290,7 @@ async function compare() {
   installFetch({ geocode: { lat: 52.27, lng: 0.32, confidence: 'high' } })
   await M.geocode.POST(json('http://127.0.0.1:3999/api/manage/geocode', { venueName: 'The Fox', town: 'Burwell', postcode: 'CB25 0BA', country: 'UK' }))
   ok(globalThis.__prompts[0] === B.geocodePrompt, 'geocoder: a UK truck now sends "UK" — its prompt is byte-identical', firstDiff(globalThis.__prompts[0], B.geocodePrompt))
-  const page = read('app/manage/[token]/page.tsx')
+  const page = read('app/(app)/manage/[token]/page.tsx')
   // ⚠️ RE-PINNED (address-formats-2, 21 October 2026): the client also sends the truck's ADDRESS FORMAT (and a region or
   // suburb only where the format has one and it holds a value), and the route builds the query from the format's geocode
   // template — GB's is the old join, so the UK prompt above is still byte-identical (and scripts/address-formats-2.cjs

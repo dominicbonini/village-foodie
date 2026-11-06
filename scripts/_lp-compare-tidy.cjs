@@ -25,11 +25,11 @@ const REPO = path.resolve(__dirname, '..')
 const src = f => { try { return fs.readFileSync(path.join(REPO, f), 'utf8') } catch { return '' } }
 
 /** The calculator without the staff question (no `staff` state). */
-const CALC_LANDED = (() => { const s = src('app/compare/CostComparison.tsx'); return !!s && !/const\s*\[\s*staff\s*,/.test(s) })()
+const CALC_LANDED = (() => { const s = src('app/(public)/(site)/compare/CostComparison.tsx'); return !!s && !/const\s*\[\s*staff\s*,/.test(s) })()
 /** The plan table's footnotes numbered by row position. */
 const NOTES_LANDED = /export function noteOrder\(/.test(src('lib/feature-table.ts'))
 /** ⚠️ RE-PINNED (compare-tidy-2, 20 October 2026): the calculator without the months-free question (no `freeMonthsRaw` state). */
-const FREE_LANDED = (() => { const s = src('app/compare/CostComparison.tsx'); return !!s && !/const\s*\[\s*freeMonthsRaw\s*,/.test(s) })()
+const FREE_LANDED = (() => { const s = src('app/(public)/(site)/compare/CostComparison.tsx'); return !!s && !/const\s*\[\s*freeMonthsRaw\s*,/.test(s) })()
 /** Village Foodie's sitemap lists /contact. */
 const SITEMAP_LANDED = /BRANDS\.VILLAGE_FOODIE\.domain\}\/contact`/.test(src('app/sitemap.ts'))
 

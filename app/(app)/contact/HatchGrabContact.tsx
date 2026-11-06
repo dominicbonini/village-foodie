@@ -33,7 +33,7 @@ import type { VisitorCountry } from '@/lib/visitor-country'
 // Log in; the landing's footer with its country menu, badges and links) — this page's own nav and three-link footer are gone.
 import { MarketingFrame } from '@/components/landing/MarketingFrame'
 import '@/lib/i18n/catalog/contactPage'
-import '../landing/landing.css'
+import '@/app/(public)/(site)/landing/landing.css'
 import './contact-form.css'
 
 // The support mailbox. An address, not a word: the same in every language, so it is not in messages.

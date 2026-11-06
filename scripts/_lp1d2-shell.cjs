@@ -17,7 +17,7 @@
 // render defines them, then run against that render's closure with an in-process fetch stub (nothing is sent),
 // recording every toast, every confirm() sentence and every request — `{ toasts, confirms, requests }` views.
 // NOT COVERED: the ?verify= toast (set and shown in effects — a static render runs none).
-const M_FILE = 'app/manage/[token]/page.tsx'
+const M_FILE = 'app/(app)/manage/[token]/page.tsx'
 const TOASTS = 'lib/useToasts.ts'
 
 // The page's in-file components that are tab bodies (stand-ins in the shell views).

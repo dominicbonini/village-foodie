@@ -69,7 +69,7 @@ const withFourth = () => {
 
 ;(async () => {
   const ctx = LP1E.context(kit, REPO)
-  const ROUTE = { landing: 'app/[country]/page', features: 'app/[country]/features/page', compare: 'app/[country]/compare/page' }
+  const ROUTE = { landing: 'app/(public)/[country]/page', features: 'app/(public)/[country]/features/page', compare: 'app/(public)/[country]/compare/page' }
   const mods = {}
   const modOf = p => (mods[p] ||= ctx.bundle(`pp-${p}`, `export * from '@/${ROUTE[p]}'\nexport { default } from '@/${ROUTE[p]}'\nexport { clearPlanCatalogCache as __ppClearPlans } from '@/lib/plans-server'`))
   const slug = cc => (cc === 'GB' ? 'uk' : 'us')
@@ -120,7 +120,7 @@ const withFourth = () => {
     t('an UNKNOWN plan_features row does not break the catalogue: it is ignored…', !err && cat && !cat.features.some(f => f.feature === 'teleportation'), String(err && err.message))
     t('…kept in `ignoredFeatures` for Admin\'s plans table…', cat && JSON.stringify(cat.ignoredFeatures) === JSON.stringify([{ planKey: 'pro', feature: 'teleportation', enabled: false }]), cat && cat.ignoredFeatures)
     t('…and logged', warns.some(w => /\[plans\] plan_features row ignored/.test(w) && /teleportation/.test(w)), warns)
-    t('Admin\'s plans table shows the ignored rows as a warning', /plans\.ignoredFeatures\?\.length \?\? 0\) > 0/.test(read('app/admin/page.tsx')) && /Ignored plan_features rows/.test(read('app/admin/page.tsx')))
+    t('Admin\'s plans table shows the ignored rows as a warning', /plans\.ignoredFeatures\?\.length \?\? 0\) > 0/.test(read('app/(app)/admin/page.tsx')) && /Ignored plan_features rows/.test(read('app/(app)/admin/page.tsx')))
   }
 
   // ══ 2 ════════════════════════════════════════════════════════════════════════════════════════════════════════════
@@ -235,7 +235,7 @@ const withFourth = () => {
   t('cheapest at £2,000 → payg; £2,800 → payg; £3,000 → pro; £7,900 → pro; £8,100 → unlimited', at(200000) === 'payg' && at(280000) === 'payg' && at(300000) === 'pro' && at(790000) === 'pro' && at(810000) === 'unlimited')
   t('the bands solved from the prices: 2,900 / 8,000 (GB) — and 2,900 / 9,000 with the old £5,000 allowance', JSON.stringify(L.cheapestBands(offers, 'GBP').map(b => [b.plan.plan.key, b.fromMinor, b.toMinor])) === JSON.stringify([['payg', null, 290000], ['pro', 290000, 800000], ['unlimited', 800000, null]])
     && (() => { const c = clone(CATALOG); price(c, 'pro', 'GB').includedOnlineMinor = 500000; return JSON.stringify(L.cheapestBands(L.offerPlans(c, 'GB'), 'GBP').map(b => b.toMinor)) === '[290000,900000,null]' })())
-  const CC = await ctx.bundle('pp-calc', "export { default } from '@/app/compare/CostComparison'\nexport { DemoModalProvider } from '@/components/landing/DemoUpload'", { patches: [{ file: 'app/compare/CostComparison.tsx', states: ['hasSystem', 'gmv', 'planOverride', 'feePctRaw', 'feePenceRaw'] }] })   // ⚠️ RE-PINNED (compare-tidy): no `staff` state any more
+  const CC = await ctx.bundle('pp-calc', "export { default } from '@/app/(public)/(site)/compare/CostComparison'\nexport { DemoModalProvider } from '@/components/landing/DemoUpload'", { patches: [{ file: 'app/(public)/(site)/compare/CostComparison.tsx', states: ['hasSystem', 'gmv', 'planOverride', 'feePctRaw', 'feePenceRaw'] }] })   // ⚠️ RE-PINNED (compare-tidy): no `staff` state any more
   const compareAt = (state, cat = CATALOG, cs = ctx.GB()) => { globalThis.__ms = state; try { return kit.renderStatic(h(CC.DemoModalProvider, null, h(CC.default, { settings: cs, catalog: cat, locale: cs.locale }))) } finally { delete globalThis.__ms } }
   const compareAtProps = (state, extra = {}, cat = CATALOG, cs = ctx.GB()) => ({ state, el: h(CC.DemoModalProvider, null, h(CC.default, { settings: cs, catalog: cat, locale: cs.locale, ...extra })) })
   const h2s = ({ state, el }) => { globalThis.__ms = state; try { return kit.renderStatic(el) } finally { delete globalThis.__ms } }
@@ -275,12 +275,12 @@ const withFourth = () => {
     t('compare-tidy-2: no months-free card or input remains', !/how many months free|Months free/i.test(compareAt({ hasSystem: 'no', gmv: 3000 })))
     t('compare-tidy-2: the months come from data — "first 3 months are on us", "Months 1–3", year one = 9 × £29 = £261', no().includes('And your first 3 months are on us.') && no().includes('Months 1–3') && yes().includes('£261 in year one'), [no().match(/first \d+ months/), yes().match(/£\d+ in year one/)])
     t('compare-tidy-2: an override of 4 is used everywhere — "first 4 months", "Months 1–4", year one = 8 × £29 = £232', no({ freeMonthsOverride: 4 }).includes('And your first 4 months are on us.') && no({ freeMonthsOverride: 4 }).includes('Months 1–4') && yes({ freeMonthsOverride: 4 }).includes('£232 in year one'))
-    const pg = read('app/compare/page.tsx')
+    const pg = read('app/(public)/(site)/compare/page.tsx')
     t('compare-tidy-2: the page accepts only a whole number 1–12 from ?free (0, 13, "abc" → the data value)', /typeof freeRaw === 'string' && \/\^\\d\{1,2\}\$\/\.test\(freeRaw\) && \+freeRaw >= 1 && \+freeRaw <= 12 \? \+freeRaw : null/.test(pg) && /freeMonthsOverride=\{freeMonthsOverride\}/.test(pg))
-    t('compare-tidy-2: dimmed cards are inert (pointer-events none + `inert`) until question 1', /pointerEvents: disabled \? 'none' : undefined/.test(read('app/compare/CostComparison.tsx')) && /inert=\{disabled \|\| undefined\}/.test(read('app/compare/CostComparison.tsx'))
+    t('compare-tidy-2: dimmed cards are inert (pointer-events none + `inert`) until question 1', /pointerEvents: disabled \? 'none' : undefined/.test(read('app/(public)/(site)/compare/CostComparison.tsx')) && /inert=\{disabled \|\| undefined\}/.test(read('app/(public)/(site)/compare/CostComparison.tsx'))
       && (compareAt({ hasSystem: null, gmv: 3000 }).match(/ inert=""/g) || []).length >= 3 && !/ inert=""/.test(compareAt({ hasSystem: 'no', gmv: 3000 })))
   }
-  const ccSrc = read('app/compare/CostComparison.tsx').replace(/\/\/.*$/gm, '').replace(/\{\/\*[\s\S]*?\*\/\}/g, '').replace(/\/\*[\s\S]*?\*\//g, '')
+  const ccSrc = read('app/(public)/(site)/compare/CostComparison.tsx').replace(/\/\/.*$/gm, '').replace(/\{\/\*[\s\S]*?\*\/\}/g, '').replace(/\/\*[\s\S]*?\*\//g, '')
   t('no plan key or name in the calculator\'s code (\'pro\' / \'max\' / Pro / Max / Starter)', !/'(pro|max|payg|unlimited|starter)'|\b(Pro|Max|Starter)\b/.test(ccSrc), ccSrc.match(/'(pro|max|payg|unlimited|starter)'|\b(Pro|Max|Starter)\b/))
   const cmpPage = await page('compare', 'GB')
   t('the /compare page renders (GB)', typeof cmpPage === 'string' && cmpPage.length > 3000 && !cmpPage.startsWith('ERROR'), String(cmpPage).slice(0, 200))
@@ -325,7 +325,7 @@ const withFourth = () => {
       && /<p class="text-sm font-bold text-slate-900">Your free trial has not started yet<\/p><\/div>/.test(bill(`${cc}|billing|trial|notStarted`)))
   }
   t('a hidden-pricing truck: Billing\'s table amounts are masked', /TB[CD] \/ month/.test(text(Object.entries(SH).find(([k]) => /GB\|billing\|.*hidePricing/.test(k))?.[1] || '')), Object.keys(SH).filter(k => /hidePricing/.test(k)))
-  const man = read('app/manage/[token]/page.tsx')
+  const man = read('app/(app)/manage/[token]/page.tsx')
   t('van modal: its sentence from data — the effective plan\'s name, plans.included_vans, the extra-van price', /t\.rich\('vanBilling\.body', \{ plan: effectivePlan\(truck, vanCatalog\)\.plan\.name, vans: vansIncluded, price: vanPx\(vanAddonLabel\('month'\)\)/.test(man)
     && /"body": "Your \{plan\} plan includes \{vans, plural, one \{# truck\} other \{# trucks\}\}\./.test(read('messages/en-GB.json')))
   t('first load: an auth refusal (401/403) says "Invalid or expired token"; anything else shows its real reason', /auth: res\.status === 401 \|\| res\.status === 403/.test(man) && /else setFirstLoadError\(e\?\.auth \? null : \(e\?\.message \|\| tRef\.current\('loadFailed'\)\)\)/.test(man) && /firstLoadError \? t\('loadFailedReason', \{ reason: firstLoadError \}\) : t\('invalidToken'\)/.test(man))
@@ -419,8 +419,8 @@ const withFourth = () => {
 
   // ══ 10 ═══════════════════════════════════════════════════════════════════════════════════════════════════════════
   head('10 · NO PLAN IN CODE, and the legacy check')
-  const NEW_CODE = ['components/pricing/PricingSection.tsx', 'components/pricing/PlanTable.tsx', 'lib/plan-offer.ts', 'lib/feature-table.ts', 'app/features/page.tsx',
-    'app/compare/CostComparison.tsx', 'lib/plans-pdf.ts', 'app/landing/page.tsx']
+  const NEW_CODE = ['components/pricing/PricingSection.tsx', 'components/pricing/PlanTable.tsx', 'lib/plan-offer.ts', 'lib/feature-table.ts', 'app/(public)/(site)/features/page.tsx',
+    'app/(public)/(site)/compare/CostComparison.tsx', 'lib/plans-pdf.ts', 'app/(public)/(site)/landing/page.tsx']
   const strip = s => s.replace(/\{\/\*[\s\S]*?\*\/\}/g, '').replace(/\/\*[\s\S]*?\*\//g, '').replace(/(^|[^:'"`])\/\/.*$/gm, '$1')
   const hits = []
   for (const f of NEW_CODE) {
@@ -442,7 +442,7 @@ const withFourth = () => {
   // ══ 11 ═══════════════════════════════════════════════════════════════════════════════════════════════════════════
   head('11 · 375px — no horizontal scroll')
   // A browser recovers from a stray brace; the production build (postcss) does not — so parse strictly first.
-  for (const f of ['app/landing/landing.css', 'components/pricing/plan-table.css']) {
+  for (const f of ['app/(public)/(site)/landing/landing.css', 'components/pricing/plan-table.css']) {
     let err = null
     try { require(require.resolve('postcss', { paths: [REPO] })).parse(read(f), { from: f }) } catch (e) { err = e.message }
     t(`${f} parses (strict postcss, as the build does)`, !err, err)
@@ -452,9 +452,9 @@ const withFourth = () => {
     const postcss = require(require.resolve('postcss', { paths: [REPO] }))
     const twMod = require(require.resolve('@tailwindcss/postcss', { paths: [REPO] }))
     const tailwind = twMod.default || twMod
-    tw = (await postcss([tailwind({ base: REPO })]).process(read('app/globals.css'), { from: path.join(REPO, 'app/globals.css') })).css
+    tw = (await postcss([tailwind({ base: REPO })]).process(read('app/(app)/globals.css'), { from: path.join(REPO, 'app/(app)/globals.css') })).css
   } catch (e) { console.log('    (Tailwind could not be compiled here: ' + String(e.message).slice(0, 120) + ' — the pages are measured with their own stylesheets only)') }
-  const css = [tw, read('app/landing/landing.css'), read('components/pricing/plan-table.css')].join('\n')
+  const css = [tw, read('app/(public)/(site)/landing/landing.css'), read('components/pricing/plan-table.css')].join('\n')
   const shell = body => `<!doctype html><html><head><meta name="viewport" content="width=device-width, initial-scale=1"><style>${css}</style></head><body>${body}</body></html>`
   const bodyOf = s => { const m = /<body[^>]*>([\s\S]*)<\/body>/.exec(s); return m ? m[1] : s }
   let browser = null

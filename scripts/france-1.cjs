@@ -187,7 +187,7 @@ const at = (o, k) => k.split('.').reduce((x, p) => (x == null ? undefined : x[p]
   t('the uk14 labels shown in French: Gluten, Crustacés, Œufs, Poissons, Arachides, Soja, Lait, Fruits à coque, Céleri, Moutarde, Sésame, Sulfites, Lupin, Mollusques', JSON.stringify(AL.allergenVocab('uk14').map(a => AL.allergenLabel(a, 'fr-FR'))) === JSON.stringify(FR14))
   t('every English locale shows the stored label untouched (nothing is looked up)', ['en-GB', 'en-US', 'en-IE', 'en-AU', 'en-NZ', 'en-CA', null].every(l => [...AL.allergenVocab('uk14'), ...AL.allergenVocab('us9'), ...AL.allergenVocab('anz'), ...AL.allergenVocab('ca'), 'Something else'].every(a => AL.allergenLabel(a, l) === a)))
   t('the label is shown, never stored: the order page, the menu list, the toggles, the wizard and the card text call allergenLabel; the stored value is unchanged',
-    /allergenLabel\(a, pageLocale\)/.test(read('app/trucks/[slug]/order/page.tsx')) && /allergenLabel\(allergen, locale\)/.test(read('components/manage/primitives.tsx')) && (read('app/manage/[token]/page.tsx').match(/allergenLabel\(/g) || []).length >= 9)
+    /allergenLabel\(a, pageLocale\)/.test(read('app/(app)/trucks/[slug]/order/page.tsx')) && /allergenLabel\(allergen, locale\)/.test(read('components/manage/primitives.tsx')) && (read('app/(app)/manage/[token]/page.tsx').match(/allergenLabel\(/g) || []).length >= 9)
   const esbuild = require(path.join(REPO, 'node_modules/esbuild'))
   const gBuilt = esbuild.buildSync({ entryPoints: [path.join(REPO, 'lib/allergen-guard.ts')], bundle: true, write: false, platform: 'node', format: 'cjs', alias: { '@': REPO }, logLevel: 'silent' })
   const G = { exports: {} }; new Function('module', 'exports', 'require', gBuilt.outputFiles[0].text)(G, G.exports, require)
@@ -229,7 +229,7 @@ const at = (o, k) => k.split('.').reduce((x, p) => (x == null ? undefined : x[p]
   kit.renderStatic(h(function Probe() { enBox = BOX.useDecimalBox('en-GB').box('k', 12.5, () => {}); frBox = BOX.useDecimalBox('fr-FR').box('k', 12.5, () => {}); return null }))
   t('Manage\'s number boxes: an English locale gets exactly { type: "number", value, onChange }; French a text box with inputMode="decimal" showing "12,5"',
     JSON.stringify(Object.keys(enBox)) === JSON.stringify(['type', 'value', 'onChange']) && enBox.type === 'number' && enBox.value === 12.5 && frBox.type === 'text' && frBox.inputMode === 'decimal' && frBox.value === '12,5')
-  t('every Manage price / money box goes through it (item, import review, deals, extras, event pricing, charges)', /priceBox\.box\('item'/.test(read('app/manage/[token]/page.tsx')) && /priceBox\.rawBox\(`import-/.test(read('app/manage/[token]/page.tsx')) && /dealBox\.box\('price'/.test(read('app/manage/[token]/page.tsx'))
+  t('every Manage price / money box goes through it (item, import review, deals, extras, event pricing, charges)', /priceBox\.box\('item'/.test(read('app/(app)/manage/[token]/page.tsx')) && /priceBox\.rawBox\(`import-/.test(read('app/(app)/manage/[token]/page.tsx')) && /dealBox\.box\('price'/.test(read('app/(app)/manage/[token]/page.tsx'))
     && /normaliseDecimal\(priceInput/.test(read('components/manage/ExtrasEditor.tsx')) && (read('components/shared/PriceControls.tsx').match(/normaliseDecimal\(/g) || []).length === 2 && (read('components/manage/ChargesCard.tsx').match(/normaliseDecimal\(/g) || []).length >= 4)
   t('no country check: the separator comes from Intl in lib/decimal-input.ts', !/'FR'|fr-FR/.test(code('lib/decimal-input.ts')) && /formatToParts\(1\.5\)/.test(read('lib/decimal-input.ts')))
 

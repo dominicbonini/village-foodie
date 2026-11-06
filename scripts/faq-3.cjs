@@ -137,8 +137,8 @@ const sectionOrder = html => [...html.matchAll(/<section(?: id="([a-z-]+)")?(?: 
   const ctx = LP1E.context(kit, REPO)
   const ADMIN_STUB = "export async function adminUser() { return globalThis.__faqAdmin ? { id: 'admin-1', email: 'admin@example.test' } : null }\nexport async function verifyAdmin() { return !!globalThis.__faqAdmin }"
   const M = await ctx.bundle('faq3-live', [
-    "export { default as Landing, generateMetadata } from '@/app/[country]/page'",
-    "export { default as FaqPage, generateMetadata as faqMetadata } from '@/app/[country]/faq/page'",   // ⚠️ RE-PINNED (faq-4)
+    "export { default as Landing, generateMetadata } from '@/app/(public)/[country]/page'",
+    "export { default as FaqPage, generateMetadata as faqMetadata } from '@/app/(public)/[country]/faq/page'",   // ⚠️ RE-PINNED (faq-4)
     "export { POST } from '@/app/api/admin/faq/route'",
     "export { clearPublicFaqCache as __faq, landingFaq } from '@/lib/faq/public'",
     "export { clearPlanCatalogCache as __p } from '@/lib/plans-server'",
@@ -330,7 +330,7 @@ const sectionOrder = html => [...html.matchAll(/<section(?: id="([a-z-]+)")?(?: 
     }
     t('the comparison pages really rendered (live DE, admin DE, GB) — not empty on both sides', !want.pages['comparison:de:live'].empty && !want.pages['comparison:de:admin:admin'].empty && want.pages['comparison:gb:live'].html !== sha('null'))
   }
-  const cmpSrc = fs.readFileSync(path.join(REPO, 'app/[country]/[section]/[slug]/page.tsx'), 'utf8')
+  const cmpSrc = fs.readFileSync(path.join(REPO, 'app/(public)/[country]/[section]/[slug]/page.tsx'), 'utf8')
   // ⚠️ RE-PINNED (compare-suits-1): the only other <details> is each "Which suits" answer's evidence (class cmp-suit-ev) — not an FAQ.
   t('the comparison page renders the shared component (no <details> of its own for its FAQ)', /<FaqDetails items=\{v\.faq\} className="cmp-faq" \/>/.test(cmpSrc)
     && !/<details/.test(cmpSrc.replace(/<details className="cmp-suit-ev">[\s\S]*?<\/details>/g, '')))

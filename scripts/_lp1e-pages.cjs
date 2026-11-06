@@ -16,10 +16,10 @@
 //   html-usOff / meta-usOff     the US page's own render with the US switched OFF (the router 302s it to GB first;
 //                               recorded, compared with nothing — BEFORE has no /us)
 const PAGES = ['landing', 'features', 'compare']
-const OLD = { landing: 'app/landing/page.tsx', features: 'app/features/page.tsx', compare: 'app/compare/page.tsx' }
-const NEW = { landing: 'app/[country]/page.tsx', features: 'app/[country]/features/page.tsx', compare: 'app/[country]/compare/page.tsx' }
-const OLD_LAYOUTS = { landing: ['app/landing/layout.tsx'], features: [], compare: [] }
-const NEW_LAYOUTS = { landing: ['app/[country]/layout.tsx'], features: ['app/[country]/layout.tsx', 'app/[country]/features/layout.tsx'], compare: ['app/[country]/layout.tsx', 'app/[country]/compare/layout.tsx'] }
+const OLD = { landing: 'app/(public)/(site)/landing/page.tsx', features: 'app/(public)/(site)/features/page.tsx', compare: 'app/(public)/(site)/compare/page.tsx' }
+const NEW = { landing: 'app/(public)/[country]/page.tsx', features: 'app/(public)/[country]/features/page.tsx', compare: 'app/(public)/[country]/compare/page.tsx' }
+const OLD_LAYOUTS = { landing: ['app/(public)/(site)/landing/layout.tsx'], features: [], compare: [] }
+const NEW_LAYOUTS = { landing: ['app/[country]/layout.tsx'], features: ['app/[country]/layout.tsx', 'app/(public)/[country]/features/layout.tsx'], compare: ['app/[country]/layout.tsx', 'app/(public)/[country]/compare/layout.tsx'] }
 const slugOf = cc => (cc === 'GB' ? 'uk' : 'us')
 
 async function views(ctx) {
@@ -27,7 +27,7 @@ async function views(ctx) {
   const out = {}
   const modOf = async (file) => bundle(`m-${file.replace(/[^a-z0-9]+/gi, '-')}`, `export * from '@/${file.replace(/\.tsx?$/, '')}'\nexport { default } from '@/${file.replace(/\.tsx?$/, '')}'`)
   const metaModOf = async (file) => bundle(`meta-${file.replace(/[^a-z0-9]+/gi, '-')}`, `export * from '@/${file.replace(/\.tsx?$/, '')}'`)
-  const root = await metaModOf('app/layout.tsx')
+  const root = await metaModOf('app/(app)/layout.tsx')
 
   /** Which module serves page `p` for country `cc` on this code, with which props and which request. */
   function route(p, cc, { usOn, cookie } = {}) {
@@ -78,8 +78,8 @@ async function views(ctx) {
     }
   }
   // the unlisted preview re-exports the landing (BEFORE); its module, rendered as the landing's GB
-  if (exists('app/1ng7n4p5omux2gdk9kqvwz/page.tsx')) {
-    await safeAsync(out, 'preview|GB|source', async () => ctx.src('app/1ng7n4p5omux2gdk9kqvwz/page.tsx').replace(/^\s*\/\/.*$/gm, '').trim())
+  if (exists('app/(public)/(site)/1ng7n4p5omux2gdk9kqvwz/page.tsx')) {
+    await safeAsync(out, 'preview|GB|source', async () => ctx.src('app/(public)/(site)/1ng7n4p5omux2gdk9kqvwz/page.tsx').replace(/^\s*\/\/.*$/gm, '').trim())
   }
   return out
 }

@@ -23,7 +23,7 @@ const kit = require('./_render-kit.cjs')({ cacheTag: 'anz-terms' })
 // before world-countries-2 — scripts/_lp-world-countries-2.cjs asBefore() removes exactly its named change and throws if it is
 // not there, so every other byte is still pinned here. The new text itself is proved by scripts/world-countries-2.cjs.
 const read = f => require('./_lp-world-countries-2.cjs').asBefore(f, fs.readFileSync(path.join(REPO, f), 'utf8'))
-const atRef = (ref, f) => execFileSync('git', ['show', `${ref}:${f}`], { cwd: REPO, encoding: 'utf8' })
+const atRef = (ref, f) => execFileSync('git', ['show', `${ref}:${require('./_moved-paths.cjs').pathAt(ref, f)}`], { cwd: REPO, encoding: 'utf8' })
 let pass = 0, fail = 0
 const t = (name, ok, detail) => { if (ok) { pass++; console.log(`  ✓ ${name}`) } else { fail++; console.log(`  ✗ ${name}${detail !== undefined ? `\n      ${typeof detail === 'string' ? detail.slice(0, 600) : JSON.stringify(detail).slice(0, 600)}` : ''}`) } }
 const paras = s => s.split(/\n\s*\n/).map(p => p.replace(/\s*\n\s*/g, ' ').trim()).filter(Boolean)
@@ -100,7 +100,7 @@ const OLD_LINE = '**Last updated:** 21 October 2026', NEW_LINE = `**Last updated
 
   // ── 5 · the product does what the sections say ──
   console.log('\n── what the sections say the product does')
-  const order = read('app/trucks/[slug]/order/page.tsx'), cur = read('lib/currencies.ts'), msgs = JSON.parse(read('messages/en-GB.json'))
+  const order = read('app/(app)/trucks/[slug]/order/page.tsx'), cur = read('lib/currencies.ts'), msgs = JSON.parse(read('messages/en-GB.json'))
   t('AUD checkouts show the dual-network notice (registry eftposNotice, AUD only) — "might be processed through either network"',
     /\{ code: 'AUD',[^}]*eftposNotice: true \}/.test(cur) && (cur.match(/eftposNotice: true/g) || []).length === 1 && /currencyInfo\(truck\?\.money\?\.currency\)\?\.eftposNotice &&/.test(order) && /processed through either network/.test(msgs.order.dualNetworkNotice))
   const allergens = read('lib/allergens.ts')

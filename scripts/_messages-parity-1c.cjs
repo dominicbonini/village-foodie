@@ -57,7 +57,7 @@ module.exports = function area({ t, head, msgs }) {
   catch { t(`messages/en-GB.json is readable at ${BEFORE_REF}`, false); return }
   const added = leaves(msgs['en-GB']).filter(([k]) => !beforeKeys.has(k))
   const changed = execSync(`git diff --name-only ${BEFORE_REF} -- app components lib`, { cwd: REPO, encoding: 'utf8' }).split('\n').filter(f => /\.(ts|tsx)$/.test(f))
-  const raw = changed.map(f => { try { return execSync(`git show ${BEFORE_REF}:${JSON.stringify(f).slice(1, -1)}`, { cwd: REPO, encoding: 'utf8', maxBuffer: 64 << 20 }) } catch { return '' } }).join('\n')
+  const raw = changed.map(f => { try { return execSync(`git show ${BEFORE_REF}:${JSON.stringify(require('./_moved-paths.cjs').pathAt(BEFORE_REF, f)).slice(1, -1)}`, { cwd: REPO, encoding: 'utf8', maxBuffer: 64 << 20 }) } catch { return '' } }).join('\n')
   t(`the source of the ${changed.length} files this phase changed is read at ${BEFORE_REF}`, raw.length > 1000)
   // A string literal's \uXXXX escape is the character it spells (the dashboard writes \u2019 for ’).
   const src = joinConcats(raw).replace(/&mdash;/g, '—').replace(/\\u([0-9a-fA-F]{4})/g, (_, h) => String.fromCharCode(parseInt(h, 16)))

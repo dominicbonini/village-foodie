@@ -85,7 +85,7 @@ const inScopeForWords = id => !/^smoke-/.test(id) && !/\|oos\|/.test(id)
 /** Out-of-scope views (Part 1's tabs, the dashboard, `|oos|` views): must not change, except named shared fixes. */
 const isSmoke = id => /^smoke-/.test(id) || /\|oos\|/.test(id)
 /** The in-scope .tsx files whose inline strings the `literals` section lists (ui-literals.cjs's counting rule). */
-const LITERAL_FILES = ['app/manage/[token]/page.tsx', ...['PaymentsTab', 'ChargesCard', 'TakingPaymentPanel', 'SocialPosts', 'EventPost', 'PostShareBar', 'LivePoster', 'WeeklyPost',
+const LITERAL_FILES = ['app/(app)/manage/[token]/page.tsx', ...['PaymentsTab', 'ChargesCard', 'TakingPaymentPanel', 'SocialPosts', 'EventPost', 'PostShareBar', 'LivePoster', 'WeeklyPost',
   'DesignEditor', 'DesignEditorBits', 'FontPicker', 'DraggableBox', 'DeleteAccountSection', 'ImageDropSlot'].map(n => `components/manage/${n}.tsx`),
   'components/dashboard/CustomDomainSetup.tsx', 'components/dashboard/CopyButton.tsx']
 /** The byte views: the Reports CSV and the poster render source. */

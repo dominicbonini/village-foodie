@@ -80,7 +80,7 @@ const tablesOf = c => ({ plans: c.plans.map(snake), plan_prices: c.prices.map(sn
 // Canada is the row its own NOT RUN SQL inserts (scripts/_canada-1-fixtures.cjs), switched on as it is live.
 const LIVE = () => [LP1E.GB(), LP1E.US_ON(), NP.IE(), NP.AU(), NP.NZ(), require('./_canada-1-fixtures.cjs').CA(true)]
 const ROWS = { frOn: () => [...LIVE(), FR(true)], frOff: () => [...LIVE(), FR(false)], noFr: () => LIVE() }
-const ROUTE = { landing: 'app/[country]/page', features: 'app/[country]/features/page', compare: 'app/[country]/compare/page' }
+const ROUTE = { landing: 'app/(public)/[country]/page', features: 'app/(public)/[country]/features/page', compare: 'app/(public)/[country]/compare/page' }
 
 /** Pages, PDF, sitemap and /llms.txt over one LP1E context, for a given set of rows. */
 function renderer(kit, tag) {

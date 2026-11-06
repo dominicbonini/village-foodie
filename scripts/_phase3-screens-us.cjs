@@ -185,7 +185,7 @@ module.exports = async function us(h) {
       const browser = E.chargesForEdit(food, browserRules, stored)
       t(`edit preview = server for food ${food}: ${server.totalMinor}`, server.totalMinor === browser.totalMinor && JSON.stringify(server.snapshot) === JSON.stringify(browser.snapshot))
     }
-    const dash = read('app/dashboard/[token]/page.tsx')
+    const dash = read('app/(app)/dashboard/[token]/page.tsx')
     t('the dashboard edit preview calls chargesForEdit for a charged order, and keeps its old sum for every other (UK) order',
       /chargesForEdit\(toMinorUnits\(food,cur\),rulesFromCheckout\(truck!\.charge_rules!\),o\)/.test(dash)   /* ⚠️ RE-PINNED (world-countries-1): in the order's currency's minor units */ && /if\(!priced\|\|!o\)return linear/.test(dash))
     const walk = E.computeOrderCharges({ foodMinor: 2400, rules: browserRules, channel: 'walk_up' })
@@ -199,7 +199,7 @@ module.exports = async function us(h) {
 
   // ══════════════════════════════════════════════════════════════════════════════════════════════════════
   head('8 · the customer order page (390 wide first) — rendered from fixtures')
-  const OP = 'app/trucks/[slug]/order/page.tsx'
+  const OP = 'app/(app)/trucks/[slug]/order/page.tsx'
   const page = await kit.bundle('p3-orderpage', `export { default as OrderPage } from '@/${OP}'`, {
     patches: [{ file: OP, states: ['truck', 'menu', 'events', 'event', 'eventLoading', 'loading', 'basket', 'appliedDeals', 'formSheetOpen', 'payByCard', 'tipSel', 'tipOther',
       'summaryExpanded', 'sheetSummaryExpanded', 'name', 'email', 'submitted', 'submittedOrderId', 'submittedCharges', 'submittedTotal', 'confirmOrder', 'confirmLoading'] },
@@ -262,7 +262,7 @@ module.exports = async function us(h) {
   t('the confirmation (in memory, pay at the truck): the server\'s lines and total', has(confMem, 'Subtotal $24.00 Sales tax 8.25% $1.98 Total $25.98'))
 
   // the status page
-  const RC = 'app/order/[id]/manage/page.tsx'
+  const RC = 'app/(app)/order/[id]/manage/page.tsx'
   const receipt = await kit.bundle('p3-receipt', `export { default as Receipt } from '@/${RC}'`, { patches: [{ file: RC, states: ['order', 'loading'] }] })
   const rec = renderWith({ order: { id: '41', status: 'confirmed', customer_name: 'Ann', slot: '12:30', event_date: '2026-10-09', items: [{ name: 'Burger', quantity: 2, unit_price: 12 }], deals: [], total: 30.6,
     payment_status: 'unpaid', truck_name: 'Pizza Kitchen', venue_name: 'The Green', allow_cancellation: false, cancellation_cutoff_mins: 0, money: USD, charges: US_SNAPSHOT }, loading: false }, el(receipt.Receipt)).text
@@ -345,7 +345,7 @@ module.exports = async function us(h) {
     t('a fee part with no country maximum is hidden', /\{maxPct !== null && \(<>/.test(card) && /\{maxFixed !== null && \(<>/.test(card))
 
     // the move
-    const P = read('app/manage/[token]/page.tsx')
+    const P = read('app/(app)/manage/[token]/page.tsx')
     const { execFileSync } = require('child_process')
     // 🔴 PINNED TO 3033a53, the commit Phase 3 started from (13 October 2026). It read HEAD while Phase 3 was
     // uncommitted; the checkpoint e54c7ea folded the move into HEAD, so HEAD no longer holds the block that moved.

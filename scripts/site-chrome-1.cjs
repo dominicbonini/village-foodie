@@ -95,27 +95,29 @@ if (mode === 'capture' || mode === 'compare') {
   // ══ 1 ══
   head('1 · the inventory: every route classified; group A through the ONE frame; nobody else draws the nav or the footer')
   const pages = execFileSync('git', ['ls-files', '--cached', '--others', '--exclude-standard', 'app'], { cwd: REPO }).toString().split('\n').filter(f => /\/page\.tsx$/.test(f) && !f.startsWith('app/api/'))
-  const A = ['app/[country]/page.tsx', 'app/landing/page.tsx', 'app/1ng7n4p5omux2gdk9kqvwz/page.tsx', 'app/features/page.tsx', 'app/[country]/features/page.tsx', 'app/faq/page.tsx', 'app/[country]/faq/page.tsx',
-    'app/about/page.tsx', 'app/compare/page.tsx', 'app/[country]/compare/page.tsx', 'app/[country]/[section]/[slug]/page.tsx', 'app/contact/page.tsx',
-    'app/(legal)/privacy/page.tsx', 'app/(legal)/terms/page.tsx', 'app/(legal)/country-terms/page.tsx', 'app/[country]/(legal)/privacy/page.tsx', 'app/[country]/(legal)/terms/page.tsx', 'app/[country]/(legal)/country-terms/page.tsx']
-  const B = ['app/signup/page.tsx', 'app/login/page.tsx', 'app/forgot-password/page.tsx', 'app/reset-password/page.tsx', 'app/verify-email/page.tsx', 'app/setup/page.tsx', 'app/try/[slug]/page.tsx']
-  const C = ['app/admin/outreach/p/[prospectId]/page.tsx', 'app/admin/outreach/page.tsx', 'app/admin/page.tsx', 'app/admin/whatsapp-connections/page.tsx', 'app/admin/whatsapp-templates/page.tsx', 'app/app/page.tsx',
-    'app/dashboard/[token]/kds/page.tsx', 'app/dashboard/[token]/page.tsx', 'app/dashboard/page.tsx', 'app/dev/ticket-preview/page.tsx', 'app/docs/[token]/page.tsx', 'app/domain/page.tsx', 'app/hire/page.tsx',
-    'app/kds/[kds_token]/page.tsx', 'app/manage/[token]/page.tsx', 'app/manage/page.tsx', 'app/o/[slug]/page.tsx', 'app/order/[id]/manage/page.tsx', 'app/order/[id]/page.tsx', 'app/p/[token]/page.tsx', 'app/page.tsx',
-    'app/trucks/[slug]/order/page.tsx', 'app/trucks/[slug]/page.tsx', 'app/trucks/page.tsx', 'app/venues/[slug]/page.tsx']
+  const A = ['app/(public)/[country]/page.tsx', 'app/(public)/(site)/landing/page.tsx', 'app/(public)/(site)/1ng7n4p5omux2gdk9kqvwz/page.tsx', 'app/(public)/(site)/features/page.tsx', 'app/(public)/[country]/features/page.tsx', 'app/(public)/(site)/faq/page.tsx', 'app/(public)/[country]/faq/page.tsx',
+    'app/(public)/(site)/about/page.tsx', 'app/(public)/(site)/compare/page.tsx', 'app/(public)/[country]/compare/page.tsx', 'app/(public)/[country]/[section]/[slug]/page.tsx', 'app/(app)/contact/page.tsx',
+    'app/(app)/(legal)/privacy/page.tsx', 'app/(app)/(legal)/terms/page.tsx', 'app/(app)/(legal)/country-terms/page.tsx', 'app/(app)/[country]/(legal)/privacy/page.tsx', 'app/(app)/[country]/(legal)/terms/page.tsx', 'app/(app)/[country]/(legal)/country-terms/page.tsx']
+  const B = ['app/(app)/signup/page.tsx', 'app/(app)/login/page.tsx', 'app/(app)/forgot-password/page.tsx', 'app/(app)/reset-password/page.tsx', 'app/(app)/verify-email/page.tsx', 'app/(app)/setup/page.tsx', 'app/(app)/try/[slug]/page.tsx']
+  const C = ['app/(app)/admin/outreach/p/[prospectId]/page.tsx', 'app/(app)/admin/outreach/page.tsx', 'app/(app)/admin/page.tsx', 'app/(app)/admin/whatsapp-connections/page.tsx', 'app/(app)/admin/whatsapp-templates/page.tsx', 'app/(app)/app/page.tsx',
+    'app/(app)/dashboard/[token]/kds/page.tsx', 'app/(app)/dashboard/[token]/page.tsx', 'app/(app)/dashboard/page.tsx', 'app/(app)/dev/ticket-preview/page.tsx', 'app/(app)/docs/[token]/page.tsx', 'app/(app)/domain/page.tsx', 'app/(app)/hire/page.tsx',
+    'app/(app)/kds/[kds_token]/page.tsx', 'app/(app)/manage/[token]/page.tsx', 'app/(app)/manage/page.tsx', 'app/(app)/o/[slug]/page.tsx', 'app/(app)/order/[id]/manage/page.tsx', 'app/(app)/order/[id]/page.tsx', 'app/(app)/p/[token]/page.tsx', 'app/(app)/page.tsx',
+    'app/(app)/trucks/[slug]/order/page.tsx', 'app/(app)/trucks/[slug]/page.tsx', 'app/(app)/trucks/page.tsx', 'app/(app)/venues/[slug]/page.tsx']
   const unclassified = pages.filter(p => !A.includes(p) && !B.includes(p) && !C.includes(p))
   t(`every page route is in group A (${A.length}), B (${B.length}) or C (${C.length}) — a new page must be classified here`, !unclassified.length && [...A, ...B, ...C].every(p => pages.includes(p)), { unclassified, gone: [...A, ...B, ...C].filter(p => !pages.includes(p)) })
   const frameUsers = execFileSync('git', ['grep', '--untracked', '-l', '<MarketingFrame', '--', 'app', 'components'], { cwd: REPO }).toString().trim().split('\n').sort()
-  t('the frame is rendered by the landing, /features, /faq, /about, /compare, the comparison page, /contact and both legal layouts', JSON.stringify(frameUsers) === JSON.stringify(['app/(legal)/layout.tsx', 'app/[country]/(legal)/layout.tsx', 'app/[country]/[section]/[slug]/page.tsx', 'app/about/page.tsx', 'app/compare/page.tsx', 'app/contact/HatchGrabContact.tsx', 'app/faq/page.tsx', 'app/features/page.tsx', 'app/landing/page.tsx'].sort()), frameUsers)
+  t('the frame is rendered by the landing, /features, /faq, /about, /compare, the comparison page, /contact and both legal layouts', JSON.stringify(frameUsers) === JSON.stringify(['app/(app)/(legal)/layout.tsx', 'app/(app)/[country]/(legal)/layout.tsx', 'app/(public)/[country]/[section]/[slug]/page.tsx', 'app/(public)/(site)/about/page.tsx', 'app/(public)/(site)/compare/page.tsx', 'app/(app)/contact/HatchGrabContact.tsx', 'app/(public)/(site)/faq/page.tsx', 'app/(public)/(site)/features/page.tsx', 'app/(public)/(site)/landing/page.tsx'].sort()), frameUsers)
   // JSX uses only: a line whose `<LandingNav` / `<LandingFooter` is not inside a comment (`//`, `/*`, `*` before it), in .tsx files.
   const navUsers = [...new Set(execFileSync('git', ['grep', '--untracked', '-n', '-E', '<Landing(Nav|Footer)( |$)', '--', '*.tsx'], { cwd: REPO }).toString().trim().split('\n')
     .filter(l => { const code = l.replace(/^[^:]+:\d+:/, ''); const i = code.search(/<Landing(Nav|Footer)( |$)/); return !/\/\/|\/\*|^\s*\*/.test(code.slice(0, i)) })
     .map(l => l.split(':')[0]))]
   t('🔴 ONLY components/landing/MarketingFrame.tsx renders <LandingNav> and <LandingFooter> — no page has its own copy', JSON.stringify(navUsers) === '["components/landing/MarketingFrame.tsx"]', navUsers)
-  const contact = read('app/contact/HatchGrabContact.tsx')
-  t('/contact\'s own nav and three-link footer are gone (its form and words are untouched)', !/<nav |<footer /.test(contact) && /<HatchGrabContactForm/.test(contact) && read('app/contact/HatchGrabContactForm.tsx') === git('show', `${BEFORE}:app/contact/HatchGrabContactForm.tsx`))
-  t('the A pages re-exporting a module (the country addresses, the unlisted landing preview) are the same modules, so they get the frame with them', ['app/[country]/page.tsx', 'app/[country]/features/page.tsx', 'app/[country]/faq/page.tsx', 'app/[country]/compare/page.tsx', 'app/1ng7n4p5omux2gdk9kqvwz/page.tsx'].every(f => /export \{ default, generateMetadata \} from '(\.\.\/)+(landing|features|faq|compare)\/page'/.test(read(f))))
-  t('LegalChrome (today\'s legal chrome) is used ONLY by the two legal layouts — for the app and for Village Foodie\'s host', execFileSync('git', ['grep', '--untracked', '-l', '<LegalChrome', '--', 'app', 'components'], { cwd: REPO }).toString().trim().split('\n').sort().join() === 'app/(legal)/layout.tsx,app/[country]/(legal)/layout.tsx')
+  const contact = read('app/(app)/contact/HatchGrabContact.tsx')
+  t('/contact\'s own nav and three-link footer are gone (its form and words are untouched)', !/<nav |<footer /.test(contact) && /<HatchGrabContactForm/.test(contact) && read('app/(app)/contact/HatchGrabContactForm.tsx') === git('show', `${BEFORE}:app/contact/HatchGrabContactForm.tsx`))
+  // ⚠️ RE-PINNED (cwv-2, 6 November 2026, docs/cwv-2-report.md §6): the shared modules moved into app/(public)/(site)/, so the country
+  // addresses re-export '../(site)/landing/page' (the unlisted preview, beside it in (site), still '../landing/page').
+  t('the A pages re-exporting a module (the country addresses, the unlisted landing preview) are the same modules, so they get the frame with them', ['app/(public)/[country]/page.tsx', 'app/(public)/[country]/features/page.tsx', 'app/(public)/[country]/faq/page.tsx', 'app/(public)/[country]/compare/page.tsx', 'app/(public)/(site)/1ng7n4p5omux2gdk9kqvwz/page.tsx'].every(f => /export \{ default, generateMetadata \} from '(\.\.\/)+(\(site\)\/)?(landing|features|faq|compare)\/page'/.test(read(f))))
+  t('LegalChrome (today\'s legal chrome) is used ONLY by the two legal layouts — for the app and for Village Foodie\'s host', execFileSync('git', ['grep', '--untracked', '-l', '<LegalChrome', '--', 'app', 'components'], { cwd: REPO }).toString().trim().split('\n').sort().join() === 'app/(app)/(legal)/layout.tsx,app/(app)/[country]/(legal)/layout.tsx')
 
   // ══ 2 ══
   const R = renderer(kit, REPO)
@@ -148,15 +150,15 @@ if (mode === 'capture' || mode === 'compare') {
   const FL = await kit.bundle('sc1-flow', "export { FlowLogo, HOME_HREF } from '@/components/shared/FlowLogo'")
   const card = kit.renderStatic(kit.h(FL.FlowLogo, { variant: 'card' })), bar = kit.renderStatic(kit.h(FL.FlowLogo, { variant: 'header' }))
   t('group B: the flows\' logo is a link to "/" (the router to the visitor\'s country page) — the card wordmark and the header bar', FL.HOME_HREF === '/' && /<a [^>]*href="\/"/.test(card) && /alt="HatchGrab"/.test(card) && /<a [^>]*href="\/"/.test(bar), [card, bar])
-  const flowSrc = { 'app/login/page.tsx': /<FlowLogo variant="card" \/>/, 'app/reset-password/page.tsx': /<FlowLogo variant="card" \/>/, 'app/forgot-password/page.tsx': /<FlowLogo variant="card" \/>/,
-    'app/verify-email/page.tsx': /<FlowLogo variant="card" \/>/, 'app/verify-email/VerifyEmailSuccess.tsx': /<FlowLogo variant="card" \/>/, 'app/setup/page.tsx': /<FlowLogo variant="header" \/>/,
-    'components/demo/DemoWalkthrough.tsx': /<FlowLogo variant="header" \/>/, 'app/signup/page.tsx': /<BrandHomeLink href=\{HOME_HREF\} kind="branding"[^>]*><HatchGrabWordmark \/><\/BrandHomeLink>/ }
+  const flowSrc = { 'app/(app)/login/page.tsx': /<FlowLogo variant="card" \/>/, 'app/(app)/reset-password/page.tsx': /<FlowLogo variant="card" \/>/, 'app/(app)/forgot-password/page.tsx': /<FlowLogo variant="card" \/>/,
+    'app/(app)/verify-email/page.tsx': /<FlowLogo variant="card" \/>/, 'app/(app)/verify-email/VerifyEmailSuccess.tsx': /<FlowLogo variant="card" \/>/, 'app/(app)/setup/page.tsx': /<FlowLogo variant="header" \/>/,
+    'components/demo/DemoWalkthrough.tsx': /<FlowLogo variant="header" \/>/, 'app/(app)/signup/page.tsx': /<BrandHomeLink href=\{HOME_HREF\} kind="branding"[^>]*><HatchGrabWordmark \/><\/BrandHomeLink>/ }
   t('every group B page draws that logo (signup keeps its own wordmark, wrapped in the same link); none has a footer', Object.entries(flowSrc).every(([f, re]) => re.test(read(f))) && B.every(f => !/LandingFooter|<footer/.test(read(f))), Object.entries(flowSrc).filter(([f, re]) => !re.test(read(f))).map(([f]) => f))
   t('…and inside the app it does not navigate (BrandHomeLink "branding", the app\'s own isNativeApp)', /kind="branding"/.test(read('components/shared/FlowLogo.tsx')) && /isNativeApp\(\)/.test(read('components/shared/BrandHomeLink.tsx')))
 
   // ══ 4 ══
   head('4 · the phone footer (CSS only, ≤720px)')
-  const css = read('app/landing/landing.css'), cssBefore = git('show', `${BEFORE}:app/landing/landing.css`)
+  const css = read('app/(public)/(site)/landing/landing.css'), cssBefore = git('show', `${BEFORE}:app/landing/landing.css`)
   const block = (css.match(/@media\(max-width:720px\)\{\n  \.hg-landing \.foot-grid \{ flex-direction: column;[\s\S]*?\n\}\n/) || [''])[0]
   t('four equal columns, centred, an 8px column gap and no row gap', /\.foot-links \{ grid-template-columns: repeat\(4, minmax\(0, 1fr\)\); gap: 0 8px; justify-items: stretch; text-align: center; \}/.test(block))
   t('every item a 44px tap target, centred, wrapping inside its column (line-height 1.2), never overflowing and never an ellipsis', /\.foot-links > a, \.hg-landing \.foot-links > \.cc \{ display: flex; align-items: center; justify-content: center; min-width: 0; min-height: 44px; line-height: 1\.2; overflow-wrap: anywhere; hyphens: auto; \}/.test(block) && !/text-overflow/.test(block))
@@ -195,7 +197,7 @@ if (mode === 'capture' || mode === 'compare') {
   // ══ 6 ══
   head('6 · group C untouched: every source file each one bundles is byte-identical to before (the offline keys aside)')
   const esbuild = require(path.join(REPO, 'node_modules/esbuild'))
-  const atBefore = f => { try { return git('show', `${BEFORE}:${f}`) } catch { return null } }
+  const atBefore = f => { try { return git('show', `${BEFORE}:${require('./_moved-paths.cjs').pathAt(BEFORE, f)}`) } catch { return null } }
   const offlineOnly = (f, a, b) => {
     if (!/^messages\/ns\/[A-Za-z-]+\/(landing|featuresPage)\.json$/.test(f) || a == null) return false
     const strip = s => { const o = JSON.parse(s); for (const k of ['offlineBody', 'offlineApps']) if (o.does) delete o.does[k]; if (o.detail) delete o.detail.offline_protection; delete o.offlineApps; return JSON.stringify(o) }
@@ -203,9 +205,9 @@ if (mode === 'capture' || mode === 'compare') {
   }
   // THIS WORK'S FILES (site-chrome-1): its code, its stylesheet and its message files. Anything else that differs from before is another
   // workstream's and is not this harness's question.
-  const MINE_CODE = new Set(['app/(legal)/layout.tsx', 'app/(legal)/terms/page.tsx', 'app/[country]/(legal)/layout.tsx', 'app/[country]/[section]/[slug]/page.tsx', 'app/about/page.tsx',
-    'app/compare/page.tsx', 'app/contact/HatchGrabContact.tsx', 'app/contact/page.tsx', 'app/features/page.tsx', 'app/forgot-password/page.tsx', 'app/landing/landing.css', 'app/landing/page.tsx',
-    'app/login/page.tsx', 'app/reset-password/page.tsx', 'app/setup/page.tsx', 'app/signup/page.tsx', 'app/verify-email/VerifyEmailSuccess.tsx', 'app/verify-email/page.tsx',
+  const MINE_CODE = new Set(['app/(app)/(legal)/layout.tsx', 'app/(app)/(legal)/terms/page.tsx', 'app/(app)/[country]/(legal)/layout.tsx', 'app/(public)/[country]/[section]/[slug]/page.tsx', 'app/(public)/(site)/about/page.tsx',
+    'app/(public)/(site)/compare/page.tsx', 'app/(app)/contact/HatchGrabContact.tsx', 'app/(app)/contact/page.tsx', 'app/(public)/(site)/features/page.tsx', 'app/(app)/forgot-password/page.tsx', 'app/(public)/(site)/landing/landing.css', 'app/(public)/(site)/landing/page.tsx',
+    'app/(app)/login/page.tsx', 'app/(app)/reset-password/page.tsx', 'app/(app)/setup/page.tsx', 'app/(app)/signup/page.tsx', 'app/(app)/verify-email/VerifyEmailSuccess.tsx', 'app/(app)/verify-email/page.tsx',
     'components/demo/DemoWalkthrough.tsx', 'components/landing/MarketingFrame.tsx', 'components/legal/LegalPage.tsx', 'components/legal/translated-legal.tsx', 'components/shared/FlowLogo.tsx', 'lib/marketing-meta.ts'])
   const MINE = f => MINE_CODE.has(f) || /^messages\/(ns\/[A-Za-z-]+\/(landing|featuresPage)\.json|[A-Za-z-]+\.json)$/.test(f) || /^lib\/i18n\/catalog\/(landing|featuresPage)\.ts$/.test(f)
   const moved = {}

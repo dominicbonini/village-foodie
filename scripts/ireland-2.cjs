@@ -46,13 +46,13 @@ const ROWS = () => [LP1E.GB(), LP1E.US_ON(), IE(true)]
 const UNIT = /<input[^>]*aria-label="(?:Pence|Cents) per order"[^>]*\/?>(?:<!-- -->)?<span class="pl-1 text-lg font-bold text-slate-400">([^<]*)<\/span>/
 // The code before ireland-2: the box read minorUnitSuffix.
 const BEFORE = [
-  { file: 'app/compare/CostComparison.tsx', from: 'pctLabel, minorUnitSign, type MoneyFormat }', to: 'pctLabel, minorUnitSuffix, type MoneyFormat }' },
-  { file: 'app/compare/CostComparison.tsx', from: '{minorUnitSign(fmt.currency) ?? \'\'}', to: '{minorUnitSuffix(fmt.currency) ?? \'\'}' },
+  { file: 'app/(public)/(site)/compare/CostComparison.tsx', from: 'pctLabel, minorUnitSign, type MoneyFormat }', to: 'pctLabel, minorUnitSuffix, type MoneyFormat }' },
+  { file: 'app/(public)/(site)/compare/CostComparison.tsx', from: '{minorUnitSign(fmt.currency) ?? \'\'}', to: '{minorUnitSuffix(fmt.currency) ?? \'\'}' },
 ]
 
 ;(async () => {
   const ctx = LP1E.context(kit, REPO)
-  const entry = `export { default } from '@/app/[country]/compare/page'\nexport { clearPlanCatalogCache as __clearPlans } from '@/lib/plans-server'\nexport { clearCountrySettingsCache as __clearCs } from '@/lib/country-settings'`
+  const entry = `export { default } from '@/app/(public)/[country]/compare/page'\nexport { clearPlanCatalogCache as __clearPlans } from '@/lib/plans-server'\nexport { clearCountrySettingsCache as __clearCs } from '@/lib/country-settings'`
   const NOW = await ctx.bundle('ie2-compare-now', entry)
   const OLD = await ctx.bundle('ie2-compare-before', entry, { patches: BEFORE })
   const render = (M, seg) => ctx.withReq({ rows: ROWS(), tables }, async () => {

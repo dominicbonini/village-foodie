@@ -1671,7 +1671,7 @@ return { bg, base, mkWeek, blank, eventLayout, entryOf, EV, evBg }
 // ════════════════════════════════════════════════════════════════════════════════════════════════
 head('9c · THE WIRING')
 {
-  const page = fs.readFileSync(path.join(REPO, 'app/manage/[token]/page.tsx'), 'utf8')
+  const page = fs.readFileSync(path.join(REPO, 'app/(app)/manage/[token]/page.tsx'), 'utf8')
   const weekly = fs.readFileSync(path.join(REPO, 'components/manage/WeeklyPost.tsx'), 'utf8')
   const eventUi = fs.readFileSync(path.join(REPO, 'components/manage/EventPost.tsx'), 'utf8')
   const route = fs.readFileSync(path.join(REPO, 'app/api/weekly-post/route.ts'), 'utf8')
@@ -2710,7 +2710,7 @@ async function variants(ctx) {
    * regression it describes, so each is re-run against a MUTATED copy of the file and must then fail.
    * ⚠️ NOTHING IS WRITTEN TO DISK — the mutation is a string in memory. */
   {
-    const pageSrc = fs.readFileSync(path.join(REPO, 'app/manage/[token]/page.tsx'), 'utf8')
+    const pageSrc = fs.readFileSync(path.join(REPO, 'app/(app)/manage/[token]/page.tsx'), 'utf8')
     const routeSrc = fs.readFileSync(path.join(REPO, 'app/api/weekly-post/route.ts'), 'utf8')
 
     // V31 — Tidy up places goes back to its own, smaller shell

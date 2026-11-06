@@ -83,11 +83,11 @@ const UNLIMITED_ONLY = ['BR', 'MX', 'MY', 'SG', 'TH']
   head('0 · THE TAGLINE — "Less time booking. More time cooking." is gone everywhere')
   const allMsgs = fs.readdirSync(path.join(REPO, 'messages')).filter(f => f.endsWith('.json'))
   t(`no locale file (${allMsgs.length}) has landing.hero.tagline or landingFooter.tagline`, allMsgs.every(f => { const m = JSON.parse(read(`messages/${f}`)); return !m.landing?.hero?.tagline && !m.landingFooter?.tagline }))
-  t('the hero and the footer render no tagline (no hero-tag / foot-tag, no t(\'…tagline\'))', !/hero-tag|hero\.tagline/.test(read('app/landing/page.tsx').replace(/\{\/\*[\s\S]*?\*\/\}/g, '')) && !/foot-tag|'tagline'/.test(read('components/landing/LandingFooter.tsx').replace(/\{\/\*[\s\S]*?\*\/\}/g, '')))
+  t('the hero and the footer render no tagline (no hero-tag / foot-tag, no t(\'…tagline\'))', !/hero-tag|hero\.tagline/.test(read('app/(public)/(site)/landing/page.tsx').replace(/\{\/\*[\s\S]*?\*\/\}/g, '')) && !/foot-tag|'tagline'/.test(read('components/landing/LandingFooter.tsx').replace(/\{\/\*[\s\S]*?\*\/\}/g, '')))
   // ⚠️ RE-PINNED (tidy-1, 3 November 2026): STALE since 2b625a66, which committed this check together with two harness files that must
   // name the words — scripts/_lp-tagline.cjs (cuts the tagline from BEFORE's pages) and scripts/world-countries-1-hero.cjs (proves it gone).
   const tagHits = execSync("git grep -l -i 'less time booking' -- ':!docs' ':!scripts/fixtures' ':!scripts/world-countries-1.cjs' ':!scripts/marketing-country-parity.cjs' ':!scripts/_lp-tagline.cjs' ':!scripts/world-countries-1-hero.cjs' || true", { cwd: REPO, encoding: 'utf8' }).trim().split('\n').filter(Boolean)
-  t('no source file outside the reports still carries the words (comments recording the removal aside)', tagHits.every(f => ['app/landing/page.tsx', 'components/landing/LandingFooter.tsx'].includes(f)), tagHits)
+  t('no source file outside the reports still carries the words (comments recording the removal aside)', tagHits.every(f => ['app/(public)/(site)/landing/page.tsx', 'components/landing/LandingFooter.tsx'].includes(f)), tagHits)
   t('the share card (og:image) is re-rendered without it: same file, same 1200×630, now the wordmark alone', (() => { const b = fs.readFileSync(path.join(REPO, 'public/logos/hatchgrab-share-card.png')); return b.readUInt32BE(16) === 1200 && b.readUInt32BE(20) === 630 })())
 
   // ══ 1 ════════════════════════════════════════════════════════════════════════════════════════════════════════════
@@ -114,7 +114,7 @@ const UNLIMITED_ONLY = ['BR', 'MX', 'MY', 'SG', 'TH']
   t('…and every two-decimal currency exactly as before: toMinor(12.5, GBP) 1250, fromMinor(1250, GBP) 12.5, toMinor(12.5, null) 1250',
     R.toMinor(12.5, 'GBP') === 1250 && R.fromMinor(1250, 'GBP') === 12.5 && R.toMinor(12.5, null) === 1250 && R.toMinor(12.5, 'BRL') === 1250 && norm(R.formatMinor(4390, { currency: 'GBP', locale: 'en-GB' })) === '£43.90')
   // no open-coded ×100 on an order or payment path
-  const orderPaths = ['app/api/orders/submit/route.ts', 'app/api/dashboard/action/route.ts', 'lib/payments/ledger.ts', 'lib/payments/promote-draft.ts', 'app/trucks/[slug]/order/page.tsx', 'components/dashboard/AddOrderPanel.tsx', 'components/manage/ChargesCard.tsx', 'lib/seed-demo-orders.ts']
+  const orderPaths = ['app/api/orders/submit/route.ts', 'app/api/dashboard/action/route.ts', 'lib/payments/ledger.ts', 'lib/payments/promote-draft.ts', 'app/(app)/trucks/[slug]/order/page.tsx', 'components/dashboard/AddOrderPanel.tsx', 'components/manage/ChargesCard.tsx', 'lib/seed-demo-orders.ts']
   const x100 = orderPaths.flatMap(f => read(f).split('\n').map((l, i) => [f, i + 1, l]).filter(([, , l]) => !/^\s*(\/\/|\*)/.test(l) && /(Minor|minor|total|Total|Pence|food)\w*\s*[*/]\s*100\b|\b100\s*\*\s*(total|food)|\*\s*100\)/.test(l) && !/bps|pct|Pct|Bps|percent|t: Math\.round\(total \* 100\)|g: Math\.round\(grandTotal \* 100\)/.test(l)).map(([f, n, l]) => `${f}:${n} ${l.trim().slice(0, 90)}`))
   t('no order or payment path converts money with an open-coded ×100 / ÷100 (the basket fingerprint, a change detector, aside)', x100.length === 0, x100)
 
@@ -156,7 +156,7 @@ const UNLIMITED_ONLY = ['BR', 'MX', 'MY', 'SG', 'TH']
   const gbForm = { ...F.Form.rowToForm(sqlCountries.length ? WF.camelRow(sqlCountries.find(r => r.country_code === 'BR'), false) : {}), platformFeeEnabled: true }
   const refused = F.Form.formToValues(gbForm, { truckCount: 0, storedCurrency: 'BRL', countryCode: 'BR', platformFeeAllowed: false })
   t('Admin › Countries refuses "Take our fee" in Brazil (platform_fee_allowed false)', !refused.ok && refused.errors.some(e => e.field === 'platformFeeEnabled'), refused.ok ? 'accepted' : refused.errors)
-  t('Admin\'s plan buttons and its API refuse a plan not offered in the truck\'s country', /disabled=\{notOffered\}/.test(read('app/admin/page.tsx')) && /is not offered in/.test(read('app/api/admin/route.ts')))
+  t('Admin\'s plan buttons and its API refuse a plan not offered in the truck\'s country', /disabled=\{notOffered\}/.test(read('app/(app)/admin/page.tsx')) && /is not offered in/.test(read('app/api/admin/route.ts')))
 
   // ══ 3 ════════════════════════════════════════════════════════════════════════════════════════════════════════════
   head('3 · COUNTRY SETTINGS — address formats, phones, allergen sets, short names')
@@ -285,13 +285,13 @@ const UNLIMITED_ONLY = ['BR', 'MX', 'MY', 'SG', 'TH']
 
   // ══ 7 ════════════════════════════════════════════════════════════════════════════════════════════════════════════
   head('7 · RIGHT TO LEFT AND SCRIPTS — dir="rtl" and the Noto families only where they belong')
-  const SF = read('lib/script-fonts.ts'), LY = read('app/layout.tsx'), CL = read('lib/i18n/client.tsx')
+  const SF = read('lib/script-fonts.ts'), LY = read('app/(app)/layout.tsx'), CL = read('lib/i18n/client.tsx')
   t('<html dir="rtl"> only for an Arabic page (layout, and the language provider for pages that learn the truck\'s language)', /isRtl\(lang\) \? \{ dir: 'rtl' \} : \{\}/.test(LY) && /if \(m\.isRtl\(locale\)\) document\.documentElement\.dir = 'rtl'/.test(CL) && /import\('@\/lib\/script-fonts'\)/.test(CL) && !/^import .*script-fonts/m.test(CL) && /export const isRtl = \(lang[^)]*\): boolean => \/\^ar\(-\|\$\)\/i/.test(SF))
   // ⚠️ RE-PINNED (world-countries-2, 1 November 2026): lib/script-fonts.ts also defines europe-languages-2's Greek / Cyrillic
   // Noto Sans now (moved from app/layout.tsx so the language provider applies it too) — five definitions, each preload: false.
   t('the four Noto families are never preloaded and each is named only under its own :lang() in globals.css and landing.css, before the metric fallback',
-    (SF.match(/preload: false/g) || []).length === 5 && ['ja', 'zh', 'th', 'ar'].every(l => new RegExp(`:root:lang\\(${l}\\) body \\{ --font-geist-sans: 'Geist', var\\(--font-script-[a-z-]+\\), 'Geist Fallback'; \\}`).test(read('app/globals.css'))
-      && new RegExp(`:root:lang\\(${l}\\) \\.hg-landing \\{\\s*--display: 'Archivo', var\\(--font-script-[a-z-]+\\), 'Archivo Fallback'`).test(read('app/landing/landing.css'))))
+    (SF.match(/preload: false/g) || []).length === 5 && ['ja', 'zh', 'th', 'ar'].every(l => new RegExp(`:root:lang\\(${l}\\) body \\{ --font-geist-sans: 'Geist', var\\(--font-script-[a-z-]+\\), 'Geist Fallback'; \\}`).test(read('app/(app)/globals.css'))
+      && new RegExp(`:root:lang\\(${l}\\) \\.hg-landing \\{\\s*--display: 'Archivo', var\\(--font-script-[a-z-]+\\), 'Archivo Fallback'`).test(read('app/(public)/(site)/landing/landing.css'))))
 
   console.log(`\n${fail ? '🔴' : '✅'} world-countries-1: ${pass} passed, ${fail} failed`)
   process.exit(fail ? 1 : 0)

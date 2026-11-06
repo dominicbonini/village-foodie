@@ -190,7 +190,7 @@ async function compare() {
     const aNoPre = JSON.parse(J(A[k])); delete aNoPre.body.truck.preordering_on; delete aNoPre.body.truck.pay_at_hatch_on
     ok(J(aNoPre) === J(without(B[k], 'codes')), `${label}: otherwise byte-identical to BEFORE (named difference 1)`)
   }
-  const page = read('app/trucks/[slug]/order/page.tsx'), menuSrc = read('app/api/menu/[truckId]/route.ts')
+  const page = read('app/(app)/trucks/[slug]/order/page.tsx'), menuSrc = read('app/api/menu/[truckId]/route.ts')
   ok(!/menu\.codes/.test(page) && !/applyCode/.test(page) && !/codes: DiscountCode\[\]/.test(page), 'the order page no longer reads menu.codes (its unused code check is gone)')
   ok(!/from\('discount_codes_db'\)/.test(menuSrc), '/api/menu no longer reads discount_codes_db at all')
   const sub = read('app/api/orders/submit/route.ts')

@@ -31,7 +31,7 @@ const promote     = strip(src('lib/payments/promote-draft.ts'))
 const action      = strip(src('app/api/dashboard/action/route.ts'))
 const panel       = strip(src('components/dashboard/AddOrderPanel.tsx'))
 const placeIn     = strip(src('lib/orders/place-in-slot.ts'))
-const orderPage   = strip(src('app/trucks/[slug]/order/page.tsx'))
+const orderPage   = strip(src('app/(app)/trucks/[slug]/order/page.tsx'))
 const menuRoute   = strip(src('app/api/menu/[truckId]/route.ts'))
 
 const { generateCollectionTimes } = compile(REPO, ['lib/slot-generation.ts'], 'routing').req('lib/slot-generation.js')

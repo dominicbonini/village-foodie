@@ -59,7 +59,7 @@ const walkTree = (dir) => {
 const SOCIAL = read('components/manage/SocialPosts.tsx')
 const COPY = read('lib/copy/socialPosts.ts')
 const ROUTE = read('app/api/weekly-post/route.ts')
-const MANAGE = read('app/manage/[token]/page.tsx')
+const MANAGE = read('app/(app)/manage/[token]/page.tsx')
 const LINKS = read('lib/manage-links.ts')
 
 /* ══ 🔴 `lib/manage-links.ts` IS COMPILED AND **RUN**, NOT ONLY GREPPED (6 October 2026) ═══════════
@@ -223,7 +223,7 @@ head('3 · every box opens an existing flow — one modal, one drag surface')
     return mounts.length === 2
       && mounts.includes('components/manage/SocialPosts.tsx')
       && mounts.includes('components/manage/WeeklyPost.tsx')
-      && !mounts.includes('app/manage/[token]/page.tsx')
+      && !mounts.includes('app/(app)/manage/[token]/page.tsx')
       && (codeOf(SOCIAL).match(/<EventPostModal /g) || []).length === 1
       /* ⛔ AND SCHEDULE'S IMPORT WENT WITH ITS MOUNT. An import of a client modal is a bundle entry,
        * and a dead one would ship the component to every operator who opens Schedule. */

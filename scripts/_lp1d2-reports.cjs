@@ -20,7 +20,7 @@
 // (`itemView === 'orders' ? exportCSV : exportItemsCSV`). The view renders the state, then calls the handler with
 // `Blob`, `URL.createObjectURL` / `revokeObjectURL` and `document.createElement` stubbed: the Blob's parts ARE the
 // bytes (`parts.join('')`), and the anchor's `download` + `click()` prove the file was handed to the browser.
-const M_FILE = 'app/manage/[token]/page.tsx'
+const M_FILE = 'app/(app)/manage/[token]/page.tsx'
 
 // ── fixtures: what get_report returns (app/api/manage/route.ts, action get_report) ─────────────────────────────
 const EVENTS = {

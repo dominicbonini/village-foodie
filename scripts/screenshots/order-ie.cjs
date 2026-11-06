@@ -19,7 +19,7 @@ async function photo(top) {   // the GB capture's own menu photos (Pizza Kitchen
 
 ;(async () => {
   kit.setNow('2026-09-01T15:31:00Z'); kit.setDeviceTz('Europe/Dublin'); kit.setDeviceLocale('en-IE')   // Tue 1 Sep, 16:31 in Dublin (IST, UTC+1) — the GB capture's clock
-  const OP = 'app/trucks/[slug]/order/page.tsx'
+  const OP = 'app/(app)/trucks/[slug]/order/page.tsx'
   const M = await kit.bundle('order', `export { default as OrderPage } from '@/${OP}'\nexport { I18nContext } from '@/lib/i18n/use-t'`, {
     patches: [{ file: OP, states: ['truck', 'menu', 'events', 'event', 'eventLoading', 'loading', 'basket', 'appliedDeals', 'isScrolled', 'activeCategory', 'noEvents'] },
       { file: OP, from: 'const { slug } = use(params)', to: 'const { slug } = params' }],

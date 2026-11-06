@@ -63,9 +63,9 @@ if (mode === 'capture' || mode === 'compare') {
   (async () => {
     const ctx = LP1E.context(kit, REPO)
     const got = {}
-    for (const seg of ['uk', 'us', 'de', 'jp']) got[`landing:${seg}`] = sha(await render(ctx, '@/app/[country]/page', seg))
+    for (const seg of ['uk', 'us', 'de', 'jp']) got[`landing:${seg}`] = sha(await render(ctx, '@/app/(public)/[country]/page', seg))
     // /features with the changed rows cut (Advanced reporting at HEAD; the three new rows now): every other byte must match.
-    for (const [seg, locale] of [['uk', 'en-GB'], ['us', 'en-US'], ['de', 'de-DE']]) got[`features-outside-the-rows:${seg}`] = sha(cutRows(String(await render(ctx, '@/app/[country]/features/page', seg)), locale))
+    for (const [seg, locale] of [['uk', 'en-GB'], ['us', 'en-US'], ['de', 'de-DE']]) got[`features-outside-the-rows:${seg}`] = sha(cutRows(String(await render(ctx, '@/app/(public)/[country]/features/page', seg)), locale))
     const commit = execFileSync('git', ['rev-parse', '--short', 'HEAD'], { cwd: REPO }).toString().trim()
     if (mode === 'capture') { fs.writeFileSync(process.argv[3], JSON.stringify({ commit, pages: got }, null, 1) + '\n'); console.log(`captured at ${commit}:`, got); return }
     const want = JSON.parse(fs.readFileSync(process.argv[3], 'utf8'))
@@ -107,7 +107,7 @@ if (mode === 'capture' || mode === 'compare') {
     && mx.planFeatures.row.accountant_reports.name === 'Reportes para tu contador' && /venza/.test(mx.featuresPage.detail.documents_reminders))
   const ctx = LP1E.context(kit, REPO)
   for (const [seg, locale] of [['uk', 'en-GB'], ['de', 'de-DE']]) {
-    const html = await render(ctx, '@/app/[country]/features/page', seg)
+    const html = await render(ctx, '@/app/(public)/[country]/features/page', seg)
     const words = JSON.parse(read(`messages/${locale}.json`))
     if (process.env.FL1_DUMP) fs.writeFileSync(`${process.env.FL1_DUMP}-${seg}.html`, String(html))
     // The plan table is ARIA rows (components/pricing/PlanTable.tsx): <div class="pt-row" role="row"> with a pt-name, a pt-desc and a cell per plan.

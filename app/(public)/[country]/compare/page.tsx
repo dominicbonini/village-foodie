@@ -3,7 +3,7 @@
 // segment rules (uk/us only, 404 otherwise, switched-off → proxy.ts 302 to the GB page). Still robots noindex.
 import { COUNTRY_PATH_SEGMENTS } from '@/lib/marketing-country'
 
-export { default, generateMetadata } from '../../compare/page'
+export { default, generateMetadata } from '../../(site)/compare/page'
 
 export const dynamic = 'force-dynamic'
 export const dynamicParams = false

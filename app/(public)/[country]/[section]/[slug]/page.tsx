@@ -30,7 +30,7 @@ import { resolveComparison, comparisonT, comparisonSuitsT } from '@/lib/comparis
 import { buildComparison, comparisonGraph, type Cell } from '@/lib/comparison'
 import { translatorFor } from '@/lib/i18n/translator'
 import '@/lib/i18n/catalog/comparison'
-import '../../../landing/landing.css'
+import '../../../(site)/landing/landing.css'
 import './comparison.css'
 
 export const dynamic = 'force-dynamic'

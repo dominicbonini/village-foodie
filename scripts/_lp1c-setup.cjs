@@ -17,7 +17,7 @@ const path = require('path')
 const SEEDS = require('./_country-settings-gb.cjs')
 
 const FILES = {
-  page: 'app/setup/page.tsx',
+  page: 'app/(app)/setup/page.tsx',
   step: 'components/setup/WhereBasedStep.tsx',
   price: 'components/shared/PriceControls.tsx',
 }
@@ -59,7 +59,7 @@ async function views(ctx) {
 
   // ── the screens ──
   const M = await kit.bundle('lp1c-setup-ui', [
-    "export { default as SetupPage } from '@/app/setup/page'",
+    "export { default as SetupPage } from '@/app/(app)/setup/page'",
     "export { WhereBasedStep, TownInput, ZoneSelect, initialBaseAnswer, baseAnswerErrors, useSignupCountries } from '@/components/setup/WhereBasedStep'",
     "export { CuisinePicker } from '@/components/shared/CuisinePicker'",
     "export { Select, PriceModeSelect, PriceRoundingSelect, PriceAmountInput, PriceCell } from '@/components/shared/PriceControls'",

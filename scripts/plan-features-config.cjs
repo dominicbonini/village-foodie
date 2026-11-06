@@ -254,7 +254,7 @@ const get = url => new NextRequest(`http://localhost${url}`)
   const blocks = P.planBlocks(payg, CATALOG, 'GB')
   const g6 = gate({ ...payg, plan_blocks: blocks }, 'schedule_graphics', { catalog: null })
   t('no catalogue (dashboard / KDS): server-sent plan_blocks give the same prompt', g6.includes(SOCIAL) && g6.includes('Pro · £29/mo'), g6)
-  const page = read('app/manage/[token]/page.tsx')
+  const page = read('app/(app)/manage/[token]/page.tsx')
   t('Manage › Settings WhatsApp card: plan-off → <PlanPrompt feature="whatsapp_replies">, override-off → "switched off"',
     /features\.block\('whatsapp_replies'\) === 'plan'\s*\n\s*\? <div className="mt-2"><PlanPrompt feature="whatsapp_replies"/.test(page) && /: <p className="text-xs text-slate-500 mt-1">\{tW\('card\.switchedOff'\)\}<\/p>\}/.test(page))
   t('Manage › Social tab shows for a plan-off truck (opens on the prompt), hidden only for an override',
@@ -300,7 +300,7 @@ const get = url => new NextRequest(`http://localhost${url}`)
     : !(w.ids || []).includes('village-spice')))) && EXISTING.trial_expires_at === null, [gbP, usP, twoP].map(truckWrites))
   t('month-end clamps: 31 Oct + 4 months → 28 Feb (P.addMonthsYmd)', P.addMonthsYmd('2026-10-31', 4) === '2027-02-28' && P.addMonthsYmd('2027-10-31', 4) === '2028-02-29')
   t('a non-trial plan gets no end date', P.trialEndFor(CATALOG.plans.find(p => p.key === 'pro'), new Date(), 'Europe/London') === null)
-  const admin = read('app/admin/page.tsx')
+  const admin = read('app/(app)/admin/page.tsx')
   t('Admin: ONE preset "Start trial: N months" from trial_months (the 1 / 3 month chips are gone)', /Start trial: \{currentModalPlanRow\.trialMonths\}/.test(admin) && !/setModalTrial\(1\)|setModalTrial\(3\)|>\s*1 month\s*</.test(admin))
 
   // ══ 7 ════════════════════════════════════════════════════════════════════════════════════════════════════════════
@@ -349,7 +349,7 @@ const get = url => new NextRequest(`http://localhost${url}`)
   const truckOf = m => m.body?.truck ?? m.body
   t('menu API: pay_at_hatch_on true on an allowed plan', truckOf(mOn)?.pay_at_hatch_on === true, { status: mOn.status, keys: Object.keys(mOn.body || {}).slice(0, 12), truck: truckOf(mOn) && { pay_at_hatch_on: truckOf(mOn).pay_at_hatch_on } })
   t('menu API: pay_at_hatch_on false and — with no card option either — ordering_available false', truckOf(mOff)?.pay_at_hatch_on === false && truckOf(mOff)?.ordering_available === false, truckOf(mOff) && { pay_at_hatch_on: truckOf(mOff).pay_at_hatch_on, ordering_available: truckOf(mOff).ordering_available })
-  const orderPage = read('app/trucks/[slug]/order/page.tsx')
+  const orderPage = read('app/(app)/trucks/[slug]/order/page.tsx')
   t('order page: the pay-at-the-truck choice renders only when pay_at_hatch_on (both copies)', (orderPage.match(/\{truck\?\.card_payments_ready && payAtHatchOffered && \(/g) || []).length === 2 && /const payAtHatchOffered = truck\?\.pay_at_hatch_on !== false/.test(orderPage))
   const payments = read('components/manage/PaymentsTab.tsx')
   t('operator (Manage › Payments): plan-off → the prompt; override-off → "switched off for your truck"', /features\.block\(PAY_AT_HATCH_FEATURE\) === 'plan'/.test(payments) && /tPrompt\('switchedOff'/.test(payments))

@@ -141,7 +141,7 @@ const code = f => read(f).replace(/\/\*[\s\S]*?\*\//g, '').replace(/^\s*\/\/.*$/
   t('every Canadian province has its tax data except Quebec (closed); every US state none', AF.ADDRESS_FORMATS.ca.regions.list.every(r => (r.code === 'QC') === !r.salesTax) && AF.ADDRESS_FORMATS.us.regions.list.every(r => !r.salesTax && !r.signupClosed))
   t('the address formats still validate (sales tax named, 0–100 %, whole thousandths; a closed region has no tax)', AF.validateAddressFormats().length === 0, AF.validateAddressFormats())
   // the order page's checkout (390 first) — the real page with its states patched, as scripts/_phase3-screens-us.cjs does
-  const OP = 'app/trucks/[slug]/order/page.tsx'
+  const OP = 'app/(app)/trucks/[slug]/order/page.tsx'
   const page = await kit.bundle('ca1-orderpage', `export { default as OrderPage } from '@/${OP}'\nexport { I18nContext } from '@/lib/i18n/use-t'`, {
     patches: [{ file: OP, states: ['truck', 'menu', 'events', 'event', 'eventLoading', 'loading', 'basket', 'appliedDeals', 'formSheetOpen', 'payByCard', 'tipSel', 'tipOther',
       'summaryExpanded', 'sheetSummaryExpanded', 'name', 'email'] }, { file: OP, from: 'const { slug } = use(params)', to: 'const { slug } = params' }],

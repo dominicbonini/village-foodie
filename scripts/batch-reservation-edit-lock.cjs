@@ -100,7 +100,7 @@ console.log('\n── STRUCTURE: the real edit block ─────────
   // `{ error, retry: true, code, params }` (named difference: code + params added last, error unchanged).
   check(/await kErr\('busy_retry', \{\}, \{ retry: true \}\),\s*\{ status: 409 \}/.test(manualBusy) && typeof GB_MESSAGES.errorsKitchen.busy_retry === 'string'
     && block.includes(BUSY) && KERR_SHAPE, "the edit's busy refusal has the manual path's status and shape (409, { error, retry: true })")
-  const page = fs.readFileSync(path.join(REPO, 'app/dashboard/[token]/page.tsx'), 'utf8')
+  const page = fs.readFileSync(path.join(REPO, 'app/(app)/dashboard/[token]/page.tsx'), 'utf8')
   const submitEdit = page.slice(page.indexOf('const submitEdit=async'), page.indexOf('const updateStock=async'))
   // Language Phase 1b re-pin: the fallback sentence is the message `dashboard.toast.editBusy` (asserted exactly);
   // the branch, its order and its `return` are unchanged.

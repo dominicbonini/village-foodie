@@ -55,9 +55,9 @@ function usHits(id, value) {
   }
   return hits
 }
-const MARKETING_FILES = ['app/landing/page.tsx', 'app/features/page.tsx', 'app/compare/page.tsx', 'app/compare/CostComparison.tsx',
+const MARKETING_FILES = ['app/(public)/(site)/landing/page.tsx', 'app/(public)/(site)/features/page.tsx', 'app/(public)/(site)/compare/page.tsx', 'app/(public)/(site)/compare/CostComparison.tsx',
   'components/landing/FeatureComparison.tsx', 'components/landing/LandingNav.tsx', 'components/landing/LandingFooter.tsx', 'components/landing/CountryMenu.tsx',
-  'components/landing/DemoUpload.tsx', 'app/contact/page.tsx', 'app/contact/HatchGrabContact.tsx', 'app/(legal)/layout.tsx', 'components/Footer.tsx', 'app/trucks/[slug]/page.tsx']
+  'components/landing/DemoUpload.tsx', 'app/(app)/contact/page.tsx', 'app/(app)/contact/HatchGrabContact.tsx', 'app/(app)/(legal)/layout.tsx', 'components/Footer.tsx', 'app/(app)/trucks/[slug]/page.tsx']
 
 const HOLE = '\u0001'
 const esc = s => s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')

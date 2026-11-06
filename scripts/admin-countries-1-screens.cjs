@@ -94,7 +94,7 @@ function serve(css, scripts) {
   fs.writeFileSync(oldFile, execFileSync('git', ['show', 'HEAD:components/admin/CountriesTab.tsx'], { cwd: REPO }).toString())
   const mount = imp => `import { createRoot } from 'react-dom/client'\nimport Tab from '${imp}'\ncreateRoot(document.getElementById('root')!).render(<div style={{ padding: 24 }}><Tab /></div>)\n`
   const scripts = {
-    admin: await bundle(sub('admin'), `import { createRoot } from 'react-dom/client'\nimport AdminPage from '@/app/admin/page'\ncreateRoot(document.getElementById('root')).render(<AdminPage />)\n`),
+    admin: await bundle(sub('admin'), `import { createRoot } from 'react-dom/client'\nimport AdminPage from '@/app/(app)/admin/page'\ncreateRoot(document.getElementById('root')).render(<AdminPage />)\n`),
     oldtab: await bundle(sub('old'), mount(oldFile.replace(/\.tsx$/, ''))),
     newtab: await bundle(sub('new'), mount('@/components/admin/CountriesTab')),
   }

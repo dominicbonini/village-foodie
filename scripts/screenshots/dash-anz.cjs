@@ -12,7 +12,7 @@ const { REPO, dirs, appCss, fontClasses, serve } = require('./common.cjs')
 const { WORK } = dirs()
 const kit = require('../_render-kit.cjs')({ cacheTag: `anz-screens-dash-${c.key}` })
 const FIX = require('../_lp1b-fixtures.cjs')
-const F = 'app/dashboard/[token]/page.tsx'
+const F = 'app/(app)/dashboard/[token]/page.tsx'
 const AP = 'components/dashboard/AddOrderPanel.tsx'
 const names = f => [...new Set([...fs.readFileSync(path.join(REPO, f), 'utf8').matchAll(/const\s*\[\s*([a-zA-Z]+)\s*,\s*set[A-Za-z]+\s*\]\s*=\s*useState/g)].map(m => m[1]))]
 

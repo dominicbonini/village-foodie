@@ -26,7 +26,7 @@ const SEEDS = require('./_country-settings-gb.cjs')
 const snake = o => Object.fromEntries(Object.entries(o).map(([k, v]) => [k.replace(/[A-Z]/g, c => '_' + c.toLowerCase()), v]))
 const GB_ROW = () => SEEDS.gbFromSeed()
 const US_ON = () => ({ ...SEEDS.usFromSeed(), enabled: true, starterMonthlyMinor: 3900, proMonthlyMinor: 5900, maxMonthlyMinor: 9900, proAllowanceMinor: 30000, maxAllowanceMinor: 100000, platformFeePct: 1.5 })
-const MANAGE = 'app/manage/[token]/page.tsx'
+const MANAGE = 'app/(app)/manage/[token]/page.tsx'
 const DATES = { sep: '2026-09-05', oct: '2026-10-10' }
 
 const CRYPTO_STUB = [

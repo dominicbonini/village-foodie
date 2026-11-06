@@ -22,7 +22,7 @@ const NAMESPACES = ['order', 'orderStatus', 'privateLink', 'charges', 'soldOut',
 /** Already in messages/ before this phase (Language Phase 0) — not part of this area. */
 const PHASE_0 = new Set(['order.tipHeading'])
 const SOURCES = [
-  'app/trucks/[slug]/order/page.tsx', 'app/order/[id]/manage/page.tsx', 'app/p/[token]/page.tsx', 'lib/private-events/copy.ts',
+  'app/(app)/trucks/[slug]/order/page.tsx', 'app/(app)/order/[id]/manage/page.tsx', 'app/(app)/p/[token]/page.tsx', 'lib/private-events/copy.ts',
   'lib/private-events/read.ts', 'lib/order-charge-lines.ts', 'lib/payments/sold-out-copy.ts', 'lib/preorder.ts', 'lib/phone.ts',
   'lib/modifier-rules.ts', 'components/OptionStockBadge.tsx', 'components/SpiceLevel.tsx', 'components/dashboard/DealsModal.tsx',
   'components/TruckListCard.tsx', 'components/dashboard/OrderLineItem.tsx', 'lib/email.ts', 'lib/orders/reject-order.ts',
@@ -71,7 +71,7 @@ function variants(ast) {
 
 module.exports = function area({ t, head, msgs }) {
   head('Phase 1a · the customer-facing text that moved into messages/ — BEFORE (ed1d4c2) against AFTER')
-  const raw = SOURCES.map(f => { try { return execSync(`git show ${BEFORE_REF}:${JSON.stringify(f).slice(1, -1)}`, { cwd: REPO, encoding: 'utf8', maxBuffer: 64 << 20 }) } catch { return '' } }).join('\n')
+  const raw = SOURCES.map(f => { try { return execSync(`git show ${BEFORE_REF}:${JSON.stringify(require('./_moved-paths.cjs').pathAt(BEFORE_REF, f)).slice(1, -1)}`, { cwd: REPO, encoding: 'utf8', maxBuffer: 64 << 20 }) } catch { return '' } }).join('\n')
   t(`every source file read at ${BEFORE_REF}`, raw.length > 100000)
   const src = joinConcats(raw).replace(/&mdash;/g, '—')
   const hay = [squash(raw), squash(src), squash(dropInterpolations(src)), squash(src.replace(/&apos;/g, "'")), squash(dropInterpolations(src).replace(/&apos;/g, "'"))].join('\n')

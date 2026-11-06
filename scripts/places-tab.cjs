@@ -66,7 +66,7 @@ function walk(dir) {
   return out
 }
 
-const MANAGE = read('app/manage/[token]/page.tsx')
+const MANAGE = read('app/(app)/manage/[token]/page.tsx')
 const ROUTE = read('app/api/manage/route.ts')
 /* ══ ⛔ `TAB` WAS `components/manage/PlacesTab.tsx` (6 October 2026) ══════════════════════════════
  * That file is deleted. Its four controls are in two places now, and this harness reads both:

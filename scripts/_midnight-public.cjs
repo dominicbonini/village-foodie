@@ -51,9 +51,9 @@ async function views({ kit, REPO, FIX }) {
     { patches: [{ file: 'lib/whatsapp-classifier.ts', append: 'export { formatEventForPrompt as __fmtEventForPrompt }' }] })
   const WP = await tryBundle('mn-public-wp', "export { POST } from '@/app/api/weekly-post/route'" + clear, { stubs: WP_STUBS })
   const UTIL = await tryBundle('mn-public-utils', "export { getGoogleLink, getOutlookLink, downloadICS } from '@/lib/utils'")
-  const HOME = await tryBundle('mn-public-home', "export { default } from '@/app/page'",
-    { stubs: PAGE_STUBS, patches: [{ file: 'hooks/useVillageData.ts', states: ['events', 'loading'] }, { file: 'app/page.tsx', states: ['filters'] }] })
-  const PAGE = await tryBundle('mn-public-truckpage', "export { default } from '@/app/trucks/[slug]/page'" + clear,
+  const HOME = await tryBundle('mn-public-home', "export { default } from '@/app/(app)/page'",
+    { stubs: PAGE_STUBS, patches: [{ file: 'hooks/useVillageData.ts', states: ['events', 'loading'] }, { file: 'app/(app)/page.tsx', states: ['filters'] }] })
+  const PAGE = await tryBundle('mn-public-truckpage', "export { default } from '@/app/(app)/trucks/[slug]/page'" + clear,
     { stubs: { ...PAGE_STUBS, '@/hooks/useVillageData': 'export function useVillageData() { return globalThis.__tcData }' } })
   // EmbedSchedule's list comes from its own state (a fetch in an effect): start it from the embed route's real JSON.
   // BEFORE has no `time` state, so the patch names only what that code has.

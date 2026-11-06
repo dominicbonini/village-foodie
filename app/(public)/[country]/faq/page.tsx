@@ -3,7 +3,7 @@
 // country's address → proxy.ts 302s it to /uk/faq; a country whose FAQ shows nothing → 404 (app/faq/page.tsx).
 import { COUNTRY_PATH_SEGMENTS } from '@/lib/marketing-country'
 
-export { default, generateMetadata } from '../../faq/page'
+export { default, generateMetadata } from '../../(site)/faq/page'
 
 export const dynamic = 'force-dynamic'
 export const dynamicParams = false

@@ -70,11 +70,11 @@ async function renderer(kit, tag = 'cde1') {
   const planTables = { plans: catalog.plans.map(LP1E.snake), plan_prices: catalog.prices.map(LP1E.snake), plan_features: catalog.features.map(LP1E.snake) }
   const ADMIN_STUB = "export async function adminUser() { return globalThis.__cmpAdmin ? { id: 'admin-1', email: null } : null }\nexport async function verifyAdmin() { return !!globalThis.__cmpAdmin }"
   const M = await ctx.bundle(tag, [
-    "export { default, generateMetadata } from '@/app/[country]/[section]/[slug]/page'",
+    "export { default, generateMetadata } from '@/app/(public)/[country]/[section]/[slug]/page'",
     "export { GET as twinGET } from '@/app/api/compare/[country]/[section]/[slug]/[format]/route'",
     "export { default as sitemap } from '@/app/sitemap'",
     "export { GET as llmsGET } from '@/app/llms.txt/route'",
-    "export { default as Landing } from '@/app/[country]/page'",
+    "export { default as Landing } from '@/app/(public)/[country]/page'",
     "export { clearPlanCatalogCache as __p } from '@/lib/plans-server'",
     "export { clearComparisonCache as __cmp, comparisonAddressOf } from '@/lib/comparison-flags'",
     "export { comparisonFooter } from '@/lib/comparison-server'",

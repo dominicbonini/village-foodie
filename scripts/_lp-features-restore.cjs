@@ -26,7 +26,7 @@ const REPO = path.resolve(__dirname, '..')
 const src = f => { try { return fs.readFileSync(path.join(REPO, f), 'utf8') } catch { return '' } }
 
 /** True on a tree with features-page-restore (/features passes variant="features"; PlanTable renders `pt pt-features`). */
-const LANDED = /variant="features"/.test(src('app/features/page.tsx')) && /pt pt-features/.test(src('components/pricing/PlanTable.tsx'))
+const LANDED = /variant="features"/.test(src('app/(public)/(site)/features/page.tsx')) && /pt pt-features/.test(src('components/pricing/PlanTable.tsx'))
 
 const escHtml = s => String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#x27;')
 /** The capability rows' ids in table order: groups in FEATURE_GROUPS order, then rows in FEATURE_TABLE order (lib/feature-table.ts). */

@@ -23,7 +23,7 @@ const read = f => fs.readFileSync(path.join(REPO, f), 'utf8')
   const got = cases.map(([l]) => S.stripeLocaleOf(l))
   t(`stripeLocaleOf: ${cases.map(([l, w]) => `${l} → ${w ?? '(Stripe\'s default)'}`).join(' · ')}`, cases.every(([, w], i) => got[i] === w), got)
   t('the order page\'s card form is created in the page\'s language (stripe.elements({ …, locale }))',
-    /\.\.\.\(stripeLocaleOf\(pageLocale\) \? \{ locale: stripeLocaleOf\(pageLocale\) as never \} : \{\}\)/.test(read('app/trucks/[slug]/order/page.tsx')))
+    /\.\.\.\(stripeLocaleOf\(pageLocale\) \? \{ locale: stripeLocaleOf\(pageLocale\) as never \} : \{\}\)/.test(read('app/(app)/trucks/[slug]/order/page.tsx')))
   t('Manage\'s Connect onboarding (loadConnectAndInitialize) is created in the truck\'s language',
     /\.\.\.\(stripeLocaleOf\(appLocale\) \? \{ locale: stripeLocaleOf\(appLocale\) as never \} : \{\}\)/.test(read('components/manage/PaymentsTab.tsx')))
   console.log(`\n${fail ? '🔴' : '✅'} legal-languages-1-payments: ${pass} passed, ${fail} failed`)

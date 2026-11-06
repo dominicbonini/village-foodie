@@ -87,9 +87,9 @@ console.log("\n── usePrinting's gate: today's expression with guardOk folded
 console.log('\n── KDS never mounts printing; web gets the stub ────────────────────────────────────────')
 {
   const mounts = require('child_process').execFileSync('grep', ['-rl', 'usePrinting(', path.join(REPO, 'app'), path.join(REPO, 'components')]).toString().trim().split('\n').map(p => path.relative(REPO, p))
-  check(mounts.length === 1 && mounts[0] === 'app/dashboard/[token]/page.tsx', `usePrinting( is called from exactly: ${mounts.join(', ')}`)
-  let kds = ''; try { kds = require('child_process').execFileSync('grep', ['-rl', 'usePrinting\\|usePrintWatcher\\|PrintingSettings', path.join(REPO, 'app', 'kds')]).toString().trim() } catch (e) { if (e.status !== 1) throw e }
-  check(kds === '', `app/kds: no printing import (${kds || 'none'})`)
+  check(mounts.length === 1 && mounts[0] === 'app/(app)/dashboard/[token]/page.tsx', `usePrinting( is called from exactly: ${mounts.join(', ')}`)
+  let kds = ''; try { kds = require('child_process').execFileSync('grep', ['-rl', 'usePrinting\\|usePrintWatcher\\|PrintingSettings', path.join(REPO, 'app', '(app)', 'kds')]).toString().trim() } catch (e) { if (e.status !== 1) throw e }
+  check(kds === '', `app/(app)/kds: no printing import (${kds || 'none'})`)
   g.native = false; await T.setPrinterKind('net'); const s = T.getPrinterTransport(); check((await s.availability()) === 'unsupported' && (await s.sendBytes(new Uint8Array([1]))).ok === false, "web + kind 'net' → the stub: unsupported, sendBytes ok:false")
   g.native = true
 }

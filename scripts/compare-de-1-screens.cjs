@@ -36,10 +36,10 @@ const t = (label, ok, detail) => { if (ok) { pass++; console.log('  ✓ ' + labe
   fs.mkdirSync(OUT, { recursive: true })
   const B = RF.built()
   // This change's CSS from source: the comparison page's file and the footer's "Vergleich" block in landing.css.
-  const landingCss = fs.readFileSync(path.join(REPO, 'app/landing/landing.css'), 'utf8')
+  const landingCss = fs.readFileSync(path.join(REPO, 'app/(public)/(site)/landing/landing.css'), 'utf8')
   const footCol = (/\/\* compare-de-1 \(24 October 2026\): the "Vergleich" column[\s\S]*?\.hg-landing \.foot-col a:hover \{[^}]*\}/.exec(landingCss) || [''])[0]
-  const css = `<style>${fs.readFileSync(path.join(REPO, 'app/[country]/[section]/[slug]/comparison.css'), 'utf8')}\n${footCol}</style>`
-  if (!footCol) throw new Error('the footer\'s .foot-col rules are not in app/landing/landing.css')
+  const css = `<style>${fs.readFileSync(path.join(REPO, 'app/(public)/[country]/[section]/[slug]/comparison.css'), 'utf8')}\n${footCol}</style>`
+  if (!footCol) throw new Error('the footer\'s .foot-col rules are not in app/(public)/(site)/landing/landing.css')
   const R = await F.renderer(kit, 'cde1s')
   const views = GLOBAL ? { admin: (await R.page({ status: 'admin', admin: true, tables: F.GLOBAL_TABLES() })).html }
     : FEATURES ? { 'page-admin': (await R.page({ status: 'admin', admin: true })).html } : {

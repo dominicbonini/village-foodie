@@ -148,7 +148,7 @@ const LIVE = () => [LP1E.GB(), LP1E.US_ON(), NP.IE(), NP.AU(), NP.NZ(), require(
 /** The live rows plus the new countries — those named switched on, every other one off. */
 const rowsWith = (on = []) => [...LIVE(), ...sqlRows().rows.map(r => camelRow(r, on.includes(r.country_code)))]
 
-const ROUTE = { landing: 'app/[country]/page', features: 'app/[country]/features/page', compare: 'app/[country]/compare/page' }
+const ROUTE = { landing: 'app/(public)/[country]/page', features: 'app/(public)/[country]/features/page', compare: 'app/(public)/[country]/compare/page' }
 /** Pages, PDF, sitemap and /llms.txt over one LP1E context, for a given set of rows. */
 function renderer(kit, tag) {
   const { h } = kit

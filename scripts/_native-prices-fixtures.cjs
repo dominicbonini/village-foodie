@@ -91,7 +91,7 @@ const tablesOf = c => ({ plans: c.plans.map(snake), plan_prices: c.prices.map(sn
 const LIVE = () => [LP1E.GB(), LP1E.US_ON(), IE(), AU(), NZ()]
 const WITH_FIXTURES = () => [...LIVE(), CA(), SE()]
 const SEG = { GB: 'uk', US: 'us', IE: 'ie', AU: 'au', NZ: 'nz', CA: 'ca', SE: 'se', FR: 'fr' }
-const ROUTE = { landing: 'app/[country]/page', features: 'app/[country]/features/page', compare: 'app/[country]/compare/page' }
+const ROUTE = { landing: 'app/(public)/[country]/page', features: 'app/(public)/[country]/features/page', compare: 'app/(public)/[country]/compare/page' }
 // ⚠️ RE-PINNED (canada-1, then france-1, 22 October 2026): Canada and France have their real addresses (/ca, /fr).
 // ⚠️ RE-PINNED (europe-settings, 22 October 2026): …and so does Sweden (/se), with the rest of Europe — so the SE fixture
 // needs no patch any more: its bundles are the live code, given the fixture rows.

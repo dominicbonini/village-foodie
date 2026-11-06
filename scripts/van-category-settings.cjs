@@ -64,8 +64,8 @@ let pass = 0, fail = 0
 const t = (label, ok) => { if (ok) { pass++; console.log('  ✓ ' + label) } else { fail++; console.log('  🔴 ' + label) } }
 const head = (s) => console.log('\n── ' + s + ' ' + '─'.repeat(Math.max(0, 92 - s.length)))
 
-const PAGE = 'app/manage/[token]/page.tsx'
-const DASH = 'app/dashboard/[token]/page.tsx'
+const PAGE = 'app/(app)/manage/[token]/page.tsx'
+const DASH = 'app/(app)/dashboard/[token]/page.tsx'
 const LIB = 'lib/van-category-settings.ts'
 const MIGRATION = 'supabase/migrations/20261005_van_category_settings.sql'
 
@@ -195,7 +195,7 @@ head('3 · THE SWITCH IS A WRITE FAN-OUT, NOT A READ')
    * CAPACITY switch. The point of this check is unchanged — the set is still CLOSED, and still
    * contains no reader on the order path (asserted next). */
   const WRITE_SITES = new Set([
-    'app/api/manage/route.ts', 'lib/van-category-settings.ts', 'app/manage/[token]/page.tsx',
+    'app/api/manage/route.ts', 'lib/van-category-settings.ts', 'app/(app)/manage/[token]/page.tsx',
     'components/manage/KitchenCapacitySection.tsx',
   ])
   /* ══ 🔴 `codeOnly`, BECAUSE THREE FILES EXPLAIN THE COLUMN WITHOUT USING IT (5 October 2026) ══════
@@ -723,7 +723,7 @@ function variants() {
       v === null || !/from\('van_category_settings'\)\.delete\(\)\.eq\('van_id', targetVanId\)/.test(v))
   }
   {
-    const v = patched('app/dashboard/[token]/page.tsx',
+    const v = patched('app/(app)/dashboard/[token]/page.tsx',
       "const vanId=activeEvent?.van_id\n    if(!vanId)return",
       "const vanId=activeEvent?.van_id??''", 'V7')
     must('V7 🔴 the Dashboard card writes with NO van — which is how it edited the truck before', (() => {

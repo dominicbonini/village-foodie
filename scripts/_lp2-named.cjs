@@ -450,7 +450,7 @@ const NAMED = [
   // The 1b dashboard / KDS views (scripts/language-phase-1b.cjs, and the same 1b views in language-phase-2). Helpers:
   // mnAddStubProp / mnActiveEvent / mnTruckTime above. Each entry adds exactly its change and nothing else.
   { id: 'midnight-dayloadstrip-event-prop', part: 'Midnight (17 Oct 2026) — stub props only', country: 'both',
-    what: 'app/dashboard/[token]/page.tsx passes event={activeEvent} to BOTH DayLoadStrips (strip + sidebar), so an event that runs past midnight orders its slots on the event’s timeline (components/dashboard/DayLoadStrip.tsx; any other event renders exactly as before — the strip is proven in its own area). In this area DayLoadStrip is a STUB that serialises its props, so the only difference is the stub’s JSON gaining "event" right after "eventDate", holding the active event — read from BEFORE’s own markup, where the page passes the same activeEvent to AddOrderPanel (todayEvent / controlledEvent, which must agree). No rendered byte changes.',
+    what: 'app/(app)/dashboard/[token]/page.tsx passes event={activeEvent} to BOTH DayLoadStrips (strip + sidebar), so an event that runs past midnight orders its slots on the event’s timeline (components/dashboard/DayLoadStrip.tsx; any other event renders exactly as before — the strip is proven in its own area). In this area DayLoadStrip is a STUB that serialises its props, so the only difference is the stub’s JSON gaining "event" right after "eventDate", holding the active event — read from BEFORE’s own markup, where the page passes the same activeEvent to AddOrderPanel (todayEvent / controlledEvent, which must agree). No rendered byte changes.',
     views: id => /^1b\/dashboard\/(GB|US)\|/.test(id),
     expect: b => mapStrings(b, s => {
       if (!s.includes('<x-stub data-c="DayLoadStrip"')) return s
@@ -458,7 +458,7 @@ const NAMED = [
       return ev && ev.value !== undefined ? mnAddStubProp(s, 'DayLoadStrip', 'eventDate', 'event', ev.value) : s
     }) },
   { id: 'midnight-finish-modal-time-prop', part: 'US formats (17 Oct 2026) — stub props only', country: 'both',
-    what: 'app/dashboard/[token]/page.tsx passes time={dashTime} to EventFinishTimeModal, so the modal writes times in the truck’s style (US "9:00 PM"; GB "21:00" exactly as before). In this area the modal is a STUB that serialises its props: its JSON gains "time" right after "busy", holding the truck’s time settings — read from BEFORE’s own markup (DayLoadStrip time={truck?.time}; dashTime = timeSettingsOr(truck.time), the same object for the fixture’s complete settings). No rendered byte changes; the modal’s own US output is the KDS entry below.',
+    what: 'app/(app)/dashboard/[token]/page.tsx passes time={dashTime} to EventFinishTimeModal, so the modal writes times in the truck’s style (US "9:00 PM"; GB "21:00" exactly as before). In this area the modal is a STUB that serialises its props: its JSON gains "time" right after "busy", holding the truck’s time settings — read from BEFORE’s own markup (DayLoadStrip time={truck?.time}; dashTime = timeSettingsOr(truck.time), the same object for the fixture’s complete settings). No rendered byte changes; the modal’s own US output is the KDS entry below.',
     views: id => /^1b\/dashboard\/(GB|US)\|/.test(id),
     expect: b => mapStrings(b, s => {
       if (!s.includes('<x-stub data-c="EventFinishTimeModal"')) return s

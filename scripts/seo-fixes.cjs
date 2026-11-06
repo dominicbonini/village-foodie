@@ -61,7 +61,7 @@ export function notFound() { throw new Error('notFound') }
 export function redirect(to) { const e = new Error('redirect'); e.to = to; throw e }
 export function permanentRedirect(to) { const e = new Error('redirect'); e.to = to; throw e }`
   const STUB = { stubs: { 'next/navigation': NAV } }
-  const ROUTE = { landing: 'app/[country]/page', features: 'app/[country]/features/page', compare: 'app/[country]/compare/page' }
+  const ROUTE = { landing: 'app/(public)/[country]/page', features: 'app/(public)/[country]/features/page', compare: 'app/(public)/[country]/compare/page' }
   const mods = {}
   const modOf = p => (mods[p] ||= ctx.bundle(`seo-${p}`, `export * from '@/${ROUTE[p]}'\nexport { default } from '@/${ROUTE[p]}'\nexport { clearPlanCatalogCache as __clearPlans } from '@/lib/plans-server'`, STUB))
   const slug = cc => (cc === 'GB' ? 'uk' : 'us')
@@ -94,8 +94,8 @@ export function permanentRedirect(to) { const e = new Error('redirect'); e.to = 
   t(`US on: /uk carries <a href="/us"> (and /uk) as menu options, in the server HTML, ${MENUS === 2 ? 'in header AND footer' : 'in the footer (the nav has none)'}`, JSON.stringify(items(ukOn)) === JSON.stringify(twice(['/uk', '/us'])) && (!AP.LANDED || AP.navHasNoMenu(ukOn)), items(ukOn))
   t('…on /uk/features the options point at the EQUIVALENT page (/us/features)', JSON.stringify(items(featUkOn)) === JSON.stringify(twice(['/uk/features', '/us/features'])), items(featUkOn))
   t(PICKER.LANDED ? '…the closed box is hidden by CSS (`cc-dlg-closed`), not absent' : '…the closed menu is hidden by CSS (`cc-menu-closed`), not absent', PICKER.LANDED
-    ? (String(ukOn).match(/class="cc-dlg cc-dlg-closed"/g) || []).length === 1 && /\.hg-landing \.cc-dlg-closed \{ display: none; \}/.test(read('app/landing/landing.css'))
-    : (String(ukOn).match(/class="cc-menu cc-menu-closed"/g) || []).length === MENUS && /\.hg-landing \.cc-menu-closed \{ display: none; \}/.test(read('app/landing/landing.css')))
+    ? (String(ukOn).match(/class="cc-dlg cc-dlg-closed"/g) || []).length === 1 && /\.hg-landing \.cc-dlg-closed \{ display: none; \}/.test(read('app/(public)/(site)/landing/landing.css'))
+    : (String(ukOn).match(/class="cc-menu cc-menu-closed"/g) || []).length === MENUS && /\.hg-landing \.cc-menu-closed \{ display: none; \}/.test(read('app/(public)/(site)/landing/landing.css')))
   t('US off: no /us link anywhere on /uk', JSON.stringify(items(ukOff)) === JSON.stringify(twice(['/uk'])) && !/href="\/us/.test(String(ukOff)), items(ukOff))
   const cm = read('components/landing/CountryMenu.tsx')
   t('the click is unchanged: it prevents the default navigation and runs the same `choose` (cookie + router)', /e\.preventDefault\(\); choose\(o\.code\)/.test(cm) && /keepCountry\(code\)/.test(cm) && /router\.push\(there \+ url\.search \+ url\.hash, \{ scroll: false \}\)/.test(cm))
@@ -135,7 +135,7 @@ export function permanentRedirect(to) { const e = new Error('redirect'); e.to = 
   t('/uk never carries a USD Offer, /us never a GBP one', !offers(appUk).some(o => /USD/.test(o)) && !offers(appUs).some(o => /GBP/.test(o)))
   t('US off: /us is not served (redirect) — so no USD Offer exists anywhere', /^REDIRECT/.test(await page('landing', 'US', false)) && !JSON.stringify(graphOf(ukOff).ld).includes('USD'))
   const sd = read('lib/structured-data.ts')
-  t('no Offer for a price the page does not show (`pricesShown` false → none)', /if \(!pricesShown\) return \[\]/.test(sd) && /pricesShown: s\.enabled/.test(read('app/landing/page.tsx')))
+  t('no Offer for a price the page does not show (`pricesShown` false → none)', /if \(!pricesShown\) return \[\]/.test(sd) && /pricesShown: s\.enabled/.test(read('app/(public)/(site)/landing/page.tsx')))
   t('nothing typed: the graph reads BRANDS, HATCHGRAB_ORIGIN, HATCHGRAB_LOGO_PNG, the app-badge URLs and offerPlans', ['BRANDS.HATCHGRAB.name', 'HATCHGRAB_ORIGIN', 'HATCHGRAB_LOGO_PNG', 'appStoreUrlFor(countryCode)', 'GOOGLE_PLAY_URL', 'offerPlans(catalog, countryCode)'].every(x => sd.includes(x)) && !/['"](GBP|USD|Pro|Unlimited|Pay as you go|29|69)['"]/.test(sd))
 
   // ══ 4 ════════════════════════════════════════════════════════════════════════════════════════════════════════════
@@ -152,10 +152,10 @@ export function permanentRedirect(to) { const e = new Error('redirect'); e.to = 
   // ══ 5 ════════════════════════════════════════════════════════════════════════════════════════════════════════════
   head('5 · S1 + S2 + N6 — canonicals, og:url, noindex')
   const P = {
-    '/privacy': "app/(legal)/privacy/page", '/terms': "app/(legal)/terms/page", '/country-terms': "app/(legal)/country-terms/page",
-    '/contact': 'app/contact/page', '/signup': 'app/signup/layout', '/login': 'app/login/layout',
+    '/privacy': "app/(app)/(legal)/privacy/page", '/terms': "app/(app)/(legal)/terms/page", '/country-terms': "app/(app)/(legal)/country-terms/page",
+    '/contact': 'app/(app)/contact/page', '/signup': 'app/(app)/signup/layout', '/login': 'app/(app)/login/layout',
   }
-  const root = await ctx.bundle('seo-root', "export { generateMetadata } from '@/app/layout'", STUB)
+  const root = await ctx.bundle('seo-root', "export { generateMetadata } from '@/app/(app)/layout'", STUB)
   for (const [p, file] of Object.entries(P)) {
     const M = await ctx.bundle(`seo-meta-${p.slice(1)}`, `export * from '@/${file}'`, STUB)
     for (const host of [HG, VF]) {
@@ -237,7 +237,7 @@ export function permanentRedirect(to) { const e = new Error('redirect'); e.to = 
     px.indexOf('request.headers.delete(PAGE_LANG_HEADER)') > 0 && px.indexOf('request.headers.delete(PAGE_LANG_HEADER)') < px.indexOf('request.headers.set(PAGE_LANG_HEADER, row.locale)')
     && /if \(LEGAL_DOCUMENT_PATHS\.has\(pathname\)\) request\.headers\.set\(PAGE_LANG_HEADER, DEFAULT_LOCALE\)/.test(px)
     && px.indexOf('request.headers.delete(PAGE_LANG_HEADER)') < px.indexOf('let supabaseResponse = NextResponse.next({ request })'))
-  t('the root layout reads it: <html lang={lang}>', /const lang = htmlLangOf\(requestHeaders\.get\(PAGE_LANG_HEADER\)\)/.test(read('app/layout.tsx')) && /<html lang=\{lang\} data-brand=\{brand\}( \{\.\.\.\(isRtl\(lang\) \? \{ dir: 'rtl' \} : \{\}\)\})?>/.test(read('app/layout.tsx')))   // ⚠️ RE-PINNED (world-countries-1): + dir="rtl" on an Arabic page only
+  t('the root layout reads it: <html lang={lang}>', /const lang = htmlLangOf\(requestHeaders\.get\(PAGE_LANG_HEADER\)\)/.test(read('app/(app)/layout.tsx')) && /<html lang=\{lang\} data-brand=\{brand\}( \{\.\.\.\(isRtl\(lang\) \? \{ dir: 'rtl' \} : \{\}\)\})?>/.test(read('app/(app)/layout.tsx')))   // ⚠️ RE-PINNED (world-countries-1): + dir="rtl" on an Arabic page only
 
   // ══ 9 ════════════════════════════════════════════════════════════════════════════════════════════════════════════
   head('9 · S7 — page weight')
@@ -252,14 +252,14 @@ export function permanentRedirect(to) { const e = new Error('redirect'); e.to = 
     const el = h(SMK.PlanTable, pr)
     t(`plan table (${label}) — a wider fixture: byte-identical too`, SMK.staticMarkup(el) === kit.renderStatic(el))
   }
-  t('the legal pages render the static HTML into the SAME content div (no wrapper element)', ['privacy', 'terms', 'country-terms'].every(f => /<LegalPage html=\{renderLegalMarkdownHtml\(SOURCE\)\}( countryTermsHref=\{COUNTRY_TERMS_PATH\})? \/>/.test(read(`app/(legal)/${f}/page.tsx`))   /* ⚠️ RE-PINNED (site-chrome-1): /terms also passes its Country terms link */)
+  t('the legal pages render the static HTML into the SAME content div (no wrapper element)', ['privacy', 'terms', 'country-terms'].every(f => /<LegalPage html=\{renderLegalMarkdownHtml\(SOURCE\)\}( countryTermsHref=\{COUNTRY_TERMS_PATH\})? \/>/.test(read(`app/(app)/(legal)/${f}/page.tsx`))   /* ⚠️ RE-PINNED (site-chrome-1): /terms also passes its Country terms link */)
     && /dangerouslySetInnerHTML=\{\{ __html: html \}\}/.test(read('components/legal/LegalPage.tsx')))
-  const lp2 = read('app/landing/page.tsx')
+  const lp2 = read('app/(public)/(site)/landing/page.tsx')
   t('exactly ONE priority image on the landing — the dashboard screenshot (the LCP)', (lp2.match(/\bpriority \/>/g) || []).length === 1 && /landingScreenshot\('dashboard'[^\n]*priority \/>/.test(lp2))
   t('…the other two hero shots load eagerly at LOW fetch priority (React emits no preload for them)', ['kitchen', 'phone'].every(k => new RegExp(`landingScreenshot\\('${k}'[^\\n]*loading="eager" fetchPriority="low" />`).test(lp2)))
   t('the store badges are lazy (not preloaded)', (read('components/StoreBadges.tsx').match(/loading="lazy"/g) || []).length >= 2)
   t('fonts: Geist Mono and Courier Prime are not preloaded (still declared, so still loaded where used); Archivo, Public Sans and Geist are',
-    /Geist_Mono\(\{[^}]*preload: false/.test(read('app/layout.tsx')) && !/Geist\(\{[^}]*preload: false/.test(read('app/layout.tsx'))
+    /Geist_Mono\(\{[^}]*preload: false/.test(read('app/(app)/layout.tsx')) && !/Geist\(\{[^}]*preload: false/.test(read('app/(app)/layout.tsx'))
     // ⚠️ RE-PINNED (faq-4, 2 November 2026): /features' fonts moved, unchanged, into the frame it shares with /faq (components/landing/MarketingFrame.tsx).
     // ⚠️ RE-PINNED (site-chrome-1, 5 November 2026): the public pages' fonts are declared ONCE, in components/landing/MarketingFrame.tsx.
     && (require('./_lp-site-chrome-1.cjs').LANDED   // eslint-disable-line @typescript-eslint/no-require-imports -- CommonJS harness module (site-chrome-1)
@@ -268,8 +268,8 @@ export function permanentRedirect(to) { const e = new Error('redirect'); e.to = 
       ? /Courier_Prime\(\{[^}]*preload: false/.test(read('components/landing/MarketingFrame.tsx'))
         && /const archivo = Archivo\(\{ subsets: \['latin'\], style: \['normal'\], variable: '--font-archivo', display: 'swap' \}\)/.test(read('components/landing/MarketingFrame.tsx'))
         && /const archivoItalic = Archivo\(\{[^}]*style: \['italic'\][^}]*preload: false/.test(read('components/landing/MarketingFrame.tsx'))
-        && ['app/landing/page.tsx', 'app/compare/page.tsx', 'app/contact/HatchGrabContact.tsx'].every(f => !/Courier_Prime\(|Archivo\(/.test(read(f)))
-      : ['app/landing/page.tsx', 'components/landing/MarketingFrame.tsx', 'app/compare/page.tsx', 'app/contact/HatchGrabContact.tsx'].every(f => /Courier_Prime\(\{[^}]*preload: false/.test(read(f)) && !/Archivo\(\{[^}]*preload: false/.test(read(f)))))
+        && ['app/(public)/(site)/landing/page.tsx', 'app/(public)/(site)/compare/page.tsx', 'app/(app)/contact/HatchGrabContact.tsx'].every(f => !/Courier_Prime\(|Archivo\(/.test(read(f)))
+      : ['app/(public)/(site)/landing/page.tsx', 'components/landing/MarketingFrame.tsx', 'app/(public)/(site)/compare/page.tsx', 'app/(app)/contact/HatchGrabContact.tsx'].every(f => /Courier_Prime\(\{[^}]*preload: false/.test(read(f)) && !/Archivo\(\{[^}]*preload: false/.test(read(f)))))
 
   // ══ 10 ═══════════════════════════════════════════════════════════════════════════════════════════════════════════
   head('10 · N1 — /compare\'s title and description')

@@ -443,7 +443,7 @@ const NAMED = [
     views: id => /^menu\/US\|(deals\||menuTab\|setup\|schedule\|)/.test(id) || /^schedule\/US\|(tab|places|timeSelect)\|/.test(id) || /^settings\/US\|[^|]+\|page$/.test(id)
       || /^copy\/US\|addressPlaceholders\|(pastePlaceholder|addressPlaceholders)\|/.test(id) },
   { id: 'us-layout-fix-1-manage-join', country: 'US', agent: 'US layout fixes (18 Oct 2026)',
-    what: '⚠️ RE-PINNED (18 October 2026): app/manage/[token]/page.tsx DealsTab — a deal’s slot range on a 12-hour truck joins with U+00A0 + "– " ("11:30 AM – 2:00 PM" never breaks before the dash); 24-hour " – " as before. LISTED: the US deals views.',
+    what: '⚠️ RE-PINNED (18 October 2026): app/(app)/manage/[token]/page.tsx DealsTab — a deal’s slot range on a 12-hour truck joins with U+00A0 + "– " ("11:30 AM – 2:00 PM" never breaks before the dash); 24-hour " – " as before. LISTED: the US deals views.',
     views: id => /^menu\/US\|deals\|/.test(id) },
   { id: 'us-layout-fix-3-schedule-phone-cards', country: 'US', agent: 'US layout fixes (18 Oct 2026)',
     what: '⚠️ RE-PINNED (18 October 2026): the Schedule cards’ phone grid (see the GB entry of this id, PRECISE there). LISTED: every US Schedule tab view.',

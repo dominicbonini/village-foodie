@@ -34,7 +34,7 @@ const REPO = path.resolve(__dirname, '..')
 const MERGE_PARENT_SG = '50759fd'   // schedule-graphics' tip, the merge's FIRST parent
 const MERGE_PARENT_ET = '5cde26d'   // event-types' tip, the merge's SECOND parent
 const gitShow = (ref, f) => {
-  try { return execFileSync('git', ['show', `${ref}:${f}`], { cwd: REPO, encoding: 'utf8', maxBuffer: 64e6 }) }
+  try { return execFileSync('git', ['show', `${ref}:${require('./_moved-paths.cjs').pathAt(ref, f)}`], { cwd: REPO, encoding: 'utf8', maxBuffer: 64e6 }) }
   catch { return null }
 }
 
@@ -322,7 +322,8 @@ head('1 · ZERO CHANGE FOR A TRUCK WITH NO TYPES — against the PRE-BUILD TREE'
      *     delay  : event override ?? van default
      * ⚠️ `?? 'pause'` AND `!== null ? :` ARE NOT INTERCHANGEABLE WITH `??` HERE and the before tree
      * used each where it did; the baseline keeps them. */
-    const beforeDashSrc = fs.readFileSync(path.join(wt, 'app/dashboard/[token]/page.tsx'), 'utf8')
+    // ⚠️ RE-PINNED (cwv-2, 6 November 2026): `wt` is a checkout of BEFORE_REF, so the file is read under the name it had there.
+    const beforeDashSrc = fs.readFileSync(path.join(wt, require('./_moved-paths.cjs').pathAt(BEFORE_REF, 'app/(app)/dashboard/[token]/page.tsx')), 'utf8')
     t('🔴 the before tree really did resolve all three offline values inline (the premise of 1d-ii)',
       /const effectiveOfflineProtection=eventOfflineOverride!==null\?eventOfflineOverride:vanAutoPause/.test(beforeDashSrc)
       && /const effectiveOfflineMode:OfflineProtectionMode=eventOfflineModeOverride\?\?vanOfflineMode/.test(beforeDashSrc)
@@ -899,12 +900,12 @@ head('5 · THE WIRING')
 {
   const dash = fs.readFileSync(path.join(REPO, 'app/api/dashboard/route.ts'), 'utf8')
   const dashAction = fs.readFileSync(path.join(REPO, 'app/api/dashboard/action/route.ts'), 'utf8')
-  const dashPage = fs.readFileSync(path.join(REPO, 'app/dashboard/[token]/page.tsx'), 'utf8')
-  const kds = fs.readFileSync(path.join(REPO, 'app/dashboard/[token]/kds/page.tsx'), 'utf8')
+  const dashPage = fs.readFileSync(path.join(REPO, 'app/(app)/dashboard/[token]/page.tsx'), 'utf8')
+  const kds = fs.readFileSync(path.join(REPO, 'app/(app)/dashboard/[token]/kds/page.tsx'), 'utf8')
   const events = fs.readFileSync(path.join(REPO, 'app/api/events/route.ts'), 'utf8')
   const slot = fs.readFileSync(path.join(REPO, 'lib/slot-interval.ts'), 'utf8')
   const route = fs.readFileSync(path.join(REPO, 'app/api/event-types/route.ts'), 'utf8')
-  const page = fs.readFileSync(path.join(REPO, 'app/manage/[token]/page.tsx'), 'utf8')
+  const page = fs.readFileSync(path.join(REPO, 'app/(app)/manage/[token]/page.tsx'), 'utf8')
   const ui = fs.readFileSync(path.join(REPO, 'components/manage/EventTypes.tsx'), 'utf8')
 
   t('🔴 THE MARK-READY STEP IS NO LONGER RESOLVED INLINE', (() => {
@@ -1233,7 +1234,7 @@ head('5 · THE WIRING')
    * ⛔ RE-AIMING IT AT NOTHING WOULD HAVE MADE IT VACUOUS, which is exactly what happened to two
    * variants in scripts/event-pricing.cjs this build and is why `buildVariant` now throws. */
   t('🔴 the type-switch confirm says all three things a live switch has to say', (() => {
-    const src = fs.readFileSync(path.join(REPO, 'app/dashboard/[token]/page.tsx'), 'utf8')
+    const src = fs.readFileSync(path.join(REPO, 'app/(app)/dashboard/[token]/page.tsx'), 'utf8')
     /* Language Phase 1b re-pin: the four sentences are `dashboard.typePicker.*` messages (exact text; the page's
      * `{targetName}` is the message's `{type}`, `&rsquo;` is ’), and the confirm reads each key with targetName. */
     return GB_MSG('dashboard.typePicker.newOrders') === 'New orders use {type}’s service settings.'
@@ -1294,7 +1295,7 @@ head('5b · THE MODAL AND THE CARD')
   /* ⛔ THE `card` LOCAL IS GONE — `components/dashboard/ThisEventCard.tsx` is deleted. Everything
    * §4 below asserts is now about the dashboard page and the shared event-actions modal. */
   const dashAction = fs.readFileSync(path.join(REPO, 'app/api/dashboard/action/route.ts'), 'utf8')
-  const dashPage = fs.readFileSync(path.join(REPO, 'app/dashboard/[token]/page.tsx'), 'utf8')
+  const dashPage = fs.readFileSync(path.join(REPO, 'app/(app)/dashboard/[token]/page.tsx'), 'utf8')
   const monitor = fs.readFileSync(path.join(REPO, 'supabase/functions/heartbeat-monitor/index.ts'), 'utf8')
 
   /* ── 🔴 §1 · A CENTRED MODAL WITH FIXED-WIDTH COLUMNS THAT SCROLL ────────────────────────────── */
@@ -2660,7 +2661,7 @@ head('5b · THE MODAL AND THE CARD')
      * branch came from schedule-graphics, so that tip is what "left" is measured against. */
     const base = execFileSync('git', ['show', `${MERGE_PARENT_SG}:app/dashboard/[token]/page.tsx`],
       { cwd: REPO, encoding: 'utf8', maxBuffer: 64e6 })
-    const now = fs.readFileSync(path.join(REPO, 'app/dashboard/[token]/page.tsx'), 'utf8')
+    const now = fs.readFileSync(path.join(REPO, 'app/(app)/dashboard/[token]/page.tsx'), 'utf8')
     const strip = (src) => codeOf(src).split('\n').map(x => x.trim()).filter(Boolean)
     const left = new Map()
     for (const l of strip(now)) left.set(l, (left.get(l) || 0) + 1)
@@ -2856,7 +2857,7 @@ head('5b · THE MODAL AND THE CARD')
       /^logoUrl=\{\(demoBranded&&truck&&hasFeature\(truck\.plan,'branded_qr_code'\)&&truck\.qr_code_style==='branded'\)\?\(truck\.logo\|\|null\):null\}\/>\}$/,
     ]
     t('⚠️ …and the Language Phase 1b replacements are present (the page reads `dashboard`; each enumerated line in its new form)', (() => {
-      const pg = codeOf(fs.readFileSync(path.join(REPO, 'app/dashboard/[token]/page.tsx'), 'utf8'))
+      const pg = codeOf(fs.readFileSync(path.join(REPO, 'app/(app)/dashboard/[token]/page.tsx'), 'utf8'))
       const flat = pg.replace(/\s+/g, '')
       const REASONS = { customer_cancelled: 'Customer cancelled', item_unavailable: 'Item unavailable', not_collected: 'Order not collected',
         wrong_or_missing_item: 'Wrong or missing item', quality_issue: 'Quality issue', duplicate_payment: 'Duplicate payment', other: 'Other' }
@@ -2884,23 +2885,23 @@ head('5b · THE MODAL AND THE CARD')
     // ⚠️ RE-PINNED (demo-2, 30 October 2026): the welcome and the loop-complete prompt are retired from the dashboard, so
     // the gate now stands down the ended card alone — and neither retired mount may come back.
     t('⚠️ …and the demo setting-up gate is present on the ended card, and the retired welcome / loop-complete mounts are gone (demo-2)', (() => {
-      const pg = codeOf(fs.readFileSync(path.join(REPO, 'app/dashboard/[token]/page.tsx'), 'utf8'))
+      const pg = codeOf(fs.readFileSync(path.join(REPO, 'app/(app)/dashboard/[token]/page.tsx'), 'utf8'))
       return /const demoEndedCard=demoServiceEnded&&!demoSettingUp\?\(/.test(pg) && !/<DemoWelcome\b/.test(pg) && !/<DemoLoopComplete\b/.test(pg)
         && /forgetRetiredDemoFlags\(token\)/.test(pg)
     })())
     t('⚠️ …and the Language Phase 0 replacements are present (walk-up helper, default category constant)', (() => {
-      const pg = codeOf(fs.readFileSync(path.join(REPO, 'app/dashboard/[token]/page.tsx'), 'utf8'))
+      const pg = codeOf(fs.readFileSync(path.join(REPO, 'app/(app)/dashboard/[token]/page.tsx'), 'utf8'))
       return /customer_name:m\.customerName\|\|WALK_UP_NAME,/.test(pg) && /order\.customer_name&&!isWalkUp\(order\.customer_name\)\?/.test(pg)
         && (pg.match(/\?\.category\|\|DEFAULT_CATEGORY_KEY/g) || []).length === 2
     })())
     // ⚠️ RE-PINNED (demo-2): one demo signup mount remains on the dashboard (the banner's); the loop-complete one is retired.
     t('⚠️ …and the Phase 2C phone copy reaches the demo signup mount (the banner\'s — the loop-complete one is retired, demo-2)', (() => {
-      const pg = codeOf(fs.readFileSync(path.join(REPO, 'app/dashboard/[token]/page.tsx'), 'utf8')).replace(/\s+/g, '')
+      const pg = codeOf(fs.readFileSync(path.join(REPO, 'app/(app)/dashboard/[token]/page.tsx'), 'utf8')).replace(/\s+/g, '')
       return /<DemoGetStartedtoken=\{token\}isAdmin=\{isAdmin\}extractionSource=\{demoSession\?\.extraction_source\?\?null\}phone=\{truck\?\.phone\?\?null\}\/>/.test(pg)
         && !/<DemoLoopComplete/.test(pg)
     })())
     t('⚠️ …and every Phase 2B edit is present in its truck-clock form', (() => {
-      const pg = codeOf(fs.readFileSync(path.join(REPO, 'app/dashboard/[token]/page.tsx'), 'utf8'))
+      const pg = codeOf(fs.readFileSync(path.join(REPO, 'app/(app)/dashboard/[token]/page.tsx'), 'utf8'))
       const flat = pg.replace(/\s+/g, '')
       return !/localTodayIso|toTimeString\(\)|\.getHours\(\)|toLocaleTimeString\(/.test(pg)
         && /pruneStaleEventCache\(timeSettingsOr\(truck\.time,'dashboard'\)\.timeZone\)/.test(flat)
@@ -2919,7 +2920,7 @@ head('5b · THE MODAL AND THE CARD')
     /* 🔴 THE COMPANION CHECK FOR THE ONE ACCOUNTED EDIT. An entry on that list excuses a lost line
      * only while its replacement exists; without this, deleting the call outright would read as
      * "explained". This is the `movedEdits` pattern scripts/schedule-graphics-places.cjs uses. */
-    const nowPage = codeOf(fs.readFileSync(path.join(REPO, 'app/dashboard/[token]/page.tsx'), 'utf8'))
+    const nowPage = codeOf(fs.readFileSync(path.join(REPO, 'app/(app)/dashboard/[token]/page.tsx'), 'utf8'))
     /* 🔴 FOUR ACCOUNTED EDITS NOW, AND EVERY ONE IS PROVED PRESENT IN ITS NEW FORM. An entry on the
      * ALLOWED list excuses a lost line only while its replacement exists; without this, deleting a
      * call outright would read as "explained". */
@@ -3736,7 +3737,7 @@ function variants() {
     const sharedPredicate = (page, prim) =>
       /import \{[^}]*\bToggle\b[^}]*\} from '@\/components\/manage\/primitives'/.test(page)
       && !/function Toggle\(/.test(codeOf(page)) && /export function Toggle\(/.test(prim)
-    const pageSrc2 = fs.readFileSync(path.join(REPO, 'app/manage/[token]/page.tsx'), 'utf8')
+    const pageSrc2 = fs.readFileSync(path.join(REPO, 'app/(app)/manage/[token]/page.tsx'), 'utf8')
     const primSrc2 = fs.readFileSync(path.join(REPO, 'components/manage/primitives.tsx'), 'utf8')
     const forked = pageSrc2.replace('const FOOD_EMOJI_CATEGORIES = [',
       'function Toggle() { return null }\nconst FOOD_EMOJI_CATEGORIES = [')
@@ -3749,7 +3750,7 @@ function variants() {
      * use the shared switch and must not re-style it.
      * ⛔ THE OLD FORM WOULD HAVE THROWN ENOENT, which is the honest failure; it is re-aimed rather
      * than deleted because the claim still has a subject. */
-    const dashSrc = fs.readFileSync(path.join(REPO, 'app/dashboard/[token]/page.tsx'), 'utf8')
+    const dashSrc = fs.readFileSync(path.join(REPO, 'app/(app)/dashboard/[token]/page.tsx'), 'utf8')
     const dashPredicate = (src) =>
       /<Toggle on=\{effectiveTakesCash\}/.test(src)
       && /<Toggle on=\{isDemo\?false:effectiveOrderReady\}/.test(src)
@@ -3841,7 +3842,7 @@ async function usualTypeSuite() {
       return /placeId: placeId \?\? null/.test(et)
         && /placeId: string \| null \| undefined/.test(et)
         && /placeId=\{editingEvent\.truck_place_id \?\? null\}/.test(
-          codeOf(fs.readFileSync(path.join(REPO, 'app/manage/[token]/page.tsx'), 'utf8')))
+          codeOf(fs.readFileSync(path.join(REPO, 'app/(app)/manage/[token]/page.tsx'), 'utf8')))
     })())
   }
 

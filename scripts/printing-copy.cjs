@@ -28,13 +28,13 @@ const leaves = (o, p = '') => Object.entries(o || {}).flatMap(([k, v]) => (v && 
 const MARKETING_NS = /^(landing|landingNav|landingFooter|planFeatures|pricing|planTable|plansPdf|compare)\./
 const marketingWords = () => ['en-GB', 'en-US'].flatMap(loc => leaves(MSG(loc)).filter(([k]) => MARKETING_NS.test(k)).map(([k, v]) => `${loc}:${k} = ${v}`)).join('\n')
 // ⚠️ RE-PINNED (pricing-pages, Stage B, 20 October 2026): the landing's pricing cards are components/pricing/PricingSection.tsx.
-const landingText = () => noComments(read('app/landing/page.tsx')) + '\n' + noComments(read('components/pricing/PricingSection.tsx')) + '\n' + marketingWords()
+const landingText = () => noComments(read('app/(public)/(site)/landing/page.tsx')) + '\n' + noComments(read('components/pricing/PricingSection.tsx')) + '\n' + marketingWords()
 // ⚠️ RE-PINNED (plans-data-model, Stage A, 19 October 2026): lib/plan-features.ts was DELETED; its content (rows, footnotes,
 // unchanged and frozen) now lives in lib/legacy-pricing-display.ts, so that file takes its place in every scan below.
 // ⚠️ RE-PINNED (pricing-pages, Stage B, 20 October 2026): lib/legacy-pricing-display.ts was DELETED; the plan table's rows are
 // lib/feature-table.ts, drawn by components/pricing/PlanTable.tsx, and the landing cards by components/pricing/PricingSection.tsx.
 const PLAN_TABLE_FILE = 'lib/feature-table.ts'
-const FACING = ['messages/en-GB.json', 'messages/en-US.json', 'components/printing/PrintingSettings.tsx', 'components/printing/PrinterTypeChoice.tsx', 'lib/printing/netTransport.ts', 'lib/printing/networkGuard.ts', 'lib/printing/netAddress.ts', 'lib/printing/usePrinting.ts', PLAN_TABLE_FILE, 'components/pricing/PlanTable.tsx', 'components/pricing/PricingSection.tsx', 'app/landing/page.tsx', 'content/store-listing.md', 'app/api/printing/route.ts']
+const FACING = ['messages/en-GB.json', 'messages/en-US.json', 'components/printing/PrintingSettings.tsx', 'components/printing/PrinterTypeChoice.tsx', 'lib/printing/netTransport.ts', 'lib/printing/networkGuard.ts', 'lib/printing/netAddress.ts', 'lib/printing/usePrinting.ts', PLAN_TABLE_FILE, 'components/pricing/PlanTable.tsx', 'components/pricing/PricingSection.tsx', 'app/(public)/(site)/landing/page.tsx', 'content/store-listing.md', 'app/api/printing/route.ts']
 console.log('── BROKEN VARIANT: MUST report FAILURE ──────────────────────────────────────────────────')
 {
   // Re-based 19 September 2026: this replaced "Bluetooth or wired printer" on the landing page, a phrase

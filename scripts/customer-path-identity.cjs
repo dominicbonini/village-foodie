@@ -178,7 +178,7 @@ console.log('\n── THE CUSTOMER FILES WERE NOT EDITED BY THIS WORK ───�
 {
   // Every file the brief ring-fences. "Unchanged by this work" = its diff against HEAD is exactly the
   // diff the collection-times work already had, which these known line counts pin.
-  const FILES = ['app/trucks/[slug]/order/page.tsx', 'app/api/slots/[truckId]/route.ts', 'app/api/menu/[truckId]/route.ts',
+  const FILES = ['app/(app)/trucks/[slug]/order/page.tsx', 'app/api/slots/[truckId]/route.ts', 'app/api/menu/[truckId]/route.ts',
                  'app/api/events/route.ts', 'app/api/orders/submit/route.ts', 'lib/payments/promote-draft.ts', 'lib/orders/place-in-slot.ts']
   for (const f of FILES) {
     const d = execFileSync('git', ['diff', '--numstat', 'HEAD', '--', f], { cwd: REPO }).toString().trim()
@@ -187,7 +187,7 @@ console.log('\n── THE CUSTOMER FILES WERE NOT EDITED BY THIS WORK ───�
     const touched = /buildFitMessage|FitWhy|slot-fit-message|manualFitWhy|Order won/.test(src)
     check(!touched, `${f} — ${d ? 'diff vs HEAD ' + d.split('\t').slice(0, 2).join('+/-') + ' (collection-times work)' : 'identical to HEAD'}; no reference to this work`)
   }
-  check(!/\.why\b/.test(fs.readFileSync(path.join(REPO, 'app/trucks/[slug]/order/page.tsx'), 'utf8')), 'the customer page never reads `why` — it reads only fits')
+  check(!/\.why\b/.test(fs.readFileSync(path.join(REPO, 'app/(app)/trucks/[slug]/order/page.tsx'), 'utf8')), 'the customer page never reads `why` — it reads only fits')
 }
 
 fs.rmSync(before, { recursive: true, force: true })

@@ -342,7 +342,7 @@ async function measure() {
 
   // ⚠️ The fixture's viewport meta must match the app's, or every phone number above is measured at
   // the engine's 980px default instead of at 390.
-  const layout = read('app/layout.tsx')
+  const layout = read('app/(app)/layout.tsx')
   t(/width: 'device-width'/.test(layout) && /initialScale: 1/.test(layout),
     "⚠️ the app declares width=device-width, so the fixture's viewport meta matches it")
 

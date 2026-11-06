@@ -117,7 +117,7 @@ if (process.argv[2] === 'capture') {
 
   head('2 · B1 venue pages: noindex without upcoming events; thin pages noindex')
   const events = [{ venueSlug: 'the-crown-thurston', venueName: 'The Crown', village: 'Thurston' }, { venueName: 'The Bull', village: 'Woolpit' }]
-  const V = await ctx.bundle('sg2-venue', "export { generateMetadata } from '@/app/venues/[slug]/page'\nexport { venueRobots } from '@/lib/venue-index'", {
+  const V = await ctx.bundle('sg2-venue', "export { generateMetadata } from '@/app/(app)/venues/[slug]/page'\nexport { venueRobots } from '@/lib/venue-index'", {
     stubs: { '@/app/api/discovery/events/route': "export async function GET() { if (globalThis.__sg2Feed === 'fail') throw new Error('feed down'); return new Response(JSON.stringify({ events: globalThis.__sg2Feed ?? [] }), { status: 200 }) }" },
   })
   const realFetch = globalThis.fetch
@@ -135,7 +135,7 @@ if (process.argv[2] === 'capture') {
     const down = await meta('empty-arms-nowhere', 'fail')
     t('the feed unreadable → nothing added (no page drops out of the index on a blip)', down.robots === undefined, down)
   } finally { globalThis.fetch = realFetch }
-  const venueSrc = read('app/venues/[slug]/page.tsx') + read('lib/venue-index.ts')
+  const venueSrc = read('app/(app)/venues/[slug]/page.tsx') + read('lib/venue-index.ts')
   t('decided on the server from the feed the page reads (app/api/discovery/events, Village Foodie\'s host)', /import\('@\/app\/api\/discovery\/events\/route'\)/.test(venueSrc) && /venueGroupKey\(e\) === slug/.test(venueSrc) && /export async function generateMetadata/.test(venueSrc))
   const vj = JSON.parse(read('vercel.json'))
   for (const p of ['/app', '/setup', '/forgot-password', '/reset-password']) t(`${p}: X-Robots-Tag noindex (vercel.json)`, vj.headers.some(h => h.source === p && h.headers.some(x => x.key === 'X-Robots-Tag' && /noindex/.test(x.value))))
@@ -144,7 +144,7 @@ if (process.argv[2] === 'capture') {
   const SD = await kit.bundle('sg2-sd', "export { operatingSystemsOf, landingGraph } from '@/lib/structured-data'")
   t('"Web" everywhere; iOS and Android only where flagged', SD.operatingSystemsOf({ ios: false, android: false }) === 'Web' && SD.operatingSystemsOf({ ios: true, android: true }) === 'Web, iOS, Android' && SD.operatingSystemsOf({ ios: true, android: false }) === 'Web, iOS' && SD.operatingSystemsOf({ ios: false, android: true }) === 'Web, Android')
   // Its own landing bundle, so the app flags' 60-second cache (lib/comparison-flags.ts) is cleared for every page.
-  const LB = await ctx.bundle('sg2-landing', "export { default as Landing } from '@/app/[country]/page'\nexport { clearComparisonCache as __cmp } from '@/lib/comparison-flags'\nexport { clearPlanCatalogCache as __p } from '@/lib/plans-server'\nexport { clearPublicFaqCache as __faq } from '@/lib/faq/public'")
+  const LB = await ctx.bundle('sg2-landing', "export { default as Landing } from '@/app/(public)/[country]/page'\nexport { clearComparisonCache as __cmp } from '@/lib/comparison-flags'\nexport { clearPlanCatalogCache as __p } from '@/lib/plans-server'\nexport { clearPublicFaqCache as __faq } from '@/lib/faq/public'")
   const osOf = async (seg, rows) => {
     const info = console.info; console.info = () => {}
     const html = await kit.quietAsync(() => ctx.withReq({ rows, tables: { ...wf.tables, ...FAQ() } }, async () => { LB.__p(); LB.__cmp(); LB.__faq(); return ctx.prerender(kit.h(LB.Landing, { params: Promise.resolve({ country: seg }), searchParams: Promise.resolve({}) })) })).finally(() => { console.info = info })
@@ -201,8 +201,8 @@ if (process.argv[2] === 'capture') {
   const E = await kit.bundle('sg2-embed', "export { PoweredBy } from '@/components/embed/EmbedParts'")
   const credit = kit.renderStatic(kit.h(E.PoweredBy, { locale: 'de-DE', href: 'https://www.hatchgrab.com/de' }))
   t('the credit links to the truck\'s country page, a plain followable link (no rel, no nofollow, no target)', /<a href="https:\/\/www\.hatchgrab\.com\/de"/.test(credit) && !/rel=|nofollow|target=/.test(credit), credit)
-  t('…and /domain passes the truck\'s country page', /const creditHref = HATCHGRAB_URL \+ \(countryPagePath\(truck\.country \?\? 'GB', 'landing'\) \?\? ''\)/.test(read('app/domain/page.tsx')) && (read('app/domain/page.tsx').match(/<PoweredBy locale=\{locale\} href=\{creditHref\} \/>/g) || []).length === 2)
-  t('the order page is not extended (35.al-3): no credit added to it', !/PoweredBy|poweredBy/.test(read('app/trucks/[slug]/order/page.tsx')))
+  t('…and /domain passes the truck\'s country page', /const creditHref = HATCHGRAB_URL \+ \(countryPagePath\(truck\.country \?\? 'GB', 'landing'\) \?\? ''\)/.test(read('app/(app)/domain/page.tsx')) && (read('app/(app)/domain/page.tsx').match(/<PoweredBy locale=\{locale\} href=\{creditHref\} \/>/g) || []).length === 2)
+  t('the order page is not extended (35.al-3): no credit added to it', !/PoweredBy|poweredBy/.test(read('app/(app)/trucks/[slug]/order/page.tsx')))
 
   head('7 · B6 IndexNow')
   const I = await kit.bundle('sg2-indexnow', "export * from '@/lib/indexnow'\nexport { changesPublicPages } from '@/lib/admin/faq-actions'")

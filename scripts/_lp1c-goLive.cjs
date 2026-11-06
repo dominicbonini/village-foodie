@@ -17,7 +17,7 @@
 const fs = require('fs'); const path = require('path')
 
 const WT = 'components/manage/Walkthrough.tsx'
-const MANAGE = 'app/manage/[token]/page.tsx'
+const MANAGE = 'app/(app)/manage/[token]/page.tsx'
 
 // ── go-live inputs ────────────────────────────────────────────────────────────────────────────────────
 const VERIFIED = n => Array.from({ length: n }, () => ({ allergens_verified: true }))
@@ -168,7 +168,7 @@ async function after(ctx) {
   const C = read('components/manage/Walkthrough.tsx')
   t('Walkthrough.tsx reads the walkthrough namespace and imports its catalog', /useT\('walkthrough'\)/.test(C) && /import '@\/lib\/i18n\/catalog\/walkthrough'/.test(C))
   t('Walkthrough.tsx has no inline button words left', !/>\s*(Skip|← Back|Done|Next →)\s*</.test(C) && !/'(Done|Next →|Dashboard walkthrough)'/.test(C))
-  const M = read('app/manage/[token]/page.tsx')
+  const M = read('app/(app)/manage/[token]/page.tsx')
   t('Manage renders the intro through WalkthroughIntro (WALKTHROUGH_INTRO is gone)', /<WalkthroughIntro \/>/.test(M) && !/WALKTHROUGH_INTRO/.test(M))
   const T = read('lib/go-live-text.ts')
   t('go-live-text.ts imports the goLive catalog', /import '@\/lib\/i18n\/catalog\/goLive'/.test(T))

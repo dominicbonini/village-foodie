@@ -13,7 +13,7 @@ const fs = require('fs'); const path = require('path')
 const base = require('./_lp1b-fixtures.cjs')
 const SEEDS = require('./_country-settings-gb.cjs')
 
-const MANAGE = 'app/manage/[token]/page.tsx'
+const MANAGE = 'app/(app)/manage/[token]/page.tsx'
 const PLAN_CATALOG = require('./_plans-catalog-fixture.cjs').seedCatalog(path.resolve(__dirname, '..'))
 // ⚠️ RE-PINNED (plan-features-config, Stage A2, 20 October 2026): the fixture truck's plan — see country() below.
 const FIXTURE_PLAN = PLAN_CATALOG && !PLAN_CATALOG.plans.some(p => p.key === 'max') && PLAN_CATALOG.plans.some(p => p.key === 'unlimited') ? 'unlimited' : 'max'

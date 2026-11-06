@@ -42,7 +42,7 @@ const OWN = (() => { try { return git('log', '--format=%H', '--grep=^cwv-1: the 
     && MF.includes("const courierPrime = Courier_Prime({ subsets: ['latin'], weight: ['400', '700'], variable: '--font-courier-prime', display: 'swap', preload: false })")
     && MF.includes('const CHROME = `hg-landing ${archivo.variable} ${publicSans.variable} ${courierPrime.variable}`'))
   t('the italic is still used where it was (landing.css: the quote mark, the testimonial, the step numbers)',
-    (read('app/landing/landing.css').match(/font-style: italic/g) || []).length >= 3)
+    (read('app/(public)/(site)/landing/landing.css').match(/font-style: italic/g) || []).length >= 3)
 
   // ══ 2 ═══════════════════════════════════════════════════════════════════════════════════════════════════════════
   head('2 · which requests are public pages')
@@ -68,7 +68,7 @@ const OWN = (() => { try { return git('log', '--format=%H', '--grep=^cwv-1: the 
 
   // ══ 3 ═══════════════════════════════════════════════════════════════════════════════════════════════════════════
   head('3 · PostHog — web vitals on the public pages only')
-  const PV = read('app/providers.tsx')
+  const PV = read('app/(app)/providers.tsx')
   t('IS_PUBLIC_ENTRY: read once at module evaluation — a HatchGrab host AND a public page\'s address',
     PV.includes("const IS_PUBLIC_ENTRY =\n  typeof window !== 'undefined' && window.location.hostname.includes('hatchgrab') && isPublicPagePath(window.location.pathname)"))
   t('capture_performance only for that entry: web_vitals true, exactly LCP, INP and CLS (the one capture_performance in the file)',
@@ -95,11 +95,14 @@ const OWN = (() => { try { return git('log', '--format=%H', '--grep=^cwv-1: the 
     .replace(/\n\s*\/\/ cwv-1 \(5 November 2026, docs\/cwv-1-report\.md\): REAL VISITORS[\s\S]*?: \{\}\),/, '')
     .replace(/if \(isCredentialPath\(path\)\) return null\n[\s\S]*?return event\n/, 'return isCredentialPath(path) ? null : event\n')
   t('nothing else in providers.tsx changed (the guards, the init options, the provider, the provider\'s timing)', stripped === pvBefore)
-  t('the root layout and the proxy are untouched', (OWN ? git('diff', '--name-only', `${OWN}^`, OWN, '--', 'app/layout.tsx', 'proxy.ts') : git('diff', '--name-only', BEFORE, '--', 'app/layout.tsx', 'proxy.ts')).trim() === '')
+  // ⚠️ RE-PINNED (cwv-2, 6 November 2026, docs/cwv-2-report.md §6): a diff BETWEEN TWO OLD COMMITS names each file as it was there (the
+  // routes moved in cwv-2) — beforePath gives that name; in the working-tree branch changedSince is blind to the move and nothing else.
+  const { beforePath, changedSince } = require('./_moved-paths.cjs')
+  t('the root layout and the proxy are untouched', (OWN ? git('diff', '--name-only', `${OWN}^`, OWN, '--', beforePath('app/(app)/layout.tsx'), 'proxy.ts') : changedSince(BEFORE, ['app/(app)/layout.tsx', 'proxy.ts']).join('\n')).trim() === '')
 
   // ══ 4 ═══════════════════════════════════════════════════════════════════════════════════════════════════════════
   head('4 · Czech and Greek at 360px')
-  const CSS = read('app/landing/landing.css'), cssBefore = git('show', `${BEFORE}:app/landing/landing.css`)
+  const CSS = read('app/(public)/(site)/landing/landing.css'), cssBefore = git('show', `${BEFORE}:app/landing/landing.css`)
   const RULES = '@media (max-width: 400px) {\n  :root:lang(el) .hg-landing .hero-cta-row .btn-lg { white-space: normal; }\n  :root:is(:lang(cs), :lang(el)) .hg-landing .cheap-band { white-space: normal; }\n}\n'
   t('the block is ≤400px and language-scoped: the Greek hero button may wrap; the Czech / Greek bands may wrap (Dominic\'s B)', CSS.endsWith(RULES))
   t('no heading rule: nothing in the block touches the hero h1, hyphens or overflow-wrap', !/h1|hyphens|overflow-wrap/.test(RULES))
@@ -108,7 +111,7 @@ const OWN = (() => { try { return git('log', '--format=%H', '--grep=^cwv-1: the 
 
   // ══ 5 ═══════════════════════════════════════════════════════════════════════════════════════════════════════════
   head('5 · scope')
-  const EXPECTED = ['app/landing/landing.css', 'app/providers.tsx', 'components/landing/MarketingFrame.tsx', 'lib/public-page.ts']
+  const EXPECTED = ['app/(public)/(site)/landing/landing.css', 'app/(app)/providers.tsx', 'components/landing/MarketingFrame.tsx', 'lib/public-page.ts'].map(f => (OWN ? beforePath(f) : f)).sort()
   const changed = (OWN ? git('diff', '--name-only', `${OWN}^`, OWN) : git('diff', '--name-only', BEFORE) + git('ls-files', '--others', '--exclude-standard'))
     .split('\n').filter(f => f && !/^(docs|scripts)\//.test(f))
   t(`the app files this work changed are exactly these ${EXPECTED.length}${OWN ? ` (its commit ${OWN.slice(0, 8)})` : ' (the working tree)'}`,

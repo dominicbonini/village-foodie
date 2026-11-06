@@ -38,7 +38,7 @@ const read = f => fs.readFileSync(path.join(REPO, f), 'utf8')
 // legal change was committed (2b625a66 committed this harness and that change together, so HEAD later carried the Terms edits twice
 // and §2 threw "Terms edit — expected once, found 0"). It is that tree, by name: 3240c536, 2b625a66's parent.
 const LL1_BASE = '3240c536'
-const atHead = f => execSync(`git show ${LL1_BASE}:${f}`, { cwd: REPO, encoding: 'utf8' })
+const atHead = f => execSync(`git show ${LL1_BASE}:${require('./_moved-paths.cjs').pathAt(LL1_BASE, f)}`, { cwd: REPO, encoding: 'utf8' })
 // ⚠️ RE-PINNED (contact-1): the Privacy Policy's contact-form paragraph and its date, taken back exactly (scripts/_lp-contact-1.cjs,
 // which throws if either is not there); contact-1 also moved PRIVACY_UPDATED and TERMS_VERSION with it.
 const C1 = require('./_lp-contact-1.cjs')
@@ -121,7 +121,7 @@ const REGIONAL = [['de-AT', 'AT', 'de-DE'], ['de-CH', 'CH', 'de-DE'], ['nl-BE', 
   const ctx = LP1E.context(kit, REPO)
   const PAGE = {}
   for (const doc of ['privacy', 'terms', 'country-terms']) {
-    PAGE[doc] = await ctx.bundle(`ll1-page-${doc}`, `export { default as Page, generateMetadata } from '@/app/[country]/(legal)/${doc}/page'\nexport { default as Layout } from '@/app/[country]/(legal)/layout'\nexport { localLegalDate } from '@/lib/legal-documents'`)
+    PAGE[doc] = await ctx.bundle(`ll1-page-${doc}`, `export { default as Page, generateMetadata } from '@/app/(app)/[country]/(legal)/${doc}/page'\nexport { default as Layout } from '@/app/(app)/[country]/(legal)/layout'\nexport { localLegalDate } from '@/lib/legal-documents'`)
   }
   const allOn = WF.rowsWith(WF.WORLD)
   const SEG = Object.fromEntries([...read('lib/marketing-country.ts').matchAll(/\b([A-Z]{2}): '([a-z]{2})'/g)].map(m => [m[1], m[2]]))
@@ -178,8 +178,8 @@ const REGIONAL = [['de-AT', 'AT', 'de-DE'], ['de-CH', 'CH', 'de-DE'], ['nl-BE', 
 
   // ══ 5 · EVERY LINK, EVERY EMAIL, THE ACCOUNT PAGES ════════════════════════════════════════════════════════════════
   head('5 · EVERY LINK TO A LEGAL DOCUMENT, THE ACCOUNT PAGES AND EMAILS')
-  const SITES = ['components/landing/LandingFooter.tsx', 'app/contact/HatchGrabContact.tsx', 'app/signup/page.tsx', 'components/DemoGetStarted.tsx',
-    'components/landing/DemoUpload.tsx', 'components/dashboard/UserMenu.tsx', 'app/trucks/[slug]/order/page.tsx', 'components/manage/DeleteAccountSection.tsx']
+  const SITES = ['components/landing/LandingFooter.tsx', 'app/(app)/contact/HatchGrabContact.tsx', 'app/(app)/signup/page.tsx', 'components/DemoGetStarted.tsx',
+    'components/landing/DemoUpload.tsx', 'components/dashboard/UserMenu.tsx', 'app/(app)/trucks/[slug]/order/page.tsx', 'components/manage/DeleteAccountSection.tsx']
   const typed = SITES.filter(f => /\b(PRIVACY_PATH|TERMS_PATH|COUNTRY_TERMS_PATH)\b|href="\/(privacy|terms)"/.test(read(f)))
   t(`every legal link asks legalPath / useLegalPath (${SITES.length} files) — none types an English address`, typed.length === 0 && SITES.every(f => /legalPath|useLegalPath/.test(read(f))), typed)
   const E = await kit.bundle('ll1-email', "export { privacyFooterHtml, privacyFooterText } from '@/lib/email-privacy'\nexport { translatorFor } from '@/lib/i18n/translator'\nimport '@/lib/i18n/catalog/emailCustomer'")
@@ -194,9 +194,9 @@ const REGIONAL = [['de-AT', 'AT', 'de-DE'], ['de-CH', 'CH', 'de-DE'], ['nl-BE', 
   t('the account pages\' layouts wrap them in <AuthLocale> (seeded words; no wrapper for English); verify-email seeds its client half',
     // ⚠️ RE-PINNED (contact-1, 2 November 2026 — reached for the first time since §2 stopped throwing): copy-truth-1 put signup's
     // children inside <TrialMonthsProvider> (the trial line's months), still inside <AuthLocale>.
-    ['app/login/layout.tsx', 'app/forgot-password/layout.tsx', 'app/reset-password/layout.tsx'].every(f => /<AuthLocale>\{children\}<\/AuthLocale>/.test(read(f)))
-    && /<AuthLocale><TrialMonthsProvider months=\{months\}>\{children\}<\/TrialMonthsProvider><\/AuthLocale>/.test(read('app/signup/layout.tsx'))
-    && /<PageLocale locale=\{locale\} \{\.\.\.pageSeedProps\(locale, 'auth'\)\}><VerifyEmailSuccess/.test(read('app/verify-email/page.tsx')))
+    ['app/(app)/login/layout.tsx', 'app/(app)/forgot-password/layout.tsx', 'app/(app)/reset-password/layout.tsx'].every(f => /<AuthLocale>\{children\}<\/AuthLocale>/.test(read(f)))
+    && /<AuthLocale><TrialMonthsProvider months=\{months\}>\{children\}<\/TrialMonthsProvider><\/AuthLocale>/.test(read('app/(app)/signup/layout.tsx'))
+    && /<PageLocale locale=\{locale\} \{\.\.\.pageSeedProps\(locale, 'auth'\)\}><VerifyEmailSuccess/.test(read('app/(app)/verify-email/page.tsx')))
   t('account emails (password reset, email change, resend verification) are in the operator\'s language (localeForOperator); the reset link carries ?lang=',
     ['app/api/auth/forgot-password/route.ts', 'app/api/auth/change-email/route.ts', 'app/api/auth/resend-verification/route.ts'].every(f => /localeForOperator\(supabase, operator\.id, await visitorCountryCodeOf\(req\)\)/.test(read(f)))
     && /reset-password\?token=\$\{token\}\$\{isEnglish\(locale\) \? '' : `&lang=\$\{locale\}`\}/.test(read('app/api/auth/forgot-password/route.ts')))
@@ -215,7 +215,7 @@ const REGIONAL = [['de-AT', 'AT', 'de-DE'], ['de-CH', 'CH', 'de-DE'], ['nl-BE', 
   // ══ 6 · THE OTHER GAPS THE AUDIT FOUND ════════════════════════════════════════════════════════════════════════════
   head('6 · THE OTHER GAPS THE AUDIT FOUND — the 404 and error pages, the private type\'s name, dietary tags, a font error\'s reason')
   {
-    const NF = await ctx.bundle('ll1-not-found', "export { default as NotFound } from '@/app/not-found'")
+    const NF = await ctx.bundle('ll1-not-found', "export { default as NotFound } from '@/app/(app)/not-found'")
     const render = (opts, lang) => ctx.withReq({ rows: allOn, ...opts }, async () => {
       if (lang) globalThis.__mcReq.headers['x-hg-page-lang'] = lang
       return text(await ctx.prerender(await NF.NotFound()))
@@ -225,8 +225,8 @@ const REGIONAL = [['de-AT', 'AT', 'de-DE'], ['de-CH', 'CH', 'de-DE'], ['nl-BE', 
     t('the 404 page speaks the page\'s language (the proxy\'s header: ja-JP), else the visitor\'s country\'s (FR → French); an English visitor, or none, gets English',
       fr.includes(words('fr-FR').notFoundTitle) && ja.includes(words('ja-JP').notFoundTitle) && gb.includes('Page not found') && none.includes('Page not found') && !gb.includes(words('fr-FR').notFoundTitle),
       { fr: fr.slice(0, 120), ja: ja.slice(0, 120), gb: gb.slice(0, 120), none: none.slice(0, 120) })
-    const errorSrc = read('app/error.tsx'), globalSrc = read('app/global-error.tsx')
-    t('the error pages (app/error.tsx, app/global-error.tsx) word `errorPage` in the document\'s language and show nothing until a non-English language\'s words have arrived',
+    const errorSrc = read('app/(app)/error.tsx'), globalSrc = read('app/global-error.tsx')
+    t('the error pages (app/(app)/error.tsx, app/global-error.tsx) word `errorPage` in the document\'s language and show nothing until a non-English language\'s words have arrived',
       /useTIn\(locale, 'errorPage'\)/.test(errorSrc) && /useDocumentLocale\(\)/.test(errorSrc) && /ready !== locale\) return null/.test(errorSrc)
       && /useTIn\(locale, 'errorPage'\)/.test(globalSrc) && /<html lang=\{locale\}>/.test(globalSrc) && /\{t && ready && \(/.test(globalSrc))
     const missing = BASES.filter(l => { const w = JSON.parse(read(`messages/${l}.json`)).errorPage; return !w || ['notFoundTitle', 'notFoundBody', 'home', 'errorTitle', 'errorBody', 'retry'].some(k => typeof w[k] !== 'string' || !w[k]) })
@@ -245,7 +245,7 @@ const REGIONAL = [['de-AT', 'AT', 'de-DE'], ['de-CH', 'CH', 'de-DE'], ['nl-BE', 
       && (wp.match(/buildWeekData\(/g) || []).length === 4)
     t('a font\'s technical failure reason (English, from lib/weekly-post/font-store.ts) is shown to an English truck only; any other language gets the sentence without it',
       /return e instanceof Error && isEnglish\(locale\)\s*\? refuse\(locale, 'wp_font_add_failed'/.test(wp) && /return e instanceof Error && isEnglish\(locale\)\s*\? discard\('wp_font_store_failed'/.test(wp))
-    const mg = read('app/manage/[token]/page.tsx')
+    const mg = read('app/(app)/manage/[token]/page.tsx')
     t('Manage\'s menu shows a stored dietary tag in the truck\'s language everywhere it lists one (the item list, the allergen wizard\'s pills, a card\'s extracted options)',
       /item\.dietary_info\?\.map\(d => \(\s*<span key=\{d\}[^>]*>\{dietaryLabel\(d, tkLocale\)\}/.test(mg) && /draft\.dietary\.map\(d => <DietaryChip key=\{d\} label=\{dietaryLabel\(d, wizLocale\)\} \/>\)/.test(mg)
       && /dietary_options\.map\(\(d: string\) => \(\s*<span key=\{d\}[^>]*>\{dietaryLabel\(d, tkLocale\)\}/.test(mg))
@@ -265,8 +265,8 @@ const REGIONAL = [['de-AT', 'AT', 'de-DE'], ['de-CH', 'CH', 'de-DE'], ['nl-BE', 
       'lib/i18n/typecheck.ts': 'a type test, never run',
       // ⚠️ RE-PINNED (contact-1 — reached for the first time since §2 stopped throwing): seo-geo-2's /llms.txt, English by design.
       'lib/llms-text.ts': '/llms.txt — the English description for AI crawlers (seo-geo-2 B4), English by design',
-      'app/(legal)/': 'the English legal pages — governing, English by design',
-      'app/verify-email/page.tsx': 'the invalid-link branch, which has no account and so no language (English, the default)',
+      'app/(app)/(legal)/': 'the English legal pages — governing, English by design',
+      'app/(app)/verify-email/page.tsx': 'the invalid-link branch, which has no account and so no language (English, the default)',
       'app/api/account/request-deletion/route.ts': 'a coded refusal (confirm_mismatch) the screen words in the language',
       // ⚠️ RE-PINNED (paperwork-1, 4 November 2026): the document-type names given to the AI in its prompt, English like the rest of
       // the prompt (lib/paperwork/ai-read.ts); nothing a person reads.

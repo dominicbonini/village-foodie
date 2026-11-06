@@ -39,9 +39,9 @@ const { fakeSupabase, MIGRATION, TYPE_ROWS, BYTES, STUBS } = require('./_paperwo
 ;(async () => {
   const L = await kit.bundle('pw1', [
     "export { POST } from '@/app/api/manage/paperwork/route'",
-    "export { default as OrganiserPage, metadata as organiserMetadata, dynamic as organiserDynamic } from '@/app/docs/[token]/page'",
-    "export { GET as fileGET } from '@/app/docs/[token]/file/[documentId]/route'",
-    "export { GET as allGET } from '@/app/docs/[token]/all/route'",
+    "export { default as OrganiserPage, metadata as organiserMetadata, dynamic as organiserDynamic } from '@/app/(app)/docs/[token]/page'",
+    "export { GET as fileGET } from '@/app/(app)/docs/[token]/file/[documentId]/route'",
+    "export { GET as allGET } from '@/app/(app)/docs/[token]/all/route'",
     "export * as M from '@/lib/paperwork/model'",
     "export { sniffMime } from '@/lib/paperwork/sniff'",
     "export { normaliseAiAnswer, paperworkPrompt, PAPERWORK_MODEL } from '@/lib/paperwork/ai-read'",
@@ -428,10 +428,10 @@ const { fakeSupabase, MIGRATION, TYPE_ROWS, BYTES, STUBS } = require('./_paperwo
     t('the route refuses: the feature off (403), staff (403 insufficient_permissions), no session (401)', gated.status === 403 && staff.status === 403 && staff.body.code === 'insufficient_permissions' && anon.status === 401 && anon.body.code === 'sign_in_required')
     const route = read('app/api/manage/paperwork/route.ts')
     t('…using the SAME access function as /api/manage (lib/truck-access.ts, moved, not copied)', /resolveTruckAccessWith\(supabase, req, truck\)/.test(route) && /return resolveTruckAccessWith\(supabase, req, truck\)/.test(read('app/api/manage/route.ts')) && /const access = await resolveTruckAccess\(req, truck\)/.test(read('app/api/manage/route.ts')))
-    const pg = read('app/manage/[token]/page.tsx')
+    const pg = read('app/(app)/manage/[token]/page.tsx')
     t('the tab: "Documents", just before Settings, owners and managers, shown only while the feature is on', /\{ id: 'paperwork', label: t\('tabs\.paperwork'\)[^}]*roles: \['owner', 'manager'\] \},\n\s*\{ id: 'settings'/.test(pg)
       && /if \(tab\.id === 'paperwork'\) \{\n\s*return tab\.roles\.includes\(userRole\) && featureAccessView\(truck, planCatalog, truck\?\.country \?\? null\)\.can\('paperwork'\)/.test(pg) && JSON.parse(read('messages/en-GB.json')).manageShell.tabs.paperwork === 'Documents')
-    t('?tab=paperwork opens it, and /manage carries it on (the reminder email\'s tokenless link)', /'paperwork', 'social'/.test(pg.match(/const allTabIds: Tab\[\] = \[[^\]]*\]/)[0]) && /CARRIED_TABS = new Set\(\[[^\]]*'paperwork'/.test(read('app/manage/page.tsx')))
+    t('?tab=paperwork opens it, and /manage carries it on (the reminder email\'s tokenless link)', /'paperwork', 'social'/.test(pg.match(/const allTabIds: Tab\[\] = \[[^\]]*\]/)[0]) && /CARRIED_TABS = new Set\(\[[^\]]*'paperwork'/.test(read('app/(app)/manage/page.tsx')))
     const en = JSON.parse(read('messages/en-GB.json'))
     const KEYS = []
     const flat = (o, p) => { for (const [k, v] of Object.entries(o)) { if (v && typeof v === 'object') flat(v, `${p}.${k}`); else KEYS.push(`${p}.${k}`) } }

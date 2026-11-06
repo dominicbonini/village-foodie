@@ -16,7 +16,7 @@
 // `__after` the code, so the page is proven to render exactly the sentence it held.
 const path = require('path')
 
-const F = 'app/dashboard/[token]/kds/page.tsx'
+const F = 'app/(app)/dashboard/[token]/kds/page.tsx'
 const STATES = ['truck', 'orders', 'payments', 'heldAuthorisations', 'paymentFailures', 'loading', 'hasLoaded', 'error', 'requiresPin', 'pinError', 'pinInput',
   'events', 'selectedEventId', 'handoverPref', 'readyPref', 'prefsReconciled', 'layoutOverride', 'cardModePref', 'showKdsIntro', 'degradedSince', 'lastRefresh',
   'eventScopeMismatch', 'pausedUntil', 'onlinePausedUntil', 'deviceOnline', 'isOffline', 'pendingSyncCount', 'pendingSync', 'extraWaitMins', 'showScreenOffWarning',

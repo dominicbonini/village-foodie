@@ -443,7 +443,7 @@ function renderWith(state, el) {
   try { return textOf(renderStatic(el)) } finally { delete globalThis.__ms }
 }
 async function receiptView() {
-  const F = 'app/order/[id]/manage/page.tsx'
+  const F = 'app/(app)/order/[id]/manage/page.tsx'
   const m = await bundle('receipt', `export { default as Receipt } from '@/${F}'\n` + moneyCtxExport(), { patches: [{ file: F, states: ['order', 'loading'] }] })
   const out = {}
   for (const k of Object.keys(ORDER_CASES)) {
@@ -480,7 +480,7 @@ const OP_BASKET = [
 ]
 const OP_DEALS = [{ bundle: OP_BUNDLE, slots: { Pizzas: 'Pepperoni', Drinks: 'Fanta' }, itemsTakenFromBasket: ['k4', 'k5'], modifierExtra: 0.75, slotModifiers: { Pizzas: [{ name: 'Jalapeños', price: 0.75 }] }, slotNotes: {} }]
 async function orderPageView() {
-  const F = 'app/trucks/[slug]/order/page.tsx'
+  const F = 'app/(app)/trucks/[slug]/order/page.tsx'
   const states = ['truck', 'menu', 'events', 'event', 'eventLoading', 'loading', 'basket', 'appliedDeals', 'formSheetOpen', 'stageOpen',
     'payment', 'payStage', 'appliedCode', 'itemModal', 'modalMods', 'submitted', 'submittedOrderId', 'confirmOrder', 'confirmLoading', 'name', 'email', 'payByCard']
   const m = await bundle('orderpage', `export { default as OrderPage } from '@/${F}'\n` + moneyCtxExport(), {
@@ -517,7 +517,7 @@ async function orderPageView() {
 
 // The KDS page: its cards (OrderCard, kitchen mode) and the "Done today" strip whose footer says "£X due".
 async function kdsView() {
-  const F = 'app/dashboard/[token]/kds/page.tsx'
+  const F = 'app/(app)/dashboard/[token]/kds/page.tsx'
   const states = ['truck', 'orders', 'payments', 'heldAuthorisations', 'loading', 'hasLoaded', 'events', 'selectedEventId', 'handoverPref', 'layoutOverride', 'showKdsIntro']
   const m = await bundle('kds', `export { default as Kds } from '@/${F}'\n` + moneyCtxExport(), { patches: [{ file: F, states }] })
   const keys = Object.keys(ORDER_CASES).filter(k => k !== 'cancelled')
@@ -574,7 +574,7 @@ async function addOrderView() {
 // The dashboard page: the completed list's money chip, the cancel / reject / edit modals, the edit item
 // sheet, the Menu & Stock price column — and the refund messages its submitRefund returns.
 async function dashboardView() {
-  const F = 'app/dashboard/[token]/page.tsx'
+  const F = 'app/(app)/dashboard/[token]/page.tsx'
   const states = ['truck', 'orders', 'loading', 'authenticated', 'truckMenu', 'todayEvents', 'upcomingEvents', 'selectedEventId', 'eventsLoaded', 'firstOpenChecked',
     'payments', 'heldAuthorisations', 'showCompleted', 'activeTab', 'showCancelModal', 'cancellingOrder', 'showRejectModal', 'rejectingOrder',
     'editingOrder', 'editItems', 'editDeals', 'editOrderBaseline', 'editReprice', 'editItemModal', 'editModalMods',
@@ -641,7 +641,7 @@ async function dashboardView() {
 // Manage → Reports: the summary, the orders table (every order expanded), the items table, and the two
 // CSV files exactly as the browser would download them (Blob captured; nothing is written or sent).
 async function reportsView() {
-  const F = 'app/manage/[token]/page.tsx'
+  const F = 'app/(app)/manage/[token]/page.tsx'
   const m = await bundle('reports', `export { __msReports } from '@/${F}'\n` + PROVIDER_EXPORT, {
     patches: [
       { file: F, states: ['reportData', 'reportLoaded', 'itemView', 'expandedOrders', 'filterMode'] },
@@ -701,7 +701,7 @@ const IMPORT_RESULT = {
   ],
 }
 async function manageView() {
-  const F = 'app/manage/[token]/page.tsx'
+  const F = 'app/(app)/manage/[token]/page.tsx'
   const m = await bundle('manage', `export { __msMenu, __msDeals, __msSchedule } from '@/${F}'\nexport { default as Extras } from '@/components/manage/ExtrasEditor'\n` + PROVIDER_EXPORT, {
     patches: [
       { file: F, states: ['editingItem', 'expandedCat', 'importStep', 'importResult', 'reviewStep', 'events', 'loadingEvents'] },
@@ -734,7 +734,7 @@ async function manageView() {
 
 // The developer ticket preview (/dev/ticket-preview): its scenario list and the on-screen ticket.
 async function devTicketView() {
-  const F = 'app/dev/ticket-preview/page.tsx'
+  const F = 'app/(app)/dev/ticket-preview/page.tsx'
   // The page's own sample is a UK truck; the USD run re-points that one constant pair at a US truck.
   const usd = USD ? [{ file: F, from: "const SAMPLE_MONEY: MoneyFormat = { currency: 'GBP', locale: 'en-GB' }", to: "const SAMPLE_MONEY: MoneyFormat = { currency: 'USD', locale: 'en-US' }" },
     { file: F, from: "const SAMPLE_COUNTRY = 'GB'", to: "const SAMPLE_COUNTRY = 'US'" }] : []

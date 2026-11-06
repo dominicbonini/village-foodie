@@ -29,17 +29,17 @@ function renderer(kit, REPO) {
   }
   const sp = (o = {}) => Promise.resolve(o)
   const PAGES = {
-    landing: async seg => { const M = await mod('landing', "export { default as Page } from '@/app/landing/page'"); M.__p?.(); return run(kit.h(M.Page, { params: Promise.resolve({ country: seg }), searchParams: sp() })) },
-    features: async seg => { const M = await mod('features', "export { default as Page } from '@/app/features/page'"); M.__p?.(); return run(kit.h(M.Page, { params: Promise.resolve({ country: seg }), searchParams: sp() })) },
-    about: async (ip = 'GB') => { const M = await mod('about', "export { default as Page } from '@/app/about/page'"); return run(kit.h(M.Page, { searchParams: sp() }), { ip }) },
-    compare: async seg => { const M = await mod('compare', "export { default as Page } from '@/app/compare/page'"); M.__p?.(); return run(kit.h(M.Page, { params: Promise.resolve({ country: seg }), searchParams: sp() })) },
-    contact: async (ip = 'GB') => { const M = await mod('contact', "export { default as Page } from '@/app/contact/page'"); return run(kit.h(M.Page, { searchParams: sp() }), { ip }) },
+    landing: async seg => { const M = await mod('landing', "export { default as Page } from '@/app/(public)/(site)/landing/page'"); M.__p?.(); return run(kit.h(M.Page, { params: Promise.resolve({ country: seg }), searchParams: sp() })) },
+    features: async seg => { const M = await mod('features', "export { default as Page } from '@/app/(public)/(site)/features/page'"); M.__p?.(); return run(kit.h(M.Page, { params: Promise.resolve({ country: seg }), searchParams: sp() })) },
+    about: async (ip = 'GB') => { const M = await mod('about', "export { default as Page } from '@/app/(public)/(site)/about/page'"); return run(kit.h(M.Page, { searchParams: sp() }), { ip }) },
+    compare: async seg => { const M = await mod('compare', "export { default as Page } from '@/app/(public)/(site)/compare/page'"); M.__p?.(); return run(kit.h(M.Page, { params: Promise.resolve({ country: seg }), searchParams: sp() })) },
+    contact: async (ip = 'GB') => { const M = await mod('contact', "export { default as Page } from '@/app/(app)/contact/page'"); return run(kit.h(M.Page, { searchParams: sp() }), { ip }) },
     legal: async (doc, { ua = null, ip = 'GB', host = null } = {}) => {
-      const M = await mod('legal', "export { default as Layout } from '@/app/(legal)/layout'\nexport { default as privacy } from '@/app/(legal)/privacy/page'\nexport { default as terms } from '@/app/(legal)/terms/page'\nexport { default as countryTerms } from '@/app/(legal)/country-terms/page'")
+      const M = await mod('legal', "export { default as Layout } from '@/app/(app)/(legal)/layout'\nexport { default as privacy } from '@/app/(app)/(legal)/privacy/page'\nexport { default as terms } from '@/app/(app)/(legal)/terms/page'\nexport { default as countryTerms } from '@/app/(app)/(legal)/country-terms/page'")
       return run(kit.h(M.Layout, { children: kit.h(M[doc]) }), { ua, ip, host })
     },
     legalIn: async (seg, doc, { ua = null } = {}) => {
-      const M = await mod('legalIn', "export { default as Layout } from '@/app/[country]/(legal)/layout'\nexport { default as privacy } from '@/app/[country]/(legal)/privacy/page'\nexport { default as terms } from '@/app/[country]/(legal)/terms/page'\nexport { default as countryTerms } from '@/app/[country]/(legal)/country-terms/page'")
+      const M = await mod('legalIn', "export { default as Layout } from '@/app/(app)/[country]/(legal)/layout'\nexport { default as privacy } from '@/app/(app)/[country]/(legal)/privacy/page'\nexport { default as terms } from '@/app/(app)/[country]/(legal)/terms/page'\nexport { default as countryTerms } from '@/app/(app)/[country]/(legal)/country-terms/page'")
       const params = Promise.resolve({ country: seg })
       return run(kit.h(M.Layout, { params, children: kit.h(M[doc], { params }) }), { ua })
     },

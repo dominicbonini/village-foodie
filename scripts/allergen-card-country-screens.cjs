@@ -34,7 +34,7 @@ async function bundle(dir, entrySrc) {
   const esbuild = require(path.join(REPO, 'node_modules/esbuild'))
   const entry = path.join(dir, 'entry.tsx')
   fs.writeFileSync(entry, entrySrc)
-  const MANAGE = path.join(REPO, 'app/manage/[token]/page.tsx')
+  const MANAGE = path.join(REPO, 'app/(app)/manage/[token]/page.tsx')
   await esbuild.build({
     entryPoints: [entry], bundle: true, outfile: path.join(dir, 'bundle.js'), format: 'iife', platform: 'browser',
     jsx: 'automatic', target: 'es2020', logLevel: 'error', alias: { '@': REPO }, nodePaths: [path.join(REPO, 'node_modules')],
@@ -49,7 +49,7 @@ async function bundle(dir, entrySrc) {
       b.onResolve({ filter: /^next\/(navigation|link|image)$/ }, a => ({ path: a.path, namespace: 'stub' }))
       b.onLoad({ filter: /.*/, namespace: 'stub' }, a => ({ contents: STUBS[a.path], loader: 'js', resolveDir: REPO }))
       // The wizard is not exported by the Manage page; expose it for this photograph only.
-      b.onLoad({ filter: /app\/manage\/\[token\]\/page\.tsx$/ }, a => (a.path === MANAGE
+      b.onLoad({ filter: /app\/\(app\)\/manage\/\[token\]\/page\.tsx$/ }, a => (a.path === MANAGE
         ? { contents: fs.readFileSync(MANAGE, 'utf8') + '\nexport { AllergenWizardModal }\n', loader: 'tsx', resolveDir: path.dirname(MANAGE) } : undefined))
     } }],
   })
@@ -69,7 +69,7 @@ function serve(css, js, settings) {
 }
 
 const WIZARD_ENTRY = `import { createRoot } from 'react-dom/client'
-import { AllergenWizardModal } from '@/app/manage/[token]/page'
+import { AllergenWizardModal } from '@/app/(app)/manage/[token]/page'
 import { CountrySettingsProvider } from '@/components/CountrySettingsProvider'
 const settings = JSON.parse(document.getElementById('settings').textContent)
 const noop = () => {}, api = async () => ({})
@@ -82,7 +82,7 @@ createRoot(document.getElementById('root')).render(
       onProcessCard={api} onCardMerge={api} />
   </CountrySettingsProvider>)
 `
-const ADMIN_ENTRY = `import { createRoot } from 'react-dom/client'\nimport AdminPage from '@/app/admin/page'\ncreateRoot(document.getElementById('root')).render(<AdminPage />)\n`
+const ADMIN_ENTRY = `import { createRoot } from 'react-dom/client'\nimport AdminPage from '@/app/(app)/admin/page'\ncreateRoot(document.getElementById('root')).render(<AdminPage />)\n`
 
 ;(async () => {
   const css = appCss()

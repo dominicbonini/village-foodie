@@ -16,7 +16,7 @@
 //    review measurements.
 const fs = require('fs'); const path = require('path'); const http = require('http'); const { execFileSync } = require('child_process')
 
-const M_FILE = 'app/manage/[token]/page.tsx'
+const M_FILE = 'app/(app)/manage/[token]/page.tsx'
 const ET_FILE = 'components/manage/EventTypes.tsx'
 const SCHED_STATES = ['events', 'loadingEvents', 'vans', 'placeTypeChoices', 'editingEvent', 'showImportModal', 'importModalTitle', 'extractedEvents',
   'editedEvents', 'expandedEventIds', 'eventTypeId', 'addMode', 'showPast', 'formErrors']

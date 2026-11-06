@@ -42,14 +42,14 @@ async function views(ctx) {
   const { kit, h, html, AFTER, REPO } = ctx
   const ctxExport = AFTER ? "export { I18nContext } from '@/lib/i18n/use-t'\n" : ''
   const P = {
-    signup: 'app/signup/page.tsx', login: 'app/login/page.tsx', forgot: 'app/forgot-password/page.tsx', reset: 'app/reset-password/page.tsx',
+    signup: 'app/(app)/signup/page.tsx', login: 'app/(app)/login/page.tsx', forgot: 'app/(app)/forgot-password/page.tsx', reset: 'app/(app)/reset-password/page.tsx',
   }
   const pages = await kit.bundle('lp1c-auth-pages', [
     `export { default as Signup } from '@/${P.signup}'`,
     `export { default as Login } from '@/${P.login}'`,
     `export { default as Forgot } from '@/${P.forgot}'`,
     `export { default as Reset } from '@/${P.reset}'`,
-    "export { default as VerifySuccess } from '@/app/verify-email/VerifyEmailSuccess'",
+    "export { default as VerifySuccess } from '@/app/(app)/verify-email/VerifyEmailSuccess'",
   ].join('\n') + '\n' + ctxExport, {
     stubs: { '@/lib/supabase/client': SUPA_STUB },
     patches: [
@@ -59,7 +59,7 @@ async function views(ctx) {
       recordError(P.reset), { file: P.reset, states: ['password', 'confirm', 'loading', 'error'] },
     ],
   })
-  const verify = await kit.bundle('lp1c-auth-verify', "export { default as VerifyEmailPage } from '@/app/verify-email/page'\nexport { clearCountrySettingsCache } from '@/lib/country-settings'", {
+  const verify = await kit.bundle('lp1c-auth-verify', "export { default as VerifyEmailPage } from '@/app/(app)/verify-email/page'\nexport { clearCountrySettingsCache } from '@/lib/country-settings'", {
     stubs: { '@/lib/supabase/client': SUPA_STUB },
   })
   const mail = await kit.bundle('lp1c-auth-mail', "export * from '@/lib/email-signup'")

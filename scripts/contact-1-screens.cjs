@@ -28,7 +28,7 @@ const t = (label, ok, detail) => { if (ok) { pass++; console.log('  ✓ ' + labe
 async function browserScript() {
   const esbuild = require(path.join(REPO, 'node_modules/esbuild'))
   const r = await esbuild.build({
-    stdin: { contents: "import { createElement } from 'react'\nimport { createRoot } from 'react-dom/client'\nimport { HatchGrabContactForm } from '@/app/contact/HatchGrabContactForm'\nconst form = document.querySelector('form.cf')\nconst holder = document.createElement('div')\nform.replaceWith(holder)\ncreateRoot(holder).render(createElement(HatchGrabContactForm, window.__CF_PROPS))\nwindow.__CF_MOUNTED = true", resolveDir: REPO, loader: 'tsx' },
+    stdin: { contents: "import { createElement } from 'react'\nimport { createRoot } from 'react-dom/client'\nimport { HatchGrabContactForm } from '@/app/(app)/contact/HatchGrabContactForm'\nconst form = document.querySelector('form.cf')\nconst holder = document.createElement('div')\nform.replaceWith(holder)\ncreateRoot(holder).render(createElement(HatchGrabContactForm, window.__CF_PROPS))\nwindow.__CF_MOUNTED = true", resolveDir: REPO, loader: 'tsx' },
     bundle: true, write: false, platform: 'browser', format: 'iife', jsx: 'automatic', alias: { '@': REPO }, define: { 'process.env.NODE_ENV': '"production"' }, logLevel: 'silent',
   })
   return r.outputFiles[0].text
@@ -37,12 +37,12 @@ async function browserScript() {
 ;(async () => {
   kit.setNow('2026-11-02T18:30:05Z')
   const ctx = LP1E.context(kit, REPO)
-  const M = await ctx.bundle('c1-screens', "export { default } from '@/app/contact/page'\nexport { contactFormWords } from '@/app/contact/HatchGrabContact'\nexport { legalPath } from '@/lib/legal'")
+  const M = await ctx.bundle('c1-screens', "export { default } from '@/app/(app)/contact/page'\nexport { contactFormWords } from '@/app/(app)/contact/HatchGrabContact'\nexport { legalPath } from '@/lib/legal'")
   const ROWS = WF.rowsWith(WF.WORLD)
   const render = cc => kit.quietAsync(() => ctx.withReq({ rows: ROWS }, () => ctx.prerender(kit.h(M.default, { searchParams: Promise.resolve({ country: cc }) }))))
   const bundle = await browserScript()
   const B = RF.built()
-  const css = fs.readFileSync(path.join(REPO, 'app/contact/contact-form.css'), 'utf8')
+  const css = fs.readFileSync(path.join(REPO, 'app/(app)/contact/contact-form.css'), 'utf8')
   const { webkit } = require(path.join(REPO, 'node_modules/playwright'))
   const browser = await webkit.launch()
   fs.mkdirSync(OUT, { recursive: true })

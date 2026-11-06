@@ -285,7 +285,7 @@ const text = html => dec(String(html).replace(/<script[\s\S]*?<\/script>/g, ' ')
     t('DE admin view renders, with Testanbieter A and the market', !r.notFound && /Testanbieter A/.test(text(html)) && /Testmarkt M/.test(text(html)))
     t('Testanbieter A\'s WhatsApp cell: "Auf der Website nicht erwähnt" — value not_mentioned, its own neutral class, not "Nein"',
       waCells[1] && waCells[1].value === 'not_mentioned' && waCells[1].text.startsWith('Auf der Website nicht erwähnt') && /cmp-tri cmp-tri-not_mentioned/.test(wa) && !/^Nein/.test(waCells[1].text), waCells)
-    t('…and the stylesheet gives it the neutral grey of "Nicht angegeben", never the red of Nein', /\.hg-landing \.cmp-tri-unknown, \.hg-landing \.cmp-tri-not_mentioned \{ color: var\(--ink-soft\); \}/.test(read('app/[country]/[section]/[slug]/comparison.css')))
+    t('…and the stylesheet gives it the neutral grey of "Nicht angegeben", never the red of Nein', /\.hg-landing \.cmp-tri-unknown, \.hg-landing \.cmp-tri-not_mentioned \{ color: var\(--ink-soft\); \}/.test(read('app/(public)/[country]/[section]/[slug]/comparison.css')))
     // ⚠️ RE-PINNED (compare-suits-1, 6 November 2026): the columns are in the four-cap's order now (lib/comparison-selection.ts), so a
     // competitor's cell is found by its column header, not by position.
     const tools = [...html.matchAll(/<th scope="col"[^>]*data-tool="([^"]+)"/g)].map(m => m[1])
@@ -309,7 +309,7 @@ const text = html => dec(String(html).replace(/<script[\s\S]*?<\/script>/g, ' ')
       /async function deliverReadyEmail\(order: any, truck: any\) \{\s*if \(!order\.customer_email\) return/.test(action) && /if \(action === 'ready'\)[\s\S]{0,1400}deliverReadyEmail\(order, truck\)/.test(action)
       && /if \(action === 'send_ready_email'\)[\s\S]{0,500}deliverReadyEmail\(order, truck\)/.test(action))
     t('…only where the order-ready step is on: it is a service setting (order_ready), per event type', /'order_ready'/.test(read('lib/event-types/types.ts')) && /order_ready: boolean \| null/.test(read('lib/event-types/types.ts')))
-    const status = read('app/order/[id]/manage/page.tsx')
+    const status = read('app/(app)/order/[id]/manage/page.tsx')
     t('the order page shows the order\'s status (ready in green) — read when it is opened, not pushed', /order\.status === 'ready' \? 'text-green-500'/.test(status) && /fetch\(`\/api\/orders\/\$\{id\}`\)/.test(status) && !/setInterval|EventSource/.test(status))
     const tw = read('lib/twilio.ts')
     const twUsers = require('child_process').execFileSync('git', ['grep', '-l', "from '@/lib/twilio'", '--', 'app', 'lib', 'components'], { cwd: REPO }).toString().trim().split('\n')

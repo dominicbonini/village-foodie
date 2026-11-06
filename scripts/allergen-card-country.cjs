@@ -35,7 +35,7 @@ const MSG = JSON.parse(read('messages/en-GB.json'))
 const W_MSG = MSG.manageAllergens, P_MSG = MSG.managePrimitives.allergenMode
 
 // ── the edits of this workstream, reverted (BEFORE = today's code without them) ────────────────────────────────────
-const M_FILE = 'app/manage/[token]/page.tsx'
+const M_FILE = 'app/(app)/manage/[token]/page.tsx'
 const REVERT_MANAGE = [
   { from: `  // allergen-card-country (21 October 2026): where the truck's country does not allow an allergen card on its own
   // (country_settings.allergen_card_only_allowed — off for Ireland), there is no page 1 (the card-or-per-dish

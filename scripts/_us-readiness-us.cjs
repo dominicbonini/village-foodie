@@ -23,7 +23,7 @@ module.exports = async function us(x) {
 
   const usToggles = await togglesView(SEEDS.usFromSeed())
   t('toggles under a US provider: the US 9, in order', usToggles.trim().replace(/\s+/g, ' ') === L.US_9.join(' '), usToggles)
-  const P = read('app/manage/[token]/page.tsx')
+  const P = read('app/(app)/manage/[token]/page.tsx')
   // ⚠️ RE-PINNED (Language Phase 1d): the review screen's words moved to messages `manageAllergens`, so its
   // translator (`const t = useT('manageAllergens')`) now sits between the set and the two derived lists.
   t('the review screen and table read the truck\'s list (allergenVocab / genericReplacements by the provider\'s set)',
@@ -50,8 +50,8 @@ module.exports = async function us(x) {
 
   /* ── 3 · metadata ── */
   head('3 · landing and features: the tags name the visitor\'s country')
-  const lm = await metadataOf('app/landing/page.tsx', 'US')
-  const fm = await metadataOf('app/features/page.tsx', 'US')
+  const lm = await metadataOf('app/(public)/(site)/landing/page.tsx', 'US')
+  const fm = await metadataOf('app/(public)/(site)/features/page.tsx', 'US')
   // ⚠️ RE-PINNED (Language Phase 1e): the landing's tags are the messages landing.meta.title / .description, read in the
   // country's locale — the US words (en-US, glossary: mobile catering → catering, pitch → spot, queue → line) are named
   // here and applied to BEFORE's GB tags below, so "nothing else moves" still compares everything else.
@@ -71,7 +71,7 @@ module.exports = async function us(x) {
   const US_FEATURES_WORDS = s => STAGE_B ? s.replace(/side by side — Pay as you go, Pro and Unlimited, with/g, 'side by side — Pay as you go, Pro, and Unlimited, with') : s
   t('nothing else in the features tags moves', strip(fm) === US_FEATURES_WORDS(strip(before.featuresMeta)), strip(fm).slice(0, 300))
   const usOff = [GB, { ...US_ON, enabled: false }]
-  const lmOff = await metadataOf('app/landing/page.tsx', 'US', usOff)
+  const lmOff = await metadataOf('app/(public)/(site)/landing/page.tsx', 'US', usOff)
   t('?country=US while the US is switched off → the GB tags, byte-identical', JSON.stringify(lmOff) === JSON.stringify(before.landingMeta))
 
   // ⚠️ RE-PINNED (seo-fixes, 20 October 2026): the landing's JSON-LD is now ONE block, { @context, @graph: [Organization,
@@ -165,7 +165,7 @@ module.exports = async function us(x) {
 
 async function landingJsonLd(x, query, rows) {
   const { kit, REPO } = x
-  const m = await kit.bundle('ur-landing-page', "export { default as Page } from '@/app/landing/page'\nexport { clearCountrySettingsCache } from '@/lib/country-settings'" + (x.PLAN_CLEAR || ''), {
+  const m = await kit.bundle('ur-landing-page', "export { default as Page } from '@/app/(public)/(site)/landing/page'\nexport { clearCountrySettingsCache } from '@/lib/country-settings'" + (x.PLAN_CLEAR || ''), {
     stubs: {
       'next/font/google': ['Archivo', 'Public_Sans', 'Courier_Prime', 'Noto_Sans_JP', 'Noto_Sans_HK', 'Noto_Sans_Thai', 'Noto_Sans_Arabic'].map(n => `export const ${n} = () => ({ variable: 'font-${n}', className: 'font-${n}', style: {} })`).join('\n'),
       'next/headers': `

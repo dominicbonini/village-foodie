@@ -39,12 +39,12 @@ const t = (name, ok, detail) => { if (ok) pass++; else { fail++; console.log(`  
 const head = s => console.log(`\n── ${s}`)
 const sha = s => crypto.createHash('sha256').update(String(s)).digest('hex')
 const read = f => fs.readFileSync(path.join(REPO, f), 'utf8')
-const atBase = f => { try { return execFileSync('git', ['show', `${BASE}:${f}`], { cwd: REPO, maxBuffer: 1 << 26 }).toString() } catch { return null } }
+const atBase = f => { try { return execFileSync('git', ['show', `${BASE}:${require('./_moved-paths.cjs').pathAt(BASE, f)}`], { cwd: REPO, maxBuffer: 1 << 26 }).toString() } catch { return null } }
 
 // ── §6's set: Village Foodie's /contact, every search its links send (rendered identically at HEAD by `capture`) ──
 const VF_SEARCHES = ['', 'topic=General%20Enquiry', 'topic=Add%20Business&truck=Pizza%20Gusto', 'topic=ClaimVenue&venue=The%20Plough%20Inn', 'topic=Report%20Issue', 'topic=Cost%20Comparison']
 async function vfViews(ctx) {
-  const CT = await ctx.bundle('c1-vf', "export { default, generateMetadata } from '@/app/contact/page'")
+  const CT = await ctx.bundle('c1-vf', "export { default, generateMetadata } from '@/app/(app)/contact/page'")
   const out = {}
   for (const s of VF_SEARCHES) {
     globalThis.__msSearch = s
@@ -94,7 +94,7 @@ const flat = (o, p = '', out = {}) => { for (const [k, v] of Object.entries(o ??
   t('message: 10 to 5,000 characters', v({ message: 'm'.repeat(9) }).message === 'messageTooShort' && !v({ message: 'm'.repeat(10) }).message && !v({ message: 'm'.repeat(5000) }).message && v({ message: 'm'.repeat(5001) }).message === 'messageTooLong')
   t('lengths are counted in characters, as Postgres counts them: ten emoji are 10, not 20; 5,000 emoji pass', !v({ message: '🍕'.repeat(10) }).message && !v({ message: '🍕'.repeat(5000) }).message && v({ message: '🍕'.repeat(9) }).message === 'messageTooShort')
   t('fields are trimmed; an unknown topic is refused', C.contactFieldsFrom({ name: '  Ana  ', topic: 'x' }).name === 'Ana' && v({ topic: 'x' }).topic === 'topicInvalid')
-  t('the browser form validates with this very function (HatchGrabContactForm imports validateContact)', /import \{[^}]*validateContact[^}]*\} from '@\/lib\/contact'/.test(read('app/contact/HatchGrabContactForm.tsx')) && /validateContact\(f\)/.test(read('lib/contact-server.ts')))
+  t('the browser form validates with this very function (HatchGrabContactForm imports validateContact)', /import \{[^}]*validateContact[^}]*\} from '@\/lib\/contact'/.test(read('app/(app)/contact/HatchGrabContactForm.tsx')) && /validateContact\(f\)/.test(read('lib/contact-server.ts')))
 
   // ══ 2 ══════════════════════════════════════════════════════════════════════════════════════════════════════════════
   head('2 · the server — bots, validation, limits, save first, the email, a failed send, the retry')
@@ -289,7 +289,7 @@ const flat = (o, p = '', out = {}) => { for (const [k, v] of Object.entries(o ??
 
   // ══ 4 ══════════════════════════════════════════════════════════════════════════════════════════════════════════════
   head('4 · the page in en-GB, de-DE, ja-JP and ar-AE')
-  const P = await ctx.bundle('c1-page', "export { default, generateMetadata } from '@/app/contact/page'\nexport { translatorFor } from '@/lib/i18n/translator'")
+  const P = await ctx.bundle('c1-page', "export { default, generateMetadata } from '@/app/(app)/contact/page'\nexport { translatorFor } from '@/lib/i18n/translator'")
   const ROWS = WF.rowsWith(WF.WORLD)
   const render = (cc, extra = {}) => kit.quietAsync(() => ctx.withReq({ rows: ROWS }, () => ctx.prerender(kit.h(P.default, { searchParams: Promise.resolve({ country: cc, ...extra }) }))))
   const EN = JSON.parse(read('messages/en-GB.json')).contactPage
@@ -320,11 +320,11 @@ const flat = (o, p = '', out = {}) => { for (const [k, v] of Object.entries(o ??
   t('?topic=General Enquiry (the footer links) and an unknown topic select the first topic', /<option value="question" selected=""/.test(gen) && /<option value="question" selected=""/.test(vt))
   t('?truck= / ?venue= are ignored on HatchGrab (nothing of them in the page)', !/Add Business|truck=|venue=/.test(vt))
   t('the trap field is off-screen, hidden from assistive tech, out of the tab order', /<div class="cf-trap" aria-hidden="true"><input type="text" tabindex="-1" autoComplete="off" name="website" value=""\/><\/div>/.test(pages.GB), /<div class="cf-trap"[\s\S]{0,200}/.exec(pages.GB)?.[0])
-  t('Arabic pages stay right to left (app/layout.tsx, as set) and the select\'s arrow moves to the left there', /\{\.\.\.\(isRtl\(lang\) \? \{ dir: 'rtl' \} : \{\}\)\}/.test(read('app/layout.tsx')) && /\[dir="rtl"\] \.hg-landing \.cf select \{ background-position: left 1rem center; \}/.test(read('app/contact/contact-form.css')))
-  t('the form\'s stylesheet is imported by the HatchGrab module only (page.tsx reaches it through a dynamic import)', /import '\.\/contact-form\.css'/.test(read('app/contact/HatchGrabContact.tsx')) && !/contact-form\.css/.test(read('app/contact/page.tsx')) && /await import\('\.\/HatchGrabContact'\)/.test(read('app/contact/page.tsx')))
-  const form = read('app/contact/HatchGrabContactForm.tsx')
+  t('Arabic pages stay right to left (app/(app)/layout.tsx, as set) and the select\'s arrow moves to the left there', /\{\.\.\.\(isRtl\(lang\) \? \{ dir: 'rtl' \} : \{\}\)\}/.test(read('app/(app)/layout.tsx')) && /\[dir="rtl"\] \.hg-landing \.cf select \{ background-position: left 1rem center; \}/.test(read('app/(app)/contact/contact-form.css')))
+  t('the form\'s stylesheet is imported by the HatchGrab module only (page.tsx reaches it through a dynamic import)', /import '\.\/contact-form\.css'/.test(read('app/(app)/contact/HatchGrabContact.tsx')) && !/contact-form\.css/.test(read('app/(app)/contact/page.tsx')) && /await import\('\.\/HatchGrabContact'\)/.test(read('app/(app)/contact/page.tsx')))
+  const form = read('app/(app)/contact/HatchGrabContactForm.tsx')
   t('field errors are inline under their field (aria-invalid + aria-describedby); the two send errors beside the button (role="alert"); the thank-you box replaces the form', /'aria-invalid': errors\[k\] \? true : undefined, 'aria-describedby': errors\[k\] \? `cf-\$\{k\}-error`/.test(form) && /id="cf-form-error" role="alert"/.test(form) && /if \(state === 'sent'\) \{\s*return \(\s*<div ref=\{thanks\} className="cf-thanks" role="status" tabIndex=\{-1\}>/.test(form))
-  const words = await kit.quietAsync(() => ctx.withReq({ rows: ROWS }, async () => (await ctx.bundle('c1-words', "export { contactFormWords } from '@/app/contact/HatchGrabContact'")).contactFormWords('de-DE')))
+  const words = await kit.quietAsync(() => ctx.withReq({ rows: ROWS }, async () => (await ctx.bundle('c1-words', "export { contactFormWords } from '@/app/(app)/contact/HatchGrabContact'")).contactFormWords('de-DE')))
   t('the error sentences carry the support address and the limits in the page\'s number format (de-DE: 5.000)', words.errors.rateLimited.includes('hello@hatchgrab.com') && words.errors.failed.includes('hello@hatchgrab.com') && words.errors.messageTooLong.includes('5.000') && !Object.values(words.errors).some(w => /\{\w+[,}]/.test(w)), words.errors)
 
   // ══ 5 ══════════════════════════════════════════════════════════════════════════════════════════════════════════════
@@ -339,17 +339,17 @@ const flat = (o, p = '', out = {}) => { for (const [k, v] of Object.entries(o ??
   // Dominic's decision (2 November 2026, option A): "no tally.so" covers HatchGrab's own pages. Every other file that loads Tally is a
   // Village Foodie page — and the truck page, kept exactly as it is on both hosts, is the one known exception on hatchgrab.com.
   const withTally = ['app', 'components', 'lib'].flatMap(d => walk(d)).filter(f => /tally\.so/.test(read(f))).sort()
-  t('tally.so is only in Village Foodie\'s pages: /contact (its branch) and the embed, the discovery home, /hire, the venue page, and the truck page', JSON.stringify(withTally) === JSON.stringify(['app/contact/ContactForm.tsx', 'app/contact/page.tsx', 'app/hire/page.tsx', 'app/page.tsx', 'app/trucks/[slug]/TruckClient.tsx', 'app/venues/[slug]/VenueClient.tsx']), withTally)
+  t('tally.so is only in Village Foodie\'s pages: /contact (its branch) and the embed, the discovery home, /hire, the venue page, and the truck page', JSON.stringify(withTally) === JSON.stringify(['app/(app)/contact/ContactForm.tsx', 'app/(app)/contact/page.tsx', 'app/(app)/hire/page.tsx', 'app/(app)/page.tsx', 'app/(app)/trucks/[slug]/TruckClient.tsx', 'app/(app)/venues/[slug]/VenueClient.tsx']), withTally)
   const HR = await kit.bundle('c1-hostredir', "export { crossHostRedirect } from '@/lib/host-redirects'")
   t('…on www.hatchgrab.com, /hire and /venues/<slug> move to Village Foodie (308 in production) and / is the landing page — none of them is served there', ['/hire', '/venues/the-plough-inn'].every(p => HR.crossHostRedirect('www.hatchgrab.com', p, '') === `https://www.villagefoodie.co.uk${p}`)
     && /if \(pathname === '\/'\)/.test(read('proxy.ts')))
   // ⚠️ RE-PINNED (tidy-1, 3 November 2026): the known exception is gone — the truck page loads Tally only where page.tsx does not pass
   // tally: false, i.e. not on hatchgrab.com (scripts/tidy-1.cjs §1 renders both hosts).
-  const tc = read('app/trucks/[slug]/TruckClient.tsx')
-  t('THE KNOWN EXCEPTION IS GONE (tidy-1): on hatchgrab.com /trucks/<slug> loads no Tally — the script and the newsletter popup sit behind `tally`, which page.tsx sets false there', /\{tally && <Script src="https:\/\/tally\.so\/widgets\/embed\.js"/.test(tc) && /\{\.\.\.\(onHatchGrab \? \{ tally: false \} : \{\}\)\}/.test(read('app/trucks/[slug]/page.tsx')) && HR.crossHostRedirect('www.hatchgrab.com', '/trucks/pizza-gusto', '') === null)
-  const pg = read('app/contact/page.tsx')
+  const tc = read('app/(app)/trucks/[slug]/TruckClient.tsx')
+  t('THE KNOWN EXCEPTION IS GONE (tidy-1): on hatchgrab.com /trucks/<slug> loads no Tally — the script and the newsletter popup sit behind `tally`, which page.tsx sets false there', /\{tally && <Script src="https:\/\/tally\.so\/widgets\/embed\.js"/.test(tc) && /\{\.\.\.\(onHatchGrab \? \{ tally: false \} : \{\}\)\}/.test(read('app/(app)/trucks/[slug]/page.tsx')) && HR.crossHostRedirect('www.hatchgrab.com', '/trucks/pizza-gusto', '') === null)
+  const pg = read('app/(app)/contact/page.tsx')
   t('…the Tally script sits after the HatchGrab branch has returned', pg.indexOf('tally.so') > pg.indexOf('return <HatchGrabContact'))
-  const hgc = read('app/contact/HatchGrabContact.tsx')
+  const hgc = read('app/(app)/contact/HatchGrabContact.tsx')
   t('the HatchGrab module no longer imports next/script, Suspense or the Tally embed', !/from 'next\/script'|from 'react'|from '\.\/ContactForm'/.test(hgc) && !/<Script|<Suspense|<ContactForm/.test(hgc))
   const leftover = ['en-GB', ...BASES, 'en-US', 'es-MX'].filter(l => { const c = JSON.parse(read(`messages/${l}.json`)).contactPage || {}; return 'loadingForm' in c || 'formTitle' in c })
   const leftoverBack = BASES.filter(l => { const b = JSON.parse(read(`docs/i18n/back/${l}.json`)); return 'contactPage.loadingForm' in b || 'contactPage.formTitle' in b })
@@ -365,7 +365,7 @@ const flat = (o, p = '', out = {}) => { for (const [k, v] of Object.entries(o ??
     for (const [k, w] of Object.entries(want.pages)) t(`${k} identical to ${want.commit} (HTML and metadata), the Tally embed still there`, JSON.stringify(got[k]) === JSON.stringify(w) && w.tally >= 2, { want: w, got: got[k] })
   }
   const esbuild = require(path.join(REPO, 'node_modules/esbuild'))
-  for (const entry of ['app/venues/[slug]/page.tsx', 'app/trucks/[slug]/page.tsx']) {
+  for (const entry of ['app/(app)/venues/[slug]/page.tsx', 'app/(app)/trucks/[slug]/page.tsx']) {
     // ⚠️ RE-PINNED (perf-1, 5 November 2026): the shared readers reach perf-1's tagged cache only through a DYNAMIC import taken during a
     // marketing render (lib/marketing-render.ts), which these pages never are — so that branch is kept out of the graph, as at runtime.
     const perf1Cache = { name: 'perf-1-cache', setup(b) { b.onResolve({ filter: /^@\/lib\/(marketing-cache|faq\/public-cache)$/ }, a => ({ path: a.path, external: true })) } }
@@ -373,7 +373,7 @@ const flat = (o, p = '', out = {}) => { for (const [k, v] of Object.entries(o ??
     const files = Object.keys(r.metafile.inputs).filter(f => !f.includes('node_modules'))
     // ⚠️ RE-PINNED (tidy-1, 3 November 2026): the three files tidy-1 changed (the truck page's `tally`, the footer's `newsletter`, both
     // defaulting to Village Foodie's page) are exempt — scripts/tidy-1.cjs §1 proves the Village Foodie render byte-identical.
-    const T1_FILES = ['components/Footer.tsx', 'app/trucks/[slug]/TruckClient.tsx', 'app/trucks/[slug]/page.tsx']
+    const T1_FILES = ['components/Footer.tsx', 'app/(app)/trucks/[slug]/TruckClient.tsx', 'app/(app)/trucks/[slug]/page.tsx']
     // ⚠️ RE-PINNED (paperwork-1, 4 November 2026): lib/i18n/namespaces.ts gained `paperwork` in Manage's list (no page here reads it);
     // that one insertion is taken back by name (scripts/_lp-paperwork-1.cjs) and the rest must be byte-identical.
     const P1N = require('./_lp-paperwork-1.cjs')
@@ -392,8 +392,8 @@ const flat = (o, p = '', out = {}) => { for (const [k, v] of Object.entries(o ??
     t(`${entry}: all ${files.length} source files it bundles are byte-identical to ${BASE} — so is every byte it serves`, files.length > 20 && moved.length === 0, moved)
   }
   // ⚠️ RE-PINNED (tidy-1): Footer and TruckClient changed later (tidy-1's `newsletter` / `tally`); their links did not.
-  t('the contact links themselves are untouched (lib/contact-topics.ts, VenueClient, ContactForm; Footer and TruckClient keep every contactHref)', ['lib/contact-topics.ts', 'app/venues/[slug]/VenueClient.tsx', 'app/contact/ContactForm.tsx'].every(f => atBase(f) === read(f))
-    && ['components/Footer.tsx', 'app/trucks/[slug]/TruckClient.tsx'].every(f => JSON.stringify(atBase(f).match(/contactHref\([^)]*\)/g)) === JSON.stringify(read(f).match(/contactHref\([^)]*\)/g))))
+  t('the contact links themselves are untouched (lib/contact-topics.ts, VenueClient, ContactForm; Footer and TruckClient keep every contactHref)', ['lib/contact-topics.ts', 'app/(app)/venues/[slug]/VenueClient.tsx', 'app/(app)/contact/ContactForm.tsx'].every(f => atBase(f) === read(f))
+    && ['components/Footer.tsx', 'app/(app)/trucks/[slug]/TruckClient.tsx'].every(f => JSON.stringify(atBase(f).match(/contactHref\([^)]*\)/g)) === JSON.stringify(read(f).match(/contactHref\([^)]*\)/g))))
 
   // ══ 7 ══════════════════════════════════════════════════════════════════════════════════════════════════════════════
   head('7 · the words — en-GB as agreed, 28 bases complete, translation-check')

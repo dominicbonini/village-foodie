@@ -279,8 +279,8 @@ console.log('\n── 6 · THE YES / NO ANSWER ───────────
     && !/rounded-full transition-colors/.test(UI.replace(/\/\*[\s\S]*?\*\//g, '')),
     '🔴 the row renders the SHARED Toggle — no Yes/No buttons, and no switch defined here')
   check(/export function Toggle\(/.test(read('components/manage/primitives.tsx'))
-    && !/^function Toggle\(/m.test(read('app/manage/[token]/page.tsx').replace(/\/\*[\s\S]*?\*\//g, ''))
-    && /import \{[^}]*\bToggle\b[^}]*\} from '@\/components\/manage\/primitives'/.test(read('app/manage/[token]/page.tsx')),
+    && !/^function Toggle\(/m.test(read('app/(app)/manage/[token]/page.tsx').replace(/\/\*[\s\S]*?\*\//g, ''))
+    && /import \{[^}]*\bToggle\b[^}]*\} from '@\/components\/manage\/primitives'/.test(read('app/(app)/manage/[token]/page.tsx')),
     '🔴 …and Settings renders that same component — page.tsx defines no switch of its own')
   /* ⛔ AND THE HELPER LINE UNDER THE LABEL IS GONE (Dominic, same message). */
   // ⚠️ RE-PINNED (Language Phase 1d): this screen's words moved to messages/en-GB.json `kitchenCapacity`, so "gone"

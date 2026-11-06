@@ -217,7 +217,7 @@ function analyse(locale) {
   for (const r of results) prev.languages[r.locale] = r
   prev.generated = new Date().toISOString().slice(0, 10)
   prev.excludedRules = EXCLUDE.map(([re, why]) => ({ views: String(re), reason: why }))
-  prev.adminExcluded = ['app/admin (Admin page, all tabs)', '/api/admin/*', 'emails to HatchGrab staff (build-request, domain check)', 'outreach emails (outreach_templates — out of scope, unchanged)']
+  prev.adminExcluded = ['app/(app)/admin (Admin page, all tabs)', '/api/admin/*', 'emails to HatchGrab staff (build-request, domain check)', 'outreach emails (outreach_templates — out of scope, unchanged)']
   fs.writeFileSync(SUMMARY, JSON.stringify(prev, null, 1) + '\n')
   console.log(`\n${bad ? '🔴' : '✅'} legal-languages-1-audit: ${LOCALES.length - bad} of ${LOCALES.length} language(s) clean`)
   process.exit(bad ? 1 : 0)

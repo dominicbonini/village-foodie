@@ -65,7 +65,7 @@ const PAGES = [
     // The UK page, admin preview (every column unverified): full page, the "Which suits" section and the table, at 390 and 1280.
     const RF = require('./_real-fonts.cjs')
     const B = RF.built()
-    const css = `<style>${fs.readFileSync(path.join(REPO, 'app/[country]/[section]/[slug]/comparison.css'), 'utf8')}</style>`
+    const css = `<style>${fs.readFileSync(path.join(REPO, 'app/(public)/[country]/[section]/[slug]/comparison.css'), 'utf8')}</style>`
     const html = fs.readFileSync(path.join(outdir, 'gb-admin.html'), 'utf8')
     const pw = require(path.join(REPO, 'node_modules/playwright'))
     const browser = await pw.chromium.launch()

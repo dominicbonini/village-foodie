@@ -21,7 +21,7 @@ const NEWSLETTER = /<h3 class="text-white font-bold text-lg mb-2">[^<]*<\/h3><p 
 const NO_SPAM = /(<div class="text-\[10px\] mt-2 flex flex-col gap-2 items-center">)<p>[^<]*<\/p>/g
 
 /** True on a tree with tidy-1 (the truck page takes `tally`). */
-const LANDED = (() => { try { return /tally = true \}: \{/.test(require('fs').readFileSync(require('path').join(__dirname, '..', 'app/trucks/[slug]/TruckClient.tsx'), 'utf8')) } catch { return false } })()
+const LANDED = (() => { try { return /tally = true \}: \{/.test(require('fs').readFileSync(require('path').join(__dirname, '..', 'app/(app)/trucks/[slug]/TruckClient.tsx'), 'utf8')) } catch { return false } })()
 
 // ── item 3 · the Privacy Policy's demo-section wording ─────────────────────────────────────────────────────────────────────────
 const PRIVACY_EDITS = [

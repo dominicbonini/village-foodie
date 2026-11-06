@@ -68,7 +68,7 @@ const ROWS = { on: () => [LP1E.GB(), LP1E.US_ON(), AU(true), NZ(true)], off: () 
 
 ;(async () => {
   const ctx = LP1E.context(kit, REPO)
-  const ROUTE = { landing: 'app/[country]/page', features: 'app/[country]/features/page', compare: 'app/[country]/compare/page' }
+  const ROUTE = { landing: 'app/(public)/[country]/page', features: 'app/(public)/[country]/features/page', compare: 'app/(public)/[country]/compare/page' }
   const mods = {}
   const modOf = p => (mods[p] ||= ctx.bundle(`anz1-${p}`, `export * from '@/${ROUTE[p]}'\nexport { default } from '@/${ROUTE[p]}'\nexport { clearPlanCatalogCache as __clearPlans } from '@/lib/plans-server'\nexport { clearCountrySettingsCache as __clearCs } from '@/lib/country-settings'`))
   const run = (rows, fn) => ctx.withReq({ rows, tables }, fn)
@@ -139,8 +139,8 @@ const ROWS = { on: () => [LP1E.GB(), LP1E.US_ON(), AU(true), NZ(true)], off: () 
       !!r.html && home && tx.split(LINE[cc]).length === 2 && !/£\d|€\d/.test(tx) && intl.length === 0, { intl: intl.slice(0, 6), seen: tx.match(/[A-Z]*\$\d[\d.,]*/g)?.slice(0, 10) })
   }
   // /compare at a volume where Pro, then Unlimited, is the suggestion (the calculator's own state, patched — the real module)
-  const CMP = await ctx.bundle('anz1-compare-vol', `export { default } from '@/app/[country]/compare/page'\nexport { clearPlanCatalogCache as __clearPlans } from '@/lib/plans-server'`,
-    { patches: [{ file: 'app/compare/CostComparison.tsx', states: ['gmv'] }] })
+  const CMP = await ctx.bundle('anz1-compare-vol', `export { default } from '@/app/(public)/[country]/compare/page'\nexport { clearPlanCatalogCache as __clearPlans } from '@/lib/plans-server'`,
+    { patches: [{ file: 'app/(public)/(site)/compare/CostComparison.tsx', states: ['gmv'] }] })
   const compareAt = (seg, gmv) => run(ROWS.on(), async () => {
     CMP.__clearPlans(); globalThis.__ms = { gmv }
     try { return text(await ctx.prerender(h(CMP.default, { params: Promise.resolve({ country: seg }), searchParams: Promise.resolve({}) }))) } finally { delete globalThis.__ms }
@@ -309,7 +309,7 @@ const ROWS = { on: () => [LP1E.GB(), LP1E.US_ON(), AU(true), NZ(true)], off: () 
   t('the GB and US trucks\' toggles are exactly their own lists (UK 14 / US 9)', JSON.stringify(gbT) === JSON.stringify(A.UK_14) && JSON.stringify(usT) === JSON.stringify(A.US_9), [gbT, usT])
 
   // The order page, state-patched (the real module), on an AU and an NZ fixture truck
-  const OP = 'app/trucks/[slug]/order/page.tsx'
+  const OP = 'app/(app)/trucks/[slug]/order/page.tsx'
   const O = await kit.bundle('anz1-order', `export { default as OrderPage } from '@/${OP}'\nexport { I18nContext } from '@/lib/i18n/use-t'`, {
     patches: [{ file: OP, states: ['truck', 'menu', 'events', 'event', 'eventLoading', 'loading', 'basket', 'appliedDeals', 'noEvents', 'availableSlots', 'serverCatConfigs', 'capacityInputs', 'formSheetOpen', 'stageOpen', 'payment', 'payStage', 'elementReady'] },
       { file: OP, from: 'const { slug } = use(params)', to: 'const { slug } = params' }],

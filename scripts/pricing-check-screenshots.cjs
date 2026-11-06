@@ -42,7 +42,7 @@ const STUBS = {
 async function bundle(dir) {
   const esbuild = require(path.join(REPO, 'node_modules/esbuild'))
   const entry = path.join(dir, 'entry.tsx')
-  fs.writeFileSync(entry, `import { createRoot } from 'react-dom/client'\nimport AdminPage from '@/app/admin/page'\ncreateRoot(document.getElementById('root')).render(<AdminPage />)\n`)
+  fs.writeFileSync(entry, `import { createRoot } from 'react-dom/client'\nimport AdminPage from '@/app/(app)/admin/page'\ncreateRoot(document.getElementById('root')).render(<AdminPage />)\n`)
   await esbuild.build({
     entryPoints: [entry], bundle: true, outfile: path.join(dir, 'bundle.js'), format: 'iife', platform: 'browser',
     jsx: 'automatic', target: 'es2020', logLevel: 'error', alias: { '@': REPO }, nodePaths: [path.join(REPO, 'node_modules')],

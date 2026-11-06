@@ -106,7 +106,7 @@ async function keyViews() {
     "export * as PR from '@/lib/pricing'",
     "export * as PDF from '@/lib/plans-pdf'", "export * as FE from '@/lib/features'", "export * as DA from '@/lib/demo-assumptions'",
     "export * as HE from '@/components/dashboard/helpers'", "export * as TK from '@/lib/printing/ticket'",
-    "export { default as CostComparison } from '@/app/compare/CostComparison'",
+    "export { default as CostComparison } from '@/app/(public)/(site)/compare/CostComparison'",
     "export { default as Footer } from '@/components/Footer'", "export { DemoModalProvider } from '@/components/landing/DemoUpload'", "export { LandingFooter } from '@/components/landing/LandingFooter'",
   ].join('\n'), { stubs: STUBS })
   kit.setNow(NOW)
@@ -157,14 +157,14 @@ async function keyViews() {
   }
   // Every /contact?topic= link, as the source writes it today (AFTER builds the same strings from ids).
   out.contactLinks = {}
-  for (const f of ['components/Footer.tsx', 'components/landing/LandingFooter.tsx', 'app/compare/CostComparison.tsx', 'app/trucks/[slug]/TruckClient.tsx', 'app/venues/[slug]/VenueClient.tsx']) {
+  for (const f of ['components/Footer.tsx', 'components/landing/LandingFooter.tsx', 'app/(public)/(site)/compare/CostComparison.tsx', 'app/(app)/trucks/[slug]/TruckClient.tsx', 'app/(app)/venues/[slug]/VenueClient.tsx']) {
     out.contactLinks[f] = (read(f).match(/\/contact\?topic=[^"`\s&]+/g) || [])
   }
   return out
 }
 
 async function landingViews() {
-  const m = await kit.bundle('lp0-landing', "export { default as Page } from '@/app/landing/page'\nexport { clearCountrySettingsCache } from '@/lib/country-settings'", { stubs: STUBS })
+  const m = await kit.bundle('lp0-landing', "export { default as Page } from '@/app/(public)/(site)/landing/page'\nexport { clearCountrySettingsCache } from '@/lib/country-settings'", { stubs: STUBS })
   const { prerenderToNodeStream } = require(path.join(REPO, 'node_modules/react-dom/static'))
   const out = {}
   for (const [k, q] of [['GB', null], ['US', 'US']]) {

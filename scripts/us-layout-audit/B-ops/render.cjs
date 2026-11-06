@@ -14,7 +14,7 @@ const { measure } = require('./measure.cjs')
 
 const OUT = path.join(REPO, 'docs/us-layout-audit/B-ops'); fs.mkdirSync(OUT, { recursive: true })
 const SIZES = [[810, 1080, 'ipad-p'], [1180, 820, 'ipad-l'], [800, 1280, 'android'], [1280, 800, 'laptop']]
-const D = 'app/dashboard/[token]/page.tsx', AP = 'components/dashboard/AddOrderPanel.tsx', K = 'app/dashboard/[token]/kds/page.tsx'
+const D = 'app/(app)/dashboard/[token]/page.tsx', AP = 'components/dashboard/AddOrderPanel.tsx', K = 'app/(app)/dashboard/[token]/kds/page.tsx'
 const names = f => [...new Set([...fs.readFileSync(path.join(REPO, f), 'utf8').matchAll(/const\s*\[\s*([a-zA-Z]+)\s*,\s*set[A-Za-z]+\s*\]\s*=\s*useState/g)].map(m => m[1]))]
 
 // ── the states ──────────────────────────────────────────────────────────────────────────────────────────

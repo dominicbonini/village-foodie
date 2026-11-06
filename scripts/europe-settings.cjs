@@ -213,7 +213,7 @@ const NAMES = { AT: 'Austria', BE: 'Belgium', BG: 'Bulgaria', HR: 'Croatia', CY:
   t('money in Gibraltar is "£8.50" (Intl alone writes "GB£", since Gibraltar\'s own pound is GIP): menus, orders and the tip box\'s symbol', M.formatAmount(850, gi) === '£8.50' && M.currencySymbol(gi) === '£' && new Intl.NumberFormat('en-GI', { style: 'currency', currency: 'GBP' }).format(8.5) === 'GB£8.50')
   t('…the same registry entry writes Romania\'s "8,50 lei" (not "RON"); the UK, Malta and every other format exactly as Intl writes them', M.formatAmount(850, { currency: 'RON', locale: 'ro-RO' }).replace(/ /g, ' ') === '8,50 lei'
     && M.formatAmount(850, gb) === new Intl.NumberFormat('en-GB', { style: 'currency', currency: 'GBP' }).format(8.5) && M.formatAmount(850, { currency: 'EUR', locale: 'en-MT' }) === '€8.50'
-    && /narrowIn: \['en-GI'\]/.test(read('lib/currencies.ts')) && !/style: 'currency', currency: m\.currency/.test(read('app/trucks/[slug]/order/page.tsx')))
+    && /narrowIn: \['en-GI'\]/.test(read('lib/currencies.ts')) && !/style: 'currency', currency: m\.currency/.test(read('app/(app)/trucks/[slug]/order/page.tsx')))
 
   // ══ 7 ════════════════════════════════════════════════════════════════════════════════════════════════════════════
   head('7 · THE NOT RUN SQL — block A "run now", block B "run after deploy"')

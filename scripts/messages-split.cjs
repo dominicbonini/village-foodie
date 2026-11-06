@@ -93,7 +93,7 @@ function graphReads(entry) {
 }
 const NS_SRC = readFileSync(path.join(REPO, 'lib/i18n/namespaces.ts'), 'utf8')
 const nsOf = name => { const m = NS_SRC.match(new RegExp(`\\n\\s*${name}: \\[([^\\]]*)\\]`)); return m ? [...m[1].matchAll(/'([A-Za-z0-9]+)'/g)].map(x => x[1]) : null }
-const SURFACES = { order: 'app/trucks/[slug]/order/page.tsx', confirmation: 'app/order/[id]/manage/page.tsx', dashboard: 'app/dashboard/[token]/page.tsx', kds: 'app/dashboard/[token]/kds/page.tsx', manage: 'app/manage/[token]/page.tsx', setup: 'app/setup/page.tsx' }
+const SURFACES = { order: 'app/(app)/trucks/[slug]/order/page.tsx', confirmation: 'app/(app)/order/[id]/manage/page.tsx', dashboard: 'app/(app)/dashboard/[token]/page.tsx', kds: 'app/(app)/dashboard/[token]/kds/page.tsx', manage: 'app/(app)/manage/[token]/page.tsx', setup: 'app/(app)/setup/page.tsx' }
 for (const [name, page] of Object.entries(SURFACES)) {
   const want = [...graphReads(page)].sort(), have = nsOf(name) || []
   const missing = want.filter(n => !have.includes(n))
@@ -117,7 +117,7 @@ function clientCatalogs(entry) {
   }
   return ns
 }
-const SEEDED = { marketing: ['app/landing/page.tsx', 'app/features/page.tsx', 'app/compare/page.tsx', 'app/about/page.tsx'], truckPage: ['app/trucks/[slug]/page.tsx'], embed: ['app/domain/page.tsx'] }
+const SEEDED = { marketing: ['app/(public)/(site)/landing/page.tsx', 'app/(public)/(site)/features/page.tsx', 'app/(public)/(site)/compare/page.tsx', 'app/(public)/(site)/about/page.tsx'], truckPage: ['app/(app)/trucks/[slug]/page.tsx'], embed: ['app/(app)/domain/page.tsx'] }
 const PAGE_WORDS = readFileSync(path.join(REPO, 'lib/i18n/page-words.ts'), 'utf8')
 for (const [name, pages] of Object.entries(SEEDED)) {
   const want = [...new Set(pages.flatMap(p => [...clientCatalogs(p)]))].sort(), have = nsOf(name) || []

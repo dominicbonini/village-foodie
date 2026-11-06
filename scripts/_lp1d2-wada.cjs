@@ -36,7 +36,7 @@
 // 🔴 EVERY VIEW RUNS ON BOTH CODES (826471a and this tree): states through ctx.states, a code-state through __after.
 const path = require('path')
 
-const M_FILE = 'app/manage/[token]/page.tsx'
+const M_FILE = 'app/(app)/manage/[token]/page.tsx'
 const DEL = 'components/manage/DeleteAccountSection.tsx'
 const CDS = 'components/dashboard/CustomDomainSetup.tsx'
 const CPY = 'components/dashboard/CopyButton.tsx'

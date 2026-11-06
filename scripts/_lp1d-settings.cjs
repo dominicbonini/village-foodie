@@ -6,7 +6,7 @@
 // States: the owner and a manager, Starter / Pro / Max, one van and two (with the per-van service settings, kitchen
 // capacity, offline protection, stock), adding / renaming / deleting a van, the van billing and upgrade modals, the
 // QR modal, schedule verify errors, the pre-order modal, the emoji picker.
-const M_FILE = 'app/manage/[token]/page.tsx'
+const M_FILE = 'app/(app)/manage/[token]/page.tsx'
 const { CATS, ITEMS, SUBCATS } = require('./_lp1d-menu.cjs')
 
 const SECTION_IDS = ['truck-details', 'contact', 'order-settings', 'truck-settings', 'schedule', 'qr-code', 'auto-replies', 'account-deletion']

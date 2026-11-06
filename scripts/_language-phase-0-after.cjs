@@ -51,17 +51,17 @@ module.exports = async function after(x) {
 
   // Providers: in each surface's layout, with only its namespaces; each page reports its truck's locale.
   const LAYOUTS = {
-    'app/trucks/[slug]/order/layout.tsx': 'order', 'app/order/[id]/layout.tsx': 'confirmation', 'app/dashboard/[token]/layout.tsx': 'dashboard',
-    'app/dashboard/[token]/kds/layout.tsx': 'kds', 'app/kds/[kds_token]/layout.tsx': 'kds', 'app/manage/[token]/layout.tsx': 'manage', 'app/setup/layout.tsx': 'setup',
+    'app/(app)/trucks/[slug]/order/layout.tsx': 'order', 'app/(app)/order/[id]/layout.tsx': 'confirmation', 'app/(app)/dashboard/[token]/layout.tsx': 'dashboard',
+    'app/(app)/dashboard/[token]/kds/layout.tsx': 'kds', 'app/(app)/kds/[kds_token]/layout.tsx': 'kds', 'app/(app)/manage/[token]/layout.tsx': 'manage', 'app/(app)/setup/layout.tsx': 'setup',
   }
   for (const [f, ns] of Object.entries(LAYOUTS)) t(`provider in ${f} with NAMESPACES.${ns}`, new RegExp(`<I18nProvider namespaces=\\{NAMESPACES\\.${ns}\\}>`).test(src(f)))
   const PAGES = {
-    'app/trucks/[slug]/order/page.tsx': /useTruckLocale\(pageTs\.locale\)/, 'app/order/[id]/manage/page.tsx': /useTruckLocale\(order\?\.time\?\.locale\)/,
-    'app/dashboard/[token]/page.tsx': /useTruckLocale\(dashTime\.locale\)/, 'app/dashboard/[token]/kds/page.tsx': /useTruckLocale\(kdsTime\.locale\)/,
-    'app/manage/[token]/page.tsx': /useTruckLocale\(countrySettings\?\.locale\)/, 'app/setup/page.tsx': /useTruckLocale\(signupCountries\.data\?\.countries\.find\(c => c\.code === base\?\.country\)\?\.locale\)/,
+    'app/(app)/trucks/[slug]/order/page.tsx': /useTruckLocale\(pageTs\.locale\)/, 'app/(app)/order/[id]/manage/page.tsx': /useTruckLocale\(order\?\.time\?\.locale\)/,
+    'app/(app)/dashboard/[token]/page.tsx': /useTruckLocale\(dashTime\.locale\)/, 'app/(app)/dashboard/[token]/kds/page.tsx': /useTruckLocale\(kdsTime\.locale\)/,
+    'app/(app)/manage/[token]/page.tsx': /useTruckLocale\(countrySettings\?\.locale\)/, 'app/(app)/setup/page.tsx': /useTruckLocale\(signupCountries\.data\?\.countries\.find\(c => c\.code === base\?\.country\)\?\.locale\)/,
   }
   for (const [f, re] of Object.entries(PAGES)) t(`${f} tells its provider the truck's locale`, re.test(src(f)))
-  t('NextIntlClientProvider is rendered by the one provider, beside (not instead of) the country settings', /<NextIntlClientProvider locale=\{locale\} messages=\{messages\}>/.test(src('lib/i18n/client.tsx')) && /<CountrySettingsProvider settings=\{countrySettings\}>/.test(src('app/manage/[token]/page.tsx')))
+  t('NextIntlClientProvider is rendered by the one provider, beside (not instead of) the country settings', /<NextIntlClientProvider locale=\{locale\} messages=\{messages\}>/.test(src('lib/i18n/client.tsx')) && /<CountrySettingsProvider settings=\{countrySettings\}>/.test(src('app/(app)/manage/[token]/page.tsx')))
 
   // The client path, mounted for real: effects run, so the provider really switches to the truck's locale.
   const { installMiniDom } = require('./_mini-dom.cjs')
@@ -88,7 +88,7 @@ module.exports = async function after(x) {
   t('client path: a US truck → provider switches to en-US; the words are the UK ones (no US override yet)', us === 'en-US|Add a tip for the truck?', us)
   t('client path: an unsupported locale → en-GB', fr === 'en-GB|Add a tip for the truck?', fr)
   t('client path: no provider at all → en-GB words, no throw', kit.renderStatic(React.createElement(C.Bare)) === '<p>Add a tip for the truck?</p>')
-  t('the order page draws the tip heading from messages (client key, end to end)', /\{tOrder\('tipHeading'\)\}/.test(src('app/trucks/[slug]/order/page.tsx')) && !/>Add a tip for the truck\?</.test(src('app/trucks/[slug]/order/page.tsx')))
+  t('the order page draws the tip heading from messages (client key, end to end)', /\{tOrder\('tipHeading'\)\}/.test(src('app/(app)/trucks/[slug]/order/page.tsx')) && !/>Add a tip for the truck\?</.test(src('app/(app)/trucks/[slug]/order/page.tsx')))
   t('the plans PDF draws its heading from messages (server key, end to end; the PDF HTML above is byte-identical for GB and US)', /<h1>\$\{esc\(translatorFor\(s\.locale, 'plansPdf'\)\('title'\)\)\}<\/h1>/.test(src('lib/plans-pdf.ts')) && !/<h1>Plans and features<\/h1>/.test(src('lib/plans-pdf.ts')))
 
   /* ── 4 · keys separated from labels, beyond byte-identity ── */
@@ -123,7 +123,7 @@ module.exports = async function after(x) {
   const PF_SRC = stripComments(LEGACY ? src('lib/legacy-pricing-display.ts') : ['lib/feature-table.ts', 'lib/plan-offer.ts', 'components/pricing/PlanTable.tsx'].map(src).join('\n')), LT_SRC = PF_SRC
   t('no lookup keys on a row NAME any more (feature map, trial column, overrides, Billing, Admin)',
     !/ROW_FEATURE_MAP\[row\.name\]|row\.name !== WHATSAPP_ROW_NAME/.test(PF_SRC) && !/row\.name ===|\.has\(row\.name\)|_OVERRIDES\[row\.name\]/.test(LT_SRC)
-    && !/row\.name === 'Online ordering — Pay at Hatch'/.test(src('app/manage/[token]/page.tsx') + src('app/admin/page.tsx')) && !/r\.name === rowName/.test(src('app/manage/[token]/page.tsx')))
+    && !/row\.name === 'Online ordering — Pay at Hatch'/.test(src('app/(app)/manage/[token]/page.tsx') + src('app/(app)/admin/page.tsx')) && !/r\.name === rowName/.test(src('app/(app)/manage/[token]/page.tsx')))
   // ⚠️ RE-PINNED (pricing-pages, Stage B): the comparison table is components/pricing/PlanTable.tsx (FeatureComparison is deleted).
   t('"Coming soon" is decided by the cell\'s state, not its words (plan table, PDF)', !/label === 'Coming soon'/.test(src(LEGACY ? 'components/landing/FeatureComparison.tsx' : 'components/pricing/PlanTable.tsx') + src('lib/plans-pdf.ts')) && (LEGACY || /tableCell\(/.test(src('components/pricing/PlanTable.tsx'))))
   t('price words: one definition, the same seven words the mask always exempted', JSON.stringify(Object.values(K.PW.PRICE_WORD).sort()) === JSON.stringify(['Free', 'Free trial', 'Lifetime', '0%', 'Pay at Hatch', 'Unlimited', '—'].sort()) && !/NON_SECRET_PRICE = new Set\(/.test(src('lib/pricing.ts')))
@@ -139,7 +139,7 @@ module.exports = async function after(x) {
   // ⚠️ RE-PINNED (landing-mobile-tidy, 21 October 2026): the amount and the per-month words are each their own span now
   // (`plan-amount` / `plan-per`), so a phone can lay them out as two grid cells — still from data, still no display string.
   else t('Stage B: the pricing card formats the amount from data and adds the per-month words beside it (no display string)', /<span className="plan-amount">\{formatAmount\(p\.monthlyMinor, money\)\}<\/span><span className="plan-per">\{t\('card\.perTruckMonth'\)\}<\/span>/.test(src('components/pricing/PricingSection.tsx')))
-  t('the pricing card no longer splits a display string on "/mo"', !/endsWith\('\/mo'\)/.test(src('app/landing/page.tsx') + (LEGACY ? '' : src('components/pricing/PricingSection.tsx'))))
+  t('the pricing card no longer splits a display string on "/mo"', !/endsWith\('\/mo'\)/.test(src('app/(public)/(site)/landing/page.tsx') + (LEGACY ? '' : src('components/pricing/PricingSection.tsx'))))
   // roundsToZero ≡ the old string comparison, for both countries, over a wide range (incl. -0.4, NaN-guarded).
   const ns = [0, 0.1, 0.49, 0.5, 0.51, 0.999, 1, 1.5, -0.4, -0.5, -0.6, 2.4999, 1e-9, 12345.5, -1e-9, 0.0049]
   let same = true; const bad = []
@@ -147,18 +147,18 @@ module.exports = async function after(x) {
     const old = K.MF.formatMajor(n, f, { grouping: true, decimals: 0, minusBeforeSymbol: true }) === K.MF.formatMajor(0, f, { grouping: true, decimals: 0, minusBeforeSymbol: true })
     if (old !== K.MF.roundsToZero(n, f, 0)) { same = false; bad.push(`${f.currency} ${n}`) }
   }
-  t('cost calculator: the number test answers exactly what the string comparison did (GBP and USD, 16 values each)', same && !/gbpIn\(f, n\) === gbpIn\(f, 0\)/.test(src('app/compare/CostComparison.tsx')), bad.join(', '))
+  t('cost calculator: the number test answers exactly what the string comparison did (GBP and USD, 16 values each)', same && !/gbpIn\(f, n\) === gbpIn\(f, 0\)/.test(src('app/(public)/(site)/compare/CostComparison.tsx')), bad.join(', '))
   const want = Object.values(before.keys.contactLinks).flat().sort()
   const built = [K.CT.contactHref('general'), K.CT.contactHref('addBusiness'), K.CT.contactHref('reportIssue'), K.CT.contactHref('general'),
     K.CT.contactHref('costComparison'), K.CT.contactHref('costComparison'), ...Array(3).fill(K.CT.contactHref('addBusiness')), K.CT.contactHref('claimVenue')].sort()
   t('contact links: built from topic ids, the same ten links as BEFORE', JSON.stringify(want) === JSON.stringify(built), JSON.stringify(built))
   t('contact links: "&truck=" and "&venue=" encode exactly as before', K.CT.contactHref('addBusiness', { truck: 'Pizza & Co' }) === `/contact?topic=Add%20Business&truck=${encodeURIComponent('Pizza & Co')}` && K.CT.contactHref('claimVenue', { venue: 'The Crown' }) === '/contact?topic=ClaimVenue&venue=The%20Crown')
-  const LINK_FILES = ['components/Footer.tsx', 'components/landing/LandingFooter.tsx', 'app/compare/CostComparison.tsx', 'app/trucks/[slug]/TruckClient.tsx', 'app/venues/[slug]/VenueClient.tsx']
+  const LINK_FILES = ['components/Footer.tsx', 'components/landing/LandingFooter.tsx', 'app/(public)/(site)/compare/CostComparison.tsx', 'app/(app)/trucks/[slug]/TruckClient.tsx', 'app/(app)/venues/[slug]/VenueClient.tsx']
   t('no /contact?topic= string is typed into an href any more', LINK_FILES.every(f => !/href=\{?[`"]\/contact\?topic=/.test(src(f))))
   t('Walk-up: one stored constant, one helper; no comparison against the literal remains', K.WU.WALK_UP_NAME === 'Walk-up' && K.WU.isWalkUp('Walk-up') && !K.WU.isWalkUp('Sam') && !K.WU.isWalkUp(null)
-    && !/!==\s*'Walk-up'|===\s*'Walk-up'|\|\|\s*'Walk-up'/.test(['app/manage/[token]/page.tsx', 'app/dashboard/[token]/page.tsx', 'app/api/dashboard/action/route.ts', 'components/dashboard/AddOrderPanel.tsx', 'lib/printing/ticket.ts'].map(src).join('\n')))
+    && !/!==\s*'Walk-up'|===\s*'Walk-up'|\|\|\s*'Walk-up'/.test(['app/(app)/manage/[token]/page.tsx', 'app/(app)/dashboard/[token]/page.tsx', 'app/api/dashboard/action/route.ts', 'components/dashboard/AddOrderPanel.tsx', 'lib/printing/ticket.ts'].map(src).join('\n')))
   t('Private type: the stored name is matched in one helper', /function whereNamedPrivate/.test(src('lib/private-events/type.ts')) && (src('lib/private-events/type.ts').match(/\.ilike\('name', PRIVATE_TYPE_NAME\)/g) || []).length === 1)
-  t("the 'Other' revenue line is one constant", /const OTHER_REVENUE_BUCKET = 'Other'/.test(src('app/manage/[token]/page.tsx')) && !/catBase\['Other'\]|\|\| 'Other'\n/.test(src('app/manage/[token]/page.tsx')))
+  t("the 'Other' revenue line is one constant", /const OTHER_REVENUE_BUCKET = 'Other'/.test(src('app/(app)/manage/[token]/page.tsx')) && !/catBase\['Other'\]|\|\| 'Other'\n/.test(src('app/(app)/manage/[token]/page.tsx')))
   // Language Phase 2: lib/demo-templates.ts names its sample categories by STANDARD CATEGORY ID ('mains' there is the id
   // menu-extract and demo-assumptions use, not the fallback config key), so it is exempt beside them.
   const mainsLeft = require('child_process').execSync("grep -rn \"'mains'\" app components lib || true", { cwd: REPO, encoding: 'utf8' }).split('\n').filter(l => l && !/lib\/category-key\.ts|lib\/demo-assumptions\.ts|lib\/menu-extract\.ts|lib\/demo-templates\.ts/.test(l) && !/^\S+:\d+:\s*(\/\/|\*)/.test(l))

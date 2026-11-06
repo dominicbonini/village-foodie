@@ -94,7 +94,7 @@ for (const el of Array.from(document.querySelectorAll('div.cc'))) {
 }
 document.documentElement.setAttribute('data-ready', '1')`)
   const setupJs = await browserBundle(dir, 'setup', `import { createRoot } from 'react-dom/client'
-import SetupPage from '@/app/setup/page'
+import SetupPage from '@/app/(app)/setup/page'
 createRoot(document.getElementById('root')!).render(<SetupPage />)`)
   const demoJs = await browserBundle(dir, 'demo', `import { createRoot } from 'react-dom/client'
 import { DemoGetStarted } from '@/components/DemoGetStarted'

@@ -436,15 +436,16 @@ function world(over = {}) {
     const mine = /^(supabase\/migrations\/20261073_loyalty_1\.sql|lib\/loyalty\/[a-z]+\.ts|app\/api\/cron\/loyalty-stamps\/route\.ts|lib\/order-retention\.ts|lib\/account-deletion\.ts|vercel\.json|scripts\/loyalty-1\.cjs|scripts\/reviews-weather-1\.cjs|scripts\/perf-1\.cjs|scripts\/harnesses\.json|docs\/loyalty-1-[a-z-]+\.md)$/
     const stray = [...committed, ...untracked].filter(f => !mine.test(f))
     t('every file loyalty-1 committed or created is on its list (no page, message, i18n, landing, legal or manual file)', commits.length >= 1 && !stray.length, { commits: commits.length, stray })
-    t('🔴 docs/reference-manual.md, messages/, lib/i18n/, app/landing/, components/landing/, components/legal/ are in none of loyalty-1\'s commits', !committed.some(f => /^(docs\/reference-manual\.md|messages\/|lib\/i18n\/|app\/landing\/|components\/landing\/|components\/legal\/|content\/legal\/)/.test(f)))
+    t('🔴 docs/reference-manual.md, messages/, lib/i18n/, app/(public)/(site)/landing/, components/landing/, components/legal/ are in none of loyalty-1\'s commits', !committed.some(f => /^(docs\/reference-manual\.md|messages\/|lib\/i18n\/|app\/landing\/|components\/landing\/|components\/legal\/|content\/legal\/)/.test(f)))
     const importers = execFileSync('git', ['grep', '--untracked', '-l', '-E', '@/lib/loyalty/', '--', 'app', 'lib', 'components'], { cwd: REPO }).toString().trim().split('\n').sort()
     t('🔴 only the new cron route, the retention job and account deletion import lib/loyalty — no order placement, dashboard action, status change, payment code, checkout or customer page', J(importers) === J(['app/api/cron/loyalty-stamps/route.ts', 'lib/account-deletion.ts', 'lib/order-retention.ts']), importers)
     // (a) of everything loyalty-1 committed, nothing under app/api or lib is outside its own files; (b) the order, dashboard-action,
     // payment and webhook code, the order pages and proxy.ts are byte-identical to before loyalty-1, committed or not
     const OWN = /^(app\/api\/cron\/loyalty-stamps\/|lib\/loyalty\/|lib\/order-retention\.ts$|lib\/account-deletion\.ts$)/
     const outside = committed.filter(f => /^(app\/|lib\/|components\/|proxy\.ts$)/.test(f) && !OWN.test(f))
-    const CRITICAL = ['app/api/orders', 'app/api/dashboard', 'app/api/payments', 'app/api/webhooks', 'lib/payments', 'lib/orders', 'lib/order-charges.ts', 'lib/order-repricing.ts', 'lib/order-calculations.ts', 'app/order', 'app/o', 'proxy.ts']
-    const critical = execFileSync('git', ['diff', '--name-only', BASE, '--', ...CRITICAL], { cwd: REPO }).toString().trim().split('\n').filter(Boolean)
+    const CRITICAL = ['app/api/orders', 'app/api/dashboard', 'app/api/payments', 'app/api/webhooks', 'lib/payments', 'lib/orders', 'lib/order-charges.ts', 'lib/order-repricing.ts', 'lib/order-calculations.ts', 'app/(app)/order', 'app/(app)/o', 'proxy.ts']
+    // ⚠️ RE-PINNED (cwv-2, 6 November 2026, docs/cwv-2-report.md §6): the routes moved into app/(app) and app/(public); `git diff` saw every moved file as deleted and added. scripts/_moved-paths.cjs changedSince compares each file with itself at that commit, under its name then — blind to the move and nothing else.
+    const critical = require('./_moved-paths.cjs').changedSince(BASE, CRITICAL)
     t('🔴 order placement, the dashboard action route (status changes), the payment and webhook code, the customer order pages and proxy.ts: byte-identical to before loyalty-1; nothing else under app/ or lib/ committed', !outside.length && !critical.length, { outside, critical })
     const src = ['lib/loyalty/model.ts', 'lib/loyalty/run.ts', 'lib/loyalty/service.ts', 'lib/loyalty/store.ts', 'lib/loyalty/retention.ts', 'app/api/cron/loyalty-stamps/route.ts'].map(read).join('\n')
     const store = read('lib/loyalty/store.ts')

@@ -3,7 +3,7 @@
 // segment rules (uk/us only, 404 otherwise, switched-off → proxy.ts 302 to the GB page).
 import { COUNTRY_PATH_SEGMENTS } from '@/lib/marketing-country'
 
-export { default, generateMetadata } from '../../features/page'
+export { default, generateMetadata } from '../../(site)/features/page'
 
 export const dynamic = 'force-dynamic'
 export const dynamicParams = false

@@ -108,7 +108,7 @@ const J = x => JSON.stringify(x)
   // ══ 2 · PostHog ═══════════════════════════════════════════════════════════════════════════════════
   head('2 · PostHog is cookieless')
   {
-    const p = read('app/providers.tsx')
+    const p = read('app/(app)/providers.tsx')
     t("posthog.init sets persistence: 'memory' (no cookie, no localStorage)", /posthog\.init\([\s\S]*?persistence: 'memory',[\s\S]*?\}\)/.test(p))
     t('…and still never initialises on /embed, an operator\'s own domain, or the dashboard / manage / KDS', /!IS_EMBED_ENTRY && !IS_CUSTOM_HOST_ENTRY && !IS_CREDENTIAL_ENTRY/.test(p) && /disable_session_recording: true/.test(p))
   }
@@ -116,7 +116,7 @@ const J = x => JSON.stringify(x)
   // ══ 3 · 4 · the order page and the emails ══════════════════════════════════════════════════════════
   head('3 · 4 · the service-fee notice and the privacy links')
   {
-    const op = read('app/trucks/[slug]/order/page.tsx')
+    const op = read('app/(app)/trucks/[slug]/order/page.tsx')
     t('the fee notice exists only when the truck\'s online orders carry a fee (checkout?.serviceFee) — never for a UK truck', /const feeNoticeEl = checkout\?\.serviceFee \? \(/.test(op))
     t('…beside the tax notice, in both places it is shown (basket footer and checkout sheet)', (op.match(/\{taxNoticeEl\}\n\s*\{feeNoticeEl\}/g) || []).length === 2)
     const F = await kit.bundle('lfu-fee', "export { feePhrase } from '@/lib/fee-phrase'\nexport { translatorFor } from '@/lib/i18n/translator'\nexport { formatMinor } from '@/lib/money-format'\nimport '@/lib/i18n/catalog/order'")
@@ -149,7 +149,7 @@ const J = x => JSON.stringify(x)
       // ⚠️ RE-PINNED (seo-fixes, 20 October 2026): the legal pages now export an async generateMetadata() (it adds the
       // canonical + og:url via lib/site-metadata.ts, which reads the request host) instead of a static `metadata`
       // object — same absolute title. next/headers is stubbed with an empty request (no host).
-      const P = await kit.bundle(`lfu-title-${doc}`, `export { generateMetadata } from '@/app/(legal)/${doc}/page'`,
+      const P = await kit.bundle(`lfu-title-${doc}`, `export { generateMetadata } from '@/app/(app)/(legal)/${doc}/page'`,
         { stubs: { 'next/headers': 'export async function headers() { return new Map() }\nexport async function cookies() { return { get() { return undefined }, getAll() { return [] } } }' } })
       const meta = await P.generateMetadata()
       t(`/${doc}'s title is absolute — "${title}", no "| HatchGrab" added`, meta?.title?.absolute === title, meta?.title)

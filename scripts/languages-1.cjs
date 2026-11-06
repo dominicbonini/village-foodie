@@ -283,9 +283,9 @@ const XX = P.pseudoTree(EN)
     ['components/StoreBadges.tsx', 'Download on the App Store'], ['app/embed/[slug]/EmbedSchedule.tsx', 'Loading schedule…'],
     ['components/embed/EmbedParts.tsx', '        Powered by <span className="font-bold'], ['lib/generateQRCode.ts', "fillText('Powered by HatchGrab'"],
     ['lib/dashboard-read.ts', "return `Can't reach the server"],
-    ['app/api/inbound-schedule/route.ts', 'Review your schedule →'], ['app/features/page.tsx', 'Plans & features compared'], ['app/domain/page.tsx', 'is trading next.'],
+    ['app/api/inbound-schedule/route.ts', 'Review your schedule →'], ['app/(public)/(site)/features/page.tsx', 'Plans & features compared'], ['app/(app)/domain/page.tsx', 'is trading next.'],
     ['lib/useReadyEmailUndo.ts', 'reverted`'], ['app/api/cron/auto-reject-offline-orders/route.ts', "'The van lost its internet connection"],
-    ['components/setup/WhereBasedStep.tsx', 'COPY.stepIntro'], ['app/dashboard/[token]/page.tsx', '{CONFIRM_TO_PRIVATE}'],
+    ['components/setup/WhereBasedStep.tsx', 'COPY.stepIntro'], ['app/(app)/dashboard/[token]/page.tsx', '{CONFIRM_TO_PRIVATE}'],
   ]
   for (const [f, s] of gone) t(`${f}: no longer writes "${s}"`, !read(f).includes(s))
   // The slot engine stays import-free (its harnesses compile lib/ alone): it keeps its English as a default and the screen passes

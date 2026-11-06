@@ -27,6 +27,6 @@ function changedFiles() {
 /** A file as it stood just before perf-1, or null for one of perf-1's new files. */
 function beforePerf1(f) {
   if (NEW_FILES.includes(f)) return null
-  return execFileSync('git', ['show', `${PERF1_BASE}:${f}`], { cwd: REPO, encoding: 'utf8', maxBuffer: 64e6 })
+  return execFileSync('git', ['show', `${PERF1_BASE}:${require('./_moved-paths.cjs').pathAt(PERF1_BASE, f)}`], { cwd: REPO, encoding: 'utf8', maxBuffer: 64e6 })
 }
 module.exports = { LANDED, PERF1_BASE, NEW_FILES, changedFiles, beforePerf1 }

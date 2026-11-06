@@ -23,7 +23,7 @@ let fails = 0
 const check = (ok, label) => { console.log(`  ${ok ? '✓' : '🔴'} ${label}`); if (!ok) fails++ }
 
 const manage = strip(src('app/api/manage/route.ts'))
-const managePage = src('app/manage/[token]/page.tsx')
+const managePage = src('app/(app)/manage/[token]/page.tsx')
 /* ⚠️ THE KITCHEN CAPACITY CARD LIVES HERE NOW (October 2026), not in page.tsx. Named once so the
  * checks below cannot drift apart from each other. */
 const NEW_CAPACITY_FILE = 'components/manage/KitchenCapacitySection.tsx'

@@ -90,7 +90,7 @@ const UNLIMITED_ONLY = ['BR', 'MX', 'MY', 'SG', 'TH']
   const missing = BASES.flatMap(l => { const m = flat(JSON.parse(read(`messages/${l}.json`))); return ['manageShell.trialPopup.bodyPaidEnd', 'manageBilling.onTrialPaidEnd', 'manageBilling.noChargePaidEnd'].filter(k => !m[k]).map(k => `${l}:${k}`) })
   const stale = fs.readdirSync(path.join(REPO, 'messages')).filter(f => f.endsWith('.json') && read(`messages/${f}`).includes('"bodyKeeps"'))
   t(`all ${BASES.length} language bases carry the three new keys; no messages file still has "bodyKeeps"`, missing.length === 0 && stale.length === 0, [...missing, ...stale])
-  const manage = read('app/manage/[token]/page.tsx')
+  const manage = read('app/(app)/manage/[token]/page.tsx')
   t('Manage: the popup and Billing switch on ONE condition — the country\'s trial-end plan has a monthly price (planPriceFor(expiryFallbackFor(…)).monthlyMinor > 0)',
     /const trialEndMonthly = trialEndPlan && planCatalog \? planPriceFor\(planCatalog, trialEndPlan\.key, truck\?\.country\)\?\.monthlyMinor \?\? 0 : 0\n\s*const trialEndPaid = trialEndMonthly > 0/.test(manage)
     && /const trialEndRow = planPriceFor\(catalog, expiryFallbackFor\(catalog, countryRow\.countryCode\)\.key, countryRow\.countryCode\)\n\s*const trialEndPaid = \(trialEndRow\?\.monthlyMinor \?\? 0\) > 0/.test(manage))
@@ -142,7 +142,7 @@ const UNLIMITED_ONLY = ['BR', 'MX', 'MY', 'SG', 'TH']
 
   // ══ 5 · F10 ═══════════════════════════════════════════════════════════════════════════════════════════════════════
   head('5 · F10 — Greek and Bulgarian truck pages load their Noto in the browser too')
-  const SF = read('lib/script-fonts.ts'), client = read('lib/i18n/client.tsx'), layout = read('app/layout.tsx')
+  const SF = read('lib/script-fonts.ts'), client = read('lib/i18n/client.tsx'), layout = read('app/(app)/layout.tsx')
   const FONT = n => `export const ${n} = o => ({ variable: 'v-' + o.variable.slice(2), className: 'c-${n}' })`
   const FS = await kit.bundle('wc2-fonts', "export * from '@/lib/script-fonts'", { stubs: { 'next/font/google': ['Noto_Sans', 'Noto_Sans_JP', 'Noto_Sans_HK', 'Noto_Sans_Thai', 'Noto_Sans_Arabic'].map(FONT).join('\n') } })
   t('lib/script-fonts.ts: scriptFontClassOf gives el-GR, el-CY and bg-BG the Greek / Cyrillic Noto (--font-script-fallback); Latin languages none',

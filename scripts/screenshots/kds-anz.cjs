@@ -11,7 +11,7 @@ const { REPO, dirs, appCss, fontClasses, serve } = require('./common.cjs')
 const { WORK } = dirs()
 const kit = require('../_render-kit.cjs')({ cacheTag: `anz-screens-kds-${c.key}` })
 const FIX = require('../_lp1b-fixtures.cjs')
-const F = 'app/dashboard/[token]/kds/page.tsx'
+const F = 'app/(app)/dashboard/[token]/kds/page.tsx'
 const names = src => [...src.matchAll(/const \[([a-zA-Z]+), *set[A-Za-z]+\] *= *useState/g)].map(m => m[1])
 
 ;(async () => {

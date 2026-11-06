@@ -82,7 +82,7 @@ console.log('\n── the route (source-level): validation, auth split, probed r
 console.log('\n── named-select rule across app/ lib/ components/ ───────────────────────────────────────')
 {
   const hits = namedSelects(); check(hits.length === 1 && hits[0] === 'app/api/printing/route.ts', `selects naming the new columns: ${JSON.stringify(hits)} — the probe only`)
-  const forbidden = ['app/dashboard/[token]/page.tsx', 'app/api/manage/route.ts', 'app/api/dashboard/action/route.ts', 'app/api/dashboard/route.ts', 'lib/supabase.ts']
+  const forbidden = ['app/(app)/dashboard/[token]/page.tsx', 'app/api/manage/route.ts', 'app/api/dashboard/action/route.ts', 'app/api/dashboard/route.ts', 'lib/supabase.ts']
   for (const f of forbidden) check(!NEW_COLS.test(fs.readFileSync(path.join(REPO, f), 'utf8')), `${f} does not mention the new columns`)
 }
 console.log('\n── the migration (NOT applied): nullable, additive, reloads the cache ───────────────────')

@@ -18,8 +18,8 @@ const STUBS = {
   '@/lib/payments/release-hold': 'export async function releaseHoldForTerminalOrder() { return { ok: true } }',
   '@/lib/payments/email-payment-state': 'export async function resolveEmailPaymentState() { return "hatch" }',
 }
-const OP = 'app/trucks/[slug]/order/page.tsx'
-const MP = 'app/order/[id]/manage/page.tsx'
+const OP = 'app/(app)/trucks/[slug]/order/page.tsx'
+const MP = 'app/(app)/order/[id]/manage/page.tsx'
 const LATER = { id: 'ev-later', date: '2026-10-03', start_time: '12:00:00', end_time: '15:00:00', venue: 'Harbour Front' }
 
 async function views({ kit, REPO, FIX }) {

@@ -67,7 +67,7 @@ const IMPORT = cc => [
 
 async function main() {
   // ── BUNDLES ─────────────────────────────────────────────────────────────────────────────────────────────
-  const M_FILE = 'app/manage/[token]/page.tsx'
+  const M_FILE = 'app/(app)/manage/[token]/page.tsx'
   const ET = 'components/manage/EventTypes.tsx'
   const SCHED = ['events', 'loadingEvents', 'vans', 'placeTypeChoices', 'editingEvent', 'showImportModal', 'importModalTitle', 'extractedEvents', 'editedEvents',
     'expandedEventIds', 'eventTypeId', 'addMode']

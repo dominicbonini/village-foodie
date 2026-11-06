@@ -468,7 +468,7 @@ const DOC_SETTINGS = { signatureLines: [{ text: 'Kind regards,' }, { text: 'Domi
       // (lib/plan-names.ts localizePlans — the same catalogue for every English country).
       && /const catalog = (localizePlans\()?await getPlanCatalog\(\)(, settings\.locale\))?/.test(LIB) && /buildPlansPdfHtml\(settings, catalog\)/.test(LIB),
       '🔴 …still generated from the plan data (the catalogue, through lib/plan-offer), never from a copy of the markup')
-    const ROUTE = readStripped('app/landing/features-pdf/route.ts')
+    const ROUTE = readStripped('app/(public)/(site)/landing/features-pdf/route.ts')
     // 10 October 2026: the generator takes a COUNTRY, and both callers pass 'GB' explicitly (prospects have
     // no country yet) — so the check names the argument rather than an empty call.
     // Phase 2D-1: the download prints the country the marketing pages show this admin (lib/visitor-country.ts —

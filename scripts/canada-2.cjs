@@ -144,7 +144,7 @@ const WORDS = {
   // ⚠️ RE-PINNED (demo-2b, 31 October 2026, docs/demo-2b-report.md): the privacy policy gained the demo section and its
   // date moved — it must now be its old self + EXACTLY that named change (scripts/_demo2b-privacy.cjs).
   {
-    const at = f => execFileSync('git', ['show', `7fcd4fc9:${f}`], { cwd: REPO, encoding: 'utf8' })
+    const at = f => execFileSync('git', ['show', `7fcd4fc9:${require('./_moved-paths.cjs').pathAt('7fcd4fc9', f)}`], { cwd: REPO, encoding: 'utf8' })
     t('content/legal/terms-and-conditions.md is byte-identical (7fcd4fc9)', read('content/legal/terms-and-conditions.md') === at('content/legal/terms-and-conditions.md'))
     t('content/legal/privacy-policy.md is 7fcd4fc9\'s + only demo-2b\'s named change (the demo section, the date)', read('content/legal/privacy-policy.md') === require('./_demo2b-privacy.cjs').apply(at('content/legal/privacy-policy.md')))
   }

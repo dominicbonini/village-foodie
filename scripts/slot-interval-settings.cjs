@@ -19,7 +19,7 @@ let fails = 0
 const check = (ok, label) => { console.log(`  ${ok ? '✓' : '🔴'} ${label}`); if (!ok) fails++ }
 
 const manage      = strip(src('app/api/manage/route.ts'))
-const managePage  = strip(src('app/manage/[token]/page.tsx'))
+const managePage  = strip(src('app/(app)/manage/[token]/page.tsx'))
 const supa        = strip(src('lib/supabase.ts'))
 const ivLib       = strip(src('lib/slot-interval.ts'))
 const mig         = src('supabase/migrations/20260917_van_collection_intervals.sql')
@@ -125,7 +125,7 @@ check(!/alter table public\.trucks[\s\S]*?collection_interval_mins integer/.test
 check(/notify pgrst, 'reload schema'/.test(mig), "ends with notify pgrst, 'reload schema'")
 
 console.log('\n── V4 COPY, EXACTLY ────────────────────────────────────────────────────────────────────')
-const rawPage = src('app/manage/[token]/page.tsx')
+const rawPage = src('app/(app)/manage/[token]/page.tsx')
 const boxStart = rawPage.indexOf('COLLECTION TIMES — PER VAN')
 /* ⚠️ RE-ANCHORED (October 2026). This slice used to end at the Kitchen capacity card, and the check
  * below asserted the Collection times box rendered BEFORE it. Kitchen capacity has MOVED to

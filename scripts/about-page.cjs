@@ -52,7 +52,7 @@ const footOf = html => (String(html).match(/<footer[\s\S]*?<\/footer>/) || [''])
   const R = NP.renderer(kit, REPO, 'about-page')
   const { ctx, tables } = R
   const rows = NP.LIVE()
-  const ABOUT = 'export * from \'@/app/about/page\'\nexport { default } from \'@/app/about/page\''
+  const ABOUT = 'export * from \'@/app/(public)/(site)/about/page\'\nexport { default } from \'@/app/(public)/(site)/about/page\''
   const about = (photo) => ctx.bundle(photo ? 'ab-about-photo' : 'ab-about', ABOUT, photo ? { stubs: { '@/lib/about-server': PHOTO_STUB } } : {})
   /** /about as a request on `host`, with ?country / cookie — { html, meta } or the thrown error. */
   async function render({ host = HG, country, cookie, photo = false } = {}) {
@@ -113,7 +113,7 @@ const footOf = html => (String(html).match(/<footer[\s\S]*?<\/footer>/) || [''])
   t('with the photo: <img class="about-photo" src="/about/dominic.jpg" alt="Dominic Bonini, founder of HatchGrab">', PC.includes('<img class="about-photo" src="/about/dominic.jpg" alt="Dominic Bonini, founder of HatchGrab"/>'), PC.slice(0, 600))
   t('with the photo: it comes before the story in the HTML (above it on phones; beside it from 760px by flex-direction)', PC.indexOf('about-photo') < PC.indexOf(esc(STORY[0])))
   t('with the photo: everything else is byte-identical', PC.replace(/<img class="about-photo"[^>]*\/>/, '') === C)
-  const CSS = read('app/landing/landing.css')
+  const CSS = read('app/(public)/(site)/landing/landing.css')
   t('the CSS: a column on phones, a row from 760px', /\.hg-landing \.about-body \{ display: flex; flex-direction: column;/.test(CSS) && /@media\(min-width:760px\)\{\s*\.hg-landing \.about-body \{ display: flex|@media\(min-width:760px\)\{\s*\.hg-landing \.about-body \{ flex-direction: row;/.test(CSS))
   // lib/about-server.ts's real check, against a real directory: absent, then present.
   const S = await kit.bundle('ab-server', "export { aboutPhotoExists, aboutPhotoUrl } from '@/lib/about-server'")
@@ -144,7 +144,7 @@ const footOf = html => (String(html).match(/<footer[\s\S]*?<\/footer>/) || [''])
   const land = await R.page('landing', 'GB')
   const lorg = node(ctx.jsonLd(land.html).filter(x => x && x['@graph']), 'Organization')
   t('the landing’s Organization names the founder too (no image while there is no photo)', lorg && JSON.stringify(lorg.founder) === '{"@type":"Person","name":"Dominic Bonini"}', lorg && lorg.founder)
-  const LP = await ctx.bundle('ab-landing-photo', "export * from '@/app/[country]/page'\nexport { default } from '@/app/[country]/page'\nexport { clearPlanCatalogCache as __clearPlans } from '@/lib/plans-server'", { stubs: { '@/lib/about-server': PHOTO_STUB } })
+  const LP = await ctx.bundle('ab-landing-photo', "export * from '@/app/(public)/[country]/page'\nexport { default } from '@/app/(public)/[country]/page'\nexport { clearPlanCatalogCache as __clearPlans } from '@/lib/plans-server'", { stubs: { '@/lib/about-server': PHOTO_STUB } })
   const landPh = await ctx.withReq({ rows, tables }, async () => { LP.__clearPlans(); const args = { params: Promise.resolve({ country: 'uk' }), searchParams: Promise.resolve({}) }; return ctx.prerender(h(LP.default, args)) })
   const lorgP = node(ctx.jsonLd(landPh).filter(x => x && x['@graph']), 'Organization')
   t('with the photo: the landing’s founder carries the image', lorgP && lorgP.founder.image === PHOTO_URL, lorgP && lorgP.founder)
@@ -162,7 +162,7 @@ const footOf = html => (String(html).match(/<footer[\s\S]*?<\/footer>/) || [''])
       t(`${cc} ${p}: footer has <a href="/about">About</a>; the nav has no country menu; the footer has it`, footOf(r.html).includes('<a href="/about">About</a>') && !/cc-head|cc-btn/.test(navOf(r.html)) && /cc cc-foot/.test(footOf(r.html)))
     }
   }
-  const CONTACT = await ctx.bundle('ab-contact', "export * from '@/app/contact/page'\nexport { default } from '@/app/contact/page'")
+  const CONTACT = await ctx.bundle('ab-contact', "export * from '@/app/(app)/contact/page'\nexport { default } from '@/app/(app)/contact/page'")
   const contact = host => ctx.withReq({ rows, tables, host }, async () => { const args = { searchParams: Promise.resolve({}) }; return ctx.prerender(await CONTACT.default(args)) })
   t('HatchGrab /contact: its footer has the About link', (await contact(HG)).includes('<a href="/about">About</a>'))
   t('Village Foodie /contact: no About link', !(await contact(VF)).includes('/about'))

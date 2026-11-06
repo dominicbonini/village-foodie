@@ -301,7 +301,7 @@ module.exports = function area({ t, head }) {
   const fGB = Object.fromEntries(W.LP2.leaves(F['en-GB']))
   const added = W.newKeys().map(([k]) => [k, fGB[k]])     // the AS-MOVED text
   const changed = execSync(`git diff --name-only ${BEFORE_REF} -- app components lib`, { cwd: REPO, encoding: 'utf8' }).split('\n').filter(f => /\.(ts|tsx)$/.test(f))
-  const raw = changed.map(f => { try { return execSync(`git show ${BEFORE_REF}:${JSON.stringify(f).slice(1, -1)}`, { cwd: REPO, encoding: 'utf8', maxBuffer: 64 << 20, stdio: ['ignore', 'pipe', 'ignore'] }) } catch { return '' } }).join('\n')
+  const raw = changed.map(f => { try { return execSync(`git show ${BEFORE_REF}:${JSON.stringify(require('./_moved-paths.cjs').pathAt(BEFORE_REF, f)).slice(1, -1)}`, { cwd: REPO, encoding: 'utf8', maxBuffer: 64 << 20, stdio: ['ignore', 'pipe', 'ignore'] }) } catch { return '' } }).join('\n')
   t(`the source of the ${changed.length} files this phase changed is read at ${BEFORE_REF}`, raw.length > 1000 || changed.length === 0)
   const src = joinConcats(raw).replace(/\\n/g, '\n').replace(/\\(['"`])/g, '$1').replace(/&quot;/g, '"').replace(/&amp;/g, '&').replace(/&mdash;/g, '—').replace(/&ldquo;/g, '“').replace(/&rdquo;/g, '”').replace(/&rsquo;/g, '’').replace(/\\u([0-9a-fA-F]{4})/g, (_, h) => String.fromCharCode(parseInt(h, 16)))
   const hay = [squash(raw), squash(src), squash(dropInterpolations(src)), squash(src.replace(/&apos;/g, "'")), squash(dropInterpolations(src).replace(/&apos;/g, "'"))].join('\n')

@@ -353,6 +353,6 @@ module.exports = async function us(h) {
      * `checkout`, so its body never carries one. */
     t('the submit route accepts a tip choice, and the page sends one only on a card order with tipping on',
       /\btip,\n/.test(read('app/api/orders/submit/route.ts'))
-      && /\.\.\.\(sentByCard && checkout\?\.tipping \? \{ tip: tipChoice \} : \{\}\)/.test(read('app/trucks/[slug]/order/page.tsx')))
+      && /\.\.\.\(sentByCard && checkout\?\.tipping \? \{ tip: tipChoice \} : \{\}\)/.test(read('app/(app)/trucks/[slug]/order/page.tsx')))
   }
 }

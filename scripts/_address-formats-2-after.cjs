@@ -209,7 +209,7 @@ module.exports = async function after({ kit, t, head, read, REPO, snapshot, SNAP
   t('AU, two venues in postcode 2026, different times — before (GB rule) "review", after none', auBefore === 'review' && k2('au', ev('c', 'Bondi Pavilion', '2026', '12:00', '14:00', 'unconfirmed'), ev('x', 'Bondi Farmers Market', '2026', '17:00', '21:00')) === '')
   t('AU, the same venue in 2026 at the same time — "duplicate"', k2('au', ev('c', 'Bondi Pavilion', '2026', '17:00', '21:00', 'unconfirmed'), ev('x', 'Bondi Pavilion', '2026', '17:00', '21:00')) === 'duplicate')
   t('IE (an Eircode is one premises): same Eircode, another name — still "review", as GB', k2('ie', ev('c', 'The Swan', 'V94 X2T6', '12:00', '14:00', 'unconfirmed'), ev('x', "People's Park", 'V94 X2T6', '17:00', '21:00')) === 'review')
-  t('Manage passes the truck\'s format', read('app/manage/[token]/page.tsx').includes('detectEventConflicts(event, events, tabSettings.addressFormat)'))
+  t('Manage passes the truck\'s format', read('app/(app)/manage/[token]/page.tsx').includes('detectEventConflicts(event, events, tabSettings.addressFormat)'))
 
   // ══ 7 ══════════════════════════════════════════════════════════════════════════════════════════════════════════
   head('7 · the write paths and the columns — after the SQL, and before it')
@@ -281,7 +281,7 @@ module.exports = async function after({ kit, t, head, read, REPO, snapshot, SNAP
     read('lib/signup-countries.ts').includes('addressFormat: c.addressFormat,') && read('components/setup/WhereBasedStep.tsx').includes("tAddr(`basedIn.${") && MSG.address.basedIn.suburb === 'Suburb you’re based in' && MSG.address.basedIn.area === 'Town or city you’re based in')
   t('a format written as codes keeps only a code: US "nj" → "NJ", "New Jersey" → none (as the two-letter rule); IE (names) "Kerry" → "KY"',
     F.normaliseRegion('nj', 'us') === 'NJ' && F.normaliseRegion('New Jersey', 'us') === null && F.normaliseRegion('nsw', 'au') === 'NSW' && F.normaliseRegion('Kerry', 'ie') === 'KY' && F.normaliseRegion('XX', 'us') === null)
-  const M = read('app/manage/[token]/page.tsx')
+  const M = read('app/(app)/manage/[token]/page.tsx')
   t('GB/US saves send no new key: the suburb only from a format with the field, the postal code tidied only where the format checks',
     M.includes("suburb: fieldOf(addrFormat, 'suburb') ? (editingEvent.suburb ?? '') : undefined,") && M.includes("...(addrFormat.entry.postalCheck ? { postcode: postalCodeForSave(addrFormat, editingEvent.postcode) } : {}),")
     && M.includes("region: fieldOf(addrFormat, 'region') ? normaliseRegion(editingEvent.region, addrFormat.key) : undefined,"))

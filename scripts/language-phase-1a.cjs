@@ -205,7 +205,7 @@ function opFixtures(cc) {
 }
 let OP_RENDER = null
 async function orderPage() {
-  const F = 'app/trucks/[slug]/order/page.tsx'
+  const F = 'app/(app)/trucks/[slug]/order/page.tsx'
   const m = await kit.bundle('lp1a-op', `export { default as OrderPage } from '@/${F}'\nexport { MoneyProvider } from '@/components/MoneyContext'` + I18N_EXPORT, {
     patches: [{ file: F, states: OP_STATES }, { file: F, from: 'const { slug } = use(params)', to: 'const { slug } = params' }],
   })
@@ -235,7 +235,7 @@ async function orderPage() {
 
 // ══ 2 · the status page ═══════════════════════════════════════════════════════════════════════════════════════
 async function statusPage() {
-  const F = 'app/order/[id]/manage/page.tsx'
+  const F = 'app/(app)/order/[id]/manage/page.tsx'
   const m = await kit.bundle('lp1a-status', `export { default as Receipt } from '@/${F}'` + I18N_EXPORT, { patches: [{ file: F, states: ['order', 'loading', 'error', 'cancelling', 'cancelled'] }] })
   const out = {}
   for (const cc of ['GB', 'US']) {
@@ -268,7 +268,7 @@ async function statusPage() {
 
 // ══ 3 · the private-link page ═══════════════════════════════════════════════════════════════════════════════════
 async function privateLinkPage() {
-  const m = await kit.bundle('lp1a-private', "export { default as Page } from '@/app/p/[token]/page'", {
+  const m = await kit.bundle('lp1a-private', "export { default as Page } from '@/app/(app)/p/[token]/page'", {
     stubs: { '@/lib/private-events/read': 'export async function resolvePrivateLink() { return globalThis.__plOutcome }' },
   })
   const { prerenderToNodeStream } = require(path.join(REPO, 'node_modules/react-dom/static'))

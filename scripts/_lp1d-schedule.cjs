@@ -6,7 +6,7 @@
 // PlaceDetail / TidyUpPlaces, EventTimeSelect at morning / noon / evening / midnight times, the status badges, the
 // Event types panel (and its type select), and VanFilter.
 // A MODULE run by scripts/language-phase-1d.cjs; every view runs on 756ca09 and on this tree.
-const M_FILE = 'app/manage/[token]/page.tsx'
+const M_FILE = 'app/(app)/manage/[token]/page.tsx'
 const SP = 'components/manage/SchedulePlaces.tsx'
 const ET = 'components/manage/EventTypes.tsx'
 const PL = 'components/manage/PrivateLinkPanel.tsx'

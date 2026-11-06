@@ -18,7 +18,7 @@ const BEFORE_REF = '8a5c4b5a'
 // before world-countries-2 — scripts/_lp-world-countries-2.cjs asBefore() removes exactly its named change and throws if it is
 // not there, so every other byte is still pinned here. The new text itself is proved by scripts/world-countries-2.cjs.
 const read = f => require('./_lp-world-countries-2.cjs').asBefore(f, fs.readFileSync(path.join(REPO, f), 'utf8'))
-const before = f => execFileSync('git', ['show', `${BEFORE_REF}:${f}`], { cwd: REPO, encoding: 'utf8' })
+const before = f => execFileSync('git', ['show', `${BEFORE_REF}:${require('./_moved-paths.cjs').pathAt(BEFORE_REF, f)}`], { cwd: REPO, encoding: 'utf8' })
 let pass = 0, fail = 0
 const t = (name, ok, detail) => { if (ok) { pass++; console.log(`  ✓ ${name}`) } else { fail++; console.log(`  ✗ ${name}${detail ? `\n      ${detail}` : ''}`) } }
 const NEW_DATE = '19 October 2026'
@@ -135,7 +135,7 @@ const NAMED = {
   t('lib/legal.ts: PRIVACY_UPDATED, TERMS_UPDATED and COUNTRY_TERMS_UPDATED each read their document\'s date', [['PRIVACY_UPDATED', DOC_DATE.privacy], ['TERMS_UPDATED', DOC_DATE.terms], ['COUNTRY_TERMS_UPDATED', DOC_DATE['country-terms']]].every(([k, d]) => legal.includes(`export const ${k} = '${d}'`)) && legal.includes("export const COUNTRY_TERMS_PATH = '/country-terms'"))
   const flat = x => x.replace(/<[^>]+>/g, ' ').replace(/&amp;/g, '&').replace(/&quot;/g, '"').replace(/&#x27;/g, "'").replace(/\s+/g, '')
   const words = s => s.replace(/\*\*/g, '').replace(/\[([^\]]+)\]\(\/[^)]*\)/g, '$1').replace(/^#+ /gm, '').replace(/^[-|].*$/gm, '').replace(/\s+/g, '')
-  for (const [doc, file, page] of [['terms', 'content/legal/terms-and-conditions.md', 'app/(legal)/terms/page'], ['privacy', 'content/legal/privacy-policy.md', 'app/(legal)/privacy/page'], ['country-terms', 'content/legal/country-specific-terms.md', 'app/(legal)/country-terms/page']]) {
+  for (const [doc, file, page] of [['terms', 'content/legal/terms-and-conditions.md', 'app/(app)/(legal)/terms/page'], ['privacy', 'content/legal/privacy-policy.md', 'app/(app)/(legal)/privacy/page'], ['country-terms', 'content/legal/country-specific-terms.md', 'app/(app)/(legal)/country-terms/page']]) {
     // ⚠️ RE-PINNED (seo-fixes, 20 October 2026): the legal pages export an async generateMetadata() (canonical + og:url
     // from lib/site-metadata.ts, which reads the request host) instead of a static `metadata` object — same absolute
     // title. next/headers is stubbed with an empty request (no host).

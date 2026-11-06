@@ -72,7 +72,7 @@ const ROWS = { ieOff: () => [LP1E.GB(), LP1E.US_ON(), IE(false)], ieOn: () => [L
 
   // ══ 3 ════════════════════════════════════════════════════════════════════════════════════════════════════════════
   head('3 · JSON-LD — real facts, from data')
-  const LP = await ctx.bundle('ai1-landing', "export * from '@/app/[country]/page'\nexport { default } from '@/app/[country]/page'\nexport { clearPlanCatalogCache as __p } from '@/lib/plans-server'\nexport { clearCountrySettingsCache as __c } from '@/lib/country-settings'\nexport { COMPANY } from '@/lib/company'")
+  const LP = await ctx.bundle('ai1-landing', "export * from '@/app/(public)/[country]/page'\nexport { default } from '@/app/(public)/[country]/page'\nexport { clearPlanCatalogCache as __p } from '@/lib/plans-server'\nexport { clearCountrySettingsCache as __c } from '@/lib/country-settings'\nexport { COMPANY } from '@/lib/company'")
   const ld = async (seg, rows) => run({ rows }, async () => { LP.__p(); LP.__c?.(); const html = await ctx.prerender(h(LP.default, { params: Promise.resolve({ country: seg }), searchParams: Promise.resolve({}) })); const m = /<script type="application\/ld\+json">([\s\S]*?)<\/script>/.exec(html); return m ? JSON.parse(m[1]) : null })
   for (const [seg, cur, cc] of [['uk', 'GBP', 'GB'], ['us', 'USD', 'US']]) {
     const g = await ld(seg, ROWS.ieOff()); const nodes = g?.['@graph'] || []

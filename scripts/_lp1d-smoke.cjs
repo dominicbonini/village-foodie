@@ -3,7 +3,7 @@
 // (posts / designs / places panes), WhatsApp (reply preview, setup control), custom domain, account deletion.
 // (Settings' own out-of-scope sections — Auto-replies, Account deletion — are cut from the Settings page and compared
 // the same way, as `settings/…|oos|…` views.)
-const M_FILE = 'app/manage/[token]/page.tsx'
+const M_FILE = 'app/(app)/manage/[token]/page.tsx'
 
 async function views(ctx) {
   const { kit, h, html, states, GB, US, inManage, PROVIDERS } = ctx

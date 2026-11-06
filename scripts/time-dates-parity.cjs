@@ -384,8 +384,8 @@ const MENU = {
 let uiMods = null
 async function uiBundles() {
   if (uiMods) return uiMods
-  const KDS = 'app/dashboard/[token]/kds/page.tsx', DASH = 'app/dashboard/[token]/page.tsx', ADD = 'components/dashboard/AddOrderPanel.tsx'
-  const OP = 'app/trucks/[slug]/order/page.tsx', RCPT = 'app/order/[id]/manage/page.tsx', MAN = 'app/manage/[token]/page.tsx'
+  const KDS = 'app/(app)/dashboard/[token]/kds/page.tsx', DASH = 'app/(app)/dashboard/[token]/page.tsx', ADD = 'components/dashboard/AddOrderPanel.tsx'
+  const OP = 'app/(app)/trucks/[slug]/order/page.tsx', RCPT = 'app/(app)/order/[id]/manage/page.tsx', MAN = 'app/(app)/manage/[token]/page.tsx'
   uiMods = {
     cards: await kit.bundle('cards', `export * from '@/components/dashboard/OrderCard'\nexport { DayLoadStrip } from '@/components/dashboard/DayLoadStrip'`),
     kds: await kit.bundle('kds', `export { default as Kds } from '@/${KDS}'`, { patches: [{ file: KDS, states: ['truck', 'orders', 'payments', 'heldAuthorisations', 'loading', 'hasLoaded', 'events', 'selectedEventId', 'handoverPref', 'layoutOverride', 'showKdsIntro', 'lastRefresh'] }] }),
@@ -712,7 +712,7 @@ const ALLOWED = [
     expect: (v, D) => v.includes(`Today is ${fmtLong(D.today).replace(/^(\w+) /, '$1, ')}`) },
   { id: 'A4', site: 'app/api/slots/[truckId]/route.ts — the default date of a request that names none', moments: ['after0030'], path: /^slots\/noDate$/,
     expect: (v, D, after) => v === after.slots.today },
-  { id: 'C1', site: 'app/manage/[token]/page.tsx — Reports\' default range (last 7 days to yesterday) and its CSV names', moments: ['after0030'],
+  { id: 'C1', site: 'app/(app)/manage/[token]/page.tsx — Reports\' default range (last 7 days to yesterday) and its CSV names', moments: ['after0030'],
     path: /^screens\/reports\|(orders|items)\/attrs\/\d+$|^screens\/reports\|csv\/\d+\/name$/,
     expect: (v, D) => { const from = addDays(D.today, -7), to = addDays(D.today, -1); return v.startsWith('max=') || v === `value=${from}` || v === `value=${to}` || v.endsWith(`-${from}-to-${to}.csv`) } },
   { id: 'C2', site: 'components/dashboard/AddOrderPanel.tsx — Add Order\'s Today / Tomorrow labels and its "future event" / "not open yet" banners (also inside the dashboard)', moments: ['after0030'],
@@ -736,7 +736,7 @@ const ALLOWED = [
   // range (its five options, in the phone toolbar and the desktop toolbar). At every instant the text must be EXACTLY the BEFORE
   // value once those five words are taken out, found exactly twice. (Its dates are computed on the truck's day — lib/accounts/
   // tax-year.ts — and no option text carries a date.)
-  { id: 'CA1', site: 'app/manage/[token]/page.tsx — costs-accounts-1: Reports\' period presets beside the range', moments: Object.keys(MOMENTS), path: /^screens\/reports\|(orders|items)\/text$/,
+  { id: 'CA1', site: 'app/(app)/manage/[token]/page.tsx — costs-accounts-1: Reports\' period presets beside the range', moments: Object.keys(MOMENTS), path: /^screens\/reports\|(orders|items)\/text$/,
     expect: (v, D, after, p, before) => { const w = 'Custom dates This month Last month Last quarter Last tax year '; return typeof before === 'string' && v.split(w).length === 3 && v.split(w).join('') === before } },
   { id: 'L6', site: 'components/dashboard/OrderCard.tsx — us-layout-fix-6-kds-full-badge: the KDS ticket reads "#43 £26.90 Ready"', moments: Object.keys(MOMENTS), path: /^screens\/kds$/,
     expect: (v, D, after, p, before) => { const re = /(#43) (Ready) (£\d+\.\d\d) (Sam Harness)/g; return typeof before === 'string' && (before.match(re) || []).length === 1 && v === before.replace(re, '$1 $3 $2 $4') } },

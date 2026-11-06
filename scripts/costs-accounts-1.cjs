@@ -35,7 +35,7 @@ const { NextRequest } = require(path.join(REPO, 'node_modules/next/server'))
 /* 🔴 THE TREE BEFORE THIS WORK'S CODE, PINNED BY SHA (never HEAD: HEAD moves). 8b32036f is costs-accounts-1's migrations commit;
  * no code file differs there from 41de9294, the commit before it. */
 const BEFORE = '8b32036f'
-const gitShow = f => execFileSync('git', ['show', `${BEFORE}:${f}`], { cwd: REPO, encoding: 'utf8', maxBuffer: 64e6 })
+const gitShow = f => execFileSync('git', ['show', `${BEFORE}:${require('./_moved-paths.cjs').pathAt(BEFORE, f)}`], { cwd: REPO, encoding: 'utf8', maxBuffer: 64e6 })
 
 let pass = 0, fail = 0
 const t = (label, ok, detail) => { if (ok) { pass++; console.log('  ✓ ' + label) } else { fail++; console.log('  🔴 ' + label + (detail !== undefined ? `\n      ${typeof detail === 'string' ? detail.slice(0, 900) : JSON.stringify(detail).slice(0, 900)}` : '')) } }
@@ -94,7 +94,7 @@ const stripComments = s => s.replace(/--.*$/gm, '')
       eq(p('2026-01-15', US).lastMonth, '2025-12-01', '2025-12-31') && eq(p('2026-01-15', US).lastQuarter, '2025-10-01', '2025-12-31') && eq(p('2028-03-02', US).lastMonth, '2028-02-01', '2028-02-29'))
     t('an unusable start is no start (never guessed); 1 January is the calendar year', TY.taxYearStartOf(13, 1) === null && TY.taxYearStartOf(4, 31) === null && TY.taxYearStartOf('x', 2) === null && TY.taxYearStartOf(1, 1) === null)
     t('presetOf names a preset range, and a hand-edited one is custom', TY.presetOf({ from: '2025-04-06', to: '2026-04-05' }, '2026-11-04', GB) === 'lastTaxYear' && TY.presetOf({ from: '2025-04-07', to: '2026-04-05' }, '2026-11-04', GB) === null)
-    const comps = read('app/manage/[token]/page.tsx')
+    const comps = read('app/(app)/manage/[token]/page.tsx')
     t('nothing per country in the screen: the start comes from get_accounts_settings (country_settings data)', /api\('get_accounts_settings'\)\.then\(r => setTaxYearStart\(r\?\.taxYearStart \?\? null\)\)/.test(comps)
       && !/tax_year_start|'GB'|=== 'AU'|=== 'NZ'/.test(comps.slice(comps.indexOf('function ReportsTab('), comps.indexOf('// ── TeamTab'))))
   }
@@ -138,7 +138,7 @@ const stripComments = s => s.replace(/--.*$/gm, '')
     const tr = T.translatorFor('en-GB', 'manageReports')
     t('the words: "Cost set for 3 of 4 dishes sold" / "… of 1 dish sold"', tr('accounts.coverage', { total: 4, withCost: '3' }) === 'Cost set for 3 of 4 dishes sold' && tr('accounts.coverage', { total: 1, withCost: '0' }) === 'Cost set for 0 of 1 dish sold')
     t('and the partial warning says the profit is too high; with no cost at all, profit shows "—" and the screen says so', /profit is higher than it really is/.test(W.partial) && /No dish has a cost yet/.test(W.noCosts))
-    const page = read('app/manage/[token]/page.tsx')
+    const page = read('app/(app)/manage/[token]/page.tsx')
     t('the screen: profit "—" when no dish has a cost; the warning whenever fewer than all have one', /anyCost \? accMoney\(tt\.profitMinor\) : '—'/.test(page) && /tt\.dishesWithCost < tt\.dishes && <p[^>]*data-accounts-partial="some">\{t\('accounts\.partial'\)\}/.test(page))
   }
 
@@ -211,7 +211,7 @@ const stripComments = s => s.replace(/--.*$/gm, '')
     const ev = CSV.eventsCsv(LG.summarise(rows).events, 'GBP', words).slice(1).split('\r\n')
     t('the events file: one summary row per event, with dishes sold and dishes with a cost', ev[0] === 'Event date,Event,Orders,Currency,Gross,Tax,Tax basis,Net,Refunded,Dishes sold,Dishes with a cost,Cost,Profit' && ev.length === 4 && ev[3] === ''
       && ev[1].startsWith('2026-10-20,"The Green, Testville",1,GBP,1234.50,0.00,no tax rate set,1234.50,0.00,1,1,3.00,1231.50'), ev)
-    const page = read('app/manage/[token]/page.tsx')
+    const page = read('app/(app)/manage/[token]/page.tsx')
     t('the downloads are UTF-8 text/csv files named accounts-orders-… / accounts-events-…', /new Blob\(\[csv\], \{ type: 'text\/csv;charset=utf-8' \}\)/.test(page) && /a\.download = `accounts-\$\{kind\}-\$\{scope\}\$\{vanFilterFilenameSuffix\(vans, vanFilter\)\}\.csv`/.test(page))
   }
 
@@ -310,13 +310,13 @@ const stripComments = s => s.replace(/--.*$/gm, '')
     t('the public menu API with a cost row in the database: the dish is there, its cost is not (no 235.71, no cost key)', js.includes('Margherita') && !/235\.71|23571|cost_minor|costMinor|"cost"/i.test(js), js.slice(0, 300))
     const T = await kit.bundle('ca1-ticket', "export { mapOrderToTicket } from '@/lib/printing/mapOrderToTicket'")
     t('the ticket mapper has no cost field to fill', !/cost/i.test(read('lib/printing/mapOrderToTicket.ts')) && typeof T.mapOrderToTicket === 'function')
-    t('Reports and the item editor are owner/manager: the editor field only with canSeeCosts (userRole !== staff)', /canSeeCosts=\{userRole !== 'staff'\}/.test(read('app/manage/[token]/page.tsx')) && /\{canSeeCosts && \(\n\s+<div data-cost-to-make>/.test(read('app/manage/[token]/page.tsx')))
+    t('Reports and the item editor are owner/manager: the editor field only with canSeeCosts (userRole !== staff)', /canSeeCosts=\{userRole !== 'staff'\}/.test(read('app/(app)/manage/[token]/page.tsx')) && /\{canSeeCosts && \(\n\s+<div data-cost-to-make>/.test(read('app/(app)/manage/[token]/page.tsx')))
   }
 
   // ── 10 · Gusto's order paths ──────────────────────────────────────────────────────────────────────────────────────────
   head('10 · Pizzeria Gusto\'s order paths byte-identical to the tree before this work')
   {
-    const PATHS = ['app/api/orders', 'app/api/menu', 'app/api/dashboard', 'app/api/kds', 'app/api/webhooks', 'app/order', 'app/o', 'app/kds', 'app/dashboard', 'app/trucks', 'app/embed', 'components/dashboard', 'components/embed', 'lib/payments', 'lib/printing', 'lib/orders',
+    const PATHS = ['app/api/orders', 'app/api/menu', 'app/api/dashboard', 'app/api/kds', 'app/api/webhooks', 'app/(app)/order', 'app/(app)/o', 'app/(app)/kds', 'app/(app)/dashboard', 'app/(app)/trucks', 'app/embed', 'components/dashboard', 'components/embed', 'lib/payments', 'lib/printing', 'lib/orders',
       'lib/order-charges.ts', 'lib/order-charge-rules.ts', 'lib/order-charge-lines.ts', 'lib/order-calculations.ts', 'lib/order-utils.ts', 'lib/order-repricing.ts', 'lib/menu-loader.ts', 'lib/slot-bookings.ts', 'lib/country-settings.ts', 'lib/country-settings-types.ts', 'lib/money-format.ts', 'supabase/functions']
       .filter(p => fs.existsSync(path.join(REPO, p)))
     // ⚠️ RE-PINNED (perf-1, 5 November 2026, docs/perf-1-report.md): lib/country-settings.ts gained perf-1's marketing branch (a
@@ -325,7 +325,8 @@ const stripComments = s => s.replace(/--.*$/gm, '')
     const PERF1_CS = 'lib/country-settings.ts'
     const PATHS_REST = PATHS.filter(p => p !== PERF1_CS)
     let diff = ''
-    try { diff = execFileSync('git', ['diff', '--stat', BEFORE, '--', ...PATHS_REST], { cwd: REPO, encoding: 'utf8' }) } catch (e) { diff = String(e) }
+    // ⚠️ RE-PINNED (cwv-2, 6 November 2026, docs/cwv-2-report.md §6): the routes moved into app/(app) and app/(public); `git diff` saw every moved file as deleted and added. scripts/_moved-paths.cjs changedSince compares each file with itself at that commit, under its name then — blind to the move and nothing else.
+    try { diff = require('./_moved-paths.cjs').changedSince(BEFORE, PATHS_REST).join('\n') } catch (e) { diff = String(e) }
     const untracked = execFileSync('git', ['ls-files', '--others', '--exclude-standard', '--', ...PATHS_REST], { cwd: REPO, encoding: 'utf8' }).trim()
     t(`${PATHS.length} order, payment, menu, KDS, dashboard and ticket paths: no change against ${BEFORE} (working tree)`, PATHS.length >= 20 && diff.trim() === '' && untracked === '', diff + untracked)
     const PERF1_LINES = [

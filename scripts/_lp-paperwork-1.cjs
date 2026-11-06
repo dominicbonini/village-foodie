@@ -65,7 +65,7 @@ function isTranslationParagraph(text, line) {
 }
 // ── Manage's tab bar: the Documents tab (📄) just before Settings, for whoever sees Settings (owners and managers — the same roles).
 /** True on a tree with the Documents tab. */
-const TAB_LANDED = (() => { try { return /\{ id: 'paperwork', label: t\('tabs\.paperwork'\)/.test(fs.readFileSync(path.join(__dirname, '..', 'app/manage/[token]/page.tsx'), 'utf8')) } catch { return false } })()
+const TAB_LANDED = (() => { try { return /\{ id: 'paperwork', label: t\('tabs\.paperwork'\)/.test(fs.readFileSync(path.join(__dirname, '..', 'app/(app)/manage/[token]/page.tsx'), 'utf8')) } catch { return false } })()
 const SETTINGS_BUTTON = /<button data-tab-id="settings" class="([^"]*)">([\s\S]*?)<\/button>/
 /** A rendered Manage page from before paperwork-1 → as it renders now: the Documents button inserted before Settings', unselected.
  *  PRECISE: the Settings button must be there exactly once (else the string is returned as it is — a view without the bar). */

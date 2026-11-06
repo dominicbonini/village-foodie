@@ -46,7 +46,7 @@ module.exports = function area({ t, head, msgs }) {
   }
   for (const [key, { source, text }] of Object.entries(LP2.FROZEN_INLINE)) {
     const f = source.split(' ')[0]
-    let src = ''; try { src = require('child_process').execSync(`git show ${LP2.FROZEN_REF}:${f}`, { cwd: REPO, encoding: 'utf8' }) } catch { /* reported below */ }
+    let src = ''; try { src = require('child_process').execSync(`git show ${LP2.FROZEN_REF}:${require('./_moved-paths.cjs').pathAt(LP2.FROZEN_REF, f)}`, { cwd: REPO, encoding: 'utf8' }) } catch { /* reported below */ }
     const flat = src.replace(/"\s*\+\s*\n\s*"/g, '')
     t(`${key}: its frozen text is ${f}'s at ${LP2.FROZEN_REF}, verbatim`, flat.includes(JSON.stringify(text).slice(1, -1)), text)
   }

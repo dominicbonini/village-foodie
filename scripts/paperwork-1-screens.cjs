@@ -23,8 +23,8 @@ const day = n => ymd(new Date(Date.now() + n * 86_400_000))
 async function css() {
   const postcss = require(require.resolve('postcss', { paths: [REPO] }))
   const tw = require(require.resolve('@tailwindcss/postcss', { paths: [REPO] }))
-  const src = fs.readFileSync(path.join(REPO, 'app/globals.css'), 'utf8').replace(/@import "leaflet[^"]*";\n?/, '')
-  const out = await postcss([tw({ base: REPO })]).process(src, { from: path.join(REPO, 'app/globals.css') })
+  const src = fs.readFileSync(path.join(REPO, 'app/(app)/globals.css'), 'utf8').replace(/@import "leaflet[^"]*";\n?/, '')
+  const out = await postcss([tw({ base: REPO })]).process(src, { from: path.join(REPO, 'app/(app)/globals.css') })
   return out.css
 }
 async function browserBundle() {
@@ -69,7 +69,7 @@ const DRAFT = { typeKey: 'gas_safety', customName: null, issuer: 'Anglia Gas Ser
 ;(async () => {
   const [style, bundle] = await Promise.all([css(), browserBundle()])
   // The organiser page: the real server render over the in-memory database.
-  const L = await kit.bundle('pw1s', "export { default as OrganiserPage } from '@/app/docs/[token]/page'", { stubs: STUBS })
+  const L = await kit.bundle('pw1s', "export { default as OrganiserPage } from '@/app/(app)/docs/[token]/page'", { stubs: STUBS })
   const db = fakeSupabase({
     trucks: [{ id: 'test-truck', name: 'Pizza Kitchen', country: 'GB', timezone: 'Europe/London', logo_storage_path: null }],
     paperwork_document_types: TYPE_ROWS,

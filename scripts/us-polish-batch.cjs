@@ -14,7 +14,7 @@ const head = s => console.log(`\n${s}`)
 const read = f => fs.readFileSync(path.join(REPO, f), 'utf8')
 // BEFORE is pinned to the commit this batch started from (not "HEAD", which moves when the batch is committed).
 const BEFORE_REF = '8a5c4b5a'
-const atHead = f => execFileSync('git', ['show', `${BEFORE_REF}:${f}`], { cwd: REPO, encoding: 'utf8', maxBuffer: 64 << 20 })
+const atHead = f => execFileSync('git', ['show', `${BEFORE_REF}:${require('./_moved-paths.cjs').pathAt(BEFORE_REF, f)}`], { cwd: REPO, encoding: 'utf8', maxBuffer: 64 << 20 })
 const whole = (file, src) => ({ file, from: /^[\s\S]*$/, to: () => src })
 const snake = o => Object.fromEntries(Object.entries(o).map(([k, v]) => [k.replace(/[A-Z]/g, c => '_' + c.toLowerCase()), v]))
 const J = x => JSON.stringify(x)
@@ -42,14 +42,14 @@ const J = x => JSON.stringify(x)
       '@/hooks/useVillageData': 'export function useVillageData() { return globalThis.__tcData }',
       'next/headers': HDR,
     }
-    const PG = 'app/trucks/[slug]/page.tsx', OL = 'app/trucks/[slug]/order/layout.tsx'
+    const PG = 'app/(app)/trucks/[slug]/page.tsx', OL = 'app/(app)/trucks/[slug]/order/layout.tsx'
     const M = {
       A: await kit.bundle('usp-meta-a', `export { generateMetadata as page } from '@/${PG}'\nexport { generateMetadata as order } from '@/${OL}'` + clear, { stubs: PAGE_STUBS }),
       B: await kit.bundle('usp-meta-b', `export { generateMetadata as page } from '@/${PG}'\nexport { generateMetadata as order } from '@/${OL}'` + clear, { stubs: PAGE_STUBS, patches: [whole(PG, atHead(PG)), whole(OL, atHead(OL))] }),
     }
     let ROOT = null
     try {
-      ROOT = await kit.bundle('usp-root-meta', "export { generateMetadata } from '@/app/layout'", { stubs: { 'next/font/google': 'export const Geist = () => ({ variable: "" }); export const Geist_Mono = () => ({ variable: "" }); export const Noto_Sans = () => ({ variable: "" }); export const Noto_Sans_JP = () => ({ variable: "" }); export const Noto_Sans_HK = () => ({ variable: "" }); export const Noto_Sans_Thai = () => ({ variable: "" }); export const Noto_Sans_Arabic = () => ({ variable: "" })', './globals.css': '', './providers': 'export const CSPostHogProvider = p => p.children', 'next/headers': HDR } })
+      ROOT = await kit.bundle('usp-root-meta', "export { generateMetadata } from '@/app/(app)/layout'", { stubs: { 'next/font/google': 'export const Geist = () => ({ variable: "" }); export const Geist_Mono = () => ({ variable: "" }); export const Noto_Sans = () => ({ variable: "" }); export const Noto_Sans_JP = () => ({ variable: "" }); export const Noto_Sans_HK = () => ({ variable: "" }); export const Noto_Sans_Thai = () => ({ variable: "" }); export const Noto_Sans_Arabic = () => ({ variable: "" })', './globals.css': '', './providers': 'export const CSPostHogProvider = p => p.children', 'next/headers': HDR } })
     } catch (e) { ROOT = { __err: String(e.message).slice(0, 300) } }
     t('the root layout\'s own generateMetadata is bundled for the merge (not a copy of it)', !ROOT.__err, ROOT.__err)
     const CSV = ['Name,a,b,c,d,e,f,g,h,Logo', 'Pizzeria Gusto,,,,,,,,,/logos/pizzeriagusto.jpg', 'Pizza Kitchen,,,,,,,,,/logos/bbpizza.jpg'].join('\n')
@@ -239,7 +239,7 @@ const J = x => JSON.stringify(x)
     const quoted = re ? ('The Feast is £1,250.00 and a Margherita £9.50 — or £12'.match(re) || []).map(p => parseFloat(p.replace(/£|\s|,/g, '')).toFixed(2)) : []
     t('WhatsApp menu replies: "£1,250.00" is read as 1250.00 (not "£1"), "£9.50" and "£12" as before', J(quoted) === J(['1250.00', '9.50', '12.00']), J(quoted))
     // CSV: the Reports screen groups, its two CSVs never do (source: the CSV builders call csvMoney only)
-    const mp = read('app/manage/[token]/page.tsx')
+    const mp = read('app/(app)/manage/[token]/page.tsx')
     const exp = mp.slice(mp.indexOf('const exportCSV = () => {'), mp.indexOf('const exportItemsCSV = () => {') + 1200)
     t('the Reports CSVs use csvMoney ({ grouping: false }) for every amount; the screen uses fmtMoney (grouped)', /function csvMoney\(n: number, f: MoneyFormat\) \{ return formatMajor\(n, f, \{ grouping: false \}\) \}/.test(mp)
       && !/[^v]orderMoney\(o, /.test(exp) && !/fmtMoney\(/.test(exp) && (exp.match(/csvOrderMoney\(o, /g) || []).length === 6 && (exp.match(/csvMoney\(r\./g) || []).length === 3, 'a CSV amount still goes through a grouped formatter')
@@ -295,26 +295,26 @@ const J = x => JSON.stringify(x)
     t('/api/setup: errorTextIn reads errorsOnboarding, then tradeArea', (() => { const tE = E.translatorFor('en-US', 'errorsOnboarding'), tT = E.translatorFor('en-US', 'tradeArea'); const k = leaves(MSG.tradeArea)[0][0]; const b = E.errorBody('tradeArea', 'en-GB', k, sample(MSG.tradeArea[k])); return E.errorTextIn([tE, tT], b, 'X') === b.error && E.errorTextIn([tE, tT], E.errorBody('errorsOnboarding', 'en-GB', 'truck_name_missing', {}), 'X') === MSG.errorsOnboarding.truck_name_missing })())
     // every switched site, by source
     const SITES = [
-      ['app/signup/page.tsx', "setError(errorText(tErr, data, t('errorFallback')))", "useT('errorsOnboarding')"],
-      ['app/reset-password/page.tsx', "setError(errorText(tErr, data, t('errorFallback')))", "useT('errorsOnboarding')"],
-      ['app/setup/page.tsx', "setError(errorTextIn([tErr, tTrade], data, t('createFailed')))", "useT('tradeArea')"],
+      ['app/(app)/signup/page.tsx', "setError(errorText(tErr, data, t('errorFallback')))", "useT('errorsOnboarding')"],
+      ['app/(app)/reset-password/page.tsx', "setError(errorText(tErr, data, t('errorFallback')))", "useT('errorsOnboarding')"],
+      ['app/(app)/setup/page.tsx', "setError(errorTextIn([tErr, tTrade], data, t('createFailed')))", "useT('tradeArea')"],
       ['components/setup/WhereBasedStep.tsx', "errorText(tErr, error.server, t('countriesFailed'))", "useT('errorsOnboarding')"],
       // ⚠️ RE-PINNED (languages-1): the wizard's translators come from useTIn (which also fetches a non-English language's
       // words) instead of useMemo(translatorFor(…)) — the same locale, the same namespace.
       ['components/DemoGetStarted.tsx', "errorTextIn([tErr, tTrade] as never[], e.server, t(`error.${e.code}`))", "useTIn(wizardLocale, 'errorsOnboarding')"],
       ['components/landing/DemoUpload.tsx', "errorText(tErr, message.server, t(`error.${message.code}`))", "useT('errorsOnboarding')"],
-      ['app/dashboard/[token]/page.tsx', "setRestartError(errorText(tErrO,data,tDash('demo.restartFailed')))", "useT('errorsKitchen'), tErrM=useT('errorsManage'), tErrO=useT('errorsOnboarding')"],
-      ['app/dashboard/[token]/kds/page.tsx', "setError(errorText(tErrK, data, 'error.linkInvalid'))", "useT('errorsKitchen'), tErrM = useT('errorsManage')"],
+      ['app/(app)/dashboard/[token]/page.tsx', "setRestartError(errorText(tErrO,data,tDash('demo.restartFailed')))", "useT('errorsKitchen'), tErrM=useT('errorsManage'), tErrO=useT('errorsOnboarding')"],
+      ['app/(app)/dashboard/[token]/kds/page.tsx', "setError(errorText(tErrK, data, 'error.linkInvalid'))", "useT('errorsKitchen'), tErrM = useT('errorsManage')"],
       ['lib/native/useGatedActionResult.tsx', "throw new Error(errorText(tErrRef.current, data, ''))", "useT('errorsKitchen')"],
       ['components/dashboard/AddOrderPanel.tsx', "throw new Error(errorText(tErr, data, ''))", "useT('errorsKitchen')"],
       ['components/dashboard/CustomDomainSetup.tsx', "throw new Error(errorText(tErr, data, t('wizard.genericError')))", "useT('errorsManage')"],
     ]
     const missing = SITES.filter(([f, use, tr]) => !read(f).includes(use) || !read(f).includes(tr)).map(([f]) => f)
     t(`every switched screen words its refusal from code + params, in its route's namespace (${SITES.length} files)`, missing.length === 0, missing.join(', '))
-    const dash = read('app/dashboard/[token]/page.tsx'), kds = read('app/dashboard/[token]/kds/page.tsx')
+    const dash = read('app/(app)/dashboard/[token]/page.tsx'), kds = read('app/(app)/dashboard/[token]/kds/page.tsx')
     t('dashboard: 5 event-menu throws use errorsManage; edit / busy / refund / intervals use errorsKitchen', (dash.match(/throw new Error\(errorText\(tErrM,data,''\)\)/g) || []).length === 5 && dash.includes("throw new Error(errorText(tErrK,data,''))") && dash.includes("errorText(tErrK,data,tDash('toast.editBusy'))") && dash.includes("message:errorText(tErrK,data,tDash('refund.failed'))") && dash.includes('msg=errorText(tErrK,await res.clone().json(),msg)'))
     t('KDS: 5 event-menu throws use errorsManage', (kds.match(/throw new Error\(errorText\(tErrM, data, ''\)\)/g) || []).length === 5)
-    const left = ['app/signup/page.tsx', 'app/reset-password/page.tsx', 'app/setup/page.tsx', 'components/setup/WhereBasedStep.tsx', 'components/DemoGetStarted.tsx', 'components/landing/DemoUpload.tsx', 'app/dashboard/[token]/kds/page.tsx', 'lib/native/useGatedActionResult.tsx', 'components/dashboard/AddOrderPanel.tsx', 'components/dashboard/CustomDomainSetup.tsx']
+    const left = ['app/(app)/signup/page.tsx', 'app/(app)/reset-password/page.tsx', 'app/(app)/setup/page.tsx', 'components/setup/WhereBasedStep.tsx', 'components/DemoGetStarted.tsx', 'components/landing/DemoUpload.tsx', 'app/(app)/dashboard/[token]/kds/page.tsx', 'lib/native/useGatedActionResult.tsx', 'components/dashboard/AddOrderPanel.tsx', 'components/dashboard/CustomDomainSetup.tsx']
       .filter(f => /(?:setError|setMessage|showToast|setRestartError)\([^)]*data\??\.error|throw new Error\(data\??\.error\)/.test(read(f)))
     t('no switched file still shows a route\'s raw `error` (the two never-shown buzzer/profile throws on the dashboard are left as they are)', left.length === 0, left.join(', '))
   }

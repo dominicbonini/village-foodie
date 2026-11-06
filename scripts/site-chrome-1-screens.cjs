@@ -33,9 +33,9 @@ async function capture(file) {
   pages['legalIn:fr:privacy'] = { html: await R.PAGES.legalIn('fr', 'privacy'), lang: 'fr-FR' }
   const postcss = require(require.resolve('postcss', { paths: [REPO] }))
   const tw = require(require.resolve('@tailwindcss/postcss', { paths: [REPO] }))
-  const src = fs.readFileSync(path.join(REPO, 'app/globals.css'), 'utf8').replace(/@import "leaflet[^"]*";\n?/, '')
-  const tailwind = (await postcss([tw({ base: REPO })]).process(src, { from: path.join(REPO, 'app/globals.css') })).css
-  const css = [tailwind, ...['app/landing/landing.css', 'app/contact/contact-form.css'].map(f => fs.readFileSync(path.join(REPO, f), 'utf8'))].join('\n')
+  const src = fs.readFileSync(path.join(REPO, 'app/(app)/globals.css'), 'utf8').replace(/@import "leaflet[^"]*";\n?/, '')
+  const tailwind = (await postcss([tw({ base: REPO })]).process(src, { from: path.join(REPO, 'app/(app)/globals.css') })).css
+  const css = [tailwind, ...['app/(public)/(site)/landing/landing.css', 'app/(app)/contact/contact-form.css'].map(f => fs.readFileSync(path.join(REPO, f), 'utf8'))].join('\n')
   const commit = execFileSync('git', ['rev-parse', '--short', 'HEAD'], { cwd: REPO }).toString().trim()
   fs.writeFileSync(file, JSON.stringify({ commit, css, pages }))
   console.log(`captured ${Object.keys(pages).length} pages at ${commit}${execFileSync('git', ['status', '--short'], { cwd: REPO }).toString().trim() ? ' (with uncommitted changes)' : ''}`)

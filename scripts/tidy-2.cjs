@@ -27,7 +27,7 @@ const LIVE = require('./fixtures/tidy-2-live-rows.json')
 /* 🔴 THE TREE BEFORE tidy-2's CODE, PINNED BY SHA (never HEAD: HEAD moves with the next commit, and the comparison would
  * quietly become this tree against itself). f9b6f3ea is tidy-2's migrations commit; no code file differs from 1da6f366. */
 const BEFORE = 'f9b6f3ea'
-const gitShow = f => execFileSync('git', ['show', `${BEFORE}:${f}`], { cwd: REPO, encoding: 'utf8', maxBuffer: 64e6 })
+const gitShow = f => execFileSync('git', ['show', `${BEFORE}:${require('./_moved-paths.cjs').pathAt(BEFORE, f)}`], { cwd: REPO, encoding: 'utf8', maxBuffer: 64e6 })
 
 let pass = 0, fail = 0
 const t = (label, ok, detail) => { if (ok) { pass++; console.log('  ✓ ' + label) } else { fail++; console.log('  🔴 ' + label + (detail !== undefined ? `\n      ${typeof detail === 'string' ? detail.slice(0, 900) : JSON.stringify(detail).slice(0, 900)}` : '')) } }
@@ -47,8 +47,8 @@ const ROWS = () => WF.rowsWith(WF.WORLD).map(r => {
 ;(async () => {
   const ctx = LP1E.context(kit, REPO)
   const M = await ctx.bundle('t2-lib', [
-    "export { default as Landing } from '@/app/[country]/page'",
-    "export { default as FaqPageView } from '@/app/[country]/faq/page'",
+    "export { default as Landing } from '@/app/(public)/[country]/page'",
+    "export { default as FaqPageView } from '@/app/(public)/[country]/faq/page'",
     "export { clearComparisonCache as __cmp, comparisonFlags, appsOf, comparisonAddressOf } from '@/lib/comparison-flags'",
     "export { clearPlanCatalogCache as __p } from '@/lib/plans-server'",
     "export { clearPublicFaqCache as __faq, faqPage } from '@/lib/faq/public'",
@@ -139,8 +139,8 @@ const ROWS = () => WF.rowsWith(WF.WORLD).map(r => {
     // Manage › Settings: the card from /api/manage's appsAvailable (the same reader), rendered for a TEST truck only.
     const apps = await withReq(async () => Object.fromEntries(await Promise.all(CODES.map(async c => [c, await M.appsOf(c)]))))
     t('Manage: /api/manage\'s reader (appsOf) answers both apps for every country\'s trucks (44)', CODES.every(c => apps[c].ios && apps[c].android))
-    const PAGE = 'app/manage/[token]/page.tsx'
-    const S = await kit.bundle('t2-settings', "export * from '@/app/manage/[token]/page'\nexport { CountrySettingsProvider } from '@/components/CountrySettingsProvider'\nexport { PlanCatalogProvider } from '@/components/PlanCatalogProvider'\nexport { PricingPolicyProvider } from '@/components/PricingPolicy'", { patches: [{ file: PAGE, append: 'export { SettingsTab }' }] })
+    const PAGE = 'app/(app)/manage/[token]/page.tsx'
+    const S = await kit.bundle('t2-settings', "export * from '@/app/(app)/manage/[token]/page'\nexport { CountrySettingsProvider } from '@/components/CountrySettingsProvider'\nexport { PlanCatalogProvider } from '@/components/PlanCatalogProvider'\nexport { PricingPolicyProvider } from '@/components/PricingPolicy'", { patches: [{ file: PAGE, append: 'export { SettingsTab }' }] })
     const noop = () => {}
     const jpSettings = await wf.rowOf(ROWS(), 'JP')
     const settingsHtml = a => kit.renderStatic(kit.h(S.PlanCatalogProvider, { catalog: cat }, kit.h(S.CountrySettingsProvider, { settings: jpSettings }, kit.h(S.PricingPolicyProvider, { hidePricing: false }, kit.h(S.SettingsTab, {
@@ -279,7 +279,7 @@ const ROWS = () => WF.rowsWith(WF.WORLD).map(r => {
     const yo = OLD.computeOrderCharges({ foodMinor: 999, rules: { ...yenRules, roundDown: undefined }, channel: 'online_card', tip: { kind: 'percent', bps: 1000 } })
     t('in yen, a 2.5% service fee on ¥999 is ¥24 (24.975 down; was ¥25) and a 10% tip ¥99 (99.9 down; was ¥100) — the page shows the same', yc.serviceFeeMinor === 24 && yc.tipMinor === 99 && yo.serviceFeeMinor === 25 && yo.tipMinor === 100
       && NOW.computeOrderCharges({ foodMinor: 999, rules: NOW.rulesFromCheckout(NOW.checkoutRulesFrom(yenRules)), channel: 'online_card', tip: { kind: 'percent', bps: 1000 } }).totalMinor === yc.totalMinor)
-    t('…the page\'s tip buttons use the same rounding as the server (applyBpsDown when the checkout says roundDown)', /\(checkout\?\.roundDown \? applyBpsDown : applyBps\)\(foodMinor, bps\)/.test(read('app/trucks/[slug]/order/page.tsx')) && NOW.applyBpsDown(999, 1000) === 99)
+    t('…the page\'s tip buttons use the same rounding as the server (applyBpsDown when the checkout says roundDown)', /\(checkout\?\.roundDown \? applyBpsDown : applyBps\)\(foodMinor, bps\)/.test(read('app/(app)/trucks/[slug]/order/page.tsx')) && NOW.applyBpsDown(999, 1000) === 99)
 
     // GBP: byte-identical to the tree before tidy-2.
     const grid = []

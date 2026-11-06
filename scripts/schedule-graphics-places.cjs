@@ -159,7 +159,7 @@ const PLACES_UI = 'components/manage/SchedulePlaces.tsx'
  * home — moved out of PLACES_UI when Social posts became two areas and six boxes, and the gate went
  * with it. The variant that removes the gate has to mutate the file that now carries it. */
 const SOCIAL_UI = 'components/manage/SocialPosts.tsx'
-const PAGE = 'app/manage/[token]/page.tsx'
+const PAGE = 'app/(app)/manage/[token]/page.tsx'
 const EVENTS_ACTION = 'app/api/events/action/route.ts'
 const PREVIEW_LIB = 'lib/schedule-graphics/event-preview.ts'
 /** The eight section labels — the ONLY new user-visible words Settings is allowed to have gained. */
@@ -1035,7 +1035,7 @@ function runWiringSuite(lib) {
         'lib/features.ts',
         SOCIAL_UI,
         'app/api/weekly-post/route.ts',
-        'app/manage/[token]/page.tsx',
+        'app/(app)/manage/[token]/page.tsx',
         'app/api/manage/route.ts',
         // ⚠️ RE-PINNED (plans-data-model, Stage A, 19 October 2026): 'lib/plan-features.ts' is DELETED, and with it
         // ROW_FEATURE_MAP (the one place that named the key as data). Its frozen successor,
@@ -1062,7 +1062,7 @@ function runWiringSuite(lib) {
       // ⚠️ RE-PINNED (plans-data-model, Stage A, 19 October 2026): lib/plan-features.ts is deleted; its frozen content
       // is lib/legacy-pricing-display.ts, which is read in its place.
       // ⚠️ RE-PINNED (pricing-pages, Stage B, 20 October 2026): that file is deleted too; lib/feature-table.ts replaces it.
-      'app/manage/[token]/page.tsx', 'app/api/manage/route.ts', 'lib/feature-table.ts']
+      'app/(app)/manage/[token]/page.tsx', 'app/api/manage/route.ts', 'lib/feature-table.ts']
     return files.every(f => !codeOnly(read(f)).includes('places_posts_preview'))
   })())
   t('⚠️ `resolveTruckAccess` and the staff gate are UNCHANGED — widening plans never widened roles',
@@ -1783,7 +1783,7 @@ function runWiringSuite(lib) {
     })())
   t('🔴 the `:has()` rule that gives the wrapper up its padding is still there, both depths',
     (() => {
-      const css = read('app/globals.css')
+      const css = read('app/(app)/globals.css')
       return /\.manage-tab-pad:has\(> \[data-subtab-bar\]:first-child\),\n\.manage-tab-pad:has\(> \*:first-child > \[data-subtab-bar\]:first-child\) \{\n  padding-top: 0;\n\}/.test(css)
         && /DO NOT PUT ANYTHING BACK ABOVE A SUB-TAB BAR/.test(css)
     })())
@@ -1813,7 +1813,7 @@ function runWiringSuite(lib) {
      * string is a constant's value in the copy module it moved out of, as that module stood at 756ca09 (the commit
      * Phase 1d started from) — i.e. the words were already on this screen, and the move did not change them. */
     const COPY_MODULES_756 = ['lib/settings-copy.ts', 'lib/copy/offlineProtection.ts', 'lib/copy/serviceSettings.ts']
-      .map(f => require('child_process').execFileSync('git', ['show', `756ca09:${f}`], { cwd: REPO, encoding: 'utf8' }))
+      .map(f => require('child_process').execFileSync('git', ['show', `756ca09:${require('./_moved-paths.cjs').pathAt('756ca09', f)}`], { cwd: REPO, encoding: 'utf8' }))
       .join('\n').replace(/'\s*\+\s*'/g, '').replace(/\\'/g, "'")
     for (const x of added) if (COPY_MODULES_756.includes(`'${x}'`) || COPY_MODULES_756.includes(`"${x}"`)) allowed.add(x)
     /* ══ ⚠️ ONE MORE ALLOWED ADDITION, AND IT IS AN ADDITION RATHER THAN A CHANGE ══════════════════
@@ -2312,21 +2312,21 @@ function runWiringSuite(lib) {
       // the line it became is in the page. (The baseline lines are taken from 719ac91 as the harness reads it.)
       { was: "function MenuTab({ truck, categories, items, subcategories, token, modifierGroups, modifierOptions, itemModGroups, setItemModGroups, api, reload, showToast, allergenWizardOpen, onCloseAllergenWizard, onOpenAllergenWizard, canEditAllergens, onWalkthroughChoice, onVerifySuccess }: {",
         reason: 'costs-accounts-1: MenuTab takes canSeeCosts', exact: true,
-        nowIn: 'app/manage/[token]/page.tsx',
+        nowIn: 'app/(app)/manage/[token]/page.tsx',
         now: "function MenuTab({ truck, categories, items, subcategories, token, modifierGroups, modifierOptions, itemModGroups, setItemModGroups, api, reload, showToast, allergenWizardOpen, onCloseAllergenWizard, onOpenAllergenWizard, canEditAllergens, onWalkthroughChoice, onVerifySuccess, canSeeCosts = false }: {" },
       { was: "{activeTab === 'menu' && menuSection === 'items' && <MenuTab      truck={truck} categories={categories} items={items} subcategories={subcategories} token={token} modifierGroups={modifierGroups} modifierOptions={modifierOptions} itemModGroups={itemModGroups} setItemModGroups={setItemModGroups} api={api} reload={refresh} showToast={showToast} allergenWizardOpen={allergenWizardOpen} onCloseAllergenWizard={() => { setAllergenWizardOpen(false); refresh() }} onOpenAllergenWizard={() => setAllergenWizardOpen(true)} canEditAllergens={userRole === 'owner' || isAdmin} onWalkthroughChoice={handleWalkthroughChoice} onVerifySuccess={handleVerifiedEvents} />}",
         reason: "costs-accounts-1: …and the Menu tab's mount passes canSeeCosts={userRole !== 'staff'}", exact: true,
-        nowIn: 'app/manage/[token]/page.tsx',
+        nowIn: 'app/(app)/manage/[token]/page.tsx',
         now: "{activeTab === 'menu' && menuSection === 'items' && <MenuTab      truck={truck} categories={categories} items={items} subcategories={subcategories} token={token} modifierGroups={modifierGroups} modifierOptions={modifierOptions} itemModGroups={itemModGroups} setItemModGroups={setItemModGroups} api={api} reload={refresh} showToast={showToast} allergenWizardOpen={allergenWizardOpen} onCloseAllergenWizard={() => { setAllergenWizardOpen(false); refresh() }} onOpenAllergenWizard={() => setAllergenWizardOpen(true)} canEditAllergens={userRole === 'owner' || isAdmin} onWalkthroughChoice={handleWalkthroughChoice} onVerifySuccess={handleVerifiedEvents} canSeeCosts={userRole !== 'staff'} />}" },
       /* ── legal-languages-1, 1 November 2026 (docs/legal-languages-1-report.md §4.2) — a stored dietary tag is shown in the truck's
        * language (lib/dietary-label.ts), as the order page already did; English shows the stored name exactly as before. ── */
-      { was: '{draft.dietary.map(d => <DietaryChip key={d} label={d} />)}', now: '{draft.dietary.map(d => <DietaryChip key={d} label={dietaryLabel(d, wizLocale)} />)}', nowIn: 'app/manage/[token]/page.tsx',
+      { was: '{draft.dietary.map(d => <DietaryChip key={d} label={d} />)}', now: '{draft.dietary.map(d => <DietaryChip key={d} label={dietaryLabel(d, wizLocale)} />)}', nowIn: 'app/(app)/manage/[token]/page.tsx',
         reason: "the allergen wizard's dietary pills in the truck's language" },
       { was: '<span key={d} className="text-[10px] px-1.5 py-0.5 bg-green-50 text-green-700 rounded-md border border-green-100">{d}</span>',
-        now: '<span key={d} className="text-[10px] px-1.5 py-0.5 bg-green-50 text-green-700 rounded-md border border-green-100">{dietaryLabel(d, tkLocale)}</span>', nowIn: 'app/manage/[token]/page.tsx',
+        now: '<span key={d} className="text-[10px] px-1.5 py-0.5 bg-green-50 text-green-700 rounded-md border border-green-100">{dietaryLabel(d, tkLocale)}</span>', nowIn: 'app/(app)/manage/[token]/page.tsx',
         reason: "the menu list's dietary tags in the truck's language" },
       { was: '<span key={d} className="text-xs px-2 py-1 bg-green-50 border border-green-200 text-green-700 rounded-lg">{d}</span>',
-        now: '<span key={d} className="text-xs px-2 py-1 bg-green-50 border border-green-200 text-green-700 rounded-lg">{dietaryLabel(d, tkLocale)}</span>', nowIn: 'app/manage/[token]/page.tsx',
+        now: '<span key={d} className="text-xs px-2 py-1 bg-green-50 border border-green-200 text-green-700 rounded-lg">{dietaryLabel(d, tkLocale)}</span>', nowIn: 'app/(app)/manage/[token]/page.tsx',
         reason: "an allergen card's extracted dietary options in the truck's language" },
       /* ── Phase 3 screens, 13 October 2026 (docs/phase-3-screens-report.md) — each with its new form ── */
       { was: "{activeTab === 'payments'  && <PaymentsTab  token={token} plan={truck?.plan} showToast={showToast} />}",
@@ -2335,60 +2335,60 @@ function runWiringSuite(lib) {
         // ⚠️ RE-PINNED (plan-features-config, Stage A2, 20 October 2026): PaymentsTab gains `features` — the truck's
         // FeatureAccessView (override → effective plan's switch), so Payments can show the one upgrade prompt when the plan
         // switches Pay at Hatch off. Same line otherwise.
-        now: "{activeTab === 'payments'  && <PaymentsTab  token={token} onTrial={onTrialPlan} features={featureAccessView(truck, planCatalog, truck?.country ?? null)} showToast={showToast}", nowIn: 'app/manage/[token]/page.tsx',
+        now: "{activeTab === 'payments'  && <PaymentsTab  token={token} onTrial={onTrialPlan} features={featureAccessView(truck, planCatalog, truck?.country ?? null)} showToast={showToast}", nowIn: 'app/(app)/manage/[token]/page.tsx',
         reason: 'Payments now receives `afterOnline`: the Tax, tips and fees card and the moved Taking payment section' },
       { was: '<div className="pt-3 border-t border-slate-100">', now: '<div>', nowIn: 'components/manage/TakingPaymentPanel.tsx',
         reason: 'the moved Taking payment block lost only its Settings separator wrapper (named difference 1)' },
       { was: 'const total = revenueOrders.reduce((s: number, o: any) => s + (o.total || 0), 0)',
-        now: 'const total = revenueOrders.reduce((s: number, o: any) => s + foodOf(o), 0)', nowIn: 'app/manage/[token]/page.tsx',
+        now: 'const total = revenueOrders.reduce((s: number, o: any) => s + foodOf(o), 0)', nowIn: 'app/(app)/manage/[token]/page.tsx',
         reason: 'Reports sum FOOD, not the grand total, so tax, tips and fees never fall into "Other"' },
-      { was: 'return { categories, base, dealRev, mods, total }', now: 'return { categories, base, dealRev, mods, total, extras }', nowIn: 'app/manage/[token]/page.tsx',
+      { was: 'return { categories, base, dealRev, mods, total }', now: 'return { categories, base, dealRev, mods, total, extras }', nowIn: 'app/(app)/manage/[token]/page.tsx',
         reason: 'tax, tips and fees as their own report lines' },
       { was: "const headers = ['Order ID', 'Date', 'Event', 'Time placed', 'Collection time', 'Customer name', 'Order type', 'Items', 'Deals', 'Modifiers', 'Notes', 'Total']",
-        now: "...(csvCharges ? ['Subtotal', csvCharges.taxLabel, 'Tip', 'Service fee'] : []), 'Total']", nowIn: 'app/manage/[token]/page.tsx',
+        now: "...(csvCharges ? ['Subtotal', csvCharges.taxLabel, 'Tip', 'Service fee'] : []), 'Total']", nowIn: 'app/(app)/manage/[token]/page.tsx',
         reason: 'the Orders CSV gains Subtotal, the tax, Tip and Service fee columns — only where tax is added at checkout or a tip/fee exists' },
-      { was: '<span className="text-slate-900">Total</span>', now: "<span className=\"text-slate-900\">{revenueBreakdown.extras.length ? 'Food sales' : 'Total'}</span>", nowIn: 'app/manage/[token]/page.tsx',
+      { was: '<span className="text-slate-900">Total</span>', now: "<span className=\"text-slate-900\">{revenueBreakdown.extras.length ? 'Food sales' : 'Total'}</span>", nowIn: 'app/(app)/manage/[token]/page.tsx',
         reason: 'the breakdown line reads "Food sales" when tax, tips or fees follow it; "Total" otherwise, as before' },
       /* ── US readiness sweep, 13 October 2026 (docs/us-readiness-sweep-report.md §1, §3) — each with its new form.
        * scripts/us-readiness.cjs proves the UK list, families and placeholders byte-identical to before. ── */
-      { was: 'const GENERIC_REPLACEMENTS: Record<string, string[]> = {', now: 'const GENERIC_REPLACEMENTS = genericReplacements(allergenSet)', nowIn: 'app/manage/[token]/page.tsx',
+      { was: 'const GENERIC_REPLACEMENTS: Record<string, string[]> = {', now: 'const GENERIC_REPLACEMENTS = genericReplacements(allergenSet)', nowIn: 'app/(app)/manage/[token]/page.tsx',
         reason: "the allergen generic families follow the truck's country; built inside AllergenWizardModal" },
       { was: "Nuts: ['Tree nuts', 'Peanuts'],", now: "{ Nuts: ['Tree nuts', 'Peanuts'], Shellfish: ['Crustaceans', 'Molluscs'] }", nowIn: 'lib/allergens.ts',
         reason: 'the UK families moved, unchanged, to lib/allergens.ts genericReplacements()' },
       { was: "Shellfish: ['Crustaceans', 'Molluscs'],", now: "{ Nuts: ['Tree nuts', 'Peanuts'], Shellfish: ['Crustaceans', 'Molluscs'] }", nowIn: 'lib/allergens.ts',
         reason: 'the UK families moved, unchanged, to lib/allergens.ts genericReplacements()' },
-      { was: 'const isVocab = (a: string) => (ALLERGEN_VOCAB as readonly string[]).includes(a)', now: 'const isVocab = (a: string) => ALLERGEN_VOCAB.includes(a)', nowIn: 'app/manage/[token]/page.tsx',
+      { was: 'const isVocab = (a: string) => (ALLERGEN_VOCAB as readonly string[]).includes(a)', now: 'const isVocab = (a: string) => ALLERGEN_VOCAB.includes(a)', nowIn: 'app/(app)/manage/[token]/page.tsx',
         reason: "the allergen list is the truck's country list (UK 14 / US 9), built inside AllergenWizardModal" },
       { was: '<Input label="Full address (optional)" value={editingEvent.address} onChange={v => setEditingEvent(p => ({...p!, address: v}))} placeholder="e.g. 123 High St, Wickhambrook" />',
-        now: 'placeholder={addressPlaceholders(tabSettings.addressFormat).address} />', nowIn: 'app/manage/[token]/page.tsx',
+        now: 'placeholder={addressPlaceholders(tabSettings.addressFormat).address} />', nowIn: 'app/(app)/manage/[token]/page.tsx',
         reason: 'the example address follows the address style (lib/copy/addressPlaceholders.ts); UK text unchanged' },
       { was: '<Input label="Area (village, town or city)" value={editingEvent.town} onChange={v => setEditingEvent(p => ({...p!, town: v}))} placeholder="e.g. Wickhambrook" />',
-        now: 'placeholder={addressPlaceholders(tabSettings.addressFormat).area} />', nowIn: 'app/manage/[token]/page.tsx',
+        now: 'placeholder={addressPlaceholders(tabSettings.addressFormat).area} />', nowIn: 'app/(app)/manage/[token]/page.tsx',
         reason: 'the example area follows the address style (lib/copy/addressPlaceholders.ts); UK text unchanged' },
       /* ── Language Phase 0, 14 October 2026 (docs/language-phase-0-report.md §2) — display text stopped being a key.
        * Each keeps its output byte-identical (scripts/language-phase-0.cjs, money-sweep-parity); the NEW form is named. ── */
-      { was: "? (row.name === 'Online ordering — Pay at Hatch' ? true : row.max)", now: '? (row.id === PAY_AT_HATCH_ROW ? true : row.max)', nowIn: 'app/manage/[token]/page.tsx',
+      { was: "? (row.name === 'Online ordering — Pay at Hatch' ? true : row.max)", now: '? (row.id === PAY_AT_HATCH_ROW ? true : row.max)', nowIn: 'app/(app)/manage/[token]/page.tsx',
         reason: "Billing's trial column names the Pay at Hatch row by its id, not its display name" },
-      { was: "const customerName = (o.customer_name && o.customer_name !== 'Walk-up') ? o.customer_name : 'Unknown'", now: "const customerName = (o.customer_name && !isWalkUp(o.customer_name)) ? o.customer_name : 'Unknown'", nowIn: 'app/manage/[token]/page.tsx',
+      { was: "const customerName = (o.customer_name && o.customer_name !== 'Walk-up') ? o.customer_name : 'Unknown'", now: "const customerName = (o.customer_name && !isWalkUp(o.customer_name)) ? o.customer_name : 'Unknown'", nowIn: 'app/(app)/manage/[token]/page.tsx',
         reason: 'the stored walk-up name is compared through one helper (lib/walk-up.ts)' },
       // ⚠️ RE-PINNED (Language Phase 1d Part 2): REPORTS replaced the display sentinel '—' with null (the render compared
       // the label with '—' — a display text used as a key, rule 6); the line still names the helper, and the rendered
       // report is byte-identical (language-phase-1d2, reports area, GB F === BEFORE).
-      { was: "const customerLabel = (o.customer_name && o.customer_name !== 'Walk-up') ? o.customer_name : '—'", now: "const customerLabel = (o.customer_name && !isWalkUp(o.customer_name)) ? o.customer_name : null", nowIn: 'app/manage/[token]/page.tsx',
+      { was: "const customerLabel = (o.customer_name && o.customer_name !== 'Walk-up') ? o.customer_name : '—'", now: "const customerLabel = (o.customer_name && !isWalkUp(o.customer_name)) ? o.customer_name : null", nowIn: 'app/(app)/manage/[token]/page.tsx',
         reason: 'the stored walk-up name is compared through one helper (lib/walk-up.ts)' },
-      { was: "const cat = itemCategories[item.name] || 'Other'", now: 'const cat = itemCategories[item.name] || OTHER_REVENUE_BUCKET', nowIn: 'app/manage/[token]/page.tsx',
+      { was: "const cat = itemCategories[item.name] || 'Other'", now: 'const cat = itemCategories[item.name] || OTHER_REVENUE_BUCKET', nowIn: 'app/(app)/manage/[token]/page.tsx',
         reason: "the revenue breakdown's catch-all line is one constant" },
-      { was: "if (Math.abs(drift) > 0.005) catBase['Other'] = (catBase['Other'] || 0) + drift", now: 'if (Math.abs(drift) > 0.005) catBase[OTHER_REVENUE_BUCKET] = (catBase[OTHER_REVENUE_BUCKET] || 0) + drift', nowIn: 'app/manage/[token]/page.tsx',
+      { was: "if (Math.abs(drift) > 0.005) catBase['Other'] = (catBase['Other'] || 0) + drift", now: 'if (Math.abs(drift) > 0.005) catBase[OTHER_REVENUE_BUCKET] = (catBase[OTHER_REVENUE_BUCKET] || 0) + drift', nowIn: 'app/(app)/manage/[token]/page.tsx',
         reason: "the revenue breakdown's catch-all line is one constant" },
       /* ── Language Phase 1c, 15 October 2026 (docs/language-phase-1c-report.md) — the walkthrough's words moved into
        * messages/en-GB.json `walkthrough`. The done screen's intro line is the same message, rendered by
        * `WalkthroughIntro`; scripts/language-phase-1c.cjs (area goLive) proves that screen byte-identical. ── */
-      { was: "import { Walkthrough } from '@/components/manage/Walkthrough'", now: "import { Walkthrough, WalkthroughIntro } from '@/components/manage/Walkthrough'", nowIn: 'app/manage/[token]/page.tsx',
+      { was: "import { Walkthrough } from '@/components/manage/Walkthrough'", now: "import { Walkthrough, WalkthroughIntro } from '@/components/manage/Walkthrough'", nowIn: 'app/(app)/manage/[token]/page.tsx',
         reason: 'the intro line is rendered by the walkthrough component that owns its message' },
       { was: "import { WALKTHROUGH_STOPS, WALKTHROUGH_INTRO, readWalkthroughState, writeWalkthroughState, type WalkthroughState } from '@/lib/walkthrough'",
-        now: "import { WALKTHROUGH_STOPS, readWalkthroughState, writeWalkthroughState, type WalkthroughState } from '@/lib/walkthrough'", nowIn: 'app/manage/[token]/page.tsx',
+        now: "import { WALKTHROUGH_STOPS, readWalkthroughState, writeWalkthroughState, type WalkthroughState } from '@/lib/walkthrough'", nowIn: 'app/(app)/manage/[token]/page.tsx',
         reason: 'WALKTHROUGH_INTRO is the message walkthrough.intro now' },
-      { was: '{WALKTHROUGH_INTRO}', now: '<WalkthroughIntro />', nowIn: 'app/manage/[token]/page.tsx',
+      { was: '{WALKTHROUGH_INTRO}', now: '<WalkthroughIntro />', nowIn: 'app/(app)/manage/[token]/page.tsx',
         reason: 'the done screen shows the same intro line, from the message file' },
       /* 1-2 · SettingsTab gained ONE prop, `onOpenKitchenCapacity`, so that the pointer left behind in
        * Settings › Kitchen can open Menu › Kitchen capacity. Both the mount and the signature changed,
@@ -2409,7 +2409,7 @@ function runWiringSuite(lib) {
        * now. The class stays on the element, for the rule's second belt and for the harnesses. */
       { was: '<div className="pt-6 manage-tab-pad">',
         reason: 'the top gap is decided by TABS_WITH_SUBTABS, not by a :has() selector',
-        nowIn: 'app/manage/[token]/page.tsx',
+        nowIn: 'app/(app)/manage/[token]/page.tsx',
         now: "className={`manage-tab-pad${TABS_WITH_SUBTABS.includes(activeTab) ? '' : ' pt-6'}`}" },
       /* ── 🔴 THE PILL RESTYLE (4 October 2026) ─────────────────────────────────────────────────
        * Three constants changed, once, so all three sub-tab bars match: Menu's, Schedule's and
@@ -2418,7 +2418,7 @@ function runWiringSuite(lib) {
        * assertions in PART A still check. */
       { was: "const SUBTAB_BAR = 'sticky top-0 z-30 -mx-4 px-4 bg-slate-50",
         reason: 'the bar gained `py-2` — a filled pill needs air an underlined tab did not',
-        nowIn: 'app/manage/[token]/page.tsx',
+        nowIn: 'app/(app)/manage/[token]/page.tsx',
         now: "const SUBTAB_BAR = 'sticky top-0 z-30 -mx-4 px-4 py-2 bg-slate-50" },
       /* ══ 🔴 THIS ENTRY HAS NOW BEEN REWRITTEN TWICE IN TWO DAYS, AND BOTH SIDES ARE RECORDED ═══════
        * The gap went 4 → 1.5 to match the boards' pill CSS. Then on 10 October the row became
@@ -2436,21 +2436,21 @@ function runWiringSuite(lib) {
       { was: '<div className={SUBTAB_ROW}>',
         reason: 'the four bars became four calls to one `SubTabBar`, which is where the fade, the '
           + 'scroll-into-view and the row now live',
-        nowIn: 'app/manage/[token]/page.tsx',
+        nowIn: 'app/(app)/manage/[token]/page.tsx',
         now: "function SubTabBar({ label, className = '', barRef, children }" },
       { was: "const SUBTAB_ROW = 'flex gap-4 w-max'",
         reason: "the boards' pill CSS is `gap:6px`, and the row is one sideways scroller that SAYS SO "
           + "since 10 October — a fade, the active pill in view, and snap points",
-        nowIn: 'app/manage/[token]/page.tsx', now: "const SUBTAB_ROW = 'flex gap-1.5 w-max'" },
+        nowIn: 'app/(app)/manage/[token]/page.tsx', now: "const SUBTAB_ROW = 'flex gap-1.5 w-max'" },
       { was: '`py-2.5 text-sm font-bold whitespace-nowrap border-b-2 transition-colors ${',
         reason: 'the tab became a pill',
-        nowIn: 'app/manage/[token]/page.tsx',
+        nowIn: 'app/(app)/manage/[token]/page.tsx',
         /* ⚠️ `snap-start` ADDED 10 OCTOBER: it pairs with the bar's `snap-x snap-proximity` so a swipe
          * settles with a pill's edge against the bar's, rather than halfway through one. */
         now: '`px-3.5 py-1.5 rounded-full text-sm font-semibold whitespace-nowrap transition-colors snap-start ${' },
       { was: "on ? 'border-orange-500 text-slate-900' : 'border-transparent text-slate-600",
         reason: 'the active pill is filled dark; the inactive one is filled grey',
-        nowIn: 'app/manage/[token]/page.tsx',
+        nowIn: 'app/(app)/manage/[token]/page.tsx',
         now: "on ? 'bg-slate-900 text-white' : 'bg-slate-100 text-slate-700 hover:bg-slate-200'}`" },
       /* ── 🔴 THE SCHEDULE SETTINGS MODAL'S WIRING ─────────────────────────────────────────────── */
       { was: 'const URL_MALFORMED_MSG = "That doesn\'t look like a web address.',
@@ -2467,10 +2467,10 @@ function runWiringSuite(lib) {
        * actually added, named on its own. */
       { was: '<ScheduleTab isActive={activeTab === \'schedule\'}',
         reason: 'the mount threads the notices, onSwitchTab for the restored link, and onOpenSocial',
-        nowIn: 'app/manage/[token]/page.tsx', now: 'onOpenSocial={(sec, eventId) =>' },
+        nowIn: 'app/(app)/manage/[token]/page.tsx', now: 'onOpenSocial={(sec, eventId) =>' },
       { was: 'function ScheduleTab({ isActive, section, onSectionChange, truck, token',
         reason: 'the signature declares them',
-        nowIn: 'app/manage/[token]/page.tsx', now: 'onVerifySuccess, onSwitchTab, onOpenSocial, pendingVerifyEvents' },
+        nowIn: 'app/(app)/manage/[token]/page.tsx', now: 'onVerifySuccess, onSwitchTab, onOpenSocial, pendingVerifyEvents' },
       /* ⛔ THE CAPTION-LINK ENTRY IS RETIRED, NOT RE-AIMED. It excused that line going when the caption
        * became a card; the move was reversed and the line is back, byte for byte, so it is not lost
        * and there is nothing to excuse. An entry for a line that never leaves is a claim that can only
@@ -2527,26 +2527,26 @@ function runWiringSuite(lib) {
          * all, because the server sets the Private type itself through the one privacy writer. Sending
          * both would be two writers of one state, which is the bug §5 exists to close. */
         reason: 'create-only still; and a private event sends no type — the writer sets it',
-        nowIn: 'app/manage/[token]/page.tsx',
+        nowIn: 'app/(app)/manage/[token]/page.tsx',
         now: '...(editingEvent.id ? {} : { event_type_id: chosenPrivate ? null : eventTypeId }),' },
       /* 4-6 · the three setting names became shared constants — see `MOVED_TO_SERVICE_COPY` above,
        * which proves each one is still spelled identically in lib/copy/serviceSettings.ts. */
       { was: '<p className="text-sm font-semibold text-slate-800">Do you take cash?</p>',
         reason: 'the name is a shared constant now, read by three surfaces',
-        nowIn: 'app/manage/[token]/page.tsx',
+        nowIn: 'app/(app)/manage/[token]/page.tsx',
         now: '{SERVICE_SETTING_LABELS.takes_cash}</p>' },
       { was: 'Offline order protection',
         reason: 'the name is a shared constant now, read by three surfaces',
-        nowIn: 'app/manage/[token]/page.tsx',
+        nowIn: 'app/(app)/manage/[token]/page.tsx',
         now: '{SERVICE_SETTING_LABELS.offline_protection}' },
       { was: '<p className={`${SUBCARD_HEADING} mb-1`}>Collection times</p>',
         reason: 'the name is a shared constant now, read by three surfaces',
-        nowIn: 'app/manage/[token]/page.tsx',
+        nowIn: 'app/(app)/manage/[token]/page.tsx',
         now: '{SERVICE_SETTING_LABELS.collection_interval_mins}</p>' },
       /* the primitives import line gained `Toggle` when the switch moved there. */
       { was: 'import { Spinner, Badge, Btn, Input, Card, EmptyState,',
         reason: '`Toggle` moved to primitives, so the import names it',
-        nowIn: 'app/manage/[token]/page.tsx',
+        nowIn: 'app/(app)/manage/[token]/page.tsx',
         /* ⚠️ `Select` JOINED THE LIST ON 5 OCTOBER, between Toggle and AllergenToggles. The Add/Edit
          * event form's last three native `<select>`s (start/end hour and minute, Van) became the
          * shared non-native control, because WebKit renders a native one at 23px whatever its padding
@@ -2569,7 +2569,7 @@ function runWiringSuite(lib) {
        * ⚠️ `{vans.map(van => (` likewise: the options are a list prop now, asserted above. */
       { was: '{vans.map(van => (',
         reason: 'the van options are a list prop, not children — asserted above',
-        nowIn: 'app/manage/[token]/page.tsx',
+        nowIn: 'app/(app)/manage/[token]/page.tsx',
         now: 'vans.map(van => ({ value: van.id, label: van.name }))' },
 
       /* 🔴 AND THE ONE REAL WIDENING: `updateVanSetting`'s field union gained `takes_cash`, from the
@@ -2577,7 +2577,7 @@ function runWiringSuite(lib) {
        * type-checks — and it is what makes "Do you take cash?" a van setting rather than a truck one. */
       { was: "field: 'show_cooking_step' | 'auto_pause_on_offline' | 'order_ready_enabled' | 'kitchen_capacity' | 'capacity_window_mins' | 'buzzer_count' | 'offline_protection_mode' | 'offline_auto_reject_mins'",
         reason: '`takes_cash` joined the union — cash is a van setting now (20261012)',
-        nowIn: 'app/manage/[token]/page.tsx',
+        nowIn: 'app/(app)/manage/[token]/page.tsx',
         now: "'takes_cash'" },
 
       /* 1 · "Weekly post" BECAME "Social posts" — the label only. The id stays `weekly`, because the
@@ -2590,7 +2590,7 @@ function runWiringSuite(lib) {
        * `create`, which `resolveManageLocation` reads and this file asserts separately. */
       { was: "{ id: 'weekly', label: 'Weekly post' },",
         reason: 'the pill left Schedule entirely — social is its own tab, and `weekly` is a legacy URL',
-        nowIn: 'app/manage/[token]/page.tsx',
+        nowIn: 'app/(app)/manage/[token]/page.tsx',
         now: "{ id: 'create', label: 'Create a post' }," },
 
       /* 2 · THE SHARED TOGGLE'S KNOB gained the `compact` travel (18px instead of 24), because the
@@ -2605,19 +2605,19 @@ function runWiringSuite(lib) {
        * that omitted it published a wedding's address on any edit. There is one builder now. */
       { was: "type EditingEvent = { id?: string; venue_name: string;",
         reason: 'the form carries is_private and private_name, through ONE builder (§7)',
-        nowIn: 'app/manage/[token]/page.tsx',
+        nowIn: 'app/(app)/manage/[token]/page.tsx',
         now: 'is_private?: boolean; private_name?: string }' },
       { was: "setEditingEvent({ id: ev.id, venue_name: ev.venue_name,",
         reason: 'the fourth inline builder — the scraped-approval path — now uses editFormFor',
-        nowIn: 'app/manage/[token]/page.tsx',
+        nowIn: 'app/(app)/manage/[token]/page.tsx',
         now: 'const editFormFor = (event: TruckEvent): EditingEvent => ({' },
       { was: "<button onClick={() => { setFormErrors({}); setEditingEvent({ id: event.id,",
         reason: 'the Edit buttons call the one builder and seed the type pill',
-        nowIn: 'app/manage/[token]/page.tsx',
+        nowIn: 'app/(app)/manage/[token]/page.tsx',
         now: 'setEditingEvent(editFormFor(event)); seedTypePill(event)' },
       { was: "<button onClick={() => { setEditingEventConfirmOnSave(true); setFormErrors({}); setEditingEvent({ id: event.id,",
         reason: 'the two Edit & Approve buttons call the one builder too',
-        nowIn: 'app/manage/[token]/page.tsx',
+        nowIn: 'app/(app)/manage/[token]/page.tsx',
         now: 'setEditingEventConfirmOnSave(true); setFormErrors({}); setEditingEvent(editFormFor(event)); seedTypePill(event)' },
 
       /* 4 · THE FORM'S LAST THREE NATIVE SELECTS became the shared non-native control. ⛔ WebKit
@@ -2626,51 +2626,51 @@ function runWiringSuite(lib) {
        * are untouched — only the box changed. */
       { was: "aria-label={label ? `${label} hour` : 'Hour'}",
         reason: 'the hour box is the shared Select — WebKit renders a native one at 23px',
-        nowIn: 'app/manage/[token]/page.tsx',
+        nowIn: 'app/(app)/manage/[token]/page.tsx',
         now: "ariaLabel={label ? `${label} hour` : 'Hour'}" },
       { was: "aria-label={label ? `${label} minute` : 'Minute'}",
         reason: 'the minute box likewise',
-        nowIn: 'app/manage/[token]/page.tsx',
+        nowIn: 'app/(app)/manage/[token]/page.tsx',
         now: "ariaLabel={label ? `${label} minute` : 'Minute'}" },
       { was: 'onChange={e => onHour(e.target.value)}',
         reason: 'Select hands over the value, not the event',
-        nowIn: 'app/manage/[token]/page.tsx',
+        nowIn: 'app/(app)/manage/[token]/page.tsx',
         now: 'onChange={v => onHour(v)}' },
       { was: '<option value="">{placeholder}</option>',
         reason: 'the options are a list prop now',
-        nowIn: 'app/manage/[token]/page.tsx',
+        nowIn: 'app/(app)/manage/[token]/page.tsx',
         now: "{ value: '', label: placeholder ?? '--' }" },
       { was: '{hours.map(h => <option key={h} value={h}>{h}</option>)}',
         reason: 'the options are a list prop now',
-        nowIn: 'app/manage/[token]/page.tsx',
+        nowIn: 'app/(app)/manage/[token]/page.tsx',
         now: 'hours.map(h => ({ value: h, label: h }))' },
       { was: 'onChange={e => { if (curH) onChange(`${curH}:${e.target.value}`) }}',
         reason: 'Select hands over the value, not the event',
-        nowIn: 'app/manage/[token]/page.tsx',
+        nowIn: 'app/(app)/manage/[token]/page.tsx',
         now: 'onChange={v => { if (curH) onChange(`${curH}:${v}`) }}' },
       { was: '{!curH && <option value="">--</option>}',
         reason: 'the options are a list prop now',
-        nowIn: 'app/manage/[token]/page.tsx',
+        nowIn: 'app/(app)/manage/[token]/page.tsx',
         now: "...(!curH ? [{ value: '', label: '--' }] : [])" },
       { was: '{minuteOptions.map(m => <option key={m} value={m}>{m}</option>)}',
         reason: 'the options are a list prop now',
-        nowIn: 'app/manage/[token]/page.tsx',
+        nowIn: 'app/(app)/manage/[token]/page.tsx',
         now: 'minuteOptions.map(m => ({ value: m, label: m }))' },
       { was: '<option value="">Select a van</option>',
         reason: 'the van box is the shared Select too',
-        nowIn: 'app/manage/[token]/page.tsx',
+        nowIn: 'app/(app)/manage/[token]/page.tsx',
         now: "{ value: '', label: 'Select a van' }" },
       { was: '<option key={van.id} value={van.id}>{van.name}</option>',
         reason: 'the van options are a list prop now',
-        nowIn: 'app/manage/[token]/page.tsx',
+        nowIn: 'app/(app)/manage/[token]/page.tsx',
         now: 'vans.map(van => ({ value: van.id, label: van.name }))' },
       { was: 'onChange={e => { setEditingEvent(p => ({ ...p!, van_id: e.target.value || null })); if (formErrors.van_id)',
         reason: 'Select hands over the value, not the event',
-        nowIn: 'app/manage/[token]/page.tsx',
+        nowIn: 'app/(app)/manage/[token]/page.tsx',
         now: 'onChange={v => { setEditingEvent(p => ({ ...p!, van_id: v || null }));' },
       { was: 'className={`w-full border rounded-xl px-3 py-2 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-orange-400 bg-white ${formErrors.van_id',
         reason: 'Select owns the box styling; only the error state is passed through className',
-        nowIn: 'app/manage/[token]/page.tsx',
+        nowIn: 'app/(app)/manage/[token]/page.tsx',
         now: "className={`w-full ${formErrors.van_id ? 'border-red-400 bg-red-50' : ''}`}" },
 
       /* ══ ⛔ THE SECTION VOCABULARY LEFT THIS FILE ENTIRELY (6 October 2026) ═════════════════════
@@ -2687,25 +2687,25 @@ function runWiringSuite(lib) {
        * on a line break, not on a missing import. One type per entry survives a reflow. */
       { was: "type ScheduleSection = 'events' | 'weekly'",
         reason: 'the type is declared in lib/manage-links.ts now and imported — one definition',
-        nowIn: 'app/manage/[token]/page.tsx',
+        nowIn: 'app/(app)/manage/[token]/page.tsx',
         now: "  type ScheduleSection,\n} from '@/lib/manage-links'" },
       { was: "v === 'events' || v === 'weekly'",
         reason: 'the guard reads the ONE map, so a pill the map does not know is a pill no link reaches',
-        nowIn: 'app/manage/[token]/page.tsx',
+        nowIn: 'app/(app)/manage/[token]/page.tsx',
         now: "canonicalScheduleSection(v) !== null" },
       /* ⚠️ THIS MOUNT HAS CHANGED THREE TIMES. The capacity pointer prop went; a Schedule settings one
        * arrived; then that one went too when the move was reversed, and `notices` arrived. What is
        * claimed is the prop that is there. */
       { was: "{activeTab === 'settings'  && <SettingsTab",
         reason: 'the capacity and schedule-settings pointers both went; `notices` arrived',
-        nowIn: 'app/manage/[token]/page.tsx', now: 'onOpenWalkthrough={openWalkthrough} notices={notices}' },
+        nowIn: 'app/(app)/manage/[token]/page.tsx', now: 'onOpenWalkthrough={openWalkthrough} notices={notices}' },
       { was: 'function SettingsTab({ userRole, truck, whatsappConnection',
         /* ⚠️ THIS ENTRY HAS NOW CHANGED THREE TIMES, and each time the companion check below was what
          * said so. The latest: on 4 October the signature gained `notices`, because the page's seven
          * notification banners render BELOW this tab's sticky bar rather than above it — the bar has to
          * be the first child of the padded wrapper or it cannot sit flush. */
         reason: 'the capacity prop left; the Schedule settings one joined it; then `notices` did',
-        nowIn: 'app/manage/[token]/page.tsx', now: ', onOpenWalkthrough, notices }: {' },
+        nowIn: 'app/(app)/manage/[token]/page.tsx', now: ', onOpenWalkthrough, notices }: {' },
       /* 3 · `mt-3` WAS A RELATIONSHIP TO THE CARD ABOVE IT, and there is no card above it any more.
        * The capacity card was the last sub-card inside a van's Kitchen panel; it is now the first
        * thing on its own screen, where a top margin would be a stray gap. */
@@ -2744,7 +2744,7 @@ function runWiringSuite(lib) {
        * list. Two more are the Places spinner fix and the private preview card. */
       { was: '{SCHEDULE_SECTIONS.map(sec => (',
         reason: 'the pill row renders only the sections this truck may see',
-        nowIn: 'app/manage/[token]/page.tsx',
+        nowIn: 'app/(app)/manage/[token]/page.tsx',
         now: '{visibleSections.map(sec => (' },
       /* ══ 🔴 RE-CLAIMED 6 October 2026 — AND THIS GUARD IS WHAT CAUGHT IT ═══════════════════════
        * The replacement was `shownSection === sec.id`, and it was WRONG: three pills, four sections,
@@ -2756,33 +2756,33 @@ function runWiringSuite(lib) {
        * its own claims would have gone on excusing a line that had been replaced twice. */
       { was: '<button key={sec.id} role="tab" aria-selected={section === sec.id}',
         reason: 'the section\'s PILL decides which one is lit — Designs lights Social posts',
-        nowIn: 'app/manage/[token]/page.tsx',
+        nowIn: 'app/(app)/manage/[token]/page.tsx',
         now: '<button key={sec.id} role="tab" aria-selected={litPill === sec.id}' },
       { was: 'className={subtabBtn(section === sec.id)}>',
         reason: 'ditto, for the pill\'s own styling',
-        nowIn: 'app/manage/[token]/page.tsx',
+        nowIn: 'app/(app)/manage/[token]/page.tsx',
         now: 'className={subtabBtn(litPill === sec.id)}>' },
       { was: "{isActive && section === 'events' && (",
         reason: 'the Events pane renders for a gated section too, which is what "lands on Events" means',
-        nowIn: 'app/manage/[token]/page.tsx',
+        nowIn: 'app/(app)/manage/[token]/page.tsx',
         now: "{isActive && shownSection === 'events' && (" },
       /* ⛔ THE PLACES SPINNER. `api` was a plain function, so it was a NEW reference on every render;
        * the load effect had it in its deps and re-ran forever, and the cleanup flag stranded `places`
        * at null — an endless spinner with no other state to fall back to. */
       { was: 'const api = async (action: string, extra: Record<string, any> = {}) => {',
         reason: 'wrapped in useCallback: an unstable `api` re-ran the Places load effect forever',
-        nowIn: 'app/manage/[token]/page.tsx',
+        nowIn: 'app/(app)/manage/[token]/page.tsx',
         now: 'const api = useCallback(async (action: string, extra: Record<string, any> = {}) => {' },
       /* 🔴 THE PRIVATE PREVIEW CARD. A private event's venue, town and postcode are never published,
        * so the preview shows a lock, "Private event" in purple, the date, the times and the van — and
        * the line under it changed from "Filled from …" to a sentence that says where the venue went. */
       { was: '{!editingEvent.id && editingEvent.truck_place_id && (',
         reason: 'the line under the preview is now one of two, because the preview is one of two',
-        nowIn: 'app/manage/[token]/page.tsx',
+        nowIn: 'app/(app)/manage/[token]/page.tsx',
         now: ': !editingEvent.id && editingEvent.truck_place_id ? (' },
       { was: "import { previewEventFromForm, previewLine, vanForPlace } from '@/lib/schedule-graphics/event-preview'",
         reason: 'the private card needs `PREVIEW_PLACEHOLDERS.date` for an unfilled date',
-        nowIn: 'app/manage/[token]/page.tsx',
+        nowIn: 'app/(app)/manage/[token]/page.tsx',
         now: "import { previewEventFromForm, previewLine, vanForPlace, PREVIEW_PLACEHOLDERS } from '@/lib/schedule-graphics/event-preview'" },
 
       /* ══ 🔴 THE TWO `?tab=billing` LITERALS WENT THROUGH THE ONE LINK BUILDER (5 October 2026) ═════
@@ -2804,7 +2804,7 @@ function runWiringSuite(lib) {
        * ⚠️ EVERY ONE CARRIES ITS NEW FORM, so "I edited this on purpose" is a claim with a test. */
       { was: 'WeeklyPostPane, TidyUpPlaces, PlaceList, usePlaces, type Place as SgPlaceRow,',
         reason: '`WeeklyPostPane` moved to SocialPosts.tsx with the gate; the other three stay',
-        nowIn: 'app/manage/[token]/page.tsx',
+        nowIn: 'app/(app)/manage/[token]/page.tsx',
         now: 'TidyUpPlaces, PlaceList, usePlaces, type Place as SgPlaceRow,' },
       /* ── THE SECTION GUARD IS NOW ONE CALL INTO THE SHARED MAP, so these three lines all became one
        * expression. They are listed separately because `git diff` reports them separately.
@@ -2815,11 +2815,11 @@ function runWiringSuite(lib) {
        * social ones, and the branch is driven by `resolveManageLocation`. */
       { was: 'const isScheduleSection = (v: unknown): v is ScheduleSection =>',
         reason: 'the guard reads the shared map; the legacy ids belong to the SOCIAL guard beside it',
-        nowIn: 'app/manage/[token]/page.tsx',
+        nowIn: 'app/(app)/manage/[token]/page.tsx',
         now: 'const isSocialSection = (v: unknown): v is SocialSection => canonicalSocialSection(v) !== null' },
       { was: 'if (isScheduleSection(sectionParam)) {',
         reason: 'a legacy id now changes the TAB as well, so one resolver answers at the URL',
-        nowIn: 'app/manage/[token]/page.tsx',
+        nowIn: 'app/(app)/manage/[token]/page.tsx',
         now: 'const moved = resolveManageLocation(tabParam, sectionParam)' },
       /* ══ 🔴 'social' JOINED THE TAB LIST — THREE LINES, ONE CHANGE (7 October 2026) ═══════════════
        * The union, the runtime id list that decides whether a `?tab=` was recognised, and the
@@ -2828,101 +2828,101 @@ function runWiringSuite(lib) {
        * dependency leaves the URL showing whatever pill was open when the tab was last rendered. */
       { was: "type Tab = 'menu' | 'reports' | 'schedule' | 'team' | 'settings' | 'payments' | 'billing'",
         reason: "the 'social' tab was added",
-        nowIn: 'app/manage/[token]/page.tsx',
+        nowIn: 'app/(app)/manage/[token]/page.tsx',
         // ⚠️ RE-PINNED (paperwork-1, 4 November 2026): 'paperwork' (the Documents tab) joined after 'schedule' — scripts/paperwork-1.cjs §12.
         now: "type Tab = 'menu' | 'reports' | 'schedule' | 'paperwork' | 'social' | 'team' | 'settings' | 'payments' | 'billing'" },
       { was: "const allTabIds: Tab[] = ['menu', 'reports', 'schedule', 'team', 'settings', 'payments', 'billing']",
         reason: "…and the runtime list that decides a `?tab=` was recognised got it too",
-        nowIn: 'app/manage/[token]/page.tsx',
+        nowIn: 'app/(app)/manage/[token]/page.tsx',
         now: "const allTabIds: Tab[] = ['menu', 'reports', 'schedule', 'paperwork', 'social', 'team', 'settings', 'payments', 'billing']" },
       { was: '}, [activeTab, scheduleSection, menuSection])',
         reason: "…and the section write-back now depends on social's pill as well",
-        nowIn: 'app/manage/[token]/page.tsx',
+        nowIn: 'app/(app)/manage/[token]/page.tsx',
         now: '}, [activeTab, scheduleSection, socialSection, menuSection])' },
       { was: 'setScheduleSection(sectionParam)',
         reason: 'the canonical section is stored, never the raw one',
-        nowIn: 'app/manage/[token]/page.tsx',
+        nowIn: 'app/(app)/manage/[token]/page.tsx',
         now: 'setScheduleSection(canonicalScheduleSection(sectionParam)!)' },
       /* ── THE VENUE SUGGESTIONS ARE PLACES NOW. The old list was ten de-duplicated `venue_name`s from
        * past events; it survives as a second group under "From your schedule", which is why
        * `filteredVenueSuggestions` is still read — the CONDITION and the WRAPPER changed. */
       { was: '{showVenueSuggestions && filteredVenueSuggestions.length > 0 && (',
         reason: 'the dropdown opens for places, for the hidden group, or for the old list',
-        nowIn: 'app/manage/[token]/page.tsx',
+        nowIn: 'app/(app)/manage/[token]/page.tsx',
         now: '{showVenueSuggestions && (placeSuggestions.live.length > 0 || hiddenShown || filteredVenueSuggestions.length > 0) && (' },
       { was: '<div className="absolute top-full left-0 right-0 mt-1 bg-white border border-slate-200 rounded-xl shadow-lg z-20 max-h-48 overflow-y-auto">',
         reason: 'it gained `data-venue-suggestions` and a taller cap — three groups, not one list',
-        nowIn: 'app/manage/[token]/page.tsx',
+        nowIn: 'app/(app)/manage/[token]/page.tsx',
         now: 'data-venue-suggestions' },
       /* ══ 🔴 COUNTRY SETTINGS (10 October 2026) — every price in Billing and the van add-on now comes
        * from the truck's own country_settings row; the raw £29/£49 literals and VAN_ADDON_PRICE are
        * gone. Proved byte-identical for GB by scripts/country-settings-parity.cjs. */
       { was: 'import { PLAN_META, canAccess, maxVans } from \'@/lib/features\'',
         reason: 'planMonthlyMinor joined the import — plan prices come from the truck\'s country settings',
-        nowIn: 'app/manage/[token]/page.tsx',
+        nowIn: 'app/(app)/manage/[token]/page.tsx',
         now: 'import { PLAN_META, canAccess, maxVans, planMonthlyMinor } from \'@/lib/features\'' },
       { was: 'import { PLAN_PRICES, PLAN_DESCRIPTIONS, TRANSACTION_ROWS, FEATURE_SECTIONS, FOOTNOTES } from \'@/lib/plan-features\'',
         reason: 'the price constants became functions of the settings (and, Language Phase 0, the line gained the row-id names; ⚠️ RE-PINNED (Language Phase 1e): Billing reads the rows, descriptions and price words in the truck\'s locale — planDescriptions / featureSections / priceText — proven by scripts/language-phase-1e.cjs\'s Billing views)',
-        nowIn: 'app/manage/[token]/page.tsx',
+        nowIn: 'app/(app)/manage/[token]/page.tsx',
         now: 'import { planPrices, planDescriptions, transactionRows, FEATURE_SECTIONS, featureSections, footnotes, priceText, vanAddonMonthlyMinor, PAY_AT_HATCH_ROW, type PlanRowId } from \'@/lib/plan-features\'' },
       { was: 'const VAN_ADDON_PRICE: Record<string, number> = { starter: 0, pro: 29, max: 49, trial: 0 }',
         reason: 'the raw-pounds van map is DELETED; an extra van costs the plan\'s monthly price from settings',
-        nowIn: 'app/manage/[token]/page.tsx',
+        nowIn: 'app/(app)/manage/[token]/page.tsx',
         now: 'const vanAddonMinor = vanAddonMonthlyMinor(truck.plan, vanSettings)' },
       { was: 'const addonPrice = VAN_ADDON_PRICE[truck.plan] ?? 0',
         reason: '…read from the settings-derived minor amount',
-        nowIn: 'app/manage/[token]/page.tsx',
+        nowIn: 'app/(app)/manage/[token]/page.tsx',
         now: 'const addonPrice = vanAddonMinor' },
       { was: '<strong>{vanPx(`£${VAN_ADDON_PRICE[truck.plan]}/month`)}</strong>{\' \'}',
         reason: '…and labelled by the formatter, still through vanPx',
-        nowIn: 'app/manage/[token]/page.tsx',
+        nowIn: 'app/(app)/manage/[token]/page.tsx',
         now: '<strong>{vanPx(vanAddonLabel(\'month\'))}</strong>' },
       { was: 'Add truck — {vanPx(`£${VAN_ADDON_PRICE[truck.plan]}/mo`)}',
         reason: '…both labels',
-        nowIn: 'app/manage/[token]/page.tsx',
+        nowIn: 'app/(app)/manage/[token]/page.tsx',
         now: 'Add truck — {vanPx(vanAddonLabel(\'mo\'))}' },
       { was: '}`}>{px(p === \'trial\' ? \'Free\' : PLAN_PRICES[p])}</p>',
         reason: 'Billing\'s column price from the truck\'s settings, still through px (Language Phase 0: the trial word is PRICE_WORD.free)',
-        nowIn: 'app/manage/[token]/page.tsx',
+        nowIn: 'app/(app)/manage/[token]/page.tsx',
         now: '{px(p === \'trial\' ? PRICE_WORD.free : prices[p])}' },
       { was: '{TRANSACTION_ROWS.map(row => (',
         reason: 'the fee rows from transactionRows(settings)',
-        nowIn: 'app/manage/[token]/page.tsx',
+        nowIn: 'app/(app)/manage/[token]/page.tsx',
         now: '{feeRows.map(row => (' },
       { was: '{FOOTNOTES.map(f => (',
         reason: 'the footnotes from footnotes(settings) — numbering and the \'2\' mask unchanged',
-        nowIn: 'app/manage/[token]/page.tsx',
+        nowIn: 'app/(app)/manage/[token]/page.tsx',
         now: '{notes.map(f => (' },
       { was: '<p className="text-sm text-slate-700 mt-0.5">{px(PLAN_PRICES[currentPlan])}</p>',
         reason: 'the current plan\'s price from settings',
-        nowIn: 'app/manage/[token]/page.tsx',
+        nowIn: 'app/(app)/manage/[token]/page.tsx',
         now: '<p className="text-sm text-slate-700 mt-0.5">{px(prices[currentPlan])}</p>' },
       { was: 'Upgrade to Max — {px(\'£49/mo\')}',
         reason: 'raw £49 literal removed',
-        nowIn: 'app/manage/[token]/page.tsx',
+        nowIn: 'app/(app)/manage/[token]/page.tsx',
         now: 'Upgrade to Max — {px(maxMo)}' },
       { was: 'Choose Pro — {px(\'£29/mo\')}',
         reason: 'raw £29 literal removed',
-        nowIn: 'app/manage/[token]/page.tsx',
+        nowIn: 'app/(app)/manage/[token]/page.tsx',
         now: 'Choose Pro — {px(proMo)}' },
       { was: 'Pro — {px(\'£29/mo\')}',
         reason: 'raw £29 literal removed',
-        nowIn: 'app/manage/[token]/page.tsx',
+        nowIn: 'app/(app)/manage/[token]/page.tsx',
         now: 'Pro — {px(proMo)}' },
       { was: 'Max — {px(\'£49/mo\')}',
         reason: 'raw £49 literal removed',
-        nowIn: 'app/manage/[token]/page.tsx',
+        nowIn: 'app/(app)/manage/[token]/page.tsx',
         now: 'Max — {px(maxMo)}' },
       { was: '{px(plan === \'pro\' ? \'£29/mo\' : \'£49/mo\')} per truck · renews automatically',
         reason: 'raw literals removed',
-        nowIn: 'app/manage/[token]/page.tsx',
+        nowIn: 'app/(app)/manage/[token]/page.tsx',
         now: '{px(plan === \'pro\' ? proMo : maxMo)} per truck · renews automatically' },
       // ⚠️ RE-PINNED (Language Phase 1d Part 2): the upgrade modal's tagline / mail body are ONE message each now
       // (manageBilling.upgradeModal.tagline "{price} — {description}", mailBody "…({price})…"), the price still the
       // settings value through px() — the claim (no raw £ literal; the price from settings) is asserted on that call.
       { was: '? `${px(\'£49/month\')} — High-volume operations & festivals`',
         reason: 'raw literal removed',
-        nowIn: 'app/manage/[token]/page.tsx',
+        nowIn: 'app/(app)/manage/[token]/page.tsx',
         // ⚠️ RE-PINNED (Language Phase 1e): the description is the truck's-locale `descriptions` (planDescriptions(cs.locale)).
         now: "price: px(upgradeTarget === 'max' ? maxMonth : proMonth), description: descriptions[upgradeTarget]" },
       // ⚠️ RE-PINNED (Language Phase 1d Part 2): the upgrade modal's tagline / mail body are ONE message each now
@@ -2930,7 +2930,7 @@ function runWiringSuite(lib) {
       // settings value through px() — the claim (no raw £ literal; the price from settings) is asserted on that call.
       { was: ': `${px(\'£29/month\')} — Busy trucks scaling pre-orders`',
         reason: 'raw literal removed',
-        nowIn: 'app/manage/[token]/page.tsx',
+        nowIn: 'app/(app)/manage/[token]/page.tsx',
         // ⚠️ RE-PINNED (Language Phase 1e): the description is the truck's-locale `descriptions` (planDescriptions(cs.locale)).
         now: "price: px(upgradeTarget === 'max' ? maxMonth : proMonth), description: descriptions[upgradeTarget]" },
       // ⚠️ RE-PINNED (Language Phase 1d Part 2): the upgrade modal's tagline / mail body are ONE message each now
@@ -2938,49 +2938,49 @@ function runWiringSuite(lib) {
       // settings value through px() — the claim (no raw £ literal; the price from settings) is asserted on that call.
       { was: '`Max (${px(\'£49/mo\')})` : `Pro (${px(\'£29/mo\')})`',
         reason: 'the mailto body\'s two literals removed',
-        nowIn: 'app/manage/[token]/page.tsx',
+        nowIn: 'app/(app)/manage/[token]/page.tsx',
         now: "price: px(upgradeTarget === 'max' ? maxMo : proMo) })" },
       /* Phase 2A — Reports' item rows now carry their ORDER's money format (its own currency). */
       { was: 'channel?: string; name: string; qty: number; total: number | null }',
         reason: 'money sweep: each Reports row carries its order\'s format',
-        nowIn: 'app/manage/[token]/page.tsx',
+        nowIn: 'app/(app)/manage/[token]/page.tsx',
         now: 'channel?: string; name: string; qty: number; total: number | null\n' },
       { was: "name: `🎁 ${d.name}`, qty: 0, total: d.price || 0 })",
         reason: 'money sweep: each Reports row carries its order\'s format',
-        nowIn: 'app/manage/[token]/page.tsx',
+        nowIn: 'app/(app)/manage/[token]/page.tsx',
         now: "name: `🎁 ${d.name}`, qty: 0, total: d.price || 0, fmt: orderFormat(o, truckFmt) })" },
       { was: 'total: (item.unit_price || 0) * (item.quantity || 1) })',
         reason: 'money sweep: each Reports row carries its order\'s format',
-        nowIn: 'app/manage/[token]/page.tsx',
+        nowIn: 'app/(app)/manage/[token]/page.tsx',
         now: 'total: (item.unit_price || 0) * (item.quantity || 1), fmt: orderFormat(o, truckFmt) })' },
       /* ══ ⚠️ RE-PINNED (Language Phase 1d): THE PHASE'S OWN CODE EDITS — lines it changed in a hunk that reads no
        * message (so `p1dMoved` below does not account them), each named with its NEW form, as every build above. ══ */
-      { was: 'suffix?: string', nowIn: 'app/manage/[token]/page.tsx', now: 'sentence?: (control: React.ReactNode) => React.ReactNode',
+      { was: 'suffix?: string', nowIn: 'app/(app)/manage/[token]/page.tsx', now: 'sentence?: (control: React.ReactNode) => React.ReactNode',
         reason: 'the settings review: a control inside a sentence is one message with the control as a tag, not prefix + suffix' },
-      { was: '{item.secondary && item.secondary.visible && (', nowIn: 'app/manage/[token]/page.tsx', now: '{item.secondary && item.secondary.visible && (() => {',
+      { was: '{item.secondary && item.secondary.visible && (', nowIn: 'app/(app)/manage/[token]/page.tsx', now: '{item.secondary && item.secondary.visible && (() => {',
         reason: 'the secondary control is built once and placed inside its sentence, or after its label' },
-      { was: '<span className="text-xs text-slate-600">{item.secondary.label}</span>', nowIn: 'app/manage/[token]/page.tsx',
+      { was: '<span className="text-xs text-slate-600">{item.secondary.label}</span>', nowIn: 'app/(app)/manage/[token]/page.tsx',
         now: ': <><span className="text-xs text-slate-600">{sec.label}</span>{control}</>}', reason: 'the label branch of the same row' },
-      { was: '{item.secondary.options.map(o => <option key={o.value} value={o.value}>{o.label}</option>)}', nowIn: 'app/manage/[token]/page.tsx',
+      { was: '{item.secondary.options.map(o => <option key={o.value} value={o.value}>{o.label}</option>)}', nowIn: 'app/(app)/manage/[token]/page.tsx',
         now: '{sec.options.map(o => <option key={o.value} value={o.value}>{o.label}</option>)}', reason: 'the same options, read off `sec`' },
-      { was: '{item.secondary.suffix && <span className="text-xs text-slate-600">{item.secondary.suffix}</span>}', nowIn: 'app/manage/[token]/page.tsx',
+      { was: '{item.secondary.suffix && <span className="text-xs text-slate-600">{item.secondary.suffix}</span>}', nowIn: 'app/(app)/manage/[token]/page.tsx',
         now: '? <span className="text-xs text-slate-600">{sec.sentence(control)}</span>', reason: 'the suffix is the rest of the one sentence' },
-      { was: "<span className=\"text-xs text-slate-400\">{[bundle.start_time, bundle.end_time].filter(Boolean).join(' – ')}</span>", nowIn: 'app/manage/[token]/page.tsx',
+      { was: "<span className=\"text-xs text-slate-400\">{[bundle.start_time, bundle.end_time].filter(Boolean).join(' – ')}</span>", nowIn: 'app/(app)/manage/[token]/page.tsx',
         now: "{[formatSlot(bundle.start_time, ts), formatSlot(bundle.end_time, ts)].filter(Boolean).join(' – ')}", reason: "a deal's hours in the truck's clock" },
-      { was: "const [importModalTitle, setImportModalTitle] = useState('Import schedule')", nowIn: 'app/manage/[token]/page.tsx',
+      { was: "const [importModalTitle, setImportModalTitle] = useState('Import schedule')", nowIn: 'app/(app)/manage/[token]/page.tsx',
         now: "const [importModalTitle, setImportModalTitle] = useState<'import' | 'found'>('import')", reason: 'the title is a code set in an effect; the render supplies the words' },
-      { was: "setImportModalTitle('Import schedule')", nowIn: 'app/manage/[token]/page.tsx', now: "setImportModalTitle('import')", reason: 'the same code' },
-      { was: '? previewEventFromForm({ form: editingEvent, truckName: truck.name, vanName: previewVanName })', nowIn: 'app/manage/[token]/page.tsx',
+      { was: "setImportModalTitle('Import schedule')", nowIn: 'app/(app)/manage/[token]/page.tsx', now: "setImportModalTitle('import')", reason: 'the same code' },
+      { was: '? previewEventFromForm({ form: editingEvent, truckName: truck.name, vanName: previewVanName })', nowIn: 'app/(app)/manage/[token]/page.tsx',
         /* ⚠️ RE-PINNED (address-formats-1, 21 Oct 2026): + the truck's address format, so the preview card writes its area line the saved card's way (GB/US identical, scripts/address-formats-1.cjs §3) */ now: '? previewEventFromForm({ form: editingEvent, truckName: truck.name, vanName: previewVanName, words: previewWords, addressFormat: tabSettings.addressFormat })', reason: "the preview's placeholder words from manageScheduleEvent" },
-      { was: 'form: editingEvent, vanName: previewVanName,', nowIn: 'app/manage/[token]/page.tsx', now: 'form: editingEvent, vanName: previewVanName, words: previewWords,',
+      { was: 'form: editingEvent, vanName: previewVanName,', nowIn: 'app/(app)/manage/[token]/page.tsx', now: 'form: editingEvent, vanName: previewVanName, words: previewWords,',
         reason: "the one-line preview's placeholder words likewise" },
       /* `getMissingLabel` had no caller — removed, not moved; the page records it where it stood. */
       ...['const getMissingLabel = (ev: any) => {', "if (!ev.event_date) return 'Add date'", "if (!ev.venue_name) return 'Add venue'",
-        "if (!ev.start_time) return 'Add start time'", "if (!ev.end_time) return 'Add end time'", "return ''"].map(was => ({ was, nowIn: 'app/manage/[token]/page.tsx',
+        "if (!ev.start_time) return 'Add start time'", "if (!ev.end_time) return 'Add end time'", "return ''"].map(was => ({ was, nowIn: 'app/(app)/manage/[token]/page.tsx',
         now: '`getMissingLabel` WAS HERE, UNUSED — nothing called it. Removed with Language Phase 1d rather than moved.', reason: 'dead code, removed' })),
-      { was: "<p className=\"text-xs text-slate-400\">{ev.event_date}{ev.town ? ` · ${ev.town}` : ''}</p>", nowIn: 'app/manage/[token]/page.tsx',
+      { was: "<p className=\"text-xs text-slate-400\">{ev.event_date}{ev.town ? ` · ${ev.town}` : ''}</p>", nowIn: 'app/(app)/manage/[token]/page.tsx',
         now: '{parseDDMMYYYY(ev.event_date) ? formatNumericDate(parseDDMMYYYY(ev.event_date), ts) : ev.event_date}{ev.town ?', reason: "the importer's DD/MM/YYYY through the truck's date order — GB reads as before" },
-      { was: '{FOOD_EMOJI_CATEGORIES.map(({ label, emojis }) => (', nowIn: 'app/manage/[token]/page.tsx', now: '{FOOD_EMOJI_CATEGORIES.map(({ label, emojis }, i) => (',
+      { was: '{FOOD_EMOJI_CATEGORIES.map(({ label, emojis }) => (', nowIn: 'app/(app)/manage/[token]/page.tsx', now: '{FOOD_EMOJI_CATEGORIES.map(({ label, emojis }, i) => (',
         reason: "the category's words by position, from emojiPicker.categories" },
       /* the verify messages that moved into lib/copy/scheduleVerify.ts on 4 October are `manageScheduleVerify` messages now —
        * each claimed in messages/en-GB.json, in its GB-fixed spelling (curly apostrophes; scripts/fixtures/language-phase-1d-gb-named.json) */
@@ -2994,7 +2994,7 @@ function runWiringSuite(lib) {
      * message (a translator kept in a ref, a code instead of a sentence, a renamed loop variable), each named with its NEW
      * form, as every build above. Each is proven elsewhere: the rendered shell / Billing / Reports / WhatsApp views are
      * byte-identical in GB (scripts/language-phase-1d2.cjs, F === BEFORE except the named changes). ══ */
-    const PAGE_F = 'app/manage/[token]/page.tsx'
+    const PAGE_F = 'app/(app)/manage/[token]/page.tsx'
     /* ══ ⚠️ RE-PINNED (Language Phase 1e): PHASE 1e'S OWN EDITS TO BILLING — the plan rows, plan descriptions and price words
      * are read BY ID in the truck's locale (lib/plan-features.ts featureSections / planDescriptions / priceText), React keys
      * are the row/section ids, and the App Store badge takes the truck's country. Each NEW form named exactly; proven by
@@ -3379,11 +3379,13 @@ function runWiringSuite(lib) {
      * — so a hunk that only deleted code is still a loss — or it is an `import` line of that diff. The words
      * themselves are proven by scripts/language-phase-1d.cjs (rendered before vs after) and messages-parity. */
     const p1dMoved = new Map()
-    for (const f of ['app/manage/[token]/page.tsx', ...MOVED_INTO]) {
+    for (const f of ['app/(app)/manage/[token]/page.tsx', ...MOVED_INTO]) {
       // the translators this file declares (`const tE = useT('manageScheduleEvent')`, `= translatorFor(…)`), and `gb(` reads
       const names = [...new Set([...read(f).matchAll(/const (\w+) = (?:useT|translatorFor)\(/g)].map(m => m[1]))]
       const P1D_READ = new RegExp(`\\b(?:${[...names, 'gb', 'gbSetting'].join('|')})(?:\\.rich)?\\(|\\b\\w*[wW]ords\\.\\w+`)
-      const diff = require('child_process').execFileSync('git', ['diff', '-U0', '756ca09', '--', f],
+      // ⚠️ RE-PINNED (cwv-2, 6 November 2026, docs/cwv-2-report.md §6): the file's name at 756ca09 AND now, with rename detection — the
+      // same hunks as before the route move, nothing for the move itself.
+      const diff = require('child_process').execFileSync('git', ['diff', '-M', '-U0', '756ca09', '--', ...new Set([require('./_moved-paths.cjs').beforePath(f), f])],
         { cwd: REPO, encoding: 'utf8', maxBuffer: 64e6 })
       for (const hunk of diff.split(/\n(?=@@ )/).slice(1)) {
         const body = hunk.split('\n').slice(1)
@@ -3407,7 +3409,9 @@ function runWiringSuite(lib) {
     const STAGE_A_PLAN = /\btruck\??\.plan\b|\bcanAccess\(|FeatureGate|[Uu]pgrade|showMatrix|currentPlan|billingPlans|INCLUDED_VANS|\bplanCatalog\b|PlanCatalog|onTrialPlan|effectivePlan|extraVanMonthlyMinor|truckPlanPrice|planPriceFor|publicPlans|switchedOff|notOnPlan|isRowComingSoon|vanAddon|addonPrice|PLAN_META|maxVans|planMonthlyMinor|planPrices|pricesVisible|showTrialColumn|legacyBillingColumns|\b(starter|pro|max|trial)\b/
     const stageAMoved = new Map()
     {
-      const diff = require('child_process').execFileSync('git', ['diff', '-U0', 'c6c44c9e', '--', 'app/manage/[token]/page.tsx'],
+      // ⚠️ RE-PINNED (cwv-2, 6 November 2026, docs/cwv-2-report.md §6): the page moved to app/(app); naming both its name at c6c44c9e and
+      // its name now, with rename detection, gives the same hunks the diff gave before the move (and nothing for the move itself).
+      const diff = require('child_process').execFileSync('git', ['diff', '-M', '-U0', 'c6c44c9e', '--', 'app/manage/[token]/page.tsx', 'app/(app)/manage/[token]/page.tsx'],
         { cwd: REPO, encoding: 'utf8', maxBuffer: 64e6 })
       for (const hunk of diff.split(/\n(?=@@ )/).slice(1)) {
         const body = hunk.split('\n').slice(1)
@@ -3443,7 +3447,7 @@ function runWiringSuite(lib) {
       add(gbWords('manageBilling.upgradeModal.email') === 'Email us to switch', ['Email us to upgrade'])
     }
     const stageAHolds = (() => {
-      const code = blockStrip(read('app/manage/[token]/page.tsx')).join('\n') // as written (RAWP resolves `t()` to words)
+      const code = blockStrip(read('app/(app)/manage/[token]/page.tsx')).join('\n') // as written (RAWP resolves `t()` to words)
       return /const \[planCatalog, setPlanCatalog\] = useState<PlanCatalog \| null>\(null\)/.test(code)
         && /if \(!planCatalog\) return \(/.test(code)
         && /<PlanCatalogProvider catalog=\{planCatalog\}>/.test(code)
@@ -3464,7 +3468,7 @@ function runWiringSuite(lib) {
      * fetch's two lines, which Stage B rewrote so a non-auth failure shows its reason (manageShell.loadFailedReason).
      * One excuse each (a multiset), granted only while `stageBHolds` (the new forms, asserted just below). */
     const stageBHolds = (() => {
-      const code = blockStrip(read('app/manage/[token]/page.tsx')).join('\n')
+      const code = blockStrip(read('app/(app)/manage/[token]/page.tsx')).join('\n')
       // ⚠️ RE-PINNED (pricing-tidy, 20 October 2026): the import also names `planTableNotes` (the row footnotes).
       return code.includes(BILLING_TABLE_NOW) && /import \{ PlanTable, planTableNotes \} from '@\/components\/pricing\/PlanTable'/.test(code)
         && !/legacy-pricing-display|featureSections\(|transactionRows\(|legacyBillingColumns/.test(code)
@@ -3497,7 +3501,7 @@ function runWiringSuite(lib) {
       [': TRIAL_NOT_STARTED_HEADING}', 1],
     ])
     const tidyHolds = (() => {
-      const code = blockStrip(read('app/manage/[token]/page.tsx')).join('\n')
+      const code = blockStrip(read('app/(app)/manage/[token]/page.tsx')).join('\n')
       return code.includes("? t('yourTrialEnds', { date: formatDate(truck.trial_expires_at) })")
         && code.includes(": t('notStarted.heading')}") && code.includes('{truck.trial_expires_at && (')
         && !/notStarted\.body/.test(code)
@@ -3718,7 +3722,7 @@ function runWiringSuite(lib) {
    * nothing to do. THE FIX: the wrapper gives up its padding when a sub-tab bar is the first thing in
    * it. Measured in both engines by scripts/schedule-places-render.cjs AT scrollTop 0. */
   t('🔴 THE JUMP BAR IS FLUSH AT THE TOP ON LOAD, not only after scrolling', (() => {
-    const css = read('app/globals.css')
+    const css = read('app/(app)/globals.css')
     /* ⚠️ RE-ANCHORED 10 OCTOBER 2026 — the markup moved into `SubTabBar`. The claim is unchanged:
      * `data-subtab-bar` is what both the JSX boolean below and the `:has()` belt key on. */
     return /<div role="tablist" aria-label=\{label\} data-subtab-bar/.test(P)
@@ -3937,7 +3941,7 @@ function runWiringSuite(lib) {
     /import TruckListCard from '@\/components\/TruckListCard'/.test(P)
     && /<TruckListCard\s*\n?\s*event=\{previewEvent\}/.test(P)
     // ⚠️ RE-PINNED (17 October 2026): the public page now hands the card the truck's own time settings (US formats).
-    && /<TruckListCard key=\{event\.id\} event=\{event\} slug=\{slug\}( time=\{time\})? \/>/.test(read('app/trucks/[slug]/TruckClient.tsx')))
+    && /<TruckListCard key=\{event\.id\} event=\{event\} slug=\{slug\}( time=\{time\})? \/>/.test(read('app/(app)/trucks/[slug]/TruckClient.tsx')))
   t('⚠️ …in the `compact` variant with no Order CTA — an unsaved event must not offer one',
     /compact\s*\n?\s*hideOrderButton/.test(P)
     && /status: 'unconfirmed'/.test(read(PREVIEW_LIB)))

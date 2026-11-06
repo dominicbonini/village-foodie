@@ -18,7 +18,7 @@ const path = require('path')
 const REPO = path.resolve(__dirname, '..')
 
 /** True on a tree with the about-page work (the route exists). */
-const LANDED = fs.existsSync(path.join(REPO, 'app/about/page.tsx'))
+const LANDED = fs.existsSync(path.join(REPO, 'app/(public)/(site)/about/page.tsx'))
 
 const ABOUT_A = '<a href="/about">About</a>'
 const FOUNDER = { '@type': 'Person', name: 'Dominic Bonini' }

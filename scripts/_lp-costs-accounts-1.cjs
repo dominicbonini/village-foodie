@@ -14,7 +14,7 @@ const fs = require('fs')
 const path = require('path')
 
 /** True on a tree with the period picker. */
-const LANDED = (() => { try { return fs.readFileSync(path.join(__dirname, '..', 'app/manage/[token]/page.tsx'), 'utf8').includes('data-report-preset') } catch { return false } })()
+const LANDED = (() => { try { return fs.readFileSync(path.join(__dirname, '..', 'app/(app)/manage/[token]/page.tsx'), 'utf8').includes('data-report-preset') } catch { return false } })()
 const OPTIONS = (words = { custom: 'Custom dates', thisMonth: 'This month', lastMonth: 'Last month', lastQuarter: 'Last quarter', lastTaxYear: 'Last tax year' }) =>
   `<option value="custom" selected="">${words.custom}</option><option value="thisMonth">${words.thisMonth}</option><option value="lastMonth">${words.lastMonth}</option><option value="lastQuarter">${words.lastQuarter}</option><option value="lastTaxYear">${words.lastTaxYear}</option>`
 const select = cls => `<select aria-label="Period" data-report-preset="true" class="border border-slate-200 rounded-xl px-3 py-2 text-sm bg-white ${cls}">${OPTIONS()}</select>`

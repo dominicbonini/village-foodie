@@ -74,11 +74,11 @@ module.exports = async function after({ kit, t, head, read, REPO, before, got, d
     t('…the same under the dashboard\'s provider and the order page\'s, byte for byte', dash === none && ord === none)
     // Every namespace a customer surface's components read is one its provider sends.
     const used = files => new Set(files.flatMap(f => [...read(f).matchAll(/useT\('([A-Za-z]+)'\)/g)].map(x => x[1])))
-    const orderUses = used(['app/trucks/[slug]/order/page.tsx', 'components/TruckListCard.tsx', 'components/dashboard/OrderLineItem.tsx',
+    const orderUses = used(['app/(app)/trucks/[slug]/order/page.tsx', 'components/TruckListCard.tsx', 'components/dashboard/OrderLineItem.tsx',
       'components/dashboard/DealsModal.tsx', 'components/OptionStockBadge.tsx', 'components/SpiceLevel.tsx'])
     const missing = [...orderUses].filter(n => !m.NAMESPACES.order.includes(n))
     t(`NAMESPACES.order sends every namespace the order page and its components read (${[...orderUses].join(', ')})`, missing.length === 0, missing.join(', '))
-    const statusUses = used(['app/order/[id]/manage/page.tsx'])
+    const statusUses = used(['app/(app)/order/[id]/manage/page.tsx'])
     t(`NAMESPACES.confirmation sends every namespace the status page reads (${[...statusUses].join(', ')})`, [...statusUses].every(n => m.NAMESPACES.confirmation.includes(n)))
     // ⚠️ RE-PINNED (Language Phase 2, docs/language-phase-2-report.md): Phase 2 fills messages/en-US.json on purpose
     // (proven in language-phase-2). This run renders with the frozen words, whose en-US is {} — asserted on what it reads.

@@ -251,7 +251,7 @@ t('provisioning writes no plan key', !/plan\s*:\s*'[a-z]+'/.test(prov) && !/'(tr
   (provKeys.match(/.*'(trial|demo|payg|pro|unlimited|tester|starter|max)'.*/g) || []).join(' | '))
 const adminRoute = code(read('app/api/admin/route.ts'))
 t('POST /api/admin validates plan against the table (isPlanKey) and uses a field allowlist', /isPlanKey\(/.test(adminRoute) && /ADMIN_TRUCK_FIELDS/.test(adminRoute) && /cannot be changed here/.test(read('app/api/admin/route.ts')))
-const adminPage = code(read('app/admin/page.tsx'))
+const adminPage = code(read('app/(app)/admin/page.tsx'))
 t('admin plan buttons come from the catalogue (activePlans), no plan key literal', /activePlans\(/.test(adminPage) && !/plan:\s*'[a-z]+'/.test(adminPage))
 const ocr = code(read('lib/order-charge-rules.ts'))
 t('the platform fee rate is the plan\'s fee_bps (truckPlanFeeBps), not country_settings.platform_fee_pct', /truckPlanFeeBps/.test(ocr) && !/platformFeePct/.test(ocr))
@@ -384,7 +384,7 @@ if (RENDER) {
    *               freeMonthsOverride ?? the trial (data), so the "Months free" mapping below no longer applies;
    *   T-inert     every dimmed AFTER card is `style="…;opacity:0.45;pointer-events:none" inert=""` — asserted on each and
    *               mapped back to BEFORE's `style="…;opacity:0.45"`; an undimmed card carries neither. */
-  const COMPARE_TIDY_2 = /freeMonthsOverride/.test(read('app/compare/CostComparison.tsx'))
+  const COMPARE_TIDY_2 = /freeMonthsOverride/.test(read('app/(public)/(site)/compare/CostComparison.tsx'))
   const DIM_BEFORE = 'style="border-color:#E2E8F0;opacity:0.45"', DIM_AFTER = 'style="border-color:#E2E8F0;opacity:0.45;pointer-events:none" inert=""'
   const CMP_MSG = JSON.parse(read('messages/ns/en-GB/compare.json'))
   const CARD_OPEN = '<div class="rounded-2xl border bg-white p-5 shadow-sm transition md:p-6"'

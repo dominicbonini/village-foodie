@@ -27,7 +27,7 @@ const t = (name, ok, detail) => { if (ok) pass++; else { fail++; console.log(`  
 const head = s => console.log(`\n── ${s}`)
 const sha = s => crypto.createHash('sha256').update(String(s)).digest('hex')
 const read = f => fs.readFileSync(path.join(REPO, f), 'utf8')
-const atBase = f => { try { return execFileSync('git', ['show', `${BASE}:${f}`], { cwd: REPO, maxBuffer: 1 << 26 }).toString() } catch { return null } }
+const atBase = f => { try { return execFileSync('git', ['show', `${BASE}:${require('./_moved-paths.cjs').pathAt(BASE, f)}`], { cwd: REPO, maxBuffer: 1 << 26 }).toString() } catch { return null } }
 
 // ── §1's views: the public truck page, as Next serves it, on each host ──
 const TRUCKS = {
@@ -35,7 +35,7 @@ const TRUCKS = {
   US: { slug: 'harness-us-truck', name: 'Harness Taco Co', country: 'US', type: 'Tacos', logo: '' },
 }
 async function truckViews(ctx) {
-  const TP = await ctx.bundle('tidy1-truck', "export { default } from '@/app/trucks/[slug]/page'")
+  const TP = await ctx.bundle('tidy1-truck', "export { default } from '@/app/(app)/trucks/[slug]/page'")
   const out = {}
   for (const host of ['www.villagefoodie.co.uk', 'www.hatchgrab.com']) {
     for (const cc of ['GB', 'US']) {
@@ -77,11 +77,11 @@ if (process.argv[2] === 'capture') {
   t('hatchgrab.com UK truck page: no newsletter block (its title, call to action and "no spam" line) and no floating weekly-schedule button', !V['truck:hg:GB'].includes(vfWords.cta) && !V['truck:hg:GB'].includes(vfWords.noSpam) && !V['truck:hg:GB'].includes(vfWords.title)
     && V['truck:vf:GB'].includes(vfWords.cta) && V['truck:vf:GB'].includes(vfWords.noSpam))
   t('…the footer\'s other links stay (contact, report an issue)', V['truck:hg:GB'].includes(vfWords.general) && V['truck:hg:GB'].includes(vfWords.reportIssue))
-  const page = read('app/trucks/[slug]/page.tsx')
-  t('decided on the server from the Host header (isHatchGrabHost, as app/contact/page.tsx): tally: false passed only on hatchgrab.com', /const onHatchGrab = isHatchGrabHost\(await requestHost\(\)\)/.test(page) && /\{\.\.\.\(onHatchGrab \? \{ tally: false \} : \{\}\)\}/.test(page))
+  const page = read('app/(app)/trucks/[slug]/page.tsx')
+  t('decided on the server from the Host header (isHatchGrabHost, as app/(app)/contact/page.tsx): tally: false passed only on hatchgrab.com', /const onHatchGrab = isHatchGrabHost\(await requestHost\(\)\)/.test(page) && /\{\.\.\.\(onHatchGrab \? \{ tally: false \} : \{\}\)\}/.test(page))
   const walk = (d, o = []) => { for (const e of fs.readdirSync(path.join(REPO, d), { withFileTypes: true })) { const p = `${d}/${e.name}`; if (e.isDirectory()) walk(p, o); else if (/\.(tsx?)$/.test(e.name)) o.push(p) } return o }
   const withTally = ['app', 'components', 'lib'].flatMap(d => walk(d)).filter(f => /tally\.so/.test(read(f))).sort()
-  t('every remaining tally.so is Village Foodie\'s (its /contact branch, the embed, the home page, /hire, the venue page, the truck page behind tally=false on HatchGrab)', JSON.stringify(withTally) === JSON.stringify(['app/contact/ContactForm.tsx', 'app/contact/page.tsx', 'app/hire/page.tsx', 'app/page.tsx', 'app/trucks/[slug]/TruckClient.tsx', 'app/venues/[slug]/VenueClient.tsx']), withTally)
+  t('every remaining tally.so is Village Foodie\'s (its /contact branch, the embed, the home page, /hire, the venue page, the truck page behind tally=false on HatchGrab)', JSON.stringify(withTally) === JSON.stringify(['app/(app)/contact/ContactForm.tsx', 'app/(app)/contact/page.tsx', 'app/(app)/hire/page.tsx', 'app/(app)/page.tsx', 'app/(app)/trucks/[slug]/TruckClient.tsx', 'app/(app)/venues/[slug]/VenueClient.tsx']), withTally)
 
   // ══ 3 ══════════════════════════════════════════════════════════════════════════════════════════════════════════════
   head('3 · the Privacy Policy\'s demo section: "simple counts", the two "If you sign up" sentences merged — English + 28')
@@ -125,7 +125,7 @@ if (process.argv[2] === 'capture') {
   // ══ 6 ══════════════════════════════════════════════════════════════════════════════════════════════════════════════
   head('6 · dead code — only what is provably unused')
   const tracked = execFileSync('git', ['ls-files'], { cwd: REPO, encoding: 'utf8' }).split('\n')
-  t('"app/manage/[token]/page 2.tsx" does not exist (not on disk, not tracked) — already gone', !fs.existsSync(path.join(REPO, 'app/manage/[token]/page 2.tsx')) && !tracked.some(f => / 2\.tsx$/.test(f)))
+  t('"app/(app)/manage/[token]/page 2.tsx" does not exist (not on disk, not tracked) — already gone', !fs.existsSync(path.join(REPO, 'app/(app)/manage/[token]/page 2.tsx')) && !tracked.some(f => / 2\.tsx$/.test(f)))
   const code = f => read(f).replace(/\/\*[\s\S]*?\*\//g, '').replace(/\/\/.*$/gm, '')
   const src = tracked.filter(f => /^(app|lib|components|hooks)\/.*\.(ts|tsx)$/.test(f) || f === 'proxy.ts')
   const isTestCode = src.filter(f => /\bis_test\b/.test(code(f)))

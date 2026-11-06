@@ -24,7 +24,7 @@ const t = (label, ok, detail) => { if (ok) { pass++; console.log('  ✓ ' + labe
 ;(async () => {
   const ctx = LP1E.context(kit, REPO)
   const M = await ctx.bundle('faq3-screens', [
-    "export { default as Landing } from '@/app/[country]/page'",
+    "export { default as Landing } from '@/app/(public)/[country]/page'",
     "export { clearPublicFaqCache as __faq } from '@/lib/faq/public'",
     "export { clearPlanCatalogCache as __p } from '@/lib/plans-server'",
     "export { clearComparisonCache as __cmp } from '@/lib/comparison-flags'",
@@ -36,7 +36,7 @@ const t = (label, ok, detail) => { if (ok) { pass++; console.log('  ✓ ' + labe
     return ctx.prerender(kit.h(M.Landing, { params: Promise.resolve({ country: seg }), searchParams: Promise.resolve({}) }))
   }))
   const B = RF.built()
-  const faqCss = fs.readFileSync(path.join(REPO, 'app/landing/faq.css'), 'utf8')
+  const faqCss = fs.readFileSync(path.join(REPO, 'app/(public)/(site)/landing/faq.css'), 'utf8')
   const { webkit } = require(path.join(REPO, 'node_modules/playwright'))
   const browser = await webkit.launch()
   fs.mkdirSync(OUT, { recursive: true })

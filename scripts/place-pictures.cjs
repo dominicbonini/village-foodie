@@ -633,7 +633,7 @@ head('5 · THE RENDERER DRAWS IT — AND DRAWS NOTHING WHEN IT SHOULD NOT')
       // ⚠️ RE-PINNED (Language Phase 1d Part 2): socialPosts `locationsTitle` / `locationsCardTitle` / `tabLocationsHeading` (same en-GB
       // words); the card is `<Box title={t('locationsCardTitle')}>`.
       SPM.locationsTitle === 'Location settings' && exportsKey(COPY, 'LOCATIONS_TITLE', 'locationsTitle')
-      && /\{ id: 'locations', label: 'Location settings' \}/.test(codeOf(read('app/manage/[token]/page.tsx')))
+      && /\{ id: 'locations', label: 'Location settings' \}/.test(codeOf(read('app/(app)/manage/[token]/page.tsx')))
       /* ══ ⚠️ THE CARD INSIDE IT IS "Locations", AND IT CARRIES NO DESCRIPTION (8 October 2026) ═══════
        * The PILL and the PAGE HEADING say "Location settings"; the card beneath them says "Locations".
        * ⛔ AND THE CARD'S BLURB WENT because the page now has its own description directly above it —
@@ -1045,7 +1045,7 @@ head('5 · THE RENDERER DRAWS IT — AND DRAWS NOTHING WHEN IT SHOULD NOT')
       && D.locationName({}, { name: 'The Kings Arms', short_name: 'Kings Arms' }) === 'Kings Arms'
       && D.locationName({}, { name: 'The Kings Arms', short_name: '  ' }) === 'The Kings Arms'
       /* ⛔ AND THE PATH IS REAL — "Tidy up places" is a button inside the Add/Edit event modal. */
-      && /setModalView\('tidy'\)/.test(read('app/manage/[token]/page.tsx')))
+      && /setModalView\('tidy'\)/.test(read('app/(app)/manage/[token]/page.tsx')))
 
     /* ══ 🔴 THE SOCIAL MEDIA TAG ════════════════════════════════════════════════════════════════════
      * ⛔ ONE NORMALISER, AND THE COLUMN CARRIES NO `check`. A constraint would be a second rule that

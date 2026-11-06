@@ -11,7 +11,7 @@
 // The unprefixed addresses (hatchgrab.com/, /landing, /features, /compare, the preview) are proxy.ts's router.
 import { COUNTRY_PATH_SEGMENTS } from '@/lib/marketing-country'
 
-export { default, generateMetadata } from '../landing/page'
+export { default, generateMetadata } from '../(site)/landing/page'
 
 export const dynamic = 'force-dynamic'
 export const dynamicParams = false

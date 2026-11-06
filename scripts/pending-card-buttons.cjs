@@ -40,7 +40,7 @@ function appCss() {
   return files.sort().map(f => fs.readFileSync(f, 'utf8')).join('\n')
 }
 
-const M_FILE = 'app/manage/[token]/page.tsx'
+const M_FILE = 'app/(app)/manage/[token]/page.tsx'
 const ET = 'components/manage/EventTypes.tsx'
 const ev = (o) => ({ truck_id: 'test-truck', venue_address: null, address: null, town: null, postcode: null, start_time: null, end_time: null,
   status: 'unconfirmed', auto_open: true, auto_close: true, opened_at: null, closed_at: null, confirmed_at: null, customer_note: null, notes: null,

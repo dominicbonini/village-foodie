@@ -27,7 +27,7 @@
 import { redirect } from 'next/navigation'
 import { Suspense } from 'react'
 import { createClient } from '@supabase/supabase-js'
-import KdsPage from '@/app/dashboard/[token]/kds/page'
+import KdsPage from '@/app/(app)/dashboard/[token]/kds/page'
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,

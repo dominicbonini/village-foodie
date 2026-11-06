@@ -42,7 +42,7 @@ const SEG = Object.fromEntries([...read('lib/marketing-country.ts').matchAll(/\b
   const rows = WF.rowsWith(WF.WORLD)
   const PAGE = {}
   for (const doc of ['privacy', 'terms']) {
-    PAGE[doc] = await ctx.bundle(`ll1s-page-${doc}`, `export { default as Page } from '@/app/[country]/(legal)/${doc}/page'\nexport { default as Layout } from '@/app/[country]/(legal)/layout'\nexport { translatorFor } from '@/lib/i18n/translator'\nimport '@/lib/i18n/catalog/legalChrome'`)
+    PAGE[doc] = await ctx.bundle(`ll1s-page-${doc}`, `export { default as Page } from '@/app/(app)/[country]/(legal)/${doc}/page'\nexport { default as Layout } from '@/app/(app)/[country]/(legal)/layout'\nexport { translatorFor } from '@/lib/i18n/translator'\nimport '@/lib/i18n/catalog/legalChrome'`)
   }
   const { webkit } = require(path.join(REPO, 'node_modules/playwright'))
   const browser = await webkit.launch()

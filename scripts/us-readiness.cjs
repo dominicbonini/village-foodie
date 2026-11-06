@@ -97,7 +97,7 @@ async function metadataOf(file, query, rows = [GB, US_ON]) {
 
 /* ── 3 · the three Manage placeholders, as the page renders them for GB ── */
 function placeholdersFromSource() {
-  const P = read('app/manage/[token]/page.tsx')
+  const P = read('app/(app)/manage/[token]/page.tsx')
   const grab = re => (P.match(re) || [])[1] ?? null
   return {
     address: grab(/label="Full address \(optional\)"[^\n]*placeholder="([^"]+)"/),
@@ -139,8 +139,8 @@ async function gbViews() {
   return {
     allergenPrompts: await allergenPrompts(GB_TRUCK, [GB, US_ON]),
     menuPrompt: await menuPrompt({ id: 'test-truck', name: 'Pizza Kitchen', money: { currency: 'GBP', locale: 'en-GB' } }),
-    landingMeta: await metadataOf('app/landing/page.tsx', null),
-    featuresMeta: await metadataOf('app/features/page.tsx', null),
+    landingMeta: await metadataOf('app/(public)/(site)/landing/page.tsx', null),
+    featuresMeta: await metadataOf('app/(public)/(site)/features/page.tsx', null),
     placeholders: placeholdersFromSource(),
     plans: await plansCountry(PROSPECTS('GB')),
     togglesNoProvider: await togglesView(null),

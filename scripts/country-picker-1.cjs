@@ -105,7 +105,7 @@ const dec = s => String(s).replace(/&amp;/g, '&').replace(/&#x27;/g, "'").replac
   t('the × is labelled by demoUpload.close (no third key)', /useT\('demoUpload'\)/.test(src) && /aria-label=\{tClose\('close'\)\}/.test(src))
 
   head('4 · the CSS — three columns, two on a phone; the box scrolls inside itself, never past the window')
-  const css = read('app/landing/landing.css')
+  const css = read('app/(public)/(site)/landing/landing.css')
   t('closed = display:none; the box is fixed over a dimmed page; max-height the window, scrolling inside', /\.hg-landing \.cc-dlg-closed \{ display: none; \}/.test(css) && /\.hg-landing \.cc-dlg \{ position: fixed; inset: 0;[^}]*background: rgba\(/.test(css)
     && /\.hg-landing \.cc-box \{[^}]*max-height: calc\(100dvh - 32px\); overflow-y: auto;/.test(css))
   t('three columns; at ≤720px two, the code hidden, 44px rows, and the trigger on its own centred line', /\.hg-landing \.cc-list \{[^}]*grid-template-columns: repeat\(3, minmax\(0, 1fr\)\)/.test(css)

@@ -12,7 +12,7 @@
 //   pdf      the plans PDF: buildPlansPdfHtml(country), and the REAL generatePlansPdf(code) with a recording browser
 //            (puppeteer stubbed): the HTML it prints, the @page size, and the options handed to page.pdf()
 // 🔴 EVERY VIEW RUNS ON BOTH CODES.
-const CALC = 'app/compare/CostComparison.tsx'
+const CALC = 'app/(public)/(site)/compare/CostComparison.tsx'
 const STAGE_B = require('./_lp-stage-b.cjs')
 // ⚠️ RE-PINNED (compare-tidy, 20 October 2026): `staff` (the removed "How many people work the van?" question) is gone from
 // app/compare/CostComparison.tsx, so the capture drops it (`have` below; reported as skipped, never set). It stays named
@@ -45,12 +45,12 @@ async function views(ctx) {
   const locale = cc => (cc === 'US' ? 'en-US' : 'en-GB')
   const settingsOf = cc => (cc === 'US' ? US_ON() : GB())
   const reqOf = cc => (cc === 'US' ? { rows: ROWS.on(), cookie: 'US' } : { rows: ROWS.off() })
-  const root = await bundle('meta-root', "export * from '@/app/layout'")
+  const root = await bundle('meta-root', "export * from '@/app/(app)/layout'")
 
   // ══ calc ══
   const have = CALC_STATES.filter(n => new RegExp(`const\\s*\\[\\s*${n}\\s*,`).test(src(CALC)))
   for (const n of CALC_STATES) if (!have.includes(n)) skipped.push(`${CALC}:${n}`)
-  const C = await bundle('calc', "export { default as CostComparison } from '@/app/compare/CostComparison'\nexport { DemoModalProvider } from '@/components/landing/DemoUpload'", { patches: [{ file: CALC, states: have }] })
+  const C = await bundle('calc', "export { default as CostComparison } from '@/app/(public)/(site)/compare/CostComparison'\nexport { DemoModalProvider } from '@/components/landing/DemoUpload'", { patches: [{ file: CALC, states: have }] })
   for (const cc of ['GB', 'US']) {
     for (const [name, st] of Object.entries(CALC_CASES)) {
       await safeAsync(out, `calc|${cc}|${name}`, async () => withReq(reqOf(cc), async () => {
@@ -69,7 +69,7 @@ async function views(ctx) {
   }
 
   // ══ contact ══
-  const CT = await bundle('contact', "export * from '@/app/contact/page'\nexport { default } from '@/app/contact/page'")
+  const CT = await bundle('contact', "export * from '@/app/(app)/contact/page'\nexport { default } from '@/app/(app)/contact/page'")
   for (const cc of ['GB', 'US']) {
     await safeAsync(out, `contact|${cc}|html`, () => withReq(reqOf(cc), async () => prerender(await inLocale(locale(cc), h(CT.default, {}), CT))))
     await safeAsync(out, `contact|${cc}|meta`, () => withReq(reqOf(cc), async () => mergeMeta([await metaOf(root, {}), await metaOf(CT, {}, mergeMeta([await metaOf(root, {})]))])))
@@ -77,11 +77,11 @@ async function views(ctx) {
   await safeAsync(out, 'contact|GB|villagefoodie', () => withReq({ rows: ROWS.off(), host: 'www.villagefoodie.co.uk' }, async () => prerender(h(CT.default, {}))))
 
   // ══ legal chrome ══
-  const LG = await bundle('legal', "export { default as LegalLayout } from '@/app/(legal)/layout'")
+  const LG = await bundle('legal', "export { default as LegalLayout } from '@/app/(app)/(legal)/layout'")
   for (const cc of ['GB', 'US']) {
     await safeAsync(out, `legal|${cc}|chrome`, () => withReq(reqOf(cc), async () => prerender(await inLocale(locale(cc), h(LG.LegalLayout, null, h('i', { 'data-legal-body': 'the legal Markdown is not ours to change' })), LG))))
     for (const doc of ['privacy', 'terms']) {
-      const P = await bundle(`legal-${doc}`, `export * from '@/app/(legal)/${doc}/page'`)
+      const P = await bundle(`legal-${doc}`, `export * from '@/app/(app)/(legal)/${doc}/page'`)
       await safeAsync(out, `legal|${cc}|meta-${doc}`, () => withReq(reqOf(cc), async () => mergeMeta([await metaOf(root, {}), await metaOf(P, {}, mergeMeta([await metaOf(root, {})]))])))
     }
   }
@@ -97,15 +97,15 @@ async function views(ctx) {
   await safeAsync(out, 'footer|US|html-discoveryOn', () => withReq(reqOf('US'), async () => kit.renderStatic(await inLocale(locale('US'), h(FT.Footer, { onOpenTally() {}, discovery: true }), FT))))
 
   // ══ the public truck page ══
-  const TCF = 'app/trucks/[slug]/TruckClient.tsx'
-  const TP = await bundle('truck-page', "export * from '@/app/trucks/[slug]/page'\nexport { default } from '@/app/trucks/[slug]/page'", {
+  const TCF = 'app/(app)/trucks/[slug]/TruckClient.tsx'
+  const TP = await bundle('truck-page', "export * from '@/app/(app)/trucks/[slug]/page'\nexport { default } from '@/app/(app)/trucks/[slug]/page'", {
     patches: [{ file: TCF, from: 'const handleProfileShare = async () => {', to: 'const handleProfileShare = ((globalThis as any).__tcH ||= {}).share = async () => {', optional: true }],
   })
   // CONTROL (tidy): the same page with `discovery` forced on — the patch has no anchor in code before the tidy (no-op).
-  const TPon = await bundle('truck-page-on', "export * from '@/app/trucks/[slug]/page'\nexport { default } from '@/app/trucks/[slug]/page'", {
+  const TPon = await bundle('truck-page-on', "export * from '@/app/(app)/trucks/[slug]/page'\nexport { default } from '@/app/(app)/trucks/[slug]/page'", {
     patches: [
       { file: TCF, from: 'const handleProfileShare = async () => {', to: 'const handleProfileShare = ((globalThis as any).__tcH ||= {}).share = async () => {', optional: true },
-      { file: 'app/trucks/[slug]/page.tsx', from: 'discovery={country === VILLAGE_FOODIE_COUNTRY}', to: 'discovery={true}', optional: true },
+      { file: 'app/(app)/trucks/[slug]/page.tsx', from: 'discovery={country === VILLAGE_FOODIE_COUNTRY}', to: 'discovery={true}', optional: true },
     ],
   })
   for (const cc of ['GB', 'US']) {

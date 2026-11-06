@@ -219,7 +219,7 @@ async function moduleView() {
     fee: [[1.5, 20], [1.4, 10], [0, 5], [2.25, 99]].map(([pct, f]) => after ? M.feeLabel({ pct, fixedMinor: f }, money) : P.feeLabel({ pct, pence: f })),
   }
   // The van add-on: a raw-number map in the page before; the plan's monthly price from settings after.
-  const page = read('app/manage/[token]/page.tsx')
+  const page = read('app/(app)/manage/[token]/page.tsx')
   const lit = page.match(/const VAN_ADDON_PRICE: Record<string, number> = \{([^}]*)\}/)
   const van = {}
   // ⚠️ RE-PINNED (plans-data-model, Stage A, 19 October 2026): the van add-on is the truck's plan's
@@ -288,7 +288,7 @@ function withProviders(m, hidePricing, el) {
   if (m.PlanCatalogProvider && CATALOG) tree = R.createElement(m.PlanCatalogProvider, { catalog: CATALOG }, tree)
   return tree
 }
-const PAGE_FILE = 'app/manage/[token]/page.tsx'
+const PAGE_FILE = 'app/(app)/manage/[token]/page.tsx'
 const providerExports = () => `export { PricingPolicyProvider } from '@/components/PricingPolicy'\n`
   + (hasProvider() ? `export { CountrySettingsProvider } from '@/components/CountrySettingsProvider'\n` : '')
   + (STAGE_A ? `export { PlanCatalogProvider } from '@/components/PlanCatalogProvider'\n` : '')
@@ -303,7 +303,7 @@ async function billingView(published) {
   // and the upgrade target is any public plan key (`useState<string>('')`). Same renders, the new state.
   if (STAGE_A) {
     for (const target of ['pro', 'max']) {
-      const m = await bundle(`billing-${published}-${target}`, `export * from '@/app/manage/[token]/page'\n` + providerExports(), {
+      const m = await bundle(`billing-${published}-${target}`, `export * from '@/app/(app)/manage/[token]/page'\n` + providerExports(), {
         define: { 'process.env.NEXT_PUBLIC_PRICING_PUBLISHED': published ? '"true"' : '"false"' },
         patches: [
           { file: PAGE_FILE, from: 'const [showUpgradeModal, setShowUpgradeModal] = useState(false)', to: 'const [showUpgradeModal, setShowUpgradeModal] = useState(true)' },
@@ -321,7 +321,7 @@ async function billingView(published) {
     return out
   }
   for (const target of ['pro', 'max']) {
-    const m = await bundle(`billing-${published}-${target}`, `export * from '@/app/manage/[token]/page'\n` + providerExports(), {
+    const m = await bundle(`billing-${published}-${target}`, `export * from '@/app/(app)/manage/[token]/page'\n` + providerExports(), {
       define: { 'process.env.NEXT_PUBLIC_PRICING_PUBLISHED': published ? '"true"' : '"false"' },
       patches: [
         { file: PAGE_FILE, from: 'const [showMatrix, setShowMatrix] = useState(false)', to: 'const [showMatrix, setShowMatrix] = useState(true)' },
@@ -368,13 +368,13 @@ async function paymentsView() {
 // 5 · ADMIN — the plan matrix (features tab) and one truck's edit modal
 // ══════════════════════════════════════════════════════════════════════════════════════════════════
 async function adminView() {
-  const A = 'app/admin/page.tsx'
+  const A = 'app/(app)/admin/page.tsx'
   const truck = {
     id: 'test-truck', slug: 'test-kitchen', name: 'Pizza Kitchen', plan: 'pro', country: 'GB', currency: 'GBP',
     operator_id: null, is_active: true, feature_overrides: {}, trial_expires_at: null, lifetime_discount_pct: 20,
     lifetime_discount_note: 'harness', hide_pricing: false, created_at: '2026-10-01T00:00:00Z',
   }
-  const m = await bundle('admin', `export { default as AdminPage } from '@/app/admin/page'`, {
+  const m = await bundle('admin', `export { default as AdminPage } from '@/app/(app)/admin/page'`, {
     define: { 'process.env.NEXT_PUBLIC_PRICING_PUBLISHED': '"true"' },
     patches: [
       { file: A, from: 'const [checkingSession, setCheckingSession] = useState(true)', to: 'const [checkingSession, setCheckingSession] = useState(false)' },
@@ -396,7 +396,7 @@ async function adminView() {
 // 5b · /compare — the RESULTS, which the initial render does not show (they follow the questions)
 // ══════════════════════════════════════════════════════════════════════════════════════════════════
 async function compareView() {
-  const C = 'app/compare/CostComparison.tsx'
+  const C = 'app/(public)/(site)/compare/CostComparison.tsx'
   const SYS = v => ({ file: C, from: "useState<'yes' | 'no' | null>(null)", to: `useState<'yes' | 'no' | null>('${v}')` })
   const TRUCKS = n => ({ file: C, from: 'const [trucks, setTrucks] = useState(1)', to: `const [trucks, setTrucks] = useState(${n})` })
   const GMV = n => ({ file: C, from: 'useState(2500)', to: `useState(${n})` })
@@ -418,7 +418,7 @@ async function compareView() {
   }
   const out = {}
   for (const [k, patches] of Object.entries(cases)) {
-    const m = await bundle(`compare-${Object.keys(out).length}`, `export { default as CostComparison } from '@/app/compare/CostComparison'`, { patches: [...patches, ...TYPED] })
+    const m = await bundle(`compare-${Object.keys(out).length}`, `export { default as CostComparison } from '@/app/(public)/(site)/compare/CostComparison'`, { patches: [...patches, ...TYPED] })
     // ⚠️ RE-PINNED (pricing-pages, Stage B, 20 October 2026): CostComparison takes the plan catalogue (`catalog`, the
     // SEEDED one); the plan it suggests is the cheapest at the volume (named change B4, STAGE B NAMED below).
     out[k] = textOf(renderStatic(React().createElement(m.CostComparison, STAGE_B ? { settings: GB, catalog: CATALOG } : { settings: GB })))
@@ -752,7 +752,7 @@ const COMPARE_TIDY_FEE_LINE = new RegExp(' ~\\d+ orders £[0-9,]+ (?:Only orders
 // ⚠️ RE-PINNED (compare-tidy-2, 20 October 2026) — C2: the months-free QUESTION is removed (card 5, its input and side
 // text); the months are `freeMonthsOverride ?? offerTrialMonths(catalog) ?? 0` (no override here → the seeded trial), so
 // every months figure in the results is the data default. Cards now run 1–4 on each path.
-const COMPARE_TIDY_2 = /freeMonthsOverride/.test(read('app/compare/CostComparison.tsx'))
+const COMPARE_TIDY_2 = /freeMonthsOverride/.test(read('app/(public)/(site)/compare/CostComparison.tsx'))
 const MONTHS_FREE_PAIR = ['aria-label=Months free', 'value=1']
 const monthsFreeAt = a => a.findIndex((x, i) => x === MONTHS_FREE_PAIR[0] && a[i + 1] === MONTHS_FREE_PAIR[1])
 const dropMonthsFree = a => { const i = monthsFreeAt(a); return i < 0 ? ['(compare-tidy-2: no Months free pair in BEFORE)', ...a] : [...a.slice(0, i), ...a.slice(i + 2)] }

@@ -24,7 +24,7 @@ const REPO = path.resolve(__dirname, '..')
 const read = (p) => fs.readFileSync(path.join(REPO, p), 'utf8')
 
 const UI = read('components/manage/EventTypes.tsx')
-const PAGE = read('app/manage/[token]/page.tsx')
+const PAGE = read('app/(app)/manage/[token]/page.tsx')
 /* 🔴 THE SHARED CONTROLS LIVE HERE NOW, so the fixture renders their classes, not a look-alike. */
 const PRIM = read('components/manage/primitives.tsx')
 const TOKENS = read('lib/ui-tokens.ts')
@@ -773,7 +773,7 @@ function pickerFixture(css) {
  * must be no input in the price column at all, and in edit mode the locked controls must look locked.
  */
 function itemsFixture(css, editing = false, longName = false) {
-  const PAGE = read('app/dashboard/[token]/page.tsx')
+  const PAGE = read('app/(app)/dashboard/[token]/page.tsx')
   /* ⚠️ LIFTED FROM THE PAGE: the column header's class, the read-only price's class, the input's
    * class, and the blue note's. A re-typed copy here would keep measuring the old shape. */
   // ⚠️ RE-PINNED (Language Phase 1d): the header reads `{tSvc('eventPriceColumnLabel')}` in place of the import.
@@ -858,7 +858,7 @@ function itemsFixture(css, editing = false, longName = false) {
  * exactly the class of thing only a browser answers.
  */
 function eventBarFixture(css, kind = 'standard', longName = false) {
-  const PAGE = read('app/dashboard/[token]/page.tsx')
+  const PAGE = read('app/(app)/dashboard/[token]/page.tsx')
   const bar = lift(PAGE, /<div id="dashboard-event-bar" className="(bg-slate-800 border-b border-slate-700 shrink-0 z-30 relative)">/, 'the event bar')
   const inner = lift(PAGE, /<div className=\{"(w-full min-\[1400px\]:max-w-5xl min-\[1400px\]:mx-auto px-4 py-2 flex items-center gap-2)"\}>/, 'the bar inner row')
   const title = lift(PAGE, /<span className="(block text-white text-sm font-medium truncate)">/, 'the title line')

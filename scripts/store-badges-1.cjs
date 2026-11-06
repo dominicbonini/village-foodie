@@ -36,7 +36,7 @@ const ents = s => s.replace(/&#x27;|&#39;/g, "'").replace(/&quot;/g, '"').replac
 const rowsWith = flags => WF.rowsWith(WF.WORLD).map(r => { const [i, a] = flags(r.countryCode); return { ...r, iosAppAvailable: i, androidAppAvailable: a } })
 
 async function landingRenderer(ctx, tag) {
-  const LB = await ctx.bundle(tag, "export { default as Landing } from '@/app/[country]/page'\nexport { clearComparisonCache as __cmp } from '@/lib/comparison-flags'\nexport { clearPlanCatalogCache as __p } from '@/lib/plans-server'")
+  const LB = await ctx.bundle(tag, "export { default as Landing } from '@/app/(public)/[country]/page'\nexport { clearComparisonCache as __cmp } from '@/lib/comparison-flags'\nexport { clearPlanCatalogCache as __p } from '@/lib/plans-server'")
   const wf = WF.renderer(kit, `${tag}-tables`)
   return (seg, rows) => {
     const info = console.info; console.info = () => {}
@@ -124,8 +124,8 @@ function badgesOf(html) {
   }
 
   head('5 · Manage › Settings: the "Get the app" card by flag (test trucks only)')
-  const PAGE = 'app/manage/[token]/page.tsx'
-  const S = await kit.bundle('sb1-settings', "export * from '@/app/manage/[token]/page'\nexport { CountrySettingsProvider } from '@/components/CountrySettingsProvider'\nexport { PlanCatalogProvider } from '@/components/PlanCatalogProvider'\nexport { PricingPolicyProvider } from '@/components/PricingPolicy'", {
+  const PAGE = 'app/(app)/manage/[token]/page.tsx'
+  const S = await kit.bundle('sb1-settings', "export * from '@/app/(app)/manage/[token]/page'\nexport { CountrySettingsProvider } from '@/components/CountrySettingsProvider'\nexport { PlanCatalogProvider } from '@/components/PlanCatalogProvider'\nexport { PricingPolicyProvider } from '@/components/PricingPolicy'", {
     patches: [{ file: PAGE, append: 'export { SettingsTab }' }],
   })
   const GB = LP1E.GB ? LP1E.GB() : null

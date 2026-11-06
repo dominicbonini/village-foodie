@@ -58,7 +58,7 @@ const INTL_AMOUNT = /\b(?:A|NZ|CA|US)\$\s?\d|\bSEK\s?\d/
   t('/compare: a small muted line under the intro, before the first question', /<p class="mt-3 text-sm text-slate-500">Prices in New Zealand dollars \(NZD\)<\/p>/.test(pages['NZ|compare'].html)
     && pages['NZ|compare'].html.indexOf('Prices in New Zealand') > pages['NZ|compare'].html.indexOf(JSON.parse(read('messages/en-GB.json')).compare.intro.slice(0, 20))
     && pages['NZ|compare'].html.indexOf('Prices in New Zealand') < pages['NZ|compare'].html.indexOf(JSON.parse(read('messages/en-GB.json')).compare.system.title.replace(/<[^>]+>/g, '').slice(0, 15)))
-  const css = read('app/landing/landing.css')
+  const css = read('app/(public)/(site)/landing/landing.css')
   // ⚠️ RE-PINNED (native-prices follow-up, 22 October 2026, Dominic): the line is `--hero-grey` (#3E5472) so it passes AA —
   // declared on the rule itself at the hero's own value (the token is `.hero`-scoped), and the two must agree.
   const heroGrey = (/\.hg-landing \.hero \{ --hero-grey: (#[0-9A-Fa-f]{6});/.exec(css) || [])[1]
@@ -94,10 +94,10 @@ const INTL_AMOUNT = /\b(?:A|NZ|CA|US)\$\s?\d|\bSEK\s?\d/
   t('/llms.txt: the UK £, the US $, Ireland €; no currency line (one document, every country — each price names itself)', /£29/.test(section('United Kingdom')) && /(?<![A-Z])\$\d/.test(section('United States')) && /€29/.test(section('Ireland')) && !llms.includes('Prices in '))
 
   // Admin › Plans (the catalogue table, "features" tab), the real page with the five countries' settings pre-loaded.
-  const A = 'app/admin/page.tsx'
+  const A = 'app/(app)/admin/page.tsx'
   const settingsOf = Object.fromEntries(await Promise.all(['GB', 'US', 'IE', 'AU', 'NZ'].map(async cc => [cc, await R.rowOf(cc)])))
   const adminText = async (tag, extra = []) => {
-    const M = await R.ctx.bundle(tag, "export { default as AdminPage } from '@/app/admin/page'", {
+    const M = await R.ctx.bundle(tag, "export { default as AdminPage } from '@/app/(app)/admin/page'", {
       define: { 'process.env.NEXT_PUBLIC_PRICING_PUBLISHED': '"true"' },
       patches: [
         { file: A, from: 'const [checkingSession, setCheckingSession] = useState(true)', to: 'const [checkingSession, setCheckingSession] = useState(false)' },
@@ -123,7 +123,7 @@ const INTL_AMOUNT = /\b(?:A|NZ|CA|US)\$\s?\d|\bSEK\s?\d/
     const tx = text(kit.renderStatic(h(PT.PlanTable, { catalog: R.catalog, settings: await R.rowOf(cc), highlight: 'pro' })))
     t(`Billing's plan table (${cc}): ${HOME[cc].join(', ')}, no international amount, and no line inside the table itself`, HOME[cc].every(w => tx.includes(w)) && !INTL_AMOUNT.test(tx) && !tx.includes('Prices in '))
   }
-  const manage = code('app/manage/[token]/page.tsx')
+  const manage = code('app/(app)/manage/[token]/page.tsx')
   t('Billing: the line once, opening the footnotes under the table (currencyLineOf → pricing.currencyLine), in the footnote style',
     /const billingCurrencyLine = currencyLineOf\(countryRow\)/.test(manage) && count(manage, "tPricing('currencyLine', billingCurrencyLine)") === 1
     && /\{billingCurrencyLine && <p className="text-xs text-slate-500 mt-3 px-1">\{tPricing\('currencyLine', billingCurrencyLine\)\}<\/p>\}\s*<p className="text-xs text-slate-500 mt-3 px-1">\{tPricing\('footnote'/.test(manage))
@@ -136,7 +136,7 @@ const INTL_AMOUNT = /\b(?:A|NZ|CA|US)\$\s?\d|\bSEK\s?\d/
   t('a truck\'s own money is the same format as our plan prices on its pages now — "$12.00" (AU menu), "$1,234.56" (NZ order) — and moneyFormatOf is unchanged',
     L.formatMinor(1200, L.moneyFormatOf(au)) === '$12.00' && L.formatMinor(123456, L.moneyFormatOf(nz)) === '$1,234.56' && JSON.stringify(L.moneyFormatOf(au)) === '{"currency":"AUD","locale":"en-AU"}'
     && JSON.stringify(L.planMoneyFormatOf(au)) === JSON.stringify(L.moneyFormatOf(au)))
-  t('the order page and receipts still format through moneyFormatOf / the truck\'s money, never the plan helpers', !/planMoneyFormatOf|intlMoneyFormatOf/.test(read('app/trucks/[slug]/order/page.tsx')))
+  t('the order page and receipts still format through moneyFormatOf / the truck\'s money, never the plan helpers', !/planMoneyFormatOf|intlMoneyFormatOf/.test(read('app/(app)/trucks/[slug]/order/page.tsx')))
 
   // ══ 6 ════════════════════════════════════════════════════════════════════════════════════════════════════════════
   head('6 · THE RULE IS DATA — one helper per form, each used where it belongs')
@@ -145,9 +145,9 @@ const INTL_AMOUNT = /\b(?:A|NZ|CA|US)\$\s?\d|\bSEK\s?\d/
   })
   const using = name => src.filter(f => new RegExp(`\\b${name}\\(`).test(code(f))).sort()
   t('no `planLocale` is read anywhere (the registry field is retired)', src.every(f => !/planLocale/.test(code(f))), src.filter(f => /planLocale/.test(code(f))))
-  t('the international form (intlMoneyFormatOf) is used only by /llms.txt and Admin', JSON.stringify(using('intlMoneyFormatOf').filter(f => f !== 'lib/country-settings-types.ts')) === JSON.stringify(['app/admin/page.tsx', 'lib/llms-text.ts']), using('intlMoneyFormatOf'))
+  t('the international form (intlMoneyFormatOf) is used only by /llms.txt and Admin', JSON.stringify(using('intlMoneyFormatOf').filter(f => f !== 'lib/country-settings-types.ts')) === JSON.stringify(['app/(app)/admin/page.tsx', 'lib/llms-text.ts']), using('intlMoneyFormatOf'))
   t('the home form (planMoneyFormatOf) is what every country page, the PDF, Billing and the plan prompts use — and not /llms.txt',
-    ['app/compare/CostComparison.tsx', 'app/manage/[token]/page.tsx', 'components/pricing/PlanTable.tsx', 'components/pricing/PricingSection.tsx', 'components/usePlanPriceLabel.ts', 'lib/plans-pdf.ts'].every(f => using('planMoneyFormatOf').includes(f)) && !using('planMoneyFormatOf').includes('lib/llms-text.ts'), using('planMoneyFormatOf'))
+    ['app/(public)/(site)/compare/CostComparison.tsx', 'app/(app)/manage/[token]/page.tsx', 'components/pricing/PlanTable.tsx', 'components/pricing/PricingSection.tsx', 'components/usePlanPriceLabel.ts', 'lib/plans-pdf.ts'].every(f => using('planMoneyFormatOf').includes(f)) && !using('planMoneyFormatOf').includes('lib/llms-text.ts'), using('planMoneyFormatOf'))
   const en = JSON.parse(read('messages/en-GB.json'))
   t('the line\'s words are a message (pricing.currencyLine, en-GB base), the currency\'s name and code its parameters', en.pricing.currencyLine === 'Prices in {currency} ({code})')
 

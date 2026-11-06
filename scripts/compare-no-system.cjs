@@ -37,7 +37,7 @@ const stripComments = src => src.replace(/\/\*[\s\S]*?\*\//g, '').replace(/^[ \t
 // same string and would silently measure the default state.
 function renderWith(patches, tag, opts = {}) {
   const tmp = fs.mkdtempSync(path.join(os.tmpdir(), `cmp-${tag}-`))
-  for (const d of ['app/compare', 'components/landing']) fs.mkdirSync(path.join(tmp, d), { recursive: true })
+  for (const d of ['app/(public)/(site)/compare', 'components/landing']) fs.mkdirSync(path.join(tmp, d), { recursive: true })
   fs.cpSync(path.join(REPO, 'lib'), path.join(tmp, 'lib'), { recursive: true })
   // ⚠️ RE-PINNED (Language Phase 1e): the calculator's words are the `compare` messages (lib/i18n/catalog/compare.ts
   // imports messages/ns/<locale>/compare.json), read through next-intl — so the copy carries the message files and
@@ -45,7 +45,7 @@ function renderWith(patches, tag, opts = {}) {
   // check reads them (Language Phase 1e's GB fixes: curly apostrophes, "question 5") and in the variants' re-anchors.
   fs.cpSync(path.join(REPO, 'messages'), path.join(tmp, 'messages'), { recursive: true })
   try { fs.symlinkSync(path.join(REPO, 'node_modules'), path.join(tmp, 'node_modules')) } catch { /* already */ }
-  let src = read('app/compare/CostComparison.tsx')
+  let src = read('app/(public)/(site)/compare/CostComparison.tsx')
   // 🔴 THE FEE BOXES START EMPTY NOW (decided 10 October 2026 — no competitor prefill). Every case written
   // against the old 4.5% + 20p default therefore TYPES it — the same figures, entered by the operator
   // instead of put there by the page — unless the case types its own rate. `opts.untyped` measures the
@@ -58,12 +58,12 @@ function renderWith(patches, tag, opts = {}) {
     if (!src.includes(a)) { console.log(`🔴 ${tag}: PATCH DID NOT APPLY — anchor drifted: ${a.slice(0, 60)}`); process.exit(1) }
     src = src.replace(a, b)
   }
-  fs.writeFileSync(path.join(tmp, 'app/compare/CostComparison.tsx'), src)
+  fs.writeFileSync(path.join(tmp, 'app/(public)/(site)/compare/CostComparison.tsx'), src)
   // ⚠️ A STUB FOR `DemoCta`, IDENTICAL IN EVERY RUN so it cannot contribute to a diff. The real one
   // needs the DemoModalProvider mounted in ../page.tsx, which is not what this harness measures.
   fs.writeFileSync(path.join(tmp, 'components/landing/DemoUpload.tsx'),
     `import React from 'react'\nexport function DemoCta({ className, children }: { className?: string; children?: React.ReactNode }) {\n  return <button className={className}>{children}</button>\n}\n`)
-  const c = compile(tmp, ['app/compare/CostComparison.tsx'], tag, { jsx: 'react-jsx', skipLibCheck: true, noImplicitAny: false })
+  const c = compile(tmp, ['app/(public)/(site)/compare/CostComparison.tsx'], tag, { jsx: 'react-jsx', skipLibCheck: true, noImplicitAny: false })
   try { fs.symlinkSync(path.join(REPO, 'node_modules'), path.join(c.out, 'node_modules')) } catch { /* already */ }
   const React = require(path.join(REPO, 'node_modules/react'))
   const { renderToStaticMarkup } = require(path.join(REPO, 'node_modules/react-dom/server'))
@@ -71,7 +71,7 @@ function renderWith(patches, tag, opts = {}) {
   // figures and the competitor prefill come from country_settings now). Parsed from the seed that was run.
   // ⚠️ RE-PINNED (pricing-pages, Stage B, 20 October 2026): CostComparison takes the plan catalogue (`catalog`) — the
   // SEEDED one (scripts/_plans-catalog-fixture.cjs: 20261024 + 20261025 + 20261026), as the server page reads it.
-  const html = renderToStaticMarkup(React.createElement(c.req('app/compare/CostComparison.js').default, { settings: opts.settings ?? GB, catalog: opts.catalog ?? CATALOG, ...(opts.props || {}) }))
+  const html = renderToStaticMarkup(React.createElement(c.req('app/(public)/(site)/compare/CostComparison.js').default, { settings: opts.settings ?? GB, catalog: opts.catalog ?? CATALOG, ...(opts.props || {}) }))
   if (opts.raw) return html
   return html.replace(/<style[\s\S]*?<\/style>/g, '').replace(/<[^>]+>/g, '\n')
     .replace(/&pound;/g, '£').replace(/&amp;/g, '&').replace(/&apos;|&#x27;/g, "'").replace(/&quot;/g, '"').replace(/&nbsp;/g, ' ')
@@ -317,7 +317,7 @@ const perWeekOf = monthly => (monthly * 12) / 52
   }))
 
   // ── WHAT MAY NOT CHANGE ─────────────────────────────────────────────────────────────────────────
-  const SRC = stripComments(read('app/compare/CostComparison.tsx'))
+  const SRC = stripComments(read('app/(public)/(site)/compare/CostComparison.tsx'))
   t('🔴 the per-day divisor is calendar-accurate — × 12 ÷ 52, never ÷ 4',
     /\(monthly \* 12\) \/ 52 \/ d/.test(SRC) && !/\/ 4 \/ days/.test(SRC))
   t('🔴 the coffee threshold is one named constant', /const COFFEE_MAX_PER_DAY = 3\.0/.test(SRC)
@@ -333,7 +333,7 @@ const perWeekOf = monthly => (monthly * 12) / 52
   // boxes start empty, and the page names no other provider.
   t('🔴 there is no competitor prefill — the competitor columns are read nowhere and the boxes start empty',
     !/competitor(Name|Pct|FixedMinor)|prefill\./.test(SRC)
-    && SRC.includes(PCT_ANCHOR) && SRC.includes(PENCE_ANCHOR) && !/Hatches/.test(read('app/compare/CostComparison.tsx')))
+    && SRC.includes(PCT_ANCHOR) && SRC.includes(PENCE_ANCHOR) && !/Hatches/.test(read('app/(public)/(site)/compare/CostComparison.tsx')))
   t('🔴 …rendered: both fee boxes are EMPTY and carry the neutral placeholders', (() => {
     const h = renderWith([SYS('yes')], 'pf-empty', { raw: true, untyped: true })
     const boxes = [...h.matchAll(/<input[^>]*inputMode="(?:decimal|numeric)"[^>]*>/g)].map(m => m[0])
@@ -367,7 +367,7 @@ const perWeekOf = monthly => (monthly * 12) / 52
   t('🔴 BOTH GATES AND THE SERVER/CLIENT SPLIT ARE UNTOUCHED — this file is still a client component',
     SRC.startsWith("'use client'") && !/verifyAdmin/.test(SRC))
   t('⚠️ …and the page shell still redirects nowhere but /contact', (() => {
-    const P = stripComments(read('app/compare/page.tsx'))
+    const P = stripComments(read('app/(public)/(site)/compare/page.tsx'))
     return !/redirect\('\/'\)/.test(P) && /notFound\(\)/.test(P)
   })())
   t('🔴 the first question has NO default, so no figure is computed from an assumption',

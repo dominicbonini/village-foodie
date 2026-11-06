@@ -22,7 +22,7 @@ const BEFORE_REF = '7fcd4fc9'
 // before world-countries-2 — scripts/_lp-world-countries-2.cjs asBefore() removes exactly its named change and throws if it is
 // not there, so every other byte is still pinned here. The new text itself is proved by scripts/world-countries-2.cjs.
 const read = f => require('./_lp-world-countries-2.cjs').asBefore(f, fs.readFileSync(path.join(REPO, f), 'utf8'))
-const before = f => execFileSync('git', ['show', `${BEFORE_REF}:${f}`], { cwd: REPO, encoding: 'utf8' })
+const before = f => execFileSync('git', ['show', `${BEFORE_REF}:${require('./_moved-paths.cjs').pathAt(BEFORE_REF, f)}`], { cwd: REPO, encoding: 'utf8' })
 let pass = 0, fail = 0
 const t = (name, ok, detail) => { if (ok) { pass++; console.log(`  ✓ ${name}`) } else { fail++; console.log(`  ✗ ${name}${detail ? `\n      ${detail}` : ''}`) } }
 

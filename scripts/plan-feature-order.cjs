@@ -182,10 +182,10 @@ head('3 · one source, and nobody re-sorts it on the way to a screen')
     t(`⚠️ …and draws all three cell states (${f})`, /=== 'off'/.test(code) && /=== 'soon'/.test(code) && /cell\.comingSoon/.test(code))
   }
   t('🔴 /features and Manage › Billing render THE SAME component (<PlanTable …>)',
-    /<PlanTable catalog=\{catalog\}/.test(codeOf(read('app/features/page.tsx'))) && /<PlanTable catalog=\{catalog\}/.test(codeOf(read('app/manage/[token]/page.tsx'))))
-  t('⛔ …and app/landing/page.tsx renders no feature table (the cards are PricingSection)',
-    !/tableGroups|FEATURE_TABLE|<PlanTable/.test(codeOf(read('app/landing/page.tsx'))))
-  t('⛔ …and app/admin/page.tsx draws no feature matrix (it lists public.plans)', !/tableGroups|FEATURE_TABLE|<PlanTable|legacy-pricing-display/.test(codeOf(read('app/admin/page.tsx'))))
+    /<PlanTable catalog=\{catalog\}/.test(codeOf(read('app/(public)/(site)/features/page.tsx'))) && /<PlanTable catalog=\{catalog\}/.test(codeOf(read('app/(app)/manage/[token]/page.tsx'))))
+  t('⛔ …and app/(public)/(site)/landing/page.tsx renders no feature table (the cards are PricingSection)',
+    !/tableGroups|FEATURE_TABLE|<PlanTable/.test(codeOf(read('app/(public)/(site)/landing/page.tsx'))))
+  t('⛔ …and app/(app)/admin/page.tsx draws no feature matrix (it lists public.plans)', !/tableGroups|FEATURE_TABLE|<PlanTable|legacy-pricing-display/.test(codeOf(read('app/(app)/admin/page.tsx'))))
   /* ⛔ AND NONE OF THEM SORTS IT. tableGroups FILTERS by group, which preserves order. */
   for (const f of RENDERERS.concat(['lib/feature-table.ts', 'lib/plan-offer.ts'])) {
     const src = codeOf(read(f))

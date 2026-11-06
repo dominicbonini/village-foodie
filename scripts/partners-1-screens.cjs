@@ -46,7 +46,7 @@ const EMAIL_HTML = '<div style="font-family:Aptos,Arial,sans-serif;font-size:12p
 async function css() {
   const postcss = (await import(path.join(REPO, 'node_modules/postcss/lib/postcss.mjs'))).default
   const tw = (await import(require.resolve('@tailwindcss/postcss', { paths: [REPO] }))).default
-  const from = path.join(REPO, 'app/globals.css')
+  const from = path.join(REPO, 'app/(app)/globals.css')
   const r = await postcss([tw({ base: REPO })]).process(fs.readFileSync(from, 'utf8').replace(/@import "leaflet[^"]*";/, ''), { from })
   return r.css
 }

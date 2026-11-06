@@ -519,11 +519,11 @@ const fakeStore = () => {
     }
     check(/THE PROSPECT MODAL WAS HERE AND IS GONE/.test(PANEL),
       '⚠️ …and the file says where it went, rather than leaving a hole')
-    check(exists('app/admin/outreach/p/[prospectId]/page.tsx'), 'the prospect has its own route')
+    check(exists('app/(app)/admin/outreach/p/[prospectId]/page.tsx'), 'the prospect has its own route')
     check(exists('components/admin/ProspectWorkspace.tsx') && exists('components/admin/ProspectTimeline.tsx'),
       '…rendered by the workspace and its timeline')
     check(/router\.push\(`\$\{prospectPath\(id\)\}/.test(stripped), '🔴 opening a row navigates there')
-    const ROUTE = read('app/admin/outreach/p/[prospectId]/page.tsx')
+    const ROUTE = read('app/(app)/admin/outreach/p/[prospectId]/page.tsx')
     check(/verifyAdmin/.test(ROUTE) || /admin/i.test(ROUTE),
       'and the route documents the same admin gate the other admin pages use')
   }

@@ -245,7 +245,7 @@ console.log('\n── THE OTHER RECENTLY CHANGED COMPONENTS ──────�
   // not a component. Rendering it means rendering DashboardPage — a ~5,000-line client component that
   // needs a route token, an authenticated /api/dashboard fetch and a dozen effects. Extracting it is a
   // refactor of a file this work is forbidden to touch, so it is REPORTED, not faked.
-  const page = fs.readFileSync(path.join(REPO, 'app/dashboard/[token]/page.tsx'), 'utf8')
+  const page = fs.readFileSync(path.join(REPO, 'app/(app)/dashboard/[token]/page.tsx'), 'utf8')
   // Language Phase 1b re-pin: the title's words moved into messages (`dashboard.settings.intervalsTitle`, exactly
   // "Collection times"); the SAME inline <p> now reads that key, so the gap reported here is unchanged.
   const gbDash = JSON.parse(fs.readFileSync(path.join(REPO, 'messages/en-GB.json'), 'utf8')).dashboard

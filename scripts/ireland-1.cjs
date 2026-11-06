@@ -46,7 +46,7 @@ const ROWS = { ieOn: () => [LP1E.GB(), LP1E.US_ON(), IE(true)], ieOff: () => [LP
 
 ;(async () => {
   const ctx = LP1E.context(kit, REPO)
-  const ROUTE = { landing: 'app/[country]/page', features: 'app/[country]/features/page', compare: 'app/[country]/compare/page' }
+  const ROUTE = { landing: 'app/(public)/[country]/page', features: 'app/(public)/[country]/features/page', compare: 'app/(public)/[country]/compare/page' }
   const mods = {}
   const modOf = p => (mods[p] ||= ctx.bundle(`ie1-${p}`, `export * from '@/${ROUTE[p]}'\nexport { default } from '@/${ROUTE[p]}'\nexport { clearPlanCatalogCache as __ieClearPlans } from '@/lib/plans-server'\nexport { clearCountrySettingsCache as __ieClearCs } from '@/lib/country-settings'`))
   const run = (rows, fn) => ctx.withReq({ rows, tables }, fn)

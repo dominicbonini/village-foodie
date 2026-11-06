@@ -115,7 +115,7 @@ const fixture = (over = {}) => ({
   t('an admin rebuild re-arms the first open too', /if \(input\.replaceBoard\) \{\s*const r = await rearmDemoFirstOpen\(supabase, truckId\)/.test(read('lib/provision-demo.ts')))
 
   head('5 · while a demo is being set up, the old board is not shown and the "real order" prompt cannot fire')
-  const dash = read('app/dashboard/[token]/page.tsx')
+  const dash = read('app/(app)/dashboard/[token]/page.tsx')
   t('one "setting up" flag: a restart in flight, or a first-open claim not yet answered',
     /const demoSettingUp=!!\(isDemo&&\(restarting\|\|\(demoFirstOpenPending&&!firstOpenChecked\)\)\)/.test(dash))
   t('…the "This service has ended" card stands down while it is set', /const demoEndedCard=demoServiceEnded&&!demoSettingUp\?\(/.test(dash))

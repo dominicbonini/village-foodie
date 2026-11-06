@@ -77,7 +77,7 @@ const tablesOf = c => ({ plans: c.plans.map(snake), plan_prices: c.prices.map(sn
 /** The live countries as they are (all five on — 21 October 2026), with or without Canada. */
 const LIVE = () => [LP1E.GB(), LP1E.US_ON(), NP.IE(), NP.AU(), NP.NZ()]
 const ROWS = { caOn: () => [...LIVE(), CA(true)], caOff: () => [...LIVE(), CA(false)], noCa: () => LIVE() }
-const ROUTE = { landing: 'app/[country]/page', features: 'app/[country]/features/page', compare: 'app/[country]/compare/page' }
+const ROUTE = { landing: 'app/(public)/[country]/page', features: 'app/(public)/[country]/features/page', compare: 'app/(public)/[country]/compare/page' }
 
 /** Pages, PDF, sitemap and /llms.txt over one LP1E context, for a given set of rows. */
 function renderer(kit, tag) {

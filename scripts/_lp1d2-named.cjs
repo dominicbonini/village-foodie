@@ -446,7 +446,7 @@ const NAMED = [
     views: id => countryOf(id) === 'US',
     expect: (b, id) => mapStrings(b, x => uslNbspView(x, id)) },
   { id: 'us-layout-fix-1-manage-join', country: 'US', agent: 'US layout fixes (18 Oct 2026)', smokeOnly: true,
-    what: '⚠️ RE-PINNED (18 October 2026): app/manage/[token]/page.tsx DealsTab — a deal’s slot range on a 12-hour truck joins with U+00A0 + "– " ("11:30 AM – 2:00 PM"). PRECISE: the deals views’ "X – Y" (both clocks) gain the no-break space before the dash.',
+    what: '⚠️ RE-PINNED (18 October 2026): app/(app)/manage/[token]/page.tsx DealsTab — a deal’s slot range on a 12-hour truck joins with U+00A0 + "– " ("11:30 AM – 2:00 PM"). PRECISE: the deals views’ "X – Y" (both clocks) gain the no-break space before the dash.',
     views: id => /^smoke-menu\/US\|deals\|/.test(id),
     expect: b => mapStrings(b, uslRangeJoin) },
   ...uslEntries(/^smoke-schedule\/(GB|US)\|/, /^smoke-settings\/(GB|US)\|[^|]+\|page$/).map(e => ({ ...e, smokeOnly: true })),

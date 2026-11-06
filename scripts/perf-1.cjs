@@ -23,7 +23,7 @@ const { REPO } = kit
 
 /* 🔴 THE TREE BEFORE perf-1, PINNED BY SHA (never HEAD). 7bc53b81 is reviews-weather-1's report, the commit perf-1 sits on. */
 const BEFORE = '7bc53b81'
-const gitShow = f => execFileSync('git', ['show', `${BEFORE}:${f}`], { cwd: REPO, encoding: 'utf8', maxBuffer: 64e6 })
+const gitShow = f => execFileSync('git', ['show', `${BEFORE}:${require('./_moved-paths.cjs').pathAt(BEFORE, f)}`], { cwd: REPO, encoding: 'utf8', maxBuffer: 64e6 })
 
 let pass = 0, fail = 0
 const t = (label, ok, detail) => { if (ok) { pass++; console.log('  ✓ ' + label) } else { fail++; console.log('  🔴 ' + label + (detail !== undefined ? `\n      ${typeof detail === 'string' ? detail.slice(0, 900) : JSON.stringify(detail).slice(0, 900)}` : '')) } }
@@ -202,12 +202,14 @@ const json = f => JSON.parse(read(f))
   // ── 6 · the pages, the rule, the workflow, no .env ────────────────────────────────────────────────────────────────────
   head('6 · the three page modules mark their render; the working rule; the workflow; no .env file is read')
   {
-    for (const f of ['app/landing/page.tsx', 'app/features/page.tsx', 'app/faq/page.tsx']) {
+    for (const f of ['app/(public)/(site)/landing/page.tsx', 'app/(public)/(site)/features/page.tsx', 'app/(public)/(site)/faq/page.tsx']) {
       const s = read(f)
       const firsts = [...s.matchAll(/^export (?:default )?async function (\w+)\([^\n]*\{\n(.*)$/gm)].map(m => [m[1], m[2].trim()])
       t(`${f}: its page and its generateMetadata both start with markMarketingRender()`, firsts.length === 2 && firsts.every(([, l]) => l.startsWith('markMarketingRender()')), firsts)
     }
-    t('the [country] modules are unchanged (they re-export the same three; no route group, no layout change)', ['app/[country]/page.tsx', 'app/[country]/features/page.tsx', 'app/[country]/faq/page.tsx', 'app/layout.tsx', 'proxy.ts'].every(f => read(f) === gitShow(f)))
+    t('the [country] modules are unchanged (they re-export the same three; no route group, no layout change)', ['app/(public)/[country]/page.tsx', 'app/(public)/[country]/features/page.tsx', 'app/(public)/[country]/faq/page.tsx', 'app/(app)/layout.tsx', 'proxy.ts'].every(f => execFileSync('git', ['show', `5622370d:${require('./_moved-paths.cjs').pathAt('5622370d', f)}`], { cwd: REPO, encoding: 'utf8', maxBuffer: 64e6 }) === gitShow(f)))
+    // ⚠️ RE-PINNED (cwv-2, 6 November 2026, docs/cwv-2-report.md §6): cwv-2 made the route group and the layout change perf-1 left out (Dominic's
+    // decision), so this compared BEFORE with the WORKING TREE and tripped. It now compares BEFORE with perf-1's own last commit (5622370d).
     const rules = read('.cursor/rules/working-rules.mdc')
     t('.cursor/rules/working-rules.mdc: the .env.local instruction is gone; the standing rule is there in one line', !/lives in `\.env\.local`/.test(rules) && /Never open, read, list, parse or test any `\.env\*` file in any form/.test(rules))
     const wf = read('.github/workflows/faq-translate.yml')
@@ -221,10 +223,11 @@ const json = f => JSON.parse(read(f))
   // ── 7 · untouched ─────────────────────────────────────────────────────────────────────────────────────────────────────
   head('7 · nothing in ordering, trucks, orders, payments, the KDS or the dashboard changed')
   {
-    const PATHS = ['app/api/orders', 'app/order', 'app/o', 'app/api/menu', 'app/kds', 'app/api/kds', 'app/dashboard', 'app/api/dashboard', 'app/trucks', 'app/manage', 'app/api/manage', 'app/api/webhooks', 'components/dashboard',
-      'lib/payments', 'lib/printing', 'lib/orders', 'lib/order-charges.ts', 'lib/order-charge-rules.ts', 'lib/menu-loader.ts', 'proxy.ts', 'app/layout.tsx'].filter(p => fs.existsSync(path.join(REPO, p)))
+    const PATHS = ['app/api/orders', 'app/(app)/order', 'app/(app)/o', 'app/api/menu', 'app/(app)/kds', 'app/api/kds', 'app/(app)/dashboard', 'app/api/dashboard', 'app/(app)/trucks', 'app/(app)/manage', 'app/api/manage', 'app/api/webhooks', 'components/dashboard',
+      'lib/payments', 'lib/printing', 'lib/orders', 'lib/order-charges.ts', 'lib/order-charge-rules.ts', 'lib/menu-loader.ts', 'proxy.ts', 'app/(app)/layout.tsx'].filter(p => fs.existsSync(path.join(REPO, p)))
     let diff = ''
-    try { diff = execFileSync('git', ['diff', '--stat', BEFORE, '--', ...PATHS], { cwd: REPO, encoding: 'utf8' }) } catch (e) { diff = String(e) }
+    // ⚠️ RE-PINNED (cwv-2, 6 November 2026, docs/cwv-2-report.md §6): the routes moved into app/(app) and app/(public); `git diff` saw every moved file as deleted and added. scripts/_moved-paths.cjs changedSince compares each file with itself at that commit, under its name then — blind to the move and nothing else.
+    try { diff = require('./_moved-paths.cjs').changedSince(BEFORE, PATHS).join('\n') } catch (e) { diff = String(e) }
     t(`${PATHS.length} ordering, payment, KDS, dashboard, Manage and proxy paths: no change against ${BEFORE}`, diff.trim() === '', diff)
     // ⚠️ RE-PINNED (loyalty-1, 5 November 2026, docs/loyalty-1-report.md): this compared BEFORE with the WORKING TREE, so loyalty-1's
     // lib/loyalty/ and its two privacy hooks read as perf-1's. It now compares BEFORE with perf-1's own last commit (5622370d, its report).

@@ -38,7 +38,7 @@ const REPO = path.resolve(__dirname, '..')
  * reason. That trap has now caught five harnesses in this repository. */
 const BEFORE_REF = '0ce4c83'
 const gitShow = (ref, f) => {
-  try { return execFileSync('git', ['show', `${ref}:${f}`], { cwd: REPO, encoding: 'utf8', maxBuffer: 64e6 }) }
+  try { return execFileSync('git', ['show', `${ref}:${require('./_moved-paths.cjs').pathAt(ref, f)}`], { cwd: REPO, encoding: 'utf8', maxBuffer: 64e6 }) }
   catch { return null }
 }
 
@@ -243,7 +243,7 @@ const SURFACES = [
   },
   {
     file: 'app/api/embed/events/route.ts',
-    what: 'the embed widget AND app/domain/page.tsx (the custom-domain schedule)',
+    what: 'the embed widget AND app/(app)/domain/page.tsx (the custom-domain schedule)',
     handling: 'redact',
   },
   {
@@ -777,8 +777,8 @@ head('2 · every privacy read FAILS CLOSED — a read failure means "private"')
   head('8 · /p/<token> is noindexed and rate-limited, like /o')
 
   {
-    t('🔴 the route exists', exists('app/p/[token]/page.tsx'))
-    const page = read('app/p/[token]/page.tsx')
+    t('🔴 the route exists', exists('app/(app)/p/[token]/page.tsx'))
+    const page = read('app/(app)/p/[token]/page.tsx')
     t('⛔ …and declares robots noindex, nofollow', /robots: \{ index: false, follow: false \}/.test(page))
     const vercel = JSON.parse(read('vercel.json'))
     const hdr = (vercel.headers || []).find(h => h.source === '/p/(.*)')
@@ -941,7 +941,7 @@ head('2 · every privacy read FAILS CLOSED — a read failure means "private"')
      * link row and the two privacy confirms are all rendered there now. The claim is unchanged: no
      * screen re-types a word the copy module owns. */
     const screens = ['components/manage/EventTypes.tsx', 'components/manage/PrivateLinkPanel.tsx',
-      'app/manage/[token]/page.tsx', 'app/dashboard/[token]/page.tsx', 'app/p/[token]/page.tsx']
+      'app/(app)/manage/[token]/page.tsx', 'app/(app)/dashboard/[token]/page.tsx', 'app/(app)/p/[token]/page.tsx']
     for (const str of COPY_STRINGS) {
       const typed = screens.filter(f => {
         const c = codeOf(read(f))
@@ -1051,11 +1051,11 @@ head('2 · every privacy read FAILS CLOSED — a read failure means "private"')
 
   {
     const ui = read('components/manage/EventTypes.tsx')
-    const page = read('app/manage/[token]/page.tsx')
+    const page = read('app/(app)/manage/[token]/page.tsx')
     /* ⛔ `components/dashboard/ThisEventCard.tsx` IS DELETED. Everything this section asserted about
      * the card's private rows is now about the DASHBOARD PAGE: the title in the dark event bar, the
      * `Manage event ▾` link row, and the type picker's two privacy confirms. */
-    const dash = read('app/dashboard/[token]/page.tsx')
+    const dash = read('app/(app)/dashboard/[token]/page.tsx')
 
     /* ══ ⛔ THE BUG THIS SECTION EXISTS FOR ═══════════════════════════════════════════════════════
      * Add event had TWO controls for one fact: an "Event type" dropdown offering "Private" AND a
@@ -1431,7 +1431,7 @@ head('2 · every privacy read FAILS CLOSED — a read failure means "private"')
    * Edit on a wedding to fix a typo in the time would have PUBLISHED ITS ADDRESS on Save, silently.
    * Three copies meant three chances to miss it; there is now one. */
   {
-    const page = read('app/manage/[token]/page.tsx')
+    const page = read('app/(app)/manage/[token]/page.tsx')
     const c = codeOf(page)
     must('V15 ⛔ an Edit button building the form WITHOUT is_private is caught', (() => {
       /* The real file must have exactly ONE builder, and it must carry the flag. */
@@ -1440,7 +1440,7 @@ head('2 · every privacy read FAILS CLOSED — a read failure means "private"')
       const inlineLeft = (c.match(/setEditingEvent\(\{ id: event\.id, venue_name: event\.venue_name/g) || []).length
       return builders === 1 && carries && inlineLeft === 0
     })())
-    const broken = mutate('app/manage/[token]/page.tsx',
+    const broken = mutate('app/(app)/manage/[token]/page.tsx',
       'is_private: event.is_private === true,', '')
     must('V15b ⛔ …and removing the flag from the one builder is caught',
       broken !== null && !/is_private: event\.is_private === true/.test(broken))

@@ -74,7 +74,7 @@ module.exports = async function after({ kit, t, head, read, REPO, snapshot, SNAP
   t('Admin › Countries: the address field is a dropdown of the config\'s formats ("United Kingdom — postcode", "Ireland — Eircode", …)',
     /choice\(code, 'addressFormat', ADDRESS_FORMAT_KEYS\.map\(k => \[k, ADDRESS_FORMATS\[k\]\.adminLabel\]\)\)/.test(tab) && F.ADDRESS_FORMATS.ie.adminLabel === 'Ireland — Eircode' && F.ADDRESS_FORMATS.au.adminLabel === 'Australia — suburb, state, postcode')
   t('…and the form refuses anything that is not a key', /if \(!isAddressFormatKey\(f\.addressFormat\)\) err\('addressFormat'/.test(form))
-  t('addressStyleOf is retired: no caller left', !/addressStyleOf\(/.test(['app/manage/[token]/page.tsx', 'components/manage/SchedulePlaces.tsx', 'lib/copy/addressPlaceholders.ts'].map(read).join('\n')))
+  t('addressStyleOf is retired: no caller left', !/addressStyleOf\(/.test(['app/(app)/manage/[token]/page.tsx', 'components/manage/SchedulePlaces.tsx', 'lib/copy/addressPlaceholders.ts'].map(read).join('\n')))
 
   // ══ 3 ══════════════════════════════════════════════════════════════════════════════════════════════════════════
   head('3 · GB and US byte-identical to the snapshot of the old code')
@@ -100,7 +100,7 @@ module.exports = async function after({ kit, t, head, read, REPO, snapshot, SNAP
   const { PARTS } = arguments[0]
   const manageCard = ['gb', 'us'].flatMap(cc => PARTS[cc].map(p => [cc, p])).filter(([cc, p]) => F.EA.eventAreaLine({ town: p.town, postcode: p.postcode }, cc) !== [p.town, p.postcode].filter(Boolean).join(' · '))
   t("Manage › Schedule's card line 2 (no state passed): GB and US read exactly the old `[town, postcode].join(' · ')`", manageCard.length === 0, manageCard)
-  t('…and Manage passes the format to it', /eventAreaLine\(\{ town: event\.town, postcode: event\.postcode \}, tabSettings\.addressFormat\)/.test(read('app/manage/[token]/page.tsx')))
+  t('…and Manage passes the format to it', /eventAreaLine\(\{ town: event\.town, postcode: event\.postcode \}, tabSettings\.addressFormat\)/.test(read('app/(app)/manage/[token]/page.tsx')))
 
   // ══ 4 ══════════════════════════════════════════════════════════════════════════════════════════════════════════
   head('4 · Ireland, Australia, New Zealand, Canada — the lines from their formats')

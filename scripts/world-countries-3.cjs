@@ -87,8 +87,8 @@ const placeOf = (file, start) => {
 
   head('4 · THE PAGES — /country-terms and /mx/country-terms name the authority')
   const ctx = LP1E.context(kit, REPO)
-  const EN = await ctx.bundle('wc3-en', "export { default as Page } from '@/app/(legal)/country-terms/page'")
-  const MX = await ctx.bundle('wc3-mx', "export { default as Page } from '@/app/[country]/(legal)/country-terms/page'\nexport { default as Layout } from '@/app/[country]/(legal)/layout'")
+  const EN = await ctx.bundle('wc3-en', "export { default as Page } from '@/app/(app)/(legal)/country-terms/page'")
+  const MX = await ctx.bundle('wc3-mx', "export { default as Page } from '@/app/(app)/[country]/(legal)/country-terms/page'\nexport { default as Layout } from '@/app/(app)/[country]/(legal)/layout'")
   const rows = WF.rowsWith(WF.WORLD)
   const en = text(await ctx.withReq({ rows }, async () => ctx.prerender(h(EN.Page, {}))))
   const params = Promise.resolve({ country: 'mx' })

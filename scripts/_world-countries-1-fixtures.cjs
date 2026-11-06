@@ -89,7 +89,7 @@ function CATALOG() {
 }
 const tablesOf = c => ({ plans: c.plans.map(snake), plan_prices: c.prices.map(p => ({ ...snake(p), is_trial_end: p.trialEnd })), plan_features: c.features.map(snake) })
 
-const ROUTE = { landing: 'app/[country]/page', features: 'app/[country]/features/page', compare: 'app/[country]/compare/page' }
+const ROUTE = { landing: 'app/(public)/[country]/page', features: 'app/(public)/[country]/features/page', compare: 'app/(public)/[country]/compare/page' }
 /** Pages, PDF, sitemap and /llms.txt over one LP1E context (europe-settings' renderer, with this catalogue). */
 function renderer(kit, tag) {
   const { h } = kit

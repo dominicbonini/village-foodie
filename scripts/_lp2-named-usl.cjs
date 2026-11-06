@@ -358,7 +358,7 @@ function entries({ mapStrings, isTicketView }) {
 
     // ── us-layout-fix-11-pickup-row ──
     { id: 'us-layout-fix-11-pickup-row', part: PART, country: 'US',
-      what: 'Manage my order (app/order/[id]/manage), 12-hour truck: the Pickup row gains `gap-4` and data-pickup-row, its label `shrink-0`, and the value is right-aligned (`text-right min-w-0`) with the time and the venue each a `block` line (was "6:30 PM · The Green" on one line).',
+      what: 'Manage my order (app/(app)/order/[id]/manage), 12-hour truck: the Pickup row gains `gap-4` and data-pickup-row, its label `shrink-0`, and the value is right-aligned (`text-right min-w-0`) with the time and the venue each a `block` line (was "6:30 PM · The Green" on one line).',
       views: id => /^1a\/statusPage\/US\|/.test(id),
       expect: strings(pickupRow) },
 

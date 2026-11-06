@@ -50,7 +50,7 @@ const codeOf = src => src
   .replace(/^[ \t]*\/\/.*$/gm, '')
 
 const FEATURES = read('lib/features.ts')
-const MANAGE_PAGE = read('app/manage/[token]/page.tsx')
+const MANAGE_PAGE = read('app/(app)/manage/[token]/page.tsx')
 const MANAGE_ROUTE = read('app/api/manage/route.ts')
 const POST_ROUTE = read('app/api/weekly-post/route.ts')
 /** 🔴 THE ONE KEY FOR SOCIAL MEDIA. ⚠️ Its NAME is historical — see `lib/features.ts`. */
@@ -133,7 +133,7 @@ head('1 · the key is a PLAN key — Pro, Max and trial — and the preview key 
     // lives in lib/legacy-pricing-display.ts, which is read in its place.
     // ⚠️ RE-PINNED (pricing-pages, Stage B, 20 October 2026): lib/legacy-pricing-display.ts is deleted; the plan table's
     // rows are lib/feature-table.ts, read in its place.
-    const files = ['app/manage/[token]/page.tsx', 'app/api/manage/route.ts',
+    const files = ['app/(app)/manage/[token]/page.tsx', 'app/api/manage/route.ts',
       'app/api/weekly-post/route.ts', 'lib/feature-table.ts']
     return files.every(f => !codeOf(read(f)).includes(OLD_KEY))
   })())

@@ -22,7 +22,7 @@ const read = f => fs.readFileSync(path.join(REPO, f), 'utf8')
 // while they were uncommitted. They are committed in 8a5c4b5a ("US readiness"), so HEAD now CONTAINS them and stopped
 // being a BEFORE. Pinned to that commit's parent, 978f6f67 — the source these fixes changed, as they found it.
 const BEFORE_REF = '978f6f67'
-const atHead = f => execFileSync('git', ['show', `${BEFORE_REF}:${f}`], { cwd: REPO, encoding: 'utf8', maxBuffer: 64 << 20 })
+const atHead = f => execFileSync('git', ['show', `${BEFORE_REF}:${require('./_moved-paths.cjs').pathAt(BEFORE_REF, f)}`], { cwd: REPO, encoding: 'utf8', maxBuffer: 64 << 20 })
 const whole = (file, src) => ({ file, from: /^[\s\S]*$/, to: () => src })
 const textOf = html => html.replace(/<style[\s\S]*?<\/style>/g, '').replace(/<[^>]+>/g, ' ').replace(/&amp;/g, '&').replace(/&#x27;|&#39;/g, "'").replace(/&quot;/g, '"').replace(/\s+/g, ' ').trim()
 const snake = o => Object.fromEntries(Object.entries(o).map(([k, v]) => [k.replace(/[A-Z]/g, c => '_' + c.toLowerCase()), v]))
@@ -59,11 +59,11 @@ const cardBefore = () => {
     'next/headers': "export async function headers() { return new Map([['host', globalThis.__host || '']]) }",
   }
   const FEED_FILE = 'app/api/discovery/events/route.ts'
-  const PAGE_FILES = ['app/trucks/[slug]/page.tsx', 'app/trucks/[slug]/TruckClient.tsx']
+  const PAGE_FILES = ['app/(app)/trucks/[slug]/page.tsx', 'app/(app)/trucks/[slug]/TruckClient.tsx']
   const FEED = { A: await kit.bundle('usrf-feed-a', `export { GET } from '@/${FEED_FILE}'` + clear),
     B: await kit.bundle('usrf-feed-b', `export { GET } from '@/${FEED_FILE}'` + clear, { patches: [whole(FEED_FILE, atHead(FEED_FILE))] }) }
-  const PAGE = { A: await kit.bundle('usrf-page-a', "export { default } from '@/app/trucks/[slug]/page'" + clear, { stubs: PAGE_STUBS }),
-    B: await kit.bundle('usrf-page-b', "export { default } from '@/app/trucks/[slug]/page'" + clear, { stubs: PAGE_STUBS,
+  const PAGE = { A: await kit.bundle('usrf-page-a', "export { default } from '@/app/(app)/trucks/[slug]/page'" + clear, { stubs: PAGE_STUBS }),
+    B: await kit.bundle('usrf-page-b', "export { default } from '@/app/(app)/trucks/[slug]/page'" + clear, { stubs: PAGE_STUBS,
       patches: [...PAGE_FILES.map(f => whole(f, atHead(f))), whole('components/TruckListCard.tsx', cardBefore())] }) }
 
   // ── the world: Gusto-shaped and Pizza Kitchen-shaped trucks (each with a discovery row), and three with none ──
@@ -184,7 +184,7 @@ const cardBefore = () => {
     t('today\'s event keeps "Today · {range}" (the message is unchanged)', gb('banner.today', { range: '11:30 – 20:00' }) === 'Today · 11:30 – 20:00')
     t('KDS confirmation: "This event is on Sun, Oct 25. Start it now?"', us('event.startFutureConfirm', { date: m.formatShortDate('2026-10-25', US) }) === 'This event is on Sun, Oct 25. Start it now?')
     t('dashboard confirmation: the same words', m.translatorFor('en-US', 'dashboard')('startFutureConfirm', { date: 'Sun, Oct 25' }) === 'This event is on Sun, Oct 25. Start it now?')
-    const kds = read('app/dashboard/[token]/kds/page.tsx'), dash = read('app/dashboard/[token]/page.tsx')
+    const kds = read('app/(app)/dashboard/[token]/kds/page.tsx'), dash = read('app/(app)/dashboard/[token]/page.tsx')
     t('the KDS banner says "Today" only when event_date is the truck\'s today', /activeEvent\.event_date === getLocalDateInTz\(kdsTz\)\s*\? t\('banner\.today'/.test(kds) && kds.includes("t('banner.onDate', { date: formatShortDate(activeEvent.event_date, kdsTime)"))
     t('both openEvent paths confirm only for a date after the truck\'s today, before any request',
       /ev\.event_date > getLocalDateInTz\(kdsTz\) && !window\.confirm\(t\('event\.startFutureConfirm'[\s\S]{0,200}\)\)\) return\n    try \{/.test(kds)
@@ -239,8 +239,8 @@ const cardBefore = () => {
   // ════════════════════════════════════════════════════════════════════════════════════════════════════
   head('4 · the cancel page')
   {
-    const P = await kit.bundle('usrf-cancel', "export { default } from '@/app/order/[id]/manage/page'\nexport { I18nContext } from '@/lib/i18n/use-t'",
-      { patches: [{ file: 'app/order/[id]/manage/page.tsx', states: ['loading', 'cancelled', 'cancelPaymentState', 'order'] }] })
+    const P = await kit.bundle('usrf-cancel', "export { default } from '@/app/(app)/order/[id]/manage/page'\nexport { I18nContext } from '@/lib/i18n/use-t'",
+      { patches: [{ file: 'app/(app)/order/[id]/manage/page.tsx', states: ['loading', 'cancelled', 'cancelPaymentState', 'order'] }] })
     const render = (state, locale = 'en-GB') => {
       globalThis.__ms = { loading: false, cancelled: true, cancelPaymentState: state, order: { truck_name: 'Pizza Kitchen', status: 'confirmed' } }
       try { return textOf(kit.renderStatic(kit.h(P.I18nContext.Provider, { value: { locale, setLocale() {} } }, kit.h(P.default)))) } finally { delete globalThis.__ms }
@@ -299,7 +299,7 @@ const cardBefore = () => {
       && (src('app/api/dashboard/action/route.ts').match(new RegExp(`readEventRegion\\(supabase, \\w+\\?\\.id${FMT}\\)`, 'g')) || []).length === 5
       && src('app/api/events/action/route.ts').includes('region: await readEventRegion(supabase, eventId, await addressFormatForTruck(truck))')
       && !/select\([^)]*\bregion\b/.test(src('app/api/orders/submit/route.ts') + src('lib/payments/promote-draft.ts') + src('app/api/dashboard/action/route.ts')))
-    const m = src('app/api/manage/route.ts'), mp = src('app/manage/[token]/page.tsx')
+    const m = src('app/api/manage/route.ts'), mp = src('app/(app)/manage/[token]/page.tsx')
     t('Manage saves the state only when the client sent it, in its own update after the save (never in the insert/update)',
       m.includes("if (body.region !== undefined && savedEvent?.id) {") && !/insert\(\{[^\n]*region/.test(m) && !/update\(\{ venue_name[^\n]*region/.test(m))
     // ⚠️ RE-PINNED (address-formats-2, 21 October 2026): "the US (zip_state) style" is now "a format with a region field"

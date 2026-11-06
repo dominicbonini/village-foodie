@@ -32,7 +32,7 @@ const shell = (body, pad = '') => `<!doctype html><html lang="en-CA"><head><meta
 
   // The order page's checkout, per province — the real page with its states patched (scripts/canada-1.cjs §4 does the same).
   const ENG = await kit.bundle('ca1s-engine', "export * as E from '@/lib/order-charges'\nexport * as R from '@/lib/order-charge-rules'")
-  const OP = 'app/trucks/[slug]/order/page.tsx'
+  const OP = 'app/(app)/trucks/[slug]/order/page.tsx'
   const page = await kit.bundle('ca1s-orderpage', `export { default as OrderPage } from '@/${OP}'\nexport { I18nContext } from '@/lib/i18n/use-t'`, {
     patches: [{ file: OP, states: ['truck', 'menu', 'events', 'event', 'eventLoading', 'loading', 'basket', 'appliedDeals', 'formSheetOpen', 'payByCard', 'tipSel', 'tipOther',
       'summaryExpanded', 'sheetSummaryExpanded', 'name', 'email'] }, { file: OP, from: 'const { slug } = use(params)', to: 'const { slug } = params' }],

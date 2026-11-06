@@ -43,7 +43,7 @@ const REPO = path.resolve(__dirname, '..')
  * harnesses in this repository. */
 const BEFORE_REF = '0ce4c83'
 const gitShow = (ref, f) => {
-  try { return execFileSync('git', ['show', `${ref}:${f}`], { cwd: REPO, encoding: 'utf8', maxBuffer: 64e6 }) }
+  try { return execFileSync('git', ['show', `${ref}:${require('./_moved-paths.cjs').pathAt(ref, f)}`], { cwd: REPO, encoding: 'utf8', maxBuffer: 64e6 }) }
   catch { return null }
 }
 
@@ -638,7 +638,7 @@ head('2 · ZERO CHANGE FOR A TRUCK WITH NO TYPES AND NO OWN PRICES')
     const SUSPECTS = [
       'app/api/menu/[truckId]/route.ts', 'app/api/orders/submit/route.ts',
       'app/api/dashboard/action/route.ts', 'app/api/event-types/route.ts',
-      'components/manage/EventTypes.tsx', 'app/dashboard/[token]/page.tsx',
+      'components/manage/EventTypes.tsx', 'app/(app)/dashboard/[token]/page.tsx',
       'components/shared/PriceControls.tsx',
     ]
     const offenders = []

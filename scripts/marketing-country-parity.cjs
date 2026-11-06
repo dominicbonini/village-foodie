@@ -56,7 +56,7 @@ const AP = require('./_lp-about-page.cjs')
 const aboutSide = A => (AP.LANDED ? AP.dropLinkText(A) : A)
 /** The country buttons a page should carry: the footer's only, from about-page; header + footer before. */
 const WANT_MENUS = AP.LANDED ? 'footer' : 'header,footer'
-const PAGES = { landing: 'app/landing/page.tsx', features: 'app/features/page.tsx', compare: 'app/compare/page.tsx' }
+const PAGES = { landing: 'app/(public)/(site)/landing/page.tsx', features: 'app/(public)/(site)/features/page.tsx', compare: 'app/(public)/(site)/compare/page.tsx' }
 const modsBy = {}
 async function pages(build = 'real') {
   if (modsBy[build]) return modsBy[build]
@@ -207,7 +207,7 @@ function stageBChecks(views, pdf) {
   const cmp = views.compare.attrs, k = cmp.indexOf('aria-label=Months free')
   // ⚠️ RE-PINNED (compare-tidy-2, 20 October 2026): the months-free input is gone (T-free). The months are the data default
   // (the trial's) unless the page's ?free=N (1–12) overrides them — the page hands that to the calculator as a prop.
-  if (COMPARE_TIDY_2) ok(k < 0 && /freeMonthsOverride=\{freeMonthsOverride\}/.test(read('app/compare/page.tsx')) && /freeMonthsOverride \?\? offerTrialMonths\(catalog\) \?\? 0/.test(read('app/compare/CostComparison.tsx')),
+  if (COMPARE_TIDY_2) ok(k < 0 && /freeMonthsOverride=\{freeMonthsOverride\}/.test(read('app/(public)/(site)/compare/page.tsx')) && /freeMonthsOverride \?\? offerTrialMonths\(catalog\) \?\? 0/.test(read('app/(public)/(site)/compare/CostComparison.tsx')),
     `B-compare · no "Months free" input; the months are freeMonthsOverride ?? the trial's (${n})`)
   else ok(k >= 0 && cmp[k + 1] === `value=${n}`, `B-compare · "Months free" defaults to the trial's ${n}`)
   ok(pdf.text.includes(`Your first ${n} months are completely free`) && pdf.text.includes(tableHeadB()) && FOOTNOTE_GB_B.test(pdf.text) && pdf.text.includes('Generated <date>'),
@@ -227,8 +227,8 @@ function stageBChecks(views, pdf) {
 //               value=<the B-compare default>) — the months are data now (freeMonthsOverride ?? the trial);
 //   T-inert     not in the text or attributes: every dimmed card (opacity 0.45) also has pointer-events:none and `inert`,
 //               asserted on the HTML in tidyChecks.
-const COMPARE_TIDY = !/const \[staff, setStaff\]/.test(read('app/compare/CostComparison.tsx'))
-const COMPARE_TIDY_2 = /freeMonthsOverride/.test(read('app/compare/CostComparison.tsx'))
+const COMPARE_TIDY = !/const \[staff, setStaff\]/.test(read('app/(public)/(site)/compare/CostComparison.tsx'))
+const COMPARE_TIDY_2 = /freeMonthsOverride/.test(read('app/(public)/(site)/compare/CostComparison.tsx'))
 // ⚠️ RE-PINNED (features-page-restore, 20 October 2026): /features in the pre-Stage-B look — the named change's words.
 const FR = require('./_lp-features-restore.cjs')
 const TIDY_FREE_TEXT = ' 5 Your introductory offer — how many months free? No plan fee, no service fee'
@@ -390,7 +390,7 @@ async function compare() {
     stageBChecks(viewsB, pdfGB)
     if (COMPARE_TIDY) tidyChecks(viewsB)   // ⚠️ RE-PINNED (compare-tidy, 20 October 2026): the named /compare tidy, asserted
   } else ok(pdfGB.text === BEFORE.pdf.text && JSON.stringify(pdfGB.attrs) === JSON.stringify(BEFORE.pdf.attrs), 'plans PDF (GB) identical', firstDiff(pdfGB.text, BEFORE.pdf.text))
-  const route = read('app/landing/features-pdf/route.ts')
+  const route = read('app/(public)/(site)/landing/features-pdf/route.ts')
   ok(/resolveVisitorCountry\(req\.nextUrl\.searchParams\.get\('country'\)\)/.test(route) && /generatePlansPdf\(visitor\.settings\.countryCode\)/.test(route), 'the PDF route prints the resolved country')
   ok(/verifyAdmin\(\)/.test(route) && /'Cache-Control': 'no-store, max-age=0'/.test(route), 'the PDF route keeps its admin gate and no-store')
 
@@ -480,7 +480,7 @@ async function compare() {
   }
 
   console.log('5. Not cached across countries; gates kept')
-  const layout = read('app/landing/layout.tsx'), feat = read('app/features/page.tsx'), cmp = read('app/compare/page.tsx'), vcSrc = read('lib/visitor-country.ts')
+  const layout = read('app/(public)/(site)/landing/layout.tsx'), feat = read('app/(public)/(site)/features/page.tsx'), cmp = read('app/(public)/(site)/compare/page.tsx'), vcSrc = read('lib/visitor-country.ts')
   ok(/export const dynamic = 'force-dynamic'/.test(layout) && /export const dynamic = 'force-dynamic'/.test(feat) && /export const dynamic = 'force-dynamic'/.test(cmp), 'landing (layout), /features and /compare are force-dynamic')
   ok(/headers\(\), cookies\(\)/.test(vcSrc), 'the resolver reads the request (headers and cookies), so each request renders its own country')
   ok(/if \(!\(await onHatchGrab\(\)\)\) \{\s*notFound\(\)/.test(feat) && /if \(!\(await onHatchGrab\(\)\)\) \{\s*notFound\(\)/.test(cmp), '/features and /compare keep the brand gate, before the country read')

@@ -31,7 +31,7 @@ import { comparisonFooter } from '@/lib/comparison-server'
 import { appsOf } from '@/lib/comparison-flags'
 import { faqHrefFor } from '@/lib/faq/public'
 import type { VisitorCountry } from '@/lib/visitor-country'
-import '@/app/landing/landing.css'
+import '@/app/(public)/(site)/landing/landing.css'
 
 // Self-hosted, non-render-blocking — as the landing page. seo-fixes S7: --ticket is declared but not preloaded.
 // cwv-1 (5 November 2026): Archivo's ITALIC is its own instance, declared but NOT preloaded. Only below-the-fold text uses it (the

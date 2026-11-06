@@ -93,8 +93,8 @@ const faqLd = html => { const m = /<script type="application\/ld\+json">([\s\S]*
 ;(async () => {
   const ctx = LP1E.context(kit, REPO)
   const M = await ctx.bundle('faq2-live', [
-    "export { default as Landing, generateMetadata } from '@/app/[country]/page'",
-    "export { default as FaqPage, generateMetadata as faqMetadata } from '@/app/[country]/faq/page'",   // ⚠️ RE-PINNED (faq-4)
+    "export { default as Landing, generateMetadata } from '@/app/(public)/[country]/page'",
+    "export { default as FaqPage, generateMetadata as faqMetadata } from '@/app/(public)/[country]/faq/page'",   // ⚠️ RE-PINNED (faq-4)
     "export { clearPublicFaqCache as __faq, landingFaq } from '@/lib/faq/public'",
     "export { clearPlanCatalogCache as __p } from '@/lib/plans-server'",
     "export { clearComparisonCache as __cmp } from '@/lib/comparison-flags'",
@@ -285,7 +285,7 @@ const faqLd = html => { const m = /<script type="application\/ld\+json">([\s\S]*
     const ld = faqLd(p.html)
     t(`/${seg}: FAQPage "<canonical>#faq", every question and answer equal to the visible text`, !!ld && ld['@id'] === `${p.meta.alternates.canonical}#faq` && JSON.stringify(ld.mainEntity.map(e => ({ q: e.name, a: e.acceptedAnswer.text }))) === JSON.stringify(v.pairs))
   }
-  t('Arabic pages are dir="rtl" (app/layout.tsx, as already set — 35.an-24)', /\{\.\.\.\(isRtl\(lang\) \? \{ dir: 'rtl' \} : \{\}\)\}/.test(read('app/layout.tsx')))
+  t('Arabic pages are dir="rtl" (app/(app)/layout.tsx, as already set — 35.an-24)', /\{\.\.\.\(isRtl\(lang\) \? \{ dir: 'rtl' \} : \{\}\)\}/.test(read('app/(app)/layout.tsx')))
   const deNone = await landing('de', { ...FAQ(), faq_translations: [] })
   t('a language with no translation shows no FAQ at all (faq-4: /de/faq is a 404 — no heading, no FAQPage)', deNone.notFound && !deNone.html)
 

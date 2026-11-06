@@ -528,7 +528,7 @@ function panelLines(Panel, X, units, n, on, endMins, cx) {
     const rows = X.E.buildSlotAvailability({ times: grid(X, 17 * 60, 21 * 60, 5), productionSlotUnits: DOMINIC_UNITS, catConfigs: PIZZA15, kitchenCapacity: null, capacityWindowMins: 5, date: '2099-01-01', nowMins: 0, earliestCollectionMins: 0, eventStartMins: 17 * 60, displayIntervalMins: 5 })
     const r = rows.find(x => x.collection_time === '17:05')
     check(r.tone === 'red' && r.available === true && !('label' in r) && !Object.values(r).some(v => typeof v === 'string' && /next free|free/.test(v)), `customer row 17:05: tone ${r.tone}, available ${r.available} (today's window), no reason text`)
-    const page = fs.readFileSync(path.join(REPO, 'app/trucks/[slug]/order/page.tsx'), 'utf8')
+    const page = fs.readFileSync(path.join(REPO, 'app/(app)/trucks/[slug]/order/page.tsx'), 'utf8')
     check(!/next free|formatOverlapLabel|overlap\./.test(page), 'the customer page renders no operator reason (no "next free", no formatter)') }
   { // 10–30 grids: the peak coverage still stands, and the rolling read combines with it by max.
     const cx = { ...DOMINIC, iv: 10 }; const L = lines(X, cx, { '17:00': { pizza: 8 }, '17:30': { pizza: 8 } })

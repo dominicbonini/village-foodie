@@ -18,23 +18,23 @@ fs.mkdirSync(WORK, { recursive: true })
 const kit = require(path.join(REPO, 'scripts/_render-kit.cjs'))({ cacheTag: 'usaudit-A-customer' })
 
 ;(async () => {
-  const OP = 'app/trucks/[slug]/order/page.tsx'
+  const OP = 'app/(app)/trucks/[slug]/order/page.tsx'
   const ORDER_STATES = ['truck', 'menu', 'events', 'event', 'eventLoading', 'loading', 'basket', 'appliedDeals', 'isScrolled', 'activeCategory', 'noEvents',
     'formSheetOpen', 'payByCard', 'tipSel', 'summaryExpanded', 'sheetSummaryExpanded', 'name', 'email', 'phone', 'slotHour', 'slotMinute', 'availableSlots', 'asapChosen',
     'submitted', 'submittedOrderId', 'submittedAutoAccepted', 'submittedConfirmedSlot', 'submittedRequestedSlot', 'submittedCharges', 'submittedTotal']
   const O = await kit.bundle('order', `export { default as OrderPage } from '@/${OP}'\nexport { I18nContext } from '@/lib/i18n/use-t'\nexport * as E from '@/lib/order-charges'\nexport * as R from '@/lib/order-charge-rules'`, {
     patches: [{ file: OP, states: ORDER_STATES }, { file: OP, from: 'const { slug } = use(params)', to: 'const { slug } = params' }],
   })
-  const MP = 'app/order/[id]/manage/page.tsx'
+  const MP = 'app/(app)/order/[id]/manage/page.tsx'
   const M = await kit.bundle('manage', `export { default as ManagePage } from '@/${MP}'`, { patches: [{ file: MP, states: ['order', 'loading'] }] })
-  const TC = 'app/trucks/[slug]/TruckClient.tsx'
+  const TC = 'app/(app)/trucks/[slug]/TruckClient.tsx'
   const T = await kit.bundle('truckclient', `export { default as TruckClient } from '@/${TC}'\nexport { createSlug } from '@/lib/utils'`, {
     patches: [{ file: TC, from: '<TruckListCard key={event.id} event={event} slug={slug} />', to: '<TruckListCard key={event.id} event={event} slug={slug} time={globalThis.__projTime} />' }],
     alias: { '@/hooks/useVillageData': 'scripts/us-layout-audit/A-customer/stub-village-data.cjs' },
     stubs: { 'posthog-js/react': 'export const usePostHog = () => null', 'next/script': 'export default function Script() { return null }', 'next/dynamic': 'export default function dynamic(_l, o) { return function D() { return o && o.loading ? o.loading() : null } }' },
   })
   const ES = 'app/embed/[slug]/EmbedSchedule.tsx'
-  const D = await kit.bundle('domain', `export { default as DomainPage } from '@/app/domain/page'`, {
+  const D = await kit.bundle('domain', `export { default as DomainPage } from '@/app/(app)/domain/page'`, {
     patches: [{ file: ES, states: ['events'] }, { file: ES, from: 'orderOrigin={orderOrigin}\n        />', to: 'orderOrigin={orderOrigin}\n          time={globalThis.__projTime}\n        />' }],
     stubs: { 'next/headers': "export async function headers() { return new Map([['host', 'schedule.pizzakitchen.test']]) }" },
   })

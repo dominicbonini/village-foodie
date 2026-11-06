@@ -25,7 +25,7 @@ const t = (label, ok, detail) => { if (ok) { pass++; console.log('  ✓ ' + labe
 async function css() {
   const postcss = (await import(path.join(REPO, 'node_modules/postcss/lib/postcss.mjs'))).default
   const tw = (await import(require.resolve('@tailwindcss/postcss', { paths: [REPO] }))).default
-  const from = path.join(REPO, 'app/globals.css')
+  const from = path.join(REPO, 'app/(app)/globals.css')
   const r = await postcss([tw({ base: REPO })]).process(fs.readFileSync(from, 'utf8').replace(/@import "leaflet[^"]*";/, ''), { from })
   return r.css
 }

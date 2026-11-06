@@ -22,7 +22,7 @@ check(hint(5, GUSTO) === null, "Gusto's shape (prep 5, every 5; instant categori
 check(hint(5, []) === null && hint(5, [{ name: 'Drinks', prep_secs: 0 }]) === null, 'no cooking categories: hidden')
 check(hint(10, [{ name: 'Burgers', prep_secs: 600 }, { name: 'Pizza', prep_secs: 900 }, { name: 'Roast', prep_secs: 1500 }]) === 'Roast takes 25 minutes to cook, so some times between batches will show as full.', 'the LONGEST misaligned category is named (Burgers lines up at 10; Pizza 15 and Roast 25 do not → Roast)')
 console.log('\n── THE PAGES: one conditional line, the effective interval, identical on both ─────────────')
-const manage = fs.readFileSync(path.join(REPO, 'app/manage/[token]/page.tsx'), 'utf8'), dash = fs.readFileSync(path.join(REPO, 'app/dashboard/[token]/page.tsx'), 'utf8')
+const manage = fs.readFileSync(path.join(REPO, 'app/(app)/manage/[token]/page.tsx'), 'utf8'), dash = fs.readFileSync(path.join(REPO, 'app/(app)/dashboard/[token]/page.tsx'), 'utf8')
 const LINE = /\{\(\(\) => \{ const mc = misalignedCookingCategory\(overrideOn \? operator : customer, ([^)]*)\); return mc \? <p className="text-xs text-amber-700 mt-1">\{collectionTimesHint\(mc\)\}<\/p> : null \}\)\(\)\}/
 // ⚠️ RE-PINNED (Language Phase 1d): Manage's line now takes its sentence from the message
 // manageSettings.collection.misaligned — `t('collection.misaligned', { name: mc.name, mins: mc.prepMins })` — instead

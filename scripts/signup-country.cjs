@@ -191,7 +191,7 @@ const BASE_GB = { country: 'GB', timezone: 'Europe/London', contact_phone: '0770
   ok(strictUs.json.ok === true, "US on its own 'strict' rule · its example number passes")
 
   console.log('7. The two signup screens and the shared step')
-  const demo = read('components/DemoGetStarted.tsx'), setup = read('app/setup/page.tsx'), step = read('components/setup/WhereBasedStep.tsx')
+  const demo = read('components/DemoGetStarted.tsx'), setup = read('app/(app)/setup/page.tsx'), step = read('components/setup/WhereBasedStep.tsx')
   ok(/type Step = 'landing' \| 'based' \| 'truck' \| 'details'/.test(demo) && /setStep\('based'\)/.test(demo), 'demo modal · "based" is the first wizard step (landing → based → truck → details)')
   ok(/const signupPhone: PhoneCopy \| null = chosenCountry\?\.phone \?\? phone/.test(demo) && /isPlausiblePhone\(contactPhone, signupPhone\.phoneCountry, signupPhone\.phoneCheck\)/.test(demo) && /phonePlaceholder\(signupPhone\)/.test(demo), 'demo modal · phone check, error and placeholder from the chosen country')
   ok(/\.\.\.\(base \? baseAnswerBody\(base\) : \{\}\)/.test(demo) && /\.\.\.\(base \? baseAnswerBody\(base\) : \{\}\)/.test(setup), 'both screens send the answer with create_truck')
@@ -208,7 +208,7 @@ const BASE_GB = { country: 'GB', timezone: 'Europe/London', contact_phone: '0770
   console.log('8. No travel distance anywhere')
   ok(!fs.existsSync(path.join(REPO, 'lib/travel-distance.ts')), 'lib/travel-distance.ts is deleted')
   const TRAVEL = /travel_radius_km|travelKm|TravelChoices|travel-distance|distanceUnit|distance_unit|usually travel/
-  const users = ['components/setup/WhereBasedStep.tsx', 'components/DemoGetStarted.tsx', 'app/setup/page.tsx', 'components/manage/WhereYouTrade.tsx',
+  const users = ['components/setup/WhereBasedStep.tsx', 'components/DemoGetStarted.tsx', 'app/(app)/setup/page.tsx', 'components/manage/WhereYouTrade.tsx',
     'lib/settings-copy.ts', 'lib/provision-truck.ts', 'app/api/setup/route.ts', 'lib/signup-countries.ts', 'lib/signup-country-types.ts']
   const code = f => read(f).replace(/^\s*\/\/.*$/gm, '')   // comments may explain the removal; code may not name it
   const named = users.filter(f => TRAVEL.test(code(f)))
@@ -252,7 +252,7 @@ const BASE_GB = { country: 'GB', timezone: 'Europe/London', contact_phone: '0770
   // ⚠️ RE-PINNED (ireland-1, 20 October 2026): the en-GB sentence no longer names the country (see COUNTRY_OFF_US).
   ok(aOff.status === 400 && !aOff.truck && /Trucks in that country can’t sign up yet/.test(aOff.json.error || ''), 'admin · switched-off US refused', aOff.json)
   ok(!/country: 'GB'/.test(read('app/api/admin/create-truck/route.ts')), "admin route · no hard-coded 'GB'")
-  ok(/useSignupCountries\(showNewTruck\)/.test(read('app/admin/page.tsx')) && /country: newTruckCountry/.test(read('app/admin/page.tsx')), 'admin form · Country select of switched-on countries, sent with the create')
+  ok(/useSignupCountries\(showNewTruck\)/.test(read('app/(app)/admin/page.tsx')) && /country: newTruckCountry/.test(read('app/(app)/admin/page.tsx')), 'admin form · Country select of switched-on countries, sent with the create')
 
   console.log('11. Manage › Where you trade — its own action, the same check, the country never written')
   const mr = read('app/api/manage/route.ts')

@@ -142,7 +142,7 @@ console.log('\n── TICKING PRE-SETS TO THE EFFECTIVE CUSTOMER VALUE ───
   const eff = await resolve('ev-cust15')
   const ticked = applyEventIntervals({ customer: 15, truck: 5 }, { collection_interval_mins_override: eff.customer, operator_collection_interval_mins_override: eff.customer })
   check(ticked.truck === eff.customer && ticked.truck === 15, `ticking on a 15 event pre-sets the operator to 15 (not the van's 5, not 5)`)
-  const src2 = strip(src('app/dashboard/[token]/page.tsx'))
+  const src2 = strip(src('app/(app)/dashboard/[token]/page.tsx'))
   check(/onChange=\{e=>saveCollectionIntervals\(customer,e\.target\.checked\?customer:null\)\}/.test(src2),
     '…and the control does exactly that: checked ? customer : null')
 }
@@ -151,7 +151,7 @@ console.log('\n── REVERT: BOTH COLUMNS NULL ⇒ BACK TO THE VAN ────
 {
   const reverted = applyEventIntervals({ customer: 15, truck: 5 }, { collection_interval_mins_override: null, operator_collection_interval_mins_override: null })
   check(reverted.customer === 15 && reverted.truck === 5, `revert → ${reverted.customer}/${reverted.truck}, the van's pair`)
-  const page = strip(src('app/dashboard/[token]/page.tsx'))
+  const page = strip(src('app/(app)/dashboard/[token]/page.tsx'))
   check(/onClick=\{\(\)=>saveCollectionIntervals\(null,null\)\}/.test(page), '"Use my usual setting" calls the saver with (null, null)')
   // Language Phase 1b re-pin: "Use my usual setting" is `dashboard.settings.useUsual`, read by THAT button.
   check(GB.dashboard.settings.useUsual === 'Use my usual setting'
@@ -176,7 +176,7 @@ console.log('\n── CUSTOMER PATHS NEVER RECEIVE THE OPERATOR VALUE ───�
   const events = strip(src('app/api/events/route.ts'))
   const submit = strip(src('app/api/orders/submit/route.ts'))
   const promote = strip(src('lib/payments/promote-draft.ts'))
-  const orderPage = strip(src('app/trucks/[slug]/order/page.tsx'))
+  const orderPage = strip(src('app/(app)/trucks/[slug]/order/page.tsx'))
   const menu = strip(src('app/api/menu/[truckId]/route.ts'))
   check(/\)\.customer,/.test(events) && !/\.truck\b/.test(events), '/api/events publishes only .customer')
   check(/const customerIntervalMins = \(vanId \|\| vanIv\.fromEvent\) \? vanIv\.customer :/.test(submit), 'submit uses .customer (event → van → legacy truck)')
@@ -223,7 +223,7 @@ console.log('\n── A 42703 DISABLES ONLY THE BOX ─────────�
   const mainSelect = (dashRoute.match(/\.from\('truck_events'\)\s*\n?\s*\.select\('([^']+)'/) || [])[1] || ''
   check(!/collection_interval_mins_override/.test(mainSelect), '🔴 the dashboard\'s MAIN event select names neither override column')
   check(/const eventIntervalOverrides = await readEventIntervalsForTruck\(supabase, truck\.id\)/.test(dashRoute), '…they come from a separate probed read')
-  const page = strip(src('app/dashboard/[token]/page.tsx'))
+  const page = strip(src('app/(app)/dashboard/[token]/page.tsx'))
   check(/\{!eventIntervalsAvailable \? \(/.test(page), 'the box branches on the flag')
   // Language Phase 1b re-pin: the line is `dashboard.settings.intervalsUnavailable`, read in the branch's unavailable arm.
   check(GB.dashboard.settings.intervalsUnavailable === 'Collection times are unavailable right now.'
@@ -243,7 +243,7 @@ console.log('\n── DASHBOARD ORDER: Collection times sits DIRECTLY ABOVE Kitc
   // 🔴 FAILURE MODE: the box drifting away from the Kitchen capacity card — back to where it first
   // landed (above the buzzer card, four cards away), or anywhere else — so the dashboard stops matching
   // Manage, where the same box sits directly above the same card.
-  const page = src('app/dashboard/[token]/page.tsx')
+  const page = src('app/(app)/dashboard/[token]/page.tsx')
   // The Settings tab's card sequence, as the titles the operator reads, in source order.
   const TITLES = ['Collection times', 'Remind me to add a buzzer', 'Take card payments online', 'Sounds', 'Kitchen capacity']
   const tabStart = page.indexOf("{activeTab==='settings'&&(")
@@ -276,7 +276,7 @@ console.log('\n── DASHBOARD ORDER: Collection times sits DIRECTLY ABOVE Kitc
    * sits directly above the dashboard's own capacity card, which did NOT move. What replaces the
    * Manage half is the one thing still worth pinning — that Manage has the card in exactly ONE place,
    * so this reads as a deliberate split rather than a half-finished move that left two copies. */
-  const manage = src('app/manage/[token]/page.tsx')
+  const manage = src('app/(app)/manage/[token]/page.tsx')
   const CARD = 'Kitchen capacity — ONE aligned grid'
   const kcFile = src('components/manage/KitchenCapacitySection.tsx')
   check(manage.indexOf('COLLECTION TIMES — PER VAN') > 0, 'Manage still has its Collection times box')

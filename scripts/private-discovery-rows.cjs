@@ -83,7 +83,7 @@ const db = () => { const pg = makeFakePg(world(), { keys: KEYS_BOTH, defaults: C
   // the same feed WITHOUT the new guard — what the public saw before the fix (the patch must apply, or this throws)
   const FEED0 = await kit.bundle('pdr-feed-before', "export { GET } from '@/app/api/discovery/events/route'" + clear, { stubs: STUBS,
     patches: [{ file: 'app/api/discovery/events/route.ts', from: 'if (isNonPublicDiscoveryRow(e)) return null', to: '/* guard removed for the BEFORE render */' }] })
-  const TC = await kit.bundle('pdr-truck', "export { default } from '@/app/trucks/[slug]/TruckClient'", { stubs: PAGE_STUBS })
+  const TC = await kit.bundle('pdr-truck', "export { default } from '@/app/(app)/trucks/[slug]/TruckClient'", { stubs: PAGE_STUBS })
   const clearAll = () => { for (const m of [GATE, INB, FEED, FEED0]) if (m.clearCountrySettingsCache) m.clearCountrySettingsCache() }
 
   // 1 ── the rule

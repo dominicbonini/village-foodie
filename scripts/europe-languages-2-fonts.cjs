@@ -44,12 +44,12 @@ const SCRIPT = { el: { name: 'Greek', cp: 0x03B1 /* α */ }, bg: { name: 'Cyrill
   // ⚠️ RE-PINNED (world-countries-2, 1 November 2026): the Noto Sans definition moved from app/layout.tsx to lib/script-fonts.ts,
   // so the language provider (lib/i18n/client.tsx) applies it too on a truck page that learns it is Greek or Bulgarian in the
   // browser. The same font call; the layout puts the same class on <body> through scriptFontClassOf.
-  const fontsFile = read('lib/script-fonts.ts'), layout = read('app/layout.tsx')
+  const fontsFile = read('lib/script-fonts.ts'), layout = read('app/(app)/layout.tsx')
   t('lib/script-fonts.ts: Noto Sans with preload: false, subsets greek + cyrillic; its class only when the language is el or bg (the layout and the language provider both ask scriptFontClassOf)',
     /Noto_Sans\(\{[^}]*subsets:\s*\["greek",\s*"cyrillic"\][^}]*preload:\s*false/.test(fontsFile.replace(/'/g, '"')) && /if \(\/\^\(el\|bg\)\(-\|\$\)\/\.test\(l\)\) return greekCyrillic\.variable/.test(fontsFile)
       && /antialiased\$\{scriptFontClassOf\(lang\) \? ` \$\{scriptFontClassOf\(lang\)\}` : ''\}/.test(layout) && /\^\(ja\|zh\|th\|ar\|el\|bg\)/.test(read('lib/i18n/client.tsx')))
-  t('the stacks name it only under :lang(el) / :lang(bg) (app/globals.css, app/landing/landing.css)',
-    [read('app/globals.css'), read('app/landing/landing.css')].every(c => c.split('\n').filter(l => l.includes('--font-script-fallback')).every(l => /:lang\((el|bg)\)/.test(l) || /^\s*(--display|--body|--font-geist-sans):/.test(l))))
+  t('the stacks name it only under :lang(el) / :lang(bg) (app/(app)/globals.css, app/(public)/(site)/landing/landing.css)',
+    [read('app/(app)/globals.css'), read('app/(public)/(site)/landing/landing.css')].every(c => c.split('\n').filter(l => l.includes('--font-script-fallback')).every(l => /:lang\((el|bg)\)/.test(l) || /^\s*(--display|--body|--font-geist-sans):/.test(l))))
   t('the layout regex: el-GR, el-CY, bg-BG need it; en-GB, de-DE, pl-PL, fi-FI do not',
     ['el-GR', 'el-CY', 'bg-BG'].every(l => RF.NEEDS_SCRIPT_FALLBACK.test(l)) && !['en-GB', 'de-DE', 'pl-PL', 'fi-FI'].some(l => RF.NEEDS_SCRIPT_FALLBACK.test(l)))
 

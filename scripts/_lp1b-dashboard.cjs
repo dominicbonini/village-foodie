@@ -15,7 +15,7 @@
 //    error a handler writes into a state, and the refund sentences submitRefund returns.
 // A state an EFFECT (or a useCallback) sets holds a CODE after this phase; its fixture holds the OLD SENTENCE and
 // `__after` the code, so the AFTER render is proven to show the sentence byte for byte.
-const F = 'app/dashboard/[token]/page.tsx'
+const F = 'app/(app)/dashboard/[token]/page.tsx'
 
 // Every useState the fixtures start from. A name that stops matching fails the bundle (the kit checks).
 const STATES = ['truck', 'orders', 'loading', 'error', 'authenticated', 'requiresPin', 'pinInput', 'pinError', 'boardUnavailable', 'degraded',

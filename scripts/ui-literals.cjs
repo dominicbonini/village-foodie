@@ -19,7 +19,8 @@ const REPO = path.resolve(__dirname, '..')
 const ts = require(path.join(REPO, 'node_modules/typescript'))
 const BASELINE = 'scripts/fixtures/ui-literals-baseline.json'
 const PROPS = new Set(['placeholder', 'title', 'label', 'aria-label', 'alt'])
-const OUT_OF_SCOPE = /^(app\/admin\/|components\/admin\/|app\/dev\/|components\/native\/Dev)/
+// ⚠️ RE-PINNED (cwv-2, 6 November 2026, docs/cwv-2-report.md §6): Admin and the dev screens moved to app/(app)/ with every app route.
+const OUT_OF_SCOPE = /^(app\/\(app\)\/admin\/|components\/admin\/|app\/\(app\)\/dev\/|components\/native\/Dev)/
 
 function files() {
   return require('child_process').execSync("git ls-files --cached --others --exclude-standard -- 'app/*.tsx' 'components/*.tsx' 'lib/*.tsx' 'hooks/*.tsx'", { cwd: REPO, encoding: 'utf8' })

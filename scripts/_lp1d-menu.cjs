@@ -6,7 +6,7 @@
 // and UpsellRulesSection, DealsTab (list, empty, editing), and the kitchen capacity section.
 // A MODULE run by scripts/language-phase-1d.cjs. Every view runs on 756ca09 and on this tree (ctx.states skips a state
 // name the code does not have; a new export is guarded).
-const M_FILE = 'app/manage/[token]/page.tsx'
+const M_FILE = 'app/(app)/manage/[token]/page.tsx'
 
 const CATS = [
   { id: 'c1', name: 'Pizzas', slug: 'pizzas', prep_secs: 480, batch_size: 4, allow_notes: true, default_stock: null, sort_order: 0, is_active: true, counts_toward_capacity: true },

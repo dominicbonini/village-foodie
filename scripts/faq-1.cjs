@@ -366,16 +366,16 @@ async function identityViews(tag) {
   // ⚠️ RE-PINNED (faq-3): the FAQ is public on the English landing pages — lib/faq/public.ts, read by app/landing/page.tsx, its
   // cache cleared by the Admin route. scripts/faq-3.cjs proves what those pages show.
   const allowed = new Set(['components/admin/FaqTab.tsx', 'lib/admin/faq-actions.ts', 'lib/faq/check.ts', 'lib/faq/feedback.ts', 'lib/faq/live-values.ts', 'lib/i18n/catalog/faq.ts',
-    'lib/faq/public.ts', 'app/landing/page.tsx', 'app/api/admin/faq/route.ts', 'lib/faq/translation.ts', 'lib/faq/translator.ts',
+    'lib/faq/public.ts', 'app/(public)/(site)/landing/page.tsx', 'app/api/admin/faq/route.ts', 'lib/faq/translation.ts', 'lib/faq/translator.ts',
     // ⚠️ RE-PINNED (seo-geo-2 B4): /llms.txt carries the English FAQ (lib/faq/public.ts landingFaq for GB); lib/llms-text.ts takes its type.
     'app/llms.txt/route.ts', 'lib/llms-text.ts',
     // ⚠️ RE-PINNED (faq-4): the FAQ is its own page, app/faq/page.tsx; the sitemap lists it and the marketing pages' footers link it
     // (faqHrefFor) where it has content. scripts/faq-4.cjs proves the page, the sitemap and the footer link.
-    'app/faq/page.tsx', 'app/sitemap.ts', 'components/landing/MarketingFrame.tsx', 'app/about/page.tsx', 'app/compare/page.tsx', 'app/[country]/[section]/[slug]/page.tsx',
+    'app/(public)/(site)/faq/page.tsx', 'app/sitemap.ts', 'components/landing/MarketingFrame.tsx', 'app/(public)/(site)/about/page.tsx', 'app/(public)/(site)/compare/page.tsx', 'app/(public)/[country]/[section]/[slug]/page.tsx',
     // ⚠️ RE-PINNED (perf-1, 5 November 2026): lib/faq/public-cache.ts (the FAQ's cached reads) imports lib/faq/public.ts, its own module.
     'lib/faq/public-cache.ts'])
   t('only Admin › FAQ, its server code and the English landing page (faq-3) import lib/faq or the faq messages', importers.every(f => allowed.has(f)), importers.filter(f => !allowed.has(f)))
-  t('the admin page mounts it as the last tab', /pricing:[^\n]*\n[\s\S]*demos:[^\n]*\n[^\n]*\n\s*faq:\s*\{ icon: '❓', label: 'FAQ' \},\n\} as const/.test(read('app/admin/page.tsx')))
+  t('the admin page mounts it as the last tab', /pricing:[^\n]*\n[\s\S]*demos:[^\n]*\n[^\n]*\n\s*faq:\s*\{ icon: '❓', label: 'FAQ' \},\n\} as const/.test(read('app/(app)/admin/page.tsx')))
   t('faq.phrases.* is in en-GB only for now (Dominic, 1 Nov: English until approved)', (() => { const d = JSON.parse(read('messages/en-GB.json')).faq?.phrases; return d && Object.keys(d).join() === 'appsSentence,appsOffline,webOffline' })())
 
   // ══ 9 ══════════════════════════════════════════════════════════════════════════════════════════════════════════════

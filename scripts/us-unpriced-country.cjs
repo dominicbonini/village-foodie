@@ -17,7 +17,7 @@ const kit = require('./_render-kit.cjs')({ cacheTag: 'us-unpriced-country' })
 const FIX = require('./_lp1d-fixtures.cjs')
 const SEEDS = require('./_country-settings-gb.cjs')
 
-const M_FILE = 'app/manage/[token]/page.tsx'
+const M_FILE = 'app/(app)/manage/[token]/page.tsx'
 let pass = 0, fail = 0
 const t = (name, ok, detail) => { if (ok) { pass++; console.log('  ✓', name) } else { fail++; console.log('  ✗', name); if (detail !== undefined) console.log('     ', String(detail).slice(0, 400)) } }
 const BAD = [/\$null/, /\bNaN\b/, /\bundefined\b/, /£/, /\bnull\/mo/]

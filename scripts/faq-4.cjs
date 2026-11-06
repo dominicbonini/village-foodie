@@ -78,7 +78,7 @@ const mode = process.argv[2]
 if (mode === 'capture-landing' || mode === 'capture-features') {
   (async () => {
     const ctx = LP1E.context(kit, REPO)
-    const page = mode === 'capture-landing' ? '@/app/[country]/page' : '@/app/[country]/features/page'
+    const page = mode === 'capture-landing' ? '@/app/(public)/[country]/page' : '@/app/(public)/[country]/features/page'
     const { M, wf } = await renderer(ctx, `faq4-${mode}`, `export { default as Page } from '${page}'\nexport { clearPlanCatalogCache as __p } from '@/lib/plans-server'\nexport { clearComparisonCache as __cmp } from '@/lib/comparison-flags'`)
     const tables = { ...wf.tables, ...FAQ(), faq_translations: [] }
     const out = fs.existsSync(process.argv[3]) ? JSON.parse(fs.readFileSync(process.argv[3], 'utf8')) : { $why: 'faq-4: sha256 of pages at the commits before faq-3 (landing, a92f983a) and before faq-4 (features, a97c2a58), by scripts/faq-4.cjs.', pages: {} }
@@ -103,9 +103,9 @@ const navOf = html => (/<nav[\s\S]*?<\/nav>/.exec(String(html)) || [''])[0]
 ;(async () => {
   const ctx = LP1E.context(kit, REPO)
   const { M, wf } = await renderer(ctx, 'faq4', [
-    "export { default as FaqPageView, generateMetadata as generateMetadataFor } from '@/app/[country]/faq/page'",
-    "export { default as Landing } from '@/app/[country]/page'",
-    "export { default as Features } from '@/app/[country]/features/page'",
+    "export { default as FaqPageView, generateMetadata as generateMetadataFor } from '@/app/(public)/[country]/faq/page'",
+    "export { default as Landing } from '@/app/(public)/[country]/page'",
+    "export { default as Features } from '@/app/(public)/[country]/features/page'",
     "export { default as sitemap } from '@/app/sitemap'",
     "export { GET as llmsGET } from '@/app/llms.txt/route'",
     "export { clearPublicFaqCache as __faq, faqPage, faqCountries, faqHrefFor } from '@/lib/faq/public'",
@@ -173,7 +173,7 @@ const navOf = html => (/<nav[\s\S]*?<\/nav>/.exec(String(html)) || [''])[0]
     dump(`landing:${seg}`, N(r.html))
     if (want) t(`/${seg}: identical to a92f983a (before faq-3), the date aside — after the later named changes (operatingSystem, badges) and faq-4's footer FAQ link`, sha(N(r.html)) === want[`landing:${seg}`]?.sha256, { now: sha(N(r.html)), head: want[`landing:${seg}`] })
   }
-  t('the landing page module no longer reads the FAQ section or builds a FAQPage', !/FaqDetails|landingFaq|faq\.css/.test(read('app/landing/page.tsx')) && !/faq\?: FaqPair/.test(read('lib/structured-data.ts')))
+  t('the landing page module no longer reads the FAQ section or builds a FAQPage', !/FaqDetails|landingFaq|faq\.css/.test(read('app/(public)/(site)/landing/page.tsx')) && !/faq\?: FaqPair/.test(read('lib/structured-data.ts')))
 
   head('4 · /uk/faq and /de/faq')
   for (const [seg, locale] of [['uk', 'en-GB'], ['de', 'de-DE']]) {
@@ -197,7 +197,7 @@ const navOf = html => (/<nav[\s\S]*?<\/nav>/.exec(String(html)) || [''])[0]
     const asBefore = FL1.LANDED ? FL1.featuresRowsBack(noFaqLink(SCX(r.html)), seg === 'uk' ? 'en-GB' : 'de-DE') : noFaqLink(SCX(r.html))
     if (want) t(`/${seg}/features: byte-identical to a97c2a58 through the shared frame (MarketingFrame), apart from the footer FAQ link${FL1.LANDED ? ' and features-list-1\'s rows' : ''}`, sha(asBefore) === want[`features:${seg}`]?.sha256, { now: sha(asBefore), head: want[`features:${seg}`] })
   }
-  t('/features and /faq share one frame (components/landing/MarketingFrame.tsx), not a copy', /<MarketingFrame visitor=\{visitor\}>/.test(read('app/features/page.tsx')) && /<MarketingFrame visitor=\{visitor\}>/.test(read('app/faq/page.tsx')) && !/Archivo\(/.test(read('app/features/page.tsx')) && /<FaqDetails items=\{sec\.items\} className="faq-q" \/>/.test(read('app/faq/page.tsx')))
+  t('/features and /faq share one frame (components/landing/MarketingFrame.tsx), not a copy', /<MarketingFrame visitor=\{visitor\}>/.test(read('app/(public)/(site)/features/page.tsx')) && /<MarketingFrame visitor=\{visitor\}>/.test(read('app/(public)/(site)/faq/page.tsx')) && !/Archivo\(/.test(read('app/(public)/(site)/features/page.tsx')) && /<FaqDetails items=\{sec\.items\} className="faq-q" \/>/.test(read('app/(public)/(site)/faq/page.tsx')))
 
   head('5 · a country with nothing to show; the sitemap')
   const it = await renderPage(ctx, M, M.FaqPageView, 'it', tablesWith(TRANS))
