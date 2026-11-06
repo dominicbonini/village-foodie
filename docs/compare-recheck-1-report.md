@@ -2,30 +2,17 @@
 
 *6 November 2026. No check has run yet. One request was written to the database (§2).*
 
-## Status, 6 November 2026, 11:40 UTC: requested; the runs come tonight at 02:10 UTC; one decision before then
+## Status, 6 November 2026, ~12:00 UTC: everything is set for tonight's run (02:10 UTC, 7 November)
 
-- **Your answer:** C. You pushed and deployed `main`.
-- **GitHub's `main` matches this `main`:** both `60db835b` before this work's commits.
-- **The 12 "Check now" requests are set** (§2), exactly as Admin's "Check now" sets them.
-- **I cannot start the run myself:** the GitHub CLI (`gh`) is not installed here. So the requests wait for the **nightly scheduled run at 02:10 UTC on 7 November**. Its routine share takes requested competitors first.
-- **Come back after about 09:00 UTC on 7 November.** The nightly job runs the quick pass, then the deep share, then the routine share, and may take several hours. I will then finish §3 and run the full sweep.
-- **⚠️ The routine check will ask very little, and that needs your decision:**
-  - A requested check is a routine check, and it asks only features that are **due**: never asked, or last asked more than 90 days ago (`lib/competitor-check/core.ts` dueFeatures).
-  - **11 of the 12 had 39 to 64 features asked by the quick pass between 1 and 6 November,** so almost none are due. Hatches Up is the exception: it was never checked.
-  - **Pages are recorded only for the features a check asks about.** So tonight would record pages for Hatches Up's features and very little else, and "Not listed" would barely move.
-
-### The question (answer before 02:10 UTC tonight to catch the run)
-
-```
-compare-recheck-1 — the requested checks only ask features that are due, and for 11 of the 12 almost none are (asked 1–6 Nov).
-Pick one:
-  A  Leave it: tonight checks the 12 as requested; expect pages for Hatches Up and little else.
-  B  Also make their shown core and commercial features due: one committed migration sets competitor_feature_checks.checked_on
-     back 91 days for those 12 competitors and those features only (scheduling data, nothing else). Tonight's routine check then
-     asks every one of them and records the pages. Same run and budget code; ~$0.9–1.6 (at most ~$3).   ← my recommendation
-  C  You start Actions › Competitor check › Run workflow, mode "single" (a deep check), once per competitor — no data change,
-     about $1.6, results within the hour.
-```
+- **Your answers:** C (you pushed and deployed `main`), then B.
+- **GitHub's `main` matched this `main`** (`60db835b`) before this work's commits.
+- **The 12 "Check now" requests are set** (`20261076`).
+- **Their shown core and commercial features are made due** (`20261077`, below). The original dates are recorded in the file.
+- **`gh` is not installed here,** so the run is tonight's scheduled one.
+- **Come back after 09:00 UTC on 7 November.** I will then:
+  - read what the run recorded;
+  - **put back the original date of every row it did not re-check** (`checked_on + 91`, exact), so no stale date remains;
+  - complete §3 and run the full sweep.
 
 ## 1 · Cost first
 
@@ -89,6 +76,63 @@ update public.competitors c
 > db-migrate: … applied — one transaction, no error
 
 **Verified (read-only):** exactly 12 competitors have `check_requested_at` set, all active, and no other competitor does.
+
+**Making the features due**, run as `supabase/migrations/20261077_compare_recheck_1_due.sql` (Dominic's B):
+
+```sql
+do $$
+declare n integer;
+begin
+  with pairs(cc, name) as (values
+         ('GB', 'Aphelios'), ('GB', 'Beat The Queue'), ('GB', 'Grafterr'), ('GB', 'Hatches Up'),
+         ('US', 'Best Food Trucks (BFT)'), ('US', 'Food Truck ONE (Food Truck OS)'), ('US', 'Food Truck Pub'), ('US', 'Goodfynd'),
+         ('DE', 'gastro25'), ('DE', 'GastroDok'), ('DE', 'FoxiFood'), ('DE', 'Jamezz')),
+       scope as (
+         select c.id as competitor_id, f.key as feature_key
+           from pairs p
+           join public.competitors c on c.name = p.name
+           join public.comparison_features f on f.tier in ('core', 'commercial')
+            and (f.show_scope = 'all' or (f.show_scope = 'some' and p.cc = any(f.show_countries))))
+  update public.competitor_feature_checks k
+     set checked_on = k.checked_on - 91
+    from scope s
+   where k.competitor_id = s.competitor_id and k.feature_key = s.feature_key and k.country_code = '';
+  get diagnostics n = row_count;
+  if n <> 246 then raise exception 'compare-recheck-1: expected 246 rows, the update would touch %', n; end if;
+end $$;
+```
+
+> db-migrate: supabase/migrations/20261077_compare_recheck_1_due.sql · sha256 05075495adc09361 · committed at 98ab0a24
+> db-migrate: … applied — one transaction, no error
+
+**Scope:**
+- the every-country check records (`country_code ''`, the ones a routine check reads to decide what is due);
+- for the 12 competitors only;
+- for the features shown on their country's page, with tier core or commercial only;
+- nothing else: not `rejudge`, not `pages_checked`, no other row.
+
+**The original dates** (all 246, in the migration's header):
+
+| Competitor | Original date | Rows |
+|---|---|---|
+| Aphelios, Beat The Queue, Grafterr | 2026-11-04 | 27 each |
+| FoxiFood, gastro25, GastroDok | 2026-11-05 | 27 each |
+| Food Truck ONE | 2026-11-04 × 25, plus domain 2026-10-23 | 26 |
+| Food Truck Pub | 2026-11-04 × 24, plus domain and preorder 2026-10-23 | 26 |
+| Goodfynd | 2026-11-06 × 25, plus preorder 2026-10-23 | 26 |
+| Best Food Trucks (BFT) | domain and preorder 2026-10-23 | 2 |
+| Jamezz | domain, kds, preorder, whatsapp 2026-10-24 | 4 |
+| Hatches Up | none: never checked | 0 |
+
+**Verified (read-only):**
+- exactly 246 rows moved, now dated 2026-07-24 to 2026-08-07, so all are due;
+- 0 country-specific rows moved, and 0 rows of any other competitor;
+- no other row in the table is dated before September, so tomorrow's restore (`checked_on < '2026-09-01'`, `+ 91`) can only touch these rows.
+
+**Flagged for the morning, not changed:**
+- Best Food Trucks, Goodfynd and Jamezz also have country-specific check records (US, DE, NL) from the quick pass, without pages.
+- The comparison page prefers a country's own record over the every-country one (`lib/comparison-features.ts` featureCheckOf). So their cells may still read "not mentioned" after tonight's every-country check, even with pages recorded.
+- Changing that rule is page code, which this brief rules out. I will report how many cells it affects.
 
 **How the request is used:**
 - The field is per competitor; a routine check covers every country the competitor sells in. Jamezz, for example, also has the Netherlands.
