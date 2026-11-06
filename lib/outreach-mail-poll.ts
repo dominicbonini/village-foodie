@@ -30,11 +30,15 @@ import { composeRaw } from '@/lib/outreach-mail-envelope'
 import { readFromName } from '@/lib/outreach-settings-read'
 import { prepareRetry } from '@/lib/outreach-retry-rebuild'
 import {
-  planFetch, advanceWatermark, emptyWatermark, withinFirstLook, classifyIncoming, matchIncoming, matchOutgoing,
+  planFetch, advanceWatermark, emptyWatermark, withinFirstLook, classifyIncoming,
   bouncedOriginalId, stripQuotedHistory, isStuckSending, shouldAutoRetry, isOwnAddress,
-  replyTextFrom, messageIdsIn,
-  type PollState, type IncomingHeaders,
+  replyTextFrom, messageIdsIn, matchIncoming, matchOutgoing, addPartnerMatch, addPartnerMatchOutgoing,
+  type PollState, type IncomingHeaders, type PartnerDirectory,
 } from '@/lib/outreach-mail-poll-rules'
+// partners-1 (5 November 2026): the partner half — see lib/partner-mail-poll.ts.
+import {
+  loadPartnerDirectory, recordPartnerIncoming, recordPartnerOutlookSent, recordPartnerBounce,
+} from '@/lib/partner-mail-poll'
 import {
   claimPollLock, releasePollLock, insertMessageOnce, claimRetry, claimAdoption,
 } from '@/lib/outreach-poll-claims'
@@ -100,6 +104,11 @@ export interface PollSummary {
   copiesFiled: number
   ambiguous: number
   unmatched: number
+  /** partners-1: partner messages recorded (replies, auto-replies, bounces, Outlook-sent). */
+  partnerMessages: number
+  /** 🔴 partners-1: mail whose address is BOTH a prospect's and a partner's — filed to NEITHER, and listed here,
+   *  flagged, beside the ambiguous and unmatched counts. Never guessed. */
+  prospectAndPartner: { address: string; subject: string | null; date: string | null; folder: string }[]
   /** 🔴 Replies to a TEST send — Dominic answering himself. Counted, never recorded. */
   repliesToTest: number
   /** Inbound rows whose contact message was empty and has now been filled in. See `repairReplyTexts`. */
@@ -120,6 +129,7 @@ export interface PollSummary {
 const emptySummary = (): PollSummary => ({
   ok: true, repliesLogged: 0, autoReplies: 0, bounces: 0, outlookSentRecorded: 0,
   retried: 0, markedUncertain: 0, copiesFiled: 0, ambiguous: 0, unmatched: 0,
+  partnerMessages: 0, prospectAndPartner: [],
   repliesToTest: 0, textsFilled: 0, adopted: 0, bodiesFilled: 0,
   rescanned: [], baselined: [], folders: [], errors: [],
 })
@@ -150,6 +160,8 @@ interface Directory {
   skip: Set<string>
   /** Prospects that already have an inbound reply row. Gates Outlook-sent logging. */
   hasReply: Set<string>
+  /** partners-1: partners by address and by our own partner Message-IDs. Empty when there are none. */
+  partners: PartnerDirectory
 }
 
 async function loadDirectory(supabase: SupabaseClient): Promise<Directory> {
@@ -171,15 +183,35 @@ async function loadDirectory(supabase: SupabaseClient): Promise<Directory> {
   const byMessageId = new Map<string, string>()
   const testMessageIds = new Set<string>()
   const hasReply = new Set<string>()
-  const { data: mRows } = await supabase
-    .from('outreach_messages').select('message_id, prospect_id, direction, status, is_test')
-  for (const m of (mRows ?? []) as { message_id: string; prospect_id: string; direction: string; status: string; is_test: boolean }[]) {
+  // partners-1: `partner_id` is read too. ⚠️ If that column cannot be read (the migration not applied), the select
+  // falls back to the old one rather than losing every thread id — an empty map would re-match every reply by address.
+  let mRows: unknown[] | null = null
+  {
+    const withPartner = await supabase
+      .from('outreach_messages').select('message_id, prospect_id, partner_id, direction, status, is_test')
+    if (!withPartner.error) mRows = withPartner.data
+    else {
+      const { data } = await supabase
+        .from('outreach_messages').select('message_id, prospect_id, direction, status, is_test')
+      mRows = data
+    }
+  }
+  const partnerRows: { message_id: string; partner_id: string }[] = []
+  for (const m of (mRows ?? []) as { message_id: string; prospect_id: string | null; partner_id?: string | null; direction: string; status: string; is_test: boolean }[]) {
+    // 🔴 A PARTNER'S EMAIL IS NOT A PROSPECT'S THREAD. Before partners-1 every row had a prospect_id, so this
+    // branch is exactly the old loop for every truck row.
+    if (!m.prospect_id) {
+      if (m.partner_id) partnerRows.push({ message_id: m.message_id, partner_id: m.partner_id })
+      if (m.is_test) testMessageIds.add(m.message_id)
+      continue
+    }
     byMessageId.set(m.message_id, m.prospect_id)
     // 🔴 A TEST SEND IS NOT CORRESPONDENCE. Its replies are Dominic answering himself.
     if (m.is_test) testMessageIds.add(m.message_id)
     if (m.direction === 'inbound' && m.status === 'received') hasReply.add(m.prospect_id)
   }
-  return { byAddress, byMessageId, testMessageIds, skip, hasReply }
+  const partners = await loadPartnerDirectory(supabase, partnerRows)
+  return { byAddress, byMessageId, testMessageIds, skip, hasReply, partners }
 }
 
 // ── READING ONE MESSAGE ─────────────────────────────────────────────────────────────────────────────
@@ -205,7 +237,8 @@ interface SeenMessage {
  */
 function isReplyToTestOnly(h: Pick<IncomingHeaders, 'get'>, dir: Directory): boolean {
   const ids = [...messageIdsIn(h.get('in-reply-to')), ...messageIdsIn(h.get('references'))]
-  const known = ids.filter(id => dir.byMessageId.has(id))
+  // partners-1: a partner's test send counts as a test thread too (a truck row is matched exactly as before).
+  const known = ids.filter(id => dir.byMessageId.has(id) || dir.partners.byMessageId.has(id))
   if (!known.length) return false
   return known.every(id => dir.testMessageIds.has(id))
 }
@@ -461,14 +494,28 @@ async function pollOneAccount(
           // drop to the From-address match and log it anyway, because the reply genuinely does come
           // from the prospect's own address.
           if (isReplyToTestOnly(h, dir)) { summary.repliesToTest++; return }
-          const match = matchIncoming({ get: h.get, fromAddress: h.fromAddress }, dir.byMessageId, dir.byAddress)
+          // partners-1: the prospect rule first and UNCHANGED (the same call as before), then partners on top —
+          // see `addPartnerMatch` / `matchIncomingWithPartners` in lib/outreach-mail-poll-rules.ts.
+          const match = addPartnerMatch(
+            matchIncoming({ get: h.get, fromAddress: h.fromAddress }, dir.byMessageId, dir.byAddress),
+            { get: h.get, fromAddress: h.fromAddress }, dir.partners)
+          if (match.kind === 'both') {
+            // 🔴 NOT GUESSED: the address is a prospect's AND a partner's, so it is filed to neither and listed, flagged.
+            summary.prospectAndPartner.push({ address: match.address, subject: m.subject, date: m.date, folder: label(path) })
+            return
+          }
+          if (match.kind === 'partner') {
+            if (dir.byMessageId.has(m.messageId) || dir.partners.byMessageId.has(m.messageId)) return
+            await handlePartnerIncoming(supabase, client, dir, m, h, path, creds.account, match.partnerId, summary)
+            return
+          }
           if (match.kind === 'ambiguous') { summary.ambiguous++; return }
           if (match.kind === 'none') { summary.unmatched++; return }
           if (dir.skip.has(match.prospectId)) return     // a linked HatchGrab truck: never auto-logged
           // ⚠️ A CHEAP PRE-CHECK, NOT THE GUARD. It saves a round trip for the overwhelmingly common
           // case of a message seen on an earlier run. The GUARD is the insert itself — see
           // `insertMessageOnce`, and the note on the defect it fixes.
-          if (dir.byMessageId.has(m.messageId)) return
+          if (dir.byMessageId.has(m.messageId) || dir.partners.byMessageId.has(m.messageId)) return
 
           const kind = classifyIncoming(h)
           if (kind === 'bounce') { await handleBounce(supabase, client, dir, m, h, path, creds.account, summary); return }
@@ -482,8 +529,20 @@ async function pollOneAccount(
     try {
       await walkMailbox(client, OUTREACH_SENT_MAILBOX, state, summary, label(OUTREACH_SENT_MAILBOX), since, async m => {
         if (!m.messageId) return
-        if (dir.byMessageId.has(m.messageId)) return     // a system send already has its row
-        const match = matchOutgoing(m.to, dir.byAddress)
+        // a system send already has its row (partners-1: a prospect's or a partner's)
+        if (dir.byMessageId.has(m.messageId) || dir.partners.byMessageId.has(m.messageId)) return
+        const match = addPartnerMatchOutgoing(matchOutgoing(m.to, dir.byAddress), m.to, dir.partners)
+        if (match.kind === 'both') {
+          summary.prospectAndPartner.push({ address: match.address, subject: m.subject, date: m.date, folder: label(OUTREACH_SENT_MAILBOX) })
+          return
+        }
+        if (match.kind === 'partner') {
+          const bodies = await readBodies(client, m.uid)
+          const made = await recordPartnerOutlookSent(supabase, dir.partners, { ...m, messageId: m.messageId }, OUTREACH_SENT_MAILBOX, creds.account, match.partnerId, bodies)
+          if (made.created) summary.partnerMessages++
+          else if (made.error) summary.errors.push({ step: 'partner_outlook_sent', error: made.error })
+          return
+        }
         if (match.kind === 'ambiguous') { summary.ambiguous++; return }
         if (match.kind === 'none') { summary.unmatched++; return }
         if (dir.skip.has(match.prospectId)) return
@@ -557,6 +616,14 @@ async function handleBounce(
   const returned = await readReturnedPart(client, m.uid)
   const originalId = bouncedOriginalId(returned, h)
   const prospectId = originalId ? dir.byMessageId.get(originalId) : undefined
+  // partners-1: a bounce of one of OUR partner emails is recorded on that partner (never on a prospect).
+  const partnerId = !prospectId && originalId ? dir.partners.byMessageId.get(originalId) : undefined
+  if (partnerId && originalId) {
+    const made = await recordPartnerBounce(supabase, dir.partners, { ...m, messageId: m.messageId! }, path, account, partnerId, originalId, await readBodies(client, m.uid))
+    if (made.created) summary.partnerMessages++
+    else if (made.error) summary.errors.push({ step: 'partner_bounce', error: made.error })
+    return
+  }
   if (!prospectId) { summary.unmatched++; return }
   if (dir.skip.has(prospectId)) return
   if (originalId) {
@@ -659,6 +726,21 @@ async function handleOutlookSent(
   if (logged.ok && logged.id) {
     await supabase.from('outreach_messages').update({ contact_id: logged.id }).eq('id', made.id)
   }
+}
+
+/** partners-1: an incoming message from a partner — a bounce report goes through `handleBounce` (it finds the
+ *  original by Message-ID); an auto-reply is recorded and moves nothing; a reply is recorded and may move the status. */
+async function handlePartnerIncoming(
+  supabase: SupabaseClient, client: ImapFlow, dir: Directory, m: SeenMessage, h: IncomingHeaders,
+  path: string, account: MailAccount, partnerId: string, summary: PollSummary,
+) {
+  const kind = classifyIncoming(h)
+  if (kind === 'bounce') { await handleBounce(supabase, client, dir, m, h, path, account, summary); return }
+  const bodies = await readBodies(client, m.uid)
+  const made = await recordPartnerIncoming(supabase, dir.partners, { ...m, messageId: m.messageId! }, path, account, partnerId,
+    kind === 'auto_reply' ? 'auto_reply' : 'reply', bodies)
+  if (made.created) summary.partnerMessages++
+  else if (made.error) summary.errors.push({ step: 'partner_reply', error: made.error })
 }
 
 // ── ADOPTING THE MAIL THE IMPORTER TOOK ────────────────────────────────────────────────────────────
@@ -1031,7 +1113,8 @@ async function housekeeping(
       continue
     }
     // 2 · a temporary failure, recent, under the attempt ceiling
-    if (shouldAutoRetry(row, now)) {
+    // partners-1: a PARTNER's failed send is never retried automatically — Retry on the Partners tab is Dominic's.
+    if (row.prospect_id && shouldAutoRetry(row, now)) {
       /* 🔴 REBUILT WITH TODAY'S COMPANY LINE, AND THE OPT-OUT RULE APPLIED, BEFORE THE CLAIM (19 October 2026,
        * lib/outreach-retry-rebuild.ts). A refusal resends nothing: its sentence becomes the row's `last_error`, which
        * is not a temporary failure, so the poll stops retrying it and the history shows why — Retry is Dominic's. */

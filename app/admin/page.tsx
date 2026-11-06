@@ -25,6 +25,7 @@ import { createSlug } from '@/lib/utils'   // slug preview in the create-truck m
 import { formatTimeRange, DISCOVERY_TIME_SETTINGS } from '@/lib/time-utils'   // canonical event-time rendering (never raw — no seconds)
 import { AppLink } from '@/components/native/AppLink'   // internal-route anchor: soft-nav in native, plain <a> on web
 import OutreachPanel from '@/components/admin/OutreachPanel'   // the outreach console, rendered as a tab
+import PartnersTab from '@/components/admin/PartnersTab'       // partners-1: associations, organisers, consultants, suppliers
 import DiscoveryEventsPanel from '@/components/admin/DiscoveryEventsPanel' // discovery_events viewer/amender
 import TemplatesPanel from '@/components/admin/TemplatesPanel' // outreach message templates (DB-backed)
 import ScreenshotsPanel from '@/components/admin/ScreenshotsPanel' // the screenshot uploader, rendered as a tab
@@ -228,6 +229,8 @@ const ADMIN_TABS = {
   features:    { icon: '📋', label: 'Features' },
   domains:     { icon: '🌐', label: 'Domains' },
   outreach:    { icon: '📣', label: 'Outreach' },
+  // Associations, organisers, consultants, suppliers — components/admin/PartnersTab.tsx (partners-1).
+  partners:    { icon: '🤝', label: 'Partners' },
   events:      { icon: '📅', label: 'Events' },
   screenshots: { icon: '🖼️', label: 'Screenshots' },
   templates:   { icon: '✉️', label: 'Templates' },
@@ -275,6 +278,9 @@ export default function AdminPage() {
   // The same for FAQ (faq-1): mounted on the first visit, then hidden, so a half-typed answer survives a look at another tab.
   const [faqSeen, setFaqSeen] = useState(false)
   if (adminTab === 'faq' && !faqSeen) setFaqSeen(true)
+  // partners-1: the same for Partners — mounted on the first visit, then hidden, so a half-written email survives.
+  const [partnersSeen, setPartnersSeen] = useState(false)
+  if (adminTab === 'partners' && !partnersSeen) setPartnersSeen(true)
 
   // ── ?tab= SEEDS THE OPENING TAB, so /admin/outreach's redirect lands on the outreach tab rather than
   // on Trucks. 🔴 READ FROM window.location IN AN EFFECT, NOT useSearchParams(): useSearchParams forces
@@ -919,7 +925,7 @@ export default function AdminPage() {
           max-w-6xl (1152px) until admin-countries-1 (23 October 2026); every admin body is now full width with
           32px side padding (px-8), and a text-heavy panel keeps its own readable width (the screenshot uploader's
           max-w-3xl). The wrapper is HIDDEN rather than unmounted so the tab blocks inside keep their state. */}
-      <div className={(adminTab === 'outreach' || adminTab === 'events' || adminTab === 'pricing' || adminTab === 'demos' || adminTab === 'faq') ? 'hidden' : "w-full px-8 py-6"}>
+      <div className={(adminTab === 'outreach' || adminTab === 'partners' || adminTab === 'events' || adminTab === 'pricing' || adminTab === 'demos' || adminTab === 'faq') ? 'hidden' : "w-full px-8 py-6"}>
 
         {/* ── EVENT SCREENSHOTS ─────────────────────────────────────────────────────────────────
             🔎 INSIDE this wrapper, unlike Outreach. Outreach is out there because its table needs
@@ -1407,6 +1413,13 @@ export default function AdminPage() {
       {adminTab === 'outreach' && (
         <div className="w-full px-8 py-6">
           <OutreachPanel />
+        </div>
+      )}
+
+      {/* partners-1: Admin › Partners — full width, like Outreach; mounted on the first visit and hidden after. */}
+      {partnersSeen && (
+        <div className={adminTab === 'partners' ? 'w-full px-8 py-4' : 'hidden'}>
+          <PartnersTab />
         </div>
       )}
 

@@ -48,6 +48,9 @@ export async function GET(req: NextRequest) {
     .eq('direction', 'inbound')
     .eq('status', 'received')
     .is('handled_at', null)
+    // partners-1: a PARTNER's email is never truck work. Before partners-1 every row had a prospect_id, so this
+    // filter selects exactly the rows it always did.
+    .not('prospect_id', 'is', null)
     .order('message_date', { ascending: true })
     .limit(200)
   if (inErr) {
@@ -61,6 +64,7 @@ export async function GET(req: NextRequest) {
     .select('id, prospect_id, status, subject, message_date, last_error, is_test, handled_at')
     .eq('direction', 'outbound')
     .in('status', PROBLEM_STATUSES as unknown as string[])
+    .not('prospect_id', 'is', null)   // partners-1: see above
     .order('message_date', { ascending: false })
     .limit(100)
 

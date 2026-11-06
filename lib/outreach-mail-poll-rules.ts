@@ -244,6 +244,68 @@ export function matchIncoming(
   return { kind: 'none' }
 }
 
+// ── PARTNERS (partners-1, 5 November 2026) ─────────────────────────────────────────────────────────
+/** Who a partner is, for matching: our partner Message-IDs and their (lower-cased) addresses. */
+export interface PartnerDirectory {
+  byMessageId: Map<string, string>
+  byAddress: Map<string, string>
+}
+export const EMPTY_PARTNERS: PartnerDirectory = { byMessageId: new Map(), byAddress: new Map() }
+
+export type MatchWithPartners =
+  | Match
+  | { kind: 'partner'; partnerId: string; via: 'thread' | 'address' }
+  /** 🔴 The address is BOTH a prospect's and a partner's: filed to neither, and listed, flagged. */
+  | { kind: 'both'; partnerId: string; address: string }
+
+/**
+ * `matchIncoming`, plus partners. 🔴 THE PROSPECT RULE RUNS FIRST AND UNCHANGED: a thread id of a prospect's
+ * email is certain and wins as it always has. Then a partner's thread id (also certain). Then the address —
+ * and an address that is BOTH a prospect's and a partner's is not guessed: `both`, filed to neither.
+ * ⚠️ With no partners (EMPTY_PARTNERS) the answer is exactly `matchIncoming`'s — scripts/partners-1.cjs proves it.
+ */
+export function matchIncomingWithPartners(
+  headers: Pick<IncomingHeaders, 'get'> & { fromAddress: string | null },
+  byMessageId: Map<string, string>,
+  byAddress: Map<string, string[]>,
+  partners: PartnerDirectory,
+): MatchWithPartners {
+  return addPartnerMatch(matchIncoming(headers, byMessageId, byAddress), headers, partners)
+}
+
+/** The partner half on its own: given the prospect rule's answer (UNCHANGED), add what partners say. The poll calls
+ *  `matchIncoming` exactly as before and passes its answer here. */
+export function addPartnerMatch(
+  prospect: Match,
+  headers: Pick<IncomingHeaders, 'get'> & { fromAddress: string | null },
+  partners: PartnerDirectory,
+): MatchWithPartners {
+  if (prospect.kind === 'thread') return prospect
+  const threadIds = [...messageIdsIn(headers.get('in-reply-to')), ...messageIdsIn(headers.get('references'))]
+  for (const id of threadIds) {
+    const p = partners.byMessageId.get(id)
+    if (p) return { kind: 'partner', partnerId: p, via: 'thread' }
+  }
+  const from = (headers.fromAddress ?? '').trim().toLowerCase()
+  const partnerId = from ? partners.byAddress.get(from) : undefined
+  if (!partnerId) return prospect
+  if (prospect.kind === 'none') return { kind: 'partner', partnerId, via: 'address' }
+  return { kind: 'both', partnerId, address: from }
+}
+
+/** `matchOutgoing`, plus partners — the same rule over the To/Cc addresses of mail Dominic sent from Outlook. */
+export function matchOutgoingWithPartners(toAddresses: string[], byAddress: Map<string, string[]>, partners: PartnerDirectory): MatchWithPartners {
+  return addPartnerMatchOutgoing(matchOutgoing(toAddresses, byAddress), toAddresses, partners)
+}
+export function addPartnerMatchOutgoing(prospect: Match, toAddresses: string[], partners: PartnerDirectory): MatchWithPartners {
+  const hits = Array.from(new Set(toAddresses.map(a => partners.byAddress.get(a.trim().toLowerCase())).filter((x): x is string => !!x)))
+  if (!hits.length) return prospect
+  const address = toAddresses.find(a => partners.byAddress.has(a.trim().toLowerCase()))!.trim().toLowerCase()
+  if (prospect.kind !== 'none') return { kind: 'both', partnerId: hits[0], address }
+  if (hits.length > 1) return { kind: 'ambiguous' }
+  return { kind: 'partner', partnerId: hits[0], via: 'address' }
+}
+
 /** A message in Sent, to exactly one prospect. Same rule, but over the To/Cc addresses. */
 export function matchOutgoing(toAddresses: string[], byAddress: Map<string, string[]>): Match {
   const hits: string[] = []

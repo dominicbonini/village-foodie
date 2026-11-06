@@ -27,13 +27,15 @@ import { useEffect, useRef, useState } from 'react'
 // compares against THAT and sends nothing when they match. Tabbing across a row therefore fires zero
 // writes — which matters because these two columns live on `discovery_trucks`, a table 🧪 confirmed
 // anon-readable, and a no-op write is indistinguishable from a real one once it has left the browser.
-function InlineField({ value, onCommit, onHold, placeholder, type, title }: {
+function InlineField({ value, onCommit, onHold, placeholder, type, title, align }: {
   value: string | null
   onCommit: (next: string) => void
   onHold: (hold: boolean) => void
   placeholder: string
   type: 'text' | 'email'
   title?: string
+  /** partners-1: 'left' for a form (Admin › Partners). Absent ⇒ the table cell's centred text, exactly as before. */
+  align?: 'left'
 }) {
   const [draft, setDraft] = useState(value ?? '')
   const seeded = useRef(value ?? '')
@@ -73,10 +75,15 @@ function InlineField({ value, onCommit, onHold, placeholder, type, title }: {
         // Escape abandons the edit and restores the last server value — nothing is written.
         if (e.key === 'Escape') { setDraft(seeded.current ?? ''); (e.target as HTMLInputElement).blur() }
       }}
-      className="w-full text-sm text-slate-600 text-center bg-transparent border border-transparent rounded px-1 py-0.5 truncate
+      className={align === 'left'
+        ? `w-full text-sm text-slate-700 text-left bg-transparent border border-transparent rounded px-1 py-0.5 truncate
                  placeholder:text-slate-300
                  hover:border-slate-200 hover:bg-white
-                 focus:border-orange-400 focus:bg-white focus:outline-none focus:text-left"
+                 focus:border-orange-400 focus:bg-white focus:outline-none`
+        : `w-full text-sm text-slate-600 text-center bg-transparent border border-transparent rounded px-1 py-0.5 truncate
+                 placeholder:text-slate-300
+                 hover:border-slate-200 hover:bg-white
+                 focus:border-orange-400 focus:bg-white focus:outline-none focus:text-left`}
     />
   )
 }

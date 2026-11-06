@@ -334,7 +334,7 @@ export async function GET(req: NextRequest) {
     const bouncedProspects = new Set<string>()
     try {
       const { data: bounced } = await supabase
-        .from('outreach_messages').select('prospect_id').eq('direction', 'outbound').eq('status', 'bounced')
+        .from('outreach_messages').select('prospect_id').eq('direction', 'outbound').eq('status', 'bounced').not('prospect_id', 'is', null)
       for (const b of (bounced ?? []) as { prospect_id: string }[]) bouncedProspects.add(b.prospect_id)
     } catch { /* the flag is a convenience; the list must still load without it */ }
 

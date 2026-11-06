@@ -33,6 +33,8 @@ import '@/lib/i18n/catalog/outreach'
 import RichEmailEditor, { type EditorApi } from '@/components/admin/RichEmailEditor'
 // 🔴 THE TAB'S OUTBOX — Send hands the message here and the window closes (instant Send, with Undo).
 import { getOutbox } from '@/components/admin/OutboxToasts'
+// partners-1: the free-form (partner) mode sends through its own outbox, to the partner route.
+import { getPartnerOutbox } from '@/components/admin/partner-outbox'
 import {
   renderTemplate, unresolvedIn, malformedTokensIn, isMustResolveToken, applyPlaceholderFills, defaultFillsOf, fillSourceOf,
   type MessageTemplate, type TemplateContext,
@@ -94,6 +96,9 @@ export interface ReplyTarget {
    *  19 October 2026); the route decides the same from the row it re-reads. Absent (an older snapshot) ⇒ not exempt. */
   inbound?: boolean
 }
+
+/** partners-1: what a free-form email opens with — a line to write on, a blank line, then the signature. */
+const PARTNER_SEED = '\n\n{{signature}}'
 
 const DEFAULT_STALE_DAYS = 60
 const defaultIsStale = (iso: string | null | undefined) => {
@@ -171,7 +176,7 @@ export default function ComposeWindow({
   truckName, prospectId, toEmail, offerable, suggestedId, initialTemplateId, doNotContact, ctx,
   whatsappConfirmed, templatesLoaded, logFormKind, snippets, onClose, onLog, replyTo,
   inline, onDirtyChange, followUpDate, hideCopyAndLog, contactName, stepKind, sequenceNote,
-  inConversation, apiRef, restore, onQueued,
+  inConversation, apiRef, restore, onQueued, partner,
 }: {
   truckName: string
   /** 🔴 THE PROSPECT THE SERVER SENDS TO. The browser never names a recipient: it sends this id and the
@@ -266,6 +271,14 @@ export default function ComposeWindow({
    * on the prospect (Today's "Emails needing a look").
    */
   onQueued?: (snapshot: ComposeSnapshot, replyTo: ReplyTarget | null) => void
+  /**
+   * 🔴 partners-1 (5 November 2026): FREE-FORM MODE, for Admin › Partners. Present ⇒ To (prefilled), subject, body,
+   * attachments and the normal signature — and NOTHING ELSE: no template chips, snippets, sequence, plans PDF,
+   * demo, logo or screenshots, and no opt-out block (a partner is not a prospect). The send goes to
+   * /api/admin/partners/mail-send with `partner_id`, through the same mail machinery.
+   * ⚠️ ABSENT ⇒ THE WINDOW IS EXACTLY WHAT IT WAS. Every change below is `partner ? … : <the old expression>`.
+   */
+  partner?: { id: string } | null
 }) {
   // ── 🔴 PRE-SELECTION, AND WHY IT DOES NOT BREAK THE RULE IT LOOKS LIKE IT BREAKS ─────────────────
   // This line used to read `useState('')  // '' = none chosen; NEVER auto-selected`, and that rule was
@@ -605,8 +618,11 @@ export default function ComposeWindow({
    * ⚠️ IT WAITS FOR THE SETTINGS. Building before they arrive would put an empty signature in the box.
    */
   const templateDoc = useMemo(
-    () => (isEmailChannel && settingsLoaded ? docFromTemplateText(finalBody, settings) : EMPTY_DOC),
-    [isEmailChannel, settingsLoaded, finalBody, settings])
+    () => (isEmailChannel && settingsLoaded
+      // partners-1: a free-form email opens with an empty line to write on and the normal signature under it.
+      ? docFromTemplateText(partner && !finalBody ? PARTNER_SEED : finalBody, settings)
+      : EMPTY_DOC),
+    [isEmailChannel, settingsLoaded, finalBody, settings, partner])
   const doc = editedDoc ?? templateDoc
 
   const guardText = useMemo(
@@ -754,13 +770,14 @@ export default function ComposeWindow({
    *   • a reply to a message the PROSPECT sent (`replyTo.inbound`) — `optOutShown` is null for it.
    * Both still carry the company line (the grey line under the box says so). */
   const optOutStop: string | null = useMemo(() => {
+    if (partner) return null   // partners-1: a free-form partner email carries no opt-out block (a partner is not a prospect)
     if (!isEmail) return null
     if (!settingsLoaded) return tOut('optOut.notLoaded')
     const code = optOutBlock(doc, settings.optOut)
     return code === 'no_opt_out_set_up' ? tOut('optOut.notSetUp')
       : code === 'no_opt_out_line' ? tOut('optOut.missing')
       : null
-  }, [isEmail, settingsLoaded, doc, settings.optOut, tOut])
+  }, [isEmail, settingsLoaded, doc, settings.optOut, tOut, partner])
   const replyExempt = optOutExempt({ isTest: false, parent: replyTo ? { direction: replyTo.inbound ? 'inbound' : null } : null })
   const optOutShown: string | null = replyExempt ? null : optOutStop
   const testBlock: string | null =
@@ -769,7 +786,7 @@ export default function ComposeWindow({
     : !hasText ? 'Write something, or pick a template, first'
     : null
   const sendBlock: string | null =
-    testBlock ?? optOutShown ?? (!toEmail ? 'This prospect has no email address' : null)
+    testBlock ?? optOutShown ?? (!toEmail ? (partner ? 'This partner has no email address — add one first' : 'This prospect has no email address') : null)
   /* ⛔ THE READ-ONLY COMPANY LINE UNDER THE BOX IS GONE (Dominic, 20 October 2026): outreach emails no longer carry
    * "HatchGrab Ltd · Company no. … · Registered office: …" (lib/outreach-mail-message.ts), so there is nothing to show. */
 
@@ -847,6 +864,7 @@ export default function ComposeWindow({
   // specific message the Reply button was pressed on, and asking the server which email a CHASE
   // would attach to could name a different one (another reply may have arrived since).
   useEffect(() => {
+    if (partner) return   // partners-1: a free-form email never chases a thread
     if (!isEmail || replyTo) return
     let live = true
     void (async () => {
@@ -865,7 +883,7 @@ export default function ComposeWindow({
       setQuoted(null); setQuotedOpen(false)      // a different parent means a different quote
     })()
     return () => { live = false }
-  }, [isEmail, prospectId, kindForSend, replyTo])
+  }, [isEmail, prospectId, kindForSend, replyTo, partner])
 
   // ── REPLY MODE: THE CONVERSATION, FROM THE DATABASE, BEFORE A WORD IS TYPED ─────────────────────
   // 🔴 EXPANDED BY DEFAULT AND FETCHED ON OPEN, which is the whole point of Part 2: Dominic could not
@@ -963,10 +981,11 @@ export default function ComposeWindow({
       }
       setFileBusy(file.name)
       try {
-        const r = await fetch('/api/admin/outreach/attachments', {
+        // partners-1: a partner's file goes into the partner's own folder, through the partner route.
+        const r = await fetch(partner ? '/api/admin/partners/mail-send' : '/api/admin/outreach/attachments', {
           method: 'POST', headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
-            action: 'signed_upload', prospect_id: prospectId,
+            action: 'signed_upload', ...(partner ? { partner_id: partner.id } : { prospect_id: prospectId }),
             filename: file.name, content_type: file.type, size: file.size,
           }),
         })
@@ -984,7 +1003,7 @@ export default function ComposeWindow({
       } finally { setFileBusy(null) }
     }
     if (fileInputRef.current) fileInputRef.current.value = ''
-  }, [files, prospectId])
+  }, [files, prospectId, partner])
 
   /**
    * The plans-and-features PDF, generated fresh and stored like any other attachment.
@@ -1063,7 +1082,13 @@ export default function ComposeWindow({
     sendInFlight.current = true
     setSendError(null); setConfirmSend(null)
     const key = crypto.randomUUID()
-    const request: Record<string, unknown> = {
+    const request: Record<string, unknown> = partner ? {
+      // partners-1: the free-form send — no step, no kind, no override; the partner route decides the rest.
+      action: 'send', partner_id: partner.id, subject: finalSubject, document: doc,
+      ...(files.length ? { attachments: files } : {}),
+      ...(replyTo ? { reply_to_message_id: replyTo.messageId, to: replyTo.fromAddress ?? '' } : {}),
+      is_test: test, idempotency_key: key, include_quote: includeQuote,
+    } : {
       action: 'send', prospect_id: prospectId, subject: finalSubject, kind: kindForSend,
       // The document for an email; the plain body for WhatsApp, which this route does not send.
       ...(isEmail ? { document: doc } : { body: fullText }),
@@ -1080,7 +1105,13 @@ export default function ComposeWindow({
       templateId, sourceSubject, sourceBody, subject, body, edited, fillsTouched,
       fills, fromDefault, fillSource, includeQuote, files, editedDoc,
     }
-    getOutbox().queue({
+    // partners-1: a partner send goes to the partner outbox (and so to the partner route); otherwise exactly as before.
+    if (partner) getPartnerOutbox().queue({
+      key, prospectId: partner.id, prospectName: truckName, test, subject: finalSubject,
+      to: test ? null : (replyTo?.fromAddress ?? toEmail ?? null),
+      request, snapshot: { compose: snapshot, replyTo: replyTo ?? null },
+    })
+    else getOutbox().queue({
       key, prospectId, prospectName: truckName, test, subject: finalSubject,
       to: test ? null : (replyTo?.fromAddress ?? toEmail ?? null),
       request, snapshot: { compose: snapshot, replyTo: replyTo ?? null },
@@ -1089,7 +1120,7 @@ export default function ComposeWindow({
     onQueued?.(snapshot, replyTo ?? null)
   }, [refusal, prospectId, finalSubject, kindForSend, isEmail, doc, fullText, files, replyTo, includeQuote,
     templateId, sourceSubject, sourceBody, subject, body, edited, fillsTouched, fills, fromDefault, fillSource,
-    editedDoc, truckName, toEmail, onQueued])
+    editedDoc, truckName, toEmail, onQueued, partner])
 
   // ── THE mailto: PATH, AND WHY IT IS NOT HERE ANY MORE ───────────────────────────────────────────
   // It lived here from the first version of this window and carried two measured limits and a defect it
@@ -1272,6 +1303,7 @@ export default function ComposeWindow({
               ⚠️ THE ORDER IS DERIVED FROM VALUES THAT ALREADY EXIST. Nothing here re-decides which
               template suits a step; it sorts by the answers `templateForStep` and `suggestTemplateId`
               already gave. */}
+          {!partner && (<>
           <div className="flex flex-wrap items-center gap-1.5">
             <span className={`${LABEL} mb-0 mr-1`}>Template</span>
             <button type="button" onClick={() => applyTemplate('')}
@@ -1325,6 +1357,7 @@ export default function ComposeWindow({
               WhatsApp templates are hidden: this prospect is not marked WhatsApp-confirmed.
             </p>
           )}
+          </>)}
 
           {/* ── (1) ONE FIELD PER PLACEHOLDER THE SELECTED TEMPLATE CONTAINS ────────────────────────
               🔴 DERIVED, NEVER HARDCODED. `tokens` comes from scanning the current subject + body, so a
@@ -1588,14 +1621,14 @@ export default function ComposeWindow({
                     {/* 🔴 THE APP GENERATES THIS DOCUMENT — the same one Admin downloads — so the copy
                         attached is always current with the feature matrix, and its name carries the
                         date it was generated. */}
-                    <button type="button" onClick={() => void attachPlansPdf()} disabled={!!fileBusy}
+                    {!partner && <button type="button" onClick={() => void attachPlansPdf()} disabled={!!fileBusy}
                       title="Generates today's plans-and-features PDF from the live feature matrix and attaches it. The same document as Admin's download button."
                       // 🔴 PLAIN WHITE, LIKE EVERY OTHER TOOLBAR BUTTON. It was tinted orange, which
                       // on this page means one thing: something is about to leave the building. That
                       // belongs to Send and the Next banner, and nothing else.
                       className="text-xs font-bold px-2 py-1 rounded border border-slate-300 text-slate-700 bg-white hover:bg-slate-50 disabled:opacity-40">
                       {fileBusy === 'plans' ? 'Generating…' : 'Plans PDF'}
-                    </button>
+                    </button>}
                   </>
                 ) : undefined}
                 underToolbar={isEmail && files.length > 0 ? (
@@ -1838,7 +1871,7 @@ export default function ComposeWindow({
                 {confirmSend === 'test'
                   ? 'Send a test copy of this message to your own address? Nothing is logged and it does not count towards today’s cap.'
                   : <>Send this email to <span className="font-bold">{toEmail}</span>
-                      {' '}({truckName})? It goes from your mailbox now, and the contact is logged.</>}
+                      {' '}({truckName})? {partner ? 'It goes from your mailbox now and is recorded on their timeline.' : 'It goes from your mailbox now, and the contact is logged.'}</>}
               </p>
               {/* ⚠️ THE OPT-OUT WARNING THAT WAS REPEATED HERE IS GONE: a message without the line can
                   no longer reach this confirm as a Send (`optOutShown` disables Send; a test is exempt). */}
@@ -1863,7 +1896,9 @@ export default function ComposeWindow({
             <span className={`text-[11px] ${optOutShown ? 'text-amber-800 font-semibold' : 'text-slate-400'}`}>
               {optOutShown
                 ? optOutShown
-                : 'Send test to me goes only to you and changes nothing. Send goes to the prospect, logs it and updates the stage.'}
+                : partner
+                  ? 'Send test to me goes only to you and changes nothing. Send goes to the partner from your mailbox and is recorded on their timeline.'
+                  : 'Send test to me goes only to you and changes nothing. Send goes to the prospect, logs it and updates the stage.'}
             </span>
             <div className="ml-auto flex items-center gap-2">
               {!hideCopyAndLog && (

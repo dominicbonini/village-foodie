@@ -1256,6 +1256,9 @@ interface PollSummaryUI {
   repliesLogged: number; autoReplies: number; bounces: number; outlookSentRecorded: number
   retried: number; markedUncertain: number; copiesFiled: number
   ambiguous: number; unmatched: number
+  /** partners-1: optional — an older route would not send them. */
+  partnerMessages?: number
+  prospectAndPartner?: { address: string; subject: string | null; date: string | null; folder: string }[]
   repliesToTest?: number; textsFilled?: number
   /** Rows the importer had taken and the poll took over. Optional: an older route would not send it. */
   adopted?: number
@@ -1342,6 +1345,10 @@ function CheckRepliesNow({ onDone }: {
                 <span className="text-slate-400">
                   {result.ambiguous} ambiguous, {result.unmatched} not outreach.
                 </span>
+                {/* partners-1: shown only when it happened — a partner is never counted in the truck figures above. */}
+                {!!result.partnerMessages && (
+                  <span className="text-slate-500"> {result.partnerMessages} partner email{result.partnerMessages === 1 ? '' : 's'} recorded (Partners tab).</span>
+                )}
                 {result.baselined.length > 0 && (
                   <span className="text-slate-400"> First look at {result.baselined.join(', ')} — older mail was left alone; use Import past emails for history.</span>
                 )}
@@ -1350,6 +1357,18 @@ function CheckRepliesNow({ onDone }: {
                 )}
               </p>
             )}
+          {/* 🔴 partners-1: an address that is BOTH a prospect's and a partner's is filed to NEITHER — listed here,
+              flagged, so it can be filed by hand. Absent ⇒ nothing renders (the line before partners-1, unchanged). */}
+          {!!result.prospectAndPartner?.length && (
+            <div data-flagged-both className="text-[11px] text-amber-900 bg-amber-50 border border-amber-300 rounded px-2 py-1">
+              <span className="font-bold">⚑ {result.prospectAndPartner.length} not filed — the address is both a prospect&apos;s and a partner&apos;s:</span>
+              <ul className="mt-0.5">
+                {result.prospectAndPartner.map((x, i) => (
+                  <li key={`${x.address}-${i}`}>{x.address} · {x.subject ?? '(no subject)'} · {x.date ? new Date(x.date).toLocaleString('en-GB') : '—'} · {x.folder}</li>
+                ))}
+              </ul>
+            </div>
+          )}
           {/* 🔴 PER FOLDER, BECAUSE "FOUND NOTHING" HAS TO BE DIAGNOSABLE. On 29 September this button
               reported all zeros and there was no way to tell from the screen whether the reply had not
               arrived, had not matched, or had been skipped by a watermark the cron had set a few
