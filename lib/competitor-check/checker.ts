@@ -40,7 +40,7 @@ import {
   validateRecordFindings, validateRecordVerdict, maxOutputTokensFor, mergeRecorded, type RawFinding, type Field, type RecordFindingsInput, type Ignored,
 } from './model'
 import {
-  quoteInPages, normaliseForQuote, fetchedPages, costOf, addSpend, ZERO_SPEND, budgetStop, routineQuota, spreadFirstDates, selectRoutine, selectDeep,
+  quoteInPages, normaliseForQuote, fetchedPages, pagesCheckedFrom, costOf, addSpend, ZERO_SPEND, budgetStop, routineQuota, spreadFirstDates, selectRoutine, selectDeep,
   afterCheck, deepQueueOf, deepTargets, nextDeepCountry, isMultiCountry, scaleTokens, type Prices, type Spend, type SchedRow, type Lifecycle, type QueueCountry,
   dueFeatures, nextIntervalFor, routineIntervalOf, featureCheckFor, DEFAULT_TIER_INTERVALS, type TierIntervals, type FeatureChecks,
 } from './core'
@@ -135,7 +135,9 @@ export interface CheckerStore {
   setPassReread?(ids: string[]): Promise<void>
   /** competitor-features-2: records that these features were asked about today (competitor_feature_checks — scheduling only;
    *  clears `rejudge`). Absent before 20261062: nothing is recorded, and every feature stays due. */
-  markFeaturesChecked?(competitorId: string, country: string | null, keys: readonly string[], today: string): Promise<void>
+  markFeaturesChecked?(competitorId: string, country: string | null, keys: readonly string[], today: string,
+    /** compare-suits-1 (20261075): the pages this check read (competitor_feature_checks.pages_checked); absent: not recorded. */
+    pages?: { pages: { url: string; kind: string; ok: boolean; status: string; fetchedAt: string | null }[]; helpCentre: string | null; checkedAt: string }): Promise<void>
 }
 export interface CheckerDeps {
   /** One Messages API call (the SDK's client.beta.messages.create, or a harness's recorded fixtures). competitor-check-8: with
@@ -398,7 +400,7 @@ export function progressFor(c: Pick<CompetitorForCheck, 'deepProgress'>, country
  *  for the next run, which asks only for the rest — `resume`); its verifications not reached stay not_run. */
 export async function checkCompetitor(deps: CheckerDeps, settings: CheckSettings, c: CompetitorForCheck, depth: 'deep' | 'routine', runId: string, country: string | null = null,
   resume: DeepProgress | null = null):
-  Promise<{ findings: FindingRow[]; spend: Spend; dropped: number; incomplete: string | null; timedOut: boolean; progress: DeepProgress | null; ignored?: Ignored; asked: string[] }> {
+  Promise<{ findings: FindingRow[]; spend: Spend; dropped: number; incomplete: string | null; timedOut: boolean; progress: DeepProgress | null; ignored?: Ignored; asked: string[]; pagesChecked?: ReturnType<typeof pagesCheckedFrom> }> {
   const domains = domainsOf(c)
   const allowed = [...domains, ...APP_STORE_HOSTS]
   const today = ymd(deps.now())
@@ -422,7 +424,8 @@ export async function checkCompetitor(deps: CheckerDeps, settings: CheckSettings
     user: extractorMessage({ name: c.name, website: c.website, lifecycle: c.lifecycle, focus: c.focus, check_urls: c.checkUrls,
       features: answersFor(c, keys, country), plans: c.plans }, depth, today,
       country ? { code: country, maxFetches: COUNTRY_MAX_FETCHES } : undefined, features,
-      before ? { pricesDone: before.pricesDone, doneFeatures: before.keys.filter(k => !(TERMS_KEYS as readonly string[]).includes(k)).length } : undefined),
+      before ? { pricesDone: before.pricesDone, doneFeatures: before.keys.filter(k => !(TERMS_KEYS as readonly string[]).includes(k)).length } : undefined,
+      settings.pass?.fetchHelp === true),
     tools: [
       { type: 'web_fetch_20260318', name: 'web_fetch', max_uses: fetches, max_content_tokens: 12000, allowed_domains: allowed },
       { type: 'web_search_20260318', name: 'web_search', max_uses: searches, allowed_domains: allowed },
@@ -458,7 +461,9 @@ export async function checkCompetitor(deps: CheckerDeps, settings: CheckSettings
   const spend = addSpend(ex.spend, await secondCheck(deps, { model: settings.verifierModel, prices: settings.prices, pageTokens: 12000, allowed,
     maxTokens: maxOutputTokensFor(settings.verifierModel, settings.maxOutputTokens) }, c, findings,
     row => depth === 'deep' || row.outcome !== 'unchanged' || !row.quote_in_page))
-  return { findings, spend, dropped: dropped + repeats, incomplete, timedOut, progress, ignored: ex.value.ignored, asked: incomplete ? [] : keys }
+  // compare-suits-1: the pages this check read — kind from the model, fetched or not from the API.
+  const pagesChecked = pagesCheckedFrom(ex.contents, ex.value.pages_checked, ex.value.help_centre, deps.now().toISOString())
+  return { findings, spend, dropped: dropped + repeats, incomplete, timedOut, progress, ignored: ex.value.ignored, asked: incomplete ? [] : keys, pagesChecked }
 }
 
 /** The extractor's findings as rows, after the rules: a finding about another website, another country, an availability
@@ -591,7 +596,7 @@ async function runOne(deps: CheckerDeps, settings: CheckSettings, mode: Mode, tr
         const rest = (): Record<string, DeepProgress> => { const x = { ...(c.deepProgress ?? {}) }; delete x[pkey]; return x }
         if (r.progress) { c.deepProgress = { ...(c.deepProgress ?? {}), [pkey]: r.progress }; await deps.store.setSchedule(c.id, { deep_progress: c.deepProgress as unknown as Record<string, unknown> }) }
         // competitor-features-2: the features it asked about are recorded (their tier's interval starts again; a re-judged "no" is done).
-        if (!r.incomplete && r.asked.length) await deps.store.markFeaturesChecked?.(c.id, country, r.asked, ymd(now))
+        if (!r.incomplete && r.asked.length) await deps.store.markFeaturesChecked?.(c.id, country, r.asked, ymd(now), r.pagesChecked)
         // …and the next check comes after its most frequent tier's interval (the commercial features: 30 days by default).
         const interval = live.tierIntervals ? nextIntervalFor(live.features ?? [], c.focus, live.tierIntervals, c.checkIntervalDays || live.checkIntervalDays) : (c.checkIntervalDays || live.checkIntervalDays)
         if (!r.incomplete) await deps.store.setSchedule(c.id, { ...afterCheck({ checkIntervalDays: interval, deepCheckedIn: c.deepCheckedIn }, ymd(now), now.toISOString(), depth === 'deep', country),

@@ -1,0 +1,102 @@
+{
+  "title": "Vilket system passar din foodtruck?",
+  "checked": "Kontrollerat {date}",
+  "evidence": "Underlag",
+  "adminPreview": "Förhandsvisning för admin – ej verifierad",
+  "ours": {
+    "fromPlan": "{name} (från {plan})"
+  },
+  "q": {
+    "preorder": "Vilket beställningssystem låter mina kunder förbeställa och välja en upphämtningstid?",
+    "capacity": "Min foodtruck blir överbelastad vid rusningstid – vilket system begränsar antalet beställningar per tidslucka?",
+    "whatsapp": "Kunderna frågar hela tiden var jag står – vilket system svarar dem på WhatsApp?",
+    "social": "Vilket system gör inläggen med mina platser för veckan, så att jag slipper designa grafik själv?",
+    "schedule": "Jag står på olika platser de flesta dagar – vilket system visar kunderna var jag är och tar emot beställningar för just den platsen?",
+    "priceLow": "Jag står bara ute några dagar i månaden – vilket system kostar minst?",
+    "priceHigh": "Jag står på festivaler och stora evenemang – vilket system kostar minst?",
+    "commission": "Jag vill inte betala provision på varje beställning – vad tar respektive produkt betalt?",
+    "offline": "Vad händer med onlinebeställningarna om jag tappar täckningen?",
+    "strength": "Vilken av de jämförda produkterna erbjuder ”{feature}”?"
+  },
+  "does": {
+    "preorder": "{names} {count, plural, one {låter} other {låter}} kunderna förbeställa och välja en upphämtningstid.",
+    "capacity": "{names} {count, plural, one {begränsar} other {begränsar}} hur många beställningar varje upphämtningstid tar emot, så att köket inte blir överbelastat.",
+    "whatsapp": "{names} {count, plural, one {svarar} other {svarar}} automatiskt på kundernas WhatsApp-meddelanden.",
+    "social": "{names} {count, plural, one {gör} other {gör}} färdig grafik med veckans platser, redo att publicera.",
+    "schedule": "{names} {count, plural, one {visar} other {visar}} kunderna var foodtrucken står varje dag och {count, plural, one {tar} other {tar}} emot beställningar för just den platsen."
+  },
+  "feat": {
+    "preorder": "upphämtningstider",
+    "capacity": "en gräns för antalet beställningar per tidslucka",
+    "whatsapp": "automatiska svar på WhatsApp",
+    "social": "grafik för veckoschemat",
+    "schedule": "ett schema med växlande platser",
+    "offlinePause": "Onlinebeställningen pausas när täckningen försvinner"
+  },
+  "others": {
+    "noQuoted": "{names} {count, plural, one {erbjuder} other {erbjuder}} inte detta.",
+    "notListed": "{names} {count, plural, one {anger inte {feature} på sin webbplats} other {anger inte {feature} på sina webbplatser}}.",
+    "doesntSay": "{count, plural, one {Det framgår inte av webbplatsen för {names}} other {Det framgår inte av webbplatserna för {names}}}.",
+    "noneLists": "Ingen av de andra jämförda produkterna anger det, så {names} {count, plural, one {är det som passar bäst} other {är de som passar bäst}} bland de jämförda produkterna."
+  },
+  "price": {
+    "lead": "Vid {orders, number} onlinebeställningar i månaden har {names} den lägsta månadskostnaden för programvaran bland de jämförda produkterna: {amount} i månaden{count, plural, one {} other { vardera}}.",
+    "includes": "Det inkluderar abonnemanget, avgifterna som foodtrucken betalar för varje beställning, eventuell avgift för extra beställningar och eventuell startavgift fördelad på 12 månader; kortavgifter ingår inte.",
+    "flat": "{name} ({plan}, ett fast pris utan avgift per beställning från {name})",
+    "planName": "{name} ({plan})"
+  },
+  "commission": {
+    "part": "{name}: {fee}",
+    "answer": "Vad respektive produkt tar betalt per beställning: {parts}."
+  },
+  "offline": {
+    "ours": "{name} kan pausa onlinebeställningen automatiskt när foodtrucken tappar täckningen, så att kunderna inte kan lägga beställningar som köket inte får.",
+    "noQuoted": "{names} {count, plural, one {erbjuder} other {erbjuder}} inte drift utan uppkoppling.",
+    "doesntSay": "{count, plural, one {Det framgår inte av webbplatsen för {names}} other {Det framgår inte av webbplatserna för {names}}} vad som händer när täckningen försvinner."
+  },
+  "strength": {
+    "answer": "{names} {count, plural, one {uppger att den erbjuder} other {uppger att de erbjuder}} ”{feature}”; det gör inte {us}.",
+    "answerSoon": "{names} {count, plural, one {uppger att den erbjuder} other {uppger att de erbjuder}} ”{feature}”; det gör inte {us} ännu."
+  },
+  "ev": {
+    "ours": {
+      "yes": "ja, enligt {us}s egna abonnemang",
+      "no": "nej, enligt {us}s egna abonnemang"
+    },
+    "state": {
+      "yes": "uppger att den erbjuder detta",
+      "partial": "erbjuder en del av det",
+      "no_quoted": "uppger att den inte erbjuder detta",
+      "no_unquoted": "nej (inget citat sparat)",
+      "not_listed": "anges inte på webbplatsen",
+      "not_mentioned": "framgår inte av webbplatsen",
+      "unknown": "okänt"
+    },
+    "row": "{tool} – {feature}: {answer}.",
+    "quote": "Citat: ”{quote}”.",
+    "pages": "Kontrollerade sidor: {pages}.",
+    "pageRead": "{page}",
+    "pageNotRead": "{page} (kunde inte läsas)",
+    "page": {
+      "features": "funktionssidan",
+      "pricing": "prissidan",
+      "help": "hjälpcentret",
+      "other": "annan sida"
+    },
+    "help": {
+      "fetched": "Hjälpcentret lästes.",
+      "linked_not_fetched": "Det finns ett hjälpcenter som inte lästes.",
+      "none_found": "Inget hjälpcenter hittades."
+    },
+    "calc": {
+      "volume": "Beräknat för {orders, number} onlinebeställningar i månaden à {order} per beställning ({revenue} i onlineförsäljning).",
+      "line": "{name} ({plan}): abonnemang {sub} + startavgift fördelad på 12 månader {setup} + avgifter per beställning {fees} + extra beställningar {over} = {total} i månaden.",
+      "excluded": "Kortavgifter och avgifter som kunderna betalar ingår inte för någon produkt.",
+      "date": "Beräknat den {date} utifrån de priser som kontrollerats på respektive leverantörs webbplats."
+    }
+  },
+  "method": {
+    "covers": "Jämförelsen omfattar upp till fyra alternativ som valts ut för att de är relevanta för foodtruckar och för att det finns offentlig information som går att kontrollera – inte alla produkter på marknaden.",
+    "notListed": "”Anges inte” betyder att vi har gått igenom produktens funktions-, pris- och hjälpsidor och att det inte nämns, för funktioner som företag normalt marknadsför. ”Framgår inte” betyder att det inte är bekräftat åt något håll."
+  }
+}

@@ -1,0 +1,102 @@
+{
+  "title": "Koji sustav odgovara vašem food trucku?",
+  "checked": "Provjereno {date}",
+  "evidence": "Izvori",
+  "adminPreview": "Pregled za administratora — neprovjereno",
+  "ours": {
+    "fromPlan": "{name} (od paketa {plan})"
+  },
+  "q": {
+    "preorder": "Koji sustav za naručivanje omogućuje mojim kupcima da naruče unaprijed i odaberu vrijeme preuzimanja?",
+    "capacity": "U vršnim satima moj food truck je zatrpan narudžbama — koji sustav ograničava broj narudžbi po terminu preuzimanja?",
+    "whatsapp": "Kupci me stalno pitaju gdje sam — koji sustav im odgovara na WhatsAppu?",
+    "social": "Koji sustav izrađuje objave s mojim lokacijama za svaki tjedan, da ne moram dizajnirati grafike?",
+    "schedule": "Gotovo svaki dan prodajem na drugom mjestu — koji sustav pokazuje kupcima gdje sam i prima narudžbe za tu lokaciju?",
+    "priceLow": "Radim samo nekoliko dana mjesečno — koji sustav najmanje košta?",
+    "priceHigh": "Radim na festivalima i posjećenim događajima — koji sustav najmanje košta?",
+    "commission": "Ne želim plaćati proviziju na svaku narudžbu — koliko naplaćuje svaki proizvod?",
+    "offline": "Što se događa s online narudžbama ako izgubim signal?",
+    "strength": "Koji od uspoređenih proizvoda nudi „{feature}“?"
+  },
+  "does": {
+    "preorder": "{names} {count, plural, one {omogućuje} few {omogućuju} other {omogućuju}} kupcima da naruče unaprijed i odaberu vrijeme preuzimanja.",
+    "capacity": "{names} {count, plural, one {ograničava} few {ograničavaju} other {ograničavaju}} koliko narudžbi prima svako vrijeme preuzimanja, kako kuhinja ne bi bila zatrpana.",
+    "whatsapp": "{names} automatski {count, plural, one {odgovara} few {odgovaraju} other {odgovaraju}} na poruke kupaca na WhatsAppu.",
+    "social": "{names} {count, plural, one {izrađuje} few {izrađuju} other {izrađuju}} grafike s lokacijama za taj tjedan, spremne za objavu.",
+    "schedule": "{names} {count, plural, one {pokazuje} few {pokazuju} other {pokazuju}} kupcima gdje se food truck nalazi svaki dan i {count, plural, one {prima} few {primaju} other {primaju}} narudžbe za tu lokaciju."
+  },
+  "feat": {
+    "preorder": "vremena preuzimanja",
+    "capacity": "ograničenje narudžbi po terminu preuzimanja",
+    "whatsapp": "automatske odgovore na WhatsAppu",
+    "social": "grafike s tjednim rasporedom",
+    "schedule": "raspored promjenjivih lokacija",
+    "offlinePause": "Pauziranje online naručivanja kad nestane signala"
+  },
+  "others": {
+    "noQuoted": "{names} {count, plural, one {to ne nudi} few {to ne nude} other {to ne nude}}.",
+    "notListed": "{names} {count, plural, one {ne navodi {feature} na svojoj web-stranici} few {ne navode {feature} na svojim web-stranicama} other {ne navode {feature} na svojim web-stranicama}}.",
+    "doesntSay": "{count, plural, one {Web-stranica proizvoda {names} o tome ne govori ništa} few {Web-stranice proizvoda {names} o tome ne govore ništa} other {Web-stranice proizvoda {names} o tome ne govore ništa}}.",
+    "noneLists": "Nijedan od ostalih uspoređenih proizvoda to ne navodi, pa {names} {count, plural, one {najbolje odgovara} few {najbolje odgovaraju} other {najbolje odgovaraju}} među uspoređenim proizvodima."
+  },
+  "price": {
+    "lead": "Uz {orders, number} online narudžbi mjesečno {names} {count, plural, one {ima} few {imaju} other {imaju}} najniži mjesečni trošak softvera među uspoređenim proizvodima: {count, plural, one {} few {po } other {po }}{amount} mjesečno.",
+    "includes": "To uključuje pretplatu, naknade koje se food trucku naplaćuju po narudžbi, eventualnu naplatu dodatnih narudžbi i naknadu za postavljanje raspoređenu na 12 mjeseci; naknade za obradu kartičnih plaćanja nisu uključene.",
+    "flat": "{name} ({plan}, fiksna cijena; {name} ne naplaćuje naknadu po narudžbi)",
+    "planName": "{name} ({plan})"
+  },
+  "commission": {
+    "part": "{name}: {fee}",
+    "answer": "Koliko svaki proizvod naplaćuje po narudžbi: {parts}."
+  },
+  "offline": {
+    "ours": "{name} može automatski pauzirati online naručivanje kad food truck izgubi signal, tako da kupci ne mogu slati narudžbe koje kuhinja neće primiti.",
+    "noQuoted": "{names} {count, plural, one {ne nudi} few {ne nude} other {ne nude}} rad bez internetske veze.",
+    "doesntSay": "{count, plural, one {Web-stranica proizvoda {names} ne kaže} few {Web-stranice proizvoda {names} ne kažu} other {Web-stranice proizvoda {names} ne kažu}} što se događa kad nestane signala."
+  },
+  "strength": {
+    "answer": "{names} {count, plural, one {navodi da nudi} few {navode da nude} other {navode da nude}} „{feature}“; {us} to ne nudi.",
+    "answerSoon": "{names} {count, plural, one {navodi da nudi} few {navode da nude} other {navode da nude}} „{feature}“; {us} to još ne nudi."
+  },
+  "ev": {
+    "ours": {
+      "yes": "da, prema vlastitim paketima {us}",
+      "no": "ne, prema vlastitim paketima {us}"
+    },
+    "state": {
+      "yes": "navodi da to nudi",
+      "partial": "nudi to djelomično",
+      "no_quoted": "navodi da to ne nudi",
+      "no_unquoted": "ne (citat nije spremljen)",
+      "not_listed": "ne navodi to na svojoj web-stranici",
+      "not_mentioned": "njegova web-stranica o tome ne govori",
+      "unknown": "nije poznato"
+    },
+    "row": "{tool} — {feature}: {answer}.",
+    "quote": "Citat: „{quote}“.",
+    "pages": "Provjerene stranice: {pages}.",
+    "pageRead": "{page}",
+    "pageNotRead": "{page} (čitanje nije uspjelo)",
+    "page": {
+      "features": "stranica sa značajkama",
+      "pricing": "stranica s cijenama",
+      "help": "centar za pomoć",
+      "other": "druga stranica"
+    },
+    "help": {
+      "fetched": "Njegov centar za pomoć je pročitan.",
+      "linked_not_fetched": "Ima centar za pomoć koji nije pročitan.",
+      "none_found": "Centar za pomoć nije pronađen."
+    },
+    "calc": {
+      "volume": "Izračunato za {orders, number} online narudžbi mjesečno uz {order} po narudžbi ({revenue} online prodaje).",
+      "line": "{name} ({plan}): pretplata {sub} + naknada za postavljanje raspoređena na 12 mjeseci {setup} + naknade po narudžbi {fees} + dodatne narudžbe {over} = {total} mjesečno.",
+      "excluded": "Naknade za obradu kartičnih plaćanja i naknade koje plaćaju kupci nisu uključene ni za jedan proizvod.",
+      "date": "Izračunato {date} na temelju cijena provjerenih na web-stranici svakog dobavljača."
+    }
+  },
+  "method": {
+    "covers": "Obuhvaća najviše četiri alternative odabrane prema njihovoj važnosti za food truckove i dostupnosti provjerljivih javnih informacija — ne svaki proizvod na tržištu.",
+    "notListed": "„Ne navodi“ znači da smo provjerili stranice proizvoda sa značajkama, cijenama i pomoći i to se ondje ne spominje — za značajke koje tvrtke obično ističu. „Ne govori“ znači da nije potvrđeno ni u jednom smjeru."
+  }
+}

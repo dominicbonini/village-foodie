@@ -42,6 +42,7 @@ export function passSettingsOut(r: Row): PassSettings {
     country: typeof r.pass_country === 'string' && /^[A-Z]{2}$/.test(r.pass_country) ? r.pass_country : null,
     maxFetches: n(r.pass_max_fetches, DEFAULT_PASS.maxFetches), maxSearches: n(r.pass_max_searches, DEFAULT_PASS.maxSearches),
     maxPageTokens: n(r.pass_max_page_tokens, DEFAULT_PASS.maxPageTokens), batch: b && typeof b.id === 'string' ? b : null,
+    fetchHelp: r.pass_fetch_help === true,   // compare-suits-1 (20261075); absent: false
     // competitor-check-8 (20261053): null while the column is missing (the failed-batch re-read then says so and waits).
     reread: Array.isArray(r.pass_batches_reread) ? (r.pass_batches_reread as unknown[]).filter((x): x is string => typeof x === 'string') : null,
   }
@@ -202,11 +203,15 @@ export function supabaseCheckerStore(db: SupabaseClient): CheckerStore {
       if (error) fail('read countries', error)
       return ((data ?? []) as Row[]).map(r => ({ code: String(r.country_code), enabled: r.enabled === true, comparisonStatus: (r.comparison_status as string | null) ?? null })) as QueueCountry[]
     },
-    async markFeaturesChecked(competitorId, country, keys, today) {
+    async markFeaturesChecked(competitorId, country, keys, today, pages) {
       // Scheduling only (35.an-3): when each was asked about; a re-judged "no" is done. Before 20261062 there is no table.
+      // compare-suits-1 (20261075): and the pages that check read — every feature it asked about carries them.
       if (!keys.length) return
-      const { error } = await db.from('competitor_feature_checks')
-        .upsert(keys.map(k => ({ competitor_id: competitorId, feature_key: k, country_code: country ?? '', checked_on: today, rejudge: false })), { onConflict: 'competitor_id,feature_key,country_code' })
+      const rows = keys.map(k => ({ competitor_id: competitorId, feature_key: k, country_code: country ?? '', checked_on: today, rejudge: false,
+        ...(pages ? { pages_checked: pages } : {}) }))
+      let { error } = await db.from('competitor_feature_checks').upsert(rows, { onConflict: 'competitor_id,feature_key,country_code' })
+      if (error && missingColumn(error) && pages) ({ error } = await db.from('competitor_feature_checks')
+        .upsert(rows.map(({ pages_checked: _p, ...r }) => { void _p; return r }), { onConflict: 'competitor_id,feature_key,country_code' }))   // before 20261075
       if (error && !tableMissing(error)) fail('record the features checked', error)
     },
     async setPassReread(ids) {

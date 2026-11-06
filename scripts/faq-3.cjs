@@ -320,11 +320,20 @@ const sectionOrder = html => [...html.matchAll(/<section(?: id="([a-z-]+)")?(?: 
     const want = JSON.parse(fs.readFileSync(IDENTITY, 'utf8'))
     const got = await identitySet()
     t(`the same ${Object.keys(want.pages).length} pages`, JSON.stringify(Object.keys(got).sort()) === JSON.stringify(Object.keys(want.pages).sort()), Object.keys(got))
-    for (const [k, v] of Object.entries(want.pages)) t(`${k} identical to ${want.commit}`, JSON.stringify(got[k]) === JSON.stringify(v), { want: v, got: got[k] })
+    // ⚠️ RE-PINNED (compare-suits-1, 6 November 2026): the comparison pages change ON PURPOSE — at most four competitors, "Not listed",
+    // "Which suits your food truck?" and two methodology sentences (docs/compare-suits-1-report.md; scripts/compare-suits-1.cjs and
+    // compare-de-1.cjs prove what they now say). Here they must still render; a 404 (off, an anonymous visitor on an admin page) and every other page stay byte-identical to the capture.
+    for (const [k, v] of Object.entries(want.pages)) {
+      if (k.startsWith('comparison:') && !v.notFound) t(`${k}: changed on purpose by compare-suits-1 — still renders (status and metadata as captured)`, !!got[k] && !got[k].empty && got[k].notFound === v.notFound
+        && (v.meta === undefined || got[k].meta === v.meta) && (v.status === undefined || got[k].status === v.status), { want: v, got: got[k] })
+      else t(`${k} identical to ${want.commit}`, JSON.stringify(got[k]) === JSON.stringify(v), { want: v, got: got[k] })
+    }
     t('the comparison pages really rendered (live DE, admin DE, GB) — not empty on both sides', !want.pages['comparison:de:live'].empty && !want.pages['comparison:de:admin:admin'].empty && want.pages['comparison:gb:live'].html !== sha('null'))
   }
   const cmpSrc = fs.readFileSync(path.join(REPO, 'app/[country]/[section]/[slug]/page.tsx'), 'utf8')
-  t('the comparison page renders the shared component (no <details> of its own)', /<FaqDetails items=\{v\.faq\} className="cmp-faq" \/>/.test(cmpSrc) && !/<details/.test(cmpSrc))
+  // ⚠️ RE-PINNED (compare-suits-1): the only other <details> is each "Which suits" answer's evidence (class cmp-suit-ev) — not an FAQ.
+  t('the comparison page renders the shared component (no <details> of its own for its FAQ)', /<FaqDetails items=\{v\.faq\} className="cmp-faq" \/>/.test(cmpSrc)
+    && !/<details/.test(cmpSrc.replace(/<details className="cmp-suit-ev">[\s\S]*?<\/details>/g, '')))
   t('lib/comparison.ts builds its FAQPage with the shared builder', /faqPageLd\(`\$\{page\}#faq`, v\.faq\)/.test(fs.readFileSync(path.join(REPO, 'lib/comparison.ts'), 'utf8')))
   // ⚠️ RE-PINNED (seo-geo-2 B4): /llms.txt was rebuilt later, on purpose — faq-3's own commits (a92f983a..78e16437) did not touch it.
   t('/llms.txt\'s builder is untouched by faq-3', execFileSync('git', ['diff', '--stat', 'a92f983a', '78e16437', '--', 'lib/llms-text.ts', 'app/llms.txt'], { cwd: REPO }).toString().trim() === '')

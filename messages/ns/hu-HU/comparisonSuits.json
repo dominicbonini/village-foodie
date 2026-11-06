@@ -1,0 +1,102 @@
+{
+  "title": "Melyik rendszer illik az Ön food truckjához?",
+  "checked": "Ellenőrizve: {date}",
+  "evidence": "Források",
+  "adminPreview": "Adminisztrátori előnézet — nem ellenőrzött",
+  "ours": {
+    "fromPlan": "{name} ({plan} csomagtól)"
+  },
+  "q": {
+    "preorder": "Melyik rendelési rendszerrel tudnak a vásárlóim előre rendelni és átvételi időt választani?",
+    "capacity": "Csúcsidőben elárasztanak a rendelések — melyik rendszer korlátozza az idősávonkénti rendelések számát?",
+    "whatsapp": "A vásárlók folyton azt kérdezik, hol vagyok — melyik rendszer válaszol nekik WhatsAppon?",
+    "social": "Melyik rendszer készíti el a heti helyszíneimről szóló bejegyzéseket, hogy ne nekem kelljen grafikát tervezni?",
+    "schedule": "Szinte minden nap máshol árulok — melyik rendszer mutatja meg a vásárlóknak, hol vagyok, és fogadja a rendeléseket az adott helyszínre?",
+    "priceLow": "Havonta csak néhány napot dolgozom — melyik rendszer a legolcsóbb?",
+    "priceHigh": "Fesztiválokra és forgalmas rendezvényekre járok — melyik rendszer a legolcsóbb?",
+    "commission": "Nem szeretnék minden rendelés után jutalékot fizetni — melyik termék mennyit számít fel?",
+    "offline": "Mi történik az online rendelésekkel, ha megszűnik a térerő?",
+    "strength": "Az összehasonlított termékek közül melyik kínálja ezt: „{feature}”?"
+  },
+  "does": {
+    "preorder": "{names} {count, plural, one {lehetővé teszi} other {lehetővé teszik}}, hogy a vásárlók előre rendeljenek és átvételi időt válasszanak.",
+    "capacity": "{names} {count, plural, one {korlátozza} other {korlátozzák}}, hány rendelést fogadhat egy-egy átvételi idő, így a konyhát nem árasztják el a rendelések.",
+    "whatsapp": "{names} automatikusan {count, plural, one {válaszol} other {válaszolnak}} a vásárlók WhatsApp-üzeneteire.",
+    "social": "{names} közzétételre kész grafikákat {count, plural, one {készít} other {készítenek}} a heti helyszínekről.",
+    "schedule": "{names} {count, plural, one {megmutatja} other {megmutatják}} a vásárlóknak, hol áll a food truck az adott napon, és {count, plural, one {fogadja} other {fogadják}} a rendeléseket az adott helyszínre."
+  },
+  "feat": {
+    "preorder": "az átvételi időket",
+    "capacity": "az idősávonkénti rendeléskorlátot",
+    "whatsapp": "a WhatsAppos automatikus válaszokat",
+    "social": "a heti menetrendről szóló grafikákat",
+    "schedule": "a változó helyszínek menetrendjét",
+    "offlinePause": "Az online rendelés szüneteltetése, ha megszűnik a térerő"
+  },
+  "others": {
+    "noQuoted": "{names} {count, plural, one {ezt nem kínálja} other {ezt nem kínálják}}.",
+    "notListed": "{names} {count, plural, one {nem tünteti fel a weboldalán {feature}} other {nem tüntetik fel a weboldalukon {feature}}}.",
+    "doesntSay": "{count, plural, one {{names} weboldala erről nem ír semmit} other {{names} weboldalai erről nem írnak semmit}}.",
+    "noneLists": "A többi összehasonlított termék egyike sem tünteti fel, így az összehasonlított termékek közül {names} {count, plural, one {illik} other {illenek}} a legjobban."
+  },
+  "price": {
+    "lead": "Havi {orders, number} online rendelésnél az összehasonlított termékek közül {names} havi szoftverköltsége a legalacsonyabb: {count, plural, one {} other {egyenként }}havi {amount}.",
+    "includes": "Ez tartalmazza az előfizetést, a food trucknak rendelésenként felszámított díjakat, a többletrendelések esetleges díját és a 12 hónapra elosztott beállítási díjat; a kártyás fizetési díjakat nem tartalmazza.",
+    "flat": "{name} ({plan}, fix ár — {name} nem számít fel rendelésenkénti díjat)",
+    "planName": "{name} ({plan})"
+  },
+  "commission": {
+    "part": "{name}: {fee}",
+    "answer": "Az egyes termékek rendelésenként felszámított díja: {parts}."
+  },
+  "offline": {
+    "ours": "{name} automatikusan szüneteltetni tudja az online rendelést, ha a food truck elveszíti a térerőt, így a vásárlók nem adhatnak le olyan rendelést, amely nem jut el a konyhára.",
+    "noQuoted": "{names} {count, plural, one {nem kínál} other {nem kínálnak}} kapcsolat nélküli működést.",
+    "doesntSay": "{count, plural, one {{names} weboldala nem írja meg} other {{names} weboldalai nem írják meg}}, mi történik, ha megszűnik a térerő."
+  },
+  "strength": {
+    "answer": "{names} {count, plural, one {azt írja, hogy kínálja} other {azt írják, hogy kínálják}} ezt: „{feature}”; {us} viszont nem.",
+    "answerSoon": "{names} {count, plural, one {azt írja, hogy kínálja} other {azt írják, hogy kínálják}} ezt: „{feature}”; {us} viszont még nem."
+  },
+  "ev": {
+    "ours": {
+      "yes": "igen, {us} saját csomagjai alapján",
+      "no": "nem, {us} saját csomagjai alapján"
+    },
+    "state": {
+      "yes": "azt írja, hogy kínálja",
+      "partial": "részben kínálja",
+      "no_quoted": "azt írja, hogy nem kínálja",
+      "no_unquoted": "nem (nincs mentett idézet)",
+      "not_listed": "nem tünteti fel a weboldalán",
+      "not_mentioned": "a weboldala nem ír róla",
+      "unknown": "nem ismert"
+    },
+    "row": "{tool} — {feature}: {answer}.",
+    "quote": "Idézet: „{quote}”.",
+    "pages": "Ellenőrzött oldalak: {pages}.",
+    "pageRead": "{page}",
+    "pageNotRead": "{page} (nem sikerült beolvasni)",
+    "page": {
+      "features": "funkciók oldala",
+      "pricing": "árak oldala",
+      "help": "súgóközpont",
+      "other": "egyéb oldal"
+    },
+    "help": {
+      "fetched": "A súgóközpontját beolvastuk.",
+      "linked_not_fetched": "Van súgóközpontja, de azt nem olvastuk be.",
+      "none_found": "Nem találtunk súgóközpontot."
+    },
+    "calc": {
+      "volume": "Havi {orders, number} online rendeléssel számolva, rendelésenként {order} értékkel ({revenue} online forgalom).",
+      "line": "{name} ({plan}): előfizetés {sub} + 12 hónapra elosztott beállítási díj {setup} + rendelésenkénti díjak {fees} + többletrendelések {over} = havi {total}.",
+      "excluded": "A kártyás fizetési díjakat és a vásárlók által fizetett díjakat egyik terméknél sem számoltuk bele.",
+      "date": "Számítás dátuma: {date}, az egyes szolgáltatók weboldalán ellenőrzött árak alapján."
+    }
+  },
+  "method": {
+    "covers": "Legfeljebb négy alternatívát tartalmaz, amelyeket a food truckok szempontjából való relevanciájuk és az ellenőrizhető nyilvános információk elérhetősége alapján választottunk ki — nem a piacon lévő összes terméket.",
+    "notListed": "A „nem tünteti fel” azt jelenti, hogy átnéztük a termék funkciókról, árakról és súgóról szóló oldalait, és nem szerepel rajtuk — olyan funkcióknál, amelyeket a cégek általában hirdetnek. A „nem ír róla” azt jelenti, hogy egyik irányban sem megerősített."
+  }
+}

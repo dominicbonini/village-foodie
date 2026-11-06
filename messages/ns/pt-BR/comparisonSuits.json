@@ -1,0 +1,102 @@
+{
+  "title": "Qual sistema combina com o seu food truck?",
+  "checked": "Verificado em {date}",
+  "evidence": "Fontes",
+  "adminPreview": "Prévia do admin — não verificado",
+  "ours": {
+    "fromPlan": "{name} (a partir do plano {plan})"
+  },
+  "q": {
+    "preorder": "Qual sistema de pedidos permite que meus clientes façam pedidos antecipados e escolham um horário de retirada?",
+    "capacity": "Meu food truck fica lotado nos horários de pico — qual sistema limita os pedidos em cada horário?",
+    "whatsapp": "Os clientes vivem perguntando onde eu estou — qual sistema responde a eles no WhatsApp?",
+    "social": "Qual sistema cria os posts com os meus locais da semana, para eu não precisar criar artes?",
+    "schedule": "Quase todo dia estou em um lugar diferente — qual sistema mostra aos clientes onde estou e recebe pedidos para esse ponto?",
+    "priceLow": "Só trabalho alguns dias por mês — qual sistema sai mais barato?",
+    "priceHigh": "Faço festivais e eventos com muito movimento — qual sistema sai mais barato?",
+    "commission": "Não quero pagar comissão em todo pedido — quanto cada produto cobra?",
+    "offline": "O que acontece com os pedidos online se o sinal cair?",
+    "strength": "Qual produto comparado oferece “{feature}”?"
+  },
+  "does": {
+    "preorder": "{names} {count, plural, one {permite} other {permitem}} que os clientes façam pedidos antecipados e escolham um horário de retirada.",
+    "capacity": "{names} {count, plural, one {limita} other {limitam}} quantos pedidos cada horário de retirada recebe, para a cozinha não ficar sobrecarregada.",
+    "whatsapp": "{names} {count, plural, one {responde} other {respondem}} automaticamente às mensagens dos clientes no WhatsApp.",
+    "social": "{names} {count, plural, one {cria} other {criam}} artes prontas para postar com os locais da semana.",
+    "schedule": "{names} {count, plural, one {mostra} other {mostram}} aos clientes onde o food truck está a cada dia e {count, plural, one {recebe} other {recebem}} pedidos para esse ponto."
+  },
+  "feat": {
+    "preorder": "os horários de retirada",
+    "capacity": "um limite de pedidos por horário",
+    "whatsapp": "as respostas automáticas no WhatsApp",
+    "social": "artes da agenda semanal",
+    "schedule": "uma agenda de locais que mudam",
+    "offlinePause": "Pedidos online pausados quando o sinal cai"
+  },
+  "others": {
+    "noQuoted": "{names} não {count, plural, one {oferece} other {oferecem}} isso.",
+    "notListed": "{names} não {count, plural, one {lista {feature} no próprio site} other {listam {feature} nos próprios sites}}.",
+    "doesntSay": "{count, plural, one {O site de {names} não diz nada sobre isso} other {Os sites de {names} não dizem nada sobre isso}}.",
+    "noneLists": "Nenhum dos outros produtos comparados lista isso, então {names} {count, plural, one {é a opção mais adequada} other {são as opções mais adequadas}} entre os produtos comparados."
+  },
+  "price": {
+    "lead": "Com {orders, number} pedidos online por mês, {names} {count, plural, one {tem} other {têm}} o menor custo mensal de software entre os produtos comparados: {amount} por mês{count, plural, one {} other { cada um}}.",
+    "includes": "Inclui a assinatura, as taxas cobradas do food truck em cada pedido, qualquer cobrança por pedidos extras e eventual taxa de adesão diluída em 12 meses; as taxas de processamento de cartão não estão incluídas.",
+    "flat": "{name} ({plan}, um preço fixo sem taxa por pedido cobrada por {name})",
+    "planName": "{name} ({plan})"
+  },
+  "commission": {
+    "part": "{name}: {fee}",
+    "answer": "Quanto cada produto cobra por pedido: {parts}."
+  },
+  "offline": {
+    "ours": "{name} pode pausar os pedidos online automaticamente quando o food truck perde o sinal, para que os clientes não façam pedidos que a cozinha não vai receber.",
+    "noQuoted": "{names} não {count, plural, one {oferece} other {oferecem}} funcionamento sem conexão.",
+    "doesntSay": "{count, plural, one {O site de {names} não diz} other {Os sites de {names} não dizem}} o que acontece quando o sinal cai."
+  },
+  "strength": {
+    "answer": "{names} {count, plural, one {diz que oferece} other {dizem que oferecem}} “{feature}”; {us} não.",
+    "answerSoon": "{names} {count, plural, one {diz que oferece} other {dizem que oferecem}} “{feature}”; {us} ainda não."
+  },
+  "ev": {
+    "ours": {
+      "yes": "sim, segundo os planos do próprio {us}",
+      "no": "não, segundo os planos do próprio {us}"
+    },
+    "state": {
+      "yes": "diz que oferece isso",
+      "partial": "oferece parte disso",
+      "no_quoted": "diz que não oferece isso",
+      "no_unquoted": "não (nenhuma citação salva)",
+      "not_listed": "não listado no site",
+      "not_mentioned": "o site não diz nada",
+      "unknown": "desconhecido"
+    },
+    "row": "{tool} — {feature}: {answer}.",
+    "quote": "Citação: “{quote}”.",
+    "pages": "Páginas verificadas: {pages}.",
+    "pageRead": "{page}",
+    "pageNotRead": "{page} (não foi possível ler)",
+    "page": {
+      "features": "página de recursos",
+      "pricing": "página de preços",
+      "help": "central de ajuda",
+      "other": "outra página"
+    },
+    "help": {
+      "fetched": "A central de ajuda foi lida.",
+      "linked_not_fetched": "Tem uma central de ajuda que não foi lida.",
+      "none_found": "Nenhuma central de ajuda foi encontrada."
+    },
+    "calc": {
+      "volume": "Calculado para {orders, number} pedidos online por mês a {order} por pedido ({revenue} em vendas online).",
+      "line": "{name} ({plan}): assinatura {sub} + taxa de adesão diluída em 12 meses {setup} + taxas por pedido {fees} + pedidos extras {over} = {total} por mês.",
+      "excluded": "As taxas de processamento de cartão e as taxas pagas pelos clientes não estão incluídas em nenhum produto.",
+      "date": "Calculado em {date} com base nos preços verificados no site de cada fornecedor."
+    }
+  },
+  "method": {
+    "covers": "Abrange até quatro alternativas, escolhidas pela relevância para food trucks e pela disponibilidade de informações públicas verificáveis — não todos os produtos do mercado.",
+    "notListed": "“Não listado” significa que verificamos as páginas de recursos, preços e ajuda do produto e ele não é mencionado, no caso de recursos que as empresas costumam divulgar. “Não diz” significa que não está confirmado nem para um lado nem para o outro."
+  }
+}

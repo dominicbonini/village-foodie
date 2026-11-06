@@ -64,6 +64,10 @@ export interface PricingStore {
   /** A feature added or switched to checked: an 'unknown' row for every active competitor that has no current row for it,
    *  and every active competitor due (next_check_at no later than today). Returns how many rows were added. */
   markFeatureDue?(key: string, today: string): Promise<number>
+  /** compare-suits-1 (20261075): competitor_feature_checks rows for a country and for every country ('' country). [] before. */
+  featureChecks?(code: string): Promise<Row[]>
+  /** compare-suits-1: pending feature findings for a country (or every country) — their competitor and `found`. */
+  pendingFeatureFindings?(code: string): Promise<Row[]>
 }
 
 export type ActionResult<T> = { ok: true; data: T } | { ok: false; status: number; error: string }
@@ -89,6 +93,9 @@ const COMPETITOR: Record<keyof Competitor, Def> = {
   checkIntervalDays: { col: 'check_interval_days', kind: 'int0' }, nextCheckAt: { col: 'next_check_at', kind: 'textOrNull' },
   lastCheckedAt: { col: 'last_checked_at', kind: 'textOrNull' }, deepCheckedAt: { col: 'deep_checked_at', kind: 'textOrNull' },
   checkRequestedAt: { col: 'check_requested_at', kind: 'textOrNull' },
+  // compare-suits-1 (20261075), read tolerantly (SUITS_COMPETITOR_COLUMNS).
+  category: { col: 'category', kind: { oneOf: ['food_truck', 'general_pos', 'restaurant', 'marketplace'], nullable: true } },
+  categoryBy: { col: 'category_by', kind: { oneOf: ['auto', 'admin'], nullable: true } },
 }
 const PLAN: Record<keyof CompetitorPlan, Def> = {
   id: { col: 'id', kind: 'text' }, competitorId: { col: 'competitor_id', kind: 'text' },
@@ -136,7 +143,9 @@ export const COMPARE_COMPETITOR_COLUMNS = ['capacity_slots', 'multi_location_sch
 /** competitor-check-1: the columns added by 20261043 — left out of the select while that migration has not run. */
 export const CHECK_COMPETITOR_COLUMNS = ['lifecycle', 'added_as_candidate', 'check_urls', 'check_interval_days', 'next_check_at', 'last_checked_at', 'deep_checked_at', 'check_requested_at'] as const
 /** competitor-check-1: what a competitor column reads as when the row does not carry it (before 20261043). */
-const ABSENT: Record<string, unknown> = { lifecycle: 'active', added_as_candidate: false, check_urls: [], check_interval_days: 90 }
+const ABSENT: Record<string, unknown> = { lifecycle: 'active', added_as_candidate: false, check_urls: [], check_interval_days: 90, pinned: false, hidden: false }
+/** compare-suits-1: the competitor columns added by 20261075 — left out of the select while that migration has not run. */
+export const SUITS_COMPETITOR_COLUMNS = ['category', 'category_by'] as const
 
 const LABEL: Record<string, string> = {
   planName: 'Plan name', currency: 'Currency', monthlyMinor: 'Monthly price', setupMinor: 'Setup fee', truckFeeBps: 'Fee the truck pays (%)',
@@ -206,6 +215,7 @@ const ENTRY: Record<keyof ComparisonEntry, Def> = {
   sortOrder: { col: 'sort_order', kind: 'int0' }, verifiedAt: { col: 'verified_at', kind: 'textOrNull' }, verifiedBy: { col: 'verified_by', kind: 'textOrNull' },
   createdAt: { col: 'created_at', kind: 'textOrNull' },
   groupLabel: { col: 'group_label', kind: 'textOrNull' },   // global-players-1 (20261046), read tolerantly
+  pinned: { col: 'pinned', kind: 'bool' }, hidden: { col: 'hidden', kind: 'bool' },   // compare-suits-1 (20261075), read tolerantly
 }
 export const entryOut = (r: Row) => mapOut<ComparisonEntry>(r, ENTRY)
 export const competitorOut = (r: Row) => mapOut<Competitor>(r, COMPETITOR)
@@ -214,10 +224,12 @@ export const benchmarkOut = (r: Row) => mapOut<Benchmark>(r, BENCH)
 /** The columns each table is read with (the store selects exactly these). */
 export const COLUMNS = {
   competitors: [...Object.values(COMPETITOR).map(d => d.col), 'updated_at'].join(', '),
+  /** compare-suits-1: the select before 20261075 runs. */
+  competitorsNoSuits: [...Object.values(COMPETITOR).map(d => d.col).filter(c => !(SUITS_COMPETITOR_COLUMNS as readonly string[]).includes(c)), 'updated_at'].join(', '),
   /** competitor-check-1: the select before 20261043 runs (the store falls back to it on an unknown column). */
-  competitorsNoCheck: [...Object.values(COMPETITOR).map(d => d.col).filter(c => !(CHECK_COMPETITOR_COLUMNS as readonly string[]).includes(c)), 'updated_at'].join(', '),
+  competitorsNoCheck: [...Object.values(COMPETITOR).map(d => d.col).filter(c => !(CHECK_COMPETITOR_COLUMNS as readonly string[]).includes(c) && !(SUITS_COMPETITOR_COLUMNS as readonly string[]).includes(c)), 'updated_at'].join(', '),
   /** compare-de-1: the competitors select before 20261042 runs (the store falls back to it on an unknown column). */
-  competitorsLegacy: [...Object.values(COMPETITOR).map(d => d.col).filter(c => !(COMPARE_COMPETITOR_COLUMNS as readonly string[]).includes(c) && !(CHECK_COMPETITOR_COLUMNS as readonly string[]).includes(c)), 'updated_at'].join(', '),
+  competitorsLegacy: [...Object.values(COMPETITOR).map(d => d.col).filter(c => !(COMPARE_COMPETITOR_COLUMNS as readonly string[]).includes(c) && !(CHECK_COMPETITOR_COLUMNS as readonly string[]).includes(c) && !(SUITS_COMPETITOR_COLUMNS as readonly string[]).includes(c)), 'updated_at'].join(', '),
   plans: Object.values(PLAN).map(d => d.col).join(', '),
   benchmarks: Object.values(BENCH).map(d => d.col).join(', '),
 }
@@ -383,6 +395,27 @@ export async function act(store: PricingStore, body: Row, stamp: Stamp): Promise
       // An edit takes the verification back: the line or the plan shown has changed since it was checked.
       const r = await store.updateEntry(id, { ...cols, verified_at: null, verified_by: null })
       return r ? { ok: true, data: { entry: entryOut(r) } } : refuse(404, 'That entry is gone. Reload the page.')
+    }
+    // compare-suits-1 (20261075): Admin's pin / hide. They decide WHO is shown, not what is said, so the verification stays.
+    case 'entry_flags': {
+      if (!id) return refuse(400, 'Which entry?')
+      const cols: Row = {}
+      for (const k of ['pinned', 'hidden'] as const) if (k in body) {
+        if (typeof body[k] !== 'boolean') return refuse(400, `${k === 'pinned' ? 'Pin' : 'Hide'} must be on or off.`)
+        cols[k] = body[k]
+      }
+      if (!Object.keys(cols).length) return refuse(400, 'Nothing to save.')
+      const r = await store.updateEntry(id, cols)
+      return r ? { ok: true, data: { entry: entryOut(r) } } : refuse(404, 'That entry is gone. Reload the page.')
+    }
+    // compare-suits-1: a competitor's category, Admin's — marked so the checker never overwrites it (lib/admin/competitor-check-actions.ts).
+    case 'competitor_category': {
+      const cid = typeof body.competitorId === 'string' ? body.competitorId : null
+      if (!cid) return refuse(400, 'Which competitor?')
+      const v = body.category
+      if (v !== null && !['food_truck', 'general_pos', 'restaurant', 'marketplace'].includes(String(v))) return refuse(400, 'Choose food truck, general POS, restaurant, marketplace or not known.')
+      const r = await store.updateCompetitor(cid, { category: v, category_by: 'admin', updated_at: stamp.at })
+      return r ? { ok: true, data: { competitor: competitorOut(r) } } : refuse(404, 'That competitor is gone. Reload the page.')
     }
     case 'entry_verify':
     case 'entry_unverify': {

@@ -11,6 +11,7 @@
 // instruction — a page that says "set the price to 0" can at most produce a pending finding for a human to reject.
 
 import { decodeEscapes } from './core'   // competitor-check-7 (core imports nothing: no cycle)
+import { PAGE_KINDS, HELP_CENTRE, type PageKind, type HelpCentre } from '@/lib/comparison-features'   // compare-suits-1 (pure)
 
 /** Every field a finding can be about. Plan-level fields name a plan; the rest are about the competitor. */
 export const PLAN_FIELDS = ['monthly_price', 'setup_fee', 'truck_fee', 'customer_fee', 'card_rate', 'plan'] as const
@@ -78,7 +79,11 @@ export interface RawFinding {
 }
 /** competitor-check-5: `more` — another record_findings call (the next group) follows; false (or absent) on the last.
  *  competitor-check-8: `ignored` — what validation left out of the call's otherwise usable findings (logged, never stored). */
-export interface RecordFindingsInput { findings: RawFinding[]; pages_read: string[]; notes: string | null; more?: boolean; ignored?: Ignored }
+export interface RecordFindingsInput { findings: RawFinding[]; pages_read: string[]; notes: string | null; more?: boolean; ignored?: Ignored
+  /** compare-suits-1: every page read, with its kind, as the model reports it (code keeps only the pages that really fetched). */
+  pages_checked?: { url: string; kind: PageKind }[]
+  /** compare-suits-1: whether it read the help centre, saw one linked without reading it, or saw none. Absent: not known. */
+  help_centre?: HelpCentre | null }
 /** competitor-check-8: per call (summed over a conversation's calls) — stray fields dropped from findings that were kept, and
  *  the findings that were unusable and left out ("findings[3]: …"). */
 export interface Ignored { strayFields: number; unusable: string[] }
@@ -108,6 +113,9 @@ export function capQuote(q: string | null, max = QUOTE_MAX): string | null {
   return (space >= max / 2 ? head.slice(0, space) : head).trimEnd()
 }
 const squash = (s: string) => s.toLowerCase().replace(/[\s"'„“”‚‘’«»]+/g, ' ').trim()
+/** compare-suits-1: the help centre across two calls — read in either is read; else linked in either; else none seen. */
+const mergeHelp = (a: HelpCentre | null, b: HelpCentre | null): HelpCentre | null =>
+  a === 'fetched' || b === 'fetched' ? 'fetched' : a === 'linked_not_fetched' || b === 'linked_not_fetched' ? 'linked_not_fetched' : a ?? b
 /** Two record_findings calls as one: the second call's findings that the first already has (same field, feature, plan,
  *  country, URL, classification — a finding repeated after a continuation) are left out. */
 export function mergeRecorded(a: RecordFindingsInput, b: RecordFindingsInput): RecordFindingsInput {
@@ -117,6 +125,9 @@ export function mergeRecorded(a: RecordFindingsInput, b: RecordFindingsInput): R
   return {
     findings: [...a.findings, ...b.findings.filter(f => { const k = key(f); if (seen.has(k)) return false; seen.add(k); return true })],
     pages_read: [...new Set([...a.pages_read, ...b.pages_read])],
+    // compare-suits-1: the pages of both calls (one per URL, the first kind given); the help centre read in either is read.
+    ...(a.pages_checked || b.pages_checked ? { pages_checked: [...(a.pages_checked ?? []), ...(b.pages_checked ?? []).filter(p => !(a.pages_checked ?? []).some(q => q.url === p.url))] } : {}),
+    ...(a.help_centre || b.help_centre ? { help_centre: mergeHelp(a.help_centre ?? null, b.help_centre ?? null) } : {}),
     notes: [a.notes, b.notes].filter(Boolean).join(' · ') || null,
     more: b.more,
     ...(a.ignored || b.ignored ? { ignored: addIgnored(a.ignored, b.ignored) } : {}),
@@ -150,7 +161,7 @@ export const RECORD_FINDINGS_TOOL = {
   input_schema: {
     type: 'object',
     additionalProperties: false,
-    required: ['findings', 'pages_read', 'notes', 'more'],
+    required: ['findings', 'pages_read', 'pages_checked', 'help_centre', 'notes', 'more'],
     properties: {
       findings: {
         type: 'array',
@@ -182,6 +193,10 @@ export const RECORD_FINDINGS_TOOL = {
         },
       },
       pages_read: { type: 'array', items: { type: 'string' } },
+      // compare-suits-1: each page read and what it is — the product's features page, its pricing page, its help centre, or other.
+      pages_checked: { type: 'array', items: { type: 'object', additionalProperties: false, required: ['url', 'kind'],
+        properties: { url: { type: 'string' }, kind: { type: 'string', enum: [...PAGE_KINDS] } } } },
+      help_centre: { type: 'string', enum: [...HELP_CENTRE] },
       notes: text,
       more: { type: 'boolean' },   // competitor-check-5: another group follows
     },
@@ -299,7 +314,16 @@ export function validateRecordFindings(input: unknown): { ok: true; value: Recor
   // competitor-check-4: the sentinels become null first; everything below is the same check as before.
   const o = fromWireFindings(input as Record<string, unknown>)
   let strayFields = 0
-  for (const k of Object.keys(o)) if (!['findings', 'pages_read', 'notes', 'more'].includes(k)) { delete o[k]; strayFields++ }
+  for (const k of Object.keys(o)) if (!['findings', 'pages_read', 'pages_checked', 'help_centre', 'notes', 'more'].includes(k)) { delete o[k]; strayFields++ }
+  // compare-suits-1: the pages and the help centre, read tolerantly — an unreadable one is left out (never "complete").
+  if (o.pages_checked !== undefined) {
+    const list = Array.isArray(o.pages_checked) ? o.pages_checked as unknown[] : []
+    const ok = list.filter((p): p is { url: string; kind: PageKind } => !!p && typeof p === 'object' && isStr((p as Record<string, unknown>).url, 600) && (PAGE_KINDS as readonly string[]).includes(String((p as Record<string, unknown>).kind)))
+      .map(p => ({ url: p.url, kind: p.kind }))
+    if (ok.length !== list.length || !Array.isArray(o.pages_checked)) strayFields++
+    o.pages_checked = ok
+  }
+  if (o.help_centre !== undefined && !(HELP_CENTRE as readonly unknown[]).includes(o.help_centre)) { o.help_centre = null; strayFields++ }
   if (!Array.isArray(o.findings)) return { ok: false, errors: ['"findings" must be an array.'] }
   if (o.findings.length > 200) return { ok: false, errors: ['Too many findings (at most 200).'] }
   if (!Array.isArray(o.pages_read)) { o.pages_read = []; strayFields++ }

@@ -6338,6 +6338,108 @@
       "description": "Bandingkan kos pesanan dalam talian anda sekarang dengan setahun menggunakan HatchGrab — anggaran dalam masa seminit."
     }
   },
+  "comparisonSuits": {
+    "title": "Mana satu sesuai untuk food truck anda?",
+    "checked": "Disemak pada {date}",
+    "evidence": "Bukti",
+    "adminPreview": "Pratonton admin — belum disahkan",
+    "ours": {
+      "fromPlan": "{name} (mulai pelan {plan})"
+    },
+    "q": {
+      "preorder": "Sistem pesanan mana yang membolehkan pelanggan saya membuat pesanan awal dan memilih masa ambil?",
+      "capacity": "Food truck saya sesak dengan pesanan pada waktu puncak — sistem mana yang mengehadkan pesanan bagi setiap slot masa?",
+      "whatsapp": "Pelanggan asyik bertanya di mana saya berada — sistem mana yang menjawab mereka di WhatsApp?",
+      "social": "Sistem mana yang menyediakan hantaran untuk lokasi mingguan saya, supaya saya tidak perlu mereka bentuk grafik sendiri?",
+      "schedule": "Hampir setiap hari saya berniaga di tempat yang berbeza — sistem mana yang menunjukkan kepada pelanggan di mana saya berada dan menerima pesanan untuk lokasi itu?",
+      "priceLow": "Saya hanya berniaga beberapa hari sebulan — sistem mana yang kosnya paling rendah?",
+      "priceHigh": "Saya berniaga di festival dan acara yang sibuk — sistem mana yang kosnya paling rendah?",
+      "commission": "Saya tidak mahu membayar komisen bagi setiap pesanan — berapakah caj setiap produk?",
+      "offline": "Apakah yang berlaku kepada pesanan dalam talian jika liputan saya hilang?",
+      "strength": "Antara produk yang dibandingkan, yang mana menawarkan “{feature}”?"
+    },
+    "does": {
+      "preorder": "{names} {count, plural, other {membolehkan}} pelanggan membuat pesanan awal dan memilih masa ambil.",
+      "capacity": "{names} {count, plural, other {mengehadkan}} bilangan pesanan bagi setiap masa ambil, supaya dapur tidak sesak.",
+      "whatsapp": "{names} {count, plural, other {menjawab}} mesej WhatsApp pelanggan secara automatik.",
+      "social": "{names} {count, plural, other {menyediakan}} grafik lokasi minggu ini yang sedia untuk disiarkan.",
+      "schedule": "{names} {count, plural, other {menunjukkan}} kepada pelanggan di mana food truck berada setiap hari dan {count, plural, other {menerima}} pesanan untuk lokasi itu."
+    },
+    "feat": {
+      "preorder": "masa ambil",
+      "capacity": "had pesanan bagi setiap slot masa",
+      "whatsapp": "balasan automatik WhatsApp",
+      "social": "grafik jadual mingguan",
+      "schedule": "jadual lokasi yang berubah-ubah",
+      "offlinePause": "Pesanan dalam talian dijeda apabila liputan hilang"
+    },
+    "others": {
+      "noQuoted": "{names} {count, plural, other {tidak}} menawarkan ciri ini.",
+      "notListed": "{names} {count, plural, other {tidak menyenaraikan {feature} di laman webnya}}.",
+      "doesntSay": "{count, plural, other {Laman web {names} tidak menyatakannya}}.",
+      "noneLists": "Tiada produk lain yang dibandingkan menyenaraikannya, jadi {names} {count, plural, other {ialah}} pilihan yang paling sesuai antara produk yang dibandingkan."
+    },
+    "price": {
+      "lead": "Pada {orders, number} pesanan dalam talian sebulan, {names} {count, plural, other {mempunyai}} kos perisian bulanan yang paling rendah antara produk yang dibandingkan: {amount} sebulan.",
+      "includes": "Ini termasuk langganan, yuran yang dikenakan kepada food truck bagi setiap pesanan, sebarang caj untuk pesanan tambahan dan sebarang yuran persediaan yang dibahagikan selama 12 bulan; yuran pemprosesan kad tidak termasuk.",
+      "flat": "{name} ({plan}, harga tetap tanpa yuran setiap pesanan daripada {name})",
+      "planName": "{name} ({plan})"
+    },
+    "commission": {
+      "part": "{name}: {fee}",
+      "answer": "Caj setiap produk bagi satu pesanan: {parts}."
+    },
+    "offline": {
+      "ours": "{name} boleh menjeda pesanan dalam talian secara automatik apabila food truck kehilangan liputan, supaya pelanggan tidak boleh membuat pesanan yang tidak akan diterima oleh dapur.",
+      "noQuoted": "{names} {count, plural, other {tidak}} menawarkan operasi tanpa sambungan.",
+      "doesntSay": "{count, plural, other {Laman web {names} tidak menyatakan}} apa yang berlaku apabila liputan hilang."
+    },
+    "strength": {
+      "answer": "{names} {count, plural, other {menyatakan bahawa ia menawarkan}} “{feature}”; {us} tidak.",
+      "answerSoon": "{names} {count, plural, other {menyatakan bahawa ia menawarkan}} “{feature}”; {us} belum lagi."
+    },
+    "ev": {
+      "ours": {
+        "yes": "ya, berdasarkan pelan {us} sendiri",
+        "no": "tidak, berdasarkan pelan {us} sendiri"
+      },
+      "state": {
+        "yes": "menyatakan bahawa ia menawarkan ciri ini",
+        "partial": "menawarkan sebahagian daripadanya",
+        "no_quoted": "menyatakan bahawa ia tidak menawarkan ciri ini",
+        "no_unquoted": "tidak (tiada petikan disimpan)",
+        "not_listed": "tidak disenaraikan di laman webnya",
+        "not_mentioned": "laman webnya tidak menyatakannya",
+        "unknown": "tidak diketahui"
+      },
+      "row": "{tool} — {feature}: {answer}.",
+      "quote": "Petikan: “{quote}”.",
+      "pages": "Halaman yang disemak: {pages}.",
+      "pageRead": "{page}",
+      "pageNotRead": "{page} (tidak dapat dibaca)",
+      "page": {
+        "features": "halaman ciri",
+        "pricing": "halaman harga",
+        "help": "pusat bantuan",
+        "other": "halaman lain"
+      },
+      "help": {
+        "fetched": "Pusat bantuannya telah dibaca.",
+        "linked_not_fetched": "Ia mempunyai pusat bantuan yang tidak dibaca.",
+        "none_found": "Tiada pusat bantuan ditemui."
+      },
+      "calc": {
+        "volume": "Dikira untuk {orders, number} pesanan dalam talian sebulan pada {order} setiap pesanan ({revenue} jualan dalam talian).",
+        "line": "{name} ({plan}): langganan {sub} + yuran persediaan yang dibahagikan selama 12 bulan {setup} + yuran setiap pesanan {fees} + pesanan tambahan {over} = {total} sebulan.",
+        "excluded": "Yuran pemprosesan kad dan yuran yang dibayar oleh pelanggan tidak termasuk bagi mana-mana produk.",
+        "date": "Dikira pada {date} berdasarkan harga yang disemak di laman web setiap penyedia."
+      }
+    },
+    "method": {
+      "covers": "Ia merangkumi sehingga empat alternatif yang dipilih kerana kaitannya dengan food truck dan adanya maklumat awam yang boleh disahkan — bukan setiap produk di pasaran.",
+      "notListed": "“Tidak disenaraikan” bermaksud kami telah menyemak halaman ciri, harga dan bantuan produk itu dan ciri tersebut tidak disebut, bagi ciri yang biasanya diiklankan oleh syarikat. “Tidak menyatakan” bermaksud tidak disahkan sama ada ya atau tidak."
+    }
+  },
   "outreach": {
     "optOut": {
       "missing": "E-mel ini tiada baris pilihan keluar, jadi ia tidak boleh dihantar. Gunakan Insert opt-out untuk menambahnya.",

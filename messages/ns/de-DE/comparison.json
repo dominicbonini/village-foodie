@@ -126,7 +126,10 @@
       "impressum": "Impressum-Entscheidung festgehalten"
     },
     "unverified": "nicht geprüft · öffentlich verborgen",
-    "label": "Admin"
+    "label": "Admin",
+    "notShown": "Nicht auf der Seite (höchstens vier werden gezeigt): {names}.",
+    "reasonHidden": "{name} (ausgeblendet)",
+    "reasonBeyond": "{name} (nach den ersten vier)"
   },
   "footer": {
     "heading": "Vergleich",
@@ -155,7 +158,8 @@
     "perMonth": "{price} pro Monat",
     "notInCountry": "nicht in {country}",
     "flagOff": "Flag noch aus, wird mit Store-Freigabe sichtbar",
-    "notApplicable": "gilt nicht für einen Markt"
+    "notApplicable": "gilt nicht für einen Markt",
+    "not_listed": "Nicht aufgeführt"
   },
   "explained": {
     "title": "Begriffe erklärt"

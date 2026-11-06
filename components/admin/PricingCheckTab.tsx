@@ -41,6 +41,7 @@ import {
   type ComparisonFeature, type FeatureValueRow, type FeatureValue, type FeatureGroup, type ShowScope,
 } from '@/lib/comparison-features'
 import { costBlockOf, costBlockWords } from '@/lib/cost-block'
+import { selectShown, isCategory, CATEGORIES, MAX_SHOWN, type Category } from '@/lib/comparison-selection'   // compare-suits-1
 import CostBlock from '@/components/comparison/CostBlock'
 import { translatorFor } from '@/lib/i18n/translator'
 import { ensureLanguage } from '@/lib/i18n/registry'
@@ -744,6 +745,15 @@ function FeatureList({ state, busy, post }: { state: State; busy: string | null;
                     </label>
                     <ScopePicker f={f} enabled={enabled} disabled={busy !== null || state.featuresFromFile}
                       onSave={(scope, countries) => post('feature', { action: 'feature_update', key: f.key, showScope: scope, showCountries: countries }, 'Saved.')} />
+                    {/* compare-suits-1: Admin's two flags — the importer and the checker never write them. */}
+                    <div className="flex flex-wrap gap-3 text-xs font-semibold text-slate-600" data-feature-flags>
+                      <label className="inline-flex items-center gap-1.5" title="A company would certainly advertise this: “not mentioned” shows as “Not listed” when its features, pricing and help pages were all read.">
+                        <input type="checkbox" data-absence checked={f.absenceMeansNo === true} disabled={busy !== null || state.featuresFromFile}
+                          onChange={e => post('feature', { action: 'feature_update', key: f.key, absenceMeansNo: e.target.checked }, 'Saved.')} />Absence means no</label>
+                      <label className="inline-flex items-center gap-1.5" title="Never a “competitor strength” answer (card readers, tills, taking card payments).">
+                        <input type="checkbox" data-never-strength checked={f.neverCompetitorStrength === true} disabled={busy !== null || state.featuresFromFile}
+                          onChange={e => post('feature', { action: 'feature_update', key: f.key, neverCompetitorStrength: e.target.checked }, 'Saved.')} />Never a competitor strength</label>
+                    </div>
                   </li>
                 )
               })}
@@ -848,12 +858,22 @@ function ComparisonPanel({ code, state, busy, post }: { code: string; state: Sta
     && state.plans.some(p => p.competitorId === c.id && p.countryCode === code && p.supersededAt === null))
   const publicCount = entries.filter(e => { const p = entryPlan(e, state.plans); return e.verifiedAt && p?.verifiedAt && compById.get(e.competitorId)?.featuresVerifiedAt }).length
   const ok = 'bg-emerald-100 text-emerald-800', no = 'bg-orange-100 text-orange-800'
+  // compare-suits-1: the four the page shows (lib/comparison-selection.ts) — the same rule as the page, over every entry here, so it
+  // is the four the page will show once they are verified.
+  const shownIds = new Set(selectShown(entries.map(e => {
+    const c = compById.get(e.competitorId)
+    return { entry: e.id, name: c?.name ?? '', pinned: e.pinned === true, hidden: e.hidden === true, sortOrder: e.sortOrder,
+      category: isCategory(c?.category) ? c!.category as Category : null, pricingVerified: !!entryPlan(e, state.plans)?.verifiedAt,
+      verifiedFeatures: state.values.filter(v => v.competitorId === e.competitorId && v.supersededAt === null && v.verifiedAt && (v.countryCode === null || v.countryCode === code)).length }
+  })).shown.map(x => x.entry))
+  const CATEGORY_LABEL: Record<Category, string> = { food_truck: 'Food truck', general_pos: 'General POS', restaurant: 'Restaurant', marketplace: 'Marketplace' }
   return (
     <section className={CARD} data-comparison-panel>
       <div className="flex flex-wrap items-start justify-between gap-2">
         <div>
           <p className="text-sm font-bold text-slate-900">Comparison page</p>
           <p className="text-xs text-slate-500">Who the country’s public comparison page shows. A competitor is public only when the entry, its plan and its features are all verified · {publicCount} of {entries.length} public.</p>
+          <p className="text-xs text-slate-500" data-shown-rule>At most {MAX_SHOWN} are shown: hidden never; pinned first; then verified pricing; then food truck, general POS, marketplace, restaurant; ties by verified features. The rest are still checked.</p>
         </div>
       </div>
       {!state.entriesReady ? (
@@ -874,6 +894,8 @@ function ComparisonPanel({ code, state, busy, post }: { code: string; state: Sta
                         <span className={`rounded-full px-2 py-0.5 ${e.verifiedAt ? ok : no}`}>Entry {e.verifiedAt ? 'verified' : 'not verified'}</span>
                         <span className={`rounded-full px-2 py-0.5 ${plan?.verifiedAt ? ok : no}`}>Plan {plan?.verifiedAt ? 'verified' : 'not verified'}</span>
                         <span className={`rounded-full px-2 py-0.5 ${c?.featuresVerifiedAt ? ok : no}`}>Features {c?.featuresVerifiedAt ? 'verified' : 'not verified'}</span>
+                        <span className={`rounded-full px-2 py-0.5 ${shownIds.has(e.id) ? 'bg-slate-900 text-white' : 'bg-slate-100 text-slate-500'}`} data-shown={shownIds.has(e.id) ? 'yes' : 'no'}>
+                          {e.hidden ? 'Hidden' : shownIds.has(e.id) ? 'In the four shown' : 'Not shown (beyond four)'}</span>
                       </div>
                     </div>
                     <div className="grid gap-2 md:grid-cols-[14rem_minmax(0,1fr)]">
@@ -893,6 +915,16 @@ function ComparisonPanel({ code, state, busy, post }: { code: string; state: Sta
                       <button type="button" className={BTN} disabled={busy !== null} onClick={() => post('entry', { action: e.verifiedAt ? 'entry_unverify' : 'entry_verify', id: e.id })}>{e.verifiedAt ? 'Undo entry verified' : 'Mark entry verified'}</button>
                       {plan && <button type="button" className={BTN} disabled={busy !== null} onClick={() => post('verify', { action: plan.verifiedAt ? 'unverify' : 'verify', id: plan.id })}>{plan.verifiedAt ? 'Undo plan verified' : 'Mark plan verified'}</button>}
                       {c && <button type="button" className={BTN} disabled={busy !== null} onClick={() => post('features', { action: c.featuresVerifiedAt ? 'unverify_features' : 'verify_features', competitorId: c.id, countryCode: code })}>{c.featuresVerifiedAt ? 'Undo features verified' : 'Mark features verified'}</button>}
+                      {/* compare-suits-1: Admin's pin / hide (never overwritten by the checker or importer) and the competitor's category. */}
+                      <label className="inline-flex items-center gap-1.5 text-sm font-semibold text-slate-700"><input type="checkbox" data-pin checked={e.pinned === true} disabled={busy !== null}
+                        onChange={ev => post('entry', { action: 'entry_flags', id: e.id, pinned: ev.target.checked }, ev.target.checked ? 'Pinned.' : 'Unpinned.')} />Pin</label>
+                      <label className="inline-flex items-center gap-1.5 text-sm font-semibold text-slate-700"><input type="checkbox" data-hide checked={e.hidden === true} disabled={busy !== null}
+                        onChange={ev => post('entry', { action: 'entry_flags', id: e.id, hidden: ev.target.checked }, ev.target.checked ? 'Hidden from the page.' : 'No longer hidden.')} />Hide</label>
+                      {c && <select className={`${BOX} w-auto`} aria-label="Category" data-category value={c.category ?? ''} disabled={busy !== null}
+                        onChange={ev => post('entry', { action: 'competitor_category', competitorId: c.id, category: ev.target.value || null }, 'Category saved.')}>
+                        <option value="">Category not known</option>
+                        {CATEGORIES.map(k => <option key={k} value={k}>{CATEGORY_LABEL[k]}{c.category === k && c.categoryBy === 'auto' ? ' (from the check)' : ''}</option>)}
+                      </select>}
                       <button type="button" className={BTN} disabled={busy !== null || i === 0} aria-label="Move up" onClick={() => post('entry', { action: 'entry_move', id: e.id, dir: 'up' })}>↑</button>
                       <button type="button" className={BTN} disabled={busy !== null || i === entries.length - 1} aria-label="Move down" onClick={() => post('entry', { action: 'entry_move', id: e.id, dir: 'down' })}>↓</button>
                       <button type="button" className={`${BTN} text-red-700`} disabled={busy !== null} onClick={() => { if (window.confirm(`Take ${c?.name ?? 'this competitor'} off the comparison page?`)) post('entry', { action: 'entry_remove', id: e.id }, 'Removed from the page.') }}>Remove</button>

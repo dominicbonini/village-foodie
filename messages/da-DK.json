@@ -6366,6 +6366,108 @@
       "description": "Sammenlign, hvad dine onlinebestillinger koster dig i dag, med et år på HatchGrab — et skøn på et minut."
     }
   },
+  "comparisonSuits": {
+    "title": "Hvilket system passer til din foodtruck?",
+    "checked": "Tjekket {date}",
+    "evidence": "Dokumentation",
+    "adminPreview": "Admin-forhåndsvisning — ikke verificeret",
+    "ours": {
+      "fromPlan": "{name} (fra {plan})"
+    },
+    "q": {
+      "preorder": "Hvilket bestillingssystem lader mine kunder forudbestille og vælge en afhentningstid?",
+      "capacity": "Min foodtruck bliver overrendt, når der er mest travlt — hvilket system begrænser antallet af bestillinger i hvert tidsrum?",
+      "whatsapp": "Kunderne spørger hele tiden, hvor jeg holder — hvilket system svarer dem på WhatsApp?",
+      "social": "Hvilket system laver opslagene med ugens placeringer, så jeg ikke selv skal designe grafik?",
+      "schedule": "Jeg holder et nyt sted de fleste dage — hvilket system viser kunderne, hvor jeg er, og tager imod bestillinger til det stop?",
+      "priceLow": "Jeg holder kun åbent nogle få dage om måneden — hvilket system er billigst?",
+      "priceHigh": "Jeg kører festivaler og travle arrangementer — hvilket system er billigst?",
+      "commission": "Jeg vil ikke betale kommission af hver bestilling — hvad tager hvert produkt?",
+      "offline": "Hvad sker der med onlinebestillingerne, hvis jeg mister signalet?",
+      "strength": "Hvilket af de sammenlignede produkter tilbyder »{feature}«?"
+    },
+    "does": {
+      "preorder": "{names} {count, plural, one {lader} other {lader}} kunderne forudbestille og vælge en afhentningstid.",
+      "capacity": "{names} {count, plural, one {begrænser} other {begrænser}}, hvor mange bestillinger hver afhentningstid tager imod, så køkkenet ikke bliver overrendt.",
+      "whatsapp": "{names} {count, plural, one {svarer} other {svarer}} automatisk på kundernes WhatsApp-beskeder.",
+      "social": "{names} {count, plural, one {laver} other {laver}} færdig grafik med ugens placeringer, klar til at slå op.",
+      "schedule": "{names} {count, plural, one {viser} other {viser}} kunderne, hvor foodtrucken holder hver dag, og {count, plural, one {tager} other {tager}} imod bestillinger til det stop."
+    },
+    "feat": {
+      "preorder": "afhentningstider",
+      "capacity": "en grænse for bestillinger pr. tidsrum",
+      "whatsapp": "automatiske svar på WhatsApp",
+      "social": "grafik med ugekalenderen",
+      "schedule": "en kalender med skiftende placeringer",
+      "offlinePause": "Onlinebestilling sat på pause, når signalet forsvinder"
+    },
+    "others": {
+      "noQuoted": "{names} {count, plural, one {tilbyder} other {tilbyder}} ikke dette.",
+      "notListed": "{names} {count, plural, one {angiver ikke {feature} på sin hjemmeside} other {angiver ikke {feature} på deres hjemmesider}}.",
+      "doesntSay": "{count, plural, one {Det fremgår ikke af hjemmesiden for {names}} other {Det fremgår ikke af hjemmesiderne for {names}}}.",
+      "noneLists": "Ingen af de andre sammenlignede produkter angiver det, så {names} {count, plural, one {er det, der passer bedst} other {er dem, der passer bedst}} blandt de sammenlignede produkter."
+    },
+    "price": {
+      "lead": "Ved {orders, number} onlinebestillinger om måneden har {names} den laveste månedlige softwareudgift blandt de sammenlignede produkter: {amount} om måneden{count, plural, one {} other { hver}}.",
+      "includes": "Det omfatter abonnementet, de gebyrer, foodtrucken betaler for hver bestilling, eventuel betaling for ekstra bestillinger og eventuelt oprettelsesgebyr fordelt over 12 måneder; kortgebyrer er ikke inkluderet.",
+      "flat": "{name} ({plan}, en fast pris uden gebyr pr. bestilling fra {name})",
+      "planName": "{name} ({plan})"
+    },
+    "commission": {
+      "part": "{name}: {fee}",
+      "answer": "Hvad hvert produkt tager pr. bestilling: {parts}."
+    },
+    "offline": {
+      "ours": "{name} kan automatisk sætte onlinebestilling på pause, når foodtrucken mister signalet, så kunderne ikke kan afgive bestillinger, som køkkenet ikke modtager.",
+      "noQuoted": "{names} {count, plural, one {tilbyder} other {tilbyder}} ikke drift uden forbindelse.",
+      "doesntSay": "{count, plural, one {Det fremgår ikke af hjemmesiden for {names}} other {Det fremgår ikke af hjemmesiderne for {names}}}, hvad der sker, når signalet forsvinder."
+    },
+    "strength": {
+      "answer": "{names} {count, plural, one {oplyser, at det tilbyder} other {oplyser, at de tilbyder}} »{feature}«; det gør {us} ikke.",
+      "answerSoon": "{names} {count, plural, one {oplyser, at det tilbyder} other {oplyser, at de tilbyder}} »{feature}«; det gør {us} ikke endnu."
+    },
+    "ev": {
+      "ours": {
+        "yes": "ja, ifølge {us}s egne abonnementer",
+        "no": "nej, ifølge {us}s egne abonnementer"
+      },
+      "state": {
+        "yes": "oplyser, at det tilbyder dette",
+        "partial": "tilbyder en del af det",
+        "no_quoted": "oplyser, at det ikke tilbyder dette",
+        "no_unquoted": "nej (intet citat gemt)",
+        "not_listed": "ikke angivet på hjemmesiden",
+        "not_mentioned": "fremgår ikke af hjemmesiden",
+        "unknown": "ukendt"
+      },
+      "row": "{tool} — {feature}: {answer}.",
+      "quote": "Citat: »{quote}«.",
+      "pages": "Tjekkede sider: {pages}.",
+      "pageRead": "{page}",
+      "pageNotRead": "{page} (kunne ikke læses)",
+      "page": {
+        "features": "funktionsside",
+        "pricing": "prisside",
+        "help": "hjælpecenter",
+        "other": "anden side"
+      },
+      "help": {
+        "fetched": "Hjælpecentret blev læst.",
+        "linked_not_fetched": "Der er et hjælpecenter, som ikke blev læst.",
+        "none_found": "Der blev ikke fundet noget hjælpecenter."
+      },
+      "calc": {
+        "volume": "Beregnet ud fra {orders, number} onlinebestillinger om måneden à {order} pr. bestilling ({revenue} i onlinesalg).",
+        "line": "{name} ({plan}): abonnement {sub} + oprettelsesgebyr fordelt over 12 måneder {setup} + gebyrer pr. bestilling {fees} + ekstra bestillinger {over} = {total} om måneden.",
+        "excluded": "Kortgebyrer og gebyrer, som kunderne betaler, er ikke medregnet for noget produkt.",
+        "date": "Beregnet den {date} ud fra de priser, der er tjekket på hver udbyders hjemmeside."
+      }
+    },
+    "method": {
+      "covers": "Den omfatter op til fire alternativer, som er valgt, fordi de er relevante for foodtrucks, og fordi der findes offentlige oplysninger, der kan efterprøves — ikke alle produkter på markedet.",
+      "notListed": "»Ikke angivet« betyder, at vi har tjekket produktets sider om funktioner, priser og hjælp, og at det ikke nævnes, for funktioner, som virksomheder normalt reklamerer med. »Fremgår ikke« betyder, at det hverken er bekræftet eller afkræftet."
+    }
+  },
   "outreach": {
     "optOut": {
       "missing": "Denne e-mail har ingen afmeldingslinje, så den kan ikke sendes. Brug »Indsæt afmelding« for at tilføje den.",

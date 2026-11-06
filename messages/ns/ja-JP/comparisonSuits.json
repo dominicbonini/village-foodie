@@ -1,0 +1,102 @@
+{
+  "title": "あなたのキッチンカーに合うのはどれ？",
+  "checked": "{date}に確認",
+  "evidence": "根拠",
+  "adminPreview": "管理者プレビュー — 未検証",
+  "ours": {
+    "fromPlan": "{name}（{plan}プランから）"
+  },
+  "q": {
+    "preorder": "お客様が事前に注文して、受け取り時間を選べる注文システムはどれですか？",
+    "capacity": "ピーク時はキッチンカーが注文でパンクしてしまいます。時間枠ごとに注文数を制限できるシステムはどれですか？",
+    "whatsapp": "お客様から出店場所をよく聞かれます。WhatsAppで答えてくれるシステムはどれですか？",
+    "social": "毎週の出店場所の投稿を作ってくれて、自分で画像をデザインしなくて済むシステムはどれですか？",
+    "schedule": "ほぼ毎日違う場所で出店しています。お客様に出店場所を知らせて、その場所での注文を受けられるシステムはどれですか？",
+    "priceLow": "出店は月に数日だけです。一番安いシステムはどれですか？",
+    "priceHigh": "フェスや混雑するイベントに出店しています。一番安いシステムはどれですか？",
+    "commission": "注文ごとに手数料を払いたくありません。各サービスは1件あたりいくらかかりますか？",
+    "offline": "電波が途切れたら、オンライン注文はどうなりますか？",
+    "strength": "比較したサービスのうち、「{feature}」を提供しているのはどれですか？"
+  },
+  "does": {
+    "preorder": "{names}{count, plural, other {では}}、お客様が事前に注文し、受け取り時間を選べます。",
+    "capacity": "{names}{count, plural, other {では}}、受け取り時間ごとに受け付ける注文数を制限できるため、キッチンが注文でパンクしません。",
+    "whatsapp": "{names}{count, plural, other {は}}、お客様からのWhatsAppメッセージに自動で返信します。",
+    "social": "{names}{count, plural, other {は}}、今週の出店場所をまとめた、すぐに投稿できる画像を作成します。",
+    "schedule": "{names}{count, plural, other {は}}、キッチンカーの毎日の出店場所をお客様に表示し、その場所での注文を{count, plural, other {受け付けます}}。"
+  },
+  "feat": {
+    "preorder": "受け取り時間の指定",
+    "capacity": "時間枠ごとの注文数の上限",
+    "whatsapp": "WhatsApp自動返信",
+    "social": "毎週の出店スケジュールの画像",
+    "schedule": "日々変わる出店場所のスケジュール",
+    "offlinePause": "電波が途切れたときのオンライン注文の一時停止"
+  },
+  "others": {
+    "noQuoted": "{names}{count, plural, other {は}}、この機能を提供していません。",
+    "notListed": "{names}{count, plural, other {は、Webサイトに{feature}を掲載していません}}。",
+    "doesntSay": "{count, plural, other {{names}のWebサイトには明記されていません}}。",
+    "noneLists": "比較した他のサービスはいずれもこれを掲載していないため、比較したサービスの中では{names}{count, plural, other {が}}最も適しています。"
+  },
+  "price": {
+    "lead": "月{orders, number}件のオンライン注文の場合、比較したサービスの中で月々のソフトウェア費用が最も安いのは{names}{count, plural, other {で}}、月{amount}です。",
+    "includes": "これには、月額料金、注文ごとにキッチンカー側に請求される手数料、追加注文の料金、12か月で按分した初期費用が含まれます。カード決済手数料は含まれません。",
+    "flat": "{name}（{plan}、{name}による注文ごとの手数料なしの定額料金）",
+    "planName": "{name}（{plan}）"
+  },
+  "commission": {
+    "part": "{name}：{fee}",
+    "answer": "各サービスの注文1件あたりの料金：{parts}。"
+  },
+  "offline": {
+    "ours": "{name}なら、キッチンカーの電波が途切れたときにオンライン注文を自動で一時停止できるため、キッチンに届かない注文をお客様が確定してしまうことはありません。",
+    "noQuoted": "{names}{count, plural, other {は}}、オフラインでの運用を提供していません。",
+    "doesntSay": "電波が途切れたときにどうなるかは、{count, plural, other {{names}のWebサイトには明記されていません}}。"
+  },
+  "strength": {
+    "answer": "{names}{count, plural, other {は}}「{feature}」を提供しているとしていますが、{us}は提供していません。",
+    "answerSoon": "{names}{count, plural, other {は}}「{feature}」を提供しているとしていますが、{us}はまだ提供していません。"
+  },
+  "ev": {
+    "ours": {
+      "yes": "はい（{us}自身のプランより）",
+      "no": "いいえ（{us}自身のプランより）"
+    },
+    "state": {
+      "yes": "提供しているとしている",
+      "partial": "一部を提供している",
+      "no_quoted": "提供していないとしている",
+      "no_unquoted": "いいえ（引用の保存なし）",
+      "not_listed": "Webサイトに掲載なし",
+      "not_mentioned": "Webサイトに明記なし",
+      "unknown": "不明"
+    },
+    "row": "{tool} — {feature}：{answer}。",
+    "quote": "引用：「{quote}」。",
+    "pages": "確認したページ：{pages}。",
+    "pageRead": "{page}",
+    "pageNotRead": "{page}（読み込めませんでした）",
+    "page": {
+      "features": "機能ページ",
+      "pricing": "料金ページ",
+      "help": "ヘルプセンター",
+      "other": "その他のページ"
+    },
+    "help": {
+      "fetched": "ヘルプセンターを確認しました。",
+      "linked_not_fetched": "ヘルプセンターがありますが、確認できていません。",
+      "none_found": "ヘルプセンターは見つかりませんでした。"
+    },
+    "calc": {
+      "volume": "月{orders, number}件のオンライン注文、1件あたり{order}（オンライン売上{revenue}）で計算しています。",
+      "line": "{name}（{plan}）：月額料金{sub} + 12か月で按分した初期費用{setup} + 注文ごとの手数料{fees} + 追加注文{over} = 月{total}。",
+      "excluded": "カード決済手数料およびお客様が支払う手数料は、どのサービスについても含まれていません。",
+      "date": "{date}に、各サービス提供元のWebサイトで確認した料金をもとに計算しました。"
+    }
+  },
+  "method": {
+    "covers": "キッチンカーとの関連性と、検証可能な公開情報があるかどうかを基準に選んだ、最大4つの代替サービスを対象としています。市場のすべてのサービスを網羅しているわけではありません。",
+    "notListed": "「掲載なし」は、企業が通常宣伝する機能について、そのサービスの機能・料金・ヘルプページを確認したうえで記載がなかったことを意味します。「明記なし」は、どちらとも確認できなかったことを意味します。"
+  }
+}

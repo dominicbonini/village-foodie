@@ -1,0 +1,102 @@
+{
+  "title": "Ktorý systém sa hodí pre váš food truck?",
+  "checked": "Skontrolované {date}",
+  "evidence": "Podklady",
+  "adminPreview": "Náhľad pre administrátora — neoverené",
+  "ours": {
+    "fromPlan": "{name} (od plánu {plan})"
+  },
+  "q": {
+    "preorder": "Ktorý objednávkový systém umožní mojim zákazníkom objednať vopred a vybrať si čas vyzdvihnutia?",
+    "capacity": "Môj food truck je v špičke zavalený objednávkami — ktorý systém obmedzí počet objednávok v každom časovom okne?",
+    "whatsapp": "Zákazníci sa stále pýtajú, kde práve stojím — ktorý systém im odpovie na WhatsAppe?",
+    "social": "Ktorý systém za mňa pripraví príspevky s mojimi miestami na každý týždeň, bez navrhovania grafiky?",
+    "schedule": "Takmer každý deň predávam inde — ktorý systém ukáže zákazníkom, kde som, a prijme objednávky pre dané stanovište?",
+    "priceLow": "Predávam len pár dní v mesiaci — ktorý systém vyjde najlacnejšie?",
+    "priceHigh": "Chodím na festivaly a akcie s veľkým náporom — ktorý systém vyjde najlacnejšie?",
+    "commission": "Nechcem platiť províziu z každej objednávky — koľko si účtuje každý produkt?",
+    "offline": "Čo sa stane s online objednávkami, keď mi vypadne signál?",
+    "strength": "Ktorý z porovnávaných produktov ponúka „{feature}“?"
+  },
+  "does": {
+    "preorder": "{names} {count, plural, one {umožňuje} few {umožňujú} many {umožňujú} other {umožňujú}} zákazníkom objednať vopred a vybrať si čas vyzdvihnutia.",
+    "capacity": "{names} {count, plural, one {obmedzuje} few {obmedzujú} many {obmedzujú} other {obmedzujú}} počet objednávok na každý čas vyzdvihnutia, aby kuchyňa nebola zahltená.",
+    "whatsapp": "{names} {count, plural, one {odpovedá} few {odpovedajú} many {odpovedajú} other {odpovedajú}} automaticky na správy zákazníkov na WhatsAppe.",
+    "social": "{names} {count, plural, one {vytvára} few {vytvárajú} many {vytvárajú} other {vytvárajú}} grafiku s miestami na daný týždeň pripravenú na zverejnenie.",
+    "schedule": "{names} {count, plural, one {ukazuje} few {ukazujú} many {ukazujú} other {ukazujú}} zákazníkom, kde food truck každý deň stojí, a {count, plural, one {prijíma} few {prijímajú} many {prijímajú} other {prijímajú}} objednávky pre dané stanovište."
+  },
+  "feat": {
+    "preorder": "časy vyzdvihnutia",
+    "capacity": "limit objednávok na časové okno",
+    "whatsapp": "automatické odpovede na WhatsAppe",
+    "social": "grafiku s týždenným harmonogramom",
+    "schedule": "harmonogram meniacich sa miest",
+    "offlinePause": "Pozastavenie online objednávok pri výpadku signálu"
+  },
+  "others": {
+    "noQuoted": "{names} {count, plural, one {to neponúka} few {to neponúkajú} many {to neponúkajú} other {to neponúkajú}}.",
+    "notListed": "{names} {count, plural, one {na svojej webovej stránke neuvádza {feature}} few {na svojich webových stránkach neuvádzajú {feature}} many {na svojich webových stránkach neuvádzajú {feature}} other {na svojich webových stránkach neuvádzajú {feature}}}.",
+    "doesntSay": "{count, plural, one {Webová stránka produktu {names} o tom nič nehovorí} few {Webové stránky produktov {names} o tom nič nehovoria} many {Webové stránky produktov {names} o tom nič nehovoria} other {Webové stránky produktov {names} o tom nič nehovoria}}.",
+    "noneLists": "Žiadny z ostatných porovnávaných produktov to neuvádza, takže {names} {count, plural, one {je} few {sú} many {sú} other {sú}} najvhodnejšou voľbou spomedzi porovnávaných produktov."
+  },
+  "price": {
+    "lead": "Pri {orders, number} online objednávkach mesačne {count, plural, one {má} few {majú} many {majú} other {majú}} {names} najnižšie mesačné náklady na softvér spomedzi porovnávaných produktov: {count, plural, one {} few {každý } many {každý } other {každý }}{amount} mesačne.",
+    "includes": "Zahŕňa to predplatné, poplatky účtované food trucku z každej objednávky, prípadné poplatky za objednávky navyše a zriaďovací poplatok rozložený na 12 mesiacov; poplatky za spracovanie kariet zahrnuté nie sú.",
+    "flat": "{name} ({plan}, pevná cena bez poplatku za objednávku zo strany {name})",
+    "planName": "{name} ({plan})"
+  },
+  "commission": {
+    "part": "{name}: {fee}",
+    "answer": "Koľko si každý produkt účtuje z objednávky: {parts}."
+  },
+  "offline": {
+    "ours": "{name} dokáže automaticky pozastaviť online objednávanie, keď food truck stratí signál, takže zákazníci nemôžu zadať objednávky, ktoré kuchyňa nedostane.",
+    "noQuoted": "{names} {count, plural, one {neponúka} few {neponúkajú} many {neponúkajú} other {neponúkajú}} prácu bez pripojenia.",
+    "doesntSay": "{count, plural, one {Webová stránka produktu {names} nehovorí} few {Webové stránky produktov {names} nehovoria} many {Webové stránky produktov {names} nehovoria} other {Webové stránky produktov {names} nehovoria}}, čo sa stane, keď vypadne signál."
+  },
+  "strength": {
+    "answer": "{names} {count, plural, one {uvádza, že ponúka} few {uvádzajú, že ponúkajú} many {uvádzajú, že ponúkajú} other {uvádzajú, že ponúkajú}} „{feature}“; {us} to neponúka.",
+    "answerSoon": "{names} {count, plural, one {uvádza, že ponúka} few {uvádzajú, že ponúkajú} many {uvádzajú, že ponúkajú} other {uvádzajú, že ponúkajú}} „{feature}“; {us} to zatiaľ neponúka."
+  },
+  "ev": {
+    "ours": {
+      "yes": "áno, podľa vlastných plánov {us}",
+      "no": "nie, podľa vlastných plánov {us}"
+    },
+    "state": {
+      "yes": "uvádza, že to ponúka",
+      "partial": "ponúka to čiastočne",
+      "no_quoted": "uvádza, že to neponúka",
+      "no_unquoted": "nie (bez uloženej citácie)",
+      "not_listed": "na svojej webovej stránke to neuvádza",
+      "not_mentioned": "jeho webová stránka o tom nič nehovorí",
+      "unknown": "nie je známe"
+    },
+    "row": "{tool} — {feature}: {answer}.",
+    "quote": "Citácia: „{quote}“.",
+    "pages": "Skontrolované stránky: {pages}.",
+    "pageRead": "{page}",
+    "pageNotRead": "{page} (nepodarilo sa načítať)",
+    "page": {
+      "features": "stránka s funkciami",
+      "pricing": "cenník",
+      "help": "centrum pomoci",
+      "other": "iná stránka"
+    },
+    "help": {
+      "fetched": "Jeho centrum pomoci bolo načítané.",
+      "linked_not_fetched": "Má centrum pomoci, ktoré nebolo načítané.",
+      "none_found": "Centrum pomoci sa nenašlo."
+    },
+    "calc": {
+      "volume": "Vypočítané pre {orders, number} online objednávok mesačne pri {order} za objednávku ({revenue} z online predaja).",
+      "line": "{name} ({plan}): predplatné {sub} + zriaďovací poplatok rozložený na 12 mesiacov {setup} + poplatky za objednávky {fees} + objednávky navyše {over} = {total} mesačne.",
+      "excluded": "Pri žiadnom produkte nie sú zahrnuté poplatky za spracovanie kariet ani poplatky platené zákazníkmi.",
+      "date": "Vypočítané {date} podľa cien overených na webovej stránke každého dodávateľa."
+    }
+  },
+  "method": {
+    "covers": "Zahŕňa najviac štyri alternatívy vybrané podľa toho, nakoľko sú relevantné pre food trucky a či o nich existujú overiteľné verejné informácie — nie každý produkt na trhu.",
+    "notListed": "„Neuvádza“ znamená, že sme prešli stránky produktu s funkciami, cenníkom a pomocou a zmienka tam nie je — pri funkciách, ktoré firmy bežne propagujú. „Nič nehovorí“ znamená, že to nie je potvrdené ani vyvrátené."
+  }
+}

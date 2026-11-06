@@ -6366,6 +6366,108 @@
       "description": "Sammenlign hva nettbestillingene dine koster i dag med ett år på HatchGrab – et anslag på ett minutt."
     }
   },
+  "comparisonSuits": {
+    "title": "Hvilket system passer for matbilen din?",
+    "checked": "Sjekket {date}",
+    "evidence": "Dokumentasjon",
+    "adminPreview": "Forhåndsvisning for admin – ikke verifisert",
+    "ours": {
+      "fromPlan": "{name} (fra {plan})"
+    },
+    "q": {
+      "preorder": "Hvilket bestillingssystem lar kundene mine forhåndsbestille og velge hentetid?",
+      "capacity": "Matbilen min blir nedrent i rushet – hvilket system begrenser antall bestillinger per tidsluke?",
+      "whatsapp": "Kundene spør hele tiden hvor jeg står – hvilket system svarer dem på WhatsApp?",
+      "social": "Hvilket system lager innleggene med ukens plasser, så jeg slipper å designe grafikk selv?",
+      "schedule": "Jeg står et nytt sted de fleste dager – hvilket system viser kundene hvor jeg er, og tar imot bestillinger for det stoppet?",
+      "priceLow": "Jeg står bare ute noen få dager i måneden – hvilket system koster minst?",
+      "priceHigh": "Jeg står på festivaler og travle arrangementer – hvilket system koster minst?",
+      "commission": "Jeg vil ikke betale provisjon på hver bestilling – hva tar hvert produkt betalt?",
+      "offline": "Hva skjer med nettbestillingene hvis jeg mister dekningen?",
+      "strength": "Hvilket av de sammenlignede produktene tilbyr «{feature}»?"
+    },
+    "does": {
+      "preorder": "{names} {count, plural, one {lar} other {lar}} kundene forhåndsbestille og velge hentetid.",
+      "capacity": "{names} {count, plural, one {begrenser} other {begrenser}} hvor mange bestillinger hver hentetid tar imot, så kjøkkenet ikke blir nedrent.",
+      "whatsapp": "{names} {count, plural, one {svarer} other {svarer}} automatisk på kundenes WhatsApp-meldinger.",
+      "social": "{names} {count, plural, one {lager} other {lager}} ferdig grafikk med ukens plasser, klar til å publiseres.",
+      "schedule": "{names} {count, plural, one {viser} other {viser}} kundene hvor matbilen står hver dag, og {count, plural, one {tar} other {tar}} imot bestillinger for det stoppet."
+    },
+    "feat": {
+      "preorder": "hentetider",
+      "capacity": "en grense for bestillinger per tidsluke",
+      "whatsapp": "automatiske svar på WhatsApp",
+      "social": "grafikk med ukekalenderen",
+      "schedule": "en kalender med skiftende plasser",
+      "offlinePause": "Nettbestilling satt på pause når dekningen forsvinner"
+    },
+    "others": {
+      "noQuoted": "{names} {count, plural, one {tilbyr} other {tilbyr}} ikke dette.",
+      "notListed": "{names} {count, plural, one {oppgir ikke {feature} på nettsiden sin} other {oppgir ikke {feature} på nettsidene sine}}.",
+      "doesntSay": "{count, plural, one {Nettsiden til {names} sier ingenting om det} other {Nettsidene til {names} sier ingenting om det}}.",
+      "noneLists": "Ingen av de andre sammenlignede produktene oppgir det, så {names} {count, plural, one {er det som passer best} other {er de som passer best}} blant de sammenlignede produktene."
+    },
+    "price": {
+      "lead": "Ved {orders, number} nettbestillinger i måneden har {names} den laveste månedlige programvarekostnaden blant de sammenlignede produktene: {amount} i måneden{count, plural, one {} other { hver}}.",
+      "includes": "Dette inkluderer abonnementet, gebyrene matbilen betaler for hver bestilling, eventuelle kostnader for ekstra bestillinger og eventuelt etableringsgebyr fordelt over 12 måneder; kortgebyr er ikke inkludert.",
+      "flat": "{name} ({plan}, en fast pris uten gebyr per bestilling fra {name})",
+      "planName": "{name} ({plan})"
+    },
+    "commission": {
+      "part": "{name}: {fee}",
+      "answer": "Hva hvert produkt tar betalt per bestilling: {parts}."
+    },
+    "offline": {
+      "ours": "{name} kan sette nettbestillingen på pause automatisk når matbilen mister dekningen, så kundene ikke kan legge inn bestillinger kjøkkenet ikke får.",
+      "noQuoted": "{names} {count, plural, one {tilbyr} other {tilbyr}} ikke drift uten nettilkobling.",
+      "doesntSay": "{count, plural, one {Nettsiden til {names} sier ingenting om} other {Nettsidene til {names} sier ingenting om}} hva som skjer når dekningen forsvinner."
+    },
+    "strength": {
+      "answer": "{names} {count, plural, one {oppgir at det tilbyr} other {oppgir at de tilbyr}} «{feature}»; det gjør ikke {us}.",
+      "answerSoon": "{names} {count, plural, one {oppgir at det tilbyr} other {oppgir at de tilbyr}} «{feature}»; det gjør ikke {us} ennå."
+    },
+    "ev": {
+      "ours": {
+        "yes": "ja, ifølge {us}s egne abonnementer",
+        "no": "nei, ifølge {us}s egne abonnementer"
+      },
+      "state": {
+        "yes": "oppgir at det tilbyr dette",
+        "partial": "tilbyr deler av det",
+        "no_quoted": "oppgir at det ikke tilbyr dette",
+        "no_unquoted": "nei (intet sitat lagret)",
+        "not_listed": "ikke oppgitt på nettsiden",
+        "not_mentioned": "nettsiden sier ingenting om det",
+        "unknown": "ukjent"
+      },
+      "row": "{tool} – {feature}: {answer}.",
+      "quote": "Sitat: «{quote}».",
+      "pages": "Sider som ble sjekket: {pages}.",
+      "pageRead": "{page}",
+      "pageNotRead": "{page} (kunne ikke leses)",
+      "page": {
+        "features": "funksjonsside",
+        "pricing": "prisside",
+        "help": "hjelpesenter",
+        "other": "annen side"
+      },
+      "help": {
+        "fetched": "Hjelpesenteret ble lest.",
+        "linked_not_fetched": "Det finnes et hjelpesenter som ikke ble lest.",
+        "none_found": "Fant ikke noe hjelpesenter."
+      },
+      "calc": {
+        "volume": "Beregnet for {orders, number} nettbestillinger i måneden à {order} per bestilling ({revenue} i nettsalg).",
+        "line": "{name} ({plan}): abonnement {sub} + etableringsgebyr fordelt over 12 måneder {setup} + gebyrer per bestilling {fees} + ekstra bestillinger {over} = {total} i måneden.",
+        "excluded": "Kortgebyr og gebyrer som kundene betaler, er ikke inkludert for noe produkt.",
+        "date": "Beregnet {date} ut fra prisene som ble sjekket på hver leverandørs nettside."
+      }
+    },
+    "method": {
+      "covers": "Den dekker opptil fire alternativer, valgt fordi de er relevante for matbiler og fordi det finnes offentlig informasjon som kan etterprøves – ikke alle produkter på markedet.",
+      "notListed": "«Ikke oppgitt» betyr at vi har sjekket produktets sider om funksjoner, priser og hjelp, og at det ikke nevnes, for funksjoner bedrifter vanligvis reklamerer med. «Sier ingenting» betyr at det ikke er bekreftet verken den ene eller den andre veien."
+    }
+  },
   "outreach": {
     "optOut": {
       "missing": "Denne e-posten mangler linjen for avmelding, så den kan ikke sendes. Bruk «Sett inn avmelding» for å legge den til.",

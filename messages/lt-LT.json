@@ -6366,6 +6366,108 @@
       "description": "Palyginkite, kiek dabar jums kainuoja internetiniai užsakymai, su metais HatchGrab — įvertinimas per minutę."
     }
   },
+  "comparisonSuits": {
+    "title": "Kuri sistema tinka jūsų maisto furgonui?",
+    "checked": "Patikrinta {date}",
+    "evidence": "Įrodymai",
+    "adminPreview": "Administratoriaus peržiūra — nepatvirtinta",
+    "ours": {
+      "fromPlan": "{name} (nuo plano {plan})"
+    },
+    "q": {
+      "preorder": "Kuri užsakymų sistema leidžia mano klientams užsisakyti iš anksto ir pasirinkti atsiėmimo laiką?",
+      "capacity": "Piko metu mano furgoną užgriūva užsakymai — kuri sistema riboja užsakymų skaičių kiekvienam laiko intervalui?",
+      "whatsapp": "Klientai nuolat klausia, kur esu — kuri sistema jiems atsako per WhatsApp?",
+      "social": "Kuri sistema paruošia įrašus su mano savaitės prekybos vietomis, kad man nereikėtų kurti grafikos?",
+      "schedule": "Daugumą dienų prekiauju vis kitoje vietoje — kuri sistema rodo klientams, kur esu, ir priima užsakymus tai vietai?",
+      "priceLow": "Prekiauju tik kelias dienas per mėnesį — kuri sistema kainuoja pigiausiai?",
+      "priceHigh": "Dalyvauju festivaliuose ir judriuose renginiuose — kuri sistema kainuoja pigiausiai?",
+      "commission": "Nenoriu mokėti komisinių už kiekvieną užsakymą — kiek ima kiekvienas produktas?",
+      "offline": "Kas nutinka užsakymams internetu, jei dingsta ryšys?",
+      "strength": "Kuris iš palygintų produktų siūlo „{feature}“?"
+    },
+    "does": {
+      "preorder": "{names} {count, plural, one {leidžia} few {leidžia} many {leidžia} other {leidžia}} klientams užsisakyti iš anksto ir pasirinkti atsiėmimo laiką.",
+      "capacity": "{names} {count, plural, one {riboja} few {riboja} many {riboja} other {riboja}}, kiek užsakymų priimama kiekvienam atsiėmimo laikui, kad virtuvė nebūtų perkrauta.",
+      "whatsapp": "{names} {count, plural, one {automatiškai atsako} few {automatiškai atsako} many {automatiškai atsako} other {automatiškai atsako}} į klientų WhatsApp žinutes.",
+      "social": "{names} {count, plural, one {sukuria} few {sukuria} many {sukuria} other {sukuria}} paskelbti paruoštą savaitės prekybos vietų grafiką.",
+      "schedule": "{names} {count, plural, one {rodo} few {rodo} many {rodo} other {rodo}} klientams, kur furgonas yra kiekvieną dieną, ir {count, plural, one {priima} few {priima} many {priima} other {priima}} užsakymus tai vietai."
+    },
+    "feat": {
+      "preorder": "atsiėmimo laikų",
+      "capacity": "užsakymų skaičiaus ribojimo kiekvienam laiko intervalui",
+      "whatsapp": "WhatsApp automatinių atsakymų",
+      "social": "savaitės tvarkaraščio grafikos",
+      "schedule": "kintančių prekybos vietų tvarkaraščio",
+      "offlinePause": "Užsakymų internetu sustabdymas, kai dingsta ryšys"
+    },
+    "others": {
+      "noQuoted": "{names} {count, plural, one {to nesiūlo} few {to nesiūlo} many {to nesiūlo} other {to nesiūlo}}.",
+      "notListed": "{names} {count, plural, one {savo svetainėje nemini {feature}} few {savo svetainėse nemini {feature}} many {savo svetainėse nemini {feature}} other {savo svetainėse nemini {feature}}}.",
+      "doesntSay": "{count, plural, one {Produkto {names} svetainėje apie tai nieko nesakoma} few {Produktų {names} svetainėse apie tai nieko nesakoma} many {Produktų {names} svetainėse apie tai nieko nesakoma} other {Produktų {names} svetainėse apie tai nieko nesakoma}}.",
+      "noneLists": "Nė vienas kitas palygintas produktas to nemini, todėl {names} {count, plural, one {labiausiai tinka} few {labiausiai tinka} many {labiausiai tinka} other {labiausiai tinka}} iš palygintų produktų."
+    },
+    "price": {
+      "lead": "Esant {orders, number} užsakymų internetu per mėnesį, {count, plural, one {produkto {names}} few {produktų {names}} many {produktų {names}} other {produktų {names}}} mėnesinės programinės įrangos išlaidos yra mažiausios iš palygintų produktų: {amount} per mėnesį{count, plural, one {} few { kiekvieno} many { kiekvieno} other { kiekvieno}}.",
+      "includes": "Į tai įskaičiuotas plano mokestis, mokesčiai, kuriuos furgonas moka už kiekvieną užsakymą, bet koks mokestis už papildomus užsakymus ir bet koks pradinis mokestis, padalytas per 12 mėnesių; kortelių mokėjimų apdorojimo mokesčiai neįskaičiuoti.",
+      "flat": "{name} ({plan}, fiksuota kaina be {name} mokesčio už užsakymą)",
+      "planName": "{name} ({plan})"
+    },
+    "commission": {
+      "part": "{name}: {fee}",
+      "answer": "Kiek kiekvienas produktas ima už užsakymą: {parts}."
+    },
+    "offline": {
+      "ours": "{name} gali automatiškai sustabdyti užsakymus internetu, kai furgone dingsta ryšys, kad klientai negalėtų pateikti užsakymų, kurių virtuvė negaus.",
+      "noQuoted": "{names} {count, plural, one {nesiūlo} few {nesiūlo} many {nesiūlo} other {nesiūlo}} darbo be ryšio.",
+      "doesntSay": "{count, plural, one {Produkto {names} svetainėje nieko nesakoma apie tai} few {Produktų {names} svetainėse nieko nesakoma apie tai} many {Produktų {names} svetainėse nieko nesakoma apie tai} other {Produktų {names} svetainėse nieko nesakoma apie tai}}, kas nutinka dingus ryšiui."
+    },
+    "strength": {
+      "answer": "{names} {count, plural, one {teigia siūlantis} few {teigia siūlantys} many {teigia siūlantys} other {teigia siūlantys}} „{feature}“; {us} to nesiūlo.",
+      "answerSoon": "{names} {count, plural, one {teigia siūlantis} few {teigia siūlantys} many {teigia siūlantys} other {teigia siūlantys}} „{feature}“; {us} to dar nesiūlo."
+    },
+    "ev": {
+      "ours": {
+        "yes": "taip, pagal paties {us} planus",
+        "no": "ne, pagal paties {us} planus"
+      },
+      "state": {
+        "yes": "teigia tai siūlantis",
+        "partial": "siūlo iš dalies",
+        "no_quoted": "teigia to nesiūlantis",
+        "no_unquoted": "ne (citata neišsaugota)",
+        "not_listed": "svetainėje neminima",
+        "not_mentioned": "svetainėje nieko nesakoma",
+        "unknown": "nežinoma"
+      },
+      "row": "{tool} — {feature}: {answer}.",
+      "quote": "Citata: „{quote}“.",
+      "pages": "Patikrinti puslapiai: {pages}.",
+      "pageRead": "{page}",
+      "pageNotRead": "{page} (nepavyko perskaityti)",
+      "page": {
+        "features": "funkcijų puslapis",
+        "pricing": "kainų puslapis",
+        "help": "pagalbos centras",
+        "other": "kitas puslapis"
+      },
+      "help": {
+        "fetched": "Jo pagalbos centras buvo perskaitytas.",
+        "linked_not_fetched": "Jis turi pagalbos centrą, kuris nebuvo perskaitytas.",
+        "none_found": "Pagalbos centras nerastas."
+      },
+      "calc": {
+        "volume": "Apskaičiuota esant {orders, number} užsakymų internetu per mėnesį, kai užsakymo vertė {order} ({revenue} pardavimų internetu).",
+        "line": "{name} ({plan}): plano mokestis {sub} + pradinis mokestis, padalytas per 12 mėnesių, {setup} + mokesčiai už užsakymus {fees} + papildomi užsakymai {over} = {total} per mėnesį.",
+        "excluded": "Kortelių mokėjimų apdorojimo mokesčiai ir klientų mokami mokesčiai neįskaičiuoti nė vienam produktui.",
+        "date": "Apskaičiuota {date} pagal kainas, patikrintas kiekvieno tiekėjo svetainėje."
+      }
+    },
+    "method": {
+      "covers": "Palyginime yra iki keturių alternatyvų, atrinktų pagal tai, kiek jos aktualios maisto furgonams ir ar apie jas yra patikrinamos viešos informacijos, — ne visi rinkoje esantys produktai.",
+      "notListed": "„Neminima“ reiškia, kad patikrinome produkto funkcijų, kainų ir pagalbos puslapius ir tai ten neminima, kai kalbama apie funkcijas, kurias įmonės paprastai reklamuoja. „Nieko nesakoma“ reiškia, kad nepatvirtinta nei taip, nei kitaip."
+    }
+  },
   "outreach": {
     "optOut": {
       "missing": "Šiame el. laiške nėra prenumeratos atsisakymo eilutės, todėl jo išsiųsti negalima. Pridėkite ją mygtuku „Insert opt-out“.",

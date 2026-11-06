@@ -32,10 +32,12 @@ import { formatYmd } from '@/lib/time-utils'
 import { cardFeeOnlineLabel } from '@/lib/card-fees'
 import type { PlanCatalog } from '@/lib/plans'
 import { offerPlans, offerTrialMonths, type OfferPlan } from '@/lib/plan-offer'
-import { isCountedCompetitor, type Competitor, type CompetitorPlan, type ComparisonEntry } from '@/lib/pricing-check'
+import { isCountedCompetitor, checkCountry, eurRates, type Competitor, type CompetitorPlan, type ComparisonEntry, type Benchmark } from '@/lib/pricing-check'
+import { selectShown, isCategory, type SelectionCandidate, type NotShownReason } from '@/lib/comparison-selection'
+import { buildSuits, type SuitsAnswer, type SuitsT, type SuitsFeature, type OurState, type PriceCalc } from '@/lib/comparison-suits'
 import {
-  featuresShownIn, featureWords, ourAnswer, effectiveValue, featuresVerifiedFor, appliesToFocus, FEATURE_GROUPS,
-  type ComparisonFeature, type FeatureValueRow, type FeatureValue, type FeatureGroup, type PriceKind,
+  featuresShownIn, featureWords, ourAnswer, effectiveValue, featuresVerifiedFor, appliesToFocus, FEATURE_GROUPS, cellState, featureCheckOf,
+  type ComparisonFeature, type FeatureValueRow, type FeatureValue, type FeatureGroup, type PriceKind, type FeatureCheckRow, type CellState, type PageChecked,
 } from '@/lib/comparison-features'
 import { BRANDS } from '@/lib/brand'
 import { HATCHGRAB_ORIGIN } from '@/lib/marketing-country'
@@ -70,6 +72,11 @@ export interface ComparisonInput {
   urls: { page: string; home: string; features: string; md: string; json: string; contact: string }
   /** Today, YYYY-MM-DD — HatchGrab's own cells are read live, so they are checked today. */
   today: string
+  /** compare-suits-1 (20261075): the pages each feature's last check read (competitor_feature_checks), the feature findings still
+   *  waiting for review, and the country benchmarks (meal price, exchange rates) the price answers are worked out with. */
+  featureChecks?: FeatureCheckRow[]
+  pendingFindings?: { competitorId: string; featureKey: string; countryCode: string | null }[]
+  benchmarks?: Benchmark[]
 }
 
 export interface ViewOptions {
@@ -81,7 +88,10 @@ export interface ViewOptions {
 
 /** One cell: its words (a fixed word, plus the note — or the note alone when the value is unknown), the machine value,
  *  the fixed word and the note separately (the .json twin), its source and checked date. */
-export interface Cell { text: string; value: FeatureValue; word: string; note: string | null; source: string | null; checkedOn: string | null; unverified?: boolean }
+export interface Cell { text: string; value: FeatureValue | 'not_listed'; word: string; note: string | null; source: string | null; checkedOn: string | null; unverified?: boolean
+  /** compare-suits-1: a competitor answer's state (lib/comparison-features.ts cellState), its RAW stored value when the cell says
+   *  "not listed" (never overwritten — it stays not_mentioned), its quote, and the pages its last check read. */
+  state?: CellState; raw?: FeatureValue; quote?: string | null; pages?: PageChecked[] | null; helpCentre?: string | null }
 export interface Column {
   key: string; name: string; url: string | null; us: boolean
   /** global-players-1: the short group label under the tool's name — the entry's override, else its focus's
@@ -90,6 +100,8 @@ export interface Column {
   /** All three checks done (entry, plan, features). Always true for HatchGrab. */
   verified: boolean; entryVerified: boolean; planVerified: boolean; featuresVerified: boolean
   plan: CompetitorPlan | null; chooseWhen: string | null
+  /** compare-suits-1: the competitor's category and Admin's pin (lib/comparison-selection.ts). */
+  category?: string | null; pinned?: boolean
 }
 export interface Row { key: string; group: FeatureGroup; label: string; explain: string; cells: Cell[] }
 export interface RowGroup { key: FeatureGroup; label: string; rows: Row[] }
@@ -120,6 +132,14 @@ export interface ComparisonView {
   faq: { q: string; a: string }[]
   trialMonths: number | null
   checklist: ChecklistItem[]
+  /** compare-suits-1: "Which suits your food truck?" (lib/comparison-suits.ts) — empty without its translator. */
+  suits: SuitsAnswer[]
+  /** compare-suits-1: the entries not shown (hidden, or beyond the four) — an admin's note; the public view never names them. */
+  notShown: { name: string; reason: NotShownReason }[]
+  /** compare-suits-1: how many shown cells say "Not listed" (and how many "not mentioned" they come from). */
+  notListedCells: number
+  /** compare-suits-1: the "Which suits" section's own words (title, labels, methodology sentences) in the page's language. */
+  suitsWords: { title: string; evidence: string; adminPreview: string; method: string[] } | null
 }
 
 /** The price rows whose competitor side comes from the entry's plan (the rest come from its answers). */
@@ -151,7 +171,7 @@ const day = (iso: string | null | undefined) => (iso ? iso.slice(0, 10) : null)
 const maxDate = (ds: (string | null | undefined)[]) => ds.filter((d): d is string => !!d).sort().pop() ?? null
 const minDate = (ds: (string | null | undefined)[]) => ds.filter((d): d is string => !!d).sort()[0] ?? null
 
-export function buildComparison(input: ComparisonInput, t: ComparisonT, opts: ViewOptions): ComparisonView {
+export function buildComparison(input: ComparisonInput, t: ComparisonT, opts: ViewOptions, st?: SuitsT): ComparisonView {
   const { settings, catalog, flags, urls } = input
   const country = input.countryName
   const showAll = opts.admin && !opts.publicView
@@ -168,33 +188,36 @@ export function buildComparison(input: ComparisonInput, t: ComparisonT, opts: Vi
     override?.trim() ? override.trim() : focus === 'pos' ? t('groups.pos') : focus === 'nearest_local' ? t('groups.nearest_local') : focus ? t('groups.food_truck') : null
   const us: Column = { key: 'hatchgrab', name: BRANDS.HATCHGRAB.name, url: urls.home, us: true, group: t('groups.food_truck'), verified: true, entryVerified: true, planVerified: true, featuresVerified: true, plan: null, chooseWhen: null }
   const columns: Column[] = [us]
+  const compOf = new Map(input.competitors.map(c => [c.id, c]))
+  // ── the features shown here (the master list), and each column's features verification ──
+  const shownFeatures = featuresShownIn(input.features, settings.countryCode)
+  const shownKeys = shownFeatures.map(f => f.key)
+  const candidates: SelectionCandidate<Column>[] = []
   for (const e of entries) {
-    const c = input.competitors.find(x => x.id === e.competitorId)
+    const c = compOf.get(e.competitorId)
     if (!c) continue
     const plan = entryPlan(e, input.plans)
     const col: Column = {
       key: c.id, name: c.name, url: c.website, us: false, group: groupOf(c.focus, e.groupLabel),
       entryVerified: !!e.verifiedAt, planVerified: !!plan?.verifiedAt, featuresVerified: !!c.featuresVerifiedAt, verified: false,
-      plan, chooseWhen: e.chooseWhen,
+      plan, chooseWhen: e.chooseWhen, category: c.category ?? null, pinned: e.pinned === true,
     }
-    // global-players-1: a pending 'pos' competitor (not yet counted — a candidate) is never public, whatever is verified.
-    col.verified = col.entryVerified && col.planVerified && col.featuresVerified && isCountedCompetitor(c)
-    if (col.verified || showAll) columns.push(col)
-  }
-  const compOf = new Map(input.competitors.map(c => [c.id, c]))
-
-  // ── the features shown here (the master list), and each column's features verification ──
-  const shownFeatures = featuresShownIn(input.features, settings.countryCode)
-  const shownKeys = shownFeatures.map(f => f.key)
-  for (const col of columns) {
-    if (col.us) continue
     // The competitor's stamp AND every stated answer shown here carries its own (Mark features verified, per country).
     // competitor-features-2: only the features that apply to its kind (the others are not asked about, nor shown as answers).
-    const focus = compOf.get(col.key)?.focus ?? null
-    col.featuresVerified = col.featuresVerified && featuresVerifiedFor(input.values, col.key, settings.countryCode, shownFeatures.filter(f => appliesToFocus(f, focus)).map(f => f.key))
-    col.verified = col.verified && col.featuresVerified
+    col.featuresVerified = col.featuresVerified && featuresVerifiedFor(input.values, col.key, settings.countryCode, shownFeatures.filter(f => appliesToFocus(f, c.focus)).map(f => f.key))
+    // global-players-1: a pending 'pos' competitor (not yet counted — a candidate) is never public, whatever is verified.
+    col.verified = col.entryVerified && col.planVerified && col.featuresVerified && isCountedCompetitor(c)
+    if (!col.verified && !showAll) continue
+    const verifiedFeatures = input.values.filter(v => v.competitorId === c.id && v.supersededAt === null && v.verifiedAt
+      && (v.countryCode === null || v.countryCode === settings.countryCode)).length
+    candidates.push({ entry: col, name: c.name, pinned: e.pinned === true, hidden: e.hidden === true, sortOrder: e.sortOrder,
+      category: isCategory(c.category) ? c.category : null, pricingVerified: col.planVerified, verifiedFeatures })
   }
-  for (let i = columns.length - 1; i > 0; i--) if (!columns[i].verified && !showAll) columns.splice(i, 1)
+  // compare-suits-1: AT MOST FOUR, chosen by the rule (lib/comparison-selection.ts) — among the public entries in the public view,
+  // among every entry in an admin's full view (so it shows the four the page will show once they are verified).
+  const selection = selectShown(candidates)
+  for (const c of selection.shown) columns.push(c.entry)
+  const notShown = selection.notShown.map(n => ({ name: n.candidate.name, reason: n.reason }))
   const verifiedCount = columns.filter(c => !c.us && c.verified).length
   const trialMonths = offerTrialMonths(catalog)
 
@@ -288,8 +311,19 @@ export function buildComparison(input: ComparisonInput, t: ComparisonT, opts: Vi
     if (!appliesToFocus(f, c.focus)) return cell('unknown', t('cell.notApplicable'), c.website, c.featuresCheckedOn, !col.featuresVerified)
     const v = effectiveValue(input.values, c.id, f.key, settings.countryCode)
     // No answer yet: "not stated", dated by the competitor's features check (a cell always has a date and a source).
-    if (!v) return cell('unknown', null, c.website, c.featuresCheckedOn, !col.featuresVerified)
-    return cell(v.value, v.note, v.sourceUrl ?? c.website, v.checkedOn ?? c.featuresCheckedOn, !col.featuresVerified)
+    if (!v) return { ...cell('unknown', null, c.website, c.featuresCheckedOn, !col.featuresVerified), state: 'unknown' }
+    // compare-suits-1: "not listed" — the raw answer stays not_mentioned (never overwritten); the cell says "Not listed" only when the
+    // feature is absence_means_no and the check that last asked about it read the features and pricing pages (and the help centre).
+    const check = featureCheckOf(input.featureChecks ?? [], c.id, f.key, settings.countryCode)
+    const pending = (input.pendingFindings ?? []).some(p => p.competitorId === c.id && p.featureKey === f.key && (p.countryCode === null || p.countryCode === settings.countryCode))
+    const state = cellState(v, f, check, pending)
+    const extra = { state, quote: v.quote, pages: check?.pages?.pages ?? null, helpCentre: check?.pages?.helpCentre ?? null }
+    if (state === 'not_listed') {
+      const base = cell('not_mentioned', v.note, v.sourceUrl ?? c.website, v.checkedOn ?? c.featuresCheckedOn, !col.featuresVerified)
+      const w = t('cell.not_listed')
+      return { ...base, value: 'not_listed', word: w, text: base.note ? t('cell.withNote', { word: w, note: base.note }) : w, raw: v.value, ...extra }
+    }
+    return { ...cell(v.value, v.note, v.sourceUrl ?? c.website, v.checkedOn ?? c.featuresCheckedOn, !col.featuresVerified), ...extra }
   }
 
   // ── the rows, grouped ──
@@ -371,10 +405,79 @@ export function buildComparison(input: ComparisonInput, t: ComparisonT, opts: Vi
     { key: 'impressum', label: t('admin.check.impressum'), ok: !!IMPRESSUM_DECISION[settings.countryCode]?.trim() },
   ]
 
+  // ── compare-suits-1: "Which suits your food truck?" — from the same columns and cells as the table ──
+  const notListedCells = rows.reduce((n, r) => n + r.cells.filter(c => c.value === 'not_listed').length, 0)
+  const suits = st ? buildSuits(suitsInput(), st) : []
+  function ourState(src: Pick<ComparisonFeature, 'hatchgrabSource'>): OurState {
+    const a = ourAnswer(src, { catalog, appFlags: { ios: flags.iosApp, android: flags.androidApp }, charges: input.charges })
+    const value = a.value === 'yes' || a.value === 'no' || a.value === 'partial' ? a.value : 'unknown'
+    return { value, fromPlan: a.note?.kind === 'plans' ? a.note.plans[0] ?? null : null, soon: a.badge === 'soon' }
+  }
+  function suitsInput() {
+    const rivalCols = columns.filter(c => !c.us)
+    const feature = (r: Row): SuitsFeature => {
+      const f = shownFeatures.find(x => x.key === r.key)!
+      const cells: SuitsFeature['cells'] = {}
+      columns.forEach((col, i) => { if (col.us) return; const c = r.cells[i]
+        cells[col.key] = { state: c.state ?? 'unknown', source: c.source, checkedOn: c.checkedOn, quote: c.quote ?? null, pages: c.pages ?? null, helpCentre: c.helpCentre ?? null } })
+      // A price row's "yes" is the price itself — never a known yes or no about a feature.
+      const ours = f.groupKey === 'price_contract' ? { value: 'unknown' as const, fromPlan: null, soon: false } : ourState(f)
+      return { key: f.key, label: r.label, group: f.groupKey, neverStrength: f.neverCompetitorStrength === true, ours, cells }
+    }
+    const features = rows.map(feature)
+    const fmtMoney = (minor: number, currency: string) => formatAmount(Math.round(minor), { ...money, currency })
+    return {
+      locale: settings.locale, today: input.today,
+      columns: columns.map(c => ({ key: c.key, name: c.name, us: c.us, unverified: !c.us && !c.verified, category: c.category ?? null })),
+      features, offlinePause: ourState({ hatchgrabSource: 'plan:offline_protection' }), offline: features.find(f => f.key === 'offline') ?? null,
+      priceLow: priceAt('small', rivalCols), priceHigh: priceAt('busy', rivalCols), commission: commissionOf(rivalCols),
+      money: fmtMoney, date: (ymd: string) => formatYmd(ymd, ts, { day: 'numeric', month: 'long', year: 'numeric' }),
+    }
+  }
+  /** One volume's monthly software cost for every shown column — lib/pricing-check.ts (Admin › Pricing check's own model), with
+   *  card processing taken out of both sides and fees customers pay left out. Null when any shown column's cost is not known. */
+  function priceAt(volume: 'small' | 'busy', rivalCols: Column[]): PriceCalc | null {
+    const bench = (input.benchmarks ?? []).find(b => b.countryCode === settings.countryCode && b.supersededAt === null) ?? null
+    if (!bench || !rivalCols.length) return null
+    // A bundled payment fee hides the platform's share inside the card rate; an unclear or hidden price is not a price.
+    if (rivalCols.some(c => !c.plan || c.plan.priceHidden || c.plan.unclear || c.plan.cardMode === 'bundled')) return null
+    const res = checkCountry({
+      countryCode: settings.countryCode, benchmark: bench, catalog,
+      country: { countryCode: settings.countryCode, name: settings.name, enabled: true, currency: settings.currency,
+        cardFeeOnlinePct: settings.cardFeeOnlinePct, cardFeeOnlineFixedMinor: settings.cardFeeOnlineFixedMinor },
+      plans: rivalCols.map(c => c.plan!), competitors: rivalCols.map(c => compOf.get(c.key)!).filter(Boolean), rates: eurRates(input.benchmarks ?? []),
+    }, { foodTruckOnly: false, countCustomerFees: false, verifiedOnly: false })
+    const vol = res.volumes.find(v => v.key === volume)
+    if (!vol || !vol.best || res.problem) return null
+    const best = vol.best
+    const lines: PriceCalc['lines'] = [{ key: us.key, name: us.name, us: true, plan: best.plan.name, unlimitedFlat: best.plan.includedOnlineMinor === null,
+      currency: res.currency, subMinor: best.subMinor, setupMinor: 0, feesMinor: best.feeMinor, overageMinor: 0, totalMinor: best.totalMinor - best.cardMinor,
+      customerFees: false, checkedOn: input.today, source: `${urls.home}#pricing` }]
+    for (const col of rivalCols) {
+      const r = vol.rivals.find(x => x.plan.id === col.plan!.id)
+      if (!r || r.reason) return null
+      lines.push({ key: col.key, name: col.name, us: false, plan: col.plan!.planName, unlimitedFlat: false, currency: res.currency,
+        subMinor: r.parts.subMinor, setupMinor: r.parts.setupMinor, feesMinor: r.parts.feesMinor, overageMinor: r.parts.overageMinor,
+        totalMinor: r.truckMinor - r.parts.cardMinor, customerFees: r.customerMinor > 0, checkedOn: col.plan!.checkedOn, source: col.plan!.sourceUrl })
+    }
+    const low = Math.min(...lines.map(l => Math.round(l.totalMinor)))
+    return { country: settings.countryCode, currency: res.currency, orders: vol.orders, orderMinor: vol.orderMinor, revenueMinor: vol.revenueMinor,
+      date: input.today, lines, lowest: lines.filter(l => Math.round(l.totalMinor) === low).map(l => l.key) }
+  }
+  /** Situation 8: each shown marketplace's and HatchGrab's per-order fee structure, as the table states it. */
+  function commissionOf(rivalCols: Column[]) {
+    const markets = rivalCols.filter(c => c.category === 'marketplace')
+    if (!markets.length || markets.some(c => !c.plan || rivalOrderFee(c.plan).value === 'unknown')) return null
+    return [{ name: us.name, fee: ourOrderFee(), unverified: false, source: `${urls.home}#pricing`, checkedOn: input.today },
+      ...markets.map(c => ({ name: c.name, fee: rivalOrderFee(c.plan!).text ?? t('table.noFee'), unverified: !c.planVerified, source: c.plan!.sourceUrl, checkedOn: c.plan!.checkedOn }))]
+  }
+  const suitsWords = st ? { title: st('title'), evidence: st('evidence'), adminPreview: st('adminPreview'), method: [st('method.covers'), st('method.notListed')] } : null
+
   return {
     status: flags.status, admin: opts.admin, publicView: !showAll,
     checkedOn, checkedLabel: formatYmd(checkedOn, ts, { day: 'numeric', month: 'long', year: 'numeric' }), publishedOn,
     columns, rows, groups, explained, morePending: verifiedCount < 2, costs, cardFee, vat, fit, faq, trialMonths, checklist,
+    suits, notShown: showAll ? notShown : [], notListedCells, suitsWords,
   }
 }
 
@@ -432,6 +535,15 @@ export function comparisonMarkdown(v: ComparisonView, input: ComparisonInput, t:
     for (const r of g.rows) out.push(`| ${mdCell(r.label)} | ${r.cells.map(c => mdCell(c.text)).join(' | ')} |`)
   }
   out.push('', t('table.note'))
+  // compare-suits-1: "Which suits your food truck?" — the same answers as the page, each with its date and evidence.
+  if (v.suits.length && v.suitsWords) {
+    out.push('', `## ${v.suitsWords.title}`, '')
+    for (const a of v.suits) {
+      out.push(`### ${a.question}`, '', a.answer, '', `_${a.checkedLabel}_`)
+      for (const line of a.evidenceLines) out.push(`- ${line.text}${line.url ? ` — ${line.url}` : ''}`)
+      out.push('')
+    }
+  }
   if (v.explained.length) {
     out.push('', `## ${t('explained.title')}`, '')
     for (const e of v.explained) out.push(`- **${e.label}:** ${e.explain}`)
@@ -449,7 +561,7 @@ export function comparisonMarkdown(v: ComparisonView, input: ComparisonInput, t:
   out.push(`## ${t('faq.title')}`, '')
   for (const f of v.faq) out.push(`### ${f.q}`, '', f.a, '')
   out.push(`## ${t('method.title')}`, '', t('method.checked', { date: v.checkedLabel }), '', t('method.prices'), '', t('method.meaning'), '',
-    t('method.vendor'), '', t('method.review'), '', `${flat('method.corrections')} ${input.urls.contact}`, '')
+    t('method.vendor'), '', t('method.review'), '', ...(v.suitsWords ? v.suitsWords.method.flatMap(m => [m, '']) : []), `${flat('method.corrections')} ${input.urls.contact}`, '')
   out.push(`JSON: ${input.urls.json}`, '')
   return out.join('\n')
 }
@@ -471,13 +583,19 @@ export function comparisonJson(v: ComparisonView, input: ComparisonInput, t: Com
     // as advertised, the whole text, the source URL and the checked date.
     rows: v.rows.map(r => ({
       key: r.key, group: v.groups.find(g => g.key === r.group)?.label ?? r.group, label: r.label, explanation: r.explain,
-      cells: r.cells.map((c, i) => ({ tool: v.columns[i].name, value: c.value, label: c.word, note: c.note, text: c.text, source: c.source, checked: c.checkedOn, ...(c.unverified ? { verified: false } : {}) })),
+      cells: r.cells.map((c, i) => ({ tool: v.columns[i].name, value: c.value, label: c.word, note: c.note, text: c.text, source: c.source, checked: c.checkedOn, ...(c.unverified ? { verified: false } : {}),
+        // compare-suits-1: "not listed" keeps the raw answer it came from, and the pages its check read.
+        ...(c.value === 'not_listed' ? { raw: c.raw, pagesChecked: c.pages, helpCentre: c.helpCentre } : {}) })),
     })),
     explained: v.explained.map(e => ({ feature: e.label, meaning: e.explain })),
     costs: v.costs.map(c => ({ tool: c.tool, lines: c.lines, source: c.source, checked: c.checkedOn })),
     cardFees: v.cardFee,
     vat: v.vat,
     faq: v.faq.map(f => ({ question: f.q, answer: f.a })),
-    method: [t('method.checked', { date: v.checkedLabel }), t('method.prices'), t('method.meaning'), t('method.vendor'), t('method.review')],
+    method: [t('method.checked', { date: v.checkedLabel }), t('method.prices'), t('method.meaning'), t('method.vendor'), t('method.review'), ...(v.suitsWords?.method ?? [])],
+    // compare-suits-1: "Which suits your food truck?" — each answer, the products it compares, its date and its evidence (the feature
+    // rows' sources, quotes and pages checked, or the price calculation with every component).
+    ...(v.suitsWords ? { suits: { title: v.suitsWords.title, answers: v.suits.map(a => ({ key: a.key, question: a.question, answer: a.answer, products: a.products,
+      checked: a.checkedOn, ...(a.unverified ? { verified: false } : {}), evidence: a.evidence, evidenceLines: a.evidenceLines })) } } : {}),
   }
 }

@@ -126,7 +126,10 @@
       "impressum": "Impressum decision recorded"
     },
     "unverified": "not verified · hidden from the public",
-    "label": "Admin"
+    "label": "Admin",
+    "notShown": "Not on the page (at most four are shown): {names}.",
+    "reasonHidden": "{name} (hidden)",
+    "reasonBeyond": "{name} (beyond the four)"
   },
   "footer": {
     "heading": "Compare",
@@ -155,7 +158,8 @@
     "perMonth": "{price} a month",
     "notInCountry": "not in {country}",
     "flagOff": "flag still off; shown once the stores list it",
-    "notApplicable": "does not apply to a market"
+    "notApplicable": "does not apply to a market",
+    "not_listed": "Not listed"
   },
   "explained": {
     "title": "What the features mean"

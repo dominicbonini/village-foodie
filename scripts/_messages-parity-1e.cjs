@@ -219,6 +219,14 @@ const NEW_WORDING = {
   const enGB = JSON.parse(fs.readFileSync(path.join(REPO, 'messages/en-GB.json'), 'utf8'))
   for (const k of flatKeys(enGB.comparison || {}, 'comparison.')) NEW_WORDING[k] = 'compare-de-1: the German comparison page (a new namespace)'
 }
+// ⚠️ RE-PINNED (compare-suits-1, 6 November 2026, docs/compare-suits-1-report.md): "Which suits your food truck?" — a NEW
+// namespace, `comparisonSuits` (every language base), generated answer patterns and the two methodology sentences. All new
+// wording, named here as a whole namespace; scripts/compare-suits-1.cjs holds its rules and where it renders.
+{
+  const flatKeys = (o, p = '') => Object.entries(o).flatMap(([k, v]) => (v && typeof v === 'object' ? flatKeys(v, `${p}${k}.`) : [`${p}${k}`]))
+  const enGB = JSON.parse(fs.readFileSync(path.join(REPO, 'messages/en-GB.json'), 'utf8'))
+  for (const k of flatKeys(enGB.comparisonSuits || {}, 'comparisonSuits.')) NEW_WORDING[k] = 'compare-suits-1: "Which suits your food truck?" (a new namespace)'
+}
 // ⚠️ RE-PINNED (demo-2, 30 October 2026, docs/demo-2-report.md): the new demo's words — two NEW namespaces, `demoWalk`
 // (the walkthrough: order page, kitchen, sheet/band) and `demoLinkEmail` (the "here is your demo" email), plus the upload
 // modal's email step and the order page's walkthrough banner. All new wording; scripts/demo-2.cjs proves where each renders.

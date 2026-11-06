@@ -1,0 +1,102 @@
+{
+  "title": "Que sistema é mais indicado para o seu food truck?",
+  "checked": "Verificado a {date}",
+  "evidence": "Fontes",
+  "adminPreview": "Pré-visualização de administrador — não verificada",
+  "ours": {
+    "fromPlan": "{name} (a partir do plano {plan})"
+  },
+  "q": {
+    "preorder": "Que sistema de encomendas permite aos meus clientes encomendar com antecedência e escolher uma hora de levantamento?",
+    "capacity": "O meu food truck fica sobrecarregado nas horas de ponta — que sistema limita as encomendas em cada horário?",
+    "whatsapp": "Os clientes estão sempre a perguntar onde estou — que sistema lhes responde no WhatsApp?",
+    "social": "Que sistema cria as publicações com os meus locais da semana, para eu não ter de criar imagens?",
+    "schedule": "Estou num sítio diferente quase todos os dias — que sistema mostra aos clientes onde estou e aceita encomendas para esse local?",
+    "priceLow": "Só trabalho alguns dias por mês — que sistema fica mais barato?",
+    "priceHigh": "Faço festivais e eventos com muito movimento — que sistema fica mais barato?",
+    "commission": "Não quero pagar comissão em cada encomenda — quanto cobra cada produto?",
+    "offline": "O que acontece às encomendas online se eu ficar sem rede?",
+    "strength": "Que produto comparado oferece «{feature}»?"
+  },
+  "does": {
+    "preorder": "{names} {count, plural, one {permite} other {permitem}} aos clientes encomendar com antecedência e escolher uma hora de levantamento.",
+    "capacity": "{names} {count, plural, one {limita} other {limitam}} quantas encomendas cada hora de levantamento aceita, para que a cozinha não fique sobrecarregada.",
+    "whatsapp": "{names} {count, plural, one {responde} other {respondem}} automaticamente às mensagens de WhatsApp dos clientes.",
+    "social": "{names} {count, plural, one {cria} other {criam}} imagens prontas a publicar com os locais da semana.",
+    "schedule": "{names} {count, plural, one {mostra} other {mostram}} aos clientes onde está o food truck em cada dia e {count, plural, one {aceita} other {aceitam}} encomendas para esse local."
+  },
+  "feat": {
+    "preorder": "as horas de levantamento",
+    "capacity": "um limite de encomendas por horário",
+    "whatsapp": "as respostas automáticas no WhatsApp",
+    "social": "imagens da agenda semanal",
+    "schedule": "uma agenda de locais que mudam",
+    "offlinePause": "Encomendas online em pausa quando se perde a rede"
+  },
+  "others": {
+    "noQuoted": "{names} não {count, plural, one {oferece} other {oferecem}} esta funcionalidade.",
+    "notListed": "{names} não {count, plural, one {indica {feature} no seu site} other {indicam {feature} nos seus sites}}.",
+    "doesntSay": "{count, plural, one {O site de {names} não diz nada sobre isto} other {Os sites de {names} não dizem nada sobre isto}}.",
+    "noneLists": "Nenhum dos outros produtos comparados o indica, por isso {names} {count, plural, one {é a opção mais adequada} other {são as opções mais adequadas}} entre os produtos comparados."
+  },
+  "price": {
+    "lead": "Com {orders, number} encomendas online por mês, {names} {count, plural, one {tem} other {têm}} o custo mensal de software mais baixo entre os produtos comparados: {amount} por mês{count, plural, one {} other { cada um}}.",
+    "includes": "Inclui a subscrição, as taxas cobradas ao food truck em cada encomenda, qualquer custo por encomendas adicionais e eventuais taxas de configuração repartidas por 12 meses; as taxas de processamento de cartões não estão incluídas.",
+    "flat": "{name} ({plan}, um preço fixo, sem taxa por encomenda cobrada por {name})",
+    "planName": "{name} ({plan})"
+  },
+  "commission": {
+    "part": "{name}: {fee}",
+    "answer": "Quanto cobra cada produto por encomenda: {parts}."
+  },
+  "offline": {
+    "ours": "{name} pode pausar automaticamente as encomendas online quando o food truck perde a rede, para que os clientes não façam encomendas que a cozinha não vai receber.",
+    "noQuoted": "{names} não {count, plural, one {oferece} other {oferecem}} funcionamento sem ligação.",
+    "doesntSay": "{count, plural, one {O site de {names} não diz} other {Os sites de {names} não dizem}} o que acontece quando se perde a rede."
+  },
+  "strength": {
+    "answer": "{names} {count, plural, one {afirma oferecer} other {afirmam oferecer}} «{feature}»; {us} não.",
+    "answerSoon": "{names} {count, plural, one {afirma oferecer} other {afirmam oferecer}} «{feature}»; {us} ainda não."
+  },
+  "ev": {
+    "ours": {
+      "yes": "sim, segundo os planos de {us}",
+      "no": "não, segundo os planos de {us}"
+    },
+    "state": {
+      "yes": "afirma oferecer isto",
+      "partial": "oferece parte disto",
+      "no_quoted": "afirma não oferecer isto",
+      "no_unquoted": "não (sem citação guardada)",
+      "not_listed": "não indicado no seu site",
+      "not_mentioned": "o seu site não diz nada",
+      "unknown": "desconhecido"
+    },
+    "row": "{tool} — {feature}: {answer}.",
+    "quote": "Citação: «{quote}».",
+    "pages": "Páginas verificadas: {pages}.",
+    "pageRead": "{page}",
+    "pageNotRead": "{page} (não foi possível ler)",
+    "page": {
+      "features": "página de funcionalidades",
+      "pricing": "página de preços",
+      "help": "centro de ajuda",
+      "other": "outra página"
+    },
+    "help": {
+      "fetched": "O seu centro de ajuda foi lido.",
+      "linked_not_fetched": "Tem um centro de ajuda que não foi lido.",
+      "none_found": "Não foi encontrado nenhum centro de ajuda."
+    },
+    "calc": {
+      "volume": "Calculado para {orders, number} encomendas online por mês a {order} por encomenda ({revenue} em vendas online).",
+      "line": "{name} ({plan}): subscrição {sub} + taxa de configuração repartida por 12 meses {setup} + taxas por encomenda {fees} + encomendas adicionais {over} = {total} por mês.",
+      "excluded": "As taxas de processamento de cartões e as taxas pagas pelos clientes não estão incluídas em nenhum produto.",
+      "date": "Calculado a {date} com base nos preços verificados no site de cada fornecedor."
+    }
+  },
+  "method": {
+    "covers": "Abrange até quatro alternativas, escolhidas pela sua relevância para food trucks e pela disponibilidade de informação pública verificável — não todos os produtos do mercado.",
+    "notListed": "«Não indicado» significa que verificámos as páginas de funcionalidades, preços e ajuda do produto e a funcionalidade não é mencionada, em funcionalidades que as empresas costumam anunciar. «Não diz» significa que não está confirmado nem num sentido nem noutro."
+  }
+}

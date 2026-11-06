@@ -26,6 +26,9 @@ import { overviewOf } from '@/lib/competitor-check/overview'
 import { countriesOf, deepQueueOf, type QueueCountry } from '@/lib/competitor-check/core'
 
 type Row = Record<string, unknown>
+/** compare-suits-1: the category a checker focus makes clear (pop-up, markets and none are not clear: null). */
+export const categoryOfFocus = (focus: string | null | undefined): 'food_truck' | 'general_pos' | 'restaurant' | null =>
+  focus === 'food_truck' ? 'food_truck' : focus === 'pos' ? 'general_pos' : focus === 'nearest_local' ? 'restaurant' : null
 const refuse = <T>(status: number, error: string): ActionResult<T> => ({ ok: false, status, error })
 
 export interface CheckAdminStore {
@@ -182,7 +185,11 @@ export async function acceptFinding(pricing: PricingStore, checks: CheckAdminSto
     const effect = posKept ? { lifecycle: 'active' as const, focus: 'pos' } : CLASSIFICATION_EFFECT[found.classification as Classification]
     if (!effect) return refuse(400, 'This finding has no classification.')
     await checks.updateCompetitor(cid, { lifecycle: effect.lifecycle, focus: effect.focus })
-    await pricing.updateCompetitor(cid, { features_verified_at: null, updated_at: stamp.at })
+    // compare-suits-1 (20261075): the category follows the focus where it is clear — never over Admin's own choice.
+    const category = categoryOfFocus(effect.focus)
+    const own = (comp as Row).category_by === 'admin'
+    await pricing.updateCompetitor(cid, { features_verified_at: null, updated_at: stamp.at,
+      ...(own || !('category_by' in (comp as Row)) ? {} : { category, category_by: category ? 'auto' : null }) })
   }
   // 'blocked', and 'not_stated' on a plan field: acknowledged only — nothing to save.
   const done = await checks.reviewFinding(id, { review_status: 'accepted', reviewed_by: stamp.by, reviewed_at: stamp.at })

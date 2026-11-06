@@ -6366,6 +6366,108 @@
       "description": "Compara lo que te cuestan ahora tus pedidos online con un año en HatchGrab: una estimación en un minuto."
     }
   },
+  "comparisonSuits": {
+    "title": "¿Qué sistema encaja con tu food truck?",
+    "checked": "Comprobado el {date}",
+    "evidence": "Fuentes",
+    "adminPreview": "Vista previa de admin — sin verificar",
+    "ours": {
+      "fromPlan": "{name} (desde el plan {plan})"
+    },
+    "q": {
+      "preorder": "¿Qué sistema de pedidos permite a mis clientes pedir por adelantado y elegir una hora de recogida?",
+      "capacity": "En las horas punta mi food truck se colapsa: ¿qué sistema limita los pedidos de cada franja horaria?",
+      "whatsapp": "Los clientes no paran de preguntarme dónde estoy: ¿qué sistema les responde por WhatsApp?",
+      "social": "¿Qué sistema crea las publicaciones con mis ubicaciones de la semana para que no tenga que diseñar imágenes?",
+      "schedule": "Casi cada día estoy en un sitio distinto: ¿qué sistema muestra a los clientes dónde estoy y acepta pedidos para esa parada?",
+      "priceLow": "Solo trabajo unos pocos días al mes: ¿qué sistema sale más barato?",
+      "priceHigh": "Hago festivales y eventos con mucha gente: ¿qué sistema sale más barato?",
+      "commission": "No quiero pagar comisión por cada pedido: ¿cuánto cobra cada producto?",
+      "offline": "¿Qué pasa con los pedidos online si me quedo sin cobertura?",
+      "strength": "¿Qué producto de la comparativa ofrece “{feature}”?"
+    },
+    "does": {
+      "preorder": "{names} {count, plural, one {permite} other {permiten}} a los clientes pedir por adelantado y elegir una hora de recogida.",
+      "capacity": "{names} {count, plural, one {limita} other {limitan}} cuántos pedidos acepta cada hora de recogida, para que la cocina no se colapse.",
+      "whatsapp": "{names} {count, plural, one {responde} other {responden}} automáticamente a los mensajes de WhatsApp de los clientes.",
+      "social": "{names} {count, plural, one {crea} other {crean}} imágenes listas para publicar con las ubicaciones de la semana.",
+      "schedule": "{names} {count, plural, one {muestra} other {muestran}} a los clientes dónde está el food truck cada día y {count, plural, one {acepta} other {aceptan}} pedidos para esa parada."
+    },
+    "feat": {
+      "preorder": "las horas de recogida",
+      "capacity": "un límite de pedidos por franja horaria",
+      "whatsapp": "las respuestas automáticas de WhatsApp",
+      "social": "imágenes de la agenda semanal",
+      "schedule": "una agenda de ubicaciones cambiantes",
+      "offlinePause": "Pedidos online en pausa cuando se pierde la cobertura"
+    },
+    "others": {
+      "noQuoted": "{names} no {count, plural, one {ofrece} other {ofrecen}} esta función.",
+      "notListed": "{names} no {count, plural, one {indica {feature} en su web} other {indican {feature} en sus webs}}.",
+      "doesntSay": "{count, plural, one {La web de {names} no lo dice} other {Las webs de {names} no lo dicen}}.",
+      "noneLists": "Ningún otro producto de la comparativa lo indica, así que {names} {count, plural, one {es la opción que mejor encaja} other {son las opciones que mejor encajan}} entre los productos comparados."
+    },
+    "price": {
+      "lead": "Con {orders, number} pedidos online al mes, {names} {count, plural, one {tiene} other {tienen}} el coste mensual de software más bajo entre los productos comparados: {amount} al mes{count, plural, one {} other { cada uno}}.",
+      "includes": "Incluye la suscripción, las comisiones que se cobran al food truck en cada pedido, cualquier cargo por pedidos extra y la cuota de alta, si la hay, repartida en 12 meses; no incluye las comisiones de procesamiento de tarjetas.",
+      "flat": "{name} ({plan}, un precio fijo sin comisión por pedido de {name})",
+      "planName": "{name} ({plan})"
+    },
+    "commission": {
+      "part": "{name}: {fee}",
+      "answer": "Lo que cobra cada producto por pedido: {parts}."
+    },
+    "offline": {
+      "ours": "{name} puede pausar automáticamente los pedidos online cuando el food truck se queda sin cobertura, para que los clientes no hagan pedidos que la cocina no va a recibir.",
+      "noQuoted": "{names} no {count, plural, one {ofrece} other {ofrecen}} funcionamiento sin conexión.",
+      "doesntSay": "{count, plural, one {La web de {names} no dice} other {Las webs de {names} no dicen}} qué pasa cuando se pierde la cobertura."
+    },
+    "strength": {
+      "answer": "{names} {count, plural, one {dice que ofrece} other {dicen que ofrecen}} “{feature}”; {us} no.",
+      "answerSoon": "{names} {count, plural, one {dice que ofrece} other {dicen que ofrecen}} “{feature}”; {us} todavía no."
+    },
+    "ev": {
+      "ours": {
+        "yes": "sí, según los planes de {us}",
+        "no": "no, según los planes de {us}"
+      },
+      "state": {
+        "yes": "dice que lo ofrece",
+        "partial": "ofrece una parte",
+        "no_quoted": "dice que no lo ofrece",
+        "no_unquoted": "no (sin cita guardada)",
+        "not_listed": "no figura en su web",
+        "not_mentioned": "su web no lo dice",
+        "unknown": "se desconoce"
+      },
+      "row": "{tool} — {feature}: {answer}.",
+      "quote": "Cita: “{quote}”.",
+      "pages": "Páginas revisadas: {pages}.",
+      "pageRead": "{page}",
+      "pageNotRead": "{page} (no se pudo leer)",
+      "page": {
+        "features": "página de funciones",
+        "pricing": "página de precios",
+        "help": "centro de ayuda",
+        "other": "otra página"
+      },
+      "help": {
+        "fetched": "Se leyó su centro de ayuda.",
+        "linked_not_fetched": "Tiene un centro de ayuda que no se leyó.",
+        "none_found": "No se encontró ningún centro de ayuda."
+      },
+      "calc": {
+        "volume": "Calculado para {orders, number} pedidos online al mes a {order} por pedido ({revenue} en ventas online).",
+        "line": "{name} ({plan}): suscripción {sub} + cuota de alta repartida en 12 meses {setup} + comisiones por pedido {fees} + pedidos extra {over} = {total} al mes.",
+        "excluded": "Para ningún producto se incluyen las comisiones de procesamiento de tarjetas ni las comisiones que pagan los clientes.",
+        "date": "Calculado el {date} con los precios comprobados en la web de cada proveedor."
+      }
+    },
+    "method": {
+      "covers": "Incluye hasta cuatro alternativas elegidas por su relevancia para food trucks y por la disponibilidad de información pública verificable, no todos los productos del mercado.",
+      "notListed": "“No figura” significa que revisamos las páginas de funciones, precios y ayuda del producto y no se menciona, en funciones que las empresas suelen anunciar. “No lo dice” significa que no está confirmado ni en un sentido ni en otro."
+    }
+  },
   "outreach": {
     "optOut": {
       "missing": "Este correo no tiene la frase para darse de baja, así que no se puede enviar. Usa “Insertar baja” para añadirla.",

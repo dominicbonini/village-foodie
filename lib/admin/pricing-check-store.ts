@@ -35,6 +35,7 @@ const missingColumn = (error: { message: string; code?: string } | null) => !!er
  *  then to the one before 20261042 — so the tab works whichever migrations have run. */
 async function readCompetitors(build: (cols: string) => PromiseLike<{ data: unknown; error: { message: string; code?: string } | null }>) {
   let r = await build(COLUMNS.competitors)
+  if (missingColumn(r.error)) r = await build(COLUMNS.competitorsNoSuits)   // compare-suits-1: before 20261075
   if (missingColumn(r.error)) r = await build(COLUMNS.competitorsNoCheck)
   return missingColumn(r.error) ? build(COLUMNS.competitorsLegacy) : r
 }
@@ -46,11 +47,16 @@ export async function readDataImports(): Promise<ImportRecord[] | null> {
 }
 /** comparison-features-1 (20261047). */
 const FEATURE_COLUMNS = 'key, group_key, sort_order, checked, show_scope, show_countries, hatchgrab_source, labels, explanations, updated_at'
+/** compare-suits-1 (20261075): the two Admin flags, read when the migration has run. */
+const FEATURE_COLUMNS_SUITS = `${FEATURE_COLUMNS}, never_competitor_strength, absence_means_no`
 const VALUE_COLUMNS = 'id, competitor_id, feature_key, country_code, value, note, quote, source_url, checked_on, verified_at, verified_by, superseded_at, created_at'
 const tableMissing = (error: { message: string; code?: string }) => error.code === '42P01' || error.code === 'PGRST205' || /relation .* does not exist|schema cache/i.test(error.message)
 const ENTRY_COLUMNS_BASE = 'id, country_code, competitor_id, primary_plan_id, choose_when, sort_order, verified_at, verified_by, created_at'
 /** global-players-1: group_label (20261046), falling back to the select before it runs. */
 async function entryCols<R extends { error: { message: string; code?: string } | null }>(build: (cols: string) => PromiseLike<R>): Promise<R> {
+  // compare-suits-1: pinned / hidden (20261075) first, then the select before it, then the one before group_label.
+  const s = await build(`${ENTRY_COLUMNS_BASE}, group_label, pinned, hidden`)
+  if (!missingColumn(s.error)) return s
   const r = await build(`${ENTRY_COLUMNS_BASE}, group_label`)
   return missingColumn(r.error) ? build(ENTRY_COLUMNS_BASE) : r
 }
@@ -201,8 +207,28 @@ export const servicePricingStore: PricingStore = {
   },
   // ── comparison-features-1: the master list and the answers (20261047). Missing tables → null / [] (the callers fall back).
   async features() {
-    const { data, error } = await (await db()).from('comparison_features').select(FEATURE_COLUMNS)
+    const s = await db()
+    let { data, error } = await s.from('comparison_features').select(FEATURE_COLUMNS_SUITS)
+    if (missingColumn(error)) ({ data, error } = await s.from('comparison_features').select(FEATURE_COLUMNS))   // before 20261075
     if (error) { if (tableMissing(error)) return null; fail('read features', error) }
+    return (data ?? []) as unknown as Row[]
+  },
+  // compare-suits-1 (20261075): when each feature was last asked about in a country, and the pages that check read.
+  async featureChecks(code) {
+    const s = await db(), out: Row[] = []
+    for (let from = 0; ; from += 1000) {
+      const { data, error } = await s.from('competitor_feature_checks').select('competitor_id, feature_key, country_code, checked_on, pages_checked')
+        .in('country_code', [code, '']).order('competitor_id').order('feature_key').order('country_code').range(from, from + 999)
+      if (error) { if (tableMissing(error) || missingColumn(error)) return []; fail('read feature checks', error) }
+      out.push(...((data ?? []) as unknown as Row[]))
+      if ((data ?? []).length < 1000) return out
+    }
+  },
+  // compare-suits-1: the feature findings still waiting for review in a country — an answer with one is never shown as "not listed".
+  async pendingFeatureFindings(code) {
+    const { data, error } = await (await db()).from('competitor_check_findings').select('competitor_id, country_code, found')
+      .eq('field', 'feature').eq('review_status', 'pending').or(`country_code.eq.${code},country_code.is.null`).limit(5000)
+    if (error) { if (tableMissing(error)) return []; fail('read pending findings', error) }
     return (data ?? []) as unknown as Row[]
   },
   async insertFeature(row) {

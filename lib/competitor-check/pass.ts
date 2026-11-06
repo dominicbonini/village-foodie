@@ -24,7 +24,9 @@
 import type Anthropic from '@anthropic-ai/sdk'
 import { RECORD_FINDINGS_TOOL, APP_STORE_HOSTS, validateRecordFindings, maxOutputTokensFor, type Classification, type RecordFindingsInput, type Ignored } from './model'
 import { EXTRACTOR_SYSTEM, passFeatureBlock, passCompetitorBlock, classifyMessage, type CheckFeature } from './prompts'
-import { addSpend, ZERO_SPEND, budgetStop, passTargets, dueFeatures, DEFAULT_TIER_INTERVALS, type PassItem, type PassState, type Spend } from './core'
+import { addSpend, ZERO_SPEND, budgetStop, passTargets, dueFeatures, DEFAULT_TIER_INTERVALS, pagesCheckedFrom, type PassItem, type PassState, type Spend } from './core'
+/** compare-suits-1: what pagesCheckedFrom returns (competitor_feature_checks.pages_checked). */
+export type PagesCheckedRecord = ReturnType<typeof pagesCheckedFrom>
 import {
   converse, rowsFrom, secondCheck, domainsOf, answersFor, applicableFeatures, loginFailure, allFailedOutright, FINDING_GROUPS, MAX_CONTINUATIONS,
   type CheckerDeps, type CheckSettings, type CompetitorForCheck, type FindingRow, type RunReport, type Meter, type Recorded,
@@ -57,6 +59,8 @@ export interface PassSettings {
   maxFetches: number; maxSearches: number; maxPageTokens: number; batch: PassBatch | null
   /** competitor-check-8 (20261053): the failed batches whose items' errors have been logged (null: the column is missing). */
   reread?: string[] | null
+  /** compare-suits-1 (20261075): also READ the help centre (false: only note whether one is linked). Every check mode reads it. */
+  fetchHelp?: boolean
 }
 export const DEFAULT_PASS: PassSettings = { extractorModel: 'claude-haiku-5-5', verifierModel: 'claude-haiku-5-5', perDay: 40, requestedAt: null, country: null,
   maxFetches: 3, maxSearches: 1, maxPageTokens: 6000, batch: null }
@@ -118,7 +122,7 @@ export function passRequest(c: CompetitorForCheck, item: Pick<PassItem<Competito
   const user = classify ? [{ type: 'text', text: classifyMessage({ name: c.name, website: c.website, check_urls: c.checkUrls }, today) }]
     : [{ type: 'text', text: passFeatureBlock(item.country!, feats), cache_control: { type: 'ephemeral' } },
       { type: 'text', text: passCompetitorBlock({ name: c.name, website: c.website, lifecycle: c.lifecycle, focus: c.focus, check_urls: c.checkUrls,
-        features: answersFor(c, keys, item.country), plans: c.plans.filter(pl => pl.country_code === item.country) }, item.country!, today, fetches, searches) }]
+        features: answersFor(c, keys, item.country), plans: c.plans.filter(pl => pl.country_code === item.country) }, item.country!, today, fetches, searches, p.fetchHelp === true) }]
   const tools = (f: number, q: number) => [
     { type: 'web_fetch_20260318', name: 'web_fetch', max_uses: f, max_content_tokens: p.maxPageTokens, allowed_domains: allowed },
     ...(q > 0 ? [{ type: 'web_search_20260318', name: 'web_search', max_uses: q, allowed_domains: allowed }] : []),
@@ -159,7 +163,7 @@ export function classOf(rows: FindingRow[], c: Pick<CompetitorForCheck, 'focus'>
 /** One item: the read (from a batch result, or asked now), the rows, the second check. competitor-check-5: a cut-off answer
  *  is continued; if it still cannot finish, its complete findings are kept and `incomplete` says why. */
 export async function processPassItem(deps: CheckerDeps, s: CheckSettings, item: PassItem<CompetitorForCheck>, runId: string, seed?: Anthropic.Beta.BetaMessage):
-  Promise<{ findings: FindingRow[]; spend: Spend; dropped: number; klass: 'relevant' | 'not_relevant' | 'unclear' | null; incomplete: string | null; ignored?: Ignored; asked: string[] }> {
+  Promise<{ findings: FindingRow[]; spend: Spend; dropped: number; klass: 'relevant' | 'not_relevant' | 'unclear' | null; incomplete: string | null; ignored?: Ignored; asked: string[]; pages: PagesCheckedRecord }> {
   const c = item.row
   const r = passRequest(c, item, s, deps.now().toISOString().slice(0, 10))
   let ex: { value: RecordFindingsInput; contents: unknown[][]; spend: Spend }, incomplete: string | null = null
@@ -179,7 +183,9 @@ export async function processPassItem(deps: CheckerDeps, s: CheckSettings, item:
   const verify = item.kind === 'classify' ? ZERO_SPEND
     : await secondCheck(deps, { model: s.pass.verifierModel, prices: s.prices, pageTokens: s.pass.maxPageTokens, allowed: r.allowed, maxInputTokens: PRICE_STEP_TOKENS,
       maxTokens: maxOutputTokensFor(s.pass.verifierModel, s.maxOutputTokens) }, c, findings, needsSecondCheck)
-  return { findings, spend: addSpend(ex.spend, verify), dropped: dropped + (all.length - findings.length), klass: item.kind === 'classify' && !incomplete ? classOf(findings, c) : null, incomplete, ignored: ex.value.ignored, asked: r.keys }
+  // compare-suits-1: the pages this check read — kind from the model, fetched or not from the API.
+  const pages = pagesCheckedFrom(ex.contents, ex.value.pages_checked, ex.value.help_centre, deps.now().toISOString())
+  return { findings, spend: addSpend(ex.spend, verify), dropped: dropped + (all.length - findings.length), klass: item.kind === 'classify' && !incomplete ? classOf(findings, c) : null, incomplete, ignored: ex.value.ignored, asked: r.keys, pages }
 }
 
 /** pass_state after an item: the classification, or the country done. */
@@ -264,7 +270,7 @@ async function writeItem(deps: CheckerDeps, item: PassItem<CompetitorForCheck>, 
   item.row.passState = next
   await deps.store.setSchedule(item.row.id, { pass_state: next as Record<string, unknown> })
   // competitor-features-2: the features it asked about start their tier's interval again.
-  if (item.kind === 'check' && out.asked.length) await deps.store.markFeaturesChecked?.(item.row.id, item.country, out.asked, deps.now().toISOString().slice(0, 10))
+  if (item.kind === 'check' && out.asked.length) await deps.store.markFeaturesChecked?.(item.row.id, item.country, out.asked, deps.now().toISOString().slice(0, 10), out.pages)
 }
 
 /** The batch's results: each item read from its result (continued one by one only if it needs another turn); an errored,

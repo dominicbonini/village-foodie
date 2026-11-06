@@ -6366,6 +6366,108 @@
       "description": "Vergelijk wat je online bestellingen je nu kosten met een jaar HatchGrab — een schatting in een minuut."
     }
   },
+  "comparisonSuits": {
+    "title": "Welk systeem past bij jouw foodtruck?",
+    "checked": "Gecontroleerd op {date}",
+    "evidence": "Bronnen",
+    "adminPreview": "Adminvoorbeeld — niet geverifieerd",
+    "ours": {
+      "fromPlan": "{name} (vanaf {plan})"
+    },
+    "q": {
+      "preorder": "Met welk bestelsysteem kunnen mijn klanten vooraf bestellen en een afhaaltijd kiezen?",
+      "capacity": "Mijn foodtruck wordt op piekmomenten overspoeld — welk systeem beperkt het aantal bestellingen per tijdslot?",
+      "whatsapp": "Klanten vragen steeds waar ik sta — welk systeem beantwoordt hun vragen via WhatsApp?",
+      "social": "Welk systeem maakt de posts voor mijn standplaatsen van de week, zodat ik zelf geen afbeeldingen hoef te ontwerpen?",
+      "schedule": "Ik sta bijna elke dag ergens anders — welk systeem laat klanten zien waar ik sta en neemt bestellingen aan voor die standplaats?",
+      "priceLow": "Ik sta maar een paar dagen per maand — welk systeem is het goedkoopst?",
+      "priceHigh": "Ik sta op festivals en drukke evenementen — welk systeem is het goedkoopst?",
+      "commission": "Ik wil geen commissie betalen op elke bestelling — wat rekent elk product?",
+      "offline": "Wat gebeurt er met online bestellingen als mijn verbinding wegvalt?",
+      "strength": "Welk vergeleken product biedt ‘{feature}’?"
+    },
+    "does": {
+      "preorder": "{names} {count, plural, one {laat} other {laten}} klanten vooraf bestellen en een afhaaltijd kiezen.",
+      "capacity": "{names} {count, plural, one {beperkt} other {beperken}} hoeveel bestellingen elke afhaaltijd aanneemt, zodat de keuken niet overspoeld raakt.",
+      "whatsapp": "{names} {count, plural, one {beantwoordt} other {beantwoorden}} WhatsApp-berichten van klanten automatisch.",
+      "social": "{names} {count, plural, one {maakt} other {maken}} kant-en-klare afbeeldingen van de standplaatsen van de week om te posten.",
+      "schedule": "{names} {count, plural, one {laat} other {laten}} klanten elke dag zien waar de foodtruck staat en {count, plural, one {neemt} other {nemen}} bestellingen aan voor die standplaats."
+    },
+    "feat": {
+      "preorder": "afhaaltijden",
+      "capacity": "een limiet op bestellingen per tijdslot",
+      "whatsapp": "automatische WhatsApp-antwoorden",
+      "social": "afbeeldingen van de weekplanning",
+      "schedule": "een planning met wisselende standplaatsen",
+      "offlinePause": "Online bestellen gepauzeerd als de verbinding wegvalt"
+    },
+    "others": {
+      "noQuoted": "{names} {count, plural, one {biedt} other {bieden}} dit niet aan.",
+      "notListed": "{names} {count, plural, one {vermeldt {feature} niet op de eigen website} other {vermelden {feature} niet op hun websites}}.",
+      "doesntSay": "{count, plural, one {De website van {names} zegt er niets over} other {De websites van {names} zeggen er niets over}}.",
+      "noneLists": "Geen van de andere vergeleken producten vermeldt het, dus {names} {count, plural, one {is de meest geschikte optie} other {zijn de meest geschikte opties}} van de vergeleken producten."
+    },
+    "price": {
+      "lead": "Bij {orders, number} online bestellingen per maand {count, plural, one {heeft} other {hebben}} {names} de laagste maandelijkse softwarekosten van de vergeleken producten: {count, plural, one {} other {elk }}{amount} per maand.",
+      "includes": "Dit omvat het abonnement, de kosten die de foodtruck per bestelling betaalt, eventuele kosten voor extra bestellingen en eventuele opstartkosten verdeeld over 12 maanden; transactiekosten voor kaartbetalingen zijn niet inbegrepen.",
+      "flat": "{name} ({plan}, een vaste prijs zonder kosten per bestelling van {name})",
+      "planName": "{name} ({plan})"
+    },
+    "commission": {
+      "part": "{name}: {fee}",
+      "answer": "Wat elk product per bestelling rekent: {parts}."
+    },
+    "offline": {
+      "ours": "{name} kan online bestellen automatisch pauzeren als de foodtruck geen verbinding meer heeft, zodat klanten geen bestellingen plaatsen die de keuken niet ontvangt.",
+      "noQuoted": "{names} {count, plural, one {biedt} other {bieden}} niet de mogelijkheid om zonder verbinding te werken.",
+      "doesntSay": "{count, plural, one {De website van {names} zegt niet} other {De websites van {names} zeggen niet}} wat er gebeurt als de verbinding wegvalt."
+    },
+    "strength": {
+      "answer": "{names} {count, plural, one {zegt ‘{feature}’ te bieden} other {zeggen ‘{feature}’ te bieden}}; {us} niet.",
+      "answerSoon": "{names} {count, plural, one {zegt ‘{feature}’ te bieden} other {zeggen ‘{feature}’ te bieden}}; {us} nog niet."
+    },
+    "ev": {
+      "ours": {
+        "yes": "ja, volgens de eigen abonnementen van {us}",
+        "no": "nee, volgens de eigen abonnementen van {us}"
+      },
+      "state": {
+        "yes": "zegt dit te bieden",
+        "partial": "biedt een deel ervan",
+        "no_quoted": "zegt dit niet te bieden",
+        "no_unquoted": "nee (geen citaat opgeslagen)",
+        "not_listed": "niet vermeld op de website",
+        "not_mentioned": "de website zegt er niets over",
+        "unknown": "onbekend"
+      },
+      "row": "{tool} — {feature}: {answer}.",
+      "quote": "Citaat: ‘{quote}’.",
+      "pages": "Gecontroleerde pagina’s: {pages}.",
+      "pageRead": "{page}",
+      "pageNotRead": "{page} (kon niet worden gelezen)",
+      "page": {
+        "features": "functiepagina",
+        "pricing": "prijspagina",
+        "help": "helpcentrum",
+        "other": "andere pagina"
+      },
+      "help": {
+        "fetched": "Het helpcentrum is gelezen.",
+        "linked_not_fetched": "Er is een helpcentrum dat niet is gelezen.",
+        "none_found": "Er is geen helpcentrum gevonden."
+      },
+      "calc": {
+        "volume": "Berekend voor {orders, number} online bestellingen per maand van {order} per bestelling ({revenue} aan online verkoop).",
+        "line": "{name} ({plan}): abonnement {sub} + opstartkosten verdeeld over 12 maanden {setup} + kosten per bestelling {fees} + extra bestellingen {over} = {total} per maand.",
+        "excluded": "Transactiekosten voor kaartbetalingen en kosten die klanten betalen zijn voor geen enkel product meegerekend.",
+        "date": "Berekend op {date} op basis van de prijzen die op de website van elke aanbieder zijn gecontroleerd."
+      }
+    },
+    "method": {
+      "covers": "Het omvat maximaal vier alternatieven, gekozen op hun relevantie voor foodtrucks en de beschikbaarheid van controleerbare openbare informatie — niet elk product op de markt.",
+      "notListed": "‘Niet vermeld’ betekent dat we de functie-, prijs- en helppagina’s van het product hebben gecontroleerd en dat het er niet wordt genoemd, bij functies die bedrijven normaal gesproken aanprijzen. ‘Zegt er niets over’ betekent dat het in geen van beide richtingen is bevestigd."
+    }
+  },
   "outreach": {
     "optOut": {
       "missing": "Deze e-mail heeft geen afmeldregel en kan dus niet worden verstuurd. Gebruik ‘Afmelding invoegen’ om die toe te voegen.",

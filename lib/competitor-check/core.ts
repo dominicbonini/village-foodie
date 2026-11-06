@@ -85,6 +85,47 @@ export function fetchErrors(contents: readonly unknown[][]): { toolUseId: string
   return out
 }
 
+/** compare-suits-1 (6 November 2026): every web fetch the conversation made, by URL — fetched, or the API's error code. The URL of a
+ *  failed fetch is read from its server_tool_use block. The web fetch tool reports no HTTP status code, so none is recorded. */
+export function fetchAttempts(contents: readonly unknown[][]): { url: string; ok: boolean; status: string; fetchedAt: string | null }[] {
+  const urlOf = new Map<string, string>()
+  for (const content of contents) for (const b of content as { type?: string; id?: string; name?: string; input?: { url?: unknown } }[]) {
+    if (b?.type === 'server_tool_use' && b.name === 'web_fetch' && typeof b.input?.url === 'string') urlOf.set(String(b.id), b.input.url)
+  }
+  const out: { url: string; ok: boolean; status: string; fetchedAt: string | null }[] = []
+  for (const content of contents) for (const b of content as { type?: string; tool_use_id?: string; content?: { type?: string; url?: string; retrieved_at?: string; error_code?: string } }[]) {
+    if (b?.type !== 'web_fetch_tool_result' || !b.content) continue
+    const asked = urlOf.get(String(b.tool_use_id)) ?? ''
+    if (b.content.type === 'web_fetch_result') out.push({ url: String(b.content.url ?? asked), ok: true, status: 'fetched', fetchedAt: typeof b.content.retrieved_at === 'string' ? b.content.retrieved_at : null })
+    else if (b.content.type === 'web_fetch_tool_result_error') out.push({ url: asked, ok: false, status: String(b.content.error_code ?? 'error'), fetchedAt: null })
+  }
+  return out
+}
+/** A URL for matching only: host without "www.", path without a trailing slash, no query or fragment, lower case. */
+export function pageKey(url: string): string {
+  try { const u = new URL(url); return `${u.hostname.toLowerCase().replace(/^www\./, '')}${u.pathname.replace(/\/+$/, '').toLowerCase()}` } catch { return url.trim().toLowerCase() }
+}
+/** compare-suits-1: the pages a check read, for competitor_feature_checks.pages_checked. The KIND is the model's word for a page;
+ *  whether it FETCHED is the API's — a page the model names that the conversation never fetched is recorded as not fetched, and a
+ *  fetched page it did not name is 'other'. */
+export function pagesCheckedFrom(contents: readonly unknown[][], claimed: readonly { url: string; kind: string }[] | undefined,
+  helpCentre: string | null | undefined, at: string): { pages: { url: string; kind: 'features' | 'pricing' | 'help' | 'other'; ok: boolean; status: string; fetchedAt: string | null }[]; helpCentre: 'fetched' | 'linked_not_fetched' | 'none_found' | null; checkedAt: string } {
+  const kinds = ['features', 'pricing', 'help', 'other'] as const
+  const kindOf = new Map<string, (typeof kinds)[number]>()
+  for (const c of claimed ?? []) if ((kinds as readonly string[]).includes(c.kind) && !kindOf.has(pageKey(c.url))) kindOf.set(pageKey(c.url), c.kind as (typeof kinds)[number])
+  const pages: { url: string; kind: (typeof kinds)[number]; ok: boolean; status: string; fetchedAt: string | null }[] = []
+  const seen = new Set<string>()
+  for (const a of fetchAttempts(contents)) {
+    const k = pageKey(a.url)
+    const prev = pages.find(p => pageKey(p.url) === k)
+    if (prev) { if (a.ok && !prev.ok) Object.assign(prev, { ok: true, status: 'fetched', fetchedAt: a.fetchedAt }); continue }
+    pages.push({ ...a, kind: kindOf.get(k) ?? 'other' }); seen.add(k)
+  }
+  for (const c of claimed ?? []) { const k = pageKey(c.url); if (!seen.has(k) && kindOf.get(k) === c.kind) { pages.push({ url: c.url, kind: kindOf.get(k)!, ok: false, status: 'not_fetched', fetchedAt: null }); seen.add(k) } }
+  const help = helpCentre === 'fetched' || helpCentre === 'linked_not_fetched' || helpCentre === 'none_found' ? helpCentre : null
+  return { pages, helpCentre: help, checkedAt: at }
+}
+
 // ── cost ────────────────────────────────────────────────────────────────────────────────────────────────────────────
 export interface ModelPrice { input_per_mtok: number; output_per_mtok: number; cache_write_per_mtok?: number; cache_read_per_mtok?: number }
 export interface Prices { web_search_per_search: number; models: Record<string, ModelPrice>; source?: string; checked_on?: string }

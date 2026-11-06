@@ -58,6 +58,16 @@ export function countryTask(code: string, maxFetches: number): string {
 Never record a plan, price or feature of another country.`
 }
 
+/** compare-suits-1 (6 November 2026): which pages to read and how to report them — so a feature its site does not mention can be
+ *  shown as "not listed" only when the features and pricing pages (and the help centre, where one exists) were read in this check.
+ *  The pages count against the same fetch limit; the help centre is READ only when `fetchHelp` is on (competitor_check_settings.
+ *  pass_fetch_help, off by default) — otherwise it is only noted. */
+export function pagesTask(country: string | null, fetchHelp: boolean): string {
+  return `PAGES: among the pages you read, read this company's features page and its pricing page${country ? ` for ${country}` : ''}${fetchHelp ? ', and its help centre (help, support or FAQ pages) if it has one' : ' (do not read its help centre)'}. `
+    + 'In "pages_checked" list every page you read, each with its kind: "features" (what the product does), "pricing" (plans and prices), "help" (help centre, support or FAQ pages) or "other". '
+    + `In "help_centre" answer "fetched" if you read its help centre, "linked_not_fetched" if its pages link to a help centre ${fetchHelp ? 'that you did not read' : '(you were told not to read it)'}, or "none_found" if you saw no help centre. Give the same two answers in every record_findings call.`
+}
+
 /** competitor-check-5: how many features one record_findings call carries — so no single answer has to hold everything
  *  (the 30 Oct deep check of 45 features was cut off at max_tokens). */
 export const FEATURE_GROUP_SIZE = 12
@@ -82,7 +92,7 @@ export function findingGroups(features: readonly Pick<CheckFeature, 'key'>[], o:
 
 /** The user message: the mode's task, today's date, the URLs (fetchable because they are here) and the stored data. */
 export function extractorMessage(c: StoredCompetitorForPrompt, mode: 'deep' | 'routine', today: string, country?: { code: string; maxFetches: number }, features: readonly CheckFeature[] = [],
-  resume?: { pricesDone: boolean; doneFeatures: number }): string {
+  resume?: { pricesDone: boolean; doneFeatures: number }, fetchHelp = false): string {
   if (country) c = { ...c, plans: c.plans.filter(p => p.country_code === country.code) }
   const deepTask = mode === 'deep'
     ? `FULL DEEP CHECK. Read the pricing page(s), the features page(s), the food-truck page if there is one, the terms (for the minimum term) and the payment page. Return a finding for EVERY feature in the list and every stored plan — changed or unchanged — plus any new plans, plans that have gone, and new URLs worth reading next time.${c.lifecycle === 'candidate' ? ' This company is a CANDIDATE: also record one "classification" finding (what it sells) with its quote.' : ''}`
@@ -97,6 +107,7 @@ export function extractorMessage(c: StoredCompetitorForPrompt, mode: 'deep' | 'r
   return [
     ...(resumed ? [resumed] : []),
     `${task}`,
+    pagesTask(country?.code ?? null, fetchHelp),
     `Record in ${groups.length} group${groups.length === 1 ? '' : 's'}, in this order — one record_findings call per group, each with only that group's findings ("more": true on every call except the last; a group with nothing to record still gets its call with an empty list):\n${groups.map((g, i) => `Group ${i + 1}. ${g}`).join('\n')}`,
     `Today is ${today}. Competitor: ${c.name}.`,
     `Pages to read (start here):\n${urls.map(u => `- ${u}`).join('\n') || '- (none stored: find the official website with one search)'}`,
@@ -117,10 +128,11 @@ export function passFeatureBlock(country: string, features: readonly CheckFeatur
     `Also: "term" (minimum contract) and "trial" (free trial) as feature findings, and every plan's price and fees.`].join('\n\n')
 }
 /** The competitor's part of a quick-pass message. */
-export function passCompetitorBlock(c: StoredCompetitorForPrompt, country: string, today: string, maxFetches: number, maxSearches: number): string {
+export function passCompetitorBlock(c: StoredCompetitorForPrompt, country: string, today: string, maxFetches: number, maxSearches: number, fetchHelp = false): string {
   const urls = c.check_urls.length ? c.check_urls : c.website ? [c.website] : []
   return [
     `Read at most ${maxFetches} page${maxFetches === 1 ? '' : 's'} (the pricing page first)${maxSearches ? ` and at most ${maxSearches} search of its own site` : ', no search'}. Record, for ${country}: if it does not sell to businesses there, one "availability" finding "not_in_country" and stop; otherwise every plan's price and fees as advertised (monthly_price, setup_fee, truck_fee, customer_fee, card_rate; new_plan / plan_gone), the features above (one "feature" finding each — "unchanged" when the stored answer still holds), "term" and "trial". Nothing else. Then call record_findings once, with "more": false.`,
+    pagesTask(country, fetchHelp),
     `Today is ${today}. Competitor: ${c.name}.`,
     `Pages to read (start here):\n${urls.map(u => `- ${u}`).join('\n') || '- (none stored: find the official website with one search)'}`,
     `Stored data (money in the currency's smallest unit, fees in basis points):\n${JSON.stringify({ website: c.website, features: c.features, plans: c.plans }, null, 1)}`,

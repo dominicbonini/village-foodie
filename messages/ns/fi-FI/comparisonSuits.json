@@ -1,0 +1,102 @@
+{
+  "title": "Mikä järjestelmä sopii ruokarekallesi?",
+  "checked": "Tarkistettu {date}",
+  "evidence": "Lähteet",
+  "adminPreview": "Ylläpidon esikatselu — ei vahvistettu",
+  "ours": {
+    "fromPlan": "{name} ({plan}-paketista alkaen)"
+  },
+  "q": {
+    "preorder": "Millä tilausjärjestelmällä asiakkaani voivat tilata etukäteen ja valita noutoajan?",
+    "capacity": "Ruokarekkani ruuhkautuu pahasti kiireisimpinä aikoina — mikä järjestelmä rajoittaa tilausten määrää kussakin aikaikkunassa?",
+    "whatsapp": "Asiakkaat kysyvät jatkuvasti, missä olen — mikä järjestelmä vastaa heille WhatsAppissa?",
+    "social": "Mikä järjestelmä tekee julkaisut viikon myyntipaikoistani, jotta minun ei tarvitse suunnitella kuvia itse?",
+    "schedule": "Myyn useimpina päivinä eri paikassa — mikä järjestelmä näyttää asiakkaille, missä olen, ja ottaa vastaan tilauksia kyseiseen paikkaan?",
+    "priceLow": "Myyn vain muutamana päivänä kuukaudessa — mikä järjestelmä on edullisin?",
+    "priceHigh": "Myyn festivaaleilla ja vilkkaissa tapahtumissa — mikä järjestelmä on edullisin?",
+    "commission": "En halua maksaa provisiota jokaisesta tilauksesta — paljonko kukin tuote veloittaa?",
+    "offline": "Mitä verkkotilauksille tapahtuu, jos yhteys katkeaa?",
+    "strength": "Mikä vertailluista tuotteista tarjoaa ominaisuuden ”{feature}”?"
+  },
+  "does": {
+    "preorder": "{names} {count, plural, one {antaa} other {antavat}} asiakkaiden tilata etukäteen ja valita noutoajan.",
+    "capacity": "{names} {count, plural, one {rajoittaa} other {rajoittavat}} sitä, montako tilausta kuhunkin noutoaikaan otetaan, jotta keittiö ei ruuhkaudu.",
+    "whatsapp": "{names} {count, plural, one {vastaa} other {vastaavat}} asiakkaiden WhatsApp-viesteihin automaattisesti.",
+    "social": "{names} {count, plural, one {tekee} other {tekevät}} viikon myyntipaikoista valmiit kuvat, jotka voi julkaista sellaisenaan.",
+    "schedule": "{names} {count, plural, one {näyttää} other {näyttävät}} asiakkaille, missä ruokarekka on kunakin päivänä, ja {count, plural, one {ottaa} other {ottavat}} vastaan tilauksia kyseiseen paikkaan."
+  },
+  "feat": {
+    "preorder": "noutoaikoja",
+    "capacity": "tilausmäärän rajoitusta aikaikkunaa kohden",
+    "whatsapp": "WhatsAppin automaattisia vastauksia",
+    "social": "viikkoaikataulun kuvia",
+    "schedule": "vaihtuvien myyntipaikkojen aikataulua",
+    "offlinePause": "Verkkotilausten keskeytys, kun yhteys katkeaa"
+  },
+  "others": {
+    "noQuoted": "{names} {count, plural, one {ei tarjoa} other {eivät tarjoa}} tätä.",
+    "notListed": "{names} {count, plural, one {ei mainitse {feature} verkkosivustollaan} other {eivät mainitse {feature} verkkosivustoillaan}}.",
+    "doesntSay": "{count, plural, one {{names} ei kerro asiasta verkkosivustollaan} other {{names} eivät kerro asiasta verkkosivustoillaan}}.",
+    "noneLists": "Mikään muista vertailluista tuotteista ei mainitse sitä, joten {names} {count, plural, one {sopii} other {sopivat}} vertailluista tuotteista parhaiten."
+  },
+  "price": {
+    "lead": "Kun verkkotilauksia on {orders, number} kuukaudessa, {names} {count, plural, one {on vertailluista tuotteista edullisin} other {ovat vertailluista tuotteista edullisimmat}} ohjelmiston kuukausikustannuksiltaan: {amount} kuukaudessa{count, plural, one {} other { kukin}}.",
+    "includes": "Summaan sisältyvät paketin hinta, ruokarekalta jokaisesta tilauksesta veloitettavat maksut, mahdollinen lisätilauksista veloitettava maksu ja mahdollinen avausmaksu jaettuna 12 kuukaudelle; korttimaksujen käsittelykulut eivät sisälly siihen.",
+    "flat": "{name} ({plan}, kiinteä hinta ilman tilauskohtaista maksua palvelulle {name})",
+    "planName": "{name} ({plan})"
+  },
+  "commission": {
+    "part": "{name}: {fee}",
+    "answer": "Mitä kukin tuote veloittaa tilauksesta: {parts}."
+  },
+  "offline": {
+    "ours": "{name} voi keskeyttää verkkotilaukset automaattisesti, kun ruokarekan yhteys katkeaa, jotta asiakkaat eivät voi tehdä tilauksia, joita keittiö ei saa.",
+    "noQuoted": "{names} {count, plural, one {ei tarjoa} other {eivät tarjoa}} toimintaa ilman yhteyttä.",
+    "doesntSay": "{count, plural, one {{names} ei kerro verkkosivustollaan} other {{names} eivät kerro verkkosivustoillaan}}, mitä tapahtuu, kun yhteys katkeaa."
+  },
+  "strength": {
+    "answer": "{names} {count, plural, one {kertoo tarjoavansa} other {kertovat tarjoavansa}} ominaisuuden ”{feature}”; {us} ei tarjoa.",
+    "answerSoon": "{names} {count, plural, one {kertoo tarjoavansa} other {kertovat tarjoavansa}} ominaisuuden ”{feature}”; {us} ei vielä tarjoa."
+  },
+  "ev": {
+    "ours": {
+      "yes": "kyllä, {us}-palvelun omien pakettien mukaan",
+      "no": "ei, {us}-palvelun omien pakettien mukaan"
+    },
+    "state": {
+      "yes": "kertoo tarjoavansa tämän",
+      "partial": "tarjoaa osan siitä",
+      "no_quoted": "kertoo, ettei tarjoa tätä",
+      "no_unquoted": "ei (lainausta ei tallennettu)",
+      "not_listed": "ei mainittu verkkosivustolla",
+      "not_mentioned": "verkkosivusto ei kerro",
+      "unknown": "ei tiedossa"
+    },
+    "row": "{tool} — {feature}: {answer}.",
+    "quote": "Lainaus: ”{quote}”.",
+    "pages": "Tarkistetut sivut: {pages}.",
+    "pageRead": "{page}",
+    "pageNotRead": "{page} (ei voitu lukea)",
+    "page": {
+      "features": "ominaisuussivu",
+      "pricing": "hinnastosivu",
+      "help": "ohjekeskus",
+      "other": "muu sivu"
+    },
+    "help": {
+      "fetched": "Sen ohjekeskus luettiin.",
+      "linked_not_fetched": "Sillä on ohjekeskus, jota ei luettu.",
+      "none_found": "Ohjekeskusta ei löytynyt."
+    },
+    "calc": {
+      "volume": "Laskettu, kun verkkotilauksia on {orders, number} kuukaudessa ja tilauksen arvo on {order} ({revenue} verkkomyyntiä).",
+      "line": "{name} ({plan}): paketin hinta {sub} + avausmaksu jaettuna 12 kuukaudelle {setup} + tilauskohtaiset maksut {fees} + lisätilaukset {over} = {total} kuukaudessa.",
+      "excluded": "Korttimaksujen käsittelykuluja ja asiakkaiden maksamia maksuja ei ole laskettu mukaan minkään tuotteen kohdalla.",
+      "date": "Laskettu {date} kunkin toimittajan verkkosivustolta tarkistettujen hintojen perusteella."
+    }
+  },
+  "method": {
+    "covers": "Vertailussa on enintään neljä vaihtoehtoa, jotka on valittu niiden ruokarekoille soveltuvuuden ja tarkistettavissa olevan julkisen tiedon saatavuuden perusteella — ei kaikkia markkinoilla olevia tuotteita.",
+    "notListed": "”Ei mainittu” tarkoittaa, että tarkistimme tuotteen ominaisuus-, hinnasto- ja ohjesivut eikä asiaa mainita niissä, kun kyse on ominaisuuksista, joita yritykset yleensä mainostavat. ”Ei kerrota” tarkoittaa, ettei asiaa ole vahvistettu suuntaan eikä toiseen."
+  }
+}

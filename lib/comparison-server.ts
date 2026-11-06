@@ -16,6 +16,7 @@ import { getPlanCatalog } from '@/lib/plans-server'
 import { localizePlans } from '@/lib/plan-names'
 import { translatorFor } from '@/lib/i18n/translator'
 import '@/lib/i18n/catalog/comparison'
+import '@/lib/i18n/catalog/comparisonSuits'   // compare-suits-1: "Which suits your food truck?" (every language base)
 import { COUNTRY_PATH_SEGMENTS, HATCHGRAB_ORIGIN, countryPagePath } from '@/lib/marketing-country'
 import { contactHref } from '@/lib/contact-topics'
 import { servicePricingStore } from '@/lib/admin/pricing-check-store'
@@ -23,7 +24,9 @@ import { competitorOut, planOut, entryOut } from '@/lib/admin/pricing-check-acti
 import { buildComparison, type ComparisonFlags, type ComparisonInput, type ComparisonT } from '@/lib/comparison'
 import { comparisonFlags, comparisonFlagsOf } from '@/lib/comparison-flags'
 export { comparisonFlags, comparisonFlagsOf, clearComparisonCache } from '@/lib/comparison-flags'
-import { valueOut, countryCharges, type ComparisonFeature, type FeatureValueRow } from '@/lib/comparison-features'
+import { valueOut, countryCharges, featureCheckOut, type ComparisonFeature, type FeatureValueRow, type FeatureCheckRow } from '@/lib/comparison-features'
+import { benchmarkOut } from '@/lib/admin/pricing-check-actions'
+import type { Benchmark } from '@/lib/pricing-check'
 import { featuresOrFile, FILE_FEATURES } from '@/lib/comparison-features-file'
 import { isCountedCompetitor, isPendingPos, type Competitor, type CompetitorPlan, type ComparisonEntry } from '@/lib/pricing-check'
 
@@ -37,6 +40,11 @@ export function comparisonT(locale: string): ComparisonT & { has(key: string): b
   return translatorFor(locale, 'comparison' as never) as unknown as ComparisonT & { has(key: string): boolean }
 }
 
+/** compare-suits-1: the "Which suits your food truck?" words in the page's language (comparisonSuits — every language base). */
+export function comparisonSuitsT(locale: string): (key: string, values?: Record<string, string | number>) => string {
+  return translatorFor(locale, 'comparisonSuits' as never) as unknown as (key: string, values?: Record<string, string | number>) => string
+}
+
 /** The address of a country's comparison page — '/de/vergleich/foodtruck-bestellsystem' — or null when the country has
  *  no address or its language has no comparison page (the namespace is German and English only: docs/i18n/scoped-namespaces.json). */
 export function comparisonPath(code: string, locale: string): string | null {
@@ -48,7 +56,8 @@ export function comparisonPath(code: string, locale: string): string | null {
 
 /** The comparison data: competitors, their plans and the country's entries. Never throws — a failed read is an empty
  *  page (HatchGrab alone), logged. */
-async function comparisonData(code: string): Promise<{ competitors: Competitor[]; plans: CompetitorPlan[]; entries: ComparisonEntry[]; features: ComparisonFeature[]; values: FeatureValueRow[] }> {
+async function comparisonData(code: string): Promise<{ competitors: Competitor[]; plans: CompetitorPlan[]; entries: ComparisonEntry[]; features: ComparisonFeature[]; values: FeatureValueRow[]
+  featureChecks: FeatureCheckRow[]; pendingFindings: { competitorId: string; featureKey: string; countryCode: string | null }[]; benchmarks: Benchmark[] }> {
   try {
     // comparison-features-1: the master list (the file's until the importer has seeded the table) and the answers.
     const [all, entries, featureRows, valueRows] = await Promise.all([servicePricingStore.listAll(), servicePricingStore.listEntries(),
@@ -59,7 +68,17 @@ async function comparisonData(code: string): Promise<{ competitors: Competitor[]
     const counted = new Set(all.competitors.map(competitorOut).filter(c => isCountedCompetitor(c) || isPendingPos(c)).map(c => c.id))
     const mine = entries.map(entryOut).filter(e => e.countryCode === code && counted.has(e.competitorId))
     const ids = new Set(mine.map(e => e.competitorId))
+    // compare-suits-1: the pages each feature's last check read, the feature findings waiting for review (never "not listed"),
+    // and the benchmarks the price answers use. Each read is tolerant: a failure is logged and the page goes on without it.
+    const [checkRows, pendingRows] = await Promise.all([
+      (servicePricingStore.featureChecks?.(code) ?? Promise.resolve([])).catch(e => { console.error('[comparison] feature checks:', e instanceof Error ? e.message : e); return [] }),
+      (servicePricingStore.pendingFeatureFindings?.(code) ?? Promise.resolve([])).catch(e => { console.error('[comparison] pending findings:', e instanceof Error ? e.message : e); return [] }),
+    ])
+    const featureChecks = checkRows.map(featureCheckOut).filter(c => ids.has(c.competitorId))
+    const pendingFindings = pendingRows.map(r => ({ competitorId: String(r.competitor_id), countryCode: typeof r.country_code === 'string' ? r.country_code : null,
+      featureKey: String(((r.found ?? {}) as Record<string, unknown>).feature_key ?? '') })).filter(p => p.featureKey && ids.has(p.competitorId))
     return {
+      featureChecks, pendingFindings, benchmarks: all.benchmarks.map(benchmarkOut).filter(b => b.supersededAt === null),
       competitors: all.competitors.map(competitorOut).filter(c => ids.has(c.id)),
       plans: all.plans.map(planOut).filter(p => ids.has(p.competitorId) && p.countryCode === code),
       entries: mine,
@@ -68,7 +87,7 @@ async function comparisonData(code: string): Promise<{ competitors: Competitor[]
     }
   } catch (e) {
     console.error('[comparison] could not read the comparison data:', e instanceof Error ? e.message : e)
-    return { competitors: [], plans: [], entries: [], features: [...FILE_FEATURES], values: [] }
+    return { competitors: [], plans: [], entries: [], features: [...FILE_FEATURES], values: [], featureChecks: [], pendingFindings: [], benchmarks: [] }
   }
 }
 

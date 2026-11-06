@@ -1,0 +1,53 @@
+{
+ "GB": {
+  "shown": [
+   "Aphelios",
+   "Beat The Queue",
+   "Grafterr",
+   "Hatches Up"
+  ],
+  "notListedCells": 0,
+  "notMentionedCells": 0,
+  "answers": [
+   "offline"
+  ],
+  "publicTools": [
+   "HatchGrab"
+  ]
+ },
+ "US": {
+  "shown": [
+   "Best Food Trucks (BFT)",
+   "Food Truck ONE (Food Truck OS)",
+   "Food Truck Pub",
+   "Goodfynd"
+  ],
+  "notListedCells": 0,
+  "notMentionedCells": 0,
+  "answers": [
+   "priceLow",
+   "priceHigh",
+   "offline"
+  ],
+  "publicTools": [
+   "HatchGrab"
+  ]
+ },
+ "DE": {
+  "shown": [
+   "gastro25",
+   "GastroDok",
+   "FoxiFood",
+   "Jamezz"
+  ],
+  "notListedCells": 0,
+  "notMentionedCells": 0,
+  "answers": [
+   "preorder",
+   "offline"
+  ],
+  "publicTools": [
+   "HatchGrab"
+  ]
+ }
+}

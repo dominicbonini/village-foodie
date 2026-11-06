@@ -63,6 +63,12 @@ export interface ComparisonFeature {
   /** Only for a feature added in Admin: its words per locale ({"en-GB": …, "de-DE": …}). Empty for a seeded one. */
   labels: Record<string, string>; explanations: Record<string, string>
   updatedAt: string | null
+  /** compare-suits-1 (20261075): never a "competitor strength" answer (card readers, tills, taking card payments). Admin's; the
+   *  importer never writes it. Absent before 20261075: false. */
+  neverCompetitorStrength?: boolean
+  /** compare-suits-1 (20261075): a feature a company would certainly advertise — "not mentioned" may read as "not listed", ONLY
+   *  when the check that last asked about it fetched the features and pricing pages (and the help centre where one exists). */
+  absenceMeansNo?: boolean
 }
 export interface FeatureValueRow {
   id: string; competitorId: string; featureKey: string; countryCode: string | null; value: FeatureValue
@@ -85,6 +91,7 @@ export function featureOut(r: Row): ComparisonFeature {
     hatchgrabSource: str(r.hatchgrab_source) ?? 'confirm', labels: words(r.labels), explanations: words(r.explanations),
     tier: (FEATURE_TIERS as readonly string[]).includes(String(r.tier)) ? r.tier as FeatureTier : null,
     updatedAt: str(r.updated_at),
+    neverCompetitorStrength: r.never_competitor_strength === true, absenceMeansNo: r.absence_means_no === true,
   }
 }
 export function valueOut(r: Row): FeatureValueRow {
@@ -206,4 +213,71 @@ export function featureWords(f: Pick<ComparisonFeature, 'key' | 'labels' | 'expl
   const own = (m: Record<string, string>) => m[locale] ?? m['en-GB'] ?? null
   if (Object.keys(f.labels).length) return { label: own(f.labels) ?? f.key, explain: own(f.explanations) ?? '' }
   return { label: t(`features.${f.key}.label`), explain: t(`features.${f.key}.explain`) }
+}
+
+// ── compare-suits-1 (6 November 2026; docs/compare-suits-1-report.md): the pages a check read, and what a cell may say ─────────
+/** The kind of page a check read, as the model reported it — kept only when that page really fetched in the conversation. */
+export const PAGE_KINDS = ['features', 'pricing', 'help', 'other'] as const
+export type PageKind = (typeof PAGE_KINDS)[number]
+/** Whether the check read the competitor's help centre: read it, saw one linked but did not read it, or saw none. */
+export const HELP_CENTRE = ['fetched', 'linked_not_fetched', 'none_found'] as const
+export type HelpCentre = (typeof HELP_CENTRE)[number]
+/** One page a check asked for. `ok`: it fetched (the API returned the page). `status`: 'fetched', or the API's error code
+ *  ("url_not_accessible" …) — the web fetch tool reports no HTTP status code, so none is stored. */
+export interface PageChecked { url: string; kind: PageKind; ok: boolean; status: string; fetchedAt: string | null }
+/** competitor_feature_checks.pages_checked (20261075): the pages of the check that last asked about the feature. */
+export interface PagesChecked { pages: PageChecked[]; helpCentre: HelpCentre | null; checkedAt: string }
+export interface FeatureCheckRow { competitorId: string; featureKey: string; countryCode: string | null; checkedOn: string | null; pages: PagesChecked | null }
+
+const PAGE_KIND_SET: readonly string[] = PAGE_KINDS
+const HELP_SET: readonly string[] = HELP_CENTRE
+/** A pages_checked value, read tolerantly: anything unreadable is null (never "complete"). */
+export function pagesCheckedOut(v: unknown): PagesChecked | null {
+  if (!v || typeof v !== 'object' || Array.isArray(v)) return null
+  const o = v as Row
+  if (!Array.isArray(o.pages)) return null
+  const pages: PageChecked[] = []
+  for (const x of o.pages as unknown[]) {
+    if (!x || typeof x !== 'object') continue
+    const p = x as Row
+    if (typeof p.url !== 'string' || !PAGE_KIND_SET.includes(String(p.kind))) continue
+    pages.push({ url: p.url, kind: p.kind as PageKind, ok: p.ok === true, status: typeof p.status === 'string' ? p.status : (p.ok === true ? 'fetched' : 'not_fetched'),
+      fetchedAt: typeof p.fetchedAt === 'string' ? p.fetchedAt : null })
+  }
+  return { pages, helpCentre: HELP_SET.includes(String(o.helpCentre)) ? o.helpCentre as HelpCentre : null, checkedAt: typeof o.checkedAt === 'string' ? o.checkedAt : '' }
+}
+export function featureCheckOut(r: Row): FeatureCheckRow {
+  const cc = str(r.country_code)
+  return { competitorId: String(r.competitor_id), featureKey: String(r.feature_key), countryCode: cc ? cc : null,
+    checkedOn: str(r.checked_on) ? String(r.checked_on).slice(0, 10) : null, pages: pagesCheckedOut(r.pages_checked) }
+}
+/** The check that last asked about a feature in a country: that country's own record, else the every-country one. */
+export function featureCheckOf(checks: readonly FeatureCheckRow[], competitorId: string, key: string, code: string | null): FeatureCheckRow | null {
+  const mine = checks.filter(c => c.competitorId === competitorId && c.featureKey === key)
+  return (code ? mine.find(c => c.countryCode === code) : undefined) ?? mine.find(c => c.countryCode === null) ?? null
+}
+/** 🔴 THE PAGES "NOT LISTED" NEEDS: the features page AND the pricing page fetched, AND the help centre fetched — or the check
+ *  saw none. A help centre linked but not read (the help fetch is off), a failed fetch or a page not asked for: not complete. */
+export function pagesComplete(p: PagesChecked | null | undefined): boolean {
+  if (!p) return false
+  const got = (k: PageKind) => p.pages.some(x => x.kind === k && x.ok)
+  if (!got('features') || !got('pricing')) return false
+  return p.helpCentre === 'none_found' || (p.helpCentre === 'fetched' && got('help'))
+}
+
+/** What a competitor's cell may say. 'no_quoted': a "no" with its quote and page; 'no_unquoted': a "no" without them (an older
+ *  answer — shown as No in the table, but never used as a known "no" in the "Which suits" answers); 'not_listed': the raw answer
+ *  is not_mentioned (kept as it is), the feature is absence_means_no and that check read every page it needs. */
+export type CellState = 'yes' | 'partial' | 'no_quoted' | 'no_unquoted' | 'not_listed' | 'not_mentioned' | 'unknown'
+export const isQuotedNo = (v: Pick<FeatureValueRow, 'value' | 'quote' | 'sourceUrl'>) => v.value === 'no' && !!v.quote?.trim() && !!v.sourceUrl?.trim()
+/** A competitor's answer, as a state. `pending`: a newer check proposed a different answer that is not reviewed yet — never "not listed". */
+export function cellState(v: FeatureValueRow | null, f: Pick<ComparisonFeature, 'absenceMeansNo'>, check: FeatureCheckRow | null, pending = false): CellState {
+  if (!v) return 'unknown'
+  switch (v.value) {
+    case 'yes': return 'yes'
+    case 'partial': return 'partial'
+    case 'no': return isQuotedNo(v) ? 'no_quoted' : 'no_unquoted'
+    case 'not_mentioned': return f.absenceMeansNo === true && !pending && pagesComplete(check?.pages) ? 'not_listed' : 'not_mentioned'
+    default: return 'unknown'
+  }
 }

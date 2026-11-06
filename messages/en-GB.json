@@ -6536,7 +6536,10 @@
         "impressum": "Impressum decision recorded"
       },
       "unverified": "not verified · hidden from the public",
-      "label": "Admin"
+      "label": "Admin",
+      "notShown": "Not on the page (at most four are shown): {names}.",
+      "reasonHidden": "{name} (hidden)",
+      "reasonBeyond": "{name} (beyond the four)"
     },
     "footer": {
       "heading": "Compare",
@@ -6565,7 +6568,8 @@
       "perMonth": "{price} a month",
       "notInCountry": "not in {country}",
       "flagOff": "flag still off; shown once the stores list it",
-      "notApplicable": "does not apply to a market"
+      "notApplicable": "does not apply to a market",
+      "not_listed": "Not listed"
     },
     "explained": {
       "title": "What the features mean"
@@ -6792,6 +6796,108 @@
         "label": "Free trial",
         "explain": "Time to use the system for free before paying."
       }
+    }
+  },
+  "comparisonSuits": {
+    "title": "Which suits your food truck?",
+    "checked": "Checked {date}",
+    "evidence": "Evidence",
+    "adminPreview": "Admin preview — unverified",
+    "ours": {
+      "fromPlan": "{name} (from {plan})"
+    },
+    "q": {
+      "preorder": "Which ordering system lets my customers order ahead and pick a collection time?",
+      "capacity": "My truck gets swamped at peak times — which system limits the orders for each time slot?",
+      "whatsapp": "Customers keep asking where I am — which system answers them on WhatsApp?",
+      "social": "Which system makes the posts for my weekly locations, so I don’t have to design graphics?",
+      "schedule": "I trade somewhere different most days — which system shows customers where I am and takes orders for that stop?",
+      "priceLow": "I only trade a few days a month — which system costs the least?",
+      "priceHigh": "I do festivals and busy events — which system costs the least?",
+      "commission": "I don’t want to pay commission on every order — what does each product charge?",
+      "offline": "What happens to online orders if my signal drops?",
+      "strength": "Which product compared offers “{feature}”?"
+    },
+    "does": {
+      "preorder": "{names} {count, plural, one {lets} other {let}} customers order ahead and choose a collection time.",
+      "capacity": "{names} {count, plural, one {limits} other {limit}} how many orders each collection time takes, so the kitchen isn’t swamped.",
+      "whatsapp": "{names} {count, plural, one {answers} other {answer}} customers’ WhatsApp messages automatically.",
+      "social": "{names} {count, plural, one {makes} other {make}} ready-to-post graphics of the week’s locations.",
+      "schedule": "{names} {count, plural, one {shows} other {show}} customers where the truck is each day and {count, plural, one {takes} other {take}} orders for that stop."
+    },
+    "feat": {
+      "preorder": "collection times",
+      "capacity": "a limit on orders per time slot",
+      "whatsapp": "WhatsApp auto-replies",
+      "social": "graphics of the weekly schedule",
+      "schedule": "a schedule of changing locations",
+      "offlinePause": "Online ordering paused when the signal drops"
+    },
+    "others": {
+      "noQuoted": "{names} {count, plural, one {doesn’t} other {don’t}} offer this.",
+      "notListed": "{names} {count, plural, one {doesn’t list {feature} on its website} other {don’t list {feature} on their websites}}.",
+      "doesntSay": "{count, plural, one {{names}’s website doesn’t say} other {The websites of {names} don’t say}}.",
+      "noneLists": "None of the other products compared lists it, so {names} {count, plural, one {is} other {are}} the best fit among the products compared."
+    },
+    "price": {
+      "lead": "At {orders, number} online orders a month, {names} {count, plural, one {has} other {have}} the lowest monthly software cost among the products compared: {amount} a month{count, plural, one {} other { each}}.",
+      "includes": "This includes the subscription, the fees charged to the truck on each order, any charge for extra orders and any set-up fee spread over 12 months; card-processing fees are not included.",
+      "flat": "{name} ({plan}, a flat price with no per-order fee from {name})",
+      "planName": "{name} ({plan})"
+    },
+    "commission": {
+      "part": "{name}: {fee}",
+      "answer": "What each product charges on an order: {parts}."
+    },
+    "offline": {
+      "ours": "{name} can pause online ordering automatically when the truck loses signal, so customers can’t place orders the kitchen won’t receive.",
+      "noQuoted": "{names} {count, plural, one {doesn’t} other {don’t}} offer working without a connection.",
+      "doesntSay": "{count, plural, one {{names}’s website doesn’t say} other {The websites of {names} don’t say}} what happens when the signal drops."
+    },
+    "strength": {
+      "answer": "{names} {count, plural, one {says it offers} other {say they offer}} “{feature}”; {us} doesn’t.",
+      "answerSoon": "{names} {count, plural, one {says it offers} other {say they offer}} “{feature}”; {us} doesn’t yet."
+    },
+    "ev": {
+      "ours": {
+        "yes": "yes, from {us}’s own plans",
+        "no": "no, from {us}’s own plans"
+      },
+      "state": {
+        "yes": "says it offers this",
+        "partial": "offers part of it",
+        "no_quoted": "says it doesn’t offer this",
+        "no_unquoted": "no (no quote stored)",
+        "not_listed": "not listed on its website",
+        "not_mentioned": "its website doesn’t say",
+        "unknown": "not known"
+      },
+      "row": "{tool} — {feature}: {answer}.",
+      "quote": "Quote: “{quote}”.",
+      "pages": "Pages checked: {pages}.",
+      "pageRead": "{page}",
+      "pageNotRead": "{page} (could not be read)",
+      "page": {
+        "features": "features page",
+        "pricing": "pricing page",
+        "help": "help centre",
+        "other": "other page"
+      },
+      "help": {
+        "fetched": "Its help centre was read.",
+        "linked_not_fetched": "It has a help centre that was not read.",
+        "none_found": "No help centre was found."
+      },
+      "calc": {
+        "volume": "Worked out for {orders, number} online orders a month at {order} an order ({revenue} in online sales).",
+        "line": "{name} ({plan}): subscription {sub} + set-up fee spread over 12 months {setup} + fees per order {fees} + extra orders {over} = {total} a month.",
+        "excluded": "Card-processing fees and fees paid by customers are not included for any product.",
+        "date": "Worked out on {date} from the prices checked on each vendor’s website."
+      }
+    },
+    "method": {
+      "covers": "It covers up to four alternatives chosen for their relevance to food trucks and the availability of verifiable public information — not every product on the market.",
+      "notListed": "“Not listed” means we checked the product’s features, pricing and help pages and it isn’t mentioned, for features companies normally advertise. “Doesn’t say” means not confirmed either way."
     }
   },
   "demoLinkEmail": {

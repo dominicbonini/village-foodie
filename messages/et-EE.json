@@ -6366,6 +6366,108 @@
       "description": "Võrdle oma veebitellimuste praeguseid kulusid aastaga HatchGrabis — hinnang minutiga."
     }
   },
+  "comparisonSuits": {
+    "title": "Milline süsteem sobib sinu toiduautole?",
+    "checked": "Kontrollitud {date}",
+    "evidence": "Tõendid",
+    "adminPreview": "Admini eelvaade — kinnitamata",
+    "ours": {
+      "fromPlan": "{name} (alates paketist {plan})"
+    },
+    "q": {
+      "preorder": "Milline tellimissüsteem laseb mu klientidel ette tellida ja kättesaamise aja valida?",
+      "capacity": "Tipptundidel ujutatakse mu toiduauto tellimustega üle — milline süsteem piirab tellimuste arvu igas ajavahemikus?",
+      "whatsapp": "Kliendid küsivad pidevalt, kus ma olen — milline süsteem vastab neile WhatsAppis?",
+      "social": "Milline süsteem teeb postitused mu nädala asukohtadega, et ma ei peaks ise pilte kujundama?",
+      "schedule": "Olen enamikul päevadel eri kohas — milline süsteem näitab klientidele, kus ma olen, ja võtab selle peatuse jaoks tellimusi vastu?",
+      "priceLow": "Müün ainult paar päeva kuus — milline süsteem on kõige odavam?",
+      "priceHigh": "Käin festivalidel ja rahvarohketel üritustel — milline süsteem on kõige odavam?",
+      "commission": "Ma ei taha igalt tellimuselt vahendustasu maksta — kui palju iga toode võtab?",
+      "offline": "Mis juhtub veebitellimustega, kui levi kaob?",
+      "strength": "Milline võrreldud toodetest pakub funktsiooni „{feature}“?"
+    },
+    "does": {
+      "preorder": "{names} {count, plural, one {laseb} other {lasevad}} klientidel ette tellida ja kättesaamise aja valida.",
+      "capacity": "{names} {count, plural, one {piirab} other {piiravad}}, mitu tellimust iga kättesaamise aja kohta vastu võetakse, et köök üle koormatud ei oleks.",
+      "whatsapp": "{names} {count, plural, one {vastab} other {vastavad}} klientide WhatsAppi sõnumitele automaatselt.",
+      "social": "{names} {count, plural, one {teeb} other {teevad}} nädala asukohtadest postitamiseks valmis pildid.",
+      "schedule": "{names} {count, plural, one {näitab} other {näitavad}} klientidele, kus toiduauto igal päeval on, ja {count, plural, one {võtab} other {võtavad}} selle peatuse jaoks tellimusi vastu."
+    },
+    "feat": {
+      "preorder": "kättesaamise aegu",
+      "capacity": "tellimuste arvu piirangut ajavahemiku kohta",
+      "whatsapp": "WhatsAppi automaatvastuseid",
+      "social": "nädala ajakava pilte",
+      "schedule": "vahetuvate asukohtade ajakava",
+      "offlinePause": "Veebitellimuse peatamine, kui levi kaob"
+    },
+    "others": {
+      "noQuoted": "{names} {count, plural, one {ei paku} other {ei paku}} seda.",
+      "notListed": "{names} {count, plural, one {ei maini {feature} oma veebisaidil} other {ei maini {feature} oma veebisaitidel}}.",
+      "doesntSay": "{count, plural, one {Toote {names} veebisaidil pole seda öeldud} other {Toodete {names} veebisaitidel pole seda öeldud}}.",
+      "noneLists": "Ükski teine võrreldud toode seda ei maini, seega {count, plural, one {sobib {names}} other {sobivad {names}}} võrreldud toodetest kõige paremini."
+    },
+    "price": {
+      "lead": "{orders, number} veebitellimuse korral kuus on {count, plural, one {tootel {names}} other {toodetel {names}}} võrreldud toodetest madalaim igakuine tarkvarakulu: {amount} kuus{count, plural, one {} other { igaühel}}.",
+      "includes": "See sisaldab paketi kuutasu, toiduautolt iga tellimuse eest võetavaid tasusid, võimalikku tasu lisatellimuste eest ja võimalikku liitumistasu, mis on jaotatud 12 kuule; kaardimakse tasud ei ole hinnas.",
+      "flat": "{name} ({plan}, kindel hind ilma {name} tellimusepõhise tasuta)",
+      "planName": "{name} ({plan})"
+    },
+    "commission": {
+      "part": "{name}: {fee}",
+      "answer": "Kui palju iga toode tellimuselt võtab: {parts}."
+    },
+    "offline": {
+      "ours": "{name} oskab veebitellimuse automaatselt peatada, kui toiduautol levi kaob, et kliendid ei saaks esitada tellimusi, mida köök kätte ei saa.",
+      "noQuoted": "{names} {count, plural, one {ei paku} other {ei paku}} töötamist ilma ühenduseta.",
+      "doesntSay": "{count, plural, one {Toote {names} veebisaidil pole öeldud} other {Toodete {names} veebisaitidel pole öeldud}}, mis juhtub, kui levi kaob."
+    },
+    "strength": {
+      "answer": "{names} {count, plural, one {ütleb, et pakub} other {ütlevad, et pakuvad}} funktsiooni „{feature}“; {us} seda ei paku.",
+      "answerSoon": "{names} {count, plural, one {ütleb, et pakub} other {ütlevad, et pakuvad}} funktsiooni „{feature}“; {us} seda veel ei paku."
+    },
+    "ev": {
+      "ours": {
+        "yes": "jah, teenuse {us} enda pakettide põhjal",
+        "no": "ei, teenuse {us} enda pakettide põhjal"
+      },
+      "state": {
+        "yes": "ütleb, et pakub seda",
+        "partial": "pakub osaliselt",
+        "no_quoted": "ütleb, et ei paku seda",
+        "no_unquoted": "ei (tsitaati pole salvestatud)",
+        "not_listed": "veebisaidil pole mainitud",
+        "not_mentioned": "veebisaidil pole öeldud",
+        "unknown": "teadmata"
+      },
+      "row": "{tool} — {feature}: {answer}.",
+      "quote": "Tsitaat: „{quote}“.",
+      "pages": "Kontrollitud lehed: {pages}.",
+      "pageRead": "{page}",
+      "pageNotRead": "{page} (ei õnnestunud lugeda)",
+      "page": {
+        "features": "funktsioonide leht",
+        "pricing": "hinnaleht",
+        "help": "abikeskus",
+        "other": "muu leht"
+      },
+      "help": {
+        "fetched": "Selle abikeskus loeti läbi.",
+        "linked_not_fetched": "Sellel on abikeskus, mida ei loetud.",
+        "none_found": "Abikeskust ei leitud."
+      },
+      "calc": {
+        "volume": "Arvutatud {orders, number} veebitellimuse kohta kuus, tellimuse väärtusega {order} ({revenue} veebimüüki).",
+        "line": "{name} ({plan}): paketi kuutasu {sub} + 12 kuule jaotatud liitumistasu {setup} + tellimusepõhised tasud {fees} + lisatellimused {over} = {total} kuus.",
+        "excluded": "Kaardimakse tasusid ja klientide makstavaid tasusid ei ole ühegi toote puhul arvestatud.",
+        "date": "Arvutatud {date} iga teenusepakkuja veebisaidilt kontrollitud hindade põhjal."
+      }
+    },
+    "method": {
+      "covers": "Võrdlus hõlmab kuni nelja alternatiivi, mis on valitud nende toiduautodele sobivuse ja kontrollitava avaliku teabe olemasolu järgi — mitte kõiki turul olevaid tooteid.",
+      "notListed": "„Pole mainitud“ tähendab, et kontrollisime toote funktsioonide, hinna- ja abilehti ning seda seal ei mainita, kui tegu on funktsioonidega, mida ettevõtted tavaliselt reklaamivad. „Pole öeldud“ tähendab, et seda pole kinnitatud ei ühes ega teises suunas."
+    }
+  },
   "outreach": {
     "optOut": {
       "missing": "Selles e-kirjas pole loobumisrida, seega ei saa seda saata. Lisa see nupuga „Insert opt-out“.",

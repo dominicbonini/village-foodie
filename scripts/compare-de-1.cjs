@@ -229,7 +229,11 @@ const { A, B, C, PA, PB, PC, comp, plan, entry } = F
     t('.md: the header cells carry the group ("Testkasse P (Kassensystem)", "Testkasse R (Kasse mit Online-Shop)")', /\| Testkasse P \(Kassensystem\) \|/.test(md) && /Testkasse R \(Kasse mit Online-Shop\)/.test(md) && /HatchGrab \(Bestellsystem für Foodtrucks\)/.test(md), md.split('\n').find(l => /HatchGrab/.test(l) && l.startsWith('|')))
     t('.json: each tool has its group', js.tools.find(x => x.name === 'Testkasse P').group === 'Kassensystem' && js.tools.find(x => x.name === 'Testkasse R').group === 'Kasse mit Online-Shop' && js.tools.find(x => x.name === 'HatchGrab').group === 'Bestellsystem für Foodtrucks', js.tools)
     t('the unverified, still-candidate POS player (Q) is nowhere public — not the page, the .md or the .json', !/Testkasse Q/.test(pub.html) && !/Testkasse Q/.test(md) && !JSON.stringify(js).includes('Testkasse Q'))
-    t('…an admin sees it, badged, with its group', /data-tool="Testkasse Q"/.test(adm.html) && groupOf(adm.html, 'Testkasse Q') === 'Kassensystem')
+    // ⚠️ RE-PINNED (compare-suits-1, 6 November 2026): at most FOUR competitors are shown (lib/comparison-selection.ts) — the admin view
+    // too. An admin still sees Q: in the table, badged, with its group, when the rule puts it among the four; otherwise named in the
+    // banner's "Nicht auf der Seite" line.
+    t('…an admin sees it: badged with its group among the four, or named in the banner as not shown', (/data-tool="Testkasse Q"/.test(adm.html) && groupOf(adm.html, 'Testkasse Q') === 'Kassensystem')
+      || /data-not-shown[^>]*>[^<]*Testkasse Q \(nach den ersten vier\)/.test(adm.html))
     const card = html => text((/<div class="cmp-fit">[\s\S]*?<\/section>/.exec(html) || [''])[0])
     t('the tills card names the verified POS players in this country and says they are in the table — no fixed example names (SumUp, orderbird …)',
       /Testkasse P und Testkasse R stehen auch in der Tabelle oben/.test(card(pub.html)) && !/orderbird|ready2order|SumUp|Zettle/.test(card(pub.html)), card(pub.html))

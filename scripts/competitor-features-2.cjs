@@ -286,10 +286,14 @@ const text = html => dec(String(html).replace(/<script[\s\S]*?<\/script>/g, ' ')
     t('Testanbieter A\'s WhatsApp cell: "Auf der Website nicht erwähnt" — value not_mentioned, its own neutral class, not "Nein"',
       waCells[1] && waCells[1].value === 'not_mentioned' && waCells[1].text.startsWith('Auf der Website nicht erwähnt') && /cmp-tri cmp-tri-not_mentioned/.test(wa) && !/^Nein/.test(waCells[1].text), waCells)
     t('…and the stylesheet gives it the neutral grey of "Nicht angegeben", never the red of Nein', /\.hg-landing \.cmp-tri-unknown, \.hg-landing \.cmp-tri-not_mentioned \{ color: var\(--ink-soft\); \}/.test(read('app/[country]/[section]/[slug]/comparison.css')))
-    const mk = waCells[waCells.length - 1]
+    // ⚠️ RE-PINNED (compare-suits-1, 6 November 2026): the columns are in the four-cap's order now (lib/comparison-selection.ts), so a
+    // competitor's cell is found by its column header, not by position.
+    const tools = [...html.matchAll(/<th scope="col"[^>]*data-tool="([^"]+)"/g)].map(m => m[1])
+    const cellOf = (cells, name) => cells[tools.indexOf(name)]
+    const mk = cellOf(waCells, 'Testmarkt M')
     t('the market\'s WhatsApp cell (stored "no") says it does not apply — "gilt nicht für einen Markt", not Nein', mk && mk.value === 'unknown' && mk.text.startsWith('gilt nicht für einen Markt'), waCells)
     const price = cellsOf(row('monthly'))
-    t('…its price rows still show its plan (the commercial features apply to a market)', price.length && /29/.test(price[price.length - 1].text), price)
+    t('…its price rows still show its plan (the commercial features apply to a market)', price.length && /29/.test(cellOf(price, 'Testmarkt M')?.text ?? ''), price)
     const twin = JSON.parse((await cmp.twin('json', { status: 'admin', admin: true, query: 'view=admin', tables })).body)
     t('the .json twin carries the machine value not_mentioned for that cell', JSON.stringify(twin).includes('"not_mentioned"'))
     const notifyRow = row('notify')
@@ -336,7 +340,7 @@ const text = html => dec(String(html).replace(/<script[\s\S]*?<\/script>/g, ' ')
     t('competitor_feature_checks: RLS on, no access for anon or authenticated (the service role only)', /alter table public\.competitor_feature_checks enable row level security/.test(sql) && /revoke all on public\.competitor_feature_checks from anon, authenticated, public/.test(sql))
     t('no row of any existing table is updated or deleted', !/^\s*(update|delete)\b/im.test(sql))
     const st = read('lib/competitor-check/store-supabase.ts')
-    t('the store: markFeaturesChecked upserts competitor_feature_checks only (35.an-3); a missing table is tolerated', /async markFeaturesChecked[\s\S]{0,400}from\('competitor_feature_checks'\)[\s\S]{0,300}\.upsert\(/.test(st) && /record the features checked/.test(st))
+    t('the store: markFeaturesChecked upserts competitor_feature_checks only (35.an-3); a missing table is tolerated', /async markFeaturesChecked[\s\S]{0,1200}from\('competitor_feature_checks'\)[\s\S]{0,300}\.upsert\(/.test(st)   /* ⚠️ RE-PINNED (compare-suits-1): the rows now also carry pages_checked, built before the upsert */ && /record the features checked/.test(st))
     t('…reads the tier with a fallback when the column is missing, and the checks table paged, tolerating its absence', /missingColumn\(t\.error\) \? await db\.from\('comparison_features'\)\.select\(cols\)/.test(st) && /from\('competitor_feature_checks'\)\.select\([\s\S]{0,200}range\(from, from \+ 999\)/.test(st))
     const imp = read('lib/data-import/store-supabase.ts')
     t('the importer\'s store says to run 20261062 first when the tier column is missing (nothing written)', /20261062/.test(imp))

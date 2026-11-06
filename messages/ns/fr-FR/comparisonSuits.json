@@ -1,0 +1,102 @@
+{
+  "title": "Quelle solution convient à votre food truck ?",
+  "checked": "Vérifié le {date}",
+  "evidence": "Sources",
+  "adminPreview": "Aperçu admin — non vérifié",
+  "ours": {
+    "fromPlan": "{name} (à partir de l’offre {plan})"
+  },
+  "q": {
+    "preorder": "Quel logiciel de commande permet à mes clients de commander à l’avance et de choisir une heure de retrait ?",
+    "capacity": "Mon food truck est débordé aux heures de pointe — quel logiciel limite le nombre de commandes par créneau ?",
+    "whatsapp": "Mes clients me demandent sans arrêt où je suis — quel logiciel leur répond sur WhatsApp ?",
+    "social": "Quel logiciel crée les publications de mes emplacements de la semaine, pour que je n’aie pas à faire de visuels ?",
+    "schedule": "Je change d’emplacement presque tous les jours — quel logiciel montre à mes clients où je suis et prend les commandes pour cet emplacement ?",
+    "priceLow": "Je ne travaille que quelques jours par mois — quel logiciel coûte le moins cher ?",
+    "priceHigh": "Je fais des festivals et des événements très fréquentés — quel logiciel coûte le moins cher ?",
+    "commission": "Je ne veux pas payer de commission sur chaque commande — que facture chaque solution ?",
+    "offline": "Que deviennent les commandes en ligne si je perds le réseau ?",
+    "strength": "Quelle solution comparée propose « {feature} » ?"
+  },
+  "does": {
+    "preorder": "{names} {count, plural, one {permet} other {permettent}} aux clients de commander à l’avance et de choisir une heure de retrait.",
+    "capacity": "{names} {count, plural, one {limite} other {limitent}} le nombre de commandes acceptées pour chaque heure de retrait, pour que la cuisine ne soit pas débordée.",
+    "whatsapp": "{names} {count, plural, one {répond} other {répondent}} automatiquement aux messages WhatsApp des clients.",
+    "social": "{names} {count, plural, one {crée} other {créent}} des visuels prêts à publier avec les emplacements de la semaine.",
+    "schedule": "{names} {count, plural, one {montre} other {montrent}} aux clients où se trouve le food truck chaque jour et {count, plural, one {prend} other {prennent}} les commandes pour cet emplacement."
+  },
+  "feat": {
+    "preorder": "les heures de retrait",
+    "capacity": "une limite de commandes par créneau",
+    "whatsapp": "les réponses automatiques WhatsApp",
+    "social": "des visuels du planning de la semaine",
+    "schedule": "un planning d’emplacements variables",
+    "offlinePause": "Commande en ligne mise en pause en cas de perte de réseau"
+  },
+  "others": {
+    "noQuoted": "{names} ne {count, plural, one {propose} other {proposent}} pas cette fonctionnalité.",
+    "notListed": "{names} {count, plural, one {n’indique pas {feature} sur son site web} other {n’indiquent pas {feature} sur leurs sites web}}.",
+    "doesntSay": "{count, plural, one {Le site web de {names} ne le précise pas} other {Les sites web de {names} ne le précisent pas}}.",
+    "noneLists": "Aucun des autres produits comparés ne l’indique, donc {names} {count, plural, one {est la solution la mieux adaptée} other {sont les solutions les mieux adaptées}} parmi les produits comparés."
+  },
+  "price": {
+    "lead": "Pour {orders, number} commandes en ligne par mois, {names} {count, plural, one {a} other {ont}} le coût logiciel mensuel le plus bas parmi les produits comparés : {amount} par mois{count, plural, one {} other { chacun}}.",
+    "includes": "Ce montant comprend l’abonnement, les frais facturés au food truck sur chaque commande, tout supplément pour commandes additionnelles et les éventuels frais de mise en service répartis sur 12 mois ; les frais de traitement des cartes ne sont pas inclus.",
+    "flat": "{name} ({plan}, un prix forfaitaire sans frais par commande de la part de {name})",
+    "planName": "{name} ({plan})"
+  },
+  "commission": {
+    "part": "{name} : {fee}",
+    "answer": "Ce que chaque solution facture par commande : {parts}."
+  },
+  "offline": {
+    "ours": "{name} peut mettre automatiquement la commande en ligne en pause quand le food truck perd le réseau, pour que les clients ne puissent pas passer des commandes que la cuisine ne recevra pas.",
+    "noQuoted": "{names} ne {count, plural, one {propose} other {proposent}} pas de fonctionnement sans connexion.",
+    "doesntSay": "{count, plural, one {Le site web de {names} ne précise pas} other {Les sites web de {names} ne précisent pas}} ce qui se passe en cas de perte de réseau."
+  },
+  "strength": {
+    "answer": "{names} {count, plural, one {indique proposer} other {indiquent proposer}} « {feature} » ; {us} ne le propose pas.",
+    "answerSoon": "{names} {count, plural, one {indique proposer} other {indiquent proposer}} « {feature} » ; {us} ne le propose pas encore."
+  },
+  "ev": {
+    "ours": {
+      "yes": "oui, d’après les offres de {us}",
+      "no": "non, d’après les offres de {us}"
+    },
+    "state": {
+      "yes": "indique proposer cette fonctionnalité",
+      "partial": "en propose une partie",
+      "no_quoted": "indique ne pas proposer cette fonctionnalité",
+      "no_unquoted": "non (aucune citation enregistrée)",
+      "not_listed": "non indiqué sur son site web",
+      "not_mentioned": "son site web ne le précise pas",
+      "unknown": "inconnu"
+    },
+    "row": "{tool} — {feature} : {answer}.",
+    "quote": "Citation : « {quote} ».",
+    "pages": "Pages consultées : {pages}.",
+    "pageRead": "{page}",
+    "pageNotRead": "{page} (lecture impossible)",
+    "page": {
+      "features": "page des fonctionnalités",
+      "pricing": "page des tarifs",
+      "help": "centre d’aide",
+      "other": "autre page"
+    },
+    "help": {
+      "fetched": "Son centre d’aide a été consulté.",
+      "linked_not_fetched": "Il existe un centre d’aide qui n’a pas été consulté.",
+      "none_found": "Aucun centre d’aide n’a été trouvé."
+    },
+    "calc": {
+      "volume": "Calculé pour {orders, number} commandes en ligne par mois à {order} la commande ({revenue} de ventes en ligne).",
+      "line": "{name} ({plan}) : abonnement {sub} + frais de mise en service répartis sur 12 mois {setup} + frais par commande {fees} + commandes supplémentaires {over} = {total} par mois.",
+      "excluded": "Les frais de traitement des cartes et les frais payés par les clients ne sont inclus pour aucun produit.",
+      "date": "Calculé le {date} à partir des prix vérifiés sur le site web de chaque éditeur."
+    }
+  },
+  "method": {
+    "covers": "La comparaison porte sur quatre alternatives au maximum, choisies pour leur pertinence pour les food trucks et la disponibilité d’informations publiques vérifiables — et non sur tous les produits du marché.",
+    "notListed": "« Non indiqué » signifie que nous avons consulté les pages fonctionnalités, tarifs et aide du produit et que la fonctionnalité n’y est pas mentionnée, pour des fonctionnalités que les éditeurs mettent normalement en avant. « Non précisé » signifie que rien n’est confirmé, dans un sens ou dans l’autre."
+  }
+}

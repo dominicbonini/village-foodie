@@ -26,7 +26,7 @@ import { MarketingFrame } from '@/components/landing/MarketingFrame'   // site-c
 import { DemoCta } from '@/components/landing/DemoUpload'
 import { FaqDetails } from '@/components/faq/FaqDetails'   // faq-3: the FAQ markup, shared with the English landing pages
 import { resolveVisitorCountry } from '@/lib/visitor-country'
-import { resolveComparison, comparisonT } from '@/lib/comparison-server'
+import { resolveComparison, comparisonT, comparisonSuitsT } from '@/lib/comparison-server'
 import { buildComparison, comparisonGraph, type Cell } from '@/lib/comparison'
 import { translatorFor } from '@/lib/i18n/translator'
 import '@/lib/i18n/catalog/comparison'
@@ -81,7 +81,7 @@ export default async function ComparisonPage({ params, searchParams }: { params:
   const t = comparisonT(settings.locale)
   const rich = translatorFor(settings.locale, 'comparison')
   const publicView = !admin || (await searchParams).view === 'public'
-  const v = buildComparison(input, t, { admin, publicView })
+  const v = buildComparison(input, t, { admin, publicView }, comparisonSuitsT(settings.locale))
   const visitor = await resolveVisitorCountry(undefined, { segment: p.country, page: 'landing' })
   const graph = comparisonGraph(v, input, t)
   const live = flags.status === 'live'
@@ -113,6 +113,11 @@ export default async function ComparisonPage({ params, searchParams }: { params:
               <ul className="cmp-admin-list">
                 {v.checklist.map(c => <li key={c.key} data-check={c.key} data-ok={c.ok ? 'yes' : 'no'}>{c.ok ? '✓' : '✗'} {c.label}</li>)}
               </ul>
+              {/* compare-suits-1: the entries the four-cap leaves out (lib/comparison-selection.ts) — named for an admin only. */}
+              {v.notShown.length > 0 && (
+                <p className="cmp-admin-note" data-not-shown>{t('admin.notShown', { names: new Intl.ListFormat(settings.locale, { style: 'long', type: 'conjunction' })
+                  .format(v.notShown.map(n => t(n.reason === 'hidden' ? 'admin.reasonHidden' : 'admin.reasonBeyond', { name: n.name }))) })}</p>
+              )}
               <p className="cmp-admin-note">{t('admin.goLive')}</p>
             </div>
           </aside>
@@ -172,6 +177,30 @@ export default async function ComparisonPage({ params, searchParams }: { params:
               {v.morePending && <p className="cmp-note" data-more-pending>{t('table.morePending')}</p>}
             </section>
 
+            {/* compare-suits-1: "Which suits your food truck?" — questions and answers generated from checked data only
+                (lib/comparison-suits.ts): question, short answer, "Checked <date> · Evidence" (the sources, pages checked or the
+                calculation). Plain headings and paragraphs — ⛔ no QAPage or FAQPage markup for this section. */}
+            {v.suits.length > 0 && v.suitsWords && (
+              <section aria-labelledby="suits" className="cmp-suits" data-suits>
+                <h2 id="suits">{v.suitsWords.title}</h2>
+                {!v.publicView && v.columns.some(c => !c.us && !c.verified) && <p className="cmp-note" data-admin-preview>{v.suitsWords.adminPreview}</p>}
+                {v.suits.map(a => (
+                  <div key={a.key} className="cmp-suit" data-suit={a.key}>
+                    <h3>{a.question}</h3>
+                    <p>{a.answer}{a.unverified && !v.publicView && <> {badge}</>}</p>
+                    <details className="cmp-suit-ev">
+                      <summary>{a.checkedLabel} · {v.suitsWords!.evidence}</summary>
+                      <ul>
+                        {a.evidenceLines.map((l, i) => (
+                          <li key={i}>{l.text}{l.url && <> <a href={l.url} rel="nofollow noopener" target="_blank">{l.url.replace(/^https?:\/\//, '')}</a></>}</li>
+                        ))}
+                      </ul>
+                    </details>
+                  </div>
+                ))}
+              </section>
+            )}
+
             {/* comparison-features-1: "Begriffe erklärt" — each shown feature in one sentence. */}
             {v.explained.length > 0 && (
               <section aria-labelledby="begriffe" data-explained>
@@ -226,6 +255,8 @@ export default async function ComparisonPage({ params, searchParams }: { params:
               <p>{t('method.meaning')}</p>
               <p>{t('method.vendor')}</p>
               <p>{t('method.review')}</p>
+              {/* compare-suits-1: up to four alternatives, and what "Not listed" and "Doesn't say" mean (comparisonSuits.method). */}
+              {v.suitsWords?.method.map(m => <p key={m}>{m}</p>)}
               <p>{rich.rich('method.corrections', { link: (c: React.ReactNode) => <a href={input.urls.contact.replace(/^https:\/\/[^/]+/, '')}>{c}</a> })}</p>
               <p>{rich.rich('method.machine', {
                 md: (c: React.ReactNode) => <a href={new URL(input.urls.md).pathname + (v.publicView ? '' : '?view=admin')} type="text/markdown">{c}</a>,

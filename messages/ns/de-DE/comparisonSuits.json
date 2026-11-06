@@ -1,0 +1,102 @@
+{
+  "title": "Welches System passt zu Ihrem Foodtruck?",
+  "checked": "Geprüft am {date}",
+  "evidence": "Belege",
+  "adminPreview": "Admin-Vorschau – nicht verifiziert",
+  "ours": {
+    "fromPlan": "{name} (ab {plan})"
+  },
+  "q": {
+    "preorder": "Mit welchem Bestellsystem können meine Kunden vorbestellen und eine Abholzeit wählen?",
+    "capacity": "Zu Stoßzeiten wird mein Foodtruck überrannt – welches System begrenzt die Bestellungen pro Zeitfenster?",
+    "whatsapp": "Kunden fragen ständig, wo ich stehe – welches System beantwortet ihre Fragen auf WhatsApp?",
+    "social": "Welches System erstellt die Beiträge für meine wöchentlichen Standorte, damit ich keine Grafiken gestalten muss?",
+    "schedule": "Ich stehe fast jeden Tag woanders – welches System zeigt Kunden, wo ich bin, und nimmt Bestellungen für diesen Standort an?",
+    "priceLow": "Ich verkaufe nur an wenigen Tagen im Monat – welches System kostet am wenigsten?",
+    "priceHigh": "Ich bin auf Festivals und großen Events – welches System kostet am wenigsten?",
+    "commission": "Ich möchte nicht auf jede Bestellung Provision zahlen – was berechnet jedes Produkt?",
+    "offline": "Was passiert mit Online-Bestellungen, wenn mein Empfang abbricht?",
+    "strength": "Welches der verglichenen Produkte bietet „{feature}“?"
+  },
+  "does": {
+    "preorder": "{names} {count, plural, one {lässt} other {lassen}} Kunden vorbestellen und eine Abholzeit wählen.",
+    "capacity": "{names} {count, plural, one {begrenzt} other {begrenzen}}, wie viele Bestellungen jede Abholzeit annimmt, damit die Küche nicht überlastet wird.",
+    "whatsapp": "{names} {count, plural, one {beantwortet} other {beantworten}} WhatsApp-Nachrichten von Kunden automatisch.",
+    "social": "{names} {count, plural, one {erstellt} other {erstellen}} fertige Grafiken mit den Standorten der Woche zum Posten.",
+    "schedule": "{names} {count, plural, one {zeigt} other {zeigen}} Kunden, wo der Foodtruck jeden Tag steht, und {count, plural, one {nimmt} other {nehmen}} Bestellungen für diesen Standort an."
+  },
+  "feat": {
+    "preorder": "Abholzeiten",
+    "capacity": "ein Limit für Bestellungen pro Zeitfenster",
+    "whatsapp": "automatische WhatsApp-Antworten",
+    "social": "Grafiken des Wochenplans",
+    "schedule": "einen Terminplan mit wechselnden Standorten",
+    "offlinePause": "Online-Bestellungen pausiert, wenn der Empfang abbricht"
+  },
+  "others": {
+    "noQuoted": "{names} {count, plural, one {bietet} other {bieten}} das nicht an.",
+    "notListed": "{names} {count, plural, one {führt {feature} auf seiner Website nicht auf} other {führen {feature} auf ihren Websites nicht auf}}.",
+    "doesntSay": "{count, plural, one {Die Website von {names} sagt dazu nichts} other {Die Websites von {names} sagen dazu nichts}}.",
+    "noneLists": "Keines der anderen verglichenen Produkte führt das auf, daher {count, plural, one {passt} other {passen}} {names} unter den verglichenen Produkten am besten."
+  },
+  "price": {
+    "lead": "Bei {orders, number} Online-Bestellungen im Monat {count, plural, one {hat} other {haben}} {names} unter den verglichenen Produkten die niedrigsten monatlichen Softwarekosten: {count, plural, one {} other {jeweils }}{amount} im Monat.",
+    "includes": "Darin enthalten sind das Abo, die Gebühren, die dem Foodtruck pro Bestellung berechnet werden, etwaige Kosten für zusätzliche Bestellungen und eine eventuelle Einrichtungsgebühr, verteilt auf 12 Monate; Gebühren für die Kartenzahlungsabwicklung sind nicht enthalten.",
+    "flat": "{name} ({plan}, ein Pauschalpreis ohne Gebühr pro Bestellung von {name})",
+    "planName": "{name} ({plan})"
+  },
+  "commission": {
+    "part": "{name}: {fee}",
+    "answer": "Was jedes Produkt pro Bestellung berechnet: {parts}."
+  },
+  "offline": {
+    "ours": "{name} kann Online-Bestellungen automatisch pausieren, wenn der Foodtruck keinen Empfang hat, damit Kunden keine Bestellungen aufgeben können, die in der Küche nicht ankommen.",
+    "noQuoted": "{names} {count, plural, one {bietet} other {bieten}} keinen Betrieb ohne Verbindung an.",
+    "doesntSay": "{count, plural, one {Die Website von {names} sagt nicht} other {Die Websites von {names} sagen nicht}}, was passiert, wenn der Empfang abbricht."
+  },
+  "strength": {
+    "answer": "{names} {count, plural, one {gibt an, „{feature}“ anzubieten} other {geben an, „{feature}“ anzubieten}}; {us} bietet das nicht.",
+    "answerSoon": "{names} {count, plural, one {gibt an, „{feature}“ anzubieten} other {geben an, „{feature}“ anzubieten}}; {us} bietet das noch nicht."
+  },
+  "ev": {
+    "ours": {
+      "yes": "ja, laut den eigenen Tarifen von {us}",
+      "no": "nein, laut den eigenen Tarifen von {us}"
+    },
+    "state": {
+      "yes": "gibt an, dies anzubieten",
+      "partial": "bietet es teilweise an",
+      "no_quoted": "gibt an, dies nicht anzubieten",
+      "no_unquoted": "nein (kein Zitat gespeichert)",
+      "not_listed": "auf der Website nicht aufgeführt",
+      "not_mentioned": "die Website sagt dazu nichts",
+      "unknown": "nicht bekannt"
+    },
+    "row": "{tool} – {feature}: {answer}.",
+    "quote": "Zitat: „{quote}“.",
+    "pages": "Geprüfte Seiten: {pages}.",
+    "pageRead": "{page}",
+    "pageNotRead": "{page} (konnte nicht gelesen werden)",
+    "page": {
+      "features": "Funktionsseite",
+      "pricing": "Preisseite",
+      "help": "Hilfe-Center",
+      "other": "andere Seite"
+    },
+    "help": {
+      "fetched": "Das Hilfe-Center wurde gelesen.",
+      "linked_not_fetched": "Es gibt ein Hilfe-Center, das nicht gelesen wurde.",
+      "none_found": "Es wurde kein Hilfe-Center gefunden."
+    },
+    "calc": {
+      "volume": "Berechnet für {orders, number} Online-Bestellungen im Monat zu je {order} ({revenue} Online-Umsatz).",
+      "line": "{name} ({plan}): Abo {sub} + Einrichtungsgebühr verteilt auf 12 Monate {setup} + Gebühren pro Bestellung {fees} + zusätzliche Bestellungen {over} = {total} im Monat.",
+      "excluded": "Gebühren für die Kartenzahlungsabwicklung und von Kunden gezahlte Gebühren sind bei keinem Produkt enthalten.",
+      "date": "Berechnet am {date} anhand der Preise, die auf der Website des jeweiligen Anbieters geprüft wurden."
+    }
+  },
+  "method": {
+    "covers": "Der Vergleich umfasst bis zu vier Alternativen, ausgewählt nach ihrer Relevanz für Foodtrucks und der Verfügbarkeit überprüfbarer öffentlicher Informationen – nicht jedes Produkt auf dem Markt.",
+    "notListed": "„Nicht aufgeführt“ bedeutet: Wir haben die Funktions-, Preis- und Hilfeseiten des Produkts geprüft und die Funktion wird nicht erwähnt – bei Funktionen, mit denen Anbieter normalerweise werben. „Sagt nichts dazu“ bedeutet: weder bestätigt noch ausgeschlossen."
+  }
+}

@@ -6366,6 +6366,108 @@
       "description": "Salīdziniet, cik jums tagad izmaksā tiešsaistes pasūtījumi, ar gadu kopā ar HatchGrab — aplēse vienā minūtē."
     }
   },
+  "comparisonSuits": {
+    "title": "Kura sistēma ir piemērota jūsu ēdienu busiņam?",
+    "checked": "Pārbaudīts {date}",
+    "evidence": "Pierādījumi",
+    "adminPreview": "Administratora priekšskatījums — nav pārbaudīts",
+    "ours": {
+      "fromPlan": "{name} (sākot no plāna {plan})"
+    },
+    "q": {
+      "preorder": "Kura pasūtīšanas sistēma ļauj maniem klientiem pasūtīt iepriekš un izvēlēties saņemšanas laiku?",
+      "capacity": "Maksimālās slodzes laikā mans busiņš tiek pārpludināts ar pasūtījumiem — kura sistēma ierobežo pasūtījumu skaitu katrā laika logā?",
+      "whatsapp": "Klienti nemitīgi jautā, kur es atrodos — kura sistēma viņiem atbild WhatsApp?",
+      "social": "Kura sistēma sagatavo ierakstus ar manām nedēļas tirdzniecības vietām, lai man nebūtu jāveido grafikas?",
+      "schedule": "Lielāko daļu dienu es tirgojos citā vietā — kura sistēma rāda klientiem, kur es atrodos, un pieņem pasūtījumus šai vietai?",
+      "priceLow": "Es tirgojos tikai dažas dienas mēnesī — kura sistēma ir vislētākā?",
+      "priceHigh": "Es strādāju festivālos un pasākumos, kur ir daudz cilvēku — kura sistēma ir vislētākā?",
+      "commission": "Es nevēlos maksāt komisiju par katru pasūtījumu — cik iekasē katrs produkts?",
+      "offline": "Kas notiek ar tiešsaistes pasūtījumiem, ja pazūd signāls?",
+      "strength": "Kurš no salīdzinātajiem produktiem piedāvā “{feature}”?"
+    },
+    "does": {
+      "preorder": "{names} {count, plural, zero {ļauj} one {ļauj} other {ļauj}} klientiem pasūtīt iepriekš un izvēlēties saņemšanas laiku.",
+      "capacity": "{names} {count, plural, zero {ierobežo} one {ierobežo} other {ierobežo}}, cik pasūtījumu tiek pieņemts katram saņemšanas laikam, lai virtuve netiktu pārslogota.",
+      "whatsapp": "{names} {count, plural, zero {automātiski atbild} one {automātiski atbild} other {automātiski atbild}} uz klientu WhatsApp ziņām.",
+      "social": "{names} {count, plural, zero {sagatavo} one {sagatavo} other {sagatavo}} publicēšanai gatavas grafikas ar nedēļas tirdzniecības vietām.",
+      "schedule": "{names} {count, plural, zero {rāda} one {rāda} other {rāda}} klientiem, kur busiņš atrodas katru dienu, un {count, plural, zero {pieņem} one {pieņem} other {pieņem}} pasūtījumus šai vietai."
+    },
+    "feat": {
+      "preorder": "saņemšanas laikus",
+      "capacity": "pasūtījumu skaita ierobežojumu katram laika logam",
+      "whatsapp": "WhatsApp automātiskās atbildes",
+      "social": "nedēļas grafika attēlus",
+      "schedule": "mainīgu tirdzniecības vietu grafiku",
+      "offlinePause": "Tiešsaistes pasūtīšanas apturēšana, kad pazūd signāls"
+    },
+    "others": {
+      "noQuoted": "{names} {count, plural, zero {to nepiedāvā} one {to nepiedāvā} other {to nepiedāvā}}.",
+      "notListed": "{names} {count, plural, zero {savās tīmekļa vietnēs nemin {feature}} one {savā tīmekļa vietnē nemin {feature}} other {savās tīmekļa vietnēs nemin {feature}}}.",
+      "doesntSay": "{count, plural, zero {Produktu {names} tīmekļa vietnēs tas nav norādīts} one {Produkta {names} tīmekļa vietnē tas nav norādīts} other {Produktu {names} tīmekļa vietnēs tas nav norādīts}}.",
+      "noneLists": "Neviens cits salīdzinātais produkts to nemin, tāpēc {names} {count, plural, zero {ir vispiemērotākie} one {ir vispiemērotākais} other {ir vispiemērotākie}} no salīdzinātajiem produktiem."
+    },
+    "price": {
+      "lead": "Pie {orders, number} tiešsaistes pasūtījumiem mēnesī {count, plural, zero {produktiem {names}} one {produktam {names}} other {produktiem {names}}} ir zemākās ikmēneša programmatūras izmaksas no salīdzinātajiem produktiem: {amount} mēnesī{count, plural, zero { katram} one {} other { katram}}.",
+      "includes": "Tas ietver abonēšanas maksu, maksas, ko busiņš maksā par katru pasūtījumu, jebkādu maksu par papildu pasūtījumiem un jebkādu pieslēgšanas maksu, kas sadalīta uz 12 mēnešiem; karšu apstrādes maksas nav iekļautas.",
+      "flat": "{name} ({plan}, fiksēta cena bez {name} maksas par katru pasūtījumu)",
+      "planName": "{name} ({plan})"
+    },
+    "commission": {
+      "part": "{name}: {fee}",
+      "answer": "Ko katrs produkts iekasē par pasūtījumu: {parts}."
+    },
+    "offline": {
+      "ours": "{name} var automātiski apturēt pasūtīšanu tiešsaistē, kad busiņam pazūd signāls, lai klienti nevarētu veikt pasūtījumus, ko virtuve nesaņems.",
+      "noQuoted": "{names} {count, plural, zero {nepiedāvā} one {nepiedāvā} other {nepiedāvā}} darbu bez savienojuma.",
+      "doesntSay": "{count, plural, zero {Produktu {names} tīmekļa vietnēs nav norādīts} one {Produkta {names} tīmekļa vietnē nav norādīts} other {Produktu {names} tīmekļa vietnēs nav norādīts}}, kas notiek, kad pazūd signāls."
+    },
+    "strength": {
+      "answer": "{names} {count, plural, zero {norāda, ka piedāvā} one {norāda, ka piedāvā} other {norāda, ka piedāvā}} “{feature}”; {us} to nepiedāvā.",
+      "answerSoon": "{names} {count, plural, zero {norāda, ka piedāvā} one {norāda, ka piedāvā} other {norāda, ka piedāvā}} “{feature}”; {us} to vēl nepiedāvā."
+    },
+    "ev": {
+      "ours": {
+        "yes": "jā, saskaņā ar paša {us} plāniem",
+        "no": "nē, saskaņā ar paša {us} plāniem"
+      },
+      "state": {
+        "yes": "norāda, ka to piedāvā",
+        "partial": "piedāvā daļēji",
+        "no_quoted": "norāda, ka to nepiedāvā",
+        "no_unquoted": "nē (citāts nav saglabāts)",
+        "not_listed": "tīmekļa vietnē nav minēts",
+        "not_mentioned": "tīmekļa vietnē nav norādīts",
+        "unknown": "nav zināms"
+      },
+      "row": "{tool} — {feature}: {answer}.",
+      "quote": "Citāts: “{quote}”.",
+      "pages": "Pārbaudītās lapas: {pages}.",
+      "pageRead": "{page}",
+      "pageNotRead": "{page} (neizdevās nolasīt)",
+      "page": {
+        "features": "funkciju lapa",
+        "pricing": "cenu lapa",
+        "help": "palīdzības centrs",
+        "other": "cita lapa"
+      },
+      "help": {
+        "fetched": "Tā palīdzības centrs tika izlasīts.",
+        "linked_not_fetched": "Tam ir palīdzības centrs, kas netika izlasīts.",
+        "none_found": "Palīdzības centrs netika atrasts."
+      },
+      "calc": {
+        "volume": "Aprēķināts {orders, number} tiešsaistes pasūtījumiem mēnesī pa {order} par pasūtījumu ({revenue} tiešsaistes apgrozījums).",
+        "line": "{name} ({plan}): abonēšanas maksa {sub} + pieslēgšanas maksa, sadalīta uz 12 mēnešiem, {setup} + maksas par pasūtījumiem {fees} + papildu pasūtījumi {over} = {total} mēnesī.",
+        "excluded": "Karšu apstrādes maksas un klientu maksātās maksas nevienam produktam nav iekļautas.",
+        "date": "Aprēķināts {date}, izmantojot cenas, kas pārbaudītas katra piegādātāja tīmekļa vietnē."
+      }
+    },
+    "method": {
+      "covers": "Tas aptver līdz četrām alternatīvām, kas izvēlētas pēc to atbilstības ēdienu busiņiem un pārbaudāmas publiskas informācijas pieejamības, — ne visus tirgū pieejamos produktus.",
+      "notListed": "“Nav minēts” nozīmē, ka mēs pārbaudījām produkta funkciju, cenu un palīdzības lapas un tas tur nav minēts, ja runa ir par funkcijām, ko uzņēmumi parasti reklamē. “Nav norādīts” nozīmē, ka tas nav apstiprināts ne vienā, ne otrā virzienā."
+    }
+  },
   "outreach": {
     "optOut": {
       "missing": "Šim e-pastam nav atteikšanās rindas, tāpēc to nevar nosūtīt. Lai to pievienotu, izmantojiet “Insert opt-out”.",

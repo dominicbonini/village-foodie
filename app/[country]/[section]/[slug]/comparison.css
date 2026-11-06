@@ -74,3 +74,13 @@
 @media (max-width: 720px) {
   .hg-landing .cmp-table tbody th { min-width: 9rem; }
 }
+
+/* compare-suits-1: "Which suits your food truck?" — question, short answer, "Checked <date> · Evidence" (the FAQ's quiet style). */
+.hg-landing .cmp-suit { border-top: 1px solid var(--line); padding: .9rem 0; }
+.hg-landing .cmp-suit h3 { margin: 0; font-size: 1.02rem; color: var(--head, #16314F); }
+.hg-landing .cmp-suit > p { margin-top: .35rem; }
+.hg-landing .cmp-suit-ev { margin-top: .35rem; font-size: .85rem; color: var(--ink-soft); }
+.hg-landing .cmp-suit-ev summary { cursor: pointer; }
+.hg-landing .cmp-suit-ev ul { margin: .4rem 0 0; padding-left: 1.2rem; }
+.hg-landing .cmp-suit-ev li { line-height: 1.55; overflow-wrap: anywhere; }
+.hg-landing .cmp-tri-not_listed { color: var(--ink-soft); }

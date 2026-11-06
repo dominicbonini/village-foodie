@@ -6366,6 +6366,108 @@
       "description": "Comparați cât vă costă acum comenzile online cu un an pe HatchGrab — o estimare într-un minut."
     }
   },
+  "comparisonSuits": {
+    "title": "Ce sistem se potrivește food truckului dumneavoastră?",
+    "checked": "Verificat la {date}",
+    "evidence": "Surse",
+    "adminPreview": "Previzualizare pentru administrator — neverificat",
+    "ours": {
+      "fromPlan": "{name} (de la planul {plan})"
+    },
+    "q": {
+      "preorder": "Ce sistem de comenzi le permite clienților mei să comande în avans și să aleagă ora de ridicare?",
+      "capacity": "La orele de vârf food truckul meu e copleșit — ce sistem limitează comenzile pentru fiecare interval orar?",
+      "whatsapp": "Clienții mă tot întreabă unde sunt — ce sistem le răspunde pe WhatsApp?",
+      "social": "Ce sistem face postările cu locațiile mele din fiecare săptămână, ca să nu mai fac eu grafica?",
+      "schedule": "Vând aproape în fiecare zi în alt loc — ce sistem le arată clienților unde sunt și preia comenzi pentru locația respectivă?",
+      "priceLow": "Vând doar câteva zile pe lună — ce sistem costă cel mai puțin?",
+      "priceHigh": "Merg la festivaluri și evenimente aglomerate — ce sistem costă cel mai puțin?",
+      "commission": "Nu vreau să plătesc comision la fiecare comandă — cât percepe fiecare produs?",
+      "offline": "Ce se întâmplă cu comenzile online dacă pierd semnalul?",
+      "strength": "Care dintre produsele comparate oferă „{feature}”?"
+    },
+    "does": {
+      "preorder": "{names} {count, plural, one {le permite} few {le permit} other {le permit}} clienților să comande în avans și să aleagă ora de ridicare.",
+      "capacity": "{names} {count, plural, one {limitează} few {limitează} other {limitează}} câte comenzi primește fiecare oră de ridicare, ca bucătăria să nu fie copleșită.",
+      "whatsapp": "{names} {count, plural, one {răspunde} few {răspund} other {răspund}} automat la mesajele clienților pe WhatsApp.",
+      "social": "{names} {count, plural, one {creează} few {creează} other {creează}} grafice gata de postat cu locațiile din săptămâna respectivă.",
+      "schedule": "{names} le {count, plural, one {arată} few {arată} other {arată}} clienților unde se află food truckul în fiecare zi și {count, plural, one {preia} few {preiau} other {preiau}} comenzi pentru locația respectivă."
+    },
+    "feat": {
+      "preorder": "orele de ridicare",
+      "capacity": "o limită de comenzi pe interval orar",
+      "whatsapp": "răspunsurile automate pe WhatsApp",
+      "social": "grafice cu programul săptămânal",
+      "schedule": "un program cu locații care se schimbă",
+      "offlinePause": "Comenzile online puse pe pauză când se pierde semnalul"
+    },
+    "others": {
+      "noQuoted": "{names} {count, plural, one {nu oferă} few {nu oferă} other {nu oferă}} acest lucru.",
+      "notListed": "{names} {count, plural, one {nu menționează {feature} pe site-ul său} few {nu menționează {feature} pe site-urile lor} other {nu menționează {feature} pe site-urile lor}}.",
+      "doesntSay": "{count, plural, one {Site-ul {names} nu spune nimic despre asta} few {Site-urile {names} nu spun nimic despre asta} other {Site-urile {names} nu spun nimic despre asta}}.",
+      "noneLists": "Niciunul dintre celelalte produse comparate nu menționează acest lucru, așa că {names} {count, plural, one {se potrivește} few {se potrivesc} other {se potrivesc}} cel mai bine dintre produsele comparate."
+    },
+    "price": {
+      "lead": "La {orders, number} de comenzi online pe lună, {names} {count, plural, one {are} few {au} other {au}} cel mai mic cost lunar de software dintre produsele comparate: {amount} pe lună{count, plural, one {} few { fiecare} other { fiecare}}.",
+      "includes": "Costul include abonamentul, comisioanele percepute food truckului la fiecare comandă, orice taxă pentru comenzi suplimentare și orice taxă de configurare împărțită pe 12 luni; comisioanele de procesare a cardurilor nu sunt incluse.",
+      "flat": "{name} ({plan}, preț fix, fără ca {name} să perceapă comision pe comandă)",
+      "planName": "{name} ({plan})"
+    },
+    "commission": {
+      "part": "{name}: {fee}",
+      "answer": "Cât percepe fiecare produs la o comandă: {parts}."
+    },
+    "offline": {
+      "ours": "{name} poate pune automat pe pauză comenzile online când food truckul pierde semnalul, ca clienții să nu plaseze comenzi pe care bucătăria nu le-ar primi.",
+      "noQuoted": "{names} {count, plural, one {nu oferă} few {nu oferă} other {nu oferă}} funcționare fără conexiune.",
+      "doesntSay": "{count, plural, one {Site-ul {names} nu spune} few {Site-urile {names} nu spun} other {Site-urile {names} nu spun}} ce se întâmplă când se pierde semnalul."
+    },
+    "strength": {
+      "answer": "{names} {count, plural, one {spune că oferă} few {spun că oferă} other {spun că oferă}} „{feature}”; {us} nu oferă.",
+      "answerSoon": "{names} {count, plural, one {spune că oferă} few {spun că oferă} other {spun că oferă}} „{feature}”; {us} nu oferă încă."
+    },
+    "ev": {
+      "ours": {
+        "yes": "da, potrivit planurilor {us}",
+        "no": "nu, potrivit planurilor {us}"
+      },
+      "state": {
+        "yes": "spune că oferă acest lucru",
+        "partial": "oferă parțial acest lucru",
+        "no_quoted": "spune că nu oferă acest lucru",
+        "no_unquoted": "nu (fără citat salvat)",
+        "not_listed": "nu este menționat pe site-ul său",
+        "not_mentioned": "site-ul său nu spune",
+        "unknown": "necunoscut"
+      },
+      "row": "{tool} — {feature}: {answer}.",
+      "quote": "Citat: „{quote}”.",
+      "pages": "Pagini verificate: {pages}.",
+      "pageRead": "{page}",
+      "pageNotRead": "{page} (nu s-a putut citi)",
+      "page": {
+        "features": "pagina de funcționalități",
+        "pricing": "pagina de prețuri",
+        "help": "centrul de ajutor",
+        "other": "altă pagină"
+      },
+      "help": {
+        "fetched": "Centrul său de ajutor a fost citit.",
+        "linked_not_fetched": "Are un centru de ajutor care nu a fost citit.",
+        "none_found": "Nu s-a găsit niciun centru de ajutor."
+      },
+      "calc": {
+        "volume": "Calculat pentru {orders, number} de comenzi online pe lună, la {order} pe comandă ({revenue} din vânzări online).",
+        "line": "{name} ({plan}): abonament {sub} + taxă de configurare împărțită pe 12 luni {setup} + comisioane pe comandă {fees} + comenzi suplimentare {over} = {total} pe lună.",
+        "excluded": "Pentru niciun produs nu sunt incluse comisioanele de procesare a cardurilor și taxele plătite de clienți.",
+        "date": "Calculat la {date} pe baza prețurilor verificate pe site-ul fiecărui furnizor."
+      }
+    },
+    "method": {
+      "covers": "Include cel mult patru alternative, alese în funcție de relevanța lor pentru food truckuri și de disponibilitatea unor informații publice verificabile — nu toate produsele de pe piață.",
+      "notListed": "„Nu este menționat” înseamnă că am verificat paginile de funcționalități, prețuri și ajutor ale produsului și funcția nu apare acolo — pentru funcționalitățile pe care companiile le promovează de obicei. „Nu spune” înseamnă că nu este confirmat nici într-un sens, nici în celălalt."
+    }
+  },
   "outreach": {
     "optOut": {
       "missing": "Acest e-mail nu are rândul de dezabonare, așa că nu poate fi trimis. Folosiți „Insert opt-out” pentru a-l adăuga.",

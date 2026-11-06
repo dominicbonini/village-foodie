@@ -6338,6 +6338,108 @@
       "description": "比較你現在的網上訂單成本與使用 HatchGrab 一年的費用——一分鐘內得出估算。"
     }
   },
+  "comparisonSuits": {
+    "title": "哪個適合你的美食車？",
+    "checked": "於 {date} 查核",
+    "evidence": "依據",
+    "adminPreview": "管理員預覽 — 未經核實",
+    "ours": {
+      "fromPlan": "{name}（{plan} 計劃起）"
+    },
+    "q": {
+      "preorder": "哪個落單系統可以讓客人預先落單，並揀選取餐時間？",
+      "capacity": "我的美食車在繁忙時段經常應接不暇，哪個系統可以限制每個時段的訂單數量？",
+      "whatsapp": "客人經常問我在哪裡開檔，哪個系統可以在 WhatsApp 上回覆他們？",
+      "social": "哪個系統可以為我每星期的出車地點製作帖文，讓我不用自己設計圖片？",
+      "schedule": "我幾乎每天都在不同地方開檔，哪個系統可以讓客人知道我在哪裡，並接收該站的訂單？",
+      "priceLow": "我每月只開檔幾天，哪個系統最便宜？",
+      "priceHigh": "我主要參加節慶和人流多的活動，哪個系統最便宜？",
+      "commission": "我不想每張訂單都付佣金，每個產品每張訂單收多少？",
+      "offline": "如果我的網絡訊號中斷，網上訂單會怎樣？",
+      "strength": "在比較的產品中，哪個提供「{feature}」？"
+    },
+    "does": {
+      "preorder": "{names}{count, plural, other {讓}}客人預先落單，並揀選取餐時間。",
+      "capacity": "{names}{count, plural, other {會}}限制每個取餐時間可接的訂單數量，讓廚房不會應接不暇。",
+      "whatsapp": "{names}{count, plural, other {會}}自動回覆客人的 WhatsApp 訊息。",
+      "social": "{names}{count, plural, other {會}}製作本星期出車地點的圖片，可以直接發佈。",
+      "schedule": "{names}{count, plural, other {會}}讓客人知道美食車每天在哪裡，並{count, plural, other {接收}}該站的訂單。"
+    },
+    "feat": {
+      "preorder": "取餐時間",
+      "capacity": "每個時段的訂單上限",
+      "whatsapp": "WhatsApp 自動回覆",
+      "social": "每星期出車時間表的圖片",
+      "schedule": "不同地點的出車時間表",
+      "offlinePause": "訊號中斷時暫停網上落單"
+    },
+    "others": {
+      "noQuoted": "{names}{count, plural, other {不}}提供此功能。",
+      "notListed": "{names}{count, plural, other {沒有在網站上列出{feature}}}。",
+      "doesntSay": "{count, plural, other {{names}的網站沒有說明}}。",
+      "noneLists": "其他比較的產品都沒有列出此功能，所以在比較的產品中，{names}{count, plural, other {是}}最合適的選擇。"
+    },
+    "price": {
+      "lead": "以每月 {orders, number} 張網上訂單計算，在比較的產品中，{names}{count, plural, other {的}}每月軟件費用最低：每月 {amount}。",
+      "includes": "這包括月費、每張訂單向美食車收取的費用、額外訂單的任何收費，以及攤分至 12 個月的任何開通費；不包括信用卡手續費。",
+      "flat": "{name}（{plan}，{name} 收取劃一價格，不設每張訂單收費）",
+      "planName": "{name}（{plan}）"
+    },
+    "commission": {
+      "part": "{name}：{fee}",
+      "answer": "每個產品每張訂單的收費：{parts}。"
+    },
+    "offline": {
+      "ours": "當美食車失去訊號時，{name} 可以自動暫停網上落單，以免客人落了廚房收不到的單。",
+      "noQuoted": "{names}{count, plural, other {不}}提供離線運作。",
+      "doesntSay": "{count, plural, other {{names}的網站沒有說明}}訊號中斷時會怎樣。"
+    },
+    "strength": {
+      "answer": "{names}{count, plural, other {表示有提供}}「{feature}」；{us} 則沒有提供。",
+      "answerSoon": "{names}{count, plural, other {表示有提供}}「{feature}」；{us} 暫時未有提供。"
+    },
+    "ev": {
+      "ours": {
+        "yes": "有，根據 {us} 自己的計劃",
+        "no": "沒有，根據 {us} 自己的計劃"
+      },
+      "state": {
+        "yes": "表示有提供",
+        "partial": "提供部分功能",
+        "no_quoted": "表示沒有提供",
+        "no_unquoted": "沒有（未儲存引文）",
+        "not_listed": "網站上沒有列出",
+        "not_mentioned": "網站沒有說明",
+        "unknown": "不詳"
+      },
+      "row": "{tool} — {feature}：{answer}。",
+      "quote": "引文：「{quote}」。",
+      "pages": "已查核的頁面：{pages}。",
+      "pageRead": "{page}",
+      "pageNotRead": "{page}（無法讀取）",
+      "page": {
+        "features": "功能頁面",
+        "pricing": "價格頁面",
+        "help": "幫助中心",
+        "other": "其他頁面"
+      },
+      "help": {
+        "fetched": "已讀取其幫助中心。",
+        "linked_not_fetched": "設有幫助中心，但未有讀取。",
+        "none_found": "找不到幫助中心。"
+      },
+      "calc": {
+        "volume": "以每月 {orders, number} 張網上訂單、每張訂單 {order} 計算（網上銷售額 {revenue}）。",
+        "line": "{name}（{plan}）：月費 {sub} + 攤分至 12 個月的開通費 {setup} + 每張訂單費用 {fees} + 額外訂單 {over} = 每月 {total}。",
+        "excluded": "所有產品均不包括信用卡手續費及由客人支付的費用。",
+        "date": "於 {date} 根據各供應商網站上查核的價格計算。"
+      }
+    },
+    "method": {
+      "covers": "涵蓋最多四個替代方案，按與美食車的相關程度及是否有可核實的公開資料挑選——並非市場上的所有產品。",
+      "notListed": "「沒有列出」指我們已查核該產品的功能、價格及幫助頁面，而對於公司通常會宣傳的功能，頁面上並未提及。「沒有說明」指未能確認有或沒有。"
+    }
+  },
   "outreach": {
     "optOut": {
       "missing": "此電郵沒有退訂句子，因此無法發送。請使用 Insert opt-out 加入。",

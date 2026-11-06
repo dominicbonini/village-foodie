@@ -49,6 +49,10 @@ export interface Competitor {
   lastCheckedAt: string | null
   deepCheckedAt: string | null
   checkRequestedAt: string | null
+  /** compare-suits-1 (20261075): food_truck | general_pos | restaurant | marketplace, or null (not known). categoryBy 'auto' (from the
+   *  checker's focus) or 'admin' (Admin's choice — the checker never overwrites it). Absent before 20261075: null. */
+  category?: 'food_truck' | 'general_pos' | 'restaurant' | 'marketplace' | null
+  categoryBy?: 'auto' | 'admin' | null
 }
 
 /** competitor-check-1: whether a competitor is counted and shown anywhere in Pricing check (and the comparison pages).
@@ -67,6 +71,9 @@ export interface ComparisonEntry {
   sortOrder: number; verifiedAt: string | null; verifiedBy: string | null; createdAt: string | null
   /** global-players-1 (20261046): overrides the group label under the tool's name (null: the label for its focus). */
   groupLabel: string | null
+  /** compare-suits-1 (20261075): Admin's choices for the four shown (lib/comparison-selection.ts). Absent before it: false. */
+  pinned?: boolean
+  hidden?: boolean
 }
 
 export interface CompetitorPlan {

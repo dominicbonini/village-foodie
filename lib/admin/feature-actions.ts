@@ -42,6 +42,11 @@ export async function updateFeature(store: PricingStore, body: Row, stamp: Stamp
     if (!(SHOW_SCOPES as readonly unknown[]).includes(body.showScope)) return refuse(400, 'Show on website is All countries, Some countries or Hidden.')
     cols.show_scope = body.showScope; cols.scope_by = 'admin'
   }
+  // compare-suits-1 (20261075): Admin's two flags. Only Admin writes them; the importer and the checker never do.
+  for (const [k, col] of [['neverCompetitorStrength', 'never_competitor_strength'], ['absenceMeansNo', 'absence_means_no']] as const) if (k in body) {
+    if (typeof body[k] !== 'boolean') return refuse(400, 'That setting must be on or off.')
+    cols[col] = body[k]
+  }
   if ('showCountries' in body) { const c = countries(body.showCountries); if (!c) return refuse(400, 'Countries are two-letter codes.'); cols.show_countries = c; cols.scope_by = 'admin' }
   const scope = (cols.show_scope ?? old.show_scope) as ShowScope
   const list = (cols.show_countries ?? old.show_countries ?? []) as string[]
