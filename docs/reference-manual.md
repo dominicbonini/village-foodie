@@ -1,4 +1,4 @@
-HatchGrab Engineering Reference Manual · V16.12
+HatchGrab Engineering Reference Manual · V16.13
 
 **HatchGrab**
 
@@ -6,7 +6,7 @@ Engineering Reference Manual
 
 *Village Foodie · Food Truck Ordering Platform*
 
-**Version 16.12**
+**Version 16.13**
 
 November 2026
 
@@ -49,6 +49,10 @@ form — including key names and set/missing checks. It may run the project's ow
 internally (`next build`, the sweep, `tsc`). Configuration is worked out from code.
 
 # Changelog
+
+## V16.13 — 6 November 2026 — **THE PUBLIC PAGES ON THEIR OWN ROOT LAYOUT, BUILT AHEAD AND SERVED FROM THE CDN**
+
+- cwv-2 (`docs/cwv-2-report.md`): two root layouts — `app/(app)` (today's, moved byte-identical) and `app/(public)` (lean); the country landing, /features and /faq built ahead with the tagged cache's revalidation; PostHog on public pages after idle; the demo pop-up's code off the first screen (35.ap-1, 35.ap-2, §48).
 
 ## V16.12 — 5 November 2026 — **ONE HEADER AND ONE FOOTER FOR EVERY PUBLIC PAGE, THE PHONE FOOTER FOUR TO A ROW, AND THE OFFLINE LINE PUT BACK**
 
@@ -22420,6 +22424,26 @@ of this manual).
   44px tap targets, labels wrap rather than overflow. (V16.12, site-chrome-1; the wrapper is `components/landing/MarketingFrame.tsx`,
   the flows' logo `components/shared/FlowLogo.tsx`, the in-app test the web view's `HatchGrabNativeApp` user agent; §48.)
 
+## 35.ap 🔴 PUBLIC PAGES ON THEIR OWN ROOT LAYOUT (V16.13)
+
+- **35.ap-1 Public HatchGrab pages never import app-only code.** They live in `app/(public)` under two lean root layouts
+  (`[country]/layout.tsx` for the country pages, `(site)/layout.tsx` for /about and the router addresses), both rendering
+  `components/public/PublicDocument.tsx`: `<html lang dir data-brand>`, `<body class="antialiased">` plus the page language's
+  `hg-script-<key>` class, `app/(public)/public.css` (globals.css minus leaflet), that ONE language's script font
+  (`components/public/script-fonts/<key>.tsx`, through next/dynamic) and PostHog started after idle
+  (`components/public/PublicAnalytics.tsx`, which `import()`s the unchanged `app/(app)/providers.tsx`). Never in their static graph: the
+  Supabase browser client, `SessionAlertBanner`, Geist, `lib/script-fonts.ts` (every language's font rules), posthog-js, the app's
+  layout, provider or stylesheet. Every other route is in `app/(app)` under the app's root layout, unchanged. A link between the two
+  is a full page load (Next's rule), so /contact and the legal pages stay in `app/(app)` (the native app's legal view and Village
+  Foodie link to them client-side). `scripts/cwv-2.cjs` §2 walks the graph.
+- **35.ap-2 A built-ahead public page reads nothing from the request and only tagged data.** The landing, /features and /faq at
+  `/<country>` are generated for every listed country (`revalidate = 300`, `dynamicParams = true`) and served from the CDN; their
+  host gate, and the 404 for a country-shaped address with no such country, are `proxy.ts`'s. Every database read they make goes
+  through the tagged shared cache, so a write shows on the very next request only if its writer revalidates the tag
+  (`revalidateMarketing` / `/api/revalidate`); anything else shows within 300 seconds. A failed read on such a render throws
+  (`isBuiltAheadRender`), never degrades, so a degraded page is never stored. /compare and the comparison pages (admin-only pages,
+  `?free`, `?view=public`, competitor data without a tag) stay per request on the lean layout until that is solved.
+
 ## 🔴 iOS PUSH ENTITLEMENT — the §36 audit CONFIRMED, then fixed (V11.4)
 
 **All three recorded facts verified before changing anything:** no `.entitlements` file anywhere under `ios/` (`find` returns nothing); **no `CODE_SIGN_ENTITLEMENTS` in either build configuration**; and **no Push Notifications capability** — an enabled capability leaves a `SystemCapabilities` block and an entitlements key, and neither existed. §36's statement that the APNs path *"has been written, deployed and reasoned about, and has never been able to obtain a token"* was accurate, and the reason was this and only this.
@@ -29504,6 +29528,22 @@ Recorded so they are not briefed again.
   - The store-flag sentences and the code that appended them are gone.
   - ⚠️ **A known wording gap Dominic has accepted for now:** offline protection is OFF until a truck switches it on, but the sentence
     reads as if it always happens.
+
+### The public pages on their own root layout (V16.13 — cwv-2, 6 November 2026)
+
+- **The rules are 35.ap-1 and 35.ap-2.** `app/(app)/` holds every app route under today's root layout (`layout.tsx`, `providers.tsx`,
+  `globals.css`, moved byte-identical); `app/(public)/` holds the public pages. URLs did not change. Route handlers, `robots.ts`,
+  `sitemap.ts`, `/llms.txt`, `global-error.tsx` and the embed component stay at `app/`.
+- **404s:** an address no route matches renders `app/global-not-found.tsx` (the app's layout around the app's 404 card;
+  `experimental.globalNotFound`); a country page's own 404 is `app/(public)/[country]/not-found.tsx`, the same card in the address's
+  language from `next/root-params` (`experimental.rootParams`), because a segment's not-found renders on every page.
+- **Built ahead:** `/<country>`, `/<country>/features`, `/<country>/faq` (● in the build output). Writers of their data: Admin ›
+  Countries, Admin › FAQ, the FAQ translation run and migrations (all revalidate their tag — §48 perf-1). `/<country>/compare`, the
+  comparison pages, /about and the router addresses render per request on the lean layout.
+- **Off the first screen:** PostHog (after load + idle; a visit that ends before then sends no page view — Dominic's Q2 = A) and the
+  demo pop-up's code (`components/landing/DemoModalBody.tsx`, fetched on idle or when a demo button is pointed at, focused or touched).
+- **Moving files:** a harness reading the working tree names the new path; one reading an old commit names the path it had there
+  (`scripts/_moved-paths.cjs` `pathAt`, `changedSince`).
 
 # 49. Deploy posture (current at V16.11; earlier postures below, each dated)
 

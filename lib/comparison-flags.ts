@@ -4,7 +4,7 @@
 import 'server-only'
 import { isComparisonStatus, type ComparisonFlags } from '@/lib/comparison-types'
 import { countryOfSegment } from '@/lib/marketing-country'
-import { isMarketingRender } from '@/lib/marketing-render'   // perf-1: a marketing page's render reads the tagged shared cache
+import { isMarketingRender, isBuiltAheadRender } from '@/lib/marketing-render'   // perf-1: a marketing page's render reads the tagged shared cache
 
 const TTL_MS = 60_000
 let flagsCache: { at: number; value: Map<string, ComparisonFlags> } | null = null
@@ -31,7 +31,7 @@ export async function comparisonFlags(): Promise<Map<string, ComparisonFlags>> {
   // perf-1 (5 November 2026): a marketing page's render reads the tagged shared cache (lib/marketing-cache.ts). A failed read there
   // is never kept; it falls through to the read below, which answers as it always has (logged, every country off).
   if (isMarketingRender()) {
-    try { return new Map((await (await import('@/lib/marketing-cache')).marketingComparisonEntries())) } catch { /* answered below, as before */ }
+    try { return new Map((await (await import('@/lib/marketing-cache')).marketingComparisonEntries())) } catch (e) { if (isBuiltAheadRender()) throw e /* cwv-2: never stored with a built-ahead page */ }
   }
   if (flagsCache && Date.now() - flagsCache.at < TTL_MS) return flagsCache.value
   let value = new Map<string, ComparisonFlags>()

@@ -302,7 +302,8 @@ const J = x => JSON.stringify(x)
       // ⚠️ RE-PINNED (languages-1): the wizard's translators come from useTIn (which also fetches a non-English language's
       // words) instead of useMemo(translatorFor(…)) — the same locale, the same namespace.
       ['components/DemoGetStarted.tsx', "errorTextIn([tErr, tTrade] as never[], e.server, t(`error.${e.code}`))", "useTIn(wizardLocale, 'errorsOnboarding')"],
-      ['components/landing/DemoUpload.tsx', "errorText(tErr, message.server, t(`error.${message.code}`))", "useT('errorsOnboarding')"],
+      // ⚠️ RE-PINNED (cwv-2, 6 November 2026): the demo pop-up's code moved, byte for byte, into DemoModalBody.tsx (loaded off the first screen).
+      ['components/landing/DemoModalBody.tsx', "errorText(tErr, message.server, t(`error.${message.code}`))", "useT('errorsOnboarding')"],
       ['app/(app)/dashboard/[token]/page.tsx', "setRestartError(errorText(tErrO,data,tDash('demo.restartFailed')))", "useT('errorsKitchen'), tErrM=useT('errorsManage'), tErrO=useT('errorsOnboarding')"],
       ['app/(app)/dashboard/[token]/kds/page.tsx', "setError(errorText(tErrK, data, 'error.linkInvalid'))", "useT('errorsKitchen'), tErrM = useT('errorsManage')"],
       ['lib/native/useGatedActionResult.tsx', "throw new Error(errorText(tErrRef.current, data, ''))", "useT('errorsKitchen')"],

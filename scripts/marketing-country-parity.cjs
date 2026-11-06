@@ -483,7 +483,9 @@ async function compare() {
   const layout = read('app/(public)/(site)/landing/layout.tsx'), feat = read('app/(public)/(site)/features/page.tsx'), cmp = read('app/(public)/(site)/compare/page.tsx'), vcSrc = read('lib/visitor-country.ts')
   ok(/export const dynamic = 'force-dynamic'/.test(layout) && /export const dynamic = 'force-dynamic'/.test(feat) && /export const dynamic = 'force-dynamic'/.test(cmp), 'landing (layout), /features and /compare are force-dynamic')
   ok(/headers\(\), cookies\(\)/.test(vcSrc), 'the resolver reads the request (headers and cookies), so each request renders its own country')
-  ok(/if \(!\(await onHatchGrab\(\)\)\) \{\s*notFound\(\)/.test(feat) && /if \(!\(await onHatchGrab\(\)\)\) \{\s*notFound\(\)/.test(cmp), '/features and /compare keep the brand gate, before the country read')
+  // ⚠️ RE-PINNED (cwv-2, 6 November 2026, docs/cwv-2-report.md §4): /<country>/features is built ahead, so its brand gate at a country
+  // address is proxy.ts's (cwv-2.cjs §3 checks it); the page keeps the gate, before the country read, for the address without a country.
+  ok(/if \(segment === undefined && !\(await onHatchGrab\(\)\)\) \{\s*notFound\(\)/.test(feat) && /if \(!\(await onHatchGrab\(\)\)\) \{\s*notFound\(\)/.test(cmp), '/features and /compare keep the brand gate, before the country read')
   ok(feat.indexOf('onHatchGrab()))') < feat.indexOf('resolveVisitorCountry(') && cmp.indexOf('onHatchGrab()))') < cmp.indexOf('resolveVisitorCountry('), 'the gate runs before any country read')
   const vf = await visit('compare', { rows: [GB, US_OFF] }).catch(e => e)
   ok(true, 'compare renders')

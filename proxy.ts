@@ -14,6 +14,7 @@ import { PAGE_LANG_HEADER } from '@/lib/page-lang'
 import { DEFAULT_LOCALE, LOCALES, isEnglish } from '@/lib/i18n/locales'
 import { PRIVACY_PATH, TERMS_PATH, COUNTRY_TERMS_PATH, legalAddressOf } from '@/lib/legal'
 import { comparisonAddressOf, comparisonFlagsOf } from '@/lib/comparison-flags'
+import { isOwnOneSegment } from '@/lib/top-level-routes'
 
 // seo-fixes S4: the legal documents, written in en-GB on every host.
 const LEGAL_DOCUMENT_PATHS = new Set([PRIVACY_PATH, TERMS_PATH, COUNTRY_TERMS_PATH])
@@ -230,6 +231,24 @@ export async function proxy(request: NextRequest) {
   // order page and the truck pages stay where they are (lib/host-redirects.ts says why). Preview and local hosts are untouched.
   const crossHost = crossHostRedirect(host, pathname, request.nextUrl.search)
   if (crossHost) return NextResponse.redirect(crossHost, 308)
+
+  // ── cwv-2 (6 November 2026, docs/cwv-2-report.md §4): THE COUNTRY PAGES' HOST GATE, MOVED HERE FROM THE PAGE. ──────────────────────
+  // /uk, /uk/features, /uk/faq are built ahead and served from the CDN, so the page can no longer read the host and 404 off HatchGrab
+  // (lib/visitor-country.ts resolveCountryPage did that). The same answer is given here instead: any host that is not HatchGrab
+  // (Village Foodie, a preview, localhost) gets today's 404 page with a 404 status (below) — an address no route matches, which renders
+  // app/global-not-found.tsx (the app's own layout and 404 card, for that host). /<country>/compare and the comparison pages are still
+  // rendered per request and keep their own check; this covers them too, with the same result.
+  // An address SHAPED like a country page whose first segment is no country (/zz, /zz/faq, /zz/x/y) gets the same answer on every host:
+  // it was a 404 from the page before; the page's 404 now knows only real countries' languages, so the app's own 404 answers it here —
+  // the card, its words in the visitor's language and the 404 status exactly as before.
+  const countryShaped = /^\/([a-z]{2})(?:\/(?:features|faq|compare)|\/[a-z0-9-]+\/[a-z0-9-]+)?$/.exec(pathname)
+  // …and ANY one-segment address with no route or file of its own (/wp-admin): app/(public)/[country] would catch it, and its built-ahead
+  // pages cannot word a 404 for the visitor or the host (lib/top-level-routes.ts).
+  const oneSegment = /^\/([^/]+)$/.exec(pathname)
+  if ((countryShaped && (!countryOfSegment(countryShaped[1]) || !isHatchGrab(host)))
+    || (oneSegment && !countryOfSegment(oneSegment[1]) && !isOwnOneSegment(oneSegment[1]))) {
+    return NextResponse.rewrite(new URL('/__cwv2/no/such/country/page', request.url))
+  }
 
   // ── Rate limiting ─────────────────────────────────────────────────
   // Only the public allowlist (isStrictPublic / isGeneralPublic) is ever limited — operator surfaces are

@@ -93,11 +93,16 @@ const count = (s, needle) => s.split(needle).length - 1
     t('…and /mt answers 200 again within the proxy\'s 60 seconds', onAfter && onAfter.ms <= 65000, onAfter)
 
     console.log('\n── 5 · a failed read is never cached (faq_translations failing)')
+    // ⚠️ RE-PINNED (cwv-2, 6 November 2026, docs/cwv-2-report.md §4): /de/faq is BUILT AHEAD now. Per request it answered a failed
+    // read with "no translations" (404); built ahead, that 404 would be STORED with the page, so a failed read throws instead
+    // (lib/marketing-render.ts isBuiltAheadRender). Unannounced, the stored good page keeps answering; right after a revalidation the
+    // render fails (500) and nothing is stored. What perf-1 proves is unchanged: the failure is never kept (the check after this one).
     const d0 = await page('/de/faq')
     await standin('/__standin/fail', { table: 'faq_translations', on: true })
+    const dA = await page('/de/faq')
     await revalidate(['marketing-faq'])
     const d1 = await page('/de/faq')
-    t('while the translations fail: /de/faq answers as it always has with no translations (404)', d0.status === 200 && d1.status === 404, [d0.status, d1.status])
+    t('while the translations fail: the built-ahead /de/faq keeps its last good page (200) until a revalidation, then fails (500) rather than storing a degraded page', d0.status === 200 && dA.status === 200 && d1.status === 500, [d0.status, dA.status, d1.status])
     await standin('/__standin/fail', { table: 'faq_translations', on: false })
     const d2 = await page('/de/faq')
     t('the moment the table reads again, the VERY NEXT /de/faq shows the German FAQ (the failure was not kept)', d2.status === 200)

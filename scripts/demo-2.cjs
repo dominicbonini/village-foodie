@@ -120,7 +120,7 @@ const gb = () => [snake(SEEDS.gbFromSeed())]
     t('outreach builds (/api/admin/provision-demo) ask for no email, file the menu and count the build as outreach',
       !/isDemoEmail|visitor_email/.test(admin) && /saveDemoMenuFiles\(supabase, result\.truckId, \{ file, text \}\)/.test(admin) && /source: 'outreach'/.test(admin))
     // The modal: email field before Build and before the sample, required; the privacy link; the unticked box.
-    const up = read('components/landing/DemoUpload.tsx')
+    const up = read('components/landing/DemoModalBody.tsx')
     t('the modal: email field after the menu, BEFORE "See sample menu" and the footer\'s "Build my demo"; both need a valid email',
       up.indexOf('data-demo-email') > up.indexOf('<MenuUploadFields') && up.indexOf('data-demo-email') < up.indexOf("{t('noPhoto')}")
       && /const canSubmit = \(!!file \|\| !!text\.trim\(\)\) && emailOk/.test(up) && /onClick=\{\(\) => submit\(\{ templateId: SAMPLE_TEMPLATE\.id \}\)\} disabled=\{!emailOk\}/.test(up))
@@ -326,7 +326,7 @@ const gb = () => [snake(SEEDS.gbFromSeed())]
   {
     const walk = read('components/demo/DemoWalkthrough.tsx')
     t('the walkthrough opens the existing signup wizard with the email from THIS browser\'s memory, never from the server',
-      /<DemoGetStarted\s+slug=\{slug\}\s+prefillEmail=\{demoEmailFor\(slug\)\}/.test(walk) && /rememberDemoEmail\(data\.slug, email\)/.test(read('components/landing/DemoUpload.tsx')))
+      /<DemoGetStarted\s+slug=\{slug\}\s+prefillEmail=\{demoEmailFor\(slug\)\}/.test(walk) && /rememberDemoEmail\(data\.slug, email\)/.test(read('components/landing/DemoModalBody.tsx')))
     const g = read('components/DemoGetStarted.tsx')
     t('the wizard starts with that email, and signs up claiming the demo by its slug (so the menu carries over via ?import=demo)',
       /useState\(prefillEmail \?\? ''\)/.test(g) && /demo: token \|\| slug/.test(g) && /\?import=demo/.test(g))

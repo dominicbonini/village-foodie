@@ -179,7 +179,7 @@ const REGIONAL = [['de-AT', 'AT', 'de-DE'], ['de-CH', 'CH', 'de-DE'], ['nl-BE', 
   // ══ 5 · EVERY LINK, EVERY EMAIL, THE ACCOUNT PAGES ════════════════════════════════════════════════════════════════
   head('5 · EVERY LINK TO A LEGAL DOCUMENT, THE ACCOUNT PAGES AND EMAILS')
   const SITES = ['components/landing/LandingFooter.tsx', 'app/(app)/contact/HatchGrabContact.tsx', 'app/(app)/signup/page.tsx', 'components/DemoGetStarted.tsx',
-    'components/landing/DemoUpload.tsx', 'components/dashboard/UserMenu.tsx', 'app/(app)/trucks/[slug]/order/page.tsx', 'components/manage/DeleteAccountSection.tsx']
+    'components/landing/DemoModalBody.tsx', 'components/dashboard/UserMenu.tsx', 'app/(app)/trucks/[slug]/order/page.tsx', 'components/manage/DeleteAccountSection.tsx']
   const typed = SITES.filter(f => /\b(PRIVACY_PATH|TERMS_PATH|COUNTRY_TERMS_PATH)\b|href="\/(privacy|terms)"/.test(read(f)))
   t(`every legal link asks legalPath / useLegalPath (${SITES.length} files) — none types an English address`, typed.length === 0 && SITES.every(f => /legalPath|useLegalPath/.test(read(f))), typed)
   const E = await kit.bundle('ll1-email', "export { privacyFooterHtml, privacyFooterText } from '@/lib/email-privacy'\nexport { translatorFor } from '@/lib/i18n/translator'\nimport '@/lib/i18n/catalog/emailCustomer'")

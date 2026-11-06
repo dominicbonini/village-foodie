@@ -33,7 +33,7 @@ import { checkItem } from '@/lib/faq/check'
 import { shownRow, type FaqTranslationRow } from '@/lib/faq/translation'
 import { itemSourceHash, sectionSourceHash } from '@/lib/faq/source-hash'
 import type { FaqPair } from '@/lib/structured-data'
-import { isMarketingRender } from '@/lib/marketing-render'   // perf-1: a marketing page's render reads the tagged shared cache
+import { isMarketingRender, isBuiltAheadRender } from '@/lib/marketing-render'   // perf-1: a marketing page's render reads the tagged shared cache
 
 /** One section as the page shows it: its title (a small label) and its visible questions. */
 export interface PublicFaqSection { title: string; items: FaqPair[] }
@@ -61,7 +61,7 @@ async function published(): Promise<Published> {
   // perf-1 (5 November 2026): a marketing page's render reads the tagged shared cache (lib/marketing-cache.ts). A failed read there is
   // never kept; it falls through to the read below, which answers as it always has.
   if (isMarketingRender()) {
-    try { return await (await import('@/lib/faq/public-cache')).marketingFaqRows() } catch { /* answered below, as before */ }
+    try { return await (await import('@/lib/faq/public-cache')).marketingFaqRows() } catch (e) { if (isBuiltAheadRender()) throw e /* cwv-2: never stored with a built-ahead page */ }
   }
   if (rowsCache && Date.now() - rowsCache.at < TTL_MS) return rowsCache.value
   const value = await readPublished(false)
@@ -121,7 +121,7 @@ export async function faqPage(settings: CountrySettings): Promise<FaqPageData | 
   // perf-1 (5 November 2026): a marketing page's render reads the tagged shared cache, by country and locale only. A failed read there
   // is never kept; it falls through to the read below, which answers as it always has.
   if (isMarketingRender()) {
-    try { return await (await import('@/lib/faq/public-cache')).marketingFaqPage(code, locale) } catch { /* answered below, as before */ }
+    try { return await (await import('@/lib/faq/public-cache')).marketingFaqPage(code, locale) } catch (e) { if (isBuiltAheadRender()) throw e /* cwv-2: never stored with a built-ahead page */ }
   }
   const hit = pageCache.get(code)
   if (hit && Date.now() - hit.at < TTL_MS) return hit.value
@@ -207,7 +207,7 @@ export async function faqCountries(): Promise<{ code: string; locale: string; up
   // perf-1 (5 November 2026): a marketing page's render reads the tagged shared cache (the FAQ pages' hreflang set). A failed read
   // there is never kept; it falls through to the read below, which answers as it always has.
   if (isMarketingRender()) {
-    try { return await (await import('@/lib/faq/public-cache')).marketingFaqCountries() } catch { /* answered below, as before */ }
+    try { return await (await import('@/lib/faq/public-cache')).marketingFaqCountries() } catch (e) { if (isBuiltAheadRender()) throw e /* cwv-2: never stored with a built-ahead page */ }
   }
   const all = await listCountrySettingsCached().catch(() => [])
   const out: { code: string; locale: string; updatedAt: string | null }[] = []

@@ -70,7 +70,11 @@ function appCss() {
   } }
   walk(cssRoot)
   if (!files.length) throw new Error('no compiled CSS under .next/static — run `npx next build`')
-  const css = files.map(f => fs.readFileSync(f, 'utf8')).join('\n')
+  // ⚠️ RE-PINNED (cwv-2, 6 November 2026, docs/cwv-2-report.md §3): the build now also holds the PUBLIC pages' base stylesheet
+  // (app/(public)/public.css — globals.css without leaflet), which no app screen loads. It is left out — the one base sheet without
+  // leaflet's rules — so this is the app's CSS exactly as before (its own chunk is byte-identical: the same content hash).
+  const isPublicBase = src => /font-size:16px!important/.test(src) && !/\.leaflet-/.test(src)
+  const css = files.map(f => fs.readFileSync(f, 'utf8')).filter(src => !isPublicBase(src)).join('\n')
   /* 🔴 THE STALENESS CHECK. Tailwind emits only the classes it finds in the source, so a build from
    * before this component existed has no rule for its grid — and the fixture would then lay out as a
    * single column at EVERY width and report the phone case passing for the wrong reason. */

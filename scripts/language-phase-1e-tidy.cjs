@@ -63,6 +63,19 @@ const FOOTNOTE_EDITS = [
 ]
 const FIX13 = require('./_lp1e-named.cjs').US_LAYOUT_FIX_13
 const NAMED = [
+  // ⚠️ RE-PINNED (cwv-2, 6 November 2026, docs/cwv-2-report.md §4): a country-SHAPED address that is no country (/gb), or any country
+  // address off HatchGrab, is answered by proxy.ts itself — a rewrite to an address no route matches, the app's own 404 (the built-ahead
+  // country pages can no longer read the host). The page gave the same 404 before (scripts/cwv-2-proof: status and pixels).
+  { id: 'cwv2-country-404', what: 'a country-shaped address that is no country, or off HatchGrab: the app\'s 404 from proxy.ts (cwv-2)',
+    applies: id => {
+      const m = /^router\/router\|X\|(\S+) (\/[a-z]{2}(?:\/(?:features|faq|compare))?) /.exec(id)
+      if (m) return !/hatchgrab/.test(m[1]) || !Object.values(SEG).includes(m[2].slice(1, 3))
+      // …and any one-segment address with no route or file of its own (/UK, /en-us) — lib/top-level-routes.ts, read as text
+      const one = /^router\/router\|X\|\S+ \/([^/ ?]+) /.exec(id)
+      const own = (fs.readFileSync(path.join(REPO, 'lib/top-level-routes.ts'), 'utf8').match(/'[^']+'/g) || []).map(x => x.slice(1, -1))
+      return !!one && !Object.values(SEG).includes(one[1]) && !own.includes(one[1])
+    },
+    apply: v => (v && v.kind === 'next' ? { ...v, kind: 'rewrite', rewrite: '/__cwv2/no/such/country/page' } : v) },
   { id: 'footnotes', what: 'footnote 1 (Tap to Pay: “a supported phone”, as its row says) and footnote 5 (“Get in touch for the list of compatible printers.”), both countries',
     applies: () => true,
     apply: v => { let j = JSON.stringify(v); for (const [a, b] of FOOTNOTE_EDITS) j = j.split(JSON.stringify(a).slice(1, -1)).join(JSON.stringify(b).slice(1, -1)); return JSON.parse(j) } },

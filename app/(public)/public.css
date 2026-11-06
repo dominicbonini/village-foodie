@@ -1,0 +1,217 @@
+/* app/(public)/public.css — cwv-2 (6 November 2026, docs/cwv-2-report.md §3): THE PUBLIC PAGES' BASE STYLESHEET. It is app/(app)/globals.css
+   with exactly one line taken out — leaflet's map CSS (no public page has a map). Everything else is that file, byte for byte, so the
+   pages draw exactly as before; scripts/cwv-2.cjs fails if the two drift apart. */
+@import "tailwindcss";
+
+:root {
+  --background: #F9F9F9;
+  --foreground: #354F52;
+  --primary: #84A98C;
+  --secondary: #354F52;
+  --accent: #E76F51;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  background: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-sans), system-ui, sans-serif;
+}
+
+/* Prevent iOS Safari auto-zoom on input focus */
+input[type="text"],
+input[type="email"],
+input[type="tel"],
+input[type="number"],
+input[type="password"],
+input[type="search"],
+select,
+textarea {
+  font-size: 16px !important;
+}
+
+@media (min-width: 640px) {
+  input[type="text"],
+  input[type="email"],
+  input[type="tel"],
+  input[type="number"],
+  input[type="password"],
+  input[type="search"],
+  select,
+  textarea {
+    font-size: inherit !important;
+  }
+}
+
+details[open] > summary .details-arrow {
+  transform: rotate(90deg);
+}
+
+/* Hide a horizontal scrollbar track without disabling scroll/swipe (e.g. the customer order page
+   category tab row). Cross-browser: Firefox, old Edge/IE, and WebKit (iOS Safari / Chrome). */
+.scrollbar-hide {
+  scrollbar-width: none;        /* Firefox */
+  -ms-overflow-style: none;     /* old Edge / IE */
+}
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;                /* iOS Safari / Chrome */
+}
+
+/* ── DEMO ONLY — the loop-complete order flash ───────────────────────────────────────────────────
+   Applied by OrderCard's `highlight` prop, which only the demo dashboard ever sets (see
+   components/dashboard/DemoLoopComplete.tsx). Nothing renders this on a live operator's board.
+
+   ── WHY A FULL-CARD WASH, NOT A RING ──────────────────────────────────────────────────────────
+   The ring this replaces was orange, and every card on this board already carries a border — so it
+   competed with borders instead of standing out, and orange sat right next to the red/amber the late
+   states use, reading as another urgency level rather than "this one is yours". A background wash has
+   no such competition in a dense grid.
+
+   ── WHY GREEN ─────────────────────────────────────────────────────────────────────────────────
+   Red = late, amber = warn/cooking (helpers.ts getHeaderStyle), orange = the primary action. All
+   three are spoken for. Green is unused by any order state on the orders screen and already reads as
+   new / fine / yours.
+
+   ── WHY ::after AND NOT background-color ──────────────────────────────────────────────────────
+   🔴 THE LAYERING POINT. An OrderCard is a white box whose HEADER carries its own background
+   (bg-red-50 on a late order, bg-amber-50 cooking/warn, bg-green-50 ready). A background-color on the
+   card root paints BEHIND those children, so on the exact card this feature exists for — a late one,
+   pink header — the wash would be invisible over the part the eye lands on. An absolutely positioned
+   ::after overlay paints ON TOP of every child instead, so the wash is uniform across header and body
+   whatever tint is underneath. `position: relative` is set here rather than as a Tailwind class so a
+   live card's markup is untouched; `pointer-events: none` keeps the card's buttons usable while it
+   fades — the operator is meant to work with this order, not wait for it.
+
+   ── FADES OUT COMPLETELY ──────────────────────────────────────────────────────────────────────
+   ~2s, ending at opacity 0 with `forwards`, so nothing is held. This is the jump-to-item convention
+   (GitHub, Slack, Linear): say "here", then get out of the way. A permanent marker on a card the
+   operator now has to work is just noise. DemoLoopComplete also drops the class shortly after, so the
+   DOM doesn't keep a spent flag either. */
+@keyframes demoOrderFlash {
+  0%   { opacity: 0.5; }
+  55%  { opacity: 0.42; }   /* hold most of the tint while they arrive, THEN fall away */
+  100% { opacity: 0; }
+}
+
+.demo-order-highlight {
+  position: relative;
+}
+
+.demo-order-highlight::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 5;                          /* above the header strip and body, both static */
+  pointer-events: none;                /* the card stays fully usable during the flash */
+  border-radius: inherit;              /* follow the card's rounded-2xl, no square corners */
+  background-color: rgb(34 197 94);    /* green-500 — see "WHY GREEN" above */
+  opacity: 0;
+  animation: demoOrderFlash 2000ms ease-out forwards;
+}
+
+/* Reduced motion must still ANSWER THE QUESTION "which one?" — dropping the flash entirely would
+   scroll someone to an unmarked card. So: the same wash, held flat and then cleared in a single step,
+   with no fade in between. steps(1, end) means opacity stays at the start value for the whole
+   duration and jumps to 0 at the end — a static tint that clears, not an animation to watch. */
+@keyframes demoOrderFlashStatic {
+  0%   { opacity: 0.4; }
+  100% { opacity: 0; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .demo-order-highlight::after {
+    animation: demoOrderFlashStatic 2000ms steps(1, end) forwards;
+  }
+}
+
+/* ── 🔴 CUSTOMER BRAND MARK — ONE OF TWO, CHOSEN BY HOST, NO JAVASCRIPT ──────────────────────────────
+   Scope, deliberately narrow: the CUSTOMER ordering page and the CUSTOMER truck schedule page render
+   BOTH marks and let this hide one. `data-brand` is set on <html> server-side in app/layout.tsx from
+   the host it already reads, so the correct mark is in the FIRST painted frame — branching on
+   lib/domain.ts's isHatchGrab() instead would render Village Foodie into the SSR HTML and swap it
+   after hydration, a visible logo flash on every load.
+   ⚠ NOTHING ELSE USES THESE CLASSES. Operator surfaces carry their own wordmark and are untouched.
+   ⚠ villagefoodie.co.uk keeps the Village Foodie mark — that is the whole point of the switch. */
+html[data-brand="hatchgrab"] .brand-mark-vf { display: none; }
+html:not([data-brand="hatchgrab"]) .brand-mark-hg { display: none; }
+
+/* ── 🔴 THE SUB-TAB BAR SITS AT THE TOP OF THE SCROLLER — ONE RESTING POSITION, NOT TWO ─────────────
+   THE BUG THIS FIXES (reported 3 October 2026): the Settings jump bar rendered ~24px down the page on
+   load and SNAPPED FLUSH the moment you scrolled or tapped a tab.
+   THE CAUSE: `position: sticky` can only hold an element at or BELOW where it sits in normal flow. The
+   bar is `top-0` inside the manage scroller, but its flow position is 24px lower because every tab's
+   content sits in a shared `pt-6` wrapper. At scrollTop 0 the pin had nothing to do, so the gap showed;
+   any scroll then let it pin flush. Two resting positions for one bar.
+   THE FIX: when a sub-tab bar IS the first thing in the wrapper, the wrapper gives up its top padding,
+   so the bar's flow position and its pinned position are the same pixel and it never moves.
+
+   ⛔ THIS RULE IS NO LONGER THE FIX — IT IS A SECOND BELT (4 October 2026, after two reports).
+   It is correct, it is unlayered so it beats the `pt-6` utility, and scripts/schedule-places-render.cjs
+   measures it working at three widths in Chromium and WebKit. Dominic still reported the gap, twice,
+   on builds carrying it. The only way both of those are true is a browser with NO `:has()` support:
+   it landed in Safari 15.4 (March 2022) and Chrome 105, this app is used in an iPad WKWebView, and an
+   unsupported selector is DISCARDED IN SILENCE — no error, no warning, nothing to see in the source.
+   So the padding is applied in JSX now, by `TABS_WITH_SUBTABS` in app/manage/[token]/page.tsx: a tab
+   whose first element is a sticky bar is never given it. The page already knew the answer; asking it
+   in a selector was what made the answer depend on the browser.
+   ⚠️ THE RULE STAYS because it costs nothing and still catches a bar added to a tab nobody listed
+   — but nothing should be written that RELIES on it. The harness asserts the bar is flush with this
+   rule unable to match, which is the measurement that says the fix does not rest on it.
+
+   ⚠️ WHY `:has()` AND NOT A `-mt-6` ON THE BAR. A fixed negative margin pulls the bar up whether or
+   not there is room, so on any day something else rendered above it the bar would overlap that thing.
+   This rule applies only when the bar really IS the first child, so it can never produce an overlap,
+   and it cannot drift: there is no boolean to keep in sync with the page's conditions.
+
+   🔴 AND WHY THE BAR IS NOW ALWAYS THE FIRST CHILD (4 October 2026). Until this date the page's seven
+   notices — walkthrough strip, approvals, allergens, custom domain, Stripe, missing fields, and the
+   staleness bar — were the first children of this wrapper. Whenever ONE of them was showing the bar
+   was not first, this rule stopped matching, the `pt-6` stayed, and the bar rested ~24px + the notice's
+   height down the page and snapped flush on the first scroll: the SAME two resting positions, reached
+   by a different route. Dominic: "they have been pushed down the screen a little so when you scroll
+   down the screen they move up." `position: sticky` has no upward reach, so there is no CSS answer to
+   content above the bar — the ORDER had to change. The notices moved BELOW each sub-tab bar (they are
+   one `notices` node in app/manage/[token]/page.tsx, handed to the three tabs that own a bar), and they
+   now scroll under the pinned bar like any other content. Tabs with no bar still render them on top.
+   ⛔ DO NOT PUT ANYTHING BACK ABOVE A SUB-TAB BAR INSIDE THIS WRAPPER. One banner is enough to undo
+   the fix, and nothing in CSS will tell you — the bar simply starts moving again.
+
+   ⚠️ TWO SELECTORS BECAUSE THE BARS SIT AT TWO DEPTHS. Menu's row and Schedule's row are direct
+   children of the wrapper (Schedule's component returns a fragment, so its children are hoisted);
+   Settings' bar is one level deeper, inside `SettingsTab`'s own `space-y-6` root. */
+.manage-tab-pad:has(> [data-subtab-bar]:first-child),
+.manage-tab-pad:has(> *:first-child > [data-subtab-bar]:first-child) {
+  padding-top: 0;
+}
+
+/* ── languages-1 (22 October 2026): MANAGE'S MENU AND SCHEDULE HEADER BUTTONS IN A LONGER LANGUAGE ──────────────────
+   "Import menu" and "+ Add category" (Schedule: "Import" and "+ Add event") sit side by side, both `whitespace-nowrap`, beside the "Menu" heading — and at 390px
+   another language's labels ("+ Ajouter une catégorie") push the row sideways. On a NON-English page only, on a phone, the
+   pair may wrap onto two lines (right-aligned), which is the whole fix. ⛔ English pages match none of this (`:lang(en)`),
+   so their row is exactly as before; the selector is the row's own shape (the two-button group whose second button sits in
+   a `self-start` wrapper — Menu's and Schedule's headers), so nothing else in Manage is touched. */
+@media (max-width: 639px) {
+  :root:not(:lang(en)) .justify-between > .flex.items-center.gap-2:has(> .flex-col.items-end + .self-start) {
+    flex-wrap: wrap;
+    justify-content: flex-end;
+  }
+}
+
+/* europe-languages-2 (23 October 2026): Greek and Bulgarian pages — Noto Sans fills the letters Geist lacks (Greek), after Geist and
+   before its metric fallback. The variable exists only on those pages (app/layout.tsx), so no Latin page is affected. */
+:root:lang(el) body, :root:lang(bg) body { --font-geist-sans: 'Geist', var(--font-script-fallback), 'Geist Fallback'; }
+/* world-countries-1 (31 October 2026): Japanese, Traditional Chinese (Hong Kong), Thai and Arabic — each language's Noto (app/layout.tsx,
+   present only on its own pages) BEFORE Geist's metric fallback, which is a size-adjusted local Arial that would otherwise draw (or
+   miss) these scripts and keep Noto from ever loading. */
+:root:lang(ja) body { --font-geist-sans: 'Geist', var(--font-script-ja), 'Geist Fallback'; }
+:root:lang(zh) body { --font-geist-sans: 'Geist', var(--font-script-zh-hk), 'Geist Fallback'; }
+:root:lang(th) body { --font-geist-sans: 'Geist', var(--font-script-th), 'Geist Fallback'; }
+:root:lang(ar) body { --font-geist-sans: 'Geist', var(--font-script-ar), 'Geist Fallback'; }

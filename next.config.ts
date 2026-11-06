@@ -48,7 +48,12 @@ const nextConfig: NextConfig = {
   },
   /* cwv-2 (6 November 2026): two root layouts (app/(app) and app/(public)) and no app/layout.tsx — an address that matches no route
    * renders app/global-not-found.tsx (today's 404 page exactly) instead of Next's bare default (docs/cwv-2-report.md §4). */
-  experimental: { globalNotFound: true },
+  experimental: {
+    globalNotFound: true,
+    /* cwv-2: `next/root-params` — the country pages' 404 (app/(public)/[country]/not-found.tsx) reads its address's country without
+     * reading the request, so the pages stay built ahead. Read nowhere else. */
+    rootParams: true,
+  },
   images: {
     remotePatterns: [
       {

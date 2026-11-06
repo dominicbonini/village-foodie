@@ -57,7 +57,7 @@ function usHits(id, value) {
 }
 const MARKETING_FILES = ['app/(public)/(site)/landing/page.tsx', 'app/(public)/(site)/features/page.tsx', 'app/(public)/(site)/compare/page.tsx', 'app/(public)/(site)/compare/CostComparison.tsx',
   'components/landing/FeatureComparison.tsx', 'components/landing/LandingNav.tsx', 'components/landing/LandingFooter.tsx', 'components/landing/CountryMenu.tsx',
-  'components/landing/DemoUpload.tsx', 'app/(app)/contact/page.tsx', 'app/(app)/contact/HatchGrabContact.tsx', 'app/(app)/(legal)/layout.tsx', 'components/Footer.tsx', 'app/(app)/trucks/[slug]/page.tsx']
+  'components/landing/DemoUpload.tsx', 'components/landing/DemoModalBody.tsx', 'app/(app)/contact/page.tsx', 'app/(app)/contact/HatchGrabContact.tsx', 'app/(app)/(legal)/layout.tsx', 'components/Footer.tsx', 'app/(app)/trucks/[slug]/page.tsx']
 
 const HOLE = '\u0001'
 const esc = s => s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
@@ -362,6 +362,13 @@ async function run(ctx) {
         const ok = v.status === 308 && v.location === want
         if (ok) untouchedOk++
         t(`router · ${k.host} ${k.url} c=${k.cookie || '-'} us=${k.usOn ? 'on' : 'off'}: 308 → ${want} (seo-geo-2 B1, named)`, ok, JSON.stringify(v))
+      } else if (!/hatchgrab/.test(k.host) && /^\/[a-z]{2}(?:\/(?:features|faq|compare)|\/[a-z0-9-]+\/[a-z0-9-]+)?$/.test(k.url.split('?')[0]) && v && v.kind === 'rewrite' && !(BEFORE[id] && BEFORE[id].kind === 'rewrite')) {
+        // ⚠️ RE-PINNED (cwv-2, 6 November 2026, docs/cwv-2-report.md §4): a country address off HatchGrab is answered by proxy.ts itself
+        // now (the country pages are built ahead and can no longer read the host): a rewrite to an address no route matches, which renders
+        // the app's own 404 for that host — the 404 the page gave before, status and card the same (scripts/cwv-2-proof, both hosts).
+        const ok = v.kind === 'rewrite' && /\/__cwv2\/no\/such\/country\/page$/.test(String(v.rewrite || ''))
+        if (ok) untouchedOk++
+        t(`router · ${k.host} ${k.url} c=${k.cookie || '-'} us=${k.usOn ? 'on' : 'off'}: the app's own 404, from proxy.ts (cwv-2, named)`, ok, JSON.stringify(v))
       } else {
         const b = BEFORE[id]
         const strip = x => x && typeof x === 'object' ? { status: x.status, kind: x.kind, location: x.location, rewrite: x.rewrite, setCookie: x.setCookie, ends: x.ends || null } : x

@@ -227,7 +227,7 @@ const json = f => JSON.parse(read(f))
       'lib/payments', 'lib/printing', 'lib/orders', 'lib/order-charges.ts', 'lib/order-charge-rules.ts', 'lib/menu-loader.ts', 'proxy.ts', 'app/(app)/layout.tsx'].filter(p => fs.existsSync(path.join(REPO, p)))
     let diff = ''
     // ⚠️ RE-PINNED (cwv-2, 6 November 2026, docs/cwv-2-report.md §6): the routes moved into app/(app) and app/(public); `git diff` saw every moved file as deleted and added. scripts/_moved-paths.cjs changedSince compares each file with itself at that commit, under its name then — blind to the move and nothing else.
-    try { diff = require('./_moved-paths.cjs').changedSince(BEFORE, PATHS).join('\n') } catch (e) { diff = String(e) }
+    try { diff = require('./_moved-paths.cjs').changedSince(BEFORE, PATHS, { cwv2: true }).join('\n') } catch (e) { diff = String(e) }
     t(`${PATHS.length} ordering, payment, KDS, dashboard, Manage and proxy paths: no change against ${BEFORE}`, diff.trim() === '', diff)
     // ⚠️ RE-PINNED (loyalty-1, 5 November 2026, docs/loyalty-1-report.md): this compared BEFORE with the WORKING TREE, so loyalty-1's
     // lib/loyalty/ and its two privacy hooks read as perf-1's. It now compares BEFORE with perf-1's own last commit (5622370d, its report).

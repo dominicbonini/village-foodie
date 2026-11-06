@@ -445,7 +445,7 @@ function world(over = {}) {
     const outside = committed.filter(f => /^(app\/|lib\/|components\/|proxy\.ts$)/.test(f) && !OWN.test(f))
     const CRITICAL = ['app/api/orders', 'app/api/dashboard', 'app/api/payments', 'app/api/webhooks', 'lib/payments', 'lib/orders', 'lib/order-charges.ts', 'lib/order-repricing.ts', 'lib/order-calculations.ts', 'app/(app)/order', 'app/(app)/o', 'proxy.ts']
     // ⚠️ RE-PINNED (cwv-2, 6 November 2026, docs/cwv-2-report.md §6): the routes moved into app/(app) and app/(public); `git diff` saw every moved file as deleted and added. scripts/_moved-paths.cjs changedSince compares each file with itself at that commit, under its name then — blind to the move and nothing else.
-    const critical = require('./_moved-paths.cjs').changedSince(BASE, CRITICAL)
+    const critical = require('./_moved-paths.cjs').changedSince(BASE, CRITICAL, { cwv2: true })
     t('🔴 order placement, the dashboard action route (status changes), the payment and webhook code, the customer order pages and proxy.ts: byte-identical to before loyalty-1; nothing else under app/ or lib/ committed', !outside.length && !critical.length, { outside, critical })
     const src = ['lib/loyalty/model.ts', 'lib/loyalty/run.ts', 'lib/loyalty/service.ts', 'lib/loyalty/store.ts', 'lib/loyalty/retention.ts', 'app/api/cron/loyalty-stamps/route.ts'].map(read).join('\n')
     const store = read('lib/loyalty/store.ts')

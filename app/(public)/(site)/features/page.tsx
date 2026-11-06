@@ -51,7 +51,7 @@ import '@/lib/i18n/catalog/pricing'
 import '@/lib/i18n/catalog/planPrompt'
 import '@/lib/i18n/catalog/featuresPage'
 // 🔴 The visitor's country (Phase 2D-1) — ?country, the hg_country cookie, the request's country, else GB; server-side.
-import { resolveVisitorCountry } from '@/lib/visitor-country'
+import { resolveVisitorCountry, resolveBuiltAheadCountry } from '@/lib/visitor-country'
 import { marketingCountry, countryPageAlternates } from '@/lib/marketing-meta'
 import '../landing/landing.css'
 import { markMarketingRender } from '@/lib/marketing-render'   // perf-1
@@ -63,12 +63,14 @@ export const dynamic = 'force-dynamic'
 export async function generateMetadata({ params, searchParams }: { params?: Promise<{ country?: string }>; searchParams: Promise<Record<string, string | string[] | undefined>> }): Promise<Metadata> {
   markMarketingRender()   // perf-1: this render reads the marketing pages' tagged shared cache (lib/marketing-render.ts)
   // 🔴 The brand gate first, as the page does — no country is read for a host this route does not serve.
-  if (!(await onHatchGrab())) {
+  // cwv-2: at a country address (built ahead) the host gate is proxy.ts's, so nothing from the request is read here.
+  const segment = (await params)?.country
+  if (segment === undefined && !(await onHatchGrab())) {
     notFound()
   }
   // Language Phase 1e: at a COUNTRY address (/uk/features, /us/features — app/[country]/features) the country is the
   // address's; canonical and og:url are that address, hreflang every switched-on country + x-default → /features.
-  const visitor = await resolveVisitorCountry((await searchParams)?.country, { segment: (await params)?.country, page: 'features' })
+  const visitor = segment !== undefined ? await resolveBuiltAheadCountry(segment, 'features') : await resolveVisitorCountry((await searchParams)?.country)
   const c = marketingCountry(visitor.settings)
   const at = visitor.countryPage && countryPageAlternates('features', visitor.settings.countryCode, visitor.countryPage.alternates)
   // 🔴 STAGE B: the description named the retired tiers ("Starter, Pro and Max") and "your first month". It now names
@@ -133,13 +135,15 @@ export default async function FeaturesPage({ params, searchParams }: { params?: 
   markMarketingRender()   // perf-1: this render reads the marketing pages' tagged shared cache (lib/marketing-render.ts)
   // ── 🔴 THE BRAND GATE. THIS PAGE DOES NOT EXIST ON VILLAGE FOODIE. See the header note.
   // ⚠️ FIRST, AND IT NEEDS ONLY A HEADER — a visitor on the wrong brand never costs a round trip.
-  if (!(await onHatchGrab())) {
+  // cwv-2: at a country address (built ahead) the host gate is proxy.ts's, so nothing from the request is read here.
+  const segment = (await params)?.country
+  if (segment === undefined && !(await onHatchGrab())) {
     notFound()
   }
   // After the host check, so the non-HatchGrab 404 costs no read. Loud: a missing row throws.
   // Phase 2D-1: the visitor's country (lib/visitor-country.ts), on the server.
   // Language Phase 1e: at a country address the country is the ADDRESS's (lib/visitor-country.ts resolveCountryPage).
-  const visitor = await resolveVisitorCountry((await searchParams)?.country, { segment: (await params)?.country, page: 'features' })
+  const visitor = segment !== undefined ? await resolveBuiltAheadCountry(segment, 'features') : await resolveVisitorCountry((await searchParams)?.country)
   const settings = visitor.settings
   // 🔴 STAGE B: everything below the nav is the plan data, in the country's words.
   const catalog = localizePlans(await getPlanCatalog(), settings.locale)

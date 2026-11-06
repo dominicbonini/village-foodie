@@ -46,7 +46,7 @@ import '@/lib/i18n/catalog/pricing'
 import '@/lib/i18n/catalog/planPrompt'
 import { landingScreenshot } from '@/lib/landing-screens'   // the hero fan's screenshots, per country (Language Phase 1e)
 // 🔴 THE VISITOR'S COUNTRY (Phase 2D-1) — ?country, the hg_country cookie, the request's country, else GB; server-side.
-import { resolveVisitorCountry } from '@/lib/visitor-country'
+import { resolveVisitorCountry, resolveBuiltAheadCountry } from '@/lib/visitor-country'
 import { marketingCountry, countryPageAlternates } from '@/lib/marketing-meta'
 // seo-fixes M5 + S9: the JSON-LD graph (Organization, WebSite, SoftwareApplication + Offers), built from data.
 import { landingGraph } from '@/lib/structured-data'
@@ -76,10 +76,18 @@ import { markMarketingRender } from '@/lib/marketing-render'   // perf-1
 
 // 🔴 US readiness (D37): the tags name the visitor's country — lib/marketing-meta.ts. For GB every value is the
 // literal this page carried before ("UK", en_GB), byte-identical.
+/** cwv-2 (6 November 2026): the page's country. At a COUNTRY address (/uk — app/(public)/[country]/page.tsx, built ahead) it is the
+ *  address's, and NOTHING from the request is read (no ?country, no host: proxy.ts gates the host); at /landing and the unlisted
+ *  preview it is the visitor's, from the request, exactly as before. */
+async function visitorOf(params: Promise<{ country?: string }> | undefined, searchParams: Promise<Record<string, string | string[] | undefined>>) {
+  const segment = (await params)?.country
+  return segment !== undefined ? resolveBuiltAheadCountry(segment, 'landing') : resolveVisitorCountry((await searchParams)?.country)
+}
+
 export async function generateMetadata({ params, searchParams }: { params?: Promise<{ country?: string }>; searchParams: Promise<Record<string, string | string[] | undefined>> }): Promise<Metadata> {
   markMarketingRender()   // perf-1: this render reads the marketing pages' tagged shared cache (lib/marketing-render.ts)
   // Language Phase 1e: at a COUNTRY address (/uk, /us — app/[country]/page.tsx) the country is the address's.
-  const visitor = await resolveVisitorCountry((await searchParams)?.country, { segment: (await params)?.country, page: 'landing' })
+  const visitor = await visitorOf(params, searchParams)
   const c = marketingCountry(visitor.settings)
   // 🔴 canonical and og:url = the page's own country address; hreflang = every switched-on country + x-default → '/'.
   // With no country address (the old module path) both stay the literal they were.
@@ -193,7 +201,7 @@ export default async function LandingPage({ params, searchParams }: { params?: P
   // Phase 2D-1: the VISITOR'S country (?country → hg_country cookie → x-vercel-ip-country → GB, switched-on
   // only — lib/visitor-country.ts), resolved here on the server so the first paint has the right prices.
   // Language Phase 1e: at a country address (/uk, /us) the country is the ADDRESS's, never the visitor's.
-  const visitor = await resolveVisitorCountry((await searchParams)?.country, { segment: (await params)?.country, page: 'landing' })
+  const visitor = await visitorOf(params, searchParams)
   const seo = marketingCountry(visitor.settings)   // 🔴 D37: the JSON-LD's country (GB: UK, United Kingdom, en-GB)
   const s = visitor.settings
   // 🔴 STAGE B: the plan catalogue the pricing section is built from (60-second cache, lib/plans-server.ts).

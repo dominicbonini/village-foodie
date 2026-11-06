@@ -18,6 +18,7 @@ import 'server-only'
 import { cookies, headers } from 'next/headers'
 import { notFound, redirect } from 'next/navigation'
 import { listCountrySettingsCached } from '@/lib/country-settings'
+import { markBuiltAheadRender } from '@/lib/marketing-render'
 import type { CountrySettings } from '@/lib/country-settings-types'
 import { flagDataUri } from '@/lib/flags'
 import { isHatchGrabHost } from '@/lib/brand'
@@ -97,6 +98,22 @@ export async function resolveVisitorCountry(
  */
 async function resolveCountryPage(segment: string, page: MarketingPage): Promise<VisitorCountry> {
   if (!isHatchGrabHost((await headers()).get('host') || '')) notFound()
+  return resolveCountryAddress(segment, page)
+}
+
+/**
+ * cwv-2 (6 November 2026, docs/cwv-2-report.md §4): resolveCountryPage WITHOUT the host read — for the country pages that are BUILT
+ * AHEAD (the landing, /features and /faq at /<country>…), which may read nothing from the request. Their host gate is proxy.ts's: a
+ * country address on any host that is not HatchGrab gets today's 404 there, before the page is reached. Everything else is identical.
+ */
+/** cwv-2: resolveCountryAddress for a BUILT-AHEAD page (the landing, /features and /faq at /<country>): it also marks the render, so a
+ *  failed shared read throws there instead of degrading (lib/marketing-render.ts markBuiltAheadRender). */
+export async function resolveBuiltAheadCountry(segment: string, page: MarketingPage): Promise<VisitorCountry> {
+  markBuiltAheadRender()
+  return resolveCountryAddress(segment, page)
+}
+
+export async function resolveCountryAddress(segment: string, page: MarketingPage): Promise<VisitorCountry> {
   const code = countryOfSegment(segment)
   if (!code) notFound()
   const all = await listCountrySettingsCached()

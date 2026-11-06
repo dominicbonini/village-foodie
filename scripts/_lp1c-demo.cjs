@@ -24,6 +24,9 @@ const { makeFakePg } = require('./_fake-pg.cjs')
 const FILES = {
   gs: 'components/DemoGetStarted.tsx',
   up: 'components/landing/DemoUpload.tsx',
+  // ⚠️ RE-PINNED (cwv-2, 6 November 2026, docs/cwv-2-report.md §5): the pop-up's code moved, byte for byte, into DemoModalBody.tsx
+  // (loaded off the first screen). Its states and its portal are patched there; `open` stays in DemoUpload.tsx's provider.
+  body: 'components/landing/DemoModalBody.tsx',
   // ⛔ loop (components/dashboard/DemoLoopComplete.tsx) retired 30 October 2026 (demo-2)
 }
 const GS_STATES = ['open', 'email', 'busy', 'savedUntil', 'error', 'justSaved', 'step', 'baseChoice', 'operatorFirstName', 'operatorLastName',
@@ -98,10 +101,13 @@ async function views(ctx) {
       { file: FILES.gs, from: '        document.body,\n      )}', to: '        null,\n      )}' },
       // the countries list arrives by fetch in an effect: a view hands it in instead
       { file: FILES.gs, from: "const signupCountries = useSignupCountries(step !== 'landing')", to: "const signupCountries = ((s: any) => (globalThis as any).__lpSignup ?? s)(useSignupCountries(step !== 'landing'))" },
-      recStates(kit, FILES.up, UP_STATES),
-      { file: FILES.up, from: "if (!open || typeof document === 'undefined') return null", to: 'if (!open) return null' },
-      { file: FILES.up, from: '  return createPortal(', to: '  return ((el: any, _b: any) => el)(' },
-      { file: FILES.up, from: '    document.body,\n  )', to: '    null,\n  )' },
+      recStates(kit, FILES.up, ['open']),
+      recStates(kit, FILES.body, UP_STATES.filter(n => n !== 'open')),
+      // a static render cannot wait for next/dynamic: the pop-up's module is required directly
+      { file: FILES.up, from: "const DemoModalBody = dynamic(() => import('./DemoModalBody'), { ssr: false })", to: "const DemoModalBody = require('./DemoModalBody').default" },
+      { file: FILES.body, from: "if (!open || typeof document === 'undefined') return null", to: 'if (!open) return null' },
+      { file: FILES.body, from: '  return createPortal(', to: '  return ((el: any, _b: any) => el)(' },
+      { file: FILES.body, from: '    document.body,\n  )', to: '    null,\n  )' },
     ],
   })
 

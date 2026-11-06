@@ -16,7 +16,7 @@ import { notFound } from 'next/navigation'
 import { isHatchGrabHost } from '@/lib/brand'
 import { MarketingFrame } from '@/components/landing/MarketingFrame'
 import { FaqDetails } from '@/components/faq/FaqDetails'
-import { resolveVisitorCountry } from '@/lib/visitor-country'
+import { resolveVisitorCountry, resolveBuiltAheadCountry } from '@/lib/visitor-country'
 import { marketingCountry, countryPageAlternates } from '@/lib/marketing-meta'
 import { HATCHGRAB_ORIGIN, ROUTER_PATH } from '@/lib/marketing-country'
 import { organizationLd, websiteLd, faqPageLd } from '@/lib/structured-data'
@@ -38,8 +38,10 @@ type Props = { params?: Promise<{ country?: string }>; searchParams: Promise<Rec
 
 /** The page's country, its FAQ (null → 404) and its canonical / hreflang among the FAQ pages that have content. */
 async function load({ params, searchParams }: Props) {
-  if (!(await onHatchGrab())) notFound()
-  const visitor = await resolveVisitorCountry((await searchParams)?.country, { segment: (await params)?.country, page: 'faq' })
+  // cwv-2: at a country address (/uk/faq, built ahead) nothing from the request is read — proxy.ts gates the host.
+  const segment = (await params)?.country
+  if (segment === undefined && !(await onHatchGrab())) notFound()
+  const visitor = segment !== undefined ? await resolveBuiltAheadCountry(segment, 'faq') : await resolveVisitorCountry((await searchParams)?.country)
   const data = await faqPage(visitor.settings)
   if (!data) notFound()
   const withContent = (await faqCountries()).map(c => ({ code: c.code, locale: c.locale }))

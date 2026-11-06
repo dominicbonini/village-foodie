@@ -63,13 +63,17 @@ const tracked = (args) => execFileSync('git', args, { cwd: REPO, maxBuffer: 1 <<
  * it had then, after the move commit's own import-line edits (MOVE_EDITS) are applied. A file that only moved is unchanged; a file
  * added or deleted since `rev` is changed. Paths are returned in their current form.
  */
-function changedSince(rev, paths) {
+/** cwv-2's one deliberate change to a file other harnesses pin as "unchanged": the country pages' host gate in proxy.ts (built-ahead
+ *  pages cannot read the host). `changedSince(rev, paths, { cwv2: true })` compares proxy.ts with exactly that block taken out. */
+const CWV2_PROXY_BLOCK = /\n  \/\/ ── cwv-2 \(6 November 2026[\s\S]*?\n  \}\n\n/
+function changedSince(rev, paths, { cwv2 = false } = {}) {
   const now = [...new Set(paths.map(nowPath))]
   const files = new Set([...tracked(['ls-files', '--', ...now]), ...tracked(['ls-tree', '-r', '--name-only', rev, '--', ...new Set(now.map(beforePath))]).map(nowPath)])
   const changed = []
   for (const f of [...files].sort()) {
     const abs = path.join(REPO, f)
-    const cur = fs.existsSync(abs) ? fs.readFileSync(abs).toString('latin1') : null
+    let cur = fs.existsSync(abs) ? fs.readFileSync(abs).toString('latin1') : null
+    if (cwv2 && f === 'proxy.ts' && cur) cur = Buffer.from(Buffer.from(cur, 'latin1').toString('utf8').replace(CWV2_PROXY_BLOCK, '\n').replace("import { isOwnOneSegment } from '@/lib/top-level-routes'\n", ''), 'utf8').toString('latin1')
     let then = show(rev, f) ?? show(rev, beforePath(f))
     if (then !== null) for (const [a, b] of MOVE_EDITS[f] || []) then = then.split(a).join(b)
     if (cur !== then) changed.push(f)
