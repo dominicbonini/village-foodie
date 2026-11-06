@@ -205,7 +205,8 @@
     "contact-1.cjs",
     "faq-translate-fix.cjs",
     "tidy-1.cjs",
-    "copy-truth-1.cjs"
+    "copy-truth-1.cjs",
+    "partners-1.cjs"
   ],
   "excluded": {
     "$comment": "Every other scripts/*.cjs file, with the reason it is NOT in the list above. The runner checks this covers the directory.",
@@ -215,7 +216,8 @@
         "migrate-from-sheets.cjs",
         "register-payment-domain.cjs",
         "db-migrate.cjs",
-        "revalidate-pages.cjs"
+        "revalidate-pages.cjs",
+        "partners-add.cjs"
       ]
     },
     "operational_read_only": {
@@ -387,6 +389,7 @@
         "outreach-bold-persists-render.cjs",
         "outreach-editor-render.cjs",
         "outreach-templates-render.cjs",
+        "partners-1-screens.cjs",
         "outreach-workspace-render.cjs",
         "screenshot-truck-details-render.cjs",
         "caption-chips-render.cjs",

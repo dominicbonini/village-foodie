@@ -113,11 +113,14 @@ function runParserSuite() {
     'uid', 'uidvalidity', 'html_body', 'text_body', 'sent_copy', 'attempts', 'last_error',
     'idempotency_key', 'created_at', 'updated_at', 'account', 'attachments', 'handled_at',
     'snoozed_until', 'guard_override',
+    // ⚠️ RE-PINNED 5 November 2026 (partners-1, docs/partners-1-report.md) from information_schema, read-only: 32 columns.
+    // `partner_id` is new (20261074_partners_1.sql); `refusal` was already live (20261015 had been applied), so it moves here.
+    'partner_id', 'refusal',
   ].sort()
   /* ⚠️ RE-PINNED 15 October 2026 (docs/outreach-instant-send-report.md): 20261015_outreach_messages_refused.sql PROPOSES \`refusal\`. It is
    * not applied yet, so the live table has 30 and the migrations declare 31 — the one named, proposed column
    * is set aside here, and nothing else may differ. Move it into LIVE_MESSAGES once the migration has run. */
-  const PROPOSED = ['refusal']
+  const PROPOSED = []   // partners-1: `refusal` is live now (see LIVE_MESSAGES)
   const declared = [...mig.columns.get('outreach_messages')].filter(c => !PROPOSED.includes(c)).sort()
   t(`🧪 the SQL reader's \`outreach_messages\` is byte-for-byte information_schema's (${LIVE_MESSAGES.length} columns)`,
     declared.join(',') === LIVE_MESSAGES.join(','))

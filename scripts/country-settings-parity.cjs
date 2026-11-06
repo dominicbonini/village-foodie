@@ -503,6 +503,10 @@ const TEXT_RULES = [
 // after "Templates" — so the admin text is compared with exactly that label taken out, and must then be
 // byte-identical (or differ only by the wording rules above).
 const ADMIN_NEW_TAB = ' 🌍 Countries'
+// ⚠️ partners-1 (5 November 2026, docs/partners-1-report.md): the same kind of named change — Admin › Partners is a new tab
+// placed right after Outreach (the brief: "next to Outreach"). Only that one label, only in the admin render, is taken out;
+// the rest of the tab bar must still be byte-identical.
+const ADMIN_PARTNERS_TAB = ' 🤝 Partners'
 // ⚠️ RE-PINNED (Language Phase 1d Part 2): Manage › Billing and Manage › Payments moved their words into messages/
 // (`manageBilling`, `managePayments`), and Part 2 named three kinds of change there — NOTHING ELSE is excused, and each
 // applies ONLY inside its own section (the billing renders, the payments renders):
@@ -665,7 +669,7 @@ function matrixOf(text) {
 const ADMIN_PROMO_ATTRS = ['placeholder=e.g. 49', 'value=', 'value=', 'placeholder=e.g. Launch offer', 'value=']
 const ADMIN_PROMO_TEXT = / Promotional monthly price Price a month Until \(inclusive\) Note Standard price on [^:]+: [^ ]+ a month\. Leave empty for the standard price\./
 function adminParts(t, isAfter) {
-  const text = isAfter ? t.text.replace('✉️ Templates' + ADMIN_NEW_TAB, '✉️ Templates') : t.text
+  const text = isAfter ? t.text.replace('✉️ Templates' + ADMIN_NEW_TAB, '✉️ Templates').replace('📣 Outreach' + ADMIN_PARTNERS_TAB, '📣 Outreach') : t.text
   const tabsEnd = text.indexOf('✉️ Templates') + '✉️ Templates'.length
   const tail = text.slice(text.indexOf(' Active Hide pricing'))
   let attrs = t.attrs
