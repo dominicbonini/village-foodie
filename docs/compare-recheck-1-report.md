@@ -1,32 +1,30 @@
-# compare-recheck-1: the re-check is not run yet; the harness fix is done
+# compare-recheck-1: the re-check is requested for tonight's run; the harness fix is done
 
-*6 November 2026. Nothing is deployed or pushed. No check has run, and nothing was written to the database.*
+*6 November 2026. No check has run yet. One request was written to the database (§2).*
 
-## Status: stopped before §2 (RUN), on one decision
+## Status, 6 November 2026, 11:40 UTC: requested; the runs come tonight at 02:10 UTC; one decision before then
 
-- **Pre-check passed.** compare-suits-1 is on `main`, and no other session has uncommitted work in the repo.
-- **§1 Cost: about $1.60, at most about $3.** That is under the $5 line, so nothing needs cutting (§1).
-- **§4 Harness fix: done and committed** (`9dd99a48`). `tidy-1` now passes 58/58 (§3).
-- **§2 Run: blocked.** Doing it "through the checker's normal path" contradicts "No deploy":
-  - **The checker only runs on GitHub Actions** (`.github/workflows/competitor-check.yml`). Its Claude API login and database keys live there, and there is no local path.
-  - **GitHub runs the code on GitHub's `main`.** That is `b5a43927`, 9 commits behind this `main`.
-  - **The checker on GitHub's `main` records no pages.** That needs compare-suits-1's checker change (`9f3a7096`), which is only here.
-  - **A run now would store "no" quotes** (that rule was already in force) **but no page records.** So no cell could become "Not listed", which is the point of the run.
-  - **Getting the new checker onto GitHub means pushing `main`,** and pushing `main` deploys the site. It would also push partners-1's commits, which are another session's work.
-- **I can't trigger a run from here:** the GitHub CLI (`gh`) is not installed on this Mac. The workflow is started from GitHub's Actions page, or by Admin's "Check now" plus the nightly run.
+- **Your answer:** C. You pushed and deployed `main`.
+- **GitHub's `main` matches this `main`:** both `60db835b` before this work's commits.
+- **The 12 "Check now" requests are set** (§2), exactly as Admin's "Check now" sets them.
+- **I cannot start the run myself:** the GitHub CLI (`gh`) is not installed here. So the requests wait for the **nightly scheduled run at 02:10 UTC on 7 November**. Its routine share takes requested competitors first.
+- **Come back after about 09:00 UTC on 7 November.** The nightly job runs the quick pass, then the deep share, then the routine share, and may take several hours. I will then finish §3 and run the full sweep.
+- **⚠️ The routine check will ask very little, and that needs your decision:**
+  - A requested check is a routine check, and it asks only features that are **due**: never asked, or last asked more than 90 days ago (`lib/competitor-check/core.ts` dueFeatures).
+  - **11 of the 12 had 39 to 64 features asked by the quick pass between 1 and 6 November,** so almost none are due. Hatches Up is the exception: it was never checked.
+  - **Pages are recorded only for the features a check asks about.** So tonight would record pages for Hatches Up's features and very little else, and "Not listed" would barely move.
 
-### The question
+### The question (answer before 02:10 UTC tonight to catch the run)
 
 ```
-compare-recheck-1 — the checker runs on GitHub from GitHub's main, which is 9 commits behind (no page recording there).
+compare-recheck-1 — the requested checks only ask features that are due, and for 11 of the 12 almost none are (asked 1–6 Nov).
 Pick one:
-  A  You push main (this deploys cwv-1, partners-1 and compare-suits-1 to production). Then run the 12 checks:
-     either in Admin › Pricing check press "Check now" on each of the 12 (the nightly 02:10 UTC run picks them up),
-     or in GitHub › Actions › Competitor check › Run workflow, mode "single", once per competitor (names below).
-     I then write the report from what they recorded.                                          ← my recommendation
-  B  Run the 12 checks now on GitHub's current code: quotes for "no"s fill in, but no pages are recorded,
-     so "Not listed" stays at 0. A second run would be needed after the push anyway.
-  C  Wait: do nothing until you have pushed; then tell me and I carry on from §2.
+  A  Leave it: tonight checks the 12 as requested; expect pages for Hatches Up and little else.
+  B  Also make their shown core and commercial features due: one committed migration sets competitor_feature_checks.checked_on
+     back 91 days for those 12 competitors and those features only (scheduling data, nothing else). Tonight's routine check then
+     asks every one of them and records the pages. Same run and budget code; ~$0.9–1.6 (at most ~$3).   ← my recommendation
+  C  You start Actions › Competitor check › Run workflow, mode "single" (a deep check), once per competitor — no data change,
+     about $1.6, results within the hour.
 ```
 
 ## 1 · Cost first
@@ -73,7 +71,29 @@ The checker's own settings:
 
 ## 2 · Run
 
-Not done; see the question. Nothing was written: no check request, no run, no finding.
+**The request**, run as `supabase/migrations/20261076_compare_recheck_1.sql`. It is what Admin's "Check now" writes (`app/api/admin/competitor-check/route.ts`, action `check_now`), for exactly these 12:
+
+```sql
+update public.competitors c
+   set check_requested_at = now()
+  from public.comparison_entries e
+ where e.competitor_id = c.id
+   and (e.country_code, c.name) in (
+     ('GB', 'Aphelios'), ('GB', 'Beat The Queue'), ('GB', 'Grafterr'), ('GB', 'Hatches Up'),
+     ('US', 'Best Food Trucks (BFT)'), ('US', 'Food Truck ONE (Food Truck OS)'), ('US', 'Food Truck Pub'), ('US', 'Goodfynd'),
+     ('DE', 'gastro25'), ('DE', 'GastroDok'), ('DE', 'FoxiFood'), ('DE', 'Jamezz'))
+   and c.check_requested_at is null;
+```
+
+> db-migrate: supabase/migrations/20261076_compare_recheck_1.sql · sha256 186d9044de744582 · committed at 41a59770
+> db-migrate: … applied — one transaction, no error
+
+**Verified (read-only):** exactly 12 competitors have `check_requested_at` set, all active, and no other competitor does.
+
+**How the request is used:**
+- The field is per competitor; a routine check covers every country the competitor sells in. Jamezz, for example, also has the Netherlands.
+- The checker clears the field after the check.
+- Nothing becomes public: every finding waits for your review.
 
 **When it runs, the normal path stays as it is:**
 - the same run, queue, budget caps and time limits as a scheduled check;
