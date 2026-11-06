@@ -129,7 +129,9 @@ if (process.argv[2] === 'capture') {
   const code = f => read(f).replace(/\/\*[\s\S]*?\*\//g, '').replace(/\/\/.*$/gm, '')
   const src = tracked.filter(f => /^(app|lib|components|hooks)\/.*\.(ts|tsx)$/.test(f) || f === 'proxy.ts')
   const isTestCode = src.filter(f => /\bis_test\b/.test(code(f)))
-  t('no code reads a trucks.is_test: every is_test in code is outreach_messages\' own column (20260928_outreach_messages.sql)', isTestCode.every(f => /outreach|ProspectWorkspace|ComposeWindow|ProspectTimeline/.test(f))
+  // ⚠️ RE-PINNED (compare-recheck-1, 6 November 2026): partners-1's partner mail (app/api/admin/partners/…, components/admin/PartnersTab.tsx,
+  // lib/partner-mail-poll.ts) reads and writes outreach_messages' own is_test too — the same column, never a trucks.is_test.
+  t('no code reads a trucks.is_test: every is_test in code is outreach_messages\' own column (20260928_outreach_messages.sql)', isTestCode.every(f => /outreach|ProspectWorkspace|ComposeWindow|ProspectTimeline|partners\/|PartnersTab|partner-mail-poll/.test(f))
     && /is_test boolean not null default false/.test(read('supabase/migrations/20260928_outreach_messages.sql')) && !src.some(f => /trucks?[^\n]{0,80}\bis_test\b/.test(code(f))), isTestCode)
   t('getSlotIndicator is gone — no definition and no caller anywhere in the code', !src.some(f => /getSlotIndicator/.test(code(f))) && !tracked.filter(f => /^scripts\/.*\.cjs$/.test(f) && f !== 'scripts/tidy-1.cjs').some(f => /getSlotIndicator/.test(read(f))))
   t('lib/slot-indicator.ts keeps only the SlotTone type its two importers use', /export type SlotTone = 'green' \| 'amber' \| 'red'/.test(read('lib/slot-indicator.ts')) && !/export function/.test(read('lib/slot-indicator.ts'))
