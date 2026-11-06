@@ -134,6 +134,17 @@ end $$;
 - The comparison page prefers a country's own record over the every-country one (`lib/comparison-features.ts` featureCheckOf). So their cells may still read "not mentioned" after tonight's every-country check, even with pages recorded.
 - Changing that rule is page code, which this brief rules out. I will report how many cells it affects.
 
+**Not applied: making the three competitors' country-specific records due** (asked on 6 November, after `20261077`).
+- **Estimated extra cost: $0,** because no check tonight would read those records:
+  - the requested routine check covers every country and reads and writes only the every-country records;
+  - a country-specific record is written only by the quick pass or a deep check for that country;
+  - the quick pass started on 29 October tracks progress per competitor and country (`pass_state.done`) and already counts Best Food Trucks (US), Goodfynd (US) and Jamezz (DE) as done;
+  - the deep check is on CZ (`deep_country`).
+- **So the migration would change nothing,** and its rows would only be moved and moved back. I did not write it.
+- **Two ways to fix these three:**
+  - let the page use the newer of the country's own and the every-country record. That is a page-code change, for a later brief;
+  - a deep "single" check for each of the three, about $0.40, started from GitHub Actions.
+
 **How the request is used:**
 - The field is per competitor; a routine check covers every country the competitor sells in. Jamezz, for example, also has the Netherlands.
 - The checker clears the field after the check.
