@@ -1,8 +1,73 @@
-# compare-autopublish-1: stopped on three decisions; §1 done
+# compare-autopublish-1: stopped again: the addendum did not arrive, and one scope question
 
-*7 November 2026. Nothing is deployed, migrated or published.*
+*7 November 2026. Nothing is deployed, migrated or published. §1 is done (`6894cfb0`).*
 
-## Status
+## Status after your answers (Q1 = C, Q2 = A, Q3 = A, plus the semi-deep addition)
+
+- **`gh` works now** (logged in as dominicbonini). Checker runs will use `gh workflow run competitor-check.yml` from now on.
+- **⚠️ FLAG: the "ADDENDUM A–F" never reached me.**
+  - The brief I received has no addendum, and no section lettered A–F. I have only the one-line labels in your last message:
+    - auto-process findings;
+    - the consistency rule;
+    - pages complete = features + pricing;
+    - android / ipad out of absence-means-no;
+    - saving check_urls;
+    - no-website competitors never shown;
+    - the gastro25 / Grafterr reclassification.
+  - **Three of those change data, and I can't act on a label:**
+    - which findings are processed automatically, and how;
+    - what "the consistency rule" says;
+    - whether gastro25 and Grafterr become restaurant tools or stay food-truck tools.
+  - Please paste the addendum.
+- **⚠️ SCOPE: "every country except AE live" cannot happen as built.**
+  - **A comparison page exists only for a country whose language is English or German** (`lib/comparison-server.ts` comparisonPath). The page's own copy — headings, table words, FAQ, methodology, its address — is translated into English and German only (the `comparison` namespace, scoped in `docs/i18n/scoped-namespaces.json`).
+  - **The 13 English and German countries:** GB, US, IE, AU, CA, NZ, SG, GI, MT, DE, AT, CH, LI.
+  - **The other 30 switched-on countries** (FR, ES, IT, NL, BE, PT, BR, MX, JP, HK, TH, MY, PL, CZ, SK, HU, RO, HR, SI, BG, GR, CY, DK, SE, NO, FI, EE, LV, LT, LU) have no comparison page. They would need the whole comparison page translated first: hundreds of keys in about 20 languages, which is a brief of its own.
+  - **Two competitors are the minimum to go live,** and four of the 13 can never reach it with today's data:
+
+| Country | Active competitors with a current plan | Can go live? |
+|---|---|---|
+| GB | 16 | yes |
+| US | 22 | yes |
+| DE | 9 | yes |
+| AU | 7 | yes |
+| IE | 4 | yes |
+| CA | 4 | yes |
+| NZ | 4 | yes |
+| SG | 3 | yes |
+| AT | 2 | yes |
+| CH | 1 | no |
+| LI | 1 | no |
+| GI | 0 | no |
+| MT | 0 | no |
+
+- **Cost of the semi-deep run** (plan plus core features, for the shown four; the checker's own averages: routine $0.074, deep $0.13 per check):
+
+| Scope | Checks | Likely | Worst case |
+|---|---|---|---|
+| The 9 English and German countries that can go live | ~33 | **≈ $2.50** (≈ $0.80 a night over 3 nights) | ≈ $8.60 |
+| Every switched-on country except AE that has ≥ 2 competitors (if their pages are translated later) | ~90 | ≈ $6.70 | ≈ $23 |
+
+  Both are under the $25 line.
+
+### The question
+
+```
+compare-autopublish-1 — two things before I build §2–§5:
+
+1  Please paste ADDENDUM A–F. It did not arrive with the brief; I only have its labels, and "auto-process findings",
+   "the consistency rule" and "the gastro25/Grafterr reclassification" each change data in a way I can't guess.
+
+2  Comparison pages exist only for English- and German-language countries. Pick one:
+   A  Now: the 9 English/German countries that can reach 2 competitors (GB, US, IE, AU, CA, NZ, SG, DE, AT) get entries,
+      the semi-deep check (~$2.50, ≤ $8.60) and auto-publish; CH, LI, GI, MT wait for competitors.   ← my recommendation
+   B  As A, and a separate brief translates the comparison page into the other languages; their semi-deep checks wait for it.
+   C  Run the semi-deep check for every switched-on country now (~$6.70, ≤ $23), so their data is ready when pages exist.
+```
+
+---
+
+## Earlier status (first stop)
 
 - **Pre-check passed.** compare-recheck-1 is committed (`b099fc00`). No restore was needed: every moved row was re-checked, and 0 rows are dated before September. The tree is clean.
   - cwv-2 (another session) is committed and pushed: the app routes now live in `app/(app)` and the public pages in `app/(public)`.
