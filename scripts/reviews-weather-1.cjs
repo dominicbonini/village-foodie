@@ -378,6 +378,9 @@ const STUBS = {
 
   // ══ 11 ══
   head('11 · the routes: switched off (today) and on')
+  // ⚠️ RE-PINNED (compare-recheck-1, 7 November 2026): the routes read the clock themselves, so this section ran on the REAL date — and
+  // its 'today' stop (6 November) fell into the past on 7 November. It now runs at section 10's own instant (WNOW, 6 November 08:00 UTC).
+  kit.setNow(new Date(WNOW).toISOString())
   wdb = wworld(); wdb.T.platform_switches[0].weather_enabled = false
   wdb.T.trucks[0].dashboard_token = 'tok'; wdb.T.trucks[0].operator_id = 'op'
   globalThis.__harnessDb = wdb

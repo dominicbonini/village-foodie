@@ -1,181 +1,147 @@
-# compare-recheck-1: the re-check is requested for tonight's run; the harness fix is done
+# compare-recheck-1: the 12 shown competitors re-checked, and tidy-1 fixed
 
-*6 November 2026. No check has run yet. One request was written to the database (§2).*
+*7 November 2026. Nothing is deployed, and nothing is public: every finding waits for your review. Two migrations were run on 6 November: the request, and the features made due.*
 
-## Status, 6 November 2026, ~12:00 UTC: everything is set for tonight's run (02:10 UTC, 7 November)
+## Summary
 
-- **Your answers:** C (you pushed and deployed `main`), then B.
-- **GitHub's `main` matched this `main`** (`60db835b`) before this work's commits.
-- **The 12 "Check now" requests are set** (`20261076`).
-- **Their shown core and commercial features are made due** (`20261077`, below). The original dates are recorded in the file.
-- **`gh` is not installed here,** so the run is tonight's scheduled one.
-- **Come back after 09:00 UTC on 7 November.** I will then:
-  - read what the run recorded;
-  - **put back the original date of every row it did not re-check** (`checked_on + 91`, exact), so no stale date remains;
-  - complete §3 and run the full sweep.
+- **The checks ran** in the scheduled job on 7 November. GitHub started it at 08:42 UTC, not at 02:10. The routine stage (10:06–10:41 UTC) re-checked **11 of the 12**.
+  - **Hatches Up was not checked.** It has no website and no check URLs, so there is nothing to read. Its request is still set.
+- **Every feature made due was re-asked, and all those records now carry their pages.** No row was left on a moved date, so the restore had nothing to put back. Read-only check: 0 rows dated before September.
+- **Results:**
+  - **317** feature-check records now carry their pages;
+  - **14 new "no" answers,** all with their quote and page;
+  - **0 cells "Not listed", before and after;**
+  - **"Which suits" answers in the admin view are unchanged:** GB 1, US 3, DE 2.
+- **Why nothing changed on the pages yet:** the checker only proposes. **Every answer from this run is a finding waiting for you in Admin › Pricing check › Automatic checks.** No stored answer, plan or category has changed, and "Not listed" can only come from a stored "not mentioned" answer. None of the 12 has one yet.
+- **⚠️ Reject before accepting (§4):** seven Best Food Trucks findings say "not mentioned" while their own quotes show the feature is offered. Two classification findings (gastro25, Grafterr: "restaurant ordering") would change who is shown.
+- **Actual cost:** this check's share of the routine run is **≈ $0.43** (11 of its 15 checks, $0.5805 in all), against an estimate of $1.60.
+- **Harness:** `tidy-1` 58/58. Full sweep: 199 / 200; the one failure (reviews-weather-1, a test that broke because the date passed) is fixed and passes (§6).
 
-## 1 · Cost first
+## 1 · Cost estimate (from 6 November)
 
-### The competitors the rule shows today
+- **Estimate:** 12 checks at the deep-check average of $0.13 each, so ≈ $1.56, and at most ≈ $3.12.
+- **Help-centre reads:** stayed off.
+- **What ran instead:** the requested routine check, for the features made due. That is cheaper per competitor.
 
-These are the four per country in the admin view. Nothing is pinned, hidden or verified, so food-truck tools come first, then the entry order.
+## 2 · What was run
 
-| Country | The four |
-|---|---|
-| GB | Aphelios · Beat The Queue · Grafterr · Hatches Up |
-| US | Best Food Trucks (BFT) · Food Truck ONE (Food Truck OS) · Food Truck Pub · Goodfynd |
-| DE | gastro25 · GastroDok · FoxiFood · Jamezz |
-
-### The features a check of these would ask about
-
-These are the core and commercial features that are checked and shown in that country. The price rows come from the plans, not from answers.
-
-- **Every country (core):**
-  - ordering: preorder, capacity, ahead, schedule, walkup, stock, notify, menuphoto;
-  - payments: cards;
-  - kitchen: kds, tickets, offline, vans;
-  - marketing: domain, whatsapp, social;
-  - apps and hardware: ipad, android, hardware, terminal.
-- **Every country (commercial):** term and trial, plus the plan's price, fees and card rate.
-- **GB only:** discovery. **DE only:** paypal.
-- **Secondary, on the same pages (no extra fetch):** delivery, and fiscal in DE.
-- **Not asked about:** allergens, which is tier off and not checked.
-
-### The estimate
-
-The checker's own settings:
-- extractor and verifier: Haiku 5.5 ($0.10 / $0.50 per million input / output tokens);
-- deep check: 12 page fetches, 6 searches;
-- help-centre reads: off.
-
-| Basis | Per check | 12 checks |
+| Step | What | Result |
 |---|---|---|
-| Deep checks over the last 30 days (81 checks, $10.50) | $0.13 average | **≈ $1.56** |
-| Worst case (each at twice the average) | $0.26 | **≈ $3.12** |
+| `20261076` | "Check now" for the 12: `competitors.check_requested_at = now()`, exactly as Admin's button | 12 requested, all active |
+| `20261077` | The 12's shown core and commercial features made due: their every-country check dates moved back 91 days. The originals are in the file's header | 246 rows. Guard: exactly 246, or roll back |
+| Not done | Making the country-specific records of Best Food Trucks, Goodfynd and Jamezz due | No check that night would read them (§5) |
+| Run `97e1fbf0` | The scheduled routine stage: requested competitors first, the same run, budget and time code | 15 checked (the 11 plus 4 that were due anyway), done, $0.5805 |
+| Restore | Rows not re-checked go back by +91 days | **Not needed:** all 246 were re-checked |
 
-- Both are under $5, and the daily cap of $8 holds either way.
-- **Checking the same 12 by the quick pass instead** would cost about $0.10 in total. It reads only 3 pages per call, so it records fewer answers.
+- **Admin's choices are untouched:** `checked_by` / `scope_by`, pin / hide, `absence_means_no`, `never_competitor_strength`.
+- **No verification was set,** and nothing became public.
 
-## 2 · Run
+## 3 · Results per country
 
-**The request**, run as `supabase/migrations/20261076_compare_recheck_1.sql`. It is what Admin's "Check now" writes (`app/api/admin/competitor-check/route.ts`, action `check_now`), for exactly these 12:
+**"Pages complete"** means the record shows the features page and the pricing page fetched, and the help centre either read or not found. That is what "Not listed" needs.
 
-```sql
-update public.competitors c
-   set check_requested_at = now()
-  from public.comparison_entries e
- where e.competitor_id = c.id
-   and (e.country_code, c.name) in (
-     ('GB', 'Aphelios'), ('GB', 'Beat The Queue'), ('GB', 'Grafterr'), ('GB', 'Hatches Up'),
-     ('US', 'Best Food Trucks (BFT)'), ('US', 'Food Truck ONE (Food Truck OS)'), ('US', 'Food Truck Pub'), ('US', 'Goodfynd'),
-     ('DE', 'gastro25'), ('DE', 'GastroDok'), ('DE', 'FoxiFood'), ('DE', 'Jamezz'))
-   and c.check_requested_at is null;
-```
+### GB (Aphelios, Beat The Queue, Grafterr; Hatches Up not checked)
 
-> db-migrate: supabase/migrations/20261076_compare_recheck_1.sql · sha256 186d9044de744582 · committed at 41a59770
-> db-migrate: … applied — one transaction, no error
+| Competitor | Records with pages | Pages complete? | New "no" with quote | New "not mentioned" |
+|---|---|---|---|---|
+| Aphelios | 27 | **no:** a help centre is linked, but help reads are off | 4 (hardware, perorder, term, terminal) | 0 |
+| Beat The Queue | 27 | **no:** its features and pricing pages were refused (`url_not_in_prior_context`: not linked from what it had read) | 0 | 0 |
+| Grafterr | 27 | **no:** help centre linked | 0 | 0 |
+| Hatches Up | 0 | not checked (no website) | — | — |
 
-**Verified (read-only):** exactly 12 competitors have `check_requested_at` set, all active, and no other competitor does.
+- **"Not listed" cells:** 0 before, 0 after.
+- **"Which suits", admin view:** 1 before, 1 after. The text, unchanged:
 
-**Making the features due**, run as `supabase/migrations/20261077_compare_recheck_1_due.sql` (Dominic's B):
+> **What happens to online orders if my signal drops?**
+> HatchGrab can pause online ordering automatically when the truck loses signal, so customers can’t place orders the kitchen won’t receive.
 
-```sql
-do $$
-declare n integer;
-begin
-  with pairs(cc, name) as (values
-         ('GB', 'Aphelios'), ('GB', 'Beat The Queue'), ('GB', 'Grafterr'), ('GB', 'Hatches Up'),
-         ('US', 'Best Food Trucks (BFT)'), ('US', 'Food Truck ONE (Food Truck OS)'), ('US', 'Food Truck Pub'), ('US', 'Goodfynd'),
-         ('DE', 'gastro25'), ('DE', 'GastroDok'), ('DE', 'FoxiFood'), ('DE', 'Jamezz')),
-       scope as (
-         select c.id as competitor_id, f.key as feature_key
-           from pairs p
-           join public.competitors c on c.name = p.name
-           join public.comparison_features f on f.tier in ('core', 'commercial')
-            and (f.show_scope = 'all' or (f.show_scope = 'some' and p.cc = any(f.show_countries))))
-  update public.competitor_feature_checks k
-     set checked_on = k.checked_on - 91
-    from scope s
-   where k.competitor_id = s.competitor_id and k.feature_key = s.feature_key and k.country_code = '';
-  get diagnostics n = row_count;
-  if n <> 246 then raise exception 'compare-recheck-1: expected 246 rows, the update would touch %', n; end if;
-end $$;
-```
+### US (Best Food Trucks, Food Truck ONE, Food Truck Pub, Goodfynd)
 
-> db-migrate: supabase/migrations/20261077_compare_recheck_1_due.sql · sha256 05075495adc09361 · committed at 98ab0a24
-> db-migrate: … applied — one transaction, no error
+| Competitor | Records with pages | Pages complete? | New "no" with quote | New "not mentioned" |
+|---|---|---|---|---|
+| Best Food Trucks (BFT) | 39 | **no:** its homepage was refused (`url_not_allowed`) and its pricing and features pages were not reachable | 0 | 7: **see §4, wrong** |
+| Food Truck ONE | 26 | **no:** only its homepage was read; no pricing page | 4 (hardware, perorder, setup, terminal) | 11 |
+| Food Truck Pub | 26 | **no:** help centre linked | 3 (hardware, perorder, terminal) | 9 |
+| Goodfynd | 26 | **yes**, on the every-country record. But its US record (22 features, from the quick pass, no pages) wins on the page (§5) | 0 | 15 |
 
-**Scope:**
-- the every-country check records (`country_code ''`, the ones a routine check reads to decide what is due);
-- for the 12 competitors only;
-- for the features shown on their country's page, with tier core or commercial only;
-- nothing else: not `rejudge`, not `pages_checked`, no other row.
+- **"Not listed" cells:** 0 before, 0 after.
+- **"Which suits", admin view:** 3 before, 3 after (the two price answers and the signal-drop answer).
 
-**The original dates** (all 246, in the migration's header):
+### DE (gastro25, GastroDok, FoxiFood, Jamezz)
 
-| Competitor | Original date | Rows |
-|---|---|---|
-| Aphelios, Beat The Queue, Grafterr | 2026-11-04 | 27 each |
-| FoxiFood, gastro25, GastroDok | 2026-11-05 | 27 each |
-| Food Truck ONE | 2026-11-04 × 25, plus domain 2026-10-23 | 26 |
-| Food Truck Pub | 2026-11-04 × 24, plus domain and preorder 2026-10-23 | 26 |
-| Goodfynd | 2026-11-06 × 25, plus preorder 2026-10-23 | 26 |
-| Best Food Trucks (BFT) | domain and preorder 2026-10-23 | 2 |
-| Jamezz | domain, kds, preorder, whatsapp 2026-10-24 | 4 |
-| Hatches Up | none: never checked | 0 |
+| Competitor | Records with pages | Pages complete? | New "no" with quote | New "not mentioned" |
+|---|---|---|---|---|
+| gastro25 | 27 | **yes** | 2 (setup, term) | 1 (perorder) |
+| GastroDok | 27 | **yes** | 0 | 2 (term, trial) |
+| FoxiFood | 27 | **no:** help centre linked | 1 (term) | 0 |
+| Jamezz | 38 | **no:** its pricing page was refused (`url_not_in_prior_context`), and its DE record (39 features, no pages) wins on the page | 0 | 1 (whatsapp) |
 
-**Verified (read-only):**
-- exactly 246 rows moved, now dated 2026-07-24 to 2026-08-07, so all are due;
-- 0 country-specific rows moved, and 0 rows of any other competitor;
-- no other row in the table is dated before September, so tomorrow's restore (`checked_on < '2026-09-01'`, `+ 91`) can only touch these rows.
+- **"Not listed" cells:** 0 before, 0 after.
+- **"Which suits", admin view:** 2 before, 2 after (collection times, and the signal drop).
 
-**Flagged for the morning, not changed:**
-- Best Food Trucks, Goodfynd and Jamezz also have country-specific check records (US, DE, NL) from the quick pass, without pages.
-- The comparison page prefers a country's own record over the every-country one (`lib/comparison-features.ts` featureCheckOf). So their cells may still read "not mentioned" after tonight's every-country check, even with pages recorded.
-- Changing that rule is page code, which this brief rules out. I will report how many cells it affects.
+**Once you accept the "not mentioned" findings, how many cells would become "Not listed"?**
+- **Under today's rules: none.**
+  - The competitors with complete pages are gastro25, GastroDok and Goodfynd.
+  - gastro25's and GastroDok's "not mentioned" features are not absence-means-no features (term, trial), or come from the plan (perorder).
+  - Goodfynd's US record wins (§5).
+- **If the page used the newer record (§5),** Goodfynd's android, domain, ipad, social and whatsapp would read "not listed". **Read §4 first:** at least the apps look doubtful.
 
-**Not applied: making the three competitors' country-specific records due** (asked on 6 November, after `20261077`).
-- **Estimated extra cost: $0,** because no check tonight would read those records:
-  - the requested routine check covers every country and reads and writes only the every-country records;
-  - a country-specific record is written only by the quick pass or a deep check for that country;
-  - the quick pass started on 29 October tracks progress per competitor and country (`pass_state.done`) and already counts Best Food Trucks (US), Goodfynd (US) and Jamezz (DE) as done;
-  - the deep check is on CZ (`deep_country`).
-- **So the migration would change nothing,** and its rows would only be moved and moved back. I did not write it.
-- **Two ways to fix these three:**
-  - let the page use the newer of the country's own and the every-country record. That is a page-code change, for a later brief;
-  - a deep "single" check for each of the three, about $0.40, started from GitHub Actions.
+## 4 · Looks wrong: listed for you, nothing changed
 
-**How the request is used:**
-- The field is per competitor; a routine check covers every country the competitor sells in. Jamezz, for example, also has the Netherlands.
-- The checker clears the field after the check.
-- Nothing becomes public: every finding waits for your review.
+1. **Best Food Trucks: seven findings say "not mentioned", but their own quotes show the feature.** Reject them, or accept them as "yes" by hand:
+   - ahead: "pre-order their meals up to 60 days before the scheduled shift";
+   - schedule: "If you have a weekly location you can click ‘recurring’";
+   - discovery: "Food trucks map";
+   - private: "Set up a regular food truck program or just a one time event";
+   - cards and cardfee: "Card not present fees are standard at 2.9% + .30";
+   - domain: no quote.
 
-**When it runs, the normal path stays as it is:**
-- the same run, queue, budget caps and time limits as a scheduled check;
-- Admin's choices untouched: `checked_by` / `scope_by`, pin / hide, the two feature flags;
-- every finding waits for your review, so nothing becomes public.
+   Accepted as they are, "schedule" (an absence-means-no feature) could later read "not listed": a false inferred no. The model's outcome contradicts its quote. That is a checker weakness worth a fix of its own: treat a "not mentioned" that carries a quote as unusable.
+2. **Goodfynd: 15 "not mentioned" findings, for android, ipad, notify, social, terminal, menuphoto, stock and others.**
+   - The source shown for each is its pricing page, and the products pages it read include online ordering and POS.
+   - For a platform that sells a POS and apps, "the website doesn't mention Android or iPad" is doubtful. Check its app-store presence before accepting.
+3. **gastro25 and Grafterr: classification "restaurant ordering",** quoting "Online ordering system for restaurants, pizzerias and snack bars" and "An end-to-end hospitality management platform".
+   - Accepting sets their focus to restaurant ordering, so their category becomes **restaurant**.
+   - **gastro25 would leave DE's four** (DE has other food-truck tools). **Grafterr would leave GB's four.**
+   - Decide it as a choice of who is shown. You can also pin either one.
+4. **Food Truck ONE: "not mentioned" for preorder, ahead and kds.** Only its homepage was read, so its pages are incomplete and this can never become "not listed". It is still unlikely for a food-truck system: check it before accepting.
+5. **Page records:**
+   - some contain a failed entry with no URL (`invalid_tool_input`, the model's malformed fetch);
+   - some `fetchedAt` times predate the check, because the fetch tool serves a cached copy and reports when that copy was taken.
+   - Neither makes a record complete when it shouldn't be.
+6. **Why most records are incomplete,** with two cheap fixes, neither applied:
+   - **help centres linked but not read:** Aphelios, Grafterr, Food Truck Pub, FoxiFood, Jamezz and Best Food Trucks. Help reads are off; up to ~$6 a month, as compare-suits-1 §4.4;
+   - **pricing or features pages the fetch tool refused** because they weren't in what it had already read: Beat The Queue, Jamezz and Best Food Trucks. **Adding each competitor's pricing and features page to its check URLs in Admin** would let the next check fetch them directly.
+7. **Hatches Up** is in GB's four, but has no website. Add one in Admin, or hide it so the next GB tool takes its place.
 
-## 3 · The harness fix (`scripts/tidy-1.cjs`)
+## 5 · The country-record rule (flagged, not changed)
 
-- **The cause:** partners-1's partner mail reads and writes `outreach_messages.is_test` (the same column), in four files the check did not list:
-  - `app/api/admin/partners/route.ts`;
-  - `app/api/admin/partners/mail-send/route.ts`;
+- **The rule:** the comparison page takes a country's own check record before the every-country one (`lib/comparison-features.ts` featureCheckOf).
+- **The effect:** Best Food Trucks (US, 21 records), Goodfynd (US, 22) and Jamezz (DE, 39) have quick-pass country records without pages. Those win over this run's every-country records, which have pages.
+- **Making those records due would not help:**
+  - only the quick pass or a deep check for that country writes them;
+  - the quick pass that started on 29 October already counts all three as done;
+  - the deep check is on Czechia.
+- **The fix is one line of page code,** for a later brief: take the newer of the two records.
+
+## 6 · Harness fix
+
+- **`scripts/tidy-1.cjs`** (`9dd99a48`): the dead-code check's allowed files now include partners-1's partner mail, which reads `outreach_messages.is_test`:
+  - `app/api/admin/partners/…`;
   - `components/admin/PartnersTab.tsx`;
   - `lib/partner-mail-poll.ts`.
-- **The fix:** the allowed-file pattern now also includes `partners/`, `PartnersTab` and `partner-mail-poll`. The check's intent is unchanged: no code reads a `trucks.is_test`. I re-checked that no file mentions trucks within 80 characters of `is_test`. Nothing else in the harness changed.
-- **Result:** `tidy-1` **58 passed, 0 failed**.
-  - It was the only failure in compare-suits-1's last full sweep (198 of 199).
-  - I have not re-run the full sweep for this one-line pattern change. It will run with §2.
+- **Its intent is unchanged:** no code reads a `trucks.is_test`.
+- **Result:** 58/58.
+- **Full sweep** (`node scripts/run-harnesses.cjs`, 200 listed): **199 of 200 passed.** The one failure was `reviews-weather-1`, which went off on the date: its route section read the real clock, and its fixture stop dated 6 November became "past" on 7 November. Nothing this work touches is involved, and it passed in the sweeps of 6 November. I pinned that section to the harness's own fixture instant (re-pinned, 3 lines, nothing else changed). It now passes alone, 79/79. I did not re-run the whole hour-long sweep for that one change.
 
-## 4 · Still to do once you choose
+## 7 · Files and commits
 
-- run the 12 checks;
-- then report per country:
-  - features with recorded pages;
-  - "no" answers with quotes;
-  - "Not listed" cells;
-  - "Which suits" answers in the admin view, before and after (GB before: 1, the signal-drop answer; US: 3; DE: 2), with GB's text;
-  - anything that looks wrong;
-  - the actual cost;
-- the full sweep;
-- commit.
+| Commit | What |
+|---|---|
+| `9dd99a48` | `scripts/tidy-1.cjs` |
+| this commit | `scripts/reviews-weather-1.cjs` (section 11 runs at its fixture instant) |
+| `41a59770` | `supabase/migrations/20261076_compare_recheck_1.sql` (run) |
+| `98ab0a24` | `supabase/migrations/20261077_compare_recheck_1_due.sql` (run) |
+| `60db835b`, `2bbe546e`, `82044fe9`, `98c10863`, and this one | `docs/compare-recheck-1-report.md` |
+
+No page code changed. No `outreach_templates` row, truck, order or payment was touched, and no `.env*` file was opened.
