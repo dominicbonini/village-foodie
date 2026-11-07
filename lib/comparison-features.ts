@@ -251,10 +251,15 @@ export function featureCheckOut(r: Row): FeatureCheckRow {
   return { competitorId: String(r.competitor_id), featureKey: String(r.feature_key), countryCode: cc ? cc : null,
     checkedOn: str(r.checked_on) ? String(r.checked_on).slice(0, 10) : null, pages: pagesCheckedOut(r.pages_checked) }
 }
-/** The check that last asked about a feature in a country: that country's own record, else the every-country one. */
+/** The check that last asked about a feature in a country: the NEWER of that country's own record and the every-country one
+ *  (compare-autopublish-1, 7 November 2026 — a routine check covers every country at once, and it must count when it is the later
+ *  look). By checked_on; a tie goes to the country's own record. Only one of them → that one. */
 export function featureCheckOf(checks: readonly FeatureCheckRow[], competitorId: string, key: string, code: string | null): FeatureCheckRow | null {
   const mine = checks.filter(c => c.competitorId === competitorId && c.featureKey === key)
-  return (code ? mine.find(c => c.countryCode === code) : undefined) ?? mine.find(c => c.countryCode === null) ?? null
+  const own = code ? mine.find(c => c.countryCode === code) ?? null : null
+  const every = mine.find(c => c.countryCode === null) ?? null
+  if (own && every) return (every.checkedOn ?? '') > (own.checkedOn ?? '') ? every : own
+  return own ?? every
 }
 /** 🔴 THE PAGES "NOT LISTED" NEEDS: the features page AND the pricing page fetched, AND the help centre fetched — or the check
  *  saw none. A help centre linked but not read (the help fetch is off), a failed fetch or a page not asked for: not complete. */

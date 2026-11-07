@@ -123,7 +123,12 @@ const CARD_WORDS = require('./_compare-suits-1-words.cjs')
   t('the raw answer is never changed by any of this', JSON.stringify(nm) === snap)
   t('a "no" with quote and page is quoted; one without either is not', L.cellState({ ...nm, value: 'no', quote: 'We do not offer WhatsApp', sourceUrl: 'https://x.example/f' }, {}, null) === 'no_quoted'
     && L.cellState({ ...nm, value: 'no' }, {}, null) === 'no_unquoted' && L.cellState({ ...nm, value: 'no', quote: 'q' }, {}, null) === 'no_unquoted')
-  t('the country\'s own check wins over the every-country one', L.featureCheckOf([{ ...full, countryCode: null, pages: null }, full], 'c1', 'whatsapp', 'GB') === full)
+  // ⚠️ RE-PINNED (compare-autopublish-1, 7 November 2026): the NEWER of the country's own and the every-country record wins; a tie → the country's own.
+  const own = { ...full, checkedOn: '2026-11-05' }, every = { ...full, countryCode: null, checkedOn: '2026-11-07' }
+  t('newer check wins: an every-country record newer than the country\'s own is used', L.featureCheckOf([own, every], 'c1', 'whatsapp', 'GB') === every)
+  t('…a country\'s own record newer than the every-country one is used', L.featureCheckOf([{ ...own, checkedOn: '2026-11-08' }, every], 'c1', 'whatsapp', 'GB').countryCode === 'GB')
+  t('…a tie (same day) goes to the country\'s own; only one record → that one', L.featureCheckOf([{ ...own, checkedOn: '2026-11-07' }, every], 'c1', 'whatsapp', 'GB').countryCode === 'GB'
+    && L.featureCheckOf([every], 'c1', 'whatsapp', 'GB') === every && L.featureCheckOf([own], 'c1', 'whatsapp', 'GB') === own && L.featureCheckOf([], 'c1', 'whatsapp', 'GB') === null)
 
   // ══ 4 · the answers ═══════════════════════════════════════════════════════════════════════════════════════════════════
   head('4 · "Which suits your food truck?" — the answers')
