@@ -16,8 +16,8 @@ const [port, label, LOG, pathArg] = process.argv.slice(2); const P = pathArg || 
   const loadAt = Date.now() - t0
   const initial = await p.evaluate(() => [...document.querySelectorAll('script[src]')].map(s => s.src.replace(/^https?:\/\/[^/]+/, '')))
   await new Promise(r => setTimeout(r, 3000))
-  await p.tap('h1').catch(() => {})
-  await new Promise(r => setTimeout(r, 6500))
+  await p.touchscreen.tap(120, 300).catch(() => {}); await p.mouse.click(120, 300).catch(() => {})
+  await new Promise(r => setTimeout(r, 9000))
   const other = await b.newPage(); await other.bringToFront(); await p.evaluate(() => document.dispatchEvent(new Event('visibilitychange')))
   await new Promise(r => setTimeout(r, 3000))
   const lines = fs.readFileSync(LOG, 'utf8').slice(start).split('\n').filter(Boolean).map(l => JSON.parse(l))

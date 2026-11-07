@@ -13,7 +13,7 @@ http.createServer((req, res) => {
     let events = []
     try { const j = JSON.parse(body); events = (Array.isArray(j) ? j : j.batch || [j]).map(e => ({ event: e.event, path: e.properties && e.properties.$pathname, metrics: Object.keys(e.properties || {}).filter(k => /^\$web_vitals_/.test(k)) })) } catch {}
     fs.appendFileSync(LOG, JSON.stringify({ t: Date.now(), method: req.method, url: req.url, events }) + '\n')
-    res.writeHead(200, { 'content-type': req.url.includes('.js') ? 'application/javascript' : 'application/json', 'access-control-allow-origin': req.headers.origin || '*', 'access-control-allow-credentials': 'true' })
+    res.writeHead(200, { 'content-type': req.url.includes('.js') ? 'application/javascript' : 'application/json', 'access-control-allow-origin': req.headers.origin || '*', 'access-control-allow-credentials': 'true', 'access-control-allow-headers': req.headers['access-control-request-headers'] || '*', 'access-control-allow-methods': 'GET, POST, OPTIONS' })
     res.end(req.url.includes('web-vitals') ? fs.readFileSync(require.resolve('posthog-js/dist/web-vitals.js')) : req.url.includes('.js') ? '' : '{}')
   })
 }).listen(54398, '127.0.0.1')
