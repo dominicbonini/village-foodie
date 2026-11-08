@@ -59,12 +59,16 @@ Never record a plan, price or feature of another country.`
 }
 
 /** compare-suits-1 (6 November 2026): which pages to read and how to report them — so a feature its site does not mention can be
- *  shown as "not listed" only when the features and pricing pages (and the help centre, where one exists) were read in this check.
+ *  shown as "not listed" only when the features and pricing pages were read in this check (compare-autopublish-1, addendum C: the help
+ *  centre is no longer needed). compare-autopublish-1, addendum D: a features or pricing page it could not reach is still LISTED, with its
+ *  address (one search of its own site, within the budget, when it cannot find it), so the publishing step can add it to check_urls and
+ *  the next check fetches it directly.
  *  The pages count against the same fetch limit; the help centre is READ only when `fetchHelp` is on (competitor_check_settings.
  *  pass_fetch_help, off by default) — otherwise it is only noted. */
 export function pagesTask(country: string | null, fetchHelp: boolean): string {
   return `PAGES: among the pages you read, read this company's features page and its pricing page${country ? ` for ${country}` : ''}${fetchHelp ? ', and its help centre (help, support or FAQ pages) if it has one' : ' (do not read its help centre)'}. `
     + 'In "pages_checked" list every page you read, each with its kind: "features" (what the product does), "pricing" (plans and prices), "help" (help centre, support or FAQ pages) or "other". '
+    + 'If you could not read its features page or its pricing page (a fetch was refused, or you could not find it), still list that page in "pages_checked" with its full address on the company\'s own site — use at most one search of its own site to find the address if you do not know it. '
     + `In "help_centre" answer "fetched" if you read its help centre, "linked_not_fetched" if its pages link to a help centre ${fetchHelp ? 'that you did not read' : '(you were told not to read it)'}, or "none_found" if you saw no help centre. Give the same two answers in every record_findings call.`
 }
 

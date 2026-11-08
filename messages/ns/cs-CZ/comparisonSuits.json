@@ -97,6 +97,6 @@
   },
   "method": {
     "covers": "Zahrnuje nejvýše čtyři alternativy vybrané podle toho, jak jsou relevantní pro food trucky a zda o nich existují ověřitelné veřejné informace — ne každý produkt na trhu.",
-    "notListed": "„Neuvádí“ znamená, že jsme prošli stránky produktu s funkcemi, ceníkem a nápovědou a zmínka tam není — u funkcí, které firmy běžně propagují. „Nic neříká“ znamená, že to není potvrzeno ani vyvráceno."
+    "notListed": "„Neuvádí“ znamená, že jsme prošli stránky produktu s funkcemi a ceníkem a zmínka tam není — u funkcí, které firmy běžně propagují. „Nic neříká“ znamená, že to není potvrzeno ani vyvráceno."
   }
 }

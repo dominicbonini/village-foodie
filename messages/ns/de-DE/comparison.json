@@ -96,12 +96,13 @@
   },
   "method": {
     "title": "So haben wir verglichen",
-    "checked": "Wir haben jede Angabe am {date} auf der Website des jeweiligen Anbieters geprüft und verlinken die Quelle.",
+    "checked": "Zuletzt geprüft am {date}.",
     "prices": "Preise stehen so da, wie der Anbieter sie angibt, auch zur Mehrwertsteuer.",
     "meaning": "„Ja“ bedeutet: Der Anbieter gibt die Funktion selbst öffentlich an. „Nicht angegeben“ bedeutet: Wir haben dazu auf seiner Website nichts gefunden – das bedeutet nicht, dass es die Funktion nicht gibt.",
     "vendor": "HatchGrab betreibt diese Seite und ist selbst einer der verglichenen Anbieter.",
-    "review": "Wir prüfen die Angaben mindestens alle drei Monate.",
+    "review": "Preise und Funktionen werden automatisch mit der Website des jeweiligen Produkts abgeglichen; jede Angabe verlinkt auf ihre Quelle.",
     "corrections": "Fehler gefunden? Schreiben Sie uns über unser <link>Kontaktformular</link>.",
+    "reportError": "<link>Fehler melden</link>",
     "machine": "Für KI-Assistenten und Entwickler: diese Tabelle <md>als Markdown</md> · <json>als JSON</json>"
   },
   "cta": {
@@ -126,10 +127,13 @@
       "impressum": "Impressum-Entscheidung festgehalten"
     },
     "unverified": "nicht geprüft · öffentlich verborgen",
+    "autoVerified": "automatisch geprüft",
+    "unchecked": "noch nicht für jeden gezeigten Anbieter geprüft · öffentlich verborgen",
     "label": "Admin",
     "notShown": "Nicht auf der Seite (höchstens vier werden gezeigt): {names}.",
     "reasonHidden": "{name} (ausgeblendet)",
-    "reasonBeyond": "{name} (nach den ersten vier)"
+    "reasonBeyond": "{name} (nach den ersten vier)",
+    "reasonNoWebsite": "{name} (keine Website)"
   },
   "footer": {
     "heading": "Vergleich",

@@ -20,6 +20,25 @@ import { runChecker, summaryEmail, exitCodeOf, type CheckerDeps } from '@/lib/co
 import { supabaseCheckerStore } from '@/lib/competitor-check/store-supabase'
 import { sendConfirmationEmail } from '@/lib/email'
 import { ADMIN_ALERT_TO } from '@/lib/custom-domain/alert'
+import { runPublish } from '@/lib/comparison-publish-run'
+import { startSemiDeep } from '@/lib/competitor-check/semi-deep'
+import { supabasePublishStore } from '@/lib/comparison-publish-store'
+import { COUNTRY_PATH_SEGMENTS } from '@/lib/marketing-country'
+
+/** compare-autopublish-1: asks the site to refresh its cached comparison switches (tag marketing-countries). Never throws. */
+async function revalidateCountries(log: (l: string) => void): Promise<boolean> {
+  const warn = (m: string) => { log(`WARNING (pages not told — they show the change within 5 minutes instead): ${m}`); return false }
+  try {
+    const secret = process.env.REVALIDATE_SECRET
+    const base = (process.env.REVALIDATE_BASE_URL || 'https://www.hatchgrab.com').replace(/\/+$/, '')
+    if (!secret) return warn('REVALIDATE_SECRET is not set.')
+    const res = await fetch(`${base}/api/revalidate`, { method: 'POST', headers: { 'content-type': 'application/json', 'x-revalidate-secret': secret },
+      body: JSON.stringify({ tags: ['marketing-countries'] }), signal: AbortSignal.timeout(10_000) })
+    if (res.status !== 200) return warn(`${base}/api/revalidate answered ${res.status}.`)
+    log(`revalidate: ${base} refreshed marketing-countries.`)
+    return true
+  } catch (e) { return warn(`the site could not be reached: ${e instanceof Error ? e.message : e}`) }
+}
 
 function arg(name: string): string | null {
   const i = process.argv.indexOf(`--${name}`)
@@ -70,8 +89,29 @@ async function main() {
     dryRun,
   }
   console.log(`competitor-check · mode ${mode}${competitor ? ` · ${competitor}` : ''}${limit ? ` · limit ${limit}` : ''}${jobMinutes ? ` · ${jobMinutes} min` : ''}${dryRun ? ' · DRY RUN (writes nothing)' : ''}`)
+  // compare-autopublish-1: the semi-deep check waits for this code — its first run turns the stored list into requests (once).
+  if (!dryRun) { try { await startSemiDeep(db, line => console.log(line)) } catch (e) { console.error(`semi-deep not started: ${e instanceof Error ? e.message : e}`) } }
   const reports = await runChecker(deps, { mode: mode === 'scheduled' ? 'scheduled' : mode, trigger, competitor, limit })
   for (const r of reports) console.log(`${r.mode}: ${r.checked} checked, ${r.failed.length} failed, ${r.findings.length} findings, $${r.spend.usd.toFixed(3)} — ${r.stoppedReason}${r.error ? ` (${r.error})` : ''}`)
+  // compare-autopublish-1: after every run that wrote — the failure counts (two failed checks in a row take a competitor down until a
+  // good check), then the automatic publishing step (lib/comparison-publish-run.ts). A failure here is logged; it never fails the run.
+  if (!dryRun) {
+    try {
+      const { data: comps } = await db.from('competitors').select('id, name, check_failures')
+      const byName = new Map(((comps ?? []) as { id: string; name: string; check_failures: number | null }[]).map(c => [c.name, c]))
+      const failed = new Set(reports.flatMap(r => r.failed.filter(f => f.kind !== 'incomplete').map(f => byName.get(f.name)?.id).filter((x): x is string => !!x)))
+      const good = new Set(reports.flatMap(r => r.checkedIds ?? []).filter(id => !failed.has(id)))
+      for (const c of byName.values()) {
+        const next = failed.has(c.id) ? (c.check_failures ?? 0) + 1 : good.has(c.id) ? 0 : null
+        if (next !== null && next !== (c.check_failures ?? 0)) await db.from('competitors').update({ check_failures: next }).eq('id', c.id)
+      }
+      process.env.SUPABASE_URL ||= process.env.NEXT_PUBLIC_SUPABASE_URL   // the Admin stores read lib/supabase.ts
+      const [{ servicePricingStore }, { serviceCheckStore }] = await Promise.all([import('@/lib/admin/pricing-check-store'), import('@/lib/admin/competitor-check-store')])
+      const p = await runPublish({ pricing: servicePricingStore, checks: serviceCheckStore, store: supabasePublishStore(db), now: () => new Date(), log: line => console.log(line),
+        hasPage: (code, locale) => !!COUNTRY_PATH_SEGMENTS[code] && /^(de|en)(-|$)/i.test(locale), revalidate: () => revalidateCountries(line => console.log(line)) })
+      console.log(`publish: ${p.events} event(s); ${p.verdicts.filter(v => v.live).map(v => v.code).join(', ') || 'no country'} live`)
+    } catch (e) { console.error(`publish step failed (the check results are saved): ${e instanceof Error ? e.message : e}`) }
+  }
   if (!dryRun) {
     const mail = summaryEmail(reports, 'https://www.hatchgrab.com/admin?tab=pricing')
     if (mail) await sendConfirmationEmail({ to: ADMIN_ALERT_TO, subject: mail.subject, html: mail.html, text: mail.text, senderName: 'HatchGrab' })

@@ -59,6 +59,9 @@ export interface PricingStore {
   unsupersedeFeatureValue?(id: string): Promise<void>
   /** Set (or clear) verified_at / verified_by on current rows, by id. */
   setFeatureValuesVerified?(ids: string[], at: string | null, by: string | null): Promise<number>
+  /** compare-autopublish-1 (20261079): Admin's "Undo verified" blocks the automatic verification (and clears it); "Mark verified" lifts it. */
+  setPlanAutoBlocked?(id: string, blocked: boolean): Promise<Row | null>
+  setFeatureValuesAutoBlocked?(ids: string[], blocked: boolean): Promise<number>
   /** checked_on on ONE current row — an "unchanged" confirmed by both checks. */
   touchFeatureValueChecked?(id: string, date: string): Promise<boolean>
   /** A feature added or switched to checked: an 'unknown' row for every active competitor that has no current row for it,
@@ -96,6 +99,8 @@ const COMPETITOR: Record<keyof Competitor, Def> = {
   // compare-suits-1 (20261075), read tolerantly (SUITS_COMPETITOR_COLUMNS).
   category: { col: 'category', kind: { oneOf: ['food_truck', 'general_pos', 'restaurant', 'marketplace'], nullable: true } },
   categoryBy: { col: 'category_by', kind: { oneOf: ['auto', 'admin'], nullable: true } },
+  // compare-autopublish-1 (20261078), read tolerantly (SUITS_COMPETITOR_COLUMNS).
+  checkFailures: { col: 'check_failures', kind: 'int0' }, checkUrlsBy: { col: 'check_urls_by', kind: { oneOf: ['auto', 'admin'], nullable: true } },
 }
 const PLAN: Record<keyof CompetitorPlan, Def> = {
   id: { col: 'id', kind: 'text' }, competitorId: { col: 'competitor_id', kind: 'text' },
@@ -116,6 +121,8 @@ const PLAN: Record<keyof CompetitorPlan, Def> = {
   source: { col: 'source', kind: { oneOf: ['research', 'manual', 'admin'] } }, sourceUrl: { col: 'source_url', kind: 'url' },
   checkedOn: { col: 'checked_on', kind: 'date' }, verifiedAt: { col: 'verified_at', kind: 'textOrNull' }, verifiedBy: { col: 'verified_by', kind: 'textOrNull' },
   notes: { col: 'notes', kind: 'textOrNull' }, supersededAt: { col: 'superseded_at', kind: 'textOrNull' }, createdAt: { col: 'created_at', kind: 'textOrNull' },
+  // compare-autopublish-1 (20261078 / 20261079).
+  autoVerifiedAt: { col: 'auto_verified_at', kind: 'textOrNull' }, autoBlocked: { col: 'auto_blocked', kind: 'bool' },
 }
 const BENCH: Record<keyof Benchmark, Def> = {
   id: { col: 'id', kind: 'text' }, countryCode: { col: 'country_code', kind: 'country' }, currency: { col: 'currency', kind: 'currency' },
@@ -143,9 +150,9 @@ export const COMPARE_COMPETITOR_COLUMNS = ['capacity_slots', 'multi_location_sch
 /** competitor-check-1: the columns added by 20261043 — left out of the select while that migration has not run. */
 export const CHECK_COMPETITOR_COLUMNS = ['lifecycle', 'added_as_candidate', 'check_urls', 'check_interval_days', 'next_check_at', 'last_checked_at', 'deep_checked_at', 'check_requested_at'] as const
 /** competitor-check-1: what a competitor column reads as when the row does not carry it (before 20261043). */
-const ABSENT: Record<string, unknown> = { lifecycle: 'active', added_as_candidate: false, check_urls: [], check_interval_days: 90, pinned: false, hidden: false }
+const ABSENT: Record<string, unknown> = { lifecycle: 'active', added_as_candidate: false, check_urls: [], check_interval_days: 90, pinned: false, hidden: false, auto_blocked: false, check_failures: 0 }
 /** compare-suits-1: the competitor columns added by 20261075 — left out of the select while that migration has not run. */
-export const SUITS_COMPETITOR_COLUMNS = ['category', 'category_by'] as const
+export const SUITS_COMPETITOR_COLUMNS = ['category', 'category_by', 'check_failures', 'check_urls_by'] as const
 
 const LABEL: Record<string, string> = {
   planName: 'Plan name', currency: 'Currency', monthlyMinor: 'Monthly price', setupMinor: 'Setup fee', truckFeeBps: 'Fee the truck pays (%)',
@@ -216,6 +223,7 @@ const ENTRY: Record<keyof ComparisonEntry, Def> = {
   createdAt: { col: 'created_at', kind: 'textOrNull' },
   groupLabel: { col: 'group_label', kind: 'textOrNull' },   // global-players-1 (20261046), read tolerantly
   pinned: { col: 'pinned', kind: 'bool' }, hidden: { col: 'hidden', kind: 'bool' },   // compare-suits-1 (20261075), read tolerantly
+  autoVerifiedAt: { col: 'auto_verified_at', kind: 'textOrNull' }, autoBlocked: { col: 'auto_blocked', kind: 'bool' },   // compare-autopublish-1
 }
 export const entryOut = (r: Row) => mapOut<ComparisonEntry>(r, ENTRY)
 export const competitorOut = (r: Row) => mapOut<Competitor>(r, COMPETITOR)
@@ -240,7 +248,7 @@ export const COLUMNS = {
 export async function newPlanVersion(store: PricingStore, old: Row, cols: Row, stamp: Stamp): Promise<ActionResult<{ plan: CompetitorPlan; row: Row }>> {
   if (old.superseded_at != null) return refuse(409, 'That plan has been edited since this page loaded. Reload to see it.')
   const next: Row = {}
-  for (const d of Object.values(PLAN)) if (!['id', 'superseded_at', 'verified_at', 'verified_by', 'created_at'].includes(d.col)) next[d.col] = old[d.col] ?? null
+  for (const d of Object.values(PLAN)) if (!['id', 'superseded_at', 'verified_at', 'verified_by', 'created_at', 'auto_verified_at', 'auto_blocked'].includes(d.col)) next[d.col] = old[d.col] ?? null
   Object.assign(next, cols, { source: 'admin', checked_on: cols.checked_on ?? stamp.today })
   if ('card_bps' in cols && !('card_rate_assumed' in cols)) next.card_rate_assumed = cols.card_bps === null
   const p = planProblem(next); if (p) return refuse(400, p)
@@ -302,7 +310,9 @@ export async function act(store: PricingStore, body: Row, stamp: Stamp): Promise
     case 'unverify': {
       if (!id) return refuse(400, 'Which plan?')
       const on = body.action === 'verify'
-      const r = await store.setPlanVerified(id, on ? stamp.at : null, on ? stamp.by : null)
+      const r0 = await store.setPlanVerified(id, on ? stamp.at : null, on ? stamp.by : null)
+      // compare-autopublish-1: Admin's choice wins — "Undo verified" also blocks the automatic verification; "Mark verified" lifts it.
+      const r = r0 && store.setPlanAutoBlocked ? (await store.setPlanAutoBlocked(id, !on)) ?? r0 : r0
       return r ? { ok: true, data: { plan: planOut(r) } } : refuse(409, 'That plan has been edited since this page loaded. Reload to see it.')
     }
     case 'edit_plan': {
@@ -421,7 +431,8 @@ export async function act(store: PricingStore, body: Row, stamp: Stamp): Promise
     case 'entry_unverify': {
       if (!id) return refuse(400, 'Which entry?')
       const on = body.action === 'entry_verify'
-      const r = await store.updateEntry(id, { verified_at: on ? stamp.at : null, verified_by: on ? stamp.by : null })
+      // compare-autopublish-1: "Undo verified" also blocks (and clears) the automatic verification; "Mark verified" lifts the block.
+      const r = await store.updateEntry(id, { verified_at: on ? stamp.at : null, verified_by: on ? stamp.by : null, auto_blocked: !on, ...(on ? {} : { auto_verified_at: null }) })
       return r ? { ok: true, data: { entry: entryOut(r) } } : refuse(404, 'That entry is gone. Reload the page.')
     }
     case 'entry_move': {

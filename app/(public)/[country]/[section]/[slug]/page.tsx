@@ -116,7 +116,7 @@ export default async function ComparisonPage({ params, searchParams }: { params:
               {/* compare-suits-1: the entries the four-cap leaves out (lib/comparison-selection.ts) — named for an admin only. */}
               {v.notShown.length > 0 && (
                 <p className="cmp-admin-note" data-not-shown>{t('admin.notShown', { names: new Intl.ListFormat(settings.locale, { style: 'long', type: 'conjunction' })
-                  .format(v.notShown.map(n => t(n.reason === 'hidden' ? 'admin.reasonHidden' : 'admin.reasonBeyond', { name: n.name }))) })}</p>
+                  .format(v.notShown.map(n => t(n.reason === 'hidden' ? 'admin.reasonHidden' : n.reason === 'no_website' ? 'admin.reasonNoWebsite' : 'admin.reasonBeyond', { name: n.name }))) })}</p>
               )}
               <p className="cmp-admin-note">{t('admin.goLive')}</p>
             </div>
@@ -153,6 +153,8 @@ export default async function ComparisonPage({ params, searchParams }: { params:
                         <th scope="col" key={c.key} className={c.us ? 'cmp-us' : undefined} data-tool={c.name}>
                           {c.url && !c.us ? <a href={c.url} rel="nofollow noopener" target="_blank">{c.name}</a> : c.name}
                           {!c.verified && !v.publicView && <> {badge}</>}
+                          {/* compare-autopublish-1: public through the automatic rules, not Admin's verification — an admin sees which. */}
+                          {c.autoVerified && !v.publicView && <> <span className="cmp-badge" data-auto-verified>{t('admin.autoVerified')}</span></>}
                           {/* global-players-1: the group the tool belongs to (comparison.groups, or the entry's own label). */}
                           {c.group && <span className="cmp-group" data-group>{c.group}</span>}
                         </th>
@@ -165,7 +167,7 @@ export default async function ComparisonPage({ params, searchParams }: { params:
                       <tr className="cmp-group-row"><th scope="rowgroup" colSpan={v.columns.length + 1}>{g.label}</th></tr>
                       {g.rows.map(row => (
                         <tr key={row.key} data-row={row.key}>
-                          <th scope="row">{row.label}</th>
+                          <th scope="row">{row.label}{row.unchecked && <> <span className="cmp-badge" data-unchecked>{t('admin.unchecked')}</span></>}</th>
                           {row.cells.map((c, i) => <td key={v.columns[i].key} className={v.columns[i].us ? 'cmp-us' : undefined} data-value={c.value}>{cellText(c)}</td>)}
                         </tr>
                       ))}
@@ -250,6 +252,8 @@ export default async function ComparisonPage({ params, searchParams }: { params:
             {/* 8 · method */}
             <section id="methodik" aria-labelledby="methodik-h">
               <h2 id="methodik-h">{t('method.title')}</h2>
+              {/* compare-autopublish-1 §5: "Report an error" — the contact form with the comparison-correction topic chosen. */}
+              <p data-report-error>{rich.rich('method.reportError', { link: (c: React.ReactNode) => <a href={input.urls.contact.replace(/^https:\/\/[^/]+/, '')}>{c}</a> })}</p>
               <p>{t('method.checked', { date: v.checkedLabel })}</p>
               <p>{t('method.prices')}</p>
               <p>{t('method.meaning')}</p>

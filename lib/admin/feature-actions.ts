@@ -140,6 +140,8 @@ export async function verifyFeatures(store: PricingStore, body: Row, stamp: Stam
   if (store.featureValues && store.setFeatureValuesVerified) {
     const rows = rowsForCountry((await store.featureValues()).map(valueOut), cid, code)
     stamped = await store.setFeatureValuesVerified(rows.map(r => r.id), on ? stamp.at : null, on ? stamp.by : null)
+    // compare-autopublish-1: Admin's "Undo verified" blocks the automatic rules for these answers; "Mark verified" lifts it.
+    if (store.setFeatureValuesAutoBlocked) await store.setFeatureValuesAutoBlocked(rows.map(r => r.id), !on)
   }
   const r = await store.updateCompetitor(cid, { features_verified_at: on ? stamp.at : null, ...(on ? { features_checked_on: stamp.today } : {}), updated_at: stamp.at })
   return r ? { ok: true, data: { competitorId: cid, stamped } } : refuse(404, 'That competitor is gone. Reload the page.')

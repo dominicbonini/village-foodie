@@ -5690,6 +5690,7 @@
       "topics": {
         "question": "Klausimas apie HatchGrab",
         "account": "Pagalba dėl mano paskyros",
+        "comparison": "Palyginimo puslapio pataisymas",
         "other": "Kita"
       },
       "nameLabel": "Jūsų vardas",
@@ -6465,7 +6466,7 @@
     },
     "method": {
       "covers": "Palyginime yra iki keturių alternatyvų, atrinktų pagal tai, kiek jos aktualios maisto furgonams ir ar apie jas yra patikrinamos viešos informacijos, — ne visi rinkoje esantys produktai.",
-      "notListed": "„Neminima“ reiškia, kad patikrinome produkto funkcijų, kainų ir pagalbos puslapius ir tai ten neminima, kai kalbama apie funkcijas, kurias įmonės paprastai reklamuoja. „Nieko nesakoma“ reiškia, kad nepatvirtinta nei taip, nei kitaip."
+      "notListed": "„Neminima“ reiškia, kad patikrinome produkto funkcijų ir kainų puslapius ir tai ten neminima, kai kalbama apie funkcijas, kurias įmonės paprastai reklamuoja. „Nieko nesakoma“ reiškia, kad nepatvirtinta nei taip, nei kitaip."
     }
   },
   "outreach": {

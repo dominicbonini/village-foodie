@@ -602,12 +602,12 @@
  "comparison.meta.about": "Online ordering systems for food trucks",
  "comparison.meta.description": "Food truck ordering systems compared: pre-orders with a collection time, kitchen capacity, weekly schedule, fees and contract length — checked on each vendor's site.",
  "comparison.meta.title": "Food truck ordering systems compared 2026: features & prices",
- "comparison.method.checked": "We checked every detail on each vendor's own website on {date} and link the source.",
+ "comparison.method.checked": "Last checked on {date}.",
  "comparison.method.corrections": "Found a mistake? Tell us through our <link>contact form</link>.",
  "comparison.method.machine": "For AI assistants and developers: this table <md>as Markdown</md> · <json>as JSON</json>",
  "comparison.method.meaning": "“Yes” means the vendor states the feature publicly. “Not stated” means we found nothing about it on their website — not that the feature is missing.",
  "comparison.method.prices": "Prices are shown as the vendor states them, including VAT.",
- "comparison.method.review": "We review the details at least every three months.",
+ "comparison.method.review": "Prices and features are automatically compared with the respective product’s website; every claim links to its source.",
  "comparison.method.title": "How we compared",
  "comparison.method.vendor": "HatchGrab runs this page and is one of the vendors compared.",
  "comparison.path.section": "compare",
@@ -645,6 +645,7 @@
  "contactPage.form.topicLabel": "What’s it about?",
  "contactPage.form.topics.question": "A question about HatchGrab",
  "contactPage.form.topics.account": "Help with my account",
+ "contactPage.form.topics.comparison": "Correction to a comparison page",
  "contactPage.form.topics.other": "Something else",
  "contactPage.form.nameLabel": "Your name",
  "contactPage.form.namePlaceholder": "Name",
@@ -5738,5 +5739,9 @@
  "comparisonSuits.ev.calc.excluded": "Fees for card payment processing and fees paid by customers are not included for any product.",
  "comparisonSuits.ev.calc.date": "Worked out on {date} from the prices checked on each vendor’s website.",
  "comparisonSuits.method.covers": "The comparison covers up to four alternatives, chosen for their relevance to food trucks and the availability of verifiable public information – not every product on the market.",
- "comparisonSuits.method.notListed": "“Not listed” means: we checked the product’s features, pricing and help pages and the feature isn’t mentioned – for features companies normally advertise. “Says nothing about it” means: neither confirmed nor ruled out."
+ "comparisonSuits.method.notListed": "“Not listed” means: we checked the product’s features and pricing pages and the feature is not mentioned — for features vendors normally advertise. “Says nothing about it” means: neither confirmed nor ruled out.",
+ "comparison.method.reportError": "<link>Report an error</link>",
+ "comparison.admin.reasonNoWebsite": "{name} (no website)",
+ "comparison.admin.autoVerified": "checked automatically",
+ "comparison.admin.unchecked": "not yet checked for every vendor shown · hidden publicly"
 }

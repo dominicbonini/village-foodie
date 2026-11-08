@@ -396,6 +396,7 @@
  "contactPage.form.topicLabel": "Your enquiry",
  "contactPage.form.topics.question": "A question about HatchGrab",
  "contactPage.form.topics.account": "Help with my account",
+ "contactPage.form.topics.comparison": "A correction to a comparison page",
  "contactPage.form.topics.other": "Something else",
  "contactPage.form.nameLabel": "Your name",
  "contactPage.form.namePlaceholder": "Name",
@@ -5488,5 +5489,5 @@
  "comparisonSuits.ev.calc.excluded": "Card-processing fees and fees paid by customers are not included for any product.",
  "comparisonSuits.ev.calc.date": "Worked out on {date} from the prices checked on each vendor’s website.",
  "comparisonSuits.method.covers": "It covers up to four alternatives chosen for their relevance to food trucks and whether verifiable public information is available. It does not cover every product on the market.",
- "comparisonSuits.method.notListed": "“Not listed” means that, for features companies normally advertise, we checked the product’s features, pricing and help pages and it was not mentioned. “Doesn’t say” means it could not be confirmed either way."
+ "comparisonSuits.method.notListed": "“Not listed” means that, for features companies usually advertise, we checked the service’s features page and pricing page and it was not mentioned. “Not stated” means it could not be confirmed either way."
 }

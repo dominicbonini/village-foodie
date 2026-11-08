@@ -40,7 +40,12 @@ const CMP_TABLES = () => ({
   competitor_plans: [plan(PA, A, 'Basis', { truck_fee_bps: 250 }), plan(PB, B, 'Start', { verified_at: null, monthly_minor: 1900 }), plan(PC, C, 'Flat', { verified_at: null, monthly_minor: 9900, setup_minor: 29900 })],
   comparison_entries: [entry('e1', A, PA, 1), entry('e2', B, PB, 2), entry('e3', C, PC, 3, { verified_at: null, verified_by: null })],
   competitor_feature_values: [...answers(A, '2026-10-21T09:00:00Z'), ...answers(B, '2026-10-21T09:00:00Z', { preorder: 'unknown' }), ...answers(C, null)],
+  // ⚠️ RE-PINNED (compare-autopublish-1, 7 November 2026): a feature row now shows publicly only when it has been checked for every
+  // competitor shown (the display rule). These fixtures predate check records, so each competitor gets one for every feature in the file —
+  // every row checked, as the tests here assume. A harness about the rule itself passes its own competitor_feature_checks.
+  competitor_feature_checks: [A, B, C].flatMap(cid => FEATURE_KEYS().map(key => ({ competitor_id: cid, feature_key: key, country_code: '', checked_on: '2026-10-20', rejudge: false, pages_checked: null }))),
 })
+const FEATURE_KEYS = () => JSON.parse(require('fs').readFileSync(require('path').join(__dirname, '..', 'data/comparison-features/features.json'), 'utf8')).features.map(f => f.key)
 /** global-players-1: CMP_TABLES plus till / POS players — P and R verified (R's entry has its own group label), Q a
  *  still-candidate POS player whose automatically added entry is unverified, and L a local-restaurant tool. */
 const P = 'c0000000-0000-4000-8000-0000000000a1', Q = 'c0000000-0000-4000-8000-0000000000a2', RR = 'c0000000-0000-4000-8000-0000000000a3', L = 'c0000000-0000-4000-8000-0000000000a4'
@@ -50,6 +55,8 @@ const GLOBAL_TABLES = () => {
     competitors: [...base.competitors, comp(P, 'Testkasse P', pos), comp(RR, 'Testkasse R', pos),
       comp(Q, 'Testkasse Q', { focus: 'pos', lifecycle: 'candidate', added_as_candidate: true, features_verified_at: null }), comp(L, 'Testlokal L', { focus: 'nearest_local' })],
     competitor_feature_values: [...base.competitor_feature_values, ...answers(P, '2026-10-21T09:00:00Z'), ...answers(RR, '2026-10-21T09:00:00Z'), ...answers(Q, null), ...answers(L, '2026-10-21T09:00:00Z')],
+    // ⚠️ RE-PINNED (compare-autopublish-1): every feature checked for these too (see CMP_TABLES).
+    competitor_feature_checks: [...base.competitor_feature_checks, ...[P, RR, Q, L].flatMap(cid => FEATURE_KEYS().map(key => ({ competitor_id: cid, feature_key: key, country_code: '', checked_on: '2026-10-20', rejudge: false, pages_checked: null })))],
     competitor_plans: [...base.competitor_plans, plan('pp', P, 'Kasse Plus', { monthly_minor: 3900 }), plan('pr', RR, 'Shop', { monthly_minor: 6900 }),
       plan('pq', Q, 'Kasse', { verified_at: null }), plan('pl', L, 'Lokal')],
     comparison_entries: [...base.comparison_entries, entry('e4', P, 'pp', 4), entry('e6', RR, 'pr', 6, { group_label: 'Kasse mit Online-Shop' }),

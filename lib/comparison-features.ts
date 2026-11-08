@@ -74,6 +74,8 @@ export interface FeatureValueRow {
   id: string; competitorId: string; featureKey: string; countryCode: string | null; value: FeatureValue
   note: string | null; quote: string | null; sourceUrl: string | null; checkedOn: string | null
   verifiedAt: string | null; verifiedBy: string | null; supersededAt: string | null; createdAt: string | null
+  /** compare-autopublish-1 (20261078 / 20261079): verified automatically (the evidence rule), and Admin's block on that. */
+  autoVerifiedAt?: string | null; autoBlocked?: boolean
 }
 
 type Row = Record<string, unknown>
@@ -100,6 +102,7 @@ export function valueOut(r: Row): FeatureValueRow {
     value: (FEATURE_VALUES as readonly string[]).includes(String(r.value)) ? r.value as FeatureValue : 'unknown',
     note: str(r.note), quote: str(r.quote), sourceUrl: str(r.source_url), checkedOn: str(r.checked_on) ? String(r.checked_on).slice(0, 10) : null,
     verifiedAt: str(r.verified_at), verifiedBy: str(r.verified_by), supersededAt: str(r.superseded_at), createdAt: str(r.created_at),
+    autoVerifiedAt: str(r.auto_verified_at), autoBlocked: r.auto_blocked === true,
   }
 }
 
@@ -261,14 +264,35 @@ export function featureCheckOf(checks: readonly FeatureCheckRow[], competitorId:
   if (own && every) return (every.checkedOn ?? '') > (own.checkedOn ?? '') ? every : own
   return own ?? every
 }
-/** 🔴 THE PAGES "NOT LISTED" NEEDS: the features page AND the pricing page fetched, AND the help centre fetched — or the check
- *  saw none. A help centre linked but not read (the help fetch is off), a failed fetch or a page not asked for: not complete. */
+/** 🔴 THE PAGES "NOT LISTED" NEEDS: the features page AND the pricing page fetched in that check (compare-autopublish-1, addendum C,
+ *  7 November 2026 — the help centre is no longer required; help reads stay off). A failed fetch or a page not asked for: not complete. */
 export function pagesComplete(p: PagesChecked | null | undefined): boolean {
   if (!p) return false
   const got = (k: PageKind) => p.pages.some(x => x.kind === k && x.ok)
-  if (!got('features') || !got('pricing')) return false
-  return p.helpCentre === 'none_found' || (p.helpCentre === 'fetched' && got('help'))
+  return got('features') && got('pricing')
 }
+
+// ── compare-autopublish-1 (7 November 2026; docs/compare-autopublish-1-report.md): what an AUTOMATICALLY verified answer may say ──
+/** 🔴 THE EVIDENCE RULE (§3, addendum B), for an answer no admin verified, on an auto-publish country's page:
+ *   • "yes" / "partly" — only with a quote and its page;
+ *   • "no" — only with the competitor's own quote saying so, and its page;
+ *   • "not mentioned" — only WITHOUT a quote (one that carries a quote contradicts itself: unusable); it becomes "not listed" only under
+ *     absence_means_no with complete pages (cellState);
+ *   • anything else: "doesn't say" (unknown) — never a yes or a no.
+ *  An answer Admin verified is shown as it is; one Admin blocked (Undo verified) is never used. Returns the value to show. */
+export function evidenceValue(v: Pick<FeatureValueRow, 'value' | 'quote' | 'sourceUrl' | 'verifiedAt' | 'autoBlocked'>): FeatureValue {
+  if (v.verifiedAt) return v.value
+  if (v.autoBlocked) return 'unknown'
+  const quoted = !!v.quote?.trim() && !!v.sourceUrl?.trim()
+  switch (v.value) {
+    case 'yes': case 'partial': case 'no': return quoted ? v.value : 'unknown'
+    case 'not_mentioned': return v.quote?.trim() ? 'unknown' : 'not_mentioned'
+    default: return 'unknown'
+  }
+}
+/** The answer passes the evidence rule as it is (what auto_verified_at records for Admin). */
+export const passesEvidence = (v: Pick<FeatureValueRow, 'value' | 'quote' | 'sourceUrl' | 'verifiedAt' | 'autoBlocked'>) =>
+  !v.verifiedAt && !v.autoBlocked && v.value !== 'unknown' && evidenceValue(v) === v.value
 
 /** What a competitor's cell may say. 'no_quoted': a "no" with its quote and page; 'no_unquoted': a "no" without them (an older
  *  answer — shown as No in the table, but never used as a known "no" in the "Which suits" answers); 'not_listed': the raw answer

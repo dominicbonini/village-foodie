@@ -207,7 +207,7 @@ export const redirect = (to) => { const e = new Error('redirect'); e.redirectTo 
   function fakeDb(tables, writes = []) {
     const cmp = (a, b) => (a == null || b == null ? NaN : (String(a) < String(b) ? -1 : String(a) > String(b) ? 1 : 0))
     const from = t => {
-      const filters = []; let op = 'select', payload = null, single = null, limitN = null, orderBy = null
+      const filters = []; let op = 'select', payload = null, single = null, limitN = null, orderBy = null, rangeAB = null
       const c = {
         select() { return c },
         eq(k, v) { filters.push(r => String(r[k]) === String(v)); return c },
@@ -235,7 +235,8 @@ export const redirect = (to) => { const e = new Error('redirect'); e.redirectTo 
         },
         order(k, o) { orderBy = { k, asc: !o || o.ascending !== false }; return c },
         limit(n) { limitN = n; return c },
-        range() { return c },
+        // compare-autopublish-1 (7 November 2026): a paged read (.range) now pages — a no-op before, so a read of more than 1,000 rows looped.
+        range(a, b) { rangeAB = [a, b]; return c },
         update(p) { op = 'update'; payload = p; return c },
         insert(p) { op = 'insert'; payload = p; return c },
         upsert(p) { op = 'upsert'; payload = p; return c },
@@ -246,6 +247,7 @@ export const redirect = (to) => { const e = new Error('redirect'); e.redirectTo 
           let rows = (tables[t] || []).filter(r => filters.every(fn => fn(r)))
           if (orderBy) rows = rows.slice().sort((a, b) => (orderBy.asc ? 1 : -1) * cmp(a[orderBy.k], b[orderBy.k]))
           if (limitN != null) rows = rows.slice(0, limitN)
+          if (rangeAB) rows = rows.slice(rangeAB[0], rangeAB[1] + 1)
           if (op !== 'select') {
             writes.push({ table: t, op, patch: payload, ids: rows.map(r => r.id ?? null) })
             return Promise.resolve({ data: op === 'insert' ? payload : null, error: null }).then(res, rej)

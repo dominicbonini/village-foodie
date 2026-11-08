@@ -18,7 +18,6 @@ import { translatorFor } from '@/lib/i18n/translator'
 import '@/lib/i18n/catalog/comparison'
 import '@/lib/i18n/catalog/comparisonSuits'   // compare-suits-1: "Which suits your food truck?" (every language base)
 import { COUNTRY_PATH_SEGMENTS, HATCHGRAB_ORIGIN, countryPagePath } from '@/lib/marketing-country'
-import { contactHref } from '@/lib/contact-topics'
 import { servicePricingStore } from '@/lib/admin/pricing-check-store'
 import { competitorOut, planOut, entryOut } from '@/lib/admin/pricing-check-actions'
 import { buildComparison, type ComparisonFlags, type ComparisonInput, type ComparisonT } from '@/lib/comparison'
@@ -106,7 +105,7 @@ export async function comparisonPage(code: string, flags?: ComparisonFlags): Pro
     charges: countryCharges(settings),
     urls: {
       page, home: HATCHGRAB_ORIGIN + countryPagePath(key, 'landing'), features: HATCHGRAB_ORIGIN + countryPagePath(key, 'features'),
-      md: `${page}.md`, json: `${page}.json`, contact: HATCHGRAB_ORIGIN + contactHref('general'),
+      md: `${page}.md`, json: `${page}.json`, contact: `${HATCHGRAB_ORIGIN}/contact?topic=comparison`,   // compare-autopublish-1: the correction topic (lib/contact.ts)
     },
     today: new Date().toISOString().slice(0, 10),
   }

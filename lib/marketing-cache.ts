@@ -48,11 +48,12 @@ export const marketingPlanCatalog = shared('plan-catalog', [plans], async (): Pr
 /** The comparison and app switches, as entries (a Map does not survive the cache). A database without the columns (20261042 not
  *  run, 42703) is every country off, as before — that answer is real, so it is kept; any other failure throws. */
 export const marketingComparisonEntries = shared('comparison-flags', [countries], async (): Promise<[string, ComparisonFlags][]> => {
-  const [{ supabase }, { flagsFromRows }] = await Promise.all([import('@/lib/supabase'), import('@/lib/comparison-flags')])
+  const [{ supabase }, { flagsFromRows, readPublishRows }] = await Promise.all([import('@/lib/supabase'), import('@/lib/comparison-flags')])
   const { data, error } = await supabase.from('country_settings').select('country_code, comparison_status, ios_app_available, android_app_available')
   if (error) {
     if (error.code === '42703' || /column .* does not exist/i.test(error.message)) return []
     throw new Error(`comparison switches: ${error.message}`)
   }
-  return [...flagsFromRows(data ?? []).entries()]
+  // compare-autopublish-1: the auto-publish switches and verdicts (comparison_publish) — any failure throws, like the read above.
+  return [...flagsFromRows(data ?? [], await readPublishRows(supabase as never)).entries()]
 })

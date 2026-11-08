@@ -5690,6 +5690,7 @@
       "topics": {
         "question": "O întrebare despre HatchGrab",
         "account": "Ajutor cu contul meu",
+        "comparison": "O corectură la o pagină de comparație",
         "other": "Altceva"
       },
       "nameLabel": "Numele dvs.",
@@ -6465,7 +6466,7 @@
     },
     "method": {
       "covers": "Include cel mult patru alternative, alese în funcție de relevanța lor pentru food truckuri și de disponibilitatea unor informații publice verificabile — nu toate produsele de pe piață.",
-      "notListed": "„Nu este menționat” înseamnă că am verificat paginile de funcționalități, prețuri și ajutor ale produsului și funcția nu apare acolo — pentru funcționalitățile pe care companiile le promovează de obicei. „Nu spune” înseamnă că nu este confirmat nici într-un sens, nici în celălalt."
+      "notListed": "„Nu este menționat” înseamnă că am verificat paginile de funcționalități și prețuri ale produsului și funcția nu apare acolo — pentru funcționalitățile pe care companiile le promovează de obicei. „Nu spune” înseamnă că nu este confirmat nici într-un sens, nici în celălalt."
     }
   },
   "outreach": {

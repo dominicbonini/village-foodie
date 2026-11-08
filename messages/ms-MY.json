@@ -5690,6 +5690,7 @@
       "topics": {
         "question": "Soalan tentang HatchGrab",
         "account": "Bantuan dengan akaun saya",
+        "comparison": "Pembetulan pada halaman perbandingan",
         "other": "Perkara lain"
       },
       "nameLabel": "Nama anda",
@@ -6437,7 +6438,7 @@
     },
     "method": {
       "covers": "Ia merangkumi sehingga empat alternatif yang dipilih kerana kaitannya dengan food truck dan adanya maklumat awam yang boleh disahkan — bukan setiap produk di pasaran.",
-      "notListed": "“Tidak disenaraikan” bermaksud kami telah menyemak halaman ciri, harga dan bantuan produk itu dan ciri tersebut tidak disebut, bagi ciri yang biasanya diiklankan oleh syarikat. “Tidak menyatakan” bermaksud tidak disahkan sama ada ya atau tidak."
+      "notListed": "“Tidak disenaraikan” bermaksud kami telah menyemak halaman ciri dan harga produk itu dan ciri tersebut tidak disebut, bagi ciri yang biasanya diiklankan oleh syarikat. “Tidak menyatakan” bermaksud tidak disahkan sama ada ya atau tidak."
     }
   },
   "outreach": {

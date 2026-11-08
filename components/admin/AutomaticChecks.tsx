@@ -235,7 +235,9 @@ export default function AutomaticChecks({ onCount }: { onCount?: (n: number) => 
                           <button type="button" className={BTN} disabled={busy !== null} data-accept onClick={() => post('accept', { action: 'accept', id: f.id }, 'Accepted. Verify it again in the country view before it shows publicly.')}>Accept</button>
                           <button type="button" className={BTN} disabled={busy !== null} data-reject onClick={() => post('reject', { action: 'reject', id: f.id }, 'Rejected.')}>Reject</button>
                         </div>
-                      ) : <span className={`rounded-full px-2 py-0.5 text-[11px] font-bold ${f.review_status === 'accepted' ? 'bg-emerald-50 text-emerald-700' : 'bg-slate-100 text-slate-500'}`}>{f.review_status === 'accepted' ? 'Accepted' : 'Rejected'}</span>}
+                      ) : <span className={`rounded-full px-2 py-0.5 text-[11px] font-bold ${f.review_status === 'accepted' ? 'bg-emerald-50 text-emerald-700' : 'bg-slate-100 text-slate-500'}`}>{f.review_status === 'accepted' ? 'Accepted' : 'Rejected'}{f.auto_reviewed === true ? ' automatically' : ''}</span>}
+                      {/* compare-autopublish-1: why the automatic rules accepted, rejected or held it. */}
+                      {typeof f.auto_reason === 'string' && f.auto_reason && <p className="text-[11px] text-slate-500" data-auto-reason>{f.auto_reason}</p>}
                     </td>
                   </tr>
                 )

@@ -109,6 +109,9 @@ jobs:
           SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
           BREVO_API_KEY: ${{ secrets.BREVO_API_KEY }}
           EMAIL_FROM_ADDRESS: ${{ secrets.EMAIL_FROM_ADDRESS }}
+          # compare-autopublish-1: after the run, the publishing step asks the site to refresh its cached comparison switches. Not set →
+          # a warning only (the cache refreshes itself within 5 minutes).
+          REVALIDATE_SECRET: ${{ secrets.REVALIDATE_SECRET }}
           MODE: ${{ github.event_name == 'schedule' && 'scheduled' || github.event.inputs.mode }}
           COMPETITOR: ${{ github.event.inputs.competitor }}
           LIMIT: ${{ github.event.inputs.limit }}

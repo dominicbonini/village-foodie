@@ -53,6 +53,10 @@ export interface Competitor {
    *  checker's focus) or 'admin' (Admin's choice — the checker never overwrites it). Absent before 20261075: null. */
   category?: 'food_truck' | 'general_pos' | 'restaurant' | 'marketplace' | null
   categoryBy?: 'auto' | 'admin' | null
+  /** compare-autopublish-1 (20261078): consecutive failed checks (two take it off every auto-published page until a good check), and
+   *  who set check_urls ('admin' — the checker never changes them; 'auto' or null — the checker may add addresses). Absent before: 0 / null. */
+  checkFailures?: number
+  checkUrlsBy?: 'auto' | 'admin' | null
 }
 
 /** competitor-check-1: whether a competitor is counted and shown anywhere in Pricing check (and the comparison pages).
@@ -74,6 +78,10 @@ export interface ComparisonEntry {
   /** compare-suits-1 (20261075): Admin's choices for the four shown (lib/comparison-selection.ts). Absent before it: false. */
   pinned?: boolean
   hidden?: boolean
+  /** compare-autopublish-1 (20261078 / 20261079): verified AUTOMATICALLY (lib/comparison-publish.ts — distinct from verifiedAt, Admin's),
+   *  and Admin's "Undo verified", which the automatic rules never override. Absent before: null / false. */
+  autoVerifiedAt?: string | null
+  autoBlocked?: boolean
 }
 
 export interface CompetitorPlan {
@@ -109,6 +117,9 @@ export interface CompetitorPlan {
   notes: string | null
   supersededAt: string | null
   createdAt: string | null
+  /** compare-autopublish-1: verified automatically (its price confirmed by both checks on its own site), and Admin's "Undo verified". */
+  autoVerifiedAt?: string | null
+  autoBlocked?: boolean
 }
 
 export interface Benchmark {

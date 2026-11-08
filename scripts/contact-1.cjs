@@ -82,7 +82,8 @@ const flat = (o, p = '', out = {}) => { for (const [k, v] of Object.entries(o ??
   head('1 · the rules (lib/contact.ts — the browser and the server run the same function)')
   const ok = { topic: 'question', name: 'Ana', email: 'ana@example.de', business: '', message: 'Hello there, a question.' }
   const v = o => C.validateContact({ ...ok, ...o })
-  t('three topics in the agreed order, the first the default', JSON.stringify(C.CONTACT_TOPICS) === '["question","account","other"]' && C.topicFromParam(undefined) === 'question')
+  // ⚠️ RE-PINNED (compare-autopublish-1, 7 November 2026): + "comparison" (a correction to a comparison page), before "other".
+  t('four topics in the agreed order, the first the default', JSON.stringify(C.CONTACT_TOPICS) === '["question","account","comparison","other"]' && C.topicFromParam(undefined) === 'question')
   t('?topic=: Tally\'s values (General Enquiry, Cost Comparison, Add Business, Report Issue, ClaimVenue) and anything unrecognised → the first topic', ['General Enquiry', 'Cost Comparison', 'Add Business', 'Report Issue', 'ClaimVenue', 'nonsense', ''].every(x => C.topicFromParam(x) === 'question'))
   t('…only the form\'s own ids pick another (account, other; an array takes its first)', C.topicFromParam('account') === 'account' && C.topicFromParam(['other', 'account']) === 'other')
   t('a complete message passes', Object.keys(v({})).length === 0)
@@ -302,7 +303,8 @@ const flat = (o, p = '', out = {}) => { for (const [k, v] of Object.entries(o ??
     t(`${locale}: the form renders (topic select, name, email, business, message, Send), no iframe`, /<form class="cf"/.test(html) && /<select id="cf-topic" name="topic"/.test(html) && /<input id="cf-name"[^>]* name="name"/.test(html) && /<input id="cf-email" type="email"[^>]* name="email"/.test(html)
       && /<input id="cf-business"[^>]* name="business"/.test(html) && /<textarea id="cf-message" name="message"/.test(html) && /<button type="submit" class="btn btn-primary btn-lg"/.test(html) && !/<iframe/.test(html))
     const opts = [...html.matchAll(/<option value="(\w+)"[^>]*>([^<]*)<\/option>/g)].map(m => [m[1], ents(m[2])])
-    t(`${locale}: the three topics in order, in the page's words, the first selected`, JSON.stringify(opts) === JSON.stringify([['question', W['form.topics.question']], ['account', W['form.topics.account']], ['other', W['form.topics.other']]]) && /<option value="question" selected=""/.test(html), opts)
+    // ⚠️ RE-PINNED (compare-autopublish-1, 7 November 2026): a fourth topic, "comparison" (a correction to a comparison page), before "other".
+    t(`${locale}: the four topics in order, in the page's words, the first selected`, JSON.stringify(opts) === JSON.stringify([['question', W['form.topics.question']], ['account', W['form.topics.account']], ['comparison', W['form.topics.comparison']], ['other', W['form.topics.other']]]) && /<option value="question" selected=""/.test(html), opts)
     t(`${locale}: every label is tied to its field (for = id)`, ['topic', 'name', 'email', 'business', 'message'].every(k => html.includes(`for="cf-${k}"`) && html.includes(`id="cf-${k}"`)))
     t(`${locale}: heading "${W.formHeading}", the labels, "(optional)", placeholders, Send and the privacy line in its language`, [W.formHeading, W['form.topicLabel'], W['form.nameLabel'], W['form.emailLabel'], W['form.businessLabel'], W['form.optional'], W['form.messageLabel'], W['form.send'], W['form.privacyLine'], W['form.privacyLink']].every(w => text.includes(w))
       && html.includes(`placeholder="${W['form.businessPlaceholder'].replace(/"/g, '&quot;')}"`) && html.includes(`placeholder="${W['form.namePlaceholder']}"`))
@@ -407,7 +409,7 @@ const flat = (o, p = '', out = {}) => { for (const [k, v] of Object.entries(o ??
   const bad = Object.entries(AGREED).filter(([k, s]) => EF[k] !== s)
   t('en-GB: the brief\'s words exactly (typographic apostrophes, as the rest of en-GB)', !bad.length, bad)
   const FORM_KEYS = Object.keys(EF).filter(k => k === 'formHeading' || k.startsWith('form.'))
-  t(`${FORM_KEYS.length} form keys`, FORM_KEYS.length === 30)
+  t(`${FORM_KEYS.length} form keys`, FORM_KEYS.length === 31)   // ⚠️ RE-PINNED (compare-autopublish-1): + form.topics.comparison
   t('English variants only where the wording truly differs: en-US none (its old "fill out the form" heading gone); es-MX three Mexican sentences', !('form' in (JSON.parse(read('messages/en-US.json')).contactPage || {})) && !('formHeading' in JSON.parse(read('messages/en-US.json')).contactPage)
     && JSON.stringify(Object.keys(flat(JSON.parse(read('messages/es-MX.json')).contactPage)).sort()) === JSON.stringify(['form.errors.failed', 'form.errors.rateLimited', 'form.thanksTitle']))
   t('28 language bases', BASES.length === 28)
@@ -418,7 +420,7 @@ const flat = (o, p = '', out = {}) => { for (const [k, v] of Object.entries(o ??
     const missing = FORM_KEYS.filter(k => typeof W[k] !== 'string' || !W[k])
     t(`${l}: all ${FORM_KEYS.length} form keys ("${W.formHeading}"), structural 0, no flag on contactPage`, !missing.length && W.formHeading !== EF.formHeading && /\*\*Structural: 0\*\*/.test(out) && !out.includes('contactPage'), { missing, flags: out.split('\n').filter(x => /Structural|contactPage/.test(x)).join(' | ') })
   }
-  t('admin text and the email to us stay English (35.an-20): the topic names in the email are the English ones', JSON.stringify(C.TOPIC_EN) === JSON.stringify({ question: 'A question about HatchGrab', account: 'Help with my account', other: 'Something else' }))
+  t('admin text and the email to us stay English (35.an-20): the topic names in the email are the English ones', JSON.stringify(C.TOPIC_EN) === JSON.stringify({ question: 'A question about HatchGrab', account: 'Help with my account', comparison: 'A correction to a comparison page', other: 'Something else' }))   // ⚠️ RE-PINNED (compare-autopublish-1)
 
   // ══ 8 ══════════════════════════════════════════════════════════════════════════════════════════════════════════════
   head('8 · the Privacy Policy, its dates, the retention job, the migration')

@@ -8,7 +8,12 @@ import { useEffect, useState } from 'react'
 import { nativeAuthHeader } from '@/lib/native/session'
 import type { ComparisonStatus } from '@/lib/comparison-types'
 
-interface Row { code: string; name: string; locale: string; enabled: boolean; path: string; status: ComparisonStatus; iosApp: boolean; androidApp: boolean }
+// compare-autopublish-1 (7 November 2026): every English- or German-language country, with its AUTO-PUBLISH switch and the automatic
+// verdict (lib/comparison-publish.ts). `status` is Admin's own; `effective` is what the site shows — live when Admin says live, or
+// auto-publish is on and the evaluation found ≥ 2 publishable competitors. Setting Off is recorded and always wins. The UAE never auto-publishes.
+// ⚠️ Only classes this panel already used (a new Tailwind class would change the stylesheet the public pages share).
+interface Row { code: string; name: string; locale: string; enabled: boolean; path: string; status: ComparisonStatus; iosApp: boolean; androidApp: boolean
+  effective?: ComparisonStatus; autoPublish?: boolean; autoLocked?: boolean; autoLive?: boolean; adminOff?: boolean; evaluatedAt?: string | null; shown?: string[] }
 const LABEL: Record<ComparisonStatus, string> = { off: 'Off', admin: 'Admins only', live: 'Live' }
 const PILL: Record<ComparisonStatus, string> = { off: 'bg-slate-100 text-slate-600', admin: 'bg-amber-100 text-amber-800', live: 'bg-emerald-100 text-emerald-800' }
 
@@ -45,6 +50,16 @@ export function ComparisonStatusPanel() {
     await load()
   }
 
+  const setAuto = async (row: Row, on: boolean) => {
+    if (on && !window.confirm(`Let the ${row.name} comparison page publish itself? It goes live by itself once at least two competitors pass the automatic checks.`)) return
+    setBusy(row.code); setNotice(null)
+    const r = await call('PATCH', { code: row.code, autoPublish: on })
+    setBusy(null)
+    if (!r.ok) { setNotice({ ok: false, text: typeof r.data.error === 'string' ? r.data.error : 'That could not be saved.' }); return }
+    setNotice({ ok: true, text: `${row.name}: auto-publish ${on ? 'on' : 'off'}.` })
+    await load()
+  }
+
   if (!rows) return null
   return (
     <section className="rounded-2xl border border-slate-200 bg-white p-4" data-comparison-status>
@@ -55,7 +70,7 @@ export function ComparisonStatusPanel() {
       <div className="mt-2 overflow-x-auto">
         <table className="w-full min-w-[640px] text-sm">
           <thead><tr className="text-left text-[11px] font-bold uppercase tracking-wide text-slate-500">
-            <th className="px-2 py-1.5">Country</th><th className="px-2 py-1.5">Address</th><th className="px-2 py-1.5">iPad app</th><th className="px-2 py-1.5">Android app</th><th className="px-2 py-1.5">Status</th>
+            <th className="px-2 py-1.5">Country</th><th className="px-2 py-1.5">Address</th><th className="px-2 py-1.5">iPad app</th><th className="px-2 py-1.5">Android app</th><th className="px-2 py-1.5">Status</th><th className="px-2 py-1.5">Auto-publish</th>
           </tr></thead>
           <tbody className="divide-y divide-slate-100">
             {rows.map(r => (
@@ -71,6 +86,13 @@ export function ComparisonStatusPanel() {
                         className={`rounded-lg px-2.5 py-1 text-xs font-bold disabled:opacity-50 ${r.status === s ? PILL[s] : 'text-slate-500 hover:bg-slate-50'}`}>{LABEL[s]}</button>
                     ))}
                   </div>
+                </td>
+                <td className="px-2 py-1.5 text-xs" data-auto-publish={r.autoPublish ? 'on' : 'off'}>
+                  <label><input type="checkbox" checked={r.autoPublish === true} disabled={!ready || busy !== null || r.autoLocked} onChange={e => setAuto(r, e.target.checked)} /> {r.autoLocked ? 'Never (fixed)' : r.autoPublish ? 'On' : 'Off'}</label>
+                  {r.adminOff && <p className="text-slate-500">You set it Off — that wins.</p>}
+                  {r.autoPublish && !r.adminOff && <p className={r.autoLive ? 'font-bold text-emerald-800' : 'text-slate-500'} data-auto-live={r.autoLive ? 'yes' : 'no'}>
+                    {r.autoLive ? `Live automatically${r.shown?.length ? `: ${r.shown.join(', ')}` : ''}` : r.evaluatedAt ? 'Not live: fewer than 2 competitors pass the checks' : 'Not evaluated yet'}</p>}
+                  {r.effective && r.effective !== r.status && <p className="text-slate-500">The site shows: {LABEL[r.effective]}</p>}
                 </td>
               </tr>
             ))}

@@ -5690,6 +5690,7 @@
       "topics": {
         "question": "Uma pergunta sobre a HatchGrab",
         "account": "Ajuda com a minha conta",
+        "comparison": "Uma correção a uma página de comparação",
         "other": "Outro assunto"
       },
       "nameLabel": "O seu nome",
@@ -6465,7 +6466,7 @@
     },
     "method": {
       "covers": "Abrange até quatro alternativas, escolhidas pela sua relevância para food trucks e pela disponibilidade de informação pública verificável — não todos os produtos do mercado.",
-      "notListed": "«Não indicado» significa que verificámos as páginas de funcionalidades, preços e ajuda do produto e a funcionalidade não é mencionada, em funcionalidades que as empresas costumam anunciar. «Não diz» significa que não está confirmado nem num sentido nem noutro."
+      "notListed": "«Não indicado» significa que verificámos as páginas de funcionalidades e preços do produto e a funcionalidade não é mencionada, em funcionalidades que as empresas costumam anunciar. «Não diz» significa que não está confirmado nem num sentido nem noutro."
     }
   },
   "outreach": {

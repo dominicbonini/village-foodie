@@ -8,7 +8,7 @@
 //       in code (lib/competitor-check/model.ts); a malformed call is sent back once with the errors, then the competitor fails.
 //   2 · the QUOTE CHECK — in code: each quote must be in the text of a page actually fetched in that conversation.
 //   3 · the VERIFIER — a separate fresh conversation that sees only the claim (field, value, URL), fetches the URL itself and
-//       returns confirmed / disagreed with its own quote. Deep: every quoted finding. Routine: every finding that is not
+//       returns confirmed / disagreed with its own quote. Deep: every quoted finding. Routine: every monthly price (compare-autopublish-1) and every finding that is not
 //       "unchanged", and any whose quote was not found.
 //   4 · WRITES — only competitor_check_findings, competitor_check_runs and the scheduling columns (next_check_at,
 //       last_checked_at, deep_checked_at, check_requested_at). `CheckerStore.setSchedule` refuses any other column.
@@ -460,7 +460,8 @@ export async function checkCompetitor(deps: CheckerDeps, settings: CheckSettings
   // quote not found on the page.
   const spend = addSpend(ex.spend, await secondCheck(deps, { model: settings.verifierModel, prices: settings.prices, pageTokens: 12000, allowed,
     maxTokens: maxOutputTokensFor(settings.verifierModel, settings.maxOutputTokens) }, c, findings,
-    row => depth === 'deep' || row.outcome !== 'unchanged' || !row.quote_in_page))
+    // compare-autopublish-1: …and every monthly price, unchanged or not — an automatically published price needs both checks to agree.
+    row => depth === 'deep' || row.outcome !== 'unchanged' || !row.quote_in_page || row.field === 'monthly_price'))
   // compare-suits-1: the pages this check read — kind from the model, fetched or not from the API.
   const pagesChecked = pagesCheckedFrom(ex.contents, ex.value.pages_checked, ex.value.help_centre, deps.now().toISOString())
   return { findings, spend, dropped: dropped + repeats, incomplete, timedOut, progress, ignored: ex.value.ignored, asked: incomplete ? [] : keys, pagesChecked }

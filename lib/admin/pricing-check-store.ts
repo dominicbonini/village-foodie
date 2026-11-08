@@ -49,12 +49,16 @@ export async function readDataImports(): Promise<ImportRecord[] | null> {
 const FEATURE_COLUMNS = 'key, group_key, sort_order, checked, show_scope, show_countries, hatchgrab_source, labels, explanations, updated_at'
 /** compare-suits-1 (20261075): the two Admin flags, read when the migration has run. */
 const FEATURE_COLUMNS_SUITS = `${FEATURE_COLUMNS}, never_competitor_strength, absence_means_no`
-const VALUE_COLUMNS = 'id, competitor_id, feature_key, country_code, value, note, quote, source_url, checked_on, verified_at, verified_by, superseded_at, created_at'
+const VALUE_COLUMNS = 'id, competitor_id, feature_key, country_code, value, note, quote, source_url, checked_on, verified_at, verified_by, superseded_at, created_at, auto_verified_at, auto_blocked'
 const tableMissing = (error: { message: string; code?: string }) => error.code === '42P01' || error.code === 'PGRST205' || /relation .* does not exist|schema cache/i.test(error.message)
 const ENTRY_COLUMNS_BASE = 'id, country_code, competitor_id, primary_plan_id, choose_when, sort_order, verified_at, verified_by, created_at'
+/** compare-autopublish-1 (20261078 / 20261079). */
+const ENTRY_COLUMNS_AUTO = 'auto_verified_at, auto_blocked'
 /** global-players-1: group_label (20261046), falling back to the select before it runs. */
 async function entryCols<R extends { error: { message: string; code?: string } | null }>(build: (cols: string) => PromiseLike<R>): Promise<R> {
   // compare-suits-1: pinned / hidden (20261075) first, then the select before it, then the one before group_label.
+  const a = await build(`${ENTRY_COLUMNS_BASE}, group_label, pinned, hidden, ${ENTRY_COLUMNS_AUTO}`)
+  if (!missingColumn(a.error)) return a
   const s = await build(`${ENTRY_COLUMNS_BASE}, group_label, pinned, hidden`)
   if (!missingColumn(s.error)) return s
   const r = await build(`${ENTRY_COLUMNS_BASE}, group_label`)
@@ -118,6 +122,14 @@ export const servicePricingStore: PricingStore = {
     const { data, error } = await (await db()).from(TABLE.plans).update({ verified_at: at, verified_by: by })
       .eq('id', id).is('superseded_at', null).select(COLUMNS.plans)
     if (error) fail('verify plan', error)
+    const rows = (data ?? []) as unknown as Row[]
+    return rows.length === 1 ? rows[0] : null
+  },
+
+  async setPlanAutoBlocked(id, blocked) {
+    const { data, error } = await (await db()).from(TABLE.plans).update({ auto_blocked: blocked, ...(blocked ? { auto_verified_at: null } : {}) })
+      .eq('id', id).is('superseded_at', null).select(COLUMNS.plans)
+    if (error) fail('block automatic verification', error)
     const rows = (data ?? []) as unknown as Row[]
     return rows.length === 1 ? rows[0] : null
   },
@@ -274,6 +286,12 @@ export const servicePricingStore: PricingStore = {
     if (!ids.length) return 0
     const { data, error } = await (await db()).from('competitor_feature_values').update({ verified_at: at, verified_by: by }).in('id', ids).is('superseded_at', null).select('id')
     if (error) fail('verify feature values', error)
+    return (data ?? []).length
+  },
+  async setFeatureValuesAutoBlocked(ids, blocked) {
+    if (!ids.length) return 0
+    const { data, error } = await (await db()).from('competitor_feature_values').update({ auto_blocked: blocked, ...(blocked ? { auto_verified_at: null } : {}) }).in('id', ids).is('superseded_at', null).select('id')
+    if (error) fail('block automatic verification', error)
     return (data ?? []).length
   },
   async touchFeatureValueChecked(id, date) {

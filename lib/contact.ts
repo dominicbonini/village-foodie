@@ -6,8 +6,9 @@
 // Lengths are counted in CHARACTERS (code points), as Postgres's char_length counts them in contact_messages' checks — not in
 // UTF-16 units, which would count an emoji twice.
 
-/** The three topics, in the form's order. The first is the default. The ids are stored; the words are `contactPage.form.topics.*`. */
-export const CONTACT_TOPICS = ['question', 'account', 'other'] as const
+/** The topics, in the form's order. The first is the default. The ids are stored; the words are `contactPage.form.topics.*`.
+ *  compare-autopublish-1 (20261080): 'comparison' — a correction to a comparison page (its "Report an error" link chooses it). */
+export const CONTACT_TOPICS = ['question', 'account', 'comparison', 'other'] as const
 export type ContactTopic = (typeof CONTACT_TOPICS)[number]
 
 export const CONTACT_LIMITS = { name: 100, email: 254, business: 120, messageMin: 10, messageMax: 5000 } as const

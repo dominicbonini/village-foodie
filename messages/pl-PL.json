@@ -5690,6 +5690,7 @@
       "topics": {
         "question": "Pytanie dotyczące HatchGrab",
         "account": "Pomoc z moim kontem",
+        "comparison": "Poprawka na stronie porównania",
         "other": "Coś innego"
       },
       "nameLabel": "Imię i nazwisko",
@@ -6465,7 +6466,7 @@
     },
     "method": {
       "covers": "Obejmuje maksymalnie cztery alternatywy wybrane ze względu na ich przydatność dla food trucków i dostępność weryfikowalnych informacji publicznych — a nie każdy produkt na rynku.",
-      "notListed": "„Nie wymienia” oznacza, że sprawdziliśmy strony produktu z funkcjami, cennikiem i pomocą i nie ma tam o tym wzmianki — dotyczy to funkcji, które firmy zwykle reklamują. „Nic o tym nie mówi” oznacza, że nie zostało to potwierdzone ani wykluczone."
+      "notListed": "„Nie wymienia” oznacza, że sprawdziliśmy strony produktu z funkcjami i cennikiem i nie ma tam o tym wzmianki — dotyczy to funkcji, które firmy zwykle reklamują. „Nic o tym nie mówi” oznacza, że nie zostało to potwierdzone ani wykluczone."
     }
   },
   "outreach": {

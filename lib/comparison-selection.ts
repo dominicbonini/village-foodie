@@ -32,7 +32,8 @@ export interface SelectionCandidate<E> {
   /** How many of its current answers in this country are verified. */
   verifiedFeatures: number
 }
-export type NotShownReason = 'hidden' | 'beyond_four'
+/** compare-autopublish-1 (addendum E): 'no_website' — a competitor without a website is never selected. */
+export type NotShownReason = 'hidden' | 'beyond_four' | 'no_website'
 export interface Selection<E> { shown: SelectionCandidate<E>[]; notShown: { candidate: SelectionCandidate<E>; reason: NotShownReason }[] }
 
 /** The candidates in the rule's order (hidden ones left out). */

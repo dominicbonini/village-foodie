@@ -14,6 +14,7 @@
     "topics": {
       "question": "Kysymys HatchGrabista",
       "account": "Apua tilini kanssa",
+      "comparison": "Korjaus vertailusivuun",
       "other": "Jotain muuta"
     },
     "nameLabel": "Nimesi",

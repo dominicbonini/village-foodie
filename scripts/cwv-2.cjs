@@ -185,10 +185,18 @@ t('🔴 the demo funnel is untouched: its routes (/api/demo, the build request, 
   demoChanged.length === 0 && DB.includes("fetch('/api/demo', { method: 'POST', body: fd, signal: ac.signal })") && DB.includes("fetch('/api/demo/build-request', {"), demoChanged)
 const leaves = (o, p = '') => (o && typeof o === 'object' ? Object.entries(o).flatMap(([k, v]) => leaves(v, p ? `${p}.${k}` : k)) : [[p, o]])
 const el = Object.fromEntries(leaves(JSON.parse(read('messages/el-GR.json')))), el0 = Object.fromEntries(leaves(JSON.parse(git('show', `${BEFORE}:messages/el-GR.json`))))
-const elChanged = Object.keys({ ...el, ...el0 }).filter(k => el[k] !== el0[k])
+// ⚠️ RE-PINNED (compare-autopublish-1, 7 November 2026): that brief's own keys — the contact form's "comparison" topic, the "Not listed"
+// methodology sentence (no help centre), the comparison page's methodology and admin words — are left out of both checks below.
+const AP1_KEY = k => k === 'contactPage.form.topics.comparison' || k === 'comparisonSuits.method.notListed' || k.startsWith('comparison.')
+const elChanged = Object.keys({ ...el, ...el0 }).filter(k => el[k] !== el0[k] && !AP1_KEY(k))
 t('Greek: exactly one value changed — landing.hero.cta, a non-breaking space before the arrow (el-GR; el-CY inherits it)',
   J(elChanged) === J(['landing.hero.cta']) && el['landing.hero.cta'] === el0['landing.hero.cta'].replace(' →', ' →') && !/"cta"/.test(read('messages/el-CY.json').slice(0, 0)))
-t('no other language file changed (the generated split file messages/ns/el-GR/landing.json follows el-GR)', git('diff', '--name-only', BEFORE, '--', 'messages/*.json').trim().split('\n').filter(Boolean).every(f => f === 'messages/el-GR.json' || f === 'messages/ns/el-GR/landing.json'))
+const nsAp1 = f => /^messages\/ns\/[a-z]{2}-[A-Z]{2}\/(contactPage|comparisonSuits|comparison)\.json$/.test(f)
+// A changed file passes when it is the Greek pair, a split file of a compare-autopublish-1 namespace, or every changed key is that brief's.
+const onlyAp1 = f => { try { const a = Object.fromEntries(leaves(JSON.parse(read(f)))), b = Object.fromEntries(leaves(JSON.parse(git('show', `${BEFORE}:${f}`)))); return Object.keys({ ...a, ...b }).filter(k => a[k] !== b[k]).every(AP1_KEY) } catch { return false } }
+const otherLangFiles = git('diff', '--name-only', BEFORE, '--', 'messages/*.json').trim().split('\n').filter(Boolean)
+  .filter(f => !(f === 'messages/el-GR.json' || f === 'messages/ns/el-GR/landing.json' || nsAp1(f) || onlyAp1(f)))
+t('no other language file changed (the generated split file messages/ns/el-GR/landing.json follows el-GR)', otherLangFiles.length === 0, otherLangFiles)
 
 // ══ 5 ═════════════════════════════════════════════════════════════════════════════════════════════════════════════════
 head('5 · nothing in ordering, payments, the KDS, the dashboard or Manage (Pizzeria Gusto unaffected)')

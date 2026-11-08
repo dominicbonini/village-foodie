@@ -66,7 +66,7 @@ export const contactSecret = (): string | null => process.env.CONTACT_IP_SALT ||
 export const ipHashOf = (ip: string | null, salt: string | null): string | null => (ip && salt ? createHash('sha256').update(`${salt}:${ip}`).digest('hex') : null)
 
 // ── the email to us (English: 35.an-20) ───────────────────────────────────────────────────────────────────────────────
-export const TOPIC_EN: Record<ContactTopic, string> = { question: 'A question about HatchGrab', account: 'Help with my account', other: 'Something else' }
+export const TOPIC_EN: Record<ContactTopic, string> = { question: 'A question about HatchGrab', account: 'Help with my account', comparison: 'A correction to a comparison page', other: 'Something else' }
 const oneLine = (s: string) => s.replace(/[\r\n\t]+/g, ' ').trim()
 const esc = (s: string) => s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;')
 function englishName(type: 'region' | 'language', code: string | null): string {

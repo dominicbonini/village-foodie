@@ -494,7 +494,9 @@ function WinCards({ v, cur, code, live }: { v: Vol; cur: string; code: string; l
 function badges(r: RivalTotal, today: string): { label: string; cls: string }[] {
   const b: { label: string; cls: string }[] = []
   const p = r.plan
-  b.push(p.verifiedAt ? { label: 'Verified by you', cls: 'bg-emerald-100 text-emerald-800' } : { label: 'Not verified', cls: 'bg-slate-100 text-slate-600' })
+  // compare-autopublish-1: an automatic verification is shown as such, distinct from yours.
+  b.push(p.verifiedAt ? { label: 'Verified by you', cls: 'bg-emerald-100 text-emerald-800' } : p.autoVerifiedAt ? { label: 'Auto-verified', cls: 'bg-emerald-100 text-emerald-800' }
+    : p.autoBlocked ? { label: 'Not verified (automatic blocked by you)', cls: 'bg-slate-100 text-slate-600' } : { label: 'Not verified', cls: 'bg-slate-100 text-slate-600' })
   if (r.cardAssumed || p.cardRateAssumed) b.push({ label: 'Card rate assumed', cls: 'bg-amber-100 text-amber-800' })
   if (p.unclear) b.push({ label: 'Unclear on their site', cls: 'bg-amber-100 text-amber-800' })
   if (p.secondHand) b.push({ label: 'Second-hand price', cls: 'bg-amber-100 text-amber-800' })
@@ -680,7 +682,7 @@ function FeatureMatrix({ v, competitors, code, state, busy, post, title }: { v?:
                             {val?.note && <p className="mt-0.5 text-xs text-slate-600">{val.note}</p>}
                             <p className="mt-0.5 text-[11px] text-slate-400">
                               {val?.sourceUrl ? <a className="underline" href={val.sourceUrl} target="_blank" rel="noreferrer">source</a> : null}
-                              {val?.countryCode ? ` · ${val.countryCode} only` : ''}{val?.verifiedAt ? ' · ✓' : val && val.value !== 'unknown' ? ' · not verified' : ''}
+                              {val?.countryCode ? ` · ${val.countryCode} only` : ''}{val?.verifiedAt ? ' · ✓' : val?.autoVerifiedAt ? ' · auto ✓' : val && val.value !== 'unknown' ? ' · not verified' : ''}
                             </p>
                           </td>
                         )
@@ -891,8 +893,9 @@ function ComparisonPanel({ code, state, busy, post }: { code: string; state: Sta
                     <div className="flex flex-wrap items-center justify-between gap-2">
                       <p className="font-semibold text-slate-900">{i + 1}. {c?.name ?? 'Unknown'}{c?.focus === 'pos' && <span className="ml-1.5 rounded bg-slate-800 px-1.5 py-0.5 align-middle text-[10px] font-bold text-white" data-pos-badge>POS</span>}</p>
                       <div className="flex flex-wrap items-center gap-1.5 text-xs font-bold">
-                        <span className={`rounded-full px-2 py-0.5 ${e.verifiedAt ? ok : no}`}>Entry {e.verifiedAt ? 'verified' : 'not verified'}</span>
-                        <span className={`rounded-full px-2 py-0.5 ${plan?.verifiedAt ? ok : no}`}>Plan {plan?.verifiedAt ? 'verified' : 'not verified'}</span>
+                        {/* compare-autopublish-1: "auto-verified" (the automatic rules) is shown apart from your verification; "blocked" = you undid it. */}
+                        <span className={`rounded-full px-2 py-0.5 ${e.verifiedAt || e.autoVerifiedAt ? ok : no}`} data-entry-state={e.verifiedAt ? 'verified' : e.autoVerifiedAt ? 'auto' : e.autoBlocked ? 'blocked' : 'none'}>Entry {e.verifiedAt ? 'verified' : e.autoVerifiedAt ? 'auto-verified' : e.autoBlocked ? 'not verified (automatic blocked)' : 'not verified'}</span>
+                        <span className={`rounded-full px-2 py-0.5 ${plan?.verifiedAt || plan?.autoVerifiedAt ? ok : no}`}>Plan {plan?.verifiedAt ? 'verified' : plan?.autoVerifiedAt ? 'auto-verified' : plan?.autoBlocked ? 'not verified (automatic blocked)' : 'not verified'}</span>
                         <span className={`rounded-full px-2 py-0.5 ${c?.featuresVerifiedAt ? ok : no}`}>Features {c?.featuresVerifiedAt ? 'verified' : 'not verified'}</span>
                         <span className={`rounded-full px-2 py-0.5 ${shownIds.has(e.id) ? 'bg-slate-900 text-white' : 'bg-slate-100 text-slate-500'}`} data-shown={shownIds.has(e.id) ? 'yes' : 'no'}>
                           {e.hidden ? 'Hidden' : shownIds.has(e.id) ? 'In the four shown' : 'Not shown (beyond four)'}</span>
@@ -912,8 +915,8 @@ function ComparisonPanel({ code, state, busy, post }: { code: string; state: Sta
                         onSave={value => post('entry', { action: 'entry_update', id: e.id, fields: { groupLabel: value } }, 'Saved. Verify the entry again.')} />
                     </div>
                     <div className="flex flex-wrap gap-1.5">
-                      <button type="button" className={BTN} disabled={busy !== null} onClick={() => post('entry', { action: e.verifiedAt ? 'entry_unverify' : 'entry_verify', id: e.id })}>{e.verifiedAt ? 'Undo entry verified' : 'Mark entry verified'}</button>
-                      {plan && <button type="button" className={BTN} disabled={busy !== null} onClick={() => post('verify', { action: plan.verifiedAt ? 'unverify' : 'verify', id: plan.id })}>{plan.verifiedAt ? 'Undo plan verified' : 'Mark plan verified'}</button>}
+                      <button type="button" className={BTN} disabled={busy !== null} onClick={() => post('entry', { action: e.verifiedAt || e.autoVerifiedAt ? 'entry_unverify' : 'entry_verify', id: e.id })}>{e.verifiedAt || e.autoVerifiedAt ? 'Undo entry verified' : 'Mark entry verified'}</button>
+                      {plan && <button type="button" className={BTN} disabled={busy !== null} onClick={() => post('verify', { action: plan.verifiedAt || plan.autoVerifiedAt ? 'unverify' : 'verify', id: plan.id })}>{plan.verifiedAt || plan.autoVerifiedAt ? 'Undo plan verified' : 'Mark plan verified'}</button>}
                       {c && <button type="button" className={BTN} disabled={busy !== null} onClick={() => post('features', { action: c.featuresVerifiedAt ? 'unverify_features' : 'verify_features', competitorId: c.id, countryCode: code })}>{c.featuresVerifiedAt ? 'Undo features verified' : 'Mark features verified'}</button>}
                       {/* compare-suits-1: Admin's pin / hide (never overwritten by the checker or importer) and the competitor's category. */}
                       <label className="inline-flex items-center gap-1.5 text-sm font-semibold text-slate-700"><input type="checkbox" data-pin checked={e.pinned === true} disabled={busy !== null}

@@ -5690,6 +5690,7 @@
       "topics": {
         "question": "Et spørsmål om HatchGrab",
         "account": "Hjelp med kontoen min",
+        "comparison": "En rettelse til en sammenligningsside",
         "other": "Noe annet"
       },
       "nameLabel": "Navnet ditt",
@@ -6465,7 +6466,7 @@
     },
     "method": {
       "covers": "Den dekker opptil fire alternativer, valgt fordi de er relevante for matbiler og fordi det finnes offentlig informasjon som kan etterprøves – ikke alle produkter på markedet.",
-      "notListed": "«Ikke oppgitt» betyr at vi har sjekket produktets sider om funksjoner, priser og hjelp, og at det ikke nevnes, for funksjoner bedrifter vanligvis reklamerer med. «Sier ingenting» betyr at det ikke er bekreftet verken den ene eller den andre veien."
+      "notListed": "«Ikke oppgitt» betyr at vi har sjekket produktets sider om funksjoner og priser, og at det ikke nevnes, for funksjoner bedrifter vanligvis reklamerer med. «Sier ingenting» betyr at det ikke er bekreftet verken den ene eller den andre veien."
     }
   },
   "outreach": {

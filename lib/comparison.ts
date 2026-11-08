@@ -36,7 +36,7 @@ import { isCountedCompetitor, checkCountry, eurRates, type Competitor, type Comp
 import { selectShown, isCategory, type SelectionCandidate, type NotShownReason } from '@/lib/comparison-selection'
 import { buildSuits, type SuitsAnswer, type SuitsT, type SuitsFeature, type OurState, type PriceCalc } from '@/lib/comparison-suits'
 import {
-  featuresShownIn, featureWords, ourAnswer, effectiveValue, featuresVerifiedFor, appliesToFocus, FEATURE_GROUPS, cellState, featureCheckOf,
+  featuresShownIn, featureWords, ourAnswer, effectiveValue, featuresVerifiedFor, appliesToFocus, FEATURE_GROUPS, cellState, featureCheckOf, evidenceValue, passesEvidence,
   type ComparisonFeature, type FeatureValueRow, type FeatureValue, type FeatureGroup, type PriceKind, type FeatureCheckRow, type CellState, type PageChecked,
 } from '@/lib/comparison-features'
 import { BRANDS } from '@/lib/brand'
@@ -102,8 +102,12 @@ export interface Column {
   plan: CompetitorPlan | null; chooseWhen: string | null
   /** compare-suits-1: the competitor's category and Admin's pin (lib/comparison-selection.ts). */
   category?: string | null; pinned?: boolean
+  /** compare-autopublish-1: public through the AUTOMATIC rules (lib/comparison-publish.ts), not Admin's verification — its answers
+   *  are shown by the evidence rule (lib/comparison-features.ts evidenceValue). */
+  autoVerified?: boolean
 }
-export interface Row { key: string; group: FeatureGroup; label: string; explain: string; cells: Cell[] }
+/** compare-autopublish-1: `unchecked` — not yet checked for every competitor shown, so hidden publicly (an admin's full view keeps it). */
+export interface Row { key: string; group: FeatureGroup; label: string; explain: string; cells: Cell[]; unchecked?: boolean }
 export interface RowGroup { key: FeatureGroup; label: string; rows: Row[] }
 export interface CostLine { tool: string; us: boolean; lines: string[]; source: string | null; checkedOn: string | null; unverified: boolean }
 export interface ChecklistItem { key: string; label: string; ok: boolean }
@@ -193,6 +197,7 @@ export function buildComparison(input: ComparisonInput, t: ComparisonT, opts: Vi
   const shownFeatures = featuresShownIn(input.features, settings.countryCode)
   const shownKeys = shownFeatures.map(f => f.key)
   const candidates: SelectionCandidate<Column>[] = []
+  const noWebsite: string[] = []
   for (const e of entries) {
     const c = compOf.get(e.competitorId)
     if (!c) continue
@@ -206,9 +211,20 @@ export function buildComparison(input: ComparisonInput, t: ComparisonT, opts: Vi
     // competitor-features-2: only the features that apply to its kind (the others are not asked about, nor shown as answers).
     col.featuresVerified = col.featuresVerified && featuresVerifiedFor(input.values, col.key, settings.countryCode, shownFeatures.filter(f => appliesToFocus(f, c.focus)).map(f => f.key))
     // global-players-1: a pending 'pos' competitor (not yet counted — a candidate) is never public, whatever is verified.
-    col.verified = col.entryVerified && col.planVerified && col.featuresVerified && isCountedCompetitor(c)
+    const manual = col.entryVerified && col.planVerified && col.featuresVerified && isCountedCompetitor(c)
+    // compare-autopublish-1: …or, in an auto-publish country, public through the automatic rules — the entry and its plan carry
+    // auto_verified_at (lib/comparison-publish.ts), Admin has not blocked either, it is counted and has a website. Its answers are then
+    // shown by the evidence rule (rivalCell), so its features need no stamp.
+    const planAuto = !!plan && (!!plan.verifiedAt || (!!plan.autoVerifiedAt && !plan.autoBlocked))
+    const auto = !manual && flags.autoPublish === true && !!e.autoVerifiedAt && !e.autoBlocked && planAuto && isCountedCompetitor(c) && !!c.website?.trim()
+    if (auto) { col.autoVerified = true; col.planVerified = true; col.featuresVerified = true }
+    col.verified = manual || auto
     if (!col.verified && !showAll) continue
-    const verifiedFeatures = input.values.filter(v => v.competitorId === c.id && v.supersededAt === null && v.verifiedAt
+    // compare-autopublish-1 (addendum E): a competitor with no website is never selected (an admin sees why).
+    if (!c.website?.trim()) { noWebsite.push(c.name); continue }
+    // compare-autopublish-1: in an auto-publish country the answers that pass the evidence rule count too — the same tie-break the
+    // evaluation uses (lib/comparison-publish.ts evaluateCountry), so the page shows the four it chose.
+    const verifiedFeatures = input.values.filter(v => v.competitorId === c.id && v.supersededAt === null && (v.verifiedAt || (flags.autoPublish === true && passesEvidence(v)))
       && (v.countryCode === null || v.countryCode === settings.countryCode)).length
     candidates.push({ entry: col, name: c.name, pinned: e.pinned === true, hidden: e.hidden === true, sortOrder: e.sortOrder,
       category: isCategory(c.category) ? c.category : null, pricingVerified: col.planVerified, verifiedFeatures })
@@ -217,7 +233,8 @@ export function buildComparison(input: ComparisonInput, t: ComparisonT, opts: Vi
   // among every entry in an admin's full view (so it shows the four the page will show once they are verified).
   const selection = selectShown(candidates)
   for (const c of selection.shown) columns.push(c.entry)
-  const notShown = selection.notShown.map(n => ({ name: n.candidate.name, reason: n.reason }))
+  const notShown: { name: string; reason: NotShownReason }[] = [...selection.notShown.map(n => ({ name: n.candidate.name, reason: n.reason })),
+    ...noWebsite.map(name => ({ name, reason: 'no_website' as const }))]
   const verifiedCount = columns.filter(c => !c.us && c.verified).length
   const trialMonths = offerTrialMonths(catalog)
 
@@ -309,7 +326,10 @@ export function buildComparison(input: ComparisonInput, t: ComparisonT, opts: Vi
     if (kind && PLAN_PRICE.includes(kind)) return rivalPrice(kind, col, c)
     // competitor-features-2: a feature that does not apply to its kind — neither yes nor no, and never counted against it.
     if (!appliesToFocus(f, c.focus)) return cell('unknown', t('cell.notApplicable'), c.website, c.featuresCheckedOn, !col.featuresVerified)
-    const v = effectiveValue(input.values, c.id, f.key, settings.countryCode)
+    const stored = effectiveValue(input.values, c.id, f.key, settings.countryCode)
+    // compare-autopublish-1: an automatically published competitor's answer says only what its evidence supports (yes / no with a quote,
+    // "not mentioned" without one) — anything else "doesn't say". An answer Admin verified is shown as it is.
+    const v = stored && col.autoVerified && !stored.verifiedAt ? (() => { const ev = evidenceValue(stored); return ev === stored.value ? stored : { ...stored, value: ev, note: null } })() : stored
     // No answer yet: "not stated", dated by the competitor's features check (a cell always has a date and a source).
     if (!v) return { ...cell('unknown', null, c.website, c.featuresCheckedOn, !col.featuresVerified), state: 'unknown' }
     // compare-suits-1: "not listed" — the raw answer stays not_mentioned (never overwritten); the cell says "Not listed" only when the
@@ -327,10 +347,26 @@ export function buildComparison(input: ComparisonInput, t: ComparisonT, opts: Vi
   }
 
   // ── the rows, grouped ──
-  const rows: Row[] = shownFeatures.map(f => {
+  // compare-autopublish-1 (the display rule): a feature row appears only when it has been CHECKED for every competitor shown — a check
+  // record for it (a checked "doesn't say" counts), an answer Admin verified, a price row (from the plan), or a feature that does not apply
+  // to its kind. An unchecked row is hidden publicly (never shown as "doesn't say") and appears by itself once filled; an admin's full
+  // view keeps it, marked. The "Which suits" answers are built from these same rows, so they follow the same rule. HatchGrab's own
+  // column is always known.
+  const checkedFor = (f: ComparisonFeature, col: Column): boolean => {
+    if (col.us) return true
+    const kind = /(?:^|;)\s*price:([a-z]+)/.exec(f.hatchgrabSource)?.[1] as PriceKind | undefined
+    if (kind && PLAN_PRICE.includes(kind)) return true
+    const c = compOf.get(col.key)
+    if (!c || !appliesToFocus(f, c.focus)) return true
+    if (featureCheckOf(input.featureChecks ?? [], c.id, f.key, settings.countryCode)) return true
+    return !!effectiveValue(input.values, c.id, f.key, settings.countryCode)?.verifiedAt
+  }
+  const allRows: Row[] = shownFeatures.map(f => {
     const w = featureWords(f, settings.locale, k => t(k))
-    return { key: f.key, group: f.groupKey, label: w.label, explain: w.explain, cells: columns.map(col => (col.us ? ourCell(f) : rivalCell(f, col))) }
+    const unchecked = !columns.every(col => checkedFor(f, col))
+    return { key: f.key, group: f.groupKey, label: w.label, explain: w.explain, cells: columns.map(col => (col.us ? ourCell(f) : rivalCell(f, col))), ...(unchecked ? { unchecked } : {}) }
   })
+  const rows: Row[] = showAll ? allRows : allRows.filter(r => !r.unchecked)
   const groups: RowGroup[] = FEATURE_GROUPS.map(g => ({ key: g, label: t(`featureGroups.${g}`), rows: rows.filter(r => r.group === g) })).filter(g => g.rows.length)
   const explained = rows.map(r => ({ key: r.key, label: r.label, explain: r.explain })).filter(e => e.explain)
 
@@ -561,7 +597,7 @@ export function comparisonMarkdown(v: ComparisonView, input: ComparisonInput, t:
   out.push(`## ${t('faq.title')}`, '')
   for (const f of v.faq) out.push(`### ${f.q}`, '', f.a, '')
   out.push(`## ${t('method.title')}`, '', t('method.checked', { date: v.checkedLabel }), '', t('method.prices'), '', t('method.meaning'), '',
-    t('method.vendor'), '', t('method.review'), '', ...(v.suitsWords ? v.suitsWords.method.flatMap(m => [m, '']) : []), `${flat('method.corrections')} ${input.urls.contact}`, '')
+    t('method.vendor'), '', t('method.review'), '', ...(v.suitsWords ? v.suitsWords.method.flatMap(m => [m, '']) : []), `${flat('method.corrections')} ${input.urls.contact}`, '', `${flat('method.reportError')}: ${input.urls.contact}`, '')
   out.push(`JSON: ${input.urls.json}`, '')
   return out.join('\n')
 }
@@ -593,6 +629,7 @@ export function comparisonJson(v: ComparisonView, input: ComparisonInput, t: Com
     vat: v.vat,
     faq: v.faq.map(f => ({ question: f.q, answer: f.a })),
     method: [t('method.checked', { date: v.checkedLabel }), t('method.prices'), t('method.meaning'), t('method.vendor'), t('method.review'), ...(v.suitsWords?.method ?? [])],
+    reportError: input.urls.contact,   // compare-autopublish-1 §5: the contact form, the comparison-correction topic chosen
     // compare-suits-1: "Which suits your food truck?" — each answer, the products it compares, its date and its evidence (the feature
     // rows' sources, quotes and pages checked, or the price calculation with every component).
     ...(v.suitsWords ? { suits: { title: v.suitsWords.title, answers: v.suits.map(a => ({ key: a.key, question: a.question, answer: a.answer, products: a.products,

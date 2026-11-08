@@ -96,12 +96,13 @@
   },
   "method": {
     "title": "How we compared",
-    "checked": "We checked every detail on each vendor's own website on {date} and link the source.",
+    "checked": "Last checked on {date}.",
     "prices": "Prices are shown as the vendor states them, including VAT.",
     "meaning": "“Yes” means the vendor states the feature publicly. “Not stated” means we found nothing about it on their website — not that the feature is missing.",
     "vendor": "HatchGrab runs this page and is one of the vendors compared.",
-    "review": "We review the details at least every three months.",
+    "review": "Prices and features are checked automatically against each product’s own website; each claim links to its source.",
     "corrections": "Found a mistake? Tell us through our <link>contact form</link>.",
+    "reportError": "<link>Report an error</link>",
     "machine": "For AI assistants and developers: this table <md>as Markdown</md> · <json>as JSON</json>"
   },
   "cta": {
@@ -126,10 +127,13 @@
       "impressum": "Impressum decision recorded"
     },
     "unverified": "not verified · hidden from the public",
+    "autoVerified": "auto-verified",
+    "unchecked": "not yet checked for every competitor shown · hidden from the public",
     "label": "Admin",
     "notShown": "Not on the page (at most four are shown): {names}.",
     "reasonHidden": "{name} (hidden)",
-    "reasonBeyond": "{name} (beyond the four)"
+    "reasonBeyond": "{name} (beyond the four)",
+    "reasonNoWebsite": "{name} (no website)"
   },
   "footer": {
     "heading": "Compare",

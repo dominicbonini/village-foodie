@@ -5690,6 +5690,7 @@
       "topics": {
         "question": "Et spørgsmål om HatchGrab",
         "account": "Hjælp med min konto",
+        "comparison": "En rettelse til en sammenligningsside",
         "other": "Noget andet"
       },
       "nameLabel": "Dit navn",
@@ -6465,7 +6466,7 @@
     },
     "method": {
       "covers": "Den omfatter op til fire alternativer, som er valgt, fordi de er relevante for foodtrucks, og fordi der findes offentlige oplysninger, der kan efterprøves — ikke alle produkter på markedet.",
-      "notListed": "»Ikke angivet« betyder, at vi har tjekket produktets sider om funktioner, priser og hjælp, og at det ikke nævnes, for funktioner, som virksomheder normalt reklamerer med. »Fremgår ikke« betyder, at det hverken er bekræftet eller afkræftet."
+      "notListed": "»Ikke angivet« betyder, at vi har tjekket produktets sider om funktioner og priser, og at det ikke nævnes, for funktioner, som virksomheder normalt reklamerer med. »Fremgår ikke« betyder, at det hverken er bekræftet eller afkræftet."
     }
   },
   "outreach": {

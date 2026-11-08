@@ -5690,6 +5690,7 @@
       "topics": {
         "question": "Pitanje o HatchGrabu",
         "account": "Pomoć s mojim računom",
+        "comparison": "Ispravak stranice za usporedbu",
         "other": "Nešto drugo"
       },
       "nameLabel": "Vaše ime",
@@ -6465,7 +6466,7 @@
     },
     "method": {
       "covers": "Obuhvaća najviše četiri alternative odabrane prema njihovoj važnosti za food truckove i dostupnosti provjerljivih javnih informacija — ne svaki proizvod na tržištu.",
-      "notListed": "„Ne navodi“ znači da smo provjerili stranice proizvoda sa značajkama, cijenama i pomoći i to se ondje ne spominje — za značajke koje tvrtke obično ističu. „Ne govori“ znači da nije potvrđeno ni u jednom smjeru."
+      "notListed": "„Ne navodi“ znači da smo provjerili stranice proizvoda sa značajkama i cijenama i to se ondje ne spominje — za značajke koje tvrtke obično ističu. „Ne govori“ znači da nije potvrđeno ni u jednom smjeru."
     }
   },
   "outreach": {

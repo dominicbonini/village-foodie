@@ -14,6 +14,7 @@
     "topics": {
       "question": "A question about HatchGrab",
       "account": "Help with my account",
+      "comparison": "A correction to a comparison page",
       "other": "Something else"
     },
     "nameLabel": "Your name",
