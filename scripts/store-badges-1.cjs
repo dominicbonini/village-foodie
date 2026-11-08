@@ -154,15 +154,17 @@ function badgesOf(html) {
   t('only a test truck ("test-truck") was rendered — no live truck', /id: 'test-truck', slug: 'test-truck'/.test(read('scripts/store-badges-1.cjs')))
 
   head('6 · every badge file as downloaded')
-  t(`56 files in the manifest (28 Apple SVG, 28 Google PNG), downloaded ${MAN.downloaded}`, MAN.files.length === 56 && MAN.files.filter(f => f.vendor === 'apple').every(f => f.file.endsWith('.svg')) && MAN.files.filter(f => f.vendor === 'google').every(f => f.file.endsWith('.png')))
+  // ⚠️ RE-PINNED (badges-manual-1, 8 November 2026): Google's badges are now its own full-bleed SVGs (27 languages, from the Google Play
+  // Partner Marketing Hub, partnermarketinghub.withgoogle.com) — zh-HK alone keeps its PNG, with its transparent margin as `inset`.
+  t(`56 files in the manifest (28 Apple SVG; Google: 27 SVG + the zh-HK PNG), downloaded ${MAN.downloaded} / 2026-11-08`, MAN.files.length === 56 && MAN.files.filter(f => f.vendor === 'apple').every(f => f.file.endsWith('.svg')) && MAN.files.filter(f => f.vendor === 'google').every(f => f.file.endsWith(f.locale === 'zh-HK' ? '.png' : '.svg')))
   const bad = MAN.files.filter(f => { const b = fs.readFileSync(path.join(REPO, 'public', f.file)); return b.length !== f.bytes || sha(b) !== f.sha256 })
   t('every file\'s sha256 and size on disk match what was downloaded', bad.length === 0, bad.map(f => f.file))
-  t('every source is a vendor host (apple.com, google.com)', MAN.files.every(f => /^https:\/\/([a-z0-9-]+\.)*(apple\.com|google\.com)\//.test(f.source)))
+  t('every source is a vendor host (apple.com, google.com, Google\'s Partner Marketing Hub withgoogle.com)', MAN.files.every(f => /^https:\/\/([a-z0-9-]+\.)*(apple\.com|google\.com|withgoogle\.com)\//.test(f.source)))
   t('Apple: SVG, black (Apple\'s "blk" files), the dimensions recorded are the files\' own', MAN.files.filter(f => f.vendor === 'apple').every(f => { const s = fs.readFileSync(path.join(REPO, 'public', f.file), 'utf8'); const vb = /viewBox="0 0 ([\d.]+) ([\d.]+)"/.exec(s); return vb && Number(vb[1]) === f.width && Number(vb[2]) === f.height && (f.title === null || /_blk_/.test(f.title)) }))
-  t('Google: PNG at least 3× the 40px display height (250px), the dimensions recorded are the files\' own', MAN.files.filter(f => f.vendor === 'google').every(f => { const b = fs.readFileSync(path.join(REPO, 'public', f.file)); return b.readUInt32BE(16) === f.width && b.readUInt32BE(20) === f.height && f.height >= 120 }))
+  t('Google: the dimensions recorded are the files\' own (an SVG\'s viewBox; the zh-HK PNG\'s pixels, at least 3× the 40px height)', MAN.files.filter(f => f.vendor === 'google').every(f => { const b = fs.readFileSync(path.join(REPO, 'public', f.file)); if (f.file.endsWith('.svg')) { const vb = /viewBox="0 0 ([\d.]+) ([\d.]+)"/.exec(b.toString('utf8')); return vb && Number(vb[1]) === f.width && Number(vb[2]) === f.height } return b.readUInt32BE(16) === f.width && b.readUInt32BE(20) === f.height && f.height >= 120 }))
   t('lib/store-badge-files.ts carries the manifest\'s dimensions, file for file', MAN.files.every(f => { const e = (f.vendor === 'apple' ? M.APPLE_BADGES : M.GOOGLE_BADGES)[f.locale]; return e && e.src === f.file && e.width === f.width && e.height === f.height }))
   const readme = read('public/badges/README.md')
-  t('public/badges/README.md lists every file with its language, source URL and date', MAN.files.every(f => readme.includes(`\`${f.file.replace('/badges/', '')}\``) && readme.includes(f.source)) && readme.includes('| 2026-11-02 |'))
+  t('public/badges/README.md lists every file with its language, source URL and date', MAN.files.every(f => readme.includes(`\`${f.file.replace('/badges/', '')}\``) && readme.includes(f.source)) && readme.includes('| 2026-11-02 |') && readme.includes('| 2026-11-08 |'))
 
   console.log(`\nstore-badges-1: ${pass} passed, ${fail} failed`)
   process.exit(fail ? 1 : 0)

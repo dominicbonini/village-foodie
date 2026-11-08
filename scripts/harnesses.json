@@ -194,6 +194,7 @@
     "compare-suits-1.cjs",
     "compare-autopublish-1.cjs",
     "compare-languages-1.cjs",
+    "badges-manual-1.cjs",
     "costs-accounts-1.cjs",
     "pricing-check-1.cjs",
     "world-countries-1.cjs",

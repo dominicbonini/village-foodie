@@ -63,7 +63,15 @@ export function StoreBadges({
   // The reserved width × height above means a lazy load shifts nothing.
   // Each file's own width × height (store-badges-1: the English pair is 119.66 × 40 and 238.96 × 70.87, as before). Widths derived
   // so the reserved box is right before the image loads; the CSS height is what actually sizes it.
-  const playW = Math.round((play.width / play.height) * height)
+  // 🔴 badges-manual-1 (8 November 2026): THE ONE SIZING RULE — Google's VISIBLE badge is exactly `height`, the App Store badge's
+  // height (the footer, desktop and phone, and Manage › Settings all pass through here). A full-bleed file (every SVG) is simply
+  // `height` tall. A file with a built-in transparent margin (`inset`, the zh-HK PNG) is drawn taller — height ÷ its visible share —
+  // and negative margins take the transparent rows back out of the layout, so the pair lines up and the gap between them (the
+  // clear space) is measured from the visible badges. The artwork itself is never cropped, scaled off-ratio or altered.
+  const playVisible = play.inset ? (play.height - play.inset.top - play.inset.bottom) / play.height : 1
+  const playH = height / playVisible
+  const playMargin = play.inset ? `${-(play.inset.top / play.height) * playH}px 0 ${-(play.inset.bottom / play.height) * playH}px` : undefined
+  const playW = Math.round((play.width / play.height) * playH)
   const appleW = Math.round((apple.width / apple.height) * height)
   return (
     <div className={wrap}>
@@ -74,7 +82,7 @@ export function StoreBadges({
       )}
       {showPlay && (
         <a href={GOOGLE_PLAY_URL} target="_blank" rel="noopener noreferrer" className={linkClassName} aria-label={t('badges.googlePlayLink')}>
-          <img src={play.src} alt={t('badges.googlePlayAlt')} width={playW} height={height} loading="lazy" style={{ height, width: 'auto', display: 'block' }} />
+          <img src={play.src} alt={t('badges.googlePlayAlt')} width={playW} height={Math.round(playH)} loading="lazy" style={{ height: playH, width: 'auto', display: 'block', ...(playMargin ? { margin: playMargin } : {}) }} />
         </a>
       )}
     </div>

@@ -1,0 +1,350 @@
+[
+ {
+  "locale": "en-GB",
+  "width": 1280,
+  "apple": 40,
+  "google": 40
+ },
+ {
+  "locale": "fr-FR",
+  "width": 1280,
+  "apple": 40,
+  "google": 40
+ },
+ {
+  "locale": "de-DE",
+  "width": 1280,
+  "apple": 40,
+  "google": 40
+ },
+ {
+  "locale": "es-ES",
+  "width": 1280,
+  "apple": 40,
+  "google": 40
+ },
+ {
+  "locale": "it-IT",
+  "width": 1280,
+  "apple": 40,
+  "google": 40
+ },
+ {
+  "locale": "pt-PT",
+  "width": 1280,
+  "apple": 40,
+  "google": 40
+ },
+ {
+  "locale": "nl-NL",
+  "width": 1280,
+  "apple": 40,
+  "google": 40
+ },
+ {
+  "locale": "sv-SE",
+  "width": 1280,
+  "apple": 40,
+  "google": 40
+ },
+ {
+  "locale": "da-DK",
+  "width": 1280,
+  "apple": 40,
+  "google": 40
+ },
+ {
+  "locale": "nb-NO",
+  "width": 1280,
+  "apple": 40,
+  "google": 40
+ },
+ {
+  "locale": "pl-PL",
+  "width": 1280,
+  "apple": 40,
+  "google": 40
+ },
+ {
+  "locale": "cs-CZ",
+  "width": 1280,
+  "apple": 40,
+  "google": 40
+ },
+ {
+  "locale": "hu-HU",
+  "width": 1280,
+  "apple": 40,
+  "google": 40
+ },
+ {
+  "locale": "sk-SK",
+  "width": 1280,
+  "apple": 40,
+  "google": 40
+ },
+ {
+  "locale": "ro-RO",
+  "width": 1280,
+  "apple": 40,
+  "google": 40
+ },
+ {
+  "locale": "hr-HR",
+  "width": 1280,
+  "apple": 39,
+  "google": 40
+ },
+ {
+  "locale": "sl-SI",
+  "width": 1280,
+  "apple": 40,
+  "google": 40
+ },
+ {
+  "locale": "fi-FI",
+  "width": 1280,
+  "apple": 40,
+  "google": 40
+ },
+ {
+  "locale": "et-EE",
+  "width": 1280,
+  "apple": 40,
+  "google": 40
+ },
+ {
+  "locale": "lv-LV",
+  "width": 1280,
+  "apple": 40,
+  "google": 40
+ },
+ {
+  "locale": "lt-LT",
+  "width": 1280,
+  "apple": 40,
+  "google": 40
+ },
+ {
+  "locale": "el-GR",
+  "width": 1280,
+  "apple": 40,
+  "google": 40
+ },
+ {
+  "locale": "bg-BG",
+  "width": 1280,
+  "apple": 40,
+  "google": 40
+ },
+ {
+  "locale": "pt-BR",
+  "width": 1280,
+  "apple": 40,
+  "google": 40
+ },
+ {
+  "locale": "ms-MY",
+  "width": 1280,
+  "apple": 40,
+  "google": 40
+ },
+ {
+  "locale": "ja-JP",
+  "width": 1280,
+  "apple": 40,
+  "google": 40
+ },
+ {
+  "locale": "zh-HK",
+  "width": 1280,
+  "apple": 40,
+  "google": 40.5
+ },
+ {
+  "locale": "th-TH",
+  "width": 1280,
+  "apple": 40,
+  "google": 40
+ },
+ {
+  "locale": "ar-AE",
+  "width": 1280,
+  "apple": 40,
+  "google": 40
+ },
+ {
+  "locale": "en-GB",
+  "width": 390,
+  "apple": 40,
+  "google": 40
+ },
+ {
+  "locale": "fr-FR",
+  "width": 390,
+  "apple": 40,
+  "google": 40
+ },
+ {
+  "locale": "de-DE",
+  "width": 390,
+  "apple": 40,
+  "google": 40
+ },
+ {
+  "locale": "es-ES",
+  "width": 390,
+  "apple": 40,
+  "google": 40
+ },
+ {
+  "locale": "it-IT",
+  "width": 390,
+  "apple": 40,
+  "google": 40
+ },
+ {
+  "locale": "pt-PT",
+  "width": 390,
+  "apple": 40,
+  "google": 40
+ },
+ {
+  "locale": "nl-NL",
+  "width": 390,
+  "apple": 40,
+  "google": 40
+ },
+ {
+  "locale": "sv-SE",
+  "width": 390,
+  "apple": 40,
+  "google": 40
+ },
+ {
+  "locale": "da-DK",
+  "width": 390,
+  "apple": 40,
+  "google": 40
+ },
+ {
+  "locale": "nb-NO",
+  "width": 390,
+  "apple": 40,
+  "google": 40
+ },
+ {
+  "locale": "pl-PL",
+  "width": 390,
+  "apple": 40,
+  "google": 40
+ },
+ {
+  "locale": "cs-CZ",
+  "width": 390,
+  "apple": 40,
+  "google": 40
+ },
+ {
+  "locale": "hu-HU",
+  "width": 390,
+  "apple": 40,
+  "google": 40
+ },
+ {
+  "locale": "sk-SK",
+  "width": 390,
+  "apple": 40,
+  "google": 40
+ },
+ {
+  "locale": "ro-RO",
+  "width": 390,
+  "apple": 40,
+  "google": 40
+ },
+ {
+  "locale": "hr-HR",
+  "width": 390,
+  "apple": 39,
+  "google": 40
+ },
+ {
+  "locale": "sl-SI",
+  "width": 390,
+  "apple": 40,
+  "google": 40
+ },
+ {
+  "locale": "fi-FI",
+  "width": 390,
+  "apple": 40,
+  "google": 40
+ },
+ {
+  "locale": "et-EE",
+  "width": 390,
+  "apple": 40,
+  "google": 40
+ },
+ {
+  "locale": "lv-LV",
+  "width": 390,
+  "apple": 40,
+  "google": 40
+ },
+ {
+  "locale": "lt-LT",
+  "width": 390,
+  "apple": 40,
+  "google": 40
+ },
+ {
+  "locale": "el-GR",
+  "width": 390,
+  "apple": 40,
+  "google": 40
+ },
+ {
+  "locale": "bg-BG",
+  "width": 390,
+  "apple": 40,
+  "google": 40
+ },
+ {
+  "locale": "pt-BR",
+  "width": 390,
+  "apple": 40,
+  "google": 40
+ },
+ {
+  "locale": "ms-MY",
+  "width": 390,
+  "apple": 40,
+  "google": 40
+ },
+ {
+  "locale": "ja-JP",
+  "width": 390,
+  "apple": 40,
+  "google": 40
+ },
+ {
+  "locale": "zh-HK",
+  "width": 390,
+  "apple": 40,
+  "google": 40.5
+ },
+ {
+  "locale": "th-TH",
+  "width": 390,
+  "apple": 40,
+  "google": 40
+ },
+ {
+  "locale": "ar-AE",
+  "width": 390,
+  "apple": 40,
+  "google": 40
+ }
+]

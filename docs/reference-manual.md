@@ -1,4 +1,4 @@
-HatchGrab Engineering Reference Manual · V16.13
+HatchGrab Engineering Reference Manual · V16.14
 
 **HatchGrab**
 
@@ -6,7 +6,7 @@ Engineering Reference Manual
 
 *Village Foodie · Food Truck Ordering Platform*
 
-**Version 16.13**
+**Version 16.14**
 
 November 2026
 
@@ -49,6 +49,14 @@ form — including key names and set/missing checks. It may run the project's ow
 internally (`next build`, the sweep, `tsc`). Configuration is worked out from code.
 
 # Changelog
+
+## V16.14 — 8 November 2026 — **SPEED MEASURED ON REAL VISITORS, ADMIN › PARTNERS, COMPARISON PAGES THAT PUBLISH THEMSELVES IN EVERY LANGUAGE, AND GOOGLE PLAY BADGES THE SIZE OF APPLE'S**
+
+- **Speed (cwv-1, 5 Nov; the live re-measure in compare-autopublish-1 §7):** PostHog web vitals (LCP, INP, CLS) on visits that start on a public page; no Vercel Speed Insights. Czech and Greek fit a 320–400px phone. Live UK LCP medians after cwv-2: /uk 5.45 → 3.02 s, /about 4.32 → 1.89 s; first byte from the CDN cache. A performance budget for the landing redesign (§87.1, 35.aq-1).
+- **Admin › Partners (partners-1, 5–6 Nov):** a CRM for organisations beside Outreach; free-form emails through the outreach mail machinery; replies matched by thread, then address — an address that is both a prospect's and a partner's is filed to neither (§87.2, 35.aq-12).
+- **Comparison pages (compare-suits-1, compare-recheck-1, compare-autopublish-1, compare-languages-1, 6–8 Nov):** at most four competitors; "Which suits your food truck?"; "Not listed" only on complete evidence; newer check wins; automatic publishing from evidence (no manual verification, ≥ 2 competitors, take-downs, Admin always wins, AE never); "Report an error"; a Monday summary email; semi-deep checks; rows only when checked for every shown competitor; the page in every language base (§87.3, 35.aq-3–11).
+- **Store badges (badges-manual-1, 8 Nov):** Google's own full-bleed localized SVG badge in 27 languages, zh-HK's PNG margin cancelled in layout — every Google badge's visible height equals the App Store badge's (§87.4, 35.aq-11).
+- **Tooling:** `gh` is installed and authenticated; checker runs start with `gh workflow run` (§87.5). **Backlog:** §87.6.
 
 ## V16.13 — 6 November 2026 — **THE PUBLIC PAGES ON THEIR OWN ROOT LAYOUT, BUILT AHEAD AND SERVED FROM THE CDN**
 
@@ -22444,6 +22452,66 @@ of this manual).
   (`isBuiltAheadRender`), never degrades, so a degraded page is never stored. /compare and the comparison pages (admin-only pages,
   `?free`, `?view=public`, competitor data without a tag) stay per request on the lean layout until that is solved.
 
+## 35.aq 🔴 SPEED, PARTNERS, COMPARISON PAGES AND STORE BADGES (V16.14)
+
+- **35.aq-1 The public pages' performance budget.** The landing redesign (and any public page) keeps to: **one** main first-screen
+  image under **80 KB** compressed, every other image smaller or loaded after; **at most 2 font families / 3 font files**; **no video,
+  animation or carousel in the first screen** (a video starts on tap, with a light poster); the headline is **real text**, never an
+  image; target **under 2.5 s LCP on Google's mobile test** (PageSpeed / Lighthouse mobile). A new top-level one-segment route or a
+  new file directly in `public/` is added to `lib/top-level-routes.ts` (the router reads it to tell a country page from anything
+  else — cwv-2).
+- **35.aq-2 Real-visitor speed is PostHog web vitals on public pages only.** LCP, INP and CLS are captured only for a visit that
+  STARTS on a public HatchGrab page (`lib/public-page.ts`); a `$web_vitals` event carrying any non-public measurement is dropped in
+  `before_send`; every other route's `posthog.init` is byte-identical to before. **No Vercel Speed Insights.**
+- **35.aq-3 A comparison page shows at most four competitors, chosen by one rule** (`lib/comparison-selection.ts`): hidden never;
+  pinned first; then verified (or automatically publishable) pricing; then category — food_truck, general_pos, marketplace,
+  restaurant, unknown; ties by verified answers (in an auto-publish country, answers that pass the evidence rule count too), then
+  the entry's order, then the name. The page and the automatic evaluation use the same function, so they show the same four. A
+  competitor with no website is never selected. A competitor's category comes from the checker's focus unless Admin set it
+  (`category_by = 'admin'`), which nothing overwrites.
+- **35.aq-4 "Which suits your food truck?" never names card readers, tills or card payments as a strength, and never says "best"
+  except "the best fit among the products compared".** Situations 1–10 are built from the table's own cells and Pricing check's
+  model (150 and 2,000 orders a month); a partly, not-stated or unquoted "no" hides an answer; `never_competitor_strength`
+  (cardfee, cards, fiscal, hardware, paymethods, terminal) never yields a strength; HatchGrab is never said to have what its data
+  says it doesn't. Every sentence is a message pattern (`comparisonSuits.*`).
+- **35.aq-5 "Not listed" only on complete evidence.** A raw `not_mentioned` answer shows as "Not listed" only for an
+  `absence_means_no` feature (delivery, domain, kds, loyalty, perorder, qr, schedule, social, whatsapp — **android and ipad are
+  not**: apps are often listed only in the stores) AND when the check that last asked read the **features page and the pricing
+  page** ("pages complete"; the help centre is not required, and help-centre reads stay off). The raw answer is never rewritten.
+  **The consistency rule:** a "not mentioned" that carries any quote is unusable (rejected), and a "no" counts only with the
+  competitor's own quote confirmed by the second check.
+- **35.aq-6 Newer check wins.** A cell reads the newer of the country's own check record and the every-country one (a tie: the
+  country's own) — `lib/comparison-features.ts` `featureCheckOf`.
+- **35.aq-7 Comparison pages publish themselves; Admin always wins.** Where a country's auto-publish switch is on
+  (`comparison_publish`, never a protected table), a competitor is published when its plan is publishable (both checks agreed on its
+  current price, on its own site, in the country's currency, a real amount, checked within its interval + 30 days); its answers say
+  only what their evidence supports; the country is live when ≥ 2 competitors are shown. Taken down: two failed checks in a row, or a
+  price older than its interval + 30 days. A price move over 50% is held for the summary. **Admin's hide, pin, verify, "Undo
+  verified" (`auto_blocked`), category and check pages always win, and an explicit "Off" in Admin › Countries is recorded
+  (`admin_off`) and beats auto-publish.** A country is live when `country_settings` says live OR (auto-publish AND auto-live AND not
+  Off). **AE never auto-publishes and has no comparison page.** Pending findings are decided automatically (accepted only on
+  evidence, else rejected, with the reason); no finding needs Admin's click.
+- **35.aq-8 A feature row shows only when it has been checked for every shown competitor.** A check record counts (a checked
+  "doesn't say" included), as do a price row and a feature that does not apply to that competitor; an unchecked row is hidden
+  publicly, never shown as "doesn't say", and appears by itself once filled. "Which suits" is built from the same rows.
+- **35.aq-9 The weekly comparison summary is an internal admin email, never an outreach template.** Mondays 08:00 UTC
+  (`/api/cron/comparison-summary`, through `sendConfirmationEmail` to the admin address); skipped when nothing changed. No
+  `outreach_templates` row is created, edited or seeded for it. Every automatic decision is a `comparison_publish_events` row.
+- **35.aq-10 The comparison page exists in every language base, for every country with an address except AE.** The address words
+  are the country's language's own (`comparison.path`, lowercase ASCII, never a section another page uses); hreflang on a live page
+  names every live comparison page and nothing else; the sitemap lists live pages only; the twins speak the page's language. A
+  country's own grammar for its name lives in its variant (fr-LU "au", de-CH "in der", de-LI without the article; English "the
+  United Kingdom / the United States").
+- **35.aq-11 Every store badge is the vendor's own artwork, and Google's VISIBLE badge is the App Store badge's height.** Google's
+  badges are its own full-bleed localized SVGs (Partner Marketing Hub), zh-HK alone a PNG whose transparent margin (`inset`) is
+  cancelled in layout with negative margins. **One rule, in `components/StoreBadges.tsx`** (the footer, desktop and phone, and
+  Manage › Settings): Google's visible height = `height`. Apple's badges are untouched. Never crop, recolour, scale off-ratio or
+  re-letter either vendor's file.
+- **35.aq-12 Partner email shares the outreach mail machinery; an address that is both a prospect's and a partner's is filed to
+  neither.** `outreach_messages` rows have exactly one owner (`prospect_id` or `partner_id`, CHECK `outreach_messages_one_owner`);
+  replies match by thread first, then by From address only when exactly one owner has it; the "both" case is listed, flagged, under
+  "Check for replies now". Partner emails are free-form: no templates, snippets, sequence or Plans PDF, and no opt-out line required.
+
 ## 🔴 iOS PUSH ENTITLEMENT — the §36 audit CONFIRMED, then fixed (V11.4)
 
 **All three recorded facts verified before changing anything:** no `.entitlements` file anywhere under `ios/` (`find` returns nothing); **no `CODE_SIGN_ENTITLEMENTS` in either build configuration**; and **no Push Notifications capability** — an enabled capability leaves a `SystemCapabilities` block and an entitlements key, and neither existed. §36's statement that the APNs path *"has been written, deployed and reasoned about, and has never been able to obtain a token"* was accurate, and the reason was this and only this.
@@ -37402,6 +37470,130 @@ Harrow; terms dated 7 Oct 2026; built by former food-truck operators (UK only; n
   walkup are 'admin', the rest 'file'.
 
 **Harness:** `import-and-cs-fix.cjs` (33). It also covers the FAQ check's ordinary words (§82.12).
+
+# 87. Speed, Admin › Partners, comparison pages that publish themselves in every language, and store badges (V16.14 — 5–8 November 2026)
+
+Sources: `docs/cwv-1-report.md`, `docs/partners-1-report.md`, `docs/compare-suits-1-report.md`, `docs/compare-recheck-1-report.md`,
+`docs/compare-autopublish-1-report.md`, `docs/compare-languages-1-report.md`, `docs/badges-manual-1-report.md`. The invariants are 35.aq.
+**Nothing here is deployed at the time of writing;** main is ahead of production by these briefs.
+
+## 87.1 Speed
+
+- **Real-visitor speed is PostHog web vitals, not Vercel Speed Insights** (cwv-1, 35.aq-2). `capture_performance: { web_vitals: true,
+  web_vitals_allowed_metrics: ['LCP','INP','CLS'] }` only for a visit that starts on a public page (`lib/public-page.ts`: a country
+  landing, /features, /faq, /compare, a comparison page, a legal document, /about, /contact); `before_send` drops any `$web_vitals`
+  event carrying a non-public measurement. Every other route's `posthog.init` is unchanged (`scripts/cwv-1.cjs` compares it byte for
+  byte). The field-data query is in `docs/cwv-1-report.md` §5.
+- **Czech and Greek on narrow phones** (cwv-1, Dominic's 1A-as-B), `landing.css`, appended:
+  `@media (max-width: 400px) { :root:lang(el) .hg-landing .hero-cta-row .btn-lg { white-space: normal } :root:is(:lang(cs), :lang(el))
+  .hg-landing .cheap-band { white-space: normal } }` — /cz, /gr and /cy fit 320–390px; the Greek hero button may take two lines at 400px
+  and below; every other landing is pixel-identical. No heading rule (hyphenation was tried and clipped the heading — rejected).
+- **The Archivo italic is not preloaded** (cwv-1): 3 fonts preloaded instead of 4; pages without italic text download 38.5 KB less.
+- **Live before / after (Lighthouse mobile, median of 3 cold runs; cwv-2's live "before" against the live site after cwv-2):**
+
+| Page | LCP before | LCP after |
+|---|---|---|
+| /uk | 5.45 s | **3.02 s** |
+| /uk/features | 2.94 s | **2.57 s** |
+| /uk/faq | 2.85 s | **2.71 s** |
+| /about | 4.32 s | **1.89 s** |
+| /contact | 4.46 s | **3.99 s** |
+
+  FCP was ~1.9 s everywhere, now 1.07–1.67 s. First byte (curl, cold median): /uk 1.03 → 0.35 s, /uk/faq 0.49 → 0.10 s, every response
+  now from Vercel's edge cache (HIT / STALE) where it was MISS + no-store. CLS 0 throughout.
+- **The performance budget for the landing redesign** (35.aq-1): one main first-screen image under **80 KB** compressed, others smaller
+  or loaded after; **≤ 2 font families / 3 font files**; no video, animation or carousel in the first screen (video starts on tap, light
+  poster); the headline is real text; **under 2.5 s on Google's mobile test**. A new top-level one-segment route or `public/` file goes
+  in `lib/top-level-routes.ts`.
+
+## 87.2 Admin › Partners (partners-1)
+
+- **What it is:** a tab beside Outreach for organisations (associations, markets, event organisers, suppliers…): a list (search,
+  status / type / country filters, **Due**, **Add**) and the selected organisation (every field editable in place, status, priority,
+  follow-up, Offered / Outcome / Notes, a timeline, **Write email**, **Add note**). Tables `partner_orgs`, `partner_events`
+  (migration `20261074`); `outreach_messages.partner_id` with CHECK `outreach_messages_one_owner` (exactly one of prospect or partner).
+- **Emails are free-form** through the SAME mail machinery as truck outreach (mailbox account, From name, message builder, attachment
+  store, SMTP, Sent-copy filing, idempotency key, test path) — `ComposeWindow`'s partner mode has **no templates, snippets, sequence
+  step or Plans PDF**, and **no opt-out line is required** (the insert button stays available). Do-not-contact prospects' addresses are
+  refused for partners too.
+- **Reply matching:** thread ids first (certain), then the From address only when exactly one owner has it. **An address belonging to
+  both a prospect and a partner is filed to neither** — listed, flagged, under "Check for replies now" (35.aq-12). "Import past emails"
+  stays prospect-only; a failed partner send shows Retry (no automatic retry).
+
+## 87.3 Comparison pages
+
+- **At most four competitors** (compare-suits-1; 35.aq-3): `comparison_entries.pinned / hidden` (Admin), `competitors.category`
+  (food_truck / general_pos / restaurant / marketplace, from the checker's focus unless `category_by = 'admin'`). Order: hidden never;
+  pinned; verified or publishable pricing; category food_truck → general_pos → marketplace → restaurant → unknown; ties by verified
+  answers, entry order, name. No website → never selected (Hatches Up, Eventifood, EasyEats, RapidOrderz).
+- **"Which suits your food truck?"** (compare-suits-1; 35.aq-4): below the table, above the methodology; ten situations from the table's
+  cells and Pricing check's model (order ahead, peak times, WhatsApp, weekly posts, changing locations, lowest cost at 150 and at 2,000
+  orders a month, no commission — only with a marketplace shown —, signal drops, competitor strengths). Wording is in message patterns:
+  "doesn't offer" only for a quoted no; "doesn't list … on its website" only for "not listed"; **the only "best" is "the best fit among
+  the products compared"**; never a strength from card readers, tills, card payments, card fees, payment methods or supplied hardware
+  (`never_competitor_strength`). No QAPage/FAQPage for it; the twins carry the same answers with their evidence.
+- **"Not listed", the consistency rule, newer check wins** (35.aq-5, 35.aq-6): absence-means-no = delivery, domain, kds, loyalty,
+  perorder, qr, schedule, social, whatsapp (android and ipad removed 7 Nov); "pages complete" = features + pricing pages read (help centre
+  not required; help-centre reads off). Every check records the pages it read (`competitor_feature_checks.pages_checked`). A quoted "not
+  mentioned" is rejected; a "no" needs its own quote confirmed by the verifier. The newer of the country and every-country record wins.
+- **Automatic publishing, no manual verification** (compare-autopublish-1; 35.aq-7): `comparison_publish` (auto_publish, auto_live,
+  admin_off, shown), `comparison_publish_events`, `auto_verified_at` / `auto_blocked` on entries, plans and answers, findings'
+  `auto_reviewed` / `auto_reason`, `competitors.check_failures` / `check_urls_by`. After every checker run (`scripts/competitor-check/main.ts`
+  → `lib/comparison-publish-run.ts`): failure counts; pending findings decided (`lib/comparison-publish.ts` `decideFindings` — evidence
+  only, the newest finding of each item, classifications applied unless Admin set the category); refused or missing features / pricing
+  addresses saved to check_urls (never over Admin's); every switched-on country evaluated; the pages told (`/api/revalidate`, tag
+  marketing-countries; `REVALIDATE_SECRET` must exist as a GitHub secret, else a warning). The routine check now second-checks every
+  monthly price. **Germany is live by default once deployed** (its status 'admin' plus auto-live) — **Dominic may switch it off** in
+  Admin › Countries (Off is recorded and wins) or untick its auto-publish. AE never shows competitors (no page).
+- **The display rule** (35.aq-8): a row appears only when checked for every shown competitor; unchecked rows hide (e.g. a new feature
+  nobody has asked about yet) and appear when filled.
+- **Report an error** on every comparison page (all languages), next to the methodology: `/contact?topic=comparison` (contact topic
+  "A correction to a comparison page", 29 languages; `contact_messages.topic` allows 'comparison'). Methodology: "Prices and features are
+  checked automatically against each product's own website; each claim links to its source."
+- **The Monday summary email** (35.aq-9): `/api/cron/comparison-summary`, Mondays 08:00 UTC, countries live and every change with its
+  reason, findings counted by reason; skipped when nothing changed.
+- **Semi-deep checks, then fuller checks on the normal tiers:** `competitor_check_settings.semi_deep` holds 73 competitors (each
+  switched-on country's shown four except AE, priority GB, US, IE, AU, CA, NZ, then SG, DE, AT, LI, then by code); the first checker run
+  on the new code turns it into ordinary requests and makes their core and commercial features without a page record due; the $8 daily
+  cap spreads them (≈ $5.90 likely, ≤ $17.50). After that the normal tier intervals (core 90, commercial 90, secondary 180 days) bring
+  the fuller checks.
+- **Every language base** (compare-languages-1; 35.aq-10): the `comparison` namespace (262 strings) in all 28 bases with back-translations;
+  variants en-US, en-CA, es-MX, fr-LU, de-CH, de-LI; `comparisonPath` gives every country with an address its own words except AE
+  (`NO_COMPARISON_PAGE`); hreflang names every live comparison page; sitemap live-only; the twins in the page's language.
+- **One-off results (7 Nov):** 4,289 findings accepted and 1,372 rejected automatically; GB (4) and DE (2) evaluated live — visible only
+  after deploy; 25 competitors reclassified as restaurant tools and 7 as not relevant by addendum A.
+
+## 87.4 Store badges (badges-manual-1)
+
+- The localized Google PNGs from Google's badge page carry a transparent margin (29 px above and below a 192 px badge in 250 px; Arabic on
+  all four sides), so at 40 px their visible badge was ~31 px. **27 languages now use Google's own full-bleed localized SVG** from the
+  Google Play Partner Marketing Hub (byte-for-byte, original filenames in `scripts/fixtures/store-badges-1-manifest.json`); **zh-HK keeps
+  its PNG** (no Hong Kong SVG; the Taiwan one has different words) with `inset` 29/29, cancelled in layout. The one rule in
+  `components/StoreBadges.tsx`: Google's visible height = `height` (40 px, footer desktop and phone, Manage › Settings). Measured in
+  Chromium at 1280 and 390 px for English and all 28 languages: equal within 1 px (Croatian's Apple badge is Apple's own 39 px visible;
+  zh-HK 40.5 by anti-aliasing). Google's rule: the Play badge "the same size or larger than the other badges" (35.aq-11).
+
+## 87.5 Tooling
+
+- **`gh` is installed and authenticated** (as dominicbonini), so checker runs are started with
+  `gh workflow run competitor-check.yml -f mode=<scheduled|routine|deep|single|pass> [-f competitor=… -f limit=… -f dry_run=true]`
+  instead of the Actions page. The run uses the code on GitHub's main, so a change takes effect in Actions only after it is pushed.
+
+## 87.6 Backlog (V16.14)
+
+- **Comparison pages built ahead** — they are per request today; building them ahead needs checker-triggered revalidation of their own tag.
+- **Help-centre reads off** (~$6 a month) — revisit if too few pages are "complete".
+- **Marketplaces are classed not relevant**, so the commission answer (situation 8) cannot show.
+- **Further speed work** after real-visitor data and the designer's hero: flag SVGs to files, public-only Tailwind, fewer client
+  components above the fold.
+- **First-touch attribution** (landing → demo → signup) with the growth dashboard.
+- **The Pizzeria Gusto case study** — needs Nadia's and Bogdan's permission.
+- **The loyalty 12-month launch decision** (loyalty-1 is built, switched off).
+- **The offline wording gap:** offline protection is off until a truck switches it on, so copy must not promise it by default.
+- From the comparison briefs: the German-specific source lines (TSE fiscal till, the delivery-platform card's "Uber Eats … in Germany") on
+  every country's page; competitor notes are English data; VAT wording for the US, HK, BR and MY; `REVALIDATE_SECRET` as a GitHub secret;
+  `event-types-render` measurement at 820 px (fails on the current build, not caused by these briefs).
+
 
 ---
 

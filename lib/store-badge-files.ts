@@ -2,8 +2,10 @@
 //
 // Each vendor's OWN localized badge for each of the site's 28 language bases, downloaded unmodified from the vendor
 // (public/badges/README.md lists every file, its source URL and the download date; scripts/fixtures/store-badges-1-manifest.json
-// holds each file's sha256, checked by scripts/store-badges-1.cjs). The width and height are each FILE'S OWN (Apple's SVG viewBox,
-// Google's PNG size), so a badge is sized by height and keeps its own aspect ratio — never stretched to match the other.
+// holds each file's sha256, checked by scripts/store-badges-1.cjs). The width and height are each FILE'S OWN (the SVG's viewBox, or a
+// PNG's pixels), so a badge is sized by height and keeps its own aspect ratio — never stretched to match the other.
+// badges-manual-1 (8 November 2026): Google's badges are its own full-bleed localized SVGs (zh-HK: a PNG with a transparent margin,
+// `inset`), so every Google badge's VISIBLE height is the App Store badge's (components/StoreBadges.tsx).
 // 🔴 NEVER EDITED, RECOLOURED, CROPPED OR RE-LETTERED: both vendors forbid it, and "App Store" is never translated.
 // The English badges are the files that were here before (the three SVGs directly in public/badges, names unchanged): every English locale, and any
 // language without a file of its own. A regional variant reads its base's badge (de-AT → de-DE, es-MX → es-ES, fr-LU → fr-FR,
@@ -11,7 +13,9 @@
 import { overrideChain, type AppLocale } from '@/lib/i18n/locales'
 import { APP_STORE_BADGE_SRC, GOOGLE_PLAY_BADGE_SRC } from '@/lib/app-badges'
 
-export interface BadgeFile { src: string; width: number; height: number }
+/** A badge file: its src and its OWN width × height (SVG viewBox or PNG pixels). badges-manual-1: `inset` — a transparent margin built
+ *  into the file (same units), which StoreBadges cancels with negative margins so only the visible badge takes up room. Absent: full-bleed. */
+export interface BadgeFile { src: string; width: number; height: number; inset?: { top: number; bottom: number } }
 
 /** Apple's English badge (the black US-UK file) and Google's English one — the files that were here before. */
 export const APPLE_ENGLISH: BadgeFile = { src: APP_STORE_BADGE_SRC, width: 119.66407, height: 40 }
@@ -49,37 +53,42 @@ export const APPLE_BADGES: Readonly<Record<string, BadgeFile>> = {
   'ar-AE': { src: '/badges/apple/ar-AE.svg', width: 119.66408, height: 40.00013 },
 }
 
-/** Google's "Get it on Google Play" badge per language base (play.google.com/intl/…/badges). */
+/** Google's "Get it on Google Play" badge per language base. badges-manual-1 (8 November 2026): Google's own FULL-BLEED localized
+ *  SVG from the Google Play Partner Marketing Hub (27 languages; the dimensions are each file's viewBox), the same artwork family as the
+ *  English badge. zh-HK keeps the PNG from Google's badge page (646 × 250): Google publishes no Hong Kong SVG, and its Taiwan SVG has
+ *  different words. That PNG carries a TRANSPARENT MARGIN of 29px above and below its 192px-high badge — `inset`, in the file's own
+ *  pixels — which components/StoreBadges.tsx cancels in layout so the VISIBLE badge is the App Store badge's height. */
 export const GOOGLE_BADGES: Readonly<Record<string, BadgeFile>> = {
-  'fr-FR': { src: '/badges/google/fr-FR.png', width: 646, height: 250 },
-  'de-DE': { src: '/badges/google/de-DE.png', width: 646, height: 250 },
-  'es-ES': { src: '/badges/google/es-ES.png', width: 646, height: 250 },
-  'it-IT': { src: '/badges/google/it-IT.png', width: 646, height: 250 },
-  'pt-PT': { src: '/badges/google/pt-PT.png', width: 646, height: 250 },
-  'nl-NL': { src: '/badges/google/nl-NL.png', width: 646, height: 250 },
-  'sv-SE': { src: '/badges/google/sv-SE.png', width: 646, height: 250 },
-  'da-DK': { src: '/badges/google/da-DK.png', width: 646, height: 250 },
-  'nb-NO': { src: '/badges/google/nb-NO.png', width: 646, height: 250 },
-  'pl-PL': { src: '/badges/google/pl-PL.png', width: 646, height: 250 },
-  'cs-CZ': { src: '/badges/google/cs-CZ.png', width: 646, height: 250 },
-  'hu-HU': { src: '/badges/google/hu-HU.png', width: 646, height: 250 },
-  'sk-SK': { src: '/badges/google/sk-SK.png', width: 646, height: 250 },
-  'ro-RO': { src: '/badges/google/ro-RO.png', width: 646, height: 250 },
-  'hr-HR': { src: '/badges/google/hr-HR.png', width: 646, height: 250 },
-  'sl-SI': { src: '/badges/google/sl-SI.png', width: 646, height: 250 },
-  'fi-FI': { src: '/badges/google/fi-FI.png', width: 646, height: 250 },
-  'et-EE': { src: '/badges/google/et-EE.png', width: 646, height: 250 },
-  'lv-LV': { src: '/badges/google/lv-LV.png', width: 646, height: 250 },
-  'lt-LT': { src: '/badges/google/lt-LT.png', width: 646, height: 250 },
-  'el-GR': { src: '/badges/google/el-GR.png', width: 646, height: 250 },
-  'bg-BG': { src: '/badges/google/bg-BG.png', width: 646, height: 250 },
-  'pt-BR': { src: '/badges/google/pt-BR.png', width: 646, height: 250 },
-  'ms-MY': { src: '/badges/google/ms-MY.png', width: 646, height: 250 },
-  'ja-JP': { src: '/badges/google/ja-JP.png', width: 646, height: 250 },
-  'zh-HK': { src: '/badges/google/zh-HK.png', width: 646, height: 250 },
-  'th-TH': { src: '/badges/google/th-TH.png', width: 646, height: 250 },
-  'ar-AE': { src: '/badges/google/ar-AE.png', width: 646, height: 250 },
+  'fr-FR': { src: '/badges/google/fr-FR.svg', width: 238.96, height: 70.87 },
+  'de-DE': { src: '/badges/google/de-DE.svg', width: 238.96, height: 70.87 },
+  'es-ES': { src: '/badges/google/es-ES.svg', width: 238.96, height: 70.87 },
+  'it-IT': { src: '/badges/google/it-IT.svg', width: 238.96, height: 70.87 },
+  'pt-PT': { src: '/badges/google/pt-PT.svg', width: 238.96, height: 70.87 },
+  'nl-NL': { src: '/badges/google/nl-NL.svg', width: 238.96, height: 70.87 },
+  'sv-SE': { src: '/badges/google/sv-SE.svg', width: 238.96, height: 70.87 },
+  'da-DK': { src: '/badges/google/da-DK.svg', width: 238.96, height: 70.87 },
+  'nb-NO': { src: '/badges/google/nb-NO.svg', width: 238.96, height: 70.87 },
+  'pl-PL': { src: '/badges/google/pl-PL.svg', width: 239.53, height: 70.87 },
+  'cs-CZ': { src: '/badges/google/cs-CZ.svg', width: 238.96, height: 70.87 },
+  'hu-HU': { src: '/badges/google/hu-HU.svg', width: 238.96, height: 70.87 },
+  'sk-SK': { src: '/badges/google/sk-SK.svg', width: 238.96, height: 70.87 },
+  'ro-RO': { src: '/badges/google/ro-RO.svg', width: 238.96, height: 70.87 },
+  'hr-HR': { src: '/badges/google/hr-HR.svg', width: 238.96, height: 70.87 },
+  'sl-SI': { src: '/badges/google/sl-SI.svg', width: 238.96, height: 70.87 },
+  'fi-FI': { src: '/badges/google/fi-FI.svg', width: 238.96, height: 70.87 },
+  'et-EE': { src: '/badges/google/et-EE.svg', width: 238.96, height: 70.87 },
+  'lv-LV': { src: '/badges/google/lv-LV.svg', width: 238.96, height: 70.87 },
+  'lt-LT': { src: '/badges/google/lt-LT.svg', width: 238.96, height: 70.87 },
+  'el-GR': { src: '/badges/google/el-GR.svg', width: 238.96, height: 70.87 },
+  'bg-BG': { src: '/badges/google/bg-BG.svg', width: 238.96, height: 70.87 },
+  'pt-BR': { src: '/badges/google/pt-BR.svg', width: 238.96, height: 70.87 },
+  'ms-MY': { src: '/badges/google/ms-MY.svg', width: 238.96, height: 70.87 },
+  'ja-JP': { src: '/badges/google/ja-JP.svg', width: 180, height: 53.333599 },
+  'zh-HK': { src: '/badges/google/zh-HK.png', width: 646, height: 250, inset: { top: 29, bottom: 29 } },
+  'th-TH': { src: '/badges/google/th-TH.svg', width: 238.96, height: 70.87 },
+  'ar-AE': { src: '/badges/google/ar-AE.svg', width: 238.96, height: 70.87 },
 }
+
 
 /** The badge for a page in `locale`: its own file, else its base's (a regional variant), else the English one. */
 export function badgeFor(vendor: 'apple' | 'google', locale: string | null | undefined): BadgeFile {

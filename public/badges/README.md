@@ -97,8 +97,10 @@ names and stay the English badges (every English locale, and any language withou
   Apple's `no-no`, Arabic Apple's `ar-ar`. Each file keeps its OWN size: most are 119.66 × 40, but French, Hungarian, Croatian
   (130.14 × 41), Finnish, Estonian, Japanese and Chinese are wider or narrower.
 - **Google** — the "Get it on Google Play" badge from Google's badge page (`play.google.com/intl/…/badges`). **Google offers no
-  SVG there, so it is the PNG, 646 × 250** — 6.25× our 40 px display height (at least 3× was asked). Full-bleed (no built-in
-  margin), so it sizes by height like the English one. Portuguese (Portugal) is Google's `pt`, Norwegian `no`.
+  SVG there, so it is the PNG, 646 × 250** — 6.25× our 40 px display height (at least 3× was asked). ~~Full-bleed (no built-in
+  margin), so it sizes by height like the English one.~~ ⛔ **Corrected badges-manual-1 (8 November 2026):** those PNGs carry a
+  transparent margin (29 px above and below the badge), so they read smaller than Apple's — 27 are now Google's full-bleed SVGs from the
+  Partner Marketing Hub, and zh-HK's margin is cancelled in layout (see the Google table below). Portuguese (Portugal) is Google's `pt`, Norwegian `no`.
 - **No English fallback was needed:** both vendors have a badge for all 28 languages.
 - Regional variants read their base's file (de-AT / de-CH / de-LI → de-DE, es-MX → es-ES, fr-LU → fr-FR, nl-BE → nl-NL,
   el-CY → el-GR) — `lib/store-badge-files.ts` `badgeFor`.
@@ -142,33 +144,48 @@ names and stay the English badges (every English locale, and any language withou
 
 ### Google — `google/`
 
+**badges-manual-1 (8 November 2026): 27 languages replaced by Google's own FULL-BLEED localized SVG.** The PNGs from Google's badge
+page carry a built-in transparent margin — 29 px above and below a 192 px-high badge in a 250 px image (Arabic: margins on all four
+sides) — so at `height: 40px` their visible badge was only ~31 px, visibly smaller than Apple's (the store-badges-1 note "full-bleed (no
+built-in margin)" was wrong; measured). The Google Play **Partner Marketing Hub** (Google's own site, the "Get it on Google Play Badges"
+→ Digital → svg folder) publishes the badge as SVG in every language we need, the same artwork family and the same 238.96 × 70.87
+viewBox as our English file (Google's current English SVG there renders pixel-identical to ours). Each file was downloaded unmodified on
+**8 November 2026**, written byte-for-byte, renamed to the locale; its original filename is in the table and in the manifest. Verified by
+eye against the old PNG: same words in every language except **Spanish** ("DESCARGAR EN", was "DISPONIBLE EN") and **Finnish** ("LATAA SE
+Google Play", was "Google Playsta") — Google's current wording. Norwegian is Google's "Norwegian", Malay its "Malaysian", Arabic its
+"Arabic-Saudi-Arabia", Japanese its only file ("Print_color_Japanese", the same full-bleed shape), Portuguese its "-Portugal" / "-Brazil",
+Spanish its "Spanish" (Spain; "-LATAM" is separate). **zh-HK stays the PNG**: the hub has no Hong Kong file and its Traditional Chinese
+"Taiwan" SVG has different words ("立即下載" under the logo) — so its transparent margin is cancelled in layout instead
+(`lib/store-badge-files.ts` `inset`, `components/StoreBadges.tsx`). Google's rule there: *"make sure the Google Play badge is the same size
+or larger than the other badges"* — equal visible heights satisfy it.
+
 | File | Language | Source URL | Downloaded |
 |---|---|---|---|
-| `google/fr-FR.png` | French (France) (fr-FR) | https://play.google.com/intl/en_us/badges/static/images/badges/fr_badge_web_generic.png | 2026-11-02 |
-| `google/de-DE.png` | German (Germany) (de-DE) | https://play.google.com/intl/en_us/badges/static/images/badges/de_badge_web_generic.png | 2026-11-02 |
-| `google/es-ES.png` | European Spanish (es-ES) | https://play.google.com/intl/en_us/badges/static/images/badges/es_badge_web_generic.png | 2026-11-02 |
-| `google/it-IT.png` | Italian (Italy) (it-IT) | https://play.google.com/intl/en_us/badges/static/images/badges/it_badge_web_generic.png | 2026-11-02 |
-| `google/pt-PT.png` | European Portuguese (pt-PT) | https://play.google.com/intl/en_us/badges/static/images/badges/pt_badge_web_generic.png | 2026-11-02 |
-| `google/nl-NL.png` | Dutch (Netherlands) (nl-NL) | https://play.google.com/intl/en_us/badges/static/images/badges/nl_badge_web_generic.png | 2026-11-02 |
-| `google/sv-SE.png` | Swedish (Sweden) (sv-SE) | https://play.google.com/intl/en_us/badges/static/images/badges/sv_badge_web_generic.png | 2026-11-02 |
-| `google/da-DK.png` | Danish (Denmark) (da-DK) | https://play.google.com/intl/en_us/badges/static/images/badges/da_badge_web_generic.png | 2026-11-02 |
-| `google/nb-NO.png` | Norwegian Bokmål (Norway) (nb-NO) | https://play.google.com/intl/en_us/badges/static/images/badges/no_badge_web_generic.png | 2026-11-02 |
-| `google/pl-PL.png` | Polish (Poland) (pl-PL) | https://play.google.com/intl/en_us/badges/static/images/badges/pl_badge_web_generic.png | 2026-11-02 |
-| `google/cs-CZ.png` | Czech (Czechia) (cs-CZ) | https://play.google.com/intl/en_us/badges/static/images/badges/cs_badge_web_generic.png | 2026-11-02 |
-| `google/hu-HU.png` | Hungarian (Hungary) (hu-HU) | https://play.google.com/intl/en_us/badges/static/images/badges/hu_badge_web_generic.png | 2026-11-02 |
-| `google/sk-SK.png` | Slovak (Slovakia) (sk-SK) | https://play.google.com/intl/en_us/badges/static/images/badges/sk_badge_web_generic.png | 2026-11-02 |
-| `google/ro-RO.png` | Romanian (Romania) (ro-RO) | https://play.google.com/intl/en_us/badges/static/images/badges/ro_badge_web_generic.png | 2026-11-02 |
-| `google/hr-HR.png` | Croatian (Croatia) (hr-HR) | https://play.google.com/intl/en_us/badges/static/images/badges/hr_badge_web_generic.png | 2026-11-02 |
-| `google/sl-SI.png` | Slovenian (Slovenia) (sl-SI) | https://play.google.com/intl/en_us/badges/static/images/badges/sl_badge_web_generic.png | 2026-11-02 |
-| `google/fi-FI.png` | Finnish (Finland) (fi-FI) | https://play.google.com/intl/en_us/badges/static/images/badges/fi_badge_web_generic.png | 2026-11-02 |
-| `google/et-EE.png` | Estonian (Estonia) (et-EE) | https://play.google.com/intl/en_us/badges/static/images/badges/et_badge_web_generic.png | 2026-11-02 |
-| `google/lv-LV.png` | Latvian (Latvia) (lv-LV) | https://play.google.com/intl/en_us/badges/static/images/badges/lv_badge_web_generic.png | 2026-11-02 |
-| `google/lt-LT.png` | Lithuanian (Lithuania) (lt-LT) | https://play.google.com/intl/en_us/badges/static/images/badges/lt_badge_web_generic.png | 2026-11-02 |
-| `google/el-GR.png` | Greek (Greece) (el-GR) | https://play.google.com/intl/en_us/badges/static/images/badges/el_badge_web_generic.png | 2026-11-02 |
-| `google/bg-BG.png` | Bulgarian (Bulgaria) (bg-BG) | https://play.google.com/intl/en_us/badges/static/images/badges/bg_badge_web_generic.png | 2026-11-02 |
-| `google/pt-BR.png` | Brazilian Portuguese (pt-BR) | https://play.google.com/intl/en_us/badges/static/images/badges/pt-br_badge_web_generic.png | 2026-11-02 |
-| `google/ms-MY.png` | Malay (Malaysia) (ms-MY) | https://play.google.com/intl/en_us/badges/static/images/badges/ms_badge_web_generic.png | 2026-11-02 |
-| `google/ja-JP.png` | Japanese (Japan) (ja-JP) | https://play.google.com/intl/en_us/badges/static/images/badges/ja_badge_web_generic.png | 2026-11-02 |
+| `google/fr-FR.svg` | French (France) (fr-FR) | https://partnermarketinghub.withgoogle.com/brands/google-play/google-play/lockups-icons-badges/?folder=86718 (`GetItOnGooglePlay_Badge_Web_color_French.svg`) | 2026-11-08 |
+| `google/de-DE.svg` | German (Germany) (de-DE) | https://partnermarketinghub.withgoogle.com/brands/google-play/google-play/lockups-icons-badges/?folder=86718 (`GetItOnGooglePlay_Badge_Web_color_German.svg`) | 2026-11-08 |
+| `google/es-ES.svg` | European Spanish (es-ES) | https://partnermarketinghub.withgoogle.com/brands/google-play/google-play/lockups-icons-badges/?folder=86718 (`GetItOnGooglePlay_Badge_Web_color_Spanish.svg`) | 2026-11-08 |
+| `google/it-IT.svg` | Italian (Italy) (it-IT) | https://partnermarketinghub.withgoogle.com/brands/google-play/google-play/lockups-icons-badges/?folder=86718 (`GetItOnGooglePlay_Badge_Web_color_Italian.svg`) | 2026-11-08 |
+| `google/pt-PT.svg` | European Portuguese (pt-PT) | https://partnermarketinghub.withgoogle.com/brands/google-play/google-play/lockups-icons-badges/?folder=86718 (`GetItOnGooglePlay_Badge_Web_color_Portuguese-Portugal.svg`) | 2026-11-08 |
+| `google/nl-NL.svg` | Dutch (Netherlands) (nl-NL) | https://partnermarketinghub.withgoogle.com/brands/google-play/google-play/lockups-icons-badges/?folder=86718 (`GetItOnGooglePlay_Badge_Web_color_Dutch.svg`) | 2026-11-08 |
+| `google/sv-SE.svg` | Swedish (Sweden) (sv-SE) | https://partnermarketinghub.withgoogle.com/brands/google-play/google-play/lockups-icons-badges/?folder=86718 (`GetItOnGooglePlay_Badge_Web_color_Swedish.svg`) | 2026-11-08 |
+| `google/da-DK.svg` | Danish (Denmark) (da-DK) | https://partnermarketinghub.withgoogle.com/brands/google-play/google-play/lockups-icons-badges/?folder=86718 (`GetItOnGooglePlay_Badge_Web_color_Danish.svg`) | 2026-11-08 |
+| `google/nb-NO.svg` | Norwegian Bokmål (Norway) (nb-NO) | https://partnermarketinghub.withgoogle.com/brands/google-play/google-play/lockups-icons-badges/?folder=86718 (`GetItOnGooglePlay_Badge_Web_color_Norwegian.svg`) | 2026-11-08 |
+| `google/pl-PL.svg` | Polish (Poland) (pl-PL) | https://partnermarketinghub.withgoogle.com/brands/google-play/google-play/lockups-icons-badges/?folder=86718 (`GetItOnGooglePlay_Badge_Web_color_Polish.svg`) | 2026-11-08 |
+| `google/cs-CZ.svg` | Czech (Czechia) (cs-CZ) | https://partnermarketinghub.withgoogle.com/brands/google-play/google-play/lockups-icons-badges/?folder=86718 (`GetItOnGooglePlay_Badge_Web_color_Czech.svg`) | 2026-11-08 |
+| `google/hu-HU.svg` | Hungarian (Hungary) (hu-HU) | https://partnermarketinghub.withgoogle.com/brands/google-play/google-play/lockups-icons-badges/?folder=86718 (`GetItOnGooglePlay_Badge_Web_color_Hungarian.svg`) | 2026-11-08 |
+| `google/sk-SK.svg` | Slovak (Slovakia) (sk-SK) | https://partnermarketinghub.withgoogle.com/brands/google-play/google-play/lockups-icons-badges/?folder=86718 (`GetItOnGooglePlay_Badge_Web_color_Slovak.svg`) | 2026-11-08 |
+| `google/ro-RO.svg` | Romanian (Romania) (ro-RO) | https://partnermarketinghub.withgoogle.com/brands/google-play/google-play/lockups-icons-badges/?folder=86718 (`GetItOnGooglePlay_Badge_Web_color_Romanian.svg`) | 2026-11-08 |
+| `google/hr-HR.svg` | Croatian (Croatia) (hr-HR) | https://partnermarketinghub.withgoogle.com/brands/google-play/google-play/lockups-icons-badges/?folder=86718 (`GetItOnGooglePlay_Badge_Web_color_Croatian.svg`) | 2026-11-08 |
+| `google/sl-SI.svg` | Slovenian (Slovenia) (sl-SI) | https://partnermarketinghub.withgoogle.com/brands/google-play/google-play/lockups-icons-badges/?folder=86718 (`GetItOnGooglePlay_Badge_Web_color_Slovenian.svg`) | 2026-11-08 |
+| `google/fi-FI.svg` | Finnish (Finland) (fi-FI) | https://partnermarketinghub.withgoogle.com/brands/google-play/google-play/lockups-icons-badges/?folder=86718 (`GetItOnGooglePlay_Badge_Web_color_Finnish.svg`) | 2026-11-08 |
+| `google/et-EE.svg` | Estonian (Estonia) (et-EE) | https://partnermarketinghub.withgoogle.com/brands/google-play/google-play/lockups-icons-badges/?folder=86718 (`GetItOnGooglePlay_Badge_Web_color_Estonian.svg`) | 2026-11-08 |
+| `google/lv-LV.svg` | Latvian (Latvia) (lv-LV) | https://partnermarketinghub.withgoogle.com/brands/google-play/google-play/lockups-icons-badges/?folder=86718 (`GetItOnGooglePlay_Badge_Web_color_Latvian.svg`) | 2026-11-08 |
+| `google/lt-LT.svg` | Lithuanian (Lithuania) (lt-LT) | https://partnermarketinghub.withgoogle.com/brands/google-play/google-play/lockups-icons-badges/?folder=86718 (`GetItOnGooglePlay_Badge_Web_color_Lithuanian.svg`) | 2026-11-08 |
+| `google/el-GR.svg` | Greek (Greece) (el-GR) | https://partnermarketinghub.withgoogle.com/brands/google-play/google-play/lockups-icons-badges/?folder=86718 (`GetItOnGooglePlay_Badge_Web_color_Greek.svg`) | 2026-11-08 |
+| `google/bg-BG.svg` | Bulgarian (Bulgaria) (bg-BG) | https://partnermarketinghub.withgoogle.com/brands/google-play/google-play/lockups-icons-badges/?folder=86718 (`GetItOnGooglePlay_Badge_Web_color_Bulgarian.svg`) | 2026-11-08 |
+| `google/pt-BR.svg` | Brazilian Portuguese (pt-BR) | https://partnermarketinghub.withgoogle.com/brands/google-play/google-play/lockups-icons-badges/?folder=86718 (`GetItOnGooglePlay_Badge_Web_color_Portuguese-Brazil.svg`) | 2026-11-08 |
+| `google/ms-MY.svg` | Malay (Malaysia) (ms-MY) | https://partnermarketinghub.withgoogle.com/brands/google-play/google-play/lockups-icons-badges/?folder=86718 (`GetItOnGooglePlay_Badge_Web_color_Malaysian.svg`) | 2026-11-08 |
+| `google/ja-JP.svg` | Japanese (Japan) (ja-JP) | https://partnermarketinghub.withgoogle.com/brands/google-play/google-play/lockups-icons-badges/?folder=86718 (`GetItOnGooglePlay_Badge_Print_color_Japanese.svg`) | 2026-11-08 |
 | `google/zh-HK.png` | Chinese (Hong Kong SAR China) (zh-HK) | https://play.google.com/intl/en_us/badges/static/images/badges/zh-hk_badge_web_generic.png | 2026-11-02 |
-| `google/th-TH.png` | Thai (Thailand) (th-TH) | https://play.google.com/intl/en_us/badges/static/images/badges/th_badge_web_generic.png | 2026-11-02 |
-| `google/ar-AE.png` | Arabic (United Arab Emirates) (ar-AE) | https://play.google.com/intl/en_us/badges/static/images/badges/ar_badge_web_generic.png | 2026-11-02 |
+| `google/th-TH.svg` | Thai (Thailand) (th-TH) | https://partnermarketinghub.withgoogle.com/brands/google-play/google-play/lockups-icons-badges/?folder=86718 (`GetItOnGooglePlay_Badge_Web_color_Thai.svg`) | 2026-11-08 |
+| `google/ar-AE.svg` | Arabic (United Arab Emirates) (ar-AE) | https://partnermarketinghub.withgoogle.com/brands/google-play/google-play/lockups-icons-badges/?folder=86718 (`GetItOnGooglePlay_Badge_Web_color_Arabic-Saudi-Arabia.svg`) | 2026-11-08 |
