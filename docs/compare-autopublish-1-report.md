@@ -326,7 +326,8 @@ The 17, each checked:
 | Commit | What |
 |---|---|
 | `a54f0ddc`, `0b92e6e4`, `3c716047`, `9672eddf`, `f41360b3` | the five migrations |
-| this commit | the code, words and harnesses (below) and this report |
+| `8c1f1f70` | the code, words and harnesses (below) and this report |
+| the next commit | this report, its final figures |
 
 - **Code:**
   - `lib/comparison-publish*.ts`, `lib/comparison*.ts`;
