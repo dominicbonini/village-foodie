@@ -8,7 +8,7 @@ import { useEffect, useState } from 'react'
 import { nativeAuthHeader } from '@/lib/native/session'
 import type { ComparisonStatus } from '@/lib/comparison-types'
 
-// compare-autopublish-1 (7 November 2026): every English- or German-language country, with its AUTO-PUBLISH switch and the automatic
+// compare-autopublish-1 (7 November 2026): every country with a comparison page (compare-languages-1: every language, never AE), with its AUTO-PUBLISH switch and the automatic
 // verdict (lib/comparison-publish.ts). `status` is Admin's own; `effective` is what the site shows — live when Admin says live, or
 // auto-publish is on and the evaluation found ≥ 2 publishable competitors. Setting Off is recorded and always wins. The UAE never auto-publishes.
 // ⚠️ Only classes this panel already used (a new Tailwind class would change the stylesheet the public pages share).

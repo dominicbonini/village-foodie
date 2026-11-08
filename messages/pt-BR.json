@@ -6339,6 +6339,400 @@
       "description": "Compare quanto seus pedidos online custam hoje com um ano no HatchGrab — uma estimativa em um minuto."
     }
   },
+  "comparison": {
+    "path": {
+      "section": "comparativo",
+      "slug": "sistema-de-pedidos-food-truck"
+    },
+    "meta": {
+      "title": "Sistemas de pedidos para food truck 2026: recursos e preços",
+      "description": "Sistemas de pedidos para food truck comparados: horário de retirada, capacidade da cozinha, agenda, taxas e contrato — verificados no site de cada um.",
+      "about": "Sistemas de pedidos online para food trucks"
+    },
+    "breadcrumb": {
+      "home": "HatchGrab",
+      "here": "Comparativo",
+      "label": "Trilha de navegação"
+    },
+    "h1": "Comparativo de sistemas de pedidos para food truck 2026",
+    "byline": "Última verificação: {date} · Feito pelo HatchGrab. Somos um dos fornecedores comparados (veja <link>Como comparamos</link>).",
+    "tldr": {
+      "title": "Resumindo",
+      "body": "Se você quer que seus clientes façam o pedido antecipado pelo celular e escolham um horário de retirada, você precisa de um sistema de pedidos, não só de um caixa. Procure quatro coisas: horários de retirada que respeitam a capacidade da sua cozinha; uma agenda semanal para pontos que mudam; taxa por pedido baixa ou zero; e nenhum contrato longo. Maquininhas e PDVs cuidam do pagamento no food truck e complementam um sistema de pedidos."
+    },
+    "table": {
+      "title": "Os sistemas de pedidos comparados",
+      "caption": "Recursos e custos de sistemas de pedidos online para food trucks no {country}, em {date}",
+      "note": "“Sim” só quando o fornecedor diz isso publicamente.",
+      "feature": "Recurso",
+      "yes": "Sim",
+      "no": "Não",
+      "unknown": "Não informado",
+      "fromPlan": "A partir do plano {plan}",
+      "appNotInCountry": "Indisponível no {country}",
+      "appFlagOff": "Sim – ainda desativado; aparece quando estiver nas lojas de apps",
+      "range": "{from} a {to}",
+      "feePlan": "{fee} ({plans})",
+      "noFee": "nenhuma",
+      "morePending": "Mais fornecedores vão aparecer aqui assim que conferirmos as informações deles no próprio site.",
+      "priceHidden": "Sob consulta",
+      "feeAfter": "{fee} acima de {included} por mês"
+    },
+    "costs": {
+      "title": "Quanto custa um sistema de pedidos para food truck?",
+      "ourPlan": "{plan}: {price} por mês, {fee}",
+      "feeOnly": "{fee} por pedido online pago com cartão",
+      "feeIncluded": "pedidos online até {included} por mês inclusos, depois {fee}",
+      "feeNone": "sem taxa do HatchGrab nos pedidos online",
+      "rivalPlan": "{plan}: {price}",
+      "perMonth": "{price} por mês",
+      "perMonthYearly": "{price} por mês, cobrado anualmente",
+      "vatExcl": "sem impostos",
+      "vatIncl": "com impostos",
+      "setup": "taxa de adesão única de {price}",
+      "truckFee": "{fee} por pedido",
+      "customerFee": "{fee} por pedido, pagos pelo cliente",
+      "source": "Fonte",
+      "checked": "verificado em {date}",
+      "cardFee": "Os pagamentos online com cartão no HatchGrab também têm as taxas da Stripe: {cardFee} por pagamento com cartão no {country}.",
+      "vat": "A HatchGrab Ltd é uma empresa do Reino Unido e não é contribuinte de impostos sobre o consumo no {country}, por isso não acrescentamos esses impostos às nossas taxas. Se você for contribuinte, informe o seu número de inscrição fiscal; nesse caso, você mesmo recolhe os impostos eventualmente devidos sobre as nossas taxas, como tomador do serviço (reverse charge).",
+      "bundledFee": "{fee} por pagamento online, taxa do cartão inclusa"
+    },
+    "fit": {
+      "title": "Qual sistema combina com quem?",
+      "ours": "O HatchGrab combina com você se …",
+      "oursBody": "você trabalha em pontos que mudam, quer pedidos antecipados com horário de retirada, não quer a cozinha sobrecarregada e não quer contrato.",
+      "oursNot": "O HatchGrab não combina com você se …",
+      "oursNotBody": "seus clientes precisam pagar com PayPal ou Klarna, ou se você quer um caixa certificado que atenda às regras fiscais do país, tudo do mesmo fornecedor.",
+      "appClause": "Ou se você precisa do app da cozinha no iPad ou Android no {country}: ele ainda não está nas lojas de apps de lá.",
+      "tills": "PDVs e maquininhas",
+      "marketplaces": "Plataformas de delivery",
+      "rival": "{name} combina se …",
+      "tillsBody": "Os PDVs recebem o pagamento no food truck e atendem às regras fiscais do país para caixas certificados. Um sistema de pedidos funciona junto com o PDV; não o substitui.",
+      "tillsBodyNamed": "Os PDVs recebem o pagamento no food truck e atendem às regras fiscais do país para caixas certificados. {names} também {count, plural, one {está} many {estão} other {estão}} na tabela acima. Um sistema de pedidos funciona junto com o PDV; não o substitui.",
+      "marketplacesBody": "As plataformas de delivery trazem novos clientes, mas cobram comissão em cada pedido. O Uber Eats informa 14% para retirada e 30% para entrega por entregadores da Uber na Alemanha. O Wolt diz no próprio site que cobra comissão, mas não informa as taxas. Não conseguimos verificar as taxas do Lieferando. Essa comissão vale também para os clientes fiéis que fazem pedidos antecipados com você."
+    },
+    "groups": {
+      "food_truck": "Sistema de pedidos para food truck",
+      "nearest_local": "Sistema de pedidos",
+      "pos": "PDV"
+    },
+    "faq": {
+      "title": "Perguntas frequentes",
+      "whatQ": "O que é um sistema de pedidos para food truck?",
+      "whatA": "Um sistema de pedidos recebe pedidos online antes de os clientes chegarem ao food truck: eles escolhem os pratos e um horário de retirada, pagam online ou na retirada, e o pedido aparece na sua cozinha. Um PDV ou uma maquininha recebe o pagamento no food truck. Um complementa o outro.",
+      "costQ": "Quanto custa o HatchGrab no {country}?",
+      "costA": "{plans}. Os pagamentos online com cartão também têm as taxas da Stripe: {cardFee} por pagamento com cartão.",
+      "termQ": "Tem prazo mínimo de contrato?",
+      "termA": "Não. Não há prazo mínimo nem aviso prévio. Você pode cancelar quando quiser; a mensalidade é cobrada todo mês, de forma antecipada, e você mantém o acesso até o fim do mês que já pagou.",
+      "locationsQ": "Funciona com pontos que mudam?",
+      "locationsA": "Sim. Você monta sua agenda semanal com locais e horários, e os clientes fazem o pedido para o local e o dia em que você estiver lá.",
+      "capacityQ": "Como o sistema evita que minha cozinha fique sobrecarregada?",
+      "capacityA": "Os clientes só veem os horários de retirada que sua cozinha consegue cumprir de verdade. O sistema usa o tempo de preparo de cada prato e quantos você prepara de uma vez.",
+      "tseQ": "Ainda preciso de um caixa certificado?",
+      "tseA": "O HatchGrab não é um PDV e não tem certificação fiscal. Como registrar os pedidos online no seu caixa é uma questão para o seu contador.",
+      "paymentsQ": "Quais formas de pagamento o HatchGrab aceita?",
+      "paymentsA": "Os clientes pagam online com cartão, Apple Pay ou Google Pay, ou pagam no food truck. PayPal e Klarna não são aceitos no momento.",
+      "costTrial": "{months, plural, one {O primeiro mês é grátis} many {Os primeiros # de meses são grátis} other {Os primeiros # meses são grátis}}, com todos os recursos."
+    },
+    "method": {
+      "title": "Como comparamos",
+      "checked": "Última verificação em {date}.",
+      "prices": "Os preços aparecem como o fornecedor os informa, inclusive quanto aos impostos.",
+      "meaning": "“Sim” significa que o fornecedor informa o recurso publicamente. “Não informado” significa que não encontramos nada sobre isso no site dele — não que o recurso não exista.",
+      "vendor": "O HatchGrab mantém esta página e é um dos fornecedores comparados.",
+      "review": "Preços e recursos são conferidos automaticamente no site de cada produto; cada informação tem link para a fonte.",
+      "corrections": "Encontrou um erro? Avise a gente pelo nosso <link>formulário de contato</link>.",
+      "reportError": "<link>Informar um erro</link>",
+      "machine": "Para assistentes de IA e desenvolvedores: esta tabela <md>em Markdown</md> · <json>em JSON</json>"
+    },
+    "cta": {
+      "title": "{months, plural, one {Teste # mês grátis} many {Teste # de meses grátis} other {Teste # meses grátis}}",
+      "noCard": "Sem precisar de cartão de crédito",
+      "cancel": "Cancelamento mês a mês",
+      "button": "Teste grátis"
+    },
+    "admin": {
+      "status": "Rascunho · noindex · fora do sitemap, llms.txt e hreflang · link no rodapé só para admins",
+      "statusLive": "No ar · pública e indexável",
+      "viewAdmin": "Visão do admin",
+      "viewPublic": "O que o público vê",
+      "pricingCheck": "Abrir a verificação de preços",
+      "checklist": "Antes de publicar",
+      "goLive": "A página é publicada em Admin › Países.",
+      "check": {
+        "apps": "Flags de iPad e Android ativadas para {country}",
+        "verified": "Pelo menos 2 fornecedores verificados ({n} verificados)",
+        "placeholders": "Nenhum marcador “[ … ]” sobrando no texto",
+        "vat": "Texto sobre impostos presente",
+        "impressum": "Decisão sobre o Impressum registrada"
+      },
+      "unverified": "não verificado · oculto para o público",
+      "autoVerified": "verificado automaticamente",
+      "unchecked": "ainda não verificado para todos os concorrentes exibidos · oculto para o público",
+      "label": "Admin",
+      "notShown": "Fora da página (no máximo quatro são exibidos): {names}.",
+      "reasonHidden": "{name} (oculto)",
+      "reasonBeyond": "{name} (além dos quatro)",
+      "reasonNoWebsite": "{name} (sem site)"
+    },
+    "footer": {
+      "heading": "Comparar",
+      "link": "Comparativo de sistemas de pedidos"
+    },
+    "featureGroups": {
+      "ordering": "Pedidos",
+      "payments": "Pagamentos",
+      "kitchen": "Cozinha",
+      "marketing": "Marketing",
+      "apps_hardware": "Apps e equipamentos",
+      "price_contract": "Preço e contrato"
+    },
+    "cell": {
+      "yes": "Sim",
+      "no": "Não",
+      "partial": "Em parte",
+      "unknown": "Não informado",
+      "not_mentioned": "O site não diz nada",
+      "withNote": "{word}, {note}",
+      "soon": "em breve",
+      "fromPlan": "a partir do plano {plan}",
+      "perCardPayment": "{fee} por pagamento com cartão",
+      "trial": "{months, plural, one {# mês} many {# de meses} other {# meses}} grátis",
+      "setupFee": "{price}, pagamento único",
+      "perMonth": "{price} por mês",
+      "notInCountry": "indisponível no {country}",
+      "flagOff": "ainda desativado; aparece quando estiver nas lojas de apps",
+      "notApplicable": "não se aplica a uma feira",
+      "not_listed": "Não listado"
+    },
+    "explained": {
+      "title": "O que significa cada recurso"
+    },
+    "costBlock": {
+      "title": "Quanto um food truck paga por mês",
+      "sizes": "Vendas online por mês",
+      "sizeSales": "{sales} por mês",
+      "sizeOrders": "cerca de {orders} pedidos",
+      "lead": "Para um food truck que fatura {sales} em pedidos online por mês (cerca de {orders} pedidos). Cada barra é o custo mensal total: a taxa do próprio sistema de pedidos mais as taxas de cartão desses pedidos.",
+      "legendSoftware": "Taxa do software",
+      "legendCard": "Taxas de cartão",
+      "software": "Taxa do software: {amount} por mês",
+      "card": "Taxas de cartão: {amount} por mês",
+      "total": "{amount} por mês, com as taxas de cartão",
+      "share": "{pct} das vendas",
+      "assumed": "(taxa não publicada, estimada)",
+      "customerFee": "Mais {amount} por mês pagos pelos clientes ({fee} por pedido) — fora da barra",
+      "summaryCheapest": "A taxa própria do {us} é de {ours} por mês, contra {theirs} por mês do concorrente mais barato exibido. As taxas de cartão ({card} por mês) são cobradas em todo pagamento com cartão, seja qual for o sistema, então a diferença que importa é a taxa do software.",
+      "summaryNotCheapest": "A taxa própria do {us} é de {ours} por mês, mais do que os {theirs} por mês de {rival}, o concorrente mais barato exibido. As taxas de cartão ({card} por mês) são cobradas em todo pagamento com cartão, seja qual for o sistema.",
+      "summaryAlone": "A taxa própria do {us} é de {ours} por mês. As taxas de cartão ({card} por mês) são cobradas em todo pagamento com cartão, seja qual for o sistema.",
+      "footOrder": "Pedido médio de {order}: uma refeição típica de {meal} × {multiplier} pratos por pedido ({source}).",
+      "footCard": "As taxas de cartão consideram {rate} por pagamento com cartão: {source}.",
+      "footCardSource": "Taxa da Stripe para o {country}",
+      "footAssumed": "{names} não {count, plural, one {publica} many {publicam} other {publicam}} uma taxa de cartão, então usamos a nossa como estimativa.",
+      "footChecked": "Preços verificados em {date}.",
+      "footCalculator": "Faça suas próprias contas na calculadora.",
+      "noRivals": "Ainda não há nenhum concorrente verificado no {country}, então não há nada para comparar."
+    },
+    "features": {
+      "preorder": {
+        "label": "Pedidos antecipados com horário de retirada à escolha",
+        "explain": "Os clientes fazem o pedido com antecedência e escolhem o horário em que vão retirar."
+      },
+      "capacity": {
+        "label": "Horários de retirada limitados pela capacidade da cozinha",
+        "explain": "Os clientes só veem os horários de retirada que a cozinha consegue cumprir de verdade."
+      },
+      "asap": {
+        "label": "Pedidos para o quanto antes",
+        "explain": "Os clientes podem pedir sem escolher um horário e retirar assim que ficar pronto."
+      },
+      "ahead": {
+        "label": "Pedido antecipado para outro dia ou evento",
+        "explain": "Os clientes podem pedir hoje para uma feira ou evento em um dia futuro."
+      },
+      "schedule": {
+        "label": "Agenda semanal com pontos que mudam",
+        "explain": "A semana do food truck, com locais e horários; os clientes pedem para o local e o dia em que ele estiver lá."
+      },
+      "walkup": {
+        "label": "Pedidos no balcão na mesma tela que os pedidos online",
+        "explain": "Os pedidos feitos no balcão entram na mesma lista que os pedidos online."
+      },
+      "stock": {
+        "label": "Esgotados e limite de estoque por evento",
+        "explain": "Marque pratos como esgotados e defina quantos de cada podem ser vendidos em um evento."
+      },
+      "notify": {
+        "label": "Cliente avisado quando o pedido fica pronto",
+        "explain": "Como os clientes ficam sabendo que o pedido está pronto: SMS, WhatsApp, e-mail, notificação push ou uma página de status do pedido em tempo real.",
+        "ours": "e-mail quando a etapa “pedido pronto” está ativada, e uma página de status do pedido; sem SMS, WhatsApp nem push"
+      },
+      "allergens": {
+        "label": "Alérgenos no cardápio",
+        "explain": "Cada prato mostra seus alérgenos aos clientes antes do pedido."
+      },
+      "menuphoto": {
+        "label": "Cardápio criado a partir de uma foto",
+        "explain": "Uma foto ou PDF do cardápio preenche os pratos para você conferir."
+      },
+      "options": {
+        "label": "Opções e adicionais nos pratos",
+        "explain": "Tamanhos, molhos e adicionais, incluindo escolhas obrigatórias para o cliente."
+      },
+      "deals": {
+        "label": "Combos e kits",
+        "explain": "Vários itens vendidos juntos por um único preço."
+      },
+      "private": {
+        "label": "Eventos privados e reservas",
+        "explain": "Pedidos para um evento privado por um link próprio, e solicitações de reserva do food truck.",
+        "ours": "eventos privados com link de pedido próprio; sem solicitações de reserva"
+      },
+      "qr": {
+        "label": "Pedido na mesa / por QR code",
+        "explain": "Os clientes escaneiam um código na mesa e o pedido chega com o número da mesa.",
+        "ours": "um QR code abre a página de pedidos; sem número de mesa"
+      },
+      "cards": {
+        "label": "Pagamento online com cartão, incl. Apple Pay e Google Pay",
+        "explain": "Os clientes pagam online com cartão, Apple Pay ou Google Pay ao fazer o pedido."
+      },
+      "payattruck": {
+        "label": "Pagamento na retirada",
+        "explain": "Os clientes pedem online e pagam na retirada."
+      },
+      "localpay": {
+        "label": "Meios de pagamento locais (BLIK, iDEAL, Swish, MobilePay…)",
+        "explain": "Os meios de pagamento online próprios do país, além do cartão.",
+        "ours": "só cartão"
+      },
+      "paypal": {
+        "label": "PayPal ou Klarna",
+        "explain": "Os clientes podem pagar com PayPal ou Klarna."
+      },
+      "custfee": {
+        "label": "Opção de o cliente pagar a taxa do pedido",
+        "explain": "O negócio pode repassar uma taxa de serviço ao cliente."
+      },
+      "tips": {
+        "label": "Gorjetas",
+        "explain": "Os clientes podem dar gorjeta ao pagar online."
+      },
+      "paymethods": {
+        "label": "Formas de pagamento oferecidas",
+        "explain": "Como os clientes podem pagar, segundo o fornecedor.",
+        "ours": "cartão, Apple Pay, Google Pay; pagamento no food truck"
+      },
+      "kds": {
+        "label": "Tela da cozinha (KDS)",
+        "explain": "Os pedidos aparecem em uma tela na cozinha, na ordem de preparo."
+      },
+      "tickets": {
+        "label": "Comandas impressas na cozinha",
+        "explain": "Cada pedido sai em uma impressora de comandas no food truck.",
+        "ours": "no app para iPad e Android; impressora não inclusa"
+      },
+      "buzzers": {
+        "label": "Pagers",
+        "explain": "Os clientes recebem um pager que avisa quando o pedido está pronto.",
+        "ours": "número do pager registrado em cada pedido; pagers não inclusos"
+      },
+      "offline": {
+        "label": "Continua funcionando se a internet cair",
+        "explain": "Pedidos e alterações feitos sem conexão ficam salvos e são enviados quando a conexão voltar.",
+        "ours": "no app para iPad e Android; não no painel web"
+      },
+      "vans": {
+        "label": "Vários food trucks ou veículos",
+        "explain": "Uma só conta gerencia mais de um food truck.",
+        "ours": "food trucks adicionais por uma mensalidade extra"
+      },
+      "staff": {
+        "label": "Logins da equipe",
+        "explain": "Cada funcionário entra com seu próprio login e função."
+      },
+      "reports": {
+        "label": "Relatórios de vendas",
+        "explain": "Totais, mais vendidos e vendas por evento ou data, com exportação para planilha."
+      },
+      "domain": {
+        "label": "Domínio próprio",
+        "explain": "A página de pedidos no domínio do próprio negócio."
+      },
+      "whatsapp": {
+        "label": "Respostas automáticas no WhatsApp",
+        "explain": "As mensagens dos clientes no WhatsApp são respondidas automaticamente."
+      },
+      "social": {
+        "label": "Posts para redes sociais a partir da agenda",
+        "explain": "Posts prontos mostrando onde o food truck vai estar nesta semana."
+      },
+      "igmsg": {
+        "label": "Respostas no Instagram e no Messenger",
+        "explain": "As mensagens do Instagram e do Facebook Messenger são respondidas automaticamente."
+      },
+      "discovery": {
+        "label": "Presença em um mapa de descoberta de food trucks",
+        "explain": "Os clientes encontram o food truck em um mapa público de food trucks perto deles.",
+        "ours": "Village Foodie"
+      },
+      "loyalty": {
+        "label": "Programa de fidelidade",
+        "explain": "Os clientes ganham recompensas por voltar."
+      },
+      "ipad": {
+        "label": "App para iPad",
+        "explain": "O app do food truck para receber e gerenciar pedidos em um iPad."
+      },
+      "android": {
+        "label": "App para Android",
+        "explain": "O mesmo app em um tablet ou celular Android."
+      },
+      "hardware": {
+        "label": "Equipamento fornecido (tablet, impressora)",
+        "explain": "O fornecedor entrega o tablet ou a impressora.",
+        "ours": "use o seu"
+      },
+      "terminal": {
+        "label": "Maquininha para o balcão fornecida",
+        "explain": "O fornecedor entrega uma maquininha para pagamentos no food truck."
+      },
+      "fiscal": {
+        "label": "Caixa certificado conforme as regras fiscais (TSE, EET, kassaregister…)",
+        "explain": "Um caixa certificado conforme as regras do país para o registro de vendas."
+      },
+      "delivery": {
+        "label": "Delivery",
+        "explain": "Pedidos entregues no endereço do cliente.",
+        "ours": "só retirada"
+      },
+      "monthly": {
+        "label": "Mensalidade",
+        "explain": "Quanto o negócio paga por mês pelo software."
+      },
+      "perorder": {
+        "label": "Taxa por pedido online",
+        "explain": "Quanto o fornecedor cobra em cada pedido online, além da mensalidade."
+      },
+      "cardfee": {
+        "label": "Taxa de cartão",
+        "explain": "A taxa do provedor de pagamento em cada pagamento com cartão."
+      },
+      "term": {
+        "label": "Prazo mínimo de contrato",
+        "explain": "Por quanto tempo o negócio fica preso ao contrato antes de poder cancelar."
+      },
+      "setup": {
+        "label": "Taxa de adesão",
+        "explain": "Um valor único cobrado no início."
+      },
+      "trial": {
+        "label": "Teste grátis",
+        "explain": "Um período para usar o sistema de graça antes de pagar."
+      }
+    }
+  },
   "comparisonSuits": {
     "title": "Qual sistema combina com o seu food truck?",
     "checked": "Verificado em {date}",

@@ -6367,6 +6367,400 @@
       "description": "Vertaa, mitä verkkotilaukset maksavat sinulle nyt, vuoteen HatchGrabilla — arvio minuutissa."
     }
   },
+  "comparison": {
+    "path": {
+      "section": "vertailu",
+      "slug": "ruokarekan-tilausjarjestelma"
+    },
+    "meta": {
+      "title": "Ruokarekkojen tilausjärjestelmät 2026: vertailu ja hinnat",
+      "description": "Ruokarekan tilausjärjestelmät vertailussa: ennakkotilaus noutoajalla, keittiön kapasiteetti, viikkoaikataulu, maksut, sitoutuminen – toimittajien sivuilta.",
+      "about": "Ruokarekkojen verkkotilausjärjestelmät"
+    },
+    "breadcrumb": {
+      "home": "HatchGrab",
+      "here": "Vertailu",
+      "label": "Murupolku"
+    },
+    "h1": "Ruokarekkojen tilausjärjestelmät vertailussa 2026",
+    "byline": "Tarkistettu viimeksi: {date} · Tekijä: HatchGrab. Olemme itse yksi vertailluista toimittajista (katso <link>Näin vertailimme</link>).",
+    "tldr": {
+      "title": "Lyhyesti",
+      "body": "Jos haluat, että asiakkaasi tilaavat etukäteen puhelimella ja valitsevat noutoajan, tarvitset tilausjärjestelmän, et pelkkää kassajärjestelmää. Katso neljää asiaa: noutoajat mukautuvat keittiösi kapasiteettiin, viikkoaikataulu tukee vaihtuvia myyntipaikkoja, tilauskohtaiset maksut ovat pieniä tai niitä ei ole, eikä pitkää sopimusta tarvita. Maksupäätteet ja kassajärjestelmät hoitavat maksamisen ruokarekalla ja täydentävät tilausjärjestelmää."
+    },
+    "table": {
+      "title": "Tilausjärjestelmät vertailussa",
+      "caption": "Ruokarekkojen verkkotilausjärjestelmien ominaisuudet ja kustannukset ({country}), tilanne {date}",
+      "note": "”Kyllä” vain, jos toimittaja itse kertoo sen julkisesti.",
+      "feature": "Ominaisuus",
+      "yes": "Kyllä",
+      "no": "Ei",
+      "unknown": "Ei kerrota",
+      "fromPlan": "{plan}-paketista alkaen",
+      "appNotInCountry": "Ei saatavilla ({country})",
+      "appFlagOff": "Kyllä – lippu vielä pois päältä, näytetään, kun sovelluskaupat listaavat sovelluksen",
+      "range": "{from}–{to}",
+      "feePlan": "{fee} ({plans})",
+      "noFee": "ei maksua",
+      "morePending": "Lisää toimittajia tulee tähän, kun olemme tarkistaneet niiden tiedot niiden omilta verkkosivustoilta.",
+      "priceHidden": "Hinta pyynnöstä",
+      "feeAfter": "{fee}, kun {included} kuukaudessa ylittyy"
+    },
+    "costs": {
+      "title": "Mitä ruokarekan tilausjärjestelmä maksaa?",
+      "ourPlan": "{plan}: {price} kuukaudessa, {fee}",
+      "feeOnly": "{fee} jokaisesta kortilla maksetusta verkkotilauksesta",
+      "feeIncluded": "verkkotilaukset {included} asti kuukaudessa sisältyvät, sen jälkeen {fee}",
+      "feeNone": "HatchGrab ei veloita maksua verkkotilauksista",
+      "rivalPlan": "{plan}: {price}",
+      "perMonth": "{price} kuukaudessa",
+      "perMonthYearly": "{price} kuukaudessa, laskutetaan vuosittain",
+      "vatExcl": "ilman alv:tä",
+      "vatIncl": "sis. alv:n",
+      "setup": "{price} kertaluonteinen avausmaksu",
+      "truckFee": "{fee} tilaukselta",
+      "customerFee": "{fee} tilaukselta, asiakas maksaa",
+      "source": "Lähde",
+      "checked": "tarkistettu {date}",
+      "cardFee": "HatchGrabin kautta tehdyistä verkkokorttimaksuista veloitetaan lisäksi Stripen kulut: {cardFee} korttimaksulta ({country}).",
+      "vat": "HatchGrab Ltd on brittiläinen yritys, eikä se ole arvonlisäverorekisterissä tässä maassa ({country}), joten maksuihimme ei lisätä arvonlisäveroa. Jos olet arvonlisäverorekisterissä, anna meille ALV-tunnisteesi; tällöin tilität itse mahdollisen arvonlisäveron maksuistamme käännetyn verovelvollisuuden mukaisesti.",
+      "bundledFee": "{fee} verkkomaksulta, korttikulut sisältyvät"
+    },
+    "fit": {
+      "title": "Mikä järjestelmä sopii kenellekin?",
+      "ours": "HatchGrab sopii sinulle, jos …",
+      "oursBody": "myyt vaihtuvilla paikoilla, haluat ennakkotilauksia noutoajalla, et halua keittiösi ruuhkautuvan etkä halua sopimusta.",
+      "oursNot": "HatchGrab ei sovi sinulle, jos …",
+      "oursNotBody": "asiakkaidesi pitää voida maksaa PayPalilla tai Klarnalla tai haluat samalta toimittajalta sertifioidun kassajärjestelmän, joka täyttää verosäännöt.",
+      "appClause": "Tai jos tarvitset keittiösovelluksen iPadille tai Androidille ({country}): se ei ole vielä siellä sovelluskaupoissa.",
+      "tills": "Kassajärjestelmät ja maksupäätteet",
+      "marketplaces": "Ruokalähettipalvelut",
+      "rival": "{name} sopii, jos …",
+      "tillsBody": "Kassajärjestelmät ottavat maksut vastaan ruokarekalla ja täyttävät verosääntöjen vaatimukset sertifioidusta kassasta. Tilausjärjestelmä toimii kassan rinnalla; se ei korvaa sitä.",
+      "tillsBodyNamed": "Kassajärjestelmät ottavat maksut vastaan ruokarekalla ja täyttävät verosääntöjen vaatimukset sertifioidusta kassasta. {names} {count, plural, one {on} other {ovat}} myös yllä olevassa taulukossa. Tilausjärjestelmä toimii kassan rinnalla; se ei korvaa sitä.",
+      "marketplacesBody": "Ruokalähettipalvelut tuovat uusia asiakkaita, mutta ottavat provision jokaisesta tilauksesta. Uber Eats ilmoittaa Saksassa 14 % noudolle ja 30 % Uberin lähettien toimittamille tilauksille. Wolt kertoo omalla verkkosivustollaan veloittavansa provision, mutta ei kerro prosentteja. Lieferandon hintoja emme pystyneet tarkistamaan. Provisio koskee myös kanta-asiakkaita, jotka tilaavat sinulta etukäteen."
+    },
+    "groups": {
+      "food_truck": "Ruokarekan tilausjärjestelmä",
+      "nearest_local": "Tilausjärjestelmä",
+      "pos": "Kassajärjestelmä"
+    },
+    "faq": {
+      "title": "Usein kysytyt kysymykset",
+      "whatQ": "Mikä on ruokarekan tilausjärjestelmä?",
+      "whatA": "Tilausjärjestelmä ottaa tilaukset vastaan verkossa ennen kuin asiakkaat saapuvat ruokarekalle: he valitsevat annokset ja noutoajan, maksavat verkossa tai noudettaessa, ja tilaus ilmestyy keittiöösi. Kassajärjestelmä tai maksupääte ottaa maksun vastaan ruokarekalla. Ne täydentävät toisiaan.",
+      "costQ": "Paljonko HatchGrab maksaa ({country})?",
+      "costA": "{plans}. Verkkokorttimaksuista veloitetaan lisäksi Stripen kulut: {cardFee} korttimaksulta.",
+      "termQ": "Onko sopimuksella vähimmäiskesto?",
+      "termA": "Ei. Vähimmäiskestoa tai irtisanomisaikaa ei ole. Voit lopettaa milloin tahansa; maksu laskutetaan kuukausittain etukäteen, ja käyttöoikeutesi jatkuu sen kuukauden loppuun, josta olet maksanut.",
+      "locationsQ": "Toimiiko se vaihtuvilla myyntipaikoilla?",
+      "locationsA": "Kyllä. Määrität viikkoaikataulusi paikkoineen ja aikoineen, ja asiakkaat tilaavat siihen paikkaan ja sille päivälle, kun olet siellä.",
+      "capacityQ": "Miten järjestelmä estää keittiötäni ruuhkautumasta?",
+      "capacityA": "Asiakkaat näkevät vain noutoajat, joihin keittiösi oikeasti ehtii. Järjestelmä laskee ne kunkin annoksen valmistusajan ja sen perusteella, montako valmistat kerralla.",
+      "tseQ": "Tarvitsenko silti verosäännöt täyttävän sertifioidun kassajärjestelmän?",
+      "tseA": "HatchGrab ei ole kassajärjestelmä, eikä sitä ole sertifioitu kassoja koskevien verosääntöjen mukaisesti. Kysy veroneuvojaltasi tai kirjanpitäjältäsi, miten verkkotilaukset kirjataan kassajärjestelmääsi.",
+      "paymentsQ": "Mitä maksutapoja HatchGrab tukee?",
+      "paymentsA": "Asiakkaat maksavat verkossa kortilla, Apple Paylla tai Google Paylla tai maksavat ruokarekalla. PayPalia ja Klarnaa ei tällä hetkellä tueta.",
+      "costTrial": "{months, plural, one {Ensimmäinen kuukausi on ilmainen} other {Ensimmäiset # kuukautta ovat ilmaisia}}, ja kaikki ominaisuudet ovat käytössä."
+    },
+    "method": {
+      "title": "Näin vertailimme",
+      "checked": "Tarkistettu viimeksi {date}.",
+      "prices": "Hinnat näytetään sellaisina kuin toimittaja ne ilmoittaa, arvonlisävero mukaan lukien.",
+      "meaning": "”Kyllä” tarkoittaa, että toimittaja kertoo ominaisuudesta julkisesti. ”Ei kerrota” tarkoittaa, ettemme löytäneet siitä mitään toimittajan verkkosivustolta – ei sitä, että ominaisuus puuttuu.",
+      "vendor": "HatchGrab ylläpitää tätä sivua ja on itse yksi vertailluista toimittajista.",
+      "review": "Hinnat ja ominaisuudet tarkistetaan automaattisesti kunkin tuotteen omalta verkkosivustolta; jokaisesta tiedosta on linkki lähteeseen.",
+      "corrections": "Löysitkö virheen? Kerro siitä <link>yhteydenottolomakkeella</link>.",
+      "reportError": "<link>Ilmoita virheestä</link>",
+      "machine": "Tekoälyavustajille ja kehittäjille: tämä taulukko <md>Markdownina</md> · <json>JSONina</json>"
+    },
+    "cta": {
+      "title": "Kokeile {months, plural, one {# kuukauden} other {# kuukautta}} ilmaiseksi",
+      "noCard": "Korttia ei tarvita",
+      "cancel": "Irtisanottavissa kuukausittain",
+      "button": "Kokeile ilmaiseksi"
+    },
+    "admin": {
+      "status": "Luonnos · noindex · ei sivukartassa, llms.txt:ssä eikä hreflangissa · alatunnisteen linkki vain ylläpitäjille",
+      "statusLive": "Julkaistu · julkinen ja indeksoitavissa",
+      "viewAdmin": "Ylläpitäjän näkymä",
+      "viewPublic": "Mitä yleisö näkee",
+      "pricingCheck": "Avaa hintatarkistus",
+      "checklist": "Ennen julkaisua",
+      "goLive": "Sivu julkaistaan kohdassa Admin › Countries.",
+      "check": {
+        "apps": "iPad- ja Android-liput päällä ({country})",
+        "verified": "Vähintään 2 vahvistettua toimittajaa ({n} vahvistettu)",
+        "placeholders": "Tekstissä ei ole jäljellä ”[ … ]”-paikkamerkkejä",
+        "vat": "ALV-teksti on mukana",
+        "impressum": "Impressum-päätös kirjattu"
+      },
+      "unverified": "ei vahvistettu · piilotettu yleisöltä",
+      "autoVerified": "vahvistettu automaattisesti",
+      "unchecked": "ei vielä tarkistettu kaikkien näytettyjen kilpailijoiden osalta · piilotettu yleisöltä",
+      "label": "Admin",
+      "notShown": "Ei sivulla (enintään neljä näytetään): {names}.",
+      "reasonHidden": "{name} (piilotettu)",
+      "reasonBeyond": "{name} (neljän ulkopuolella)",
+      "reasonNoWebsite": "{name} (ei verkkosivustoa)"
+    },
+    "footer": {
+      "heading": "Vertailu",
+      "link": "Tilausjärjestelmien vertailu"
+    },
+    "featureGroups": {
+      "ordering": "Tilaaminen",
+      "payments": "Maksut",
+      "kitchen": "Keittiö",
+      "marketing": "Markkinointi",
+      "apps_hardware": "Sovellukset ja laitteet",
+      "price_contract": "Hinta ja sopimus"
+    },
+    "cell": {
+      "yes": "Kyllä",
+      "no": "Ei",
+      "partial": "Osittain",
+      "unknown": "Ei kerrota",
+      "not_mentioned": "Verkkosivusto ei kerro",
+      "withNote": "{word}, {note}",
+      "soon": "tulossa pian",
+      "fromPlan": "{plan}-paketista alkaen",
+      "perCardPayment": "{fee} korttimaksulta",
+      "trial": "{months, plural, one {# kuukausi} other {# kuukautta}} ilmaiseksi",
+      "setupFee": "{price} kertamaksu",
+      "perMonth": "{price} kuukaudessa",
+      "notInCountry": "ei saatavilla ({country})",
+      "flagOff": "lippu vielä pois päältä; näytetään, kun sovelluskaupat listaavat sovelluksen",
+      "notApplicable": "ei koske ruokatoria",
+      "not_listed": "Ei mainittu"
+    },
+    "explained": {
+      "title": "Mitä ominaisuudet tarkoittavat"
+    },
+    "costBlock": {
+      "title": "Mitä ruokarekka maksaa kuukaudessa",
+      "sizes": "Verkkomyynti kuukaudessa",
+      "sizeSales": "{sales} kuukaudessa",
+      "sizeOrders": "noin {orders} tilausta",
+      "lead": "Ruokarekka, jonka verkkotilaukset ovat {sales} kuukaudessa (noin {orders} tilausta). Jokainen palkki on kuukauden kokonaiskustannus: tilausjärjestelmän oma maksu sekä näiden tilausten korttikulut.",
+      "legendSoftware": "Ohjelmistomaksu",
+      "legendCard": "Korttikulut",
+      "software": "Ohjelmistomaksu {amount} kuukaudessa",
+      "card": "Korttikulut {amount} kuukaudessa",
+      "total": "{amount} kuukaudessa korttikulut mukaan lukien",
+      "share": "{pct} myynnistä",
+      "assumed": "(hintaa ei julkaistu, oletettu)",
+      "customerFee": "Lisäksi {amount} kuukaudessa, jonka asiakkaat maksavat ({fee} tilaukselta) – ei mukana palkissa",
+      "summaryCheapest": "{us}-palvelun oma maksu on {ours} kuukaudessa, kun halvimman näytetyn kilpailijan maksu on {theirs} kuukaudessa. Korttikulut ({card} kuukaudessa) veloitetaan jokaisesta korttimaksusta riippumatta siitä, mitä järjestelmää käytät, joten ratkaiseva ero on ohjelmistomaksussa.",
+      "summaryNotCheapest": "{us}-palvelun oma maksu on {ours} kuukaudessa, mikä on enemmän kuin halvimman näytetyn kilpailijan ({rival}) {theirs} kuukaudessa. Korttikulut ({card} kuukaudessa) veloitetaan jokaisesta korttimaksusta riippumatta siitä, mitä järjestelmää käytät.",
+      "summaryAlone": "{us}-palvelun oma maksu on {ours} kuukaudessa. Korttikulut ({card} kuukaudessa) veloitetaan jokaisesta korttimaksusta riippumatta siitä, mitä järjestelmää käytät.",
+      "footOrder": "Keskimääräinen tilaus {order}: tyypillinen ateria {meal} × {multiplier} annosta tilausta kohden ({source}).",
+      "footCard": "Korttikulut on laskettu hinnalla {rate} korttimaksulta: {source}.",
+      "footCardSource": "Stripen hinta ({country})",
+      "footAssumed": "{names} {count, plural, one {ei julkaise} other {eivät julkaise}} korttikulujen hintaa, joten olemme olettaneet saman hinnan kuin omamme.",
+      "footChecked": "Hinnat tarkistettu {date}.",
+      "footCalculator": "Laske omat lukusi laskurilla.",
+      "noRivals": "Yhtään kilpailijaa ei ole vielä vahvistettu ({country}), joten vertailtavaa ei ole."
+    },
+    "features": {
+      "preorder": {
+        "label": "Ennakkotilaus valitulla noutoajalla",
+        "explain": "Asiakkaat tilaavat etukäteen ja valitsevat, milloin noutavat."
+      },
+      "capacity": {
+        "label": "Keittiön kapasiteetin mukaan rajatut noutoajat",
+        "explain": "Asiakkaat näkevät vain noutoajat, joihin keittiö oikeasti ehtii."
+      },
+      "asap": {
+        "label": "Tilaus mahdollisimman pian",
+        "explain": "Asiakkaat voivat tilata valitsematta aikaa ja noutaa heti, kun ruoka on valmis."
+      },
+      "ahead": {
+        "label": "Ennakkotilaus myöhemmälle päivälle tai tapahtumaan",
+        "explain": "Asiakkaat voivat tilata tänään myöhemmin pidettäville markkinoille tai tapahtumaan."
+      },
+      "schedule": {
+        "label": "Viikkoaikataulu vaihtuvilla myyntipaikoilla",
+        "explain": "Ruokarekan viikon paikat ja ajat; asiakkaat tilaavat siihen paikkaan ja sille päivälle, kun rekka on siellä."
+      },
+      "walkup": {
+        "label": "Paikan päällä tehdyt tilaukset samalla näytöllä kuin verkkotilaukset",
+        "explain": "Luukulla otetut tilaukset tulevat samaan listaan kuin verkkotilaukset."
+      },
+      "stock": {
+        "label": "Loppuunmyyty ja varastorajat tapahtumittain",
+        "explain": "Merkitse annokset loppuunmyydyiksi ja määritä, montako kutakin voi myydä tapahtumassa."
+      },
+      "notify": {
+        "label": "Asiakkaalle ilmoitus, kun tilaus on valmis",
+        "explain": "Miten asiakkaat saavat tiedon valmiista tilauksesta: tekstiviesti, WhatsApp, sähköposti, push tai reaaliaikainen tilauksen tilasivu.",
+        "ours": "sähköposti, kun ”tilaus valmis” -vaihe on käytössä, ja tilauksen tilasivu; ei tekstiviestiä, WhatsAppia eikä pushia"
+      },
+      "allergens": {
+        "label": "Allergeenit ruokalistalla",
+        "explain": "Jokainen annos näyttää allergeeninsa asiakkaille ennen tilausta."
+      },
+      "menuphoto": {
+        "label": "Ruokalista valokuvasta",
+        "explain": "Ruokalistan valokuva tai PDF täyttää annokset valmiiksi, ja sinä tarkistat ne."
+      },
+      "options": {
+        "label": "Valinnat ja lisät annoksiin",
+        "explain": "Koot, kastikkeet ja lisät, myös valinnat, jotka asiakkaan on tehtävä."
+      },
+      "deals": {
+        "label": "Ateriat ja tuotepaketit",
+        "explain": "Useita tuotteita myydään yhdessä yhteen hintaan."
+      },
+      "private": {
+        "label": "Yksityistilaisuudet ja varaukset",
+        "explain": "Tilaukset yksityistilaisuuteen omalla linkillä sekä pyynnöt varata ruokarekka.",
+        "ours": "yksityistilaisuudet omalla tilauslinkillä; ei varauspyyntöjä"
+      },
+      "qr": {
+        "label": "Pöytä- / QR-tilaus istumapaikoilta",
+        "explain": "Asiakkaat skannaavat koodin pöydässä, ja tilaus saapuu pöytänumeron kanssa.",
+        "ours": "QR-koodi avaa tilaussivun; ei pöytänumeroita"
+      },
+      "cards": {
+        "label": "Korttimaksut verkossa, myös Apple Pay ja Google Pay",
+        "explain": "Asiakkaat maksavat verkossa kortilla, Apple Paylla tai Google Paylla tilatessaan."
+      },
+      "payattruck": {
+        "label": "Maksu noudettaessa",
+        "explain": "Asiakkaat tilaavat verkossa ja maksavat noutaessaan."
+      },
+      "localpay": {
+        "label": "Paikalliset maksutavat (BLIK, iDEAL, Swish, MobilePay…)",
+        "explain": "Maan omat verkkomaksutavat korttien lisäksi.",
+        "ours": "vain kortit"
+      },
+      "paypal": {
+        "label": "PayPal tai Klarna",
+        "explain": "Asiakkaat voivat maksaa PayPalilla tai Klarnalla."
+      },
+      "custfee": {
+        "label": "Mahdollisuus siirtää tilausmaksu asiakkaalle",
+        "explain": "Yritys voi siirtää palvelumaksun asiakkaan maksettavaksi."
+      },
+      "tips": {
+        "label": "Juomarahat",
+        "explain": "Asiakkaat voivat lisätä juomarahan maksaessaan verkossa."
+      },
+      "paymethods": {
+        "label": "Tarjotut maksutavat",
+        "explain": "Miten asiakkaat voivat maksaa, toimittajan ilmoituksen mukaan.",
+        "ours": "kortti, Apple Pay, Google Pay; maksu noudettaessa"
+      },
+      "kds": {
+        "label": "Keittiönäyttö (KDS)",
+        "explain": "Tilaukset näkyvät keittiön näytöllä valmistusjärjestyksessä."
+      },
+      "tickets": {
+        "label": "Tulostetut keittiölaput",
+        "explain": "Jokainen tilaus tulostuu ruokarekan kuittitulostimelle.",
+        "ours": "iPad- ja Android-sovelluksessa; tulostin ei sisälly"
+      },
+      "buzzers": {
+        "label": "Summerit",
+        "explain": "Asiakas saa summerin, joka ilmoittaa, kun tilaus on valmis.",
+        "ours": "summerin numero tallennetaan jokaiseen tilaukseen; summerit eivät sisälly"
+      },
+      "offline": {
+        "label": "Toimii, vaikka nettiyhteys katkeaa",
+        "explain": "Ilman yhteyttä tehdyt tilaukset ja muutokset tallennetaan ja lähetetään, kun yhteys palaa.",
+        "ours": "iPad- ja Android-sovelluksessa; ei verkkohallintapaneelissa"
+      },
+      "vans": {
+        "label": "Useita autoja tai ruokarekkoja",
+        "explain": "Yhdellä tilillä hallitaan useampaa kuin yhtä ruokarekkaa.",
+        "ours": "lisärekat erillistä kuukausimaksua vastaan"
+      },
+      "staff": {
+        "label": "Henkilökunnan kirjautumiset",
+        "explain": "Henkilökunta kirjautuu omilla tunnuksillaan ja omalla roolillaan."
+      },
+      "reports": {
+        "label": "Myyntiraportit",
+        "explain": "Kokonaissummat, myydyimmät tuotteet ja myynti tapahtumittain tai päivittäin, taulukkovienti mukaan lukien."
+      },
+      "domain": {
+        "label": "Oma verkko-osoite",
+        "explain": "Tilaussivu yrityksen omassa verkkotunnuksessa."
+      },
+      "whatsapp": {
+        "label": "WhatsAppin automaattiset vastaukset",
+        "explain": "Asiakkaiden WhatsApp-viesteihin vastataan automaattisesti."
+      },
+      "social": {
+        "label": "Somejulkaisut aikataulusi pohjalta",
+        "explain": "Valmiit julkaisut, jotka kertovat, missä ruokarekka on tällä viikolla."
+      },
+      "igmsg": {
+        "label": "Instagram- ja Messenger-vastaukset",
+        "explain": "Instagram- ja Facebook Messenger -viesteihin vastataan automaattisesti."
+      },
+      "discovery": {
+        "label": "Mukana ruokarekkakartalla",
+        "explain": "Asiakkaat löytävät ruokarekan julkiselta kartalta, joka näyttää lähistön ruokarekat.",
+        "ours": "Village Foodie"
+      },
+      "loyalty": {
+        "label": "Kanta-asiakasohjelma",
+        "explain": "Asiakkaat keräävät etuja palatessaan."
+      },
+      "ipad": {
+        "label": "iPad-sovellus",
+        "explain": "Ruokarekan sovellus tilausten vastaanottoon ja hallintaan iPadilla."
+      },
+      "android": {
+        "label": "Android-sovellus",
+        "explain": "Sama sovellus Android-tabletilla tai -puhelimella."
+      },
+      "hardware": {
+        "label": "Laitteet mukana (tabletti, tulostin)",
+        "explain": "Toimittaja toimittaa tabletin tai tulostimen.",
+        "ours": "käytä omaasi"
+      },
+      "terminal": {
+        "label": "Maksupääte luukulle mukana",
+        "explain": "Toimittaja toimittaa maksupäätteen ruokarekalla maksamista varten."
+      },
+      "fiscal": {
+        "label": "Verosäännöt täyttävä sertifioitu kassa (TSE, EET, kassaregister…)",
+        "explain": "Kassa, joka on sertifioitu maan myynnin kirjaamista koskevien sääntöjen mukaisesti."
+      },
+      "delivery": {
+        "label": "Kotiinkuljetus",
+        "explain": "Tilaukset toimitetaan asiakkaan osoitteeseen.",
+        "ours": "vain nouto"
+      },
+      "monthly": {
+        "label": "Kuukausihinta",
+        "explain": "Mitä yritys maksaa ohjelmistosta joka kuukausi."
+      },
+      "perorder": {
+        "label": "Maksu verkkotilaukselta",
+        "explain": "Mitä toimittaja veloittaa jokaisesta verkkotilauksesta kuukausihinnan lisäksi."
+      },
+      "cardfee": {
+        "label": "Korttikulu",
+        "explain": "Maksupalveluntarjoajan maksu jokaisesta korttimaksusta."
+      },
+      "term": {
+        "label": "Vähimmäissopimuskausi",
+        "explain": "Kuinka pitkäksi aikaa yritys sitoutuu ennen kuin se voi irtisanoa sopimuksen."
+      },
+      "setup": {
+        "label": "Avausmaksu",
+        "explain": "Kertaluonteinen maksu käyttöönotosta."
+      },
+      "trial": {
+        "label": "Ilmainen kokeilujakso",
+        "explain": "Aika käyttää järjestelmää ilmaiseksi ennen maksamista."
+      }
+    }
+  },
   "comparisonSuits": {
     "title": "Mikä järjestelmä sopii ruokarekallesi?",
     "checked": "Tarkistettu {date}",

@@ -267,6 +267,27 @@
       "options": {
         "explain": "Grössen, Saucen und Extras, auch Pflichtauswahl."
       }
+    },
+    "table": {
+      "caption": "Funktionen und Kosten von Online-Bestellsystemen für Foodtrucks in der {country}, Stand {date}",
+      "appNotInCountry": "Nicht in der {country}"
+    },
+    "costs": {
+      "cardFee": "Bei Online-Kartenzahlungen kommen bei HatchGrab die Gebühren von Stripe dazu: {cardFee} pro Kartenzahlung in der {country}.",
+      "vat": "HatchGrab Ltd ist ein Unternehmen aus dem Vereinigten Königreich und in der {country} nicht umsatzsteuerlich registriert, daher wird auf unsere Gebühren keine Umsatzsteuer aufgeschlagen. Wenn Sie umsatzsteuerlich registriert sind, geben Sie uns Ihre USt-IdNr.; die Umsatzsteuer auf unsere Gebühren führen Sie dann im Reverse-Charge-Verfahren selbst ab."
+    },
+    "fit": {
+      "appClause": "Oder wenn Sie die Küchen-App auf dem iPad oder auf Android in der {country} brauchen: Sie ist dort noch nicht in den Stores."
+    },
+    "faq": {
+      "costQ": "Was kostet HatchGrab in der {country}?"
+    },
+    "cell": {
+      "notInCountry": "nicht in der {country}"
+    },
+    "costBlock": {
+      "footCardSource": "Stripe-Satz für die {country}",
+      "noRivals": "In der {country} ist noch kein Anbieter geprüft, daher gibt es nichts zu vergleichen."
     }
   },
   "paperwork": {

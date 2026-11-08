@@ -6339,6 +6339,400 @@
       "description": "比較你現在的網上訂單成本與使用 HatchGrab 一年的費用——一分鐘內得出估算。"
     }
   },
+  "comparison": {
+    "path": {
+      "section": "comparison",
+      "slug": "food-truck-ordering-system"
+    },
+    "meta": {
+      "title": "2026 美食車落單系統比較：功能及價格",
+      "description": "比較美食車落單系統：可揀取餐時間的預先落單、廚房產能、每週時間表、收費及合約期——全部在各供應商網站上查核。",
+      "about": "美食車網上落單系統"
+    },
+    "breadcrumb": {
+      "home": "HatchGrab",
+      "here": "比較",
+      "label": "導覽路徑"
+    },
+    "h1": "2026 美食車落單系統比較",
+    "byline": "最後查核：{date} · 由 HatchGrab 製作。我們亦是比較對象之一（見<link>比較方法</link>）。",
+    "tldr": {
+      "title": "重點",
+      "body": "如果你想讓客人用手機預先落單並揀選取餐時間，你需要的是落單系統，而不只是收銀系統。留意四點：取餐時間跟隨廚房產能而設定；有每週時間表，配合不斷轉換的開檔地點；每張訂單收費低或免收費；以及沒有長期合約。信用卡機及收銀系統負責在美食車前收款，與落單系統相輔相成。"
+    },
+    "table": {
+      "title": "落單系統比較",
+      "caption": "{country}美食車網上落單系統的功能及費用（截至 {date}）",
+      "note": "只有供應商公開表示有提供，才會標示「有」。",
+      "feature": "功能",
+      "yes": "有",
+      "no": "沒有",
+      "unknown": "沒有說明",
+      "fromPlan": "{plan} 或以上",
+      "appNotInCountry": "{country}未有提供",
+      "appFlagOff": "有——旗標仍未開啟，應用程式商店上架後顯示",
+      "range": "{from} 至 {to}",
+      "feePlan": "{fee}（{plans}）",
+      "noFee": "免收費",
+      "morePending": "我們在供應商自己的網站上查核其資料後，便會在此列出更多供應商。",
+      "priceHidden": "須查詢",
+      "feeAfter": "每月超過 {included} 的部分收取 {fee}"
+    },
+    "costs": {
+      "title": "美食車落單系統要多少錢？",
+      "ourPlan": "{plan}：每月 {price}，{fee}",
+      "feeOnly": "每張網上信用卡訂單 {fee}",
+      "feeIncluded": "每月首 {included} 網上訂單已包括在內，之後收取 {fee}",
+      "feeNone": "HatchGrab 不收取網上訂單費用",
+      "rivalPlan": "{plan}：{price}",
+      "perMonth": "每月 {price}",
+      "perMonthYearly": "每月 {price}，按年收費",
+      "vatExcl": "不含增值稅",
+      "vatIncl": "含增值稅",
+      "setup": "一次性開通費 {price}",
+      "truckFee": "每張訂單 {fee}",
+      "customerFee": "每張訂單 {fee}，由客人支付",
+      "source": "資料來源",
+      "checked": "於 {date} 查核",
+      "cardFee": "使用 HatchGrab 收取網上信用卡付款，另需支付 Stripe 的手續費：在{country}每筆信用卡付款 {cardFee}。",
+      "vat": "HatchGrab Ltd 是英國公司，並未在{country}登記增值稅，因此我們的收費不會加上增值稅。如你已登記增值稅，請向我們提供你的增值稅登記號碼；你其後須按反向徵稅機制，自行申報我們收費所涉的增值稅。",
+      "bundledFee": "每筆網上付款 {fee}，已包括信用卡手續費"
+    },
+    "fit": {
+      "title": "哪個系統適合哪類商戶？",
+      "ours": "HatchGrab 適合你，如果……",
+      "oursBody": "你在不同地點開檔，想接受附取餐時間的預先落單，不想廚房應接不暇，也不想簽合約。",
+      "oursNot": "HatchGrab 不適合你，如果……",
+      "oursNotBody": "你想客人用 PayPal 或 Klarna 付款，或想由同一供應商提供符合當地稅務規定的認證收銀機。",
+      "appClause": "又或者你需要在{country}使用 iPad 或 Android 版廚房應用程式：當地的應用程式商店暫時未有上架。",
+      "tills": "收銀系統及信用卡機",
+      "marketplaces": "外賣平台",
+      "rival": "{name} 適合你，如果……",
+      "tillsBody": "收銀系統負責在美食車前收款，並符合稅務規定對收銀機的要求。落單系統與收銀系統配合使用，但不能取代收銀系統。",
+      "tillsBodyNamed": "收銀系統負責在美食車前收款，並符合稅務規定對收銀機的要求。{names}{count, plural, other {亦}}列於上表。落單系統與收銀系統配合使用，但不能取代收銀系統。",
+      "marketplacesBody": "外賣平台可以帶來新客人，但每張訂單都會抽佣金。Uber Eats 列明在德國自取收 14%，由 Uber 速遞員送遞收 30%。Wolt 在自己網站上表示會收取佣金，但沒有列出佣金率。我們未能查核 Lieferando 的佣金率。即使是向你預先落單的熟客，這些佣金同樣照收。"
+    },
+    "groups": {
+      "food_truck": "美食車落單系統",
+      "nearest_local": "落單系統",
+      "pos": "收銀系統"
+    },
+    "faq": {
+      "title": "常見問題",
+      "whatQ": "甚麼是美食車落單系統？",
+      "whatA": "落單系統在客人到達美食車之前，先在網上接收訂單：客人揀選食物及取餐時間，在網上付款或取餐時付款，訂單隨即顯示在你的廚房。收銀系統或信用卡機則負責在美食車前收款。兩者相輔相成。",
+      "costQ": "HatchGrab 在{country}收費多少？",
+      "costA": "{plans}。網上信用卡付款另需支付 Stripe 的手續費：每筆信用卡付款 {cardFee}。",
+      "termQ": "有沒有最短合約期？",
+      "termA": "沒有。沒有最短合約期，也不需要預先通知。你可以隨時取消；費用每月預先收取，你可以使用至已付款月份完結為止。",
+      "locationsQ": "地點不固定也可以用嗎？",
+      "locationsA": "可以。你設定好每週時間表，包括地點及時間，客人便會按你在場的地點及日子落單。",
+      "capacityQ": "系統怎樣避免我的廚房應接不暇？",
+      "capacityA": "客人只會看到廚房真正做得到的取餐時間。系統會根據每款食物的準備時間，以及你一次可以準備多少份來計算。",
+      "tseQ": "我還需要符合稅務規定的認證收銀機嗎？",
+      "tseA": "HatchGrab 不是收銀系統，也不是符合稅務規定的認證收銀機。網上訂單應如何記入你的收銀系統，請向你的稅務顧問查詢。",
+      "paymentsQ": "HatchGrab 支援哪些付款方式？",
+      "paymentsA": "客人可以在網上用信用卡、Apple Pay 或 Google Pay 付款，或在取餐時付款。目前不支援 PayPal 及 Klarna。",
+      "costTrial": "{months, plural, other {首 # 個月}}免費，包括所有功能。"
+    },
+    "method": {
+      "title": "比較方法",
+      "checked": "最後查核於 {date}。",
+      "prices": "價格按供應商所列顯示，包括是否含增值稅。",
+      "meaning": "「有」指供應商公開表示有此功能。「沒有說明」指我們在其網站上找不到相關資料——並不代表沒有此功能。",
+      "vendor": "本頁由 HatchGrab 營運，而 HatchGrab 亦是比較對象之一。",
+      "review": "價格及功能會自動與各產品的官方網站核對；每項資料都附有來源連結。",
+      "corrections": "發現錯誤？請透過我們的<link>聯絡表格</link>告訴我們。",
+      "reportError": "<link>報告錯誤</link>",
+      "machine": "供 AI 助理及開發者使用：本表的 <md>Markdown 版</md> · <json>JSON 版</json>"
+    },
+    "cta": {
+      "title": "免費試用 {months, plural, other {# 個月}}",
+      "noCard": "無需信用卡",
+      "cancel": "按月取消",
+      "button": "免費試用"
+    },
+    "admin": {
+      "status": "草稿 · noindex · 不在網站地圖、llms.txt 或 hreflang 內 · 頁尾連結只限管理員",
+      "statusLive": "已上線 · 公開及可被索引",
+      "viewAdmin": "管理員檢視",
+      "viewPublic": "公眾看到的版本",
+      "pricingCheck": "開啟價格查核",
+      "checklist": "上線前檢查",
+      "goLive": "在「管理 › 國家」將頁面上線。",
+      "check": {
+        "apps": "{country}的 iPad 及 Android 旗標已開啟",
+        "verified": "最少 2 個已核實供應商（已核實 {n} 個）",
+        "placeholders": "內文沒有剩下「[ … ]」佔位符",
+        "vat": "已有增值稅說明",
+        "impressum": "已記錄 Impressum 決定"
+      },
+      "unverified": "未核實 · 不向公眾顯示",
+      "autoVerified": "自動核實",
+      "unchecked": "未就每個顯示的競爭對手查核 · 不向公眾顯示",
+      "label": "管理",
+      "notShown": "不在頁面上（最多顯示四個）：{names}。",
+      "reasonHidden": "{name}（已隱藏）",
+      "reasonBeyond": "{name}（四個以外）",
+      "reasonNoWebsite": "{name}（沒有網站）"
+    },
+    "footer": {
+      "heading": "比較",
+      "link": "落單系統比較"
+    },
+    "featureGroups": {
+      "ordering": "落單",
+      "payments": "付款",
+      "kitchen": "廚房",
+      "marketing": "推廣",
+      "apps_hardware": "應用程式及硬件",
+      "price_contract": "價格及合約"
+    },
+    "cell": {
+      "yes": "有",
+      "no": "沒有",
+      "partial": "部分提供",
+      "unknown": "沒有說明",
+      "not_mentioned": "網站沒有說明",
+      "withNote": "{word}，{note}",
+      "soon": "即將推出",
+      "fromPlan": "{plan} 或以上",
+      "perCardPayment": "每筆信用卡付款 {fee}",
+      "trial": "免費 {months, plural, other {# 個月}}",
+      "setupFee": "一次性 {price}",
+      "perMonth": "每月 {price}",
+      "notInCountry": "{country}未有提供",
+      "flagOff": "旗標仍未開啟；應用程式商店上架後顯示",
+      "notApplicable": "不適用於外賣平台",
+      "not_listed": "沒有列出"
+    },
+    "explained": {
+      "title": "各項功能的意思"
+    },
+    "costBlock": {
+      "title": "美食車每月要付多少",
+      "sizes": "每月網上銷售額",
+      "sizeSales": "每月 {sales}",
+      "sizeOrders": "約 {orders} 張訂單",
+      "lead": "以每月網上訂單銷售額 {sales}（約 {orders} 張訂單）的美食車計算。每條棒代表每月總成本：落單系統本身的收費，加上這些訂單的信用卡手續費。",
+      "legendSoftware": "軟件費",
+      "legendCard": "信用卡手續費",
+      "software": "軟件費每月 {amount}",
+      "card": "信用卡手續費每月 {amount}",
+      "total": "每月 {amount}，包括信用卡手續費",
+      "share": "佔銷售額 {pct}",
+      "assumed": "（未有公佈費率，按假設計算）",
+      "customerFee": "另加每月 {amount} 由客人支付（每張訂單 {fee}）——不計入棒內",
+      "summaryCheapest": "{us} 本身的收費為每月 {ours}，而所顯示最便宜的競爭對手為每月 {theirs}。無論用哪個系統，每筆信用卡付款都要支付信用卡手續費（每月 {card}），所以真正的差別在於軟件費。",
+      "summaryNotCheapest": "{us} 本身的收費為每月 {ours}，比所顯示最便宜的競爭對手 {rival} 的每月 {theirs} 為高。無論用哪個系統，每筆信用卡付款都要支付信用卡手續費（每月 {card}）。",
+      "summaryAlone": "{us} 本身的收費為每月 {ours}。無論用哪個系統，每筆信用卡付款都要支付信用卡手續費（每月 {card}）。",
+      "footOrder": "平均每張訂單 {order}：一般餐點 {meal} × 每張訂單 {multiplier} 款食物（{source}）。",
+      "footCard": "信用卡手續費以每筆信用卡付款 {rate} 計算：{source}。",
+      "footCardSource": "Stripe 在{country}的費率",
+      "footAssumed": "{names}{count, plural, other {沒有}}公佈信用卡費率，因此按我們的費率假設。",
+      "footChecked": "價格於 {date} 查核。",
+      "footCalculator": "用計算機算出你自己的數字。",
+      "noRivals": "{country}暫時未有已核實的競爭對手，所以沒有可比較的對象。"
+    },
+    "features": {
+      "preorder": {
+        "label": "預先落單及自選取餐時間",
+        "explain": "客人預先落單，並揀選取餐時間。"
+      },
+      "capacity": {
+        "label": "按廚房產能限制取餐時間",
+        "explain": "客人只會看到廚房真正做得到的取餐時間。"
+      },
+      "asap": {
+        "label": "盡快取餐的訂單",
+        "explain": "客人可以不揀時間落單，食物一做好便可取餐。"
+      },
+      "ahead": {
+        "label": "為日後或活動預先落單",
+        "explain": "客人今天就可以為日後的市集或活動落單。"
+      },
+      "schedule": {
+        "label": "每週時間表及不同地點",
+        "explain": "美食車一週的地點及時間；客人按美食車在場的地點及日子落單。"
+      },
+      "walkup": {
+        "label": "現場訂單與網上訂單在同一畫面",
+        "explain": "在窗口接的訂單與網上訂單列在同一清單。"
+      },
+      "stock": {
+        "label": "售罄及每場活動的存貨上限",
+        "explain": "把食物設為售罄，並設定每場活動每款可賣多少份。"
+      },
+      "notify": {
+        "label": "訂單完成時通知客人",
+        "explain": "客人如何得知訂單已完成：短訊、WhatsApp、電郵、推送通知或即時訂單狀態頁面。",
+        "ours": "開啟「訂單完成」步驟時發電郵，另有訂單狀態頁面；沒有短訊、WhatsApp 或推送通知"
+      },
+      "allergens": {
+        "label": "餐牌上的致敏原",
+        "explain": "客人落單前，每款食物都會顯示其致敏原。"
+      },
+      "menuphoto": {
+        "label": "用相片建立餐牌",
+        "explain": "用餐牌的相片或 PDF 自動填入食物，你只需核對。"
+      },
+      "options": {
+        "label": "食物選項及附加配料",
+        "explain": "份量、醬汁及附加配料，包括客人必須揀選的選項。"
+      },
+      "deals": {
+        "label": "套餐及組合優惠",
+        "explain": "多件食物以一個價錢一併出售。"
+      },
+      "private": {
+        "label": "私人活動及預約",
+        "explain": "透過專屬連結為私人活動落單，以及租用美食車的查詢。",
+        "ours": "私人活動附專屬落單連結；不設租用查詢"
+      },
+      "qr": {
+        "label": "座位 / QR 碼落單",
+        "explain": "客人掃描枱上的二維碼落單，訂單會連同枱號送到。",
+        "ours": "QR 碼可開啟落單頁面；不設枱號"
+      },
+      "cards": {
+        "label": "網上信用卡付款，包括 Apple Pay 及 Google Pay",
+        "explain": "客人落單時可在網上用信用卡、Apple Pay 或 Google Pay 付款。"
+      },
+      "payattruck": {
+        "label": "取餐時付款",
+        "explain": "客人在網上落單，取餐時才付款。"
+      },
+      "localpay": {
+        "label": "本地付款方式（BLIK、iDEAL、Swish、MobilePay……）",
+        "explain": "除信用卡以外，該國本身的網上付款方式。",
+        "ours": "只限信用卡"
+      },
+      "paypal": {
+        "label": "PayPal 或 Klarna",
+        "explain": "客人可用 PayPal 或 Klarna 付款。"
+      },
+      "custfee": {
+        "label": "可由客人支付訂單費用",
+        "explain": "商戶可把服務費轉由客人支付。"
+      },
+      "tips": {
+        "label": "小費",
+        "explain": "客人在網上付款時可加小費。"
+      },
+      "paymethods": {
+        "label": "提供的付款方式",
+        "explain": "按供應商所述，客人可以怎樣付款。",
+        "ours": "信用卡、Apple Pay、Google Pay；取餐時付款"
+      },
+      "kds": {
+        "label": "廚房顯示屏（KDS）",
+        "explain": "訂單按製作次序顯示在廚房的屏幕上。"
+      },
+      "tickets": {
+        "label": "列印廚房單",
+        "explain": "每張訂單都會在美食車上的收據打印機列印出來。",
+        "ours": "iPad 及 Android 應用程式提供；不附打印機"
+      },
+      "buzzers": {
+        "label": "取餐器",
+        "explain": "客人獲發取餐器，訂單完成時會通知他們。",
+        "ours": "每張訂單可記錄取餐器號碼；不附取餐器"
+      },
+      "offline": {
+        "label": "斷網時仍可運作",
+        "explain": "沒有網絡時的訂單及更改會被保留，恢復連線後便會傳送。",
+        "ours": "iPad 及 Android 應用程式提供；網頁版控制台不提供"
+      },
+      "vans": {
+        "label": "多部美食車",
+        "explain": "一個帳戶管理多於一部美食車。",
+        "ours": "每月加付費用可增加車輛"
+      },
+      "staff": {
+        "label": "員工登入",
+        "explain": "員工以自己的帳戶及角色登入。"
+      },
+      "reports": {
+        "label": "銷售報告",
+        "explain": "總額、最暢銷食物，以及按活動或日期劃分的銷售，可匯出試算表。"
+      },
+      "domain": {
+        "label": "自家網址",
+        "explain": "落單頁面使用商戶自己的域名。"
+      },
+      "whatsapp": {
+        "label": "WhatsApp 自動回覆",
+        "explain": "自動回覆客人的 WhatsApp 訊息。"
+      },
+      "social": {
+        "label": "按時間表生成社交媒體帖子",
+        "explain": "現成帖子，顯示美食車本星期在哪裡。"
+      },
+      "igmsg": {
+        "label": "Instagram 及 Messenger 回覆",
+        "explain": "自動回覆 Instagram 及 Facebook Messenger 的訊息。"
+      },
+      "discovery": {
+        "label": "列於美食車搜尋地圖",
+        "explain": "客人可在公開的地圖上找到附近的美食車。",
+        "ours": "Village Foodie"
+      },
+      "loyalty": {
+        "label": "會員獎賞",
+        "explain": "客人再次光顧可累積獎賞。"
+      },
+      "ipad": {
+        "label": "iPad 應用程式",
+        "explain": "美食車在 iPad 上接收及管理訂單的應用程式。"
+      },
+      "android": {
+        "label": "Android 應用程式",
+        "explain": "同一應用程式的 Android 平板電腦或手機版。"
+      },
+      "hardware": {
+        "label": "提供硬件（平板電腦、打印機）",
+        "explain": "供應商提供平板電腦或打印機。",
+        "ours": "使用你自己的裝置"
+      },
+      "terminal": {
+        "label": "提供窗口用信用卡機",
+        "explain": "供應商提供信用卡機，供在美食車前收款。"
+      },
+      "fiscal": {
+        "label": "符合稅務規定的認證收銀機（TSE、EET、kassaregister……）",
+        "explain": "獲認證符合該國銷售記錄規定的收銀機。"
+      },
+      "delivery": {
+        "label": "送遞",
+        "explain": "把訂單送到客人的地址。",
+        "ours": "只限自取"
+      },
+      "monthly": {
+        "label": "月費",
+        "explain": "商戶每月為軟件支付的費用。"
+      },
+      "perorder": {
+        "label": "每張網上訂單收費",
+        "explain": "月費以外，供應商就每張網上訂單收取的費用。"
+      },
+      "cardfee": {
+        "label": "信用卡手續費",
+        "explain": "付款服務商就每筆信用卡付款收取的費用。"
+      },
+      "term": {
+        "label": "最短合約期",
+        "explain": "商戶須受合約約束多久才可取消。"
+      },
+      "setup": {
+        "label": "開通費",
+        "explain": "開始時一次性收取的費用。"
+      },
+      "trial": {
+        "label": "免費試用",
+        "explain": "付款前可免費使用系統的時間。"
+      }
+    }
+  },
   "comparisonSuits": {
     "title": "哪個適合你的美食車？",
     "checked": "於 {date} 查核",

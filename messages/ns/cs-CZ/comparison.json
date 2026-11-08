@@ -1,0 +1,394 @@
+{
+  "path": {
+    "section": "srovnani",
+    "slug": "objednavkovy-system-pro-food-trucky"
+  },
+  "meta": {
+    "title": "Objednávkové systémy pro food trucky 2026: funkce a ceny",
+    "description": "Srovnání objednávkových systémů pro food trucky: předobjednávky s časem vyzvednutí, kapacita kuchyně, týdenní rozpis, poplatky a délka smlouvy.",
+    "about": "Online objednávkové systémy pro food trucky"
+  },
+  "breadcrumb": {
+    "home": "HatchGrab",
+    "here": "Srovnání",
+    "label": "Drobečková navigace"
+  },
+  "h1": "Srovnání objednávkových systémů pro food trucky 2026",
+  "byline": "Naposledy zkontrolováno: {date} · Připravil HatchGrab. Jsme jedním z porovnávaných dodavatelů (viz <link>Jak jsme porovnávali</link>).",
+  "tldr": {
+    "title": "Ve zkratce",
+    "body": "Pokud si mají zákazníci objednávat předem v telefonu a vybírat si čas vyzvednutí, potřebujete objednávkový systém, nejen pokladnu. Sledujte čtyři věci: časy vyzvednutí, které se řídí kapacitou kuchyně; týdenní rozpis pro měnící se stanoviště; nízké nebo žádné poplatky za objednávku; a žádnou dlouhou smlouvu. Platební terminály a pokladny řeší placení u food trucku a objednávkový systém doplňují."
+  },
+  "table": {
+    "title": "Porovnání objednávkových systémů",
+    "caption": "Funkce a náklady online objednávkových systémů pro food trucky ({country}), stav k {date}",
+    "note": "„Ano“ jen tam, kde to dodavatel veřejně uvádí.",
+    "feature": "Funkce",
+    "yes": "Ano",
+    "no": "Ne",
+    "unknown": "Bez údaje",
+    "fromPlan": "Od tarifu {plan}",
+    "appNotInCountry": "Nedostupné ({country})",
+    "appFlagOff": "Ano – příznak zatím vypnutý, zobrazí se, až bude aplikace v obchodech",
+    "range": "{from} až {to}",
+    "feePlan": "{fee} ({plans})",
+    "noFee": "žádný",
+    "morePending": "Další dodavatelé se tu objeví, jakmile ověříme jejich údaje na jejich vlastním webu.",
+    "priceHidden": "Na vyžádání",
+    "feeAfter": "{fee} nad {included} měsíčně"
+  },
+  "costs": {
+    "title": "Kolik stojí objednávkový systém pro food truck?",
+    "ourPlan": "{plan}: {price} měsíčně, {fee}",
+    "feeOnly": "{fee} za každou online objednávku placenou kartou",
+    "feeIncluded": "online objednávky do {included} měsíčně v ceně, poté {fee}",
+    "feeNone": "žádný poplatek HatchGrab z online objednávek",
+    "rivalPlan": "{plan}: {price}",
+    "perMonth": "{price} měsíčně",
+    "perMonthYearly": "{price} měsíčně při roční platbě",
+    "vatExcl": "bez DPH",
+    "vatIncl": "vč. DPH",
+    "setup": "{price} jednorázově za zřízení",
+    "truckFee": "{fee} za objednávku",
+    "customerFee": "{fee} za objednávku, platí zákazník",
+    "source": "Zdroj",
+    "checked": "zkontrolováno {date}",
+    "cardFee": "Online platby kartou přes HatchGrab navíc podléhají poplatkům Stripe: {cardFee} za platbu kartou ({country}).",
+    "vat": "HatchGrab Ltd je britská společnost a v této zemi ({country}) není registrovaná k DPH, proto k našim poplatkům DPH nepřipočítáváme. Pokud jste plátce DPH, sdělte nám své DIČ; DPH z našich poplatků pak odvedete sami v režimu přenesení daňové povinnosti.",
+    "bundledFee": "{fee} za online platbu, včetně poplatku za kartu"
+  },
+  "fit": {
+    "title": "Který systém se hodí pro koho?",
+    "ours": "HatchGrab se vám hodí, pokud …",
+    "oursBody": "prodáváte na měnících se stanovištích, chcete předobjednávky s časem vyzvednutí, nechcete přetěžovat kuchyni a nechcete se vázat smlouvou.",
+    "oursNot": "HatchGrab se vám nehodí, pokud …",
+    "oursNotBody": "mají zákazníci platit přes PayPal nebo Klarna, nebo chcete od jednoho dodavatele certifikovanou pokladnu, která splňuje daňové předpisy.",
+    "appClause": "Nebo pokud potřebujete kuchyňskou aplikaci pro iPad nebo Android v této zemi ({country}): v obchodech tam zatím není.",
+    "tills": "Pokladny a platební terminály",
+    "marketplaces": "Rozvozové platformy",
+    "rival": "{name} se hodí, pokud …",
+    "tillsBody": "Pokladny přijímají platby u food trucku a splňují daňové předpisy pro zaznamenávání prodejů. Objednávkový systém funguje vedle pokladny; nenahrazuje ji.",
+    "tillsBodyNamed": "Pokladny přijímají platby u food trucku a splňují daňové předpisy pro zaznamenávání prodejů. {names} {count, plural, one {je} few {jsou} many {jsou} other {jsou}} také v tabulce výše. Objednávkový systém funguje vedle pokladny; nenahrazuje ji.",
+    "marketplacesBody": "Rozvozové platformy přivádějí nové zákazníky, ale z každé objednávky si berou provizi. Uber Eats uvádí pro Německo 14 % při osobním vyzvednutí a 30 % při doručení kurýry Uberu. Wolt na svém webu uvádí, že si provizi účtuje, ale sazby neuvádí. Sazby Lieferando jsme ověřit nemohli. Tato provize se týká i stálých zákazníků, kteří si u vás objednávají předem."
+  },
+  "groups": {
+    "food_truck": "Objednávkový systém pro food trucky",
+    "nearest_local": "Objednávkový systém",
+    "pos": "Pokladní systém"
+  },
+  "faq": {
+    "title": "Časté dotazy",
+    "whatQ": "Co je objednávkový systém pro food trucky?",
+    "whatA": "Objednávkový systém přijímá objednávky online ještě předtím, než zákazníci dorazí k food trucku: vyberou si jídla a čas vyzvednutí, zaplatí online nebo při vyzvednutí a objednávka se objeví ve vaší kuchyni. Pokladna nebo platební terminál přijímá platby u food trucku. Obojí se vzájemně doplňuje.",
+    "costQ": "Kolik stojí HatchGrab ({country})?",
+    "costA": "{plans}. Online platby kartou navíc podléhají poplatkům Stripe: {cardFee} za platbu kartou.",
+    "termQ": "Je nějaká minimální doba závazku?",
+    "termA": "Ne. Není žádná minimální doba závazku ani výpovědní lhůta. Zrušit můžete kdykoli; poplatek se účtuje měsíčně předem a přístup vám zůstane do konce zaplaceného měsíce.",
+    "locationsQ": "Funguje to i s měnícími se stanovišti?",
+    "locationsA": "Ano. Nastavíte si týdenní rozpis s místy a časy a zákazníci objednávají na to místo a ten den, kdy tam jste.",
+    "capacityQ": "Jak systém zabrání přetížení mé kuchyně?",
+    "capacityA": "Zákazníci vidí jen ty časy vyzvednutí, které vaše kuchyně opravdu zvládne. Systém vychází z doby přípravy každého jídla a z toho, kolik kusů připravujete najednou.",
+    "tseQ": "Potřebuji i tak certifikovanou pokladnu, která splňuje daňové předpisy?",
+    "tseA": "HatchGrab není pokladna a nemá certifikaci, kterou daňové předpisy u pokladen vyžadují. Jak online objednávky zaznamenat ve vaší pokladně, proberte se svým daňovým poradcem.",
+    "paymentsQ": "Jaké platební metody HatchGrab podporuje?",
+    "paymentsA": "Zákazníci platí online kartou, přes Apple Pay nebo Google Pay, nebo zaplatí u food trucku. PayPal a Klarna zatím podporovány nejsou.",
+    "costTrial": "{months, plural, one {První měsíc je} few {První # měsíce jsou} many {Prvních # měsíce je} other {Prvních # měsíců je}} zdarma, se všemi funkcemi."
+  },
+  "method": {
+    "title": "Jak jsme porovnávali",
+    "checked": "Naposledy zkontrolováno {date}.",
+    "prices": "Ceny uvádíme tak, jak je uvádí dodavatel, včetně DPH.",
+    "meaning": "„Ano“ znamená, že dodavatel danou funkci veřejně uvádí. „Bez údaje“ znamená, že jsme o ní na jeho webu nic nenašli — ne že funkce chybí.",
+    "vendor": "HatchGrab tuto stránku provozuje a je jedním z porovnávaných dodavatelů.",
+    "review": "Ceny a funkce se automaticky ověřují na vlastním webu každého produktu; u každého údaje je odkaz na zdroj.",
+    "corrections": "Našli jste chybu? Dejte nám vědět přes <link>kontaktní formulář</link>.",
+    "reportError": "<link>Nahlásit chybu</link>",
+    "machine": "Pro AI asistenty a vývojáře: tato tabulka <md>jako Markdown</md> · <json>jako JSON</json>"
+  },
+  "cta": {
+    "title": "Vyzkoušejte {months, plural, one {# měsíc} few {# měsíce} many {# měsíce} other {# měsíců}} zdarma",
+    "noCard": "Bez platební karty",
+    "cancel": "Zrušitelné každý měsíc",
+    "button": "Vyzkoušet zdarma"
+  },
+  "admin": {
+    "status": "Koncept · noindex · mimo sitemapu, llms.txt a hreflang · odkaz v patičce jen pro administrátory",
+    "statusLive": "Zveřejněno · veřejné a indexovatelné",
+    "viewAdmin": "Pohled administrátora",
+    "viewPublic": "Co vidí veřejnost",
+    "pricingCheck": "Otevřít kontrolu cen",
+    "checklist": "Před zveřejněním",
+    "goLive": "Stránka se zveřejňuje v Admin › Countries.",
+    "check": {
+      "apps": "Příznaky iPad a Android zapnuté ({country})",
+      "verified": "Alespoň 2 ověření dodavatelé (ověřeno: {n})",
+      "placeholders": "V textu nezůstal žádný zástupný text „[ … ]“",
+      "vat": "Text o DPH je uveden",
+      "impressum": "Rozhodnutí o Impressum zaznamenáno"
+    },
+    "unverified": "neověřeno · skryto před veřejností",
+    "autoVerified": "ověřeno automaticky",
+    "unchecked": "zatím neověřeno u všech zobrazených konkurentů · skryto před veřejností",
+    "label": "Admin",
+    "notShown": "Nejsou na stránce (zobrazují se nejvýše čtyři): {names}.",
+    "reasonHidden": "{name} (skryto)",
+    "reasonBeyond": "{name} (nad rámec čtyř)",
+    "reasonNoWebsite": "{name} (bez webu)"
+  },
+  "footer": {
+    "heading": "Srovnání",
+    "link": "Srovnání objednávkových systémů"
+  },
+  "featureGroups": {
+    "ordering": "Objednávání",
+    "payments": "Platby",
+    "kitchen": "Kuchyně",
+    "marketing": "Marketing",
+    "apps_hardware": "Aplikace a hardware",
+    "price_contract": "Cena a smlouva"
+  },
+  "cell": {
+    "yes": "Ano",
+    "no": "Ne",
+    "partial": "Částečně",
+    "unknown": "Bez údaje",
+    "not_mentioned": "Web o tom nic neříká",
+    "withNote": "{word}, {note}",
+    "soon": "již brzy",
+    "fromPlan": "od tarifu {plan}",
+    "perCardPayment": "{fee} za platbu kartou",
+    "trial": "{months, plural, one {# měsíc} few {# měsíce} many {# měsíce} other {# měsíců}} zdarma",
+    "setupFee": "{price} jednorázově",
+    "perMonth": "{price} měsíčně",
+    "notInCountry": "nedostupné ({country})",
+    "flagOff": "příznak zatím vypnutý; zobrazí se, až bude aplikace v obchodech",
+    "notApplicable": "netýká se pořadatele trhů",
+    "not_listed": "Neuvádí"
+  },
+  "explained": {
+    "title": "Co jednotlivé funkce znamenají"
+  },
+  "costBlock": {
+    "title": "Kolik food truck platí měsíčně",
+    "sizes": "Online tržby za měsíc",
+    "sizeSales": "{sales} měsíčně",
+    "sizeOrders": "asi {orders} objednávek",
+    "lead": "Pro food truck s online objednávkami za {sales} měsíčně (asi {orders} objednávek). Každý sloupec ukazuje celkové měsíční náklady: vlastní poplatek objednávkového systému plus poplatky za platby kartou u těchto objednávek.",
+    "legendSoftware": "Poplatek za software",
+    "legendCard": "Poplatky za karty",
+    "software": "Poplatek za software {amount} měsíčně",
+    "card": "Poplatky za karty {amount} měsíčně",
+    "total": "{amount} měsíčně včetně poplatků za karty",
+    "share": "{pct} z tržeb",
+    "assumed": "(sazba nezveřejněna, předpokládáme)",
+    "customerFee": "Navíc {amount} měsíčně platí zákazníci ({fee} za objednávku) — ve sloupci není",
+    "summaryCheapest": "Vlastní poplatek systému {us} činí {ours} měsíčně, u nejlevnějšího zobrazeného konkurenta {theirs} měsíčně. Poplatky za karty ({card} měsíčně) se platí u každé platby kartou bez ohledu na systém, takže rozhoduje rozdíl v poplatku za software.",
+    "summaryNotCheapest": "Vlastní poplatek systému {us} činí {ours} měsíčně, tedy víc než {theirs} měsíčně u {rival}, nejlevnějšího zobrazeného konkurenta. Poplatky za karty ({card} měsíčně) se platí u každé platby kartou bez ohledu na systém.",
+    "summaryAlone": "Vlastní poplatek systému {us} činí {ours} měsíčně. Poplatky za karty ({card} měsíčně) se platí u každé platby kartou bez ohledu na systém.",
+    "footOrder": "Průměrná objednávka {order}: typické jídlo za {meal} × {multiplier} jídla na objednávku ({source}).",
+    "footCard": "Poplatky za karty počítáme se sazbou {rate} za platbu kartou: {source}.",
+    "footCardSource": "Sazba Stripe ({country})",
+    "footAssumed": "{names} {count, plural, one {nezveřejňuje} few {nezveřejňují} many {nezveřejňují} other {nezveřejňují}} sazbu za platby kartou, proto počítáme s naší.",
+    "footChecked": "Ceny zkontrolovány {date}.",
+    "footCalculator": "Spočítejte si vlastní čísla v kalkulačce.",
+    "noRivals": "V této zemi ({country}) zatím není ověřený žádný konkurent, takže není s čím srovnávat."
+  },
+  "features": {
+    "preorder": {
+      "label": "Předobjednávky s výběrem času vyzvednutí",
+      "explain": "Zákazníci si objednají předem a vyberou si čas vyzvednutí."
+    },
+    "capacity": {
+      "label": "Časy vyzvednutí omezené kapacitou kuchyně",
+      "explain": "Zákazníci vidí jen ty časy vyzvednutí, které kuchyně opravdu zvládne."
+    },
+    "asap": {
+      "label": "Objednávky co nejdříve",
+      "explain": "Zákazníci mohou objednat bez výběru času a vyzvednout si jídlo, jakmile je hotové."
+    },
+    "ahead": {
+      "label": "Objednávka předem na jiný den nebo akci",
+      "explain": "Zákazníci si mohou už dnes objednat na trh nebo akci, která se koná později."
+    },
+    "schedule": {
+      "label": "Týdenní rozpis s měnícími se stanovišti",
+      "explain": "Týden food trucku s místy a časy; zákazníci objednávají na místo a den, kdy tam stojí."
+    },
+    "walkup": {
+      "label": "Objednávky na místě na stejné obrazovce jako online",
+      "explain": "Objednávky přijaté u okénka se řadí do stejného seznamu jako online objednávky."
+    },
+    "stock": {
+      "label": "Vyprodáno a limity zásob na akci",
+      "explain": "Označte jídla jako vyprodaná a nastavte, kolik kusů každého lze na akci prodat."
+    },
+    "notify": {
+      "label": "Upozornění zákazníka, že je objednávka hotová",
+      "explain": "Jak se zákazníci dozvědí, že je objednávka hotová: SMS, WhatsApp, e-mail, push nebo živá stránka se stavem objednávky.",
+      "ours": "e-mail, když je zapnutý krok „objednávka hotová“, a stránka se stavem objednávky; bez SMS, WhatsAppu a push"
+    },
+    "allergens": {
+      "label": "Alergeny v jídelním lístku",
+      "explain": "U každého jídla vidí zákazníci alergeny ještě před objednáním."
+    },
+    "menuphoto": {
+      "label": "Jídelní lístek z fotky",
+      "explain": "Z fotky nebo PDF jídelního lístku se vyplní jídla a vy je jen zkontrolujete."
+    },
+    "options": {
+      "label": "Varianty a doplňky k jídlům",
+      "explain": "Velikosti, omáčky a doplňky, včetně voleb, které zákazník musí vybrat."
+    },
+    "deals": {
+      "label": "Menu a balíčky",
+      "explain": "Několik položek prodávaných společně za jednu cenu."
+    },
+    "private": {
+      "label": "Soukromé akce a rezervace",
+      "explain": "Objednávky na soukromou akci přes vlastní odkaz a žádosti o pronájem food trucku.",
+      "ours": "soukromé akce s vlastním objednávkovým odkazem; bez žádostí o rezervaci"
+    },
+    "qr": {
+      "label": "Objednávka u stolu / přes QR kód",
+      "explain": "Zákazníci naskenují kód u stolu a objednávka přijde s číslem stolu.",
+      "ours": "QR kód otevře objednávkovou stránku; bez čísel stolů"
+    },
+    "cards": {
+      "label": "Online platby kartou vč. Apple Pay a Google Pay",
+      "explain": "Zákazníci platí online kartou, přes Apple Pay nebo Google Pay už při objednávce."
+    },
+    "payattruck": {
+      "label": "Platba při vyzvednutí",
+      "explain": "Zákazníci objednají online a zaplatí při vyzvednutí."
+    },
+    "localpay": {
+      "label": "Místní platební metody (BLIK, iDEAL, Swish, MobilePay…)",
+      "explain": "Online platební metody dané země kromě karet.",
+      "ours": "jen karty"
+    },
+    "paypal": {
+      "label": "PayPal nebo Klarna",
+      "explain": "Zákazníci mohou platit přes PayPal nebo Klarna."
+    },
+    "custfee": {
+      "label": "Možnost, aby poplatek za objednávku platil zákazník",
+      "explain": "Podnik může servisní poplatek přenést na zákazníka."
+    },
+    "tips": {
+      "label": "Spropitné",
+      "explain": "Zákazníci mohou při online platbě přidat spropitné."
+    },
+    "paymethods": {
+      "label": "Nabízené platební metody",
+      "explain": "Jak mohou zákazníci platit, podle údajů dodavatele.",
+      "ours": "karta, Apple Pay, Google Pay; platba při vyzvednutí"
+    },
+    "kds": {
+      "label": "Kuchyňská obrazovka (KDS)",
+      "explain": "Objednávky se zobrazují na obrazovce v kuchyni v pořadí, v jakém je připravovat."
+    },
+    "tickets": {
+      "label": "Tištěné kuchyňské lístky",
+      "explain": "Každá objednávka se vytiskne na tiskárně účtenek ve food trucku.",
+      "ours": "v aplikaci pro iPad a Android; tiskárnu nedodáváme"
+    },
+    "buzzers": {
+      "label": "Vyvolávací pagery",
+      "explain": "Zákazník dostane pager, který mu dá vědět, že je objednávka hotová.",
+      "ours": "číslo pageru se ukládá u každé objednávky; pagery nedodáváme"
+    },
+    "offline": {
+      "label": "Funguje i při výpadku internetu",
+      "explain": "Objednávky a změny provedené bez připojení se uloží a odešlou, jakmile je připojení zpět.",
+      "ours": "v aplikaci pro iPad a Android; ne ve webovém přehledu"
+    },
+    "vans": {
+      "label": "Více vozů nebo food trucků",
+      "explain": "Jeden účet pro více než jeden food truck.",
+      "ours": "další vozy za měsíční příplatek"
+    },
+    "staff": {
+      "label": "Přihlášení pro zaměstnance",
+      "explain": "Zaměstnanci se přihlašují vlastními údaji a mají svou roli."
+    },
+    "reports": {
+      "label": "Přehledy prodejů",
+      "explain": "Součty, nejprodávanější položky a prodeje podle akce nebo data, s exportem do tabulky."
+    },
+    "domain": {
+      "label": "Vlastní webová adresa",
+      "explain": "Objednávková stránka na vlastní doméně podniku."
+    },
+    "whatsapp": {
+      "label": "Automatické odpovědi na WhatsAppu",
+      "explain": "Na zprávy zákazníků na WhatsAppu se odpovídá automaticky."
+    },
+    "social": {
+      "label": "Příspěvky na sociální sítě z vašeho rozpisu",
+      "explain": "Hotové příspěvky, které ukazují, kde food truck tento týden stojí."
+    },
+    "igmsg": {
+      "label": "Odpovědi na Instagramu a Messengeru",
+      "explain": "Na zprávy na Instagramu a ve Facebook Messengeru se odpovídá automaticky."
+    },
+    "discovery": {
+      "label": "Zobrazení na mapě food trucků",
+      "explain": "Zákazníci najdou food truck na veřejné mapě food trucků ve svém okolí.",
+      "ours": "Village Foodie"
+    },
+    "loyalty": {
+      "label": "Věrnostní program",
+      "explain": "Zákazníci sbírají odměny za to, že se vracejí."
+    },
+    "ipad": {
+      "label": "Aplikace pro iPad",
+      "explain": "Aplikace food trucku pro přijímání a správu objednávek na iPadu."
+    },
+    "android": {
+      "label": "Aplikace pro Android",
+      "explain": "Stejná aplikace na tabletu nebo telefonu s Androidem."
+    },
+    "hardware": {
+      "label": "Dodaný hardware (tablet, tiskárna)",
+      "explain": "Dodavatel poskytne tablet nebo tiskárnu.",
+      "ours": "vlastní zařízení"
+    },
+    "terminal": {
+      "label": "Dodaný platební terminál k okénku",
+      "explain": "Dodavatel poskytne platební terminál pro platby u food trucku."
+    },
+    "fiscal": {
+      "label": "Certifikovaná pokladna podle daňových předpisů (TSE, EET, kassaregister…)",
+      "explain": "Pokladna certifikovaná podle předpisů dané země pro zaznamenávání prodejů."
+    },
+    "delivery": {
+      "label": "Rozvoz",
+      "explain": "Objednávky doručené na adresu zákazníka.",
+      "ours": "jen vyzvednutí"
+    },
+    "monthly": {
+      "label": "Měsíční cena",
+      "explain": "Kolik podnik platí každý měsíc za software."
+    },
+    "perorder": {
+      "label": "Poplatek za online objednávku",
+      "explain": "Kolik si dodavatel účtuje z každé online objednávky navíc k měsíční ceně."
+    },
+    "cardfee": {
+      "label": "Poplatek za kartu",
+      "explain": "Poplatek poskytovatele plateb z každé platby kartou."
+    },
+    "term": {
+      "label": "Minimální doba závazku",
+      "explain": "Jak dlouho je podnik vázán, než může smlouvu vypovědět."
+    },
+    "setup": {
+      "label": "Zřizovací poplatek",
+      "explain": "Jednorázový poplatek na začátku."
+    },
+    "trial": {
+      "label": "Zkušební období zdarma",
+      "explain": "Doba, kdy lze systém používat zdarma, než začnete platit."
+    }
+  }
+}

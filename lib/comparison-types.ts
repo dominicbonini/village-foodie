@@ -15,3 +15,5 @@ export interface ComparisonFlags { countryCode: string; status: ComparisonStatus
 }
 /** compare-autopublish-1: never auto-published. */
 export const NEVER_AUTO_PUBLISH: readonly string[] = ['AE']
+/** compare-languages-1 (8 November 2026): the countries that never have a comparison page at all (the brief: "AE stays off"). */
+export const NO_COMPARISON_PAGE: readonly string[] = ['AE']

@@ -6367,6 +6367,400 @@
       "description": "Usporedite koliko vas online narudžbe sada stoje s godinom uz HatchGrab – procjena za minutu."
     }
   },
+  "comparison": {
+    "path": {
+      "section": "usporedba",
+      "slug": "sustav-za-narudzbe-food-truck"
+    },
+    "meta": {
+      "title": "Sustavi za narudžbe za food truckove 2026: značajke, cijene",
+      "description": "Usporedba sustava za narudžbe za food truckove: prednarudžbe s vremenom preuzimanja, kapacitet kuhinje, raspored, naknade, ugovor — provjereno na izvoru.",
+      "about": "Sustavi za online narudžbe za food truckove"
+    },
+    "breadcrumb": {
+      "home": "HatchGrab",
+      "here": "Usporedba",
+      "label": "Putanja navigacije"
+    },
+    "h1": "Usporedba sustava za narudžbe za food truckove 2026",
+    "byline": "Zadnja provjera: {date} · Izradio HatchGrab. Mi smo jedan od uspoređenih dobavljača (pogledajte <link>Kako smo uspoređivali</link>).",
+    "tldr": {
+      "title": "Ukratko",
+      "body": "Ako želite da kupci naručuju unaprijed na mobitelu i biraju vrijeme preuzimanja, trebate sustav za narudžbe, a ne samo blagajnu. Obratite pažnju na četiri stvari: vremena preuzimanja koja prate kapacitet kuhinje; tjedni raspored za promjenjive lokacije; niske naknade po narudžbi ili nikakve; te da nema dugoročnog ugovora. POS uređaji i blagajne pokrivaju plaćanje kod food trucka i nadopunjuju sustav za narudžbe."
+    },
+    "table": {
+      "title": "Usporedba sustava za narudžbe",
+      "caption": "Značajke i troškovi sustava za online narudžbe za food truckove ({country}), stanje {date}",
+      "note": "„Da“ samo ako to dobavljač javno navodi.",
+      "feature": "Značajka",
+      "yes": "Da",
+      "no": "Ne",
+      "unknown": "Nije poznato",
+      "fromPlan": "Od paketa {plan}",
+      "appNotInCountry": "Nije dostupno ({country})",
+      "appFlagOff": "Da – zastavica još isključena, prikazuje se kad aplikacija bude u trgovinama",
+      "range": "od {from} do {to}",
+      "feePlan": "{fee} ({plans})",
+      "noFee": "nema",
+      "morePending": "Ostali dobavljači pojavit će se ovdje čim njihove podatke provjerimo na njihovim web-stranicama.",
+      "priceHidden": "Na upit",
+      "feeAfter": "{fee} iznad {included} mjesečno"
+    },
+    "costs": {
+      "title": "Koliko košta sustav za narudžbe za food truck?",
+      "ourPlan": "{plan}: {price} mjesečno, {fee}",
+      "feeOnly": "{fee} po online narudžbi plaćenoj karticom",
+      "feeIncluded": "online narudžbe do {included} mjesečno uključene, zatim {fee}",
+      "feeNone": "bez HatchGrab naknade na online narudžbe",
+      "rivalPlan": "{plan}: {price}",
+      "perMonth": "{price} mjesečno",
+      "perMonthYearly": "{price} mjesečno uz godišnje plaćanje",
+      "vatExcl": "bez PDV-a",
+      "vatIncl": "s PDV-om",
+      "setup": "{price} jednokratno za postavljanje",
+      "truckFee": "{fee} po narudžbi",
+      "customerFee": "{fee} po narudžbi, plaća kupac",
+      "source": "Izvor",
+      "checked": "provjereno {date}",
+      "cardFee": "Uz online kartična plaćanja putem HatchGraba plaćaju se i Stripeove naknade: {cardFee} po kartičnom plaćanju ({country}).",
+      "vat": "HatchGrab Ltd je tvrtka iz Ujedinjenog Kraljevstva i nije registrirana za PDV u državi {country}, pa se na naše naknade ne obračunava PDV. Ako ste u sustavu PDV-a, pošaljite nam svoj PDV identifikacijski broj; PDV na naše naknade tada sami obračunavate po načelu prijenosa porezne obveze.",
+      "bundledFee": "{fee} po online plaćanju, uključujući kartičnu naknadu"
+    },
+    "fit": {
+      "title": "Koji sustav kome odgovara?",
+      "ours": "HatchGrab vam odgovara ako …",
+      "oursBody": "radite na promjenjivim lokacijama, želite prednarudžbe s vremenom preuzimanja, ne želite preopteretiti kuhinju i ne želite ugovor.",
+      "oursNot": "HatchGrab vam ne odgovara ako …",
+      "oursNotBody": "vaši kupci trebaju plaćati putem servisa PayPal ili Klarna ili želite od jednog dobavljača i certificiranu blagajnu usklađenu s poreznim propisima.",
+      "appClause": "Ili ako vam treba kuhinjska aplikacija za iPad ili Android u državi {country}: ondje još nije dostupna u trgovinama aplikacija.",
+      "tills": "Blagajne i POS uređaji",
+      "marketplaces": "Platforme za dostavu",
+      "rival": "{name} odgovara ako …",
+      "tillsBody": "Blagajne naplaćuju kod food trucka i ispunjavaju zahtjeve poreznih propisa za certificirane blagajne. Sustav za narudžbe radi uz blagajnu; ne zamjenjuje je.",
+      "tillsBodyNamed": "Blagajne naplaćuju kod food trucka i ispunjavaju zahtjeve poreznih propisa za certificirane blagajne. {names} {count, plural, one {nalazi se} few {nalaze se} other {nalaze se}} i u tablici iznad. Sustav za narudžbe radi uz blagajnu; ne zamjenjuje je.",
+      "marketplacesBody": "Platforme za dostavu donose nove kupce, ali uzimaju proviziju na svaku narudžbu. Uber Eats za Njemačku navodi 14 % za preuzimanje i 30 % za dostavu Uberovim dostavljačima. Wolt na svojoj web-stranici navodi da naplaćuje proviziju, ali ne navodi stope. Stope Lieferanda nismo mogli provjeriti. Ta se provizija naplaćuje i za stalne kupce koji kod vas naručuju unaprijed."
+    },
+    "groups": {
+      "food_truck": "Sustav za narudžbe za food truck",
+      "nearest_local": "Sustav za narudžbe",
+      "pos": "Blagajnički sustav"
+    },
+    "faq": {
+      "title": "Često postavljana pitanja",
+      "whatQ": "Što je sustav za narudžbe za food truck?",
+      "whatA": "Sustav za narudžbe prima narudžbe online prije nego što kupci dođu do food trucka: biraju jela i vrijeme preuzimanja, plaćaju online ili pri preuzimanju, a narudžba se pojavljuje u vašoj kuhinji. Blagajna ili POS uređaj naplaćuje kod food trucka. Jedno nadopunjuje drugo.",
+      "costQ": "Koliko košta HatchGrab ({country})?",
+      "costA": "{plans}. Uz online kartična plaćanja plaćaju se i Stripeove naknade: {cardFee} po kartičnom plaćanju.",
+      "termQ": "Postoji li minimalno trajanje ugovora?",
+      "termA": "Ne. Nema minimalnog trajanja ni otkaznog roka. Možete otkazati bilo kada; naknada se naplaćuje mjesečno unaprijed, a pristup zadržavate do kraja plaćenog mjeseca.",
+      "locationsQ": "Radi li s promjenjivim lokacijama?",
+      "locationsA": "Da. Postavite tjedni raspored s mjestima i vremenima, a kupci naručuju za mjesto i dan kad ste ondje.",
+      "capacityQ": "Kako sustav sprječava preopterećenje moje kuhinje?",
+      "capacityA": "Kupci vide samo vremena preuzimanja koja vaša kuhinja stvarno može ostvariti. Sustav računa s vremenom pripreme svakog jela i s tim koliko ih pripremate odjednom.",
+      "tseQ": "Trebam li i dalje certificiranu blagajnu prema poreznim propisima?",
+      "tseA": "HatchGrab nije blagajna i nije certificiran prema poreznim propisima. Kako online narudžbe evidentirati u blagajni, pitanje je za vašeg poreznog savjetnika.",
+      "paymentsQ": "Koje načine plaćanja podržava HatchGrab?",
+      "paymentsA": "Kupci plaćaju online karticom, uslugom Apple Pay ili Google Pay, ili plaćaju kod food trucka. PayPal i Klarna trenutačno nisu podržani.",
+      "costTrial": "{months, plural, one {Prvi mjesec je besplatan} few {Prva # mjeseca su besplatna} other {Prvih # mjeseci je besplatno}}, uz sve značajke."
+    },
+    "method": {
+      "title": "Kako smo uspoređivali",
+      "checked": "Zadnja provjera: {date}.",
+      "prices": "Cijene su prikazane onako kako ih navodi dobavljač, s PDV-om.",
+      "meaning": "„Da“ znači da dobavljač tu značajku javno navodi. „Nije poznato“ znači da o tome na njegovoj web-stranici nismo ništa pronašli — a ne da značajka ne postoji.",
+      "vendor": "HatchGrab vodi ovu stranicu i jedan je od uspoređenih dobavljača.",
+      "review": "Cijene i značajke automatski se provjeravaju na web-stranici svakog proizvoda; svaka tvrdnja ima poveznicu na svoj izvor.",
+      "corrections": "Pronašli ste pogrešku? Javite nam putem <link>obrasca za kontakt</link>.",
+      "reportError": "<link>Prijavite pogrešku</link>",
+      "machine": "Za AI asistente i programere: ova tablica <md>u Markdownu</md> · <json>u JSON-u</json>"
+    },
+    "cta": {
+      "title": "Isprobajte {months, plural, one {# mjesec} few {# mjeseca} other {# mjeseci}} besplatno",
+      "noCard": "Kreditna kartica nije potrebna",
+      "cancel": "Otkaz od mjeseca do mjeseca",
+      "button": "Isprobajte besplatno"
+    },
+    "admin": {
+      "status": "Skica · noindex · nije u sitemapu, llms.txt ni hreflangu · poveznica u podnožju samo za administratore",
+      "statusLive": "Objavljeno · javno i indeksirano",
+      "viewAdmin": "Prikaz za administratore",
+      "viewPublic": "Što vidi javnost",
+      "pricingCheck": "Otvori provjeru cijena",
+      "checklist": "Prije objave",
+      "goLive": "Stranica se objavljuje u Admin › Countries.",
+      "check": {
+        "apps": "Zastavice za iPad i Android uključene ({country})",
+        "verified": "Najmanje 2 provjerena dobavljača (provjereno: {n})",
+        "placeholders": "U tekstu nema preostalih rezerviranih mjesta „[ … ]“",
+        "vat": "Tekst o PDV-u postoji",
+        "impressum": "Odluka o Impressumu zabilježena"
+      },
+      "unverified": "nije provjereno · skriveno od javnosti",
+      "autoVerified": "automatski provjereno",
+      "unchecked": "još nije provjereno za sve prikazane konkurente · skriveno od javnosti",
+      "label": "Admin",
+      "notShown": "Nije na stranici (prikazuju se najviše četiri): {names}.",
+      "reasonHidden": "{name} (skriveno)",
+      "reasonBeyond": "{name} (izvan prve četiri)",
+      "reasonNoWebsite": "{name} (nema web-stranicu)"
+    },
+    "footer": {
+      "heading": "Usporedba",
+      "link": "Usporedba sustava za narudžbe"
+    },
+    "featureGroups": {
+      "ordering": "Naručivanje",
+      "payments": "Plaćanje",
+      "kitchen": "Kuhinja",
+      "marketing": "Marketing",
+      "apps_hardware": "Aplikacije i oprema",
+      "price_contract": "Cijena i ugovor"
+    },
+    "cell": {
+      "yes": "Da",
+      "no": "Ne",
+      "partial": "Djelomično",
+      "unknown": "Nije poznato",
+      "not_mentioned": "Web-stranica o tome ne govori",
+      "withNote": "{word}, {note}",
+      "soon": "uskoro",
+      "fromPlan": "od paketa {plan}",
+      "perCardPayment": "{fee} po kartičnom plaćanju",
+      "trial": "{months, plural, one {# mjesec besplatno} few {# mjeseca besplatno} other {# mjeseci besplatno}}",
+      "setupFee": "{price} jednokratno",
+      "perMonth": "{price} mjesečno",
+      "notInCountry": "nije dostupno ({country})",
+      "flagOff": "zastavica još isključena; prikazuje se kad aplikacija bude u trgovinama",
+      "notApplicable": "ne odnosi se na tržište",
+      "not_listed": "Ne navodi"
+    },
+    "explained": {
+      "title": "Što znače značajke"
+    },
+    "costBlock": {
+      "title": "Koliko food truck plaća mjesečno",
+      "sizes": "Online prodaja mjesečno",
+      "sizeSales": "{sales} mjesečno",
+      "sizeOrders": "broj narudžbi: oko {orders}",
+      "lead": "Za food truck s online prodajom od {sales} mjesečno (broj narudžbi: oko {orders}). Svaki stupac prikazuje ukupni mjesečni trošak: vlastitu naknadu sustava za narudžbe plus kartične naknade na te narudžbe.",
+      "legendSoftware": "Naknada za softver",
+      "legendCard": "Kartične naknade",
+      "software": "Naknada za softver: {amount} mjesečno",
+      "card": "Kartične naknade: {amount} mjesečno",
+      "total": "{amount} mjesečno uključujući kartične naknade",
+      "share": "{pct} prodaje",
+      "assumed": "(stopa nije objavljena, pretpostavljena)",
+      "customerFee": "Plus {amount} mjesečno koje plaćaju kupci ({fee} po narudžbi) — nije u stupcu",
+      "summaryCheapest": "Vlastita naknada platforme {us} iznosi {ours} mjesečno, naspram {theirs} mjesečno kod najjeftinijeg prikazanog konkurenta. Kartične naknade ({card} mjesečno) naplaćuju se na svako kartično plaćanje bez obzira na sustav, pa je razlika koja je važna naknada za softver.",
+      "summaryNotCheapest": "Vlastita naknada platforme {us} iznosi {ours} mjesečno, što je više od {theirs} mjesečno koliko naplaćuje {rival}, najjeftiniji prikazani konkurent. Kartične naknade ({card} mjesečno) naplaćuju se na svako kartično plaćanje bez obzira na sustav.",
+      "summaryAlone": "Vlastita naknada platforme {us} iznosi {ours} mjesečno. Kartične naknade ({card} mjesečno) naplaćuju se na svako kartično plaćanje bez obzira na sustav.",
+      "footOrder": "Prosječna narudžba {order}: tipičan obrok od {meal} × {multiplier} jela po narudžbi ({source}).",
+      "footCard": "Kartične naknade izračunate su uz {rate} po kartičnom plaćanju: {source}.",
+      "footCardSource": "Stripeova stopa ({country})",
+      "footAssumed": "{names} {count, plural, one {ne objavljuje} few {ne objavljuju} other {ne objavljuju}} stopu kartične naknade, pa je stopa koju koristimo pretpostavljena.",
+      "footChecked": "Cijene provjerene {date}.",
+      "footCalculator": "Izračunajte vlastite brojke u kalkulatoru.",
+      "noRivals": "Za državu {country} još nije provjeren nijedan konkurent, pa nema što usporediti."
+    },
+    "features": {
+      "preorder": {
+        "label": "Prednarudžbe s odabranim vremenom preuzimanja",
+        "explain": "Kupci naručuju unaprijed i biraju vrijeme preuzimanja."
+      },
+      "capacity": {
+        "label": "Vremena preuzimanja ograničena kapacitetom kuhinje",
+        "explain": "Kupci vide samo vremena preuzimanja koja kuhinja stvarno može ostvariti."
+      },
+      "asap": {
+        "label": "Narudžbe za što prije",
+        "explain": "Kupci mogu naručiti bez odabira vremena i preuzeti čim bude gotovo."
+      },
+      "ahead": {
+        "label": "Narudžba unaprijed za kasniji dan ili događaj",
+        "explain": "Kupci danas mogu naručiti za sajam ili događaj nekog kasnijeg dana."
+      },
+      "schedule": {
+        "label": "Tjedni raspored s promjenjivim lokacijama",
+        "explain": "Tjedan food trucka s mjestima i vremenima; kupci naručuju za mjesto i dan kad je ondje."
+      },
+      "walkup": {
+        "label": "Narudžbe na licu mjesta na istom zaslonu kao online narudžbe",
+        "explain": "Narudžbe primljene na prozoru idu na isti popis kao online narudžbe."
+      },
+      "stock": {
+        "label": "Rasprodano i ograničenje zaliha po događaju",
+        "explain": "Označite jela kao rasprodana i odredite koliko se svakog može prodati na događaju."
+      },
+      "notify": {
+        "label": "Obavijest kupcima kad je narudžba gotova",
+        "explain": "Kako kupci saznaju da je narudžba gotova: SMS, WhatsApp, e-pošta, push-obavijest ili stranica sa statusom narudžbe uživo.",
+        "ours": "e-pošta kad je uključen korak „narudžba gotova“ i stranica sa statusom narudžbe; bez SMS-a, WhatsAppa ili push-obavijesti"
+      },
+      "allergens": {
+        "label": "Alergeni na jelovniku",
+        "explain": "Svako jelo kupcima prikazuje alergene prije narudžbe."
+      },
+      "menuphoto": {
+        "label": "Jelovnik postavljen s fotografije",
+        "explain": "Fotografija ili PDF jelovnika popunjava jela, a vi ih provjerite."
+      },
+      "options": {
+        "label": "Opcije i dodaci uz jela",
+        "explain": "Veličine, umaci i dodaci, uključujući izbore koje kupac mora napraviti."
+      },
+      "deals": {
+        "label": "Meniji i paketi",
+        "explain": "Više artikala prodanih zajedno po jednoj cijeni."
+      },
+      "private": {
+        "label": "Privatni događaji i rezervacije",
+        "explain": "Narudžbe za privatni događaj putem vlastite poveznice i zahtjevi za najam food trucka.",
+        "ours": "privatni događaji s vlastitom poveznicom za narudžbe; bez zahtjeva za rezervaciju"
+      },
+      "qr": {
+        "label": "Naručivanje za stolom / QR kodom",
+        "explain": "Kupci skeniraju kod na stolu, a narudžba stiže s brojem stola.",
+        "ours": "QR kod otvara stranicu za narudžbe; bez brojeva stolova"
+      },
+      "cards": {
+        "label": "Online plaćanje karticama, uključujući Apple Pay i Google Pay",
+        "explain": "Kupci pri naručivanju plaćaju online karticom, uslugom Apple Pay ili Google Pay."
+      },
+      "payattruck": {
+        "label": "Plaćanje pri preuzimanju",
+        "explain": "Kupci naručuju online i plaćaju pri preuzimanju."
+      },
+      "localpay": {
+        "label": "Lokalni načini plaćanja (BLIK, iDEAL, Swish, MobilePay…)",
+        "explain": "Domaći načini online plaćanja u zemlji, uz kartice.",
+        "ours": "samo kartice"
+      },
+      "paypal": {
+        "label": "PayPal ili Klarna",
+        "explain": "Kupci mogu platiti putem servisa PayPal ili Klarna."
+      },
+      "custfee": {
+        "label": "Mogućnost da kupac plati naknadu za narudžbu",
+        "explain": "Tvrtka može naknadu za uslugu prenijeti na kupca."
+      },
+      "tips": {
+        "label": "Napojnice",
+        "explain": "Kupci mogu dodati napojnicu pri online plaćanju."
+      },
+      "paymethods": {
+        "label": "Ponuđeni načini plaćanja",
+        "explain": "Kako kupci mogu platiti, prema navodima dobavljača.",
+        "ours": "kartica, Apple Pay, Google Pay; plaćanje pri preuzimanju"
+      },
+      "kds": {
+        "label": "Kuhinjski zaslon (KDS)",
+        "explain": "Narudžbe se pojavljuju na zaslonu u kuhinji, redoslijedom pripreme."
+      },
+      "tickets": {
+        "label": "Ispisani kuhinjski listići",
+        "explain": "Svaka se narudžba ispisuje na pisaču računa u food trucku.",
+        "ours": "u aplikaciji za iPad i Android; pisač nije uključen"
+      },
+      "buzzers": {
+        "label": "Pageri",
+        "explain": "Kupci dobivaju pager koji ih obavijesti kad je narudžba gotova.",
+        "ours": "broj pagera bilježi se uz svaku narudžbu; pageri nisu uključeni"
+      },
+      "offline": {
+        "label": "Radi i kad nestane interneta",
+        "explain": "Narudžbe i promjene napravljene bez veze čuvaju se i šalju kad se veza vrati.",
+        "ours": "u aplikaciji za iPad i Android; ne u web-nadzornoj ploči"
+      },
+      "vans": {
+        "label": "Više kombija ili food truckova",
+        "explain": "Jedan račun upravlja s više food truckova.",
+        "ours": "dodatna vozila uz dodatnu mjesečnu naknadu"
+      },
+      "staff": {
+        "label": "Prijave za osoblje",
+        "explain": "Osoblje se prijavljuje vlastitim računom i ulogom."
+      },
+      "reports": {
+        "label": "Izvješća o prodaji",
+        "explain": "Ukupni iznosi, najprodavaniji artikli i prodaja po događaju ili datumu, uz izvoz u tablicu."
+      },
+      "domain": {
+        "label": "Vlastita web-adresa",
+        "explain": "Stranica za narudžbe na vlastitoj domeni tvrtke."
+      },
+      "whatsapp": {
+        "label": "Automatski odgovori na WhatsAppu",
+        "explain": "Na poruke kupaca na WhatsAppu odgovara se automatski."
+      },
+      "social": {
+        "label": "Objave za društvene mreže iz vašeg rasporeda",
+        "explain": "Gotove objave koje pokazuju gdje je food truck ovaj tjedan."
+      },
+      "igmsg": {
+        "label": "Odgovori na Instagramu i Messengeru",
+        "explain": "Na poruke na Instagramu i Facebook Messengeru odgovara se automatski."
+      },
+      "discovery": {
+        "label": "Na karti za pronalaženje food truckova",
+        "explain": "Kupci pronalaze food truck na javnoj karti food truckova u blizini.",
+        "ours": "Village Foodie"
+      },
+      "loyalty": {
+        "label": "Program vjernosti",
+        "explain": "Kupci skupljaju nagrade kad se vraćaju."
+      },
+      "ipad": {
+        "label": "Aplikacija za iPad",
+        "explain": "Aplikacija food trucka za primanje i upravljanje narudžbama na iPadu."
+      },
+      "android": {
+        "label": "Aplikacija za Android",
+        "explain": "Ista aplikacija na Android tabletu ili telefonu."
+      },
+      "hardware": {
+        "label": "Uključena oprema (tablet, pisač)",
+        "explain": "Dobavljač osigurava tablet ili pisač.",
+        "ours": "koristite vlastitu"
+      },
+      "terminal": {
+        "label": "Uključen POS uređaj za prozor",
+        "explain": "Dobavljač osigurava POS uređaj za plaćanja kod food trucka."
+      },
+      "fiscal": {
+        "label": "Certificirana blagajna za porezne propise (TSE, EET, kassaregister…)",
+        "explain": "Blagajna certificirana prema propisima zemlje o evidentiranju prodaje."
+      },
+      "delivery": {
+        "label": "Dostava",
+        "explain": "Narudžbe dostavljene na adresu kupca.",
+        "ours": "samo preuzimanje"
+      },
+      "monthly": {
+        "label": "Mjesečna cijena",
+        "explain": "Što tvrtka mjesečno plaća za softver."
+      },
+      "perorder": {
+        "label": "Naknada po online narudžbi",
+        "explain": "Što dobavljač naplaćuje na svaku online narudžbu, uz mjesečnu cijenu."
+      },
+      "cardfee": {
+        "label": "Kartična naknada",
+        "explain": "Naknada pružatelja usluge plaćanja na svako kartično plaćanje."
+      },
+      "term": {
+        "label": "Minimalno trajanje ugovora",
+        "explain": "Koliko je dugo tvrtka vezana prije nego što može otkazati."
+      },
+      "setup": {
+        "label": "Naknada za postavljanje",
+        "explain": "Jednokratna naknada za početak."
+      },
+      "trial": {
+        "label": "Besplatno probno razdoblje",
+        "explain": "Vrijeme za besplatno korištenje sustava prije plaćanja."
+      }
+    }
+  },
   "comparisonSuits": {
     "title": "Koji sustav odgovara vašem food trucku?",
     "checked": "Provjereno {date}",

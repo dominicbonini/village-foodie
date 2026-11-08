@@ -6367,6 +6367,400 @@
       "description": "Võrdle oma veebitellimuste praeguseid kulusid aastaga HatchGrabis — hinnang minutiga."
     }
   },
+  "comparison": {
+    "path": {
+      "section": "vordlus",
+      "slug": "toiduauto-tellimissusteem"
+    },
+    "meta": {
+      "title": "Toiduauto tellimissüsteemid 2026: funktsioonid ja hinnad",
+      "description": "Toiduauto tellimissüsteemide võrdlus: ettetellimused kättesaamise ajaga, köögi võimsus, nädala ajakava, tasud ja leping — kontrollitud pakkujate saitidelt.",
+      "about": "Veebitellimissüsteemid toiduautodele"
+    },
+    "breadcrumb": {
+      "home": "HatchGrab",
+      "here": "Võrdlus",
+      "label": "Navigatsioonirada"
+    },
+    "h1": "Toiduauto tellimissüsteemide võrdlus 2026",
+    "byline": "Viimati kontrollitud: {date} · Koostanud HatchGrab. Oleme ise üks võrreldud pakkujatest (vt <link>Kuidas me võrdlesime</link>).",
+    "tldr": {
+      "title": "Lühidalt",
+      "body": "Kui tahad, et kliendid telliksid telefonis ette ja valiksid kättesaamise aja, vajad tellimissüsteemi, mitte ainult kassat. Vaata nelja asja: kättesaamise ajad, mis arvestavad sinu köögi võimsusega; nädala ajakava vahetuvate asukohtade jaoks; väikesed tasud tellimuse kohta või üldse mitte; ja pikka lepingut pole. Makseterminalid ja kassad katavad maksmise toiduauto juures ning täiendavad tellimissüsteemi."
+    },
+    "table": {
+      "title": "Tellimissüsteemid võrdluses",
+      "caption": "Toiduautode veebitellimissüsteemide funktsioonid ja kulud {country} turul, seisuga {date}",
+      "note": "„Jah“ ainult siis, kui pakkuja seda avalikult ütleb.",
+      "feature": "Funktsioon",
+      "yes": "Jah",
+      "no": "Ei",
+      "unknown": "Pole öeldud",
+      "fromPlan": "Alates paketist {plan}",
+      "appNotInCountry": "Pole saadaval ({country})",
+      "appFlagOff": "Jah – lipp on veel väljas; kuvatakse, kui rakenduste poed selle avaldavad",
+      "range": "{from} kuni {to}",
+      "feePlan": "{fee} ({plans})",
+      "noFee": "puudub",
+      "morePending": "Rohkem pakkujaid lisandub siia, kui oleme nende andmed nende enda veebisaidilt üle kontrollinud.",
+      "priceHidden": "Päringu alusel",
+      "feeAfter": "{fee}, kui üle {included} kuus"
+    },
+    "costs": {
+      "title": "Mis maksab toiduauto tellimissüsteem?",
+      "ourPlan": "{plan}: {price} kuus, {fee}",
+      "feeOnly": "{fee} iga veebis kaardiga makstud tellimuse kohta",
+      "feeIncluded": "veebitellimused kuni {included} kuus hinnas, seejärel {fee}",
+      "feeNone": "veebitellimustelt HatchGrabi tasu pole",
+      "rivalPlan": "{plan}: {price}",
+      "perMonth": "{price} kuus",
+      "perMonthYearly": "{price} kuus, arveldatakse kord aastas",
+      "vatExcl": "käibemaksuta",
+      "vatIncl": "koos käibemaksuga",
+      "setup": "{price} ühekordne liitumistasu",
+      "truckFee": "{fee} tellimuse kohta",
+      "customerFee": "{fee} tellimuse kohta, maksab klient",
+      "source": "Allikas",
+      "checked": "kontrollitud {date}",
+      "cardFee": "Veebis kaardiga makstes lisanduvad HatchGrabiga ka Stripe’i tasud: {country} kaardimaksete puhul {cardFee} makse kohta.",
+      "vat": "HatchGrab Ltd on Ühendkuningriigi ettevõte ega ole registreeritud {country} käibemaksukohustuslasena, seega meie tasudele käibemaksu ei lisandu. Kui oled registreeritud käibemaksukohustuslane, anna meile oma KMKR-number; siis arvestad meie tasudelt käibemaksu ise pöördmaksustamise korras.",
+      "bundledFee": "{fee} veebimakse kohta, kaardimaksetasu hinnas"
+    },
+    "fit": {
+      "title": "Milline süsteem kellele sobib?",
+      "ours": "HatchGrab sobib sulle, kui …",
+      "oursBody": "müüd vahetuvates kohtades, tahad ettetellimusi kättesaamise ajaga, ei taha oma kööki üle koormata ega soovi lepingut.",
+      "oursNot": "HatchGrab ei sobi sulle, kui …",
+      "oursNotBody": "sinu kliendid peaksid saama maksta PayPali või Klarnaga või tahad ühelt tarnijalt ka sertifitseeritud kassat, mis vastab riigi maksunõuetele.",
+      "appClause": "Või kui vajad köögirakendust iPadis või Androidis: {country} rakenduste poodides seda veel pole.",
+      "tills": "Kassad ja makseterminalid",
+      "marketplaces": "Kojuveoplatvormid",
+      "rival": "{name} sobib, kui …",
+      "tillsBody": "Kassad võtavad makse vastu toiduauto juures ja täidavad riigi maksunõuded müügi registreerimisele. Tellimissüsteem töötab koos kassaga, see ei asenda seda.",
+      "tillsBodyNamed": "Kassad võtavad makse vastu toiduauto juures ja täidavad riigi maksunõuded müügi registreerimisele. {names} {count, plural, one {on} other {on}} ka ülaltoodud tabelis. Tellimissüsteem töötab koos kassaga, see ei asenda seda.",
+      "marketplacesBody": "Kojuveoplatvormid toovad uusi kliente, kuid võtavad igalt tellimuselt vahendustasu. Uber Eats märgib Saksamaa kohta 14% ise järele tulles ja 30% Uberi kulleritega kojuveol. Wolt ütleb oma veebisaidil, et võtab vahendustasu, kuid määrasid ei avalda. Lieferando määrasid ei õnnestunud meil kontrollida. See vahendustasu kehtib ka püsiklientidele, kes sinu juures ette tellivad."
+    },
+    "groups": {
+      "food_truck": "Toiduauto tellimissüsteem",
+      "nearest_local": "Tellimissüsteem",
+      "pos": "Kassasüsteem"
+    },
+    "faq": {
+      "title": "Korduma kippuvad küsimused",
+      "whatQ": "Mis on toiduauto tellimissüsteem?",
+      "whatA": "Tellimissüsteem võtab tellimused veebis vastu enne, kui kliendid toiduautoni jõuavad: nad valivad toidud ja kättesaamise aja, maksavad veebis või kättesaamisel ning tellimus ilmub sinu kööki. Kassa või makseterminal võtab makse vastu toiduauto juures. Need kaks täiendavad teineteist.",
+      "costQ": "Mis maksab HatchGrab {country} toiduautole?",
+      "costA": "{plans}. Veebis kaardiga makstes lisanduvad Stripe’i tasud: {cardFee} kaardimakse kohta.",
+      "termQ": "Kas lepingul on miinimumperiood?",
+      "termA": "Ei. Miinimumperioodi ega etteteatamistähtaega pole. Võid igal ajal loobuda; tasu arveldatakse igakuiselt ette ja juurdepääs jääb sulle kuni makstud kuu lõpuni.",
+      "locationsQ": "Kas see sobib vahetuvate asukohtadega?",
+      "locationsA": "Jah. Seadistad oma nädala ajakava kohtade ja kellaaegadega ning kliendid tellivad selle koha ja päeva jaoks, kus sa oled.",
+      "capacityQ": "Kuidas süsteem hoiab ära mu köögi ülekoormuse?",
+      "capacityA": "Kliendid näevad ainult kättesaamise aegu, mida sinu köök tegelikult jõuab. Süsteem arvestab iga toidu valmistusaega ja seda, mitu sa korraga valmistad.",
+      "tseQ": "Kas mul on ikkagi vaja sertifitseeritud kassat?",
+      "tseA": "HatchGrab ei ole kassa ega ole maksunõuete järgi sertifitseeritud. Kuidas veebitellimusi oma kassas kajastada, küsi oma maksunõustajalt.",
+      "paymentsQ": "Milliseid makseviise HatchGrab toetab?",
+      "paymentsA": "Kliendid maksavad veebis kaardiga, Apple Pay või Google Payga või maksavad toiduauto juures. PayPali ja Klarnat praegu ei toetata.",
+      "costTrial": "{months, plural, one {Esimene kuu on} other {Esimesed # kuud on}} tasuta, kõigi funktsioonidega."
+    },
+    "method": {
+      "title": "Kuidas me võrdlesime",
+      "checked": "Viimati kontrollitud {date}.",
+      "prices": "Hinnad on esitatud nii, nagu pakkuja need välja toob, koos käibemaksuga.",
+      "meaning": "„Jah“ tähendab, et pakkuja toob funktsiooni avalikult välja. „Pole öeldud“ tähendab, et me ei leidnud selle kohta nende veebisaidilt midagi — mitte seda, et funktsioon puudub.",
+      "vendor": "Seda lehte haldab HatchGrab, mis on ka üks võrreldud pakkujatest.",
+      "review": "Hindu ja funktsioone kontrollitakse automaatselt iga toote enda veebisaidilt; iga väide viitab oma allikale.",
+      "corrections": "Leidsid vea? Anna meile teada meie <link>kontaktivormi</link> kaudu.",
+      "reportError": "<link>Teata veast</link>",
+      "machine": "Tehisintellekti assistentidele ja arendajatele: see tabel <md>Markdownina</md> · <json>JSON-ina</json>"
+    },
+    "cta": {
+      "title": "Proovi {months, plural, one {# kuu} other {# kuud}} tasuta",
+      "noCard": "Krediitkaarti pole vaja",
+      "cancel": "Saad loobuda iga kuu",
+      "button": "Proovi tasuta"
+    },
+    "admin": {
+      "status": "Mustand · noindex · pole saidikaardis, llms.txt-is ega hreflangis · jaluse link ainult adminidele",
+      "statusLive": "Avaldatud · avalik ja indekseeritav",
+      "viewAdmin": "Admini vaade",
+      "viewPublic": "Mida avalikkus näeb",
+      "pricingCheck": "Ava hinnakontroll",
+      "checklist": "Enne avaldamist",
+      "goLive": "Leht avaldatakse jaotises Admin › Riigid.",
+      "check": {
+        "apps": "iPadi ja Androidi lipud sees ({country})",
+        "verified": "Vähemalt 2 kinnitatud pakkujat ({n} kinnitatud)",
+        "placeholders": "Tekstis pole ühtegi „[ … ]“ kohatäidet",
+        "vat": "Käibemaksu tekst olemas",
+        "impressum": "Impressumi otsus salvestatud"
+      },
+      "unverified": "kinnitamata · avalikkuse eest peidetud",
+      "autoVerified": "automaatselt kinnitatud",
+      "unchecked": "pole veel iga näidatud konkurendi puhul kontrollitud · avalikkuse eest peidetud",
+      "label": "Admin",
+      "notShown": "Lehel pole (näidatakse kuni nelja): {names}.",
+      "reasonHidden": "{name} (peidetud)",
+      "reasonBeyond": "{name} (väljaspool nelja)",
+      "reasonNoWebsite": "{name} (veebisait puudub)"
+    },
+    "footer": {
+      "heading": "Võrdlus",
+      "link": "Tellimissüsteemide võrdlus"
+    },
+    "featureGroups": {
+      "ordering": "Tellimine",
+      "payments": "Maksed",
+      "kitchen": "Köök",
+      "marketing": "Turundus",
+      "apps_hardware": "Rakendused ja riistvara",
+      "price_contract": "Hind ja leping"
+    },
+    "cell": {
+      "yes": "Jah",
+      "no": "Ei",
+      "partial": "Osaliselt",
+      "unknown": "Pole öeldud",
+      "not_mentioned": "Veebisaidil pole öeldud",
+      "withNote": "{word}, {note}",
+      "soon": "tulekul",
+      "fromPlan": "alates paketist {plan}",
+      "perCardPayment": "{fee} kaardimakse kohta",
+      "trial": "{months, plural, one {# kuu} other {# kuud}} tasuta",
+      "setupFee": "{price} ühekordselt",
+      "perMonth": "{price} kuus",
+      "notInCountry": "pole saadaval ({country})",
+      "flagOff": "lipp on veel väljas; kuvatakse, kui rakenduste poed selle avaldavad",
+      "notApplicable": "turu puhul ei kehti",
+      "not_listed": "Pole mainitud"
+    },
+    "explained": {
+      "title": "Mida funktsioonid tähendavad"
+    },
+    "costBlock": {
+      "title": "Mida toiduauto igas kuus maksab",
+      "sizes": "Veebimüük kuus",
+      "sizeSales": "{sales} kuus",
+      "sizeOrders": "umbes {orders} tellimust",
+      "lead": "Toiduautole, mis saab kuus veebitellimusi {sales} eest (umbes {orders} tellimust). Iga tulp on kuu kogukulu: tellimissüsteemi enda tasu pluss nende tellimuste kaardimaksetasud.",
+      "legendSoftware": "Tarkvaratasu",
+      "legendCard": "Kaardimaksetasud",
+      "software": "Tarkvaratasu {amount} kuus",
+      "card": "Kaardimaksetasud {amount} kuus",
+      "total": "{amount} kuus koos kaardimaksetasudega",
+      "share": "{pct} müügist",
+      "assumed": "(määra pole avaldatud, eeldatud)",
+      "customerFee": "Lisaks {amount} kuus, mida maksavad kliendid ({fee} tellimuse kohta) — tulbas pole",
+      "summaryCheapest": "Teenuse {us} enda tasu on {ours} kuus, odavaimal näidatud konkurendil {theirs} kuus. Kaardimaksetasud ({card} kuus) lisanduvad igale kaardimaksele, ükskõik millist süsteemi kasutad, seega oluline erinevus on tarkvaratasus.",
+      "summaryNotCheapest": "Teenuse {us} enda tasu on {ours} kuus, mis on rohkem kui {theirs} kuus odavaimal näidatud konkurendil {rival}. Kaardimaksetasud ({card} kuus) lisanduvad igale kaardimaksele, ükskõik millist süsteemi kasutad.",
+      "summaryAlone": "Teenuse {us} enda tasu on {ours} kuus. Kaardimaksetasud ({card} kuus) lisanduvad igale kaardimaksele, ükskõik millist süsteemi kasutad.",
+      "footOrder": "Keskmine tellimus {order}: tüüpiline toit hinnaga {meal} × {multiplier} toitu tellimuse kohta ({source}).",
+      "footCard": "Kaardimaksetasude arvutuses on kasutatud määra {rate} kaardimakse kohta: {source}.",
+      "footCardSource": "Stripe’i määr ({country})",
+      "footAssumed": "{names} {count, plural, one {ei avalda} other {ei avalda}} kaardimakse määra, seega oleme määra ise eeldanud.",
+      "footChecked": "Hinnad kontrollitud {date}.",
+      "footCalculator": "Arvuta oma numbrid kalkulaatoris.",
+      "noRivals": "{country} turul pole veel ühtegi konkurenti kinnitatud, seega pole midagi võrrelda."
+    },
+    "features": {
+      "preorder": {
+        "label": "Ettetellimused valitud kättesaamise ajaga",
+        "explain": "Kliendid tellivad ette ja valivad, mis kell nad tellimuse kätte saavad."
+      },
+      "capacity": {
+        "label": "Kättesaamise ajad köögi võimsuse järgi",
+        "explain": "Kliendid näevad ainult kättesaamise aegu, mida köök tegelikult jõuab."
+      },
+      "asap": {
+        "label": "Tellimused esimesel võimalusel",
+        "explain": "Kliendid saavad tellida aega valimata ja tellimuse kätte niipea, kui see valmis on."
+      },
+      "ahead": {
+        "label": "Ettetellimine hilisemaks päevaks või ürituseks",
+        "explain": "Kliendid saavad täna tellida hilisemal päeval toimuvaks turuks või ürituseks."
+      },
+      "schedule": {
+        "label": "Nädala ajakava vahetuvate asukohtadega",
+        "explain": "Toiduauto nädala kohad ja kellaajad; kliendid tellivad selle koha ja päeva jaoks, kus toiduauto on."
+      },
+      "walkup": {
+        "label": "Kohapealsed tellimused samal ekraanil veebitellimustega",
+        "explain": "Leti juures vastu võetud tellimused lähevad samasse nimekirja veebitellimustega."
+      },
+      "stock": {
+        "label": "Läbimüük ja laoseisu piirangud ürituse kaupa",
+        "explain": "Märgi toidud läbimüüduks ja määra, mitu igaüht saab ühel üritusel müüa."
+      },
+      "notify": {
+        "label": "Kliendile teade, kui tellimus on valmis",
+        "explain": "Kuidas kliendid saavad teada, et tellimus on valmis: SMS, WhatsApp, e-post, tõuketeade või reaalajas tellimuse olekuleht.",
+        "ours": "e-kiri, kui „tellimus valmis“ samm on sisse lülitatud, ja tellimuse olekuleht; SMS-i, WhatsAppi ega tõuketeateid pole"
+      },
+      "allergens": {
+        "label": "Allergeenid menüüs",
+        "explain": "Iga toidu juures näevad kliendid enne tellimist selle allergeene."
+      },
+      "menuphoto": {
+        "label": "Menüü seadistamine fotolt",
+        "explain": "Menüü foto või PDF täidab toidud ära, sina kontrollid need üle."
+      },
+      "options": {
+        "label": "Valikud ja lisandid toitudele",
+        "explain": "Suurused, kastmed ja lisandid, sh valikud, mille klient peab tegema."
+      },
+      "deals": {
+        "label": "Komplektid",
+        "explain": "Mitu toodet koos ühe hinnaga."
+      },
+      "private": {
+        "label": "Eraüritused ja broneeringud",
+        "explain": "Eraürituse tellimused selle oma lingi kaudu ja päringud toiduauto rentimiseks.",
+        "ours": "eraüritused oma tellimislingiga; broneerimispäringuid pole"
+      },
+      "qr": {
+        "label": "Laua- / QR-tellimine kohtadel",
+        "explain": "Kliendid skannivad laual koodi ja tellimus saabub koos lauanumbriga.",
+        "ours": "QR-kood avab tellimislehe; lauanumbreid pole"
+      },
+      "cards": {
+        "label": "Veebis kaardimaksed, sh Apple Pay ja Google Pay",
+        "explain": "Kliendid maksavad tellides veebis kaardiga, Apple Pay või Google Payga."
+      },
+      "payattruck": {
+        "label": "Tasumine kättesaamisel",
+        "explain": "Kliendid tellivad veebis ja maksavad kättesaamisel."
+      },
+      "localpay": {
+        "label": "Kohalikud makseviisid (BLIK, iDEAL, Swish, MobilePay…)",
+        "explain": "Riigi enda veebimakseviisid lisaks kaartidele.",
+        "ours": "ainult kaardid"
+      },
+      "paypal": {
+        "label": "PayPal või Klarna",
+        "explain": "Kliendid saavad maksta PayPali või Klarnaga."
+      },
+      "custfee": {
+        "label": "Võimalus lasta kliendil tellimustasu maksta",
+        "explain": "Ettevõte saab teenustasu kliendile edasi anda."
+      },
+      "tips": {
+        "label": "Jootraha",
+        "explain": "Kliendid saavad veebis makstes jootraha lisada."
+      },
+      "paymethods": {
+        "label": "Pakutavad makseviisid",
+        "explain": "Kuidas kliendid saavad maksta, pakkuja sõnul.",
+        "ours": "kaart, Apple Pay, Google Pay; tasumine kättesaamisel"
+      },
+      "kds": {
+        "label": "Köögiekraan (KDS)",
+        "explain": "Tellimused ilmuvad köögis ekraanile valmistamise järjekorras."
+      },
+      "tickets": {
+        "label": "Prinditud köögitšekid",
+        "explain": "Iga tellimus prinditakse toiduautos tšekiprinterist.",
+        "ours": "iPadi ja Androidi rakenduses; printerit ei pakuta"
+      },
+      "buzzers": {
+        "label": "Piiparid",
+        "explain": "Klient saab piipari, mis annab märku, kui tellimus on valmis.",
+        "ours": "iga tellimuse juurde salvestatakse piipari number; piipareid ei pakuta"
+      },
+      "offline": {
+        "label": "Töötab ka internetiühenduse katkedes",
+        "explain": "Ilma ühenduseta tehtud tellimused ja muudatused salvestatakse ja saadetakse, kui ühendus taastub.",
+        "ours": "iPadi ja Androidi rakenduses; mitte veebipõhisel töölaual"
+      },
+      "vans": {
+        "label": "Mitu toiduautot",
+        "explain": "Ühe kontoga saab hallata rohkem kui üht toiduautot.",
+        "ours": "lisaautod igakuise lisatasu eest"
+      },
+      "staff": {
+        "label": "Töötajate kontod",
+        "explain": "Töötajad logivad sisse oma kasutaja ja rolliga."
+      },
+      "reports": {
+        "label": "Müügiaruanded",
+        "explain": "Kogusummad, enimmüüdud tooted ja müük ürituse või kuupäeva kaupa, koos tabelarvutuse ekspordiga."
+      },
+      "domain": {
+        "label": "Oma veebiaadress",
+        "explain": "Tellimisleht ettevõtte enda domeenil."
+      },
+      "whatsapp": {
+        "label": "WhatsAppi automaatvastused",
+        "explain": "Klientide WhatsAppi sõnumitele vastatakse automaatselt."
+      },
+      "social": {
+        "label": "Sotsiaalmeedia postitused sinu ajakavast",
+        "explain": "Valmis postitused, mis näitavad, kus toiduauto sel nädalal on."
+      },
+      "igmsg": {
+        "label": "Instagrami ja Messengeri vastused",
+        "explain": "Instagrami ja Facebook Messengeri sõnumitele vastatakse automaatselt."
+      },
+      "discovery": {
+        "label": "Nähtav toiduautode kaardil",
+        "explain": "Kliendid leiavad toiduauto avalikult kaardilt, mis näitab lähedal olevaid toiduautosid.",
+        "ours": "Village Foodie"
+      },
+      "loyalty": {
+        "label": "Püsikliendiprogramm",
+        "explain": "Kliendid koguvad tagasi tulles boonuseid."
+      },
+      "ipad": {
+        "label": "iPadi rakendus",
+        "explain": "Toiduauto rakendus tellimuste vastuvõtmiseks ja haldamiseks iPadis."
+      },
+      "android": {
+        "label": "Androidi rakendus",
+        "explain": "Sama rakendus Androidi tahvelarvutis või telefonis."
+      },
+      "hardware": {
+        "label": "Riistvara kaasas (tahvelarvuti, printer)",
+        "explain": "Pakkuja annab tahvelarvuti või printeri.",
+        "ours": "kasutad oma seadmeid"
+      },
+      "terminal": {
+        "label": "Makseterminal leti jaoks kaasas",
+        "explain": "Pakkuja annab makseterminali maksete vastuvõtmiseks toiduauto juures."
+      },
+      "fiscal": {
+        "label": "Maksunõuetele vastav sertifitseeritud kassa (TSE, EET, kassaregister…)",
+        "explain": "Kassa, mis on sertifitseeritud riigi müügi registreerimise nõuete järgi."
+      },
+      "delivery": {
+        "label": "Kojuvedu",
+        "explain": "Tellimused toimetatakse kliendi aadressile.",
+        "ours": "ainult kättesaamine kohapeal"
+      },
+      "monthly": {
+        "label": "Kuuhind",
+        "explain": "Mida ettevõte maksab tarkvara eest igas kuus."
+      },
+      "perorder": {
+        "label": "Tasu veebitellimuse kohta",
+        "explain": "Mida pakkuja võtab igalt veebitellimuselt lisaks kuuhinnale."
+      },
+      "cardfee": {
+        "label": "Kaardimaksetasu",
+        "explain": "Makseteenuse pakkuja tasu iga kaardimakse pealt."
+      },
+      "term": {
+        "label": "Minimaalne lepinguperiood",
+        "explain": "Kui kauaks on ettevõte seotud, enne kui saab lepingu lõpetada."
+      },
+      "setup": {
+        "label": "Liitumistasu",
+        "explain": "Ühekordne tasu alustamiseks."
+      },
+      "trial": {
+        "label": "Tasuta prooviperiood",
+        "explain": "Aeg süsteemi tasuta kasutamiseks enne maksmist."
+      }
+    }
+  },
   "comparisonSuits": {
     "title": "Milline süsteem sobib sinu toiduautole?",
     "checked": "Kontrollitud {date}",

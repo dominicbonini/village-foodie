@@ -91,10 +91,12 @@ async function renderer(kit, tag = 'cde1') {
     "export { PLACEHOLDER } from '@/lib/comparison'",
   ].join('\n'), { stubs: { '@/lib/auth/admin': ADMIN_STUB } })
   const SEG = { country: 'de', section: 'vergleich', slug: 'foodtruck-bestellsystem' }
-  async function req({ status = 'admin', apps = false, admin = false, tables = {} }, fn) {
+  // compare-languages-1: `enable` — more countries switched on in the stand-in (a page in another language needs its country on).
+  async function req({ status = 'admin', apps = false, admin = false, tables = {}, enable = [] }, fn) {
     globalThis.__cmpAdmin = admin
     try {
-      return await ctx.withReq({ rows: rowsWith(status, apps), tables: { ...planTables, ...CMP_TABLES(), ...tables } }, async () => { M.__p(); M.__cmp(); return fn() })
+      const rows = rowsWith(status, apps).map(r => (enable.includes(r.countryCode) ? { ...r, enabled: true } : r))
+      return await ctx.withReq({ rows, tables: { ...planTables, ...CMP_TABLES(), ...tables } }, async () => { M.__p(); M.__cmp(); return fn() })
     } finally { delete globalThis.__cmpAdmin }
   }
   async function page(o = {}) {

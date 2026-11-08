@@ -8,7 +8,8 @@
 // set by SQL on the day, docs/compare-de-1-report.md). Before 20261042 has run the column is missing: GET says
 // `ready: false` and PATCH refuses with a plain sentence. After a save both caches are cleared, so this instance shows
 // the change at once and every other within 60 seconds.
-// compare-autopublish-1 (7 November 2026, Dominic's Q1 = C / Q2 = A): every English- or German-language country is listed, with its
+// compare-autopublish-1 (7 November 2026, Dominic's Q1 = C / Q2 = A): every country with a comparison page is listed (compare-languages-1:
+// every language, AE never), with its
 // AUTO-PUBLISH switch (public.comparison_publish — not a protected table) and the automatic verdict. `status` is Admin's own
 // (country_settings); `effective` is what the site shows (live when Admin says live, or auto-publish on and the evaluation says live).
 //   PATCH { code, status }       — as before; setting 'off' is now RECORDED (admin_off) and always wins over auto-publish; 'admin' /
@@ -54,7 +55,7 @@ export async function GET(req: NextRequest) {
           autoLive: p?.auto_live === true, adminOff: p?.admin_off === true, evaluatedAt: (p?.evaluated_at as string | null) ?? null,
           shown: Array.isArray(p?.shown) ? (p!.shown as { name: string }[]).map(s => s.name) : [] }
       })
-      // The page is written in German and English: every country whose language has it.
+      // compare-languages-1 (8 November 2026): the page is in every language base — every country with an address, except AE.
       .filter(r => r.path)
     return NextResponse.json({ ready: isReady, countries: rows })
   } catch (e) {

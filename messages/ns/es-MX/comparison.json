@@ -1,0 +1,120 @@
+{
+  "path": {
+    "section": "comparativo"
+  },
+  "meta": {
+    "description": "Sistemas de pedidos para food trucks: hora para recoger, capacidad de cocina, agenda, comisiones y plazo forzoso, revisados en el sitio de cada proveedor."
+  },
+  "byline": "Última revisión: {date} · Hecho por HatchGrab. Somos uno de los proveedores comparados (consulta <link>Cómo comparamos</link>).",
+  "tldr": {
+    "body": "Si quieres que tus clientes pidan por adelantado desde el celular y elijan una hora para recoger, necesitas un sistema de pedidos, no solo un punto de venta. Fíjate en cuatro cosas: horas para recoger que se ajusten a la capacidad de tu cocina; una agenda semanal para ubicaciones que cambian; comisiones por pedido bajas o nulas; y nada de plazos forzosos largos. Las terminales y los puntos de venta cubren el cobro en el food truck y complementan un sistema de pedidos."
+  },
+  "table": {
+    "caption": "Funciones y costos de los sistemas de pedidos online para food trucks en {country}, al {date}",
+    "morePending": "Aquí aparecerán más proveedores en cuanto revisemos sus datos en su propio sitio web."
+  },
+  "costs": {
+    "setup": "{price} de activación (pago único)"
+  },
+  "fit": {
+    "oursBody": "vendes en ubicaciones que cambian, quieres pedidos anticipados con hora para recoger, no quieres que tu cocina se sature y no quieres plazos forzosos.",
+    "oursNotBody": "tus clientes tienen que poder pagar con PayPal o Klarna, o quieres un punto de venta certificado según la normativa fiscal, todo de un mismo proveedor.",
+    "tills": "Puntos de venta y terminales",
+    "marketplaces": "Plataformas de entrega a domicilio",
+    "tillsBody": "Los puntos de venta cobran en el food truck y cumplen los requisitos fiscales de un sistema de caja certificado. Un sistema de pedidos funciona junto a un punto de venta; no lo sustituye.",
+    "tillsBodyNamed": "Los puntos de venta cobran en el food truck y cumplen los requisitos fiscales de un sistema de caja certificado. {names} también {count, plural, one {aparece} many {aparecen} other {aparecen}} en la tabla de arriba. Un sistema de pedidos funciona junto a un punto de venta; no lo sustituye.",
+    "marketplacesBody": "Las plataformas de entrega a domicilio traen clientes nuevos, pero se quedan con una comisión de cada pedido. Uber Eats indica un 14 % para recoger y un 30 % para entrega con repartidores de Uber en Alemania. Wolt dice en su propio sitio web que cobra comisión, pero no da las tarifas. No pudimos comprobar las tarifas de Lieferando. Esa comisión también se aplica a los clientes frecuentes que te hacen pedidos anticipados."
+  },
+  "groups": {
+    "pos": "Punto de venta"
+  },
+  "faq": {
+    "whatA": "Un sistema de pedidos recibe pedidos online antes de que los clientes lleguen al food truck: eligen los platillos y una hora para recoger, pagan online o al recoger, y el pedido aparece en tu cocina. Un punto de venta o una terminal cobra en el food truck. Las dos cosas se complementan.",
+    "termQ": "¿Hay plazo forzoso?",
+    "termA": "No. No hay plazo forzoso ni periodo de aviso previo. Puedes cancelar cuando quieras; la cuota se cobra por mes y por adelantado, y mantienes el acceso hasta el final del mes que pagaste.",
+    "capacityQ": "¿Cómo evita el sistema que mi cocina se sature?",
+    "capacityA": "Los clientes solo ven las horas para recoger que tu cocina realmente puede cumplir. El sistema toma en cuenta el tiempo de preparación de cada platillo y cuántos preparas a la vez.",
+    "tseQ": "¿Sigo necesitando un punto de venta certificado?",
+    "tseA": "HatchGrab no es un punto de venta y no está certificado según la normativa fiscal para sistemas de caja. Cómo registrar los pedidos online en tu punto de venta es algo que debes consultar con tu contador."
+  },
+  "method": {
+    "title": "Cómo comparamos",
+    "meaning": "“Sí” significa que el proveedor anuncia la función públicamente. “No lo dice” significa que no encontramos nada al respecto en su sitio web, no que la función no exista.",
+    "review": "Los precios y las funciones se revisan automáticamente en el sitio web de cada producto; cada dato enlaza a su fuente.",
+    "corrections": "¿Encontraste un error? Avísanos en nuestro <link>formulario de contacto</link>."
+  },
+  "admin": {
+    "reasonNoWebsite": "{name} (sin sitio web)"
+  },
+  "costBlock": {
+    "lead": "Para un food truck que vende {sales} en pedidos online al mes (unos {orders} pedidos). Cada barra es el costo mensual total: la tarifa del propio sistema de pedidos más las comisiones de tarjeta de esos pedidos.",
+    "footOrder": "Pedido promedio de {order}: una comida típica de {meal} × {multiplier} platillos por pedido ({source})."
+  },
+  "features": {
+    "preorder": {
+      "label": "Pedidos anticipados con hora para recoger a elegir"
+    },
+    "capacity": {
+      "label": "Horas para recoger según la capacidad de cocina",
+      "explain": "Los clientes solo ven las horas para recoger que la cocina realmente puede cumplir."
+    },
+    "stock": {
+      "explain": "Marca platillos como agotados y fija cuántas unidades de cada uno se pueden vender en un evento."
+    },
+    "notify": {
+      "explain": "Cómo se enteran los clientes de que su pedido está listo: SMS, WhatsApp, email, notificación push o una página con el estado del pedido en tiempo real."
+    },
+    "allergens": {
+      "label": "Alérgenos en el menú",
+      "explain": "Cada platillo muestra sus alérgenos a los clientes antes de que pidan."
+    },
+    "menuphoto": {
+      "label": "Menú creado a partir de una foto",
+      "explain": "Una foto o un PDF del menú llena los platillos para que tú los revises."
+    },
+    "options": {
+      "label": "Opciones y extras en los platillos"
+    },
+    "deals": {
+      "label": "Combos y paquetes"
+    },
+    "private": {
+      "label": "Eventos privados y renta",
+      "explain": "Pedidos para un evento privado con su propio enlace, y solicitudes para rentar el food truck.",
+      "ours": "eventos privados con su propio enlace de pedidos; sin solicitudes de renta"
+    },
+    "custfee": {
+      "explain": "El negocio puede trasladarle al cliente un cargo por servicio."
+    },
+    "vans": {
+      "label": "Varias camionetas o food trucks",
+      "ours": "camionetas adicionales por una cuota mensual extra"
+    },
+    "reports": {
+      "label": "Reportes de ventas"
+    },
+    "loyalty": {
+      "label": "Programa de lealtad"
+    },
+    "android": {
+      "explain": "La misma app en una tablet o un celular Android."
+    },
+    "terminal": {
+      "label": "Terminal para la ventanilla incluida",
+      "explain": "El proveedor da una terminal para cobrar en el food truck."
+    },
+    "fiscal": {
+      "label": "Punto de venta certificado según la normativa fiscal (TSE, EET, kassaregister…)",
+      "explain": "Un punto de venta certificado según las normas del país sobre el registro de ventas."
+    },
+    "delivery": {
+      "label": "Entrega a domicilio"
+    },
+    "term": {
+      "label": "Plazo forzoso"
+    },
+    "setup": {
+      "label": "Cargo de activación"
+    }
+  }
+}

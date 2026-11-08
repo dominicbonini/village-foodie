@@ -6367,6 +6367,400 @@
       "description": "Palyginkite, kiek dabar jums kainuoja internetiniai užsakymai, su metais HatchGrab — įvertinimas per minutę."
     }
   },
+  "comparison": {
+    "path": {
+      "section": "palyginimas",
+      "slug": "food-truck-uzsakymu-sistema"
+    },
+    "meta": {
+      "title": "Food truck užsakymų sistemų palyginimas 2026: kainos",
+      "description": "Food truck užsakymų sistemos: užsakymai su atsiėmimo laiku, virtuvės pajėgumas, tvarkaraštis, mokesčiai ir sutartis — patikrinta tiekėjų svetainėse.",
+      "about": "Internetinės užsakymų sistemos food truck verslui"
+    },
+    "breadcrumb": {
+      "home": "HatchGrab",
+      "here": "Palyginimas",
+      "label": "Naršymo kelias"
+    },
+    "h1": "Food truck užsakymų sistemų palyginimas 2026",
+    "byline": "Paskutinį kartą patikrinta: {date} · Parengė HatchGrab. Esame vienas iš palyginamų tiekėjų (žr. <link>Kaip palyginome</link>).",
+    "tldr": {
+      "title": "Trumpai",
+      "body": "Jei norite, kad klientai užsisakytų iš anksto telefonu ir pasirinktų atsiėmimo laiką, jums reikia užsakymų sistemos, o ne vien kasos. Atkreipkite dėmesį į keturis dalykus: atsiėmimo laikai, kurie prisitaiko prie jūsų virtuvės pajėgumo; savaitės tvarkaraštis kintančioms vietoms; maži mokesčiai už užsakymą arba jokių; ir jokios ilgos sutarties. Mokėjimo terminalai ir kasos skirti mokėjimams prie furgono ir papildo užsakymų sistemą."
+    },
+    "table": {
+      "title": "Palygintos užsakymų sistemos",
+      "caption": "Food truck internetinių užsakymų sistemų funkcijos ir kainos ({country}), {date} duomenimis",
+      "note": "„Taip“ tik tada, kai tiekėjas tai skelbia viešai.",
+      "feature": "Funkcija",
+      "yes": "Taip",
+      "no": "Ne",
+      "unknown": "Nieko nesakoma",
+      "fromPlan": "Nuo plano {plan}",
+      "appNotInCountry": "Neprieinama ({country})",
+      "appFlagOff": "Taip – vėliavėlė dar išjungta; bus rodoma, kai atsiras programėlių parduotuvėse",
+      "range": "nuo {from} iki {to}",
+      "feePlan": "{fee} ({plans})",
+      "noFee": "nėra",
+      "morePending": "Daugiau tiekėjų čia atsiras, kai patikrinsime jų duomenis jų pačių svetainėse.",
+      "priceHidden": "Pagal užklausą",
+      "feeAfter": "{fee} viršijus {included} per mėnesį"
+    },
+    "costs": {
+      "title": "Kiek kainuoja food truck užsakymų sistema?",
+      "ourPlan": "{plan}: {price} per mėnesį, {fee}",
+      "feeOnly": "{fee} už kiekvieną internetu kortele apmokėtą užsakymą",
+      "feeIncluded": "užsakymai internetu iki {included} per mėnesį įskaičiuoti, vėliau {fee}",
+      "feeNone": "HatchGrab neima mokesčio už užsakymus internetu",
+      "rivalPlan": "{plan}: {price}",
+      "perMonth": "{price} per mėnesį",
+      "perMonthYearly": "{price} per mėnesį, mokant už metus",
+      "vatExcl": "be PVM",
+      "vatIncl": "su PVM",
+      "setup": "{price} vienkartinis pradinis mokestis",
+      "truckFee": "{fee} už užsakymą",
+      "customerFee": "{fee} už užsakymą, moka klientas",
+      "source": "Šaltinis",
+      "checked": "patikrinta {date}",
+      "cardFee": "Su HatchGrab už mokėjimus kortele internetu taip pat taikomi Stripe mokesčiai: {cardFee} už mokėjimą kortele ({country}).",
+      "vat": "HatchGrab Ltd yra JK įmonė ir nėra įregistruota kaip PVM mokėtoja ({country}), todėl prie mūsų mokesčių PVM nepridedamas. Jei esate PVM mokėtojas, pateikite mums savo PVM mokėtojo kodą; tada PVM nuo mūsų mokesčių apskaičiuojate patys pagal atvirkštinio apmokestinimo tvarką.",
+      "bundledFee": "{fee} už mokėjimą internetu, įskaitant kortelės mokestį"
+    },
+    "fit": {
+      "title": "Kokia sistema kam tinka?",
+      "ours": "HatchGrab jums tinka, jei …",
+      "oursBody": "prekiaujate kintančiose vietose, norite išankstinių užsakymų su atsiėmimo laiku, nenorite perkrauti virtuvės ir nenorite sutarties.",
+      "oursNot": "HatchGrab jums netinka, jei …",
+      "oursNotBody": "jūsų klientai turėtų mokėti PayPal ar Klarna arba norite iš vieno tiekėjo gauti ir sertifikuotą kasą, atitinkančią šalies mokesčių reikalavimus.",
+      "appClause": "Arba jei jums reikia virtuvės programėlės iPad ar Android įrenginiams ({country}): ten jos dar nėra programėlių parduotuvėse.",
+      "tills": "Kasos ir mokėjimo terminalai",
+      "marketplaces": "Pristatymo platformos",
+      "rival": "{name} tinka, jei …",
+      "tillsBody": "Kasos priima mokėjimus prie furgono ir atitinka šalies mokesčių reikalavimus pardavimams registruoti. Užsakymų sistema veikia kartu su kasa, o ne ją pakeičia.",
+      "tillsBodyNamed": "Kasos priima mokėjimus prie furgono ir atitinka šalies mokesčių reikalavimus pardavimams registruoti. {names} {count, plural, one {taip pat yra} few {taip pat yra} many {taip pat yra} other {taip pat yra}} lentelėje aukščiau. Užsakymų sistema veikia kartu su kasa, o ne ją pakeičia.",
+      "marketplacesBody": "Pristatymo platformos atveda naujų klientų, bet už kiekvieną užsakymą ima komisinius. Uber Eats Vokietijoje nurodo 14 % už atsiėmimą ir 30 % už pristatymą Uber kurjeriais. Wolt savo svetainėje teigia imanti komisinius, bet tarifų nenurodo. Lieferando tarifų patikrinti nepavyko. Šie komisiniai taikomi ir nuolatiniams klientams, kurie pas jus užsisako iš anksto."
+    },
+    "groups": {
+      "food_truck": "Food truck užsakymų sistema",
+      "nearest_local": "Užsakymų sistema",
+      "pos": "Kasos sistema"
+    },
+    "faq": {
+      "title": "Dažniausiai užduodami klausimai",
+      "whatQ": "Kas yra food truck užsakymų sistema?",
+      "whatA": "Užsakymų sistema priima užsakymus internetu dar prieš klientams atvykstant prie furgono: jie pasirenka patiekalus ir atsiėmimo laiką, sumoka internetu arba atsiimdami, o užsakymas atsiranda jūsų virtuvėje. Kasa ar mokėjimo terminalas priima mokėjimą prie furgono. Abi viena kitą papildo.",
+      "costQ": "Kiek kainuoja HatchGrab ({country})?",
+      "costA": "{plans}. Už mokėjimus kortele internetu taip pat taikomi Stripe mokesčiai: {cardFee} už mokėjimą kortele.",
+      "termQ": "Ar yra minimalus sutarties terminas?",
+      "termA": "Ne. Nėra nei minimalaus termino, nei įspėjimo laikotarpio. Atsisakyti galite bet kada; mokestis imamas kas mėnesį iš anksto, o prieigą turite iki apmokėto mėnesio pabaigos.",
+      "locationsQ": "Ar sistema tinka kintančioms vietoms?",
+      "locationsA": "Taip. Susikuriate savaitės tvarkaraštį su vietomis ir laiku, o klientai užsisako tai vietai ir dienai, kai jūs ten esate.",
+      "capacityQ": "Kaip sistema apsaugo mano virtuvę nuo perkrovos?",
+      "capacityA": "Klientai mato tik tuos atsiėmimo laikus, kuriuos jūsų virtuvė tikrai spės. Sistema remiasi kiekvieno patiekalo paruošimo laiku ir tuo, kiek porcijų gaminate vienu metu.",
+      "tseQ": "Ar man vis tiek reikia sertifikuotos kasos?",
+      "tseA": "HatchGrab nėra kasa ir nėra sertifikuota pagal mokesčių reikalavimus. Kaip užsakymus internetu registruoti kasoje, pasitarkite su savo mokesčių konsultantu.",
+      "paymentsQ": "Kokius mokėjimo būdus palaiko HatchGrab?",
+      "paymentsA": "Klientai moka internetu kortele, Apple Pay ar Google Pay arba sumoka prie furgono. PayPal ir Klarna šiuo metu nepalaikomi.",
+      "costTrial": "{months, plural, one {Pirmas mėnuo} few {Pirmieji # mėnesiai} many {Pirmieji # mėnesio} other {Pirmieji # mėnesių}} – nemokamai, su visomis funkcijomis."
+    },
+    "method": {
+      "title": "Kaip palyginome",
+      "checked": "Paskutinį kartą patikrinta {date}.",
+      "prices": "Kainos nurodytos taip, kaip jas skelbia tiekėjas, su PVM.",
+      "meaning": "„Taip“ reiškia, kad tiekėjas funkciją skelbia viešai. „Nieko nesakoma“ reiškia, kad jo svetainėje apie tai nieko neradome — o ne tai, kad funkcijos nėra.",
+      "vendor": "Šį puslapį tvarko HatchGrab – vienas iš palyginamų tiekėjų.",
+      "review": "Kainos ir funkcijos automatiškai tikrinamos kiekvieno produkto svetainėje; kiekvienas teiginys susietas su savo šaltiniu.",
+      "corrections": "Radote klaidą? Praneškite mums per <link>kontaktų formą</link>.",
+      "reportError": "<link>Pranešti apie klaidą</link>",
+      "machine": "DI asistentams ir kūrėjams: ši lentelė <md>Markdown formatu</md> · <json>JSON formatu</json>"
+    },
+    "cta": {
+      "title": "Išbandykite {months, plural, one {# mėnesį} few {# mėnesius} many {# mėnesio} other {# mėnesių}} nemokamai",
+      "noCard": "Kredito kortelės nereikia",
+      "cancel": "Atsisakykite bet kurį mėnesį",
+      "button": "Išbandyti nemokamai"
+    },
+    "admin": {
+      "status": "Juodraštis · noindex · nėra svetainės žemėlapyje, llms.txt ar hreflang · poraštės nuoroda tik administratoriams",
+      "statusLive": "Paskelbta · vieša ir indeksuojama",
+      "viewAdmin": "Administratoriaus rodinys",
+      "viewPublic": "Ką mato lankytojai",
+      "pricingCheck": "Atidaryti kainų patikrą",
+      "checklist": "Prieš paskelbiant",
+      "goLive": "Puslapis paskelbiamas skiltyje Admin › Šalys.",
+      "check": {
+        "apps": "iPad ir Android vėliavėlės įjungtos ({country})",
+        "verified": "Bent 2 patikrinti tiekėjai (patikrinta: {n})",
+        "placeholders": "Tekste neliko „[ … ]“ žymeklių",
+        "vat": "PVM tekstas yra",
+        "impressum": "Impressum sprendimas užfiksuotas"
+      },
+      "unverified": "nepatikrinta · paslėpta nuo lankytojų",
+      "autoVerified": "patikrinta automatiškai",
+      "unchecked": "dar nepatikrinta dėl kiekvieno rodomo konkurento · paslėpta nuo lankytojų",
+      "label": "Admin",
+      "notShown": "Puslapyje nerodoma (rodomi daugiausia keturi): {names}.",
+      "reasonHidden": "{name} (paslėpta)",
+      "reasonBeyond": "{name} (už ketverto ribų)",
+      "reasonNoWebsite": "{name} (nėra svetainės)"
+    },
+    "footer": {
+      "heading": "Palyginimas",
+      "link": "Užsakymų sistemų palyginimas"
+    },
+    "featureGroups": {
+      "ordering": "Užsakymai",
+      "payments": "Mokėjimai",
+      "kitchen": "Virtuvė",
+      "marketing": "Rinkodara",
+      "apps_hardware": "Programėlės ir įranga",
+      "price_contract": "Kaina ir sutartis"
+    },
+    "cell": {
+      "yes": "Taip",
+      "no": "Ne",
+      "partial": "Iš dalies",
+      "unknown": "Nieko nesakoma",
+      "not_mentioned": "Svetainėje nieko nesakoma",
+      "withNote": "{word}, {note}",
+      "soon": "jau netrukus",
+      "fromPlan": "nuo plano {plan}",
+      "perCardPayment": "{fee} už mokėjimą kortele",
+      "trial": "{months, plural, one {# mėnuo} few {# mėnesiai} many {# mėnesio} other {# mėnesių}} nemokamai",
+      "setupFee": "{price} vienkartinis",
+      "perMonth": "{price} per mėnesį",
+      "notInCountry": "neprieinama ({country})",
+      "flagOff": "vėliavėlė dar išjungta; bus rodoma, kai atsiras programėlių parduotuvėse",
+      "notApplicable": "netaikoma maisto turgui",
+      "not_listed": "Neminima"
+    },
+    "explained": {
+      "title": "Ką reiškia funkcijos"
+    },
+    "costBlock": {
+      "title": "Kiek furgonas moka kas mėnesį",
+      "sizes": "Pardavimai internetu per mėnesį",
+      "sizeSales": "{sales} per mėnesį",
+      "sizeOrders": "užsakymų: apie {orders}",
+      "lead": "Furgonui, kurio užsakymai internetu per mėnesį siekia {sales} (užsakymų: apie {orders}). Kiekvienas stulpelis rodo visas mėnesio išlaidas: užsakymų sistemos mokestį ir kortelių mokesčius už tuos užsakymus.",
+      "legendSoftware": "Programinės įrangos mokestis",
+      "legendCard": "Kortelių mokesčiai",
+      "software": "Programinės įrangos mokestis {amount} per mėnesį",
+      "card": "Kortelių mokesčiai {amount} per mėnesį",
+      "total": "{amount} per mėnesį su kortelių mokesčiais",
+      "share": "{pct} pardavimų",
+      "assumed": "(tarifas neskelbiamas, numanomas)",
+      "customerFee": "Plius {amount} per mėnesį, kuriuos moka klientai ({fee} už užsakymą) — stulpelyje neįskaičiuota",
+      "summaryCheapest": "{us} mokestis yra {ours} per mėnesį, o pigiausio rodomo konkurento — {theirs} per mėnesį. Kortelių mokesčiai ({card} per mėnesį) taikomi kiekvienam mokėjimui kortele, kad ir kokią sistemą naudotumėte, todėl svarbus skirtumas yra programinės įrangos mokestis.",
+      "summaryNotCheapest": "{us} mokestis yra {ours} per mėnesį – daugiau nei pigiausio rodomo konkurento {rival} ({theirs} per mėnesį). Kortelių mokesčiai ({card} per mėnesį) taikomi kiekvienam mokėjimui kortele, kad ir kokią sistemą naudotumėte.",
+      "summaryAlone": "{us} mokestis yra {ours} per mėnesį. Kortelių mokesčiai ({card} per mėnesį) taikomi kiekvienam mokėjimui kortele, kad ir kokią sistemą naudotumėte.",
+      "footOrder": "Vidutinis užsakymas {order}: įprastas patiekalas po {meal} × {multiplier} patiekalų užsakyme ({source}).",
+      "footCard": "Kortelių mokesčiai apskaičiuoti taikant {rate} už mokėjimą kortele: {source}.",
+      "footCardSource": "Stripe tarifas ({country})",
+      "footAssumed": "{names} {count, plural, one {neskelbia} few {neskelbia} many {neskelbia} other {neskelbia}} kortelių mokėjimų tarifo, todėl jį numatėme patys.",
+      "footChecked": "Kainos patikrintos {date}.",
+      "footCalculator": "Apskaičiuokite savo skaičius skaičiuoklėje.",
+      "noRivals": "Kol kas nepatikrintas nė vienas konkurentas ({country}), todėl nėra ką palyginti."
+    },
+    "features": {
+      "preorder": {
+        "label": "Išankstiniai užsakymai su pasirinktu atsiėmimo laiku",
+        "explain": "Klientai užsisako iš anksto ir pasirenka, kada atsiims."
+      },
+      "capacity": {
+        "label": "Atsiėmimo laikai pagal virtuvės pajėgumą",
+        "explain": "Klientai mato tik tuos atsiėmimo laikus, kuriuos virtuvė tikrai spės."
+      },
+      "asap": {
+        "label": "Užsakymai kuo greičiau",
+        "explain": "Klientai gali užsisakyti nepasirinkę laiko ir atsiimti, kai tik užsakymas paruoštas."
+      },
+      "ahead": {
+        "label": "Užsakymas iš anksto vėlesnei dienai ar renginiui",
+        "explain": "Klientai gali jau šiandien užsisakyti turgui ar renginiui, vyksiančiam vėlesnę dieną."
+      },
+      "schedule": {
+        "label": "Savaitės tvarkaraštis su kintančiomis vietomis",
+        "explain": "Furgono savaitės vietos ir laikas; klientai užsisako tai vietai ir dienai, kai jis ten yra."
+      },
+      "walkup": {
+        "label": "Užsakymai vietoje tame pačiame ekrane kaip ir internetiniai",
+        "explain": "Prie langelio priimti užsakymai patenka į tą patį sąrašą kaip ir užsakymai internetu."
+      },
+      "stock": {
+        "label": "Išparduota ir atsargų ribos kiekvienam renginiui",
+        "explain": "Pažymėkite patiekalus kaip išparduotus ir nustatykite, kiek kiekvieno galima parduoti renginyje."
+      },
+      "notify": {
+        "label": "Klientams pranešama, kai užsakymas paruoštas",
+        "explain": "Kaip klientai sužino, kad užsakymas paruoštas: SMS, WhatsApp, el. paštu, „push“ pranešimu ar tiesioginiu užsakymo būsenos puslapiu.",
+        "ours": "el. laiškas, kai įjungtas žingsnis „užsakymas paruoštas“, ir užsakymo būsenos puslapis; be SMS, WhatsApp ir „push“ pranešimų"
+      },
+      "allergens": {
+        "label": "Alergenai meniu",
+        "explain": "Prie kiekvieno patiekalo klientai prieš užsisakydami mato jo alergenus."
+      },
+      "menuphoto": {
+        "label": "Meniu sukūrimas iš nuotraukos",
+        "explain": "Iš meniu nuotraukos ar PDF patiekalai užpildomi automatiškai, jums lieka juos patikrinti."
+      },
+      "options": {
+        "label": "Patiekalų pasirinkimai ir priedai",
+        "explain": "Dydžiai, padažai ir priedai, įskaitant privalomus kliento pasirinkimus."
+      },
+      "deals": {
+        "label": "Rinkiniai",
+        "explain": "Keli produktai kartu už vieną kainą."
+      },
+      "private": {
+        "label": "Privatūs renginiai ir rezervacijos",
+        "explain": "Užsakymai privačiam renginiui per atskirą nuorodą ir prašymai išsinuomoti furgoną.",
+        "ours": "privatūs renginiai su atskira užsakymo nuoroda; be rezervacijos užklausų"
+      },
+      "qr": {
+        "label": "Užsakymas prie stalo / per QR",
+        "explain": "Klientai nuskaito kodą prie stalo, o užsakymas gaunamas su stalo numeriu.",
+        "ours": "QR kodas atveria užsakymo puslapį; be stalų numerių"
+      },
+      "cards": {
+        "label": "Mokėjimai kortele internetu, įskaitant Apple Pay ir Google Pay",
+        "explain": "Užsisakydami klientai moka internetu kortele, Apple Pay ar Google Pay."
+      },
+      "payattruck": {
+        "label": "Mokėjimas atsiimant",
+        "explain": "Klientai užsisako internetu ir sumoka atsiimdami."
+      },
+      "localpay": {
+        "label": "Vietiniai mokėjimo būdai (BLIK, iDEAL, Swish, MobilePay…)",
+        "explain": "Šalies vietiniai internetinio mokėjimo būdai, be kortelių.",
+        "ours": "tik kortelės"
+      },
+      "paypal": {
+        "label": "PayPal arba Klarna",
+        "explain": "Klientai gali mokėti PayPal arba Klarna."
+      },
+      "custfee": {
+        "label": "Galimybė klientui sumokėti užsakymo mokestį",
+        "explain": "Verslas gali perkelti aptarnavimo mokestį klientui."
+      },
+      "tips": {
+        "label": "Arbatpinigiai",
+        "explain": "Mokėdami internetu klientai gali pridėti arbatpinigių."
+      },
+      "paymethods": {
+        "label": "Siūlomi mokėjimo būdai",
+        "explain": "Kaip klientai gali mokėti, kaip nurodo tiekėjas.",
+        "ours": "kortelė, Apple Pay, Google Pay; mokėjimas atsiimant"
+      },
+      "kds": {
+        "label": "Virtuvės ekranas (KDS)",
+        "explain": "Užsakymai rodomi ekrane virtuvėje ta tvarka, kuria juos reikia gaminti."
+      },
+      "tickets": {
+        "label": "Spausdinami virtuvės čekiai",
+        "explain": "Kiekvienas užsakymas atspausdinamas čekių spausdintuvu furgone.",
+        "ours": "iPad ir Android programėlėje; spausdintuvas netiekiamas"
+      },
+      "buzzers": {
+        "label": "Gavikliai (pageriai)",
+        "explain": "Klientai gauna gaviklį, kuris praneša, kad užsakymas paruoštas.",
+        "ours": "gaviklio numeris išsaugomas su kiekvienu užsakymu; gavikliai netiekiami"
+      },
+      "offline": {
+        "label": "Veikia ir dingus internetui",
+        "explain": "Be ryšio atlikti užsakymai ir pakeitimai išsaugomi ir išsiunčiami, kai ryšys atsiranda.",
+        "ours": "iPad ir Android programėlėje; ne žiniatinklio valdymo skydelyje"
+      },
+      "vans": {
+        "label": "Keli furgonai",
+        "explain": "Viena paskyra valdo daugiau nei vieną furgoną.",
+        "ours": "papildomi furgonai už papildomą mėnesinį mokestį"
+      },
+      "staff": {
+        "label": "Darbuotojų paskyros",
+        "explain": "Darbuotojai prisijungia savo paskyra ir su savo vaidmeniu."
+      },
+      "reports": {
+        "label": "Pardavimų ataskaitos",
+        "explain": "Sumos, perkamiausi patiekalai ir pardavimai pagal renginį ar datą, su eksportu į skaičiuoklę."
+      },
+      "domain": {
+        "label": "Savas interneto adresas",
+        "explain": "Užsakymų puslapis paties verslo domene."
+      },
+      "whatsapp": {
+        "label": "WhatsApp automatiniai atsakymai",
+        "explain": "Į klientų WhatsApp žinutes atsakoma automatiškai."
+      },
+      "social": {
+        "label": "Socialinių tinklų įrašai pagal jūsų tvarkaraštį",
+        "explain": "Paruošti įrašai, rodantys, kur furgonas bus šią savaitę."
+      },
+      "igmsg": {
+        "label": "Instagram ir Messenger atsakymai",
+        "explain": "Į Instagram ir Facebook Messenger žinutes atsakoma automatiškai."
+      },
+      "discovery": {
+        "label": "Rodomas food truck žemėlapyje",
+        "explain": "Klientai randa furgoną viešame netoliese esančių food truck žemėlapyje.",
+        "ours": "Village Foodie"
+      },
+      "loyalty": {
+        "label": "Lojalumo programa",
+        "explain": "Klientai renka atlygį už sugrįžimą."
+      },
+      "ipad": {
+        "label": "iPad programėlė",
+        "explain": "Furgono programėlė užsakymams priimti ir tvarkyti iPad planšetėje."
+      },
+      "android": {
+        "label": "Android programėlė",
+        "explain": "Ta pati programėlė Android planšetėje ar telefone."
+      },
+      "hardware": {
+        "label": "Tiekiama įranga (planšetė, spausdintuvas)",
+        "explain": "Tiekėjas suteikia planšetę ar spausdintuvą.",
+        "ours": "naudojate savo"
+      },
+      "terminal": {
+        "label": "Tiekiamas mokėjimo terminalas langeliui",
+        "explain": "Tiekėjas suteikia mokėjimo terminalą mokėjimams prie furgono."
+      },
+      "fiscal": {
+        "label": "Sertifikuota kasa pagal mokesčių reikalavimus (TSE, EET, kassaregister…)",
+        "explain": "Kasa, sertifikuota pagal šalies pardavimų registravimo taisykles."
+      },
+      "delivery": {
+        "label": "Pristatymas",
+        "explain": "Užsakymai pristatomi kliento adresu.",
+        "ours": "tik atsiėmimas"
+      },
+      "monthly": {
+        "label": "Mėnesio kaina",
+        "explain": "Kiek verslas kas mėnesį moka už programinę įrangą."
+      },
+      "perorder": {
+        "label": "Mokestis už užsakymą internetu",
+        "explain": "Kiek tiekėjas ima už kiekvieną užsakymą internetu, be mėnesio kainos."
+      },
+      "cardfee": {
+        "label": "Kortelės mokestis",
+        "explain": "Mokėjimų paslaugų teikėjo mokestis už kiekvieną mokėjimą kortele."
+      },
+      "term": {
+        "label": "Minimalus sutarties terminas",
+        "explain": "Kiek laiko verslas yra susaistytas, kol gali atsisakyti."
+      },
+      "setup": {
+        "label": "Pradinis mokestis",
+        "explain": "Vienkartinis mokestis pradedant."
+      },
+      "trial": {
+        "label": "Nemokamas bandomasis laikotarpis",
+        "explain": "Laikas sistemą naudoti nemokamai prieš pradedant mokėti."
+      }
+    }
+  },
   "comparisonSuits": {
     "title": "Kuri sistema tinka jūsų maisto furgonui?",
     "checked": "Patikrinta {date}",

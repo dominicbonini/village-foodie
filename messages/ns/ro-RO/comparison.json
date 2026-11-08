@@ -1,0 +1,394 @@
+{
+  "path": {
+    "section": "comparatie",
+    "slug": "sistem-de-comenzi-food-truck"
+  },
+  "meta": {
+    "title": "Sisteme de comenzi pentru food truck 2026: funcții, prețuri",
+    "description": "Sisteme de comenzi food truck comparate: precomenzi cu ora de ridicare, capacitatea bucătăriei, program, comisioane, contract — verificate la furnizori.",
+    "about": "Sisteme de comenzi online pentru food truck-uri"
+  },
+  "breadcrumb": {
+    "home": "HatchGrab",
+    "here": "Comparație",
+    "label": "Navigare"
+  },
+  "h1": "Sisteme de comenzi pentru food truck-uri: comparație 2026",
+  "byline": "Ultima verificare: {date} · Realizat de HatchGrab. Suntem unul dintre furnizorii comparați (vedeți <link>Cum am comparat</link>).",
+  "tldr": {
+    "title": "Pe scurt",
+    "body": "Dacă vreți ca clienții să comande în avans de pe telefon și să aleagă ora de ridicare, aveți nevoie de un sistem de comenzi, nu doar de o casă de marcat. Urmăriți patru lucruri: ore de ridicare care țin cont de capacitatea bucătăriei; un program săptămânal pentru locații care se schimbă; comisioane mici sau deloc pe comandă; și niciun contract pe termen lung. Terminalele de plată și casele de marcat acoperă plata la food truck și completează un sistem de comenzi."
+  },
+  "table": {
+    "title": "Sistemele de comenzi comparate",
+    "caption": "Funcțiile și costurile sistemelor de comenzi online pentru food truck-uri în {country}, la data de {date}",
+    "note": "„Da” doar acolo unde furnizorul o spune public.",
+    "feature": "Funcție",
+    "yes": "Da",
+    "no": "Nu",
+    "unknown": "Necunoscut",
+    "fromPlan": "De la planul {plan}",
+    "appNotInCountry": "Indisponibil în {country}",
+    "appFlagOff": "Da – flag încă dezactivat, apare când magazinele de aplicații o listează",
+    "range": "de la {from} la {to}",
+    "feePlan": "{fee} ({plans})",
+    "noFee": "fără",
+    "morePending": "Alți furnizori vor apărea aici după ce le verificăm datele pe propriul lor site.",
+    "priceHidden": "La cerere",
+    "feeAfter": "{fee} peste {included} pe lună"
+  },
+  "costs": {
+    "title": "Cât costă un sistem de comenzi pentru food truck?",
+    "ourPlan": "{plan}: {price} pe lună, {fee}",
+    "feeOnly": "{fee} per comandă online plătită cu cardul",
+    "feeIncluded": "comenzi online de până la {included} pe lună incluse, apoi {fee}",
+    "feeNone": "fără comision HatchGrab la comenzile online",
+    "rivalPlan": "{plan}: {price}",
+    "perMonth": "{price} pe lună",
+    "perMonthYearly": "{price} pe lună, facturat anual",
+    "vatExcl": "fără TVA",
+    "vatIncl": "cu TVA inclus",
+    "setup": "{price} taxă unică de configurare",
+    "truckFee": "{fee} per comandă",
+    "customerFee": "{fee} per comandă, plătit de client",
+    "source": "Sursă",
+    "checked": "verificat la {date}",
+    "cardFee": "Plățile online cu cardul prin HatchGrab au în plus comisioanele Stripe: {cardFee} per plată cu cardul în {country}.",
+    "vat": "HatchGrab Ltd este o companie din Regatul Unit și nu este înregistrată în scopuri de TVA în {country}, așa că nu adăugăm TVA la comisioanele noastre. Dacă sunteți înregistrat în scopuri de TVA, comunicați-ne codul de TVA; atunci contabilizați dumneavoastră TVA-ul aferent comisioanelor noastre, prin taxare inversă.",
+    "bundledFee": "{fee} per plată online, comisionul cardului inclus"
+  },
+  "fit": {
+    "title": "Ce sistem se potrivește cui?",
+    "ours": "HatchGrab vi se potrivește dacă …",
+    "oursBody": "vindeți în locații care se schimbă, vreți precomenzi cu ora de ridicare, nu vreți ca bucătăria să fie copleșită și nu vreți contract.",
+    "oursNot": "HatchGrab nu vi se potrivește dacă …",
+    "oursNotBody": "clienții dumneavoastră trebuie să poată plăti cu PayPal sau Klarna ori doriți de la un singur furnizor o casă de marcat certificată conform regulilor fiscale.",
+    "appClause": "Sau dacă aveți nevoie de aplicația de bucătărie pe iPad sau Android în {country}: acolo nu este încă în magazinele de aplicații.",
+    "tills": "Case de marcat și terminale de plată",
+    "marketplaces": "Platforme de livrare",
+    "rival": "{name} se potrivește dacă …",
+    "tillsBody": "Casele de marcat încasează plata la food truck și respectă cerințele fiscale pentru casele de marcat certificate. Un sistem de comenzi funcționează alături de casa de marcat; nu o înlocuiește.",
+    "tillsBodyNamed": "Casele de marcat încasează plata la food truck și respectă cerințele fiscale pentru casele de marcat certificate. {names} {count, plural, one {apare} few {apar} other {apar}} și în tabelul de mai sus. Un sistem de comenzi funcționează alături de casa de marcat; nu o înlocuiește.",
+    "marketplacesBody": "Platformele de livrare aduc clienți noi, dar iau comision la fiecare comandă. Uber Eats indică pentru Germania 14% la ridicare și 30% la livrarea prin curierii Uber. Wolt spune pe propriul site că percepe comision, dar nu indică procentele. Nu am putut verifica procentele Lieferando. Comisionul se aplică și clienților fideli care comandă în avans la dumneavoastră."
+  },
+  "groups": {
+    "food_truck": "Sistem de comenzi pentru food truck",
+    "nearest_local": "Sistem de comenzi",
+    "pos": "Sistem POS"
+  },
+  "faq": {
+    "title": "Întrebări frecvente",
+    "whatQ": "Ce este un sistem de comenzi pentru food truck?",
+    "whatA": "Un sistem de comenzi preia comenzile online înainte ca clienții să ajungă la food truck: aleg preparatele și ora de ridicare, plătesc online sau la ridicare, iar comanda apare în bucătăria dumneavoastră. O casă de marcat sau un terminal de plată încasează plata la food truck. Cele două se completează.",
+    "costQ": "Cât costă HatchGrab în {country}?",
+    "costA": "{plans}. Plățile online cu cardul au în plus comisioanele Stripe: {cardFee} per plată cu cardul.",
+    "termQ": "Există o perioadă minimă de contract?",
+    "termA": "Nu. Nu există perioadă minimă și nici perioadă de preaviz. Puteți anula oricând; abonamentul se facturează lunar, în avans, iar accesul rămâne activ până la sfârșitul lunii plătite.",
+    "locationsQ": "Funcționează cu locații care se schimbă?",
+    "locationsA": "Da. Vă setați programul săptămânal cu locații și ore, iar clienții comandă pentru locul și ziua în care sunteți acolo.",
+    "capacityQ": "Cum împiedică sistemul supraîncărcarea bucătăriei mele?",
+    "capacityA": "Clienții văd doar orele de ridicare pe care bucătăria le poate onora efectiv. Sistemul calculează pe baza timpului de preparare al fiecărui preparat și a numărului de porții pe care le pregătiți deodată.",
+    "tseQ": "Mai am nevoie de o casă de marcat certificată conform regulilor fiscale?",
+    "tseA": "HatchGrab nu este o casă de marcat și nu este certificat conform regulilor fiscale. Cum înregistrați comenzile online în casa de marcat este o întrebare pentru consultantul dumneavoastră fiscal.",
+    "paymentsQ": "Ce metode de plată acceptă HatchGrab?",
+    "paymentsA": "Clienții plătesc online cu cardul, Apple Pay sau Google Pay ori plătesc la food truck. PayPal și Klarna nu sunt acceptate momentan.",
+    "costTrial": "{months, plural, one {Prima lună este gratuită} few {Primele # luni sunt gratuite} other {Primele # de luni sunt gratuite}}, cu toate funcțiile."
+  },
+  "method": {
+    "title": "Cum am comparat",
+    "checked": "Ultima verificare: {date}.",
+    "prices": "Prețurile sunt afișate așa cum le indică furnizorul, cu TVA inclus.",
+    "meaning": "„Da” înseamnă că furnizorul declară public funcția. „Necunoscut” înseamnă că nu am găsit nimic despre ea pe site-ul său — nu că funcția lipsește.",
+    "vendor": "HatchGrab administrează această pagină și este unul dintre furnizorii comparați.",
+    "review": "Prețurile și funcțiile sunt verificate automat pe site-ul fiecărui produs; fiecare afirmație are link către sursa sa.",
+    "corrections": "Ați găsit o greșeală? Spuneți-ne prin <link>formularul de contact</link>.",
+    "reportError": "<link>Raportați o eroare</link>",
+    "machine": "Pentru asistenți AI și dezvoltatori: acest tabel <md>în format Markdown</md> · <json>în format JSON</json>"
+  },
+  "cta": {
+    "title": "Încercați gratuit {months, plural, one {# lună} few {# luni} other {# de luni}}",
+    "noCard": "Nu este nevoie de card de credit",
+    "cancel": "Puteți anula lunar",
+    "button": "Încercați gratuit"
+  },
+  "admin": {
+    "status": "Ciornă · noindex · nu apare în sitemap, llms.txt sau hreflang · link în subsol doar pentru administratori",
+    "statusLive": "Publicată · publică și indexabilă",
+    "viewAdmin": "Vizualizare admin",
+    "viewPublic": "Ce vede publicul",
+    "pricingCheck": "Deschideți verificarea prețurilor",
+    "checklist": "Înainte de publicare",
+    "goLive": "Pagina se publică din Admin › Countries.",
+    "check": {
+      "apps": "Flagurile iPad și Android activate pentru {country}",
+      "verified": "Cel puțin 2 furnizori verificați ({n} verificați)",
+      "placeholders": "Niciun substituent „[ … ]” rămas în text",
+      "vat": "Mențiunea despre TVA este prezentă",
+      "impressum": "Decizia privind Impressum este înregistrată"
+    },
+    "unverified": "neverificat · ascuns publicului",
+    "autoVerified": "verificat automat",
+    "unchecked": "încă neverificat pentru fiecare concurent afișat · ascuns publicului",
+    "label": "Admin",
+    "notShown": "Nu apar pe pagină (se afișează cel mult patru): {names}.",
+    "reasonHidden": "{name} (ascuns)",
+    "reasonBeyond": "{name} (peste cele patru)",
+    "reasonNoWebsite": "{name} (fără site)"
+  },
+  "footer": {
+    "heading": "Comparație",
+    "link": "Comparație sisteme de comenzi"
+  },
+  "featureGroups": {
+    "ordering": "Comenzi",
+    "payments": "Plăți",
+    "kitchen": "Bucătărie",
+    "marketing": "Marketing",
+    "apps_hardware": "Aplicații și hardware",
+    "price_contract": "Preț și contract"
+  },
+  "cell": {
+    "yes": "Da",
+    "no": "Nu",
+    "partial": "Parțial",
+    "unknown": "Necunoscut",
+    "not_mentioned": "Site-ul său nu spune",
+    "withNote": "{word}, {note}",
+    "soon": "în curând",
+    "fromPlan": "de la planul {plan}",
+    "perCardPayment": "{fee} per plată cu cardul",
+    "trial": "{months, plural, one {# lună gratuită} few {# luni gratuite} other {# de luni gratuite}}",
+    "setupFee": "{price} o singură dată",
+    "perMonth": "{price} pe lună",
+    "notInCountry": "indisponibil în {country}",
+    "flagOff": "flag încă dezactivat; apare când magazinele de aplicații o listează",
+    "notApplicable": "nu se aplică unei piețe",
+    "not_listed": "Nu este menționat"
+  },
+  "explained": {
+    "title": "Ce înseamnă funcțiile"
+  },
+  "costBlock": {
+    "title": "Cât plătește un food truck pe lună",
+    "sizes": "Vânzări online pe lună",
+    "sizeSales": "{sales} pe lună",
+    "sizeOrders": "comenzi: circa {orders}",
+    "lead": "Pentru un food truck cu vânzări online de {sales} pe lună (comenzi: circa {orders}). Fiecare bară arată costul lunar total: taxa proprie a sistemului de comenzi plus comisioanele cardurilor pentru acele comenzi.",
+    "legendSoftware": "Taxa de software",
+    "legendCard": "Comisioane card",
+    "software": "Taxa de software: {amount} pe lună",
+    "card": "Comisioane card: {amount} pe lună",
+    "total": "{amount} pe lună, inclusiv comisioanele cardurilor",
+    "share": "{pct} din vânzări",
+    "assumed": "(procent nepublicat, estimat)",
+    "customerFee": "Plus {amount} pe lună plătiți de clienți ({fee} per comandă) — neinclus în bară",
+    "summaryCheapest": "Taxa proprie percepută de {us} este de {ours} pe lună, față de {theirs} pe lună la cel mai ieftin concurent afișat. Comisioanele cardurilor ({card} pe lună) se aplică la fiecare plată cu cardul, indiferent de sistem, deci diferența care contează este taxa de software.",
+    "summaryNotCheapest": "Taxa proprie percepută de {us} este de {ours} pe lună, mai mult decât {theirs} pe lună la {rival}, cel mai ieftin concurent afișat. Comisioanele cardurilor ({card} pe lună) se aplică la fiecare plată cu cardul, indiferent de sistem.",
+    "summaryAlone": "Taxa proprie percepută de {us} este de {ours} pe lună. Comisioanele cardurilor ({card} pe lună) se aplică la fiecare plată cu cardul, indiferent de sistem.",
+    "footOrder": "Comanda medie {order}: o masă tipică de {meal} × {multiplier} preparate per comandă ({source}).",
+    "footCard": "Comisioanele cardurilor sunt calculate cu {rate} per plată cu cardul: {source}.",
+    "footCardSource": "Tariful Stripe pentru {country}",
+    "footAssumed": "{names} {count, plural, one {nu publică} few {nu publică} other {nu publică}} un procent pentru plățile cu cardul, așa că procentul folosit de noi este estimat.",
+    "footChecked": "Prețuri verificate la {date}.",
+    "footCalculator": "Calculați-vă propriile cifre în calculator.",
+    "noRivals": "Niciun concurent nu este încă verificat în {country}, deci nu avem ce compara."
+  },
+  "features": {
+    "preorder": {
+      "label": "Precomenzi cu ora de ridicare aleasă",
+      "explain": "Clienții comandă în avans și aleg ora la care ridică comanda."
+    },
+    "capacity": {
+      "label": "Ore de ridicare limitate de capacitatea bucătăriei",
+      "explain": "Clienții văd doar orele de ridicare pe care bucătăria le poate onora efectiv."
+    },
+    "asap": {
+      "label": "Comenzi cât mai curând posibil",
+      "explain": "Clienții pot comanda fără să aleagă o oră și ridică comanda imediat ce este gata."
+    },
+    "ahead": {
+      "label": "Comandă în avans pentru altă zi sau un eveniment",
+      "explain": "Clienții pot comanda azi pentru un târg sau un eveniment dintr-o zi ulterioară."
+    },
+    "schedule": {
+      "label": "Program săptămânal cu locații care se schimbă",
+      "explain": "Săptămâna food truckului, cu locuri și ore; clienții comandă pentru locul și ziua în care se află acolo."
+    },
+    "walkup": {
+      "label": "Comenzi la fața locului pe același ecran cu cele online",
+      "explain": "Comenzile luate la ghișeu intră în aceeași listă cu comenzile online."
+    },
+    "stock": {
+      "label": "Epuizat și limite de stoc pe eveniment",
+      "explain": "Marcați preparatele ca epuizate și stabiliți câte porții din fiecare se pot vinde la un eveniment."
+    },
+    "notify": {
+      "label": "Clienții sunt anunțați când comanda e gata",
+      "explain": "Cum află clienții că le este gata comanda: SMS, WhatsApp, e-mail, notificare push sau o pagină cu starea comenzii în timp real.",
+      "ours": "e-mail când pasul „comandă gata” este activat și o pagină cu starea comenzii; fără SMS, WhatsApp sau push"
+    },
+    "allergens": {
+      "label": "Alergeni în meniu",
+      "explain": "Fiecare preparat le arată clienților alergenii înainte de a comanda."
+    },
+    "menuphoto": {
+      "label": "Meniu configurat dintr-o fotografie",
+      "explain": "O fotografie sau un PDF al meniului completează preparatele, iar dumneavoastră le verificați."
+    },
+    "options": {
+      "label": "Opțiuni și extra la preparate",
+      "explain": "Mărimi, sosuri și extra, inclusiv opțiuni pe care clientul trebuie să le aleagă."
+    },
+    "deals": {
+      "label": "Meniuri combo și pachete",
+      "explain": "Mai multe produse vândute împreună la un singur preț."
+    },
+    "private": {
+      "label": "Evenimente private și rezervări",
+      "explain": "Comenzi pentru un eveniment privat printr-un link propriu și cereri de închiriere a food truckului.",
+      "ours": "evenimente private cu link de comandă propriu; fără cereri de rezervare"
+    },
+    "qr": {
+      "label": "Comandă la masă / prin cod QR",
+      "explain": "Clienții scanează un cod la masă, iar comanda sosește cu numărul mesei.",
+      "ours": "un cod QR deschide pagina de comandă; fără numere de masă"
+    },
+    "cards": {
+      "label": "Plăți online cu cardul, inclusiv Apple Pay și Google Pay",
+      "explain": "Clienții plătesc online cu cardul, Apple Pay sau Google Pay când comandă."
+    },
+    "payattruck": {
+      "label": "Plata la ridicare",
+      "explain": "Clienții comandă online și plătesc când ridică comanda."
+    },
+    "localpay": {
+      "label": "Metode de plată locale (BLIK, iDEAL, Swish, MobilePay…)",
+      "explain": "Metodele de plată online specifice țării, pe lângă carduri.",
+      "ours": "doar carduri"
+    },
+    "paypal": {
+      "label": "PayPal sau Klarna",
+      "explain": "Clienții pot plăti cu PayPal sau Klarna."
+    },
+    "custfee": {
+      "label": "Opțiunea ca clientul să plătească taxa de comandă",
+      "explain": "Afacerea poate transfera clientului o taxă de serviciu."
+    },
+    "tips": {
+      "label": "Bacșiș",
+      "explain": "Clienții pot adăuga bacșiș când plătesc online."
+    },
+    "paymethods": {
+      "label": "Metode de plată oferite",
+      "explain": "Cum pot plăti clienții, așa cum indică furnizorul.",
+      "ours": "card, Apple Pay, Google Pay; plata la ridicare"
+    },
+    "kds": {
+      "label": "Ecran de bucătărie (KDS)",
+      "explain": "Comenzile apar pe un ecran în bucătărie, în ordinea în care trebuie pregătite."
+    },
+    "tickets": {
+      "label": "Bonuri de bucătărie tipărite",
+      "explain": "Fiecare comandă se tipărește la o imprimantă de bonuri din food truck.",
+      "ours": "în aplicația pentru iPad și Android; imprimanta nu este inclusă"
+    },
+    "buzzers": {
+      "label": "Pagere",
+      "explain": "Clienții primesc un pager care îi anunță când comanda este gata.",
+      "ours": "numărul pagerului se înregistrează la fiecare comandă; pagerele nu sunt incluse"
+    },
+    "offline": {
+      "label": "Funcționează și dacă pică internetul",
+      "explain": "Comenzile și modificările făcute fără conexiune sunt păstrate și trimise când revine conexiunea.",
+      "ours": "în aplicația pentru iPad și Android; nu în panoul web"
+    },
+    "vans": {
+      "label": "Mai multe dube sau food truck-uri",
+      "explain": "Un singur cont gestionează mai multe food truck-uri.",
+      "ours": "dube suplimentare contra unei taxe lunare suplimentare"
+    },
+    "staff": {
+      "label": "Conturi pentru personal",
+      "explain": "Angajații se conectează cu propriul cont și rol."
+    },
+    "reports": {
+      "label": "Rapoarte de vânzări",
+      "explain": "Totaluri, cele mai vândute produse și vânzări pe eveniment sau dată, cu export în foaie de calcul."
+    },
+    "domain": {
+      "label": "Adresă web proprie",
+      "explain": "Pagina de comenzi pe domeniul propriu al afacerii."
+    },
+    "whatsapp": {
+      "label": "Răspunsuri automate pe WhatsApp",
+      "explain": "Mesajele clienților pe WhatsApp primesc răspuns automat."
+    },
+    "social": {
+      "label": "Postări pe rețelele sociale din programul dumneavoastră",
+      "explain": "Postări gata făcute care arată unde se află food truckul săptămâna aceasta."
+    },
+    "igmsg": {
+      "label": "Răspunsuri pe Instagram și Messenger",
+      "explain": "Mesajele de pe Instagram și Facebook Messenger primesc răspuns automat."
+    },
+    "discovery": {
+      "label": "Prezent pe o hartă de food truck-uri",
+      "explain": "Clienții găsesc food truckul pe o hartă publică a food truck-urilor din apropiere.",
+      "ours": "Village Foodie"
+    },
+    "loyalty": {
+      "label": "Program de fidelitate",
+      "explain": "Clienții primesc recompense când revin."
+    },
+    "ipad": {
+      "label": "Aplicație pentru iPad",
+      "explain": "Aplicația food truckului pentru preluarea și gestionarea comenzilor pe iPad."
+    },
+    "android": {
+      "label": "Aplicație pentru Android",
+      "explain": "Aceeași aplicație pe o tabletă sau un telefon Android."
+    },
+    "hardware": {
+      "label": "Hardware inclus (tabletă, imprimantă)",
+      "explain": "Furnizorul oferă tableta sau imprimanta.",
+      "ours": "folosiți propriul echipament"
+    },
+    "terminal": {
+      "label": "Terminal de plată inclus",
+      "explain": "Furnizorul oferă un terminal de plată pentru plățile la food truck."
+    },
+    "fiscal": {
+      "label": "Casă de marcat certificată fiscal (TSE, EET, kassaregister…)",
+      "explain": "O casă de marcat certificată conform regulilor țării privind înregistrarea vânzărilor."
+    },
+    "delivery": {
+      "label": "Livrare",
+      "explain": "Comenzi livrate la adresa clientului.",
+      "ours": "doar ridicare"
+    },
+    "monthly": {
+      "label": "Preț lunar",
+      "explain": "Cât plătește afacerea lunar pentru software."
+    },
+    "perorder": {
+      "label": "Comision per comandă online",
+      "explain": "Cât percepe furnizorul la fiecare comandă online, pe lângă prețul lunar."
+    },
+    "cardfee": {
+      "label": "Comision card",
+      "explain": "Comisionul furnizorului de plăți la fiecare plată cu cardul."
+    },
+    "term": {
+      "label": "Contract minim",
+      "explain": "Cât timp este legată afacerea înainte de a putea anula."
+    },
+    "setup": {
+      "label": "Taxă de configurare",
+      "explain": "O taxă unică la început."
+    },
+    "trial": {
+      "label": "Perioadă de probă gratuită",
+      "explain": "Timp în care folosiți sistemul gratuit înainte de a plăti."
+    }
+  }
+}

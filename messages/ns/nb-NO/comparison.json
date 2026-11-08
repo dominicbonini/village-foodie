@@ -1,0 +1,394 @@
+{
+  "path": {
+    "section": "sammenligning",
+    "slug": "bestillingssystem-matbil"
+  },
+  "meta": {
+    "title": "Bestillingssystemer for matbiler 2026: funksjoner og priser",
+    "description": "Bestillingssystemer for matbiler sammenlignet: forhåndsbestilling med hentetid, kjøkkenkapasitet, ukekalender, gebyrer, binding – sjekket hos leverandørene.",
+    "about": "Nettbestillingssystemer for matbiler"
+  },
+  "breadcrumb": {
+    "home": "HatchGrab",
+    "here": "Sammenligning",
+    "label": "Brødsmulesti"
+  },
+  "h1": "Bestillingssystemer for matbiler sammenlignet 2026",
+  "byline": "Sist sjekket: {date} · Laget av HatchGrab. Vi er selv en av leverandørene som sammenlignes (se <link>Slik sammenlignet vi</link>).",
+  "tldr": {
+    "title": "Kort fortalt",
+    "body": "Skal kundene kunne bestille på forhånd på mobilen og velge hentetid, trenger du et bestillingssystem, ikke bare et kassasystem. Se etter fire ting: hentetider som følger kjøkkenkapasiteten din, en ukekalender for skiftende plasser, lave eller ingen gebyrer per bestilling og ingen lang bindingstid. Betalingsterminaler og kassasystemer tar seg av betalingen ved matbilen og utfyller et bestillingssystem."
+  },
+  "table": {
+    "title": "Bestillingssystemene sammenlignet",
+    "caption": "Funksjoner og kostnader for nettbestillingssystemer for matbiler i {country}, per {date}",
+    "note": "«Ja» bare der leverandøren selv oppgir det offentlig.",
+    "feature": "Funksjon",
+    "yes": "Ja",
+    "no": "Nei",
+    "unknown": "Sier ingenting",
+    "fromPlan": "Fra {plan}",
+    "appNotInCountry": "Ikke i {country}",
+    "appFlagOff": "Ja – flagget er fortsatt av, vises når appbutikkene har appen",
+    "range": "{from} til {to}",
+    "feePlan": "{fee} ({plans})",
+    "noFee": "ingen",
+    "morePending": "Flere leverandører vises her når vi har sjekket opplysningene deres på deres egen nettside.",
+    "priceHidden": "På forespørsel",
+    "feeAfter": "{fee} over {included} i måneden"
+  },
+  "costs": {
+    "title": "Hva koster et bestillingssystem for matbiler?",
+    "ourPlan": "{plan}: {price} i måneden, {fee}",
+    "feeOnly": "{fee} per nettbestilling betalt med kort",
+    "feeIncluded": "nettbestillinger opptil {included} i måneden er inkludert, deretter {fee}",
+    "feeNone": "ingen gebyr til HatchGrab på nettbestillinger",
+    "rivalPlan": "{plan}: {price}",
+    "perMonth": "{price} i måneden",
+    "perMonthYearly": "{price} i måneden, faktureres årlig",
+    "vatExcl": "ekskl. mva.",
+    "vatIncl": "inkl. mva.",
+    "setup": "{price} i engangsgebyr ved oppstart",
+    "truckFee": "{fee} per bestilling",
+    "customerFee": "{fee} per bestilling, betales av kunden",
+    "source": "Kilde",
+    "checked": "sjekket {date}",
+    "cardFee": "Kortbetaling på nett med HatchGrab gir også Stripes gebyrer: {cardFee} per kortbetaling i {country}.",
+    "vat": "HatchGrab Ltd er et britisk selskap og er ikke registrert i merverdiavgiftsregisteret i {country}, så det legges ikke mva. på gebyrene våre. Er du mva.-registrert, gir du oss mva.-nummeret ditt; da beregner du selv eventuell mva. på gebyrene våre etter reglene om omvendt avgiftsplikt.",
+    "bundledFee": "{fee} per nettbetaling, kortgebyr inkludert"
+  },
+  "fit": {
+    "title": "Hvilket system passer for hvem?",
+    "ours": "HatchGrab passer for deg hvis …",
+    "oursBody": "du står på skiftende plasser, vil ha forhåndsbestillinger med hentetid, ikke vil at kjøkkenet skal bli overbelastet, og ikke vil ha bindingstid.",
+    "oursNot": "HatchGrab passer ikke for deg hvis …",
+    "oursNotBody": "kundene skal kunne betale med PayPal eller Klarna, eller hvis du vil ha et sertifisert kassasystem som oppfyller skattereglene, fra én og samme leverandør.",
+    "appClause": "Eller hvis du trenger kjøkkenappen på iPad eller Android i {country}: Den er ikke i appbutikkene der ennå.",
+    "tills": "Kassasystemer og betalingsterminaler",
+    "marketplaces": "Leveringsplattformer",
+    "rival": "{name} passer hvis …",
+    "tillsBody": "Kassasystemer tar betalt ved matbilen og oppfyller kravet om en sertifisert kasse etter skattereglene. Et bestillingssystem fungerer side om side med kassasystemet; det erstatter det ikke.",
+    "tillsBodyNamed": "Kassasystemer tar betalt ved matbilen og oppfyller kravet om en sertifisert kasse etter skattereglene. {names} {count, plural, one {står} other {står}} også i tabellen over. Et bestillingssystem fungerer side om side med kassasystemet; det erstatter det ikke.",
+    "marketplacesBody": "Leveringsplattformer gir nye kunder, men tar provisjon på hver bestilling. Uber Eats oppgir 14 % ved henting og 30 % ved levering med Ubers bud i Tyskland. Wolt skriver på sin egen nettside at de tar provisjon, men oppgir ingen satser. Vi fikk ikke sjekket satsene til Lieferando. Provisjonen gjelder også faste kunder som forhåndsbestiller hos deg."
+  },
+  "groups": {
+    "food_truck": "Bestillingssystem for matbiler",
+    "nearest_local": "Bestillingssystem",
+    "pos": "Kassasystem"
+  },
+  "faq": {
+    "title": "Ofte stilte spørsmål",
+    "whatQ": "Hva er et bestillingssystem for matbiler?",
+    "whatA": "Et bestillingssystem tar imot bestillinger på nett før kundene kommer til matbilen: De velger retter og hentetid, betaler på nett eller ved henting, og bestillingen dukker opp på kjøkkenet ditt. Et kassasystem eller en betalingsterminal tar betalt ved matbilen. De to utfyller hverandre.",
+    "costQ": "Hva koster HatchGrab i {country}?",
+    "costA": "{plans}. Kortbetaling på nett gir også Stripes gebyrer: {cardFee} per kortbetaling.",
+    "termQ": "Er det bindingstid?",
+    "termA": "Nei. Det er ingen bindingstid og ingen oppsigelsestid. Du kan si opp når som helst; gebyret faktureres månedlig på forskudd, og du beholder tilgangen ut måneden du har betalt for.",
+    "locationsQ": "Fungerer det med skiftende plasser?",
+    "locationsA": "Ja. Du legger inn ukekalenderen din med steder og tider, og kundene bestiller til stedet og dagen du står der.",
+    "capacityQ": "Hvordan hindrer systemet at kjøkkenet mitt blir overbelastet?",
+    "capacityA": "Kundene ser bare hentetider som kjøkkenet ditt faktisk rekker. Systemet regner ut fra tilberedningstiden for hver rett og hvor mange du lager samtidig.",
+    "tseQ": "Trenger jeg fortsatt et sertifisert kassasystem etter skattereglene?",
+    "tseA": "HatchGrab er ikke et kassasystem og er ikke sertifisert etter skattereglene for kasser. Hvordan du registrerer nettbestillinger i kassasystemet ditt, er et spørsmål for regnskapsføreren eller skatterådgiveren din.",
+    "paymentsQ": "Hvilke betalingsmåter støtter HatchGrab?",
+    "paymentsA": "Kundene betaler på nett med kort, Apple Pay eller Google Pay, eller betaler ved matbilen. PayPal og Klarna støttes ikke foreløpig.",
+    "costTrial": "{months, plural, one {Den første måneden er} other {De første # månedene er}} gratis, med alle funksjoner."
+  },
+  "method": {
+    "title": "Slik sammenlignet vi",
+    "checked": "Sist sjekket {date}.",
+    "prices": "Prisene vises slik leverandøren oppgir dem, inkludert mva.",
+    "meaning": "«Ja» betyr at leverandøren oppgir funksjonen offentlig. «Sier ingenting» betyr at vi ikke fant noe om den på leverandørens nettside – ikke at funksjonen mangler.",
+    "vendor": "HatchGrab driver denne siden og er selv en av leverandørene som sammenlignes.",
+    "review": "Priser og funksjoner sjekkes automatisk mot hvert produkts egen nettside; hver opplysning lenker til kilden sin.",
+    "corrections": "Har du funnet en feil? Si fra via <link>kontaktskjemaet</link> vårt.",
+    "reportError": "<link>Meld fra om en feil</link>",
+    "machine": "For KI-assistenter og utviklere: denne tabellen <md>som Markdown</md> · <json>som JSON</json>"
+  },
+  "cta": {
+    "title": "Prøv {months, plural, one {# måned} other {# måneder}} gratis",
+    "noCard": "Ikke behov for kort",
+    "cancel": "Si opp fra måned til måned",
+    "button": "Prøv gratis"
+  },
+  "admin": {
+    "status": "Utkast · noindex · ikke i sitemap, llms.txt eller hreflang · lenke i bunnteksten bare for administratorer",
+    "statusLive": "Live · offentlig og kan indekseres",
+    "viewAdmin": "Adminvisning",
+    "viewPublic": "Det publikum ser",
+    "pricingCheck": "Åpne priskontrollen",
+    "checklist": "Før publisering",
+    "goLive": "Siden publiseres i Admin › Countries.",
+    "check": {
+      "apps": "Flagg for iPad og Android på for {country}",
+      "verified": "Minst 2 verifiserte leverandører ({n} verifisert)",
+      "placeholders": "Ingen «[ … ]»-plassholder igjen i teksten",
+      "vat": "Mva.-tekst finnes",
+      "impressum": "Beslutning om Impressum registrert"
+    },
+    "unverified": "ikke verifisert · skjult for publikum",
+    "autoVerified": "autoverifisert",
+    "unchecked": "ikke sjekket for alle viste konkurrenter ennå · skjult for publikum",
+    "label": "Admin",
+    "notShown": "Ikke på siden (maks fire vises): {names}.",
+    "reasonHidden": "{name} (skjult)",
+    "reasonBeyond": "{name} (utover de fire)",
+    "reasonNoWebsite": "{name} (ingen nettside)"
+  },
+  "footer": {
+    "heading": "Sammenlign",
+    "link": "Sammenligning av bestillingssystemer"
+  },
+  "featureGroups": {
+    "ordering": "Bestilling",
+    "payments": "Betaling",
+    "kitchen": "Kjøkken",
+    "marketing": "Markedsføring",
+    "apps_hardware": "Apper og maskinvare",
+    "price_contract": "Pris og avtale"
+  },
+  "cell": {
+    "yes": "Ja",
+    "no": "Nei",
+    "partial": "Delvis",
+    "unknown": "Sier ingenting",
+    "not_mentioned": "Nettsiden sier ingenting om det",
+    "withNote": "{word}, {note}",
+    "soon": "kommer snart",
+    "fromPlan": "fra {plan}",
+    "perCardPayment": "{fee} per kortbetaling",
+    "trial": "{months, plural, one {# måned} other {# måneder}} gratis",
+    "setupFee": "{price} én gang",
+    "perMonth": "{price} i måneden",
+    "notInCountry": "ikke i {country}",
+    "flagOff": "flagget er fortsatt av; vises når appbutikkene har appen",
+    "notApplicable": "gjelder ikke for et matmarked",
+    "not_listed": "Ikke oppgitt"
+  },
+  "explained": {
+    "title": "Hva funksjonene betyr"
+  },
+  "costBlock": {
+    "title": "Hva en matbil betaler hver måned",
+    "sizes": "Nettsalg i måneden",
+    "sizeSales": "{sales} i måneden",
+    "sizeOrders": "ca. {orders} bestillinger",
+    "lead": "For en matbil med {sales} i nettbestillinger i måneden (ca. {orders} bestillinger). Hver søyle er den samlede månedskostnaden: bestillingssystemets eget gebyr pluss kortgebyrene på disse bestillingene.",
+    "legendSoftware": "Programvaregebyr",
+    "legendCard": "Kortgebyrer",
+    "software": "Programvaregebyr {amount} i måneden",
+    "card": "Kortgebyrer {amount} i måneden",
+    "total": "{amount} i måneden inkludert kortgebyrer",
+    "share": "{pct} av salget",
+    "assumed": "(satsen er ikke publisert, antatt)",
+    "customerFee": "Pluss {amount} i måneden som kundene betaler ({fee} per bestilling) – ikke med i søylen",
+    "summaryCheapest": "{us}s eget gebyr er {ours} i måneden, mot {theirs} i måneden for den billigste konkurrenten som vises. Kortgebyrene ({card} i måneden) belastes hver kortbetaling uansett hvilket system du bruker, så det er programvaregebyret som utgjør forskjellen.",
+    "summaryNotCheapest": "{us}s eget gebyr er {ours} i måneden, mer enn {theirs} i måneden for {rival}, den billigste konkurrenten som vises. Kortgebyrene ({card} i måneden) belastes hver kortbetaling uansett hvilket system du bruker.",
+    "summaryAlone": "{us}s eget gebyr er {ours} i måneden. Kortgebyrene ({card} i måneden) belastes hver kortbetaling uansett hvilket system du bruker.",
+    "footOrder": "Gjennomsnittlig bestilling {order}: et typisk måltid på {meal} × {multiplier} retter per bestilling ({source}).",
+    "footCard": "Kortgebyrene er beregnet med {rate} per kortbetaling: {source}.",
+    "footCardSource": "Stripes sats for {country}",
+    "footAssumed": "{names} {count, plural, one {publiserer} other {publiserer}} ingen kortsats, så vi har lagt vår egen til grunn.",
+    "footChecked": "Prisene ble sjekket {date}.",
+    "footCalculator": "Regn ut dine egne tall i kalkulatoren.",
+    "noRivals": "Ingen konkurrent er verifisert i {country} ennå, så det er ingenting å sammenligne."
+  },
+  "features": {
+    "preorder": {
+      "label": "Forhåndsbestilling med valgt hentetid",
+      "explain": "Kundene bestiller på forhånd og velger når de henter."
+    },
+    "capacity": {
+      "label": "Hentetider begrenset av kjøkkenkapasiteten",
+      "explain": "Kundene ser bare hentetider som kjøkkenet faktisk rekker."
+    },
+    "asap": {
+      "label": "Bestilling til så snart som mulig",
+      "explain": "Kundene kan bestille uten å velge tidspunkt og hente så snart maten er klar."
+    },
+    "ahead": {
+      "label": "Bestilling på forhånd til en senere dag eller et arrangement",
+      "explain": "Kundene kan bestille i dag til et marked eller arrangement en senere dag."
+    },
+    "schedule": {
+      "label": "Ukekalender med skiftende plasser",
+      "explain": "Matbilens uke med steder og tider; kundene bestiller til stedet og dagen den står der."
+    },
+    "walkup": {
+      "label": "Bestillinger ved bilen på samme skjerm som nettbestillinger",
+      "explain": "Bestillinger som tas i luka, havner i samme liste som nettbestillingene."
+    },
+    "stock": {
+      "label": "Utsolgt og lagergrenser per arrangement",
+      "explain": "Merk retter som utsolgt og angi hvor mange av hver som kan selges på et arrangement."
+    },
+    "notify": {
+      "label": "Kunden får beskjed når bestillingen er klar",
+      "explain": "Hvordan kundene får vite at bestillingen er klar: SMS, WhatsApp, e-post, push eller en side med bestillingsstatus i sanntid.",
+      "ours": "e-post når trinnet «bestilling klar» er på, og en side med bestillingsstatus; ikke SMS, WhatsApp eller push"
+    },
+    "allergens": {
+      "label": "Allergener på menyen",
+      "explain": "Hver rett viser allergenene sine for kundene før de bestiller."
+    },
+    "menuphoto": {
+      "label": "Meny fra et bilde",
+      "explain": "Et bilde eller en PDF av menyen fyller inn rettene, så du bare sjekker dem."
+    },
+    "options": {
+      "label": "Valg og tillegg på retter",
+      "explain": "Størrelser, sauser og tillegg, også valg kunden må ta."
+    },
+    "deals": {
+      "label": "Måltider og kombotilbud",
+      "explain": "Flere varer som selges sammen til én pris."
+    },
+    "private": {
+      "label": "Private arrangementer og bookinger",
+      "explain": "Bestillinger til et privat arrangement via en egen lenke, og forespørsler om å bestille matbilen.",
+      "ours": "private arrangementer med egen bestillingslenke; ingen bookingforespørsler"
+    },
+    "qr": {
+      "label": "Bord-/QR-bestilling ved plassene",
+      "explain": "Kundene skanner en kode ved bordet, og bestillingen kommer inn med bordnummeret.",
+      "ours": "en QR-kode åpner bestillingssiden; ingen bordnumre"
+    },
+    "cards": {
+      "label": "Kortbetaling på nett inkl. Apple Pay og Google Pay",
+      "explain": "Kundene betaler på nett med kort, Apple Pay eller Google Pay når de bestiller."
+    },
+    "payattruck": {
+      "label": "Betaling ved henting",
+      "explain": "Kundene bestiller på nett og betaler når de henter."
+    },
+    "localpay": {
+      "label": "Lokale betalingsmåter (BLIK, iDEAL, Swish, MobilePay…)",
+      "explain": "Landets egne betalingsmåter på nett, i tillegg til kort.",
+      "ours": "bare kort"
+    },
+    "paypal": {
+      "label": "PayPal eller Klarna",
+      "explain": "Kundene kan betale med PayPal eller Klarna."
+    },
+    "custfee": {
+      "label": "Mulighet for at kunden betaler bestillingsgebyret",
+      "explain": "Bedriften kan legge et servicegebyr over på kunden."
+    },
+    "tips": {
+      "label": "Tips",
+      "explain": "Kundene kan legge til tips når de betaler på nett."
+    },
+    "paymethods": {
+      "label": "Betalingsmåter som tilbys",
+      "explain": "Hvordan kundene kan betale, slik leverandøren oppgir det.",
+      "ours": "kort, Apple Pay, Google Pay; betaling ved henting"
+    },
+    "kds": {
+      "label": "Kjøkkenskjerm (KDS)",
+      "explain": "Bestillingene vises på en skjerm på kjøkkenet, i den rekkefølgen de skal lages."
+    },
+    "tickets": {
+      "label": "Utskrevne kjøkkenbonger",
+      "explain": "Hver bestilling skrives ut på en kvitteringsskriver i matbilen.",
+      "ours": "i appen for iPad og Android; skriver følger ikke med"
+    },
+    "buzzers": {
+      "label": "Personsøkere",
+      "explain": "Kundene får en personsøker som gir beskjed når bestillingen er klar.",
+      "ours": "personsøkernumre lagres med hver bestilling; personsøkere følger ikke med"
+    },
+    "offline": {
+      "label": "Fungerer videre hvis nettet faller ut",
+      "explain": "Bestillinger og endringer som gjøres uten forbindelse, lagres og sendes når forbindelsen er tilbake.",
+      "ours": "i appen for iPad og Android; ikke i nettdashbordet"
+    },
+    "vans": {
+      "label": "Flere biler",
+      "explain": "Én konto styrer mer enn én matbil.",
+      "ours": "ekstra biler mot en ekstra månedsavgift"
+    },
+    "staff": {
+      "label": "Innlogging for ansatte",
+      "explain": "De ansatte logger inn med egen bruker og rolle."
+    },
+    "reports": {
+      "label": "Salgsrapporter",
+      "explain": "Totalsummer, bestselgere og salg per arrangement eller dato, med eksport til regneark."
+    },
+    "domain": {
+      "label": "Egen nettadresse",
+      "explain": "Bestillingssiden på bedriftens eget domene."
+    },
+    "whatsapp": {
+      "label": "Automatiske svar på WhatsApp",
+      "explain": "Kundenes WhatsApp-meldinger besvares automatisk."
+    },
+    "social": {
+      "label": "Innlegg i sosiale medier ut fra kalenderen din",
+      "explain": "Ferdige innlegg som viser hvor matbilen står denne uken."
+    },
+    "igmsg": {
+      "label": "Svar på Instagram og Messenger",
+      "explain": "Meldinger på Instagram og Facebook Messenger besvares automatisk."
+    },
+    "discovery": {
+      "label": "Med på et kart der kunder finner matbiler",
+      "explain": "Kundene finner matbilen på et offentlig kart over matbiler i nærheten.",
+      "ours": "Village Foodie"
+    },
+    "loyalty": {
+      "label": "Lojalitetsprogram",
+      "explain": "Kundene samler belønninger når de kommer tilbake."
+    },
+    "ipad": {
+      "label": "App for iPad",
+      "explain": "Matbilens app for å ta imot og håndtere bestillinger på en iPad."
+    },
+    "android": {
+      "label": "App for Android",
+      "explain": "Den samme appen på et Android-nettbrett eller en Android-telefon."
+    },
+    "hardware": {
+      "label": "Maskinvare følger med (nettbrett, skriver)",
+      "explain": "Leverandøren leverer nettbrettet eller skriveren.",
+      "ours": "bruk ditt eget"
+    },
+    "terminal": {
+      "label": "Betalingsterminal til luka følger med",
+      "explain": "Leverandøren leverer en betalingsterminal for betaling ved matbilen."
+    },
+    "fiscal": {
+      "label": "Sertifisert kasse for skatteregler (TSE, EET, kassaregister…)",
+      "explain": "En kasse som er sertifisert etter landets regler for registrering av salg."
+    },
+    "delivery": {
+      "label": "Levering",
+      "explain": "Bestillinger leveres til kundens adresse.",
+      "ours": "bare henting"
+    },
+    "monthly": {
+      "label": "Månedspris",
+      "explain": "Hva bedriften betaler hver måned for programvaren."
+    },
+    "perorder": {
+      "label": "Gebyr per nettbestilling",
+      "explain": "Hva leverandøren tar for hver nettbestilling, i tillegg til månedsprisen."
+    },
+    "cardfee": {
+      "label": "Kortgebyr",
+      "explain": "Betalingsleverandørens gebyr på hver kortbetaling."
+    },
+    "term": {
+      "label": "Bindingstid",
+      "explain": "Hvor lenge bedriften er bundet før den kan si opp."
+    },
+    "setup": {
+      "label": "Etableringsgebyr",
+      "explain": "Et engangsgebyr for å komme i gang."
+    },
+    "trial": {
+      "label": "Gratis prøveperiode",
+      "explain": "Tid til å bruke systemet gratis før du betaler."
+    }
+  }
+}

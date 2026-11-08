@@ -6367,6 +6367,400 @@
       "description": "Vergelijk wat je online bestellingen je nu kosten met een jaar HatchGrab — een schatting in een minuut."
     }
   },
+  "comparison": {
+    "path": {
+      "section": "vergelijking",
+      "slug": "bestelsysteem-foodtruck"
+    },
+    "meta": {
+      "title": "Bestelsysteem foodtruck vergelijken 2026: functies & prijzen",
+      "description": "Bestelsystemen voor foodtrucks vergeleken: vooraf bestellen met afhaaltijd, keukencapaciteit, weekplanning, kosten en looptijd — gecheckt per aanbieder.",
+      "about": "Online bestelsystemen voor foodtrucks"
+    },
+    "breadcrumb": {
+      "home": "HatchGrab",
+      "here": "Vergelijken",
+      "label": "Kruimelpad"
+    },
+    "h1": "Bestelsystemen voor foodtrucks vergeleken 2026",
+    "byline": "Laatst gecontroleerd: {date} · Gemaakt door HatchGrab. Wij zijn een van de vergeleken aanbieders (zie <link>Zo hebben we vergeleken</link>).",
+    "tldr": {
+      "title": "In het kort",
+      "body": "Wil je dat klanten vooraf op hun telefoon bestellen en een afhaaltijd kiezen, dan heb je een bestelsysteem nodig, niet alleen een kassa. Let op vier dingen: afhaaltijden die meebewegen met wat je keuken aankan; een weekplanning voor wisselende standplaatsen; lage of geen kosten per bestelling; en geen lang contract. Pinapparaten en kassasystemen regelen het afrekenen bij de truck en vullen een bestelsysteem aan."
+    },
+    "table": {
+      "title": "De bestelsystemen vergeleken",
+      "caption": "Functies en kosten van online bestelsystemen voor foodtrucks in {country}, stand {date}",
+      "note": "‘Ja’ alleen als de aanbieder dat zelf openbaar vermeldt.",
+      "feature": "Functie",
+      "yes": "Ja",
+      "no": "Nee",
+      "unknown": "Niet aangegeven",
+      "fromPlan": "Vanaf {plan}",
+      "appNotInCountry": "Niet in {country}",
+      "appFlagOff": "Ja – flag nog uit, zichtbaar zodra de stores de app tonen",
+      "range": "{from} tot {to}",
+      "feePlan": "{fee} ({plans})",
+      "noFee": "geen",
+      "morePending": "Meer aanbieders verschijnen hier zodra we hun gegevens op hun eigen website hebben gecontroleerd.",
+      "priceHidden": "Op aanvraag",
+      "feeAfter": "{fee} boven {included} per maand"
+    },
+    "costs": {
+      "title": "Wat kost een bestelsysteem voor je foodtruck?",
+      "ourPlan": "{plan}: {price} per maand, {fee}",
+      "feeOnly": "{fee} per online kaartbestelling",
+      "feeIncluded": "online bestellingen tot {included} per maand inbegrepen, daarna {fee}",
+      "feeNone": "geen HatchGrab-kosten op online bestellingen",
+      "rivalPlan": "{plan}: {price}",
+      "perMonth": "{price} per maand",
+      "perMonthYearly": "{price} per maand, jaarlijks gefactureerd",
+      "vatExcl": "excl. btw",
+      "vatIncl": "incl. btw",
+      "setup": "{price} eenmalige opstartkosten",
+      "truckFee": "{fee} per bestelling",
+      "customerFee": "{fee} per bestelling, betaald door de klant",
+      "source": "Bron",
+      "checked": "gecontroleerd op {date}",
+      "cardFee": "Bij online kaartbetalingen via HatchGrab komen daar de kosten van Stripe bij: {cardFee} per kaartbetaling in {country}.",
+      "vat": "HatchGrab Ltd is een Brits bedrijf en is in {country} niet geregistreerd voor de btw, dus er komt geen btw op onze kosten. Ben je btw-ondernemer, geef ons dan je btw-nummer; je draagt de eventuele btw over onze kosten dan zelf af via de verleggingsregeling.",
+      "bundledFee": "{fee} per online betaling, inclusief kaartkosten"
+    },
+    "fit": {
+      "title": "Welk systeem past bij wie?",
+      "ours": "HatchGrab past bij je als …",
+      "oursBody": "je op wisselende standplaatsen staat, vooraf bestellen met een afhaaltijd wilt, je keuken niet wilt overbelasten en geen contract wilt.",
+      "oursNot": "HatchGrab past niet bij je als …",
+      "oursNotBody": "je klanten met PayPal of Klarna moeten kunnen betalen, of als je een gecertificeerde kassa wilt die aan de fiscale regels van het land voldoet, alles bij één leverancier.",
+      "appClause": "Of als je de keukenapp op iPad of Android in {country} nodig hebt: die staat daar nog niet in de stores.",
+      "tills": "Kassasystemen en pinapparaten",
+      "marketplaces": "Bezorgplatforms",
+      "rival": "{name} past als …",
+      "tillsBody": "Kassasystemen rekenen af bij de truck en voldoen aan de fiscale regels van het land voor gecertificeerde kassa’s. Een bestelsysteem werkt naast een kassa; het vervangt die niet.",
+      "tillsBodyNamed": "Kassasystemen rekenen af bij de truck en voldoen aan de fiscale regels van het land voor gecertificeerde kassa’s. {names} {count, plural, one {staat} other {staan}} ook in de tabel hierboven. Een bestelsysteem werkt naast een kassa; het vervangt die niet.",
+      "marketplacesBody": "Bezorgplatforms brengen nieuwe klanten, maar rekenen commissie op elke bestelling. Uber Eats noemt voor Duitsland 14% bij afhalen en 30% bij bezorging door koeriers van Uber. Wolt zegt op de eigen website dat het commissie rekent, maar noemt geen tarieven. De tarieven van Lieferando konden we niet controleren. Die commissie geldt ook voor vaste klanten die bij jou vooraf bestellen."
+    },
+    "groups": {
+      "food_truck": "Bestelsysteem voor foodtrucks",
+      "nearest_local": "Bestelsysteem",
+      "pos": "Kassasysteem"
+    },
+    "faq": {
+      "title": "Veelgestelde vragen",
+      "whatQ": "Wat is een bestelsysteem voor foodtrucks?",
+      "whatA": "Een bestelsysteem neemt online bestellingen aan voordat klanten bij de truck zijn: ze kiezen gerechten en een afhaaltijd, betalen online of bij het afhalen, en de bestelling verschijnt in je keuken. Een kassa of pinapparaat regelt het afrekenen bij de truck. De twee vullen elkaar aan.",
+      "costQ": "Wat kost HatchGrab in {country}?",
+      "costA": "{plans}. Bij online kaartbetalingen komen daar de kosten van Stripe bij: {cardFee} per kaartbetaling.",
+      "termQ": "Is er een minimale looptijd?",
+      "termA": "Nee. Er is geen minimale looptijd en geen opzegtermijn. Je kunt altijd opzeggen; het bedrag wordt maandelijks vooraf gefactureerd en je houdt toegang tot het einde van de maand waarvoor je hebt betaald.",
+      "locationsQ": "Werkt het met wisselende standplaatsen?",
+      "locationsA": "Ja. Je zet je weekplanning met standplaatsen en tijden klaar, en klanten bestellen voor de plek en de dag waarop je er staat.",
+      "capacityQ": "Hoe voorkomt het systeem dat mijn keuken overbelast raakt?",
+      "capacityA": "Klanten zien alleen afhaaltijden die je keuken echt kan halen. Het systeem rekent met de bereidingstijd van elk gerecht en hoeveel je er tegelijk maakt.",
+      "tseQ": "Heb ik dan nog een gecertificeerde kassa nodig?",
+      "tseA": "HatchGrab is geen kassasysteem en is niet fiscaal gecertificeerd. Hoe je online bestellingen in je kassa vastlegt, is een vraag voor je belastingadviseur.",
+      "paymentsQ": "Welke betaalmethoden ondersteunt HatchGrab?",
+      "paymentsA": "Klanten betalen online met kaart, Apple Pay of Google Pay, of betalen bij de truck. PayPal en Klarna worden op dit moment niet ondersteund.",
+      "costTrial": "{months, plural, one {De eerste maand is} other {De eerste # maanden zijn}} gratis, met alle functies."
+    },
+    "method": {
+      "title": "Zo hebben we vergeleken",
+      "checked": "Laatst gecontroleerd op {date}.",
+      "prices": "Prijzen staan zoals de aanbieder ze vermeldt, ook wat de btw betreft.",
+      "meaning": "‘Ja’ betekent dat de aanbieder de functie openbaar vermeldt. ‘Niet aangegeven’ betekent dat we er op de website niets over hebben gevonden — niet dat de functie ontbreekt.",
+      "vendor": "HatchGrab beheert deze pagina en is een van de vergeleken aanbieders.",
+      "review": "Prijzen en functies worden automatisch gecontroleerd op de eigen website van elk product; elke bewering linkt naar de bron.",
+      "corrections": "Een fout gevonden? Laat het ons weten via ons <link>contactformulier</link>.",
+      "reportError": "<link>Fout melden</link>",
+      "machine": "Voor AI-assistenten en ontwikkelaars: deze tabel <md>als Markdown</md> · <json>als JSON</json>"
+    },
+    "cta": {
+      "title": "{months, plural, one {Probeer # maand gratis} other {Probeer # maanden gratis}}",
+      "noCard": "Geen creditcard nodig",
+      "cancel": "Maandelijks opzegbaar",
+      "button": "Probeer het gratis"
+    },
+    "admin": {
+      "status": "Concept · noindex · niet in sitemap, llms.txt of hreflang · footerlink alleen voor admins",
+      "statusLive": "Live · openbaar en indexeerbaar",
+      "viewAdmin": "Adminweergave",
+      "viewPublic": "Wat het publiek ziet",
+      "pricingCheck": "Open de prijscontrole",
+      "checklist": "Voor livegang",
+      "goLive": "Je zet de pagina live in Admin › Landen.",
+      "check": {
+        "apps": "iPad- en Android-flags aan voor {country}",
+        "verified": "Minstens 2 geverifieerde aanbieders ({n} geverifieerd)",
+        "placeholders": "Geen ‘[ … ]’-placeholder meer in de tekst",
+        "vat": "Btw-tekst aanwezig",
+        "impressum": "Impressum-besluit vastgelegd"
+      },
+      "unverified": "niet geverifieerd · verborgen voor het publiek",
+      "autoVerified": "automatisch geverifieerd",
+      "unchecked": "nog niet voor elke getoonde concurrent gecontroleerd · verborgen voor het publiek",
+      "label": "Admin",
+      "notShown": "Niet op de pagina (er worden er maximaal vier getoond): {names}.",
+      "reasonHidden": "{name} (verborgen)",
+      "reasonBeyond": "{name} (na de eerste vier)",
+      "reasonNoWebsite": "{name} (geen website)"
+    },
+    "footer": {
+      "heading": "Vergelijken",
+      "link": "Bestelsystemen vergelijken"
+    },
+    "featureGroups": {
+      "ordering": "Bestellen",
+      "payments": "Betalen",
+      "kitchen": "Keuken",
+      "marketing": "Marketing",
+      "apps_hardware": "Apps en hardware",
+      "price_contract": "Prijs en contract"
+    },
+    "cell": {
+      "yes": "Ja",
+      "no": "Nee",
+      "partial": "Deels",
+      "unknown": "Niet aangegeven",
+      "not_mentioned": "De website zegt er niets over",
+      "withNote": "{word}, {note}",
+      "soon": "binnenkort",
+      "fromPlan": "vanaf {plan}",
+      "perCardPayment": "{fee} per kaartbetaling",
+      "trial": "{months, plural, one {# maand} other {# maanden}} gratis",
+      "setupFee": "{price} eenmalig",
+      "perMonth": "{price} per maand",
+      "notInCountry": "niet in {country}",
+      "flagOff": "flag nog uit; zichtbaar zodra de stores de app tonen",
+      "notApplicable": "geldt niet voor een markt",
+      "not_listed": "Niet vermeld"
+    },
+    "explained": {
+      "title": "Wat de functies betekenen"
+    },
+    "costBlock": {
+      "title": "Wat een foodtruck per maand betaalt",
+      "sizes": "Online omzet per maand",
+      "sizeSales": "{sales} per maand",
+      "sizeOrders": "ongeveer {orders} bestellingen",
+      "lead": "Voor een foodtruck met {sales} aan online bestellingen per maand (ongeveer {orders} bestellingen). Elke balk toont de totale maandkosten: de eigen kosten van het bestelsysteem plus de kaartkosten op die bestellingen.",
+      "legendSoftware": "Softwarekosten",
+      "legendCard": "Kaartkosten",
+      "software": "Softwarekosten {amount} per maand",
+      "card": "Kaartkosten {amount} per maand",
+      "total": "{amount} per maand inclusief kaartkosten",
+      "share": "{pct} van de omzet",
+      "assumed": "(tarief niet gepubliceerd, aangenomen)",
+      "customerFee": "Plus {amount} per maand betaald door klanten ({fee} per bestelling) — niet in de balk",
+      "summaryCheapest": "De eigen kosten van {us} zijn {ours} per maand, tegenover {theirs} per maand voor de goedkoopste getoonde concurrent. De kaartkosten ({card} per maand) betaal je op elke kaartbetaling, welk systeem je ook gebruikt, dus het verschil dat telt zijn de softwarekosten.",
+      "summaryNotCheapest": "De eigen kosten van {us} zijn {ours} per maand, meer dan de {theirs} per maand van {rival}, de goedkoopste getoonde concurrent. De kaartkosten ({card} per maand) betaal je op elke kaartbetaling, welk systeem je ook gebruikt.",
+      "summaryAlone": "De eigen kosten van {us} zijn {ours} per maand. De kaartkosten ({card} per maand) betaal je op elke kaartbetaling, welk systeem je ook gebruikt.",
+      "footOrder": "Gemiddelde bestelling {order}: een typische maaltijd van {meal} × {multiplier} gerechten per bestelling ({source}).",
+      "footCard": "Voor de kaartkosten rekenen we met {rate} per kaartbetaling: {source}.",
+      "footCardSource": "Het tarief van Stripe voor {country}",
+      "footAssumed": "{names} {count, plural, one {publiceert} other {publiceren}} geen kaarttarief, dus we gaan uit van het onze.",
+      "footChecked": "Prijzen gecontroleerd op {date}.",
+      "footCalculator": "Reken je eigen cijfers uit in de calculator.",
+      "noRivals": "Er is in {country} nog geen concurrent geverifieerd, dus er valt niets te vergelijken."
+    },
+    "features": {
+      "preorder": {
+        "label": "Vooraf bestellen met een gekozen afhaaltijd",
+        "explain": "Klanten bestellen vooraf en kiezen zelf hoe laat ze afhalen."
+      },
+      "capacity": {
+        "label": "Afhaaltijden begrensd door de keukencapaciteit",
+        "explain": "Klanten zien alleen afhaaltijden die de keuken echt kan halen."
+      },
+      "asap": {
+        "label": "Bestellen voor zo snel mogelijk",
+        "explain": "Klanten kunnen bestellen zonder een tijd te kiezen en afhalen zodra het klaar is."
+      },
+      "ahead": {
+        "label": "Vooraf bestellen voor een latere dag of een evenement",
+        "explain": "Klanten kunnen vandaag bestellen voor een markt of evenement op een latere dag."
+      },
+      "schedule": {
+        "label": "Weekplanning met wisselende standplaatsen",
+        "explain": "De week van de truck met standplaatsen en tijden; klanten bestellen voor de plek en de dag waarop hij er staat."
+      },
+      "walkup": {
+        "label": "Bestellingen aan de truck op hetzelfde scherm als online bestellingen",
+        "explain": "Bestellingen die aan het loket worden opgenomen, komen in dezelfde lijst als online bestellingen."
+      },
+      "stock": {
+        "label": "Uitverkocht en voorraadlimieten per evenement",
+        "explain": "Markeer gerechten als uitverkocht en stel in hoeveel er per evenement verkocht mogen worden."
+      },
+      "notify": {
+        "label": "Klant krijgt bericht als de bestelling klaar is",
+        "explain": "Hoe klanten horen dat hun bestelling klaar is: sms, WhatsApp, e-mail, pushmelding of een live statuspagina van de bestelling.",
+        "ours": "e-mail als de stap ‘bestelling klaar’ aanstaat, en een statuspagina van de bestelling; geen sms, WhatsApp of push"
+      },
+      "allergens": {
+        "label": "Allergenen op de menukaart",
+        "explain": "Bij elk gerecht zien klanten de allergenen voordat ze bestellen."
+      },
+      "menuphoto": {
+        "label": "Menukaart instellen vanaf een foto",
+        "explain": "Een foto of pdf van de menukaart vult de gerechten in, zodat jij ze alleen nog hoeft te controleren."
+      },
+      "options": {
+        "label": "Opties en extra’s bij gerechten",
+        "explain": "Formaten, sauzen en extra’s, inclusief keuzes die de klant moet maken."
+      },
+      "deals": {
+        "label": "Combideals en bundels",
+        "explain": "Meerdere items samen voor één prijs."
+      },
+      "private": {
+        "label": "Privé-evenementen en boekingen",
+        "explain": "Bestellingen voor een privé-evenement via een eigen link, en aanvragen om de truck te boeken.",
+        "ours": "privé-evenementen met een eigen bestellink; geen boekingsaanvragen"
+      },
+      "qr": {
+        "label": "Bestellen aan tafel / via QR",
+        "explain": "Klanten scannen een code aan tafel en de bestelling komt binnen met het tafelnummer.",
+        "ours": "een QR-code opent de bestelpagina; geen tafelnummers"
+      },
+      "cards": {
+        "label": "Online kaartbetalingen incl. Apple Pay en Google Pay",
+        "explain": "Klanten betalen bij het bestellen online met kaart, Apple Pay of Google Pay."
+      },
+      "payattruck": {
+        "label": "Betalen bij afhalen",
+        "explain": "Klanten bestellen online en betalen bij het afhalen."
+      },
+      "localpay": {
+        "label": "Lokale betaalmethoden (BLIK, iDEAL, Swish, MobilePay…)",
+        "explain": "De eigen online betaalmethoden van het land, naast kaarten.",
+        "ours": "alleen kaarten"
+      },
+      "paypal": {
+        "label": "PayPal of Klarna",
+        "explain": "Klanten kunnen met PayPal of Klarna betalen."
+      },
+      "custfee": {
+        "label": "Optie: klant betaalt de bestelkosten",
+        "explain": "Het bedrijf kan servicekosten doorberekenen aan de klant."
+      },
+      "tips": {
+        "label": "Fooi",
+        "explain": "Klanten kunnen een fooi toevoegen als ze online betalen."
+      },
+      "paymethods": {
+        "label": "Aangeboden betaalmethoden",
+        "explain": "Hoe klanten kunnen betalen, volgens de aanbieder.",
+        "ours": "kaart, Apple Pay, Google Pay; betalen bij de truck"
+      },
+      "kds": {
+        "label": "Keukenscherm (KDS)",
+        "explain": "Bestellingen verschijnen op een scherm in de keuken, in de volgorde waarin je ze maakt."
+      },
+      "tickets": {
+        "label": "Geprinte keukenbonnen",
+        "explain": "Elke bestelling wordt geprint op een bonprinter in de truck.",
+        "ours": "in de iPad- en Android-app; printer niet meegeleverd"
+      },
+      "buzzers": {
+        "label": "Buzzers",
+        "explain": "Klanten krijgen een buzzer die laat weten dat hun bestelling klaar is.",
+        "ours": "buzzernummer bij elke bestelling vastgelegd; buzzers niet meegeleverd"
+      },
+      "offline": {
+        "label": "Blijft werken als internet wegvalt",
+        "explain": "Bestellingen en wijzigingen zonder verbinding worden bewaard en verstuurd zodra de verbinding terug is.",
+        "ours": "in de iPad- en Android-app; niet in het webdashboard"
+      },
+      "vans": {
+        "label": "Meerdere bussen of trucks",
+        "explain": "Eén account voor meer dan één truck.",
+        "ours": "extra trucks tegen een extra maandbedrag"
+      },
+      "staff": {
+        "label": "Logins voor personeel",
+        "explain": "Medewerkers loggen in met hun eigen login en rol."
+      },
+      "reports": {
+        "label": "Verkooprapporten",
+        "explain": "Totalen, bestsellers en verkoop per evenement of datum, met export naar een spreadsheet."
+      },
+      "domain": {
+        "label": "Eigen webadres",
+        "explain": "De bestelpagina op het eigen domein van het bedrijf."
+      },
+      "whatsapp": {
+        "label": "Automatische antwoorden via WhatsApp",
+        "explain": "WhatsApp-berichten van klanten worden automatisch beantwoord."
+      },
+      "social": {
+        "label": "Social media posts vanuit je planning",
+        "explain": "Kant-en-klare posts die laten zien waar de truck deze week staat."
+      },
+      "igmsg": {
+        "label": "Antwoorden via Instagram en Messenger",
+        "explain": "Berichten via Instagram en Facebook Messenger worden automatisch beantwoord."
+      },
+      "discovery": {
+        "label": "Vermelding op een foodtruck-ontdekkaart",
+        "explain": "Klanten vinden de truck op een openbare kaart met foodtrucks bij hen in de buurt.",
+        "ours": "Village Foodie"
+      },
+      "loyalty": {
+        "label": "Spaarprogramma",
+        "explain": "Klanten sparen voor beloningen als ze terugkomen."
+      },
+      "ipad": {
+        "label": "iPad-app",
+        "explain": "De app van de truck om bestellingen aan te nemen en te beheren op een iPad."
+      },
+      "android": {
+        "label": "Android-app",
+        "explain": "Dezelfde app op een Android-tablet of -telefoon."
+      },
+      "hardware": {
+        "label": "Hardware meegeleverd (tablet, printer)",
+        "explain": "De aanbieder levert de tablet of de printer.",
+        "ours": "gebruik je eigen apparaten"
+      },
+      "terminal": {
+        "label": "Pinapparaat voor het loket meegeleverd",
+        "explain": "De aanbieder levert een pinapparaat voor betalingen bij de truck."
+      },
+      "fiscal": {
+        "label": "Gecertificeerde kassa volgens fiscale regels (TSE, EET, kassaregister…)",
+        "explain": "Een kassa die gecertificeerd is volgens de regels van het land voor het vastleggen van verkopen."
+      },
+      "delivery": {
+        "label": "Bezorging",
+        "explain": "Bestellingen worden op het adres van de klant bezorgd.",
+        "ours": "alleen afhalen"
+      },
+      "monthly": {
+        "label": "Maandprijs",
+        "explain": "Wat het bedrijf per maand betaalt voor de software."
+      },
+      "perorder": {
+        "label": "Kosten per online bestelling",
+        "explain": "Wat de aanbieder rekent op elke online bestelling, bovenop de maandprijs."
+      },
+      "cardfee": {
+        "label": "Kaartkosten",
+        "explain": "De kosten van de betaalprovider per kaartbetaling."
+      },
+      "term": {
+        "label": "Minimale looptijd",
+        "explain": "Hoe lang het bedrijf vastzit voordat het kan opzeggen."
+      },
+      "setup": {
+        "label": "Opstartkosten",
+        "explain": "Eenmalige kosten om te beginnen."
+      },
+      "trial": {
+        "label": "Gratis proefperiode",
+        "explain": "Tijd om het systeem gratis te gebruiken voordat je betaalt."
+      }
+    }
+  },
   "comparisonSuits": {
     "title": "Welk systeem past bij jouw foodtruck?",
     "checked": "Gecontroleerd op {date}",

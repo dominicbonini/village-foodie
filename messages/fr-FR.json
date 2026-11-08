@@ -6367,6 +6367,400 @@
       "description": "Comparez ce que vous coûtent vos commandes en ligne aujourd’hui avec un an sur HatchGrab : une estimation en une minute."
     }
   },
+  "comparison": {
+    "path": {
+      "section": "comparatif",
+      "slug": "logiciel-de-commande-food-truck"
+    },
+    "meta": {
+      "title": "Logiciel de commande food truck : comparatif 2026 et prix",
+      "description": "Logiciels de commande pour food trucks comparés : heure de retrait, capacité cuisine, planning, frais et engagement — vérifiés sur le site des éditeurs.",
+      "about": "Logiciels de commande en ligne pour food trucks"
+    },
+    "breadcrumb": {
+      "home": "HatchGrab",
+      "here": "Comparatif",
+      "label": "Fil d’Ariane"
+    },
+    "h1": "Comparatif 2026 des logiciels de commande pour food trucks",
+    "byline": "Dernière vérification : {date} · Réalisé par HatchGrab. Nous sommes l’un des éditeurs comparés (voir <link>Notre méthode de comparaison</link>).",
+    "tldr": {
+      "title": "En bref",
+      "body": "Si vos clients doivent pouvoir commander à l’avance sur leur téléphone et choisir une heure de retrait, il vous faut un logiciel de commande, pas seulement une caisse. Vérifiez quatre points : des heures de retrait qui suivent la capacité de votre cuisine ; un planning hebdomadaire pour des emplacements qui changent ; peu ou pas de frais par commande ; et pas d’engagement long. Les TPE et les caisses gèrent l’encaissement au camion et complètent un logiciel de commande."
+    },
+    "table": {
+      "title": "Les logiciels de commande comparés",
+      "caption": "Fonctionnalités et coûts des logiciels de commande en ligne pour food trucks en {country}, au {date}",
+      "note": "« Oui » uniquement lorsque l’éditeur l’indique publiquement.",
+      "feature": "Fonctionnalité",
+      "yes": "Oui",
+      "no": "Non",
+      "unknown": "Non précisé",
+      "fromPlan": "À partir de {plan}",
+      "appNotInCountry": "Indisponible en {country}",
+      "appFlagOff": "Oui – indicateur encore désactivé, affiché dès que l’app est dans les stores",
+      "range": "{from} à {to}",
+      "feePlan": "{fee} ({plans})",
+      "noFee": "sans frais",
+      "morePending": "D’autres éditeurs apparaîtront ici dès que nous aurons vérifié leurs informations sur leur propre site web.",
+      "priceHidden": "Sur demande",
+      "feeAfter": "{fee} au-delà de {included} par mois"
+    },
+    "costs": {
+      "title": "Combien coûte un logiciel de commande pour food truck ?",
+      "ourPlan": "{plan} : {price} par mois, {fee}",
+      "feeOnly": "{fee} par commande en ligne payée par carte",
+      "feeIncluded": "commandes en ligne incluses jusqu’à {included} par mois, puis {fee}",
+      "feeNone": "pas de frais HatchGrab sur les commandes en ligne",
+      "rivalPlan": "{plan} : {price}",
+      "perMonth": "{price} par mois",
+      "perMonthYearly": "{price} par mois, facturé à l’année",
+      "vatExcl": "HT",
+      "vatIncl": "TTC",
+      "setup": "{price} de mise en service, une seule fois",
+      "truckFee": "{fee} par commande",
+      "customerFee": "{fee} par commande, payés par le client",
+      "source": "Source",
+      "checked": "vérifié le {date}",
+      "cardFee": "Avec HatchGrab, les paiements par carte en ligne entraînent aussi les frais de Stripe : {cardFee} par paiement par carte en {country}.",
+      "vat": "HatchGrab Ltd est une société britannique et n’est pas immatriculée à la TVA en {country} : aucune TVA n’est donc ajoutée à nos frais. Si vous êtes assujetti à la TVA, communiquez-nous votre numéro de TVA ; vous déclarez alors vous-même la TVA éventuellement due sur nos frais, selon le mécanisme de l’autoliquidation.",
+      "bundledFee": "{fee} par paiement en ligne, frais de carte inclus"
+    },
+    "fit": {
+      "title": "Quelle solution pour qui ?",
+      "ours": "HatchGrab vous convient si …",
+      "oursBody": "vous changez d’emplacement, voulez des précommandes avec heure de retrait, ne voulez pas que votre cuisine soit débordée et ne voulez pas d’engagement.",
+      "oursNot": "HatchGrab ne vous convient pas si …",
+      "oursNotBody": "vos clients doivent pouvoir payer avec PayPal ou Klarna, ou si vous voulez une caisse certifiée conforme aux règles fiscales, le tout chez un seul fournisseur.",
+      "appClause": "Ou si vous avez besoin de l’app cuisine sur iPad ou Android en {country} : elle n’y est pas encore disponible dans les stores.",
+      "tills": "Caisses et TPE",
+      "marketplaces": "Plateformes de livraison",
+      "rival": "{name} convient si …",
+      "tillsBody": "Les caisses encaissent au camion et répondent à l’obligation de caisse certifiée prévue par les règles fiscales. Un logiciel de commande fonctionne avec une caisse ; il ne la remplace pas.",
+      "tillsBodyNamed": "Les caisses encaissent au camion et répondent à l’obligation de caisse certifiée prévue par les règles fiscales. {names} {count, plural, one {figure} many {figurent} other {figurent}} aussi dans le tableau ci-dessus. Un logiciel de commande fonctionne avec une caisse ; il ne la remplace pas.",
+      "marketplacesBody": "Les plateformes de livraison apportent de nouveaux clients, mais prennent une commission sur chaque commande. Uber Eats indique 14 % pour le retrait et 30 % pour la livraison par des coursiers Uber en Allemagne. Wolt indique sur son propre site prendre une commission, sans en donner les taux. Nous n’avons pas pu vérifier les taux de Lieferando. Cette commission s’applique aussi aux habitués qui commandent chez vous à l’avance."
+    },
+    "groups": {
+      "food_truck": "Logiciel de commande pour food truck",
+      "nearest_local": "Logiciel de commande",
+      "pos": "Logiciel de caisse"
+    },
+    "faq": {
+      "title": "Questions fréquentes",
+      "whatQ": "Qu’est-ce qu’un logiciel de commande pour food truck ?",
+      "whatA": "Un logiciel de commande prend les commandes en ligne avant que les clients n’arrivent au camion : ils choisissent leurs plats et une heure de retrait, paient en ligne ou au retrait, et la commande s’affiche dans votre cuisine. Une caisse ou un TPE encaisse au camion. Les deux se complètent.",
+      "costQ": "Combien coûte HatchGrab en {country} ?",
+      "costA": "{plans}. Les paiements par carte en ligne entraînent aussi les frais de Stripe : {cardFee} par paiement par carte.",
+      "termQ": "Y a-t-il une durée minimale d’engagement ?",
+      "termA": "Non. Il n’y a ni durée minimale d’engagement ni préavis. Vous pouvez résilier à tout moment ; l’abonnement est facturé chaque mois à l’avance, et vous gardez l’accès jusqu’à la fin du mois payé.",
+      "locationsQ": "Est-ce que ça fonctionne avec des emplacements qui changent ?",
+      "locationsA": "Oui. Vous créez votre planning de la semaine avec les lieux et les horaires, et les clients commandent pour l’emplacement et le jour où vous y êtes.",
+      "capacityQ": "Comment le logiciel évite-t-il que ma cuisine soit débordée ?",
+      "capacityA": "Les clients ne voient que les heures de retrait que votre cuisine peut réellement tenir. Le logiciel tient compte du temps de préparation de chaque plat et du nombre que vous préparez à la fois.",
+      "tseQ": "Ai-je encore besoin d’une caisse certifiée ?",
+      "tseA": "HatchGrab n’est pas une caisse et n’est pas certifié selon les règles fiscales applicables aux caisses. La façon d’enregistrer les commandes en ligne dans votre caisse est une question à poser à votre expert-comptable.",
+      "paymentsQ": "Quels moyens de paiement HatchGrab accepte-t-il ?",
+      "paymentsA": "Les clients paient en ligne par carte, Apple Pay ou Google Pay, ou bien au camion. PayPal et Klarna ne sont pas pris en charge pour le moment.",
+      "costTrial": "{months, plural, one {Le premier mois est gratuit} many {Les # premiers mois sont gratuits} other {Les # premiers mois sont gratuits}}, avec toutes les fonctionnalités."
+    },
+    "method": {
+      "title": "Notre méthode de comparaison",
+      "checked": "Dernière vérification le {date}.",
+      "prices": "Les prix sont indiqués tels que l’éditeur les affiche, TVA comprise.",
+      "meaning": "« Oui » signifie que l’éditeur indique publiquement la fonctionnalité. « Non précisé » signifie que nous n’avons rien trouvé à ce sujet sur son site web — et non que la fonctionnalité n’existe pas.",
+      "vendor": "HatchGrab édite cette page et fait partie des éditeurs comparés.",
+      "review": "Les prix et les fonctionnalités sont vérifiés automatiquement sur le site web de chaque produit ; chaque information renvoie à sa source.",
+      "corrections": "Vous avez repéré une erreur ? Signalez-la-nous via notre <link>formulaire de contact</link>.",
+      "reportError": "<link>Signaler une erreur</link>",
+      "machine": "Pour les assistants IA et les développeurs : ce tableau <md>en Markdown</md> · <json>en JSON</json>"
+    },
+    "cta": {
+      "title": "Essai gratuit de {months, plural, one {# mois} many {# de mois} other {# mois}}",
+      "noCard": "Sans carte bancaire",
+      "cancel": "Résiliable chaque mois",
+      "button": "Essayer gratuitement"
+    },
+    "admin": {
+      "status": "Brouillon · noindex · absent du sitemap, de llms.txt et du hreflang · lien en pied de page pour les admins uniquement",
+      "statusLive": "En ligne · publique et indexable",
+      "viewAdmin": "Vue admin",
+      "viewPublic": "Vue publique",
+      "pricingCheck": "Ouvrir le contrôle des prix",
+      "checklist": "Avant la mise en ligne",
+      "goLive": "La page se met en ligne dans Admin › Pays.",
+      "check": {
+        "apps": "Indicateurs iPad et Android activés pour {country}",
+        "verified": "Au moins 2 éditeurs vérifiés ({n} vérifiés)",
+        "placeholders": "Plus aucun espace réservé « [ … ] » dans le texte",
+        "vat": "Mention de la TVA présente",
+        "impressum": "Décision sur l’Impressum enregistrée"
+      },
+      "unverified": "non vérifié · masqué au public",
+      "autoVerified": "vérifié automatiquement",
+      "unchecked": "pas encore vérifié pour chaque concurrent affiché · masqué au public",
+      "label": "Admin",
+      "notShown": "Absents de la page (quatre au maximum sont affichés) : {names}.",
+      "reasonHidden": "{name} (masqué)",
+      "reasonBeyond": "{name} (au-delà des quatre)",
+      "reasonNoWebsite": "{name} (pas de site web)"
+    },
+    "footer": {
+      "heading": "Comparatif",
+      "link": "Comparatif des logiciels de commande"
+    },
+    "featureGroups": {
+      "ordering": "Commande",
+      "payments": "Paiements",
+      "kitchen": "Cuisine",
+      "marketing": "Marketing",
+      "apps_hardware": "Applis et matériel",
+      "price_contract": "Prix et engagement"
+    },
+    "cell": {
+      "yes": "Oui",
+      "no": "Non",
+      "partial": "En partie",
+      "unknown": "Non précisé",
+      "not_mentioned": "Non précisé sur son site web",
+      "withNote": "{word}, {note}",
+      "soon": "bientôt",
+      "fromPlan": "à partir de {plan}",
+      "perCardPayment": "{fee} par paiement par carte",
+      "trial": "{months, plural, one {# mois gratuit} many {# de mois gratuits} other {# mois gratuits}}",
+      "setupFee": "{price} une seule fois",
+      "perMonth": "{price} par mois",
+      "notInCountry": "indisponible en {country}",
+      "flagOff": "indicateur encore désactivé ; affiché dès que l’app est dans les stores",
+      "notApplicable": "ne s’applique pas à un marché",
+      "not_listed": "Non indiqué"
+    },
+    "explained": {
+      "title": "Les fonctionnalités expliquées"
+    },
+    "costBlock": {
+      "title": "Ce qu’un food truck paie chaque mois",
+      "sizes": "Ventes en ligne par mois",
+      "sizeSales": "{sales} par mois",
+      "sizeOrders": "environ {orders} commandes",
+      "lead": "Pour un food truck qui réalise {sales} de commandes en ligne par mois (environ {orders} commandes). Chaque barre représente le coût mensuel total : les frais propres du logiciel de commande plus les frais de carte sur ces commandes.",
+      "legendSoftware": "Frais logiciel",
+      "legendCard": "Frais de carte",
+      "software": "Frais logiciel : {amount} par mois",
+      "card": "Frais de carte : {amount} par mois",
+      "total": "{amount} par mois, frais de carte compris",
+      "share": "{pct} des ventes",
+      "assumed": "(taux non publié, estimé)",
+      "customerFee": "Plus {amount} par mois payés par les clients ({fee} par commande) — non inclus dans la barre",
+      "summaryCheapest": "Les frais propres de {us} sont de {ours} par mois, contre {theirs} par mois pour le concurrent affiché le moins cher. Les frais de carte ({card} par mois) s’appliquent à chaque paiement par carte, quel que soit le logiciel : la différence qui compte est donc celle des frais logiciel.",
+      "summaryNotCheapest": "Les frais propres de {us} sont de {ours} par mois, soit plus que les {theirs} par mois de {rival}, le concurrent affiché le moins cher. Les frais de carte ({card} par mois) s’appliquent à chaque paiement par carte, quel que soit le logiciel.",
+      "summaryAlone": "Les frais propres de {us} sont de {ours} par mois. Les frais de carte ({card} par mois) s’appliquent à chaque paiement par carte, quel que soit le logiciel.",
+      "footOrder": "Commande moyenne de {order} : un repas type à {meal} × {multiplier} plats par commande ({source}).",
+      "footCard": "Les frais de carte sont calculés à {rate} par paiement par carte : {source}.",
+      "footCardSource": "tarif Stripe en {country}",
+      "footAssumed": "{names} ne {count, plural, one {publie} many {publient} other {publient}} pas de taux pour les cartes : nous utilisons donc une estimation.",
+      "footChecked": "Prix vérifiés le {date}.",
+      "footCalculator": "Calculez vos propres chiffres avec le calculateur.",
+      "noRivals": "Aucun concurrent n’est encore vérifié en {country} : il n’y a donc rien à comparer."
+    },
+    "features": {
+      "preorder": {
+        "label": "Précommande avec choix de l’heure de retrait",
+        "explain": "Les clients commandent à l’avance et choisissent l’heure à laquelle ils viennent récupérer leur commande."
+      },
+      "capacity": {
+        "label": "Heures de retrait limitées selon la capacité de la cuisine",
+        "explain": "Les clients ne voient que les heures de retrait que la cuisine peut réellement tenir."
+      },
+      "asap": {
+        "label": "Commandes « dès que possible »",
+        "explain": "Les clients peuvent commander sans choisir d’heure et récupérer leur commande dès qu’elle est prête."
+      },
+      "ahead": {
+        "label": "Commande à l’avance pour un autre jour ou un événement",
+        "explain": "Les clients peuvent commander aujourd’hui pour un marché ou un événement qui a lieu un autre jour."
+      },
+      "schedule": {
+        "label": "Planning hebdomadaire avec emplacements variables",
+        "explain": "La semaine du camion, avec ses lieux et ses horaires ; les clients commandent pour l’emplacement et le jour où il s’y trouve."
+      },
+      "walkup": {
+        "label": "Commandes au comptoir sur le même écran que les commandes en ligne",
+        "explain": "Les commandes prises au comptoir arrivent dans la même liste que les commandes en ligne."
+      },
+      "stock": {
+        "label": "Ruptures et limites de stock par événement",
+        "explain": "Marquez des plats comme épuisés et fixez combien de chacun peuvent être vendus lors d’un événement."
+      },
+      "notify": {
+        "label": "Client prévenu quand sa commande est prête",
+        "explain": "Comment les clients apprennent que leur commande est prête : SMS, WhatsApp, e-mail, notification push ou page de suivi de commande en direct.",
+        "ours": "e-mail si l’étape « commande prête » est activée, et une page de suivi de commande ; pas de SMS, de WhatsApp ni de push"
+      },
+      "allergens": {
+        "label": "Allergènes sur la carte",
+        "explain": "Chaque plat affiche ses allergènes aux clients avant qu’ils ne commandent."
+      },
+      "menuphoto": {
+        "label": "Carte créée à partir d’une photo",
+        "explain": "Une photo ou un PDF de la carte remplit les plats, que vous n’avez plus qu’à vérifier."
+      },
+      "options": {
+        "label": "Options et suppléments sur les plats",
+        "explain": "Tailles, sauces et suppléments, y compris les choix que le client doit obligatoirement faire."
+      },
+      "deals": {
+        "label": "Formules et menus",
+        "explain": "Plusieurs articles vendus ensemble à un prix unique."
+      },
+      "private": {
+        "label": "Événements privés et privatisations",
+        "explain": "Des commandes pour un événement privé via un lien dédié, et des demandes de privatisation du camion.",
+        "ours": "événements privés avec leur propre lien de commande ; pas de demandes de privatisation"
+      },
+      "qr": {
+        "label": "Commande à table par QR code",
+        "explain": "Les clients scannent un code à leur table et la commande arrive avec le numéro de table.",
+        "ours": "un QR code ouvre la page de commande ; pas de numéros de table"
+      },
+      "cards": {
+        "label": "Paiement en ligne par carte, Apple Pay et Google Pay compris",
+        "explain": "Les clients paient en ligne par carte, Apple Pay ou Google Pay au moment de commander."
+      },
+      "payattruck": {
+        "label": "Paiement sur place",
+        "explain": "Les clients commandent en ligne et paient au retrait."
+      },
+      "localpay": {
+        "label": "Moyens de paiement locaux (BLIK, iDEAL, Swish, MobilePay…)",
+        "explain": "Les moyens de paiement en ligne propres au pays, en plus des cartes.",
+        "ours": "cartes uniquement"
+      },
+      "paypal": {
+        "label": "PayPal ou Klarna",
+        "explain": "Les clients peuvent payer avec PayPal ou Klarna."
+      },
+      "custfee": {
+        "label": "Option pour faire payer les frais de commande au client",
+        "explain": "L’entreprise peut répercuter des frais de service sur le client."
+      },
+      "tips": {
+        "label": "Pourboires",
+        "explain": "Les clients peuvent ajouter un pourboire quand ils paient en ligne."
+      },
+      "paymethods": {
+        "label": "Moyens de paiement proposés",
+        "explain": "Comment les clients peuvent payer, selon ce qu’indique l’éditeur.",
+        "ours": "carte, Apple Pay, Google Pay ; paiement au camion"
+      },
+      "kds": {
+        "label": "Écran cuisine (KDS)",
+        "explain": "Les commandes s’affichent sur un écran en cuisine, dans l’ordre de préparation."
+      },
+      "tickets": {
+        "label": "Tickets cuisine imprimés",
+        "explain": "Chaque commande s’imprime sur une imprimante à tickets dans le camion.",
+        "ours": "dans l’app iPad et Android ; imprimante non fournie"
+      },
+      "buzzers": {
+        "label": "Bipeurs",
+        "explain": "Les clients reçoivent un bipeur qui les prévient quand leur commande est prête.",
+        "ours": "numéro de bipeur enregistré avec chaque commande ; bipeurs non fournis"
+      },
+      "offline": {
+        "label": "Continue de fonctionner sans internet",
+        "explain": "Les commandes et modifications faites sans connexion sont conservées et envoyées dès que la connexion revient.",
+        "ours": "dans l’app iPad et Android ; pas dans le tableau de bord web"
+      },
+      "vans": {
+        "label": "Plusieurs camions",
+        "explain": "Un seul compte gère plusieurs camions.",
+        "ours": "camions supplémentaires moyennant un supplément mensuel"
+      },
+      "staff": {
+        "label": "Accès pour l’équipe",
+        "explain": "Chaque membre de l’équipe se connecte avec son propre identifiant et son rôle."
+      },
+      "reports": {
+        "label": "Rapports de ventes",
+        "explain": "Totaux, meilleures ventes et ventes par événement ou par date, avec export vers un tableur."
+      },
+      "domain": {
+        "label": "Adresse web personnalisée",
+        "explain": "La page de commande sur le nom de domaine de l’entreprise."
+      },
+      "whatsapp": {
+        "label": "Réponses automatiques WhatsApp",
+        "explain": "Les messages WhatsApp des clients reçoivent une réponse automatique."
+      },
+      "social": {
+        "label": "Publications pour les réseaux sociaux à partir de votre planning",
+        "explain": "Des publications prêtes à l’emploi qui montrent où se trouve le camion cette semaine."
+      },
+      "igmsg": {
+        "label": "Réponses Instagram et Messenger",
+        "explain": "Les messages Instagram et Facebook Messenger reçoivent une réponse automatique."
+      },
+      "discovery": {
+        "label": "Présence sur une carte de food trucks",
+        "explain": "Les clients trouvent le camion sur une carte publique des food trucks près de chez eux.",
+        "ours": "Village Foodie"
+      },
+      "loyalty": {
+        "label": "Fidélité",
+        "explain": "Les clients cumulent des avantages quand ils reviennent."
+      },
+      "ipad": {
+        "label": "App iPad",
+        "explain": "L’app du camion pour prendre et gérer les commandes sur iPad."
+      },
+      "android": {
+        "label": "App Android",
+        "explain": "La même app sur une tablette ou un téléphone Android."
+      },
+      "hardware": {
+        "label": "Matériel fourni (tablette, imprimante)",
+        "explain": "L’éditeur fournit la tablette ou l’imprimante.",
+        "ours": "votre propre matériel"
+      },
+      "terminal": {
+        "label": "TPE fourni pour le comptoir",
+        "explain": "L’éditeur fournit un TPE pour les paiements au camion."
+      },
+      "fiscal": {
+        "label": "Caisse certifiée selon les règles fiscales (TSE, EET, kassaregister…)",
+        "explain": "Une caisse certifiée selon les règles du pays sur l’enregistrement des ventes."
+      },
+      "delivery": {
+        "label": "Livraison",
+        "explain": "Commandes livrées à l’adresse du client.",
+        "ours": "retrait uniquement"
+      },
+      "monthly": {
+        "label": "Prix mensuel",
+        "explain": "Ce que l’entreprise paie chaque mois pour le logiciel."
+      },
+      "perorder": {
+        "label": "Frais par commande en ligne",
+        "explain": "Ce que l’éditeur facture sur chaque commande en ligne, en plus du prix mensuel."
+      },
+      "cardfee": {
+        "label": "Frais de carte",
+        "explain": "Les frais du prestataire de paiement sur chaque paiement par carte."
+      },
+      "term": {
+        "label": "Engagement minimum",
+        "explain": "Combien de temps l’entreprise est engagée avant de pouvoir résilier."
+      },
+      "setup": {
+        "label": "Frais de mise en service",
+        "explain": "Un montant unique à payer au démarrage."
+      },
+      "trial": {
+        "label": "Essai gratuit",
+        "explain": "Une période pour utiliser le logiciel gratuitement avant de payer."
+      }
+    }
+  },
   "comparisonSuits": {
     "title": "Quelle solution convient à votre food truck ?",
     "checked": "Vérifié le {date}",

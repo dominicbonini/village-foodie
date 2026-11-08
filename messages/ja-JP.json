@@ -6339,6 +6339,400 @@
       "description": "現在のオンライン注文のコストと、HatchGrabを1年使った場合を比較。1分で概算がわかります。"
     }
   },
+  "comparison": {
+    "path": {
+      "section": "comparison",
+      "slug": "food-truck-ordering-system"
+    },
+    "meta": {
+      "title": "キッチンカー向け注文システム比較2026：機能と料金",
+      "description": "キッチンカー向け注文システムを比較。受け取り時間を選べる事前注文、キッチンの調理能力、週間スケジュール、手数料、契約期間を各社の公式サイトで確認しました。",
+      "about": "キッチンカー向けオンライン注文システム"
+    },
+    "breadcrumb": {
+      "home": "HatchGrab",
+      "here": "比較",
+      "label": "パンくずリスト"
+    },
+    "h1": "キッチンカー向け注文システム比較 2026",
+    "byline": "最終確認日：{date} · 作成：HatchGrab。HatchGrabも比較対象のサービスのひとつです（<link>比較の方法</link>をご覧ください）。",
+    "tldr": {
+      "title": "まとめ",
+      "body": "お客様にスマートフォンで事前に注文し、受け取り時間を選んでもらいたいなら、POSレジだけでなく注文システムが必要です。チェックすべきポイントは四つ。キッチンの調理能力に合わせた受け取り時間、出店場所が変わっても使える週間スケジュール、注文ごとの手数料が低いかかからないこと、そして長期契約がないことです。カード決済端末やPOSレジはキッチンカーでの会計を担い、注文システムを補うものです。"
+    },
+    "table": {
+      "title": "注文システムの比較",
+      "caption": "{country}のキッチンカー向けオンライン注文システムの機能と費用（{date}時点）",
+      "note": "「あり」は、提供会社が公式に明示している場合のみです。",
+      "feature": "機能",
+      "yes": "あり",
+      "no": "なし",
+      "unknown": "明記なし",
+      "fromPlan": "{plan}以上",
+      "appNotInCountry": "{country}では未提供",
+      "appFlagOff": "あり – フラグはまだオフ。ストアに掲載され次第表示",
+      "range": "{from}〜{to}",
+      "feePlan": "{fee}（{plans}）",
+      "noFee": "なし",
+      "morePending": "他のサービスも、各社の公式サイトで情報を確認でき次第ここに掲載します。",
+      "priceHidden": "要問い合わせ",
+      "feeAfter": "月{included}を超えた分に{fee}"
+    },
+    "costs": {
+      "title": "キッチンカー向け注文システムの費用は？",
+      "ourPlan": "{plan}：月額{price}、{fee}",
+      "feeOnly": "オンラインのカード注文ごとに{fee}",
+      "feeIncluded": "月{included}までのオンライン注文は料金に含まれ、それ以降は{fee}",
+      "feeNone": "オンライン注文にHatchGrabの手数料はかかりません",
+      "rivalPlan": "{plan}：{price}",
+      "perMonth": "月額{price}",
+      "perMonthYearly": "月額{price}（年払い）",
+      "vatExcl": "税抜",
+      "vatIncl": "税込",
+      "setup": "初期費用{price}（初回のみ）",
+      "truckFee": "注文ごとに{fee}",
+      "customerFee": "注文ごとに{fee}（お客様負担）",
+      "source": "出典",
+      "checked": "{date}に確認",
+      "cardFee": "HatchGrabでオンラインカード決済を利用する場合は、Stripeの手数料も別途かかります：{country}ではカード決済ごとに{cardFee}。",
+      "vat": "HatchGrab Ltdは英国の会社で、{country}では消費税（VAT）の登録をしていないため、当社の料金に消費税は加算されません。消費税の登録事業者の方は、登録番号をお知らせください。その場合、当社の料金にかかる消費税は、リバースチャージ方式によりご自身で申告していただきます。",
+      "bundledFee": "オンライン決済ごとに{fee}（カード手数料込み）"
+    },
+    "fit": {
+      "title": "どのシステムがどんな方に向いているか",
+      "ours": "HatchGrabが向いているのは …",
+      "oursBody": "出店場所が日によって変わり、受け取り時間を指定できる事前注文を受けたい、キッチンに無理をさせたくない、契約に縛られたくない方。",
+      "oursNot": "HatchGrabが向いていないのは …",
+      "oursNotBody": "お客様にPayPalやKlarnaで支払ってもらいたい方、または税務要件を満たす認証済みのレジを一社でまとめて導入したい方。",
+      "appClause": "また、{country}でiPadやAndroidのキッチンアプリが必要な方。現地のストアにはまだ掲載されていません。",
+      "tills": "POSレジとカード決済端末",
+      "marketplaces": "デリバリープラットフォーム",
+      "rival": "{name}が向いているのは …",
+      "tillsBody": "POSレジはキッチンカーでの会計を担い、税務上のレジ要件にも対応します。注文システムはレジと併用するもので、レジの代わりにはなりません。",
+      "tillsBodyNamed": "POSレジはキッチンカーでの会計を担い、税務上のレジ要件にも対応します。{names}{count, plural, other {も}}上の表に掲載しています。注文システムはレジと併用するもので、レジの代わりにはなりません。",
+      "marketplacesBody": "デリバリープラットフォームは新しいお客様を呼び込みますが、注文のたびに手数料を取ります。Uber Eatsはドイツについて、受け取りで14%、Uberの配達員による配達で30%と明記しています。Woltは公式サイトで手数料がかかるとしていますが、料率は示していません。Lieferandoの料率は確認できませんでした。この手数料は、常連のお客様が事前注文する場合にもかかります。"
+    },
+    "groups": {
+      "food_truck": "キッチンカー向け注文システム",
+      "nearest_local": "注文システム",
+      "pos": "POSレジ"
+    },
+    "faq": {
+      "title": "よくある質問",
+      "whatQ": "キッチンカー向け注文システムとは？",
+      "whatA": "注文システムは、お客様がキッチンカーに来る前にオンラインで注文を受け付けます。お客様は料理と受け取り時間を選び、オンラインまたは受け取り時に支払い、注文はキッチンに表示されます。一方、POSレジやカード決済端末はキッチンカーでの会計を受け持ちます。両者は互いを補い合います。",
+      "costQ": "{country}でのHatchGrabの料金は？",
+      "costA": "{plans}。オンラインカード決済には別途Stripeの手数料がかかります：カード決済ごとに{cardFee}。",
+      "termQ": "最低契約期間はありますか？",
+      "termA": "ありません。最低契約期間も解約予告期間もなく、いつでも解約できます。料金は毎月前払いで請求され、支払い済みの月の末日までご利用いただけます。",
+      "locationsQ": "出店場所が変わっても使えますか？",
+      "locationsA": "はい。出店場所と時間を入れた週間スケジュールを設定すると、お客様はキッチンカーが出店する場所と日を選んで注文します。",
+      "capacityQ": "キッチンに注文が集中しすぎないよう、どのように調整されますか？",
+      "capacityA": "お客様には、キッチンが実際に対応できる受け取り時間だけが表示されます。システムは、料理ごとの調理時間と、一度にいくつ調理できるかをもとに計算します。",
+      "tseQ": "税務要件を満たす認証済みのレジは別途必要ですか？",
+      "tseA": "HatchGrabはレジではなく、税務要件を満たす認証済みレジの機能もありません。オンライン注文をレジにどう記録するかは、税理士にご相談ください。",
+      "paymentsQ": "HatchGrabはどの支払い方法に対応していますか？",
+      "paymentsA": "お客様はカード、Apple Pay、Google Payでオンライン決済するか、受け取り時に支払えます。PayPalとKlarnaには現在対応していません。",
+      "costTrial": "{months, plural, other {最初の#か月間}}は無料で、すべての機能を使えます。"
+    },
+    "method": {
+      "title": "比較の方法",
+      "checked": "最終確認日：{date}。",
+      "prices": "料金は、税込・税抜の別も含め、各社の表示どおりに記載しています。",
+      "meaning": "「あり」は、提供会社がその機能を公式に明示していることを意味します。「明記なし」は、公式サイトで該当する情報が見つからなかったことを意味し、その機能がないという意味ではありません。",
+      "vendor": "このページはHatchGrabが運営しており、HatchGrabも比較対象のひとつです。",
+      "review": "料金と機能は各製品の公式サイトと自動で照合しており、各記載から出典にリンクしています。",
+      "corrections": "誤りを見つけた場合は、<link>お問い合わせフォーム</link>からお知らせください。",
+      "reportError": "<link>誤りを報告する</link>",
+      "machine": "AIアシスタントと開発者向け：この表を<md>Markdownで</md> · <json>JSONで</json>"
+    },
+    "cta": {
+      "title": "{months, plural, other {#か月間}}無料でお試し",
+      "noCard": "クレジットカード登録不要",
+      "cancel": "月単位で解約可能",
+      "button": "無料で試す"
+    },
+    "admin": {
+      "status": "下書き · noindex · サイトマップ、llms.txt、hreflangに未掲載 · フッターリンクは管理者のみ",
+      "statusLive": "公開中 · 一般公開・インデックス可",
+      "viewAdmin": "管理者ビュー",
+      "viewPublic": "一般公開時の表示",
+      "pricingCheck": "料金チェックを開く",
+      "checklist": "公開前チェック",
+      "goLive": "ページの公開は「管理 › 国」で行います。",
+      "check": {
+        "apps": "{country}のiPad・Androidフラグがオン",
+        "verified": "検証済みの提供会社が2社以上（{n}社検証済み）",
+        "placeholders": "本文に「[ … ]」のプレースホルダーが残っていない",
+        "vat": "消費税（VAT）の記載あり",
+        "impressum": "Impressumの判断を記録済み"
+      },
+      "unverified": "未検証 · 一般には非表示",
+      "autoVerified": "自動検証済み",
+      "unchecked": "表示中の競合すべての確認がまだ · 一般には非表示",
+      "label": "管理",
+      "notShown": "ページに非掲載（表示は最大四社まで）：{names}。",
+      "reasonHidden": "{name}（非表示）",
+      "reasonBeyond": "{name}（上位四社以外）",
+      "reasonNoWebsite": "{name}（Webサイトなし）"
+    },
+    "footer": {
+      "heading": "比較",
+      "link": "注文システム比較"
+    },
+    "featureGroups": {
+      "ordering": "注文",
+      "payments": "支払い",
+      "kitchen": "キッチン",
+      "marketing": "マーケティング",
+      "apps_hardware": "アプリとハードウェア",
+      "price_contract": "料金と契約"
+    },
+    "cell": {
+      "yes": "あり",
+      "no": "なし",
+      "partial": "一部あり",
+      "unknown": "明記なし",
+      "not_mentioned": "Webサイトに明記なし",
+      "withNote": "{word}（{note}）",
+      "soon": "近日対応予定",
+      "fromPlan": "{plan}以上",
+      "perCardPayment": "カード決済ごとに{fee}",
+      "trial": "{months, plural, other {#か月間}}無料",
+      "setupFee": "{price}（初回のみ）",
+      "perMonth": "月額{price}",
+      "notInCountry": "{country}では未提供",
+      "flagOff": "フラグはまだオフ。ストアに掲載され次第表示",
+      "notApplicable": "マーケットプレイスには該当しません",
+      "not_listed": "掲載なし"
+    },
+    "explained": {
+      "title": "各機能の説明"
+    },
+    "costBlock": {
+      "title": "キッチンカーが毎月支払う金額",
+      "sizes": "月間のオンライン売上",
+      "sizeSales": "月{sales}",
+      "sizeOrders": "約{orders}件の注文",
+      "lead": "オンライン注文の売上が月{sales}（約{orders}件）のキッチンカーの場合。各バーは月々の合計費用で、注文システム自体の料金と、それらの注文にかかるカード手数料を足したものです。",
+      "legendSoftware": "ソフトウェア料金",
+      "legendCard": "カード手数料",
+      "software": "ソフトウェア料金 月{amount}",
+      "card": "カード手数料 月{amount}",
+      "total": "カード手数料込みで月{amount}",
+      "share": "売上の{pct}",
+      "assumed": "（料率非公開のため推定）",
+      "customerFee": "このほか、お客様が負担する月{amount}（注文ごとに{fee}）— バーには含みません",
+      "summaryCheapest": "{us}自体の料金は月{ours}で、表示中の競合で最も安いサービスは月{theirs}です。カード手数料（月{card}）はどのシステムを使ってもカード決済ごとにかかるため、差が出るのはソフトウェア料金です。",
+      "summaryNotCheapest": "{us}自体の料金は月{ours}で、表示中の競合で最も安い{rival}の月{theirs}より高くなります。カード手数料（月{card}）はどのシステムを使ってもカード決済ごとにかかります。",
+      "summaryAlone": "{us}自体の料金は月{ours}です。カード手数料（月{card}）はどのシステムを使ってもカード決済ごとにかかります。",
+      "footOrder": "平均注文額{order}：一般的な食事{meal} × 注文あたり{multiplier}品（{source}）。",
+      "footCard": "カード手数料はカード決済ごとに{rate}で計算：{source}。",
+      "footCardSource": "{country}におけるStripeの料率",
+      "footAssumed": "{names}{count, plural, other {は}}カード手数料の料率を公開していないため、当社の料率を仮定しています。",
+      "footChecked": "料金は{date}に確認。",
+      "footCalculator": "ご自身の数字は計算ツールで試算できます。",
+      "noRivals": "{country}ではまだ検証済みの競合がないため、比較できるものがありません。"
+    },
+    "features": {
+      "preorder": {
+        "label": "受け取り時間を選べる事前注文",
+        "explain": "お客様が事前に注文し、受け取る時間を選びます。"
+      },
+      "capacity": {
+        "label": "キッチンの調理能力に応じた受け取り時間の制限",
+        "explain": "お客様には、キッチンが実際に対応できる受け取り時間だけが表示されます。"
+      },
+      "asap": {
+        "label": "「できるだけ早く」の注文",
+        "explain": "お客様は時間を選ばずに注文し、できあがり次第受け取れます。"
+      },
+      "ahead": {
+        "label": "後日・イベント向けの事前注文",
+        "explain": "お客様は、後日のマーケットやイベントの分を今日のうちに注文できます。"
+      },
+      "schedule": {
+        "label": "出店場所が変わる週間スケジュール",
+        "explain": "キッチンカーの週ごとの出店場所と時間。お客様は、キッチンカーがいる場所と日を選んで注文します。"
+      },
+      "walkup": {
+        "label": "店頭注文もオンライン注文と同じ画面に",
+        "explain": "窓口で受けた注文も、オンライン注文と同じ一覧に入ります。"
+      },
+      "stock": {
+        "label": "売り切れ表示とイベントごとの在庫上限",
+        "explain": "料理を売り切れにしたり、イベントごとに各料理の販売数を設定したりできます。"
+      },
+      "notify": {
+        "label": "注文ができたらお客様にお知らせ",
+        "explain": "注文ができあがったことをお客様に知らせる方法：SMS、WhatsApp、メール、プッシュ通知、またはリアルタイムの注文状況ページ。",
+        "ours": "「受け取り準備完了」ステップがオンのときのメールと、注文状況ページ。SMS、WhatsApp、プッシュ通知はなし"
+      },
+      "allergens": {
+        "label": "メニューのアレルギー表示",
+        "explain": "注文前に、各料理のアレルギー情報がお客様に表示されます。"
+      },
+      "menuphoto": {
+        "label": "写真からメニューを作成",
+        "explain": "メニューの写真やPDFから料理が自動で入力されるので、内容を確認するだけです。"
+      },
+      "options": {
+        "label": "料理のオプションとトッピング",
+        "explain": "サイズ、ソース、トッピングなど。お客様が必ず選ぶ項目も設定できます。"
+      },
+      "deals": {
+        "label": "セットメニュー",
+        "explain": "複数の商品をまとめてセット価格で販売します。"
+      },
+      "private": {
+        "label": "プライベートイベントと出店依頼",
+        "explain": "専用リンクから受け付けるプライベートイベントの注文と、キッチンカーの出店依頼。",
+        "ours": "専用の注文リンク付きのプライベートイベント。出店依頼の受付はなし"
+      },
+      "qr": {
+        "label": "席でのテーブル／QR注文",
+        "explain": "お客様がテーブルのコードを読み取ると、テーブル番号付きで注文が届きます。",
+        "ours": "QRコードで注文ページが開きます。テーブル番号はなし"
+      },
+      "cards": {
+        "label": "Apple Pay・Google Payを含むオンラインカード決済",
+        "explain": "お客様は注文時に、カード、Apple Pay、Google Payでオンライン決済します。"
+      },
+      "payattruck": {
+        "label": "受け取り時のお支払い",
+        "explain": "お客様はオンラインで注文し、受け取り時に支払います。"
+      },
+      "localpay": {
+        "label": "各国の決済手段（BLIK、iDEAL、Swish、MobilePay…）",
+        "explain": "カード以外の、その国独自のオンライン決済手段。",
+        "ours": "カードのみ"
+      },
+      "paypal": {
+        "label": "PayPalまたはKlarna",
+        "explain": "お客様がPayPalやKlarnaで支払えます。"
+      },
+      "custfee": {
+        "label": "注文手数料をお客様負担にする設定",
+        "explain": "事業者はサービス料をお客様に負担してもらうことができます。"
+      },
+      "tips": {
+        "label": "チップ",
+        "explain": "お客様はオンライン決済時にチップを追加できます。"
+      },
+      "paymethods": {
+        "label": "対応する支払い方法",
+        "explain": "提供会社が明示している、お客様の支払い方法。",
+        "ours": "カード、Apple Pay、Google Pay、受け取り時のお支払い"
+      },
+      "kds": {
+        "label": "キッチンディスプレイ（KDS）",
+        "explain": "注文が調理する順にキッチンの画面に表示されます。"
+      },
+      "tickets": {
+        "label": "キッチン伝票の印刷",
+        "explain": "注文ごとに、キッチンカー内のレシートプリンターで伝票が印刷されます。",
+        "ours": "iPad・Androidアプリで対応。プリンターは付属しません"
+      },
+      "buzzers": {
+        "label": "呼び出しベル",
+        "explain": "注文ができると知らせてくれる呼び出しベルをお客様に渡します。",
+        "ours": "注文ごとにベル番号を記録。ベル本体は付属しません"
+      },
+      "offline": {
+        "label": "ネットが切れても動作",
+        "explain": "接続がない間の注文や変更は保存され、接続が戻ると送信されます。",
+        "ours": "iPad・Androidアプリで対応。Webダッシュボードは非対応"
+      },
+      "vans": {
+        "label": "複数台のキッチンカー",
+        "explain": "ひとつのアカウントで複数台のキッチンカーを運営できます。",
+        "ours": "車両の追加は月額の追加料金で利用可能"
+      },
+      "staff": {
+        "label": "スタッフ用ログイン",
+        "explain": "スタッフは自分のログインと権限でサインインします。"
+      },
+      "reports": {
+        "label": "売上レポート",
+        "explain": "合計、人気商品、イベント別・日付別の売上。スプレッドシートに書き出せます。"
+      },
+      "domain": {
+        "label": "独自ドメイン",
+        "explain": "注文ページを事業者自身のドメインで公開できます。"
+      },
+      "whatsapp": {
+        "label": "WhatsApp自動返信",
+        "explain": "お客様からのWhatsAppメッセージに自動で返信します。"
+      },
+      "social": {
+        "label": "スケジュールからSNS投稿を作成",
+        "explain": "今週のキッチンカーの出店場所を伝える、すぐに使える投稿。"
+      },
+      "igmsg": {
+        "label": "InstagramとMessengerへの返信",
+        "explain": "InstagramとFacebook Messengerのメッセージに自動で返信します。"
+      },
+      "discovery": {
+        "label": "キッチンカー検索マップへの掲載",
+        "explain": "近くのキッチンカーを探せる公開マップで、お客様がキッチンカーを見つけられます。",
+        "ours": "Village Foodie"
+      },
+      "loyalty": {
+        "label": "リピーター特典",
+        "explain": "また来てくれたお客様が特典を貯められます。"
+      },
+      "ipad": {
+        "label": "iPadアプリ",
+        "explain": "iPadで注文を受け付け・管理する、キッチンカー用のアプリ。"
+      },
+      "android": {
+        "label": "Androidアプリ",
+        "explain": "同じアプリをAndroidのタブレットやスマートフォンで使えます。"
+      },
+      "hardware": {
+        "label": "ハードウェアの提供（タブレット、プリンター）",
+        "explain": "提供会社がタブレットやプリンターを用意します。",
+        "ours": "お手持ちの機器を使用"
+      },
+      "terminal": {
+        "label": "窓口用カード決済端末の提供",
+        "explain": "提供会社が、キッチンカーでの支払い用にカード決済端末を用意します。"
+      },
+      "fiscal": {
+        "label": "税務ルールに対応した認証済みレジ（TSE、EET、kassaregister…）",
+        "explain": "売上記録に関するその国のルールに対応した認証済みのレジ。"
+      },
+      "delivery": {
+        "label": "デリバリー",
+        "explain": "お客様の住所に注文を届けます。",
+        "ours": "受け取りのみ"
+      },
+      "monthly": {
+        "label": "月額料金",
+        "explain": "事業者がソフトウェアに毎月支払う金額。"
+      },
+      "perorder": {
+        "label": "オンライン注文ごとの手数料",
+        "explain": "月額料金に加えて、提供会社がオンライン注文ごとに請求する金額。"
+      },
+      "cardfee": {
+        "label": "カード手数料",
+        "explain": "カード決済ごとに決済サービス会社が請求する手数料。"
+      },
+      "term": {
+        "label": "最低契約期間",
+        "explain": "解約できるようになるまでの契約の拘束期間。"
+      },
+      "setup": {
+        "label": "初期費用",
+        "explain": "開始時に一度だけかかる費用。"
+      },
+      "trial": {
+        "label": "無料トライアル",
+        "explain": "支払いを始める前に、システムを無料で使える期間。"
+      }
+    }
+  },
   "comparisonSuits": {
     "title": "あなたのキッチンカーに合うのはどれ？",
     "checked": "{date}に確認",

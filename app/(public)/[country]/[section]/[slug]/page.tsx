@@ -26,7 +26,7 @@ import { MarketingFrame } from '@/components/landing/MarketingFrame'   // site-c
 import { DemoCta } from '@/components/landing/DemoUpload'
 import { FaqDetails } from '@/components/faq/FaqDetails'   // faq-3: the FAQ markup, shared with the English landing pages
 import { resolveVisitorCountry } from '@/lib/visitor-country'
-import { resolveComparison, comparisonT, comparisonSuitsT } from '@/lib/comparison-server'
+import { resolveComparison, comparisonT, comparisonSuitsT, liveComparisonAlternates } from '@/lib/comparison-server'
 import { buildComparison, comparisonGraph, type Cell } from '@/lib/comparison'
 import { translatorFor } from '@/lib/i18n/translator'
 import '@/lib/i18n/catalog/comparison'
@@ -59,8 +59,8 @@ export async function generateMetadata({ params }: { params: Promise<Params> }):
     robots: live ? { index: true, follow: true } : { index: false, follow: false },
     alternates: {
       canonical: url,
-      // hreflang names the page itself only, and only once it is live.
-      ...(live ? { languages: { [r.input.settings.locale]: url } } : {}),
+      // compare-languages-1 §4: once live, hreflang names every live country's comparison page (this one included); never before.
+      ...(live ? { languages: { ...(await liveComparisonAlternates()), [r.input.settings.locale]: url } } : {}),
       types: { 'text/markdown': r.input.urls.md, 'application/json': r.input.urls.json },
     },
     openGraph: {

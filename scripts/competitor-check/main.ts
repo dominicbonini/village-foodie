@@ -24,6 +24,7 @@ import { runPublish } from '@/lib/comparison-publish-run'
 import { startSemiDeep } from '@/lib/competitor-check/semi-deep'
 import { supabasePublishStore } from '@/lib/comparison-publish-store'
 import { COUNTRY_PATH_SEGMENTS } from '@/lib/marketing-country'
+import { NO_COMPARISON_PAGE } from '@/lib/comparison-types'
 
 /** compare-autopublish-1: asks the site to refresh its cached comparison switches (tag marketing-countries). Never throws. */
 async function revalidateCountries(log: (l: string) => void): Promise<boolean> {
@@ -108,7 +109,8 @@ async function main() {
       process.env.SUPABASE_URL ||= process.env.NEXT_PUBLIC_SUPABASE_URL   // the Admin stores read lib/supabase.ts
       const [{ servicePricingStore }, { serviceCheckStore }] = await Promise.all([import('@/lib/admin/pricing-check-store'), import('@/lib/admin/competitor-check-store')])
       const p = await runPublish({ pricing: servicePricingStore, checks: serviceCheckStore, store: supabasePublishStore(db), now: () => new Date(), log: line => console.log(line),
-        hasPage: (code, locale) => !!COUNTRY_PATH_SEGMENTS[code] && /^(de|en)(-|$)/i.test(locale), revalidate: () => revalidateCountries(line => console.log(line)) })
+        // compare-languages-1: every country with an address has a comparison page in its own language, except AE.
+        hasPage: code => !!COUNTRY_PATH_SEGMENTS[code] && !NO_COMPARISON_PAGE.includes(code), revalidate: () => revalidateCountries(line => console.log(line)) })
       console.log(`publish: ${p.events} event(s); ${p.verdicts.filter(v => v.live).map(v => v.code).join(', ') || 'no country'} live`)
     } catch (e) { console.error(`publish step failed (the check results are saved): ${e instanceof Error ? e.message : e}`) }
   }

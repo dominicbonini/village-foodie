@@ -1,0 +1,80 @@
+{
+ "FR": {
+  "locale": "fr-FR",
+  "address": "/fr/comparatif/logiciel-de-commande-food-truck",
+  "lang": null,
+  "dir": "ltr",
+  "title": null,
+  "h1": "Comparatif 2026 des logiciels de commande pour food trucks",
+  "columns": 5,
+  "jsonLanguage": "fr-FR",
+  "englishLeftPage": [],
+  "englishLeftAdminOnly": 0,
+  "competitorNotesShown": 28
+ },
+ "ES": {
+  "locale": "es-ES",
+  "address": "/es/comparativa/sistema-de-pedidos-food-truck",
+  "lang": null,
+  "dir": "ltr",
+  "title": null,
+  "h1": "Comparativa de sistemas de pedidos para food trucks 2026",
+  "columns": 5,
+  "jsonLanguage": "es-ES",
+  "englishLeftPage": [],
+  "englishLeftAdminOnly": 0,
+  "competitorNotesShown": 9
+ },
+ "IT": {
+  "locale": "it-IT",
+  "address": "/it/confronto/sistema-di-ordini-food-truck",
+  "lang": null,
+  "dir": "ltr",
+  "title": null,
+  "h1": "Sistemi di ordini per food truck a confronto 2026",
+  "columns": 5,
+  "jsonLanguage": "it-IT",
+  "englishLeftPage": [],
+  "englishLeftAdminOnly": 0,
+  "competitorNotesShown": 4
+ },
+ "JP": {
+  "locale": "ja-JP",
+  "address": "/jp/comparison/food-truck-ordering-system",
+  "lang": null,
+  "dir": "ltr",
+  "title": null,
+  "h1": "キッチンカー向け注文システム比較 2026",
+  "columns": 5,
+  "jsonLanguage": "ja-JP",
+  "englishLeftPage": [],
+  "englishLeftAdminOnly": 0,
+  "competitorNotesShown": 3
+ },
+ "PL": {
+  "locale": "pl-PL",
+  "address": "/pl/porownanie/system-zamowien-dla-food-truckow",
+  "lang": null,
+  "dir": "ltr",
+  "title": null,
+  "h1": "Porównanie systemów zamówień dla food trucków 2026",
+  "columns": 2,
+  "jsonLanguage": "pl-PL",
+  "englishLeftPage": [],
+  "englishLeftAdminOnly": 0,
+  "competitorNotesShown": 0
+ },
+ "BR": {
+  "locale": "pt-BR",
+  "address": "/br/comparativo/sistema-de-pedidos-food-truck",
+  "lang": null,
+  "dir": "ltr",
+  "title": null,
+  "h1": "Comparativo de sistemas de pedidos para food truck 2026",
+  "columns": 5,
+  "jsonLanguage": "pt-BR",
+  "englishLeftPage": [],
+  "englishLeftAdminOnly": 0,
+  "competitorNotesShown": 14
+ }
+}

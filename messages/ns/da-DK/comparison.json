@@ -1,0 +1,394 @@
+{
+  "path": {
+    "section": "sammenligning",
+    "slug": "bestillingssystem-foodtruck"
+  },
+  "meta": {
+    "title": "Bestillingssystemer til foodtrucks 2026: funktioner & priser",
+    "description": "Foodtruck-bestillingssystemer sammenlignet: forudbestilling med afhentningstid, køkkenkapacitet, ugekalender, gebyrer og binding – tjekket hos udbyderne.",
+    "about": "Onlinebestillingssystemer til foodtrucks"
+  },
+  "breadcrumb": {
+    "home": "HatchGrab",
+    "here": "Sammenligning",
+    "label": "Brødkrumme"
+  },
+  "h1": "Bestillingssystemer til foodtrucks sammenlignet 2026",
+  "byline": "Senest tjekket: {date} · Lavet af HatchGrab. Vi er selv en af de sammenlignede udbydere (se <link>Sådan har vi sammenlignet</link>).",
+  "tldr": {
+    "title": "Kort fortalt",
+    "body": "Hvis dine kunder skal kunne bestille på forhånd på mobilen og vælge en afhentningstid, har du brug for et bestillingssystem, ikke kun et kassesystem. Se efter fire ting: afhentningstider, der følger din køkkenkapacitet, en ugekalender til skiftende placeringer, lave eller ingen gebyrer pr. bestilling og ingen lang binding. Kortterminaler og kassesystemer klarer betalingen ved foodtrucken og supplerer et bestillingssystem."
+  },
+  "table": {
+    "title": "Bestillingssystemerne sammenlignet",
+    "caption": "Funktioner og priser for onlinebestillingssystemer til foodtrucks i {country}, pr. {date}",
+    "note": "»Ja« kun, hvor udbyderen selv oplyser det offentligt.",
+    "feature": "Funktion",
+    "yes": "Ja",
+    "no": "Nej",
+    "unknown": "Fremgår ikke",
+    "fromPlan": "Fra {plan}",
+    "appNotInCountry": "Ikke i {country}",
+    "appFlagOff": "Ja – flaget er stadig slået fra, vises, når app-butikkerne har appen",
+    "range": "{from} til {to}",
+    "feePlan": "{fee} ({plans})",
+    "noFee": "intet",
+    "morePending": "Flere udbydere vises her, når vi har tjekket deres oplysninger på deres egen hjemmeside.",
+    "priceHidden": "På forespørgsel",
+    "feeAfter": "{fee} over {included} om måneden"
+  },
+  "costs": {
+    "title": "Hvad koster et bestillingssystem til foodtrucks?",
+    "ourPlan": "{plan}: {price} om måneden, {fee}",
+    "feeOnly": "{fee} pr. onlinebestilling betalt med kort",
+    "feeIncluded": "onlinebestillinger op til {included} om måneden er inkluderet, derefter {fee}",
+    "feeNone": "intet HatchGrab-gebyr på onlinebestillinger",
+    "rivalPlan": "{plan}: {price}",
+    "perMonth": "{price} om måneden",
+    "perMonthYearly": "{price} om måneden, faktureres årligt",
+    "vatExcl": "ekskl. moms",
+    "vatIncl": "inkl. moms",
+    "setup": "{price} i engangsgebyr ved oprettelse",
+    "truckFee": "{fee} pr. bestilling",
+    "customerFee": "{fee} pr. bestilling, betales af kunden",
+    "source": "Kilde",
+    "checked": "tjekket den {date}",
+    "cardFee": "Onlinebetalinger med kort via HatchGrab koster også Stripes gebyrer: {cardFee} pr. kortbetaling i {country}.",
+    "vat": "HatchGrab Ltd er en britisk virksomhed og er ikke momsregistreret i {country}, så der lægges ikke moms på vores gebyrer. Hvis du er momsregistreret, giver du os dit momsnummer; så afregner du selv eventuel moms af vores gebyrer efter reglerne om omvendt betalingspligt.",
+    "bundledFee": "{fee} pr. onlinebetaling, kortgebyr inkluderet"
+  },
+  "fit": {
+    "title": "Hvilket system passer til hvem?",
+    "ours": "HatchGrab passer til dig, hvis …",
+    "oursBody": "du holder forskellige steder, vil have forudbestillinger med afhentningstid, ikke vil have dit køkken overbelastet og ikke vil være bundet af en kontrakt.",
+    "oursNot": "HatchGrab passer ikke til dig, hvis …",
+    "oursNotBody": "dine kunder skal kunne betale med PayPal eller Klarna, eller hvis du vil have et certificeret kassesystem, der opfylder skattereglerne, fra én og samme leverandør.",
+    "appClause": "Eller hvis du har brug for køkkenappen på iPad eller Android i {country}: Den er ikke i app-butikkerne der endnu.",
+    "tills": "Kassesystemer og kortterminaler",
+    "marketplaces": "Leveringsplatforme",
+    "rival": "{name} passer, hvis …",
+    "tillsBody": "Kassesystemer tager imod betaling ved foodtrucken og opfylder kravet om en certificeret kasse efter skattereglerne. Et bestillingssystem fungerer side om side med kassesystemet; det erstatter det ikke.",
+    "tillsBodyNamed": "Kassesystemer tager imod betaling ved foodtrucken og opfylder kravet om en certificeret kasse efter skattereglerne. {names} {count, plural, one {står} other {står}} også i tabellen ovenfor. Et bestillingssystem fungerer side om side med kassesystemet; det erstatter det ikke.",
+    "marketplacesBody": "Leveringsplatforme giver nye kunder, men tager kommission af hver bestilling. Uber Eats oplyser 14 % ved afhentning og 30 % ved levering med Ubers bude i Tyskland. Wolt skriver på sin egen hjemmeside, at de tager kommission, men oplyser ingen satser. Vi kunne ikke tjekke Lieferandos satser. Kommissionen gælder også for faste kunder, der forudbestiller hos dig."
+  },
+  "groups": {
+    "food_truck": "Bestillingssystem til foodtrucks",
+    "nearest_local": "Bestillingssystem",
+    "pos": "Kassesystem"
+  },
+  "faq": {
+    "title": "Ofte stillede spørgsmål",
+    "whatQ": "Hvad er et bestillingssystem til foodtrucks?",
+    "whatA": "Et bestillingssystem tager imod bestillinger online, før kunderne når frem til foodtrucken: De vælger retter og en afhentningstid, betaler online eller ved afhentning, og bestillingen dukker op i dit køkken. Et kassesystem eller en kortterminal tager imod betaling ved foodtrucken. De to supplerer hinanden.",
+    "costQ": "Hvad koster HatchGrab i {country}?",
+    "costA": "{plans}. Onlinebetalinger med kort koster også Stripes gebyrer: {cardFee} pr. kortbetaling.",
+    "termQ": "Er der en bindingsperiode?",
+    "termA": "Nej. Der er ingen bindingsperiode og intet opsigelsesvarsel. Du kan opsige når som helst; gebyret faktureres månedligt forud, og du beholder adgangen til udgangen af den måned, du har betalt for.",
+    "locationsQ": "Fungerer det med skiftende placeringer?",
+    "locationsA": "Ja. Du lægger din ugekalender ind med steder og tidspunkter, og kunderne bestiller til det sted og den dag, hvor du holder der.",
+    "capacityQ": "Hvordan forhindrer systemet, at mit køkken bliver overbelastet?",
+    "capacityA": "Kunderne ser kun afhentningstider, som dit køkken faktisk kan nå. Systemet regner ud fra hver rets tilberedningstid og hvor mange du laver ad gangen.",
+    "tseQ": "Har jeg stadig brug for et certificeret kassesystem efter skattereglerne?",
+    "tseA": "HatchGrab er ikke et kassesystem og er ikke certificeret efter skattereglerne for kasser. Hvordan du registrerer onlinebestillinger i dit kassesystem, er et spørgsmål til din revisor eller skatterådgiver.",
+    "paymentsQ": "Hvilke betalingsmetoder understøtter HatchGrab?",
+    "paymentsA": "Kunderne betaler online med kort, Apple Pay eller Google Pay eller betaler ved foodtrucken. PayPal og Klarna understøttes ikke i øjeblikket.",
+    "costTrial": "{months, plural, one {Den første måned er} other {De første # måneder er}} gratis med alle funktioner."
+  },
+  "method": {
+    "title": "Sådan har vi sammenlignet",
+    "checked": "Senest tjekket den {date}.",
+    "prices": "Priserne vises, som udbyderen oplyser dem, inklusive moms.",
+    "meaning": "»Ja« betyder, at udbyderen oplyser funktionen offentligt. »Fremgår ikke« betyder, at vi ikke fandt noget om den på udbyderens hjemmeside – ikke at funktionen mangler.",
+    "vendor": "HatchGrab driver denne side og er selv en af de sammenlignede udbydere.",
+    "review": "Priser og funktioner tjekkes automatisk op mod hvert produkts egen hjemmeside; hver oplysning linker til sin kilde.",
+    "corrections": "Har du fundet en fejl? Skriv til os via vores <link>kontaktformular</link>.",
+    "reportError": "<link>Rapportér en fejl</link>",
+    "machine": "Til AI-assistenter og udviklere: denne tabel <md>som Markdown</md> · <json>som JSON</json>"
+  },
+  "cta": {
+    "title": "Prøv {months, plural, one {# måned} other {# måneder}} gratis",
+    "noCard": "Intet betalingskort nødvendigt",
+    "cancel": "Opsig fra måned til måned",
+    "button": "Prøv gratis"
+  },
+  "admin": {
+    "status": "Kladde · noindex · ikke i sitemap, llms.txt eller hreflang · link i sidefoden kun for admins",
+    "statusLive": "Live · offentlig og kan indekseres",
+    "viewAdmin": "Adminvisning",
+    "viewPublic": "Det, offentligheden ser",
+    "pricingCheck": "Åbn pristjekket",
+    "checklist": "Før siden går live",
+    "goLive": "Siden går live i Admin › Countries.",
+    "check": {
+      "apps": "Flag for iPad og Android slået til for {country}",
+      "verified": "Mindst 2 verificerede udbydere ({n} verificeret)",
+      "placeholders": "Ingen »[ … ]«-pladsholder tilbage i teksten",
+      "vat": "Momstekst findes",
+      "impressum": "Beslutning om Impressum registreret"
+    },
+    "unverified": "ikke verificeret · skjult for offentligheden",
+    "autoVerified": "autoverificeret",
+    "unchecked": "endnu ikke tjekket for alle viste konkurrenter · skjult for offentligheden",
+    "label": "Admin",
+    "notShown": "Ikke på siden (højst fire vises): {names}.",
+    "reasonHidden": "{name} (skjult)",
+    "reasonBeyond": "{name} (ud over de fire)",
+    "reasonNoWebsite": "{name} (ingen hjemmeside)"
+  },
+  "footer": {
+    "heading": "Sammenlign",
+    "link": "Sammenligning af bestillingssystemer"
+  },
+  "featureGroups": {
+    "ordering": "Bestilling",
+    "payments": "Betalinger",
+    "kitchen": "Køkken",
+    "marketing": "Markedsføring",
+    "apps_hardware": "Apps og hardware",
+    "price_contract": "Pris og kontrakt"
+  },
+  "cell": {
+    "yes": "Ja",
+    "no": "Nej",
+    "partial": "Delvist",
+    "unknown": "Fremgår ikke",
+    "not_mentioned": "Fremgår ikke af hjemmesiden",
+    "withNote": "{word}, {note}",
+    "soon": "kommer snart",
+    "fromPlan": "fra {plan}",
+    "perCardPayment": "{fee} pr. kortbetaling",
+    "trial": "{months, plural, one {# måned} other {# måneder}} gratis",
+    "setupFee": "{price} én gang",
+    "perMonth": "{price} om måneden",
+    "notInCountry": "ikke i {country}",
+    "flagOff": "flaget er stadig slået fra; vises, når app-butikkerne har appen",
+    "notApplicable": "gælder ikke for et street food-marked",
+    "not_listed": "Ikke angivet"
+  },
+  "explained": {
+    "title": "Det betyder funktionerne"
+  },
+  "costBlock": {
+    "title": "Hvad en foodtruck betaler om måneden",
+    "sizes": "Onlinesalg om måneden",
+    "sizeSales": "{sales} om måneden",
+    "sizeOrders": "ca. {orders} bestillinger",
+    "lead": "For en foodtruck med {sales} i onlinebestillinger om måneden (ca. {orders} bestillinger). Hver søjle er den samlede månedlige udgift: bestillingssystemets eget gebyr plus kortgebyrerne på de bestillinger.",
+    "legendSoftware": "Softwaregebyr",
+    "legendCard": "Kortgebyrer",
+    "software": "Softwaregebyr {amount} om måneden",
+    "card": "Kortgebyrer {amount} om måneden",
+    "total": "{amount} om måneden inklusive kortgebyrer",
+    "share": "{pct} af salget",
+    "assumed": "(satsen er ikke offentliggjort, antaget)",
+    "customerFee": "Plus {amount} om måneden, som kunderne betaler ({fee} pr. bestilling) – ikke med i søjlen",
+    "summaryCheapest": "{us}s eget gebyr er {ours} om måneden mod {theirs} om måneden for den billigste viste konkurrent. Kortgebyrerne ({card} om måneden) opkræves på hver kortbetaling, uanset hvilket system du bruger, så det er softwaregebyret, der gør forskellen.",
+    "summaryNotCheapest": "{us}s eget gebyr er {ours} om måneden, mere end {theirs} om måneden for {rival}, den billigste viste konkurrent. Kortgebyrerne ({card} om måneden) opkræves på hver kortbetaling, uanset hvilket system du bruger.",
+    "summaryAlone": "{us}s eget gebyr er {ours} om måneden. Kortgebyrerne ({card} om måneden) opkræves på hver kortbetaling, uanset hvilket system du bruger.",
+    "footOrder": "Gennemsnitlig bestilling {order}: et typisk måltid på {meal} × {multiplier} retter pr. bestilling ({source}).",
+    "footCard": "Kortgebyrerne er beregnet med {rate} pr. kortbetaling: {source}.",
+    "footCardSource": "Stripes sats for {country}",
+    "footAssumed": "{names} {count, plural, one {offentliggør} other {offentliggør}} ingen kortsats, så vi har antaget vores egen.",
+    "footChecked": "Priserne er tjekket den {date}.",
+    "footCalculator": "Regn dine egne tal ud i beregneren.",
+    "noRivals": "Ingen konkurrent er verificeret i {country} endnu, så der er intet at sammenligne."
+  },
+  "features": {
+    "preorder": {
+      "label": "Forudbestilling med valgt afhentningstid",
+      "explain": "Kunderne bestiller på forhånd og vælger, hvornår de henter."
+    },
+    "capacity": {
+      "label": "Afhentningstider begrænset af køkkenkapaciteten",
+      "explain": "Kunderne ser kun afhentningstider, som køkkenet faktisk kan nå."
+    },
+    "asap": {
+      "label": "Bestilling til hurtigst muligt",
+      "explain": "Kunderne kan bestille uden at vælge et tidspunkt og hente, så snart maden er klar."
+    },
+    "ahead": {
+      "label": "Bestilling på forhånd til en senere dag eller et arrangement",
+      "explain": "Kunderne kan bestille i dag til et marked eller et arrangement en senere dag."
+    },
+    "schedule": {
+      "label": "Ugekalender med skiftende placeringer",
+      "explain": "Foodtruckens uge med steder og tidspunkter; kunderne bestiller til det sted og den dag, hvor den holder der."
+    },
+    "walkup": {
+      "label": "Bestillinger ved vognen på samme skærm som onlinebestillinger",
+      "explain": "Bestillinger, der tages ved lugen, kommer på samme liste som onlinebestillingerne."
+    },
+    "stock": {
+      "label": "Udsolgt og lagergrænser pr. arrangement",
+      "explain": "Markér retter som udsolgt, og angiv, hvor mange af hver der kan sælges til et arrangement."
+    },
+    "notify": {
+      "label": "Kunden får besked, når bestillingen er klar",
+      "explain": "Sådan får kunderne at vide, at bestillingen er klar: sms, WhatsApp, e-mail, push eller en side med bestillingsstatus i realtid.",
+      "ours": "e-mail, når trinnet »bestilling klar« er slået til, og en side med bestillingsstatus; ingen sms, WhatsApp eller push"
+    },
+    "allergens": {
+      "label": "Allergener på menukortet",
+      "explain": "Hver ret viser sine allergener for kunderne, før de bestiller."
+    },
+    "menuphoto": {
+      "label": "Menukort fra et billede",
+      "explain": "Et billede eller en PDF af menukortet udfylder retterne, så du bare skal tjekke dem."
+    },
+    "options": {
+      "label": "Tilvalg og ekstra på retter",
+      "explain": "Størrelser, saucer og ekstra, også valg, som kunden skal træffe."
+    },
+    "deals": {
+      "label": "Menuer og pakketilbud",
+      "explain": "Flere varer, der sælges samlet til én pris."
+    },
+    "private": {
+      "label": "Private arrangementer og bookinger",
+      "explain": "Bestillinger til et privat arrangement via et eget link og forespørgsler om at booke foodtrucken.",
+      "ours": "private arrangementer med eget bestillingslink; ingen bookingforespørgsler"
+    },
+    "qr": {
+      "label": "Bord-/QR-bestilling ved pladserne",
+      "explain": "Kunderne scanner en kode ved bordet, og bestillingen kommer ind med bordnummeret.",
+      "ours": "en QR-kode åbner bestillingssiden; ingen bordnumre"
+    },
+    "cards": {
+      "label": "Onlinebetaling med kort inkl. Apple Pay og Google Pay",
+      "explain": "Kunderne betaler online med kort, Apple Pay eller Google Pay, når de bestiller."
+    },
+    "payattruck": {
+      "label": "Betaling ved afhentning",
+      "explain": "Kunderne bestiller online og betaler, når de henter."
+    },
+    "localpay": {
+      "label": "Lokale betalingsmetoder (BLIK, iDEAL, Swish, MobilePay…)",
+      "explain": "Landets egne betalingsmetoder online ud over kort.",
+      "ours": "kun kort"
+    },
+    "paypal": {
+      "label": "PayPal eller Klarna",
+      "explain": "Kunderne kan betale med PayPal eller Klarna."
+    },
+    "custfee": {
+      "label": "Mulighed for, at kunden betaler bestillingsgebyret",
+      "explain": "Virksomheden kan sende et servicegebyr videre til kunden."
+    },
+    "tips": {
+      "label": "Drikkepenge",
+      "explain": "Kunderne kan give drikkepenge, når de betaler online."
+    },
+    "paymethods": {
+      "label": "Tilbudte betalingsmetoder",
+      "explain": "Hvordan kunderne kan betale, som udbyderen oplyser det.",
+      "ours": "kort, Apple Pay, Google Pay; betaling ved afhentning"
+    },
+    "kds": {
+      "label": "Køkkenskærm (KDS)",
+      "explain": "Bestillingerne vises på en skærm i køkkenet i den rækkefølge, de skal laves."
+    },
+    "tickets": {
+      "label": "Udskrevne køkkenbonner",
+      "explain": "Hver bestilling udskrives på en bonprinter i foodtrucken.",
+      "ours": "i appen til iPad og Android; printer følger ikke med"
+    },
+    "buzzers": {
+      "label": "Buzzere",
+      "explain": "Kunderne får en buzzer, der giver besked, når bestillingen er klar.",
+      "ours": "buzzernumre gemmes med hver bestilling; buzzere følger ikke med"
+    },
+    "offline": {
+      "label": "Virker videre, hvis internettet forsvinder",
+      "explain": "Bestillinger og ændringer, der laves uden forbindelse, gemmes og sendes, når forbindelsen er tilbage.",
+      "ours": "i appen til iPad og Android; ikke i webdashboardet"
+    },
+    "vans": {
+      "label": "Flere vogne eller foodtrucks",
+      "explain": "Én konto styrer mere end én foodtruck.",
+      "ours": "ekstra foodtrucks mod et ekstra månedsgebyr"
+    },
+    "staff": {
+      "label": "Login til personale",
+      "explain": "Personalet logger ind med eget login og egen rolle."
+    },
+    "reports": {
+      "label": "Salgsrapporter",
+      "explain": "Totaler, bedst sælgende varer og salg pr. arrangement eller dato med eksport til regneark."
+    },
+    "domain": {
+      "label": "Egen webadresse",
+      "explain": "Bestillingssiden på virksomhedens eget domæne."
+    },
+    "whatsapp": {
+      "label": "Automatiske svar på WhatsApp",
+      "explain": "Kundernes WhatsApp-beskeder besvares automatisk."
+    },
+    "social": {
+      "label": "Opslag på sociale medier ud fra din kalender",
+      "explain": "Færdige opslag, der viser, hvor foodtrucken holder i denne uge."
+    },
+    "igmsg": {
+      "label": "Svar på Instagram og Messenger",
+      "explain": "Beskeder på Instagram og Facebook Messenger besvares automatisk."
+    },
+    "discovery": {
+      "label": "Med på et kort, hvor kunder finder foodtrucks",
+      "explain": "Kunderne finder foodtrucken på et offentligt kort over foodtrucks i nærheden.",
+      "ours": "Village Foodie"
+    },
+    "loyalty": {
+      "label": "Loyalitetsprogram",
+      "explain": "Kunderne optjener belønninger, når de kommer igen."
+    },
+    "ipad": {
+      "label": "App til iPad",
+      "explain": "Foodtruckens app til at tage imod og styre bestillinger på en iPad."
+    },
+    "android": {
+      "label": "App til Android",
+      "explain": "Den samme app på en Android-tablet eller -telefon."
+    },
+    "hardware": {
+      "label": "Hardware følger med (tablet, printer)",
+      "explain": "Udbyderen leverer tabletten eller printeren.",
+      "ours": "brug din egen"
+    },
+    "terminal": {
+      "label": "Kortterminal til lugen følger med",
+      "explain": "Udbyderen leverer en kortterminal til betalinger ved foodtrucken."
+    },
+    "fiscal": {
+      "label": "Certificeret kasse til skatteregler (TSE, EET, kassaregister…)",
+      "explain": "En kasse, der er certificeret efter landets regler for registrering af salg."
+    },
+    "delivery": {
+      "label": "Levering",
+      "explain": "Bestillinger leveres til kundens adresse.",
+      "ours": "kun afhentning"
+    },
+    "monthly": {
+      "label": "Månedspris",
+      "explain": "Hvad virksomheden betaler hver måned for softwaren."
+    },
+    "perorder": {
+      "label": "Gebyr pr. onlinebestilling",
+      "explain": "Hvad udbyderen opkræver for hver onlinebestilling oven i månedsprisen."
+    },
+    "cardfee": {
+      "label": "Kortgebyr",
+      "explain": "Betalingsudbyderens gebyr på hver kortbetaling."
+    },
+    "term": {
+      "label": "Bindingsperiode",
+      "explain": "Hvor længe virksomheden er bundet, før den kan opsige."
+    },
+    "setup": {
+      "label": "Oprettelsesgebyr",
+      "explain": "Et engangsbeløb for at komme i gang."
+    },
+    "trial": {
+      "label": "Gratis prøveperiode",
+      "explain": "Tid til at bruge systemet gratis, før man betaler."
+    }
+  }
+}

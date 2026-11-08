@@ -6367,6 +6367,400 @@
       "description": "Salīdziniet, cik jums tagad izmaksā tiešsaistes pasūtījumi, ar gadu kopā ar HatchGrab — aplēse vienā minūtē."
     }
   },
+  "comparison": {
+    "path": {
+      "section": "salidzinajums",
+      "slug": "food-truck-pasutijumu-sistema"
+    },
+    "meta": {
+      "title": "Food truck pasūtījumu sistēmas 2026: funkcijas un cenas",
+      "description": "Food truck pasūtījumu sistēmu salīdzinājums: pasūtījumi ar saņemšanas laiku, virtuves jauda, grafiks, maksas un līgums — pārbaudīts sniedzēju vietnēs.",
+      "about": "Tiešsaistes pasūtījumu sistēmas food truck uzņēmumiem"
+    },
+    "breadcrumb": {
+      "home": "HatchGrab",
+      "here": "Salīdzinājums",
+      "label": "Navigācijas ceļš"
+    },
+    "h1": "Food truck pasūtījumu sistēmu salīdzinājums 2026",
+    "byline": "Pēdējo reizi pārbaudīts: {date} · Sagatavoja HatchGrab. Mēs esam viens no salīdzinātajiem pakalpojumu sniedzējiem (skatiet <link>Kā mēs salīdzinājām</link>).",
+    "tldr": {
+      "title": "Īsumā",
+      "body": "Ja vēlaties, lai klienti pasūta iepriekš savā tālrunī un izvēlas saņemšanas laiku, jums vajag pasūtījumu sistēmu, nevis tikai kases sistēmu. Pievērsiet uzmanību četrām lietām: saņemšanas laiki, kas pielāgojas jūsu virtuves jaudai; nedēļas grafiks mainīgām tirdzniecības vietām; zemas maksas par pasūtījumu vai to nav vispār; un nav ilga līguma. Maksājumu termināļi un kases sistēmas nodrošina apmaksu pie busiņa un papildina pasūtījumu sistēmu."
+    },
+    "table": {
+      "title": "Salīdzinātās pasūtījumu sistēmas",
+      "caption": "Food truck tiešsaistes pasūtījumu sistēmu funkcijas un izmaksas ({country}), dati uz {date}",
+      "note": "“Jā” tikai tad, ja pakalpojuma sniedzējs to publiski norāda.",
+      "feature": "Funkcija",
+      "yes": "Jā",
+      "no": "Nē",
+      "unknown": "Nav norādīts",
+      "fromPlan": "Sākot no plāna {plan}",
+      "appNotInCountry": "Nav pieejams ({country})",
+      "appFlagOff": "Jā – karodziņš vēl izslēgts; tiks rādīts, kad lietotņu veikali to iekļaus",
+      "range": "no {from} līdz {to}",
+      "feePlan": "{fee} ({plans})",
+      "noFee": "nav",
+      "morePending": "Citi pakalpojumu sniedzēji šeit parādīsies, tiklīdz būsim pārbaudījuši viņu informāciju viņu pašu tīmekļa vietnē.",
+      "priceHidden": "Pēc pieprasījuma",
+      "feeAfter": "{fee} virs {included} mēnesī"
+    },
+    "costs": {
+      "title": "Cik maksā food truck pasūtījumu sistēma?",
+      "ourPlan": "{plan}: {price} mēnesī, {fee}",
+      "feeOnly": "{fee} par katru tiešsaistes pasūtījumu, kas apmaksāts ar karti",
+      "feeIncluded": "tiešsaistes pasūtījumi līdz {included} mēnesī iekļauti, pēc tam {fee}",
+      "feeNone": "HatchGrab neiekasē maksu par tiešsaistes pasūtījumiem",
+      "rivalPlan": "{plan}: {price}",
+      "perMonth": "{price} mēnesī",
+      "perMonthYearly": "{price} mēnesī, maksājot par gadu",
+      "vatExcl": "bez PVN",
+      "vatIncl": "ar PVN",
+      "setup": "{price} vienreizēja pieslēgšanas maksa",
+      "truckFee": "{fee} par pasūtījumu",
+      "customerFee": "{fee} par pasūtījumu, maksā klients",
+      "source": "Avots",
+      "checked": "pārbaudīts {date}",
+      "cardFee": "Tiešsaistes maksājumiem ar karti, izmantojot HatchGrab, piemēro arī Stripe maksas: {cardFee} par karšu maksājumu ({country}).",
+      "vat": "HatchGrab Ltd ir Apvienotās Karalistes uzņēmums un nav reģistrēts kā PVN maksātājs ({country}), tāpēc mūsu maksām PVN netiek pievienots. Ja esat reģistrēts PVN maksātājs, norādiet mums savu PVN numuru; tad PVN par mūsu maksām jūs aprēķināt paši saskaņā ar apgrieztās maksāšanas kārtību.",
+      "bundledFee": "{fee} par tiešsaistes maksājumu, ieskaitot karšu maksu"
+    },
+    "fit": {
+      "title": "Kura sistēma kam der?",
+      "ours": "HatchGrab jums der, ja …",
+      "oursBody": "jūs tirgojaties mainīgās vietās, vēlaties iepriekšējus pasūtījumus ar saņemšanas laiku, nevēlaties pārslogot virtuvi un nevēlaties līgumu.",
+      "oursNot": "HatchGrab jums neder, ja …",
+      "oursNotBody": "jūsu klientiem jāvar maksāt ar PayPal vai Klarna vai jūs vēlaties no viena piegādātāja arī sertificētu kases sistēmu, kas atbilst valsts nodokļu prasībām.",
+      "appClause": "Vai arī, ja jums vajag virtuves lietotni iPad vai Android ierīcēm ({country}): tur tā vēl nav pieejama lietotņu veikalos.",
+      "tills": "Kases sistēmas un maksājumu termināļi",
+      "marketplaces": "Piegādes platformas",
+      "rival": "{name} der, ja …",
+      "tillsBody": "Kases sistēmas pieņem maksājumus pie busiņa un atbilst valsts nodokļu prasībām darījumu reģistrēšanai. Pasūtījumu sistēma darbojas kopā ar kases sistēmu, nevis to aizstāj.",
+      "tillsBodyNamed": "Kases sistēmas pieņem maksājumus pie busiņa un atbilst valsts nodokļu prasībām darījumu reģistrēšanai. Tabulā augstāk {count, plural, zero {ir arī} one {ir arī} other {ir arī}} {names}. Pasūtījumu sistēma darbojas kopā ar kases sistēmu, nevis to aizstāj.",
+      "marketplacesBody": "Piegādes platformas piesaista jaunus klientus, bet par katru pasūtījumu iekasē komisiju. Uber Eats Vācijā norāda 14% par pašizņemšanu un 30% par piegādi ar Uber kurjeriem. Wolt savā tīmekļa vietnē norāda, ka iekasē komisiju, bet likmes nenorāda. Lieferando likmes mēs nevarējām pārbaudīt. Šī komisija attiecas arī uz pastāvīgajiem klientiem, kas pie jums pasūta iepriekš."
+    },
+    "groups": {
+      "food_truck": "Food truck pasūtījumu sistēma",
+      "nearest_local": "Pasūtījumu sistēma",
+      "pos": "Kases sistēma"
+    },
+    "faq": {
+      "title": "Biežāk uzdotie jautājumi",
+      "whatQ": "Kas ir food truck pasūtījumu sistēma?",
+      "whatA": "Pasūtījumu sistēma pieņem pasūtījumus tiešsaistē, pirms klienti nonāk pie busiņa: viņi izvēlas ēdienus un saņemšanas laiku, maksā tiešsaistē vai saņemot, un pasūtījums parādās jūsu virtuvē. Kases sistēma vai maksājumu terminālis pieņem maksājumu pie busiņa. Abi viens otru papildina.",
+      "costQ": "Cik HatchGrab maksā ({country})?",
+      "costA": "{plans}. Tiešsaistes maksājumiem ar karti piemēro arī Stripe maksas: {cardFee} par karšu maksājumu.",
+      "termQ": "Vai ir minimālais līguma termiņš?",
+      "termA": "Nē. Nav ne minimālā termiņa, ne uzteikuma perioda. Varat atteikties jebkurā laikā; maksa tiek iekasēta katru mēnesi avansā, un piekļuve jums saglabājas līdz apmaksātā mēneša beigām.",
+      "locationsQ": "Vai tā darbojas ar mainīgām tirdzniecības vietām?",
+      "locationsA": "Jā. Jūs iestatāt savu nedēļas grafiku ar vietām un laikiem, un klienti pasūta tai vietai un dienai, kad jūs tur esat.",
+      "capacityQ": "Kā sistēma neļauj pārslogot manu virtuvi?",
+      "capacityA": "Klienti redz tikai tos saņemšanas laikus, kurus jūsu virtuve patiešām spēj nodrošināt. Sistēma ņem vērā katra ēdiena pagatavošanas laiku un to, cik porcijas jūs gatavojat vienlaikus.",
+      "tseQ": "Vai man joprojām vajag sertificētu kases sistēmu?",
+      "tseA": "HatchGrab nav kases sistēma un nav sertificēta atbilstoši nodokļu prasībām. Kā tiešsaistes pasūtījumus reģistrēt savā kases sistēmā, jautājiet savam nodokļu konsultantam.",
+      "paymentsQ": "Kādas maksājumu metodes atbalsta HatchGrab?",
+      "paymentsA": "Klienti maksā tiešsaistē ar karti, Apple Pay vai Google Pay vai maksā pie busiņa. PayPal un Klarna pašlaik netiek atbalstīti.",
+      "costTrial": "{months, plural, zero {Pirmie # mēneši ir} one {Pirmais mēnesis ir} other {Pirmie # mēneši ir}} bez maksas, ar visām funkcijām."
+    },
+    "method": {
+      "title": "Kā mēs salīdzinājām",
+      "checked": "Pēdējo reizi pārbaudīts {date}.",
+      "prices": "Cenas norādītas tā, kā tās norāda pakalpojuma sniedzējs, ar PVN.",
+      "meaning": "“Jā” nozīmē, ka pakalpojuma sniedzējs šo funkciju publiski norāda. “Nav norādīts” nozīmē, ka mēs viņa tīmekļa vietnē par to neko neatradām — nevis to, ka funkcijas nav.",
+      "vendor": "Šo lapu uztur HatchGrab, kas ir viens no salīdzinātajiem pakalpojumu sniedzējiem.",
+      "review": "Cenas un funkcijas tiek automātiski pārbaudītas katra produkta tīmekļa vietnē; katrs apgalvojums ir saistīts ar savu avotu.",
+      "corrections": "Atradāt kļūdu? Paziņojiet mums, izmantojot <link>saziņas veidlapu</link>.",
+      "reportError": "<link>Ziņot par kļūdu</link>",
+      "machine": "AI asistentiem un izstrādātājiem: šī tabula <md>Markdown formātā</md> · <json>JSON formātā</json>"
+    },
+    "cta": {
+      "title": "Izmēģiniet {months, plural, zero {# mēnešus} one {# mēnesi} other {# mēnešus}} bez maksas",
+      "noCard": "Kredītkarte nav vajadzīga",
+      "cancel": "Varat atteikties katru mēnesi",
+      "button": "Izmēģināt bez maksas"
+    },
+    "admin": {
+      "status": "Melnraksts · noindex · nav vietnes kartē, llms.txt vai hreflang · kājenes saite tikai administratoriem",
+      "statusLive": "Publicēts · publisks un indeksējams",
+      "viewAdmin": "Administratora skats",
+      "viewPublic": "Ko redz apmeklētāji",
+      "pricingCheck": "Atvērt cenu pārbaudi",
+      "checklist": "Pirms publicēšanas",
+      "goLive": "Lapu publicē sadaļā Admin › Valstis.",
+      "check": {
+        "apps": "iPad un Android karodziņi ieslēgti ({country})",
+        "verified": "Vismaz 2 pārbaudīti pakalpojumu sniedzēji (pārbaudīti: {n})",
+        "placeholders": "Tekstā nav palicis neviens “[ … ]” vietturis",
+        "vat": "PVN teksts ir",
+        "impressum": "Impressum lēmums reģistrēts"
+      },
+      "unverified": "nav pārbaudīts · paslēpts no apmeklētājiem",
+      "autoVerified": "pārbaudīts automātiski",
+      "unchecked": "vēl nav pārbaudīts katram parādītajam konkurentam · paslēpts no apmeklētājiem",
+      "label": "Admin",
+      "notShown": "Nav lapā (tiek rādīti ne vairāk kā četri): {names}.",
+      "reasonHidden": "{name} (paslēpts)",
+      "reasonBeyond": "{name} (ārpus pirmajiem četriem)",
+      "reasonNoWebsite": "{name} (nav tīmekļa vietnes)"
+    },
+    "footer": {
+      "heading": "Salīdzinājums",
+      "link": "Pasūtījumu sistēmu salīdzinājums"
+    },
+    "featureGroups": {
+      "ordering": "Pasūtīšana",
+      "payments": "Maksājumi",
+      "kitchen": "Virtuve",
+      "marketing": "Mārketings",
+      "apps_hardware": "Lietotnes un aparatūra",
+      "price_contract": "Cena un līgums"
+    },
+    "cell": {
+      "yes": "Jā",
+      "no": "Nē",
+      "partial": "Daļēji",
+      "unknown": "Nav norādīts",
+      "not_mentioned": "Tīmekļa vietnē nav norādīts",
+      "withNote": "{word}, {note}",
+      "soon": "drīzumā",
+      "fromPlan": "sākot no plāna {plan}",
+      "perCardPayment": "{fee} par karšu maksājumu",
+      "trial": "{months, plural, zero {# mēneši} one {# mēnesis} other {# mēneši}} bez maksas",
+      "setupFee": "{price} vienreizēji",
+      "perMonth": "{price} mēnesī",
+      "notInCountry": "nav pieejams ({country})",
+      "flagOff": "karodziņš vēl izslēgts; tiks rādīts, kad lietotņu veikali to iekļaus",
+      "notApplicable": "neattiecas uz tirgu",
+      "not_listed": "Nav minēts"
+    },
+    "explained": {
+      "title": "Ko nozīmē funkcijas"
+    },
+    "costBlock": {
+      "title": "Ko busiņš maksā katru mēnesi",
+      "sizes": "Tiešsaistes pārdošana mēnesī",
+      "sizeSales": "{sales} mēnesī",
+      "sizeOrders": "pasūtījumi: aptuveni {orders}",
+      "lead": "Busiņam, kas mēnesī saņem tiešsaistes pasūtījumus {sales} apmērā (pasūtījumi: aptuveni {orders}). Katrs stabiņš ir kopējās mēneša izmaksas: pasūtījumu sistēmas maksa plus karšu maksas par šiem pasūtījumiem.",
+      "legendSoftware": "Programmatūras maksa",
+      "legendCard": "Karšu maksas",
+      "software": "Programmatūras maksa {amount} mēnesī",
+      "card": "Karšu maksas {amount} mēnesī",
+      "total": "{amount} mēnesī, ieskaitot karšu maksas",
+      "share": "{pct} no apgrozījuma",
+      "assumed": "(likme nav publicēta, pieņemta)",
+      "customerFee": "Plus {amount} mēnesī, ko maksā klienti ({fee} par pasūtījumu) — nav iekļauts stabiņā",
+      "summaryCheapest": "{us} maksa ir {ours} mēnesī, salīdzinot ar {theirs} mēnesī lētākajam parādītajam konkurentam. Karšu maksas ({card} mēnesī) tiek iekasētas par katru karšu maksājumu neatkarīgi no izmantotās sistēmas, tāpēc būtiskā atšķirība ir programmatūras maksa.",
+      "summaryNotCheapest": "{us} maksa ir {ours} mēnesī — vairāk nekā lētākajam parādītajam konkurentam {rival} ({theirs} mēnesī). Karšu maksas ({card} mēnesī) tiek iekasētas par katru karšu maksājumu neatkarīgi no izmantotās sistēmas.",
+      "summaryAlone": "{us} maksa ir {ours} mēnesī. Karšu maksas ({card} mēnesī) tiek iekasētas par katru karšu maksājumu neatkarīgi no izmantotās sistēmas.",
+      "footOrder": "Vidējais pasūtījums {order}: tipiska maltīte par {meal} × {multiplier} ēdieni vienā pasūtījumā ({source}).",
+      "footCard": "Karšu maksām izmantota likme {rate} par karšu maksājumu: {source}.",
+      "footCardSource": "Stripe likme ({country})",
+      "footAssumed": "{names} {count, plural, zero {nepublicē} one {nepublicē} other {nepublicē}} karšu maksājumu likmi, tāpēc likmi esam pieņēmuši paši.",
+      "footChecked": "Cenas pārbaudītas {date}.",
+      "footCalculator": "Aprēķiniet savus skaitļus kalkulatorā.",
+      "noRivals": "Neviens konkurents vēl nav pārbaudīts ({country}), tāpēc nav ar ko salīdzināt."
+    },
+    "features": {
+      "preorder": {
+        "label": "Iepriekšēji pasūtījumi ar izvēlētu saņemšanas laiku",
+        "explain": "Klienti pasūta iepriekš un izvēlas, kurā laikā saņems pasūtījumu."
+      },
+      "capacity": {
+        "label": "Saņemšanas laiki atbilstoši virtuves jaudai",
+        "explain": "Klienti redz tikai tos saņemšanas laikus, kurus virtuve patiešām spēj nodrošināt."
+      },
+      "asap": {
+        "label": "Pasūtījumi pēc iespējas ātrāk",
+        "explain": "Klienti var pasūtīt, neizvēloties laiku, un saņemt pasūtījumu, tiklīdz tas ir gatavs."
+      },
+      "ahead": {
+        "label": "Iepriekšējs pasūtījums vēlākai dienai vai pasākumam",
+        "explain": "Klienti var pasūtīt jau šodien tirgum vai pasākumam kādā vēlākā dienā."
+      },
+      "schedule": {
+        "label": "Nedēļas grafiks ar mainīgām vietām",
+        "explain": "Busiņa nedēļas vietas un laiki; klienti pasūta tai vietai un dienai, kad tas tur ir."
+      },
+      "walkup": {
+        "label": "Pasūtījumi uz vietas tajā pašā ekrānā ar tiešsaistes pasūtījumiem",
+        "explain": "Pie lodziņa pieņemtie pasūtījumi nonāk tajā pašā sarakstā, kur tiešsaistes pasūtījumi."
+      },
+      "stock": {
+        "label": "Izpārdots un krājumu ierobežojumi katram pasākumam",
+        "explain": "Atzīmējiet ēdienus kā izpārdotus un iestatiet, cik daudz no katra var pārdot pasākumā."
+      },
+      "notify": {
+        "label": "Klientiem paziņo, kad pasūtījums ir gatavs",
+        "explain": "Kā klienti uzzina, ka pasūtījums ir gatavs: SMS, WhatsApp, e-pasts, push paziņojums vai tiešsaistes pasūtījuma statusa lapa.",
+        "ours": "e-pasts, ja ieslēgts solis “pasūtījums gatavs”, un pasūtījuma statusa lapa; nav SMS, WhatsApp vai push paziņojumu"
+      },
+      "allergens": {
+        "label": "Alergēni ēdienkartē",
+        "explain": "Katram ēdienam klienti pirms pasūtīšanas redz tā alergēnus."
+      },
+      "menuphoto": {
+        "label": "Ēdienkartes izveide no foto",
+        "explain": "Ēdienkartes foto vai PDF aizpilda ēdienus, un jūs tos tikai pārbaudāt."
+      },
+      "options": {
+        "label": "Izvēles un piedevas ēdieniem",
+        "explain": "Izmēri, mērces un piedevas, ieskaitot obligātas klienta izvēles."
+      },
+      "deals": {
+        "label": "Komplekti",
+        "explain": "Vairākas pozīcijas kopā par vienu cenu."
+      },
+      "private": {
+        "label": "Privāti pasākumi un rezervācijas",
+        "explain": "Pasūtījumi privātam pasākumam ar atsevišķu saiti un pieprasījumi busiņa rezervēšanai.",
+        "ours": "privāti pasākumi ar savu pasūtīšanas saiti; nav rezervācijas pieprasījumu"
+      },
+      "qr": {
+        "label": "Pasūtīšana pie galdiņa / ar QR kodu",
+        "explain": "Klienti noskenē kodu pie galdiņa, un pasūtījums pienāk ar galdiņa numuru.",
+        "ours": "QR kods atver pasūtīšanas lapu; nav galdiņu numuru"
+      },
+      "cards": {
+        "label": "Tiešsaistes maksājumi ar karti, arī Apple Pay un Google Pay",
+        "explain": "Pasūtot tiešsaistē, klienti maksā ar karti, Apple Pay vai Google Pay."
+      },
+      "payattruck": {
+        "label": "Apmaksa saņemot",
+        "explain": "Klienti pasūta tiešsaistē un maksā, kad saņem pasūtījumu."
+      },
+      "localpay": {
+        "label": "Vietējās maksājumu metodes (BLIK, iDEAL, Swish, MobilePay…)",
+        "explain": "Valsts vietējās tiešsaistes maksājumu metodes papildus kartēm.",
+        "ours": "tikai kartes"
+      },
+      "paypal": {
+        "label": "PayPal vai Klarna",
+        "explain": "Klienti var maksāt ar PayPal vai Klarna."
+      },
+      "custfee": {
+        "label": "Iespēja klientam maksāt pasūtījuma maksu",
+        "explain": "Uzņēmums var pārlikt apkalpošanas maksu uz klientu."
+      },
+      "tips": {
+        "label": "Dzeramnauda",
+        "explain": "Klienti var pievienot dzeramnaudu, maksājot tiešsaistē."
+      },
+      "paymethods": {
+        "label": "Piedāvātās maksājumu metodes",
+        "explain": "Kā klienti var maksāt, kā to norāda pakalpojuma sniedzējs.",
+        "ours": "karte, Apple Pay, Google Pay; apmaksa saņemot"
+      },
+      "kds": {
+        "label": "Virtuves ekrāns (KDS)",
+        "explain": "Pasūtījumi parādās ekrānā virtuvē tādā secībā, kādā tie jāgatavo."
+      },
+      "tickets": {
+        "label": "Drukāti virtuves čeki",
+        "explain": "Katrs pasūtījums tiek izdrukāts ar čeku printeri busiņā.",
+        "ours": "iPad un Android lietotnē; printeris netiek nodrošināts"
+      },
+      "buzzers": {
+        "label": "Peidžeri (zvaniņi)",
+        "explain": "Klienti saņem peidžeri, kas paziņo, kad pasūtījums ir gatavs.",
+        "ours": "peidžera numurs tiek saglabāts katram pasūtījumam; peidžeri netiek nodrošināti"
+      },
+      "offline": {
+        "label": "Darbojas arī bez interneta",
+        "explain": "Bez savienojuma veiktie pasūtījumi un izmaiņas tiek saglabāti un nosūtīti, kad savienojums atjaunojas.",
+        "ours": "iPad un Android lietotnē; ne tīmekļa vadības panelī"
+      },
+      "vans": {
+        "label": "Vairāki busiņi",
+        "explain": "Viens konts pārvalda vairāk nekā vienu busiņu.",
+        "ours": "papildu busiņi par papildu ikmēneša maksu"
+      },
+      "staff": {
+        "label": "Darbinieku konti",
+        "explain": "Darbinieki pierakstās ar savu lietotājvārdu un lomu."
+      },
+      "reports": {
+        "label": "Pārdošanas pārskati",
+        "explain": "Kopsummas, populārākie ēdieni un pārdošana pa pasākumiem vai datumiem, ar eksportu uz izklājlapu."
+      },
+      "domain": {
+        "label": "Sava tīmekļa adrese",
+        "explain": "Pasūtīšanas lapa uzņēmuma paša domēnā."
+      },
+      "whatsapp": {
+        "label": "WhatsApp automātiskās atbildes",
+        "explain": "Uz klientu WhatsApp ziņām tiek atbildēts automātiski."
+      },
+      "social": {
+        "label": "Sociālo tīklu ieraksti no jūsu grafika",
+        "explain": "Gatavi ieraksti, kas rāda, kur busiņš ir šonedēļ."
+      },
+      "igmsg": {
+        "label": "Instagram un Messenger atbildes",
+        "explain": "Uz Instagram un Facebook Messenger ziņām tiek atbildēts automātiski."
+      },
+      "discovery": {
+        "label": "Redzams food truck kartē",
+        "explain": "Klienti atrod busiņu publiskā kartē ar tuvumā esošiem food truck.",
+        "ours": "Village Foodie"
+      },
+      "loyalty": {
+        "label": "Lojalitātes programma",
+        "explain": "Klienti krāj atlīdzības par atkārtotiem apmeklējumiem."
+      },
+      "ipad": {
+        "label": "iPad lietotne",
+        "explain": "Busiņa lietotne pasūtījumu pieņemšanai un pārvaldībai iPad ierīcē."
+      },
+      "android": {
+        "label": "Android lietotne",
+        "explain": "Tā pati lietotne Android planšetdatorā vai tālrunī."
+      },
+      "hardware": {
+        "label": "Aparatūra iekļauta (planšetdators, printeris)",
+        "explain": "Pakalpojuma sniedzējs nodrošina planšetdatoru vai printeri.",
+        "ours": "izmantojiet savu"
+      },
+      "terminal": {
+        "label": "Maksājumu terminālis lodziņam iekļauts",
+        "explain": "Pakalpojuma sniedzējs nodrošina maksājumu termināli maksājumiem pie busiņa."
+      },
+      "fiscal": {
+        "label": "Sertificēta kases sistēma nodokļu prasībām (TSE, EET, kassaregister…)",
+        "explain": "Kases sistēma, kas sertificēta atbilstoši valsts darījumu reģistrēšanas prasībām."
+      },
+      "delivery": {
+        "label": "Piegāde",
+        "explain": "Pasūtījumi tiek piegādāti uz klienta adresi.",
+        "ours": "tikai saņemšana uz vietas"
+      },
+      "monthly": {
+        "label": "Ikmēneša cena",
+        "explain": "Ko uzņēmums katru mēnesi maksā par programmatūru."
+      },
+      "perorder": {
+        "label": "Maksa par tiešsaistes pasūtījumu",
+        "explain": "Ko pakalpojuma sniedzējs iekasē par katru tiešsaistes pasūtījumu papildus ikmēneša cenai."
+      },
+      "cardfee": {
+        "label": "Karšu maksa",
+        "explain": "Maksājumu pakalpojuma sniedzēja maksa par katru karšu maksājumu."
+      },
+      "term": {
+        "label": "Minimālais līguma termiņš",
+        "explain": "Cik ilgi uzņēmums ir piesaistīts, pirms var atteikties."
+      },
+      "setup": {
+        "label": "Pieslēgšanas maksa",
+        "explain": "Vienreizēja maksa par sākšanu."
+      },
+      "trial": {
+        "label": "Bezmaksas izmēģinājums",
+        "explain": "Laiks, kurā sistēmu var lietot bez maksas, pirms sākt maksāt."
+      }
+    }
+  },
   "comparisonSuits": {
     "title": "Kura sistēma ir piemērota jūsu ēdienu busiņam?",
     "checked": "Pārbaudīts {date}",

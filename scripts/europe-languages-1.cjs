@@ -255,7 +255,11 @@ const SEG = Object.fromEntries([...read('lib/marketing-country.ts').matchAll(/\b
     t('de-CH: no "ß" anywhere (Swiss "ss"); the decimal examples written with a point ("3.5", "0.50"); "Rappen", not "Cent"', !Object.values(CH).some(v => /ß/.test(v)) && /3\.5/.test(CH['errorsManage.charges_fee_pct']) && /0\.50/.test(CH['errorsManage.charges_fee_fixed']) && /Rappen/.test(CH['compare.fee.fixedAria']))
     t('de-AT: only Austrian words differ ("gratis testen", "ohne Anstellen", "USt.", the +43 phone example); months ("Jänner") are Intl\'s', JSON.stringify(Object.keys(flat(JSON.parse(read('messages/de-AT.json')))).sort()) === JSON.stringify(['compare.orders.captionNo', 'landing.meta.description', 'manageTeam.phonePlaceholder', 'orderCard.chargesSummary', 'pricing.card.tryFree']) && new Intl.DateTimeFormat('de-AT', { month: 'long', timeZone: 'UTC' }).format(new Date(Date.UTC(2026, 0, 1))) === 'Jänner')
     // europe-languages-2 Stage 0: one key of its own — the team form's phone example in Liechtenstein's +423.
-    t('de-LI: Liechtenstein writes as Switzerland does — only its phone example (+423) differs', JSON.stringify(flat(JSON.parse(read('messages/de-LI.json')))) === JSON.stringify({ 'manageTeam.phonePlaceholder': '+423 660 234 567' }))
+    // ⚠️ RE-PINNED (compare-languages-1, 8 November 2026): + the comparison page's country-name lines — de-CH says "in der {country}"
+    // (die Schweiz), Liechtenstein takes no article, so de-LI puts "in {country}" back for exactly those keys.
+    const LI = flat(JSON.parse(read('messages/de-LI.json')))
+    t('de-LI: Liechtenstein writes as Switzerland does — only its phone example (+423) and the comparison page\'s "in {country}" lines differ',
+      LI['manageTeam.phonePlaceholder'] === '+423 660 234 567' && Object.keys(LI).every(k => k === 'manageTeam.phonePlaceholder' || (k.startsWith('comparison.') && /\{country\}/.test(LI[k]) && !/der \{country\}/.test(LI[k]))), LI)
   }
 
   // ══ 5 ════════════════════════════════════════════════════════════════════════════════════════════════════════════

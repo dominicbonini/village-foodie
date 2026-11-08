@@ -1,0 +1,394 @@
+{
+  "path": {
+    "section": "osszehasonlitas",
+    "slug": "food-truck-rendelesi-rendszer"
+  },
+  "meta": {
+    "title": "Food truck rendelési rendszerek 2026: funkciók és árak",
+    "description": "Food truck rendelési rendszerek: előrendelés átvételi idővel, konyhai kapacitás, heti menetrend, díjak, szerződés — a szolgáltatók oldalán ellenőrizve.",
+    "about": "Online rendelési rendszerek food truckoknak"
+  },
+  "breadcrumb": {
+    "home": "HatchGrab",
+    "here": "Összehasonlítás",
+    "label": "Morzsamenü"
+  },
+  "h1": "Food truck rendelési rendszerek összehasonlítása 2026",
+  "byline": "Utoljára ellenőrizve: {date} · Készítette: HatchGrab. Mi magunk is az összehasonlított szolgáltatók egyike vagyunk (lásd: <link>Hogyan hasonlítottunk össze</link>).",
+  "tldr": {
+    "title": "Röviden",
+    "body": "Ha azt szeretné, hogy a vásárlók előre rendeljenek a telefonjukon, és átvételi időt válasszanak, rendelési rendszerre van szüksége, nem csak kasszára. Négy dologra figyeljen: az átvételi idők igazodjanak a konyhai kapacitáshoz; legyen heti menetrend a változó helyszínekhez; alacsony vagy semmilyen rendelésenkénti díj; és ne legyen hosszú szerződés. A kártyaterminálok és a kasszák a food trucknál történő fizetést intézik, és kiegészítik a rendelési rendszert."
+  },
+  "table": {
+    "title": "A rendelési rendszerek összehasonlítása",
+    "caption": "Food truckoknak szóló online rendelési rendszerek funkciói és költségei ({country}), állapot: {date}",
+    "note": "„Igen” csak ott, ahol a szolgáltató ezt nyilvánosan állítja.",
+    "feature": "Funkció",
+    "yes": "Igen",
+    "no": "Nem",
+    "unknown": "Nincs adat",
+    "fromPlan": "{plan} csomagtól",
+    "appNotInCountry": "Nem elérhető ({country})",
+    "appFlagOff": "Igen – a kapcsoló még ki van kapcsolva, akkor jelenik meg, ha az áruházakban elérhető lesz",
+    "range": "{from} – {to}",
+    "feePlan": "{fee} ({plans})",
+    "noFee": "nincs",
+    "morePending": "További szolgáltatók akkor jelennek meg itt, ha az adataikat a saját weboldalukon ellenőriztük.",
+    "priceHidden": "Ajánlatkérésre",
+    "feeAfter": "havi {included} felett {fee}"
+  },
+  "costs": {
+    "title": "Mennyibe kerül egy food truck rendelési rendszer?",
+    "ourPlan": "{plan}: havi {price}, {fee}",
+    "feeOnly": "online kártyás rendelésenként {fee}",
+    "feeIncluded": "havi {included} értékig az online rendelések benne vannak, utána {fee}",
+    "feeNone": "a HatchGrab nem számít fel díjat az online rendelések után",
+    "rivalPlan": "{plan}: {price}",
+    "perMonth": "havi {price}",
+    "perMonthYearly": "havi {price}, éves számlázással",
+    "vatExcl": "áfa nélkül",
+    "vatIncl": "áfával",
+    "setup": "egyszeri beállítási díj: {price}",
+    "truckFee": "rendelésenként {fee}",
+    "customerFee": "rendelésenként {fee}, a vásárló fizeti",
+    "source": "Forrás",
+    "checked": "ellenőrizve: {date}",
+    "cardFee": "A HatchGrabbel történő online kártyás fizetéseknél a Stripe díjai is felmerülnek: kártyás fizetésenként {cardFee} ({country}).",
+    "vat": "A HatchGrab Ltd egyesült királyságbeli cég, és ebben az országban ({country}) nem áll áfanyilvántartásban, ezért díjainkhoz nem számítunk fel áfát. Ha Ön áfaalany, adja meg nekünk közösségi adószámát; ilyenkor a díjainkat terhelő áfát fordított adózással Ön számolja el.",
+    "bundledFee": "online fizetésenként {fee}, a kártyadíjjal együtt"
+  },
+  "fit": {
+    "title": "Melyik rendszer kinek való?",
+    "ours": "A HatchGrab Önnek való, ha …",
+    "oursBody": "változó helyszíneken árul, átvételi idős előrendelést szeretne, nem akarja túlterhelni a konyháját, és nem szeretne szerződést.",
+    "oursNot": "A HatchGrab nem Önnek való, ha …",
+    "oursNotBody": "a vásárlóinak PayPal vagy Klarna használatával kell fizetniük, vagy egyetlen szolgáltatótól szeretne az adóügyi előírásoknak megfelelő, tanúsított pénztárgépet.",
+    "appClause": "Vagy ha a konyhai alkalmazásra iPaden vagy Androidon van szüksége ebben az országban ({country}): ott még nem érhető el az áruházakban.",
+    "tills": "Kasszák és kártyaterminálok",
+    "marketplaces": "Ételkiszállító platformok",
+    "rival": "{name} akkor illik Önhöz, ha …",
+    "tillsBody": "A kasszák a food trucknál veszik fel a fizetést, és megfelelnek az eladások rögzítésére vonatkozó adóügyi előírásoknak. A rendelési rendszer a kassza mellett működik, nem helyettesíti azt.",
+    "tillsBodyNamed": "A kasszák a food trucknál veszik fel a fizetést, és megfelelnek az eladások rögzítésére vonatkozó adóügyi előírásoknak. {names} {count, plural, one {szintén szerepel} other {szintén szerepelnek}} a fenti táblázatban. A rendelési rendszer a kassza mellett működik, nem helyettesíti azt.",
+    "marketplacesBody": "Az ételkiszállító platformok új vásárlókat hoznak, de minden rendelés után jutalékot vonnak le. Az Uber Eats Németországra 14% jutalékot ad meg személyes átvételnél és 30%-ot az Uber futárai általi kiszállításnál. A Wolt a saját weboldalán azt írja, hogy jutalékot számít fel, de mértéket nem közöl. A Lieferando jutalékait nem tudtuk ellenőrizni. Ez a jutalék azokra a törzsvásárlókra is vonatkozik, akik Önnél előre rendelnek."
+  },
+  "groups": {
+    "food_truck": "Food truck rendelési rendszer",
+    "nearest_local": "Rendelési rendszer",
+    "pos": "Kasszarendszer"
+  },
+  "faq": {
+    "title": "Gyakori kérdések",
+    "whatQ": "Mi az a food truck rendelési rendszer?",
+    "whatA": "A rendelési rendszer online veszi fel a rendeléseket, még mielőtt a vásárlók a food truckhoz érnének: kiválasztják az ételeket és az átvételi időt, online vagy átvételkor fizetnek, a rendelés pedig megjelenik az Ön konyháján. A kassza vagy a kártyaterminál a food trucknál veszi fel a fizetést. A kettő kiegészíti egymást.",
+    "costQ": "Mennyibe kerül a HatchGrab ({country})?",
+    "costA": "{plans}. Az online kártyás fizetéseknél a Stripe díjai is felmerülnek: kártyás fizetésenként {cardFee}.",
+    "termQ": "Van minimális szerződési időszak?",
+    "termA": "Nincs. Nincs minimális szerződési időszak és felmondási idő sem. Bármikor lemondhatja; a díjat havonta előre számlázzuk, és a hozzáférése a kifizetett hónap végéig megmarad.",
+    "locationsQ": "Működik változó helyszínekkel is?",
+    "locationsA": "Igen. Beállítja a heti menetrendjét helyszínekkel és időpontokkal, a vásárlók pedig arra a helyszínre és napra rendelnek, amikor Ön ott van.",
+    "capacityQ": "Hogyan akadályozza meg a rendszer, hogy a konyhám túlterhelődjön?",
+    "capacityA": "A vásárlók csak azokat az átvételi időket látják, amelyeket a konyhája valóban teljesíteni tud. A rendszer az egyes ételek elkészítési idejéből és abból számol, hogy egyszerre hányat készít el.",
+    "tseQ": "Kell-e így is az adóügyi előírásoknak megfelelő, tanúsított pénztárgép?",
+    "tseA": "A HatchGrab nem pénztárgép, és nem rendelkezik azzal a tanúsítással, amelyet az adóügyi előírások a pénztárgépektől megkövetelnek. Arról, hogyan rögzítse az online rendeléseket a kasszájában, kérdezze adótanácsadóját.",
+    "paymentsQ": "Milyen fizetési módokat támogat a HatchGrab?",
+    "paymentsA": "A vásárlók online fizetnek kártyával, Apple Pay vagy Google Pay használatával, vagy a food trucknál. A PayPal és a Klarna jelenleg nem támogatott.",
+    "costTrial": "{months, plural, one {Az első hónap} other {Az első # hónap}} ingyenes, minden funkcióval."
+  },
+  "method": {
+    "title": "Hogyan hasonlítottunk össze",
+    "checked": "Utoljára ellenőrizve: {date}.",
+    "prices": "Az árakat úgy tüntetjük fel, ahogy a szolgáltató megadja, áfával.",
+    "meaning": "Az „Igen” azt jelenti, hogy a szolgáltató nyilvánosan feltünteti a funkciót. A „Nincs adat” azt jelenti, hogy a weboldalán nem találtunk róla semmit — nem azt, hogy a funkció hiányzik.",
+    "vendor": "Ezt az oldalt a HatchGrab üzemelteti, és az összehasonlított szolgáltatók egyike.",
+    "review": "Az árakat és a funkciókat automatikusan ellenőrizzük az egyes termékek saját weboldalán; minden állításnál ott a forrás linkje.",
+    "corrections": "Hibát talált? Jelezze nekünk a <link>kapcsolatfelvételi űrlapon</link>.",
+    "reportError": "<link>Hiba bejelentése</link>",
+    "machine": "MI-asszisztenseknek és fejlesztőknek: ez a táblázat <md>Markdownként</md> · <json>JSON-ként</json>"
+  },
+  "cta": {
+    "title": "Próbálja ki ingyen {months, plural, one {# hónapig} other {# hónapig}}",
+    "noCard": "Bankkártya nem szükséges",
+    "cancel": "Havonta lemondható",
+    "button": "Kipróbálom ingyen"
+  },
+  "admin": {
+    "status": "Piszkozat · noindex · nincs a sitemapben, az llms.txt-ben és a hreflangban · lábléclink csak adminoknak",
+    "statusLive": "Élő · nyilvános és indexelhető",
+    "viewAdmin": "Admin nézet",
+    "viewPublic": "Amit a nyilvánosság lát",
+    "pricingCheck": "Árellenőrzés megnyitása",
+    "checklist": "Élesítés előtt",
+    "goLive": "Az oldal az Admin › Countries menüben élesíthető.",
+    "check": {
+      "apps": "iPad- és Android-kapcsoló bekapcsolva ({country})",
+      "verified": "Legalább 2 ellenőrzött szolgáltató (ellenőrzött: {n})",
+      "placeholders": "Nem maradt „[ … ]” helyőrző a szövegben",
+      "vat": "Az áfáról szóló szöveg megvan",
+      "impressum": "Az Impressumról szóló döntés rögzítve"
+    },
+    "unverified": "nem ellenőrzött · a nyilvánosság elől rejtve",
+    "autoVerified": "automatikusan ellenőrizve",
+    "unchecked": "még nincs ellenőrizve minden megjelenített versenytársnál · a nyilvánosság elől rejtve",
+    "label": "Admin",
+    "notShown": "Nincs az oldalon (legfeljebb négy jelenik meg): {names}.",
+    "reasonHidden": "{name} (rejtett)",
+    "reasonBeyond": "{name} (a négyen felül)",
+    "reasonNoWebsite": "{name} (nincs weboldala)"
+  },
+  "footer": {
+    "heading": "Összehasonlítás",
+    "link": "Rendelési rendszerek összehasonlítása"
+  },
+  "featureGroups": {
+    "ordering": "Rendelés",
+    "payments": "Fizetés",
+    "kitchen": "Konyha",
+    "marketing": "Marketing",
+    "apps_hardware": "Alkalmazások és eszközök",
+    "price_contract": "Ár és szerződés"
+  },
+  "cell": {
+    "yes": "Igen",
+    "no": "Nem",
+    "partial": "Részben",
+    "unknown": "Nincs adat",
+    "not_mentioned": "A weboldala nem ír róla",
+    "withNote": "{word}, {note}",
+    "soon": "hamarosan",
+    "fromPlan": "{plan} csomagtól",
+    "perCardPayment": "kártyás fizetésenként {fee}",
+    "trial": "{months, plural, one {# hónap} other {# hónap}} ingyen",
+    "setupFee": "egyszeri {price}",
+    "perMonth": "havi {price}",
+    "notInCountry": "nem elérhető ({country})",
+    "flagOff": "a kapcsoló még ki van kapcsolva; akkor jelenik meg, ha az áruházakban elérhető lesz",
+    "notApplicable": "piacüzemeltetőre nem vonatkozik",
+    "not_listed": "Nem tünteti fel"
+  },
+  "explained": {
+    "title": "Mit jelentenek a funkciók"
+  },
+  "costBlock": {
+    "title": "Mennyit fizet havonta egy food truck",
+    "sizes": "Havi online forgalom",
+    "sizeSales": "havi {sales}",
+    "sizeOrders": "kb. {orders} rendelés",
+    "lead": "Egy olyan food truckra, amely havonta {sales} értékű online rendelést fogad (kb. {orders} rendelés). Minden oszlop a teljes havi költséget mutatja: a rendelési rendszer saját díját, plusz az ezekre a rendelésekre jutó kártyadíjakat.",
+    "legendSoftware": "Szoftverdíj",
+    "legendCard": "Kártyadíjak",
+    "software": "Szoftverdíj: havi {amount}",
+    "card": "Kártyadíjak: havi {amount}",
+    "total": "havi {amount} a kártyadíjakkal együtt",
+    "share": "{pct} a forgalomból",
+    "assumed": "(a díj nem nyilvános, becsült)",
+    "customerFee": "Ezen felül havi {amount}, amelyet a vásárlók fizetnek (rendelésenként {fee}) — nincs benne az oszlopban",
+    "summaryCheapest": "{us} saját díja havi {ours}, a legolcsóbb bemutatott versenytársé havi {theirs}. A kártyadíjak (havi {card}) minden kártyás fizetésnél felmerülnek, bármelyik rendszert használja, így a szoftverdíjban rejlő különbség számít.",
+    "summaryNotCheapest": "{us} saját díja havi {ours}, ami több, mint a legolcsóbb bemutatott versenytárs, {rival} havi {theirs} díja. A kártyadíjak (havi {card}) minden kártyás fizetésnél felmerülnek, bármelyik rendszert használja.",
+    "summaryAlone": "{us} saját díja havi {ours}. A kártyadíjak (havi {card}) minden kártyás fizetésnél felmerülnek, bármelyik rendszert használja.",
+    "footOrder": "Átlagos rendelés: {order} — egy tipikus étel ára ({meal}) × rendelésenként {multiplier} étel ({source}).",
+    "footCard": "A kártyadíjakat kártyás fizetésenként {rate} értékkel számoljuk: {source}.",
+    "footCardSource": "A Stripe díja ({country})",
+    "footAssumed": "{names} {count, plural, one {nem teszi közzé a kártyadíját} other {nem teszik közzé a kártyadíjukat}}, ezért a saját díjunkkal számoltunk.",
+    "footChecked": "Az árak ellenőrzése: {date}.",
+    "footCalculator": "Számolja ki saját adataival a kalkulátorban.",
+    "noRivals": "Ebben az országban ({country}) még egyetlen versenytárs sincs ellenőrizve, így nincs mivel összehasonlítani."
+  },
+  "features": {
+    "preorder": {
+      "label": "Előrendelés választott átvételi idővel",
+      "explain": "A vásárlók előre rendelnek, és kiválasztják, mikor veszik át."
+    },
+    "capacity": {
+      "label": "A konyhai kapacitáshoz igazított átvételi idők",
+      "explain": "A vásárlók csak azokat az átvételi időket látják, amelyeket a konyha valóban teljesíteni tud."
+    },
+    "asap": {
+      "label": "Rendelés a lehető leghamarabbra",
+      "explain": "A vásárlók időpont választása nélkül is rendelhetnek, és átvehetik, amint elkészült."
+    },
+    "ahead": {
+      "label": "Előrendelés egy későbbi napra vagy eseményre",
+      "explain": "A vásárlók már ma rendelhetnek egy későbbi napon tartott piacra vagy eseményre."
+    },
+    "schedule": {
+      "label": "Heti menetrend változó helyszínekkel",
+      "explain": "A food truck heti helyszínei és időpontjai; a vásárlók arra a helyszínre és napra rendelnek, amikor ott van."
+    },
+    "walkup": {
+      "label": "Helyszíni rendelések ugyanazon a kijelzőn, mint az online rendelések",
+      "explain": "Az ablaknál felvett rendelések ugyanabba a listába kerülnek, mint az online rendelések."
+    },
+    "stock": {
+      "label": "Elfogyott jelölés és eseményenkénti készletkorlát",
+      "explain": "Jelölje elfogyottnak az ételeket, és adja meg, egy eseményen mennyi adható el belőlük."
+    },
+    "notify": {
+      "label": "Értesítés a vásárlónak, ha kész a rendelés",
+      "explain": "Hogyan tudja meg a vásárló, hogy kész a rendelése: SMS, WhatsApp, e-mail, push értesítés vagy élő rendelésállapot-oldal.",
+      "ours": "e-mail, ha a „rendelés kész” lépés be van kapcsolva, valamint rendelésállapot-oldal; SMS, WhatsApp és push nincs"
+    },
+    "allergens": {
+      "label": "Allergének az étlapon",
+      "explain": "Minden ételnél látják a vásárlók az allergéneket, még rendelés előtt."
+    },
+    "menuphoto": {
+      "label": "Étlap beállítása fotóról",
+      "explain": "Az étlapról készült fotó vagy PDF alapján kitöltődnek az ételek, Önnek csak ellenőriznie kell."
+    },
+    "options": {
+      "label": "Választható opciók és extrák az ételekhez",
+      "explain": "Méretek, szószok és extrák, a vásárló számára kötelező választásokkal együtt."
+    },
+    "deals": {
+      "label": "Menük és csomagajánlatok",
+      "explain": "Több tétel együtt, egy áron."
+    },
+    "private": {
+      "label": "Privát események és foglalások",
+      "explain": "Rendelés egy privát eseményre saját linken keresztül, valamint food truck bérlési kérések.",
+      "ours": "privát események saját rendelési linkkel; foglalási kérések nincsenek"
+    },
+    "qr": {
+      "label": "Asztali / QR-kódos rendelés",
+      "explain": "A vásárlók beolvasnak egy kódot az asztaluknál, és a rendelés az asztalszámmal érkezik.",
+      "ours": "a QR-kód megnyitja a rendelési oldalt; asztalszámok nincsenek"
+    },
+    "cards": {
+      "label": "Online kártyás fizetés, Apple Pay és Google Pay is",
+      "explain": "A vásárlók rendeléskor online fizetnek kártyával, Apple Pay vagy Google Pay használatával."
+    },
+    "payattruck": {
+      "label": "Fizetés átvételkor",
+      "explain": "A vásárlók online rendelnek, és átvételkor fizetnek."
+    },
+    "localpay": {
+      "label": "Helyi fizetési módok (BLIK, iDEAL, Swish, MobilePay…)",
+      "explain": "Az adott ország saját online fizetési módjai a kártyák mellett.",
+      "ours": "csak kártya"
+    },
+    "paypal": {
+      "label": "PayPal vagy Klarna",
+      "explain": "A vásárlók PayPal vagy Klarna használatával is fizethetnek."
+    },
+    "custfee": {
+      "label": "A rendelési díjat a vásárló is fizetheti",
+      "explain": "A vállalkozás szolgáltatási díjat háríthat át a vásárlóra."
+    },
+    "tips": {
+      "label": "Borravaló",
+      "explain": "A vásárlók online fizetéskor borravalót adhatnak."
+    },
+    "paymethods": {
+      "label": "Elérhető fizetési módok",
+      "explain": "Hogyan fizethetnek a vásárlók, a szolgáltató közlése szerint.",
+      "ours": "kártya, Apple Pay, Google Pay; fizetés átvételkor"
+    },
+    "kds": {
+      "label": "Konyhai kijelző (KDS)",
+      "explain": "A rendelések egy konyhai kijelzőn jelennek meg, elkészítési sorrendben."
+    },
+    "tickets": {
+      "label": "Nyomtatott konyhai rendelésjegyek",
+      "explain": "Minden rendelés kinyomtatódik a food truckban lévő blokknyomtatón.",
+      "ours": "az iPad- és Android-alkalmazásban; nyomtatót nem biztosítunk"
+    },
+    "buzzers": {
+      "label": "Vendéghívó csipogók",
+      "explain": "A vásárló csipogót kap, amely jelez, ha kész a rendelése.",
+      "ours": "a csipogó száma minden rendeléshez rögzítve; csipogókat nem biztosítunk"
+    },
+    "offline": {
+      "label": "Internetkimaradáskor is működik",
+      "explain": "A kapcsolat nélkül felvett rendelések és módosítások megmaradnak, és a kapcsolat visszatértekor elküldődnek.",
+      "ours": "az iPad- és Android-alkalmazásban; a webes vezérlőpultban nem"
+    },
+    "vans": {
+      "label": "Több jármű vagy food truck",
+      "explain": "Egy fiókkal több food truck is üzemeltethető.",
+      "ours": "további járművek havi felárért"
+    },
+    "staff": {
+      "label": "Munkatársi belépések",
+      "explain": "A munkatársak saját belépéssel és szerepkörrel jelentkeznek be."
+    },
+    "reports": {
+      "label": "Értékesítési kimutatások",
+      "explain": "Összesítések, legkelendőbb tételek és eladások esemény vagy dátum szerint, táblázatos exporttal."
+    },
+    "domain": {
+      "label": "Saját webcím",
+      "explain": "A rendelési oldal a vállalkozás saját domainjén."
+    },
+    "whatsapp": {
+      "label": "WhatsApp automatikus válaszok",
+      "explain": "A vásárlók WhatsApp-üzeneteire automatikus válasz érkezik."
+    },
+    "social": {
+      "label": "Közösségimédia-bejegyzések a menetrendből",
+      "explain": "Kész bejegyzések, amelyek megmutatják, hol áll a food truck ezen a héten."
+    },
+    "igmsg": {
+      "label": "Instagram- és Messenger-válaszok",
+      "explain": "Az Instagram- és Facebook Messenger-üzenetekre automatikus válasz érkezik."
+    },
+    "discovery": {
+      "label": "Megjelenés egy food truck-térképen",
+      "explain": "A vásárlók egy nyilvános, a közelükben lévő food truckokat mutató térképen találják meg a food truckot.",
+      "ours": "Village Foodie"
+    },
+    "loyalty": {
+      "label": "Hűségprogram",
+      "explain": "A visszatérő vásárlók jutalmakat gyűjtenek."
+    },
+    "ipad": {
+      "label": "iPad-alkalmazás",
+      "explain": "A food truck alkalmazása rendelések felvételére és kezelésére iPaden."
+    },
+    "android": {
+      "label": "Android-alkalmazás",
+      "explain": "Ugyanez az alkalmazás Androidos tableten vagy telefonon."
+    },
+    "hardware": {
+      "label": "Biztosított eszközök (tablet, nyomtató)",
+      "explain": "A szolgáltató biztosítja a tabletet vagy a nyomtatót.",
+      "ours": "saját eszközzel"
+    },
+    "terminal": {
+      "label": "Biztosított kártyaterminál az ablakhoz",
+      "explain": "A szolgáltató kártyaterminált biztosít a food trucknál történő fizetéshez."
+    },
+    "fiscal": {
+      "label": "Adóügyi előírásoknak megfelelő, tanúsított pénztárgép (TSE, EET, kassaregister…)",
+      "explain": "Az adott ország eladásrögzítési szabályai szerint tanúsított pénztárgép."
+    },
+    "delivery": {
+      "label": "Kiszállítás",
+      "explain": "A rendelések kiszállítása a vásárló címére.",
+      "ours": "csak átvétel"
+    },
+    "monthly": {
+      "label": "Havidíj",
+      "explain": "Mennyit fizet a vállalkozás havonta a szoftverért."
+    },
+    "perorder": {
+      "label": "Online rendelésenkénti díj",
+      "explain": "Mennyit számít fel a szolgáltató minden online rendelés után, a havidíjon felül."
+    },
+    "cardfee": {
+      "label": "Kártyadíj",
+      "explain": "A fizetési szolgáltató díja minden kártyás fizetés után."
+    },
+    "term": {
+      "label": "Minimális szerződési idő",
+      "explain": "Mennyi ideig van elkötelezve a vállalkozás, mielőtt felmondhat."
+    },
+    "setup": {
+      "label": "Beállítási díj",
+      "explain": "Egyszeri díj az induláshoz."
+    },
+    "trial": {
+      "label": "Ingyenes próbaidőszak",
+      "explain": "Időszak, amíg fizetés előtt ingyen használhatja a rendszert."
+    }
+  }
+}

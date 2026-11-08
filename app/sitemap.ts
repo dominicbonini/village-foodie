@@ -80,9 +80,11 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       ]
     }))
     // compare-de-1 (24 October 2026): a country's comparison page — ONLY while its comparison_status is 'live'. lastmod is
-    // the newest check date the public page shows; hreflang names the page itself only (one language, one country).
-    const comparisons: MetadataRoute.Sitemap = (await liveComparisonPages()).map(c => ({
-      url: c.url, lastModified: new Date(c.checked), changeFrequency: 'monthly', priority: 0.7, alternates: { languages: { [c.locale]: c.url } },
+    // the newest check date the public page shows. compare-languages-1 (8 November 2026): hreflang names every live comparison page.
+    const livePages = await liveComparisonPages()
+    const comparisonLanguages = Object.fromEntries(livePages.map(c => [c.locale, c.url]))
+    const comparisons: MetadataRoute.Sitemap = livePages.map(c => ({
+      url: c.url, lastModified: new Date(c.checked), changeFrequency: 'monthly', priority: 0.7, alternates: { languages: comparisonLanguages },
     }))
     // faq-4 (2 November 2026): each country's FAQ page — ONLY where it has a question to show (a country with none answers 404 and is
     // left out); lastmod = the newest publish or translation time it shows; hreflang names only the FAQ pages with content.

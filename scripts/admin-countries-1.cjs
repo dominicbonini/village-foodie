@@ -231,7 +231,8 @@ const ACTIVE_PUBLIC_PLANS = ['payg', 'pro', 'unlimited']   // public.plans where
   t('ro-RO: the order button reads „Comandă ce implică o obligație de plată", and the busy notice quotes it',
     ro.order.placeOrder === 'Comandă ce implică o obligație de plată' && ro.order.busyNotice.includes('„Comandă ce implică o obligație de plată”'))
   const flat = (o, p = '') => Object.entries(o).flatMap(([k, v]) => (v && typeof v === 'object' ? flat(v, p + k + '.') : [[p + k, v]]))
-  t('fr-LU: a sparse override of fr-FR (20 keys), with the +352 phone example and .lu addresses', flat(lu).length === 20 && lu.manageTeam.phonePlaceholder === '+352 621 123 456'
+  // ⚠️ RE-PINNED (compare-languages-1, 8 November 2026): + 9 comparison lines saying "au {country}" (au Luxembourg) — 29 keys.
+  t('fr-LU: a sparse override of fr-FR (20 keys + 9 comparison "au {country}" lines), with the +352 phone example and .lu addresses', flat(lu).length === 29 && flat(lu).filter(([k]) => k.startsWith('comparison.')).length === 9 && lu.manageTeam.phonePlaceholder === '+352 621 123 456'
     && flat(lu).every(([k]) => flat(fr_).some(([k2]) => k2 === k)))
   const LOC = await kit.bundle('ac1-loc', "export * from '@/lib/i18n/locales'")
   t('fr-LU is a locale, its parent fr-FR (LOCALE_PARENT)', LOC.LOCALES.includes('fr-LU') && LOC.LOCALE_PARENT['fr-LU'] === 'fr-FR')

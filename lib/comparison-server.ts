@@ -22,6 +22,7 @@ import { servicePricingStore } from '@/lib/admin/pricing-check-store'
 import { competitorOut, planOut, entryOut } from '@/lib/admin/pricing-check-actions'
 import { buildComparison, type ComparisonFlags, type ComparisonInput, type ComparisonT } from '@/lib/comparison'
 import { comparisonFlags, comparisonFlagsOf } from '@/lib/comparison-flags'
+import { NO_COMPARISON_PAGE } from '@/lib/comparison-types'
 export { comparisonFlags, comparisonFlagsOf, clearComparisonCache } from '@/lib/comparison-flags'
 import { valueOut, countryCharges, featureCheckOut, type ComparisonFeature, type FeatureValueRow, type FeatureCheckRow } from '@/lib/comparison-features'
 import { benchmarkOut } from '@/lib/admin/pricing-check-actions'
@@ -44,13 +45,29 @@ export function comparisonSuitsT(locale: string): (key: string, values?: Record<
   return translatorFor(locale, 'comparisonSuits' as never) as unknown as (key: string, values?: Record<string, string | number>) => string
 }
 
-/** The address of a country's comparison page — '/de/vergleich/foodtruck-bestellsystem' — or null when the country has
- *  no address or its language has no comparison page (the namespace is German and English only: docs/i18n/scoped-namespaces.json). */
+/** The address of a country's comparison page — '/de/vergleich/foodtruck-bestellsystem', '/fr/comparatif/…' — or null when the
+ *  country has no address, or is one that never has a comparison page (AE). compare-languages-1 (8 November 2026): the `comparison`
+ *  namespace is in every language base now, so the address words come from the country's own language (comparison.path). */
 export function comparisonPath(code: string, locale: string): string | null {
-  const seg = COUNTRY_PATH_SEGMENTS[code.toUpperCase()]
-  if (!seg || !/^(de|en)(-|$)/i.test(locale)) return null
+  const key = code.toUpperCase()
+  const seg = COUNTRY_PATH_SEGMENTS[key]
+  if (!seg || NO_COMPARISON_PAGE.includes(key)) return null
   const t = comparisonT(locale)
   return `/${seg}/${t('path.section')}/${t('path.slug')}`
+}
+
+/** compare-languages-1 §4: the hreflang set of the comparison pages — every LIVE country's page, its locale → its address (absolute).
+ *  Each country's page is that country's version of the same page (its own competitors, prices and language). Never throws. */
+export async function liveComparisonAlternates(): Promise<Record<string, string>> {
+  const out: Record<string, string> = {}
+  try {
+    for (const code of await liveComparisonCodes()) {
+      const s = await getCountrySettings(code)
+      const p = comparisonPath(code, s.locale)
+      if (p) out[s.locale] = HATCHGRAB_ORIGIN + p
+    }
+  } catch (e) { console.error('[comparison] the hreflang set could not be read:', e instanceof Error ? e.message : e) }
+  return out
 }
 
 /** The comparison data: competitors, their plans and the country's entries. Never throws — a failed read is an empty
@@ -100,6 +117,8 @@ export async function comparisonPage(code: string, flags?: ComparisonFlags): Pro
   const page = HATCHGRAB_ORIGIN + path
   let countryName = settings.name
   try { countryName = new Intl.DisplayNames([settings.locale], { type: 'region' }).of(key) ?? settings.name } catch { /* the row's name */ }
+  // compare-languages-1: the English copy always says "in {country}" / "for {country}" — the two countries English names with "the".
+  if (/^en(-|$)/i.test(settings.locale) && (key === 'GB' || key === 'US')) countryName = `the ${countryName}`
   return {
     settings, countryName, catalog: localizePlans(catalog, settings.locale), flags: f, ...data,
     charges: countryCharges(settings),
