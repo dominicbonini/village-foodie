@@ -1,4 +1,4 @@
-HatchGrab Engineering Reference Manual · V16.14
+HatchGrab Engineering Reference Manual · V16.15
 
 **HatchGrab**
 
@@ -6,7 +6,7 @@ Engineering Reference Manual
 
 *Village Foodie · Food Truck Ordering Platform*
 
-**Version 16.14**
+**Version 16.15**
 
 November 2026
 
@@ -49,6 +49,16 @@ form — including key names and set/missing checks. It may run the project's ow
 internally (`next build`, the sweep, `tsc`). Configuration is worked out from code.
 
 # Changelog
+
+## V16.15 — 9 November 2026 — **COMPARISON PAGES EASY TO READ ON ANY DEVICE, ONE "COMPARE" LINK IN THE FOOTER, AND THE JAPANESE NAV ON NARROW PHONES**
+
+- **Comparison page layout (compare-ux-1, 8 Nov):** "Which suits your food truck?" sits directly under the title and checked-date line as the page's short answer; the "In short" (tldr) section is gone from the page, the Markdown, the word list and every language (it broke the never-card-readers-or-tills rule); the breadcrumb no longer sticks over the header (§88.1, 35.aq-16).
+- **The table (compare-ux-1; "Doesn't apply" jp-nav-1, 9 Nov):** one six-value set in every language — ✓ Yes, ◐ Partly, ✗ No, Not listed, — (doesn't say), Doesn't apply — or a price's amount; the note, quote, source and date behind an ⓘ that stays in the HTML; a legend under the table; no admin badges or category line in public; the twins keep full detail (§88.2, 35.aq-13, 35.aq-14).
+- **Phones (compare-ux-1):** one shared sticky table header, `components/StickyTableHead.tsx`, for /features and the comparison pages; the comparison table scrolls sideways in its own box with a sticky feature column and a "Swipe sideways" hint (§88.3, 35.aq-15).
+- **Admin banner (compare-ux-1):** one compact line that reflects auto-publish, the rest behind "Details"; the manual checklist items are gone (§88.4).
+- **Footer (compare-ux-1):** one "Compare" link in the main row, only where the country's comparison page is live; the phone footer's rules still hold (§88.5).
+- **Narrow phones (cwv-1; jp-nav-1):** the language fixes now cover Czech, Greek and Japanese (§88.6). **Google Play badges:** confirmed byte-identical to Google's official artwork (§88.7).
+- **Live:** compare-ux-1 is deployed (OBSERVED 9 Nov 12:59 UTC); jp-nav-1 (`4ab4d956`, `49aa0a6e`) is committed on main, not pushed.
 
 ## V16.14 — 8 November 2026 — **SPEED MEASURED ON REAL VISITORS, ADMIN › PARTNERS, COMPARISON PAGES THAT PUBLISH THEMSELVES IN EVERY LANGUAGE, AND GOOGLE PLAY BADGES THE SIZE OF APPLE'S**
 
@@ -22452,7 +22462,7 @@ of this manual).
   (`isBuiltAheadRender`), never degrades, so a degraded page is never stored. /compare and the comparison pages (admin-only pages,
   `?free`, `?view=public`, competitor data without a tag) stay per request on the lean layout until that is solved.
 
-## 35.aq 🔴 SPEED, PARTNERS, COMPARISON PAGES AND STORE BADGES (V16.14)
+## 35.aq 🔴 SPEED, PARTNERS, COMPARISON PAGES AND STORE BADGES (V16.14); COMPARISON PAGES READABLE ON ANY DEVICE (V16.15)
 
 - **35.aq-1 The public pages' performance budget.** The landing redesign (and any public page) keeps to: **one** main first-screen
   image under **80 KB** compressed, every other image smaller or loaded after; **at most 2 font families / 3 font files**; **no video,
@@ -22511,6 +22521,20 @@ of this manual).
   neither.** `outreach_messages` rows have exactly one owner (`prospect_id` or `partner_id`, CHECK `outreach_messages_one_owner`);
   replies match by thread first, then by From address only when exactly one owner has it; the "both" case is listed, flagged, under
   "Check for replies now". Partner emails are free-form: no templates, snippets, sequence or Plans PDF, and no opt-out line required.
+- **35.aq-13 A comparison cell shows one of six values, the same set in every language** (V16.15, §88.2): ✓ Yes, ◐ Partly, ✗ No,
+  Not listed, — (doesn't say), Doesn't apply — or a plan price's or fee's amount ("✓ None" when there is none). The icons are
+  `aria-hidden`; "—" is `role="img"` labelled with `comparison.cell.doesntSay`. **"Doesn't apply" only for a feature that does not exist
+  for that kind of service** (`appliesToFocus` false), never for a feature their website doesn't mention; "—" never for one that doesn't
+  apply. The legend under the table explains all six and the ⓘ in every language. No other word appears as a cell's value on the page.
+- **35.aq-14 A cell's detail is never visually hidden** (V16.15, §88.2). The note, the quote, the source link and the checked date are in
+  the server HTML inside a native `<details>` ⓘ — never `sr-only` / visually-hidden / `display: none` text, never fetched on demand.
+  The Markdown and JSON twins keep every cell's full words and detail.
+- **35.aq-15 One shared sticky table header** (V16.15, §88.3): `components/StickyTableHead.tsx` is the only code that measures or pins a
+  table's header — /features (through `PlanTableHeadHeight`) and the comparison pages (`pin`). A new table that needs a sticky header uses
+  it; no page adds a second mechanism. The comparison table's sideways scroll and sticky first column are `comparison.css`.
+- **35.aq-16 No "In short" section** (V16.15, §88.1): no tldr summary on a comparison page, its Markdown or JSON twin, its metadata or
+  its messages (`comparison.tldr.*` is deleted). "Which suits your food truck?", directly under the title and checked-date line, is the
+  page's short answer, and it follows 35.aq-4.
 
 ## 🔴 iOS PUSH ENTITLEMENT — the §36 audit CONFIRMED, then fixed (V11.4)
 
@@ -36934,7 +36958,8 @@ verified it. No proposed price is recorded here as decided.
   - Admins see everything, with unverified items badged "nicht geprüft · öffentlich verborgen".
   - "So sieht es öffentlich aus" (`?view=public`) renders the public version.
 - **Built for AI and search:** everything is server-rendered (the table, prices, the FAQ in `<details>`, the method).
-  - An answer-first "Kurz gesagt".
+  - ~~An answer-first "Kurz gesagt".~~ ⛔ Corrected V16.15 — removed everywhere; "Which suits your food truck?" under the title is the
+    short answer (§88.1, 35.aq-16).
   - A real `<table>` with a caption and `th scope`.
   - Every price with its source link and checked date.
   - An honest "HatchGrab passt nicht, wenn …".
@@ -36958,7 +36983,8 @@ verified it. No proposed price is recorded here as decided.
   - `lib/comparison.ts` (pure), `lib/comparison-server.ts`, `-flags.ts`, `-types.ts`;
   - `lib/comparison-decisions.ts`;
   - the twins route and the `proxy.ts` headers;
-  - the `LandingFooter` "Vergleich" column: in the server HTML only when live, added in the browser for admins.
+  - ~~the `LandingFooter` "Vergleich" column: in the server HTML only when live, added in the browser for admins.~~ ⛔ Corrected
+    V16.15 — one "Compare" link in the footer row, with the same live / admin rule (§88.5).
 - **German competitors checked on their own sites (24 Oct):** gastro25, GastroDok, FoxiFood, Bestelltheke,
   GASTRODIGITAL, OrderFront, FoodsHero, Jamezz, and Vev (no German price).
   - GastroSystem was dropped (it sells kitchen equipment). my-foodtrucks.com does not resolve, and Lieferando's partner
@@ -36976,10 +37002,10 @@ verified it. No proposed price is recorded here as decided.
     "Ja" (24 Oct).
 - **Go-live checklist** (shown in the admin banner):
   - the DE app flags on;
-  - at least 2 verified competitors;
+  - ~~at least 2 verified competitors;~~ ⛔ Removed V16.15 (§88.4);
   - no "[ … ]" placeholder;
   - VAT wording present;
-  - the Impressum decision recorded (`IMPRESSUM_DECISION.DE` is null on purpose).
+  - ~~the Impressum decision recorded (`IMPRESSUM_DECISION.DE` is null on purpose).~~ ⛔ Removed from the banner V16.15 (§88.4).
 - **Proof (25 Oct):** `scripts/compare-de-1.cjs` 64/0; screenshots 17/0 (WebKit, Chromium, 1512 and 390); tsc clean.
 
 ## 86.4 The automatic competitor checker (competitor-check-1 and -1c, 25–27 October 2026)
@@ -37139,7 +37165,8 @@ repo files. compare-de-1 and competitor-check-1 were built from the briefs' word
   - stamps `deep_checked_in.<X>`.
 - **Accepting the first plan of a `pos` player** in a country with a comparison page adds it to that page's entries,
   unverified.
-- **Comparison pages show a group label under each tool:**
+- **Comparison pages show a group label under each tool** (⛔ V16.15: in the admin view only; the public table has none, the twins
+  keep it — §88.2):
   - chosen by focus: Bestellsystem für Foodtrucks, Bestellsystem or Kassensystem;
   - an entry can override it with `comparison_entries.group_label`;
   - the twins carry it too;
@@ -37526,7 +37553,8 @@ Sources: `docs/cwv-1-report.md`, `docs/partners-1-report.md`, `docs/compare-suit
   (food_truck / general_pos / restaurant / marketplace, from the checker's focus unless `category_by = 'admin'`). Order: hidden never;
   pinned; verified or publishable pricing; category food_truck → general_pos → marketplace → restaurant → unknown; ties by verified
   answers, entry order, name. No website → never selected (Hatches Up, Eventifood, EasyEats, RapidOrderz).
-- **"Which suits your food truck?"** (compare-suits-1; 35.aq-4): below the table, above the methodology; ten situations from the table's
+- **"Which suits your food truck?"** (compare-suits-1; 35.aq-4): ~~below the table, above the methodology~~ ⛔ Corrected V16.15 —
+  directly under the title and checked-date line (§88.1); ten situations from the table's
   cells and Pricing check's model (order ahead, peak times, WhatsApp, weekly posts, changing locations, lowest cost at 150 and at 2,000
   orders a month, no commission — only with a marketplace shown —, signal drops, competitor strengths). Wording is in message patterns:
   "doesn't offer" only for a quoted no; "doesn't list … on its website" only for "not listed"; **the only "best" is "the best fit among
@@ -37594,6 +37622,119 @@ Sources: `docs/cwv-1-report.md`, `docs/partners-1-report.md`, `docs/compare-suit
   every country's page; competitor notes are English data; VAT wording for the US, HK, BR and MY; `REVALIDATE_SECRET` as a GitHub secret;
   `event-types-render` measurement at 820 px (fails on the current build, not caused by these briefs).
 
+
+# 88. Comparison pages easy to read on any device, one "Compare" link, and narrow-phone languages (V16.15 — 8–9 November 2026)
+
+Sources: `docs/compare-ux-1-report.md` (§12 and §13 are the 9 November follow-ups, jp-nav-1). The invariants are 35.aq-13 to 35.aq-16.
+**compare-ux-1 is deployed** (OBSERVED 9 Nov 12:59 UTC: the UK comparison page has the legend and no "In short"; `/uk`'s footer has the
+Compare link and no column). **jp-nav-1 (the Japanese nav button and "Doesn't apply") is committed on main (`4ab4d956`), not pushed.**
+
+## 88.1 Comparison page layout
+
+- **"Which suits your food truck?" is the page's short answer,** directly under the title and the "Last checked … · Made by HatchGrab"
+  line, before the table (it was below the table).
+- **The "In short" (tldr) section is removed everywhere** (35.aq-16): the page, the Markdown twin (`## In short`), the page's word list in
+  `lib/comparison.ts`, and the `comparison.tldr.*` keys in all 32 messages files, the generated `messages/ns/*/comparison.json` and every
+  back-translation. The JSON twin and the `<meta>` tags never carried it. **Why (stated 9 Nov): it broke the never-card-readers-or-tills
+  rule** — its last sentence said "Card readers and tills cover payment at the truck and complement an ordering system" (35.aq-4).
+- **The breadcrumb scrolls with the page.** `landing.css` makes every `<nav>` under `.hg-landing` sticky, 72px tall and bordered (the site
+  nav's rule), and that caught the breadcrumb, a `<nav>` for its landmark: it stuck over the header. `.cmp-crumbs` now sets
+  `position: static`. Its markup and the `BreadcrumbList` structured data are unchanged.
+
+## 88.2 The table
+
+- **One six-value set in every language** (35.aq-13), `app/(public)/[country]/[section]/[slug]/page.tsx` `verdict`:
+  - **✓ Yes** (green), **◐ Partly** (amber), **✗ No** (red), **Not listed** (grey), **—** (light grey; spoken "Doesn't say",
+    `role="img"`), **Doesn't apply** (grey; added 9 Nov, `comparison.cell.doesntApply`) — the icons are `aria-hidden`, the word is read;
+  - **a plan price or fee** (monthly, per order, card fee, set-up; `Cell.price`) shows its amount when ≤ 40 characters, or **✓ None**;
+  - **Doesn't apply** is only for a feature that does not exist for that kind of service (`appliesToFocus` false, `Cell.na`: a market's
+    WhatsApp, say). Which kind ("does not apply to a market", "…to delivery platforms" in MY, HK, TH and AE) is the cell's note.
+    It is never "—", which the legend defines as "their website doesn't say" — untrue for such a cell.
+- **The detail is behind an ⓘ and never visually hidden** (35.aq-14): the note, the quote, the source link (the host, or "Source" for
+  HatchGrab's own pages) and the checked date sit in a native `<details class="cmp-i">` with a spoken "Details" summary, in the server
+  HTML. HatchGrab's cells show an ⓘ only when there is a note. Checked on the real data (8 Nov): every note and every source link of the
+  GB, DE and JP tables is in the page HTML, cell for cell against the JSON twin, and nothing is visually hidden.
+- **A one-line legend under the table** in every language: "✓ Yes · ◐ Partly · ✗ No · Not listed: not on their features or pricing pages
+  · —: their website doesn't say · Doesn't apply: that kind of service doesn't have the feature · ⓘ: the note, quote and source". The
+  "Doesn't apply" part is deliberately general, because the kind differs by country.
+- **The public view has no admin badges** ("unverified", "auto-verified") **and no category line** under the product names; admins still
+  see both in the admin view. The group label under each tool (§86, "Comparison pages show a group label") is admin-only now.
+- **The twins keep full detail:** the Markdown and JSON keep every cell's full words ("Not stated", "Not mentioned on their website",
+  "Yes, from Pro"…), its note, source and date; a "Doesn't apply" cell stays value `unknown` with its phrase as its text. Only the
+  "In short" section left the Markdown.
+- **Kept:** the caption, `<th scope="col">` / `scope="row"`, the `<th scope="rowgroup">` group rows.
+
+## 88.3 Phones: one shared sticky table header
+
+- **`components/StickyTableHead.tsx` is the one sticky-header mechanism** for /features' plan table and the comparison pages (35.aq-15).
+  It renders an empty hidden `<span>` in the table's box and:
+  - always publishes the header's measured height as a CSS variable on the box (`--pt-head-h` on /features, so its group headings pin
+    under the header; `--cmp-head-h` on the comparison page). `components/pricing/PlanTableHeadHeight.tsx` now renders it, same markup;
+  - with `pin` (the comparison page) keeps the one real `<thead>` under the site nav while the page scrolls, even though the box scrolls
+    sideways. A box with `overflow-x: auto` captures CSS `position: sticky`, which is why the old header never stuck, so the header is
+    moved down with a transform by exactly the distance scrolled past the table's top, clamped to the table. Where the box does not
+    scroll sideways (from 900px) it does nothing and CSS sticky does the job;
+  - with `pin`, marks the box `data-overflows` while the table is wider than it; the "Swipe sideways" hint shows only then.
+- ⚠️ **/features shares the header mechanism, not a sideways-scrolling table.** Its plan table does not scroll sideways and has no sticky
+  first column or swipe hint. Those are the comparison page's own CSS (`comparison.css`):
+  - **below 900px:** the table scrolls sideways inside `.cmp-scroll`; the feature column is `position: sticky; left: 0` at 7.75rem;
+    group-row labels stay in view; the table's minimum width is the feature column plus 5.9rem per product; borders are `separate`
+    so a sticky cell keeps its border;
+  - **from 900px:** the box is `overflow: visible`, the header cells are CSS-sticky at `top: var(--nav-h)`, the feature column is 13rem,
+    and four competitors fit.
+- **Measured (8 Nov, real data on the stand-in, built CSS, Chromium; WebKit for the columns):** the header sits under the nav (72px)
+  while scrolling at 390 and 1280; the feature column stays put while the table scrolls; every product column renders with text on a
+  phone. The reported "only the feature column renders on phones" could not be reproduced, before or after, in either engine.
+
+## 88.4 Admin banner on comparison pages
+
+- **One compact line:** the status — "Live via auto-publish", "Live · public and indexable", or "Admins only — {why}" where why is
+  "{n} of {total} competitors pass the checks" or "auto-publish is off" — then "{n} shown", "What the public sees" and "Open the Pricing
+  check".
+- **Behind "Details"** (a native `<details>`): the checklist (apps, placeholders, VAT), the "not on the page" list, the draft notice and
+  the go-live note. **The manual items "≥ 2 verified vendors" and "Impressum decision recorded" are gone** from the checklist, with
+  their message keys and code (§86.3's go-live checklist is corrected).
+- The banner is rendered only for a verified admin; a public response never contains it.
+
+## 88.5 Footer: one "Compare" link
+
+- `components/landing/LandingFooter.tsx`: the "Compare / Ordering system comparison" column is gone. **"Compare"** (the page language's
+  `comparison.footer.heading`) is an `<a class="foot-compare">` in `.foot-links`, after FAQ (after Pricing where the country has no FAQ):
+  - comparison **live** → in the server HTML; **admin** → only in an admin's browser (`AdminOnly`, as before); **off** → nothing;
+  - **the old column's slot is kept as `{null}`,** and with no live comparison each branch renders exactly the elements it did, so
+    React's generated ids (the country menu's) are unchanged on every page.
+- **The phone footer rules still hold** (`landing.css`, ≤720px): four to a row, the last five items counted from the end (the order rule
+  is unchanged); **nine items** (FAQ and Compare) put the country menu on a third row of its own, spanning it and centred
+  (`.foot-links > .cc:nth-child(9)`); eight stay four and four. Measured in all 29 languages at 360 and 430px: no footer wider than the
+  phone, no label overflowing, every item ≥ 44px, nine items 4 / 4 / 1.
+- **Other pages:** a 280-page before/after snapshot changed only the footer of the 15 pages whose country had a live comparison (UK, DE
+  and the English site pages carrying the UK footer).
+
+## 88.6 Narrow-phone language fixes: Czech, Greek and Japanese
+
+- **The base (languages-1, 22 Oct; world-countries-1, 1 Nov):** below 640px a non-English page's two nav buttons may wrap their labels
+  (`:root:not(:lang(en)) .hg-landing .nav-r .btn { white-space: normal; … }`); Japanese and Chinese keep words whole there
+  (`word-break: keep-all`), so "ログイン" never splits as "ログイ / ン" — they break only where a label has a break opportunity.
+- **Czech and Greek (cwv-1, 5 Nov; §87.1):** `landing.css`'s appended `@media (max-width: 400px)` block lets the Greek hero button and the
+  Czech and Greek `.cheap-band` line wrap, because their words were too long for 320–400px (/cz, /gr and /cy).
+- **Japanese (jp-nav-1, 9 Nov; stated 9 Nov: "fix the Japanese nav button … on ja-JP pages only"):** "メニューをアップロード" had no break
+  opportunity, so below 640px the nav button could not wrap and `/jp/features`, `/jp/faq` and the comparison page scrolled sideways at
+  320–390px (`/jp`'s hero shrinks the button, so it fitted). **The fix is in the words, not the CSS:** `messages/ja-JP.json`
+  `landingNav.ctaShort` = "メニューを" + U+200B + "アップロード", so the button reads "メニューを / アップロード" on two lines. CSS
+  `word-break: auto-phrase` would have worked in Chromium only, and most Japanese phones run Safari.
+  - Measured: no JP page scrolls sideways at 320, 360, 375 or 390px, in Chromium and WebKit; every other country's first screens are
+    pixel-identical (516); every other page's HTML is unchanged. `scripts/jp-nav-1.cjs` guards the label; the byte-identity harnesses
+    take the one character out through `scripts/_lp-jp-nav-1.cjs`.
+  - 🔴 **Open (found, not fixed — Dominic to decide):** on `/jp/features`, `/jp/faq` and the comparison page "ログイン" runs under the
+    button by 10px at 320, 4px at 360, 1px at 375 and 0 at 390, the same before the fix. The proposed fix: let the Japanese Log in link
+    keep its full width below 640px.
+
+## 88.7 Google Play badges: byte-identical to Google's artwork
+
+- Checked 8 Nov against Google's Partner Marketing Hub folder page (the links badges-manual-1 used): **all 27 localized SVGs are
+  byte-identical** (sha256) to Google's files; **zh-HK's PNG is byte-identical** to Google's badge page; the English SVG
+  (`public/badges/GetItOnGooglePlay_Badge_Web_color_English.svg`) differs only by one trailing newline. Every manifest sha256 still
+  matches the file on disk. Nothing was changed (35.aq-11).
 
 ---
 
