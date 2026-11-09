@@ -2897,7 +2897,9 @@ head('5b · THE MODAL AND THE CARD')
     // ⚠️ RE-PINNED (demo-2): one demo signup mount remains on the dashboard (the banner's); the loop-complete one is retired.
     t('⚠️ …and the Phase 2C phone copy reaches the demo signup mount (the banner\'s — the loop-complete one is retired, demo-2)', (() => {
       const pg = codeOf(fs.readFileSync(path.join(REPO, 'app/(app)/dashboard/[token]/page.tsx'), 'utf8')).replace(/\s+/g, '')
-      return /<DemoGetStartedtoken=\{token\}isAdmin=\{isAdmin\}extractionSource=\{demoSession\?\.extraction_source\?\?null\}phone=\{truck\?\.phone\?\?null\}\/>/.test(pg)
+      // ⚠️ RE-PINNED (demo-claim-2, 9 November 2026, docs/demo-claim-2-report.md §6): the mount gains ONE prop after `phone`,
+      // `eventSlug` (the demo's slug, used only to count signup_started). The phone copy still reaches it exactly as before.
+      return /<DemoGetStartedtoken=\{token\}isAdmin=\{isAdmin\}extractionSource=\{demoSession\?\.extraction_source\?\?null\}phone=\{truck\?\.phone\?\?null\}eventSlug=\{\(truckas\{slug\?:string\|null\}\|null\)\?\.slug\?\?null\}\/>/.test(pg)
         && !/<DemoLoopComplete/.test(pg)
     })())
     t('⚠️ …and every Phase 2B edit is present in its truck-clock form', (() => {

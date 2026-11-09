@@ -2293,6 +2293,11 @@ function runWiringSuite(lib) {
        * Manage › Payments, unchanged, as its own component. docs/phase-3-screens-report.md;
        * scripts/_phase3-screens-us.cjs proves the block is there byte for byte. */
       'components/manage/TakingPaymentPanel.tsx',
+      /* 🔴 RE-PINNED (demo-claim-2, 9 November 2026, docs/demo-claim-2-report.md §2): the import review's pure passes
+       * (autoSplitConflicts, ungroupAiVariantsForReview, computeRegroupCandidates, makeGroupingRow, computeGroupingRows,
+       * buildGroupedItems, VARIANT_AXIS_TOKENS) moved VERBATIM out of MenuTab into this lib, so the server-side demo
+       * carry-over applies the same review defaults. A line it absorbs is really present there (scripts/demo-claim-2.cjs §1). */
+      'lib/menu-import-review.ts',
     ]
     const movedTo = (() => {
       try {
@@ -2999,6 +3004,27 @@ function runWiringSuite(lib) {
      * are read BY ID in the truck's locale (lib/plan-features.ts featureSections / planDescriptions / priceText), React keys
      * are the row/section ids, and the App Store badge takes the truck's country. Each NEW form named exactly; proven by
      * scripts/language-phase-1e.cjs's Billing views (GB F === BEFORE byte-identical; US listed). ══ */
+    /* ══ ⚠️ RE-PINNED (demo-claim-2, 9 November 2026, docs/demo-claim-2-report.md §2–3): the import review's pure passes moved
+     * VERBATIM to lib/menu-import-review.ts (each declaration now `export`ed there — the bodies are absorbed by MOVED_INTO), and
+     * four lines of the demo bootstrap / offer changed on purpose. Each NEW form named exactly. ══ */
+    movedEdits.push(
+      { exact: true, was: "const VARIANT_AXIS_TOKENS: Record<string, 'protein' | 'size'> = {", nowIn: 'lib/menu-import-review.ts', now: "export const VARIANT_AXIS_TOKENS: Record<string, 'protein' | 'size'> = {", reason: 'demo-claim-2: moved verbatim to the lib, exported' },
+      { exact: true, was: "const dissolveGroupInItems = (items: any[], normGroup: string, markConflict = false): any[] => {", nowIn: 'lib/menu-import-review.ts', now: "export const dissolveGroupInItems = (items: any[], normGroup: string, markConflict = false): any[] => {", reason: 'demo-claim-2: moved verbatim to the lib, exported' },
+      { exact: true, was: "const detectConflictGroups = (items: any[]): string[] => {", nowIn: 'lib/menu-import-review.ts', now: "export const detectConflictGroups = (items: any[]): string[] => {", reason: 'demo-claim-2: moved verbatim to the lib, exported' },
+      { exact: true, was: "const autoSplitConflicts = (data: any) => {", nowIn: 'lib/menu-import-review.ts', now: "export const autoSplitConflicts = (data: any) => {", reason: 'demo-claim-2: moved verbatim to the lib, exported' },
+      { exact: true, was: "type RegroupMember = { idx: number; token: string; item: any }", nowIn: 'lib/menu-import-review.ts', now: "export type RegroupMember = { idx: number; token: string; item: any }", reason: 'demo-claim-2: moved verbatim to the lib, exported' },
+      { exact: true, was: "type RegroupCandidate = { key: string; baseName: string; category: string; axis: 'protein' | 'size'; members: RegroupMember[] }", nowIn: 'lib/menu-import-review.ts', now: "export type RegroupCandidate = { key: string; baseName: string; category: string; axis: 'protein' | 'size'; members: RegroupMember[] }", reason: 'demo-claim-2: moved verbatim to the lib, exported' },
+      { exact: true, was: "const computeRegroupCandidates = (items: any[]): RegroupCandidate[] => {", nowIn: 'lib/menu-import-review.ts', now: "export const computeRegroupCandidates = (items: any[]): RegroupCandidate[] => {", reason: 'demo-claim-2: moved verbatim to the lib, exported' },
+      { exact: true, was: "const ungroupAiVariantsForReview = (data: any) => {", nowIn: 'lib/menu-import-review.ts', now: "export const ungroupAiVariantsForReview = (data: any) => {", reason: 'demo-claim-2: moved verbatim to the lib, exported' },
+      { exact: true, was: "type GroupingOpt = { name: string; surcharge: number; allergens: string[]; dietary: string[] }", nowIn: 'lib/menu-import-review.ts', now: "export type GroupingOpt = { name: string; surcharge: number; allergens: string[]; dietary: string[] }", reason: 'demo-claim-2: moved verbatim to the lib, exported' },
+      { exact: true, was: "type GroupingRow = {", nowIn: 'lib/menu-import-review.ts', now: "export type GroupingRow = {", reason: 'demo-claim-2: moved verbatim to the lib, exported' },
+      { exact: true, was: "const makeGroupingRow = (", nowIn: 'lib/menu-import-review.ts', now: "export const makeGroupingRow = (", reason: 'demo-claim-2: moved verbatim to the lib, exported' },
+      { exact: true, was: "const computeGroupingRows = (items: any[]): GroupingRow[] => {", nowIn: 'lib/menu-import-review.ts', now: "export const computeGroupingRows = (items: any[]): GroupingRow[] => {", reason: 'demo-claim-2: moved verbatim to the lib, exported' },
+      { exact: true, was: "if (new URLSearchParams(window.location.search).get('import') !== 'demo') return", nowIn: PAGE_F, now: "const viaParam = new URLSearchParams(window.location.search).get('import') === 'demo'", reason: "demo-claim-2: the bootstrap runs from saved state; ?import=demo is an alias" },
+      { exact: true, was: "setImportResult(withImpUids(ungroupAiVariantsForReview(autoSplitConflicts(data.extraction))))", nowIn: PAGE_F, now: "setImportResult(withImpUids(ungroupAiVariantsForReview(autoSplitConflicts(extraction))))", reason: "demo-claim-2: the same load, inside openOffer (fed by the saved state or the legacy GET)" },
+      { exact: true, was: "const buildGroupedItems = (items: any[]): any[] => {", nowIn: PAGE_F, now: "const buildGroupedItems = (items: any[]): any[] => buildGroupedItemsWith(items, groupingChoice)", reason: "demo-claim-2: the pass moved to the lib; the page passes its chooser state" },
+      { exact: true, was: "<button type=\"button\" onClick={() => { setShowSetupIntro(false); setDemoImportMode(false); setImportStep('upload') }}", nowIn: PAGE_F, now: "<button type=\"button\" onClick={() => { setShowSetupIntro(false); setDemoImportMode(carriedReview === 'offer'); setImportStep('upload') }}", reason: "demo-claim-2: \"Upload a different menu\" REPLACES a carried-over menu (clear-first)" },
+    )
     movedEdits.push(
       { was: 'const vanPx = usePriceMask()', nowIn: PAGE_F, now: 'const vanPx = (val: string) => priceText(vanMask(val), vanSettings.locale)', reason: "the van add-on's price word in the truck's locale (the mask is `vanMask`)" },
       { exact: true, was: '<StoreBadges className="mt-3 flex flex-wrap items-center gap-3" />', nowIn: PAGE_F, now: '<StoreBadges className="mt-3 flex flex-wrap items-center gap-3" countryCode={truck?.country} locale={settingsLocale} apps={appsAvailable} />', reason: "the App Store link follows the truck's country (GB unchanged); ⚠️ RE-PINNED (languages-1): the badge alt text in the truck's language; ⚠️ RE-PINNED (store-badges-1): each badge only where the truck's country has that app (`apps`)" },

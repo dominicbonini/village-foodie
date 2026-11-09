@@ -216,7 +216,8 @@
     "tidy-1.cjs",
     "copy-truth-1.cjs",
     "partners-1.cjs",
-    "email-sender-1.cjs"
+    "email-sender-1.cjs",
+    "demo-claim-2.cjs"
   ],
   "excluded": {
     "$comment": "Every other scripts/*.cjs file, with the reason it is NOT in the list above. The runner checks this covers the directory.",
@@ -369,7 +370,8 @@
         "_moved-paths.cjs",
         "_compare-suits-1-words.cjs",
         "_lp-gsc-index-2.cjs",
-        "_lp-email-sender-1.cjs"
+        "_lp-email-sender-1.cjs",
+        "_lp-demo-claim-2.cjs"
       ]
     },
     "fixture_generators": {

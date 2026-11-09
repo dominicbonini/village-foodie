@@ -648,9 +648,14 @@ const NAMED = [
     views: id => require('./_lp-site-chrome-1.cjs').LANDED && require('./_lp-site-chrome-1.cjs').flowPageOf(id) !== null,
     // eslint-disable-next-line @typescript-eslint/no-require-imports -- CommonJS harness module (site-chrome-1)
     expect: (b, id) => require('./_lp-site-chrome-1.cjs').flowLogo(b, id) },
+
   // ── ⚠️ RE-PINNED (email-sender-1, 9 November 2026; scripts/_lp-email-sender-1.cjs) ─────────────────────────────────────────
   //    HatchGrab's own emails are From and Reply-To hello@hatchgrab.com, never villagefoodie.co.uk (the 1c API views' `sends`).
   ...require('./_lp-email-sender-1.cjs').LP2_ENTRIES,
+
+  // ── ⚠️ RE-PINNED (demo-claim-2, 9 November 2026; scripts/_lp-demo-claim-2.cjs) ─────────────────────────────────────────────
+  //    create_truck's answers carry the demo menu carry-over's outcome ("menuCarry"), last. PRECISE.
+  ...require('./_lp-demo-claim-2.cjs').LP2_ENTRIES,
 ]
 
 // ── ⚠️ RE-PINNED (ireland-1, 20 October 2026): helpers for the ie1-demo-* entries ─────────────────────────────────────────

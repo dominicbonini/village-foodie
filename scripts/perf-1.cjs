@@ -227,7 +227,14 @@ const json = f => JSON.parse(read(f))
       'lib/payments', 'lib/printing', 'lib/orders', 'lib/order-charges.ts', 'lib/order-charge-rules.ts', 'lib/menu-loader.ts', 'proxy.ts', 'app/(app)/layout.tsx'].filter(p => fs.existsSync(path.join(REPO, p)))
     let diff = ''
     // ⚠️ RE-PINNED (cwv-2, 6 November 2026, docs/cwv-2-report.md §6): the routes moved into app/(app) and app/(public); `git diff` saw every moved file as deleted and added. scripts/_moved-paths.cjs changedSince compares each file with itself at that commit, under its name then — blind to the move and nothing else.
-    try { diff = require('./_moved-paths.cjs').changedSince(BEFORE, PATHS, { cwv2: true }).join('\n') } catch (e) { diff = String(e) }
+    // ⚠️ RE-PINNED (demo-claim-2, 9 November 2026, docs/demo-claim-2-report.md §8): this still compared BEFORE with the WORKING TREE, so
+    // demo-claim-2's Manage / dashboard / manage-route edits read as perf-1's — the trip the two re-pins above already fixed for their own
+    // checks. It now compares BEFORE with perf-1's own last commit (5622370d), under each path's name then (scripts/_moved-paths.cjs
+    // beforePath): "perf-1 changed nothing here", which is what this guard is for, and still true.
+    try {
+      const oldPaths = [...new Set(PATHS.map(p => require('./_moved-paths.cjs').beforePath(p)))]
+      diff = execFileSync('git', ['diff', '--name-only', BEFORE, '5622370d', '--', ...oldPaths], { cwd: REPO, encoding: 'utf8' }).trim()
+    } catch (e) { diff = String(e) }
     t(`${PATHS.length} ordering, payment, KDS, dashboard, Manage and proxy paths: no change against ${BEFORE}`, diff.trim() === '', diff)
     // ⚠️ RE-PINNED (loyalty-1, 5 November 2026, docs/loyalty-1-report.md): this compared BEFORE with the WORKING TREE, so loyalty-1's
     // lib/loyalty/ and its two privacy hooks read as perf-1's. It now compares BEFORE with perf-1's own last commit (5622370d, its report).

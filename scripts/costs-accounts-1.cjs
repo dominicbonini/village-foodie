@@ -326,7 +326,19 @@ const stripComments = s => s.replace(/--.*$/gm, '')
     const PATHS_REST = PATHS.filter(p => p !== PERF1_CS)
     let diff = ''
     // ⚠️ RE-PINNED (cwv-2, 6 November 2026, docs/cwv-2-report.md §6): the routes moved into app/(app) and app/(public); `git diff` saw every moved file as deleted and added. scripts/_moved-paths.cjs changedSince compares each file with itself at that commit, under its name then — blind to the move and nothing else.
-    try { diff = require('./_moved-paths.cjs').changedSince(BEFORE, PATHS_REST, { cwv2: true }).join('\n') } catch (e) { diff = String(e) }
+    // ⚠️ RE-PINNED (demo-claim-2, 9 November 2026, docs/demo-claim-2-report.md §8): demo-claim-2 edited the dashboard and the KDS (the review
+    // hand-off to Manage; the demo slug for the signup_started count). Each of those two passes when it was still BEFORE's file (the move
+    // aside) in 64ac2eb7 — the tree demo-claim-2 started from — so every other path is still compared with the working tree as before.
+    const DC2_FILES = ['app/(app)/dashboard/[token]/page.tsx', 'app/(app)/dashboard/[token]/kds/page.tsx']
+    const showAt = (rev, f) => { try { return execFileSync('git', ['show', `${rev}:${f}`], { cwd: REPO, maxBuffer: 256e6, stdio: ['ignore', 'pipe', 'ignore'] }).toString() || null } catch { return null } }
+    const MPd = require('./_moved-paths.cjs')
+    const notDc2 = f => {
+      if (!DC2_FILES.includes(f)) return true
+      let then = showAt(BEFORE, MPd.beforePath(f)) || showAt(BEFORE, f)
+      if (then) for (const [a, b] of MPd.MOVE_EDITS[f] || []) then = then.split(a).join(b)
+      return !then || showAt('64ac2eb7', f) !== then
+    }
+    try { diff = require('./_moved-paths.cjs').changedSince(BEFORE, PATHS_REST, { cwv2: true }).filter(notDc2).join('\n') } catch (e) { diff = String(e) }
     const untracked = execFileSync('git', ['ls-files', '--others', '--exclude-standard', '--', ...PATHS_REST], { cwd: REPO, encoding: 'utf8' }).trim()
     t(`${PATHS.length} order, payment, menu, KDS, dashboard and ticket paths: no change against ${BEFORE} (working tree)`, PATHS.length >= 20 && diff.trim() === '' && untracked === '', diff + untracked)
     const PERF1_LINES = [

@@ -22,6 +22,20 @@ const head = s => console.log(`\n── ${s} ${'─'.repeat(Math.max(0, 100 - s.
 const read = f => fs.readFileSync(path.join(REPO, f), 'utf8')
 const git = (...a) => execFileSync('git', a, { cwd: REPO, maxBuffer: 256e6, stdio: ['ignore', 'pipe', 'ignore'] }).toString()
 const BEFORE = 'ceda135d'   // main when this work started (cwv-2's stop report), before the move
+// ⚠️ RE-PINNED (demo-claim-2, 9 November 2026, docs/demo-claim-2-report.md §8): demo-claim-2 edited five files this guard watches (Manage, the
+// dashboard, the KDS, the manage route and commit-menu) and added four message keys. A file of THOSE five passes when it was still its pre-move
+// self (the move aside) in 64ac2eb7 — the tree demo-claim-2 started from — so every other byte this guard checks is still checked as before.
+const DC2_FILES = ['app/(app)/manage/[token]/page.tsx', 'app/(app)/dashboard/[token]/page.tsx', 'app/(app)/dashboard/[token]/kds/page.tsx', 'app/api/manage/route.ts', 'app/api/manage/commit-menu/route.ts']
+const DC2_START = '64ac2eb7'
+const showAt = (rev, f) => { try { return git('show', `${rev}:${f}`) } catch { return null } }
+const notDc2 = f => {
+  if (!DC2_FILES.includes(f)) return true
+  let then = showAt(BEFORE, MP.beforePath(f)) || showAt(BEFORE, f) || null   // `git show` of a path a revision lacks answers '' here
+  if (then !== null) for (const [a, b] of MP.MOVE_EDITS[f] || []) then = then.split(a).join(b)
+  return then === null || (showAt(DC2_START, f) || null) !== then
+}
+const DC2_KEY = k => k.startsWith('manageMenuImport.checkMenu.') || k === 'manageMenuImport.discard.carriedBody'
+const DC2_NS_KEY = (f, k) => /\/manageMenuImport\.json$/.test(f) && (k.startsWith('checkMenu.') || k === 'discard.carriedBody')
 const J = x => JSON.stringify(x)
 const walk = d => fs.readdirSync(path.join(REPO, d), { withFileTypes: true }).flatMap(e => e.isDirectory() ? walk(path.join(d, e.name)) : [path.join(d, e.name)])
 
@@ -44,7 +58,7 @@ t('/contact, /privacy, /terms, /country-terms and /<c>/ legal pages stay on the 
 t('outside the groups: only route handlers, metadata routes, the two global pages and the embed component',
   J([...new Set(appFiles.filter(f => !/^app\/\((app|public)\)\//.test(f)).map(f => f.split('/').slice(0, 2).join('/')))].sort())
   === J(['app/api', 'app/auth', 'app/demo', 'app/embed', 'app/global-error.tsx', 'app/global-not-found.tsx', 'app/llms.txt', 'app/robots.ts', 'app/sitemap.ts']))
-const appChanged = MP.changedSince(BEFORE, ['app/(app)'])
+const appChanged = MP.changedSince(BEFORE, ['app/(app)']).filter(notDc2)
 t('🔴 every file under app/(app) is its pre-move self, byte for byte (the two import lines the move had to change, named in _moved-paths.cjs, aside)',
   appChanged.length === 0, appChanged)
 t('the moved root layout, its provider and its stylesheet are byte-identical to before', ['app/(app)/layout.tsx', 'app/(app)/providers.tsx', 'app/(app)/globals.css']
@@ -192,7 +206,7 @@ const AP1_KEY = k => k === 'contactPage.form.topics.comparison' || k === 'compar
 // ⚠️ RE-PINNED (ios-intl-1, 9 November 2026): every language gained nativeShell.binary.* — the iOS app's permission prompts and offline
 // screen, generated into the binary (scripts/ios/native-strings.cjs; scripts/ios-intl-1.cjs proves them). A NEW key in that one subtree only.
 const IOS_KEY = k => k.startsWith('nativeShell.binary.')
-const elChanged = Object.keys({ ...el, ...el0 }).filter(k => el[k] !== el0[k] && !AP1_KEY(k) && !IOS_KEY(k))
+const elChanged = Object.keys({ ...el, ...el0 }).filter(k => el[k] !== el0[k] && !AP1_KEY(k) && !IOS_KEY(k) && !DC2_KEY(k))
 t('Greek: exactly one value changed — landing.hero.cta, a non-breaking space before the arrow (el-GR; el-CY inherits it)',
   J(elChanged) === J(['landing.hero.cta']) && el['landing.hero.cta'] === el0['landing.hero.cta'].replace(' →', ' →') && !/"cta"/.test(read('messages/el-CY.json').slice(0, 0)))
 const nsAp1 = f => /^messages\/ns\/[a-z]{2}-[A-Z]{2}\/(contactPage|comparisonSuits|comparison)\.json$/.test(f)
@@ -200,7 +214,7 @@ const nsAp1 = f => /^messages\/ns\/[a-z]{2}-[A-Z]{2}\/(contactPage|comparisonSui
 // ⚠️ RE-PINNED (jp-nav-1, 9 November 2026): Japanese's short nav label gained one zero-width space after "メニューを" (its break
 // opportunity on a phone; scripts/jp-nav-1.cjs). That key passes only when its value is the old one with exactly that space added.
 const JP_NAV = (k, a, b) => (k === 'landingNav.ctaShort' || k === 'ctaShort') && typeof b === 'string' && a === b.replace('メニューを', 'メニューを\u200B')
-const onlyAp1 = f => { try { const a = Object.fromEntries(leaves(JSON.parse(read(f)))), b = Object.fromEntries(leaves(JSON.parse(git('show', `${BEFORE}:${f}`)))); return Object.keys({ ...a, ...b }).filter(k => a[k] !== b[k]).every(k => AP1_KEY(k) || IOS_KEY(k) || (/\/nativeShell\.json$/.test(f) && k.startsWith('binary.') && b[k] === undefined) || (/ja-JP/.test(f) && JP_NAV(k, a[k], b[k]))) } catch { return false } }
+const onlyAp1 = f => { try { const a = Object.fromEntries(leaves(JSON.parse(read(f)))), b = Object.fromEntries(leaves(JSON.parse(git('show', `${BEFORE}:${f}`)))); return Object.keys({ ...a, ...b }).filter(k => a[k] !== b[k]).every(k => AP1_KEY(k) || IOS_KEY(k) || DC2_KEY(k) || (DC2_NS_KEY(f, k) && b[k] === undefined) || (/\/nativeShell\.json$/.test(f) && k.startsWith('binary.') && b[k] === undefined) || (/ja-JP/.test(f) && JP_NAV(k, a[k], b[k]))) } catch { return false } }
 const otherLangFiles = git('diff', '--name-only', BEFORE, '--', 'messages/*.json').trim().split('\n').filter(Boolean)
   .filter(f => !(f === 'messages/el-GR.json' || f === 'messages/ns/el-GR/landing.json' || nsAp1(f) || onlyAp1(f)))
 t('no other language file changed (the generated split file messages/ns/el-GR/landing.json follows el-GR)', otherLangFiles.length === 0, otherLangFiles)
@@ -210,7 +224,7 @@ head('5 · nothing in ordering, payments, the KDS, the dashboard or Manage (Pizz
 const CRIT = ['app/api/orders', 'app/api/payments', 'app/api/webhooks', 'app/api/menu', 'app/api/kds', 'app/api/dashboard', 'app/api/manage', 'lib/payments', 'lib/orders', 'lib/printing',
   'lib/order-charges.ts', 'lib/order-charge-rules.ts', 'lib/menu-loader.ts', 'app/(app)/order', 'app/(app)/o', 'app/(app)/trucks', 'app/(app)/kds', 'app/(app)/dashboard', 'app/(app)/manage',
   'app/(app)/p', 'components/dashboard'].filter(p => fs.existsSync(path.join(REPO, p)))
-const critChanged = MP.changedSince(BEFORE, CRIT)
+const critChanged = MP.changedSince(BEFORE, CRIT).filter(notDc2)
 t(`🔴 ${CRIT.length} ordering, payment, KDS, dashboard and Manage paths: unchanged since ${BEFORE} (the move aside)`, CRIT.length >= 18 && critChanged.length === 0, critChanged)
 
 console.log(`\n${fail ? '🔴' : '✅'} cwv-2: ${pass} passed, ${fail} failed`)

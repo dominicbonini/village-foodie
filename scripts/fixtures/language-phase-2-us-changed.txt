@@ -1,4 +1,4 @@
-# Language Phase 2 — every US view that differs from BEFORE (2083 US views; 1370 changed). Written by scripts/language-phase-2.cjs.
+# Language Phase 2 — every US view that differs from BEFORE (2083 US views; 1372 changed). Written by scripts/language-phase-2.cjs.
 # view id	why (named code change in F, or words only)
 1a/orderPage/US|loading	words
 1a/orderPage/US|eventsError	words
@@ -1081,6 +1081,8 @@
 1c/api/US|setup|zoneBad	code: 1d-setup-trade-area-codes
 1c/api/US|setup|townMissing	code: 1d-setup-trade-area-codes
 1c/api/US|setup|townLong	code: 1d-setup-trade-area-codes
+1c/api/US|setup|resumed	code: demo-claim-2-create-truck-carry
+1c/api/US|setup|created	code: demo-claim-2-create-truck-carry
 1c/api/US|signup|gateAdmin	code: legal-followups-terms-version+pricing-tidy-terms-version+ireland-3-terms-version+anz-terms-terms-version+demo-2b-terms-version+world-countries-2-terms-version+contact-1-terms-version+tidy-1-terms-version+paperwork-1-terms-version
 1c/api/US|signup|limiterDown	code: legal-followups-terms-version+pricing-tidy-terms-version+ireland-3-terms-version+anz-terms-terms-version+demo-2b-terms-version+world-countries-2-terms-version+contact-1-terms-version+tidy-1-terms-version+paperwork-1-terms-version
 1c/api/US|signup|verifyRowFails	code: legal-followups-terms-version+pricing-tidy-terms-version+ireland-3-terms-version+anz-terms-terms-version+demo-2b-terms-version+world-countries-2-terms-version+contact-1-terms-version+tidy-1-terms-version+paperwork-1-terms-version
