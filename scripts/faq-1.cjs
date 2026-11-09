@@ -34,7 +34,8 @@ let pass = 0, fail = 0
 const t = (label, ok, d) => { if (ok) pass++; else { fail++; console.log('  🔴 ' + label + (d !== undefined ? `\n      ${String(typeof d === 'string' ? d : JSON.stringify(d)).slice(0, 700)}` : '')) } }
 const head = s => console.log('\n' + s)
 const sha = s => crypto.createHash('sha256').update(String(s ?? 'null')).digest('hex')
-const SCX = h => require('./_lp-site-chrome-1.cjs').asCopyTruth(h)   // eslint-disable-line @typescript-eslint/no-require-imports -- ⚠️ RE-PINNED (site-chrome-1): today's offline sentence written as copy-truth-1 wrote it (scripts/_lp-site-chrome-1.cjs asCopyTruth)
+const SCX = h => require('./_lp-site-chrome-1.cjs').asCopyTruth(require('./_lp-jp-nav-1.cjs').noBreak(h))   // eslint-disable-line @typescript-eslint/no-require-imports -- ⚠️ RE-PINNED (jp-nav-1, 9 November 2026): the Japanese nav label's one zero-width space taken out (scripts/_lp-jp-nav-1.cjs; scripts/jp-nav-1.cjs proves it)
+// ⚠️ RE-PINNED earlier (site-chrome-1): today's offline sentence written as copy-truth-1 wrote it (scripts/_lp-site-chrome-1.cjs asCopyTruth)
 // ⚠️ RE-PINNED (store-badges-1, 2 November 2026): hashed with the footer's store badges and the Play URL's &hl=en taken out (scripts/
 // _lp-store-badges-1.cjs strip, both sides; the badges follow the app flags now and are proven by scripts/store-badges-1.cjs).
 const SB1 = require('./_lp-store-badges-1.cjs')

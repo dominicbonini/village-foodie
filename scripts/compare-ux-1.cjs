@@ -3,7 +3,7 @@
 // with everything search and AI tools read kept. Proves, against the real modules, stylesheets and messages on the committed fixtures
 // (no network, no database, no build):
 //   1 · the words: "In short" (comparison.tldr.*) and the two manual checklist items are gone from every messages file; the new words
-//       (legend, swipe hint, ⓘ, "Doesn't say", "None", the one-line admin banner) are in en-GB and every language base
+//       (legend, swipe hint, ⓘ, "Doesn't say", "Doesn't apply", "None", the one-line admin banner) are in en-GB and every language base
 //   2 · the page as the public sees it (DE, live): no "In short"; "Which suits…" straight under the byline; the table with its caption,
 //       th scope, the short verdicts (✓ ◐ ✗, "Not listed", "—" with a spoken label, amounts), the ⓘ as a native <details> holding EVERY
 //       cell's note and source link (the JSON twin's), nothing visually hidden; no admin badges or group line; the legend; the swipe hint;
@@ -26,7 +26,7 @@ const head = s => console.log(`\n── ${s} ${'─'.repeat(Math.max(0, 100 - s.
 const read = f => fs.readFileSync(path.join(REPO, f), 'utf8')
 const unesc = s => s.replace(/<!-- -->/g, '').replace(/&amp;/g, '&').replace(/&#x27;/g, "'").replace(/&quot;/g, '"').replace(/&lt;/g, '<').replace(/&gt;/g, '>')
 const BASES = ['fr-FR', 'de-DE', 'es-ES', 'it-IT', 'pt-PT', 'nl-NL', 'sv-SE', 'da-DK', 'nb-NO', 'pl-PL', 'cs-CZ', 'hu-HU', 'sk-SK', 'ro-RO', 'hr-HR', 'sl-SI', 'fi-FI', 'et-EE', 'lv-LV', 'lt-LT', 'el-GR', 'bg-BG', 'pt-BR', 'ms-MY', 'ja-JP', 'zh-HK', 'th-TH', 'ar-AE']
-const NEW = ['table.legend', 'table.swipe', 'cell.details', 'cell.doesntSay', 'cell.none', 'admin.liveAuto', 'admin.adminsOnly', 'admin.whyFewer', 'admin.whyAutoOff', 'admin.shown', 'admin.details']
+const NEW = ['table.legend', 'table.swipe', 'cell.details', 'cell.doesntSay', 'cell.doesntApply', 'cell.none', 'admin.liveAuto', 'admin.adminsOnly', 'admin.whyFewer', 'admin.whyAutoOff', 'admin.shown', 'admin.details']
 const get = (o, k) => k.split('.').reduce((a, p) => (a == null ? a : a[p]), o)
 
 ;(async () => {
@@ -43,7 +43,9 @@ const get = (o, k) => k.split('.').reduce((a, p) => (a == null ? a : a[p]), o)
   for (const l of ['en-GB', ...BASES]) { const c = JSON.parse(read(`messages/${l}.json`)).comparison; for (const k of NEW) if (typeof get(c, k) !== 'string' || !get(c, k).trim()) missing.push(`${l} ${k}`) }
   t(`the ${NEW.length} new words (legend, swipe hint, ⓘ, "Doesn't say", "None", the one-line banner) are in en-GB and all ${BASES.length} language bases`, !missing.length, missing.slice(0, 20))
   const en = JSON.parse(read('messages/en-GB.json')).comparison
-  t('the legend names the five verdicts and the ⓘ, in one line', /✓/.test(en.table.legend) && /◐/.test(en.table.legend) && /✗/.test(en.table.legend) && /—/.test(en.table.legend) && /ⓘ/.test(en.table.legend) && !/\n/.test(en.table.legend), en.table.legend)
+  t('the legend names the six verdicts and the ⓘ, in one line', /✓/.test(en.table.legend) && /◐/.test(en.table.legend) && /✗/.test(en.table.legend) && /—/.test(en.table.legend) && en.table.legend.includes(en.cell.doesntApply) && /ⓘ/.test(en.table.legend) && !/\n/.test(en.table.legend), en.table.legend)
+  const noNa = ['en-GB', ...BASES].filter(l => { const c = JSON.parse(read(`messages/${l}.json`)).comparison; return !c.table.legend.includes(`${c.cell.doesntApply}`) || !/ · ⓘ/.test(c.table.legend) })
+  t('…in every language, the legend explains "Doesn\'t apply" in that language\'s own word (before the ⓘ)', !noNa.length, noNa)
   const deW = JSON.parse(read('messages/de-DE.json')).comparison
 
   // ══ 2 · the public page ══
@@ -78,6 +80,15 @@ const get = (o, k) => k.split('.').reduce((a, p) => (a == null ? a : a[p]), o)
   t('the shared sticky header sits in the scroll box (an empty hidden span — StickyTableHead)', /<div class="cmp-scroll" role="region" aria-labelledby="[^"]+" tabindex="0"><span hidden=""><\/span><table/.test(html))
   t('the breadcrumb and its BreadcrumbList data are kept', /class="cmp-crumbs"/.test(html) && /"@type":"BreadcrumbList"/.test(html))
   t('no admin banner in a public response', !/cmp-admin/.test(html))
+  {
+    // the sixth value: a feature that does not apply to the tool's kind (a market's WhatsApp, stored "no")
+    const M = 'c0000000-0000-4000-8000-0000000000f1', base = FX.CMP_TABLES()
+    const tables = { competitors: [...base.competitors, FX.comp(M, 'Testmarkt M', { focus: 'street_food_markets' })], competitor_plans: [...base.competitor_plans, FX.plan('pm', M, 'Markt', { monthly_minor: 2900 })],
+      comparison_entries: [...base.comparison_entries, FX.entry('em', M, 'pm', 4)], competitor_feature_values: [...base.competitor_feature_values, ...FX.answers(M, '2026-10-21T09:00:00Z', { whatsapp: 'no' })] }
+    const a = (await R.page({ status: 'admin', admin: true, tables })).html || ''
+    const wa = /<tr data-row="whatsapp">[\s\S]*?<\/tr>/.exec(a)?.[0] ?? ''
+    t('"Doesn\'t apply" is the sixth value: a market\'s WhatsApp shows "Gilt nicht" (never "—", never ✗ Nein), with "gilt nicht für einen Markt" behind its ⓘ', /<td data-value="unknown"><span class="cmp-v cmp-v-na">Gilt nicht<\/span><details class="cmp-i">[\s\S]*?<p>gilt nicht für einen Markt<\/p>/.test(wa), wa.slice(0, 900))
+  }
 
   // ══ 3 · the admin banner ══
   head('3 · the admin banner')

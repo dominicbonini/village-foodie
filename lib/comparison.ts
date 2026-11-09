@@ -90,8 +90,9 @@ export interface ViewOptions {
 export interface Cell { text: string; value: FeatureValue | 'not_listed'; word: string; note: string | null; source: string | null; checkedOn: string | null; unverified?: boolean
   /** compare-ux-1: a plan price or fee (monthly, per order, card fee, set-up) — the page shows its amount as the short value. */
   price?: boolean
-  /** compare-ux-1: a feature that does not apply to the tool's kind (a market's WhatsApp) — the page shows "does not apply…" as the short
-   *  value, never "—" (which says their website does not say). */
+  /** compare-ux-1: a feature that does not apply to the tool's kind (a market's WhatsApp) — the page shows "Doesn't apply" (the sixth
+   *  value, comparison.cell.doesntApply; the note says which kind), never "—" (which says their website does not say). The twins keep
+   *  the cell as before (value unknown, the note as its text). */
   na?: boolean
   /** compare-suits-1: a competitor answer's state (lib/comparison-features.ts cellState), its RAW stored value when the cell says
    *  "not listed" (never overwritten — it stays not_mentioned), its quote, and the pages its last check read. */

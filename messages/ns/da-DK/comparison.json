@@ -32,7 +32,7 @@
     "morePending": "Flere udbydere vises her, når vi har tjekket deres oplysninger på deres egen hjemmeside.",
     "priceHidden": "På forespørgsel",
     "feeAfter": "{fee} over {included} om måneden",
-    "legend": "✓ Ja · ◐ Delvist · ✗ Nej · Ikke angivet: står ikke på deres funktions- eller prissider · —: fremgår ikke af deres hjemmeside · ⓘ: noten, citatet og kilden",
+    "legend": "✓ Ja · ◐ Delvist · ✗ Nej · Ikke angivet: står ikke på deres funktions- eller prissider · —: fremgår ikke af deres hjemmeside · Gælder ikke: den type tjeneste har ikke funktionen · ⓘ: noten, citatet og kilden",
     "swipe": "Stryg til siden for at se alle produkter →"
   },
   "costs": {
@@ -167,6 +167,7 @@
     "notApplicable": "gælder ikke for et street food-marked",
     "not_listed": "Ikke angivet",
     "details": "Detaljer",
+    "doesntApply": "Gælder ikke",
     "doesntSay": "Fremgår ikke",
     "none": "Intet"
   },

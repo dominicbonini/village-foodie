@@ -193,7 +193,10 @@ t('Greek: exactly one value changed — landing.hero.cta, a non-breaking space b
   J(elChanged) === J(['landing.hero.cta']) && el['landing.hero.cta'] === el0['landing.hero.cta'].replace(' →', ' →') && !/"cta"/.test(read('messages/el-CY.json').slice(0, 0)))
 const nsAp1 = f => /^messages\/ns\/[a-z]{2}-[A-Z]{2}\/(contactPage|comparisonSuits|comparison)\.json$/.test(f)
 // A changed file passes when it is the Greek pair, a split file of a compare-autopublish-1 namespace, or every changed key is that brief's.
-const onlyAp1 = f => { try { const a = Object.fromEntries(leaves(JSON.parse(read(f)))), b = Object.fromEntries(leaves(JSON.parse(git('show', `${BEFORE}:${f}`)))); return Object.keys({ ...a, ...b }).filter(k => a[k] !== b[k]).every(AP1_KEY) } catch { return false } }
+// ⚠️ RE-PINNED (jp-nav-1, 9 November 2026): Japanese's short nav label gained one zero-width space after "メニューを" (its break
+// opportunity on a phone; scripts/jp-nav-1.cjs). That key passes only when its value is the old one with exactly that space added.
+const JP_NAV = (k, a, b) => (k === 'landingNav.ctaShort' || k === 'ctaShort') && typeof b === 'string' && a === b.replace('メニューを', 'メニューを\u200B')
+const onlyAp1 = f => { try { const a = Object.fromEntries(leaves(JSON.parse(read(f)))), b = Object.fromEntries(leaves(JSON.parse(git('show', `${BEFORE}:${f}`)))); return Object.keys({ ...a, ...b }).filter(k => a[k] !== b[k]).every(k => AP1_KEY(k) || (/ja-JP/.test(f) && JP_NAV(k, a[k], b[k]))) } catch { return false } }
 const otherLangFiles = git('diff', '--name-only', BEFORE, '--', 'messages/*.json').trim().split('\n').filter(Boolean)
   .filter(f => !(f === 'messages/el-GR.json' || f === 'messages/ns/el-GR/landing.json' || nsAp1(f) || onlyAp1(f)))
 t('no other language file changed (the generated split file messages/ns/el-GR/landing.json follows el-GR)', otherLangFiles.length === 0, otherLangFiles)

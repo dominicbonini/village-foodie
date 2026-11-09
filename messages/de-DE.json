@@ -6572,7 +6572,7 @@
       "morePending": "Weitere Anbieter erscheinen hier, sobald wir ihre Angaben anhand ihrer eigenen Website geprüft haben.",
       "priceHidden": "Auf Anfrage",
       "feeAfter": "{fee} über {included} pro Monat",
-      "legend": "✓ Ja · ◐ Teilweise · ✗ Nein · Nicht aufgeführt: nicht auf den Funktions- oder Preisseiten · —: auf der Website nicht angegeben · ⓘ: Anmerkung, Zitat und Quelle",
+      "legend": "✓ Ja · ◐ Teilweise · ✗ Nein · Nicht aufgeführt: nicht auf den Funktions- oder Preisseiten · —: auf der Website nicht angegeben · Gilt nicht: diese Art von Dienst hat die Funktion nicht · ⓘ: Anmerkung, Zitat und Quelle",
       "swipe": "Seitlich wischen, um alle Produkte zu sehen →"
     },
     "costs": {
@@ -6707,6 +6707,7 @@
       "notApplicable": "gilt nicht für einen Markt",
       "not_listed": "Nicht aufgeführt",
       "details": "Details",
+      "doesntApply": "Gilt nicht",
       "doesntSay": "Nicht angegeben",
       "none": "Keine"
     },

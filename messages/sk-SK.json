@@ -6401,7 +6401,7 @@
       "morePending": "Ďalší dodávatelia sa tu objavia, keď overíme ich údaje na ich vlastnej webovej stránke.",
       "priceHidden": "Na vyžiadanie",
       "feeAfter": "{fee} nad {included} mesačne",
-      "legend": "✓ Áno · ◐ Čiastočne · ✗ Nie · Neuvádza: nie je na ich stránkach funkcií ani cenníka · —: bez údaja na ich webe · ⓘ: poznámka, citát a zdroj",
+      "legend": "✓ Áno · ◐ Čiastočne · ✗ Nie · Neuvádza: nie je na ich stránkach funkcií ani cenníka · —: bez údaja na ich webe · Netýka sa: tento druh služby túto funkciu nemá · ⓘ: poznámka, citát a zdroj",
       "swipe": "Potiahnite do strany a uvidíte všetky produkty →"
     },
     "costs": {
@@ -6536,6 +6536,7 @@
       "notApplicable": "netýka sa organizátora trhov",
       "not_listed": "Neuvádza",
       "details": "Podrobnosti",
+      "doesntApply": "Netýka sa",
       "doesntSay": "Bez údaja",
       "none": "Žiadny"
     },

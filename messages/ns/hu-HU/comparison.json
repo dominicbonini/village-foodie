@@ -32,7 +32,7 @@
     "morePending": "További szolgáltatók akkor jelennek meg itt, ha az adataikat a saját weboldalukon ellenőriztük.",
     "priceHidden": "Ajánlatkérésre",
     "feeAfter": "havi {included} felett {fee}",
-    "legend": "✓ Igen · ◐ Részben · ✗ Nem · Nem tünteti fel: nem szerepel a funkció- vagy árazási oldalain · —: a weboldalából nem derül ki · ⓘ: a megjegyzés, az idézet és a forrás",
+    "legend": "✓ Igen · ◐ Részben · ✗ Nem · Nem tünteti fel: nem szerepel a funkció- vagy árazási oldalain · —: a weboldalából nem derül ki · Nem vonatkozik rá: az ilyen szolgáltatásnak nincs ilyen funkciója · ⓘ: a megjegyzés, az idézet és a forrás",
     "swipe": "Húzza oldalra az összes termék megtekintéséhez →"
   },
   "costs": {
@@ -167,6 +167,7 @@
     "notApplicable": "piacüzemeltetőre nem vonatkozik",
     "not_listed": "Nem tünteti fel",
     "details": "Részletek",
+    "doesntApply": "Nem vonatkozik rá",
     "doesntSay": "Nem derül ki",
     "none": "Nincs"
   },

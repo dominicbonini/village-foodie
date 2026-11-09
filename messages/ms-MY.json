@@ -6373,7 +6373,7 @@
       "morePending": "Lebih banyak vendor akan dipaparkan di sini setelah kami menyemak butiran mereka di laman web mereka sendiri.",
       "priceHidden": "Atas permintaan",
       "feeAfter": "{fee} melebihi {included} sebulan",
-      "legend": "✓ Ya · ◐ Sebahagian · ✗ Tidak · Tidak disenaraikan: tiada di halaman ciri atau harganya · —: laman webnya tidak menyatakan · ⓘ: nota, petikan dan sumber",
+      "legend": "✓ Ya · ◐ Sebahagian · ✗ Tidak · Tidak disenaraikan: tiada di halaman ciri atau harganya · —: laman webnya tidak menyatakan · Tidak terpakai: jenis perkhidmatan itu tiada ciri tersebut · ⓘ: nota, petikan dan sumber",
       "swipe": "Leret ke tepi untuk melihat setiap produk →"
     },
     "costs": {
@@ -6508,6 +6508,7 @@
       "notApplicable": "tidak terpakai bagi platform penghantaran",
       "not_listed": "Tidak disenaraikan",
       "details": "Butiran",
+      "doesntApply": "Tidak terpakai",
       "doesntSay": "Tidak menyatakan",
       "none": "Tiada"
     },

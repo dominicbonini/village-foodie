@@ -44,7 +44,7 @@ async function views(tag, landingText, featuresText, gbApps = true) {
     const P = await kit.quietAsync(() => R.page('landing', seg, rows))
     // ⚠️ RE-PINNED (seo-geo-2 B3, 2 November 2026): hashed as HEAD rendered it — the JSON-LD's operatingSystem set back to
     // "Web, iOS, Android" where seo-geo-2 made it "Web" (scripts/_lp-seo-geo-2.cjs asBefore; the value is proven by seo-geo-2.cjs).
-    out[`${cc}/landing`] = sha(once(SB1.strip(SG2.asBefore(P.html)), `<p>${landingText(cc)}</p>`, `${cc}/landing`)) + ':' + sha(JSON.stringify(P.meta))
+    out[`${cc}/landing`] = sha(once(SB1.strip(SG2.asBefore(JN.noBreak(P.html))), `<p>${landingText(cc)}</p>`, `${cc}/landing`)) + ':' + sha(JSON.stringify(P.meta))
     cut[`${cc}/landing`] = P.html
   }
   for (const cc of ['GB', 'US']) {
@@ -62,6 +62,7 @@ const LOCALE = { GB: 'en-GB', US: 'en-US', BR: 'pt-BR', JP: 'ja-JP' }
 // ⚠️ RE-PINNED (store-badges-1, 2 November 2026): hashed with the footer's store badges and the Play URL's &hl=en taken out (scripts/
 // _lp-store-badges-1.cjs strip, both sides; the badges follow the app flags now and are proven by scripts/store-badges-1.cjs).
 const SB1 = require('./_lp-store-badges-1.cjs')
+const JN = require('./_lp-jp-nav-1.cjs')   // ⚠️ RE-PINNED (jp-nav-1, 9 November 2026): the Japanese nav label's one zero-width space taken out
 const SG2 = require('./_lp-seo-geo-2.cjs')   // eslint-disable-line @typescript-eslint/no-require-imports -- CommonJS harness module (seo-geo-2)
 const FL1 = require('./_lp-features-list-1.cjs')   // eslint-disable-line @typescript-eslint/no-require-imports -- ⚠️ RE-PINNED (features-list-1): see its uses below
 

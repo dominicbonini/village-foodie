@@ -6401,7 +6401,7 @@
       "morePending": "Ostali dobavljači pojavit će se ovdje čim njihove podatke provjerimo na njihovim web-stranicama.",
       "priceHidden": "Na upit",
       "feeAfter": "{fee} iznad {included} mjesečno",
-      "legend": "✓ Da · ◐ Djelomično · ✗ Ne · Ne navodi: nije na njihovim stranicama značajki ni cijena · —: nema podatka na njihovoj web-stranici · ⓘ: napomena, citat i izvor",
+      "legend": "✓ Da · ◐ Djelomično · ✗ Ne · Ne navodi: nije na njihovim stranicama značajki ni cijena · —: nema podatka na njihovoj web-stranici · Ne odnosi se: ta vrsta usluge nema tu značajku · ⓘ: napomena, citat i izvor",
       "swipe": "Povucite u stranu za prikaz svih proizvoda →"
     },
     "costs": {
@@ -6536,6 +6536,7 @@
       "notApplicable": "ne odnosi se na tržište",
       "not_listed": "Ne navodi",
       "details": "Detalji",
+      "doesntApply": "Ne odnosi se",
       "doesntSay": "Nema podatka",
       "none": "Nema"
     },

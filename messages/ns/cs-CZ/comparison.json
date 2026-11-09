@@ -32,7 +32,7 @@
     "morePending": "Další dodavatelé se tu objeví, jakmile ověříme jejich údaje na jejich vlastním webu.",
     "priceHidden": "Na vyžádání",
     "feeAfter": "{fee} nad {included} měsíčně",
-    "legend": "✓ Ano · ◐ Částečně · ✗ Ne · Neuvádí: není na jejich stránkách funkcí ani ceníku · —: bez údaje na jejich webu · ⓘ: poznámka, citace a zdroj",
+    "legend": "✓ Ano · ◐ Částečně · ✗ Ne · Neuvádí: není na jejich stránkách funkcí ani ceníku · —: bez údaje na jejich webu · Netýká se: tento druh služby tuto funkci nemá · ⓘ: poznámka, citace a zdroj",
     "swipe": "Přejeďte do strany a uvidíte všechny produkty →"
   },
   "costs": {
@@ -167,6 +167,7 @@
     "notApplicable": "netýká se pořadatele trhů",
     "not_listed": "Neuvádí",
     "details": "Podrobnosti",
+    "doesntApply": "Netýká se",
     "doesntSay": "Bez údaje",
     "none": "Žádný"
   },

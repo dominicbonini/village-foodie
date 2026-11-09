@@ -32,7 +32,7 @@
     "morePending": "Flere leverandører vises her når vi har sjekket opplysningene deres på deres egen nettside.",
     "priceHidden": "På forespørsel",
     "feeAfter": "{fee} over {included} i måneden",
-    "legend": "✓ Ja · ◐ Delvis · ✗ Nei · Ikke oppgitt: står ikke på funksjons- eller prissidene deres · —: nettsiden deres sier ingenting · ⓘ: merknaden, sitatet og kilden",
+    "legend": "✓ Ja · ◐ Delvis · ✗ Nei · Ikke oppgitt: står ikke på funksjons- eller prissidene deres · —: nettsiden deres sier ingenting · Gjelder ikke: den typen tjeneste har ikke funksjonen · ⓘ: merknaden, sitatet og kilden",
     "swipe": "Sveip til siden for å se alle produktene →"
   },
   "costs": {
@@ -167,6 +167,7 @@
     "notApplicable": "gjelder ikke for et matmarked",
     "not_listed": "Ikke oppgitt",
     "details": "Detaljer",
+    "doesntApply": "Gjelder ikke",
     "doesntSay": "Sier ingenting",
     "none": "Ingen"
   },

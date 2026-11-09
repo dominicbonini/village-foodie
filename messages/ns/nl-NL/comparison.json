@@ -32,7 +32,7 @@
     "morePending": "Meer aanbieders verschijnen hier zodra we hun gegevens op hun eigen website hebben gecontroleerd.",
     "priceHidden": "Op aanvraag",
     "feeAfter": "{fee} boven {included} per maand",
-    "legend": "✓ Ja · ◐ Deels · ✗ Nee · Niet vermeld: niet op hun functie- of prijspagina's · —: niet aangegeven op hun website · ⓘ: de notitie, het citaat en de bron",
+    "legend": "✓ Ja · ◐ Deels · ✗ Nee · Niet vermeld: niet op hun functie- of prijspagina's · —: niet aangegeven op hun website · Niet van toepassing: dat soort dienst heeft de functie niet · ⓘ: de notitie, het citaat en de bron",
     "swipe": "Veeg opzij om alle producten te zien →"
   },
   "costs": {
@@ -167,6 +167,7 @@
     "notApplicable": "geldt niet voor een markt",
     "not_listed": "Niet vermeld",
     "details": "Details",
+    "doesntApply": "Niet van toepassing",
     "doesntSay": "Niet aangegeven",
     "none": "Geen"
   },

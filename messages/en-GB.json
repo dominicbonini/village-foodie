@@ -6443,7 +6443,7 @@
       "morePending": "More vendors appear here once we have checked their details on their own website.",
       "priceHidden": "On request",
       "feeAfter": "{fee} above {included} a month",
-      "legend": "✓ Yes · ◐ Partly · ✗ No · Not listed: not on their features or pricing pages · —: their website doesn't say · ⓘ: the note, quote and source",
+      "legend": "✓ Yes · ◐ Partly · ✗ No · Not listed: not on their features or pricing pages · —: their website doesn't say · Doesn't apply: that kind of service doesn't have the feature · ⓘ: the note, quote and source",
       "swipe": "Swipe sideways to see every product →"
     },
     "costs": {
@@ -6578,6 +6578,7 @@
       "notApplicable": "does not apply to a market",
       "not_listed": "Not listed",
       "details": "Details",
+      "doesntApply": "Doesn't apply",
       "doesntSay": "Doesn't say",
       "none": "None"
     },

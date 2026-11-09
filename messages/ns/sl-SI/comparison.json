@@ -32,7 +32,7 @@
     "morePending": "Drugi ponudniki se bodo tu prikazali, ko bomo njihove podatke preverili na njihovih spletnih straneh.",
     "priceHidden": "Na povpraševanje",
     "feeAfter": "{fee} nad {included} na mesec",
-    "legend": "✓ Da · ◐ Delno · ✗ Ne · Ne navaja: ni na njihovih straneh s funkcijami ali cenami · —: na njihovi spletni strani ni podatka · ⓘ: opomba, citat in vir",
+    "legend": "✓ Da · ◐ Delno · ✗ Ne · Ne navaja: ni na njihovih straneh s funkcijami ali cenami · —: na njihovi spletni strani ni podatka · Ne velja: ta vrsta storitve te funkcije nima · ⓘ: opomba, citat in vir",
     "swipe": "Podrsajte vstran za ogled vseh izdelkov →"
   },
   "costs": {
@@ -167,6 +167,7 @@
     "notApplicable": "ne velja za trg",
     "not_listed": "Ne navaja",
     "details": "Podrobnosti",
+    "doesntApply": "Ne velja",
     "doesntSay": "Ni podatka",
     "none": "Brez"
   },

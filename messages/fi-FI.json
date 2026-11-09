@@ -6401,7 +6401,7 @@
       "morePending": "Lisää toimittajia tulee tähän, kun olemme tarkistaneet niiden tiedot niiden omilta verkkosivustoilta.",
       "priceHidden": "Hinta pyynnöstä",
       "feeAfter": "{fee}, kun {included} kuukaudessa ylittyy",
-      "legend": "✓ Kyllä · ◐ Osittain · ✗ Ei · Ei mainittu: ei heidän ominaisuus- tai hintasivuillaan · —: ei kerrota verkkosivustolla · ⓘ: huomautus, lainaus ja lähde",
+      "legend": "✓ Kyllä · ◐ Osittain · ✗ Ei · Ei mainittu: ei heidän ominaisuus- tai hintasivuillaan · —: ei kerrota verkkosivustolla · Ei koske: sen tyyppisessä palvelussa ominaisuutta ei ole · ⓘ: huomautus, lainaus ja lähde",
       "swipe": "Pyyhkäise sivulle nähdäksesi kaikki tuotteet →"
     },
     "costs": {
@@ -6536,6 +6536,7 @@
       "notApplicable": "ei koske ruokatoria",
       "not_listed": "Ei mainittu",
       "details": "Lisätiedot",
+      "doesntApply": "Ei koske",
       "doesntSay": "Ei kerrota",
       "none": "Ei mitään"
     },

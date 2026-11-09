@@ -6401,7 +6401,7 @@
       "morePending": "Mais fornecedores aparecerão aqui assim que verificarmos os seus dados no respetivo site.",
       "priceHidden": "Sob consulta",
       "feeAfter": "{fee} acima de {included} por mês",
-      "legend": "✓ Sim · ◐ Em parte · ✗ Não · Não indicado: não consta das páginas de funcionalidades ou de preços · —: não especificado no site · ⓘ: a nota, a citação e a fonte",
+      "legend": "✓ Sim · ◐ Em parte · ✗ Não · Não indicado: não consta das páginas de funcionalidades ou de preços · —: não especificado no site · Não se aplica: esse tipo de serviço não tem a funcionalidade · ⓘ: a nota, a citação e a fonte",
       "swipe": "Deslize para o lado para ver todos os produtos →"
     },
     "costs": {
@@ -6536,6 +6536,7 @@
       "notApplicable": "não se aplica a um mercado",
       "not_listed": "Não indicado",
       "details": "Detalhes",
+      "doesntApply": "Não se aplica",
       "doesntSay": "Não especificado",
       "none": "Nenhuma"
     },

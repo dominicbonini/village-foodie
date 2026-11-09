@@ -6401,7 +6401,7 @@
       "morePending": "Kolejni dostawcy pojawią się tutaj, gdy sprawdzimy ich dane na ich własnych stronach internetowych.",
       "priceHidden": "Na zapytanie",
       "feeAfter": "{fee} powyżej {included} miesięcznie",
-      "legend": "✓ Tak · ◐ Częściowo · ✗ Nie · Nie wymienia: brak na stronach funkcji i cennika · —: nie podano na stronie internetowej · ⓘ: uwaga, cytat i źródło",
+      "legend": "✓ Tak · ◐ Częściowo · ✗ Nie · Nie wymienia: brak na stronach funkcji i cennika · —: nie podano na stronie internetowej · Nie dotyczy: ten rodzaj usługi nie ma tej funkcji · ⓘ: uwaga, cytat i źródło",
       "swipe": "Przesuń w bok, aby zobaczyć wszystkie produkty →"
     },
     "costs": {
@@ -6536,6 +6536,7 @@
       "notApplicable": "nie dotyczy organizatora targów",
       "not_listed": "Nie wymienia",
       "details": "Szczegóły",
+      "doesntApply": "Nie dotyczy",
       "doesntSay": "Nie podano",
       "none": "Brak"
     },

@@ -64,7 +64,8 @@ async function identitySet() {
   return out
 }
 function sha(s) { return crypto.createHash('sha256').update(String(s)).digest('hex') }
-const SCX = h => require('./_lp-site-chrome-1.cjs').asCopyTruth(h)   // eslint-disable-line @typescript-eslint/no-require-imports -- ⚠️ RE-PINNED (site-chrome-1): today's offline sentence written as copy-truth-1 wrote it (scripts/_lp-site-chrome-1.cjs asCopyTruth)
+const SCX = h => require('./_lp-site-chrome-1.cjs').asCopyTruth(require('./_lp-jp-nav-1.cjs').noBreak(h))   // eslint-disable-line @typescript-eslint/no-require-imports -- ⚠️ RE-PINNED (jp-nav-1, 9 November 2026): the Japanese nav label's one zero-width space taken out (scripts/_lp-jp-nav-1.cjs; scripts/jp-nav-1.cjs proves it)
+// ⚠️ RE-PINNED earlier (site-chrome-1): today's offline sentence written as copy-truth-1 wrote it (scripts/_lp-site-chrome-1.cjs asCopyTruth)
 if (process.argv[2] === 'capture') {
   (async () => {
     const out = await identitySet()

@@ -88,15 +88,17 @@ export default async function ComparisonPage({ params, searchParams }: { params:
   const live = flags.status === 'live'
   const badge = <span className="cmp-badge">{t('admin.unverified')}</span>
   // ── compare-ux-1 (8 November 2026): each cell is ONE short verdict from one word set — "✓ Yes", "◐ Partly", "✗ No", "Not listed",
-  // "—" (doesn't say); a plan price or fee shows its amount ("✓ None" when there is none). The detail — the note, the quote, the source
+  // "—" (doesn't say), "Doesn't apply" (that kind of service, e.g. a market, has no such feature; 9 November 2026); a plan price or fee
+  // shows its amount ("✓ None" when there is none). The detail — the note, the quote, the source
   // and the date — opens from the cell's ⓘ, a native details element: the text is in the HTML for search and AI tools, never visually hidden.
   // The Markdown and JSON twins keep every cell's full words and detail, unchanged.
   const doesntSay = t('cell.doesntSay')
   const verdict = (c: Cell) => {
     if (c.price && c.value === 'no') return <span className="cmp-v cmp-v-yes"><span aria-hidden="true">✓ </span>{t('cell.none')}</span>
     if (c.price && c.note && c.note.length <= 40) return <span className="cmp-v cmp-v-amt">{c.note}</span>
-    // a feature that does not apply to the tool's kind (a market): that, in words — not "—", which means their website doesn't say
-    if (c.na && c.note) return <span className="cmp-v cmp-v-na">{c.note}</span>
+    // a feature that does not apply to the tool's kind (a market): "Doesn't apply" — not "—", which means their website doesn't say.
+    // Which kind ("does not apply to a market") is the cell's note, behind its ⓘ.
+    if (c.na) return <span className="cmp-v cmp-v-na">{t('cell.doesntApply')}</span>
     switch (c.value) {
       case 'yes': return <span className="cmp-v cmp-v-yes"><span aria-hidden="true">✓ </span>{t('cell.yes')}</span>
       case 'partial': return <span className="cmp-v cmp-v-partial"><span aria-hidden="true">◐ </span>{t('cell.partial')}</span>
@@ -109,8 +111,7 @@ export default async function ComparisonPage({ params, searchParams }: { params:
   const cellBody = (c: Cell, us: boolean) => {
     const quote = c.quote?.trim() || null
     // HatchGrab's cells link to our own pages; their ⓘ shows only when there is a note to read.
-    // A "does not apply" cell shows its note as the value, so its ⓘ carries the source alone.
-    const note = c.na ? null : c.note
+    const note = c.note
     const hasDetail = !!(note || quote || (!us && c.source))
     return (
       <>

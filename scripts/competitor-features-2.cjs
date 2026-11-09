@@ -293,8 +293,9 @@ const text = html => dec(String(html).replace(/<script[\s\S]*?<\/script>/g, ' ')
     const tools = [...html.matchAll(/<th scope="col"[^>]*data-tool="([^"]+)"/g)].map(m => m[1])
     const cellOf = (cells, name) => cells[tools.indexOf(name)]
     const mk = cellOf(waCells, 'Testmarkt M')
-    // 🔁 RE-PINNED (compare-ux-1): the words are the cell's short value (class cmp-v-na), never "—" and never Nein.
-    t('the market\'s WhatsApp cell (stored "no") says it does not apply — "gilt nicht für einen Markt", not Nein', mk && mk.value === 'unknown' && mk.text.startsWith('gilt nicht für einen Markt') && /<span class="cmp-v cmp-v-na">gilt nicht für einen Markt<\/span>/.test(wa), waCells)
+    // 🔁 RE-PINNED (compare-ux-1, 9 November 2026): the sixth value, "Gilt nicht" (Doesn't apply; class cmp-v-na) — never "—" and never
+    // Nein — with which kind ("gilt nicht für einen Markt") behind the cell's ⓘ.
+    t('the market\'s WhatsApp cell (stored "no") says it does not apply — "Gilt nicht", "gilt nicht für einen Markt" behind the ⓘ, not Nein', mk && mk.value === 'unknown' && /^Gilt nicht ⓘ gilt nicht für einen Markt/.test(mk.text) && /<span class="cmp-v cmp-v-na">Gilt nicht<\/span><details class="cmp-i">/.test(wa), waCells)
     const price = cellsOf(row('monthly'))
     t('…its price rows still show its plan (the commercial features apply to a market)', price.length && /29/.test(cellOf(price, 'Testmarkt M')?.text ?? ''), price)
     const twin = JSON.parse((await cmp.twin('json', { status: 'admin', admin: true, query: 'view=admin', tables })).body)

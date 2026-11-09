@@ -6401,7 +6401,7 @@
       "morePending": "Citi pakalpojumu sniedzēji šeit parādīsies, tiklīdz būsim pārbaudījuši viņu informāciju viņu pašu tīmekļa vietnē.",
       "priceHidden": "Pēc pieprasījuma",
       "feeAfter": "{fee} virs {included} mēnesī",
-      "legend": "✓ Jā · ◐ Daļēji · ✗ Nē · Nav minēts: nav viņu funkciju vai cenu lapās · —: tīmekļa vietnē nav norādīts · ⓘ: piezīme, citāts un avots",
+      "legend": "✓ Jā · ◐ Daļēji · ✗ Nē · Nav minēts: nav viņu funkciju vai cenu lapās · —: tīmekļa vietnē nav norādīts · Neattiecas: šāda veida pakalpojumam šīs funkcijas nav · ⓘ: piezīme, citāts un avots",
       "swipe": "Pavelciet uz sāniem, lai redzētu visus produktus →"
     },
     "costs": {
@@ -6536,6 +6536,7 @@
       "notApplicable": "neattiecas uz tirgu",
       "not_listed": "Nav minēts",
       "details": "Detaļas",
+      "doesntApply": "Neattiecas",
       "doesntSay": "Nav norādīts",
       "none": "Nav"
     },

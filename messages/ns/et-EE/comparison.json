@@ -32,7 +32,7 @@
     "morePending": "Rohkem pakkujaid lisandub siia, kui oleme nende andmed nende enda veebisaidilt üle kontrollinud.",
     "priceHidden": "Päringu alusel",
     "feeAfter": "{fee}, kui üle {included} kuus",
-    "legend": "✓ Jah · ◐ Osaliselt · ✗ Ei · Pole mainitud: puudub nende funktsioonide ja hindade lehtedelt · —: veebisaidil pole öeldud · ⓘ: märkus, tsitaat ja allikas",
+    "legend": "✓ Jah · ◐ Osaliselt · ✗ Ei · Pole mainitud: puudub nende funktsioonide ja hindade lehtedelt · —: veebisaidil pole öeldud · Ei kehti: sellisel teenusel seda funktsiooni pole · ⓘ: märkus, tsitaat ja allikas",
     "swipe": "Pühi külgsuunas, et näha kõiki tooteid →"
   },
   "costs": {
@@ -167,6 +167,7 @@
     "notApplicable": "turu puhul ei kehti",
     "not_listed": "Pole mainitud",
     "details": "Üksikasjad",
+    "doesntApply": "Ei kehti",
     "doesntSay": "Pole öeldud",
     "none": "Puudub"
   },

@@ -32,7 +32,7 @@
     "morePending": "D’autres éditeurs apparaîtront ici dès que nous aurons vérifié leurs informations sur leur propre site web.",
     "priceHidden": "Sur demande",
     "feeAfter": "{fee} au-delà de {included} par mois",
-    "legend": "✓ Oui · ◐ En partie · ✗ Non · Non indiqué : absent de ses pages fonctionnalités et tarifs · — : non précisé sur son site web · ⓘ : la note, la citation et la source",
+    "legend": "✓ Oui · ◐ En partie · ✗ Non · Non indiqué : absent de ses pages fonctionnalités et tarifs · — : non précisé sur son site web · Ne s’applique pas : ce type de service n’a pas cette fonctionnalité · ⓘ : la note, la citation et la source",
     "swipe": "Faites glisser latéralement pour voir tous les produits →"
   },
   "costs": {
@@ -167,6 +167,7 @@
     "notApplicable": "ne s’applique pas à un marché",
     "not_listed": "Non indiqué",
     "details": "Détails",
+    "doesntApply": "Ne s’applique pas",
     "doesntSay": "Non précisé",
     "none": "Aucun"
   },

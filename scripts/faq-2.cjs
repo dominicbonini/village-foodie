@@ -49,7 +49,8 @@ let pass = 0, fail = 0
 const t = (name, ok, detail) => { if (ok) pass++; else { fail++; console.log(`  ✗ ${name}${detail === undefined ? '' : ' — ' + (typeof detail === 'string' ? detail : JSON.stringify(detail)).slice(0, 500)}`) } }
 const head = s => console.log(`\n── ${s}`)
 const sha = s => crypto.createHash('sha256').update(String(s)).digest('hex')
-const SCX = h => require('./_lp-site-chrome-1.cjs').asCopyTruth(h)   // eslint-disable-line @typescript-eslint/no-require-imports -- ⚠️ RE-PINNED (site-chrome-1): today's offline sentence written as copy-truth-1 wrote it (scripts/_lp-site-chrome-1.cjs asCopyTruth)
+const SCX = h => require('./_lp-site-chrome-1.cjs').asCopyTruth(require('./_lp-jp-nav-1.cjs').noBreak(h))   // eslint-disable-line @typescript-eslint/no-require-imports -- ⚠️ RE-PINNED (jp-nav-1, 9 November 2026): the Japanese nav label's one zero-width space taken out (scripts/_lp-jp-nav-1.cjs; scripts/jp-nav-1.cjs proves it)
+// ⚠️ RE-PINNED earlier (site-chrome-1): today's offline sentence written as copy-truth-1 wrote it (scripts/_lp-site-chrome-1.cjs asCopyTruth)
 const FAQ = () => JSON.parse(JSON.stringify({ faq_sections: FIX.faq_sections, faq_items: FIX.faq_items }))
 const read = f => fs.readFileSync(path.join(REPO, f), 'utf8')
 

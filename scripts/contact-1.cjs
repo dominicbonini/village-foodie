@@ -390,7 +390,11 @@ const flat = (o, p = '', out = {}) => { for (const [k, v] of Object.entries(o ??
     // every other rule above still holds for it. The rendered pages above are still byte-identical; scripts/perf-1.cjs proves the rest.
     const PF1 = require('./_lp-perf-1.cjs')
     const nowOf = f => (PF1.LANDED && PF1.changedFiles().has(f) ? (f === 'lib/i18n/namespaces.ts' ? P1N.namespacesAsBefore(PF1.beforePerf1(f)) : PF1.beforePerf1(f)) : now(f))
-    const moved = files.filter(f => !(PF1.LANDED && PF1.NEW_FILES.includes(f)) && atBase(f) !== nowOf(f) && !T1_FILES.includes(f) && !(FL1.LANDED && FL1.nsSameApartFromRows(f, atBase(f), nowOf(f))))
+    // ⚠️ RE-PINNED (jp-nav-1, 9 November 2026): the Japanese nav label gained one zero-width space (its break opportunity on a phone);
+    // the Japanese landingNav split file passes when taking exactly that out gives back BASE's bytes (scripts/_lp-jp-nav-1.cjs).
+    const JN = require('./_lp-jp-nav-1.cjs')
+    const jpNavOnly = f => f === 'messages/ns/ja-JP/landingNav.json' && JN.noBreak(nowOf(f)) === atBase(f)
+    const moved = files.filter(f => !(PF1.LANDED && PF1.NEW_FILES.includes(f)) && atBase(f) !== nowOf(f) && !T1_FILES.includes(f) && !(FL1.LANDED && FL1.nsSameApartFromRows(f, atBase(f), nowOf(f))) && !jpNavOnly(f))
     t(`${entry}: all ${files.length} source files it bundles are byte-identical to ${BASE} — so is every byte it serves`, files.length > 20 && moved.length === 0, moved)
   }
   // ⚠️ RE-PINNED (tidy-1): Footer and TruckClient changed later (tidy-1's `newsletter` / `tally`); their links did not.

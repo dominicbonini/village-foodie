@@ -6401,7 +6401,7 @@
       "morePending": "Daugiau tiekėjų čia atsiras, kai patikrinsime jų duomenis jų pačių svetainėse.",
       "priceHidden": "Pagal užklausą",
       "feeAfter": "{fee} viršijus {included} per mėnesį",
-      "legend": "✓ Taip · ◐ Iš dalies · ✗ Ne · Neminima: nėra jų funkcijų ar kainų puslapiuose · —: svetainėje nieko nesakoma · ⓘ: pastaba, citata ir šaltinis",
+      "legend": "✓ Taip · ◐ Iš dalies · ✗ Ne · Neminima: nėra jų funkcijų ar kainų puslapiuose · —: svetainėje nieko nesakoma · Netaikoma: tokios rūšies paslauga šios funkcijos neturi · ⓘ: pastaba, citata ir šaltinis",
       "swipe": "Braukite į šoną, kad pamatytumėte visus produktus →"
     },
     "costs": {
@@ -6536,6 +6536,7 @@
       "notApplicable": "netaikoma maisto turgui",
       "not_listed": "Neminima",
       "details": "Išsamiau",
+      "doesntApply": "Netaikoma",
       "doesntSay": "Nieko nesakoma",
       "none": "Nėra"
     },

@@ -6401,7 +6401,7 @@
       "morePending": "Alți furnizori vor apărea aici după ce le verificăm datele pe propriul lor site.",
       "priceHidden": "La cerere",
       "feeAfter": "{fee} peste {included} pe lună",
-      "legend": "✓ Da · ◐ Parțial · ✗ Nu · Nu este menționat: nu apare în paginile sale de funcții sau prețuri · —: site-ul său nu precizează · ⓘ: nota, citatul și sursa",
+      "legend": "✓ Da · ◐ Parțial · ✗ Nu · Nu este menționat: nu apare în paginile sale de funcții sau prețuri · —: site-ul său nu precizează · Nu se aplică: acest tip de serviciu nu are funcția · ⓘ: nota, citatul și sursa",
       "swipe": "Glisați lateral pentru a vedea toate produsele →"
     },
     "costs": {
@@ -6536,6 +6536,7 @@
       "notApplicable": "nu se aplică unei piețe",
       "not_listed": "Nu este menționat",
       "details": "Detalii",
+      "doesntApply": "Nu se aplică",
       "doesntSay": "Nu precizează",
       "none": "Niciuna"
     },
