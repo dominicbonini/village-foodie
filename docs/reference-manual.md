@@ -37658,7 +37658,7 @@ Compare link and no column). **jp-nav-1 (the Japanese nav button and "Doesn't ap
   · —: their website doesn't say · Doesn't apply: that kind of service doesn't have the feature · ⓘ: the note, quote and source". The
   "Doesn't apply" part is deliberately general, because the kind differs by country.
 - **The public view has no admin badges** ("unverified", "auto-verified") **and no category line** under the product names; admins still
-  see both in the admin view. The group label under each tool (§86, "Comparison pages show a group label") is admin-only now.
+  see both in the admin view. The group label under each tool (§86.9) is admin-only now.
 - **The twins keep full detail:** the Markdown and JSON keep every cell's full words ("Not stated", "Not mentioned on their website",
   "Yes, from Pro"…), its note, source and date; a "Doesn't apply" cell stays value `unknown` with its phrase as its text. Only the
   "In short" section left the Markdown.
