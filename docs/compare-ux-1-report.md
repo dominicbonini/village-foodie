@@ -267,7 +267,7 @@ On the real data, each cell's note and source link was checked against the JSON 
 
 - `488073ee` compare-ux-1: the comparison pages easy to read on any device (the code, the words in every language, the harnesses, docs/compare-ux-1/)
 - `ab7cb920` compare-ux-1: report
-- the jp-nav-1 commit (the Japanese nav button and "Doesn't apply", 9 November), with this report's §12 and §13
+- `4ab4d956` jp-nav-1: the Japanese nav button and "Doesn't apply" (9 November), with this report's §12 and §13
 
 All are on main, committed by explicit paths. Nothing is pushed or deployed.
 
