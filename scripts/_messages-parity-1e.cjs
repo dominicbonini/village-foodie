@@ -115,6 +115,10 @@ const NEW_WORDING = {
   // ⚠️ RE-PINNED (anz-1, 21 October 2026): a NEW message — the card processor's dual-network debit notice, shown on an
   // Australian (AUD) checkout only (app/trucks/[slug]/order/page.tsx); its exact text is held by scripts/anz-1.cjs §7.
   'order.dualNetworkNotice': 'anz-1: the eftpos dual-network debit notice on Australian checkouts ("Notwithstanding the payment brand logo displayed …")',
+  // ⚠️ RE-PINNED (ios-intl-1, 9 November 2026): the iOS camera permission prompt (NSCameraUsageDescription), added to the app's Info.plist
+  // after eb7ed44 and now generated from messages (nativeShell.binary, scripts/ios/native-strings.cjs) — a NEW message, so no eb7ed44 string
+  // carries "photograph your menu board". Its exact text is held by scripts/ios-intl-1.cjs (Info.plist's English = en-GB's).
+  'nativeShell.binary.cameraUsage': 'ios-intl-1: the iOS camera permission prompt ("photograph your menu board, your dishes and other documents")',
   // ⚠️ RE-PINNED (allergen-card-country, 21 October 2026): two NEW messages — Manage's notice for a truck still saved as
   // "allergen card only" where its country does not allow it, and /api/manage's refusal of a change to it. Their exact
   // text and where they show are held by scripts/allergen-card-country.cjs §4 and §6.
