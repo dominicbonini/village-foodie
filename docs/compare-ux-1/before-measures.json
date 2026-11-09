@@ -1,0 +1,114 @@
+{
+ "gb-public-390": {
+  "cols": 5,
+  "pageScrollsSideways": false,
+  "columnsPopulated": [
+   true,
+   true,
+   true,
+   true,
+   true
+  ],
+  "headerTopWhileScrolled": -11,
+  "navBottom": 72,
+  "headerSticky": false,
+  "swipeHint": null,
+  "featureColumnSticky": true,
+  "tableScrollsSideways": true,
+  "breadcrumbOverNav": true,
+  "breadcrumbPosition": "sticky",
+  "legend": false,
+  "tldr": true,
+  "suitsBeforeTable": false
+ },
+ "gb-public-1280": {
+  "cols": 5,
+  "pageScrollsSideways": false,
+  "columnsPopulated": [
+   true,
+   true,
+   true,
+   true,
+   true
+  ],
+  "headerTopWhileScrolled": -33,
+  "navBottom": 72,
+  "headerSticky": false,
+  "swipeHint": null,
+  "featureColumnSticky": "no sideways scroll",
+  "tableScrollsSideways": false,
+  "breadcrumbOverNav": true,
+  "breadcrumbPosition": "sticky",
+  "legend": false,
+  "tldr": true,
+  "suitsBeforeTable": false
+ },
+ "de-public-390": {
+  "cols": 3,
+  "pageScrollsSideways": false,
+  "columnsPopulated": [
+   true,
+   true,
+   true
+  ],
+  "headerTopWhileScrolled": -11,
+  "navBottom": 72,
+  "headerSticky": false,
+  "swipeHint": null,
+  "featureColumnSticky": true,
+  "tableScrollsSideways": true,
+  "breadcrumbOverNav": true,
+  "breadcrumbPosition": "sticky",
+  "legend": false,
+  "tldr": true,
+  "suitsBeforeTable": false
+ },
+ "jp-public-390": {
+  "cols": 3,
+  "pageScrollsSideways": true,
+  "sticksOut": [
+   "span.cta-short: 415 \"メニューをアップロード\""
+  ],
+  "columnsPopulated": [
+   true,
+   true,
+   true
+  ],
+  "headerTopWhileScrolled": -32,
+  "navBottom": 72,
+  "headerSticky": false,
+  "swipeHint": null,
+  "featureColumnSticky": true,
+  "tableScrollsSideways": true,
+  "breadcrumbOverNav": true,
+  "breadcrumbPosition": "sticky",
+  "legend": false,
+  "tldr": true,
+  "suitsBeforeTable": false
+ },
+ "jp-admin-390": {
+  "cols": 5,
+  "pageScrollsSideways": true,
+  "sticksOut": [
+   "span.cta-short: 415 \"メニューをアップロード\""
+  ],
+  "columnsPopulated": [
+   true,
+   true,
+   true,
+   true,
+   true
+  ],
+  "headerTopWhileScrolled": -33,
+  "navBottom": 72,
+  "headerSticky": false,
+  "swipeHint": null,
+  "featureColumnSticky": true,
+  "tableScrollsSideways": true,
+  "breadcrumbOverNav": false,
+  "breadcrumbPosition": "sticky",
+  "legend": false,
+  "tldr": true,
+  "suitsBeforeTable": false
+ }
+}

@@ -6384,10 +6384,6 @@
     },
     "h1": "Bestillingssystemer til foodtrucks sammenlignet 2026",
     "byline": "Senest tjekket: {date} · Lavet af HatchGrab. Vi er selv en af de sammenlignede udbydere (se <link>Sådan har vi sammenlignet</link>).",
-    "tldr": {
-      "title": "Kort fortalt",
-      "body": "Hvis dine kunder skal kunne bestille på forhånd på mobilen og vælge en afhentningstid, har du brug for et bestillingssystem, ikke kun et kassesystem. Se efter fire ting: afhentningstider, der følger din køkkenkapacitet, en ugekalender til skiftende placeringer, lave eller ingen gebyrer pr. bestilling og ingen lang binding. Kortterminaler og kassesystemer klarer betalingen ved foodtrucken og supplerer et bestillingssystem."
-    },
     "table": {
       "title": "Bestillingssystemerne sammenlignet",
       "caption": "Funktioner og priser for onlinebestillingssystemer til foodtrucks i {country}, pr. {date}",
@@ -6404,7 +6400,9 @@
       "noFee": "intet",
       "morePending": "Flere udbydere vises her, når vi har tjekket deres oplysninger på deres egen hjemmeside.",
       "priceHidden": "På forespørgsel",
-      "feeAfter": "{fee} over {included} om måneden"
+      "feeAfter": "{fee} over {included} om måneden",
+      "legend": "✓ Ja · ◐ Delvist · ✗ Nej · Ikke angivet: står ikke på deres funktions- eller prissider · —: fremgår ikke af deres hjemmeside · ⓘ: noten, citatet og kilden",
+      "swipe": "Stryg til siden for at se alle produkter →"
     },
     "costs": {
       "title": "Hvad koster et bestillingssystem til foodtrucks?",
@@ -6490,10 +6488,8 @@
       "goLive": "Siden går live i Admin › Countries.",
       "check": {
         "apps": "Flag for iPad og Android slået til for {country}",
-        "verified": "Mindst 2 verificerede udbydere ({n} verificeret)",
         "placeholders": "Ingen »[ … ]«-pladsholder tilbage i teksten",
-        "vat": "Momstekst findes",
-        "impressum": "Beslutning om Impressum registreret"
+        "vat": "Momstekst findes"
       },
       "unverified": "ikke verificeret · skjult for offentligheden",
       "autoVerified": "autoverificeret",
@@ -6502,7 +6498,13 @@
       "notShown": "Ikke på siden (højst fire vises): {names}.",
       "reasonHidden": "{name} (skjult)",
       "reasonBeyond": "{name} (ud over de fire)",
-      "reasonNoWebsite": "{name} (ingen hjemmeside)"
+      "reasonNoWebsite": "{name} (ingen hjemmeside)",
+      "liveAuto": "Live via automatisk udgivelse",
+      "adminsOnly": "Kun for admins — {reason}",
+      "whyFewer": "konkurrenter, der består de automatiske tjek: {n} af {total}; der skal 2 til",
+      "whyAutoOff": "automatisk udgivelse er slået fra for dette land",
+      "shown": "{n, plural, one {# konkurrent vist} other {# konkurrenter vist}}",
+      "details": "Detaljer"
     },
     "footer": {
       "heading": "Sammenlign",
@@ -6532,7 +6534,10 @@
       "notInCountry": "ikke i {country}",
       "flagOff": "flaget er stadig slået fra; vises, når app-butikkerne har appen",
       "notApplicable": "gælder ikke for et street food-marked",
-      "not_listed": "Ikke angivet"
+      "not_listed": "Ikke angivet",
+      "details": "Detaljer",
+      "doesntSay": "Fremgår ikke",
+      "none": "Intet"
     },
     "explained": {
       "title": "Det betyder funktionerne"

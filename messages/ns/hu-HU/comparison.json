@@ -15,10 +15,6 @@
   },
   "h1": "Food truck rendelési rendszerek összehasonlítása 2026",
   "byline": "Utoljára ellenőrizve: {date} · Készítette: HatchGrab. Mi magunk is az összehasonlított szolgáltatók egyike vagyunk (lásd: <link>Hogyan hasonlítottunk össze</link>).",
-  "tldr": {
-    "title": "Röviden",
-    "body": "Ha azt szeretné, hogy a vásárlók előre rendeljenek a telefonjukon, és átvételi időt válasszanak, rendelési rendszerre van szüksége, nem csak kasszára. Négy dologra figyeljen: az átvételi idők igazodjanak a konyhai kapacitáshoz; legyen heti menetrend a változó helyszínekhez; alacsony vagy semmilyen rendelésenkénti díj; és ne legyen hosszú szerződés. A kártyaterminálok és a kasszák a food trucknál történő fizetést intézik, és kiegészítik a rendelési rendszert."
-  },
   "table": {
     "title": "A rendelési rendszerek összehasonlítása",
     "caption": "Food truckoknak szóló online rendelési rendszerek funkciói és költségei ({country}), állapot: {date}",
@@ -35,7 +31,9 @@
     "noFee": "nincs",
     "morePending": "További szolgáltatók akkor jelennek meg itt, ha az adataikat a saját weboldalukon ellenőriztük.",
     "priceHidden": "Ajánlatkérésre",
-    "feeAfter": "havi {included} felett {fee}"
+    "feeAfter": "havi {included} felett {fee}",
+    "legend": "✓ Igen · ◐ Részben · ✗ Nem · Nem tünteti fel: nem szerepel a funkció- vagy árazási oldalain · —: a weboldalából nem derül ki · ⓘ: a megjegyzés, az idézet és a forrás",
+    "swipe": "Húzza oldalra az összes termék megtekintéséhez →"
   },
   "costs": {
     "title": "Mennyibe kerül egy food truck rendelési rendszer?",
@@ -121,10 +119,8 @@
     "goLive": "Az oldal az Admin › Countries menüben élesíthető.",
     "check": {
       "apps": "iPad- és Android-kapcsoló bekapcsolva ({country})",
-      "verified": "Legalább 2 ellenőrzött szolgáltató (ellenőrzött: {n})",
       "placeholders": "Nem maradt „[ … ]” helyőrző a szövegben",
-      "vat": "Az áfáról szóló szöveg megvan",
-      "impressum": "Az Impressumról szóló döntés rögzítve"
+      "vat": "Az áfáról szóló szöveg megvan"
     },
     "unverified": "nem ellenőrzött · a nyilvánosság elől rejtve",
     "autoVerified": "automatikusan ellenőrizve",
@@ -133,7 +129,13 @@
     "notShown": "Nincs az oldalon (legfeljebb négy jelenik meg): {names}.",
     "reasonHidden": "{name} (rejtett)",
     "reasonBeyond": "{name} (a négyen felül)",
-    "reasonNoWebsite": "{name} (nincs weboldala)"
+    "reasonNoWebsite": "{name} (nincs weboldala)",
+    "liveAuto": "Élő – automatikus közzététellel",
+    "adminsOnly": "Csak adminoknak — {reason}",
+    "whyFewer": "{total} versenytársból {n} felel meg az automatikus ellenőrzéseknek; 2 szükséges",
+    "whyAutoOff": "az automatikus közzététel ki van kapcsolva ebben az országban",
+    "shown": "{n, plural, one {# versenytárs látható} other {# versenytárs látható}}",
+    "details": "Részletek"
   },
   "footer": {
     "heading": "Összehasonlítás",
@@ -163,7 +165,10 @@
     "notInCountry": "nem elérhető ({country})",
     "flagOff": "a kapcsoló még ki van kapcsolva; akkor jelenik meg, ha az áruházakban elérhető lesz",
     "notApplicable": "piacüzemeltetőre nem vonatkozik",
-    "not_listed": "Nem tünteti fel"
+    "not_listed": "Nem tünteti fel",
+    "details": "Részletek",
+    "doesntSay": "Nem derül ki",
+    "none": "Nincs"
   },
   "explained": {
     "title": "Mit jelentenek a funkciók"

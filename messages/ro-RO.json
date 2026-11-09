@@ -6384,10 +6384,6 @@
     },
     "h1": "Sisteme de comenzi pentru food truck-uri: comparație 2026",
     "byline": "Ultima verificare: {date} · Realizat de HatchGrab. Suntem unul dintre furnizorii comparați (vedeți <link>Cum am comparat</link>).",
-    "tldr": {
-      "title": "Pe scurt",
-      "body": "Dacă vreți ca clienții să comande în avans de pe telefon și să aleagă ora de ridicare, aveți nevoie de un sistem de comenzi, nu doar de o casă de marcat. Urmăriți patru lucruri: ore de ridicare care țin cont de capacitatea bucătăriei; un program săptămânal pentru locații care se schimbă; comisioane mici sau deloc pe comandă; și niciun contract pe termen lung. Terminalele de plată și casele de marcat acoperă plata la food truck și completează un sistem de comenzi."
-    },
     "table": {
       "title": "Sistemele de comenzi comparate",
       "caption": "Funcțiile și costurile sistemelor de comenzi online pentru food truck-uri în {country}, la data de {date}",
@@ -6404,7 +6400,9 @@
       "noFee": "fără",
       "morePending": "Alți furnizori vor apărea aici după ce le verificăm datele pe propriul lor site.",
       "priceHidden": "La cerere",
-      "feeAfter": "{fee} peste {included} pe lună"
+      "feeAfter": "{fee} peste {included} pe lună",
+      "legend": "✓ Da · ◐ Parțial · ✗ Nu · Nu este menționat: nu apare în paginile sale de funcții sau prețuri · —: site-ul său nu precizează · ⓘ: nota, citatul și sursa",
+      "swipe": "Glisați lateral pentru a vedea toate produsele →"
     },
     "costs": {
       "title": "Cât costă un sistem de comenzi pentru food truck?",
@@ -6490,10 +6488,8 @@
       "goLive": "Pagina se publică din Admin › Countries.",
       "check": {
         "apps": "Flagurile iPad și Android activate pentru {country}",
-        "verified": "Cel puțin 2 furnizori verificați ({n} verificați)",
         "placeholders": "Niciun substituent „[ … ]” rămas în text",
-        "vat": "Mențiunea despre TVA este prezentă",
-        "impressum": "Decizia privind Impressum este înregistrată"
+        "vat": "Mențiunea despre TVA este prezentă"
       },
       "unverified": "neverificat · ascuns publicului",
       "autoVerified": "verificat automat",
@@ -6502,7 +6498,13 @@
       "notShown": "Nu apar pe pagină (se afișează cel mult patru): {names}.",
       "reasonHidden": "{name} (ascuns)",
       "reasonBeyond": "{name} (peste cele patru)",
-      "reasonNoWebsite": "{name} (fără site)"
+      "reasonNoWebsite": "{name} (fără site)",
+      "liveAuto": "Publicată prin publicare automată",
+      "adminsOnly": "Doar pentru admini — {reason}",
+      "whyFewer": "concurenți care trec verificările automate: {n} din {total}; sunt necesari 2",
+      "whyAutoOff": "publicarea automată este dezactivată pentru această țară",
+      "shown": "{n, plural, one {# concurent afișat} few {# concurenți afișați} other {# de concurenți afișați}}",
+      "details": "Detalii"
     },
     "footer": {
       "heading": "Comparație",
@@ -6532,7 +6534,10 @@
       "notInCountry": "indisponibil în {country}",
       "flagOff": "flag încă dezactivat; apare când magazinele de aplicații o listează",
       "notApplicable": "nu se aplică unei piețe",
-      "not_listed": "Nu este menționat"
+      "not_listed": "Nu este menționat",
+      "details": "Detalii",
+      "doesntSay": "Nu precizează",
+      "none": "Niciuna"
     },
     "explained": {
       "title": "Ce înseamnă funcțiile"

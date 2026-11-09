@@ -15,10 +15,6 @@
   },
   "h1": "Bestellsystem für Foodtrucks: Vergleich 2026",
   "byline": "Zuletzt geprüft: {date} · Erstellt von HatchGrab. Wir sind selbst einer der verglichenen Anbieter (siehe <link>So haben wir verglichen</link>).",
-  "tldr": {
-    "title": "Kurz gesagt",
-    "body": "Wenn Ihre Gäste vorab per Handy bestellen und eine Abholzeit wählen sollen, brauchen Sie ein Bestellsystem, nicht nur ein Kassensystem. Achten Sie auf vier Dinge: Abholzeiten, die sich nach Ihrer Küchenkapazität richten; einen Wochenplan für wechselnde Standorte; geringe oder keine Gebühren pro Bestellung; und keine lange Vertragslaufzeit. Kartenleser und Kassensysteme decken die Zahlung am Fenster ab und ergänzen ein Bestellsystem."
-  },
   "table": {
     "title": "Die Bestellsysteme im Vergleich",
     "caption": "Funktionen und Kosten von Online-Bestellsystemen für Foodtrucks in {country}, Stand {date}",
@@ -35,7 +31,9 @@
     "noFee": "keine",
     "morePending": "Weitere Anbieter erscheinen hier, sobald wir ihre Angaben anhand ihrer eigenen Website geprüft haben.",
     "priceHidden": "Auf Anfrage",
-    "feeAfter": "{fee} über {included} pro Monat"
+    "feeAfter": "{fee} über {included} pro Monat",
+    "legend": "✓ Ja · ◐ Teilweise · ✗ Nein · Nicht aufgeführt: nicht auf den Funktions- oder Preisseiten · —: auf der Website nicht angegeben · ⓘ: Anmerkung, Zitat und Quelle",
+    "swipe": "Seitlich wischen, um alle Produkte zu sehen →"
   },
   "costs": {
     "title": "Was kostet ein Bestellsystem für Foodtrucks?",
@@ -121,10 +119,8 @@
     "goLive": "Live schalten Sie die Seite in Admin › Länder.",
     "check": {
       "apps": "iPad- und Android-Flag für {country} an",
-      "verified": "Mindestens 2 geprüfte Anbieter ({n} geprüft)",
       "placeholders": "Kein „[ … ]“-Platzhalter mehr im Text",
-      "vat": "Umsatzsteuer-Hinweis vorhanden",
-      "impressum": "Impressum-Entscheidung festgehalten"
+      "vat": "Umsatzsteuer-Hinweis vorhanden"
     },
     "unverified": "nicht geprüft · öffentlich verborgen",
     "autoVerified": "automatisch geprüft",
@@ -133,7 +129,13 @@
     "notShown": "Nicht auf der Seite (höchstens vier werden gezeigt): {names}.",
     "reasonHidden": "{name} (ausgeblendet)",
     "reasonBeyond": "{name} (nach den ersten vier)",
-    "reasonNoWebsite": "{name} (keine Website)"
+    "reasonNoWebsite": "{name} (keine Website)",
+    "liveAuto": "Live per automatischer Veröffentlichung",
+    "adminsOnly": "Nur für Admins — {reason}",
+    "whyFewer": "automatische Prüfungen bestanden: {n} von {total} Anbietern; nötig sind 2",
+    "whyAutoOff": "die automatische Veröffentlichung ist für dieses Land aus",
+    "shown": "{n, plural, one {# Anbieter gezeigt} other {# Anbieter gezeigt}}",
+    "details": "Details"
   },
   "footer": {
     "heading": "Vergleich",
@@ -163,7 +165,10 @@
     "notInCountry": "nicht in {country}",
     "flagOff": "Flag noch aus, wird mit Store-Freigabe sichtbar",
     "notApplicable": "gilt nicht für einen Markt",
-    "not_listed": "Nicht aufgeführt"
+    "not_listed": "Nicht aufgeführt",
+    "details": "Details",
+    "doesntSay": "Nicht angegeben",
+    "none": "Keine"
   },
   "explained": {
     "title": "Begriffe erklärt"

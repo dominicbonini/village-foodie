@@ -107,7 +107,14 @@ const OWN = (() => { try { return git('log', '--format=%H', '--grep=^cwv-1: the 
   t('the block is ≤400px and language-scoped: the Greek hero button may wrap; the Czech / Greek bands may wrap (Dominic\'s B)', CSS.endsWith(RULES))
   t('no heading rule: nothing in the block touches the hero h1, hyphens or overflow-wrap', !/h1|hyphens|overflow-wrap/.test(RULES))
   t('the rule it relaxes is still the one-line hero button rule above it', CSS.includes('.hg-landing .hero-cta-row .btn-lg { width: 100%; justify-content: center; white-space: nowrap; }'))
-  t('it is appended: every byte before it is the file as it was', CSS.startsWith(cssBefore) && /^\n\/\* ── cwv-1[\s\S]*\*\/\n$/.test(CSS.slice(cssBefore.length, CSS.length - RULES.length)))
+  // ⚠️ RE-PINNED (compare-ux-1, 8 November 2026): compare-ux-1 changed two places before the block, both in the footer — compare-de-1's
+  // .foot-col rules became a one-line comment, and the ≤720px block gained the nine-item country-menu row (scripts/compare-ux-1.cjs pins
+  // both). They are put back here exactly, so every other byte before the block is still checked.
+  const UX1_ROW = /  \/\* compare-ux-1 \(8 November 2026\): where the comparison page is live[\s\S]*?\.hg-landing \.foot-links > \.cc:nth-child\(9\) \{ grid-column: 1 \/ -1; \}\n/
+  const UX1_COL = /\/\* compare-de-1's "Vergleich" column \(\.foot-col\) is gone: compare-ux-1[^\n]*\n/
+  const footColBefore = (/\/\* compare-de-1 \(24 October 2026\): the "Vergleich" column[\s\S]*?\.hg-landing \.foot-col a:hover \{ color: #fff; \}\n/.exec(git('show', 'c892cb3d:app/(public)/(site)/landing/landing.css')) || [''])[0]
+  const CSS0 = UX1_COL.test(CSS) ? CSS.replace(UX1_ROW, '').replace(UX1_COL, () => footColBefore) : CSS
+  t('it is appended: every byte before it is the file as it was (compare-ux-1\'s two footer changes set aside)', !!footColBefore && CSS0.startsWith(cssBefore) && /^\n\/\* ── cwv-1[\s\S]*\*\/\n$/.test(CSS0.slice(cssBefore.length, CSS0.length - RULES.length)))
 
   // ══ 5 ═══════════════════════════════════════════════════════════════════════════════════════════════════════════
   head('5 · scope')

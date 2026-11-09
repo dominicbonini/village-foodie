@@ -6384,10 +6384,6 @@
     },
     "h1": "Food truck pasūtījumu sistēmu salīdzinājums 2026",
     "byline": "Pēdējo reizi pārbaudīts: {date} · Sagatavoja HatchGrab. Mēs esam viens no salīdzinātajiem pakalpojumu sniedzējiem (skatiet <link>Kā mēs salīdzinājām</link>).",
-    "tldr": {
-      "title": "Īsumā",
-      "body": "Ja vēlaties, lai klienti pasūta iepriekš savā tālrunī un izvēlas saņemšanas laiku, jums vajag pasūtījumu sistēmu, nevis tikai kases sistēmu. Pievērsiet uzmanību četrām lietām: saņemšanas laiki, kas pielāgojas jūsu virtuves jaudai; nedēļas grafiks mainīgām tirdzniecības vietām; zemas maksas par pasūtījumu vai to nav vispār; un nav ilga līguma. Maksājumu termināļi un kases sistēmas nodrošina apmaksu pie busiņa un papildina pasūtījumu sistēmu."
-    },
     "table": {
       "title": "Salīdzinātās pasūtījumu sistēmas",
       "caption": "Food truck tiešsaistes pasūtījumu sistēmu funkcijas un izmaksas ({country}), dati uz {date}",
@@ -6404,7 +6400,9 @@
       "noFee": "nav",
       "morePending": "Citi pakalpojumu sniedzēji šeit parādīsies, tiklīdz būsim pārbaudījuši viņu informāciju viņu pašu tīmekļa vietnē.",
       "priceHidden": "Pēc pieprasījuma",
-      "feeAfter": "{fee} virs {included} mēnesī"
+      "feeAfter": "{fee} virs {included} mēnesī",
+      "legend": "✓ Jā · ◐ Daļēji · ✗ Nē · Nav minēts: nav viņu funkciju vai cenu lapās · —: tīmekļa vietnē nav norādīts · ⓘ: piezīme, citāts un avots",
+      "swipe": "Pavelciet uz sāniem, lai redzētu visus produktus →"
     },
     "costs": {
       "title": "Cik maksā food truck pasūtījumu sistēma?",
@@ -6490,10 +6488,8 @@
       "goLive": "Lapu publicē sadaļā Admin › Valstis.",
       "check": {
         "apps": "iPad un Android karodziņi ieslēgti ({country})",
-        "verified": "Vismaz 2 pārbaudīti pakalpojumu sniedzēji (pārbaudīti: {n})",
         "placeholders": "Tekstā nav palicis neviens “[ … ]” vietturis",
-        "vat": "PVN teksts ir",
-        "impressum": "Impressum lēmums reģistrēts"
+        "vat": "PVN teksts ir"
       },
       "unverified": "nav pārbaudīts · paslēpts no apmeklētājiem",
       "autoVerified": "pārbaudīts automātiski",
@@ -6502,7 +6498,13 @@
       "notShown": "Nav lapā (tiek rādīti ne vairāk kā četri): {names}.",
       "reasonHidden": "{name} (paslēpts)",
       "reasonBeyond": "{name} (ārpus pirmajiem četriem)",
-      "reasonNoWebsite": "{name} (nav tīmekļa vietnes)"
+      "reasonNoWebsite": "{name} (nav tīmekļa vietnes)",
+      "liveAuto": "Publicēts automātiski",
+      "adminsOnly": "Tikai adminiem — {reason}",
+      "whyFewer": "automātiskās pārbaudes iztur {n} no {total} konkurentiem; vajag 2",
+      "whyAutoOff": "automātiskā publicēšana šai valstij ir izslēgta",
+      "shown": "{n, plural, zero {# konkurenti parādīti} one {# konkurents parādīts} other {# konkurenti parādīti}}",
+      "details": "Detaļas"
     },
     "footer": {
       "heading": "Salīdzinājums",
@@ -6532,7 +6534,10 @@
       "notInCountry": "nav pieejams ({country})",
       "flagOff": "karodziņš vēl izslēgts; tiks rādīts, kad lietotņu veikali to iekļaus",
       "notApplicable": "neattiecas uz tirgu",
-      "not_listed": "Nav minēts"
+      "not_listed": "Nav minēts",
+      "details": "Detaļas",
+      "doesntSay": "Nav norādīts",
+      "none": "Nav"
     },
     "explained": {
       "title": "Ko nozīmē funkcijas"

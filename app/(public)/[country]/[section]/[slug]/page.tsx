@@ -30,6 +30,7 @@ import { resolveComparison, comparisonT, comparisonSuitsT, liveComparisonAlterna
 import { buildComparison, comparisonGraph, type Cell } from '@/lib/comparison'
 import { translatorFor } from '@/lib/i18n/translator'
 import '@/lib/i18n/catalog/comparison'
+import { StickyTableHead } from '@/components/StickyTableHead'   // compare-ux-1: the ONE sticky table header (shared with /features)
 import '../../../(site)/landing/landing.css'
 import './comparison.css'
 
@@ -86,12 +87,54 @@ export default async function ComparisonPage({ params, searchParams }: { params:
   const graph = comparisonGraph(v, input, t)
   const live = flags.status === 'live'
   const badge = <span className="cmp-badge">{t('admin.unverified')}</span>
-  const cellText = (c: Cell) => (
-    <>
-      <span className={`cmp-tri cmp-tri-${c.value}`}>{c.text}</span>
-      {c.unverified && !v.publicView && badge}
-    </>
-  )
+  // ── compare-ux-1 (8 November 2026): each cell is ONE short verdict from one word set — "✓ Yes", "◐ Partly", "✗ No", "Not listed",
+  // "—" (doesn't say); a plan price or fee shows its amount ("✓ None" when there is none). The detail — the note, the quote, the source
+  // and the date — opens from the cell's ⓘ, a native details element: the text is in the HTML for search and AI tools, never visually hidden.
+  // The Markdown and JSON twins keep every cell's full words and detail, unchanged.
+  const doesntSay = t('cell.doesntSay')
+  const verdict = (c: Cell) => {
+    if (c.price && c.value === 'no') return <span className="cmp-v cmp-v-yes"><span aria-hidden="true">✓ </span>{t('cell.none')}</span>
+    if (c.price && c.note && c.note.length <= 40) return <span className="cmp-v cmp-v-amt">{c.note}</span>
+    // a feature that does not apply to the tool's kind (a market): that, in words — not "—", which means their website doesn't say
+    if (c.na && c.note) return <span className="cmp-v cmp-v-na">{c.note}</span>
+    switch (c.value) {
+      case 'yes': return <span className="cmp-v cmp-v-yes"><span aria-hidden="true">✓ </span>{t('cell.yes')}</span>
+      case 'partial': return <span className="cmp-v cmp-v-partial"><span aria-hidden="true">◐ </span>{t('cell.partial')}</span>
+      case 'no': return <span className="cmp-v cmp-v-no"><span aria-hidden="true">✗ </span>{t('cell.no')}</span>
+      case 'not_listed': return <span className="cmp-v cmp-v-not_listed">{t('cell.not_listed')}</span>
+      default: return <span className="cmp-v cmp-v-none" role="img" aria-label={doesntSay}>—</span>
+    }
+  }
+  const host = (u: string) => u.replace(/^https?:\/\/(www\.)?/, '').replace(/\/$/, '')
+  const cellBody = (c: Cell, us: boolean) => {
+    const quote = c.quote?.trim() || null
+    // HatchGrab's cells link to our own pages; their ⓘ shows only when there is a note to read.
+    // A "does not apply" cell shows its note as the value, so its ⓘ carries the source alone.
+    const note = c.na ? null : c.note
+    const hasDetail = !!(note || quote || (!us && c.source))
+    return (
+      <>
+        {verdict(c)}
+        {hasDetail && (
+          <details className="cmp-i">
+            <summary aria-label={t('cell.details')} title={t('cell.details')}><span aria-hidden="true">ⓘ</span></summary>
+            <div className="cmp-i-body">
+              {note && <p>{note}</p>}
+              {quote && <p className="cmp-i-quote">“{quote}”</p>}
+              {c.source && <p className="cmp-i-src"><a href={c.source} rel={us ? undefined : 'nofollow noopener'} target={us ? undefined : '_blank'}>{us ? t('costs.source') : host(c.source)}</a>{c.checkedOn && <> · {t('costs.checked', { date: c.checkedOn })}</>}</p>}
+            </div>
+          </details>
+        )}
+        {c.unverified && !v.publicView && badge}
+      </>
+    )
+  }
+  // ── compare-ux-1: the admin banner is ONE line under the auto-publish rules; the rest behind "Details". Admins only. ──
+  const rivals = v.columns.filter(c => !c.us)
+  const publicCount = rivals.filter(c => c.verified).length
+  const statusLine = live
+    ? (flags.autoLive ? t('admin.liveAuto') : t('admin.statusLive'))
+    : t('admin.adminsOnly', { reason: flags.autoPublish ? t('admin.whyFewer', { n: publicCount, total: rivals.length }) : t('admin.whyAutoOff') })
 
   return (
     // site-chrome-1 (5 November 2026): the ONE shared frame (components/landing/MarketingFrame.tsx); the JSON-LD stays after it.
@@ -103,29 +146,34 @@ export default async function ComparisonPage({ params, searchParams }: { params:
         {admin && (
           <aside className="cmp-admin" data-admin-banner aria-label={t('admin.label')}>
             <div className="wrap">
-              <p className="cmp-admin-status"><b>{live ? t('admin.statusLive') : t('admin.status')}</b></p>
-              <p className="cmp-admin-links">
-                <a href="?" aria-current={!v.publicView ? 'page' : undefined} data-view="admin">{t('admin.viewAdmin')}</a>
-                <a href="?view=public" aria-current={v.publicView ? 'page' : undefined} data-view="public">{t('admin.viewPublic')}</a>
+              <p className="cmp-admin-line">
+                <b data-admin-status>{statusLine}</b>
+                <span data-admin-shown>{t('admin.shown', { n: publicCount })}</span>
+                {v.publicView
+                  ? <a href="?" data-view="admin">{t('admin.viewAdmin')}</a>
+                  : <a href="?view=public" data-view="public">{t('admin.viewPublic')}</a>}
                 <Link href="/admin?tab=pricing">{t('admin.pricingCheck')}</Link>
               </p>
-              <p className="cmp-admin-h">{t('admin.checklist')}</p>
-              <ul className="cmp-admin-list">
-                {v.checklist.map(c => <li key={c.key} data-check={c.key} data-ok={c.ok ? 'yes' : 'no'}>{c.ok ? '✓' : '✗'} {c.label}</li>)}
-              </ul>
-              {/* compare-suits-1: the entries the four-cap leaves out (lib/comparison-selection.ts) — named for an admin only. */}
-              {v.notShown.length > 0 && (
-                <p className="cmp-admin-note" data-not-shown>{t('admin.notShown', { names: new Intl.ListFormat(settings.locale, { style: 'long', type: 'conjunction' })
-                  .format(v.notShown.map(n => t(n.reason === 'hidden' ? 'admin.reasonHidden' : n.reason === 'no_website' ? 'admin.reasonNoWebsite' : 'admin.reasonBeyond', { name: n.name }))) })}</p>
-              )}
-              <p className="cmp-admin-note">{t('admin.goLive')}</p>
+              <details className="cmp-admin-more">
+                <summary>{t('admin.details')}</summary>
+                <ul className="cmp-admin-list">
+                  {v.checklist.map(c => <li key={c.key} data-check={c.key} data-ok={c.ok ? 'yes' : 'no'}>{c.ok ? '✓' : '✗'} {c.label}</li>)}
+                </ul>
+                {/* compare-suits-1: the entries the four-cap leaves out (lib/comparison-selection.ts) — named for an admin only. */}
+                {v.notShown.length > 0 && (
+                  <p className="cmp-admin-note" data-not-shown>{t('admin.notShown', { names: new Intl.ListFormat(settings.locale, { style: 'long', type: 'conjunction' })
+                    .format(v.notShown.map(n => t(n.reason === 'hidden' ? 'admin.reasonHidden' : n.reason === 'no_website' ? 'admin.reasonNoWebsite' : 'admin.reasonBeyond', { name: n.name }))) })}</p>
+                )}
+                <p className="cmp-admin-note">{live ? t('admin.statusLive') : t('admin.status')}</p>
+                <p className="cmp-admin-note">{t('admin.goLive')}</p>
+              </details>
             </div>
           </aside>
         )}
 
         <main className="band cmp" data-comparison={settings.countryCode}>
           <div className="wrap cmp-wrap">
-            {/* 1 · breadcrumb */}
+            {/* 1 · breadcrumb (compare-ux-1: it scrolls with the page — landing.css makes every <nav> sticky, comparison.css undoes it here) */}
             <nav className="cmp-crumbs" aria-label={t('breadcrumb.label')}>
               <ol><li><a href={visitor.paths.landing}>{t('breadcrumb.home')}</a></li><li aria-current="page">{t('breadcrumb.here')}</li></ol>
             </nav>
@@ -134,54 +182,9 @@ export default async function ComparisonPage({ params, searchParams }: { params:
             <h1>{t('h1')}</h1>
             <p className="cmp-byline">{rich.rich('byline', { date: v.checkedLabel, link: (c: React.ReactNode) => <a href="#methodik">{c}</a> })}</p>
 
-            {/* 3 · Kurz gesagt */}
-            <section className="cmp-tldr" aria-labelledby="kurz">
-              <h2 id="kurz">{t('tldr.title')}</h2>
-              <p>{t('tldr.body')}</p>
-            </section>
-
-            {/* 4 · the table */}
-            <section aria-labelledby="tabelle">
-              <h2 id="tabelle">{t('table.title')}</h2>
-              <div className="cmp-scroll" role="region" aria-labelledby="tabelle" tabIndex={0}>
-                <table className="cmp-table" data-table>
-                  <caption>{t('table.caption', { country: input.countryName, date: v.checkedLabel })}</caption>
-                  <thead>
-                    <tr>
-                      <th scope="col">{t('table.feature')}</th>
-                      {v.columns.map(c => (
-                        <th scope="col" key={c.key} className={c.us ? 'cmp-us' : undefined} data-tool={c.name}>
-                          {c.url && !c.us ? <a href={c.url} rel="nofollow noopener" target="_blank">{c.name}</a> : c.name}
-                          {!c.verified && !v.publicView && <> {badge}</>}
-                          {/* compare-autopublish-1: public through the automatic rules, not Admin's verification — an admin sees which. */}
-                          {c.autoVerified && !v.publicView && <> <span className="cmp-badge" data-auto-verified>{t('admin.autoVerified')}</span></>}
-                          {/* global-players-1: the group the tool belongs to (comparison.groups, or the entry's own label). */}
-                          {c.group && <span className="cmp-group" data-group>{c.group}</span>}
-                        </th>
-                      ))}
-                    </tr>
-                  </thead>
-                  {/* comparison-features-1: one <tbody> per group, headed by a real row-group heading. */}
-                  {v.groups.map(g => (
-                    <tbody key={g.key} data-group-rows={g.key}>
-                      <tr className="cmp-group-row"><th scope="rowgroup" colSpan={v.columns.length + 1}>{g.label}</th></tr>
-                      {g.rows.map(row => (
-                        <tr key={row.key} data-row={row.key}>
-                          <th scope="row">{row.label}{row.unchecked && <> <span className="cmp-badge" data-unchecked>{t('admin.unchecked')}</span></>}</th>
-                          {row.cells.map((c, i) => <td key={v.columns[i].key} className={v.columns[i].us ? 'cmp-us' : undefined} data-value={c.value}>{cellText(c)}</td>)}
-                        </tr>
-                      ))}
-                    </tbody>
-                  ))}
-                </table>
-              </div>
-              <p className="cmp-note">{t('table.note')}</p>
-              {v.morePending && <p className="cmp-note" data-more-pending>{t('table.morePending')}</p>}
-            </section>
-
-            {/* compare-suits-1: "Which suits your food truck?" — questions and answers generated from checked data only
-                (lib/comparison-suits.ts): question, short answer, "Checked <date> · Evidence" (the sources, pages checked or the
-                calculation). Plain headings and paragraphs — ⛔ no QAPage or FAQPage markup for this section. */}
+            {/* 3 · compare-ux-1: "Which suits your food truck?" is the page's short direct answer, directly under the title (the "In short"
+                section is gone). Questions and answers generated from checked data only (lib/comparison-suits.ts): question, short
+                answer, "Checked <date> · Evidence". Plain headings and paragraphs — ⛔ no QAPage or FAQPage markup for this section. */}
             {v.suits.length > 0 && v.suitsWords && (
               <section aria-labelledby="suits" className="cmp-suits" data-suits>
                 <h2 id="suits">{v.suitsWords.title}</h2>
@@ -202,6 +205,49 @@ export default async function ComparisonPage({ params, searchParams }: { params:
                 ))}
               </section>
             )}
+
+            {/* 4 · the table — compare-ux-1: short verdicts, the detail behind ⓘ; the header row stays under the nav and the feature
+                column on the left while the table scrolls sideways (components/StickyTableHead.tsx, shared with /features). */}
+            <section aria-labelledby="tabelle" className="cmp-tablewrap">
+              <h2 id="tabelle">{t('table.title')}</h2>
+              <p className="cmp-swipe" data-swipe aria-hidden="true">{t('table.swipe')}</p>
+              <div className="cmp-scroll" role="region" aria-labelledby="tabelle" tabIndex={0}>
+                <StickyTableHead head="thead" heightVar="--cmp-head-h" pin />
+                <table className="cmp-table" data-table style={{ '--cmp-n': v.columns.length } as React.CSSProperties}>
+                  <caption>{t('table.caption', { country: input.countryName, date: v.checkedLabel })}</caption>
+                  <thead>
+                    <tr>
+                      <th scope="col">{t('table.feature')}</th>
+                      {v.columns.map(c => (
+                        <th scope="col" key={c.key} className={c.us ? 'cmp-us' : undefined} data-tool={c.name}>
+                          {c.url && !c.us ? <a href={c.url} rel="nofollow noopener" target="_blank">{c.name}</a> : c.name}
+                          {/* Admins only: the unverified badge, the automatic-verification badge and the group line. */}
+                          {!c.verified && !v.publicView && <> {badge}</>}
+                          {c.autoVerified && !v.publicView && <> <span className="cmp-badge" data-auto-verified>{t('admin.autoVerified')}</span></>}
+                          {c.group && !v.publicView && <span className="cmp-group" data-group>{c.group}</span>}
+                        </th>
+                      ))}
+                    </tr>
+                  </thead>
+                  {/* comparison-features-1: one <tbody> per group, headed by a real row-group heading. */}
+                  {v.groups.map(g => (
+                    <tbody key={g.key} data-group-rows={g.key}>
+                      <tr className="cmp-group-row"><th scope="rowgroup" colSpan={v.columns.length + 1}><span>{g.label}</span></th></tr>
+                      {g.rows.map(row => (
+                        <tr key={row.key} data-row={row.key}>
+                          <th scope="row">{row.label}{row.unchecked && <> <span className="cmp-badge" data-unchecked>{t('admin.unchecked')}</span></>}</th>
+                          {row.cells.map((c, i) => <td key={v.columns[i].key} className={v.columns[i].us ? 'cmp-us' : undefined} data-value={c.value}>{cellBody(c, v.columns[i].us)}</td>)}
+                        </tr>
+                      ))}
+                    </tbody>
+                  ))}
+                </table>
+              </div>
+              {/* compare-ux-1: the five values in one line (every language). */}
+              <p className="cmp-legend" data-legend>{t('table.legend')}</p>
+              <p className="cmp-note">{t('table.note')}</p>
+              {v.morePending && <p className="cmp-note" data-more-pending>{t('table.morePending')}</p>}
+            </section>
 
             {/* comparison-features-1: "Begriffe erklärt" — each shown feature in one sentence. */}
             {v.explained.length > 0 && (

@@ -15,10 +15,6 @@
   },
   "h1": "Toiduauto tellimissüsteemide võrdlus 2026",
   "byline": "Viimati kontrollitud: {date} · Koostanud HatchGrab. Oleme ise üks võrreldud pakkujatest (vt <link>Kuidas me võrdlesime</link>).",
-  "tldr": {
-    "title": "Lühidalt",
-    "body": "Kui tahad, et kliendid telliksid telefonis ette ja valiksid kättesaamise aja, vajad tellimissüsteemi, mitte ainult kassat. Vaata nelja asja: kättesaamise ajad, mis arvestavad sinu köögi võimsusega; nädala ajakava vahetuvate asukohtade jaoks; väikesed tasud tellimuse kohta või üldse mitte; ja pikka lepingut pole. Makseterminalid ja kassad katavad maksmise toiduauto juures ning täiendavad tellimissüsteemi."
-  },
   "table": {
     "title": "Tellimissüsteemid võrdluses",
     "caption": "Toiduautode veebitellimissüsteemide funktsioonid ja kulud {country} turul, seisuga {date}",
@@ -35,7 +31,9 @@
     "noFee": "puudub",
     "morePending": "Rohkem pakkujaid lisandub siia, kui oleme nende andmed nende enda veebisaidilt üle kontrollinud.",
     "priceHidden": "Päringu alusel",
-    "feeAfter": "{fee}, kui üle {included} kuus"
+    "feeAfter": "{fee}, kui üle {included} kuus",
+    "legend": "✓ Jah · ◐ Osaliselt · ✗ Ei · Pole mainitud: puudub nende funktsioonide ja hindade lehtedelt · —: veebisaidil pole öeldud · ⓘ: märkus, tsitaat ja allikas",
+    "swipe": "Pühi külgsuunas, et näha kõiki tooteid →"
   },
   "costs": {
     "title": "Mis maksab toiduauto tellimissüsteem?",
@@ -121,10 +119,8 @@
     "goLive": "Leht avaldatakse jaotises Admin › Riigid.",
     "check": {
       "apps": "iPadi ja Androidi lipud sees ({country})",
-      "verified": "Vähemalt 2 kinnitatud pakkujat ({n} kinnitatud)",
       "placeholders": "Tekstis pole ühtegi „[ … ]“ kohatäidet",
-      "vat": "Käibemaksu tekst olemas",
-      "impressum": "Impressumi otsus salvestatud"
+      "vat": "Käibemaksu tekst olemas"
     },
     "unverified": "kinnitamata · avalikkuse eest peidetud",
     "autoVerified": "automaatselt kinnitatud",
@@ -133,7 +129,13 @@
     "notShown": "Lehel pole (näidatakse kuni nelja): {names}.",
     "reasonHidden": "{name} (peidetud)",
     "reasonBeyond": "{name} (väljaspool nelja)",
-    "reasonNoWebsite": "{name} (veebisait puudub)"
+    "reasonNoWebsite": "{name} (veebisait puudub)",
+    "liveAuto": "Avaldatud automaatselt",
+    "adminsOnly": "Ainult adminitele — {reason}",
+    "whyFewer": "{total} konkurendist läbib automaatsed kontrollid {n}; vaja on 2",
+    "whyAutoOff": "automaatne avaldamine on selle riigi jaoks välja lülitatud",
+    "shown": "{n, plural, one {# konkurent näidatud} other {# konkurenti näidatud}}",
+    "details": "Üksikasjad"
   },
   "footer": {
     "heading": "Võrdlus",
@@ -163,7 +165,10 @@
     "notInCountry": "pole saadaval ({country})",
     "flagOff": "lipp on veel väljas; kuvatakse, kui rakenduste poed selle avaldavad",
     "notApplicable": "turu puhul ei kehti",
-    "not_listed": "Pole mainitud"
+    "not_listed": "Pole mainitud",
+    "details": "Üksikasjad",
+    "doesntSay": "Pole öeldud",
+    "none": "Puudub"
   },
   "explained": {
     "title": "Mida funktsioonid tähendavad"

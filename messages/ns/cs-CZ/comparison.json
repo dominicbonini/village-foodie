@@ -15,10 +15,6 @@
   },
   "h1": "Srovnání objednávkových systémů pro food trucky 2026",
   "byline": "Naposledy zkontrolováno: {date} · Připravil HatchGrab. Jsme jedním z porovnávaných dodavatelů (viz <link>Jak jsme porovnávali</link>).",
-  "tldr": {
-    "title": "Ve zkratce",
-    "body": "Pokud si mají zákazníci objednávat předem v telefonu a vybírat si čas vyzvednutí, potřebujete objednávkový systém, nejen pokladnu. Sledujte čtyři věci: časy vyzvednutí, které se řídí kapacitou kuchyně; týdenní rozpis pro měnící se stanoviště; nízké nebo žádné poplatky za objednávku; a žádnou dlouhou smlouvu. Platební terminály a pokladny řeší placení u food trucku a objednávkový systém doplňují."
-  },
   "table": {
     "title": "Porovnání objednávkových systémů",
     "caption": "Funkce a náklady online objednávkových systémů pro food trucky ({country}), stav k {date}",
@@ -35,7 +31,9 @@
     "noFee": "žádný",
     "morePending": "Další dodavatelé se tu objeví, jakmile ověříme jejich údaje na jejich vlastním webu.",
     "priceHidden": "Na vyžádání",
-    "feeAfter": "{fee} nad {included} měsíčně"
+    "feeAfter": "{fee} nad {included} měsíčně",
+    "legend": "✓ Ano · ◐ Částečně · ✗ Ne · Neuvádí: není na jejich stránkách funkcí ani ceníku · —: bez údaje na jejich webu · ⓘ: poznámka, citace a zdroj",
+    "swipe": "Přejeďte do strany a uvidíte všechny produkty →"
   },
   "costs": {
     "title": "Kolik stojí objednávkový systém pro food truck?",
@@ -121,10 +119,8 @@
     "goLive": "Stránka se zveřejňuje v Admin › Countries.",
     "check": {
       "apps": "Příznaky iPad a Android zapnuté ({country})",
-      "verified": "Alespoň 2 ověření dodavatelé (ověřeno: {n})",
       "placeholders": "V textu nezůstal žádný zástupný text „[ … ]“",
-      "vat": "Text o DPH je uveden",
-      "impressum": "Rozhodnutí o Impressum zaznamenáno"
+      "vat": "Text o DPH je uveden"
     },
     "unverified": "neověřeno · skryto před veřejností",
     "autoVerified": "ověřeno automaticky",
@@ -133,7 +129,13 @@
     "notShown": "Nejsou na stránce (zobrazují se nejvýše čtyři): {names}.",
     "reasonHidden": "{name} (skryto)",
     "reasonBeyond": "{name} (nad rámec čtyř)",
-    "reasonNoWebsite": "{name} (bez webu)"
+    "reasonNoWebsite": "{name} (bez webu)",
+    "liveAuto": "Zveřejněno automaticky",
+    "adminsOnly": "Jen pro adminy — {reason}",
+    "whyFewer": "konkurenti, kteří prošli automatickými kontrolami: {n} z {total}; jsou potřeba 2",
+    "whyAutoOff": "automatické zveřejňování je pro tuto zemi vypnuté",
+    "shown": "{n, plural, one {# zobrazený konkurent} few {# zobrazení konkurenti} many {# zobrazeného konkurenta} other {# zobrazených konkurentů}}",
+    "details": "Podrobnosti"
   },
   "footer": {
     "heading": "Srovnání",
@@ -163,7 +165,10 @@
     "notInCountry": "nedostupné ({country})",
     "flagOff": "příznak zatím vypnutý; zobrazí se, až bude aplikace v obchodech",
     "notApplicable": "netýká se pořadatele trhů",
-    "not_listed": "Neuvádí"
+    "not_listed": "Neuvádí",
+    "details": "Podrobnosti",
+    "doesntSay": "Bez údaje",
+    "none": "Žádný"
   },
   "explained": {
     "title": "Co jednotlivé funkce znamenají"

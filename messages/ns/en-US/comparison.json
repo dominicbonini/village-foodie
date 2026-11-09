@@ -2,9 +2,6 @@
   "meta": {
     "description": "Food truck ordering systems compared: pre-orders with a pickup time, kitchen capacity, weekly schedule, fees and contract length — checked on each vendor's site."
   },
-  "tldr": {
-    "body": "If your customers should order ahead on their phone and choose a pickup time, you need an ordering system, not just a POS. Look for four things: pickup times that follow your kitchen capacity; a weekly schedule for changing locations; low or no fees per order; and no long contract. Card readers and POS systems cover payment at the truck and complement an ordering system."
-  },
   "costs": {
     "vatExcl": "excl. sales tax",
     "vatIncl": "incl. sales tax",

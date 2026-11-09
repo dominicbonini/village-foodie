@@ -6356,10 +6356,6 @@
     },
     "h1": "2026 美食車落單系統比較",
     "byline": "最後查核：{date} · 由 HatchGrab 製作。我們亦是比較對象之一（見<link>比較方法</link>）。",
-    "tldr": {
-      "title": "重點",
-      "body": "如果你想讓客人用手機預先落單並揀選取餐時間，你需要的是落單系統，而不只是收銀系統。留意四點：取餐時間跟隨廚房產能而設定；有每週時間表，配合不斷轉換的開檔地點；每張訂單收費低或免收費；以及沒有長期合約。信用卡機及收銀系統負責在美食車前收款，與落單系統相輔相成。"
-    },
     "table": {
       "title": "落單系統比較",
       "caption": "{country}美食車網上落單系統的功能及費用（截至 {date}）",
@@ -6376,7 +6372,9 @@
       "noFee": "免收費",
       "morePending": "我們在供應商自己的網站上查核其資料後，便會在此列出更多供應商。",
       "priceHidden": "須查詢",
-      "feeAfter": "每月超過 {included} 的部分收取 {fee}"
+      "feeAfter": "每月超過 {included} 的部分收取 {fee}",
+      "legend": "✓ 有 · ◐ 部分提供 · ✗ 沒有 · 沒有列出：功能或價格頁面上沒有提及 · —：網站沒有說明 · ⓘ：備註、引述及來源",
+      "swipe": "左右滑動以查看所有產品 →"
     },
     "costs": {
       "title": "美食車落單系統要多少錢？",
@@ -6462,10 +6460,8 @@
       "goLive": "在「管理 › 國家」將頁面上線。",
       "check": {
         "apps": "{country}的 iPad 及 Android 旗標已開啟",
-        "verified": "最少 2 個已核實供應商（已核實 {n} 個）",
         "placeholders": "內文沒有剩下「[ … ]」佔位符",
-        "vat": "已有增值稅說明",
-        "impressum": "已記錄 Impressum 決定"
+        "vat": "已有增值稅說明"
       },
       "unverified": "未核實 · 不向公眾顯示",
       "autoVerified": "自動核實",
@@ -6474,7 +6470,13 @@
       "notShown": "不在頁面上（最多顯示四個）：{names}。",
       "reasonHidden": "{name}（已隱藏）",
       "reasonBeyond": "{name}（四個以外）",
-      "reasonNoWebsite": "{name}（沒有網站）"
+      "reasonNoWebsite": "{name}（沒有網站）",
+      "liveAuto": "已透過自動發佈上線",
+      "adminsOnly": "只限管理員 — {reason}",
+      "whyFewer": "{total} 個競爭對手中有 {n} 個通過自動檢查；需要 2 個",
+      "whyAutoOff": "這個國家的自動發佈已關閉",
+      "shown": "{n, plural, other {顯示 # 個競爭對手}}",
+      "details": "詳情"
     },
     "footer": {
       "heading": "比較",
@@ -6504,7 +6506,10 @@
       "notInCountry": "{country}未有提供",
       "flagOff": "旗標仍未開啟；應用程式商店上架後顯示",
       "notApplicable": "不適用於外賣平台",
-      "not_listed": "沒有列出"
+      "not_listed": "沒有列出",
+      "details": "詳情",
+      "doesntSay": "沒有說明",
+      "none": "無"
     },
     "explained": {
       "title": "各項功能的意思"

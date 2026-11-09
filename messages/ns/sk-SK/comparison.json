@@ -15,10 +15,6 @@
   },
   "h1": "Porovnanie objednávkových systémov pre food trucky 2026",
   "byline": "Naposledy skontrolované: {date} · Pripravil HatchGrab. Sme jedným z porovnávaných dodávateľov (pozri <link>Ako sme porovnávali</link>).",
-  "tldr": {
-    "title": "V skratke",
-    "body": "Ak si majú zákazníci objednávať vopred v telefóne a vyberať si čas vyzdvihnutia, potrebujete objednávkový systém, nielen pokladnicu. Sledujte štyri veci: časy vyzdvihnutia, ktoré sa riadia kapacitou kuchyne; týždenný harmonogram pre meniace sa stanovištia; nízke alebo žiadne poplatky za objednávku; a žiadnu dlhú zmluvu. Platobné terminály a pokladnice riešia platby pri food trucku a objednávkový systém dopĺňajú."
-  },
   "table": {
     "title": "Porovnanie objednávkových systémov",
     "caption": "Funkcie a náklady online objednávkových systémov pre food trucky ({country}), stav k {date}",
@@ -35,7 +31,9 @@
     "noFee": "žiadny",
     "morePending": "Ďalší dodávatelia sa tu objavia, keď overíme ich údaje na ich vlastnej webovej stránke.",
     "priceHidden": "Na vyžiadanie",
-    "feeAfter": "{fee} nad {included} mesačne"
+    "feeAfter": "{fee} nad {included} mesačne",
+    "legend": "✓ Áno · ◐ Čiastočne · ✗ Nie · Neuvádza: nie je na ich stránkach funkcií ani cenníka · —: bez údaja na ich webe · ⓘ: poznámka, citát a zdroj",
+    "swipe": "Potiahnite do strany a uvidíte všetky produkty →"
   },
   "costs": {
     "title": "Koľko stojí objednávkový systém pre food truck?",
@@ -121,10 +119,8 @@
     "goLive": "Stránka sa zverejňuje v Admin › Countries.",
     "check": {
       "apps": "Príznaky iPad a Android zapnuté ({country})",
-      "verified": "Aspoň 2 overení dodávatelia (overených: {n})",
       "placeholders": "V texte nezostal žiadny zástupný text „[ … ]“",
-      "vat": "Text o DPH je uvedený",
-      "impressum": "Rozhodnutie o Impressum zaznamenané"
+      "vat": "Text o DPH je uvedený"
     },
     "unverified": "neoverené · skryté pred verejnosťou",
     "autoVerified": "overené automaticky",
@@ -133,7 +129,13 @@
     "notShown": "Nie sú na stránke (zobrazujú sa najviac štyria): {names}.",
     "reasonHidden": "{name} (skryté)",
     "reasonBeyond": "{name} (nad rámec štyroch)",
-    "reasonNoWebsite": "{name} (bez webovej stránky)"
+    "reasonNoWebsite": "{name} (bez webovej stránky)",
+    "liveAuto": "Zverejnené automaticky",
+    "adminsOnly": "Len pre adminov — {reason}",
+    "whyFewer": "konkurenti, ktorí prešli automatickými kontrolami: {n} z {total}; treba 2",
+    "whyAutoOff": "automatické zverejňovanie je pre túto krajinu vypnuté",
+    "shown": "{n, plural, one {# zobrazený konkurent} few {# zobrazení konkurenti} many {# zobrazeného konkurenta} other {# zobrazených konkurentov}}",
+    "details": "Podrobnosti"
   },
   "footer": {
     "heading": "Porovnanie",
@@ -163,7 +165,10 @@
     "notInCountry": "nedostupné ({country})",
     "flagOff": "príznak zatiaľ vypnutý; zobrazí sa, keď bude aplikácia v obchodoch",
     "notApplicable": "netýka sa organizátora trhov",
-    "not_listed": "Neuvádza"
+    "not_listed": "Neuvádza",
+    "details": "Podrobnosti",
+    "doesntSay": "Bez údaja",
+    "none": "Žiadny"
   },
   "explained": {
     "title": "Čo jednotlivé funkcie znamenajú"

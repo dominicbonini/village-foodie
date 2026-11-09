@@ -6,9 +6,6 @@
     "description": "Sistemas de pedidos para food trucks: hora para recoger, capacidad de cocina, agenda, comisiones y plazo forzoso, revisados en el sitio de cada proveedor."
   },
   "byline": "Última revisión: {date} · Hecho por HatchGrab. Somos uno de los proveedores comparados (consulta <link>Cómo comparamos</link>).",
-  "tldr": {
-    "body": "Si quieres que tus clientes pidan por adelantado desde el celular y elijan una hora para recoger, necesitas un sistema de pedidos, no solo un punto de venta. Fíjate en cuatro cosas: horas para recoger que se ajusten a la capacidad de tu cocina; una agenda semanal para ubicaciones que cambian; comisiones por pedido bajas o nulas; y nada de plazos forzosos largos. Las terminales y los puntos de venta cubren el cobro en el food truck y complementan un sistema de pedidos."
-  },
   "table": {
     "caption": "Funciones y costos de los sistemas de pedidos online para food trucks en {country}, al {date}",
     "morePending": "Aquí aparecerán más proveedores en cuanto revisemos sus datos en su propio sitio web."

@@ -6384,10 +6384,6 @@
     },
     "h1": "Sistemi di ordini per food truck a confronto 2026",
     "byline": "Ultima verifica: {date} · Realizzato da HatchGrab. Siamo uno dei fornitori confrontati (vedi <link>Come abbiamo fatto il confronto</link>).",
-    "tldr": {
-      "title": "In breve",
-      "body": "Se vuoi che i tuoi clienti ordinino in anticipo dal telefono e scelgano un orario di ritiro, ti serve un sistema di ordini, non solo una cassa. Valuta quattro cose: orari di ritiro che seguono la capacità della tua cucina; un calendario settimanale per postazioni che cambiano; commissioni per ordine basse o nulle; e nessun contratto lungo. POS e casse gestiscono il pagamento al food truck e completano un sistema di ordini."
-    },
     "table": {
       "title": "I sistemi di ordini a confronto",
       "caption": "Funzionalità e costi dei sistemi di ordini online per food truck in {country}, al {date}",
@@ -6404,7 +6400,9 @@
       "noFee": "nessuna",
       "morePending": "Altri fornitori compariranno qui quando avremo verificato i loro dati sul loro sito.",
       "priceHidden": "Su richiesta",
-      "feeAfter": "{fee} oltre {included} al mese"
+      "feeAfter": "{fee} oltre {included} al mese",
+      "legend": "✓ Sì · ◐ In parte · ✗ No · Non indicato: non compare nelle sue pagine funzionalità o prezzi · —: il suo sito non lo dice · ⓘ: nota, citazione e fonte",
+      "swipe": "Scorri di lato per vedere tutti i prodotti →"
     },
     "costs": {
       "title": "Quanto costa un sistema di ordini per food truck?",
@@ -6490,10 +6488,8 @@
       "goLive": "La pagina si pubblica in Admin › Paesi.",
       "check": {
         "apps": "Flag iPad e Android attivi per {country}",
-        "verified": "Almeno 2 fornitori verificati ({n} verificati)",
         "placeholders": "Nessun segnaposto «[ … ]» rimasto nel testo",
-        "vat": "Testo sull’IVA presente",
-        "impressum": "Decisione sull’Impressum registrata"
+        "vat": "Testo sull’IVA presente"
       },
       "unverified": "non verificato · nascosto al pubblico",
       "autoVerified": "verificato automaticamente",
@@ -6502,7 +6498,13 @@
       "notShown": "Non nella pagina (se ne mostrano al massimo quattro): {names}.",
       "reasonHidden": "{name} (nascosto)",
       "reasonBeyond": "{name} (oltre i quattro)",
-      "reasonNoWebsite": "{name} (nessun sito)"
+      "reasonNoWebsite": "{name} (nessun sito)",
+      "liveAuto": "Online con la pubblicazione automatica",
+      "adminsOnly": "Solo per gli admin — {reason}",
+      "whyFewer": "concorrenti che superano i controlli automatici: {n} su {total}; ne servono 2",
+      "whyAutoOff": "la pubblicazione automatica è disattivata per questo paese",
+      "shown": "{n, plural, one {# concorrente mostrato} many {# di concorrenti mostrati} other {# concorrenti mostrati}}",
+      "details": "Dettagli"
     },
     "footer": {
       "heading": "Confronto",
@@ -6532,7 +6534,10 @@
       "notInCountry": "non disponibile in {country}",
       "flagOff": "flag ancora disattivato; visibile quando l’app sarà negli store",
       "notApplicable": "non si applica a un mercato",
-      "not_listed": "Non indicato"
+      "not_listed": "Non indicato",
+      "details": "Dettagli",
+      "doesntSay": "Non lo dice",
+      "none": "Nessuna"
     },
     "explained": {
       "title": "Cosa significano le funzionalità"

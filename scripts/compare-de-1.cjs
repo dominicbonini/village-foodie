@@ -58,9 +58,12 @@ const { A, B, C, PA, PB, PC, comp, plan, entry } = F
   t('admin: 404 for an anonymous visitor', adAnon.notFound)
   t('admin: 200 for a verified admin, robots noindex,nofollow, canonical itself, NO hreflang', !adAdmin.notFound && !!adAdmin.html
     && adAdmin.meta.robots.index === false && adAdmin.meta.robots.follow === false && adAdmin.meta.alternates.canonical === URL_ && !adAdmin.meta.alternates.languages, adAdmin.meta)
-  t('admin: the admin banner with the status line, the view toggle, the Pricing check link and the checklist; no live switch',
-    /data-admin-banner/.test(adAdmin.html) && /Entwurf · noindex/.test(dec(adAdmin.html)) && /href="\?view=public"/.test(adAdmin.html) && /href="\/admin\?tab=pricing"/.test(adAdmin.html)
-    && (adAdmin.html.match(/data-check="/g) || []).length === 5 && !/data-status="live"|Live schalten<\/button>/.test(adAdmin.html))
+  // 🔁 RE-PINNED (compare-ux-1, 8 November 2026): ONE line — status ("Nur für Admins — …"), the view toggle, the Pricing check — and the
+  // rest (the draft notice, the checklist of three: apps, placeholders, VAT) behind "Details".
+  t('admin: the admin banner — one line with the status, the view toggle and the Pricing check link; the draft notice and checklist behind "Details"; no live switch',
+    /data-admin-banner/.test(adAdmin.html) && /<p class="cmp-admin-line"[^>]*>[\s\S]*?Nur für Admins — [\s\S]*?href="\?view=public"[\s\S]*?href="\/admin\?tab=pricing"[\s\S]*?<\/p>/.test(dec(adAdmin.html))
+    && /<details class="cmp-admin-more"><summary>Details<\/summary>[\s\S]*Entwurf · noindex/.test(dec(adAdmin.html))
+    && (adAdmin.html.match(/data-check="/g) || []).length === 3 && !/data-status="live"|Live schalten<\/button>/.test(adAdmin.html))
   const live = await page({ status: 'live' })
   t('live: 200 for everyone, indexable, self-canonical, hreflang = itself only (de-DE)', !live.notFound && live.meta.robots.index === true
     && live.meta.alternates.canonical === URL_ && JSON.stringify(live.meta.alternates.languages) === JSON.stringify({ 'de-DE': URL_ }), live.meta.alternates)
@@ -117,7 +120,8 @@ const { A, B, C, PA, PB, PC, comp, plan, entry } = F
   t('HatchGrab\'s base fee in the German form: "0 € bis 69 €"', pubTxt.includes('0 € bis 69 €'), (/data-row="baseFee"[\s\S]*?<\/tr>/.exec(live.html) || [])[0])
   t('HatchGrab\'s order fee from fee_bps, plan by plan ("0,99 %", "keine")', /0,99\s%/.test(pubTxt) && /keine \(Unlimited\)/.test(pubTxt), (/data-row="orderFee"[\s\S]*?<\/tr>/.exec(dec(live.html)) || [])[0])
   // 🔁 re-pinned 29 Oct 2026: a cell is a fixed word plus the note — "Ja, ab Pro".
-  t('"Ja, ab Pro" where only some plans have a feature (WhatsApp)', /data-row="whatsapp"><th scope="row">Automatische WhatsApp-Antworten<\/th><td class="cmp-us" data-value="yes"><span class="cmp-tri cmp-tri-yes">Ja, ab Pro<\/span>/.test(dec(live.html)), (/data-row="whatsapp"[\s\S]*?<\/tr>/.exec(dec(live.html)) || [])[0])
+  // 🔁 re-pinned (compare-ux-1, 8 November 2026): the short verdict "✓ Ja", the note "ab Pro" behind the cell's ⓘ.
+  t('"✓ Ja" with "ab Pro" behind the ⓘ where only some plans have a feature (WhatsApp)', /data-row="whatsapp"><th scope="row">Automatische WhatsApp-Antworten<\/th><td class="cmp-us" data-value="yes"><span class="cmp-v cmp-v-yes"><span aria-hidden="true">✓ <\/span>Ja<\/span><details class="cmp-i">[\s\S]*?<div class="cmp-i-body"><p>ab Pro<\/p>/.test(dec(live.html)), (/data-row="whatsapp"[\s\S]*?<\/tr>/.exec(dec(live.html)) || [])[0])
   t('a competitor\'s cells: Ja / Nein / Nicht angegeben, its price and fee as advertised', /Nicht angegeben/.test(pubTxt) && /49 € pro Monat zzgl\. MwSt\./.test(pubTxt.replace(/ /g, ' ')) && /2,5 % pro Bestellung/.test(pubTxt.replace(/ /g, ' ')))
   t('the costs: one line per HatchGrab plan and per competitor, with source and checked date; the card-fee and VAT sentences',
     /data-costs/.test(live.html) && /Pro: 29\s€ pro Monat/.test(pubTxt) && /geprüft am 2026-10-19/.test(pubTxt) && /Gebühren von S[a-z]+e dazu/.test(pubTxt) && /Reverse-Charge-Verfahren/.test(pubTxt))
@@ -129,10 +133,10 @@ const { A, B, C, PA, PB, PC, comp, plan, entry } = F
   // ── 4 · app rows ──
   head('4 · the app rows follow the flags')
   const ipadCell = html => text((/<tr data-row="ipad"[\s\S]*?<\/tr>/.exec(html) || [''])[0])
-  t('flags off, public: "Nein, nicht in Deutschland" (🔁 re-pinned 29 Oct 2026: word + note)', /iPad-App Nein, nicht in Deutschland/.test(ipadCell(live.html)), ipadCell(live.html))
+  t('flags off, public: "✗ Nein", "nicht in Deutschland" behind the ⓘ (🔁 re-pinned 8 Nov 2026, compare-ux-1: verdict + ⓘ)', /iPad-App ✗ Nein ⓘ nicht in Deutschland/.test(ipadCell(live.html)), ipadCell(live.html))
   t('flags off, admin view: the admin wording', /Flag noch aus/.test(ipadCell(adAdmin.html)), ipadCell(adAdmin.html))
   const appsOn = await page({ status: 'live', apps: true })
-  t('flags on: "Ja", and the "passt nicht" box drops the app clause', /^iPad-App Ja/.test(ipadCell(appsOn.html).trim()) && !/in den Stores/.test(text((/<div class="cmp-fit">[\s\S]*?<\/section>/.exec(appsOn.html) || [''])[0])) && /in den Stores/.test(text((/<div class="cmp-fit">[\s\S]*?<\/section>/.exec(live.html) || [''])[0])), ipadCell(appsOn.html))
+  t('flags on: "Ja", and the "passt nicht" box drops the app clause', /^iPad-App ✓ Ja/.test(ipadCell(appsOn.html).trim()) && !/in den Stores/.test(text((/<div class="cmp-fit">[\s\S]*?<\/section>/.exec(appsOn.html) || [''])[0])) && /in den Stores/.test(text((/<div class="cmp-fit">[\s\S]*?<\/section>/.exec(live.html) || [''])[0])), ipadCell(appsOn.html))
   t('checklist: the apps item follows the flags', /data-check="apps" data-ok="no"/.test(adAdmin.html) && /data-check="apps" data-ok="yes"/.test((await page({ status: 'admin', apps: true, admin: true })).html))
 
   // ── 5 · a price change propagates ──
@@ -158,19 +162,21 @@ const { A, B, C, PA, PB, PC, comp, plan, entry } = F
   // ── 7 · the footer link ──
   head('7 · the footer\'s "Vergleich" link')
   const lL = await landing('live'), lA = await landing('admin'), lO = await landing('off'), lUk = await landing('live', 'uk')
-  const hasLink = html => /data-footer-comparison="live"[\s\S]*?href="\/de\/vergleich\/foodtruck-bestellsystem"/.test(html)
-  t('live: in the /de landing\'s server HTML, headed "Vergleich"', hasLink(lL) && /<p class="foot-col-h">Vergleich<\/p>/.test(lL))
+  // 🔁 RE-PINNED (compare-ux-1, 8 November 2026): "Vergleich" is a link in the footer row (.foot-links), no longer a column with a heading.
+  const hasLink = html => /<div class="foot-links">[\s\S]*?<a href="\/de\/vergleich\/foodtruck-bestellsystem" class="foot-compare" data-footer-comparison="live">Vergleich<\/a>/.test(html)
+  t('live: in the /de landing\'s server HTML, the link "Vergleich" in the footer row', hasLink(lL) && !/foot-col/.test(lL))
   const noLink = html => !/data-footer-comparison|\/de\/vergleich\//.test(html)
   t('admin: NOT in the server HTML (the browser adds it after /api/auth/me confirms an admin)', noLink(lA))
   t('off: absent', noLink(lO))
   t('only on the country\'s own pages: the /uk landing has no link even while DE is live', noLink(lUk))
   const fAdmin = await req({ status: 'admin' }, () => M.comparisonFooter('DE', 'de-DE'))
-  t('admin mode is handed to the footer as mode "admin" (rendered by the client-only AdminOnly)', fAdmin && fAdmin.mode === 'admin' && /<AdminOnly>\{box\}<\/AdminOnly>/.test(read('components/landing/LandingFooter.tsx')) && /fetch\('\/api\/auth\/me'/.test(read('components/landing/AdminOnly.tsx')))
+  t('admin mode is handed to the footer as mode "admin" (rendered by the client-only AdminOnly)', fAdmin && fAdmin.mode === 'admin' && /<AdminOnly><a href=\{comparison\.href\} className="foot-compare" data-footer-comparison="admin">/.test(read('components/landing/LandingFooter.tsx')) && /fetch\('\/api\/auth\/me'/.test(read('components/landing/AdminOnly.tsx')))
 
   // ── 8 · checklist, import, data file ──
   head('8 · checklist, the import, the data file')
   const chk = k => (new RegExp(`data-check="${k}" data-ok="(yes|no)"`).exec(adAdmin.html) || [])[1]
-  t('checklist: ≥2 verified (no: 1), no placeholder (yes), VAT wording present (yes), Impressum decision recorded (no — empty)', chk('verified') === 'no' && chk('placeholders') === 'yes' && chk('vat') === 'yes' && chk('impressum') === 'no', [chk('verified'), chk('placeholders'), chk('vat'), chk('impressum')])
+  // 🔁 RE-PINNED (compare-ux-1, 8 November 2026): the manual items (≥2 verified vendors, the Impressum decision) were removed.
+  t('checklist: no placeholder (yes), VAT wording present (yes); no verified-vendors or Impressum item', chk('verified') === undefined && chk('placeholders') === 'yes' && chk('vat') === 'yes' && chk('impressum') === undefined, [chk('verified'), chk('placeholders'), chk('vat'), chk('impressum')])
   t('the placeholder rule catches "[ … ]" and "[...]"', M.PLACEHOLDER.test('Preis [ … ] pro Monat') && M.PLACEHOLDER.test('[... prüfen]') && !M.PLACEHOLDER.test('[Pro]'))
   const data = JSON.parse(read('data/compare-de-1/competitors.json'))
   t('data file: competitors, plans and entries; every plan source research and unverified; every entry unverified', data.competitors.length >= 2 && data.plans.length >= 2 && data.entries.length >= 2
@@ -220,11 +226,13 @@ const { A, B, C, PA, PB, PC, comp, plan, entry } = F
     const tables = F.GLOBAL_TABLES()   // P, R verified POS players (R with its own label), Q an unverified candidate, L local
     const pub = await page({ status: 'live', tables })
     const adm = await page({ status: 'admin', admin: true, tables })
-    const groupOf = (html, name) => dec((new RegExp(`data-tool="${name}"[\\s\\S]*?</th>`).exec(html) || [''])[0]).replace(/<[^>]+>/g, '|').split('|').map(x => x.trim()).filter(Boolean).pop()
-    t('HTML: under each name its group — HatchGrab and a food-truck tool "Bestellsystem für Foodtrucks", a local tool "Bestellsystem", a POS player "Kassensystem", an override "Kasse mit Online-Shop"',
-      groupOf(pub.html, 'HatchGrab') === 'Bestellsystem für Foodtrucks' && groupOf(pub.html, 'Testanbieter A') === 'Bestellsystem für Foodtrucks' && groupOf(pub.html, 'Testlokal L') === 'Bestellsystem'
-      && groupOf(pub.html, 'Testkasse P') === 'Kassensystem' && groupOf(pub.html, 'Testkasse R') === 'Kasse mit Online-Shop' && /class="cmp-group"/.test(pub.html),
-      ['HatchGrab', 'Testanbieter A', 'Testlokal L', 'Testkasse P', 'Testkasse R'].map(n => groupOf(pub.html, n)))
+    // 🔁 RE-PINNED (compare-ux-1, 8 November 2026): the group line under a name is for ADMINS only now (the public table is names only;
+    // the .md and .json keep each tool's group).
+    const groupOf = (html, name) => dec((new RegExp(`data-tool="${name}"[\\s\\S]*?<span class="cmp-group"[^>]*>([^<]*)</span>`).exec(html) || [])[1] ?? '')
+    t('HTML (admin view): under each name its group — HatchGrab and a food-truck tool "Bestellsystem für Foodtrucks", a local tool "Bestellsystem", a POS player "Kassensystem", an override "Kasse mit Online-Shop"; the public table has none',
+      groupOf(adm.html, 'HatchGrab') === 'Bestellsystem für Foodtrucks' && groupOf(adm.html, 'Testanbieter A') === 'Bestellsystem für Foodtrucks' && groupOf(adm.html, 'Testlokal L') === 'Bestellsystem'
+      && groupOf(adm.html, 'Testkasse P') === 'Kassensystem' && groupOf(adm.html, 'Testkasse R') === 'Kasse mit Online-Shop' && !/class="cmp-group"/.test(pub.html),
+      ['HatchGrab', 'Testanbieter A', 'Testlokal L', 'Testkasse P', 'Testkasse R'].map(n => groupOf(adm.html, n)))
     const md = (await twin('md', { status: 'live', tables })).body, js = JSON.parse((await twin('json', { status: 'live', tables })).body)
     t('.md: the header cells carry the group ("Testkasse P (Kassensystem)", "Testkasse R (Kasse mit Online-Shop)")', /\| Testkasse P \(Kassensystem\) \|/.test(md) && /Testkasse R \(Kasse mit Online-Shop\)/.test(md) && /HatchGrab \(Bestellsystem für Foodtrucks\)/.test(md), md.split('\n').find(l => /HatchGrab/.test(l) && l.startsWith('|')))
     t('.json: each tool has its group', js.tools.find(x => x.name === 'Testkasse P').group === 'Kassensystem' && js.tools.find(x => x.name === 'Testkasse R').group === 'Kasse mit Online-Shop' && js.tools.find(x => x.name === 'HatchGrab').group === 'Bestellsystem für Foodtrucks', js.tools)
@@ -270,7 +278,12 @@ const { A, B, C, PA, PB, PC, comp, plan, entry } = F
       cells.length > 0 && cells.every(c => WORDS[c.value] === c.label && 'note' in c && /^https:/.test(c.source) && /^\d{4}-\d{2}-\d{2}$/.test(c.checked)), cells.find(c => !(WORDS[c.value] === c.label && /^https:/.test(c.source) && /^\d{4}-\d{2}-\d{2}$/.test(c.checked))))
     t('cell words come ONLY from the fixed set: each text is the word, "word, note", or — not stated — the note alone',
       cells.every(c => c.text === c.label || c.text === `${c.label}, ${c.note}` || (c.value === 'unknown' && c.text === c.note)), cells.filter(c => !(c.text === c.label || c.text === `${c.label}, ${c.note}` || (c.value === 'unknown' && c.text === c.note))).slice(0, 3))
-    t('…and the page shows exactly those texts', cells.every(c => dec(pub.html).includes(`>${c.text}</span>`)))
+    // 🔁 RE-PINNED (compare-ux-1, 8 November 2026): the page shows each cell as a short verdict of its machine value, with the note (and
+    // the source) behind the cell's ⓘ — the full "word, note" text stays in the .md and .json.
+    const CLS = { yes: 'cmp-v-yes', partial: 'cmp-v-partial', no: 'cmp-v-no', unknown: 'cmp-v-none', not_mentioned: 'cmp-v-none', not_listed: 'cmp-v-not_listed' }
+    const pubTable = dec((/<table[\s\S]*?<\/table>/.exec(pub.html) || [''])[0])
+    t('…and the page shows each one: its verdict for the value (or the amount), and its note and source in the HTML', cells.every(c => (!c.note || pubTable.includes(`>${c.note}</`)) && pubTable.includes(`href="${c.source}"`))
+      && js.rows.every(r => r.cells.every(c => new RegExp(`data-row="${r.key}"`).test(pubTable))) && cells.some(c => pubTable.includes(CLS[c.value] || 'x')), cells.filter(c => !((!c.note || pubTable.includes(`>${c.note}</`)) && pubTable.includes(`href="${c.source}"`))).slice(0, 3))
     t('HatchGrab\'s "Nein" rows appear like any other (hardware, card reader, delivery, PayPal, a certified till)', ['hardware', 'terminal', 'delivery', 'paypal', 'fiscal'].every(k => js.rows.find(r => r.key === k).cells[0].value === 'no')
       && js.rows.find(r => r.key === 'hardware').cells[0].text === 'Nein, eigene Geräte nutzen' && js.rows.find(r => r.key === 'delivery').cells[0].text === 'Nein, nur Abholung')
     t('the answers confirmed from the code: printed tickets "Ja, in der iPad- und Android-App; Drucker nicht enthalten", offline "Teilweise"', js.rows.find(r => r.key === 'tickets').cells[0].text === 'Ja, in der iPad- und Android-App; Drucker nicht enthalten'

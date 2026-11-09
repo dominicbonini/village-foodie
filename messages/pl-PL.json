@@ -6384,10 +6384,6 @@
     },
     "h1": "Porównanie systemów zamówień dla food trucków 2026",
     "byline": "Ostatnio sprawdzono: {date} · Przygotowane przez HatchGrab. Jesteśmy jednym z porównywanych dostawców (zobacz <link>Jak porównywaliśmy</link>).",
-    "tldr": {
-      "title": "W skrócie",
-      "body": "Jeśli twoi klienci mają zamawiać z wyprzedzeniem na telefonie i wybierać godzinę odbioru, potrzebujesz systemu zamówień, a nie tylko kasy. Zwróć uwagę na cztery rzeczy: godziny odbioru dopasowane do wydajności kuchni; harmonogram tygodnia na zmieniające się lokalizacje; niskie opłaty od zamówienia albo ich brak; brak długiej umowy. Terminale płatnicze i kasy obsługują płatności przy food trucku i uzupełniają system zamówień."
-    },
     "table": {
       "title": "Porównanie systemów zamówień",
       "caption": "Funkcje i koszty systemów zamówień online dla food trucków ({country}), stan na {date}",
@@ -6404,7 +6400,9 @@
       "noFee": "brak",
       "morePending": "Kolejni dostawcy pojawią się tutaj, gdy sprawdzimy ich dane na ich własnych stronach internetowych.",
       "priceHidden": "Na zapytanie",
-      "feeAfter": "{fee} powyżej {included} miesięcznie"
+      "feeAfter": "{fee} powyżej {included} miesięcznie",
+      "legend": "✓ Tak · ◐ Częściowo · ✗ Nie · Nie wymienia: brak na stronach funkcji i cennika · —: nie podano na stronie internetowej · ⓘ: uwaga, cytat i źródło",
+      "swipe": "Przesuń w bok, aby zobaczyć wszystkie produkty →"
     },
     "costs": {
       "title": "Ile kosztuje system zamówień dla food trucka?",
@@ -6490,10 +6488,8 @@
       "goLive": "Stronę publikuje się w Admin › Countries.",
       "check": {
         "apps": "Flagi iPad i Android włączone ({country})",
-        "verified": "Co najmniej 2 zweryfikowanych dostawców (zweryfikowano: {n})",
         "placeholders": "Brak zastępników „[ … ]” w tekście",
-        "vat": "Jest informacja o VAT",
-        "impressum": "Decyzja w sprawie Impressum zapisana"
+        "vat": "Jest informacja o VAT"
       },
       "unverified": "niezweryfikowane · ukryte przed odwiedzającymi",
       "autoVerified": "zweryfikowane automatycznie",
@@ -6502,7 +6498,13 @@
       "notShown": "Nie ma ich na stronie (pokazujemy maksymalnie cztery): {names}.",
       "reasonHidden": "{name} (ukryty)",
       "reasonBeyond": "{name} (poza czwórką)",
-      "reasonNoWebsite": "{name} (brak strony internetowej)"
+      "reasonNoWebsite": "{name} (brak strony internetowej)",
+      "liveAuto": "Opublikowana automatycznie",
+      "adminsOnly": "Tylko dla adminów — {reason}",
+      "whyFewer": "konkurenci, którzy przeszli automatyczne kontrole: {n} z {total}; potrzeba 2",
+      "whyAutoOff": "automatyczna publikacja jest wyłączona dla tego kraju",
+      "shown": "{n, plural, one {Pokazano # konkurenta} few {Pokazano # konkurentów} many {Pokazano # konkurentów} other {Pokazano # konkurenta}}",
+      "details": "Szczegóły"
     },
     "footer": {
       "heading": "Porównanie",
@@ -6532,7 +6534,10 @@
       "notInCountry": "niedostępne w kraju: {country}",
       "flagOff": "flaga jeszcze wyłączona; pokażemy, gdy aplikacja trafi do sklepów",
       "notApplicable": "nie dotyczy organizatora targów",
-      "not_listed": "Nie wymienia"
+      "not_listed": "Nie wymienia",
+      "details": "Szczegóły",
+      "doesntSay": "Nie podano",
+      "none": "Brak"
     },
     "explained": {
       "title": "Co oznaczają poszczególne funkcje"

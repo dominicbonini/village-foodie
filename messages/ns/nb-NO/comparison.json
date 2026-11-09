@@ -15,10 +15,6 @@
   },
   "h1": "Bestillingssystemer for matbiler sammenlignet 2026",
   "byline": "Sist sjekket: {date} · Laget av HatchGrab. Vi er selv en av leverandørene som sammenlignes (se <link>Slik sammenlignet vi</link>).",
-  "tldr": {
-    "title": "Kort fortalt",
-    "body": "Skal kundene kunne bestille på forhånd på mobilen og velge hentetid, trenger du et bestillingssystem, ikke bare et kassasystem. Se etter fire ting: hentetider som følger kjøkkenkapasiteten din, en ukekalender for skiftende plasser, lave eller ingen gebyrer per bestilling og ingen lang bindingstid. Betalingsterminaler og kassasystemer tar seg av betalingen ved matbilen og utfyller et bestillingssystem."
-  },
   "table": {
     "title": "Bestillingssystemene sammenlignet",
     "caption": "Funksjoner og kostnader for nettbestillingssystemer for matbiler i {country}, per {date}",
@@ -35,7 +31,9 @@
     "noFee": "ingen",
     "morePending": "Flere leverandører vises her når vi har sjekket opplysningene deres på deres egen nettside.",
     "priceHidden": "På forespørsel",
-    "feeAfter": "{fee} over {included} i måneden"
+    "feeAfter": "{fee} over {included} i måneden",
+    "legend": "✓ Ja · ◐ Delvis · ✗ Nei · Ikke oppgitt: står ikke på funksjons- eller prissidene deres · —: nettsiden deres sier ingenting · ⓘ: merknaden, sitatet og kilden",
+    "swipe": "Sveip til siden for å se alle produktene →"
   },
   "costs": {
     "title": "Hva koster et bestillingssystem for matbiler?",
@@ -121,10 +119,8 @@
     "goLive": "Siden publiseres i Admin › Countries.",
     "check": {
       "apps": "Flagg for iPad og Android på for {country}",
-      "verified": "Minst 2 verifiserte leverandører ({n} verifisert)",
       "placeholders": "Ingen «[ … ]»-plassholder igjen i teksten",
-      "vat": "Mva.-tekst finnes",
-      "impressum": "Beslutning om Impressum registrert"
+      "vat": "Mva.-tekst finnes"
     },
     "unverified": "ikke verifisert · skjult for publikum",
     "autoVerified": "autoverifisert",
@@ -133,7 +129,13 @@
     "notShown": "Ikke på siden (maks fire vises): {names}.",
     "reasonHidden": "{name} (skjult)",
     "reasonBeyond": "{name} (utover de fire)",
-    "reasonNoWebsite": "{name} (ingen nettside)"
+    "reasonNoWebsite": "{name} (ingen nettside)",
+    "liveAuto": "Live via automatisk publisering",
+    "adminsOnly": "Kun for admins — {reason}",
+    "whyFewer": "konkurrenter som består de automatiske kontrollene: {n} av {total}; det trengs 2",
+    "whyAutoOff": "automatisk publisering er slått av for dette landet",
+    "shown": "{n, plural, one {# konkurrent vist} other {# konkurrenter vist}}",
+    "details": "Detaljer"
   },
   "footer": {
     "heading": "Sammenlign",
@@ -163,7 +165,10 @@
     "notInCountry": "ikke i {country}",
     "flagOff": "flagget er fortsatt av; vises når appbutikkene har appen",
     "notApplicable": "gjelder ikke for et matmarked",
-    "not_listed": "Ikke oppgitt"
+    "not_listed": "Ikke oppgitt",
+    "details": "Detaljer",
+    "doesntSay": "Sier ingenting",
+    "none": "Ingen"
   },
   "explained": {
     "title": "Hva funksjonene betyr"

@@ -169,9 +169,23 @@ if (mode === 'capture' || mode === 'compare') {
   // ⚠️ RE-PINNED (cwv-1, 5 November 2026): cwv-1 APPENDED one block to landing.css — its comment, then rules for ≤400px Czech / Greek
   // pages only (scripts/cwv-1.cjs pins it, and that everything before it is byte-identical). Only that appended tail is set aside here.
   const outside = s => s.replace(/\n\/\* ── cwv-1 \(5 November 2026[\s\S]*$/, '').replace(/@media\(max-width:720px\)\{[\s\S]*?\n\}\n/g, '')
-  t('🔴 desktop unchanged: every rule outside the ≤720px blocks is byte-identical to before', outside(css) === outside(cssBefore))
+  // ⚠️ RE-PINNED (compare-ux-1, 8 November 2026): compare-ux-1 removed compare-de-1's "Vergleich" column rules (.foot-col) — the link is
+  // in .foot-links now (scripts/compare-ux-1.cjs pins it). Only that block, and the one-line comment that replaced it, are set aside.
+  const FOOT_COL_BEFORE = /\/\* compare-de-1 \(24 October 2026\): the "Vergleich" column[\s\S]*?\.hg-landing \.foot-col a:hover \{ color: #fff; \}\n/
+  const FOOT_COL_NOW = /\/\* compare-de-1's "Vergleich" column \(\.foot-col\) is gone: compare-ux-1[^\n]*\n/
+  t('🔴 desktop unchanged: every rule outside the ≤720px blocks is byte-identical to before (apart from compare-ux-1\'s removal of the .foot-col column)', FOOT_COL_BEFORE.test(cssBefore) && outside(css.replace(FOOT_COL_NOW, '')) === outside(cssBefore.replace(FOOT_COL_BEFORE, '')))
   const markupNow = read('components/landing/LandingFooter.tsx'), markupBefore = git('show', `${BEFORE}:components/landing/LandingFooter.tsx`)
-  t('the footer\'s markup and item order are unchanged (React\'s ids depend on it)', markupNow === markupBefore && read('components/landing/LandingNav.tsx') === git('show', `${BEFORE}:components/landing/LandingNav.tsx`))
+  // ⚠️ RE-PINNED (compare-ux-1, 8 November 2026): compare-ux-1 moved the comparison link from its own column into the row (its old slot kept
+  // as {null}, so React's ids are unchanged; scripts/compare-ux-1.cjs pins that). The footer is pinned to be what it was here up to the
+  // commit before compare-ux-1 (c892cb3d), and every line compare-ux-1 changed to be about the comparison link.
+  const UX1_BASE = 'c892cb3d'
+  // Code lines only (JSX comments dropped), as multisets: every line added or removed must be about the comparison link.
+  const codeLines = src => src.replace(/\{\/\*[\s\S]*?\*\/\}/g, '').split('\n').map(l => l.trim()).filter(Boolean)
+  const count = a => a.reduce((m, l) => m.set(l, (m.get(l) || 0) + 1), new Map())
+  const [cb, cn] = [count(codeLines(git('show', `${UX1_BASE}:components/landing/LandingFooter.tsx`))), count(codeLines(markupNow))]
+  const footDiff = [...new Set([...cb.keys(), ...cn.keys()])].filter(l => (cb.get(l) || 0) !== (cn.get(l) || 0))
+  const offTopic = footDiff.filter(l => !/compar|foot-col|AdminOnly|^\{null\}$|faqHref|^\? \(compareLink$|^: \(compareLink|^: null$|^const box = \($|^<\/div>$|^\)$|^\}\)\(\)\}$/.test(l))
+  t('the footer\'s markup and item order are unchanged but for compare-ux-1\'s comparison link (React\'s ids depend on it)', git('show', `${UX1_BASE}:components/landing/LandingFooter.tsx`) === markupBefore && footDiff.length > 0 && !offTopic.length && read('components/landing/LandingNav.tsx') === git('show', `${BEFORE}:components/landing/LandingNav.tsx`), offTopic)
 
   // ══ 5 ══
   head('5 · the offline words: put back exactly as they were at 7e1effa7^, in every language; the apps sentences and their code gone')

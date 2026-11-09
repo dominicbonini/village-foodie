@@ -15,10 +15,6 @@
   },
   "h1": "Food truck ordering systems compared 2026",
   "byline": "Last checked: {date} · Made by HatchGrab. We are one of the vendors compared (see <link>How we compared</link>).",
-  "tldr": {
-    "title": "In short",
-    "body": "If your customers should order ahead on their phone and choose a collection time, you need an ordering system, not just a till. Look for four things: collection times that follow your kitchen capacity; a weekly schedule for changing locations; low or no fees per order; and no long contract. Card readers and tills cover payment at the truck and complement an ordering system."
-  },
   "table": {
     "title": "The ordering systems compared",
     "caption": "Features and costs of online ordering systems for food trucks in {country}, as of {date}",
@@ -35,7 +31,9 @@
     "noFee": "none",
     "morePending": "More vendors appear here once we have checked their details on their own website.",
     "priceHidden": "On request",
-    "feeAfter": "{fee} above {included} a month"
+    "feeAfter": "{fee} above {included} a month",
+    "legend": "✓ Yes · ◐ Partly · ✗ No · Not listed: not on their features or pricing pages · —: their website doesn't say · ⓘ: the note, quote and source",
+    "swipe": "Swipe sideways to see every product →"
   },
   "costs": {
     "title": "What does a food truck ordering system cost?",
@@ -121,10 +119,8 @@
     "goLive": "The page goes live in Admin › Countries.",
     "check": {
       "apps": "iPad and Android flags on for {country}",
-      "verified": "At least 2 verified vendors ({n} verified)",
       "placeholders": "No “[ … ]” placeholder left in the copy",
-      "vat": "VAT wording present",
-      "impressum": "Impressum decision recorded"
+      "vat": "VAT wording present"
     },
     "unverified": "not verified · hidden from the public",
     "autoVerified": "auto-verified",
@@ -133,7 +129,13 @@
     "notShown": "Not on the page (at most four are shown): {names}.",
     "reasonHidden": "{name} (hidden)",
     "reasonBeyond": "{name} (beyond the four)",
-    "reasonNoWebsite": "{name} (no website)"
+    "reasonNoWebsite": "{name} (no website)",
+    "liveAuto": "Live via auto-publish",
+    "adminsOnly": "Admins only — {reason}",
+    "whyFewer": "{n} of {total} competitors pass the automatic checks; 2 are needed",
+    "whyAutoOff": "auto-publish is off for this country",
+    "shown": "{n, plural, one {# competitor shown} other {# competitors shown}}",
+    "details": "Details"
   },
   "footer": {
     "heading": "Compare",
@@ -163,7 +165,10 @@
     "notInCountry": "not in {country}",
     "flagOff": "flag still off; shown once the stores list it",
     "notApplicable": "does not apply to a market",
-    "not_listed": "Not listed"
+    "not_listed": "Not listed",
+    "details": "Details",
+    "doesntSay": "Doesn't say",
+    "none": "None"
   },
   "explained": {
     "title": "What the features mean"

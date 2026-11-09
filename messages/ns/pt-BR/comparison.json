@@ -15,10 +15,6 @@
   },
   "h1": "Comparativo de sistemas de pedidos para food truck 2026",
   "byline": "Última verificação: {date} · Feito pelo HatchGrab. Somos um dos fornecedores comparados (veja <link>Como comparamos</link>).",
-  "tldr": {
-    "title": "Resumindo",
-    "body": "Se você quer que seus clientes façam o pedido antecipado pelo celular e escolham um horário de retirada, você precisa de um sistema de pedidos, não só de um caixa. Procure quatro coisas: horários de retirada que respeitam a capacidade da sua cozinha; uma agenda semanal para pontos que mudam; taxa por pedido baixa ou zero; e nenhum contrato longo. Maquininhas e PDVs cuidam do pagamento no food truck e complementam um sistema de pedidos."
-  },
   "table": {
     "title": "Os sistemas de pedidos comparados",
     "caption": "Recursos e custos de sistemas de pedidos online para food trucks no {country}, em {date}",
@@ -35,7 +31,9 @@
     "noFee": "nenhuma",
     "morePending": "Mais fornecedores vão aparecer aqui assim que conferirmos as informações deles no próprio site.",
     "priceHidden": "Sob consulta",
-    "feeAfter": "{fee} acima de {included} por mês"
+    "feeAfter": "{fee} acima de {included} por mês",
+    "legend": "✓ Sim · ◐ Em parte · ✗ Não · Não listado: não aparece nas páginas de recursos ou de preços · —: não informado no site · ⓘ: a nota, a citação e a fonte",
+    "swipe": "Deslize para o lado para ver todos os produtos →"
   },
   "costs": {
     "title": "Quanto custa um sistema de pedidos para food truck?",
@@ -121,10 +119,8 @@
     "goLive": "A página é publicada em Admin › Países.",
     "check": {
       "apps": "Flags de iPad e Android ativadas para {country}",
-      "verified": "Pelo menos 2 fornecedores verificados ({n} verificados)",
       "placeholders": "Nenhum marcador “[ … ]” sobrando no texto",
-      "vat": "Texto sobre impostos presente",
-      "impressum": "Decisão sobre o Impressum registrada"
+      "vat": "Texto sobre impostos presente"
     },
     "unverified": "não verificado · oculto para o público",
     "autoVerified": "verificado automaticamente",
@@ -133,7 +129,13 @@
     "notShown": "Fora da página (no máximo quatro são exibidos): {names}.",
     "reasonHidden": "{name} (oculto)",
     "reasonBeyond": "{name} (além dos quatro)",
-    "reasonNoWebsite": "{name} (sem site)"
+    "reasonNoWebsite": "{name} (sem site)",
+    "liveAuto": "No ar via publicação automática",
+    "adminsOnly": "Só para admins — {reason}",
+    "whyFewer": "concorrentes aprovados nas verificações automáticas: {n} de {total}; são necessários 2",
+    "whyAutoOff": "a publicação automática está desativada para este país",
+    "shown": "{n, plural, one {# concorrente exibido} many {# de concorrentes exibidos} other {# concorrentes exibidos}}",
+    "details": "Detalhes"
   },
   "footer": {
     "heading": "Comparar",
@@ -163,7 +165,10 @@
     "notInCountry": "indisponível no {country}",
     "flagOff": "ainda desativado; aparece quando estiver nas lojas de apps",
     "notApplicable": "não se aplica a uma feira",
-    "not_listed": "Não listado"
+    "not_listed": "Não listado",
+    "details": "Detalhes",
+    "doesntSay": "Não informado",
+    "none": "Nenhuma"
   },
   "explained": {
     "title": "O que significa cada recurso"

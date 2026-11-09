@@ -15,10 +15,6 @@
   },
   "h1": "Food truck užsakymų sistemų palyginimas 2026",
   "byline": "Paskutinį kartą patikrinta: {date} · Parengė HatchGrab. Esame vienas iš palyginamų tiekėjų (žr. <link>Kaip palyginome</link>).",
-  "tldr": {
-    "title": "Trumpai",
-    "body": "Jei norite, kad klientai užsisakytų iš anksto telefonu ir pasirinktų atsiėmimo laiką, jums reikia užsakymų sistemos, o ne vien kasos. Atkreipkite dėmesį į keturis dalykus: atsiėmimo laikai, kurie prisitaiko prie jūsų virtuvės pajėgumo; savaitės tvarkaraštis kintančioms vietoms; maži mokesčiai už užsakymą arba jokių; ir jokios ilgos sutarties. Mokėjimo terminalai ir kasos skirti mokėjimams prie furgono ir papildo užsakymų sistemą."
-  },
   "table": {
     "title": "Palygintos užsakymų sistemos",
     "caption": "Food truck internetinių užsakymų sistemų funkcijos ir kainos ({country}), {date} duomenimis",
@@ -35,7 +31,9 @@
     "noFee": "nėra",
     "morePending": "Daugiau tiekėjų čia atsiras, kai patikrinsime jų duomenis jų pačių svetainėse.",
     "priceHidden": "Pagal užklausą",
-    "feeAfter": "{fee} viršijus {included} per mėnesį"
+    "feeAfter": "{fee} viršijus {included} per mėnesį",
+    "legend": "✓ Taip · ◐ Iš dalies · ✗ Ne · Neminima: nėra jų funkcijų ar kainų puslapiuose · —: svetainėje nieko nesakoma · ⓘ: pastaba, citata ir šaltinis",
+    "swipe": "Braukite į šoną, kad pamatytumėte visus produktus →"
   },
   "costs": {
     "title": "Kiek kainuoja food truck užsakymų sistema?",
@@ -121,10 +119,8 @@
     "goLive": "Puslapis paskelbiamas skiltyje Admin › Šalys.",
     "check": {
       "apps": "iPad ir Android vėliavėlės įjungtos ({country})",
-      "verified": "Bent 2 patikrinti tiekėjai (patikrinta: {n})",
       "placeholders": "Tekste neliko „[ … ]“ žymeklių",
-      "vat": "PVM tekstas yra",
-      "impressum": "Impressum sprendimas užfiksuotas"
+      "vat": "PVM tekstas yra"
     },
     "unverified": "nepatikrinta · paslėpta nuo lankytojų",
     "autoVerified": "patikrinta automatiškai",
@@ -133,7 +129,13 @@
     "notShown": "Puslapyje nerodoma (rodomi daugiausia keturi): {names}.",
     "reasonHidden": "{name} (paslėpta)",
     "reasonBeyond": "{name} (už ketverto ribų)",
-    "reasonNoWebsite": "{name} (nėra svetainės)"
+    "reasonNoWebsite": "{name} (nėra svetainės)",
+    "liveAuto": "Paskelbta automatiškai",
+    "adminsOnly": "Tik administratoriams — {reason}",
+    "whyFewer": "automatinius patikrinimus įveikia {n} iš {total} konkurentų; reikia 2",
+    "whyAutoOff": "automatinis skelbimas šiai šaliai išjungtas",
+    "shown": "{n, plural, one {# rodomas konkurentas} few {# rodomi konkurentai} many {# rodomo konkurento} other {# rodomų konkurentų}}",
+    "details": "Išsamiau"
   },
   "footer": {
     "heading": "Palyginimas",
@@ -163,7 +165,10 @@
     "notInCountry": "neprieinama ({country})",
     "flagOff": "vėliavėlė dar išjungta; bus rodoma, kai atsiras programėlių parduotuvėse",
     "notApplicable": "netaikoma maisto turgui",
-    "not_listed": "Neminima"
+    "not_listed": "Neminima",
+    "details": "Išsamiau",
+    "doesntSay": "Nieko nesakoma",
+    "none": "Nėra"
   },
   "explained": {
     "title": "Ką reiškia funkcijos"

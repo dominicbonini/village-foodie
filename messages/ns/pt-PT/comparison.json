@@ -15,10 +15,6 @@
   },
   "h1": "Comparação de sistemas de encomendas para food trucks 2026",
   "byline": "Última verificação: {date} · Feito pela HatchGrab. Somos um dos fornecedores comparados (ver <link>Como comparámos</link>).",
-  "tldr": {
-    "title": "Em resumo",
-    "body": "Se quer que os seus clientes encomendem com antecedência no telemóvel e escolham uma hora de levantamento, precisa de um sistema de encomendas, não apenas de uma caixa. Procure quatro coisas: horas de levantamento que acompanham a capacidade da cozinha; uma agenda semanal para locais que mudam; taxas por encomenda baixas ou inexistentes; e nenhum contrato longo. Os terminais de pagamento e as caixas tratam do pagamento no food truck e complementam um sistema de encomendas."
-  },
   "table": {
     "title": "Os sistemas de encomendas comparados",
     "caption": "Funcionalidades e custos de sistemas de encomendas online para food trucks em {country}, à data de {date}",
@@ -35,7 +31,9 @@
     "noFee": "nenhuma",
     "morePending": "Mais fornecedores aparecerão aqui assim que verificarmos os seus dados no respetivo site.",
     "priceHidden": "Sob consulta",
-    "feeAfter": "{fee} acima de {included} por mês"
+    "feeAfter": "{fee} acima de {included} por mês",
+    "legend": "✓ Sim · ◐ Em parte · ✗ Não · Não indicado: não consta das páginas de funcionalidades ou de preços · —: não especificado no site · ⓘ: a nota, a citação e a fonte",
+    "swipe": "Deslize para o lado para ver todos os produtos →"
   },
   "costs": {
     "title": "Quanto custa um sistema de encomendas para food trucks?",
@@ -121,10 +119,8 @@
     "goLive": "A página é publicada em Admin › Países.",
     "check": {
       "apps": "Flags de iPad e Android ativas para {country}",
-      "verified": "Pelo menos 2 fornecedores verificados ({n} verificados)",
       "placeholders": "Nenhum marcador «[ … ]» por preencher no texto",
-      "vat": "Texto sobre o IVA presente",
-      "impressum": "Decisão sobre o Impressum registada"
+      "vat": "Texto sobre o IVA presente"
     },
     "unverified": "não verificado · oculto ao público",
     "autoVerified": "verificado automaticamente",
@@ -133,7 +129,13 @@
     "notShown": "Fora da página (são apresentados no máximo quatro): {names}.",
     "reasonHidden": "{name} (oculto)",
     "reasonBeyond": "{name} (além dos quatro)",
-    "reasonNoWebsite": "{name} (sem site)"
+    "reasonNoWebsite": "{name} (sem site)",
+    "liveAuto": "Publicada através da publicação automática",
+    "adminsOnly": "Só para admins — {reason}",
+    "whyFewer": "concorrentes que passam nas verificações automáticas: {n} de {total}; são precisos 2",
+    "whyAutoOff": "a publicação automática está desativada para este país",
+    "shown": "{n, plural, one {# concorrente apresentado} many {# de concorrentes apresentados} other {# concorrentes apresentados}}",
+    "details": "Detalhes"
   },
   "footer": {
     "heading": "Comparar",
@@ -163,7 +165,10 @@
     "notInCountry": "não disponível em {country}",
     "flagOff": "ainda desativado; aparece quando estiver nas lojas de apps",
     "notApplicable": "não se aplica a um mercado",
-    "not_listed": "Não indicado"
+    "not_listed": "Não indicado",
+    "details": "Detalhes",
+    "doesntSay": "Não especificado",
+    "none": "Nenhuma"
   },
   "explained": {
     "title": "O que significam as funcionalidades"

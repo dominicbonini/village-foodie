@@ -15,10 +15,6 @@
   },
   "h1": "Bestelsystemen voor foodtrucks vergeleken 2026",
   "byline": "Laatst gecontroleerd: {date} · Gemaakt door HatchGrab. Wij zijn een van de vergeleken aanbieders (zie <link>Zo hebben we vergeleken</link>).",
-  "tldr": {
-    "title": "In het kort",
-    "body": "Wil je dat klanten vooraf op hun telefoon bestellen en een afhaaltijd kiezen, dan heb je een bestelsysteem nodig, niet alleen een kassa. Let op vier dingen: afhaaltijden die meebewegen met wat je keuken aankan; een weekplanning voor wisselende standplaatsen; lage of geen kosten per bestelling; en geen lang contract. Pinapparaten en kassasystemen regelen het afrekenen bij de truck en vullen een bestelsysteem aan."
-  },
   "table": {
     "title": "De bestelsystemen vergeleken",
     "caption": "Functies en kosten van online bestelsystemen voor foodtrucks in {country}, stand {date}",
@@ -35,7 +31,9 @@
     "noFee": "geen",
     "morePending": "Meer aanbieders verschijnen hier zodra we hun gegevens op hun eigen website hebben gecontroleerd.",
     "priceHidden": "Op aanvraag",
-    "feeAfter": "{fee} boven {included} per maand"
+    "feeAfter": "{fee} boven {included} per maand",
+    "legend": "✓ Ja · ◐ Deels · ✗ Nee · Niet vermeld: niet op hun functie- of prijspagina's · —: niet aangegeven op hun website · ⓘ: de notitie, het citaat en de bron",
+    "swipe": "Veeg opzij om alle producten te zien →"
   },
   "costs": {
     "title": "Wat kost een bestelsysteem voor je foodtruck?",
@@ -121,10 +119,8 @@
     "goLive": "Je zet de pagina live in Admin › Landen.",
     "check": {
       "apps": "iPad- en Android-flags aan voor {country}",
-      "verified": "Minstens 2 geverifieerde aanbieders ({n} geverifieerd)",
       "placeholders": "Geen ‘[ … ]’-placeholder meer in de tekst",
-      "vat": "Btw-tekst aanwezig",
-      "impressum": "Impressum-besluit vastgelegd"
+      "vat": "Btw-tekst aanwezig"
     },
     "unverified": "niet geverifieerd · verborgen voor het publiek",
     "autoVerified": "automatisch geverifieerd",
@@ -133,7 +129,13 @@
     "notShown": "Niet op de pagina (er worden er maximaal vier getoond): {names}.",
     "reasonHidden": "{name} (verborgen)",
     "reasonBeyond": "{name} (na de eerste vier)",
-    "reasonNoWebsite": "{name} (geen website)"
+    "reasonNoWebsite": "{name} (geen website)",
+    "liveAuto": "Live via automatisch publiceren",
+    "adminsOnly": "Alleen voor admins — {reason}",
+    "whyFewer": "concurrenten door de automatische controles: {n} van {total}; er zijn er 2 nodig",
+    "whyAutoOff": "automatisch publiceren staat uit voor dit land",
+    "shown": "{n, plural, one {# concurrent getoond} other {# concurrenten getoond}}",
+    "details": "Details"
   },
   "footer": {
     "heading": "Vergelijken",
@@ -163,7 +165,10 @@
     "notInCountry": "niet in {country}",
     "flagOff": "flag nog uit; zichtbaar zodra de stores de app tonen",
     "notApplicable": "geldt niet voor een markt",
-    "not_listed": "Niet vermeld"
+    "not_listed": "Niet vermeld",
+    "details": "Details",
+    "doesntSay": "Niet aangegeven",
+    "none": "Geen"
   },
   "explained": {
     "title": "Wat de functies betekenen"

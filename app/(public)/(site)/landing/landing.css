@@ -1022,12 +1022,7 @@ html:has(.hg-landing) { scroll-behavior: smooth; }
    ⚠️ .foot-grid IS UNCHANGED — still a two-child `space-between` row. The brand block keeps its
    position and its width; only the right-hand child gained an internal column. */
 .hg-landing .foot-right { display: flex; flex-direction: column; align-items: flex-end; gap: 1.25rem; }
-/* compare-de-1 (24 October 2026): the "Vergleich" column — a third .foot-grid child between the brand block and the links,
-   only on a country whose comparison page is live (or, in the browser, for an admin). */
-.hg-landing .foot-col { display: flex; flex-direction: column; gap: .45rem; }
-.hg-landing .foot-col-h { color: #fff; font-weight: 700; font-size: .8rem; letter-spacing: .06em; text-transform: uppercase; }
-.hg-landing .foot-col a { color: #C3CAD8; text-decoration: none; font-size: .9rem; }
-.hg-landing .foot-col a:hover { color: #fff; }
+/* compare-de-1's "Vergleich" column (.foot-col) is gone: compare-ux-1 (8 November 2026) made it the "Compare" link in .foot-links. */
 .hg-landing .foot-apps { display: flex; flex-wrap: wrap; gap: 1.25rem; }
 .hg-landing .foot-badge { display: inline-block; line-height: 0; }
 .hg-landing .foot-badge img { height: 40px; width: auto; display: block; }
@@ -1077,6 +1072,10 @@ html:has(.hg-landing) { scroll-behavior: smooth; }
   .hg-landing .foot-links > a, .hg-landing .foot-links > .cc { display: flex; align-items: center; justify-content: center; min-width: 0; min-height: 44px; line-height: 1.2; overflow-wrap: anywhere; hyphens: auto; }
   .hg-landing .foot-links > :nth-last-child(5), .hg-landing .foot-links > :nth-last-child(4),
   .hg-landing .foot-links > :nth-last-child(2), .hg-landing .foot-links > :nth-last-child(1) { order: 1; }
+  /* compare-ux-1 (8 November 2026): where the comparison page is live, "Compare" sits after FAQ. The last five items are unchanged, so
+     the order rule above still holds: eight items (Compare without FAQ) are still four and four; NINE (FAQ and Compare) put the country
+     menu — the ninth, painted last — on a third row of its own, spanning it and centred. */
+  .hg-landing .foot-links > .cc:nth-child(9) { grid-column: 1 / -1; }
   .hg-landing .foot-base { margin-top: 1.4rem; padding-top: .9rem; }
 }
 

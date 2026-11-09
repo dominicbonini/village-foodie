@@ -6384,10 +6384,6 @@
     },
     "h1": "Beställningssystem för foodtruckar – jämförelse 2026",
     "byline": "Senast kontrollerat: {date} · Gjord av HatchGrab. Vi är en av de jämförda leverantörerna (se <link>Så har vi jämfört</link>).",
-    "tldr": {
-      "title": "Kort sagt",
-      "body": "Om dina kunder ska kunna beställa i förväg i mobilen och välja en upphämtningstid behöver du ett beställningssystem, inte bara ett kassasystem. Titta efter fyra saker: upphämtningstider som följer din kökskapacitet, ett veckoschema för växlande platser, låga eller inga avgifter per beställning och ingen lång bindningstid. Kortterminaler och kassasystem sköter betalningen vid foodtrucken och kompletterar ett beställningssystem."
-    },
     "table": {
       "title": "De jämförda beställningssystemen",
       "caption": "Funktioner och kostnader för onlinebeställningssystem för foodtruckar i {country}, per {date}",
@@ -6404,7 +6400,9 @@
       "noFee": "ingen",
       "morePending": "Fler leverantörer visas här när vi har kontrollerat deras uppgifter på deras egen webbplats.",
       "priceHidden": "På förfrågan",
-      "feeAfter": "{fee} över {included} i månaden"
+      "feeAfter": "{fee} över {included} i månaden",
+      "legend": "✓ Ja · ◐ Delvis · ✗ Nej · Anges inte: finns inte på deras funktions- eller prissidor · —: framgår inte av deras webbplats · ⓘ: anteckningen, citatet och källan",
+      "swipe": "Svep åt sidan för att se alla produkter →"
     },
     "costs": {
       "title": "Vad kostar ett beställningssystem för foodtruckar?",
@@ -6490,10 +6488,8 @@
       "goLive": "Sidan publiceras i Admin › Countries.",
       "check": {
         "apps": "Flaggor för iPad och Android på för {country}",
-        "verified": "Minst 2 verifierade leverantörer ({n} verifierade)",
         "placeholders": "Ingen platshållare ”[ … ]” kvar i texten",
-        "vat": "Momstext finns",
-        "impressum": "Beslut om Impressum registrerat"
+        "vat": "Momstext finns"
       },
       "unverified": "ej verifierad · dold för besökarna",
       "autoVerified": "autoverifierad",
@@ -6502,7 +6498,13 @@
       "notShown": "Inte på sidan (högst fyra visas): {names}.",
       "reasonHidden": "{name} (dold)",
       "reasonBeyond": "{name} (utöver de fyra)",
-      "reasonNoWebsite": "{name} (ingen webbplats)"
+      "reasonNoWebsite": "{name} (ingen webbplats)",
+      "liveAuto": "Live via automatisk publicering",
+      "adminsOnly": "Endast admins — {reason}",
+      "whyFewer": "konkurrenter som klarar de automatiska kontrollerna: {n} av {total}; 2 behövs",
+      "whyAutoOff": "automatisk publicering är avstängd för det här landet",
+      "shown": "{n, plural, one {# konkurrent visas} other {# konkurrenter visas}}",
+      "details": "Detaljer"
     },
     "footer": {
       "heading": "Jämför",
@@ -6532,7 +6534,10 @@
       "notInCountry": "inte i {country}",
       "flagOff": "flaggan är fortfarande av; visas när appbutikerna listar appen",
       "notApplicable": "gäller inte för en matmarknad",
-      "not_listed": "Anges inte"
+      "not_listed": "Anges inte",
+      "details": "Detaljer",
+      "doesntSay": "Framgår inte",
+      "none": "Ingen"
     },
     "explained": {
       "title": "Vad funktionerna betyder"

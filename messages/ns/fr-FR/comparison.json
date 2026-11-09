@@ -15,10 +15,6 @@
   },
   "h1": "Comparatif 2026 des logiciels de commande pour food trucks",
   "byline": "Dernière vérification : {date} · Réalisé par HatchGrab. Nous sommes l’un des éditeurs comparés (voir <link>Notre méthode de comparaison</link>).",
-  "tldr": {
-    "title": "En bref",
-    "body": "Si vos clients doivent pouvoir commander à l’avance sur leur téléphone et choisir une heure de retrait, il vous faut un logiciel de commande, pas seulement une caisse. Vérifiez quatre points : des heures de retrait qui suivent la capacité de votre cuisine ; un planning hebdomadaire pour des emplacements qui changent ; peu ou pas de frais par commande ; et pas d’engagement long. Les TPE et les caisses gèrent l’encaissement au camion et complètent un logiciel de commande."
-  },
   "table": {
     "title": "Les logiciels de commande comparés",
     "caption": "Fonctionnalités et coûts des logiciels de commande en ligne pour food trucks en {country}, au {date}",
@@ -35,7 +31,9 @@
     "noFee": "sans frais",
     "morePending": "D’autres éditeurs apparaîtront ici dès que nous aurons vérifié leurs informations sur leur propre site web.",
     "priceHidden": "Sur demande",
-    "feeAfter": "{fee} au-delà de {included} par mois"
+    "feeAfter": "{fee} au-delà de {included} par mois",
+    "legend": "✓ Oui · ◐ En partie · ✗ Non · Non indiqué : absent de ses pages fonctionnalités et tarifs · — : non précisé sur son site web · ⓘ : la note, la citation et la source",
+    "swipe": "Faites glisser latéralement pour voir tous les produits →"
   },
   "costs": {
     "title": "Combien coûte un logiciel de commande pour food truck ?",
@@ -121,10 +119,8 @@
     "goLive": "La page se met en ligne dans Admin › Pays.",
     "check": {
       "apps": "Indicateurs iPad et Android activés pour {country}",
-      "verified": "Au moins 2 éditeurs vérifiés ({n} vérifiés)",
       "placeholders": "Plus aucun espace réservé « [ … ] » dans le texte",
-      "vat": "Mention de la TVA présente",
-      "impressum": "Décision sur l’Impressum enregistrée"
+      "vat": "Mention de la TVA présente"
     },
     "unverified": "non vérifié · masqué au public",
     "autoVerified": "vérifié automatiquement",
@@ -133,7 +129,13 @@
     "notShown": "Absents de la page (quatre au maximum sont affichés) : {names}.",
     "reasonHidden": "{name} (masqué)",
     "reasonBeyond": "{name} (au-delà des quatre)",
-    "reasonNoWebsite": "{name} (pas de site web)"
+    "reasonNoWebsite": "{name} (pas de site web)",
+    "liveAuto": "En ligne via la publication automatique",
+    "adminsOnly": "Réservé aux admins — {reason}",
+    "whyFewer": "concurrents ayant passé les contrôles automatiques : {n} sur {total} ; il en faut 2",
+    "whyAutoOff": "la publication automatique est désactivée pour ce pays",
+    "shown": "{n, plural, one {# concurrent affiché} many {# de concurrents affichés} other {# concurrents affichés}}",
+    "details": "Détails"
   },
   "footer": {
     "heading": "Comparatif",
@@ -163,7 +165,10 @@
     "notInCountry": "indisponible en {country}",
     "flagOff": "indicateur encore désactivé ; affiché dès que l’app est dans les stores",
     "notApplicable": "ne s’applique pas à un marché",
-    "not_listed": "Non indiqué"
+    "not_listed": "Non indiqué",
+    "details": "Détails",
+    "doesntSay": "Non précisé",
+    "none": "Aucun"
   },
   "explained": {
     "title": "Les fonctionnalités expliquées"

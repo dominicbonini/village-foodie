@@ -15,10 +15,6 @@
   },
   "h1": "Comparativa de sistemas de pedidos para food trucks 2026",
   "byline": "Última comprobación: {date} · Hecho por HatchGrab. Somos uno de los proveedores comparados (consulta <link>Cómo hemos comparado</link>).",
-  "tldr": {
-    "title": "En resumen",
-    "body": "Si quieres que tus clientes pidan por adelantado desde el móvil y elijan una hora de recogida, necesitas un sistema de pedidos, no solo un TPV. Fíjate en cuatro cosas: horas de recogida que se ajusten a la capacidad de tu cocina; una agenda semanal para ubicaciones que cambian; comisiones por pedido bajas o nulas; y nada de permanencias largas. Los datáfonos y los TPV cubren el cobro en el food truck y complementan un sistema de pedidos."
-  },
   "table": {
     "title": "Los sistemas de pedidos, comparados",
     "caption": "Funciones y costes de los sistemas de pedidos online para food trucks en {country}, a fecha de {date}",
@@ -35,7 +31,9 @@
     "noFee": "ninguna",
     "morePending": "Aquí aparecerán más proveedores cuando hayamos comprobado sus datos en su propia web.",
     "priceHidden": "A consultar",
-    "feeAfter": "{fee} a partir de {included} al mes"
+    "feeAfter": "{fee} a partir de {included} al mes",
+    "legend": "✓ Sí · ◐ En parte · ✗ No · No figura: no aparece en sus páginas de funciones ni de precios · —: su web no lo dice · ⓘ: la nota, la cita y la fuente",
+    "swipe": "Desliza en horizontal para ver todos los productos →"
   },
   "costs": {
     "title": "¿Cuánto cuesta un sistema de pedidos para food trucks?",
@@ -121,10 +119,8 @@
     "goLive": "La página se publica en Admin › Países.",
     "check": {
       "apps": "Indicadores de iPad y Android activados para {country}",
-      "verified": "Al menos 2 proveedores verificados ({n} verificados)",
       "placeholders": "No queda ningún marcador “[ … ]” en el texto",
-      "vat": "Texto del IVA presente",
-      "impressum": "Decisión sobre el Impressum registrada"
+      "vat": "Texto del IVA presente"
     },
     "unverified": "sin verificar · oculto al público",
     "autoVerified": "verificado automáticamente",
@@ -133,7 +129,13 @@
     "notShown": "No aparecen en la página (se muestran cuatro como máximo): {names}.",
     "reasonHidden": "{name} (oculto)",
     "reasonBeyond": "{name} (después de los cuatro)",
-    "reasonNoWebsite": "{name} (sin web)"
+    "reasonNoWebsite": "{name} (sin web)",
+    "liveAuto": "Publicada mediante publicación automática",
+    "adminsOnly": "Solo para admins — {reason}",
+    "whyFewer": "competidores que superan las comprobaciones automáticas: {n} de {total}; hacen falta 2",
+    "whyAutoOff": "la publicación automática está desactivada para este país",
+    "shown": "{n, plural, one {# competidor mostrado} many {# de competidores mostrados} other {# competidores mostrados}}",
+    "details": "Detalles"
   },
   "footer": {
     "heading": "Comparativa",
@@ -163,7 +165,10 @@
     "notInCountry": "no disponible en {country}",
     "flagOff": "indicador aún desactivado; se mostrará cuando esté en las tiendas de apps",
     "notApplicable": "no se aplica a un mercado",
-    "not_listed": "No figura"
+    "not_listed": "No figura",
+    "details": "Detalles",
+    "doesntSay": "No lo dice",
+    "none": "Ninguna"
   },
   "explained": {
     "title": "Qué significa cada función"

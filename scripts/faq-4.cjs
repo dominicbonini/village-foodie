@@ -219,7 +219,9 @@ const navOf = html => (/<nav[\s\S]*?<\/nav>/.exec(String(html)) || [''])[0]
   }
   const fl = await linkIn(M.Features, 'uk')
   t('/uk/features: the footer links /uk/faq (every marketing page through the frame)', fl.foot.includes('href="/uk/faq"') && /<a href="\/uk\/faq">FAQ<\/a>/.test(fl.foot))
-  t('the link sits beside Features and Pricing, in Pricing\'s slot (React\'s ids after it unchanged)', /\{faqHref \? <><a href=\{`\$\{landingHref\}#pricing`\}>\{t\('pricing'\)\}<\/a><a href=\{faqHref\}>\{t\('faq'\)\}<\/a><\/> : <a href=\{`\$\{landingHref\}#pricing`\}>\{t\('pricing'\)\}<\/a>\}/.test(read('components/landing/LandingFooter.tsx')))
+  // 🔁 RE-PINNED (compare-ux-1, 8 November 2026): the same slot also carries the "Compare" link after FAQ where a comparison is live; with
+  // none, each branch renders exactly what it did (Pricing and FAQ / Pricing alone), so React's ids are unchanged.
+  t('the link sits beside Features and Pricing, in Pricing\'s slot (React\'s ids after it unchanged)', /\{faqHref\s*\? \(compareLink\s*\? <><a href=\{`\$\{landingHref\}#pricing`\}>\{t\('pricing'\)\}<\/a><a href=\{faqHref\}>\{t\('faq'\)\}<\/a>\{compareLink\}<\/>\s*: <><a href=\{`\$\{landingHref\}#pricing`\}>\{t\('pricing'\)\}<\/a><a href=\{faqHref\}>\{t\('faq'\)\}<\/a><\/>\)\s*: \(compareLink \? <><a href=\{`\$\{landingHref\}#pricing`\}>\{t\('pricing'\)\}<\/a>\{compareLink\}<\/> : <a href=\{`\$\{landingHref\}#pricing`\}>\{t\('pricing'\)\}<\/a>\)\}/.test(read('components/landing/LandingFooter.tsx')))
 
   head('7 · /faq routes like /features; /llms.txt; IndexNow')
   const codes = Object.keys(M.COUNTRY_PATH_SEGMENTS)

@@ -283,22 +283,26 @@ const text = html => dec(String(html).replace(/<script[\s\S]*?<\/script>/g, ' ')
     const cellsOf = tr => [...tr.matchAll(/<td[^>]*data-value="([a-z_]+)"[^>]*>([\s\S]*?)<\/td>/g)].map(m => ({ value: m[1], text: text(m[2]).trim() }))
     const waCells = cellsOf(wa)
     t('DE admin view renders, with Testanbieter A and the market', !r.notFound && /Testanbieter A/.test(text(html)) && /Testmarkt M/.test(text(html)))
-    t('Testanbieter A\'s WhatsApp cell: "Auf der Website nicht erwähnt" — value not_mentioned, its own neutral class, not "Nein"',
-      waCells[1] && waCells[1].value === 'not_mentioned' && waCells[1].text.startsWith('Auf der Website nicht erwähnt') && /cmp-tri cmp-tri-not_mentioned/.test(wa) && !/^Nein/.test(waCells[1].text), waCells)
-    t('…and the stylesheet gives it the neutral grey of "Nicht angegeben", never the red of Nein', /\.hg-landing \.cmp-tri-unknown, \.hg-landing \.cmp-tri-not_mentioned \{ color: var\(--ink-soft\); \}/.test(read('app/(public)/[country]/[section]/[slug]/comparison.css')))
+    // 🔁 RE-PINNED (compare-ux-1, 8 November 2026): the page shows one short verdict per cell — "not mentioned" is "—" (their website
+    // doesn't say), in the neutral grey, with its source behind the cell's ⓘ; the words "Auf der Website nicht erwähnt" stay in the twins.
+    t('Testanbieter A\'s WhatsApp cell: value not_mentioned, shown as "—" (doesn\'t say) in its neutral class, not "Nein"',
+      waCells[1] && waCells[1].value === 'not_mentioned' && waCells[1].text.startsWith('—') && /<td[^>]*data-value="not_mentioned"[^>]*><span class="cmp-v cmp-v-none" role="img" aria-label="[^"]+">—<\/span>/.test(wa) && !/^✗|Nein/.test(waCells[1].text), waCells)
+    t('…and the stylesheet gives it a neutral grey, never the red of Nein', /\.hg-landing \.cmp-v-none \{ color: var\(--ink-faint, #94A3B8\); \}/.test(read('app/(public)/[country]/[section]/[slug]/comparison.css')))
     // ⚠️ RE-PINNED (compare-suits-1, 6 November 2026): the columns are in the four-cap's order now (lib/comparison-selection.ts), so a
     // competitor's cell is found by its column header, not by position.
     const tools = [...html.matchAll(/<th scope="col"[^>]*data-tool="([^"]+)"/g)].map(m => m[1])
     const cellOf = (cells, name) => cells[tools.indexOf(name)]
     const mk = cellOf(waCells, 'Testmarkt M')
-    t('the market\'s WhatsApp cell (stored "no") says it does not apply — "gilt nicht für einen Markt", not Nein', mk && mk.value === 'unknown' && mk.text.startsWith('gilt nicht für einen Markt'), waCells)
+    // 🔁 RE-PINNED (compare-ux-1): the words are the cell's short value (class cmp-v-na), never "—" and never Nein.
+    t('the market\'s WhatsApp cell (stored "no") says it does not apply — "gilt nicht für einen Markt", not Nein', mk && mk.value === 'unknown' && mk.text.startsWith('gilt nicht für einen Markt') && /<span class="cmp-v cmp-v-na">gilt nicht für einen Markt<\/span>/.test(wa), waCells)
     const price = cellsOf(row('monthly'))
     t('…its price rows still show its plan (the commercial features apply to a market)', price.length && /29/.test(cellOf(price, 'Testmarkt M')?.text ?? ''), price)
     const twin = JSON.parse((await cmp.twin('json', { status: 'admin', admin: true, query: 'view=admin', tables })).body)
     t('the .json twin carries the machine value not_mentioned for that cell', JSON.stringify(twin).includes('"not_mentioned"'))
     const notifyRow = row('notify')
     const nc = cellsOf(notifyRow)
-    t('the new notify row is on the page (ordering group): HatchGrab "Teilweise" with the note from the code', nc[0] && nc[0].value === 'partial' && /^Teilweise, E-Mail, wenn der Schritt „Bestellung fertig“ an ist, und eine Statusseite zur Bestellung; keine SMS, kein WhatsApp, kein Push/.test(nc[0].text), nc[0])
+    // 🔁 RE-PINNED (compare-ux-1): "◐ Teilweise", the note behind the ⓘ.
+    t('the new notify row is on the page (ordering group): HatchGrab "Teilweise" with the note from the code', nc[0] && nc[0].value === 'partial' && /^◐ Teilweise ⓘ E-Mail, wenn der Schritt „Bestellung fertig“ an ist, und eine Statusseite zur Bestellung; keine SMS, kein WhatsApp, kein Push/.test(nc[0].text), nc[0])
   }
 
   // ── 5 · notify's answer comes from the code ────────────────────────────────────────────────────────────────────────

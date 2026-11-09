@@ -333,7 +333,9 @@ const sectionOrder = html => [...html.matchAll(/<section(?: id="([a-z-]+)")?(?: 
   const cmpSrc = fs.readFileSync(path.join(REPO, 'app/(public)/[country]/[section]/[slug]/page.tsx'), 'utf8')
   // ⚠️ RE-PINNED (compare-suits-1): the only other <details> is each "Which suits" answer's evidence (class cmp-suit-ev) — not an FAQ.
   t('the comparison page renders the shared component (no <details> of its own for its FAQ)', /<FaqDetails items=\{v\.faq\} className="cmp-faq" \/>/.test(cmpSrc)
-    && !/<details/.test(cmpSrc.replace(/<details className="cmp-suit-ev">[\s\S]*?<\/details>/g, '')))
+    // 🔁 RE-PINNED (compare-ux-1, 8 November 2026): the page has two more <details> of its own that are not its FAQ — a cell's ⓘ (cmp-i)
+    // and the admin banner's "Details" (cmp-admin-more) — set aside like the suits' evidence.
+    && !/<details/.test(cmpSrc.replace(/<details className="(cmp-suit-ev|cmp-i|cmp-admin-more)">[\s\S]*?<\/details>/g, '')))
   t('lib/comparison.ts builds its FAQPage with the shared builder', /faqPageLd\(`\$\{page\}#faq`, v\.faq\)/.test(fs.readFileSync(path.join(REPO, 'lib/comparison.ts'), 'utf8')))
   // ⚠️ RE-PINNED (seo-geo-2 B4): /llms.txt was rebuilt later, on purpose — faq-3's own commits (a92f983a..78e16437) did not touch it.
   t('/llms.txt\'s builder is untouched by faq-3', execFileSync('git', ['diff', '--stat', 'a92f983a', '78e16437', '--', 'lib/llms-text.ts', 'app/llms.txt'], { cwd: REPO }).toString().trim() === '')

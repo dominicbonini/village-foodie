@@ -12,7 +12,7 @@
 //       marketplace; HatchGrab never named when its data says no; the price answers' volume, inclusions and the Unlimited wording
 //   5 · every language: the section's messages exist in all 28 language bases with en-GB's tokens, and name no card reader, till,
 //       card machine or payment terminal; the source never says "best overall", "the only", "doesn't have", "unlimited capacity"
-//   6 · the real page route (fixture data): the section below the table, "Nicht aufgeführt" in the table, no FAQPage/QAPage for it,
+//   6 · the real page route (fixture data): the section above the table (compare-ux-1; it was below), "Nicht aufgeführt" in the table, no FAQPage/QAPage for it,
 //       the Markdown and JSON twins carry the same answers, at most four columns
 /* eslint-disable @typescript-eslint/no-require-imports -- a CommonJS harness, like every scripts/*.cjs */
 'use strict'
@@ -262,9 +262,10 @@ const CARD_WORDS = require('./_compare-suits-1-words.cjs')
   const pub = await R.page({ status: 'live', tables })
   const html = adm.html || ''
   t('the admin view renders, with at most four competitor columns', !!html && (html.match(/<th scope="col"[^>]*data-tool=/g) || []).length <= 5)
-  t('the table says "Nicht aufgeführt" for A\'s WhatsApp (raw answer not_mentioned; absence means no; features and pricing read)', /data-row="whatsapp"[\s\S]*?data-value="not_listed"[^>]*><span class="cmp-tri cmp-tri-not_listed">Nicht aufgeführt/.test(html))
+  t('the table says "Nicht aufgeführt" for A\'s WhatsApp (raw answer not_mentioned; absence means no; features and pricing read)', /data-row="whatsapp"[\s\S]*?data-value="not_listed"[^>]*><span class="cmp-v cmp-v-not_listed">Nicht aufgeführt/.test(html)) // 🔁 compare-ux-1: the short verdict's class
   const iTable = html.indexOf('data-table'), iSuits = html.indexOf('data-suits'), iMethod = html.indexOf('id="methodik"')
-  t('"Which suits" sits below the table and above the methodology (when it has an answer)', iSuits === -1 || (iTable < iSuits && iSuits < iMethod), { iTable, iSuits, iMethod })
+  // 🔁 RE-PINNED (compare-ux-1, 8 November 2026): "Which suits" moved up, directly under the title and the checked-date line.
+  t('"Which suits" sits above the table, straight under the byline (when it has an answer)', iSuits === -1 || (iSuits < iTable && iTable < iMethod && /<p class="cmp-byline">(?:(?!<\/p>)[\s\S])*<\/p><section aria-labelledby="suits"/.test(html)), { iTable, iSuits, iMethod })
   t('no QAPage, and the only FAQPage is the existing FAQ\'s (one)', !/QAPage/.test(html) && (html.match(/"FAQPage"/g) || []).length === 1)
   const deSuits = JSON.parse(read('messages/de-DE.json')).comparisonSuits ?? {}, deCmp = JSON.parse(read('messages/de-DE.json')).comparison
   const esc = x => String(x ?? '').replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/'/g, '&#x27;').replace(/</g, '&lt;').replace(/>/g, '&gt;')

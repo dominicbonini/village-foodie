@@ -15,10 +15,6 @@
   },
   "h1": "Ruokarekkojen tilausjärjestelmät vertailussa 2026",
   "byline": "Tarkistettu viimeksi: {date} · Tekijä: HatchGrab. Olemme itse yksi vertailluista toimittajista (katso <link>Näin vertailimme</link>).",
-  "tldr": {
-    "title": "Lyhyesti",
-    "body": "Jos haluat, että asiakkaasi tilaavat etukäteen puhelimella ja valitsevat noutoajan, tarvitset tilausjärjestelmän, et pelkkää kassajärjestelmää. Katso neljää asiaa: noutoajat mukautuvat keittiösi kapasiteettiin, viikkoaikataulu tukee vaihtuvia myyntipaikkoja, tilauskohtaiset maksut ovat pieniä tai niitä ei ole, eikä pitkää sopimusta tarvita. Maksupäätteet ja kassajärjestelmät hoitavat maksamisen ruokarekalla ja täydentävät tilausjärjestelmää."
-  },
   "table": {
     "title": "Tilausjärjestelmät vertailussa",
     "caption": "Ruokarekkojen verkkotilausjärjestelmien ominaisuudet ja kustannukset ({country}), tilanne {date}",
@@ -35,7 +31,9 @@
     "noFee": "ei maksua",
     "morePending": "Lisää toimittajia tulee tähän, kun olemme tarkistaneet niiden tiedot niiden omilta verkkosivustoilta.",
     "priceHidden": "Hinta pyynnöstä",
-    "feeAfter": "{fee}, kun {included} kuukaudessa ylittyy"
+    "feeAfter": "{fee}, kun {included} kuukaudessa ylittyy",
+    "legend": "✓ Kyllä · ◐ Osittain · ✗ Ei · Ei mainittu: ei heidän ominaisuus- tai hintasivuillaan · —: ei kerrota verkkosivustolla · ⓘ: huomautus, lainaus ja lähde",
+    "swipe": "Pyyhkäise sivulle nähdäksesi kaikki tuotteet →"
   },
   "costs": {
     "title": "Mitä ruokarekan tilausjärjestelmä maksaa?",
@@ -121,10 +119,8 @@
     "goLive": "Sivu julkaistaan kohdassa Admin › Countries.",
     "check": {
       "apps": "iPad- ja Android-liput päällä ({country})",
-      "verified": "Vähintään 2 vahvistettua toimittajaa ({n} vahvistettu)",
       "placeholders": "Tekstissä ei ole jäljellä ”[ … ]”-paikkamerkkejä",
-      "vat": "ALV-teksti on mukana",
-      "impressum": "Impressum-päätös kirjattu"
+      "vat": "ALV-teksti on mukana"
     },
     "unverified": "ei vahvistettu · piilotettu yleisöltä",
     "autoVerified": "vahvistettu automaattisesti",
@@ -133,7 +129,13 @@
     "notShown": "Ei sivulla (enintään neljä näytetään): {names}.",
     "reasonHidden": "{name} (piilotettu)",
     "reasonBeyond": "{name} (neljän ulkopuolella)",
-    "reasonNoWebsite": "{name} (ei verkkosivustoa)"
+    "reasonNoWebsite": "{name} (ei verkkosivustoa)",
+    "liveAuto": "Julkaistu automaattisesti",
+    "adminsOnly": "Vain admineille — {reason}",
+    "whyFewer": "{total} kilpailijasta {n} läpäisee automaattiset tarkistukset; tarvitaan 2",
+    "whyAutoOff": "automaattinen julkaisu on pois päältä tässä maassa",
+    "shown": "{n, plural, one {# kilpailija näkyvissä} other {# kilpailijaa näkyvissä}}",
+    "details": "Lisätiedot"
   },
   "footer": {
     "heading": "Vertailu",
@@ -163,7 +165,10 @@
     "notInCountry": "ei saatavilla ({country})",
     "flagOff": "lippu vielä pois päältä; näytetään, kun sovelluskaupat listaavat sovelluksen",
     "notApplicable": "ei koske ruokatoria",
-    "not_listed": "Ei mainittu"
+    "not_listed": "Ei mainittu",
+    "details": "Lisätiedot",
+    "doesntSay": "Ei kerrota",
+    "none": "Ei mitään"
   },
   "explained": {
     "title": "Mitä ominaisuudet tarkoittavat"

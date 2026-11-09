@@ -4,9 +4,6 @@
       "explain": "The vendor provides a card terminal for payments at the truck."
     }
   },
-  "tldr": {
-    "body": "If your customers should order ahead on their phone and choose a pickup time, you need an ordering system, not just a POS. Look for four things: pickup times that follow your kitchen capacity; a weekly schedule for changing locations; low or no fees per order; and no long contract. Card terminals and POS systems cover payment at the truck and complement an ordering system."
-  },
   "fit": {
     "tills": "POS systems and card terminals"
   },

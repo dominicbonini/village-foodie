@@ -65,6 +65,11 @@ export interface FooterComparison { mode: 'live' | 'admin'; href: string; headin
 // faqHrefFor); absent → no FAQ link.
 export function LandingFooter({ landingHref = '', featuresHref = '/features', country, locale, comparison, apps, faqHref }: { landingHref?: string; featuresHref?: string; country?: VisitorCountryMenu; locale?: string; comparison?: FooterComparison; apps?: { ios: boolean; android: boolean }; faqHref?: string } = {}) {
   const t = translatorFor(locale, 'landingFooter')
+  const compareLink = comparison
+    ? (comparison.mode === 'live'
+      ? <a href={comparison.href} className="foot-compare" data-footer-comparison="live">{comparison.heading}</a>
+      : <AdminOnly><a href={comparison.href} className="foot-compare" data-footer-comparison="admin">{comparison.heading}</a></AdminOnly>)
+    : null
   return (
   <footer className={HEADER_BG}>
     <div className="wrap">
@@ -94,15 +99,9 @@ export function LandingFooter({ landingHref = '', featuresHref = '/features', co
             The brand block on the left is untouched and keeps its position.
             ⚠️ MOBILE: @media(max-width:720px) turns .foot-grid into a centred column and switches this
             wrapper to `align-items: center`, so the stack reads brand -> links -> badge, all centred. */}
-        {comparison && (() => {
-          const box = (
-            <div className="foot-col" data-footer-comparison={comparison.mode}>
-              <p className="foot-col-h">{comparison.heading}</p>
-              <a href={comparison.href}>{comparison.link}</a>
-            </div>
-          )
-          return comparison.mode === 'live' ? box : <AdminOnly>{box}</AdminOnly>
-        })()}
+        {/* compare-ux-1: the old comparison column's SLOT, kept empty — removing it would shift React's generated ids (the country
+            menu's) on every page; a page without a live comparison stays byte-identical. The link is in .foot-links below. */}
+        {null}
         <div className="foot-right">
           <div className="foot-links">
             {/* 🔴 FEATURES IS IN THE FOOTER AT EVERY WIDTH, which is what makes the header's 820px
@@ -112,7 +111,15 @@ export function LandingFooter({ landingHref = '', featuresHref = '/features', co
             {/* faq-4: the FAQ page, beside Features and Pricing — only where this country's /faq has content. 🔴 ONE SLOT WITH PRICING: a
                 separate `{faqHref && …}` slot would move the country menu after it one position and change React's generated ids on EVERY
                 page (found by scripts/faq-4.cjs's HEAD comparison, as faq-3 found for the landing). */}
-            {faqHref ? <><a href={`${landingHref}#pricing`}>{t('pricing')}</a><a href={faqHref}>{t('faq')}</a></> : <a href={`${landingHref}#pricing`}>{t('pricing')}</a>}
+            {/* compare-ux-1 (8 November 2026): "Compare" — the country's comparison page — is a link in this row after FAQ (it was a
+                separate "Compare / Ordering system comparison" column). 'live' → in the server HTML; 'admin' → in an admin's browser only
+                (AdminOnly); absent → nothing. 🔴 IN THE SAME SLOT as Pricing and FAQ, for the reason faq-4 gives: a slot of its own would
+                shift React's generated ids on every page, and a page without a live comparison must stay byte-identical. */}
+            {faqHref
+              ? (compareLink
+                ? <><a href={`${landingHref}#pricing`}>{t('pricing')}</a><a href={faqHref}>{t('faq')}</a>{compareLink}</>
+                : <><a href={`${landingHref}#pricing`}>{t('pricing')}</a><a href={faqHref}>{t('faq')}</a></>)
+              : (compareLink ? <><a href={`${landingHref}#pricing`}>{t('pricing')}</a>{compareLink}</> : <a href={`${landingHref}#pricing`}>{t('pricing')}</a>)}
             {/* legal-languages-1 (1 November 2026): the documents in the page's language — /fr/privacy on a French page; the
                 English /privacy and /terms on an English one, exactly as before (lib/legal.ts legalPath). */}
             <a href={legalPath('privacy', { country: country?.current.code, locale })}>{t('privacy')}</a>

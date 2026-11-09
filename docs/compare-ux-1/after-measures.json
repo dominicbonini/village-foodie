@@ -1,0 +1,119 @@
+{
+ "gb-public-390": {
+  "cols": 5,
+  "pageScrollsSideways": false,
+  "columnsPopulated": [
+   true,
+   true,
+   true,
+   true,
+   true
+  ],
+  "headerTopWhileScrolled": 72,
+  "navBottom": 72,
+  "headerSticky": true,
+  "swipeHint": true,
+  "featureColumnSticky": true,
+  "tableScrollsSideways": true,
+  "breadcrumbOverNav": false,
+  "breadcrumbPosition": "static",
+  "detailOpens": true,
+  "legend": true,
+  "tldr": false,
+  "suitsBeforeTable": true
+ },
+ "gb-public-1280": {
+  "cols": 5,
+  "pageScrollsSideways": false,
+  "columnsPopulated": [
+   true,
+   true,
+   true,
+   true,
+   true
+  ],
+  "headerTopWhileScrolled": 72,
+  "navBottom": 72,
+  "headerSticky": true,
+  "swipeHint": false,
+  "featureColumnSticky": "no sideways scroll",
+  "tableScrollsSideways": false,
+  "breadcrumbOverNav": false,
+  "breadcrumbPosition": "static",
+  "detailOpens": true,
+  "legend": true,
+  "tldr": false,
+  "suitsBeforeTable": true
+ },
+ "de-public-390": {
+  "cols": 3,
+  "pageScrollsSideways": false,
+  "columnsPopulated": [
+   true,
+   true,
+   true
+  ],
+  "headerTopWhileScrolled": 72,
+  "navBottom": 72,
+  "headerSticky": true,
+  "swipeHint": true,
+  "featureColumnSticky": true,
+  "tableScrollsSideways": true,
+  "breadcrumbOverNav": false,
+  "breadcrumbPosition": "static",
+  "detailOpens": true,
+  "legend": true,
+  "tldr": false,
+  "suitsBeforeTable": true
+ },
+ "jp-public-390": {
+  "cols": 3,
+  "pageScrollsSideways": true,
+  "sticksOut": [
+   "span.cta-short: 415 \"メニューをアップロード\""
+  ],
+  "columnsPopulated": [
+   true,
+   true,
+   true
+  ],
+  "headerTopWhileScrolled": 72,
+  "navBottom": 72,
+  "headerSticky": true,
+  "swipeHint": true,
+  "featureColumnSticky": true,
+  "tableScrollsSideways": true,
+  "breadcrumbOverNav": false,
+  "breadcrumbPosition": "static",
+  "detailOpens": true,
+  "legend": true,
+  "tldr": false,
+  "suitsBeforeTable": true
+ },
+ "jp-admin-390": {
+  "cols": 5,
+  "pageScrollsSideways": true,
+  "sticksOut": [
+   "span.cta-short: 415 \"メニューをアップロード\""
+  ],
+  "columnsPopulated": [
+   true,
+   true,
+   true,
+   true,
+   true
+  ],
+  "headerTopWhileScrolled": 72,
+  "navBottom": 72,
+  "headerSticky": true,
+  "swipeHint": true,
+  "featureColumnSticky": true,
+  "tableScrollsSideways": true,
+  "breadcrumbOverNav": false,
+  "breadcrumbPosition": "static",
+  "detailOpens": true,
+  "legend": true,
+  "tldr": false,
+  "suitsBeforeTable": true
+ }
+}

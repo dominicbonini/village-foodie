@@ -6384,10 +6384,6 @@
     },
     "h1": "Usporedba sustava za narudžbe za food truckove 2026",
     "byline": "Zadnja provjera: {date} · Izradio HatchGrab. Mi smo jedan od uspoređenih dobavljača (pogledajte <link>Kako smo uspoređivali</link>).",
-    "tldr": {
-      "title": "Ukratko",
-      "body": "Ako želite da kupci naručuju unaprijed na mobitelu i biraju vrijeme preuzimanja, trebate sustav za narudžbe, a ne samo blagajnu. Obratite pažnju na četiri stvari: vremena preuzimanja koja prate kapacitet kuhinje; tjedni raspored za promjenjive lokacije; niske naknade po narudžbi ili nikakve; te da nema dugoročnog ugovora. POS uređaji i blagajne pokrivaju plaćanje kod food trucka i nadopunjuju sustav za narudžbe."
-    },
     "table": {
       "title": "Usporedba sustava za narudžbe",
       "caption": "Značajke i troškovi sustava za online narudžbe za food truckove ({country}), stanje {date}",
@@ -6404,7 +6400,9 @@
       "noFee": "nema",
       "morePending": "Ostali dobavljači pojavit će se ovdje čim njihove podatke provjerimo na njihovim web-stranicama.",
       "priceHidden": "Na upit",
-      "feeAfter": "{fee} iznad {included} mjesečno"
+      "feeAfter": "{fee} iznad {included} mjesečno",
+      "legend": "✓ Da · ◐ Djelomično · ✗ Ne · Ne navodi: nije na njihovim stranicama značajki ni cijena · —: nema podatka na njihovoj web-stranici · ⓘ: napomena, citat i izvor",
+      "swipe": "Povucite u stranu za prikaz svih proizvoda →"
     },
     "costs": {
       "title": "Koliko košta sustav za narudžbe za food truck?",
@@ -6490,10 +6488,8 @@
       "goLive": "Stranica se objavljuje u Admin › Countries.",
       "check": {
         "apps": "Zastavice za iPad i Android uključene ({country})",
-        "verified": "Najmanje 2 provjerena dobavljača (provjereno: {n})",
         "placeholders": "U tekstu nema preostalih rezerviranih mjesta „[ … ]“",
-        "vat": "Tekst o PDV-u postoji",
-        "impressum": "Odluka o Impressumu zabilježena"
+        "vat": "Tekst o PDV-u postoji"
       },
       "unverified": "nije provjereno · skriveno od javnosti",
       "autoVerified": "automatski provjereno",
@@ -6502,7 +6498,13 @@
       "notShown": "Nije na stranici (prikazuju se najviše četiri): {names}.",
       "reasonHidden": "{name} (skriveno)",
       "reasonBeyond": "{name} (izvan prve četiri)",
-      "reasonNoWebsite": "{name} (nema web-stranicu)"
+      "reasonNoWebsite": "{name} (nema web-stranicu)",
+      "liveAuto": "Objavljeno automatski",
+      "adminsOnly": "Samo za admine — {reason}",
+      "whyFewer": "konkurenti koji prolaze automatske provjere: {n} od {total}; potrebna su 2",
+      "whyAutoOff": "automatsko objavljivanje isključeno je za ovu zemlju",
+      "shown": "{n, plural, one {# prikazani konkurent} few {# prikazana konkurenta} other {# prikazanih konkurenata}}",
+      "details": "Detalji"
     },
     "footer": {
       "heading": "Usporedba",
@@ -6532,7 +6534,10 @@
       "notInCountry": "nije dostupno ({country})",
       "flagOff": "zastavica još isključena; prikazuje se kad aplikacija bude u trgovinama",
       "notApplicable": "ne odnosi se na tržište",
-      "not_listed": "Ne navodi"
+      "not_listed": "Ne navodi",
+      "details": "Detalji",
+      "doesntSay": "Nema podatka",
+      "none": "Nema"
     },
     "explained": {
       "title": "Što znače značajke"

@@ -9,7 +9,7 @@
 // `.foot-col` rules) — so it does not depend on a build made after this change. Writes into docs/compare-de-1/:
 //   <engine>-admin-<w>.png     the admin view (status 'admin', a verified admin): banner, checklist, every entry badged
 //   <engine>-public-<w>.png    the public view (status 'live', anonymous): HatchGrab + the verified competitor only
-//   <engine>-footer-<w>.png    the /de landing footer with the "Vergleich" column (status 'live')
+//   <engine>-footer-<w>.png    the /de landing footer with the "Vergleich" link (status 'live'; a column until compare-ux-1)
 // …and FAILS if: the page scrolls sideways at 390 (only the table's own box may); the table box does not scroll sideways at
 // 390; the "Vergleich" column is missing from the footer; an unverified competitor shows in the public view.
 // global-players-1 (29 October 2026): `--global-players` photographs the ADMIN view with the till / POS players
@@ -37,9 +37,10 @@ const t = (label, ok, detail) => { if (ok) { pass++; console.log('  ✓ ' + labe
   const B = RF.built()
   // This change's CSS from source: the comparison page's file and the footer's "Vergleich" block in landing.css.
   const landingCss = fs.readFileSync(path.join(REPO, 'app/(public)/(site)/landing/landing.css'), 'utf8')
+  // 🔁 RE-PINNED (compare-ux-1, 8 November 2026): the "Vergleich" column (.foot-col) is gone — the footer's "Vergleich" is a link in its
+  // row now, styled by landing.css's own .foot-links rules (in the build). The column's rules are added only if a tree still has them.
   const footCol = (/\/\* compare-de-1 \(24 October 2026\): the "Vergleich" column[\s\S]*?\.hg-landing \.foot-col a:hover \{[^}]*\}/.exec(landingCss) || [''])[0]
   const css = `<style>${fs.readFileSync(path.join(REPO, 'app/(public)/[country]/[section]/[slug]/comparison.css'), 'utf8')}\n${footCol}</style>`
-  if (!footCol) throw new Error('the footer\'s .foot-col rules are not in app/(public)/(site)/landing/landing.css')
   const R = await F.renderer(kit, 'cde1s')
   const views = GLOBAL ? { admin: (await R.page({ status: 'admin', admin: true, tables: F.GLOBAL_TABLES() })).html }
     : FEATURES ? { 'page-admin': (await R.page({ status: 'admin', admin: true })).html } : {
@@ -65,7 +66,7 @@ const t = (label, ok, detail) => { if (ok) { pass++; console.log('  ✓ ' + labe
               card: ((document.querySelector('.cmp-fit') || document.body).closest('section') || document.body).innerText || '' }
           })
           if (name === 'footer') {
-            t(`${engine} ${width}: the footer shows the "Vergleich" column`, m.footCol, m)
+            t(`${engine} ${width}: the footer shows the "Vergleich" link`, m.footCol, m)
             await v.page.locator('footer').screenshot({ path: path.join(OUT, `${engine}-footer-${width}.png`) })
           } else {
             t(`${engine} ${width} ${name}: the page never scrolls sideways`, !m.pageScrollsSideways, m)

@@ -1,0 +1,1854 @@
+{
+ "shots": {
+  "en-GB-360": {
+   "n": 9,
+   "rows": [
+    [
+     "Features",
+     "Pricing",
+     "FAQ",
+     "Compare"
+    ],
+    [
+     "About",
+     "Privacy",
+     "Terms",
+     "Contact"
+    ],
+    [
+     "GB"
+    ]
+   ],
+   "compare": true,
+   "overflow": [],
+   "short": [],
+   "footerSW": 360,
+   "footerCW": 360,
+   "pageSW": 360,
+   "vw": 360,
+   "ccCentred": true
+  },
+  "en-GB-430": {
+   "n": 9,
+   "rows": [
+    [
+     "Features",
+     "Pricing",
+     "FAQ",
+     "Compare"
+    ],
+    [
+     "About",
+     "Privacy",
+     "Terms",
+     "Contact"
+    ],
+    [
+     "GB"
+    ]
+   ],
+   "compare": true,
+   "overflow": [],
+   "short": [],
+   "footerSW": 430,
+   "footerCW": 430,
+   "pageSW": 430,
+   "vw": 430,
+   "ccCentred": true
+  },
+  "en-GB-1280": {
+   "n": 9,
+   "rows": [
+    [
+     "Features",
+     "Pricing",
+     "FAQ",
+     "Compare",
+     "Privacy",
+     "Terms",
+     "About",
+     "Contact",
+     "GB"
+    ]
+   ],
+   "compare": true,
+   "overflow": [],
+   "short": [
+    "Features 22px",
+    "Pricing 22px",
+    "FAQ 22px",
+    "Compare 22px",
+    "Privacy 22px",
+    "Terms 22px",
+    "About 22px",
+    "Contact 22px",
+    "GB 22px"
+   ],
+   "footerSW": 1280,
+   "footerCW": 1280,
+   "pageSW": 1280,
+   "vw": 1280,
+   "ccCentred": false
+  },
+  "fr-FR-360": {
+   "n": 9,
+   "rows": [
+    [
+     "Fonctionnalités",
+     "Tarifs",
+     "Questions fréquentes",
+     "Comparatif"
+    ],
+    [
+     "À propos",
+     "Confidentialité",
+     "Conditions",
+     "Contact"
+    ],
+    [
+     "FR"
+    ]
+   ],
+   "compare": true,
+   "overflow": [],
+   "short": [],
+   "footerSW": 360,
+   "footerCW": 360,
+   "pageSW": 360,
+   "vw": 360,
+   "ccCentred": true
+  },
+  "fr-FR-430": {
+   "n": 9,
+   "rows": [
+    [
+     "Fonctionnalités",
+     "Tarifs",
+     "Questions fréquentes",
+     "Comparatif"
+    ],
+    [
+     "À propos",
+     "Confidentialité",
+     "Conditions",
+     "Contact"
+    ],
+    [
+     "FR"
+    ]
+   ],
+   "compare": true,
+   "overflow": [],
+   "short": [],
+   "footerSW": 430,
+   "footerCW": 430,
+   "pageSW": 430,
+   "vw": 430,
+   "ccCentred": true
+  },
+  "fr-FR-1280": {
+   "n": 9,
+   "rows": [
+    [
+     "Fonctionnalités",
+     "Tarifs",
+     "Questions fréquentes",
+     "Comparatif",
+     "Confidentialité",
+     "Conditions",
+     "À propos",
+     "Contact",
+     "FR"
+    ]
+   ],
+   "compare": true,
+   "overflow": [],
+   "short": [
+    "Fonctionnalités 22px",
+    "Tarifs 22px",
+    "Questions fréquentes 22px",
+    "Comparatif 22px",
+    "Confidentialité 22px",
+    "Conditions 22px",
+    "À propos 22px",
+    "Contact 22px",
+    "FR 22px"
+   ],
+   "footerSW": 1280,
+   "footerCW": 1280,
+   "pageSW": 1280,
+   "vw": 1280,
+   "ccCentred": false
+  },
+  "de-DE-360": {
+   "n": 9,
+   "rows": [
+    [
+     "Funktionen",
+     "Preise",
+     "Häufige Fragen",
+     "Vergleich"
+    ],
+    [
+     "Über uns",
+     "Datenschutz",
+     "AGB",
+     "Kontakt"
+    ],
+    [
+     "DE"
+    ]
+   ],
+   "compare": true,
+   "overflow": [],
+   "short": [],
+   "footerSW": 360,
+   "footerCW": 360,
+   "pageSW": 360,
+   "vw": 360,
+   "ccCentred": true
+  },
+  "de-DE-430": {
+   "n": 9,
+   "rows": [
+    [
+     "Funktionen",
+     "Preise",
+     "Häufige Fragen",
+     "Vergleich"
+    ],
+    [
+     "Über uns",
+     "Datenschutz",
+     "AGB",
+     "Kontakt"
+    ],
+    [
+     "DE"
+    ]
+   ],
+   "compare": true,
+   "overflow": [],
+   "short": [],
+   "footerSW": 430,
+   "footerCW": 430,
+   "pageSW": 430,
+   "vw": 430,
+   "ccCentred": true
+  },
+  "de-DE-1280": {
+   "n": 9,
+   "rows": [
+    [
+     "Funktionen",
+     "Preise",
+     "Häufige Fragen",
+     "Vergleich",
+     "Datenschutz",
+     "AGB",
+     "Über uns",
+     "Kontakt",
+     "DE"
+    ]
+   ],
+   "compare": true,
+   "overflow": [],
+   "short": [
+    "Funktionen 22px",
+    "Preise 22px",
+    "Häufige Fragen 22px",
+    "Vergleich 22px",
+    "Datenschutz 22px",
+    "AGB 22px",
+    "Über uns 22px",
+    "Kontakt 22px",
+    "DE 22px"
+   ],
+   "footerSW": 1280,
+   "footerCW": 1280,
+   "pageSW": 1280,
+   "vw": 1280,
+   "ccCentred": false
+  },
+  "ja-JP-360": {
+   "n": 9,
+   "rows": [
+    [
+     "機能",
+     "料金",
+     "よくある質問",
+     "比較"
+    ],
+    [
+     "会社概要",
+     "プライバシー",
+     "利用規約",
+     "お問い合わせ"
+    ],
+    [
+     "JP"
+    ]
+   ],
+   "compare": true,
+   "overflow": [],
+   "short": [],
+   "footerSW": 360,
+   "footerCW": 360,
+   "pageSW": 360,
+   "vw": 360,
+   "ccCentred": true
+  },
+  "ja-JP-430": {
+   "n": 9,
+   "rows": [
+    [
+     "機能",
+     "料金",
+     "よくある質問",
+     "比較"
+    ],
+    [
+     "会社概要",
+     "プライバシー",
+     "利用規約",
+     "お問い合わせ"
+    ],
+    [
+     "JP"
+    ]
+   ],
+   "compare": true,
+   "overflow": [],
+   "short": [],
+   "footerSW": 430,
+   "footerCW": 430,
+   "pageSW": 430,
+   "vw": 430,
+   "ccCentred": true
+  },
+  "ja-JP-1280": {
+   "n": 9,
+   "rows": [
+    [
+     "機能",
+     "料金",
+     "よくある質問",
+     "比較",
+     "プライバシー",
+     "利用規約",
+     "会社概要",
+     "お問い合わせ",
+     "JP"
+    ]
+   ],
+   "compare": true,
+   "overflow": [],
+   "short": [
+    "機能 22px",
+    "料金 22px",
+    "よくある質問 22px",
+    "比較 22px",
+    "プライバシー 22px",
+    "利用規約 22px",
+    "会社概要 22px",
+    "お問い合わせ 22px",
+    "JP 22px"
+   ],
+   "footerSW": 1280,
+   "footerCW": 1280,
+   "pageSW": 1280,
+   "vw": 1280,
+   "ccCentred": false
+  }
+ },
+ "all": {
+  "en-GB-360": {
+   "n": 9,
+   "rows": [
+    [
+     "Features",
+     "Pricing",
+     "FAQ",
+     "Compare"
+    ],
+    [
+     "About",
+     "Privacy",
+     "Terms",
+     "Contact"
+    ],
+    [
+     "GB"
+    ]
+   ],
+   "compare": true,
+   "overflow": [],
+   "short": [],
+   "footerSW": 360,
+   "footerCW": 360,
+   "pageSW": 360,
+   "vw": 360,
+   "ccCentred": true
+  },
+  "en-GB-430": {
+   "n": 9,
+   "rows": [
+    [
+     "Features",
+     "Pricing",
+     "FAQ",
+     "Compare"
+    ],
+    [
+     "About",
+     "Privacy",
+     "Terms",
+     "Contact"
+    ],
+    [
+     "GB"
+    ]
+   ],
+   "compare": true,
+   "overflow": [],
+   "short": [],
+   "footerSW": 430,
+   "footerCW": 430,
+   "pageSW": 430,
+   "vw": 430,
+   "ccCentred": true
+  },
+  "fr-FR-360": {
+   "n": 9,
+   "rows": [
+    [
+     "Fonctionnalités",
+     "Tarifs",
+     "Questions fréquentes",
+     "Comparatif"
+    ],
+    [
+     "À propos",
+     "Confidentialité",
+     "Conditions",
+     "Contact"
+    ],
+    [
+     "FR"
+    ]
+   ],
+   "compare": true,
+   "overflow": [],
+   "short": [],
+   "footerSW": 360,
+   "footerCW": 360,
+   "pageSW": 360,
+   "vw": 360,
+   "ccCentred": true
+  },
+  "fr-FR-430": {
+   "n": 9,
+   "rows": [
+    [
+     "Fonctionnalités",
+     "Tarifs",
+     "Questions fréquentes",
+     "Comparatif"
+    ],
+    [
+     "À propos",
+     "Confidentialité",
+     "Conditions",
+     "Contact"
+    ],
+    [
+     "FR"
+    ]
+   ],
+   "compare": true,
+   "overflow": [],
+   "short": [],
+   "footerSW": 430,
+   "footerCW": 430,
+   "pageSW": 430,
+   "vw": 430,
+   "ccCentred": true
+  },
+  "de-DE-360": {
+   "n": 9,
+   "rows": [
+    [
+     "Funktionen",
+     "Preise",
+     "Häufige Fragen",
+     "Vergleich"
+    ],
+    [
+     "Über uns",
+     "Datenschutz",
+     "AGB",
+     "Kontakt"
+    ],
+    [
+     "DE"
+    ]
+   ],
+   "compare": true,
+   "overflow": [],
+   "short": [],
+   "footerSW": 360,
+   "footerCW": 360,
+   "pageSW": 360,
+   "vw": 360,
+   "ccCentred": true
+  },
+  "de-DE-430": {
+   "n": 9,
+   "rows": [
+    [
+     "Funktionen",
+     "Preise",
+     "Häufige Fragen",
+     "Vergleich"
+    ],
+    [
+     "Über uns",
+     "Datenschutz",
+     "AGB",
+     "Kontakt"
+    ],
+    [
+     "DE"
+    ]
+   ],
+   "compare": true,
+   "overflow": [],
+   "short": [],
+   "footerSW": 430,
+   "footerCW": 430,
+   "pageSW": 430,
+   "vw": 430,
+   "ccCentred": true
+  },
+  "es-ES-360": {
+   "n": 8,
+   "rows": [
+    [
+     "Funciones",
+     "Precios",
+     "Comparativa",
+     "Quiénes somos"
+    ],
+    [
+     "Privacidad",
+     "Condiciones",
+     "Contacto",
+     "ES"
+    ]
+   ],
+   "compare": true,
+   "overflow": [],
+   "short": [],
+   "footerSW": 360,
+   "footerCW": 360,
+   "pageSW": 360,
+   "vw": 360,
+   "ccCentred": false
+  },
+  "es-ES-430": {
+   "n": 8,
+   "rows": [
+    [
+     "Funciones",
+     "Precios",
+     "Comparativa",
+     "Quiénes somos"
+    ],
+    [
+     "Privacidad",
+     "Condiciones",
+     "Contacto",
+     "ES"
+    ]
+   ],
+   "compare": true,
+   "overflow": [],
+   "short": [],
+   "footerSW": 430,
+   "footerCW": 430,
+   "pageSW": 430,
+   "vw": 430,
+   "ccCentred": false
+  },
+  "it-IT-360": {
+   "n": 8,
+   "rows": [
+    [
+     "Funzioni",
+     "Prezzi",
+     "Confronto",
+     "Chi siamo"
+    ],
+    [
+     "Privacy",
+     "Termini",
+     "Contatti",
+     "IT"
+    ]
+   ],
+   "compare": true,
+   "overflow": [],
+   "short": [],
+   "footerSW": 360,
+   "footerCW": 360,
+   "pageSW": 360,
+   "vw": 360,
+   "ccCentred": false
+  },
+  "it-IT-430": {
+   "n": 8,
+   "rows": [
+    [
+     "Funzioni",
+     "Prezzi",
+     "Confronto",
+     "Chi siamo"
+    ],
+    [
+     "Privacy",
+     "Termini",
+     "Contatti",
+     "IT"
+    ]
+   ],
+   "compare": true,
+   "overflow": [],
+   "short": [],
+   "footerSW": 430,
+   "footerCW": 430,
+   "pageSW": 430,
+   "vw": 430,
+   "ccCentred": false
+  },
+  "pt-PT-360": {
+   "n": 8,
+   "rows": [
+    [
+     "Funcionalidades",
+     "Preços",
+     "Comparar",
+     "Sobre nós"
+    ],
+    [
+     "Privacidade",
+     "Termos",
+     "Contacto",
+     "PT"
+    ]
+   ],
+   "compare": true,
+   "overflow": [],
+   "short": [],
+   "footerSW": 360,
+   "footerCW": 360,
+   "pageSW": 360,
+   "vw": 360,
+   "ccCentred": false
+  },
+  "pt-PT-430": {
+   "n": 8,
+   "rows": [
+    [
+     "Funcionalidades",
+     "Preços",
+     "Comparar",
+     "Sobre nós"
+    ],
+    [
+     "Privacidade",
+     "Termos",
+     "Contacto",
+     "PT"
+    ]
+   ],
+   "compare": true,
+   "overflow": [],
+   "short": [],
+   "footerSW": 430,
+   "footerCW": 430,
+   "pageSW": 430,
+   "vw": 430,
+   "ccCentred": false
+  },
+  "nl-NL-360": {
+   "n": 8,
+   "rows": [
+    [
+     "Functies",
+     "Prijzen",
+     "Vergelijken",
+     "Over ons"
+    ],
+    [
+     "Privacy",
+     "Voorwaarden",
+     "Contact",
+     "NL"
+    ]
+   ],
+   "compare": true,
+   "overflow": [],
+   "short": [],
+   "footerSW": 360,
+   "footerCW": 360,
+   "pageSW": 360,
+   "vw": 360,
+   "ccCentred": false
+  },
+  "nl-NL-430": {
+   "n": 8,
+   "rows": [
+    [
+     "Functies",
+     "Prijzen",
+     "Vergelijken",
+     "Over ons"
+    ],
+    [
+     "Privacy",
+     "Voorwaarden",
+     "Contact",
+     "NL"
+    ]
+   ],
+   "compare": true,
+   "overflow": [],
+   "short": [],
+   "footerSW": 430,
+   "footerCW": 430,
+   "pageSW": 430,
+   "vw": 430,
+   "ccCentred": false
+  },
+  "sv-SE-360": {
+   "n": 8,
+   "rows": [
+    [
+     "Funktioner",
+     "Priser",
+     "Jämför",
+     "Om oss"
+    ],
+    [
+     "Integritet",
+     "Villkor",
+     "Kontakt",
+     "SE"
+    ]
+   ],
+   "compare": true,
+   "overflow": [],
+   "short": [],
+   "footerSW": 360,
+   "footerCW": 360,
+   "pageSW": 360,
+   "vw": 360,
+   "ccCentred": false
+  },
+  "sv-SE-430": {
+   "n": 8,
+   "rows": [
+    [
+     "Funktioner",
+     "Priser",
+     "Jämför",
+     "Om oss"
+    ],
+    [
+     "Integritet",
+     "Villkor",
+     "Kontakt",
+     "SE"
+    ]
+   ],
+   "compare": true,
+   "overflow": [],
+   "short": [],
+   "footerSW": 430,
+   "footerCW": 430,
+   "pageSW": 430,
+   "vw": 430,
+   "ccCentred": false
+  },
+  "da-DK-360": {
+   "n": 8,
+   "rows": [
+    [
+     "Funktioner",
+     "Priser",
+     "Sammenlign",
+     "Om os"
+    ],
+    [
+     "Privatliv",
+     "Vilkår",
+     "Kontakt",
+     "DK"
+    ]
+   ],
+   "compare": true,
+   "overflow": [],
+   "short": [],
+   "footerSW": 360,
+   "footerCW": 360,
+   "pageSW": 360,
+   "vw": 360,
+   "ccCentred": false
+  },
+  "da-DK-430": {
+   "n": 8,
+   "rows": [
+    [
+     "Funktioner",
+     "Priser",
+     "Sammenlign",
+     "Om os"
+    ],
+    [
+     "Privatliv",
+     "Vilkår",
+     "Kontakt",
+     "DK"
+    ]
+   ],
+   "compare": true,
+   "overflow": [],
+   "short": [],
+   "footerSW": 430,
+   "footerCW": 430,
+   "pageSW": 430,
+   "vw": 430,
+   "ccCentred": false
+  },
+  "nb-NO-360": {
+   "n": 8,
+   "rows": [
+    [
+     "Funksjoner",
+     "Priser",
+     "Sammenlign",
+     "Om oss"
+    ],
+    [
+     "Personvern",
+     "Vilkår",
+     "Kontakt",
+     "NO"
+    ]
+   ],
+   "compare": true,
+   "overflow": [],
+   "short": [],
+   "footerSW": 360,
+   "footerCW": 360,
+   "pageSW": 360,
+   "vw": 360,
+   "ccCentred": false
+  },
+  "nb-NO-430": {
+   "n": 8,
+   "rows": [
+    [
+     "Funksjoner",
+     "Priser",
+     "Sammenlign",
+     "Om oss"
+    ],
+    [
+     "Personvern",
+     "Vilkår",
+     "Kontakt",
+     "NO"
+    ]
+   ],
+   "compare": true,
+   "overflow": [],
+   "short": [],
+   "footerSW": 430,
+   "footerCW": 430,
+   "pageSW": 430,
+   "vw": 430,
+   "ccCentred": false
+  },
+  "pl-PL-360": {
+   "n": 8,
+   "rows": [
+    [
+     "Funkcje",
+     "Cennik",
+     "Porównanie",
+     "O nas"
+    ],
+    [
+     "Prywatność",
+     "Regulamin",
+     "Kontakt",
+     "PL"
+    ]
+   ],
+   "compare": true,
+   "overflow": [],
+   "short": [],
+   "footerSW": 360,
+   "footerCW": 360,
+   "pageSW": 360,
+   "vw": 360,
+   "ccCentred": false
+  },
+  "pl-PL-430": {
+   "n": 8,
+   "rows": [
+    [
+     "Funkcje",
+     "Cennik",
+     "Porównanie",
+     "O nas"
+    ],
+    [
+     "Prywatność",
+     "Regulamin",
+     "Kontakt",
+     "PL"
+    ]
+   ],
+   "compare": true,
+   "overflow": [],
+   "short": [],
+   "footerSW": 430,
+   "footerCW": 430,
+   "pageSW": 430,
+   "vw": 430,
+   "ccCentred": false
+  },
+  "cs-CZ-360": {
+   "n": 8,
+   "rows": [
+    [
+     "Funkce",
+     "Ceník",
+     "Srovnání",
+     "O nás"
+    ],
+    [
+     "Soukromí",
+     "Podmínky",
+     "Kontakt",
+     "CZ"
+    ]
+   ],
+   "compare": true,
+   "overflow": [],
+   "short": [],
+   "footerSW": 360,
+   "footerCW": 360,
+   "pageSW": 360,
+   "vw": 360,
+   "ccCentred": false
+  },
+  "cs-CZ-430": {
+   "n": 8,
+   "rows": [
+    [
+     "Funkce",
+     "Ceník",
+     "Srovnání",
+     "O nás"
+    ],
+    [
+     "Soukromí",
+     "Podmínky",
+     "Kontakt",
+     "CZ"
+    ]
+   ],
+   "compare": true,
+   "overflow": [],
+   "short": [],
+   "footerSW": 430,
+   "footerCW": 430,
+   "pageSW": 430,
+   "vw": 430,
+   "ccCentred": false
+  },
+  "hu-HU-360": {
+   "n": 8,
+   "rows": [
+    [
+     "Funkciók",
+     "Árak",
+     "Összehasonlítás",
+     "Rólunk"
+    ],
+    [
+     "Adatvédelem",
+     "Feltételek",
+     "Kapcsolat",
+     "HU"
+    ]
+   ],
+   "compare": true,
+   "overflow": [],
+   "short": [],
+   "footerSW": 360,
+   "footerCW": 360,
+   "pageSW": 364,
+   "vw": 360,
+   "ccCentred": false
+  },
+  "hu-HU-430": {
+   "n": 8,
+   "rows": [
+    [
+     "Funkciók",
+     "Árak",
+     "Összehasonlítás",
+     "Rólunk"
+    ],
+    [
+     "Adatvédelem",
+     "Feltételek",
+     "Kapcsolat",
+     "HU"
+    ]
+   ],
+   "compare": true,
+   "overflow": [],
+   "short": [],
+   "footerSW": 430,
+   "footerCW": 430,
+   "pageSW": 430,
+   "vw": 430,
+   "ccCentred": false
+  },
+  "sk-SK-360": {
+   "n": 8,
+   "rows": [
+    [
+     "Funkcie",
+     "Ceny",
+     "Porovnanie",
+     "O nás"
+    ],
+    [
+     "Ochrana súkromia",
+     "Podmienky",
+     "Kontakt",
+     "SK"
+    ]
+   ],
+   "compare": true,
+   "overflow": [],
+   "short": [],
+   "footerSW": 360,
+   "footerCW": 360,
+   "pageSW": 360,
+   "vw": 360,
+   "ccCentred": false
+  },
+  "sk-SK-430": {
+   "n": 8,
+   "rows": [
+    [
+     "Funkcie",
+     "Ceny",
+     "Porovnanie",
+     "O nás"
+    ],
+    [
+     "Ochrana súkromia",
+     "Podmienky",
+     "Kontakt",
+     "SK"
+    ]
+   ],
+   "compare": true,
+   "overflow": [],
+   "short": [],
+   "footerSW": 430,
+   "footerCW": 430,
+   "pageSW": 430,
+   "vw": 430,
+   "ccCentred": false
+  },
+  "ro-RO-360": {
+   "n": 8,
+   "rows": [
+    [
+     "Funcții",
+     "Prețuri",
+     "Comparație",
+     "Despre noi"
+    ],
+    [
+     "Confidențialitate",
+     "Termeni",
+     "Contact",
+     "RO"
+    ]
+   ],
+   "compare": true,
+   "overflow": [],
+   "short": [],
+   "footerSW": 360,
+   "footerCW": 360,
+   "pageSW": 362,
+   "vw": 360,
+   "ccCentred": false
+  },
+  "ro-RO-430": {
+   "n": 8,
+   "rows": [
+    [
+     "Funcții",
+     "Prețuri",
+     "Comparație",
+     "Despre noi"
+    ],
+    [
+     "Confidențialitate",
+     "Termeni",
+     "Contact",
+     "RO"
+    ]
+   ],
+   "compare": true,
+   "overflow": [],
+   "short": [],
+   "footerSW": 430,
+   "footerCW": 430,
+   "pageSW": 430,
+   "vw": 430,
+   "ccCentred": false
+  },
+  "hr-HR-360": {
+   "n": 8,
+   "rows": [
+    [
+     "Značajke",
+     "Cijene",
+     "Usporedba",
+     "O nama"
+    ],
+    [
+     "Privatnost",
+     "Uvjeti",
+     "Kontakt",
+     "HR"
+    ]
+   ],
+   "compare": true,
+   "overflow": [],
+   "short": [],
+   "footerSW": 360,
+   "footerCW": 360,
+   "pageSW": 360,
+   "vw": 360,
+   "ccCentred": false
+  },
+  "hr-HR-430": {
+   "n": 8,
+   "rows": [
+    [
+     "Značajke",
+     "Cijene",
+     "Usporedba",
+     "O nama"
+    ],
+    [
+     "Privatnost",
+     "Uvjeti",
+     "Kontakt",
+     "HR"
+    ]
+   ],
+   "compare": true,
+   "overflow": [],
+   "short": [],
+   "footerSW": 430,
+   "footerCW": 430,
+   "pageSW": 430,
+   "vw": 430,
+   "ccCentred": false
+  },
+  "sl-SI-360": {
+   "n": 8,
+   "rows": [
+    [
+     "Funkcije",
+     "Cenik",
+     "Primerjava",
+     "O nas"
+    ],
+    [
+     "Zasebnost",
+     "Pogoji",
+     "Kontakt",
+     "SI"
+    ]
+   ],
+   "compare": true,
+   "overflow": [],
+   "short": [],
+   "footerSW": 360,
+   "footerCW": 360,
+   "pageSW": 360,
+   "vw": 360,
+   "ccCentred": false
+  },
+  "sl-SI-430": {
+   "n": 8,
+   "rows": [
+    [
+     "Funkcije",
+     "Cenik",
+     "Primerjava",
+     "O nas"
+    ],
+    [
+     "Zasebnost",
+     "Pogoji",
+     "Kontakt",
+     "SI"
+    ]
+   ],
+   "compare": true,
+   "overflow": [],
+   "short": [],
+   "footerSW": 430,
+   "footerCW": 430,
+   "pageSW": 430,
+   "vw": 430,
+   "ccCentred": false
+  },
+  "fi-FI-360": {
+   "n": 8,
+   "rows": [
+    [
+     "Ominaisuudet",
+     "Hinnoittelu",
+     "Vertailu",
+     "Tietoa meistä"
+    ],
+    [
+     "Tietosuoja",
+     "Käyttöehdot",
+     "Ota yhteyttä",
+     "FI"
+    ]
+   ],
+   "compare": true,
+   "overflow": [],
+   "short": [],
+   "footerSW": 360,
+   "footerCW": 360,
+   "pageSW": 360,
+   "vw": 360,
+   "ccCentred": false
+  },
+  "fi-FI-430": {
+   "n": 8,
+   "rows": [
+    [
+     "Ominaisuudet",
+     "Hinnoittelu",
+     "Vertailu",
+     "Tietoa meistä"
+    ],
+    [
+     "Tietosuoja",
+     "Käyttöehdot",
+     "Ota yhteyttä",
+     "FI"
+    ]
+   ],
+   "compare": true,
+   "overflow": [],
+   "short": [],
+   "footerSW": 430,
+   "footerCW": 430,
+   "pageSW": 430,
+   "vw": 430,
+   "ccCentred": false
+  },
+  "et-EE-360": {
+   "n": 8,
+   "rows": [
+    [
+     "Funktsioonid",
+     "Hinnad",
+     "Võrdlus",
+     "Meist"
+    ],
+    [
+     "Privaatsus",
+     "Tingimused",
+     "Kontakt",
+     "EE"
+    ]
+   ],
+   "compare": true,
+   "overflow": [],
+   "short": [],
+   "footerSW": 360,
+   "footerCW": 360,
+   "pageSW": 360,
+   "vw": 360,
+   "ccCentred": false
+  },
+  "et-EE-430": {
+   "n": 8,
+   "rows": [
+    [
+     "Funktsioonid",
+     "Hinnad",
+     "Võrdlus",
+     "Meist"
+    ],
+    [
+     "Privaatsus",
+     "Tingimused",
+     "Kontakt",
+     "EE"
+    ]
+   ],
+   "compare": true,
+   "overflow": [],
+   "short": [],
+   "footerSW": 430,
+   "footerCW": 430,
+   "pageSW": 430,
+   "vw": 430,
+   "ccCentred": false
+  },
+  "lv-LV-360": {
+   "n": 8,
+   "rows": [
+    [
+     "Funkcijas",
+     "Cenas",
+     "Salīdzinājums",
+     "Par mums"
+    ],
+    [
+     "Privātums",
+     "Noteikumi",
+     "Kontakti",
+     "LV"
+    ]
+   ],
+   "compare": true,
+   "overflow": [],
+   "short": [],
+   "footerSW": 360,
+   "footerCW": 360,
+   "pageSW": 364,
+   "vw": 360,
+   "ccCentred": false
+  },
+  "lv-LV-430": {
+   "n": 8,
+   "rows": [
+    [
+     "Funkcijas",
+     "Cenas",
+     "Salīdzinājums",
+     "Par mums"
+    ],
+    [
+     "Privātums",
+     "Noteikumi",
+     "Kontakti",
+     "LV"
+    ]
+   ],
+   "compare": true,
+   "overflow": [],
+   "short": [],
+   "footerSW": 430,
+   "footerCW": 430,
+   "pageSW": 430,
+   "vw": 430,
+   "ccCentred": false
+  },
+  "lt-LT-360": {
+   "n": 8,
+   "rows": [
+    [
+     "Funkcijos",
+     "Kainos",
+     "Palyginimas",
+     "Apie mus"
+    ],
+    [
+     "Privatumas",
+     "Sąlygos",
+     "Kontaktai",
+     "LT"
+    ]
+   ],
+   "compare": true,
+   "overflow": [],
+   "short": [],
+   "footerSW": 360,
+   "footerCW": 360,
+   "pageSW": 360,
+   "vw": 360,
+   "ccCentred": false
+  },
+  "lt-LT-430": {
+   "n": 8,
+   "rows": [
+    [
+     "Funkcijos",
+     "Kainos",
+     "Palyginimas",
+     "Apie mus"
+    ],
+    [
+     "Privatumas",
+     "Sąlygos",
+     "Kontaktai",
+     "LT"
+    ]
+   ],
+   "compare": true,
+   "overflow": [],
+   "short": [],
+   "footerSW": 430,
+   "footerCW": 430,
+   "pageSW": 430,
+   "vw": 430,
+   "ccCentred": false
+  },
+  "el-GR-360": {
+   "n": 8,
+   "rows": [
+    [
+     "Λειτουργίες",
+     "Τιμές",
+     "Σύγκριση",
+     "Σχετικά με εμάς"
+    ],
+    [
+     "Απόρρητο",
+     "Όροι",
+     "Επικοινωνία",
+     "GR"
+    ]
+   ],
+   "compare": true,
+   "overflow": [],
+   "short": [],
+   "footerSW": 360,
+   "footerCW": 360,
+   "pageSW": 360,
+   "vw": 360,
+   "ccCentred": false
+  },
+  "el-GR-430": {
+   "n": 8,
+   "rows": [
+    [
+     "Λειτουργίες",
+     "Τιμές",
+     "Σύγκριση",
+     "Σχετικά με εμάς"
+    ],
+    [
+     "Απόρρητο",
+     "Όροι",
+     "Επικοινωνία",
+     "GR"
+    ]
+   ],
+   "compare": true,
+   "overflow": [],
+   "short": [],
+   "footerSW": 430,
+   "footerCW": 430,
+   "pageSW": 430,
+   "vw": 430,
+   "ccCentred": false
+  },
+  "bg-BG-360": {
+   "n": 8,
+   "rows": [
+    [
+     "Функции",
+     "Цени",
+     "Сравнение",
+     "За нас"
+    ],
+    [
+     "Поверителност",
+     "Условия",
+     "Контакт",
+     "BG"
+    ]
+   ],
+   "compare": true,
+   "overflow": [],
+   "short": [],
+   "footerSW": 360,
+   "footerCW": 360,
+   "pageSW": 360,
+   "vw": 360,
+   "ccCentred": false
+  },
+  "bg-BG-430": {
+   "n": 8,
+   "rows": [
+    [
+     "Функции",
+     "Цени",
+     "Сравнение",
+     "За нас"
+    ],
+    [
+     "Поверителност",
+     "Условия",
+     "Контакт",
+     "BG"
+    ]
+   ],
+   "compare": true,
+   "overflow": [],
+   "short": [],
+   "footerSW": 430,
+   "footerCW": 430,
+   "pageSW": 430,
+   "vw": 430,
+   "ccCentred": false
+  },
+  "pt-BR-360": {
+   "n": 8,
+   "rows": [
+    [
+     "Recursos",
+     "Preços",
+     "Comparar",
+     "Sobre"
+    ],
+    [
+     "Privacidade",
+     "Termos",
+     "Contato",
+     "BR"
+    ]
+   ],
+   "compare": true,
+   "overflow": [],
+   "short": [],
+   "footerSW": 360,
+   "footerCW": 360,
+   "pageSW": 360,
+   "vw": 360,
+   "ccCentred": false
+  },
+  "pt-BR-430": {
+   "n": 8,
+   "rows": [
+    [
+     "Recursos",
+     "Preços",
+     "Comparar",
+     "Sobre"
+    ],
+    [
+     "Privacidade",
+     "Termos",
+     "Contato",
+     "BR"
+    ]
+   ],
+   "compare": true,
+   "overflow": [],
+   "short": [],
+   "footerSW": 430,
+   "footerCW": 430,
+   "pageSW": 430,
+   "vw": 430,
+   "ccCentred": false
+  },
+  "ms-MY-360": {
+   "n": 8,
+   "rows": [
+    [
+     "Ciri-ciri",
+     "Harga",
+     "Perbandingan",
+     "Tentang kami"
+    ],
+    [
+     "Privasi",
+     "Terma",
+     "Hubungi kami",
+     "MY"
+    ]
+   ],
+   "compare": true,
+   "overflow": [],
+   "short": [],
+   "footerSW": 360,
+   "footerCW": 360,
+   "pageSW": 360,
+   "vw": 360,
+   "ccCentred": false
+  },
+  "ms-MY-430": {
+   "n": 8,
+   "rows": [
+    [
+     "Ciri-ciri",
+     "Harga",
+     "Perbandingan",
+     "Tentang kami"
+    ],
+    [
+     "Privasi",
+     "Terma",
+     "Hubungi kami",
+     "MY"
+    ]
+   ],
+   "compare": true,
+   "overflow": [],
+   "short": [],
+   "footerSW": 430,
+   "footerCW": 430,
+   "pageSW": 430,
+   "vw": 430,
+   "ccCentred": false
+  },
+  "ja-JP-360": {
+   "n": 9,
+   "rows": [
+    [
+     "機能",
+     "料金",
+     "よくある質問",
+     "比較"
+    ],
+    [
+     "会社概要",
+     "プライバシー",
+     "利用規約",
+     "お問い合わせ"
+    ],
+    [
+     "JP"
+    ]
+   ],
+   "compare": true,
+   "overflow": [],
+   "short": [],
+   "footerSW": 360,
+   "footerCW": 360,
+   "pageSW": 360,
+   "vw": 360,
+   "ccCentred": true
+  },
+  "ja-JP-430": {
+   "n": 9,
+   "rows": [
+    [
+     "機能",
+     "料金",
+     "よくある質問",
+     "比較"
+    ],
+    [
+     "会社概要",
+     "プライバシー",
+     "利用規約",
+     "お問い合わせ"
+    ],
+    [
+     "JP"
+    ]
+   ],
+   "compare": true,
+   "overflow": [],
+   "short": [],
+   "footerSW": 430,
+   "footerCW": 430,
+   "pageSW": 430,
+   "vw": 430,
+   "ccCentred": true
+  },
+  "zh-HK-360": {
+   "n": 8,
+   "rows": [
+    [
+     "功能",
+     "收費",
+     "比較",
+     "關於我們"
+    ],
+    [
+     "私隱",
+     "條款",
+     "聯絡我們",
+     "HK"
+    ]
+   ],
+   "compare": true,
+   "overflow": [],
+   "short": [],
+   "footerSW": 360,
+   "footerCW": 360,
+   "pageSW": 360,
+   "vw": 360,
+   "ccCentred": false
+  },
+  "zh-HK-430": {
+   "n": 8,
+   "rows": [
+    [
+     "功能",
+     "收費",
+     "比較",
+     "關於我們"
+    ],
+    [
+     "私隱",
+     "條款",
+     "聯絡我們",
+     "HK"
+    ]
+   ],
+   "compare": true,
+   "overflow": [],
+   "short": [],
+   "footerSW": 430,
+   "footerCW": 430,
+   "pageSW": 430,
+   "vw": 430,
+   "ccCentred": false
+  },
+  "th-TH-360": {
+   "n": 8,
+   "rows": [
+    [
+     "ฟีเจอร์",
+     "ราคา",
+     "เปรียบเทียบ",
+     "เกี่ยวกับเรา"
+    ],
+    [
+     "ความเป็นส่วนตัว",
+     "ข้อกำหนด",
+     "ติดต่อ",
+     "TH"
+    ]
+   ],
+   "compare": true,
+   "overflow": [],
+   "short": [],
+   "footerSW": 360,
+   "footerCW": 360,
+   "pageSW": 360,
+   "vw": 360,
+   "ccCentred": false
+  },
+  "th-TH-430": {
+   "n": 8,
+   "rows": [
+    [
+     "ฟีเจอร์",
+     "ราคา",
+     "เปรียบเทียบ",
+     "เกี่ยวกับเรา"
+    ],
+    [
+     "ความเป็นส่วนตัว",
+     "ข้อกำหนด",
+     "ติดต่อ",
+     "TH"
+    ]
+   ],
+   "compare": true,
+   "overflow": [],
+   "short": [],
+   "footerSW": 430,
+   "footerCW": 430,
+   "pageSW": 430,
+   "vw": 430,
+   "ccCentred": false
+  },
+  "ar-AE-360": {
+   "n": 8,
+   "rows": [
+    [
+     "المزايا",
+     "الأسعار",
+     "الأسئلة الشائعة",
+     "من نحن"
+    ],
+    [
+     "الخصوصية",
+     "الشروط",
+     "تواصل معنا",
+     "AE"
+    ]
+   ],
+   "compare": false,
+   "overflow": [],
+   "short": [],
+   "footerSW": 360,
+   "footerCW": 360,
+   "pageSW": 360,
+   "vw": 360,
+   "ccCentred": false
+  },
+  "ar-AE-430": {
+   "n": 8,
+   "rows": [
+    [
+     "المزايا",
+     "الأسعار",
+     "الأسئلة الشائعة",
+     "من نحن"
+    ],
+    [
+     "الخصوصية",
+     "الشروط",
+     "تواصل معنا",
+     "AE"
+    ]
+   ],
+   "compare": false,
+   "overflow": [],
+   "short": [],
+   "footerSW": 430,
+   "footerCW": 430,
+   "pageSW": 430,
+   "vw": 430,
+   "ccCentred": false
+  }
+ },
+ "none": {
+  "en-GB-off": {
+   "link": false,
+   "links": 7
+  },
+  "fr-FR-off": {
+   "link": false,
+   "links": 7
+  },
+  "de-DE-admin": {
+   "link": false,
+   "links": 7
+  }
+ }
+}

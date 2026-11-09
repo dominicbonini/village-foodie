@@ -15,10 +15,6 @@
   },
   "h1": "Primerjava sistemov za naročanje za food trucke 2026",
   "byline": "Zadnja preverba: {date} · Pripravil HatchGrab. Smo eden od primerjanih ponudnikov (glejte <link>Kako smo primerjali</link>).",
-  "tldr": {
-    "title": "Na kratko",
-    "body": "Če želite, da kupci naročijo vnaprej na telefonu in izberejo čas prevzema, potrebujete sistem za naročanje, ne le blagajne. Bodite pozorni na štiri stvari: čase prevzema, ki upoštevajo zmogljivost kuhinje; tedenski urnik za spreminjajoče se lokacije; nizke ali nobene provizije na naročilo; in brez dolgoročne pogodbe. Plačilni terminali in blagajne pokrivajo plačilo pri food trucku in dopolnjujejo sistem za naročanje."
-  },
   "table": {
     "title": "Primerjava sistemov za naročanje",
     "caption": "Funkcije in stroški sistemov za spletno naročanje za food trucke ({country}), stanje na dan {date}",
@@ -35,7 +31,9 @@
     "noFee": "brez",
     "morePending": "Drugi ponudniki se bodo tu prikazali, ko bomo njihove podatke preverili na njihovih spletnih straneh.",
     "priceHidden": "Na povpraševanje",
-    "feeAfter": "{fee} nad {included} na mesec"
+    "feeAfter": "{fee} nad {included} na mesec",
+    "legend": "✓ Da · ◐ Delno · ✗ Ne · Ne navaja: ni na njihovih straneh s funkcijami ali cenami · —: na njihovi spletni strani ni podatka · ⓘ: opomba, citat in vir",
+    "swipe": "Podrsajte vstran za ogled vseh izdelkov →"
   },
   "costs": {
     "title": "Koliko stane sistem za naročanje za food truck?",
@@ -121,10 +119,8 @@
     "goLive": "Stran se objavi v Admin › Countries.",
     "check": {
       "apps": "Zastavici za iPad in Android vklopljeni ({country})",
-      "verified": "Vsaj 2 preverjena ponudnika (preverjenih: {n})",
       "placeholders": "V besedilu ni ostala nobena oznaka „[ … ]“",
-      "vat": "Besedilo o DDV je prisotno",
-      "impressum": "Odločitev o Impressumu je zabeležena"
+      "vat": "Besedilo o DDV je prisotno"
     },
     "unverified": "ni preverjeno · skrito javnosti",
     "autoVerified": "samodejno preverjeno",
@@ -133,7 +129,13 @@
     "notShown": "Ni na strani (prikazane so največ štiri): {names}.",
     "reasonHidden": "{name} (skrito)",
     "reasonBeyond": "{name} (zunaj prvih štirih)",
-    "reasonNoWebsite": "{name} (brez spletne strani)"
+    "reasonNoWebsite": "{name} (brez spletne strani)",
+    "liveAuto": "Objavljeno samodejno",
+    "adminsOnly": "Samo za admine — {reason}",
+    "whyFewer": "konkurenti, ki opravijo samodejna preverjanja: {n} od {total}; potrebna sta 2",
+    "whyAutoOff": "samodejno objavljanje je za to državo izklopljeno",
+    "shown": "{n, plural, one {# prikazan konkurent} two {# prikazana konkurenta} few {# prikazani konkurenti} other {# prikazanih konkurentov}}",
+    "details": "Podrobnosti"
   },
   "footer": {
     "heading": "Primerjava",
@@ -163,7 +165,10 @@
     "notInCountry": "ni na voljo ({country})",
     "flagOff": "zastavica še izklopljena; prikaže se, ko bo aplikacija v trgovinah",
     "notApplicable": "ne velja za trg",
-    "not_listed": "Ne navaja"
+    "not_listed": "Ne navaja",
+    "details": "Podrobnosti",
+    "doesntSay": "Ni podatka",
+    "none": "Brez"
   },
   "explained": {
     "title": "Kaj pomenijo funkcije"

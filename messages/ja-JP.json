@@ -6356,10 +6356,6 @@
     },
     "h1": "キッチンカー向け注文システム比較 2026",
     "byline": "最終確認日：{date} · 作成：HatchGrab。HatchGrabも比較対象のサービスのひとつです（<link>比較の方法</link>をご覧ください）。",
-    "tldr": {
-      "title": "まとめ",
-      "body": "お客様にスマートフォンで事前に注文し、受け取り時間を選んでもらいたいなら、POSレジだけでなく注文システムが必要です。チェックすべきポイントは四つ。キッチンの調理能力に合わせた受け取り時間、出店場所が変わっても使える週間スケジュール、注文ごとの手数料が低いかかからないこと、そして長期契約がないことです。カード決済端末やPOSレジはキッチンカーでの会計を担い、注文システムを補うものです。"
-    },
     "table": {
       "title": "注文システムの比較",
       "caption": "{country}のキッチンカー向けオンライン注文システムの機能と費用（{date}時点）",
@@ -6376,7 +6372,9 @@
       "noFee": "なし",
       "morePending": "他のサービスも、各社の公式サイトで情報を確認でき次第ここに掲載します。",
       "priceHidden": "要問い合わせ",
-      "feeAfter": "月{included}を超えた分に{fee}"
+      "feeAfter": "月{included}を超えた分に{fee}",
+      "legend": "✓ あり · ◐ 一部あり · ✗ なし · 掲載なし：機能・料金ページに記載がない · —：Webサイトに明記なし · ⓘ：注記・引用・出典",
+      "swipe": "横にスワイプしてすべての製品を表示 →"
     },
     "costs": {
       "title": "キッチンカー向け注文システムの費用は？",
@@ -6462,10 +6460,8 @@
       "goLive": "ページの公開は「管理 › 国」で行います。",
       "check": {
         "apps": "{country}のiPad・Androidフラグがオン",
-        "verified": "検証済みの提供会社が2社以上（{n}社検証済み）",
         "placeholders": "本文に「[ … ]」のプレースホルダーが残っていない",
-        "vat": "消費税（VAT）の記載あり",
-        "impressum": "Impressumの判断を記録済み"
+        "vat": "消費税（VAT）の記載あり"
       },
       "unverified": "未検証 · 一般には非表示",
       "autoVerified": "自動検証済み",
@@ -6474,7 +6470,13 @@
       "notShown": "ページに非掲載（表示は最大四社まで）：{names}。",
       "reasonHidden": "{name}（非表示）",
       "reasonBeyond": "{name}（上位四社以外）",
-      "reasonNoWebsite": "{name}（Webサイトなし）"
+      "reasonNoWebsite": "{name}（Webサイトなし）",
+      "liveAuto": "自動公開で公開中",
+      "adminsOnly": "管理者のみ — {reason}",
+      "whyFewer": "自動チェックに合格した競合は{total}社中{n}社です（2社必要）",
+      "whyAutoOff": "この国では自動公開がオフです",
+      "shown": "{n, plural, other {競合#社を表示}}",
+      "details": "詳細"
     },
     "footer": {
       "heading": "比較",
@@ -6504,7 +6506,10 @@
       "notInCountry": "{country}では未提供",
       "flagOff": "フラグはまだオフ。ストアに掲載され次第表示",
       "notApplicable": "マーケットプレイスには該当しません",
-      "not_listed": "掲載なし"
+      "not_listed": "掲載なし",
+      "details": "詳細",
+      "doesntSay": "明記なし",
+      "none": "なし"
     },
     "explained": {
       "title": "各機能の説明"
