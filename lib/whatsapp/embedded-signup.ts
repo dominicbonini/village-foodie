@@ -150,10 +150,15 @@ export function loadFacebookSdk(appId: string): Promise<FBGlobal> {
   sdkPromise = new Promise<FBGlobal>((resolve, reject) => {
     const init = () => {
       try {
+        // 🔴 meta-sdk-1 (9 November 2026; docs/meta-sdk-1-report.md): NO AUTOMATIC EVENT LOGGING, NO XFBML. `autoLogAppEvents: true`
+        // let the SDK send Meta app events (a page view on init) from the operator's Settings screen with no action by the operator —
+        // which undermines "Data used to track you: none" (App Store) and "not shared" (Play). `xfbml: true` parsed the page for
+        // <fb:…> social plugins; HatchGrab has none (checked 9 Nov), so it did nothing but scan the DOM. Embedded Signup needs neither:
+        // FB.login opens the flow and the code comes back in its callback. scripts/meta-sdk-1.cjs holds both to false.
         window.FB!.init({
           appId,
-          autoLogAppEvents: true,
-          xfbml: true,
+          autoLogAppEvents: false,
+          xfbml: false,
           version: SDK_GRAPH_VERSION,
         })
         resolve(window.FB)
