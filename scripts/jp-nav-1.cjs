@@ -8,6 +8,8 @@
 //       label, and no other Japanese string, gained a zero-width space
 //   2 · the rule that makes it the ONLY break is still there: keep-all for ja / zh below 640px, labels allowed to wrap on non-English pages
 //   3 · the nav renders the label with the break, in the short span only (the full label, from 640px, is unchanged)
+//   jp-nav-2 (9 November 2026, in §2): "ログイン" never shrinks below its text on a Japanese page, and below 360px the Japanese nav is
+//       tightened (gap and side padding, never the text size) — Japanese only
 // The pixels (before / after at 320, 360, 375, 390; every other country's screens identical): scripts/jp-nav-1-shots.cjs, by hand.
 /* eslint-disable @typescript-eslint/no-require-imports -- a CommonJS harness, like every scripts/*.cjs */
 'use strict'
@@ -38,6 +40,13 @@ const ZW = '​'
   const block = /@media\(max-width:639px\)\{[\s\S]*?\n\}/.exec(css)?.[0] ?? ''
   t('below 640px a non-English page\'s nav buttons may wrap (white-space: normal)', /:root:not\(:lang\(en\)\) \.hg-landing \.nav-r \.btn \{ white-space: normal;/.test(block))
   t('…and Japanese and Chinese keep words whole (keep-all) — "ログイン" never splits', /:root:is\(:lang\(ja\), :lang\(zh\)\) \.hg-landing \.nav-r \.btn \{ word-break: keep-all; \}/.test(block))
+  // jp-nav-2 (9 November 2026): "ログイン" never shrinks below its text on a Japanese page; below 360px the Japanese nav is tightened
+  // (gap, side padding — never the text size) so the two-line button's label stays inside the button. Japanese only.
+  t('jp-nav-2: on a Japanese page "ログイン" never shrinks below its text (flex-shrink: 0, below 640px)', /:root:lang\(ja\) \.hg-landing \.nav-only-sm \{ flex-shrink: 0; \}/.test(block))
+  const b359 = /@media\(max-width:359px\)\{([\s\S]*?)\n\}/.exec(css)?.[1] ?? ''
+  t('jp-nav-2: below 360px a Japanese nav tightens its gap and side padding, never its text size', /:root:lang\(ja\) \.hg-landing \.nav-in \{ gap: \.5rem; \}/.test(b359) && /:root:lang\(ja\) \.hg-landing \.nav-cta \{ padding-inline: \.35rem; \}/.test(b359) && /:root:lang\(ja\) \.hg-landing \.nav-only-sm \{ padding-inline: \.25rem; \}/.test(b359) && !/font-size/.test(b359))
+  const jpRules = (css.match(/[^{}]*:lang\(ja\)[^{}]*\{[^{}]*\}/g) || []).map(r => r.trim().replace(/^\/\*[\s\S]*?\*\/\s*/, ''))
+  t('jp-nav-2: every rule it added names :lang(ja) alone — no other language matches it', jpRules.filter(r => /nav-only-sm|nav-in|nav-cta/.test(r) && !/:is\(/.test(r)).every(r => /^:root:lang\(ja\) /.test(r)) && jpRules.filter(r => /nav-only-sm|nav-in \{|nav-cta \{/.test(r)).length === 4, jpRules)
 
   console.log('\n── 3 · the nav renders it')
   const M = await kit.bundle('jp-nav-1', "export { LandingNav } from '@/components/landing/LandingNav'\nexport { DemoModalProvider } from '@/components/landing/DemoUpload'")

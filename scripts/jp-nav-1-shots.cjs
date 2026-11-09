@@ -30,6 +30,9 @@ const MEASURE = () => {
   return { pageScrollsSideways: document.documentElement.scrollWidth > innerWidth + 1, scrollWidth: document.documentElement.scrollWidth, vw: innerWidth,
     button: b ? { left: Math.round(b.left), right: Math.round(b.right), height: Math.round(b.height), lines: lines(btn), label: (btn.querySelector('.cta-short')?.textContent || '').replace(/​/g, '‸') } : null,
     loginLines: login && getComputedStyle(login).display !== 'none' ? lines(login) : null, loginRight: l ? Math.round(l.right) : null,
+    // jp-nav-2: is "ログイン" shown in full — its text inside its own box, and clear of the button (when the button is to its right)?
+    login: login && getComputedStyle(login).display !== 'none' ? (() => { const r = document.createRange(); r.selectNodeContents(login); const t = r.getBoundingClientRect()
+      return { box: Math.round(login.clientWidth), text: Math.round(t.width), clipped: t.width > login.clientWidth + 0.5, underButton: b && b.left > l.left ? Math.max(0, Math.round(t.right - b.left)) : 0 } })() : null,
     navHeight: Math.round(document.querySelector('.hg-landing nav')?.getBoundingClientRect().height || 0) }
 }
 

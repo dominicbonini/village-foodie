@@ -303,6 +303,7 @@ All are on main, committed by explicit paths. Nothing is pushed or deployed.
   - On `/jp/features`, `/jp/faq` and the comparison page: 10px at 320, 4px at 360, 1px at 375, 0 at 390.
   - It was the same before this fix: the Log in link's box didn't change, and the button's box was already 119px wide. You'll see it in the 320 screenshots ("ログイ…").
   - You said nothing else should change, so I left it. **Decision for you:** let the Japanese Log in link keep its full width (`flex-shrink: 0` on ja pages below 640px)? The button would lose about 10px at 320 and still fit its two lines.
+  - ✅ **Fixed 9 Nov (jp-nav-2, you approved):** on ja pages "ログイン" no longer shrinks below its text, and below 360px the Japanese nav's gap and side padding tighten (never its text size). All 16 JP views now show it whole at 320, 360, 375 and 390px, the button still two lines with its label inside, nothing scrolling sideways in Chromium or WebKit; the CSS change is exactly 4 `:root:lang(ja)` rules, every other country's 516 first screens are pixel-identical, and every page's HTML is unchanged. Screenshots in `docs/jp-nav-2/`; guarded by `scripts/jp-nav-1.cjs` (12/12); `site-chrome-1` and `cwv-1` re-pinned through `_lp-jp-nav-1.cjs` `cssAsBefore`.
 - **Checks:**
   - new harness `scripts/jp-nav-1.cjs`, 9/9, registered: the label and its namespace file, no other zero-width space anywhere, the keep-all rule that makes it the only break, and the rendered nav;
   - `scripts/jp-nav-1-shots.cjs` is by hand (it needs the server and an export).

@@ -193,6 +193,16 @@ html:has(.hg-landing) { scroll-behavior: smooth; }
   /* world-countries-1 (1 November 2026): Japanese and Chinese break between ANY two characters, so "ログイン" split as
      "ログイ / ン". Their labels wrap only where the label has a space. */
   :root:is(:lang(ja), :lang(zh)) .hg-landing .nav-r .btn { word-break: keep-all; }
+  /* jp-nav-2 (9 November 2026): Japanese's "ログイン" may not shrink below its text — it ran under the button by up to 10px at 320–375px
+     (docs/compare-ux-1-report.md §12). The button takes the room left; its label wraps at its break opportunity (jp-nav-1). */
+  :root:lang(ja) .hg-landing .nav-only-sm { flex-shrink: 0; }
+}
+/* jp-nav-2: below 360px a Japanese nav is tightened (the gap beside the logo, the two buttons' side padding; never the text size) so the
+   two-line button's "アップロード" stays inside the button beside a full "ログイン". Every other language matches none of this. */
+@media(max-width:359px){
+  :root:lang(ja) .hg-landing .nav-in { gap: .5rem; }
+  :root:lang(ja) .hg-landing .nav-cta { padding-inline: .35rem; }
+  :root:lang(ja) .hg-landing .nav-only-sm { padding-inline: .25rem; }
 }
 
 /* ---------- hero ---------- */

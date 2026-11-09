@@ -1,0 +1,350 @@
+{
+ "jp-320": {
+  "status": 200,
+  "pageScrollsSideways": false,
+  "scrollWidth": 320,
+  "vw": 320,
+  "button": {
+   "left": 135,
+   "right": 248,
+   "height": 49,
+   "lines": 2,
+   "label": "メニューを‸アップロード"
+  },
+  "loginLines": 1,
+  "loginRight": 300,
+  "login": {
+   "box": 47,
+   "text": 52,
+   "clipped": true,
+   "underButton": 0
+  },
+  "navHeight": 72
+ },
+ "jp-360": {
+  "status": 200,
+  "pageScrollsSideways": false,
+  "scrollWidth": 360,
+  "vw": 360,
+  "button": {
+   "left": 150,
+   "right": 281,
+   "height": 49,
+   "lines": 2,
+   "label": "メニューを‸アップロード"
+  },
+  "loginLines": 1,
+  "loginRight": 340,
+  "login": {
+   "box": 53,
+   "text": 52,
+   "clipped": false,
+   "underButton": 0
+  },
+  "navHeight": 72
+ },
+ "jp-375": {
+  "status": 200,
+  "pageScrollsSideways": false,
+  "scrollWidth": 375,
+  "vw": 375,
+  "button": {
+   "left": 155,
+   "right": 294,
+   "height": 49,
+   "lines": 2,
+   "label": "メニューを‸アップロード"
+  },
+  "loginLines": 1,
+  "loginRight": 355,
+  "login": {
+   "box": 55,
+   "text": 52,
+   "clipped": false,
+   "underButton": 0
+  },
+  "navHeight": 72
+ },
+ "jp-390": {
+  "status": 200,
+  "pageScrollsSideways": false,
+  "scrollWidth": 390,
+  "vw": 390,
+  "button": {
+   "left": 161,
+   "right": 306,
+   "height": 49,
+   "lines": 2,
+   "label": "メニューを‸アップロード"
+  },
+  "loginLines": 1,
+  "loginRight": 370,
+  "login": {
+   "box": 58,
+   "text": 52,
+   "clipped": false,
+   "underButton": 0
+  },
+  "navHeight": 72
+ },
+ "jp-features-320": {
+  "status": 200,
+  "pageScrollsSideways": false,
+  "scrollWidth": 320,
+  "vw": 320,
+  "button": {
+   "left": 181,
+   "right": 300,
+   "height": 59,
+   "lines": 2,
+   "label": "メニューを‸アップロード"
+  },
+  "loginLines": 1,
+  "loginRight": 177,
+  "login": {
+   "box": 45,
+   "text": 52,
+   "clipped": true,
+   "underButton": 10
+  },
+  "navHeight": 72
+ },
+ "jp-features-360": {
+  "status": 200,
+  "pageScrollsSideways": false,
+  "scrollWidth": 360,
+  "vw": 360,
+  "button": {
+   "left": 202,
+   "right": 340,
+   "height": 59,
+   "lines": 2,
+   "label": "メニューを‸アップロード"
+  },
+  "loginLines": 1,
+  "loginRight": 198,
+  "login": {
+   "box": 51,
+   "text": 52,
+   "clipped": true,
+   "underButton": 4
+  },
+  "navHeight": 72
+ },
+ "jp-features-375": {
+  "status": 200,
+  "pageScrollsSideways": false,
+  "scrollWidth": 375,
+  "vw": 375,
+  "button": {
+   "left": 210,
+   "right": 355,
+   "height": 59,
+   "lines": 2,
+   "label": "メニューを‸アップロード"
+  },
+  "loginLines": 1,
+  "loginRight": 206,
+  "login": {
+   "box": 53,
+   "text": 52,
+   "clipped": false,
+   "underButton": 1
+  },
+  "navHeight": 72
+ },
+ "jp-features-390": {
+  "status": 200,
+  "pageScrollsSideways": false,
+  "scrollWidth": 390,
+  "vw": 390,
+  "button": {
+   "left": 217,
+   "right": 370,
+   "height": 59,
+   "lines": 2,
+   "label": "メニューを‸アップロード"
+  },
+  "loginLines": 1,
+  "loginRight": 213,
+  "login": {
+   "box": 56,
+   "text": 52,
+   "clipped": false,
+   "underButton": 0
+  },
+  "navHeight": 72
+ },
+ "jp-faq-320": {
+  "status": 200,
+  "pageScrollsSideways": false,
+  "scrollWidth": 320,
+  "vw": 320,
+  "button": {
+   "left": 181,
+   "right": 300,
+   "height": 59,
+   "lines": 2,
+   "label": "メニューを‸アップロード"
+  },
+  "loginLines": 1,
+  "loginRight": 177,
+  "login": {
+   "box": 45,
+   "text": 52,
+   "clipped": true,
+   "underButton": 10
+  },
+  "navHeight": 72
+ },
+ "jp-faq-360": {
+  "status": 200,
+  "pageScrollsSideways": false,
+  "scrollWidth": 360,
+  "vw": 360,
+  "button": {
+   "left": 202,
+   "right": 340,
+   "height": 59,
+   "lines": 2,
+   "label": "メニューを‸アップロード"
+  },
+  "loginLines": 1,
+  "loginRight": 198,
+  "login": {
+   "box": 51,
+   "text": 52,
+   "clipped": true,
+   "underButton": 4
+  },
+  "navHeight": 72
+ },
+ "jp-faq-375": {
+  "status": 200,
+  "pageScrollsSideways": false,
+  "scrollWidth": 375,
+  "vw": 375,
+  "button": {
+   "left": 210,
+   "right": 355,
+   "height": 59,
+   "lines": 2,
+   "label": "メニューを‸アップロード"
+  },
+  "loginLines": 1,
+  "loginRight": 206,
+  "login": {
+   "box": 53,
+   "text": 52,
+   "clipped": false,
+   "underButton": 1
+  },
+  "navHeight": 72
+ },
+ "jp-faq-390": {
+  "status": 200,
+  "pageScrollsSideways": false,
+  "scrollWidth": 390,
+  "vw": 390,
+  "button": {
+   "left": 217,
+   "right": 370,
+   "height": 59,
+   "lines": 2,
+   "label": "メニューを‸アップロード"
+  },
+  "loginLines": 1,
+  "loginRight": 213,
+  "login": {
+   "box": 56,
+   "text": 52,
+   "clipped": false,
+   "underButton": 0
+  },
+  "navHeight": 72
+ },
+ "jp-comparison-320": {
+  "pageScrollsSideways": false,
+  "scrollWidth": 320,
+  "vw": 320,
+  "button": {
+   "left": 181,
+   "right": 300,
+   "height": 59,
+   "lines": 2,
+   "label": "メニューを‸アップロード"
+  },
+  "loginLines": 1,
+  "loginRight": 177,
+  "login": {
+   "box": 45,
+   "text": 52,
+   "clipped": true,
+   "underButton": 10
+  },
+  "navHeight": 72
+ },
+ "jp-comparison-360": {
+  "pageScrollsSideways": false,
+  "scrollWidth": 360,
+  "vw": 360,
+  "button": {
+   "left": 202,
+   "right": 340,
+   "height": 59,
+   "lines": 2,
+   "label": "メニューを‸アップロード"
+  },
+  "loginLines": 1,
+  "loginRight": 198,
+  "login": {
+   "box": 51,
+   "text": 52,
+   "clipped": true,
+   "underButton": 4
+  },
+  "navHeight": 72
+ },
+ "jp-comparison-375": {
+  "pageScrollsSideways": false,
+  "scrollWidth": 375,
+  "vw": 375,
+  "button": {
+   "left": 210,
+   "right": 355,
+   "height": 59,
+   "lines": 2,
+   "label": "メニューを‸アップロード"
+  },
+  "loginLines": 1,
+  "loginRight": 206,
+  "login": {
+   "box": 53,
+   "text": 52,
+   "clipped": false,
+   "underButton": 1
+  },
+  "navHeight": 72
+ },
+ "jp-comparison-390": {
+  "pageScrollsSideways": false,
+  "scrollWidth": 390,
+  "vw": 390,
+  "button": {
+   "left": 217,
+   "right": 370,
+   "height": 59,
+   "lines": 2,
+   "label": "メニューを‸アップロード"
+  },
+  "loginLines": 1,
+  "loginRight": 213,
+  "login": {
+   "box": 56,
+   "text": 52,
+   "clipped": false,
+   "underButton": 0
+  },
+  "navHeight": 72
+ }
+}
