@@ -11,24 +11,19 @@
 | 3. Customer-facing truck emails → donotreply@hatchgrab.com; the villagefoodie fallbacks in lib/email.ts replaced | Done in code (§2) |
 | 4. Village Foodie consumer emails listed | Done (§3). **None are sent today.** |
 | 5. Stale TODO removed; static guard in the sweep | Done (§4). scripts/email-sender-1.cjs passes 43/43, and fails 25 checks on the old code. |
-| 6. Brevo account check over its API | **Blocked.** Public DNS checked instead (§5). See "What I need from you". |
-| 7. One test send of each type to dominicbonini@hotmail.com | **Not run.** It depends on step 6. See "What I need from you". |
+| 6. Brevo account check over its API | Done (§5). Option A, approved by Dominic. hatchgrab.com is **authenticated and verified**, and all four records are green. |
+| 7. One test send of each type to dominicbonini@hotmail.com | Done (§6). **9/9 accepted by Brevo (201) and delivered.** |
 
-**Do not deploy until step 6 is confirmed.** Customer order mail (Pizzeria Gusto included) will send from donotreply@hatchgrab.com after deploy. If Brevo does not accept that sender, those emails fail. Order placement itself never fails on an email, because sendConfirmationEmail never throws, but the customer would get no confirmation.
+**Safe to deploy from the email side.** hatchgrab.com is authenticated in Brevo, and Brevo accepted and delivered both hello@hatchgrab.com and donotreply@hatchgrab.com.
 
-## What I need from you
+**Two things worth doing in Brevo (optional; neither blocks anything):**
 
-The Brevo API key exists only in the app's environment (.env.local and Vercel). The brief says not to open .env files. I tried a read-only probe (GET /v3/senders/domains, /v3/senders/domains/hatchgrab.com, /v3/senders, and the From-address counts for the last 30 days). It loaded the key through Next's own env loader (@next/env, which `next dev` uses) and printed no secrets. The tool's safety classifier refused to run it, and I did not try to work around that.
+- **Senders, Domains & Dedicated IPs → Senders → Add a sender.** Add "HatchGrab" with hello@hatchgrab.com, and "HatchGrab" with donotreply@hatchgrab.com. Today the Senders list has only the five villagefoodie.co.uk addresses. Brevo still accepts any address on an authenticated domain over the API, as the tests prove. Listing them just makes them choosable in Brevo's own UI.
+- **NEXT_PUBLIC_SUPPORT_EMAIL is set to a villagefoodie.co.uk address in the local environment**, and probably in Vercel too. It no longer sets any sender. It still decides two things:
+  - where contact-form messages are delivered (lib/contact-server.ts supportInbox);
+  - the support address the Manage dashboard shows (app/(app)/manage/[token]/page.tsx:14645).
 
-Two ways to finish steps 6 and 7:
-
-- **A.** You allow that probe to run, plus a test-send script that loads the key the same way. The test script sends one email of each type in §6 to dominicbonini@hotmail.com only, through the real modules, using test-truck data. It never touches a live truck's row, writes nothing to the database, and prints only From, Reply-To, Brevo's status code and the messageId.
-- **B.** You check it in Brevo yourself:
-  1. Go to **Senders, Domains & Dedicated IPs → Domains**. hatchgrab.com should say **Authenticated**, with green ticks on *Brevo code*, *DKIM* and *DMARC*.
-  2. Go to **Senders**. Check that **hello@hatchgrab.com** and **donotreply@hatchgrab.com** are both listed and active.
-  3. If donotreply@hatchgrab.com is missing, click **Add a sender**. Enter From name "HatchGrab" and email donotreply@hatchgrab.com, then save. On an authenticated domain Brevo should not need a confirmation email; if it asks for one, tell me, because that mailbox does not exist at Namecheap.
-
-  Then tell me "B done", and I will run the test sends through `next dev` (the app's own process) if you allow that.
+  Change it to hello@hatchgrab.com in Vercel if you want both on the new domain. I did not change or open it.
 
 ## §1 Inventory (before any change, read from HEAD 64ac2eb7)
 
@@ -156,7 +151,21 @@ tsc is clean, and eslint is clean on every changed file.
 
 ## §5 Brevo and DNS (step 6)
 
-**Brevo API: not checked.** See "What I need from you".
+**Brevo API** (read-only GETs; key loaded by the app's own env loader, never printed):
+
+| Check | Result |
+|---|---|
+| GET /senders/domains | villagefoodie.co.uk: authenticated, verified. **hatchgrab.com: authenticated, verified.** |
+| GET /senders/domains/hatchgrab.com | DKIM 1 (brevo1._domainkey CNAME) ✓ · DKIM 2 (brevo2._domainkey CNAME) ✓ · Brevo code (TXT @) ✓ · DMARC (TXT _dmarc) ✓ |
+| GET /senders | 5 senders, all villagefoodie.co.uk: dominic@, hello@, schedule@, orders@, donotreply@. **No hatchgrab.com sender is listed.** It isn't needed: Brevo accepted every hatchgrab.com From in §6. The optional tidy-up is under Status. |
+| From addresses Brevo sent from, last 30 days (94 requests) | donotreply@villagefoodie.co.uk 83 · hello@villagefoodie.co.uk 8 · hello@hatchgrab.com 3 |
+
+The 30-day counts confirm the problem. Almost everything went out on the old domain:
+- 83 from donotreply@villagefoodie.co.uk: the order mail and operator copies through lib/email.ts;
+- 8 from hello@villagefoodie.co.uk: the HATCHGRAB_SENDER paths, including the demo emails the French prospect got;
+- 3 from hello@hatchgrab.com: the contact form and the scraper.
+
+EMAIL_FROM_ADDRESS is unset locally. Its Vercel value is unknown, but it is no longer read.
 
 **Public DNS for hatchgrab.com** (`dig @1.1.1.1`, read-only):
 
@@ -171,27 +180,52 @@ tsc is clean, and eslint is clean on every changed file.
 
 This is exactly the record set villagefoodie.co.uk has. So the DNS side of "authenticated in Brevo" is in place. The account-side ticks and the sender list still need step 6.
 
-## §6 Test sends (step 7): not run
+## §6 Test sends (step 7)
 
-Planned, once you choose A or B. Each goes to **dominicbonini@hotmail.com** only, never to a customer or a live truck. Each is reported with its From, Reply-To and Brevo's acceptance:
+**How they were sent:** at 22:20 UTC on 9 November 2026, through the real modules, bundled with the harness render kit. The database stand-in throws on any use, so nothing read or wrote Supabase.
 
-1. Signup verification (fr-FR), from HatchGrab <hello@hatchgrab.com>
-2. Operator welcome, from HatchGrab <hello@hatchgrab.com>
-3. Demo link email, from HatchGrab <hello@hatchgrab.com>
-4. Forgot password / team invite / email-change (the shared HG sender), from HatchGrab <hello@hatchgrab.com>
-5. New-order operator copy (sendConfirmationEmail, HatchGrab), from HatchGrab <hello@hatchgrab.com>
-6. Order confirmation to a customer (test truck name), from <test truck> <donotreply@hatchgrab.com>
-7. Reject/cancel notice (notifyCustomer, test truck), from <test truck> <donotreply@hatchgrab.com>
-8. Review request, from "<test truck> via HatchGrab" <donotreply@hatchgrab.com>
-9. Paperwork share, from "<test truck> via HatchGrab" <donotreply@hatchgrab.com>
-10. Paperwork reminder, from HatchGrab <hello@hatchgrab.com>
+**Data:** test-truck "Pizza Kitchen" (GB, a read-only lookup) and a fictional order #7. Links in the emails are deliberately invalid test links.
+
+**Safety guard:** the script forwarded a Brevo request only if its single recipient was dominicbonini@hotmail.com, with no cc or bcc. Nothing went to a customer, a live truck or hello@hatchgrab.com.
+
+**Brevo's events after 3 minutes:** every message is *delivered* (accepted by Outlook's servers). #8 was also *opened*. Brevo cannot see whether Outlook filed each one in the Inbox or in Junk.
+
+| # | Email type | From | Reply-To | Brevo | Subject to look for |
+|---|---|---|---|---|---|
+| 1 | Signup verification (fr-FR) | HatchGrab <hello@hatchgrab.com> | hello@hatchgrab.com | 201, delivered | "Confirmez votre adresse e-mail" |
+| 2 | Operator welcome | HatchGrab <hello@hatchgrab.com> | hello@hatchgrab.com | 201, delivered | "Welcome to HatchGrab, Dominic" |
+| 3 | Demo link | HatchGrab <hello@hatchgrab.com> | hello@hatchgrab.com | 201, delivered | "Your HatchGrab demo — here's your link" |
+| 4 | New-order copy to the operator | HatchGrab <hello@hatchgrab.com> | hello@hatchgrab.com | 201, delivered | "[TEST email-sender-1] 🔔 New order #7 — Dominic (test) · 12:30" |
+| 5 | Order confirmation to a customer | Pizza Kitchen <donotreply@hatchgrab.com> | (none, as before) | 201, delivered | "[TEST email-sender-1] Order #7 confirmed" |
+| 6 | Reject / cancel notice to a customer | Pizza Kitchen <donotreply@hatchgrab.com> | (none, as before) | 201, delivered | "[TEST email-sender-1] Your order #7 could not be accepted" |
+| 7 | Review request | Pizza Kitchen via HatchGrab <donotreply@hatchgrab.com> | hello@hatchgrab.com (no truck address given) | 201, delivered | "[TEST email-sender-1] How was your order from Pizza Kitchen?" |
+| 8 | Paperwork share | Pizza Kitchen via HatchGrab <donotreply@hatchgrab.com> | hello@hatchgrab.com (no truck address given) | 201, delivered, opened | "Pizza Kitchen has sent you their documents" |
+| 9 | Paperwork reminder | HatchGrab <hello@hatchgrab.com> | hello@hatchgrab.com | 201, delivered | "A document needs renewing" |
+
+**Not sent separately:**
+- The inline route emails (forgot password, team invite, email change, admin-created welcome, demo save-email, deletion request and the admin digests) build their From and Reply-To from the same HATCHGRAB_SENDER constant as #9. scripts/email-sender-1.cjs §2 and §3 prove that statically.
+- Sending them for real would mean running those routes against the database.
+
+**What to check in Outlook:**
+- Look in the **Inbox and the Junk Email folder** for the 9 subjects above.
+- Open one HatchGrab email (#2) and one truck email (#5). Under *View message details* (or the headers), check:
+  - `From: …@hatchgrab.com`;
+  - `dkim=pass header.d=hatchgrab.com`;
+  - `dmarc=pass`.
+
+  That is the alignment Outlook is strict about.
+- If any landed in Junk, mark it *Not junk*, and tell me which numbers.
 
 ## SQL
 
-None was run.
+One read-only query (the test truck's name for §6):
+
+```sql
+select id, name, slug, country from trucks where id = 'test-truck';
+```
 
 ## Commits
 
 - **1d97ffc4** has the code, the guard and the re-pins. It was staged by path. In scripts/_lp2-named.cjs and scripts/harnesses.json only my lines were staged; demo-claim-2's uncommitted lines in those files were left alone.
-- This report is committed separately.
+- This report is committed separately; the step 6 and 7 results were added in a second report commit.
 - Not pushed and not deployed.
