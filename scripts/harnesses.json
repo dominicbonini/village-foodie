@@ -235,11 +235,12 @@
       ]
     },
     "server": {
-      "$why": "A long-running local TCP server. It never exits, so a sequential runner would hang on it (it held the 17 Sep sweep for 200s). ⚠️ perf-1 (5 November 2026): `_perf-1-standin.cjs` SERVES the stand-in database (fixtures only, never the real one) for a local production build, and `perf-1-local.cjs` starts `next start` on that build to prove revalidation — both by hand, after `npx next build` (docs/perf-1-report.md).",
+      "$why": "A long-running local TCP server. It never exits, so a sequential runner would hang on it (it held the 17 Sep sweep for 200s). ⚠️ perf-1 (5 November 2026): `_perf-1-standin.cjs` SERVES the stand-in database (fixtures only, never the real one) for a local production build, and `perf-1-local.cjs` starts `next start` on that build to prove revalidation — both by hand, after `npx next build` (docs/perf-1-report.md). ⚠️ gsc-index-2 (9 November 2026): `gsc-index-2.cjs` starts `next start` on a completed build (this checkout, or --dir=; --before= adds the before/after diff) and proves the legal hreflang clusters, the legal sitemap entries and /support → /contact against it — by hand, after `npx next build` (docs/gsc-index-2-report.md).",
       "files": [
         "dev-virtual-printer.cjs",
         "_perf-1-standin.cjs",
-        "perf-1-local.cjs"
+        "perf-1-local.cjs",
+        "gsc-index-2.cjs"
       ]
     },
     "shared_modules": {
@@ -364,7 +365,8 @@
         "_lp-competitor-features-2.cjs",
         "_perf-1-tables.cjs",
         "_moved-paths.cjs",
-        "_compare-suits-1-words.cjs"
+        "_compare-suits-1-words.cjs",
+        "_lp-gsc-index-2.cjs"
       ]
     },
     "fixture_generators": {

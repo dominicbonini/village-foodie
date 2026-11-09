@@ -14,7 +14,7 @@ import type { Metadata } from 'next'
 import { headers } from 'next/headers'
 import { notFound, redirect } from 'next/navigation'
 import { isHatchGrabHost } from '@/lib/brand'
-import { countryOfSegment, countryPagePath, HATCHGRAB_ORIGIN } from '@/lib/marketing-country'
+import { COUNTRY_PATH_SEGMENTS, countryOfSegment, countryPagePath, HATCHGRAB_ORIGIN } from '@/lib/marketing-country'
 import { listCountrySettingsCached } from '@/lib/country-settings'
 import { LEGAL_DOC_PATH, legalBaseOf, legalPath, type LegalDoc } from '@/lib/legal'
 import { legalDocumentSource } from '@/lib/legal-documents'
@@ -41,8 +41,35 @@ export async function legalPlace(segment: string, doc: LegalDoc | null): Promise
 const TITLE = { privacy: 'meta.privacyTitle', terms: 'meta.termsTitle', 'country-terms': 'meta.countryTermsTitle' } as const
 const DESCRIPTION = { privacy: 'meta.privacyDescription', terms: 'meta.termsDescription', 'country-terms': 'meta.countryTermsDescription' } as const
 
-/** The page's metadata: its title and description in the language; canonical and og:url its own address; hreflang naming
- *  the English (governing) page as well. */
+// ── 🔴 gsc-index-2 (9 November 2026, docs/gsc-index-2-report.md; found by gsc-index-1 §1a): ONE CLUSTER PER DOCUMENT ────────────────
+// Each translated page used to name only itself and the English page, and the English page named nobody, so Google ignored
+// all 105 pairs: it uses an hreflang pair only when both pages confirm it. Now every member of a document's cluster (the English
+// page, each translation, x-default) declares the SAME set, built here. The English pages (app/(legal)/…) and app/sitemap.ts
+// read it too.
+//   • a translation is listed only where its page actually serves one: the country is in COUNTRY_PATH_SEGMENTS, its row exists
+//     and is switched on, its language is not English (legalBaseOf), and the document has a translation file
+//     (legalDocumentSource …translatedInto). These are the same tests that make legalPlace / legalPage redirect to the English page.
+//   • one entry per locale. A later country with the same locale replaces an earlier one, the rule countryPageAlternates
+//     (lib/marketing-meta.ts) uses for the country pages.
+//   • en-GB and x-default → the English (governing) document.
+// ⚠️ If the country list cannot be read, the cluster is the English page alone. The translated pages redirect to it then anyway.
+/** A legal document's full hreflang set: locale → absolute address. */
+export async function legalLanguages(doc: LegalDoc): Promise<Record<string, string>> {
+  const english = HATCHGRAB_ORIGIN + LEGAL_DOC_PATH[doc]
+  const rows = await listCountrySettingsCached().catch(() => [])
+  const languages: Record<string, string> = { 'en-GB': english }
+  for (const row of rows) {
+    if (!row.enabled || !COUNTRY_PATH_SEGMENTS[row.countryCode]) continue
+    const locale = localeOfCountry(row)
+    if (!legalBaseOf(locale) || !legalDocumentSource(doc, { country: row.countryCode, locale }).translatedInto) continue
+    languages[locale] = HATCHGRAB_ORIGIN + legalPath(doc, { country: row.countryCode, locale })
+  }
+  languages['x-default'] = english
+  return languages
+}
+
+/** The page's metadata: its title and description in the language; canonical and og:url its own address; hreflang the
+ *  document's whole cluster (legalLanguages, above). */
 export function legalMetadata(doc: LegalDoc) {
   return async function generateMetadata({ params }: CountryParams): Promise<Metadata> {
     const { country, locale } = await legalPlace((await params).country, doc)
@@ -52,7 +79,7 @@ export function legalMetadata(doc: LegalDoc) {
     return {
       title: { absolute: t(TITLE[doc]) },
       description: t(DESCRIPTION[doc]),
-      alternates: { canonical: url, languages: { [locale]: url, 'en-GB': HATCHGRAB_ORIGIN + LEGAL_DOC_PATH[doc], 'x-default': HATCHGRAB_ORIGIN + LEGAL_DOC_PATH[doc] } },
+      alternates: { canonical: url, languages: await legalLanguages(doc) },
       openGraph: { ...siteOpenGraph(site), url, locale: locale.replace('-', '_') },
     }
   }

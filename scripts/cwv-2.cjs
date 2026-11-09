@@ -148,7 +148,8 @@ t('proxy.ts: a country-shaped address off HatchGrab or with no such country, and
   && PX.includes("  if ((countryShaped && (!countryOfSegment(countryShaped[1]) || !isHatchGrab(host)))\n    || (oneSegment && !countryOfSegment(oneSegment[1]) && !isOwnOneSegment(oneSegment[1]))) {\n    return NextResponse.rewrite(new URL('/__cwv2/no/such/country/page', request.url))")
   && PX.indexOf('const countryShaped') < PX.indexOf('request.headers.delete(PAGE_LANG_HEADER)') && PX.indexOf('const countryShaped') > PX.indexOf('export async function proxy('))
 t('proxy.ts is otherwise exactly as before (the switched-off redirects, Village Foodie, the language header, the session)',
-  PX.replace(/\n  \/\/ ── cwv-2 \(6 November 2026[\s\S]*?\n  \}\n\n/, '\n').replace("import { isOwnOneSegment } from '@/lib/top-level-routes'\n", '') === git('show', `${BEFORE}:proxy.ts`))
+  // ⚠️ RE-PINNED (gsc-index-2, 9 November 2026): its /support block taken back exactly first (scripts/_lp-gsc-index-2.cjs asBefore).
+  require('./_lp-gsc-index-2.cjs').asBefore('proxy.ts', PX).replace(/\n  \/\/ ── cwv-2 \(6 November 2026[\s\S]*?\n  \}\n\n/, '\n').replace("import { isOwnOneSegment } from '@/lib/top-level-routes'\n", '') === git('show', `${BEFORE}:proxy.ts`))
 const TL = read('lib/top-level-routes.ts')
 const listOf = name => JSON.parse('[' + (TL.match(new RegExp(`export const ${name}: readonly string\\[\\] = \\[([\\s\\S]*?)\\]`)) || [, ''])[1].replace(/'/g, '"') + ']')
 const oneSeg = [...new Set(appFiles.map(f => f.split('/').slice(1).filter(p => !/^\(.*\)$/.test(p))).flatMap(p => (p.length === 2 && /^(page|route)\.(tsx?|js)$/.test(p[1]) && !p[0].startsWith('[') ? [p[0]]

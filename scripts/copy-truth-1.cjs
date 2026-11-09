@@ -54,7 +54,9 @@ async function views(tag, landingText, featuresText, gbApps = true) {
   }
   const llmsText = await R.llms(rows)
   out.llms = sha(llmsText)
-  out.sitemap = sha(JSON.stringify((await R.sitemap(rows)).map(e => ({ ...e, lastModified: undefined }))))
+  // ⚠️ RE-PINNED (gsc-index-2, 9 November 2026): the legal entries' hreflang cluster (and any translated legal entries) taken back
+  // exactly first (scripts/_lp-gsc-index-2.cjs sitemapBack, PRECISE); every other byte still hashed as HEAD's.
+  out.sitemap = sha(JSON.stringify(require('./_lp-gsc-index-2.cjs').sitemapBack(await R.sitemap(rows)).map(e => ({ ...e, lastModified: undefined }))))
   return { out, cut, llmsText }
 }
 

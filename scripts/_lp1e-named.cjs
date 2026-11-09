@@ -350,6 +350,10 @@ for (const e of require('./_lp-paperwork-1.cjs').ITEMS) NAMED.push({ id: e.id, w
 // and the legal pages' web chrome is the ONE shared header and footer (STRUCTURAL); one copy in scripts/_lp-site-chrome-1.cjs.
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- CommonJS harness module (site-chrome-1)
 for (const e of require('./_lp-site-chrome-1.cjs').ITEMS) NAMED.push({ id: e.id, what: e.what, views: e.views, apply: (id, v) => e.apply(id, v), ...(e.proveWith ? { proveWith: e.proveWith } : {}) })
+// ⚠️ RE-PINNED (gsc-index-2, 9 November 2026): the English legal pages' hreflang cluster, in their metadata and the sitemap — PRECISE,
+// after site-chrome-1's (scripts/_lp-gsc-index-2.cjs).
+// eslint-disable-next-line @typescript-eslint/no-require-imports -- CommonJS harness module (gsc-index-2)
+for (const e of require('./_lp-gsc-index-2.cjs').ITEMS) NAMED.push({ id: e.id, what: e.what, views: e.views, apply: (id, v) => e.apply(id, v) })
 
 /** BEFORE value of view `id` → { expected, touched: [named ids whose transform changed it] }. */
 // ⚠️ RE-PINNED (plans-data-model, Stage A): an entry with `proveWith` adds `matches(f)` → { ok, problems } — its own

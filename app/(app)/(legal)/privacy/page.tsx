@@ -18,6 +18,7 @@ import { renderLegalMarkdownHtml } from '@/lib/legal-markdown-html'   // seo-fix
 import { DEFAULT_LOCALE } from '@/lib/i18n/locales'
 import { translatorFor } from '@/lib/i18n/translator'
 import { ownUrlMetadata } from '@/lib/site-metadata'
+import { legalLanguages } from '@/components/legal/translated-legal'
 import { PRIVACY_PATH } from '@/lib/legal'
 import '@/lib/i18n/catalog/legalChrome'
 
@@ -27,12 +28,16 @@ const t = translatorFor(DEFAULT_LOCALE, 'legalChrome')
 // seo-fixes S1 (20 October 2026): its canonical and og:url are its HatchGrab www address on EVERY host — the Village
 // Foodie host serves this same document, and the canonical names the HatchGrab copy (lib/site-metadata.ts).
 export async function generateMetadata(): Promise<Metadata> {
+  const own = await ownUrlMetadata(PRIVACY_PATH)
   return {
     // `absolute`: the document's own title ends "— HatchGrab", so the root template's "| HatchGrab" would double it
     // (legal follow-ups, 19 October 2026).
     title: { absolute: t('meta.privacyTitle') },
     description: t('meta.privacyDescription'),
-    ...(await ownUrlMetadata(PRIVACY_PATH)),
+    ...own,
+    // gsc-index-2 (9 November 2026): hreflang is the document's whole cluster, the English page and every translation, the same
+    // set each translation declares (components/legal/translated-legal.tsx legalLanguages). The canonical stays its own.
+    alternates: { ...own.alternates, languages: await legalLanguages('privacy') },
   }
 }
 

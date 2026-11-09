@@ -66,6 +66,7 @@ const tracked = (args) => execFileSync('git', args, { cwd: REPO, maxBuffer: 1 <<
 /** cwv-2's one deliberate change to a file other harnesses pin as "unchanged": the country pages' host gate in proxy.ts (built-ahead
  *  pages cannot read the host). `changedSince(rev, paths, { cwv2: true })` compares proxy.ts with exactly that block taken out. */
 const CWV2_PROXY_BLOCK = /\n  \/\/ ── cwv-2 \(6 November 2026[\s\S]*?\n  \}\n\n/
+const G2 = require('./_lp-gsc-index-2.cjs')
 function changedSince(rev, paths, { cwv2 = false } = {}) {
   const now = [...new Set(paths.map(nowPath))]
   const files = new Set([...tracked(['ls-files', '--', ...now]), ...tracked(['ls-tree', '-r', '--name-only', rev, '--', ...new Set(now.map(beforePath))]).map(nowPath)])
@@ -74,6 +75,10 @@ function changedSince(rev, paths, { cwv2 = false } = {}) {
     const abs = path.join(REPO, f)
     let cur = fs.existsSync(abs) ? fs.readFileSync(abs).toString('latin1') : null
     if (cwv2 && f === 'proxy.ts' && cur) cur = Buffer.from(Buffer.from(cur, 'latin1').toString('utf8').replace(CWV2_PROXY_BLOCK, '\n').replace("import { isOwnOneSegment } from '@/lib/top-level-routes'\n", ''), 'utf8').toString('latin1')
+    // ⚠️ RE-PINNED (gsc-index-2, 9 November 2026): against a revision from before gsc-index-2, its named edits (proxy.ts's /support
+    // block, the English legal pages' hreflang) are taken back exactly (scripts/_lp-gsc-index-2.cjs asBefore; it throws if one is
+    // not there exactly once), so every other byte is still compared.
+    if (cur && G2.FILES.includes(f) && G2.LANDED && show(rev, 'scripts/_lp-gsc-index-2.cjs') === null) cur = Buffer.from(G2.asBefore(f, Buffer.from(cur, 'latin1').toString('utf8')), 'utf8').toString('latin1')
     let then = show(rev, f) ?? show(rev, beforePath(f))
     if (then !== null) for (const [a, b] of MOVE_EDITS[f] || []) then = then.split(a).join(b)
     if (cur !== then) changed.push(f)

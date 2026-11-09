@@ -155,6 +155,10 @@ const NAMED = [
   // ⚠️ RE-PINNED (site-chrome-1, 5 November 2026): the sitemap's country-page lastmod moves to 2026-11-05 (PRECISE; scripts/_lp-site-chrome-1.cjs).
   // eslint-disable-next-line @typescript-eslint/no-require-imports -- CommonJS harness module (site-chrome-1)
   ...require('./_lp-site-chrome-1.cjs').ITEMS.filter(P => !P.proveWith).map(P => ({ id: P.id, what: P.what, applies: id => P.views(id), apply: (v, id) => P.apply(id, v) })),
+  // ⚠️ RE-PINNED (gsc-index-2, 9 November 2026): the English legal pages' hreflang cluster, in their metadata and the sitemap — PRECISE
+  // (scripts/_lp-gsc-index-2.cjs).
+  // eslint-disable-next-line @typescript-eslint/no-require-imports -- CommonJS harness module (gsc-index-2)
+  ...require('./_lp-gsc-index-2.cjs').ITEMS.map(P => ({ id: P.id, what: P.what, applies: id => P.views(id), apply: (v, id) => P.apply(id, v) })),
 ]
 // ⚠️ RE-PINNED (plans-data-model, Stage A, 19 October 2026): Manage › Billing is ONE data-driven plan card above the frozen comparison
 // table — STRUCTURAL, by the same proof Part 2 and Phase 1e name (scripts/_lp1d2-named.cjs makeBillingProof, one copy):

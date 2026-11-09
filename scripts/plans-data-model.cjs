@@ -673,6 +673,9 @@ if (RENDER) {
       // fixtures. seo-fixes builds the expected JSON-LD from BEFORE with "Web, iOS, Android", so AFTER's value is set back to it
       // (scripts/_lp-seo-geo-2.cjs osBack, PRECISE) in the landing views that carry the JSON-LD.
       if (SG2.LANDED && /^landing\|[A-Z]+\|(html|meta)/.test(k) && JSON.stringify(A[area][k] ?? '').includes('operatingSystem')) A[area][k] = SG2.osBack(A[area][k])
+      // ⚠️ RE-PINNED (gsc-index-2, 9 November 2026): the HatchGrab sitemap's legal hreflang cluster taken back exactly first
+      // (scripts/_lp-gsc-index-2.cjs sitemapBack, PRECISE), so SEO-sitemap below still compares every other byte.
+      if (/^sitemap\|/.test(k) && !/villagefoodie/.test(k)) A[area][k] = require('./_lp-gsc-index-2.cjs').sitemapBack(A[area][k])   // eslint-disable-line @typescript-eslint/no-require-imports -- CommonJS harness module (gsc-index-2)
       const sf = seoFixes(k)
       if (!sf) { N[k] = [A[area][k], B[area][k]]; continue }
       const r = sf[1](A[area][k], B[area][k])

@@ -9,6 +9,7 @@ import { BRANDS } from '@/lib/brand'
 import { ABOUT_PATH, ABOUT_UPDATED } from '@/lib/about'
 import { liveComparisonPages } from '@/lib/comparison-server'
 import { faqCountries } from '@/lib/faq/public'
+import { legalLanguages } from '@/components/legal/translated-legal'
 
 // app/sitemap.ts — serves /sitemap.xml. There was none before.
 //
@@ -94,16 +95,30 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       url: HATCHGRAB_ORIGIN + countryPagePath(f.code, 'faq'), ...(f.updatedAt ? { lastModified: new Date(f.updatedAt) } : {}), changeFrequency: 'weekly', priority: 0.6,
       alternates: { languages: countryPageAlternates('faq', f.code, faqAlternates).languages },
     }))
+    // gsc-index-2 (9 November 2026, docs/gsc-index-2-report.md): each legal document's hreflang cluster: the English page and every
+    // translation (/fr/privacy, /de/terms, …) the site serves, the same set their <head>s declare (legalLanguages). The English
+    // entries keep their place below and gain the alternates. The translations follow at the end, each dated like its English
+    // document (a translation shows its English document's date, lib/legal.ts).
+    const legalCluster = {
+      privacy: await legalLanguages('privacy'), terms: await legalLanguages('terms'), 'country-terms': await legalLanguages('country-terms'),
+    }
+    const legalDate = { privacy: legalUpdatedDate(PRIVACY_UPDATED), terms: legalUpdatedDate(TERMS_UPDATED), 'country-terms': legalUpdatedDate(COUNTRY_TERMS_UPDATED) }
+    const englishLegal = { privacy: HATCHGRAB_ORIGIN + PRIVACY_PATH, terms: HATCHGRAB_ORIGIN + TERMS_PATH, 'country-terms': HATCHGRAB_ORIGIN + COUNTRY_TERMS_PATH }
+    const translatedLegal: MetadataRoute.Sitemap = (['privacy', 'terms', 'country-terms'] as const).flatMap(doc =>
+      [...new Set(Object.values(legalCluster[doc]))].filter(url => url !== englishLegal[doc]).map(url => ({
+        url, lastModified: legalDate[doc], changeFrequency: 'yearly' as const, priority: 0.3, alternates: { languages: legalCluster[doc] },
+      })))
     return [
       ...countryPages.flat(),
       ...faqPages,
       ...comparisons,
-      { url: HATCHGRAB_ORIGIN + PRIVACY_PATH, lastModified: legalUpdatedDate(PRIVACY_UPDATED), changeFrequency: 'yearly', priority: 0.3 },
-      { url: HATCHGRAB_ORIGIN + TERMS_PATH, lastModified: legalUpdatedDate(TERMS_UPDATED), changeFrequency: 'yearly', priority: 0.3 },
-      { url: HATCHGRAB_ORIGIN + COUNTRY_TERMS_PATH, lastModified: legalUpdatedDate(COUNTRY_TERMS_UPDATED), changeFrequency: 'yearly', priority: 0.3 },
+      { url: englishLegal.privacy, lastModified: legalDate.privacy, changeFrequency: 'yearly', priority: 0.3, alternates: { languages: legalCluster.privacy } },
+      { url: englishLegal.terms, lastModified: legalDate.terms, changeFrequency: 'yearly', priority: 0.3, alternates: { languages: legalCluster.terms } },
+      { url: englishLegal['country-terms'], lastModified: legalDate['country-terms'], changeFrequency: 'yearly', priority: 0.3, alternates: { languages: legalCluster['country-terms'] } },
       { url: HATCHGRAB_ORIGIN + '/contact', changeFrequency: 'yearly', priority: 0.3 },
       // about-page (22 October 2026): HatchGrab only; lastmod is the page's own words' date (lib/about.ts ABOUT_UPDATED).
       { url: HATCHGRAB_ORIGIN + ABOUT_PATH, lastModified: legalUpdatedDate(ABOUT_UPDATED), changeFrequency: 'yearly', priority: 0.3 },
+      ...translatedLegal,
     ]
   }
   // Village Foodie: the discovery root, and /contact — self-canonical on this host since pricing-tidy, so listed here

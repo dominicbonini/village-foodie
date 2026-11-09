@@ -21,13 +21,13 @@ parts/calc|US|fracFreeYes	code: US behaviour — COMPARE: ¢ minor-unit suffix, 
 parts/contact|US|html	code: about-page-footer-link + contact-1-form + words
 parts/contact|US|meta	code: metadataBase-www + seo-s1-canonical + words
 parts/legal|US|chrome	code: legal-logo-country + legal-country-terms-link + site-chrome-1-legal-chrome
-parts/legal|US|meta-privacy	code: metadataBase-www + legal-titles-absolute + seo-s1-canonical
-parts/legal|US|meta-terms	code: metadataBase-www + legal-titles-absolute + seo-s1-canonical
+parts/legal|US|meta-privacy	code: metadataBase-www + legal-titles-absolute + seo-s1-canonical + gsc-index-2-legal-hreflang
+parts/legal|US|meta-terms	code: metadataBase-www + legal-titles-absolute + seo-s1-canonical + gsc-index-2-legal-hreflang
 parts/footer|US|html	code: US behaviour — TIDY: Village Foodie’s discovery prompts are hidden for a truck outside GB (the newsletter, the weekly-schedule button, Hire / Add my Business / Truck Directory, the claim links) + words
 parts/truck|US|meta	code: metadataBase-www + us-polish-hg-truck-preview
 parts/truck|US|html	code: tidy-1-hg-truck-no-tally + US behaviour — TIDY: Village Foodie’s discovery prompts are hidden for a truck outside GB (the newsletter, the weekly-schedule button, Hire / Add my Business / Truck Directory, the claim links) + words
 parts/truck|US|share	words
-parts/sitemap|US|hatchgrab-usOn	code: sitemap-country + seo-s5-sitemap + pricing-tidy-terms-lastmod + ireland-3-country-terms-lastmod + anz-terms-country-terms-lastmod + demo-2b-privacy-lastmod + world-countries-2-legal-lastmod + about-page-sitemap + copy-truth-1-sitemap-lastmod + features-list-1-sitemap-lastmod + contact-1-privacy-lastmod + tidy-1-privacy-lastmod + paperwork-1-privacy-lastmod + site-chrome-1-sitemap-lastmod
+parts/sitemap|US|hatchgrab-usOn	code: sitemap-country + seo-s5-sitemap + pricing-tidy-terms-lastmod + ireland-3-country-terms-lastmod + anz-terms-country-terms-lastmod + demo-2b-privacy-lastmod + world-countries-2-legal-lastmod + about-page-sitemap + copy-truth-1-sitemap-lastmod + features-list-1-sitemap-lastmod + contact-1-privacy-lastmod + tidy-1-privacy-lastmod + paperwork-1-privacy-lastmod + site-chrome-1-sitemap-lastmod + gsc-index-2-legal-sitemap
 parts/pdf|US|html	code: US behaviour — FEATURES: US Letter page (@page size letter, format Letter), US footnote dates + words
 parts/pdf|US|print	code: US behaviour — FEATURES: US Letter page (@page size letter, format Letter), US footnote dates
 billing/billing|US|trial	code: US behaviour — FEATURES: footnote 4’s dates via formatLongDate (“October 1, 2026”), the US price mask “TBD” + words

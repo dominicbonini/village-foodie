@@ -232,6 +232,14 @@ export async function proxy(request: NextRequest) {
   const crossHost = crossHostRedirect(host, pathname, request.nextUrl.search)
   if (crossHost) return NextResponse.redirect(crossHost, 308)
 
+  // ── gsc-index-2 (9 November 2026, docs/gsc-index-2-report.md): /support MOVED TO /contact, PERMANENTLY ──────────────────────────
+  // app/support was deleted on 20 August 2026 (e605bbfa, "hg contact") and /contact replaced it. Google still asks for /support and
+  // gets a 404 (gsc-index-1 §2). On every HatchGrab host it now answers 308 to /contact on the same host, with the query kept.
+  if (isHatchGrab(host) && pathname === '/support') {
+    const to = new URL('/contact', request.url); to.search = request.nextUrl.search   // built like /landing's 308, below
+    return NextResponse.redirect(to, 308)
+  }
+
   // ── cwv-2 (6 November 2026, docs/cwv-2-report.md §4): THE COUNTRY PAGES' HOST GATE, MOVED HERE FROM THE PAGE. ──────────────────────
   // /uk, /uk/features, /uk/faq are built ahead and served from the CDN, so the page can no longer read the host and 404 off HatchGrab
   // (lib/visitor-country.ts resolveCountryPage did that). The same answer is given here instead: any host that is not HatchGrab
