@@ -314,17 +314,22 @@ final class HGLoadErrorView: UIView {
     private let retryButton = UIButton(type: .system)
     private let spinner = UIActivityIndicatorView(style: .medium)
 
+    private static let checkConnection = NSLocalizedString("offlineDetail", value: "Check your connection.", comment: "Offline screen line under the headline")
+
     init(targetURL: String) {
         super.init(frame: .zero)
         backgroundColor = Self.backgroundColour
 
-        titleLabel.text = "Can't reach HatchGrab"
+        // ios-intl-1 (9 November 2026): every user-visible string here is localised. The words live in messages/<locale>.json
+        // nativeShell.binary and are generated into <locale>.lproj/Localizable.strings by scripts/ios/native-strings.cjs —
+        // never edit a .strings file by hand (scripts/ios-intl-1.cjs fails if one drifts from messages).
+        titleLabel.text = NSLocalizedString("offlineTitle", value: "Can't reach HatchGrab", comment: "Offline screen headline")
         titleLabel.font = .systemFont(ofSize: 20, weight: .semibold)
         titleLabel.textColor = .white
         titleLabel.textAlignment = .center
         titleLabel.numberOfLines = 0
 
-        detailLabel.text = "Check your connection."
+        detailLabel.text = Self.checkConnection
         detailLabel.font = .systemFont(ofSize: 15, weight: .regular)
         // 70% white on #1C1C1E clears the 4.5:1 AA floor comfortably; the URL below is deliberately
         // quieter still, because it is diagnostic information rather than something to read.
@@ -339,7 +344,7 @@ final class HGLoadErrorView: UIView {
         urlLabel.numberOfLines = 2
         urlLabel.lineBreakMode = .byTruncatingMiddle
 
-        retryButton.setTitle("Retry", for: .normal)
+        retryButton.setTitle(NSLocalizedString("retry", value: "Retry", comment: "Offline screen button that reloads the app"), for: .normal)
         retryButton.titleLabel?.font = .systemFont(ofSize: 16, weight: .semibold)
         retryButton.setTitleColor(.white, for: .normal)
         retryButton.backgroundColor = UIColor.white.withAlphaComponent(0.14)
@@ -374,8 +379,8 @@ final class HGLoadErrorView: UIView {
     func setDetail(_ message: String) {
         setRetrying(false)
         detailLabel.text = message.isEmpty
-            ? "Check your connection."
-            : "Check your connection.\n\(message)"
+            ? Self.checkConnection
+            : "\(Self.checkConnection)\n\(message)"
     }
 
     func setRetrying(_ retrying: Bool) {

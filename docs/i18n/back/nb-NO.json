@@ -5759,5 +5759,12 @@
  "comparison.admin.whyFewer": "competitors that pass the automatic checks: {n} of {total}; 2 are needed",
  "comparison.admin.whyAutoOff": "automatic publishing is switched off for this country",
  "comparison.admin.shown": "{n, plural, one {# competitor shown} other {# competitors shown}}",
- "comparison.admin.details": "Details"
+ "comparison.admin.details": "Details",
+ "nativeShell.binary.cameraUsage": "HatchGrab uses the camera so that you can photograph the menu board, your dishes and other documents and upload them straight to your account. The images are used only for the uploads you yourself choose to make.",
+ "nativeShell.binary.bluetoothUsage": "HatchGrab uses Bluetooth to connect to the receipt printer in your kitchen, so that order tickets can be printed automatically. It is not used for anything else.",
+ "nativeShell.binary.localNetworkUsage": "HatchGrab connects to your kitchen printer on the local network, so that order tickets can be printed automatically. It is not used for anything else.",
+ "nativeShell.binary.faceIdUsage": "Unlock HatchGrab with Face ID.",
+ "nativeShell.binary.offlineTitle": "Can't get in touch with HatchGrab",
+ "nativeShell.binary.offlineDetail": "Check the connection.",
+ "nativeShell.binary.retry": "Try again"
 }

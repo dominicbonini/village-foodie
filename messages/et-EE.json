@@ -1309,6 +1309,15 @@
     }
   },
   "nativeShell": {
+    "binary": {
+      "cameraUsage": "HatchGrab kasutab kaamerat, et saaksid pildistada oma menüütahvlit, roogasid ja muid dokumente ning laadida need otse oma kontole üles. Pilte kasutatakse ainult nende üleslaadimiste jaoks, mille ise teha otsustad.",
+      "bluetoothUsage": "HatchGrab kasutab Bluetoothi ühenduse loomiseks sinu köögi tšekiprinteriga, et tellimuste tšekke saaks automaatselt printida. Seda ei kasutata millekski muuks.",
+      "localNetworkUsage": "HatchGrab loob kohalikus võrgus ühenduse sinu köögi printeriga, et tellimuste tšekke saaks automaatselt printida. Seda ei kasutata millekski muuks.",
+      "faceIdUsage": "Ava HatchGrab Face ID-ga.",
+      "offlineTitle": "HatchGrabiga ei saa ühendust",
+      "offlineDetail": "Kontrolli ühendust.",
+      "retry": "Proovi uuesti"
+    },
     "gate": {
       "reverted": "Tellimus #{id} ennistatud",
       "saved": "Tellimus #{id} salvestatud",

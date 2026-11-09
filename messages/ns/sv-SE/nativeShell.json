@@ -1,4 +1,13 @@
 {
+  "binary": {
+    "cameraUsage": "HatchGrab använder kameran så att du kan fotografera din menytavla, dina rätter och andra dokument och ladda upp dem direkt till ditt konto. Bilderna används bara för de uppladdningar du själv väljer att göra.",
+    "bluetoothUsage": "HatchGrab använder Bluetooth för att ansluta till kvittoskrivaren i ditt kök så att beställningsbongar kan skrivas ut automatiskt. Det används inte till något annat.",
+    "localNetworkUsage": "HatchGrab ansluter till köksskrivaren i ditt lokala nätverk så att beställningsbongar kan skrivas ut automatiskt. Det används inte till något annat.",
+    "faceIdUsage": "Lås upp HatchGrab med Face ID.",
+    "offlineTitle": "Det går inte att nå HatchGrab",
+    "offlineDetail": "Kontrollera din anslutning.",
+    "retry": "Försök igen"
+  },
   "gate": {
     "reverted": "Beställning #{id} återställd",
     "saved": "Beställning #{id} sparad",

@@ -1,0 +1,13 @@
+{
+  "$about": "ios-intl-1 (9 November 2026): the App Store listing for this locale, reusable for Google Play (name → title, shortDescription → short description, description → full description). Must be true in every one of the 44 countries: no prices, plan names, trial lengths, purchase instructions or other platforms (docs/ios-intl-1-report.md §4).",
+  "appStoreLocale": "sl-SI",
+  "messagesLocale": "sl-SI",
+  "countrySegment": "si",
+  "name": "HatchGrab",
+  "subtitle": "Food truck: naročila, kuhinja",
+  "promotionalText": "Sprejemajte naročila vnaprej, zaščitite kuhinjo pred preveč naročili in strezite naprej, ko signal izgine. Aplikacija za naročanje za osebje food truckov.",
+  "description": "HatchGrab je aplikacija za naročanje in kuhinjo za food trucke: orodje, s katerim vaša ekipa vodi strežbo.\n\nStranke naročijo vnaprej in izberejo čas prevzema. Vaše osebje vidi vsa naročila na enem zaslonu, potrdi, kar lahko kuhinja pripravi, nato pa jih označi kot pripravljena in prevzeta.\n\nNIKOLI NE OBLJUBITE ČASA, KI GA NE MORETE DOSEČI\nNastavite, koliko lahko vaša kuhinja skuha naenkrat in koliko časa to traja. Ko je čas prevzema zaseden, ga stranke ne morejo izbrati, zato se vrsta ujema z zmogljivostjo kuhinje.\n\nSPREJEMAJTE NAROČILA NA MESTU\nNaročila na mestu dodajte na istem zaslonu kot naročila, oddana vnaprej, da kuhinja dela iz ene vrste.\n\nEN ZASLON ZA KUHINJO\nKuhinjski zaslon prikazuje, kaj pripraviti zdaj, kaj sledi in kaj je pripravljeno, z opozorilom, ko je treba začeti naročilo.\n\nTISKAJTE LISTKE NAROČIL\nPovežite kuhinjski tiskalnik računov prek Bluetootha ali lokalnega omrežja in listki naročil se bodo natisnili samodejno.\n\nSTREZITE NAPREJ, KO SIGNAL IZGINE\nVklopite zaščito brez povezave in, če se povezava prekine, se naročanje vnaprej ustavi, da nihče ne odda naročila, ki ga ne bi videli. Naročila, ki jih sprejmete na napravi, se shranijo in sinhronizirajo, ko boste spet povezani.\n\nNAREJENO ZA FOOD TRUCK\nUporabljajte jo na iPhonu ali iPadu. Med strežbo naj zaslon ostane vklopljen, prejmite obvestilo, ko naročilo čaka na potrditev, in zaklenite aplikacijo s Face ID ali Touch ID.\n\nNAČRTUJTE SVOJ TEDEN\nEnkrat nastavite svoje dogodke in lokacije ter sprejemajte naročila za vsakega od njih.\n\nHatchGrab je namenjen upravljavcem food truckov in njihovemu osebju. Za prijavo potrebujete račun HatchGrab.",
+  "keywords": "food truck,street food,sistem za naročila,spletno,prednaročilo,prevzem,kuhinjski zaslon,POS",
+  "whatsNew": "HatchGrab zdaj govori 29 jezikov.\n\nTiskajte listke naročil na kuhinjskem tiskalniku v lokalnem omrežju in tudi prek Bluetootha.\n\nPopravki in izboljšave.",
+  "shortDescription": "Naročila, kuhinjski zaslon in tiskanje listkov za osebje food truckov."
+}

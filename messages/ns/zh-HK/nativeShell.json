@@ -1,4 +1,13 @@
 {
+  "binary": {
+    "cameraUsage": "HatchGrab 會使用相機，讓你拍攝餐牌板、菜式及其他文件，並直接上載到你的帳戶。影像只會用於你選擇進行的上載。",
+    "bluetoothUsage": "HatchGrab 會使用藍牙連接你的廚房收據打印機，以便自動打印廚房單。不會用作其他用途。",
+    "localNetworkUsage": "HatchGrab 會連接你本地網絡上的廚房打印機，以便自動打印廚房單。不會用作其他用途。",
+    "faceIdUsage": "使用 Face ID 解鎖 HatchGrab。",
+    "offlineTitle": "無法連接 HatchGrab",
+    "offlineDetail": "請檢查你的連線。",
+    "retry": "重試"
+  },
   "gate": {
     "reverted": "訂單 #{id} 已還原",
     "saved": "訂單 #{id} 已儲存",

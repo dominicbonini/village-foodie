@@ -1,4 +1,13 @@
 {
+  "binary": {
+    "cameraUsage": "HatchGrab uses the camera so you can photograph your menu board, your dishes and other documents and upload them straight into your account. Images are used only for the uploads you choose to make.",
+    "bluetoothUsage": "HatchGrab uses Bluetooth to connect to your kitchen receipt printer so order tickets can be printed automatically. It is not used for anything else.",
+    "localNetworkUsage": "HatchGrab connects to your kitchen printer on your local network so order tickets can print automatically. It is not used for anything else.",
+    "faceIdUsage": "Unlock HatchGrab with Face ID.",
+    "offlineTitle": "Can't reach HatchGrab",
+    "offlineDetail": "Check your connection.",
+    "retry": "Retry"
+  },
   "gate": {
     "reverted": "Order #{id} reverted",
     "saved": "Order #{id} saved",

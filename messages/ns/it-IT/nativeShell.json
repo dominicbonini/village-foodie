@@ -1,4 +1,13 @@
 {
+  "binary": {
+    "cameraUsage": "HatchGrab usa la fotocamera per permetterti di fotografare la lavagna del menu, i tuoi piatti e altri documenti e caricarli direttamente nel tuo account. Le immagini vengono usate solo per i caricamenti che scegli di fare.",
+    "bluetoothUsage": "HatchGrab usa il Bluetooth per collegarsi alla stampante termica della tua cucina, così le comande possono essere stampate automaticamente. Il Bluetooth non viene usato per nient’altro.",
+    "localNetworkUsage": "HatchGrab si collega alla stampante della tua cucina sulla tua rete locale, così le comande possono essere stampate automaticamente. L’accesso alla rete locale non viene usato per nient’altro.",
+    "faceIdUsage": "Sblocca HatchGrab con Face ID.",
+    "offlineTitle": "Impossibile raggiungere HatchGrab",
+    "offlineDetail": "Controlla la connessione.",
+    "retry": "Riprova"
+  },
   "gate": {
     "reverted": "Ordine #{id} ripristinato",
     "saved": "Ordine #{id} salvato",

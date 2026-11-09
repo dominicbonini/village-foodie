@@ -1,0 +1,13 @@
+{
+  "$about": "ios-intl-1 (9 November 2026): the App Store listing for this locale, reusable for Google Play (name → title, shortDescription → short description, description → full description). Must be true in every one of the 44 countries: no prices, plan names, trial lengths, purchase instructions or other platforms (docs/ios-intl-1-report.md §4).",
+  "appStoreLocale": "zh-Hant",
+  "messagesLocale": "zh-HK",
+  "countrySegment": "hk",
+  "name": "HatchGrab",
+  "subtitle": "美食車落單及廚房系統",
+  "promotionalText": "預先接單、防止訂單超出廚房負荷，訊號中斷時照樣做生意。專為美食車員工而設的落單應用程式。",
+  "description": "HatchGrab 是專為美食車而設的落單及廚房應用程式：你的團隊靠它應付整個營業時段。\n\n顧客預先落單並選擇取餐時間。你的員工在同一個畫面看到所有訂單，確認廚房煮得到哪些，然後標示為可取餐及已取餐。\n\n【不承諾做不到的時間】\n設定廚房一次可以煮多少，以及需時多久。某個取餐時間額滿後，顧客便無法選擇，令輪候的訂單與廚房的能力相符。\n\n【在窗口即場接單】\n在預先落單的同一個畫面加入現場訂單，讓廚房只需跟一條隊處理。\n\n【廚房專用的一個畫面】\n廚房顯示屏列出現在要製作的、下一張要製作的及可取餐的訂單，並在有訂單需要開始製作時發出提示。\n\n【打印廚房單】\n透過藍牙或本地網絡連接廚房收據打印機，廚房單便會自動打印。\n\n【沒有訊號？照樣做生意】\n開啟離線訂單保護後，一旦連線中斷，預先落單便會暫停，以免有人落了你看不到的單。你在裝置上接的訂單會被保留，恢復連線後便會同步。\n\n【為美食車而設】\n可在 iPhone 或 iPad 上使用。營業期間保持屏幕開啟，有訂單需要確認時收到通知，並可用 Face ID 或 Touch ID 鎖定應用程式。\n\n【安排你的一星期】\n一次過設定你的活動及地點，便可為每一個活動接單。\n\nHatchGrab 專為美食車經營者及其員工而設。你需要 HatchGrab 帳戶才可登入。",
+  "keywords": "美食車,落單,預先落單,網上落單,自取,取餐,廚房顯示屏,收銀系統,POS,街頭小食,到會,流動餐飲,點餐系統",
+  "whatsNew": "HatchGrab 現已支援 29 種語言。\n\n除了藍牙之外，現在亦可將廚房單打印到本地網絡上的廚房打印機。\n\n問題修正及改進。",
+  "shortDescription": "為美食車員工而設的落單、廚房顯示屏及廚房單打印。"
+}

@@ -1309,6 +1309,15 @@
     }
   },
   "nativeShell": {
+    "binary": {
+      "cameraUsage": "HatchGrab uporablja kamero, da lahko fotografirate tablo z jedilnikom, svoje jedi in druge dokumente ter jih naložite neposredno v svoj račun. Slike se uporabljajo samo za nalaganja, ki jih izberete sami.",
+      "bluetoothUsage": "HatchGrab uporablja Bluetooth za povezavo z vašim kuhinjskim tiskalnikom računov, da se listki naročil lahko samodejno natisnejo. Za nič drugega se ne uporablja.",
+      "localNetworkUsage": "HatchGrab se poveže z vašim kuhinjskim tiskalnikom v lokalnem omrežju, da se listki naročil lahko samodejno natisnejo. Povezava se ne uporablja za nič drugega.",
+      "faceIdUsage": "Odklenite HatchGrab s Face ID.",
+      "offlineTitle": "HatchGrab ni dosegljiv",
+      "offlineDetail": "Preverite povezavo.",
+      "retry": "Poskusi znova"
+    },
     "gate": {
       "reverted": "Naročilo #{id}: razveljavljeno",
       "saved": "Naročilo #{id} shranjeno",

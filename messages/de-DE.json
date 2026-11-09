@@ -1309,6 +1309,15 @@
     }
   },
   "nativeShell": {
+    "binary": {
+      "cameraUsage": "HatchGrab verwendet die Kamera, damit Sie Ihre Speisekarten-Tafel, Ihre Gerichte und andere Dokumente fotografieren und direkt in Ihr Konto hochladen können. Die Bilder werden nur für die Uploads verwendet, für die Sie sich entscheiden.",
+      "bluetoothUsage": "HatchGrab verwendet Bluetooth, um eine Verbindung zu Ihrem Bondrucker in der Küche herzustellen, damit Bestellbons automatisch gedruckt werden können. Bluetooth wird für nichts anderes verwendet.",
+      "localNetworkUsage": "HatchGrab verbindet sich mit Ihrem Küchendrucker in Ihrem lokalen Netzwerk, damit Bestellbons automatisch gedruckt werden können. Der Zugriff auf das lokale Netzwerk wird für nichts anderes verwendet.",
+      "faceIdUsage": "Entsperren Sie HatchGrab mit Face ID.",
+      "offlineTitle": "HatchGrab nicht erreichbar",
+      "offlineDetail": "Prüfen Sie Ihre Verbindung.",
+      "retry": "Erneut versuchen"
+    },
     "gate": {
       "reverted": "Bestellung #{id} zurückgesetzt",
       "saved": "Bestellung #{id} gespeichert",

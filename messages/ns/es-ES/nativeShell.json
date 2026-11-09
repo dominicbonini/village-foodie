@@ -1,4 +1,13 @@
 {
+  "binary": {
+    "cameraUsage": "HatchGrab usa la cámara para que puedas hacer fotos de la pizarra de tu carta, de tus platos y de otros documentos y subirlas directamente a tu cuenta. Las imágenes solo se usan para las subidas que tú decidas hacer.",
+    "bluetoothUsage": "HatchGrab usa el Bluetooth para conectarse a la impresora de tickets de tu cocina y que las comandas se puedan imprimir automáticamente. El Bluetooth no se usa para nada más.",
+    "localNetworkUsage": "HatchGrab se conecta a la impresora de tu cocina en tu red local para que las comandas se impriman automáticamente. El acceso a la red local no se usa para nada más.",
+    "faceIdUsage": "Desbloquea HatchGrab con Face ID.",
+    "offlineTitle": "No se puede conectar con HatchGrab",
+    "offlineDetail": "Comprueba tu conexión.",
+    "retry": "Reintentar"
+  },
   "gate": {
     "reverted": "Pedido #{id} revertido",
     "saved": "Pedido #{id} guardado",

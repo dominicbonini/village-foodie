@@ -1309,6 +1309,15 @@
     }
   },
   "nativeShell": {
+    "binary": {
+      "cameraUsage": "A HatchGrab usa a câmara para que possa fotografar o quadro da ementa, os seus pratos e outros documentos e carregá-los diretamente na sua conta. As imagens são usadas apenas para os carregamentos que decidir fazer.",
+      "bluetoothUsage": "A HatchGrab usa o Bluetooth para se ligar à impressora de talões da sua cozinha, para que os talões das encomendas possam ser impressos automaticamente. O Bluetooth não é usado para mais nada.",
+      "localNetworkUsage": "A HatchGrab liga-se à impressora da sua cozinha na sua rede local, para que os talões das encomendas sejam impressos automaticamente. O acesso à rede local não é usado para mais nada.",
+      "faceIdUsage": "Desbloqueie a HatchGrab com o Face ID.",
+      "offlineTitle": "Não é possível contactar a HatchGrab",
+      "offlineDetail": "Verifique a sua ligação.",
+      "retry": "Tentar novamente"
+    },
     "gate": {
       "reverted": "Encomenda #{id} revertida",
       "saved": "Encomenda #{id} guardada",

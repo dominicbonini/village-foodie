@@ -1,4 +1,13 @@
 {
+  "binary": {
+    "cameraUsage": "HatchGrab gebruikt de camera zodat je je menubord, je gerechten en andere documenten kunt fotograferen en ze direct naar je account kunt uploaden. Afbeeldingen worden alleen gebruikt voor de uploads die je zelf kiest.",
+    "bluetoothUsage": "HatchGrab gebruikt Bluetooth om verbinding te maken met de bonprinter in je keuken, zodat bestelbonnen automatisch kunnen worden geprint. Het wordt nergens anders voor gebruikt.",
+    "localNetworkUsage": "HatchGrab maakt verbinding met de printer in je keuken op je lokale netwerk, zodat bestelbonnen automatisch kunnen worden geprint. Het wordt nergens anders voor gebruikt.",
+    "faceIdUsage": "Ontgrendel HatchGrab met Face ID.",
+    "offlineTitle": "Kan HatchGrab niet bereiken",
+    "offlineDetail": "Controleer je verbinding.",
+    "retry": "Opnieuw proberen"
+  },
   "gate": {
     "reverted": "Bestelling #{id} teruggezet",
     "saved": "Bestelling #{id} opgeslagen",

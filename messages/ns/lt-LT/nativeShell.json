@@ -1,4 +1,13 @@
 {
+  "binary": {
+    "cameraUsage": "HatchGrab naudoja kamerą, kad galėtumėte nufotografuoti savo meniu lentą, patiekalus ir kitus dokumentus ir įkelti juos tiesiai į savo paskyrą. Vaizdai naudojami tik tiems įkėlimams, kuriuos nusprendžiate atlikti.",
+    "bluetoothUsage": "HatchGrab naudoja Bluetooth, kad prisijungtų prie jūsų virtuvės kvitų spausdintuvo ir užsakymų kvitai būtų spausdinami automatiškai. Tai nenaudojama niekam kitam.",
+    "localNetworkUsage": "HatchGrab prisijungia prie jūsų virtuvės spausdintuvo vietiniame tinkle, kad užsakymų kvitai būtų spausdinami automatiškai. Tai nenaudojama niekam kitam.",
+    "faceIdUsage": "Atrakinkite HatchGrab naudodami Face ID.",
+    "offlineTitle": "Nepavyksta pasiekti HatchGrab",
+    "offlineDetail": "Patikrinkite ryšį.",
+    "retry": "Bandyti dar kartą"
+  },
   "gate": {
     "reverted": "Užsakymas #{id}: pakeitimas atšauktas",
     "saved": "Užsakymas #{id} išsaugotas",

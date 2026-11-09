@@ -1,4 +1,13 @@
 {
+  "binary": {
+    "cameraUsage": "HatchGrab utilise l’appareil photo pour que vous puissiez photographier votre ardoise, vos plats et d’autres documents et les importer directement dans votre compte. Les images servent uniquement aux importations que vous choisissez d’effectuer.",
+    "bluetoothUsage": "HatchGrab utilise le Bluetooth pour se connecter à l’imprimante de tickets de votre cuisine afin que les tickets de commande puissent être imprimés automatiquement. Le Bluetooth n’est utilisé à aucune autre fin.",
+    "localNetworkUsage": "HatchGrab se connecte à l’imprimante de votre cuisine sur votre réseau local afin que les tickets de commande s’impriment automatiquement. L’accès au réseau local n’est utilisé à aucune autre fin.",
+    "faceIdUsage": "Déverrouillez HatchGrab avec Face ID.",
+    "offlineTitle": "Impossible de joindre HatchGrab",
+    "offlineDetail": "Vérifiez votre connexion.",
+    "retry": "Réessayer"
+  },
   "gate": {
     "reverted": "Commande n° {id} : action annulée",
     "saved": "Commande n° {id} enregistrée",

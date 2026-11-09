@@ -1,0 +1,13 @@
+{
+  "$about": "ios-intl-1 (9 November 2026): the App Store listing for this locale, reusable for Google Play (name → title, shortDescription → short description, description → full description). Must be true in every one of the 44 countries: no prices, plan names, trial lengths, purchase instructions or other platforms (docs/ios-intl-1-report.md §4).",
+  "appStoreLocale": "ja",
+  "messagesLocale": "ja-JP",
+  "countrySegment": "jp",
+  "name": "HatchGrab",
+  "subtitle": "キッチンカー向け注文＆キッチンアプリ",
+  "promotionalText": "事前注文を受け付け、キッチンの調理能力を超える注文を防ぎ、電波が途切れても営業を続けられます。キッチンカーのスタッフのための注文アプリです。",
+  "description": "HatchGrabは、キッチンカーのための注文＆キッチンアプリです。チームはこのアプリで営業を回します。\n\nお客様は事前に注文して受け取り時間を選びます。スタッフはすべての注文を1つの画面で確認し、キッチンで調理できる注文を承認してから、準備完了、受け取り済みにします。\n\n【守れない時間は約束しない】\n一度に調理できる量と、調理にかかる時間を設定します。受け取り時間の枠が埋まると、お客様はその時間を選べなくなるため、注文の列がキッチンの調理能力に合います。\n\n【店頭でも注文を受け付け】\n店頭注文を事前注文と同じ画面に追加できるので、キッチンは1つの列に沿って調理できます。\n\n【キッチンのための1つの画面】\nキッチンディスプレイには、今作るもの、次に作るもの、準備完了のものが表示され、調理を始めるべき注文があるとアラートでお知らせします。\n\n【注文伝票を印刷】\nキッチンのレシートプリンターをBluetoothまたはローカルネットワークで接続すると、注文伝票が自動で印刷されます。\n\n【電波が途切れても営業を続けられる】\nオフライン時の注文保護をオンにしておくと、接続が切れたときに事前注文の受付が一時停止するので、確認できない注文が入ることはありません。デバイスで受け付けた注文は保存され、オンラインに戻ると同期されます。\n\n【キッチンカーの現場のために】\niPhoneまたはiPadで使えます。営業中は画面をオンのままにでき、承認が必要な注文があると通知が届き、Face IDまたはTouch IDでアプリをロックできます。\n\n【1週間の予定を立てる】\n出店と出店場所を一度設定すれば、それぞれの出店で注文を受け付けられます。\n\nHatchGrabは、キッチンカーの事業者とそのスタッフのためのアプリです。ログインにはHatchGrabのアカウントが必要です。",
+  "keywords": "キッチンカー,移動販売,事前注文,モバイルオーダー,テイクアウト,キッチンディスプレイ,注文システム,POSレジ,ケータリング,屋台,受け取り,注文アプリ",
+  "whatsNew": "HatchGrabが29の言語に対応しました。\n\nBluetoothに加えて、ローカルネットワーク上のキッチンプリンターにも注文伝票を印刷できるようになりました。\n\n不具合の修正と改善。",
+  "shortDescription": "キッチンカーのスタッフのための注文、キッチンディスプレイ、伝票印刷。"
+}

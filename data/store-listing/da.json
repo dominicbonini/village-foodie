@@ -1,0 +1,13 @@
+{
+  "$about": "ios-intl-1 (9 November 2026): the App Store listing for this locale, reusable for Google Play (name → title, shortDescription → short description, description → full description). Must be true in every one of the 44 countries: no prices, plan names, trial lengths, purchase instructions or other platforms (docs/ios-intl-1-report.md §4).",
+  "appStoreLocale": "da",
+  "messagesLocale": "da-DK",
+  "countrySegment": "dk",
+  "name": "HatchGrab",
+  "subtitle": "Foodtruck-køkken & bestilling",
+  "promotionalText": "Tag imod forudbestillinger, beskyt dit køkken mod for mange bestillinger, og bliv ved med at servere, når signalet forsvinder. Bestillingsappen til foodtruck-personale.",
+  "description": "HatchGrab er bestillings- og køkkenappen til foodtrucks: det værktøj, dit team kører servicen fra.\n\nKunderne forudbestiller og vælger en afhentningstid. Dit personale ser alle bestillinger på én skærm, bekræfter, hvad køkkenet kan lave, og markerer dem derefter som klar og afhentet.\n\nLOV ALDRIG EN TID, DU IKKE KAN NÅ\nAngiv, hvor meget dit køkken kan lave ad gangen, og hvor lang tid det tager. Når en afhentningstid er fuld, kan kunderne ikke vælge den, så køen passer til køkkenet.\n\nTAG IMOD BESTILLINGER I LUGEN\nTilføj bestillinger ved vognen på samme skærm som forudbestillingerne, så køkkenet arbejder ud fra én kø.\n\nÉN SKÆRM TIL KØKKENET\nKøkkenskærmen viser, hvad der skal laves nu, hvad der er det næste, og hvad der er klar, med en alarm, når en bestilling skal i gang.\n\nUDSKRIV BONNER\nTilslut en bonprinter i køkkenet via Bluetooth eller via dit lokale netværk, så udskrives bonnerne automatisk.\n\nBLIV VED MED AT SERVERE, NÅR SIGNALET FORSVINDER\nSlå offlinebeskyttelse til, og hvis forbindelsen forsvinder, sættes forudbestilling på pause, så ingen afgiver en bestilling, du ikke ser. Bestillinger, du tager imod på enheden, gemmes og synkroniseres, når du er online igen.\n\nBYGGET TIL VOGNEN\nBrug den på iPhone eller iPad. Hold skærmen tændt under service, få besked, når en bestilling skal bekræftes, og lås appen med Face ID eller Touch ID.\n\nPLANLÆG DIN UGE\nOpret dine arrangementer og steder én gang, og tag imod bestillinger til hvert af dem.\n\nHatchGrab er til foodtruck-ejere og deres personale. Du skal have en HatchGrab-konto for at logge ind.",
+  "keywords": "street food,forudbestilling,bestil og hent,køkkenskærm,bestillingssystem,kassesystem,madvogn,online",
+  "whatsNew": "HatchGrab taler nu 29 sprog.\n\nUdskriv bonner på en køkkenprinter på dit lokale netværk og også via Bluetooth.\n\nFejlrettelser og forbedringer.",
+  "shortDescription": "Bestillinger, køkkenskærm og bonudskrift til foodtruck-personale."
+}

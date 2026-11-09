@@ -1309,6 +1309,15 @@
     }
   },
   "nativeShell": {
+    "binary": {
+      "cameraUsage": "HatchGrab izmanto kameru, lai jūs varētu fotografēt savu ēdienkartes tāfeli, ēdienus un citus dokumentus un augšupielādēt tos tieši savā kontā. Attēli tiek izmantoti tikai tām augšupielādēm, kuras izvēlaties veikt.",
+      "bluetoothUsage": "HatchGrab izmanto Bluetooth, lai pievienotos jūsu virtuves čeku printerim un pasūtījumu čekus varētu drukāt automātiski. To neizmanto nekam citam.",
+      "localNetworkUsage": "HatchGrab pievienojas jūsu virtuves printerim lokālajā tīklā, lai pasūtījumu čekus varētu drukāt automātiski. To neizmanto nekam citam.",
+      "faceIdUsage": "Atbloķējiet HatchGrab ar Face ID.",
+      "offlineTitle": "Nevar sazināties ar HatchGrab",
+      "offlineDetail": "Pārbaudiet savienojumu.",
+      "retry": "Mēģināt vēlreiz"
+    },
     "gate": {
       "reverted": "Pasūtījuma #{id} izmaiņa atsaukta",
       "saved": "Pasūtījums #{id} saglabāts",

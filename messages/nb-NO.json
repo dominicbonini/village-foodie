@@ -1309,6 +1309,15 @@
     }
   },
   "nativeShell": {
+    "binary": {
+      "cameraUsage": "HatchGrab bruker kameraet slik at du kan fotografere menytavla, rettene dine og andre dokumenter og laste dem opp rett til kontoen din. Bildene brukes bare til opplastingene du selv velger å gjøre.",
+      "bluetoothUsage": "HatchGrab bruker Bluetooth til å koble til kvitteringsskriveren på kjøkkenet ditt, slik at bestillingsbonger kan skrives ut automatisk. Det brukes ikke til noe annet.",
+      "localNetworkUsage": "HatchGrab kobler til kjøkkenskriveren din på det lokale nettverket, slik at bestillingsbonger kan skrives ut automatisk. Det brukes ikke til noe annet.",
+      "faceIdUsage": "Lås opp HatchGrab med Face ID.",
+      "offlineTitle": "Får ikke kontakt med HatchGrab",
+      "offlineDetail": "Sjekk tilkoblingen.",
+      "retry": "Prøv igjen"
+    },
     "gate": {
       "reverted": "Bestilling #{id} tilbakestilt",
       "saved": "Bestilling #{id} lagret",

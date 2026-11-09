@@ -1,4 +1,13 @@
 {
+  "binary": {
+    "cameraUsage": "HatchGrab používá fotoaparát, abyste mohli vyfotit tabuli s jídelním lístkem, svá jídla a další dokumenty a nahrát je přímo do svého účtu. Snímky se používají pouze pro nahrávání, která sami zvolíte.",
+    "bluetoothUsage": "HatchGrab používá Bluetooth k připojení ke kuchyňské tiskárně účtenek, aby se lístky objednávek mohly tisknout automaticky. K ničemu jinému se nepoužívá.",
+    "localNetworkUsage": "HatchGrab se připojuje ke kuchyňské tiskárně ve vaší místní síti, aby se lístky objednávek mohly tisknout automaticky. Připojení se k ničemu jinému nepoužívá.",
+    "faceIdUsage": "Odemkněte HatchGrab pomocí Face ID.",
+    "offlineTitle": "Nelze se připojit k HatchGrab",
+    "offlineDetail": "Zkontrolujte připojení.",
+    "retry": "Zkusit znovu"
+  },
   "gate": {
     "reverted": "Objednávka #{id} vrácena zpět",
     "saved": "Objednávka #{id} uložena",

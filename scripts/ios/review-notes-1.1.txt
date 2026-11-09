@@ -1,0 +1,31 @@
+What this app is
+
+HatchGrab is an operator tool for food truck staff. It is not a consumer ordering app — customers order through a web link, and this app is what the truck uses to run service. Sign-in is required; demo credentials are provided above. The demo truck has a service scheduled every day, so the Orders and Add order screens are live when you sign in.
+
+New in this version (1.1)
+
+1. Wired network kitchen printing. Besides Bluetooth printers, the app can now print kitchen tickets to a receipt printer on the truck's local network. Go to Settings › Kitchen ticket printing, choose Wired and enter the printer's address (for example 192.168.1.50). Wired printing is set up per device, for the van that device belongs to: if the card says this device isn't set to a van yet, that is the app working as designed, not an error. iOS then asks for Local Network permission, which is used only to send tickets to that printer (raw TCP, port 9100). Without a printer on your network you can still see the whole flow: "Print test ticket" reports that the printer could not be reached. Nothing else uses the local network.
+
+2. The app in 29 languages. The app's interface follows the truck's language, and the iOS permission prompts and the "Can't reach HatchGrab" screen follow the device's language. The demo truck is in English.
+
+3. Camera. When an operator adds a photo of their menu board, a dish or a document, iOS asks for camera access; photos are used only for the uploads the operator chooses to make.
+
+Why this is a native app and not a website
+
+The app provides capabilities a website cannot, all of which matter in a food truck with unreliable mobile signal:
+
+Offline ordering. The Orders screen and Add order screen continue to work with no network connection. An order taken at the window while offline is saved to the device and automatically synced to the server when the connection returns. This is the core reason the app exists: a truck at a rural pitch or a festival regularly loses signal mid-service, and a web page cannot take orders in that state.
+
+Push notifications. Incoming customer orders trigger a native push alert so staff are notified when they are not looking at the screen.
+
+Screen wake lock. The display is kept awake during service so the order board does not sleep between customers.
+
+Kitchen printing. The app connects to a kitchen receipt printer over Bluetooth or over the local network to print tickets automatically.
+
+Biometric app lock. Face ID / Touch ID protects the operator dashboard on a shared device left on a counter.
+
+Per-device configuration. Each device is registered to a specific van and remembers its own role — front counter, kitchen screen, or phone.
+
+How to test offline behaviour
+
+Sign in, open the Orders screen, then enable Airplane Mode. An offline banner appears. Go to Add order, build an order and place it — it is accepted and held on the device. Disable Airplane Mode; the order syncs automatically and appears on the Orders board.

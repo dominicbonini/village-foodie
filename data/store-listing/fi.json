@@ -1,0 +1,13 @@
+{
+  "$about": "ios-intl-1 (9 November 2026): the App Store listing for this locale, reusable for Google Play (name → title, shortDescription → short description, description → full description). Must be true in every one of the 44 countries: no prices, plan names, trial lengths, purchase instructions or other platforms (docs/ios-intl-1-report.md §4).",
+  "appStoreLocale": "fi",
+  "messagesLocale": "fi-FI",
+  "countrySegment": "fi",
+  "name": "HatchGrab",
+  "subtitle": "Ruokarekan tilaukset & keittiö",
+  "promotionalText": "Ota tilauksia vastaan etukäteen, suojaa keittiö liialta tilausmäärältä ja jatka myyntiä, kun kenttä katoaa. Tilaussovellus ruokarekan henkilökunnalle.",
+  "description": "HatchGrab on ruokarekkojen tilaus- ja keittiösovellus: työkalu, jolla tiimisi pyörittää myyntiä.\n\nAsiakkaat tilaavat etukäteen ja valitsevat noutoajan. Henkilökuntasi näkee kaikki tilaukset yhdellä näytöllä, vahvistaa sen, mitä keittiö pystyy valmistamaan, ja merkitsee tilaukset sitten valmiiksi ja noudetuiksi.\n\nÄLÄ KOSKAAN LUPAA AIKAA, JOHON ET EHDI\nMääritä, kuinka paljon keittiösi pystyy valmistamaan kerralla ja kuinka kauan se kestää. Kun noutoaika on täynnä, asiakkaat eivät voi valita sitä, joten jono vastaa keittiön tahtia.\n\nOTA TILAUKSIA VASTAAN LUUKULLA\nLisää paikan päällä tehdyt tilaukset samalle näytölle kuin ennakkotilaukset, niin keittiö työskentelee yhden jonon mukaan.\n\nYKSI NÄYTTÖ KEITTIÖLLE\nKeittiönäyttö näyttää, mitä tehdään nyt, mitä seuraavaksi ja mikä on valmista, ja hälyttää, kun tilauksen valmistus pitää aloittaa.\n\nTULOSTA TILAUSLAPUT\nYhdistä keittiön kuittitulostin Bluetoothilla tai paikallisverkon kautta, niin tilauslaput tulostuvat automaattisesti.\n\nJATKA MYYNTIÄ, KUN KENTTÄ KATOAA\nOta offline-suojaus käyttöön: jos yhteys katkeaa, ennakkotilaukset keskeytyvät, jotta kukaan ei tee tilausta, jota et näe. Laitteella vastaanottamasi tilaukset säilyvät ja synkronoidaan, kun olet taas verkossa.\n\nTEHTY RUOKAREKKAAN\nKäytä sitä iPhonella tai iPadilla. Pidä näyttö päällä myyntivuoron ajan, saa ilmoitus, kun tilaus odottaa vahvistusta, ja lukitse sovellus Face ID:llä tai Touch ID:llä.\n\nSUUNNITTELE VIIKKOSI\nMääritä tapahtumasi ja paikkasi kerran ja ota tilauksia vastaan jokaiseen niistä.\n\nHatchGrab on tarkoitettu ruokarekkayrittäjille ja heidän henkilökunnalleen. Tarvitset HatchGrab-tilin kirjautuaksesi sisään.",
+  "keywords": "ruokarekka,food truck,katuruoka,ennakkotilaus,tilausjärjestelmä,verkkotilaus,keittiönäyttö",
+  "whatsNew": "HatchGrab puhuu nyt 29 kieltä.\n\nTulosta tilauslaput paikallisverkon keittiötulostimeen Bluetoothin lisäksi.\n\nKorjauksia ja parannuksia.",
+  "shortDescription": "Tilaukset, keittiönäyttö ja tilauslappujen tulostus ruokarekan henkilöstölle."
+}

@@ -1,4 +1,13 @@
 {
+  "binary": {
+    "cameraUsage": "HatchGrab menggunakan kamera supaya anda boleh mengambil foto papan menu, hidangan anda dan dokumen lain serta memuat naiknya terus ke dalam akaun anda. Imej hanya digunakan untuk muat naik yang anda pilih untuk dibuat.",
+    "bluetoothUsage": "HatchGrab menggunakan Bluetooth untuk menyambung ke pencetak resit dapur anda supaya tiket pesanan boleh dicetak secara automatik. Ia tidak digunakan untuk tujuan lain.",
+    "localNetworkUsage": "HatchGrab menyambung ke pencetak dapur anda pada rangkaian setempat anda supaya tiket pesanan boleh dicetak secara automatik. Ia tidak digunakan untuk tujuan lain.",
+    "faceIdUsage": "Buka kunci HatchGrab dengan Face ID.",
+    "offlineTitle": "HatchGrab tidak dapat dicapai",
+    "offlineDetail": "Semak sambungan anda.",
+    "retry": "Cuba semula"
+  },
   "gate": {
     "reverted": "Pesanan #{id} dikembalikan",
     "saved": "Pesanan #{id} disimpan",

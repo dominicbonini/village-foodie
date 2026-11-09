@@ -1309,6 +1309,15 @@
     }
   },
   "nativeShell": {
+    "binary": {
+      "cameraUsage": "HatchGrab folosește camera pentru a vă permite să fotografiați tabla cu meniul, preparatele și alte documente și să le încărcați direct în contul dumneavoastră. Imaginile sunt folosite doar pentru încărcările pe care alegeți să le faceți.",
+      "bluetoothUsage": "HatchGrab folosește Bluetooth pentru a se conecta la imprimanta de bonuri din bucătărie, astfel încât bonurile de comandă să poată fi tipărite automat. Nu este folosit pentru nimic altceva.",
+      "localNetworkUsage": "HatchGrab se conectează la imprimanta din bucătărie în rețeaua dumneavoastră locală, astfel încât bonurile de comandă să se poată tipări automat. Conexiunea nu este folosită pentru nimic altceva.",
+      "faceIdUsage": "Deblocați HatchGrab cu Face ID.",
+      "offlineTitle": "Nu se poate accesa HatchGrab",
+      "offlineDetail": "Verificați conexiunea.",
+      "retry": "Reîncercați"
+    },
     "gate": {
       "reverted": "Comanda #{id}: modificare anulată",
       "saved": "Comanda #{id} a fost salvată",

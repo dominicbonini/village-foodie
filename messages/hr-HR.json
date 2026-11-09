@@ -1309,6 +1309,15 @@
     }
   },
   "nativeShell": {
+    "binary": {
+      "cameraUsage": "HatchGrab koristi kameru kako biste mogli fotografirati ploču s jelovnikom, svoja jela i druge dokumente te ih učitati izravno na svoj račun. Slike se koriste samo za učitavanja koja sami odaberete.",
+      "bluetoothUsage": "HatchGrab koristi Bluetooth za povezivanje s vašim kuhinjskim pisačem računa kako bi se listići narudžbi mogli automatski ispisivati. Ne koristi se ni za što drugo.",
+      "localNetworkUsage": "HatchGrab se povezuje s vašim kuhinjskim pisačem u lokalnoj mreži kako bi se listići narudžbi mogli automatski ispisivati. Veza se ne koristi ni za što drugo.",
+      "faceIdUsage": "Otključajte HatchGrab pomoću Face ID-a.",
+      "offlineTitle": "HatchGrab nije dostupan",
+      "offlineDetail": "Provjerite vezu.",
+      "retry": "Pokušaj ponovno"
+    },
     "gate": {
       "reverted": "Narudžba #{id} vraćena",
       "saved": "Narudžba #{id} spremljena",

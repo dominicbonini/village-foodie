@@ -1,0 +1,13 @@
+{
+  "$about": "ios-intl-1 (9 November 2026): the App Store listing for this locale, reusable for Google Play (name → title, shortDescription → short description, description → full description). Must be true in every one of the 44 countries: no prices, plan names, trial lengths, purchase instructions or other platforms (docs/ios-intl-1-report.md §4).",
+  "appStoreLocale": "no",
+  "messagesLocale": "nb-NO",
+  "countrySegment": "no",
+  "name": "HatchGrab",
+  "subtitle": "Matbil: bestilling og kjøkken",
+  "promotionalText": "Ta imot bestillinger på forhånd, beskytt kjøkkenet mot for mange bestillinger og fortsett å servere når dekningen forsvinner. Bestillingsappen for ansatte i matbiler.",
+  "description": "HatchGrab er bestillings- og kjøkkenappen for matbiler: verktøyet teamet ditt kjører serveringen fra.\n\nKundene forhåndsbestiller og velger en hentetid. De ansatte ser alle bestillinger på én skjerm, bekrefter hva kjøkkenet kan lage, og markerer dem deretter som klare og hentet.\n\nLOV ALDRI EN TID DU IKKE REKKER\nAngi hvor mye kjøkkenet kan lage samtidig, og hvor lang tid det tar. Når en hentetid er full, kan ikke kundene velge den, så køen passer med kjøkkenet.\n\nTA IMOT BESTILLINGER I LUKA\nLegg inn bestillinger ved bilen på samme skjerm som forhåndsbestillingene, så kjøkkenet jobber ut fra én kø.\n\nÉN SKJERM FOR KJØKKENET\nKjøkkenskjermen viser hva som skal lages nå, hva som kommer etterpå, og hva som er klart, med et varsel når en bestilling må startes.\n\nSKRIV UT BESTILLINGSBONGER\nKoble til en kvitteringsskriver på kjøkkenet via Bluetooth eller via det lokale nettverket ditt, så skrives bestillingsbongene ut automatisk.\n\nFORTSETT Å SERVERE NÅR DEKNINGEN FORSVINNER\nSlå på frakoblingsbeskyttelse, så settes forhåndsbestilling på pause hvis tilkoblingen faller ut, og ingen kan legge inn en bestilling du ikke ser. Bestillinger du tar imot på enheten, lagres og synkroniseres når du er tilkoblet igjen.\n\nLAGET FOR MATBILEN\nBruk den på iPhone eller iPad. Hold skjermen på under serveringen, få varsel når en bestilling må bekreftes, og lås appen med Face ID eller Touch ID.\n\nPLANLEGG UKA\nSett opp arrangementene og plassene dine én gang, og ta imot bestillinger for hvert av dem.\n\nHatchGrab er for matbileiere og de ansatte deres. Du trenger en HatchGrab-konto for å logge inn.",
+  "keywords": "foodtruck,forhåndsbestilling,kjøkkenskjerm,bestillingssystem,kassasystem,nettbestilling,street food",
+  "whatsNew": "HatchGrab snakker nå 29 språk.\n\nSkriv ut bestillingsbonger på en kjøkkenskriver på det lokale nettverket, i tillegg til via Bluetooth.\n\nFeilrettinger og forbedringer.",
+  "shortDescription": "Bestillinger, kjøkkenskjerm og bongutskrift for ansatte i matbiler."
+}

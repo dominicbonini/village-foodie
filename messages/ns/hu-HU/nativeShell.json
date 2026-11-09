@@ -1,4 +1,13 @@
 {
+  "binary": {
+    "cameraUsage": "A HatchGrab a kamerát arra használja, hogy lefotózhassa az étlaptábláját, az ételeit és más dokumentumokat, és közvetlenül a fiókjába tölthesse fel őket. A képeket csak az Ön által választott feltöltésekhez használjuk.",
+    "bluetoothUsage": "A HatchGrab a Bluetootht arra használja, hogy csatlakozzon a konyhai blokknyomtatójához, így a rendelésjegyek automatikusan kinyomtathatók. Másra nem használjuk.",
+    "localNetworkUsage": "A HatchGrab a helyi hálózaton csatlakozik a konyhai nyomtatójához, így a rendelésjegyek automatikusan kinyomtathatók. Másra nem használjuk.",
+    "faceIdUsage": "Oldja fel a HatchGrab zárolását Face ID-val.",
+    "offlineTitle": "A HatchGrab nem érhető el",
+    "offlineDetail": "Ellenőrizze a kapcsolatot.",
+    "retry": "Újrapróbálás"
+  },
   "gate": {
     "reverted": "#{id} rendelés visszaállítva",
     "saved": "#{id} rendelés mentve",

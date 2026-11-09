@@ -1,0 +1,13 @@
+{
+  "$about": "English back-translation of data/store-listing/fi.json (ios-intl-1, 9 November 2026), for a reviewer to check meaning. Not uploaded anywhere.",
+  "appStoreLocale": "fi",
+  "messagesLocale": "fi-FI",
+  "countrySegment": "fi",
+  "name": "HatchGrab",
+  "subtitle": "Food truck orders & kitchen",
+  "promotionalText": "Take orders in advance, protect the kitchen from too large a volume of orders and keep selling when the signal disappears. The ordering app for food truck staff.",
+  "description": "HatchGrab is the ordering and kitchen app for food trucks: the tool your team runs service with.\n\nCustomers order ahead and choose a collection time. Your staff see all orders on one screen, confirm what the kitchen can prepare, and then mark the orders ready and collected.\n\nNEVER PROMISE A TIME YOU CAN'T MAKE\nSet how much your kitchen can prepare at once and how long it takes. When a collection time is full, customers can't choose it, so the queue matches the kitchen's pace.\n\nTAKE ORDERS AT THE HATCH\nAdd orders made on the spot to the same screen as the pre-orders, so the kitchen works from one queue.\n\nONE SCREEN FOR THE KITCHEN\nThe kitchen screen shows what is being made now, what is next and what is ready, and alerts you when an order needs to be started.\n\nPRINT ORDER TICKETS\nConnect the kitchen receipt printer by Bluetooth or over the local network, and order tickets print automatically.\n\nKEEP SELLING WHEN THE SIGNAL DISAPPEARS\nSwitch on offline protection: if the connection drops, pre-orders pause so nobody places an order you don't see. Orders you take on the device are kept and synchronised when you are online again.\n\nMADE FOR THE FOOD TRUCK\nUse it on iPhone or iPad. Keep the screen on during the service shift, get a notification when an order is waiting for confirmation, and lock the app with Face ID or Touch ID.\n\nPLAN YOUR WEEK\nSet up your events and locations once and take orders for each of them.\n\nHatchGrab is meant for food truck operators and their staff. You need a HatchGrab account to sign in.",
+  "keywords": "food truck (Finnish word),food truck,street food,pre-order,ordering system,online order,kitchen screen",
+  "whatsNew": "HatchGrab now speaks 29 languages.\n\nPrint order tickets to a kitchen printer on the local network, in addition to Bluetooth.\n\nFixes and improvements.",
+  "shortDescription": "Orders, kitchen screen and order-ticket printing for food truck staff."
+}

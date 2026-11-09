@@ -1309,6 +1309,15 @@
     }
   },
   "nativeShell": {
+    "binary": {
+      "cameraUsage": "HatchGrab käyttää kameraa, jotta voit kuvata ruokalistataulusi, annoksesi ja muita asiakirjoja ja ladata ne suoraan tilillesi. Kuvia käytetään vain latauksiin, jotka itse päätät tehdä.",
+      "bluetoothUsage": "HatchGrab käyttää Bluetoothia yhteyden muodostamiseen keittiösi kuittitulostimeen, jotta tilauslaput voidaan tulostaa automaattisesti. Sitä ei käytetä mihinkään muuhun.",
+      "localNetworkUsage": "HatchGrab muodostaa yhteyden keittiösi tulostimeen paikallisverkossa, jotta tilauslaput voidaan tulostaa automaattisesti. Sitä ei käytetä mihinkään muuhun.",
+      "faceIdUsage": "Avaa HatchGrab Face ID:llä.",
+      "offlineTitle": "HatchGrabiin ei saada yhteyttä",
+      "offlineDetail": "Tarkista yhteytesi.",
+      "retry": "Yritä uudelleen"
+    },
     "gate": {
       "reverted": "Tilaus #{id} palautettu",
       "saved": "Tilaus #{id} tallennettu",
