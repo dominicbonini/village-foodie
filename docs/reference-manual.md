@@ -58,6 +58,7 @@ internally (`next build`, the sweep, `tsc`). Configuration is worked out from co
 - **Admin banner (compare-ux-1):** one compact line that reflects auto-publish, the rest behind "Details"; the manual checklist items are gone (§88.4).
 - **Footer (compare-ux-1):** one "Compare" link in the main row, only where the country's comparison page is live; the phone footer's rules still hold (§88.5).
 - **Narrow phones (cwv-1; jp-nav-1):** the language fixes now cover Czech, Greek and Japanese (§88.6). **Google Play badges:** confirmed byte-identical to Google's official artwork (§88.7).
+- **Japanese "ログイン" (jp-nav-2, `71169cf6`, 9 Nov):** four ja-JP-only rules in `landing.css` — Log in never shrinks below its text; below 360px the logo gap and button side padding tighten — so it shows in full beside the two-line button (§88.6).
 - **Live:** compare-ux-1 is deployed (OBSERVED 9 Nov 12:59 UTC); jp-nav-1 (`4ab4d956`, `49aa0a6e`) is committed on main, not pushed.
 
 ## V16.14 — 8 November 2026 — **SPEED MEASURED ON REAL VISITORS, ADMIN › PARTNERS, COMPARISON PAGES THAT PUBLISH THEMSELVES IN EVERY LANGUAGE, AND GOOGLE PLAY BADGES THE SIZE OF APPLE'S**
@@ -37725,9 +37726,15 @@ Compare link and no column). **jp-nav-1 (the Japanese nav button and "Doesn't ap
   - Measured: no JP page scrolls sideways at 320, 360, 375 or 390px, in Chromium and WebKit; every other country's first screens are
     pixel-identical (516); every other page's HTML is unchanged. `scripts/jp-nav-1.cjs` guards the label; the byte-identity harnesses
     take the one character out through `scripts/_lp-jp-nav-1.cjs`.
-  - 🔴 **Open (found, not fixed — Dominic to decide):** on `/jp/features`, `/jp/faq` and the comparison page "ログイン" runs under the
+  - ~~🔴 **Open (found, not fixed — Dominic to decide):** on `/jp/features`, `/jp/faq` and the comparison page "ログイン" runs under the
     button by 10px at 320, 4px at 360, 1px at 375 and 0 at 390, the same before the fix. The proposed fix: let the Japanese Log in link
-    keep its full width below 640px.
+    keep its full width below 640px.~~
+    ✅ **Fixed 9 Nov (jp-nav-2, `71169cf6`; Dominic approved):** four ja-JP-only rules in `landing.css` — "ログイン" never shrinks below
+    its text (`:root:lang(ja) .hg-landing .nav-only-sm { flex-shrink: 0 }`, below 640px), and below 360px the gap beside the logo
+    (`.nav-in`, .5rem) and the two buttons' side padding (`.nav-cta` .35rem, `.nav-only-sm` .25rem) tighten, never the text size.
+    Proven: all 16 JP views (`/jp`, `/jp/features`, `/jp/faq`, the comparison page × 320, 360, 375, 390) show "ログイン" whole with the
+    two-line button's label inside it and nothing scrolling sideways, in Chromium and WebKit; 516 other-language first screens are
+    pixel-identical. Guarded by `scripts/jp-nav-1.cjs`; screenshots in `docs/jp-nav-2/`.
 
 ## 88.7 Google Play badges: byte-identical to Google's artwork
 
