@@ -65,6 +65,11 @@
     "upload": "Lataa toinen ruokalista",
     "body": "Tallensimme lataamasi ruokalistan — {count, plural, one {# tuote} other {# tuotetta}}. Käytä sitä lähtökohtana tai lataa toinen."
   },
+  "checkMenu": {
+    "title": "Tarkista ruokalistasi",
+    "body": "Tallensimme demosi ruokalistan ruoka-autollesi, ja olet muuttanut sitä sen jälkeen — joten muutoksesi säilyvät. Katso se läpi alta.",
+    "done": "Näyttää hyvältä"
+  },
   "upload": {
     "title": "Tuo ruokalistasi",
     "body": "Lataa kuva ruokalistataulustasi, kuvakaappaus tai PDF, tai liitä ruokalistasi tekstinä. Tekoälymme lukee sen ja rakentaa digitaalisen ruokalistasi — tarkistat kaiken ennen tallennusta.",
@@ -180,7 +185,8 @@
     "title": "Hylätäänkö tämä tuonti?",
     "keepEditing": "Jatka muokkaamista",
     "discard": "Hylkää",
-    "body": "Muutoksiasi ei tallenneta — tuotuja tuotteita, valmistusaikoja ja keittiön kapasiteettia ei lisätä."
+    "body": "Muutoksiasi ei tallenneta — tuotuja tuotteita, valmistusaikoja ja keittiön kapasiteettia ei lisätä.",
+    "carriedBody": "Demosi ruokalista on tallennettu ruoka-autollesi sellaisenaan. Voit muuttaa sitä milloin tahansa ruokalistanäkymässä."
   },
   "allergenCardText": {
     "contains": "Sisältää: {list}",

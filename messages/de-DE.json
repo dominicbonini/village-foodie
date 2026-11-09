@@ -3003,6 +3003,11 @@
       "upload": "Andere Speisekarte hochladen",
       "body": "Wir haben die von Ihnen hochgeladene Speisekarte gespeichert – {count, plural, one {# Artikel} other {# Artikel}}. Verwenden Sie sie als Ausgangspunkt oder laden Sie eine andere hoch."
     },
+    "checkMenu": {
+      "title": "Speisekarte prüfen",
+      "body": "Wir haben die Speisekarte aus deiner Demo für deinen Truck gespeichert, und du hast sie seitdem geändert — deine Änderungen bleiben also erhalten. Sieh sie dir unten noch einmal an.",
+      "done": "Passt so"
+    },
     "upload": {
       "title": "Speisekarte importieren",
       "body": "Laden Sie ein Foto Ihrer Speisekarten-Tafel, einen Screenshot oder ein PDF hoch oder fügen Sie Ihre Speisekarte als Text ein. Unsere KI liest sie aus und erstellt Ihre digitale Speisekarte – Sie prüfen alles, bevor es gespeichert wird.",
@@ -3118,7 +3123,8 @@
       "title": "Diesen Import verwerfen?",
       "keepEditing": "Weiter bearbeiten",
       "discard": "Verwerfen",
-      "body": "Ihre Änderungen werden nicht gespeichert – die importierten Artikel, Zubereitungszeiten und die Küchenkapazität werden nicht hinzugefügt."
+      "body": "Ihre Änderungen werden nicht gespeichert – die importierten Artikel, Zubereitungszeiten und die Küchenkapazität werden nicht hinzugefügt.",
+      "carriedBody": "Die Speisekarte aus deiner Demo ist so, wie sie ist, für deinen Truck gespeichert. Du kannst sie jederzeit auf deinem Speisekarten-Bildschirm ändern."
     },
     "allergenCardText": {
       "contains": "Enthält: {list}",

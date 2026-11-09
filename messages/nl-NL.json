@@ -3003,6 +3003,11 @@
       "upload": "Een ander menu uploaden",
       "body": "We hebben het menu bewaard dat je hebt geüpload — {count, plural, one {# item} other {# items}}. Gebruik het als startpunt of upload een ander menu."
     },
+    "checkMenu": {
+      "title": "Controleer je menu",
+      "body": "We hebben het menu uit je demo voor je truck bewaard, en je hebt het sindsdien aangepast — je wijzigingen blijven dus staan. Kijk het hieronder even na.",
+      "done": "Ziet er goed uit"
+    },
     "upload": {
       "title": "Je menukaart importeren",
       "body": "Upload een foto van je menubord, een screenshot of een PDF, of plak je menukaart als tekst. Onze AI leest hem en bouwt je digitale menukaart — je controleert alles voordat het wordt opgeslagen.",
@@ -3118,7 +3123,8 @@
       "title": "Deze import weggooien?",
       "keepEditing": "Verder bewerken",
       "discard": "Weggooien",
-      "body": "Je wijzigingen worden niet opgeslagen — de geïmporteerde items, bereidingstijden en keukencapaciteit worden niet toegevoegd."
+      "body": "Je wijzigingen worden niet opgeslagen — de geïmporteerde items, bereidingstijden en keukencapaciteit worden niet toegevoegd.",
+      "carriedBody": "Het menu uit je demo is zoals het is voor je truck bewaard. Je kunt het altijd aanpassen op je menuscherm."
     },
     "allergenCardText": {
       "contains": "Bevat: {list}",

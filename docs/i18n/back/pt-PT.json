@@ -5766,5 +5766,9 @@
  "nativeShell.binary.faceIdUsage": "Unlock HatchGrab with Face ID.",
  "nativeShell.binary.offlineTitle": "Unable to reach HatchGrab",
  "nativeShell.binary.offlineDetail": "Check your connection.",
- "nativeShell.binary.retry": "Try again"
+ "nativeShell.binary.retry": "Try again",
+ "manageMenuImport.checkMenu.title": "Check your menu",
+ "manageMenuImport.checkMenu.body": "We saved your demo's menu to your truck, and you have changed it since, so your changes are kept. Take a look at it below.",
+ "manageMenuImport.checkMenu.done": "Looks good",
+ "manageMenuImport.discard.carriedBody": "Your demo's menu is saved to your truck as it is. You can change it at any time on your menu screen."
 }

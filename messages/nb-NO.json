@@ -3003,6 +3003,11 @@
       "upload": "Last opp en annen meny",
       "body": "Vi lagret menyen du lastet opp – {count, plural, one {# vare} other {# varer}}. Bruk den som utgangspunkt, eller last opp en annen."
     },
+    "checkMenu": {
+      "title": "Sjekk menyen din",
+      "body": "Vi lagret menyen fra demoen din på foodtrucken din, og du har endret den siden — så endringene dine er beholdt. Ta en titt på den nedenfor.",
+      "done": "Ser bra ut"
+    },
     "upload": {
       "title": "Importer menyen din",
       "body": "Last opp et bilde av menytavla, et skjermbilde eller en PDF, eller lim inn menyen som tekst. KI-en vår leser den og lager den digitale menyen din – du går gjennom alt før det lagres.",
@@ -3118,7 +3123,8 @@
       "title": "Forkaste denne importen?",
       "keepEditing": "Fortsett å redigere",
       "discard": "Forkast",
-      "body": "Endringene dine blir ikke lagret – de importerte varene, tilberedningstidene og kjøkkenkapasiteten blir ikke lagt til."
+      "body": "Endringene dine blir ikke lagret – de importerte varene, tilberedningstidene og kjøkkenkapasiteten blir ikke lagt til.",
+      "carriedBody": "Menyen fra demoen din er lagret på foodtrucken din slik den er. Du kan endre den når som helst på menyskjermen."
     },
     "allergenCardText": {
       "contains": "Inneholder: {list}",

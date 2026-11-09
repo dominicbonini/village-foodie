@@ -3003,6 +3003,11 @@
       "upload": "Augšupielādēt citu ēdienkarti",
       "body": "Mēs saglabājām jūsu augšupielādēto ēdienkarti — {count, plural, zero {# pozīcijas} one {# pozīcija} other {# pozīcijas}}. Izmantojiet to kā sākumpunktu vai augšupielādējiet citu."
     },
+    "checkMenu": {
+      "title": "Pārbaudiet savu ēdienkarti",
+      "body": "Mēs saglabājām jūsu demo ēdienkarti jūsu busiņam, un jūs to kopš tā laika esat mainījuši — tāpēc jūsu izmaiņas ir saglabātas. Apskatiet to zemāk.",
+      "done": "Viss kārtībā"
+    },
     "upload": {
       "title": "Importējiet savu ēdienkarti",
       "body": "Augšupielādējiet ēdienkartes tāfeles foto, ekrānuzņēmumu, PDF vai ielīmējiet ēdienkarti kā tekstu. Mūsu MI to nolasa un izveido jūsu digitālo ēdienkarti — pirms saglabāšanas jūs visu pārskatāt.",
@@ -3118,7 +3123,8 @@
       "title": "Atmest šo importu?",
       "keepEditing": "Turpināt rediģēt",
       "discard": "Atmest",
-      "body": "Jūsu izmaiņas netiks saglabātas — importētās pozīcijas, gatavošanas laiki un virtuves jauda netiks pievienoti."
+      "body": "Jūsu izmaiņas netiks saglabātas — importētās pozīcijas, gatavošanas laiki un virtuves jauda netiks pievienoti.",
+      "carriedBody": "Jūsu demo ēdienkarte ir saglabāta jūsu busiņam tāda, kāda tā ir. Jūs to varat mainīt jebkurā laikā savas ēdienkartes ekrānā."
     },
     "allergenCardText": {
       "contains": "Satur: {list}",

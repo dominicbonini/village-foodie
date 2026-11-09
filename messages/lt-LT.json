@@ -3003,6 +3003,11 @@
       "upload": "Įkelti kitą meniu",
       "body": "Išsaugojome jūsų įkeltą meniu — {count, plural, one {# patiekalas} few {# patiekalai} many {# patiekalų} other {# patiekalų}}. Naudokite jį kaip pradžią arba įkelkite kitą."
     },
+    "checkMenu": {
+      "title": "Patikrinkite savo meniu",
+      "body": "Išsaugojome jūsų demonstracinį meniu jūsų furgonui, o jūs jį nuo tada pakeitėte — todėl jūsų pakeitimai išlieka. Peržiūrėkite jį žemiau.",
+      "done": "Viskas gerai"
+    },
     "upload": {
       "title": "Importuokite meniu",
       "body": "Įkelkite meniu lentos nuotrauką, ekrano kopiją, PDF arba įklijuokite meniu kaip tekstą. Mūsų DI jį perskaitys ir sukurs jūsų skaitmeninį meniu — prieš išsaugant viską peržiūrėsite.",
@@ -3118,7 +3123,8 @@
       "title": "Atmesti šį importavimą?",
       "keepEditing": "Toliau redaguoti",
       "discard": "Atmesti",
-      "body": "Jūsų pakeitimai nebus išsaugoti — importuoti patiekalai, ruošimo laikai ir virtuvės pajėgumas nebus pridėti."
+      "body": "Jūsų pakeitimai nebus išsaugoti — importuoti patiekalai, ruošimo laikai ir virtuvės pajėgumas nebus pridėti.",
+      "carriedBody": "Jūsų demonstracinis meniu išsaugotas jūsų furgonui toks, koks yra. Galite jį bet kada pakeisti savo meniu ekrane."
     },
     "allergenCardText": {
       "contains": "Sudėtyje yra: {list}",

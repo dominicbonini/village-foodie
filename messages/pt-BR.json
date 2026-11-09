@@ -3003,6 +3003,11 @@
       "upload": "Enviar outro cardápio",
       "body": "Salvamos o cardápio que você enviou — {count, plural, one {# item} other {# itens}}. Use como ponto de partida ou envie outro."
     },
+    "checkMenu": {
+      "title": "Confira seu cardápio",
+      "body": "Salvamos o cardápio da sua demo no seu food truck, e você o alterou desde então — então suas alterações foram mantidas. Dê uma olhada abaixo.",
+      "done": "Está tudo certo"
+    },
     "upload": {
       "title": "Importe seu cardápio",
       "body": "Envie uma foto do quadro do cardápio, uma captura de tela, um PDF ou cole seu cardápio como texto. Nossa IA lê tudo e monta seu cardápio digital — você revisa tudo antes de salvar.",
@@ -3118,7 +3123,8 @@
       "title": "Descartar esta importação?",
       "keepEditing": "Continuar editando",
       "discard": "Descartar",
-      "body": "Suas alterações não serão salvas — os itens importados, os tempos de preparo e a capacidade da cozinha não serão adicionados."
+      "body": "Suas alterações não serão salvas — os itens importados, os tempos de preparo e a capacidade da cozinha não serão adicionados.",
+      "carriedBody": "O cardápio da sua demo está salvo no seu food truck do jeito que está. Você pode alterá-lo quando quiser na tela do seu cardápio."
     },
     "allergenCardText": {
       "contains": "Contém: {list}",

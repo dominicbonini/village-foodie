@@ -3003,6 +3003,11 @@
       "upload": "Másik étlap feltöltése",
       "body": "Elmentettük a feltöltött étlapját — {count, plural, one {# tétel} other {# tétel}}. Használja kiindulópontként, vagy töltsön fel másikat."
     },
+    "checkMenu": {
+      "title": "Ellenőrizd a menüdet",
+      "body": "A demód menüjét elmentettük a food truckodhoz, és azóta módosítottad — így a módosításaid megmaradnak. Nézd át lent.",
+      "done": "Rendben van"
+    },
     "upload": {
       "title": "Étlap importálása",
       "body": "Töltsön fel egy fotót az étlaptáblájáról, egy képernyőképet vagy egy PDF-et, vagy illessze be az étlapot szövegként. Az AI kiolvassa, és elkészíti digitális étlapját — mentés előtt mindent átnézhet.",
@@ -3118,7 +3123,8 @@
       "title": "Elveti ezt az importálást?",
       "keepEditing": "Szerkesztés folytatása",
       "discard": "Elvetés",
-      "body": "A módosításai nem kerülnek mentésre — az importált tételek, az előkészítési idők és a konyhai kapacitás nem adódnak hozzá."
+      "body": "A módosításai nem kerülnek mentésre — az importált tételek, az előkészítési idők és a konyhai kapacitás nem adódnak hozzá.",
+      "carriedBody": "A demód menüje úgy, ahogy van, el van mentve a food truckodhoz. Bármikor módosíthatod a menüképernyőn."
     },
     "allergenCardText": {
       "contains": "Tartalmaz: {list}",

@@ -65,6 +65,11 @@
     "upload": "Ladda upp en annan meny",
     "body": "Vi sparade menyn du laddade upp — {count, plural, one {# artikel} other {# artiklar}}. Använd den som utgångspunkt eller ladda upp en annan."
   },
+  "checkMenu": {
+    "title": "Kontrollera din meny",
+    "body": "Vi sparade menyn från din demo på din foodtruck, och du har ändrat den sedan dess — så dina ändringar finns kvar. Titta igenom den nedan.",
+    "done": "Ser bra ut"
+  },
   "upload": {
     "title": "Importera din meny",
     "body": "Ladda upp ett foto av din menytavla, en skärmbild eller en PDF, eller klistra in menyn som text. Vår AI läser den och bygger din digitala meny — du granskar allt innan det sparas.",
@@ -180,7 +185,8 @@
     "title": "Släng den här importen?",
     "keepEditing": "Fortsätt redigera",
     "discard": "Släng",
-    "body": "Dina ändringar sparas inte — de importerade artiklarna, tillagningstiderna och kökskapaciteten läggs inte till."
+    "body": "Dina ändringar sparas inte — de importerade artiklarna, tillagningstiderna och kökskapaciteten läggs inte till.",
+    "carriedBody": "Menyn från din demo är sparad på din foodtruck som den är. Du kan ändra den när du vill på din menyskärm."
   },
   "allergenCardText": {
     "contains": "Innehåller: {list}",

@@ -65,6 +65,11 @@
     "upload": "Laadi üles teine menüü",
     "body": "Salvestasime sinu üles laaditud menüü — {count, plural, one {# toode} other {# toodet}}. Kasuta seda lähtepunktina või laadi üles teine."
   },
+  "checkMenu": {
+    "title": "Kontrolli oma menüüd",
+    "body": "Salvestasime sinu demo menüü sinu toiduautole ja sa oled seda pärast muutnud — seega sinu muudatused jäävad alles. Vaata see allpool üle.",
+    "done": "Tundub hea"
+  },
   "upload": {
     "title": "Impordi oma menüü",
     "body": "Laadi üles foto oma menüütahvlist, ekraanipilt või PDF või kleebi oma menüü tekstina. Meie tehisaru loeb selle ja loob sinu digitaalse menüü — enne salvestamist vaatad kõik üle.",
@@ -180,7 +185,8 @@
     "title": "Kas loobuda sellest impordist?",
     "keepEditing": "Jätka muutmist",
     "discard": "Loobu",
-    "body": "Sinu muudatusi ei salvestata — imporditud tooteid, ettevalmistusaegu ja köögi võimsust ei lisata."
+    "body": "Sinu muudatusi ei salvestata — imporditud tooteid, ettevalmistusaegu ja köögi võimsust ei lisata.",
+    "carriedBody": "Sinu demo menüü on sinu toiduautole salvestatud sellisena, nagu see on. Saad seda igal ajal oma menüüvaates muuta."
   },
   "allergenCardText": {
     "contains": "Sisaldab: {list}",

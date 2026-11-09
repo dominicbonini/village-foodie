@@ -65,6 +65,11 @@
     "upload": "Carica un altro menu",
     "body": "Abbiamo salvato il menu che hai caricato: {count, plural, one {# prodotto} other {# prodotti}}. Usalo come punto di partenza o caricane un altro."
   },
+  "checkMenu": {
+    "title": "Controlla il tuo menu",
+    "body": "Abbiamo salvato il menu della tua demo sul tuo truck e da allora l’hai modificato, quindi le tue modifiche restano. Dagli un’occhiata qui sotto.",
+    "done": "Va bene così"
+  },
   "upload": {
     "title": "Importa il tuo menu",
     "body": "Carica una foto della lavagna del menu, uno screenshot, un PDF o incolla il tuo menu come testo. La nostra IA lo legge e crea il tuo menu digitale: controlli tutto prima del salvataggio.",
@@ -180,7 +185,8 @@
     "title": "Scartare questa importazione?",
     "keepEditing": "Continua a modificare",
     "discard": "Scarta",
-    "body": "Le modifiche non verranno salvate: i prodotti importati, i tempi di preparazione e la capacità della cucina non verranno aggiunti."
+    "body": "Le modifiche non verranno salvate: i prodotti importati, i tempi di preparazione e la capacità della cucina non verranno aggiunti.",
+    "carriedBody": "Il menu della tua demo è salvato sul tuo truck così com’è. Puoi modificarlo in qualsiasi momento dalla schermata del menu."
   },
   "allergenCardText": {
     "contains": "Contiene: {list}",

@@ -3003,6 +3003,11 @@
       "upload": "Importer une autre carte",
       "body": "Nous avons enregistré la carte que vous avez importée — {count, plural, one {# article} other {# articles}}. Utilisez-la comme point de départ ou importez-en une autre."
     },
+    "checkMenu": {
+      "title": "Vérifiez votre menu",
+      "body": "Nous avons enregistré le menu de votre démo sur votre camion, et vous l’avez modifié depuis — vos modifications sont donc conservées. Jetez-y un œil ci-dessous.",
+      "done": "C’est bon"
+    },
     "upload": {
       "title": "Importez votre carte",
       "body": "Importez une photo de votre ardoise, une capture d’écran ou un PDF, ou collez votre carte sous forme de texte. Notre IA la lit et crée votre carte numérique — vous vérifiez tout avant l’enregistrement.",
@@ -3118,7 +3123,8 @@
       "title": "Abandonner cet import ?",
       "keepEditing": "Continuer à modifier",
       "discard": "Abandonner",
-      "body": "Vos modifications ne seront pas enregistrées — les articles importés, les temps de préparation et les réglages pour limiter le nombre de commandes par créneau ne seront pas ajoutés."
+      "body": "Vos modifications ne seront pas enregistrées — les articles importés, les temps de préparation et les réglages pour limiter le nombre de commandes par créneau ne seront pas ajoutés.",
+      "carriedBody": "Le menu de votre démo est enregistré sur votre camion tel quel. Vous pouvez le modifier à tout moment depuis l’écran de votre menu."
     },
     "allergenCardText": {
       "contains": "Contient : {list}",

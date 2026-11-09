@@ -65,6 +65,11 @@
     "upload": "Upload et andet menukort",
     "body": "Vi har gemt det menukort, du uploadede — {count, plural, one {# vare} other {# varer}}. Brug det som udgangspunkt, eller upload et andet."
   },
+  "checkMenu": {
+    "title": "Tjek din menu",
+    "body": "Vi har gemt menuen fra din demo på din foodtruck, og du har ændret den siden — så dine ændringer er bevaret. Kig den igennem nedenfor.",
+    "done": "Ser godt ud"
+  },
   "upload": {
     "title": "Importér dit menukort",
     "body": "Upload et foto af din menutavle, et skærmbillede eller en PDF, eller indsæt dit menukort som tekst. Vores AI læser det og bygger dit digitale menukort — du gennemgår alt, før det bliver gemt.",
@@ -180,7 +185,8 @@
     "title": "Kassér denne import?",
     "keepEditing": "Redigér videre",
     "discard": "Kassér",
-    "body": "Dine ændringer bliver ikke gemt — de importerede varer, tilberedningstider og køkkenkapaciteten bliver ikke tilføjet."
+    "body": "Dine ændringer bliver ikke gemt — de importerede varer, tilberedningstider og køkkenkapaciteten bliver ikke tilføjet.",
+    "carriedBody": "Menuen fra din demo er gemt på din foodtruck, som den er. Du kan ændre den når som helst på din menuskærm."
   },
   "allergenCardText": {
     "contains": "Indeholder: {list}",

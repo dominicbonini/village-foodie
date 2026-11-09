@@ -7,6 +7,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@supabase/supabase-js'
 import { createSupabaseServerClient } from '@/lib/supabase/server'
 import { commitMenu, clearMenu } from '@/lib/menu-commit'
+import { readMenuReview, closeMenuReview } from '@/lib/demo-menu-carry'   // demo-claim-2
 import type { Actor } from '@/lib/allergen-audit'
 // Language Phase 1d: a refusal of ours is `{ error: <today's English>, …, code, params }` (lib/i18n/manage-errors.ts), in the
 // truck's language (en-GB before the truck is known). A database's or exception's message is passed on as it comes.
@@ -42,6 +43,13 @@ export async function POST(req: NextRequest) {
     if (!inSetup) {
       return NextResponse.json(manageErrorBody(await localeForTruck(truck), 'clear_first_setup_only'), { status: 400 })
     }
+    // ── demo-claim-2: NEVER CLEAR OVER HAND EDITS ─────────────────────────────────────────────────────
+    // A menu carried over from the demo (lib/demo-menu-carry.ts) that the operator has since edited by hand is
+    // reviewed as "check your menu" — never re-committed. If a review loaded before those edits (another tab or
+    // device) now tries to clear-first, refuse: "refresh and try again" re-reads the state and shows the check.
+    if ((await readMenuReview(supabase, truck.id)).state === 'check') {
+      return NextResponse.json(manageErrorBody(await localeForTruck(truck), 'clear_first_setup_only'), { status: 409 })
+    }
     // clearMenu deletes exactly what commitMenu writes (items + groups→options/links + categories), in the
     // module that owns that graph — not reconstructed here from partial FK knowledge.
     try {
@@ -62,5 +70,8 @@ export async function POST(req: NextRequest) {
   } catch { /* token-only import */ }
 
   const result = await commitMenu(supabase, truck, { categories, items, categoryPrep }, importActor)
+  // demo-claim-2: a clean clear-first commit IS the review of a carried-over menu — record it, server-side, so the
+  // review never appears again on any device (a no-op when no review is pending for this truck).
+  if (clearFirst === true && result.ok) await closeMenuReview(supabase, truck.id, 'reviewed')
   return NextResponse.json(result)
 }

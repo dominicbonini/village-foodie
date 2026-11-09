@@ -65,6 +65,11 @@
     "upload": "Carregar outra ementa",
     "body": "Guardámos a ementa que carregou — {count, plural, one {# artigo} other {# artigos}}. Use-a como ponto de partida ou carregue outra."
   },
+  "checkMenu": {
+    "title": "Verifique o seu menu",
+    "body": "Guardámos o menu da sua demo na sua carrinha e, entretanto, alterou-o — por isso as suas alterações ficam. Dê-lhe uma vista de olhos abaixo.",
+    "done": "Está bem assim"
+  },
   "upload": {
     "title": "Importar a sua ementa",
     "body": "Carregue uma foto do quadro da ementa, uma captura de ecrã, um PDF ou cole a sua ementa como texto. A nossa IA lê-a e cria a sua ementa digital — revê tudo antes de ser guardado.",
@@ -180,7 +185,8 @@
     "title": "Descartar esta importação?",
     "keepEditing": "Continuar a editar",
     "discard": "Descartar",
-    "body": "As suas alterações não serão guardadas — os artigos importados, os tempos de preparação e a capacidade da cozinha não serão adicionados."
+    "body": "As suas alterações não serão guardadas — os artigos importados, os tempos de preparação e a capacidade da cozinha não serão adicionados.",
+    "carriedBody": "O menu da sua demo está guardado na sua carrinha tal como está. Pode alterá-lo quando quiser no ecrã do seu menu."
   },
   "allergenCardText": {
     "contains": "Contém: {list}",

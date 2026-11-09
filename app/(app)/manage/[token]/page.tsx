@@ -228,6 +228,7 @@ import { dietaryLabel } from '@/lib/dietary-label'   // languages-1: a stored di
 import { allergenLabel } from '@/lib/allergen-label'   // france-1: a stored allergen label in the truck's language (English: as stored)
 import { useDecimalBox } from '@/components/shared/useDecimalBox'   // france-1: price boxes take "12,50" in a decimal-comma locale
 import { decimalForInput } from '@/lib/decimal-input'
+import { autoSplitConflicts, ungroupAiVariantsForReview, computeGroupingRows, buildGroupedItems as buildGroupedItemsWith } from '@/lib/menu-import-review'   // demo-claim-2: the review's pure passes, shared with the server carry-over
 
 // ── Types ─────────────────────────────────────────────────────
 interface Truck { custom_domain?: string | null; custom_domain_verified_at?: string | null; custom_domain_setup_started_at?: string | null; custom_domain_setup_state?: 'choosing' | 'registered' | 'awaiting_dns' | null; custom_domain_last_ok_at?: string | null; custom_domain_confirmed_at?: string | null; embed_enabled?: boolean; id: string; name: string; slug: string | null; description: string | null; cuisine_type: string | null; logo_storage_path: string | null; logo: string | null; contact_email: string | null; contact_phone: string | null; social_instagram: string | null; social_facebook: string | null; website: string | null; whatsapp: string | null; phone_is_whatsapp: boolean; auto_accept: boolean; truck_order_email_enabled: boolean; dashboard_token: string; crew_mode: 'solo' | 'full'; kds_mode: boolean; keep_screen_on: boolean; plan: PlanKey; feature_overrides: Record<string, boolean> | null; trial_expires_at: string | null; hide_pricing?: boolean; whatsapp_sender: string | null; whatsapp_monthly_reply_limit?: number | null; allergen_info_url: string | null; allergen_info_text: string | null; allergen_display_mode?: 'per_dish' | 'card' | 'both' | null; preferred_contact_method: string | null; allow_customer_cancellation: boolean; cancellation_cutoff_mins: number; default_auto_open: boolean; default_auto_close: boolean; qr_code_style?: 'standard' | 'branded'; truck_emoji?: string; scraper_preference?: 'auto' | 'manual' | 'both'; schedule_url?: string | null; preorders_enabled?: boolean; preorder_deadline_type?: 'hours_before' | 'daily_cutoff' | null; preorder_deadline_value?: number | null; preorder_past_action?: 'sold_out' | 'force_pending' | null; preorder_open_rule?: string | null; setup_step?: string | null; show_paid_step?: boolean; takes_cash?: boolean; completion_presses?: 'one' | 'two' | null; add_order_layout?: 'tabs' | 'scroll'; event_post_wording?: string | null; timezone?: string | null; country?: string | null; /** Where the truck trades (Phase 2D-1) — Settings › Where you trade. */ base_place_id?: string | null; base_place_name?: string | null; base_region?: string | null; base_lat?: number | string | null; base_lng?: number | string | null; /** 🔴 The truck's zone and display settings (Phase 2B), from /api/manage. */ time?: TimeSettings | null; /** Phase 3 screens: Manage › Payments › Tax, tips and fees (20261010_17/_18). */ tax_rate_milli?: number | null; tipping_enabled?: boolean | null; service_fee_enabled?: boolean | null; service_fee_bps?: number | null; service_fee_fixed_minor?: number | null }
@@ -1811,18 +1812,7 @@ export default function ManagePage({ params }: { params: Promise<{ token: string
 // from under itself.
 type ImportStep = 'idle' | 'upload' | 'processing' | 'offer' | 'review' | 'allergens' | 'prep' | 'saving' | 'schedule' | 'settings' | 'done'
 
-// ── Variant-axis vocabulary for the deterministic regroup pass ───────────────────────────────
-// The single varying token that makes two same-base dishes a VARIANT of one item (vs two different
-// dishes). ONLY protein/size tokens qualify — a dish-TYPE word (e.g. Green/Red curry, a topping) does
-// NOT, so those stay separate. Named + extensible: add a token here to teach the regroup detector a
-// new variant word. Keys are lowercase single tokens; value is the axis they belong to.
-const VARIANT_AXIS_TOKENS: Record<string, 'protein' | 'size'> = {
-  beef: 'protein', chicken: 'protein', prawn: 'protein', prawns: 'protein', duck: 'protein',
-  veg: 'protein', vegetable: 'protein', vegetarian: 'protein', tofu: 'protein', lamb: 'protein',
-  pork: 'protein', fish: 'protein', salmon: 'protein', paneer: 'protein', halloumi: 'protein',
-  mushroom: 'protein', shrimp: 'protein',
-  small: 'size', regular: 'size', medium: 'size', large: 'size', sm: 'size', reg: 'size', lg: 'size',
-}
+// demo-claim-2: VARIANT_AXIS_TOKENS (the regroup pass's protein/size vocabulary) moved to lib/menu-import-review.ts.
 
 // ══════════════════════════════════════════════════════════════════════════════════════
 // ALLERGEN WIZARD (Slice 3 shell + Mode-1; Slice 4 adds Mode-2 card + Mode-3 both).
@@ -3001,6 +2991,9 @@ function MenuTab({ truck, categories, items, subcategories, token, modifierGroup
   // cleared by every control that advances or exits.
   const [showSetupIntro, setShowSetupIntro] = useState(false)
   const demoImportTried = useRef(false)   // one-shot guard so the bootstrap can't re-fire on re-render
+  // demo-claim-2: which review of a CARRIED-OVER menu is showing — 'offer' (untouched: the usual offer/review,
+  // clear-first) or 'check' (edited by hand: the check card). null = none (incl. every non-carried import).
+  const [carriedReview, setCarriedReview] = useState<'offer' | 'check' | null>(null)
   // §65: the review is a 3-step wizard (1 Menu · 2 Extras · 3 Allergens). All edits live in
   // importResult, so stepping back/forward never loses progress — each step is just a different view.
   const [reviewStep, setReviewStep] = useState(1)
@@ -3401,54 +3394,8 @@ function MenuTab({ truck, categories, items, subcategories, token, modifierGroup
   // conflict then naturally drops out of this list (exactly like the allergen list shrinking), which
   // gates Next + commit. Cheapest-as-base guarantees surcharges ≥ 0.
   const normName = (s: string) => String(s ?? '').trim().toLowerCase()
-  // §66: dissolve a group across ALL carrying dishes into per-variant items (name = dish + option,
-  // price = base + surcharge, allergens/dietary merged, group removed). PURE over an items array.
-  // markConflict tags produced items so step 1 can show a subtle "kept separate — prices differed" note.
-  const dissolveGroupInItems = (items: any[], normGroup: string, markConflict = false): any[] => {
-    const out: any[] = []
-    for (const it of items) {
-      const gi = (it.modifierGroups || []).findIndex((g: any) => normName(g.name) === normGroup)
-      if (gi < 0) { out.push(it); continue }
-      const grp = (it.modifierGroups || [])[gi]
-      for (const o of grp.options) {
-        out.push({ ...it, name: `${it.name} ${o.name}`.trim(), price: Number(((it.price || 0) + (o.price || 0)).toFixed(2)),
-          allergens: Array.from(new Set([...(it.allergens || []), ...(o.allergens || [])])),
-          dietary: Array.from(new Set([...(it.dietary || []), ...(o.dietary || [])])),
-          modifierGroups: (it.modifierGroups || []).filter((_: any, gj: number) => gj !== gi),
-          _allergensChecked: false, ...(markConflict ? { _splitFromConflict: true } : {}) })
-      }
-    }
-    return out
-  }
-  // §66: a PRICE CONFLICT = the SAME option name carrying DIFFERENT surcharges across the dishes that
-  // share it → the conflicted GROUP names. Used to AUTO-split (no operator decision, no gate).
-  const detectConflictGroups = (items: any[]): string[] => {
-    const perKey = new Map<string, Set<number>>()
-    const groupOfKey = new Map<string, string>()
-    for (const it of items) {
-      if (it._skip) continue
-      for (const g of (it.modifierGroups || [])) {
-        for (const o of (g.options || [])) {
-          const ng = normName(g.name), key = `${ng} ${normName(o.name)}`
-          if (!perKey.has(key)) perKey.set(key, new Set())
-          perKey.get(key)!.add(typeof o.price === 'number' ? o.price : 0)
-          groupOfKey.set(key, ng)
-        }
-      }
-    }
-    const groups = new Set<string>()
-    for (const [key, set] of perKey) if (set.size > 1) groups.add(groupOfKey.get(key)!)
-    return [...groups]
-  }
-  // §66: AUTO-resolve price conflicts to SEPARATE ITEMS at load — price-faithful, no gate. Consistent
-  // options (same surcharge everywhere) stay as shared extras.
-  const autoSplitConflicts = (data: any) => {
-    const conflictGroups = detectConflictGroups(data?.items || [])
-    if (conflictGroups.length === 0) return data
-    let items = data.items
-    for (const ng of conflictGroups) items = dissolveGroupInItems(items, ng, true)
-    return { ...data, items }
-  }
+  // demo-claim-2: dissolveGroupInItems, detectConflictGroups and autoSplitConflicts (§66) moved VERBATIM to
+  // lib/menu-import-review.ts — imported above.
   // §66: the price-conflict panel/gate/"+£X for all" resolution were REMOVED — conflicts auto-split to
   // separate items at load (detectConflictGroups + autoSplitConflicts above); only the allergen gate remains.
   // Manual "Keep as separate items" (a legitimate preference on step 2) — dissolve the group via the
@@ -3504,264 +3451,76 @@ function MenuTab({ truck, categories, items, subcategories, token, modifierGroup
     return [...byName.values()]
   })()
 
-  // ── DETERMINISTIC REGROUP PASS — detects variant sets the AI emitted as SEPARATE items ──────────
-  // (e.g. "Tom Yum Prawn" + "Tom Yum Chicken" instead of one dish + a protein choice). STRUCTURAL predicate:
-  // within ONE category, two+ UNGROUPED items whose names differ by EXACTLY ONE token, that token a
-  // known protein/size axis token (VARIANT_AXIS_TOKENS) of the SAME axis. (No price cap — these are
-  // SUGGESTIONS the operator confirms.) A dish-TYPE differing token (Green/Red curry) is NOT in the axis
-  // list → NOT a candidate (verified non-merge).
-  // Pure over a given items array (no React state) so the grouping chooser + commit can re-run it on
-  // the latest items atomically.
-  type RegroupMember = { idx: number; token: string; item: any }
-  type RegroupCandidate = { key: string; baseName: string; category: string; axis: 'protein' | 'size'; members: RegroupMember[] }
-  const computeRegroupCandidates = (items: any[]): RegroupCandidate[] => {
-    const buckets = new Map<string, { baseTokens: string[]; category: string; axis: 'protein' | 'size'; members: RegroupMember[] }>()
-    items.forEach((it: any, idx: number) => {
-      if (it._skip) return
-      if (it._variantOf) return // already reconstructed as an AI-origin grouping row — don't double-detect
-      if ((it.modifierGroups || []).length > 0) return // already a grouped dish — not a loose variant
-      const tokens = String(it.name || '').trim().split(/\s+/).filter(Boolean)
-      if (tokens.length < 2) return // need a base + a varying token
-      tokens.forEach((tok: string, i: number) => {
-        const axis = VARIANT_AXIS_TOKENS[tok.toLowerCase()]
-        if (!axis) return
-        const baseTokens = tokens.filter((_: string, j: number) => j !== i)
-        if (baseTokens.length === 0) return // base can't be empty (item literally named "Chicken")
-        const key = `${normName(it.category || '')}|${baseTokens.join(' ').toLowerCase()}|${axis}`
-        let b = buckets.get(key)
-        if (!b) { b = { baseTokens, category: it.category, axis, members: [] }; buckets.set(key, b) }
-        b.members.push({ idx, token: tok, item: it })
-      })
-    })
-    const out: RegroupCandidate[] = []
-    for (const [key, b] of buckets) {
-      const byTok = new Map<string, RegroupMember>()
-      for (const m of b.members) { const k = m.token.toLowerCase(); if (!byTok.has(k)) byTok.set(k, m) }
-      const members = [...byTok.values()]
-      if (members.length < 2) continue
-      // No price-spread cap: the £1 cap was a guard from when regroup merged SILENTLY. It's now a
-      // SUGGESTION on the two-box chooser (operator confirms each), so confirmation is the safety net —
-      // any spread is safe to suggest (e.g. Springrolls Chicken/Veg/Prawn/Duck across £5.50–£7). The
-      // STRUCTURAL guards (same base, single differing token, token in VARIANT_AXIS_TOKENS, same
-      // category) still exclude non-variants like Green/Red Curry. Confirm math uses cheapest=base.
-      out.push({ key, baseName: b.baseTokens.join(' '), category: b.category, axis: b.axis, members })
-    }
-    return out
-  }
-
-  // ── UN-GROUP AI VARIANT GROUPS FOR REVIEW ───────────────────────────────────────────────────────
-  // Page 1 shows EVERY dish as a flat separate item. So at load we DISSOLVE each AI-detected variant
-  // group (_inferredFromVariants) into its constituent items, TAGGING each with `_variantOf` (the
-  // original group identity) so page 2 can reconstruct the grouped choice — regardless of whether the
-  // variant token is a known protein/size word. importResult thus holds everything SEPARATE during
-  // review (Back-stable; grouping is re-derived on page 2 + applied only at commit). Any OTHER (non-
-  // variant "extras") groups stay on each constituent item untouched.
-  const ungroupAiVariantsForReview = (data: any) => {
-    if (!data || !Array.isArray(data.items)) return data
-    const out: any[] = []
-    for (const it of data.items) {
-      const vg = (it.modifierGroups || []).find((g: any) => g._inferredFromVariants === true)
-      if (!vg) { out.push(it); continue }
-      // Rare: a dish carrying a variant group AND other (non-variant "extras") groups. Dissolving +
-      // re-grouping would drop the extras, so leave such a dish grouped (it just isn't split on page 1).
-      if ((it.modifierGroups || []).some((g: any) => g !== vg)) { out.push(it); continue }
-      const baseName = it.name
-      const basePrice = Number(it.price) || 0
-      const groupKey = `${normName(it.category || '')}|${normName(baseName)}|${normName(vg.name)}`
-      for (const o of (vg.options || [])) {
-        out.push({
-          name: `${baseName} ${o.name}`.trim(),
-          description: it.description || undefined,
-          price: Number((basePrice + (Number(o.price) || 0)).toFixed(2)),
-          category: it.category,
-          allergens: Array.from(new Set([...(it.allergens || []), ...(o.allergens || [])])),
-          dietary: Array.from(new Set([...(it.dietary || []), ...(o.dietary || [])])),
-          spiciness: it.spiciness ?? null,
-          _allergensChecked: false,
-          _variantOf: { key: groupKey, baseName, groupName: vg.name, optionName: o.name },
-          modifierGroups: (it.modifierGroups || []).filter((g: any) => g !== vg), // keep any OTHER groups
-        })
-      }
-    }
-    return { ...data, items: out }
-  }
-
-  // ── GROUPING CHOOSER (step 2) — every row is a set of SEPARATE items that CAN be grouped into one
-  // customisable dish. Sources: (1) AI-origin (items tagged `_variantOf`, reconstructed by tag) and
-  // (2) regroup CANDIDATES (untagged separate items matched by base + protein/size axis token). Both
-  // render identically (two boxes). The choice is tracked in `groupingChoice` (default 'grouped');
-  // importResult is NEVER mutated by the chooser — buildGroupedItems() applies selections PURELY when
-  // building the commit payload. computeGroupingRows is pure over an items array (render + commit), so
-  // base/surcharge math always reads the CURRENT (page-1-edited) prices — never cached.
-  type GroupingOpt = { name: string; surcharge: number; allergens: string[]; dietary: string[] }
-  type GroupingRow = {
-    key: string; source: 'ai' | 'candidate'; category: string; baseName: string; axisLabel: string
-    basePrice: number; options: GroupingOpt[]; separateItems: { name: string; price: number }[]
-    memberIdxs: number[]; groupedItem: any
-  }
-  // Build a row from a set of member indices that should group under one base name. Members are sorted
-  // by price ASCENDING (cheapest/base first), ties broken alphabetically by option name — the SAME order
-  // flows to the grouped chips, the separate-items list, AND the committed group's option order.
-  const makeGroupingRow = (
-    items: any[], key: string, source: 'ai' | 'candidate', category: string, baseName: string,
-    axisLabel: string, groupName: string, members: { idx: number; optionName: string }[],
-  ): GroupingRow => {
-    const sorted = [...members].sort((a, b) => {
-      const pa = Number(items[a.idx].price) || 0, pb = Number(items[b.idx].price) || 0
-      if (pa !== pb) return pa - pb
-      return a.optionName.localeCompare(b.optionName)
-    })
-    const memberItems = sorted.map(m => items[m.idx])
-    const basePrice = Math.min(...memberItems.map((it: any) => Number(it.price) || 0))
-    const base = memberItems.find((it: any) => (Number(it.price) || 0) === basePrice) || memberItems[0]
-    const options: GroupingOpt[] = sorted.map(m => ({
-      name: m.optionName,
-      surcharge: Number(((Number(items[m.idx].price) || 0) - basePrice).toFixed(2)),
-      // Options carry NO allergen/dietary data on import: per-option allergens are a FUTURE feature
-      // (modifier_options has no verified flag), and copying the member item's allergens here BLED the
-      // parent dish's tags onto every protein option (Chicken→Gluten/Molluscs/Vegetarian). Leave BLANK —
-      // the dish-level union below (over-warn-safe) still warns for everything the dish can contain.
-      allergens: [], dietary: [],
-    }))
-    const groupedItem = {
-      name: baseName, description: base.description || undefined, price: basePrice,
-      // ALLERGENS/DIETARY = UNION of ALL members (not base-only) — §74 over-warn-safe: a statutory allergen
-      // on a non-cheapest member must NOT be dropped from the dish (base-only WAS an under-warn bug). Mirrors
-      // the option→item union elsewhere (:1442/:1473/:1524/:1635). Base still drives PRICE only.
-      category,
-      allergens: [...new Set(memberItems.flatMap((it: any) => it.allergens || []))],
-      dietary:   [...new Set(memberItems.flatMap((it: any) => it.dietary || []))],
-      spiciness: base.spiciness ?? null,
-      // ── 🔴 M1: THE PARENT'S CONFIRMATION IS DERIVED FROM ITS MEMBERS ─────────────────────────
-      // This was the literal `false`, and it silently discarded real human work. The allergen step
-      // reviews the UN-GROUPED rows; grouping happens later, in buildGroupedItems, which DELETES the
-      // confirmed members and inserts this object in their place. With `false` hardcoded, every
-      // grouped dish committed unverified however carefully its members had been checked — confirmed
-      // in production on truck "village spice": 29 items committed, the 24 standalone ones verified,
-      // and exactly the 5 grouped parents unverified and corrected by hand 23 minutes later.
-      //
-      // 🔴 THE SAFETY PROPERTY, WHICH THIS PRESERVES: nothing is ever marked verified that a human did
-      // not verify. `every(… === true)` is an AND over the members, and each member's flag was set by
-      // the operator confirming that row in the allergen step. So a true here means every dish folded
-      // into this parent was individually confirmed by a person. A single unconfirmed member — or one
-      // whose flag is undefined — makes the whole thing false. It cannot invent a confirmation.
-      // Strict `=== true`, not truthiness, for exactly that reason.
-      //
-      // ⚠️ `memberItems.length > 0 &&` IS LOAD-BEARING, NOT DEFENSIVE PADDING. `[].every(...)` is
-      // TRUE by definition, so without this guard a group that somehow arrived with no members would
-      // commit as verified — a confirmation asserted about nothing at all. The one case where the
-      // vacuous-truth default is exactly backwards from the safe one.
-      //
-      // Derived like every other field on this object — the allergens union two lines above is built
-      // from the same memberItems, for the same reason: the parent must represent ALL of them.
-      _allergensChecked: memberItems.length > 0 && memberItems.every(it => it._allergensChecked === true),
-      modifierGroups: [{
-        name: groupName,
-        options: options.map(o => ({ name: o.name, price: o.surcharge, allergens: o.allergens, dietary: o.dietary })),
-        // Inferred variant groups (protein/size) are structurally a MUST-CHOOSE-ONE → default required +
-        // single-select (→ is_required / min_choices=1 / max_choices=1 at commit). A default, not a lock —
-        // the operator can amend in the editor. Also makes the consolidation key uniform so groups that
-        // differ only by (now-removed) bled option tags merge.
-        isRequired: true, singleSelect: true, _inferredFromVariants: true,
-      }],
-    }
-    return {
-      key, source, category, baseName, axisLabel, basePrice, options,
-      separateItems: sorted.map(m => ({ name: items[m.idx].name, price: Number(items[m.idx].price) || 0 })),
-      memberIdxs: sorted.map(m => m.idx), groupedItem,
-    }
-  }
-  const computeGroupingRows = (items: any[]): GroupingRow[] => {
-    const rows: GroupingRow[] = []
-    // (1) AI-origin: items tagged `_variantOf`, grouped by their stored group key.
-    const aiBuckets = new Map<string, { idx: number; optionName: string }[]>()
-    const aiMeta = new Map<string, { baseName: string; groupName: string; category: string }>()
-    items.forEach((it: any, idx: number) => {
-      if (it._skip || !it._variantOf) return
-      const k = it._variantOf.key
-      if (!aiBuckets.has(k)) { aiBuckets.set(k, []); aiMeta.set(k, { baseName: it._variantOf.baseName, groupName: it._variantOf.groupName, category: it.category }) }
-      aiBuckets.get(k)!.push({ idx, optionName: it._variantOf.optionName })
-    })
-    for (const [k, members] of aiBuckets) {
-      if (members.length < 2) continue
-      const meta = aiMeta.get(k)!
-      rows.push(makeGroupingRow(items, `ai|${k}`, 'ai', meta.category, meta.baseName, meta.groupName, meta.groupName, members))
-    }
-    // (2) Regroup CANDIDATES (untagged separate items the AI never grouped).
-    for (const cand of computeRegroupCandidates(items)) {
-      const members = cand.members.map(m => ({ idx: m.idx, optionName: m.token }))
-      rows.push(makeGroupingRow(items, `cand|${cand.key}`, 'candidate', cand.category, cand.baseName, cand.axis, cand.axis === 'protein' ? 'Protein' : 'Size', members))
-    }
-    // ── CONTENT-CONSOLIDATION + STRUCTURED NAMING (import-grouping only) ───────────────────────────
-    // The import models ONE inferred modifier group PER base dish, so N dishes offering the SAME options
-    // at the SAME prices yield N near-duplicate groups. Consolidate by EXACT CONTENT: rows whose group is
-    // identical on (category, option SET + per-option price, rules, per-option allergens/dietary) are ONE
-    // logical group and get the SAME final name → commit-menu's name-dedup then collapses them into a
-    // SINGLE modifier_groups row that every matching dish links to. Groups that differ on ANY of those
-    // (e.g. Beef free vs Beef +£0.50) keep DISTINCT signatures and are numbered apart so they stay
-    // separate — never the old name-collision over-merge across different prices.
-    //
-    // Allergens/dietary are PART of the key (stricter than options+price alone): a merge can therefore
-    // NEVER drop an option's allergen onto another dish (over-warn-safe — worst case leaves a near-dup
-    // unmerged, which is cosmetic). NAME is NOT part of the key — consolidation is by content, not by the
-    // AI's group name. Each dish keeps its own option set intact (no superset / no cross-dish option
-    // mixing). The operator sees none of this (machinery beneath the grouped/separate choice).
-    const sortJoin = (xs: any) => (Array.isArray(xs) ? xs : []).map((s: any) => normName(String(s))).sort().join(',')
-    const contentSig = (row: GroupingRow): string => {
-      const g = row.groupedItem.modifierGroups[0]
-      const opts = (g.options || []).map((o: any) => `${normName(o.name)}#${Number(o.price) || 0}#${sortJoin(o.allergens)}#${sortJoin(o.dietary)}`).sort()
-      return JSON.stringify({ cat: normName(row.category || ''), opts, req: g.isRequired === true, single: g.singleSelect === true })
-    }
-    // (1) CONSOLIDATE — bucket rows by content signature; each DISTINCT signature = one logical shared group.
-    const bySig = new Map<string, GroupingRow[]>()
-    const sigOrder: string[] = []
-    for (const row of rows) {
-      const sig = contentSig(row)
-      const arr = bySig.get(sig)
-      if (arr) arr.push(row); else { bySig.set(sig, [row]); sigOrder.push(sig) }
-    }
-    // (2) NAME the distinct signatures: bucket by (category, base axis name). A lone signature → "Category -
-    // Name"; 2+ DISTINCT signatures sharing a base name → "Category - Name 1/2/…" (first-seen order). All
-    // rows of a signature get the SAME name → one shared group at commit.
-    const sigBuckets = new Map<string, string[]>()   // (cat|baseName) → signatures, first-seen order
-    for (const sig of sigOrder) {
-      const r0 = bySig.get(sig)![0]
-      const bkey = `${normName(r0.category || '')}|${normName(r0.groupedItem.modifierGroups[0].name)}`
-      const arr = sigBuckets.get(bkey)
-      if (arr) arr.push(sig); else sigBuckets.set(bkey, [sig])
-    }
-    for (const sigs of sigBuckets.values()) {
-      const numbered = sigs.length > 1
-      sigs.forEach((sig, i) => {
-        const bucketRows = bySig.get(sig)!
-        const cat = String(bucketRows[0].category || '').trim()
-        const base = bucketRows[0].groupedItem.modifierGroups[0].name
-        const prefix = cat ? `${cat} - ` : ''
-        const finalName = `${prefix}${base}${numbered ? ` ${i + 1}` : ''}`
-        bucketRows.forEach(r => { r.groupedItem.modifierGroups[0].name = finalName })
-      })
-    }
-    return rows
-  }
+  // ── demo-claim-2: computeRegroupCandidates, ungroupAiVariantsForReview, makeGroupingRow and computeGroupingRows
+  // (the grouping chooser's pure passes) moved VERBATIM to lib/menu-import-review.ts — imported above.
   const groupingRows = computeGroupingRows(importResult?.items || [])
 
   // ── DEMO→REAL MIGRATION BOOTSTRAP ─────────────────────────────────────────────────────────────────
-  // When the setup wizard deep-links here with ?import=demo, pre-load the review step from the demo's
-  // STORED extraction instead of a fresh upload. This is the whole reason the migration is a re-commit and
-  // not a row copy: demo_sessions.extraction is byte-for-byte the shape process-menu returns (both are
-  // extractMenu()), so it flows through the SAME transform the upload uses — and every downstream step
-  // (grouped-vs-separate, the price gate, allergens, kitchen) runs unchanged. Nothing here is reachable
-  // without the query param, so a normal operator open of Manage is completely untouched.
+  // Pre-load the review step from the demo's STORED extraction instead of a fresh upload. This is the whole reason
+  // the migration is a re-commit and not a row copy: demo_sessions.extraction is byte-for-byte the shape
+  // process-menu returns (both are extractMenu()), so it flows through the SAME transform the upload uses — and
+  // every downstream step (grouped-vs-separate, the price gate, allergens, kitchen) runs unchanged.
+  //
+  // ── demo-claim-2: DRIVEN BY SAVED STATE, ON ANY DEVICE — ?import=demo IS NOW AN ALIAS ─────────────────
+  // The demo's menu is CARRIED OVER server-side when the truck is created (lib/demo-menu-carry.ts), and that leaves
+  // a review owed (demo_sessions.menu_review_status = 'pending'). The review is asked for from THAT state, read through
+  // /api/manage (`menu_review_state`, cookie or Bearer, so the native app gets it too), whenever this truck is in
+  // setup — with or without the param, on the tab that signed up, a phone, the app, or after the verify-signup link:
+  //   • 'offer'  — untouched since carry-over: the usual welcome + "Use the menu from your demo?" + review; the commit
+  //                is CLEAR-FIRST (demoImportMode), so the reviewed menu REPLACES the carried one;
+  //   • 'check'  — edited by hand since: the "check your menu" card over the SAVED menu; nothing is re-committed;
+  //   • 'closed' — reviewed or dismissed: never again (the param, if any, is stripped);
+  //   • 'none'   — no carried menu for this truck: with ?import=demo the original path below runs exactly as before
+  //                (a sample demo, a carry-over that never happened); without it, nothing — a normal open of Manage.
   //
   // Placed AFTER the transform helpers (autoSplitConflicts/ungroupAiVariantsForReview) so it references
   // them post-declaration. MenuTab mounts only after the parent finished loading, so `truck` is present.
   useEffect(() => {
     if (demoImportTried.current || !truck) return
     if (typeof window === 'undefined') return
-    if (new URLSearchParams(window.location.search).get('import') !== 'demo') return
+    const viaParam = new URLSearchParams(window.location.search).get('import') === 'demo'
+    const truckInSetup = truck.setup_step != null && truck.setup_step !== 'done'
+    if (!viaParam && !truckInSetup) return
     demoImportTried.current = true
+    /** Load an extraction into the wizard and open the offer — the original success path, unchanged. */
+    const openOffer = async (extraction: any) => {
+      // SAME pipeline as handleProcessMenu — the extraction is the same shape process-menu returns.
+      setImportResult(withImpUids(ungroupAiVariantsForReview(autoSplitConflicts(extraction))))
+      setReviewStep(1)
+      setGroupingChoice({})
+      try {
+        const r = await api('get_vans')
+        const vs = (r.vans || []).map((v: { id: string; kitchen_capacity?: number | null; capacity_window_mins?: number | null }) =>
+          ({ id: v.id, kitchen_capacity: v.kitchen_capacity ?? null, capacity_window_mins: v.capacity_window_mins ?? null }))
+        setImportVans(vs)
+        setImportKitchenCapacity({ kitchen_capacity: vs[0]?.kitchen_capacity ?? null, capacity_window_mins: vs[0]?.capacity_window_mins ?? 5 })
+      } catch { /* non-fatal */ }
+      setImportKitchenDirty(false)
+      setDemoImportMode(true)
+      setShowSetupIntro(true)
+      // ── C1: ASK BEFORE LOADING ────────────────────────────────────────────────────────────────
+      // Everything above is UNCHANGED — the extraction is parsed, the vans are read and
+      // demoImportMode is set exactly as before. The ONLY difference is which step opens: 'offer'
+      // instead of 'review'. Choosing "Use this menu" then does `setImportStep('review')` and nothing
+      // else, so that branch lands in a state byte-identical to today's.
+      setImportStep('offer')
+    }
     ;(async () => {
       try {
+        // ── 1. demo-claim-2: THE SAVED STATE ───────────────────────────────────────────────────────────
+        let review: { state?: string; extraction?: unknown } | null = null
+        try { review = await api('menu_review_state') } catch { review = null }
+        if (review?.state === 'closed') { stripImportParam(); return }
+        if (review?.state === 'check') { setCarriedReview('check'); stripImportParam(); return }
+        if (review?.state === 'offer' && review.extraction) { setCarriedReview('offer'); await openOffer(review.extraction); return }
+        if (!viaParam) return
+        // ── 2. ?import=demo WITH NO CARRIED MENU FOR THIS TRUCK — the original path ────────────────────
+        // 🔴 demo-claim-2: NEVER OVER A MENU THAT IS ALREADY THERE. Every sign-in of an operator still in setup goes
+        // /setup → /manage/<token>?import=demo, so this path re-offered the demo menu on EVERY login — and accepting
+        // re-commits CLEAR-FIRST, wiping a menu they had already imported and edited (Le Roi du Churrasco, 9 Nov: an
+        // 11-item import, allergens confirmed dish by dish, one "Use this menu" from gone). The offer is for an EMPTY
+        // truck; one that has a menu has had its import. Otherwise unchanged.
+        if (items.length > 0) { stripImportParam(); return }
         const res = await fetch('/api/setup')            // GET → the operator's claimed demo extraction
         const data = await res.json()
         if (!data?.ok || !data.extraction) {
@@ -3774,9 +3533,15 @@ function MenuTab({ truck, categories, items, subcategories, token, modifierGroup
           //    nothing was lost, and apologising for a loss that did not happen fired on every sample
           //    signup, once per return to this tab. The true message — "you'll upload your own menu
           //    next" — belongs in the flow, not in an error, and is slice C's to place. Silent here.
+          //  • 'carried_over' (demo-claim-2) — the operator's latest claim was carried to a truck and is not
+          //    this one's to review (the saved state above answered for THIS truck). Nothing to do.
           //  • 'no_claim' / anything else — no demo behind this signup; a normal upload is unremarkable.
           if (data?.reason === 'no_extraction') {
             showToast(ti('toast.demoGone'), 'error')
+          }
+          if (data?.reason === 'carried_over') {
+            stripImportParam()
+            return
           }
           // ── C2: THE TEMPLATE ROUTE — straight to the EXISTING upload step ───────────────────────
           // A sample demo has nothing to offer: the payload is intact but deliberately withheld (it was
@@ -3792,26 +3557,7 @@ function MenuTab({ truck, categories, items, subcategories, token, modifierGroup
           }
           return
         }
-        // SAME pipeline as handleProcessMenu — the extraction is the same shape process-menu returns.
-        setImportResult(withImpUids(ungroupAiVariantsForReview(autoSplitConflicts(data.extraction))))
-        setReviewStep(1)
-        setGroupingChoice({})
-        try {
-          const r = await api('get_vans')
-          const vs = (r.vans || []).map((v: { id: string; kitchen_capacity?: number | null; capacity_window_mins?: number | null }) =>
-            ({ id: v.id, kitchen_capacity: v.kitchen_capacity ?? null, capacity_window_mins: v.capacity_window_mins ?? null }))
-          setImportVans(vs)
-          setImportKitchenCapacity({ kitchen_capacity: vs[0]?.kitchen_capacity ?? null, capacity_window_mins: vs[0]?.capacity_window_mins ?? 5 })
-        } catch { /* non-fatal */ }
-        setImportKitchenDirty(false)
-        setDemoImportMode(true)
-        setShowSetupIntro(true)
-        // ── C1: ASK BEFORE LOADING ────────────────────────────────────────────────────────────────
-        // Everything above is UNCHANGED — the extraction is parsed, the vans are read and
-        // demoImportMode is set exactly as before. The ONLY difference is which step opens: 'offer'
-        // instead of 'review'. Choosing "Use this menu" then does `setImportStep('review')` and nothing
-        // else, so that branch lands in a state byte-identical to today's.
-        setImportStep('offer')
+        await openOffer(data.extraction)
       } catch (e) {
         console.error('[manage] demo import bootstrap failed:', e)
       }
@@ -3819,6 +3565,17 @@ function MenuTab({ truck, categories, items, subcategories, token, modifierGroup
     // One-shot, guarded by demoImportTried — the setters/api/helpers are stable for this purpose.
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [truck, token])
+
+  // ── demo-claim-2: CLOSING THE CARRIED-OVER MENU'S REVIEW ─────────────────────────────────────────────────
+  // Recorded server-side (`set_menu_review`) so it holds on every device. A clean clear-first commit records
+  // 'reviewed' by itself (commit-menu); these are the two other ways out: the "check your menu" card's "Looks good"
+  // ('reviewed') and a deliberate "Finish later" / × ('dismissed'). Best-effort: a failed write only means the
+  // question is asked once more next time — never that a menu is touched.
+  const closeCarriedReview = (status: 'reviewed' | 'dismissed') => {
+    if (!carriedReview) return
+    setCarriedReview(null)
+    void api('set_menu_review', { state: status }).catch(() => undefined)
+  }
 
   // ── PRICE GATE (🔴 applies to EVERY import, operator and demo) ────────────────────────────────────
   // Items whose price the AI couldn't read (menu-extract sets price_missing when the price is absent OR £0)
@@ -4367,20 +4124,9 @@ function MenuTab({ truck, categories, items, subcategories, token, modifierGroup
   // so the only action is SYNTHESISE for rows chosen 'grouped' (default): remove the member items, add
   // the grouped item. 'separate' rows are left as-is (no-op). Base/surcharge are computed from the
   // CURRENT item prices, so page-1 price edits flow straight into the committed group.
-  const buildGroupedItems = (items: any[]): any[] => {
-    const rows = computeGroupingRows(items)
-    const toRemove = new Set<number>()
-    const toAdd: any[] = []
-    for (const row of rows) {
-      const choice = groupingChoice[row.key] ?? 'grouped'
-      if (choice === 'grouped') {
-        row.memberIdxs.forEach(i => toRemove.add(i))
-        toAdd.push(row.groupedItem)
-      }
-    }
-    const kept = items.filter((_, i) => !toRemove.has(i))
-    return [...kept, ...toAdd]
-  }
+  // demo-claim-2: the pass itself lives in lib/menu-import-review.ts (shared with the server carry-over); the
+  // page supplies its chooser state.
+  const buildGroupedItems = (items: any[]): any[] => buildGroupedItemsWith(items, groupingChoice)
 
   const dishOffersGroup = (item: any, gnorm: string) => (item.modifierGroups || []).some((g: any) => normName(g.name) === gnorm)
   const dishHasOption = (item: any, gnorm: string, onorm: string) =>
@@ -4479,6 +4225,8 @@ function MenuTab({ truck, categories, items, subcategories, token, modifierGroup
         // Placed here (both branches below it) rather than in the auto-dismiss timeout, because the
         // setup route never reaches that timeout.
         stripImportParam()
+        // demo-claim-2: a clear-first commit of a carried-over menu IS its review (commit-menu has recorded it).
+        setCarriedReview(null)
         if (inSetup) {
           setImportStep('schedule')
         } else {
@@ -4802,6 +4550,26 @@ function MenuTab({ truck, categories, items, subcategories, token, modifierGroup
 
   return (
     <div className="space-y-4">
+      {/* ── demo-claim-2: "CHECK YOUR MENU" — the review of a carried-over menu they have ALREADY EDITED ──────
+          The menu from their demo was saved to the truck at sign-up, and they have changed it by hand since, so a
+          clear-first re-commit would overwrite their work. Instead the review is this card over the SAVED menu
+          below: they look it over in place; "Looks good" records it reviewed, × records it dismissed. Nothing is
+          re-committed either way. Non-blocking (a card, not a modal) so the menu itself stays in view. */}
+      {carriedReview === 'check' && (
+        <div className="bg-orange-50 border border-orange-200 rounded-2xl p-4" data-check-menu>
+          <div className="flex items-start justify-between gap-3">
+            <div>
+              <p className="font-black text-slate-900">{ti('checkMenu.title')}</p>
+              <p className="text-sm text-slate-600 mt-1">{ti('checkMenu.body')}</p>
+            </div>
+            <button type="button" onClick={() => closeCarriedReview('dismissed')} aria-label={ti('closeImport')}
+              className="text-slate-400 hover:text-slate-600 text-2xl leading-none -mt-1 flex-shrink-0">×</button>
+          </div>
+          <div className="mt-3">
+            <Btn label={ti('checkMenu.done')} colour="orange" onClick={() => closeCarriedReview('reviewed')} />
+          </div>
+        </div>
+      )}
       <div className="mb-2">
         {/* Row 1: heading + Add category button */}
         <div className="flex items-start justify-between">
@@ -5967,7 +5735,7 @@ function MenuTab({ truck, categories, items, subcategories, token, modifierGroup
               {/* SECONDARY — a different menu. 🔴 demoImportMode goes FALSE so the eventual commit does
                   NOT clear-first: clearFirst exists to make the demo re-commit repairable, and firing it
                   for a menu that has nothing to do with the demo would wipe rows on an unrelated import. */}
-              <button type="button" onClick={() => { setShowSetupIntro(false); setDemoImportMode(false); setImportStep('upload') }}
+              <button type="button" onClick={() => { setShowSetupIntro(false); setDemoImportMode(carriedReview === 'offer'); setImportStep('upload') }}
                 className="w-full border border-slate-200 text-slate-600 font-semibold py-3 rounded-xl text-sm hover:bg-slate-50">
                 {ti('offer.upload')}
               </button>
@@ -7001,10 +6769,14 @@ function MenuTab({ truck, categories, items, subcategories, token, modifierGroup
             {inSetup ? (
               <>
                 <p className="font-black text-slate-900 mb-1">{ti('discard.setupTitle')}</p>
-                <p className="text-sm text-slate-500 mb-4">{ti.rich('discard.setupBody', { b: chunks => <span className="font-semibold">{chunks}</span> })}</p>
+                {/* demo-claim-2: closing the review of a CARRIED-OVER menu loses nothing either — but the menu is already
+                    there, so "add your menu any time" would be false. Say what is true: it stays as it is. */}
+                <p className="text-sm text-slate-500 mb-4">{carriedReview
+                  ? ti('discard.carriedBody')
+                  : ti.rich('discard.setupBody', { b: chunks => <span className="font-semibold">{chunks}</span> })}</p>
                 <div className="flex gap-2 justify-center">
                   <Btn label={ti('discard.keepGoing')} colour="slate" onClick={() => setShowDiscardConfirm(false)} />
-                  <Btn label={ti('discard.finishLater')} colour="orange" onClick={resetImportState} />
+                  <Btn label={ti('discard.finishLater')} colour="orange" onClick={() => { closeCarriedReview('dismissed'); resetImportState() }} />
                 </div>
               </>
             ) : (
@@ -7013,7 +6785,7 @@ function MenuTab({ truck, categories, items, subcategories, token, modifierGroup
                 <p className="text-sm text-slate-500 mb-4">{ti('discard.body')}</p>
                 <div className="flex gap-2 justify-center">
                   <Btn label={ti('discard.keepEditing')} colour="slate" onClick={() => setShowDiscardConfirm(false)} />
-                  <Btn label={ti('discard.discard')} colour="red" onClick={resetImportState} />
+                  <Btn label={ti('discard.discard')} colour="red" onClick={() => { closeCarriedReview('dismissed'); resetImportState() }} />
                 </div>
               </>
             )}

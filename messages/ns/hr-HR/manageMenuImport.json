@@ -65,6 +65,11 @@
     "upload": "Učitaj drugi jelovnik",
     "body": "Spremili smo jelovnik koji ste učitali – {count, plural, one {# artikl} few {# artikla} other {# artikala}}. Upotrijebite ga kao polazište ili učitajte drugi."
   },
+  "checkMenu": {
+    "title": "Provjerite svoj jelovnik",
+    "body": "Jelovnik iz vašeg demoa spremili smo uz vaš food truck, a vi ste ga od tada promijenili — zato vaše promjene ostaju. Pregledajte ga u nastavku.",
+    "done": "Sve je u redu"
+  },
   "upload": {
     "title": "Uvezite svoj jelovnik",
     "body": "Učitajte fotografiju ploče s jelovnikom, snimku zaslona, PDF ili zalijepite jelovnik kao tekst. Naš AI ga čita i izrađuje vaš digitalni jelovnik – sve provjeravate prije spremanja.",
@@ -180,7 +185,8 @@
     "title": "Odbaciti ovaj uvoz?",
     "keepEditing": "Nastavi uređivati",
     "discard": "Odbaci",
-    "body": "Vaše promjene neće biti spremljene – uvezeni artikli, vremena pripreme i kapacitet kuhinje neće biti dodani."
+    "body": "Vaše promjene neće biti spremljene – uvezeni artikli, vremena pripreme i kapacitet kuhinje neće biti dodani.",
+    "carriedBody": "Jelovnik iz vašeg demoa spremljen je uz vaš food truck takav kakav jest. Možete ga promijeniti bilo kada na zaslonu jelovnika."
   },
   "allergenCardText": {
     "contains": "Sadrži: {list}",

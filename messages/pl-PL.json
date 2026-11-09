@@ -3003,6 +3003,11 @@
       "upload": "Prześlij inne menu",
       "body": "Zapisaliśmy przesłane przez ciebie menu — {count, plural, one {# pozycja} few {# pozycje} many {# pozycji} other {# pozycji}}. Użyj go jako punktu wyjścia albo prześlij inne."
     },
+    "checkMenu": {
+      "title": "Sprawdź swoje menu",
+      "body": "Zapisaliśmy menu z Twojego demo w Twoim food trucku, a Ty od tego czasu je zmieniłeś — więc Twoje zmiany zostają. Przejrzyj je poniżej.",
+      "done": "Wszystko w porządku"
+    },
     "upload": {
       "title": "Importuj menu",
       "body": "Prześlij zdjęcie tablicy z menu, zrzut ekranu, PDF albo wklej menu jako tekst. Nasza AI je odczyta i zbuduje twoje cyfrowe menu — przed zapisaniem sprawdzisz wszystko.",
@@ -3118,7 +3123,8 @@
       "title": "Odrzucić ten import?",
       "keepEditing": "Edytuj dalej",
       "discard": "Odrzuć",
-      "body": "Twoje zmiany nie zostaną zapisane — zaimportowane pozycje, czasy przygotowania i wydajność kuchni nie zostaną dodane."
+      "body": "Twoje zmiany nie zostaną zapisane — zaimportowane pozycje, czasy przygotowania i wydajność kuchni nie zostaną dodane.",
+      "carriedBody": "Menu z Twojego demo jest zapisane w Twoim food trucku w obecnej postaci. Możesz je zmienić w każdej chwili na ekranie menu."
     },
     "allergenCardText": {
       "contains": "Zawiera: {list}",

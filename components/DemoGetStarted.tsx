@@ -113,7 +113,7 @@ type DemoError = string | { code: DemoErrorCode } | { server: { error?: unknown;
 /** A field's problem, held as a code (`demoGetStarted.fieldError.<code>`; 'phoneInvalid' is the shared phone sentence). */
 type FieldErrorCode = 'firstName' | 'lastName' | 'truck' | 'cuisine' | 'phoneMissing' | 'phoneInvalid' | 'email' | 'password' | 'terms'
 
-export function DemoGetStarted({ token, slug, label, className, isAdmin = false, extractionSource = null, phone = null, setupLabel, prefillEmail, onOpen, trialMonths = null }: {
+export function DemoGetStarted({ token, slug, eventSlug = null, label, className, isAdmin = false, extractionSource = null, phone = null, setupLabel, prefillEmail, onOpen, trialMonths = null }: {
   token?: string
   slug?: string
   /** demo-2 (30 Oct 2026): the trigger's words WHEN SIGN-UP IS OFFERED ("Start free for {months} months, keep my menu", the length read from plans.trial_months).
@@ -125,6 +125,9 @@ export function DemoGetStarted({ token, slug, label, className, isAdmin = false,
   prefillEmail?: string
   /** demo-2: told when the visitor opens the flow (the walkthrough counts `signup_started`). */
   onOpen?: () => void
+  /** demo-claim-2: the demo's slug on a surface that holds only the TOKEN (dashboard, KDS) — used for ONE thing: counting
+   *  `signup_started` when the sign-up form opens. Never for the claim or the save (those keep `token`). */
+  eventSlug?: string | null
   /** copy-truth-1 (2 November 2026): the trial's length (plans.trial_months), for the line beside the setup button — the trial
    *  starts at signup. The walkthrough has it from its API; a caller without it passes nothing and the line names no length. */
   trialMonths?: number | null
@@ -181,7 +184,28 @@ export function DemoGetStarted({ token, slug, label, className, isAdmin = false,
   const emailKey = `hg_demo_email_${key}`
 
   const [open, setOpenState] = useState(false)
-  const setOpen = (v: boolean) => { if (v && !open) onOpen?.(); setOpenState(v) }
+  // ── demo-claim-2: signup_started FROM EVERY SURFACE THAT OPENS THE SIGN-UP FORM ───────────────────────────
+  // It used to be counted only by the walkthrough (its `onOpen`), so a sign-up that began anywhere else — the order
+  // page's banner, the post-save "Set up my truck →" CTA on the slug-only surface, the dashboard or KDS banner — had a
+  // `signup_done` with no `signup_started` (Le Roi du Churrasco, 9 Nov: docs/demo-claim-1-report.md). Now: a host's own
+  // `onOpen` still wins (the walkthrough, unchanged, so nothing is counted twice); otherwise, when this open shows the
+  // SIGN-UP form (canSetup — not the save-my-menu-only form), it is counted here through the walkthrough route's
+  // existing, slug-keyed, demo-only `event` action. Best-effort, never blocks the modal.
+  const setOpen = (v: boolean) => {
+    if (v && !open) {
+      if (onOpen) onOpen()
+      else {
+        const countSlug = slug || eventSlug
+        if (canSetup && countSlug) {
+          void fetch('/api/demo/walkthrough', {
+            method: 'POST', headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ slug: countSlug, action: 'event', event: 'signup_started' }),
+          }).catch(() => undefined)
+        }
+      }
+    }
+    setOpenState(v)
+  }
   const [email, setEmail] = useState(prefillEmail ?? '')
   const [busy, setBusy] = useState(false)
   const [savedUntil, setSavedUntil] = useState<string | null>(null)

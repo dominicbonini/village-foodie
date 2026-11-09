@@ -3003,6 +3003,11 @@
       "upload": "Muat naik menu lain",
       "body": "Kami telah menyimpan menu yang anda muat naik — {count, plural, other {# item}}. Gunakannya sebagai titik permulaan, atau muat naik menu lain."
     },
+    "checkMenu": {
+      "title": "Semak menu anda",
+      "body": "Kami telah menyimpan menu daripada demo anda ke trak anda, dan anda telah mengubahnya sejak itu — jadi perubahan anda dikekalkan. Lihat semula di bawah.",
+      "done": "Nampak baik"
+    },
     "upload": {
       "title": "Import menu anda",
       "body": "Muat naik foto papan menu anda, tangkapan layar, PDF, atau tampal menu anda sebagai teks. AI kami membacanya dan membina menu digital anda — anda menyemak semuanya sebelum ia disimpan.",
@@ -3118,7 +3123,8 @@
       "title": "Buang import ini?",
       "keepEditing": "Terus mengedit",
       "discard": "Buang",
-      "body": "Perubahan anda tidak akan disimpan — item yang diimport, masa penyediaan dan kapasiti dapur tidak akan ditambah."
+      "body": "Perubahan anda tidak akan disimpan — item yang diimport, masa penyediaan dan kapasiti dapur tidak akan ditambah.",
+      "carriedBody": "Menu daripada demo anda disimpan pada trak anda seperti sedia ada. Anda boleh mengubahnya bila-bila masa di skrin menu anda."
     },
     "allergenCardText": {
       "contains": "Mengandungi: {list}",

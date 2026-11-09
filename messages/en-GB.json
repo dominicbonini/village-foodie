@@ -3003,6 +3003,11 @@
       "upload": "Upload a different menu",
       "body": "We saved the menu you uploaded — {count, plural, one {# item} other {# items}}. Use it as your starting point, or upload a different one."
     },
+    "checkMenu": {
+      "title": "Check your menu",
+      "body": "We saved the menu from your demo to your truck, and you’ve changed it since — so your changes are kept. Have a look over it below.",
+      "done": "Looks good"
+    },
     "upload": {
       "title": "Import your menu",
       "body": "Upload a photo of your menu board, a screenshot, a PDF, or paste your menu as text. Our AI reads it and builds your digital menu — you review everything before it saves.",
@@ -3118,7 +3123,8 @@
       "title": "Discard this import?",
       "keepEditing": "Keep editing",
       "discard": "Discard",
-      "body": "Your changes won’t be saved — the imported items, prep times and kitchen capacity won’t be added."
+      "body": "Your changes won’t be saved — the imported items, prep times and kitchen capacity won’t be added.",
+      "carriedBody": "Your menu from the demo is saved on your truck as it is. You can change it any time on your menu screen."
     },
     "allergenCardText": {
       "contains": "Contains: {list}",

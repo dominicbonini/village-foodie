@@ -3003,6 +3003,11 @@
       "upload": "Încărcați alt meniu",
       "body": "Am salvat meniul pe care l-ați încărcat — {count, plural, one {# produs} few {# produse} other {# de produse}}. Folosiți-l ca punct de plecare sau încărcați altul."
     },
+    "checkMenu": {
+      "title": "Verifică-ți meniul",
+      "body": "Am salvat meniul din demo pe food truck-ul tău, iar tu l-ai modificat între timp — așa că modificările tale rămân. Aruncă o privire mai jos.",
+      "done": "Arată bine"
+    },
     "upload": {
       "title": "Importați meniul",
       "body": "Încărcați o fotografie a tablei cu meniul, o captură de ecran, un PDF sau lipiți meniul ca text. AI-ul nostru îl citește și vă creează meniul digital — verificați totul înainte de salvare.",
@@ -3118,7 +3123,8 @@
       "title": "Renunțați la acest import?",
       "keepEditing": "Continuați editarea",
       "discard": "Renunțați",
-      "body": "Modificările nu vor fi salvate — produsele importate, timpii de preparare și capacitatea bucătăriei nu vor fi adăugate."
+      "body": "Modificările nu vor fi salvate — produsele importate, timpii de preparare și capacitatea bucătăriei nu vor fi adăugate.",
+      "carriedBody": "Meniul din demo este salvat pe food truck-ul tău așa cum este. Îl poți modifica oricând din ecranul meniului."
     },
     "allergenCardText": {
       "contains": "Conține: {list}",

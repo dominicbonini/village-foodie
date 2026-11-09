@@ -132,6 +132,7 @@ import {
  * control's label and the Add event pre-selection are the same rule and the same word. */
 import { readPlaceTypeHistory, STANDARD_TYPE_NAME } from '@/lib/event-types/read'
 import { normaliseRegion } from '@/lib/event-address'
+import { readMenuReview, closeMenuReview } from '@/lib/demo-menu-carry'   // demo-claim-2: the carried-over menu's review state
 /* ⛔ `readImageInfo` WAS IMPORTED HERE (5 October 2026). It measured an uploaded `place_pictures` row
  * server-side rather than trusting the browser's numbers. That pane and its four routes are deleted;
  * the POST picture is measured by the same function on /api/weekly-post, which is where it always was. */
@@ -612,6 +613,8 @@ export async function POST(req: NextRequest) {
     // ⚠️ UNCHANGED BY THE PLAN-GATE REMOVAL: dropping the plan gate widens WHICH PLANS may use this,
     // never WHICH ROLES. Staff are still refused.
     'sg_places', 'sg_upsert_place', 'sg_merge_place',
+    // demo-claim-2: closing the carried-over menu's review is an owner/manager decision.
+    'set_menu_review',
   ]
   if (staffBlockedActions.includes(action) && requestingUserRole === 'staff') {
     // languages-1: the plain body's sentence in the truck's language too (en-GB exactly as before; the body's shape unchanged).
@@ -650,6 +653,20 @@ export async function POST(req: NextRequest) {
   ]
   if (demoBlockedActions.includes(action) && access.via === 'demo') {
     return refuse('demo_not_available', 403)   // Language Phase 1d Part 2: a code, in the truck's language
+  }
+
+  // ── demo-claim-2: THE CARRIED-OVER MENU'S REVIEW, FROM SAVED STATE ───────────────────────────────────────────
+  // The review of a menu carried over from a demo (lib/demo-menu-carry.ts) is driven by demo_sessions.menu_review_status,
+  // NOT by ?import=demo or a browser tab — so it is read HERE, through the one route both the web (cookie) and the native
+  // app (Bearer) already authenticate, by the truck the caller is in. Staff are never handed a setup review.
+  if (action === 'menu_review_state') {
+    if (requestingUserRole === 'staff' || access.via === 'demo') return NextResponse.json({ state: 'none' })
+    return NextResponse.json(await readMenuReview(supabase, truck.id))
+  }
+  if (action === 'set_menu_review') {
+    const status = body.state === 'reviewed' ? 'reviewed' : body.state === 'dismissed' ? 'dismissed' : null
+    if (!status || access.via === 'demo') return NextResponse.json({ ok: false, error: 'bad_request' }, { status: 400 })
+    return NextResponse.json({ ok: true, changed: await closeMenuReview(supabase, truck.id, status) })
   }
 
   // ── CATEGORY CRUD ─────────────────────────────────────────

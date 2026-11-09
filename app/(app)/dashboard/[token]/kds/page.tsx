@@ -2640,7 +2640,7 @@ export default function KdsPage({ token: tokenProp, vanId: vanIdProp, vanName: v
           orange identity strip wedged between two of those would break an ordering the operator is meant
           to be able to rely on. This is a persistent statement about the whole screen, so it sits
           directly under the header, where it was directly over it. */}
-      {isDemo && <DemoModeBanner action={<DemoGetStarted token={token} isAdmin={isAdmin} extractionSource={demoExtractionSource} phone={truck?.phone ?? null} />} />}
+      {isDemo && <DemoModeBanner action={<DemoGetStarted token={token} isAdmin={isAdmin} extractionSource={demoExtractionSource} phone={truck?.phone ?? null} eventSlug={(truck as { slug?: string | null } | null)?.slug ?? null} />} />}
 
       {/* ── THE BANNER STACK — ONE CONTAINER, DIRECTLY UNDER THE HEADER ───────────────────────────
           🔴 THE WAKE-LOCK BAR USED TO RENDER HERE AND THE REST RENDERED FURTHER DOWN, so on a phone the

@@ -14,6 +14,8 @@ import { linkDiscoveryRowForSelfServe } from '@/lib/self-serve-discovery-link'
 import { isPlausiblePhone } from '@/lib/phone'
 import { phoneCopyOf } from '@/lib/phone-copy'
 import { resolveOperatorTruck } from '@/lib/resolve-operator-truck'
+// demo-claim-2: the claimed demo's OWN menu is committed to the real truck here, in the request that creates it.
+import { carryClaimedDemoMenu, carryClaimedDemoLogo } from '@/lib/demo-menu-carry'
 import { getCountrySettings } from '@/lib/country-settings'
 import type { CountrySettings } from '@/lib/country-settings-types'
 import { checkSignupCountry, checkTradeArea } from '@/lib/trade-area'
@@ -124,8 +126,14 @@ export async function POST(req: NextRequest) {
     const { data: existing } = await supabase
       .from('trucks').select('id, dashboard_token, setup_step')
       .eq('operator_id', operator.id).not('setup_step', 'is', null).neq('setup_step', 'done').limit(1)
+    // demo-claim-2: the operator who created the account (the carry-over's audit actor), as commit-menu records one.
+    const ownerActor = { actor_user_id: user.id, actor_role: 'owner', auth_method: 'authenticated' as const }
     if (existing && existing.length > 0) {
-      return NextResponse.json({ ok: true, truck: existing[0], resumed: true })
+      // ── demo-claim-2: A RESUMED TRUCK GETS THE CARRY-OVER TOO ───────────────────────────────────────────
+      // A retry after a flaky response, or /setup finished on a second device, lands here — so a carry-over that did
+      // not happen (or failed) the first time is attempted again. It is a no-op once done, or once the truck has a menu.
+      const menuCarry = await carryClaimedDemoMenu(supabase, operator.id, { id: existing[0].id }, ownerActor)
+      return NextResponse.json({ ok: true, truck: existing[0], resumed: true, menuCarry: menuCarry.status })
     }
 
     try {
@@ -186,7 +194,17 @@ export async function POST(req: NextRequest) {
       // nothing and the block is a no-op — no write, no log line, the same response as before.
       const discoveryLink = await linkDiscoveryRowForSelfServe(supabase, operator.id, result.truck.id)
 
-      return NextResponse.json({ ok: true, truck: result.truck, warnings: result.warnings, ...(discoveryLink ? { discoveryLink } : {}) })
+      // ── demo-claim-2: THE DEMO'S MENU ARRIVES WITH THE TRUCK ──────────────────────────────────────────────
+      // If this operator signed up from a demo built from their OWN uploaded menu (extraction_source 'upload'), that
+      // menu is committed to the new truck NOW — server-side, so it is there on whatever device they continue on.
+      // The same decisions as the review accepted without changes (lib/menu-import-review.ts); never a sample menu;
+      // never twice; never over a menu. NEVER FAILS THIS REQUEST: a failed commit is wiped and recorded on the demo
+      // session, and the ?import=demo offer stays the fallback. See lib/demo-menu-carry.ts.
+      const menuCarry = await carryClaimedDemoMenu(supabase, operator.id, { id: result.truck.id }, ownerActor)
+      // …and the one other thing a demo can hold that is the truck's own: a branded demo's logo (only into a truck with none).
+      await carryClaimedDemoLogo(supabase, operator.id, { id: result.truck.id })
+
+      return NextResponse.json({ ok: true, truck: result.truck, warnings: result.warnings, menuCarry: menuCarry.status, ...(discoveryLink ? { discoveryLink } : {}) })
     } catch (e) {
       // An exception's own message is passed on as it came; only our fallback carries a code.
       if (e instanceof Error) {
@@ -260,7 +278,7 @@ export async function GET(req: NextRequest) {
   // (truck_id → trucks is ON DELETE CASCADE), predates the migration, or the best-effort persist failed.
   const { data: session } = await supabase
     .from('demo_sessions')
-    .select('truck_id, extraction, extraction_source')
+    .select('truck_id, extraction, extraction_source, menu_carry_status')
     .eq('claimed_by_operator_id', operator.id)
     .order('created_at', { ascending: false })
     .limit(1)
@@ -283,6 +301,15 @@ export async function GET(req: NextRequest) {
   // honest. 'template_withheld' means the payload is intact and we are DELIBERATELY not giving it to
   // them, because it was a sample and was never theirs. Reporting a deliberate withholding as a loss
   // apologised for something that had not happened, on every single sample signup.
+  // ── demo-claim-2: 'carried_over' — THE MENU IS ALREADY ON THE TRUCK ─────────────────────────────────────
+  // create_truck committed it server-side (lib/demo-menu-carry.ts). Handing the extraction back now would put the
+  // "Use the menu from your demo?" offer in front of a menu that is already there — and accepting it re-commits with
+  // clearFirst, WIPING whatever they have edited since. So once the carry-over is 'done' the payload is withheld and
+  // the bootstrap stands down. Any other status ('started' that never finished, 'failed', or none) still returns it:
+  // the offer is the fallback, and its clearFirst re-commit repairs whatever a failed attempt left.
+  if (session.menu_carry_status === 'done') {
+    return NextResponse.json({ ok: true, extraction: null, reason: 'carried_over' })
+  }
   if (!session.extraction) {
     return NextResponse.json({ ok: true, extraction: null, reason: 'no_extraction' })
   }

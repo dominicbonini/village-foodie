@@ -280,6 +280,26 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
   const[requiresPin,setRequiresPin]=useState(false)
   const[authenticated,setAuthenticated]=useState(false)
   const[truck,setTruck]=useState<TruckData|null>(null)
+  // ── demo-claim-2: A MENU REVIEW IS OWED → MANAGE ───────────────────────────────────────────────────────────
+  // A new operator's demo menu is carried to the truck at sign-up, and its review is owed until they do it or dismiss
+  // it (lib/demo-menu-carry.ts). The review lives in Manage — and the native app (and a sign-in on the web) lands HERE,
+  // on the board. So while the truck is still in setup, ask once whether a review is pending (through /api/manage, with
+  // the app's Bearer like every other call here) and, if it is, go to Manage, which asks for it. Never for a demo board;
+  // once reviewed or dismissed the answer is 'closed' and the board simply stays. A failed check stays on the board.
+  const menuReviewChecked=useRef(false)
+  useEffect(()=>{
+    if(isDemo||!truck||menuReviewChecked.current)return
+    const step=(truck as {setup_step?:string|null}).setup_step
+    if(step==null||step==='done')return
+    menuReviewChecked.current=true
+    ;(async()=>{
+      try{
+        const res=await fetch('/api/manage',{method:'POST',headers:{'Content-Type':'application/json',...await nativeAuthHeader()},body:JSON.stringify({token,action:'menu_review_state'})})
+        const d=await res.json().catch(()=>null)
+        if(res.ok&&(d?.state==='offer'||d?.state==='check'))router.replace(`/manage/${encodeURIComponent(token)}`)
+      }catch{/* best-effort: stay on the board */}
+    })()
+  },[truck,isDemo,token,router])
   // Stage A2: override → the truck's EFFECTIVE plan's switch (server-sent `plan_blocks`) → allowed.
   const features=useFeatures(truck)
   // 🔴 THE TRUCK'S TIME (Phase 2B): its zone decides "now" and "today" everywhere on this screen (was the
@@ -4331,7 +4351,7 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
       {/* DEMO MODE — persistent app-shell strip, on EVERY tab. Deliberately calm rather than alarming:
           this is a prospect exploring the product, not an operator being warned. Moved below the chrome
           with the stack; its copy, condition and action are untouched. */}
-      {isDemo&&<DemoModeBanner action={<DemoGetStarted token={token} isAdmin={isAdmin} extractionSource={demoSession?.extraction_source??null} phone={truck?.phone??null}/>}/>}
+      {isDemo&&<DemoModeBanner action={<DemoGetStarted token={token} isAdmin={isAdmin} extractionSource={demoSession?.extraction_source??null} phone={truck?.phone??null} eventSlug={(truck as {slug?:string|null}|null)?.slug??null}/>}/>}
       {/* Keep-screen-on prompt — full-width bar in the app-shell (visible on the service screen, not
           buried). Shows only when the pref is on but the lock isn't held; the operator's first tap
           dismisses AND acquires it. Moved below the chrome with the stack; conditions untouched. */}

@@ -65,6 +65,11 @@
     "upload": "Nahrát jiný jídelní lístek",
     "body": "Uložili jsme jídelní lístek, který jste nahráli — {count, plural, one {# položka} few {# položky} other {# položek}}. Použijte ho jako výchozí bod, nebo nahrajte jiný."
   },
+  "checkMenu": {
+    "title": "Zkontrolujte své menu",
+    "body": "Menu z vašeho dema jsme uložili k vašemu food trucku a vy jste ho od té doby upravili — vaše změny tedy zůstávají. Projděte si ho níže.",
+    "done": "Vypadá to dobře"
+  },
   "upload": {
     "title": "Import jídelního lístku",
     "body": "Nahrajte fotku tabule s jídelním lístkem, snímek obrazovky nebo PDF, případně vložte jídelní lístek jako text. Naše AI ho přečte a sestaví váš digitální jídelní lístek — před uložením vše zkontrolujete.",
@@ -180,7 +185,8 @@
     "title": "Zahodit tento import?",
     "keepEditing": "Pokračovat v úpravách",
     "discard": "Zahodit",
-    "body": "Vaše změny se neuloží — importované položky, doby přípravy ani kapacita kuchyně nebudou přidány."
+    "body": "Vaše změny se neuloží — importované položky, doby přípravy ani kapacita kuchyně nebudou přidány.",
+    "carriedBody": "Menu z vašeho dema je uložené u vašeho food trucku tak, jak je. Můžete ho kdykoli změnit na obrazovce menu."
   },
   "allergenCardText": {
     "contains": "Obsahuje: {list}",

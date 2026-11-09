@@ -3003,6 +3003,11 @@
       "upload": "Subir otra carta",
       "body": "Hemos guardado la carta que subiste: {count, plural, one {# producto} other {# productos}}. Úsala como punto de partida o sube otra."
     },
+    "checkMenu": {
+      "title": "Revisa tu menú",
+      "body": "Guardamos el menú de tu demo en tu food truck y lo has cambiado desde entonces, así que tus cambios se mantienen. Échale un vistazo abajo.",
+      "done": "Todo bien"
+    },
     "upload": {
       "title": "Importa tu carta",
       "body": "Sube una foto de la pizarra de tu carta, una captura de pantalla o un PDF, o pega tu carta como texto. Nuestra IA la lee y crea tu carta digital; tú lo revisas todo antes de que se guarde.",
@@ -3118,7 +3123,8 @@
       "title": "¿Descartar esta importación?",
       "keepEditing": "Seguir editando",
       "discard": "Descartar",
-      "body": "Tus cambios no se guardarán: no se añadirán los productos importados, los tiempos de preparación ni los pedidos máximos por franja."
+      "body": "Tus cambios no se guardarán: no se añadirán los productos importados, los tiempos de preparación ni los pedidos máximos por franja.",
+      "carriedBody": "El menú de tu demo está guardado en tu food truck tal cual. Puedes cambiarlo cuando quieras en la pantalla de tu menú."
     },
     "allergenCardText": {
       "contains": "Contiene: {list}",
