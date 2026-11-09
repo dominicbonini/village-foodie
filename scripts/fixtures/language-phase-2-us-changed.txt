@@ -1,4 +1,4 @@
-# Language Phase 2 — every US view that differs from BEFORE (2083 US views; 1368 changed). Written by scripts/language-phase-2.cjs.
+# Language Phase 2 — every US view that differs from BEFORE (2083 US views; 1370 changed). Written by scripts/language-phase-2.cjs.
 # view id	why (named code change in F, or words only)
 1a/orderPage/US|loading	words
 1a/orderPage/US|eventsError	words
@@ -1087,24 +1087,26 @@
 1c/api/US|signup|ok	code: legal-followups-terms-version+pricing-tidy-terms-version+ireland-3-terms-version+anz-terms-terms-version+demo-2b-terms-version+world-countries-2-terms-version+contact-1-terms-version+tidy-1-terms-version+paperwork-1-terms-version
 1c/api/US|signup|okPlain	code: legal-followups-terms-version+pricing-tidy-terms-version+ireland-3-terms-version+anz-terms-terms-version+demo-2b-terms-version+world-countries-2-terms-version+contact-1-terms-version+tidy-1-terms-version+paperwork-1-terms-version
 1c/api/US|cancel-email-change|noChangeId	words
-1c/api/US|change-email|brevoFails	words
-1c/api/US|change-email|ok	words
-1c/api/US|forgot-password|brevoFails	words
-1c/api/US|forgot-password|ok	words
+1c/api/US|change-email|brevoFails	code: email-sender-1-hatchgrab-sender + words
+1c/api/US|change-email|ok	code: email-sender-1-hatchgrab-sender + words
+1c/api/US|forgot-password|brevoFails	code: email-sender-1-hatchgrab-sender + words
+1c/api/US|forgot-password|ok	code: email-sender-1-hatchgrab-sender + words
 1c/api/US|resend-verification|noChangeId	words
-1c/api/US|resend-verification|brevoFails	words
-1c/api/US|resend-verification|ok	words
+1c/api/US|resend-verification|brevoFails	code: email-sender-1-hatchgrab-sender + words
+1c/api/US|resend-verification|ok	code: email-sender-1-hatchgrab-sender + words
 1c/api/US|reset-password|short	words
 1c/api/US|verify-signup|okNoTruck	code: pricing-b-verify-signup-trial-months
 1c/api/US|verify-signup|okTruck	code: pricing-b-verify-signup-trial-months
-1c/api/US|save-email|ok	code: P2-save-email-date-US + words
-1c/api/US|save-email|okBySlug	code: P2-save-email-date-US + words
-1c/api/US|save-email|okOneDay	code: P2-save-email-date-US + words
-1c/api/US|save-email|okOutreach	code: P2-save-email-date-US + words
-1c/api/US|save-email|brevoThrows	code: P2-save-email-date-US + words
+1c/api/US|build-request|ok	code: email-sender-1-hatchgrab-sender
+1c/api/US|build-request|okNoTruck	code: email-sender-1-hatchgrab-sender
+1c/api/US|save-email|ok	code: P2-save-email-date-US+email-sender-1-hatchgrab-sender + words
+1c/api/US|save-email|okBySlug	code: P2-save-email-date-US+email-sender-1-hatchgrab-sender + words
+1c/api/US|save-email|okOneDay	code: P2-save-email-date-US+email-sender-1-hatchgrab-sender + words
+1c/api/US|save-email|okOutreach	code: P2-save-email-date-US+email-sender-1-hatchgrab-sender + words
+1c/api/US|save-email|brevoThrows	code: P2-save-email-date-US+email-sender-1-hatchgrab-sender + words
 1c/api/US|save-email|noBrevo	code: P2-save-email-date-US
-1c/api/US|deletion|post|ok	code: P2-deletion-email-date + words
-1c/api/US|deletion|post|okNoTrucks	code: P2-deletion-email-date + words
+1c/api/US|deletion|post|ok	code: P2-deletion-email-date+email-sender-1-hatchgrab-sender + words
+1c/api/US|deletion|post|okNoTrucks	code: P2-deletion-email-date+email-sender-1-hatchgrab-sender + words
 1c/auth/US|signup|empty	code: site-chrome-1-flow-logo + words
 1c/auth/US|signup|empty|demo	code: site-chrome-1-flow-logo + words
 1c/auth/US|signup|typing|noAt	code: site-chrome-1-flow-logo + words

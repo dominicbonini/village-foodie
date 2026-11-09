@@ -1,4 +1,4 @@
-# Language Phase 1d Part 2 — every in-scope US view that differs from BEFORE (826471a) (846 US views; 552 changed). Written by scripts/language-phase-1d2.cjs.
+# Language Phase 1d Part 2 — every in-scope US view that differs from BEFORE (826471a) (846 US views; 557 changed). Written by scripts/language-phase-1d2.cjs.
 # view id	why (code: named difference 1 / a named code change; words: the en-US words and moved messages)
 shell/US|shell|loading	words
 shell/US|shell|invalidToken	code: pricing-b-first-load-line
@@ -287,7 +287,8 @@ wada/US|settings|notice|setupFailed|auto-replies	code: 1d2-us-whatsapp-dates + w
 wada/US|settings|notice|serverMessage|auto-replies	code: 1d2-us-whatsapp-dates + words
 wada/US|settings|starter|auto-replies	code: 1d2-us-whatsapp-dates + words
 wada/US|settings|pro|auto-replies	code: 1d2-us-whatsapp-dates + words
-wada/US|settings|deletionDialog|account-deletion	words
+wada/US|settings|deletionPending|account-deletion	code: 1d2-us-whatsapp-dates
+wada/US|settings|deletionDialog|account-deletion	code: 1d2-us-whatsapp-dates + words
 wada/US|preview|empty	words
 wada/US|preview|typing	words
 wada/US|preview|loading	words
@@ -298,10 +299,14 @@ wada/US|preview|result|IGNORE	words
 wada/US|preview|error|server	words
 wada/US|preview|error|fallback	words
 wada/US|preview|error|network	words
-wada/US|delete|open|oneOrder	words
-wada/US|delete|open|partial	words
-wada/US|delete|open|exact	words
-wada/US|delete|open|severalTrucks	words
+wada/US|delete|open|noOrders	code: email-sender-1-deletion-address
+wada/US|delete|open|oneOrder	code: email-sender-1-deletion-address + words
+wada/US|delete|open|partial	code: email-sender-1-deletion-address + words
+wada/US|delete|open|exact	code: email-sender-1-deletion-address + words
+wada/US|delete|open|severalTrucks	code: email-sender-1-deletion-address + words
+wada/US|delete|open|submitting	code: email-sender-1-deletion-address
+wada/US|delete|pending	code: email-sender-1-deletion-address
+wada/US|delete|pendingNoDates	code: email-sender-1-deletion-address
 wada/US|domain|starter	code: plans-every-plan-every-feature-2
 wada/US|domain|card|justWentLive	words
 wada/US|domain|record|wix	words

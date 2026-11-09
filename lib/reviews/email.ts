@@ -5,7 +5,7 @@
 // 🔴 ONE EMAIL FOR EVERY CUSTOMER (Google's rule): the same words and the same single Google link. No rating step, no
 // "if you enjoyed it", no second path for unhappy customers.
 // Every email says who it is from and carries an unsubscribe link (in the body, and as List-Unsubscribe / one-click headers).
-import { HATCHGRAB_SENDER, HATCHGRAB_LOGO_URL } from '@/lib/email-config'
+import { HATCHGRAB_SENDER, HATCHGRAB_NOREPLY, HATCHGRAB_LOGO_URL } from '@/lib/email-config'
 import { translatorFor } from '@/lib/i18n/translator'
 import { privacyFooterHtml, privacyFooterText } from '@/lib/email-privacy'
 import '@/lib/i18n/catalog/emailReview'
@@ -45,9 +45,11 @@ export async function sendReviewEmail(m: ReviewSend, fetchImpl: typeof fetch = f
       method: 'POST',
       headers: { accept: 'application/json', 'api-key': apiKey, 'content-type': 'application/json' },
       body: JSON.stringify({
-        sender: { name: reviewFromName(m.truckName), email: HATCHGRAB_SENDER.email },
+        // email-sender-1 (9 November 2026): a truck's email to its customer — donotreply@hatchgrab.com under "<truck> via HatchGrab".
+        // Replies reach the truck where it has an address, otherwise hello@hatchgrab.com (where the old From took them).
+        sender: { name: reviewFromName(m.truckName), email: HATCHGRAB_NOREPLY },
         to: [{ email: m.to }],
-        ...(m.replyTo ? { replyTo: { email: m.replyTo, name: m.truckName } } : {}),
+        replyTo: m.replyTo ? { email: m.replyTo, name: m.truckName } : { email: HATCHGRAB_SENDER.replyTo },
         subject: m.subject,
         htmlContent: m.html,
         textContent: m.text,

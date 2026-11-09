@@ -285,7 +285,10 @@ const cardBefore = () => {
     sent.length = 0
     await EMAIL.A.sendEventCancellationEmail({ ...cancelArgs, venueName: 'The Bell', village: 'Castle Hedingham', time: GBT })
     await EMAIL.B.sendEventCancellationEmail({ ...cancelArgs, venueName: 'The Bell', village: 'Castle Hedingham', time: GBT })
-    t('GB event-cancellation email: byte-identical to BEFORE apart from the named privacy link', sent.length === 2 && JSON.stringify(sent[0]) === named(sent[1]))
+    // ⚠️ RE-PINNED (email-sender-1, 9 November 2026, docs/email-sender-1-report.md): the BEFORE side's From also takes the named
+    // change email-sender-1-truck-sender (donotreply@villagefoodie.co.uk → donotreply@hatchgrab.com, scripts/_lp-email-sender-1.cjs).
+    const ES1 = require('./_lp-email-sender-1.cjs')
+    t('GB event-cancellation email: byte-identical to BEFORE apart from the named privacy link (and email-sender-1\'s From)', sent.length === 2 && JSON.stringify(sent[0]) === named(ES1.LANDED ? ES1.brevoBody(sent[1]) : sent[1]))
     sent.length = 0
     await EMAIL.A.sendEventCancellationEmail({ ...cancelArgs, venueName: 'Pier A Park', village: 'Hoboken', region: 'NJ', time: UST })
     t('US event-cancellation email with a state: "Pier A Park, Hoboken, NJ"', JSON.stringify(sent[0] || {}).includes('Pier A Park, Hoboken, NJ'))

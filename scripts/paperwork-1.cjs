@@ -317,7 +317,9 @@ const { fakeSupabase, MIGRATION, TYPE_ROWS, BYTES, STUBS } = require('./_paperwo
     const exp = new Date(share.expires_at)
     t('the link works until the END of the chosen day in the truck\'s time (midnight UK after it)', /T0[01]:00:00\.000Z$/.test(share.expires_at) && ymd(new Date(exp.getTime() - 1)) === day(33), share.expires_at)
     const m = calls.brevo
-    const verified = /email: '([^']+)'/.exec(read('lib/email-config.ts').split('HATCHGRAB_SENDER = {')[1])[1]
+    // ⚠️ RE-PINNED (email-sender-1, 9 November 2026, docs/email-sender-1-report.md): a truck's email to an organiser is From
+    // donotreply@hatchgrab.com (HATCHGRAB_NOREPLY); only the From NAME carries the truck. It was HATCHGRAB_SENDER's address.
+    const verified = /export const HATCHGRAB_NOREPLY = '([^']+)'/.exec(read('lib/email-config.ts'))[1]
     t('one email to each organiser, From "Pizza Kitchen via HatchGrab" at the verified sender, Reply-To the truck', m.length === 2 && m.every(x => x.sender.name === 'Pizza Kitchen via HatchGrab' && x.sender.email === verified && x.replyTo.email === 'owner@pizzakitchen.test')
       && m.map(x => x.to[0].email).sort().join() === 'events@cambridgemarket.co.uk,food@cambridgemarket.co.uk', m.map(x => [x.sender, x.replyTo, x.to]))
     t('…with the message, the documents (current versions, with dates), the event and the link', m[0].subject === 'Pizza Kitchen has sent you their documents' && m[0].textContent.includes(base.message) && m[0].textContent.includes('Gas safety certificate — expires')
@@ -328,7 +330,7 @@ const { fakeSupabase, MIGRATION, TYPE_ROWS, BYTES, STUBS } = require('./_paperwo
     t('if no email could be sent the link is not kept (502)', failed.status === 502 && db.T.document_shares.length === 1)
     t('the Sent list: who, when, opened, views, until — from load', (await POST(db, { action: 'load' })).body.shares[0].emails.length === 2)
     const sender = read('lib/email-config.ts')
-    t('the sender is the verified HATCHGRAB_SENDER address (lib/email-config.ts); only the From NAME carries the truck', /sender: \{ name: fromName\(p\.truckName\), email: HATCHGRAB_SENDER\.email \}/.test(read('lib/paperwork/email.ts')) && /HATCHGRAB_SENDER = \{/.test(sender))
+    t('the sender is HatchGrab\'s donotreply@hatchgrab.com (HATCHGRAB_NOREPLY, lib/email-config.ts — email-sender-1); only the From NAME carries the truck', /sender: \{ name: fromName\(p\.truckName\), email: HATCHGRAB_NOREPLY \}/.test(read('lib/paperwork/email.ts')) && verified === 'donotreply@hatchgrab.com' && /HATCHGRAB_SENDER = \{/.test(sender))
   }
 
   // ── 9 · the organiser page ─────────────────────────────────────────────────────────────────────────────────────────

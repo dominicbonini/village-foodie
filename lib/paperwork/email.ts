@@ -4,7 +4,7 @@
 //     Reply-To the truck's contact email, the truck's message, the documents and the link;
 //   • a REMINDER to the truck's contact email: the documents that need renewing, and a link to Manage › Paperwork.
 // Never throws: a failed send is `{ sent: false, reason }` for the caller to log (and, for a reminder, to try again tomorrow).
-import { HATCHGRAB_SENDER, HATCHGRAB_LOGO_URL } from '@/lib/email-config'
+import { HATCHGRAB_SENDER, HATCHGRAB_NOREPLY, HATCHGRAB_LOGO_URL } from '@/lib/email-config'
 import { translatorFor } from '@/lib/i18n/translator'
 import { formatLongDate, type TimeSettings } from '@/lib/time-utils'
 import { daysBetween, type ReminderStage } from './model'
@@ -55,9 +55,11 @@ export async function sendShareEmail(p: {
     p.eventName ? t('email.event', { event: p.eventName }) : '', p.message ?? '', lines.map(l => `- ${l}`).join('\n'), p.url,
     t('email.shareUntil', { date: until, truck: p.truckName })].filter(Boolean).join('\n\n')
   return brevo({
-    sender: { name: fromName(p.truckName), email: HATCHGRAB_SENDER.email },
+    // email-sender-1 (9 November 2026): a truck's email — donotreply@hatchgrab.com under "<truck> via HatchGrab". Replies reach the
+    // truck's contact email where it has one, otherwise hello@hatchgrab.com (where the old From took them).
+    sender: { name: fromName(p.truckName), email: HATCHGRAB_NOREPLY },
     to: [{ email: p.to }],
-    ...(p.replyTo ? { replyTo: { email: p.replyTo, name: p.truckName } } : {}),
+    replyTo: p.replyTo ? { email: p.replyTo, name: p.truckName } : { email: HATCHGRAB_SENDER.replyTo },
     subject: t('email.shareSubject', { truck: p.truckName }),
     htmlContent: html, textContent,
   }, fetchImpl)

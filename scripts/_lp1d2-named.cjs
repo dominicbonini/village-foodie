@@ -523,6 +523,9 @@ const NAMED = [
       views: id => /^smoke-settings\/(GB|US)\|[^|]+\|page$/.test(id),
       expect: b => require('./_lp-store-badges-1.cjs').noAppCardMust(b) },
   ] : []),
+  // ── ⚠️ RE-PINNED (email-sender-1, 9 November 2026, docs/email-sender-1-report.md) ──────────────────────────────────────────
+  //    The account-deletion screen's support address is hello@hatchgrab.com (scripts/_lp-email-sender-1.cjs). PRECISE.
+  ...require('./_lp-email-sender-1.cjs').LP1D2_ENTRIES,
 ]
 
 const SMOKE_SHARED = [

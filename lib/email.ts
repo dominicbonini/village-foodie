@@ -5,6 +5,8 @@ import type { EmailPaymentState } from '@/lib/payments/email-payment-state'
 // For notifyCustomer's demo guard, moved here from app/api/dashboard/action. lib/demo imports
 // nothing, so this adds no cycle.
 import { isDemoIdentifier } from '@/lib/demo'
+// email-sender-1 (9 November 2026): the From (and Reply-To) of both senders below — hatchgrab.com only (lib/email-config.ts).
+import { brevoFrom } from '@/lib/email-config'
 // 🔴 EVERY AMOUNT IN EVERY EMAIL IS IN THE ORDER'S CURRENCY. `money` is a REQUIRED parameter on every
 // function below that prints one, so the compiler names every caller; the caller gets it from
 // lib/money-server.ts (moneyFormatForOrder) — never a default, never GBP by omission.
@@ -666,7 +668,8 @@ export async function sendConfirmationEmail(params: {
   }
   try {
     const senderName = params.senderName || params.truckName || 'HatchGrab'
-    const fromAddress = process.env.EMAIL_FROM_ADDRESS || 'donotreply@villagefoodie.co.uk'
+    // email-sender-1: "HatchGrab" (an operator copy, an admin alert) → hello@hatchgrab.com with Reply-To the same; a truck's
+    // name (its customers' mail) → donotreply@hatchgrab.com, no Reply-To, as before. EMAIL_FROM_ADDRESS is no longer read.
     const res = await fetch('https://api.brevo.com/v3/smtp/email', {
       method: 'POST',
       headers: {
@@ -674,7 +677,7 @@ export async function sendConfirmationEmail(params: {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        sender:      { name: senderName, email: fromAddress },
+        ...brevoFrom(senderName),
         to:          [{ email: params.to }],
         subject:     params.subject,
         htmlContent: params.html,
@@ -724,7 +727,7 @@ export async function notifyCustomer(
       method: 'POST',
       headers: { 'api-key': apiKey, 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        sender:      { name: truckName || 'HatchGrab', email: process.env.EMAIL_FROM_ADDRESS || 'donotreply@villagefoodie.co.uk' },
+        ...brevoFrom(truckName || 'HatchGrab'),   // email-sender-1: donotreply@hatchgrab.com under the truck's name
         to:          [{ email }],
         subject,
         htmlContent: html,

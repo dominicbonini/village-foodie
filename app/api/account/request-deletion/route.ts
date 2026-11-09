@@ -54,6 +54,7 @@ async function sendMail(to: string, subject: string, html: string) {
       headers: { 'accept': 'application/json', 'api-key': apiKey, 'content-type': 'application/json' },
       body: JSON.stringify({
         sender: { name: HATCHGRAB_SENDER.name, email: HATCHGRAB_SENDER.email },
+        replyTo: { email: HATCHGRAB_SENDER.replyTo },   // email-sender-1: hello@hatchgrab.com, as every HatchGrab email
         to: [{ email: to }], subject, htmlContent: html,
       }),
     })

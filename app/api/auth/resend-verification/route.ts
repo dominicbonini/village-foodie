@@ -11,6 +11,7 @@ import { visitorCountryCodeOf } from '@/lib/visitor-country'
 // language is not known on this route (docs/language-phase-1c-report.md). The markup and the link stay here.
 import { translatorFor } from '@/lib/i18n/translator'
 import '@/lib/i18n/catalog/emailAccount'
+import { HATCHGRAB_SENDER } from '@/lib/email-config'
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -74,7 +75,9 @@ export async function POST(req: NextRequest) {
       'content-type': 'application/json',
     },
     body: JSON.stringify({
-      sender: { name: 'HatchGrab', email: process.env.NEXT_PUBLIC_SUPPORT_EMAIL ?? 'hello@villagefoodie.co.uk' },
+      // email-sender-1 (9 November 2026): HatchGrab's sender, hello@hatchgrab.com (it was NEXT_PUBLIC_SUPPORT_EMAIL, else the old domain).
+      sender: { name: HATCHGRAB_SENDER.name, email: HATCHGRAB_SENDER.email },
+      replyTo: { email: HATCHGRAB_SENDER.replyTo },
       to: [{ email: change.new_email }],
       subject: t('newEmail.subject'),
       htmlContent: `

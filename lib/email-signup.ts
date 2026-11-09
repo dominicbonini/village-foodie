@@ -17,7 +17,7 @@
 // 600px column, 180px logo, #ea580c CTA) factored out ONCE so these two emails cannot drift from each
 // other. The admin one is left exactly as it is.
 
-import { HATCHGRAB_LOGO_URL } from '@/lib/email-config'
+import { HATCHGRAB_LOGO_URL, HATCHGRAB_SENDER } from '@/lib/email-config'
 import { HATCHGRAB_ORANGE_HEX } from '@/lib/brand'
 import { translatorFor } from '@/lib/i18n/translator'
 import '@/lib/i18n/catalog/emailSignup'
@@ -31,17 +31,14 @@ import '@/lib/i18n/catalog/emailSignup'
 // (a select on whether a name is held), so no English word is slotted into a sentence by code.
 type SignupT = ReturnType<typeof translatorFor<'emailSignup'>>
 
-// ⚠️ NOT LIVE YET. This mailbox must exist, and hatchgrab.com must be SPF/DKIM-verified in Brevo,
-// before the first real send. Defined ONCE — both emails read it, neither inlines it.
-export const HATCHGRAB_REPLY_TO = 'hello@hatchgrab.com'
+// hello@hatchgrab.com — a real mailbox, and hatchgrab.com is authenticated in Brevo (31 October 2026, manual V16.10).
+// Defined ONCE, in lib/email-config.ts (HATCHGRAB_SENDER); both emails read it, and lib/contact-server.ts imports this name.
+export const HATCHGRAB_REPLY_TO = HATCHGRAB_SENDER.replyTo
 
-// Operator-facing from-name is fixed; the address is env-driven per the existing convention
-// (EMAIL_FROM_ADDRESS, the same var lib/email.ts reads).
-// 🔴 The fallback is DELIBERATELY NOT villagefoodie.co.uk. With EMAIL_FROM_ADDRESS unset these two
-// emails send from an as-yet-unverified domain and Brevo will reject them — see the report. That is
-// the specified behaviour: this brand must not be introduced to operators under the old domain.
-const FROM_NAME = 'HatchGrab'
-const FROM_ADDRESS = process.env.EMAIL_FROM_ADDRESS || HATCHGRAB_REPLY_TO
+// 🔴 email-sender-1 (9 November 2026, docs/email-sender-1-report.md): the From is HATCHGRAB_SENDER, never env-driven. It used to
+// read EMAIL_FROM_ADDRESS first, and an env value is how a villagefoodie.co.uk address could reach an operator's first email.
+const FROM_NAME = HATCHGRAB_SENDER.name
+const FROM_ADDRESS = HATCHGRAB_SENDER.email
 
 /** Truck names come from scraping and operator input — never interpolate them raw into HTML. */
 function esc(s: string): string {
