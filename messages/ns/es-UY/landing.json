@@ -1,0 +1,53 @@
+{
+  "jsonLd": {
+    "description": "Pedidos, pedidos anticipados y pantalla de cocina para food trucks y catering móvil en {country}.",
+    "audience": "Dueños de food trucks y emprendimientos de catering móvil"
+  },
+  "hero": {
+    "subSmall": "Subí tu menú, sin registrarte.<br></br>Mirá una demo funcionando en menos de 60 segundos.",
+    "ctaNote": "<lead>Subí una foto de tu menú y miralo funcionando en menos de 60 segundos.</lead><small>Sin registro. Sin tarjeta.</small>"
+  },
+  "trust": {
+    "cancel": "Cancelá cuando quieras, sin plazos forzosos"
+  },
+  "does": {
+    "lede": "La mayoría de los sistemas de pedidos dan por hecho una dirección fija, un wifi confiable y el mismo horario cada semana. Vos cambiás de lugar cada semana, a horas distintas, con poca o nada de señal de celular. HatchGrab está hecho para eso.",
+    "slotsTitle": "Tus clientes eligen el horario de retiro",
+    "capacityTitle": "Fijá tus pedidos máximos por franja",
+    "capacityBody": "Indicá cuánto podés cocinar a la vez y cuánto tardás. Cuando un horario de retiro se llena, los clientes ya no pueden elegirlo.",
+    "devicesBody": "En el celular del delantal, la tablet del mostrador, la notebook del food truck… y el POS con el que ya cobrás.",
+    "postsTitle": "Automatizá tus publicaciones de Facebook e Instagram",
+    "postsBody": "Subí el diseño que ya publicás en Facebook o Instagram. Nosotros llenamos tus fechas, lugares y horarios, listo para compartir — cada semana o cada día.",
+    "whatsappBody": "“¿Dónde están esta noche?” “¿Qué postres tienen?” Tu WhatsApp responde mientras manejás hacia tu ubicación o estás en la plancha, con tu propio menú y tu agenda. Messenger e Instagram, muy pronto.",
+    "whatsappSoonBody": "“¿Dónde están esta noche?” “¿Qué postres tienen?” Pronto tu WhatsApp responderá mientras manejás hacia tu ubicación o estás en la plancha. Messenger e Instagram vendrán después.",
+    "offlineTitle": "¿Sin cobertura? Seguí sirviendo.",
+    "offlineBody": "Si te quedás sin cobertura, los pedidos online se pausan solos para que nadie haga pedidos que no vas a ver. Seguí tomando pedidos con la app para iPhone, iPad y Android.",
+    "slotsBody": "Tus clientes hacen un pedido anticipado y eligen el horario de retiro. Sin colas, y la comida lista cuando llegan."
+  },
+  "steps": {
+    "title": "Configuralo y empezá a recibir pedidos en unos 15 minutos.",
+    "menuTitle": "Creá tu menú",
+    "menuBody": "Sacale una foto a tu pizarrón o pegá el texto. Platos, precios y extras se importan solos. Vos solo revisás que estén bien.",
+    "scheduleTitle": "Agregá tu agenda",
+    "scheduleBody": "¿La tenés en tu web? La leemos de ahí y la mantenemos al día. Si no, sacale una foto también. Vos solo aprobás lo que encuentra.",
+    "shareTitle": "Compartí tu enlace",
+    "shareBody": "Publicalo en Facebook, pegá el QR en el food truck. Los pedidos llegan a tu pantalla en el orden en que tenés que cocinarlos."
+  },
+  "pricing": {
+    "title": "Empezá gratis. Cambiá de plan cuando lo necesites.",
+    "switchHead": "¿Venís de otra plataforma?",
+    "switchBody": "Mirá lo que pagarías en HatchGrab por los mismos pedidos. Se tarda un minuto.",
+    "switchCta": "Compará lo que pagás"
+  },
+  "faq": {
+    "metaDescription": "Respuestas claras para food trucks sobre los precios de HatchGrab, cómo empezar, recibir pedidos online y cobrar con tarjeta o al retirar."
+  },
+  "final": {
+    "title": "¿Querés ver lo fácil que es empezar?",
+    "lede": "Subí una foto o una captura de tu menú y lo convertimos en una página de pedidos que funciona, para que la pruebes en menos de 60 segundos. Tus platos, tus precios. Sin registro, sin tarjeta, sin instalar nada. Echale un vistazo y luego decidí."
+  },
+  "meta": {
+    "title": "Sistema de pedidos para food trucks — HatchGrab {country}",
+    "description": "Recibí pedidos y pedidos anticipados donde estés, sin colas. Pedidos online y pantalla de cocina para food trucks en {country}. No es un sistema de caja."
+  }
+}

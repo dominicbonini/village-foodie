@@ -1,0 +1,4 @@
+{
+  "tipAmount": "Monto de la propina",
+  "cardHeldUntil": "El monto queda retenido en tu tarjeta, sin cobrarse, hasta que {withTruck, select, yes {{truck}} other {el food truck}} confirme tu pedido."
+}

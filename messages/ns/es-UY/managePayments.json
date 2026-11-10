@@ -1,0 +1,25 @@
+{
+  "state": {
+    "pending": {
+      "body": "No tenés que hacer nada. Stripe está revisando lo que enviaste y esta página se actualiza cuando termine."
+    },
+    "unsupported": {
+      "body": "Stripe no puede activar aquí los pagos con tarjeta. Ponete en contacto con nosotros y lo resolveremos con vos."
+    }
+  },
+  "online": {
+    "feeLine": "Stripe cobra {fee} por pago con {region} estándar. Otras tarjetas pueden costar más. La comisión de HatchGrab en los pedidos online depende de tu plan: consultá Facturación."
+  },
+  "toast": {
+    "addDetails": "Ahora agregá tus datos para Stripe"
+  },
+  "details": {
+    "body": "Cambiá la cuenta bancaria en la que cobrás o actualizá los datos y documentos de tu negocio."
+  },
+  "walkUp": {
+    "body": "Cómo cobrás en la ventanilla. HatchGrab no cobra comisión de plataforma por los pedidos en ventanilla, elijas lo que elijas.",
+    "ownTerminal": "Tu propio POS",
+    "ownTerminalHelp": "Handy POS, OCA, Getnet o el que ya uses. No hay nada que configurar: solo se aplican las comisiones de tu proveedor.",
+    "hatchgrabHelp": "Usa la misma conexión de Stripe que tus pagos online: un POS, o pago sin contacto directamente en tu celular o tablet."
+  }
+}

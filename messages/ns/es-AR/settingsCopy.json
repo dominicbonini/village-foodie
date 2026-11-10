@@ -1,0 +1,13 @@
+{
+  "allowCancellation": {
+    "sentence": "Los clientes pueden cancelar hasta <select></select> antes de su horario de retiro"
+  },
+  "orderReady": {
+    "help": "Muestra un botón “Marcar como listo” en la pantalla de pedidos. Las pantallas de cocina se configuran aparte, en cada dispositivo. Los clientes reciben un email cada vez que un pedido se marca como listo. Se aplica a todos los eventos; aun así, podés activarlo o desactivarlo para un solo evento desde su panel."
+  },
+  "buzzers": {
+    "label": "¿Das avisadores para el retiro?",
+    "help": "Anotá qué avisador le diste a cada cliente, para saber a quién buscar cuando su comida esté lista.",
+    "countLabel": "¿Cuántos avisadores tenés?"
+  }
+}

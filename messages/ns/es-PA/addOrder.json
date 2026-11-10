@@ -1,0 +1,5 @@
+{
+  "catClosed": "La categoría {cat} está cerrada a pedidos en línea en este evento (oculta para los clientes). Puedes añadirla igualmente para la ventanilla; se te pedirá confirmación.",
+  "savedToast": "Pedido {id} guardado{paid, select, cash { — pagado en efectivo} card { — pagado con tu POS} other {}}",
+  "confirmedToast": "Pedido #{id} confirmado{paid, select, cash { — pagado en efectivo} card { — pagado con tu POS} other {}}"
+}

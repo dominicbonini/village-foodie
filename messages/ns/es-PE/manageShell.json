@@ -1,0 +1,11 @@
+{
+  "tabs": {
+    "menu": "Carta"
+  },
+  "menuSections": {
+    "label": "Secciones de la carta"
+  },
+  "notices": {
+    "allergens": "<b>Alérgenos sin configurar</b>: los clientes no pueden ver la información de alérgenos hasta que la verifiques. Revisa los alérgenos de cada plato en la pestaña Carta."
+  }
+}

@@ -1,0 +1,11 @@
+{
+  "settingsReview": {
+    "cancelAria": "Con cuánta antelación al retiro pueden cancelar los clientes"
+  },
+  "review": {
+    "moveBody": "Para eliminar “{name}” hay que mover sus platos a otro lugar: los productos sin categoría no se importan."
+  },
+  "schedule": {
+    "urlPlaceholder": "https://tufoodtruck.ec/eventos"
+  }
+}

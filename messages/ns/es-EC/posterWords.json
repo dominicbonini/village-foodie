@@ -1,0 +1,19 @@
+{
+  "placeSample": {
+    "nameTownBelow": "Bar La Plaza\nOtavalo",
+    "nameTown": "Bar La Plaza, Otavalo"
+  },
+  "busyWeek": {
+    "venue1": "Casa de la Cultura de Otavalo",
+    "town1": "Otavalo",
+    "venue2": "Complejo Deportivo y Cancha de Fútbol de Sangolquí",
+    "town2": "Sangolquí",
+    "venue3": "Plaza Grande",
+    "town3": "Quito",
+    "town4": "Guayaquil",
+    "venue5": "Café El Portal",
+    "town5": "Cuenca",
+    "venue6": "Parque Central",
+    "town6": "Baños"
+  }
+}

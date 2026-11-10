@@ -1,0 +1,19 @@
+{
+  "placeSample": {
+    "nameTownBelow": "Bar La Plaza\nValle de Ángeles",
+    "nameTown": "Bar La Plaza, Valle de Ángeles"
+  },
+  "busyWeek": {
+    "venue1": "Casa de la Cultura de Valle de Ángeles",
+    "town1": "Valle de Ángeles",
+    "venue2": "Complejo Deportivo Municipal y Cancha de Fútbol de San Pedro Sula",
+    "town2": "San Pedro Sula",
+    "venue3": "Parque Central",
+    "town3": "Tegucigalpa",
+    "town4": "La Ceiba",
+    "venue5": "Mesón El Portal",
+    "town5": "Comayagua",
+    "venue6": "Parque Central",
+    "town6": "Copán Ruinas"
+  }
+}

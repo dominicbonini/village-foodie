@@ -1,0 +1,41 @@
+{
+  "preview": {
+    "title": "Probalo antes de conectar",
+    "intro": "Escribí una pregunta como la haría un cliente y mirá exactamente qué recibiría. No se envía nada a nadie.",
+    "unreachable": "No se ha podido conectar con el servidor. Comprobá tu conexión e intentalo de nuevo."
+  },
+  "setup": {
+    "popupHint": "¿No ves la ventana de Facebook? Puede que se haya bloqueado. Permití las ventanas emergentes para hatchgrab.com y tocá Empezar de nuevo."
+  },
+  "notice": {
+    "metaError": "Meta ha informado de un problema durante la configuración. No se ha cambiado nada. Intentalo de nuevo y, si sigue pasando, contactá con nosotros.",
+    "closed": "La configuración se cerró antes de terminar. No se cambió nada: tocá Configurar para intentarlo de nuevo.",
+    "disconnectedUnreachable": "WhatsApp está desconectado. No hemos podido contactar con Meta para retirar el acceso. Eliminá HatchGrab en WhatsApp Business → Ajustes → Cuenta → Business Platform."
+  },
+  "card": {
+    "requiresAccount": "Necesitás una cuenta de WhatsApp Business.",
+    "popupInstruction": "Se abrirá una ventana de Facebook para conectar tu cuenta de WhatsApp Business. Si no aparece nada, permití las ventanas emergentes para hatchgrab.com en tu navegador y volvé a tocar Configurar.",
+    "expiring": "Tu conexión con WhatsApp debe renovarse pronto. Tocá Reconectar para que las respuestas automáticas sigan funcionando."
+  },
+  "blocked": {
+    "fix": "Estos mensajes se los pagás directamente a WhatsApp, así que se soluciona en WhatsApp Manager. <link>Revisá tu método de pago</link>"
+  },
+  "billing": {
+    "missing": "No añadiste ningún método de pago",
+    "summary": "Es Meta, no HatchGrab, quien factura a tu cuenta de WhatsApp por las respuestas. Desde el {from}, las primeras {free, number} de cada mes son gratis. Información correcta a fecha de {checked}; consultá <link>los precios de Meta</link> por si hay cambios.",
+    "chargesBody": "Meta factura a tu cuenta de WhatsApp Business cada respuesta que HatchGrab envía por vos. Desde el {from}, Meta incluye {free, number} respuestas gratis al mes por número; después, cada respuesta se cobra según la tarifa de Meta. Las respuestas que enviás vos desde la app WhatsApp Business no se cobran. Meta fija estos precios y puede cambiarlos. <link>Ver los precios de Meta</link>",
+    "addPaymentInManager": "Agregá un método de pago en WhatsApp Manager"
+  },
+  "disconnect": {
+    "body": "Las respuestas automáticas se detienen al momento y HatchGrab pierde el acceso a tu cuenta de WhatsApp. Tu número sigue funcionando en la app WhatsApp Business. Para eliminar HatchGrab por completo, abrí también WhatsApp Business → Ajustes → Cuenta → Business Platform."
+  },
+  "signup": {
+    "partial": "Hemos vinculado tu cuenta de WhatsApp Business, pero no hemos podido completar la conexión. No hay ningún problema por tu parte: contactá con nosotros y la terminaremos.",
+    "noNumber": "Tu cuenta de WhatsApp Business está vinculada, pero no se recibió ningún número de teléfono. Tocá Reconectar y completá el paso del número.",
+    "needsRegistering": "Tu cuenta está vinculada, pero tenemos que registrar este número antes de que empiecen las respuestas. Contactá con soporte: tu configuración está guardada, no vuelvas a ejecutarla.",
+    "registerRefused": "Tu cuenta está vinculada, pero Meta no ha querido registrar el número. Tu configuración está guardada: contactá con soporte en lugar de volver a ejecutarla.",
+    "deliveryRefused": "Tu cuenta está vinculada, pero Meta no ha querido activar la entrega de mensajes. Tu configuración está guardada: contactá con soporte en lugar de volver a ejecutarla.",
+    "numberTaken": "Ese número de WhatsApp ya está conectado a otra cuenta de HatchGrab. Un número solo puede responder por un food truck. Contactá con soporte y lo trasladaremos.",
+    "saveIncomplete": "Ya casi está: no hemos podido terminar de guardar. Tu configuración está guardada; contactá con soporte en lugar de volver a ejecutarla."
+  }
+}

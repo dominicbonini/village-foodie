@@ -1,0 +1,12 @@
+{
+  "newOrder": {
+    "collection": "Retiro: {time}",
+    "autoConfirmed": "Confirmado automáticamente: no tenés que hacer nada.",
+    "confirmPrompt": "Iniciá sesión en tu panel de HatchGrab para confirmar o rechazar este pedido."
+  },
+  "newEvents": {
+    "subject": "Nuevos eventos encontrados para {truck}: revisalos",
+    "cta": "Revisá tu agenda →",
+    "text": "Hola:\n\nHemos encontrado {n, plural, one {{count} evento nuevo en tu agenda que necesita tu aprobación} other {{count} eventos nuevos en tu agenda que necesitan tu aprobación}}:\n\n{list}\n\nRevisá tu agenda en: {url}\n\nCuando los apruebes, aparecerán en el mapa.\n\n— El equipo de HatchGrab"
+  }
+}

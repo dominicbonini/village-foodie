@@ -1,0 +1,17 @@
+{
+  "meta": {
+    "orderTitle": "Hacé tu pedido a {truck}",
+    "orderDescription": "Hacé tu pedido anticipado a {truck} y retiralo en el food truck."
+  },
+  "shareText": "¡Mirá dónde estará {truck} próximamente! 🚚",
+  "ownThisTruckTitle": "¿Es tu food truck? Hacé clic para actualizar tu perfil",
+  "loadError": {
+    "body": "Ahora mismo no hemos podido cargar la agenda — suele ser un fallo momentáneo. Volvé a intentarlo."
+  },
+  "noEvents": {
+    "body": "Puede que nos falten datos de este food truck. ¿Sos el propietario o conocés su agenda?",
+    "cta": "¡Escribinos para actualizarla!"
+  },
+  "missingEvent": "<strong>¿Nos falta algún evento?</strong> <br></br>Si sos el propietario de este food truck o simplemente un fan fiel, ¡ayudanos a mantener esta página al día! <br></br><link>Escribinos para añadir los datos que faltan.</link>",
+  "weeklySchedule": "Recibí la agenda semanal 🍕"
+}

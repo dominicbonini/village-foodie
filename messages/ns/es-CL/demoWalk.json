@@ -1,0 +1,13 @@
+{
+  "paymentPanel": "Aquí tu cliente paga con tarjeta, Apple Pay o Google Pay, o elige pagar al retirar. En la demo no se cobra nada.",
+  "bubbleArrived": "El pedido que acabas de hacer llegó aquí al instante, con la hora de retiro. Toca Cocinar.",
+  "thatsIt": "Eso es HatchGrab: tus clientes piden desde el celular, tú lo ves aquí y ellos retiran sin hacer fila. Tu carta ya está configurada.",
+  "startFree": "{months, plural, =0 {Empezar gratis y conservar mi carta} one {Empezar gratis durante # mes y conservar mi carta} many {Empezar gratis durante # de meses y conservar mi carta} other {Empezar gratis durante # meses y conservar mi carta}}",
+  "readyForCollection": "Listo para retirar",
+  "collectAt": "Retirar a las {time}",
+  "collectAsap": "Retirar cuanto antes",
+  "bandTitle": "Eso es HatchGrab. Tu carta ya está configurada.",
+  "bandStart": "Empezar gratis y conservar mi carta",
+  "goneBody": "Las demos se eliminan después de un día. Puedes crear una nueva con tu carta en menos de un minuto.",
+  "backToMenu": "Volver a la carta"
+}

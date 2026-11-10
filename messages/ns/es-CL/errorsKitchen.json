@@ -1,0 +1,8 @@
+{
+  "intervals_choices": "Las horas de retiro deben ir cada {choices} minutos.",
+  "intervals_customer_first": "Configura las horas de retiro de los clientes antes de configurar las tuyas.",
+  "intervals_save_failed": "Ahora mismo no se han podido guardar las horas de retiro.",
+  "completed_payment_not_recorded": "Pedido completado, pero no se ha podido guardar el registro del pago — el monto recaudado de este pedido puede ser incorrecto hasta que se corrija.",
+  "created_payment_not_recorded": "Pedido creado, pero no se ha podido guardar el registro del pago — el monto recaudado de este pedido puede ser incorrecto hasta que se corrija.",
+  "payment_not_recorded": "No se ha podido registrar el pago — el monto recaudado de este pedido puede ser incorrecto hasta que se corrija."
+}

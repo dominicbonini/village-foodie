@@ -1,0 +1,16 @@
+{
+  "q": {
+    "preorder": "¿Qué sistema de pedidos permite a mis clientes pedir por adelantado y elegir un horario de retiro?",
+    "capacity": "En las horas pico mi food truck se colapsa: ¿qué sistema limita los pedidos de cada franja horaria?"
+  },
+  "does": {
+    "preorder": "{names} {count, plural, one {permite} other {permiten}} a los clientes pedir por adelantado y elegir un horario de retiro.",
+    "capacity": "{names} {count, plural, one {limita} other {limitan}} cuántos pedidos acepta cada horario de retiro, para que la cocina no se colapse."
+  },
+  "feat": {
+    "preorder": "los horarios de retiro"
+  },
+  "price": {
+    "lead": "Con {orders, number} pedidos online al mes, {names} {count, plural, one {tiene} other {tienen}} el costo mensual de software más bajo entre los productos comparados: {amount} al mes{count, plural, one {} other { cada uno}}."
+  }
+}

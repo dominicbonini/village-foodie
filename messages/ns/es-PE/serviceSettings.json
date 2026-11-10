@@ -1,0 +1,12 @@
+{
+  "labels": {
+    "collection_interval_mins": "Horas de recojo"
+  },
+  "priceLabels": {
+    "price_amount": "Monto"
+  },
+  "pricesStandardCell": "Los precios de tu carta",
+  "pricesMenuCell": "Carta",
+  "pricesTypeOffCell": "Precios de la carta",
+  "eventPriceOwnNote": "{hasType, select, yes {{type} {price} · este evento} other {carta {price} · este evento}}"
+}

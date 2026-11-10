@@ -1,0 +1,80 @@
+{
+  "catError": {
+    "empty": "Ponele un nombre a la categoría."
+  },
+  "toast": {
+    "demoGone": "El menú de tu demo ya no está disponible: volvé a subirlo para continuar.",
+    "cardReadFailed": "No se pudo leer la tabla de alérgenos: intentalo de nuevo",
+    "imageReadFailed": "No se pudo leer esa imagen: escribí o pegá tu tabla de alérgenos",
+    "commitFailedDetail": "No se pudo terminar de guardar el menú: {error}. Puede que algunos productos ya se hayan guardado; revisá tu menú antes de volver a intentarlo.",
+    "commitFailed": "No se pudo terminar de guardar el menú. Puede que algunos productos ya se hayan guardado; revisá tu menú antes de volver a intentarlo.",
+    "finishFailed": "No se ha podido marcar la configuración como completada, pero podés continuar.",
+    "scheduleReadFailed": "No se ha podido leer esa agenda: probá con una foto más nítida o escribí tus fechas.",
+    "cardRead": "Tabla leída: {matched} asociados; {pending, plural, one {# queda pendiente} many {# quedan pendientes} other {# quedan pendientes}} de que los asignes vos"
+  },
+  "settingsReview": {
+    "saveFailed": "No se ha podido guardar: podés cambiarlo en Ajustes.",
+    "intro": "Te hemos configurado algunos ajustes habituales. Vale la pena echarles un vistazo: podés cambiar cualquiera de ellos más adelante en Ajustes.",
+    "cancelAria": "Con cuánta anticipación al retiro pueden cancelar los clientes"
+  },
+  "allergensNotSet": {
+    "bodySetup": "Revisalos antes de publicar tu menú. Hasta entonces, los productos aparecen marcados como “alérgenos sin configurar”.",
+    "body": "Revisalos en Ajustes antes de publicar tu menú. Hasta entonces, los productos aparecen marcados como “alérgenos sin configurar”."
+  },
+  "welcome": {
+    "stop": "Podés parar y volver cuando quieras."
+  },
+  "offer": {
+    "body": "Guardamos el menú que subiste: {count, plural, one {# producto} many {# productos} other {# productos}}. Usalo como punto de partida o subí otro."
+  },
+  "checkMenu": {
+    "title": "Revisá tu menú",
+    "body": "Guardamos el menú de tu demo en tu food truck y lo cambiaste desde entonces, así que tus cambios se mantienen. Echale un vistazo abajo."
+  },
+  "upload": {
+    "title": "Importá tu menú",
+    "body": "Subí una foto del pizarrón de tu menú, una captura de pantalla o un PDF, o pegá tu menú como texto. Nuestra IA lo lee y crea tu menú digital; vos revisás todo antes de que se guarde."
+  },
+  "review": {
+    "title": "Revisá el menú importado",
+    "moveBody": "Para eliminar “{name}” hay que mover sus platos a otro lugar: los productos sin categoría no se importan.",
+    "chooseCategory": "Elegí una categoría…",
+    "nameFirst": "Ponele nombre al nuevo producto antes de añadir otro",
+    "ready": "{count, plural, one {# producto listo} other {# productos listos}} para añadir. Desmarcá los que no quieras.",
+    "noPriceBody": "Poné un precio a cada uno o marcalo como gratis; si no, se publicaría a {zero}. No podés continuar hasta resolverlo.",
+    "incomplete": "Escribí un nombre para añadir este producto: las filas vacías no se importan."
+  },
+  "extras": {
+    "introSetup": "Algunos platos se pueden configurar como <b>un único producto personalizable</b> o mantenerse como <b>platos separados</b>. Elegí cómo debe aparecer cada uno. Podés cambiarlo más adelante.",
+    "intro": "Algunos platos se pueden configurar como <b>un único producto personalizable</b> o mantenerse como <b>platos separados</b>. Elegí cómo debe aparecer cada uno. Podés cambiarlo más adelante en Ajustes."
+  },
+  "allergens": {
+    "detected": "Detectamos alérgenos en tu menú. Elegí abajo cómo mostrarlos.",
+    "howShow": "¿Cómo querés mostrar los alérgenos a los clientes?"
+  },
+  "kitchen": {
+    "intro": "Ayudá a los clientes a saber cuánto tendrán que esperar; siempre podés cambiarlo más adelante.",
+    "totalHelp": "Fijá una capacidad total para limitar cuántos productos acepta la cocina por franja horaria. Dejalo en ∞ para no poner límite."
+  },
+  "schedule": {
+    "intro": "Si tu agenda está en tu web, podemos mantenerla actualizada automáticamente; o agregá vos las fechas.",
+    "urlPlaceholder": "https://tufoodtruck.com.py/eventos",
+    "dragChoose": "Arrastrá y soltá o tocá para elegir",
+    "pastePlaceholder": "Pegá aquí tus fechas…",
+    "manualDesc": "Agregalas más tarde en la pestaña Agenda; no tenés que hacer nada ahora.",
+    "manualBody": "Sin problema. Podés añadir y gestionar tus fechas cuando quieras desde la pestaña Agenda de tu cuenta.",
+    "blockedDomain": "Usá la URL de tu web: las páginas de Facebook e Instagram no se pueden leer automáticamente.",
+    "saveFailed": "Hemos leído tu agenda, pero ahora mismo no hemos podido guardarla: intentalo de nuevo.",
+    "photoDesc": "Sacá una foto o pegá tus fechas: las leeremos para que las revises.",
+    "noneFound": "No hemos encontrado ninguna fecha: probá con una foto más nítida o agregá vos una fecha.",
+    "trialNotStarted": "Añadir eventos no inicia tu prueba gratis: más adelante elegís qué evento la inicia."
+  },
+  "done": {
+    "showMe": "Mostrame cómo funciona",
+    "remind": "Recordámelo más tarde"
+  },
+  "discard": {
+    "setupBody": "Tu cuenta y tu food truck están guardados: no se pierde nada. Podés agregar tu menú cuando quieras: iniciá sesión y tocá <b>Importar menú</b> en la pantalla de tu menú para seguir justo aquí.",
+    "carriedBody": "El menú de tu demo está guardado en tu food truck tal cual. Podés cambiarlo cuando quieras en la pantalla de tu menú."
+  }
+}

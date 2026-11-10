@@ -1,0 +1,15 @@
+{
+  "catClosed": "La categoría {cat} está cerrada a pedidos online en este evento (oculta para los clientes). Podés añadirla igualmente para la ventanilla; se te pedirá confirmación.",
+  "savedToast": "Pedido {id} guardado{paid, select, cash { — pagado en efectivo} card { — pagado con tu POS} other {}}",
+  "confirmedToast": "Pedido #{id} confirmado{paid, select, cash { — pagado en efectivo} card { — pagado con tu POS} other {}}",
+  "busyRetry": "Sistema ocupado — volvé a tocar Confirmar en un momento",
+  "offlineNotSent": "No se ha podido conectar con el servidor: parece que estás sin conexión. El pedido NO se ha enviado. Dejá este panel abierto y volvé a intentarlo cuando recuperes la conexión.",
+  "paymentNotRecorded": "⚠ Pedido #{id} añadido — PAGO NO REGISTRADO. Volvé a cobrar desde la tarjeta del pedido.",
+  "buzzerSaveFailed": "No se ha podido guardar el número de avisador — agregalo desde la tarjeta del pedido",
+  "selectAnEvent": "Seleccioná un evento",
+  "selectEventToConfirm": "Seleccioná un evento para confirmar",
+  "stockUnknown": "Las existencias no están cargadas en este dispositivo. Podés seguir tomando pedidos: comprobá lo que tenés.",
+  "eventEnded": "Este evento ha terminado: estás añadiendo un pedido después del cierre. Asegurate de haber seleccionado el evento correcto.",
+  "tapItems": "Tocá productos para crear el pedido",
+  "chooseRequired": "Elegí las opciones obligatorias"
+}

@@ -1,0 +1,11 @@
+{
+  "basedIn": {
+    "area": "Pueblo o ciudad donde tenés tu base",
+    "townOrArea": "Localidad o zona donde tenés tu base",
+    "city": "Ciudad donde tenés tu base",
+    "suburb": "Barrio donde tenés tu base",
+    "townOrCity": "Pueblo o ciudad donde tenés tu base"
+  },
+  "postalWarning": "No parece {article}; por ejemplo, {example}. Podés guardarlo igualmente.",
+  "regionChoose": "Elegí…"
+}

@@ -1,0 +1,8 @@
+{
+  "pickup": "Retiro",
+  "payAtTruck": "Paga al retirar",
+  "statusName": {
+    "collected": "retirado"
+  },
+  "cutoffNote": "{n, plural, one {Se aceptan cancelaciones hasta {count} minuto antes del retiro} other {Se aceptan cancelaciones hasta {count} minutos antes del retiro}}"
+}

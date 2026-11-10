@@ -1,0 +1,6 @@
+{
+  "orderingOffBody": "Este evento no acepta pedidos online. Pedí en la ventanilla.",
+  "replacedBody": "Este enlace ya no funciona — {truck} lo ha sustituido. Pedile al organizador el nuevo enlace o código QR.",
+  "madePublicBody": "Este enlace ya no funciona — {truck} ha hecho público este evento. Podés pedir desde su página habitual.",
+  "unknownBody": "Este enlace no funciona. Comprobalo con el organizador o volvé a escanear el código QR."
+}

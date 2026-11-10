@@ -1,0 +1,92 @@
+{
+  "card": {
+    "title": "Agregá tu agenda a tu web",
+    "exampleDomain": "tufoodtruck.com.py",
+    "justLive": "<b>{address}</b> ya funciona. Echale un vistazo y luego confirmanos aquí abajo que está bien."
+  },
+  "waiting": {
+    "bodySince": "Lo configuraste el {date}. Las direcciones web nuevas suelen empezar a funcionar en unos minutos y, a veces, tardan hasta 24 horas en llegar a todo el mundo; mientras tanto, no tenés que hacer nada. Si otra persona iba a añadir la línea por vos, conviene comprobar que lo ha hecho.",
+    "body": "Las direcciones web nuevas suelen empezar a funcionar en unos minutos y, a veces, tardan hasta 24 horas en llegar a todo el mundo; mientras tanto, no tenés que hacer nada. Si otra persona iba a añadir la línea por vos, conviene comprobar que lo ha hecho."
+  },
+  "ready": {
+    "body": "Echale un vistazo y luego confirmanos en tus ajustes que está bien."
+  },
+  "confirm": {
+    "heading": "Echale un vistazo y confirmanos que está bien",
+    "open": "Abrí <link>{address}</link>",
+    "checkTimes": "Comprobá que las fechas y las horas son correctas.",
+    "problemLine": "Contanos qué ves y lo revisaremos.",
+    "emailUs": "Escribinos"
+  },
+  "confirmed": {
+    "body": "No tenés que hacer nada más."
+  },
+  "turnOff": {
+    "reAdd": "Si vas a volver a configurarla más adelante, dejá la línea que añadiste en la empresa de tu dirección web. Si no, pediles que la eliminen.",
+    "failed": "Ahora mismo no hemos podido desactivarla. No ha cambiado nada: tu dirección sigue funcionando. Volvé a intentarlo dentro de un rato."
+  },
+  "wizard": {
+    "resumeFailedBody": "No ha cambiado nada. Volvé a intentarlo dentro de un rato."
+  },
+  "address": {
+    "noChange": "Tu web no cambia: solo tenés que añadir un enlace a la nueva dirección.",
+    "restricted": "Quien gestione tu dirección web tiene que permitirnos configurar el candado, ese pequeño candado que los clientes ven junto a ella. Hasta que nos añadan, no aparecerá, así que nos hemos detenido para que no te quedes esperándolo. Pediles que nos añadan y volvé a intentarlo.",
+    "blocked": "Ahora mismo tu dirección web bloquea el candado por completo. Quien la gestione tiene que permitirlo para que esto funcione. Pediles que lo cambien y volvé a intentarlo.",
+    "elsewhere": "Ya hay algo que responde en esa dirección. Enviá el mensaje de la siguiente pantalla a quien la gestione: sabrá qué hacer."
+  },
+  "apex": {
+    "empty": "Escribí la dirección que querés usar.",
+    "unparseable": "No hemos podido leerlo como una dirección web. Revisá cómo está escrito y volvé a intentarlo.",
+    "apex": "{host} es la dirección completa de tu web. Si la apuntás hacia nosotros, esta página sustituirá a tu web. Mejor poné una palabra delante; por ejemplo, agenda.{host}."
+  },
+  "record": {
+    "addAt": "Agregá esto en {provider}",
+    "addAtSave": "Agregá esto en {provider} y guardá.",
+    "addSomewhere": "Agregá esto donde se gestiona tu dirección web y guardá.",
+    "hintChoose": "Elegilo de la lista.",
+    "hintExact": "Copialo exactamente."
+  },
+  "providers": {
+    "cloudflare": {
+      "open": "Abrí tu dirección web y luego “DNS” y “Records”.",
+      "add": "Seleccioná “Add record” y elegí “CNAME” como “Type”.",
+      "name": "Poné el primer valor de abajo en “Name”.",
+      "value": "Poné el segundo valor de abajo en “Target”.",
+      "proxy": "Poné “Proxy status” en “DNS only”: la nube de al lado debe estar gris, no naranja.",
+      "save": "Dejá “TTL” en “Auto” y seleccioná “Save”."
+    },
+    "godaddy": {
+      "open": "Abrí tu “Domain Portfolio” y elegí tu dirección web.",
+      "dns": "En “Domain Settings”, seleccioná “DNS”.",
+      "add": "Seleccioná “Add New Record” y elegí “CNAME” en el menú “Type”.",
+      "name": "Poné el primer valor de abajo en “Name”.",
+      "value": "Poné el segundo valor de abajo en “Value”.",
+      "save": "Dejá “TTL” como está y seleccioná “Save”.",
+      "caveat": "Si añadiste varios a la vez, el botón dice “Save All Records”."
+    },
+    "123reg": {
+      "signIn": "Iniciá sesión en tu “123 Reg Control Panel”.",
+      "manage": "Junto a “Domains”, seleccioná “Manage All” y elegí tu dirección web.",
+      "dns": "Seleccioná “DNS” y luego “Add New Record”.",
+      "type": "Elegí “CNAME” en la lista “Type”.",
+      "name": "Poné el primer valor de abajo en “Name”.",
+      "value": "Poné el segundo valor de abajo en “Value” y agregá un punto al final.",
+      "save": "Dejá “TTL” en “Default” y hacé clic en “Save”."
+    },
+    "wix": {
+      "open": "Abrí “Domains” y hacé clic en el icono “Domain Actions” junto a tu dirección web.",
+      "manage": "Elegí “Manage DNS Records”.",
+      "add": "En la sección “CNAME (Aliases)”, hacé clic en “+ Add Record” y luego en “Got it”.",
+      "name": "Poné el primer valor de abajo en “Host Name”.",
+      "value": "Poné el segundo valor de abajo en “Value”.",
+      "save": "Hacé clic en “Save” y luego en “Save Changes” en la ventana emergente."
+    }
+  },
+  "instructionsEmail": {
+    "replyTo": "Si tenés alguna pregunta, respondé a {email}."
+  },
+  "liveEmail": {
+    "body": "Tu agenda ya se muestra en tu propia dirección. Echale un vistazo y comprobá que está bien: abrí {address} y asegurate de que los eventos son tuyos y de que las fechas son correctas.",
+    "confirm": "Cuando lo hayas hecho, abrí tus ajustes en HatchGrab y confirmanos que está bien. No depende nada de ello: solo nos sirve para saber que una persona lo ha visto."
+  }
+}

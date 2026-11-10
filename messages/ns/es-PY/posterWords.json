@@ -1,0 +1,19 @@
+{
+  "placeSample": {
+    "nameTownBelow": "Bar La Plaza\nSan Bernardino",
+    "nameTown": "Bar La Plaza, San Bernardino"
+  },
+  "busyWeek": {
+    "venue1": "Plaza Uruguaya",
+    "town1": "Asunción",
+    "venue2": "Polideportivo Municipal y Cancha de Fútbol del Barrio San Antonio de Luque",
+    "town2": "Luque",
+    "venue3": "Plaza de Armas",
+    "town3": "Encarnación",
+    "town4": "San Bernardino",
+    "venue5": "Copetín El Arco",
+    "town5": "Ciudad del Este",
+    "venue6": "Plaza de los Héroes",
+    "town6": "Villarrica"
+  }
+}

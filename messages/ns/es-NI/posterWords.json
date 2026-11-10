@@ -1,0 +1,19 @@
+{
+  "placeSample": {
+    "nameTownBelow": "Bar La Plaza\nGranada",
+    "nameTown": "Bar La Plaza, Granada"
+  },
+  "busyWeek": {
+    "venue1": "Casa de Cultura de Granada",
+    "town1": "Granada",
+    "venue2": "Complejo Deportivo Municipal y Cancha de Fútbol de León",
+    "town2": "León",
+    "venue3": "Parque Central",
+    "town3": "Masaya",
+    "town4": "Managua",
+    "venue5": "Mesón El Portal",
+    "town5": "Estelí",
+    "venue6": "Malecón",
+    "town6": "San Juan del Sur"
+  }
+}

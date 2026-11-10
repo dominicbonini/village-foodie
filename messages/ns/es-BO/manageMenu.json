@@ -1,0 +1,12 @@
+{
+  "empty": {
+    "body": "Toma una foto de la pizarra de tu menú, una captura de tu menú actual o arrastra un PDF: nuestra IA extraerá todo y creará tu menú digital automáticamente."
+  },
+  "allergens": {
+    "buildFirst": "Primero crea tu menú: agrega platos y luego configura sus alérgenos",
+    "cardNotAllowed": "Donde vende tu food truck no se puede usar solo una tabla de alérgenos, así que los clientes ven los alérgenos de cada plato. Confirma los alérgenos de cada plato."
+  },
+  "item": {
+    "allergenGateBody": "Abre el recuadro “Configurar / revisar alérgenos” en la pestaña Menú: el asistente te guía para confirmar cada plato."
+  }
+}

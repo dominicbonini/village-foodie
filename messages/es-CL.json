@@ -1,0 +1,851 @@
+{
+  "order": {
+    "taxNotice": "Los precios de la carta no incluyen {tax}. Se añade abajo.",
+    "tipAmount": "Monto de la propina",
+    "authFailed": "No se ha podido autorizar ese pago. No se te ha cobrado nada: prueba con otra tarjeta o elige Paga al retirar.",
+    "paymentThrew": "Algo ha fallado al procesar el pago. No se te ha cobrado nada: inténtalo de nuevo o elige Paga al retirar.",
+    "menuChangedFallback": "La carta cambió. Revisa tu pedido antes de hacerlo.",
+    "loadingMenu": "Cargando la carta…",
+    "closedDemo": "Este servicio de demostración terminó: se acabó el horario del evento, exactamente como pasaría con uno real. Vuelve a abrir tu panel de demostración y elige “Empezar un nuevo servicio” para preparar otro. Tu carta se queda como está.",
+    "menu": "Carta",
+    "cardHeldUntil": "El monto queda retenido en tu tarjeta, sin cobrarse, hasta que {withTruck, select, yes {{truck}} other {el food truck}} confirme tu pedido.",
+    "collectionTimeTitle": "Hora de retiro",
+    "collectionTimeChosen": "✓ Hora de retiro: {time}",
+    "payAtTruck": "Paga al retirar",
+    "payAtTruckLine": "Pagas en el food truck al retirar · Sin datos de tarjeta",
+    "addItemsPrompt": "Añade productos de la carta para hacer un pedido",
+    "payEitherLine": "Paga con tarjeta o al retirar",
+    "allergensUsed": "Alérgenos presentes en esta carta",
+    "collectionTime": "Hora de retiro: {time}",
+    "preferredCollection": "Retiro preferido: {time}",
+    "willConfirmTime": "{truck} confirmará tu hora de retiro cuando acepte tu pedido.",
+    "cardFallback": "No hemos podido iniciar el pago con tarjeta, así que tu pedido se pagará al retirar. Tu pedido está hecho y no se te ha cobrado nada."
+  },
+  "dashboard": {
+    "toast": {
+      "intervalsSaved": "Horas de retiro guardadas para este evento",
+      "printMode": "{mode, select, onConfirmed {Las comandas se imprimirán al aceptar un pedido} other {Las comandas se imprimirán poco antes del retiro}}",
+      "layout": "{layout, select, scroll {La carta se muestra en una sola página} other {La carta se muestra por categorías}}",
+      "intervalsFailed": "No se han podido guardar las horas de retiro en este momento."
+    },
+    "demo": {
+      "endedBody": "Empieza uno nuevo y prepararemos un servicio a partir de este momento. Tu carta se queda como está."
+    },
+    "cancelReasons": {
+      "not_collected": "Pedido no retirado"
+    },
+    "cancelModal": {
+      "held": "El monto está <b>retenido, no cobrado</b> en su tarjeta: no se ha cobrado nada, así que no hay nada que reembolsar. Al cancelar, la retención se libera al momento."
+    },
+    "banner": {
+      "menuSnapshot": "Carta guardada en esta tableta a las {time}. Revisa los precios antes de cobrar.",
+      "offlinePaused": "La protección sin conexión está activada: los clientes pueden ver la carta, pero no pedir.",
+      "paused": "Pedidos en pausa{indefinite, select, yes {} other { (se reanudan en ~{mins} min)}} · Los clientes pueden ver la carta, pero no pedir"
+    },
+    "tabs": {
+      "stock": "Carta y stock"
+    },
+    "orders": {
+      "prepBannerBody": "Tu carta usa tiempos de preparación predeterminados. Actualízalos en Gestionar para que tu cocina no se sature de pedidos.",
+      "status": "{status, select, pending {Nuevo} confirmed {Confirmado} rejected {Rechazado} modified {Modificado} cancelled {Cancelado} cooking {En preparación} ready {Listo} collected {Retirado} other {{status}}}"
+    },
+    "addTab": {
+      "noMenuSaved": "Tu carta no está guardada en este dispositivo, así que no hay nada con qué crear un pedido."
+    },
+    "settings": {
+      "layoutTitle": "Diseño de la carta",
+      "layoutTabsHelp": "Muestra una categoría a la vez. Toca una categoría para cambiar. Ideal para cartas largas, donde cada producto se queda siempre en el mismo lugar.",
+      "layoutScrollHelp": "Muestra todos los productos en una lista con desplazamiento, con un encabezado por categoría. No hay botones de categoría: te desplazas para moverte. Ideal para cartas cortas, donde puedes ver casi todo de un vistazo.",
+      "intervalsTitle": "Horas de retiro",
+      "intervalsHelp": "Cuánto tiempo hay entre una hora de retiro y la siguiente. No cambia la capacidad de cocina ni los tiempos de preparación.",
+      "intervalsUnavailable": "Las horas de retiro no están disponibles ahora mismo.",
+      "customerTimes": "Horas de retiro de los clientes",
+      "yourTimes": "Tus horas de retiro"
+    },
+    "stock": {
+      "ownPriceTitle": "Precio propio de este evento: toca × para volver al precio del tipo o de la carta",
+      "loadingMenu": "Cargando la carta…"
+    },
+    "pause": {
+      "body": "Los clientes podrán seguir viendo la carta, pero no podrán pedir."
+    },
+    "edit": {
+      "extraToCollect": "Monto extra a cobrar",
+      "collectionTime": "Hora de retiro",
+      "repriceTitle": "No está en la carta",
+      "repriceBody": "Estos productos son nuevos en este pedido y no están en la carta, así que no se pudo comprobar el precio. Todo lo que ya estaba en el pedido mantiene su precio original. Todavía no se ha guardado nada."
+    }
+  },
+  "errorsCustomer": {
+    "menu_changed": "La carta cambió — revisa tu pedido antes de hacerlo.",
+    "menu_changed_item": "La carta cambió — {item} ya no está disponible. Revisa tu pedido antes de hacerlo.",
+    "menu_changed_option": "La carta cambió — {option} (de {item}) ya no está disponible. Revisa tu pedido antes de hacerlo.",
+    "card_unavailable": "Ahora mismo no pudimos preparar el pago con tarjeta, así que tu pedido no se realizó y no se te cobró nada. Tu carrito está guardado — vuelve a intentarlo o elige Paga al retirar.",
+    "cancel_window_passed": "{n, plural, one {Los pedidos ya no se pueden cancelar a menos de {count} minuto del retiro} other {Los pedidos ya no se pueden cancelar a menos de {count} minutos del retiro}}",
+    "pay_at_hatch_unavailable": "Ahora mismo este food truck no acepta pedidos online con Pago al retirar. Paga con tarjeta."
+  },
+  "whatsappCustomer": {
+    "allergenRedirect": "{opener}Aquí puedes ver nuestra carta completa y la información sobre alérgenos: {url} — {truck} {emoji}",
+    "menuFallback": "{opener}Mira nuestra carta completa aquí: {url} — {truck} {emoji}",
+    "menuSummary": "{opener}Tenemos {summary}. Mira la carta completa y haz tu pedido anticipado aquí: {url} — {truck} {emoji}",
+    "allergenCaveat": "Consulta la carta completa para ver la información sobre alérgenos — esta es una respuesta automática."
+  },
+  "orderStatus": {
+    "pickup": "Retiro",
+    "payAtTruck": "Paga al retirar",
+    "statusName": {
+      "collected": "retirado"
+    },
+    "cutoffNote": "{n, plural, one {Se aceptan cancelaciones hasta {count} minuto antes del retiro} other {Se aceptan cancelaciones hasta {count} minutos antes del retiro}}"
+  },
+  "emailCustomer": {
+    "payNote": {
+      "capturedBody": "Tu pago se ha completado — no tienes que pagar nada al retirar.",
+      "capturedText": "Pagado con tarjeta. Tu pago se ha completado — no tienes que pagar nada al retirar.",
+      "partPaidBody": "El resto se paga al retirar.",
+      "partPaidBodyFigures": "De este pedido ya se han pagado {paid}. El monto restante, {balance}, se paga al retirar.",
+      "partPaidText": "Pagado en parte. Una parte de este pedido se paga al retirar.",
+      "partPaidTextFigures": "Pagado en parte: recibido {paid}, pendiente de pago al retirar {balance}.",
+      "heldTitle": "Monto retenido en tu tarjeta, sin cobrar",
+      "heldBody": "{truck} cobrará el monto cuando confirme tu pedido. No tienes que pagar nada al retirar.",
+      "heldText": "Monto retenido en tu tarjeta, sin cobrar. {truck} cobrará el monto cuando confirme tu pedido — no tienes que pagar nada al retirar.",
+      "heldReady": "Monto retenido en tu tarjeta, sin cobrar — no tienes que pagar nada al retirar.",
+      "heldShortTitle": "Monto retenido en tu tarjeta por una parte de este pedido",
+      "heldShortTitleOwing": "Monto retenido en tu tarjeta por una parte de este pedido — pendiente de pago: {owing}",
+      "heldShortBody": "{truck} cobrará el monto retenido cuando confirme tu pedido. El resto se paga al retirar.",
+      "heldShortBodyFigures": "{truck} cobrará el monto retenido ({held}) cuando confirme tu pedido. El monto restante, {owing}, se paga al retirar.",
+      "heldShortText": "Monto retenido en tu tarjeta por una parte de este pedido. {truck} cobrará el monto retenido cuando confirme tu pedido, y el resto se paga al retirar.",
+      "heldShortTextFigures": "Se ha retenido un monto de {held} en tu tarjeta, que {truck} cobrará cuando confirme tu pedido. Pendiente de pago al retirar: {owing}.",
+      "heldShortShort": "Monto retenido por una parte de este pedido",
+      "heldShortShortOwing": "Monto retenido por una parte de este pedido, pendiente de pago: {owing}",
+      "hatchTitle": "Paga al retirar tu pedido",
+      "hatchText": "Paga al retirar tu pedido.",
+      "hatchReady": "Paga al retirar."
+    },
+    "confirmation": {
+      "slotUpdated": "Tu hora de retiro ha cambiado",
+      "collectionTime": "Hora de retiro: {time}",
+      "preferredTime": "Hora de retiro preferida: {time}",
+      "weWillConfirm": "Confirmaremos tu hora de retiro cuando aceptemos tu pedido.",
+      "cancelLine": "{n, plural, one {¿Necesitas cancelar?<link>Cancela tu pedido</link>(hasta {count} minuto antes de tu hora de retiro)} other {¿Necesitas cancelar?<link>Cancela tu pedido</link>(hasta {count} minutos antes de tu hora de retiro)}}",
+      "leadReady": "Tu pedido ya está listo — pasa a retirarlo a {truck}.",
+      "textTitleReady": "Pedido #{id} listo para retirar — {truck}",
+      "textReady": "Tu pedido ya está listo — pasa a retirarlo.",
+      "textSlotUpdated": "Hora de retiro cambiada a las {time} (antes: {previous}).",
+      "textCollection": "Hora de retiro: {time}. ¡Nos vemos en la ventanilla!",
+      "textPreferred": "Retiro preferido: {time} — la confirmaremos cuando aceptemos tu pedido."
+    },
+    "cancelSentence": {
+      "refunded": "Se reembolsó un monto de {amount} a tu tarjeta. Los reembolsos suelen tardar entre 5 y 10 días hábiles en aparecer en tu estado de cuenta, según tu banco.",
+      "heldReleased": "Se retuvo un monto en tu tarjeta para este pedido, sin cobrarlo. Esa retención se ha liberado y no se te ha cobrado nada."
+    },
+    "rejectSentence": {
+      "heldReleased": "Se retuvo un monto en tu tarjeta para este pedido, pero nunca se llegó a cobrar, y esa retención ya se ha liberado.",
+      "heldWillClear": "Se retuvo un monto en tu tarjeta para este pedido, pero nunca se llegó a cobrar, y esa retención se liberará automáticamente — ponte en contacto con {truck} si no se ha liberado en una semana."
+    },
+    "refund": {
+      "leadFull": "{truck} ha reembolsado tu pedido. Se ha devuelto un monto de {amount} a la tarjeta con la que pagaste."
+    }
+  },
+  "errorsKitchen": {
+    "intervals_choices": "Las horas de retiro deben ir cada {choices} minutos.",
+    "intervals_customer_first": "Configura las horas de retiro de los clientes antes de configurar las tuyas.",
+    "intervals_save_failed": "Ahora mismo no se han podido guardar las horas de retiro.",
+    "completed_payment_not_recorded": "Pedido completado, pero no se ha podido guardar el registro del pago — el monto recaudado de este pedido puede ser incorrecto hasta que se corrija.",
+    "created_payment_not_recorded": "Pedido creado, pero no se ha podido guardar el registro del pago — el monto recaudado de este pedido puede ser incorrecto hasta que se corrija.",
+    "payment_not_recorded": "No se ha podido registrar el pago — el monto recaudado de este pedido puede ser incorrecto hasta que se corrija."
+  },
+  "kitchenModals": {
+    "extraWait": {
+      "hint": "Se suma a la hora de retiro indicada en los pedidos nuevos. No cambia la hora de fin del evento."
+    }
+  },
+  "ticket": {
+    "collect": "RETIRO {time}",
+    "collectAsap": "RETIRO CUANTO ANTES"
+  },
+  "printing": {
+    "card": {
+      "summaryLead": "Imprimir <b>{lead} min</b> antes del retiro · papel de {paper} mm",
+      "modeLead": "Un tiempo fijo antes del retiro",
+      "leadLabel": "Minutos antes de la hora de retiro",
+      "modeOnConfirmedHint": "Un pedido anticipado se imprime cuando lo aceptas, lo que puede ser horas antes de la hora de retiro. Los pedidos que aún no has aceptado nunca se imprimen."
+    }
+  },
+  "nativeShell": {
+    "gate": {
+      "undoneCollected": "Deshecho — pedido no retirado",
+      "collected": "Pedido #{id} {paidToo, select, yes {pagado y retirado} other {retirado}}",
+      "status": "Pedido #{id} {action, select, confirm {confirmado} reject {rechazado} ready {listo} collected {retirado} undo_collected {restaurado} cancel {cancelado} other {actualizado}}"
+    }
+  },
+  "demo": {
+    "cashAndCollected": "Efectivo y retirado",
+    "welcomeIntro": "{sample, select, yes {Esta es una <b>carta de ejemplo</b> para que veas cómo funciona todo; sube la tuya cuando quieras para hacerla tuya.} other {Esta es tu propia carta, con tu imagen de marca, en un tablero real.}} Los pedidos que ya aparecen son ejemplos, para que veas un servicio con mucho movimiento.",
+    "walkBanner": "Demo · esta es tu carta, tal como la verán tus clientes. No se cobra nada y no se envía ningún correo."
+  },
+  "paymentActions": {
+    "reason": "{reason, select, item_unavailable {Producto no disponible} not_collected {Pedido no retirado} wrong_or_missing_item {Producto equivocado o que falta} quality_issue {Problema de calidad} duplicate_payment {Pago duplicado} customer_cancelled {Cancelado por el cliente} other {Otro}}",
+    "paidCardMachine": "Pagado con tu máquina POS{mixed, select, yes { — {amount}} other {}}",
+    "inPersonHint": "Efectivo o tu máquina POS — no se registra",
+    "amount": "Monto"
+  },
+  "orderCard": {
+    "collected": "Retirado",
+    "cashAndCollected": "Efectivo y retirado",
+    "cardAndCollected": "Tarjeta y retirado",
+    "status": "{status, select, pending {Nuevo} confirmed {Confirmado} rejected {Rechazado} modified {Modificado} cancelled {Cancelado} cooking {En cocina} ready {Listo} collected {Retirado} other {Nuevo}}",
+    "markPaidAndCollected": "Marcar pagado y retirado"
+  },
+  "addOrder": {
+    "savedToast": "Pedido {id} guardado{paid, select, cash { — pagado en efectivo} card { — pagado con tu máquina POS} other {}}",
+    "confirmedToast": "Pedido #{id} confirmado{paid, select, cash { — pagado en efectivo} card { — pagado con tu máquina POS} other {}}",
+    "notOnMenu": "{name}{hasOn, select, yes { (en {on})} other {}} — no está en la carta",
+    "somethingNotOnMenu": "Algo de este pedido ya no está en la carta",
+    "loadingMenu": "Cargando carta…"
+  },
+  "emailOperator": {
+    "newOrder": {
+      "collection": "Retiro: {time}"
+    }
+  },
+  "setup": {
+    "steps": {
+      "menu": "Tu carta"
+    }
+  },
+  "goLive": {
+    "allergensUnanswered": {
+      "detail": "Hasta que elijas, los clientes no ven ninguno de tus platos: la carta se protege ocultando todo lo que tenga alérgenos sin confirmar, y en este momento eso es todo.",
+      "where": "Carta → Alérgenos"
+    },
+    "allergensCardMissing": {
+      "where": "Carta → Alérgenos"
+    },
+    "allergensItemsUnverified": {
+      "detail": "{n, plural, one {Tu plato está oculto para los clientes hasta que confirmes sus alérgenos.} other {{u, plural, one {{unverified} de tus {total} platos está oculto para los clientes hasta que confirmes sus alérgenos.} other {{unverified} de tus {total} platos están ocultos para los clientes hasta que confirmes sus alérgenos.}}}} Un plato mostrado sin alérgenos confirmados se lee como “no contiene ninguno”, así que la carta lo oculta en vez de correr ese riesgo.",
+      "where": "Carta → Alérgenos"
+    },
+    "kitchenCapacityUnset": {
+      "detail": "No hay capacidad configurada para {vans}. Sin ella, seguiremos prometiendo a los clientes horas de retiro que tu cocina no puede cumplir.",
+      "where": "Carta → Capacidad de cocina"
+    },
+    "noPrepBearingCategory": {
+      "detail": "{categories, select, none {Todavía no tienes categorías en la carta, así que no podemos calcular cuánto tarda un pedido.} other {Ninguna de tus categorías tiene un tiempo de cocción configurado, así que para nosotros todos los pedidos parecen instantáneos. Seguiríamos dando a los clientes horas de retiro que tu cocina no tiene forma de cumplir, y mientras más trabajo tengas, más desfasadas estarían.}}",
+      "where": "Carta → Categorías → Configuración de cocina"
+    }
+  },
+  "walkthrough": {
+    "stops": {
+      "menu": {
+        "title": "Carta"
+      },
+      "build": {
+        "body": "Los combos, las ventas sugeridas, las personalizaciones y tu capacidad de cocina están en Carta: échale un vistazo."
+      }
+    }
+  },
+  "auth": {
+    "fields": {
+      "emailPlaceholder": "tu@ejemplo.cl"
+    },
+    "signup": {
+      "emailPlaceholder": "tu@tufoodtruck.cl"
+    }
+  },
+  "errorsOnboarding": {
+    "file_too_big": "Ese archivo es demasiado grande (máx. {mb} MB). Basta con una foto normal de tu carta.",
+    "file_type_unsupported": "Ese tipo de archivo no es compatible: envía una foto o un PDF de tu carta.",
+    "text_too_long": "Es mucho texto: pega solo la carta.",
+    "menu_missing": "Agrega una foto de tu carta o pégala aquí."
+  },
+  "demoSaveEmail": {
+    "intro": "Aquí tienes tu enlace para volver a la demo con tu carta. No hace falta iniciar sesión: solo tócalo.",
+    "deletion": "Es una demo, así que no la guardamos para siempre: la borraremos junto con la carta el <b>{date}</b> ({days, plural, one {# día} many {# días} other {# días}}). Si te registras antes de esa fecha, tu carta se va contigo."
+  },
+  "demoGetStarted": {
+    "upload": {
+      "bannerButton": "Guardar mi carta →",
+      "sub": "Tu carta se pasa tal cual."
+    },
+    "sample": {
+      "sub": "Después vas a subir tu propia carta: es cosa de un minuto."
+    },
+    "saveOnly": {
+      "bannerButton": "Guardar mi carta →"
+    },
+    "stepper": {
+      "menu": "Carta"
+    },
+    "confirmKeepUntil": "La guardaremos hasta el <b>{date}</b>. Tu carta se va contigo cuando hagas la configuración completa.",
+    "readyBody": "Ahora terminemos de configurar tu food truck: la carta, los alérgenos y la cocina.",
+    "stage": {
+      "menu": "Cargando tu carta"
+    },
+    "emailPlaceholder": "tu@tufoodtruck.cl"
+  },
+  "demoUpload": {
+    "steps": {
+      "reading": "Leyendo tu carta…"
+    },
+    "templateSteps": {
+      "menu": "Configurando la carta…"
+    },
+    "dialogLabel": "Sube tu carta",
+    "heading": "✨ Sube tu carta",
+    "failedHeading": "No pudimos leer esa carta",
+    "intro": "Una foto de tu pizarra, una captura de pantalla, un PDF, o pégalo como texto. Nuestra IA lo lee y te crea una página de pedidos que funciona, con tus productos y tus precios, en menos de 60 segundos. Sin registro y sin tarjeta.",
+    "slow": "Está tardando más de lo normal; a veces pasa con cartas grandes.",
+    "sampleWhileYouWait": "O échale un vistazo a una carta de ejemplo mientras esperas",
+    "standIn": "Esta <b>no será tu carta</b>: es un ejemplo para que veas cómo funciona.",
+    "seeSample": "Ver carta de ejemplo",
+    "orSample": "O échale un vistazo a una carta de ejemplo",
+    "buildBody": "Déjanos tu correo y una persona de verdad va a ingresar tu carta y te enviará el enlace.",
+    "emailPlaceholder": "tu@tufoodtruck.cl",
+    "noPhoto": "¿No tienes a mano una foto de la carta?",
+    "noPhotoBody": "Échale un vistazo a un food truck de ejemplo: puedes subir tu carta cuando quieras.",
+    "fields": {
+      "uploadLabel": "Subir archivo de la carta",
+      "dropHere": "Suelta aquí tu carta",
+      "pasteLabel": "Pegar el texto de la carta",
+      "pastePlaceholder": "Pega aquí tu carta: nombres de los productos, descripciones, precios…"
+    }
+  },
+  "provisionContent": {
+    "standardCategories": {
+      "starters": "Entradas",
+      "mains": "Platos de fondo",
+      "wrapsSandwiches": "Wraps y sándwiches"
+    },
+    "demoTemplates": {
+      "pizza": {
+        "items": {
+          "rocketParmesan": "Rúcula y parmesano"
+        }
+      }
+    }
+  },
+  "manageAllergens": {
+    "cardUpload": {
+      "blanket": "La tabla indica que <b>{list}</b> puede estar presente en <b>todos</b> los platos. ¿Agregarlo a todos? (de todos modos confirmarás cada uno) <muted>— desactivado de forma predeterminada</muted>"
+    },
+    "wizard": {
+      "review": {
+        "detected": "Detectados a partir de tu carta: <b>revísalos</b>. Los alérgenos siguen ocultos para los clientes hasta que confirmes cada plato.",
+        "emptyTitle": "No hay productos en la carta",
+        "emptyBody": "Primero agrega productos a la carta y luego configura aquí sus alérgenos."
+      },
+      "cardPanel": {
+        "intro": "Los clientes verán esta tabla como la referencia de alérgenos de tu carta. Los alérgenos por plato quedan ocultos en el modo solo tabla de alérgenos (los datos de tus platos se conservan por si más adelante cambias a alérgenos por plato)."
+      }
+    }
+  },
+  "manageExtras": {
+    "note": "Crea un grupo de opciones y asígnalo a una categoría de la carta. Todos los productos de esa categoría ofrecerán esas opciones cuando los clientes pidan."
+  },
+  "eventTypes": {
+    "phone": {
+      "noMenuItems": "Aún no hay productos en la carta: agrégalos en Carta › Productos."
+    },
+    "newType": {
+      "chips": {
+        "privateHire": "Arriendo de food truck"
+      }
+    },
+    "summary": {
+      "collectionEvery": "retiro cada {mins} min"
+    }
+  },
+  "manageMenu": {
+    "title": "Carta",
+    "importMenu": "✨ Importar carta",
+    "empty": {
+      "title": "Crea tu carta en segundos",
+      "body": "Toma una foto de la pizarra de tu carta, una captura de tu carta actual o arrastra un PDF: nuestra IA extraerá todo y creará tu carta digital automáticamente.",
+      "importAi": "✨ Importar carta con IA"
+    },
+    "category": {
+      "countsTitle": "Cuenta para el límite de pedidos máximos por franja (se ajusta en Carta → Capacidad de cocina)"
+    },
+    "allergens": {
+      "buildFirst": "Primero crea tu carta: agrega platos y luego configura sus alérgenos",
+      "cardNotAllowed": "Donde vende tu food truck no se puede usar solo una tabla de alérgenos, así que los clientes ven los alérgenos de cada plato. Confirma los alérgenos de cada plato."
+    },
+    "deleteItem": {
+      "body": "Este producto se ocultará de tu carta de inmediato. No aparecerá en la página de pedidos de los clientes ni en el panel Añadir pedido."
+    },
+    "item": {
+      "allergenGateBody": "Abre el recuadro “Configurar / revisar alérgenos” en la pestaña Carta: el asistente te guía para confirmar cada plato."
+    }
+  },
+  "manageMenuImport": {
+    "steps": {
+      "menu": "Carta"
+    },
+    "toast": {
+      "demoGone": "La carta de tu demo ya no está disponible: vuelve a subirla para continuar.",
+      "commitFailedDetail": "No se pudo terminar de guardar la carta: {error}. Puede que algunos productos ya se hayan guardado; revisa tu carta antes de volver a intentarlo.",
+      "commitFailed": "No se pudo terminar de guardar la carta. Puede que algunos productos ya se hayan guardado; revisa tu carta antes de volver a intentarlo."
+    },
+    "settingsReview": {
+      "cancelAria": "Con cuánta antelación al retiro pueden cancelar los clientes"
+    },
+    "allergensNotSet": {
+      "bodySetup": "Revísalos antes de publicar tu carta. Hasta entonces, los productos aparecen marcados como “alérgenos sin configurar”.",
+      "body": "Revísalos en Ajustes antes de publicar tu carta. Hasta entonces, los productos aparecen marcados como “alérgenos sin configurar”."
+    },
+    "welcome": {
+      "body": "{name} ya está configurado. Ahora agregaremos tu carta y después tu primer evento."
+    },
+    "offer": {
+      "title": "¿Usar la carta de tu demo?",
+      "use": "Usar esta carta",
+      "upload": "Subir otra carta",
+      "body": "Guardamos la carta que subiste: {count, plural, one {# producto} many {# productos} other {# productos}}. Úsala como punto de partida o sube otra."
+    },
+    "checkMenu": {
+      "title": "Revisa tu carta",
+      "body": "Guardamos la carta de tu demo en tu food truck y la has cambiado desde entonces, así que tus cambios se mantienen. Échale un vistazo abajo."
+    },
+    "upload": {
+      "title": "Importa tu carta",
+      "body": "Sube una foto de la pizarra de tu carta, una captura de pantalla o un PDF, o pega tu carta como texto. Nuestra IA la lee y crea tu carta digital; tú revisas todo antes de que se guarde.",
+      "confirmCancel": "¿Cancelar esta importación? Se descartará tu revisión de esta carta.",
+      "process": "Procesar carta"
+    },
+    "processing": {
+      "title": "Analizando tu carta"
+    },
+    "review": {
+      "title": "Revisa la carta importada",
+      "lastCategory": "Tu carta necesita al menos una categoría",
+      "moveBody": "Para eliminar “{name}” hay que mover sus platos a otro lugar: los productos sin categoría no se importan."
+    },
+    "extras": {
+      "separate": "Productos separados en la carta"
+    },
+    "allergens": {
+      "detected": "Detectamos alérgenos en tu carta. Elige abajo cómo mostrarlos."
+    },
+    "kitchen": {
+      "saveAdd": "Guardar y añadir a la carta"
+    },
+    "schedule": {
+      "urlPlaceholder": "https://tufoodtruck.cl/eventos"
+    },
+    "done": {
+      "imported": "¡Carta importada!",
+      "added": "Tus productos se agregaron a la carta."
+    },
+    "discard": {
+      "setupBody": "Tu cuenta y tu food truck están guardados: no se pierde nada. Puedes agregar tu carta cuando quieras: inicia sesión y toca <b>Importar carta</b> en la pantalla de tu carta para seguir justo aquí.",
+      "carriedBody": "La carta de tu demo está guardada en tu food truck tal cual. Puedes cambiarla cuando quieras en la pantalla de tu carta."
+    }
+  },
+  "errorsManage": {
+    "allergen_card_not_allowed": "Donde trabaja tu food truck, los alérgenos deben indicarse junto a cada plato, así que no se puede elegir solo una tabla de alérgenos.",
+    "menu_failed": "No se pudo procesar la carta",
+    "menu_read_failed": "No se pudo leer la carta; no se guardó nada",
+    "collection_interval_choices": "Las horas de retiro deben ser cada {choices} minutos.",
+    "collection_intervals_save_failed": "Ahora mismo no se han podido guardar las horas de retiro.",
+    "charges_fee_fixed": "Usa un monto, por ejemplo 0,50."
+  },
+  "manageScheduleVerify": {
+    "malformed": "Eso no parece una dirección web. Prueba algo como tufoodtruck.cl/eventos"
+  },
+  "serviceSettings": {
+    "labels": {
+      "collection_interval_mins": "Horas de retiro"
+    },
+    "priceLabels": {
+      "price_amount": "Monto"
+    },
+    "pricesStandardCell": "Los precios de tu carta",
+    "pricesMenuCell": "Carta",
+    "pricesTypeOffCell": "Precios de la carta",
+    "eventPriceOwnNote": "{hasType, select, yes {{type} {price} · este evento} other {carta {price} · este evento}}"
+  },
+  "kitchenCapacity": {
+    "warning": "⚠️ Para que la capacidad de cocina funcione bien, indica un tiempo de preparación y un tamaño de tanda en las categorías de tu carta (Carta y stock). Sin ellos, la capacidad no puede saber cuánto tardan los productos en cocinarse.",
+    "lead": "Cuántos productos puede preparar tu cocina, para que los clientes solo puedan elegir horas de retiro que puedas cumplir."
+  },
+  "settingsCopy": {
+    "allowCancellation": {
+      "sentence": "Los clientes pueden cancelar hasta <select></select> antes de su hora de retiro"
+    },
+    "buzzers": {
+      "label": "¿Das avisadores para el retiro?"
+    }
+  },
+  "managePrimitives": {
+    "allergenMode": {
+      "perDishBody": "Revisa cada plato y confirma sus alérgenos. Los clientes ven etiquetas por plato y una tabla resumen de alérgenos generada a partir de ellas.",
+      "cardBody": "Sube o pega una sola tabla de alérgenos (PDF, imagen o texto), que se muestra tal cual. Las etiquetas por plato quedan ocultas."
+    }
+  },
+  "manageSettings": {
+    "details": {
+      "websitePlaceholder": "https://tufoodtruck.cl",
+      "menuIcon": "Ícono de la carta"
+    },
+    "contact": {
+      "emailPlaceholder": "hola@tufoodtruck.cl",
+      "emailError": "Ingresa un correo válido (p. ej., hola@tufoodtruck.cl)"
+    },
+    "collection": {
+      "help": "Cuánto separan unas horas de retiro de otras. Esto no cambia la capacidad de cocina ni los tiempos de preparación.",
+      "unavailable": "Las horas de retiro no están disponibles en este momento.",
+      "customerTimes": "Horas de retiro para clientes",
+      "yourTimes": "Tus horas de retiro"
+    },
+    "schedule": {
+      "urlPlaceholder": "https://tufoodtruck.cl/eventos"
+    }
+  },
+  "manageReports": {
+    "csv": {
+      "collectionTime": "Hora de retiro"
+    },
+    "accounts": {
+      "payAtTruck": "Pago al retirar",
+      "cost": "Costo de los platos vendidos",
+      "coverage": "{total, plural, one {Costo indicado en {withCost} de # plato vendido} many {Costo indicado en {withCost} de # platos vendidos} other {Costo indicado en {withCost} de # platos vendidos}}",
+      "partial": "Los platos sin costo no se incluyen en el costo, así que esta ganancia es mayor de lo que es en realidad. Agrega un costo a cada plato en la pestaña Carta.",
+      "noCosts": "Todavía ningún plato tiene costo. Agrega un costo a tus platos en la pestaña Carta para ver tu ganancia.",
+      "eventNoProfit": "Un guion significa que no todos los platos vendidos ahí tienen costo."
+    },
+    "accountsCsv": {
+      "header": {
+        "dishesSold": "Platos vendidos",
+        "dishesWithCost": "Platos con costo"
+      }
+    }
+  },
+  "socialPosts": {
+    "socialTagPlaceholder": "@festivalprovidencia"
+  },
+  "managePayments": {
+    "walkUp": {
+      "ownTerminal": "Tu propia máquina POS",
+      "hatchgrabHelp": "Usa la misma conexión de Stripe que tus pagos online: una máquina POS, o pago sin contacto directamente en tu celular o tablet."
+    }
+  },
+  "manageCharges": {
+    "tips": {
+      "other": "Otro monto"
+    },
+    "fee": {
+      "hint": "Solo se añade a los pedidos online. Nunca a los pedidos con Pago al retirar ni a los pedidos en ventanilla. Te lo quedas tú.",
+      "fixedAria": "Monto fijo del cargo por servicio"
+    }
+  },
+  "designEditor": {
+    "sample": {
+      "area": "Providencia"
+    }
+  },
+  "weeklyPost": {
+    "post": {
+      "notePlaceholder": "p. ej., Haz tu pedido anticipado para retirar"
+    }
+  },
+  "manageShell": {
+    "tabs": {
+      "menu": "Carta"
+    },
+    "menuSections": {
+      "label": "Secciones de la carta"
+    },
+    "notices": {
+      "allergens": "<b>Alérgenos sin configurar</b>: los clientes no pueden ver la información de alérgenos hasta que la verifiques. Revisa los alérgenos de cada plato en la pestaña Carta."
+    }
+  },
+  "manageTeam": {
+    "phonePlaceholder": "+56 9 1234 5678",
+    "modal": {
+      "roleManager": "Encargado — Acceso completo, incluidos la carta y los ajustes"
+    }
+  },
+  "manageWhatsApp": {
+    "preview": {
+      "examples": {
+        "menu": "¿Qué hay en la carta?"
+      }
+    },
+    "card": {
+      "description": "Responde automáticamente a las preguntas de los clientes en tus redes sociales con tu carta y tu agenda."
+    }
+  },
+  "customDomain": {
+    "card": {
+      "exampleDomain": "tufoodtruck.cl"
+    }
+  },
+  "posterWords": {
+    "placeSample": {
+      "nameTownBelow": "Bar La Plaza\nPucón",
+      "nameTown": "Bar La Plaza, Pucón"
+    },
+    "busyWeek": {
+      "venue1": "Centro Cultural de Pucón",
+      "town1": "Pucón",
+      "venue2": "Polideportivo y Estadio Municipal de San Pedro de la Paz",
+      "town2": "San Pedro de la Paz",
+      "venue3": "Plaza de Armas",
+      "town3": "La Serena",
+      "venue4": "Feria Gastronómica",
+      "town4": "Valparaíso",
+      "venue5": "Picada El Arriero",
+      "town5": "Talca",
+      "venue6": "Parque Costanera",
+      "town6": "Puerto Varas"
+    }
+  },
+  "completionSettings": {
+    "pressesOne": "Un toque (“Marcar pagado y retirado”)",
+    "pressesOneHelp": "Ideal si cobras al entregar la comida. Tienes un único botón, “Marcar pagado y retirado”, que registra el pago y cierra el pedido a la vez.",
+    "pressesTwo": "Dos toques (“Marcar pagado” y “Retirado”)",
+    "pressesTwoHelp": "Ideal si el pago y la entrega ocurren en momentos distintos: el cliente paga en la ventanilla y retira cuando está listo. Tienes dos botones: primero “Marcar pagado” y luego “Retirado” cuando se lleva la comida."
+  },
+  "landing": {
+    "jsonLd": {
+      "description": "Pedidos, pedidos anticipados y pantalla de cocina para food trucks y catering móvil en {country}.",
+      "audience": "Dueños de food trucks y negocios de catering móvil"
+    },
+    "hero": {
+      "subSmall": "Sube tu carta, sin registrarte.<br></br>Mira una demo funcionando en menos de 60 segundos.",
+      "cta": "Subir mi carta →",
+      "ctaNote": "<lead>Sube una foto de tu carta y mírala funcionando en menos de 60 segundos.</lead><small>Sin registro. Sin tarjeta.</small>"
+    },
+    "shots": {
+      "dashboardAlt": "Tomando un pedido en HatchGrab: la carta a la izquierda y el carrito con el total a la derecha",
+      "phoneAlt": "Pidiendo a un food truck en HatchGrab: la carta con fotos y precios, y el total del carrito"
+    },
+    "trust": {
+      "cancel": "Cancela cuando quieras, sin permanencia mínima"
+    },
+    "does": {
+      "slotsTitle": "Tus clientes eligen la hora de retiro",
+      "capacityBody": "Indica cuánto puedes cocinar a la vez y cuánto tardas. Cuando una hora de retiro se llena, los clientes ya no pueden elegirla.",
+      "devicesBody": "En el celular del delantal, la tablet del mostrador, el notebook del food truck… y la máquina POS con la que ya cobras.",
+      "whatsappBody": "“¿Dónde están esta noche?” “¿Qué postres tienen?” Tu WhatsApp responde mientras manejas hacia tu ubicación o estás en la plancha, con tu propia carta y tu agenda. Messenger e Instagram, muy pronto.",
+      "slotsBody": "Tus clientes hacen un pedido anticipado y eligen la hora de retiro. Sin filas, y la comida lista cuando llegan."
+    },
+    "steps": {
+      "menuTitle": "Crea tu carta",
+      "menuBody": "Toma una foto de tu pizarra o pega el texto. Platos, precios y extras se importan solos. Tú solo revisas que estén bien."
+    },
+    "faq": {
+      "metaDescription": "Respuestas claras para food trucks sobre los precios de HatchGrab, cómo empezar, recibir pedidos online y cobrar con tarjeta o al retirar."
+    },
+    "final": {
+      "lede": "Sube una foto o una captura de tu carta y la convertimos en una página de pedidos que funciona, para que la pruebes en menos de 60 segundos. Tus platos, tus precios. Sin registro, sin tarjeta, sin instalar nada. Échale un vistazo y luego decide.",
+      "cta": "Subir mi carta ahora →"
+    },
+    "meta": {
+      "title": "Sistema de pedidos para food trucks — HatchGrab {country}",
+      "description": "Recibe pedidos y pedidos anticipados donde estés, sin filas. Pedidos online y pantalla de cocina para food trucks en {country}. No es un sistema de caja."
+    }
+  },
+  "landingNav": {
+    "cta": "Subir mi carta →",
+    "ctaShort": "Subir carta"
+  },
+  "aboutPage": {
+    "meta": {
+      "description": "HatchGrab crea software para food trucks y catering móvil: pedidos online, horas de retiro y menos preguntas repetidas. Fundado por Dominic Bonini."
+    },
+    "story": {
+      "build": "Creamos software práctico pensado específicamente para food trucks y catering móvil, que les ayuda a recibir pedidos online, gestionar las horas de retiro, mantener los pedidos en marcha sin tropiezos y dedicar menos tiempo a responder siempre las mismas preguntas."
+    }
+  },
+  "siteFooter": {
+    "hire": "Arrendar un food truck"
+  },
+  "truckPage": {
+    "meta": {
+      "orderTitle": "Haz tu pedido a {truck}",
+      "orderDescription": "Haz tu pedido anticipado a {truck} y retíralo en el food truck."
+    },
+    "actions": {
+      "menu": "Carta"
+    }
+  },
+  "planFeatures": {
+    "priceWord": {
+      "payAtHatch": "Pago al retirar"
+    }
+  },
+  "planPrompt": {
+    "features": {
+      "qr_menu": {
+        "name": "La carta con código QR"
+      },
+      "online_ordering_pay_at_hatch": {
+        "name": "Pedir online con Pago al retirar"
+      },
+      "time_slot_selection": {
+        "name": "Las franjas horarias de retiro"
+      }
+    }
+  },
+  "pricing": {
+    "banner": {
+      "body": "Con {brand}, tus clientes piden con antelación y pagan al retirar, así que puedes aceptar pedidos online sin conectar ningún procesador de pagos con tarjeta. ¿Prefieres cobrar por adelantado? Agrega el pago online con tarjeta cuando quieras. Cuando termine tu prueba, pasarás al plan <plan>{fallback}</plan>{fallbackFree, select, yes { (sin cuota mensual)} other {}}, salvo que elijas otro plan. Sin tarjeta para empezar, sin permanencia mínima, cancela cuando quieras.",
+      "bodyOnly": "Con {brand}, tus clientes piden con antelación y pagan al retirar, así que puedes aceptar pedidos online sin conectar ningún procesador de pagos con tarjeta. ¿Prefieres cobrar por adelantado? Agrega el pago online con tarjeta cuando quieras. Cuando termine tu prueba, el plan <plan>{fallback}</plan> costará {price} al mes. Antes de esa fecha nos pondremos en contacto contigo para configurar el pago. Sin tarjeta para empezar, sin permanencia mínima, cancela cuando quieras."
+    },
+    "fee": {
+      "noFee": "<b>Sin comisiones de HatchGrab</b> en los pedidos online, por mucho trabajo que tengas. Un costo mensual fijo y previsible."
+    },
+    "base": {
+      "preorders": "Pedidos anticipados y hora de retiro"
+    },
+    "footnote": "* Más la comisión de Stripe por procesar tarjetas en los pedidos online pagados con tarjeta (tarifa actual, {country}: {cardFee}), que se paga a Stripe, no a HatchGrab. Los pedidos en ventanilla se cobran con tu propia máquina POS — HatchGrab cobra 0 %."
+  },
+  "featuresPage": {
+    "detail": {
+      "walkup_orders": "Toma y gestiona pedidos en la ventanilla, cobrados con tu propia máquina POS.",
+      "web_dashboard": "Gestiona tu servicio desde el navegador de cualquier celular, tablet o notebook.",
+      "meal_deals_upsells": "Agrupa platos en combos y ofrece extras al pagar para subir el ticket promedio.",
+      "stock_countdown": "Indica las existencias y se van descontando con cada pedido; al llegar a cero, el plato se agota solo.",
+      "tap_to_pay": "Cobra con tarjeta desde un celular compatible, sin necesidad de una máquina POS aparte.",
+      "time_slot_selection": "Los clientes eligen su hora de retiro dentro de una franja horaria, así la demanda se reparte a lo largo del servicio.",
+      "qr_code": "Un código QR imprimible que abre tu carta y tu página de pedidos.",
+      "whatsapp_auto_replies": "Respuestas automáticas de WhatsApp a las consultas sobre tu carta y tu agenda."
+    },
+    "metaTitle": "Planes, precios y funciones — HatchGrab {country}"
+  },
+  "compare": {
+    "eyebrow": "Comparativa de costos",
+    "title": "Compara tus costos<br></br><accent>de pedidos online</accent>",
+    "orders": {
+      "sliderAria": "Monto mensual de pedidos online por food truck"
+    },
+    "cta": {
+      "upload": "Subir mi carta →",
+      "uploadSave": "Subir mi carta y ahorrar {amount} →"
+    },
+    "breakdown": {
+      "card": "Comisión de tarjeta: los {fee} por pedido de Stripe, que se pagan a Stripe. Pagarías más o menos lo mismo con una máquina POS en la ventanilla."
+    },
+    "meta": {
+      "title": "Calculadora de costos y comisiones — HatchGrab {country}",
+      "description": "Compara lo que hoy te cuestan los pedidos online y las comisiones de las apps de delivery con un año en HatchGrab: una estimación en un minuto."
+    }
+  },
+  "comparison": {
+    "meta": {
+      "description": "Sistemas de pedidos para food trucks: hora de retiro, capacidad de cocina, agenda, comisiones y plazo de contrato, revisados en la web de cada proveedor."
+    },
+    "fit": {
+      "oursBody": "vendes en ubicaciones que cambian, quieres pedidos anticipados con hora de retiro, no quieres que tu cocina se sature y no quieres permanencia mínima.",
+      "oursNotBody": "tus clientes tienen que poder pagar con PayPal o Klarna, o quieres un sistema de caja certificado según la normativa fiscal, todo de un mismo proveedor.",
+      "tills": "Sistemas de caja y máquinas POS",
+      "tillsBody": "Los sistemas de caja cobran en el food truck y cumplen los requisitos fiscales de un sistema de caja certificado. Un sistema de pedidos funciona junto a un sistema de caja; no lo sustituye.",
+      "tillsBodyNamed": "Los sistemas de caja cobran en el food truck y cumplen los requisitos fiscales de un sistema de caja certificado. {names} también {count, plural, one {aparece} many {aparecen} other {aparecen}} en la tabla de arriba. Un sistema de pedidos funciona junto a un sistema de caja; no lo sustituye.",
+      "marketplacesBody": "Las plataformas de entrega a domicilio traen clientes nuevos, pero se quedan con una comisión de cada pedido. Uber Eats indica un 14 % para retirar y un 30 % para entrega con repartidores de Uber en Alemania. Wolt dice en su propio sitio web que cobra comisión, pero no da las tarifas. No pudimos comprobar las tarifas de Lieferando. Esa comisión también se aplica a los clientes frecuentes que te hacen pedidos anticipados."
+    },
+    "groups": {
+      "pos": "Sistema de caja"
+    },
+    "faq": {
+      "whatA": "Un sistema de pedidos recibe pedidos online antes de que los clientes lleguen al food truck: eligen los platos y una hora de retiro, pagan online o al retirar, y el pedido aparece en tu cocina. Un sistema de caja o una máquina POS cobra en el food truck. Las dos cosas se complementan.",
+      "termQ": "¿Hay permanencia mínima?",
+      "termA": "No. No hay permanencia mínima ni periodo de aviso previo. Puedes cancelar cuando quieras; la cuota se cobra por mes y por adelantado, y mantienes el acceso hasta el final del mes que pagaste.",
+      "capacityA": "Los clientes solo ven las horas de retiro que tu cocina realmente puede cumplir. El sistema toma en cuenta el tiempo de preparación de cada plato y cuántos preparas a la vez.",
+      "tseQ": "¿Sigo necesitando un sistema de caja certificado?",
+      "tseA": "HatchGrab no es un sistema de caja y no está certificado según la normativa fiscal para sistemas de caja. Cómo registrar los pedidos online en tu sistema de caja es algo que debes consultar con tu contador."
+    },
+    "costBlock": {
+      "footOrder": "Pedido promedio de {order}: una comida típica de {meal} × {multiplier} platos por pedido ({source})."
+    },
+    "features": {
+      "preorder": {
+        "label": "Pedidos anticipados con hora de retiro a elegir",
+        "explain": "Los clientes piden por adelantado y eligen a qué hora retiran."
+      },
+      "capacity": {
+        "label": "Horas de retiro según la capacidad de cocina",
+        "explain": "Los clientes solo ven las horas de retiro que la cocina realmente puede cumplir."
+      },
+      "asap": {
+        "explain": "Los clientes pueden pedir sin elegir hora y retirar en cuanto esté listo."
+      },
+      "stock": {
+        "explain": "Marca platos como agotados y fija cuántas unidades de cada uno se pueden vender en un evento."
+      },
+      "allergens": {
+        "label": "Alérgenos en la carta",
+        "explain": "Cada plato muestra sus alérgenos a los clientes antes de que pidan."
+      },
+      "menuphoto": {
+        "label": "Carta creada a partir de una foto",
+        "explain": "Una foto o un PDF de la carta llena los platos para que tú los revises."
+      },
+      "options": {
+        "label": "Opciones y extras en los platos"
+      },
+      "private": {
+        "label": "Eventos privados y arriendo",
+        "explain": "Pedidos para un evento privado con su propio enlace, y solicitudes para arrendar el food truck.",
+        "ours": "eventos privados con su propio enlace de pedidos; sin solicitudes de arriendo"
+      },
+      "payattruck": {
+        "label": "Pago al retirar",
+        "explain": "Los clientes piden online y pagan al retirar."
+      },
+      "terminal": {
+        "label": "Máquina POS para la ventanilla incluida",
+        "explain": "El proveedor da una máquina POS para cobrar en el food truck."
+      },
+      "fiscal": {
+        "label": "Sistema de caja certificado según la normativa fiscal (TSE, EET, kassaregister…)",
+        "explain": "Un sistema de caja certificado según las normas del país sobre el registro de ventas."
+      },
+      "delivery": {
+        "ours": "solo para retirar"
+      },
+      "term": {
+        "label": "Permanencia mínima"
+      }
+    }
+  },
+  "comparisonSuits": {
+    "q": {
+      "preorder": "¿Qué sistema de pedidos permite a mis clientes pedir por adelantado y elegir una hora de retiro?"
+    },
+    "does": {
+      "preorder": "{names} {count, plural, one {permite} other {permiten}} a los clientes pedir por adelantado y elegir una hora de retiro.",
+      "capacity": "{names} {count, plural, one {limita} other {limitan}} cuántos pedidos acepta cada hora de retiro, para que la cocina no se colapse."
+    },
+    "feat": {
+      "preorder": "las horas de retiro"
+    },
+    "price": {
+      "lead": "Con {orders, number} pedidos online al mes, {names} {count, plural, one {tiene} other {tienen}} el costo mensual de software más bajo entre los productos comparados: {amount} al mes{count, plural, one {} other { cada uno}}."
+    }
+  },
+  "demoLinkEmail": {
+    "intro": "Aquí tienes el enlace a la demo que creamos con tu carta. Haz un pedido como uno de tus clientes y mira cómo llega a tu pantalla de cocina (KDS). No hace falta iniciar sesión: solo tienes que tocarlo.",
+    "deletion": "Esto es una demo, así que no la guardamos: la eliminaremos, junto con la carta que subiste, el {date}. Si quieres más tiempo, toca “Guardar mi carta” en la demo y la guardaremos durante 14 días.",
+    "deletionSoon": "Esto es una demo, así que no la guardamos: la eliminaremos, junto con la carta que subiste, en 24 horas. Si quieres más tiempo, toca “Guardar mi carta” en la demo y la guardaremos durante 14 días."
+  },
+  "demoWalk": {
+    "paymentPanel": "Aquí tu cliente paga con tarjeta, Apple Pay o Google Pay, o elige pagar al retirar. En la demo no se cobra nada.",
+    "bubbleArrived": "El pedido que acabas de hacer llegó aquí al instante, con la hora de retiro. Toca Cocinar.",
+    "thatsIt": "Eso es HatchGrab: tus clientes piden desde el celular, tú lo ves aquí y ellos retiran sin hacer fila. Tu carta ya está configurada.",
+    "startFree": "{months, plural, =0 {Empezar gratis y conservar mi carta} one {Empezar gratis durante # mes y conservar mi carta} many {Empezar gratis durante # de meses y conservar mi carta} other {Empezar gratis durante # meses y conservar mi carta}}",
+    "readyForCollection": "Listo para retirar",
+    "collectAt": "Retirar a las {time}",
+    "collectAsap": "Retirar cuanto antes",
+    "bandTitle": "Eso es HatchGrab. Tu carta ya está configurada.",
+    "bandStart": "Empezar gratis y conservar mi carta",
+    "goneBody": "Las demos se eliminan después de un día. Puedes crear una nueva con tu carta en menos de un minuto.",
+    "backToMenu": "Volver a la carta"
+  },
+  "paperwork": {
+    "check": {
+      "coverHint": "Opcional. El monto que cubre la póliza."
+    }
+  }
+}

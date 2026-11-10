@@ -1,0 +1,10 @@
+{
+  "newType": {
+    "chips": {
+      "privateHire": "Alquiler de food truck"
+    }
+  },
+  "summary": {
+    "collectionEvery": "retiro cada {mins} min"
+  }
+}

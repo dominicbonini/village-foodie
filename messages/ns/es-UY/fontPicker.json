@@ -1,0 +1,7 @@
+{
+  "uploadButton": "↑ Subí tu fuente",
+  "noOwn": "Aún no subiste ninguna fuente. Usá el botón “↑ Subí tu fuente” de arriba.",
+  "showing": "Se muestran {shown} de {total, number}: escribí más para acotar la búsqueda.",
+  "woff": "Subí un archivo TTF u OTF; normalmente podés descargarlo desde donde compraste la fuente.",
+  "missingFaces": "Agregá la versión {faces} de “{name}” (opcional): volvé a elegir el archivo."
+}

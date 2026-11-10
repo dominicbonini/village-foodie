@@ -1,0 +1,8 @@
+{
+  "explainerLead": "Debés mantener el panel o la pantalla de cocina encendidos y conectados durante el servicio.",
+  "explainerBody": "Si la pantalla se apaga, el dispositivo pierde internet o cambiás a otra web, la protección sin conexión toma el control: pausa los pedidos o desactiva la aceptación automática, según lo que hayas elegido.",
+  "reminder": "⚠️ Mantené el panel o la pantalla de cocina encendidos y conectados durante el servicio, o la protección sin conexión podría tomar el control.",
+  "enableConfirm": "Protección sin conexión activada.\n\nPara que los pedidos sigan llegando, la pantalla debe permanecer encendida. Si este dispositivo pierde la conexión, la protección sin conexión toma el control en el modo que hayas elegido.\n\nAsegurate de que Pantalla encendida está activado en este dispositivo.",
+  "disableConfirm": "¿Desactivar la protección sin conexión para este evento?\n\nSi este dispositivo pierde la conexión, los pedidos online seguirán llegando: los clientes podrían hacer pedidos que no ves. Desactivala solo si tenés una conexión fiable.",
+  "purpose": "Si tu dispositivo pierde la conexión, esto evita que lleguen pedidos mientras no podés verlos."
+}

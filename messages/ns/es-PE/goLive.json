@@ -1,0 +1,21 @@
+{
+  "allergensUnanswered": {
+    "detail": "Hasta que elijas, los clientes no ven ninguno de tus platos: la carta se protege ocultando todo lo que tenga alérgenos sin confirmar, y en este momento eso es todo.",
+    "where": "Carta → Alérgenos"
+  },
+  "allergensCardMissing": {
+    "where": "Carta → Alérgenos"
+  },
+  "allergensItemsUnverified": {
+    "detail": "{n, plural, one {Tu plato está oculto para los clientes hasta que confirmes sus alérgenos.} other {{u, plural, one {{unverified} de tus {total} platos está oculto para los clientes hasta que confirmes sus alérgenos.} other {{unverified} de tus {total} platos están ocultos para los clientes hasta que confirmes sus alérgenos.}}}} Un plato mostrado sin alérgenos confirmados se lee como “no contiene ninguno”, así que la carta lo oculta en vez de correr ese riesgo.",
+    "where": "Carta → Alérgenos"
+  },
+  "kitchenCapacityUnset": {
+    "detail": "No hay capacidad configurada para {vans}. Sin ella, seguiremos prometiendo a los clientes horas de recojo que tu cocina no puede cumplir.",
+    "where": "Carta → Capacidad de cocina"
+  },
+  "noPrepBearingCategory": {
+    "detail": "{categories, select, none {Todavía no tienes categorías en la carta, así que no podemos calcular cuánto tarda un pedido.} other {Ninguna de tus categorías tiene un tiempo de cocción configurado, así que para nosotros todos los pedidos parecen instantáneos. Seguiríamos dando a los clientes horas de recojo que tu cocina no tiene forma de cumplir, y mientras más trabajo tengas, más desfasadas estarían.}}",
+    "where": "Carta → Categorías → Configuración de cocina"
+  }
+}

@@ -1,0 +1,71 @@
+{
+  "intro": "Tené todos tus certificados en un solo sitio. Te avisaremos antes de que venza alguno y podrás enviárselos a un organizador de una sola vez.",
+  "loadFailed": "No se han podido cargar tus documentos. Intentalo de nuevo.",
+  "counts": {
+    "expired": "{count, plural, one {# vencido} many {# vencidos} other {# vencidos}}",
+    "dueSoon": "{count, plural, one {# vence pronto} many {# vencen pronto} other {# vencen pronto}}"
+  },
+  "status": {
+    "dueSoon": "Vence pronto",
+    "expired": "Vencido"
+  },
+  "line": {
+    "expires": "Vence el {date}",
+    "expiresIn": "Vence el {date} · {days, plural, one {dentro de # día} many {dentro de # de días} other {dentro de # días}}",
+    "expiresToday": "Vence hoy",
+    "expired": "Venció el {date}",
+    "noExpiry": "Sin vencimiento"
+  },
+  "upload": {
+    "intro": "Sacale una foto o elegí una foto o un archivo.",
+    "takePhoto": "Sacar una foto",
+    "tooBig": "Ese archivo supera los 20 MB. Elegí uno más pequeño.",
+    "wrongType": "Ese tipo de archivo no se acepta. Usá un archivo PDF, JPEG, PNG, HEIC o WebP.",
+    "failed": "No se ha podido subir. Intentalo de nuevo."
+  },
+  "check": {
+    "title": "Revisá los datos",
+    "aiBanner": "Hemos sacado estos datos de tu documento. Comprobá que son correctos antes de guardar.",
+    "expires": "Vence el",
+    "footer": "El certificado anterior se conserva en el historial. Tus archivos son privados: solo los ves vos y los organizadores a los que se los envíes.",
+    "needType": "Elegí el documento o ponele un nombre.",
+    "badDates": "La fecha de vencimiento no puede ser anterior a la de emisión."
+  },
+  "warnings": {
+    "notRead": "No hemos podido leer este documento. Completá vos los datos.",
+    "expired": "Venció el {date}. Podés guardarlo igualmente, pero los organizadores verán que está vencido.",
+    "expiresSoon": "{days, plural, =0 {Vence hoy. Te lo recordaremos cada semana hasta que lo renueves.} one {Vence dentro de # día. Te lo recordaremos 4 semanas antes, 1 semana antes y el mismo día.} many {Vence dentro de # de días. Te lo recordaremos 4 semanas antes, 1 semana antes y el mismo día.} other {Vence dentro de # días. Te lo recordaremos 4 semanas antes, 1 semana antes y el mismo día.}}",
+    "nameMismatch": "El nombre que figura, “{name}”, no parece el de tu negocio. Comprobá que es el documento correcto."
+  },
+  "view": {
+    "noPreview": "Este archivo no se puede mostrar aquí. Abrilo o descargalo."
+  },
+  "send": {
+    "messagePlaceholder": "Hola, aquí tenés nuestros documentos para el mercado.",
+    "footer": "Si renovás un certificado, el enlace del organizador muestra el nuevo automáticamente. Verás cuándo lo abre.",
+    "emailNone": "Escribí el email del organizador.",
+    "emailTooMany": "Podés enviarlo a 5 direcciones como máximo a la vez.",
+    "noDocuments": "Elegí al menos un documento.",
+    "untilRange": "Elegí una fecha entre mañana y dentro de 90 días."
+  },
+  "sent": {
+    "empty": "Todavía no enviaste nada.",
+    "expiredOn": "Venció el {date}"
+  },
+  "page": {
+    "intro": "{truck} ha compartido estos documentos con vos.",
+    "expiredTitle": "Este enlace venció",
+    "expiredBody": "Este enlace venció. Pedile a {truck} que te lo vuelva a enviar.",
+    "expiredBodyUnknown": "Este enlace venció. Pedile al negocio que te lo envió que te lo vuelva a enviar."
+  },
+  "email": {
+    "shareIntro": "{truck} ha compartido estos documentos con vos.",
+    "shareUntil": "El enlace funciona hasta el {date}. Si venció, pedile a {truck} que te lo vuelva a enviar.",
+    "shareReply": "Respondé a este email para contactar con {truck}.",
+    "expires": "vence el {date}",
+    "noExpiry": "sin vencimiento",
+    "reminderIn": "{document} vence el {date} ({days, plural, one {dentro de # día} many {dentro de # de días} other {dentro de # días}})",
+    "reminderToday": "{document} vence hoy",
+    "reminderExpired": "{document} venció el {date}"
+  }
+}

@@ -1,0 +1,181 @@
+{
+  "dashboard": {
+    "stock": {
+      "howCategory": "El <b>total de la categoría</b> es una reserva compartida entre todos los productos de esa categoría (p. ej. 30 entradas esta noche)."
+    }
+  },
+  "paymentActions": {
+    "paidCardMachine": "Pagado con tu POS{mixed, select, yes { — {amount}} other {}}",
+    "inPersonHint": "Efectivo o tu POS — no se registra"
+  },
+  "addOrder": {
+    "savedToast": "Pedido {id} guardado{paid, select, cash { — pagado en efectivo} card { — pagado con tu POS} other {}}",
+    "confirmedToast": "Pedido #{id} confirmado{paid, select, cash { — pagado en efectivo} card { — pagado con tu POS} other {}}"
+  },
+  "auth": {
+    "signup": {
+      "emailPlaceholder": "tu@tufoodtruck.com.gt"
+    }
+  },
+  "demoGetStarted": {
+    "emailPlaceholder": "tu@tufoodtruck.com.gt"
+  },
+  "demoUpload": {
+    "emailPlaceholder": "tu@tufoodtruck.com.gt"
+  },
+  "provisionContent": {
+    "standardCategories": {
+      "starters": "Entradas",
+      "mains": "Platos fuertes",
+      "wrapsSandwiches": "Wraps y sándwiches"
+    }
+  },
+  "manageMenuImport": {
+    "schedule": {
+      "urlPlaceholder": "https://tufoodtruck.com.gt/eventos"
+    }
+  },
+  "manageScheduleVerify": {
+    "malformed": "Eso no parece una dirección web. Prueba algo como tufoodtruck.com.gt/eventos"
+  },
+  "manageSettings": {
+    "details": {
+      "websitePlaceholder": "https://tufoodtruck.com.gt"
+    },
+    "contact": {
+      "emailPlaceholder": "hola@tufoodtruck.com.gt",
+      "emailError": "Ingresa un correo válido (p. ej., hola@tufoodtruck.com.gt)"
+    },
+    "schedule": {
+      "urlPlaceholder": "https://tufoodtruck.com.gt/eventos"
+    }
+  },
+  "socialPosts": {
+    "socialTagPlaceholder": "@festivalantigua"
+  },
+  "managePayments": {
+    "walkUp": {
+      "ownTerminal": "Tu propio POS",
+      "hatchgrabHelp": "Usa la misma conexión de Stripe que tus pagos online: un POS, o pago sin contacto directamente en tu celular o tablet."
+    }
+  },
+  "designEditor": {
+    "sample": {
+      "area": "Zona 10"
+    }
+  },
+  "manageTeam": {
+    "phonePlaceholder": "+502 5123 4567"
+  },
+  "customDomain": {
+    "card": {
+      "exampleDomain": "tufoodtruck.com.gt"
+    }
+  },
+  "posterWords": {
+    "placeSample": {
+      "nameTownBelow": "Bar La Plaza\nAntigua Guatemala",
+      "nameTown": "Bar La Plaza, Antigua Guatemala"
+    },
+    "busyWeek": {
+      "venue1": "Casa de la Cultura de Quetzaltenango",
+      "town1": "Quetzaltenango",
+      "venue2": "Complejo Deportivo Municipal y Campo de Futbol de Mixco",
+      "town2": "Mixco",
+      "venue3": "Parque Central",
+      "town3": "Cobán",
+      "venue4": "Feria Gastronómica",
+      "town4": "Escuintla",
+      "venue5": "Restaurante El Lago",
+      "town5": "Panajachel",
+      "venue6": "Plaza Central",
+      "town6": "Retalhuleu"
+    }
+  },
+  "landing": {
+    "jsonLd": {
+      "subCategory": "Sistema de pedidos en línea para food trucks y catering móvil",
+      "description": "Pedidos, pedidos anticipados y pantalla de cocina (KDS) para food trucks y catering móvil en {country}.",
+      "audience": "Dueños de food trucks y negocios de catering móvil"
+    },
+    "hero": {
+      "title": "El sistema de pedidos pensado para <lean>food trucks.</lean>"
+    },
+    "does": {
+      "devicesBody": "En el celular del delantal, la tablet del mostrador, la laptop del food truck… y el POS con el que ya cobras."
+    },
+    "faq": {
+      "metaDescription": "Respuestas claras para dueños de food trucks sobre los precios de HatchGrab, cómo empezar, cómo recibir pedidos en línea y los pagos."
+    },
+    "meta": {
+      "title": "Sistema de pedidos para food trucks — HatchGrab {country}",
+      "description": "Sistema de pedidos para food trucks en {country}: pedidos anticipados con hora para recoger y pantalla de cocina (KDS). No es un sistema de caja."
+    }
+  },
+  "aboutPage": {
+    "meta": {
+      "description": "HatchGrab crea software para food trucks y catering móvil: pedidos en línea, horas para recoger y menos preguntas repetidas. Fundado por Dominic Bonini."
+    }
+  },
+  "truckPage": {
+    "meta": {
+      "orderDescription": "Haz tu pedido anticipado a {truck} y pasa a recogerlo al food truck."
+    }
+  },
+  "pricing": {
+    "fee": {
+      "noFee": "<b>Sin comisiones de HatchGrab</b> en los pedidos online, por mucho trabajo que tengas. Un costo mensual fijo y previsible."
+    },
+    "footnote": "* Más la comisión de Stripe por procesar tarjetas en los pedidos online pagados con tarjeta (tarifa actual, {country}: {cardFee}), que se paga a Stripe, no a HatchGrab. Los pedidos en ventanilla se cobran con tu propio POS — HatchGrab cobra 0 %."
+  },
+  "featuresPage": {
+    "detail": {
+      "walkup_orders": "Toma y gestiona pedidos en la ventanilla, cobrados con tu propio POS.",
+      "tap_to_pay": "Cobra con tarjeta desde un celular compatible, sin necesidad de un POS aparte."
+    }
+  },
+  "compare": {
+    "eyebrow": "Comparativa de costos",
+    "title": "Compara tus costos<br></br><accent>de pedidos online</accent>",
+    "breakdown": {
+      "card": "Comisión de tarjeta: los {fee} por pedido de Stripe, que se pagan a Stripe. Pagarías más o menos lo mismo con un POS en la ventanilla."
+    },
+    "meta": {
+      "title": "Calculadora de costos — HatchGrab {country}",
+      "description": "Compara lo que te cuestan hoy tus pedidos en línea y las comisiones de las apps de delivery con un año en HatchGrab: un cálculo en un minuto."
+    }
+  },
+  "comparison": {
+    "meta": {
+      "description": "Sistemas de pedidos para food trucks: hora para recoger, capacidad de cocina, agenda, comisiones y plazos, revisados en el sitio de cada proveedor.",
+      "about": "Sistemas de pedidos en línea para food trucks"
+    },
+    "fit": {
+      "tills": "Sistemas de caja y POS"
+    },
+    "faq": {
+      "whatA": "Un sistema de pedidos recibe pedidos online antes de que los clientes lleguen al food truck: eligen los platillos y una hora para recoger, pagan online o al recoger, y el pedido aparece en tu cocina. Un sistema de caja o un POS cobra en el food truck. Las dos cosas se complementan.",
+      "termQ": "¿Hay un plazo mínimo de contrato?",
+      "termA": "No. No hay plazo mínimo de contrato ni periodo de aviso previo. Puedes cancelar cuando quieras; la cuota se cobra por mes y por adelantado, y mantienes el acceso hasta el final del mes que pagaste.",
+      "tseA": "HatchGrab no es un sistema de caja ni está certificado según la normativa fiscal. Cómo registrar los pedidos online en tu sistema de caja es algo que debes consultar con tu contador."
+    },
+    "features": {
+      "vans": {
+        "label": "Varios vehículos o food trucks",
+        "ours": "vehículos adicionales por una cuota mensual extra"
+      },
+      "terminal": {
+        "label": "POS para la ventanilla incluido",
+        "explain": "El proveedor da un POS para cobrar en el food truck."
+      },
+      "term": {
+        "label": "Plazo mínimo de contrato"
+      }
+    }
+  },
+  "comparisonSuits": {
+    "price": {
+      "lead": "Con {orders, number} pedidos online al mes, {names} {count, plural, one {tiene} other {tienen}} el costo mensual de software más bajo entre los productos comparados: {amount} al mes{count, plural, one {} other { cada uno}}."
+    }
+  }
+}

@@ -1,0 +1,21 @@
+{
+  "upload": {
+    "bannerButton": "Guardar mi carta →",
+    "sub": "Tu carta se pasa tal cual."
+  },
+  "sample": {
+    "sub": "Después vas a subir tu propia carta: es cosa de un minuto."
+  },
+  "saveOnly": {
+    "bannerButton": "Guardar mi carta →"
+  },
+  "stepper": {
+    "menu": "Carta"
+  },
+  "confirmKeepUntil": "La guardaremos hasta el <b>{date}</b>. Tu carta se va contigo cuando hagas la configuración completa.",
+  "readyBody": "Ahora terminemos de configurar tu food truck: la carta, los alérgenos y la cocina.",
+  "stage": {
+    "menu": "Cargando tu carta"
+  },
+  "emailPlaceholder": "tu@tufoodtruck.pe"
+}

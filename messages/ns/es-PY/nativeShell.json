@@ -1,0 +1,53 @@
+{
+  "binary": {
+    "cameraUsage": "HatchGrab usa la cámara para que puedas sacar fotos de la pizarra de tu carta, de tus platos y de otros documentos y subirlas directamente a tu cuenta. Las imágenes solo se usan para las subidas que vos decidas hacer.",
+    "faceIdUsage": "Desbloqueá HatchGrab con Face ID.",
+    "offlineDetail": "Comprobá tu conexión."
+  },
+  "gate": {
+    "undoneCollected": "Deshecho — pedido no retirado",
+    "collected": "Pedido #{id} {paidToo, select, yes {pagado y retirado} other {retirado}}",
+    "status": "Pedido #{id} {action, select, confirm {confirmado} reject {rechazado} ready {listo} collected {retirado} undo_collected {restaurado} cancel {cancelado} other {actualizado}}"
+  },
+  "banner": {
+    "paymentCheck": "Revisá el pedido y volvé a cobrar si aún está pendiente.",
+    "confirmChecked": "Confirmá que revisaste {orders}",
+    "statusBody": "⚠ {orders} — este cambio no se ha aplicado. Revisá el pedido."
+  },
+  "lock": {
+    "cantUseBiometric": "¿No podés usar Face ID / Touch ID?",
+    "enterPin": "Ingresá tu PIN de respaldo",
+    "wrongPin": "PIN incorrecto — intentalo de nuevo.",
+    "tryBiometric": "Probá con Face ID / Touch ID",
+    "forgot": "¿Olvidaste tu PIN? Tendrás que reinstalar la app."
+  },
+  "notify": {
+    "intro": "Avisos en este dispositivo. Activalos para elegir cuáles recibís.",
+    "refused": "Para activarlo, permití las notificaciones en los Ajustes del dispositivo.",
+    "newOrderHelp": "Recibí un aviso cuando un pedido de cliente necesite confirmación.",
+    "offlineHelp": "Recibí un aviso cuando este dispositivo pierda la conexión (y se pausen los pedidos). <green>Funciona sin conexión.</green>"
+  },
+  "deviceSave": {
+    "network": "No se ha podido conectar con el servidor: comprobá la conexión e intentalo de nuevo.",
+    "server": "No se ha podido guardar ahora mismo. Intentalo de nuevo."
+  },
+  "setup": {
+    "fetchErrorBody": "No hemos podido conectar con el servidor para configurar <b>este dispositivo</b>. Comprobá la conexión e intentalo de nuevo; tus pedidos y ajustes no se ven afectados.",
+    "noVanBody": "Este negocio aún no tiene ningún food truck activo. Activá uno en <b>Ajustes → Tus food trucks</b> y este dispositivo se configurará automáticamente, sin más pasos aquí.",
+    "title": "Configurá este dispositivo",
+    "body": "Configuración única de <b>este dispositivo</b>: la pantalla con la que se abre y qué food truck gestiona. Solo afecta a este dispositivo (los demás se configuran por separado) y podés cambiarlo más tarde desde el menú de perfil → “Este dispositivo”.",
+    "selectVan": "Seleccioná un food truck…"
+  },
+  "device": {
+    "pinTitle": "Definí un PIN de respaldo (4–6 dígitos)",
+    "pinHelp": "Tu forma de entrar si la huella o el reconocimiento facial no funcionan. Es la única alternativa, así que no lo olvides (si lo olvidás, tendrás que reinstalar la app). Funciona sin conexión.",
+    "pinTooShort": "Usá al menos 4 dígitos.",
+    "noBiometric": "Este dispositivo no tiene huella ni reconocimiento facial configurados: agregá uno en los ajustes del dispositivo. Tu PIN de respaldo sigue funcionando."
+  },
+  "appLock": {
+    "confirmEnable": "Confirmá para activar el bloqueo de la app"
+  },
+  "localNotify": {
+    "newOrders": "{n, plural, one {Tenés un pedido nuevo} other {Tenés {count} pedidos nuevos}}"
+  }
+}

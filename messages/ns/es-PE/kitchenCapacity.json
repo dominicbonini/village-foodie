@@ -1,0 +1,4 @@
+{
+  "warning": "⚠️ Para que la capacidad de cocina funcione bien, indica un tiempo de preparación y un tamaño de tanda en las categorías de tu carta (Carta y stock). Sin ellos, la capacidad no puede saber cuánto tardan los productos en cocinarse.",
+  "lead": "Cuántos productos puede preparar tu cocina, para que los clientes solo puedan elegir horas de recojo que puedas cumplir."
+}

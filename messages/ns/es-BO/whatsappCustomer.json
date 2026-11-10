@@ -1,0 +1,4 @@
+{
+  "menuFallback": "{opener}Mira nuestro menú completo aquí: {url} — {truck} {emoji}",
+  "menuSummary": "{opener}Tenemos {summary}. Mira el menú completo y haz tu pedido anticipado aquí: {url} — {truck} {emoji}"
+}

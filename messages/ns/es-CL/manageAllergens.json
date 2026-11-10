@@ -1,0 +1,15 @@
+{
+  "cardUpload": {
+    "blanket": "La tabla indica que <b>{list}</b> puede estar presente en <b>todos</b> los platos. ¿Agregarlo a todos? (de todos modos confirmarás cada uno) <muted>— desactivado de forma predeterminada</muted>"
+  },
+  "wizard": {
+    "review": {
+      "detected": "Detectados a partir de tu carta: <b>revísalos</b>. Los alérgenos siguen ocultos para los clientes hasta que confirmes cada plato.",
+      "emptyTitle": "No hay productos en la carta",
+      "emptyBody": "Primero agrega productos a la carta y luego configura aquí sus alérgenos."
+    },
+    "cardPanel": {
+      "intro": "Los clientes verán esta tabla como la referencia de alérgenos de tu carta. Los alérgenos por plato quedan ocultos en el modo solo tabla de alérgenos (los datos de tus platos se conservan por si más adelante cambias a alérgenos por plato)."
+    }
+  }
+}

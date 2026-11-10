@@ -1,0 +1,70 @@
+{
+  "walkthrough": {
+    "title": "¿Sos nuevo en HatchGrab?",
+    "button": "Mostrame cómo funciona"
+  },
+  "getApp": {
+    "title": "Descargá la app",
+    "body": "La app de cocina gestiona tu servicio desde un celular o una tablet, y es la única forma de seguir recibiendo pedidos cuando te quedás sin señal. Gratis con tu cuenta, para iPhone, iPad y Android."
+  },
+  "logo": {
+    "dropTitle": "Tocá o soltá un logo",
+    "removeConfirm": "¿Quitar tu logo? Los clientes verán el nombre de tu food truck sin él. Podés subir uno nuevo cuando quieras.",
+    "removeFailed": "No se ha podido quitar el logo. Intentalo de nuevo."
+  },
+  "details": {
+    "descriptionPlaceholder": "Contales a tus clientes cómo es tu comida…",
+    "websitePlaceholder": "https://tufoodtruck.com.ar"
+  },
+  "emojiPicker": {
+    "title": "Elegí tu icono"
+  },
+  "contact": {
+    "intro": "Cómo te contactan los clientes sobre su pedido (aparece en las confirmaciones de pedido) y dónde recibís los avisos de pedidos nuevos. Para los datos de tu cuenta personal, andá a Equipo → Mi perfil.",
+    "emailPlaceholder": "hola@tufoodtruck.com.ar",
+    "emailError": "Ingresá un correo válido (p. ej., hola@tufoodtruck.com.ar)",
+    "emailHelp": "Donde recibís los avisos de pedidos nuevos; además, se muestra a los clientes en su confirmación cuando “Email” es el método preferido de abajo.",
+    "previousMethodGone": "Tu método de contacto anterior ya no está disponible. Elegí uno nuevo.",
+    "addEmailOrPhone": "Agregá un email o un teléfono arriba para ofrecer un método de contacto.",
+    "tickWhatsApp": "⚠️ Marcá “Este número tiene WhatsApp” en el campo Teléfono para usar WhatsApp."
+  },
+  "orders": {
+    "notificationsHelp": "Cómo te enterás de los pedidos nuevos."
+  },
+  "preorders": {
+    "intro": "Dejá que los clientes pidan con anticipación a un evento. Configurá cuándo se abren los pedidos anticipados y las reglas de plazo de abajo: solo se aplican a los productos que selecciones.",
+    "deadlineHelp": "Configurá una regla de pedido anticipado para que no se puedan pedir productos después de una hora determinada.",
+    "noneYet": "Aún no hay productos seleccionados: usá “Configurar productos” para añadir algunos.",
+    "modalTitle": "Elegí los productos de pedido anticipado",
+    "modalHelp": "Marcá qué productos son de pedido anticipado. Todos usan la regla general ({rule})."
+  },
+  "vans": {
+    "help": "Gestioná tus food trucks. Cada uno tiene su propia pantalla de pedidos y sus propios ajustes.",
+    "sameOff": "Copiá los ajustes del primer food truck (todo menos la capacidad de cocina) y mantenelos sincronizados.",
+    "takesCashHelp": "Divide el botón de pago en “Efectivo” y “Tarjeta” para que lo que cobrás cuadre con la caja. Podés activarlo para un solo evento desde el panel.",
+    "addConfirm": "{free, select, yes {Añadir otro food truck es gratis con tu plan.} other {Cada food truck adicional cuesta {price} al mes con tu plan. Te avisaremos antes de cobrar nada.}}\n\n¿Querés continuar?"
+  },
+  "collection": {
+    "help": "Cuánto separan unos horarios de retiro de otros. Esto no cambia la capacidad de cocina ni los tiempos de preparación.",
+    "unavailable": "Los horarios de retiro no están disponibles en este momento.",
+    "customerTimes": "Horarios de retiro para clientes",
+    "canPick": "{who, select, customers {Los clientes pueden elegir {example}} other {Vos y tus clientes pueden elegir {example}}}",
+    "differentTimes": "Usar otros horarios para los pedidos que añado yo",
+    "yourTimes": "Tus horarios de retiro",
+    "youCanPick": "Podés elegir {example}",
+    "misaligned": "{name} tarda {mins, plural, one {# minuto} other {# minutos}} en cocinarse, así que algunos horarios entre tandas aparecerán como completos."
+  },
+  "schedule": {
+    "autoDesc": "Decinos dónde publicás tu agenda y la revisaremos por vos, enviándote para tu aprobación los eventos que encontremos. Tiene que ser tu propia web, no una página de Facebook o Instagram.",
+    "wherePost": "¿Dónde publicás tu agenda?",
+    "urlPlaceholder": "https://tufoodtruck.com.ar/eventos",
+    "checkingHelp": "Puede tardar hasta 2 minutos: mantené esta página abierta y no cierres la pestaña.",
+    "exclusionsHelp": "Estos términos se filtran automáticamente al importar tu agenda. Quitá los que se hayan añadido por error."
+  },
+  "qr": {
+    "domainNotLive": "Este código QR lleva a los clientes a tu página de pedidos de HatchGrab. Si más adelante configurás tu propia dirección web, el mismo código QR los llevará allí: no tendrás que imprimir uno nuevo.",
+    "printHelp": "Imprimí o mostrá este código para que los clientes lo escaneen y hagan su pedido anticipado. Ponelo en la ventanilla, en tu food truck o compartilo online.",
+    "addLogo": "Agregá tu logo a tu perfil y aparecerá aquí.",
+    "buildFailed": "No se ha podido generar ahora mismo. Intentalo de nuevo en un rato."
+  }
+}

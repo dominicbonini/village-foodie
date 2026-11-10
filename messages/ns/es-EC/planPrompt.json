@@ -1,0 +1,10 @@
+{
+  "features": {
+    "online_ordering_pay_at_hatch": {
+      "name": "Pedir online con Pago al retirar"
+    },
+    "time_slot_selection": {
+      "name": "Las franjas horarias de retiro"
+    }
+  }
+}

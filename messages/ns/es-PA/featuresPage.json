@@ -1,0 +1,11 @@
+{
+  "detail": {
+    "walkup_orders": "Toma y gestiona pedidos en la ventanilla, cobrados con tu propio POS.",
+    "offline_protection": "Si te quedas sin cobertura, los pedidos en línea se pausan para que nadie haga pedidos que no vas a ver. La app para iPhone, iPad y Android te permite seguir tomando pedidos sin conexión; el panel web necesita conexión.",
+    "meal_deals_upsells": "Agrupa platos en combos y ofrece extras al pagar para subir el ticket promedio.",
+    "stock_countdown": "Indica las existencias y se van descontando con cada pedido; al llegar a cero, el plato se agota solo.",
+    "tap_to_pay": "Cobra con tarjeta desde un celular compatible, sin necesidad de un POS aparte.",
+    "online_payments": "Cobra con tarjeta por adelantado cuando los clientes piden en línea, a través de Stripe.",
+    "auto_accept": "Los pedidos en línea se aceptan automáticamente — no hace falta confirmarlos uno a uno."
+  }
+}

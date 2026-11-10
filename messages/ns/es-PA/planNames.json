@@ -1,0 +1,11 @@
+{
+  "payg": {
+    "description": "Sin cuota mensual. Solo pagas cuando un cliente paga en línea con tarjeta."
+  },
+  "pro": {
+    "description": "Todo incluido, también las respuestas automáticas de WhatsApp y las publicaciones para redes sociales, con pedidos en línea incluidos cada mes."
+  },
+  "unlimited": {
+    "description": "Todo incluido, sin comisiones en los pedidos en línea, por mucho trabajo que tengas."
+  }
+}

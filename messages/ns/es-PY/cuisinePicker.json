@@ -1,0 +1,7 @@
+{
+  "choose": "Elegí un tipo de cocina…",
+  "otherPlaceholder": "Decinos tu tipo de cocina",
+  "cuisine": {
+    "BBQ": "Parrilla"
+  }
+}

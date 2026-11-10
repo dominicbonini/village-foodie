@@ -1,0 +1,56 @@
+{
+  "eyebrow": "Comparativa de costos",
+  "title": "Compará tus costos<br></br><accent>de pedidos online</accent>",
+  "system": {
+    "title": "¿Ya aceptás pedidos online?"
+  },
+  "trucks": {
+    "title": "¿Cuántos food trucks tenés?"
+  },
+  "plan": {
+    "summaryFeeOnly": "{hasMonthly, select, yes {{price} por food truck al mes, más {pct} en los pedidos online pagados con tarjeta.} other {Sin abono mensual: solo {pct} en los pedidos online pagados con tarjeta.}}"
+  },
+  "orders": {
+    "titleNo": "¿Cuánto creés que venderías online al mes, por food truck?"
+  },
+  "fee": {
+    "title": "¿Cuánto pagás ahora por pedido?",
+    "onTopNote": "La comisión de tarjeta de {fee} se cobra aparte, así que en realidad pagás <b>{pct} + {fixed}</b> en total."
+  },
+  "days": {
+    "title": "¿Cuántos días a la semana trabajás?"
+  },
+  "jump": {
+    "saving": "Ver cuánto ahorrás ↓"
+  },
+  "cta": {
+    "ask": "Hacenos una pregunta"
+  },
+  "breakdown": {
+    "card": "Comisión de tarjeta: los {fee} por pedido de Stripe, que se pagan a Stripe. Pagarías más o menos lo mismo con un posnet en la ventanilla."
+  },
+  "enterRate": "Ingresá lo que pagás ahora para ver cuánto ahorrás.",
+  "panel": {
+    "nowYear": "<label>Ahora mismo pagás</label><fig>{amount}<q> al año</q></fig>",
+    "nowMonth": "<label>Ahora mismo pagás</label><fig>{amount}<q> al mes</q></fig>"
+  },
+  "hero": {
+    "save": "<verb>Ahorrás</verb><figure>{amount}</figure><sub><num>{pct}</num> menos el primer año</sub>"
+  },
+  "anchor": {
+    "vanDeposit": "Es el anticipo de un segundo food truck."
+  },
+  "year": {
+    "save": "Ahorrás {amount}<note>({pct} menos)</note>"
+  },
+  "smallPrint": {
+    "no": "Estimaciones basadas en las cifras que ingresás, con un pedido promedio de {aov}. La comisión de tarjeta se aplica sea cual sea el proveedor. Comprobalo antes de decidir.",
+    "yes": "Estimaciones basadas en las cifras que ingresás, con un pedido promedio de {aov}. La comisión de tarjeta de {fee} por pedido se aplica sea cual sea el proveedor, así que queda fuera en ambos lados.",
+    "check": "Comprobá las tarifas de tu proveedor actual antes de decidir."
+  },
+  "intro": "Se tarda un minuto. ¿Ya usás un sistema? Lo comparamos. ¿Todavía no? Te mostramos exactamente lo que cuesta.",
+  "meta": {
+    "title": "Calculadora de costos y comisiones — HatchGrab {country}",
+    "description": "Compará lo que hoy te cuestan los pedidos online y las comisiones de las apps de delivery con un año en HatchGrab: una estimación en un minuto."
+  }
+}

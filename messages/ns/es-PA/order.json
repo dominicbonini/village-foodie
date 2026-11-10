@@ -1,0 +1,8 @@
+{
+  "serviceFeeNotice": "Los pedidos en línea con tarjeta incluyen unos gastos de servicio de {fee}.",
+  "notAvailableTitle": "Pedidos en línea no disponibles",
+  "closedAt": "Los pedidos en línea para este evento se cerraron a las {time}. ¡Esperamos verte la próxima vez!",
+  "pausedClosingTitle": "Este negocio ya no acepta pedidos en línea",
+  "pausedOfflineTitle": "Pedidos en línea no disponibles temporalmente",
+  "pausedClosingBody": "Los pedidos en línea se han cerrado. Si necesitas ponerte en contacto con ellos, hazlo directamente."
+}

@@ -1,0 +1,12 @@
+{
+  "details": {
+    "websitePlaceholder": "https://tufoodtruck.cr"
+  },
+  "contact": {
+    "emailPlaceholder": "hola@tufoodtruck.cr",
+    "emailError": "Ingresa un correo válido (p. ej., hola@tufoodtruck.cr)"
+  },
+  "schedule": {
+    "urlPlaceholder": "https://tufoodtruck.cr/eventos"
+  }
+}

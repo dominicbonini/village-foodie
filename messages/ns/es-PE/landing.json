@@ -1,0 +1,37 @@
+{
+  "jsonLd": {
+    "description": "Pedidos, pedidos anticipados y pantalla de cocina para food trucks y catering móvil en {country}.",
+    "audience": "Dueños de food trucks y negocios de catering móvil"
+  },
+  "hero": {
+    "subSmall": "Sube tu carta, sin registrarte.<br></br>Mira una demo funcionando en menos de 60 segundos.",
+    "cta": "Subir mi carta →",
+    "ctaNote": "<lead>Sube una foto de tu carta y mírala funcionando en menos de 60 segundos.</lead><small>Sin registro. Sin tarjeta.</small>"
+  },
+  "shots": {
+    "dashboardAlt": "Tomando un pedido en HatchGrab: la carta a la izquierda y el carrito con el total a la derecha",
+    "phoneAlt": "Pidiendo a un food truck en HatchGrab: la carta con fotos y precios, y el total del carrito"
+  },
+  "does": {
+    "slotsTitle": "Tus clientes eligen la hora de recojo",
+    "capacityBody": "Indica cuánto puedes cocinar a la vez y cuánto tardas. Cuando una hora de recojo se llena, los clientes ya no pueden elegirla.",
+    "devicesBody": "En el celular del delantal, la tablet del mostrador, la laptop del food truck… y el POS con el que ya cobras.",
+    "whatsappBody": "“¿Dónde están esta noche?” “¿Qué postres tienen?” Tu WhatsApp responde mientras manejas hacia tu ubicación o estás en la plancha, con tu propia carta y tu agenda. Messenger e Instagram, muy pronto.",
+    "slotsBody": "Tus clientes hacen un pedido anticipado y eligen la hora de recojo. Sin colas, y la comida lista cuando llegan."
+  },
+  "steps": {
+    "menuTitle": "Crea tu carta",
+    "menuBody": "Toma una foto de tu pizarra o pega el texto. Platos, precios y extras se importan solos. Tú solo revisas que estén bien."
+  },
+  "faq": {
+    "metaDescription": "Respuestas claras para food trucks sobre los precios de HatchGrab, cómo empezar, recibir pedidos online y cobrar con tarjeta o al recoger."
+  },
+  "final": {
+    "lede": "Sube una foto o una captura de tu carta y la convertimos en una página de pedidos que funciona, para que la pruebes en menos de 60 segundos. Tus platos, tus precios. Sin registro, sin tarjeta, sin instalar nada. Échale un vistazo y luego decide.",
+    "cta": "Subir mi carta ahora →"
+  },
+  "meta": {
+    "title": "Sistema de pedidos para food trucks — HatchGrab {country}",
+    "description": "Recibe pedidos y pedidos anticipados donde estés, sin colas. Pedidos online y pantalla de cocina para food trucks en {country}. No es un sistema de caja."
+  }
+}

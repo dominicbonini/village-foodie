@@ -1,0 +1,10 @@
+{
+  "labels": {
+    "collection_interval_mins": "Horarios de retiro",
+    "takes_cash": "¿Aceptás efectivo?"
+  },
+  "eventTypesFooterStandard": "Estándar es tu configuración habitual. Si lo cambiás aquí, también cambia en Ajustes.",
+  "eventTypesFooterOneEvent": "Para cambiar un ajuste solo para un evento, usá el panel de ese evento.",
+  "priceItemsHeading": "Fijá el precio de cada producto",
+  "priceTypeHint": "Tocá un precio para escribir el tuyo."
+}

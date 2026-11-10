@@ -1,0 +1,18 @@
+{
+  "selectReason": "Elegí un motivo",
+  "reject": {
+    "notePlaceholder": "Agregá más detalles para el cliente…"
+  },
+  "actions": {
+    "notePlaceholder": "p. ej., Estacioná en el estacionamiento principal y buscá la carpa naranja"
+  },
+  "finish": {
+    "noTimesLeft": "Hoy no quedan más horas. Usá Finalizar evento."
+  },
+  "extraWait": {
+    "hint": "Se suma al horario de retiro indicado en los pedidos nuevos. No cambia la hora de fin del evento."
+  },
+  "picker": {
+    "reconnect": "Reconectá para cargar"
+  }
+}

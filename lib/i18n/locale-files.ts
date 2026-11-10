@@ -45,7 +45,22 @@ const jaJP = (): unknown => require('@/messages/ja-JP.json')
 const zhHK = (): unknown => require('@/messages/zh-HK.json')
 const thTH = (): unknown => require('@/messages/th-TH.json')
 const arAE = (): unknown => require('@/messages/ar-AE.json')
+const esCL = (): unknown => require('@/messages/es-CL.json')
+const esCO = (): unknown => require('@/messages/es-CO.json')
+const esPE = (): unknown => require('@/messages/es-PE.json')
+const esBO = (): unknown => require('@/messages/es-BO.json')
+const esEC = (): unknown => require('@/messages/es-EC.json')
+const esCR = (): unknown => require('@/messages/es-CR.json')
+const esPA = (): unknown => require('@/messages/es-PA.json')
+const esDO = (): unknown => require('@/messages/es-DO.json')
+const esGT = (): unknown => require('@/messages/es-GT.json')
+const esSV = (): unknown => require('@/messages/es-SV.json')
+const esHN = (): unknown => require('@/messages/es-HN.json')
+const esNI = (): unknown => require('@/messages/es-NI.json')
+const esAR = (): unknown => require('@/messages/es-AR.json')
+const esUY = (): unknown => require('@/messages/es-UY.json')
+const esPY = (): unknown => require('@/messages/es-PY.json')
 /* eslint-enable @typescript-eslint/no-require-imports */
 
 /** An English file itself, or (perf-1) a loader for a non-English one — lib/i18n/messages.ts calls it the first time. */
-export const LOCALE_FILES: Partial<Record<AppLocale, unknown>> = { 'en-US': enUS, 'en-IE': enIE, 'en-AU': enAU, 'en-NZ': enNZ, 'en-CA': enCA, 'fr-FR': frFR, 'en-MT': enMT, 'en-GI': enGI, 'de-DE': deDE, 'de-AT': deAT, 'de-CH': deCH, 'de-LI': deLI, 'es-ES': esES, 'it-IT': itIT, 'pt-PT': ptPT, 'nl-NL': nlNL, 'nl-BE': nlBE, 'sv-SE': svSE, 'da-DK': daDK, 'nb-NO': nbNO, 'pl-PL': plPL, 'cs-CZ': csCZ, 'hu-HU': huHU, 'sk-SK': skSK, 'ro-RO': roRO, 'hr-HR': hrHR, 'sl-SI': slSI, 'fi-FI': fiFI, 'et-EE': etEE, 'lv-LV': lvLV, 'lt-LT': ltLT, 'el-GR': elGR, 'el-CY': elCY, 'bg-BG': bgBG, 'fr-LU': frLU, 'es-MX': esMX, 'pt-BR': ptBR, 'ms-MY': msMY, 'en-SG': enSG, 'ja-JP': jaJP, 'zh-HK': zhHK, 'th-TH': thTH, 'ar-AE': arAE }
+export const LOCALE_FILES: Partial<Record<AppLocale, unknown>> = { 'en-US': enUS, 'en-IE': enIE, 'en-AU': enAU, 'en-NZ': enNZ, 'en-CA': enCA, 'fr-FR': frFR, 'en-MT': enMT, 'en-GI': enGI, 'de-DE': deDE, 'de-AT': deAT, 'de-CH': deCH, 'de-LI': deLI, 'es-ES': esES, 'it-IT': itIT, 'pt-PT': ptPT, 'nl-NL': nlNL, 'nl-BE': nlBE, 'sv-SE': svSE, 'da-DK': daDK, 'nb-NO': nbNO, 'pl-PL': plPL, 'cs-CZ': csCZ, 'hu-HU': huHU, 'sk-SK': skSK, 'ro-RO': roRO, 'hr-HR': hrHR, 'sl-SI': slSI, 'fi-FI': fiFI, 'et-EE': etEE, 'lv-LV': lvLV, 'lt-LT': ltLT, 'el-GR': elGR, 'el-CY': elCY, 'bg-BG': bgBG, 'fr-LU': frLU, 'es-MX': esMX, 'pt-BR': ptBR, 'ms-MY': msMY, 'en-SG': enSG, 'ja-JP': jaJP, 'zh-HK': zhHK, 'th-TH': thTH, 'ar-AE': arAE, 'es-CL': esCL, 'es-CO': esCO, 'es-PE': esPE, 'es-BO': esBO, 'es-EC': esEC, 'es-CR': esCR, 'es-PA': esPA, 'es-DO': esDO, 'es-GT': esGT, 'es-SV': esSV, 'es-HN': esHN, 'es-NI': esNI, 'es-AR': esAR, 'es-UY': esUY, 'es-PY': esPY }

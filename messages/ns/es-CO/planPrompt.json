@@ -1,0 +1,10 @@
+{
+  "features": {
+    "online_ordering_pay_at_hatch": {
+      "name": "Pedir en línea con Pago al recoger"
+    },
+    "online_payments": {
+      "name": "Los pagos en línea"
+    }
+  }
+}

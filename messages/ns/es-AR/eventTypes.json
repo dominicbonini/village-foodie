@@ -1,0 +1,15 @@
+{
+  "noTypes": "Aún no tenés tipos de evento, así que todos los eventos usan tu configuración normal.",
+  "phone": {
+    "noMenuItems": "Aún no hay productos en el menú: agregalos en Menú › Productos."
+  },
+  "newType": {
+    "help": "Tocá un nombre o escribí el tuyo. Empieza como copia de Estándar, y si luego cambiás Estándar, este no cambia. Después podés cambiar lo que quieras.",
+    "chips": {
+      "privateHire": "Alquiler de food truck"
+    }
+  },
+  "summary": {
+    "collectionEvery": "retiro cada {mins} min"
+  }
+}

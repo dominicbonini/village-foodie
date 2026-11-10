@@ -1,0 +1,22 @@
+{
+  "title": "Carta",
+  "importMenu": "✨ Importar carta",
+  "empty": {
+    "title": "Crea tu carta en segundos",
+    "body": "Toma una foto de la pizarra de tu carta, una captura de tu carta actual o arrastra un PDF: nuestra IA extraerá todo y creará tu carta digital automáticamente.",
+    "importAi": "✨ Importar carta con IA"
+  },
+  "category": {
+    "countsTitle": "Cuenta para el límite de pedidos máximos por franja (se ajusta en Carta → Capacidad de cocina)"
+  },
+  "allergens": {
+    "buildFirst": "Primero crea tu carta: agrega platos y luego configura sus alérgenos",
+    "cardNotAllowed": "Donde vende tu food truck no se puede usar solo una tabla de alérgenos, así que los clientes ven los alérgenos de cada plato. Confirma los alérgenos de cada plato."
+  },
+  "deleteItem": {
+    "body": "Este producto se ocultará de tu carta de inmediato. No aparecerá en la página de pedidos de los clientes ni en el panel Añadir pedido."
+  },
+  "item": {
+    "allergenGateBody": "Abre el recuadro “Configurar / revisar alérgenos” en la pestaña Carta: el asistente te guía para confirmar cada plato."
+  }
+}

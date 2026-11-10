@@ -1,0 +1,5 @@
+{
+  "card_unavailable": "Ahora mismo no pudimos preparar el pago con tarjeta, así que tu pedido no se realizó y no se te cobró nada. Tu carrito está guardado — vuelve a intentarlo o elige Paga al retirar.",
+  "cancel_window_passed": "{n, plural, one {Los pedidos ya no se pueden cancelar a menos de {count} minuto del retiro} other {Los pedidos ya no se pueden cancelar a menos de {count} minutos del retiro}}",
+  "pay_at_hatch_unavailable": "Ahora mismo este food truck no acepta pedidos online con Pago al retirar. Paga con tarjeta."
+}

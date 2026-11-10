@@ -1,0 +1,31 @@
+{
+  "header": {
+    "scraperManual": "Gestionás tu agenda manualmente"
+  },
+  "list": {
+    "found": "Hemos encontrado {count, plural, one {# evento para vos: revisalo y aprobalo antes de que se publique.} other {# eventos para vos: revisalos y aprobalos antes de que se publiquen.}}"
+  },
+  "card": {
+    "setTimeFirst": "Primero indicá una hora",
+    "approveNeedsTimes": "No podés aprobar este evento hasta que tenga hora de inicio y de fin: agregalas con Editar."
+  },
+  "guessed": {
+    "body": "Varios lugares coinciden con <b>{venue}</b>, así que hemos elegido el más probable{hasTown, select, yes { en <b>{town}</b>} other {}}{hasPostcode, select, yes { ({postcode})} other {}}. Comprobá que es el correcto antes de aprobar: si no lo es, usá <b>Editar</b> para corregir la zona o {postal}; si no, los clientes irán al sitio equivocado."
+  },
+  "noLocation": {
+    "body": "No pudimos ubicar este lugar en el mapa, así que aparecerá en la lista pero sin marcador en el mapa. Agregá {postal} con <b>Editar</b> para que salga en el mapa."
+  },
+  "conflict": {
+    "title": "⚠️ {count, plural, one {Posible conflicto} other {Posibles conflictos}}: revisá antes de {pending, select, yes {aprobar} other {confirmar}}",
+    "duplicate": "Parece el mismo evento que ya tenés.",
+    "review": "Mismo lugar y fecha, pero distinta hora: ¿es el mismo evento con la hora cambiada o una franja aparte? Revisalo antes de aprobar.",
+    "overlap": "La hora de este evento se solapa con otro evento del mismo día: un food truck no puede estar en dos sitios a la vez. Comprobalo antes de aprobar."
+  },
+  "toast": {
+    "needsTime": "Agregá una hora de inicio y de fin antes de aprobar: este evento necesita una hora para publicarse.",
+    "addStartTime": "Agregá una hora de inicio",
+    "addEndTime": "Agregá una hora de fin",
+    "chooseTruckBefore": "Elegí qué food truck trabaja en este evento antes de aprobar.",
+    "chooseTruck": "Elegí qué food truck trabaja en este evento"
+  }
+}

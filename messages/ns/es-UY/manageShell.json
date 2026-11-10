@@ -1,0 +1,23 @@
+{
+  "invalidToken": "Token no válido o vencido",
+  "noCountrySettings": "No se han podido cargar los ajustes de país de este food truck. Actualizá la página.",
+  "noPlans": "No se ha podido cargar el plan de este food truck. Actualizá la página.",
+  "verify": {
+    "expired": "Ese enlace de confirmación venció. Escribinos y lo solucionaremos antes de que empieces a recibir pedidos.",
+    "invalid": "Ese enlace de confirmación no ha funcionado. Escribinos y lo solucionaremos antes de que empieces a recibir pedidos."
+  },
+  "notices": {
+    "tour": "¿Querés un recorrido rápido por tu panel?",
+    "showMeAround": "Mostrámelo",
+    "approval": "{count, plural, one {Hemos encontrado <b>{count}</b> evento para vos: revisalo y aprobalo antes de que se publique.} other {Hemos encontrado <b>{count}</b> eventos para vos: revisalos y aprobalos antes de que se publiquen.}}",
+    "allergens": "<b>Alérgenos sin configurar</b>: los clientes no pueden ver la información de alérgenos hasta que la verifiques. Revisá los alérgenos de cada plato en la pestaña Menú.",
+    "domainLive": "<link>{domain}</link> ya está activa. Echale un vistazo y luego confirmanos en Ajustes que está bien.",
+    "stripe": "<b>Stripe necesita algo de vos</b>: los pagos con tarjeta pueden detenerse hasta que se resuelva.",
+    "profileTitle": "Completá tu perfil"
+  },
+  "trialPopup": {
+    "body": "{hasDate, select, yes {No se te cobrará nada durante tu prueba, que dura hasta el <b>{date}</b>. La facturación solo empieza cuando elegís un plan e ingresás tus datos de pago. Hasta entonces, no hay nada que cancelar ni nada que pagar. Elegí tu plan antes de esa fecha; si no lo hacés, pasarás al plan {fallback} y algunas funciones dejarán de funcionar.} other {No se te cobrará nada mientras estés en periodo de prueba. La facturación solo empieza cuando elegís un plan e ingresás tus datos de pago. Hasta entonces, no hay nada que cancelar ni nada que pagar. Elegí tu plan antes de que termine la prueba; si no lo hacés, pasarás al plan {fallback} y algunas funciones dejarán de funcionar.}}",
+    "bodyPaidEnd": "{hasDate, select, yes {No se te cobrará nada durante tu prueba, que dura hasta el <b>{date}</b>. Cuando termine tu prueba, el plan {fallback} costará {price} al mes. Antes de esa fecha nos pondremos en contacto con vos para configurar el pago.} other {No se te cobrará nada mientras estés en periodo de prueba. Cuando termine tu prueba, el plan {fallback} costará {price} al mes. Antes de esa fecha nos pondremos en contacto con vos para configurar el pago.}}",
+    "upgrade": "Mejorá tu plan aquí →"
+  }
+}

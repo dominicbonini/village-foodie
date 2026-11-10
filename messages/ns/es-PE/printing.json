@@ -1,0 +1,8 @@
+{
+  "card": {
+    "summaryLead": "Imprimir <b>{lead} min</b> antes del recojo · papel de {paper} mm",
+    "modeLead": "Un tiempo fijo antes del recojo",
+    "leadLabel": "Minutos antes de la hora de recojo",
+    "modeOnConfirmedHint": "Un pedido anticipado se imprime cuando lo aceptas, lo que puede ser horas antes de la hora de recojo. Los pedidos que aún no has aceptado nunca se imprimen."
+  }
+}

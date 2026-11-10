@@ -1,0 +1,22 @@
+{
+  "jsonLd": {
+    "description": "Pedidos, pedidos anticipados y pantalla de cocina para food trucks y catering móvil en {country}.",
+    "audience": "Dueños de food trucks y negocios de catering móvil"
+  },
+  "does": {
+    "devicesBody": "En el celular del delantal, la tablet del mostrador, la laptop del food truck… y el POS con el que ya cobras."
+  },
+  "steps": {
+    "menuBody": "Toma una foto de tu pizarra o pega el texto. Platos, precios y extras se importan solos. Tú solo revisas que estén bien."
+  },
+  "faq": {
+    "metaDescription": "Respuestas claras para food trucks sobre los precios de HatchGrab, cómo empezar, recibir pedidos online y cobrar con tarjeta o al recoger."
+  },
+  "final": {
+    "lede": "Sube una foto o una captura de tu menú y lo convertimos en una página de pedidos que funciona, para que la pruebes en menos de 60 segundos. Tus platos, tus precios. Sin registro, sin tarjeta, sin instalar nada. Échale un vistazo y luego decide."
+  },
+  "meta": {
+    "title": "Sistema de pedidos para food trucks — HatchGrab {country}",
+    "description": "Recibe pedidos y pedidos anticipados donde estés, sin filas. Pedidos online y pantalla de cocina para food trucks en {country}. No es un sistema de caja."
+  }
+}

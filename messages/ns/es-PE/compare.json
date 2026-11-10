@@ -1,0 +1,19 @@
+{
+  "eyebrow": "Comparativa de costos",
+  "title": "Compara tus costos<br></br><accent>de pedidos online</accent>",
+  "orders": {
+    "captionNo": "Basta con una estimación: pedidos anticipados y clientes que se saltan la cola, no el efectivo ni la tarjeta en la ventanilla.",
+    "sliderAria": "Monto mensual de pedidos online por food truck"
+  },
+  "cta": {
+    "upload": "Subir mi carta →",
+    "uploadSave": "Subir mi carta y ahorrar {amount} →"
+  },
+  "breakdown": {
+    "card": "Comisión de tarjeta: los {fee} por pedido de Stripe, que se pagan a Stripe. Pagarías más o menos lo mismo con un POS en la ventanilla."
+  },
+  "meta": {
+    "title": "Calculadora de costos y comisiones — HatchGrab {country}",
+    "description": "Compara lo que hoy te cuestan los pedidos online y las comisiones de las apps de delivery con un año en HatchGrab: una estimación en un minuto."
+  }
+}

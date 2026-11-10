@@ -1,0 +1,19 @@
+{
+  "details": {
+    "websitePlaceholder": "https://tufoodtruck.pe",
+    "menuIcon": "Ícono de la carta"
+  },
+  "contact": {
+    "emailPlaceholder": "hola@tufoodtruck.pe",
+    "emailError": "Ingresa un correo válido (p. ej., hola@tufoodtruck.pe)"
+  },
+  "collection": {
+    "help": "Cuánto separan unas horas de recojo de otras. Esto no cambia la capacidad de cocina ni los tiempos de preparación.",
+    "unavailable": "Las horas de recojo no están disponibles en este momento.",
+    "customerTimes": "Horas de recojo para clientes",
+    "yourTimes": "Tus horas de recojo"
+  },
+  "schedule": {
+    "urlPlaceholder": "https://tufoodtruck.pe/eventos"
+  }
+}

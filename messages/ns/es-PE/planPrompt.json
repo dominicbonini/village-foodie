@@ -1,0 +1,10 @@
+{
+  "features": {
+    "qr_menu": {
+      "name": "La carta con código QR"
+    },
+    "time_slot_selection": {
+      "name": "Las franjas horarias de recojo"
+    }
+  }
+}

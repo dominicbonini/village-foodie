@@ -1,0 +1,13 @@
+{
+  "authFailed": "No se ha podido autorizar ese pago. No se te ha cobrado nada: prueba con otra tarjeta o elige Paga al retirar.",
+  "paymentThrew": "Algo ha fallado al procesar el pago. No se te ha cobrado nada: inténtalo de nuevo o elige Paga al retirar.",
+  "collectionTimeTitle": "Hora de retiro",
+  "collectionTimeChosen": "✓ Hora de retiro: {time}",
+  "payAtTruck": "Paga al retirar",
+  "payAtTruckLine": "Pagas en el food truck al retirar · Sin datos de tarjeta",
+  "payEitherLine": "Paga con tarjeta o al retirar",
+  "collectionTime": "Hora de retiro: {time}",
+  "preferredCollection": "Retiro preferido: {time}",
+  "willConfirmTime": "{truck} confirmará tu hora de retiro cuando acepte tu pedido.",
+  "cardFallback": "No hemos podido iniciar el pago con tarjeta, así que tu pedido se pagará al retirar. Tu pedido está hecho y no se te ha cobrado nada."
+}

@@ -1,0 +1,9 @@
+{
+  "meta": {
+    "orderTitle": "Haz tu pedido a {truck}",
+    "orderDescription": "Haz tu pedido anticipado a {truck} y retíralo en el food truck."
+  },
+  "actions": {
+    "menu": "Carta"
+  }
+}

@@ -1,0 +1,16 @@
+{
+  "banner": {
+    "body": "Con {brand}, tus clientes piden con anticipación y pagan al retirar, así que podés aceptar pedidos online sin conectar ningún procesador de pagos con tarjeta. ¿Preferís cobrar por adelantado? Agregá el pago online con tarjeta cuando quieras. Cuando termine tu prueba, pasarás al plan <plan>{fallback}</plan>{fallbackFree, select, yes { (sin abono mensual)} other {}}, salvo que elijas otro plan. Sin tarjeta para empezar, sin plazos forzosos, cancelá cuando quieras.",
+    "bodyOnly": "Con {brand}, tus clientes piden con anticipación y pagan al retirar, así que podés aceptar pedidos online sin conectar ningún procesador de pagos con tarjeta. ¿Preferís cobrar por adelantado? Agregá el pago online con tarjeta cuando quieras. Cuando termine tu prueba, el plan <plan>{fallback}</plan> costará {price} al mes. Antes de esa fecha nos pondremos en contacto con vos para configurar el pago. Sin tarjeta para empezar, sin plazos forzosos, cancelá cuando quieras."
+  },
+  "card": {
+    "tryFree": "Probá gratis"
+  },
+  "fee": {
+    "noFee": "<b>Sin comisiones de HatchGrab</b> en los pedidos online, por mucho trabajo que tengas. Un costo mensual fijo y previsible."
+  },
+  "base": {
+    "preorders": "Pedidos anticipados y horario de retiro"
+  },
+  "footnote": "* Más la comisión de Stripe por procesar tarjetas en los pedidos online pagados con tarjeta (tarifa actual, {country}: {cardFee}), que se paga a Stripe, no a HatchGrab. Los pedidos en ventanilla se cobran con tu propio posnet — HatchGrab cobra 0 %."
+}

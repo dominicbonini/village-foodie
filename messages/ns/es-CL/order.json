@@ -1,0 +1,22 @@
+{
+  "taxNotice": "Los precios de la carta no incluyen {tax}. Se añade abajo.",
+  "tipAmount": "Monto de la propina",
+  "authFailed": "No se ha podido autorizar ese pago. No se te ha cobrado nada: prueba con otra tarjeta o elige Paga al retirar.",
+  "paymentThrew": "Algo ha fallado al procesar el pago. No se te ha cobrado nada: inténtalo de nuevo o elige Paga al retirar.",
+  "menuChangedFallback": "La carta cambió. Revisa tu pedido antes de hacerlo.",
+  "loadingMenu": "Cargando la carta…",
+  "closedDemo": "Este servicio de demostración terminó: se acabó el horario del evento, exactamente como pasaría con uno real. Vuelve a abrir tu panel de demostración y elige “Empezar un nuevo servicio” para preparar otro. Tu carta se queda como está.",
+  "menu": "Carta",
+  "cardHeldUntil": "El monto queda retenido en tu tarjeta, sin cobrarse, hasta que {withTruck, select, yes {{truck}} other {el food truck}} confirme tu pedido.",
+  "collectionTimeTitle": "Hora de retiro",
+  "collectionTimeChosen": "✓ Hora de retiro: {time}",
+  "payAtTruck": "Paga al retirar",
+  "payAtTruckLine": "Pagas en el food truck al retirar · Sin datos de tarjeta",
+  "addItemsPrompt": "Añade productos de la carta para hacer un pedido",
+  "payEitherLine": "Paga con tarjeta o al retirar",
+  "allergensUsed": "Alérgenos presentes en esta carta",
+  "collectionTime": "Hora de retiro: {time}",
+  "preferredCollection": "Retiro preferido: {time}",
+  "willConfirmTime": "{truck} confirmará tu hora de retiro cuando acepte tu pedido.",
+  "cardFallback": "No hemos podido iniciar el pago con tarjeta, así que tu pedido se pagará al retirar. Tu pedido está hecho y no se te ha cobrado nada."
+}

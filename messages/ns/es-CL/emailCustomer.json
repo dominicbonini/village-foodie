@@ -1,0 +1,49 @@
+{
+  "payNote": {
+    "capturedBody": "Tu pago se ha completado — no tienes que pagar nada al retirar.",
+    "capturedText": "Pagado con tarjeta. Tu pago se ha completado — no tienes que pagar nada al retirar.",
+    "partPaidBody": "El resto se paga al retirar.",
+    "partPaidBodyFigures": "De este pedido ya se han pagado {paid}. El monto restante, {balance}, se paga al retirar.",
+    "partPaidText": "Pagado en parte. Una parte de este pedido se paga al retirar.",
+    "partPaidTextFigures": "Pagado en parte: recibido {paid}, pendiente de pago al retirar {balance}.",
+    "heldTitle": "Monto retenido en tu tarjeta, sin cobrar",
+    "heldBody": "{truck} cobrará el monto cuando confirme tu pedido. No tienes que pagar nada al retirar.",
+    "heldText": "Monto retenido en tu tarjeta, sin cobrar. {truck} cobrará el monto cuando confirme tu pedido — no tienes que pagar nada al retirar.",
+    "heldReady": "Monto retenido en tu tarjeta, sin cobrar — no tienes que pagar nada al retirar.",
+    "heldShortTitle": "Monto retenido en tu tarjeta por una parte de este pedido",
+    "heldShortTitleOwing": "Monto retenido en tu tarjeta por una parte de este pedido — pendiente de pago: {owing}",
+    "heldShortBody": "{truck} cobrará el monto retenido cuando confirme tu pedido. El resto se paga al retirar.",
+    "heldShortBodyFigures": "{truck} cobrará el monto retenido ({held}) cuando confirme tu pedido. El monto restante, {owing}, se paga al retirar.",
+    "heldShortText": "Monto retenido en tu tarjeta por una parte de este pedido. {truck} cobrará el monto retenido cuando confirme tu pedido, y el resto se paga al retirar.",
+    "heldShortTextFigures": "Se ha retenido un monto de {held} en tu tarjeta, que {truck} cobrará cuando confirme tu pedido. Pendiente de pago al retirar: {owing}.",
+    "heldShortShort": "Monto retenido por una parte de este pedido",
+    "heldShortShortOwing": "Monto retenido por una parte de este pedido, pendiente de pago: {owing}",
+    "hatchTitle": "Paga al retirar tu pedido",
+    "hatchText": "Paga al retirar tu pedido.",
+    "hatchReady": "Paga al retirar."
+  },
+  "confirmation": {
+    "slotUpdated": "Tu hora de retiro ha cambiado",
+    "collectionTime": "Hora de retiro: {time}",
+    "preferredTime": "Hora de retiro preferida: {time}",
+    "weWillConfirm": "Confirmaremos tu hora de retiro cuando aceptemos tu pedido.",
+    "cancelLine": "{n, plural, one {¿Necesitas cancelar?<link>Cancela tu pedido</link>(hasta {count} minuto antes de tu hora de retiro)} other {¿Necesitas cancelar?<link>Cancela tu pedido</link>(hasta {count} minutos antes de tu hora de retiro)}}",
+    "leadReady": "Tu pedido ya está listo — pasa a retirarlo a {truck}.",
+    "textTitleReady": "Pedido #{id} listo para retirar — {truck}",
+    "textReady": "Tu pedido ya está listo — pasa a retirarlo.",
+    "textSlotUpdated": "Hora de retiro cambiada a las {time} (antes: {previous}).",
+    "textCollection": "Hora de retiro: {time}. ¡Nos vemos en la ventanilla!",
+    "textPreferred": "Retiro preferido: {time} — la confirmaremos cuando aceptemos tu pedido."
+  },
+  "cancelSentence": {
+    "refunded": "Se reembolsó un monto de {amount} a tu tarjeta. Los reembolsos suelen tardar entre 5 y 10 días hábiles en aparecer en tu estado de cuenta, según tu banco.",
+    "heldReleased": "Se retuvo un monto en tu tarjeta para este pedido, sin cobrarlo. Esa retención se ha liberado y no se te ha cobrado nada."
+  },
+  "rejectSentence": {
+    "heldReleased": "Se retuvo un monto en tu tarjeta para este pedido, pero nunca se llegó a cobrar, y esa retención ya se ha liberado.",
+    "heldWillClear": "Se retuvo un monto en tu tarjeta para este pedido, pero nunca se llegó a cobrar, y esa retención se liberará automáticamente — ponte en contacto con {truck} si no se ha liberado en una semana."
+  },
+  "refund": {
+    "leadFull": "{truck} ha reembolsado tu pedido. Se ha devuelto un monto de {amount} a la tarjeta con la que pagaste."
+  }
+}

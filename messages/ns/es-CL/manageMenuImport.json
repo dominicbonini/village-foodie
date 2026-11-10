@@ -1,0 +1,64 @@
+{
+  "steps": {
+    "menu": "Carta"
+  },
+  "toast": {
+    "demoGone": "La carta de tu demo ya no está disponible: vuelve a subirla para continuar.",
+    "commitFailedDetail": "No se pudo terminar de guardar la carta: {error}. Puede que algunos productos ya se hayan guardado; revisa tu carta antes de volver a intentarlo.",
+    "commitFailed": "No se pudo terminar de guardar la carta. Puede que algunos productos ya se hayan guardado; revisa tu carta antes de volver a intentarlo."
+  },
+  "settingsReview": {
+    "cancelAria": "Con cuánta antelación al retiro pueden cancelar los clientes"
+  },
+  "allergensNotSet": {
+    "bodySetup": "Revísalos antes de publicar tu carta. Hasta entonces, los productos aparecen marcados como “alérgenos sin configurar”.",
+    "body": "Revísalos en Ajustes antes de publicar tu carta. Hasta entonces, los productos aparecen marcados como “alérgenos sin configurar”."
+  },
+  "welcome": {
+    "body": "{name} ya está configurado. Ahora agregaremos tu carta y después tu primer evento."
+  },
+  "offer": {
+    "title": "¿Usar la carta de tu demo?",
+    "use": "Usar esta carta",
+    "upload": "Subir otra carta",
+    "body": "Guardamos la carta que subiste: {count, plural, one {# producto} many {# productos} other {# productos}}. Úsala como punto de partida o sube otra."
+  },
+  "checkMenu": {
+    "title": "Revisa tu carta",
+    "body": "Guardamos la carta de tu demo en tu food truck y la has cambiado desde entonces, así que tus cambios se mantienen. Échale un vistazo abajo."
+  },
+  "upload": {
+    "title": "Importa tu carta",
+    "body": "Sube una foto de la pizarra de tu carta, una captura de pantalla o un PDF, o pega tu carta como texto. Nuestra IA la lee y crea tu carta digital; tú revisas todo antes de que se guarde.",
+    "confirmCancel": "¿Cancelar esta importación? Se descartará tu revisión de esta carta.",
+    "process": "Procesar carta"
+  },
+  "processing": {
+    "title": "Analizando tu carta"
+  },
+  "review": {
+    "title": "Revisa la carta importada",
+    "lastCategory": "Tu carta necesita al menos una categoría",
+    "moveBody": "Para eliminar “{name}” hay que mover sus platos a otro lugar: los productos sin categoría no se importan."
+  },
+  "extras": {
+    "separate": "Productos separados en la carta"
+  },
+  "allergens": {
+    "detected": "Detectamos alérgenos en tu carta. Elige abajo cómo mostrarlos."
+  },
+  "kitchen": {
+    "saveAdd": "Guardar y añadir a la carta"
+  },
+  "schedule": {
+    "urlPlaceholder": "https://tufoodtruck.cl/eventos"
+  },
+  "done": {
+    "imported": "¡Carta importada!",
+    "added": "Tus productos se agregaron a la carta."
+  },
+  "discard": {
+    "setupBody": "Tu cuenta y tu food truck están guardados: no se pierde nada. Puedes agregar tu carta cuando quieras: inicia sesión y toca <b>Importar carta</b> en la pantalla de tu carta para seguir justo aquí.",
+    "carriedBody": "La carta de tu demo está guardada en tu food truck tal cual. Puedes cambiarla cuando quieras en la pantalla de tu carta."
+  }
+}

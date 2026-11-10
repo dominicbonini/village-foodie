@@ -1,0 +1,97 @@
+{
+  "meta": {
+    "description": "Sistemas de pedidos para food trucks: hora para recoger, capacidad de cocina, agenda, comisiones y permanencia, revisados en la web de cada proveedor.",
+    "about": "Sistemas de pedidos en línea para food trucks"
+  },
+  "table": {
+    "caption": "Funciones y costos de los sistemas de pedidos en línea para food trucks en {country}, al {date}"
+  },
+  "costs": {
+    "feeOnly": "{fee} por pedido en línea pagado con tarjeta",
+    "feeIncluded": "pedidos en línea incluidos hasta {included} al mes; después, {fee}",
+    "feeNone": "sin comisión de HatchGrab en los pedidos en línea",
+    "cardFee": "Con HatchGrab, los pagos en línea con tarjeta también llevan las comisiones de Stripe: {cardFee} por pago con tarjeta en {country}.",
+    "bundledFee": "{fee} por pago en línea, comisión de tarjeta incluida"
+  },
+  "fit": {
+    "oursBody": "vendes en ubicaciones que cambian, quieres pedidos anticipados con hora para recoger, no quieres que tu cocina se sature y no quieres cláusula de permanencia.",
+    "oursNotBody": "tus clientes tienen que poder pagar con PayPal o Klarna, o quieres un sistema de caja certificado según la normativa fiscal, todo de un mismo proveedor.",
+    "tills": "Sistemas de caja y datáfonos",
+    "marketplaces": "Apps de domicilios",
+    "tillsBody": "Los sistemas de caja cobran en el food truck y cumplen los requisitos fiscales de una caja registradora certificada. Un sistema de pedidos funciona junto a un sistema de caja; no lo sustituye.",
+    "tillsBodyNamed": "Los sistemas de caja cobran en el food truck y cumplen los requisitos fiscales de una caja registradora certificada. {names} también {count, plural, one {aparece} many {aparecen} other {aparecen}} en la tabla de arriba. Un sistema de pedidos funciona junto a un sistema de caja; no lo sustituye.",
+    "marketplacesBody": "Las apps de domicilios traen clientes nuevos, pero se quedan con una comisión de cada pedido. Uber Eats indica un 14 % para recoger y un 30 % para domicilios con domiciliarios de Uber en Alemania. Wolt dice en su propio sitio web que cobra comisión, pero no da las tarifas. No pudimos comprobar las tarifas de Lieferando. Esa comisión también se aplica a los clientes frecuentes que te hacen pedidos anticipados."
+  },
+  "groups": {
+    "pos": "Sistema de caja"
+  },
+  "faq": {
+    "whatA": "Un sistema de pedidos recibe pedidos en línea antes de que los clientes lleguen al food truck: eligen los platos y una hora para recoger, pagan en línea o al recoger, y el pedido aparece en tu cocina. Un sistema de caja o un datáfono cobra en el food truck. Las dos cosas se complementan.",
+    "costA": "{plans}. Los pagos en línea con tarjeta también llevan las comisiones de Stripe: {cardFee} por pago con tarjeta.",
+    "termQ": "¿Hay cláusula de permanencia?",
+    "termA": "No. No hay cláusula de permanencia ni periodo de aviso previo. Puedes cancelar cuando quieras; la cuota se cobra por mes y por adelantado, y mantienes el acceso hasta el final del mes que pagaste.",
+    "capacityA": "Los clientes solo ven las horas para recoger que tu cocina realmente puede cumplir. El sistema toma en cuenta el tiempo de preparación de cada plato y cuántos preparas a la vez.",
+    "tseQ": "¿Sigo necesitando un sistema de caja certificado?",
+    "tseA": "HatchGrab no es un sistema de caja y no está certificado según la normativa fiscal para cajas registradoras. Cómo registrar los pedidos en línea en tu sistema de caja es algo que debes consultar con tu contador.",
+    "paymentsA": "Los clientes pagan en línea con tarjeta, Apple Pay o Google Pay, o pagan en el food truck. De momento no se admiten PayPal ni Klarna."
+  },
+  "costBlock": {
+    "sizes": "Ventas en línea al mes",
+    "lead": "Para un food truck que vende {sales} en pedidos en línea al mes (unos {orders} pedidos). Cada barra es el costo mensual total: la tarifa del propio sistema de pedidos más las comisiones de tarjeta de esos pedidos.",
+    "footOrder": "Pedido promedio de {order}: una comida típica de {meal} × {multiplier} platos por pedido ({source})."
+  },
+  "features": {
+    "walkup": {
+      "label": "Pedidos en ventanilla en la misma pantalla que los pedidos en línea",
+      "explain": "Los pedidos que se toman en la ventanilla entran en la misma lista que los pedidos en línea."
+    },
+    "stock": {
+      "explain": "Marca platos como agotados y fija cuántas unidades de cada uno se pueden vender en un evento."
+    },
+    "allergens": {
+      "explain": "Cada plato muestra sus alérgenos a los clientes antes de que pidan."
+    },
+    "menuphoto": {
+      "explain": "Una foto o un PDF del menú llena los platos para que tú los revises."
+    },
+    "options": {
+      "label": "Opciones y extras en los platos"
+    },
+    "private": {
+      "label": "Eventos privados y alquiler",
+      "explain": "Pedidos para un evento privado con su propio enlace, y solicitudes para alquilar el food truck.",
+      "ours": "eventos privados con su propio enlace de pedidos; sin solicitudes de alquiler"
+    },
+    "cards": {
+      "label": "Pagos en línea con tarjeta, incluidos Apple Pay y Google Pay",
+      "explain": "Los clientes pagan en línea con tarjeta, Apple Pay o Google Pay al hacer el pedido."
+    },
+    "payattruck": {
+      "explain": "Los clientes piden en línea y pagan al recoger."
+    },
+    "localpay": {
+      "explain": "Los métodos de pago en línea propios del país, además de las tarjetas."
+    },
+    "tips": {
+      "explain": "Los clientes pueden añadir una propina al pagar en línea."
+    },
+    "terminal": {
+      "label": "Datáfono para la ventanilla incluido",
+      "explain": "El proveedor da un datáfono para cobrar en el food truck."
+    },
+    "fiscal": {
+      "label": "Sistema de caja certificado según la normativa fiscal (TSE, EET, kassaregister…)",
+      "explain": "Un sistema de caja certificado según las normas del país sobre el registro de ventas."
+    },
+    "delivery": {
+      "label": "Domicilios"
+    },
+    "perorder": {
+      "label": "Comisión por pedido en línea",
+      "explain": "Lo que cobra el proveedor por cada pedido en línea, además del precio mensual."
+    },
+    "term": {
+      "label": "Cláusula de permanencia"
+    }
+  }
+}

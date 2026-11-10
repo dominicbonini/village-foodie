@@ -1,0 +1,103 @@
+{
+  "toast": {
+    "usualSetting": "Volvés a tu configuración habitual para este evento",
+    "intervalsSaved": "Horarios de retiro guardados para este evento",
+    "notOnBoard": "Ese pedido no está en este panel: comprobá el evento",
+    "printMode": "{mode, select, onConfirmed {Las comandas se imprimirán al aceptar un pedido} other {Las comandas se imprimirán poco antes del retiro}}",
+    "intervalsFailed": "No se han podido guardar los horarios de retiro en este momento.",
+    "saveThatFailed": "No se ha podido guardar: intentalo de nuevo",
+    "editBusy": "Otra persona está actualizando pedidos en este momento. Intentalo de nuevo.",
+    "categoryUpdateFailed": "No se ha podido actualizar la categoría: intentalo de nuevo",
+    "extraSaveFailed": "No se ha podido guardar ese extra. Revisalo antes del servicio.",
+    "reconnectToLoad": "Volvé a conectarte para cargar este evento"
+  },
+  "gate": {
+    "openOnceOnline": "Abrí la app una vez mientras tengas conexión y después funcionará sin conexión."
+  },
+  "demo": {
+    "restartFailed": "No se ha podido empezar un nuevo servicio: intentalo de nuevo.",
+    "endedBody": "Empezá uno nuevo y prepararemos un servicio a partir de este momento. Tu menú se queda como está.",
+    "lockBody": "Desde aquí empezás y cerrás un servicio, pausás los pedidos cuando la cola se hace larga o cambiás a otro evento."
+  },
+  "qr": {
+    "tapToClose": "Tocá en cualquier sitio para cerrar"
+  },
+  "pin": {
+    "unreachable": "No se puede conectar con el servidor ahora mismo. Tu PIN es correcto: intentalo de nuevo en un momento.",
+    "failed": "Algo ha fallado. Intentalo de nuevo.",
+    "title": "Ingresá el PIN"
+  },
+  "refund": {
+    "unreachable": "No hemos podido conectar con el sistema de pagos, así que no se ha reembolsado nada. Comprobá tu conexión e intentalo de nuevo."
+  },
+  "cancelReasons": {
+    "not_collected": "Pedido no retirado"
+  },
+  "cancelModal": {
+    "chooseReason": "Elegí un motivo para el reembolso.",
+    "cash": "Los {amount} se cobraron en persona. No hay ningún pago con tarjeta que reembolsar: devolvé el dinero en el food truck y usá la etiqueta PAGADO del pedido para eliminar el registro.",
+    "selectReason": "Seleccioná un motivo",
+    "notePlaceholder": "Agregá más detalles para el cliente…"
+  },
+  "switchEventConfirm": "Ahora estás sirviendo en {current}. ¿Cambiar a {next}? Tocá el evento actual para volver.",
+  "extraWait": {
+    "activeTapToClear": "+{mins} min activos · Tocá para quitar"
+  },
+  "banner": {
+    "boardUnavailable": "No se han podido cargar los pedidos de hoy. Podés seguir aceptando pedidos nuevos en este dispositivo.",
+    "menuSnapshot": "Menú guardado en esta tableta a las {time}. Revisá los precios antes de cobrar."
+  },
+  "header": {
+    "sound": "{state, select, on {Sonido de pedidos nuevos activado: tocá para desactivarlo} other {Sonido de pedidos nuevos desactivado: tocá para activarlo}}",
+    "screenTitle": "{state, select, on {La pantalla se mantendrá encendida} other {Tocá para mantener la pantalla encendida}}"
+  },
+  "orders": {
+    "noEvent": "Ningún evento seleccionado: seleccioná un evento para ver los pedidos",
+    "prepBannerTitle": "Configurá tus tiempos de preparación antes de empezar",
+    "prepBannerBody": "Tu menú usa tiempos de preparación predeterminados. Actualizalos en Gestionar para que tu cocina no se sature de pedidos.",
+    "chipTitle": "Tocá para reembolsar o corregir este pago",
+    "status": "{status, select, pending {Nuevo} confirmed {Confirmado} rejected {Rechazado} modified {Modificado} cancelled {Cancelado} cooking {En preparación} ready {Listo} collected {Retirado} other {{status}}}"
+  },
+  "prep": {
+    "kitchen": "Cocina: empezá ya (por orden)"
+  },
+  "settings": {
+    "layoutTabsHelp": "Muestra una categoría a la vez. Tocá una categoría para cambiar. Ideal para menús largos, donde cada producto se queda siempre en el mismo lugar.",
+    "layoutScrollHelp": "Muestra todos los productos en una lista con desplazamiento, con un encabezado por categoría. No hay botones de categoría: te desplazás para moverte. Ideal para menús cortos, donde podés ver casi todo de un vistazo.",
+    "paidStepHelp": "Añade un botón Confirmar cuando agregás vos un pedido, para que puedas registrarlo ahora y cobrar más tarde.",
+    "takesCashTitle": "¿Aceptás efectivo?",
+    "buzzerPromptHelp": "Abre la cuadrícula de avisadores en cuanto registrás un pedido, para que el número quede en el panel mientras el cliente sigue delante de vos. Si lo desactivás, podés añadir un avisador cuando quieras tocando el pedido, pero nada te lo recordará. Útil si repartís avisadores; fácil de desactivar si no.",
+    "cardsHelp": "Desactivalo si hay un problema con las tarjetas: los clientes harán sus pedidos como siempre y pagarán en la ventanilla. Los pedidos siguen llegando; solo se detiene el paso de la tarjeta.",
+    "intervalsTitle": "Horarios de retiro",
+    "intervalsHelp": "Cuánto tiempo hay entre un horario de retiro y el siguiente. No cambia la capacidad de cocina ni los tiempos de preparación.",
+    "intervalsUnavailable": "Los horarios de retiro no están disponibles ahora mismo.",
+    "customerTimes": "Horarios de retiro de los clientes",
+    "canPick": "{who, select, customers {Los clientes pueden elegir {example}} other {Vos y tus clientes pueden elegir {example}}}",
+    "yourTimes": "Tus horarios de retiro",
+    "youCanPick": "Podés elegir {example}",
+    "colCountsTitle": "Qué categorías cuentan para la capacidad total. Las categorías que se cocinan siempre cuentan; marcá las instantáneas (acompañamientos, salsas, bebidas) para incluirlas.",
+    "countsNoCap": "Fijá una capacidad para elegir qué categorías cuentan",
+    "countsTick": "Marcá para incluir esta categoría instantánea (acompañamientos, salsas, bebidas) en el límite compartido por franja",
+    "assignTruck": "Asigná un food truck a este evento antes de fijar la capacidad de cocina.",
+    "setCapacityFirst": "Fijá una capacidad para elegir qué categorías cuentan."
+  },
+  "stock": {
+    "defaultStockTitle": "Stock predeterminado: guardá para cambiarlo",
+    "ownPriceTitle": "Precio propio de este evento: tocá × para volver al precio del tipo o del menú",
+    "followsCategoryTitle": "Sigue el total de la categoría: escribí un número para limitarlo",
+    "howCategory": "El <b>total de la categoría</b> es una reserva compartida entre todos los productos de esa categoría (p. ej. 30 entradas esta noche).",
+    "howItem": "El <b>límite del producto</b> limita solo ese producto dentro de la reserva (p. ej. solo 8 Pepperoni). Dejalo vacío para que tire de la reserva sin límite propio."
+  },
+  "finish": {
+    "early": "Este evento no tiene previsto terminar hasta las {time}. No se aceptarán más pedidos. ¿Confirmás que querés terminar el evento?"
+  },
+  "screenOff": {
+    "confirm": "¿Seguro que querés permitir que la pantalla se apague?"
+  },
+  "kds": {
+    "body": "Elegí de qué food truck querés abrir la pantalla de cocina:"
+  },
+  "edit": {
+    "collectionTime": "Horario de retiro"
+  }
+}

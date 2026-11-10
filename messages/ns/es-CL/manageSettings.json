@@ -1,0 +1,19 @@
+{
+  "details": {
+    "websitePlaceholder": "https://tufoodtruck.cl",
+    "menuIcon": "Ícono de la carta"
+  },
+  "contact": {
+    "emailPlaceholder": "hola@tufoodtruck.cl",
+    "emailError": "Ingresa un correo válido (p. ej., hola@tufoodtruck.cl)"
+  },
+  "collection": {
+    "help": "Cuánto separan unas horas de retiro de otras. Esto no cambia la capacidad de cocina ni los tiempos de preparación.",
+    "unavailable": "Las horas de retiro no están disponibles en este momento.",
+    "customerTimes": "Horas de retiro para clientes",
+    "yourTimes": "Tus horas de retiro"
+  },
+  "schedule": {
+    "urlPlaceholder": "https://tufoodtruck.cl/eventos"
+  }
+}

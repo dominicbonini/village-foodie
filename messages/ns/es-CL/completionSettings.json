@@ -1,0 +1,6 @@
+{
+  "pressesOne": "Un toque (“Marcar pagado y retirado”)",
+  "pressesOneHelp": "Ideal si cobras al entregar la comida. Tienes un único botón, “Marcar pagado y retirado”, que registra el pago y cierra el pedido a la vez.",
+  "pressesTwo": "Dos toques (“Marcar pagado” y “Retirado”)",
+  "pressesTwoHelp": "Ideal si el pago y la entrega ocurren en momentos distintos: el cliente paga en la ventanilla y retira cuando está listo. Tienes dos botones: primero “Marcar pagado” y luego “Retirado” cuando se lleva la comida."
+}

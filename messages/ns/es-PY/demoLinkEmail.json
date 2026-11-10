@@ -1,0 +1,6 @@
+{
+  "subject": "Tu demo de HatchGrab: aquí tenés tu enlace",
+  "intro": "Aquí tenés el enlace a la demo que creamos con tu menú. Hacé un pedido como uno de tus clientes y mirá cómo llega a tu pantalla de cocina (KDS). No hace falta iniciar sesión: solo tenés que tocarlo.",
+  "deletion": "Esto es una demo, así que no la guardamos: la eliminaremos, junto con el menú que subiste, el {date}. Si querés más tiempo, tocá “Guardar mi menú” en la demo y la guardaremos durante 14 días.",
+  "deletionSoon": "Esto es una demo, así que no la guardamos: la eliminaremos, junto con el menú que subiste, en 24 horas. Si querés más tiempo, tocá “Guardar mi menú” en la demo y la guardaremos durante 14 días."
+}

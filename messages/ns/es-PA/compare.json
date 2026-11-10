@@ -1,0 +1,34 @@
+{
+  "eyebrow": "Comparativa de costos",
+  "title": "Compara tus costos<br></br><accent>de pedidos en línea</accent>",
+  "system": {
+    "title": "¿Aceptas ya pedidos en línea?"
+  },
+  "plan": {
+    "summary": "{price} por food truck al mes, con {allowance} en pedidos en línea incluidos{fleet, plural, one {} other { en cada uno}}.",
+    "summaryFeeOnly": "{hasMonthly, select, yes {{price} por food truck al mes, más {pct} en los pedidos en línea pagados con tarjeta.} other {Sin cuota mensual: solo {pct} en los pedidos en línea pagados con tarjeta.}}",
+    "summaryNoFee": "{price} por food truck al mes, con pedidos en línea ilimitados y sin comisión de HatchGrab."
+  },
+  "orders": {
+    "titleYes": "Pedidos en línea al mes, por food truck",
+    "sliderAria": "Importe mensual de pedidos en línea por food truck",
+    "overAllowance": "{allowance} en pedidos en línea incluidos por food truck. Los {excess} de más se cobran al {pct}: <b>{over}</b> al mes cada uno.",
+    "insideAllowance": "Dentro de los {allowance} en pedidos en línea incluidos: nada aparte del plan.",
+    "titleNo": "¿Cuánto crees que venderías en línea al mes, por food truck?",
+    "feeOnly": "{pct} en cada pedido en línea pagado con tarjeta: <b>{over}</b> al mes por food truck.",
+    "noFee": "Pedidos en línea ilimitados incluidos: nada aparte del plan."
+  },
+  "noSystem": {
+    "hero": "<lead>Pedidos en línea, pedidos anticipados y tu pantalla de cocina por</lead><figure>{amount}</figure><unit>cada día de venta</unit>"
+  },
+  "breakdown": {
+    "inside": "Pedidos en línea dentro de los {allowance} incluidos",
+    "card": "Comisión de tarjeta: los {fee} por pedido de Stripe, que se pagan a Stripe. Pagarías más o menos lo mismo con un POS en la ventanilla.",
+    "feeOnly": "{pct} sobre {excess} en pedidos en línea",
+    "noFee": "Pedidos en línea: ilimitados, sin comisión de HatchGrab"
+  },
+  "meta": {
+    "title": "Calculadora de costos — HatchGrab {country}",
+    "description": "Compara lo que te cuestan hoy tus pedidos en línea y las comisiones de las apps de delivery con un año en HatchGrab: un cálculo en un minuto."
+  }
+}

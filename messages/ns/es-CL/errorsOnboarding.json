@@ -1,0 +1,6 @@
+{
+  "file_too_big": "Ese archivo es demasiado grande (máx. {mb} MB). Basta con una foto normal de tu carta.",
+  "file_type_unsupported": "Ese tipo de archivo no es compatible: envía una foto o un PDF de tu carta.",
+  "text_too_long": "Es mucho texto: pega solo la carta.",
+  "menu_missing": "Agrega una foto de tu carta o pégala aquí."
+}

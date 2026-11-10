@@ -1,0 +1,20 @@
+{
+  "placeSample": {
+    "nameTownBelow": "Bar La Plaza\nSuchitoto",
+    "nameTown": "Bar La Plaza, Suchitoto"
+  },
+  "busyWeek": {
+    "venue1": "Casa de la Cultura de Suchitoto",
+    "town1": "Suchitoto",
+    "venue2": "Polideportivo Municipal y Cancha de Fútbol de Santa Tecla",
+    "town2": "Santa Tecla",
+    "venue3": "Plaza Libertad",
+    "town3": "San Salvador",
+    "venue4": "Feria Gastronómica",
+    "town4": "Juayúa",
+    "venue5": "Mesón El Portal",
+    "town5": "Santa Ana",
+    "venue6": "Parque Central",
+    "town6": "San Miguel"
+  }
+}

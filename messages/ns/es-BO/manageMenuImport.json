@@ -1,0 +1,11 @@
+{
+  "upload": {
+    "body": "Sube una foto de la pizarra de tu menú, una captura de pantalla o un PDF, o pega tu menú como texto. Nuestra IA lo lee y crea tu menú digital; tú revisas todo antes de que se guarde."
+  },
+  "review": {
+    "moveBody": "Para eliminar “{name}” hay que mover sus platos a otro lugar: los productos sin categoría no se importan."
+  },
+  "schedule": {
+    "urlPlaceholder": "https://tufoodtruck.bo/eventos"
+  }
+}

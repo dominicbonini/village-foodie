@@ -1,0 +1,14 @@
+{
+  "tapToOverride": "Tocá para cambiar el precio",
+  "collected": "Retirado",
+  "cashAndCollected": "Efectivo y retirado",
+  "cardAndCollected": "Tarjeta y retirado",
+  "tapToRemovePayment": "Tocá para eliminar este pago",
+  "tapForRefund": "Tocá para ver cómo reembolsarlo",
+  "buzzerTitle": "Avisador {number} — tocá para cambiarlo",
+  "giveBuzzer": "Tocá para dar un avisador",
+  "status": "{status, select, pending {Nuevo} confirmed {Confirmado} rejected {Rechazado} modified {Modificado} cancelled {Cancelado} cooking {En cocina} ready {Listo} collected {Retirado} other {Nuevo}}",
+  "contactTitle": "Tocá para ver los datos de contacto",
+  "conflictPayment": "PAGO NO REGISTRADO — revisá antes de entregar",
+  "markPaidAndCollected": "Marcar pagado y retirado"
+}

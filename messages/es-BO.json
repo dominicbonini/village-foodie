@@ -1,0 +1,361 @@
+{
+  "order": {
+    "tipAmount": "Monto de la propina",
+    "cardHeldUntil": "El monto queda retenido en tu tarjeta, sin cobrarse, hasta que {withTruck, select, yes {{truck}} other {el food truck}} confirme tu pedido."
+  },
+  "dashboard": {
+    "cancelModal": {
+      "held": "El monto está <b>retenido, no cobrado</b> en su tarjeta: no se ha cobrado nada, así que no hay nada que reembolsar. Al cancelar, la retención se libera al momento."
+    },
+    "edit": {
+      "extraToCollect": "Monto extra a cobrar"
+    }
+  },
+  "whatsappCustomer": {
+    "menuFallback": "{opener}Mira nuestro menú completo aquí: {url} — {truck} {emoji}",
+    "menuSummary": "{opener}Tenemos {summary}. Mira el menú completo y haz tu pedido anticipado aquí: {url} — {truck} {emoji}"
+  },
+  "emailCustomer": {
+    "payNote": {
+      "partPaidBodyFigures": "De este pedido ya se han pagado {paid}. El monto restante, {balance}, se paga al recoger.",
+      "heldTitle": "Monto retenido en tu tarjeta, sin cobrar",
+      "heldBody": "{truck} cobrará el monto cuando confirme tu pedido. No tienes que pagar nada al recoger.",
+      "heldText": "Monto retenido en tu tarjeta, sin cobrar. {truck} cobrará el monto cuando confirme tu pedido — no tienes que pagar nada al recoger.",
+      "heldReady": "Monto retenido en tu tarjeta, sin cobrar — no tienes que pagar nada al recoger.",
+      "heldShortTitle": "Monto retenido en tu tarjeta por una parte de este pedido",
+      "heldShortTitleOwing": "Monto retenido en tu tarjeta por una parte de este pedido — pendiente de pago: {owing}",
+      "heldShortBody": "{truck} cobrará el monto retenido cuando confirme tu pedido. El resto se paga al recoger.",
+      "heldShortBodyFigures": "{truck} cobrará el monto retenido ({held}) cuando confirme tu pedido. El monto restante, {owing}, se paga al recoger.",
+      "heldShortText": "Monto retenido en tu tarjeta por una parte de este pedido. {truck} cobrará el monto retenido cuando confirme tu pedido, y el resto se paga al recoger.",
+      "heldShortTextFigures": "Se ha retenido un monto de {held} en tu tarjeta, que {truck} cobrará cuando confirme tu pedido. Pendiente de pago al recoger: {owing}.",
+      "heldShortShort": "Monto retenido por una parte de este pedido",
+      "heldShortShortOwing": "Monto retenido por una parte de este pedido, pendiente de pago: {owing}"
+    },
+    "cancelSentence": {
+      "refunded": "Se reembolsó un monto de {amount} a tu tarjeta. Los reembolsos suelen tardar entre 5 y 10 días hábiles en aparecer en tu estado de cuenta, según tu banco.",
+      "heldReleased": "Se retuvo un monto en tu tarjeta para este pedido, sin cobrarlo. Esa retención se ha liberado y no se te ha cobrado nada."
+    },
+    "rejectSentence": {
+      "heldReleased": "Se retuvo un monto en tu tarjeta para este pedido, pero nunca se llegó a cobrar, y esa retención ya se ha liberado.",
+      "heldWillClear": "Se retuvo un monto en tu tarjeta para este pedido, pero nunca se llegó a cobrar, y esa retención se liberará automáticamente — ponte en contacto con {truck} si no se ha liberado en una semana."
+    },
+    "refund": {
+      "leadFull": "{truck} ha reembolsado tu pedido. Se ha devuelto un monto de {amount} a la tarjeta con la que pagaste."
+    }
+  },
+  "errorsKitchen": {
+    "completed_payment_not_recorded": "Pedido completado, pero no se ha podido guardar el registro del pago — el monto recaudado de este pedido puede ser incorrecto hasta que se corrija.",
+    "created_payment_not_recorded": "Pedido creado, pero no se ha podido guardar el registro del pago — el monto recaudado de este pedido puede ser incorrecto hasta que se corrija.",
+    "payment_not_recorded": "No se ha podido registrar el pago — el monto recaudado de este pedido puede ser incorrecto hasta que se corrija."
+  },
+  "paymentActions": {
+    "paidCardMachine": "Pagado con tu POS{mixed, select, yes { — {amount}} other {}}",
+    "inPersonHint": "Efectivo o tu POS — no se registra",
+    "amount": "Monto"
+  },
+  "addOrder": {
+    "savedToast": "Pedido {id} guardado{paid, select, cash { — pagado en efectivo} card { — pagado con tu POS} other {}}",
+    "confirmedToast": "Pedido #{id} confirmado{paid, select, cash { — pagado en efectivo} card { — pagado con tu POS} other {}}"
+  },
+  "goLive": {
+    "allergensUnanswered": {
+      "detail": "Hasta que elijas, los clientes no ven ninguno de tus platos: el menú se protege ocultando todo lo que tenga alérgenos sin confirmar, y en este momento eso es todo."
+    },
+    "allergensItemsUnverified": {
+      "detail": "{n, plural, one {Tu plato está oculto para los clientes hasta que confirmes sus alérgenos.} other {{u, plural, one {{unverified} de tus {total} platos está oculto para los clientes hasta que confirmes sus alérgenos.} other {{unverified} de tus {total} platos están ocultos para los clientes hasta que confirmes sus alérgenos.}}}} Un plato mostrado sin alérgenos confirmados se lee como “no contiene ninguno”, así que el menú lo oculta en vez de correr ese riesgo."
+    },
+    "noPrepBearingCategory": {
+      "detail": "{categories, select, none {Todavía no tienes categorías en el menú, así que no podemos calcular cuánto tarda un pedido.} other {Ninguna de tus categorías tiene un tiempo de cocción configurado, así que para nosotros todos los pedidos parecen instantáneos. Seguiríamos dando a los clientes horas de recogida que tu cocina no tiene forma de cumplir, y mientras más trabajo tengas, más desfasadas estarían.}}"
+    }
+  },
+  "auth": {
+    "fields": {
+      "emailPlaceholder": "tu@ejemplo.bo"
+    },
+    "signup": {
+      "emailPlaceholder": "tu@tufoodtruck.bo"
+    }
+  },
+  "demoGetStarted": {
+    "emailPlaceholder": "tu@tufoodtruck.bo"
+  },
+  "demoUpload": {
+    "intro": "Una foto de tu pizarra, una captura de pantalla, un PDF, o pégalo como texto. Nuestra IA lo lee y te crea una página de pedidos que funciona, con tus productos y tus precios, en menos de 60 segundos. Sin registro y sin tarjeta.",
+    "buildBody": "Déjanos tu correo y una persona de verdad va a ingresar tu menú y te enviará el enlace.",
+    "emailPlaceholder": "tu@tufoodtruck.bo",
+    "noPhoto": "¿No tienes a mano una foto del menú?"
+  },
+  "provisionContent": {
+    "standardCategories": {
+      "starters": "Entradas",
+      "wrapsSandwiches": "Wraps y sándwiches"
+    }
+  },
+  "manageAllergens": {
+    "cardUpload": {
+      "blanket": "La tabla indica que <b>{list}</b> puede estar presente en <b>todos</b> los platos. ¿Agregarlo a todos? (de todos modos confirmarás cada uno) <muted>— desactivado de forma predeterminada</muted>"
+    },
+    "wizard": {
+      "review": {
+        "detected": "Detectados a partir de tu menú: <b>revísalos</b>. Los alérgenos siguen ocultos para los clientes hasta que confirmes cada plato."
+      },
+      "cardPanel": {
+        "intro": "Los clientes verán esta tabla como la referencia de alérgenos de tu menú. Los alérgenos por plato quedan ocultos en el modo solo tabla de alérgenos (los datos de tus platos se conservan por si más adelante cambias a alérgenos por plato)."
+      }
+    }
+  },
+  "eventTypes": {
+    "newType": {
+      "chips": {
+        "privateHire": "Alquiler de food truck"
+      }
+    }
+  },
+  "manageMenu": {
+    "empty": {
+      "body": "Toma una foto de la pizarra de tu menú, una captura de tu menú actual o arrastra un PDF: nuestra IA extraerá todo y creará tu menú digital automáticamente."
+    },
+    "allergens": {
+      "buildFirst": "Primero crea tu menú: agrega platos y luego configura sus alérgenos",
+      "cardNotAllowed": "Donde vende tu food truck no se puede usar solo una tabla de alérgenos, así que los clientes ven los alérgenos de cada plato. Confirma los alérgenos de cada plato."
+    },
+    "item": {
+      "allergenGateBody": "Abre el recuadro “Configurar / revisar alérgenos” en la pestaña Menú: el asistente te guía para confirmar cada plato."
+    }
+  },
+  "manageMenuImport": {
+    "upload": {
+      "body": "Sube una foto de la pizarra de tu menú, una captura de pantalla o un PDF, o pega tu menú como texto. Nuestra IA lo lee y crea tu menú digital; tú revisas todo antes de que se guarde."
+    },
+    "review": {
+      "moveBody": "Para eliminar “{name}” hay que mover sus platos a otro lugar: los productos sin categoría no se importan."
+    },
+    "schedule": {
+      "urlPlaceholder": "https://tufoodtruck.bo/eventos"
+    }
+  },
+  "errorsManage": {
+    "allergen_card_not_allowed": "Donde trabaja tu food truck, los alérgenos deben indicarse junto a cada plato, así que no se puede elegir solo una tabla de alérgenos.",
+    "charges_fee_fixed": "Usa un monto, por ejemplo 0,50."
+  },
+  "manageScheduleVerify": {
+    "malformed": "Eso no parece una dirección web. Prueba algo como tufoodtruck.bo/eventos"
+  },
+  "serviceSettings": {
+    "priceLabels": {
+      "price_amount": "Monto"
+    }
+  },
+  "managePrimitives": {
+    "allergenMode": {
+      "perDishBody": "Revisa cada plato y confirma sus alérgenos. Los clientes ven etiquetas por plato y una tabla resumen de alérgenos generada a partir de ellas.",
+      "cardBody": "Sube o pega una sola tabla de alérgenos (PDF, imagen o texto), que se muestra tal cual. Las etiquetas por plato quedan ocultas."
+    }
+  },
+  "manageSettings": {
+    "details": {
+      "websitePlaceholder": "https://tufoodtruck.bo"
+    },
+    "contact": {
+      "emailPlaceholder": "hola@tufoodtruck.bo",
+      "emailError": "Ingresa un correo válido (p. ej., hola@tufoodtruck.bo)"
+    },
+    "schedule": {
+      "urlPlaceholder": "https://tufoodtruck.bo/eventos"
+    }
+  },
+  "manageReports": {
+    "accounts": {
+      "cost": "Costo de los platos vendidos",
+      "coverage": "{total, plural, one {Costo indicado en {withCost} de # plato vendido} many {Costo indicado en {withCost} de # platos vendidos} other {Costo indicado en {withCost} de # platos vendidos}}",
+      "partial": "Los platos sin costo no se incluyen en el costo, así que esta ganancia es mayor de lo que es en realidad. Agrega un costo a cada plato en la pestaña Menú.",
+      "noCosts": "Todavía ningún plato tiene costo. Agrega un costo a tus platos en la pestaña Menú para ver tu ganancia.",
+      "eventNoProfit": "Un guion significa que no todos los platos vendidos ahí tienen costo."
+    },
+    "accountsCsv": {
+      "header": {
+        "dishesSold": "Platos vendidos",
+        "dishesWithCost": "Platos con costo"
+      }
+    }
+  },
+  "socialPosts": {
+    "socialTagPlaceholder": "@festivalsopocachi"
+  },
+  "managePayments": {
+    "walkUp": {
+      "ownTerminal": "Tu propio POS",
+      "hatchgrabHelp": "Usa la misma conexión de Stripe que tus pagos online: un POS, o pago sin contacto directamente en tu celular o tablet."
+    }
+  },
+  "manageCharges": {
+    "tips": {
+      "other": "Otro monto"
+    },
+    "fee": {
+      "fixedAria": "Monto fijo del cargo por servicio"
+    }
+  },
+  "designEditor": {
+    "sample": {
+      "area": "Sopocachi"
+    }
+  },
+  "manageShell": {
+    "notices": {
+      "allergens": "<b>Alérgenos sin configurar</b>: los clientes no pueden ver la información de alérgenos hasta que la verifiques. Revisa los alérgenos de cada plato en la pestaña Menú."
+    }
+  },
+  "manageTeam": {
+    "phonePlaceholder": "+591 71234567"
+  },
+  "customDomain": {
+    "card": {
+      "exampleDomain": "tufoodtruck.bo"
+    }
+  },
+  "posterWords": {
+    "placeSample": {
+      "nameTownBelow": "Bar La Plaza\nSamaipata",
+      "nameTown": "Bar La Plaza, Samaipata"
+    },
+    "busyWeek": {
+      "venue1": "Casa de la Cultura de Samaipata",
+      "town1": "Samaipata",
+      "venue2": "Complejo Deportivo y Estadio Municipal de Quillacollo",
+      "town2": "Quillacollo",
+      "venue3": "Plaza Principal",
+      "town3": "Sucre",
+      "venue4": "Feria Gastronómica",
+      "town4": "Cochabamba",
+      "venue5": "Peña El Arco",
+      "town5": "Tarija",
+      "venue6": "Parque Urbano",
+      "town6": "La Paz"
+    }
+  },
+  "landing": {
+    "jsonLd": {
+      "description": "Pedidos, pedidos anticipados y pantalla de cocina para food trucks y catering móvil en {country}.",
+      "audience": "Dueños de food trucks y negocios de catering móvil"
+    },
+    "does": {
+      "devicesBody": "En el celular del delantal, la tablet del mostrador, la laptop del food truck… y el POS con el que ya cobras."
+    },
+    "steps": {
+      "menuBody": "Toma una foto de tu pizarra o pega el texto. Platos, precios y extras se importan solos. Tú solo revisas que estén bien."
+    },
+    "faq": {
+      "metaDescription": "Respuestas claras para food trucks sobre los precios de HatchGrab, cómo empezar, recibir pedidos online y cobrar con tarjeta o al recoger."
+    },
+    "final": {
+      "lede": "Sube una foto o una captura de tu menú y lo convertimos en una página de pedidos que funciona, para que la pruebes en menos de 60 segundos. Tus platos, tus precios. Sin registro, sin tarjeta, sin instalar nada. Échale un vistazo y luego decide."
+    },
+    "meta": {
+      "title": "Sistema de pedidos para food trucks — HatchGrab {country}",
+      "description": "Recibe pedidos y pedidos anticipados donde estés, sin filas. Pedidos online y pantalla de cocina para food trucks en {country}. No es un sistema de caja."
+    }
+  },
+  "aboutPage": {
+    "meta": {
+      "description": "HatchGrab crea software para food trucks y catering móvil: pedidos online, horas para recoger y menos preguntas repetidas. Fundado por Dominic Bonini."
+    }
+  },
+  "siteFooter": {
+    "hire": "Alquilar un food truck"
+  },
+  "truckPage": {
+    "meta": {
+      "orderTitle": "Haz tu pedido a {truck}"
+    }
+  },
+  "pricing": {
+    "fee": {
+      "noFee": "<b>Sin comisiones de HatchGrab</b> en los pedidos online, por mucho trabajo que tengas. Un costo mensual fijo y previsible."
+    },
+    "footnote": "* Más la comisión de Stripe por procesar tarjetas en los pedidos online pagados con tarjeta (tarifa actual, {country}: {cardFee}), que se paga a Stripe, no a HatchGrab. Los pedidos en ventanilla se cobran con tu propio POS — HatchGrab cobra 0 %."
+  },
+  "featuresPage": {
+    "detail": {
+      "walkup_orders": "Toma y gestiona pedidos en la ventanilla, cobrados con tu propio POS.",
+      "meal_deals_upsells": "Agrupa platos en combos y ofrece extras al pagar para subir el ticket promedio.",
+      "stock_countdown": "Indica las existencias y se van descontando con cada pedido; al llegar a cero, el plato se agota solo.",
+      "tap_to_pay": "Cobra con tarjeta desde un celular compatible, sin necesidad de un POS aparte."
+    },
+    "metaTitle": "Planes, precios y funciones — HatchGrab {country}"
+  },
+  "compare": {
+    "eyebrow": "Comparativa de costos",
+    "title": "Compara tus costos<br></br><accent>de pedidos online</accent>",
+    "orders": {
+      "sliderAria": "Monto mensual de pedidos online por food truck"
+    },
+    "breakdown": {
+      "card": "Comisión de tarjeta: los {fee} por pedido de Stripe, que se pagan a Stripe. Pagarías más o menos lo mismo con un POS en la ventanilla."
+    },
+    "meta": {
+      "title": "Calculadora de costos y comisiones — HatchGrab {country}",
+      "description": "Compara lo que hoy te cuestan los pedidos online y las comisiones de las apps de delivery con un año en HatchGrab: una estimación en un minuto."
+    }
+  },
+  "comparison": {
+    "meta": {
+      "description": "Sistemas de pedidos para food trucks: hora para recoger, capacidad de cocina, agenda, comisiones y plazo forzoso, revisados en la web de cada proveedor."
+    },
+    "fit": {
+      "oursNotBody": "tus clientes tienen que poder pagar con PayPal o Klarna, o quieres un sistema de caja certificado según la normativa fiscal, todo de un mismo proveedor.",
+      "tills": "Sistemas de caja y POS",
+      "tillsBody": "Los sistemas de caja cobran en el food truck y cumplen los requisitos fiscales de un sistema de caja certificado. Un sistema de pedidos funciona junto a un sistema de caja; no lo sustituye.",
+      "tillsBodyNamed": "Los sistemas de caja cobran en el food truck y cumplen los requisitos fiscales de un sistema de caja certificado. {names} también {count, plural, one {aparece} many {aparecen} other {aparecen}} en la tabla de arriba. Un sistema de pedidos funciona junto a un sistema de caja; no lo sustituye."
+    },
+    "groups": {
+      "pos": "Sistema de caja"
+    },
+    "faq": {
+      "whatA": "Un sistema de pedidos recibe pedidos online antes de que los clientes lleguen al food truck: eligen los platos y una hora para recoger, pagan online o al recoger, y el pedido aparece en tu cocina. Un sistema de caja o un POS cobra en el food truck. Las dos cosas se complementan.",
+      "capacityA": "Los clientes solo ven las horas para recoger que tu cocina realmente puede cumplir. El sistema toma en cuenta el tiempo de preparación de cada plato y cuántos preparas a la vez.",
+      "tseQ": "¿Sigo necesitando un sistema de caja certificado?",
+      "tseA": "HatchGrab no es un sistema de caja y no está certificado según la normativa fiscal para sistemas de caja. Cómo registrar los pedidos online en tu sistema de caja es algo que debes consultar con tu contador."
+    },
+    "costBlock": {
+      "footOrder": "Pedido promedio de {order}: una comida típica de {meal} × {multiplier} platos por pedido ({source})."
+    },
+    "features": {
+      "stock": {
+        "explain": "Marca platos como agotados y fija cuántas unidades de cada uno se pueden vender en un evento."
+      },
+      "allergens": {
+        "explain": "Cada plato muestra sus alérgenos a los clientes antes de que pidan."
+      },
+      "menuphoto": {
+        "explain": "Una foto o un PDF del menú llena los platos para que tú los revises."
+      },
+      "options": {
+        "label": "Opciones y extras en los platos"
+      },
+      "private": {
+        "label": "Eventos privados y alquiler",
+        "explain": "Pedidos para un evento privado con su propio enlace, y solicitudes para alquilar el food truck.",
+        "ours": "eventos privados con su propio enlace de pedidos; sin solicitudes de alquiler"
+      },
+      "terminal": {
+        "label": "POS para la ventanilla incluido",
+        "explain": "El proveedor da un POS para cobrar en el food truck."
+      },
+      "fiscal": {
+        "label": "Sistema de caja certificado según la normativa fiscal (TSE, EET, kassaregister…)",
+        "explain": "Un sistema de caja certificado según las normas del país sobre el registro de ventas."
+      }
+    }
+  },
+  "comparisonSuits": {
+    "price": {
+      "lead": "Con {orders, number} pedidos online al mes, {names} {count, plural, one {tiene} other {tienen}} el costo mensual de software más bajo entre los productos comparados: {amount} al mes{count, plural, one {} other { cada uno}}."
+    }
+  },
+  "paperwork": {
+    "check": {
+      "coverHint": "Opcional. El monto que cubre la póliza."
+    }
+  }
+}

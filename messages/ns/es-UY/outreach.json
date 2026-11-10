@@ -1,0 +1,6 @@
+{
+  "optOut": {
+    "missing": "Este correo no tiene la frase para darse de baja, así que no se puede enviar. Usá “Insertar baja” para añadirla.",
+    "notSetUp": "No hay ninguna frase para darse de baja configurada, así que no se puede enviar ningún correo de prospección. Agregá una en el panel Firma de la pestaña Plantillas."
+  }
+}

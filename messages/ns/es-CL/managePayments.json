@@ -1,0 +1,6 @@
+{
+  "walkUp": {
+    "ownTerminal": "Tu propia máquina POS",
+    "hatchgrabHelp": "Usa la misma conexión de Stripe que tus pagos online: una máquina POS, o pago sin contacto directamente en tu celular o tablet."
+  }
+}

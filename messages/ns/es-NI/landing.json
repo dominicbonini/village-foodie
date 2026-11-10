@@ -1,0 +1,22 @@
+{
+  "jsonLd": {
+    "subCategory": "Sistema de pedidos en línea para food trucks y catering móvil",
+    "description": "Pedidos, pedidos anticipados y pantalla de cocina (KDS) para food trucks y catering móvil en {country}.",
+    "audience": "Dueños de food trucks y negocios de catering móvil"
+  },
+  "hero": {
+    "title": "El sistema de pedidos pensado para <lean>food trucks.</lean>"
+  },
+  "trust": {
+    "cancel": "Cancela cuando quieras, sin plazo mínimo"
+  },
+  "does": {
+    "devicesBody": "En el celular del delantal, la tablet del mostrador, la laptop del food truck… y el POS con el que ya cobras."
+  },
+  "faq": {
+    "metaDescription": "Respuestas claras para dueños de food trucks sobre los precios de HatchGrab, cómo empezar, cómo recibir pedidos en línea y los pagos."
+  },
+  "meta": {
+    "description": "Sistema de pedidos para food trucks en {country}: pedidos anticipados con hora para recoger y pantalla de cocina, sin filas. No es un sistema de caja."
+  }
+}

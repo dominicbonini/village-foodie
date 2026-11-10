@@ -1,0 +1,2225 @@
+{
+  "order": {
+    "tipHeading": "¿Querés dejar propina al food truck?",
+    "submitUnconfirmedCard": "No hemos podido hacer tu pedido. No se te ha cobrado nada y no se ha creado ningún pedido. Intentalo de nuevo.",
+    "submitUnconfirmedCheck": "No hemos podido confirmar que tu pedido se haya enviado. Puede que ya esté en la pantalla del food truck: consultalo con ellos antes de volver a pedir.",
+    "state": {
+      "cardFormLoadFailed": "No pudimos cargar el formulario de tarjeta. Revisá tu conexión e intentalo de nuevo. Tu carrito quedó guardado y no se te cobró nada."
+    },
+    "tipInPerson": "Si querés, podés dar la propina en persona.",
+    "authFailed": "No se ha podido autorizar ese pago. No se te ha cobrado nada: probá con otra tarjeta o elegí Pagá al retirar.",
+    "paymentThrew": "Algo ha fallado al procesar el pago. No se te ha cobrado nada: intentalo de nuevo o elegí Pagá al retirar.",
+    "pausedNotice": "Los pedidos están en pausa ahora mismo. Volvé a intentarlo en un rato. Tu pedido se ha guardado aquí.",
+    "busyNotice": "Estamos recibiendo muchos pedidos en este momento. Volvé a tocar “Hacer pedido” en unos instantes. Tu pedido quedó guardado aquí.",
+    "menuChangedFallback": "El menú cambió. Revisá tu pedido antes de hacerlo.",
+    "somethingWrong": "Algo ha fallado. Intentalo de nuevo.",
+    "eventsRetryHint": "Esperá un momento y tocá para volver a intentarlo.",
+    "timeNotSetBody": "El food truck aún no ha fijado la hora del evento: consultalo directamente con ellos. Podrás pedir aquí en cuanto la fijen.",
+    "closedDemo": "Este servicio de demostración terminó: se acabó el horario del evento, exactamente como pasaría con uno real. Volvé a abrir tu panel de demostración y elegí “Empezar un nuevo servicio” para preparar otro. Tu menú se queda como está.",
+    "pausedClosingBody": "Los pedidos online se han cerrado. Si necesitás ponerte en contacto con ellos, hacelo directamente.",
+    "pausedOfflineBody": "Tenemos un problema de conexión, pero podés seguir pidiendo en la ventanilla. ¡Volvé a mirar pronto!",
+    "pausedBody": "Volvé a mirar en un rato o pedí en la ventanilla cuando llegues.",
+    "notOpenBody": "{truck} aún no ha confirmado este evento. Volvé a mirar cuando se acerque la fecha o seguilos en redes sociales para estar al día.",
+    "orderFrom": "Pedile a {truck}",
+    "noEventsBody": "Volvé a mirar pronto o visitá la página del food truck para estar al día",
+    "chooseEvent": "Elegí para qué evento querés pedir",
+    "save": "Ahorrá {amount}",
+    "chooseLeader": "Elegí:",
+    "completeOrder": "Completá tu pedido",
+    "collectionTimeTitle": "Horario de retiro",
+    "collectionTimeChosen": "✓ Horario de retiro: {time}",
+    "selectTime": "Elegí “Cuanto antes” o una hora concreta",
+    "namePlaceholder": "p. ej. Sofía",
+    "emailPlaceholder": "p. ej. sofia@email.com",
+    "emailInvalid": "Ingresá un correo válido (p. ej. sofia@email.com)",
+    "stockNotice": "Lo sentimos: {detail}. Hemos actualizado tu pedido: revisalo y confirmalo.",
+    "payNowByCard": "Pagá ahora con tarjeta",
+    "payAtTruck": "Pagá al retirar",
+    "payAtTruckLine": "Pagás en el food truck al retirar · Sin datos de tarjeta",
+    "addItemsPrompt": "Agregá productos del menú para hacer un pedido",
+    "payEitherLine": "Pagá con tarjeta o al retirar",
+    "chooseAnOption": "Elegí una opción",
+    "chooseRequired": "Elegí las opciones obligatorias",
+    "allergenNotProvided": "No se ha facilitado información sobre alérgenos: confirmalo directamente con el food truck.",
+    "allergensSeeEach": "Consultá cada plato para ver sus alérgenos.",
+    "allergenSevere": "Si tenés una alergia grave, ponete en contacto directamente con el food truck antes de pedir.",
+    "collectionTime": "Horario de retiro: {time}",
+    "preferredCollection": "Retiro preferido: {time}",
+    "willConfirmTime": "{truck} confirmará tu horario de retiro cuando acepte tu pedido.",
+    "dealSave": "ahorrá {amount}",
+    "cardFallback": "No hemos podido iniciar el pago con tarjeta, así que tu pedido se pagará al retirar. Tu pedido está hecho y no se te ha cobrado nada."
+  },
+  "dashboard": {
+    "toast": {
+      "usualSetting": "Volvés a tu configuración habitual para este evento",
+      "intervalsSaved": "Horarios de retiro guardados para este evento",
+      "notOnBoard": "Ese pedido no está en este panel: comprobá el evento",
+      "printMode": "{mode, select, onConfirmed {Las comandas se imprimirán al aceptar un pedido} other {Las comandas se imprimirán poco antes del retiro}}",
+      "intervalsFailed": "No se han podido guardar los horarios de retiro en este momento.",
+      "saveThatFailed": "No se ha podido guardar: intentalo de nuevo",
+      "editBusy": "Otra persona está actualizando pedidos en este momento. Intentalo de nuevo.",
+      "categoryUpdateFailed": "No se ha podido actualizar la categoría: intentalo de nuevo",
+      "extraSaveFailed": "No se ha podido guardar ese extra. Revisalo antes del servicio.",
+      "reconnectToLoad": "Volvé a conectarte para cargar este evento"
+    },
+    "gate": {
+      "openOnceOnline": "Abrí la app una vez mientras tengas conexión y después funcionará sin conexión."
+    },
+    "demo": {
+      "restartFailed": "No se ha podido empezar un nuevo servicio: intentalo de nuevo.",
+      "endedBody": "Empezá uno nuevo y prepararemos un servicio a partir de este momento. Tu menú se queda como está.",
+      "lockBody": "Desde aquí empezás y cerrás un servicio, pausás los pedidos cuando la cola se hace larga o cambiás a otro evento."
+    },
+    "qr": {
+      "tapToClose": "Tocá en cualquier sitio para cerrar"
+    },
+    "pin": {
+      "unreachable": "No se puede conectar con el servidor ahora mismo. Tu PIN es correcto: intentalo de nuevo en un momento.",
+      "failed": "Algo ha fallado. Intentalo de nuevo.",
+      "title": "Ingresá el PIN"
+    },
+    "refund": {
+      "unreachable": "No hemos podido conectar con el sistema de pagos, así que no se ha reembolsado nada. Comprobá tu conexión e intentalo de nuevo."
+    },
+    "cancelReasons": {
+      "not_collected": "Pedido no retirado"
+    },
+    "cancelModal": {
+      "chooseReason": "Elegí un motivo para el reembolso.",
+      "cash": "Los {amount} se cobraron en persona. No hay ningún pago con tarjeta que reembolsar: devolvé el dinero en el food truck y usá la etiqueta PAGADO del pedido para eliminar el registro.",
+      "selectReason": "Seleccioná un motivo",
+      "notePlaceholder": "Agregá más detalles para el cliente…"
+    },
+    "switchEventConfirm": "Ahora estás sirviendo en {current}. ¿Cambiar a {next}? Tocá el evento actual para volver.",
+    "extraWait": {
+      "activeTapToClear": "+{mins} min activos · Tocá para quitar"
+    },
+    "banner": {
+      "boardUnavailable": "No se han podido cargar los pedidos de hoy. Podés seguir aceptando pedidos nuevos en este dispositivo.",
+      "menuSnapshot": "Menú guardado en esta tableta a las {time}. Revisá los precios antes de cobrar."
+    },
+    "header": {
+      "sound": "{state, select, on {Sonido de pedidos nuevos activado: tocá para desactivarlo} other {Sonido de pedidos nuevos desactivado: tocá para activarlo}}",
+      "screenTitle": "{state, select, on {La pantalla se mantendrá encendida} other {Tocá para mantener la pantalla encendida}}"
+    },
+    "orders": {
+      "noEvent": "Ningún evento seleccionado: seleccioná un evento para ver los pedidos",
+      "prepBannerTitle": "Configurá tus tiempos de preparación antes de empezar",
+      "prepBannerBody": "Tu menú usa tiempos de preparación predeterminados. Actualizalos en Gestionar para que tu cocina no se sature de pedidos.",
+      "chipTitle": "Tocá para reembolsar o corregir este pago",
+      "status": "{status, select, pending {Nuevo} confirmed {Confirmado} rejected {Rechazado} modified {Modificado} cancelled {Cancelado} cooking {En preparación} ready {Listo} collected {Retirado} other {{status}}}"
+    },
+    "prep": {
+      "kitchen": "Cocina: empezá ya (por orden)"
+    },
+    "settings": {
+      "layoutTabsHelp": "Muestra una categoría a la vez. Tocá una categoría para cambiar. Ideal para menús largos, donde cada producto se queda siempre en el mismo lugar.",
+      "layoutScrollHelp": "Muestra todos los productos en una lista con desplazamiento, con un encabezado por categoría. No hay botones de categoría: te desplazás para moverte. Ideal para menús cortos, donde podés ver casi todo de un vistazo.",
+      "paidStepHelp": "Añade un botón Confirmar cuando agregás vos un pedido, para que puedas registrarlo ahora y cobrar más tarde.",
+      "takesCashTitle": "¿Aceptás efectivo?",
+      "buzzerPromptHelp": "Abre la cuadrícula de avisadores en cuanto registrás un pedido, para que el número quede en el panel mientras el cliente sigue delante de vos. Si lo desactivás, podés añadir un avisador cuando quieras tocando el pedido, pero nada te lo recordará. Útil si repartís avisadores; fácil de desactivar si no.",
+      "cardsHelp": "Desactivalo si hay un problema con las tarjetas: los clientes harán sus pedidos como siempre y pagarán en la ventanilla. Los pedidos siguen llegando; solo se detiene el paso de la tarjeta.",
+      "intervalsTitle": "Horarios de retiro",
+      "intervalsHelp": "Cuánto tiempo hay entre un horario de retiro y el siguiente. No cambia la capacidad de cocina ni los tiempos de preparación.",
+      "intervalsUnavailable": "Los horarios de retiro no están disponibles ahora mismo.",
+      "customerTimes": "Horarios de retiro de los clientes",
+      "canPick": "{who, select, customers {Los clientes pueden elegir {example}} other {Vos y tus clientes pueden elegir {example}}}",
+      "yourTimes": "Tus horarios de retiro",
+      "youCanPick": "Podés elegir {example}",
+      "colCountsTitle": "Qué categorías cuentan para la capacidad total. Las categorías que se cocinan siempre cuentan; marcá las instantáneas (acompañamientos, salsas, bebidas) para incluirlas.",
+      "countsNoCap": "Fijá una capacidad para elegir qué categorías cuentan",
+      "countsTick": "Marcá para incluir esta categoría instantánea (acompañamientos, salsas, bebidas) en el límite compartido por franja",
+      "assignTruck": "Asigná un food truck a este evento antes de fijar la capacidad de cocina.",
+      "setCapacityFirst": "Fijá una capacidad para elegir qué categorías cuentan."
+    },
+    "stock": {
+      "defaultStockTitle": "Stock predeterminado: guardá para cambiarlo",
+      "ownPriceTitle": "Precio propio de este evento: tocá × para volver al precio del tipo o del menú",
+      "followsCategoryTitle": "Sigue el total de la categoría: escribí un número para limitarlo",
+      "howCategory": "El <b>total de la categoría</b> es una reserva compartida entre todos los productos de esa categoría (p. ej. 30 entradas esta noche).",
+      "howItem": "El <b>límite del producto</b> limita solo ese producto dentro de la reserva (p. ej. solo 8 Pepperoni). Dejalo vacío para que tire de la reserva sin límite propio."
+    },
+    "finish": {
+      "early": "Este evento no tiene previsto terminar hasta las {time}. No se aceptarán más pedidos. ¿Confirmás que querés terminar el evento?"
+    },
+    "screenOff": {
+      "confirm": "¿Seguro que querés permitir que la pantalla se apague?"
+    },
+    "kds": {
+      "body": "Elegí de qué food truck querés abrir la pantalla de cocina:"
+    },
+    "edit": {
+      "collectionTime": "Horario de retiro"
+    }
+  },
+  "phone": {
+    "invalidMobile": "{withName, select, yes {{name}: ingresá un número de celular válido} other {Ingresá un número de celular válido}}{withExample, select, yes { (p. ej. {example})} other {}}",
+    "invalidPhone": "{withName, select, yes {{name}: ingresá un número de teléfono válido} other {Ingresá un número de teléfono válido}}{withExample, select, yes { (p. ej. {example})} other {}}",
+    "invalidPhoneNumber": "{withName, select, yes {{name}: ingresá un número de teléfono válido} other {Ingresá un número de teléfono válido}}{withExample, select, yes { (p. ej. {example})} other {}}."
+  },
+  "modifierRules": {
+    "customer": "{required, select, yes {Obligatorio} other {Opcional}}{limit, select, one { · Elegí una} upTo { · Elegí hasta {max}} other {}}"
+  },
+  "menuBadges": {
+    "allergen": {
+      "Peanuts": "Maní",
+      "Soy": "Soja",
+      "Sesame": "Sésamo",
+      "Soybeans": "Soja",
+      "Peanut": "Maní",
+      "Cashew": "Castañas de cajú",
+      "Pecan": "Nueces pecán",
+      "Walnut": "Nueces",
+      "Shrimp": "Camarones",
+      "Beef": "Carne vacuna",
+      "Banana": "Banana",
+      "Peach": "Durazno"
+    }
+  },
+  "errorsCustomer": {
+    "sold_out_paying": "Mientras pagabas se {count, plural, one {ha agotado} other {han agotado}}: {names}. {count, plural, one {Lo hemos quitado} other {Los hemos quitado}} de tu pedido y no te hemos cobrado nada — revisá tu pedido antes de volver a hacerlo.",
+    "sold_out_ordering": "Mientras pedías se {count, plural, one {ha agotado} other {han agotado}}: {names}. {count, plural, one {Lo hemos quitado} other {Los hemos quitado}} de tu pedido — revisalo antes de volver a hacerlo.",
+    "menu_changed": "El menú cambió — revisá tu pedido antes de hacerlo.",
+    "menu_changed_item": "El menú cambió — {item} ya no está disponible. Revisá tu pedido antes de hacerlo.",
+    "menu_changed_option": "El menú cambió — {option} (de {item}) ya no está disponible. Revisá tu pedido antes de hacerlo.",
+    "private_link_only": "Este evento solo acepta pedidos a través de un enlace privado. Usá el enlace o el código QR del organizador.",
+    "preorder_not_open": "Los pedidos anticipados para este evento aún no están abiertos — volvé cuando se abran.",
+    "tip_invalid": "Esa opción de propina no está disponible — volvé a elegir.",
+    "too_many_options": "{max, plural, one {Elegí como máximo {count} opción para {withGroup, select, yes {{group}} other {tus elecciones}} ({item}).} other {Elegí como máximo {count} opciones para {withGroup, select, yes {{group}} other {tus elecciones}} ({item}).}}",
+    "choose_group": "Elegí {group} para {item}.",
+    "choose_option": "Elegí una opción para {item}.",
+    "card_unavailable": "Ahora mismo no pudimos preparar el pago con tarjeta, así que tu pedido no se realizó y no se te cobró nada. Tu carrito está guardado — volvé a intentarlo o elegí Pagá al retirar.",
+    "busy_retry": "Estamos gestionando muchos pedidos en este momento — volvé a intentarlo",
+    "try_again": "Algo ha fallado. Volvé a intentarlo.",
+    "cancel_window_passed": "{n, plural, one {Los pedidos ya no se pueden cancelar a menos de {count} minuto del retiro} other {Los pedidos ya no se pueden cancelar a menos de {count} minutos del retiro}}",
+    "pay_at_hatch_unavailable": "Ahora mismo este food truck no acepta pedidos online con Pago al retirar. Pagá con tarjeta."
+  },
+  "deals": {
+    "save": "Ahorrá {amount}",
+    "selectItems": "Elegí los productos de cada apartado",
+    "choose": "Elegí: {category}…",
+    "ruleHint": "· {rule, select, requiredOne {Obligatorio · elegí uno} required {Obligatorio} other {Elegí uno}}{unmet, select, yes { (obligatorio)} other {}}",
+    "notePlaceholder": "Agregá una nota, p. ej., sin cebolla (opcional)",
+    "chooseRequired": "Elegí las opciones obligatorias"
+  },
+  "whatsappCustomer": {
+    "allergenRedirect": "{opener}Aquí podés ver nuestro menú completo y la información sobre alérgenos: {url} — {truck} {emoji}",
+    "menuFallback": "{opener}Mirá nuestro menú completo aquí: {url} — {truck} {emoji}",
+    "menuSummary": "{opener}Tenemos {summary}. Mirá el menú completo y hacé tu pedido anticipado aquí: {url} — {truck} {emoji}",
+    "allergenCaveat": "Consultá el menú completo para ver la información sobre alérgenos — esta es una respuesta automática.",
+    "specificFallback": "{opener}Mirá dónde estamos aquí: {url}\n\n{truck} {emoji}"
+  },
+  "orderStatus": {
+    "confirmCancel": "¿Seguro que querés cancelar este pedido?",
+    "cancelledBody": "Tu pedido se ha cancelado.{card, select, no {} other { Si pagaste con tarjeta, cualquier reembolso lo gestiona directamente {withTruck, select, yes {{truck}} other {el food truck}} — ponete en contacto con ellos.}}",
+    "pickup": "Retiro",
+    "payAtTruck": "Pagá al retirar",
+    "statusName": {
+      "collected": "retirado"
+    },
+    "cutoffNote": "{n, plural, one {Se aceptan cancelaciones hasta {count} minuto antes del retiro} other {Se aceptan cancelaciones hasta {count} minutos antes del retiro}}"
+  },
+  "privateLink": {
+    "orderingOffBody": "Este evento no acepta pedidos online. Pedí en la ventanilla.",
+    "replacedBody": "Este enlace ya no funciona — {truck} lo ha sustituido. Pedile al organizador el nuevo enlace o código QR.",
+    "madePublicBody": "Este enlace ya no funciona — {truck} ha hecho público este evento. Podés pedir desde su página habitual.",
+    "unknownBody": "Este enlace no funciona. Comprobalo con el organizador o volvé a escanear el código QR."
+  },
+  "emailCustomer": {
+    "payNote": {
+      "capturedBody": "Tu pago se ha completado — no tenés que pagar nada al retirar.",
+      "capturedText": "Pagado con tarjeta. Tu pago se ha completado — no tenés que pagar nada al retirar.",
+      "partPaidBody": "El resto se paga al retirar.",
+      "partPaidBodyFigures": "De este pedido ya se han pagado {paid}. El importe restante, {balance}, se paga al retirar.",
+      "partPaidText": "Pagado en parte. Una parte de este pedido se paga al retirar.",
+      "partPaidTextFigures": "Pagado en parte: recibido {paid}, pendiente de pago al retirar {balance}.",
+      "heldBody": "{truck} cobrará el importe cuando confirme tu pedido. No tenés que pagar nada al retirar.",
+      "heldText": "Importe retenido en tu tarjeta, sin cobrar. {truck} cobrará el importe cuando confirme tu pedido — no tenés que pagar nada al retirar.",
+      "heldReady": "Importe retenido en tu tarjeta, sin cobrar — no tenés que pagar nada al retirar.",
+      "heldShortBody": "{truck} cobrará el importe retenido cuando confirme tu pedido. El resto se paga al retirar.",
+      "heldShortBodyFigures": "{truck} cobrará el importe retenido ({held}) cuando confirme tu pedido. El importe restante, {owing}, se paga al retirar.",
+      "heldShortText": "Importe retenido en tu tarjeta por una parte de este pedido. {truck} cobrará el importe retenido cuando confirme tu pedido, y el resto se paga al retirar.",
+      "heldShortTextFigures": "Se ha retenido un importe de {held} en tu tarjeta, que {truck} cobrará cuando confirme tu pedido. Pendiente de pago al retirar: {owing}.",
+      "hatchTitle": "Pagá al retirar tu pedido",
+      "hatchText": "Pagá al retirar tu pedido.",
+      "hatchReady": "Pagá al retirar."
+    },
+    "confirmation": {
+      "slotUpdated": "Tu horario de retiro ha cambiado",
+      "collectionTime": "Horario de retiro: {time}",
+      "preferredTime": "Horario de retiro preferido: {time}",
+      "weWillConfirm": "Confirmaremos tu horario de retiro cuando aceptemos tu pedido.",
+      "questions": "¿Tenés alguna pregunta sobre tu pedido?",
+      "contactCall": "Llamanos",
+      "contactWhatsApp": "Escribinos por WhatsApp",
+      "contactWhatsAppNumber": "Escribinos por WhatsApp: {number}",
+      "contactFacebook": "Escribinos en Facebook",
+      "contactMessenger": "Escribinos por Messenger",
+      "contactInstagram": "Mandanos un DM en Instagram",
+      "contactEmail": "Envianos un correo",
+      "cancelLine": "{n, plural, one {¿Necesitás cancelar?<link>Cancelá tu pedido</link>(hasta {count} minuto antes de tu horario de retiro)} other {¿Necesitás cancelar?<link>Cancelá tu pedido</link>(hasta {count} minutos antes de tu horario de retiro)}}",
+      "leadReady": "Tu pedido ya está listo — pasá a retirarlo a {truck}.",
+      "textTitleReady": "Pedido #{id} listo para retirar — {truck}",
+      "textReady": "Tu pedido ya está listo — pasá a retirarlo.",
+      "textSlotUpdated": "Horario de retiro cambiado a las {time} (antes: {previous}).",
+      "textCollection": "Horario de retiro: {time}. ¡Nos vemos en la ventanilla!",
+      "textPreferred": "Retiro preferido: {time} — lo confirmaremos cuando aceptemos tu pedido.",
+      "textWhatsApp": "¿Preguntas? Escribinos por WhatsApp: {value}",
+      "textEmail": "¿Preguntas? Escribinos un correo: {value}",
+      "textCall": "¿Preguntas? Llamanos: {value}",
+      "textFacebook": "¿Preguntas? Escribinos en Facebook: {value}",
+      "textMessenger": "¿Preguntas? Escribinos por Messenger: {value}",
+      "textInstagram": "¿Preguntas? Mandanos un DM en Instagram: {value}"
+    },
+    "cancelSentence": {
+      "refundDeclined": "Si tenés alguna pregunta sobre el pago de este pedido, ponete en contacto con {truck}.",
+      "paidContactTruck": "Si pagaste con tarjeta, cualquier reembolso lo gestiona directamente {truck} — ponete en contacto con ellos."
+    },
+    "rejectSentence": {
+      "heldWillClear": "Se retuvo un importe en tu tarjeta para este pedido, pero nunca se llegó a cobrar, y esa retención se liberará automáticamente — ponete en contacto con {truck} si no se ha liberado en una semana.",
+      "paidContactTruck": "Si pagaste este pedido con tarjeta, ponete en contacto con {truck}."
+    },
+    "common": {
+      "sorry": "Disculpá las molestias."
+    },
+    "refund": {
+      "contact": "Si algo no te parece correcto, ponete en contacto con {truck}."
+    },
+    "rejection": {
+      "orderAtTruck": "Hacé tu pedido en el food truck cuando llegues. Disculpá las molestias."
+    }
+  },
+  "errorsKitchen": {
+    "conflict": "Este pedido ha cambiado — revisalo y volvé a intentarlo.",
+    "busy_retry_edit": "Otra persona está actualizando pedidos en este momento. Volvé a intentarlo.",
+    "refund_reason_required": "Elegí un motivo para este reembolso.",
+    "refund_note_required": "Agregá una nota que explique este reembolso.",
+    "refund_amount_invalid": "Ingresá un monto mayor que cero.",
+    "item_name_required": "Algo ha fallado — recargá la página y volvé a intentarlo.",
+    "event_id_required": "Algo ha fallado — recargá la página y volvé a intentarlo.",
+    "live_event_needs_times": "Un evento en curso necesita hora de inicio y de fin — agregalas antes de guardar.",
+    "busy_retry": "Estamos gestionando muchos pedidos en este momento — volvé a intentarlo",
+    "option_id_required": "Algo ha fallado — recargá la página y volvé a intentarlo.",
+    "category_required": "Algo ha fallado — recargá la página y volvé a intentarlo.",
+    "missing_event_id": "Algo ha fallado — recargá la página y volvé a intentarlo.",
+    "value_bool_or_clear": "Algo ha fallado — recargá la página y volvé a intentarlo.",
+    "value_presses_or_clear": "Algo ha fallado — recargá la página y volvé a intentarlo.",
+    "missing_order_key": "Algo ha fallado — recargá la página y volvé a intentarlo.",
+    "already_paid_by_card": "Este cliente ya ha pagado con tarjeta. Su tarjeta está autorizada para este pedido y se cobra automáticamente cuando lo confirmás, así que cobrar aquí le cobraría dos veces. No se ha registrado nada.",
+    "value_bool": "Algo ha fallado — recargá la página y volvé a intentarlo.",
+    "eventid_required": "Algo ha fallado — recargá la página y volvé a intentarlo.",
+    "value_bool_or_null": "Algo ha fallado — recargá la página y volvé a intentarlo.",
+    "intervals_choices": "Los horarios de retiro deben ir cada {choices} minutos.",
+    "intervals_customer_first": "Configurá los horarios de retiro de los clientes antes de configurar los tuyos.",
+    "intervals_save_failed": "Ahora mismo no se han podido guardar los horarios de retiro.",
+    "category_id_required": "Algo ha fallado — recargá la página y volvé a intentarlo.",
+    "device_id_required": "Algo ha fallado — recargá la página y volvé a intentarlo.",
+    "invalid_default_screen": "Algo ha fallado — recargá la página y volvé a intentarlo.",
+    "device_and_truck_required": "Algo ha fallado — recargá la página y volvé a intentarlo.",
+    "not_truck_member": "No sos miembro de ese negocio",
+    "choose_group": "Elegí {group} para {item}.",
+    "net_address_invalid": "Ingresá la dirección de la impresora como 192.168.1.50 o 192.168.1.50:9100.",
+    "slot_board_not_updated": "Pedido guardado, pero no se ha podido actualizar el panel de capacidad de cocina — comprobá la franja antes de fiarte de él."
+  },
+  "kitchenModals": {
+    "selectReason": "Elegí un motivo",
+    "reject": {
+      "notePlaceholder": "Agregá más detalles para el cliente…"
+    },
+    "actions": {
+      "notePlaceholder": "p. ej., Estacioná en el estacionamiento principal y buscá la carpa naranja"
+    },
+    "finish": {
+      "noTimesLeft": "Hoy no quedan más horas. Usá Finalizar evento."
+    },
+    "extraWait": {
+      "hint": "Se suma al horario de retiro indicado en los pedidos nuevos. No cambia la hora de fin del evento."
+    },
+    "picker": {
+      "reconnect": "Reconectá para cargar"
+    }
+  },
+  "ticket": {
+    "duplicateDetail": "Revisá las comandas antes de preparar",
+    "collect": "RETIRO {time}",
+    "collectAsap": "RETIRO CUANTO ANTES"
+  },
+  "printing": {
+    "say": {
+      "addressHelp": "Ingresá la dirección de la impresora como 192.168.1.50 o 192.168.1.50:9100.",
+      "netPermission": "HatchGrab necesita permiso para acceder a tu impresora. Activá “Red local” para HatchGrab en Ajustes.",
+      "netUnreachable": "No se puede conectar con la impresora en {address} — comprobá que esté en la misma red.",
+      "testSent": "Comanda de prueba enviada — revisá la impresora."
+    },
+    "card": {
+      "noPrinter": "<b>No hay ninguna impresora conectada.</b> {withDetail, select, yes {{detail}. } other {}}Conectá una impresora de tickets Bluetooth para empezar a imprimir comandas.",
+      "bluetoothOff": "El Bluetooth está desactivado en este dispositivo. Activalo en Ajustes y volvé a buscar.",
+      "bluetoothUnauthorised": "HatchGrab necesita permiso para usar el Bluetooth. Permitilo en Ajustes → HatchGrab → Bluetooth y volvé a buscar.",
+      "bluetoothUnsupported": "Para imprimir necesitás la app de HatchGrab — un navegador web no puede conectarse a una impresora Bluetooth.",
+      "noneFound": "No se han encontrado impresoras. Comprobá que la impresora esté encendida, tenga papel y esté cerca de este dispositivo — la mayoría de las impresoras de tickets solo aparecen durante uno o dos minutos después de encenderlas.",
+      "likelyHeading": "Posibles impresoras — tocá para conectar:",
+      "noneRecognised": "Aún no se ha reconocido ninguna impresora. Abajo aparece todo lo que hay cerca — si tu impresora está ahí, tocala y HatchGrab comprobará si puede imprimir.",
+      "otherHint": "No parecen impresoras, pero podés probar con alguno.",
+      "addressHint": "Imprimí la página de configuración de la impresora para ver su dirección. Pedile a quien configuró tu router que deje fija esta dirección.",
+      "wiredAppOnly": "Para imprimir necesitás la app de HatchGrab.",
+      "summaryLead": "Imprimir <b>{lead} min</b> antes del retiro · papel de {paper} mm",
+      "modeLead": "Un tiempo fijo antes del retiro",
+      "leadLabel": "Minutos antes del horario de retiro",
+      "modeOnConfirmedHint": "Un pedido anticipado se imprime cuando lo aceptás, lo que puede ser horas antes del horario de retiro. Los pedidos que aún no aceptaste nunca se imprimen."
+    }
+  },
+  "kds": {
+    "pin": {
+      "title": "Ingresá el PIN",
+      "unreachable": "Ahora mismo no se puede conectar con el servidor. Tu PIN está bien: volvé a intentarlo en un momento.",
+      "generic": "Algo ha fallado. Intentalo de nuevo."
+    },
+    "header": {
+      "readyOnTitle": "Esta pantalla marca los pedidos como listos. Tocá para que lo haga otra pantalla.",
+      "readyOffTitle": "Otra pantalla marca los pedidos como listos. Tocá para que lo haga esta.",
+      "handoverOnTitle": "Esta pantalla cobra y entrega. Tocá para que lo haga otra pantalla.",
+      "handoverOffTitle": "Otra pantalla cobra. Tocá para que lo haga esta.",
+      "soundOn": "Sonido de pedido nuevo activado — tocá para desactivarlo",
+      "soundOff": "Sonido de pedido nuevo desactivado — tocá para activarlo"
+    },
+    "banner": {
+      "mismatchBody": "El servidor respondió con otro evento, así que no se muestra nada en lugar de pedidos equivocados. Volvé a elegir el evento o recargá.",
+      "mismatchBodyAt": "El servidor respondió con otro evento, así que no se muestra nada en lugar de pedidos equivocados de {venue}. Volvé a elegir el evento o recargá."
+    },
+    "screenOff": {
+      "keepHint": "Mantené la pantalla encendida para que los pedidos no se interrumpan."
+    },
+    "event": {
+      "waitActive": "⏱ +{mins} min activa · Tocá para quitar",
+      "endEarly": "Este evento no termina hasta las {time}. No se admitirán más pedidos. ¿Confirmás que querés terminarlo?",
+      "switchConfirm": "¿Cambiar de {from} a {to}?{n, plural, =0 {} one { Se sustituirá {count} pedido de esta pantalla.} other { Se sustituirán {count} pedidos de esta pantalla.}} Tocá el evento actual para volver."
+    },
+    "intro": {
+      "p1": "Es la vista de quien cocina: los pedidos que tenés que preparar, en el orden en que hay que prepararlos. La pantalla junto a la plancha muestra esto mientras el mostrador usa el panel de pedidos.",
+      "p2": "Las tarjetas avanzan al tocarlas, así quien cocina siempre sabe qué va después y nadie tiene que gritar. Todo lo que ves aquí son datos de demo: probá todo lo que quieras."
+    }
+  },
+  "nativeShell": {
+    "binary": {
+      "cameraUsage": "HatchGrab usa la cámara para que puedas sacar fotos de la pizarra de tu carta, de tus platos y de otros documentos y subirlas directamente a tu cuenta. Las imágenes solo se usan para las subidas que vos decidas hacer.",
+      "faceIdUsage": "Desbloqueá HatchGrab con Face ID.",
+      "offlineDetail": "Comprobá tu conexión."
+    },
+    "gate": {
+      "undoneCollected": "Deshecho — pedido no retirado",
+      "collected": "Pedido #{id} {paidToo, select, yes {pagado y retirado} other {retirado}}",
+      "status": "Pedido #{id} {action, select, confirm {confirmado} reject {rechazado} ready {listo} collected {retirado} undo_collected {restaurado} cancel {cancelado} other {actualizado}}"
+    },
+    "banner": {
+      "paymentCheck": "Revisá el pedido y volvé a cobrar si aún está pendiente.",
+      "confirmChecked": "Confirmá que revisaste {orders}",
+      "statusBody": "⚠ {orders} — este cambio no se ha aplicado. Revisá el pedido."
+    },
+    "lock": {
+      "cantUseBiometric": "¿No podés usar Face ID / Touch ID?",
+      "enterPin": "Ingresá tu PIN de respaldo",
+      "wrongPin": "PIN incorrecto — intentalo de nuevo.",
+      "tryBiometric": "Probá con Face ID / Touch ID",
+      "forgot": "¿Olvidaste tu PIN? Tendrás que reinstalar la app."
+    },
+    "notify": {
+      "intro": "Avisos en este dispositivo. Activalos para elegir cuáles recibís.",
+      "refused": "Para activarlo, permití las notificaciones en los Ajustes del dispositivo.",
+      "newOrderHelp": "Recibí un aviso cuando un pedido de cliente necesite confirmación.",
+      "offlineHelp": "Recibí un aviso cuando este dispositivo pierda la conexión (y se pausen los pedidos). <green>Funciona sin conexión.</green>"
+    },
+    "deviceSave": {
+      "network": "No se ha podido conectar con el servidor: comprobá la conexión e intentalo de nuevo.",
+      "server": "No se ha podido guardar ahora mismo. Intentalo de nuevo."
+    },
+    "setup": {
+      "fetchErrorBody": "No hemos podido conectar con el servidor para configurar <b>este dispositivo</b>. Comprobá la conexión e intentalo de nuevo; tus pedidos y ajustes no se ven afectados.",
+      "noVanBody": "Este negocio aún no tiene ningún food truck activo. Activá uno en <b>Ajustes → Tus food trucks</b> y este dispositivo se configurará automáticamente, sin más pasos aquí.",
+      "title": "Configurá este dispositivo",
+      "body": "Configuración única de <b>este dispositivo</b>: la pantalla con la que se abre y qué food truck gestiona. Solo afecta a este dispositivo (los demás se configuran por separado) y podés cambiarlo más tarde desde el menú de perfil → “Este dispositivo”.",
+      "selectVan": "Seleccioná un food truck…"
+    },
+    "device": {
+      "pinTitle": "Definí un PIN de respaldo (4–6 dígitos)",
+      "pinHelp": "Tu forma de entrar si la huella o el reconocimiento facial no funcionan. Es la única alternativa, así que no lo olvides (si lo olvidás, tendrás que reinstalar la app). Funciona sin conexión.",
+      "pinTooShort": "Usá al menos 4 dígitos.",
+      "noBiometric": "Este dispositivo no tiene huella ni reconocimiento facial configurados: agregá uno en los ajustes del dispositivo. Tu PIN de respaldo sigue funcionando."
+    },
+    "appLock": {
+      "confirmEnable": "Confirmá para activar el bloqueo de la app"
+    },
+    "localNotify": {
+      "newOrders": "{n, plural, one {Tenés un pedido nuevo} other {Tenés {count} pedidos nuevos}}"
+    }
+  },
+  "buzzer": {
+    "title": "Elegí un avisador",
+    "allTaken": "{n, plural, one {El avisador está en uso. Tocalo para quitárselo a otro pedido.} other {Los {count} avisadores están en uso. Tocá uno para quitárselo a otro pedido.}}"
+  },
+  "dashboardBanners": {
+    "wakeRetry": "Mantener pantalla encendida — tocá para reintentar"
+  },
+  "demo": {
+    "showMe": "Mostrámelo",
+    "cashAndCollected": "Efectivo y retirado",
+    "welcomeTitle": "{sample, select, yes {Aquí tenés una demo de ejemplo} other {Aquí tenés tu demo}}",
+    "welcomeIntro": "{sample, select, yes {Este es un <b>menú de ejemplo</b> para que veas cómo funciona todo; subí el tuyo cuando quieras para hacerlo tuyo.} other {Este es tu propio menú, con tu imagen de marca, en un tablero real.}} Los pedidos que ya aparecen son ejemplos, para que veas un servicio con mucho movimiento.",
+    "hitButton": "Tocá <b>{button}</b> en un pedido",
+    "scanQr": "Escaneá el <b>código QR</b> (o tocá el enlace), hacé un pedido como cliente y mirá cómo llega",
+    "openHere": "O abrila en este dispositivo",
+    "signupOffer": {
+      "sub": "Tu prueba gratuita empieza cuando creás tu cuenta."
+    }
+  },
+  "paymentActions": {
+    "reason": "{reason, select, item_unavailable {Producto no disponible} not_collected {Pedido no retirado} wrong_or_missing_item {Producto equivocado o que falta} quality_issue {Problema de calidad} duplicate_payment {Pago duplicado} customer_cancelled {Cancelado por el cliente} other {Otro}}",
+    "paidCardMachine": "Pagado con tu POS{mixed, select, yes { — {amount}} other {}}",
+    "inPersonHint": "Efectivo o tu POS — no se registra",
+    "offlineUnchanged": "El pedido <b>#{orderId}</b> no ha cambiado. Volvé a conectarte y abrilo de nuevo.",
+    "chooseReason": "Elegí un motivo…"
+  },
+  "orderCard": {
+    "tapToOverride": "Tocá para cambiar el precio",
+    "collected": "Retirado",
+    "cashAndCollected": "Efectivo y retirado",
+    "cardAndCollected": "Tarjeta y retirado",
+    "tapToRemovePayment": "Tocá para eliminar este pago",
+    "tapForRefund": "Tocá para ver cómo reembolsarlo",
+    "buzzerTitle": "Avisador {number} — tocá para cambiarlo",
+    "giveBuzzer": "Tocá para dar un avisador",
+    "status": "{status, select, pending {Nuevo} confirmed {Confirmado} rejected {Rechazado} modified {Modificado} cancelled {Cancelado} cooking {En cocina} ready {Listo} collected {Retirado} other {Nuevo}}",
+    "contactTitle": "Tocá para ver los datos de contacto",
+    "conflictPayment": "PAGO NO REGISTRADO — revisá antes de entregar",
+    "markPaidAndCollected": "Marcar pagado y retirado"
+  },
+  "addOrder": {
+    "catClosed": "La categoría {cat} está cerrada a pedidos online en este evento (oculta para los clientes). Podés añadirla igualmente para la ventanilla; se te pedirá confirmación.",
+    "savedToast": "Pedido {id} guardado{paid, select, cash { — pagado en efectivo} card { — pagado con tu POS} other {}}",
+    "confirmedToast": "Pedido #{id} confirmado{paid, select, cash { — pagado en efectivo} card { — pagado con tu POS} other {}}",
+    "busyRetry": "Sistema ocupado — volvé a tocar Confirmar en un momento",
+    "offlineNotSent": "No se ha podido conectar con el servidor: parece que estás sin conexión. El pedido NO se ha enviado. Dejá este panel abierto y volvé a intentarlo cuando recuperes la conexión.",
+    "paymentNotRecorded": "⚠ Pedido #{id} añadido — PAGO NO REGISTRADO. Volvé a cobrar desde la tarjeta del pedido.",
+    "buzzerSaveFailed": "No se ha podido guardar el número de avisador — agregalo desde la tarjeta del pedido",
+    "selectAnEvent": "Seleccioná un evento",
+    "selectEventToConfirm": "Seleccioná un evento para confirmar",
+    "stockUnknown": "Las existencias no están cargadas en este dispositivo. Podés seguir tomando pedidos: comprobá lo que tenés.",
+    "eventEnded": "Este evento ha terminado: estás añadiendo un pedido después del cierre. Asegurate de haber seleccionado el evento correcto.",
+    "tapItems": "Tocá productos para crear el pedido",
+    "chooseRequired": "Elegí las opciones obligatorias"
+  },
+  "emailOperator": {
+    "newOrder": {
+      "collection": "Retiro: {time}",
+      "autoConfirmed": "Confirmado automáticamente: no tenés que hacer nada.",
+      "confirmPrompt": "Iniciá sesión en tu panel de HatchGrab para confirmar o rechazar este pedido."
+    },
+    "newEvents": {
+      "subject": "Nuevos eventos encontrados para {truck}: revisalos",
+      "cta": "Revisá tu agenda →",
+      "text": "Hola:\n\nHemos encontrado {n, plural, one {{count} evento nuevo en tu agenda que necesita tu aprobación} other {{count} eventos nuevos en tu agenda que necesitan tu aprobación}}:\n\n{list}\n\nRevisá tu agenda en: {url}\n\nCuando los apruebes, aparecerán en el mapa.\n\n— El equipo de HatchGrab"
+    }
+  },
+  "alertsOperator": {
+    "limit80": {
+      "subject": "Usaste el 80 % de las respuestas de WhatsApp de este mes",
+      "raise": "Podés subir tu límite mensual en Ajustes cuando quieras.",
+      "raiseLink": "Podés subir tu límite mensual en Ajustes cuando quieras:"
+    },
+    "limit100": {
+      "usedAll": "Usaste las {limit} respuestas automáticas de WhatsApp de este mes, así que se han pausado.",
+      "startAgain": "Volverán a funcionar el <b>{reset}</b>, o enseguida si subís tu límite mensual en Ajustes.",
+      "startAgainLink": "Volverán a funcionar el {reset}, o enseguida si subís tu límite mensual en Ajustes:"
+    },
+    "paymentBlocked": {
+      "payDirect": "Estos mensajes se los pagás directamente a WhatsApp, así que esto se soluciona en WhatsApp Manager, no en HatchGrab. Agregá o actualizá una tarjeta allí y las respuestas volverán a enviarse solas.",
+      "payDirectLink": "Estos mensajes se los pagás directamente a WhatsApp, así que esto se soluciona en WhatsApp Manager, no en HatchGrab. Agregá o actualizá una tarjeta allí y las respuestas volverán a enviarse solas:"
+    }
+  },
+  "setup": {
+    "steps": {
+      "based": "Dónde operás"
+    },
+    "verify": {
+      "expired": "Ese enlace de confirmación venció. Escribinos y lo solucionaremos antes de que empieces a recibir pedidos.",
+      "invalid": "Ese enlace de confirmación no ha funcionado. Escribinos y lo solucionaremos antes de que empieces a recibir pedidos."
+    },
+    "identity": {
+      "phoneHelp": "Los clientes lo ven en la confirmación del pedido para poder preguntarte por él. La casilla decide si pone “Llamanos” o “Escribinos por WhatsApp”. Podés cambiar ambas cosas en Ajustes."
+    },
+    "phoneRequired": "Agregá un número de teléfono: tanto los clientes como nosotros lo usamos para contactarte.",
+    "unreachable": "No hemos podido conectar ahora mismo. Intentalo de nuevo."
+  },
+  "whereBased": {
+    "countriesFailed": "No hemos podido cargar la lista de países. Volvé a intentarlo en un momento."
+  },
+  "cuisinePicker": {
+    "choose": "Elegí un tipo de cocina…",
+    "otherPlaceholder": "Decinos tu tipo de cocina",
+    "cuisine": {
+      "BBQ": "Parrilla",
+      "HotDogs": "Panchos"
+    }
+  },
+  "goLive": {
+    "allergensUnanswered": {
+      "title": "Elegí cómo mostrás la información de alérgenos",
+      "detail": "Hasta que elijas, los clientes no ven ninguno de tus platos: el menú se protege ocultando todo lo que tenga alérgenos sin confirmar, y en este momento eso es todo."
+    },
+    "allergensCardMissing": {
+      "title": "Agregá tu tabla de alérgenos"
+    },
+    "allergensItemsUnverified": {
+      "title": "{n, plural, one {Confirmá los alérgenos de {count} plato} other {Confirmá los alérgenos de {count} platos}}",
+      "detail": "{n, plural, one {Tu plato está oculto para los clientes hasta que confirmes sus alérgenos.} other {{u, plural, one {{unverified} de tus {total} platos está oculto para los clientes hasta que confirmes sus alérgenos.} other {{unverified} de tus {total} platos están ocultos para los clientes hasta que confirmes sus alérgenos.}}}} Un plato mostrado sin alérgenos confirmados se lee como “no contiene ninguno”, así que el menú lo oculta en vez de correr ese riesgo."
+    },
+    "noVan": {
+      "title": "Agregá un food truck"
+    },
+    "kitchenCapacityUnset": {
+      "title": "Configurá tu capacidad de cocina",
+      "detail": "No hay capacidad configurada para {vans}. Sin ella, seguiremos prometiendo a los clientes horarios de retiro que tu cocina no puede cumplir."
+    },
+    "noPrepBearingCategory": {
+      "title": "Decinos cuánto tarda tu comida",
+      "detail": "{categories, select, none {Todavía no tenés categorías en el menú, así que no podemos calcular cuánto tarda un pedido.} other {Ninguna de tus categorías tiene un tiempo de cocción configurado, así que para nosotros todos los pedidos parecen instantáneos. Seguiríamos dando a los clientes horarios de retiro que tu cocina no tiene forma de cumplir, y cuanto más trabajo tengas, más desfasados estarían.}}"
+    },
+    "emailUnverified": {
+      "title": "Confirmá tu dirección de correo electrónico",
+      "where": "Buscá nuestro enlace de confirmación en tu bandeja de entrada"
+    }
+  },
+  "walkthrough": {
+    "intro": "En Gestión configurás tu food truck y ves cómo va. En el Panel recibís pedidos y llevás cada evento en directo.",
+    "stops": {
+      "schedule": {
+        "body": "Dónde y cuándo vendés. Agregá aquí un evento y los clientes podrán hacer pedidos para él."
+      },
+      "build": {
+        "body": "Los combos, las ventas sugeridas, las personalizaciones y tu capacidad de cocina están en Menú: echale un vistazo."
+      }
+    }
+  },
+  "auth": {
+    "signup": {
+      "title": "Creá tu cuenta",
+      "subtitle": "{months, plural, =0 {Tu prueba gratuita empieza cuando creás tu cuenta.} one {Tu primer mes es gratis, desde que creás tu cuenta.} many {Tus primeros # de meses son gratis, desde que creás tu cuenta.} other {Tus primeros # meses son gratis, desde que creás tu cuenta.}}",
+      "emailPlaceholder": "tu@tufoodtruck.com.uy",
+      "codeLabel": "¿Tenés un código? <optional>(opcional)</optional>",
+      "codePlaceholder": "Escribilo aquí",
+      "marketing": "Quiero recibir de vez en cuando consejos y novedades del producto por correo. Nada que ver con tus pedidos: podés darte de baja cuando quieras.",
+      "consent": "Al crear una cuenta aceptás nuestros <terms>Términos</terms> y nuestra <privacy>Política de privacidad</privacy>. No hace falta tarjeta. Nada se hace público hasta que vos lo digas.",
+      "haveAccount": "¿Ya tenés cuenta? Iniciá sesión",
+      "errorOffline": "No hemos podido conectar ahora mismo. Volvé a intentarlo."
+    },
+    "login": {
+      "title": "Entrá a tu cocina",
+      "resetSuccess": "Contraseña actualizada correctamente. Iniciá sesión.",
+      "emailChanged": "Dirección de correo actualizada. Iniciá sesión con tu nueva dirección de correo.",
+      "errorFallback": "Correo o contraseña incorrectos. Volvé a intentarlo.",
+      "forgot": "¿Olvidaste tu contraseña?"
+    },
+    "forgot": {
+      "sentTitle": "Revisá tu correo",
+      "sentBody": "Si existe una cuenta con esa dirección de correo, recibirás en breve un enlace para restablecerla. Revisá la carpeta de spam si no llega en unos minutos.",
+      "title": "Restablecé tu contraseña",
+      "subtitle": "Escribí tu correo y te enviaremos un enlace para restablecerla"
+    },
+    "reset": {
+      "invalidBody": "Este enlace no es válido o venció.",
+      "errorFallback": "Algo ha salido mal. Volvé a intentarlo.",
+      "titleFirstLogin": "Creá tu contraseña",
+      "titleReset": "Elegí una contraseña nueva",
+      "subtitleFirstLogin": "Elegí una contraseña para proteger tu cuenta",
+      "confirmPlaceholder": "Repetí tu contraseña"
+    },
+    "verifyEmail": {
+      "invalidTitle": "Enlace no válido o vencido",
+      "invalidBody": "Este enlace de verificación no es válido o ya venció.",
+      "expiredTitle": "Enlace vencido",
+      "expiredBody": "Este enlace de verificación venció. Solicitá uno nuevo desde los ajustes de tu perfil.",
+      "accountNotFound": "No se ha encontrado la cuenta. Contactá con soporte.",
+      "emailTaken": "Esta dirección de correo ya está asociada a otra cuenta. Usá otra dirección de correo.",
+      "updateFailed": "No se ha podido actualizar el correo. Volvé a intentarlo."
+    }
+  },
+  "emailSignup": {
+    "verify": {
+      "subject": "Confirmá tu dirección de correo electrónico",
+      "next": "En cuanto esté confirmada, te enviaré todo lo que necesitás para empezar.",
+      "carryOn": "Mientras tanto, podés seguir con la configuración.",
+      "stuck": "¿Te atascaste con algo? Respondé a este correo: los contesto yo mismo.",
+      "fallbackLink": "Si el botón no funciona, pegá esto en el navegador: {url}"
+    },
+    "welcome": {
+      "setup": "Si aún no lo hiciste, la configuración es sencilla y lleva unos quince minutos.",
+      "stuck": "Si te atascás, respondé a este correo: los contesto yo mismo."
+    }
+  },
+  "errorsOnboarding": {
+    "not_signed_in": "No iniciaste sesión",
+    "truck_name_missing": "Ponele un nombre a tu food truck.",
+    "phone_invalid": "{withName, select, yes {Ingresá un número de teléfono válido ({name})} other {Ingresá un número de teléfono válido}}{withExample, select, yes { (p. ej., {example})} other {}}.",
+    "countries_unavailable": "No hemos podido cargar la lista de países. Volvé a intentarlo en un momento.",
+    "email_invalid": "Ingresá una dirección de correo válida.",
+    "too_many_attempts": "Demasiados intentos ahora mismo. Volvé a intentarlo en breve.",
+    "account_exists": "Ya hay una cuenta con ese correo: iniciá sesión.",
+    "account_finish_failed": "No se ha podido terminar de crear tu cuenta. Volvé a intentarlo.",
+    "change_id_required": "Algo ha salido mal. Actualizá la página y volvé a intentarlo.",
+    "email_send_failed": "No se ha podido enviar el correo. Volvé a intentarlo.",
+    "reset_link_invalid": "Enlace de restablecimiento no válido o vencido. Solicitá uno nuevo.",
+    "reset_link_used": "Este enlace de restablecimiento ya se ha usado. Solicitá uno nuevo.",
+    "reset_link_expired": "Este enlace de restablecimiento venció. Solicitá uno nuevo.",
+    "password_update_failed": "No se ha podido actualizar la contraseña. Volvé a intentarlo.",
+    "upload_unreadable": "No hemos podido leer lo que subiste. Volvé a intentarlo.",
+    "file_type_unsupported": "Ese tipo de archivo no es compatible: enviá una foto o un PDF de tu menú.",
+    "text_too_long": "Es mucho texto: pegá solo el menú.",
+    "menu_missing": "Agregá una foto de tu menú o pegalo aquí.",
+    "demo_rate_limited": "Ya creaste unas cuantas demos. Volvé a intentarlo dentro de un rato, o escribinos y te ayudamos.",
+    "demo_build_failed": "Algo ha salido mal al crear tu demo. Volvé a intentarlo.",
+    "try_again_shortly": "Volvé a intentarlo en breve.",
+    "demo_save_failed": "No hemos podido guardarlo ahora mismo. Volvé a intentarlo.",
+    "deletion_sign_in": "Iniciá sesión para solicitar la eliminación de la cuenta.",
+    "confirm_mismatch": "Escribí DELETE para confirmar.",
+    "partial_stamp": "Hemos registrado tu solicitud de eliminación, pero no hemos podido detener los pedidos en todos tus food trucks. Contactá con soporte."
+  },
+  "emailAccount": {
+    "newEmail": {
+      "subject": "Verificá tu nueva dirección de correo de HatchGrab",
+      "heading": "Verificá tu dirección de correo"
+    },
+    "changeEmail": {
+      "requested": "Solicitaste cambiar tu dirección de correo de HatchGrab a esta dirección.",
+      "click": "Hacé clic en el botón de abajo para verificarla. Este enlace vence en 24 horas.",
+      "ignore": "Si no solicitaste este cambio, podés ignorar este correo sin problema."
+    },
+    "resendVerification": {
+      "requested": "Solicitaste cambiar tu correo de HatchGrab a esta dirección.",
+      "click": "Hacé clic abajo para verificarla. Este enlace vence en 24 horas.",
+      "ignore": "Si no lo solicitaste, ignorá este correo."
+    },
+    "passwordReset": {
+      "subject": "Restablecé tu contraseña de HatchGrab",
+      "heading": "Restablecé tu contraseña",
+      "click": "Hacé clic en el botón de abajo para elegir una contraseña nueva. Este enlace vence en 1 hora.",
+      "ignore": "Si no lo solicitaste, podés ignorar este correo sin problema."
+    },
+    "deletionScheduled": {
+      "cannotCancel": "<b>Esto no se puede cancelar desde la app.</b> Si no fuiste vos, o\n    cambiaste de opinión, respondé a este correo lo antes posible."
+    }
+  },
+  "demoSaveEmail": {
+    "subject": "Tu demo de HatchGrab: aquí tenés tu enlace para volver",
+    "intro": "Aquí tenés tu enlace para volver a la demo con tu menú. No hace falta iniciar sesión: solo tocalo.",
+    "deletion": "Es una demo, así que no la guardamos para siempre: la borraremos junto con el menú el <b>{date}</b> ({days, plural, one {# día} many {# días} other {# días}}). Si te registrás antes de esa fecha, tu menú se va con vos."
+  },
+  "demoGetStarted": {
+    "upload": {
+      "heading": "Configurá tu food truck",
+      "privacy": "Solo usaremos estos datos para configurar tu food truck y enviarte el enlace a tu demo. Consultá nuestra <link>política de privacidad</link>."
+    },
+    "sample": {
+      "heading": "Configurá tu food truck",
+      "privacy": "Solo usaremos estos datos para configurar tu food truck y enviarte el enlace a tu demo. Consultá nuestra <link>política de privacidad</link>."
+    },
+    "saveOnly": {
+      "heading": "Guardá tu demo",
+      "privacy": "Solo usaremos estos datos para enviarte el enlace a tu demo. Consultá nuestra <link>política de privacidad</link>."
+    },
+    "detailsStepHeading": "Terminá la configuración",
+    "confirmKeepUntil": "La guardaremos hasta el <b>{date}</b>. Tu menú se va con vos cuando hagas la configuración completa.",
+    "lastName": "Apellido",
+    "stageState": {
+      "recognised": "ya tenés una cuenta"
+    },
+    "emailPlaceholder": "tu@tufoodtruck.com.uy",
+    "promoLabel": "¿Tenés un código? <opt>(opcional)</opt>",
+    "promoPlaceholder": "Escribilo aquí",
+    "freeMonth": "{months, plural, =0 {Tu prueba gratuita empieza cuando creás tu cuenta.} one {Tu primer mes es gratis, desde que creás tu cuenta.} many {Tus primeros # de meses son gratis, desde que creás tu cuenta.} other {Tus primeros # meses son gratis, desde que creás tu cuenta.}}",
+    "fieldError": {
+      "firstName": "Decinos tu nombre.",
+      "lastName": "Y tu apellido.",
+      "truck": "Ponele un nombre a tu food truck.",
+      "cuisine": "Decinos qué cocinás.",
+      "phoneMissing": "Agregá un número de teléfono: tanto los clientes como nosotros lo usamos para contactarte.",
+      "email": "Ingresá una dirección de correo válida.",
+      "terms": "Aceptá los términos para continuar."
+    },
+    "error": {
+      "saveFailed": "No se ha podido guardar. Volvé a intentarlo.",
+      "unreachable": "No hemos podido conectar ahora mismo. Volvé a intentarlo.",
+      "truckCreateFailed": "Tu cuenta está lista, pero no hemos podido crear tu food truck. Volvé a intentarlo.",
+      "truckUnreachable": "Tu cuenta está lista, pero no hemos podido crear tu food truck ahora mismo. Volvé a intentarlo.",
+      "truckNoToken": "Tu food truck está configurado, pero no hemos podido abrirlo ahora mismo. Volvé a intentarlo."
+    }
+  },
+  "demoUpload": {
+    "dialogLabel": "Subí tu menú",
+    "heading": "✨ Subí tu menú",
+    "intro": "Una foto de tu pizarrón, una captura de pantalla, un PDF, o pegalo como texto. Nuestra IA lo lee y te crea una página de pedidos que funciona, con tus productos y tus precios, en menos de 60 segundos. Sin registro y sin tarjeta.",
+    "sampleWhileYouWait": "O echale un vistazo a un menú de ejemplo mientras esperás",
+    "orSample": "O echale un vistazo a un menú de ejemplo",
+    "orBuild": "O lo creamos nosotros por vos",
+    "buildBody": "Dejanos tu correo y una persona de verdad va a cargar tu menú y te enviará el enlace.",
+    "emailPlaceholder": "tu@tufoodtruck.com.uy",
+    "noPhoto": "¿No tenés a mano una foto del menú?",
+    "noPhotoBody": "Echale un vistazo a un food truck de ejemplo: podés subir tu menú cuando quieras.",
+    "nothingPublished": "No se publica nada: solo lo ves vos.",
+    "error": {
+      "somethingWrong": "Algo ha salido mal. Volvé a intentarlo.",
+      "serverUnreachable": "No hemos podido conectar con el servidor. Comprobá tu conexión y volvé a intentarlo.",
+      "sendFailed": "No se ha podido enviar. Volvé a intentarlo."
+    },
+    "fields": {
+      "dropHere": "Soltá aquí tu menú",
+      "dragOrTap": "Arrastrá y soltá o tocá para elegir",
+      "pastePlaceholder": "Pegá aquí tu menú: nombres de los productos, descripciones, precios…"
+    },
+    "emailNote": "Te enviaremos por correo un enlace a tu demo y puede que nos pongamos en contacto con vos para configurar HatchGrab. <link>Política de privacidad</link>",
+    "emailInvalid": "Ingresá una dirección de correo válida."
+  },
+  "provisionContent": {
+    "standardCategories": {
+      "starters": "Entradas",
+      "wrapsSandwiches": "Wraps y sándwiches",
+      "sides": "Guarniciones"
+    },
+    "demoCategories": {
+      "sides": "Guarniciones"
+    },
+    "demoTemplates": {
+      "pizza": {
+        "items": {
+          "rocketParmesan": "Rúcula y parmesano"
+        }
+      },
+      "burgers": {
+        "items": {
+          "doubleBacon": "Doble bacon"
+        }
+      }
+    }
+  },
+  "manageAllergens": {
+    "cardEditor": {
+      "intro": "Los clientes la ven <b>exactamente como la escribís</b>: no se reescribe nada. Escribí o pegá abajo, o subí una foto o un PDF y leeremos el texto para que lo revises.",
+      "placeholder": "p. ej., Todo nuestro pescado rebozado con papas contiene trigo y leche. La freidora se comparte con productos que contienen gluten y nueces. Hay opciones veganas: preguntá al personal."
+    },
+    "cardUpload": {
+      "question": "¿Tenés una tabla de alérgenos para subir?",
+      "perDish": "{detected, select, yes {Subila y la usaremos para preparar los alérgenos de tus platos. Los alérgenos detectados aparecerán en la página siguiente, donde confirmarás cada plato.} other {Subila y la usaremos para preparar los alérgenos de tus platos.}}",
+      "cardOnly": "Subí la tabla de alérgenos que verán los clientes.",
+      "noProblem": "No pasa nada: no la necesitás. Continuá con el botón de abajo.",
+      "dropzone": "Arrastrá y soltá o tocá para elegir",
+      "pastePlaceholder": "Pegá aquí el texto de tu tabla de alérgenos…",
+      "unmatchedHeading": "No se han podido asociar automáticamente: asignalos o descartalos",
+      "ambiguous": "Ambiguo: coincide con varios platos; elegí el correcto.",
+      "blanket": "La tabla indica que <b>{list}</b> puede estar presente en <b>todos</b> los platos. ¿Agregarlo a todos? (de todos modos confirmarás cada uno) <muted>— desactivado de forma predeterminada</muted>"
+    },
+    "savedCard": {
+      "fileOnly": "Hay un archivo de tabla guardado para este food truck, pero no se guardó ningún texto de resumen. Abrí el original para leerlo."
+    },
+    "wizard": {
+      "toast": {
+        "readFailed": "No se pudo leer la tabla de alérgenos. Volvé a intentarlo",
+        "saveFailed": "No se ha podido guardar. Volvé a intentarlo",
+        "imageFailed": "No se pudo leer esa imagen. Escribí o pegá tu tabla"
+      },
+      "genericWarn": {
+        "text": "Se ha detectado “{generic}”, pero no es específico. Elegí {picks} si este plato contiene {family}, o dejalos sin marcar si no."
+      },
+      "confirm": {
+        "changedTitle": "Editado desde la última confirmación: volvé a confirmar"
+      },
+      "review": {
+        "detected": "Detectados a partir de tu menú: <b>revisalos</b>. Los alérgenos siguen ocultos para los clientes hasta que confirmes cada plato.",
+        "emptyBody": "Primero agregá productos al menú y luego configurá aquí sus alérgenos."
+      },
+      "cardPanel": {
+        "uploadHelp": "Subí tu tabla de alérgenos (foto/PDF) o pegá tu información de alérgenos: nuestra IA la organiza para los clientes.",
+        "intro": "Los clientes verán esta tabla como la referencia de alérgenos de tu menú. Los alérgenos por plato quedan ocultos en el modo solo tabla de alérgenos (los datos de tus platos se conservan por si más adelante cambiás a alérgenos por plato)."
+      },
+      "subtitle": {
+        "choose": "Elegí cómo ven los clientes la información de alérgenos",
+        "card": "Agregá tu tabla de alérgenos",
+        "cardOptional": "Agregá una tabla de alérgenos (opcional)",
+        "review": "Revisá y confirmá cada plato"
+      },
+      "hint": {
+        "importIncomplete": "Confirmá todos los platos para continuar, o elegí “Saltar la configuración de alérgenos por ahora”."
+      }
+    }
+  },
+  "manageUpsells": {
+    "intro": "Animá a los clientes a añadir algo más. Cuando alguien pide de una categoría, sugerí productos de otra: una bebida con una pizza, una salsa con una hamburguesa."
+  },
+  "manageExtras": {
+    "description": "Agregá opciones de pago o gratuitas que los clientes pueden elegir al pedir, p. ej., Extra de queso +{price}, Sin cebolla {zero}",
+    "note": "Creá un grupo de opciones y asignalo a una categoría del menú. Todos los productos de esa categoría ofrecerán esas opciones cuando los clientes pidan.",
+    "matrix": {
+      "offeredRemoveGroup": "Se ofrece: hacé clic para quitar el grupo de este plato",
+      "notOfferedAdd": "No se ofrece: hacé clic para añadirlo",
+      "addGroupFirst": "Primero agregá el grupo a este plato",
+      "offeredRemove": "Se ofrece: hacé clic para quitarla",
+      "help": "Marcá “Incluir” para añadir el grupo a un plato y luego marcá qué opciones muestra. Se guarda al instante."
+    },
+    "emptyBody": "Creá un grupo como “Extras de pizza” y agregá opciones como “Extra de queso +{price}”"
+  },
+  "manageDeals": {
+    "applyHelp": "Elegí si este combo se aplica automáticamente a tus eventos",
+    "applyAllHelp": "Este combo estará activo en cada evento nuevo que crees. Podés desactivarlo para eventos específicos en Agenda.",
+    "applyAllNote": "Este combo se agregará a los eventos nuevos. Para los eventos ya creados, andá a Agenda para administrar los combos de cada evento.",
+    "emptyBody": "Creá un combo como “Combo de mediodía — cualquier pizza + bebida + salsa por {price}”"
+  },
+  "eventTypes": {
+    "noTypes": "Aún no tenés tipos de evento, así que todos los eventos usan tu configuración normal.",
+    "phone": {
+      "noMenuItems": "Aún no hay productos en el menú: agregalos en Menú › Productos."
+    },
+    "newType": {
+      "help": "Tocá un nombre o escribí el tuyo. Empieza como copia de Estándar, y si luego cambiás Estándar, este no cambia. Después podés cambiar lo que quieras.",
+      "chips": {
+        "privateHire": "Alquiler de food truck"
+      }
+    },
+    "summary": {
+      "collectionEvery": "retiro cada {mins} min"
+    }
+  },
+  "privateEvents": {
+    "form": {
+      "namePlaceholder": "Casamiento de Sofía y Martín",
+      "needsTimes": "Agregá una hora de inicio y de fin: un evento privado que acepta pedidos por enlace las necesita."
+    },
+    "link": {
+      "newLinkHelp": "Usalo si el enlace ha llegado a donde no debía. El enlace actual deja de funcionar de inmediato, y los códigos QR impresos también."
+    },
+    "cards": {
+      "scan": "Escaneá para pedir",
+      "blurb": "Pedí y pagá desde tu celular. Te llamaremos por tu nombre cuando esté listo."
+    }
+  },
+  "manageMenu": {
+    "toast": {
+      "subcatNotEmpty": "Primero mové o eliminá {count, plural, one {# producto} other {# productos}} de la subcategoría",
+      "enterPrice": "Ingresá un precio",
+      "chooseCategory": "Elegí una categoría"
+    },
+    "hiddenNotice": {
+      "body": "{count, plural, one {No aparecerá en tu página de pedidos hasta que se confirmen sus alérgenos: mostrar un plato con la información de alérgenos sin revisar se interpretaría como “sin alérgenos”. Aquí sí podés verlo.} other {No aparecerán en tu página de pedidos hasta que se confirmen sus alérgenos: mostrar un plato con la información de alérgenos sin revisar se interpretaría como “sin alérgenos”. Aquí sí podés verlos.}} <link>Confirmar alérgenos →</link>"
+    },
+    "empty": {
+      "title": "Creá tu menú en segundos",
+      "body": "Sacá una foto del pizarrón de tu menú, una captura de tu menú actual o arrastrá un PDF: nuestra IA extraerá todo y creará tu menú digital automáticamente.",
+      "manual": "o agregá categorías manualmente",
+      "note": "Funciona con fotos, capturas de pantalla, PDF y texto sin formato. Podés revisarlo y editarlo todo antes de guardarlo."
+    },
+    "category": {
+      "dragToReorder": "Arrastrá para reordenar",
+      "photoTitle": "Tocá o soltá una foto",
+      "prepHelp": "Elegí Instantáneo para productos como bebidas o salsas. No contarán para los pedidos máximos por franja."
+    },
+    "uncategorized": {
+      "body": "⚠ Sin categoría asignada: elegí una (✏️) para que cada uno aparezca en su sección. Mientras tanto, siguen visibles en las pantallas de pedidos."
+    },
+    "allergens": {
+      "buildFirst": "Primero creá tu menú: agregá platos y luego configurá sus alérgenos",
+      "cardNotAllowed": "Donde vende tu food truck no se puede usar solo una tabla de alérgenos, así que los clientes ven los alérgenos de cada plato. Confirmá los alérgenos de cada plato.",
+      "addCard": "agregá una tabla de alérgenos para que los clientes vean la información de alérgenos",
+      "uploadIntro": "Subí tu tabla de alérgenos o pegá tu información de alérgenos. Nuestra IA la extraerá y la ordenará con claridad para los clientes.",
+      "dropHere": "Soltá aquí tu tabla de alérgenos",
+      "dragOrTap": "Arrastrá y soltá o tocá para subir",
+      "orTypePaste": "o escribí / pegá",
+      "pastePlaceholder": "Pegá aquí tu información de alérgenos…"
+    },
+    "subcats": {
+      "tapToRename": "Tocá para renombrar"
+    },
+    "item": {
+      "createHint": "Completá los datos y luego agregá el producto.",
+      "selectCategory": "Seleccioná una categoría…",
+      "subcatHelp": "Agrupa este producto bajo un encabezado dentro de su categoría en las pantallas de pedidos (p. ej., Carnívoras, Vegetarianas). Dejalo vacío si no querés ninguno.",
+      "optionsHelp": "Marcá un grupo para ofrecerlo en este plato y luego elegí qué opciones mostrar.",
+      "optionOffered": "Disponible: tocá para ocultarla en este plato",
+      "optionHidden": "Oculta: tocá para ofrecerla en este plato",
+      "allergenGateTitle": "Configurá los alérgenos de este plato en la revisión de alérgenos.",
+      "allergenGateBody": "Abrí el recuadro “Configurar / revisar alérgenos” en la pestaña Menú: el asistente te guía para confirmar cada plato.",
+      "selectAll": "Seleccioná todos los que correspondan",
+      "preorderHelp": "Incluí este producto en los pedidos anticipados. El horario y las reglas se configuran de forma general en Ajustes → Pedidos anticipados.",
+      "noGroups": "Aún no hay grupos de opciones: crealos en Extras y ventas sugeridas."
+    }
+  },
+  "manageMenuImport": {
+    "catError": {
+      "empty": "Ponele un nombre a la categoría."
+    },
+    "toast": {
+      "demoGone": "El menú de tu demo ya no está disponible: volvé a subirlo para continuar.",
+      "cardReadFailed": "No se pudo leer la tabla de alérgenos: intentalo de nuevo",
+      "imageReadFailed": "No se pudo leer esa imagen: escribí o pegá tu tabla de alérgenos",
+      "commitFailedDetail": "No se pudo terminar de guardar el menú: {error}. Puede que algunos productos ya se hayan guardado; revisá tu menú antes de volver a intentarlo.",
+      "commitFailed": "No se pudo terminar de guardar el menú. Puede que algunos productos ya se hayan guardado; revisá tu menú antes de volver a intentarlo.",
+      "finishFailed": "No se ha podido marcar la configuración como completada, pero podés continuar.",
+      "scheduleReadFailed": "No se ha podido leer esa agenda: probá con una foto más nítida o escribí tus fechas.",
+      "cardRead": "Tabla leída: {matched} asociados; {pending, plural, one {# queda pendiente} many {# quedan pendientes} other {# quedan pendientes}} de que los asignes vos"
+    },
+    "settingsReview": {
+      "saveFailed": "No se ha podido guardar: podés cambiarlo en Ajustes.",
+      "intro": "Te hemos configurado algunos ajustes habituales. Vale la pena echarles un vistazo: podés cambiar cualquiera de ellos más adelante en Ajustes.",
+      "cancelAria": "Con cuánta anticipación al retiro pueden cancelar los clientes"
+    },
+    "allergensNotSet": {
+      "bodySetup": "Revisalos antes de publicar tu menú. Hasta entonces, los productos aparecen marcados como “alérgenos sin configurar”.",
+      "body": "Revisalos en Ajustes antes de publicar tu menú. Hasta entonces, los productos aparecen marcados como “alérgenos sin configurar”."
+    },
+    "welcome": {
+      "stop": "Podés parar y volver cuando quieras."
+    },
+    "offer": {
+      "body": "Guardamos el menú que subiste: {count, plural, one {# producto} many {# productos} other {# productos}}. Usalo como punto de partida o subí otro."
+    },
+    "checkMenu": {
+      "title": "Revisá tu menú",
+      "body": "Guardamos el menú de tu demo en tu food truck y lo cambiaste desde entonces, así que tus cambios se mantienen. Echale un vistazo abajo."
+    },
+    "upload": {
+      "title": "Importá tu menú",
+      "body": "Subí una foto del pizarrón de tu menú, una captura de pantalla o un PDF, o pegá tu menú como texto. Nuestra IA lo lee y crea tu menú digital; vos revisás todo antes de que se guarde."
+    },
+    "review": {
+      "title": "Revisá el menú importado",
+      "moveBody": "Para eliminar “{name}” hay que mover sus platos a otro lugar: los productos sin categoría no se importan.",
+      "chooseCategory": "Elegí una categoría…",
+      "nameFirst": "Ponele nombre al nuevo producto antes de añadir otro",
+      "ready": "{count, plural, one {# producto listo} other {# productos listos}} para añadir. Desmarcá los que no quieras.",
+      "noPriceBody": "Poné un precio a cada uno o marcalo como gratis; si no, se publicaría a {zero}. No podés continuar hasta resolverlo.",
+      "incomplete": "Escribí un nombre para añadir este producto: las filas vacías no se importan."
+    },
+    "extras": {
+      "introSetup": "Algunos platos se pueden configurar como <b>un único producto personalizable</b> o mantenerse como <b>platos separados</b>. Elegí cómo debe aparecer cada uno. Podés cambiarlo más adelante.",
+      "intro": "Algunos platos se pueden configurar como <b>un único producto personalizable</b> o mantenerse como <b>platos separados</b>. Elegí cómo debe aparecer cada uno. Podés cambiarlo más adelante en Ajustes."
+    },
+    "allergens": {
+      "detected": "Detectamos alérgenos en tu menú. Elegí abajo cómo mostrarlos.",
+      "howShow": "¿Cómo querés mostrar los alérgenos a los clientes?"
+    },
+    "kitchen": {
+      "intro": "Ayudá a los clientes a saber cuánto tendrán que esperar; siempre podés cambiarlo más adelante.",
+      "totalHelp": "Fijá una capacidad total para limitar cuántos productos acepta la cocina por franja horaria. Dejalo en ∞ para no poner límite."
+    },
+    "schedule": {
+      "intro": "Si tu agenda está en tu web, podemos mantenerla actualizada automáticamente; o agregá vos las fechas.",
+      "urlPlaceholder": "https://tufoodtruck.com.uy/eventos",
+      "dragChoose": "Arrastrá y soltá o tocá para elegir",
+      "pastePlaceholder": "Pegá aquí tus fechas…",
+      "manualDesc": "Agregalas más tarde en la pestaña Agenda; no tenés que hacer nada ahora.",
+      "manualBody": "Sin problema. Podés añadir y gestionar tus fechas cuando quieras desde la pestaña Agenda de tu cuenta.",
+      "blockedDomain": "Usá la URL de tu web: las páginas de Facebook e Instagram no se pueden leer automáticamente.",
+      "saveFailed": "Hemos leído tu agenda, pero ahora mismo no hemos podido guardarla: intentalo de nuevo.",
+      "photoDesc": "Sacá una foto o pegá tus fechas: las leeremos para que las revises.",
+      "noneFound": "No hemos encontrado ninguna fecha: probá con una foto más nítida o agregá vos una fecha.",
+      "trialNotStarted": "Añadir eventos no inicia tu prueba gratis: más adelante elegís qué evento la inicia."
+    },
+    "done": {
+      "showMe": "Mostrame cómo funciona",
+      "remind": "Recordámelo más tarde"
+    },
+    "discard": {
+      "setupBody": "Tu cuenta y tu food truck están guardados: no se pierde nada. Podés agregar tu menú cuando quieras: iniciá sesión y tocá <b>Importar menú</b> en la pantalla de tu menú para seguir justo aquí.",
+      "carriedBody": "El menú de tu demo está guardado en tu food truck tal cual. Podés cambiarlo cuando quieras en la pantalla de tu menú."
+    }
+  },
+  "errorsManage": {
+    "sign_in_required": "Tenés que iniciar sesión",
+    "no_truck_access": "No tenés acceso a este food truck",
+    "allergen_card_not_allowed": "Donde trabaja tu food truck, los alérgenos deben indicarse junto a cada plato, así que no se puede elegir solo una tabla de alérgenos.",
+    "ai_failed": "Ha fallado el procesamiento con IA; volvé a intentarlo",
+    "live_event_needs_times": "Un evento publicado necesita hora de inicio y de fin: agregalas antes de guardar.",
+    "event_needs_times": "Agregá una hora de inicio y de fin para poder publicar este evento.",
+    "private_needs_times": "Agregá una hora de inicio y de fin: un evento privado que recibe pedidos por enlace las necesita.",
+    "choose_truck_for_event": "Elegí qué food truck trabaja en este evento para poder publicarlo.",
+    "type_name_required": "Ponele un nombre al tipo.",
+    "type_name_taken": "Ya tenés un tipo llamado “{name}”.",
+    "collection_interval_choices": "Los horarios de retiro deben ser cada {choices} minutos.",
+    "collection_intervals_save_failed": "Ahora mismo no se han podido guardar los horarios de retiro.",
+    "missing_params": "Algo ha fallado: actualizá la página y volvé a intentarlo.",
+    "truck_param_required": "Algo ha fallado: actualizá la página y volvé a intentarlo.",
+    "upsell_categories_required": "Algo ha fallado: actualizá la página y volvé a intentarlo.",
+    "clear_first_setup_only": "Algo ha fallado: actualizá la página y volvé a intentarlo.",
+    "event_id_required": "Algo ha fallado: actualizá la página y volvé a intentarlo.",
+    "id_required": "Algo ha fallado: actualizá la página y volvé a intentarlo.",
+    "ids_required": "Algo ha fallado: actualizá la página y volvé a intentarlo.",
+    "id_and_item_required": "Algo ha fallado: actualizá la página y volvé a intentarlo.",
+    "settings_save_failed": "No se han podido guardar los ajustes; volvé a intentarlo.",
+    "van_category_ids_required": "Algo ha fallado: actualizá la página y volvé a intentarlo.",
+    "van_id_required": "Algo ha fallado: actualizá la página y volvé a intentarlo.",
+    "auto_open_close_required": "Algo ha fallado: actualizá la página y volvé a intentarlo.",
+    "charges_rate_decimals": "Usá hasta 3 decimales, por ejemplo 8,875.",
+    "charges_rate_range": "Usá un tipo de entre 0 y 20 %.",
+    "charges_fee_pct": "Usá un porcentaje, por ejemplo 3 o 3,5.",
+    "charges_fee_fixed": "Usá un importe, por ejemplo 0,50.",
+    "charges_fee_over_pct": "Lo máximo que podés cobrar es un {max} %.",
+    "charges_fee_over_fixed": "Lo máximo que podés cobrar es {max}.",
+    "charges_choose_on_off": "Elegí activado o desactivado.",
+    "country_settings_failed": "No se han podido cargar los ajustes de país de este food truck. Volvé a intentarlo en un momento.",
+    "plans_failed": "No se ha podido cargar el plan de este food truck. Volvé a intentarlo en un momento.",
+    "select_one_van": "Seleccioná al menos un food truck",
+    "wa_no_code": "Meta no devolvió un código de un solo uso. Tocá “Configurar” y volvé a intentarlo.",
+    "wa_no_waba": "Meta no devolvió una cuenta de WhatsApp Business. Tocá “Configurar” y volvé a intentarlo.",
+    "wa_not_configured": "La configuración de WhatsApp no está disponible ahora mismo. Ya nos han avisado; ponete en contacto con soporte.",
+    "wa_code_expired": "Tardó demasiado y el código de un solo uso de Meta expiró. No se guardó nada. Tocá “Configurar” y volvé a hacerlo: solo debería tomarte un minuto.",
+    "wa_write_failed": "Nos hemos conectado con Meta, pero no hemos podido guardar la conexión. Ponete en contacto con soporte y no vuelvas a hacer la configuración todavía.",
+    "wa_disconnect_failed": "No se ha podido desconectar. No se ha cambiado nada; volvé a intentarlo.",
+    "wa_preview_empty": "Primero escribí una pregunta.",
+    "wa_preview_rate_limited": "Hiciste bastantes vistas previas. Volvé a intentarlo dentro de un rato.",
+    "wa_preview_failed": "Ahora mismo no se ha podido crear una vista previa. Volvé a intentarlo en un momento.",
+    "domain_too_many_checks": "Demasiadas comprobaciones seguidas. Volvé a intentarlo dentro de unos minutos.",
+    "domain_www_inner": "Esa dirección tiene www en medio. Quitá el www. del principio de tu dirección web y volvé a intentarlo.",
+    "domain_www": "{host} suele ser donde ya está tu web actual. Si la dirigís hacia nosotros, tu web se sustituirá por esta página. Poné otra palabra delante, por ejemplo eventos.",
+    "domain_apex": "{host} es la dirección completa de tu web. Si la dirigís hacia nosotros, tu web se sustituirá por esta página. Poné una palabra delante.",
+    "domain_provision_not_configured": "Hay algo sin configurar por nuestra parte, así que no hemos podido añadir tu dirección. No ha cambiado nada por tu parte. Volvé a intentarlo en breve.",
+    "domain_provision_error": "Ahora mismo no hemos podido añadir esa dirección. No ha cambiado nada por tu parte. Volvé a intentarlo en breve.",
+    "domain_turn_off_failed": "Ahora mismo no hemos podido desactivarlo. No ha cambiado nada: tu dirección sigue funcionando. Volvé a intentarlo en breve.",
+    "domain_send_unavailable": "Ahora mismo no hemos podido enviarlo. Volvé a intentarlo en breve, o copiá los datos de esta pantalla y envialos vos por correo: funciona igual de bien.",
+    "domain_send_limit": "Hoy ya enviaste estas instrucciones varias veces. Volvé a intentarlo mañana o reenviá el correo que ya tenés.",
+    "wp_migration_three_pictures": "Las fotos de ubicación necesitan una actualización de la base de datos: ejecutá primero supabase/migrations/20261022_three_location_pictures.sql.",
+    "wp_migration_slots": "Las imágenes de ubicación necesitan una actualización de la base de datos: ejecutá primero supabase/migrations/20261019_place_picture_slots.sql.",
+    "wp_migration_library": "Las fotos de los lugares necesitan una actualización de la base de datos: ejecutá primero supabase/migrations/20261018_place_picture_library.sql.",
+    "wp_migration_fonts": "Las fuentes subidas necesitan una actualización de la base de datos: ejecutá primero supabase/migrations/20261017_post_fonts.sql.",
+    "wp_upload_missing": "Ese archivo no ha llegado; volvé a intentarlo.",
+    "wp_event_design_first": "Primero configurá el diseño de tus publicaciones de eventos.",
+    "wp_upload_blank_first": "Primero subí la plantilla en blanco.",
+    "wp_upload_blank_image_first": "Primero subí tu imagen en blanco.",
+    "wp_back_to_standard": "La foto de este lugar tiene una forma distinta de tu foto Estándar, así que las posiciones de texto estándar no encajarían. Primero sustituí la foto por una con la misma forma que tu foto Estándar, o mantené las posiciones propias de este lugar.",
+    "wp_upload_event_picture_first": "Primero subí la foto de tu evento.",
+    "wp_licence_required": "Marcá la casilla para confirmar que sos propietario de esta fuente o tenés licencia para usarla.",
+    "wp_font_woff": "Subí un archivo TTF u OTF: normalmente podés descargarlo donde compraste la fuente.",
+    "wp_picture_saved_not_used": "Esa imagen se ha guardado, pero no se ha podido usar aquí; volvé a intentarlo.",
+    "wp_caption_needs_design": "Configurá primero este diseño: el texto de la publicación va asociado a un diseño.",
+    "wp_upload_too_big": "Esa imagen ocupa {size} MB. El límite es de {max} MB: volvé a exportarla a un tamaño menor.",
+    "wp_upload_not_image": "Ese archivo no es PNG ni JPG. En Canva, elegí “Compartir › Descargar” y seleccioná PNG.",
+    "wp_upload_no_size": "Esa imagen no indica su tamaño; probá a exportarla otra vez.",
+    "wp_picture_wrong_shape": "Esta foto tiene una forma distinta de la predeterminada ({width}×{height}). Exportala al mismo tamaño.",
+    "wp_tag_spaces": "Una etiqueta no puede contener espacios. Usá solo el nombre de usuario, por ejemplo @buresmusicfest.",
+    "wp_tag_one_at": "Una etiqueta solo puede tener una @, al principio. Probá con @buresmusicfest.",
+    "wp_tag_just_at": "Eso es solo una @: agregá el nombre de usuario detrás, por ejemplo @buresmusicfest.",
+    "wp_last_toggle": "Mantené activada Ubicación u Hora. Un evento cancelado muestra su lugar tachado y la palabra CANCELADO, así que con las dos desactivadas no habría nada que indicara que está cancelado.",
+    "sg_merge_pick": "Elegí un lugar con el que fusionarlo.",
+    "sg_merge_into_gone": "El lugar que elegiste ya no está aquí.",
+    "stripe_account_not_saved": "Cuenta creada pero no guardada: ponete en contacto con soporte",
+    "paperwork_file_too_big": "Ese archivo supera los 20 MB. Elegí uno más pequeño.",
+    "paperwork_file_type": "Ese tipo de archivo no se acepta. Usá un archivo PDF, JPEG, PNG, HEIC o WebP.",
+    "paperwork_upload_failed": "No se ha podido subir. Intentalo de nuevo.",
+    "paperwork_not_found": "Ese documento ya no existe. Volvé a cargar la página.",
+    "paperwork_bad_details": "Algunos datos no son correctos. Revisalos e intentalo de nuevo.",
+    "paperwork_send_limit": "Enviaste muchos enlaces en poco tiempo. Volvé a intentarlo dentro de una hora.",
+    "paperwork_send_failed": "No se ha podido enviar el email. Intentalo de nuevo.",
+    "cost_invalid": "Ingresá un costo de 0 o más, o dejá el campo vacío."
+  },
+  "tradeArea": {
+    "country_missing": "Elegí el país donde tiene su base tu food truck.",
+    "country_off": "Los food trucks de ese país aún no pueden registrarse. Elegí otro país.",
+    "zone_unknown": "Esa zona horaria no está disponible para ese país. Elegí una de la lista.",
+    "town_missing": "Indicanos la localidad o ciudad donde tenés tu base.",
+    "region_closed": "Los food trucks con base en {region} aún no pueden registrarse{reason, select, language {: HatchGrab todavía no está disponible en {language}} taxLines {: primero estamos añadiendo líneas separadas para GST y PST} other {}}. Si tu food truck tiene su base en otro sitio, elegí esa localidad o ciudad."
+  },
+  "manageSchedule": {
+    "header": {
+      "scraperManual": "Gestionás tu agenda manualmente"
+    },
+    "list": {
+      "found": "Hemos encontrado {count, plural, one {# evento para vos: revisalo y aprobalo antes de que se publique.} other {# eventos para vos: revisalos y aprobalos antes de que se publiquen.}}"
+    },
+    "card": {
+      "setTimeFirst": "Primero indicá una hora",
+      "approveNeedsTimes": "No podés aprobar este evento hasta que tenga hora de inicio y de fin: agregalas con Editar."
+    },
+    "guessed": {
+      "body": "Varios lugares coinciden con <b>{venue}</b>, así que hemos elegido el más probable{hasTown, select, yes { en <b>{town}</b>} other {}}{hasPostcode, select, yes { ({postcode})} other {}}. Comprobá que es el correcto antes de aprobar: si no lo es, usá <b>Editar</b> para corregir la zona o {postal}; si no, los clientes irán al sitio equivocado."
+    },
+    "noLocation": {
+      "body": "No pudimos ubicar este lugar en el mapa, así que aparecerá en la lista pero sin marcador en el mapa. Agregá {postal} con <b>Editar</b> para que salga en el mapa."
+    },
+    "conflict": {
+      "title": "⚠️ {count, plural, one {Posible conflicto} other {Posibles conflictos}}: revisá antes de {pending, select, yes {aprobar} other {confirmar}}",
+      "duplicate": "Parece el mismo evento que ya tenés.",
+      "review": "Mismo lugar y fecha, pero distinta hora: ¿es el mismo evento con la hora cambiada o una franja aparte? Revisalo antes de aprobar.",
+      "overlap": "La hora de este evento se solapa con otro evento del mismo día: un food truck no puede estar en dos sitios a la vez. Comprobalo antes de aprobar."
+    },
+    "toast": {
+      "needsTime": "Agregá una hora de inicio y de fin antes de aprobar: este evento necesita una hora para publicarse.",
+      "addStartTime": "Agregá una hora de inicio",
+      "addEndTime": "Agregá una hora de fin",
+      "chooseTruckBefore": "Elegí qué food truck trabaja en este evento antes de aprobar.",
+      "chooseTruck": "Elegí qué food truck trabaja en este evento"
+    }
+  },
+  "manageScheduleEvent": {
+    "placesEmpty": "Aún no hay lugares: escribí el lugar a la derecha y se guardará como uno.",
+    "selectVan": "Elegí un food truck",
+    "notesPlaceholder": "p. ej., Estacionate en el estacionamiento principal",
+    "previewDate": "Elegí una fecha",
+    "errors": {
+      "van": "Elegí un food truck"
+    }
+  },
+  "manageScheduleImport": {
+    "intro": "Subí una captura de pantalla, una foto o un PDF de tu agenda, o pegá el texto abajo. Nuestra IA extraerá tus eventos para que los revises.",
+    "dropHere": "Soltá aquí tu agenda",
+    "dragOrTap": "Arrastrá y soltá o tocá para elegir",
+    "orPaste": "O pegá el texto de tu agenda",
+    "pastePlaceholder": "Pegá aquí tu agenda, p. ej., {date}, {place}, {start}-{end}",
+    "review": {
+      "selectVan": "Elegí un food truck",
+      "pastHeading": "Fechas pasadas: actualizalas para guardar",
+      "pastBody": "Estos eventos ya han pasado. Cambiá la fecha a una futura para incluirlos.",
+      "fixFirst": "Primero corregí {count, plural, one {# evento} other {# eventos}}"
+    }
+  },
+  "manageScheduleVerify": {
+    "launch_failed": "La verificación no está disponible temporalmente. Intentalo de nuevo en un momento.",
+    "malformed": "Eso no parece una dirección web. Probá algo como tufoodtruck.com.uy/eventos",
+    "blocked": "No hemos podido acceder a este sitio: puede que bloquee las comprobaciones automáticas. Probá con la página donde aparece tu agenda o agregá los eventos manualmente.",
+    "no_content": "Hemos llegado a esta página, pero no hemos podido leer nada en ella. Comprobá que es de acceso público.",
+    "no_events": "No hemos encontrado próximos eventos en esta página. Asegurate de que la URL lleva directamente a donde aparece tu agenda.",
+    "blockedDomain": "Usá la URL de tu web: las páginas de Facebook e Instagram no se pueden leer automáticamente."
+  },
+  "schedulePlaces": {
+    "hiddenNote": "Los lugares ocultos no aparecen en Añadir evento. Abrí uno para restaurarlo.",
+    "venueHint": "Dejalo en blanco para usar el nombre completo.",
+    "pickPlace": "Elegí un lugar para ordenarlo."
+  },
+  "serviceSettings": {
+    "labels": {
+      "collection_interval_mins": "Horarios de retiro",
+      "takes_cash": "¿Aceptás efectivo?"
+    },
+    "eventTypesFooterStandard": "Estándar es tu configuración habitual. Si lo cambiás aquí, también cambia en Ajustes.",
+    "eventTypesFooterOneEvent": "Para cambiar un ajuste solo para un evento, usá el panel de ese evento.",
+    "priceItemsHeading": "Fijá el precio de cada producto",
+    "priceTypeHint": "Tocá un precio para escribir el tuyo."
+  },
+  "offlineProtection": {
+    "explainerLead": "Debés mantener el panel o la pantalla de cocina encendidos y conectados durante el servicio.",
+    "explainerBody": "Si la pantalla se apaga, el dispositivo pierde internet o cambiás a otra web, la protección sin conexión toma el control: pausa los pedidos o desactiva la aceptación automática, según lo que hayas elegido.",
+    "reminder": "⚠️ Mantené el panel o la pantalla de cocina encendidos y conectados durante el servicio, o la protección sin conexión podría tomar el control.",
+    "enableConfirm": "Protección sin conexión activada.\n\nPara que los pedidos sigan llegando, la pantalla debe permanecer encendida. Si este dispositivo pierde la conexión, la protección sin conexión toma el control en el modo que hayas elegido.\n\nAsegurate de que Pantalla encendida está activado en este dispositivo.",
+    "disableConfirm": "¿Desactivar la protección sin conexión para este evento?\n\nSi este dispositivo pierde la conexión, los pedidos online seguirán llegando: los clientes podrían hacer pedidos que no ves. Desactivala solo si tenés una conexión fiable.",
+    "purpose": "Si tu dispositivo pierde la conexión, esto evita que lleguen pedidos mientras no podés verlos."
+  },
+  "kitchenCapacity": {
+    "example": "Ejemplo: si podés cocinar 4 principales en 5 minutos, configuralo en 4 productos cada 5 minutos. La capacidad total limita los pedidos de todas las categorías seleccionadas, así que si querés vender como máximo 10 entradas y principales cada 5 minutos, poné la Capacidad total en 10 productos cada 5 minutos y marcá las casillas Entradas y Principales. Tus principales seguirán limitados a 4 productos cada 5 minutos.",
+    "noLimit": "Dejalo en el símbolo de infinito para no poner límite.",
+    "warning": "⚠️ Para que la capacidad de cocina funcione bien, indicá un tiempo de preparación y un tamaño de tanda en las categorías de tu menú (Menú y stock). Sin ellos, la capacidad no puede saber cuánto tardan los productos en cocinarse.",
+    "noVan": "Agregá un food truck en Ajustes › Ajustes del food truck para configurar la capacidad de cocina.",
+    "lead": "Cuántos productos puede preparar tu cocina, para que los clientes solo puedan elegir horarios de retiro que puedas cumplir.",
+    "colCountsTitle": "Qué categorías cuentan para la capacidad total. Las categorías cocinadas siempre cuentan; marcá las instantáneas (guarniciones, salsas, bebidas) para incluirlas.",
+    "countsNoCap": "Indicá una capacidad para elegir qué categorías cuentan",
+    "countsTick": "Marcá para incluir esta categoría instantánea (guarniciones, salsas, bebidas) en el límite compartido por franja",
+    "setCapacityFirst": "Indicá una capacidad para elegir qué categorías cuentan."
+  },
+  "settingsCopy": {
+    "allowCancellation": {
+      "sentence": "Los clientes pueden cancelar hasta <select></select> antes de su horario de retiro"
+    },
+    "orderReady": {
+      "help": "Muestra un botón “Marcar como listo” en la pantalla de pedidos. Las pantallas de cocina se configuran aparte, en cada dispositivo. Los clientes reciben un email cada vez que un pedido se marca como listo. Se aplica a todos los eventos; aun así, podés activarlo o desactivarlo para un solo evento desde su panel."
+    },
+    "buzzers": {
+      "label": "¿Das avisadores para el retiro?",
+      "help": "Anotá qué avisador le diste a cada cliente, para saber a quién buscar cuando su comida esté lista.",
+      "countLabel": "¿Cuántos avisadores tenés?"
+    }
+  },
+  "whereYouTrade": {
+    "settingsHeading": "Dónde vendés",
+    "countryGuessed": "Lo hemos deducido a partir de tu ubicación. Cambialo si no es correcto.",
+    "townQuestion": "Localidad o ciudad donde tenés tu base",
+    "saveFailed": "No se han podido guardar los ajustes. Intentalo de nuevo."
+  },
+  "stockCopy": {
+    "defaultScopeNote": "Valor predeterminado para todos los eventos. Para fijar otra cantidad en un evento, cambiala en el panel de ese evento: los eventos que ya hayas configurado allí mantienen su propia cantidad."
+  },
+  "managePrimitives": {
+    "allergenMode": {
+      "perDishBody": "Revisá cada plato y confirmá sus alérgenos. Los clientes ven etiquetas por plato y una tabla resumen de alérgenos generada a partir de ellas.",
+      "cardBody": "Subí o pegá una sola tabla de alérgenos (PDF, imagen o texto), que se muestra tal cual. Las etiquetas por plato quedan ocultas."
+    }
+  },
+  "manageSettings": {
+    "walkthrough": {
+      "title": "¿Sos nuevo en HatchGrab?",
+      "button": "Mostrame cómo funciona"
+    },
+    "getApp": {
+      "title": "Descargá la app",
+      "body": "La app de cocina gestiona tu servicio desde un celular o una tablet, y es la única forma de seguir recibiendo pedidos cuando te quedás sin señal. Gratis con tu cuenta, para iPhone, iPad y Android."
+    },
+    "logo": {
+      "dropTitle": "Tocá o soltá un logo",
+      "removeConfirm": "¿Quitar tu logo? Los clientes verán el nombre de tu food truck sin él. Podés subir uno nuevo cuando quieras.",
+      "removeFailed": "No se ha podido quitar el logo. Intentalo de nuevo."
+    },
+    "details": {
+      "descriptionPlaceholder": "Contales a tus clientes cómo es tu comida…",
+      "websitePlaceholder": "https://tufoodtruck.com.uy"
+    },
+    "emojiPicker": {
+      "title": "Elegí tu icono"
+    },
+    "contact": {
+      "intro": "Cómo te contactan los clientes sobre su pedido (aparece en las confirmaciones de pedido) y dónde recibís los avisos de pedidos nuevos. Para los datos de tu cuenta personal, andá a Equipo → Mi perfil.",
+      "emailPlaceholder": "hola@tufoodtruck.com.uy",
+      "emailError": "Ingresá un correo válido (p. ej., hola@tufoodtruck.com.uy)",
+      "emailHelp": "Donde recibís los avisos de pedidos nuevos; además, se muestra a los clientes en su confirmación cuando “Email” es el método preferido de abajo.",
+      "previousMethodGone": "Tu método de contacto anterior ya no está disponible. Elegí uno nuevo.",
+      "addEmailOrPhone": "Agregá un email o un teléfono arriba para ofrecer un método de contacto.",
+      "tickWhatsApp": "⚠️ Marcá “Este número tiene WhatsApp” en el campo Teléfono para usar WhatsApp."
+    },
+    "orders": {
+      "notificationsHelp": "Cómo te enterás de los pedidos nuevos."
+    },
+    "preorders": {
+      "intro": "Dejá que los clientes pidan con anticipación a un evento. Configurá cuándo se abren los pedidos anticipados y las reglas de plazo de abajo: solo se aplican a los productos que selecciones.",
+      "deadlineHelp": "Configurá una regla de pedido anticipado para que no se puedan pedir productos después de una hora determinada.",
+      "noneYet": "Aún no hay productos seleccionados: usá “Configurar productos” para añadir algunos.",
+      "modalTitle": "Elegí los productos de pedido anticipado",
+      "modalHelp": "Marcá qué productos son de pedido anticipado. Todos usan la regla general ({rule})."
+    },
+    "vans": {
+      "help": "Gestioná tus food trucks. Cada uno tiene su propia pantalla de pedidos y sus propios ajustes.",
+      "sameOff": "Copiá los ajustes del primer food truck (todo menos la capacidad de cocina) y mantenelos sincronizados.",
+      "takesCashHelp": "Divide el botón de pago en “Efectivo” y “Tarjeta” para que lo que cobrás cuadre con la caja. Podés activarlo para un solo evento desde el panel.",
+      "addConfirm": "{free, select, yes {Añadir otro food truck es gratis con tu plan.} other {Cada food truck adicional cuesta {price} al mes con tu plan. Te avisaremos antes de cobrar nada.}}\n\n¿Querés continuar?"
+    },
+    "collection": {
+      "help": "Cuánto separan unos horarios de retiro de otros. Esto no cambia la capacidad de cocina ni los tiempos de preparación.",
+      "unavailable": "Los horarios de retiro no están disponibles en este momento.",
+      "customerTimes": "Horarios de retiro para clientes",
+      "canPick": "{who, select, customers {Los clientes pueden elegir {example}} other {Vos y tus clientes pueden elegir {example}}}",
+      "differentTimes": "Usar otros horarios para los pedidos que añado yo",
+      "yourTimes": "Tus horarios de retiro",
+      "youCanPick": "Podés elegir {example}",
+      "misaligned": "{name} tarda {mins, plural, one {# minuto} other {# minutos}} en cocinarse, así que algunos horarios entre tandas aparecerán como completos."
+    },
+    "schedule": {
+      "autoDesc": "Decinos dónde publicás tu agenda y la revisaremos por vos, enviándote para tu aprobación los eventos que encontremos. Tiene que ser tu propia web, no una página de Facebook o Instagram.",
+      "wherePost": "¿Dónde publicás tu agenda?",
+      "urlPlaceholder": "https://tufoodtruck.com.uy/eventos",
+      "checkingHelp": "Puede tardar hasta 2 minutos: mantené esta página abierta y no cierres la pestaña.",
+      "exclusionsHelp": "Estos términos se filtran automáticamente al importar tu agenda. Quitá los que se hayan añadido por error."
+    },
+    "qr": {
+      "domainNotLive": "Este código QR lleva a los clientes a tu página de pedidos de HatchGrab. Si más adelante configurás tu propia dirección web, el mismo código QR los llevará allí: no tendrás que imprimir uno nuevo.",
+      "printHelp": "Imprimí o mostrá este código para que los clientes lo escaneen y hagan su pedido anticipado. Ponelo en la ventanilla, en tu food truck o compartilo online.",
+      "addLogo": "Agregá tu logo a tu perfil y aparecerá aquí.",
+      "buildFailed": "No se ha podido generar ahora mismo. Intentalo de nuevo en un rato."
+    }
+  },
+  "manageReports": {
+    "filter": {
+      "selectEvent": "Elegí un evento…"
+    },
+    "empty": {
+      "selectEvent": "Elegí un evento arriba para ver su informe."
+    },
+    "csv": {
+      "collectionTime": "Horario de retiro"
+    },
+    "accounts": {
+      "payAtTruck": "Pago al retirar",
+      "cost": "Costo de los platos vendidos",
+      "coverage": "{total, plural, one {Costo indicado en {withCost} de # plato vendido} many {Costo indicado en {withCost} de # platos vendidos} other {Costo indicado en {withCost} de # platos vendidos}}",
+      "partial": "Los platos sin costo no se incluyen en el costo, así que esta ganancia es mayor de lo que es en realidad. Agregá un costo a cada plato en la pestaña Menú.",
+      "noCosts": "Todavía ningún plato tiene costo. Agregá un costo a tus platos en la pestaña Menú para ver tu ganancia.",
+      "eventNoProfit": "Un guion significa que no todos los platos vendidos ahí tienen costo."
+    },
+    "accountsCsv": {
+      "header": {
+        "dishesSold": "Platos vendidos",
+        "dishesWithCost": "Platos con costo"
+      }
+    }
+  },
+  "socialPosts": {
+    "placePostBoxBlurb": "Elegí un lugar y publicá tu próximo evento allí.",
+    "emptyWeeklyTitle": "Aún no diseñaste una publicación semanal",
+    "emptyEventTitle": "Aún no diseñaste una publicación de evento",
+    "emptyBody": "Subí primero tu imagen en Diseños.",
+    "placePicturesBlurb": "Guardá imágenes para una ubicación: el logo de un bar, una foto, el cartel de un festival. Tus diseños deciden dónde aparecen: en un cuadro de imagen de tu publicación semanal o de evento, o como fondo completo.",
+    "placePicturesPageLine": "Imágenes de esta ubicación. La marcada como Principal se usa automáticamente; podés elegir otra al crear una publicación.",
+    "locationsBlurb": "Asigná imágenes a cada ubicación. Se usan automáticamente al crear una publicación.",
+    "pickAnotherHeading": "O ELEGÍ OTRO EVENTO",
+    "captionThisPostNote": "Escribí directamente en el cuadro para cambiarlo solo en esta publicación. Tu plantilla no cambia.",
+    "locationsPickOne": "Elegí una ubicación a la izquierda para asignarle imágenes.",
+    "eventBoxAddPhotoSpace": "Agregá un hueco para foto a tu diseño de evento para usar cualquier formato",
+    "tabCreateBlurb": "Creá una publicación para esta semana o para un evento. Ponemos tus fechas, lugares y horarios en tu diseño, lista para descargar o compartir.",
+    "tabDesignsBlurb": "Tus dos diseños: uno para la agenda semanal y otro para las publicaciones de evento. Configuralos una vez: todas las publicaciones los usan.",
+    "dropAPicture": "Soltala aquí",
+    "dropAPoster": "Soltalo aquí",
+    "pictureWeeklyOff": "Activala en tu diseño semanal →",
+    "pictureEventNoSpace": "Tu diseño de evento aún no tiene hueco para foto: agregá uno para mostrar esta imagen en las publicaciones de evento →",
+    "socialTagPlaceholder": "@festivalpocitos",
+    "shareCaptionNote": "Facebook e Instagram no aceptan un texto ya escrito desde otras apps: lo hemos copiado, así que solo tenés que pegarlo.",
+    "posterBoxBlurb": "¿Tenés un cartel ya hecho para esta ubicación? Subilo y lo usaremos en lugar de tu diseño de evento.",
+    "nameFromScheduleNote": "El nombre y la zona vienen de tu agenda. Editalos en Agenda › Eventos › Añadir evento › Ordenar lugares.",
+    "leaveConfirmTitle": "Tenés cambios sin guardar. ¿Salir sin guardar?",
+    "editorNothingSelected": "Hacé clic en cualquier elemento de tu publicación para cambiarlo",
+    "editorSettingsFor": "Ajustes del cuadro que elegiste",
+    "editorSectionStand": "HACÉ QUE DESTAQUE",
+    "lookSameHint": "La fuente, el color y los efectos vienen de Todo el texto. Elegí “Estilo propio” para cambiarlos solo en este cuadro.",
+    "lookOwnHint": "Este cuadro tiene su propia fuente, color y efectos. Elegí “Igual que Todo el texto” para volver a igualarlo con los demás.",
+    "daysBlurb": "Una fila por día. Arrastrá el cuadro naranja de tu cartel para moverlas; arrastrá sus esquinas para hacer las filas más grandes o más pequeñas.",
+    "daysPartsHint": "Arrastrá ⋮⋮ para cambiar el orden. Para cambiar el aspecto del texto, hacé clic en él en tu cartel.",
+    "editorClickOne": "hacé clic en uno para cambiarlo",
+    "leaveBody": "Cambiaste este diseño desde la última vez que guardaste.",
+    "settingsClicked": "Hiciste clic aquí en tu cartel. Cambialo aquí.",
+    "textSizeHint": "o arrastrá una esquina del cuadro en tu cartel",
+    "deleteOwnTextKey": "o presioná Supr",
+    "liveFontFallback": "Tu fuente subida no se puede mostrar aquí, así que ese texto aparece en Oswald mientras editás. Tocá “👁 Vista previa” para verlo bien.",
+    "phoneEditHint": "Tocá el texto de tu cartel, o elegí algo abajo, para cambiarlo",
+    "pageIntro": "En <b>Diseños</b> subís tus imágenes de fondo, una sola vez. <b>Crear publicación</b> pone en ellas tus fechas, lugares y horarios por vos.",
+    "postNameHint": "Se imprime en las publicaciones de este lugar. Dejalo vacío para usar “{fullName}”.",
+    "screen": {
+      "pngOrJpg": "Elegí un PNG o un JPG."
+    }
+  },
+  "managePayments": {
+    "state": {
+      "pending": {
+        "body": "No tenés que hacer nada. Stripe está revisando lo que enviaste y esta página se actualiza cuando termine."
+      },
+      "unsupported": {
+        "body": "Stripe no puede activar aquí los pagos con tarjeta. Ponete en contacto con nosotros y lo resolveremos con vos."
+      }
+    },
+    "online": {
+      "feeLine": "Stripe cobra {fee} por pago con {region} estándar. Otras tarjetas pueden costar más. La comisión de HatchGrab en los pedidos online depende de tu plan: consultá Facturación."
+    },
+    "toast": {
+      "addDetails": "Ahora agregá tus datos para Stripe"
+    },
+    "details": {
+      "body": "Cambiá la cuenta bancaria en la que cobrás o actualizá los datos y documentos de tu negocio."
+    },
+    "walkUp": {
+      "body": "Cómo cobrás en la ventanilla. HatchGrab no cobra comisión de plataforma por los pedidos en ventanilla, elijas lo que elijas.",
+      "ownTerminal": "Tu propio POS",
+      "ownTerminalHelp": "Handy POS, OCA, Getnet o el que ya uses. No hay nada que configurar: solo se aplican las comisiones de tu proveedor.",
+      "hatchgrabHelp": "Usa la misma conexión de Stripe que tus pagos online: un POS, o pago sin contacto directamente en tu celular o tablet."
+    }
+  },
+  "manageCharges": {
+    "rate": {
+      "hint": "La tasa que aplicás a cada pedido. Los clientes la ven sumada al pagar, en los tickets y en las comandas.",
+      "regionDefault": "Dejalo vacío para aplicar {label} al {rate} %, la tasa de la comida preparada ({region})."
+    },
+    "included": {
+      "default": "Dejalo vacío para usar el {rate} %, la tasa de {label} de la comida caliente para llevar ({country})."
+    },
+    "tips": {
+      "hint": "Los clientes que pagan online con tarjeta pueden añadir propina. Es toda para vos."
+    },
+    "fee": {
+      "hint": "Solo se añade a los pedidos online. Nunca a los pedidos con Pago al retirar ni a los pedidos en ventanilla. Te lo quedás vos.",
+      "max": "Máximo que podés cobrar: {max}",
+      "hatchgrab": "HatchGrab añade un cargo por servicio de {fee} a los pedidos online de tus clientes. No lo pagás vos y no podés cambiarlo."
+    },
+    "saveFailed": "No se ha podido guardar. Intentalo de nuevo."
+  },
+  "takingPayment": {
+    "paidStepHelp": "Añade un botón Confirmar cuando agregás vos un pedido, para que puedas hacerlo ahora y cobrarlo después. Activalo si aceptás pedidos por teléfono o anticipados.",
+    "paidStepNote": "Esto solo afecta a los pedidos que agregás vos. No afecta a los pedidos online."
+  },
+  "designEditor": {
+    "item": {
+      "noteTokenSample": "La nota que escribís al crear la publicación"
+    },
+    "sample": {
+      "area": "Pocitos"
+    },
+    "scope": {
+      "locked": "Estas posiciones vienen de tu diseño Estándar. Elegí “Posiciones propias para {place}” para moverlas solo aquí."
+    },
+    "stage": {
+      "hint": "Arrastrá un cuadro para moverlo · arrastrá una esquina para cambiar su tamaño"
+    },
+    "rows": {
+      "showCancelledHint": "Un evento cancelado muestra su lugar tachado y la palabra CANCELADO. Si lo desactivás, ese día aparece como día libre."
+    },
+    "picture": {
+      "allHaveImage": "{total, plural, =0 {Aún no tenés ninguna ubicación.} one {Tu ubicación tiene imagen.} other {Tus # ubicaciones tienen imagen.}}"
+    },
+    "settings": {
+      "lastToggle": "{kind, select, weekly {Dejá activado Lugar u Horario. Un evento cancelado muestra su lugar tachado y la palabra CANCELADO, así que con los dos desactivados nada indicaría que está cancelado.} other {Dejá activado Local u Horario. Un evento cancelado muestra su lugar tachado y la palabra CANCELADO, así que con los dos desactivados nada indicaría que está cancelado.}}"
+    },
+    "bits": {
+      "chooseColourFor": "{label}: elegí cualquier color",
+      "chooseColour": "Elegí cualquier color"
+    }
+  },
+  "fontPicker": {
+    "uploadButton": "↑ Subí tu fuente",
+    "noOwn": "Aún no subiste ninguna fuente. Usá el botón “↑ Subí tu fuente” de arriba.",
+    "showing": "Se muestran {shown} de {total, number}: escribí más para acotar la búsqueda.",
+    "woff": "Subí un archivo TTF u OTF; normalmente podés descargarlo desde donde compraste la fuente.",
+    "missingFaces": "Agregá la versión {faces} de “{name}” (opcional): volvé a elegir el archivo."
+  },
+  "weeklyPost": {
+    "error": {
+      "wrongType": "Elegí un PNG o JPG.",
+      "copyFailed": "No se ha podido copiar: seleccioná el texto y copialo a mano."
+    },
+    "setup": {
+      "title": "Configurá tu publicación semanal",
+      "intro": "Subí la versión en blanco del gráfico semanal de tu agenda que ya preparás: el mismo diseño, sin tus cuadros de texto. HatchGrab llena la semana a partir de tu agenda.",
+      "canvaStep1": "Abrí tu diseño habitual de la agenda semanal.",
+      "canvaStep2": "Borrá los cuadros de texto con las fechas, los lugares y las horas; dejá el fondo y los títulos que quieras conservar.",
+      "upload": "Subí tu imagen en blanco"
+    },
+    "post": {
+      "notePlaceholder": "p. ej., Hacé tu pedido anticipado para retirar",
+      "noteHint": "Aparece en el texto de la publicación y en el cuadro de nota, si colocaste uno.",
+      "noOrderLink": "Aún no hay enlace para pedidos: configurá la dirección web de tu food truck en Ajustes."
+    }
+  },
+  "manageShell": {
+    "invalidToken": "Token no válido o vencido",
+    "noCountrySettings": "No se han podido cargar los ajustes de país de este food truck. Actualizá la página.",
+    "noPlans": "No se ha podido cargar el plan de este food truck. Actualizá la página.",
+    "verify": {
+      "expired": "Ese enlace de confirmación venció. Escribinos y lo solucionaremos antes de que empieces a recibir pedidos.",
+      "invalid": "Ese enlace de confirmación no ha funcionado. Escribinos y lo solucionaremos antes de que empieces a recibir pedidos."
+    },
+    "notices": {
+      "tour": "¿Querés un recorrido rápido por tu panel?",
+      "showMeAround": "Mostrámelo",
+      "approval": "{count, plural, one {Hemos encontrado <b>{count}</b> evento para vos: revisalo y aprobalo antes de que se publique.} other {Hemos encontrado <b>{count}</b> eventos para vos: revisalos y aprobalos antes de que se publiquen.}}",
+      "allergens": "<b>Alérgenos sin configurar</b>: los clientes no pueden ver la información de alérgenos hasta que la verifiques. Revisá los alérgenos de cada plato en la pestaña Menú.",
+      "domainLive": "<link>{domain}</link> ya está activa. Echale un vistazo y luego confirmanos en Ajustes que está bien.",
+      "stripe": "<b>Stripe necesita algo de vos</b>: los pagos con tarjeta pueden detenerse hasta que se resuelva.",
+      "profileTitle": "Completá tu perfil"
+    },
+    "trialPopup": {
+      "body": "{hasDate, select, yes {No se te cobrará nada durante tu prueba, que dura hasta el <b>{date}</b>. La facturación solo empieza cuando elegís un plan e ingresás tus datos de pago. Hasta entonces, no hay nada que cancelar ni nada que pagar. Elegí tu plan antes de esa fecha; si no lo hacés, pasarás al plan {fallback} y algunas funciones dejarán de funcionar.} other {No se te cobrará nada mientras estés en periodo de prueba. La facturación solo empieza cuando elegís un plan e ingresás tus datos de pago. Hasta entonces, no hay nada que cancelar ni nada que pagar. Elegí tu plan antes de que termine la prueba; si no lo hacés, pasarás al plan {fallback} y algunas funciones dejarán de funcionar.}}",
+      "bodyPaidEnd": "{hasDate, select, yes {No se te cobrará nada durante tu prueba, que dura hasta el <b>{date}</b>. Cuando termine tu prueba, el plan {fallback} costará {price} al mes. Antes de esa fecha nos pondremos en contacto con vos para configurar el pago.} other {No se te cobrará nada mientras estés en periodo de prueba. Cuando termine tu prueba, el plan {fallback} costará {price} al mes. Antes de esa fecha nos pondremos en contacto con vos para configurar el pago.}}",
+      "upgrade": "Mejorá tu plan aquí →"
+    }
+  },
+  "manageBilling": {
+    "plan": {
+      "ended": "Tu plan {plan} terminó el {date}. Ahora tenés el plan {now}."
+    },
+    "onTrial": "Tenés todas las funciones. Elegí un plan antes de que termine tu prueba.",
+    "onTrialPaidEnd": "Tenés todas las funciones. Cuando termine tu prueba, el plan {plan} costará {price} al mes. Antes de esa fecha nos pondremos en contacto con vos para configurar el pago.",
+    "onTrialNoCta": "Tenés todas las funciones.",
+    "noCharge": "🔒 No se te cobrará nada durante tu prueba, que dura hasta el {date}. La facturación solo empieza cuando elegís un plan e ingresás tus datos de pago. Hasta entonces, no hay nada que cancelar ni nada que pagar.",
+    "setUpPayment": "⏱ Elegí un plan antes de que termine tu prueba",
+    "changeYourPlan": "Cambiá tu plan",
+    "upgradeModal": {
+      "body": "Estamos preparando la facturación automática. Para cambiar ahora, escribinos y lo dejaremos todo listo en menos de 24 horas.",
+      "email": "Escribinos para cambiar"
+    }
+  },
+  "manageTeam": {
+    "toast": {
+      "verificationResent": "Email de verificación reenviado: revisá tu bandeja de entrada"
+    },
+    "intro": "Invitá a tu personal para que acceda a la pantalla de pedidos y tome pedidos",
+    "ownerName": "{you, select, yes {{name} (vos)} other {{name}}}",
+    "sentTo": "Verificación enviada a <b>{email}</b>. Revisá tu bandeja de entrada.",
+    "lastName": "Apellido *",
+    "phonePlaceholder": "+598 94 123 456",
+    "modal": {
+      "namePlaceholder": "p. ej., Sofía",
+      "emailPlaceholder": "sofia@example.com",
+      "selectOne": "Seleccioná al menos un food truck"
+    },
+    "inviteEmail": {
+      "click": "Hacé clic en el botón de abajo para crear tu contraseña y empezar. Este enlace vence en 7 días.",
+      "ignore": "Si no esperabas esta invitación, podés ignorar este email sin problema."
+    }
+  },
+  "manageWhatsApp": {
+    "preview": {
+      "title": "Probalo antes de conectar",
+      "intro": "Escribí una pregunta como la haría un cliente y mirá exactamente qué recibiría. No se envía nada a nadie.",
+      "unreachable": "No se ha podido conectar con el servidor. Comprobá tu conexión e intentalo de nuevo."
+    },
+    "setup": {
+      "popupHint": "¿No ves la ventana de Facebook? Puede que se haya bloqueado. Permití las ventanas emergentes para hatchgrab.com y tocá Empezar de nuevo."
+    },
+    "notice": {
+      "metaError": "Meta ha informado de un problema durante la configuración. No se ha cambiado nada. Intentalo de nuevo y, si sigue pasando, contactá con nosotros.",
+      "closed": "La configuración se cerró antes de terminar. No se cambió nada: tocá Configurar para intentarlo de nuevo.",
+      "disconnectedUnreachable": "WhatsApp está desconectado. No hemos podido contactar con Meta para retirar el acceso. Eliminá HatchGrab en WhatsApp Business → Ajustes → Cuenta → Business Platform."
+    },
+    "card": {
+      "requiresAccount": "Necesitás una cuenta de WhatsApp Business.",
+      "popupInstruction": "Se abrirá una ventana de Facebook para conectar tu cuenta de WhatsApp Business. Si no aparece nada, permití las ventanas emergentes para hatchgrab.com en tu navegador y volvé a tocar Configurar.",
+      "expiring": "Tu conexión con WhatsApp debe renovarse pronto. Tocá Reconectar para que las respuestas automáticas sigan funcionando."
+    },
+    "blocked": {
+      "fix": "Estos mensajes se los pagás directamente a WhatsApp, así que se soluciona en WhatsApp Manager. <link>Revisá tu método de pago</link>"
+    },
+    "billing": {
+      "missing": "No añadiste ningún método de pago",
+      "summary": "Es Meta, no HatchGrab, quien factura a tu cuenta de WhatsApp por las respuestas. Desde el {from}, las primeras {free, number} de cada mes son gratis. Información correcta a fecha de {checked}; consultá <link>los precios de Meta</link> por si hay cambios.",
+      "chargesBody": "Meta factura a tu cuenta de WhatsApp Business cada respuesta que HatchGrab envía por vos. Desde el {from}, Meta incluye {free, number} respuestas gratis al mes por número; después, cada respuesta se cobra según la tarifa de Meta. Las respuestas que enviás vos desde la app WhatsApp Business no se cobran. Meta fija estos precios y puede cambiarlos. <link>Ver los precios de Meta</link>",
+      "addPaymentInManager": "Agregá un método de pago en WhatsApp Manager"
+    },
+    "disconnect": {
+      "body": "Las respuestas automáticas se detienen al momento y HatchGrab pierde el acceso a tu cuenta de WhatsApp. Tu número sigue funcionando en la app WhatsApp Business. Para eliminar HatchGrab por completo, abrí también WhatsApp Business → Ajustes → Cuenta → Business Platform."
+    },
+    "signup": {
+      "partial": "Hemos vinculado tu cuenta de WhatsApp Business, pero no hemos podido completar la conexión. No hay ningún problema por tu parte: contactá con nosotros y la terminaremos.",
+      "noNumber": "Tu cuenta de WhatsApp Business está vinculada, pero no se recibió ningún número de teléfono. Tocá Reconectar y completá el paso del número.",
+      "needsRegistering": "Tu cuenta está vinculada, pero tenemos que registrar este número antes de que empiecen las respuestas. Contactá con soporte: tu configuración está guardada, no vuelvas a ejecutarla.",
+      "registerRefused": "Tu cuenta está vinculada, pero Meta no ha querido registrar el número. Tu configuración está guardada: contactá con soporte en lugar de volver a ejecutarla.",
+      "deliveryRefused": "Tu cuenta está vinculada, pero Meta no ha querido activar la entrega de mensajes. Tu configuración está guardada: contactá con soporte en lugar de volver a ejecutarla.",
+      "numberTaken": "Ese número de WhatsApp ya está conectado a otra cuenta de HatchGrab. Un número solo puede responder por un food truck. Contactá con soporte y lo trasladaremos.",
+      "saveIncomplete": "Ya casi está: no hemos podido terminar de guardar. Tu configuración está guardada; contactá con soporte en lugar de volver a ejecutarla."
+    }
+  },
+  "customDomain": {
+    "card": {
+      "title": "Agregá tu agenda a tu web",
+      "exampleDomain": "tufoodtruck.com.uy",
+      "justLive": "<b>{address}</b> ya funciona. Echale un vistazo y luego confirmanos aquí abajo que está bien."
+    },
+    "waiting": {
+      "bodySince": "Lo configuraste el {date}. Las direcciones web nuevas suelen empezar a funcionar en unos minutos y, a veces, tardan hasta 24 horas en llegar a todo el mundo; mientras tanto, no tenés que hacer nada. Si otra persona iba a añadir la línea por vos, conviene comprobar que lo ha hecho.",
+      "body": "Las direcciones web nuevas suelen empezar a funcionar en unos minutos y, a veces, tardan hasta 24 horas en llegar a todo el mundo; mientras tanto, no tenés que hacer nada. Si otra persona iba a añadir la línea por vos, conviene comprobar que lo ha hecho."
+    },
+    "ready": {
+      "body": "Echale un vistazo y luego confirmanos en tus ajustes que está bien."
+    },
+    "confirm": {
+      "heading": "Echale un vistazo y confirmanos que está bien",
+      "open": "Abrí <link>{address}</link>",
+      "checkTimes": "Comprobá que las fechas y las horas son correctas.",
+      "problemLine": "Contanos qué ves y lo revisaremos.",
+      "emailUs": "Escribinos"
+    },
+    "confirmed": {
+      "body": "No tenés que hacer nada más."
+    },
+    "turnOff": {
+      "reAdd": "Si vas a volver a configurarla más adelante, dejá la línea que añadiste en la empresa de tu dirección web. Si no, pediles que la eliminen.",
+      "failed": "Ahora mismo no hemos podido desactivarla. No ha cambiado nada: tu dirección sigue funcionando. Volvé a intentarlo dentro de un rato."
+    },
+    "wizard": {
+      "resumeFailedBody": "No ha cambiado nada. Volvé a intentarlo dentro de un rato."
+    },
+    "address": {
+      "noChange": "Tu web no cambia: solo tenés que añadir un enlace a la nueva dirección.",
+      "restricted": "Quien gestione tu dirección web tiene que permitirnos configurar el candado, ese pequeño candado que los clientes ven junto a ella. Hasta que nos añadan, no aparecerá, así que nos hemos detenido para que no te quedes esperándolo. Pediles que nos añadan y volvé a intentarlo.",
+      "blocked": "Ahora mismo tu dirección web bloquea el candado por completo. Quien la gestione tiene que permitirlo para que esto funcione. Pediles que lo cambien y volvé a intentarlo.",
+      "elsewhere": "Ya hay algo que responde en esa dirección. Enviá el mensaje de la siguiente pantalla a quien la gestione: sabrá qué hacer."
+    },
+    "apex": {
+      "empty": "Escribí la dirección que querés usar.",
+      "unparseable": "No hemos podido leerlo como una dirección web. Revisá cómo está escrito y volvé a intentarlo.",
+      "apex": "{host} es la dirección completa de tu web. Si la apuntás hacia nosotros, esta página sustituirá a tu web. Mejor poné una palabra delante; por ejemplo, agenda.{host}."
+    },
+    "record": {
+      "addAt": "Agregá esto en {provider}",
+      "addAtSave": "Agregá esto en {provider} y guardá.",
+      "addSomewhere": "Agregá esto donde se gestiona tu dirección web y guardá.",
+      "hintChoose": "Elegilo de la lista.",
+      "hintExact": "Copialo exactamente."
+    },
+    "providers": {
+      "cloudflare": {
+        "open": "Abrí tu dirección web y luego “DNS” y “Records”.",
+        "add": "Seleccioná “Add record” y elegí “CNAME” como “Type”.",
+        "name": "Poné el primer valor de abajo en “Name”.",
+        "value": "Poné el segundo valor de abajo en “Target”.",
+        "proxy": "Poné “Proxy status” en “DNS only”: la nube de al lado debe estar gris, no naranja.",
+        "save": "Dejá “TTL” en “Auto” y seleccioná “Save”."
+      },
+      "godaddy": {
+        "open": "Abrí tu “Domain Portfolio” y elegí tu dirección web.",
+        "dns": "En “Domain Settings”, seleccioná “DNS”.",
+        "add": "Seleccioná “Add New Record” y elegí “CNAME” en el menú “Type”.",
+        "name": "Poné el primer valor de abajo en “Name”.",
+        "value": "Poné el segundo valor de abajo en “Value”.",
+        "save": "Dejá “TTL” como está y seleccioná “Save”.",
+        "caveat": "Si añadiste varios a la vez, el botón dice “Save All Records”."
+      },
+      "123reg": {
+        "signIn": "Iniciá sesión en tu “123 Reg Control Panel”.",
+        "manage": "Junto a “Domains”, seleccioná “Manage All” y elegí tu dirección web.",
+        "dns": "Seleccioná “DNS” y luego “Add New Record”.",
+        "type": "Elegí “CNAME” en la lista “Type”.",
+        "name": "Poné el primer valor de abajo en “Name”.",
+        "value": "Poné el segundo valor de abajo en “Value” y agregá un punto al final.",
+        "save": "Dejá “TTL” en “Default” y hacé clic en “Save”."
+      },
+      "wix": {
+        "open": "Abrí “Domains” y hacé clic en el icono “Domain Actions” junto a tu dirección web.",
+        "manage": "Elegí “Manage DNS Records”.",
+        "add": "En la sección “CNAME (Aliases)”, hacé clic en “+ Add Record” y luego en “Got it”.",
+        "name": "Poné el primer valor de abajo en “Host Name”.",
+        "value": "Poné el segundo valor de abajo en “Value”.",
+        "save": "Hacé clic en “Save” y luego en “Save Changes” en la ventana emergente."
+      }
+    },
+    "instructionsEmail": {
+      "replyTo": "Si tenés alguna pregunta, respondé a {email}."
+    },
+    "liveEmail": {
+      "body": "Tu agenda ya se muestra en tu propia dirección. Echale un vistazo y comprobá que está bien: abrí {address} y asegurate de que los eventos son tuyos y de que las fechas son correctas.",
+      "confirm": "Cuando lo hayas hecho, abrí tus ajustes en HatchGrab y confirmanos que está bien. No depende nada de ello: solo nos sirve para saber que una persona lo ha visto."
+    }
+  },
+  "deleteAccount": {
+    "cannotCancelPending": "<b>No podés cancelarlo vos.</b> Para detenerlo, escribí a <link>{email}</link> lo antes posible.",
+    "upcoming": "<b>Tenés {count, plural, one {# pedido próximo} other {# pedidos próximos}}.</b> Tendrás que prepararlos y entregarlos igualmente.",
+    "cannotCancel": "No podés cancelarlo vos. Para detenerlo, debés escribir a <link>{email}</link>.",
+    "whatAccounting": "Los registros contables anónimos <b>se conservan seis años</b>, como exige la legislación británica. Consultá nuestra <link>política de privacidad</link>.",
+    "copyFirst": "<b>¿Querés antes una copia de tus datos?</b> En la app no hay opción de descarga. Tenés derecho a una copia: escribí a <link>{email}</link> <b>antes</b> de confirmar y te la enviaremos.",
+    "typeToConfirm": "Escribí <code>{name}</code> para confirmar",
+    "typeAria": "Escribí {name} para confirmar la eliminación de la cuenta",
+    "requestedToast": "Eliminación de la cuenta solicitada. Revisá tu email."
+  },
+  "copyButton": {
+    "announceFailed": "No se pudo copiar {thing}. Seleccioná el texto y copialo vos.",
+    "announceFailedValue": "No se pudo copiar el valor. Seleccioná el texto y copialo vos."
+  },
+  "eventPost": {
+    "error": {
+      "pngOrJpg": "Elegí un PNG o un JPG."
+    },
+    "setup": {
+      "firstTitle": "Configurá tu publicación de evento",
+      "firstBody": "Subí la imagen que usás para un evento suelto: tu diseño sin fecha, lugar ni hora. HatchGrab los añade en cada evento.",
+      "uploadYourPicture": "Subí tu imagen",
+      "noEvents": "Aún no hay eventos — agregá uno y la vista previa lo usará."
+    }
+  },
+  "postShare": {
+    "copyFailed": "No se pudo copiar — seleccioná el texto y copialo a mano.",
+    "sharedStatus": "{kind, select, postText {Texto de la publicación copiado — pegalo en tu publicación.} other {Texto copiado — pegalo en tu publicación.}}"
+  },
+  "posterWords": {
+    "placeSample": {
+      "nameTownBelow": "Bar La Plaza\nCiudad Vieja",
+      "nameTown": "Bar La Plaza, Ciudad Vieja"
+    },
+    "busyWeek": {
+      "venue1": "Plaza Gomensoro",
+      "town1": "Pocitos",
+      "venue2": "Polideportivo Municipal y Cancha de Fútbol del Barrio Cerro Pelado de Maldonado",
+      "town2": "Maldonado",
+      "venue3": "Plaza Artigas",
+      "town3": "Salto",
+      "town4": "Punta del Este",
+      "venue5": "Parador El Arco",
+      "town5": "Colonia del Sacramento",
+      "venue6": "Plaza Constitución",
+      "town6": "Paysandú"
+    }
+  },
+  "captions": {
+    "noDates": "Esta semana no hay fechas — volvé pronto.",
+    "orderAhead": "Pedí con anticipación: {url}",
+    "orderAheadTagged": "Pedí con anticipación: {url} {tag}",
+    "cancelledApology": "Pedimos disculpas a todos los que tenían pensado venir. Volveremos pronto."
+  },
+  "weeklyPostApi": {
+    "rowsFit": "El último día queda {px} px por debajo del borde inferior de la imagen — reducí el espacio entre filas o subí la fila 1.",
+    "fontUploadButton": "↑ Subí tu fuente"
+  },
+  "completionSettings": {
+    "pressesOne": "Un toque (“Marcar pagado y retirado”)",
+    "pressesOneHelp": "Ideal si cobrás al entregar la comida. Tenés un único botón, “Marcar pagado y retirado”, que registra el pago y cierra el pedido a la vez.",
+    "pressesTwo": "Dos toques (“Marcar pagado” y “Retirado”)",
+    "pressesTwoHelp": "Ideal si el pago y la entrega ocurren en momentos distintos: el cliente paga en la ventanilla y retira cuando está listo. Tenés dos botones: primero “Marcar pagado” y luego “Retirado” cuando se lleva la comida."
+  },
+  "landing": {
+    "jsonLd": {
+      "description": "Pedidos, pedidos anticipados y pantalla de cocina para food trucks y catering móvil en {country}.",
+      "audience": "Dueños de food trucks y emprendimientos de catering móvil"
+    },
+    "hero": {
+      "subSmall": "Subí tu menú, sin registrarte.<br></br>Mirá una demo funcionando en menos de 60 segundos.",
+      "ctaNote": "<lead>Subí una foto de tu menú y miralo funcionando en menos de 60 segundos.</lead><small>Sin registro. Sin tarjeta.</small>"
+    },
+    "trust": {
+      "cancel": "Cancelá cuando quieras, sin plazos forzosos"
+    },
+    "does": {
+      "lede": "La mayoría de los sistemas de pedidos dan por hecho una dirección fija, un wifi confiable y el mismo horario cada semana. Vos cambiás de lugar cada semana, a horas distintas, con poca o nada de señal de celular. HatchGrab está hecho para eso.",
+      "slotsTitle": "Tus clientes eligen el horario de retiro",
+      "capacityTitle": "Fijá tus pedidos máximos por franja",
+      "capacityBody": "Indicá cuánto podés cocinar a la vez y cuánto tardás. Cuando un horario de retiro se llena, los clientes ya no pueden elegirlo.",
+      "devicesBody": "En el celular del delantal, la tablet del mostrador, la notebook del food truck… y el POS con el que ya cobrás.",
+      "postsTitle": "Automatizá tus publicaciones de Facebook e Instagram",
+      "postsBody": "Subí el diseño que ya publicás en Facebook o Instagram. Nosotros llenamos tus fechas, lugares y horarios, listo para compartir — cada semana o cada día.",
+      "whatsappBody": "“¿Dónde están esta noche?” “¿Qué postres tienen?” Tu WhatsApp responde mientras manejás hacia tu ubicación o estás en la plancha, con tu propio menú y tu agenda. Messenger e Instagram, muy pronto.",
+      "whatsappSoonBody": "“¿Dónde están esta noche?” “¿Qué postres tienen?” Pronto tu WhatsApp responderá mientras manejás hacia tu ubicación o estás en la plancha. Messenger e Instagram vendrán después.",
+      "offlineTitle": "¿Sin cobertura? Seguí sirviendo.",
+      "offlineBody": "Si te quedás sin cobertura, los pedidos online se pausan solos para que nadie haga pedidos que no vas a ver. Seguí tomando pedidos con la app para iPhone, iPad y Android.",
+      "slotsBody": "Tus clientes hacen un pedido anticipado y eligen el horario de retiro. Sin colas, y la comida lista cuando llegan."
+    },
+    "steps": {
+      "title": "Configuralo y empezá a recibir pedidos en unos 15 minutos.",
+      "menuTitle": "Creá tu menú",
+      "menuBody": "Sacale una foto a tu pizarrón o pegá el texto. Platos, precios y extras se importan solos. Vos solo revisás que estén bien.",
+      "scheduleTitle": "Agregá tu agenda",
+      "scheduleBody": "¿La tenés en tu web? La leemos de ahí y la mantenemos al día. Si no, sacale una foto también. Vos solo aprobás lo que encuentra.",
+      "shareTitle": "Compartí tu enlace",
+      "shareBody": "Publicalo en Facebook, pegá el QR en el food truck. Los pedidos llegan a tu pantalla en el orden en que tenés que cocinarlos."
+    },
+    "pricing": {
+      "title": "Empezá gratis. Cambiá de plan cuando lo necesites.",
+      "switchHead": "¿Venís de otra plataforma?",
+      "switchBody": "Mirá lo que pagarías en HatchGrab por los mismos pedidos. Se tarda un minuto.",
+      "switchCta": "Compará lo que pagás"
+    },
+    "faq": {
+      "metaDescription": "Respuestas claras para food trucks sobre los precios de HatchGrab, cómo empezar, recibir pedidos online y cobrar con tarjeta o al retirar."
+    },
+    "final": {
+      "title": "¿Querés ver lo fácil que es empezar?",
+      "lede": "Subí una foto o una captura de tu menú y lo convertimos en una página de pedidos que funciona, para que la pruebes en menos de 60 segundos. Tus platos, tus precios. Sin registro, sin tarjeta, sin instalar nada. Echale un vistazo y luego decidí."
+    },
+    "meta": {
+      "title": "Sistema de pedidos para food trucks — HatchGrab {country}",
+      "description": "Recibí pedidos y pedidos anticipados donde estés, sin colas. Pedidos online y pantalla de cocina para food trucks en {country}. No es un sistema de caja."
+    }
+  },
+  "landingNav": {
+    "country": {
+      "title": "Elegí tu país"
+    }
+  },
+  "landingFooter": {
+    "badges": {
+      "appStoreLink": "Descargá HatchGrab en el App Store",
+      "googlePlayLink": "Conseguí HatchGrab en Google Play"
+    }
+  },
+  "contactPage": {
+    "meta": {
+      "description": "Conseguí ayuda con HatchGrab. Envianos un mensaje y te responderemos por email."
+    },
+    "lede": "¿Algo no funciona o tenés una pregunta sobre tu cuenta? Tenés dos formas de contactarnos — en ambos casos te responderemos por email.",
+    "emailUs": "Escribinos",
+    "formHeading": "O envianos un mensaje",
+    "form": {
+      "errors": {
+        "nameRequired": "Escribí tu nombre.",
+        "emailRequired": "Escribí tu dirección de email.",
+        "emailInvalid": "Escribí una dirección de email válida.",
+        "businessRequired": "Escribí el nombre de tu food truck o negocio, para que podamos encontrar tu cuenta.",
+        "messageTooShort": "Escribí al menos {min, number} caracteres.",
+        "topicInvalid": "Elegí de qué trata tu mensaje.",
+        "rateLimited": "Ya enviaste varios mensajes — volvé a intentarlo más tarde o escribinos a {email}.",
+        "failed": "Algo salió mal — escribinos a {email}."
+      }
+    }
+  },
+  "aboutPage": {
+    "meta": {
+      "description": "HatchGrab crea software para food trucks y catering móvil: pedidos online, horarios de retiro y menos preguntas repetidas. Fundado por Dominic Bonini."
+    },
+    "story": {
+      "build": "Creamos software práctico pensado específicamente para food trucks y catering móvil, que les ayuda a recibir pedidos online, gestionar los horarios de retiro, mantener los pedidos en marcha sin tropiezos y dedicar menos tiempo a responder siempre las mismas preguntas."
+    },
+    "contact": "Contactanos"
+  },
+  "siteFooter": {
+    "body": "Recibí cada semana en tu correo la agenda de food trucks del pueblo.",
+    "hire": "Alquilar un food truck",
+    "disclaimer": "Aviso: los vendedores pueden cambiar sus agendas. Hacemos lo que podemos, pero no somos responsables de food trucks cancelados ni de hamburguesas agotadas. Consultá siempre las redes sociales del vendedor para ver los cambios de última hora."
+  },
+  "legalChrome": {
+    "questions": "¿Tenés preguntas? <link>Escribinos</link> — somos personas de verdad."
+  },
+  "truckPage": {
+    "meta": {
+      "orderTitle": "Hacé tu pedido a {truck}",
+      "orderDescription": "Hacé tu pedido anticipado a {truck} y retiralo en el food truck."
+    },
+    "shareText": "¡Mirá dónde estará {truck} próximamente! 🚚",
+    "ownThisTruckTitle": "¿Es tu food truck? Hacé clic para actualizar tu perfil",
+    "loadError": {
+      "body": "Ahora mismo no hemos podido cargar la agenda — suele ser un fallo momentáneo. Volvé a intentarlo."
+    },
+    "noEvents": {
+      "body": "Puede que nos falten datos de este food truck. ¿Sos el propietario o conocés su agenda?",
+      "cta": "¡Escribinos para actualizarla!"
+    },
+    "missingEvent": "<strong>¿Nos falta algún evento?</strong> <br></br>Si sos el propietario de este food truck o simplemente un fan fiel, ¡ayudanos a mantener esta página al día! <br></br><link>Escribinos para añadir los datos que faltan.</link>",
+    "weeklySchedule": "Recibí la agenda semanal 🍕"
+  },
+  "planFeatures": {
+    "row": {
+      "tap_to_pay": {
+        "name": "Cobrá con tu celular"
+      }
+    },
+    "priceWord": {
+      "payAtHatch": "Pago al retirar"
+    }
+  },
+  "planNames": {
+    "payg": {
+      "description": "Sin cuota mensual. Solo pagás cuando un cliente paga online con tarjeta."
+    }
+  },
+  "planPrompt": {
+    "features": {
+      "online_ordering_pay_at_hatch": {
+        "name": "Pedir online con Pago al retirar"
+      },
+      "time_slot_selection": {
+        "name": "Las franjas horarias de retiro"
+      }
+    }
+  },
+  "pricing": {
+    "banner": {
+      "body": "Con {brand}, tus clientes piden con anticipación y pagan al retirar, así que podés aceptar pedidos online sin conectar ningún procesador de pagos con tarjeta. ¿Preferís cobrar por adelantado? Agregá el pago online con tarjeta cuando quieras. Cuando termine tu prueba, pasarás al plan <plan>{fallback}</plan>{fallbackFree, select, yes { (sin cuota mensual)} other {}}, salvo que elijas otro plan. Sin tarjeta para empezar, sin plazos forzosos, cancelá cuando quieras.",
+      "bodyOnly": "Con {brand}, tus clientes piden con anticipación y pagan al retirar, así que podés aceptar pedidos online sin conectar ningún procesador de pagos con tarjeta. ¿Preferís cobrar por adelantado? Agregá el pago online con tarjeta cuando quieras. Cuando termine tu prueba, el plan <plan>{fallback}</plan> costará {price} al mes. Antes de esa fecha nos pondremos en contacto con vos para configurar el pago. Sin tarjeta para empezar, sin plazos forzosos, cancelá cuando quieras."
+    },
+    "card": {
+      "tryFree": "Probá gratis"
+    },
+    "fee": {
+      "noFee": "<b>Sin comisiones de HatchGrab</b> en los pedidos online, por mucho trabajo que tengas. Un costo mensual fijo y previsible."
+    },
+    "base": {
+      "preorders": "Pedidos anticipados y horario de retiro"
+    },
+    "footnote": "* Más la comisión de Stripe por procesar tarjetas en los pedidos online pagados con tarjeta (tarifa actual, {country}: {cardFee}), que se paga a Stripe, no a HatchGrab. Los pedidos en ventanilla se cobran con tu propio POS — HatchGrab cobra 0 %."
+  },
+  "planTable": {
+    "group": {
+      "pay": "Lo que pagás",
+      "run": "Gestioná tu servicio"
+    }
+  },
+  "featuresPage": {
+    "detail": {
+      "walkup_orders": "Tomá y gestioná pedidos en la ventanilla, cobrados con tu propio POS.",
+      "kitchen_app": "La forma más completa de usar HatchGrab: una pantalla de cocina (KDS) en directo, y la única manera de seguir tomando pedidos cuando te quedás sin cobertura.",
+      "multi_device_kitchen": "Usá varias pantallas — mostrador y cocina — con los mismos pedidos en directo.",
+      "multi_user_access": "Dale a tu equipo su propio acceso con el nivel de permisos adecuado.",
+      "offline_protection": "Si te quedás sin cobertura, los pedidos online se pausan para que nadie haga pedidos que no vas a ver. La app para iPhone, iPad y Android te permite seguir tomando pedidos sin conexión; el panel web necesita conexión.",
+      "ticket_printing": "Imprimí las comandas en una impresora Bluetooth o con cable en la cocina.",
+      "web_dashboard": "Gestioná tu servicio desde el navegador de cualquier celular, tablet o notebook.",
+      "meal_deals_upsells": "Agrupá platos en combos y ofrecé extras al pagar para subir el ticket promedio.",
+      "sold_out_toggle": "Marcá cualquier plato como agotado con un toque — aparece en gris para los clientes al momento.",
+      "stock_countdown": "Indicá las existencias y se van descontando con cada pedido; al llegar a cero, el plato se agota solo.",
+      "buzzer_tracking": "Asigná un número de avisador al pedido cuando lo entregás, para saber qué avisador corresponde a cada pedido.",
+      "documents_reminders": "Guardá tus certificados en un solo lugar, como higiene alimentaria, seguro y seguridad del gas. Te avisamos antes de que venza algo y podés enviarlos al organizador de un evento o mercado con un toque.",
+      "profit_per_event": "Indicá cuánto te cuesta cada plato y descubrí lo que ganaste de verdad en cada evento, no solo lo que facturaste.",
+      "tap_to_pay": "Cobrá con tarjeta desde un celular compatible, sin necesidad de un POS aparte.",
+      "online_payments": "Cobrá con tarjeta por adelantado cuando los clientes piden online, a través de Stripe.",
+      "advance_preordering": "Permití a los clientes hacer un pedido anticipado para una fecha u hora futura, antes del evento.",
+      "preorder_deadline": "Fijá una hora límite para los platos que necesitan preparación previa.",
+      "time_slot_selection": "Los clientes eligen su horario de retiro dentro de una franja horaria, así la demanda se reparte a lo largo del servicio.",
+      "kitchen_capacity": "Indicá cuánto puede cocinar tu cocina a la vez y cuánto tarda. Cuando una franja se llena, los clientes ya no pueden elegirla.",
+      "private_events": "Agregá eventos privados que no aparecen en el mapa, con su propio enlace y código QR para pedir.",
+      "embed_schedule": "Mostrá tus próximas fechas en tu propia web. Cada una enlaza directamente con su página de pedidos.",
+      "branded_qr_code": "Agregá tu logo a tu código QR.",
+      "schedule_import": "Llenamos tu agenda automáticamente — desde tu web o desde una foto que ya publicás en Facebook. Vos solo revisás y confirmás.",
+      "event_types": "Creá tus propios tipos de evento, con precios y ajustes personalizados para eventos y festivales.",
+      "social_media_posts": "Subí tus diseños — añadimos automáticamente tus fechas, lugares y horarios para cada semana y cada evento.",
+      "sms_order_alerts": "Avisá a los clientes por SMS automáticamente cuando su pedido está listo.",
+      "loyalty_stamp_cards": "Premiá a los clientes que repiten con tarjetas de sellos digitales — los sellos se suman y se canjean automáticamente."
+    },
+    "metaTitle": "Planes, precios y funciones — HatchGrab {country}"
+  },
+  "compare": {
+    "eyebrow": "Comparativa de costos",
+    "title": "Compará tus costos<br></br><accent>de pedidos online</accent>",
+    "system": {
+      "title": "¿Ya aceptás pedidos online?"
+    },
+    "trucks": {
+      "title": "¿Cuántos food trucks tenés?"
+    },
+    "orders": {
+      "captionNo": "Basta con una estimación: pedidos anticipados y clientes que se saltan la cola, no el efectivo ni la tarjeta en la ventanilla.",
+      "titleNo": "¿Cuánto creés que venderías online al mes, por food truck?"
+    },
+    "fee": {
+      "title": "¿Cuánto pagás ahora por pedido?",
+      "onTopNote": "La comisión de tarjeta de {fee} se cobra aparte, así que en realidad pagás <b>{pct} + {fixed}</b> en total."
+    },
+    "days": {
+      "title": "¿Cuántos días a la semana trabajás?"
+    },
+    "jump": {
+      "saving": "Ver cuánto ahorrás ↓"
+    },
+    "cta": {
+      "ask": "Hacenos una pregunta"
+    },
+    "breakdown": {
+      "card": "Comisión de tarjeta: los {fee} por pedido de Stripe, que se pagan a Stripe. Pagarías más o menos lo mismo con un POS en la ventanilla."
+    },
+    "enterRate": "Ingresá lo que pagás ahora para ver cuánto ahorrás.",
+    "panel": {
+      "nowYear": "<label>Ahora mismo pagás</label><fig>{amount}<q> al año</q></fig>",
+      "nowMonth": "<label>Ahora mismo pagás</label><fig>{amount}<q> al mes</q></fig>"
+    },
+    "hero": {
+      "save": "<verb>Ahorrás</verb><figure>{amount}</figure><sub><num>{pct}</num> menos el primer año</sub>"
+    },
+    "anchor": {
+      "vanDeposit": "Es el anticipo de un segundo food truck."
+    },
+    "year": {
+      "save": "Ahorrás {amount}<note>({pct} menos)</note>"
+    },
+    "smallPrint": {
+      "no": "Estimaciones basadas en las cifras que ingresás, con un pedido promedio de {aov}. La comisión de tarjeta se aplica sea cual sea el proveedor. Comprobalo antes de decidir.",
+      "yes": "Estimaciones basadas en las cifras que ingresás, con un pedido promedio de {aov}. La comisión de tarjeta de {fee} por pedido se aplica sea cual sea el proveedor, así que queda fuera en ambos lados.",
+      "check": "Comprobá las tarifas de tu proveedor actual antes de decidir."
+    },
+    "intro": "Se tarda un minuto. ¿Ya usás un sistema? Lo comparamos. ¿Todavía no? Te mostramos exactamente lo que cuesta.",
+    "meta": {
+      "title": "Calculadora de costos y comisiones — HatchGrab {country}",
+      "description": "Compará lo que hoy te cuestan los pedidos online y las comisiones de las apps de delivery con un año en HatchGrab: una estimación en un minuto."
+    }
+  },
+  "outreach": {
+    "optOut": {
+      "missing": "Este correo no tiene la frase para darse de baja, así que no se puede enviar. Usá “Insertar baja” para añadirla.",
+      "notSetUp": "No hay ninguna frase para darse de baja configurada, así que no se puede enviar ningún correo de prospección. Agregá una en el panel Firma de la pestaña Plantillas."
+    }
+  },
+  "address": {
+    "basedIn": {
+      "area": "Pueblo o ciudad donde tenés tu base",
+      "townOrArea": "Localidad o zona donde tenés tu base",
+      "city": "Ciudad donde tenés tu base",
+      "suburb": "Barrio donde tenés tu base",
+      "townOrCity": "Pueblo o ciudad donde tenés tu base"
+    },
+    "postalWarning": "No parece {article}; por ejemplo, {example}. Podés guardarlo igualmente.",
+    "regionChoose": "Elegí…"
+  },
+  "comparison": {
+    "meta": {
+      "description": "Sistemas de pedidos para food trucks: horario de retiro, capacidad de cocina, agenda, comisiones y permanencia, revisados en la web de cada proveedor."
+    },
+    "table": {
+      "swipe": "Deslizá en horizontal para ver todos los productos →"
+    },
+    "costs": {
+      "vat": "HatchGrab Ltd es una empresa del Reino Unido y no está registrada a efectos del IVA en {country}, así que no añadimos IVA a nuestras tarifas. Si estás registrado a efectos del IVA, danos tu número de IVA; en ese caso sos vos quien declara el IVA que corresponda sobre nuestras tarifas, por inversión del sujeto pasivo."
+    },
+    "fit": {
+      "ours": "HatchGrab encaja con vos si…",
+      "oursBody": "vendés en ubicaciones que cambian, querés pedidos anticipados con horario de retiro, no querés que tu cocina se sature y no querés plazos forzosos.",
+      "oursNot": "HatchGrab no encaja con vos si…",
+      "oursNotBody": "tus clientes tienen que poder pagar con PayPal o Klarna, o querés un sistema de caja certificado según la normativa fiscal, todo de un mismo proveedor.",
+      "appClause": "O si necesitás la app de cocina en iPad o Android en {country}: allí todavía no está en las tiendas de apps.",
+      "tills": "Sistemas de caja y POS",
+      "tillsBody": "Los sistemas de caja cobran en el food truck y cumplen los requisitos fiscales de una caja certificada. Un sistema de pedidos funciona junto a un sistema de caja; no lo sustituye.",
+      "tillsBodyNamed": "Los sistemas de caja cobran en el food truck y cumplen los requisitos fiscales de una caja certificada. {names} también {count, plural, one {aparece} many {aparecen} other {aparecen}} en la tabla de arriba. Un sistema de pedidos funciona junto a un sistema de caja; no lo sustituye.",
+      "marketplacesBody": "Las plataformas de entrega a domicilio traen clientes nuevos, pero se quedan con una comisión de cada pedido. Uber Eats indica un 14 % para retirar y un 30 % para entrega con repartidores de Uber en Alemania. Wolt dice en su propio sitio web que cobra comisión, pero no da las tarifas. No pudimos comprobar las tarifas de Lieferando. Esa comisión también se aplica a los clientes frecuentes que te hacen pedidos anticipados."
+    },
+    "groups": {
+      "pos": "Sistema de caja"
+    },
+    "faq": {
+      "whatA": "Un sistema de pedidos recibe pedidos online antes de que los clientes lleguen al food truck: eligen los platos y un horario de retiro, pagan online o al retirar, y el pedido aparece en tu cocina. Un sistema de caja o un POS cobra en el food truck. Las dos cosas se complementan.",
+      "termA": "No. No hay plazo forzoso ni periodo de aviso previo. Podés cancelar cuando quieras; la cuota se cobra por mes y por adelantado, y mantenés el acceso hasta el final del mes que pagaste.",
+      "locationsA": "Sí. Configurás tu agenda semanal con lugares y horarios, y los clientes piden para el lugar y el día en que estás allí.",
+      "capacityA": "Los clientes solo ven los horarios de retiro que tu cocina realmente puede cumplir. El sistema toma en cuenta el tiempo de preparación de cada plato y cuántos preparás a la vez.",
+      "tseQ": "¿Sigo necesitando un sistema de caja certificado?",
+      "tseA": "HatchGrab no es un sistema de caja y no está certificado según la normativa fiscal para cajas. Cómo registrar los pedidos online en tu sistema de caja es algo que debés consultar con tu contador."
+    },
+    "method": {
+      "corrections": "¿Encontraste un error? Avisanos en nuestro <link>formulario de contacto</link>."
+    },
+    "cta": {
+      "title": "Probá gratis {months, plural, one {# mes} many {# de meses} other {# meses}}",
+      "cancel": "Cancelá mes a mes",
+      "button": "Probalo gratis"
+    },
+    "costBlock": {
+      "footOrder": "Pedido promedio de {order}: una comida típica de {meal} × {multiplier} platos por pedido ({source}).",
+      "footCalculator": "Calculá tus propias cifras con la calculadora."
+    },
+    "features": {
+      "preorder": {
+        "label": "Pedidos anticipados con horario de retiro a elegir",
+        "explain": "Los clientes piden por adelantado y eligen a qué hora retiran."
+      },
+      "capacity": {
+        "label": "Horarios de retiro según la capacidad de cocina",
+        "explain": "Los clientes solo ven los horarios de retiro que la cocina realmente puede cumplir."
+      },
+      "asap": {
+        "explain": "Los clientes pueden pedir sin elegir hora y retirar en cuanto esté listo."
+      },
+      "stock": {
+        "explain": "Marca platos como agotados y fija cuántas unidades de cada uno se pueden vender en un evento."
+      },
+      "allergens": {
+        "explain": "Cada plato muestra sus alérgenos a los clientes antes de que pidan."
+      },
+      "menuphoto": {
+        "explain": "Una foto o un PDF del menú llena los platos para que vos los revises."
+      },
+      "options": {
+        "label": "Opciones y extras en los platos"
+      },
+      "private": {
+        "label": "Eventos privados y alquiler",
+        "explain": "Pedidos para un evento privado con su propio enlace, y solicitudes para alquilar el food truck.",
+        "ours": "eventos privados con su propio enlace de pedidos; sin solicitudes de alquiler"
+      },
+      "payattruck": {
+        "label": "Pago al retirar",
+        "explain": "Los clientes piden online y pagan al retirar."
+      },
+      "hardware": {
+        "ours": "usás tus propios dispositivos"
+      },
+      "terminal": {
+        "label": "POS para la ventanilla incluido",
+        "explain": "El proveedor da un POS para cobrar en el food truck."
+      },
+      "fiscal": {
+        "label": "Sistema de caja certificado según la normativa fiscal (TSE, EET, kassaregister…)",
+        "explain": "Un sistema de caja certificado según las normas del país sobre el registro de ventas."
+      },
+      "delivery": {
+        "ours": "solo para retirar"
+      }
+    }
+  },
+  "comparisonSuits": {
+    "q": {
+      "preorder": "¿Qué sistema de pedidos permite a mis clientes pedir por adelantado y elegir un horario de retiro?",
+      "capacity": "En las horas pico mi food truck se colapsa: ¿qué sistema limita los pedidos de cada franja horaria?"
+    },
+    "does": {
+      "preorder": "{names} {count, plural, one {permite} other {permiten}} a los clientes pedir por adelantado y elegir un horario de retiro.",
+      "capacity": "{names} {count, plural, one {limita} other {limitan}} cuántos pedidos acepta cada horario de retiro, para que la cocina no se colapse."
+    },
+    "feat": {
+      "preorder": "los horarios de retiro"
+    },
+    "price": {
+      "lead": "Con {orders, number} pedidos online al mes, {names} {count, plural, one {tiene} other {tienen}} el costo mensual de software más bajo entre los productos comparados: {amount} al mes{count, plural, one {} other { cada uno}}."
+    }
+  },
+  "demoLinkEmail": {
+    "subject": "Tu demo de HatchGrab: aquí tenés tu enlace",
+    "intro": "Aquí tenés el enlace a la demo que creamos con tu menú. Hacé un pedido como uno de tus clientes y mirá cómo llega a tu pantalla de cocina (KDS). No hace falta iniciar sesión: solo tenés que tocarlo.",
+    "deletion": "Esto es una demo, así que no la guardamos: la eliminaremos, junto con el menú que subiste, el {date}. Si querés más tiempo, tocá “Guardar mi menú” en la demo y la guardaremos durante 14 días.",
+    "deletionSoon": "Esto es una demo, así que no la guardamos: la eliminaremos, junto con el menú que subiste, en 24 horas. Si querés más tiempo, tocá “Guardar mi menú” en la demo y la guardaremos durante 14 días."
+  },
+  "demoWalk": {
+    "step1": "Paso 1 de 3 · Pedí como uno de tus clientes",
+    "paymentPanel": "Aquí tu cliente paga con tarjeta, Apple Pay o Google Pay, o elige pagar al retirar. En la demo no se cobra nada.",
+    "bubbleArrived": "El pedido que acabás de hacer llegó aquí al instante, con el horario de retiro. Tocá Cocinar.",
+    "bubbleReady": "Cuando la comida esté lista, tocá Listo. Tu cliente recibe el aviso al momento.",
+    "thatsIt": "Eso es HatchGrab: tus clientes piden desde el celular, vos lo ves aquí y ellos retiran sin hacer cola. Tu menú ya está configurado.",
+    "barOrder": "Pedí como un cliente",
+    "barReady": "Marcalo como listo",
+    "waitingBody": "Pedí algo en el celular. Aparece aquí en cuanto tu cliente toca “Hacer pedido”.",
+    "readyForCollection": "Listo para retirar",
+    "collectAt": "Retirar a las {time}",
+    "collectAsap": "Retirar cuanto antes",
+    "phoneReadyBody": "Retiralo en el food truck.",
+    "goneBody": "Las demos se eliminan después de un día. Podés crear una nueva con tu menú en menos de un minuto.",
+    "failed": "No ha funcionado. Intentalo de nuevo."
+  },
+  "errorPage": {
+    "errorBody": "Lo sentimos, esta página no se ha cargado. Intentalo de nuevo o volvé a la página de inicio."
+  },
+  "faq": {
+    "phrases": {
+      "appsSentence": "También hay una app para iPad y Android, que sigue aceptando pedidos en ventanilla si te quedás sin cobertura.",
+      "appsOffline": "La app para iPad y Android sigue aceptando pedidos en ventanilla sin cobertura y los envía cuando volvés a estar en línea; el panel web necesita conexión."
+    }
+  },
+  "paperwork": {
+    "intro": "Tené todos tus certificados en un solo sitio. Te avisaremos antes de que venza alguno y podrás enviárselos a un organizador de una sola vez.",
+    "loadFailed": "No se han podido cargar tus documentos. Intentalo de nuevo.",
+    "counts": {
+      "expired": "{count, plural, one {# vencido} many {# vencidos} other {# vencidos}}",
+      "dueSoon": "{count, plural, one {# vence pronto} many {# vencen pronto} other {# vencen pronto}}"
+    },
+    "status": {
+      "dueSoon": "Vence pronto",
+      "expired": "Vencido"
+    },
+    "line": {
+      "expires": "Vence el {date}",
+      "expiresIn": "Vence el {date} · {days, plural, one {dentro de # día} many {dentro de # de días} other {dentro de # días}}",
+      "expiresToday": "Vence hoy",
+      "expired": "Venció el {date}",
+      "noExpiry": "Sin vencimiento"
+    },
+    "upload": {
+      "intro": "Sacale una foto o elegí una foto o un archivo.",
+      "takePhoto": "Sacar una foto",
+      "tooBig": "Ese archivo supera los 20 MB. Elegí uno más pequeño.",
+      "wrongType": "Ese tipo de archivo no se acepta. Usá un archivo PDF, JPEG, PNG, HEIC o WebP.",
+      "failed": "No se ha podido subir. Intentalo de nuevo."
+    },
+    "check": {
+      "title": "Revisá los datos",
+      "aiBanner": "Hemos sacado estos datos de tu documento. Comprobá que son correctos antes de guardar.",
+      "expires": "Vence el",
+      "footer": "El certificado anterior se conserva en el historial. Tus archivos son privados: solo los ves vos y los organizadores a los que se los envíes.",
+      "needType": "Elegí el documento o ponele un nombre.",
+      "badDates": "La fecha de vencimiento no puede ser anterior a la de emisión."
+    },
+    "warnings": {
+      "notRead": "No hemos podido leer este documento. Completá vos los datos.",
+      "expired": "Venció el {date}. Podés guardarlo igualmente, pero los organizadores verán que está vencido.",
+      "expiresSoon": "{days, plural, =0 {Vence hoy. Te lo recordaremos cada semana hasta que lo renueves.} one {Vence dentro de # día. Te lo recordaremos 4 semanas antes, 1 semana antes y el mismo día.} many {Vence dentro de # de días. Te lo recordaremos 4 semanas antes, 1 semana antes y el mismo día.} other {Vence dentro de # días. Te lo recordaremos 4 semanas antes, 1 semana antes y el mismo día.}}",
+      "nameMismatch": "El nombre que figura, “{name}”, no parece el de tu negocio. Comprobá que es el documento correcto."
+    },
+    "view": {
+      "noPreview": "Este archivo no se puede mostrar aquí. Abrilo o descargalo."
+    },
+    "send": {
+      "messagePlaceholder": "Hola, aquí tenés nuestros documentos para el mercado.",
+      "footer": "Si renovás un certificado, el enlace del organizador muestra el nuevo automáticamente. Verás cuándo lo abre.",
+      "emailNone": "Escribí el email del organizador.",
+      "emailTooMany": "Podés enviarlo a 5 direcciones como máximo a la vez.",
+      "noDocuments": "Elegí al menos un documento.",
+      "untilRange": "Elegí una fecha entre mañana y dentro de 90 días."
+    },
+    "sent": {
+      "empty": "Todavía no enviaste nada.",
+      "expiredOn": "Venció el {date}"
+    },
+    "page": {
+      "intro": "{truck} ha compartido estos documentos con vos.",
+      "expiredTitle": "Este enlace venció",
+      "expiredBody": "Este enlace venció. Pedile a {truck} que te lo vuelva a enviar.",
+      "expiredBodyUnknown": "Este enlace venció. Pedile al negocio que te lo envió que te lo vuelva a enviar."
+    },
+    "email": {
+      "shareIntro": "{truck} ha compartido estos documentos con vos.",
+      "shareUntil": "El enlace funciona hasta el {date}. Si venció, pedile a {truck} que te lo vuelva a enviar.",
+      "shareReply": "Respondé a este email para contactar con {truck}.",
+      "expires": "vence el {date}",
+      "noExpiry": "sin vencimiento",
+      "reminderIn": "{document} vence el {date} ({days, plural, one {dentro de # día} many {dentro de # de días} other {dentro de # días}})",
+      "reminderToday": "{document} vence hoy",
+      "reminderExpired": "{document} venció el {date}"
+    }
+  },
+  "emailReview": {
+    "from": "Este email te lo envía {truck} a través de HatchGrab porque le hiciste un pedido.",
+    "unsubscribeLead": "¿No querés recibir solicitudes de reseña de {truck}?",
+    "unsubscribed": {
+      "title": "Te diste de baja"
+    }
+  }
+}

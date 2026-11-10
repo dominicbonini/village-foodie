@@ -1,0 +1,20 @@
+{
+  "meta": {
+    "description": "Conseguí ayuda con HatchGrab. Envianos un mensaje y te responderemos por email."
+  },
+  "lede": "¿Algo no funciona o tenés una pregunta sobre tu cuenta? Tenés dos formas de contactarnos — en ambos casos te responderemos por email.",
+  "emailUs": "Escribinos",
+  "formHeading": "O envianos un mensaje",
+  "form": {
+    "errors": {
+      "nameRequired": "Escribí tu nombre.",
+      "emailRequired": "Escribí tu dirección de email.",
+      "emailInvalid": "Escribí una dirección de email válida.",
+      "businessRequired": "Escribí el nombre de tu food truck o negocio, para que podamos encontrar tu cuenta.",
+      "messageTooShort": "Escribí al menos {min, number} caracteres.",
+      "topicInvalid": "Elegí de qué trata tu mensaje.",
+      "rateLimited": "Ya enviaste varios mensajes — volvé a intentarlo más tarde o escribinos a {email}.",
+      "failed": "Algo salió mal — escribinos a {email}."
+    }
+  }
+}

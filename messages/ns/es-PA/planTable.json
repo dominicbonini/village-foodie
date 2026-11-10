@@ -1,0 +1,9 @@
+{
+  "group": {
+    "online": "Pedidos en línea"
+  },
+  "pay": {
+    "included": "Pedidos en línea incluidos cada mes",
+    "fee": "Comisión de HatchGrab en pedidos en línea con tarjeta*"
+  }
+}

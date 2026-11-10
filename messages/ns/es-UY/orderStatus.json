@@ -1,0 +1,10 @@
+{
+  "confirmCancel": "¿Seguro que querés cancelar este pedido?",
+  "cancelledBody": "Tu pedido se ha cancelado.{card, select, no {} other { Si pagaste con tarjeta, cualquier reembolso lo gestiona directamente {withTruck, select, yes {{truck}} other {el food truck}} — ponete en contacto con ellos.}}",
+  "pickup": "Retiro",
+  "payAtTruck": "Pagá al retirar",
+  "statusName": {
+    "collected": "retirado"
+  },
+  "cutoffNote": "{n, plural, one {Se aceptan cancelaciones hasta {count} minuto antes del retiro} other {Se aceptan cancelaciones hasta {count} minutos antes del retiro}}"
+}

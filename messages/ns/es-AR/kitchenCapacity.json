@@ -1,0 +1,11 @@
+{
+  "example": "Ejemplo: si podés cocinar 4 principales en 5 minutos, configuralo en 4 productos cada 5 minutos. La capacidad total limita los pedidos de todas las categorías seleccionadas, así que si querés vender como máximo 10 entradas y principales cada 5 minutos, poné la Capacidad total en 10 productos cada 5 minutos y marcá las casillas Entradas y Principales. Tus principales seguirán limitados a 4 productos cada 5 minutos.",
+  "noLimit": "Dejalo en el símbolo de infinito para no poner límite.",
+  "warning": "⚠️ Para que la capacidad de cocina funcione bien, indicá un tiempo de preparación y un tamaño de tanda en las categorías de tu menú (Menú y stock). Sin ellos, la capacidad no puede saber cuánto tardan los productos en cocinarse.",
+  "noVan": "Agregá un food truck en Ajustes › Ajustes del food truck para configurar la capacidad de cocina.",
+  "lead": "Cuántos productos puede preparar tu cocina, para que los clientes solo puedan elegir horarios de retiro que puedas cumplir.",
+  "colCountsTitle": "Qué categorías cuentan para la capacidad total. Las categorías cocinadas siempre cuentan; marcá las instantáneas (guarniciones, salsas, bebidas) para incluirlas.",
+  "countsNoCap": "Indicá una capacidad para elegir qué categorías cuentan",
+  "countsTick": "Marcá para incluir esta categoría instantánea (guarniciones, salsas, bebidas) en el límite compartido por franja",
+  "setCapacityFirst": "Indicá una capacidad para elegir qué categorías cuentan."
+}

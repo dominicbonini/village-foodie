@@ -1,0 +1,18 @@
+{
+  "rate": {
+    "hint": "La tasa que aplicás a cada pedido. Los clientes la ven sumada al pagar, en los tickets y en las comandas.",
+    "regionDefault": "Dejalo vacío para aplicar {label} al {rate} %, la tasa de la comida preparada ({region})."
+  },
+  "included": {
+    "default": "Dejalo vacío para usar el {rate} %, la tasa de {label} de la comida caliente para llevar ({country})."
+  },
+  "tips": {
+    "hint": "Los clientes que pagan online con tarjeta pueden añadir propina. Es toda para vos."
+  },
+  "fee": {
+    "hint": "Solo se añade a los pedidos online. Nunca a los pedidos con Pago al retirar ni a los pedidos en ventanilla. Te lo quedás vos.",
+    "max": "Máximo que podés cobrar: {max}",
+    "hatchgrab": "HatchGrab añade un cargo por servicio de {fee} a los pedidos online de tus clientes. No lo pagás vos y no podés cambiarlo."
+  },
+  "saveFailed": "No se ha podido guardar. Intentalo de nuevo."
+}

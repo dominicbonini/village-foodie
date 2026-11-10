@@ -1,0 +1,60 @@
+{
+  "meta": {
+    "description": "Sistemas de pedidos para food trucks: hora de recojo, capacidad de cocina, agenda, comisiones y plazo de contrato, revisados en la web de cada proveedor."
+  },
+  "fit": {
+    "oursBody": "vendes en ubicaciones que cambian, quieres pedidos anticipados con hora de recojo, no quieres que tu cocina se sature y no quieres plazos forzosos.",
+    "oursNotBody": "tus clientes tienen que poder pagar con PayPal o Klarna, o quieres un sistema de caja certificado según la normativa fiscal, todo de un mismo proveedor.",
+    "tills": "Sistemas de caja y POS",
+    "tillsBody": "Los sistemas de caja cobran en el food truck y cumplen los requisitos fiscales de un sistema de caja certificado. Un sistema de pedidos funciona junto a un sistema de caja; no lo sustituye.",
+    "tillsBodyNamed": "Los sistemas de caja cobran en el food truck y cumplen los requisitos fiscales de un sistema de caja certificado. {names} también {count, plural, one {aparece} many {aparecen} other {aparecen}} en la tabla de arriba. Un sistema de pedidos funciona junto a un sistema de caja; no lo sustituye."
+  },
+  "groups": {
+    "pos": "Sistema de caja"
+  },
+  "faq": {
+    "whatA": "Un sistema de pedidos recibe pedidos online antes de que los clientes lleguen al food truck: eligen los platos y una hora de recojo, pagan online o al recoger, y el pedido aparece en tu cocina. Un sistema de caja o un POS cobra en el food truck. Las dos cosas se complementan.",
+    "capacityA": "Los clientes solo ven las horas de recojo que tu cocina realmente puede cumplir. El sistema toma en cuenta el tiempo de preparación de cada plato y cuántos preparas a la vez.",
+    "tseQ": "¿Sigo necesitando un sistema de caja certificado?",
+    "tseA": "HatchGrab no es un sistema de caja y no está certificado según la normativa fiscal para sistemas de caja. Cómo registrar los pedidos online en tu sistema de caja es algo que debes consultar con tu contador."
+  },
+  "costBlock": {
+    "footOrder": "Pedido promedio de {order}: una comida típica de {meal} × {multiplier} platos por pedido ({source})."
+  },
+  "features": {
+    "preorder": {
+      "label": "Pedidos anticipados con hora de recojo a elegir"
+    },
+    "capacity": {
+      "label": "Horas de recojo según la capacidad de cocina",
+      "explain": "Los clientes solo ven las horas de recojo que la cocina realmente puede cumplir."
+    },
+    "stock": {
+      "explain": "Marca platos como agotados y fija cuántas unidades de cada uno se pueden vender en un evento."
+    },
+    "allergens": {
+      "label": "Alérgenos en la carta",
+      "explain": "Cada plato muestra sus alérgenos a los clientes antes de que pidan."
+    },
+    "menuphoto": {
+      "label": "Carta creada a partir de una foto",
+      "explain": "Una foto o un PDF de la carta llena los platos para que tú los revises."
+    },
+    "options": {
+      "label": "Opciones y extras en los platos"
+    },
+    "private": {
+      "label": "Eventos privados y alquiler",
+      "explain": "Pedidos para un evento privado con su propio enlace, y solicitudes para alquilar el food truck.",
+      "ours": "eventos privados con su propio enlace de pedidos; sin solicitudes de alquiler"
+    },
+    "terminal": {
+      "label": "POS para la ventanilla incluido",
+      "explain": "El proveedor da un POS para cobrar en el food truck."
+    },
+    "fiscal": {
+      "label": "Sistema de caja certificado según la normativa fiscal (TSE, EET, kassaregister…)",
+      "explain": "Un sistema de caja certificado según las normas del país sobre el registro de ventas."
+    }
+  }
+}

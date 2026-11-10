@@ -1,0 +1,20 @@
+{
+  "placeSample": {
+    "nameTownBelow": "Bar La Plaza\nHuanchaco",
+    "nameTown": "Bar La Plaza, Huanchaco"
+  },
+  "busyWeek": {
+    "venue1": "Casa de la Cultura de Huanchaco",
+    "town1": "Huanchaco",
+    "venue2": "Complejo Deportivo y Estadio Municipal de San Juan de Lurigancho",
+    "town2": "San Juan de Lurigancho",
+    "venue3": "Plaza de Armas",
+    "town3": "Arequipa",
+    "venue4": "Feria Gastronómica",
+    "town4": "Trujillo",
+    "venue5": "Picantería El Arco",
+    "town5": "Cusco",
+    "venue6": "Parque Principal",
+    "town6": "Huancayo"
+  }
+}

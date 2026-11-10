@@ -1,0 +1,5 @@
+{
+  "paidOnline": "Pagado en línea con tarjeta{mixed, select, yes { — {amount}} other {}}",
+  "paidCardMachine": "Pagado con tu POS{mixed, select, yes { — {amount}} other {}}",
+  "inPersonHint": "Efectivo o tu POS — no se registra"
+}

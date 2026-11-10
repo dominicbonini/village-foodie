@@ -1,0 +1,5 @@
+{
+  "intervals_choices": "Las horas de retiro deben ir cada {choices} minutos.",
+  "intervals_customer_first": "Configura las horas de retiro de los clientes antes de configurar las tuyas.",
+  "intervals_save_failed": "Ahora mismo no se han podido guardar las horas de retiro."
+}

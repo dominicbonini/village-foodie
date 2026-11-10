@@ -1,0 +1,22 @@
+{
+  "standardCategories": {
+    "starters": "Entradas",
+    "wrapsSandwiches": "Wraps y sándwiches",
+    "sides": "Guarniciones"
+  },
+  "demoCategories": {
+    "sides": "Guarniciones"
+  },
+  "demoTemplates": {
+    "pizza": {
+      "items": {
+        "rocketParmesan": "Rúcula y parmesano"
+      }
+    },
+    "burgers": {
+      "items": {
+        "doubleBacon": "Doble bacon"
+      }
+    }
+  }
+}

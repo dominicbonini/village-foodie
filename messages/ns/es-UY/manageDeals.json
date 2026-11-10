@@ -1,0 +1,6 @@
+{
+  "applyHelp": "Elegí si este combo se aplica automáticamente a tus eventos",
+  "applyAllHelp": "Este combo estará activo en cada evento nuevo que crees. Podés desactivarlo para eventos específicos en Agenda.",
+  "applyAllNote": "Este combo se agregará a los eventos nuevos. Para los eventos ya creados, andá a Agenda para administrar los combos de cada evento.",
+  "emptyBody": "Creá un combo como “Combo de mediodía — cualquier pizza + bebida + salsa por {price}”"
+}

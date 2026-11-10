@@ -1,0 +1,6 @@
+{
+  "menu_changed": "La carta cambió — revisa tu pedido antes de hacerlo.",
+  "menu_changed_item": "La carta cambió — {item} ya no está disponible. Revisa tu pedido antes de hacerlo.",
+  "menu_changed_option": "La carta cambió — {option} (de {item}) ya no está disponible. Revisa tu pedido antes de hacerlo.",
+  "cancel_window_passed": "{n, plural, one {Los pedidos ya no se pueden cancelar a menos de {count} minuto del recojo} other {Los pedidos ya no se pueden cancelar a menos de {count} minutos del recojo}}"
+}

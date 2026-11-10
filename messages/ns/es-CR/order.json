@@ -1,0 +1,5 @@
+{
+  "authFailed": "No se ha podido autorizar ese pago. No se te ha cobrado nada: prueba con otra tarjeta o elige Pago al recoger.",
+  "paymentThrew": "Algo ha fallado al procesar el pago. No se te ha cobrado nada: inténtalo de nuevo o elige Pago al recoger.",
+  "payAtTruck": "Pago al recoger"
+}

@@ -1,0 +1,10 @@
+{
+  "tips": {
+    "hint": "Los clientes que pagan en línea con tarjeta pueden añadir propina. Es toda para ti."
+  },
+  "fee": {
+    "label": "Cargo por servicio en línea",
+    "hint": "Solo se añade a los pedidos en línea. Nunca a los pedidos con Pago al recoger ni a los pedidos en ventanilla. Te lo quedas tú.",
+    "hatchgrab": "HatchGrab añade un cargo por servicio de {fee} a los pedidos en línea de tus clientes. No lo pagas tú y no puedes cambiarlo."
+  }
+}

@@ -1,0 +1,19 @@
+{
+  "placeSample": {
+    "nameTownBelow": "Bar La Plaza\nVilla de Leyva",
+    "nameTown": "Bar La Plaza, Villa de Leyva"
+  },
+  "busyWeek": {
+    "venue1": "Casa de la Cultura de Zipaquirá",
+    "town1": "Zipaquirá",
+    "venue2": "Unidad Deportiva y Cancha de Fútbol de Envigado",
+    "town2": "Envigado",
+    "venue3": "Plaza Mayor",
+    "town3": "Villa de Leyva",
+    "town4": "Medellín",
+    "venue5": "Café El Portal",
+    "town5": "Bucaramanga",
+    "venue6": "Parque Principal",
+    "town6": "Guatapé"
+  }
+}

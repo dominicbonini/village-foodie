@@ -1,0 +1,10 @@
+{
+  "row": {
+    "tap_to_pay": {
+      "name": "Cobrá con tu celular"
+    }
+  },
+  "priceWord": {
+    "payAtHatch": "Pago al retirar"
+  }
+}

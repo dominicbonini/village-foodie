@@ -1,0 +1,9 @@
+{
+  "tips": {
+    "other": "Otro monto"
+  },
+  "fee": {
+    "hint": "Solo se añade a los pedidos online. Nunca a los pedidos con Pago al retirar ni a los pedidos en ventanilla. Te lo quedas tú.",
+    "fixedAria": "Monto fijo del cargo por servicio"
+  }
+}

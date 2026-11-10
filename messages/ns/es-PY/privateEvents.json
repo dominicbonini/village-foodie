@@ -1,0 +1,13 @@
+{
+  "form": {
+    "namePlaceholder": "Casamiento de Sofía y Martín",
+    "needsTimes": "Agregá una hora de inicio y de fin: un evento privado que acepta pedidos por enlace las necesita."
+  },
+  "link": {
+    "newLinkHelp": "Usalo si el enlace ha llegado a donde no debía. El enlace actual deja de funcionar de inmediato, y los códigos QR impresos también."
+  },
+  "cards": {
+    "scan": "Escaneá para pedir",
+    "blurb": "Pedí y pagá desde tu celular. Te llamaremos por tu nombre cuando esté listo."
+  }
+}

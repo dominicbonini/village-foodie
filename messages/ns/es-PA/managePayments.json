@@ -1,0 +1,16 @@
+{
+  "online": {
+    "heading": "Pagos en línea",
+    "feeLine": "Stripe cobra {fee} por pago con {region} estándar. Otras tarjetas pueden costar más. La comisión de HatchGrab en los pedidos en línea depende de tu plan: consulta Facturación."
+  },
+  "admin": {
+    "body": "Este food truck no ha configurado los pagos en línea. Solo el propietario puede hacerlo, desde su propia cuenta con la sesión iniciada: aquí no hay nada que tocar."
+  },
+  "setUp": {
+    "button": "Configurar pagos en línea"
+  },
+  "walkUp": {
+    "ownTerminal": "Tu propio POS",
+    "hatchgrabHelp": "Usa la misma conexión de Stripe que tus pagos en línea: un POS, o pago sin contacto directamente en tu celular o tablet."
+  }
+}

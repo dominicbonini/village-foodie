@@ -1,0 +1,31 @@
+{
+  "pin": {
+    "title": "Ingresá el PIN",
+    "unreachable": "Ahora mismo no se puede conectar con el servidor. Tu PIN está bien: volvé a intentarlo en un momento.",
+    "generic": "Algo ha fallado. Intentalo de nuevo."
+  },
+  "header": {
+    "readyOnTitle": "Esta pantalla marca los pedidos como listos. Tocá para que lo haga otra pantalla.",
+    "readyOffTitle": "Otra pantalla marca los pedidos como listos. Tocá para que lo haga esta.",
+    "handoverOnTitle": "Esta pantalla cobra y entrega. Tocá para que lo haga otra pantalla.",
+    "handoverOffTitle": "Otra pantalla cobra. Tocá para que lo haga esta.",
+    "soundOn": "Sonido de pedido nuevo activado — tocá para desactivarlo",
+    "soundOff": "Sonido de pedido nuevo desactivado — tocá para activarlo"
+  },
+  "banner": {
+    "mismatchBody": "El servidor respondió con otro evento, así que no se muestra nada en lugar de pedidos equivocados. Volvé a elegir el evento o recargá.",
+    "mismatchBodyAt": "El servidor respondió con otro evento, así que no se muestra nada en lugar de pedidos equivocados de {venue}. Volvé a elegir el evento o recargá."
+  },
+  "screenOff": {
+    "keepHint": "Mantené la pantalla encendida para que los pedidos no se interrumpan."
+  },
+  "event": {
+    "waitActive": "⏱ +{mins} min activa · Tocá para quitar",
+    "endEarly": "Este evento no termina hasta las {time}. No se admitirán más pedidos. ¿Confirmás que querés terminarlo?",
+    "switchConfirm": "¿Cambiar de {from} a {to}?{n, plural, =0 {} one { Se sustituirá {count} pedido de esta pantalla.} other { Se sustituirán {count} pedidos de esta pantalla.}} Tocá el evento actual para volver."
+  },
+  "intro": {
+    "p1": "Es la vista de quien cocina: los pedidos que tenés que preparar, en el orden en que hay que prepararlos. La pantalla junto a la plancha muestra esto mientras el mostrador usa el panel de pedidos.",
+    "p2": "Las tarjetas avanzan al tocarlas, así quien cocina siempre sabe qué va después y nadie tiene que gritar. Todo lo que ves aquí son datos de demo: probá todo lo que quieras."
+  }
+}

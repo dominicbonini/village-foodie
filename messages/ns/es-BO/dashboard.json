@@ -1,0 +1,8 @@
+{
+  "cancelModal": {
+    "held": "El monto está <b>retenido, no cobrado</b> en su tarjeta: no se ha cobrado nada, así que no hay nada que reembolsar. Al cancelar, la retención se libera al momento."
+  },
+  "edit": {
+    "extraToCollect": "Monto extra a cobrar"
+  }
+}

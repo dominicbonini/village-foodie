@@ -1,0 +1,5 @@
+{
+  "extraWait": {
+    "hint": "Se suma a la hora de recojo indicada en los pedidos nuevos. No cambia la hora de fin del evento."
+  }
+}

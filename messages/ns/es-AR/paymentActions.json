@@ -1,0 +1,7 @@
+{
+  "reason": "{reason, select, item_unavailable {Producto no disponible} not_collected {Pedido no retirado} wrong_or_missing_item {Producto equivocado o que falta} quality_issue {Problema de calidad} duplicate_payment {Pago duplicado} customer_cancelled {Cancelado por el cliente} other {Otro}}",
+  "paidCardMachine": "Pagado con tu posnet{mixed, select, yes { — {amount}} other {}}",
+  "inPersonHint": "Efectivo o tu posnet — no se registra",
+  "offlineUnchanged": "El pedido <b>#{orderId}</b> no ha cambiado. Volvé a conectarte y abrilo de nuevo.",
+  "chooseReason": "Elegí un motivo…"
+}

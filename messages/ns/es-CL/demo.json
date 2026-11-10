@@ -1,0 +1,5 @@
+{
+  "cashAndCollected": "Efectivo y retirado",
+  "welcomeIntro": "{sample, select, yes {Esta es una <b>carta de ejemplo</b> para que veas cómo funciona todo; sube la tuya cuando quieras para hacerla tuya.} other {Esta es tu propia carta, con tu imagen de marca, en un tablero real.}} Los pedidos que ya aparecen son ejemplos, para que veas un servicio con mucho movimiento.",
+  "walkBanner": "Demo · esta es tu carta, tal como la verán tus clientes. No se cobra nada y no se envía ningún correo."
+}

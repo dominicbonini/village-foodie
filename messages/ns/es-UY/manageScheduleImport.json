@@ -1,0 +1,13 @@
+{
+  "intro": "Subí una captura de pantalla, una foto o un PDF de tu agenda, o pegá el texto abajo. Nuestra IA extraerá tus eventos para que los revises.",
+  "dropHere": "Soltá aquí tu agenda",
+  "dragOrTap": "Arrastrá y soltá o tocá para elegir",
+  "orPaste": "O pegá el texto de tu agenda",
+  "pastePlaceholder": "Pegá aquí tu agenda, p. ej., {date}, {place}, {start}-{end}",
+  "review": {
+    "selectVan": "Elegí un food truck",
+    "pastHeading": "Fechas pasadas: actualizalas para guardar",
+    "pastBody": "Estos eventos ya han pasado. Cambiá la fecha a una futura para incluirlos.",
+    "fixFirst": "Primero corregí {count, plural, one {# evento} other {# eventos}}"
+  }
+}

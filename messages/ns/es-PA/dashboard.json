@@ -1,0 +1,14 @@
+{
+  "settings": {
+    "cardsTitle": "Aceptar pagos con tarjeta en línea"
+  },
+  "stock": {
+    "howCategory": "El <b>total de la categoría</b> es una reserva compartida entre todos los productos de esa categoría (p. ej. 30 entradas esta noche)."
+  },
+  "pause": {
+    "title": "Pausar pedidos en línea"
+  },
+  "screenOff": {
+    "body": "La protección de pedidos sin conexión está activada. Si la pantalla se apaga y el dispositivo pierde la conexión, los pedidos en línea pueden pausarse automáticamente."
+  }
+}

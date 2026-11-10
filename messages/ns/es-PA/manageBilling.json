@@ -1,0 +1,8 @@
+{
+  "footnote2Masked": "Los pagos en línea funcionan con Stripe Connect. Las comisiones de la plataforma y de procesamiento de tarjetas están por confirmar y se anunciarán en el lanzamiento.",
+  "plan": {
+    "included": "Incluye {amount} en pedidos en línea al mes.",
+    "includedUnlimited": "Pedidos en línea ilimitados incluidos."
+  },
+  "fees": "*En los pedidos en línea se aplican las comisiones estándar por pago con tarjeta"
+}

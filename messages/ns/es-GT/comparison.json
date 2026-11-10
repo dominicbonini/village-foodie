@@ -1,0 +1,28 @@
+{
+  "meta": {
+    "description": "Sistemas de pedidos para food trucks: hora para recoger, capacidad de cocina, agenda, comisiones y plazos, revisados en el sitio de cada proveedor.",
+    "about": "Sistemas de pedidos en línea para food trucks"
+  },
+  "fit": {
+    "tills": "Sistemas de caja y POS"
+  },
+  "faq": {
+    "whatA": "Un sistema de pedidos recibe pedidos online antes de que los clientes lleguen al food truck: eligen los platillos y una hora para recoger, pagan online o al recoger, y el pedido aparece en tu cocina. Un sistema de caja o un POS cobra en el food truck. Las dos cosas se complementan.",
+    "termQ": "¿Hay un plazo mínimo de contrato?",
+    "termA": "No. No hay plazo mínimo de contrato ni periodo de aviso previo. Puedes cancelar cuando quieras; la cuota se cobra por mes y por adelantado, y mantienes el acceso hasta el final del mes que pagaste.",
+    "tseA": "HatchGrab no es un sistema de caja ni está certificado según la normativa fiscal. Cómo registrar los pedidos online en tu sistema de caja es algo que debes consultar con tu contador."
+  },
+  "features": {
+    "vans": {
+      "label": "Varios vehículos o food trucks",
+      "ours": "vehículos adicionales por una cuota mensual extra"
+    },
+    "terminal": {
+      "label": "POS para la ventanilla incluido",
+      "explain": "El proveedor da un POS para cobrar en el food truck."
+    },
+    "term": {
+      "label": "Plazo mínimo de contrato"
+    }
+  }
+}

@@ -1,0 +1,12 @@
+{
+  "description": "Agregá opciones de pago o gratuitas que los clientes pueden elegir al pedir, p. ej., Extra de queso +{price}, Sin cebolla {zero}",
+  "note": "Creá un grupo de opciones y asignalo a una categoría del menú. Todos los productos de esa categoría ofrecerán esas opciones cuando los clientes pidan.",
+  "matrix": {
+    "offeredRemoveGroup": "Se ofrece: hacé clic para quitar el grupo de este plato",
+    "notOfferedAdd": "No se ofrece: hacé clic para añadirlo",
+    "addGroupFirst": "Primero agregá el grupo a este plato",
+    "offeredRemove": "Se ofrece: hacé clic para quitarla",
+    "help": "Marcá “Incluir” para añadir el grupo a un plato y luego marcá qué opciones muestra. Se guarda al instante."
+  },
+  "emptyBody": "Creá un grupo como “Extras de pizza” y agregá opciones como “Extra de queso +{price}”"
+}

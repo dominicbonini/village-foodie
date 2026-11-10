@@ -1,0 +1,4 @@
+{
+  "intro": "Aquí tienes tu enlace para volver a la demo con tu carta. No hace falta iniciar sesión: solo tócalo.",
+  "deletion": "Es una demo, así que no la guardamos para siempre: la borraremos junto con la carta el <b>{date}</b> ({days, plural, one {# día} many {# días} other {# días}}). Si te registras antes de esa fecha, tu carta se va contigo."
+}

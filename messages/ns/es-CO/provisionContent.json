@@ -1,0 +1,17 @@
+{
+  "standardCategories": {
+    "starters": "Entradas",
+    "mains": "Platos fuertes",
+    "wrapsSandwiches": "Wraps y sándwiches"
+  },
+  "demoCategories": {
+    "mains": "Platos fuertes"
+  },
+  "demoTemplates": {
+    "burgers": {
+      "items": {
+        "doubleBacon": "Doble tocineta"
+      }
+    }
+  }
+}

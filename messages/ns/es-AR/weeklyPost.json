@@ -1,0 +1,18 @@
+{
+  "error": {
+    "wrongType": "Elegí un PNG o JPG.",
+    "copyFailed": "No se ha podido copiar: seleccioná el texto y copialo a mano."
+  },
+  "setup": {
+    "title": "Configurá tu publicación semanal",
+    "intro": "Subí la versión en blanco del gráfico semanal de tu agenda que ya preparás: el mismo diseño, sin tus cuadros de texto. HatchGrab llena la semana a partir de tu agenda.",
+    "canvaStep1": "Abrí tu diseño habitual de la agenda semanal.",
+    "canvaStep2": "Borrá los cuadros de texto con las fechas, los lugares y las horas; dejá el fondo y los títulos que quieras conservar.",
+    "upload": "Subí tu imagen en blanco"
+  },
+  "post": {
+    "notePlaceholder": "p. ej., Hacé tu pedido anticipado para retirar",
+    "noteHint": "Aparece en el texto de la publicación y en el cuadro de nota, si colocaste uno.",
+    "noOrderLink": "Aún no hay enlace para pedidos: configurá la dirección web de tu food truck en Ajustes."
+  }
+}

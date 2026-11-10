@@ -1,0 +1,16 @@
+{
+  "step1": "Paso 1 de 3 · Pedí como uno de tus clientes",
+  "paymentPanel": "Aquí tu cliente paga con tarjeta, Apple Pay o Google Pay, o elige pagar al retirar. En la demo no se cobra nada.",
+  "bubbleArrived": "El pedido que acabás de hacer llegó aquí al instante, con el horario de retiro. Tocá Cocinar.",
+  "bubbleReady": "Cuando la comida esté lista, tocá Listo. Tu cliente recibe el aviso al momento.",
+  "thatsIt": "Eso es HatchGrab: tus clientes piden desde el celular, vos lo ves aquí y ellos retiran sin hacer cola. Tu menú ya está configurado.",
+  "barOrder": "Pedí como un cliente",
+  "barReady": "Marcalo como listo",
+  "waitingBody": "Pedí algo en el celular. Aparece aquí en cuanto tu cliente toca “Hacer pedido”.",
+  "readyForCollection": "Listo para retirar",
+  "collectAt": "Retirar a las {time}",
+  "collectAsap": "Retirar cuanto antes",
+  "phoneReadyBody": "Retiralo en el food truck.",
+  "goneBody": "Las demos se eliminan después de un día. Podés crear una nueva con tu menú en menos de un minuto.",
+  "failed": "No ha funcionado. Intentalo de nuevo."
+}

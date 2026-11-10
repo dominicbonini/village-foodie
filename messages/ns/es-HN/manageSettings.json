@@ -1,0 +1,12 @@
+{
+  "details": {
+    "websitePlaceholder": "https://tufoodtruck.hn"
+  },
+  "contact": {
+    "emailPlaceholder": "hola@tufoodtruck.hn",
+    "emailError": "Ingresa un correo válido (p. ej., hola@tufoodtruck.hn)"
+  },
+  "schedule": {
+    "urlPlaceholder": "https://tufoodtruck.hn/eventos"
+  }
+}

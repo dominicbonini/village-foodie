@@ -1,0 +1,14 @@
+{
+  "steps": {
+    "based": "Dónde operás"
+  },
+  "verify": {
+    "expired": "Ese enlace de confirmación venció. Escribinos y lo solucionaremos antes de que empieces a recibir pedidos.",
+    "invalid": "Ese enlace de confirmación no ha funcionado. Escribinos y lo solucionaremos antes de que empieces a recibir pedidos."
+  },
+  "identity": {
+    "phoneHelp": "Los clientes lo ven en la confirmación del pedido para poder preguntarte por él. La casilla decide si pone “Llamanos” o “Escribinos por WhatsApp”. Podés cambiar ambas cosas en Ajustes."
+  },
+  "phoneRequired": "Agregá un número de teléfono: tanto los clientes como nosotros lo usamos para contactarte.",
+  "unreachable": "No hemos podido conectar ahora mismo. Intentalo de nuevo."
+}

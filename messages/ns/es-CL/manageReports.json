@@ -1,0 +1,19 @@
+{
+  "csv": {
+    "collectionTime": "Hora de retiro"
+  },
+  "accounts": {
+    "payAtTruck": "Pago al retirar",
+    "cost": "Costo de los platos vendidos",
+    "coverage": "{total, plural, one {Costo indicado en {withCost} de # plato vendido} many {Costo indicado en {withCost} de # platos vendidos} other {Costo indicado en {withCost} de # platos vendidos}}",
+    "partial": "Los platos sin costo no se incluyen en el costo, así que esta ganancia es mayor de lo que es en realidad. Agrega un costo a cada plato en la pestaña Carta.",
+    "noCosts": "Todavía ningún plato tiene costo. Agrega un costo a tus platos en la pestaña Carta para ver tu ganancia.",
+    "eventNoProfit": "Un guion significa que no todos los platos vendidos ahí tienen costo."
+  },
+  "accountsCsv": {
+    "header": {
+      "dishesSold": "Platos vendidos",
+      "dishesWithCost": "Platos con costo"
+    }
+  }
+}

@@ -1,0 +1,20 @@
+{
+  "placeSample": {
+    "nameTownBelow": "Bar La Plaza\nEscazú",
+    "nameTown": "Bar La Plaza, Escazú"
+  },
+  "busyWeek": {
+    "venue1": "Casa de la Cultura de Heredia",
+    "town1": "Heredia",
+    "venue2": "Polideportivo Municipal y Cancha de Fútbol de Santa Ana",
+    "town2": "Santa Ana",
+    "venue3": "Parque Central",
+    "town3": "Alajuela",
+    "venue4": "Feria Gastronómica",
+    "town4": "Cartago",
+    "venue5": "Soda La Esquina",
+    "town5": "Liberia",
+    "venue6": "Plaza de la Cultura",
+    "town6": "San José"
+  }
+}

@@ -1,0 +1,19 @@
+{
+  "placeSample": {
+    "nameTownBelow": "Bar La Plaza\nBoquete",
+    "nameTown": "Bar La Plaza, Boquete"
+  },
+  "busyWeek": {
+    "venue1": "Casa de la Cultura de Penonomé",
+    "town1": "Penonomé",
+    "venue2": "Complejo Deportivo y Cancha de Fútbol de La Chorrera",
+    "town2": "La Chorrera",
+    "venue3": "Parque Cervantes",
+    "town3": "David",
+    "town4": "Ciudad de Panamá",
+    "venue5": "Fonda El Portal",
+    "town5": "Chitré",
+    "venue6": "Parque Central",
+    "town6": "Santiago"
+  }
+}

@@ -1,0 +1,20 @@
+{
+  "placeSample": {
+    "nameTownBelow": "Bar La Plaza\nAntigua Guatemala",
+    "nameTown": "Bar La Plaza, Antigua Guatemala"
+  },
+  "busyWeek": {
+    "venue1": "Casa de la Cultura de Quetzaltenango",
+    "town1": "Quetzaltenango",
+    "venue2": "Complejo Deportivo Municipal y Campo de Futbol de Mixco",
+    "town2": "Mixco",
+    "venue3": "Parque Central",
+    "town3": "Cobán",
+    "venue4": "Feria Gastronómica",
+    "town4": "Escuintla",
+    "venue5": "Restaurante El Lago",
+    "town5": "Panajachel",
+    "venue6": "Plaza Central",
+    "town6": "Retalhuleu"
+  }
+}

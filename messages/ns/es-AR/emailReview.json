@@ -1,0 +1,7 @@
+{
+  "from": "Este email te lo envía {truck} a través de HatchGrab porque le hiciste un pedido.",
+  "unsubscribeLead": "¿No querés recibir solicitudes de reseña de {truck}?",
+  "unsubscribed": {
+    "title": "Te diste de baja"
+  }
+}

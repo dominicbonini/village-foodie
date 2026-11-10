@@ -1,0 +1,19 @@
+{
+  "q": {
+    "offline": "¿Qué pasa con los pedidos en línea si me quedo sin cobertura?"
+  },
+  "feat": {
+    "offlinePause": "Pedidos en línea en pausa cuando se pierde la cobertura"
+  },
+  "price": {
+    "lead": "Con {orders, number} pedidos en línea al mes, {names} {count, plural, one {tiene} other {tienen}} el costo mensual de software más bajo entre los productos comparados: {amount} al mes{count, plural, one {} other { cada uno}}."
+  },
+  "offline": {
+    "ours": "{name} puede pausar automáticamente los pedidos en línea cuando el food truck se queda sin cobertura, para que los clientes no hagan pedidos que la cocina no va a recibir."
+  },
+  "ev": {
+    "calc": {
+      "volume": "Calculado para {orders, number} pedidos en línea al mes a {order} por pedido ({revenue} en ventas en línea)."
+    }
+  }
+}

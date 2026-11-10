@@ -1,0 +1,8 @@
+{
+  "review": {
+    "moveBody": "Para eliminar “{name}” hay que mover sus platos a otro lugar: los productos sin categoría no se importan."
+  },
+  "schedule": {
+    "urlPlaceholder": "https://tufoodtruck.com.pa/eventos"
+  }
+}

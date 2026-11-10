@@ -1,0 +1,16 @@
+{
+  "limit80": {
+    "subject": "Usaste el 80 % de las respuestas de WhatsApp de este mes",
+    "raise": "Podés subir tu límite mensual en Ajustes cuando quieras.",
+    "raiseLink": "Podés subir tu límite mensual en Ajustes cuando quieras:"
+  },
+  "limit100": {
+    "usedAll": "Usaste las {limit} respuestas automáticas de WhatsApp de este mes, así que se han pausado.",
+    "startAgain": "Volverán a funcionar el <b>{reset}</b>, o enseguida si subís tu límite mensual en Ajustes.",
+    "startAgainLink": "Volverán a funcionar el {reset}, o enseguida si subís tu límite mensual en Ajustes:"
+  },
+  "paymentBlocked": {
+    "payDirect": "Estos mensajes se los pagás directamente a WhatsApp, así que esto se soluciona en WhatsApp Manager, no en HatchGrab. Agregá o actualizá una tarjeta allí y las respuestas volverán a enviarse solas.",
+    "payDirectLink": "Estos mensajes se los pagás directamente a WhatsApp, así que esto se soluciona en WhatsApp Manager, no en HatchGrab. Agregá o actualizá una tarjeta allí y las respuestas volverán a enviarse solas:"
+  }
+}

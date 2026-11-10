@@ -1,0 +1,20 @@
+{
+  "placeSample": {
+    "nameTownBelow": "Bar La Plaza\nPucón",
+    "nameTown": "Bar La Plaza, Pucón"
+  },
+  "busyWeek": {
+    "venue1": "Centro Cultural de Pucón",
+    "town1": "Pucón",
+    "venue2": "Polideportivo y Estadio Municipal de San Pedro de la Paz",
+    "town2": "San Pedro de la Paz",
+    "venue3": "Plaza de Armas",
+    "town3": "La Serena",
+    "venue4": "Feria Gastronómica",
+    "town4": "Valparaíso",
+    "venue5": "Picada El Arriero",
+    "town5": "Talca",
+    "venue6": "Parque Costanera",
+    "town6": "Puerto Varas"
+  }
+}

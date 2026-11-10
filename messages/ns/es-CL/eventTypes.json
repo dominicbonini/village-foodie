@@ -1,0 +1,13 @@
+{
+  "phone": {
+    "noMenuItems": "Aún no hay productos en la carta: agrégalos en Carta › Productos."
+  },
+  "newType": {
+    "chips": {
+      "privateHire": "Arriendo de food truck"
+    }
+  },
+  "summary": {
+    "collectionEvery": "retiro cada {mins} min"
+  }
+}

@@ -1,0 +1,24 @@
+{
+  "say": {
+    "addressHelp": "Ingresá la dirección de la impresora como 192.168.1.50 o 192.168.1.50:9100.",
+    "netPermission": "HatchGrab necesita permiso para acceder a tu impresora. Activá “Red local” para HatchGrab en Ajustes.",
+    "netUnreachable": "No se puede conectar con la impresora en {address} — comprobá que esté en la misma red.",
+    "testSent": "Comanda de prueba enviada — revisá la impresora."
+  },
+  "card": {
+    "noPrinter": "<b>No hay ninguna impresora conectada.</b> {withDetail, select, yes {{detail}. } other {}}Conectá una impresora de tickets Bluetooth para empezar a imprimir comandas.",
+    "bluetoothOff": "El Bluetooth está desactivado en este dispositivo. Activalo en Ajustes y volvé a buscar.",
+    "bluetoothUnauthorised": "HatchGrab necesita permiso para usar el Bluetooth. Permitilo en Ajustes → HatchGrab → Bluetooth y volvé a buscar.",
+    "bluetoothUnsupported": "Para imprimir necesitás la app de HatchGrab — un navegador web no puede conectarse a una impresora Bluetooth.",
+    "noneFound": "No se han encontrado impresoras. Comprobá que la impresora esté encendida, tenga papel y esté cerca de este dispositivo — la mayoría de las impresoras de tickets solo aparecen durante uno o dos minutos después de encenderlas.",
+    "likelyHeading": "Posibles impresoras — tocá para conectar:",
+    "noneRecognised": "Aún no se ha reconocido ninguna impresora. Abajo aparece todo lo que hay cerca — si tu impresora está ahí, tocala y HatchGrab comprobará si puede imprimir.",
+    "otherHint": "No parecen impresoras, pero podés probar con alguno.",
+    "addressHint": "Imprimí la página de configuración de la impresora para ver su dirección. Pedile a quien configuró tu router que deje fija esta dirección.",
+    "wiredAppOnly": "Para imprimir necesitás la app de HatchGrab.",
+    "summaryLead": "Imprimir <b>{lead} min</b> antes del retiro · papel de {paper} mm",
+    "modeLead": "Un tiempo fijo antes del retiro",
+    "leadLabel": "Minutos antes del horario de retiro",
+    "modeOnConfirmedHint": "Un pedido anticipado se imprime cuando lo aceptás, lo que puede ser horas antes del horario de retiro. Los pedidos que aún no aceptaste nunca se imprimen."
+  }
+}

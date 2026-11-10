@@ -1,0 +1,11 @@
+{
+  "error": {
+    "pngOrJpg": "Elegí un PNG o un JPG."
+  },
+  "setup": {
+    "firstTitle": "Configurá tu publicación de evento",
+    "firstBody": "Subí la imagen que usás para un evento suelto: tu diseño sin fecha, lugar ni hora. HatchGrab los añade en cada evento.",
+    "uploadYourPicture": "Subí tu imagen",
+    "noEvents": "Aún no hay eventos — agregá uno y la vista previa lo usará."
+  }
+}

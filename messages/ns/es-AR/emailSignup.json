@@ -1,0 +1,13 @@
+{
+  "verify": {
+    "subject": "Confirmá tu dirección de correo electrónico",
+    "next": "En cuanto esté confirmada, te enviaré todo lo que necesitás para empezar.",
+    "carryOn": "Mientras tanto, podés seguir con la configuración.",
+    "stuck": "¿Te atascaste con algo? Respondé a este correo: los contesto yo mismo.",
+    "fallbackLink": "Si el botón no funciona, pegá esto en el navegador: {url}"
+  },
+  "welcome": {
+    "setup": "Si aún no lo hiciste, la configuración es sencilla y lleva unos quince minutos.",
+    "stuck": "Si te atascás, respondé a este correo: los contesto yo mismo."
+  }
+}

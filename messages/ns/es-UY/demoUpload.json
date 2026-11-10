@@ -1,0 +1,25 @@
+{
+  "dialogLabel": "Subí tu menú",
+  "heading": "✨ Subí tu menú",
+  "intro": "Una foto de tu pizarrón, una captura de pantalla, un PDF, o pegalo como texto. Nuestra IA lo lee y te crea una página de pedidos que funciona, con tus productos y tus precios, en menos de 60 segundos. Sin registro y sin tarjeta.",
+  "sampleWhileYouWait": "O echale un vistazo a un menú de ejemplo mientras esperás",
+  "orSample": "O echale un vistazo a un menú de ejemplo",
+  "orBuild": "O lo creamos nosotros por vos",
+  "buildBody": "Dejanos tu correo y una persona de verdad va a cargar tu menú y te enviará el enlace.",
+  "emailPlaceholder": "tu@tufoodtruck.com.uy",
+  "noPhoto": "¿No tenés a mano una foto del menú?",
+  "noPhotoBody": "Echale un vistazo a un food truck de ejemplo: podés subir tu menú cuando quieras.",
+  "nothingPublished": "No se publica nada: solo lo ves vos.",
+  "error": {
+    "somethingWrong": "Algo ha salido mal. Volvé a intentarlo.",
+    "serverUnreachable": "No hemos podido conectar con el servidor. Comprobá tu conexión y volvé a intentarlo.",
+    "sendFailed": "No se ha podido enviar. Volvé a intentarlo."
+  },
+  "fields": {
+    "dropHere": "Soltá aquí tu menú",
+    "dragOrTap": "Arrastrá y soltá o tocá para elegir",
+    "pastePlaceholder": "Pegá aquí tu menú: nombres de los productos, descripciones, precios…"
+  },
+  "emailNote": "Te enviaremos por correo un enlace a tu demo y puede que nos pongamos en contacto con vos para configurar HatchGrab. <link>Política de privacidad</link>",
+  "emailInvalid": "Ingresá una dirección de correo válida."
+}

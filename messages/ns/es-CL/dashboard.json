@@ -1,0 +1,55 @@
+{
+  "toast": {
+    "intervalsSaved": "Horas de retiro guardadas para este evento",
+    "printMode": "{mode, select, onConfirmed {Las comandas se imprimirán al aceptar un pedido} other {Las comandas se imprimirán poco antes del retiro}}",
+    "layout": "{layout, select, scroll {La carta se muestra en una sola página} other {La carta se muestra por categorías}}",
+    "intervalsFailed": "No se han podido guardar las horas de retiro en este momento."
+  },
+  "demo": {
+    "endedBody": "Empieza uno nuevo y prepararemos un servicio a partir de este momento. Tu carta se queda como está."
+  },
+  "cancelReasons": {
+    "not_collected": "Pedido no retirado"
+  },
+  "cancelModal": {
+    "held": "El monto está <b>retenido, no cobrado</b> en su tarjeta: no se ha cobrado nada, así que no hay nada que reembolsar. Al cancelar, la retención se libera al momento."
+  },
+  "banner": {
+    "menuSnapshot": "Carta guardada en esta tableta a las {time}. Revisa los precios antes de cobrar.",
+    "offlinePaused": "La protección sin conexión está activada: los clientes pueden ver la carta, pero no pedir.",
+    "paused": "Pedidos en pausa{indefinite, select, yes {} other { (se reanudan en ~{mins} min)}} · Los clientes pueden ver la carta, pero no pedir"
+  },
+  "tabs": {
+    "stock": "Carta y stock"
+  },
+  "orders": {
+    "prepBannerBody": "Tu carta usa tiempos de preparación predeterminados. Actualízalos en Gestionar para que tu cocina no se sature de pedidos.",
+    "status": "{status, select, pending {Nuevo} confirmed {Confirmado} rejected {Rechazado} modified {Modificado} cancelled {Cancelado} cooking {En preparación} ready {Listo} collected {Retirado} other {{status}}}"
+  },
+  "addTab": {
+    "noMenuSaved": "Tu carta no está guardada en este dispositivo, así que no hay nada con qué crear un pedido."
+  },
+  "settings": {
+    "layoutTitle": "Diseño de la carta",
+    "layoutTabsHelp": "Muestra una categoría a la vez. Toca una categoría para cambiar. Ideal para cartas largas, donde cada producto se queda siempre en el mismo lugar.",
+    "layoutScrollHelp": "Muestra todos los productos en una lista con desplazamiento, con un encabezado por categoría. No hay botones de categoría: te desplazas para moverte. Ideal para cartas cortas, donde puedes ver casi todo de un vistazo.",
+    "intervalsTitle": "Horas de retiro",
+    "intervalsHelp": "Cuánto tiempo hay entre una hora de retiro y la siguiente. No cambia la capacidad de cocina ni los tiempos de preparación.",
+    "intervalsUnavailable": "Las horas de retiro no están disponibles ahora mismo.",
+    "customerTimes": "Horas de retiro de los clientes",
+    "yourTimes": "Tus horas de retiro"
+  },
+  "stock": {
+    "ownPriceTitle": "Precio propio de este evento: toca × para volver al precio del tipo o de la carta",
+    "loadingMenu": "Cargando la carta…"
+  },
+  "pause": {
+    "body": "Los clientes podrán seguir viendo la carta, pero no podrán pedir."
+  },
+  "edit": {
+    "extraToCollect": "Monto extra a cobrar",
+    "collectionTime": "Hora de retiro",
+    "repriceTitle": "No está en la carta",
+    "repriceBody": "Estos productos son nuevos en este pedido y no están en la carta, así que no se pudo comprobar el precio. Todo lo que ya estaba en el pedido mantiene su precio original. Todavía no se ha guardado nada."
+  }
+}

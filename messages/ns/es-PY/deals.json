@@ -1,0 +1,8 @@
+{
+  "save": "Ahorrá {amount}",
+  "selectItems": "Elegí los productos de cada apartado",
+  "choose": "Elegí: {category}…",
+  "ruleHint": "· {rule, select, requiredOne {Obligatorio · elegí uno} required {Obligatorio} other {Elegí uno}}{unmet, select, yes { (obligatorio)} other {}}",
+  "notePlaceholder": "Agregá una nota, p. ej., sin cebolla (opcional)",
+  "chooseRequired": "Elegí las opciones obligatorias"
+}

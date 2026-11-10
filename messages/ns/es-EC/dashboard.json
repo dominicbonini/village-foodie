@@ -1,0 +1,26 @@
+{
+  "toast": {
+    "intervalsSaved": "Horas de retiro guardadas para este evento",
+    "printMode": "{mode, select, onConfirmed {Las comandas se imprimirán al aceptar un pedido} other {Las comandas se imprimirán poco antes del retiro}}",
+    "intervalsFailed": "No se han podido guardar las horas de retiro en este momento."
+  },
+  "cancelReasons": {
+    "not_collected": "Pedido no retirado"
+  },
+  "orders": {
+    "status": "{status, select, pending {Nuevo} confirmed {Confirmado} rejected {Rechazado} modified {Modificado} cancelled {Cancelado} cooking {En preparación} ready {Listo} collected {Retirado} other {{status}}}"
+  },
+  "settings": {
+    "intervalsTitle": "Horas de retiro",
+    "intervalsHelp": "Cuánto tiempo hay entre una hora de retiro y la siguiente. No cambia la capacidad de cocina ni los tiempos de preparación.",
+    "intervalsUnavailable": "Las horas de retiro no están disponibles ahora mismo.",
+    "customerTimes": "Horas de retiro de los clientes",
+    "yourTimes": "Tus horas de retiro"
+  },
+  "stock": {
+    "howCategory": "El <b>total de la categoría</b> es una reserva compartida entre todos los productos de esa categoría (p. ej. 30 entradas esta noche)."
+  },
+  "edit": {
+    "collectionTime": "Hora de retiro"
+  }
+}

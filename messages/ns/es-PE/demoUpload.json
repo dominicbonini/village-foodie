@@ -1,0 +1,27 @@
+{
+  "steps": {
+    "reading": "Leyendo tu carta…"
+  },
+  "templateSteps": {
+    "menu": "Configurando la carta…"
+  },
+  "dialogLabel": "Sube tu carta",
+  "heading": "✨ Sube tu carta",
+  "failedHeading": "No pudimos leer esa carta",
+  "intro": "Una foto de tu pizarra, una captura de pantalla, un PDF, o pégalo como texto. Nuestra IA lo lee y te crea una página de pedidos que funciona, con tus productos y tus precios, en menos de 60 segundos. Sin registro y sin tarjeta.",
+  "slow": "Está tardando más de lo normal; a veces pasa con cartas grandes.",
+  "sampleWhileYouWait": "O échale un vistazo a una carta de ejemplo mientras esperas",
+  "standIn": "Esta <b>no será tu carta</b>: es un ejemplo para que veas cómo funciona.",
+  "seeSample": "Ver carta de ejemplo",
+  "orSample": "O échale un vistazo a una carta de ejemplo",
+  "buildBody": "Déjanos tu correo y una persona de verdad va a ingresar tu carta y te enviará el enlace.",
+  "emailPlaceholder": "tu@tufoodtruck.pe",
+  "noPhoto": "¿No tienes a mano una foto de la carta?",
+  "noPhotoBody": "Échale un vistazo a un food truck de ejemplo: puedes subir tu carta cuando quieras.",
+  "fields": {
+    "uploadLabel": "Subir archivo de la carta",
+    "dropHere": "Suelta aquí tu carta",
+    "pasteLabel": "Pegar el texto de la carta",
+    "pastePlaceholder": "Pega aquí tu carta: nombres de los productos, descripciones, precios…"
+  }
+}

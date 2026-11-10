@@ -1,0 +1,4 @@
+{
+  "pickup": "Recojo",
+  "cutoffNote": "{n, plural, one {Se aceptan cancelaciones hasta {count} minuto antes del recojo} other {Se aceptan cancelaciones hasta {count} minutos antes del recojo}}"
+}

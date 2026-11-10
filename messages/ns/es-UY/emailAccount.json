@@ -1,0 +1,25 @@
+{
+  "newEmail": {
+    "subject": "Verificá tu nueva dirección de correo de HatchGrab",
+    "heading": "Verificá tu dirección de correo"
+  },
+  "changeEmail": {
+    "requested": "Solicitaste cambiar tu dirección de correo de HatchGrab a esta dirección.",
+    "click": "Hacé clic en el botón de abajo para verificarla. Este enlace vence en 24 horas.",
+    "ignore": "Si no solicitaste este cambio, podés ignorar este correo sin problema."
+  },
+  "resendVerification": {
+    "requested": "Solicitaste cambiar tu correo de HatchGrab a esta dirección.",
+    "click": "Hacé clic abajo para verificarla. Este enlace vence en 24 horas.",
+    "ignore": "Si no lo solicitaste, ignorá este correo."
+  },
+  "passwordReset": {
+    "subject": "Restablecé tu contraseña de HatchGrab",
+    "heading": "Restablecé tu contraseña",
+    "click": "Hacé clic en el botón de abajo para elegir una contraseña nueva. Este enlace vence en 1 hora.",
+    "ignore": "Si no lo solicitaste, podés ignorar este correo sin problema."
+  },
+  "deletionScheduled": {
+    "cannotCancel": "<b>Esto no se puede cancelar desde la app.</b> Si no fuiste vos, o\n    cambiaste de opinión, respondé a este correo lo antes posible."
+  }
+}

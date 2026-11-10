@@ -1,0 +1,19 @@
+{
+  "placeSample": {
+    "nameTownBelow": "Bar La Plaza\nJarabacoa",
+    "nameTown": "Bar La Plaza, Jarabacoa"
+  },
+  "busyWeek": {
+    "venue1": "Casa de la Cultura de Jarabacoa",
+    "town1": "Jarabacoa",
+    "venue2": "Complejo Deportivo Municipal y Play de Béisbol de San Cristóbal",
+    "town2": "San Cristóbal",
+    "venue3": "Parque Duarte",
+    "town3": "Santiago",
+    "town4": "Puerto Plata",
+    "venue5": "Terraza El Malecón",
+    "town5": "La Romana",
+    "venue6": "Parque Central",
+    "town6": "Higüey"
+  }
+}

@@ -1,0 +1,6 @@
+{
+  "walkUp": {
+    "ownTerminal": "Tu propio datáfono",
+    "hatchgrabHelp": "Usa la misma conexión de Stripe que tus pagos online: un datáfono, o pago sin contacto directamente en tu celular o tablet."
+  }
+}

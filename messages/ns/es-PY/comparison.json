@@ -1,0 +1,93 @@
+{
+  "meta": {
+    "description": "Sistemas de pedidos para food trucks: horario de retiro, capacidad de cocina, agenda, comisiones y permanencia, revisados en la web de cada proveedor."
+  },
+  "table": {
+    "swipe": "Deslizá en horizontal para ver todos los productos →"
+  },
+  "costs": {
+    "vat": "HatchGrab Ltd es una empresa del Reino Unido y no está registrada a efectos del IVA en {country}, así que no añadimos IVA a nuestras tarifas. Si estás registrado a efectos del IVA, danos tu número de IVA; en ese caso sos vos quien declara el IVA que corresponda sobre nuestras tarifas, por inversión del sujeto pasivo."
+  },
+  "fit": {
+    "ours": "HatchGrab encaja con vos si…",
+    "oursBody": "vendés en ubicaciones que cambian, querés pedidos anticipados con horario de retiro, no querés que tu cocina se sature y no querés plazos forzosos.",
+    "oursNot": "HatchGrab no encaja con vos si…",
+    "oursNotBody": "tus clientes tienen que poder pagar con PayPal o Klarna, o querés un sistema de caja certificado según la normativa fiscal, todo de un mismo proveedor.",
+    "appClause": "O si necesitás la app de cocina en iPad o Android en {country}: allí todavía no está en las tiendas de apps.",
+    "tills": "Sistemas de caja y POS",
+    "tillsBody": "Los sistemas de caja cobran en el food truck y cumplen los requisitos fiscales de una caja certificada. Un sistema de pedidos funciona junto a un sistema de caja; no lo sustituye.",
+    "tillsBodyNamed": "Los sistemas de caja cobran en el food truck y cumplen los requisitos fiscales de una caja certificada. {names} también {count, plural, one {aparece} many {aparecen} other {aparecen}} en la tabla de arriba. Un sistema de pedidos funciona junto a un sistema de caja; no lo sustituye.",
+    "marketplacesBody": "Las plataformas de entrega a domicilio traen clientes nuevos, pero se quedan con una comisión de cada pedido. Uber Eats indica un 14 % para retirar y un 30 % para entrega con repartidores de Uber en Alemania. Wolt dice en su propio sitio web que cobra comisión, pero no da las tarifas. No pudimos comprobar las tarifas de Lieferando. Esa comisión también se aplica a los clientes frecuentes que te hacen pedidos anticipados."
+  },
+  "groups": {
+    "pos": "Sistema de caja"
+  },
+  "faq": {
+    "whatA": "Un sistema de pedidos recibe pedidos online antes de que los clientes lleguen al food truck: eligen los platos y un horario de retiro, pagan online o al retirar, y el pedido aparece en tu cocina. Un sistema de caja o un POS cobra en el food truck. Las dos cosas se complementan.",
+    "termA": "No. No hay plazo forzoso ni periodo de aviso previo. Podés cancelar cuando quieras; la cuota se cobra por mes y por adelantado, y mantenés el acceso hasta el final del mes que pagaste.",
+    "locationsA": "Sí. Configurás tu agenda semanal con lugares y horarios, y los clientes piden para el lugar y el día en que estás allí.",
+    "capacityA": "Los clientes solo ven los horarios de retiro que tu cocina realmente puede cumplir. El sistema toma en cuenta el tiempo de preparación de cada plato y cuántos preparás a la vez.",
+    "tseQ": "¿Sigo necesitando un sistema de caja certificado?",
+    "tseA": "HatchGrab no es un sistema de caja y no está certificado según la normativa fiscal para cajas. Cómo registrar los pedidos online en tu sistema de caja es algo que debés consultar con tu contador."
+  },
+  "method": {
+    "corrections": "¿Encontraste un error? Avisanos en nuestro <link>formulario de contacto</link>."
+  },
+  "cta": {
+    "title": "Probá gratis {months, plural, one {# mes} many {# de meses} other {# meses}}",
+    "cancel": "Cancelá mes a mes",
+    "button": "Probalo gratis"
+  },
+  "costBlock": {
+    "footOrder": "Pedido promedio de {order}: una comida típica de {meal} × {multiplier} platos por pedido ({source}).",
+    "footCalculator": "Calculá tus propias cifras con la calculadora."
+  },
+  "features": {
+    "preorder": {
+      "label": "Pedidos anticipados con horario de retiro a elegir",
+      "explain": "Los clientes piden por adelantado y eligen a qué hora retiran."
+    },
+    "capacity": {
+      "label": "Horarios de retiro según la capacidad de cocina",
+      "explain": "Los clientes solo ven los horarios de retiro que la cocina realmente puede cumplir."
+    },
+    "asap": {
+      "explain": "Los clientes pueden pedir sin elegir hora y retirar en cuanto esté listo."
+    },
+    "stock": {
+      "explain": "Marca platos como agotados y fija cuántas unidades de cada uno se pueden vender en un evento."
+    },
+    "allergens": {
+      "explain": "Cada plato muestra sus alérgenos a los clientes antes de que pidan."
+    },
+    "menuphoto": {
+      "explain": "Una foto o un PDF del menú llena los platos para que vos los revises."
+    },
+    "options": {
+      "label": "Opciones y extras en los platos"
+    },
+    "private": {
+      "label": "Eventos privados y alquiler",
+      "explain": "Pedidos para un evento privado con su propio enlace, y solicitudes para alquilar el food truck.",
+      "ours": "eventos privados con su propio enlace de pedidos; sin solicitudes de alquiler"
+    },
+    "payattruck": {
+      "label": "Pago al retirar",
+      "explain": "Los clientes piden online y pagan al retirar."
+    },
+    "hardware": {
+      "ours": "usás tus propios dispositivos"
+    },
+    "terminal": {
+      "label": "POS para la ventanilla incluido",
+      "explain": "El proveedor da un POS para cobrar en el food truck."
+    },
+    "fiscal": {
+      "label": "Sistema de caja certificado según la normativa fiscal (TSE, EET, kassaregister…)",
+      "explain": "Un sistema de caja certificado según las normas del país sobre el registro de ventas."
+    },
+    "delivery": {
+      "ours": "solo para retirar"
+    }
+  }
+}

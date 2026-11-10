@@ -1,0 +1,18 @@
+{
+  "sold_out_paying": "Mientras pagabas se {count, plural, one {ha agotado} other {han agotado}}: {names}. {count, plural, one {Lo hemos quitado} other {Los hemos quitado}} de tu pedido y no te hemos cobrado nada — revisá tu pedido antes de volver a hacerlo.",
+  "sold_out_ordering": "Mientras pedías se {count, plural, one {ha agotado} other {han agotado}}: {names}. {count, plural, one {Lo hemos quitado} other {Los hemos quitado}} de tu pedido — revisalo antes de volver a hacerlo.",
+  "menu_changed": "El menú cambió — revisá tu pedido antes de hacerlo.",
+  "menu_changed_item": "El menú cambió — {item} ya no está disponible. Revisá tu pedido antes de hacerlo.",
+  "menu_changed_option": "El menú cambió — {option} (de {item}) ya no está disponible. Revisá tu pedido antes de hacerlo.",
+  "private_link_only": "Este evento solo acepta pedidos a través de un enlace privado. Usá el enlace o el código QR del organizador.",
+  "preorder_not_open": "Los pedidos anticipados para este evento aún no están abiertos — volvé cuando se abran.",
+  "tip_invalid": "Esa opción de propina no está disponible — volvé a elegir.",
+  "too_many_options": "{max, plural, one {Elegí como máximo {count} opción para {withGroup, select, yes {{group}} other {tus elecciones}} ({item}).} other {Elegí como máximo {count} opciones para {withGroup, select, yes {{group}} other {tus elecciones}} ({item}).}}",
+  "choose_group": "Elegí {group} para {item}.",
+  "choose_option": "Elegí una opción para {item}.",
+  "card_unavailable": "Ahora mismo no pudimos preparar el pago con tarjeta, así que tu pedido no se realizó y no se te cobró nada. Tu carrito está guardado — volvé a intentarlo o elegí Pagá al retirar.",
+  "busy_retry": "Estamos gestionando muchos pedidos en este momento — volvé a intentarlo",
+  "try_again": "Algo ha fallado. Volvé a intentarlo.",
+  "cancel_window_passed": "{n, plural, one {Los pedidos ya no se pueden cancelar a menos de {count} minuto del retiro} other {Los pedidos ya no se pueden cancelar a menos de {count} minutos del retiro}}",
+  "pay_at_hatch_unavailable": "Ahora mismo este food truck no acepta pedidos online con Pago al retirar. Pagá con tarjeta."
+}

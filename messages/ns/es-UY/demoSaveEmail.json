@@ -1,0 +1,5 @@
+{
+  "subject": "Tu demo de HatchGrab: aquí tenés tu enlace para volver",
+  "intro": "Aquí tenés tu enlace para volver a la demo con tu menú. No hace falta iniciar sesión: solo tocalo.",
+  "deletion": "Es una demo, así que no la guardamos para siempre: la borraremos junto con el menú el <b>{date}</b> ({days, plural, one {# día} many {# días} other {# días}}). Si te registrás antes de esa fecha, tu menú se va con vos."
+}

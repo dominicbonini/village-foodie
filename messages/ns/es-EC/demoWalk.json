@@ -1,0 +1,9 @@
+{
+  "paymentPanel": "Aquí tu cliente paga con tarjeta, Apple Pay o Google Pay, o elige pagar al retirar. En la demo no se cobra nada.",
+  "bubbleArrived": "El pedido que acabas de hacer llegó aquí al instante, con la hora de retiro. Toca Cocinar.",
+  "thatsIt": "Eso es HatchGrab: tus clientes piden desde el celular, tú lo ves aquí y ellos retiran su pedido sin hacer fila. Tu menú ya está configurado.",
+  "readyForCollection": "Listo para retirar",
+  "collectAt": "Retirar a las {time}",
+  "collectAsap": "Retirar cuanto antes",
+  "phoneReadyBody": "Retíralo en el food truck."
+}

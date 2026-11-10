@@ -1,0 +1,15 @@
+{
+  "plan": {
+    "ended": "Tu plan {plan} terminó el {date}. Ahora tenés el plan {now}."
+  },
+  "onTrial": "Tenés todas las funciones. Elegí un plan antes de que termine tu prueba.",
+  "onTrialPaidEnd": "Tenés todas las funciones. Cuando termine tu prueba, el plan {plan} costará {price} al mes. Antes de esa fecha nos pondremos en contacto con vos para configurar el pago.",
+  "onTrialNoCta": "Tenés todas las funciones.",
+  "noCharge": "🔒 No se te cobrará nada durante tu prueba, que dura hasta el {date}. La facturación solo empieza cuando elegís un plan e ingresás tus datos de pago. Hasta entonces, no hay nada que cancelar ni nada que pagar.",
+  "setUpPayment": "⏱ Elegí un plan antes de que termine tu prueba",
+  "changeYourPlan": "Cambiá tu plan",
+  "upgradeModal": {
+    "body": "Estamos preparando la facturación automática. Para cambiar ahora, escribinos y lo dejaremos todo listo en menos de 24 horas.",
+    "email": "Escribinos para cambiar"
+  }
+}

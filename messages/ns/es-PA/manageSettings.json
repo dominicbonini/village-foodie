@@ -1,0 +1,19 @@
+{
+  "details": {
+    "websitePlaceholder": "https://tufoodtruck.com.pa"
+  },
+  "contact": {
+    "emailPlaceholder": "hola@tufoodtruck.com.pa",
+    "emailError": "Ingresa un correo válido (p. ej., hola@tufoodtruck.com.pa)"
+  },
+  "orders": {
+    "openCloseHelp": "Cuándo empiezan y dejan de aceptar pedidos en línea tus eventos.",
+    "autoOpenHelp": "Los eventos abren los pedidos en línea a la hora de inicio del evento"
+  },
+  "schedule": {
+    "urlPlaceholder": "https://tufoodtruck.com.pa/eventos"
+  },
+  "qr": {
+    "printHelp": "Imprime o muestra este código para que los clientes lo escaneen y hagan su pedido anticipado. Ponlo en la ventanilla, en tu food truck o compártelo en línea."
+  }
+}

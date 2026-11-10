@@ -1,0 +1,5 @@
+{
+  "check": {
+    "coverHint": "Opcional. El monto que cubre la póliza."
+  }
+}

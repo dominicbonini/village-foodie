@@ -1,0 +1,11 @@
+{
+  "intro": "En Gestión configurás tu food truck y ves cómo va. En el Panel recibís pedidos y llevás cada evento en directo.",
+  "stops": {
+    "schedule": {
+      "body": "Dónde y cuándo vendés. Agregá aquí un evento y los clientes podrán hacer pedidos para él."
+    },
+    "build": {
+      "body": "Los combos, las ventas sugeridas, las personalizaciones y tu capacidad de cocina están en Menú: echale un vistazo."
+    }
+  }
+}

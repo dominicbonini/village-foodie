@@ -1,0 +1,10 @@
+{
+  "row": {
+    "online_payments": {
+      "name": "Pagos en línea"
+    },
+    "auto_accept": {
+      "name": "Aceptación automática de pedidos en línea"
+    }
+  }
+}

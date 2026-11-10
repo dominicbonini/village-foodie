@@ -1,0 +1,18 @@
+{
+  "details": {
+    "websitePlaceholder": "https://tufoodtruck.ec"
+  },
+  "contact": {
+    "emailPlaceholder": "hola@tufoodtruck.ec",
+    "emailError": "Ingresa un correo válido (p. ej., hola@tufoodtruck.ec)"
+  },
+  "collection": {
+    "help": "Cuánto separan unas horas de retiro de otras. Esto no cambia la capacidad de cocina ni los tiempos de preparación.",
+    "unavailable": "Las horas de retiro no están disponibles en este momento.",
+    "customerTimes": "Horas de retiro para clientes",
+    "yourTimes": "Tus horas de retiro"
+  },
+  "schedule": {
+    "urlPlaceholder": "https://tufoodtruck.ec/eventos"
+  }
+}

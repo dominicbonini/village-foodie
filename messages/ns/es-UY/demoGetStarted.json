@@ -1,0 +1,40 @@
+{
+  "upload": {
+    "heading": "Configurá tu food truck",
+    "privacy": "Solo usaremos estos datos para configurar tu food truck y enviarte el enlace a tu demo. Consultá nuestra <link>política de privacidad</link>."
+  },
+  "sample": {
+    "heading": "Configurá tu food truck",
+    "privacy": "Solo usaremos estos datos para configurar tu food truck y enviarte el enlace a tu demo. Consultá nuestra <link>política de privacidad</link>."
+  },
+  "saveOnly": {
+    "heading": "Guardá tu demo",
+    "privacy": "Solo usaremos estos datos para enviarte el enlace a tu demo. Consultá nuestra <link>política de privacidad</link>."
+  },
+  "detailsStepHeading": "Terminá la configuración",
+  "confirmKeepUntil": "La guardaremos hasta el <b>{date}</b>. Tu menú se va con vos cuando hagas la configuración completa.",
+  "lastName": "Apellido",
+  "stageState": {
+    "recognised": "ya tenés una cuenta"
+  },
+  "emailPlaceholder": "tu@tufoodtruck.com.uy",
+  "promoLabel": "¿Tenés un código? <opt>(opcional)</opt>",
+  "promoPlaceholder": "Escribilo aquí",
+  "freeMonth": "{months, plural, =0 {Tu prueba gratuita empieza cuando creás tu cuenta.} one {Tu primer mes es gratis, desde que creás tu cuenta.} many {Tus primeros # de meses son gratis, desde que creás tu cuenta.} other {Tus primeros # meses son gratis, desde que creás tu cuenta.}}",
+  "fieldError": {
+    "firstName": "Decinos tu nombre.",
+    "lastName": "Y tu apellido.",
+    "truck": "Ponele un nombre a tu food truck.",
+    "cuisine": "Decinos qué cocinás.",
+    "phoneMissing": "Agregá un número de teléfono: tanto los clientes como nosotros lo usamos para contactarte.",
+    "email": "Ingresá una dirección de correo válida.",
+    "terms": "Aceptá los términos para continuar."
+  },
+  "error": {
+    "saveFailed": "No se ha podido guardar. Volvé a intentarlo.",
+    "unreachable": "No hemos podido conectar ahora mismo. Volvé a intentarlo.",
+    "truckCreateFailed": "Tu cuenta está lista, pero no hemos podido crear tu food truck. Volvé a intentarlo.",
+    "truckUnreachable": "Tu cuenta está lista, pero no hemos podido crear tu food truck ahora mismo. Volvé a intentarlo.",
+    "truckNoToken": "Tu food truck está configurado, pero no hemos podido abrirlo ahora mismo. Volvé a intentarlo."
+  }
+}

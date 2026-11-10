@@ -1,0 +1,16 @@
+{
+  "taxNotice": "Los precios de la carta no incluyen {tax}. Se añade abajo.",
+  "tipAmount": "Monto de la propina",
+  "menuChangedFallback": "La carta cambió. Revisa tu pedido antes de hacerlo.",
+  "loadingMenu": "Cargando la carta…",
+  "closedDemo": "Este servicio de demostración terminó: se acabó el horario del evento, exactamente como pasaría con uno real. Vuelve a abrir tu panel de demostración y elige “Empezar un nuevo servicio” para preparar otro. Tu carta se queda como está.",
+  "menu": "Carta",
+  "cardHeldUntil": "El monto queda retenido en tu tarjeta, sin cobrarse, hasta que {withTruck, select, yes {{truck}} other {el food truck}} confirme tu pedido.",
+  "collectionTimeTitle": "Hora de recojo",
+  "collectionTimeChosen": "✓ Hora de recojo: {time}",
+  "addItemsPrompt": "Añade productos de la carta para hacer un pedido",
+  "allergensUsed": "Alérgenos presentes en esta carta",
+  "collectionTime": "Hora de recojo: {time}",
+  "preferredCollection": "Recojo preferido: {time}",
+  "willConfirmTime": "{truck} confirmará tu hora de recojo cuando acepte tu pedido."
+}

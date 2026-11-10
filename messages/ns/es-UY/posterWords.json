@@ -1,0 +1,19 @@
+{
+  "placeSample": {
+    "nameTownBelow": "Bar La Plaza\nCiudad Vieja",
+    "nameTown": "Bar La Plaza, Ciudad Vieja"
+  },
+  "busyWeek": {
+    "venue1": "Plaza Gomensoro",
+    "town1": "Pocitos",
+    "venue2": "Polideportivo Municipal y Cancha de Fútbol del Barrio Cerro Pelado de Maldonado",
+    "town2": "Maldonado",
+    "venue3": "Plaza Artigas",
+    "town3": "Salto",
+    "town4": "Punta del Este",
+    "venue5": "Parador El Arco",
+    "town5": "Colonia del Sacramento",
+    "venue6": "Plaza Constitución",
+    "town6": "Paysandú"
+  }
+}

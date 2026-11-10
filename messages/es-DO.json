@@ -1,0 +1,163 @@
+{
+  "dashboard": {
+    "stock": {
+      "howCategory": "El <b>total de la categoría</b> es una reserva compartida entre todos los productos de esa categoría (p. ej. 30 entradas esta noche)."
+    }
+  },
+  "kitchenModals": {
+    "actions": {
+      "notePlaceholder": "p. ej., Parquéate en el parqueo principal y busca la carpa naranja"
+    }
+  },
+  "auth": {
+    "signup": {
+      "emailPlaceholder": "tu@tufoodtruck.com.do"
+    }
+  },
+  "demoGetStarted": {
+    "emailPlaceholder": "tu@tufoodtruck.com.do"
+  },
+  "demoUpload": {
+    "emailPlaceholder": "tu@tufoodtruck.com.do"
+  },
+  "provisionContent": {
+    "standardCategories": {
+      "starters": "Entradas",
+      "mains": "Platos fuertes",
+      "wrapsSandwiches": "Wraps y sándwiches"
+    }
+  },
+  "eventTypes": {
+    "newType": {
+      "chips": {
+        "privateHire": "Alquiler de food truck"
+      }
+    }
+  },
+  "manageMenuImport": {
+    "schedule": {
+      "urlPlaceholder": "https://tufoodtruck.com.do/eventos"
+    }
+  },
+  "manageScheduleEvent": {
+    "notesPlaceholder": "p. ej., Parquéate en el parqueo principal"
+  },
+  "manageScheduleVerify": {
+    "malformed": "Eso no parece una dirección web. Prueba algo como tufoodtruck.com.do/eventos"
+  },
+  "manageSettings": {
+    "details": {
+      "websitePlaceholder": "https://tufoodtruck.com.do"
+    },
+    "contact": {
+      "emailPlaceholder": "hola@tufoodtruck.com.do",
+      "emailError": "Ingresa un correo válido (p. ej., hola@tufoodtruck.com.do)"
+    },
+    "schedule": {
+      "urlPlaceholder": "https://tufoodtruck.com.do/eventos"
+    }
+  },
+  "socialPosts": {
+    "socialTagPlaceholder": "@festivalzonacolonial"
+  },
+  "designEditor": {
+    "sample": {
+      "area": "Zona Colonial"
+    }
+  },
+  "manageTeam": {
+    "phonePlaceholder": "+1 809 555 1234"
+  },
+  "customDomain": {
+    "card": {
+      "exampleDomain": "tufoodtruck.com.do"
+    }
+  },
+  "posterWords": {
+    "placeSample": {
+      "nameTownBelow": "Bar La Plaza\nJarabacoa",
+      "nameTown": "Bar La Plaza, Jarabacoa"
+    },
+    "busyWeek": {
+      "venue1": "Casa de la Cultura de Jarabacoa",
+      "town1": "Jarabacoa",
+      "venue2": "Complejo Deportivo Municipal y Play de Béisbol de San Cristóbal",
+      "town2": "San Cristóbal",
+      "venue3": "Parque Duarte",
+      "town3": "Santiago",
+      "town4": "Puerto Plata",
+      "venue5": "Terraza El Malecón",
+      "town5": "La Romana",
+      "venue6": "Parque Central",
+      "town6": "Higüey"
+    }
+  },
+  "landing": {
+    "jsonLd": {
+      "subCategory": "Sistema de pedidos en línea para food trucks y catering móvil",
+      "description": "Pedidos, pedidos anticipados y pantalla de cocina (KDS) para food trucks y catering móvil en {country}.",
+      "audience": "Dueños de food trucks y negocios de catering móvil"
+    },
+    "hero": {
+      "title": "El sistema de pedidos pensado para <lean>food trucks.</lean>"
+    },
+    "faq": {
+      "metaDescription": "Respuestas claras para dueños de food trucks sobre los precios de HatchGrab, cómo empezar, cómo recibir pedidos en línea y los pagos."
+    },
+    "meta": {
+      "title": "Sistema de pedidos para food trucks — HatchGrab {country}",
+      "description": "Sistema de pedidos para food trucks en {country}: pedidos anticipados con hora para recoger y pantalla de cocina, sin filas. No es un sistema de caja."
+    }
+  },
+  "aboutPage": {
+    "meta": {
+      "description": "HatchGrab crea software para food trucks y catering móvil: pedidos en línea, horas para recoger y menos preguntas repetidas. Fundado por Dominic Bonini."
+    }
+  },
+  "siteFooter": {
+    "hire": "Alquilar un food truck"
+  },
+  "truckPage": {
+    "meta": {
+      "orderDescription": "Haz tu pedido anticipado a {truck} y pasa a recogerlo al food truck."
+    }
+  },
+  "pricing": {
+    "fee": {
+      "noFee": "<b>Sin comisiones de HatchGrab</b> en los pedidos online, por mucho trabajo que tengas. Un costo mensual fijo y previsible."
+    }
+  },
+  "compare": {
+    "eyebrow": "Comparativa de costos",
+    "title": "Compara tus costos<br></br><accent>de pedidos online</accent>",
+    "meta": {
+      "title": "Calculadora de costos — HatchGrab {country}",
+      "description": "Compara lo que te cuestan hoy tus pedidos en línea y las comisiones de las apps de delivery con un año en HatchGrab: un cálculo en un minuto."
+    }
+  },
+  "comparison": {
+    "meta": {
+      "description": "Sistemas de pedidos para food trucks: hora para recoger, capacidad de cocina, agenda, comisiones y plazos, revisados en el sitio de cada proveedor.",
+      "about": "Sistemas de pedidos en línea para food trucks"
+    },
+    "faq": {
+      "termQ": "¿Hay un plazo mínimo de contrato?",
+      "termA": "No. No hay plazo mínimo de contrato ni periodo de aviso previo. Puedes cancelar cuando quieras; la cuota se cobra por mes y por adelantado, y mantienes el acceso hasta el final del mes que pagaste."
+    },
+    "features": {
+      "private": {
+        "label": "Eventos privados y alquiler",
+        "explain": "Pedidos para un evento privado con su propio enlace, y solicitudes para alquilar el food truck.",
+        "ours": "eventos privados con su propio enlace de pedidos; sin solicitudes de alquiler"
+      },
+      "term": {
+        "label": "Plazo mínimo de contrato"
+      }
+    }
+  },
+  "comparisonSuits": {
+    "price": {
+      "lead": "Con {orders, number} pedidos online al mes, {names} {count, plural, one {tiene} other {tienen}} el costo mensual de software más bajo entre los productos comparados: {amount} al mes{count, plural, one {} other { cada uno}}."
+    }
+  }
+}

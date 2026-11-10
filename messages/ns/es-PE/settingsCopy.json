@@ -1,0 +1,8 @@
+{
+  "allowCancellation": {
+    "sentence": "Los clientes pueden cancelar hasta <select></select> antes de su hora de recojo"
+  },
+  "buzzers": {
+    "label": "¿Das avisadores para el recojo?"
+  }
+}

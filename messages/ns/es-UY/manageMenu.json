@@ -1,0 +1,50 @@
+{
+  "toast": {
+    "subcatNotEmpty": "Primero mové o eliminá {count, plural, one {# producto} other {# productos}} de la subcategoría",
+    "enterPrice": "Ingresá un precio",
+    "chooseCategory": "Elegí una categoría"
+  },
+  "hiddenNotice": {
+    "body": "{count, plural, one {No aparecerá en tu página de pedidos hasta que se confirmen sus alérgenos: mostrar un plato con la información de alérgenos sin revisar se interpretaría como “sin alérgenos”. Aquí sí podés verlo.} other {No aparecerán en tu página de pedidos hasta que se confirmen sus alérgenos: mostrar un plato con la información de alérgenos sin revisar se interpretaría como “sin alérgenos”. Aquí sí podés verlos.}} <link>Confirmar alérgenos →</link>"
+  },
+  "empty": {
+    "title": "Creá tu menú en segundos",
+    "body": "Sacá una foto del pizarrón de tu menú, una captura de tu menú actual o arrastrá un PDF: nuestra IA extraerá todo y creará tu menú digital automáticamente.",
+    "manual": "o agregá categorías manualmente",
+    "note": "Funciona con fotos, capturas de pantalla, PDF y texto sin formato. Podés revisarlo y editarlo todo antes de guardarlo."
+  },
+  "category": {
+    "dragToReorder": "Arrastrá para reordenar",
+    "photoTitle": "Tocá o soltá una foto",
+    "prepHelp": "Elegí Instantáneo para productos como bebidas o salsas. No contarán para los pedidos máximos por franja."
+  },
+  "uncategorized": {
+    "body": "⚠ Sin categoría asignada: elegí una (✏️) para que cada uno aparezca en su sección. Mientras tanto, siguen visibles en las pantallas de pedidos."
+  },
+  "allergens": {
+    "buildFirst": "Primero creá tu menú: agregá platos y luego configurá sus alérgenos",
+    "cardNotAllowed": "Donde vende tu food truck no se puede usar solo una tabla de alérgenos, así que los clientes ven los alérgenos de cada plato. Confirmá los alérgenos de cada plato.",
+    "addCard": "agregá una tabla de alérgenos para que los clientes vean la información de alérgenos",
+    "uploadIntro": "Subí tu tabla de alérgenos o pegá tu información de alérgenos. Nuestra IA la extraerá y la ordenará con claridad para los clientes.",
+    "dropHere": "Soltá aquí tu tabla de alérgenos",
+    "dragOrTap": "Arrastrá y soltá o tocá para subir",
+    "orTypePaste": "o escribí / pegá",
+    "pastePlaceholder": "Pegá aquí tu información de alérgenos…"
+  },
+  "subcats": {
+    "tapToRename": "Tocá para renombrar"
+  },
+  "item": {
+    "createHint": "Completá los datos y luego agregá el producto.",
+    "selectCategory": "Seleccioná una categoría…",
+    "subcatHelp": "Agrupa este producto bajo un encabezado dentro de su categoría en las pantallas de pedidos (p. ej., Carnívoras, Vegetarianas). Dejalo vacío si no querés ninguno.",
+    "optionsHelp": "Marcá un grupo para ofrecerlo en este plato y luego elegí qué opciones mostrar.",
+    "optionOffered": "Disponible: tocá para ocultarla en este plato",
+    "optionHidden": "Oculta: tocá para ofrecerla en este plato",
+    "allergenGateTitle": "Configurá los alérgenos de este plato en la revisión de alérgenos.",
+    "allergenGateBody": "Abrí el recuadro “Configurar / revisar alérgenos” en la pestaña Menú: el asistente te guía para confirmar cada plato.",
+    "selectAll": "Seleccioná todos los que correspondan",
+    "preorderHelp": "Incluí este producto en los pedidos anticipados. El horario y las reglas se configuran de forma general en Ajustes → Pedidos anticipados.",
+    "noGroups": "Aún no hay grupos de opciones: crealos en Extras y ventas sugeridas."
+  }
+}

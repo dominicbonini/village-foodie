@@ -1,0 +1,8 @@
+{
+  "disableConfirm": "¿Desactivar la protección sin conexión para este evento?\n\nSi este dispositivo pierde la conexión, los pedidos en línea seguirán llegando: los clientes podrían hacer pedidos que no ves. Desactívala solo si tienes una conexión fiable.",
+  "modes": {
+    "pause": {
+      "label": "Pausar los pedidos en línea"
+    }
+  }
+}

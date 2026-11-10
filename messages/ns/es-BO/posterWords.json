@@ -1,0 +1,20 @@
+{
+  "placeSample": {
+    "nameTownBelow": "Bar La Plaza\nSamaipata",
+    "nameTown": "Bar La Plaza, Samaipata"
+  },
+  "busyWeek": {
+    "venue1": "Casa de la Cultura de Samaipata",
+    "town1": "Samaipata",
+    "venue2": "Complejo Deportivo y Estadio Municipal de Quillacollo",
+    "town2": "Quillacollo",
+    "venue3": "Plaza Principal",
+    "town3": "Sucre",
+    "venue4": "Feria Gastronómica",
+    "town4": "Cochabamba",
+    "venue5": "Peña El Arco",
+    "town5": "Tarija",
+    "venue6": "Parque Urbano",
+    "town6": "La Paz"
+  }
+}

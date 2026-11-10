@@ -1,0 +1,7 @@
+{
+  "savedToast": "Pedido {id} guardado{paid, select, cash { — pagado en efectivo} card { — pagado con tu máquina POS} other {}}",
+  "confirmedToast": "Pedido #{id} confirmado{paid, select, cash { — pagado en efectivo} card { — pagado con tu máquina POS} other {}}",
+  "notOnMenu": "{name}{hasOn, select, yes { (en {on})} other {}} — no está en la carta",
+  "somethingNotOnMenu": "Algo de este pedido ya no está en la carta",
+  "loadingMenu": "Cargando carta…"
+}

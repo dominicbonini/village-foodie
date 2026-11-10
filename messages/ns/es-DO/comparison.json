@@ -1,0 +1,20 @@
+{
+  "meta": {
+    "description": "Sistemas de pedidos para food trucks: hora para recoger, capacidad de cocina, agenda, comisiones y plazos, revisados en el sitio de cada proveedor.",
+    "about": "Sistemas de pedidos en línea para food trucks"
+  },
+  "faq": {
+    "termQ": "¿Hay un plazo mínimo de contrato?",
+    "termA": "No. No hay plazo mínimo de contrato ni periodo de aviso previo. Puedes cancelar cuando quieras; la cuota se cobra por mes y por adelantado, y mantienes el acceso hasta el final del mes que pagaste."
+  },
+  "features": {
+    "private": {
+      "label": "Eventos privados y alquiler",
+      "explain": "Pedidos para un evento privado con su propio enlace, y solicitudes para alquilar el food truck.",
+      "ours": "eventos privados con su propio enlace de pedidos; sin solicitudes de alquiler"
+    },
+    "term": {
+      "label": "Plazo mínimo de contrato"
+    }
+  }
+}

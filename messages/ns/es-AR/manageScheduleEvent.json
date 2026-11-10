@@ -1,0 +1,9 @@
+{
+  "placesEmpty": "Aún no hay lugares: escribí el lugar a la derecha y se guardará como uno.",
+  "selectVan": "Elegí un food truck",
+  "notesPlaceholder": "p. ej., Estacionate en el estacionamiento principal",
+  "previewDate": "Elegí una fecha",
+  "errors": {
+    "van": "Elegí un food truck"
+  }
+}

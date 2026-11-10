@@ -1,0 +1,3 @@
+{
+  "example": "Ejemplo: si puedes cocinar 4 platos fuertes en 5 minutos, configúralo en 4 productos cada 5 minutos. La capacidad total limita los pedidos de todas las categorías seleccionadas, así que si quieres vender como máximo 10 entradas y platos fuertes cada 5 minutos, pon la Capacidad total en 10 productos cada 5 minutos y marca las casillas Entradas y Platos fuertes. Tus platos fuertes seguirán limitados a 4 productos cada 5 minutos."
+}

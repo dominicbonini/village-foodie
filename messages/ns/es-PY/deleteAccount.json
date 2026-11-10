@@ -1,0 +1,10 @@
+{
+  "cannotCancelPending": "<b>No podés cancelarlo vos.</b> Para detenerlo, escribí a <link>{email}</link> lo antes posible.",
+  "upcoming": "<b>Tenés {count, plural, one {# pedido próximo} other {# pedidos próximos}}.</b> Tendrás que prepararlos y entregarlos igualmente.",
+  "cannotCancel": "No podés cancelarlo vos. Para detenerlo, debés escribir a <link>{email}</link>.",
+  "whatAccounting": "Los registros contables anónimos <b>se conservan seis años</b>, como exige la legislación británica. Consultá nuestra <link>política de privacidad</link>.",
+  "copyFirst": "<b>¿Querés antes una copia de tus datos?</b> En la app no hay opción de descarga. Tenés derecho a una copia: escribí a <link>{email}</link> <b>antes</b> de confirmar y te la enviaremos.",
+  "typeToConfirm": "Escribí <code>{name}</code> para confirmar",
+  "typeAria": "Escribí {name} para confirmar la eliminación de la cuenta",
+  "requestedToast": "Eliminación de la cuenta solicitada. Revisá tu email."
+}

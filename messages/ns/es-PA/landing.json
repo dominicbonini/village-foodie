@@ -1,0 +1,30 @@
+{
+  "jsonLd": {
+    "subCategory": "Sistema de pedidos en línea para food trucks y catering móvil",
+    "description": "Pedidos, pedidos anticipados y pantalla de cocina (KDS) para food trucks y catering móvil en {country}.",
+    "audience": "Dueños de food trucks y negocios de catering móvil"
+  },
+  "hero": {
+    "title": "El sistema de pedidos pensado para <lean>food trucks.</lean>"
+  },
+  "trust": {
+    "cancel": "Cancela cuando quieras, sin plazo mínimo de contrato"
+  },
+  "does": {
+    "devicesBody": "En el celular del delantal, la tablet del mostrador, la laptop del food truck… y el POS con el que ya cobras.",
+    "offlineBody": "Si te quedas sin cobertura, los pedidos en línea se pausan solos para que nadie haga pedidos que no vas a ver. Sigue tomando pedidos con la app para iPhone, iPad y Android."
+  },
+  "steps": {
+    "menuBody": "Toma una foto de tu pizarrón o pega el texto. Platos, precios y extras se importan solos. Tú solo revisas que estén bien."
+  },
+  "faq": {
+    "metaDescription": "Respuestas claras para dueños de food trucks sobre los precios de HatchGrab, cómo empezar, cómo recibir pedidos en línea y los pagos."
+  },
+  "final": {
+    "lede": "Sube una foto o una captura de tu menú y lo convertimos en una página de pedidos que funciona, para que la pruebes en menos de 60 segundos. Tus platos, tus precios. Sin registro, sin tarjeta, sin instalar nada. Échale un vistazo y luego decide."
+  },
+  "meta": {
+    "title": "Sistema de pedidos para food trucks — HatchGrab {country}",
+    "description": "Sistema de pedidos para food trucks en {country}: pedidos anticipados con hora para recoger y pantalla de cocina, sin filas. No es un sistema de caja."
+  }
+}

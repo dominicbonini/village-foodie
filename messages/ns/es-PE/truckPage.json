@@ -1,0 +1,8 @@
+{
+  "meta": {
+    "orderTitle": "Haz tu pedido a {truck}"
+  },
+  "actions": {
+    "menu": "Carta"
+  }
+}

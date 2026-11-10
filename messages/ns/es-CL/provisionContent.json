@@ -1,0 +1,14 @@
+{
+  "standardCategories": {
+    "starters": "Entradas",
+    "mains": "Platos de fondo",
+    "wrapsSandwiches": "Wraps y sándwiches"
+  },
+  "demoTemplates": {
+    "pizza": {
+      "items": {
+        "rocketParmesan": "Rúcula y parmesano"
+      }
+    }
+  }
+}

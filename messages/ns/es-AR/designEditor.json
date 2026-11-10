@@ -1,0 +1,27 @@
+{
+  "item": {
+    "noteTokenSample": "La nota que escribís al crear la publicación"
+  },
+  "sample": {
+    "area": "Palermo"
+  },
+  "scope": {
+    "locked": "Estas posiciones vienen de tu diseño Estándar. Elegí “Posiciones propias para {place}” para moverlas solo aquí."
+  },
+  "stage": {
+    "hint": "Arrastrá un cuadro para moverlo · arrastrá una esquina para cambiar su tamaño"
+  },
+  "rows": {
+    "showCancelledHint": "Un evento cancelado muestra su lugar tachado y la palabra CANCELADO. Si lo desactivás, ese día aparece como día libre."
+  },
+  "picture": {
+    "allHaveImage": "{total, plural, =0 {Aún no tenés ninguna ubicación.} one {Tu ubicación tiene imagen.} other {Tus # ubicaciones tienen imagen.}}"
+  },
+  "settings": {
+    "lastToggle": "{kind, select, weekly {Dejá activado Lugar u Horario. Un evento cancelado muestra su lugar tachado y la palabra CANCELADO, así que con los dos desactivados nada indicaría que está cancelado.} other {Dejá activado Local u Horario. Un evento cancelado muestra su lugar tachado y la palabra CANCELADO, así que con los dos desactivados nada indicaría que está cancelado.}}"
+  },
+  "bits": {
+    "chooseColourFor": "{label}: elegí cualquier color",
+    "chooseColour": "Elegí cualquier color"
+  }
+}

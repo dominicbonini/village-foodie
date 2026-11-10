@@ -1,0 +1,4 @@
+{
+  "paidCardMachine": "Pagado con tu datáfono{mixed, select, yes { — {amount}} other {}}",
+  "inPersonHint": "Efectivo o tu datáfono — no se registra"
+}

@@ -1,0 +1,19 @@
+{
+  "toast": {
+    "verificationResent": "Email de verificación reenviado: revisá tu bandeja de entrada"
+  },
+  "intro": "Invitá a tu personal para que acceda a la pantalla de pedidos y tome pedidos",
+  "ownerName": "{you, select, yes {{name} (vos)} other {{name}}}",
+  "sentTo": "Verificación enviada a <b>{email}</b>. Revisá tu bandeja de entrada.",
+  "lastName": "Apellido *",
+  "phonePlaceholder": "+598 94 123 456",
+  "modal": {
+    "namePlaceholder": "p. ej., Sofía",
+    "emailPlaceholder": "sofia@example.com",
+    "selectOne": "Seleccioná al menos un food truck"
+  },
+  "inviteEmail": {
+    "click": "Hacé clic en el botón de abajo para crear tu contraseña y empezar. Este enlace vence en 7 días.",
+    "ignore": "Si no esperabas esta invitación, podés ignorar este email sin problema."
+  }
+}

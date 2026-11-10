@@ -1,0 +1,7 @@
+{
+  "collected": "Retirado",
+  "cashAndCollected": "Efectivo y retirado",
+  "cardAndCollected": "Tarjeta y retirado",
+  "status": "{status, select, pending {Nuevo} confirmed {Confirmado} rejected {Rechazado} modified {Modificado} cancelled {Cancelado} cooking {En cocina} ready {Listo} collected {Retirado} other {Nuevo}}",
+  "markPaidAndCollected": "Marcar pagado y retirado"
+}

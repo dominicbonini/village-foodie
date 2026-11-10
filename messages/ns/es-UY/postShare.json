@@ -1,0 +1,4 @@
+{
+  "copyFailed": "No se pudo copiar — seleccioná el texto y copialo a mano.",
+  "sharedStatus": "{kind, select, postText {Texto de la publicación copiado — pegalo en tu publicación.} other {Texto copiado — pegalo en tu publicación.}}"
+}

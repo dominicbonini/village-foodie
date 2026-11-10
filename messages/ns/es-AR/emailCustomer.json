@@ -1,0 +1,64 @@
+{
+  "payNote": {
+    "capturedBody": "Tu pago se ha completado — no tenés que pagar nada al retirar.",
+    "capturedText": "Pagado con tarjeta. Tu pago se ha completado — no tenés que pagar nada al retirar.",
+    "partPaidBody": "El resto se paga al retirar.",
+    "partPaidBodyFigures": "De este pedido ya se han pagado {paid}. El importe restante, {balance}, se paga al retirar.",
+    "partPaidText": "Pagado en parte. Una parte de este pedido se paga al retirar.",
+    "partPaidTextFigures": "Pagado en parte: recibido {paid}, pendiente de pago al retirar {balance}.",
+    "heldBody": "{truck} cobrará el importe cuando confirme tu pedido. No tenés que pagar nada al retirar.",
+    "heldText": "Importe retenido en tu tarjeta, sin cobrar. {truck} cobrará el importe cuando confirme tu pedido — no tenés que pagar nada al retirar.",
+    "heldReady": "Importe retenido en tu tarjeta, sin cobrar — no tenés que pagar nada al retirar.",
+    "heldShortBody": "{truck} cobrará el importe retenido cuando confirme tu pedido. El resto se paga al retirar.",
+    "heldShortBodyFigures": "{truck} cobrará el importe retenido ({held}) cuando confirme tu pedido. El importe restante, {owing}, se paga al retirar.",
+    "heldShortText": "Importe retenido en tu tarjeta por una parte de este pedido. {truck} cobrará el importe retenido cuando confirme tu pedido, y el resto se paga al retirar.",
+    "heldShortTextFigures": "Se ha retenido un importe de {held} en tu tarjeta, que {truck} cobrará cuando confirme tu pedido. Pendiente de pago al retirar: {owing}.",
+    "hatchTitle": "Pagá al retirar tu pedido",
+    "hatchText": "Pagá al retirar tu pedido.",
+    "hatchReady": "Pagá al retirar."
+  },
+  "confirmation": {
+    "slotUpdated": "Tu horario de retiro ha cambiado",
+    "collectionTime": "Horario de retiro: {time}",
+    "preferredTime": "Horario de retiro preferido: {time}",
+    "weWillConfirm": "Confirmaremos tu horario de retiro cuando aceptemos tu pedido.",
+    "questions": "¿Tenés alguna pregunta sobre tu pedido?",
+    "contactCall": "Llamanos",
+    "contactWhatsApp": "Escribinos por WhatsApp",
+    "contactWhatsAppNumber": "Escribinos por WhatsApp: {number}",
+    "contactFacebook": "Escribinos en Facebook",
+    "contactMessenger": "Escribinos por Messenger",
+    "contactInstagram": "Mandanos un DM en Instagram",
+    "contactEmail": "Envianos un correo",
+    "cancelLine": "{n, plural, one {¿Necesitás cancelar?<link>Cancelá tu pedido</link>(hasta {count} minuto antes de tu horario de retiro)} other {¿Necesitás cancelar?<link>Cancelá tu pedido</link>(hasta {count} minutos antes de tu horario de retiro)}}",
+    "leadReady": "Tu pedido ya está listo — pasá a retirarlo a {truck}.",
+    "textTitleReady": "Pedido #{id} listo para retirar — {truck}",
+    "textReady": "Tu pedido ya está listo — pasá a retirarlo.",
+    "textSlotUpdated": "Horario de retiro cambiado a las {time} (antes: {previous}).",
+    "textCollection": "Horario de retiro: {time}. ¡Nos vemos en la ventanilla!",
+    "textPreferred": "Retiro preferido: {time} — lo confirmaremos cuando aceptemos tu pedido.",
+    "textWhatsApp": "¿Preguntas? Escribinos por WhatsApp: {value}",
+    "textEmail": "¿Preguntas? Escribinos un correo: {value}",
+    "textCall": "¿Preguntas? Llamanos: {value}",
+    "textFacebook": "¿Preguntas? Escribinos en Facebook: {value}",
+    "textMessenger": "¿Preguntas? Escribinos por Messenger: {value}",
+    "textInstagram": "¿Preguntas? Mandanos un DM en Instagram: {value}"
+  },
+  "cancelSentence": {
+    "refundDeclined": "Si tenés alguna pregunta sobre el pago de este pedido, ponete en contacto con {truck}.",
+    "paidContactTruck": "Si pagaste con tarjeta, cualquier reembolso lo gestiona directamente {truck} — ponete en contacto con ellos."
+  },
+  "rejectSentence": {
+    "heldWillClear": "Se retuvo un importe en tu tarjeta para este pedido, pero nunca se llegó a cobrar, y esa retención se liberará automáticamente — ponete en contacto con {truck} si no se ha liberado en una semana.",
+    "paidContactTruck": "Si pagaste este pedido con tarjeta, ponete en contacto con {truck}."
+  },
+  "common": {
+    "sorry": "Disculpá las molestias."
+  },
+  "refund": {
+    "contact": "Si algo no te parece correcto, ponete en contacto con {truck}."
+  },
+  "rejection": {
+    "orderAtTruck": "Hacé tu pedido en el food truck cuando llegues. Disculpá las molestias."
+  }
+}

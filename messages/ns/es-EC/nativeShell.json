@@ -1,0 +1,7 @@
+{
+  "gate": {
+    "undoneCollected": "Deshecho — pedido no retirado",
+    "collected": "Pedido #{id} {paidToo, select, yes {pagado y retirado} other {retirado}}",
+    "status": "Pedido #{id} {action, select, confirm {confirmado} reject {rechazado} ready {listo} collected {retirado} undo_collected {restaurado} cancel {cancelado} other {actualizado}}"
+  }
+}

@@ -1,0 +1,28 @@
+{
+  "meta": {
+    "description": "Sistemas de pedidos para food trucks: hora para recoger, capacidad de cocina, agenda, comisiones y plazos, revisados en el sitio de cada proveedor.",
+    "about": "Sistemas de pedidos en línea para food trucks"
+  },
+  "fit": {
+    "tills": "Puntos de venta y datáfonos"
+  },
+  "faq": {
+    "whatA": "Un sistema de pedidos recibe pedidos online antes de que los clientes lleguen al food truck: eligen los platillos y una hora para recoger, pagan online o al recoger, y el pedido aparece en tu cocina. Un punto de venta o un datáfono cobra en el food truck. Las dos cosas se complementan.",
+    "termQ": "¿Hay un plazo mínimo de contrato?",
+    "termA": "No. No hay plazo mínimo de contrato ni periodo de aviso previo. Puedes cancelar cuando quieras; la cuota se cobra por mes y por adelantado, y mantienes el acceso hasta el final del mes que pagaste."
+  },
+  "features": {
+    "private": {
+      "label": "Eventos privados y alquiler",
+      "explain": "Pedidos para un evento privado con su propio enlace, y solicitudes para alquilar el food truck.",
+      "ours": "eventos privados con su propio enlace de pedidos; sin solicitudes de alquiler"
+    },
+    "terminal": {
+      "label": "Datáfono para la ventanilla incluido",
+      "explain": "El proveedor da un datáfono para cobrar en el food truck."
+    },
+    "term": {
+      "label": "Plazo mínimo de contrato"
+    }
+  }
+}

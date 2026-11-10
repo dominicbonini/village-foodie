@@ -1,0 +1,4 @@
+{
+  "title": "Elegí un avisador",
+  "allTaken": "{n, plural, one {El avisador está en uso. Tocalo para quitárselo a otro pedido.} other {Los {count} avisadores están en uso. Tocá uno para quitárselo a otro pedido.}}"
+}

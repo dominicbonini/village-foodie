@@ -1,0 +1,41 @@
+{
+  "meta": {
+    "description": "Sistemas de pedidos para food trucks: hora para recoger, capacidad de cocina, agenda, comisiones y plazo mínimo, revisados en el sitio de cada proveedor.",
+    "about": "Sistemas de pedidos en línea para food trucks"
+  },
+  "fit": {
+    "oursBody": "vendes en ubicaciones que cambian, quieres pedidos anticipados con hora para recoger, no quieres que tu cocina se sature y no quieres atarte a un plazo mínimo.",
+    "oursNotBody": "tus clientes tienen que poder pagar con PayPal o Klarna, o quieres un sistema de caja certificado según la normativa fiscal, todo de un mismo proveedor.",
+    "tills": "Sistemas de caja y POS",
+    "tillsBody": "Los sistemas de caja cobran en el food truck y cumplen los requisitos fiscales de una caja registradora certificada. Un sistema de pedidos funciona junto a un sistema de caja; no lo sustituye.",
+    "tillsBodyNamed": "Los sistemas de caja cobran en el food truck y cumplen los requisitos fiscales de una caja registradora certificada. {names} también {count, plural, one {aparece} many {aparecen} other {aparecen}} en la tabla de arriba. Un sistema de pedidos funciona junto a un sistema de caja; no lo sustituye."
+  },
+  "groups": {
+    "pos": "Sistema de caja"
+  },
+  "faq": {
+    "whatA": "Un sistema de pedidos recibe pedidos online antes de que los clientes lleguen al food truck: eligen los platillos y una hora para recoger, pagan online o al recoger, y el pedido aparece en tu cocina. Un sistema de caja o un POS cobra en el food truck. Las dos cosas se complementan.",
+    "termQ": "¿Hay plazo mínimo?",
+    "termA": "No. No hay plazo mínimo ni periodo de aviso previo. Puedes cancelar cuando quieras; la cuota se cobra por mes y por adelantado, y mantienes el acceso hasta el final del mes que pagaste.",
+    "tseQ": "¿Sigo necesitando un sistema de caja certificado?",
+    "tseA": "HatchGrab no es un sistema de caja y no está certificado según la normativa fiscal para cajas registradoras. Cómo registrar los pedidos online en tu sistema de caja es algo que debes consultar con tu contador."
+  },
+  "features": {
+    "private": {
+      "label": "Eventos privados y alquiler",
+      "explain": "Pedidos para un evento privado con su propio enlace, y solicitudes para alquilar el food truck.",
+      "ours": "eventos privados con su propio enlace de pedidos; sin solicitudes de alquiler"
+    },
+    "terminal": {
+      "label": "POS para la ventanilla incluido",
+      "explain": "El proveedor da un POS para cobrar en el food truck."
+    },
+    "fiscal": {
+      "label": "Sistema de caja certificado según la normativa fiscal (TSE, EET, kassaregister…)",
+      "explain": "Un sistema de caja certificado según las normas del país sobre el registro de ventas."
+    },
+    "term": {
+      "label": "Plazo mínimo"
+    }
+  }
+}

@@ -1,0 +1,19 @@
+{
+  "placeSample": {
+    "nameTownBelow": "Bar La Plaza\nSan Telmo",
+    "nameTown": "Bar La Plaza, San Telmo"
+  },
+  "busyWeek": {
+    "venue1": "Plaza Serrano",
+    "town1": "Palermo",
+    "venue2": "Polideportivo Municipal y Cancha de Fútbol del Parque Camet de Mar del Plata",
+    "town2": "Mar del Plata",
+    "venue3": "Plaza Moreno",
+    "town3": "La Plata",
+    "town4": "Córdoba",
+    "venue5": "Bodegón El Arco",
+    "town5": "Mendoza",
+    "venue6": "Parque de la Independencia",
+    "town6": "Rosario"
+  }
+}
