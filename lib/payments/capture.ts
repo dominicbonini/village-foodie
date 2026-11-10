@@ -44,9 +44,10 @@
 // second is a 23505 no-op. The webhook is NOT changed by this work and does not need to be — it becomes
 // the backstop for a capture whose own ledger write failed.
 //
-// ── ⚠️ NO application_fee_amount ─────────────────────────────────────────────────────────────────
-// The parameter is accepted at capture and is deliberately not sent. This build charges no platform
-// fee, and a fee must be a positive integer, so "no fee" is absence. Search this file — there is none.
+// ── ⚠️ application_fee_amount — ONLY THROUGH billing-1's GATE (step 3a) ──────────────────────────────
+// The parameter is accepted at capture. It is sent only when lib/billing/gate.ts applicationFeeAtCapture
+// returns a positive fee AND platformFeeOn(country) holds — which needs platform_switches.billing_enabled
+// on (OFF everywhere today). A fee must be a positive integer, so "no fee" is absence, never zero.
 import type { SupabaseClient } from '@supabase/supabase-js'
 import { recordOnlineCardPayment, onlinePaymentIdempotencyKey } from '@/lib/payments/online'
 // 🔴 THE CHOKEPOINT FOR "WHAT DOES THIS ORDER OWE". Read-only. See step 2b.
@@ -54,6 +55,11 @@ import { readOrderBalance, type OrderBalance } from '@/lib/payments/ledger'
 import { stripeAccountForTruck } from '@/lib/payments/authorize'
 import { logAction } from '@/lib/audit/actionAudit'
 import { stripeClient } from '@/lib/stripe/client'
+// billing-1 (10 November 2026): the platform fee, taken HERE when it is taken at all (model (a) — lib/billing/rules.ts).
+import { billingSwitchOn, applicationFeeAtCapture } from '@/lib/billing/gate'
+import { getPlanCatalog } from '@/lib/plans-server'
+import { countrySettingsForTruck } from '@/lib/country-settings'
+import { platformFeeOn } from '@/lib/country-settings-types'
 
 export type CaptureResult =
   /** Money moved. `amountMinor` is Stripe's own `amount_received`. */
@@ -255,10 +261,25 @@ export async function captureOnConfirmation(
       return { status: 'failed', paymentIntentId: piId, detail: 'no stripe account for the truck' }
     }
 
+    // ── 3a. billing-1: THE PLATFORM FEE, OR NONE. ─────────────────────────────────────────────────────────────────
+    // 🔴 SWITCH OFF (platform_switches.billing_enabled false — today, everywhere): `applicationFeeMinor` stays null, no
+    // catalogue or country is read, and the capture call below is EXACTLY the call it has always been.
+    // Switch on: lib/billing/gate.ts decides (billable, past the trial, model (a), not post-pay, above the allowance), and
+    // this file asks platformFeeOn(country) itself once more before sending anything (35.an-17).
+    let applicationFeeMinor: number | null = null
+    if (await billingSwitchOn()) {
+      const fee = await applicationFeeAtCapture({ orderKey: args.orderKey, truckId: draft.truck_id ?? args.truckId, captureMinor, catalog: await getPlanCatalog() })
+      if (fee !== null) {
+        const { data: t } = await supabase.from('trucks').select('country').eq('id', draft.truck_id ?? args.truckId).maybeSingle()
+        if (platformFeeOn(await countrySettingsForTruck(t as { country?: string | null } | null))) applicationFeeMinor = fee
+      }
+    }
+
     let amountMinor: number
+    let feeTakenMinor: number | null = null
     try {
       const stripe = stripeClient()
-      // ⚠️ NO application_fee_amount. See the header — absence, never zero.
+      // ⚠️ application_fee_amount ONLY WHEN billing-1's gate says so (3a above) — absence, never zero.
       // 🔴 `amount_to_capture` IS SENT ONLY WHEN IT LOWERS THE AMOUNT, so a full capture is the same
       // empty-params call it has always been and cannot change behaviour for an unedited order.
       // Stripe's own wording for the parameter, from the hold documentation: "This captures the total
@@ -271,7 +292,10 @@ export async function captureOnConfirmation(
       // of the two and never a guess.
       const captured = await stripe.paymentIntents.capture(
         piId,
-        isPartialCapture ? { amount_to_capture: captureMinor } : {},
+        {
+          ...(isPartialCapture ? { amount_to_capture: captureMinor } : {}),
+          ...(applicationFeeMinor !== null ? { application_fee_amount: applicationFeeMinor } : {}),
+        },
         {
           stripeAccount: account,
           // 🔴 IDEMPOTENCY. Capture is the call that MOVES THE MONEY, and it is one-shot: Stripe will
@@ -284,10 +308,13 @@ export async function captureOnConfirmation(
           // attempts the amount differs, and that MUST NOT be replayed as the old amount — a differing
           // key sends a real second capture, which Stripe then refuses as already-captured and the
           // ALREADY_CAPTURED branch below retrieves the true figure. Both paths end at the right number.
-          idempotencyKey: `op_capture:${piId}:${captureMinor}`,
+          // billing-1: a fee joins the key only when one is sent, so a capture without one keeps its old key exactly.
+          idempotencyKey: `op_capture:${piId}:${captureMinor}${applicationFeeMinor !== null ? `:fee${applicationFeeMinor}` : ''}`,
         },
       )
       amountMinor = typeof captured.amount_received === 'number' ? captured.amount_received : 0
+      // Stripe's own figure for the fee it took (null when none was sent).
+      feeTakenMinor = typeof captured.application_fee_amount === 'number' && captured.application_fee_amount > 0 ? captured.application_fee_amount : null
       if (amountMinor <= 0) {
         // Captured with nothing received is not a state this design produces, and writing a zero-amount
         // ledger row would fail the CHECK anyway. Reported rather than papered over.
@@ -303,6 +330,7 @@ export async function captureOnConfirmation(
           const stripe = stripeClient()
           const pi = await stripe.paymentIntents.retrieve(piId, {}, { stripeAccount: account })
           amountMinor = typeof pi.amount_received === 'number' ? pi.amount_received : 0
+          feeTakenMinor = typeof pi.application_fee_amount === 'number' && pi.application_fee_amount > 0 ? pi.application_fee_amount : null
           if (amountMinor <= 0) return { status: 'already', paymentIntentId: piId }
         } catch { return { status: 'already', paymentIntentId: piId } }
       } else if (GONE.test(message)) {
@@ -355,6 +383,8 @@ export async function captureOnConfirmation(
         // The DRAFT's currency — the one the hold was authorised in (lib/payments/authorize.ts reads the
         // same column). Was absent here, so every captured row took the writer's old 'GBP' default.
         currency: draft.currency as string,
+        // billing-1: the application fee Stripe took, when one was (absent otherwise — the row is as before).
+        ...(feeTakenMinor !== null ? { applicationFeeMinor: feeTakenMinor } : {}),
       })
       console.log(
         `[capture] ${inserted ? 'CAPTURED' : 'captured (ledger row already present)'} order_key=${args.orderKey} ` +

@@ -25,6 +25,7 @@ import { useEffect, useMemo, useRef, useState } from 'react'
 import { createPortal } from 'react-dom'
 import { nativeAuthHeader } from '@/lib/native/session'
 import { ComparisonStatusPanel } from '@/components/admin/ComparisonStatusPanel'
+import { CountryBillingPanel } from '@/components/admin/CountryBillingPanel'   // billing-1: payment model, post-pay surcharge, minimum
 import type { CountrySettings } from '@/lib/country-settings-types'
 import {
   rowToForm, formToValues, isTimeZone,
@@ -592,6 +593,9 @@ export default function CountriesTab() {
 
       {/* compare-de-1: each country's comparison page — Off / Admins only / Live (its own route; saves on its own). */}
       <ComparisonStatusPanel />
+
+      {/* billing-1: how trucks are charged in each country (its own route; each row saves on its own). */}
+      <CountryBillingPanel />
 
       {/* ── search and filter chips ── */}
       <div className="flex flex-wrap items-center gap-2" data-countries-filters>

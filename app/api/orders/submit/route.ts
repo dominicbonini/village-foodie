@@ -35,6 +35,8 @@ import { isPreorderOpenYet, type PreorderConfig } from '@/lib/preorder'
 import { decideAutoAccept } from '@/lib/orders/auto-accept'
 import { resolveBatchReservations } from '@/lib/features'
 import { truckCan, payAtHatchOn, truckPlanSwitch } from '@/lib/plans'
+// billing-1: billing's gate — refuses only while platform_switches.billing_enabled is on (lib/billing/gate.ts).
+import { billingGateForTruck } from '@/lib/billing/gate'
 import { getPlanCatalog } from '@/lib/plans-server'
 import { formatConfirmationEmail, formatNewOrderEmail, sendConfirmationEmail } from '@/lib/email'
 // 🔴 THE ORDER WAS PLACED IN THIS REQUEST, FROM THIS TRUCK: place_order_atomic's insert fires the 20261010
@@ -748,7 +750,14 @@ export async function POST(req: NextRequest) {
     /* 🔴 PAY AT HATCH IS THE PLAN'S TO ALLOW (plans.pay_at_hatch_allowed, enforced from Stage A2; true on every plan as
      * seeded). A pay-at-the-truck order on a plan without it is refused HERE — before any booking, stock or money path —
      * with its own sentence; the menu never offered it, so only a stale page or a hand-made request reaches this. */
-    if (payByCard !== true && !payAtHatchOn(truck, planCatalog)) {
+    /* 🔴 billing-1: BILLING'S GATE, before any booking, stock or money path. Switch off (today) → nothing refused here that was
+     * not refused before. Switch on → an account billing has paused takes no ONLINE order (the existing "no longer taking
+     * orders" sentence), and Pay at Hatch after the trial needs post-pay and a payment method on file. */
+    const billingGate = await billingGateForTruck(truck, planCatalog)
+    if (billingGate.onlineOrderingPaused) {
+      return NextResponse.json(customerErrorBody(locale, 'truck_not_taking_orders', {}, { orderingPaused: true }), { status: 423 })
+    }
+    if (payByCard !== true && !(payAtHatchOn(truck, planCatalog) && billingGate.payAtHatchAllowed)) {
       return NextResponse.json(customerErrorBody(locale, 'pay_at_hatch_unavailable', {}, { payAtHatchUnavailable: true }), { status: 403 })
     }
     {

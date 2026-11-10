@@ -21,7 +21,7 @@
 import type { SupabaseClient } from '@supabase/supabase-js'
 import Stripe from 'stripe'
 import { readLedger, type OrderBalance, readOrderBalance } from '@/lib/payments/ledger'
-import { recordOnlineCardRefund } from '@/lib/payments/online'
+import { recordOnlineCardRefund, onlinePaymentIdempotencyKey } from '@/lib/payments/online'
 import { ledgerCurrency } from '@/lib/payments/currency'
 import { moneyFormatForOrder } from '@/lib/money-server'
 import { formatMinorOrBare, type MoneyFormat } from '@/lib/money-format'
@@ -186,9 +186,26 @@ export async function refundOrder(
   // the position moves the moment Stripe accepts, not when the money lands.
   const idempotencyKey = `op_refund:${args.orderKey}:${refundable.refundedMinor}:${args.amountMinor}`
 
+  // ── 🔴 billing-1 (10 November 2026): THE PLATFORM FEE GOES BACK IN PROPORTION ─────────────────────────────────────
+  // Did this charge carry an application fee? Our ledger row for the capture says (lib/payments/capture.ts writes Stripe's
+  // own figure). Read EVERY time — not only while billing is switched on — so a fee taken before the switch was turned off
+  // is still given back. No fee on the charge → the refund call below is exactly what it always was.
+  let chargeFeeMinor = 0
+  {
+    const { data: feeRow } = await supabase.from('order_payments').select('application_fee_minor')
+      .eq('idempotency_key', onlinePaymentIdempotencyKey(refundable.paymentIntentId)).maybeSingle()
+    const f = (feeRow as { application_fee_minor?: number | null } | null)?.application_fee_minor
+    chargeFeeMinor = typeof f === 'number' && f > 0 ? f : 0
+  }
+  // Stripe refunds the fee proportionally to the amount refunded; this is our record of that share (rounded down).
+  const feeBackMinor = chargeFeeMinor > 0 && refundable.capturedMinor > 0
+    ? Math.min(chargeFeeMinor, Math.floor((chargeFeeMinor * args.amountMinor) / refundable.capturedMinor)) : 0
+
   let refund: Stripe.Refund
   try {
     // ── 🔴 THE DAY A PLATFORM FEE EXISTS, THIS CALL SILENTLY SHORTCHANGES THE TRUCK ─────────────────
+    // ✅ billing-1: ANSWERED — `refund_application_fee: true` is sent whenever the charge carried a fee (above).
+    // The history of the trap is kept below because it is still Stripe's default.
     // CORRECT TODAY, AND ONLY BECAUSE THERE IS NO FEE. `application_fee_amount` is never sent anywhere in
     // this build — authorize.ts and capture.ts both record "absence, never zero", and the commercial model
     // is 0% on every tier. With no fee on the charge there is nothing for a refund to give back.
@@ -206,6 +223,8 @@ export async function refundOrder(
         payment_intent: refundable.paymentIntentId,
         amount: args.amountMinor,
         reason: stripeReasonFor(args.reason),
+        // billing-1: only when the charge carried a fee — otherwise absent, and the call is unchanged.
+        ...(chargeFeeMinor > 0 ? { refund_application_fee: true } : {}),
         // ⚠️ OUR REASON TRAVELS TOO, so a human in the Stripe Dashboard sees what the operator chose
         // rather than the three-value approximation. The audit row below is the durable record.
         metadata: {
@@ -281,6 +300,8 @@ export async function refundOrder(
       // this inside the writer; doing it here too keeps the source honest. The refund's own currency (Stripe
       // always sets it) — never a literal.
       currency: ledgerCurrency(refund.currency, `refund ${refund.id}`),
+      // billing-1: the platform fee's share given back with this refund (absent when the charge had none).
+      ...(feeBackMinor > 0 ? { applicationFeeRefundedMinor: feeBackMinor } : {}),
     })
   } catch (ledgerErr) {
     // 🔴 THE MONEY HAS GONE BACK AND WE FAILED TO RECORD IT. Loud, and RECOVERABLE WITHOUT US: Stripe's

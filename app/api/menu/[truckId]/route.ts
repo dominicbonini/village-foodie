@@ -11,6 +11,8 @@ import { getNowMinsInTz, getLocalDateInTz } from '@/lib/time-utils'
 import { upcomingQueryFloor, isUpcomingOrRunning } from '@/lib/event-window'
 import { isPreorderDeadlinePassed, preorderDeadlineClock, formatPreorderLabel, isPreorderOpenYet, formatPreorderOpenLabel } from '@/lib/preorder'
 import { truckCan, payAtHatchOn } from '@/lib/plans'
+// billing-1: billing's gate — pauses online ordering / Pay at Hatch only while platform_switches.billing_enabled is on.
+import { billingGateForTruck } from '@/lib/billing/gate'
 import { getPlanCatalog } from '@/lib/plans-server'
 import { resolveCategoriesForVan } from '@/lib/van-category-settings'
 // ⚠️ TEMPORARY — delete with the online-payments switch. See the migration named in that file.
@@ -837,8 +839,13 @@ export async function GET(
   /* 🔴 PAY AT HATCH IS THE PLAN'S TO ALLOW (Stage A2, plans.pay_at_hatch_allowed — enforced; true on every plan as seeded).
    * Off → the customer is not offered it, and /api/orders/submit refuses it. With no card option either, nothing can be
    * paid online, so online ordering is unavailable — the existing "not taking orders" state, never a dead checkout. */
-  const payAtHatchOffered = payAtHatchOn(truck, planCatalog)
+  /* 🔴 billing-1: BILLING'S GATE. Switch off (today) → { paused: false, Pay at Hatch allowed }, so this response is byte-identical.
+   * Switch on → an unpaid account (5 days) or an ended trial with no payment method pauses ONLINE ordering — the same "not
+   * taking orders" state — and after the trial Pay at Hatch needs post-pay and a payment method on file (lib/billing/rules.ts). */
+  const billingGate = await billingGateForTruck(truck, planCatalog)
+  const payAtHatchOffered = payAtHatchOn(truck, planCatalog) && billingGate.payAtHatchAllowed
   if (!payAtHatchOffered && !cardPaymentsReady) orderingAvailable = false
+  if (billingGate.onlineOrderingPaused) orderingAvailable = false
 
   // 🔴 THE TRUCK'S MONEY FORMAT — {currency, locale} only, never the settings row. Every price on the
   // customer page is shown in it. A truck with no currency or country is a LOUD error (it cannot happen:

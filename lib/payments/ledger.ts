@@ -600,6 +600,10 @@ export async function recordPaymentEvent(
      *  Deriving this from configuration would reintroduce the entire defect this column exists to
      *  prevent, while looking correct. */
     livemode: boolean
+    /** billing-1 (10 November 2026): the platform fee Stripe took on this charge / gave back on this refund, in minor
+     *  units. ABSENT on every row written before billing is switched on — the insert below is then exactly as before. */
+    applicationFeeMinor?: number | null
+    applicationFeeRefundedMinor?: number | null
   },
 ): Promise<{ inserted: boolean; balance: OrderBalance }> {
   if (!Number.isInteger(event.amountMinor) || event.amountMinor <= 0) {
@@ -626,6 +630,9 @@ export async function recordPaymentEvent(
     // relying on the default would be discarding information we hold. It also means the day the default
     // is dropped (phase two of the migration), nothing here changes.
     livemode: event.livemode,
+    // billing-1: named only when given, so a row without a fee is the same insert it always was.
+    ...(typeof event.applicationFeeMinor === 'number' && event.applicationFeeMinor > 0 ? { application_fee_minor: event.applicationFeeMinor } : {}),
+    ...(typeof event.applicationFeeRefundedMinor === 'number' && event.applicationFeeRefundedMinor > 0 ? { application_fee_refunded_minor: event.applicationFeeRefundedMinor } : {}),
   })
 
   let inserted = true
@@ -636,6 +643,14 @@ export async function recordPaymentEvent(
     // balance; see recordCollectionPayment's expected-vs-actual detector.
     if (error.code === '23505') inserted = false
     else throw new Error(`[ledger] insert failed for ${event.orderKey}: ${error.message}`)
+  }
+  // billing-1: THE WEBHOOK MAY HAVE WRITTEN THIS ROW FIRST (payment_intent.succeeded carries the same key and no fee). The
+  // fee the capture took is then added to that row — only where it is still empty, so a replay can never change it.
+  if (!inserted && event.idempotencyKey) {
+    const fee = typeof event.applicationFeeMinor === 'number' && event.applicationFeeMinor > 0 ? { application_fee_minor: event.applicationFeeMinor } : null
+    const back = typeof event.applicationFeeRefundedMinor === 'number' && event.applicationFeeRefundedMinor > 0 ? { application_fee_refunded_minor: event.applicationFeeRefundedMinor } : null
+    if (fee) await supabase.from('order_payments').update(fee).eq('idempotency_key', event.idempotencyKey).is('application_fee_minor', null)
+    if (back) await supabase.from('order_payments').update(back).eq('idempotency_key', event.idempotencyKey).is('application_fee_refunded_minor', null)
   }
 
   const balance = await recalcOrderPayment(supabase, event.orderKey)

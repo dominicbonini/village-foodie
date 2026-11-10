@@ -94,6 +94,8 @@ export async function recordOnlineCardPayment(
     livemode: boolean
     /** REQUIRED — the order's currency, or the Stripe object's. Normalised by the ledger writer. */
     currency: string
+    /** billing-1: the application fee Stripe took on this capture (absent = none). */
+    applicationFeeMinor?: number | null
   },
 ) {
   // 🔴 THE AMOUNT IS STRIPE'S, NOT OURS. `amount_received` on the PaymentIntent is what the customer
@@ -113,6 +115,7 @@ export async function recordOnlineCardPayment(
     currency: args.currency,
     createdBy: 'stripe_webhook',
     note: 'Online card payment',
+    ...(args.applicationFeeMinor ? { applicationFeeMinor: args.applicationFeeMinor } : {}),
   })
 }
 
@@ -152,9 +155,12 @@ export async function recordOnlineCardRefund(
     livemode: boolean
     /** REQUIRED — the order's currency, or the Stripe object's. Normalised by the ledger writer. */
     currency: string
+    /** billing-1: the platform fee's share Stripe gave back with this refund (absent = none). */
+    applicationFeeRefundedMinor?: number | null
   },
 ) {
   return recordPaymentEvent(supabase, {
+    ...(args.applicationFeeRefundedMinor ? { applicationFeeRefundedMinor: args.applicationFeeRefundedMinor } : {}),
     orderKey: args.orderKey,
     truckId: args.truckId,
     kind: 'refund',

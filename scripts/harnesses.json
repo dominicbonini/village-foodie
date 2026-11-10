@@ -217,7 +217,8 @@
     "copy-truth-1.cjs",
     "partners-1.cjs",
     "email-sender-1.cjs",
-    "demo-claim-2.cjs"
+    "demo-claim-2.cjs",
+    "billing-1.cjs"
   ],
   "excluded": {
     "$comment": "Every other scripts/*.cjs file, with the reason it is NOT in the list above. The runner checks this covers the directory.",
@@ -234,7 +235,9 @@
     "operational_read_only": {
       "$why": "Talks to live Stripe/Supabase. Read-only today, but it is an operational tool, not a proof, and it must never run unattended.",
       "files": [
-        "list-stranded-authorisations.cjs"
+        "list-stranded-authorisations.cjs",
+        "billing-1-stripe-test.cjs",
+        "billing-1-db-read.cjs"
       ]
     },
     "server": {
