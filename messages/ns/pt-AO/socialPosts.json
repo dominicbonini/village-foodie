@@ -1,0 +1,10 @@
+{
+  "captionThisPostNote": "Escreva directamente na caixa para a alterar só nesta publicação. O seu modelo fica como está.",
+  "templatePanelNote": "As palavras a laranja são preenchidas com os dados de cada evento. Ao guardar, actualiza a legenda acima e todas as publicações futuras.",
+  "weeklyBoxTitle": "Imagem ao lado da respectiva linha na publicação semanal",
+  "weeklyNotOnLine": "O seu design semanal ainda não mostra imagens dos locais, por isso esta só aparece quando activar essa opção em Designs.",
+  "pictureWeeklyOff": "Active-a no seu design semanal →",
+  "lookHeading": "ASPECTO",
+  "daysPartsHint": "Arraste ⋮⋮ para mudar a ordem. Para mudar o aspecto das palavras, clique nelas no cartaz.",
+  "previewPostHint": "É exactamente isto que será publicado."
+}

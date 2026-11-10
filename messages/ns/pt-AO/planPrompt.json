@@ -1,0 +1,11 @@
+{
+  "switchedOff": "{many, select, yes {{feature}: funcionalidades desactivadas para o seu food truck.} other {{feature}: funcionalidade desactivada para o seu food truck.}}",
+  "features": {
+    "qr_menu": {
+      "name": "O menu com código QR"
+    },
+    "offline_protection": {
+      "name": "A protecção de encomendas offline"
+    }
+  }
+}

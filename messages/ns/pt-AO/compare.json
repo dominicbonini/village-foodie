@@ -1,0 +1,34 @@
+{
+  "orders": {
+    "titleNo": "Quanto acha que facturaria online, por mês, por food truck?"
+  },
+  "fee": {
+    "title": "Quanto paga actualmente por encomenda?"
+  },
+  "cta": {
+    "upload": "Carregar o meu menu →",
+    "uploadSave": "Carregar o meu menu e poupar {amount} →"
+  },
+  "breakdown": {
+    "card": "Processamento de cartões — a taxa da Stripe de {fee} por encomenda, paga à Stripe. Pagaria praticamente o mesmo num TPA ao balcão.",
+    "provider": "A taxa própria do seu fornecedor actual ({pct})"
+  },
+  "enterRate": "Introduza quanto paga actualmente para ver a sua poupança.",
+  "panel": {
+    "nowYear": "<label>Actualmente paga</label><fig>{amount}<q> por ano</q></fig>",
+    "nowMonth": "<label>Actualmente paga</label><fig>{amount}<q> por mês</q></fig>"
+  },
+  "anchor": {
+    "weekendPitch": "É um local para um fim-de-semana num festival de comida."
+  },
+  "year": {
+    "current": "Fornecedor actual <b>{amount}</b>"
+  },
+  "smallPrint": {
+    "check": "Confirme as taxas do seu fornecedor actual antes de decidir."
+  },
+  "intro": "Demora cerca de um minuto. Já usa um sistema? Comparamo-lo. Ainda não? Mostramos-lhe exactamente quanto custa.",
+  "meta": {
+    "description": "Compare quanto lhe custam actualmente as encomendas online e as comissões das apps de entrega com um ano na HatchGrab — uma estimativa num minuto."
+  }
+}

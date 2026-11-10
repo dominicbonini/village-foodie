@@ -1,0 +1,5 @@
+{
+  "menu_changed": "O menu mudou — verifique a sua encomenda antes de a fazer.",
+  "menu_changed_item": "O menu mudou — {item} já não está disponível. Verifique a sua encomenda antes de a fazer.",
+  "menu_changed_option": "O menu mudou — {option} (em {item}) já não está disponível. Verifique a sua encomenda antes de a fazer."
+}

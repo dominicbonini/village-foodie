@@ -1,0 +1,55 @@
+{
+  "steps": {
+    "menu": "Menu"
+  },
+  "toast": {
+    "demoGone": "O menu da sua demonstração já não está disponível — carregue-o novamente para continuar.",
+    "commitFailedDetail": "Não foi possível concluir a gravação do menu: {error}. Alguns artigos podem já ter sido guardados — verifique o seu menu antes de tentar novamente.",
+    "commitFailed": "Não foi possível concluir a gravação do menu. Alguns artigos podem já ter sido guardados — verifique o seu menu antes de tentar novamente."
+  },
+  "settingsReview": {
+    "loading": "A carregar as suas definições actuais…"
+  },
+  "welcome": {
+    "body": "{name} está configurado. A seguir adicionamos o seu menu e depois o seu primeiro evento."
+  },
+  "offer": {
+    "title": "Usar o menu da sua demonstração?",
+    "use": "Usar este menu",
+    "upload": "Carregar outro menu",
+    "body": "Guardámos o menu que carregou — {count, plural, one {# artigo} other {# artigos}}. Use-o como ponto de partida ou carregue outro."
+  },
+  "upload": {
+    "title": "Importar o seu menu",
+    "body": "Carregue uma foto do quadro do menu, uma captura de ecrã, um PDF ou cole o seu menu como texto. A nossa IA lê-o e cria o seu menu digital — revê tudo antes de ser guardado.",
+    "confirmCancel": "Cancelar esta importação? A revisão deste menu será descartada.",
+    "process": "Processar menu"
+  },
+  "processing": {
+    "title": "A analisar o seu menu"
+  },
+  "review": {
+    "title": "Rever menu importado",
+    "lastCategory": "O seu menu precisa de pelo menos uma categoria"
+  },
+  "extras": {
+    "separate": "Artigos separados no menu"
+  },
+  "allergens": {
+    "detected": "Detectámos alergénios no seu menu. Escolha abaixo como os mostrar."
+  },
+  "kitchen": {
+    "saveAdd": "Guardar e adicionar ao menu"
+  },
+  "schedule": {
+    "intro": "Se a sua agenda está no seu site, podemos mantê-la actualizada automaticamente — ou adicione as datas por si.",
+    "urlPlaceholder": "https://oseufoodtruck.co.ao/eventos"
+  },
+  "done": {
+    "imported": "Menu importado!",
+    "added": "Os seus artigos foram adicionados ao menu."
+  },
+  "discard": {
+    "setupBody": "A sua conta e o seu food truck estão guardados — nada se perde. Pode adicionar o seu menu a qualquer momento: inicie sessão e toque em <b>Importar menu</b> no ecrã do menu para continuar exactamente aqui."
+  }
+}

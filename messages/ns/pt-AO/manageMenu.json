@@ -1,0 +1,33 @@
+{
+  "title": "Menu",
+  "importMenu": "✨ Importar menu",
+  "toast": {
+    "photoUpdated": "Foto actualizada",
+    "categoryOrderUpdated": "Ordem das categorias actualizada"
+  },
+  "empty": {
+    "title": "Crie o seu menu em segundos",
+    "body": "Tire uma foto ao quadro do menu, faça uma captura de ecrã do seu menu actual ou arraste um PDF — a nossa IA extrai tudo e cria automaticamente o seu menu digital.",
+    "importAi": "✨ Importar menu com IA"
+  },
+  "category": {
+    "notesOn": "Notas activas",
+    "countsTitle": "Conta para o limite da capacidade da cozinha (definido em Menu → Capacidade da cozinha)"
+  },
+  "allergens": {
+    "buildFirst": "Crie primeiro o seu menu — adicione pratos e depois configure os alergénios",
+    "update": "Actualizar informação de alergénios"
+  },
+  "deleteItem": {
+    "body": "Este artigo fica oculto do seu menu de imediato. Não vai aparecer na página de encomenda do cliente nem no painel Adicionar encomenda."
+  },
+  "item": {
+    "selectCategory": "Seleccione uma categoria…",
+    "allergenGateBody": "Abra a caixa «Configurar / rever alergénios» no separador Menu — o assistente guia a confirmação de cada prato.",
+    "selectAll": "Seleccione todos os que se aplicam"
+  },
+  "confirmDelete": {
+    "withItems": "Eliminar «{name}»? Isto também elimina {count, plural, one {# artigo} other {# artigos}} desta categoria. Esta acção não pode ser anulada.",
+    "empty": "Eliminar «{name}»? Esta acção não pode ser anulada."
+  }
+}

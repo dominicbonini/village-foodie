@@ -1,0 +1,21 @@
+{
+  "upload": {
+    "bannerButton": "Guardar o meu menu →",
+    "sub": "O seu menu passa directamente."
+  },
+  "sample": {
+    "sub": "A seguir, carrega o seu próprio menu — demora um minuto."
+  },
+  "saveOnly": {
+    "bannerButton": "Guardar o meu menu →"
+  },
+  "stepper": {
+    "menu": "Menu"
+  },
+  "confirmKeepUntil": "Guardamo-la até <b>{date}</b>. O seu menu vem consigo quando fizer a configuração a sério.",
+  "readyBody": "Agora vamos concluir a configuração do seu food truck — o menu, os alergénios e a cozinha.",
+  "stage": {
+    "menu": "A carregar o seu menu"
+  },
+  "emailPlaceholder": "nome@oseufoodtruck.co.ao"
+}

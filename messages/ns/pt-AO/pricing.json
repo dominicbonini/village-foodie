@@ -1,0 +1,3 @@
+{
+  "footnote": "* Acrescem as taxas de processamento de cartões da Stripe nas encomendas online pagas com cartão (tarifa actual — {country}: {cardFee}), pagas à Stripe e não à HatchGrab. As encomendas ao balcão usam o seu próprio TPA — a HatchGrab cobra 0 %."
+}

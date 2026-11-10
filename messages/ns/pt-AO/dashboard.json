@@ -1,0 +1,80 @@
+{
+  "toast": {
+    "layout": "{layout, select, scroll {O menu aparece numa só página} other {O menu aparece por categorias}}",
+    "autoAccept": "{state, select, on {Aceitação automática activada} other {Aceitação automática desactivada}}",
+    "cardPayments": "{state, select, off {Pagamentos com cartão desactivados — os clientes pagam ao balcão} other {Pagamentos com cartão reactivados}}",
+    "unpaidOrders": "{state, select, on {Encomendas por pagar activadas para este evento} other {Encomendas por pagar desactivadas para este evento}}",
+    "cashAndCard": "{state, select, on {Dinheiro e cartão activados para este evento} other {Dinheiro e cartão desactivados para este evento}}",
+    "buzzerPrompt": "{state, select, on {Lembrete de pager activado para este evento} other {Lembrete de pager desactivado para este evento}}",
+    "editBusy": "Outra pessoa está a actualizar encomendas neste momento. Tente novamente.",
+    "orderUpdated": "Encomenda #{id} actualizada",
+    "categoryUpdateFailed": "Não foi possível actualizar a categoria — tente novamente"
+  },
+  "demo": {
+    "endedBody": "Inicie um novo e preparamos um serviço novo para agora mesmo — o seu menu mantém-se igual."
+  },
+  "refund": {
+    "pending": "Reembolso de {amount} enviado. A Stripe está a processá-lo — a encomenda aparecerá como reembolsada quando o dinheiro tiver sido efectivamente devolvido."
+  },
+  "cancelModal": {
+    "selectReason": "Seleccione um motivo"
+  },
+  "switchEventConfirm": "Evento actual: {current}. Mudar para {next}? Toque no evento actual para voltar.",
+  "extraWait": {
+    "activeTapToClear": "+{mins} min activos · Toque para limpar"
+  },
+  "banner": {
+    "menuSnapshot": "Menu guardado neste tablet às {time}. Verifique os preços antes de cobrar.",
+    "cardPaymentsOff": "Os pagamentos com cartão estão desactivados — os clientes pagam ao balcão. Continuam desactivados, em todos os eventos, até os voltar a activar.",
+    "turnBackOn": "Reactivar",
+    "offlinePaused": "A protecção sem ligação está activa — os clientes podem ver o menu, mas não encomendar.",
+    "paused": "Encomendas em pausa{indefinite, select, yes {} other { — retomam dentro de ~{mins} min}} · Os clientes podem ver o menu, mas não encomendar",
+    "extraWait": "+{mins} min de espera adicional activos"
+  },
+  "tabs": {
+    "stock": "Menu e stock"
+  },
+  "eventBar": {
+    "noEvent": "Nenhum evento seleccionado",
+    "selectEvent": "Seleccionar evento"
+  },
+  "orders": {
+    "noEvent": "Nenhum evento seleccionado — seleccione um evento para ver as encomendas",
+    "prepBannerBody": "O seu menu está a usar tempos de preparação predefinidos. Actualize-os em Gerir para a cozinha não ficar sobrecarregada de encomendas.",
+    "newSection": "Novas — requer acção",
+    "updated": "Actualizado às {time}"
+  },
+  "addTab": {
+    "noMenuSaved": "O seu menu não está guardado neste dispositivo, por isso não há com que criar uma encomenda."
+  },
+  "settings": {
+    "layoutTitle": "Disposição do menu",
+    "layoutTabsHelp": "Mostra uma categoria de cada vez. Toque numa categoria para mudar. Ideal para menus mais longos, em que cada artigo fica sempre no mesmo sítio.",
+    "layoutScrollHelp": "Mostra todos os artigos numa única lista com deslocamento, com um título para cada categoria. Não há botões de categoria — desloca-se para navegar. Ideal para menus mais curtos, em que consegue ver quase tudo de uma vez."
+  },
+  "stock": {
+    "colOn": "Activo",
+    "ownPriceTitle": "Preço próprio deste evento — prima × para voltar ao preço do tipo ou do menu",
+    "loadingMenu": "A carregar o menu…"
+  },
+  "offlineNotice": {
+    "title": "A protecção sem ligação protegeu-o",
+    "body": "As encomendas estiveram em pausa enquanto o seu dispositivo estava sem ligação. As encomendas dos clientes já estão activas de novo."
+  },
+  "pause": {
+    "body": "Os clientes continuam a poder ver o menu, mas não vão conseguir encomendar.",
+    "indefinite": "Até eu voltar a activar"
+  },
+  "screenOff": {
+    "body": "A protecção de encomendas sem ligação está activa. Se o ecrã se desligar e o dispositivo perder a ligação, as encomendas online podem ser pausadas automaticamente."
+  },
+  "edit": {
+    "current": "(actual)",
+    "repriceTitle": "Não está no menu",
+    "repriceBody": "Estes artigos são novos nesta encomenda e não estão no menu, por isso não foi possível verificar o preço. Tudo o que já estava na encomenda mantém o preço original. Ainda nada foi guardado."
+  },
+  "typePicker": {
+    "current": "Actual",
+    "clearOwn": "Limpar as minhas alterações e usar exactamente o tipo {type}"
+  }
+}

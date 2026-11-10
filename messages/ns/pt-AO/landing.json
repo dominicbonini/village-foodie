@@ -1,0 +1,34 @@
+{
+  "hero": {
+    "subSmall": "Carregue o seu menu, sem registo.<br></br>Veja uma demonstração a funcionar em menos de 60 segundos.",
+    "cta": "Carregar o meu menu →",
+    "ctaNote": "<lead>Carregue uma foto do seu menu e veja-o a funcionar em menos de 60 segundos.</lead><small>Sem registo. Sem cartão.</small>"
+  },
+  "shots": {
+    "dashboardAlt": "Registar uma encomenda na HatchGrab: o menu à esquerda, o cesto e o total à direita",
+    "phoneAlt": "Encomendar a um food truck na HatchGrab: o menu com fotos e preços, e o total do cesto actualizado"
+  },
+  "does": {
+    "devicesBody": "Funciona no telemóvel que traz no avental, no tablet ao balcão, no portátil dentro do food truck — e no TPA que já usa para cobrar.",
+    "whatsappBody": "«Onde estão hoje à noite?» «Que sobremesas têm?» O seu WhatsApp responde enquanto conduz até ao local ou está à grelha, com base no seu menu e na sua agenda. Messenger e Instagram em breve."
+  },
+  "steps": {
+    "menuTitle": "Crie o seu menu",
+    "scheduleBody": "Tem-na no seu site? Lemo-la a partir daí e mantemo-la actualizada. Se não, fotografe-a também. Só tem de aprovar o que encontrarmos."
+  },
+  "testimonial": {
+    "quote": "A HatchGrab tornou as encomendas muito mais fáceis. Está tudo organizado, conseguimos controlar o stock e saber exactamente quantas pizzas nos faltam vender — e os horários de levantamento são fantásticos para as aldeias mais movimentadas."
+  },
+  "faq": {
+    "metaTitle": "Encomendas para food trucks: FAQ | HatchGrab",
+    "metaDescription": "Respostas claras para food trucks sobre os preços da HatchGrab, a configuração, a recepção de encomendas e os pagamentos online ou no levantamento."
+  },
+  "final": {
+    "lede": "Carregue uma foto ou captura de ecrã do seu menu e transformamo-lo numa página de encomendas a funcionar, para experimentar em menos de 60 segundos. Os seus artigos, os seus preços. Sem registo, sem cartão, nada para instalar. Dê uma vista de olhos e depois decida.",
+    "cta": "Carregar o meu menu agora →"
+  },
+  "meta": {
+    "title": "Sistema de encomendas food truck — HatchGrab {country}",
+    "description": "Receba encomendas e encomendas antecipadas no seu local, sem filas. Encomendas online e ecrã da cozinha para food trucks ({country}) — não é um POS."
+  }
+}

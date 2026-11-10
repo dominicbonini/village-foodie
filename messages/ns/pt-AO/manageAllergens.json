@@ -1,0 +1,25 @@
+{
+  "cardEditor": {
+    "intro": "Os clientes veem isto <b>exactamente como o escrever</b> — nada é reescrito. Escreva ou cole abaixo, ou carregue uma fotografia/PDF e nós extraímos o texto para o rever."
+  },
+  "cardUpload": {
+    "perDish": "{detected, select, yes {Carregue-a e usamo-la para preencher os alergénios dos seus pratos. Os alergénios detectados aparecem na página seguinte, onde confirma cada prato.} other {Carregue-a e usamo-la para preencher os alergénios dos seus pratos.}}",
+    "blanket": "A ficha indica que <b>{list}</b> pode estar presente em <b>todos</b> os pratos. Adicionar a todos os pratos? (continua a confirmar cada um) <muted>— desactivado por predefinição</muted>"
+  },
+  "wizard": {
+    "genericWarn": {
+      "text": "Foi detectado «{generic}», mas não é específico. Escolha {picks} se este prato contiver {family} — ou deixe sem selecção se não contiver."
+    },
+    "review": {
+      "detected": "Detectados a partir do seu menu — <b>verifique-os</b>. Os alergénios ficam ocultos para os clientes até confirmar cada prato.",
+      "emptyTitle": "Sem artigos no menu",
+      "emptyBody": "Adicione primeiro artigos ao menu e depois defina aqui os respectivos alergénios."
+    },
+    "cardPanel": {
+      "intro": "Os clientes vão ver esta ficha como a referência de alergénios do menu. No modo só com ficha, os alergénios por prato ficam ocultos (os dados dos pratos são mantidos caso mude mais tarde para alergénios por prato)."
+    },
+    "hint": {
+      "skipDefers": "Saltar adia — os pratos que não confirmou ficam ocultos para os clientes até os respectivos alergénios serem confirmados."
+    }
+  }
+}

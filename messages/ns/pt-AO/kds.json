@@ -1,0 +1,17 @@
+{
+  "header": {
+    "readyOnlyTitle": "Este ecrã só marca encomendas como prontas, por isso esta opção não pode ser desactivada — é a única etapa que realiza.",
+    "handoverOnlyTitle": "Este ecrã só recebe pagamentos, por isso esta opção não pode ser desactivada — é a única etapa que realiza."
+  },
+  "banner": {
+    "queued": "{n, plural, one {{count} acção em fila} other {{count} acções em fila}}",
+    "extraWait": "⏱ +{mins} min de espera extra activos"
+  },
+  "screenOff": {
+    "bodyVans": "{vans} {n, plural, one {tem} other {têm}} a deteção offline activada. Se o ecrã se desligar, o dispositivo pode deixar de enviar o sinal de ligação e as encomendas dos clientes podem ser pausadas."
+  },
+  "event": {
+    "waitActive": "⏱ +{mins} min activos · Toque para limpar",
+    "switchConfirm": "Mudar de {from} para {to}?{n, plural, =0 {} one { {count} encomenda neste ecrã será substituída.} other { {count} encomendas neste ecrã serão substituídas.}} Toque no evento actual para voltar."
+  }
+}

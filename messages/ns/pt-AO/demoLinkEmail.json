@@ -1,0 +1,5 @@
+{
+  "intro": "Aqui está o link para a demonstração que criámos a partir do seu menu. Encomende como um dos seus clientes e depois veja a encomenda chegar ao ecrã da cozinha. Não precisa de iniciar sessão — basta tocar no link.",
+  "deletion": "Isto é uma demonstração, por isso não a guardamos: vamos eliminá-la, juntamente com o menu que carregou, a {date}. Se quiser mais tempo, toque em «Guardar o meu menu» na demonstração e guardamo-la durante 14 dias.",
+  "deletionSoon": "Isto é uma demonstração, por isso não a guardamos: vamos eliminá-la, juntamente com o menu que carregou, ao fim de 24 horas. Se quiser mais tempo, toque em «Guardar o meu menu» na demonstração e guardamo-la durante 14 dias."
+}

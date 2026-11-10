@@ -1,0 +1,7 @@
+{
+  "selectDate": "Seleccionar data",
+  "selectVan": "Seleccione um food truck",
+  "errors": {
+    "van": "Seleccione um food truck"
+  }
+}

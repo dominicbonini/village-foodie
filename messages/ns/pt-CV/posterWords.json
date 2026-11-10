@@ -1,0 +1,17 @@
+{
+  "placeSample": {
+    "nameTownBelow": "Esplanada da Praça\nPraia",
+    "nameTown": "Esplanada da Praça, Praia",
+    "nameOnly": "Esplanada da Praça"
+  },
+  "busyWeek": {
+    "venue1": "Câmara Municipal do Sal",
+    "town1": "Espargos",
+    "venue2": "Complexo Desportivo de Assomada",
+    "town2": "Assomada",
+    "town3": "Mindelo",
+    "town4": "Santa Maria",
+    "town5": "Tarrafal",
+    "town6": "São Filipe"
+  }
+}

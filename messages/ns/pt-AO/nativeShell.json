@@ -1,0 +1,27 @@
+{
+  "binary": {
+    "cameraUsage": "A HatchGrab usa a câmara para que possa fotografar o quadro do menu, os seus pratos e outros documentos e carregá-los directamente na sua conta. As imagens são usadas apenas para os carregamentos que decidir fazer."
+  },
+  "gate": {
+    "status": "Encomenda #{id} {action, select, confirm {confirmada} reject {recusada} ready {pronta} collected {levantada} undo_collected {reposta} cancel {cancelada} other {actualizada}}"
+  },
+  "notify": {
+    "intro": "Alertas neste dispositivo. Active para escolher que alertas recebe.",
+    "refused": "Para activar esta opção, as notificações têm de estar activadas nas Definições do dispositivo."
+  },
+  "van": {
+    "select": "Seleccionar…"
+  },
+  "setup": {
+    "fetchErrorBody": "Não conseguimos contactar o servidor para configurar <b>este dispositivo</b>. Verifique a ligação e tente novamente — as suas encomendas e definições não são afectadas.",
+    "noVanTitle": "Nenhum food truck activo",
+    "noVanBody": "Este negócio ainda não tem nenhum food truck activo. Active um em <b>Definições → Os seus food trucks</b> e este dispositivo fica configurado automaticamente — não precisa de fazer mais nada aqui.",
+    "selectVan": "Seleccione um food truck…"
+  },
+  "device": {
+    "setPin": "Definir PIN e activar"
+  },
+  "appLock": {
+    "confirmEnable": "Confirme para activar o bloqueio da app"
+  }
+}

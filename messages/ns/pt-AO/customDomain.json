@@ -1,0 +1,38 @@
+{
+  "card": {
+    "exampleDomain": "oseufoodtruck.co.ao"
+  },
+  "turnOff": {
+    "link": "Desactivar",
+    "heading": "Desactivar o seu próprio endereço web?",
+    "carriesOn": "Isto continua exactamente como está, e é para aqui que o seu código QR encaminha as pessoas:",
+    "cancel": "Manter activo",
+    "confirm": "Desactivar",
+    "working": "A desactivar…",
+    "failed": "Não conseguimos desactivar isso neste momento. Nada mudou — o seu endereço continua a funcionar. Tente novamente daqui a pouco."
+  },
+  "record": {
+    "hintExact": "Copie isto exactamente."
+  },
+  "providers": {
+    "cloudflare": {
+      "add": "Seleccione «Add record» e escolha «CNAME» como «Type».",
+      "save": "Deixe «TTL» em «Auto» e seleccione «Save»."
+    },
+    "godaddy": {
+      "dns": "Em «Domain Settings», seleccione «DNS».",
+      "add": "Seleccione «Add New Record» e escolha «CNAME» no menu «Type».",
+      "save": "Deixe «TTL» como está e seleccione «Save»."
+    },
+    "123reg": {
+      "manage": "Ao lado de «Domains», seleccione «Manage All» e escolha o seu endereço web.",
+      "dns": "Seleccione «DNS» e depois «Add New Record»."
+    }
+  },
+  "instructionsEmail": {
+    "introAt": "Vamos colocar a agenda em directo de {truckName} em {address}, e é preciso adicionar um registo ao nosso domínio em {provider}.",
+    "introHolder": "Vamos colocar a agenda em directo de {truckName} em {address}, e é preciso adicionar um registo ao nosso domínio junto de quem o detém.",
+    "wholeChange": "É só esta alteração — nada mais no site é afectado e o resto do nosso domínio continua a funcionar exactamente como agora. Normalmente começa a funcionar dentro de uma hora.",
+    "pointsAt": "A página para onde aponta mostra onde vamos estar a vender a seguir e actualiza-se sozinha."
+  }
+}

@@ -1,0 +1,28 @@
+{
+  "preview": {
+    "intro": "Escreva uma pergunta como um cliente faria e veja exactamente o que ele receberia. Nada é enviado a ninguém.",
+    "examples": {
+      "menu": "O que há no menu?"
+    }
+  },
+  "notice": {
+    "sdkBlocked": "Não foi possível carregar o script de início de sessão da Meta. Normalmente, a causa é um bloqueador de anúncios ou a protecção contra rastreamento."
+  },
+  "card": {
+    "description": "Responda automaticamente às perguntas dos clientes nas suas redes sociais, com base no seu menu e na sua agenda.",
+    "switchedOff": "As respostas automáticas do WhatsApp estão desactivadas para o seu food truck.",
+    "instagram": "Respostas automáticas às mensagens directas do Instagram. Vai requerer uma conta profissional do Instagram."
+  },
+  "blocked": {
+    "body": "O WhatsApp está a recusar enviar as suas respostas automáticas devido a um problema de facturação na sua conta WhatsApp Business. Os clientes continuam a poder enviar-lhe mensagens e continua a ver tudo o que enviam — mas não estão a receber resposta.",
+    "fix": "Paga estas mensagens directamente ao WhatsApp, por isso o problema resolve-se no WhatsApp Manager. <link>Verificar o método de pagamento</link>"
+  },
+  "billing": {
+    "heading": "Facturação",
+    "summary": "É a Meta, e não o HatchGrab, que factura as respostas à sua conta WhatsApp. A partir de {from}, as primeiras {free, number} por mês são gratuitas. Informação correta a {checked}; consulte os <link>preços da Meta</link> para ver alterações.",
+    "chargesBody": "Cada resposta que o HatchGrab envia por si é facturada pela Meta à sua conta WhatsApp Business. A partir de {from}, a Meta inclui {free, number} respostas gratuitas por mês por número; depois disso, cada resposta é cobrada à tarifa da Meta. As respostas que envia pessoalmente a partir da app WhatsApp Business não são cobradas. A Meta define estes preços e pode alterá-los. <link>Ver os preços da Meta</link>"
+  },
+  "signup": {
+    "deliveryRefused": "A sua conta está associada, mas a Meta não activou a entrega de mensagens. A sua configuração está guardada — contacte o suporte em vez de a executar novamente."
+  }
+}

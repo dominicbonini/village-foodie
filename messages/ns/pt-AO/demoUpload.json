@@ -1,0 +1,26 @@
+{
+  "steps": {
+    "reading": "A ler o seu menu…"
+  },
+  "templateSteps": {
+    "menu": "A configurar o menu…"
+  },
+  "dialogLabel": "Carregar o seu menu",
+  "heading": "✨ Carregue o seu menu",
+  "failedHeading": "Não conseguimos ler esse menu",
+  "intro": "Uma fotografia do quadro do menu, uma captura de ecrã, um PDF, ou cole-o como texto. A nossa IA lê-o e cria-lhe uma página de encomendas a funcionar — os seus artigos, os seus preços — em menos de 60 segundos. Sem registo, sem cartão.",
+  "slow": "Está a demorar mais do que o habitual — os menus grandes às vezes demoram.",
+  "sampleWhileYouWait": "Ou explore um menu de exemplo enquanto espera",
+  "standIn": "Este <b>não vai ser o seu menu</b> — é apenas um exemplo para ver como funciona.",
+  "seeSample": "Ver menu de exemplo",
+  "orSample": "Ou explore um menu de exemplo",
+  "buildBody": "Deixe o seu email e uma pessoa real introduz o seu menu e envia-lhe a ligação.",
+  "emailPlaceholder": "nome@oseufoodtruck.co.ao",
+  "noPhoto": "Não tem uma fotografia do menu à mão?",
+  "fields": {
+    "uploadLabel": "Carregar ficheiro do menu",
+    "dropHere": "Largue aqui o seu menu",
+    "pasteLabel": "Colar texto do menu",
+    "pastePlaceholder": "Cole aqui o seu menu — nomes dos artigos, descrições, preços…"
+  }
+}

@@ -1,0 +1,3 @@
+{
+  "cancelledBody": "A sua encomenda foi cancelada.{card, select, no {} other { Se pagou com cartão, qualquer reembolso é tratado directamente por {withTruck, select, yes {{truck}} other {o food truck}} — contacte-os para esse efeito.}}"
+}

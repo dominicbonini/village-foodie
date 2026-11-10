@@ -1,0 +1,7 @@
+{
+  "explainerBody": "Se o ecrã se desligar, o dispositivo perder a internet ou mudar para outro site, a protecção sem ligação entra em acção — pausando as encomendas ou desligando a aceitação automática, conforme o que escolheu.",
+  "reminder": "⚠️ Mantenha o painel ou o ecrã da cozinha ligado e com internet durante o serviço, ou a protecção sem ligação pode entrar em acção.",
+  "enableConfirm": "Protecção sem ligação activada.\n\nPara as encomendas continuarem a entrar, o ecrã tem de ficar ligado. Se este dispositivo perder a ligação, a protecção sem ligação entra em acção no modo que escolheu.\n\nConfirme que a opção «Ecrã ligado» está activada neste dispositivo.",
+  "disableConfirm": "Desactivar a protecção sem ligação para este evento?\n\nSe este dispositivo perder a ligação, as encomendas online continuam — os clientes podem fazer encomendas que não consegue ver. Desactive apenas se tiver uma ligação fiável.",
+  "switchLabel": "Protecção de encomendas sem ligação"
+}

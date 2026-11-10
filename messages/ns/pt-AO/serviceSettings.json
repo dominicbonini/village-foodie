@@ -1,0 +1,10 @@
+{
+  "labels": {
+    "offline_protection": "Protecção de encomendas sem ligação"
+  },
+  "pricesStandardCell": "Os preços do seu menu",
+  "pricesMenuCell": "Menu",
+  "pricesTypeOffCell": "Preços do menu",
+  "placeTypeHelper": "Adicionar evento escolhe este tipo sempre que seleccionar este local.",
+  "eventPriceOwnNote": "{hasType, select, yes {{type} {price} · este evento} other {menu {price} · este evento}}"
+}

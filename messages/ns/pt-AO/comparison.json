@@ -1,0 +1,44 @@
+{
+  "meta": {
+    "title": "Sistemas de encomendas para food trucks 2026: comparação"
+  },
+  "table": {
+    "appFlagOff": "Sim – ainda desactivado; aparece quando estiver nas lojas de apps",
+    "morePending": "Mais fornecedores aparecerão aqui assim que verificarmos os seus dados no respectivo site."
+  },
+  "costs": {
+    "perMonthYearly": "{price} por mês, facturado anualmente"
+  },
+  "faq": {
+    "whatA": "Um sistema de encomendas recebe encomendas online antes de os clientes chegarem ao food truck: escolhem os pratos e uma hora de levantamento, pagam online ou no levantamento, e a encomenda aparece na sua cozinha. Uma caixa ou um TPA cobra o pagamento no food truck. Os dois complementam-se."
+  },
+  "method": {
+    "meaning": "«Sim» significa que o fornecedor indica publicamente a funcionalidade. «Não especificado» significa que não encontrámos nada sobre isso no respectivo site — não que a funcionalidade não exista.",
+    "review": "Os preços e as funcionalidades são verificados automaticamente no site de cada produto; cada afirmação tem um link para a respectiva fonte."
+  },
+  "admin": {
+    "check": {
+      "apps": "Flags de iPad e Android activas para {country}"
+    },
+    "whyAutoOff": "a publicação automática está desactivada para este país"
+  },
+  "cell": {
+    "flagOff": "ainda desactivado; aparece quando estiver nas lojas de apps"
+  },
+  "features": {
+    "notify": {
+      "ours": "email quando o passo «encomenda pronta» está activo, e uma página de estado da encomenda; sem SMS, WhatsApp nem push"
+    },
+    "allergens": {
+      "label": "Alergénios no menu"
+    },
+    "menuphoto": {
+      "label": "Menu criado a partir de uma foto",
+      "explain": "Uma foto ou PDF do menu preenche os pratos, que depois só tem de verificar."
+    },
+    "terminal": {
+      "label": "TPA para o balcão incluído",
+      "explain": "O fornecedor disponibiliza um TPA para pagamentos no food truck."
+    }
+  }
+}

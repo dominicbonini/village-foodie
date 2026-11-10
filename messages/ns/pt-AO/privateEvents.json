@@ -1,0 +1,6 @@
+{
+  "link": {
+    "newLinkConfirm": "Criar um novo link? O link actual deixa de funcionar de imediato, e os códigos QR que já imprimiu também deixam de funcionar.",
+    "newLinkHelp": "Use isto se o link chegou onde não devia. O link actual deixa de funcionar de imediato, e os códigos QR impressos também."
+  }
+}

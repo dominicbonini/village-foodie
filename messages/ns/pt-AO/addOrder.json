@@ -1,0 +1,13 @@
+{
+  "savedToast": "Encomenda {id} guardada{paid, select, cash { — paga em dinheiro} card { — paga no seu TPA} other {}}",
+  "confirmedToast": "Encomenda #{id} confirmada{paid, select, cash { — paga em dinheiro} card { — paga no seu TPA} other {}}",
+  "notOnMenu": "{name}{hasOn, select, yes { (em {on})} other {}} — não está no menu",
+  "somethingNotOnMenu": "Algo nesta encomenda já não está no menu",
+  "selectAnEvent": "Seleccione um evento",
+  "selectEventToConfirm": "Seleccione um evento para confirmar",
+  "noEventSelected": "Nenhum evento seleccionado",
+  "selectEvent": "Seleccionar evento",
+  "futureEventSelected": "Evento de {date} seleccionado. As encomendas aparecem no ecrã de encomendas quando o evento abrir.",
+  "eventEnded": "Este evento já terminou — está a adicionar uma encomenda depois do fecho. Confirme que seleccionou o evento certo.",
+  "loadingMenu": "A carregar o menu…"
+}

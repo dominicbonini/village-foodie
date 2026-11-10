@@ -1,0 +1,4 @@
+{
+  "paidCardMachine": "Pago no seu TPA{mixed, select, yes { — {amount}} other {}}",
+  "inPersonHint": "Dinheiro ou TPA — não registado"
+}

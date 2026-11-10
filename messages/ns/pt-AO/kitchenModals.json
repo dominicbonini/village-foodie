@@ -1,0 +1,10 @@
+{
+  "selectReason": "Seleccione um motivo",
+  "finish": {
+    "optionCurrent": "{time} (actual)",
+    "earlier": "É mais cedo do que a hora de fim actual. Os clientes não poderão encomendar para horas posteriores."
+  },
+  "picker": {
+    "selected": "Seleccionado"
+  }
+}

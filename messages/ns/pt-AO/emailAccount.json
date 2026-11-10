@@ -1,0 +1,8 @@
+{
+  "changeEmail": {
+    "stillActive": "O seu endereço de email actual continua activo."
+  },
+  "resendVerification": {
+    "stillActive": "O seu email actual continua activo."
+  }
+}

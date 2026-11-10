@@ -1,0 +1,28 @@
+{
+  "payNote": {
+    "capturedBody": "O seu pagamento foi efectuado — não há nada a pagar no food truck.",
+    "capturedText": "Pago com cartão. O seu pagamento foi efectuado — não há nada a pagar no food truck."
+  },
+  "confirmation": {
+    "slotUpdated": "A sua hora de levantamento foi actualizada",
+    "contactInstagram": "Envie-nos uma mensagem directa no Instagram",
+    "textInstagram": "Dúvidas? Envie-nos uma mensagem directa no Instagram: {value}"
+  },
+  "cancelSentence": {
+    "refunded": "Foram reembolsados {amount} no seu cartão. Os reembolsos costumam demorar 5 a 10 dias úteis a aparecer no seu extracto, consoante o seu banco.",
+    "paidContactTruck": "Se pagou com cartão, qualquer reembolso é tratado directamente por {truck} — contacte-os para esse efeito."
+  },
+  "refund": {
+    "timing": "Os reembolsos costumam demorar 5 a 10 dias úteis a aparecer no seu extracto, consoante o seu banco."
+  },
+  "rejection": {
+    "subject": "Actualização da encomenda #{id}",
+    "heading": "Actualização da encomenda",
+    "orderAtTruck": "Encomende directamente no food truck quando chegar. Pedimos desculpa pelo incómodo."
+  },
+  "updated": {
+    "subjectTotalMoved": "Encomenda #{id} actualizada — agora {total} (antes {previous})",
+    "subject": "Encomenda #{id} actualizada",
+    "subjectSlotMoved": "A sua encomenda #{id} foi actualizada"
+  }
+}

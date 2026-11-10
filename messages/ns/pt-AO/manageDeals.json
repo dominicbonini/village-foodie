@@ -1,0 +1,12 @@
+{
+  "toast": {
+    "updated": "Menu actualizado"
+  },
+  "active": "Activo",
+  "off": "Inactivo",
+  "hidden": "Actualmente oculto para os clientes — {warning}",
+  "dealActive": "Menu activo",
+  "applyAllHelp": "Este menu ficará activo em cada novo evento que criar. Pode sempre desligá-lo em eventos específicos na Agenda.",
+  "manualTitle": "Seleccionar manualmente por evento",
+  "manualHelp": "Este menu não aparece nos eventos a menos que o active no separador Agenda."
+}

@@ -1,0 +1,36 @@
+{
+  "details": {
+    "websitePlaceholder": "https://oseufoodtruck.co.ao",
+    "menuIcon": "Ícone do menu"
+  },
+  "contact": {
+    "emailPlaceholder": "ola@oseufoodtruck.co.ao",
+    "emailError": "Introduza um email válido (p. ex. ola@oseufoodtruck.co.ao)",
+    "previousMethodGone": "O seu método de contacto anterior já não está disponível. Seleccione um novo."
+  },
+  "orders": {
+    "emailNotificationsHelp": "{hasEmail, select, yes {Quando activo, é enviado um email para {email} por cada nova encomenda. Os emails de encomenda para os clientes são enviados de qualquer forma.} other {Quando activo, é enviado um email para o email de contacto do food truck por cada nova encomenda. Os emails de encomenda para os clientes são enviados de qualquer forma.}}"
+  },
+  "preorders": {
+    "intro": "Deixe os clientes encomendar antes de um evento. Defina quando abrem as encomendas antecipadas e as regras de prazo abaixo — aplicam-se apenas aos artigos que seleccionar.",
+    "noneYet": "Ainda não há artigos seleccionados — use «Configurar artigos» para adicionar.",
+    "allUseRule": "Todos os artigos seleccionados usam a regra acima: <hl>{rule}</hl>.",
+    "selectAll": "Seleccionar todos"
+  },
+  "vans": {
+    "sameOn": "Este food truck usa as mesmas definições, excepto a capacidade da cozinha.",
+    "sameOff": "Copiar as definições do primeiro food truck — tudo excepto a capacidade da cozinha — e mantê-las sincronizadas.",
+    "takesCashHelp": "Divide o botão de pagamento em «Dinheiro» e «Cartão» para que o que recebe bata certo com a caixa. Pode activar isto para um único evento a partir do painel."
+  },
+  "removeVan": {
+    "preservedEvents": "<b>✓ Mantido:</b> Os registos de eventos passados ligados a este food truck não são afectados.",
+    "removedLink": "<b>✕ Removido:</b> A ligação do ecrã da cozinha e as definições deste food truck serão desactivadas."
+  },
+  "schedule": {
+    "urlPlaceholder": "https://oseufoodtruck.co.ao/eventos"
+  },
+  "qr": {
+    "lockedTitle": "Os códigos com marca estão desactivados para o seu food truck",
+    "lockedBody": "Os códigos com marca estão desactivados para o seu food truck. O seu código QR normal funciona exactamente da mesma forma para os clientes — a diferença é o seu logótipo no centro."
+  }
+}

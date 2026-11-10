@@ -1,0 +1,4 @@
+{
+  "paidStepHelp": "Adiciona um botão Confirmar quando regista uma encomenda manualmente, para a poder registar já e receber o pagamento mais tarde. Active esta opção se aceita encomendas por telefone ou antecipadas.",
+  "paidStepNote": "Só afecta as encomendas que adiciona. Não afecta as encomendas online."
+}

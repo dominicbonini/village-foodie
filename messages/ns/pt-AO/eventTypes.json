@@ -1,0 +1,10 @@
+{
+  "missingTitle": "Os tipos de evento ainda não estão activados.",
+  "missingBody": "A actualização da base de dados para esta funcionalidade ainda não foi aplicada. Nada está avariado — todos os eventos usam a sua configuração habitual.",
+  "phone": {
+    "noMenuItems": "Ainda não há artigos no menu — adicione-os em Menu › Artigos."
+  },
+  "summary": {
+    "offlineOff": "protecção offline desligada"
+  }
+}

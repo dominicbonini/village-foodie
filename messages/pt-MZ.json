@@ -1,0 +1,102 @@
+{
+  "auth": {
+    "fields": {
+      "emailPlaceholder": "nome@exemplo.co.mz"
+    },
+    "signup": {
+      "emailPlaceholder": "nome@oseufoodtruck.co.mz"
+    }
+  },
+  "demoGetStarted": {
+    "emailPlaceholder": "nome@oseufoodtruck.co.mz"
+  },
+  "demoUpload": {
+    "emailPlaceholder": "nome@oseufoodtruck.co.mz"
+  },
+  "manageMenuImport": {
+    "schedule": {
+      "urlPlaceholder": "https://oseufoodtruck.co.mz/eventos"
+    }
+  },
+  "manageScheduleVerify": {
+    "malformed": "Isso não parece um endereço web. Experimente algo como oseufoodtruck.co.mz/eventos"
+  },
+  "manageSettings": {
+    "details": {
+      "websitePlaceholder": "https://oseufoodtruck.co.mz"
+    },
+    "contact": {
+      "emailPlaceholder": "ola@oseufoodtruck.co.mz",
+      "emailError": "Introduza um email válido (p. ex. ola@oseufoodtruck.co.mz)"
+    },
+    "schedule": {
+      "urlPlaceholder": "https://oseufoodtruck.co.mz/eventos"
+    }
+  },
+  "designEditor": {
+    "sample": {
+      "venue": "Esplanada do Largo",
+      "area": "Matola"
+    }
+  },
+  "manageTeam": {
+    "phonePlaceholder": "+258 84 123 4567"
+  },
+  "customDomain": {
+    "card": {
+      "exampleDomain": "oseufoodtruck.co.mz"
+    }
+  },
+  "posterWords": {
+    "placeSample": {
+      "nameTownBelow": "Esplanada do Largo\nMaputo",
+      "nameTown": "Esplanada do Largo, Maputo",
+      "nameOnly": "Esplanada do Largo"
+    },
+    "busyWeek": {
+      "venue1": "Conselho Municipal da Matola",
+      "town1": "Matola",
+      "venue2": "Complexo Desportivo de Boane",
+      "town2": "Boane",
+      "town3": "Beira",
+      "town4": "Xai-Xai",
+      "venue5": "Churrasqueira do Zé",
+      "town5": "Inhambane",
+      "town6": "Nampula"
+    }
+  },
+  "landing": {
+    "faq": {
+      "metaTitle": "Encomendas para food trucks: FAQ | HatchGrab",
+      "metaDescription": "Respostas claras para food trucks sobre os preços da HatchGrab, a configuração, a receção de encomendas e os pagamentos online ou no levantamento."
+    },
+    "meta": {
+      "title": "Sistema de encomendas food truck — HatchGrab {country}",
+      "description": "Receba encomendas e encomendas antecipadas no seu local, sem filas. Encomendas online e ecrã da cozinha para food trucks ({country}) — não é um POS."
+    }
+  },
+  "aboutPage": {
+    "meta": {
+      "description": "A HatchGrab cria software prático para food trucks: encomendas online, horas de levantamento e menos perguntas repetitivas. Fundada por Dominic Bonini."
+    }
+  },
+  "truckPage": {
+    "meta": {
+      "orderTitle": "Encomendar a {truck}",
+      "orderDescription": "Encomende com antecedência ao food truck {truck} e levante a encomenda no food truck, à hora escolhida."
+    }
+  },
+  "featuresPage": {
+    "metaTitle": "Planos e preços para food trucks — HatchGrab {country}"
+  },
+  "compare": {
+    "meta": {
+      "description": "Compare quanto lhe custam atualmente as encomendas online e as comissões das apps de entrega com um ano na HatchGrab — uma estimativa num minuto."
+    }
+  },
+  "comparison": {
+    "meta": {
+      "title": "Sistemas de encomendas para food trucks 2026: comparação"
+    }
+  }
+}

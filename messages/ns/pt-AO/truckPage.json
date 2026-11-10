@@ -1,0 +1,16 @@
+{
+  "meta": {
+    "orderTitle": "Encomendar a {truck}",
+    "orderDescription": "Encomende com antecedência ao food truck {truck} e levante a encomenda no food truck, à hora escolhida."
+  },
+  "ownThisTruckTitle": "Este food truck é seu? Clique para actualizar o seu perfil",
+  "actions": {
+    "menu": "Menu"
+  },
+  "notFound": {
+    "body": "Não encontrámos informações sobre este food truck. Pode ter mudado de sítio ou actualizado o perfil."
+  },
+  "noEvents": {
+    "cta": "Envie-nos uma mensagem para actualizar!"
+  }
+}

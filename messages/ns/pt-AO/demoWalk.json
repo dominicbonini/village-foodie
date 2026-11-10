@@ -1,0 +1,8 @@
+{
+  "thatsIt": "Isto é o HatchGrab: os clientes encomendam no telemóvel, vê a encomenda aqui e eles levantam-na sem ficar na fila. O seu menu já está configurado.",
+  "startFree": "{months, plural, =0 {Começar grátis e manter o meu menu} one {Começar grátis durante # mês e manter o meu menu} many {Começar grátis durante # de meses e manter o meu menu} other {Começar grátis durante # meses e manter o meu menu}}",
+  "bandTitle": "Isto é o HatchGrab. O seu menu já está configurado.",
+  "bandStart": "Começar grátis e manter o meu menu",
+  "goneBody": "As demonstrações são eliminadas ao fim de um dia. Pode criar uma nova a partir do seu menu em menos de um minuto.",
+  "backToMenu": "Voltar ao menu"
+}

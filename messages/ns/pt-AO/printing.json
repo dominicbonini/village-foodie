@@ -1,0 +1,8 @@
+{
+  "say": {
+    "netPermission": "A HatchGrab precisa de autorização para aceder à sua impressora. Active Rede local para a HatchGrab nas Definições."
+  },
+  "card": {
+    "bluetoothOff": "O Bluetooth está desligado neste dispositivo. Active-o nas Definições e pesquise novamente."
+  }
+}

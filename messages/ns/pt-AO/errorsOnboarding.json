@@ -1,0 +1,11 @@
+{
+  "unknown_action": "Acção desconhecida",
+  "change_id_required": "Algo correu mal — actualize a página e tente novamente.",
+  "email_already_current": "Esse já é o seu email actual",
+  "password_update_failed": "Não foi possível actualizar a palavra-passe. Tente novamente.",
+  "no_fields_to_update": "Não há campos para actualizar",
+  "file_too_big": "Esse ficheiro é demasiado grande (máx. {mb} MB). Uma fotografia normal do seu menu serve.",
+  "file_type_unsupported": "Esse tipo de ficheiro não é suportado — envie uma fotografia ou um PDF do seu menu.",
+  "text_too_long": "É muito texto — cole apenas o menu.",
+  "menu_missing": "Adicione uma fotografia do seu menu ou cole-o aqui."
+}

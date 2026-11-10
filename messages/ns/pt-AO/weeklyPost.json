@@ -1,0 +1,11 @@
+{
+  "error": {
+    "copyFailed": "Não foi possível copiar — seleccione o texto e copie-o manualmente."
+  },
+  "missingTable": {
+    "title": "A publicação semanal precisa de uma actualização da base de dados"
+  },
+  "post": {
+    "updating": "A actualizar…"
+  }
+}

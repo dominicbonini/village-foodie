@@ -1,0 +1,12 @@
+{
+  "filter": {
+    "selectEvent": "Seleccione um evento…"
+  },
+  "empty": {
+    "selectEvent": "Seleccione um evento acima para ver o respectivo relatório."
+  },
+  "accounts": {
+    "partial": "Os pratos sem custo ficam de fora do custo, por isso este lucro é mais alto do que realmente é. Adicione um custo a cada prato no separador Menu.",
+    "noCosts": "Ainda nenhum prato tem custo. Adicione um custo aos seus pratos no separador Menu para ver o seu lucro."
+  }
+}

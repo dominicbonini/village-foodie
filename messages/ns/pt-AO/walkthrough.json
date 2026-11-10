@@ -1,0 +1,14 @@
+{
+  "stops": {
+    "menu": {
+      "title": "Menu"
+    },
+    "build": {
+      "body": "Menus, vendas adicionais, personalizações e a capacidade da cozinha estão em Menu — explore à vontade."
+    },
+    "billing": {
+      "title": "Facturação",
+      "body": "Onde encontra o seu plano, a facturação e as informações sobre funcionalidades."
+    }
+  }
+}

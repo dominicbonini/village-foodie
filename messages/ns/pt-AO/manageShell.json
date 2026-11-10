@@ -1,0 +1,21 @@
+{
+  "noCountrySettings": "Não foi possível carregar as definições de país deste food truck. Actualize a página.",
+  "noPlans": "Não foi possível carregar o plano deste food truck. Actualize a página.",
+  "stale": "{hasTime, select, yes {Não foi possível actualizar. A mostrar o que estava guardado às {time}. As alterações que fizer continuam a ser guardadas.} other {Não foi possível actualizar. A mostrar o que estava guardado. As alterações que fizer continuam a ser guardadas.}}",
+  "profile": {
+    "updated": "Perfil actualizado"
+  },
+  "tabs": {
+    "menu": "Menu",
+    "billing": "Facturação"
+  },
+  "menuSections": {
+    "label": "Secções do menu"
+  },
+  "notices": {
+    "allergens": "<b>Alergénios por definir</b> — os clientes não veem a informação sobre alergénios até a verificar. Reveja os alergénios de cada prato no separador Menu."
+  },
+  "trialPopup": {
+    "body": "{hasDate, select, yes {Não lhe será cobrado nada durante o teste, que decorre até <b>{date}</b>. A facturação só começa quando escolher um plano e introduzir os seus dados de pagamento. Até lá, não há nada para cancelar nem nada para pagar. Escolha o seu plano antes dessa data — caso contrário, passa para o plano {fallback} e algumas funcionalidades deixam de funcionar.} other {Não lhe será cobrado nada durante o teste. A facturação só começa quando escolher um plano e introduzir os seus dados de pagamento. Até lá, não há nada para cancelar nem nada para pagar. Escolha o seu plano antes do fim do teste — caso contrário, passa para o plano {fallback} e algumas funcionalidades deixam de funcionar.}}"
+  }
+}

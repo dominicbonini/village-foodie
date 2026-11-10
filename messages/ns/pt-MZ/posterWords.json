@@ -1,0 +1,18 @@
+{
+  "placeSample": {
+    "nameTownBelow": "Esplanada do Largo\nMaputo",
+    "nameTown": "Esplanada do Largo, Maputo",
+    "nameOnly": "Esplanada do Largo"
+  },
+  "busyWeek": {
+    "venue1": "Conselho Municipal da Matola",
+    "town1": "Matola",
+    "venue2": "Complexo Desportivo de Boane",
+    "town2": "Boane",
+    "town3": "Beira",
+    "town4": "Xai-Xai",
+    "venue5": "Churrasqueira do Zé",
+    "town5": "Inhambane",
+    "town6": "Nampula"
+  }
+}

@@ -1,0 +1,1106 @@
+{
+  "order": {
+    "taxNotice": "Os preços do menu não incluem {tax}. É acrescentado abaixo.",
+    "menuChangedFallback": "O menu foi alterado. Verifique a sua encomenda antes de a fazer.",
+    "loadingMenu": "A carregar o menu…",
+    "timeNotSetBody": "O food truck ainda não definiu o horário do evento — contacte-o directamente. Poderá encomendar aqui assim que estiver definido.",
+    "closedDemo": "Este serviço de demonstração terminou — o período do evento chegou ao fim, tal como aconteceria num serviço real. Abra novamente o seu painel de demonstração e escolha «Iniciar um novo serviço» para preparar outro. O seu menu mantém-se igual.",
+    "pausedClosingBody": "As encomendas online foram encerradas. Se precisar de entrar em contacto, contacte-os directamente.",
+    "menu": "Menu",
+    "selectTime": "Seleccione «O quanto antes» ou escolha uma hora",
+    "stockNotice": "Lamentamos — {detail}. Actualizámos a sua encomenda — reveja-a e confirme.",
+    "addItemsPrompt": "Adicione artigos do menu para fazer uma encomenda",
+    "allergenNotProvided": "Informação sobre alergénios não indicada — confirme directamente com o food truck.",
+    "allergensUsed": "Alergénios presentes neste menu",
+    "allergenSevere": "Se tiver uma alergia grave, contacte directamente o food truck antes de encomendar."
+  },
+  "dashboard": {
+    "toast": {
+      "layout": "{layout, select, scroll {O menu aparece numa só página} other {O menu aparece por categorias}}",
+      "autoAccept": "{state, select, on {Aceitação automática activada} other {Aceitação automática desactivada}}",
+      "cardPayments": "{state, select, off {Pagamentos com cartão desactivados — os clientes pagam ao balcão} other {Pagamentos com cartão reactivados}}",
+      "unpaidOrders": "{state, select, on {Encomendas por pagar activadas para este evento} other {Encomendas por pagar desactivadas para este evento}}",
+      "cashAndCard": "{state, select, on {Dinheiro e cartão activados para este evento} other {Dinheiro e cartão desactivados para este evento}}",
+      "buzzerPrompt": "{state, select, on {Lembrete de pager activado para este evento} other {Lembrete de pager desactivado para este evento}}",
+      "editBusy": "Outra pessoa está a actualizar encomendas neste momento. Tente novamente.",
+      "orderUpdated": "Encomenda #{id} actualizada",
+      "categoryUpdateFailed": "Não foi possível actualizar a categoria — tente novamente"
+    },
+    "demo": {
+      "endedBody": "Inicie um novo e preparamos um serviço novo para agora mesmo — o seu menu mantém-se igual."
+    },
+    "refund": {
+      "pending": "Reembolso de {amount} enviado. A Stripe está a processá-lo — a encomenda aparecerá como reembolsada quando o dinheiro tiver sido efectivamente devolvido."
+    },
+    "cancelModal": {
+      "selectReason": "Seleccione um motivo"
+    },
+    "switchEventConfirm": "Evento actual: {current}. Mudar para {next}? Toque no evento actual para voltar.",
+    "extraWait": {
+      "activeTapToClear": "+{mins} min activos · Toque para limpar"
+    },
+    "banner": {
+      "menuSnapshot": "Menu guardado neste tablet às {time}. Verifique os preços antes de cobrar.",
+      "cardPaymentsOff": "Os pagamentos com cartão estão desactivados — os clientes pagam ao balcão. Continuam desactivados, em todos os eventos, até os voltar a activar.",
+      "turnBackOn": "Reactivar",
+      "offlinePaused": "A protecção sem ligação está activa — os clientes podem ver o menu, mas não encomendar.",
+      "paused": "Encomendas em pausa{indefinite, select, yes {} other { — retomam dentro de ~{mins} min}} · Os clientes podem ver o menu, mas não encomendar",
+      "extraWait": "+{mins} min de espera adicional activos"
+    },
+    "tabs": {
+      "stock": "Menu e stock"
+    },
+    "eventBar": {
+      "noEvent": "Nenhum evento seleccionado",
+      "selectEvent": "Seleccionar evento"
+    },
+    "orders": {
+      "noEvent": "Nenhum evento seleccionado — seleccione um evento para ver as encomendas",
+      "prepBannerBody": "O seu menu está a usar tempos de preparação predefinidos. Actualize-os em Gerir para a cozinha não ficar sobrecarregada de encomendas.",
+      "newSection": "Novas — requer acção",
+      "updated": "Actualizado às {time}"
+    },
+    "addTab": {
+      "noMenuSaved": "O seu menu não está guardado neste dispositivo, por isso não há com que criar uma encomenda."
+    },
+    "settings": {
+      "layoutTitle": "Disposição do menu",
+      "layoutTabsHelp": "Mostra uma categoria de cada vez. Toque numa categoria para mudar. Ideal para menus mais longos, em que cada artigo fica sempre no mesmo sítio.",
+      "layoutScrollHelp": "Mostra todos os artigos numa única lista com deslocamento, com um título para cada categoria. Não há botões de categoria — desloca-se para navegar. Ideal para menus mais curtos, em que consegue ver quase tudo de uma vez."
+    },
+    "stock": {
+      "colOn": "Activo",
+      "ownPriceTitle": "Preço próprio deste evento — prima × para voltar ao preço do tipo ou do menu",
+      "loadingMenu": "A carregar o menu…"
+    },
+    "offlineNotice": {
+      "title": "A protecção sem ligação protegeu-o",
+      "body": "As encomendas estiveram em pausa enquanto o seu dispositivo estava sem ligação. As encomendas dos clientes já estão activas de novo."
+    },
+    "pause": {
+      "body": "Os clientes continuam a poder ver o menu, mas não vão conseguir encomendar.",
+      "indefinite": "Até eu voltar a activar"
+    },
+    "screenOff": {
+      "body": "A protecção de encomendas sem ligação está activa. Se o ecrã se desligar e o dispositivo perder a ligação, as encomendas online podem ser pausadas automaticamente."
+    },
+    "edit": {
+      "current": "(actual)",
+      "repriceTitle": "Não está no menu",
+      "repriceBody": "Estes artigos são novos nesta encomenda e não estão no menu, por isso não foi possível verificar o preço. Tudo o que já estava na encomenda mantém o preço original. Ainda nada foi guardado."
+    },
+    "typePicker": {
+      "current": "Actual",
+      "clearOwn": "Limpar as minhas alterações e usar exactamente o tipo {type}"
+    }
+  },
+  "errorsCustomer": {
+    "menu_changed": "O menu mudou — verifique a sua encomenda antes de a fazer.",
+    "menu_changed_item": "O menu mudou — {item} já não está disponível. Verifique a sua encomenda antes de a fazer.",
+    "menu_changed_option": "O menu mudou — {option} (em {item}) já não está disponível. Verifique a sua encomenda antes de a fazer."
+  },
+  "deals": {
+    "selectItems": "Seleccione os artigos para cada elemento"
+  },
+  "whatsappCustomer": {
+    "allergenRedirect": "{opener}Pode consultar o nosso menu completo e a informação sobre alergénios aqui: {url} — {truck} {emoji}",
+    "menuFallback": "{opener}Pode consultar o nosso menu completo aqui: {url} — {truck} {emoji}",
+    "menuSummary": "{opener}Temos {summary}. Veja o menu completo e encomende com antecedência aqui: {url} — {truck} {emoji}",
+    "allergenCaveat": "Confirme sempre os alergénios no menu completo — esta é uma resposta automática.",
+    "specificFallback": "{opener}Veja onde vamos estar na nossa agenda actualizada: {url}\n\n{truck} {emoji}",
+    "capContact": "Para nos contactar directamente: {number}"
+  },
+  "orderStatus": {
+    "cancelledBody": "A sua encomenda foi cancelada.{card, select, no {} other { Se pagou com cartão, qualquer reembolso é tratado directamente por {withTruck, select, yes {{truck}} other {o food truck}} — contacte-os para esse efeito.}}"
+  },
+  "privateLink": {
+    "orderingOffTitle": "As encomendas online não estão activadas"
+  },
+  "emailCustomer": {
+    "payNote": {
+      "capturedBody": "O seu pagamento foi efectuado — não há nada a pagar no food truck.",
+      "capturedText": "Pago com cartão. O seu pagamento foi efectuado — não há nada a pagar no food truck."
+    },
+    "confirmation": {
+      "slotUpdated": "A sua hora de levantamento foi actualizada",
+      "contactInstagram": "Envie-nos uma mensagem directa no Instagram",
+      "textInstagram": "Dúvidas? Envie-nos uma mensagem directa no Instagram: {value}"
+    },
+    "cancelSentence": {
+      "refunded": "Foram reembolsados {amount} no seu cartão. Os reembolsos costumam demorar 5 a 10 dias úteis a aparecer no seu extracto, consoante o seu banco.",
+      "paidContactTruck": "Se pagou com cartão, qualquer reembolso é tratado directamente por {truck} — contacte-os para esse efeito."
+    },
+    "refund": {
+      "timing": "Os reembolsos costumam demorar 5 a 10 dias úteis a aparecer no seu extracto, consoante o seu banco."
+    },
+    "rejection": {
+      "subject": "Actualização da encomenda #{id}",
+      "heading": "Actualização da encomenda",
+      "orderAtTruck": "Encomende directamente no food truck quando chegar. Pedimos desculpa pelo incómodo."
+    },
+    "updated": {
+      "subjectTotalMoved": "Encomenda #{id} actualizada — agora {total} (antes {previous})",
+      "subject": "Encomenda #{id} actualizada",
+      "subjectSlotMoved": "A sua encomenda #{id} foi actualizada"
+    }
+  },
+  "errorsKitchen": {
+    "busy_retry_edit": "Outra pessoa está a actualizar encomendas neste momento. Tente novamente.",
+    "item_name_required": "Ocorreu um erro — actualize a página e tente novamente.",
+    "event_id_required": "Ocorreu um erro — actualize a página e tente novamente.",
+    "option_id_required": "Ocorreu um erro — actualize a página e tente novamente.",
+    "category_required": "Ocorreu um erro — actualize a página e tente novamente.",
+    "missing_event_id": "Ocorreu um erro — actualize a página e tente novamente.",
+    "value_bool_or_clear": "Ocorreu um erro — actualize a página e tente novamente.",
+    "value_presses_or_clear": "Ocorreu um erro — actualize a página e tente novamente.",
+    "missing_order_key": "Ocorreu um erro — actualize a página e tente novamente.",
+    "value_bool": "Ocorreu um erro — actualize a página e tente novamente.",
+    "eventid_required": "Ocorreu um erro — actualize a página e tente novamente.",
+    "value_bool_or_null": "Ocorreu um erro — actualize a página e tente novamente.",
+    "category_id_required": "Ocorreu um erro — actualize a página e tente novamente.",
+    "unknown_action": "Acção desconhecida",
+    "device_id_required": "Ocorreu um erro — actualize a página e tente novamente.",
+    "invalid_default_screen": "Ocorreu um erro — actualize a página e tente novamente.",
+    "device_and_truck_required": "Ocorreu um erro — actualize a página e tente novamente.",
+    "completed_payment_not_recorded": "Encomenda concluída, mas não foi possível guardar o registo de pagamento — o valor facturado desta encomenda pode estar errado até ser corrigido.",
+    "slot_board_not_updated": "Encomenda guardada, mas não foi possível actualizar o quadro de capacidade da cozinha — verifique o horário antes de confiar nele.",
+    "created_payment_not_recorded": "Encomenda criada, mas não foi possível guardar o registo de pagamento — o valor facturado desta encomenda pode estar errado até ser corrigido.",
+    "payment_not_recorded": "Não foi possível registar o pagamento — o valor facturado desta encomenda pode estar errado até ser corrigido."
+  },
+  "kitchenModals": {
+    "selectReason": "Seleccione um motivo",
+    "finish": {
+      "optionCurrent": "{time} (actual)",
+      "earlier": "É mais cedo do que a hora de fim actual. Os clientes não poderão encomendar para horas posteriores."
+    },
+    "picker": {
+      "selected": "Seleccionado"
+    }
+  },
+  "printing": {
+    "say": {
+      "netPermission": "A HatchGrab precisa de autorização para aceder à sua impressora. Active Rede local para a HatchGrab nas Definições."
+    },
+    "card": {
+      "bluetoothOff": "O Bluetooth está desligado neste dispositivo. Active-o nas Definições e pesquise novamente."
+    }
+  },
+  "kds": {
+    "header": {
+      "readyOnlyTitle": "Este ecrã só marca encomendas como prontas, por isso esta opção não pode ser desactivada — é a única etapa que realiza.",
+      "handoverOnlyTitle": "Este ecrã só recebe pagamentos, por isso esta opção não pode ser desactivada — é a única etapa que realiza."
+    },
+    "banner": {
+      "queued": "{n, plural, one {{count} acção em fila} other {{count} acções em fila}}",
+      "extraWait": "⏱ +{mins} min de espera extra activos"
+    },
+    "screenOff": {
+      "bodyVans": "{vans} {n, plural, one {tem} other {têm}} a deteção offline activada. Se o ecrã se desligar, o dispositivo pode deixar de enviar o sinal de ligação e as encomendas dos clientes podem ser pausadas."
+    },
+    "event": {
+      "waitActive": "⏱ +{mins} min activos · Toque para limpar",
+      "switchConfirm": "Mudar de {from} para {to}?{n, plural, =0 {} one { {count} encomenda neste ecrã será substituída.} other { {count} encomendas neste ecrã serão substituídas.}} Toque no evento actual para voltar."
+    }
+  },
+  "nativeShell": {
+    "binary": {
+      "cameraUsage": "A HatchGrab usa a câmara para que possa fotografar o quadro do menu, os seus pratos e outros documentos e carregá-los directamente na sua conta. As imagens são usadas apenas para os carregamentos que decidir fazer."
+    },
+    "gate": {
+      "status": "Encomenda #{id} {action, select, confirm {confirmada} reject {recusada} ready {pronta} collected {levantada} undo_collected {reposta} cancel {cancelada} other {actualizada}}"
+    },
+    "notify": {
+      "intro": "Alertas neste dispositivo. Active para escolher que alertas recebe.",
+      "refused": "Para activar esta opção, as notificações têm de estar activadas nas Definições do dispositivo."
+    },
+    "van": {
+      "select": "Seleccionar…"
+    },
+    "setup": {
+      "fetchErrorBody": "Não conseguimos contactar o servidor para configurar <b>este dispositivo</b>. Verifique a ligação e tente novamente — as suas encomendas e definições não são afectadas.",
+      "noVanTitle": "Nenhum food truck activo",
+      "noVanBody": "Este negócio ainda não tem nenhum food truck activo. Active um em <b>Definições → Os seus food trucks</b> e este dispositivo fica configurado automaticamente — não precisa de fazer mais nada aqui.",
+      "selectVan": "Seleccione um food truck…"
+    },
+    "device": {
+      "setPin": "Definir PIN e activar"
+    },
+    "appLock": {
+      "confirmEnable": "Confirme para activar o bloqueio da app"
+    }
+  },
+  "buzzer": {
+    "subtitle": "{hasTarget, select, yes {Encomenda #{id}} other {Esta encomenda}}{hasCurrent, select, yes { · pager actual: {current}} other {}}"
+  },
+  "demo": {
+    "loopLands": "É exactamente assim que chega uma encomenda real",
+    "welcomeIntro": "{sample, select, yes {Este é um <b>menu provisório</b> para ver como tudo funciona — carregue o seu quando quiser para o tornar seu.} other {Este é o seu próprio menu e imagem, num painel real.}} As encomendas que já lá estão são exemplos, para que veja um serviço movimentado.",
+    "asLive": "O fluxo de encomendas e da cozinha é exactamente igual ao real.",
+    "walkBanner": "Demonstração · este é o seu menu, tal como os seus clientes o vão ver. Nada é cobrado e não são enviados emails."
+  },
+  "paymentActions": {
+    "paidCardMachine": "Pago no seu TPA{mixed, select, yes { — {amount}} other {}}",
+    "inPersonHint": "Dinheiro ou TPA — não registado"
+  },
+  "addOrder": {
+    "savedToast": "Encomenda {id} guardada{paid, select, cash { — paga em dinheiro} card { — paga no seu TPA} other {}}",
+    "confirmedToast": "Encomenda #{id} confirmada{paid, select, cash { — paga em dinheiro} card { — paga no seu TPA} other {}}",
+    "notOnMenu": "{name}{hasOn, select, yes { (em {on})} other {}} — não está no menu",
+    "somethingNotOnMenu": "Algo nesta encomenda já não está no menu",
+    "selectAnEvent": "Seleccione um evento",
+    "selectEventToConfirm": "Seleccione um evento para confirmar",
+    "noEventSelected": "Nenhum evento seleccionado",
+    "selectEvent": "Seleccionar evento",
+    "futureEventSelected": "Evento de {date} seleccionado. As encomendas aparecem no ecrã de encomendas quando o evento abrir.",
+    "eventEnded": "Este evento já terminou — está a adicionar uma encomenda depois do fecho. Confirme que seleccionou o evento certo.",
+    "loadingMenu": "A carregar o menu…"
+  },
+  "alertsOperator": {
+    "paymentBlocked": {
+      "payDirect": "Paga directamente ao WhatsApp por estas mensagens, por isso isto resolve-se no WhatsApp Manager e não no HatchGrab. Adicione ou actualize lá um cartão e as respostas voltam a funcionar sozinhas.",
+      "payDirectLink": "Paga directamente ao WhatsApp por estas mensagens, por isso isto resolve-se no WhatsApp Manager e não no HatchGrab. Adicione ou actualize lá um cartão e as respostas voltam a funcionar sozinhas:"
+    }
+  },
+  "setup": {
+    "steps": {
+      "menu": "O seu menu"
+    }
+  },
+  "goLive": {
+    "allergensUnanswered": {
+      "detail": "Enquanto não escolher, os clientes não veem nenhum dos seus pratos — o menu protege-se ocultando tudo o que tenha alergénios por confirmar, e neste momento isso é tudo.",
+      "where": "Menu → Alergénios"
+    },
+    "allergensCardMissing": {
+      "where": "Menu → Alergénios"
+    },
+    "allergensItemsUnverified": {
+      "detail": "{n, plural, one {O seu prato está oculto para os clientes até confirmar os respectivos alergénios.} other {{u, plural, one {{unverified} dos seus {total} pratos está oculto para os clientes até confirmar os respectivos alergénios.} other {{unverified} dos seus {total} pratos estão ocultos para os clientes até confirmar os respectivos alergénios.}}}} Um prato mostrado sem alergénios confirmados lê-se como «não contém nenhum», por isso o menu oculta-o em vez de correr esse risco.",
+      "where": "Menu → Alergénios"
+    },
+    "kitchenCapacityUnset": {
+      "where": "Menu → Capacidade da cozinha"
+    },
+    "noPrepBearingCategory": {
+      "detail": "{categories, select, none {Ainda não tem categorias no menu, por isso não temos forma de calcular quanto tempo demora uma encomenda.} other {Nenhuma das suas categorias tem um tempo de preparação definido, por isso todas as encomendas nos parecem instantâneas. Continuaríamos a dar aos clientes uma hora de levantamento que a sua cozinha não tem hipótese de cumprir e, quanto mais movimento tivesse, mais desfasada ficaria.}}",
+      "where": "Menu → Categorias → Configuração da cozinha"
+    }
+  },
+  "walkthrough": {
+    "stops": {
+      "menu": {
+        "title": "Menu"
+      },
+      "build": {
+        "body": "Menus, vendas adicionais, personalizações e a capacidade da cozinha estão em Menu — explore à vontade."
+      },
+      "billing": {
+        "title": "Facturação",
+        "body": "Onde encontra o seu plano, a facturação e as informações sobre funcionalidades."
+      }
+    }
+  },
+  "auth": {
+    "fields": {
+      "emailPlaceholder": "nome@exemplo.co.ao"
+    },
+    "signup": {
+      "emailPlaceholder": "nome@oseufoodtruck.co.ao"
+    },
+    "login": {
+      "resetSuccess": "Palavra-passe actualizada com sucesso. Inicie sessão.",
+      "emailChanged": "Endereço de email actualizado. Inicie sessão com o seu novo endereço de email."
+    },
+    "verifyEmail": {
+      "updateFailed": "Não foi possível actualizar o email. Tente novamente.",
+      "loginUpdateFailed": "Não foi possível actualizar os dados de acesso. O seu email não foi alterado.",
+      "successTitle": "Endereço de email actualizado"
+    }
+  },
+  "errorsOnboarding": {
+    "unknown_action": "Acção desconhecida",
+    "change_id_required": "Algo correu mal — actualize a página e tente novamente.",
+    "email_already_current": "Esse já é o seu email actual",
+    "password_update_failed": "Não foi possível actualizar a palavra-passe. Tente novamente.",
+    "no_fields_to_update": "Não há campos para actualizar",
+    "file_too_big": "Esse ficheiro é demasiado grande (máx. {mb} MB). Uma fotografia normal do seu menu serve.",
+    "file_type_unsupported": "Esse tipo de ficheiro não é suportado — envie uma fotografia ou um PDF do seu menu.",
+    "text_too_long": "É muito texto — cole apenas o menu.",
+    "menu_missing": "Adicione uma fotografia do seu menu ou cole-o aqui."
+  },
+  "emailAccount": {
+    "changeEmail": {
+      "stillActive": "O seu endereço de email actual continua activo."
+    },
+    "resendVerification": {
+      "stillActive": "O seu email actual continua activo."
+    }
+  },
+  "demoSaveEmail": {
+    "intro": "Eis a ligação para voltar à demonstração com o seu menu. Não é preciso iniciar sessão — basta tocar nela.",
+    "deletion": "Isto é uma demonstração, por isso não a guardamos para sempre — vamos eliminá-la, e o menu, em\n                <b>{date}</b> ({days, plural, one {# dia} other {# dias}}). Se se registar antes\n                disso, o seu menu vem consigo."
+  },
+  "demoGetStarted": {
+    "upload": {
+      "bannerButton": "Guardar o meu menu →",
+      "sub": "O seu menu passa directamente."
+    },
+    "sample": {
+      "sub": "A seguir, carrega o seu próprio menu — demora um minuto."
+    },
+    "saveOnly": {
+      "bannerButton": "Guardar o meu menu →"
+    },
+    "stepper": {
+      "menu": "Menu"
+    },
+    "confirmKeepUntil": "Guardamo-la até <b>{date}</b>. O seu menu vem consigo quando fizer a configuração a sério.",
+    "readyBody": "Agora vamos concluir a configuração do seu food truck — o menu, os alergénios e a cozinha.",
+    "stage": {
+      "menu": "A carregar o seu menu"
+    },
+    "emailPlaceholder": "nome@oseufoodtruck.co.ao"
+  },
+  "demoUpload": {
+    "steps": {
+      "reading": "A ler o seu menu…"
+    },
+    "templateSteps": {
+      "menu": "A configurar o menu…"
+    },
+    "dialogLabel": "Carregar o seu menu",
+    "heading": "✨ Carregue o seu menu",
+    "failedHeading": "Não conseguimos ler esse menu",
+    "intro": "Uma fotografia do quadro do menu, uma captura de ecrã, um PDF, ou cole-o como texto. A nossa IA lê-o e cria-lhe uma página de encomendas a funcionar — os seus artigos, os seus preços — em menos de 60 segundos. Sem registo, sem cartão.",
+    "slow": "Está a demorar mais do que o habitual — os menus grandes às vezes demoram.",
+    "sampleWhileYouWait": "Ou explore um menu de exemplo enquanto espera",
+    "standIn": "Este <b>não vai ser o seu menu</b> — é apenas um exemplo para ver como funciona.",
+    "seeSample": "Ver menu de exemplo",
+    "orSample": "Ou explore um menu de exemplo",
+    "buildBody": "Deixe o seu email e uma pessoa real introduz o seu menu e envia-lhe a ligação.",
+    "emailPlaceholder": "nome@oseufoodtruck.co.ao",
+    "noPhoto": "Não tem uma fotografia do menu à mão?",
+    "fields": {
+      "uploadLabel": "Carregar ficheiro do menu",
+      "dropHere": "Largue aqui o seu menu",
+      "pasteLabel": "Colar texto do menu",
+      "pastePlaceholder": "Cole aqui o seu menu — nomes dos artigos, descrições, preços…"
+    }
+  },
+  "manageAllergens": {
+    "cardEditor": {
+      "intro": "Os clientes veem isto <b>exactamente como o escrever</b> — nada é reescrito. Escreva ou cole abaixo, ou carregue uma fotografia/PDF e nós extraímos o texto para o rever."
+    },
+    "cardUpload": {
+      "perDish": "{detected, select, yes {Carregue-a e usamo-la para preencher os alergénios dos seus pratos. Os alergénios detectados aparecem na página seguinte, onde confirma cada prato.} other {Carregue-a e usamo-la para preencher os alergénios dos seus pratos.}}",
+      "blanket": "A ficha indica que <b>{list}</b> pode estar presente em <b>todos</b> os pratos. Adicionar a todos os pratos? (continua a confirmar cada um) <muted>— desactivado por predefinição</muted>"
+    },
+    "wizard": {
+      "genericWarn": {
+        "text": "Foi detectado «{generic}», mas não é específico. Escolha {picks} se este prato contiver {family} — ou deixe sem selecção se não contiver."
+      },
+      "review": {
+        "detected": "Detectados a partir do seu menu — <b>verifique-os</b>. Os alergénios ficam ocultos para os clientes até confirmar cada prato.",
+        "emptyTitle": "Sem artigos no menu",
+        "emptyBody": "Adicione primeiro artigos ao menu e depois defina aqui os respectivos alergénios."
+      },
+      "cardPanel": {
+        "intro": "Os clientes vão ver esta ficha como a referência de alergénios do menu. No modo só com ficha, os alergénios por prato ficam ocultos (os dados dos pratos são mantidos caso mude mais tarde para alergénios por prato)."
+      },
+      "hint": {
+        "skipDefers": "Saltar adia — os pratos que não confirmou ficam ocultos para os clientes até os respectivos alergénios serem confirmados."
+      }
+    }
+  },
+  "manageUpsells": {
+    "toast": {
+      "updated": "Regra de venda adicional actualizada"
+    }
+  },
+  "manageExtras": {
+    "toast": {
+      "optionUpdated": "Opção actualizada"
+    },
+    "note": "Crie um grupo de opções e atribua-o a uma categoria do menu. Todos os artigos dessa categoria vão oferecer essas opções quando os clientes encomendarem.",
+    "selection": "Selecção:"
+  },
+  "manageDeals": {
+    "toast": {
+      "updated": "Menu actualizado"
+    },
+    "active": "Activo",
+    "off": "Inactivo",
+    "hidden": "Actualmente oculto para os clientes — {warning}",
+    "dealActive": "Menu activo",
+    "applyAllHelp": "Este menu ficará activo em cada novo evento que criar. Pode sempre desligá-lo em eventos específicos na Agenda.",
+    "manualTitle": "Seleccionar manualmente por evento",
+    "manualHelp": "Este menu não aparece nos eventos a menos que o active no separador Agenda."
+  },
+  "eventTypes": {
+    "missingTitle": "Os tipos de evento ainda não estão activados.",
+    "missingBody": "A actualização da base de dados para esta funcionalidade ainda não foi aplicada. Nada está avariado — todos os eventos usam a sua configuração habitual.",
+    "phone": {
+      "noMenuItems": "Ainda não há artigos no menu — adicione-os em Menu › Artigos."
+    },
+    "summary": {
+      "offlineOff": "protecção offline desligada"
+    }
+  },
+  "privateEvents": {
+    "link": {
+      "newLinkConfirm": "Criar um novo link? O link actual deixa de funcionar de imediato, e os códigos QR que já imprimiu também deixam de funcionar.",
+      "newLinkHelp": "Use isto se o link chegou onde não devia. O link actual deixa de funcionar de imediato, e os códigos QR impressos também."
+    }
+  },
+  "manageMenu": {
+    "title": "Menu",
+    "importMenu": "✨ Importar menu",
+    "toast": {
+      "photoUpdated": "Foto actualizada",
+      "categoryOrderUpdated": "Ordem das categorias actualizada"
+    },
+    "empty": {
+      "title": "Crie o seu menu em segundos",
+      "body": "Tire uma foto ao quadro do menu, faça uma captura de ecrã do seu menu actual ou arraste um PDF — a nossa IA extrai tudo e cria automaticamente o seu menu digital.",
+      "importAi": "✨ Importar menu com IA"
+    },
+    "category": {
+      "notesOn": "Notas activas",
+      "countsTitle": "Conta para o limite da capacidade da cozinha (definido em Menu → Capacidade da cozinha)"
+    },
+    "allergens": {
+      "buildFirst": "Crie primeiro o seu menu — adicione pratos e depois configure os alergénios",
+      "update": "Actualizar informação de alergénios"
+    },
+    "deleteItem": {
+      "body": "Este artigo fica oculto do seu menu de imediato. Não vai aparecer na página de encomenda do cliente nem no painel Adicionar encomenda."
+    },
+    "item": {
+      "selectCategory": "Seleccione uma categoria…",
+      "allergenGateBody": "Abra a caixa «Configurar / rever alergénios» no separador Menu — o assistente guia a confirmação de cada prato.",
+      "selectAll": "Seleccione todos os que se aplicam"
+    },
+    "confirmDelete": {
+      "withItems": "Eliminar «{name}»? Isto também elimina {count, plural, one {# artigo} other {# artigos}} desta categoria. Esta acção não pode ser anulada.",
+      "empty": "Eliminar «{name}»? Esta acção não pode ser anulada."
+    }
+  },
+  "manageMenuImport": {
+    "steps": {
+      "menu": "Menu"
+    },
+    "toast": {
+      "demoGone": "O menu da sua demonstração já não está disponível — carregue-o novamente para continuar.",
+      "commitFailedDetail": "Não foi possível concluir a gravação do menu: {error}. Alguns artigos podem já ter sido guardados — verifique o seu menu antes de tentar novamente.",
+      "commitFailed": "Não foi possível concluir a gravação do menu. Alguns artigos podem já ter sido guardados — verifique o seu menu antes de tentar novamente."
+    },
+    "settingsReview": {
+      "loading": "A carregar as suas definições actuais…"
+    },
+    "welcome": {
+      "body": "{name} está configurado. A seguir adicionamos o seu menu e depois o seu primeiro evento."
+    },
+    "offer": {
+      "title": "Usar o menu da sua demonstração?",
+      "use": "Usar este menu",
+      "upload": "Carregar outro menu",
+      "body": "Guardámos o menu que carregou — {count, plural, one {# artigo} other {# artigos}}. Use-o como ponto de partida ou carregue outro."
+    },
+    "upload": {
+      "title": "Importar o seu menu",
+      "body": "Carregue uma foto do quadro do menu, uma captura de ecrã, um PDF ou cole o seu menu como texto. A nossa IA lê-o e cria o seu menu digital — revê tudo antes de ser guardado.",
+      "confirmCancel": "Cancelar esta importação? A revisão deste menu será descartada.",
+      "process": "Processar menu"
+    },
+    "processing": {
+      "title": "A analisar o seu menu"
+    },
+    "review": {
+      "title": "Rever menu importado",
+      "lastCategory": "O seu menu precisa de pelo menos uma categoria"
+    },
+    "extras": {
+      "separate": "Artigos separados no menu"
+    },
+    "allergens": {
+      "detected": "Detectámos alergénios no seu menu. Escolha abaixo como os mostrar."
+    },
+    "kitchen": {
+      "saveAdd": "Guardar e adicionar ao menu"
+    },
+    "schedule": {
+      "intro": "Se a sua agenda está no seu site, podemos mantê-la actualizada automaticamente — ou adicione as datas por si.",
+      "urlPlaceholder": "https://oseufoodtruck.co.ao/eventos"
+    },
+    "done": {
+      "imported": "Menu importado!",
+      "added": "Os seus artigos foram adicionados ao menu."
+    },
+    "discard": {
+      "setupBody": "A sua conta e o seu food truck estão guardados — nada se perde. Pode adicionar o seu menu a qualquer momento: inicie sessão e toque em <b>Importar menu</b> no ecrã do menu para continuar exactamente aqui."
+    }
+  },
+  "errorsManage": {
+    "unknown_action": "Acção desconhecida",
+    "menu_failed": "Não foi possível processar o menu",
+    "live_event_needs_times": "Um evento activo precisa de hora de início e de fim — adicione-as antes de guardar.",
+    "event_needs_times": "Adicione uma hora de início e de fim antes de este evento poder ficar activo.",
+    "choose_truck_for_event": "Escolha o food truck que vai estar neste evento antes de ele poder ficar activo.",
+    "menu_read_failed": "Não foi possível ler o menu; nada foi guardado",
+    "switch_unavailable": "Essa opção não está disponível até a base de dados ser actualizada.",
+    "missing_params": "Algo correu mal — actualize a página e tente novamente.",
+    "truck_param_required": "Algo correu mal — actualize a página e tente novamente.",
+    "upsell_categories_required": "Algo correu mal — actualize a página e tente novamente.",
+    "feature_switched_off": "Esta funcionalidade está desactivada para o seu food truck.",
+    "clear_first_setup_only": "Algo correu mal — actualize a página e tente novamente.",
+    "event_id_required": "Algo correu mal — actualize a página e tente novamente.",
+    "id_required": "Algo correu mal — actualize a página e tente novamente.",
+    "ids_required": "Algo correu mal — actualize a página e tente novamente.",
+    "id_and_item_required": "Algo correu mal — actualize a página e tente novamente.",
+    "van_category_ids_required": "Algo correu mal — actualize a página e tente novamente.",
+    "van_id_required": "Algo correu mal — actualize a página e tente novamente.",
+    "token_and_action_required": "Token e acção obrigatórios",
+    "auto_open_close_required": "Algo correu mal — actualize a página e tente novamente.",
+    "charges_choose_on_off": "Escolha activado ou desactivado.",
+    "select_one_van": "Seleccione pelo menos um food truck",
+    "domain_www": "{host} é normalmente onde já está o seu site actual. Se o apontar para nós, o seu site é substituído por esta página. Use outra palavra à frente, como eventos.",
+    "domain_turn_off_failed": "Não foi possível desactivar isso agora. Nada mudou — o seu endereço continua a funcionar. Tente novamente daqui a pouco.",
+    "wp_migration_three_pictures": "As imagens de localização precisam de uma actualização da base de dados — execute primeiro supabase/migrations/20261022_three_location_pictures.sql.",
+    "wp_migration_slots": "As imagens de localização precisam de uma actualização da base de dados — execute primeiro supabase/migrations/20261019_place_picture_slots.sql.",
+    "wp_migration_library": "As imagens dos locais precisam de uma actualização da base de dados — execute primeiro supabase/migrations/20261018_place_picture_library.sql.",
+    "wp_migration_fonts": "Os tipos de letra carregados precisam de uma actualização da base de dados — execute primeiro supabase/migrations/20261017_post_fonts.sql.",
+    "wp_upload_not_image": "Esse ficheiro não é PNG nem JPG. No Canva, escolha Partilhar › Transferir e seleccione PNG.",
+    "wp_last_toggle": "Mantenha «Local» ou «Hora» activado. Um evento cancelado mostra o local riscado e a palavra CANCELADO, por isso, com ambos desactivados, nada indicaria que está cancelado.",
+    "private_link_off": "As encomendas por link privado estão desactivadas para este evento."
+  },
+  "manageSchedule": {
+    "card": {
+      "noDeals": "Sem promoções activas",
+      "dealsActive": "{count, plural, one {# promoção activa} other {# promoções activas}} · {names}{hidden, plural, =0 {} one { · # oculta} other { · # ocultas}}"
+    },
+    "toast": {
+      "eventUpdated": "Evento actualizado"
+    }
+  },
+  "manageScheduleEvent": {
+    "selectDate": "Seleccionar data",
+    "selectVan": "Seleccione um food truck",
+    "errors": {
+      "van": "Seleccione um food truck"
+    }
+  },
+  "manageScheduleImport": {
+    "review": {
+      "selectDate": "Seleccionar data",
+      "selectVan": "Seleccione um food truck",
+      "select": "Seleccionar",
+      "pastHeading": "Datas passadas — actualize para guardar",
+      "selectRow": "Seleccionar"
+    }
+  },
+  "manageScheduleVerify": {
+    "malformed": "Isso não parece um endereço web. Experimente algo como oseufoodtruck.co.ao/eventos",
+    "no_events": "Não encontrámos eventos futuros nesta página. Confirme que o URL aponta directamente para onde a sua agenda está listada."
+  },
+  "serviceSettings": {
+    "labels": {
+      "offline_protection": "Protecção de encomendas sem ligação"
+    },
+    "pricesStandardCell": "Os preços do seu menu",
+    "pricesMenuCell": "Menu",
+    "pricesTypeOffCell": "Preços do menu",
+    "placeTypeHelper": "Adicionar evento escolhe este tipo sempre que seleccionar este local.",
+    "eventPriceOwnNote": "{hasType, select, yes {{type} {price} · este evento} other {menu {price} · este evento}}"
+  },
+  "offlineProtection": {
+    "explainerBody": "Se o ecrã se desligar, o dispositivo perder a internet ou mudar para outro site, a protecção sem ligação entra em acção — pausando as encomendas ou desligando a aceitação automática, conforme o que escolheu.",
+    "reminder": "⚠️ Mantenha o painel ou o ecrã da cozinha ligado e com internet durante o serviço, ou a protecção sem ligação pode entrar em acção.",
+    "enableConfirm": "Protecção sem ligação activada.\n\nPara as encomendas continuarem a entrar, o ecrã tem de ficar ligado. Se este dispositivo perder a ligação, a protecção sem ligação entra em acção no modo que escolheu.\n\nConfirme que a opção «Ecrã ligado» está activada neste dispositivo.",
+    "disableConfirm": "Desactivar a protecção sem ligação para este evento?\n\nSe este dispositivo perder a ligação, as encomendas online continuam — os clientes podem fazer encomendas que não consegue ver. Desactive apenas se tiver uma ligação fiável.",
+    "switchLabel": "Protecção de encomendas sem ligação"
+  },
+  "kitchenCapacity": {
+    "example": "Exemplo: se consegue cozinhar 4 pratos principais em 5 minutos, defina 4 artigos a cada 5 minutos. A capacidade total limita as encomendas em todas as categorias seleccionadas; por isso, se quiser vender no máximo 10 entradas e pratos principais a cada 5 minutos, defina a Capacidade total para 10 artigos a cada 5 minutos e assinale as caixas Entradas e Pratos principais. Os pratos principais continuam limitados a 4 artigos a cada 5 minutos.",
+    "warning": "⚠️ Para a capacidade da cozinha funcionar bem, defina um tempo de preparação e um tamanho de lote nas categorias do menu (Menu e stock). Sem eles, a capacidade não sabe quanto tempo os artigos demoram a cozinhar.",
+    "countsUnavailable": "Indisponível até a base de dados ser actualizada"
+  },
+  "settingsCopy": {
+    "orderReady": {
+      "help": "Mostra um botão «Marcar como pronta» no ecrã de encomendas. Os ecrãs da cozinha configuram-se à parte, em cada dispositivo. Os clientes recebem um email sempre que uma encomenda é marcada como pronta. Aplica-se a todos os eventos — pode ainda activá-lo ou desactivá-lo para um único evento no respectivo painel."
+    }
+  },
+  "manageSettings": {
+    "details": {
+      "websitePlaceholder": "https://oseufoodtruck.co.ao",
+      "menuIcon": "Ícone do menu"
+    },
+    "contact": {
+      "emailPlaceholder": "ola@oseufoodtruck.co.ao",
+      "emailError": "Introduza um email válido (p. ex. ola@oseufoodtruck.co.ao)",
+      "previousMethodGone": "O seu método de contacto anterior já não está disponível. Seleccione um novo."
+    },
+    "orders": {
+      "emailNotificationsHelp": "{hasEmail, select, yes {Quando activo, é enviado um email para {email} por cada nova encomenda. Os emails de encomenda para os clientes são enviados de qualquer forma.} other {Quando activo, é enviado um email para o email de contacto do food truck por cada nova encomenda. Os emails de encomenda para os clientes são enviados de qualquer forma.}}"
+    },
+    "preorders": {
+      "intro": "Deixe os clientes encomendar antes de um evento. Defina quando abrem as encomendas antecipadas e as regras de prazo abaixo — aplicam-se apenas aos artigos que seleccionar.",
+      "noneYet": "Ainda não há artigos seleccionados — use «Configurar artigos» para adicionar.",
+      "allUseRule": "Todos os artigos seleccionados usam a regra acima: <hl>{rule}</hl>.",
+      "selectAll": "Seleccionar todos"
+    },
+    "vans": {
+      "sameOn": "Este food truck usa as mesmas definições, excepto a capacidade da cozinha.",
+      "sameOff": "Copiar as definições do primeiro food truck — tudo excepto a capacidade da cozinha — e mantê-las sincronizadas.",
+      "takesCashHelp": "Divide o botão de pagamento em «Dinheiro» e «Cartão» para que o que recebe bata certo com a caixa. Pode activar isto para um único evento a partir do painel."
+    },
+    "removeVan": {
+      "preservedEvents": "<b>✓ Mantido:</b> Os registos de eventos passados ligados a este food truck não são afectados.",
+      "removedLink": "<b>✕ Removido:</b> A ligação do ecrã da cozinha e as definições deste food truck serão desactivadas."
+    },
+    "schedule": {
+      "urlPlaceholder": "https://oseufoodtruck.co.ao/eventos"
+    },
+    "qr": {
+      "lockedTitle": "Os códigos com marca estão desactivados para o seu food truck",
+      "lockedBody": "Os códigos com marca estão desactivados para o seu food truck. O seu código QR normal funciona exactamente da mesma forma para os clientes — a diferença é o seu logótipo no centro."
+    }
+  },
+  "manageReports": {
+    "filter": {
+      "selectEvent": "Seleccione um evento…"
+    },
+    "empty": {
+      "selectEvent": "Seleccione um evento acima para ver o respectivo relatório."
+    },
+    "accounts": {
+      "partial": "Os pratos sem custo ficam de fora do custo, por isso este lucro é mais alto do que realmente é. Adicione um custo a cada prato no separador Menu.",
+      "noCosts": "Ainda nenhum prato tem custo. Adicione um custo aos seus pratos no separador Menu para ver o seu lucro."
+    }
+  },
+  "socialPosts": {
+    "captionThisPostNote": "Escreva directamente na caixa para a alterar só nesta publicação. O seu modelo fica como está.",
+    "templatePanelNote": "As palavras a laranja são preenchidas com os dados de cada evento. Ao guardar, actualiza a legenda acima e todas as publicações futuras.",
+    "weeklyBoxTitle": "Imagem ao lado da respectiva linha na publicação semanal",
+    "weeklyNotOnLine": "O seu design semanal ainda não mostra imagens dos locais, por isso esta só aparece quando activar essa opção em Designs.",
+    "pictureWeeklyOff": "Active-a no seu design semanal →",
+    "lookHeading": "ASPECTO",
+    "daysPartsHint": "Arraste ⋮⋮ para mudar a ordem. Para mudar o aspecto das palavras, clique nelas no cartaz.",
+    "previewPostHint": "É exactamente isto que será publicado."
+  },
+  "managePayments": {
+    "state": {
+      "requirements": {
+        "chip": "Acção necessária"
+      },
+      "pending": {
+        "body": "Não precisa de fazer nada. A Stripe está a analisar o que enviou e esta página é actualizada quando terminar."
+      },
+      "unsupported": {
+        "body": "A Stripe não consegue activar pagamentos com cartão aqui. Contacte-nos e resolvemos a situação consigo."
+      }
+    },
+    "online": {
+      "body": "Os clientes pagam com cartão quando encomendam. O dinheiro vai directamente para a sua própria conta Stripe — nunca o retemos.",
+      "feeLine": "A Stripe cobra {fee} por pagamento com {region} (cartões normais). Outros cartões podem custar mais. A taxa do próprio HatchGrab nas encomendas online depende do seu plano — consulte Facturação."
+    },
+    "onboarding": {
+      "restricted": "A Stripe trata do resto — vai iniciar sessão na Stripe e actualizar os dados de que ela precisa."
+    },
+    "details": {
+      "body": "Altere a conta bancária onde recebe os pagamentos, ou actualize os dados e documentos da sua empresa."
+    },
+    "walkUp": {
+      "ownTerminal": "O seu próprio TPA",
+      "current": "Actual",
+      "hatchgrabHelp": "Usa a mesma ligação Stripe dos seus pagamentos online — um TPA, ou contactless directamente no seu telemóvel ou tablet."
+    }
+  },
+  "takingPayment": {
+    "paidStepHelp": "Adiciona um botão Confirmar quando regista uma encomenda manualmente, para a poder registar já e receber o pagamento mais tarde. Active esta opção se aceita encomendas por telefone ou antecipadas.",
+    "paidStepNote": "Só afecta as encomendas que adiciona. Não afecta as encomendas online."
+  },
+  "designEditor": {
+    "sample": {
+      "venue": "Esplanada do Largo",
+      "area": "Talatona"
+    },
+    "rows": {
+      "showCancelledHint": "Um evento cancelado mostra o local riscado e a palavra CANCELADO. Se estiver desactivado, o dia aparece como dia de folga."
+    },
+    "settings": {
+      "lastToggle": "{kind, select, weekly {Mantenha Local ou Horário activado. Um evento cancelado mostra o local riscado e a palavra CANCELADO, por isso, com os dois desactivados, nada indicaria que está cancelado.} other {Mantenha Local ou Horário activado. Um evento cancelado mostra o local riscado e a palavra CANCELADO, por isso, com os dois desactivados, nada indicaria que está cancelado.}}"
+    },
+    "effects": {
+      "bandDaysOffHint": "Usada em vez da faixa acima num dia sem actividade."
+    }
+  },
+  "weeklyPost": {
+    "error": {
+      "copyFailed": "Não foi possível copiar — seleccione o texto e copie-o manualmente."
+    },
+    "missingTable": {
+      "title": "A publicação semanal precisa de uma actualização da base de dados"
+    },
+    "post": {
+      "updating": "A actualizar…"
+    }
+  },
+  "manageShell": {
+    "noCountrySettings": "Não foi possível carregar as definições de país deste food truck. Actualize a página.",
+    "noPlans": "Não foi possível carregar o plano deste food truck. Actualize a página.",
+    "stale": "{hasTime, select, yes {Não foi possível actualizar. A mostrar o que estava guardado às {time}. As alterações que fizer continuam a ser guardadas.} other {Não foi possível actualizar. A mostrar o que estava guardado. As alterações que fizer continuam a ser guardadas.}}",
+    "profile": {
+      "updated": "Perfil actualizado"
+    },
+    "tabs": {
+      "menu": "Menu",
+      "billing": "Facturação"
+    },
+    "menuSections": {
+      "label": "Secções do menu"
+    },
+    "notices": {
+      "allergens": "<b>Alergénios por definir</b> — os clientes não veem a informação sobre alergénios até a verificar. Reveja os alergénios de cada prato no separador Menu."
+    },
+    "trialPopup": {
+      "body": "{hasDate, select, yes {Não lhe será cobrado nada durante o teste, que decorre até <b>{date}</b>. A facturação só começa quando escolher um plano e introduzir os seus dados de pagamento. Até lá, não há nada para cancelar nem nada para pagar. Escolha o seu plano antes dessa data — caso contrário, passa para o plano {fallback} e algumas funcionalidades deixam de funcionar.} other {Não lhe será cobrado nada durante o teste. A facturação só começa quando escolher um plano e introduzir os seus dados de pagamento. Até lá, não há nada para cancelar nem nada para pagar. Escolha o seu plano antes do fim do teste — caso contrário, passa para o plano {fallback} e algumas funcionalidades deixam de funcionar.}}"
+    }
+  },
+  "manageBilling": {
+    "transactionFees": "Taxas por transacção",
+    "card": {
+      "title": "Facturação e pagamentos",
+      "managed": "A facturação é gerida pelo HatchGrab"
+    },
+    "currentPlan": "Plano actual",
+    "noCharge": "🔒 Não lhe será cobrado nada durante o teste, que decorre até {date}. A facturação só começa quando escolher um plano e introduzir os seus dados de pagamento. Até lá, não há nada para cancelar nem nada para pagar.",
+    "upgradeModal": {
+      "body": "Estamos a preparar a facturação automática. Para mudar já, envie-nos uma mensagem e tratamos de tudo em 24 horas."
+    }
+  },
+  "manageTeam": {
+    "toast": {
+      "profileUpdated": "Perfil actualizado",
+      "memberUpdated": "Membro actualizado"
+    },
+    "phonePlaceholder": "+244 923 123 456",
+    "verifyNote": "Será enviado um link de verificação para este endereço. O seu email actual continua activo até à verificação.",
+    "privacy": "Os seus dados pessoais são privados e nunca são mostrados aos clientes. São usados para a gestão da conta e a verificação da facturação.",
+    "modal": {
+      "roleManager": "Gestor — Acesso total, incluindo menu e definições",
+      "roleOwner": "Proprietário — Acesso total, incluindo equipa e facturação",
+      "selectOne": "Seleccione pelo menos um food truck"
+    }
+  },
+  "manageWhatsApp": {
+    "preview": {
+      "intro": "Escreva uma pergunta como um cliente faria e veja exactamente o que ele receberia. Nada é enviado a ninguém.",
+      "examples": {
+        "menu": "O que há no menu?"
+      }
+    },
+    "notice": {
+      "sdkBlocked": "Não foi possível carregar o script de início de sessão da Meta. Normalmente, a causa é um bloqueador de anúncios ou a protecção contra rastreamento."
+    },
+    "card": {
+      "description": "Responda automaticamente às perguntas dos clientes nas suas redes sociais, com base no seu menu e na sua agenda.",
+      "switchedOff": "As respostas automáticas do WhatsApp estão desactivadas para o seu food truck.",
+      "instagram": "Respostas automáticas às mensagens directas do Instagram. Vai requerer uma conta profissional do Instagram."
+    },
+    "blocked": {
+      "body": "O WhatsApp está a recusar enviar as suas respostas automáticas devido a um problema de facturação na sua conta WhatsApp Business. Os clientes continuam a poder enviar-lhe mensagens e continua a ver tudo o que enviam — mas não estão a receber resposta.",
+      "fix": "Paga estas mensagens directamente ao WhatsApp, por isso o problema resolve-se no WhatsApp Manager. <link>Verificar o método de pagamento</link>"
+    },
+    "billing": {
+      "heading": "Facturação",
+      "summary": "É a Meta, e não o HatchGrab, que factura as respostas à sua conta WhatsApp. A partir de {from}, as primeiras {free, number} por mês são gratuitas. Informação correta a {checked}; consulte os <link>preços da Meta</link> para ver alterações.",
+      "chargesBody": "Cada resposta que o HatchGrab envia por si é facturada pela Meta à sua conta WhatsApp Business. A partir de {from}, a Meta inclui {free, number} respostas gratuitas por mês por número; depois disso, cada resposta é cobrada à tarifa da Meta. As respostas que envia pessoalmente a partir da app WhatsApp Business não são cobradas. A Meta define estes preços e pode alterá-los. <link>Ver os preços da Meta</link>"
+    },
+    "signup": {
+      "deliveryRefused": "A sua conta está associada, mas a Meta não activou a entrega de mensagens. A sua configuração está guardada — contacte o suporte em vez de a executar novamente."
+    }
+  },
+  "customDomain": {
+    "card": {
+      "exampleDomain": "oseufoodtruck.co.ao"
+    },
+    "turnOff": {
+      "link": "Desactivar",
+      "heading": "Desactivar o seu próprio endereço web?",
+      "carriesOn": "Isto continua exactamente como está, e é para aqui que o seu código QR encaminha as pessoas:",
+      "cancel": "Manter activo",
+      "confirm": "Desactivar",
+      "working": "A desactivar…",
+      "failed": "Não conseguimos desactivar isso neste momento. Nada mudou — o seu endereço continua a funcionar. Tente novamente daqui a pouco."
+    },
+    "record": {
+      "hintExact": "Copie isto exactamente."
+    },
+    "providers": {
+      "cloudflare": {
+        "add": "Seleccione «Add record» e escolha «CNAME» como «Type».",
+        "save": "Deixe «TTL» em «Auto» e seleccione «Save»."
+      },
+      "godaddy": {
+        "dns": "Em «Domain Settings», seleccione «DNS».",
+        "add": "Seleccione «Add New Record» e escolha «CNAME» no menu «Type».",
+        "save": "Deixe «TTL» como está e seleccione «Save»."
+      },
+      "123reg": {
+        "manage": "Ao lado de «Domains», seleccione «Manage All» e escolha o seu endereço web.",
+        "dns": "Seleccione «DNS» e depois «Add New Record»."
+      }
+    },
+    "instructionsEmail": {
+      "introAt": "Vamos colocar a agenda em directo de {truckName} em {address}, e é preciso adicionar um registo ao nosso domínio em {provider}.",
+      "introHolder": "Vamos colocar a agenda em directo de {truckName} em {address}, e é preciso adicionar um registo ao nosso domínio junto de quem o detém.",
+      "wholeChange": "É só esta alteração — nada mais no site é afectado e o resto do nosso domínio continua a funcionar exactamente como agora. Normalmente começa a funcionar dentro de uma hora.",
+      "pointsAt": "A página para onde aponta mostra onde vamos estar a vender a seguir e actualiza-se sozinha."
+    }
+  },
+  "copyButton": {
+    "announceFailed": "Não foi possível copiar: {thing}. Seleccione o texto e copie-o manualmente.",
+    "announceFailedValue": "Não foi possível copiar o valor. Seleccione o texto e copie-o manualmente."
+  },
+  "postShare": {
+    "copyFailed": "Não foi possível copiar — seleccione o texto e copie-o manualmente."
+  },
+  "posterWords": {
+    "placeSample": {
+      "nameTownBelow": "Esplanada do Largo\nLuanda",
+      "nameTown": "Esplanada do Largo, Luanda",
+      "nameOnly": "Esplanada do Largo"
+    },
+    "busyWeek": {
+      "venue1": "Administração Municipal de Talatona",
+      "town1": "Talatona",
+      "venue2": "Complexo Desportivo de Viana",
+      "town2": "Viana",
+      "town3": "Benguela",
+      "town4": "Lobito",
+      "venue5": "Churrasqueira do Zé",
+      "town5": "Huambo",
+      "town6": "Lubango"
+    }
+  },
+  "landing": {
+    "hero": {
+      "subSmall": "Carregue o seu menu, sem registo.<br></br>Veja uma demonstração a funcionar em menos de 60 segundos.",
+      "cta": "Carregar o meu menu →",
+      "ctaNote": "<lead>Carregue uma foto do seu menu e veja-o a funcionar em menos de 60 segundos.</lead><small>Sem registo. Sem cartão.</small>"
+    },
+    "shots": {
+      "dashboardAlt": "Registar uma encomenda na HatchGrab: o menu à esquerda, o cesto e o total à direita",
+      "phoneAlt": "Encomendar a um food truck na HatchGrab: o menu com fotos e preços, e o total do cesto actualizado"
+    },
+    "does": {
+      "devicesBody": "Funciona no telemóvel que traz no avental, no tablet ao balcão, no portátil dentro do food truck — e no TPA que já usa para cobrar.",
+      "whatsappBody": "«Onde estão hoje à noite?» «Que sobremesas têm?» O seu WhatsApp responde enquanto conduz até ao local ou está à grelha, com base no seu menu e na sua agenda. Messenger e Instagram em breve."
+    },
+    "steps": {
+      "menuTitle": "Crie o seu menu",
+      "scheduleBody": "Tem-na no seu site? Lemo-la a partir daí e mantemo-la actualizada. Se não, fotografe-a também. Só tem de aprovar o que encontrarmos."
+    },
+    "testimonial": {
+      "quote": "A HatchGrab tornou as encomendas muito mais fáceis. Está tudo organizado, conseguimos controlar o stock e saber exactamente quantas pizzas nos faltam vender — e os horários de levantamento são fantásticos para as aldeias mais movimentadas."
+    },
+    "faq": {
+      "metaTitle": "Encomendas para food trucks: FAQ | HatchGrab",
+      "metaDescription": "Respostas claras para food trucks sobre os preços da HatchGrab, a configuração, a recepção de encomendas e os pagamentos online ou no levantamento."
+    },
+    "final": {
+      "lede": "Carregue uma foto ou captura de ecrã do seu menu e transformamo-lo numa página de encomendas a funcionar, para experimentar em menos de 60 segundos. Os seus artigos, os seus preços. Sem registo, sem cartão, nada para instalar. Dê uma vista de olhos e depois decida.",
+      "cta": "Carregar o meu menu agora →"
+    },
+    "meta": {
+      "title": "Sistema de encomendas food truck — HatchGrab {country}",
+      "description": "Receba encomendas e encomendas antecipadas no seu local, sem filas. Encomendas online e ecrã da cozinha para food trucks ({country}) — não é um POS."
+    }
+  },
+  "landingNav": {
+    "cta": "Carregar o meu menu →",
+    "ctaShort": "Carregar menu"
+  },
+  "contactPage": {
+    "form": {
+      "topics": {
+        "comparison": "Uma correcção a uma página de comparação"
+      }
+    }
+  },
+  "aboutPage": {
+    "meta": {
+      "description": "A HatchGrab cria software prático para food trucks: encomendas online, horas de levantamento e menos perguntas repetitivas. Fundada por Dominic Bonini."
+    },
+    "story": {
+      "villageFoodie": "Depois de criar o Village Foodie, um directório que ajuda as pessoas a descobrir os food trucks que passam pela sua zona, dediquei mais tempo a conhecer os desafios dos negócios de restauração móvel. Ao contrário dos restaurantes tradicionais, os food trucks estão sempre em movimento, trabalham em locais diferentes e servem os clientes em condições que mudam constantemente.",
+      "focus": "O nosso objectivo é simples: tornar mais fácil gerir um food truck, com ferramentas pensadas para a forma como estes negócios funcionam realmente."
+    }
+  },
+  "siteFooter": {
+    "directory": "Directório de food trucks",
+    "disclaimer": "Aviso: as agendas podem ser alteradas pelos vendedores. Fazemos o nosso melhor, mas não somos responsáveis por food trucks cancelados nem por hambúrgueres esgotados. Consulte sempre as redes sociais do vendedor para actualizações de última hora."
+  },
+  "legalChrome": {
+    "lastUpdated": "Última actualização: {date}"
+  },
+  "truckPage": {
+    "meta": {
+      "orderTitle": "Encomendar a {truck}",
+      "orderDescription": "Encomende com antecedência ao food truck {truck} e levante a encomenda no food truck, à hora escolhida."
+    },
+    "ownThisTruckTitle": "Este food truck é seu? Clique para actualizar o seu perfil",
+    "actions": {
+      "menu": "Menu"
+    },
+    "notFound": {
+      "body": "Não encontrámos informações sobre este food truck. Pode ter mudado de sítio ou actualizado o perfil."
+    },
+    "noEvents": {
+      "cta": "Envie-nos uma mensagem para actualizar!"
+    }
+  },
+  "planFeatures": {
+    "row": {
+      "offline_protection": {
+        "name": "Protecção de encomendas offline"
+      }
+    }
+  },
+  "planPrompt": {
+    "switchedOff": "{many, select, yes {{feature}: funcionalidades desactivadas para o seu food truck.} other {{feature}: funcionalidade desactivada para o seu food truck.}}",
+    "features": {
+      "qr_menu": {
+        "name": "O menu com código QR"
+      },
+      "offline_protection": {
+        "name": "A protecção de encomendas offline"
+      }
+    }
+  },
+  "pricing": {
+    "footnote": "* Acrescem as taxas de processamento de cartões da Stripe nas encomendas online pagas com cartão (tarifa actual — {country}: {cardFee}), pagas à Stripe e não à HatchGrab. As encomendas ao balcão usam o seu próprio TPA — a HatchGrab cobra 0 %."
+  },
+  "featuresPage": {
+    "detail": {
+      "walkup_orders": "Registe e gira as encomendas ao balcão, pagas no seu próprio TPA.",
+      "profit_per_event": "Indique quanto lhe custa cada prato e veja quanto ganhou realmente em cada evento, não apenas a facturação.",
+      "tap_to_pay": "Receba pagamentos com cartão num telemóvel compatível, sem precisar de um TPA à parte.",
+      "embed_schedule": "Mostre as suas próximas datas no seu próprio site. Cada uma leva directamente à respectiva página de encomendas.",
+      "qr_code": "Um código QR para imprimir que abre o seu menu e a sua página de encomendas.",
+      "whatsapp_auto_replies": "Respostas automáticas a perguntas no WhatsApp sobre o seu menu e a sua agenda."
+    },
+    "metaTitle": "Planos e preços para food trucks — HatchGrab {country}"
+  },
+  "compare": {
+    "orders": {
+      "titleNo": "Quanto acha que facturaria online, por mês, por food truck?"
+    },
+    "fee": {
+      "title": "Quanto paga actualmente por encomenda?"
+    },
+    "cta": {
+      "upload": "Carregar o meu menu →",
+      "uploadSave": "Carregar o meu menu e poupar {amount} →"
+    },
+    "breakdown": {
+      "card": "Processamento de cartões — a taxa da Stripe de {fee} por encomenda, paga à Stripe. Pagaria praticamente o mesmo num TPA ao balcão.",
+      "provider": "A taxa própria do seu fornecedor actual ({pct})"
+    },
+    "enterRate": "Introduza quanto paga actualmente para ver a sua poupança.",
+    "panel": {
+      "nowYear": "<label>Actualmente paga</label><fig>{amount}<q> por ano</q></fig>",
+      "nowMonth": "<label>Actualmente paga</label><fig>{amount}<q> por mês</q></fig>"
+    },
+    "anchor": {
+      "weekendPitch": "É um local para um fim-de-semana num festival de comida."
+    },
+    "year": {
+      "current": "Fornecedor actual <b>{amount}</b>"
+    },
+    "smallPrint": {
+      "check": "Confirme as taxas do seu fornecedor actual antes de decidir."
+    },
+    "intro": "Demora cerca de um minuto. Já usa um sistema? Comparamo-lo. Ainda não? Mostramos-lhe exactamente quanto custa.",
+    "meta": {
+      "description": "Compare quanto lhe custam actualmente as encomendas online e as comissões das apps de entrega com um ano na HatchGrab — uma estimativa num minuto."
+    }
+  },
+  "comparison": {
+    "meta": {
+      "title": "Sistemas de encomendas para food trucks 2026: comparação"
+    },
+    "table": {
+      "appFlagOff": "Sim – ainda desactivado; aparece quando estiver nas lojas de apps",
+      "morePending": "Mais fornecedores aparecerão aqui assim que verificarmos os seus dados no respectivo site."
+    },
+    "costs": {
+      "perMonthYearly": "{price} por mês, facturado anualmente"
+    },
+    "faq": {
+      "whatA": "Um sistema de encomendas recebe encomendas online antes de os clientes chegarem ao food truck: escolhem os pratos e uma hora de levantamento, pagam online ou no levantamento, e a encomenda aparece na sua cozinha. Uma caixa ou um TPA cobra o pagamento no food truck. Os dois complementam-se."
+    },
+    "method": {
+      "meaning": "«Sim» significa que o fornecedor indica publicamente a funcionalidade. «Não especificado» significa que não encontrámos nada sobre isso no respectivo site — não que a funcionalidade não exista.",
+      "review": "Os preços e as funcionalidades são verificados automaticamente no site de cada produto; cada afirmação tem um link para a respectiva fonte."
+    },
+    "admin": {
+      "check": {
+        "apps": "Flags de iPad e Android activas para {country}"
+      },
+      "whyAutoOff": "a publicação automática está desactivada para este país"
+    },
+    "cell": {
+      "flagOff": "ainda desactivado; aparece quando estiver nas lojas de apps"
+    },
+    "features": {
+      "notify": {
+        "ours": "email quando o passo «encomenda pronta» está activo, e uma página de estado da encomenda; sem SMS, WhatsApp nem push"
+      },
+      "allergens": {
+        "label": "Alergénios no menu"
+      },
+      "menuphoto": {
+        "label": "Menu criado a partir de uma foto",
+        "explain": "Uma foto ou PDF do menu preenche os pratos, que depois só tem de verificar."
+      },
+      "terminal": {
+        "label": "TPA para o balcão incluído",
+        "explain": "O fornecedor disponibiliza um TPA para pagamentos no food truck."
+      }
+    }
+  },
+  "demoLinkEmail": {
+    "intro": "Aqui está o link para a demonstração que criámos a partir do seu menu. Encomende como um dos seus clientes e depois veja a encomenda chegar ao ecrã da cozinha. Não precisa de iniciar sessão — basta tocar no link.",
+    "deletion": "Isto é uma demonstração, por isso não a guardamos: vamos eliminá-la, juntamente com o menu que carregou, a {date}. Se quiser mais tempo, toque em «Guardar o meu menu» na demonstração e guardamo-la durante 14 dias.",
+    "deletionSoon": "Isto é uma demonstração, por isso não a guardamos: vamos eliminá-la, juntamente com o menu que carregou, ao fim de 24 horas. Se quiser mais tempo, toque em «Guardar o meu menu» na demonstração e guardamo-la durante 14 dias."
+  },
+  "demoWalk": {
+    "thatsIt": "Isto é o HatchGrab: os clientes encomendam no telemóvel, vê a encomenda aqui e eles levantam-na sem ficar na fila. O seu menu já está configurado.",
+    "startFree": "{months, plural, =0 {Começar grátis e manter o meu menu} one {Começar grátis durante # mês e manter o meu menu} many {Começar grátis durante # de meses e manter o meu menu} other {Começar grátis durante # meses e manter o meu menu}}",
+    "bandTitle": "Isto é o HatchGrab. O seu menu já está configurado.",
+    "bandStart": "Começar grátis e manter o meu menu",
+    "goneBody": "As demonstrações são eliminadas ao fim de um dia. Pode criar uma nova a partir do seu menu em menos de um minuto.",
+    "backToMenu": "Voltar ao menu"
+  },
+  "paperwork": {
+    "select": "Seleccionar {document}",
+    "selected": "{count, plural, one {# seleccionado} many {# seleccionados} other {# seleccionados}}",
+    "types": {
+      "food_registration": "Registo de empresa do sector alimentar",
+      "gas_safety": "Certificado de inspecção de gás",
+      "pat_test": "Inspecção de equipamentos eléctricos portáteis",
+      "electrical_safety": "Inspecção da instalação eléctrica",
+      "trading_licence": "Licença de actividade"
+    },
+    "view": {
+      "deleteConfirm": "Eliminar este documento e as respectivas versões anteriores? Os ficheiros são removidos e o documento deixa de constar de qualquer link que tenha enviado."
+    },
+    "sent": {
+      "off": "Desactivado",
+      "turnOff": "Desactivar link",
+      "turnOffConfirm": "Desactivar este link? O organizador deixa de o conseguir abrir.",
+      "turnedOff": "Link desactivado"
+    }
+  }
+}

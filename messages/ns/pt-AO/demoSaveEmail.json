@@ -1,0 +1,4 @@
+{
+  "intro": "Eis a ligação para voltar à demonstração com o seu menu. Não é preciso iniciar sessão — basta tocar nela.",
+  "deletion": "Isto é uma demonstração, por isso não a guardamos para sempre — vamos eliminá-la, e o menu, em\n                <b>{date}</b> ({days, plural, one {# dia} other {# dias}}). Se se registar antes\n                disso, o seu menu vem consigo."
+}

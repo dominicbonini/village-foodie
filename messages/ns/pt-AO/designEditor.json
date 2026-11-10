@@ -1,0 +1,15 @@
+{
+  "sample": {
+    "venue": "Esplanada do Largo",
+    "area": "Talatona"
+  },
+  "rows": {
+    "showCancelledHint": "Um evento cancelado mostra o local riscado e a palavra CANCELADO. Se estiver desactivado, o dia aparece como dia de folga."
+  },
+  "settings": {
+    "lastToggle": "{kind, select, weekly {Mantenha Local ou Horário activado. Um evento cancelado mostra o local riscado e a palavra CANCELADO, por isso, com os dois desactivados, nada indicaria que está cancelado.} other {Mantenha Local ou Horário activado. Um evento cancelado mostra o local riscado e a palavra CANCELADO, por isso, com os dois desactivados, nada indicaria que está cancelado.}}"
+  },
+  "effects": {
+    "bandDaysOffHint": "Usada em vez da faixa acima num dia sem actividade."
+  }
+}

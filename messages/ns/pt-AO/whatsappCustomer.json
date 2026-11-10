@@ -1,0 +1,8 @@
+{
+  "allergenRedirect": "{opener}Pode consultar o nosso menu completo e a informação sobre alergénios aqui: {url} — {truck} {emoji}",
+  "menuFallback": "{opener}Pode consultar o nosso menu completo aqui: {url} — {truck} {emoji}",
+  "menuSummary": "{opener}Temos {summary}. Veja o menu completo e encomende com antecedência aqui: {url} — {truck} {emoji}",
+  "allergenCaveat": "Confirme sempre os alergénios no menu completo — esta é uma resposta automática.",
+  "specificFallback": "{opener}Veja onde vamos estar na nossa agenda actualizada: {url}\n\n{truck} {emoji}",
+  "capContact": "Para nos contactar directamente: {number}"
+}

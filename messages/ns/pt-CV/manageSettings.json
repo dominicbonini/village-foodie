@@ -1,0 +1,12 @@
+{
+  "details": {
+    "websitePlaceholder": "https://oseufoodtruck.cv"
+  },
+  "contact": {
+    "emailPlaceholder": "ola@oseufoodtruck.cv",
+    "emailError": "Introduza um email válido (p. ex. ola@oseufoodtruck.cv)"
+  },
+  "schedule": {
+    "urlPlaceholder": "https://oseufoodtruck.cv/eventos"
+  }
+}

@@ -1,0 +1,9 @@
+{
+  "card": {
+    "noDeals": "Sem promoções activas",
+    "dealsActive": "{count, plural, one {# promoção activa} other {# promoções activas}} · {names}{hidden, plural, =0 {} one { · # oculta} other { · # ocultas}}"
+  },
+  "toast": {
+    "eventUpdated": "Evento actualizado"
+  }
+}

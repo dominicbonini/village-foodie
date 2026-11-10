@@ -1,0 +1,12 @@
+{
+  "transactionFees": "Taxas por transacção",
+  "card": {
+    "title": "Facturação e pagamentos",
+    "managed": "A facturação é gerida pelo HatchGrab"
+  },
+  "currentPlan": "Plano actual",
+  "noCharge": "🔒 Não lhe será cobrado nada durante o teste, que decorre até {date}. A facturação só começa quando escolher um plano e introduzir os seus dados de pagamento. Até lá, não há nada para cancelar nem nada para pagar.",
+  "upgradeModal": {
+    "body": "Estamos a preparar a facturação automática. Para mudar já, envie-nos uma mensagem e tratamos de tudo em 24 horas."
+  }
+}

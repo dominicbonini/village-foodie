@@ -1,0 +1,5 @@
+{
+  "orderReady": {
+    "help": "Mostra um botão «Marcar como pronta» no ecrã de encomendas. Os ecrãs da cozinha configuram-se à parte, em cada dispositivo. Os clientes recebem um email sempre que uma encomenda é marcada como pronta. Aplica-se a todos os eventos — pode ainda activá-lo ou desactivá-lo para um único evento no respectivo painel."
+  }
+}

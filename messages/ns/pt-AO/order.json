@@ -1,0 +1,15 @@
+{
+  "taxNotice": "Os preços do menu não incluem {tax}. É acrescentado abaixo.",
+  "menuChangedFallback": "O menu foi alterado. Verifique a sua encomenda antes de a fazer.",
+  "loadingMenu": "A carregar o menu…",
+  "timeNotSetBody": "O food truck ainda não definiu o horário do evento — contacte-o directamente. Poderá encomendar aqui assim que estiver definido.",
+  "closedDemo": "Este serviço de demonstração terminou — o período do evento chegou ao fim, tal como aconteceria num serviço real. Abra novamente o seu painel de demonstração e escolha «Iniciar um novo serviço» para preparar outro. O seu menu mantém-se igual.",
+  "pausedClosingBody": "As encomendas online foram encerradas. Se precisar de entrar em contacto, contacte-os directamente.",
+  "menu": "Menu",
+  "selectTime": "Seleccione «O quanto antes» ou escolha uma hora",
+  "stockNotice": "Lamentamos — {detail}. Actualizámos a sua encomenda — reveja-a e confirme.",
+  "addItemsPrompt": "Adicione artigos do menu para fazer uma encomenda",
+  "allergenNotProvided": "Informação sobre alergénios não indicada — confirme directamente com o food truck.",
+  "allergensUsed": "Alergénios presentes neste menu",
+  "allergenSevere": "Se tiver uma alergia grave, contacte directamente o food truck antes de encomendar."
+}

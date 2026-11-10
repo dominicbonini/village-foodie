@@ -1,0 +1,20 @@
+{
+  "select": "Seleccionar {document}",
+  "selected": "{count, plural, one {# seleccionado} many {# seleccionados} other {# seleccionados}}",
+  "types": {
+    "food_registration": "Registo de empresa do sector alimentar",
+    "gas_safety": "Certificado de inspecção de gás",
+    "pat_test": "Inspecção de equipamentos eléctricos portáteis",
+    "electrical_safety": "Inspecção da instalação eléctrica",
+    "trading_licence": "Licença de actividade"
+  },
+  "view": {
+    "deleteConfirm": "Eliminar este documento e as respectivas versões anteriores? Os ficheiros são removidos e o documento deixa de constar de qualquer link que tenha enviado."
+  },
+  "sent": {
+    "off": "Desactivado",
+    "turnOff": "Desactivar link",
+    "turnOffConfirm": "Desactivar este link? O organizador deixa de o conseguir abrir.",
+    "turnedOff": "Link desactivado"
+  }
+}

@@ -1,0 +1,101 @@
+{
+  "auth": {
+    "fields": {
+      "emailPlaceholder": "nome@exemplo.cv"
+    },
+    "signup": {
+      "emailPlaceholder": "nome@oseufoodtruck.cv"
+    }
+  },
+  "demoGetStarted": {
+    "emailPlaceholder": "nome@oseufoodtruck.cv"
+  },
+  "demoUpload": {
+    "emailPlaceholder": "nome@oseufoodtruck.cv"
+  },
+  "manageMenuImport": {
+    "schedule": {
+      "urlPlaceholder": "https://oseufoodtruck.cv/eventos"
+    }
+  },
+  "manageScheduleVerify": {
+    "malformed": "Isso não parece um endereço web. Experimente algo como oseufoodtruck.cv/eventos"
+  },
+  "manageSettings": {
+    "details": {
+      "websitePlaceholder": "https://oseufoodtruck.cv"
+    },
+    "contact": {
+      "emailPlaceholder": "ola@oseufoodtruck.cv",
+      "emailError": "Introduza um email válido (p. ex. ola@oseufoodtruck.cv)"
+    },
+    "schedule": {
+      "urlPlaceholder": "https://oseufoodtruck.cv/eventos"
+    }
+  },
+  "designEditor": {
+    "sample": {
+      "venue": "Esplanada da Praça",
+      "area": "Mindelo"
+    }
+  },
+  "manageTeam": {
+    "phonePlaceholder": "+238 991 23 45"
+  },
+  "customDomain": {
+    "card": {
+      "exampleDomain": "oseufoodtruck.cv"
+    }
+  },
+  "posterWords": {
+    "placeSample": {
+      "nameTownBelow": "Esplanada da Praça\nPraia",
+      "nameTown": "Esplanada da Praça, Praia",
+      "nameOnly": "Esplanada da Praça"
+    },
+    "busyWeek": {
+      "venue1": "Câmara Municipal do Sal",
+      "town1": "Espargos",
+      "venue2": "Complexo Desportivo de Assomada",
+      "town2": "Assomada",
+      "town3": "Mindelo",
+      "town4": "Santa Maria",
+      "town5": "Tarrafal",
+      "town6": "São Filipe"
+    }
+  },
+  "landing": {
+    "faq": {
+      "metaTitle": "Encomendas para food trucks: FAQ | HatchGrab",
+      "metaDescription": "Respostas claras para food trucks sobre os preços da HatchGrab, a configuração, a receção de encomendas e os pagamentos online ou no levantamento."
+    },
+    "meta": {
+      "title": "Sistema de encomendas food truck — HatchGrab {country}",
+      "description": "Receba encomendas e encomendas antecipadas no seu local, sem filas. Encomendas online e ecrã da cozinha para food trucks ({country}) — não é um POS."
+    }
+  },
+  "aboutPage": {
+    "meta": {
+      "description": "A HatchGrab cria software prático para food trucks: encomendas online, horas de levantamento e menos perguntas repetitivas. Fundada por Dominic Bonini."
+    }
+  },
+  "truckPage": {
+    "meta": {
+      "orderTitle": "Encomendar a {truck}",
+      "orderDescription": "Encomende com antecedência ao food truck {truck} e levante a encomenda no food truck, à hora escolhida."
+    }
+  },
+  "featuresPage": {
+    "metaTitle": "Planos e preços para food trucks — HatchGrab {country}"
+  },
+  "compare": {
+    "meta": {
+      "description": "Compare quanto lhe custam atualmente as encomendas online e as comissões das apps de entrega com um ano na HatchGrab — uma estimativa num minuto."
+    }
+  },
+  "comparison": {
+    "meta": {
+      "title": "Sistemas de encomendas para food trucks 2026: comparação"
+    }
+  }
+}

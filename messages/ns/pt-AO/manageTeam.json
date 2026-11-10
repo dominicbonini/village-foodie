@@ -1,0 +1,14 @@
+{
+  "toast": {
+    "profileUpdated": "Perfil actualizado",
+    "memberUpdated": "Membro actualizado"
+  },
+  "phonePlaceholder": "+244 923 123 456",
+  "verifyNote": "Será enviado um link de verificação para este endereço. O seu email actual continua activo até à verificação.",
+  "privacy": "Os seus dados pessoais são privados e nunca são mostrados aos clientes. São usados para a gestão da conta e a verificação da facturação.",
+  "modal": {
+    "roleManager": "Gestor — Acesso total, incluindo menu e definições",
+    "roleOwner": "Proprietário — Acesso total, incluindo equipa e facturação",
+    "selectOne": "Seleccione pelo menos um food truck"
+  }
+}

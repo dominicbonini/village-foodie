@@ -1,0 +1,23 @@
+{
+  "busy_retry_edit": "Outra pessoa está a actualizar encomendas neste momento. Tente novamente.",
+  "item_name_required": "Ocorreu um erro — actualize a página e tente novamente.",
+  "event_id_required": "Ocorreu um erro — actualize a página e tente novamente.",
+  "option_id_required": "Ocorreu um erro — actualize a página e tente novamente.",
+  "category_required": "Ocorreu um erro — actualize a página e tente novamente.",
+  "missing_event_id": "Ocorreu um erro — actualize a página e tente novamente.",
+  "value_bool_or_clear": "Ocorreu um erro — actualize a página e tente novamente.",
+  "value_presses_or_clear": "Ocorreu um erro — actualize a página e tente novamente.",
+  "missing_order_key": "Ocorreu um erro — actualize a página e tente novamente.",
+  "value_bool": "Ocorreu um erro — actualize a página e tente novamente.",
+  "eventid_required": "Ocorreu um erro — actualize a página e tente novamente.",
+  "value_bool_or_null": "Ocorreu um erro — actualize a página e tente novamente.",
+  "category_id_required": "Ocorreu um erro — actualize a página e tente novamente.",
+  "unknown_action": "Acção desconhecida",
+  "device_id_required": "Ocorreu um erro — actualize a página e tente novamente.",
+  "invalid_default_screen": "Ocorreu um erro — actualize a página e tente novamente.",
+  "device_and_truck_required": "Ocorreu um erro — actualize a página e tente novamente.",
+  "completed_payment_not_recorded": "Encomenda concluída, mas não foi possível guardar o registo de pagamento — o valor facturado desta encomenda pode estar errado até ser corrigido.",
+  "slot_board_not_updated": "Encomenda guardada, mas não foi possível actualizar o quadro de capacidade da cozinha — verifique o horário antes de confiar nele.",
+  "created_payment_not_recorded": "Encomenda criada, mas não foi possível guardar o registo de pagamento — o valor facturado desta encomenda pode estar errado até ser corrigido.",
+  "payment_not_recorded": "Não foi possível registar o pagamento — o valor facturado desta encomenda pode estar errado até ser corrigido."
+}

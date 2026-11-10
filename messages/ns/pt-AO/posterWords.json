@@ -1,0 +1,18 @@
+{
+  "placeSample": {
+    "nameTownBelow": "Esplanada do Largo\nLuanda",
+    "nameTown": "Esplanada do Largo, Luanda",
+    "nameOnly": "Esplanada do Largo"
+  },
+  "busyWeek": {
+    "venue1": "Administração Municipal de Talatona",
+    "town1": "Talatona",
+    "venue2": "Complexo Desportivo de Viana",
+    "town2": "Viana",
+    "town3": "Benguela",
+    "town4": "Lobito",
+    "venue5": "Churrasqueira do Zé",
+    "town5": "Huambo",
+    "town6": "Lubango"
+  }
+}

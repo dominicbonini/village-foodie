@@ -1,0 +1,11 @@
+{
+  "detail": {
+    "walkup_orders": "Registe e gira as encomendas ao balcão, pagas no seu próprio TPA.",
+    "profit_per_event": "Indique quanto lhe custa cada prato e veja quanto ganhou realmente em cada evento, não apenas a facturação.",
+    "tap_to_pay": "Receba pagamentos com cartão num telemóvel compatível, sem precisar de um TPA à parte.",
+    "embed_schedule": "Mostre as suas próximas datas no seu próprio site. Cada uma leva directamente à respectiva página de encomendas.",
+    "qr_code": "Um código QR para imprimir que abre o seu menu e a sua página de encomendas.",
+    "whatsapp_auto_replies": "Respostas automáticas a perguntas no WhatsApp sobre o seu menu e a sua agenda."
+  },
+  "metaTitle": "Planos e preços para food trucks — HatchGrab {country}"
+}

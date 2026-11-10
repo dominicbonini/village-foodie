@@ -1,0 +1,12 @@
+{
+  "details": {
+    "websitePlaceholder": "https://oseufoodtruck.co.mz"
+  },
+  "contact": {
+    "emailPlaceholder": "ola@oseufoodtruck.co.mz",
+    "emailError": "Introduza um email válido (p. ex. ola@oseufoodtruck.co.mz)"
+  },
+  "schedule": {
+    "urlPlaceholder": "https://oseufoodtruck.co.mz/eventos"
+  }
+}
