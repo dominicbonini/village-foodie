@@ -1,0 +1,3 @@
+{
+  "reason": "{reason, select, item_unavailable {Item unavailable} not_collected {Order not picked up} wrong_or_missing_item {Wrong or missing item} quality_issue {Quality issue} duplicate_payment {Duplicate payment} customer_cancelled {Customer cancelled} other {Other}}"
+}

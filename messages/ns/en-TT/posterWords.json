@@ -1,0 +1,19 @@
+{
+  "placeSample": {
+    "nameTownBelow": "The Courtyard\nWoodbrook",
+    "nameTown": "The Courtyard, Woodbrook",
+    "nameOnly": "The Courtyard"
+  },
+  "busyWeek": {
+    "venue1": "Arima Community Centre",
+    "town1": "Arima",
+    "venue2": "Chaguanas Recreation Ground and Community Sports Complex",
+    "town2": "Chaguanas",
+    "town3": "San Fernando",
+    "town4": "Scarborough",
+    "venue5": "The Rum Bar",
+    "town5": "Maraval",
+    "venue6": "Queen’s Park Savannah",
+    "town6": "Port of Spain"
+  }
+}

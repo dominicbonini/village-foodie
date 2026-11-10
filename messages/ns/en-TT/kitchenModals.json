@@ -1,0 +1,5 @@
+{
+  "extraWait": {
+    "hint": "Adds to the pickup time quoted on new orders. It does not change the event finish time."
+  }
+}

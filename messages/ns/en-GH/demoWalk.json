@@ -1,0 +1,8 @@
+{
+  "bubbleArrived": "The order you just placed arrived here instantly, with the pick-up time. Tap Start cooking.",
+  "thatsIt": "That’s HatchGrab: customers order on their phone, you see it here, they pick up without queuing. Your menu is already set up.",
+  "readyForCollection": "Ready for pick-up",
+  "collectAt": "Pick up at {time}",
+  "collectAsap": "Pick up as soon as possible",
+  "phoneReadyBody": "Pick it up at the truck."
+}

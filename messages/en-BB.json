@@ -1,0 +1,398 @@
+{
+  "order": {
+    "walkUpOnly": "This truck takes walk-up orders, in person.",
+    "mealDeals": "🎁 Combos",
+    "collectionTimeTitle": "Pickup time",
+    "collectionTimeChosen": "✓ Pickup time: {time}",
+    "payAtTruckLine": "Pay at the truck at pickup · No card details needed",
+    "collectionTime": "Pickup time: {time}",
+    "seeYou": "See you at the truck!",
+    "preferredCollection": "Preferred pickup: {time}",
+    "willConfirmTime": "{truck} will confirm your pickup time when they accept your order."
+  },
+  "dashboard": {
+    "toast": {
+      "intervalsSaved": "Pickup times saved for this event",
+      "printMode": "{mode, select, onConfirmed {Tickets will print when you accept an order} other {Tickets will print shortly before pickup}}",
+      "cardPayments": "{state, select, off {Card payments off — customers pay at the truck} other {Card payments back on}}",
+      "intervalsFailed": "Pickup times could not be saved right now."
+    },
+    "cancelReasons": {
+      "not_collected": "Order not picked up"
+    },
+    "banner": {
+      "cardPaymentsOff": "Card payments are off — customers are paying at the truck. This stays off, on every event, until you turn it back on."
+    },
+    "orders": {
+      "status": "{status, select, pending {New} confirmed {Confirmed} rejected {Rejected} modified {Modified} cancelled {Cancelled} cooking {Cooking} ready {Ready} collected {Picked up} other {{status}}}"
+    },
+    "settings": {
+      "cardsHelp": "Turn this off during a card problem and customers will place orders as normal and pay at the truck instead. Orders keep coming; only the card step stops.",
+      "intervalsTitle": "Pickup times",
+      "intervalsHelp": "How far apart pickup times are. This doesn’t change kitchen capacity or prep times.",
+      "intervalsUnavailable": "Pickup times are unavailable right now.",
+      "customerTimes": "Customer Pickup Times",
+      "yourTimes": "Your Pickup Times"
+    },
+    "edit": {
+      "collectionTime": "Pickup time"
+    }
+  },
+  "phone": {
+    "invalidMobile": "{withName, select, yes {Please enter a valid {name} cell number} other {Please enter a valid cell number}}{withExample, select, yes { (e.g. {example})} other {}}"
+  },
+  "errorsCustomer": {
+    "cancel_window_passed": "{n, plural, one {Orders can no longer be cancelled within {count} minute of pickup} other {Orders can no longer be cancelled within {count} minutes of pickup}}"
+  },
+  "orderStatus": {
+    "statusName": {
+      "collected": "picked up"
+    }
+  },
+  "privateLink": {
+    "orderingOffBody": "This event isn’t taking orders online. Please order at the truck."
+  },
+  "emailCustomer": {
+    "payNote": {
+      "partPaidBody": "The rest is due when you pick up.",
+      "partPaidBodyFigures": "{paid} of this order is paid. The remaining {balance} is due when you pick up.",
+      "partPaidText": "Part paid. Some of this order is still to pay when you pick up.",
+      "partPaidTextFigures": "Part paid: {paid} received, {balance} still to pay when you pick up.",
+      "heldShortBody": "{truck} takes the amount held when they confirm your order. The rest is due when you pick up.",
+      "heldShortBodyFigures": "{truck} takes the {held} held when they confirm your order. The remaining {owing} is due when you pick up.",
+      "heldShortText": "Your card is held for part of this order. {truck} takes the amount held when they confirm your order, and the rest is due when you pick up.",
+      "heldShortTextFigures": "Your card is held for {held}, which {truck} takes when they confirm your order. {owing} of this order is still to pay when you pick up.",
+      "unknownBody": "Your card was authorised, so please do not pay again — {truck} will confirm when you pick up.",
+      "unknownText": "We’re still confirming your payment. Your card was authorised, so please do not pay again — {truck} will confirm when you pick up.",
+      "hatchTitle": "Pay at the truck at pickup",
+      "hatchText": "Pay at the truck at pickup."
+    },
+    "confirmation": {
+      "slotUpdated": "Your pickup time has been updated",
+      "collectionTime": "Pickup time: {time}",
+      "seeYou": "See you at the truck!",
+      "preferredTime": "Preferred pickup time: {time}",
+      "weWillConfirm": "We’ll confirm your pickup time when we accept your order.",
+      "leadReady": "Your order is ready for pickup — come and pick it up from {truck}.",
+      "textTitleReady": "Order #{id} is ready to pick up — {truck}",
+      "textReady": "Your order is ready for pickup — come and pick it up.",
+      "textSlotUpdated": "Pickup time updated to {time} (was {previous}).",
+      "textCollection": "Pickup time: {time}. See you at the truck!",
+      "textPreferred": "Preferred pickup: {time} — we’ll confirm when we accept your order."
+    }
+  },
+  "errorsKitchen": {
+    "intervals_choices": "Pickup times must be every {choices} minutes.",
+    "intervals_customer_first": "Set the customer pickup times before setting your own.",
+    "intervals_save_failed": "Pickup times could not be saved right now."
+  },
+  "kitchenModals": {
+    "extraWait": {
+      "hint": "Adds to the pickup time quoted on new orders. It does not change the event finish time."
+    }
+  },
+  "ticket": {
+    "collect": "PICKUP {time}",
+    "collectAsap": "PICKUP ASAP"
+  },
+  "printing": {
+    "card": {
+      "summaryLead": "Print <b>{lead} min</b> before pickup · {paper}mm paper",
+      "modeLead": "A set time before pickup",
+      "leadLabel": "Minutes before the pickup time",
+      "modeOnConfirmedHint": "An advance pre-order prints when you accept it, which may be hours before the pickup time. Orders you have not accepted yet never print."
+    }
+  },
+  "kds": {
+    "header": {
+      "fullTitle": "Full cards — prices and payment details, as the counter sees them."
+    }
+  },
+  "nativeShell": {
+    "gate": {
+      "undoneCollected": "Undone — order not picked up",
+      "collected": "Order #{id} {paidToo, select, yes {paid and picked up} other {picked up}}",
+      "status": "Order #{id} {action, select, confirm {confirmed} reject {rejected} ready {ready} collected {picked up} undo_collected {restored} cancel {cancelled} other {updated}}"
+    }
+  },
+  "demo": {
+    "cashAndCollected": "Cash & picked up"
+  },
+  "paymentActions": {
+    "reason": "{reason, select, item_unavailable {Item unavailable} not_collected {Order not picked up} wrong_or_missing_item {Wrong or missing item} quality_issue {Quality issue} duplicate_payment {Duplicate payment} customer_cancelled {Customer cancelled} other {Other}}"
+  },
+  "orderCard": {
+    "collected": "Picked up",
+    "cashAndCollected": "Cash & picked up",
+    "cardAndCollected": "Card & picked up",
+    "status": "{status, select, pending {New} confirmed {Confirmed} rejected {Rejected} modified {Modified} cancelled {Cancelled} cooking {Cooking} ready {Ready} collected {Picked up} other {New}}",
+    "markPaidAndCollected": "Mark paid & picked up"
+  },
+  "addOrder": {
+    "catClosed": "{cat} is closed for online orders this event — hidden from customers. You can still add walk-up orders at the truck; you’ll be asked to confirm.",
+    "addAnywayConfirm": "{detail}\n\nAdd anyway (as a walk-up order)?\n\nOK = add anyway   ·   Cancel = edit the order"
+  },
+  "emailOperator": {
+    "newOrder": {
+      "collection": "Pickup: {time}"
+    }
+  },
+  "goLive": {
+    "kitchenCapacityUnset": {
+      "detail": "No capacity is set for {vans}. Without it we will keep promising customers pickup times your kitchen has no way to hit."
+    },
+    "noPrepBearingCategory": {
+      "detail": "{categories, select, none {You have no menu categories yet, so we have no way to work out how long an order takes.} other {None of your categories has a cooking time set, so every order looks instant to us. We would keep giving customers pickup times your kitchen has no chance of hitting, and the busier you get the further out they would be.}}"
+    }
+  },
+  "auth": {
+    "signup": {
+      "emailPlaceholder": "you@yourtruck.bb"
+    }
+  },
+  "demoGetStarted": {
+    "emailPlaceholder": "you@yourtruck.bb"
+  },
+  "demoUpload": {
+    "emailPlaceholder": "you@yourtruck.bb"
+  },
+  "eventTypes": {
+    "summary": {
+      "collectionEvery": "pickup every {mins} min"
+    }
+  },
+  "manageMenuImport": {
+    "schedule": {
+      "urlPlaceholder": "https://yourtruck.bb/events"
+    }
+  },
+  "errorsManage": {
+    "collection_interval_choices": "Pickup times must be every {choices} minutes.",
+    "collection_intervals_save_failed": "Pickup times could not be saved right now."
+  },
+  "manageScheduleVerify": {
+    "malformed": "That doesn’t look like a web address. Try something like yourtruck.bb/events"
+  },
+  "serviceSettings": {
+    "labels": {
+      "collection_interval_mins": "Pickup times"
+    }
+  },
+  "kitchenCapacity": {
+    "lead": "How many items your kitchen can make, so customers can only choose pickup times you can meet."
+  },
+  "settingsCopy": {
+    "buzzers": {
+      "label": "Do you hand out buzzers for pickup?"
+    }
+  },
+  "manageSettings": {
+    "collection": {
+      "help": "How far apart pickup times are. This doesn’t change kitchen capacity or prep times.",
+      "unavailable": "Pickup times are unavailable right now.",
+      "customerTimes": "Customer pickup times",
+      "yourTimes": "Your pickup times"
+    },
+    "schedule": {
+      "urlPlaceholder": "https://yourtruck.bb/events"
+    },
+    "qr": {
+      "printHelp": "Print or display this code so customers can scan and pre-order. Place it at your counter, on your van, or share it online."
+    }
+  },
+  "manageReports": {
+    "csv": {
+      "collectionTime": "Pickup time"
+    },
+    "accounts": {
+      "payAtTruck": "Pay at the truck"
+    }
+  },
+  "socialPosts": {
+    "socialTagPlaceholder": "@bajanfoodfest"
+  },
+  "managePayments": {
+    "walkUp": {
+      "body": "How you take money at the truck. HatchGrab charges no platform fee on walk-ups, whichever you choose."
+    }
+  },
+  "designEditor": {
+    "sample": {
+      "venue": "The Rum Shop",
+      "area": "Holetown"
+    }
+  },
+  "weeklyPost": {
+    "post": {
+      "notePlaceholder": "e.g. Pre-order for pickup"
+    }
+  },
+  "manageTeam": {
+    "phonePlaceholder": "+1 246 555 0123"
+  },
+  "posterWords": {
+    "placeSample": {
+      "nameTownBelow": "The Rum Shop\nHoletown",
+      "nameTown": "The Rum Shop, Holetown",
+      "nameOnly": "The Rum Shop"
+    },
+    "busyWeek": {
+      "venue1": "Speightstown Community Centre",
+      "town1": "Speightstown",
+      "venue2": "Bridgetown Sports Grounds and Community Recreation Centre",
+      "town2": "Bridgetown",
+      "venue3": "Fish Fry",
+      "town3": "Oistins",
+      "town4": "St Lawrence Gap",
+      "venue5": "The Beach Bar",
+      "town5": "Bathsheba",
+      "town6": "St Philip"
+    }
+  },
+  "completionSettings": {
+    "pressesOne": "One press (“Mark paid & picked up”)",
+    "pressesOneHelp": "Best when you take the money as you hand the food over. You get a single button, “Mark paid & picked up”, which records the payment and clears the order together.",
+    "pressesTwo": "Two presses (“Mark paid” & “Picked up”)",
+    "pressesTwoHelp": "Best when payment and handover happen at different moments — someone pays at the truck, then picks up when it’s ready. You get two buttons: “Mark paid” first, then “Picked up” when they take the food."
+  },
+  "landing": {
+    "does": {
+      "lede": "Most ordering systems assume a fixed address, reliable wifi and the same hours every week. You’re somewhere new every week, at different times, on patchy or no cell signal. HatchGrab was built for that.",
+      "slotsTitle": "Customers choose pickup times",
+      "capacityBody": "Set how much you can cook at once, and how long it takes. Once a pickup time is full, customers can’t pick it.",
+      "whatsappBody": "“Where are you tonight?” “What desserts do you have?” Your WhatsApp gets answered while you’re driving to your spot or at the grill, using your own menu and schedule. Messenger and Instagram coming soon.",
+      "whatsappSoonBody": "“Where are you tonight?” “What desserts do you have?” Soon your WhatsApp will get answered while you’re driving to your spot or at the grill. Messenger and Instagram to follow.",
+      "slotsBody": "Customers order ahead and choose a pickup time. Fewer queues, and food ready when they arrive."
+    },
+    "faq": {
+      "metaTitle": "Food truck ordering: frequently asked questions | HatchGrab",
+      "metaDescription": "Straight answers for food trucks about HatchGrab’s prices, setting up, taking orders and pre-orders, pickup times and payments."
+    },
+    "meta": {
+      "title": "Food truck ordering system — HatchGrab {country}",
+      "description": "Take orders and pre-orders at your spot without the queue. Ordering and kitchen-screen software for {country} food trucks and mobile catering — not a POS."
+    }
+  },
+  "aboutPage": {
+    "meta": {
+      "description": "HatchGrab makes practical software for food trucks and mobile caterers: orders, pickup times and fewer repeat questions. Founded by Dominic Bonini."
+    },
+    "story": {
+      "build": "We build practical software specifically for food trucks and mobile caterers, helping them take online orders, manage pickup times, keep orders flowing smoothly and spend less time dealing with repetitive questions."
+    }
+  },
+  "truckPage": {
+    "meta": {
+      "orderDescription": "Order ahead from {truck} and pick it up at the truck."
+    },
+    "shareText": "Check out where {truck} is setting up next! 🚚"
+  },
+  "planFeatures": {
+    "row": {
+      "meal_deals_upsells": {
+        "name": "Combos & upsells"
+      }
+    },
+    "priceWord": {
+      "payAtHatch": "Pay at the truck"
+    }
+  },
+  "planPrompt": {
+    "features": {
+      "meal_deals": {
+        "name": "Combos"
+      },
+      "online_ordering_pay_at_hatch": {
+        "name": "Pay-at-the-truck ordering"
+      }
+    }
+  },
+  "pricing": {
+    "banner": {
+      "body": "With {brand}, customers order ahead and pay when they pick up, so you can take online orders without connecting a card processor at all. Prefer to take payment up front? Add online card payments any time. When your trial ends you move to <plan>{fallback}</plan>{fallbackFree, select, yes { — no monthly fee —} other {}} unless you choose a plan. No card to start, no contract, cancel anytime.",
+      "bodyOnly": "With {brand}, customers order ahead and pay when they pick up, so you can take online orders without connecting a card processor at all. Prefer to take payment up front? Add online card payments any time. When your trial ends, <plan>{fallback}</plan> is {price} a month. We’ll be in touch before then to set up payment. No card to start, no contract, cancel anytime."
+    },
+    "base": {
+      "preorders": "Pre-orders & pickup times"
+    },
+    "footnote": "* Plus Stripe’s card processing on online card orders (currently {cardFee} in {country}), paid to Stripe, not HatchGrab. Walk-up orders use your own card reader — HatchGrab charges 0%."
+  },
+  "featuresPage": {
+    "detail": {
+      "walkup_orders": "Take and manage orders at the truck, paid on your own card terminal.",
+      "time_slot_selection": "Customers choose a pickup time slot, spreading demand across your service."
+    },
+    "metaTitle": "Food truck ordering plans & features — HatchGrab {country}"
+  },
+  "compare": {
+    "fee": {
+      "fixedAria": "Cents per order"
+    },
+    "days": {
+      "help": "Events, markets, spots — any day the van’s out."
+    },
+    "anchor": {
+      "weekendPitch": "That’s a weekend spot at a food festival.",
+      "festivalPitches": "That’s a couple of festival spots."
+    },
+    "meta": {
+      "title": "Online ordering cost calculator — HatchGrab {country}",
+      "description": "Compare what your online orders cost you now — commission, card fees, monthly fees — with a year on HatchGrab. An estimate in a minute."
+    }
+  },
+  "comparison": {
+    "meta": {
+      "description": "Food truck ordering systems compared: pre-orders with a pickup time, kitchen capacity, schedules, fees and contracts — checked on each vendor’s site."
+    },
+    "fit": {
+      "oursBody": "you trade at changing locations, want pre-orders with a pickup time, don’t want your kitchen overloaded, and don’t want a contract.",
+      "marketplacesBody": "Delivery platforms bring new customers but take commission on every order. Uber Eats states 14% for pickup and 30% for delivery by Uber couriers in Germany. Wolt says on its own website that it charges commission but gives no rates. We could not check Lieferando’s rates. That commission applies to regulars who pre-order with you, too."
+    },
+    "faq": {
+      "whatA": "An ordering system takes orders online before customers reach the truck: they choose dishes and a pickup time, pay online or at pickup, and the order appears in your kitchen. A till or card machine takes payment at the truck. The two complement each other.",
+      "capacityA": "Customers only see pickup times your kitchen can actually make. The system works from each dish’s preparation time and how many you prepare at once."
+    },
+    "features": {
+      "preorder": {
+        "label": "Pre-orders with a chosen pickup time",
+        "explain": "Customers order in advance and choose the time they pick up."
+      },
+      "capacity": {
+        "label": "Pickup times limited by kitchen capacity",
+        "explain": "Customers only see pickup times the kitchen can actually make."
+      },
+      "asap": {
+        "explain": "Customers can order without choosing a time and pick up as soon as it is ready."
+      },
+      "deals": {
+        "label": "Combos and bundles"
+      },
+      "payattruck": {
+        "explain": "Customers order online and pay when they pick up."
+      },
+      "delivery": {
+        "ours": "pickup only"
+      }
+    }
+  },
+  "comparisonSuits": {
+    "q": {
+      "preorder": "Which ordering system lets my customers order ahead and choose a pickup time?"
+    },
+    "does": {
+      "preorder": "{names} {count, plural, one {lets} other {let}} customers order ahead and choose a pickup time.",
+      "capacity": "{names} {count, plural, one {limits} other {limit}} how many orders each pickup time takes, so the kitchen isn’t swamped."
+    },
+    "feat": {
+      "preorder": "pickup times"
+    }
+  },
+  "demoWalk": {
+    "bubbleArrived": "The order you just placed arrived here instantly, with the pickup time. Tap Start cooking.",
+    "thatsIt": "That’s HatchGrab: customers order on their phone, you see it here, they pick up without queuing. Your menu is already set up.",
+    "readyForCollection": "Ready for pickup",
+    "collectAt": "Pick up at {time}",
+    "collectAsap": "Pick up as soon as possible",
+    "phoneReadyBody": "Pick it up at the truck."
+  }
+}

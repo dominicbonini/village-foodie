@@ -38,7 +38,10 @@ export const COUNTRY_PATH_SEGMENTS: Readonly<Record<string, string>> = { GB: 'uk
   BR: 'br', MX: 'mx', JP: 'jp', SG: 'sg', HK: 'hk', MY: 'my', TH: 'th', AE: 'ae',
   // languages-world-1 (10 November 2026): AR CL CO PE UY PY BO EC CR PA DO GT SV HN NI — prepared, each at its ISO code. A country with no enabled row 302s to /uk and is in no
   // router pick, hreflang set, sitemap or menu, so these appear only when the country is switched on.
-  AR: 'ar', CL: 'cl', CO: 'co', PE: 'pe', UY: 'uy', PY: 'py', BO: 'bo', EC: 'ec', CR: 'cr', PA: 'pa', DO: 'do', GT: 'gt', SV: 'sv', HN: 'hn', NI: 'ni' }
+  AR: 'ar', CL: 'cl', CO: 'co', PE: 'pe', UY: 'uy', PY: 'py', BO: 'bo', EC: 'ec', CR: 'cr', PA: 'pa', DO: 'do', GT: 'gt', SV: 'sv', HN: 'hn', NI: 'ni',
+  // languages-world-1 (10 November 2026): ZA KE NG GH PH JM TT BS BB — prepared, each at its ISO code. A country with no enabled row 302s to /uk and is in no
+  // router pick, hreflang set, sitemap or menu, so these appear only when the country is switched on.
+  ZA: 'za', KE: 'ke', NG: 'ng', GH: 'gh', PH: 'ph', JM: 'jm', TT: 'tt', BS: 'bs', BB: 'bb' }
 
 /** The marketing pages that have a country address. faq-4 (2 November 2026): + 'faq' (/<country>/faq, routed from /faq like
  *  /features; a country whose FAQ has nothing to show answers 404 there — app/faq/page.tsx). */

@@ -1,0 +1,4 @@
+{
+  "collection_interval_choices": "Pick-up times must be every {choices} minutes.",
+  "collection_intervals_save_failed": "Pick-up times could not be saved right now."
+}

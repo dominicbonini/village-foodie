@@ -1,0 +1,20 @@
+{
+  "placeSample": {
+    "nameTownBelow": "Maginhawa Food Park\nQuezon City",
+    "nameTown": "Maginhawa Food Park, Quezon City",
+    "nameOnly": "Maginhawa Food Park"
+  },
+  "busyWeek": {
+    "venue1": "Barangay San Antonio Covered Court",
+    "town1": "Pasig",
+    "venue2": "Marikina Sports Center Grounds and Community Recreation Complex",
+    "town2": "Marikina",
+    "venue3": "Town Plaza",
+    "town3": "Antipolo",
+    "town4": "Tagaytay",
+    "venue5": "The Food Hub",
+    "town5": "Makati",
+    "venue6": "Bonifacio High Street",
+    "town6": "Taguig"
+  }
+}

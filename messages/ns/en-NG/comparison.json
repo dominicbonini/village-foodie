@@ -1,0 +1,40 @@
+{
+  "meta": {
+    "description": "Food truck ordering systems compared: pre-orders with a pick-up time, kitchen capacity, schedules, fees and contracts — checked on each vendor’s site."
+  },
+  "fit": {
+    "oursBody": "you trade at changing locations, want pre-orders with a pick-up time, don’t want your kitchen overloaded, and don’t want a contract.",
+    "tills": "Tills and POS terminals",
+    "marketplacesBody": "Delivery platforms bring new customers but take commission on every order. Uber Eats states 14% for pick-up and 30% for delivery by Uber couriers in Germany. Wolt says on its own website that it charges commission but gives no rates. We could not check Lieferando’s rates. That commission applies to regulars who pre-order with you, too."
+  },
+  "faq": {
+    "whatA": "An ordering system takes orders online before customers reach the truck: they choose dishes and a pick-up time, pay online or at pick-up, and the order appears in your kitchen. A till or POS terminal takes payment at the truck. The two complement each other.",
+    "capacityA": "Customers only see pick-up times your kitchen can actually make. The system works from each dish’s preparation time and how many you prepare at once."
+  },
+  "features": {
+    "preorder": {
+      "label": "Pre-orders with a chosen pick-up time",
+      "explain": "Customers order in advance and choose the time they pick up."
+    },
+    "capacity": {
+      "label": "Pick-up times limited by kitchen capacity",
+      "explain": "Customers only see pick-up times the kitchen can actually make."
+    },
+    "asap": {
+      "explain": "Customers can order without choosing a time and pick up as soon as it is ready."
+    },
+    "deals": {
+      "label": "Combos and bundles"
+    },
+    "payattruck": {
+      "explain": "Customers order online and pay when they pick up."
+    },
+    "terminal": {
+      "label": "POS terminal for the window supplied",
+      "explain": "The vendor provides a POS terminal for payments at the truck."
+    },
+    "delivery": {
+      "ours": "pick-up only"
+    }
+  }
+}

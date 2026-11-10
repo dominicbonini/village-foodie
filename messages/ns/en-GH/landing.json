@@ -1,0 +1,18 @@
+{
+  "does": {
+    "lede": "Most ordering systems assume a fixed address, reliable wifi and the same hours every week. You’re somewhere new every week, at different times, on patchy or no network coverage. HatchGrab was built for that.",
+    "slotsTitle": "Customers choose pick-up times",
+    "capacityBody": "Set how much you can cook at once, and how long it takes. Once a pick-up time is full, customers can’t pick it.",
+    "whatsappBody": "“Where are you tonight?” “What desserts do you have?” Your WhatsApp gets answered while you’re driving to your spot or at the grill, using your own menu and schedule. Messenger and Instagram coming soon.",
+    "whatsappSoonBody": "“Where are you tonight?” “What desserts do you have?” Soon your WhatsApp will get answered while you’re driving to your spot or at the grill. Messenger and Instagram to follow.",
+    "slotsBody": "Customers order ahead and choose a pick-up time. Fewer queues, and food ready when they arrive."
+  },
+  "faq": {
+    "metaTitle": "Food truck ordering: frequently asked questions | HatchGrab",
+    "metaDescription": "Straight answers for food trucks about HatchGrab’s prices, setting up, taking orders and pre-orders, pick-up times and payments."
+  },
+  "meta": {
+    "title": "Food truck ordering system — HatchGrab {country}",
+    "description": "Take orders and pre-orders at your spot without the queue. Ordering and kitchen-screen software for {country} food trucks and mobile catering — not a POS."
+  }
+}

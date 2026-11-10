@@ -1,0 +1,19 @@
+{
+  "placeSample": {
+    "nameTownBelow": "The Courtyard\nKaren",
+    "nameTown": "The Courtyard, Karen",
+    "nameOnly": "The Courtyard"
+  },
+  "busyWeek": {
+    "venue1": "Karen Community Hall",
+    "town1": "Karen",
+    "venue2": "Kiambu Stadium Grounds and Community Recreation Centre",
+    "town2": "Kiambu",
+    "town3": "Thika",
+    "town4": "Naivasha",
+    "venue5": "The Garden Café",
+    "town5": "Westlands",
+    "venue6": "Central Park",
+    "town6": "Nakuru"
+  }
+}

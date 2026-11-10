@@ -1,0 +1,19 @@
+{
+  "fee": {
+    "fixedAria": "Cents per order"
+  },
+  "days": {
+    "help": "Events, markets, spots — any day the van’s out."
+  },
+  "breakdown": {
+    "card": "Card processing — Stripe’s {fee} per order, paid to Stripe. You’d pay much the same on a PDQ machine at the window."
+  },
+  "anchor": {
+    "weekendPitch": "That’s a weekend spot at a food festival.",
+    "festivalPitches": "That’s a couple of festival spots."
+  },
+  "meta": {
+    "title": "Online ordering cost calculator — HatchGrab {country}",
+    "description": "Compare what your online orders cost you now — commission, card fees, monthly fees — with a year on HatchGrab. An estimate in a minute."
+  }
+}

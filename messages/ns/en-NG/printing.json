@@ -1,0 +1,8 @@
+{
+  "card": {
+    "summaryLead": "Print <b>{lead} min</b> before pick-up · {paper}mm paper",
+    "modeLead": "A set time before pick-up",
+    "leadLabel": "Minutes before the pick-up time",
+    "modeOnConfirmedHint": "An advance pre-order prints when you accept it, which may be hours before the pick-up time. Orders you have not accepted yet never print."
+  }
+}

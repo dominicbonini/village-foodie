@@ -1,0 +1,14 @@
+{
+  "collection": {
+    "help": "How far apart pickup times are. This doesn’t change kitchen capacity or prep times.",
+    "unavailable": "Pickup times are unavailable right now.",
+    "customerTimes": "Customer pickup times",
+    "yourTimes": "Your pickup times"
+  },
+  "schedule": {
+    "urlPlaceholder": "https://yourtruck.bb/events"
+  },
+  "qr": {
+    "printHelp": "Print or display this code so customers can scan and pre-order. Place it at your counter, on your van, or share it online."
+  }
+}

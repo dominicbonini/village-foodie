@@ -1,0 +1,28 @@
+{
+  "toast": {
+    "intervalsSaved": "Pick-up times saved for this event",
+    "printMode": "{mode, select, onConfirmed {Tickets will print when you accept an order} other {Tickets will print shortly before pick-up}}",
+    "cardPayments": "{state, select, off {Card payments off — customers pay at the truck} other {Card payments back on}}",
+    "intervalsFailed": "Pick-up times could not be saved right now."
+  },
+  "cancelReasons": {
+    "not_collected": "Order not picked up"
+  },
+  "banner": {
+    "cardPaymentsOff": "Card payments are off — customers are paying at the truck. This stays off, on every event, until you turn it back on."
+  },
+  "orders": {
+    "status": "{status, select, pending {New} confirmed {Confirmed} rejected {Rejected} modified {Modified} cancelled {Cancelled} cooking {Cooking} ready {Ready} collected {Picked up} other {{status}}}"
+  },
+  "settings": {
+    "cardsHelp": "Turn this off during a card problem and customers will place orders as normal and pay at the truck instead. Orders keep coming; only the card step stops.",
+    "intervalsTitle": "Pick-up times",
+    "intervalsHelp": "How far apart pick-up times are. This doesn’t change kitchen capacity or prep times.",
+    "intervalsUnavailable": "Pick-up times are unavailable right now.",
+    "customerTimes": "Customer Pick-up Times",
+    "yourTimes": "Your Pick-up Times"
+  },
+  "edit": {
+    "collectionTime": "Pick-up time"
+  }
+}

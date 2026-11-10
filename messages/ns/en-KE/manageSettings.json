@@ -1,0 +1,14 @@
+{
+  "collection": {
+    "help": "How far apart pick-up times are. This doesn’t change kitchen capacity or prep times.",
+    "unavailable": "Pick-up times are unavailable right now.",
+    "customerTimes": "Customer pick-up times",
+    "yourTimes": "Your pick-up times"
+  },
+  "schedule": {
+    "urlPlaceholder": "https://yourtruck.co.ke/events"
+  },
+  "qr": {
+    "printHelp": "Print or display this code so customers can scan and pre-order. Place it at your counter, on your van, or share it online."
+  }
+}

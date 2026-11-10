@@ -1,0 +1,19 @@
+{
+  "placeSample": {
+    "nameTownBelow": "The Conch Shack\nCable Beach",
+    "nameTown": "The Conch Shack, Cable Beach",
+    "nameOnly": "The Conch Shack"
+  },
+  "busyWeek": {
+    "venue1": "Freeport Community Centre",
+    "town1": "Freeport",
+    "venue2": "Marsh Harbour Sports Complex and Community Recreation Grounds",
+    "town2": "Marsh Harbour",
+    "town3": "Nassau",
+    "town4": "Paradise Island",
+    "venue5": "The Beach Bar",
+    "town5": "Love Beach",
+    "venue6": "Fish Fry",
+    "town6": "Arawak Cay"
+  }
+}

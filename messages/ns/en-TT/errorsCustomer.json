@@ -1,0 +1,3 @@
+{
+  "cancel_window_passed": "{n, plural, one {Orders can no longer be cancelled within {count} minute of pickup} other {Orders can no longer be cancelled within {count} minutes of pickup}}"
+}

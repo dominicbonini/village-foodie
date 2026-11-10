@@ -1,0 +1,4 @@
+{
+  "catClosed": "{cat} is closed for online orders this event — hidden from customers. You can still add walk-up orders at the truck; you’ll be asked to confirm.",
+  "addAnywayConfirm": "{detail}\n\nAdd anyway (as a walk-up order)?\n\nOK = add anyway   ·   Cancel = edit the order"
+}

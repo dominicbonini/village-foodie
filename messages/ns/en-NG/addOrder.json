@@ -1,0 +1,6 @@
+{
+  "catClosed": "{cat} is closed for online orders this event — hidden from customers. You can still add walk-up orders at the truck; you’ll be asked to confirm.",
+  "savedToast": "Order {id} saved{paid, select, cash { — paid in cash} card { — paid on your POS terminal} other {}}",
+  "confirmedToast": "Order #{id} confirmed{paid, select, cash { — paid in cash} card { — paid on your POS terminal} other {}}",
+  "addAnywayConfirm": "{detail}\n\nAdd anyway (as a walk-up order)?\n\nOK = add anyway   ·   Cancel = edit the order"
+}

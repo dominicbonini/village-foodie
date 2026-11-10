@@ -1,0 +1,8 @@
+{
+  "schedule": {
+    "urlPlaceholder": "https://yourtruck.co.za/events"
+  },
+  "qr": {
+    "printHelp": "Print or display this code so customers can scan and pre-order. Place it at your counter, on your van, or share it online."
+  }
+}

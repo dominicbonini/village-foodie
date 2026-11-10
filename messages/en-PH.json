@@ -1,0 +1,178 @@
+{
+  "order": {
+    "walkUpOnly": "This truck takes walk-up orders, in person.",
+    "seeYou": "See you at the truck!"
+  },
+  "dashboard": {
+    "toast": {
+      "cardPayments": "{state, select, off {Card payments off — customers pay at the truck} other {Card payments back on}}"
+    },
+    "banner": {
+      "cardPaymentsOff": "Card payments are off — customers are paying at the truck. This stays off, on every event, until you turn it back on."
+    },
+    "settings": {
+      "cardsHelp": "Turn this off during a card problem and customers will place orders as normal and pay at the truck instead. Orders keep coming; only the card step stops."
+    }
+  },
+  "privateLink": {
+    "orderingOffBody": "This event isn’t taking orders online. Please order at the truck."
+  },
+  "emailCustomer": {
+    "payNote": {
+      "unknownBody": "Your card was authorized, so please do not pay again — {truck} will confirm when you pick up.",
+      "unknownText": "We’re still confirming your payment. Your card was authorized, so please do not pay again — {truck} will confirm when you pick up."
+    },
+    "confirmation": {
+      "seeYou": "See you at the truck!",
+      "textCollection": "Pickup time: {time}. See you at the truck!"
+    }
+  },
+  "kds": {
+    "header": {
+      "fullTitle": "Full cards — prices and payment details, as the counter sees them."
+    }
+  },
+  "addOrder": {
+    "catClosed": "{cat} is closed for online orders this event — hidden from customers. You can still add walk-up orders at the truck; you’ll be asked to confirm.",
+    "addAnywayConfirm": "{detail}\n\nAdd anyway (as a walk-up order)?\n\nOK = add anyway   ·   Cancel = edit the order"
+  },
+  "auth": {
+    "signup": {
+      "emailPlaceholder": "you@yourtruck.ph"
+    }
+  },
+  "demoGetStarted": {
+    "emailPlaceholder": "you@yourtruck.ph"
+  },
+  "demoUpload": {
+    "emailPlaceholder": "you@yourtruck.ph"
+  },
+  "provisionContent": {
+    "standardCategories": {
+      "starters": "Appetizers",
+      "mains": "Main Course",
+      "drinks": "Beverages"
+    }
+  },
+  "manageMenuImport": {
+    "schedule": {
+      "urlPlaceholder": "https://yourtruck.ph/events"
+    }
+  },
+  "manageScheduleVerify": {
+    "malformed": "That doesn’t look like a web address. Try something like yourtruck.ph/events"
+  },
+  "manageSettings": {
+    "schedule": {
+      "urlPlaceholder": "https://yourtruck.ph/events"
+    },
+    "qr": {
+      "printHelp": "Print or display this code so customers can scan and pre-order. Place it at your counter, on your truck, or share it online."
+    }
+  },
+  "socialPosts": {
+    "socialTagPlaceholder": "@manilafoodfest"
+  },
+  "managePayments": {
+    "walkUp": {
+      "body": "How you take money at the truck. HatchGrab charges no platform fee on walk-ups, whichever you choose."
+    }
+  },
+  "designEditor": {
+    "sample": {
+      "venue": "Maginhawa Food Park",
+      "area": "Quezon City"
+    }
+  },
+  "manageTeam": {
+    "phonePlaceholder": "+63 917 123 4567"
+  },
+  "posterWords": {
+    "placeSample": {
+      "nameTownBelow": "Maginhawa Food Park\nQuezon City",
+      "nameTown": "Maginhawa Food Park, Quezon City",
+      "nameOnly": "Maginhawa Food Park"
+    },
+    "busyWeek": {
+      "venue1": "Barangay San Antonio Covered Court",
+      "town1": "Pasig",
+      "venue2": "Marikina Sports Center Grounds and Community Recreation Complex",
+      "town2": "Marikina",
+      "venue3": "Town Plaza",
+      "town3": "Antipolo",
+      "town4": "Tagaytay",
+      "venue5": "The Food Hub",
+      "town5": "Makati",
+      "venue6": "Bonifacio High Street",
+      "town6": "Taguig"
+    }
+  },
+  "completionSettings": {
+    "pressesTwoHelp": "Best when payment and handover happen at different moments — someone pays at the truck, then picks up when it’s ready. You get two buttons: “Mark paid” first, then “Picked up” when they take the food."
+  },
+  "landing": {
+    "faq": {
+      "metaTitle": "Food truck ordering: frequently asked questions | HatchGrab",
+      "metaDescription": "Straight answers for food trucks about HatchGrab’s prices, setting up, taking orders and pre-orders, pickup times and payments."
+    },
+    "meta": {
+      "title": "Food truck ordering system — HatchGrab {country}",
+      "description": "Take orders and pre-orders at your spot without the line. Ordering and kitchen-screen software for {country} food trucks and catering — not a POS."
+    }
+  },
+  "aboutPage": {
+    "meta": {
+      "description": "HatchGrab makes practical software for food trucks and caterers: orders, pickup times and fewer repeat questions. Founded by Dominic Bonini."
+    }
+  },
+  "planPrompt": {
+    "features": {
+      "meal_deals": {
+        "name": "Combos"
+      }
+    }
+  },
+  "pricing": {
+    "footnote": "* Plus Stripe’s card processing on online card orders ({country}: currently {cardFee}), paid to Stripe, not HatchGrab. Walk-up orders use your own card reader — HatchGrab charges 0%."
+  },
+  "featuresPage": {
+    "detail": {
+      "walkup_orders": "Take and manage orders at the truck, paid on your own card terminal."
+    },
+    "metaTitle": "Food truck ordering plans & features — HatchGrab {country}"
+  },
+  "compare": {
+    "fee": {
+      "fixedAria": "Centavos per order"
+    },
+    "meta": {
+      "title": "Online ordering cost calculator — HatchGrab {country}",
+      "description": "Compare what your online orders cost you now — commission, card fees, monthly fees — with a year on HatchGrab. An estimate in a minute."
+    }
+  },
+  "comparison": {
+    "meta": {
+      "description": "Food truck ordering systems compared: pre-orders with a pickup time, kitchen capacity, schedules, fees and contracts — checked on each vendor’s site."
+    }
+  },
+  "comparisonSuits": {
+    "q": {
+      "preorder": "Which ordering system lets my customers order ahead and choose a pickup time?"
+    },
+    "does": {
+      "preorder": "{names} {count, plural, one {lets} other {let}} customers order ahead and choose a pickup time.",
+      "capacity": "{names} {count, plural, one {limits} other {limit}} how many orders each pickup time takes, so the kitchen isn’t swamped."
+    },
+    "feat": {
+      "preorder": "pickup times"
+    }
+  },
+  "demoWalk": {
+    "bubbleArrived": "The order you just placed arrived here instantly, with the pickup time. Tap Start cooking.",
+    "thatsIt": "That’s HatchGrab: customers order on their phone, you see it here, they pick up without waiting in line. Your menu is already set up.",
+    "readyForCollection": "Ready for pickup",
+    "collectAt": "Pick up at {time}",
+    "collectAsap": "Pick up as soon as possible",
+    "phoneReadyBody": "Pick it up at the truck."
+  }
+}

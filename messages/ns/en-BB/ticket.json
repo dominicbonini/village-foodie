@@ -1,0 +1,4 @@
+{
+  "collect": "PICKUP {time}",
+  "collectAsap": "PICKUP ASAP"
+}

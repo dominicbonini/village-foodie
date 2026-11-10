@@ -1,0 +1,192 @@
+{
+  "order": {
+    "walkUpOnly": "This truck takes walk-up orders, in person.",
+    "mealDeals": "🎁 Combos",
+    "seeYou": "See you at the truck!"
+  },
+  "dashboard": {
+    "toast": {
+      "cardPayments": "{state, select, off {Card payments off — customers pay at the truck} other {Card payments back on}}"
+    },
+    "banner": {
+      "cardPaymentsOff": "Card payments are off — customers are paying at the truck. This stays off, on every event, until you turn it back on."
+    },
+    "settings": {
+      "cardsHelp": "Turn this off during a card problem and customers will place orders as normal and pay at the truck instead. Orders keep coming; only the card step stops."
+    }
+  },
+  "phone": {
+    "invalidMobile": "{withName, select, yes {Please enter a valid {name} cellphone number} other {Please enter a valid cellphone number}}{withExample, select, yes { (e.g. {example})} other {}}"
+  },
+  "privateLink": {
+    "orderingOffBody": "This event isn’t taking orders online. Please order at the truck."
+  },
+  "emailCustomer": {
+    "payNote": {
+      "unknownBody": "Your card was authorised, so please do not pay again — {truck} will confirm when you collect.",
+      "unknownText": "We’re still confirming your payment. Your card was authorised, so please do not pay again — {truck} will confirm when you collect."
+    },
+    "confirmation": {
+      "seeYou": "See you at the truck!",
+      "textCollection": "Collection time: {time}. See you at the truck!"
+    }
+  },
+  "kds": {
+    "header": {
+      "fullTitle": "Full cards — prices and payment details, as the counter sees them."
+    }
+  },
+  "addOrder": {
+    "catClosed": "{cat} is closed for online orders this event — hidden from customers. You can still add walk-up orders at the truck; you’ll be asked to confirm.",
+    "addAnywayConfirm": "{detail}\n\nAdd anyway (as a walk-up order)?\n\nOK = add anyway   ·   Cancel = edit the order"
+  },
+  "auth": {
+    "signup": {
+      "emailPlaceholder": "you@yourtruck.co.za"
+    }
+  },
+  "demoGetStarted": {
+    "emailPlaceholder": "you@yourtruck.co.za"
+  },
+  "demoUpload": {
+    "emailPlaceholder": "you@yourtruck.co.za"
+  },
+  "manageMenuImport": {
+    "schedule": {
+      "urlPlaceholder": "https://yourtruck.co.za/events"
+    }
+  },
+  "manageScheduleVerify": {
+    "malformed": "That doesn’t look like a web address. Try something like yourtruck.co.za/events"
+  },
+  "manageSettings": {
+    "schedule": {
+      "urlPlaceholder": "https://yourtruck.co.za/events"
+    },
+    "qr": {
+      "printHelp": "Print or display this code so customers can scan and pre-order. Place it at your counter, on your van, or share it online."
+    }
+  },
+  "manageReports": {
+    "accounts": {
+      "payAtTruck": "Pay at the truck"
+    }
+  },
+  "socialPosts": {
+    "socialTagPlaceholder": "@stellenboschfoodfest"
+  },
+  "managePayments": {
+    "walkUp": {
+      "body": "How you take money at the truck. HatchGrab charges no platform fee on walk-ups, whichever you choose."
+    }
+  },
+  "designEditor": {
+    "sample": {
+      "venue": "The Brewers Yard",
+      "area": "Stellenbosch"
+    }
+  },
+  "manageTeam": {
+    "phonePlaceholder": "+27 82 123 4567"
+  },
+  "posterWords": {
+    "placeSample": {
+      "nameTownBelow": "The Brewers Yard\nStellenbosch",
+      "nameTown": "The Brewers Yard, Stellenbosch",
+      "nameOnly": "The Brewers Yard"
+    },
+    "busyWeek": {
+      "venue1": "Stellenbosch Town Hall",
+      "town1": "Stellenbosch",
+      "venue2": "Paarl Sports Grounds and Community Recreation Centre",
+      "town2": "Paarl",
+      "town3": "Franschhoek",
+      "town4": "Somerset West",
+      "venue5": "The Wine Barn",
+      "town5": "Durbanville",
+      "venue6": "Village Green",
+      "town6": "Hermanus"
+    }
+  },
+  "completionSettings": {
+    "pressesTwoHelp": "Best when payment and handover happen at different moments — someone pays at the truck, then collects when it’s ready. You get two buttons: “Mark paid” first, then “Collected” when they take the food."
+  },
+  "landing": {
+    "does": {
+      "lede": "Most ordering systems assume a fixed address, reliable wifi and the same hours every week. You’re somewhere new every week, at different times, on patchy or no cellphone signal. HatchGrab was built for that.",
+      "whatsappBody": "“Where are you tonight?” “What desserts do you have?” Your WhatsApp gets answered while you’re driving to your spot or at the grill, using your own menu and schedule. Messenger and Instagram coming soon.",
+      "whatsappSoonBody": "“Where are you tonight?” “What desserts do you have?” Soon your WhatsApp will get answered while you’re driving to your spot or at the grill. Messenger and Instagram to follow."
+    },
+    "faq": {
+      "metaTitle": "Food truck ordering: frequently asked questions | HatchGrab",
+      "metaDescription": "Straight answers for food trucks about HatchGrab’s prices, setting up, taking orders and pre-orders, collection times and payments."
+    },
+    "meta": {
+      "title": "Food truck ordering system — HatchGrab {country}",
+      "description": "Take orders and pre-orders at your spot without the queue. Ordering and kitchen-screen software for {country} food trucks and mobile catering — not a POS."
+    }
+  },
+  "aboutPage": {
+    "meta": {
+      "description": "HatchGrab makes practical software for food trucks and mobile caterers: orders, collection times and fewer repeat questions. Founded by Dominic Bonini."
+    }
+  },
+  "truckPage": {
+    "shareText": "Check out where {truck} is setting up next! 🚚"
+  },
+  "planFeatures": {
+    "row": {
+      "meal_deals_upsells": {
+        "name": "Combos & upsells"
+      }
+    },
+    "priceWord": {
+      "payAtHatch": "Pay at the truck"
+    }
+  },
+  "planPrompt": {
+    "features": {
+      "meal_deals": {
+        "name": "Combos"
+      },
+      "online_ordering_pay_at_hatch": {
+        "name": "Pay-at-the-truck ordering"
+      }
+    }
+  },
+  "pricing": {
+    "footnote": "* Plus Stripe’s card processing on online card orders (currently {cardFee} in {country}), paid to Stripe, not HatchGrab. Walk-up orders use your own card reader — HatchGrab charges 0%."
+  },
+  "featuresPage": {
+    "detail": {
+      "walkup_orders": "Take and manage orders at the truck, paid on your own card terminal."
+    },
+    "metaTitle": "Food truck ordering plans & features — HatchGrab {country}"
+  },
+  "compare": {
+    "fee": {
+      "fixedAria": "Cents per order"
+    },
+    "days": {
+      "help": "Events, markets, spots — any day the van’s out."
+    },
+    "anchor": {
+      "weekendPitch": "That’s a weekend spot at a food festival.",
+      "festivalPitches": "That’s a couple of festival spots."
+    },
+    "meta": {
+      "title": "Online ordering cost calculator — HatchGrab {country}",
+      "description": "Compare what your online orders cost you now — commission, card fees, monthly fees — with a year on HatchGrab. An estimate in a minute."
+    }
+  },
+  "comparison": {
+    "meta": {
+      "description": "Food truck ordering systems compared: pre-orders with a collection time, kitchen capacity, schedules, fees and contracts — checked on each vendor’s site."
+    },
+    "features": {
+      "deals": {
+        "label": "Combos and bundles"
+      }
+    }
+  }
+}

@@ -1,0 +1,19 @@
+{
+  "placeSample": {
+    "nameTownBelow": "The Garden Lounge\nLekki",
+    "nameTown": "The Garden Lounge, Lekki",
+    "nameOnly": "The Garden Lounge"
+  },
+  "busyWeek": {
+    "venue1": "Ikeja Community Hall",
+    "town1": "Ikeja",
+    "venue2": "Surulere Stadium Grounds and Community Recreation Centre",
+    "town2": "Surulere",
+    "town3": "Yaba",
+    "town4": "Victoria Island",
+    "venue5": "The Palm Lounge",
+    "town5": "Ikoyi",
+    "venue6": "Freedom Park",
+    "town6": "Lagos Island"
+  }
+}

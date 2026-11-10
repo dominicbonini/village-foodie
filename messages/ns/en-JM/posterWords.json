@@ -1,0 +1,19 @@
+{
+  "placeSample": {
+    "nameTownBelow": "The Courtyard\nKingston",
+    "nameTown": "The Courtyard, Kingston",
+    "nameOnly": "The Courtyard"
+  },
+  "busyWeek": {
+    "venue1": "Mandeville Community Centre",
+    "town1": "Mandeville",
+    "venue2": "Portmore Sports Complex and Community Recreation Grounds",
+    "town2": "Portmore",
+    "town3": "Ocho Rios",
+    "town4": "Montego Bay",
+    "venue5": "The Jerk Pit",
+    "town5": "Spanish Town",
+    "venue6": "Seven Mile Beach",
+    "town6": "Negril"
+  }
+}

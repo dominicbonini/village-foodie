@@ -1,0 +1,11 @@
+{
+  "walkUpOnly": "This truck takes walk-up orders, in person.",
+  "mealDeals": "🎁 Combos",
+  "collectionTimeTitle": "Pickup time",
+  "collectionTimeChosen": "✓ Pickup time: {time}",
+  "payAtTruckLine": "Pay at the truck at pickup · No card details needed",
+  "collectionTime": "Pickup time: {time}",
+  "seeYou": "See you at the truck!",
+  "preferredCollection": "Preferred pickup: {time}",
+  "willConfirmTime": "{truck} will confirm your pickup time when they accept your order."
+}

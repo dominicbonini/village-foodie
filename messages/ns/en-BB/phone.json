@@ -1,0 +1,3 @@
+{
+  "invalidMobile": "{withName, select, yes {Please enter a valid {name} cell number} other {Please enter a valid cell number}}{withExample, select, yes { (e.g. {example})} other {}}"
+}

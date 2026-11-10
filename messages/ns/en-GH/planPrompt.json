@@ -1,0 +1,10 @@
+{
+  "features": {
+    "meal_deals": {
+      "name": "Combos"
+    },
+    "online_ordering_pay_at_hatch": {
+      "name": "Pay-at-the-truck ordering"
+    }
+  }
+}

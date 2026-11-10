@@ -1,0 +1,10 @@
+{
+  "row": {
+    "meal_deals_upsells": {
+      "name": "Combos & upsells"
+    }
+  },
+  "priceWord": {
+    "payAtHatch": "Pay at the truck"
+  }
+}

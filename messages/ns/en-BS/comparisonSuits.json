@@ -1,0 +1,12 @@
+{
+  "q": {
+    "preorder": "Which ordering system lets my customers order ahead and choose a pickup time?"
+  },
+  "does": {
+    "preorder": "{names} {count, plural, one {lets} other {let}} customers order ahead and choose a pickup time.",
+    "capacity": "{names} {count, plural, one {limits} other {limit}} how many orders each pickup time takes, so the kitchen isn’t swamped."
+  },
+  "feat": {
+    "preorder": "pickup times"
+  }
+}

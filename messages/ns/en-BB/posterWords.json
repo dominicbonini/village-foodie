@@ -1,0 +1,19 @@
+{
+  "placeSample": {
+    "nameTownBelow": "The Rum Shop\nHoletown",
+    "nameTown": "The Rum Shop, Holetown",
+    "nameOnly": "The Rum Shop"
+  },
+  "busyWeek": {
+    "venue1": "Speightstown Community Centre",
+    "town1": "Speightstown",
+    "venue2": "Bridgetown Sports Grounds and Community Recreation Centre",
+    "town2": "Bridgetown",
+    "venue3": "Fish Fry",
+    "town3": "Oistins",
+    "town4": "St Lawrence Gap",
+    "venue5": "The Beach Bar",
+    "town5": "Bathsheba",
+    "town6": "St Philip"
+  }
+}

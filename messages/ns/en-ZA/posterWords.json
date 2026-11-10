@@ -1,0 +1,19 @@
+{
+  "placeSample": {
+    "nameTownBelow": "The Brewers Yard\nStellenbosch",
+    "nameTown": "The Brewers Yard, Stellenbosch",
+    "nameOnly": "The Brewers Yard"
+  },
+  "busyWeek": {
+    "venue1": "Stellenbosch Town Hall",
+    "town1": "Stellenbosch",
+    "venue2": "Paarl Sports Grounds and Community Recreation Centre",
+    "town2": "Paarl",
+    "town3": "Franschhoek",
+    "town4": "Somerset West",
+    "venue5": "The Wine Barn",
+    "town5": "Durbanville",
+    "venue6": "Village Green",
+    "town6": "Hermanus"
+  }
+}

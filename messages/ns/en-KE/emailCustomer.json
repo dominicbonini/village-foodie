@@ -1,0 +1,29 @@
+{
+  "payNote": {
+    "partPaidBody": "The rest is due when you pick up.",
+    "partPaidBodyFigures": "{paid} of this order is paid. The remaining {balance} is due when you pick up.",
+    "partPaidText": "Part paid. Some of this order is still to pay when you pick up.",
+    "partPaidTextFigures": "Part paid: {paid} received, {balance} still to pay when you pick up.",
+    "heldShortBody": "{truck} takes the amount held when they confirm your order. The rest is due when you pick up.",
+    "heldShortBodyFigures": "{truck} takes the {held} held when they confirm your order. The remaining {owing} is due when you pick up.",
+    "heldShortText": "Your card is held for part of this order. {truck} takes the amount held when they confirm your order, and the rest is due when you pick up.",
+    "heldShortTextFigures": "Your card is held for {held}, which {truck} takes when they confirm your order. {owing} of this order is still to pay when you pick up.",
+    "unknownBody": "Your card was authorised, so please do not pay again — {truck} will confirm when you pick up.",
+    "unknownText": "We’re still confirming your payment. Your card was authorised, so please do not pay again — {truck} will confirm when you pick up.",
+    "hatchTitle": "Pay at the truck at pick-up",
+    "hatchText": "Pay at the truck at pick-up."
+  },
+  "confirmation": {
+    "slotUpdated": "Your pick-up time has been updated",
+    "collectionTime": "Pick-up time: {time}",
+    "seeYou": "See you at the truck!",
+    "preferredTime": "Preferred pick-up time: {time}",
+    "weWillConfirm": "We’ll confirm your pick-up time when we accept your order.",
+    "leadReady": "Your order is ready for pick-up — come and pick it up from {truck}.",
+    "textTitleReady": "Order #{id} is ready to pick up — {truck}",
+    "textReady": "Your order is ready for pick-up — come and pick it up.",
+    "textSlotUpdated": "Pick-up time updated to {time} (was {previous}).",
+    "textCollection": "Pick-up time: {time}. See you at the truck!",
+    "textPreferred": "Preferred pick-up: {time} — we’ll confirm when we accept your order."
+  }
+}

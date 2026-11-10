@@ -1,0 +1,10 @@
+{
+  "meta": {
+    "description": "Food truck ordering systems compared: pre-orders with a collection time, kitchen capacity, schedules, fees and contracts — checked on each vendor’s site."
+  },
+  "features": {
+    "deals": {
+      "label": "Combos and bundles"
+    }
+  }
+}
