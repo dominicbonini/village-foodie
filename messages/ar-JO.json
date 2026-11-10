@@ -1,0 +1,88 @@
+{
+  "auth": {
+    "fields": {
+      "emailPlaceholder": "you@example.jo"
+    },
+    "signup": {
+      "emailPlaceholder": "you@yourfoodtruck.jo"
+    }
+  },
+  "demoGetStarted": {
+    "emailPlaceholder": "you@yourfoodtruck.jo"
+  },
+  "demoUpload": {
+    "emailPlaceholder": "you@yourfoodtruck.jo"
+  },
+  "manageMenuImport": {
+    "schedule": {
+      "urlPlaceholder": "https://yourfoodtruck.jo/events"
+    }
+  },
+  "manageScheduleVerify": {
+    "malformed": "لا يبدو هذا عنوان موقع إلكتروني. جرّب عنوانًا مثل yourfoodtruck.jo/events"
+  },
+  "manageSettings": {
+    "schedule": {
+      "urlPlaceholder": "https://yourfoodtruck.jo/events"
+    }
+  },
+  "designEditor": {
+    "sample": {
+      "area": "جبل اللويبدة"
+    }
+  },
+  "manageTeam": {
+    "phonePlaceholder": "+962 7 9123 4567"
+  },
+  "customDomain": {
+    "card": {
+      "exampleDomain": "yourfoodtruck.jo"
+    }
+  },
+  "posterWords": {
+    "placeSample": {
+      "nameTownBelow": "مقهى الواحة\nجبل اللويبدة",
+      "nameTown": "مقهى الواحة، جبل اللويبدة"
+    },
+    "busyWeek": {
+      "venue1": "حديقة الحسين",
+      "town1": "عمّان",
+      "venue2": "المنتزه الترفيهي والملاعب الرياضية في الزرقاء",
+      "town2": "الزرقاء",
+      "town3": "إربد",
+      "town4": "جرش",
+      "town5": "مادبا",
+      "town6": "العقبة"
+    }
+  },
+  "landing": {
+    "jsonLd": {
+      "subCategory": "نظام طلبات لعربات الطعام وخدمات الضيافة المتنقلة",
+      "description": "الطلبات والطلبات المسبقة وشاشة المطبخ لعربات الطعام وخدمات الضيافة المتنقلة في {country}.",
+      "audience": "أصحاب عربات الطعام وخدمات الضيافة المتنقلة"
+    },
+    "faq": {
+      "metaTitle": "أسئلة شائعة عن نظام طلبات عربات الطعام | HatchGrab",
+      "metaDescription": "إجابات واضحة لأصحاب عربات الطعام حول أسعار HatchGrab، والإعداد، واستقبال الطلبات المسبقة، والدفع عبر الإنترنت أو عند الاستلام من العربة."
+    },
+    "meta": {
+      "title": "نظام طلبات لعربات الطعام المتنقلة — HatchGrab {country}",
+      "description": "استقبل الطلبات والطلبات المسبقة في موقعك دون طوابير. برنامج للطلبات وشاشة المطبخ لعربات الطعام (فود ترك) في {country}، وليس نظام نقاط بيع."
+    }
+  },
+  "featuresPage": {
+    "metaTitle": "باقات وأسعار نظام طلبات عربات الطعام — HatchGrab {country}"
+  },
+  "compare": {
+    "meta": {
+      "title": "حاسبة التكاليف والعمولات — HatchGrab {country}",
+      "description": "قارن تكلفة طلباتك عبر الإنترنت وعمولات تطبيقات التوصيل حاليًا بتكلفة عام مع HatchGrab، واحصل على تقدير خلال دقيقة واحدة."
+    }
+  },
+  "comparison": {
+    "meta": {
+      "title": "مقارنة أنظمة طلبات عربات الطعام 2026: المزايا والأسعار"
+    },
+    "h1": "مقارنة أنظمة طلبات عربات الطعام 2026"
+  }
+}

@@ -1,0 +1,8 @@
+{
+  "getApp": {
+    "body": "يدير تطبيق المطبخ خدمتك على هاتف نقال أو جهاز لوحي، وهو الطريقة الوحيدة لمواصلة استقبال الطلبات عند انقطاع الشبكة. مجاني مع حسابك، ومتوفر على iPhone وiPad وAndroid."
+  },
+  "schedule": {
+    "urlPlaceholder": "https://yourfoodtruck.bh/events"
+  }
+}
