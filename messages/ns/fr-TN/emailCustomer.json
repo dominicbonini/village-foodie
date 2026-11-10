@@ -1,0 +1,14 @@
+{
+  "payNote": {
+    "partPaidBody": "Le reste est à régler sur place.",
+    "partPaidBodyFigures": "Montant déjà payé pour cette commande : {paid}. Le solde de {balance} est à régler sur place.",
+    "partPaidText": "Payé en partie. Une partie de cette commande reste à payer sur place.",
+    "partPaidTextFigures": "Payé en partie — reçu : {paid}, reste à payer sur place : {balance}.",
+    "heldShortBody": "{truck} encaisse le montant bloqué à la confirmation de votre commande. Le reste est à régler sur place.",
+    "heldShortBodyFigures": "{truck} encaisse le montant bloqué ({held}) à la confirmation de votre commande. Le solde de {owing} est à régler sur place.",
+    "heldShortText": "Montant bloqué sur votre carte pour une partie de cette commande. {truck} encaisse ce montant à la confirmation de votre commande, et le reste est à régler sur place.",
+    "heldShortTextFigures": "Montant bloqué sur votre carte : {held}. {truck} l’encaisse à la confirmation de votre commande. Reste à payer sur place : {owing}.",
+    "hatchTitle": "À payer sur place, au food truck",
+    "hatchText": "À payer sur place, au food truck."
+  }
+}

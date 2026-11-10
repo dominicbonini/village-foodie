@@ -1,0 +1,17 @@
+{
+  "placeSample": {
+    "nameTownBelow": "Le Café de la Place\nCasablanca",
+    "nameTown": "Le Café de la Place, Casablanca"
+  },
+  "busyWeek": {
+    "venue1": "Salle des fêtes de Mohammedia",
+    "town1": "Mohammedia",
+    "venue2": "Complexe sportif et terrain de loisirs de Témara",
+    "town2": "Témara",
+    "town3": "Kénitra",
+    "town4": "Marrakech",
+    "town5": "Essaouira",
+    "venue6": "Place Mohammed V",
+    "town6": "El Jadida"
+  }
+}

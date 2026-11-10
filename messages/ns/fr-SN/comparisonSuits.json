@@ -1,0 +1,12 @@
+{
+  "q": {
+    "preorder": "Quel logiciel de commande permet à mes clients de commander à l’avance et de choisir une heure de récupération ?"
+  },
+  "does": {
+    "preorder": "{names} {count, plural, one {permet} other {permettent}} aux clients de commander à l’avance et de choisir une heure de récupération.",
+    "capacity": "{names} {count, plural, one {limite} other {limitent}} le nombre de commandes acceptées pour chaque heure de récupération, pour que la cuisine ne soit pas débordée."
+  },
+  "feat": {
+    "preorder": "les heures de récupération"
+  }
+}

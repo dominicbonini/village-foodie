@@ -1,0 +1,7 @@
+{
+  "gate": {
+    "undoneCollected": "Annulé — commande non récupérée",
+    "collected": "Commande n° {id} {paidToo, select, yes {payée et récupérée} other {récupérée}}",
+    "status": "Commande n° {id} {action, select, confirm {confirmée} reject {refusée} ready {prête} collected {récupérée} undo_collected {rétablie} cancel {annulée} other {mise à jour}}"
+  }
+}

@@ -1,0 +1,5 @@
+{
+  "extraWait": {
+    "hint": "S’ajoute à l’heure de récupération annoncée pour les nouvelles commandes. Ne modifie pas l’heure de fin de l’événement."
+  }
+}

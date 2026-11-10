@@ -1,0 +1,13 @@
+{
+  "meta": {
+    "title": "Logiciel de commande food truck : comparatif 2026"
+  },
+  "faq": {
+    "whatA": "Un logiciel de commande prend les commandes en ligne avant que les clients n’arrivent au camion : ils choisissent leurs plats et une heure de retrait, paient en ligne ou sur place, et la commande s’affiche dans votre cuisine. Une caisse ou un TPE encaisse au camion. Les deux se complètent."
+  },
+  "features": {
+    "payattruck": {
+      "explain": "Les clients commandent en ligne et paient sur place."
+    }
+  }
+}

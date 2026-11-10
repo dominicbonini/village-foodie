@@ -1,0 +1,46 @@
+{
+  "meta": {
+    "title": "Logiciel de commande food truck : comparatif 2026",
+    "description": "Logiciels de commande pour food trucks comparés : heure de récupération, capacité cuisine, planning, frais, engagement — vérifiés chez chaque éditeur."
+  },
+  "table": {
+    "caption": "Fonctionnalités et coûts des logiciels de commande en ligne pour food trucks au {country}, au {date}",
+    "appNotInCountry": "Indisponible au {country}"
+  },
+  "costs": {
+    "cardFee": "Avec HatchGrab, les paiements par carte en ligne entraînent aussi les frais de Stripe : {cardFee} par paiement par carte au {country}.",
+    "vat": "HatchGrab Ltd est une société britannique et n’est pas immatriculée à la TVA au {country} : aucune TVA n’est donc ajoutée à nos frais. Si vous êtes assujetti à la TVA, communiquez-nous votre numéro de TVA ; vous déclarez alors vous-même la TVA éventuellement due sur nos frais, selon le mécanisme de l’autoliquidation."
+  },
+  "fit": {
+    "oursBody": "vous changez d’emplacement, voulez des précommandes avec heure de récupération, ne voulez pas que votre cuisine soit débordée et ne voulez pas d’engagement.",
+    "appClause": "Ou si vous avez besoin de l’app cuisine sur iPad ou Android au {country} : elle n’y est pas encore disponible dans les stores.",
+    "marketplacesBody": "Les plateformes de livraison apportent de nouveaux clients, mais prennent une commission sur chaque commande. Uber Eats indique 14 % pour les commandes à emporter et 30 % pour la livraison par des coursiers Uber en Allemagne. Wolt indique sur son propre site prendre une commission, sans en donner les taux. Nous n’avons pas pu vérifier les taux de Lieferando. Cette commission s’applique aussi aux habitués qui commandent chez vous à l’avance."
+  },
+  "faq": {
+    "whatA": "Un logiciel de commande prend les commandes en ligne avant que les clients n’arrivent au camion : ils choisissent leurs plats et une heure de récupération, paient en ligne ou sur place, et la commande s’affiche dans votre cuisine. Une caisse ou un TPE encaisse au camion. Les deux se complètent.",
+    "costQ": "Combien coûte HatchGrab au {country} ?",
+    "capacityA": "Les clients ne voient que les heures de récupération que votre cuisine peut réellement tenir. Le logiciel tient compte du temps de préparation de chaque plat et du nombre que vous préparez à la fois."
+  },
+  "cell": {
+    "notInCountry": "indisponible au {country}"
+  },
+  "costBlock": {
+    "footCardSource": "tarif Stripe au {country}",
+    "noRivals": "Aucun concurrent n’est encore vérifié au {country} : il n’y a donc rien à comparer."
+  },
+  "features": {
+    "preorder": {
+      "label": "Précommande avec choix de l’heure de récupération"
+    },
+    "capacity": {
+      "label": "Heures de récupération limitées selon la capacité de la cuisine",
+      "explain": "Les clients ne voient que les heures de récupération que la cuisine peut réellement tenir."
+    },
+    "payattruck": {
+      "explain": "Les clients commandent en ligne et paient sur place."
+    },
+    "delivery": {
+      "ours": "récupération sur place uniquement"
+    }
+  }
+}

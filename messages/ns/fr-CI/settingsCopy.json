@@ -1,0 +1,8 @@
+{
+  "allowCancellation": {
+    "sentence": "Les clients peuvent annuler jusqu’à <select></select> avant leur heure de récupération"
+  },
+  "buzzers": {
+    "label": "Remettez-vous des bipeurs pour la récupération ?"
+  }
+}

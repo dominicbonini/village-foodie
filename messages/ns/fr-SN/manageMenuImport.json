@@ -1,0 +1,8 @@
+{
+  "settingsReview": {
+    "cancelAria": "Jusqu’à combien de temps avant la récupération les clients peuvent annuler"
+  },
+  "schedule": {
+    "urlPlaceholder": "https://votrefoodtruck.sn/evenements"
+  }
+}

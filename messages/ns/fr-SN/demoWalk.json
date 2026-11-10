@@ -1,0 +1,8 @@
+{
+  "bubbleArrived": "La commande que vous venez de passer est arrivée ici instantanément, avec l’heure de récupération. Appuyez sur Lancer la cuisson.",
+  "thatsIt": "Voilà HatchGrab : vos clients commandent sur leur téléphone, vous voyez la commande ici, ils la récupèrent sans faire la queue. Votre carte est déjà configurée.",
+  "readyForCollection": "Prête à être récupérée",
+  "collectAt": "Récupération à {time}",
+  "collectAsap": "Récupération au plus tôt",
+  "phoneReadyBody": "Venez la récupérer au food truck."
+}

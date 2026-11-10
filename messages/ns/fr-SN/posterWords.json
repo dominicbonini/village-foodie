@@ -1,0 +1,17 @@
+{
+  "placeSample": {
+    "nameTownBelow": "Le Café de la Place\nThiès",
+    "nameTown": "Le Café de la Place, Thiès"
+  },
+  "busyWeek": {
+    "venue1": "Salle des fêtes de Rufisque",
+    "town1": "Rufisque",
+    "venue2": "Complexe sportif et terrain de loisirs de Pikine",
+    "town2": "Pikine",
+    "town3": "Mbour",
+    "town4": "Saint-Louis",
+    "town5": "Saly",
+    "venue6": "Place de la Mairie",
+    "town6": "Kaolack"
+  }
+}

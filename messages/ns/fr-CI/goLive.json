@@ -1,0 +1,8 @@
+{
+  "kitchenCapacityUnset": {
+    "detail": "Aucune capacité n’est définie pour {vans}. Sans elle, nous continuerons à promettre aux clients des heures de récupération que votre cuisine ne peut pas tenir."
+  },
+  "noPrepBearingCategory": {
+    "detail": "{categories, select, none {Vous n’avez pas encore de catégories sur votre carte, nous ne pouvons donc pas calculer le temps de préparation d’une commande.} other {Aucune de vos catégories n’a de temps de cuisson défini : chaque commande nous semble donc instantanée. Nous continuerions à donner aux clients des heures de récupération que votre cuisine n’a aucune chance de tenir, et plus vous auriez de monde, plus elles seraient décalées.}}"
+  }
+}

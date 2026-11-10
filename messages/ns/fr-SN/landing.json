@@ -1,0 +1,23 @@
+{
+  "jsonLd": {
+    "subCategory": "Logiciel de commande en ligne pour food trucks et restaurants mobiles",
+    "description": "Commande en ligne, précommande et écran cuisine pour les food trucks et les restaurants mobiles ({country}).",
+    "audience": "Propriétaires de food trucks et de restaurants mobiles"
+  },
+  "does": {
+    "slotsTitle": "Vos clients choisissent leur heure de récupération",
+    "capacityBody": "Indiquez combien vous pouvez cuisiner à la fois, et en combien de temps. Une fois une heure de récupération complète, les clients ne peuvent plus la choisir.",
+    "slotsBody": "Les clients commandent à l’avance et choisissent leur heure de récupération. Moins de file d’attente, et des plats prêts à leur arrivée."
+  },
+  "testimonial": {
+    "quote": "HatchGrab a rendu les commandes tellement plus simples. Tout est organisé, nous suivons notre stock et savons exactement combien de pizzas il nous reste à vendre — et les créneaux de récupération sont parfaits pour les villages animés."
+  },
+  "faq": {
+    "metaTitle": "Commande en ligne food truck : FAQ | HatchGrab",
+    "metaDescription": "Des réponses claires pour les food trucks sur les tarifs de HatchGrab, la mise en route, la prise de commandes et les paiements en ligne ou sur place."
+  },
+  "meta": {
+    "title": "Logiciel de commande food truck — HatchGrab {country}",
+    "description": "Vos clients commandent à l’avance et récupèrent à l’heure choisie, sans file d’attente. Commande en ligne et écran cuisine pour food trucks ({country})."
+  }
+}

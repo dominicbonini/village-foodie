@@ -1,0 +1,8 @@
+{
+  "card": {
+    "summaryLead": "Impression <b>{lead} min</b> avant la récupération · papier {paper} mm",
+    "modeLead": "Un délai fixe avant la récupération",
+    "leadLabel": "Minutes avant l’heure de récupération",
+    "modeOnConfirmedHint": "Une précommande s’imprime lorsque vous l’acceptez, ce qui peut être plusieurs heures avant l’heure de récupération. Les commandes que vous n’avez pas encore acceptées ne s’impriment jamais."
+  }
+}

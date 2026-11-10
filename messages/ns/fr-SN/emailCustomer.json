@@ -1,0 +1,27 @@
+{
+  "payNote": {
+    "partPaidBody": "Le reste est à régler sur place.",
+    "partPaidBodyFigures": "Montant déjà payé pour cette commande : {paid}. Le solde de {balance} est à régler sur place.",
+    "partPaidText": "Payé en partie. Une partie de cette commande reste à payer sur place.",
+    "partPaidTextFigures": "Payé en partie — reçu : {paid}, reste à payer sur place : {balance}.",
+    "heldShortBody": "{truck} encaisse le montant bloqué à la confirmation de votre commande. Le reste est à régler sur place.",
+    "heldShortBodyFigures": "{truck} encaisse le montant bloqué ({held}) à la confirmation de votre commande. Le solde de {owing} est à régler sur place.",
+    "heldShortText": "Montant bloqué sur votre carte pour une partie de cette commande. {truck} encaisse ce montant à la confirmation de votre commande, et le reste est à régler sur place.",
+    "heldShortTextFigures": "Montant bloqué sur votre carte : {held}. {truck} l’encaisse à la confirmation de votre commande. Reste à payer sur place : {owing}.",
+    "hatchTitle": "À payer sur place, au food truck",
+    "hatchText": "À payer sur place, au food truck."
+  },
+  "confirmation": {
+    "slotUpdated": "Votre heure de récupération a été modifiée",
+    "collectionTime": "Heure de récupération : {time}",
+    "preferredTime": "Heure de récupération souhaitée : {time}",
+    "weWillConfirm": "Nous confirmerons votre heure de récupération en acceptant votre commande.",
+    "cancelLine": "{n, plural, one {Besoin d’annuler ?<link>Annuler votre commande</link>(jusqu’à {count} minute avant votre heure de récupération)} other {Besoin d’annuler ?<link>Annuler votre commande</link>(jusqu’à {count} minutes avant votre heure de récupération)}}",
+    "leadReady": "Votre commande est prête à être récupérée — venez la chercher chez {truck}.",
+    "textTitleReady": "Commande #{id} prête à récupérer — {truck}",
+    "textReady": "Votre commande est prête à être récupérée — venez la chercher.",
+    "textSlotUpdated": "Heure de récupération mise à jour : {time} (auparavant {previous}).",
+    "textCollection": "Heure de récupération : {time}. À tout à l’heure au food truck !",
+    "textPreferred": "Récupération souhaitée : {time} — nous confirmerons en acceptant votre commande."
+  }
+}

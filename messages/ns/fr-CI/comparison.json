@@ -1,0 +1,29 @@
+{
+  "meta": {
+    "title": "Logiciel de commande food truck : comparatif 2026",
+    "description": "Logiciels de commande pour food trucks comparés : heure de récupération, capacité cuisine, planning, frais, engagement — vérifiés chez chaque éditeur."
+  },
+  "fit": {
+    "oursBody": "vous changez d’emplacement, voulez des précommandes avec heure de récupération, ne voulez pas que votre cuisine soit débordée et ne voulez pas d’engagement.",
+    "marketplacesBody": "Les plateformes de livraison apportent de nouveaux clients, mais prennent une commission sur chaque commande. Uber Eats indique 14 % pour les commandes à emporter et 30 % pour la livraison par des coursiers Uber en Allemagne. Wolt indique sur son propre site prendre une commission, sans en donner les taux. Nous n’avons pas pu vérifier les taux de Lieferando. Cette commission s’applique aussi aux habitués qui commandent chez vous à l’avance."
+  },
+  "faq": {
+    "whatA": "Un logiciel de commande prend les commandes en ligne avant que les clients n’arrivent au camion : ils choisissent leurs plats et une heure de récupération, paient en ligne ou sur place, et la commande s’affiche dans votre cuisine. Une caisse ou un TPE encaisse au camion. Les deux se complètent.",
+    "capacityA": "Les clients ne voient que les heures de récupération que votre cuisine peut réellement tenir. Le logiciel tient compte du temps de préparation de chaque plat et du nombre que vous préparez à la fois."
+  },
+  "features": {
+    "preorder": {
+      "label": "Précommande avec choix de l’heure de récupération"
+    },
+    "capacity": {
+      "label": "Heures de récupération limitées selon la capacité de la cuisine",
+      "explain": "Les clients ne voient que les heures de récupération que la cuisine peut réellement tenir."
+    },
+    "payattruck": {
+      "explain": "Les clients commandent en ligne et paient sur place."
+    },
+    "delivery": {
+      "ours": "récupération sur place uniquement"
+    }
+  }
+}

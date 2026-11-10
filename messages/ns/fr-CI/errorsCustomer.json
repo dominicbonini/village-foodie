@@ -1,0 +1,5 @@
+{
+  "card_unavailable": "Nous n’avons pas pu configurer le paiement par carte pour le moment : votre commande n’a donc pas été passée et aucun montant n’a été débité. Votre panier est enregistré — veuillez réessayer, ou choisissez Payer sur place.",
+  "cancel_window_passed": "{n, plural, one {Les commandes ne peuvent plus être annulées moins de {count} minute avant la récupération} other {Les commandes ne peuvent plus être annulées moins de {count} minutes avant la récupération}}",
+  "pay_at_hatch_unavailable": "Ce food truck n’accepte pas les commandes en ligne avec paiement sur place pour le moment. Veuillez payer par carte."
+}

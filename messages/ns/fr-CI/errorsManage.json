@@ -1,0 +1,4 @@
+{
+  "collection_interval_choices": "Les heures de récupération doivent être espacées de {choices} minutes.",
+  "collection_intervals_save_failed": "Les heures de récupération n’ont pas pu être enregistrées pour le moment."
+}

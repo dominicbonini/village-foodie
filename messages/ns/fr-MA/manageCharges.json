@@ -1,0 +1,8 @@
+{
+  "included": {
+    "default": "Laissez vide pour appliquer {rate} %, le taux de {label} sur les plats chauds vendus à emporter au {country}."
+  },
+  "fee": {
+    "hint": "Ajoutés uniquement aux commandes en ligne. Jamais aux commandes payées sur place ni aux commandes au comptoir. Vous les conservez."
+  }
+}

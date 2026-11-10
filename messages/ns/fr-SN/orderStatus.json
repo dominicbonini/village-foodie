@@ -1,0 +1,8 @@
+{
+  "pickup": "Récupération",
+  "payAtTruck": "Payer sur place",
+  "statusName": {
+    "collected": "récupérée"
+  },
+  "cutoffNote": "{n, plural, one {Annulation possible jusqu’à {count} minute avant la récupération} other {Annulation possible jusqu’à {count} minutes avant la récupération}}"
+}

@@ -1,0 +1,17 @@
+{
+  "placeSample": {
+    "nameTownBelow": "Le Café de la Place\nBouaké",
+    "nameTown": "Le Café de la Place, Bouaké"
+  },
+  "busyWeek": {
+    "venue1": "Salle des fêtes de Grand-Bassam",
+    "town1": "Grand-Bassam",
+    "venue2": "Complexe sportif et terrain de loisirs de Bingerville",
+    "town2": "Bingerville",
+    "town3": "Yamoussoukro",
+    "town4": "Abidjan",
+    "town5": "San-Pédro",
+    "venue6": "Place de la Mairie",
+    "town6": "Daloa"
+  }
+}

@@ -1,0 +1,5 @@
+{
+  "intervals_choices": "Les heures de récupération doivent tomber toutes les {choices} minutes.",
+  "intervals_customer_first": "Définissez les heures de récupération des clients avant de définir les vôtres.",
+  "intervals_save_failed": "Impossible d’enregistrer les heures de récupération pour le moment."
+}

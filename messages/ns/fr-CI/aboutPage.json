@@ -1,0 +1,9 @@
+{
+  "meta": {
+    "description": "HatchGrab crée des logiciels pour food trucks : commandes en ligne, heures de récupération et moins de questions répétitives. Fondé par Dominic Bonini."
+  },
+  "story": {
+    "villageFoodie": "Après avoir créé Village Foodie, un annuaire qui aide chacun à découvrir les food trucks de passage près de chez soi, j’ai pris le temps de mieux comprendre les difficultés des entreprises de restauration mobile. Contrairement aux restaurants traditionnels, les food trucks se déplacent sans cesse, s’installent à des endroits différents et servent leurs clients dans des conditions toujours changeantes.",
+    "build": "Nous développons des logiciels pratiques, pensés spécialement pour les food trucks et la restauration mobile : prendre des commandes en ligne, gérer les heures de récupération, garder des commandes qui s’enchaînent sans accroc et passer moins de temps à répondre aux mêmes questions."
+  }
+}

@@ -1,0 +1,6 @@
+{
+  "newOrder": {
+    "collection": "Récupération : {time}",
+    "text": "Nouvelle commande #{id} — client : {name}{withSlot, select, yes {, récupération : {slot}} other {}}{withVenue, select, yes {, lieu : {venue}} other {}}.{withCharges, select, yes { {charges}.} other {}} Total : {total}.{withNotes, select, yes { Remarques : {notes}} other {}}"
+  }
+}

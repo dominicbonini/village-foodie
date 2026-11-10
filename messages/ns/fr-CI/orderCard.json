@@ -1,0 +1,7 @@
+{
+  "collected": "Récupérée",
+  "cashAndCollected": "Espèces et récupérée",
+  "cardAndCollected": "Carte et récupérée",
+  "status": "{status, select, pending {Nouvelle} confirmed {Confirmée} rejected {Refusée} modified {Modifiée} cancelled {Annulée} cooking {En cuisine} ready {Prête} collected {Récupérée} other {Nouvelle}}",
+  "markPaidAndCollected": "Marquer payée et récupérée"
+}

@@ -1,0 +1,145 @@
+{
+  "order": {
+    "authFailed": "Ce paiement n’a pas pu être autorisé. Aucun montant n’a été prélevé — essayez une autre carte ou choisissez Payer sur place.",
+    "paymentThrew": "Un problème est survenu lors du paiement. Aucun montant n’a été prélevé — veuillez réessayer ou choisir Payer sur place.",
+    "payAtTruck": "Payer sur place",
+    "payAtTruckLine": "Payez sur place, au food truck · Pas besoin de carte bancaire"
+  },
+  "errorsCustomer": {
+    "card_unavailable": "Nous n’avons pas pu configurer le paiement par carte pour le moment : votre commande n’a donc pas été passée et aucun montant n’a été débité. Votre panier est enregistré — veuillez réessayer, ou choisissez Payer sur place.",
+    "pay_at_hatch_unavailable": "Ce food truck n’accepte pas les commandes en ligne avec paiement sur place pour le moment. Veuillez payer par carte."
+  },
+  "orderStatus": {
+    "payAtTruck": "Payer sur place"
+  },
+  "emailCustomer": {
+    "payNote": {
+      "partPaidBody": "Le reste est à régler sur place.",
+      "partPaidBodyFigures": "Montant déjà payé pour cette commande : {paid}. Le solde de {balance} est à régler sur place.",
+      "partPaidText": "Payé en partie. Une partie de cette commande reste à payer sur place.",
+      "partPaidTextFigures": "Payé en partie — reçu : {paid}, reste à payer sur place : {balance}.",
+      "heldShortBody": "{truck} encaisse le montant bloqué à la confirmation de votre commande. Le reste est à régler sur place.",
+      "heldShortBodyFigures": "{truck} encaisse le montant bloqué ({held}) à la confirmation de votre commande. Le solde de {owing} est à régler sur place.",
+      "heldShortText": "Montant bloqué sur votre carte pour une partie de cette commande. {truck} encaisse ce montant à la confirmation de votre commande, et le reste est à régler sur place.",
+      "heldShortTextFigures": "Montant bloqué sur votre carte : {held}. {truck} l’encaisse à la confirmation de votre commande. Reste à payer sur place : {owing}.",
+      "hatchTitle": "À payer sur place, au food truck",
+      "hatchText": "À payer sur place, au food truck."
+    }
+  },
+  "auth": {
+    "fields": {
+      "emailPlaceholder": "vous@exemple.tn"
+    },
+    "signup": {
+      "emailPlaceholder": "vous@votrefoodtruck.tn"
+    }
+  },
+  "demoGetStarted": {
+    "emailPlaceholder": "vous@votrefoodtruck.tn"
+  },
+  "demoUpload": {
+    "emailPlaceholder": "vous@votrefoodtruck.tn"
+  },
+  "manageMenuImport": {
+    "schedule": {
+      "urlPlaceholder": "https://votrefoodtruck.tn/evenements"
+    }
+  },
+  "manageScheduleVerify": {
+    "malformed": "Cela ne ressemble pas à une adresse web. Essayez par exemple votrefoodtruck.tn/evenements"
+  },
+  "manageSettings": {
+    "schedule": {
+      "urlPlaceholder": "https://votrefoodtruck.tn/evenements"
+    }
+  },
+  "manageCharges": {
+    "included": {
+      "default": "Laissez vide pour appliquer {rate} %, le taux de {label} sur les plats chauds vendus à emporter en {country}."
+    },
+    "fee": {
+      "hint": "Ajoutés uniquement aux commandes en ligne. Jamais aux commandes payées sur place ni aux commandes au comptoir. Vous les conservez."
+    }
+  },
+  "designEditor": {
+    "sample": {
+      "area": "Sousse"
+    }
+  },
+  "manageTeam": {
+    "phonePlaceholder": "+216 20 123 456"
+  },
+  "customDomain": {
+    "card": {
+      "exampleDomain": "votrefoodtruck.tn"
+    }
+  },
+  "posterWords": {
+    "placeSample": {
+      "nameTownBelow": "Le Café de la Place\nSousse",
+      "nameTown": "Le Café de la Place, Sousse"
+    },
+    "busyWeek": {
+      "venue1": "Salle des fêtes de La Marsa",
+      "town1": "La Marsa",
+      "venue2": "Complexe sportif et terrain de loisirs de Radès",
+      "town2": "Radès",
+      "town3": "Nabeul",
+      "town4": "Hammamet",
+      "town5": "Monastir",
+      "venue6": "Place de la Municipalité",
+      "town6": "Bizerte"
+    }
+  },
+  "landing": {
+    "jsonLd": {
+      "description": "Commande en ligne, précommande et écran cuisine pour les food trucks et la restauration ambulante ({country}).",
+      "audience": "Gérants de food trucks et professionnels de la restauration ambulante"
+    },
+    "faq": {
+      "metaTitle": "Commande en ligne food truck : FAQ | HatchGrab",
+      "metaDescription": "Des réponses claires pour les food trucks sur les tarifs de HatchGrab, la mise en route, la prise de commandes et les paiements en ligne ou sur place."
+    },
+    "meta": {
+      "title": "Logiciel de commande food truck — HatchGrab {country}",
+      "description": "Vos clients commandent à l’avance et récupèrent à l’heure choisie, sans file d’attente. Commande en ligne et écran cuisine pour food trucks ({country})."
+    }
+  },
+  "aboutPage": {
+    "meta": {
+      "description": "HatchGrab crée des logiciels pratiques pour food trucks : commandes en ligne, heures de retrait, moins de questions répétitives. Fondé par Dominic Bonini."
+    }
+  },
+  "truckPage": {
+    "meta": {
+      "orderDescription": "Commandez à l’avance chez {truck} et récupérez votre commande au food truck, à l’heure choisie."
+    }
+  },
+  "pricing": {
+    "banner": {
+      "body": "Avec {brand}, vos clients commandent à l’avance et paient sur place : vous pouvez donc prendre des commandes en ligne sans aucun prestataire de paiement par carte. Vous préférez encaisser à l’avance ? Ajoutez le paiement en ligne par carte quand vous voulez. À la fin de votre essai gratuit, vous passez à l’offre <plan>{fallback}</plan>{fallbackFree, select, yes { (sans abonnement mensuel)} other {}}, sauf si vous choisissez une autre offre. Sans carte bancaire pour démarrer, sans engagement, résiliable à tout moment.",
+      "bodyOnly": "Avec {brand}, vos clients commandent à l’avance et paient sur place : vous pouvez donc prendre des commandes en ligne sans aucun prestataire de paiement par carte. Vous préférez encaisser à l’avance ? Ajoutez le paiement en ligne par carte quand vous voulez. À la fin de votre essai gratuit, l’offre <plan>{fallback}</plan> coûtera {price} par mois. Nous vous contacterons d’ici là pour mettre en place le paiement. Sans carte bancaire pour démarrer, sans engagement, résiliable à tout moment."
+    }
+  },
+  "featuresPage": {
+    "metaTitle": "Tarifs et fonctionnalités food truck — HatchGrab {country}"
+  },
+  "compare": {
+    "meta": {
+      "description": "Comparez ce que vous coûtent aujourd’hui vos commandes en ligne et les commissions des applis avec un an sur HatchGrab : une estimation en une minute."
+    }
+  },
+  "comparison": {
+    "meta": {
+      "title": "Logiciel de commande food truck : comparatif 2026"
+    },
+    "faq": {
+      "whatA": "Un logiciel de commande prend les commandes en ligne avant que les clients n’arrivent au camion : ils choisissent leurs plats et une heure de retrait, paient en ligne ou sur place, et la commande s’affiche dans votre cuisine. Une caisse ou un TPE encaisse au camion. Les deux se complètent."
+    },
+    "features": {
+      "payattruck": {
+        "explain": "Les clients commandent en ligne et paient sur place."
+      }
+    }
+  }
+}

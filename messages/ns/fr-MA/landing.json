@@ -1,0 +1,14 @@
+{
+  "jsonLd": {
+    "description": "Commande en ligne, précommande et écran cuisine pour les food trucks et la restauration ambulante ({country}).",
+    "audience": "Gérants de food trucks et professionnels de la restauration ambulante"
+  },
+  "faq": {
+    "metaTitle": "Commande en ligne food truck : FAQ | HatchGrab",
+    "metaDescription": "Des réponses claires pour les food trucks sur les tarifs de HatchGrab, la mise en route, la prise de commandes et les paiements en ligne ou sur place."
+  },
+  "meta": {
+    "title": "Logiciel de commande food truck — HatchGrab {country}",
+    "description": "Vos clients commandent à l’avance et récupèrent à l’heure choisie, sans file d’attente. Commande en ligne et écran cuisine pour food trucks ({country})."
+  }
+}

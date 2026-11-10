@@ -1,0 +1,6 @@
+{
+  "authFailed": "Ce paiement n’a pas pu être autorisé. Aucun montant n’a été prélevé — essayez une autre carte ou choisissez Payer sur place.",
+  "paymentThrew": "Un problème est survenu lors du paiement. Aucun montant n’a été prélevé — veuillez réessayer ou choisir Payer sur place.",
+  "payAtTruck": "Payer sur place",
+  "payAtTruckLine": "Payez sur place, au food truck · Pas besoin de carte bancaire"
+}

@@ -1,0 +1,384 @@
+{
+  "order": {
+    "authFailed": "Ce paiement n’a pas pu être autorisé. Aucun montant n’a été prélevé — essayez une autre carte ou choisissez Payer sur place.",
+    "paymentThrew": "Un problème est survenu lors du paiement. Aucun montant n’a été prélevé — veuillez réessayer ou choisir Payer sur place.",
+    "collectionTimeTitle": "Heure de récupération",
+    "collectionTimeChosen": "✓ Heure de récupération : {time}",
+    "payAtTruck": "Payer sur place",
+    "payAtTruckLine": "Payez sur place, au food truck · Pas besoin de carte bancaire",
+    "collectionTime": "Heure de récupération : {time}",
+    "preferredCollection": "Récupération souhaitée : {time}",
+    "willConfirmTime": "{truck} confirmera votre heure de récupération en acceptant votre commande."
+  },
+  "dashboard": {
+    "toast": {
+      "intervalsSaved": "Heures de récupération enregistrées pour cet événement",
+      "printMode": "{mode, select, onConfirmed {Les tickets s’imprimeront dès que vous acceptez une commande} other {Les tickets s’imprimeront peu avant la récupération}}",
+      "intervalsFailed": "Impossible d’enregistrer les heures de récupération pour le moment."
+    },
+    "cancelReasons": {
+      "not_collected": "Commande non récupérée"
+    },
+    "orders": {
+      "status": "{status, select, pending {Nouvelle} confirmed {Confirmée} rejected {Refusée} modified {Modifiée} cancelled {Annulée} cooking {En préparation} ready {Prête} collected {Récupérée} other {{status}}}"
+    },
+    "settings": {
+      "intervalsTitle": "Heures de récupération",
+      "intervalsHelp": "L’intervalle entre les heures de récupération. Cela ne modifie ni la capacité de la cuisine ni les temps de préparation.",
+      "intervalsUnavailable": "Les heures de récupération sont indisponibles pour le moment.",
+      "customerTimes": "Heures de récupération des clients",
+      "yourTimes": "Vos heures de récupération"
+    },
+    "edit": {
+      "collectionTime": "Heure de récupération"
+    }
+  },
+  "errorsCustomer": {
+    "card_unavailable": "Nous n’avons pas pu configurer le paiement par carte pour le moment : votre commande n’a donc pas été passée et aucun montant n’a été débité. Votre panier est enregistré — veuillez réessayer, ou choisissez Payer sur place.",
+    "cancel_window_passed": "{n, plural, one {Les commandes ne peuvent plus être annulées moins de {count} minute avant la récupération} other {Les commandes ne peuvent plus être annulées moins de {count} minutes avant la récupération}}",
+    "pay_at_hatch_unavailable": "Ce food truck n’accepte pas les commandes en ligne avec paiement sur place pour le moment. Veuillez payer par carte."
+  },
+  "orderStatus": {
+    "pickup": "Récupération",
+    "payAtTruck": "Payer sur place",
+    "statusName": {
+      "collected": "récupérée"
+    },
+    "cutoffNote": "{n, plural, one {Annulation possible jusqu’à {count} minute avant la récupération} other {Annulation possible jusqu’à {count} minutes avant la récupération}}"
+  },
+  "emailCustomer": {
+    "payNote": {
+      "partPaidBody": "Le reste est à régler sur place.",
+      "partPaidBodyFigures": "Montant déjà payé pour cette commande : {paid}. Le solde de {balance} est à régler sur place.",
+      "partPaidText": "Payé en partie. Une partie de cette commande reste à payer sur place.",
+      "partPaidTextFigures": "Payé en partie — reçu : {paid}, reste à payer sur place : {balance}.",
+      "heldShortBody": "{truck} encaisse le montant bloqué à la confirmation de votre commande. Le reste est à régler sur place.",
+      "heldShortBodyFigures": "{truck} encaisse le montant bloqué ({held}) à la confirmation de votre commande. Le solde de {owing} est à régler sur place.",
+      "heldShortText": "Montant bloqué sur votre carte pour une partie de cette commande. {truck} encaisse ce montant à la confirmation de votre commande, et le reste est à régler sur place.",
+      "heldShortTextFigures": "Montant bloqué sur votre carte : {held}. {truck} l’encaisse à la confirmation de votre commande. Reste à payer sur place : {owing}.",
+      "hatchTitle": "À payer sur place, au food truck",
+      "hatchText": "À payer sur place, au food truck."
+    },
+    "confirmation": {
+      "slotUpdated": "Votre heure de récupération a été modifiée",
+      "collectionTime": "Heure de récupération : {time}",
+      "preferredTime": "Heure de récupération souhaitée : {time}",
+      "weWillConfirm": "Nous confirmerons votre heure de récupération en acceptant votre commande.",
+      "cancelLine": "{n, plural, one {Besoin d’annuler ?<link>Annuler votre commande</link>(jusqu’à {count} minute avant votre heure de récupération)} other {Besoin d’annuler ?<link>Annuler votre commande</link>(jusqu’à {count} minutes avant votre heure de récupération)}}",
+      "leadReady": "Votre commande est prête à être récupérée — venez la chercher chez {truck}.",
+      "textTitleReady": "Commande #{id} prête à récupérer — {truck}",
+      "textReady": "Votre commande est prête à être récupérée — venez la chercher.",
+      "textSlotUpdated": "Heure de récupération mise à jour : {time} (auparavant {previous}).",
+      "textCollection": "Heure de récupération : {time}. À tout à l’heure au food truck !",
+      "textPreferred": "Récupération souhaitée : {time} — nous confirmerons en acceptant votre commande."
+    }
+  },
+  "errorsKitchen": {
+    "intervals_choices": "Les heures de récupération doivent tomber toutes les {choices} minutes.",
+    "intervals_customer_first": "Définissez les heures de récupération des clients avant de définir les vôtres.",
+    "intervals_save_failed": "Impossible d’enregistrer les heures de récupération pour le moment."
+  },
+  "kitchenModals": {
+    "extraWait": {
+      "hint": "S’ajoute à l’heure de récupération annoncée pour les nouvelles commandes. Ne modifie pas l’heure de fin de l’événement."
+    }
+  },
+  "ticket": {
+    "collect": "À RÉCUPÉRER {time}",
+    "collectAsap": "À RÉCUPÉRER AU PLUS VITE"
+  },
+  "printing": {
+    "card": {
+      "summaryLead": "Impression <b>{lead} min</b> avant la récupération · papier {paper} mm",
+      "modeLead": "Un délai fixe avant la récupération",
+      "leadLabel": "Minutes avant l’heure de récupération",
+      "modeOnConfirmedHint": "Une précommande s’imprime lorsque vous l’acceptez, ce qui peut être plusieurs heures avant l’heure de récupération. Les commandes que vous n’avez pas encore acceptées ne s’impriment jamais."
+    }
+  },
+  "nativeShell": {
+    "gate": {
+      "undoneCollected": "Annulé — commande non récupérée",
+      "collected": "Commande n° {id} {paidToo, select, yes {payée et récupérée} other {récupérée}}",
+      "status": "Commande n° {id} {action, select, confirm {confirmée} reject {refusée} ready {prête} collected {récupérée} undo_collected {rétablie} cancel {annulée} other {mise à jour}}"
+    }
+  },
+  "demo": {
+    "cashAndCollected": "Espèces · récupérée"
+  },
+  "paymentActions": {
+    "reason": "{reason, select, item_unavailable {Article indisponible} not_collected {Commande non récupérée} wrong_or_missing_item {Article erroné ou manquant} quality_issue {Problème de qualité} duplicate_payment {Paiement en double} customer_cancelled {Annulée par le client} other {Autre}}"
+  },
+  "orderCard": {
+    "collected": "Récupérée",
+    "cashAndCollected": "Espèces et récupérée",
+    "cardAndCollected": "Carte et récupérée",
+    "status": "{status, select, pending {Nouvelle} confirmed {Confirmée} rejected {Refusée} modified {Modifiée} cancelled {Annulée} cooking {En cuisine} ready {Prête} collected {Récupérée} other {Nouvelle}}",
+    "markPaidAndCollected": "Marquer payée et récupérée"
+  },
+  "emailOperator": {
+    "newOrder": {
+      "collection": "Récupération : {time}",
+      "text": "Nouvelle commande #{id} — client : {name}{withSlot, select, yes {, récupération : {slot}} other {}}{withVenue, select, yes {, lieu : {venue}} other {}}.{withCharges, select, yes { {charges}.} other {}} Total : {total}.{withNotes, select, yes { Remarques : {notes}} other {}}"
+    }
+  },
+  "goLive": {
+    "kitchenCapacityUnset": {
+      "detail": "Aucune capacité n’est définie pour {vans}. Sans elle, nous continuerons à promettre aux clients des heures de récupération que votre cuisine ne peut pas tenir."
+    },
+    "noPrepBearingCategory": {
+      "detail": "{categories, select, none {Vous n’avez pas encore de catégories sur votre carte, nous ne pouvons donc pas calculer le temps de préparation d’une commande.} other {Aucune de vos catégories n’a de temps de cuisson défini : chaque commande nous semble donc instantanée. Nous continuerions à donner aux clients des heures de récupération que votre cuisine n’a aucune chance de tenir, et plus vous auriez de monde, plus elles seraient décalées.}}"
+    }
+  },
+  "auth": {
+    "fields": {
+      "emailPlaceholder": "vous@exemple.sn"
+    },
+    "signup": {
+      "emailPlaceholder": "vous@votrefoodtruck.sn"
+    }
+  },
+  "demoGetStarted": {
+    "emailPlaceholder": "vous@votrefoodtruck.sn"
+  },
+  "demoUpload": {
+    "emailPlaceholder": "vous@votrefoodtruck.sn"
+  },
+  "eventTypes": {
+    "summary": {
+      "collectionEvery": "récupération toutes les {mins} min"
+    }
+  },
+  "manageMenuImport": {
+    "settingsReview": {
+      "cancelAria": "Jusqu’à combien de temps avant la récupération les clients peuvent annuler"
+    },
+    "schedule": {
+      "urlPlaceholder": "https://votrefoodtruck.sn/evenements"
+    }
+  },
+  "errorsManage": {
+    "collection_interval_choices": "Les heures de récupération doivent être espacées de {choices} minutes.",
+    "collection_intervals_save_failed": "Les heures de récupération n’ont pas pu être enregistrées pour le moment."
+  },
+  "manageScheduleVerify": {
+    "malformed": "Cela ne ressemble pas à une adresse web. Essayez par exemple votrefoodtruck.sn/evenements"
+  },
+  "serviceSettings": {
+    "labels": {
+      "collection_interval_mins": "Heures de récupération"
+    }
+  },
+  "kitchenCapacity": {
+    "lead": "Le nombre d’articles que votre cuisine peut préparer, pour que les clients ne choisissent que des heures de récupération que vous pouvez tenir."
+  },
+  "settingsCopy": {
+    "allowCancellation": {
+      "sentence": "Les clients peuvent annuler jusqu’à <select></select> avant leur heure de récupération"
+    },
+    "buzzers": {
+      "label": "Remettez-vous des bipeurs pour la récupération ?"
+    }
+  },
+  "manageSettings": {
+    "collection": {
+      "help": "L’intervalle entre les heures de récupération. Cela ne modifie ni la capacité de la cuisine ni les temps de préparation.",
+      "unavailable": "Les heures de récupération sont indisponibles pour le moment.",
+      "customerTimes": "Heures de récupération des clients",
+      "yourTimes": "Vos heures de récupération"
+    },
+    "schedule": {
+      "urlPlaceholder": "https://votrefoodtruck.sn/evenements"
+    }
+  },
+  "manageReports": {
+    "csv": {
+      "collectionTime": "Heure de récupération"
+    }
+  },
+  "manageCharges": {
+    "included": {
+      "default": "Laissez vide pour appliquer {rate} %, le taux de {label} sur les plats chauds vendus à emporter au {country}."
+    },
+    "fee": {
+      "hint": "Ajoutés uniquement aux commandes en ligne. Jamais aux commandes payées sur place ni aux commandes au comptoir. Vous les conservez."
+    }
+  },
+  "designEditor": {
+    "sample": {
+      "area": "Thiès"
+    }
+  },
+  "weeklyPost": {
+    "post": {
+      "notePlaceholder": "ex. Commander à l’avance et récupérer au food truck"
+    }
+  },
+  "manageTeam": {
+    "phonePlaceholder": "+221 77 123 45 67"
+  },
+  "customDomain": {
+    "card": {
+      "exampleDomain": "votrefoodtruck.sn"
+    }
+  },
+  "posterWords": {
+    "placeSample": {
+      "nameTownBelow": "Le Café de la Place\nThiès",
+      "nameTown": "Le Café de la Place, Thiès"
+    },
+    "busyWeek": {
+      "venue1": "Salle des fêtes de Rufisque",
+      "town1": "Rufisque",
+      "venue2": "Complexe sportif et terrain de loisirs de Pikine",
+      "town2": "Pikine",
+      "town3": "Mbour",
+      "town4": "Saint-Louis",
+      "town5": "Saly",
+      "venue6": "Place de la Mairie",
+      "town6": "Kaolack"
+    }
+  },
+  "completionSettings": {
+    "pressesOne": "Un seul appui (« Marquer payée et récupérée »)",
+    "pressesOneHelp": "Idéal si vous encaissez au moment de remettre la commande. Vous avez un seul bouton, « Marquer payée et récupérée », qui enregistre le paiement et clôture la commande en même temps.",
+    "pressesTwo": "Deux appuis (« Marquer payée » puis « Récupérée »)",
+    "pressesTwoHelp": "Idéal si le paiement et la remise ont lieu à des moments différents : le client paie au comptoir, puis récupère sa commande quand elle est prête. Vous avez deux boutons : d’abord « Marquer payée », puis « Récupérée » quand il récupère sa commande."
+  },
+  "landing": {
+    "jsonLd": {
+      "subCategory": "Logiciel de commande en ligne pour food trucks et restaurants mobiles",
+      "description": "Commande en ligne, précommande et écran cuisine pour les food trucks et les restaurants mobiles ({country}).",
+      "audience": "Propriétaires de food trucks et de restaurants mobiles"
+    },
+    "does": {
+      "slotsTitle": "Vos clients choisissent leur heure de récupération",
+      "capacityBody": "Indiquez combien vous pouvez cuisiner à la fois, et en combien de temps. Une fois une heure de récupération complète, les clients ne peuvent plus la choisir.",
+      "slotsBody": "Les clients commandent à l’avance et choisissent leur heure de récupération. Moins de file d’attente, et des plats prêts à leur arrivée."
+    },
+    "testimonial": {
+      "quote": "HatchGrab a rendu les commandes tellement plus simples. Tout est organisé, nous suivons notre stock et savons exactement combien de pizzas il nous reste à vendre — et les créneaux de récupération sont parfaits pour les villages animés."
+    },
+    "faq": {
+      "metaTitle": "Commande en ligne food truck : FAQ | HatchGrab",
+      "metaDescription": "Des réponses claires pour les food trucks sur les tarifs de HatchGrab, la mise en route, la prise de commandes et les paiements en ligne ou sur place."
+    },
+    "meta": {
+      "title": "Logiciel de commande food truck — HatchGrab {country}",
+      "description": "Vos clients commandent à l’avance et récupèrent à l’heure choisie, sans file d’attente. Commande en ligne et écran cuisine pour food trucks ({country})."
+    }
+  },
+  "aboutPage": {
+    "meta": {
+      "description": "HatchGrab crée des logiciels pour food trucks : commandes en ligne, heures de récupération et moins de questions répétitives. Fondé par Dominic Bonini."
+    },
+    "story": {
+      "villageFoodie": "Après avoir créé Village Foodie, un annuaire qui aide chacun à découvrir les food trucks de passage près de chez soi, j’ai pris le temps de mieux comprendre les difficultés des entreprises de restauration mobile. Contrairement aux restaurants traditionnels, les food trucks se déplacent sans cesse, s’installent à des endroits différents et servent leurs clients dans des conditions toujours changeantes.",
+      "build": "Nous développons des logiciels pratiques, pensés spécialement pour les food trucks et la restauration mobile : prendre des commandes en ligne, gérer les heures de récupération, garder des commandes qui s’enchaînent sans accroc et passer moins de temps à répondre aux mêmes questions."
+    }
+  },
+  "truckPage": {
+    "meta": {
+      "orderDescription": "Commandez à l’avance chez {truck} et récupérez votre commande au food truck, à l’heure choisie."
+    }
+  },
+  "planFeatures": {
+    "row": {
+      "time_slot_selection": {
+        "name": "Choix du créneau de récupération par le client"
+      }
+    }
+  },
+  "planPrompt": {
+    "features": {
+      "time_slot_selection": {
+        "name": "Les créneaux de récupération au choix du client"
+      }
+    }
+  },
+  "pricing": {
+    "banner": {
+      "body": "Avec {brand}, vos clients commandent à l’avance et paient sur place : vous pouvez donc prendre des commandes en ligne sans aucun prestataire de paiement par carte. Vous préférez encaisser à l’avance ? Ajoutez le paiement en ligne par carte quand vous voulez. À la fin de votre essai gratuit, vous passez à l’offre <plan>{fallback}</plan>{fallbackFree, select, yes { (sans abonnement mensuel)} other {}}, sauf si vous choisissez une autre offre. Sans carte bancaire pour démarrer, sans engagement, résiliable à tout moment.",
+      "bodyOnly": "Avec {brand}, vos clients commandent à l’avance et paient sur place : vous pouvez donc prendre des commandes en ligne sans aucun prestataire de paiement par carte. Vous préférez encaisser à l’avance ? Ajoutez le paiement en ligne par carte quand vous voulez. À la fin de votre essai gratuit, l’offre <plan>{fallback}</plan> coûtera {price} par mois. Nous vous contacterons d’ici là pour mettre en place le paiement. Sans carte bancaire pour démarrer, sans engagement, résiliable à tout moment."
+    },
+    "base": {
+      "preorders": "Précommandes et heures de récupération"
+    }
+  },
+  "featuresPage": {
+    "detail": {
+      "time_slot_selection": "Les clients choisissent un créneau de récupération, ce qui répartit la demande sur votre service."
+    },
+    "metaTitle": "Tarifs et fonctionnalités food truck — HatchGrab {country}"
+  },
+  "compare": {
+    "meta": {
+      "description": "Comparez ce que vous coûtent aujourd’hui vos commandes en ligne et les commissions des applis avec un an sur HatchGrab : une estimation en une minute."
+    }
+  },
+  "comparison": {
+    "meta": {
+      "title": "Logiciel de commande food truck : comparatif 2026",
+      "description": "Logiciels de commande pour food trucks comparés : heure de récupération, capacité cuisine, planning, frais, engagement — vérifiés chez chaque éditeur."
+    },
+    "table": {
+      "caption": "Fonctionnalités et coûts des logiciels de commande en ligne pour food trucks au {country}, au {date}",
+      "appNotInCountry": "Indisponible au {country}"
+    },
+    "costs": {
+      "cardFee": "Avec HatchGrab, les paiements par carte en ligne entraînent aussi les frais de Stripe : {cardFee} par paiement par carte au {country}.",
+      "vat": "HatchGrab Ltd est une société britannique et n’est pas immatriculée à la TVA au {country} : aucune TVA n’est donc ajoutée à nos frais. Si vous êtes assujetti à la TVA, communiquez-nous votre numéro de TVA ; vous déclarez alors vous-même la TVA éventuellement due sur nos frais, selon le mécanisme de l’autoliquidation."
+    },
+    "fit": {
+      "oursBody": "vous changez d’emplacement, voulez des précommandes avec heure de récupération, ne voulez pas que votre cuisine soit débordée et ne voulez pas d’engagement.",
+      "appClause": "Ou si vous avez besoin de l’app cuisine sur iPad ou Android au {country} : elle n’y est pas encore disponible dans les stores.",
+      "marketplacesBody": "Les plateformes de livraison apportent de nouveaux clients, mais prennent une commission sur chaque commande. Uber Eats indique 14 % pour les commandes à emporter et 30 % pour la livraison par des coursiers Uber en Allemagne. Wolt indique sur son propre site prendre une commission, sans en donner les taux. Nous n’avons pas pu vérifier les taux de Lieferando. Cette commission s’applique aussi aux habitués qui commandent chez vous à l’avance."
+    },
+    "faq": {
+      "whatA": "Un logiciel de commande prend les commandes en ligne avant que les clients n’arrivent au camion : ils choisissent leurs plats et une heure de récupération, paient en ligne ou sur place, et la commande s’affiche dans votre cuisine. Une caisse ou un TPE encaisse au camion. Les deux se complètent.",
+      "costQ": "Combien coûte HatchGrab au {country} ?",
+      "capacityA": "Les clients ne voient que les heures de récupération que votre cuisine peut réellement tenir. Le logiciel tient compte du temps de préparation de chaque plat et du nombre que vous préparez à la fois."
+    },
+    "cell": {
+      "notInCountry": "indisponible au {country}"
+    },
+    "costBlock": {
+      "footCardSource": "tarif Stripe au {country}",
+      "noRivals": "Aucun concurrent n’est encore vérifié au {country} : il n’y a donc rien à comparer."
+    },
+    "features": {
+      "preorder": {
+        "label": "Précommande avec choix de l’heure de récupération"
+      },
+      "capacity": {
+        "label": "Heures de récupération limitées selon la capacité de la cuisine",
+        "explain": "Les clients ne voient que les heures de récupération que la cuisine peut réellement tenir."
+      },
+      "payattruck": {
+        "explain": "Les clients commandent en ligne et paient sur place."
+      },
+      "delivery": {
+        "ours": "récupération sur place uniquement"
+      }
+    }
+  },
+  "comparisonSuits": {
+    "q": {
+      "preorder": "Quel logiciel de commande permet à mes clients de commander à l’avance et de choisir une heure de récupération ?"
+    },
+    "does": {
+      "preorder": "{names} {count, plural, one {permet} other {permettent}} aux clients de commander à l’avance et de choisir une heure de récupération.",
+      "capacity": "{names} {count, plural, one {limite} other {limitent}} le nombre de commandes acceptées pour chaque heure de récupération, pour que la cuisine ne soit pas débordée."
+    },
+    "feat": {
+      "preorder": "les heures de récupération"
+    }
+  },
+  "demoWalk": {
+    "bubbleArrived": "La commande que vous venez de passer est arrivée ici instantanément, avec l’heure de récupération. Appuyez sur Lancer la cuisson.",
+    "thatsIt": "Voilà HatchGrab : vos clients commandent sur leur téléphone, vous voyez la commande ici, ils la récupèrent sans faire la queue. Votre carte est déjà configurée.",
+    "readyForCollection": "Prête à être récupérée",
+    "collectAt": "Récupération à {time}",
+    "collectAsap": "Récupération au plus tôt",
+    "phoneReadyBody": "Venez la récupérer au food truck."
+  }
+}

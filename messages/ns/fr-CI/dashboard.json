@@ -1,0 +1,23 @@
+{
+  "toast": {
+    "intervalsSaved": "Heures de récupération enregistrées pour cet événement",
+    "printMode": "{mode, select, onConfirmed {Les tickets s’imprimeront dès que vous acceptez une commande} other {Les tickets s’imprimeront peu avant la récupération}}",
+    "intervalsFailed": "Impossible d’enregistrer les heures de récupération pour le moment."
+  },
+  "cancelReasons": {
+    "not_collected": "Commande non récupérée"
+  },
+  "orders": {
+    "status": "{status, select, pending {Nouvelle} confirmed {Confirmée} rejected {Refusée} modified {Modifiée} cancelled {Annulée} cooking {En préparation} ready {Prête} collected {Récupérée} other {{status}}}"
+  },
+  "settings": {
+    "intervalsTitle": "Heures de récupération",
+    "intervalsHelp": "L’intervalle entre les heures de récupération. Cela ne modifie ni la capacité de la cuisine ni les temps de préparation.",
+    "intervalsUnavailable": "Les heures de récupération sont indisponibles pour le moment.",
+    "customerTimes": "Heures de récupération des clients",
+    "yourTimes": "Vos heures de récupération"
+  },
+  "edit": {
+    "collectionTime": "Heure de récupération"
+  }
+}

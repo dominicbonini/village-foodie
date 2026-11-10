@@ -1,0 +1,32 @@
+{
+  "meta": {
+    "title": "Logiciel de commande food truck : comparatif 2026"
+  },
+  "table": {
+    "caption": "Fonctionnalités et coûts des logiciels de commande en ligne pour food trucks au {country}, au {date}",
+    "appNotInCountry": "Indisponible au {country}"
+  },
+  "costs": {
+    "cardFee": "Avec HatchGrab, les paiements par carte en ligne entraînent aussi les frais de Stripe : {cardFee} par paiement par carte au {country}.",
+    "vat": "HatchGrab Ltd est une société britannique et n’est pas immatriculée à la TVA au {country} : aucune TVA n’est donc ajoutée à nos frais. Si vous êtes assujetti à la TVA, communiquez-nous votre numéro de TVA ; vous déclarez alors vous-même la TVA éventuellement due sur nos frais, selon le mécanisme de l’autoliquidation."
+  },
+  "fit": {
+    "appClause": "Ou si vous avez besoin de l’app cuisine sur iPad ou Android au {country} : elle n’y est pas encore disponible dans les stores."
+  },
+  "faq": {
+    "whatA": "Un logiciel de commande prend les commandes en ligne avant que les clients n’arrivent au camion : ils choisissent leurs plats et une heure de retrait, paient en ligne ou sur place, et la commande s’affiche dans votre cuisine. Une caisse ou un TPE encaisse au camion. Les deux se complètent.",
+    "costQ": "Combien coûte HatchGrab au {country} ?"
+  },
+  "cell": {
+    "notInCountry": "indisponible au {country}"
+  },
+  "costBlock": {
+    "footCardSource": "tarif Stripe au {country}",
+    "noRivals": "Aucun concurrent n’est encore vérifié au {country} : il n’y a donc rien à comparer."
+  },
+  "features": {
+    "payattruck": {
+      "explain": "Les clients commandent en ligne et paient sur place."
+    }
+  }
+}

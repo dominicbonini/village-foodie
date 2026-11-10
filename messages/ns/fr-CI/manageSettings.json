@@ -1,0 +1,11 @@
+{
+  "collection": {
+    "help": "L’intervalle entre les heures de récupération. Cela ne modifie ni la capacité de la cuisine ni les temps de préparation.",
+    "unavailable": "Les heures de récupération sont indisponibles pour le moment.",
+    "customerTimes": "Heures de récupération des clients",
+    "yourTimes": "Vos heures de récupération"
+  },
+  "schedule": {
+    "urlPlaceholder": "https://votrefoodtruck.ci/evenements"
+  }
+}

@@ -1,0 +1,6 @@
+{
+  "pressesOne": "Un seul appui (« Marquer payée et récupérée »)",
+  "pressesOneHelp": "Idéal si vous encaissez au moment de remettre la commande. Vous avez un seul bouton, « Marquer payée et récupérée », qui enregistre le paiement et clôture la commande en même temps.",
+  "pressesTwo": "Deux appuis (« Marquer payée » puis « Récupérée »)",
+  "pressesTwoHelp": "Idéal si le paiement et la remise ont lieu à des moments différents : le client paie au comptoir, puis récupère sa commande quand elle est prête. Vous avez deux boutons : d’abord « Marquer payée », puis « Récupérée » quand il récupère sa commande."
+}

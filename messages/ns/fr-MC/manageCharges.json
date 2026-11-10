@@ -1,0 +1,5 @@
+{
+  "included": {
+    "default": "Laissez vide pour appliquer {rate} %, le taux de {label} sur les plats chauds vendus à emporter à {country}. Les produits emballés à consommer plus tard sont à 5,5 % et l’alcool à 20 %."
+  }
+}
