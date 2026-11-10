@@ -2,7 +2,7 @@
 // lib/billing/store.ts implements it on the database (service role); lib/billing/memory-store.ts implements it in memory
 // for the harnesses. The engine (lib/billing/engine.ts) and the gate (lib/billing/gate.ts) only ever see this interface,
 // so the rules the harness proves are the rules the server runs.
-import type { CountryBilling, PaymentMethodState, PaymentMethodType, BillingStatus, BillingTruck, UsageOrder, UsageLine } from '@/lib/billing/rules'
+import type { CountryBilling, PaymentMethodState, PaymentMethodType, BillingStatus, BillingTruck, UsageOrder, UsageLine, PlanHistoryRow } from '@/lib/billing/rules'
 
 export interface BillingSwitches { enabled: boolean; pauseAfterDays: number }
 
@@ -30,8 +30,12 @@ export interface TruckBillingRow {
   status: BillingStatus | null
   statusReason: string | null
   statusChangedAt: string | null
+  /** A downgrade waiting for the 1st (correction decision 3). */
+  pendingPlanKey: string | null
+  pendingPlanFrom: string | null
 }
 
+/** One month's USAGE (billed on the next 1st, in arrears). */
 export interface UsageRow {
   truckId: string
   period: string
@@ -50,18 +54,43 @@ export interface UsageRow {
   feeDueMinor: number
   feeTakenMinor: number
   feeBilledMinor: number
-  planFeeMinor: number
+  periodDays: number
+  surchargeMinor: number
+  inputsDigest: string
+  /** 'open' (rebuilt from orders) until a monthly charge bills it ('billed', chargeId). */
+  state: 'open' | 'billed'
+  chargeId: string | null
+  computedAt: string
+}
+
+export type ChargeKind = 'monthly' | 'trial_end' | 'upgrade'
+export type ChargeState = 'invoicing' | 'invoiced' | 'carried' | 'nothing'
+
+/** One public.billing_charges row: something HatchGrab charges (or carries) — the monthly charge, a trial end, an upgrade. */
+export interface ChargeRow {
+  id: string
+  truckId: string
+  period: string
+  kind: ChargeKind
+  ref: string
+  currency: string
+  planKey: string
+  fromPlanKey: string | null
+  planMinor: number
   planDays: number
   periodDays: number
-  extraVansMinor: number
+  vansMinor: number
+  usagePeriod: string | null
+  usageFeeMinor: number
   surchargeMinor: number
   carriedInMinor: number
   amountDueMinor: number
   chargedMinor: number
   carriedOutMinor: number
+  carriedInto: string | null
   minChargeMinor: number
+  state: ChargeState
   inputsDigest: string
-  state: 'open' | 'invoiced' | 'carried' | 'nothing'
   computedAt: string
 }
 
@@ -69,6 +98,7 @@ export type InvoiceStatus = 'creating' | 'open' | 'paid' | 'failed' | 'void' | '
 
 export interface InvoiceRow {
   id: string
+  chargeId: string
   truckId: string
   period: string
   currency: string
@@ -83,6 +113,9 @@ export interface InvoiceRow {
   createdAt: string
   finalizedAt: string | null
   paidAt: string | null
+  /** The late-payment fee added (null = not decided yet; 0 = decided at the pause: none). */
+  lateFeeMinor: number | null
+  replacedStripeInvoiceId: string | null
 }
 
 export interface BillingStore {
@@ -112,15 +145,30 @@ export interface BillingStore {
   usage(truckId: string, period: string): Promise<UsageRow | null>
   usageLines(truckId: string, period: string): Promise<UsageLine[]>
   listUsage(truckId: string): Promise<UsageRow[]>
-  /** Replace an OPEN (or absent) month and its lines. Refuses (returns false) once the month is frozen. */
+  /** Replace an OPEN (or absent) usage month and its lines. Refuses (false) once it is billed. */
   replaceUsage(row: UsageRow, lines: UsageLine[]): Promise<boolean>
-  /** Freeze a month (open → invoiced | carried | nothing). */
-  freezeUsage(truckId: string, period: string, state: 'invoiced' | 'carried' | 'nothing'): Promise<void>
 
-  invoice(truckId: string, period: string): Promise<InvoiceRow | null>
+  /** The truck's plan history (truck_plan_history), oldest first. */
+  planHistory(truckId: string): Promise<PlanHistoryRow[]>
+  /** Set trucks.plan (a downgrade on the 1st, an upgrade at once). The database records the history by trigger (at its own
+   *  now(); `at` is the in-memory store's clock). */
+  setTruckPlan(truckId: string, planKey: string, by: string, at: string): Promise<void>
+
+  charge(truckId: string, period: string, kind: ChargeKind, ref: string): Promise<ChargeRow | null>
+  listCharges(truckId: string): Promise<ChargeRow[]>
+  /** Carried charges not yet added to a monthly charge. */
+  carriedPool(truckId: string): Promise<ChargeRow[]>
+  /**
+   * 🔴 THE CLAIM: insert a charge — unique (truck, period, kind, ref). `inserted: false` = it exists (returned), never a second.
+   * When inserted: the carried charges `consume` point at it (carried_into), and the usage month `billsUsage` is marked billed.
+   */
+  insertCharge(row: Omit<ChargeRow, 'id' | 'computedAt' | 'carriedInto'>, opts: { consume: string[]; billsUsage: string | null }): Promise<{ inserted: boolean; row: ChargeRow }>
+  updateCharge(id: string, patch: Partial<Pick<ChargeRow, 'state'>>): Promise<ChargeRow>
+
+  invoiceForCharge(chargeId: string): Promise<InvoiceRow | null>
   invoiceByStripeId(stripeInvoiceId: string): Promise<InvoiceRow | null>
   listInvoices(truckId: string): Promise<InvoiceRow[]>
-  /** 🔴 THE CLAIM: insert (truck, period) as 'creating'. `claimed: false` = a row already exists (returned) — never a second. */
-  claimInvoice(row: Omit<InvoiceRow, 'id' | 'createdAt' | 'finalizedAt' | 'paidAt' | 'stripeInvoiceId' | 'status' | 'attemptCount' | 'lastError' | 'hostedInvoiceUrl' | 'dueAt'>): Promise<{ claimed: boolean; row: InvoiceRow }>
-  updateInvoice(id: string, patch: Partial<Omit<InvoiceRow, 'id' | 'truckId' | 'period'>>): Promise<InvoiceRow>
+  /** 🔴 One invoice per charge: insert as 'creating'. `claimed: false` = it exists (returned). */
+  claimInvoice(row: { chargeId: string; truckId: string; period: string; currency: string; amountMinor: number; livemode: boolean }): Promise<{ claimed: boolean; row: InvoiceRow }>
+  updateInvoice(id: string, patch: Partial<Omit<InvoiceRow, 'id' | 'truckId' | 'period' | 'chargeId'>>): Promise<InvoiceRow>
 }

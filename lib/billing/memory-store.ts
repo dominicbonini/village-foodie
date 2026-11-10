@@ -1,8 +1,8 @@
 // lib/billing/memory-store.ts — billing-1: the BillingStore IN MEMORY, for the harnesses (scripts/billing-1.cjs). PURE.
 // Same contract as lib/billing/store.ts on the database — including the two guards that matter: a frozen month is never
 // replaced, and (truck, period) can be claimed for an invoice only once. Not imported by any app code.
-import type { CountryBilling, UsageOrder, UsageLine } from '@/lib/billing/rules'
-import type { BillingStore, BillingSwitches, CountryBillingFacts, StoredTruck, TruckBillingRow, UsageRow, InvoiceRow } from '@/lib/billing/store-types'
+import type { CountryBilling, UsageOrder, UsageLine, PlanHistoryRow } from '@/lib/billing/rules'
+import type { BillingStore, BillingSwitches, CountryBillingFacts, StoredTruck, TruckBillingRow, UsageRow, InvoiceRow, ChargeRow } from '@/lib/billing/store-types'
 
 export interface MemoryOrder { order_key: string; truck_id: string; source: string; status: string; food_minor: number | null; placed_at: string }
 export interface MemoryPayment { order_key: string; kind: 'charge' | 'refund'; amount_minor: number; application_fee_minor?: number | null; application_fee_refunded_minor?: number | null }
@@ -20,6 +20,8 @@ export interface MemoryData {
   payments: MemoryPayment[]
   usage: UsageRow[]
   usageLines: (UsageLine & { truckId: string; period: string })[]
+  history: (PlanHistoryRow & { truckId: string })[]
+  charges: ChargeRow[]
   invoices: InvoiceRow[]
   /** Every write, in order — the harness proves "switch off = nothing written" from it. */
   writes: string[]
@@ -27,12 +29,13 @@ export interface MemoryData {
 
 export function emptyMemoryData(): MemoryData {
   return { switches: { enabled: false, pauseAfterDays: 5 }, countryBilling: [], countryFacts: [], trucks: [], operators: [], vans: {}, truckBilling: [],
-    customers: [], orders: [], payments: [], usage: [], usageLines: [], invoices: [], writes: [] }
+    customers: [], orders: [], payments: [], usage: [], usageLines: [], history: [], charges: [], invoices: [], writes: [] }
 }
 
 const DEFAULT_TB = (truckId: string): TruckBillingRow => ({
   truckId, postPay: false, billingTest: false, paymentMethodState: 'none', paymentMethodType: null, stripePaymentMethodId: null, stripeSetupIntentId: null,
   paymentMethodLabel: null, paymentMethodUpdatedAt: null, paymentMethodLivemode: null, status: null, statusReason: null, statusChangedAt: null,
+  pendingPlanKey: null, pendingPlanFrom: null,
 })
 
 export function memoryBillingStore(d: MemoryData): BillingStore {
@@ -89,25 +92,54 @@ export function memoryBillingStore(d: MemoryData): BillingStore {
     async replaceUsage(row, lines) {
       const i = d.usage.findIndex(u => u.truckId === row.truckId && u.period === row.period)
       if (i >= 0 && d.usage[i].state !== 'open') return false
-      if (i >= 0) d.usage[i] = clone(row); else d.usage.push(clone(row))
+      const r = clone({ ...row, state: 'open' as const, chargeId: null })
+      if (i >= 0) d.usage[i] = r; else d.usage.push(r)
       d.usageLines = d.usageLines.filter(l => !(l.truckId === row.truckId && l.period === row.period)).concat(lines.map(l => ({ ...l, truckId: row.truckId, period: row.period })))
       d.writes.push(`billing_usage:${row.truckId}:${row.period}`)
       return true
     },
-    async freezeUsage(truckId, period, state) {
-      const r = d.usage.find(u => u.truckId === truckId && u.period === period && u.state === 'open')
-      if (r) { r.state = state; d.writes.push(`billing_usage_freeze:${truckId}:${period}:${state}`) }
+    async planHistory(truckId) {
+      return d.history.filter(h => h.truckId === truckId).map(({ truckId: _t, ...h }) => { void _t; return { ...h } })
     },
-    async invoice(truckId, period) { const r = d.invoices.find(i => i.truckId === truckId && i.period === period); return r ? { ...r } : null },
+    async setTruckPlan(truckId, planKey, _by, at) {
+      // As the database trigger does: the first change also records the state before it ('-infinity').
+      const t = d.trucks.find(x => x.id === truckId)
+      if (!t) throw new Error(`[memory-store] no truck ${truckId}`)
+      if (!d.history.some(h => h.truckId === truckId)) d.history.push({ truckId, planKey: String(t.plan), trialExpiresAt: t.trial_expires_at ?? null, changedAt: '-infinity' })
+      t.plan = planKey
+      d.history.push({ truckId, planKey, trialExpiresAt: t.trial_expires_at ?? null, changedAt: at })
+      d.writes.push(`trucks.plan:${truckId}`)
+    },
+    async charge(truckId, period, kind, ref) { const c = d.charges.find(x => x.truckId === truckId && x.period === period && x.kind === kind && x.ref === ref); return c ? { ...c } : null },
+    async listCharges(truckId) { return d.charges.filter(c => c.truckId === truckId).map(c => ({ ...c })) },
+    async carriedPool(truckId) { return d.charges.filter(c => c.truckId === truckId && c.state === 'carried' && c.carriedInto === null).map(c => ({ ...c })) },
+    async insertCharge(row, opts) {
+      const existing = d.charges.find(x => x.truckId === row.truckId && x.period === row.period && x.kind === row.kind && x.ref === row.ref)
+      if (existing) return { inserted: false, row: { ...existing } }
+      const created: ChargeRow = { ...row, id: `charge-${++seq}`, carriedInto: null, computedAt: new Date().toISOString() }
+      d.charges.push(created)
+      for (const c of d.charges) if (opts.consume.includes(c.id) && c.carriedInto === null) c.carriedInto = created.id
+      if (opts.billsUsage) { const u = d.usage.find(x => x.truckId === row.truckId && x.period === opts.billsUsage && x.state === 'open'); if (u) { u.state = 'billed'; u.chargeId = created.id } }
+      d.writes.push(`billing_charges:${row.truckId}:${row.period}:${row.kind}:${row.ref}`)
+      return { inserted: true, row: { ...created } }
+    },
+    async updateCharge(id, patch) {
+      const c = d.charges.find(x => x.id === id)
+      if (!c) throw new Error(`[memory-store] no charge ${id}`)
+      Object.assign(c, patch)
+      d.writes.push(`billing_charges_update:${id}`)
+      return { ...c }
+    },
+    async invoiceForCharge(chargeId) { const r = d.invoices.find(i => i.chargeId === chargeId); return r ? { ...r } : null },
     async invoiceByStripeId(id) { const r = d.invoices.find(i => i.stripeInvoiceId === id); return r ? { ...r } : null },
-    async listInvoices(truckId) { return d.invoices.filter(i => i.truckId === truckId).sort((a, b) => b.period.localeCompare(a.period)).map(i => ({ ...i })) },
+    async listInvoices(truckId) { return d.invoices.filter(i => i.truckId === truckId).map(i => ({ ...i })) },
     async claimInvoice(row) {
-      const existing = d.invoices.find(i => i.truckId === row.truckId && i.period === row.period)
+      const existing = d.invoices.find(i => i.chargeId === row.chargeId)
       if (existing) return { claimed: false, row: { ...existing } }
       const created: InvoiceRow = { ...row, id: `inv-row-${++seq}`, stripeInvoiceId: null, status: 'creating', dueAt: null, attemptCount: 0, lastError: null,
-        hostedInvoiceUrl: null, createdAt: new Date().toISOString(), finalizedAt: null, paidAt: null }
+        hostedInvoiceUrl: null, createdAt: new Date().toISOString(), finalizedAt: null, paidAt: null, lateFeeMinor: null, replacedStripeInvoiceId: null }
       d.invoices.push(created)
-      d.writes.push(`billing_invoices:${row.truckId}:${row.period}`)
+      d.writes.push(`billing_invoices:${row.chargeId}`)
       return { claimed: true, row: { ...created } }
     },
     async updateInvoice(id, patch) {

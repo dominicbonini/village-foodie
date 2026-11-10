@@ -44,7 +44,11 @@ export interface BillingProcessor {
   createInvoice(a: {
     customerId: string; truckId: string; period: string; currency: string; lines: InvoiceLine[]
     paymentMethodId: string; paymentMethodType: PaymentMethodType; description: string
+    /** Every Stripe call's key starts with this (one charge → one key; a late-fee re-issue adds ':late'). */
+    idempotencyBase: string
   }): Promise<ProcessorInvoice>
+  /** Void an open invoice (the late fee re-issues it). A paid invoice cannot be voided: it comes back as paid. */
+  voidInvoice(id: string): Promise<ProcessorInvoice>
   /** Ask Stripe to collect now (Stripe's own automatic attempt and Smart Retries happen without this). */
   payInvoice(id: string, paymentMethodId?: string): Promise<ProcessorInvoice>
   retrieveInvoice(id: string): Promise<ProcessorInvoice>
@@ -136,7 +140,7 @@ export function stripeBillingProcessor(): BillingProcessor {
     },
 
     async createInvoice(a) {
-      const key = `billing:${a.truckId}:${a.period}`
+      const key = a.idempotencyBase
       const currency = a.currency.toLowerCase()
       const inv = await stripe.invoices.create({
         customer: a.customerId,
@@ -147,7 +151,7 @@ export function stripeBillingProcessor(): BillingProcessor {
         pending_invoice_items_behavior: 'exclude',
         payment_settings: { payment_method_types: [a.paymentMethodType] },
         description: a.description,
-        metadata: { truck_id: a.truckId, period: a.period, hatchgrab: 'billing-1' },
+        metadata: { truck_id: a.truckId, period: a.period, hatchgrab: 'billing-1', charge: a.idempotencyBase.slice(0, 450) },
       }, { idempotencyKey: `${key}:invoice` })
       for (const l of a.lines) {
         await stripe.invoiceItems.create({
@@ -170,5 +174,14 @@ export function stripeBillingProcessor(): BillingProcessor {
     },
 
     async retrieveInvoice(id) { return processorInvoiceOf(await stripe.invoices.retrieve(id)) },
+
+    async voidInvoice(id) {
+      try { return processorInvoiceOf(await stripe.invoices.voidInvoice(id, {}, { idempotencyKey: `billing:void:${id}` })) }
+      catch (err) {
+        const inv = processorInvoiceOf(await stripe.invoices.retrieve(id))
+        if (inv.status === 'paid' || inv.status === 'void') return inv
+        throw err
+      }
+    },
   }
 }

@@ -12,9 +12,8 @@ import 'server-only'
 import type { PlanCatalog } from '@/lib/plans'
 import {
   onlineOrderingPausedByBilling, payAtHatchAllowedByBilling, arrangementOf, billableOf, inTrial, applicationFeeFor, periodOf, periodBounds,
-  previousPeriod,
+  previousPeriod, planLevelAt,
 } from '@/lib/billing/rules'
-import { truckPlanPrice } from '@/lib/plans'
 import { platformFeeOn } from '@/lib/country-settings-types'
 import { minorDigits } from '@/lib/money-format'
 import { billingContextFor } from '@/lib/billing/engine'
@@ -74,8 +73,6 @@ export async function applicationFeeAtCapture(a: { orderKey: string; truckId: st
     if (!billableOf(ctx).billable || inTrial(truck, a.catalog, now)) return null
     const arr = arrangementOf(ctx)
     if (!arr?.feeFromPayment || !platformFeeOn(ctx.country)) return null
-    const price = truckPlanPrice(truck, a.catalog, truck.country, { now }).price
-    if (!price || price.feeBps <= 0) return null
     // The ORDER'S month (placed_at, truck's zone) — an order placed just before midnight on the 31st and captured after it
     // belongs to the month it was placed in. This month first, then the previous one.
     const tz = truck.timezone || 'Europe/London'
@@ -88,10 +85,16 @@ export async function applicationFeeAtCapture(a: { orderKey: string; truckId: st
       if (self) break
     }
     if (!self) return null
+    // Each order at the plan in force when it was placed (plan history — the same pricing the month-end uses).
+    const pin = { truck, history: await store.planHistory(truck.id), catalog: a.catalog, countryCode: truck.country, tz }
+    const priceOf = (o: { placedAt: string }) => {
+      const lv = planLevelAt(pin, Date.parse(o.placedAt))
+      return lv.trialling ? null : { allowanceMinor: lv.price ? lv.price.includedOnlineMinor : null, feeBps: lv.price ? lv.price.feeBps : 0, planKey: lv.planKey }
+    }
+    if (!priceOf(self)?.feeBps) return null
     const fee = applicationFeeFor({
       earlier: orders.filter(o => o.orderKey !== a.orderKey && Date.parse(o.placedAt) <= Date.parse(self.placedAt)),
-      order: { ...self, paidOnline: true },
-      allowanceMinor: price.includedOnlineMinor, feeBps: price.feeBps, roundDown: minorDigits(truck.currency) === 0,
+      order: { ...self, paidOnline: true }, priceOf, roundDown: minorDigits(truck.currency) === 0,
     })
     const capped = Math.min(fee, Math.max(0, a.captureMinor))
     return capped > 0 ? capped : null

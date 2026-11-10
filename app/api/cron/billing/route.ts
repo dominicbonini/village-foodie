@@ -1,15 +1,17 @@
-// app/api/cron/billing/route.ts — billing-1 (10 November 2026): THE DAILY BILLING RUN. Vercel Cron, 12:00 UTC (vercel.json) —
-// by then the previous calendar month has ended in every time zone a truck can be in (UTC−10 to UTC+13).
-//   • the month-end: for every candidate truck, the month that has just ended in its own zone — computed, frozen and, when
-//     something above the minimum is owed, invoiced ONCE (lib/billing/engine.ts runMonthEndAll; idempotent, so running daily
-//     also completes any month a failed run, or a missing payment method, left open);
+// app/api/cron/billing/route.ts — billing-1 (10 November 2026; corrected the same day): THE BILLING RUN. Vercel Cron, HOURLY
+// (vercel.json), so each truck is handled within the hour of its own local events:
+//   • the 1st's charge, as soon as the month has started in the truck's own zone — this month's plan fee and extra vans IN
+//     ADVANCE + last month's billed usage IN ARREARS + surcharge + anything carried (once per truck per month);
+//   • mid-month charges: the trial's end (the rest of that month's plan, pro rata) and upgrades (the pro-rata difference);
+//   • the late-payment fee (0 everywhere — none) once an invoice is still unpaid when online ordering pauses;
 //   • the status refresh: trial ended without a payment method, the 5-day unpaid pause.
+// All of it idempotent (lib/billing/engine.ts runBillingAll), so a failed or missed hour is completed by the next.
 // 🔴 SWITCH OFF (platform_switches.billing_enabled false — today): returns `skipped: switch_off` and touches nothing.
 // The same auth as the other crons: Vercel's `Bearer $CRON_SECRET`, or an admin by hand.
 import { NextRequest, NextResponse } from 'next/server'
 import { verifyAdmin } from '@/lib/auth/admin'
 import { serverBillingStore } from '@/lib/billing/store'
-import { runMonthEndAll } from '@/lib/billing/engine'
+import { runBillingAll } from '@/lib/billing/engine'
 import { stripeBillingProcessor, type BillingProcessor } from '@/lib/billing/processor'
 import { getPlanCatalog } from '@/lib/plans-server'
 
@@ -31,10 +33,10 @@ export async function GET(req: NextRequest) {
   // reports `no_processor` and stays open for the next run).
   let processor: BillingProcessor | null = null
   try { processor = stripeBillingProcessor() } catch (e) { console.error('[cron/billing]', e instanceof Error ? e.message : e) }
-  const result = await runMonthEndAll(store, processor, await getPlanCatalog(), new Date(), 'cron')
+  const result = await runBillingAll(store, processor, await getPlanCatalog(), new Date(), 'cron')
   const failed = result.outcomes.filter(o => o.outcome === 'failed')
   if (failed.length) console.error('[cron/billing] failures:', failed.slice(0, 20).map(f => `${f.truckId} ${f.period}: ${'reason' in f ? f.reason : ''}`).join(' | '))
   const counts = result.outcomes.reduce<Record<string, number>>((m, o) => ({ ...m, [o.outcome]: (m[o.outcome] ?? 0) + 1 }), {})
-  return NextResponse.json({ ok: failed.length === 0, counts, outcomes: result.outcomes.map(o => ({ truckId: o.truckId, period: o.period, outcome: o.outcome, ...('reason' in o ? { reason: o.reason } : {}) })) },
+  return NextResponse.json({ ok: failed.length === 0, counts, lateFees: result.lateFees, outcomes: result.outcomes.map(o => ({ truckId: o.truckId, period: o.period, kind: o.kind, outcome: o.outcome, ...('reason' in o ? { reason: o.reason } : {}) })) },
     { status: failed.length ? 500 : 200 })
 }

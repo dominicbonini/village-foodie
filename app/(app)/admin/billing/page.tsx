@@ -40,6 +40,7 @@ export default function AdminBillingPage() {
   const [period, setPeriod] = useState('')
   const [result, setResult] = useState<string | null>(null)
   const [busy, setBusy] = useState(false)
+  const [planKey, setPlanKey] = useState('pro')
 
   useEffect(() => {
     let off = false
@@ -56,16 +57,16 @@ export default function AdminBillingPage() {
     const r = await api('GET', `?truckId=${encodeURIComponent(id)}`)
     if (!r.ok) { setError(String(r.data.error ?? 'Could not load the truck.')); return }
     setDetail(r.data)
-    setPeriod(String(r.data.lastEndedPeriod ?? ''))
+    setPeriod(String(r.data.currentPeriod ?? ''))
   }
 
-  async function act(action: 'preview_month' | 'run_month_end_test') {
+  async function act(action: 'preview_month' | 'run_month_end_test' | 'change_plan_test') {
     if (!openId) return
     setBusy(true); setResult(null)
-    const r = await api('POST', '', { action, truckId: openId, period })
+    const r = await api('POST', '', { action, truckId: openId, period, planKey })
     setBusy(false)
     setResult(JSON.stringify(r.ok ? (r.data.outcome ?? r.data.preview ?? r.data) : { error: r.data.error }, null, 2))
-    if (action === 'run_month_end_test') void open(openId)
+    if (action !== 'preview_month') void open(openId)
   }
 
   const truck = (detail?.truck ?? null) as Rec | null
@@ -121,26 +122,51 @@ export default function AdminBillingPage() {
               <p className="text-xs text-slate-500">Plan {String(truck.plan)} · trial ends {fmtDate(truck.trialEndsAt)} · {String(truck.timezone ?? '')} · arrangement {JSON.stringify(detail.arrangement)}</p>
               <p className="text-xs text-slate-500">Status now: {statusText(detail.statusNow as Status)} · if switched on: {statusText(detail.statusIfOn as Status)}</p>
 
-              <p className="mt-3 text-[11px] font-bold uppercase tracking-wide text-slate-500">Months (ledger)</p>
+              <p className="mt-3 text-[11px] font-bold uppercase tracking-wide text-slate-500">Usage by month (billed in arrears on the next 1st)</p>
               <div className="mt-2 overflow-x-auto">
                 <table className="w-full text-sm border-collapse">
                   <thead><tr className="text-left text-xs uppercase tracking-wide text-slate-500 border-b border-slate-200">
                     <th className="py-2 pr-3">Month</th><th className="py-2 pr-3">State</th><th className="py-2 pr-3">Pre-orders</th><th className="py-2 pr-3">Counted</th>
                     <th className="py-2 pr-3">Fee due</th><th className="py-2 pr-3">Taken</th><th className="py-2 pr-3">Billed</th><th className="py-2 pr-3">Plan</th>
-                    <th className="py-2 pr-3">Carried in</th><th className="py-2 pr-3">Charged</th><th className="py-2 pr-3">Carried out</th>
+                    <th className="py-2 pr-3">Surcharge</th>
                   </tr></thead>
                   <tbody>
                     {((detail.usage ?? []) as Rec[]).map(u => (
                       <tr key={String(u.period)} className="border-b border-slate-100 align-top text-xs text-slate-600">
                         <td className="py-2 pr-3 font-semibold text-slate-800">{String(u.period).slice(0, 7)}</td><td className="py-2 pr-3">{String(u.state)}</td>
                         <td className="py-2 pr-3">{String(u.preorderCount)}</td><td className="py-2 pr-3">{m(u.countedMinor)}</td><td className="py-2 pr-3">{m(u.feeDueMinor)}</td>
-                        <td className="py-2 pr-3">{m(u.feeTakenMinor)}</td><td className="py-2 pr-3">{m(u.feeBilledMinor)}</td><td className="py-2 pr-3">{m(u.planFeeMinor)}</td>
-                        <td className="py-2 pr-3">{m(u.carriedInMinor)}</td><td className="py-2 pr-3">{m(u.chargedMinor)}</td><td className="py-2 pr-3">{m(u.carriedOutMinor)}</td>
+                        <td className="py-2 pr-3">{m(u.feeTakenMinor)}</td><td className="py-2 pr-3">{m(u.feeBilledMinor)}</td><td className="py-2 pr-3">{String(u.planKey)}</td>
+                        <td className="py-2 pr-3">{m(u.surchargeMinor)}</td>
                       </tr>
                     ))}
                   </tbody>
                 </table>
               </div>
+
+              <p className="mt-3 text-[11px] font-bold uppercase tracking-wide text-slate-500">Charges (plan in advance; trial end and upgrades pro rata)</p>
+              <div className="mt-2 overflow-x-auto">
+                <table className="w-full text-sm border-collapse">
+                  <thead><tr className="text-left text-xs uppercase tracking-wide text-slate-500 border-b border-slate-200">
+                    <th className="py-2 pr-3">Month</th><th className="py-2 pr-3">Kind</th><th className="py-2 pr-3">Plan</th><th className="py-2 pr-3">Plan fee</th><th className="py-2 pr-3">Vans</th>
+                    <th className="py-2 pr-3">Usage</th><th className="py-2 pr-3">Surcharge</th><th className="py-2 pr-3">Carried in</th><th className="py-2 pr-3">Charged</th><th className="py-2 pr-3">Carried out</th><th className="py-2 pr-3">State</th>
+                  </tr></thead>
+                  <tbody>
+                    {((detail.charges ?? []) as Rec[]).map(c => (
+                      <tr key={String(c.id)} className="border-b border-slate-100 align-top text-xs text-slate-600">
+                        <td className="py-2 pr-3 font-semibold text-slate-800">{String(c.period).slice(0, 7)}</td><td className="py-2 pr-3">{String(c.kind)}</td>
+                        <td className="py-2 pr-3">{c.fromPlanKey ? `${String(c.fromPlanKey)} → ` : ''}{String(c.planKey)}{Number(c.planDays) > 0 && Number(c.planDays) < Number(c.periodDays) ? ` (${String(c.planDays)}/${String(c.periodDays)} days)` : ''}</td>
+                        <td className="py-2 pr-3">{m(c.planMinor)}</td><td className="py-2 pr-3">{m(c.vansMinor)}</td>
+                        <td className="py-2 pr-3">{m(c.usageFeeMinor)}{c.usagePeriod ? <div className="text-slate-400">{String(c.usagePeriod).slice(0, 7)}</div> : null}</td>
+                        <td className="py-2 pr-3">{m(c.surchargeMinor)}</td><td className="py-2 pr-3">{m(c.carriedInMinor)}</td><td className="py-2 pr-3">{m(c.chargedMinor)}</td>
+                        <td className="py-2 pr-3">{m(c.carriedOutMinor)}</td><td className="py-2 pr-3">{String(c.state)}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+              {((detail.history ?? []) as Rec[]).length > 0 && (
+                <p className="text-xs text-slate-500">Plan history: {((detail.history ?? []) as Rec[]).map(h => `${String(h.planKey)} from ${h.changedAt === '-infinity' ? 'before billing' : fmtDate(h.changedAt)}`).join(' · ')}</p>
+              )}
 
               <p className="mt-3 text-[11px] font-bold uppercase tracking-wide text-slate-500">Invoices</p>
               <div className="mt-2 overflow-x-auto">
@@ -152,7 +178,7 @@ export default function AdminBillingPage() {
                     {((detail.invoices ?? []) as Rec[]).map(i => (
                       <tr key={String(i.id)} className="border-b border-slate-100 align-top text-xs text-slate-600">
                         <td className="py-2 pr-3 font-semibold text-slate-800">{String(i.period).slice(0, 7)}</td><td className="py-2 pr-3">{m(i.amountMinor)}</td>
-                        <td className="py-2 pr-3">{String(i.status)}{i.lastError ? <div className="text-red-700">{String(i.lastError)}</div> : null}</td>
+                        <td className="py-2 pr-3">{String(i.status)}{Number(i.lateFeeMinor) > 0 ? <div className="text-red-700">late fee {m(i.lateFeeMinor)}</div> : null}{i.lastError ? <div className="text-red-700">{String(i.lastError)}</div> : null}</td>
                         <td className="py-2 pr-3">{fmtDate(i.dueAt)}</td><td className="py-2 pr-3">{fmtDate(i.paidAt)}</td><td className="py-2 pr-3">{String(i.attemptCount)}</td>
                         <td className="py-2 pr-3 font-mono">{String(i.stripeInvoiceId ?? '—')}{i.livemode ? ' (live)' : ' (test)'}</td>
                       </tr>
@@ -165,7 +191,9 @@ export default function AdminBillingPage() {
                 <input className="min-w-0 rounded-lg border border-slate-200 bg-white px-2 py-1 text-sm text-slate-900" value={period} aria-label="Month (YYYY-MM-01)" onChange={e => setPeriod(e.target.value)} />
                 <button type="button" disabled={busy} onClick={() => void act('preview_month')} className="rounded-lg border border-slate-200 px-2 py-1 font-semibold text-slate-600">Preview month</button>
                 <button type="button" disabled={busy || !(detail.billing as Rec | null)?.billingTest} onClick={() => void act('run_month_end_test')}
-                  className="shrink-0 rounded-lg bg-orange-600 px-2.5 py-1 text-xs font-semibold text-white hover:bg-orange-700 disabled:bg-slate-200 disabled:text-slate-500">Run month-end for this truck (test)</button>
+                  className="shrink-0 rounded-lg bg-orange-600 px-2.5 py-1 text-xs font-semibold text-white hover:bg-orange-700 disabled:bg-slate-200 disabled:text-slate-500">Run billing for this truck (test)</button>
+                <input className="min-w-0 rounded-lg border border-slate-200 bg-white px-2 py-1 text-sm text-slate-900" value={planKey} aria-label="Plan key" onChange={e => setPlanKey(e.target.value)} />
+                <button type="button" disabled={busy || !(detail.billing as Rec | null)?.billingTest} onClick={() => void act('change_plan_test')} className="rounded-lg border border-slate-200 px-2 py-1 font-semibold text-slate-600">Change plan (test)</button>
                 {!(detail.billing as Rec | null)?.billingTest && <span className="text-xs text-slate-500">Only billing test trucks can be run by hand.</span>}
               </div>
               {result && <pre className="mt-2 overflow-x-auto rounded-lg bg-slate-50 p-3 text-xs text-slate-700">{result}</pre>}

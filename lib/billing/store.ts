@@ -4,8 +4,8 @@
 // order_payments, plans, plan_prices or country_settings.
 import 'server-only'
 import type { SupabaseClient } from '@supabase/supabase-js'
-import { isPaymentModel, type CountryBilling, type UsageOrder, type UsageLine } from '@/lib/billing/rules'
-import type { BillingStore, TruckBillingRow, UsageRow, InvoiceRow, StoredTruck } from '@/lib/billing/store-types'
+import { isPaymentModel, type CountryBilling, type UsageOrder, type UsageLine, type PlanHistoryRow } from '@/lib/billing/rules'
+import type { BillingStore, TruckBillingRow, UsageRow, InvoiceRow, StoredTruck, ChargeRow } from '@/lib/billing/store-types'
 
 type Row = Record<string, unknown>
 const num = (v: unknown, d = 0) => (typeof v === 'number' && Number.isFinite(v) ? v : d)
@@ -18,12 +18,12 @@ function mapCountryBilling(r: Row): CountryBilling {
   return {
     countryCode: String(r.country_code), paymentModel: model,
     postPaySurchargeBps: num(r.post_pay_surcharge_bps), postPaySurchargeFixedMinor: num(r.post_pay_surcharge_fixed_minor),
-    minChargeMinor: num(r.min_charge_minor), updatedAt: str(r.updated_at) ?? undefined, updatedBy: str(r.updated_by),
+    minChargeMinor: num(r.min_charge_minor), lateFeeMinor: num(r.late_fee_minor), updatedAt: str(r.updated_at) ?? undefined, updatedBy: str(r.updated_by),
   }
 }
 const cbCols = (c: CountryBilling) => ({
   country_code: c.countryCode, payment_model: c.paymentModel, post_pay_surcharge_bps: c.postPaySurchargeBps,
-  post_pay_surcharge_fixed_minor: c.postPaySurchargeFixedMinor, min_charge_minor: c.minChargeMinor,
+  post_pay_surcharge_fixed_minor: c.postPaySurchargeFixedMinor, min_charge_minor: c.minChargeMinor, late_fee_minor: c.lateFeeMinor ?? 0,
 })
 
 function mapTruckBilling(r: Row): TruckBillingRow {
@@ -35,23 +35,22 @@ function mapTruckBilling(r: Row): TruckBillingRow {
     paymentMethodLabel: str(r.payment_method_label), paymentMethodUpdatedAt: str(r.payment_method_updated_at),
     paymentMethodLivemode: typeof r.payment_method_livemode === 'boolean' ? r.payment_method_livemode : null,
     status: str(r.status) as TruckBillingRow['status'], statusReason: str(r.status_reason), statusChangedAt: str(r.status_changed_at),
+    pendingPlanKey: str(r.pending_plan_key), pendingPlanFrom: r.pending_plan_from ? String(r.pending_plan_from).slice(0, 10) : null,
   }
 }
 const TB_COLS: Record<keyof Omit<TruckBillingRow, 'truckId'>, string> = {
   postPay: 'post_pay', billingTest: 'billing_test', paymentMethodState: 'payment_method_state', paymentMethodType: 'payment_method_type',
   stripePaymentMethodId: 'stripe_payment_method_id', stripeSetupIntentId: 'stripe_setup_intent_id', paymentMethodLabel: 'payment_method_label',
   paymentMethodUpdatedAt: 'payment_method_updated_at', paymentMethodLivemode: 'payment_method_livemode', status: 'status',
-  statusReason: 'status_reason', statusChangedAt: 'status_changed_at',
+  statusReason: 'status_reason', statusChangedAt: 'status_changed_at', pendingPlanKey: 'pending_plan_key', pendingPlanFrom: 'pending_plan_from',
 }
 
 const U_COLS: Record<keyof UsageRow, string> = {
   truckId: 'truck_id', period: 'period', currency: 'currency', countryCode: 'country_code', paymentModel: 'payment_model', postPay: 'post_pay',
   planKey: 'plan_key', preorderCount: 'preorder_count', countedOnlineMinor: 'counted_online_minor', countedAtTruckMinor: 'counted_at_truck_minor',
   countedMinor: 'counted_minor', allowanceMinor: 'allowance_minor', allowanceUsedMinor: 'allowance_used_minor', feeBps: 'fee_bps',
-  feeDueMinor: 'fee_due_minor', feeTakenMinor: 'fee_taken_minor', feeBilledMinor: 'fee_billed_minor', planFeeMinor: 'plan_fee_minor',
-  planDays: 'plan_days', periodDays: 'period_days', extraVansMinor: 'extra_vans_minor', surchargeMinor: 'surcharge_minor',
-  carriedInMinor: 'carried_in_minor', amountDueMinor: 'amount_due_minor', chargedMinor: 'charged_minor', carriedOutMinor: 'carried_out_minor',
-  minChargeMinor: 'min_charge_minor', inputsDigest: 'inputs_digest', state: 'state', computedAt: 'computed_at',
+  feeDueMinor: 'fee_due_minor', feeTakenMinor: 'fee_taken_minor', feeBilledMinor: 'fee_billed_minor', periodDays: 'period_days',
+  surchargeMinor: 'surcharge_minor', inputsDigest: 'inputs_digest', state: 'state', chargeId: 'charge_id', computedAt: 'computed_at',
 }
 function mapUsage(r: Row): UsageRow {
   const out = {} as Record<string, unknown>
@@ -62,9 +61,10 @@ function mapUsage(r: Row): UsageRow {
 const usageCols = (u: UsageRow) => Object.fromEntries(Object.entries(U_COLS).map(([k, c]) => [c, (u as unknown as Row)[k]]))
 
 const I_COLS: Record<keyof InvoiceRow, string> = {
-  id: 'id', truckId: 'truck_id', period: 'period', currency: 'currency', amountMinor: 'amount_minor', livemode: 'livemode',
+  id: 'id', chargeId: 'charge_id', truckId: 'truck_id', period: 'period', currency: 'currency', amountMinor: 'amount_minor', livemode: 'livemode',
   stripeInvoiceId: 'stripe_invoice_id', status: 'status', dueAt: 'due_at', attemptCount: 'attempt_count', lastError: 'last_error',
   hostedInvoiceUrl: 'hosted_invoice_url', createdAt: 'created_at', finalizedAt: 'finalized_at', paidAt: 'paid_at',
+  lateFeeMinor: 'late_fee_minor', replacedStripeInvoiceId: 'replaced_stripe_invoice_id',
 }
 function mapInvoice(r: Row): InvoiceRow {
   const out = {} as Record<string, unknown>
@@ -72,6 +72,22 @@ function mapInvoice(r: Row): InvoiceRow {
   out.period = String(r.period).slice(0, 10)
   out.attemptCount = num(r.attempt_count)
   return out as unknown as InvoiceRow
+}
+
+const C_COLS: Record<keyof ChargeRow, string> = {
+  id: 'id', truckId: 'truck_id', period: 'period', kind: 'kind', ref: 'ref', currency: 'currency', planKey: 'plan_key', fromPlanKey: 'from_plan_key',
+  planMinor: 'plan_minor', planDays: 'plan_days', periodDays: 'period_days', vansMinor: 'vans_minor', usagePeriod: 'usage_period',
+  usageFeeMinor: 'usage_fee_minor', surchargeMinor: 'surcharge_minor', carriedInMinor: 'carried_in_minor', amountDueMinor: 'amount_due_minor',
+  chargedMinor: 'charged_minor', carriedOutMinor: 'carried_out_minor', carriedInto: 'carried_into', minChargeMinor: 'min_charge_minor',
+  state: 'state', inputsDigest: 'inputs_digest', computedAt: 'computed_at',
+}
+function mapCharge(r: Row): ChargeRow {
+  const out = {} as Record<string, unknown>
+  for (const [k, c] of Object.entries(C_COLS)) out[k] = r[c] ?? null
+  out.period = String(r.period).slice(0, 10)
+  out.usagePeriod = r.usage_period ? String(r.usage_period).slice(0, 10) : null
+  out.ref = String(r.ref ?? '')
+  return out as unknown as ChargeRow
 }
 
 export function supabaseBillingStore(db: SupabaseClient): BillingStore {
@@ -216,7 +232,7 @@ export function supabaseBillingStore(db: SupabaseClient): BillingStore {
       return ((data ?? []) as Row[]).map(r => ({
         orderKey: String(r.order_key), placedAt: String(r.placed_at), paidOnline: r.paid_online === true, foodMinor: num(r.food_minor),
         countedMinor: num(r.counted_minor), allowanceBeforeMinor: num(r.allowance_before_minor), feeMinor: num(r.fee_minor),
-        feeVia: String(r.fee_via) as UsageLine['feeVia'], feeTakenMinor: num(r.fee_taken_minor),
+        feeVia: String(r.fee_via) as UsageLine['feeVia'], feeTakenMinor: num(r.fee_taken_minor), planKey: str(r.plan_key), feeBps: num(r.fee_bps),
       }))
     },
     async listUsage(truckId) {
@@ -227,29 +243,81 @@ export function supabaseBillingStore(db: SupabaseClient): BillingStore {
     async replaceUsage(row, lines) {
       const existing = await this.usage(row.truckId, row.period)
       if (existing && existing.state !== 'open') return false
-      // Lines first (they cascade from the month row, but deleting them explicitly keeps the month row's identity).
       const { error: dl } = await db.from('billing_usage_orders').delete().eq('truck_id', row.truckId).eq('period', row.period)
       fail('clear usage lines', dl)
-      const { error: up } = await db.from('billing_usage').upsert(usageCols(row), { onConflict: 'truck_id,period' })
+      const { error: up } = await db.from('billing_usage').upsert(usageCols({ ...row, state: 'open', chargeId: null }), { onConflict: 'truck_id,period' })
       fail('save usage', up)
       if (lines.length) {
         const { error: li } = await db.from('billing_usage_orders').insert(lines.map(l => ({
           order_key: l.orderKey, truck_id: row.truckId, period: row.period, placed_at: l.placedAt, paid_online: l.paidOnline,
           food_minor: l.foodMinor, counted_minor: l.countedMinor, allowance_before_minor: l.allowanceBeforeMinor,
-          fee_minor: l.feeMinor, fee_via: l.feeVia, fee_taken_minor: l.feeTakenMinor,
+          fee_minor: l.feeMinor, fee_via: l.feeVia, fee_taken_minor: l.feeTakenMinor, plan_key: l.planKey, fee_bps: l.feeBps,
         })))
         fail('save usage lines', li)
       }
       return true
     },
-    async freezeUsage(truckId, period, state) {
-      const { error } = await db.from('billing_usage').update({ state }).eq('truck_id', truckId).eq('period', period).eq('state', 'open')
-      fail('freeze usage', error)
+
+    async planHistory(truckId): Promise<PlanHistoryRow[]> {
+      const { data, error } = await db.from('truck_plan_history').select('plan_key, trial_expires_at, changed_at').eq('truck_id', truckId).order('changed_at').order('id')
+      fail(`plan history ${truckId}`, error)
+      return ((data ?? []) as Row[]).map(r => ({
+        planKey: String(r.plan_key), trialExpiresAt: str(r.trial_expires_at),
+        // PostgREST renders -infinity as the string "-infinity"
+        changedAt: String(r.changed_at) === '-infinity' ? '-infinity' : String(r.changed_at),
+      }))
+    },
+    async setTruckPlan(truckId, planKey) {
+      // 🔴 the only write billing makes to trucks: the plan, for an upgrade now or a downgrade on the 1st (the trigger records it)
+      const { error } = await db.from('trucks').update({ plan: planKey }).eq('id', truckId)
+      fail(`set plan ${truckId}`, error)
     },
 
-    async invoice(truckId, period) {
-      const { data, error } = await db.from('billing_invoices').select('*').eq('truck_id', truckId).eq('period', period).maybeSingle()
-      fail(`invoice ${truckId} ${period}`, error)
+    async charge(truckId, period, kind, ref) {
+      const { data, error } = await db.from('billing_charges').select('*').eq('truck_id', truckId).eq('period', period).eq('kind', kind).eq('ref', ref).maybeSingle()
+      fail(`charge ${truckId} ${period} ${kind}`, error)
+      return data ? mapCharge(data as Row) : null
+    },
+    async listCharges(truckId) {
+      const { data, error } = await db.from('billing_charges').select('*').eq('truck_id', truckId).order('computed_at', { ascending: false }).limit(48)
+      fail(`charges ${truckId}`, error)
+      return ((data ?? []) as Row[]).map(mapCharge)
+    },
+    async carriedPool(truckId) {
+      const { data, error } = await db.from('billing_charges').select('*').eq('truck_id', truckId).eq('state', 'carried').is('carried_into', null)
+      fail(`carried ${truckId}`, error)
+      return ((data ?? []) as Row[]).map(mapCharge)
+    },
+    async insertCharge(row, opts) {
+      const cols: Row = {}
+      for (const [k, c] of Object.entries(C_COLS)) if (k !== 'id' && k !== 'computedAt' && k !== 'carriedInto') cols[c] = (row as unknown as Row)[k]
+      const { data, error } = await db.from('billing_charges').insert(cols).select('*').single()
+      if (error?.code === '23505') {
+        const existing = await this.charge(row.truckId, row.period, row.kind, row.ref)
+        if (!existing) throw new Error('[billing/store] charge claim collided but no row was found')
+        return { inserted: false, row: existing }
+      }
+      fail('insert charge', error)
+      const created = mapCharge(data as Row)
+      if (opts.consume.length) {
+        const { error: ce } = await db.from('billing_charges').update({ carried_into: created.id }).in('id', opts.consume).is('carried_into', null)
+        fail('consume carried', ce)
+      }
+      if (opts.billsUsage) {
+        const { error: ue } = await db.from('billing_usage').update({ state: 'billed', charge_id: created.id }).eq('truck_id', row.truckId).eq('period', opts.billsUsage).eq('state', 'open')
+        fail('bill usage', ue)
+      }
+      return { inserted: true, row: created }
+    },
+    async updateCharge(id, patch) {
+      const { data, error } = await db.from('billing_charges').update({ ...(patch.state ? { state: patch.state } : {}) }).eq('id', id).select('*').single()
+      fail('update charge', error)
+      return mapCharge(data as Row)
+    },
+
+    async invoiceForCharge(chargeId) {
+      const { data, error } = await db.from('billing_invoices').select('*').eq('charge_id', chargeId).maybeSingle()
+      fail('invoice for charge', error)
       return data ? mapInvoice(data as Row) : null
     },
     async invoiceByStripeId(id) {
@@ -258,16 +326,16 @@ export function supabaseBillingStore(db: SupabaseClient): BillingStore {
       return data ? mapInvoice(data as Row) : null
     },
     async listInvoices(truckId) {
-      const { data, error } = await db.from('billing_invoices').select('*').eq('truck_id', truckId).order('period', { ascending: false }).limit(24)
+      const { data, error } = await db.from('billing_invoices').select('*').eq('truck_id', truckId).order('created_at', { ascending: false }).limit(48)
       fail(`invoices ${truckId}`, error)
       return ((data ?? []) as Row[]).map(mapInvoice)
     },
     async claimInvoice(row) {
       const { data, error } = await db.from('billing_invoices').insert({
-        truck_id: row.truckId, period: row.period, currency: row.currency, amount_minor: row.amountMinor, livemode: row.livemode, status: 'creating',
+        charge_id: row.chargeId, truck_id: row.truckId, period: row.period, currency: row.currency, amount_minor: row.amountMinor, livemode: row.livemode, status: 'creating',
       }).select('*').single()
       if (error?.code === '23505') {
-        const existing = await this.invoice(row.truckId, row.period)
+        const existing = await this.invoiceForCharge(row.chargeId)
         if (!existing) throw new Error('[billing/store] invoice claim collided but no row was found')
         return { claimed: false, row: existing }
       }

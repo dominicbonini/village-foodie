@@ -27,7 +27,7 @@ const t = (label, ok, detail) => { if (ok) { pass++; console.log('  ✓ ' + labe
   const M = require(out)
   const { createClient } = require(path.join(REPO, 'node_modules/@supabase/supabase-js'))
   const db = createClient(process.env.SUPABASE_URL || process.env.NEXT_PUBLIC_SUPABASE_URL, process.env.SUPABASE_SERVICE_ROLE_KEY)
-  const TABLES = ['country_billing', 'operator_billing', 'truck_billing', 'billing_usage', 'billing_usage_orders', 'billing_invoices']
+  const TABLES = ['country_billing', 'operator_billing', 'truck_billing', 'billing_usage', 'billing_usage_orders', 'billing_invoices', 'billing_charges', 'truck_plan_history']
   const counts = async () => Object.fromEntries(await Promise.all(TABLES.map(async x => [x, (await db.from(x).select('*', { count: 'exact', head: true })).count])))
   const before = await counts()
 
@@ -50,11 +50,15 @@ const t = (label, ok, detail) => { if (ok) { pass++; console.log('  ✓ ' + labe
   const catalog = await M.PS.getPlanCatalog()
   const asEnded = { ...truck, trial_expires_at: '2026-09-30T23:59:59Z' }
   const ctx = { ...(await M.E.billingContextFor(store, asEnded, catalog, new Date())), switchOn: true, truckBilling: { postPay: false, billingTest: true, paymentMethodState: 'valid', paymentMethodType: 'card' } }
-  const c = await M.E.computeMonth(store, catalog, asEnded, ctx, '2026-10-01', new Date())
+  const c = await M.E.computeUsage(store, catalog, asEnded, ctx, '2026-10-01', new Date())
   const counted = orders.filter(o => M.R.countsAsPreorder(o)).reduce((s2, o) => s2 + M.R.countedValueOf(o), 0)
-  t('its October computed in memory (as if its trial had ended on 30 September; NOT saved): Pay as you go, 0.99% of every counted pre-order',
-    c.ok && c.usage.planKey === 'payg' && c.usage.countedMinor === counted && c.usage.feeDueMinor === c.result.lines.reduce((s2, l) => s2 + l.feeMinor, 0), c.ok ? c.usage : c)
-  if (c.ok) console.log(`      October as if billed: ${c.usage.preorderCount} counted pre-orders of ${orders.length}, counted ${c.usage.countedMinor}, fee due ${c.usage.feeDueMinor}, plan ${c.usage.planFeeMinor} → ${c.result.state} (${c.usage.amountDueMinor} USD; minimum ${c.usage.minChargeMinor})`)
+  t('its October usage computed in memory (as if its trial had ended on 30 September; NOT saved): Pay as you go, 0.99% of every counted pre-order',
+    c.ok && c.usage.planKey === 'payg' && c.usage.countedMinor === counted && c.usage.feeDueMinor === c.lines.reduce((s2, l) => s2 + l.feeMinor, 0), c.ok ? c.usage : c)
+  const pm = M.R.planMonth({ truck: asEnded, history: await store.planHistory('test-truck-us'), catalog, countryCode: 'US', tz, period: '2026-11-01', vanCount: await store.vanCount('test-truck-us'), upTo: Date.now() })
+  const fig = M.R.settleCharge({ planMinor: pm.advance.monthlyMinor, vansMinor: pm.advance.vansMinor, usageFeeMinor: c.ok ? c.usage.feeBilledMinor : 0, minChargeMinor: (await store.countryBilling('US')).minChargeMinor })
+  t('its 1 November charge as it would be: November\'s plan in advance + October\'s fee in arrears', fig.amountDueMinor === pm.advance.monthlyMinor + pm.advance.vansMinor + (c.ok ? c.usage.feeBilledMinor : 0), fig)
+  console.log(`      1 November as if billed: plan ${pm.advance.planKey} ${pm.advance.monthlyMinor} + October's fee ${c.ok ? c.usage.feeBilledMinor : '?'} (${c.ok ? c.usage.preorderCount : '?'} counted of ${orders.length}) → ${fig.outcome} ${fig.amountDueMinor} USD (minimum ${fig.minChargeMinor})`)
+  t('no plan history for it (nothing recorded while billing is off)', (await store.planHistory('test-truck-us')).length === 0)
   const ids = await store.candidateTruckIds()
   t(`billing candidates (customers + billing test trucks): ${ids.length}`, Array.isArray(ids))
   M.G.__resetBillingSwitchCache()
