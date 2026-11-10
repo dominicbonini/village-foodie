@@ -67,7 +67,7 @@ export function CountryBillingPanel() {
   return (
     <section className="rounded-2xl border border-slate-200 bg-white p-4" data-country-billing>
       <p className="text-sm font-bold text-slate-900">Billing</p>
-      <p className="text-xs text-slate-500">How HatchGrab charges trucks in each country. (a) takes the fee from each online payment; (b) and (c) bill it monthly, with the plan. Any truck can also choose post-pay. Amounts are in the country&apos;s minor units (pence, cents, whole yen). Surcharge 100 = 1%.</p>
+      <p className="text-xs text-slate-500">How HatchGrab charges trucks in each country. (a) takes the fee from each online payment; (b) and (c) bill it monthly, with the plan. Any truck can also choose post-pay. Amounts are in the currency&apos;s smallest unit: pence, cents, whole yen. Surcharge 100 = 1%.</p>
       {switchOn !== null && (
         <p className={`mt-2 rounded-lg px-3 py-2 text-sm font-semibold ${switchOn ? 'bg-emerald-50 text-emerald-800' : 'bg-amber-50 text-amber-800'}`} data-billing-switch={switchOn ? 'on' : 'off'}>
           {switchOn ? 'Billing is switched ON — these settings are charging trucks.' : 'Billing is switched OFF — nothing is charged and no truck is paused. These settings take effect when it is switched on.'}

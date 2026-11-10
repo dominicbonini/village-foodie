@@ -344,7 +344,11 @@ module.exports = async function us(h) {
       ['trucks', 'orders', 'order_drafts', 'truck_events'].every(tb => new RegExp(`comment on column public\\.${tb}\\.tax_rate_bps is\\s+'RETIRED`).test(sql)))
     const sent = ['app', 'lib'].flatMap(d => { const out = []; const walk = p => { for (const e of fs.readdirSync(path.join(REPO, p), { withFileTypes: true })) { const q = path.join(p, e.name); if (e.isDirectory()) walk(q); else if (/\.tsx?$/.test(e.name)) out.push(q) } }; walk(d); return out })
       .filter(f => /application_fee_amount/.test(read(f).replace(/\/\/.*$/gm, '').replace(/\/\*[\s\S]*?\*\//g, '')))
-    t('no code sends application_fee_amount (comments aside)', sent.length === 0, sent.join(', '))
+    // ⚠️ RE-PINNED (billing-1, 10 November 2026): capture.ts may now send it — ONLY there, and only behind the billing switch
+    // (platform_switches.billing_enabled, false) and platformFeeOn; scripts/billing-1.cjs §14 proves the construct.
+    t('only lib/payments/capture.ts sends application_fee_amount (comments aside), and only inside `if (await billingSwitchOn())`',
+      sent.length === 1 && sent[0] === path.join('lib', 'payments', 'capture.ts')
+      && /if \(await billingSwitchOn\(\)\) \{[\s\S]{0,400}applicationFeeAtCapture[\s\S]{0,400}platformFeeOn\(/.test(read('lib/payments/capture.ts')), sent.join(', '))
     t('no route calls wouldBeApplicationFeeMinor — it is computed only here, behind the switch',
       ['app/api/orders/submit/route.ts', 'app/api/dashboard/action/route.ts', 'lib/payments/promote-draft.ts', 'lib/payments/ledger.ts', 'lib/payments/capture.ts', 'lib/payments/authorize.ts']
         .every(f => !/wouldBeApplicationFeeMinor/.test(read(f))))

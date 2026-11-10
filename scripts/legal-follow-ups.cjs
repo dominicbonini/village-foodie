@@ -102,7 +102,10 @@ const J = x => JSON.stringify(x)
     const r = C.computeOrderCharges({ foodMinor: 2400, rules, channel: 'online_card', tip: { kind: 'percent', bps: 1500 } })
     t('a $24.00 card order with a 15% tip: food_minor stays 2400; the tip (360) is its own field; the total adds it', r.snapshot.food_minor === 2400 && r.tipMinor === 360 && r.snapshot.tip_minor === 360 && r.totalMinor === 2400 + r.taxMinor + 360 + r.serviceFeeMinor, r)
     t('the submit route passes the FOOD after discount as foodMinor (never a total with a tip in it)', /const foodMinor = toMinor\(repriced\.calculation\.total(, truck\.currency)?\)/.test(read('app/api/orders/submit/route.ts')))   // ⚠️ RE-PINNED (world-countries-1): in the truck's currency's minor units (whole yen for JPY)
-    t('no platform (application) fee is taken on any payment today', /NO application_fee_amount/.test(read('lib/payments/capture.ts')) && /NO application_fee_amount/.test(read('lib/payments/authorize.ts')))
+    // ⚠️ RE-PINNED (billing-1, 10 November 2026): authorisation still sends none; capture sends one only behind the billing switch
+    // (platform_switches.billing_enabled — false) — scripts/billing-1.cjs §1 and §14.
+    t('no platform (application) fee is taken on any payment today: none at authorisation, and at capture only behind the billing switch (off)',
+      /NO application_fee_amount/.test(read('lib/payments/authorize.ts')) && /if \(await billingSwitchOn\(\)\) \{/.test(read('lib/payments/capture.ts')))
   }
 
   // ══ 2 · PostHog ═══════════════════════════════════════════════════════════════════════════════════

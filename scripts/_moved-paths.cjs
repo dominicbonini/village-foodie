@@ -67,6 +67,7 @@ const tracked = (args) => execFileSync('git', args, { cwd: REPO, maxBuffer: 1 <<
  *  pages cannot read the host). `changedSince(rev, paths, { cwv2: true })` compares proxy.ts with exactly that block taken out. */
 const CWV2_PROXY_BLOCK = /\n  \/\/ ── cwv-2 \(6 November 2026[\s\S]*?\n  \}\n\n/
 const G2 = require('./_lp-gsc-index-2.cjs')
+const B1 = require('./_lp-billing-1.cjs')   // billing-1 (10 November 2026): its named edits, taken back exactly
 function changedSince(rev, paths, { cwv2 = false } = {}) {
   const now = [...new Set(paths.map(nowPath))]
   const files = new Set([...tracked(['ls-files', '--', ...now]), ...tracked(['ls-tree', '-r', '--name-only', rev, '--', ...new Set(now.map(beforePath))]).map(nowPath)])
@@ -79,6 +80,10 @@ function changedSince(rev, paths, { cwv2 = false } = {}) {
     // block, the English legal pages' hreflang) are taken back exactly (scripts/_lp-gsc-index-2.cjs asBefore; it throws if one is
     // not there exactly once), so every other byte is still compared.
     if (cur && G2.FILES.includes(f) && G2.LANDED && show(rev, 'scripts/_lp-gsc-index-2.cjs') === null) cur = Buffer.from(G2.asBefore(f, Buffer.from(cur, 'latin1').toString('utf8')), 'utf8').toString('latin1')
+    // ⚠️ RE-PINNED (billing-1, 10 November 2026): against a revision from before billing-1, its committed edits (the billing gate in
+    // the menu and submit routes, the fee at capture and on refunds, the ledger's optional fee fields) are reverse-applied exactly
+    // (scripts/_lp-billing-1.cjs asBefore; it throws if they are not there exactly), so every other byte is still compared.
+    if (cur && B1.LANDED && B1.FILES.includes(f) && show(rev, 'lib/billing/rules.ts') === null) { const b = B1.asBefore(f, Buffer.from(cur, 'latin1').toString('utf8')); cur = b === null ? null : Buffer.from(b, 'utf8').toString('latin1') }
     let then = show(rev, f) ?? show(rev, beforePath(f))
     if (then !== null) for (const [a, b] of MOVE_EDITS[f] || []) then = then.split(a).join(b)
     if (cur !== then) changed.push(f)

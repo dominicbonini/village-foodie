@@ -73,7 +73,7 @@ export type MonthOutcome =
 export async function computeMonth(store: BillingStore, catalog: PlanCatalog, truck: StoredTruck, ctx: BillingContext, period: string, now: Date):
   Promise<{ ok: true; result: MonthResult; usage: UsageRow } | { ok: false; reason: string }> {
   const billable = billableOf(ctx)
-  if (!billable.billable) return { ok: false, reason: billable.reason }
+  if (billable.billable === false) return { ok: false, reason: billable.reason }
   const arrangement = arrangementOf(ctx)
   if (!arrangement || !ctx.countryBilling) return { ok: false, reason: 'country_not_configured' }
   const tz = truck.timezone || 'Europe/London'
@@ -123,7 +123,7 @@ export async function runMonth(store: BillingStore, processor: BillingProcessor 
     if (existing.state === 'nothing' || existing.state === 'carried') return { truckId, period, outcome: existing.state, usage }
   } else {
     const c = await computeMonth(store, catalog, truck, ctx, period, now)
-    if (!c.ok) return { truckId, period, outcome: 'skipped', reason: c.reason }
+    if (c.ok === false) return { truckId, period, outcome: 'skipped', reason: c.reason }
     usage = c.usage
     if (!(await store.replaceUsage(usage, c.result.lines))) {
       const frozen = await store.usage(truckId, period)
