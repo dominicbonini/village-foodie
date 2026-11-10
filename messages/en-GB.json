@@ -2303,6 +2303,21 @@
     "emailInvalid": "Please enter a valid email address."
   },
   "provisionContent": {
+    "standardCategories": {
+      "starters": "Starters",
+      "mains": "Mains",
+      "burgers": "Burgers",
+      "pizza": "Pizza",
+      "wrapsSandwiches": "Wraps & Sandwiches",
+      "sides": "Sides",
+      "dipsSauces": "Dips & Sauces",
+      "desserts": "Desserts",
+      "drinks": "Drinks",
+      "kidsMenu": "Kids Menu",
+      "specials": "Specials",
+      "other": "Other"
+    },
+    "demoEventName": "Demo event",
     "firstVanName": "Van 1",
     "demoCategories": {
       "pizza": "Pizza",

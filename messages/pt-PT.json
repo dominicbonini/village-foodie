@@ -2303,6 +2303,21 @@
     "emailInvalid": "Introduza um endereço de email válido."
   },
   "provisionContent": {
+    "standardCategories": {
+      "starters": "Entradas",
+      "mains": "Pratos principais",
+      "burgers": "Hambúrgueres",
+      "pizza": "Pizzas",
+      "wrapsSandwiches": "Wraps e sandes",
+      "sides": "Acompanhamentos",
+      "dipsSauces": "Molhos e dips",
+      "desserts": "Sobremesas",
+      "drinks": "Bebidas",
+      "kidsMenu": "Menu infantil",
+      "specials": "Sugestões",
+      "other": "Outros"
+    },
+    "demoEventName": "Evento de demonstração",
     "firstVanName": "Food truck 1",
     "demoCategories": {
       "pizza": "Pizzas",

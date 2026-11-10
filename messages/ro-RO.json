@@ -2303,6 +2303,21 @@
     "emailInvalid": "Introduceți o adresă de e-mail validă."
   },
   "provisionContent": {
+    "standardCategories": {
+      "starters": "Aperitive",
+      "mains": "Feluri principale",
+      "burgers": "Burgeri",
+      "pizza": "Pizza",
+      "wrapsSandwiches": "Wrapuri și sandvișuri",
+      "sides": "Garnituri",
+      "dipsSauces": "Dipuri și sosuri",
+      "desserts": "Deserturi",
+      "drinks": "Băuturi",
+      "kidsMenu": "Meniu pentru copii",
+      "specials": "Specialități",
+      "other": "Altele"
+    },
+    "demoEventName": "Eveniment demo",
     "firstVanName": "Food truck 1",
     "demoCategories": {
       "pizza": "Pizza",

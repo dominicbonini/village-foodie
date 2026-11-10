@@ -1,4 +1,19 @@
 {
+  "standardCategories": {
+    "starters": "Pembuka selera",
+    "mains": "Hidangan utama",
+    "burgers": "Burger",
+    "pizza": "Piza",
+    "wrapsSandwiches": "Wrap & sandwic",
+    "sides": "Hidangan sampingan",
+    "dipsSauces": "Sos & pencicah",
+    "desserts": "Pencuci mulut",
+    "drinks": "Minuman",
+    "kidsMenu": "Menu kanak-kanak",
+    "specials": "Hidangan istimewa",
+    "other": "Lain-lain"
+  },
+  "demoEventName": "Acara demo",
   "firstVanName": "Van 1",
   "demoCategories": {
     "pizza": "Piza",

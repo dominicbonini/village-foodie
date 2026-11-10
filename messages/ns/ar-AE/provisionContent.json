@@ -1,4 +1,19 @@
 {
+  "standardCategories": {
+    "starters": "المقبلات",
+    "mains": "الأطباق الرئيسية",
+    "burgers": "برغر",
+    "pizza": "بيتزا",
+    "wrapsSandwiches": "اللفائف والسندويشات",
+    "sides": "الأطباق الجانبية",
+    "dipsSauces": "الصلصات والغموس",
+    "desserts": "الحلويات",
+    "drinks": "المشروبات",
+    "kidsMenu": "قائمة الأطفال",
+    "specials": "الأطباق المميزة",
+    "other": "أخرى"
+  },
+  "demoEventName": "فعالية تجريبية",
   "firstVanName": "المركبة 1",
   "demoCategories": {
     "pizza": "بيتزا",

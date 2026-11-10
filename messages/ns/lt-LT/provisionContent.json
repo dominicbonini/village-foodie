@@ -1,4 +1,19 @@
 {
+  "standardCategories": {
+    "starters": "Užkandžiai",
+    "mains": "Pagrindiniai",
+    "burgers": "Mėsainiai",
+    "pizza": "Picos",
+    "wrapsSandwiches": "Suktiniai ir sumuštiniai",
+    "sides": "Garnyrai",
+    "dipsSauces": "Padažai",
+    "desserts": "Desertai",
+    "drinks": "Gėrimai",
+    "kidsMenu": "Vaikų meniu",
+    "specials": "Specialūs pasiūlymai",
+    "other": "Kita"
+  },
+  "demoEventName": "Demonstracinis renginys",
   "firstVanName": "Furgonas 1",
   "demoCategories": {
     "pizza": "Picos",

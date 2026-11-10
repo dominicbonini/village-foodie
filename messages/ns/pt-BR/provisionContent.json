@@ -1,4 +1,19 @@
 {
+  "standardCategories": {
+    "starters": "Entradas",
+    "mains": "Pratos principais",
+    "burgers": "Hambúrgueres",
+    "pizza": "Pizzas",
+    "wrapsSandwiches": "Wraps e sanduíches",
+    "sides": "Acompanhamentos",
+    "dipsSauces": "Molhos e pastas",
+    "desserts": "Sobremesas",
+    "drinks": "Bebidas",
+    "kidsMenu": "Cardápio infantil",
+    "specials": "Especiais",
+    "other": "Outros"
+  },
+  "demoEventName": "Evento de demonstração",
   "firstVanName": "Van 1",
   "demoCategories": {
     "pizza": "Pizzas",

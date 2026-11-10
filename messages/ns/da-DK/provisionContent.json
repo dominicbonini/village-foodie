@@ -1,4 +1,19 @@
 {
+  "standardCategories": {
+    "starters": "Forretter",
+    "mains": "Hovedretter",
+    "burgers": "Burgere",
+    "pizza": "Pizza",
+    "wrapsSandwiches": "Wraps & sandwiches",
+    "sides": "Tilbehør",
+    "dipsSauces": "Dips & saucer",
+    "desserts": "Desserter",
+    "drinks": "Drikkevarer",
+    "kidsMenu": "Børnemenu",
+    "specials": "Specialretter",
+    "other": "Andet"
+  },
+  "demoEventName": "Demoarrangement",
   "firstVanName": "Foodtruck 1",
   "demoCategories": {
     "pizza": "Pizza",

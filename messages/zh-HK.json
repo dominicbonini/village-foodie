@@ -2303,6 +2303,21 @@
     "emailInvalid": "請輸入有效的電郵地址。"
   },
   "provisionContent": {
+    "standardCategories": {
+      "starters": "前菜",
+      "mains": "主菜",
+      "burgers": "漢堡包",
+      "pizza": "薄餅",
+      "wrapsSandwiches": "卷餅及三文治",
+      "sides": "小食",
+      "dipsSauces": "醬汁及蘸醬",
+      "desserts": "甜品",
+      "drinks": "飲品",
+      "kidsMenu": "兒童餐",
+      "specials": "精選推介",
+      "other": "其他"
+    },
+    "demoEventName": "示範活動",
     "firstVanName": "1 號車",
     "demoCategories": {
       "pizza": "薄餅",

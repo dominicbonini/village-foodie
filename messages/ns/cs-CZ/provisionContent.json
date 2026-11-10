@@ -1,4 +1,19 @@
 {
+  "standardCategories": {
+    "starters": "Předkrmy",
+    "mains": "Hlavní jídla",
+    "burgers": "Burgery",
+    "pizza": "Pizza",
+    "wrapsSandwiches": "Wrapy a sendviče",
+    "sides": "Přílohy",
+    "dipsSauces": "Dipy a omáčky",
+    "desserts": "Dezerty",
+    "drinks": "Nápoje",
+    "kidsMenu": "Dětské menu",
+    "specials": "Speciality",
+    "other": "Ostatní"
+  },
+  "demoEventName": "Ukázková akce",
   "firstVanName": "Food truck 1",
   "demoCategories": {
     "pizza": "Pizza",

@@ -1,4 +1,19 @@
 {
+  "standardCategories": {
+    "starters": "Alkuruoat",
+    "mains": "Pääruoat",
+    "burgers": "Burgerit",
+    "pizza": "Pizzat",
+    "wrapsSandwiches": "Wrapit ja voileivät",
+    "sides": "Lisukkeet",
+    "dipsSauces": "Dipit ja kastikkeet",
+    "desserts": "Jälkiruoat",
+    "drinks": "Juomat",
+    "kidsMenu": "Lasten annokset",
+    "specials": "Erikoisannokset",
+    "other": "Muut"
+  },
+  "demoEventName": "Demotapahtuma",
   "firstVanName": "Ruokarekka 1",
   "demoCategories": {
     "pizza": "Pizzat",

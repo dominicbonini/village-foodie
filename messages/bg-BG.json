@@ -2303,6 +2303,21 @@
     "emailInvalid": "Моля, въведете валиден имейл адрес."
   },
   "provisionContent": {
+    "standardCategories": {
+      "starters": "Предястия",
+      "mains": "Основни",
+      "burgers": "Бургери",
+      "pizza": "Пици",
+      "wrapsSandwiches": "Тортили и сандвичи",
+      "sides": "Гарнитури",
+      "dipsSauces": "Сосове и дипове",
+      "desserts": "Десерти",
+      "drinks": "Напитки",
+      "kidsMenu": "Детско меню",
+      "specials": "Специални предложения",
+      "other": "Други"
+    },
+    "demoEventName": "Демо събитие",
     "firstVanName": "Фуд трък 1",
     "demoCategories": {
       "pizza": "Пици",

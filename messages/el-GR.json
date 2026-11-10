@@ -2303,6 +2303,21 @@
     "emailInvalid": "Εισαγάγετε μια έγκυρη διεύθυνση email."
   },
   "provisionContent": {
+    "standardCategories": {
+      "starters": "Ορεκτικά",
+      "mains": "Κυρίως πιάτα",
+      "burgers": "Burger",
+      "pizza": "Πίτσες",
+      "wrapsSandwiches": "Wraps & σάντουιτς",
+      "sides": "Συνοδευτικά",
+      "dipsSauces": "Σάλτσες & ντιπ",
+      "desserts": "Γλυκά",
+      "drinks": "Ποτά",
+      "kidsMenu": "Παιδικό μενού",
+      "specials": "Προτάσεις",
+      "other": "Άλλα"
+    },
+    "demoEventName": "Εκδήλωση επίδειξης",
     "firstVanName": "Food truck 1",
     "demoCategories": {
       "pizza": "Πίτσες",

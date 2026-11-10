@@ -1,4 +1,19 @@
 {
+  "standardCategories": {
+    "starters": "Voorgerechten",
+    "mains": "Hoofdgerechten",
+    "burgers": "Burgers",
+    "pizza": "Pizza’s",
+    "wrapsSandwiches": "Wraps & broodjes",
+    "sides": "Bijgerechten",
+    "dipsSauces": "Dips & sauzen",
+    "desserts": "Desserts",
+    "drinks": "Drankjes",
+    "kidsMenu": "Kindermenu",
+    "specials": "Specials",
+    "other": "Overig"
+  },
+  "demoEventName": "Demo-evenement",
   "firstVanName": "Foodtruck 1",
   "demoCategories": {
     "pizza": "Pizza’s",

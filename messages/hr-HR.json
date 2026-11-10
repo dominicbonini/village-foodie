@@ -2303,6 +2303,21 @@
     "emailInvalid": "Unesite valjanu adresu e-pošte."
   },
   "provisionContent": {
+    "standardCategories": {
+      "starters": "Predjela",
+      "mains": "Glavna jela",
+      "burgers": "Burgeri",
+      "pizza": "Pizze",
+      "wrapsSandwiches": "Wrapovi i sendviči",
+      "sides": "Prilozi",
+      "dipsSauces": "Dipovi i umaci",
+      "desserts": "Deserti",
+      "drinks": "Pića",
+      "kidsMenu": "Dječji meni",
+      "specials": "Posebna ponuda",
+      "other": "Ostalo"
+    },
+    "demoEventName": "Demo događaj",
     "firstVanName": "Food truck 1",
     "demoCategories": {
       "pizza": "Pizze",

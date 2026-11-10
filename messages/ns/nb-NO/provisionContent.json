@@ -1,4 +1,19 @@
 {
+  "standardCategories": {
+    "starters": "Forretter",
+    "mains": "Hovedretter",
+    "burgers": "Burgere",
+    "pizza": "Pizza",
+    "wrapsSandwiches": "Wraps og sandwicher",
+    "sides": "Tilbehør",
+    "dipsSauces": "Dipp og sauser",
+    "desserts": "Desserter",
+    "drinks": "Drikke",
+    "kidsMenu": "Barnemeny",
+    "specials": "Spesialretter",
+    "other": "Annet"
+  },
+  "demoEventName": "Demoarrangement",
   "firstVanName": "Matbil 1",
   "demoCategories": {
     "pizza": "Pizza",

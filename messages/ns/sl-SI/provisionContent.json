@@ -1,4 +1,19 @@
 {
+  "standardCategories": {
+    "starters": "Predjedi",
+    "mains": "Glavne jedi",
+    "burgers": "Burgerji",
+    "pizza": "Pice",
+    "wrapsSandwiches": "Wrapi in sendviči",
+    "sides": "Priloge",
+    "dipsSauces": "Pomake in omake",
+    "desserts": "Sladice",
+    "drinks": "Pijače",
+    "kidsMenu": "Otroški meni",
+    "specials": "Posebna ponudba",
+    "other": "Drugo"
+  },
+  "demoEventName": "Demo dogodek",
   "firstVanName": "Food truck 1",
   "demoCategories": {
     "pizza": "Pice",

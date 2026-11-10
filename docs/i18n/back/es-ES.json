@@ -5770,5 +5770,18 @@
  "manageMenuImport.checkMenu.title": "Check your menu",
  "manageMenuImport.checkMenu.body": "We saved your demo's menu to your truck, and you have changed it since, so your changes are kept. Take a look at it below.",
  "manageMenuImport.checkMenu.done": "Looks good",
- "manageMenuImport.discard.carriedBody": "Your demo's menu is saved to your truck as it is. You can change it at any time on your menu screen."
+ "manageMenuImport.discard.carriedBody": "Your demo's menu is saved to your truck as it is. You can change it at any time on your menu screen.",
+ "provisionContent.standardCategories.starters": "Starters",
+ "provisionContent.standardCategories.mains": "Mains",
+ "provisionContent.standardCategories.burgers": "Hamburgers",
+ "provisionContent.standardCategories.pizza": "Pizzas",
+ "provisionContent.standardCategories.wrapsSandwiches": "Wraps and (baguette) sandwiches",
+ "provisionContent.standardCategories.sides": "Side dishes",
+ "provisionContent.standardCategories.dipsSauces": "Sauces and dips",
+ "provisionContent.standardCategories.desserts": "Desserts",
+ "provisionContent.standardCategories.drinks": "Drinks",
+ "provisionContent.standardCategories.kidsMenu": "Children’s menu",
+ "provisionContent.standardCategories.specials": "Specials",
+ "provisionContent.standardCategories.other": "Others",
+ "provisionContent.demoEventName": "Demo event"
 }

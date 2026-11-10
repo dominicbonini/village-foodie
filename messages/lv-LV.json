@@ -2303,6 +2303,21 @@
     "emailInvalid": "Lūdzu, ievadiet derīgu e-pasta adresi."
   },
   "provisionContent": {
+    "standardCategories": {
+      "starters": "Uzkodas",
+      "mains": "Pamatēdieni",
+      "burgers": "Burgeri",
+      "pizza": "Picas",
+      "wrapsSandwiches": "Tortiljas un sviestmaizes",
+      "sides": "Garnīri",
+      "dipsSauces": "Dipi un mērces",
+      "desserts": "Deserti",
+      "drinks": "Dzērieni",
+      "kidsMenu": "Bērnu ēdienkarte",
+      "specials": "Īpašie piedāvājumi",
+      "other": "Citi"
+    },
+    "demoEventName": "Demo pasākums",
     "firstVanName": "Busiņš 1",
     "demoCategories": {
       "pizza": "Picas",

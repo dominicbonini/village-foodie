@@ -1,4 +1,19 @@
 {
+  "standardCategories": {
+    "starters": "Entrées",
+    "mains": "Plats",
+    "burgers": "Burgers",
+    "pizza": "Pizzas",
+    "wrapsSandwiches": "Wraps & sandwichs",
+    "sides": "Accompagnements",
+    "dipsSauces": "Sauces & dips",
+    "desserts": "Desserts",
+    "drinks": "Boissons",
+    "kidsMenu": "Menu enfant",
+    "specials": "Suggestions du moment",
+    "other": "Autres"
+  },
+  "demoEventName": "Événement démo",
   "firstVanName": "Camion 1",
   "demoCategories": {
     "pizza": "Pizzas",

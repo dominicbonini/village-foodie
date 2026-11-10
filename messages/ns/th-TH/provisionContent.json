@@ -1,4 +1,19 @@
 {
+  "standardCategories": {
+    "starters": "อาหารทานเล่น",
+    "mains": "จานหลัก",
+    "burgers": "เบอร์เกอร์",
+    "pizza": "พิซซ่า",
+    "wrapsSandwiches": "แรปและแซนด์วิช",
+    "sides": "เครื่องเคียง",
+    "dipsSauces": "ซอสและดิป",
+    "desserts": "ของหวาน",
+    "drinks": "เครื่องดื่ม",
+    "kidsMenu": "เมนูเด็ก",
+    "specials": "เมนูพิเศษ",
+    "other": "อื่นๆ"
+  },
+  "demoEventName": "อีเวนต์เดโม",
   "firstVanName": "รถคันที่ 1",
   "demoCategories": {
     "pizza": "พิซซ่า",

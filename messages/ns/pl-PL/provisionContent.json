@@ -1,4 +1,19 @@
 {
+  "standardCategories": {
+    "starters": "Przystawki",
+    "mains": "Dania główne",
+    "burgers": "Burgery",
+    "pizza": "Pizza",
+    "wrapsSandwiches": "Wrapy i kanapki",
+    "sides": "Dodatki",
+    "dipsSauces": "Dipy i sosy",
+    "desserts": "Desery",
+    "drinks": "Napoje",
+    "kidsMenu": "Menu dla dzieci",
+    "specials": "Polecamy",
+    "other": "Inne"
+  },
+  "demoEventName": "Wydarzenie demo",
   "firstVanName": "Food truck 1",
   "demoCategories": {
     "pizza": "Pizza",

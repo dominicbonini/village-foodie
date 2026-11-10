@@ -2303,6 +2303,21 @@
     "emailInvalid": "Palun sisesta kehtiv e-posti aadress."
   },
   "provisionContent": {
+    "standardCategories": {
+      "starters": "Eelroad",
+      "mains": "Pearoad",
+      "burgers": "Burgerid",
+      "pizza": "Pitsad",
+      "wrapsSandwiches": "Wrapid ja võileivad",
+      "sides": "Lisandid",
+      "dipsSauces": "Dipid ja kastmed",
+      "desserts": "Magustoidud",
+      "drinks": "Joogid",
+      "kidsMenu": "Lastemenüü",
+      "specials": "Eripakkumised",
+      "other": "Muu"
+    },
+    "demoEventName": "Demoüritus",
     "firstVanName": "Toiduauto 1",
     "demoCategories": {
       "pizza": "Pitsad",

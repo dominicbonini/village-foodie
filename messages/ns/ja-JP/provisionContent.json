@@ -1,4 +1,19 @@
 {
+  "standardCategories": {
+    "starters": "前菜",
+    "mains": "メイン",
+    "burgers": "バーガー",
+    "pizza": "ピザ",
+    "wrapsSandwiches": "ラップ＆サンド",
+    "sides": "サイド",
+    "dipsSauces": "ディップ＆ソース",
+    "desserts": "デザート",
+    "drinks": "ドリンク",
+    "kidsMenu": "キッズメニュー",
+    "specials": "おすすめ",
+    "other": "その他"
+  },
+  "demoEventName": "デモ出店",
   "firstVanName": "車両1",
   "demoCategories": {
     "pizza": "ピザ",

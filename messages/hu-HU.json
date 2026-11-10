@@ -2303,6 +2303,21 @@
     "emailInvalid": "Adjon meg egy érvényes e-mail-címet."
   },
   "provisionContent": {
+    "standardCategories": {
+      "starters": "Előételek",
+      "mains": "Főételek",
+      "burgers": "Burgerek",
+      "pizza": "Pizzák",
+      "wrapsSandwiches": "Wrapek és szendvicsek",
+      "sides": "Köretek",
+      "dipsSauces": "Mártogatósok és szószok",
+      "desserts": "Desszertek",
+      "drinks": "Italok",
+      "kidsMenu": "Gyerekmenü",
+      "specials": "Ajánlataink",
+      "other": "Egyéb"
+    },
+    "demoEventName": "Demóesemény",
     "firstVanName": "Food truck 1",
     "demoCategories": {
       "pizza": "Pizzák",

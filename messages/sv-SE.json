@@ -2303,6 +2303,21 @@
     "emailInvalid": "Ange en giltig e-postadress."
   },
   "provisionContent": {
+    "standardCategories": {
+      "starters": "Förrätter",
+      "mains": "Varmrätter",
+      "burgers": "Burgare",
+      "pizza": "Pizzor",
+      "wrapsSandwiches": "Wraps & smörgåsar",
+      "sides": "Tillbehör",
+      "dipsSauces": "Dipp & såser",
+      "desserts": "Desserter",
+      "drinks": "Drycker",
+      "kidsMenu": "Barnmeny",
+      "specials": "Specialrätter",
+      "other": "Övrigt"
+    },
+    "demoEventName": "Demoevenemang",
     "firstVanName": "Foodtruck 1",
     "demoCategories": {
       "pizza": "Pizzor",
