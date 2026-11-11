@@ -1931,7 +1931,7 @@
     },
     "signup": {
       "title": "Stofnaðu aðgang",
-      "subtitle": "{months, plural, =0 {Ókeypis prufan hefst þegar þú skráir þig.} one {Fyrsti mánuðurinn er ókeypis og hefst þegar þú skráir þig.} other {Fyrstu # mánuðirnir eru ókeypis og hefjast þegar þú skráir þig.}}",
+      "subtitle": "{months, plural, =0 {Ókeypis prufan hefst þegar þú skráir þig.} one {# mánuður er ókeypis og hefst þegar þú skráir þig.} other {Fyrstu # mánuðirnir eru ókeypis og hefjast þegar þú skráir þig.}}",
       "emailPlaceholder": "thu@matarvagninnthinn.is",
       "codeLabel": "Ertu með kóða? <optional>(valfrjálst)</optional>",
       "codePlaceholder": "Sláðu hann inn hér",
@@ -2220,7 +2220,7 @@
     "promoLabel": "Ertu með kóða? <opt>(valfrjálst)</opt>",
     "promoPlaceholder": "Sláðu hann inn hér",
     "agreeTerms": "Ég samþykki <terms>skilmálana</terms> og <privacy>persónuverndarstefnuna</privacy>.",
-    "freeMonth": "{months, plural, =0 {Ókeypis prufan hefst þegar þú skráir þig.} one {Fyrsti mánuðurinn er ókeypis og hefst þegar þú skráir þig.} other {Fyrstu # mánuðirnir eru ókeypis og hefjast þegar þú skráir þig.}}",
+    "freeMonth": "{months, plural, =0 {Ókeypis prufan hefst þegar þú skráir þig.} one {# mánuður er ókeypis og hefst þegar þú skráir þig.} other {Fyrstu # mánuðirnir eru ókeypis og hefjast þegar þú skráir þig.}}",
     "fieldError": {
       "firstName": "Segðu okkur fornafnið þitt.",
       "lastName": "Og eftirnafnið þitt.",

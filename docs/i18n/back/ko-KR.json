@@ -1775,7 +1775,7 @@
  "emailOperator.newOrder.total": "Total",
  "emailReview.body": "An honest Google review for the {truck} food truck would be a big help. It only takes a minute, and it helps other people find this food truck.",
  "emailReview.button": "Leave a review on Google",
- "emailReview.from": "This email was sent by the {truck} food truck through HatchGrab because you ordered from the {truck} food truck.",
+ "emailReview.from": "This email is from the {truck} food truck; it was sent through HatchGrab because you ordered from this food truck.",
  "emailReview.heading": "Thank you for ordering from the {truck} food truck",
  "emailReview.linkText": "Leave a review on Google: {url}",
  "emailReview.subject": "How was your order from the {truck} food truck?",

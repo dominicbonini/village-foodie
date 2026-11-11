@@ -7218,7 +7218,7 @@
     "body": "{truck} 푸드트럭에 솔직한 Google 리뷰를 남겨 주시면 큰 힘이 됩니다. 1분이면 충분하고, 다른 분들이 이 푸드트럭을 찾는 데 도움이 됩니다.",
     "button": "Google에 리뷰 남기기",
     "linkText": "Google에 리뷰 남기기: {url}",
-    "from": "{truck} 푸드트럭에서 주문하셔서 {truck} 푸드트럭이 HatchGrab을 통해 보낸 이메일입니다.",
+    "from": "이 이메일은 {truck} 푸드트럭에서 보낸 것으로, 이 푸드트럭에서 주문하셔서 HatchGrab을 통해 발송되었습니다.",
     "unsubscribeLead": "{truck} 푸드트럭의 리뷰 요청을 받고 싶지 않으신가요?",
     "unsubscribeLink": "수신 거부",
     "unsubscribeText": "수신 거부: {url}",
