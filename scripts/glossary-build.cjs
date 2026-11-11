@@ -55,6 +55,15 @@ const BANNED = {
   id: [{ pattern: 'bayar di tempat', why: '"Bayar di tempat" means cash on delivery in Indonesian e-commerce — Pay at Hatch is "Bayar saat ambil" / "Bayar di truk"' }],
   tr: [{ pattern: 'kapıda ödeme', why: '"kapıda ödeme" is paying the courier at the door — Pay at Hatch is "Teslim alırken ödeme"' }],
   sr: [{ pattern: '[\\u0400-\\u04FF]', why: 'sr-RS is written in LATIN script (latinica) — no Cyrillic letters' }],
+  // languages-world-2 (11 November 2026): the cash-on-delivery traps (there is no delivery) and the Latin-script languages.
+  uk: [{ pattern: 'накладен', why: '"накладений платіж" is cash on delivery (Nova Poshta) — Pay at Hatch is «Оплата у фудтраку» / «Оплата на місці»' }],
+  sq: [{ pattern: 'pagesë në dorëzim', why: '"pagesë në dorëzim" is cash on delivery — Pay at Hatch is «Pagesë në marrje»' }],
+  bs: [{ pattern: 'pouzeć', why: '"pouzećem" is cash on delivery — Pay at Hatch is "Plaćanje pri preuzimanju"' }, { pattern: '[\\u0400-\\u04FF]', why: 'bs-BA is written in LATIN script — no Cyrillic letters' }],
+  ca: [{ pattern: 'contra reemborsament', why: '"contra reemborsament" is cash on delivery — Pay at Hatch is "Pagament en recollir"' }],
+  uz: [{ pattern: '[\\u0400-\\u04FF]', why: 'uz-UZ is written in LATIN script — no Cyrillic letters' }],
+  hi: [{ pattern: 'कैश ऑन डिलीवरी', why: 'cash on delivery — Pay at Hatch is "पिकअप के समय भुगतान"' }],
+  ur: [{ pattern: 'کیش آن ڈیلیوری', why: 'cash on delivery — Pay at Hatch is "پک اپ پر ادائیگی"' }],
+  sw: [{ pattern: 'lipa unapopokea', why: '"lipa unapopokea" reads as cash on delivery — Pay at Hatch is "Lipa Unapochukua"' }],
 }
 const EVERY_LANGUAGE_BANNED = [{ pattern: '\\bhatch\\b', why: '"Pay at Hatch" is translated and the word "hatch" means nothing outside English (glossary rule 2)' }]
 const INVARIANTS = [{ term: 'HatchGrab', why: 'the brand — never translated (rule 1)' }, { term: 'Pro', why: 'the plan name stays "Pro" everywhere (rule 1)', word: true }]
@@ -65,7 +74,10 @@ const LANG_OF_HEADING = { DE: 'de', NL: 'nl', FR: 'fr', ES: 'es', IT: 'it', PT: 
   'PT-BR': 'pt-BR', 'ES-MX': 'es-MX', MS: 'ms', JA: 'ja', ZH: 'zh', TH: 'th', AR: 'ar',
   // languages-world-1 (10 November 2026): Turkish, Korean, Traditional Chinese as Taiwan writes it (its own zh-TW.json — the Hong Kong
   // table would be wrong there), Indonesian, Vietnamese, Hebrew, Icelandic and Serbian (Latin script).
-  TR: 'tr', KO: 'ko', 'ZH-TW': 'zh-TW', ID: 'id', VI: 'vi', HE: 'he', IS: 'is', SR: 'sr' }   // europe-languages-1: + PT, SV, DA, NB; europe-languages-2: + 13
+  TR: 'tr', KO: 'ko', 'ZH-TW': 'zh-TW', ID: 'id', VI: 'vi', HE: 'he', IS: 'is', SR: 'sr',
+  // languages-world-2 (11 November 2026): 23 more languages (Russian is Kazakhstan's, filed as ru — the only Russian locale).
+  UK: 'uk', 'RU-KZ': 'ru', KK: 'kk', UZ: 'uz', AZ: 'az', KA: 'ka', HY: 'hy', SQ: 'sq', MK: 'mk', BS: 'bs', CA: 'ca', HI: 'hi', BN: 'bn', UR: 'ur',
+  NE: 'ne', SI: 'si', TA: 'ta', KM: 'km', LO: 'lo', MN: 'mn', FIL: 'fil', SW: 'sw', AM: 'am' }   // europe-languages-1: + PT, SV, DA, NB; europe-languages-2: + 13
 const md = fs.readFileSync(path.join(REPO, SRC), 'utf8')
 const cells = line => line.split('|').slice(1, -1).map(c => c.trim())
 const bold = c => [...c.matchAll(/\*\*([^*]+)\*\*/g)].map(m => m[1].trim())
