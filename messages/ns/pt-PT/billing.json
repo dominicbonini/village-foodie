@@ -22,7 +22,8 @@
       "change": "Alterar",
       "lastFailed": "O último pagamento falhou",
       "update": "Atualizar cartão",
-      "error": "Não conseguimos abrir a página de pagamento. Tente novamente."
+      "error": "Não conseguimos abrir a página de pagamento. Tente novamente.",
+      "noneAfterTrial": "Nenhum cartão adicionado. Adicione um para voltar a ativar as encomendas online."
     },
     "whatYouPay": {
       "title": "O que paga",
@@ -48,8 +49,7 @@
       "title": "Como os clientes pagam as encomendas antecipadas",
       "online": "Online, ao encomendar",
       "onlineHint": "O dinheiro vai diretamente para a sua conta Stripe.",
-      "atTruck": "No food truck, ao levantar",
-      "atTruckHint": "Nesse caso, a nossa taxa é acrescentada à sua cobrança mensal.",
+      "atTruckHint": "Os clientes pagam ao levantar. A nossa taxa é acrescentada à sua cobrança mensal.",
       "saved": "Guardado.",
       "error": "Não conseguimos guardar. Tente novamente."
     },
@@ -100,7 +100,10 @@
     "startsLater": "Começa a {nextFirst}. Até lá, mantém o plano {plan}.",
     "cancel": "Cancelar",
     "switchTo": "Mudar para {plan}",
-    "error": "Não conseguimos mudar o seu plano. Tente novamente."
+    "error": "Não conseguimos mudar o seu plano. Tente novamente.",
+    "trialLine": "Está num teste gratuito. Escolha o plano para quando terminar, a {date}.",
+    "startsAtTrialEnd": "Começa quando o teste terminar.",
+    "choose": "Escolher {plan}"
   },
   "notices": {
     "trialEndsSoon": "<b>O seu teste gratuito termina a {date}.</b> Adicione um cartão para manter as encomendas online ativas.",
@@ -111,6 +114,7 @@
     "addCard": "Adicionar cartão →",
     "updateCard": "Atualizar {method, select, payment_method {método de pagamento} other {cartão}} →",
     "payNow": "Pagar agora →",
-    "dismiss": "Dispensar"
+    "dismiss": "Dispensar",
+    "trialEnded": "<b>O seu teste gratuito terminou.</b> Adicione um cartão para voltar a ativar as encomendas online."
   }
 }

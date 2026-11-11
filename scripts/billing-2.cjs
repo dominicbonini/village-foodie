@@ -220,8 +220,10 @@ const CATALOG = { plans: PLANS, prices: PRICES, features: [] }
     t('down (Pro → Pay as you go): from 1 December, nothing charged', down.direction === 'down' && down.amountMinor === 0 && down.nextFirst === '2026-12-01', down)
     t('"Starts on 1 December. You keep Pro until then."', tb('changePlan.startsLater', { nextFirst: '1 December', plan: 'Pro' }) === 'Starts on 1 December. You keep Pro until then.')
     const up2 = V.planChangePreview({ ...l2.input, toPlanKey: 'unlimited' })
+    const trialInput = (await screen(world(), 'trial', '2027-01-10T12:00:00Z')).input
     t('up from Pro to Unlimited: only the difference (£40 × 20/30 = £26.66)', up2.direction === 'up' && up2.amountMinor === 2666, up2)
-    t('the trial: in_trial (the button is not offered during the trial)', V.planChangePreview({ ...(await screen(world(), 'trial', '2027-01-10T12:00:00Z')).input, toPlanKey: 'pro' }).direction === 'in_trial')
+    // ⚠️ RE-PINNED (billing-3 item 5): the button IS offered during the trial now; the preview says the plan starts at the trial's end.
+    t('the trial: in_trial — starts when the trial ends, nothing charged now', (() => { const pv = V.planChangePreview({ ...trialInput, toPlanKey: 'pro' }); return pv.direction === 'in_trial' && pv.amountMinor === 0 && typeof pv.trialEndDate === 'string' })())
     t('the modal\'s title, line and buttons', tb('changePlan.title') === 'Change plan' && tb('changePlan.current', { plan: 'Pro' }) === 'You’re on Pro.' && tb('changePlan.switchTo', { plan: 'Unlimited' }) === 'Switch to Unlimited' && tb('changePlan.cancel') === 'Cancel')
   }
 

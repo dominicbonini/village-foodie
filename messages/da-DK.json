@@ -7252,7 +7252,8 @@
         "change": "Skift",
         "lastFailed": "Seneste betaling mislykkedes",
         "update": "Opdater kort",
-        "error": "Vi kunne ikke åbne betalingssiden. Prøv igen."
+        "error": "Vi kunne ikke åbne betalingssiden. Prøv igen.",
+        "noneAfterTrial": "Der er ikke tilføjet et kort. Tilføj et for at åbne onlinebestilling igen."
       },
       "whatYouPay": {
         "title": "Det betaler du",
@@ -7278,8 +7279,7 @@
         "title": "Sådan betaler kunderne for forudbestillinger",
         "online": "Online, når de bestiller",
         "onlineHint": "Pengene går direkte til din Stripe-konto.",
-        "atTruck": "Ved vognen, når de henter",
-        "atTruckHint": "Vores gebyr lægges i stedet oven i din månedlige betaling.",
+        "atTruckHint": "Kunderne betaler, når de henter. Vores gebyr lægges oven i din månedlige betaling.",
         "saved": "Gemt.",
         "error": "Vi kunne ikke gemme det. Prøv igen."
       },
@@ -7330,7 +7330,10 @@
       "startsLater": "Starter den {nextFirst}. Du beholder {plan} indtil da.",
       "cancel": "Annuller",
       "switchTo": "Skift til {plan}",
-      "error": "Vi kunne ikke skifte dit abonnement. Prøv igen."
+      "error": "Vi kunne ikke skifte dit abonnement. Prøv igen.",
+      "trialLine": "Du har en gratis prøveperiode. Vælg, hvilket abonnement du vil have, når den slutter {date}.",
+      "startsAtTrialEnd": "Starter, når din prøveperiode slutter.",
+      "choose": "Vælg {plan}"
     },
     "notices": {
       "trialEndsSoon": "<b>Din gratis prøveperiode slutter {date}.</b> Tilføj et kort for at holde onlinebestilling åben.",
@@ -7341,7 +7344,8 @@
       "addCard": "Tilføj kort →",
       "updateCard": "Opdater {method, select, payment_method {betalingsmetode} other {kort}} →",
       "payNow": "Betal nu →",
-      "dismiss": "Luk"
+      "dismiss": "Luk",
+      "trialEnded": "<b>Din gratis prøveperiode er slut.</b> Tilføj et kort for at åbne onlinebestilling igen."
     }
   },
   "emailBilling": {

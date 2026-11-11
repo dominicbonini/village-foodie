@@ -22,7 +22,8 @@
       "change": "Módosítás",
       "lastFailed": "Az utolsó fizetés sikertelen volt",
       "update": "Kártya frissítése",
-      "error": "Nem sikerült megnyitni a fizetési oldalt. Kérjük, próbálja újra."
+      "error": "Nem sikerült megnyitni a fizetési oldalt. Kérjük, próbálja újra.",
+      "noneAfterTrial": "Nincs megadott kártya. Adjon meg egyet, és az online rendelés újra bekapcsol."
     },
     "whatYouPay": {
       "title": "Mit fizet",
@@ -48,8 +49,7 @@
       "title": "Hogyan fizetnek a vásárlók az előrendelésekért",
       "online": "Online, a rendeléskor",
       "onlineHint": "A pénz közvetlenül a Stripe-fiókjába kerül.",
-      "atTruck": "A food trucknál, átvételkor",
-      "atTruckHint": "Ilyenkor a díjunkat a havi terheléséhez adjuk hozzá.",
+      "atTruckHint": "A vásárlók átvételkor fizetnek. A díjunkat a havi terheléséhez adjuk hozzá.",
       "saved": "Mentve.",
       "error": "Nem sikerült menteni. Kérjük, próbálja újra."
     },
@@ -100,7 +100,10 @@
     "startsLater": "Érvénybe lépés: {nextFirst}. Addig marad a jelenlegi csomagja ({plan}).",
     "cancel": "Mégse",
     "switchTo": "Váltás erre: {plan}",
-    "error": "Nem sikerült módosítani a csomagját. Kérjük, próbálja újra."
+    "error": "Nem sikerült módosítani a csomagját. Kérjük, próbálja újra.",
+    "trialLine": "Ingyenes próbaidőszakot használ, amelynek vége: {date}. Válassza ki, melyik csomaggal folytatja utána.",
+    "startsAtTrialEnd": "A próbaidőszak végén lép érvénybe.",
+    "choose": "Választás: {plan}"
   },
   "notices": {
     "trialEndsSoon": "<b>Az ingyenes próbaidőszak vége: {date}.</b> Adjon meg egy kártyát, hogy az online rendelés bekapcsolva maradjon.",
@@ -111,6 +114,7 @@
     "addCard": "Kártya hozzáadása →",
     "updateCard": "{method, select, payment_method {Fizetési mód} other {Kártya}} frissítése →",
     "payNow": "Fizetés most →",
-    "dismiss": "Elvetés"
+    "dismiss": "Elvetés",
+    "trialEnded": "<b>Az ingyenes próbaidőszak véget ért.</b> Adjon meg egy kártyát, és az online rendelés újra bekapcsol."
   }
 }

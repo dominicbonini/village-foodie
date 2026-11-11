@@ -7252,7 +7252,8 @@
         "change": "Cambiar",
         "lastFailed": "El último pago ha fallado",
         "update": "Actualizar tarjeta",
-        "error": "No hemos podido abrir la página de pago. Inténtalo de nuevo."
+        "error": "No hemos podido abrir la página de pago. Inténtalo de nuevo.",
+        "noneAfterTrial": "No has añadido ninguna tarjeta. Añade una para reactivar los pedidos online."
       },
       "whatYouPay": {
         "title": "Lo que pagas",
@@ -7278,8 +7279,7 @@
         "title": "Cómo pagan los clientes los pedidos anticipados",
         "online": "Online, al hacer el pedido",
         "onlineHint": "El dinero va directamente a tu cuenta de Stripe.",
-        "atTruck": "En el food truck, al recoger",
-        "atTruckHint": "En ese caso, nuestra comisión se suma a tu cobro mensual.",
+        "atTruckHint": "Los clientes pagan al recoger. Nuestra comisión se suma a tu cobro mensual.",
         "saved": "Guardado.",
         "error": "No hemos podido guardarlo. Inténtalo de nuevo."
       },
@@ -7330,7 +7330,10 @@
       "startsLater": "Empieza el {nextFirst}. Hasta entonces, sigues con el plan {plan}.",
       "cancel": "Cancelar",
       "switchTo": "Cambiar a {plan}",
-      "error": "No hemos podido cambiar tu plan. Inténtalo de nuevo."
+      "error": "No hemos podido cambiar tu plan. Inténtalo de nuevo.",
+      "trialLine": "Estás en tu prueba gratuita. Elige tu plan para cuando termine, el {date}.",
+      "startsAtTrialEnd": "Empieza cuando termine tu prueba.",
+      "choose": "Elegir {plan}"
     },
     "notices": {
       "trialEndsSoon": "<b>Tu prueba gratuita termina el {date}.</b> Añade una tarjeta para mantener activos los pedidos online.",
@@ -7341,7 +7344,8 @@
       "addCard": "Añadir tarjeta →",
       "updateCard": "Actualizar {method, select, payment_method {método de pago} other {tarjeta}} →",
       "payNow": "Pagar ahora →",
-      "dismiss": "Descartar"
+      "dismiss": "Descartar",
+      "trialEnded": "<b>Tu prueba gratuita ha terminado.</b> Añade una tarjeta para reactivar los pedidos online."
     }
   },
   "emailBilling": {

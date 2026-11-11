@@ -7252,7 +7252,8 @@
         "change": "Cambia",
         "lastFailed": "Ultimo pagamento non riuscito",
         "update": "Aggiorna carta",
-        "error": "Non siamo riusciti ad aprire la pagina di pagamento. Riprova."
+        "error": "Non siamo riusciti ad aprire la pagina di pagamento. Riprova.",
+        "noneAfterTrial": "Nessuna carta aggiunta. Aggiungine una per riattivare gli ordini online."
       },
       "whatYouPay": {
         "title": "Cosa paghi",
@@ -7278,8 +7279,7 @@
         "title": "Come i clienti pagano i preordini",
         "online": "Online, quando ordinano",
         "onlineHint": "Il denaro va direttamente sul tuo account Stripe.",
-        "atTruck": "Al food truck, al ritiro",
-        "atTruckHint": "In questo caso la nostra commissione viene aggiunta al tuo addebito mensile.",
+        "atTruckHint": "I clienti pagano al ritiro. La nostra commissione viene aggiunta al tuo addebito mensile.",
         "saved": "Salvato.",
         "error": "Non siamo riusciti a salvare. Riprova."
       },
@@ -7330,7 +7330,10 @@
       "startsLater": "Inizia il {nextFirst}. Fino ad allora resti sul piano {plan}.",
       "cancel": "Annulla",
       "switchTo": "Passa al piano {plan}",
-      "error": "Non siamo riusciti a cambiare il tuo piano. Riprova."
+      "error": "Non siamo riusciti a cambiare il tuo piano. Riprova.",
+      "trialLine": "Sei in prova gratuita. Scegli il piano per quando termina, il {date}.",
+      "startsAtTrialEnd": "Inizia al termine della prova.",
+      "choose": "Scegli il piano {plan}"
     },
     "notices": {
       "trialEndsSoon": "<b>La tua prova gratuita termina il {date}.</b> Aggiungi una carta per mantenere attivi gli ordini online.",
@@ -7341,7 +7344,8 @@
       "addCard": "Aggiungi carta →",
       "updateCard": "Aggiorna {method, select, payment_method {metodo di pagamento} other {carta}} →",
       "payNow": "Paga ora →",
-      "dismiss": "Chiudi"
+      "dismiss": "Chiudi",
+      "trialEnded": "<b>La tua prova gratuita è terminata.</b> Aggiungi una carta per riattivare gli ordini online."
     }
   },
   "emailBilling": {

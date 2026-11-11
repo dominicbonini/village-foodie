@@ -22,7 +22,8 @@
       "change": "변경",
       "lastFailed": "최근 결제 실패",
       "update": "카드 업데이트",
-      "error": "결제 페이지를 열지 못했어요. 다시 시도해 주세요."
+      "error": "결제 페이지를 열지 못했어요. 다시 시도해 주세요.",
+      "noneAfterTrial": "등록된 카드가 없어요. 온라인 주문을 다시 받으려면 카드를 추가하세요."
     },
     "whatYouPay": {
       "title": "결제 금액 안내",
@@ -48,8 +49,7 @@
       "title": "고객의 미리 주문 결제 방식",
       "online": "온라인, 주문할 때",
       "onlineHint": "결제 금액은 내 Stripe 계정으로 바로 입금돼요.",
-      "atTruck": "트럭에서, 픽업할 때",
-      "atTruckHint": "대신 저희 수수료가 월 청구 금액에 추가돼요.",
+      "atTruckHint": "고객이 픽업할 때 결제해요. 저희 수수료는 월 청구 금액에 추가돼요.",
       "saved": "저장했어요.",
       "error": "저장하지 못했어요. 다시 시도해 주세요."
     },
@@ -100,7 +100,10 @@
     "startsLater": "{nextFirst}에 시작돼요. 그때까지는 {plan} 요금제가 유지돼요.",
     "cancel": "취소",
     "switchTo": "{plan} 요금제로 변경",
-    "error": "요금제를 변경하지 못했어요. 다시 시도해 주세요."
+    "error": "요금제를 변경하지 못했어요. 다시 시도해 주세요.",
+    "trialLine": "무료 체험 중이에요. 체험이 끝나는 {date} 이후에 적용할 요금제를 선택하세요.",
+    "startsAtTrialEnd": "체험이 끝나면 시작돼요.",
+    "choose": "{plan} 요금제 선택"
   },
   "notices": {
     "trialEndsSoon": "<b>무료 체험이 {date}에 끝나요.</b> 온라인 주문을 계속 받으려면 카드를 추가하세요.",
@@ -111,6 +114,7 @@
     "addCard": "카드 추가 →",
     "updateCard": "{method, select, payment_method {결제 수단} other {카드}} 업데이트 →",
     "payNow": "지금 결제 →",
-    "dismiss": "닫기"
+    "dismiss": "닫기",
+    "trialEnded": "<b>무료 체험이 끝났어요.</b> 온라인 주문을 다시 받으려면 카드를 추가하세요."
   }
 }

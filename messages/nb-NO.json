@@ -7252,7 +7252,8 @@
         "change": "Endre",
         "lastFailed": "Siste betaling mislyktes",
         "update": "Oppdater kort",
-        "error": "Vi fikk ikke åpnet betalingssiden. Prøv igjen."
+        "error": "Vi fikk ikke åpnet betalingssiden. Prøv igjen.",
+        "noneAfterTrial": "Du har ikke lagt til et kort. Legg til et for å åpne nettbestillingen igjen."
       },
       "whatYouPay": {
         "title": "Hva du betaler",
@@ -7278,8 +7279,7 @@
         "title": "Slik betaler kundene for forhåndsbestillinger",
         "online": "På nett, når de bestiller",
         "onlineHint": "Pengene går rett til Stripe-kontoen din.",
-        "atTruck": "Ved bilen, når de henter",
-        "atTruckHint": "Gebyret vårt legges i stedet til den månedlige betalingen din.",
+        "atTruckHint": "Kundene betaler når de henter. Gebyret vårt legges til den månedlige betalingen din.",
         "saved": "Lagret.",
         "error": "Vi fikk ikke lagret det. Prøv igjen."
       },
@@ -7330,7 +7330,10 @@
       "startsLater": "Starter den {nextFirst}. Du beholder {plan} fram til da.",
       "cancel": "Avbryt",
       "switchTo": "Bytt til {plan}",
-      "error": "Vi fikk ikke byttet abonnementet ditt. Prøv igjen."
+      "error": "Vi fikk ikke byttet abonnementet ditt. Prøv igjen.",
+      "trialLine": "Du har en gratis prøveperiode. Velg hvilket abonnement du vil ha når den slutter {date}.",
+      "startsAtTrialEnd": "Starter når prøveperioden slutter.",
+      "choose": "Velg {plan}"
     },
     "notices": {
       "trialEndsSoon": "<b>Den gratis prøveperioden din slutter {date}.</b> Legg til et kort for å holde nettbestillingen åpen.",
@@ -7341,7 +7344,8 @@
       "addCard": "Legg til kort →",
       "updateCard": "Oppdater {method, select, payment_method {betalingsmetode} other {kort}} →",
       "payNow": "Betal nå →",
-      "dismiss": "Lukk"
+      "dismiss": "Lukk",
+      "trialEnded": "<b>Den gratis prøveperioden din er over.</b> Legg til et kort for å åpne nettbestillingen igjen."
     }
   },
   "emailBilling": {

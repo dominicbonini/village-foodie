@@ -7252,7 +7252,8 @@
         "change": "Zmień",
         "lastFailed": "Ostatnia płatność nie powiodła się",
         "update": "Zaktualizuj kartę",
-        "error": "Nie udało się otworzyć strony płatności. Spróbuj ponownie."
+        "error": "Nie udało się otworzyć strony płatności. Spróbuj ponownie.",
+        "noneAfterTrial": "Nie dodano karty. Dodaj kartę, aby ponownie włączyć zamówienia online."
       },
       "whatYouPay": {
         "title": "Ile płacisz",
@@ -7278,8 +7279,7 @@
         "title": "Jak klienci płacą za zamówienia z wyprzedzeniem",
         "online": "Online, przy składaniu zamówienia",
         "onlineHint": "Pieniądze trafiają prosto na Twoje konto Stripe.",
-        "atTruck": "Przy food trucku, przy odbiorze",
-        "atTruckHint": "Wtedy nasza prowizja jest doliczana do Twojej miesięcznej opłaty.",
+        "atTruckHint": "Klienci płacą przy odbiorze. Nasza prowizja jest doliczana do Twojej miesięcznej opłaty.",
         "saved": "Zapisano.",
         "error": "Nie udało się tego zapisać. Spróbuj ponownie."
       },
@@ -7330,7 +7330,10 @@
       "startsLater": "Zacznie obowiązywać {nextFirst}. Do tego czasu korzystasz z planu {plan}.",
       "cancel": "Anuluj",
       "switchTo": "Przejdź na plan {plan}",
-      "error": "Nie udało się zmienić planu. Spróbuj ponownie."
+      "error": "Nie udało się zmienić planu. Spróbuj ponownie.",
+      "trialLine": "Korzystasz z bezpłatnego okresu próbnego, który kończy się {date}. Wybierz plan na czas po jego zakończeniu.",
+      "startsAtTrialEnd": "Zacznie obowiązywać po zakończeniu okresu próbnego.",
+      "choose": "Wybierz plan {plan}"
     },
     "notices": {
       "trialEndsSoon": "<b>Twój bezpłatny okres próbny kończy się {date}.</b> Dodaj kartę, aby zamówienia online pozostały włączone.",
@@ -7341,7 +7344,8 @@
       "addCard": "Dodaj kartę →",
       "updateCard": "Zaktualizuj {method, select, payment_method {metodę płatności} other {kartę}} →",
       "payNow": "Zapłać teraz →",
-      "dismiss": "Zamknij"
+      "dismiss": "Zamknij",
+      "trialEnded": "<b>Twój bezpłatny okres próbny się zakończył.</b> Dodaj kartę, aby ponownie włączyć zamówienia online."
     }
   },
   "emailBilling": {

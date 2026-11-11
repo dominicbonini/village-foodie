@@ -21,11 +21,12 @@
 // except an admin's explicit TEST run for a truck whose truck_billing row is marked billing_test (the processor is
 // Stripe test mode only, so even that can charge nobody).
 import type { PlanCatalog } from '@/lib/plans'
-import { planByKey, planPriceFor } from '@/lib/plans'
+import { planByKey, planPriceFor, effectivePlan } from '@/lib/plans'
+import { localDateOfInstant, instantOfLocal } from '@/lib/time-utils'
 import { minorDigits } from '@/lib/money-format'
 import {
   billingStatusOf, arrangementOf, billableOf, planMonth, usageMonth, settleCharge, invoiceLinesOf, digestOf, periodBounds, periodOf,
-  previousPeriod, nextPeriod, planLevelAt, stripeLocaleFor, DEFAULT_TRUCK_BILLING, failureTimeline,
+  previousPeriod, nextPeriod, planLevelAt, stripeLocaleFor, DEFAULT_TRUCK_BILLING, failureTimeline, trialEndOf,
   type BillingContext, type TruckBillingFacts, type PaymentMethodType, type PlanHistoryRow, type PlanInputs, type ChargeFigures,
 } from '@/lib/billing/rules'
 import type { BillingStore, TruckBillingRow, UsageRow, InvoiceRow, StoredTruck, InvoiceStatus, ChargeRow, ChargeKind } from '@/lib/billing/store-types'
@@ -35,6 +36,9 @@ const factsOf = (r: TruckBillingRow | null): TruckBillingFacts => r
   ? { postPay: r.postPay, billingTest: r.billingTest, paymentMethodState: r.paymentMethodState, paymentMethodType: r.paymentMethodType }
   : DEFAULT_TRUCK_BILLING
 const tzOf = (t: StoredTruck) => t.timezone || 'Europe/London'
+/** billing-3: the truck's plan END DATE (trucks.trial_expires_at — lib/plans.ts planEndDate) has already passed at `now`. A truck in
+ *  that state that gets a new plan must lose the past end date with it, or effectivePlan keeps answering with the fallback. */
+const planEndPassed = (t: StoredTruck, now: Date) => !!t.trial_expires_at && Date.parse(t.trial_expires_at) <= now.getTime()
 
 /** Build the context for one truck from the store. `forceSwitch` is the admin test run's override (test trucks only). */
 export async function billingContextFor(store: BillingStore, truck: StoredTruck, catalog: PlanCatalog, now: Date, opts: { forceSwitch?: boolean } = {}): Promise<BillingContext> {
@@ -242,10 +246,11 @@ export async function runMonthly(store: BillingStore, processor: BillingProcesso
   // exists, so a run that could not charge (no payment method) leaves it waiting and the next run prices the same plan.
   const tb = await store.truckBilling(truck.id)
   const pending = tb?.pendingPlanKey && tb.pendingPlanFrom && tb.pendingPlanFrom <= a.period ? tb.pendingPlanKey : null
-  const extra: PlanHistoryRow[] = pending ? [{ planKey: pending, trialExpiresAt: truck.trial_expires_at ?? null, changedAt: start }] : []
+  const ended = planEndPassed(truck, a.now)
+  const extra: PlanHistoryRow[] = pending ? [{ planKey: pending, trialExpiresAt: ended ? null : truck.trial_expires_at ?? null, changedAt: start }] : []
   const applyPending = async (r: ChargeOutcome) => {
     if (!pending || !('charge' in r) || !r.charge) return r
-    if (truck.plan !== pending) await store.setTruckPlan(truck.id, pending, a.by, a.now.toISOString())
+    if (truck.plan !== pending || ended) await store.setTruckPlan(truck.id, pending, a.by, a.now.toISOString(), { clearPlanEnd: ended })
     await store.upsertTruckBilling(truck.id, { pendingPlanKey: null, pendingPlanFrom: null }, a.by)
     return r
   }
@@ -319,7 +324,7 @@ export async function settleMidMonth(store: BillingStore, processor: BillingProc
  */
 export async function requestPlanChange(store: BillingStore, processor: BillingProcessor | null, catalog: PlanCatalog,
   a: { truckId: string; planKey: string; now: Date; by: string; testRun?: boolean }):
-  Promise<{ outcome: 'skipped'; reason: string } | { outcome: 'in_trial' } | { outcome: 'scheduled'; from: string } | { outcome: 'changed'; charges: ChargeOutcome[] }> {
+  Promise<{ outcome: 'skipped'; reason: string } | { outcome: 'trial_choice'; planKey: string; at: string } | { outcome: 'scheduled'; from: string } | { outcome: 'changed'; charges: ChargeOutcome[] }> {
   const s = await setUp(store, catalog, a.truckId, a.now, a.testRun)
   if ('skip' in s) return { outcome: 'skipped', reason: String(s.skip) }
   const { truck } = s
@@ -329,14 +334,25 @@ export async function requestPlanChange(store: BillingStore, processor: BillingP
   if (!price || price.offered === false) return { outcome: 'skipped', reason: 'not_offered_in_country' }
   const pin = await planInputs(store, truck, catalog)
   const now = planLevelAt(pin, a.now.getTime())
-  if (now.trialling) return { outcome: 'in_trial' }
+  // billing-3 item 5: during the trial the choice is the plan the trial ENDS INTO — stored, nothing charged now. lib/plans.ts
+  // effectivePlan reads it at the trial's end (the engine then charges the rest of that month on it, as billing-1 already does), and
+  // the hourly run moves trucks.plan to it (applyTrialEndChoice). Choosing again replaces it; no choice = the country's trial-end plan.
+  if (now.trialling) {
+    const at = trialEndOf(truck, catalog)
+    if (!at) return { outcome: 'skipped', reason: 'no_trial_end' }
+    await store.upsertTruckBilling(truck.id, { trialEndPlanKey: plan.key, pendingPlanKey: null, pendingPlanFrom: null }, a.by)
+    return { outcome: 'trial_choice', planKey: plan.key, at }
+  }
   if (price.monthlyMinor < now.monthlyMinor) {
     const from = nextPeriod(periodOf(a.now, tzOf(truck)))
     await store.upsertTruckBilling(truck.id, { pendingPlanKey: plan.key, pendingPlanFrom: from }, a.by)
     return { outcome: 'scheduled', from }
   }
   await store.upsertTruckBilling(truck.id, { pendingPlanKey: null, pendingPlanFrom: null }, a.by)
-  if (truck.plan !== plan.key) await store.setTruckPlan(truck.id, plan.key, a.by, a.now.toISOString())
+  // billing-3: a truck whose trial (or plan) end date has passed loses that past date with the new plan — before this, an upgrade
+  // after the trial wrote trucks.plan but left trial_expires_at in the past, so effectivePlan still answered with the fallback.
+  const ended = planEndPassed(truck, a.now)
+  if (truck.plan !== plan.key || ended) await store.setTruckPlan(truck.id, plan.key, a.by, a.now.toISOString(), { clearPlanEnd: ended })
   return { outcome: 'changed', charges: await settleMidMonth(store, processor, catalog, { truckId: truck.id, now: a.now, by: a.by, testRun: a.testRun }) }
 }
 
@@ -400,9 +416,11 @@ export async function runBillingAll(store: BillingStore, processor: BillingProce
     const truck = await store.truck(id)
     if (!truck) continue
     const period = periodOf(now, tzOf(truck))
+    try { await applyTrialEndChoice(store, catalog, { truckId: id, now, by }) } catch { /* the plan stays the fallback's until the next run */ }
     try { outcomes.push(await runMonthly(store, processor, catalog, { truckId: id, period, now, by })) }
     catch (err) { outcomes.push({ truckId: id, period, kind: 'monthly', ref: '', outcome: 'failed', reason: err instanceof Error ? err.message : String(err) }) }
     try { outcomes.push(...(await settleMidMonth(store, processor, catalog, { truckId: id, now, by }))) } catch (err) { outcomes.push({ truckId: id, period, kind: 'upgrade', ref: '?', outcome: 'failed', reason: err instanceof Error ? err.message : String(err) }) }
+    try { await retryUnpaidInvoices(store, processor, catalog, { truckId: id, now, by }) } catch { /* retried next run */ }
     try { lateFees += (await applyLateFees(store, processor, catalog, { truckId: id, now, by })).filter(x => x.outcome === 'added').length } catch { /* reported next run */ }
     try { await refreshTruckBillingStatus(store, catalog, id, now, by) } catch { /* reported by the outcome list */ }
   }
@@ -491,4 +509,59 @@ export async function attachTestPaymentMethod(store: BillingStore, processor: Bi
   const customerId = await ensureCustomer(store, processor, truck)
   const pm = await processor.attachTestPaymentMethod({ customerId, testToken: a.testToken })
   return applyPaymentMethod(store, catalog, { truckId: a.truckId, pm, state: 'valid', livemode: false, now: a.now, by: a.by })
+}
+
+// ── billing-3: the trial's chosen plan, and retrying a payment Stripe will not retry ─────────────────────────────────────
+
+/**
+ * billing-3 item 5: once a trial has ENDED, a truck that chose a plan for it moves to that plan in trucks.plan (and loses the past end
+ * date), so every surface outside billing (features, the plan pills) agrees with what billing charges. Billing itself already charges
+ * the chosen plan from the trial's end instant (lib/plans.ts effectivePlan reads truck_billing.trial_end_plan_key via the store), so
+ * the hour between the end and this run changes nothing that is billed. The choice stays recorded (the history before this run reads
+ * it). No choice = nothing to do: the country's trial-end plan, as today.
+ */
+export async function applyTrialEndChoice(store: BillingStore, catalog: PlanCatalog, a: { truckId: string; now: Date; by: string }): Promise<'moved' | 'none'> {
+  const truck = await store.truck(a.truckId)
+  if (!truck?.trial_end_plan || !planEndPassed(truck, a.now)) return 'none'
+  if (!planByKey(catalog, truck.plan)?.isTrial) return 'none'
+  const eff = effectivePlan(truck, catalog, a.now)
+  if (eff.plan.key !== truck.trial_end_plan) return 'none'   // not offered any more → the country's fallback stands
+  await store.setTruckPlan(truck.id, truck.trial_end_plan, a.by, a.now.toISOString(), { clearPlanEnd: true })
+  return 'moved'
+}
+
+/** Retry an unpaid invoice ourselves for this many days after its first failure (what Stripe's Smart Retries gave a one-off
+ *  invoice in test mode: 9 attempts over 16 days — docs/billing-3-report.md §1). */
+export const RETRY_FOR_DAYS = 16
+
+/**
+ * billing-3 item 1 (billing-2 §6 point 3): Stripe's Smart Retries DO retry our one-off invoices after ITS OWN automatic attempt fails
+ * (proved on a test clock) — but a FAILED MANUAL attempt (invoices.pay: "Update card", payOpenInvoices) leaves next_payment_attempt
+ * null, and Stripe never tries that invoice again. So: for every unpaid invoice that has failed and that Stripe has NO retry
+ * scheduled for, try once per truck-local day (from 08:00, after the failure day, for RETRY_FOR_DAYS days) on the card on file —
+ * idempotency key `billing:retry:<invoice>:<day>`, so a second run the same day replays the first instead of charging again.
+ */
+export async function retryUnpaidInvoices(store: BillingStore, processor: BillingProcessor | null, catalog: PlanCatalog,
+  a: { truckId: string; now: Date; by: string }): Promise<{ invoiceId: string; outcome: 'refreshed' | 'retried' | 'waiting_for_stripe' | 'not_due'; status?: string }[]> {
+  if (!processor || processor.livemode) return []
+  const truck = await store.truck(a.truckId)
+  if (!truck) return []
+  const tz = tzOf(truck)
+  const today = localDateOfInstant(a.now, tz)
+  const tb = await store.truckBilling(truck.id)
+  const out: { invoiceId: string; outcome: 'refreshed' | 'retried' | 'waiting_for_stripe' | 'not_due'; status?: string }[] = []
+  for (const inv of await store.listInvoices(truck.id)) {
+    if (!(inv.status === 'open' || inv.status === 'failed') || !inv.stripeInvoiceId || !inv.firstFailedAt) continue
+    const failDay = localDateOfInstant(inv.firstFailedAt, tz)
+    const lastDay = localDateOfInstant(new Date(Date.parse(inv.firstFailedAt) + RETRY_FOR_DAYS * 86_400_000), tz)
+    if (today <= failDay || today > lastDay || a.now.getTime() < instantOfLocal(today, '08:00:00', tz)) { out.push({ invoiceId: inv.id, outcome: 'not_due' }); continue }
+    const now = await processor.retrieveInvoice(inv.stripeInvoiceId)
+    if (now.status !== 'open') { await applyInvoiceUpdate(store, catalog, now, a.now); out.push({ invoiceId: inv.id, outcome: 'refreshed', status: now.status }); continue }
+    if (now.nextPaymentAttempt) { out.push({ invoiceId: inv.id, outcome: 'waiting_for_stripe' }); continue }
+    if (tb?.paymentMethodState !== 'valid' || !tb.stripePaymentMethodId) { out.push({ invoiceId: inv.id, outcome: 'not_due' }); continue }
+    const res = await processor.payInvoice(inv.stripeInvoiceId, tb.stripePaymentMethodId, { idempotencyKey: `billing:retry:${inv.stripeInvoiceId}:${today}` })
+    await applyInvoiceUpdate(store, catalog, res, a.now)
+    out.push({ invoiceId: inv.id, outcome: 'retried', status: res.status })
+  }
+  return out
 }

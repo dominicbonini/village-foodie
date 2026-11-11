@@ -31,6 +31,10 @@ export interface ProcessorInvoice {
   hostedUrl: string | null
   /** billing-2: Stripe's hosted invoice PDF ("Download"). */
   pdfUrl?: string | null
+  /** billing-3: when Stripe will try the payment again by itself (its automatic collection / Smart Retries), null = never. A FAILED
+   *  MANUAL attempt (invoices.pay) leaves this null — Stripe then never retries — so the hourly run retries it (engine.ts
+   *  retryUnpaidInvoices). */
+  nextPaymentAttempt?: string | null
   metadata: Record<string, string>
 }
 
@@ -52,7 +56,8 @@ export interface BillingProcessor {
   /** Void an open invoice (the late fee re-issues it). A paid invoice cannot be voided: it comes back as paid. */
   voidInvoice(id: string): Promise<ProcessorInvoice>
   /** Ask Stripe to collect now (Stripe's own automatic attempt and Smart Retries happen without this). */
-  payInvoice(id: string, paymentMethodId?: string): Promise<ProcessorInvoice>
+  /** billing-3: `idempotencyKey` — the hourly retry's (one attempt per invoice per truck-local day). */
+  payInvoice(id: string, paymentMethodId?: string, opts?: { idempotencyKey?: string }): Promise<ProcessorInvoice>
   retrieveInvoice(id: string): Promise<ProcessorInvoice>
   /** billing-2: a Stripe-HOSTED card set-up (Checkout in setup mode) — no card fields on our page. */
   createSetupCheckout(a: { customerId: string; truckId: string; currency: string; successUrl: string; cancelUrl: string; locale: string }): Promise<{ id: string; url: string }>
@@ -92,6 +97,7 @@ export function processorInvoiceOf(i: Stripe.Invoice): ProcessorInvoice {
     paidAt: iso(i.status_transitions?.paid_at),
     hostedUrl: i.hosted_invoice_url ?? null,
     pdfUrl: i.invoice_pdf ?? null,
+    nextPaymentAttempt: iso(i.next_payment_attempt),
     metadata: (i.metadata ?? {}) as Record<string, string>,
   }
 }
@@ -172,9 +178,9 @@ export function stripeBillingProcessor(): BillingProcessor {
       return processorInvoiceOf(fin)
     },
 
-    async payInvoice(id, paymentMethodId) {
+    async payInvoice(id, paymentMethodId, opts) {
       try {
-        return processorInvoiceOf(await stripe.invoices.pay(id, paymentMethodId ? { payment_method: paymentMethodId } : {}))
+        return processorInvoiceOf(await stripe.invoices.pay(id, paymentMethodId ? { payment_method: paymentMethodId } : {}, opts?.idempotencyKey ? { idempotencyKey: opts.idempotencyKey } : undefined))
       } catch (err) {
         // A declined attempt is an ANSWER, not an error: return the invoice as it now stands (attempt_count moved).
         const inv = processorInvoiceOf(await stripe.invoices.retrieve(id))

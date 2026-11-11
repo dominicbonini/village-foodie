@@ -7252,7 +7252,8 @@
         "change": "Ändern",
         "lastFailed": "Letzte Zahlung fehlgeschlagen",
         "update": "Karte aktualisieren",
-        "error": "Die Zahlungsseite konnte nicht geöffnet werden. Bitte versuchen Sie es erneut."
+        "error": "Die Zahlungsseite konnte nicht geöffnet werden. Bitte versuchen Sie es erneut.",
+        "noneAfterTrial": "Keine Karte hinterlegt. Fügen Sie eine hinzu, um Online-Bestellungen wieder zu aktivieren."
       },
       "whatYouPay": {
         "title": "Was Sie zahlen",
@@ -7278,8 +7279,7 @@
         "title": "Wie Kunden Vorbestellungen bezahlen",
         "online": "Online, bei der Bestellung",
         "onlineHint": "Das Geld geht direkt auf Ihr Stripe-Konto.",
-        "atTruck": "Am Foodtruck, bei der Abholung",
-        "atTruckHint": "Unsere Gebühr wird stattdessen Ihrer monatlichen Abrechnung hinzugefügt.",
+        "atTruckHint": "Kunden bezahlen bei der Abholung. Unsere Gebühr wird Ihrer monatlichen Abrechnung hinzugefügt.",
         "saved": "Gespeichert.",
         "error": "Das konnte nicht gespeichert werden. Bitte versuchen Sie es erneut."
       },
@@ -7330,7 +7330,10 @@
       "startsLater": "Gilt ab dem {nextFirst}. Bis dahin behalten Sie den Tarif {plan}.",
       "cancel": "Abbrechen",
       "switchTo": "Zu {plan} wechseln",
-      "error": "Ihr Tarif konnte nicht geändert werden. Bitte versuchen Sie es erneut."
+      "error": "Ihr Tarif konnte nicht geändert werden. Bitte versuchen Sie es erneut.",
+      "trialLine": "Sie sind in der kostenlosen Testphase. Wählen Sie Ihren Tarif für die Zeit nach ihrem Ende am {date}.",
+      "startsAtTrialEnd": "Gilt ab dem Ende Ihrer Testphase.",
+      "choose": "Tarif {plan} wählen"
     },
     "notices": {
       "trialEndsSoon": "<b>Ihre kostenlose Testphase endet am {date}.</b> Hinterlegen Sie eine Karte, damit Online-Bestellungen aktiv bleiben.",
@@ -7341,7 +7344,8 @@
       "addCard": "Karte hinzufügen →",
       "updateCard": "{method, select, payment_method {Zahlungsmethode} other {Karte}} aktualisieren →",
       "payNow": "Jetzt bezahlen →",
-      "dismiss": "Ausblenden"
+      "dismiss": "Ausblenden",
+      "trialEnded": "<b>Ihre kostenlose Testphase ist beendet.</b> Hinterlegen Sie eine Karte, um Online-Bestellungen wieder zu aktivieren."
     }
   },
   "emailBilling": {

@@ -33,6 +33,8 @@ export interface TruckBillingRow {
   /** A downgrade waiting for the 1st (correction decision 3). */
   pendingPlanKey: string | null
   pendingPlanFrom: string | null
+  /** billing-3: the plan the free trial ends into, as the owner chose it during the trial (null = the country's trial-end plan). */
+  trialEndPlanKey: string | null
 }
 
 /** One month's USAGE (billed on the next 1st, in arrears). */
@@ -159,8 +161,10 @@ export interface BillingStore {
   /** The truck's plan history (truck_plan_history), oldest first. */
   planHistory(truckId: string): Promise<PlanHistoryRow[]>
   /** Set trucks.plan (a downgrade on the 1st, an upgrade at once). The database records the history by trigger (at its own
-   *  now(); `at` is the in-memory store's clock). */
-  setTruckPlan(truckId: string, planKey: string, by: string, at: string): Promise<void>
+   *  now(); `at` is the in-memory store's clock). billing-3: `clearPlanEnd` also clears trucks.trial_expires_at — the plan's END
+   *  DATE (lib/plans.ts planEndDate) — when it has already passed: a truck whose trial ended and which now chooses a plan must not
+   *  keep that past end date, or lib/plans.ts effectivePlan would still answer with the fallback and the new plan never apply. */
+  setTruckPlan(truckId: string, planKey: string, by: string, at: string, opts?: { clearPlanEnd?: boolean }): Promise<void>
 
   charge(truckId: string, period: string, kind: ChargeKind, ref: string): Promise<ChargeRow | null>
   listCharges(truckId: string): Promise<ChargeRow[]>

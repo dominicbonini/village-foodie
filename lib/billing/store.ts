@@ -36,6 +36,7 @@ function mapTruckBilling(r: Row): TruckBillingRow {
     paymentMethodLivemode: typeof r.payment_method_livemode === 'boolean' ? r.payment_method_livemode : null,
     status: str(r.status) as TruckBillingRow['status'], statusReason: str(r.status_reason), statusChangedAt: str(r.status_changed_at),
     pendingPlanKey: str(r.pending_plan_key), pendingPlanFrom: r.pending_plan_from ? String(r.pending_plan_from).slice(0, 10) : null,
+    trialEndPlanKey: str(r.trial_end_plan_key),
   }
 }
 const TB_COLS: Record<keyof Omit<TruckBillingRow, 'truckId'>, string> = {
@@ -43,6 +44,7 @@ const TB_COLS: Record<keyof Omit<TruckBillingRow, 'truckId'>, string> = {
   stripePaymentMethodId: 'stripe_payment_method_id', stripeSetupIntentId: 'stripe_setup_intent_id', paymentMethodLabel: 'payment_method_label',
   paymentMethodUpdatedAt: 'payment_method_updated_at', paymentMethodLivemode: 'payment_method_livemode', status: 'status',
   statusReason: 'status_reason', statusChangedAt: 'status_changed_at', pendingPlanKey: 'pending_plan_key', pendingPlanFrom: 'pending_plan_from',
+  trialEndPlanKey: 'trial_end_plan_key',
 }
 
 const U_COLS: Record<keyof UsageRow, string> = {
@@ -138,7 +140,11 @@ export function supabaseBillingStore(db: SupabaseClient): BillingStore {
         .select('id, slug, name, plan, trial_expires_at, plan_price_override_minor, plan_price_override_until, plan_price_override_note, country, currency, timezone, is_customer, operator_id')
         .eq('id', id).maybeSingle()
       fail(`truck ${id}`, error)
-      return (data as StoredTruck | null) ?? null
+      if (!data) return null
+      // billing-3: the plan the trial ends into, as the owner chose it (lib/plans.ts effectivePlan reads it as `trial_end_plan`).
+      const { data: tb, error: e2 } = await db.from('truck_billing').select('trial_end_plan_key').eq('truck_id', id).maybeSingle()
+      fail(`truck ${id} trial plan`, e2)
+      return { ...(data as StoredTruck), trial_end_plan: str((tb as Row | null)?.trial_end_plan_key) }
     },
     async candidateTruckIds() {
       const [{ data: customers, error: e1 }, { data: tests, error: e2 }] = await Promise.all([
@@ -270,9 +276,10 @@ export function supabaseBillingStore(db: SupabaseClient): BillingStore {
         changedAt: String(r.changed_at) === '-infinity' ? '-infinity' : String(r.changed_at),
       }))
     },
-    async setTruckPlan(truckId, planKey) {
-      // 🔴 the only write billing makes to trucks: the plan, for an upgrade now or a downgrade on the 1st (the trigger records it)
-      const { error } = await db.from('trucks').update({ plan: planKey }).eq('id', truckId)
+    async setTruckPlan(truckId, planKey, _by, _at, opts) {
+      // 🔴 the only write billing makes to trucks: the plan, for an upgrade now or a downgrade on the 1st (the trigger records it);
+      // billing-3: and, with `clearPlanEnd`, the plan's end date once it has passed (an ended trial moving to the plan chosen for it).
+      const { error } = await db.from('trucks').update({ plan: planKey, ...(opts?.clearPlanEnd ? { trial_expires_at: null } : {}) }).eq('id', truckId)
       fail(`set plan ${truckId}`, error)
     },
 

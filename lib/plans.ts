@@ -102,6 +102,11 @@ export interface TruckPlanFields {
   /** world-countries-1: the truck's country (trucks.country) — which country's trial-end plan an ENDED plan falls back to
    *  (`expiryFallbackFor`). Absent = the plans table's expiry fallback, exactly as before. */
   country?: string | null
+  /** billing-3 (11 November 2026): THE PLAN THIS TRUCK'S TRIAL ENDS INTO, as the owner chose it during the trial
+   *  (truck_billing.trial_end_plan_key — only lib/billing/store.ts sets this field). Used ONLY when the assigned plan is a trial
+   *  and only if it is an active, public, non-trial plan offered in the truck's country; otherwise (and whenever absent, as on every
+   *  other code path) the country's trial-end plan, exactly as before. */
+  trial_end_plan?: string | null
 }
 
 // ── the list ────────────────────────────────────────────────────────────────────────────────────────────────────────
@@ -224,12 +229,15 @@ export interface EffectivePlan {
  *     A2 replaced Stage A's "keeps every feature"): an ended trial has exactly what a Pay as you go truck has;
  *     world-countries-1: the fallback is the TRUCK'S COUNTRY'S (`expiryFallbackFor`, from `truck.country`) — Unlimited where
  *     Pay as you go is not offered; the plans table's own fallback everywhere else, and whenever the country is not given;
+ *     billing-3: for a TRIAL, the plan the owner chose for its end (`trial_end_plan`) when one was chosen and is still offered;
  *   • the expiry fallback too for a key that is not in the table or a plan that is inactive (`ended: false`) — defensive;
  *     the foreign key on trucks.plan makes an unknown key impossible in the database.
  */
 export function effectivePlan(truck: TruckPlanFields | null | undefined, catalog: PlanCatalog, now: Date = new Date()): EffectivePlan {
   const assigned = planByKey(catalog, truck?.plan)
-  const fallback = expiryFallbackFor(catalog, truck?.country)
+  const chosen = assigned?.isTrial && truck?.trial_end_plan ? planByKey(catalog, truck.trial_end_plan) : null
+  const fallback = chosen && chosen.active && chosen.isPublic && !chosen.isTrial && offeredPriceFor(catalog, chosen.key, truck?.country)
+    ? chosen : expiryFallbackFor(catalog, truck?.country)
   if (!assigned || !assigned.active) return { plan: fallback, assigned, ended: false, endedAt: null }
   const end = planEndDate(truck)
   if (end && new Date(end).getTime() <= now.getTime()) return { plan: fallback, assigned, ended: true, endedAt: end }

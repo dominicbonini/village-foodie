@@ -347,7 +347,15 @@ function fakeProcessor({ livemode = false, failCreateOnce = new Set() } = {}) {
     const dec = await E.runMonthly(store, proc, CATALOG, { truckId: 'gb-trial', period: '2026-12-01', now: NOW('2026-12-01T12:00:00Z'), by: 'h' })
     t('December\'s charge (in the trial): nothing', dec.outcome === 'nothing' && dec.charge.planMinor === 0, dec)
     t('a trial ending in the month\'s last second leaves nothing for the rest of the month (0 days)', (await E.settleMidMonth(store, proc, CATALOG, { truckId: 'gb-trial', now: NOW('2027-01-01T00:30:00Z'), by: 'h' })).length === 0)
-    t('requestPlanChange during the trial → in_trial (the operator screen decides how a trialling truck pre-chooses)', (await E.requestPlanChange(store, proc, CATALOG, { truckId: 'gb-trial', planKey: 'pro', now: NOW('2026-11-10T12:00:00Z'), by: 'h' })).outcome === 'in_trial')
+    // ⚠️ RE-PINNED (billing-3, 11 November 2026, item 5): during the trial a plan choice is STORED as the plan the trial ends into
+    // (truck_billing.trial_end_plan_key) — nothing charged now. Reset afterwards so the rest of this world is unchanged.
+    {
+      const chargesBefore = (await store.listCharges('gb-trial')).length
+      const ch = await E.requestPlanChange(store, proc, CATALOG, { truckId: 'gb-trial', planKey: 'pro', now: NOW('2026-11-10T12:00:00Z'), by: 'h' })
+      t('requestPlanChange during the trial → trial_choice: stored as the plan the trial ends into, nothing charged', ch.outcome === 'trial_choice' && ch.planKey === 'pro'
+        && (await store.truckBilling('gb-trial')).trialEndPlanKey === 'pro' && (await store.listCharges('gb-trial')).length === chargesBefore, ch)
+      await store.upsertTruckBilling('gb-trial', { trialEndPlanKey: null }, 'h')
+    }
     const action = read('app/api/dashboard/action/route.ts')
     t('walk-ups and the kitchen screen never ask billing (no billing import on the dashboard/KDS paths)', !/lib\/billing/.test(action) && !/lib\/billing/.test(read('app/(app)/dashboard/[token]/kds/page.tsx')))
   }

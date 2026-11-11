@@ -22,7 +22,8 @@
       "change": "Change",
       "lastFailed": "Last payment failed",
       "update": "Update card",
-      "error": "We couldn’t open the payment page. Please try again."
+      "error": "We couldn’t open the payment page. Please try again.",
+      "noneAfterTrial": "No card added. Add one to turn online ordering back on."
     },
     "whatYouPay": {
       "title": "What you pay",
@@ -48,8 +49,7 @@
       "title": "How customers pay for pre-orders",
       "online": "Online, when they order",
       "onlineHint": "The money goes straight to your Stripe account.",
-      "atTruck": "At the truck, when they collect",
-      "atTruckHint": "Our fee is added to your monthly charge instead.",
+      "atTruckHint": "Customers pay when they collect. Our fee is added to your monthly charge.",
       "saved": "Saved.",
       "error": "We couldn’t save that. Please try again."
     },
@@ -100,7 +100,10 @@
     "startsLater": "Starts on {nextFirst}. You keep {plan} until then.",
     "cancel": "Cancel",
     "switchTo": "Switch to {plan}",
-    "error": "We couldn’t change your plan. Please try again."
+    "error": "We couldn’t change your plan. Please try again.",
+    "trialLine": "You’re on a free trial. Choose your plan for when it ends on {date}.",
+    "startsAtTrialEnd": "Starts when your trial ends.",
+    "choose": "Choose {plan}"
   },
   "notices": {
     "trialEndsSoon": "<b>Your free trial ends on {date}.</b> Add a card to keep online ordering on.",
@@ -111,6 +114,7 @@
     "addCard": "Add card →",
     "updateCard": "Update {method, select, payment_method {payment method} other {card}} →",
     "payNow": "Pay now →",
-    "dismiss": "Dismiss"
+    "dismiss": "Dismiss",
+    "trialEnded": "<b>Your free trial has ended.</b> Add a card to turn online ordering back on."
   }
 }

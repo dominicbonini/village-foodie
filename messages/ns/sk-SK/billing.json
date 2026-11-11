@@ -22,7 +22,8 @@
       "change": "Zmeniť",
       "lastFailed": "Posledná platba zlyhala",
       "update": "Aktualizovať kartu",
-      "error": "Platobnú stránku sa nepodarilo otvoriť. Skúste to znova."
+      "error": "Platobnú stránku sa nepodarilo otvoriť. Skúste to znova.",
+      "noneAfterTrial": "Nie je pridaná žiadna karta. Pridajte ju a online objednávanie sa znova zapne."
     },
     "whatYouPay": {
       "title": "Čo platíte",
@@ -48,8 +49,7 @@
       "title": "Ako zákazníci platia za predobjednávky",
       "online": "Online, pri objednaní",
       "onlineHint": "Peniaze idú priamo na váš účet Stripe.",
-      "atTruck": "Pri food trucku, pri vyzdvihnutí",
-      "atTruckHint": "Náš poplatok sa namiesto toho pripočíta k vašej mesačnej platbe.",
+      "atTruckHint": "Zákazníci platia pri vyzdvihnutí. Náš poplatok sa pripočíta k vašej mesačnej platbe.",
       "saved": "Uložené.",
       "error": "Nepodarilo sa to uložiť. Skúste to znova."
     },
@@ -100,7 +100,10 @@
     "startsLater": "Začína sa {nextFirst}. Dovtedy vám zostáva plán {plan}.",
     "cancel": "Zrušiť",
     "switchTo": "Prejsť na plán {plan}",
-    "error": "Plán sa nepodarilo zmeniť. Skúste to znova."
+    "error": "Plán sa nepodarilo zmeniť. Skúste to znova.",
+    "trialLine": "Máte bezplatné skúšobné obdobie, ktoré končí {date}. Vyberte si plán, ktorý sa začne po jeho skončení.",
+    "startsAtTrialEnd": "Začína sa po skončení skúšobného obdobia.",
+    "choose": "Vybrať plán {plan}"
   },
   "notices": {
     "trialEndsSoon": "<b>Vaše bezplatné skúšobné obdobie končí {date}.</b> Pridajte kartu, aby online objednávanie zostalo zapnuté.",
@@ -111,6 +114,7 @@
     "addCard": "Pridať kartu →",
     "updateCard": "Aktualizovať {method, select, payment_method {spôsob platby} other {kartu}} →",
     "payNow": "Zaplatiť teraz →",
-    "dismiss": "Zavrieť"
+    "dismiss": "Zavrieť",
+    "trialEnded": "<b>Vaše bezplatné skúšobné obdobie sa skončilo.</b> Pridajte kartu a online objednávanie sa znova zapne."
   }
 }

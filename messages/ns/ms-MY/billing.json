@@ -22,7 +22,8 @@
       "change": "Tukar",
       "lastFailed": "Pembayaran terakhir gagal",
       "update": "Kemas kini kad",
-      "error": "Kami tidak dapat membuka halaman pembayaran. Sila cuba lagi."
+      "error": "Kami tidak dapat membuka halaman pembayaran. Sila cuba lagi.",
+      "noneAfterTrial": "Tiada kad ditambah. Tambah kad untuk mengaktifkan semula pesanan dalam talian."
     },
     "whatYouPay": {
       "title": "Apa yang anda bayar",
@@ -48,8 +49,7 @@
       "title": "Cara pelanggan membayar pra-pesanan",
       "online": "Dalam talian, semasa membuat pesanan",
       "onlineHint": "Wang terus masuk ke akaun Stripe anda.",
-      "atTruck": "Di trak, semasa mengambil pesanan",
-      "atTruckHint": "Sebaliknya, yuran kami ditambah pada caj bulanan anda.",
+      "atTruckHint": "Pelanggan membayar semasa mengambil pesanan. Yuran kami ditambah pada caj bulanan anda.",
       "saved": "Disimpan.",
       "error": "Kami tidak dapat menyimpannya. Sila cuba lagi."
     },
@@ -100,7 +100,10 @@
     "startsLater": "Bermula pada {nextFirst}. Anda kekal dengan pelan {plan} sehingga itu.",
     "cancel": "Batal",
     "switchTo": "Tukar ke {plan}",
-    "error": "Kami tidak dapat menukar pelan anda. Sila cuba lagi."
+    "error": "Kami tidak dapat menukar pelan anda. Sila cuba lagi.",
+    "trialLine": "Anda sedang dalam percubaan percuma. Pilih pelan anda untuk selepas percubaan tamat pada {date}.",
+    "startsAtTrialEnd": "Bermula apabila percubaan anda tamat.",
+    "choose": "Pilih {plan}"
   },
   "notices": {
     "trialEndsSoon": "<b>Percubaan percuma anda tamat pada {date}.</b> Tambah kad supaya pesanan dalam talian kekal aktif.",
@@ -111,6 +114,7 @@
     "addCard": "Tambah kad →",
     "updateCard": "Kemas kini {method, select, payment_method {kaedah pembayaran} other {kad}} →",
     "payNow": "Bayar sekarang →",
-    "dismiss": "Tutup"
+    "dismiss": "Tutup",
+    "trialEnded": "<b>Percubaan percuma anda telah tamat.</b> Tambah kad untuk mengaktifkan semula pesanan dalam talian."
   }
 }

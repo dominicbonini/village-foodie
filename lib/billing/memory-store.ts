@@ -36,7 +36,7 @@ export function emptyMemoryData(): MemoryData {
 const DEFAULT_TB = (truckId: string): TruckBillingRow => ({
   truckId, postPay: false, billingTest: false, paymentMethodState: 'none', paymentMethodType: null, stripePaymentMethodId: null, stripeSetupIntentId: null,
   paymentMethodLabel: null, paymentMethodUpdatedAt: null, paymentMethodLivemode: null, status: null, statusReason: null, statusChangedAt: null,
-  pendingPlanKey: null, pendingPlanFrom: null,
+  pendingPlanKey: null, pendingPlanFrom: null, trialEndPlanKey: null,
 })
 
 export function memoryBillingStore(d: MemoryData): BillingStore {
@@ -55,7 +55,11 @@ export function memoryBillingStore(d: MemoryData): BillingStore {
       return { ...saved }
     },
     async countryFacts(code) { const r = d.countryFacts.find(c => c.countryCode === code); return r ? { ...r } : null },
-    async truck(id) { const t = d.trucks.find(x => x.id === id); return t ? { ...t } : null },
+    async truck(id) {
+      const t = d.trucks.find(x => x.id === id)
+      // billing-3: as the database store does — the plan the trial ends into, from truck_billing.
+      return t ? { ...t, trial_end_plan: d.truckBilling.find(x => x.truckId === id)?.trialEndPlanKey ?? null } : null
+    },
     async candidateTruckIds() {
       return [...new Set([...d.trucks.filter(t => t.is_customer === true).map(t => t.id), ...d.truckBilling.filter(t => t.billingTest).map(t => t.truckId)])].sort()
     },
@@ -102,12 +106,13 @@ export function memoryBillingStore(d: MemoryData): BillingStore {
     async planHistory(truckId) {
       return d.history.filter(h => h.truckId === truckId).map(({ truckId: _t, ...h }) => { void _t; return { ...h } })
     },
-    async setTruckPlan(truckId, planKey, _by, at) {
+    async setTruckPlan(truckId, planKey, _by, at, opts) {
       // As the database trigger does: the first change also records the state before it ('-infinity').
       const t = d.trucks.find(x => x.id === truckId)
       if (!t) throw new Error(`[memory-store] no truck ${truckId}`)
       if (!d.history.some(h => h.truckId === truckId)) d.history.push({ truckId, planKey: String(t.plan), trialExpiresAt: t.trial_expires_at ?? null, changedAt: '-infinity' })
       t.plan = planKey
+      if (opts?.clearPlanEnd) t.trial_expires_at = null
       d.history.push({ truckId, planKey, trialExpiresAt: t.trial_expires_at ?? null, changedAt: at })
       d.writes.push(`trucks.plan:${truckId}`)
     },

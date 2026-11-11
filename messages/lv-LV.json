@@ -7252,7 +7252,8 @@
         "change": "Mainīt",
         "lastFailed": "Pēdējais maksājums neizdevās",
         "update": "Atjaunināt karti",
-        "error": "Neizdevās atvērt maksājuma lapu. Lūdzu, mēģiniet vēlreiz."
+        "error": "Neizdevās atvērt maksājuma lapu. Lūdzu, mēģiniet vēlreiz.",
+        "noneAfterTrial": "Karte nav pievienota. Pievienojiet to, lai atkal ieslēgtu tiešsaistes pasūtīšanu."
       },
       "whatYouPay": {
         "title": "Ko jūs maksājat",
@@ -7278,8 +7279,7 @@
         "title": "Kā klienti maksā par iepriekšējiem pasūtījumiem",
         "online": "Tiešsaistē, kad pasūta",
         "onlineHint": "Nauda nonāk tieši jūsu Stripe kontā.",
-        "atTruck": "Pie food truck, kad saņem pasūtījumu",
-        "atTruckHint": "Tā vietā mūsu maksa tiek pievienota jūsu ikmēneša maksājumam.",
+        "atTruckHint": "Klienti maksā, kad saņem pasūtījumu. Mūsu maksa tiek pievienota jūsu ikmēneša maksājumam.",
         "saved": "Saglabāts.",
         "error": "Neizdevās saglabāt. Lūdzu, mēģiniet vēlreiz."
       },
@@ -7330,7 +7330,10 @@
       "startsLater": "Sāksies {nextFirst}. Līdz tam jums paliek plāns {plan}.",
       "cancel": "Atcelt",
       "switchTo": "Pāriet uz plānu {plan}",
-      "error": "Neizdevās mainīt plānu. Lūdzu, mēģiniet vēlreiz."
+      "error": "Neizdevās mainīt plānu. Lūdzu, mēģiniet vēlreiz.",
+      "trialLine": "Jums ir bezmaksas izmēģinājuma periods, kas beidzas {date}. Izvēlieties plānu, kas sāksies pēc tam.",
+      "startsAtTrialEnd": "Sāksies, kad beigsies izmēģinājuma periods.",
+      "choose": "Izvēlēties plānu {plan}"
     },
     "notices": {
       "trialEndsSoon": "<b>Jūsu bezmaksas izmēģinājuma periods beidzas {date}.</b> Pievienojiet karti, lai tiešsaistes pasūtīšana paliktu ieslēgta.",
@@ -7341,7 +7344,8 @@
       "addCard": "Pievienot karti →",
       "updateCard": "Atjaunināt {method, select, payment_method {maksājuma veidu} other {karti}} →",
       "payNow": "Maksāt tagad →",
-      "dismiss": "Aizvērt"
+      "dismiss": "Aizvērt",
+      "trialEnded": "<b>Jūsu bezmaksas izmēģinājuma periods ir beidzies.</b> Pievienojiet karti, lai atkal ieslēgtu tiešsaistes pasūtīšanu."
     }
   },
   "emailBilling": {

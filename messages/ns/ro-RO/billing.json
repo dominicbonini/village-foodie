@@ -22,7 +22,8 @@
       "change": "Schimbați",
       "lastFailed": "Ultima plată nu a reușit",
       "update": "Actualizați cardul",
-      "error": "Nu am putut deschide pagina de plată. Vă rugăm să încercați din nou."
+      "error": "Nu am putut deschide pagina de plată. Vă rugăm să încercați din nou.",
+      "noneAfterTrial": "Niciun card adăugat. Adăugați unul ca să reactivați comenzile online."
     },
     "whatYouPay": {
       "title": "Ce plătiți",
@@ -48,8 +49,7 @@
       "title": "Cum plătesc clienții precomenzile",
       "online": "Online, când comandă",
       "onlineHint": "Banii ajung direct în contul dumneavoastră Stripe.",
-      "atTruck": "La food truck, când ridică comanda",
-      "atTruckHint": "În schimb, taxa noastră se adaugă la plata lunară.",
+      "atTruckHint": "Clienții plătesc când ridică comanda. Taxa noastră se adaugă la plata lunară.",
       "saved": "Salvat.",
       "error": "Nu am putut salva. Vă rugăm să încercați din nou."
     },
@@ -100,7 +100,10 @@
     "startsLater": "Începe pe {nextFirst}. Până atunci păstrați planul {plan}.",
     "cancel": "Anulați",
     "switchTo": "Treceți la {plan}",
-    "error": "Nu am putut schimba planul. Vă rugăm să încercați din nou."
+    "error": "Nu am putut schimba planul. Vă rugăm să încercați din nou.",
+    "trialLine": "Sunteți în perioada de probă gratuită. Alegeți planul pentru momentul în care se încheie, pe {date}.",
+    "startsAtTrialEnd": "Începe la finalul perioadei de probă.",
+    "choose": "Alegeți planul {plan}"
   },
   "notices": {
     "trialEndsSoon": "<b>Perioada de probă gratuită se încheie pe {date}.</b> Adăugați un card ca să rămână active comenzile online.",
@@ -111,6 +114,7 @@
     "addCard": "Adăugați un card →",
     "updateCard": "Actualizați {method, select, payment_method {metoda de plată} other {cardul}} →",
     "payNow": "Plătiți acum →",
-    "dismiss": "Închideți"
+    "dismiss": "Închideți",
+    "trialEnded": "<b>Perioada de probă gratuită s-a încheiat.</b> Adăugați un card ca să reactivați comenzile online."
   }
 }

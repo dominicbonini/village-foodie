@@ -20,6 +20,8 @@ import { planByKey } from '@/lib/plans'
 import { moneyFormatOf, planMoneyFormatOf } from '@/lib/country-settings-types'
 import { formatMinor, formatWholeAmount, pctLabel } from '@/lib/money-format'
 import { formatYmd, monthName } from '@/lib/time-utils'
+import { priceText } from '@/lib/price-text'
+import { PRICE_WORD } from '@/lib/price-words'
 import type { BillingScreenView, NoticeView, PlanChangePreview, InvoiceView } from '@/lib/billing/view'
 
 type Loaded = { status: 'loading' } | { status: 'hidden' } | { status: 'error' } | { status: 'visible'; view: BillingScreenView }
@@ -90,6 +92,9 @@ function useWords() {
     fee: (bps: number) => pctLabel(bps / 100, { locale: country.locale }),
     date: (ymd: string) => formatYmd(ymd, time, { day: 'numeric', month: 'long' }),
     month: (ymd: string) => monthName(ymd, country.locale, 'long'),
+    // billing-3 item 2: the locale's own existing word for paying at the truck — "Pay at Hatch" (UK), "Pay at the truck" (other
+    // English locales), each language's word (planFeatures.priceWord.payAtHatch).
+    payAtHatch: priceText(PRICE_WORD.payAtHatch, country.locale),
   }
 }
 
@@ -106,6 +111,7 @@ export function BillingNoticeStrip({ notice, onOpen }: { notice: NoticeView; onO
     : notice.kind === 'trial_ends_tomorrow' ? w.t.rich('notices.trialEndsTomorrow', { b })
     : notice.kind === 'all_set' ? w.t.rich('notices.allSet', { b, plan: w.plan(notice.planKey), date: w.date(notice.date!) })
     : notice.kind === 'payment_failed' ? w.t.rich('notices.paymentFailed', { b, method: notice.method, date: w.date(notice.lastDay!) })
+    : notice.kind === 'trial_ended' ? w.t.rich('notices.trialEnded', { b })
     : w.t.rich('notices.paused', { b, amount: w.amount(notice.amountMinor ?? 0), date: w.date(notice.suspendWarningDate!) })
   const link = notice.kind === 'all_set' ? null
     : notice.kind === 'paused' ? w.t('notices.payNow')
@@ -202,7 +208,8 @@ export function BillingScreen({ token, view, setView }: { token: string; view: B
               {p.onTrial && <span className="ml-2 text-[10px] font-bold px-2 py-0.5 rounded-full bg-orange-100 text-orange-700">{t('tab.plan.trialPill')}</span>}
             </p>
           </div>
-          {cta && !p.onTrial && view.plans.length > 1 && <button type="button" onClick={() => setChanging(true)} className={BTN2}>{t('tab.plan.change')}</button>}
+          {/* billing-3 item 5: during the trial too — the choice is the plan the trial ends into. */}
+          {cta && view.plans.length > 1 && <button type="button" onClick={() => setChanging(true)} className={BTN2}>{t('tab.plan.change')}</button>}
         </div>
         <p className="text-sm text-slate-600 mt-2">{lineForPlan()}</p>
         {view.pendingPlan && <p className="text-sm text-slate-600 mt-1">{t('tab.plan.pendingLine', { plan: w.plan(view.pendingPlan.key), date: w.date(view.pendingPlan.from) })}</p>}
@@ -223,7 +230,7 @@ export function BillingScreen({ token, view, setView }: { token: string; view: B
           <p className="text-sm text-slate-600 mt-2">{t('tab.payment.pending')}</p>
         ) : (
           <>
-            {cta && <p className="text-sm text-slate-600 mt-2">{t('tab.payment.none')}</p>}
+            {cta && <p className="text-sm text-slate-600 mt-2">{view.trialEndedNoCard ? t('tab.payment.noneAfterTrial') : t('tab.payment.none')}</p>}
             {cta && (
               <div className="mt-3 flex flex-wrap gap-2">
                 <button type="button" disabled={!!busy} onClick={() => void go('add_card')} className={BTN}>{t('tab.payment.add')}</button>
@@ -284,7 +291,7 @@ export function BillingScreen({ token, view, setView }: { token: string; view: B
         )}
         <label className="flex items-start gap-3 py-2 cursor-pointer">
           <input type="radio" name="billing-preorders" checked={view.preOrderPayment.value === 'at_truck'} disabled={busy === 'preorder'} onChange={() => void setPreorder('at_truck')} className="mt-1" />
-          <span><span className="block text-sm font-semibold text-slate-800">{t('tab.preorders.atTruck')}</span><span className="block text-xs text-slate-500">{t('tab.preorders.atTruckHint')}</span></span>
+          <span><span className="block text-sm font-semibold text-slate-800">{w.payAtHatch}</span><span className="block text-xs text-slate-500">{t('tab.preorders.atTruckHint')}</span></span>
         </label>
         {saved && <p className="text-xs font-semibold text-green-700 mt-1">{t('tab.preorders.saved')}</p>}
       </div>
@@ -338,18 +345,20 @@ function InvoiceRowView({ inv, cta }: { inv: InvoiceView; cta: boolean }) {
 function ChangePlanModal({ token, view, onClose, onDone }: { token: string; view: BillingScreenView; onClose: () => void; onDone: (v: BillingScreenView) => void }) {
   const w = useWords()
   const t = w.t
-  const current = view.plans.find(x => x.current)?.key ?? view.plan.key
+  // billing-3 item 5: on the trial, the plan it ends into is the one selected (the country's, or the one already chosen).
+  const onTrial = !!view.trial
+  const current = onTrial ? view.trial!.afterPlanKey : view.plans.find(x => x.current)?.key ?? view.plan.key
   const [chosen, setChosen] = useState<string>(current)
   const [preview, setPreview] = useState<PlanChangePreview | null>(null)
   const [busy, setBusy] = useState(false)
   const [error, setError] = useState<string | null>(null)
   useEffect(() => {
-    if (chosen === current) return
+    if (onTrial || chosen === current) return
     let off = false
     call(token, 'plan_preview', { planKey: chosen }).then(r => { if (!off && r.ok) setPreview(r.data as unknown as PlanChangePreview) })
     return () => { off = true }
-  }, [token, chosen, current])
-  const shown = chosen === current ? null : preview
+  }, [token, chosen, current, onTrial])
+  const shown = onTrial || chosen === current ? null : preview
   const lineOf = (x: BillingScreenView['plans'][number]) => (x.allowanceMinor ?? 0) > 0 ? t('changePlan.proLine', { allowance: w.allowance(x.allowanceMinor), fee: w.fee(x.feeBps) })
     : x.feeBps > 0 ? t('changePlan.paygLine', { fee: w.fee(x.feeBps) }) : t('changePlan.unlimitedLine')
   const submit = async () => {
@@ -362,7 +371,7 @@ function ChangePlanModal({ token, view, onClose, onDone }: { token: string; view
     <div className="fixed inset-0 z-50 bg-black/40 flex items-center justify-center p-4" role="dialog" aria-modal="true" data-billing-modal="change-plan">
       <div className="bg-white rounded-2xl p-6 w-full max-w-md max-h-[90vh] overflow-y-auto">
         <h3 className="text-lg font-semibold text-slate-900">{t('changePlan.title')}</h3>
-        <p className="text-sm text-slate-600 mt-1">{t('changePlan.current', { plan: w.plan(current) })}</p>
+        <p className="text-sm text-slate-600 mt-1">{onTrial ? t('changePlan.trialLine', { date: w.date(view.trial!.endDate) }) : t('changePlan.current', { plan: w.plan(current) })}</p>
         <div className="mt-4 flex flex-col gap-2">
           {view.plans.map(x => (
             <label key={x.key} data-plan-choice={x.key} className={`flex items-start gap-3 rounded-xl border px-4 py-3 cursor-pointer ${chosen === x.key ? 'border-orange-600 bg-orange-50' : 'border-slate-200 bg-white'}`}>
@@ -378,6 +387,7 @@ function ChangePlanModal({ token, view, onClose, onDone }: { token: string; view
             </label>
           ))}
         </div>
+        {onTrial && <p className="text-sm font-semibold text-slate-800 mt-4" data-billing-trial-choice={chosen}>{t('changePlan.startsAtTrialEnd')}</p>}
         {shown?.direction === 'up' && (
           <>
             <p className="text-sm font-semibold text-slate-800 mt-4">{t('changePlan.startsNow')}</p>
@@ -390,7 +400,9 @@ function ChangePlanModal({ token, view, onClose, onDone }: { token: string; view
         {error && <p className="text-sm font-semibold text-red-600 mt-3" role="alert">{error}</p>}
         <div className="mt-5 flex justify-end gap-2">
           <button type="button" onClick={onClose} className={BTN2}>{t('changePlan.cancel')}</button>
-          <button type="button" disabled={busy || chosen === current || !shown || shown.direction === 'in_trial'} onClick={() => void submit()} className={BTN}>{t('changePlan.switchTo', { plan: w.plan(chosen) })}</button>
+          {onTrial
+            ? <button type="button" disabled={busy} onClick={() => void submit()} className={BTN}>{t('changePlan.choose', { plan: w.plan(chosen) })}</button>
+            : <button type="button" disabled={busy || chosen === current || !shown || shown.direction === 'in_trial'} onClick={() => void submit()} className={BTN}>{t('changePlan.switchTo', { plan: w.plan(chosen) })}</button>}
         </div>
       </div>
     </div>

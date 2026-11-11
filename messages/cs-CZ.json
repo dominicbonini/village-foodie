@@ -7252,7 +7252,8 @@
         "change": "Změnit",
         "lastFailed": "Poslední platba se nezdařila",
         "update": "Aktualizovat kartu",
-        "error": "Platební stránku se nepodařilo otevřít. Zkuste to prosím znovu."
+        "error": "Platební stránku se nepodařilo otevřít. Zkuste to prosím znovu.",
+        "noneAfterTrial": "Nemáte přidanou kartu. Přidejte ji a online objednávky se znovu zapnou."
       },
       "whatYouPay": {
         "title": "Co platíte",
@@ -7278,8 +7279,7 @@
         "title": "Jak zákazníci platí za předobjednávky",
         "online": "Online, při objednání",
         "onlineHint": "Peníze jdou přímo na váš účet Stripe.",
-        "atTruck": "U food trucku, při vyzvednutí",
-        "atTruckHint": "Náš poplatek se pak připočte k vaší měsíční platbě.",
+        "atTruckHint": "Zákazníci platí při vyzvednutí. Náš poplatek se připočte k vaší měsíční platbě.",
         "saved": "Uloženo.",
         "error": "Nepodařilo se to uložit. Zkuste to prosím znovu."
       },
@@ -7330,7 +7330,10 @@
       "startsLater": "Začne platit {nextFirst}. Do té doby vám zůstává tarif {plan}.",
       "cancel": "Zrušit",
       "switchTo": "Přejít na {plan}",
-      "error": "Tarif se nepodařilo změnit. Zkuste to prosím znovu."
+      "error": "Tarif se nepodařilo změnit. Zkuste to prosím znovu.",
+      "trialLine": "Máte bezplatné zkušební období, které končí {date}. Zvolte tarif, který začne platit po jeho skončení.",
+      "startsAtTrialEnd": "Začne platit po skončení zkušebního období.",
+      "choose": "Zvolit tarif {plan}"
     },
     "notices": {
       "trialEndsSoon": "<b>Vaše bezplatné zkušební období končí {date}.</b> Přidejte kartu, aby online objednávky zůstaly zapnuté.",
@@ -7341,7 +7344,8 @@
       "addCard": "Přidat kartu →",
       "updateCard": "Aktualizovat {method, select, payment_method {platební metodu} other {kartu}} →",
       "payNow": "Zaplatit hned →",
-      "dismiss": "Zavřít"
+      "dismiss": "Zavřít",
+      "trialEnded": "<b>Vaše bezplatné zkušební období skončilo.</b> Přidejte kartu a online objednávky se znovu zapnou."
     }
   },
   "emailBilling": {

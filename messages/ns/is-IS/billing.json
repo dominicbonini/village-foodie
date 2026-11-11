@@ -22,7 +22,8 @@
       "change": "Breyta",
       "lastFailed": "Síðasta greiðsla mistókst",
       "update": "Uppfæra kort",
-      "error": "Ekki tókst að opna greiðslusíðuna. Reyndu aftur."
+      "error": "Ekki tókst að opna greiðslusíðuna. Reyndu aftur.",
+      "noneAfterTrial": "Ekkert kort skráð. Bættu við korti til að opna aftur fyrir netpantanir."
     },
     "whatYouPay": {
       "title": "Það sem þú greiðir",
@@ -48,8 +49,7 @@
       "title": "Hvernig viðskiptavinir greiða fyrir forpöntun",
       "online": "Á netinu, þegar þeir panta",
       "onlineHint": "Peningarnir fara beint inn á Stripe-reikninginn þinn.",
-      "atTruck": "Við vagninn, þegar þeir sækja",
-      "atTruckHint": "Gjaldið okkar bætist þá við mánaðargjaldið þitt.",
+      "atTruckHint": "Viðskiptavinir greiða þegar þeir sækja. Gjaldið okkar bætist við mánaðargjaldið þitt.",
       "saved": "Vistað.",
       "error": "Ekki tókst að vista þetta. Reyndu aftur."
     },
@@ -100,7 +100,10 @@
     "startsLater": "Hefst {nextFirst}. Þú heldur áskriftarleiðinni {plan} fram að því.",
     "cancel": "Hætta við",
     "switchTo": "Skipta yfir í {plan}",
-    "error": "Ekki tókst að breyta áskriftarleiðinni. Reyndu aftur."
+    "error": "Ekki tókst að breyta áskriftarleiðinni. Reyndu aftur.",
+    "trialLine": "Þú ert í ókeypis prufu. Veldu áskriftarleiðina sem tekur við þegar henni lýkur {date}.",
+    "startsAtTrialEnd": "Hefst þegar prufunni þinni lýkur.",
+    "choose": "Velja {plan}"
   },
   "notices": {
     "trialEndsSoon": "<b>Ókeypis prufunni þinni lýkur {date}.</b> Bættu við korti til að halda netpöntunum opnum.",
@@ -111,6 +114,7 @@
     "addCard": "Bæta við korti →",
     "updateCard": "Uppfæra {method, select, payment_method {greiðslumáta} other {kort}} →",
     "payNow": "Greiða núna →",
-    "dismiss": "Loka"
+    "dismiss": "Loka",
+    "trialEnded": "<b>Ókeypis prufunni þinni er lokið.</b> Bættu við korti til að opna aftur fyrir netpantanir."
   }
 }

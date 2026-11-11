@@ -22,7 +22,8 @@
       "change": "Modifier",
       "lastFailed": "Le dernier paiement a échoué",
       "update": "Mettre à jour la carte",
-      "error": "Nous n’avons pas pu ouvrir la page de paiement. Veuillez réessayer."
+      "error": "Nous n’avons pas pu ouvrir la page de paiement. Veuillez réessayer.",
+      "noneAfterTrial": "Aucune carte ajoutée. Ajoutez-en une pour réactiver les commandes en ligne."
     },
     "whatYouPay": {
       "title": "Ce que vous payez",
@@ -48,8 +49,7 @@
       "title": "Comment les clients paient leurs précommandes",
       "online": "En ligne, au moment de commander",
       "onlineHint": "L’argent est versé directement sur votre compte Stripe.",
-      "atTruck": "Au food truck, au moment du retrait",
-      "atTruckHint": "Nos frais sont alors ajoutés à votre prélèvement mensuel.",
+      "atTruckHint": "Les clients paient au moment du retrait. Nos frais sont ajoutés à votre prélèvement mensuel.",
       "saved": "Enregistré.",
       "error": "Nous n’avons pas pu enregistrer ce choix. Veuillez réessayer."
     },
@@ -100,7 +100,10 @@
     "startsLater": "Prend effet le {nextFirst}. Vous gardez l’offre {plan} d’ici là.",
     "cancel": "Annuler",
     "switchTo": "Passer à l’offre {plan}",
-    "error": "Nous n’avons pas pu changer votre offre. Veuillez réessayer."
+    "error": "Nous n’avons pas pu changer votre offre. Veuillez réessayer.",
+    "trialLine": "Vous êtes en essai gratuit. Choisissez l’offre qui prendra le relais à sa fin, le {date}.",
+    "startsAtTrialEnd": "Prend effet à la fin de votre essai.",
+    "choose": "Choisir l’offre {plan}"
   },
   "notices": {
     "trialEndsSoon": "<b>Votre essai gratuit se termine le {date}.</b> Ajoutez une carte pour garder les commandes en ligne actives.",
@@ -111,6 +114,7 @@
     "addCard": "Ajouter une carte →",
     "updateCard": "Mettre à jour {method, select, payment_method {le moyen de paiement} other {la carte}} →",
     "payNow": "Payer maintenant →",
-    "dismiss": "Ignorer"
+    "dismiss": "Ignorer",
+    "trialEnded": "<b>Votre essai gratuit est terminé.</b> Ajoutez une carte pour réactiver les commandes en ligne."
   }
 }

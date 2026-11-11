@@ -22,7 +22,8 @@
       "change": "Değiştir",
       "lastFailed": "Son ödeme başarısız oldu",
       "update": "Kartı güncelle",
-      "error": "Ödeme sayfasını açamadık. Lütfen tekrar deneyin."
+      "error": "Ödeme sayfasını açamadık. Lütfen tekrar deneyin.",
+      "noneAfterTrial": "Kart eklenmedi. Online sipariş alımını yeniden açmak için bir kart ekleyin."
     },
     "whatYouPay": {
       "title": "Ne ödersiniz",
@@ -48,8 +49,7 @@
       "title": "Müşteriler ön siparişleri nasıl ödüyor",
       "online": "Online, sipariş verirken",
       "onlineHint": "Para doğrudan Stripe hesabınıza gider.",
-      "atTruck": "Food truck’ta, teslim alırken",
-      "atTruckHint": "Bunun yerine ücretimiz aylık tahsilatınıza eklenir.",
+      "atTruckHint": "Müşteriler teslim alırken öder. Ücretimiz aylık tahsilatınıza eklenir.",
       "saved": "Kaydedildi.",
       "error": "Bunu kaydedemedik. Lütfen tekrar deneyin."
     },
@@ -100,7 +100,10 @@
     "startsLater": "{nextFirst} tarihinde başlar. O zamana kadar {plan} paketiniz devam eder.",
     "cancel": "İptal",
     "switchTo": "{plan} paketine geç",
-    "error": "Paketinizi değiştiremedik. Lütfen tekrar deneyin."
+    "error": "Paketinizi değiştiremedik. Lütfen tekrar deneyin.",
+    "trialLine": "Ücretsiz denemedesiniz. Denemeniz {date} tarihinde bittiğinde geçerli olacak paketinizi seçin.",
+    "startsAtTrialEnd": "Denemeniz bittiğinde başlar.",
+    "choose": "{plan} paketini seç"
   },
   "notices": {
     "trialEndsSoon": "<b>Ücretsiz denemeniz {date} tarihinde bitiyor.</b> Online sipariş alımının açık kalması için bir kart ekleyin.",
@@ -111,6 +114,7 @@
     "addCard": "Kart ekle →",
     "updateCard": "{method, select, payment_method {Ödeme yöntemini} other {Kartı}} güncelle →",
     "payNow": "Şimdi öde →",
-    "dismiss": "Kapat"
+    "dismiss": "Kapat",
+    "trialEnded": "<b>Ücretsiz denemeniz sona erdi.</b> Online sipariş alımını yeniden açmak için bir kart ekleyin."
   }
 }

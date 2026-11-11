@@ -22,7 +22,8 @@
       "change": "Promijeni",
       "lastFailed": "Posljednje plaćanje nije uspjelo",
       "update": "Ažuriraj karticu",
-      "error": "Nismo mogli otvoriti stranicu za plaćanje. Pokušajte ponovno."
+      "error": "Nismo mogli otvoriti stranicu za plaćanje. Pokušajte ponovno.",
+      "noneAfterTrial": "Kartica nije dodana. Dodajte je kako biste ponovno uključili online naručivanje."
     },
     "whatYouPay": {
       "title": "Što plaćate",
@@ -48,8 +49,7 @@
       "title": "Kako kupci plaćaju prednarudžbe",
       "online": "Online, pri naručivanju",
       "onlineHint": "Novac ide izravno na vaš Stripe račun.",
-      "atTruck": "Kod food trucka, pri preuzimanju",
-      "atTruckHint": "Naša se naknada umjesto toga dodaje vašoj mjesečnoj naplati.",
+      "atTruckHint": "Kupci plaćaju pri preuzimanju. Naša se naknada dodaje vašoj mjesečnoj naplati.",
       "saved": "Spremljeno.",
       "error": "Nismo mogli spremiti promjenu. Pokušajte ponovno."
     },
@@ -100,7 +100,10 @@
     "startsLater": "Počinje {nextFirst}. Do tada zadržavate paket {plan}.",
     "cancel": "Odustani",
     "switchTo": "Prijeđi na paket {plan}",
-    "error": "Nismo mogli promijeniti paket. Pokušajte ponovno."
+    "error": "Nismo mogli promijeniti paket. Pokušajte ponovno.",
+    "trialLine": "Koristite besplatno probno razdoblje, koje završava {date}. Odaberite paket koji počinje nakon njegova završetka.",
+    "startsAtTrialEnd": "Počinje kad završi probno razdoblje.",
+    "choose": "Odaberi paket {plan}"
   },
   "notices": {
     "trialEndsSoon": "<b>Vaše besplatno probno razdoblje završava {date}.</b> Dodajte karticu kako bi online naručivanje ostalo uključeno.",
@@ -111,6 +114,7 @@
     "addCard": "Dodaj karticu →",
     "updateCard": "Ažuriraj {method, select, payment_method {način plaćanja} other {karticu}} →",
     "payNow": "Plati sada →",
-    "dismiss": "Odbaci"
+    "dismiss": "Odbaci",
+    "trialEnded": "<b>Vaše besplatno probno razdoblje je završilo.</b> Dodajte karticu kako biste ponovno uključili online naručivanje."
   }
 }

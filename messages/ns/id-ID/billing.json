@@ -22,7 +22,8 @@
       "change": "Ganti",
       "lastFailed": "Pembayaran terakhir gagal",
       "update": "Perbarui kartu",
-      "error": "Halaman pembayaran tidak bisa dibuka. Silakan coba lagi."
+      "error": "Halaman pembayaran tidak bisa dibuka. Silakan coba lagi.",
+      "noneAfterTrial": "Belum ada kartu. Tambahkan kartu untuk mengaktifkan kembali pemesanan online."
     },
     "whatYouPay": {
       "title": "Yang Anda bayar",
@@ -48,8 +49,7 @@
       "title": "Cara pelanggan membayar pre-order",
       "online": "Online, saat memesan",
       "onlineHint": "Uangnya langsung masuk ke akun Stripe Anda.",
-      "atTruck": "Di truk, saat mengambil pesanan",
-      "atTruckHint": "Biaya kami ditambahkan ke tagihan bulanan Anda.",
+      "atTruckHint": "Pelanggan membayar saat mengambil pesanan. Biaya kami ditambahkan ke tagihan bulanan Anda.",
       "saved": "Tersimpan.",
       "error": "Gagal menyimpan. Silakan coba lagi."
     },
@@ -100,7 +100,10 @@
     "startsLater": "Mulai pada {nextFirst}. Sampai saat itu Anda tetap memakai paket {plan}.",
     "cancel": "Batal",
     "switchTo": "Beralih ke paket {plan}",
-    "error": "Paket Anda tidak bisa diganti. Silakan coba lagi."
+    "error": "Paket Anda tidak bisa diganti. Silakan coba lagi.",
+    "trialLine": "Anda sedang dalam masa coba gratis. Pilih paket Anda untuk setelah masa coba berakhir pada {date}.",
+    "startsAtTrialEnd": "Dimulai saat masa coba Anda berakhir.",
+    "choose": "Pilih paket {plan}"
   },
   "notices": {
     "trialEndsSoon": "<b>Masa coba gratis Anda berakhir pada {date}.</b> Tambahkan kartu agar pemesanan online tetap aktif.",
@@ -111,6 +114,7 @@
     "addCard": "Tambah kartu →",
     "updateCard": "Perbarui {method, select, payment_method {metode pembayaran} other {kartu}} →",
     "payNow": "Bayar sekarang →",
-    "dismiss": "Tutup"
+    "dismiss": "Tutup",
+    "trialEnded": "<b>Masa coba gratis Anda sudah berakhir.</b> Tambahkan kartu untuk mengaktifkan kembali pemesanan online."
   }
 }

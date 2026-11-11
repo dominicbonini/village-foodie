@@ -7252,7 +7252,8 @@
         "change": "Keisti",
         "lastFailed": "Paskutinis mokėjimas nepavyko",
         "update": "Atnaujinti kortelę",
-        "error": "Nepavyko atidaryti mokėjimo puslapio. Bandykite dar kartą."
+        "error": "Nepavyko atidaryti mokėjimo puslapio. Bandykite dar kartą.",
+        "noneAfterTrial": "Kortelė nepridėta. Pridėkite ją, kad vėl įjungtumėte internetinius užsakymus."
       },
       "whatYouPay": {
         "title": "Ką mokate",
@@ -7278,8 +7279,7 @@
         "title": "Kaip klientai moka už išankstinius užsakymus",
         "online": "Internetu, kai užsako",
         "onlineHint": "Pinigai keliauja tiesiai į jūsų Stripe paskyrą.",
-        "atTruck": "Prie furgono, kai atsiima",
-        "atTruckHint": "Tokiu atveju mūsų mokestis pridedamas prie jūsų mėnesinio mokėjimo.",
+        "atTruckHint": "Klientai moka, kai atsiima užsakymą. Mūsų mokestis pridedamas prie jūsų mėnesinio mokėjimo.",
         "saved": "Išsaugota.",
         "error": "Nepavyko išsaugoti. Bandykite dar kartą."
       },
@@ -7330,7 +7330,10 @@
       "startsLater": "Prasidės {nextFirst}. Iki tol naudositės planu {plan}.",
       "cancel": "Atšaukti",
       "switchTo": "Pereiti prie plano {plan}",
-      "error": "Nepavyko pakeisti plano. Bandykite dar kartą."
+      "error": "Nepavyko pakeisti plano. Bandykite dar kartą.",
+      "trialLine": "Jums taikomas nemokamas bandomasis laikotarpis, kuris baigiasi {date}. Pasirinkite planą, kuris prasidės po jo.",
+      "startsAtTrialEnd": "Prasidės pasibaigus bandomajam laikotarpiui.",
+      "choose": "Pasirinkti planą {plan}"
     },
     "notices": {
       "trialEndsSoon": "<b>Jūsų nemokamas bandomasis laikotarpis baigiasi {date}.</b> Pridėkite kortelę, kad internetiniai užsakymai liktų įjungti.",
@@ -7341,7 +7344,8 @@
       "addCard": "Pridėti kortelę →",
       "updateCard": "Atnaujinti {method, select, payment_method {mokėjimo būdą} other {kortelę}} →",
       "payNow": "Mokėti dabar →",
-      "dismiss": "Uždaryti"
+      "dismiss": "Uždaryti",
+      "trialEnded": "<b>Jūsų nemokamas bandomasis laikotarpis baigėsi.</b> Pridėkite kortelę, kad vėl įjungtumėte internetinius užsakymus."
     }
   },
   "emailBilling": {

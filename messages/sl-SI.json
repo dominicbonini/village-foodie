@@ -7252,7 +7252,8 @@
         "change": "Spremeni",
         "lastFailed": "Zadnje plačilo ni uspelo",
         "update": "Posodobi kartico",
-        "error": "Strani za plačilo ni bilo mogoče odpreti. Poskusite znova."
+        "error": "Strani za plačilo ni bilo mogoče odpreti. Poskusite znova.",
+        "noneAfterTrial": "Kartica ni dodana. Dodajte jo, da spletno naročanje znova vklopite."
       },
       "whatYouPay": {
         "title": "Kaj plačate",
@@ -7278,8 +7279,7 @@
         "title": "Kako stranke plačajo prednaročila",
         "online": "Na spletu, ob naročilu",
         "onlineHint": "Denar gre neposredno na vaš račun Stripe.",
-        "atTruck": "Pri food trucku, ob prevzemu",
-        "atTruckHint": "Naša provizija se namesto tega prišteje vašemu mesečnemu obračunu.",
+        "atTruckHint": "Stranke plačajo ob prevzemu. Naša provizija se prišteje vašemu mesečnemu obračunu.",
         "saved": "Shranjeno.",
         "error": "Tega ni bilo mogoče shraniti. Poskusite znova."
       },
@@ -7330,7 +7330,10 @@
       "startsLater": "Začne veljati {nextFirst}. Do takrat obdržite paket {plan}.",
       "cancel": "Prekliči",
       "switchTo": "Preidi na paket {plan}",
-      "error": "Paketa ni bilo mogoče zamenjati. Poskusite znova."
+      "error": "Paketa ni bilo mogoče zamenjati. Poskusite znova.",
+      "trialLine": "Uporabljate brezplačni preizkus, ki se konča {date}. Izberite paket, ki bo začel veljati po njegovem koncu.",
+      "startsAtTrialEnd": "Začne veljati ob koncu preizkusnega obdobja.",
+      "choose": "Izberi paket {plan}"
     },
     "notices": {
       "trialEndsSoon": "<b>Vaše brezplačno preizkusno obdobje se konča {date}.</b> Dodajte kartico, da spletno naročanje ostane vklopljeno.",
@@ -7341,7 +7344,8 @@
       "addCard": "Dodaj kartico →",
       "updateCard": "Posodobi {method, select, payment_method {način plačila} other {kartico}} →",
       "payNow": "Plačaj zdaj →",
-      "dismiss": "Opusti"
+      "dismiss": "Opusti",
+      "trialEnded": "<b>Vaše brezplačno preizkusno obdobje se je končalo.</b> Dodajte kartico, da spletno naročanje znova vklopite."
     }
   },
   "emailBilling": {

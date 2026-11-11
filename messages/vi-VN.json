@@ -7252,7 +7252,8 @@
         "change": "Đổi",
         "lastFailed": "Lần thanh toán gần nhất không thành công",
         "update": "Cập nhật thẻ",
-        "error": "Không mở được trang thanh toán. Vui lòng thử lại."
+        "error": "Không mở được trang thanh toán. Vui lòng thử lại.",
+        "noneAfterTrial": "Chưa có thẻ nào. Hãy thêm thẻ để bật lại đặt món online."
       },
       "whatYouPay": {
         "title": "Khoản bạn trả",
@@ -7278,8 +7279,7 @@
         "title": "Khách thanh toán đơn đặt trước như thế nào",
         "online": "Online, khi đặt món",
         "onlineHint": "Tiền chuyển thẳng vào tài khoản Stripe của bạn.",
-        "atTruck": "Tại xe, khi nhận món",
-        "atTruckHint": "Thay vào đó, phí của chúng tôi được cộng vào khoản thu hằng tháng của bạn.",
+        "atTruckHint": "Khách thanh toán khi nhận món. Phí của chúng tôi được cộng vào khoản thu hằng tháng của bạn.",
         "saved": "Đã lưu.",
         "error": "Không lưu được. Vui lòng thử lại."
       },
@@ -7330,7 +7330,10 @@
       "startsLater": "Bắt đầu từ {nextFirst}. Đến lúc đó bạn vẫn dùng gói {plan}.",
       "cancel": "Hủy",
       "switchTo": "Chuyển sang gói {plan}",
-      "error": "Không đổi được gói. Vui lòng thử lại."
+      "error": "Không đổi được gói. Vui lòng thử lại.",
+      "trialLine": "Bạn đang trong thời gian dùng thử miễn phí. Hãy chọn gói sẽ áp dụng khi thời gian dùng thử kết thúc vào {date}.",
+      "startsAtTrialEnd": "Bắt đầu khi hết thời gian dùng thử.",
+      "choose": "Chọn gói {plan}"
     },
     "notices": {
       "trialEndsSoon": "<b>Thời gian dùng thử miễn phí của bạn kết thúc vào {date}.</b> Hãy thêm thẻ để tiếp tục nhận đơn online.",
@@ -7341,7 +7344,8 @@
       "addCard": "Thêm thẻ →",
       "updateCard": "Cập nhật {method, select, payment_method {hình thức thanh toán} other {thẻ}} →",
       "payNow": "Thanh toán ngay →",
-      "dismiss": "Bỏ qua"
+      "dismiss": "Bỏ qua",
+      "trialEnded": "<b>Thời gian dùng thử miễn phí của bạn đã kết thúc.</b> Hãy thêm thẻ để bật lại đặt món online."
     }
   },
   "emailBilling": {

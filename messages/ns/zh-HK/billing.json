@@ -22,7 +22,8 @@
       "change": "更改",
       "lastFailed": "上次付款失敗",
       "update": "更新信用卡",
-      "error": "未能開啟付款頁面，請再試一次。"
+      "error": "未能開啟付款頁面，請再試一次。",
+      "noneAfterTrial": "尚未加入信用卡。請加入信用卡，以重新開啟網上落單。"
     },
     "whatYouPay": {
       "title": "你需支付的費用",
@@ -48,8 +49,7 @@
       "title": "顧客如何支付預先落單",
       "online": "落單時網上付款",
       "onlineHint": "款項會直接存入你的 Stripe 帳戶。",
-      "atTruck": "取餐時在美食車付款",
-      "atTruckHint": "我們的費用會改為加入你的每月收費。",
+      "atTruckHint": "顧客取餐時付款。我們的費用會加入你的每月收費。",
       "saved": "已儲存。",
       "error": "未能儲存，請再試一次。"
     },
@@ -100,7 +100,10 @@
     "startsLater": "於 {nextFirst} 生效。在此之前你會繼續使用 {plan}。",
     "cancel": "取消",
     "switchTo": "轉用 {plan}",
-    "error": "未能更改你的計劃，請再試一次。"
+    "error": "未能更改你的計劃，請再試一次。",
+    "trialLine": "你正在免費試用。請選擇試用期於 {date} 結束後使用的計劃。",
+    "startsAtTrialEnd": "試用期結束後生效。",
+    "choose": "選擇 {plan}"
   },
   "notices": {
     "trialEndsSoon": "<b>你的免費試用將於 {date} 結束。</b>請加入信用卡，以繼續接受網上訂單。",
@@ -111,6 +114,7 @@
     "addCard": "加入信用卡 →",
     "updateCard": "更新{method, select, payment_method {付款方式} other {信用卡}} →",
     "payNow": "立即付款 →",
-    "dismiss": "關閉"
+    "dismiss": "關閉",
+    "trialEnded": "<b>你的免費試用已結束。</b>請加入信用卡，以重新開啟網上落單。"
   }
 }

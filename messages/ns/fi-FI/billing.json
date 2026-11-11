@@ -22,7 +22,8 @@
       "change": "Vaihda",
       "lastFailed": "Viimeisin maksu epäonnistui",
       "update": "Päivitä kortti",
-      "error": "Maksusivua ei voitu avata. Yritä uudelleen."
+      "error": "Maksusivua ei voitu avata. Yritä uudelleen.",
+      "noneAfterTrial": "Korttia ei ole lisätty. Lisää kortti, niin verkkotilaukset palaavat päälle."
     },
     "whatYouPay": {
       "title": "Mitä maksat",
@@ -48,8 +49,7 @@
       "title": "Miten asiakkaat maksavat ennakkotilaukset",
       "online": "Verkossa, tilatessaan",
       "onlineHint": "Rahat menevät suoraan Stripe-tilillesi.",
-      "atTruck": "Ruokarekalla, noutaessaan",
-      "atTruckHint": "Maksumme lisätään sen sijaan kuukausiveloitukseesi.",
+      "atTruckHint": "Asiakkaat maksavat noutaessaan. Maksumme lisätään kuukausiveloitukseesi.",
       "saved": "Tallennettu.",
       "error": "Tallentaminen ei onnistunut. Yritä uudelleen."
     },
@@ -100,7 +100,10 @@
     "startsLater": "Alkaa {nextFirst}. Siihen asti käytössäsi on paketti {plan}.",
     "cancel": "Peruuta",
     "switchTo": "Vaihda pakettiin {plan}",
-    "error": "Paketin vaihtaminen ei onnistunut. Yritä uudelleen."
+    "error": "Paketin vaihtaminen ei onnistunut. Yritä uudelleen.",
+    "trialLine": "Käytössäsi on ilmainen kokeilujakso, joka päättyy {date}. Valitse paketti, joka alkaa sen jälkeen.",
+    "startsAtTrialEnd": "Alkaa, kun kokeilujaksosi päättyy.",
+    "choose": "Valitse paketti {plan}"
   },
   "notices": {
     "trialEndsSoon": "<b>Ilmainen kokeilujaksosi päättyy {date}.</b> Lisää kortti, niin verkkotilaukset pysyvät päällä.",
@@ -111,6 +114,7 @@
     "addCard": "Lisää kortti →",
     "updateCard": "Päivitä {method, select, payment_method {maksutapa} other {kortti}} →",
     "payNow": "Maksa nyt →",
-    "dismiss": "Ohita"
+    "dismiss": "Ohita",
+    "trialEnded": "<b>Ilmainen kokeilujaksosi on päättynyt.</b> Lisää kortti, niin verkkotilaukset palaavat päälle."
   }
 }

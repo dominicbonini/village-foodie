@@ -220,6 +220,7 @@
     "demo-claim-2.cjs",
     "billing-1.cjs",
     "billing-2.cjs",
+    "billing-3.cjs",
     "pricing-copy-1.cjs"
   ],
   "excluded": {
@@ -408,6 +409,7 @@
         "countries-screenshots.cjs",
         "admin-countries-1-screens.cjs",
         "billing-2-screens.cjs",
+        "billing-3-screens.cjs",
         "pricing-copy-1-screens.cjs",
         "country-picker-1-screens.cjs",
         "compare-de-1-screens.cjs",

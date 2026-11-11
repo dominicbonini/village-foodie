@@ -7252,7 +7252,8 @@
         "change": "Promeni",
         "lastFailed": "Poslednje plaćanje nije uspelo",
         "update": "Ažuriraj karticu",
-        "error": "Nismo uspeli da otvorimo stranicu za plaćanje. Pokušajte ponovo."
+        "error": "Nismo uspeli da otvorimo stranicu za plaćanje. Pokušajte ponovo.",
+        "noneAfterTrial": "Kartica nije dodata. Dodajte je da biste ponovo uključili online poručivanje."
       },
       "whatYouPay": {
         "title": "Šta plaćate",
@@ -7278,8 +7279,7 @@
         "title": "Kako kupci plaćaju porudžbine unapred",
         "online": "Online, prilikom poručivanja",
         "onlineHint": "Novac ide direktno na vaš Stripe nalog.",
-        "atTruck": "Kod food trucka, prilikom preuzimanja",
-        "atTruckHint": "Naša naknada se tada dodaje vašem mesečnom računu.",
+        "atTruckHint": "Kupci plaćaju prilikom preuzimanja. Naša naknada se dodaje vašem mesečnom računu.",
         "saved": "Sačuvano.",
         "error": "Nismo uspeli da sačuvamo. Pokušajte ponovo."
       },
@@ -7330,7 +7330,10 @@
       "startsLater": "Počinje {nextFirst}. Do tada zadržavate paket {plan}.",
       "cancel": "Otkaži",
       "switchTo": "Pređi na {plan}",
-      "error": "Nismo uspeli da promenimo paket. Pokušajte ponovo."
+      "error": "Nismo uspeli da promenimo paket. Pokušajte ponovo.",
+      "trialLine": "Koristite besplatni probni period. Izaberite paket koji počinje kada on istekne {date}.",
+      "startsAtTrialEnd": "Počinje kada vam istekne probni period.",
+      "choose": "Izaberi paket {plan}"
     },
     "notices": {
       "trialEndsSoon": "<b>Vaš besplatni probni period ističe {date}.</b> Dodajte karticu da bi online poručivanje ostalo uključeno.",
@@ -7341,7 +7344,8 @@
       "addCard": "Dodaj karticu →",
       "updateCard": "Ažuriraj {method, select, payment_method {način plaćanja} other {karticu}} →",
       "payNow": "Plati odmah →",
-      "dismiss": "Odbaci"
+      "dismiss": "Odbaci",
+      "trialEnded": "<b>Vaš besplatni probni period je istekao.</b> Dodajte karticu da biste ponovo uključili online poručivanje."
     }
   },
   "emailBilling": {

@@ -6,7 +6,7 @@
 //   add_pix            Pix Automático through Stripe's hosted instructions page (Brazil) → { url }
 //   setup_return       { sessionId } — back from Checkout: the card on file, then every unpaid invoice tried on it at once
 //   plan_preview       { planKey } — what "Switch to {plan}" will do (up: charged today; down: from the 1st)
-//   change_plan        { planKey } — lib/billing/engine.ts requestPlanChange
+//   change_plan        { planKey } — lib/billing/engine.ts requestPlanChange (billing-3: during the trial, the plan it ends into)
 //   pre_order_payment  { value: 'online' | 'at_truck' } — truck_billing.post_pay, the ONE setting for it (no second is created)
 // 🔴 VISIBLE ONLY while billing is switched on, or for a billing_test truck: every other truck gets { visible: false } and no action
 // runs, so Manage › Billing stays exactly as today. Stripe calls go through lib/billing/processor.ts — TEST MODE ONLY.
@@ -99,7 +99,8 @@ export async function POST(req: NextRequest) {
     }
     if (action === 'change_plan') {
       const out = await requestPlanChange(store, processor, catalog, { truckId: truckRow.id, planKey: String(body.planKey ?? ''), now, by, testRun })
-      if (out.outcome === 'skipped' || out.outcome === 'in_trial') return json({ error: out.outcome, code: out.outcome }, 400)
+      // billing-3: during the trial the outcome is 'trial_choice' — stored as the plan the trial ends into, nothing charged.
+      if (out.outcome === 'skipped') return json({ error: out.outcome, code: out.outcome }, 400)
       return json({ outcome: out.outcome, view: (await loadBillingScreen(store, catalog, truckRow.id, new Date()) as { view: unknown }).view })
     }
   } catch (e) {

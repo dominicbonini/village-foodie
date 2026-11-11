@@ -22,7 +22,8 @@
       "change": "Muuda",
       "lastFailed": "Viimane makse ebaõnnestus",
       "update": "Uuenda kaarti",
-      "error": "Makselehte ei õnnestunud avada. Palun proovi uuesti."
+      "error": "Makselehte ei õnnestunud avada. Palun proovi uuesti.",
+      "noneAfterTrial": "Kaarti pole lisatud. Lisa kaart, et veebitellimine uuesti sisse lülitada."
     },
     "whatYouPay": {
       "title": "Mille eest maksad",
@@ -48,8 +49,7 @@
       "title": "Kuidas kliendid ettetellimuste eest maksavad",
       "online": "Veebis, tellimisel",
       "onlineHint": "Raha läheb otse sinu Stripe’i kontole.",
-      "atTruck": "Toiduauto juures, kättesaamisel",
-      "atTruckHint": "Meie tasu lisatakse selle asemel sinu kuumaksele.",
+      "atTruckHint": "Kliendid maksavad kättesaamisel. Meie tasu lisatakse sinu kuumaksele.",
       "saved": "Salvestatud.",
       "error": "Salvestamine ei õnnestunud. Palun proovi uuesti."
     },
@@ -100,7 +100,10 @@
     "startsLater": "Algab {nextFirst}. Seni jääb sulle pakett {plan}.",
     "cancel": "Tühista",
     "switchTo": "Mine üle paketile {plan}",
-    "error": "Paketi muutmine ei õnnestunud. Palun proovi uuesti."
+    "error": "Paketi muutmine ei õnnestunud. Palun proovi uuesti.",
+    "trialLine": "Kasutad tasuta prooviperioodi, mis lõpeb {date}. Vali pakett, mis algab pärast seda.",
+    "startsAtTrialEnd": "Algab, kui prooviperiood lõpeb.",
+    "choose": "Vali pakett {plan}"
   },
   "notices": {
     "trialEndsSoon": "<b>Sinu tasuta prooviperiood lõpeb {date}.</b> Lisa kaart, et veebitellimine jääks sisse.",
@@ -111,6 +114,7 @@
     "addCard": "Lisa kaart →",
     "updateCard": "Uuenda {method, select, payment_method {makseviisi} other {kaarti}} →",
     "payNow": "Maksa kohe →",
-    "dismiss": "Sulge"
+    "dismiss": "Sulge",
+    "trialEnded": "<b>Sinu tasuta prooviperiood on lõppenud.</b> Lisa kaart, et veebitellimine uuesti sisse lülitada."
   }
 }

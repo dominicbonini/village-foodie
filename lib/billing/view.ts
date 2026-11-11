@@ -11,7 +11,7 @@ import {
 import { localDateOfInstant, instantOfLocal } from '@/lib/time-utils'
 import type { InvoiceRow, ChargeRow, UsageRow, TruckBillingRow, BillingEmailKind, BillingEmailRow } from '@/lib/billing/store-types'
 
-export type NoticeKind = 'trial_ends_soon' | 'trial_ends_tomorrow' | 'all_set' | 'payment_failed' | 'paused'
+export type NoticeKind = 'trial_ends_soon' | 'trial_ends_tomorrow' | 'all_set' | 'payment_failed' | 'paused' | 'trial_ended'
 
 export interface NoticeView {
   kind: NoticeKind
@@ -85,6 +85,9 @@ export interface BillingScreenView {
   invoices: InvoiceView[]
   plans: PlanChoiceView[]
   pendingPlan: { key: string; from: string } | null
+  /** billing-3: the free trial is over and no payment method is on file — online ordering is paused (notice F; the Payment method
+   *  card's "No card added. Add one to turn online ordering back on."). */
+  trialEndedNoCard: boolean
   notice: NoticeView | null
 }
 
@@ -193,6 +196,8 @@ export function billingScreenOf(i: ScreenInput): BillingScreenView {
 
   const arr = arrangementOf(ctx)
   const label = tb?.paymentMethodLabel ?? null
+  const pmState = tb?.paymentMethodState ?? 'none'
+  const trialEndedNoCard = !onTrial && !!trialEnd && now >= Date.parse(trialEnd) && pmState !== 'valid' && pmState !== 'pending'
   const view: BillingScreenView = {
     visible: true, mode: onTrial ? 'trial' : 'paying', currency: truck.currency ?? 'GBP', today,
     plan: { key: level.planKey, onTrial, monthlyMinor: level.monthlyMinor, allowanceMinor: level.price ? level.price.includedOnlineMinor : null, feeBps: level.price ? level.price.feeBps : 0 },
@@ -201,7 +206,7 @@ export function billingScreenOf(i: ScreenInput): BillingScreenView {
     pixOffered: (truck.currency ?? '') === 'BRL',
     failure,
     preOrderPayment: { value: arr?.postPay ? 'at_truck' : 'online', onlineAllowed: ctx.countryBilling?.paymentModel !== 'billed_at_truck' },
-    invoices, plans, pendingPlan: pending, notice: null,
+    invoices, plans, pendingPlan: pending, trialEndedNoCard, notice: null,
   }
   view.notice = noticeOf(view, { pmValid, method })
   return view
@@ -209,11 +214,13 @@ export function billingScreenOf(i: ScreenInput): BillingScreenView {
 
 /**
  * 🔴 ONE BILLING NOTICE AT A TIME (every Manage tab except Billing; the owner only). Most urgent first:
- *   E paused → D payment failed → B trial ends tomorrow, no card → A trial ends within 7 days, no card → C trial ending, card added.
+ *   E paused → D payment failed → F trial over, no card (billing-3) → B trial ends tomorrow, no card → A trial ends within 7 days,
+ *   no card → C trial ending, card added.
  */
 export function noticeOf(v: Omit<BillingScreenView, 'notice'>, o: { pmValid: boolean; method: NoticeView['method'] }): NoticeView | null {
   if (v.failure?.paused) return { kind: 'paused', amountMinor: v.failure.amountMinor, suspendWarningDate: v.failure.suspendWarningDate, method: o.method, dismissible: false }
   if (v.failure) return { kind: 'payment_failed', lastDay: v.failure.lastDay, method: o.method, dismissible: false }
+  if (v.trialEndedNoCard) return { kind: 'trial_ended', method: o.method, dismissible: false }
   if (v.trial) {
     const left = dayDiff(v.today, v.trial.endDate)
     if (left < 0 || left > 7) return null
@@ -288,6 +295,8 @@ export interface PlanChangePreview {
   month: string
   nextFirst: string
   toMonthlyMinor: number
+  /** billing-3: 'in_trial' — the plan starts when the trial ends, on this date (the trial's last day). */
+  trialEndDate?: string | null
 }
 
 /**
@@ -306,7 +315,11 @@ export function planChangePreview(i: ScreenInput & { toPlanKey: string }): PlanC
   const nextFirst = nextPeriod(month)
   const to = planPriceFor(catalog, i.toPlanKey, pin.countryCode)
   const toMonthlyMinor = to?.monthlyMinor ?? 0
-  if (level.trialling) return { direction: 'in_trial', amountMinor: 0, month, nextFirst, toMonthlyMinor }
+  // billing-3 item 5: during the trial the choice starts when the trial ends — nothing is charged now (no amount box).
+  if (level.trialling) {
+    const end = trialEndOf(truck, catalog)
+    return { direction: 'in_trial', amountMinor: 0, month, nextFirst, toMonthlyMinor, trialEndDate: end ? localDateOfInstant(end, tz) : null }
+  }
   if (toMonthlyMinor < level.monthlyMinor) return { direction: 'down', amountMinor: 0, month, nextFirst, toMonthlyMinor }
   if (toMonthlyMinor === level.monthlyMinor) return { direction: 'same', amountMinor: 0, month, nextFirst, toMonthlyMinor }
   const monthly = i.charges.find(c => c.kind === 'monthly' && c.period === month)

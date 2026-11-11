@@ -22,7 +22,8 @@
       "change": "Wijzigen",
       "lastFailed": "Laatste betaling mislukt",
       "update": "Kaart bijwerken",
-      "error": "We konden de betaalpagina niet openen. Probeer het opnieuw."
+      "error": "We konden de betaalpagina niet openen. Probeer het opnieuw.",
+      "noneAfterTrial": "Geen kaart toegevoegd. Voeg er een toe om online bestellen weer aan te zetten."
     },
     "whatYouPay": {
       "title": "Wat je betaalt",
@@ -48,8 +49,7 @@
       "title": "Hoe klanten voorbestellingen betalen",
       "online": "Online, bij het bestellen",
       "onlineHint": "Het geld gaat direct naar je Stripe-account.",
-      "atTruck": "Bij de truck, bij het afhalen",
-      "atTruckHint": "Onze kosten worden dan bij je maandelijkse afschrijving opgeteld.",
+      "atTruckHint": "Klanten betalen bij het afhalen. Onze kosten worden bij je maandelijkse afschrijving opgeteld.",
       "saved": "Opgeslagen.",
       "error": "We konden dat niet opslaan. Probeer het opnieuw."
     },
@@ -100,7 +100,10 @@
     "startsLater": "Gaat in op {nextFirst}. Tot die tijd houd je {plan}.",
     "cancel": "Annuleren",
     "switchTo": "Overstappen naar {plan}",
-    "error": "We konden je abonnement niet wijzigen. Probeer het opnieuw."
+    "error": "We konden je abonnement niet wijzigen. Probeer het opnieuw.",
+    "trialLine": "Je hebt een gratis proefperiode. Kies welk abonnement ingaat wanneer die op {date} eindigt.",
+    "startsAtTrialEnd": "Gaat in wanneer je proefperiode eindigt.",
+    "choose": "Kies {plan}"
   },
   "notices": {
     "trialEndsSoon": "<b>Je gratis proefperiode eindigt op {date}.</b> Voeg een kaart toe zodat online bestellen aan blijft.",
@@ -111,6 +114,7 @@
     "addCard": "Kaart toevoegen →",
     "updateCard": "{method, select, payment_method {Betaalmethode} other {Kaart}} bijwerken →",
     "payNow": "Nu betalen →",
-    "dismiss": "Sluiten"
+    "dismiss": "Sluiten",
+    "trialEnded": "<b>Je gratis proefperiode is afgelopen.</b> Voeg een kaart toe om online bestellen weer aan te zetten."
   }
 }

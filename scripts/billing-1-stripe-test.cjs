@@ -110,6 +110,91 @@ const t = (label, ok, detail) => { if (ok) { pass++; console.log('  ✓ ' + labe
     t('BR: a Pix Automático SetupIntent is created', false, `Stripe refused: ${e.message} — see the report's hand steps (enable Pix in Settings › Payment methods)`)
   }
 
+  // ══ billing-3 (11 November 2026): the billing-2 flows on Stripe's own test mode, and who retries a failed payment ══════════════
+  // Checkout in setup mode (Manage › Billing "Add card" / "Update card" / "Use a different card") — the hosted card page.
+  const custId = d.customers[0].stripeCustomerId
+  const cs = await proc.createSetupCheckout({ customerId: custId, truckId: T('GB'), currency: 'GBP', locale: 'en-GB', successUrl: 'https://example.test/manage?tab=billing&setup={CHECKOUT_SESSION_ID}', cancelUrl: 'https://example.test/manage?tab=billing' })
+  const csBack = await proc.retrieveSetupCheckout(cs.id)
+  t(`Checkout set-up: a hosted Stripe page (${cs.url.slice(0, 32)}…), tagged with the truck, not complete until the owner finishes it`,
+    /^https:\/\/checkout\.stripe\.com\//.test(cs.url) && /^cs_test_/.test(cs.id) && csBack.truckId === T('GB') && csBack.complete === false, { url: cs.url.slice(0, 40), back: csBack })
+  // The hosted invoice page ("Pay now" / "Pay {amount}") and the invoice PDF ("Download"), as Stripe serves them.
+  const frInv = await proc.retrieveInvoice(fr.stripeInvoiceId)
+  const page = frInv.hostedUrl ? await fetch(frInv.hostedUrl, { redirect: 'follow' }) : null
+  t(`Pay now: the open invoice's hosted page answers ${page?.status} (invoice.stripe.com)`, !!page && page.status === 200 && /^https:\/\/invoice\.stripe\.com\//.test(frInv.hostedUrl), frInv.hostedUrl)
+  const paidInv = await proc.retrieveInvoice(gbRow.stripeInvoiceId)
+  const pdf = paidInv.pdfUrl ? await fetch(paidInv.pdfUrl, { redirect: 'follow' }) : null
+  const pdfHead = pdf && pdf.status === 200 ? Buffer.from(await pdf.arrayBuffer()).subarray(0, 5).toString('latin1') : ''
+  t(`Download: the paid invoice's PDF answers ${pdf?.status} and is a PDF file ("${pdfHead}")`, !!pdf && pdf.status === 200 && pdfHead === '%PDF-', paidInv.pdfUrl)
+
+  // Who retries? Stripe's own automatic attempt on our ONE-OFF invoices (auto_advance) — on a test clock, 2 hours and 5 days on.
+  {
+    const Stripe = require(path.join(REPO, 'node_modules/stripe'))
+    const raw = new (Stripe.default || Stripe)(key)
+    const wait = ms => new Promise(r => setTimeout(r, ms))
+    const advance = async (clock, to) => { await raw.testHelpers.testClocks.advance(clock, { frozen_time: to }); for (let i = 0; i < 90; i++) { if ((await raw.testHelpers.testClocks.retrieve(clock)).status === 'ready') return; await wait(2000) } throw new Error('test clock stuck') }
+    const t0 = Math.floor(Date.now() / 1000)
+    const clock = await raw.testHelpers.testClocks.create({ frozen_time: t0, name: `billing-3 ${run}` })
+    try {
+      const c = await raw.customers.create({ name: `billing-3 retry check ${run}`, test_clock: clock.id, metadata: { hatchgrab: 'billing-3-harness' } })
+      const pm = await raw.paymentMethods.attach('pm_card_chargeCustomerFail', { customer: c.id })
+      const inv = await raw.invoices.create({ customer: c.id, currency: 'gbp', collection_method: 'charge_automatically', auto_advance: true, default_payment_method: pm.id, pending_invoice_items_behavior: 'exclude', payment_settings: { payment_method_types: ['card'] } })
+      await raw.invoiceItems.create({ customer: c.id, invoice: inv.id, currency: 'gbp', amount: 2900, description: 'billing-3 retry check' })
+      await raw.invoices.finalizeInvoice(inv.id, { auto_advance: true })
+      await advance(clock.id, t0 + 2 * 3600)
+      const r1 = await raw.invoices.retrieve(inv.id)
+      await advance(clock.id, t0 + 5 * 86400)
+      const r2 = await raw.invoices.retrieve(inv.id)
+      t(`Smart Retries DO apply to our one-off invoices after Stripe's own attempt: attempts ${r1.attempt_count} → ${r2.attempt_count} in 5 days, next retry scheduled`,
+        r1.attempt_count >= 1 && r2.attempt_count > r1.attempt_count && !!r2.next_payment_attempt, { r1: [r1.attempt_count, r1.next_payment_attempt], r2: [r2.attempt_count, r2.next_payment_attempt] })
+    } finally { await raw.testHelpers.testClocks.del(clock.id).catch(() => {}) }
+  }
+
+  // …and after a FAILED MANUAL attempt (invoices.pay — what "Update card" does) Stripe schedules its next Smart Retry a few seconds
+  // later, so the hourly run leaves it to Stripe. Only when Stripe has NO retry scheduled (Smart Retries switched off — simulated
+  // here by turning automatic collection off on this one test invoice) does the hourly run retry it itself (engine.ts
+  // retryUnpaidInvoices): once a truck-local day from 08:00, the day after the failure on.
+  {
+    const id = `${run}-ie`
+    d.countryBilling.push({ countryCode: 'IE', paymentModel: 'fee_from_payment', postPaySurchargeBps: 0, postPaySurchargeFixedMinor: 0, minChargeMinor: 600, lateFeeMinor: 0 })
+    d.countryFacts.push({ countryCode: 'IE', currency: 'EUR', locale: 'en-IE', platformFeeEnabled: false, platformFeeAllowed: true })
+    for (const pl of ['payg', 'pro', 'unlimited']) { const fr2 = CATALOG.prices.find(x => x.planKey === pl && x.countryCode === 'FR'); CATALOG.prices.push({ ...fr2, countryCode: 'IE' }) }
+    d.trucks.push({ id, name: 'billing-3 retry IE', slug: id, country: 'IE', currency: 'EUR', timezone: 'Europe/Dublin', plan: 'pro', trial_expires_at: null, is_customer: false, operator_id: `${run}-op` })
+    d.truckBilling.push({ ...d.truckBilling.find(x => x.truckId === T('FR')), truckId: id, postPay: false, paymentMethodState: 'none', paymentMethodType: null, stripePaymentMethodId: null, paymentMethodLabel: null })
+    await E.attachTestPaymentMethod(store, proc, CATALOG, { truckId: id, testToken: 'pm_card_chargeCustomerFail', now, by: 'harness' })
+    const out = await E.runMonthly(store, proc, CATALOG, { truckId: id, period: '2026-11-01', now, by: 'harness' })
+    const row = (await store.listInvoices(id))[0]
+    const failedNow = await proc.payInvoice(row.stripeInvoiceId)
+    await E.applyInvoiceUpdate(store, CATALOG, failedNow, now)
+    let scheduled = null
+    for (let i = 0; i < 15 && !scheduled; i++) { await new Promise(r => setTimeout(r, 2000)); scheduled = (await proc.retrieveInvoice(row.stripeInvoiceId)).nextPaymentAttempt }
+    t(`IE: after a failed manual attempt Stripe schedules its own Smart Retry (next ${scheduled})`, out.outcome === 'invoiced' && failedNow.status === 'open' && !!scheduled, { failedNow, scheduled })
+    const leaves = await E.retryUnpaidInvoices(store, proc, CATALOG, { truckId: id, now: new Date('2026-11-02T09:00:00Z'), by: 'harness' })
+    t('IE: …so the hourly run leaves it to Stripe (waiting_for_stripe)', leaves[0]?.outcome === 'waiting_for_stripe', leaves)
+    {
+      const Stripe = require(path.join(REPO, 'node_modules/stripe'))
+      const raw = new (Stripe.default || Stripe)(key)
+      await raw.invoices.update(row.stripeInvoiceId, { auto_advance: false })   // simulate Smart Retries off: Stripe schedules nothing
+    }
+    t('IE: with Stripe retrying nothing (simulated), next_payment_attempt is null', (await proc.retrieveInvoice(row.stripeInvoiceId)).nextPaymentAttempt === null)
+    const sameDay = await E.retryUnpaidInvoices(store, proc, CATALOG, { truckId: id, now: new Date('2026-11-01T20:00:00Z'), by: 'harness' })
+    t('IE: the hourly run does not retry on the failure day itself', sameDay.every(x => x.outcome === 'not_due'), sameDay)
+    const early = await E.retryUnpaidInvoices(store, proc, CATALOG, { truckId: id, now: new Date('2026-11-02T07:30:00Z'), by: 'harness' })
+    t('IE: …nor before 08:00 the next day', early.every(x => x.outcome === 'not_due'), early)
+    const stillDeclined = await E.retryUnpaidInvoices(store, proc, CATALOG, { truckId: id, now: new Date('2026-11-02T09:00:00Z'), by: 'harness' })
+    t(`IE: 09:00 the next day → the hourly run retries it itself (${stillDeclined[0]?.status}; the card still declines)`, stillDeclined[0]?.outcome === 'retried' && stillDeclined[0]?.status === 'open', stillDeclined)
+    const StripeC = require(path.join(REPO, 'node_modules/stripe'))
+    const rawC = new (StripeC.default || StripeC)(key)
+    const chargesOf = async () => (await rawC.charges.list({ customer: d.customers[0].stripeCustomerId, limit: 100 })).data.length
+    const before = await chargesOf()
+    const again = await E.retryUnpaidInvoices(store, proc, CATALOG, { truckId: id, now: new Date('2026-11-02T10:00:00Z'), by: 'harness' })
+    const after = await chargesOf()
+    t(`IE: a second run the same day replays the first (idempotency key per day): charge attempts at Stripe ${before} → ${after}`, again[0]?.outcome === 'retried' && after === before, { again, before, after })
+    await E.attachTestPaymentMethod(store, proc, CATALOG, { truckId: id, testToken: 'pm_card_visa', now, by: 'harness' })
+    const next = await E.retryUnpaidInvoices(store, proc, CATALOG, { truckId: id, now: new Date('2026-11-03T09:00:00Z'), by: 'harness' })
+    const st = R.billingStatusOf(await E.billingContextFor(store, await store.truck(id), CATALOG, new Date('2026-11-03T09:00:00Z')))
+    t(`IE: the next day, on a good card → paid, online ordering active (${next[0]?.status}, ${st?.status})`, next[0]?.outcome === 'retried' && next[0]?.status === 'paid' && st?.status === 'active', { next, st })
+  }
+
   console.log(`\n${fail === 0 ? '✅' : '🔴'} billing-1 (Stripe test mode): ${pass} passed, ${fail} failed`)
   process.exit(fail === 0 ? 0 : 1)
 })().catch(e => { console.error('🔴 crashed:', e.message); process.exit(1) })

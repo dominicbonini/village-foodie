@@ -7252,7 +7252,8 @@
         "change": "變更",
         "lastFailed": "上次付款失敗",
         "update": "更新卡片",
-        "error": "無法開啟付款頁面，請再試一次。"
+        "error": "無法開啟付款頁面，請再試一次。",
+        "noneAfterTrial": "尚未新增卡片。請新增卡片，以重新開啟線上點餐。"
       },
       "whatYouPay": {
         "title": "你需要支付的費用",
@@ -7278,8 +7279,7 @@
         "title": "顧客如何支付預約點餐",
         "online": "線上付款，下單時支付",
         "onlineHint": "款項會直接進入你的 Stripe 帳戶。",
-        "atTruck": "在餐車付款，取餐時支付",
-        "atTruckHint": "我們的手續費會改為加到你的每月帳單中。",
+        "atTruckHint": "顧客於取餐時付款。我們的手續費會加到你的每月帳單中。",
         "saved": "已儲存。",
         "error": "無法儲存，請再試一次。"
       },
@@ -7330,7 +7330,10 @@
       "startsLater": "將於 {nextFirst} 生效。在那之前你會繼續使用 {plan}。",
       "cancel": "取消",
       "switchTo": "改用 {plan}",
-      "error": "無法變更方案，請再試一次。"
+      "error": "無法變更方案，請再試一次。",
+      "trialLine": "你正在免費試用。請選擇試用於 {date} 結束後要使用的方案。",
+      "startsAtTrialEnd": "將於試用結束時生效。",
+      "choose": "選擇 {plan}"
     },
     "notices": {
       "trialEndsSoon": "<b>你的免費試用將於 {date} 結束。</b>請新增卡片，以維持線上點餐。",
@@ -7341,7 +7344,8 @@
       "addCard": "新增卡片 →",
       "updateCard": "更新{method, select, payment_method {付款方式} other {卡片}} →",
       "payNow": "立即付款 →",
-      "dismiss": "關閉"
+      "dismiss": "關閉",
+      "trialEnded": "<b>你的免費試用已結束。</b>請新增卡片，以重新開啟線上點餐。"
     }
   },
   "emailBilling": {
