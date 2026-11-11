@@ -275,7 +275,8 @@ function tidyChecks(views) {
   // The seed's cheapest plan at the default £2,500 is a fee-only plan with no monthly price (Pay as you go); a fixture where
   // that stops being true fails here by name rather than being restated by reading the page.
   const shapeOk = best.r.monthlyMinor === 0 && best.r.includedOnlineMinor === 0 && best.r.feeBps > 0
-  const want = ` ${pct} on every online card order — ${money2(gmv * best.r.feeBps / 10000)} a month per truck. We suggest ${best.p.name} No monthly fee — ${pct} on online card orders only. `
+  // ⚠️ RE-PINNED (pricing-copy-1, 11 November 2026): compare.orders.feeOnly and compare.plan.summaryFeeOnly say "online order(s)", no "card".
+  const want = ` ${pct} on every online order — ${money2(gmv * best.r.feeBps / 10000)} a month per truck. We suggest ${best.p.name} No monthly fee — ${pct} on online orders only. `
     + offer.filter(o => o !== best).map(o => `Use ${o.p.name} instead`).join(' ')
   ok(gmv === 250000 && shapeOk && !!r && r.region === want, `T-panel · /compare's orders card: the fee line, then "We suggest ${best.p.name}" and every other public plan`, r ? r.region : 'no region')
   // ⚠️ RE-PINNED (compare-tidy-2, 20 October 2026): no months-free card — fee 4 is the last question (T-free).

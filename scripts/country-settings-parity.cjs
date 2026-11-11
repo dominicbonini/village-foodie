@@ -746,8 +746,9 @@ const COMPARE_TIDY_STAFF_CARD = / 3 How many people work (?:the van|across your 
 const COMPARE_TIDY_ORDERS_CARD = / 3 (?:Online orders per month, per truck|How much do you think you’d take online, per month, per truck\?) .*$/
 // The orders card, as it now reads up to the panel: its title, the slider, the caption, then the "£X included…" / fee line
 // (one of compare.orders.feeOnly | overAllowance | insideAllowance | noFee, plus acrossFleet at more than one truck).
+// ⚠️ RE-PINNED (pricing-copy-1, 11 November 2026): compare.orders.feeOnly says "on every online order" (no "card").
 const COMPARE_TIDY_FEE_LINE = new RegExp(' ~\\d+ orders £[0-9,]+ (?:Only orders placed through your ordering page — not cash or card at the window\\.|A rough guess is fine — pre-orders and queue-skippers, not cash or card at the window\\.) '
-  + '(?:[0-9.]+% on every online card order — £[0-9,.]+ a month per truck\\.|£[0-9,]+ of online orders included per truck\\. The £[0-9,]+ above is charged at [0-9.]+% — £[0-9,.]+ a month each\\.'
+  + '(?:[0-9.]+% on every online order — £[0-9,.]+ a month per truck\\.|£[0-9,]+ of online orders included per truck\\. The £[0-9,]+ above is charged at [0-9.]+% — £[0-9,.]+ a month each\\.'
   + '|Inside the £[0-9,]+ of online orders included — nothing on top of the plan\\.|Unlimited online orders included — nothing on top of the plan\\.)(?: Across \\d+ trucks: £[0-9,]+ a month\\.)?$')
 // ⚠️ RE-PINNED (compare-tidy-2, 20 October 2026) — C2: the months-free QUESTION is removed (card 5, its input and side
 // text); the months are `freeMonthsOverride ?? offerTrialMonths(catalog) ?? 0` (no override here → the seeded trial), so

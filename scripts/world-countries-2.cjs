@@ -84,7 +84,9 @@ const UNLIMITED_ONLY = ['BR', 'MX', 'MY', 'SG', 'TH']
     ['pricing.banner.bodyOnly', 'manageShell.trialPopup.bodyPaidEnd', 'manageBilling.onTrialPaidEnd', 'manageBilling.noChargePaidEnd'].every(k => !BILLING_ONLY.test(EN[k])))
   const HEADGB = flat(JSON.parse(atHead('messages/en-GB.json')))
   t('every other country\'s keys are untouched: pricing.banner.body, trialPopup.body, manageBilling.onTrial / noCharge / setUpPayment are HEAD\'s',
-    ['pricing.banner.body', 'manageShell.trialPopup.body', 'manageBilling.onTrial', 'manageBilling.noCharge', 'manageBilling.setUpPayment'].every(k => EN[k] === HEADGB[k]))
+    // ⚠️ RE-PINNED (pricing-copy-1, 11 November 2026): pricing.banner.body compared with its "Prefer to take payment up front?" sentence
+    // put back (scripts/_lp-pricing-copy-1.cjs asBefore — the one sentence pricing-copy-1 deleted; scripts/pricing-copy-1.cjs proves it).
+    ['pricing.banner.body', 'manageShell.trialPopup.body', 'manageBilling.onTrial', 'manageBilling.noCharge', 'manageBilling.setUpPayment'].every(k => (k === 'pricing.banner.body' ? require('./_lp-pricing-copy-1.cjs').asBefore(EN[k], 'en-GB') : EN[k]) === HEADGB[k]))   // eslint-disable-line @typescript-eslint/no-require-imports -- CommonJS harness module
   const LOC = read('lib/i18n/locales.ts')
   const BASES = JSON.parse('[' + /export const LANGUAGE_BASES[^=]*= \[([^\]]*)\]/.exec(LOC)[1].replace(/'/g, '"') + ']')
   const missing = BASES.flatMap(l => { const m = flat(JSON.parse(read(`messages/${l}.json`))); return ['manageShell.trialPopup.bodyPaidEnd', 'manageBilling.onTrialPaidEnd', 'manageBilling.noChargePaidEnd'].filter(k => !m[k]).map(k => `${l}:${k}`) })

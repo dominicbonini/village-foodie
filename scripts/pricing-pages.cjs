@@ -137,7 +137,8 @@ const withFourth = () => {
   t('prices: £0, £29, £69 "per truck / month"', inOrder(pt, ['£0 per truck / month', '£29 per truck / month', '£69 per truck / month']))
   t('one "Most trucks" badge (CSS capitals), on the Pro card, which is the orange-button card',
     count(pricingHtml, 'class="plan-tag"') === 1 && /class="plan hero-plan">\s*<span class="plan-tag">Most trucks<\/span><div class="plan-name">Pro</.test(pricingHtml.replace(/<!-- -->/g, '')) && count(pricingHtml, 'btn btn-primary') === 1)
-  t('fee sentence by SHAPE — payg: "0.99%* on online card orders only. Walk-up orders are always free."', pt.includes('0.99%* on online card orders only. Walk-up orders are always free.'))
+  // ⚠️ RE-PINNED (pricing-copy-1, 11 November 2026): the Pay as you go fee line has no asterisk and says "online orders" (Dominic's wording).
+  t('fee sentence by SHAPE — payg: "0.99% on online orders only. Walk-up orders are always free."', pt.includes('0.99% on online orders only. Walk-up orders are always free.'))
   t('pro: "First £4,000 of online orders included each month, then 0.99%*. Walk-up orders are always free."', pt.includes('First £4,000 of online orders included each month, then 0.99%*. Walk-up orders are always free.'), pt.match(/First.{0,140}/))
   t('unlimited: "No HatchGrab fees on online orders, however busy you get. One predictable monthly cost."', pt.includes('No HatchGrab fees on online orders, however busy you get. One predictable monthly cost.'))
   t('first card: "Everything to run a service" + the 7 bullets + "See every feature →" to /features (no multi-staff logins)',
@@ -242,7 +243,8 @@ const withFourth = () => {
   const c1 = text(compareAt({ hasSystem: 'no', gmv: 2000 }))
   const c2 = text(compareAt({ hasSystem: 'no', gmv: 5000 }))
   const c3 = text(compareAt({ hasSystem: 'no', gmv: 10000 }))
-  t('£2,000 a month → "We suggest Pay as you go" with "No monthly fee — 0.99% on online card orders only."', /We suggest Pay as you go No monthly fee — 0\.99% on online card orders only\./.test(c1), c1.match(/We suggest.{0,160}/))
+  // ⚠️ RE-PINNED (pricing-copy-1, 11 November 2026): the Pay as you go fee line has no asterisk and says "online orders" (Dominic's wording).
+  t('£2,000 a month → "We suggest Pay as you go" with "No monthly fee — 0.99% on online orders only."', /We suggest Pay as you go No monthly fee — 0\.99% on online orders only\./.test(c1), c1.match(/We suggest.{0,160}/))
   t('£5,000 → "We suggest Pro", "£29 per truck per month, with £4,000 of online orders included."', /We suggest Pro £29 per truck per month, with £4,000 of online orders included\./.test(c2), c2.match(/We suggest.{0,160}/))
   // ⚠️ RE-PINNED (compare-tidy, 20 October 2026): the staff question and its "Everyone gets their own login." line are gone.
   t('£10,000 → "We suggest Unlimited", unlimited wording (and no "own login" line — the staff question is removed)', /We suggest Unlimited £69 per truck per month, with unlimited online orders and no HatchGrab fee\./.test(c3) && !/own login/.test(c3), c3.match(/We suggest.{0,200}/))
@@ -291,7 +293,8 @@ const withFourth = () => {
   const dt = text(pdfGB)
   t('renders (GB)', typeof pdfGB === 'string' && pdfGB.startsWith('<!doctype html>'), String(pdfGB).slice(0, 200))
   t('banner, then the Pro card (badge, name, subtitle, £29, its fee sentence)', inOrder(dt, ['Your first 3 months are completely free — every feature unlocked.', 'Most trucks', 'Pro', 'Trucks taking regular pre-orders', '£29 per truck / month', 'First £4,000 of online orders included each month, then 0.99%*']))
-  t('the payg card: name, subtitle, £0, its fee sentence', dt.includes('Pay as you go Seasonal & part-time traders £0 per truck / month 0.99%* on online card orders only.'))
+  // ⚠️ RE-PINNED (pricing-copy-1, 11 November 2026): the Pay as you go fee line has no asterisk and says "online orders" (Dominic's wording).
+  t('the payg card: name, subtitle, £0, its fee sentence', dt.includes('Pay as you go Seasonal & part-time traders £0 per truck / month 0.99% on online orders only.'))
   t('the Pro card\'s bullets, as on the landing (no Messenger & Instagram, no included-amount bullet)', dt.includes('Everything in Pay as you go, plus WhatsApp auto-replies Social media posts — your Facebook and Instagram schedule — ready to post Custom event types & pricing Most') || dt.includes('Everything in Pay as you go, plus WhatsApp auto-replies Social media posts — your Facebook and Instagram schedule — ready to post Custom event types & pricing Unlimited'), dt.match(/Everything in Pay as you go.{0,220}/))
   // ⚠️ RE-PINNED (landing-mobile-tidy, 21 October 2026): the PDF's bar carries the same approved wording as the page.
   t('the cheapest bar', dt.includes('Which plan is cheapest for me? Your online orders each month Under £2,900 → Pay as you go · £2,900 – £8,000 → Pro · Over £8,000 → Unlimited'), dt.match(/Which plan.{0,200}/))
@@ -351,7 +354,8 @@ const withFourth = () => {
     const PT = await ctx.bundle('pp-table', "export { PlanTable } from '@/components/pricing/PlanTable'")
     const bt = text(kit.renderStatic(h(PT.PlanTable, { catalog: c, settings: ctx.GB(), highlight: 'pro' })))
     t('Pro £29 → £35: landing, /features, PDF and Billing\'s table', lg.includes('£35 per truck / month') && text(fg).includes('Pro £35 / month') && pd.includes('£35 per truck / month') && bt.includes('Pro £35 / month') && !lg.includes('£29 per truck'))
-    t('payg fee 0.99% → 1.2%: everywhere', lg.includes('1.2%* on online card orders only') && text(fg).includes('1.2%') && pd.includes('1.2%* on online card orders only') && bt.includes('1.2%'))
+    // ⚠️ RE-PINNED (pricing-copy-1): no asterisk, "online orders".
+    t('payg fee 0.99% → 1.2%: everywhere', lg.includes('1.2% on online orders only') && text(fg).includes('1.2%') && pd.includes('1.2% on online orders only') && bt.includes('1.2%'))
     t('Pro included £4,000 → £3,000: everywhere', lg.includes('First £3,000 of online orders included') && text(fg).includes('0.99% above £3,000') && pd.includes('First £3,000') && bt.includes('£3,000'))
     // ⚠️ RE-PINNED (landing-mobile-tidy, 21 October 2026): /features has no trial callout any more — the landing banner and PDF carry it.
     t('the trial 3 → 2 months: landing banner and PDF (/features has no callout)', lg.includes('Your first 2 months are completely free') && !/months? free with every feature unlocked/.test(text(fg)) && pd.includes('Your first 2 months are completely free'))

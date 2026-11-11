@@ -40,6 +40,8 @@ const SCX = h => require('./_lp-site-chrome-1.cjs').asCopyTruth(require('./_lp-j
 // _lp-store-badges-1.cjs strip, both sides; the badges follow the app flags now and are proven by scripts/store-badges-1.cjs).
 const SB1 = require('./_lp-store-badges-1.cjs')
 const SG2 = require('./_lp-seo-geo-2.cjs')   // eslint-disable-line @typescript-eslint/no-require-imports -- CommonJS harness module (seo-geo-2)
+const PC1 = require('./_lp-pricing-copy-1.cjs')   // eslint-disable-line @typescript-eslint/no-require-imports -- CommonJS harness module (pricing-copy-1)
+const PC1_LOCALE = { GB: 'en-GB', US: 'en-US', BR: 'pt-BR', JP: 'ja-JP' }
 
 /** The landing page for GB, US, BR and JP and /llms.txt, over the world fixtures with every country switched on (as live). */
 async function identityViews(tag) {
@@ -50,7 +52,9 @@ async function identityViews(tag) {
     const P = await kit.quietAsync(() => R.page('landing', seg, rows))
     // ⚠️ RE-PINNED (seo-geo-2 B3, 2 November 2026): hashed as HEAD rendered it — operatingSystem set back to "Web, iOS, Android"
     // where seo-geo-2 made it "Web" (scripts/_lp-seo-geo-2.cjs asBefore; seo-geo-2.cjs proves the value per country).
-    out[`${cc}/landing`] = sha(SB1.strip(SG2.asBefore(SCX(P.html)))) + ':' + sha(JSON.stringify(P.meta))
+    // ⚠️ RE-PINNED (pricing-copy-1, 11 November 2026): hashed with pricing-copy-1's wording put back (scripts/_lp-pricing-copy-1.cjs
+    // asBefore, in the page's language) — the banner sentence and the Pay as you go fee line; scripts/pricing-copy-1.cjs proves them.
+    out[`${cc}/landing`] = sha(SB1.strip(SG2.asBefore(SCX(PC1.asBefore(P.html, PC1_LOCALE[cc]))))) + ':' + sha(JSON.stringify(P.meta))
   }
   // ⚠️ RE-PINNED (seo-geo-2 B4): /llms.txt is rebuilt on purpose — not compared with HEAD on a tree with seo-geo-2 (its content is
   // proven by seo-geo-2.cjs §5); captured as before on an older tree.

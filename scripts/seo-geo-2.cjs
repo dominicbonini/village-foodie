@@ -57,12 +57,16 @@ async function identitySet() {
     for (const seg of SEGS) {
       const r = await kit.quietAsync(() => wf.page('landing', seg, rows))
       const os = (/"operatingSystem":"([^"]*)"/.exec(r.html) || [])[1] ?? null
-      const html = F4.noLandingFaq(F4.noFaqLink(SCX(r.html)))   // ⚠️ RE-PINNED (faq-4; site-chrome-1)
+      // ⚠️ RE-PINNED (pricing-copy-1, 11 November 2026): pricing-copy-1's wording put back in the page's language first
+      // (scripts/_lp-pricing-copy-1.cjs asBefore — the banner sentence and the Pay as you go fee line; scripts/pricing-copy-1.cjs proves them).
+      const html = F4.noLandingFaq(F4.noFaqLink(SCX(PC1.asBefore(r.html, PC1_LOCALE[seg]))))   // ⚠️ RE-PINNED (faq-4; site-chrome-1)
       out[`landing:${seg}`] = { html: sha(SB1.strip(html)), htmlWithoutOs: sha(withoutOs(SB1.strip(html))), meta: sha(JSON.stringify(r.meta)), os }
     }
   } finally { console.info = info }
   return out
 }
+const PC1 = require('./_lp-pricing-copy-1.cjs')   // eslint-disable-line @typescript-eslint/no-require-imports -- CommonJS harness module (pricing-copy-1)
+const PC1_LOCALE = { uk: 'en-GB', us: 'en-US', ie: 'en-IE', de: 'de-DE', fr: 'fr-FR', jp: 'ja-JP', ae: 'ar-AE', br: 'pt-BR' }
 function sha(s) { return crypto.createHash('sha256').update(String(s)).digest('hex') }
 const SCX = h => require('./_lp-site-chrome-1.cjs').asCopyTruth(require('./_lp-jp-nav-1.cjs').noBreak(h))   // eslint-disable-line @typescript-eslint/no-require-imports -- ⚠️ RE-PINNED (jp-nav-1, 9 November 2026): the Japanese nav label's one zero-width space taken out (scripts/_lp-jp-nav-1.cjs; scripts/jp-nav-1.cjs proves it)
 // ⚠️ RE-PINNED earlier (site-chrome-1): today's offline sentence written as copy-truth-1 wrote it (scripts/_lp-site-chrome-1.cjs asCopyTruth)

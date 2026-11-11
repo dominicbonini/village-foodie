@@ -57,7 +57,8 @@ const ROWS = { ieOff: () => [LP1E.GB(), LP1E.US_ON(), IE(false)], ieOn: () => [L
   const off = await getLlms(ROWS.ieOff(), 'www.hatchgrab.com')
   t('HatchGrab host: 200, text/markdown', off.status === 200 && /text\/markdown/.test(off.type || ''), off)
   t('it opens with the H1 and a one-sentence summary (llmstxt.org shape)', /^# HatchGrab\n\n> HatchGrab is online ordering, pre-orders and a kitchen screen for food trucks and mobile catering: /.test(off.body), off.body.slice(0, 200))
-  t('switched on: United Kingdom and United States, each with its own plans and prices from the data', /### United Kingdom \(GBP\)[\s\S]*- Pay as you go: £0 per truck per month\. 0\.99% on online card orders\.[\s\S]*- Pro: £29 per truck per month\. First £4,000 of online orders included each month, then 0\.99% on online card orders\.[\s\S]*- Unlimited: £69 per truck per month\. No HatchGrab fee on online orders\./.test(off.body)
+  // ⚠️ RE-PINNED (pricing-copy-1, 11 November 2026): Pay as you go's line says "on online orders." (lib/llms-text.ts feeSentence).
+  t('switched on: United Kingdom and United States, each with its own plans and prices from the data', /### United Kingdom \(GBP\)[\s\S]*- Pay as you go: £0 per truck per month\. 0\.99% on online orders\.[\s\S]*- Pro: £29 per truck per month\. First £4,000 of online orders included each month, then 0\.99% on online card orders\.[\s\S]*- Unlimited: £69 per truck per month\. No HatchGrab fee on online orders\./.test(off.body)
     && off.body.includes(`- Pro: $${CATALOG.prices.find(p => p.countryCode === 'US' && p.planKey === 'pro').monthlyMinor / 100} per truck per month`), off.body.match(/###[\s\S]{0,600}/g))
   t('each country\'s card-processing line is the pricing footnote in its own words ("in the UK")', /currently 1\.5% \+ 20p in the UK/.test(off.body))
   t('the fee rule and the trial (3 months, falls back to Pay as you go with no monthly fee) come from the catalogue',
