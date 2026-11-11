@@ -1,0 +1,8 @@
+{
+  "change": "{label} — dəyiş",
+  "useRule": "{label} — əvəzinə qaydadan istifadə et",
+  "typePrice": "{label} — qiymət yazın",
+  "backToRule": "Qaydaya qayıt",
+  "diffUp": "(+{amount})",
+  "diffDown": "(−{amount})"
+}

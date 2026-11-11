@@ -1,0 +1,117 @@
+{
+  "cardEditor": {
+    "title": "Allergen kartınız",
+    "intro": "Müştərilər bunu <b>tam sizin yazdığınız kimi</b> görür — heç nə yenidən yazılmır. Aşağıda yazın və ya yapışdırın, yaxud foto/PDF yükləyin — mətni oxuyub yoxlamağınız üçün buraya köçürəcəyik.",
+    "empty": "Hələ allergen kartı yoxdur.",
+    "placeholder": "məs. Bütün qızardılmış balıq yeməklərimizdə buğda və süd var. Fritürdən glüten və qoz-fındıq olan məhsullarla birgə istifadə olunur. Vegan seçimlər var — işçilərdən soruşun.",
+    "reading": "Şəkil oxunur…",
+    "upload": "📷 Şəkil / PDF yüklə",
+    "uploadNote": "Yoxlaya biləsiniz deyə mətni şəklinizdən oxuyuruq — şəkil saxlanmır."
+  },
+  "cardUpload": {
+    "dishFallback": "Yemək",
+    "question": "Yükləmək üçün allergen kartınız var?",
+    "perDish": "{detected, select, yes {Kartı yükləyin — yeməklərinizin allergenlərini onun əsasında hazırlayacağıq. Aşkarlanan allergenlər hər yeməyi təsdiqləyəcəyiniz növbəti səhifədə görünəcək.} other {Kartı yükləyin — yeməklərinizin allergenlərini onun əsasında hazırlayacağıq.}}",
+    "cardOnly": "Müştərilərin görəcəyi allergen kartını yükləyin.",
+    "yes": "Bəli",
+    "no": "Xeyr",
+    "noProblem": "Problem deyil — kart məcburi deyil. Aşağıdakı düymə ilə davam edin.",
+    "analysing": "Kart təhlil edilir…",
+    "dropzone": "Sürüşdürüb atın və ya seçmək üçün toxunun",
+    "imageOrPdf": "Şəkil və ya PDF",
+    "or": "və ya",
+    "pastePlaceholder": "Allergen kartınızın mətnini bura yapışdırın…",
+    "process": "Kartı emal et",
+    "cardRead": "Kart oxundu ✓",
+    "unmatchedHeading": "Bunları avtomatik uyğunlaşdırmaq mümkün olmadı — təyin edin və ya rədd edin",
+    "quotedName": "“{name}”",
+    "ambiguous": "Birmənalı deyil — bir neçə yeməyə uyğun gəlir; düzgün olanı seçin.",
+    "assignTo": "Yeməyə təyin et…",
+    "dismiss": "Rədd et",
+    "blanket": "Karta görə, <b>{list}</b> <b>bütün</b> yeməklərdə ola bilər. Hər yeməyə əlavə edilsin? (hər birini yenə də təsdiqləyəcəksiniz) <muted>— standart olaraq söndürülüb</muted>",
+    "kitchenNotes": "Mətbəx qeydləri (allergen məlumatınızda saxlanılır)",
+    "matchSummary": "{n, plural, =0 {Yeməyə uyğunlaşdırıldı: {matched}.} one {Yeməyə uyğunlaşdırıldı: {matched}. Təyin etməyiniz lazımdır: {count}.} other {Yeməyə uyğunlaşdırıldı: {matched}. Təyin etməyiniz lazımdır: {count}.}}"
+  },
+  "savedCard": {
+    "showLess": "Daha az göstər",
+    "showMore": "Daha çox göstər",
+    "fileOnly": "Bu food truck üçün kart faylı yadda saxlanılıb, lakin xülasə mətni saxlanmayıb. Oxumaq üçün orijinalı açın.",
+    "viewOriginal": "Orijinal karta bax"
+  },
+  "wizard": {
+    "toast": {
+      "readFailed": "Allergen kartını oxumaq mümkün olmadı — yenidən cəhd edin",
+      "confirmed": "Təsdiqləndi: {name}",
+      "undo": "Geri al",
+      "saveFailed": "Yadda saxlamaq mümkün olmadı — yenidən cəhd edin",
+      "imageFailed": "Bu şəkli oxumaq mümkün olmadı — əvəzinə kartınızı yazın və ya yapışdırın",
+      "cardRead": "{n, plural, one {Kart oxundu — uyğunlaşdırıldı: {matched}, təyin edilməlidir: {count}} other {Kart oxundu — uyğunlaşdırıldı: {matched}, təyin edilməlidir: {count}}}"
+    },
+    "genericWarn": {
+      "text": "“{generic}” aşkarlandı, lakin dəqiq deyil. Bu yeməkdə bunlar varsa ({family}), seçin: {picks} — yoxdursa, seçilməmiş saxlayın.",
+      "andOr": "{a} və/və ya {b}"
+    },
+    "badge": {
+      "justConfirmed": "✓ Təsdiqləndi",
+      "confirmed": "Təsdiqlənib",
+      "needsReview": "Yoxlanmalıdır"
+    },
+    "confirm": {
+      "confirming": "Təsdiqlənir…",
+      "confirmed": "Təsdiqlənib ✓",
+      "confirm": "Təsdiqlə",
+      "changed": "· dəyişib",
+      "changedTitle": "Son təsdiqdən sonra dəyişdirilib — yenidən təsdiqləyin"
+    },
+    "allergens": "Allergenlər",
+    "dietary": "Pəhriz",
+    "uncategorised": "Kateqoriyasız",
+    "review": {
+      "progress": "Təsdiqlənib: {confirmed} / {total}",
+      "allConfirmed": "✓ Hamısı təsdiqlənib",
+      "list": "Siyahı",
+      "table": "Cədvəl",
+      "detected": "Menyunuzdan aşkarlanıb — <b>bunları yoxlayın</b>. Hər yeməyi təsdiqləyənədək allergenlər müştərilərdən gizli qalır.",
+      "viewOnly": "👁 Yalnız baxış — allergenləri yalnız sahib təsdiqləyə və ya dəyişə bilər.",
+      "emptyTitle": "Menyu məhsulu yoxdur",
+      "emptyBody": "Əvvəlcə menyu məhsulları əlavə edin, sonra onların allergenlərini burada təyin edin.",
+      "dish": "Yemək",
+      "status": "Status"
+    },
+    "cardPanel": {
+      "reading": "Allergen məlumatı oxunur…",
+      "saved": "🛡️ Allergen kartı yadda saxlanıldı",
+      "viewOriginal": "Orijinal karta bax",
+      "replace": "Kartı əvəz et",
+      "uploadHelp": "Allergen kartınızı (foto/PDF) yükləyin və ya allergen məlumatınızı yapışdırın — süni intellektimiz onu müştərilər üçün səliqəyə salır.",
+      "add": "Allergen kartı əlavə et",
+      "viewOnly": "👁 Yalnız baxış — allergen kartını yalnız sahib əlavə edə bilər.",
+      "intro": "Müştərilər bu kartı menyunun allergen məlumatı kimi görəcək. Yalnız kart rejimində hər yeməyin allergenləri gizli qalır (sonradan hər yemək üzrə rejimə keçsəniz deyə yemək məlumatlarınız saxlanılır)."
+    },
+    "subtitle": {
+      "choose": "Müştərilərin allergen məlumatını necə görəcəyini seçin",
+      "card": "Allergen kartınızı əlavə edin",
+      "cardOptional": "Allergen kartı əlavə edin (istəyə bağlı)",
+      "review": "Hər yeməyi yoxlayın və təsdiqləyin"
+    },
+    "heading": {
+      "import": "Allergenlər",
+      "standalone": "Allergen ayarları"
+    },
+    "nav": {
+      "next": "İrəli →",
+      "back": "← Geri",
+      "skip": "İndilik ötür",
+      "saving": "Yadda saxlanılır…",
+      "done": "Hazırdır",
+      "saveLater": "Yadda saxla və sonra bitir",
+      "close": "Bağla",
+      "finish": "Bitir",
+      "skipImport": "Allergen ayarlarını indilik ötür"
+    },
+    "hint": {
+      "skipDefers": "Ötürmək təxirə salmaq deməkdir — təsdiqləmədiyiniz yeməklər allergenləri təsdiqlənənədək müştərilərdən gizli qalır.",
+      "importIncomplete": "Davam etmək üçün hər yeməyi təsdiqləyin — və ya “Allergen ayarlarını indilik ötür” seçin."
+    }
+  }
+}

@@ -1,0 +1,46 @@
+{
+  "greeting": "{hasName, select, yes {Salam, {name}!} other {Salam!}}",
+  "questions": "Sualınız var? Sadəcə cavab yazın.",
+  "signoff": "HatchGrab komandası",
+  "buttonUpdate": "{method, select, payment_method {Ödəniş üsulunu} other {Kartı}} yenilə",
+  "buttonPay": "İndi ödə",
+  "buttonAddCard": "Kart əlavə et",
+  "suspended": "Ödəniş edilməsə, hesabınız dayandırıla bilər.",
+  "failed": {
+    "subject": "HatchGrab ödənişiniz alınmadı",
+    "line1": "Bu gün {amount} məbləğini tuta bilmədik — food truck: {truck}. Yenidən cəhd edəcəyik.",
+    "line2": "Onlayn sifarişin aktiv qalması üçün zəhmət olmasa, {date} tarixinədək {method, select, payment_method {ödəniş üsulunuzu} other {kartınızı}} yeniləyin."
+  },
+  "twoDays": {
+    "subject": "{method, select, payment_method {Ödəniş üsulunuzu} other {Kartınızı}} yeniləmək üçün 2 gün qalıb",
+    "line1": "{amount} hələ ödənilməyib — food truck: {truck}. {date} tarixinədək {method, select, payment_method {ödəniş üsulunuzu} other {kartınızı}} yeniləyin, əks halda onlayn sifariş dayandırılacaq."
+  },
+  "oneDay": {
+    "subject": "{method, select, payment_method {Ödəniş üsulunuzu} other {Kartınızı}} sabahadək yeniləyin",
+    "line1": "{amount} hələ ödənilməyib — food truck: {truck}. Sabahadək {method, select, payment_method {ödəniş üsulunuzu} other {kartınızı}} yeniləyin, əks halda onlayn sifariş dayandırılacaq."
+  },
+  "lastDay": {
+    "subject": "{method, select, payment_method {Ödəniş üsulunuzu} other {Kartınızı}} yeniləmək üçün son gün",
+    "line1": "Bu gün {amount} ödəmək üçün son gündür — food truck: {truck}. Gecə yarısınadək ödənilməsə, ödəniş edənədək onlayn sifariş dayandırılacaq."
+  },
+  "paused": {
+    "subject": "Onlayn sifariş dayandırılıb",
+    "line1": "{amount} ödənilmədiyi üçün onlayn sifariş dayandırılıb — food truck: {truck}. İndi ödəyin və sifariş dərhal bərpa olunsun.",
+    "line2": "{date} tarixinədək ödəyin, əks halda hesabınız dayandırıla bilər."
+  },
+  "trial7": {
+    "subject": "Pulsuz sınaq müddətiniz 7 gündən sonra bitir",
+    "line1": "Pulsuz sınaq müddətiniz {date} tarixində bitir — food truck: {truck}.",
+    "line2": "Onlayn sifarişin aktiv qalması üçün İdarəetmə › Hesablaşma bölməsində kart əlavə edin.",
+    "plan": "Sonra plan: {plan}, ayda {price}. Sınaq müddətiniz bitəndə {month} ayının qalan hissəsi üçün {amount}, sonra isə {nextFirst} tarixində {price} tutacağıq.",
+    "planFree": "Sonra planınız: {plan}, aylıq ödənişsiz.",
+    "fee": "Onlayn sifarişlər üçün {fee} haqqımız ayın 1-də əvvəlki ay üçün tutulur."
+  },
+  "trial1": {
+    "subject": "Pulsuz sınaq müddətiniz sabah bitir",
+    "line1": "Pulsuz sınaq müddətiniz sabah bitir — food truck: {truck}.",
+    "noCard": "Kart əlavə edin, əks halda onlayn sifariş dayandırılacaq.",
+    "allSet": "Hər şey hazırdır: plan {date} tarixində başlayır — {plan}.",
+    "charge": "Sınaq müddətiniz bitəndə {month} ayının qalan hissəsi üçün {amount} tutacağıq."
+  }
+}

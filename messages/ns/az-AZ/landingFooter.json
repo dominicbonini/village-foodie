@@ -1,0 +1,17 @@
+{
+  "features": "Funksiyalar",
+  "pricing": "Qiymətlər",
+  "faq": "Suallar",
+  "privacy": "Məxfilik",
+  "terms": "Şərtlər",
+  "contact": "Əlaqə",
+  "about": "Haqqımızda",
+  "copyright": "© {year} HatchGrab",
+  "credit": "<b>Village Foodie</b> komandasından",
+  "badges": {
+    "appStoreLink": "HatchGrab-ı App Store-dan yükləyin",
+    "appStoreAlt": "App Store-dan yükləyin",
+    "googlePlayLink": "HatchGrab-ı Google Play-dən əldə edin",
+    "googlePlayAlt": "Google Play-dən əldə edin"
+  }
+}

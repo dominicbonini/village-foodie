@@ -1,0 +1,13 @@
+{
+  "stepHeading": "Food truck-unuz harada yerləşir?",
+  "stepIntro": "Bu, valyutanızı, qiymətlərinizi, saat qurşağınızı və telefon formatınızı müəyyən edir. Ölkəni sonradan dəyişmək olmaz, çünki o, kart ödənişlərinizə bağlıdır.",
+  "settingsHeading": "Fəaliyyət göstərdiyiniz yer",
+  "countryLabel": "Ölkə",
+  "countryGuessed": "Bunu olduğunuz yerə görə təxmin etdik. Səhvdirsə, dəyişin.",
+  "countryLocked": "Ölkənizi dəyişmək olmaz",
+  "townLabel": "Şəhər və ya qəsəbə",
+  "townQuestion": "Yerləşdiyiniz şəhər və ya qəsəbə",
+  "timezoneLabel": "Saat qurşağı",
+  "continueButton": "Davam et",
+  "saveFailed": "Ayarları yadda saxlamaq mümkün olmadı — zəhmət olmasa, yenidən cəhd edin."
+}

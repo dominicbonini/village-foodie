@@ -1,0 +1,154 @@
+{
+  "filter": {
+    "dateRange": "📅 Tarix aralığı",
+    "event": "📍 Tədbir",
+    "filterBy": "Süzgəc",
+    "show": "Göstər",
+    "range": "<from></from><sep>—</sep><until></until>",
+    "selectEvent": "Tədbir seçin…",
+    "eventOption": "{venue} · {date}",
+    "unnamedEvent": "Tədbir",
+    "viewReport": "Hesabata bax",
+    "loading": "Yüklənir…",
+    "orders": "📋 Sifarişlər",
+    "items": "📦 Məhsullar",
+    "exportCsv": "⬇ CSV ixrac et"
+  },
+  "empty": {
+    "noOrders": "Bu dövr üçün sifariş tapılmadı.",
+    "selectEvent": "Hesabatına baxmaq üçün yuxarıda tədbir seçin."
+  },
+  "summary": {
+    "totals": "{n, plural, one {{count} sifariş} other {{count} sifariş}} · {total}"
+  },
+  "revenue": {
+    "title": "Gəlirin bölgüsü",
+    "deals": "Kombo gəliri",
+    "modifiers": "Əlavələr üçün əlavə haqlar",
+    "foodSales": "Yemək satışı",
+    "total": "Cəmi",
+    "other": "Digər",
+    "tax": "Vergi",
+    "tips": "Çaypulu",
+    "serviceFees": "Xidmət haqları",
+    "cardFees": "Kart haqları"
+  },
+  "itemsSold": {
+    "title": "Satılan məhsullar"
+  },
+  "dealsCard": {
+    "title": "Kombo menyular"
+  },
+  "custom": {
+    "title": "Fərdiləşdirmələr",
+    "paidModifiers": "Ödənişli əlavələr",
+    "customerNotes": "Müştəri qeydləri",
+    "note": "“{note}”"
+  },
+  "table": {
+    "item": "Məhsul",
+    "modifier": "Əlavə",
+    "qty": "Say",
+    "total": "Cəmi",
+    "date": "Tarix",
+    "time": "Vaxt",
+    "channel": "Kanal"
+  },
+  "breakdown": {
+    "orders": "Sifarişlərin bölgüsü",
+    "items": "Məhsulların bölgüsü"
+  },
+  "channel": {
+    "online": "Onlayn",
+    "walkUp": "Yerində sifariş"
+  },
+  "csv": {
+    "orderId": "Sifariş ID",
+    "date": "Tarix",
+    "event": "Tədbir",
+    "timePlaced": "Verilmə vaxtı",
+    "collectionTime": "Götürmə vaxtı",
+    "customerName": "Müştərinin adı",
+    "orderType": "Sifariş növü",
+    "items": "Məhsullar",
+    "deals": "Kombo menyular",
+    "modifiers": "Əlavələr",
+    "notes": "Qeydlər",
+    "subtotal": "Aralıq cəm",
+    "tip": "Çaypulu",
+    "serviceFee": "Xidmət haqqı",
+    "total": "Cəmi",
+    "itemName": "Məhsulun adı",
+    "qty": "Say",
+    "unitPrice": "Vahid qiyməti",
+    "itemTotal": "Məhsul cəmi",
+    "orderTotal": "Sifariş cəmi",
+    "unknownEvent": "Naməlum tədbir",
+    "asap": "Ən tez",
+    "unknownCustomer": "Naməlum",
+    "customerOnline": "Müştəri onlayn",
+    "placedByTruck": "Food truck tərəfindən verilib"
+  },
+  "presets": {
+    "label": "Dövr",
+    "custom": "Fərdi tarixlər",
+    "thisMonth": "Bu ay",
+    "lastMonth": "Keçən ay",
+    "lastQuarter": "Keçən rüb",
+    "lastTaxYear": "Keçən vergi ili"
+  },
+  "accounts": {
+    "title": "Mühasibiniz üçün",
+    "help": "Satışlar tədbir günü üzrə hesablanır. Ümumi satış müştərilərin ödədiyi məbləğdir. Xalis satış geri qaytarmalar və vergidən sonra qalan məbləğdir.",
+    "gross": "Ümumi satış",
+    "refunds": "Geri qaytarmalar",
+    "net": "Xalis satış",
+    "taxEstimated": "vergi dərəcənizə əsasən təxmin edilib",
+    "taxNone": "Food truck-unuz üçün vergi dərəcəsi təyin edilməyib, ona görə də burada vergi hesablanmır.",
+    "byChannel": "Kanallar üzrə ümumi satış",
+    "byPayment": "Ödəniş üsulları üzrə ümumi satış",
+    "online": "Onlayn",
+    "walkUp": "Yerində sifariş",
+    "cardOnline": "Onlayn kartla",
+    "payAtTruck": "Yerində ödəniş",
+    "cost": "Satılan yeməklərin maya dəyəri",
+    "profit": "Mənfəət",
+    "coverage": "{total, plural, one {Satılan # yeməkdən {withCost} üçün maya dəyəri təyin edilib} other {Satılan # yeməkdən {withCost} üçün maya dəyəri təyin edilib}}",
+    "partial": "Maya dəyəri olmayan yeməklər xərcə daxil edilmir, ona görə də bu mənfəət əslində olduğundan yüksəkdir. Menyu bölməsində hər yeməyə maya dəyəri əlavə edin.",
+    "noCosts": "Hələ heç bir yeməyin maya dəyəri yoxdur. Mənfəətinizi görmək üçün Menyu bölməsində yeməklərinizə maya dəyəri əlavə edin.",
+    "byEvent": "Tədbirlər üzrə",
+    "event": "Tədbir",
+    "sales": "Xalis satış",
+    "eventNoProfit": "Tire o deməkdir ki, orada satılan yeməklərin hamısının maya dəyəri yoxdur.",
+    "downloadOrders": "⬇ Mühasib üçün sifarişlər",
+    "downloadEvents": "⬇ Mühasib üçün tədbirlər",
+    "downloadHelp": "İki cədvəl faylı: hər sifariş üçün bir sətir və hər tədbir üçün bir sətir. Onlar Excel, Numbers, Xero və QuickBooks-da açılır."
+  },
+  "accountsCsv": {
+    "header": {
+      "date": "Tarix",
+      "time": "Vaxt",
+      "orderNumber": "Sifariş nömrəsi",
+      "event": "Tədbir",
+      "channel": "Kanal",
+      "paymentMethod": "Ödəniş üsulu",
+      "currency": "Valyuta",
+      "gross": "Ümumi",
+      "tax": "Vergi",
+      "taxBasis": "Vergi əsası",
+      "net": "Xalis",
+      "refunded": "Geri qaytarılıb",
+      "cost": "Maya dəyəri",
+      "profit": "Mənfəət",
+      "eventDate": "Tədbir tarixi",
+      "orders": "Sifarişlər",
+      "dishesSold": "Satılan yeməklər",
+      "dishesWithCost": "Maya dəyəri olan yeməklər"
+    },
+    "taxBasis": {
+      "stored": "sifarişlə birlikdə saxlanılıb",
+      "estimated": "vergi dərəcənizə əsasən təxmin edilib",
+      "none": "vergi dərəcəsi təyin edilməyib"
+    }
+  }
+}

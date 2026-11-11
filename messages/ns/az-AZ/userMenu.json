@@ -1,0 +1,18 @@
+{
+  "menuLabel": "İstifadəçi menyusu",
+  "screenOn": "Ekran açıq",
+  "screenOff": "Ekran sönə bilər",
+  "newOrderSound": "Yeni sifariş səsi",
+  "copied": "Kopyalandı",
+  "orderLink": "Sifariş linki",
+  "qrCode": "QR kod",
+  "kitchenScreen": "Mətbəx ekranı (KDS)",
+  "thisDevice": "Bu cihaz",
+  "manage": "İdarəetmə",
+  "ordersDashboard": "Sifarişlər paneli",
+  "admin": "Admin",
+  "privacy": "Məxfilik siyasəti",
+  "terms": "Şərtlər",
+  "signOut": "Çıxış",
+  "close": "Bağla"
+}

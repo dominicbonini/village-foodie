@@ -1,0 +1,9 @@
+{
+  "subject": "HatchGrab demonuz — geri qayıtmaq üçün linkiniz",
+  "heading": "Demonuz yadda saxlanıldı",
+  "intro": "Menyunuz olan demoya qayıtmaq üçün linkiniz budur. Giriş tələb olunmur — sadəcə toxunun.",
+  "button": "Demomu aç",
+  "freshDay": "Hər dəfə qayıtdığınızda sınamaq üçün nəsə olsun deyə yeni satış günü hazırlayacağıq.",
+  "deletion": "Bu, demodur, ona görə də onu həmişəlik saxlamırıq — onu və menyunu\n                <b>{date}</b> tarixində ({days, plural, one {# gün} other {# gün}}) siləcəyik. Ondan əvvəl\n                qeydiyyatdan keçsəniz, menyunuz sizinlə gəlir.",
+  "notSent": "Yadda saxlanıldı, lakin hazırda məktubu göndərə bilmədik."
+}

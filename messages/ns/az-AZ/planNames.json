@@ -1,0 +1,28 @@
+{
+  "payg": {
+    "name": "Abunəsiz",
+    "subtitle": "Mövsümi və qismən işləyən satıcılar üçün",
+    "description": "Aylıq ödəniş yoxdur. Yalnız müştəri onlayn kartla ödəyəndə ödəyirsiniz."
+  },
+  "pro": {
+    "subtitle": "Müntəzəm əvvəlcədən sifariş qəbul edən food truck-lar üçün",
+    "description": "Bütün funksiyalar, o cümlədən WhatsApp-da avtomatik cavablar və sosial media postları; hər ay müəyyən həcmdə onlayn sifariş daxildir."
+  },
+  "unlimited": {
+    "name": "Limitsiz",
+    "subtitle": "Çox məşğul food truck-lar və festivallar üçün",
+    "description": "Bütün funksiyalar; nə qədər məşğul olsanız da, onlayn sifarişlərdən heç bir haqq tutulmur."
+  },
+  "trial": {
+    "name": "Pulsuz sınaq",
+    "description": "Sınaq müddətində bütün funksiyalar pulsuzdur."
+  },
+  "demo": {
+    "name": "Demo",
+    "description": "Potensial müştəri üçün sınaq mühiti — heç vaxt ictimai deyil."
+  },
+  "tester": {
+    "name": "Testçi",
+    "description": "Buraxılışdan əvvəlki testçi — tam giriş."
+  }
+}

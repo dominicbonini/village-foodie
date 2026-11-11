@@ -1,0 +1,9 @@
+{
+  "launch_failed": "Yoxlama müvəqqəti olaraq əlçatan deyil. Zəhmət olmasa, bir azdan yenidən cəhd edin.",
+  "malformed": "Bu, veb ünvana oxşamır. Belə bir ünvan yoxlayın: foodtruckunuz.az/tedbirler",
+  "blocked": "Bu sayta daxil ola bilmədik — o, avtomatik yoxlamaları bloklaya bilər. Cədvəlinizin göstərildiyi səhifəni sınayın və ya tədbirləri əl ilə əlavə edin.",
+  "unreachable": "Bu sayta qoşula bilmədik. Sayt işləməyə bilər və ya ünvan səhv ola bilər.",
+  "no_content": "Bu səhifəyə daxil olduq, lakin orada heç nə oxuya bilmədik. Səhifənin hamı üçün açıq olduğunu yoxlayın.",
+  "no_events": "Bu səhifədə qarşıdan gələn heç bir tədbir tapa bilmədik. URL-in birbaşa cədvəlinizin göstərildiyi yerə apardığına əmin olun.",
+  "blockedDomain": "Zəhmət olmasa, saytınızın URL-ini istifadə edin — Facebook və Instagram səhifələrini avtomatik oxumaq mümkün deyil."
+}

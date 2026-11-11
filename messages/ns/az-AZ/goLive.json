@@ -1,0 +1,43 @@
+{
+  "allergensUnanswered": {
+    "title": "Allergen məlumatını necə göstərəcəyinizi seçin",
+    "detail": "Siz seçənədək müştərilər yeməklərinizin heç birini görmür — menyu allergenləri təsdiqlənməmiş hər şeyi gizlədərək özünü qoruyur, hazırda isə bu, hər şeydir.",
+    "where": "Menyu → Allergenlər"
+  },
+  "allergensCardMissing": {
+    "title": "Allergen kartınızı əlavə edin",
+    "detail": "Allergen kartı göstərməyi seçmisiniz, lakin heç bir kart yadda saxlanmayıb — yəni müştərilərə allergen məlumatının olduğu deyiləcək, sonra isə heç nə tapmayacaqlar.",
+    "where": "Menyu → Allergenlər"
+  },
+  "allergensItemsUnverified": {
+    "title": "{n, plural, one {Allergenləri təsdiqləyin: {count} yemək} other {Allergenləri təsdiqləyin: {count} yemək}}",
+    "detail": "{n, plural, one {Allergenlərini təsdiqləyənədək yeməyiniz müştərilərdən gizlədilir.} other {{u, plural, one {Allergenlərini təsdiqləyənədək {total} yeməyinizdən {unverified} müştərilərdən gizlədilir.} other {Allergenlərini təsdiqləyənədək {total} yeməyinizdən {unverified} müştərilərdən gizlədilir.}}}} Allergenləri təsdiqlənmədən göstərilən yemək “heç bir allergen yoxdur” kimi başa düşülür, ona görə də menyu bu riskə getmək əvəzinə onu gizlədir.",
+    "where": "Menyu → Allergenlər"
+  },
+  "noVan": {
+    "title": "Maşın əlavə edin",
+    "detail": "Tədbirlər maşın üzərindən işləyir — maşın olmadan sifariş qəbul etmək üçün heç nə yoxdur.",
+    "where": "Ayarlar → Food truck-larınız"
+  },
+  "kitchenCapacityUnset": {
+    "title": "Mətbəx tutumunuzu təyin edin",
+    "detail": "Tutum təyin olunmayıb: {vans}. Tutum olmadan müştərilərə mətbəxinizin heç cür çatdıra bilməyəcəyi götürmə vaxtları vəd etməyə davam edəcəyik.",
+    "where": "Menyu → Mətbəx tutumu",
+    "unnamedVan": "Adsız maşın"
+  },
+  "noPrepBearingCategory": {
+    "title": "Yeməyinizin nə qədər vaxt apardığını bizə bildirin",
+    "detail": "{categories, select, none {Hələ menyu kateqoriyanız yoxdur, ona görə də sifarişin nə qədər vaxt apardığını hesablaya bilmirik.} other {Kateqoriyalarınızın heç birində bişirmə vaxtı təyin olunmayıb, ona görə də hər sifariş bizə ani görünür. Müştərilərə mətbəxinizin çatdıra bilməyəcəyi götürmə vaxtları verməyə davam edəcəyik və iş artdıqca bu vaxtlar daha da uzaqlaşacaq.}}",
+    "where": "Menyu → Kateqoriyalar → Mətbəx ayarları"
+  },
+  "emailUnverified": {
+    "title": "E-poçt ünvanınızı təsdiqləyin",
+    "detail": "Sifariş bildirişlərini və hesabın bərpası məktublarını bu ünvana göndəririk. Ünvan səhvdirsə, bunu artıq nəsə yolunda getməyəndə öyrənəcəksiniz.",
+    "where": "Təsdiq linkimiz üçün gələnlər qutunuzu yoxlayın"
+  },
+  "emailUnknown": {
+    "title": "E-poçt təsdiqinin statusu məlum deyil",
+    "detail": "E-poçt təsdiqi hələ qoşulmayıb, ona görə də bunu yoxlamaq mümkün deyil. Səssizcə keçmək əvəzinə, bu, qəsdən bloklayır.",
+    "where": "—"
+  }
+}

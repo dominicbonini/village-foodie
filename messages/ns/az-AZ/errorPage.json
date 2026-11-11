@@ -1,0 +1,8 @@
+{
+  "notFoundTitle": "Səhifə tapılmadı",
+  "notFoundBody": "Bu səhifəni tapa bilmədik. Ola bilsin ki, köçürülüb və ya ünvan səhv yazılıb.",
+  "home": "Ana səhifəyə keçin",
+  "errorTitle": "Xəta baş verdi",
+  "errorBody": "Bağışlayın — bu səhifə yüklənmədi. Yenidən cəhd edin və ya ana səhifəyə qayıdın.",
+  "retry": "Yenidən cəhd et"
+}

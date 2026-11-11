@@ -1,0 +1,161 @@
+{
+  "card": {
+    "title": "Cədvəlinizi saytınıza əlavə edin",
+    "live": "<addr>{address}</addr> cədvəlinizi göstərir.",
+    "create": "<addr>{address}</addr> ünvanında cədvəlinizi göstərən səhifə yaradırıq.",
+    "exampleDomain": "foodtruckunuz.az",
+    "liveBadge": "Aktiv",
+    "setUp": "Qur",
+    "viewSetup": "Qurulmaya bax",
+    "continue": "Davam et",
+    "justLive": "<b>{address}</b> işləyir. Ona baxın, sonra aşağıda hər şeyin düzgün olduğunu bizə bildirin."
+  },
+  "waiting": {
+    "title": "Ünvan gözlənilir: {address}",
+    "bodySince": "Bunu {date} tarixində qurdunuz. Yeni veb ünvanlar adətən bir neçə dəqiqəyə işləməyə başlayır, bəzən isə hamıya çatması 24 saata qədər çəkir — bu müddətdə sizin heç nə etməyinizə ehtiyac yoxdur. Sətri sizin əvəzinizə başqası əlavə edirdisə, onun bunu etdiyini yoxlamağa dəyər.",
+    "body": "Yeni veb ünvanlar adətən bir neçə dəqiqəyə işləməyə başlayır, bəzən isə hamıya çatması 24 saata qədər çəkir — bu müddətdə sizin heç nə etməyinizə ehtiyac yoxdur. Sətri sizin əvəzinizə başqası əlavə edirdisə, onun bunu etdiyini yoxlamağa dəyər."
+  },
+  "ready": {
+    "title": "{address} artıq işləyir",
+    "body": "Ona baxın, sonra ayarlarınızda hər şeyin düzgün olduğunu bizə bildirin."
+  },
+  "confirm": {
+    "heading": "Baxın, sonra hər şeyin düzgün olduğunu bizə bildirin",
+    "open": "<link>{address}</link> ünvanını açın",
+    "checkTimes": "Tarix və vaxtların düzgün göründüyünü yoxlayın.",
+    "yes": "Bəli, düzgün görünür",
+    "no": "Xeyr, problem var",
+    "problemLine": "Nə gördüyünüzü bizə yazın, biz baxaq.",
+    "emailUs": "Bizə yazın",
+    "mailSubject": "Ünvanla bağlı problem: {address}",
+    "mailLiveSince": "Aktivləşmə tarixi: {date}",
+    "mailSeeing": "Gördüyüm:"
+  },
+  "confirmed": {
+    "heading": "Təşəkkürlər — hər şey qeyd olundu.",
+    "body": "Başqa heç nə etmək lazım deyil."
+  },
+  "turnOff": {
+    "link": "Bunu söndür",
+    "heading": "Öz veb ünvanınız söndürülsün?",
+    "stops": "Bu işləməyi dayandıracaq:",
+    "carriesOn": "Bu olduğu kimi işləməyə davam edir və QR kodunuz insanları məhz buraya yönləndirir:",
+    "reAdd": "Bunu sonra yenidən quracaqsınızsa, veb ünvan şirkətinizdə əlavə etdiyiniz sətri saxlayın. Qurmayacaqsınızsa, onlardan həmin sətri silmələrini xahiş edin.",
+    "cancel": "Aktiv saxla",
+    "confirm": "Söndür",
+    "working": "Söndürülür…",
+    "failed": "Hazırda bunu söndürə bilmədik. Heç nə dəyişməyib — ünvanınız hələ də işləyir. Bir az sonra yenidən cəhd edin."
+  },
+  "wizard": {
+    "resumeFailedTitle": "Qurulmanızı yükləyə bilmədik.",
+    "resumeFailedBody": "Heç nə dəyişməyib. Bir az sonra yenidən cəhd edin.",
+    "close": "Bağla",
+    "resuming": "Qaldığınız yerdən davam edilir…",
+    "genericError": "Xəta baş verdi",
+    "saveFailed": "Yadda saxlamaq mümkün olmadı"
+  },
+  "address": {
+    "intro": "Cədvəlinizin öz veb ünvanı olur.",
+    "question": "Veb ünvanınız nədir?",
+    "hint": "İnsanların sizi tapmaq üçün artıq istifadə etdiyi ünvan.",
+    "aria": "Öz veb ünvanınız",
+    "willBe": "Ünvanınız belə olacaq: <addr>{address}</addr>",
+    "example": "Məsələn, <addr>{address}</addr>",
+    "noChange": "Saytınız dəyişmir — sadəcə yeni ünvana link əlavə edirsiniz.",
+    "notSetUp": "Bunu qurmamışıq.",
+    "restricted": "Veb ünvanınıza baxan şirkət bizə kilid nişanını — müştərilərin ünvanın yanında gördüyü kiçik kilidi — qurmağa icazə verməlidir. Onlar bizi əlavə edənə qədər o görünməyəcək, ona görə də sizi gözlətmək əvəzinə prosesi dayandırdıq. Onlardan bizi əlavə etmələrini xahiş edin, sonra yenidən cəhd edin.",
+    "blocked": "Veb ünvanınız hazırda kilid nişanını tamamilə bloklayır. Bunun işləməsi üçün ona baxan şirkət buna icazə verməlidir. Onlardan bunu dəyişmələrini xahiş edin, sonra yenidən cəhd edin.",
+    "elsewhere": "Bu ünvanda artıq nəsə cavab verir. Növbəti ekrandakı mesajı ona baxan şəxsə göndərin — nə edəcəklərini biləcəklər.",
+    "provider": "Veb ünvanınıza <b>{provider}</b> baxır. Hara keçməli olduğunuzu sizə göstərəcəyik.",
+    "provisionFailed": "Bu ünvanı qura bilmədik.",
+    "willNotWork": "Bu ünvan işləməyəcək.",
+    "couldNotBeSetUp": "Bu ünvanı qurmaq mümkün olmadı.",
+    "couldNotSetUp": "Qurmaq mümkün olmadı",
+    "checking": "Yoxlanılır…",
+    "setting": "Qurulur…",
+    "tryAgain": "Yenidən cəhd et",
+    "setUpAddress": "Bu ünvanı qur",
+    "notNow": "İndi yox"
+  },
+  "apex": {
+    "empty": "İstifadə etmək istədiyiniz ünvanı yazın.",
+    "not_a_domain": "Bu, veb ünvana oxşamır.",
+    "unparseable": "Bunu veb ünvan kimi oxuya bilmədik. Yazılışı yoxlayıb yenidən cəhd edin.",
+    "apex": "{host} — saytınızın əsas ünvanıdır. Onu bizə yönləndirsəniz, saytınızın yerini bu səhifə tutacaq. Əvəzində qarşısına bir söz əlavə edin — məsələn, tedbirler.{host}.",
+    "too_deep": "Bu ünvanda həddən artıq çox hissə var. tedbirler.{domain} kimi bir ünvan daha yaxşı işləyir."
+  },
+  "record": {
+    "addAt": "Bunu {provider} saytında əlavə edin",
+    "open": "{provider} saytını açın",
+    "guide": "{provider} xidmətinin bu barədə öz təlimatı",
+    "addAtSave": "Bunu {provider} saytında əlavə edin və yadda saxlayın.",
+    "addSomewhere": "Bunu veb ünvanınızın idarə olunduğu yerdə əlavə edin və yadda saxlayın.",
+    "hintChoose": "Bunu siyahıdan seçin.",
+    "hintWord": "Yalnız bu söz, bütün ünvan yox.",
+    "hintExact": "Bunu dəqiq kopyalayın.",
+    "timing": "Adətən bir saat ərzində işləməyə başlayır, lakin daha uzun çəkə bilər. Bu səhifəni açıq saxlamağa ehtiyac yoxdur.",
+    "someoneElse": "Veb ünvanınıza başqası baxır?",
+    "sentTo": "Göndərildi: {email}",
+    "emailPlaceholder": "onların e-poçt ünvanı",
+    "sending": "Göndərilir…",
+    "send": "Bu məlumatları göndər",
+    "sendFailed": "Göndərmək mümkün olmadı"
+  },
+  "providers": {
+    "cloudflare": {
+      "open": "Veb ünvanınızı açın, sonra “DNS” və “Records” bölmələrinə keçin.",
+      "add": "“Add record” seçin, sonra “Type” sahəsində “CNAME” seçin.",
+      "name": "Aşağıdakı birinci dəyəri “Name” sahəsinə yazın.",
+      "value": "Aşağıdakı ikinci dəyəri “Target” sahəsinə yazın.",
+      "proxy": "“Proxy status” üçün “DNS only” seçin — yanındakı bulud narıncı deyil, boz olmalıdır.",
+      "save": "“TTL” dəyərini “Auto” olaraq saxlayın və “Save” seçin.",
+      "caveat": "Bulud narıncı qalarsa, kilid nişanı heç vaxt görünməyəcək və səbəbi heç yerdə göstərilməyəcək."
+    },
+    "godaddy": {
+      "open": "“Domain Portfolio” bölməsini açın və veb ünvanınızı seçin.",
+      "dns": "“Domain Settings” səhifəsində “DNS” seçin.",
+      "add": "“Add New Record” seçin, sonra “Type” menyusundan “CNAME” seçin.",
+      "name": "Aşağıdakı birinci dəyəri “Name” sahəsinə yazın.",
+      "value": "Aşağıdakı ikinci dəyəri “Value” sahəsinə yazın.",
+      "save": "“TTL” dəyərini olduğu kimi saxlayın və “Save” seçin.",
+      "caveat": "Bir neçəsini birdən əlavə etmisinizsə, düymədə “Save All Records” yazılır."
+    },
+    "123reg": {
+      "signIn": "“123 Reg Control Panel” hesabınıza daxil olun.",
+      "manage": "“Domains” yanında “Manage All” seçin, sonra veb ünvanınızı seçin.",
+      "dns": "“DNS”, sonra “Add New Record” seçin.",
+      "type": "“Type” siyahısından “CNAME” seçin.",
+      "name": "Aşağıdakı birinci dəyəri “Name” sahəsinə yazın.",
+      "value": "Aşağıdakı ikinci dəyəri “Value” sahəsinə yazın və sonuna nöqtə əlavə edin.",
+      "save": "“TTL” dəyərini “Default” olaraq saxlayın və “Save” düyməsinə klikləyin.",
+      "caveat": "123 Reg ikinci dəyərin sonunda nöqtə tələb edir, əks halda işləməyəcək."
+    },
+    "wix": {
+      "open": "“Domains” bölməsini açın, sonra veb ünvanınızın yanındakı “Domain Actions” nişanına klikləyin.",
+      "manage": "“Manage DNS Records” seçin.",
+      "add": "“CNAME (Aliases)” bölməsində “+ Add Record”, sonra “Got it” düyməsinə klikləyin.",
+      "name": "Aşağıdakı birinci dəyəri “Host Name” sahəsinə yazın.",
+      "value": "Aşağıdakı ikinci dəyəri “Value” sahəsinə yazın.",
+      "save": "“Save”, sonra açılan pəncərədə “Save Changes” düyməsinə klikləyin.",
+      "caveat": "Veb ünvanınız Wix-də saxlanılmırsa və sadəcə Wix-ə yönləndirilirsə, Wix bu dəyişikliyi edə bilməz — bunu ünvanı saxlayan şirkət etməlidir."
+    }
+  },
+  "instructionsEmail": {
+    "subject": "{truckName} cədvəl səhifəsi üçün əlavə ediləcək bir qeyd",
+    "hello": "Salam,",
+    "introAt": "{truckName} food truck-ının canlı cədvəlini {address} ünvanında yerləşdiririk və bunun üçün {provider} xidmətindəki domenimizə bir qeyd əlavə etmək lazımdır.",
+    "introHolder": "{truckName} food truck-ının canlı cədvəlini {address} ünvanında yerləşdiririk və bunun üçün domenimizi saxlayan şirkətdə domenimizə bir qeyd əlavə etmək lazımdır.",
+    "stepsAt": "{provider} xidmətində:",
+    "guide": "Onların öz təlimatı: {url}",
+    "wholeChange": "Bütün dəyişiklik budur — saytda başqa heç nəyə təsir etmir və domenimizin qalan hissəsi indiki kimi işləməyə davam edir. Adətən bir saat ərzində işləməyə başlayır.",
+    "pointsAt": "Yönləndirdiyi səhifə növbəti dəfə harada satış edəcəyimizi göstərir və özü-özünü yeniləyir.",
+    "replyTo": "Sualınız olarsa, {email} ünvanına cavab yazın.",
+    "thanks": "Təşəkkürlər,"
+  },
+  "liveEmail": {
+    "subject": "{address} işləyir",
+    "goodNews": "Xoş xəbər — {address} işləyir.",
+    "body": "Cədvəliniz artıq öz ünvanınızda göstərilir. Ona baxın və düzgün olduğunu yoxlayın: {address} ünvanını açın, tədbirlərin sizin olduğuna və tarixlərin düzgün göründüyünə əmin olun.",
+    "confirm": "Bunu etdikdən sonra HatchGrab-da ayarlarınızı açın və hər şeyin düzgün olduğunu bizə bildirin. Bundan heç nə asılı deyil — sadəcə bir insanın onu gördüyünü bilmiş olarıq."
+  }
+}

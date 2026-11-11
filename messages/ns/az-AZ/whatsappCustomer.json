@@ -1,0 +1,15 @@
+{
+  "greeting": "Salam 👋",
+  "opener": "{greeting} ",
+  "allergenRedirect": "{opener}Tam menyumuza və allergenlər haqqında məlumata buradan baxa bilərsiniz: {url} — {truck} {emoji}",
+  "menuFallback": "{opener}Tam menyumuza buradan baxa bilərsiniz: {url} — {truck} {emoji}",
+  "otherCategory": "Digər",
+  "categoryFrom": "{category} — {price} və yuxarı",
+  "listTwo": "{first} və {second}",
+  "listMany": "{init} və {last}",
+  "menuSummary": "{opener}Bizdə bunlar var: {summary}. Tam menyuya baxın və əvvəlcədən sifariş edin: {url} — {truck} {emoji}",
+  "allergenCaveat": "Lütfən, allergenlər haqqında məlumat üçün tam menyunu yoxlayın — bu, avtomatik cavabdır.",
+  "specificFallback": "{opener}Son cədvəlimizə buradan baxın: {url}\n\n{truck} {emoji}",
+  "capHandoff": "Bütün mesajlarınız üçün təşəkkür edirik! Burada gündə yalnız bir neçə dəfə cavab verə bilirəm.\n\nSifariş etmək üçün: {link}",
+  "capContact": "Bizimlə birbaşa əlaqə: {number}"
+}

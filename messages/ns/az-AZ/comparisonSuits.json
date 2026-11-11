@@ -1,0 +1,102 @@
+{
+  "title": "Food truck-ınıza hansı uyğundur?",
+  "checked": "Yoxlanılıb: {date}",
+  "evidence": "Sübut",
+  "adminPreview": "Admin önizləməsi — təsdiqlənməyib",
+  "ours": {
+    "fromPlan": "{name} ({plan} planından)"
+  },
+  "q": {
+    "preorder": "Hansı sifariş sistemi müştərilərimə əvvəlcədən sifariş etməyə və götürmə vaxtı seçməyə imkan verir?",
+    "capacity": "Pik saatlarda food truck-ım sifarişlərə çatdıra bilmir — hansı sistem hər vaxt aralığı üçün sifarişləri məhdudlaşdırır?",
+    "whatsapp": "Müştərilər daim harada olduğumu soruşur — hansı sistem onlara WhatsApp-da cavab verir?",
+    "social": "Hansı sistem həftəlik məkanlarım üçün postları hazırlayır ki, qrafika dizayn etməli olmayım?",
+    "schedule": "Demək olar ki, hər gün başqa yerdə satış edirəm — hansı sistem müştərilərə harada olduğumu göstərir və həmin dayanacaq üçün sifariş qəbul edir?",
+    "priceLow": "Ayda cəmi bir neçə gün satış edirəm — hansı sistem ən ucuz başa gəlir?",
+    "priceHigh": "Festivallarda və izdihamlı tədbirlərdə işləyirəm — hansı sistem ən ucuz başa gəlir?",
+    "commission": "Hər sifarişdən komissiya ödəmək istəmirəm — hər məhsul nə qədər tutur?",
+    "offline": "Siqnal kəsiləndə onlayn sifarişlərə nə olur?",
+    "strength": "Müqayisə olunan hansı məhsul “{feature}” təklif edir?"
+  },
+  "does": {
+    "preorder": "Müştərilərə əvvəlcədən sifariş etməyə və götürmə vaxtı seçməyə imkan {count, plural, one {verir} other {verir}}: {names}.",
+    "capacity": "Hər götürmə vaxtına düşən sifarişlərin sayını {count, plural, one {məhdudlaşdırır} other {məhdudlaşdırır}} ki, mətbəx həddən artıq yüklənməsin: {names}.",
+    "whatsapp": "Müştərilərin WhatsApp mesajlarına avtomatik cavab {count, plural, one {verir} other {verir}}: {names}.",
+    "social": "Həftəlik məkanlar üçün paylaşmağa hazır qrafika {count, plural, one {hazırlayır} other {hazırlayır}}: {names}.",
+    "schedule": "Müştərilərə food truck-ın hər gün harada olduğunu {count, plural, one {göstərir} other {göstərir}} və həmin dayanacaq üçün sifariş {count, plural, one {qəbul edir} other {qəbul edir}}: {names}."
+  },
+  "feat": {
+    "preorder": "götürmə vaxtları",
+    "capacity": "hər vaxt aralığı üçün sifariş limiti",
+    "whatsapp": "WhatsApp-da avtomatik cavablar",
+    "social": "həftəlik cədvəlin qrafikası",
+    "schedule": "dəyişən məkanlarla cədvəl",
+    "offlinePause": "Siqnal kəsiləndə onlayn sifarişin dayandırılması"
+  },
+  "others": {
+    "noQuoted": "Bunu {count, plural, one {təklif etmir} other {təklif etmir}}: {names}.",
+    "notListed": "{count, plural, one {Öz saytında “{feature}” göstərmir} other {Öz saytlarında “{feature}” göstərmirlər}}: {names}.",
+    "doesntSay": "{count, plural, one {Saytında bu barədə məlumat yoxdur} other {Saytlarında bu barədə məlumat yoxdur}}: {names}.",
+    "noneLists": "Müqayisə olunan digər məhsulların heç biri bunu göstərmir, ona görə də müqayisə olunan məhsullar arasında ən uyğun {count, plural, one {seçim budur} other {seçimlər bunlardır}}: {names}."
+  },
+  "price": {
+    "lead": "Ayda {orders, number} onlayn sifarişdə müqayisə olunan məhsullar arasında ən aşağı aylıq proqram xərci {count, plural, one {buna məxsusdur} other {bunlara məxsusdur}}: {names} — ayda {amount}{count, plural, one {} other { (hər biri)}}.",
+    "includes": "Buraya abunə haqqı, hər sifarişdən food truck-dan tutulan haqlar, əlavə sifarişlər üçün istənilən ödəniş və 12 aya bölünmüş quraşdırma haqqı daxildir; kart əməliyyatı haqları daxil deyil.",
+    "flat": "{name} ({plan}, sabit qiymət, {name} tərəfindən hər sifarişə haqq tutulmur)",
+    "planName": "{name} ({plan})"
+  },
+  "commission": {
+    "part": "{name}: {fee}",
+    "answer": "Hər məhsulun bir sifarişdən tutduğu haqq: {parts}."
+  },
+  "offline": {
+    "ours": "Food truck siqnalı itirəndə {name} onlayn sifarişi avtomatik dayandıra bilər ki, müştərilər mətbəxin almayacağı sifarişləri verməsin.",
+    "noQuoted": "Bağlantı olmadan işləməyi {count, plural, one {təklif etmir} other {təklif etmir}}: {names}.",
+    "doesntSay": "{count, plural, one {Saytında siqnal kəsiləndə nə baş verdiyi qeyd olunmur} other {Saytlarında siqnal kəsiləndə nə baş verdiyi qeyd olunmur}}: {names}."
+  },
+  "strength": {
+    "answer": "“{feature}” təklif etdiyini {count, plural, one {bildirir} other {bildirirlər}}: {names}; {us} isə təklif etmir.",
+    "answerSoon": "“{feature}” təklif etdiyini {count, plural, one {bildirir} other {bildirirlər}}: {names}; {us} isə hələ təklif etmir."
+  },
+  "ev": {
+    "ours": {
+      "yes": "bəli, {us} xidmətinin öz planlarına görə",
+      "no": "xeyr, {us} xidmətinin öz planlarına görə"
+    },
+    "state": {
+      "yes": "bunu təklif etdiyini bildirir",
+      "partial": "qismən təklif edir",
+      "no_quoted": "bunu təklif etmədiyini bildirir",
+      "no_unquoted": "xeyr (sitat saxlanılmayıb)",
+      "not_listed": "saytında göstərilməyib",
+      "not_mentioned": "saytında qeyd olunmur",
+      "unknown": "məlum deyil"
+    },
+    "row": "{tool} — {feature}: {answer}.",
+    "quote": "Sitat: “{quote}”.",
+    "pages": "Yoxlanılan səhifələr: {pages}.",
+    "pageRead": "{page}",
+    "pageNotRead": "{page} (oxunmadı)",
+    "page": {
+      "features": "funksiyalar səhifəsi",
+      "pricing": "qiymətlər səhifəsi",
+      "help": "yardım mərkəzi",
+      "other": "digər səhifə"
+    },
+    "help": {
+      "fetched": "Onun yardım mərkəzi oxundu.",
+      "linked_not_fetched": "Onun yardım mərkəzi var, lakin oxunmadı.",
+      "none_found": "Yardım mərkəzi tapılmadı."
+    },
+    "calc": {
+      "volume": "Hesablama: ayda {orders, number} onlayn sifariş, sifariş başına {order} (onlayn satış: {revenue}).",
+      "line": "{name} ({plan}): abunə {sub} + 12 aya bölünmüş quraşdırma haqqı {setup} + sifariş haqları {fees} + əlavə sifarişlər {over} = ayda {total}.",
+      "excluded": "Heç bir məhsul üçün kart əməliyyatı haqları və müştərilərin ödədiyi haqlar daxil edilməyib.",
+      "date": "Hesablama tarixi: {date}, hər provayderin saytında yoxlanılan qiymətlərə əsasən."
+    }
+  },
+  "method": {
+    "covers": "Food truck-lar üçün uyğunluğuna və yoxlanıla bilən açıq məlumatın mövcudluğuna görə seçilmiş ən çoxu dörd alternativi əhatə edir — bazardakı bütün məhsulları yox.",
+    "notListed": "“Siyahıda yoxdur” o deməkdir ki, şirkətlərin adətən reklam etdiyi funksiyalar üçün məhsulun funksiyalar və qiymətlər səhifələrini yoxladıq və orada qeyd olunmur. “Qeyd olunmur” isə hər iki halda təsdiqlənmədiyini bildirir."
+  }
+}

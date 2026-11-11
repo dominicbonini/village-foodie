@@ -1,0 +1,134 @@
+{
+  "item": {
+    "weekHeading": "Həftə başlığı",
+    "weekHeadingSample": "Həftənin başlanğıcı …",
+    "daysSample": "{first} – {last}",
+    "date": "Tarix",
+    "place": "Yer",
+    "venue": "Məkan",
+    "area": "Ərazi",
+    "time": "Vaxt",
+    "rows": "Sətirlər",
+    "rowsSample": "Aralıq: {px}px · {first} – {last}",
+    "ownText": "Öz mətniniz",
+    "noteTokenSample": "Post hazırlayarkən yazdığınız qeyd",
+    "nothingYet": "Hələ heç nə yoxdur",
+    "thisBox": "bu qutu"
+  },
+  "sample": {
+    "venue": "Dənizkənarı bulvar",
+    "area": "Səbail"
+  },
+  "bar": {
+    "previewWith": "Önizləmə:",
+    "undo": "Geri al",
+    "undoTitle": "Geri al (⌘Z)",
+    "redo": "Təkrarla",
+    "redoTitle": "Təkrarla (⇧⌘Z)",
+    "cancel": "Ləğv et",
+    "saving": "Yadda saxlanılır…",
+    "save": "Dizaynı yadda saxla"
+  },
+  "grid": {
+    "eachRow": "Hər sətir",
+    "placeOff": "Yerin adı şəklinizdə var — HatchGrab onu əlavə etməyəcək."
+  },
+  "background": {
+    "uploading": "Yüklənir…",
+    "replace": "Şəkli dəyiş",
+    "shape": {
+      "square": "Kvadrat (1:1)",
+      "portrait45": "Portret (4:5)",
+      "portrait916": "Portret (9:16)",
+      "landscape169": "Albom (16:9)",
+      "portrait": "Portret",
+      "landscape": "Albom"
+    }
+  },
+  "scope": {
+    "title": "Mətnin mövqeləri",
+    "standard": "Standart ilə eyni mövqelər",
+    "own": "{place} üçün ayrıca mövqelər",
+    "locked": "Bu mövqelər Standart dizaynınızdan götürülür. Onları yalnız burada dəyişmək üçün “{place} üçün ayrıca mövqelər” seçin."
+  },
+  "stage": {
+    "hint": "Qutunun yerini dəyişmək üçün onu sürüşdürün · ölçüsünü dəyişmək üçün küncündən çəkin",
+    "zoomOut": "Kiçilt",
+    "zoomIn": "Böyüt"
+  },
+  "rows": {
+    "spacing": "Aralıq",
+    "daysRun": "Günlər: {first} – {last}. 1-ci sətrin üç qutusu bu məsafə ilə aşağıya kopyalanır.",
+    "whichEvents": "Hansı tədbirlər",
+    "showCancelled": "Ləğv edilmiş tədbirləri göstər",
+    "showCancelledHint": "Ləğv edilmiş tədbirdə yerin adı üstündən xətt çəkilmiş halda və LƏĞV EDİLİB sözü ilə göstərilir. Söndürülsə, həmin gün istirahət günü kimi görünür."
+  },
+  "days": {
+    "reorder": "Sıranı dəyiş",
+    "move": "köçür"
+  },
+  "picture": {
+    "picture": "Şəkil",
+    "fill": "Qutunu doldur",
+    "fit": "İçinə sığdır",
+    "corners": "Künclər",
+    "square": "Düz",
+    "rounded": "Yuvarlaq",
+    "ifMissing": "Məkanın şəkli yoxdursa",
+    "noPicture": {
+      "omit": "Göstərmə",
+      "blank": "Boş yer saxla",
+      "logo": "Loqonuzu göstər"
+    },
+    "border": "Çərçivə",
+    "drawBorder": "Çərçivə çək",
+    "drawBorderHint": "Şəklin ətrafında öz rənginizdə xətt.",
+    "borderWidth": "Çərçivənin qalınlığı",
+    "cornerRadius": "Künc radiusu",
+    "locationPictures": "Məkan şəkilləri",
+    "addLocationPictures": "+ Məkan şəkilləri əlavə et",
+    "allHaveImage": "{total, plural, =0 {Hələ heç bir məkanınız yoxdur.} one {Məkanınızın şəkli var.} other {Bütün # məkanınızın şəkli var.}}",
+    "someWithout": "{total, plural, one {# məkanınızdan} other {# məkanınızdan}} {without} {without, plural, one {məkanın} other {məkanın}} hələ şəkli yoxdur"
+  },
+  "settings": {
+    "font": "Şrift",
+    "colour": "Rəng",
+    "textColour": "Mətnin rəngi",
+    "ownStyleNote": "{count, plural, one {{names} — öz üslubu var, ona görə dəyişdirilmir.} other {{names} — öz üslubları var, ona görə dəyişdirilmir.}}",
+    "matchAgain": "Yenidən uyğunlaşdır",
+    "matchName": "Uyğunlaşdır: {name}",
+    "lastToggle": "{kind, select, weekly {Yer və ya Vaxt seçimlərindən birini aktiv saxlayın. Ləğv edilmiş tədbirdə yerin adı üstündən xətt çəkilmiş halda və LƏĞV EDİLİB sözü ilə göstərilir, ona görə də hər ikisi söndürülsə, tədbirin ləğv edildiyini göstərən heç nə qalmaz.} other {Məkan və ya Vaxt seçimlərindən birini aktiv saxlayın. Ləğv edilmiş tədbirdə yerin adı üstündən xətt çəkilmiş halda və LƏĞV EDİLİB sözü ilə göstərilir, ona görə də hər ikisi söndürülsə, tədbirin ləğv edildiyini göstərən heç nə qalmaz.}}"
+  },
+  "letters": {
+    "boldGlyph": "Q",
+    "italicGlyph": "K",
+    "capsGlyph": "AA",
+    "italicTitle": "{italic} — bu şriftin həqiqi kursiv variantı var"
+  },
+  "align": {
+    "left": "Sola",
+    "centre": "Mərkəzə",
+    "right": "Sağa"
+  },
+  "effects": {
+    "outlineColour": "Kontur rəngi",
+    "bandColour": "Zolağın rəngi",
+    "bandDaysOff": "İstirahət günlərində zolaq",
+    "bandCancelled": "Tədbir ləğv edildikdə zolaq",
+    "bandDaysOffHint": "Satış olmayan gündə yuxarıdakı zolağın əvəzinə istifadə olunur.",
+    "bandCancelledHint": "Tədbir ləğv edildikdə yuxarıdakı zolağın əvəzinə istifadə olunur."
+  },
+  "more": {
+    "dayOwnLine": "Həftənin günü ayrıca sətirdə",
+    "dayOwnLineHint": "Həftənin günü tarixin üstündə. Yalnız tarix üçün.",
+    "noEventDay": "Tədbir olmayan gündə",
+    "wordsBeforePlaceholder": "məs. Bizi tapın",
+    "neverHyphenate": "Boşluqsuz uzun söz həmişə kiçildilir — yer adlarını heç vaxt defislə bölmürük."
+  },
+  "bits": {
+    "less": "Daha az",
+    "more": "Daha çox",
+    "chooseColourFor": "{label} — istənilən rəngi seçin",
+    "chooseColour": "İstənilən rəngi seçin"
+  }
+}

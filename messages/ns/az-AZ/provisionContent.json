@@ -1,0 +1,72 @@
+{
+  "standardCategories": {
+    "starters": "Qəlyanaltılar",
+    "mains": "Əsas yeməklər",
+    "burgers": "Burgerlər",
+    "pizza": "Pizza",
+    "wrapsSandwiches": "Dürmək və sendviçlər",
+    "sides": "Qarnirlər",
+    "dipsSauces": "Souslar",
+    "desserts": "Desertlər",
+    "drinks": "İçkilər",
+    "kidsMenu": "Uşaq menyusu",
+    "specials": "Günün təklifləri",
+    "other": "Digər"
+  },
+  "demoEventName": "Demo tədbir",
+  "firstVanName": "Maşın 1",
+  "demoCategories": {
+    "pizza": "Pizza",
+    "burgers": "Burgerlər",
+    "mains": "Əsas yeməklər",
+    "sides": "Qarnirlər",
+    "drinks": "İçkilər"
+  },
+  "demoTemplates": {
+    "pizza": {
+      "label": "🍕 Pizza maşını",
+      "items": {
+        "margherita": "Marqarita",
+        "pepperoni": "Pepperoni",
+        "ndujaHoney": "Nduja və bal",
+        "fourCheese": "Dörd pendir",
+        "gardenVeg": "Tərəvəzli",
+        "garlicBread": "Sarımsaqlı çörək",
+        "rocketParmesan": "Roka və parmezan",
+        "olives": "Zeytun",
+        "sanPellegrino": "San Pellegrino",
+        "coke": "Kola"
+      }
+    },
+    "burgers": {
+      "label": "🍔 Burger maşını",
+      "items": {
+        "classicCheeseburger": "Klassik çizburger",
+        "doubleBacon": "Dubl bekon",
+        "buttermilkChicken": "Ayranlı toyuq",
+        "halloumiStack": "Hellim burger",
+        "smashBurger": "Smeş burger",
+        "skinOnFries": "Qabıqlı kartof fri",
+        "loadedCheeseFries": "Pendirli kartof fri",
+        "onionRings": "Soğan halqaları",
+        "craftLemonade": "Ev limonadı",
+        "coke": "Kola"
+      }
+    },
+    "curries": {
+      "label": "🍛 Karri maşını",
+      "items": {
+        "chickenTikkaMasala": "Toyuq tikka masala",
+        "lambRoganJosh": "Quzu roqan coş",
+        "chanaMasala": "Çana masala",
+        "butterChicken": "Kərə yağlı toyuq",
+        "saagPaneer": "Saaq panir",
+        "pilauRice": "Hind plovu",
+        "garlicNaan": "Sarımsaqlı naan",
+        "onionBhaji": "Soğan baci",
+        "mangoLassi": "Manqo lassi",
+        "coke": "Kola"
+      }
+    }
+  }
+}

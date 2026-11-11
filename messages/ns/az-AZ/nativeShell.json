@@ -1,0 +1,136 @@
+{
+  "binary": {
+    "cameraUsage": "HatchGrab kameradan istifadə edir ki, menyu lövhənizin, yeməklərinizin və digər sənədlərin şəklini çəkib birbaşa hesabınıza yükləyə biləsiniz. Şəkillər yalnız sizin seçdiyiniz yükləmələr üçün istifadə olunur.",
+    "bluetoothUsage": "HatchGrab mətbəx çek printerinizə qoşulmaq üçün Bluetooth-dan istifadə edir ki, sifariş çekləri avtomatik çap olunsun. Başqa heç bir məqsədlə istifadə olunmur.",
+    "localNetworkUsage": "HatchGrab lokal şəbəkənizdəki mətbəx printerinizə qoşulur ki, sifariş çekləri avtomatik çap olunsun. Başqa heç bir məqsədlə istifadə olunmur.",
+    "faceIdUsage": "HatchGrab-ın kilidini Face ID ilə açın.",
+    "offlineTitle": "HatchGrab ilə əlaqə yoxdur",
+    "offlineDetail": "İnternet bağlantınızı yoxlayın.",
+    "retry": "Yenidən cəhd et"
+  },
+  "gate": {
+    "reverted": "Sifariş #{id} geri qaytarıldı",
+    "saved": "Sifariş #{id} yadda saxlanıldı",
+    "undo": "↩ Geri al",
+    "paymentNotRecorded": "⚠ Sifariş #{id} — ÖDƏNİŞ QEYDƏ ALINMAYIB. {collect, select, yes {Sifariş tamamlandı} other {Sifariş yadda saxlanıldı}}, ödəniş isə yox.",
+    "recordPayment": "Ödənişi qeydə al",
+    "paid": "Sifariş #{id} ödənildi",
+    "undonePayment": "Geri alındı — ödəniş silindi",
+    "undoneCollected": "Geri alındı — sifariş götürülməyib",
+    "collected": "Sifariş #{id} {paidToo, select, yes {ödənildi və götürüldü} other {götürüldü}}",
+    "ready": "Sifariş #{id} hazırdır",
+    "readyBuzzer": "Sifariş #{id} hazırdır · <pill></pill>",
+    "status": "Sifariş #{id} {action, select, confirm {təsdiqləndi} reject {rədd edildi} ready {hazırdır} collected {götürüldü} undo_collected {bərpa edildi} cancel {ləğv edildi} other {yeniləndi}}"
+  },
+  "conflicts": {
+    "more": "+{count} əlavə",
+    "notOnScreenPlus": "+{count} bu ekranda deyil",
+    "notOnScreen": "{n, plural, one {{count} sifariş bu ekranda deyil} other {{count} sifariş bu ekranda deyil}}"
+  },
+  "banner": {
+    "paymentTitle": "⚠ ÖDƏNİŞ QEYDƏ ALINMAYIB",
+    "paymentBody": "{orders} — yalnız bu cihazda ödənilmiş kimi qeyd edilib. Ödəniş keçməyib.",
+    "paymentCheck": "Sifarişi yoxlayın və borc hələ qalırsa, ödənişi yenidən alın.",
+    "dismiss": "Bağla",
+    "confirmChecked": "Yoxladığınızı təsdiqləyin: {orders}",
+    "confirmHides": "Bu, xəbərdarlığı gizlədir. Qeyd hər halda bu cihazda saxlanılır.",
+    "notYet": "Hələ yox",
+    "iveChecked": "Yoxladım: {orders}",
+    "statusBody": "⚠ {orders} — bu dəyişiklik keçmədi. Sifarişi yoxlayın.",
+    "offline": "📴 Bağlantı yoxdur — {n, plural, one {{count} dəyişiklik bu cihazda saxlanıldı. Yenidən onlayn olduqda göndəriləcək.} other {{count} dəyişiklik bu cihazda saxlanıldı. Yenidən onlayn olduqda göndəriləcək.}} Ayarlar kilidlənib.",
+    "syncing": "Yenidən onlayn — {n, plural, one {{count} dəyişiklik göndərilir} other {{count} dəyişiklik göndərilir}}…",
+    "synced": "Bütün dəyişikliklər göndərildi.",
+    "stillQueued": "{n, plural, one {{count} dəyişiklik bu cihazda saxlanıldı. Onu göndərməyə hələ də cəhd edilir.} other {{count} dəyişiklik bu cihazda saxlanıldı. Onları göndərməyə hələ də cəhd edilir.}}"
+  },
+  "lock": {
+    "locked": "HatchGrab kilidlənib",
+    "verifying": "Yoxlanılır…",
+    "unlock": "Kilidi aç",
+    "cantUseBiometric": "Face / Touch ID işləmir?",
+    "enterPin": "Ehtiyat PIN-inizi daxil edin",
+    "wrongPin": "PIN yanlışdır — yenidən cəhd edin.",
+    "checking": "Yoxlanılır…",
+    "tryBiometric": "Bunun əvəzinə Face / Touch ID sınayın",
+    "forgot": "PIN-i unutmusunuz? Tətbiqi yenidən quraşdırmalı olacaqsınız."
+  },
+  "notify": {
+    "title": "🔔 Bildirişlər",
+    "intro": "Bu cihazdakı bildirişlər. Hansı bildirişləri alacağınızı seçmək üçün aktiv edin.",
+    "refused": "Bunu aktiv etmək üçün bildirişlərə cihazınızın Ayarlarında icazə verilməlidir.",
+    "newOrder": "Yeni sifariş bildirişləri",
+    "newOrderHelp": "Müştəri sifarişi təsdiq tələb edəndə bildiriş alın.",
+    "offline": "Oflayn / dayandırılma bildirişləri",
+    "offlineHelp": "Bu cihaz oflayn olanda (və sifariş qəbulu dayandırılanda) bildiriş alın. <green>Oflayn da işləyir.</green>"
+  },
+  "van": {
+    "label": "Maşın",
+    "loadRetry": "Yüklənmədi · Yenidən cəhd et",
+    "select": "Seçin…"
+  },
+  "deviceSave": {
+    "network": "Serverə qoşulmaq mümkün olmadı — bağlantını yoxlayın və yenidən cəhd edin.",
+    "server": "Hazırda yadda saxlamaq mümkün olmadı. Zəhmət olmasa, yenidən cəhd edin."
+  },
+  "setup": {
+    "fetchErrorTitle": "Cihaz quraşdırması yüklənmədi",
+    "fetchErrorBody": "<b>Bu cihazı</b> quraşdırmaq üçün serverə qoşula bilmədik. Bağlantını yoxlayın və yenidən cəhd edin — sifarişləriniz və ayarlarınız toxunulmaz qalır.",
+    "retry": "Yenidən cəhd et",
+    "later": "Sonra",
+    "noVanTitle": "Aktiv maşın yoxdur",
+    "noVanBody": "Bu food truck-ın hələ aktiv maşını yoxdur. <b>Ayarlar → Food truck-larınız</b> bölməsində birini aktiv edin, sonra bu cihaz avtomatik quraşdırılacaq — burada başqa addım lazım deyil.",
+    "goToVans": "Keçin: Ayarlar → Food truck-larınız",
+    "title": "Bu cihazı quraşdırın",
+    "body": "<b>Bu cihaz</b> üçün birdəfəlik quraşdırma: açılış ekranı və hansı maşında işlədiyi. Yalnız bu cihaza aiddir — digər cihazlar ayrıca quraşdırılır və bunları sonra profil menyusundan → “Bu cihaz” bölməsində dəyişə bilərsiniz.",
+    "whichScreen": "Bu cihaz hansı ekranla açılsın?",
+    "dashboard": "Sifarişlər paneli",
+    "kds": "Mətbəx ekranı (KDS)",
+    "whichVan": "Bu cihaz hansı maşındadır?",
+    "selectVan": "Maşın seçin…",
+    "saving": "Yadda saxlanılır…",
+    "tryAgain": "Yenidən cəhd et",
+    "continue": "Davam et"
+  },
+  "device": {
+    "title": "Bu cihaz",
+    "viewing": "Baxdığınız: <b>{truck}</b>",
+    "viewingVan": "Baxdığınız: <b>{truck}</b> — <b>{van}</b>",
+    "only": "Yalnız bu cihaz — digər cihazlar ayrıca quraşdırılır. (ID: {id}…)",
+    "truck": "Food truck",
+    "van": "Maşın",
+    "defaultScreen": "Əsas ekran",
+    "orderNotifications": "Sifariş bildirişləri",
+    "patchFailed": "{setting, select, van {Maşın} defaultScreen {Əsas ekran} other {Sifariş bildirişləri}}: yadda saxlanılmadı. {reason}",
+    "requireBiometric": "Açmaq üçün barmaq izi və ya üz tanıma tələb et",
+    "pinTitle": "Ehtiyat PIN təyin edin (4–6 rəqəm)",
+    "pinHelp": "Barmaq izi və ya üz tanıma işləməsə, daxil olmaq yolunuz budur — yeganə ehtiyat variantdır, ona görə də unutmayın (unudulmuş PIN tətbiqi yenidən quraşdırmaq deməkdir). Oflayn da işləyir.",
+    "pinPlaceholder": "PIN",
+    "confirmPinPlaceholder": "PIN-i təsdiqləyin",
+    "pinTooShort": "Ən azı 4 rəqəm istifadə edin.",
+    "pinMismatch": "PIN-lər uyğun gəlmir.",
+    "setPin": "PIN təyin et və aktiv et",
+    "cancel": "Ləğv et",
+    "noBiometric": "Bu cihazda barmaq izi və ya üz tanıma quraşdırılmayıb — cihaz ayarlarında əlavə edin. Ehtiyat PIN-iniz yenə də işləyir.",
+    "footer": "Bu ayarlar yalnız bu cihaza aiddir — digər cihazlar ayrıca quraşdırılır."
+  },
+  "appLock": {
+    "unlockReason": "HatchGrab-ın kilidini açın",
+    "usePasscode": "Parol koddan istifadə et",
+    "cancel": "Ləğv et",
+    "confirmEnable": "Tətbiq kilidini aktiv etmək üçün təsdiqləyin"
+  },
+  "channel": {
+    "ordersName": "Yeni sifarişlər",
+    "ordersDescription": "Sifariş təsdiq tələb edəndə bildirişlər."
+  },
+  "localNotify": {
+    "newOrderTitle": "Yeni sifariş",
+    "orderReceived": "Sifariş {number} qəbul edildi",
+    "newOrders": "{n, plural, one {Yeni sifarişiniz var} other {{count} yeni sifarişiniz var}}"
+  },
+  "offlineAlert": {
+    "pausedTitle": "Sifariş qəbulu dayandırılıb",
+    "pausedBody": "Siz oflaynsınız — müştəri sifarişləri dayandırılıb.",
+    "offlineTitle": "Siz oflaynsınız",
+    "offlineBody": "Bu cihazın bağlantısı kəsilib."
+  }
+}

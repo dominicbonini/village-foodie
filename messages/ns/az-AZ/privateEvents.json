@@ -1,0 +1,42 @@
+{
+  "publicName": "Özəl tədbir",
+  "chip": "Özəl",
+  "grid": {
+    "orderingSection": "SİFARİŞ",
+    "linkRowLabel": "Sifarişləri özəl link və QR kod ilə qəbul et",
+    "columnTitle": "Daxili Özəl növ. Onun adını dəyişmək, yerini dəyişmək və ya silmək olmaz."
+  },
+  "form": {
+    "help": "Cədvəlinizdə yalnız tarix və vaxtla “Özəl tədbir” kimi görünür — heç vaxt ünvan, xəritə və ya Village Foodie göstərilmir.",
+    "linkPromise": "Qonaqlar özəl link və QR kod ilə sifariş verir — onları yadda saxladıqdan sonra alacaqsınız.",
+    "nameLabel": "Tədbirin adı",
+    "nameHelp": "Qonaqlar bunu sifariş səhifəsinin yuxarısında görür.",
+    "namePlaceholder": "Aysel və Orxanın toyu",
+    "previewNote": "Cədvəlinizdə necə görünəcəyi — məkan, şəhər və ya poçt indeksi olmadan.",
+    "needsTimes": "Başlama və bitmə vaxtını əlavə edin — link ilə sifariş qəbul edən özəl tədbir üçün onlar lazımdır."
+  },
+  "link": {
+    "button": "Link və QR",
+    "title": "Özəl link və QR kod",
+    "label": "Özəl link",
+    "copy": "Kopyala",
+    "copied": "Kopyalandı",
+    "qrDownload": "QR kodu yüklə",
+    "tableCards": "Masa kartlarını çap et",
+    "newLink": "Yeni link yarat",
+    "working": "İşlənir…",
+    "newLinkConfirm": "Yeni link yaradılsın? Cari link dərhal işləməyi dayandırır və artıq çap etdiyiniz QR kodlar da işləməyəcək.",
+    "newLinkHelp": "Link getməməli olduğu yerə gedibsə, bundan istifadə edin. Cari link dərhal işləməyi dayandırır, çap olunmuş QR kodlar da işləməyəcək.",
+    "newLinkFailed": "Yeni link yaratmaq mümkün olmadı.",
+    "offNotice": "Bu tədbir üçün özəl link ilə sifariş söndürülüb, ona görə də paylaşmaq üçün link yoxdur. Tədbir cədvəlinizdə yenə də “Özəl tədbir” kimi görünür."
+  },
+  "cards": {
+    "printTitle": "{truck} — masa kartları",
+    "scan": "Sifariş üçün skan edin",
+    "blurb": "Telefonunuzda sifariş verin və ödəyin. Hazır olanda adınızı çağıracağıq.",
+    "footer": "Sifariş sistemi: HatchGrab"
+  },
+  "noSinglePost": "Özəl tədbirlər üçün ayrıca post olmur — onlar həftəlik afişanızda “Özəl tədbir” kimi görünür.",
+  "confirmToPrivate": "Bu, ünvanı və tədbiri xəritədən gizlədir. Qonaqlara sifariş vermək üçün özəl link lazım olacaq.",
+  "confirmFromPrivate": "Bu, tədbiri ictimai edir: onun ünvanı və xəritə nişanı görünəcək, özəl link isə işləməyi dayandıracaq."
+}

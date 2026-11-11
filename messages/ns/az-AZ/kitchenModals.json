@@ -1,0 +1,69 @@
+{
+  "close": "Bağla",
+  "cancel": "Ləğv et",
+  "selectReason": "Səbəb seçin",
+  "reject": {
+    "title": "Sifariş #{orderId} rədd edilsin?",
+    "reasonLabel": "Səbəb — məcburidir (müştəriyə göstərilir)",
+    "reason": "{reason, select, sold_out {Məhsullardan biri satılıb qurtarıb} too_busy {Çox məşğuluq — vaxtında hazırlaya bilmərik} closing_soon {Tezliklə bağlanırıq} other {Digər}}",
+    "noteRequired": "Səbəb — məcburidir",
+    "noteOptional": "Əlavə qeyd — istəyə bağlı",
+    "notePlaceholder": "Müştəri üçün əlavə məlumat yazın…",
+    "keep": "Sifarişi saxla",
+    "confirm": "Sifarişi rədd et"
+  },
+  "eventCancel": {
+    "title": "Bu tədbir ləğv edilsin?",
+    "affected": "{n, plural, one {{count} sifariş ləğv ediləcək} other {{count} sifariş ləğv ediləcək}} və müştərilərə bildiriş göndəriləcək.",
+    "reasonLabel": "Səbəb — istəyə bağlı",
+    "reason": "{reason, select, vehicle_breakdown {Maşın xarab olub} weather {Hava şəraiti} venue_issue {Məkanla bağlı problem} personal_emergency {Şəxsi təcili hal} other {Digər}}",
+    "messageLabel": "Müştərilərə mesaj — istəyə bağlı",
+    "messagePlaceholder": "məs. Təəssüf ki, məkana gedərkən qoşqumuz xarab oldu…",
+    "keep": "Tədbiri saxla",
+    "cancelling": "Ləğv edilir…",
+    "confirm": "Tədbiri ləğv et"
+  },
+  "actions": {
+    "startEvent": "{restart, select, yes {Tədbiri yenidən başlat} other {Tədbiri başlat}}",
+    "changeEvent": "Tədbiri dəyiş",
+    "changeEventType": "Tədbirin növünü dəyiş…",
+    "privateLink": "Özəl link və QR kod",
+    "noteLabel": "Müştərilər üçün qeyd",
+    "notePlaceholder": "məs. Əsas dayanacaqda park edin, narıncı çadırı axtarın",
+    "noteHint": "Sifariş səhifəsində tədbir məlumatlarınızın altında müştərilərə göstərilir.",
+    "saveNote": "Qeydi yadda saxla",
+    "resume": "Sifarişləri bərpa et",
+    "pause": "Sifarişləri dayandır",
+    "changeFinishTime": "Tədbirin bitmə vaxtını dəyiş",
+    "finishEvent": "Tədbiri bitir",
+    "cancelEvent": "Tədbiri ləğv et"
+  },
+  "finish": {
+    "confirmTitle": "Bitmə vaxtı dəyişdirilsin?",
+    "willFinish": "Bu tədbirin yeni bitmə vaxtı: <b>{selected}</b>{hasCurrent, select, yes { (əvvəlki: <b>{current}</b>)} other {}}.",
+    "dueAfter": "<b>{n, plural, one {{count} sifarişin vaxtı {selected} vaxtından sonradır.} other {{count} sifarişin vaxtı {selected} vaxtından sonradır.}}</b> {n, plural, one {O, lövhədə qalır} other {Onlar lövhədə qalır}} və yenə də {n, plural, one {hazırlanmalıdır} other {hazırlanmalıdır}}. Bitmə vaxtının dəyişdirilməsi yalnız sonrakı vaxtlar üçün YENİ sifarişlərin verilməsini dayandırır.",
+    "saving": "Yadda saxlanılır…",
+    "confirm": "Bitmə vaxtını dəyiş",
+    "keepCurrent": "Saxla: {current}",
+    "keepAsIs": "Olduğu kimi saxla",
+    "title": "Bitmə vaxtını dəyiş",
+    "currentlySet": "Bu tədbirin hazırkı bitmə vaxtı: <b>{current}</b>.",
+    "noFinishTime": "Bu tədbir üçün bitmə vaxtı təyin edilməyib.",
+    "noTimesLeft": "Bu gün üçün başqa vaxt qalmayıb. Bunun əvəzinə “Tədbiri bitir” düyməsindən istifadə edin.",
+    "newFinishTime": "Yeni bitmə vaxtı",
+    "optionCurrent": "{time} (hazırkı)",
+    "earlier": "Bu, hazırkı bitmə vaxtından tezdir. Müştərilər ondan sonrakı vaxtlar üçün sifariş verə bilməyəcək.",
+    "review": "Dəyişikliyə bax",
+    "optionNextDay": "{time} (növbəti gün)"
+  },
+  "extraWait": {
+    "title": "Əlavə gözləmə vaxtı",
+    "hint": "Yeni sifarişlərdə göstərilən götürmə vaxtına əlavə olunur. Tədbirin bitmə vaxtını dəyişmir.",
+    "option": "+{mins} dəq"
+  },
+  "picker": {
+    "reconnect": "Yükləmək üçün yenidən qoşulun",
+    "selected": "Seçilib",
+    "status": "{tone, select, paused {⏸ Dayandırılıb} live {● Aktiv} finished {● Bitib} cancelled {Ləğv edilib} other {Başlamayıb}}"
+  }
+}

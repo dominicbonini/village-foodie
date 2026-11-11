@@ -1,0 +1,38 @@
+{
+  "newEmail": {
+    "subject": "Yeni HatchGrab e-poçt ünvanınızı təsdiqləyin",
+    "heading": "E-poçt ünvanınızı təsdiqləyin",
+    "button": "E-poçt ünvanını təsdiqlə"
+  },
+  "changeEmail": {
+    "requested": "HatchGrab e-poçt ünvanınızı bu ünvanla əvəz etməyi istəmisiniz.",
+    "click": "Təsdiqləmək üçün aşağıdakı düyməyə klikləyin. Bu link 24 saat ərzində qüvvədədir.",
+    "ignore": "Bu dəyişikliyi siz istəməmisinizsə, bu məktubu nəzərə almaya bilərsiniz.",
+    "stillActive": "Cari e-poçt ünvanınız aktiv olaraq qalır."
+  },
+  "resendVerification": {
+    "requested": "HatchGrab e-poçtunuzu bu ünvanla əvəz etməyi istəmisiniz.",
+    "click": "Təsdiqləmək üçün aşağıya klikləyin. Bu link 24 saat ərzində qüvvədədir.",
+    "ignore": "Bunu siz istəməmisinizsə, bu məktubu nəzərə almayın.",
+    "stillActive": "Cari e-poçtunuz aktiv olaraq qalır."
+  },
+  "passwordReset": {
+    "subject": "HatchGrab parolunuzu sıfırlayın",
+    "heading": "Parolunuzu sıfırlayın",
+    "requested": "HatchGrab hesabınızın parolunu sıfırlamaq üçün sorğu aldıq.",
+    "click": "Yeni parol seçmək üçün aşağıdakı düyməyə klikləyin. Bu link 1 saat ərzində qüvvədədir.",
+    "button": "Parolu sıfırla",
+    "ignore": "Bunu siz istəməmisinizsə, bu məktubu nəzərə almaya bilərsiniz.",
+    "unchanged": "Yuxarıdakı linkə klikləməyənədək parolunuz dəyişməyəcək."
+  },
+  "deletionScheduled": {
+    "subject": "HatchGrab hesabınızın silinməsi planlaşdırılıb",
+    "received": "Bu HatchGrab hesabının silinməsi üçün sorğu aldıq.",
+    "orderingStopped": "<b>Onlayn sifariş dərhal dayandırıldı</b>: {trucks}.",
+    "noTrucks": "(food truck yoxdur)",
+    "readable": "İdarəetmə paneliniz növbəti\n    {days, plural, one {# gün} other {# gün}} ərzində oxumaq üçün əlçatan qalır.",
+    "scheduled": "Hesabın silinməsi bu tarixə planlaşdırılıb: <b>{date}</b>.",
+    "cannotCancel": "<b>Bunu tətbiqin daxilindən ləğv etmək mümkün deyil.</b> Əgər bu, siz deyildinizsə və ya\n    fikrinizi dəyişmisinizsə, bu məktuba mümkün qədər tez cavab yazın.",
+    "kept": "Hesab silindikdə şəxsi məlumatlarınızı və müştərilərinizin məlumatlarını silirik. Qanunla\n    saxlamağa borclu olduğumuz anonim mühasibat qeydlərini saxlayırıq."
+  }
+}

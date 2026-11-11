@@ -1,0 +1,8 @@
+{
+  "metaDescription": "{truck} növbəti dəfə harada satış edəcək.",
+  "orderFrom": "Sifariş et: {truck}",
+  "poweredBy": "<b>HatchGrab</b> ilə hazırlanıb",
+  "loadFailed": "Cədvəli hazırda yükləmək mümkün olmadı.",
+  "loading": "Cədvəl yüklənir…",
+  "empty": "Qarşıdakı tədbir yoxdur: {truck}."
+}

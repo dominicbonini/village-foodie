@@ -1,0 +1,103 @@
+{
+  "upload": {
+    "bannerButton": "Menyumu yadda saxla →",
+    "heading": "Food truck-ınızı quraşdırın",
+    "sub": "Menyunuz birbaşa köçürülür.",
+    "privacy": "Bundan yalnız food truck-ınızı quraşdırmaq və demo linkinizi göndərmək üçün istifadə edəcəyik — <link>məxfilik siyasətimizə</link> baxın."
+  },
+  "sample": {
+    "bannerButton": "Food truck-ımı quraşdır →",
+    "heading": "Food truck-ınızı quraşdırın",
+    "sub": "Növbəti addımda öz menyunuzu yükləyəcəksiniz — bir dəqiqə çəkir.",
+    "privacy": "Bundan yalnız food truck-ınızı quraşdırmaq və demo linkinizi göndərmək üçün istifadə edəcəyik — <link>məxfilik siyasətimizə</link> baxın."
+  },
+  "saveOnly": {
+    "bannerButton": "Menyumu yadda saxla →",
+    "heading": "Demonuzu yadda saxlayın",
+    "sub": "Onu 14 gün saxlayacağıq və geri qayıtmaq üçün linki dərhal e-poçtunuza göndərəcəyik.",
+    "privacy": "Bundan yalnız demo linkinizi göndərmək üçün istifadə edəcəyik — <link>məxfilik siyasətimizə</link> baxın."
+  },
+  "confirmationHeading": "Hər şey hazırdır",
+  "postSaveButton": "Food truck-ımı quraşdır →",
+  "enterSetupButton": "Food truck-ımı quraşdır →",
+  "emailOnlyLink": "Sadəcə bu demoya qayıtmaq üçün mənə link göndərin",
+  "sendLinkButton": "Linki göndərin",
+  "savingButton": "Yadda saxlanılır…",
+  "continueButton": "Davam et →",
+  "createAccountButton": "Hesabımı yarat →",
+  "retryButton": "Yenidən cəhd et",
+  "backToDemoButton": "Demoya qayıt",
+  "savedStatus": "{hasDate, select, yes {✓ Yadda saxlanıldı — bu tarixədək saxlanılır: {date}} other {✓ Yadda saxlanıldı}}",
+  "back": "Geri",
+  "close": "Bağla",
+  "truckStepHeading": "Food truck-ınız haqqında",
+  "detailsStepHeading": "Quraşdırmanı başa çatdırın",
+  "stepper": {
+    "details": "Məlumatlarınız",
+    "menu": "Menyu",
+    "allergens": "Allergenlər",
+    "kitchen": "Mətbəx ayarları",
+    "schedule": "Cədvəl"
+  },
+  "confirmEmailed": "Bu demoya birbaşa qayıtmaq üçün sizə e-poçtla link göndərdik — giriş tələb olunmur.",
+  "confirmKeepUntil": "Onu bu tarixədək saxlayacağıq: <b>{date}</b>. Tam quraşdırma zamanı menyunuz sizinlə gəlir.",
+  "loading": "Yüklənir…",
+  "firstName": "Ad",
+  "lastName": "Soyad",
+  "truckName": "Food truck-ın adı",
+  "truckNamePlaceholder": "məs. Kənd Mətbəxi",
+  "cuisine": "Mətbəx",
+  "logoLabel": "Loqo <opt>(istəyə bağlı)</opt>",
+  "logoPreviewAlt": "Loqonun önizləməsi",
+  "changeLogo": "Loqonu dəyiş",
+  "removeLogo": "Sil",
+  "uploadLogo": "📷 Loqo yüklə",
+  "readyTitle": "Hesabınız hazırdır",
+  "readyBody": "İndi food truck-ınızın quraşdırılmasını başa çatdıraq — menyunuz, allergenlər və mətbəx.",
+  "hangTight": "Bir az gözləyin — hər şey quraşdırılır.",
+  "stage": {
+    "account": "Hesabınız yaradılır",
+    "truck": "Food truck-ınız quraşdırılır",
+    "menu": "Menyunuz yüklənir"
+  },
+  "stageState": {
+    "done": "hazırdır",
+    "recognised": "artıq hesabınız var",
+    "failed": "alınmadı",
+    "active": "davam edir",
+    "pending": "gözləmədə"
+  },
+  "signIn": "Daxil ol",
+  "phone": "Telefon",
+  "onWhatsapp": "Bu nömrə WhatsApp-dadır",
+  "email": "E-poçt",
+  "emailPlaceholder": "siz@foodtruckunuz.az",
+  "settingUpAs": "Quraşdırma bu ünvanla: <b>{email}</b> <change>dəyiş</change>",
+  "password": "Parol",
+  "passwordPlaceholder": "Ən azı 8 simvol",
+  "hidePassword": "Parolu gizlət",
+  "showPassword": "Parolu göstər",
+  "promoLabel": "Kodunuz var? <opt>(istəyə bağlı)</opt>",
+  "promoPlaceholder": "Buraya daxil edin",
+  "agreeTerms": "<terms>Şərtləri</terms> və <privacy>Məxfilik siyasətini</privacy> qəbul edirəm.",
+  "freeMonth": "{months, plural, =0 {Pulsuz sınaq qeydiyyatdan keçdiyiniz an başlayır.} one {İlk ayınız pulsuzdur, qeydiyyatdan keçdiyiniz andan başlayaraq.} other {İlk # ayınız pulsuzdur, qeydiyyatdan keçdiyiniz andan başlayaraq.}}",
+  "fieldError": {
+    "firstName": "Adınızı yazın.",
+    "lastName": "Soyadınızı da yazın.",
+    "truck": "Food truck-ınıza ad verin.",
+    "cuisine": "Nə bişirdiyinizi bizə bildirin.",
+    "phoneMissing": "Telefon nömrəsi əlavə edin — həm müştərilər, həm də biz sizinlə onun vasitəsilə əlaqə saxlayırıq.",
+    "email": "Düzgün e-poçt ünvanı daxil edin.",
+    "password": "Parol ən azı 8 simvol olmalıdır.",
+    "terms": "Davam etmək üçün şərtləri qəbul edin."
+  },
+  "error": {
+    "saveFailed": "Bunu yadda saxlamaq mümkün olmadı — yenidən cəhd edin.",
+    "savedNoEmail": "Yadda saxlanıldı — lakin hazırda linki e-poçtla göndərə bilmədik.",
+    "unreachable": "Hazırda bizə qoşulmaq mümkün olmadı — yenidən cəhd edin.",
+    "createAccountFailed": "Hesabınızı yaratmaq mümkün olmadı.",
+    "truckCreateFailed": "Hesabınız hazırdır, lakin food truck-ınızı yarada bilmədik. Yenidən cəhd edin.",
+    "truckUnreachable": "Hesabınız hazırdır, lakin hazırda food truck-ınızı yarada bilmədik. Yenidən cəhd edin.",
+    "truckNoToken": "Food truck-ınız quraşdırılıb, lakin hazırda onu aça bilmədik. Yenidən cəhd edin."
+  }
+}

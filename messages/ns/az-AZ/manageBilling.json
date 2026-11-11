@@ -1,0 +1,44 @@
+{
+  "perTruckMonth": "food truck başına / ay",
+  "transactionFees": "Əməliyyat haqları",
+  "comingSoon": "Tezliklə",
+  "footnote2Masked": "Onlayn ödənişlər Stripe Connect ilə həyata keçirilir. Platforma və kart emalı haqları hələ dəqiqləşdirilir və istifadəyə veriləndə təsdiqlənəcək.",
+  "card": {
+    "title": "Hesablaşma və ödənişlər",
+    "managed": "Hesablaşmanı HatchGrab idarə edir",
+    "earlyAccess": "Erkən giriş dövründə planları biz əl ilə qurur və tənzimləyirik.",
+    "planLine": "{trial, select, yes {{truck} · Plan: {plan} (sınaq)} other {{truck} · Plan: {plan}}}"
+  },
+  "currentPlan": "Cari plan",
+  "plan": {
+    "included": "Ayda {amount} məbləğində onlayn sifariş daxildir.",
+    "includedUnlimited": "Limitsiz onlayn sifarişlər daxildir.",
+    "promo": "Xüsusi qiymət.",
+    "promoUntil": "Xüsusi qiymət: {date} tarixinədək.",
+    "ended": "{plan} planınız {date} tarixində başa çatdı. İndiki planınız: {now}.",
+    "trialMonths": "{months} aylıq pulsuz sınaq."
+  },
+  "trialEnds": "Sınaq dövrü bitir: {date}",
+  "yourTrialEnds": "Sınaq dövrünüz bitir: {date}",
+  "notStarted": {
+    "heading": "Pulsuz sınaq dövrünüz hələ başlamayıb"
+  },
+  "onTrial": "Bütün funksiyalar sizə açıqdır. Sınaq dövrü bitməzdən əvvəl plan seçin.",
+  "onTrialPaidEnd": "Bütün funksiyalar sizə açıqdır. Sınaq dövrü bitdikdən sonra {plan} planının qiyməti ayda {price} olacaq. Ödənişi qurmaq üçün bundan əvvəl sizinlə əlaqə saxlayacağıq.",
+  "onTrialNoCta": "Bütün funksiyalar sizə açıqdır.",
+  "noCharge": "🔒 Sınaq dövrünüz {date} tarixinədək davam edir və bu müddətdə sizdən heç bir ödəniş tutulmayacaq. Ödəniş yalnız siz plan seçib ödəniş məlumatlarınızı daxil etdikdə başlayır. O vaxta qədər ləğv ediləcək və ödəniləcək heç nə yoxdur.",
+  "noChargePaidEnd": "🔒 Sınaq dövrünüz {date} tarixinədək davam edir və bu müddətdə sizdən heç bir ödəniş tutulmayacaq.",
+  "fees": "*Onlayn sifarişlərə standart kart emalı haqları tətbiq olunur",
+  "setUpPayment": "⏱ Sınaq dövrü bitməzdən əvvəl plan seçin",
+  "changeYourPlan": "Planınızı dəyişin",
+  "planButton": "{plan} — {price}",
+  "upgradeModal": {
+    "title": "Plana keçid: {plan}",
+    "tagline": "{price} — {description}",
+    "body": "Avtomatik hesablaşmanı qururuq. İndi keçmək üçün bizə yazın, 24 saat ərzində hər şeyi quraq.",
+    "mailSubject": "Plana keçid: {plan} — {truck}",
+    "mailBody": "Salam, {truck} üçün {plan} ({price}) planına keçmək istəyirəm.",
+    "email": "Keçid üçün bizə yazın",
+    "cancel": "Ləğv et"
+  }
+}

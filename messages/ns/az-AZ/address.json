@@ -1,0 +1,58 @@
+{
+  "label": {
+    "street": "Ünvan",
+    "postcode": "Poçt indeksi",
+    "zip": "ZIP kod",
+    "eircode": "Eircode",
+    "postalCode": "Poçt kodu",
+    "state": "Ştat",
+    "stateTerritory": "Ştat və ya ərazi",
+    "province": "Əyalət",
+    "county": "Qraflıq",
+    "prefecture": "Prefektura",
+    "emirate": "Əmirlik",
+    "region": "Bölgə",
+    "area": "Ərazi (kənd, qəsəbə və ya şəhər)",
+    "townOrArea": "Qəsəbə və ya ərazi",
+    "city": "Şəhər",
+    "suburb": "Məhəllə",
+    "townOrCity": "Qəsəbə və ya şəhər"
+  },
+  "short": {
+    "area": "Ərazi",
+    "townOrArea": "Qəsəbə və ya ərazi",
+    "city": "Şəhər",
+    "suburb": "Məhəllə",
+    "townOrCity": "Qəsəbə və ya şəhər"
+  },
+  "inSentence": {
+    "postcode": "poçt indeksi",
+    "zip": "ZIP kod",
+    "eircode": "Eircode",
+    "postalCode": "poçt kodu"
+  },
+  "withArticle": {
+    "postcode": "poçt indeksi",
+    "zip": "ZIP kod",
+    "eircode": "Eircode",
+    "postalCode": "poçt kodu"
+  },
+  "tradeLabel": {
+    "area": "Qəsəbə və ya şəhər",
+    "townOrArea": "Qəsəbə və ya ərazi",
+    "city": "Şəhər",
+    "suburb": "Məhəllə",
+    "townOrCity": "Qəsəbə və ya şəhər"
+  },
+  "basedIn": {
+    "area": "Fəaliyyət göstərdiyiniz qəsəbə və ya şəhər",
+    "townOrArea": "Fəaliyyət göstərdiyiniz qəsəbə və ya ərazi",
+    "city": "Fəaliyyət göstərdiyiniz şəhər",
+    "suburb": "Fəaliyyət göstərdiyiniz məhəllə",
+    "townOrCity": "Fəaliyyət göstərdiyiniz qəsəbə və ya şəhər"
+  },
+  "example": "məs., {example}",
+  "customersSee": "Müştərilər görür:",
+  "postalWarning": "Bu, düzgün {article} kimi görünmür — məsələn: {example}. Yenə də yadda saxlaya bilərsiniz.",
+  "regionChoose": "Seçin…"
+}

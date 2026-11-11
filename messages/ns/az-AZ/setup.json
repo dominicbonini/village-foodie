@@ -1,0 +1,32 @@
+{
+  "steps": {
+    "based": "Harada fəaliyyət göstərirsiniz",
+    "identity": "Food truck-ınız",
+    "menu": "Menyunuz",
+    "event": "İlk tədbir"
+  },
+  "stepItem": "{number}. {label}",
+  "settingUp": "Quraşdırma",
+  "loading": "Yüklənir",
+  "loadingCountries": "Yüklənir…",
+  "verify": {
+    "ok": "E-poçt təsdiqləndi — təşəkkür edirik.",
+    "expired": "Bu təsdiq linkinin vaxtı bitib. Bizimlə əlaqə saxlayın — yayıma çıxmazdan əvvəl məsələni həll edəcəyik.",
+    "invalid": "Bu təsdiq linki işləmədi. Bizimlə əlaqə saxlayın — yayıma çıxmazdan əvvəl məsələni həll edəcəyik."
+  },
+  "identity": {
+    "heading": "Food truck-ınızın adı nədir?",
+    "intro": "Müştərilər bu adı görəcək. Siz yayıma çıxmağı seçənədək heç nə ictimai olmur.",
+    "nameLabel": "Food truck-ın adı",
+    "namePlaceholder": "Bakı Burger",
+    "phoneLabel": "Telefon",
+    "whatsappTick": "Bu nömrə WhatsApp-dadır",
+    "phoneHelp": "Müştərilər sifariş barədə soruşa bilsinlər deyə bunu sifariş təsdiqində görürlər. İşarə orada “Bizə zəng edin” və ya “Bizə WhatsApp-da yazın” yazılacağını müəyyən edir. Hər ikisini Ayarlar bölməsində dəyişə bilərsiniz."
+  },
+  "phoneRequired": "Telefon nömrəsi əlavə edin — həm müştərilər, həm də biz sizinlə onun vasitəsilə əlaqə saxlayırıq.",
+  "createFailed": "Food truck-ınızı yaratmaq mümkün olmadı.",
+  "unreachable": "Hazırda bizə qoşulmaq mümkün olmadı — yenidən cəhd edin.",
+  "back": "Geri",
+  "creating": "Food truck-ınız yaradılır…",
+  "continue": "Davam et"
+}

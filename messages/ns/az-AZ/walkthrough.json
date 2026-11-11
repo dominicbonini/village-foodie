@@ -1,0 +1,31 @@
+{
+  "intro": "İdarəetmə — food truck-ınızı quraşdırdığınız və işlərin necə getdiyini gördüyünüz yerdir. Sifarişlər paneli isə sifariş qəbul etdiyiniz və hər tədbiri canlı idarə etdiyiniz yerdir.",
+  "ariaLabel": "İdarəetmə paneli ilə tanışlıq",
+  "step": "{current} / {total}",
+  "skip": "Ötür",
+  "back": "← Geri",
+  "next": "İrəli →",
+  "done": "Hazırdır",
+  "stops": {
+    "menu": {
+      "title": "Menyu",
+      "body": "Yeməkləriniz, qiymətlər və allergenlər. Burada nəyi dəyişsəniz, dərhal qüvvəyə minir."
+    },
+    "schedule": {
+      "title": "Cədvəl",
+      "body": "Harada və nə vaxt satış etdiyiniz. Burada tədbir əlavə edin — müştərilər onun üçün sifariş verə bilsin."
+    },
+    "build": {
+      "title": "Kombo menyular, əlavələr və təkliflər",
+      "body": "Kombo menyular, əlavə təkliflər, fərdiləşdirmələr və mətbəx tutumunuz Menyu bölməsindədir — sınayıb baxın."
+    },
+    "settings": {
+      "title": "Ayarlar",
+      "body": "Food truck-ınızın məlumatları və müştərilərin necə ödədiyi."
+    },
+    "billing": {
+      "title": "Hesablaşma",
+      "body": "Planınız, hesablaşma və funksiyalar haqqında məlumat burada yerləşir."
+    }
+  }
+}

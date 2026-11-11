@@ -1,0 +1,16 @@
+{
+  "takeConfirm": "Çağırış cihazı <b>{number}</b> hazırda <b>sifariş #{holderId}</b> üçündür{hasName, select, yes { ({name})} other {}}. Onu <b>{hasTarget, select, yes {sifariş #{targetId}} other {bu sifariş}}</b> üçün götürmək istəyirsiniz?",
+  "cancel": "Ləğv et",
+  "take": "Çağırış cihazı {number} götür",
+  "titleBlocking": "Sifariş #{id} üçün çağırış cihazı?",
+  "title": "Çağırış cihazı seçin",
+  "subtitle": "{hasTarget, select, yes {Sifariş #{id}} other {Bu sifariş}}{hasCurrent, select, yes { · hazırkı çağırış cihazı: {current}} other {}}",
+  "allTaken": "{n, plural, one {Çağırış cihazı istifadədədir. Onu başqa sifarişdən götürmək üçün toxunun.} other {Bütün {count} çağırış cihazı istifadədədir. Birini başqa sifarişdən götürmək üçün toxunun.}}",
+  "thisOrder": "Bu sifariş",
+  "noBuzzer": "Çağırış cihazı yoxdur",
+  "done": "Hazırdır",
+  "lostTitle": "Sifariş #{id} üçün çağırış cihazı yoxdur",
+  "lostBody": "{hasName, select, yes {{name} — } other {}}siz oflayn olarkən başqa sifariş eyni çağırış cihazını götürdü. Müştəriyə başqa cihaz verin.",
+  "dismiss": "Bağla",
+  "assign": "Təyin et"
+}

@@ -1,0 +1,11 @@
+{
+  "optOut": {
+    "missing": "Bu e-poçtda abunəlikdən imtina sətri yoxdur, ona görə də onu göndərmək olmur. Əlavə etmək üçün “Insert opt-out” düyməsindən istifadə edin.",
+    "notSetUp": "Abunəlikdən imtina cümləsi qurulmayıb, ona görə də heç bir təklif e-poçtu göndərmək olmur. Onu “Templates” bölməsindəki “Signature” panelində əlavə edin.",
+    "notLoaded": "Abunəlikdən imtina cümləsi hələ yüklənməyib, ona görə də bunu göndərmək olmur.",
+    "unreadable": "Abunəlikdən imtina cümləsini oxumaq mümkün olmadı, ona görə də heç nə göndərilmədi."
+  },
+  "retry": {
+    "notRebuilt": "Həmin mesajı şirkət sətri ilə yenidən yaratmaq mümkün olmadı, ona görə də heç nə göndərilmədi."
+  }
+}

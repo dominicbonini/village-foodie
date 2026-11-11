@@ -1,0 +1,59 @@
+{
+  "labels": {
+    "collection_interval_mins": "Götürmə vaxtları",
+    "takes_cash": "Nağd pul qəbul edirsiniz?",
+    "offline_protection": "Oflayn sifariş qoruması",
+    "buzzer_prompt": "Çağırış cihazı əlavə etməyi xatırlat"
+  },
+  "typeFollowsVanTitle": "Hər maşının adi ayarına uyğunlaşır",
+  "sameSettingsAllVansLabel": "Bütün maşınlar üçün eyni ayarlar",
+  "sameSettingsAllVansHeader": "Bütün maşınlar",
+  "sameSettingsConfirm": "Maşın 1-in ayarları bütün maşınlara köçürülsün? Bu, Maşın 1-in bütün maşın ayarlarını köçürür — Ayarlardakı “Maşın 1 ilə eyni” seçimi kimi. Mətbəx tutumunun öz açarı var.",
+  "eventTypesFooterStandard": "Standart sizin adi qurulumunuzdur. Onu burada dəyişsəniz, Ayarlarda da dəyişəcək.",
+  "eventTypesFooterOneEvent": "Ayarı yalnız bir tədbir üçün dəyişmək üçün həmin tədbirin sifarişlər panelindən istifadə edin.",
+  "eventTypesSubtitle": "Dəyişikliklər dərhal yadda saxlanılır.",
+  "matchStandardLabel": "Standarta uyğunlaşdır",
+  "matchStandardConfirm": "Bu növdəki bütün ayarlar Standarta qaytarılsın? Burada dəyişdiyiniz hər şey silinəcək.",
+  "priceLabels": {
+    "price_change_on": "Qiymətləri dəyiş",
+    "price_mode": "Qiymət dəyişikliyi",
+    "price_amount": "Məbləğ",
+    "price_rounding": "Yuvarlaqlaşdırma",
+    "item_prices": "Məhsul qiymətləri"
+  },
+  "priceMode": {
+    "add_amount": "+ {symbol}",
+    "add_pct": "+ %",
+    "sub_amount": "− {symbol}",
+    "sub_pct": "− %",
+    "none": "Hər qiyməti özüm təyin edim"
+  },
+  "priceRounding": {
+    "none": "Yoxdur",
+    "nearest_1": "Ən yaxın {symbol}1",
+    "up_1": "Həmişə yuxarı yuvarlaqlaşdır"
+  },
+  "pricesStandardCell": "Menyu qiymətləriniz",
+  "pricesTruckWideTitle": "Qiymətləriniz bütün maşınlar üçün eynidir",
+  "pricesMenuCell": "Menyu",
+  "pricesTypeOffCell": "Menyu qiymətləri",
+  "itemPricesShow": "Qiymətləri göstər",
+  "itemPricesHide": "Qiymətləri gizlət",
+  "priceItemsHeading": "Hər məhsulun qiymətini təyin edin",
+  "priceItemsOpen": "Hər məhsulun qiymətinə baxın və ya dəyişin ›",
+  "priceItemsClose": "Məhsul qiymətlərini gizlət ⌃",
+  "ownPriceCount": "{n, plural, one {{count} məhsulun öz qiyməti var} other {{count} məhsulun öz qiyməti var}}",
+  "priceTypeHint": "Öz qiymətinizi yazmaq üçün qiymətə basın.",
+  "pricesLiveNotice": "Bu tədbir hazırda gedir. Yeni sifarişlər yeni qiymətlərlə verilir. Artıq verilmiş sifarişlər öz qiymətlərini saxlayır.",
+  "placeTypeHelper": "Bu yeri hər dəfə seçəndə “Tədbir əlavə et” bu növü seçir.",
+  "postPictureStandardNote": "Buradakı tədbir postlarında standart dizaynınız istifadə olunur.",
+  "eventItemsCardDescription": "Yalnız bu tədbir üçün qiymətlər, məhsul limitləri və mövcudluq. Dəyişikliklər dərhal qüvvəyə minir.",
+  "eventPriceColumnLabel": "Qiymət",
+  "eventPriceOwnNote": "{hasType, select, yes {{type} {price} · bu tədbir} other {menyu {price} · bu tədbir}}",
+  "eventPriceEdit": "✎ Qiymətləri redaktə et",
+  "eventPriceCancel": "Ləğv et",
+  "eventPriceSave": "Qiymətləri yadda saxla",
+  "eventPriceEditNote": "Qiymətlər yalnız bu tədbir üçün redaktə olunur. Yadda saxlayana qədər məhsul limitləri və mövcudluq kilidlidir.",
+  "eventPriceLiveNote": "Aktivdir: yeni sifarişlər yeni qiymətlərlə verilir.",
+  "offlineWhenOfflineLabel": "Oflayn olduqda"
+}

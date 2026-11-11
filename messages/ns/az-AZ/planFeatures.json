@@ -1,0 +1,141 @@
+{
+  "row": {
+    "discovery_map_listing": {
+      "name": "Xəritədə görünmə"
+    },
+    "web_dashboard": {
+      "name": "Universal veb sifarişlər paneli"
+    },
+    "qr_code": {
+      "name": "QR kod"
+    },
+    "schedule_import": {
+      "name": "Cədvəlin avtomatik idxalı"
+    },
+    "meal_deals_upsells": {
+      "name": "Kombo menyular və əlavə təkliflər"
+    },
+    "walkup_orders": {
+      "name": "Yerində sifarişlərin emalı"
+    },
+    "sold_out_toggle": {
+      "name": "Bir toxunuşla “satılıb qurtarıb” qeydi"
+    },
+    "kitchen_app": {
+      "name": "iPhone, iPad və Android üçün mətbəx tətbiqi"
+    },
+    "offline_protection": {
+      "name": "Oflayn sifariş qoruması"
+    },
+    "online_payments": {
+      "name": "Onlayn ödənişlər"
+    },
+    "advance_preordering": {
+      "name": "Gələcək tarixə əvvəlcədən sifariş"
+    },
+    "preorder_deadline": {
+      "name": "Əvvəlcədən sifariş üçün son vaxt"
+    },
+    "time_slot_selection": {
+      "name": "Müştərinin vaxt aralığı seçimi"
+    },
+    "kitchen_capacity": {
+      "name": "Mətbəx tutumunun idarəsi"
+    },
+    "stock_countdown": {
+      "name": "Stokun avtomatik geri sayımı"
+    },
+    "auto_accept": {
+      "name": "Onlayn sifarişlərin avtomatik qəbulu"
+    },
+    "branded_qr_code": {
+      "name": "Loqolu QR kod"
+    },
+    "private_events": {
+      "name": "Özəl tədbirlər"
+    },
+    "social_media_posts": {
+      "name": "Sosial media postları"
+    },
+    "whatsapp_auto_replies": {
+      "name": "WhatsApp-da avtomatik cavablar"
+    },
+    "messenger_instagram_replies": {
+      "name": "Messenger və Instagram-da avtomatik cavablar"
+    },
+    "tap_to_pay": {
+      "name": "Telefonla ödəniş qəbulu"
+    },
+    "sms_order_alerts": {
+      "name": "SMS sifariş bildirişləri"
+    },
+    "multi_device_kitchen": {
+      "name": "Mətbəxdə çoxcihazlı sinxronizasiya"
+    },
+    "multi_user_access": {
+      "name": "Çoxistifadəçili giriş"
+    },
+    "embed_schedule": {
+      "name": "Öz saytınızda cədvəl səhifəsi"
+    },
+    "event_types": {
+      "name": "Fərdi tədbir növləri və qiymətlər"
+    },
+    "buzzer_tracking": {
+      "name": "Çağırış cihazlarının izlənməsi"
+    },
+    "documents_reminders": {
+      "name": "Sənədlər və xatırlatmalar"
+    },
+    "profit_per_event": {
+      "name": "Hər tədbir üzrə mənfəət"
+    },
+    "accountant_reports": {
+      "name": "Mühasib üçün hesabatlar"
+    },
+    "ticket_printing": {
+      "name": "Mətbəx çeklərinin çapı"
+    },
+    "customer_display": {
+      "name": "Müştəri ekranı"
+    },
+    "loyalty_stamp_cards": {
+      "name": "Rəqəmsal sadiqlik möhür kartları"
+    }
+  },
+  "cardRegionOnline": "standart {region}",
+  "cardRegion": {
+    "UKcards": "Böyük Britaniya kartları",
+    "EEAcards": "AİZ kartları",
+    "UScards": "ABŞ kartları",
+    "Australiancards": "Avstraliya kartları",
+    "NewZealandcards": "Yeni Zelandiya kartları",
+    "Canadiancards": "Kanada kartları",
+    "Swisscards": "İsveçrə kartları",
+    "Braziliancards": "Braziliya kartları",
+    "Mexicancards": "Meksika kartları",
+    "Japanesecards": "Yaponiya kartları",
+    "Singaporecards": "Sinqapur kartları",
+    "HongKongcards": "Honq Konq kartları",
+    "Malaysiancards": "Malayziya kartları",
+    "Thaicards": "Tailand kartları",
+    "UAEcards": "BƏƏ kartları"
+  },
+  "perMonth": {
+    "mo": "{amount}/ay",
+    "month": "ayda {amount}"
+  },
+  "priceWord": {
+    "free": "Pulsuz",
+    "freeTrial": "Pulsuz sınaq",
+    "lifetime": "Ömürlük",
+    "zeroPercent": "0%",
+    "payAtHatch": "Yerində ödəniş",
+    "unlimited": "Limitsiz",
+    "none": "—",
+    "masked": "Dəqiqləşdirilir"
+  },
+  "cell": {
+    "included": "Daxildir"
+  }
+}

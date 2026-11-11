@@ -1,0 +1,6 @@
+{
+  "closedPending": "Əvvəlcədən sifarişlər bağlanıb. Mətbəxin təsdiqi gözlənilir.",
+  "deadline": "Əvvəlcədən sifariş üçün son vaxt: {time}",
+  "deadlineOnDay": "Əvvəlcədən sifariş üçün son vaxt: {time}, {day}",
+  "opens": "Əvvəlcədən sifarişlər açılır: {day}"
+}

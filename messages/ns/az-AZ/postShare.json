@@ -1,0 +1,10 @@
+{
+  "download": "Şəkli yüklə",
+  "copied": "Kopyalandı ✓",
+  "copyCaption": "Mətni kopyala",
+  "share": "Paylaş",
+  "copiedStatus": "{kind, select, postText {Post mətni kopyalandı.} other {Şəkil mətni kopyalandı.}}",
+  "copyFailed": "Kopyalamaq mümkün olmadı — mətni seçin və özünüz kopyalayın.",
+  "sharedStatus": "{kind, select, postText {Post mətni kopyalandı — onu postunuza yapışdırın.} other {Şəkil mətni kopyalandı — onu postunuza yapışdırın.}}",
+  "shareRefused": "{kind, select, postText {Paylaşmağa icazə verilmədi, ona görə də şəkil yükləndi. Post mətni kopyalandı.} other {Paylaşmağa icazə verilmədi, ona görə də şəkil yükləndi. Şəkil mətni kopyalandı.}}"
+}

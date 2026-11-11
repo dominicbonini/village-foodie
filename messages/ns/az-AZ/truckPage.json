@@ -1,0 +1,47 @@
+{
+  "meta": {
+    "fallbackTitle": "Food truck | Village Foodie",
+    "hgFallbackTitle": "Food truck",
+    "orderTitle": "{truck} — onlayn sifariş",
+    "orderDescription": "{truck} — əvvəlcədən sifariş edin və sifarişinizi food truck-dan götürün.",
+    "title": "{truck} | Village Foodie",
+    "logoAlt": "{truck} loqosu"
+  },
+  "shareTitle": "{truck} — cədvəl",
+  "shareText": "{truck} növbəti dəfə harada olacaq — baxın! 🚚",
+  "linkCopied": "Profil linki panoya kopyalandı! 📋",
+  "facebookPage": "Facebook səhifəsi",
+  "loadingMap": "Xəritə yüklənir…",
+  "view": {
+    "list": "Siyahı",
+    "map": "Xəritə"
+  },
+  "ownThisTruck": "Bu food truck sizindir?",
+  "ownThisTruckTitle": "Bu food truck sizindir? Profilinizi yeniləmək üçün klikləyin",
+  "actions": {
+    "menu": "Menyu",
+    "call": "Zəng et",
+    "message": "Mesaj",
+    "share": "Paylaş",
+    "order": "Sifariş et"
+  },
+  "loadingSchedule": "Cədvəl yüklənir…",
+  "loadError": {
+    "title": "Yüklənmədi",
+    "body": "Cədvəli hazırda yükləyə bilmədik — adətən bu, qısa bir nasazlıqdır. Yenidən cəhd edin.",
+    "retry": "Yenidən cəhd et"
+  },
+  "notFound": {
+    "title": "Food truck tapılmadı",
+    "body": "Bu food truck haqqında məlumat tapa bilmədik. Ola bilsin ki, başqa yerə köçüb və ya profilini yeniləyib.",
+    "cta": "Bütün food truck-lar"
+  },
+  "noEvents": {
+    "title": "Qarşıdakı tədbir tapılmadı",
+    "body": "Bu food truck haqqında bəzi məlumatlar çatışmaya bilər. Sahibisiniz, yoxsa onun cədvəlini bilirsiniz?",
+    "cta": "Yeniləmək üçün bizə yazın!"
+  },
+  "whereToFind": "Bizi harada tapmaq olar",
+  "missingEvent": "<strong>Hansısa tədbir çatışmır?</strong> <br></br>Bu food truck-ın sahibisinizsə və ya sadəcə sadiq pərəstişkarısınızsa, bu səhifəni dəqiq saxlamağa kömək edin! <br></br><link>Çatışmayan məlumatları əlavə etmək üçün bizimlə əlaqə saxlayın.</link>",
+  "weeklySchedule": "Həftəlik cədvəli alın 🍕"
+}

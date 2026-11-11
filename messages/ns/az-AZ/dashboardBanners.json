@@ -1,0 +1,21 @@
+{
+  "breachHeadline": "{n, plural, one {{count} vaxt aralığında tutum aşılıb} other {{count} vaxt aralığında tutum aşılıb}} — yoxlayın",
+  "batchOver": "{cat}: partiya həddi aşılıb — {count} (vaxt aralığı: {slot}; hər partiyada {per})",
+  "eventStartOver": "Tədbirin başlanğıcında tutum aşılıb — {n, plural, one {{count} məhsul} other {{count} məhsul}} (vaxt aralığı: {slot})",
+  "kitchenOver": "Mətbəxin tutumu aşılıb — {n, plural, one {{count} məhsul hazırlanır} other {{count} məhsul hazırlanır}} (vaxt aralığı: {slot})",
+  "orderItems": "#{id} — {n, plural, one {{count} məhsul} other {{count} məhsul}}",
+  "placedAnyway": "Yenə də verilib: {list}",
+  "placedItem": "#{id} — {slot}",
+  "orphans": "{times} — tutum aşılıb, buna aid sifariş tapılmadı",
+  "dismiss": "Bağla",
+  "kitchenCapacity": "Mətbəx tutumu",
+  "overCapacity": "Tutum aşılıb",
+  "wakeUnsupported": "Bu cihaz ekranı açıq saxlaya bilmir.",
+  "wakeInsecure": "Bu ünvandan ekranı açıq saxlamaq mümkün deyil.",
+  "wakeRetry": "Ekranı açıq saxla — yenidən cəhd etmək üçün toxunun",
+  "wakeAcquire": "Ekranı açıq saxla",
+  "degraded": {
+    "serverError": "Server sifarişləri yükləyə bilmədi{hasStatus, select, yes { (xəta {status})} other {}}. Göstərilən sifarişlərin vaxtı: {at}. Yeni sifarişlər görünməyə bilər.",
+    "unreachable": "Serverə qoşulmaq mümkün deyil. Göstərilən sifarişlərin vaxtı: {at}. Yeni sifarişlər görünməyə bilər."
+  }
+}

@@ -1,0 +1,25 @@
+{
+  "newOrder": {
+    "subject": "Yeni sifariş #{id} — {name}{withSlot, select, yes { · {slot}} other {}}",
+    "heading": "Yeni sifariş qəbul edildi",
+    "from": "<b>Sifariş #{id}</b> — sifarişçi: <b>{name}</b>",
+    "collection": "Götürmə vaxtı: {time}",
+    "asap": "Konkret vaxt yoxdur — ən tez",
+    "total": "Cəmi",
+    "notes": "<b>Qeydlər:</b> {notes}",
+    "autoConfirmed": "Avtomatik təsdiqlənib — heç bir əməliyyat tələb olunmur.",
+    "confirmPrompt": "Bu sifarişi təsdiqləmək və ya rədd etmək üçün HatchGrab sifarişlər panelinizə daxil olun.",
+    "text": "Yeni sifariş #{id} — sifarişçi: {name}{withSlot, select, yes {, vaxt: {slot}} other {}}{withVenue, select, yes {, məkan: {venue}} other {}}.{withCharges, select, yes { {charges}.} other {}} Cəmi: {total}.{withNotes, select, yes { Qeydlər: {notes}} other {}}"
+  },
+  "newEvents": {
+    "subject": "Yeni tədbirlər tapıldı — {truck}: zəhmət olmasa, yoxlayın",
+    "hi": "Salam,",
+    "found": "Cədvəlinizdə müştərilərə göstərilməzdən əvvəl təsdiqinizi tələb edən <b>{n, plural, one {{count} yeni tədbir} other {{count} yeni tədbir}}</b> tapdıq.",
+    "listHeading": "Tapılan tədbirlər:",
+    "approve": "Onları “Cədvəl” bölməsində təsdiqlədikdən sonra tədbirlər xəritədə görünəcək və sifariş səhifəniz əvvəlcədən sifariş qəbul etməyə hazır olacaq.",
+    "cta": "Cədvəlinizə baxın →",
+    "signoff": "— HatchGrab komandası · hatchgrab.com",
+    "unknownVenue": "Naməlum məkan",
+    "text": "Salam,\n\nCədvəlinizdə təsdiqinizi tələb edən {n, plural, one {{count} yeni tədbir} other {{count} yeni tədbir}} tapdıq:\n\n{list}\n\nOnlara buradan baxın: {url}\n\nTəsdiqlədikdən sonra tədbirlər xəritədə görünəcək.\n\n— HatchGrab komandası"
+  }
+}

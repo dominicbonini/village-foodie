@@ -1,0 +1,28 @@
+{
+  "hi": "Salam, {name}!",
+  "limit80": {
+    "subject": "Bu ayın WhatsApp cavablarının 80%-ni istifadə etmisiniz",
+    "used": "Bu ay avtomatik WhatsApp cavablarınızdan <b>{used} / {limit}</b> istifadə olunub.",
+    "nothingStopped": "Heç nə dayanmayıb. Limit ({limit}) dolanda avtomatik cavablar limitiniz <b>{reset}</b> tarixində yenilənənədək dayanacaq — müştərilər yenə də sizə yaza biləcək və onların göndərdiyi hər şeyi görəcəksiniz.",
+    "raise": "Aylıq limitinizi istədiyiniz vaxt Ayarlar bölməsində artıra bilərsiniz.",
+    "raiseLink": "Aylıq limitinizi istədiyiniz vaxt Ayarlar bölməsində artıra bilərsiniz:",
+    "button": "Ayarları aç"
+  },
+  "limit100": {
+    "subject": "WhatsApp-da avtomatik cavablarınız bu ay üçün dayandırılıb",
+    "usedAll": "Bu ayın avtomatik WhatsApp cavablarının hamısını ({limit}) istifadə etmisiniz, ona görə də onlar dayandırılıb.",
+    "stillReach": "<b>Müştərilər sizə həmişəki kimi yaza bilər və hər mesaj sizə çatır.</b> Dayanan yeganə şey geri göndərilən avtomatik cavabdır.",
+    "startAgain": "Onlar <b>{reset}</b> tarixində yenidən başlayacaq, Ayarlar bölməsində aylıq limitinizi artırsanız isə dərhal.",
+    "startAgainLink": "Onlar {reset} tarixində yenidən başlayacaq, Ayarlar bölməsində aylıq limitinizi artırsanız isə dərhal:",
+    "button": "Limitimi artır"
+  },
+  "paymentBlocked": {
+    "subject": "Göndərmək üçün WhatsApp-a ödəniş üsulu lazımdır",
+    "stopped": "WhatsApp Business hesabınızda işlək ödəniş üsulu olmadığı üçün WhatsApp avtomatik cavablarınızın göndərilməsini dayandırıb.",
+    "stillMessage": "<b>Müştərilər yenə də sizə yaza bilər və onların göndərdiyi hər şeyi görəcəksiniz</b> — lakin cavablar onlara çatmır.",
+    "payDirect": "Bu mesajlar üçün WhatsApp-a birbaşa siz ödəyirsiniz, ona görə də bu, HatchGrab-da yox, WhatsApp Manager-də düzəldilir. Orada kart əlavə edin və ya yeniləyin — cavablar öz-özünə yenidən başlayacaq.",
+    "payDirectLink": "Bu mesajlar üçün WhatsApp-a birbaşa siz ödəyirsiniz, ona görə də bu, HatchGrab-da yox, WhatsApp Manager-də düzəldilir. Orada kart əlavə edin və ya yeniləyin — cavablar öz-özünə yenidən başlayacaq:",
+    "button": "WhatsApp Manager-i aç",
+    "settings": "HatchGrab ayarlarınız: <link>{url}</link>"
+  }
+}

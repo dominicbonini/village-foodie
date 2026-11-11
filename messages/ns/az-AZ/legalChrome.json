@@ -1,0 +1,18 @@
+{
+  "meta": {
+    "privacyTitle": "Məxfilik siyasəti — HatchGrab",
+    "privacyDescription": "HatchGrab Ltd şəxsi məlumatları necə toplayır və istifadə edir.",
+    "termsTitle": "Xidmət şərtləri — HatchGrab",
+    "termsDescription": "HatchGrab-dan istifadə şərtləri.",
+    "countryTermsTitle": "Ölkəyə aid şərtlər — HatchGrab",
+    "countryTermsDescription": "Bəzi ölkələrdə HatchGrab-a tətbiq olunan əlavə qaydalar."
+  },
+  "homeLabel": "HatchGrab ana səhifə",
+  "privacy": "Məxfilik",
+  "terms": "Şərtlər",
+  "countryTerms": "Ölkə şərtləri",
+  "contact": "Əlaqə",
+  "lastUpdated": "Son yenilənmə: {date}",
+  "questions": "Suallarınız var? <link>Bizimlə əlaqə saxlayın</link> — biz real insanlarıq.",
+  "translationNote": "Bu, tərcümədir. <link>İngilis dilindəki versiyadan</link> fərqlənərsə, ingilis dilindəki versiya tətbiq olunur."
+}

@@ -1,0 +1,36 @@
+{
+  "h1": "Xidmətinizi idarə etmək üçün hər şey — hər planda.",
+  "lede": "Sifariş, əvvəlcədən sifariş, tutum və mətbəx ekranı hər plana daxildir.{hasUpgrades, select, yes { {plans} bunlara əlavə olaraq {features} və daha aşağı haqlar təklif edir.} other {}}",
+  "perMonth": "{price} / ay",
+  "group": {
+    "pay": "Nə ödəyirsiniz",
+    "run": "Xidmətin idarəsi",
+    "online": "Onlayn sifarişlər",
+    "marketing": "Marketinq və avtomatlaşdırma"
+  },
+  "pay": {
+    "included": "Hər ay daxil olan onlayn sifarişlər",
+    "fee": "Onlayn kart sifarişlərində HatchGrab haqqı*",
+    "walkUp": "Yerində sifarişlər"
+  },
+  "cell": {
+    "unlimited": "Limitsiz",
+    "free": "Pulsuz",
+    "feeAbove": "{included} həddindən yuxarı <b>{fee}</b>",
+    "yes": "Daxildir",
+    "none": "Daxil deyil",
+    "comingSoon": "Tezliklə"
+  },
+  "short": {
+    "whatsapp_replies": "WhatsApp",
+    "schedule_graphics": "sosial media",
+    "event_types": "fərdi tədbir qiymətləri"
+  },
+  "meta": {
+    "description": "Hər plandakı bütün HatchGrab funksiyaları yan-yana — {plans}, haqlar və limitlərlə.{months, plural, =0 {} one { İlk ayınız bütün funksiyaları əhatə edir.} other { İlk # ayınız bütün funksiyaları əhatə edir.}}"
+  },
+  "notes": {
+    "whatsapp": "WhatsApp-da avtomatik cavablar üçün WhatsApp Business hesabı lazımdır. Meta bəzi mesajlar üçün haqq ala bilər; cavablar avtomatik yaradılır.",
+    "printing": "Mətbəx çeklərinin çapı üçün uyğun Bluetooth və ya kabelli printer lazımdır (dəstə daxil deyil)."
+  }
+}

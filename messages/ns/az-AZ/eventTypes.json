@@ -1,0 +1,83 @@
+{
+  "title": "Tədbir növləri",
+  "newTypeButton": "+ Yeni tədbir növü",
+  "close": "Bağla",
+  "loading": "Yüklənir…",
+  "missingTitle": "Tədbir növləri hələ aktivləşdirilməyib.",
+  "missingBody": "Bu funksiya üçün verilənlər bazası yeniləməsi hələ tətbiq olunmayıb. Heç nə xarab deyil — hər tədbir adi ayarlarınızdan istifadə edir.",
+  "column": "Sütun",
+  "vanGone": "Bu maşın artıq yoxdur.",
+  "typeGone": "Bu növ artıq yoxdur.",
+  "standard": "Standart",
+  "standardHeading": "STANDART",
+  "moreFor": "Daha çox: {name}",
+  "rename": "Adını dəyiş",
+  "moveLeft": "Sola köçür",
+  "moveRight": "Sağa köçür",
+  "delete": "Sil",
+  "sections": {
+    "vans": "MAŞINLAR",
+    "prices": "QİYMƏTLƏR",
+    "itemPrices": "MƏHSUL QİYMƏTLƏRİ",
+    "service": "XİDMƏT"
+  },
+  "labelFor": "{label} — {name}",
+  "intervalEvery": "Hər {mins} dəq.",
+  "noTypes": "Hələ tədbir növünüz yoxdur, ona görə də hər tədbir adi ayarlarınızdan istifadə edir.",
+  "renameTitle": "Bu növün adını dəyişin",
+  "name": "Ad",
+  "cancel": "Ləğv et",
+  "save": "Yadda saxla",
+  "copyVanOne": "Maşın 1-in ayarlarını köçür",
+  "thisType": "bu növ",
+  "matchTitle": "“{name}” növü Standarta uyğunlaşdırılsın?",
+  "matchKeeps": "Ayrıca bir tədbirin sifarişlər panelində dəyişdiyiniz hər şey olduğu kimi qalır və bu növün qiymətləri dəyişmir.",
+  "matchWillUse": "İstifadə ediləcək: {summary}",
+  "deleteTitle": "“{name}” silinsin?",
+  "deleteBody": "{n, plural, =0 {Qarşıdakı heç bir tədbir “{name}” növündən istifadə etmir.} one {Qarşıdakı {count} tədbir “{name}” növündən istifadə edir. Onlar Standarta qayıdacaq.} other {Qarşıdakı {count} tədbir “{name}” növündən istifadə edir. Onlar Standarta qayıdacaq.}} Ayrıca bir tədbirdə dəyişdiyiniz hər şey olduğu kimi qalır.",
+  "keep": "Saxla",
+  "phone": {
+    "standardTag": "Standart",
+    "defaultTag": "defolt",
+    "vanSetup": "Bu maşının adi ayarları — növü olmayan hər tədbirdə istifadə olunur.",
+    "standardSetup": "Adi ayarlarınız — növü olmayan hər tədbirdə istifadə olunur.",
+    "cardSummary": "{upcoming, plural, one {Qarşıdakı tədbir: {upcomingCount}} other {Qarşıdakı tədbirlər: {upcomingCount}}} · {changed, plural, =0 {hələ heç nə dəyişməyib} one {dəyişib: {changedCount} / {total}} other {dəyişib: {changedCount} / {total}}}",
+    "noMenuItems": "Hələ menyu məhsulu yoxdur — onları Menyu › Məhsullar bölməsində əlavə edin."
+  },
+  "newType": {
+    "title": "Yeni tədbir növü",
+    "namePlaceholder": "məs. Məktəb bayramı",
+    "help": "Ada toxunun və ya özünüz yazın. O, Standartın surəti kimi başlayır və sonradan Standartı dəyişmək onu dəyişməyəcək. Sonra istədiyinizi dəyişin.",
+    "create": "Yarat",
+    "chips": {
+      "festival": "Festival",
+      "pub": "Pab",
+      "market": "Bazar",
+      "privateHire": "Tədbir üçün sifariş"
+    }
+  },
+  "select": {
+    "label": "Tədbir növü",
+    "usual": "Bu yer üçün adətən: {name}."
+  },
+  "summary": {
+    "normalSetup": "Adi ayarlarınız",
+    "sameAsStandard": "Standartla eyni",
+    "buzzersOn": "çağırış cihazları açıq",
+    "buzzersOff": "çağırış cihazları söndürülüb",
+    "takeCashOn": "nağd ödəniş açıq",
+    "takeCashOff": "nağd ödəniş söndürülüb",
+    "markReadyOn": "“hazırdır” addımı açıq",
+    "markReadyOff": "“hazırdır” addımı söndürülüb",
+    "collectionEvery": "götürmə hər {mins} dəq.",
+    "offlineOff": "oflayn qoruma söndürülüb",
+    "offlineKeepTaking": "oflayn: sifariş qəbuluna davam et",
+    "offlinePause": "oflayn: sifarişi dayandır"
+  },
+  "errors": {
+    "somethingWentWrong": "Nəsə alınmadı",
+    "couldNotLoad": "Yükləmək mümkün olmadı",
+    "couldNotSave": "Yadda saxlamaq mümkün olmadı",
+    "noVans": "Bu food truck-da dəyişmək üçün maşın yoxdur."
+  }
+}

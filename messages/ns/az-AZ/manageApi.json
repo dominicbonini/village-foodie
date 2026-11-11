@@ -1,0 +1,10 @@
+{
+  "vanFallback": "Maşın",
+  "eventsFeed": {
+    "today": "Bu gün · {date}",
+    "tomorrow": "Sabah · {date}"
+  },
+  "privacyNotSaved": "Tədbir aktivdir, amma məxfilik ayarını yadda saxlamaq mümkün olmadı.",
+  "stockWarning": "“{category}” kateqoriyasında mövcud məhsul yoxdur",
+  "uncategorised": "Kateqoriyasız"
+}

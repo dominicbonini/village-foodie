@@ -1,0 +1,26 @@
+{
+  "greeting": "{hasName, select, yes {Salam, {name}!} other {Salam!}}",
+  "signoffName": "Dominic",
+  "signoffRole": "HatchGrab-ın təsisçisi",
+  "verify": {
+    "subject": "E-poçt ünvanınızı təsdiqləyin",
+    "thanks": "{hasTruck, select, yes {HatchGrab-da food truck yaratdığınız üçün təşəkkür edirik: {truck}.} other {Food truck-ınızı HatchGrab-da qurduğunuz üçün təşəkkür edirik.}}",
+    "button": "E-poçt ünvanımı təsdiqlə",
+    "buttonText": "E-poçt ünvanımı təsdiqlə: {url}",
+    "why": "Bu, daxil olacağınız və sifariş bildirişlərinin gələcəyi ünvandır — ona görə də bunu indi etməyə dəyər.",
+    "next": "Təsdiqləndikdən sonra başlamaq üçün lazım olan hər şeyi sizə göndərəcəyəm.",
+    "carryOn": "Bu arada quraşdırmaya davam edə bilərsiniz.",
+    "stuck": "Nədəsə ilişib qalmısınız? Sadəcə bu məktuba cavab yazın — onlara özüm cavab verirəm.",
+    "fallbackLink": "Düymə işləməsə, bunu brauzerə yapışdırın: {url}"
+  },
+  "welcome": {
+    "subject": "{hasName, select, yes {HatchGrab-a xoş gəlmisiniz, {name}} other {HatchGrab-a xoş gəlmisiniz}}",
+    "intro": "{hasTruck, select, yes {HatchGrab-da sizi salamlamağa çox şadam — food truck: {truck}.} other {Food truck-ınızı HatchGrab-da salamlamağa çox şadam.}}",
+    "trial": "{months, plural, one {Bir aylıq pulsuz sınağınız başladı — bütün funksiyalar açıqdır.} other {# aylıq pulsuz sınağınız başladı — bütün funksiyalar açıqdır.}}",
+    "setup": "Hələ etməmisinizsə, quraşdırma sadədir və təxminən on beş dəqiqə çəkir.",
+    "button": "İdarəetmə panelinizi açın",
+    "bookmark": "Əlfəcinlərə əlavə etməyə dəyər. İstənilən cihazda işləyir.",
+    "stuck": "Nədəsə ilişsəniz, sadəcə bu məktuba cavab yazın — onlara özüm cavab verirəm.",
+    "lookingForward": "{hasTruck, select, yes {Satışa başlamağınızı səbirsizliklə gözləyirəm — food truck: {truck}.} other {Food truck-ınızın satışa başlamasını səbirsizliklə gözləyirəm.}}"
+  }
+}

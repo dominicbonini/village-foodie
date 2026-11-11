@@ -1,0 +1,122 @@
+{
+  "includedOn": "{many, select, yes {{feature}: {plan} planına daxildir.} other {{feature}: {plan} planına daxildir.}}",
+  "notOnPlan": "{many, select, yes {{feature}: planınıza daxil deyil.} other {{feature}: planınıza daxil deyil.}}",
+  "switchedOff": "{many, select, yes {{feature}: food truck-ınız üçün söndürülüb.} other {{feature}: food truck-ınız üçün söndürülüb.}}",
+  "planLine": "{plan} · {price} · {description}",
+  "planLineNoPrice": "{plan} · {description}",
+  "upgrade": "Planı yüksəlt →",
+  "features": {
+    "discovery_map": {
+      "name": "Xəritədə görünmə",
+      "many": "no"
+    },
+    "web_dashboard": {
+      "name": "Veb sifarişlər paneli",
+      "many": "no"
+    },
+    "ipad_kds": {
+      "name": "Mətbəx tətbiqi",
+      "many": "no"
+    },
+    "qr_menu": {
+      "name": "QR kodlu menyu",
+      "many": "no"
+    },
+    "meal_deals": {
+      "name": "Kombo menyular",
+      "many": "yes"
+    },
+    "upsells": {
+      "name": "Əlavə təkliflər",
+      "many": "yes"
+    },
+    "walkup_orders": {
+      "name": "Yerində sifarişlər",
+      "many": "yes"
+    },
+    "online_ordering_pay_at_hatch": {
+      "name": "Götürərkən ödənişlə sifariş",
+      "many": "no"
+    },
+    "sold_out_toggle": {
+      "name": "“Satılıb qurtarıb” qeydi",
+      "many": "no"
+    },
+    "stock_countdown": {
+      "name": "Stokun geri sayımı",
+      "many": "no"
+    },
+    "offline_protection": {
+      "name": "Oflayn sifariş qoruması",
+      "many": "no"
+    },
+    "online_payments": {
+      "name": "Onlayn ödənişlər",
+      "many": "yes"
+    },
+    "advance_preordering": {
+      "name": "Gələcək tarixə əvvəlcədən sifariş",
+      "many": "no"
+    },
+    "time_slot_selection": {
+      "name": "Müştəri vaxt aralıqları",
+      "many": "yes"
+    },
+    "smart_batch_pacing": {
+      "name": "Mətbəx tutumunun idarəsi",
+      "many": "no"
+    },
+    "auto_accept": {
+      "name": "Avtomatik qəbul",
+      "many": "no"
+    },
+    "instagram_messenger_replies": {
+      "name": "Messenger və Instagram-da avtomatik cavablar",
+      "many": "yes"
+    },
+    "branded_qr_code": {
+      "name": "Loqolu QR kodlar",
+      "many": "yes"
+    },
+    "advanced_reporting": {
+      "name": "Genişləndirilmiş hesabatlar",
+      "many": "no"
+    },
+    "ticket_printing": {
+      "name": "Mətbəx çeklərinin çapı",
+      "many": "no"
+    },
+    "multi_device_kds": {
+      "name": "Mətbəxdə çoxcihazlı sinxronizasiya",
+      "many": "no"
+    },
+    "cook_screen": {
+      "name": "Aşpaz ekranı",
+      "many": "no"
+    },
+    "whatsapp_replies": {
+      "name": "WhatsApp-da avtomatik cavablar",
+      "many": "yes"
+    },
+    "embed_schedule": {
+      "name": "Öz saytınızda cədvəliniz",
+      "many": "no"
+    },
+    "schedule_graphics": {
+      "name": "Sosial media postları",
+      "many": "yes"
+    },
+    "event_types": {
+      "name": "Fərdi tədbir növləri",
+      "many": "yes"
+    },
+    "private_events": {
+      "name": "Özəl tədbirlər",
+      "many": "yes"
+    },
+    "paperwork": {
+      "name": "Sənədlər",
+      "many": "yes"
+    }
+  }
+}

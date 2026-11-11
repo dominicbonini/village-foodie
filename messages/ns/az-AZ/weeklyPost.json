@@ -1,0 +1,70 @@
+{
+  "error": {
+    "generic": "Xəta baş verdi",
+    "previewFailed": "Önizləmə hazırlana bilmədi",
+    "loadFailed": "Yükləmək mümkün olmadı",
+    "tooBig": "Şəklin ölçüsü: {size, number, ::.0 group-off} MB. Limit: 10 MB.",
+    "wrongType": "PNG və ya JPG seçin.",
+    "uploadIncomplete": "Yükləmə tamamlanmadı",
+    "uploadFailed": "Yükləmə uğursuz oldu",
+    "saveFailed": "Yadda saxlamaq mümkün olmadı",
+    "buildFailed": "Postu hazırlamaq mümkün olmadı",
+    "copyFailed": "Kopyalamaq mümkün olmadı — mətni seçib əl ilə kopyalayın."
+  },
+  "loading": "Yüklənir…",
+  "missingTable": {
+    "title": "Həftəlik post üçün verilənlər bazası yenilənməlidir",
+    "body": "Dizayn cədvəli hələ yaradılmayıb. Miqrasiya tətbiq olunduqdan sonra bu ekran işləyəcək."
+  },
+  "kind": {
+    "label": "Hansı dizayn",
+    "event": "Tək tədbir",
+    "week": "Həftəlik"
+  },
+  "setup": {
+    "title": "Həftəlik postunuzu qurun",
+    "intro": "Artıq hazırladığınız həftəlik cədvəl qrafikasının boş variantını yükləyin — eyni dizayn, sadəcə öz mətn qutularınız silinmiş halda. HatchGrab həftəni cədvəlinizə əsasən doldurur.",
+    "canvaTitle": "Canva-dan boş variantı necə ixrac etmək olar",
+    "canvaStep1": "Adi həftəlik cədvəl dizaynınızı açın.",
+    "canvaStep2": "Tarixlər, yerlər və vaxtlar olan mətn qutularını silin — saxlamaq istədiyiniz fonu və başlıqları qoyun.",
+    "canvaStep3": "Share (Paylaş) › Download (Endir) › PNG.",
+    "uploading": "Yüklənir…",
+    "upload": "Boş şəklinizi yükləyin",
+    "uploadHint": "PNG və ya JPG, 10 MB-a qədər, qısa tərəfi ən azı {px}px.",
+    "phoneTip": "Kompüterdə və ya iPad-də daha rahatdır — telefonda qutuları sürüşdürmək çətindir, çünki kiçikdirlər.",
+    "designName": "Həftəlik post dizaynı",
+    "backDesigns": "‹ Dizaynlar",
+    "back": "‹ Geri",
+    "pictureNote": "Üzərində heç bir tarix və ya yer olmayan şəkliniz. Onları biz əlavə edirik.",
+    "saved": "Dizayn yadda saxlanıldı."
+  },
+  "week": {
+    "this": "Bu həftə",
+    "next": "Gələn həftə"
+  },
+  "post": {
+    "title": "Həftəlik postunuz",
+    "editDesign": "Dizaynı redaktə et",
+    "weekOf": "Həftə: {date}",
+    "imageAlt": "Həftəlik postunuz",
+    "building": "Postunuz hazırlanır…",
+    "updating": "Yenilənir…",
+    "eventsTitle": "Bu həftənin tədbirləri",
+    "noEvents": "Bu həftə tədbir yoxdur.",
+    "eventDateCancelled": "{date} · ləğv edilib",
+    "showCancelled": "Ləğv edilmiş tədbirləri göstər",
+    "showPrivate": "Özəl tədbirləri göstər",
+    "privateHint": "Onlar tarix və vaxtla “Özəl tədbir” kimi göstərilir — yer heç vaxt göstərilmir.",
+    "noteTitle": "Qeyd",
+    "notePlaceholder": "məs. Götürmək üçün əvvəlcədən sifariş edin",
+    "noteHint": "Şəkil mətnində, qeyd qutusu yerləşdirmisinizsə, həm də orada göstərilir.",
+    "captionTitle": "Səhifəniz üçün şəkil mətni",
+    "perEventTitle": "Hər tədbir üçün post",
+    "nothingToPost": "Bu həftə paylaşılacaq heç nə yoxdur.",
+    "textCopied": "Mətn kopyalandı.",
+    "copyText": "Mətni kopyala",
+    "image": "Şəkil",
+    "share": "Paylaş",
+    "noOrderLink": "Hələ sifariş linki yoxdur — Ayarlar bölməsində food truck-ınızın veb ünvanını təyin edin."
+  }
+}

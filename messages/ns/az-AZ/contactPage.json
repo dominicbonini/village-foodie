@@ -1,0 +1,52 @@
+{
+  "meta": {
+    "title": "Dəstək",
+    "description": "HatchGrab ilə bağlı kömək alın. Bizə mesaj göndərin, sizə e-poçtla cavab verəcəyik."
+  },
+  "logIn": "Daxil ol",
+  "eyebrow": "Dəstək",
+  "title": "Sizə necə kömək edə bilərik?",
+  "lede": "Nəsə işləmir və ya hesabınızla bağlı sualınız var? Bizimlə iki yolla əlaqə saxlaya bilərsiniz — hər halda sizə e-poçtla cavab verəcəyik.",
+  "emailUs": "Bizə e-poçt yazın",
+  "formHeading": "Və ya bizə mesaj göndərin",
+  "form": {
+    "topicLabel": "Mövzu nədir?",
+    "topics": {
+      "question": "HatchGrab haqqında sual",
+      "account": "Hesabımla bağlı kömək",
+      "comparison": "Müqayisə səhifəsində düzəliş",
+      "other": "Başqa bir şey"
+    },
+    "nameLabel": "Adınız",
+    "namePlaceholder": "Ad",
+    "emailLabel": "E-poçt",
+    "businessLabel": "Food truck və ya biznesin adı",
+    "optional": "(istəyə bağlı)",
+    "businessPlaceholder": "məs. Şirin Təndir",
+    "messageLabel": "Mesajınız",
+    "send": "Mesaj göndər",
+    "sending": "Göndərilir…",
+    "privacyLine": "Məlumatlarınızdan yalnız sizə cavab vermək üçün istifadə edəcəyik.",
+    "privacyLink": "Məxfilik siyasəti",
+    "thanksTitle": "Təşəkkürlər — mesajınız çatdı.",
+    "thanksBody": "Göstərdiyiniz e-poçt ünvanına cavab yazacağıq.",
+    "errors": {
+      "nameRequired": "Adınızı daxil edin.",
+      "nameTooLong": "Adınız ən çox {max, number} simvol olmalıdır.",
+      "emailRequired": "E-poçt ünvanınızı daxil edin.",
+      "emailInvalid": "Düzgün e-poçt ünvanı daxil edin.",
+      "emailTooLong": "E-poçt ünvanı ən çox {max, number} simvol olmalıdır.",
+      "businessRequired": "Hesabınızı tapa bilməyimiz üçün food truck-ın və ya biznesin adını daxil edin.",
+      "businessTooLong": "Food truck-ın və ya biznesin adı ən çox {max, number} simvol olmalıdır.",
+      "messageTooShort": "Ən azı {min, number} simvol yazın.",
+      "messageTooLong": "Mesajınız ən çox {max, number} simvol olmalıdır.",
+      "topicInvalid": "Mesajınızın mövzusunu seçin.",
+      "rateLimited": "Artıq bir neçə mesaj göndərmisiniz — bir az sonra yenidən cəhd edin və ya bizə bu ünvana yazın: {email}.",
+      "failed": "Xəta baş verdi — bizə bu ünvana yazın: {email}."
+    }
+  },
+  "privacy": "Məxfilik",
+  "terms": "Şərtlər",
+  "about": "Haqqımızda",
+  "copyright": "© {year} HatchGrab"
+}

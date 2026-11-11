@@ -1,0 +1,16 @@
+{
+  "subject": "{truck} — sifarişiniz necə idi?",
+  "heading": "Sifarişiniz üçün təşəkkür edirik — {truck}",
+  "body": "{truck} Google-da səmimi rəyiniz üçün minnətdar olardı. Bu, cəmi bir dəqiqə çəkir və başqalarına onları tapmağa kömək edir.",
+  "button": "Google-da rəy yazın",
+  "linkText": "Google-da rəy yazın: {url}",
+  "from": "Bu e-poçt HatchGrab vasitəsilə göndərilib, çünki siz bu food truck-dan sifariş vermisiniz: {truck}.",
+  "unsubscribeLead": "Rəy sorğuları almaq istəmirsiniz? Food truck: {truck}.",
+  "unsubscribeLink": "Abunəlikdən çıx",
+  "unsubscribeText": "Abunəlikdən çıx: {url}",
+  "unsubscribed": {
+    "title": "Abunəlikdən çıxdınız",
+    "body": "{truck} sizə artıq rəy sorğuları göndərməyəcək.",
+    "invalid": "Bu abunəlikdən çıxma linki etibarsızdır."
+  }
+}

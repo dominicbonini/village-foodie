@@ -53,6 +53,7 @@ import ru from './allergen-guard/ru.json'   // languages-world-2 (11 November 20
 import uk from './allergen-guard/uk.json'   // languages-world-2
 import kk from './allergen-guard/kk.json'   // languages-world-2
 import uz from './allergen-guard/uz.json'   // languages-world-2
+import az from './allergen-guard/az.json'   // languages-world-2
 
 export interface GuardWords {
   language: string
@@ -73,7 +74,7 @@ export const GUARD_WORDS: Record<string, GuardWords> = { en: en as GuardWords, f
   es: es as GuardWords, it: it as GuardWords, pt: pt as GuardWords, nl: nl as GuardWords, sv: sv as GuardWords, da: da as GuardWords, nb: nb as GuardWords,
   pl: pl as GuardWords, cs: cs as GuardWords, sk: sk as GuardWords, hu: hu as GuardWords, ro: ro as GuardWords, hr: hr as GuardWords, sl: sl as GuardWords, fi: fi as GuardWords, et: et as GuardWords, lv: lv as GuardWords, lt: lt as GuardWords, el: el as GuardWords, bg: bg as GuardWords,
   ms: ms as GuardWords, ja: ja as GuardWords, zh: zh as GuardWords, th: th as GuardWords, ar: ar as GuardWords,
-  tr: tr as GuardWords, ko: ko as GuardWords, id: id as GuardWords, vi: vi as GuardWords, he: he as GuardWords, is: is as GuardWords, sr: sr as GuardWords, ru: ru as GuardWords, uk: uk as GuardWords, kk: kk as GuardWords, uz: uz as GuardWords }
+  tr: tr as GuardWords, ko: ko as GuardWords, id: id as GuardWords, vi: vi as GuardWords, he: he as GuardWords, is: is as GuardWords, sr: sr as GuardWords, ru: ru as GuardWords, uk: uk as GuardWords, kk: kk as GuardWords, uz: uz as GuardWords, az: az as GuardWords }
 
 const asciiNorm = (s: string) => ` ${s.toLowerCase().replace(/[^a-z0-9]+/g, ' ').replace(/\s+/g, ' ').trim()} `
 const unicodeNorm = (s: string) => ` ${s.normalize('NFKD').replace(/\p{M}+/gu, '').toLowerCase().replace(/[^\p{L}\p{N}]+/gu, ' ').replace(/\s+/g, ' ').trim()} `

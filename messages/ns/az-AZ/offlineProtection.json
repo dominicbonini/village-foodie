@@ -1,0 +1,23 @@
+{
+  "explainerLead": "Xidmət zamanı sifarişlər panelinizi və ya mətbəx ekranınızı açıq və onlayn saxlamalısınız.",
+  "explainerBody": "Ekran sönərsə, cihazın interneti kəsilərsə və ya başqa sayta keçsəniz, oflayn qoruma işə düşür — seçiminizdən asılı olaraq ya sifariş qəbulunu dayandırır, ya da avtomatik qəbulu söndürür.",
+  "reminder": "⚠️ Xidmət zamanı sifarişlər panelinizi və ya mətbəx ekranınızı açıq və onlayn saxlayın, əks halda oflayn qoruma işə düşə bilər.",
+  "enableConfirm": "Oflayn qoruma aktiv edildi.\n\nSifarişlərin fasiləsiz gəlməsi üçün ekranınız açıq qalmalıdır. Bu cihazın bağlantısı kəsilərsə, oflayn qoruma seçdiyiniz rejimdə işə düşür.\n\nBu cihazda “Ekran açıq” funksiyasının aktiv olduğuna əmin olun.",
+  "disableConfirm": "Bu tədbir üçün oflayn qoruma söndürülsün?\n\nBu cihazın bağlantısı kəsilərsə, onlayn sifarişlər davam edəcək — müştərilər sizin görə bilmədiyiniz sifarişlər verə bilər. Yalnız etibarlı bağlantınız varsa söndürün.",
+  "cardDescription": "Cihazınız oflayn qaldıqda daxil olan sifarişlərlə nə baş verəcəyini müəyyən edir.",
+  "purpose": "Cihazınızın bağlantısı kəsilərsə, bu funksiya siz sifarişləri görə bilmədiyiniz müddətdə onların gəlməsinin qarşısını alır.",
+  "switchLabel": "Oflayn sifariş qoruması",
+  "switchHelp": "Bu maşının bağlantısı kəsildikdə nə baş verir.",
+  "modes": {
+    "pause": {
+      "label": "Onlayn sifarişi dayandır",
+      "help": "Siz yenidən onlayn olana qədər müştərilər sifariş verə bilməz."
+    },
+    "no_auto_accept": {
+      "label": "Sifariş qəbuluna davam et, özüm təsdiqləyim",
+      "help": "Avtomatik qəbul söndürülür, ona görə də müştərilər yenə sifariş verə bilər, lakin heç nə avtomatik təsdiqlənmir. Yenidən onlayn olduqda hər birini özünüz təsdiqləyəcəksiniz — seçdiyiniz vaxtdan sonra hələ də gözləyən sifarişlər avtomatik rədd edilir və müştəriyə bu barədə e-poçt göndərilir."
+    }
+  },
+  "autoRejectLabel": "Bundan uzun gözləyən sifarişləri rədd et",
+  "autoRejectOption": "{n, plural, one {{count} dəq} other {{count} dəq}}"
+}

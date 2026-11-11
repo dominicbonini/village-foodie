@@ -1,0 +1,17 @@
+{
+  "back": "← Geri",
+  "title": "Kombo tətbiq et",
+  "save": "Qənaət: {amount}",
+  "selectItems": "Hər seçim yeri üçün məhsul seçin",
+  "choose": "Seçin: {category}…",
+  "inYourBasket": "── Səbətinizdə ──",
+  "basketUnit": "{name}{withMods, select, yes { (+ {mods})} other {}} (səbətdə){state, select, used { — artıq kombodadır} taken { — başqa yerdə seçilib} other {}}",
+  "addNew": "── Yeni əlavə et ──",
+  "itemWithPrice": "{name} {price}",
+  "ruleHint": "· {rule, select, requiredOne {Məcburi · birini seçin} required {Məcburi} other {Birini seçin}}{unmet, select, yes { (məcburi)} other {}}",
+  "notePlaceholder": "Qeyd əlavə edin, məs. soğansız (istəyə bağlı)",
+  "backButton": "Geri",
+  "cancel": "Ləğv et",
+  "chooseRequired": "Məcburi seçimləri edin",
+  "apply": "Kombonu tətbiq et · {amount}"
+}

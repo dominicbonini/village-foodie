@@ -1,0 +1,102 @@
+{
+  "status": {
+    "cancelled": "Ləğv edilib",
+    "finished": "Bitib",
+    "unconfirmed": "Təsdiqlənməyib",
+    "confirmed": "Təsdiqlənib",
+    "open": "İndi açıqdır",
+    "closed": "Bağlıdır"
+  },
+  "sections": {
+    "label": "Cədvəl bölmələri",
+    "events": "Tədbirlər",
+    "eventTypes": "Tədbir növləri"
+  },
+  "header": {
+    "title": "Cədvəl",
+    "upcoming": "Qarşıdakı: {count}",
+    "import": "✨ Cədvəli idxal et",
+    "importHint": "şəkil, PDF və ya mətn",
+    "addEvent": "+ Tədbir əlavə et",
+    "scraperAuto": "Tədbirlər saytınızdan avtomatik tapılır",
+    "changeInSettings": "Ayarlarda dəyişin",
+    "scraperManual": "Cədvəlinizi əl ilə idarə edirsiniz"
+  },
+  "empty": {
+    "title": "Qarşıdakı tədbir yoxdur",
+    "body": "Sosial şəbəkələrinizdən və bron təqviminizdən götürülən tədbirlər təsdiqləməyiniz üçün burada görünəcək"
+  },
+  "list": {
+    "openNow": "İndi açıqdır",
+    "needsApproval": "Qəbulunuzu gözləyir",
+    "needsConfirmation": "Təsdiq tələb olunur",
+    "confirmed": "Təsdiqlənib",
+    "past": "Keçmiş tədbirlər ({count})",
+    "found": "Sizin üçün {count, plural, one {# tədbir tapdıq — yayımlanmazdan əvvəl onu yoxlayıb qəbul edin.} other {# tədbir tapdıq — yayımlanmazdan əvvəl onları yoxlayıb qəbul edin.}}"
+  },
+  "card": {
+    "addName": "Ad əlavə et",
+    "timeNeeded": "⚠ Vaxt lazımdır",
+    "setTimeFirst": "Əvvəlcə vaxtı təyin edin",
+    "confirm": "Təsdiqlə",
+    "copy": "Kopyala",
+    "edit": "Redaktə et",
+    "makePost": "Post hazırla",
+    "cancel": "Ləğv et",
+    "approve": "Qəbul et",
+    "reject": "Rədd et",
+    "stock": "⚠️ Stok",
+    "stockHidden": "Gizlidir — {reason}",
+    "noDeals": "Aktiv kombo yoxdur",
+    "dealsActive": "Aktiv kombo: {count, plural, one {#} other {#}} · {names}{hidden, plural, =0 {} one { · # gizli} other { · # gizli}}",
+    "approveNeedsTimes": "Bu tədbirin başlama və bitmə vaxtı olmayınca “Qəbul et” bağlıdır — onları “Redaktə et” ilə əlavə edin."
+  },
+  "guessed": {
+    "title": "📍 Bu məkanı təxmin etdik",
+    "body": "<b>{venue}</b> adına birdən çox məkan uyğun gəldi, ona görə də ən uyğun variantı seçdik{hasTown, select, yes { (şəhər: <b>{town}</b>)} other {}}{hasPostcode, select, yes { ({postcode})} other {}}. Qəbul etməzdən əvvəl bunun düzgün məkan olduğunu yoxlayın — səhvdirsə, ərazini və ya {postal} məlumatını düzəltmək üçün <b>Redaktə et</b> düyməsindən istifadə edin, əks halda müştərilər yanlış yerə yönləndiriləcək.",
+    "thisVenue": "bu məkan"
+  },
+  "noLocation": {
+    "title": "📍 Hələ məkan yoxdur",
+    "body": "Bu məkanı xəritədə yerləşdirə bilmədik, ona görə də o, siyahıda görünəcək, amma xəritədə nişanı olmayacaq. Xəritədə göstərmək üçün <b>Redaktə et</b> ilə {postal} məlumatını əlavə edin."
+  },
+  "conflict": {
+    "title": "⚠️ {count, plural, one {Mümkün toqquşma} other {Mümkün toqquşmalar}} — {pending, select, yes {qəbul etməzdən} other {təsdiqləməzdən}} əvvəl yoxlayın",
+    "duplicate": "Bu, artıq mövcud olan tədbirinizlə eyni görünür.",
+    "review": "Eyni məkan və tarix, fərqli vaxt — bu, vaxtı dəyişdirilmiş eyni tədbirdir, yoxsa ayrıca vaxt aralığıdır? Qəbul etməzdən əvvəl yoxlayın.",
+    "already": "Artıq cədvəlinizdə var: <b>{venue}</b>{details} ({status, select, confirmed {təsdiqlənib} open {açıqdır} other {{status}}})",
+    "unnamedVenue": "Adsız məkan",
+    "ack": "Bəli, bunlar fərqli tədbirlərdir — yenə də {pending, select, yes {qəbul et} other {təsdiqlə}}",
+    "cancel": "Ləğv et",
+    "overlap": "Bu tədbirin vaxtı eyni gündəki başqa tədbirlə üst-üstə düşür — bir maşın eyni anda iki yerdə ola bilməz. Qəbul etməzdən əvvəl yoxlayın."
+  },
+  "toast": {
+    "loadFailed": "Tədbirləri yükləmək mümkün olmadı",
+    "linkFailed": "Linki yükləmək mümkün olmadı",
+    "placeTypeFailed": "Tədbir yadda saxlanıldı. Yerin adi növü yadda saxlanılmadı ({place}) — {reason}.",
+    "placeTypeFailedReason": "yadda saxlama baş tutmadı",
+    "eventUpdated": "Tədbir yeniləndi",
+    "eventAdded": "Tədbir əlavə edildi",
+    "eventsSaved": "{count, plural, one {# tədbir yadda saxlanıldı} other {# tədbir yadda saxlanıldı}}",
+    "saveEventsFailed": "Tədbirləri yadda saxlamaq mümkün olmadı",
+    "needsTime": "Qəbul etməzdən əvvəl başlama və bitmə vaxtı əlavə edin — bu tədbirin yayımlanması üçün vaxt lazımdır.",
+    "addStartTime": "Başlama vaxtı əlavə edin",
+    "addEndTime": "Bitmə vaxtı əlavə edin",
+    "chooseTruckBefore": "Qəbul etməzdən əvvəl bu tədbirdə hansı food truck-ın işlədiyini seçin.",
+    "chooseTruck": "Bu tədbirdə hansı food truck-ın işlədiyini seçin",
+    "eventConfirmed": "Tədbir təsdiqləndi",
+    "eventRejected": "Tədbir rədd edildi",
+    "undo": "↩ Geri qaytar",
+    "eventRestored": "Tədbir bərpa edildi",
+    "restoreFailed": "Bərpa etmək mümkün olmadı",
+    "eventCancelled": "Tədbir ləğv edildi",
+    "eventCancelledOrders": "Tədbir ləğv edildi · {count, plural, one {# sifariş} other {# sifariş}} ləğv edildi",
+    "placeHidden": "Yer gizlədildi",
+    "placeShown": "Yer yenidən göstərilir",
+    "saveThatFailed": "Bunu yadda saxlamaq mümkün olmadı."
+  },
+  "link": {
+    "label": "Özəl link və QR kod",
+    "close": "Bağla"
+  }
+}

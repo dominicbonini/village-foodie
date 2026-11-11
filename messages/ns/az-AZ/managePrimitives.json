@@ -1,0 +1,9 @@
+{
+  "allergenMode": {
+    "perDishTitle": "Allergenləri hər yeməyin yanında göstər",
+    "recommended": "Tövsiyə olunur",
+    "perDishBody": "Hər yeməyi yoxlayın və allergenlərini təsdiqləyin. Müştərilər hər yeməyin etiketlərini və onlardan yaradılan allergen xülasəsi kartını görür.",
+    "cardTitle": "Allergen kartı göstər",
+    "cardBody": "Vahid allergen kartını (PDF, şəkil və ya mətn) yükləyin və ya yapışdırın — olduğu kimi göstərilir. Hər yeməyin etiketləri gizli qalır."
+  }
+}

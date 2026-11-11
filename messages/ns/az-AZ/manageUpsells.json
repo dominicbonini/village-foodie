@@ -1,0 +1,19 @@
+{
+  "heading": "Əlavə təkliflər",
+  "intro": "Müştəriləri nəsə əlavə etməyə həvəsləndirin. Kimsə bir kateqoriyadan sifariş verəndə başqa kateqoriyadan məhsul təklif edin — pizza ilə içki, burger ilə sous.",
+  "add": "+ Əlavə təklif yarat",
+  "toast": {
+    "updated": "Əlavə təklif qaydası yeniləndi",
+    "added": "Əlavə təklif qaydası əlavə edildi",
+    "removed": "Qayda silindi"
+  },
+  "whenAdds": "Müştəri əlavə edəndə…",
+  "suggestFrom": "Bu kateqoriyadan təklif et…",
+  "chooseCategory": "Kateqoriya seçin",
+  "cancel": "Ləğv et",
+  "saveChanges": "Dəyişiklikləri yadda saxla",
+  "addRule": "Qayda əlavə et",
+  "empty": "Hələ əlavə təklif qaydası yoxdur.",
+  "confirmRemove": "Əlavə təklif qaydası silinsin: “{trigger} → {suggest}”?",
+  "upTo": "{n, plural, one {Ən çoxu {count} məhsul təklif olunur} other {Ən çoxu {count} məhsul təklif olunur}}"
+}

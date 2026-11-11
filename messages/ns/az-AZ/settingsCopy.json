@@ -1,0 +1,19 @@
+{
+  "allowCancellation": {
+    "label": "Müştərilərə sifarişi ləğv etməyə icazə ver",
+    "sentence": "Müştərilər götürmə vaxtından <select></select> əvvələ qədər ləğv edə bilər"
+  },
+  "autoAccept": {
+    "label": "Sifarişləri avtomatik qəbul et",
+    "help": "Sifarişlər avtomatik təsdiqlənir. İstənilən vaxt aralığı doludursa, sifariş növbəti boş vaxt aralığına keçirilir. Yalnız tutum olduqda təsdiqlənir. Müştəri qeydi olan sifarişlər (məs. allergiya) yenə də təsdiq tələb edəcək."
+  },
+  "orderReady": {
+    "label": "“Sifariş hazırdır” addımı",
+    "help": "Sifarişlər ekranında “Hazırdır” düyməsini göstərir. Mətbəx ekranları hər cihazda ayrıca qurulur. Sifariş hazır kimi qeyd ediləndə müştəriyə e-poçt göndərilir. Bütün tədbirlərə aiddir — tək bir tədbir üçün onu yenə də həmin tədbirin sifarişlər panelində yandırıb-söndürə bilərsiniz."
+  },
+  "buzzers": {
+    "label": "Götürmə üçün çağırış cihazları verirsiniz?",
+    "help": "Hər müştəriyə hansı çağırış cihazını verdiyinizi qeyd edin ki, yemək hazır olanda kimi axtaracağınızı biləsiniz.",
+    "countLabel": "Neçə çağırış cihazınız var?"
+  }
+}

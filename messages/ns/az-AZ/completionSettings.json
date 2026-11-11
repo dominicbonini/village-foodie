@@ -1,0 +1,9 @@
+{
+  "paidStepTitle": "Ödənişsiz sifariş qəbul edin",
+  "completionTitle": "Ödənilməmiş sifarişin tamamlanması",
+  "completionHelp": "Ödənilməmiş sifariş təhvilə hazır olanda nə baş verir.",
+  "pressesOne": "Bir toxunuş (“Ödənildi və götürüldü”)",
+  "pressesOneHelp": "Pulu yeməyi verərkən alırsınızsa, ən yaxşısı budur. Tək düymə olur — “Ödənildi və götürüldü”: o, ödənişi qeydə alır və sifarişi birlikdə bağlayır.",
+  "pressesTwo": "İki toxunuş (“Ödənildi” və “Götürüldü”)",
+  "pressesTwoHelp": "Ödəniş və təhvil fərqli anlarda olursa, ən yaxşısı budur — müştəri food truck-da ödəyir, sonra sifariş hazır olanda götürür. İki düymə olur: əvvəl “Ödənildi”, müştəri yeməyi götürəndə isə “Götürüldü”."
+}

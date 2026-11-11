@@ -1,0 +1,12 @@
+{
+  "guestLabel": "ÖZƏL TƏDBİR",
+  "truckFallback": "Food truck",
+  "noSlugTitle": "Bu food truck hələ onlayn sifariş üçün qurulmayıb.",
+  "orderingOffTitle": "Onlayn sifariş aktiv deyil",
+  "orderingOffBody": "Bu tədbir onlayn sifariş qəbul etmir. Lütfən, food truck-da yerində sifariş verin.",
+  "replacedTitle": "Bu link dəyişdirilib",
+  "replacedBody": "Bu link artıq işləmir — {truck} onu yenisi ilə əvəz edib. Yeni link və ya QR kod üçün təşkilatçıya müraciət edin.",
+  "madePublicBody": "Bu link artıq işləmir — {truck} bu tədbiri hamı üçün açıq edib. Onların adi səhifəsindən sifariş verə bilərsiniz.",
+  "unknownTitle": "Bu link işləmir",
+  "unknownBody": "Bu link işləmir. Təşkilatçı ilə yoxlayın və ya QR kodu yenidən skan edin."
+}

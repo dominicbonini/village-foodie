@@ -1,0 +1,61 @@
+{
+  "steps": {
+    "reading": "Menyunuz oxunur…",
+    "found": "Məhsullarınız tapıldı…",
+    "kitchen": "Mətbəxiniz quraşdırılır…",
+    "page": "Sifariş səhifəniz yaradılır…",
+    "almost": "Az qaldı…"
+  },
+  "templateSteps": {
+    "truck": "Nümunə food truck-ınız yaradılır…",
+    "menu": "Menyu quraşdırılır…",
+    "kitchen": "Mətbəx quraşdırılır…",
+    "page": "Sifariş səhifəsi yaradılır…",
+    "almost": "Az qaldı…"
+  },
+  "dialogLabel": "Menyunuzu yükləyin",
+  "heading": "✨ Menyunuzu yükləyin",
+  "failedHeading": "Bu menyunu oxuya bilmədik",
+  "close": "Bağla",
+  "intro": "Menyu lövhənizin fotosu, ekran görüntüsü, PDF və ya mətn kimi yapışdırın. Süni intellektimiz onu oxuyur və sizin üçün işlək sifariş səhifəsi yaradır — sizin məhsullarınız, sizin qiymətləriniz — 60 saniyədən az müddətdə. Qeydiyyat yoxdur, kart yoxdur.",
+  "failedIntro": "Bəzən foto çox qaranlıq, çox əyri və ya əlyazma olur. Bu, sizin səhviniz deyil, bizim həll etməli olduğumuz işdir. Bir neçə yol:",
+  "usually": "Bu, adətən 60 saniyədən az çəkir.",
+  "slow": "Bu, həmişəkindən uzun çəkir — böyük menyularda bəzən belə olur.",
+  "keepWaiting": "Gözləməyə davam et",
+  "sampleWhileYouWait": "Və ya gözləyərkən nümunə menyu ilə tanış olun",
+  "standIn": "Bu, <b>sizin menyunuz olmayacaq</b> — necə işlədiyini görməyiniz üçün müvəqqəti nümunədir.",
+  "seeSample": "Nümunə menyuya bax",
+  "tryAgain": "Yenidən cəhd et",
+  "tryPhotoAgain": "Bu fotonu yenidən sına",
+  "tryDifferent": "Başqa foto sına",
+  "uploadAnother": "← Başqa foto yüklə",
+  "orSample": "Və ya nümunə menyu ilə tanış olun",
+  "orBuild": "Və ya biz onu sizin üçün hazırlayaq",
+  "buildSent": "✓ Təşəkkürlər — aldıq. Sizə e-poçtla yazacağıq.",
+  "buildBody": "E-poçtunuzu qoyun — real bir insan menyunuzu daxil edib linki sizə göndərəcək.",
+  "emailPlaceholder": "siz@foodtruckunuz.az",
+  "sending": "…",
+  "send": "Göndər",
+  "noPhoto": "Əlinizdə menyu fotosu yoxdur?",
+  "noPhotoBody": "Əvəzinə nümunə food truck ilə tanış olun — öz menyunuzu istənilən vaxt yükləyə bilərsiniz.",
+  "build": "Demomu yarat →",
+  "nothingPublished": "Heç nə dərc olunmayıb — bunu yalnız siz görə bilərsiniz.",
+  "error": {
+    "somethingWrong": "Nəsə alınmadı. Yenidən cəhd edin.",
+    "serverUnreachable": "Serverə qoşula bilmədik. İnternet bağlantınızı yoxlayın və yenidən cəhd edin.",
+    "sendFailed": "Bunu göndərmək mümkün olmadı — yenidən cəhd edin."
+  },
+  "fields": {
+    "uploadLabel": "Menyu faylını yüklə",
+    "dropHere": "Menyunuzu bura atın",
+    "dragOrTap": "Sürüşdürüb atın və ya seçmək üçün toxunun",
+    "fileTypes": "Şəkil və ya PDF",
+    "or": "və ya",
+    "pasteLabel": "Menyu mətnini yapışdır",
+    "pastePlaceholder": "Menyunuzu bura yapışdırın — məhsulların adları, təsvirləri, qiymətləri..."
+  },
+  "emailLabel": "E-poçtunuz",
+  "emailNote": "Sizə demonuzun linkini e-poçtla göndərəcəyik və HatchGrab-ın quraşdırılması ilə bağlı sizinlə əlaqə saxlaya bilərik. <link>Məxfilik siyasəti</link>",
+  "marketing": "Mənə HatchGrab-dan arabir məsləhətlər və xəbərlər göndərin",
+  "emailInvalid": "Zəhmət olmasa, düzgün e-poçt ünvanı daxil edin."
+}

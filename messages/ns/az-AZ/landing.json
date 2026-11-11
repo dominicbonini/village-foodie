@@ -1,0 +1,82 @@
+{
+  "jsonLd": {
+    "subCategory": "Food truck və səyyar ketrinq üçün sifariş sistemi",
+    "description": "Food truck və səyyar ketrinq üçün sifarişlər, əvvəlcədən sifarişlər və mətbəx ekranı ({country}).",
+    "audience": "Food truck və səyyar ketrinq sahibkarları"
+  },
+  "hero": {
+    "title": "<lean>Food truck-lar</lean> üçün yaradılmış sifariş sistemi.",
+    "subSmall": "Menyunuzu yükləyin, qeydiyyat lazım deyil.<br></br>İşləyən demonu 60 saniyədən az vaxtda görün.",
+    "cta": "Menyumu yüklə →",
+    "ctaNote": "<lead>Menyunuzun şəklini yükləyin və 60 saniyədən az vaxtda necə işlədiyini görün.</lead><small>Qeydiyyat yoxdur. Kart lazım deyil.</small>"
+  },
+  "shots": {
+    "kitchenAlt": "HatchGrab mətbəx ekranı: sifariş çekləri hazırlanma ardıcıllığı ilə",
+    "dashboardAlt": "HatchGrab-da sifariş qəbulu: solda menyu, sağda səbət və cəmi məbləğ",
+    "phoneAlt": "HatchGrab-da food truck-dan sifariş: şəkilli və qiymətli menyu, səbətin cəmi məbləği"
+  },
+  "trust": {
+    "freeMonth": "{months, plural, one {İlk ay tamamilə pulsuz, bütün funksiyalar açıqdır} other {İlk # ay tamamilə pulsuz, bütün funksiyalar açıqdır}}",
+    "noCard": "Kart lazım deyil",
+    "cancel": "İstənilən vaxt ləğv edin, müqavilə yoxdur"
+  },
+  "does": {
+    "eyebrow": "Nə edir",
+    "title": "Restoranlar üçün yox, food truck-lar üçün yaradılıb.",
+    "lede": "Əksər sifariş sistemləri sabit ünvan, etibarlı Wi-Fi və hər həftə eyni iş saatları nəzərdə tutur. Siz isə hər həftə yeni yerdə, fərqli saatlarda, zəif və ya heç olmayan mobil əhatə ilə işləyirsiniz. HatchGrab məhz bunun üçün yaradılıb.",
+    "slotsTitle": "Müştərilər götürmə vaxtını seçir",
+    "capacityTitle": "Mətbəx tutumunuzu təyin edin",
+    "capacityBody": "Eyni anda nə qədər hazırlaya bildiyinizi və bunun nə qədər çəkdiyini təyin edin. Götürmə vaxtı dolanda müştərilər onu seçə bilmir.",
+    "devicesTitle": "İstənilən cihazda işləyir",
+    "devicesBody": "Önlüyünüzün cibindəki telefonda, piştaxtadakı planşetdə, maşındakı noutbukda — və artıq ödəniş qəbul etdiyiniz POS-terminalda işləyir.",
+    "postsTitle": "Facebook və Instagram postlarınızı avtomatlaşdırın",
+    "postsBody": "Facebook və ya Instagram-da artıq paylaşdığınız dizaynı yükləyin. Tarixləri, yerləri və saatları biz dolduracağıq, paylaşmağa hazır olacaq — hər həftə və ya hər gün.",
+    "whatsappTitle": "WhatsApp-da avtomatik cavablar",
+    "whatsappBody": "“Bu axşam haradasınız?” “Hansı desertləriniz var?” Siz ticarət yerinə gedərkən və ya manqalın başında olarkən WhatsApp-ınıza öz menyunuz və cədvəliniz əsasında cavab verilir. Messenger və Instagram tezliklə.",
+    "whatsappSoonTitle": "WhatsApp-da avtomatik cavablar <soon>Tezliklə</soon>",
+    "whatsappSoonBody": "“Bu axşam haradasınız?” “Hansı desertləriniz var?” Tezliklə siz ticarət yerinə gedərkən və ya manqalın başında olarkən WhatsApp-ınıza avtomatik cavab veriləcək. Ardınca Messenger və Instagram.",
+    "offlineTitle": "Siqnal yoxdur? Satışa davam edin.",
+    "offlineBody": "Siqnal itəndə onlayn sifariş avtomatik dayandırılır ki, müştərilər görməyəcəyiniz sifarişlər verməsin. iPhone, iPad və Android tətbiqi ilə sifariş qəbul etməyə davam edin.",
+    "slotsBody": "Müştərilər əvvəlcədən sifariş edir və götürmə vaxtını seçir. Növbələr azalır, onlar gələndə yemək hazır olur."
+  },
+  "steps": {
+    "eyebrow": "Başlanğıc",
+    "title": "Təxminən 15 dəqiqəyə qurun və sifariş qəbul etməyə başlayın.",
+    "lede": "Üç iş görməlisiniz — onlardan ikisi üçün sadəcə şəkil lazımdır.",
+    "menuTitle": "Menyunuzu yaradın",
+    "menuBody": "Menyu lövhənizin şəklini çəkin və ya mətni yapışdırın. Məhsullar, qiymətlər və əlavələr avtomatik köçürülür. Siz sadəcə düzgün olduğunu yoxlayırsınız.",
+    "scheduleTitle": "Cədvəlinizi əlavə edin",
+    "scheduleBody": "Cədvəliniz saytınızdadır? Onu oradan oxuyub aktual saxlayacağıq. Yoxdursa, onun da şəklini çəkin. Siz sadəcə tapılanları təsdiqləyirsiniz.",
+    "shareTitle": "Linkinizi paylaşın",
+    "shareBody": "Onu Facebook-da paylaşın, QR kodu maşına yapışdırın. Sifarişlər hazırlamalı olduğunuz ardıcıllıqla ekranınıza düşür."
+  },
+  "testimonial": {
+    "quote": "HatchGrab sifariş qəbulunu xeyli asanlaşdırıb. Hər şey qaydasındadır, stoku izləyə bilirik və satmaq üçün neçə pitsa qaldığını dəqiq bilirik — vaxt aralıqları isə sıx kəndlər üçün əladır.",
+    "award": "İlin səyyar pitseriyası",
+    "awardScope": "Regional qalib",
+    "business": "Pizzeria Gusto",
+    "byline": "Nadia & Bogdan — sahiblər"
+  },
+  "pricing": {
+    "eyebrow": "Qiymətlər",
+    "title": "Pulsuz başlayın. Lazım olanda planı yüksəldin.",
+    "switchHead": "Başqa platformadan keçirsiniz?",
+    "switchBody": "Eyni sifarişlər üçün HatchGrab-da nə qədər ödəyəcəyinizi görün. Təxminən bir dəqiqə çəkir.",
+    "switchCta": "Xərclərinizi müqayisə edin"
+  },
+  "faq": {
+    "title": "Tez-tez verilən suallar",
+    "metaTitle": "Tez-tez verilən suallar | HatchGrab",
+    "metaDescription": "Food truck sahibləri üçün HatchGrab-ın qiymətləri, quraşdırılması, sifarişlərin qəbulu və ödənişlər haqqında sadə və aydın cavablar."
+  },
+  "final": {
+    "truckLabel": "Food truck",
+    "title": "Quraşdırmanın nə qədər asan olduğunu görmək istəyirsiniz?",
+    "lede": "Menyunuzun şəklini və ya ekran görüntüsünü yükləyin — 60 saniyədən az vaxtda onu sınaqdan keçirə biləcəyiniz işlək sifariş səhifəsinə çevirək. Sizin məhsullarınız, sizin qiymətləriniz. Qeydiyyat yoxdur, kart lazım deyil, heç nə quraşdırmaq lazım deyil. Baxın, sonra qərar verin.",
+    "cta": "Menyumu indi yüklə →"
+  },
+  "meta": {
+    "title": "Food truck sifariş sistemi — HatchGrab {country}",
+    "description": "Növbəsiz sifariş və əvvəlcədən sifariş qəbul edin. Food truck və səyyar ketrinq üçün sifariş və mətbəx ekranı proqramı ({country}) — POS sistemi deyil."
+  }
+}

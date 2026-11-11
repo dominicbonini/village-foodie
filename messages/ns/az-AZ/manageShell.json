@@ -1,0 +1,86 @@
+{
+  "loading": "İdarəetmə paneli yüklənir…",
+  "loadFailed": "Yükləmək mümkün olmadı",
+  "requestFailed": "Uğursuz oldu",
+  "invalidToken": "Token etibarsızdır və ya vaxtı bitib",
+  "loadFailedReason": "Bu səhifəni yükləmək mümkün olmadı: {reason}",
+  "noCountrySettings": "Bu food truck-ın ölkə ayarlarını yükləmək mümkün olmadı. Səhifəni yeniləyin.",
+  "noPlans": "Bu food truck-ın planını yükləmək mümkün olmadı. Səhifəni yeniləyin.",
+  "stale": "{hasTime, select, yes {Yeniləmək mümkün olmadı. Saat {time} üzrə yadda saxlanılmış məlumatlar göstərilir. Etdiyiniz dəyişikliklər yenə də yadda saxlanılır.} other {Yeniləmək mümkün olmadı. Yadda saxlanılmış məlumatlar göstərilir. Etdiyiniz dəyişikliklər yenə də yadda saxlanılır.}}",
+  "verify": {
+    "ok": "E-poçt təsdiqləndi — təşəkkür edirik.",
+    "expired": "Bu təsdiq linkinin vaxtı bitib. Bizimlə əlaqə saxlayın, işə başlamazdan əvvəl məsələni həll edək.",
+    "invalid": "Bu təsdiq linki işləmədi. Bizimlə əlaqə saxlayın, işə başlamazdan əvvəl məsələni həll edək."
+  },
+  "profile": {
+    "updated": "Profil yeniləndi",
+    "saveFailed": "Yadda saxlamaq mümkün olmadı",
+    "title": "Profili redaktə et",
+    "name": "Ad",
+    "namePlaceholder": "Adınız",
+    "email": "E-poçt",
+    "cancel": "Ləğv et",
+    "saving": "Yadda saxlanılır…",
+    "save": "Yadda saxla"
+  },
+  "header": {
+    "subtitle": "İdarəetmə paneli",
+    "ordersDashboard": "← Sifarişlər paneli"
+  },
+  "tabs": {
+    "menu": "Menyu",
+    "schedule": "Cədvəl",
+    "paperwork": "Sənədlər",
+    "social": "Sosial media",
+    "reports": "Hesabatlar",
+    "team": "Komanda",
+    "settings": "Ayarlar",
+    "payments": "Ödənişlər",
+    "billing": "Hesablaşma",
+    "paymentsIcon": "💵",
+    "scheduleCount": "Cədvəl ({count})",
+    "stripeAttention": "Stripe diqqətinizi tələb edir",
+    "allergensNotSet": "allergenlər təyin edilməyib"
+  },
+  "menuSections": {
+    "label": "Menyu bölmələri",
+    "items": "Məhsullar",
+    "capacity": "Mətbəx tutumu",
+    "extras": "Əlavələr və təkliflər",
+    "deals": "Kombo menyular"
+  },
+  "socialSections": {
+    "label": "Sosial media bölmələri",
+    "create": "Post yarat",
+    "designs": "Dizaynlar",
+    "locations": "Məkan ayarları"
+  },
+  "notices": {
+    "review": "Bax →",
+    "tour": "İdarəetmə paneli ilə qısa tanışlıq istəyirsiniz?",
+    "showMeAround": "Mənə göstərin",
+    "dismiss": "Bağla",
+    "approval": "{count, plural, one {Sizin üçün <b>{count}</b> tədbir tapdıq — yayımlanmadan əvvəl onu nəzərdən keçirib təsdiqləyin.} other {Sizin üçün <b>{count}</b> tədbir tapdıq — yayımlanmadan əvvəl onları nəzərdən keçirib təsdiqləyin.}}",
+    "allergens": "<b>Allergenlər təyin edilməyib</b> — siz təsdiqləyənə qədər müştərilər allergen məlumatını görə bilməz. Menyu bölməsində hər yeməyin allergenlərini yoxlayın.",
+    "domainLive": "<link>{domain}</link> artıq işləyir. Ona baxın, sonra Ayarlar bölməsində hər şeyin düzgün olduğunu bizə bildirin.",
+    "stripe": "<b>Stripe sizdən nəsə tələb edir</b> — bu həll olunana qədər kartla ödənişlər dayana bilər.",
+    "profileTitle": "Profilinizi tamamlayın",
+    "missing": "Çatışmır: {fields}.",
+    "goToSettings": "Ayarlara keç →",
+    "field": {
+      "truckName": "food truck-ın adı",
+      "cuisineType": "mətbəx növü",
+      "contactEmail": "əlaqə e-poçtu",
+      "contactPhone": "əlaqə telefonu"
+    }
+  },
+  "trialPopup": {
+    "title": "{months, select, none {Pulsuz sınaq dövründəsiniz} other {{months} aylıq pulsuz sınaq dövründəsiniz}}",
+    "ends": "{hasDate, select, yes {Sınaq dövrü bitir: <hl>{date}</hl>} other {Sınaq dövrü <hl>tezliklə</hl> bitir}}",
+    "offer": "{hasMonths, select, yes {{months, plural, one {Bütün funksiyalar # ay pulsuzdur} other {Bütün funksiyalar # ay pulsuzdur}}} other {Sınaq dövründə bütün funksiyalar pulsuzdur}}",
+    "body": "{hasDate, select, yes {Sınaq dövrünüz <b>{date}</b> tarixinədək davam edir və bu müddətdə sizdən heç bir ödəniş tutulmayacaq. Ödəniş yalnız siz plan seçib ödəniş məlumatlarınızı daxil etdikdə başlayır. O vaxta qədər ləğv ediləcək və ödəniləcək heç nə yoxdur. Planınızı bundan əvvəl seçin — seçməsəniz, {fallback} planına keçəcəksiniz və bəzi funksiyalar işləməyi dayandıracaq.} other {Sınaq dövründə sizdən heç bir ödəniş tutulmayacaq. Ödəniş yalnız siz plan seçib ödəniş məlumatlarınızı daxil etdikdə başlayır. O vaxta qədər ləğv ediləcək və ödəniləcək heç nə yoxdur. Planınızı bundan əvvəl seçin — seçməsəniz, {fallback} planına keçəcəksiniz və bəzi funksiyalar işləməyi dayandıracaq.}}",
+    "bodyPaidEnd": "{hasDate, select, yes {Sınaq dövrünüz <b>{date}</b> tarixinədək davam edir və bu müddətdə sizdən heç bir ödəniş tutulmayacaq. Sınaq dövrü bitdikdən sonra {fallback} planının qiyməti ayda {price} olacaq. Ödənişi qurmaq üçün bundan əvvəl sizinlə əlaqə saxlayacağıq.} other {Sınaq dövründə sizdən heç bir ödəniş tutulmayacaq. Sınaq dövrü bitdikdən sonra {fallback} planının qiyməti ayda {price} olacaq. Ödənişi qurmaq üçün bundan əvvəl sizinlə əlaqə saxlayacağıq.}}",
+    "fees": "*Onlayn sifarişlərə standart kart emalı haqları tətbiq olunur",
+    "upgrade": "Planı buradan yüksəlt →"
+  }
+}

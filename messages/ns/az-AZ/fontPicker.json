@@ -1,0 +1,46 @@
+{
+  "tab": {
+    "all": "Hamısı",
+    "bold": "Qalın və hündür",
+    "hand": "Əl yazısı",
+    "classic": "Klassik",
+    "clean": "Sadə",
+    "own": "Sizinkilər",
+    "ownCount": "Sizinkilər ({count})"
+  },
+  "yoursTag": "· sizin",
+  "loadingFonts": "Şriftlər yüklənir…",
+  "search": "{count, number} şrift arasında axtar",
+  "uploadButton": "↑ Şriftinizi yükləyin",
+  "loadingLibrary": "Şrift kitabxanası yüklənir…",
+  "tryAgain": "Yenidən cəhd et",
+  "noOwn": "Hələ şrift yükləməmisiniz. Yuxarıdakı “↑ Şriftinizi yükləyin” düyməsindən istifadə edin.",
+  "recent": "Son istifadə olunanlar",
+  "popular": "Afişalar üçün populyar",
+  "adding": "Əlavə olunur…",
+  "noMatch": "“{query}” sorğusuna uyğun şrift yoxdur.",
+  "showing": "{total, number} şriftdən {shown} göstərilir — daraltmaq üçün daha çox yazın.",
+  "couldNotAdd": "Bu şrifti əlavə etmək mümkün olmadı",
+  "tooBig": "Şriftin ölçüsü: {size, number, ::.0 group-off} MB. Limit: 5 MB.",
+  "woff": "TTF və ya OTF faylı yükləyin — adətən onu şrifti aldığınız yerdən endirə bilərsiniz.",
+  "uploadIncomplete": "Yükləmə tamamlanmadı",
+  "added": "“{name}” {face} variant kimi əlavə edildi.",
+  "face": {
+    "regular": "adi",
+    "bold": "qalın",
+    "italic": "kursiv"
+  },
+  "licenceTick": "Bu şrift mənimdir və ya ondan istifadə üçün lisenziyam var",
+  "checking": "Şrift yoxlanılır…",
+  "addFont": "Şrift əlavə et",
+  "cancel": "Ləğv et",
+  "missingFaces": "“{name}” şriftinin {faces} variantını əlavə edin (istəyə bağlı) — faylı yenidən seçin.",
+  "somethingWrong": "Xəta baş verdi",
+  "faceLower": {
+    "regular": "adi",
+    "bold": "qalın",
+    "italic": "kursiv"
+  },
+  "ownLicence": "Öz şriftiniz",
+  "loadFailed": "Şriftləri yükləmək mümkün olmadı"
+}

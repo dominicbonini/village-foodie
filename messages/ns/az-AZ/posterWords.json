@@ -1,0 +1,25 @@
+{
+  "heading": "Həftə: {start} – {end}",
+  "daysOff": "Bu gün işləmirik",
+  "cancelled": "LƏĞV EDİLDİ",
+  "placeSample": {
+    "nameTownBelow": "Kənd bazarı\nQuba",
+    "nameTown": "Kənd bazarı, Quba",
+    "nameOnly": "Kənd bazarı"
+  },
+  "busyWeek": {
+    "venue1": "Kənd mədəniyyət evi",
+    "town1": "Quba",
+    "venue2": "Yasamal rayonu mədəniyyət evinin həyəti və idman meydançası",
+    "town2": "Bakı",
+    "venue3": "Bazar meydanı",
+    "town3": "Gəncə",
+    "venue4": "Küçə yeməkləri festivalı",
+    "town4": "Sumqayıt",
+    "venue5": "Şəhər parkı",
+    "town5": "Şəki",
+    "venue6": "Dənizkənarı bulvar",
+    "town6": "Lənkəran"
+  },
+  "poweredBy": "HatchGrab ilə hazırlanıb"
+}

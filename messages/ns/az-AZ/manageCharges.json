@@ -1,0 +1,30 @@
+{
+  "heading": "Vergi, çaypulu və haqlar",
+  "rate": {
+    "label": "Satış vergisi dərəcəsi",
+    "hint": "Hər sifarişə tətbiq etdiyiniz dərəcə. Müştərilər onu ödəniş zamanı, qəbzlərdə və çeklərdə əlavə olunmuş şəkildə görür.",
+    "regionDefault": "Boş saxlasanız, {label} {rate}% dərəcə ilə tutulacaq — {region} üzrə hazır yeməyə tətbiq olunan dərəcə."
+  },
+  "included": {
+    "label": "Qiymətlərinizə daxil olan vergi: {label}",
+    "hint": "Qiymətlərinizə {label} artıq daxildir. Bu dərəcə yalnız qəbzlərdə və çeklərdə hər qiymətin hansı hissəsinin {label} olduğunu göstərir — ödəniş zamanı heç nə əlavə olunmur.",
+    "default": "Boş saxlasanız, {rate}% tətbiq olunacaq — {country} üzrə al-apar satılan isti yemək üçün {label} dərəcəsi."
+  },
+  "tips": {
+    "label": "Çaypulu",
+    "hint": "Onlayn kartla ödəyən müştərilər çaypulu əlavə edə bilər. Hamısı sizə çatır.",
+    "choices": "Müştərilərin gördüyü seçimlər:",
+    "chip": "{rate}%",
+    "other": "Başqa məbləğ"
+  },
+  "fee": {
+    "label": "Onlayn xidmət haqqı",
+    "hint": "Yalnız onlayn sifarişlərə əlavə olunur. “Yerində ödəniş” seçilmiş sifarişlərə və ya yerində sifarişlərə heç vaxt əlavə olunmur. Bu haqq sizdə qalır.",
+    "pctAria": "Xidmət haqqı faizi",
+    "fixedAria": "Xidmət haqqının sabit məbləği",
+    "max": "Maksimum tuta biləcəyiniz: {max}",
+    "example": "Müştərilər bunu ödənişdən əvvəl bir sətir kimi görür: “{label} {amount}”.",
+    "hatchgrab": "HatchGrab müştərilərinizin onlayn sifarişlərinə {fee} xidmət haqqı əlavə edir. Bunu siz ödəmirsiniz və dəyişə bilməzsiniz."
+  },
+  "saveFailed": "Yadda saxlamaq mümkün olmadı — yenidən cəhd edin."
+}

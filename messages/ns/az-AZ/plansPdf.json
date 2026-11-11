@@ -1,0 +1,9 @@
+{
+  "title": "Planlar və funksiyalar",
+  "generated": "Yaradılıb: {date}",
+  "allowanceHeading": "Onlayn sifariş limiti",
+  "smallPrint": "Əlavə qeydlər",
+  "priceNoteMasked": "“Dəqiqləşdirilir” kimi göstərilən qiymətlər hələ dərc edilməyib.",
+  "omitNote": "Qiymətlər bu sənədə qəsdən daxil edilməyib.",
+  "terms": "Rəqəmlər yuxarıdakı tarixə dərc edilmiş plan şərtləridir və dəyişə bilər. Kartla ödəniş emalı haqları HatchGrab-ın deyil, Stripe-ın öz haqqıdır. Bu sənəd müqavilə deyil, xülasədir."
+}

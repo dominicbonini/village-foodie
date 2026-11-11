@@ -1,0 +1,13 @@
+{
+  "subtotal": "Aralıq cəm",
+  "taxFallback": "Vergi",
+  "taxIncluded": "Daxildir: {label}",
+  "serviceFeeCustomer": "Onlayn xidmət haqqı",
+  "serviceFee": "Xidmət haqqı",
+  "cardFee": "Kartla ödəniş haqqı",
+  "tip": "Çaypulu",
+  "rate": "{rate}%",
+  "line": "{label}: {amount}",
+  "lineWithRate": "{label} {rate}: {amount}",
+  "foldedCharges": "{parts, select, tax_fees_tip {Vergi, haqlar və çaypulu} tax_tip {Vergi və çaypulu} fees_tip {Haqlar və çaypulu} fees {Haqlar} other {Vergi və haqlar}}"
+}

@@ -1,0 +1,129 @@
+{
+  "docTitle": "Mətbəx — {truck}",
+  "loading": "Mətbəx yüklənir…",
+  "pin": {
+    "title": "PIN daxil edin",
+    "placeholder": "PIN",
+    "unlock": "Kilidi aç",
+    "unreachable": "Hazırda serverə qoşulmaq mümkün deyil. PIN-iniz düzgündür — bir azdan yenidən cəhd edin.",
+    "incorrect": "PIN yanlışdır",
+    "generic": "Xəta baş verdi. Yenidən cəhd edin."
+  },
+  "error": {
+    "linkInvalid": "Bu link artıq etibarlı deyil.",
+    "couldNotLoad": "Sifarişləri yükləmək mümkün olmadı",
+    "truckNotFound": "Food truck tapılmadı"
+  },
+  "degraded": {
+    "at": "⚠️ Serverə qoşulmaq mümkün deyil. Göstərilən çeklərin vaxtı: {time}. YENİ SİFARİŞLƏR GÖRÜNMƏYƏ BİLƏR.",
+    "earlier": "⚠️ Serverə qoşulmaq mümkün deyil. Əvvəlki çeklər göstərilir. YENİ SİFARİŞLƏR GÖRÜNMƏYƏ BİLƏR."
+  },
+  "header": {
+    "dashboard": "Sifarişlər paneli",
+    "backTitle": "Sifarişlər panelinə qayıt",
+    "list": "Siyahı",
+    "grid": "Şəbəkə",
+    "full": "Tam",
+    "cook": "Aşpaz",
+    "fullTitle": "Tam kartlar — qiymətlər və ödəniş məlumatları, pəncərədə göründüyü kimi.",
+    "cookTitle": "Aşpaz kartları — iri şrift, kateqoriyalar üzrə qruplaşdırılıb, qiymətsiz.",
+    "readyStep": "“Hazırdır” addımı",
+    "readyOnlyTitle": "Bu ekran yalnız sifarişləri hazır kimi qeyd edir, ona görə də bunu söndürmək olmaz — onun yerinə yetirdiyi yeganə mərhələ budur.",
+    "readyOnTitle": "Bu ekran sifarişləri hazır kimi qeyd edir. Bunu başqa ekranın etməsi üçün toxunun.",
+    "readyOffTitle": "Sifarişləri başqa ekran hazır kimi qeyd edir. Bunu bu ekranın etməsi üçün toxunun.",
+    "handover": "Ödəniş və təhvil",
+    "handoverOnlyTitle": "Bu ekran yalnız ödəniş qəbul edir, ona görə də bunu söndürmək olmaz — onun yerinə yetirdiyi yeganə mərhələ budur.",
+    "handoverOnTitle": "Bu ekran ödəniş qəbul edir və sifarişi təhvil verir. Bunu başqa ekranın etməsi üçün toxunun.",
+    "handoverOffTitle": "Ödənişi başqa ekran qəbul edir. Bunu bu ekranın etməsi üçün toxunun.",
+    "soundOn": "Yeni sifariş səsi aktivdir — söndürmək üçün toxunun",
+    "soundOff": "Yeni sifariş səsi söndürülüb — aktiv etmək üçün toxunun",
+    "screenOn": "Ekran açıq",
+    "screenOff": "Ekran sönə bilər",
+    "screenSettings": "Ekran ayarları",
+    "manageEvent": "Tədbiri idarə et",
+    "manageEventTitle": "Tədbiri idarə edin — başladın, dayandırın, dəyişin və ya bitirin",
+    "soundSettings": "Səs ayarları",
+    "soundSettingsTitle": "Bu cihazda hansı səslər çalınır",
+    "cashIcon": "💵"
+  },
+  "panel": {
+    "viewSettings": "Görünüş ayarları",
+    "on": "Aktiv",
+    "off": "Deaktiv",
+    "newOrderSound": "Yeni sifariş səsi",
+    "soundNeedsConfirming": "Yalnız təsdiq tələb edən sifarişlər",
+    "soundAll": "Bütün yeni sifarişlər",
+    "soundDue": "Sifarişi hazırlamaq vaxtı çatanda səs",
+    "soundDueHelp": "Çek kəhrəba rənginə keçəndə səs çıxır.",
+    "deviceSettings": "Cihaz ayarları",
+    "sound": "Səs",
+    "close": "Bağla"
+  },
+  "banner": {
+    "mismatchTitle": "⚠️ Bu tədbir üçün sifarişlər yüklənmədi",
+    "mismatchBody": "Server başqa tədbir üzrə cavab verdi, ona görə də səhv sifarişlər əvəzinə heç nə göstərilmir. Tədbiri yenidən seçin və ya səhifəni yeniləyin.",
+    "mismatchBodyAt": "Server başqa tədbir üzrə cavab verdi, ona görə də səhv sifarişlər əvəzinə heç nə göstərilmir (məkan: {venue}). Tədbiri yenidən seçin və ya səhifəni yeniləyin.",
+    "paused": "⏸ Sifarişlər dayandırılıb{reason, select, offline { (cihaz oflayndır)} other {}} — müştərilər sifariş verə bilmir",
+    "resume": "Bərpa et",
+    "offline": "Bağlantı yoxdur — son məlum sifarişlər göstərilir. Müştərilər üçün onlayn sifariş dayandırılıb.",
+    "queued": "{n, plural, one {Sırada {count} əməliyyat} other {Sırada {count} əməliyyat}}",
+    "extraWait": "⏱ +{mins} dəq əlavə gözləmə aktivdir",
+    "clear": "Sil",
+    "toMake": "Hazırlanacaq",
+    "today": "Bu gün · {range}",
+    "onDate": "{date} · {range}",
+    "startEvent": "Tədbiri başlat",
+    "recentlyClosed": "Tədbir bitdi · {venue} · bitmə vaxtı: {time}",
+    "eventStatus": "{tone, select, paused {⏸ Dayandırılıb} live {● Aktiv} finished {● Bitib} cancelled {Ləğv edilib} other {Başlamayıb}}"
+  },
+  "board": {
+    "queueClear": "Sıra boşdur",
+    "doneToday": "Bu gün hazırlanıb · {count}",
+    "paid": "✓ ödənilib",
+    "cardHeld": "kart bloklanıb",
+    "due": "Ödənilməli: {amount}"
+  },
+  "screenOff": {
+    "title": "Ekranın sönməsinə icazə verilsin?",
+    "bodyVans": "{vans}: {n, plural, one {oflayn rejimin aşkarlanması aktivdir} other {oflayn rejimin aşkarlanması aktivdir}}. Ekran sönərsə, cihaz onlayn siqnal göndərməyi dayandıra və müştəri sifarişləri dayandırıla bilər.",
+    "body": "Ekran sönərsə, cihaz onlayn siqnal göndərməyi dayandıra bilər.",
+    "keepHint": "Sifarişlərin fasiləsiz qəbulu üçün ekranı açıq saxlayın.",
+    "keep": "Ekranı açıq saxla",
+    "allow": "Ekranın sönməsinə icazə ver"
+  },
+  "event": {
+    "change": "Tədbiri dəyiş",
+    "cancel": "Ləğv et",
+    "waitActive": "⏱ +{mins} dəq aktivdir · Silmək üçün toxunun",
+    "addWait": "⏱ Əlavə gözləmə vaxtı",
+    "endTitle": "Tədbir bitirilsin?",
+    "endEarly": "Bu tədbirin planlaşdırılmış bitmə vaxtı: {time}. Daha sifariş qəbul edilməyəcək. Tədbiri bitirməyi təsdiqləyirsiniz?",
+    "endNow": "Bu tədbir bitirilsin? Daha sifariş qəbul edilməyəcək.",
+    "yes": "Bəli",
+    "started": "Tədbir başladı",
+    "startFutureConfirm": "Bu tədbirin tarixi: {date}. İndi başladılsın?",
+    "finishTimeNow": "Yeni bitmə vaxtı: {time}",
+    "finished": "Tədbir bitdi",
+    "cancelled": "Tədbir ləğv edildi",
+    "noteSaved": "Qeyd yadda saxlanıldı",
+    "pauseConfirm": "Sifarişlər dayandırılsın? Siz bərpa edənə qədər müştərilər “Sifariş qəbul edilmir” yazısını görəcək.",
+    "switchConfirm": "Keçid edilsin: {from} → {to}?{n, plural, =0 {} one { Bu ekrandakı {count} sifariş əvəz olunacaq.} other { Bu ekrandakı {count} sifariş əvəz olunacaq.}} Geri qayıtmaq üçün hazırkı tədbirə toxunun."
+  },
+  "intro": {
+    "title": "Bu, mətbəx ekranıdır (KDS)",
+    "p1": "Bu, aşpazın görünüşüdür — hazırlamalı olduğunuz sifarişlər, hazırlanma ardıcıllığı ilə. Qril yanındakı ekran bunu göstərir, piştaxta isə sifarişlər panelindən istifadə edir.",
+    "p2": "Kartlara toxunduqca onlar irəli keçir, beləliklə, yemək hazırlayan hər zaman növbəti sifarişi bilir və heç kəs qışqırmalı olmur. Buradakı hər şey sizin demo məlumatlarınızdır — sınayın.",
+    "gotIt": "Aydındır"
+  },
+  "toast": {
+    "failed": "Uğursuz oldu",
+    "rejectFailed": "Rədd etmək mümkün olmadı",
+    "buzzerSaved": "Çağırış cihazı {n} yadda saxlanıldı",
+    "buzzerRemoved": "Çağırış cihazı {n} silindi",
+    "buzzerRemovedNone": "Çağırış cihazı silindi",
+    "buzzerAssigned": "Çağırış cihazı {n} təyin edildi",
+    "buzzerAssignedFrom": "Çağırış cihazı {n} təyin edildi (#{from} nömrəli sifarişdən götürüldü)",
+    "buzzerRemoveFailed": "{had, select, no {Çağırış cihazını silmək mümkün olmadı — {target, select, order {sifariş #{id}} other {bu sifariş}}} other {Çağırış cihazı {n} silinmədi — hələ də buradadır: {target, select, order {sifariş #{id}} other {bu sifariş}}}}",
+    "buzzerAssignFailed": "Çağırış cihazı {n} təyin edilmədi — {target, select, order {sifariş #{id}} other {bu sifariş}}: {had, select, yes {hələ də çağırış cihazı {prior} var} other {hələ də çağırış cihazı yoxdur}}"
+  }
+}

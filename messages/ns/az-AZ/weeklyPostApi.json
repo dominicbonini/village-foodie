@@ -1,0 +1,57 @@
+{
+  "shortened": {
+    "heading": "Başlıq yerləşmədi və qısaldıldı.",
+    "date": "Tarix yerləşmədi və qısaldıldı.",
+    "daysOff": "İstirahət günləri mətni yerləşmədi və qısaldıldı.",
+    "place": "Yerin adı yerləşmədi və qısaldıldı.",
+    "time": "Vaxt yerləşmədi və qısaldıldı.",
+    "note": "Öz mətniniz yerləşmədi və qısaldıldı.",
+    "venue": "Məkan yerləşmədi və qısaldıldı.",
+    "area": "Ərazi yerləşmədi və qısaldıldı."
+  },
+  "fontFallback": "Bu dizaynın istifadə etdiyi şrifti ({id}) yükləmək mümkün olmadı — həmin xanalar Oswald şrifti ilə göstərilir.",
+  "wrongShapeBackground": "Bu yerin şəklinin forması dizaynınızdan fərqlidir, ona görə də standart fon istifadə olunur.",
+  "rowsFit": "Son gün şəklin aşağı kənarından {px}px aşağı düşür — sətirlər arasındakı məsafəni azaldın və ya 1-ci sətri yuxarı çəkin.",
+  "placeStatus": {
+    "ownBoth": "Öz şəkliniz və öz mətn yerləşməsi",
+    "wrongShape": "Forma fərqlidir — dəyişdirilənədək istifadə olunmur",
+    "ownPicture": "Öz şəkliniz, standart yerləşmə",
+    "ownPositions": "Standart şəkil, öz mətn yerləşməsi",
+    "none": "Hələ şəkil yoxdur — Standart istifadə olunur"
+  },
+  "standardStatus": "Bütün digər yerlərdə istifadə olunur",
+  "option": {
+    "oneOff": "Yalnız bu post üçün şəkil yükləyin",
+    "placePoster": "Poster: {name}",
+    "standard": "Standart dizayn"
+  },
+  "previewLabel": {
+    "lastEvent": "Önizləmədə burada keçirdiyiniz son tədbir göstərilir",
+    "noEvents": "Burada hələ tədbir yoxdur — önizləmədə növbəti tədbiriniz bu yerin adı ilə göstərilir"
+  },
+  "fontUsage": {
+    "weekly": "həftəlik post dizaynınız",
+    "event": "tək tədbir postu dizaynınız",
+    "place": "yer üçün dizaynınız: {place}",
+    "placeUnnamed": "yer üçün dizaynınız"
+  },
+  "face": {
+    "regular": "Adi",
+    "bold": "Qalın",
+    "italic": "Kursiv"
+  },
+  "picture": {
+    "legacy": "Tədbir posteri",
+    "fallback": "Şəkil",
+    "wrongShape": "Forma fərqlidir — bütöv fon kimi istifadə etmək olmur"
+  },
+  "noPicture": {
+    "omit": "Göstərmə",
+    "blank": "Boş yer saxla",
+    "logo": "Loqonu göstər"
+  },
+  "noPicturesAll": "{total, plural, one {Məkanınızın şəkli var.} other {Bütün məkanlarınızın şəkli var: {total}.}}",
+  "noPicturesSome": "{without, plural, one {Şəkli hələ olmayan məkanlar: {without} / {total}} other {Şəkli hələ olmayan məkanlar: {without} / {total}}}",
+  "licenceTick": "Bu şrift mənimdir və ya ondan istifadə üçün lisenziyam var",
+  "fontUploadButton": "↑ Şriftinizi yükləyin"
+}
