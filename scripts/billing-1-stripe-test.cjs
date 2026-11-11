@@ -74,8 +74,10 @@ const t = (label, ok, detail) => { if (ok) { pass++; console.log('  ✓ ' + labe
   const a1 = await proc.payInvoice(gb.stripeInvoiceId)
   await E.applyInvoiceUpdate(store, CATALOG, a1, now)
   t(`GB: the declining test card fails (attempts ${a1.attemptCount}, "${a1.lastError}")`, a1.status === 'open' && a1.attemptCount >= 1, a1)
-  const day5 = new Date(Date.parse(gb.dueAt) + 5 * 86_400_000)
-  t('GB: paused on day 5', R.billingStatusOf(await E.billingContextFor(store, await store.truck(T('GB')), CATALOG, day5)).status === 'paused')
+  // billing-2: the pause instant of the 5-full-day rule (00:00 London, the day after the last full day to pay).
+  const fresh = (await store.listInvoices(T('GB')))[0]
+  const day5 = new Date(R.failureTimeline(fresh.firstFailedAt ?? new Date().toISOString(), 'Europe/London', 5).pauseAt)
+  t('GB: paused at the pause instant (00:00 after 5 full days)', R.billingStatusOf(await E.billingContextFor(store, await store.truck(T('GB')), CATALOG, day5)).status === 'paused')
   d.countryBilling.find(c => c.countryCode === LATE).lateFeeMinor = 300
   const late = await E.applyLateFees(store, proc, CATALOG, { truckId: T('GB'), now: day5, by: 'harness' })
   const gbRow = (await store.listInvoices(T('GB')))[0]

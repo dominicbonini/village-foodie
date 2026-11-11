@@ -25,7 +25,7 @@ import { planByKey, planPriceFor } from '@/lib/plans'
 import { minorDigits } from '@/lib/money-format'
 import {
   billingStatusOf, arrangementOf, billableOf, planMonth, usageMonth, settleCharge, invoiceLinesOf, digestOf, periodBounds, periodOf,
-  previousPeriod, nextPeriod, planLevelAt, stripeLocaleFor, DEFAULT_TRUCK_BILLING,
+  previousPeriod, nextPeriod, planLevelAt, stripeLocaleFor, DEFAULT_TRUCK_BILLING, failureTimeline,
   type BillingContext, type TruckBillingFacts, type PaymentMethodType, type PlanHistoryRow, type PlanInputs, type ChargeFigures,
 } from '@/lib/billing/rules'
 import type { BillingStore, TruckBillingRow, UsageRow, InvoiceRow, StoredTruck, InvoiceStatus, ChargeRow, ChargeKind } from '@/lib/billing/store-types'
@@ -45,11 +45,12 @@ export async function billingContextFor(store: BillingStore, truck: StoredTruck,
   return {
     switchOn: sw.enabled || (opts.forceSwitch === true && truckBilling.billingTest),
     pauseAfterDays: sw.pauseAfterDays,
+    suspendWarningDays: sw.suspendWarningDays ?? 6,
     truck, catalog,
     country: { countryCode: truck.country, platformFeeEnabled: facts?.platformFeeEnabled === true, platformFeeAllowed: facts?.platformFeeAllowed !== false },
     countryBilling: cb,
     truckBilling,
-    unpaid: invoices.filter(i => i.status === 'open' || i.status === 'failed').map(i => ({ dueAt: i.dueAt ?? i.createdAt })),
+    unpaid: invoices.filter(i => i.status === 'open' || i.status === 'failed').map(i => ({ dueAt: i.dueAt ?? i.createdAt, firstFailedAt: i.firstFailedAt ?? null })),
     now,
   }
 }
@@ -154,7 +155,7 @@ async function chargeOnce(store: BillingStore, processor: BillingProcessor | nul
     if (inv.amountDueMinor !== charge.chargedMinor) console.error(`[billing] 🔴 invoice ${inv.id} amount_due ${inv.amountDueMinor} ≠ charge ${charge.chargedMinor} (${chargeKeyOf(charge)})`)
     const updated = await store.updateInvoice(row.id, {
       stripeInvoiceId: inv.id, status: invoiceStatusOf(inv), dueAt: inv.finalizedAt ?? now.toISOString(), finalizedAt: inv.finalizedAt, paidAt: inv.paidAt,
-      attemptCount: inv.attemptCount, hostedInvoiceUrl: inv.hostedUrl, lastError: inv.lastError,
+      attemptCount: inv.attemptCount, hostedInvoiceUrl: inv.hostedUrl, lastError: inv.lastError, invoicePdfUrl: inv.pdfUrl ?? null,
     })
     const done = await store.updateCharge(charge.id, { state: 'invoiced' })
     await refreshTruckBillingStatus(store, catalog, truck.id, now, by)
@@ -167,7 +168,8 @@ async function chargeOnce(store: BillingStore, processor: BillingProcessor | nul
   }
 }
 
-async function ensureCustomer(store: BillingStore, processor: BillingProcessor, truck: StoredTruck): Promise<string> {
+/** The truck owner's Stripe Customer (one per owner): found in operator_billing, or created with the truck's language. */
+export async function ensureCustomer(store: BillingStore, processor: BillingProcessor, truck: StoredTruck): Promise<string> {
   if (!truck.operator_id) throw new Error('truck has no owner (operator_id) to bill')
   const have = await store.customerFor(truck.operator_id)
   if (have && have.livemode === processor.livemode) return have.stripeCustomerId
@@ -341,7 +343,8 @@ export async function requestPlanChange(store: BillingStore, processor: BillingP
 // ── the late-payment fee ────────────────────────────────────────────────────────────────────────────────────────────
 
 /**
- * Correction decision 4: once per invoice, when it is still unpaid as online ordering pauses (due + pauseAfterDays), the
+ * Correction decision 4: once per invoice, when it is still unpaid as online ordering pauses (billing-2: the pause instant of
+ * the 5-full-day rule — rules.ts failureTimeline), the
  * country's late fee (country_billing.late_fee_minor) is ADDED TO THAT INVOICE — a finalised Stripe invoice cannot take a new
  * line, so it is voided and re-issued with the fee as its last line (same charge, same due date, so the pause holds until it
  * is paid). With the fee at 0 (every country today) the decision is recorded as 0 and nothing else happens.
@@ -353,9 +356,9 @@ export async function applyLateFees(store: BillingStore, processor: BillingProce
   const { truck, ctx, countryBilling } = s
   const out: { invoiceId: string; lateFeeMinor: number; outcome: 'none' | 'added' | 'paid_meanwhile' | 'failed'; detail?: string }[] = []
   for (const inv of await store.listInvoices(truck.id)) {
-    if (!(inv.status === 'open' || inv.status === 'failed') || inv.lateFeeMinor !== null || !inv.stripeInvoiceId) continue
-    const due = Date.parse(inv.dueAt ?? inv.createdAt)
-    if (a.now.getTime() - due < ctx.pauseAfterDays * 86_400_000) continue
+    if (!(inv.status === 'open' || inv.status === 'failed') || inv.lateFeeMinor !== null || !inv.stripeInvoiceId || !inv.firstFailedAt) continue
+    // billing-2: at the PAUSE INSTANT — 00:00 truck time on the day after the last full day to pay (failureTimeline).
+    if (a.now.getTime() < Date.parse(failureTimeline(inv.firstFailedAt, tzOf(truck), ctx.pauseAfterDays, ctx.suspendWarningDays).pauseAt)) continue
     const fee = countryBilling.lateFeeMinor
     if (fee <= 0) { await store.updateInvoice(inv.id, { lateFeeMinor: 0 }); out.push({ invoiceId: inv.id, lateFeeMinor: 0, outcome: 'none' }); continue }
     if (!processor || processor.livemode) { out.push({ invoiceId: inv.id, lateFeeMinor: fee, outcome: 'failed', detail: processor ? 'live_processor_refused' : 'no_processor' }); continue }
@@ -374,7 +377,7 @@ export async function applyLateFees(store: BillingStore, processor: BillingProce
       })
       await store.updateInvoice(inv.id, {
         stripeInvoiceId: re.id, replacedStripeInvoiceId: inv.stripeInvoiceId, amountMinor: inv.amountMinor + fee, lateFeeMinor: fee,
-        status: invoiceStatusOf(re), attemptCount: re.attemptCount, lastError: null, hostedInvoiceUrl: re.hostedUrl,
+        status: invoiceStatusOf(re), attemptCount: re.attemptCount, lastError: null, hostedInvoiceUrl: re.hostedUrl, invoicePdfUrl: re.pdfUrl ?? null,
       })
       out.push({ invoiceId: inv.id, lateFeeMinor: fee, outcome: 'added' })
     } catch (err) {
@@ -416,9 +419,13 @@ export async function runBillingAll(store: BillingStore, processor: BillingProce
 export async function applyInvoiceUpdate(store: BillingStore, catalog: PlanCatalog, inv: ProcessorInvoice, now: Date): Promise<'updated' | 'unknown'> {
   const row = await store.invoiceByStripeId(inv.id)
   if (!row) return 'unknown'
+  const status = invoiceStatusOf(inv)
   await store.updateInvoice(row.id, {
-    status: invoiceStatusOf(inv), attemptCount: inv.attemptCount, lastError: inv.lastError,
+    status, attemptCount: inv.attemptCount, lastError: inv.lastError,
     paidAt: inv.paidAt, finalizedAt: inv.finalizedAt ?? row.finalizedAt, dueAt: row.dueAt ?? inv.finalizedAt, hostedInvoiceUrl: inv.hostedUrl ?? row.hostedInvoiceUrl,
+    invoicePdfUrl: inv.pdfUrl ?? row.invoicePdfUrl,
+    // billing-2: the 5-full-day rule counts from the FIRST failure — stamped once, never moved by a later retry.
+    ...(status === 'failed' && !row.firstFailedAt ? { firstFailedAt: now.toISOString() } : {}),
   })
   await refreshTruckBillingStatus(store, catalog, row.truckId, now, 'stripe_webhook')
   return 'updated'
@@ -439,6 +446,24 @@ export async function applyPaymentMethod(store: BillingStore, catalog: PlanCatal
   }, a.by)
   await refreshTruckBillingStatus(store, catalog, a.truckId, a.now, a.by)
   return row
+}
+
+/**
+ * billing-2: a new payment method was added (Checkout set-up returned, or its webhook) — try every unpaid invoice on it now,
+ * so "Use a different card" and "Update card" bring online ordering straight back when the charge goes through.
+ */
+export async function payOpenInvoices(store: BillingStore, processor: BillingProcessor, catalog: PlanCatalog, a: { truckId: string; now: Date; by: string }): Promise<{ invoiceId: string; status: string }[]> {
+  if (processor.livemode) throw new Error('live processor refused')
+  const tb = await store.truckBilling(a.truckId)
+  if (!tb || tb.paymentMethodState !== 'valid' || !tb.stripePaymentMethodId) return []
+  const out: { invoiceId: string; status: string }[] = []
+  for (const inv of await store.listInvoices(a.truckId)) {
+    if (!(inv.status === 'open' || inv.status === 'failed') || !inv.stripeInvoiceId) continue
+    const res = await processor.payInvoice(inv.stripeInvoiceId, tb.stripePaymentMethodId)
+    await applyInvoiceUpdate(store, catalog, res, a.now)
+    out.push({ invoiceId: inv.id, status: res.status })
+  }
+  return out
 }
 
 /** Start setting up a payment method (card everywhere; Pix Automático in Brazil). Returns the SetupIntent's client secret

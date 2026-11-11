@@ -7227,5 +7227,167 @@
       "body": "{truck} ei enää lähetä sinulle arvostelupyyntöjä.",
       "invalid": "Tämä peruutuslinkki ei ole voimassa."
     }
+  },
+  "billing": {
+    "tab": {
+      "plan": {
+        "title": "Pakettisi",
+        "trialPill": "Ilmainen kokeilujakso",
+        "change": "Vaihda pakettia",
+        "trialLine": "Ilmainen kokeilujaksosi päättyy {date}. Sen jälkeen paketin {plan} hinta on {price} kuukaudessa.",
+        "trialLineFree": "Ilmainen kokeilujaksosi päättyy {date}. Sen jälkeen käytössäsi on paketti {plan} ilman kuukausimaksua.",
+        "proLine": "Sisältää verkkotilauksia {allowance} edestä kuukaudessa. Sen jälkeen {fee}.",
+        "paygLine": "{fee} verkkotilauksista. Ei kuukausimaksua.",
+        "unlimitedLine": "{price} kuukaudessa. Ei maksua verkkotilauksista.",
+        "pendingLine": "Paketti {plan} alkaa {date}."
+      },
+      "payment": {
+        "title": "Maksutapa",
+        "none": "Korttia ei ole vielä lisätty. Lisää kortti, niin voit ottaa verkkotilauksia vastaan myös kokeilujakson jälkeen.",
+        "add": "Lisää kortti",
+        "pix": "Käytä Pix Automático -palvelua",
+        "card": "{brand}, loppuu {last4}",
+        "pixOnFile": "Pix Automático",
+        "pending": "Odottaa vahvistusta.",
+        "change": "Vaihda",
+        "lastFailed": "Viimeisin maksu epäonnistui",
+        "update": "Päivitä kortti",
+        "error": "Maksusivua ei voitu avata. Yritä uudelleen."
+      },
+      "whatYouPay": {
+        "title": "Mitä maksat",
+        "plan": "Pakettisi, veloitetaan kuun 1. päivänä tulevasta kuukaudesta",
+        "fee": "Verkkotilaukset, jotka ylittävät {allowance} kuukaudessa, veloitetaan kuun 1. päivänä edelliseltä kuukaudelta",
+        "feePayg": "Verkkotilaukset, veloitetaan kuun 1. päivänä edelliseltä kuukaudelta",
+        "walkUps": "Tilaukset paikan päällä",
+        "free": "Maksuton",
+        "trialEnd": "Kun kokeilujaksosi päättyy {date}, veloitamme {amount} loppukuulta ({month}). Sen jälkeen {price} {nextFirst}."
+      },
+      "next": {
+        "title": "Seuraava maksu · {date}",
+        "plan": "Paketti {plan} ({month})",
+        "fee": "{fee} verkkotilauksista, jotka ylittävät {allowance} ({month}, tähän mennessä)",
+        "feePayg": "{fee} verkkotilauksista ({month}, tähän mennessä)",
+        "vans": "Lisäruokarekat ({month})",
+        "surcharge": "Maksu noudettaessa maksetuista tilauksista ({month})",
+        "carried": "Siirretty aiemmalta jaksolta",
+        "total": "Yhteensä tähän mennessä",
+        "walkUps": "Tilaukset paikan päällä ovat aina maksuttomia."
+      },
+      "preorders": {
+        "title": "Miten asiakkaat maksavat ennakkotilaukset",
+        "online": "Verkossa, tilatessaan",
+        "onlineHint": "Rahat menevät suoraan Stripe-tilillesi.",
+        "atTruck": "Ruokarekalla, noutaessaan",
+        "atTruckHint": "Maksumme lisätään sen sijaan kuukausiveloitukseesi.",
+        "saved": "Tallennettu.",
+        "error": "Tallentaminen ei onnistunut. Yritä uudelleen."
+      },
+      "invoices": {
+        "title": "Laskut",
+        "date": "Päivämäärä",
+        "for": "Kohde",
+        "amount": "Summa",
+        "status": "Tila",
+        "forMonthly": "Paketti: {planMonth}, maksut: {usageMonth}",
+        "forMonthlyPlan": "Paketti: {planMonth}",
+        "forTrialEnd": "Loppukuu ({month})",
+        "forUpgrade": "Vaihto pakettiin {plan}",
+        "lateFee": "Viivästysmaksu",
+        "paid": "Maksettu",
+        "unpaid": "Maksamatta",
+        "overdue": "Erääntynyt",
+        "download": "Lataa",
+        "payNow": "Maksa nyt",
+        "none": "Ei vielä laskuja."
+      },
+      "failed": {
+        "title": "Maksusi {amount} ei mennyt läpi.",
+        "body": "Yritämme uudelleen. Päivitä korttisi viimeistään {date}, niin verkkotilaukset pysyvät päällä.",
+        "button": "Päivitä kortti"
+      },
+      "paused": {
+        "title": "Verkkotilaukset on keskeytetty",
+        "body": "{amount} on erääntynyt. Maksa nyt, niin verkkotilaukset palaavat heti päälle.",
+        "warning": "Maksa viimeistään {date}, tai tilisi voidaan jäädyttää.",
+        "pay": "Maksa {amount}",
+        "otherCard": "Käytä toista korttia"
+      },
+      "loading": "Ladataan laskutusta…",
+      "loadError": "Laskutusta ei voitu ladata. Yritä uudelleen."
+    },
+    "changePlan": {
+      "title": "Vaihda pakettia",
+      "current": "Käytössäsi on paketti {plan}.",
+      "free": "Maksuton",
+      "perMonth": "{price} kuukaudessa",
+      "paygLine": "{fee} verkkotilauksista.",
+      "proLine": "Sisältää verkkotilauksia {allowance} edestä. Sen jälkeen {fee}.",
+      "unlimitedLine": "Ei maksua verkkotilauksista.",
+      "yourPlan": "Pakettisi",
+      "startsNow": "Alkaa heti.",
+      "chargeToday": "Veloitamme tänään {amount} loppukuulta ({month}). Sen jälkeen {price} {nextFirst}.",
+      "startsLater": "Alkaa {nextFirst}. Siihen asti käytössäsi on paketti {plan}.",
+      "cancel": "Peruuta",
+      "switchTo": "Vaihda pakettiin {plan}",
+      "error": "Paketin vaihtaminen ei onnistunut. Yritä uudelleen."
+    },
+    "notices": {
+      "trialEndsSoon": "<b>Ilmainen kokeilujaksosi päättyy {date}.</b> Lisää kortti, niin verkkotilaukset pysyvät päällä.",
+      "trialEndsTomorrow": "<b>Ilmainen kokeilujaksosi päättyy huomenna.</b> Lisää kortti, tai verkkotilaukset keskeytetään.",
+      "allSet": "<b>Kaikki on valmista.</b> Paketti {plan} alkaa {date}.",
+      "paymentFailed": "<b>Maksusi ei mennyt läpi.</b> Päivitä {method, select, payment_method {maksutapasi} other {korttisi}} viimeistään {date}, niin verkkotilaukset pysyvät päällä.",
+      "paused": "<b>Verkkotilaukset on keskeytetty.</b> Maksa {amount} viimeistään {date}, tai tilisi voidaan jäädyttää.",
+      "addCard": "Lisää kortti →",
+      "updateCard": "Päivitä {method, select, payment_method {maksutapa} other {kortti}} →",
+      "payNow": "Maksa nyt →",
+      "dismiss": "Ohita"
+    }
+  },
+  "emailBilling": {
+    "greeting": "{hasName, select, yes {Hei {name},} other {Hei,}}",
+    "questions": "Kysyttävää? Vastaa vain tähän viestiin.",
+    "signoff": "HatchGrab-tiimi",
+    "buttonUpdate": "Päivitä {method, select, payment_method {maksutapa} other {kortti}}",
+    "buttonPay": "Maksa nyt",
+    "buttonAddCard": "Lisää kortti",
+    "suspended": "Jos summa jää maksamatta, tilisi voidaan jäädyttää.",
+    "failed": {
+      "subject": "HatchGrab-maksusi ei mennyt läpi",
+      "line1": "Emme saaneet tänään veloitettua summaa {amount} ruokarekan {truck} osalta. Yritämme uudelleen.",
+      "line2": "Päivitä {method, select, payment_method {maksutapasi} other {korttisi}} viimeistään {date}, niin verkkotilaukset pysyvät päällä."
+    },
+    "twoDays": {
+      "subject": "2 päivää aikaa päivittää {method, select, payment_method {maksutapasi} other {korttisi}}",
+      "line1": "Ruokarekan {truck} summa {amount} on yhä maksamatta. Päivitä {method, select, payment_method {maksutapasi} other {korttisi}} viimeistään {date}, tai verkkotilaukset keskeytetään."
+    },
+    "oneDay": {
+      "subject": "Päivitä {method, select, payment_method {maksutapasi} other {korttisi}} huomiseen mennessä",
+      "line1": "Ruokarekan {truck} summa {amount} on yhä maksamatta. Päivitä {method, select, payment_method {maksutapasi} other {korttisi}} huomiseen mennessä, tai verkkotilaukset keskeytetään."
+    },
+    "lastDay": {
+      "subject": "Viimeinen päivä päivittää {method, select, payment_method {maksutapasi} other {korttisi}}",
+      "line1": "Tänään on viimeinen päivä maksaa ruokarekan {truck} summa {amount}. Jos summa on yhä maksamatta keskiyöllä, verkkotilaukset keskeytetään, kunnes maksat."
+    },
+    "paused": {
+      "subject": "Verkkotilaukset on keskeytetty",
+      "line1": "Ruokarekan {truck} verkkotilaukset on keskeytetty, koska {amount} on maksamatta. Maksa nyt, niin ne palaavat heti päälle.",
+      "line2": "Maksa viimeistään {date}, tai tilisi voidaan jäädyttää."
+    },
+    "trial7": {
+      "subject": "Ilmainen kokeilujaksosi päättyy 7 päivän kuluttua",
+      "line1": "Ruokarekan {truck} ilmainen kokeilujakso päättyy {date}.",
+      "line2": "Lisää kortti kohdassa Hallinta › Laskutus, niin verkkotilaukset pysyvät päällä.",
+      "plan": "Sen jälkeen paketin {plan} hinta on {price} kuukaudessa. Kun kokeilujaksosi päättyy, veloitamme {amount} loppukuulta ({month}) ja sen jälkeen {price} {nextFirst}.",
+      "planFree": "Sen jälkeen käytössäsi on paketti {plan} ilman kuukausimaksua.",
+      "fee": "Verkkotilausten maksumme ({fee}) veloitetaan kuun 1. päivänä edelliseltä kuukaudelta."
+    },
+    "trial1": {
+      "subject": "Ilmainen kokeilujaksosi päättyy huomenna",
+      "line1": "Ruokarekan {truck} ilmainen kokeilujakso päättyy huomenna.",
+      "noCard": "Lisää kortti, tai verkkotilaukset keskeytetään.",
+      "allSet": "Kaikki on valmista: paketti {plan} alkaa {date}.",
+      "charge": "Kun kokeilujaksosi päättyy, veloitamme {amount} loppukuulta ({month})."
+    }
   }
 }

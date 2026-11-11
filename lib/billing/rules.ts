@@ -95,8 +95,11 @@ export interface BillingContext {
   /** null = the country has no country_billing row: never billed (Admin shows it as not set). */
   countryBilling: CountryBilling | null
   truckBilling: TruckBillingFacts
-  /** The truck's invoices still being collected (status open or failed), with their due dates. */
-  unpaid: { dueAt: string }[]
+  /** The truck's invoices still being collected (status open or failed), with their due dates and — once a collection attempt
+   *  has failed — when it first failed (billing_invoices.first_failed_at: the 5-full-day rule counts from its local date). */
+  unpaid: { dueAt: string; firstFailedAt?: string | null }[]
+  /** platform_switches.billing_suspend_warning_days (6): the suspension-warning date is the pause date + this. Wording only. */
+  suspendWarningDays?: number
   now: Date
 }
 
@@ -157,27 +160,60 @@ export function arrangementOf(ctx: Pick<BillingContext, 'countryBilling' | 'truc
 
 // ── the status ──────────────────────────────────────────────────────────────────────────────────────────────────────
 
-const DAY_MS = 86_400_000
+
+/**
+ * 🔴 THE 5-FULL-DAY RULE (billing-2, Dominic, 11 November 2026). A failed charge gives the failure day and then
+ * `pauseAfterDays` (5) FULL days to pay, in the truck's own time zone; online ordering pauses at 00:00 on the day after:
+ *   fails 1 Jan → last day to pay 6 Jan → paused from 00:00 on 7 Jan → "pay by 13 Jan or your account may be suspended".
+ * The late fee (0 everywhere) is applied at the same pause instant. The suspension date is wording only — nothing locks.
+ */
+export interface FailureTimeline {
+  /** The local date the first attempt failed. */
+  failDay: string
+  /** The last full day to pay (failDay + pauseAfterDays). */
+  lastDay: string
+  /** The local date online ordering pauses (lastDay + 1), and that day's 00:00 as an instant. */
+  pauseDay: string
+  pauseAt: string
+  /** pauseDay + suspendWarningDays — "pay by {date} or your account may be suspended". */
+  suspendWarningDate: string
+}
+
+export function addDaysYmd(ymd: string, days: number): string {
+  const [y, m, d] = ymd.split('-').map(Number)
+  const t = new Date(Date.UTC(y, m - 1, d + days))
+  return `${t.getUTCFullYear()}-${String(t.getUTCMonth() + 1).padStart(2, '0')}-${String(t.getUTCDate()).padStart(2, '0')}`
+}
+
+export function failureTimeline(firstFailedAt: string, tz: string, pauseAfterDays: number, suspendWarningDays = 6): FailureTimeline {
+  const failDay = localDateOfInstant(firstFailedAt, tz)
+  const lastDay = addDaysYmd(failDay, pauseAfterDays)
+  const pauseDay = addDaysYmd(lastDay, 1)
+  return { failDay, lastDay, pauseDay, pauseAt: new Date(instantOfLocal(pauseDay, '00:00:00', tz)).toISOString(), suspendWarningDate: addDaysYmd(pauseDay, suspendWarningDays) }
+}
+
+/** The earliest failed unpaid invoice's timeline, or null when nothing unpaid has failed yet. */
+export function oldestFailure(ctx: Pick<BillingContext, 'unpaid' | 'truck' | 'pauseAfterDays' | 'suspendWarningDays'>): FailureTimeline | null {
+  const first = ctx.unpaid.map(u => u.firstFailedAt).filter((x): x is string => !!x && Number.isFinite(Date.parse(x))).sort()[0]
+  return first ? failureTimeline(first, ctx.truck.timezone || 'Europe/London', ctx.pauseAfterDays, ctx.suspendWarningDays ?? 6) : null
+}
 
 /**
  * 🔴 THE STATUS, DERIVED FROM THE FACTS EVERY TIME (never read from the cached truck_billing.status):
  *   trialling  the trial is running;
- *   paused     the trial has ended and no valid payment method is on file, OR an invoice is unpaid `pauseAfterDays` days
- *              after its due date;
- *   past_due   an invoice is unpaid, inside those days;
- *   active     otherwise.
+ *   paused     the trial has ended and no valid payment method is on file, OR a failed invoice is still unpaid at its pause
+ *              instant (00:00 truck time, the day after the last full day to pay — failureTimeline);
+ *   past_due   a failed invoice is unpaid, before that instant;
+ *   active     otherwise (an invoice not yet attempted is simply being collected).
  * null = not billable (the switch is off, an internal plan, …) — nothing is paused and nothing is charged.
+ * Paying clears it at once: a paid invoice is no longer in `unpaid`.
  */
 export function billingStatusOf(ctx: BillingContext): { status: BillingStatus; reason: StatusReason } | null {
   if (!billableOf(ctx).billable) return null
   if (inTrial(ctx.truck, ctx.catalog, ctx.now)) return { status: 'trialling', reason: 'trial' }
   if (ctx.truckBilling.paymentMethodState !== 'valid') return { status: 'paused', reason: 'no_payment_method' }
-  const oldestDue = ctx.unpaid.map(u => Date.parse(u.dueAt)).filter(Number.isFinite).sort((a, b) => a - b)[0]
-  if (oldestDue !== undefined) {
-    const daysUnpaid = (ctx.now.getTime() - oldestDue) / DAY_MS
-    if (daysUnpaid >= ctx.pauseAfterDays) return { status: 'paused', reason: 'unpaid' }
-    return { status: 'past_due', reason: 'unpaid' }
-  }
+  const fail = oldestFailure(ctx)
+  if (fail) return ctx.now.getTime() >= Date.parse(fail.pauseAt) ? { status: 'paused', reason: 'unpaid' } : { status: 'past_due', reason: 'unpaid' }
   return { status: 'active', reason: 'ok' }
 }
 

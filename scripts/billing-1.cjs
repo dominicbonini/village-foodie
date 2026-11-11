@@ -388,7 +388,7 @@ function fakeProcessor({ livemode = false, failCreateOnce = new Set() } = {}) {
   }
 
   // ══ 12 ════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
-  head('12 · a failed payment → past due → paused on day 5 (+ the late fee) → paid → resumed')
+  head('12 · a failed payment → past due → paused at 00:00 after 5 full days (+ the late fee) → paid → resumed')
   {
     const d = world(); const store = S.memoryBillingStore(d)
     d.countryBilling.find(x => x.countryCode === 'GB').lateFeeMinor = 300   // 🔴 A TEST VALUE ONLY — every country's real fee is 0
@@ -398,17 +398,19 @@ function fakeProcessor({ livemode = false, failCreateOnce = new Set() } = {}) {
     const attempt = await proc.payInvoice(out.invoice.stripeInvoiceId)
     await E.applyInvoiceUpdate(store, CATALOG, attempt, NOW('2026-11-01T13:00:00Z'))
     t('the provider\'s attempt declines → our row: failed, 1 attempt', (await store.invoiceForCharge(out.charge.id)).status === 'failed')
-    t('day 4: past due, still taking online orders; no late fee yet', R.billingStatusOf(await ctxFor(store, 'gb-fail', NOW('2026-11-05T11:59:00Z'))).status === 'past_due'
-      && (await gate(store, 'gb-fail', NOW('2026-11-05T11:59:00Z'))).onlineOrderingPaused === false && (await E.applyLateFees(store, proc, CATALOG, { truckId: 'gb-fail', now: globalThis.__now, by: 'h' })).length === 0)
-    const g5 = await gate(store, 'gb-fail', NOW('2026-11-06T12:00:00Z'))
-    t('day 5: ONLINE ordering paused (the existing "not taking orders" state)', g5.onlineOrderingPaused === true)
-    const late = await E.applyLateFees(store, proc, CATALOG, { truckId: 'gb-fail', now: NOW('2026-11-06T12:00:00Z'), by: 'h' })
+    // ⚠️ RE-PINNED (billing-2, 11 November 2026): the 5-FULL-DAY rule — failed 1 Nov (London) → last day to pay 6 Nov → paused
+    // from 00:00 on 7 Nov; the late fee at that same instant.
+    t('6 Nov 23:59 London (the last full day): past due, still taking online orders; no late fee yet', R.billingStatusOf(await ctxFor(store, 'gb-fail', NOW('2026-11-06T23:59:00Z'))).status === 'past_due'
+      && (await gate(store, 'gb-fail', NOW('2026-11-06T23:59:00Z'))).onlineOrderingPaused === false && (await E.applyLateFees(store, proc, CATALOG, { truckId: 'gb-fail', now: globalThis.__now, by: 'h' })).length === 0)
+    const g5 = await gate(store, 'gb-fail', NOW('2026-11-07T00:00:00Z'))
+    t('00:00 on 7 Nov: ONLINE ordering paused (the existing "not taking orders" state)', g5.onlineOrderingPaused === true)
+    const late = await E.applyLateFees(store, proc, CATALOG, { truckId: 'gb-fail', now: NOW('2026-11-07T00:00:00Z'), by: 'h' })
     const row = await store.invoiceForCharge(out.charge.id)
     const reissued = proc.P.invoices[row.stripeInvoiceId]
     t('with a (test) late fee of £3: ADDED TO THAT INVOICE — voided and re-issued at 3200 with a "Late payment fee" line, same due date',
       late.length === 1 && late[0].outcome === 'added' && row.lateFeeMinor === 300 && row.amountMinor === 3200 && row.replacedStripeInvoiceId === out.invoice.stripeInvoiceId
       && proc.P.invoices[out.invoice.stripeInvoiceId].status === 'void' && reissued.amountDueMinor === 3200 && reissued.lines.at(-1).key === 'late_fee' && row.dueAt === out.invoice.dueAt, { row, late })
-    t('…still paused (the re-issued invoice is unpaid)', (await gate(store, 'gb-fail', NOW('2026-11-06T13:00:00Z'))).onlineOrderingPaused === true)
+    t('…still paused (the re-issued invoice is unpaid)', (await gate(store, 'gb-fail', NOW('2026-11-07T01:00:00Z'))).onlineOrderingPaused === true)
     t('ONCE per invoice: the next run adds nothing', (await E.applyLateFees(store, proc, CATALOG, { truckId: 'gb-fail', now: NOW('2026-11-07T08:00:00Z'), by: 'h' })).length === 0 && proc.P.created === 2)
     t('the voided original\'s webhook is ignored (unknown — the row now carries the new invoice)', (await E.applyInvoiceUpdate(store, CATALOG, proc.P.invoices[out.invoice.stripeInvoiceId], globalThis.__now)) === 'unknown')
     NOW('2026-11-07T09:00:00Z'); await pm(d, store, proc, 'gb-fail', 'pm_card_visa')
@@ -422,7 +424,7 @@ function fakeProcessor({ livemode = false, failCreateOnce = new Set() } = {}) {
     NOW('2026-10-20T12:00:00Z'); await pm(d0, s0, p0, 'gb-fail', 'pm_card_chargeCustomerFail')
     const o0 = await E.runMonthly(s0, p0, CATALOG, { truckId: 'gb-fail', period: '2026-11-01', now: NOW('2026-11-01T12:00:00Z'), by: 'h' })
     await E.applyInvoiceUpdate(s0, CATALOG, await p0.payInvoice(o0.invoice.stripeInvoiceId), NOW('2026-11-01T13:00:00Z'))
-    const l0 = await E.applyLateFees(s0, p0, CATALOG, { truckId: 'gb-fail', now: NOW('2026-11-06T12:00:00Z'), by: 'h' })
+    const l0 = await E.applyLateFees(s0, p0, CATALOG, { truckId: 'gb-fail', now: NOW('2026-11-07T00:30:00Z'), by: 'h' })
     const r0 = await s0.invoiceForCharge(o0.charge.id)
     t('late fee 0 (the real setting): paused, recorded as 0, NOTHING added or re-issued', l0.length === 1 && l0[0].outcome === 'none' && r0.lateFeeMinor === 0 && r0.amountMinor === 2900 && p0.P.created === 1 && !p0.P.calls.includes('voidInvoice'))
     const whDir = fs.readdirSync(path.join(REPO, 'app/api/webhooks')).find(n => n.endsWith('-billing'))   // the billing webhook's folder

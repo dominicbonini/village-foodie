@@ -63,6 +63,8 @@ export const NAMESPACES = {
   manage: ['eventCard', 'menuBadges', 'orderCard', 'paymentActions', 'kitchenModals', 'userMenu', 'nativeShell',
     // paperwork-1 (4 November 2026): Manage › Documents (components/manage/PaperworkTab.tsx).
     'paperwork',
+    // billing-2 (11 November 2026): Manage › Billing when billing is shown, and its notice (components/manage/BillingScreen.tsx).
+    'billing',
     // Language Phase 1c: the cuisine and price controls, the walkthrough, and the where-based step.
     'cuisinePicker', 'priceControls', 'walkthrough', 'whereBased', 'tradeArea',
     // Language Phase 1d (Menu A): the allergen wizard and card, Upsells, Custom extras, Deals.

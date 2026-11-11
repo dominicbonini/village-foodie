@@ -1,0 +1,116 @@
+{
+  "tab": {
+    "plan": {
+      "title": "Il tuo piano",
+      "trialPill": "Prova gratuita",
+      "change": "Cambia piano",
+      "trialLine": "La tua prova gratuita termina il {date}. Dopo, il piano {plan} costa {price} al mese.",
+      "trialLineFree": "La tua prova gratuita termina il {date}. Dopo, passi al piano {plan}, senza canone mensile.",
+      "proLine": "Include {allowance} di ordini online al mese. Poi {fee}.",
+      "paygLine": "{fee} sugli ordini online. Nessun canone mensile.",
+      "unlimitedLine": "{price} al mese. Nessuna commissione sugli ordini online.",
+      "pendingLine": "Il piano {plan} inizia il {date}."
+    },
+    "payment": {
+      "title": "Metodo di pagamento",
+      "none": "Non hai ancora aggiunto una carta. Aggiungine una per continuare a ricevere ordini online dopo la prova.",
+      "add": "Aggiungi carta",
+      "pix": "Usa Pix Automático",
+      "card": "{brand} che termina con {last4}",
+      "pixOnFile": "Pix Automático",
+      "pending": "In attesa di conferma.",
+      "change": "Cambia",
+      "lastFailed": "Ultimo pagamento non riuscito",
+      "update": "Aggiorna carta",
+      "error": "Non siamo riusciti ad aprire la pagina di pagamento. Riprova."
+    },
+    "whatYouPay": {
+      "title": "Cosa paghi",
+      "plan": "Il tuo piano, addebitato il giorno 1 per il mese che inizia",
+      "fee": "Ordini online oltre {allowance} al mese, addebitati il giorno 1 per il mese precedente",
+      "feePayg": "Ordini online, addebitati il giorno 1 per il mese precedente",
+      "walkUps": "Ordini al banco",
+      "free": "Gratis",
+      "trialEnd": "Quando la tua prova termina, il {date}, addebitiamo {amount} per il resto di {month}. Poi {price} il {nextFirst}."
+    },
+    "next": {
+      "title": "Prossimo pagamento · {date}",
+      "plan": "{plan} per {month}",
+      "fee": "{fee} sugli ordini online di {month} oltre {allowance} (finora)",
+      "feePayg": "{fee} sugli ordini online di {month} (finora)",
+      "vans": "Food truck aggiuntivi per {month}",
+      "surcharge": "Addebito posticipato per {month}",
+      "carried": "Riportato dai periodi precedenti",
+      "total": "Totale finora",
+      "walkUps": "Gli ordini al banco sono sempre gratuiti."
+    },
+    "preorders": {
+      "title": "Come i clienti pagano i preordini",
+      "online": "Online, quando ordinano",
+      "onlineHint": "Il denaro va direttamente sul tuo account Stripe.",
+      "atTruck": "Al food truck, al ritiro",
+      "atTruckHint": "In questo caso la nostra commissione viene aggiunta al tuo addebito mensile.",
+      "saved": "Salvato.",
+      "error": "Non siamo riusciti a salvare. Riprova."
+    },
+    "invoices": {
+      "title": "Fatture",
+      "date": "Data",
+      "for": "Descrizione",
+      "amount": "Importo",
+      "status": "Stato",
+      "forMonthly": "Piano di {planMonth}, commissioni di {usageMonth}",
+      "forMonthlyPlan": "Piano di {planMonth}",
+      "forTrialEnd": "Resto di {month}",
+      "forUpgrade": "Passaggio a {plan}",
+      "lateFee": "Penale per ritardato pagamento",
+      "paid": "Pagata",
+      "unpaid": "Non pagata",
+      "overdue": "Scaduta",
+      "download": "Scarica",
+      "payNow": "Paga ora",
+      "none": "Ancora nessuna fattura."
+    },
+    "failed": {
+      "title": "Il pagamento di {amount} non è andato a buon fine.",
+      "body": "Riproveremo. Aggiorna la tua carta entro il {date} per mantenere attivi gli ordini online.",
+      "button": "Aggiorna carta"
+    },
+    "paused": {
+      "title": "Gli ordini online sono in pausa",
+      "body": "Hai un pagamento scaduto di {amount}. Paga ora e gli ordini online si riattivano subito.",
+      "warning": "Paga entro il {date}, altrimenti il tuo account potrebbe essere sospeso.",
+      "pay": "Paga {amount}",
+      "otherCard": "Usa un’altra carta"
+    },
+    "loading": "Caricamento della fatturazione…",
+    "loadError": "Non siamo riusciti a caricare la fatturazione. Riprova."
+  },
+  "changePlan": {
+    "title": "Cambia piano",
+    "current": "Hai il piano {plan}.",
+    "free": "Gratis",
+    "perMonth": "{price} al mese",
+    "paygLine": "{fee} sugli ordini online.",
+    "proLine": "{allowance} di ordini online inclusi. Poi {fee}.",
+    "unlimitedLine": "Nessuna commissione sugli ordini online.",
+    "yourPlan": "Il tuo piano",
+    "startsNow": "Inizia subito.",
+    "chargeToday": "Oggi addebitiamo {amount} per il resto di {month}. Poi {price} il {nextFirst}.",
+    "startsLater": "Inizia il {nextFirst}. Fino ad allora resti sul piano {plan}.",
+    "cancel": "Annulla",
+    "switchTo": "Passa al piano {plan}",
+    "error": "Non siamo riusciti a cambiare il tuo piano. Riprova."
+  },
+  "notices": {
+    "trialEndsSoon": "<b>La tua prova gratuita termina il {date}.</b> Aggiungi una carta per mantenere attivi gli ordini online.",
+    "trialEndsTomorrow": "<b>La tua prova gratuita termina domani.</b> Aggiungi una carta, altrimenti gli ordini online vanno in pausa.",
+    "allSet": "<b>È tutto pronto.</b> Il piano {plan} inizia il {date}.",
+    "paymentFailed": "<b>Il pagamento non è andato a buon fine.</b> Aggiorna {method, select, payment_method {il tuo metodo di pagamento} other {la tua carta}} entro il {date} per mantenere attivi gli ordini online.",
+    "paused": "<b>Gli ordini online sono in pausa.</b> Paga {amount} entro il {date}, altrimenti il tuo account potrebbe essere sospeso.",
+    "addCard": "Aggiungi carta →",
+    "updateCard": "Aggiorna {method, select, payment_method {metodo di pagamento} other {carta}} →",
+    "payNow": "Paga ora →",
+    "dismiss": "Chiudi"
+  }
+}

@@ -241,6 +241,13 @@ const NEW_WORDING = {
   for (const k of ['demoUpload.emailLabel', 'demoUpload.emailNote', 'demoUpload.marketing', 'demoUpload.emailInvalid']) NEW_WORDING[k] = 'demo-2: the upload modal email step'
   NEW_WORDING['demo.walkBanner'] = 'demo-2: the walkthrough banner on the demo order page'
 }
+// ⚠️ RE-PINNED (billing-2, 11 November 2026, docs/billing-2-report.md): Manage › Billing when billing is on, its notices and the
+// billing emails — two NEW namespaces, `billing` and `emailBilling`. All new wording; scripts/billing-2.cjs proves where each shows.
+{
+  const flatKeys = (o, p = '') => Object.entries(o).flatMap(([k, v]) => (v && typeof v === 'object' ? flatKeys(v, `${p}${k}.`) : [`${p}${k}`]))
+  const enGB = JSON.parse(fs.readFileSync(path.join(REPO, 'messages/en-GB.json'), 'utf8'))
+  for (const ns of ['billing', 'emailBilling']) for (const k of flatKeys(enGB[ns] || {}, `${ns}.`)) NEW_WORDING[k] = `billing-2: Manage › Billing, its notices and emails (${ns}, a new namespace)`
+}
 // ⚠️ RE-PINNED (paperwork-1, 4 November 2026, docs/paperwork-1-report.md): Manage › Documents — a NEW namespace, `paperwork`
 // (the tab, the AI's "Check the details", reminders, the organiser's page and both emails), its seven refusals
 // (`errorsManage.paperwork_*`), the tab's label and the feature's name. All new wording; scripts/paperwork-1.cjs proves where each shows.

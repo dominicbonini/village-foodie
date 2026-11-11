@@ -1,0 +1,46 @@
+{
+  "greeting": "{hasName, select, yes {Hej {name}!} other {Hej!}}",
+  "questions": "Har du frågor? Svara bara på det här mejlet.",
+  "signoff": "HatchGrab-teamet",
+  "buttonUpdate": "Uppdatera {method, select, payment_method {betalningsmetod} other {kort}}",
+  "buttonPay": "Betala nu",
+  "buttonAddCard": "Lägg till kort",
+  "suspended": "Om beloppet förblir obetalt kan ditt konto stängas av.",
+  "failed": {
+    "subject": "Din betalning till HatchGrab gick inte igenom",
+    "line1": "Vi kunde inte dra {amount} för {truck} i dag. Vi försöker igen.",
+    "line2": "Uppdatera {method, select, payment_method {din betalningsmetod} other {ditt kort}} senast {date} för att hålla onlinebeställningen igång."
+  },
+  "twoDays": {
+    "subject": "2 dagar kvar att uppdatera {method, select, payment_method {din betalningsmetod} other {ditt kort}}",
+    "line1": "{amount} för {truck} är fortfarande obetalt. Uppdatera {method, select, payment_method {din betalningsmetod} other {ditt kort}} senast {date}, annars pausas onlinebeställningen."
+  },
+  "oneDay": {
+    "subject": "Uppdatera {method, select, payment_method {din betalningsmetod} other {ditt kort}} senast i morgon",
+    "line1": "{amount} för {truck} är fortfarande obetalt. Uppdatera {method, select, payment_method {din betalningsmetod} other {ditt kort}} senast i morgon, annars pausas onlinebeställningen."
+  },
+  "lastDay": {
+    "subject": "Sista dagen att uppdatera {method, select, payment_method {din betalningsmetod} other {ditt kort}}",
+    "line1": "I dag är sista dagen att betala {amount} för {truck}. Om beloppet fortfarande är obetalt vid midnatt pausas onlinebeställningen tills du betalar."
+  },
+  "paused": {
+    "subject": "Onlinebeställningen är pausad",
+    "line1": "Onlinebeställningen för {truck} är pausad eftersom {amount} är obetalt. Betala nu så öppnar den direkt igen.",
+    "line2": "Betala senast {date}, annars kan ditt konto stängas av."
+  },
+  "trial7": {
+    "subject": "Din gratis provperiod slutar om 7 dagar",
+    "line1": "Din gratis provperiod för {truck} slutar {date}.",
+    "line2": "Lägg till ett kort under Hantera › Fakturering för att hålla onlinebeställningen igång.",
+    "plan": "Därefter kostar {plan} {price} i månaden. När provperioden slutar debiterar vi {amount} för resten av {month} och sedan {price} den {nextFirst}.",
+    "planFree": "Därefter har du {plan}, utan månadsavgift.",
+    "fee": "Vår avgift på {fee} för onlinebeställningar debiteras den 1:a, för föregående månad."
+  },
+  "trial1": {
+    "subject": "Din gratis provperiod slutar i morgon",
+    "line1": "Din gratis provperiod för {truck} slutar i morgon.",
+    "noCard": "Lägg till ett kort, annars pausas onlinebeställningen.",
+    "allSet": "Allt är klart: {plan} börjar {date}.",
+    "charge": "Vi debiterar {amount} för resten av {month} när provperioden slutar."
+  }
+}

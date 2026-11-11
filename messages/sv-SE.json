@@ -7227,5 +7227,167 @@
       "body": "{truck} skickar inte längre förfrågningar om omdömen till dig.",
       "invalid": "Den här avregistreringslänken är inte giltig."
     }
+  },
+  "billing": {
+    "tab": {
+      "plan": {
+        "title": "Ditt abonnemang",
+        "trialPill": "Gratis provperiod",
+        "change": "Byt abonnemang",
+        "trialLine": "Din gratis provperiod slutar {date}. Därefter kostar {plan} {price} i månaden.",
+        "trialLineFree": "Din gratis provperiod slutar {date}. Därefter har du {plan}, utan månadsavgift.",
+        "proLine": "Inkluderar onlinebeställningar för {allowance} i månaden. Därefter {fee}.",
+        "paygLine": "{fee} på onlinebeställningar. Ingen månadsavgift.",
+        "unlimitedLine": "{price} i månaden. Ingen avgift på onlinebeställningar.",
+        "pendingLine": "{plan} börjar {date}."
+      },
+      "payment": {
+        "title": "Betalningsmetod",
+        "none": "Inget kort har lagts till än. Lägg till ett för att fortsätta ta emot onlinebeställningar efter provperioden.",
+        "add": "Lägg till kort",
+        "pix": "Använd Pix Automático",
+        "card": "{brand} som slutar på {last4}",
+        "pixOnFile": "Pix Automático",
+        "pending": "Väntar på bekräftelse.",
+        "change": "Ändra",
+        "lastFailed": "Senaste betalningen misslyckades",
+        "update": "Uppdatera kort",
+        "error": "Vi kunde inte öppna betalningssidan. Försök igen."
+      },
+      "whatYouPay": {
+        "title": "Vad du betalar",
+        "plan": "Ditt abonnemang, debiteras den 1:a för månaden som kommer",
+        "fee": "Onlinebeställningar över {allowance} i månaden, debiteras den 1:a för föregående månad",
+        "feePayg": "Onlinebeställningar, debiteras den 1:a för föregående månad",
+        "walkUps": "Beställningar på plats",
+        "free": "Gratis",
+        "trialEnd": "När din provperiod slutar {date} debiterar vi {amount} för resten av {month}. Därefter {price} den {nextFirst}."
+      },
+      "next": {
+        "title": "Nästa betalning · {date}",
+        "plan": "{plan} för {month}",
+        "fee": "{fee} på onlinebeställningar över {allowance} i {month} (hittills)",
+        "feePayg": "{fee} på onlinebeställningar i {month} (hittills)",
+        "vans": "Extra foodtruckar för {month}",
+        "surcharge": "Avgift för betalning vid upphämtning för {month}",
+        "carried": "Överfört från tidigare",
+        "total": "Totalt hittills",
+        "walkUps": "Beställningar på plats är alltid gratis."
+      },
+      "preorders": {
+        "title": "Så betalar kunderna för förbeställningar",
+        "online": "Online, när de beställer",
+        "onlineHint": "Pengarna går direkt till ditt Stripe-konto.",
+        "atTruck": "Vid foodtrucken, när de hämtar",
+        "atTruckHint": "Vår avgift läggs i stället till på din månadsdebitering.",
+        "saved": "Sparat.",
+        "error": "Vi kunde inte spara det. Försök igen."
+      },
+      "invoices": {
+        "title": "Fakturor",
+        "date": "Datum",
+        "for": "Avser",
+        "amount": "Belopp",
+        "status": "Status",
+        "forMonthly": "Abonnemang för {planMonth}, avgifter för {usageMonth}",
+        "forMonthlyPlan": "Abonnemang för {planMonth}",
+        "forTrialEnd": "Resten av {month}",
+        "forUpgrade": "Byte till {plan}",
+        "lateFee": "Förseningsavgift",
+        "paid": "Betald",
+        "unpaid": "Obetald",
+        "overdue": "Förfallen",
+        "download": "Ladda ner",
+        "payNow": "Betala nu",
+        "none": "Inga fakturor än."
+      },
+      "failed": {
+        "title": "Din betalning på {amount} gick inte igenom.",
+        "body": "Vi försöker igen. Uppdatera ditt kort senast {date} för att hålla onlinebeställningen igång.",
+        "button": "Uppdatera kort"
+      },
+      "paused": {
+        "title": "Onlinebeställningen är pausad",
+        "body": "{amount} har förfallit till betalning. Betala nu så öppnar onlinebeställningen direkt igen.",
+        "warning": "Betala senast {date}, annars kan ditt konto stängas av.",
+        "pay": "Betala {amount}",
+        "otherCard": "Använd ett annat kort"
+      },
+      "loading": "Läser in fakturering …",
+      "loadError": "Vi kunde inte läsa in din fakturering. Försök igen."
+    },
+    "changePlan": {
+      "title": "Byt abonnemang",
+      "current": "Du har {plan}.",
+      "free": "Gratis",
+      "perMonth": "{price} i månaden",
+      "paygLine": "{fee} på onlinebeställningar.",
+      "proLine": "Onlinebeställningar för {allowance} ingår. Därefter {fee}.",
+      "unlimitedLine": "Ingen avgift på onlinebeställningar.",
+      "yourPlan": "Ditt abonnemang",
+      "startsNow": "Börjar nu.",
+      "chargeToday": "Vi debiterar {amount} i dag för resten av {month}. Därefter {price} den {nextFirst}.",
+      "startsLater": "Börjar den {nextFirst}. Du behåller {plan} till dess.",
+      "cancel": "Avbryt",
+      "switchTo": "Byt till {plan}",
+      "error": "Vi kunde inte byta ditt abonnemang. Försök igen."
+    },
+    "notices": {
+      "trialEndsSoon": "<b>Din gratis provperiod slutar {date}.</b> Lägg till ett kort för att hålla onlinebeställningen igång.",
+      "trialEndsTomorrow": "<b>Din gratis provperiod slutar i morgon.</b> Lägg till ett kort, annars pausas onlinebeställningen.",
+      "allSet": "<b>Allt är klart.</b> {plan} börjar {date}.",
+      "paymentFailed": "<b>Din betalning gick inte igenom.</b> Uppdatera {method, select, payment_method {din betalningsmetod} other {ditt kort}} senast {date} för att hålla onlinebeställningen igång.",
+      "paused": "<b>Onlinebeställningen är pausad.</b> Betala {amount} senast {date}, annars kan ditt konto stängas av.",
+      "addCard": "Lägg till kort →",
+      "updateCard": "Uppdatera {method, select, payment_method {betalningsmetod} other {kort}} →",
+      "payNow": "Betala nu →",
+      "dismiss": "Stäng"
+    }
+  },
+  "emailBilling": {
+    "greeting": "{hasName, select, yes {Hej {name}!} other {Hej!}}",
+    "questions": "Har du frågor? Svara bara på det här mejlet.",
+    "signoff": "HatchGrab-teamet",
+    "buttonUpdate": "Uppdatera {method, select, payment_method {betalningsmetod} other {kort}}",
+    "buttonPay": "Betala nu",
+    "buttonAddCard": "Lägg till kort",
+    "suspended": "Om beloppet förblir obetalt kan ditt konto stängas av.",
+    "failed": {
+      "subject": "Din betalning till HatchGrab gick inte igenom",
+      "line1": "Vi kunde inte dra {amount} för {truck} i dag. Vi försöker igen.",
+      "line2": "Uppdatera {method, select, payment_method {din betalningsmetod} other {ditt kort}} senast {date} för att hålla onlinebeställningen igång."
+    },
+    "twoDays": {
+      "subject": "2 dagar kvar att uppdatera {method, select, payment_method {din betalningsmetod} other {ditt kort}}",
+      "line1": "{amount} för {truck} är fortfarande obetalt. Uppdatera {method, select, payment_method {din betalningsmetod} other {ditt kort}} senast {date}, annars pausas onlinebeställningen."
+    },
+    "oneDay": {
+      "subject": "Uppdatera {method, select, payment_method {din betalningsmetod} other {ditt kort}} senast i morgon",
+      "line1": "{amount} för {truck} är fortfarande obetalt. Uppdatera {method, select, payment_method {din betalningsmetod} other {ditt kort}} senast i morgon, annars pausas onlinebeställningen."
+    },
+    "lastDay": {
+      "subject": "Sista dagen att uppdatera {method, select, payment_method {din betalningsmetod} other {ditt kort}}",
+      "line1": "I dag är sista dagen att betala {amount} för {truck}. Om beloppet fortfarande är obetalt vid midnatt pausas onlinebeställningen tills du betalar."
+    },
+    "paused": {
+      "subject": "Onlinebeställningen är pausad",
+      "line1": "Onlinebeställningen för {truck} är pausad eftersom {amount} är obetalt. Betala nu så öppnar den direkt igen.",
+      "line2": "Betala senast {date}, annars kan ditt konto stängas av."
+    },
+    "trial7": {
+      "subject": "Din gratis provperiod slutar om 7 dagar",
+      "line1": "Din gratis provperiod för {truck} slutar {date}.",
+      "line2": "Lägg till ett kort under Hantera › Fakturering för att hålla onlinebeställningen igång.",
+      "plan": "Därefter kostar {plan} {price} i månaden. När provperioden slutar debiterar vi {amount} för resten av {month} och sedan {price} den {nextFirst}.",
+      "planFree": "Därefter har du {plan}, utan månadsavgift.",
+      "fee": "Vår avgift på {fee} för onlinebeställningar debiteras den 1:a, för föregående månad."
+    },
+    "trial1": {
+      "subject": "Din gratis provperiod slutar i morgon",
+      "line1": "Din gratis provperiod för {truck} slutar i morgon.",
+      "noCard": "Lägg till ett kort, annars pausas onlinebeställningen.",
+      "allSet": "Allt är klart: {plan} börjar {date}.",
+      "charge": "Vi debiterar {amount} för resten av {month} när provperioden slutar."
+    }
   }
 }

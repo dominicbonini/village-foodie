@@ -7227,5 +7227,167 @@
       "body": "{truck} artık size değerlendirme isteği göndermeyecek.",
       "invalid": "Bu abonelikten çıkma bağlantısı geçerli değil."
     }
+  },
+  "billing": {
+    "tab": {
+      "plan": {
+        "title": "Paketiniz",
+        "trialPill": "Ücretsiz deneme",
+        "change": "Paketi değiştir",
+        "trialLine": "Ücretsiz denemeniz {date} tarihinde bitiyor. Sonrasında {plan} paketi aylık {price} olur.",
+        "trialLineFree": "Ücretsiz denemeniz {date} tarihinde bitiyor. Sonrasında aylık ücret olmadan {plan} paketine geçersiniz.",
+        "proLine": "Ayda {allowance} tutarında online sipariş dahildir. Sonrasında {fee}.",
+        "paygLine": "Online siparişlerde {fee}. Aylık ücret yok.",
+        "unlimitedLine": "Aylık {price}. Online siparişlerde ücret yok.",
+        "pendingLine": "{plan} paketi {date} tarihinde başlıyor."
+      },
+      "payment": {
+        "title": "Ödeme yöntemi",
+        "none": "Henüz kart eklenmedi. Denemeniz bittikten sonra da online sipariş almaya devam etmek için bir kart ekleyin.",
+        "add": "Kart ekle",
+        "pix": "Pix Automático kullan",
+        "card": "Son dört hanesi {last4} olan {brand}",
+        "pixOnFile": "Pix Automático",
+        "pending": "Onay bekleniyor.",
+        "change": "Değiştir",
+        "lastFailed": "Son ödeme başarısız oldu",
+        "update": "Kartı güncelle",
+        "error": "Ödeme sayfasını açamadık. Lütfen tekrar deneyin."
+      },
+      "whatYouPay": {
+        "title": "Ne ödersiniz",
+        "plan": "Paketiniz, önümüzdeki ay için her ayın 1’inde tahsil edilir",
+        "fee": "Ayda {allowance} tutarını aşan online siparişler, önceki ay için her ayın 1’inde tahsil edilir",
+        "feePayg": "Online siparişler, önceki ay için her ayın 1’inde tahsil edilir",
+        "walkUps": "Yerinde siparişler",
+        "free": "Ücretsiz",
+        "trialEnd": "Denemeniz {date} tarihinde bittiğinde {month} ayının kalanı için {amount} tahsil ederiz. Ardından {nextFirst} tarihinde {price}."
+      },
+      "next": {
+        "title": "Sonraki ödeme · {date}",
+        "plan": "{month} için {plan}",
+        "fee": "{month} ayında {allowance} tutarını aşan online siparişlerde {fee} (şu ana kadar)",
+        "feePayg": "{month} ayındaki online siparişlerde {fee} (şu ana kadar)",
+        "vans": "{month} için ek araçlar",
+        "surcharge": "{month} için teslimde ödeme ücreti",
+        "carried": "Önceki dönemden devreden",
+        "total": "Şu ana kadar toplam",
+        "walkUps": "Yerinde siparişler her zaman ücretsiz."
+      },
+      "preorders": {
+        "title": "Müşteriler ön siparişleri nasıl ödüyor",
+        "online": "Online, sipariş verirken",
+        "onlineHint": "Para doğrudan Stripe hesabınıza gider.",
+        "atTruck": "Food truck’ta, teslim alırken",
+        "atTruckHint": "Bunun yerine ücretimiz aylık tahsilatınıza eklenir.",
+        "saved": "Kaydedildi.",
+        "error": "Bunu kaydedemedik. Lütfen tekrar deneyin."
+      },
+      "invoices": {
+        "title": "Faturalar",
+        "date": "Tarih",
+        "for": "Kapsam",
+        "amount": "Tutar",
+        "status": "Durum",
+        "forMonthly": "{planMonth} paketi, {usageMonth} ücretleri",
+        "forMonthlyPlan": "{planMonth} paketi",
+        "forTrialEnd": "{month} ayının kalanı",
+        "forUpgrade": "{plan} paketine geçiş",
+        "lateFee": "Gecikme ücreti",
+        "paid": "Ödendi",
+        "unpaid": "Ödenmedi",
+        "overdue": "Vadesi geçti",
+        "download": "İndir",
+        "payNow": "Şimdi öde",
+        "none": "Henüz fatura yok."
+      },
+      "failed": {
+        "title": "{amount} tutarındaki ödemeniz gerçekleşmedi.",
+        "body": "Tekrar deneyeceğiz. Online sipariş alımının açık kalması için kartınızı {date} tarihine kadar güncelleyin.",
+        "button": "Kartı güncelle"
+      },
+      "paused": {
+        "title": "Online sipariş alımı duraklatıldı",
+        "body": "{amount} tutarındaki ödemenin vadesi geçti. Şimdi ödeyin, online sipariş alımı hemen yeniden açılsın.",
+        "warning": "{date} tarihine kadar ödeyin, aksi takdirde hesabınız askıya alınabilir.",
+        "pay": "{amount} öde",
+        "otherCard": "Başka bir kart kullan"
+      },
+      "loading": "Faturalandırma yükleniyor…",
+      "loadError": "Faturalandırma bilgilerinizi yükleyemedik. Lütfen tekrar deneyin."
+    },
+    "changePlan": {
+      "title": "Paketi değiştir",
+      "current": "Şu anda {plan} paketindesiniz.",
+      "free": "Ücretsiz",
+      "perMonth": "Aylık {price}",
+      "paygLine": "Online siparişlerde {fee}.",
+      "proLine": "{allowance} tutarında online sipariş dahil. Sonrasında {fee}.",
+      "unlimitedLine": "Online siparişlerde ücret yok.",
+      "yourPlan": "Paketiniz",
+      "startsNow": "Hemen başlar.",
+      "chargeToday": "{month} ayının kalanı için bugün {amount} tahsil edeceğiz. Ardından {nextFirst} tarihinde {price}.",
+      "startsLater": "{nextFirst} tarihinde başlar. O zamana kadar {plan} paketiniz devam eder.",
+      "cancel": "İptal",
+      "switchTo": "{plan} paketine geç",
+      "error": "Paketinizi değiştiremedik. Lütfen tekrar deneyin."
+    },
+    "notices": {
+      "trialEndsSoon": "<b>Ücretsiz denemeniz {date} tarihinde bitiyor.</b> Online sipariş alımının açık kalması için bir kart ekleyin.",
+      "trialEndsTomorrow": "<b>Ücretsiz denemeniz yarın bitiyor.</b> Bir kart ekleyin, aksi takdirde online sipariş alımı duraklar.",
+      "allSet": "<b>Her şey hazır.</b> {plan} paketi {date} tarihinde başlıyor.",
+      "paymentFailed": "<b>Ödemeniz gerçekleşmedi.</b> Online sipariş alımının açık kalması için {method, select, payment_method {ödeme yönteminizi} other {kartınızı}} {date} tarihine kadar güncelleyin.",
+      "paused": "<b>Online sipariş alımı duraklatıldı.</b> {date} tarihine kadar {amount} ödeyin, aksi takdirde hesabınız askıya alınabilir.",
+      "addCard": "Kart ekle →",
+      "updateCard": "{method, select, payment_method {Ödeme yöntemini} other {Kartı}} güncelle →",
+      "payNow": "Şimdi öde →",
+      "dismiss": "Kapat"
+    }
+  },
+  "emailBilling": {
+    "greeting": "{hasName, select, yes {Merhaba {name},} other {Merhaba,}}",
+    "questions": "Sorunuz mu var? Bu e-postayı yanıtlamanız yeterli.",
+    "signoff": "HatchGrab ekibi",
+    "buttonUpdate": "{method, select, payment_method {Ödeme yöntemini} other {Kartı}} güncelle",
+    "buttonPay": "Şimdi öde",
+    "buttonAddCard": "Kart ekle",
+    "suspended": "Ödeme yapılmazsa hesabınız askıya alınabilir.",
+    "failed": {
+      "subject": "HatchGrab ödemeniz gerçekleşmedi",
+      "line1": "Bugün {truck} için {amount} tahsil edemedik. Tekrar deneyeceğiz.",
+      "line2": "Online sipariş alımının açık kalması için lütfen {method, select, payment_method {ödeme yönteminizi} other {kartınızı}} {date} tarihine kadar güncelleyin."
+    },
+    "twoDays": {
+      "subject": "{method, select, payment_method {Ödeme yönteminizi} other {Kartınızı}} güncellemek için 2 gün kaldı",
+      "line1": "{truck} için {amount} hâlâ ödenmedi. {method, select, payment_method {Ödeme yönteminizi} other {Kartınızı}} {date} tarihine kadar güncelleyin, aksi takdirde online sipariş alımı duraklar."
+    },
+    "oneDay": {
+      "subject": "{method, select, payment_method {Ödeme yönteminizi} other {Kartınızı}} yarına kadar güncelleyin",
+      "line1": "{truck} için {amount} hâlâ ödenmedi. {method, select, payment_method {Ödeme yönteminizi} other {Kartınızı}} yarına kadar güncelleyin, aksi takdirde online sipariş alımı duraklar."
+    },
+    "lastDay": {
+      "subject": "{method, select, payment_method {Ödeme yönteminizi} other {Kartınızı}} güncellemek için son gün",
+      "line1": "{truck} için {amount} ödemenin son günü bugün. Gece yarısına kadar ödenmezse, ödeme yapana kadar online sipariş alımı duraklar."
+    },
+    "paused": {
+      "subject": "Online sipariş alımı duraklatıldı",
+      "line1": "{amount} ödenmediği için {truck} için online sipariş alımı duraklatıldı. Şimdi ödeyin, hemen yeniden açılsın.",
+      "line2": "{date} tarihine kadar ödeyin, aksi takdirde hesabınız askıya alınabilir."
+    },
+    "trial7": {
+      "subject": "Ücretsiz denemeniz 7 gün içinde bitiyor",
+      "line1": "{truck} için ücretsiz denemeniz {date} tarihinde bitiyor.",
+      "line2": "Online sipariş alımının açık kalması için Yönetim › Faturalandırma bölümünden bir kart ekleyin.",
+      "plan": "Sonrasında {plan} paketi aylık {price} olur. Denemeniz bittiğinde {month} ayının kalanı için {amount}, ardından {nextFirst} tarihinde {price} tahsil ederiz.",
+      "planFree": "Sonrasında aylık ücret olmadan {plan} paketine geçersiniz.",
+      "fee": "Online siparişlerdeki {fee} ücretimiz, önceki ay için her ayın 1’inde tahsil edilir."
+    },
+    "trial1": {
+      "subject": "Ücretsiz denemeniz yarın bitiyor",
+      "line1": "{truck} için ücretsiz denemeniz yarın bitiyor.",
+      "noCard": "Bir kart ekleyin, aksi takdirde online sipariş alımı duraklar.",
+      "allSet": "Her şey hazır: {plan} paketi {date} tarihinde başlıyor.",
+      "charge": "Denemeniz bittiğinde {month} ayının kalanı için {amount} tahsil edeceğiz."
+    }
   }
 }

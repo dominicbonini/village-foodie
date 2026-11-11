@@ -29,6 +29,8 @@ export interface ProcessorInvoice {
   finalizedAt: string | null
   paidAt: string | null
   hostedUrl: string | null
+  /** billing-2: Stripe's hosted invoice PDF ("Download"). */
+  pdfUrl?: string | null
   metadata: Record<string, string>
 }
 
@@ -52,6 +54,12 @@ export interface BillingProcessor {
   /** Ask Stripe to collect now (Stripe's own automatic attempt and Smart Retries happen without this). */
   payInvoice(id: string, paymentMethodId?: string): Promise<ProcessorInvoice>
   retrieveInvoice(id: string): Promise<ProcessorInvoice>
+  /** billing-2: a Stripe-HOSTED card set-up (Checkout in setup mode) — no card fields on our page. */
+  createSetupCheckout(a: { customerId: string; truckId: string; currency: string; successUrl: string; cancelUrl: string; locale: string }): Promise<{ id: string; url: string }>
+  /** …and on the way back: the card it saved (null while the session is not complete). */
+  retrieveSetupCheckout(sessionId: string): Promise<{ truckId: string | null; setupIntentId: string | null; paymentMethod: ProcessorPaymentMethod | null; complete: boolean }>
+  /** billing-2: Pix Automático through Stripe's HOSTED instructions page (the SetupIntent's pix_display_qr_code next action). */
+  createPixHostedSetup(a: { customerId: string; truckId: string; returnUrl: string; maxMinor?: number }): Promise<{ setupIntentId: string; hostedUrl: string | null; status: string }>
 }
 
 /** 🔴 THE KEY: the billing TEST key only. Anything else is refused — never STRIPE_SECRET_KEY. */
@@ -83,6 +91,7 @@ export function processorInvoiceOf(i: Stripe.Invoice): ProcessorInvoice {
     finalizedAt: iso(i.status_transitions?.finalized_at),
     paidAt: iso(i.status_transitions?.paid_at),
     hostedUrl: i.hosted_invoice_url ?? null,
+    pdfUrl: i.invoice_pdf ?? null,
     metadata: (i.metadata ?? {}) as Record<string, string>,
   }
 }
@@ -174,6 +183,40 @@ export function stripeBillingProcessor(): BillingProcessor {
     },
 
     async retrieveInvoice(id) { return processorInvoiceOf(await stripe.invoices.retrieve(id)) },
+
+    async createSetupCheckout(a) {
+      const cs = await stripe.checkout.sessions.create({
+        mode: 'setup',
+        customer: a.customerId,
+        currency: a.currency.toLowerCase(),
+        payment_method_types: ['card'],
+        success_url: a.successUrl,
+        cancel_url: a.cancelUrl,
+        locale: (a.locale as Stripe.Checkout.SessionCreateParams.Locale) || 'auto',
+        setup_intent_data: { metadata: { truck_id: a.truckId, hatchgrab: 'billing-1' } },
+        metadata: { truck_id: a.truckId, hatchgrab: 'billing-1' },
+      })
+      if (!cs.url) throw new Error('[billing] Checkout returned no URL')
+      return { id: cs.id, url: cs.url }
+    },
+
+    async retrieveSetupCheckout(sessionId) {
+      const cs = await stripe.checkout.sessions.retrieve(sessionId, { expand: ['setup_intent', 'setup_intent.payment_method'] })
+      const si = typeof cs.setup_intent === 'string' ? null : cs.setup_intent
+      const pm = si && si.payment_method && typeof si.payment_method !== 'string' ? processorPaymentMethodOf(si.payment_method) : null
+      return { truckId: (cs.metadata ?? {}).truck_id ?? null, setupIntentId: si?.id ?? (typeof cs.setup_intent === 'string' ? cs.setup_intent : null),
+        paymentMethod: pm, complete: cs.status === 'complete' && si?.status === 'succeeded' }
+    },
+
+    async createPixHostedSetup(a) {
+      const si = await stripe.setupIntents.create({
+        customer: a.customerId, usage: 'off_session', payment_method_types: ['pix'], confirm: true,
+        payment_method_data: { type: 'pix' }, return_url: a.returnUrl,
+        payment_method_options: { pix: { mandate_options: { amount_type: 'maximum', amount: a.maxMinor ?? 40000, currency: 'brl', payment_schedule: 'monthly', reference: 'HatchGrab' } } },
+        metadata: { truck_id: a.truckId, hatchgrab: 'billing-1' },
+      })
+      return { setupIntentId: si.id, hostedUrl: si.next_action?.pix_display_qr_code?.hosted_instructions_url ?? null, status: si.status }
+    },
 
     async voidInvoice(id) {
       try { return processorInvoiceOf(await stripe.invoices.voidInvoice(id, {}, { idempotencyKey: `billing:void:${id}` })) }

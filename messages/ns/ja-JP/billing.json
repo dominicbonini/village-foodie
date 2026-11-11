@@ -1,0 +1,116 @@
+{
+  "tab": {
+    "plan": {
+      "title": "ご利用中のプラン",
+      "trialPill": "無料トライアル",
+      "change": "プランを変更",
+      "trialLine": "無料トライアルは{date}に終了します。終了後、{plan}は月額{price}です。",
+      "trialLineFree": "無料トライアルは{date}に終了します。終了後は{plan}となり、月額料金はかかりません。",
+      "proLine": "月{allowance}分のオンライン注文が含まれます。超過分は{fee}です。",
+      "paygLine": "オンライン注文に{fee}がかかります。月額料金はありません。",
+      "unlimitedLine": "月額{price}。オンライン注文の手数料はかかりません。",
+      "pendingLine": "{plan}は{date}に始まります。"
+    },
+    "payment": {
+      "title": "お支払い方法",
+      "none": "カードがまだ登録されていません。トライアル終了後もオンライン注文を受け付けるには、カードを登録してください。",
+      "add": "カードを登録",
+      "pix": "Pix Automáticoを使う",
+      "card": "{brand}（末尾{last4}）",
+      "pixOnFile": "Pix Automático",
+      "pending": "確認待ちです。",
+      "change": "変更",
+      "lastFailed": "前回のお支払いに失敗しました",
+      "update": "カードを更新",
+      "error": "お支払いページを開けませんでした。もう一度お試しください。"
+    },
+    "whatYouPay": {
+      "title": "お支払い内容",
+      "plan": "プラン料金。毎月1日にその月の分を請求します",
+      "fee": "月{allowance}を超えるオンライン注文。毎月1日に前月分を請求します",
+      "feePayg": "オンライン注文。毎月1日に前月分を請求します",
+      "walkUps": "店頭での注文",
+      "free": "無料",
+      "trialEnd": "{date}にトライアルが終了すると、{month}の残り期間分として{amount}を請求します。その後、{nextFirst}に{price}を請求します。"
+    },
+    "next": {
+      "title": "次回のお支払い · {date}",
+      "plan": "{month}分の{plan}",
+      "fee": "{month}のオンライン注文のうち{allowance}を超える分の{fee}（現時点）",
+      "feePayg": "{month}のオンライン注文の{fee}（現時点）",
+      "vans": "{month}分の追加キッチンカー",
+      "surcharge": "{month}分の後払い手数料",
+      "carried": "前回からの繰り越し",
+      "total": "現時点の合計",
+      "walkUps": "店頭での注文は常に無料です。"
+    },
+    "preorders": {
+      "title": "事前注文のお客様のお支払い方法",
+      "online": "オンラインで、注文時に支払う",
+      "onlineHint": "代金はお使いのStripeアカウントに直接入金されます。",
+      "atTruck": "キッチンカーで、受け取り時に支払う",
+      "atTruckHint": "当社の手数料は、代わりに毎月のご請求に加算されます。",
+      "saved": "保存しました。",
+      "error": "保存できませんでした。もう一度お試しください。"
+    },
+    "invoices": {
+      "title": "請求書",
+      "date": "日付",
+      "for": "内容",
+      "amount": "金額",
+      "status": "ステータス",
+      "forMonthly": "{planMonth}分のプラン料金、{usageMonth}分の手数料",
+      "forMonthlyPlan": "{planMonth}分のプラン料金",
+      "forTrialEnd": "{month}の残り期間",
+      "forUpgrade": "{plan}への切り替え",
+      "lateFee": "延滞手数料",
+      "paid": "支払い済み",
+      "unpaid": "未払い",
+      "overdue": "期限超過",
+      "download": "ダウンロード",
+      "payNow": "今すぐ支払う",
+      "none": "請求書はまだありません。"
+    },
+    "failed": {
+      "title": "{amount}のお支払いが完了しませんでした。",
+      "body": "再度お支払いを試みます。オンライン注文を続けるには、{date}までにカードを更新してください。",
+      "button": "カードを更新"
+    },
+    "paused": {
+      "title": "オンライン注文は停止中です",
+      "body": "{amount}のお支払い期限が過ぎています。今すぐお支払いいただくと、オンライン注文はすぐに再開されます。",
+      "warning": "{date}までにお支払いがない場合、アカウントが停止されることがあります。",
+      "pay": "{amount}を支払う",
+      "otherCard": "別のカードを使う"
+    },
+    "loading": "請求情報を読み込み中…",
+    "loadError": "請求情報を読み込めませんでした。もう一度お試しください。"
+  },
+  "changePlan": {
+    "title": "プランを変更",
+    "current": "現在は{plan}をご利用中です。",
+    "free": "無料",
+    "perMonth": "月額{price}",
+    "paygLine": "オンライン注文に{fee}がかかります。",
+    "proLine": "月{allowance}分のオンライン注文が含まれます。超過分は{fee}です。",
+    "unlimitedLine": "オンライン注文の手数料はかかりません。",
+    "yourPlan": "ご利用中のプラン",
+    "startsNow": "すぐに開始します。",
+    "chargeToday": "本日、{month}の残り期間分として{amount}を請求します。その後、{nextFirst}に{price}を請求します。",
+    "startsLater": "{nextFirst}に開始します。それまでは{plan}をご利用いただけます。",
+    "cancel": "キャンセル",
+    "switchTo": "{plan}に切り替える",
+    "error": "プランを変更できませんでした。もう一度お試しください。"
+  },
+  "notices": {
+    "trialEndsSoon": "<b>無料トライアルは{date}に終了します。</b>オンライン注文を続けるには、カードを登録してください。",
+    "trialEndsTomorrow": "<b>無料トライアルは明日終了します。</b>カードを登録しないと、オンライン注文が停止されます。",
+    "allSet": "<b>準備が整いました。</b>{plan}は{date}に始まります。",
+    "paymentFailed": "<b>お支払いが完了しませんでした。</b>オンライン注文を続けるには、{date}までに{method, select, payment_method {お支払い方法} other {カード}}を更新してください。",
+    "paused": "<b>オンライン注文は停止中です。</b>{date}までに{amount}をお支払いください。お支払いがない場合、アカウントが停止されることがあります。",
+    "addCard": "カードを登録 →",
+    "updateCard": "{method, select, payment_method {お支払い方法} other {カード}}を更新 →",
+    "payNow": "今すぐ支払う →",
+    "dismiss": "閉じる"
+  }
+}

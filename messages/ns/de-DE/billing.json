@@ -1,0 +1,116 @@
+{
+  "tab": {
+    "plan": {
+      "title": "Ihr Tarif",
+      "trialPill": "Kostenlose Testphase",
+      "change": "Tarif wechseln",
+      "trialLine": "Ihre kostenlose Testphase endet am {date}. Danach kostet der Tarif {plan} {price} pro Monat.",
+      "trialLineFree": "Ihre kostenlose Testphase endet am {date}. Danach nutzen Sie den Tarif {plan} ohne monatliche Gebühr.",
+      "proLine": "Enthält Online-Bestellungen im Wert von {allowance} pro Monat. Danach {fee}.",
+      "paygLine": "{fee} auf Online-Bestellungen. Keine monatliche Gebühr.",
+      "unlimitedLine": "{price} pro Monat. Keine Gebühr auf Online-Bestellungen.",
+      "pendingLine": "Der Tarif {plan} beginnt am {date}."
+    },
+    "payment": {
+      "title": "Zahlungsmethode",
+      "none": "Noch keine Karte hinterlegt. Fügen Sie eine hinzu, um nach Ihrer Testphase weiter Online-Bestellungen anzunehmen.",
+      "add": "Karte hinzufügen",
+      "pix": "Pix Automático nutzen",
+      "card": "{brand} mit Endziffern {last4}",
+      "pixOnFile": "Pix Automático",
+      "pending": "Warten auf Bestätigung.",
+      "change": "Ändern",
+      "lastFailed": "Letzte Zahlung fehlgeschlagen",
+      "update": "Karte aktualisieren",
+      "error": "Die Zahlungsseite konnte nicht geöffnet werden. Bitte versuchen Sie es erneut."
+    },
+    "whatYouPay": {
+      "title": "Was Sie zahlen",
+      "plan": "Ihr Tarif, am 1. im Voraus für den Monat abgerechnet",
+      "fee": "Online-Bestellungen über {allowance} pro Monat, am 1. für den Vormonat abgerechnet",
+      "feePayg": "Online-Bestellungen, am 1. für den Vormonat abgerechnet",
+      "walkUps": "Bestellungen vor Ort",
+      "free": "Kostenlos",
+      "trialEnd": "Wenn Ihre Testphase am {date} endet, berechnen wir {amount} für den restlichen {month}. Danach {price} am {nextFirst}."
+    },
+    "next": {
+      "title": "Nächste Zahlung · {date}",
+      "plan": "{plan} für {month}",
+      "fee": "{fee} auf Online-Bestellungen über {allowance} im {month} (bisher)",
+      "feePayg": "{fee} auf Online-Bestellungen im {month} (bisher)",
+      "vans": "Zusätzliche Foodtrucks für {month}",
+      "surcharge": "Nachträgliche Gebühr für {month}",
+      "carried": "Übertrag aus früheren Zeiträumen",
+      "total": "Bisherige Summe",
+      "walkUps": "Bestellungen vor Ort sind immer kostenlos."
+    },
+    "preorders": {
+      "title": "Wie Kunden Vorbestellungen bezahlen",
+      "online": "Online, bei der Bestellung",
+      "onlineHint": "Das Geld geht direkt auf Ihr Stripe-Konto.",
+      "atTruck": "Am Foodtruck, bei der Abholung",
+      "atTruckHint": "Unsere Gebühr wird stattdessen Ihrer monatlichen Abrechnung hinzugefügt.",
+      "saved": "Gespeichert.",
+      "error": "Das konnte nicht gespeichert werden. Bitte versuchen Sie es erneut."
+    },
+    "invoices": {
+      "title": "Rechnungen",
+      "date": "Datum",
+      "for": "Für",
+      "amount": "Betrag",
+      "status": "Status",
+      "forMonthly": "Tarif {planMonth}, Gebühren {usageMonth}",
+      "forMonthlyPlan": "Tarif {planMonth}",
+      "forTrialEnd": "Rest des Monats {month}",
+      "forUpgrade": "Wechsel zu {plan}",
+      "lateFee": "Gebühr für verspätete Zahlung",
+      "paid": "Bezahlt",
+      "unpaid": "Offen",
+      "overdue": "Überfällig",
+      "download": "Herunterladen",
+      "payNow": "Jetzt bezahlen",
+      "none": "Noch keine Rechnungen."
+    },
+    "failed": {
+      "title": "Ihre Zahlung über {amount} ist fehlgeschlagen.",
+      "body": "Wir versuchen es erneut. Aktualisieren Sie Ihre Karte bis zum {date}, damit Online-Bestellungen aktiv bleiben.",
+      "button": "Karte aktualisieren"
+    },
+    "paused": {
+      "title": "Online-Bestellungen sind pausiert",
+      "body": "{amount} ist überfällig. Bezahlen Sie jetzt, und Online-Bestellungen sind sofort wieder aktiv.",
+      "warning": "Zahlen Sie bis zum {date}, sonst kann Ihr Konto gesperrt werden.",
+      "pay": "{amount} bezahlen",
+      "otherCard": "Andere Karte verwenden"
+    },
+    "loading": "Abrechnung wird geladen…",
+    "loadError": "Ihre Abrechnung konnte nicht geladen werden. Bitte versuchen Sie es erneut."
+  },
+  "changePlan": {
+    "title": "Tarif wechseln",
+    "current": "Sie nutzen den Tarif {plan}.",
+    "free": "Kostenlos",
+    "perMonth": "{price} pro Monat",
+    "paygLine": "{fee} auf Online-Bestellungen.",
+    "proLine": "Online-Bestellungen im Wert von {allowance} inklusive. Danach {fee}.",
+    "unlimitedLine": "Keine Gebühr auf Online-Bestellungen.",
+    "yourPlan": "Ihr Tarif",
+    "startsNow": "Gilt ab sofort.",
+    "chargeToday": "Wir berechnen heute {amount} für den restlichen {month}. Danach {price} am {nextFirst}.",
+    "startsLater": "Gilt ab dem {nextFirst}. Bis dahin behalten Sie den Tarif {plan}.",
+    "cancel": "Abbrechen",
+    "switchTo": "Zu {plan} wechseln",
+    "error": "Ihr Tarif konnte nicht geändert werden. Bitte versuchen Sie es erneut."
+  },
+  "notices": {
+    "trialEndsSoon": "<b>Ihre kostenlose Testphase endet am {date}.</b> Hinterlegen Sie eine Karte, damit Online-Bestellungen aktiv bleiben.",
+    "trialEndsTomorrow": "<b>Ihre kostenlose Testphase endet morgen.</b> Hinterlegen Sie eine Karte, sonst werden Online-Bestellungen pausiert.",
+    "allSet": "<b>Alles bereit.</b> Der Tarif {plan} beginnt am {date}.",
+    "paymentFailed": "<b>Ihre Zahlung ist fehlgeschlagen.</b> Aktualisieren Sie Ihre {method, select, payment_method {Zahlungsmethode} other {Karte}} bis zum {date}, damit Online-Bestellungen aktiv bleiben.",
+    "paused": "<b>Online-Bestellungen sind pausiert.</b> Zahlen Sie {amount} bis zum {date}, sonst kann Ihr Konto gesperrt werden.",
+    "addCard": "Karte hinzufügen →",
+    "updateCard": "{method, select, payment_method {Zahlungsmethode} other {Karte}} aktualisieren →",
+    "payNow": "Jetzt bezahlen →",
+    "dismiss": "Ausblenden"
+  }
+}

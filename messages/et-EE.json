@@ -7227,5 +7227,167 @@
       "body": "{truck} ei saada sulle enam arvustuspalveid.",
       "invalid": "See loobumislink ei kehti."
     }
+  },
+  "billing": {
+    "tab": {
+      "plan": {
+        "title": "Sinu pakett",
+        "trialPill": "Tasuta prooviperiood",
+        "change": "Muuda paketti",
+        "trialLine": "Sinu tasuta prooviperiood lõpeb {date}. Seejärel on paketi {plan} hind {price} kuus.",
+        "trialLineFree": "Sinu tasuta prooviperiood lõpeb {date}. Seejärel jätkad paketiga {plan}, ilma kuutasuta.",
+        "proLine": "Sisaldab {allowance} väärtuses veebitellimusi kuus. Seejärel {fee}.",
+        "paygLine": "{fee} veebitellimustelt. Kuutasu pole.",
+        "unlimitedLine": "{price} kuus. Veebitellimustelt tasu ei võeta.",
+        "pendingLine": "Pakett {plan} algab {date}."
+      },
+      "payment": {
+        "title": "Makseviis",
+        "none": "Kaarti pole veel lisatud. Lisa kaart, et saaksid ka pärast prooviperioodi veebitellimusi vastu võtta.",
+        "add": "Lisa kaart",
+        "pix": "Kasuta Pix Automático",
+        "card": "{brand}, lõpeb numbritega {last4}",
+        "pixOnFile": "Pix Automático",
+        "pending": "Ootab kinnitust.",
+        "change": "Muuda",
+        "lastFailed": "Viimane makse ebaõnnestus",
+        "update": "Uuenda kaarti",
+        "error": "Makselehte ei õnnestunud avada. Palun proovi uuesti."
+      },
+      "whatYouPay": {
+        "title": "Mille eest maksad",
+        "plan": "Sinu pakett, võetakse kuu 1. kuupäeval eelseisva kuu eest",
+        "fee": "Veebitellimused üle {allowance} kuus, võetakse kuu 1. kuupäeval eelmise kuu eest",
+        "feePayg": "Veebitellimused, võetakse kuu 1. kuupäeval eelmise kuu eest",
+        "walkUps": "Tellimused kohapeal",
+        "free": "Tasuta",
+        "trialEnd": "Kui sinu prooviperiood {date} lõpeb, võtame {amount} ülejäänud kuu eest ({month}). Seejärel {price} {nextFirst}."
+      },
+      "next": {
+        "title": "Järgmine makse · {date}",
+        "plan": "Pakett {plan} ({month})",
+        "fee": "{fee} veebitellimustelt üle {allowance} ({month}, seni)",
+        "feePayg": "{fee} veebitellimustelt ({month}, seni)",
+        "vans": "Lisatoiduautod ({month})",
+        "surcharge": "Kättesaamisel makstud tellimuste tasu ({month})",
+        "carried": "Üle kantud varasemast",
+        "total": "Seni kokku",
+        "walkUps": "Tellimused kohapeal on alati tasuta."
+      },
+      "preorders": {
+        "title": "Kuidas kliendid ettetellimuste eest maksavad",
+        "online": "Veebis, tellimisel",
+        "onlineHint": "Raha läheb otse sinu Stripe’i kontole.",
+        "atTruck": "Toiduauto juures, kättesaamisel",
+        "atTruckHint": "Meie tasu lisatakse selle asemel sinu kuumaksele.",
+        "saved": "Salvestatud.",
+        "error": "Salvestamine ei õnnestunud. Palun proovi uuesti."
+      },
+      "invoices": {
+        "title": "Arved",
+        "date": "Kuupäev",
+        "for": "Mille eest",
+        "amount": "Summa",
+        "status": "Olek",
+        "forMonthly": "Pakett: {planMonth}, tasud: {usageMonth}",
+        "forMonthlyPlan": "Pakett: {planMonth}",
+        "forTrialEnd": "Ülejäänud kuu ({month})",
+        "forUpgrade": "Üleminek paketile {plan}",
+        "lateFee": "Viivistasu",
+        "paid": "Makstud",
+        "unpaid": "Maksmata",
+        "overdue": "Tähtaeg ületatud",
+        "download": "Laadi alla",
+        "payNow": "Maksa kohe",
+        "none": "Arveid veel pole."
+      },
+      "failed": {
+        "title": "Sinu makse summas {amount} ei läinud läbi.",
+        "body": "Proovime uuesti. Uuenda oma kaarti hiljemalt {date}, et veebitellimine jääks sisse.",
+        "button": "Uuenda kaarti"
+      },
+      "paused": {
+        "title": "Veebitellimine on peatatud",
+        "body": "{amount} on tähtajaks maksmata. Maksa kohe ja veebitellimine lülitub kohe uuesti sisse.",
+        "warning": "Maksa hiljemalt {date}, muidu võidakse sinu konto sulgeda.",
+        "pay": "Maksa {amount}",
+        "otherCard": "Kasuta teist kaarti"
+      },
+      "loading": "Arveldust laaditakse…",
+      "loadError": "Arveldust ei õnnestunud laadida. Palun proovi uuesti."
+    },
+    "changePlan": {
+      "title": "Muuda paketti",
+      "current": "Sinu pakett on {plan}.",
+      "free": "Tasuta",
+      "perMonth": "{price} kuus",
+      "paygLine": "{fee} veebitellimustelt.",
+      "proLine": "Hinnas on {allowance} väärtuses veebitellimusi. Seejärel {fee}.",
+      "unlimitedLine": "Veebitellimustelt tasu ei võeta.",
+      "yourPlan": "Sinu pakett",
+      "startsNow": "Algab kohe.",
+      "chargeToday": "Võtame täna {amount} ülejäänud kuu eest ({month}). Seejärel {price} {nextFirst}.",
+      "startsLater": "Algab {nextFirst}. Seni jääb sulle pakett {plan}.",
+      "cancel": "Tühista",
+      "switchTo": "Mine üle paketile {plan}",
+      "error": "Paketi muutmine ei õnnestunud. Palun proovi uuesti."
+    },
+    "notices": {
+      "trialEndsSoon": "<b>Sinu tasuta prooviperiood lõpeb {date}.</b> Lisa kaart, et veebitellimine jääks sisse.",
+      "trialEndsTomorrow": "<b>Sinu tasuta prooviperiood lõpeb homme.</b> Lisa kaart, muidu veebitellimine peatatakse.",
+      "allSet": "<b>Kõik on valmis.</b> Pakett {plan} algab {date}.",
+      "paymentFailed": "<b>Sinu makse ei läinud läbi.</b> Uuenda oma {method, select, payment_method {makseviisi} other {kaarti}} hiljemalt {date}, et veebitellimine jääks sisse.",
+      "paused": "<b>Veebitellimine on peatatud.</b> Maksa {amount} hiljemalt {date}, muidu võidakse sinu konto sulgeda.",
+      "addCard": "Lisa kaart →",
+      "updateCard": "Uuenda {method, select, payment_method {makseviisi} other {kaarti}} →",
+      "payNow": "Maksa kohe →",
+      "dismiss": "Sulge"
+    }
+  },
+  "emailBilling": {
+    "greeting": "{hasName, select, yes {Tere, {name}!} other {Tere!}}",
+    "questions": "Küsimusi? Vasta lihtsalt sellele kirjale.",
+    "signoff": "HatchGrabi meeskond",
+    "buttonUpdate": "Uuenda {method, select, payment_method {makseviisi} other {kaarti}}",
+    "buttonPay": "Maksa kohe",
+    "buttonAddCard": "Lisa kaart",
+    "suspended": "Kui summa jääb maksmata, võidakse sinu konto sulgeda.",
+    "failed": {
+      "subject": "Sinu HatchGrabi makse ei läinud läbi",
+      "line1": "Me ei saanud täna võtta {amount} toiduauto {truck} eest. Proovime uuesti.",
+      "line2": "Palun uuenda oma {method, select, payment_method {makseviisi} other {kaarti}} hiljemalt {date}, et veebitellimine jääks sisse."
+    },
+    "twoDays": {
+      "subject": "Sul on 2 päeva, et uuendada oma {method, select, payment_method {makseviisi} other {kaarti}}",
+      "line1": "{amount} toiduauto {truck} eest on endiselt maksmata. Uuenda oma {method, select, payment_method {makseviisi} other {kaarti}} hiljemalt {date}, muidu veebitellimine peatatakse."
+    },
+    "oneDay": {
+      "subject": "Uuenda oma {method, select, payment_method {makseviisi} other {kaarti}} homseks",
+      "line1": "{amount} toiduauto {truck} eest on endiselt maksmata. Uuenda oma {method, select, payment_method {makseviisi} other {kaarti}} homseks, muidu veebitellimine peatatakse."
+    },
+    "lastDay": {
+      "subject": "Viimane päev, et uuendada oma {method, select, payment_method {makseviisi} other {kaarti}}",
+      "line1": "Täna on viimane päev, et maksta {amount} toiduauto {truck} eest. Kui summa on keskööl endiselt maksmata, peatatakse veebitellimine, kuni oled maksnud."
+    },
+    "paused": {
+      "subject": "Veebitellimine on peatatud",
+      "line1": "Toiduauto {truck} veebitellimine on peatatud, sest {amount} on maksmata. Maksa kohe ja see lülitub kohe uuesti sisse.",
+      "line2": "Maksa hiljemalt {date}, muidu võidakse sinu konto sulgeda."
+    },
+    "trial7": {
+      "subject": "Sinu tasuta prooviperiood lõpeb 7 päeva pärast",
+      "line1": "Toiduauto {truck} tasuta prooviperiood lõpeb {date}.",
+      "line2": "Lisa kaart jaotises Haldus › Arveldus, et veebitellimine jääks sisse.",
+      "plan": "Seejärel on paketi {plan} hind {price} kuus. Kui prooviperiood lõpeb, võtame {amount} ülejäänud kuu eest ({month}), seejärel {price} {nextFirst}.",
+      "planFree": "Seejärel jätkad paketiga {plan}, ilma kuutasuta.",
+      "fee": "Meie tasu {fee} veebitellimustelt võetakse kuu 1. kuupäeval eelmise kuu eest."
+    },
+    "trial1": {
+      "subject": "Sinu tasuta prooviperiood lõpeb homme",
+      "line1": "Toiduauto {truck} tasuta prooviperiood lõpeb homme.",
+      "noCard": "Lisa kaart, muidu veebitellimine peatatakse.",
+      "allSet": "Kõik on valmis: pakett {plan} algab {date}.",
+      "charge": "Kui prooviperiood lõpeb, võtame {amount} ülejäänud kuu eest ({month})."
+    }
   }
 }

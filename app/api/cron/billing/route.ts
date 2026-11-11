@@ -14,6 +14,9 @@ import { serverBillingStore } from '@/lib/billing/store'
 import { runBillingAll } from '@/lib/billing/engine'
 import { stripeBillingProcessor, type BillingProcessor } from '@/lib/billing/processor'
 import { getPlanCatalog } from '@/lib/plans-server'
+// billing-2: the billing emails (Brevo, hello@hatchgrab.com), each once — after the charges and statuses are up to date.
+import { runBillingEmails } from '@/lib/billing/notify'
+import { brevoBillingMailer } from '@/lib/billing/mailer'
 
 export const runtime = 'nodejs'
 export const maxDuration = 300
@@ -33,10 +36,19 @@ export async function GET(req: NextRequest) {
   // reports `no_processor` and stays open for the next run).
   let processor: BillingProcessor | null = null
   try { processor = stripeBillingProcessor() } catch (e) { console.error('[cron/billing]', e instanceof Error ? e.message : e) }
-  const result = await runBillingAll(store, processor, await getPlanCatalog(), new Date(), 'cron')
+  const catalog = await getPlanCatalog()
+  const now = new Date()
+  const result = await runBillingAll(store, processor, catalog, now, 'cron')
+  const base = process.env.NEXT_PUBLIC_HATCHGRAB_URL ?? 'https://www.hatchgrab.com'
+  const mailer = brevoBillingMailer()
+  let emailsSent = 0
+  for (const id of await store.candidateTruckIds()) {
+    try { emailsSent += (await runBillingEmails(store, mailer, catalog, { truckId: id, now, base })).filter(e => e.outcome === 'sent').length }
+    catch (e) { console.error(`[cron/billing] emails for ${id}:`, e instanceof Error ? e.message : e) }
+  }
   const failed = result.outcomes.filter(o => o.outcome === 'failed')
   if (failed.length) console.error('[cron/billing] failures:', failed.slice(0, 20).map(f => `${f.truckId} ${f.period}: ${'reason' in f ? f.reason : ''}`).join(' | '))
   const counts = result.outcomes.reduce<Record<string, number>>((m, o) => ({ ...m, [o.outcome]: (m[o.outcome] ?? 0) + 1 }), {})
-  return NextResponse.json({ ok: failed.length === 0, counts, lateFees: result.lateFees, outcomes: result.outcomes.map(o => ({ truckId: o.truckId, period: o.period, kind: o.kind, outcome: o.outcome, ...('reason' in o ? { reason: o.reason } : {}) })) },
+  return NextResponse.json({ ok: failed.length === 0, counts, lateFees: result.lateFees, emailsSent, outcomes: result.outcomes.map(o => ({ truckId: o.truckId, period: o.period, kind: o.kind, outcome: o.outcome, ...('reason' in o ? { reason: o.reason } : {}) })) },
     { status: failed.length ? 500 : 200 })
 }

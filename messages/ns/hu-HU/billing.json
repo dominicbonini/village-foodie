@@ -1,0 +1,116 @@
+{
+  "tab": {
+    "plan": {
+      "title": "Az Ön csomagja",
+      "trialPill": "Ingyenes próbaidőszak",
+      "change": "Csomag módosítása",
+      "trialLine": "Az ingyenes próbaidőszak vége: {date}. Ezután ez a csomag lesz érvényes: {plan}, havi {price} áron.",
+      "trialLineFree": "Az ingyenes próbaidőszak vége: {date}. Ezután ez a csomag lesz érvényes: {plan}, havidíj nélkül.",
+      "proLine": "Havonta {allowance} értékű online rendelést tartalmaz. Felette: {fee}.",
+      "paygLine": "{fee} díj az online rendelések után. Nincs havidíj.",
+      "unlimitedLine": "Havi {price}. Az online rendelések után nincs díj.",
+      "pendingLine": "Új csomagja ({plan}) ekkor indul: {date}."
+    },
+    "payment": {
+      "title": "Fizetési mód",
+      "none": "Még nem adott meg kártyát. Adjon meg egyet, hogy a próbaidőszak után is fogadhasson online rendeléseket.",
+      "add": "Kártya hozzáadása",
+      "pix": "Pix Automático használata",
+      "card": "{brand}, végződés: {last4}",
+      "pixOnFile": "Pix Automático",
+      "pending": "Megerősítésre vár.",
+      "change": "Módosítás",
+      "lastFailed": "Az utolsó fizetés sikertelen volt",
+      "update": "Kártya frissítése",
+      "error": "Nem sikerült megnyitni a fizetési oldalt. Kérjük, próbálja újra."
+    },
+    "whatYouPay": {
+      "title": "Mit fizet",
+      "plan": "Az Ön csomagja, minden hónap 1-jén terheljük a következő hónapra",
+      "fee": "Havi {allowance} feletti online rendelések, minden hónap 1-jén terheljük az előző hónapra",
+      "feePayg": "Online rendelések, minden hónap 1-jén terheljük az előző hónapra",
+      "walkUps": "Helyszíni rendelések",
+      "free": "Díjmentes",
+      "trialEnd": "Amikor a próbaidőszak véget ér ({date}), {amount} összeget terhelünk {month} hátralévő részére. Ezután a díj {price}, első terhelés: {nextFirst}."
+    },
+    "next": {
+      "title": "Következő fizetés · {date}",
+      "plan": "{plan} csomag – {month}",
+      "fee": "{fee} díj a havi keret ({allowance}) feletti online rendelések után – {month} (eddig)",
+      "feePayg": "{fee} díj az online rendelések után – {month} (eddig)",
+      "vans": "További food truckok – {month}",
+      "surcharge": "Átvételkori fizetés díja – {month}",
+      "carried": "Korábbi időszakból áthozva",
+      "total": "Összesen eddig",
+      "walkUps": "A helyszíni rendelések mindig díjmentesek."
+    },
+    "preorders": {
+      "title": "Hogyan fizetnek a vásárlók az előrendelésekért",
+      "online": "Online, a rendeléskor",
+      "onlineHint": "A pénz közvetlenül a Stripe-fiókjába kerül.",
+      "atTruck": "A food trucknál, átvételkor",
+      "atTruckHint": "Ilyenkor a díjunkat a havi terheléséhez adjuk hozzá.",
+      "saved": "Mentve.",
+      "error": "Nem sikerült menteni. Kérjük, próbálja újra."
+    },
+    "invoices": {
+      "title": "Számlák",
+      "date": "Dátum",
+      "for": "Tárgy",
+      "amount": "Összeg",
+      "status": "Állapot",
+      "forMonthly": "Csomag: {planMonth}, díjak: {usageMonth}",
+      "forMonthlyPlan": "Csomag: {planMonth}",
+      "forTrialEnd": "{month} hátralévő része",
+      "forUpgrade": "Csomagváltás: {plan}",
+      "lateFee": "Késedelmi díj",
+      "paid": "Fizetve",
+      "unpaid": "Nincs fizetve",
+      "overdue": "Lejárt",
+      "download": "Letöltés",
+      "payNow": "Fizetés most",
+      "none": "Még nincsenek számlák."
+    },
+    "failed": {
+      "title": "Nem sikerült a fizetés ({amount}).",
+      "body": "Újra megpróbáljuk. Frissítse kártyáját eddig: {date}, hogy az online rendelés bekapcsolva maradjon.",
+      "button": "Kártya frissítése"
+    },
+    "paused": {
+      "title": "Az online rendelés szünetel",
+      "body": "Lejárt tartozás: {amount}. Fizessen most, és az online rendelés azonnal újra bekapcsol.",
+      "warning": "Fizessen eddig: {date}, különben felfüggeszthetjük a fiókját.",
+      "pay": "Fizetés: {amount}",
+      "otherCard": "Másik kártya használata"
+    },
+    "loading": "Számlázási adatok betöltése…",
+    "loadError": "Nem sikerült betölteni a számlázási adatokat. Kérjük, próbálja újra."
+  },
+  "changePlan": {
+    "title": "Csomag módosítása",
+    "current": "Jelenlegi csomagja: {plan}.",
+    "free": "Díjmentes",
+    "perMonth": "Havi {price}",
+    "paygLine": "{fee} díj az online rendelések után.",
+    "proLine": "Havi {allowance} értékű online rendelés benne van. Felette: {fee}.",
+    "unlimitedLine": "Az online rendelések után nincs díj.",
+    "yourPlan": "Az Ön csomagja",
+    "startsNow": "Azonnal érvénybe lép.",
+    "chargeToday": "Ma {amount} összeget terhelünk {month} hátralévő részére. Ezután a díj {price}, első terhelés: {nextFirst}.",
+    "startsLater": "Érvénybe lépés: {nextFirst}. Addig marad a jelenlegi csomagja ({plan}).",
+    "cancel": "Mégse",
+    "switchTo": "Váltás erre: {plan}",
+    "error": "Nem sikerült módosítani a csomagját. Kérjük, próbálja újra."
+  },
+  "notices": {
+    "trialEndsSoon": "<b>Az ingyenes próbaidőszak vége: {date}.</b> Adjon meg egy kártyát, hogy az online rendelés bekapcsolva maradjon.",
+    "trialEndsTomorrow": "<b>Az ingyenes próbaidőszak holnap véget ér.</b> Adjon meg egy kártyát, különben az online rendelés szünetel.",
+    "allSet": "<b>Minden készen áll.</b> Csomagja ({plan}) ekkor indul: {date}.",
+    "paymentFailed": "<b>A fizetés nem sikerült.</b> Frissítse {method, select, payment_method {fizetési módját} other {kártyáját}} eddig: {date}, hogy az online rendelés bekapcsolva maradjon.",
+    "paused": "<b>Az online rendelés szünetel.</b> Fizetendő: {amount}, határidő: {date}. Ellenkező esetben felfüggeszthetjük a fiókját.",
+    "addCard": "Kártya hozzáadása →",
+    "updateCard": "{method, select, payment_method {Fizetési mód} other {Kártya}} frissítése →",
+    "payNow": "Fizetés most →",
+    "dismiss": "Elvetés"
+  }
+}

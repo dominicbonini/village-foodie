@@ -7227,5 +7227,167 @@
       "body": "{truck} sẽ không gửi lời mời đánh giá cho bạn nữa.",
       "invalid": "Link hủy đăng ký này không hợp lệ."
     }
+  },
+  "billing": {
+    "tab": {
+      "plan": {
+        "title": "Gói của bạn",
+        "trialPill": "Dùng thử miễn phí",
+        "change": "Đổi gói",
+        "trialLine": "Thời gian dùng thử miễn phí của bạn kết thúc vào {date}. Sau đó, gói {plan} có giá {price} mỗi tháng.",
+        "trialLineFree": "Thời gian dùng thử miễn phí của bạn kết thúc vào {date}. Sau đó, bạn dùng gói {plan}, không mất phí hằng tháng.",
+        "proLine": "Bao gồm {allowance} đơn online mỗi tháng. Phần vượt tính {fee}.",
+        "paygLine": "{fee} trên đơn online. Không mất phí hằng tháng.",
+        "unlimitedLine": "{price} mỗi tháng. Không tính phí trên đơn online.",
+        "pendingLine": "Gói {plan} bắt đầu từ {date}."
+      },
+      "payment": {
+        "title": "Hình thức thanh toán",
+        "none": "Chưa có thẻ nào. Hãy thêm thẻ để tiếp tục nhận đơn online sau khi hết thời gian dùng thử.",
+        "add": "Thêm thẻ",
+        "pix": "Dùng Pix Automático",
+        "card": "{brand} đuôi {last4}",
+        "pixOnFile": "Pix Automático",
+        "pending": "Đang chờ xác nhận.",
+        "change": "Đổi",
+        "lastFailed": "Lần thanh toán gần nhất không thành công",
+        "update": "Cập nhật thẻ",
+        "error": "Không mở được trang thanh toán. Vui lòng thử lại."
+      },
+      "whatYouPay": {
+        "title": "Khoản bạn trả",
+        "plan": "Phí gói, thu vào ngày 1 hằng tháng cho tháng bắt đầu từ ngày đó",
+        "fee": "Đơn online vượt {allowance} mỗi tháng, thu vào ngày 1 hằng tháng cho tháng trước",
+        "feePayg": "Đơn online, thu vào ngày 1 hằng tháng cho tháng trước",
+        "walkUps": "Đơn mua tại chỗ",
+        "free": "Miễn phí",
+        "trialEnd": "Khi thời gian dùng thử kết thúc vào {date}, chúng tôi thu {amount} cho phần còn lại của {month}. Sau đó thu {price} vào {nextFirst}."
+      },
+      "next": {
+        "title": "Lần thanh toán tới · {date}",
+        "plan": "Gói {plan} cho {month}",
+        "fee": "{fee} trên đơn online vượt {allowance} của {month} (tính đến nay)",
+        "feePayg": "{fee} trên đơn online của {month} (tính đến nay)",
+        "vans": "Xe thêm cho {month}",
+        "surcharge": "Phí trả sau cho {month}",
+        "carried": "Chuyển từ kỳ trước",
+        "total": "Tổng tính đến nay",
+        "walkUps": "Đơn mua tại chỗ luôn miễn phí."
+      },
+      "preorders": {
+        "title": "Khách thanh toán đơn đặt trước như thế nào",
+        "online": "Online, khi đặt món",
+        "onlineHint": "Tiền chuyển thẳng vào tài khoản Stripe của bạn.",
+        "atTruck": "Tại xe, khi nhận món",
+        "atTruckHint": "Thay vào đó, phí của chúng tôi được cộng vào khoản thu hằng tháng của bạn.",
+        "saved": "Đã lưu.",
+        "error": "Không lưu được. Vui lòng thử lại."
+      },
+      "invoices": {
+        "title": "Hóa đơn",
+        "date": "Ngày",
+        "for": "Nội dung",
+        "amount": "Số tiền",
+        "status": "Trạng thái",
+        "forMonthly": "Gói {planMonth}, phí {usageMonth}",
+        "forMonthlyPlan": "Gói {planMonth}",
+        "forTrialEnd": "Phần còn lại của {month}",
+        "forUpgrade": "Chuyển sang gói {plan}",
+        "lateFee": "Phí trả chậm",
+        "paid": "Đã thanh toán",
+        "unpaid": "Chưa thanh toán",
+        "overdue": "Quá hạn",
+        "download": "Tải xuống",
+        "payNow": "Thanh toán ngay",
+        "none": "Chưa có hóa đơn nào."
+      },
+      "failed": {
+        "title": "Khoản thanh toán {amount} của bạn không thành công.",
+        "body": "Chúng tôi sẽ thử lại. Hãy cập nhật thẻ chậm nhất vào {date} để tiếp tục nhận đơn online.",
+        "button": "Cập nhật thẻ"
+      },
+      "paused": {
+        "title": "Đặt món online đang tạm dừng",
+        "body": "Khoản {amount} đã quá hạn. Thanh toán ngay để mở lại đặt món online.",
+        "warning": "Hãy thanh toán chậm nhất vào {date}, nếu không tài khoản của bạn có thể bị tạm khóa.",
+        "pay": "Thanh toán {amount}",
+        "otherCard": "Dùng thẻ khác"
+      },
+      "loading": "Đang tải thông tin thanh toán…",
+      "loadError": "Không tải được thông tin thanh toán. Vui lòng thử lại."
+    },
+    "changePlan": {
+      "title": "Đổi gói",
+      "current": "Bạn đang dùng gói {plan}.",
+      "free": "Miễn phí",
+      "perMonth": "{price} mỗi tháng",
+      "paygLine": "{fee} trên đơn online.",
+      "proLine": "Bao gồm {allowance} đơn online. Phần vượt tính {fee}.",
+      "unlimitedLine": "Không tính phí trên đơn online.",
+      "yourPlan": "Gói của bạn",
+      "startsNow": "Bắt đầu ngay.",
+      "chargeToday": "Hôm nay chúng tôi sẽ thu {amount} cho phần còn lại của {month}. Sau đó thu {price} vào {nextFirst}.",
+      "startsLater": "Bắt đầu từ {nextFirst}. Đến lúc đó bạn vẫn dùng gói {plan}.",
+      "cancel": "Hủy",
+      "switchTo": "Chuyển sang gói {plan}",
+      "error": "Không đổi được gói. Vui lòng thử lại."
+    },
+    "notices": {
+      "trialEndsSoon": "<b>Thời gian dùng thử miễn phí của bạn kết thúc vào {date}.</b> Hãy thêm thẻ để tiếp tục nhận đơn online.",
+      "trialEndsTomorrow": "<b>Thời gian dùng thử miễn phí của bạn kết thúc vào ngày mai.</b> Hãy thêm thẻ, nếu không đặt món online sẽ tạm dừng.",
+      "allSet": "<b>Mọi thứ đã sẵn sàng.</b> Gói {plan} bắt đầu từ {date}.",
+      "paymentFailed": "<b>Thanh toán của bạn không thành công.</b> Hãy cập nhật {method, select, payment_method {hình thức thanh toán} other {thẻ}} chậm nhất vào {date} để tiếp tục nhận đơn online.",
+      "paused": "<b>Đặt món online đang tạm dừng.</b> Hãy thanh toán {amount} chậm nhất vào {date}, nếu không tài khoản của bạn có thể bị tạm khóa.",
+      "addCard": "Thêm thẻ →",
+      "updateCard": "Cập nhật {method, select, payment_method {hình thức thanh toán} other {thẻ}} →",
+      "payNow": "Thanh toán ngay →",
+      "dismiss": "Bỏ qua"
+    }
+  },
+  "emailBilling": {
+    "greeting": "{hasName, select, yes {Chào {name},} other {Xin chào,}}",
+    "questions": "Có thắc mắc? Chỉ cần trả lời email này.",
+    "signoff": "Đội ngũ HatchGrab",
+    "buttonUpdate": "Cập nhật {method, select, payment_method {hình thức thanh toán} other {thẻ}}",
+    "buttonPay": "Thanh toán ngay",
+    "buttonAddCard": "Thêm thẻ",
+    "suspended": "Nếu vẫn chưa thanh toán, tài khoản của bạn có thể bị tạm khóa.",
+    "failed": {
+      "subject": "Thanh toán HatchGrab của bạn không thành công",
+      "line1": "Hôm nay chúng tôi không thu được {amount} cho {truck}. Chúng tôi sẽ thử lại.",
+      "line2": "Vui lòng cập nhật {method, select, payment_method {hình thức thanh toán} other {thẻ}} chậm nhất vào {date} để tiếp tục nhận đơn online."
+    },
+    "twoDays": {
+      "subject": "Còn 2 ngày để cập nhật {method, select, payment_method {hình thức thanh toán} other {thẻ}}",
+      "line1": "Khoản {amount} cho {truck} vẫn chưa được thanh toán. Hãy cập nhật {method, select, payment_method {hình thức thanh toán} other {thẻ}} chậm nhất vào {date}, nếu không đặt món online sẽ tạm dừng."
+    },
+    "oneDay": {
+      "subject": "Hãy cập nhật {method, select, payment_method {hình thức thanh toán} other {thẻ}} chậm nhất vào ngày mai",
+      "line1": "Khoản {amount} cho {truck} vẫn chưa được thanh toán. Hãy cập nhật {method, select, payment_method {hình thức thanh toán} other {thẻ}} chậm nhất vào ngày mai, nếu không đặt món online sẽ tạm dừng."
+    },
+    "lastDay": {
+      "subject": "Hôm nay là ngày cuối để cập nhật {method, select, payment_method {hình thức thanh toán} other {thẻ}}",
+      "line1": "Hôm nay là ngày cuối để thanh toán {amount} cho {truck}. Nếu đến nửa đêm vẫn chưa thanh toán, đặt món online sẽ tạm dừng cho đến khi bạn thanh toán."
+    },
+    "paused": {
+      "subject": "Đặt món online đang tạm dừng",
+      "line1": "Đặt món online của {truck} đang tạm dừng vì khoản {amount} chưa được thanh toán. Thanh toán ngay để mở lại.",
+      "line2": "Hãy thanh toán chậm nhất vào {date}, nếu không tài khoản của bạn có thể bị tạm khóa."
+    },
+    "trial7": {
+      "subject": "Thời gian dùng thử miễn phí của bạn kết thúc sau 7 ngày",
+      "line1": "Thời gian dùng thử miễn phí của {truck} kết thúc vào {date}.",
+      "line2": "Hãy thêm thẻ trong Quản lý › Gói & thanh toán để tiếp tục nhận đơn online.",
+      "plan": "Sau đó, gói {plan} có giá {price} mỗi tháng. Khi hết thời gian dùng thử, chúng tôi thu {amount} cho phần còn lại của {month}, sau đó thu {price} vào {nextFirst}.",
+      "planFree": "Sau đó, bạn dùng gói {plan}, không mất phí hằng tháng.",
+      "fee": "Phí {fee} của chúng tôi trên đơn online được thu vào ngày 1 hằng tháng, cho tháng trước."
+    },
+    "trial1": {
+      "subject": "Thời gian dùng thử miễn phí của bạn kết thúc vào ngày mai",
+      "line1": "Thời gian dùng thử miễn phí của {truck} kết thúc vào ngày mai.",
+      "noCard": "Hãy thêm thẻ, nếu không đặt món online sẽ tạm dừng.",
+      "allSet": "Mọi thứ đã sẵn sàng: gói {plan} bắt đầu từ {date}.",
+      "charge": "Chúng tôi sẽ thu {amount} cho phần còn lại của {month} khi hết thời gian dùng thử."
+    }
   }
 }

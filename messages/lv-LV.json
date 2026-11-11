@@ -7227,5 +7227,167 @@
       "body": "{truck} jums vairs nesūtīs atsauksmju pieprasījumus.",
       "invalid": "Šī atrakstīšanās saite nav derīga."
     }
+  },
+  "billing": {
+    "tab": {
+      "plan": {
+        "title": "Jūsu plāns",
+        "trialPill": "Bezmaksas izmēģinājums",
+        "change": "Mainīt plānu",
+        "trialLine": "Jūsu bezmaksas izmēģinājuma periods beidzas {date}. Pēc tam plāns {plan} maksās {price} mēnesī.",
+        "trialLineFree": "Jūsu bezmaksas izmēģinājuma periods beidzas {date}. Pēc tam jums būs plāns {plan} bez ikmēneša maksas.",
+        "proLine": "Ietver tiešsaistes pasūtījumus {allowance} vērtībā mēnesī. Pēc tam {fee}.",
+        "paygLine": "{fee} par tiešsaistes pasūtījumiem. Bez ikmēneša maksas.",
+        "unlimitedLine": "{price} mēnesī. Bez maksas par tiešsaistes pasūtījumiem.",
+        "pendingLine": "Plāns {plan} sāksies {date}."
+      },
+      "payment": {
+        "title": "Maksājuma veids",
+        "none": "Karte vēl nav pievienota. Pievienojiet to, lai pēc izmēģinājuma perioda turpinātu pieņemt tiešsaistes pasūtījumus.",
+        "add": "Pievienot karti",
+        "pix": "Izmantot Pix Automático",
+        "card": "{brand}, kas beidzas ar {last4}",
+        "pixOnFile": "Pix Automático",
+        "pending": "Gaida apstiprinājumu.",
+        "change": "Mainīt",
+        "lastFailed": "Pēdējais maksājums neizdevās",
+        "update": "Atjaunināt karti",
+        "error": "Neizdevās atvērt maksājuma lapu. Lūdzu, mēģiniet vēlreiz."
+      },
+      "whatYouPay": {
+        "title": "Ko jūs maksājat",
+        "plan": "Jūsu plāns, iekasē mēneša 1. datumā par nākamo mēnesi",
+        "fee": "Tiešsaistes pasūtījumi virs {allowance} mēnesī, iekasē mēneša 1. datumā par iepriekšējo mēnesi",
+        "feePayg": "Tiešsaistes pasūtījumi, iekasē mēneša 1. datumā par iepriekšējo mēnesi",
+        "walkUps": "Pasūtījumi uz vietas",
+        "free": "Bez maksas",
+        "trialEnd": "Kad jūsu izmēģinājuma periods beigsies {date}, mēs iekasēsim {amount} par atlikušo mēneša daļu ({month}). Pēc tam {nextFirst} — {price}."
+      },
+      "next": {
+        "title": "Nākamais maksājums · {date}",
+        "plan": "Plāns {plan} — {month}",
+        "fee": "{fee} par tiešsaistes pasūtījumiem virs {allowance} — {month} (līdz šim)",
+        "feePayg": "{fee} par tiešsaistes pasūtījumiem — {month} (līdz šim)",
+        "vans": "Papildu food truck — {month}",
+        "surcharge": "Pēcapmaksas maksa — {month}",
+        "carried": "Pārnests no iepriekšējā perioda",
+        "total": "Kopā līdz šim",
+        "walkUps": "Pasūtījumi uz vietas vienmēr ir bez maksas."
+      },
+      "preorders": {
+        "title": "Kā klienti maksā par iepriekšējiem pasūtījumiem",
+        "online": "Tiešsaistē, kad pasūta",
+        "onlineHint": "Nauda nonāk tieši jūsu Stripe kontā.",
+        "atTruck": "Pie food truck, kad saņem pasūtījumu",
+        "atTruckHint": "Tā vietā mūsu maksa tiek pievienota jūsu ikmēneša maksājumam.",
+        "saved": "Saglabāts.",
+        "error": "Neizdevās saglabāt. Lūdzu, mēģiniet vēlreiz."
+      },
+      "invoices": {
+        "title": "Rēķini",
+        "date": "Datums",
+        "for": "Par ko",
+        "amount": "Summa",
+        "status": "Statuss",
+        "forMonthly": "Plāns: {planMonth}, maksas: {usageMonth}",
+        "forMonthlyPlan": "Plāns: {planMonth}",
+        "forTrialEnd": "Atlikusī mēneša daļa ({month})",
+        "forUpgrade": "Pāreja uz plānu {plan}",
+        "lateFee": "Maksa par kavētu maksājumu",
+        "paid": "Apmaksāts",
+        "unpaid": "Neapmaksāts",
+        "overdue": "Kavēts",
+        "download": "Lejupielādēt",
+        "payNow": "Maksāt tagad",
+        "none": "Rēķinu vēl nav."
+      },
+      "failed": {
+        "title": "Jūsu maksājums {amount} apmērā neizdevās.",
+        "body": "Mēs mēģināsim vēlreiz. Atjauniniet karti līdz {date}, lai tiešsaistes pasūtīšana paliktu ieslēgta.",
+        "button": "Atjaunināt karti"
+      },
+      "paused": {
+        "title": "Tiešsaistes pasūtīšana ir apturēta",
+        "body": "Maksājums {amount} apmērā ir kavēts. Samaksājiet tagad, un tiešsaistes pasūtīšana uzreiz atsāksies.",
+        "warning": "Samaksājiet līdz {date}, citādi jūsu konts var tikt apturēts.",
+        "pay": "Maksāt {amount}",
+        "otherCard": "Izmantot citu karti"
+      },
+      "loading": "Ielādē norēķinus…",
+      "loadError": "Neizdevās ielādēt norēķinus. Lūdzu, mēģiniet vēlreiz."
+    },
+    "changePlan": {
+      "title": "Mainīt plānu",
+      "current": "Jums ir plāns {plan}.",
+      "free": "Bez maksas",
+      "perMonth": "{price} mēnesī",
+      "paygLine": "{fee} par tiešsaistes pasūtījumiem.",
+      "proLine": "Ietverti tiešsaistes pasūtījumi {allowance} vērtībā. Pēc tam {fee}.",
+      "unlimitedLine": "Bez maksas par tiešsaistes pasūtījumiem.",
+      "yourPlan": "Jūsu plāns",
+      "startsNow": "Sākas tūlīt.",
+      "chargeToday": "Šodien mēs iekasēsim {amount} par atlikušo mēneša daļu ({month}). Pēc tam {nextFirst} — {price}.",
+      "startsLater": "Sāksies {nextFirst}. Līdz tam jums paliek plāns {plan}.",
+      "cancel": "Atcelt",
+      "switchTo": "Pāriet uz plānu {plan}",
+      "error": "Neizdevās mainīt plānu. Lūdzu, mēģiniet vēlreiz."
+    },
+    "notices": {
+      "trialEndsSoon": "<b>Jūsu bezmaksas izmēģinājuma periods beidzas {date}.</b> Pievienojiet karti, lai tiešsaistes pasūtīšana paliktu ieslēgta.",
+      "trialEndsTomorrow": "<b>Jūsu bezmaksas izmēģinājuma periods beidzas rīt.</b> Pievienojiet karti, citādi tiešsaistes pasūtīšana tiks apturēta.",
+      "allSet": "<b>Viss ir gatavs.</b> Plāns {plan} sāksies {date}.",
+      "paymentFailed": "<b>Jūsu maksājums neizdevās.</b> Atjauniniet {method, select, payment_method {maksājuma veidu} other {karti}} līdz {date}, lai tiešsaistes pasūtīšana paliktu ieslēgta.",
+      "paused": "<b>Tiešsaistes pasūtīšana ir apturēta.</b> Samaksājiet {amount} līdz {date}, citādi jūsu konts var tikt apturēts.",
+      "addCard": "Pievienot karti →",
+      "updateCard": "Atjaunināt {method, select, payment_method {maksājuma veidu} other {karti}} →",
+      "payNow": "Maksāt tagad →",
+      "dismiss": "Aizvērt"
+    }
+  },
+  "emailBilling": {
+    "greeting": "{hasName, select, yes {Sveiki, {name}!} other {Sveiki!}}",
+    "questions": "Ir jautājumi? Vienkārši atbildiet uz šo e-pastu.",
+    "signoff": "HatchGrab komanda",
+    "buttonUpdate": "Atjaunināt {method, select, payment_method {maksājuma veidu} other {karti}}",
+    "buttonPay": "Maksāt tagad",
+    "buttonAddCard": "Pievienot karti",
+    "suspended": "Ja maksājums netiks veikts, jūsu konts var tikt apturēts.",
+    "failed": {
+      "subject": "Jūsu HatchGrab maksājums neizdevās",
+      "line1": "Šodien neizdevās iekasēt {amount} par {truck}. Mēs mēģināsim vēlreiz.",
+      "line2": "Lūdzu, atjauniniet {method, select, payment_method {maksājuma veidu} other {karti}} līdz {date}, lai tiešsaistes pasūtīšana paliktu ieslēgta."
+    },
+    "twoDays": {
+      "subject": "Atlikušas 2 dienas, lai atjauninātu {method, select, payment_method {maksājuma veidu} other {karti}}",
+      "line1": "Maksājums {amount} par {truck} joprojām nav veikts. Atjauniniet {method, select, payment_method {maksājuma veidu} other {karti}} līdz {date}, citādi tiešsaistes pasūtīšana tiks apturēta."
+    },
+    "oneDay": {
+      "subject": "Atjauniniet {method, select, payment_method {maksājuma veidu} other {karti}} līdz rītdienai",
+      "line1": "Maksājums {amount} par {truck} joprojām nav veikts. Atjauniniet {method, select, payment_method {maksājuma veidu} other {karti}} līdz rītdienai, citādi tiešsaistes pasūtīšana tiks apturēta."
+    },
+    "lastDay": {
+      "subject": "Pēdējā diena, lai atjauninātu {method, select, payment_method {maksājuma veidu} other {karti}}",
+      "line1": "Šodien ir pēdējā diena, lai samaksātu {amount} par {truck}. Ja līdz pusnaktij maksājums nebūs veikts, tiešsaistes pasūtīšana tiks apturēta, līdz jūs samaksāsiet."
+    },
+    "paused": {
+      "subject": "Tiešsaistes pasūtīšana ir apturēta",
+      "line1": "Tiešsaistes pasūtīšana ({truck}) ir apturēta, jo maksājums {amount} apmērā nav veikts. Samaksājiet tagad, un tā uzreiz atsāksies.",
+      "line2": "Samaksājiet līdz {date}, citādi jūsu konts var tikt apturēts."
+    },
+    "trial7": {
+      "subject": "Jūsu bezmaksas izmēģinājuma periods beigsies pēc 7 dienām",
+      "line1": "Jūsu bezmaksas izmēģinājuma periods ({truck}) beidzas {date}.",
+      "line2": "Pievienojiet karti sadaļā Pārvaldība › Norēķini, lai tiešsaistes pasūtīšana paliktu ieslēgta.",
+      "plan": "Pēc tam plāns {plan} maksās {price} mēnesī. Kad izmēģinājuma periods beigsies, mēs iekasēsim {amount} par atlikušo mēneša daļu ({month}), pēc tam {nextFirst} — {price}.",
+      "planFree": "Pēc tam jums būs plāns {plan} bez ikmēneša maksas.",
+      "fee": "Mūsu maksa {fee} par tiešsaistes pasūtījumiem tiek iekasēta mēneša 1. datumā par iepriekšējo mēnesi."
+    },
+    "trial1": {
+      "subject": "Jūsu bezmaksas izmēģinājuma periods beidzas rīt",
+      "line1": "Jūsu bezmaksas izmēģinājuma periods ({truck}) beidzas rīt.",
+      "noCard": "Pievienojiet karti, citādi tiešsaistes pasūtīšana tiks apturēta.",
+      "allSet": "Viss ir gatavs: plāns {plan} sāksies {date}.",
+      "charge": "Kad izmēģinājuma periods beigsies, mēs iekasēsim {amount} par atlikušo mēneša daļu ({month})."
+    }
   }
 }

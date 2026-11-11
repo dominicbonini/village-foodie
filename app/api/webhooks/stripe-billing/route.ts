@@ -14,13 +14,14 @@
 //   invoice.marked_uncollectible             → our billing_invoices row and the truck's status (paying resumes ordering)
 //   setup_intent.succeeded / setup_failed    → the truck's payment method on file (card, Pix Automático)
 //   payment_method.detached · mandate.updated (inactive) → the method is no longer usable
+//   checkout.session.completed (setup mode)   → billing-2: the card added on Stripe's hosted page, then unpaid invoices tried on it
 // Anything else: recorded, 200, nothing done.
 import { NextRequest, NextResponse } from 'next/server'
 import type Stripe from 'stripe'
 import { createClient } from '@supabase/supabase-js'
 import { parseSigningSecrets, verifyStripeSignature } from '@/lib/stripe/webhook-signature'
 import { supabaseBillingStore } from '@/lib/billing/store'
-import { applyInvoiceUpdate, applyPaymentMethod } from '@/lib/billing/engine'
+import { applyInvoiceUpdate, applyPaymentMethod, payOpenInvoices } from '@/lib/billing/engine'
 import { processorInvoiceOf, stripeBillingProcessor } from '@/lib/billing/processor'
 import { getPlanCatalog } from '@/lib/plans-server'
 
@@ -99,6 +100,18 @@ async function handle(event: Stripe.Event): Promise<string> {
     const pm = await stripeBillingProcessor().retrievePaymentMethod(pmId)
     await applyPaymentMethod(store, await getPlanCatalog(), { truckId, pm, state: 'valid', livemode: false, now, by: 'stripe_webhook', setupIntentId: si.id })
     return 'payment_method_valid'
+  }
+
+  if (event.type === 'checkout.session.completed') {
+    const cs = event.data.object as Stripe.Checkout.Session
+    if (cs.mode !== 'setup' || (cs.metadata ?? {}).hatchgrab !== 'billing-1') return 'ignored_not_ours'
+    const proc = stripeBillingProcessor()
+    const s = await proc.retrieveSetupCheckout(cs.id)
+    if (!s.truckId || !s.complete || !s.paymentMethod) return 'ignored_incomplete'
+    const catalog = await getPlanCatalog()
+    await applyPaymentMethod(store, catalog, { truckId: s.truckId, pm: s.paymentMethod, state: 'valid', livemode: false, now, by: 'stripe_webhook', setupIntentId: s.setupIntentId })
+    await payOpenInvoices(store, proc, catalog, { truckId: s.truckId, now, by: 'stripe_webhook' })
+    return 'payment_method_valid_checkout'
   }
 
   if (event.type === 'payment_method.detached' || event.type === 'mandate.updated') {

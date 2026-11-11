@@ -1,0 +1,46 @@
+{
+  "greeting": "{hasName, select, yes {Dobrý deň, {name},} other {Dobrý deň,}}",
+  "questions": "Máte otázky? Stačí odpovedať na tento e-mail.",
+  "signoff": "Tím HatchGrab",
+  "buttonUpdate": "Aktualizovať {method, select, payment_method {spôsob platby} other {kartu}}",
+  "buttonPay": "Zaplatiť teraz",
+  "buttonAddCard": "Pridať kartu",
+  "suspended": "Ak suma zostane nezaplatená, váš účet môže byť zablokovaný.",
+  "failed": {
+    "subject": "Vaša platba za HatchGrab neprešla",
+    "line1": "Dnes sa nám nepodarilo strhnúť {amount} za {truck}. Skúsime to znova.",
+    "line2": "Aktualizujte, prosím, {method, select, payment_method {spôsob platby} other {kartu}} do {date}, aby online objednávanie zostalo zapnuté."
+  },
+  "twoDays": {
+    "subject": "Ešte 2 dni na aktualizáciu {method, select, payment_method {spôsobu platby} other {karty}}",
+    "line1": "Suma {amount} za {truck} je stále nezaplatená. Aktualizujte {method, select, payment_method {spôsob platby} other {kartu}} do {date}, inak sa online objednávanie pozastaví."
+  },
+  "oneDay": {
+    "subject": "Aktualizujte {method, select, payment_method {spôsob platby} other {kartu}} do zajtra",
+    "line1": "Suma {amount} za {truck} je stále nezaplatená. Aktualizujte {method, select, payment_method {spôsob platby} other {kartu}} do zajtra, inak sa online objednávanie pozastaví."
+  },
+  "lastDay": {
+    "subject": "Posledný deň na aktualizáciu {method, select, payment_method {spôsobu platby} other {karty}}",
+    "line1": "Dnes je posledný deň na zaplatenie sumy {amount} za {truck}. Ak bude o polnoci stále nezaplatená, online objednávanie sa pozastaví, kým nezaplatíte."
+  },
+  "paused": {
+    "subject": "Online objednávanie je pozastavené",
+    "line1": "Online objednávanie pre {truck} je pozastavené, pretože suma {amount} nie je zaplatená. Zaplaťte teraz a hneď sa znova zapne.",
+    "line2": "Zaplaťte do {date}, inak môže byť váš účet zablokovaný."
+  },
+  "trial7": {
+    "subject": "Vaše bezplatné skúšobné obdobie končí o 7 dní",
+    "line1": "Vaše bezplatné skúšobné obdobie pre {truck} končí {date}.",
+    "line2": "Pridajte kartu v časti Správa › Fakturácia, aby online objednávanie zostalo zapnuté.",
+    "plan": "Potom bude plán {plan} stáť {price} mesačne. Keď sa skúšobné obdobie skončí, zaúčtujeme {amount} za zvyšok mesiaca {month} a potom {price} dňa {nextFirst}.",
+    "planFree": "Potom budete mať plán {plan} bez mesačného poplatku.",
+    "fee": "Náš poplatok {fee} z online objednávok sa účtuje 1. dňa v mesiaci za predchádzajúci mesiac."
+  },
+  "trial1": {
+    "subject": "Vaše bezplatné skúšobné obdobie končí zajtra",
+    "line1": "Vaše bezplatné skúšobné obdobie pre {truck} končí zajtra.",
+    "noCard": "Pridajte kartu, inak sa online objednávanie pozastaví.",
+    "allSet": "Všetko je pripravené: plán {plan} sa začína {date}.",
+    "charge": "Keď sa skúšobné obdobie skončí, zaúčtujeme {amount} za zvyšok mesiaca {month}."
+  }
+}

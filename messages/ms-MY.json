@@ -7227,5 +7227,167 @@
       "body": "{truck} tidak akan menghantar permintaan ulasan kepada anda lagi.",
       "invalid": "Pautan berhenti melanggan ini tidak sah."
     }
+  },
+  "billing": {
+    "tab": {
+      "plan": {
+        "title": "Pelan anda",
+        "trialPill": "Percubaan percuma",
+        "change": "Tukar pelan",
+        "trialLine": "Percubaan percuma anda tamat pada {date}. Selepas itu, harga pelan {plan} ialah {price} sebulan.",
+        "trialLineFree": "Percubaan percuma anda tamat pada {date}. Selepas itu, anda akan menggunakan pelan {plan}, tanpa yuran bulanan.",
+        "proLine": "Termasuk pesanan dalam talian bernilai {allowance} sebulan. Kemudian {fee}.",
+        "paygLine": "{fee} untuk pesanan dalam talian. Tiada yuran bulanan.",
+        "unlimitedLine": "{price} sebulan. Tiada yuran untuk pesanan dalam talian.",
+        "pendingLine": "Pelan {plan} bermula pada {date}."
+      },
+      "payment": {
+        "title": "Kaedah pembayaran",
+        "none": "Belum ada kad ditambah. Tambah kad untuk terus menerima pesanan dalam talian selepas percubaan anda.",
+        "add": "Tambah kad",
+        "pix": "Guna Pix Automático",
+        "card": "{brand} berakhir {last4}",
+        "pixOnFile": "Pix Automático",
+        "pending": "Menunggu pengesahan.",
+        "change": "Tukar",
+        "lastFailed": "Pembayaran terakhir gagal",
+        "update": "Kemas kini kad",
+        "error": "Kami tidak dapat membuka halaman pembayaran. Sila cuba lagi."
+      },
+      "whatYouPay": {
+        "title": "Apa yang anda bayar",
+        "plan": "Pelan anda, dicaj pada 1 haribulan untuk bulan hadapan",
+        "fee": "Pesanan dalam talian melebihi {allowance} sebulan, dicaj pada 1 haribulan untuk bulan sebelumnya",
+        "feePayg": "Pesanan dalam talian, dicaj pada 1 haribulan untuk bulan sebelumnya",
+        "walkUps": "Pesanan walk-in",
+        "free": "Percuma",
+        "trialEnd": "Apabila percubaan anda tamat pada {date}, kami akan mengecaj {amount} untuk baki bulan {month}. Kemudian {price} pada {nextFirst}."
+      },
+      "next": {
+        "title": "Pembayaran seterusnya · {date}",
+        "plan": "Pelan {plan} untuk {month}",
+        "fee": "{fee} untuk pesanan dalam talian {month} melebihi {allowance} (setakat ini)",
+        "feePayg": "{fee} untuk pesanan dalam talian {month} (setakat ini)",
+        "vans": "Trak tambahan untuk {month}",
+        "surcharge": "Caj bayar kemudian untuk {month}",
+        "carried": "Dibawa dari tempoh sebelumnya",
+        "total": "Jumlah setakat ini",
+        "walkUps": "Pesanan walk-in sentiasa percuma."
+      },
+      "preorders": {
+        "title": "Cara pelanggan membayar pra-pesanan",
+        "online": "Dalam talian, semasa membuat pesanan",
+        "onlineHint": "Wang terus masuk ke akaun Stripe anda.",
+        "atTruck": "Di trak, semasa mengambil pesanan",
+        "atTruckHint": "Sebaliknya, yuran kami ditambah pada caj bulanan anda.",
+        "saved": "Disimpan.",
+        "error": "Kami tidak dapat menyimpannya. Sila cuba lagi."
+      },
+      "invoices": {
+        "title": "Invois",
+        "date": "Tarikh",
+        "for": "Untuk",
+        "amount": "Jumlah",
+        "status": "Status",
+        "forMonthly": "Pelan {planMonth}, yuran {usageMonth}",
+        "forMonthlyPlan": "Pelan {planMonth}",
+        "forTrialEnd": "Baki bulan {month}",
+        "forUpgrade": "Tukar ke {plan}",
+        "lateFee": "Yuran bayaran lewat",
+        "paid": "Dibayar",
+        "unpaid": "Belum dibayar",
+        "overdue": "Tertunggak",
+        "download": "Muat turun",
+        "payNow": "Bayar sekarang",
+        "none": "Belum ada invois."
+      },
+      "failed": {
+        "title": "Pembayaran {amount} anda tidak berjaya.",
+        "body": "Kami akan cuba lagi. Kemas kini kad anda selewat-lewatnya pada {date} supaya pesanan dalam talian kekal aktif.",
+        "button": "Kemas kini kad"
+      },
+      "paused": {
+        "title": "Pesanan dalam talian dijeda",
+        "body": "{amount} sudah tertunggak. Bayar sekarang dan pesanan dalam talian akan aktif semula serta-merta.",
+        "warning": "Bayar selewat-lewatnya pada {date} atau akaun anda mungkin digantung.",
+        "pay": "Bayar {amount}",
+        "otherCard": "Guna kad lain"
+      },
+      "loading": "Memuatkan pengebilan…",
+      "loadError": "Kami tidak dapat memuatkan pengebilan anda. Sila cuba lagi."
+    },
+    "changePlan": {
+      "title": "Tukar pelan",
+      "current": "Anda menggunakan pelan {plan}.",
+      "free": "Percuma",
+      "perMonth": "{price} sebulan",
+      "paygLine": "{fee} untuk pesanan dalam talian.",
+      "proLine": "Termasuk pesanan dalam talian bernilai {allowance}. Kemudian {fee}.",
+      "unlimitedLine": "Tiada yuran untuk pesanan dalam talian.",
+      "yourPlan": "Pelan anda",
+      "startsNow": "Bermula sekarang.",
+      "chargeToday": "Kami akan mengecaj {amount} hari ini untuk baki bulan {month}. Kemudian {price} pada {nextFirst}.",
+      "startsLater": "Bermula pada {nextFirst}. Anda kekal dengan pelan {plan} sehingga itu.",
+      "cancel": "Batal",
+      "switchTo": "Tukar ke {plan}",
+      "error": "Kami tidak dapat menukar pelan anda. Sila cuba lagi."
+    },
+    "notices": {
+      "trialEndsSoon": "<b>Percubaan percuma anda tamat pada {date}.</b> Tambah kad supaya pesanan dalam talian kekal aktif.",
+      "trialEndsTomorrow": "<b>Percubaan percuma anda tamat esok.</b> Tambah kad atau pesanan dalam talian akan dijeda.",
+      "allSet": "<b>Semuanya sudah sedia.</b> Pelan {plan} bermula pada {date}.",
+      "paymentFailed": "<b>Pembayaran anda tidak berjaya.</b> Kemas kini {method, select, payment_method {kaedah pembayaran} other {kad}} anda selewat-lewatnya pada {date} supaya pesanan dalam talian kekal aktif.",
+      "paused": "<b>Pesanan dalam talian dijeda.</b> Bayar {amount} selewat-lewatnya pada {date} atau akaun anda mungkin digantung.",
+      "addCard": "Tambah kad →",
+      "updateCard": "Kemas kini {method, select, payment_method {kaedah pembayaran} other {kad}} →",
+      "payNow": "Bayar sekarang →",
+      "dismiss": "Tutup"
+    }
+  },
+  "emailBilling": {
+    "greeting": "{hasName, select, yes {Hai {name},} other {Hai,}}",
+    "questions": "Ada soalan? Balas sahaja e-mel ini.",
+    "signoff": "Pasukan HatchGrab",
+    "buttonUpdate": "Kemas kini {method, select, payment_method {kaedah pembayaran} other {kad}}",
+    "buttonPay": "Bayar sekarang",
+    "buttonAddCard": "Tambah kad",
+    "suspended": "Jika masih belum dibayar, akaun anda mungkin digantung.",
+    "failed": {
+      "subject": "Pembayaran HatchGrab anda tidak berjaya",
+      "line1": "Kami tidak dapat mengutip {amount} untuk {truck} hari ini. Kami akan cuba lagi.",
+      "line2": "Sila kemas kini {method, select, payment_method {kaedah pembayaran} other {kad}} anda selewat-lewatnya pada {date} supaya pesanan dalam talian kekal aktif."
+    },
+    "twoDays": {
+      "subject": "Tinggal 2 hari untuk mengemas kini {method, select, payment_method {kaedah pembayaran} other {kad}} anda",
+      "line1": "{amount} untuk {truck} masih belum dibayar. Kemas kini {method, select, payment_method {kaedah pembayaran} other {kad}} anda selewat-lewatnya pada {date}, atau pesanan dalam talian akan dijeda."
+    },
+    "oneDay": {
+      "subject": "Kemas kini {method, select, payment_method {kaedah pembayaran} other {kad}} anda selewat-lewatnya esok",
+      "line1": "{amount} untuk {truck} masih belum dibayar. Kemas kini {method, select, payment_method {kaedah pembayaran} other {kad}} anda selewat-lewatnya esok, atau pesanan dalam talian akan dijeda."
+    },
+    "lastDay": {
+      "subject": "Hari terakhir untuk mengemas kini {method, select, payment_method {kaedah pembayaran} other {kad}} anda",
+      "line1": "Hari ini hari terakhir untuk membayar {amount} untuk {truck}. Jika masih belum dibayar pada tengah malam, pesanan dalam talian akan dijeda sehingga anda membayar."
+    },
+    "paused": {
+      "subject": "Pesanan dalam talian dijeda",
+      "line1": "Pesanan dalam talian untuk {truck} dijeda kerana {amount} belum dibayar. Bayar sekarang dan ia akan aktif semula serta-merta.",
+      "line2": "Bayar selewat-lewatnya pada {date} atau akaun anda mungkin digantung."
+    },
+    "trial7": {
+      "subject": "Percubaan percuma anda tamat dalam 7 hari",
+      "line1": "Percubaan percuma anda untuk {truck} tamat pada {date}.",
+      "line2": "Tambah kad di Urus › Pengebilan supaya pesanan dalam talian kekal aktif.",
+      "plan": "Selepas itu, harga pelan {plan} ialah {price} sebulan. Apabila percubaan anda tamat, kami akan mengecaj {amount} untuk baki bulan {month}, kemudian {price} pada {nextFirst}.",
+      "planFree": "Selepas itu, anda akan menggunakan pelan {plan}, tanpa yuran bulanan.",
+      "fee": "Yuran {fee} kami untuk pesanan dalam talian dicaj pada 1 haribulan, untuk bulan sebelumnya."
+    },
+    "trial1": {
+      "subject": "Percubaan percuma anda tamat esok",
+      "line1": "Percubaan percuma anda untuk {truck} tamat esok.",
+      "noCard": "Tambah kad atau pesanan dalam talian akan dijeda.",
+      "allSet": "Semuanya sudah sedia: pelan {plan} bermula pada {date}.",
+      "charge": "Kami akan mengecaj {amount} untuk baki bulan {month} apabila percubaan anda tamat."
+    }
   }
 }

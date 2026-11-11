@@ -1,0 +1,46 @@
+{
+  "greeting": "{hasName, select, yes {{name}様} other {こんにちは。}}",
+  "questions": "ご不明な点は、このメールにご返信ください。",
+  "signoff": "HatchGrabチーム",
+  "buttonUpdate": "{method, select, payment_method {お支払い方法} other {カード}}を更新",
+  "buttonPay": "今すぐ支払う",
+  "buttonAddCard": "カードを登録",
+  "suspended": "未払いのままの場合、アカウントが停止されることがあります。",
+  "failed": {
+    "subject": "HatchGrabのお支払いが完了しませんでした",
+    "line1": "本日、{truck}の{amount}を決済できませんでした。再度お試しします。",
+    "line2": "オンライン注文を続けるには、{date}までに{method, select, payment_method {お支払い方法} other {カード}}を更新してください。"
+  },
+  "twoDays": {
+    "subject": "{method, select, payment_method {お支払い方法} other {カード}}の更新期限まであと2日です",
+    "line1": "{truck}の{amount}がまだ支払われていません。{date}までに{method, select, payment_method {お支払い方法} other {カード}}を更新してください。更新がない場合、オンライン注文が停止されます。"
+  },
+  "oneDay": {
+    "subject": "明日までに{method, select, payment_method {お支払い方法} other {カード}}を更新してください",
+    "line1": "{truck}の{amount}がまだ支払われていません。明日までに{method, select, payment_method {お支払い方法} other {カード}}を更新してください。更新がない場合、オンライン注文が停止されます。"
+  },
+  "lastDay": {
+    "subject": "本日が{method, select, payment_method {お支払い方法} other {カード}}の更新期限です",
+    "line1": "本日が{truck}の{amount}のお支払い期限です。日付が変わる時点で未払いの場合、お支払いいただくまでオンライン注文が停止されます。"
+  },
+  "paused": {
+    "subject": "オンライン注文は停止中です",
+    "line1": "{amount}が未払いのため、{truck}のオンライン注文を停止しています。今すぐお支払いいただくと、すぐに再開されます。",
+    "line2": "{date}までにお支払いがない場合、アカウントが停止されることがあります。"
+  },
+  "trial7": {
+    "subject": "無料トライアルはあと7日で終了します",
+    "line1": "{truck}の無料トライアルは{date}に終了します。",
+    "line2": "オンライン注文を続けるには、管理画面 › プラン・請求でカードを登録してください。",
+    "plan": "終了後、{plan}は月額{price}です。トライアル終了時に{month}の残り期間分として{amount}を請求し、その後{nextFirst}に{price}を請求します。",
+    "planFree": "終了後は{plan}となり、月額料金はかかりません。",
+    "fee": "オンライン注文にかかる当社の手数料{fee}は、毎月1日に前月分を請求します。"
+  },
+  "trial1": {
+    "subject": "無料トライアルは明日終了します",
+    "line1": "{truck}の無料トライアルは明日終了します。",
+    "noCard": "カードを登録しないと、オンライン注文が停止されます。",
+    "allSet": "準備が整いました。{plan}は{date}に始まります。",
+    "charge": "トライアル終了時に、{month}の残り期間分として{amount}を請求します。"
+  }
+}

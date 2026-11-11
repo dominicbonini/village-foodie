@@ -1,0 +1,116 @@
+{
+  "tab": {
+    "plan": {
+      "title": "Áskriftarleiðin þín",
+      "trialPill": "Ókeypis prufa",
+      "change": "Breyta áskriftarleið",
+      "trialLine": "Ókeypis prufunni þinni lýkur {date}. Eftir það kostar {plan} {price} á mánuði.",
+      "trialLineFree": "Ókeypis prufunni þinni lýkur {date}. Eftir það ertu á áskriftarleiðinni {plan}, án mánaðargjalds.",
+      "proLine": "Innifalið: netpantanir fyrir {allowance} á mánuði. Síðan {fee}.",
+      "paygLine": "{fee} af netpöntunum. Ekkert mánaðargjald.",
+      "unlimitedLine": "{price} á mánuði. Ekkert gjald af netpöntunum.",
+      "pendingLine": "Áskriftarleiðin {plan} hefst {date}."
+    },
+    "payment": {
+      "title": "Greiðslumáti",
+      "none": "Ekkert kort skráð enn. Bættu við korti til að halda áfram að taka við netpöntunum eftir prufuna.",
+      "add": "Bæta við korti",
+      "pix": "Nota Pix Automático",
+      "card": "{brand} sem endar á {last4}",
+      "pixOnFile": "Pix Automático",
+      "pending": "Bíður staðfestingar.",
+      "change": "Breyta",
+      "lastFailed": "Síðasta greiðsla mistókst",
+      "update": "Uppfæra kort",
+      "error": "Ekki tókst að opna greiðslusíðuna. Reyndu aftur."
+    },
+    "whatYouPay": {
+      "title": "Það sem þú greiðir",
+      "plan": "Áskriftarleiðin þín, gjaldfærð 1. hvers mánaðar fyrir mánuðinn fram undan",
+      "fee": "Netpantanir umfram {allowance} á mánuði, gjaldfærðar 1. hvers mánaðar fyrir mánuðinn á undan",
+      "feePayg": "Netpantanir, gjaldfærðar 1. hvers mánaðar fyrir mánuðinn á undan",
+      "walkUps": "Pantanir á staðnum",
+      "free": "Ókeypis",
+      "trialEnd": "Þegar prufunni lýkur {date} gjaldfærum við {amount} fyrir það sem eftir er af {month}. Síðan {price} þann {nextFirst}."
+    },
+    "next": {
+      "title": "Næsta greiðsla · {date}",
+      "plan": "{plan} fyrir {month}",
+      "fee": "{fee} af netpöntunum í {month} umfram {allowance} (hingað til)",
+      "feePayg": "{fee} af netpöntunum í {month} (hingað til)",
+      "vans": "Aukavagnar fyrir {month}",
+      "surcharge": "Gjald vegna greiðslu við vagninn fyrir {month}",
+      "carried": "Flutt frá fyrra tímabili",
+      "total": "Samtals hingað til",
+      "walkUps": "Pantanir á staðnum eru alltaf ókeypis."
+    },
+    "preorders": {
+      "title": "Hvernig viðskiptavinir greiða fyrir forpöntun",
+      "online": "Á netinu, þegar þeir panta",
+      "onlineHint": "Peningarnir fara beint inn á Stripe-reikninginn þinn.",
+      "atTruck": "Við vagninn, þegar þeir sækja",
+      "atTruckHint": "Gjaldið okkar bætist þá við mánaðargjaldið þitt.",
+      "saved": "Vistað.",
+      "error": "Ekki tókst að vista þetta. Reyndu aftur."
+    },
+    "invoices": {
+      "title": "Reikningar",
+      "date": "Dagsetning",
+      "for": "Fyrir",
+      "amount": "Upphæð",
+      "status": "Staða",
+      "forMonthly": "Áskriftarleið fyrir {planMonth}, gjöld fyrir {usageMonth}",
+      "forMonthlyPlan": "Áskriftarleið fyrir {planMonth}",
+      "forTrialEnd": "Það sem eftir er af {month}",
+      "forUpgrade": "Skipt yfir í {plan}",
+      "lateFee": "Vanskilagjald",
+      "paid": "Greitt",
+      "unpaid": "Ógreitt",
+      "overdue": "Í vanskilum",
+      "download": "Sækja",
+      "payNow": "Greiða núna",
+      "none": "Engir reikningar enn."
+    },
+    "failed": {
+      "title": "Greiðslan þín upp á {amount} fór ekki í gegn.",
+      "body": "Við reynum aftur. Uppfærðu kortið þitt fyrir {date} til að halda netpöntunum opnum.",
+      "button": "Uppfæra kort"
+    },
+    "paused": {
+      "title": "Hlé er á netpöntunum",
+      "body": "{amount} er gjaldfallið. Greiddu núna og netpantanir opnast strax aftur.",
+      "warning": "Greiddu fyrir {date}, annars gæti aðganginum þínum verið lokað.",
+      "pay": "Greiða {amount}",
+      "otherCard": "Nota annað kort"
+    },
+    "loading": "Hleð áskrift…",
+    "loadError": "Ekki tókst að hlaða áskriftarupplýsingunum. Reyndu aftur."
+  },
+  "changePlan": {
+    "title": "Breyta áskriftarleið",
+    "current": "Þú ert á áskriftarleiðinni {plan}.",
+    "free": "Ókeypis",
+    "perMonth": "{price} á mánuði",
+    "paygLine": "{fee} af netpöntunum.",
+    "proLine": "Netpantanir fyrir {allowance} innifaldar. Síðan {fee}.",
+    "unlimitedLine": "Ekkert gjald af netpöntunum.",
+    "yourPlan": "Áskriftarleiðin þín",
+    "startsNow": "Hefst strax.",
+    "chargeToday": "Við gjaldfærum {amount} í dag fyrir það sem eftir er af {month}. Síðan {price} þann {nextFirst}.",
+    "startsLater": "Hefst {nextFirst}. Þú heldur áskriftarleiðinni {plan} fram að því.",
+    "cancel": "Hætta við",
+    "switchTo": "Skipta yfir í {plan}",
+    "error": "Ekki tókst að breyta áskriftarleiðinni. Reyndu aftur."
+  },
+  "notices": {
+    "trialEndsSoon": "<b>Ókeypis prufunni þinni lýkur {date}.</b> Bættu við korti til að halda netpöntunum opnum.",
+    "trialEndsTomorrow": "<b>Ókeypis prufunni þinni lýkur á morgun.</b> Bættu við korti, annars verður hlé á netpöntunum.",
+    "allSet": "<b>Allt klárt.</b> Áskriftarleiðin {plan} hefst {date}.",
+    "paymentFailed": "<b>Greiðslan þín fór ekki í gegn.</b> Uppfærðu {method, select, payment_method {greiðslumátann} other {kortið}} þitt fyrir {date} til að halda netpöntunum opnum.",
+    "paused": "<b>Hlé er á netpöntunum.</b> Greiddu {amount} fyrir {date}, annars gæti aðganginum þínum verið lokað.",
+    "addCard": "Bæta við korti →",
+    "updateCard": "Uppfæra {method, select, payment_method {greiðslumáta} other {kort}} →",
+    "payNow": "Greiða núna →",
+    "dismiss": "Loka"
+  }
+}

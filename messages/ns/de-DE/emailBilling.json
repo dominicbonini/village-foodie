@@ -1,0 +1,46 @@
+{
+  "greeting": "{hasName, select, yes {Hallo {name},} other {Hallo,}}",
+  "questions": "Fragen? Antworten Sie einfach auf diese E-Mail.",
+  "signoff": "Ihr HatchGrab-Team",
+  "buttonUpdate": "{method, select, payment_method {Zahlungsmethode} other {Karte}} aktualisieren",
+  "buttonPay": "Jetzt bezahlen",
+  "buttonAddCard": "Karte hinzufügen",
+  "suspended": "Bleibt der Betrag offen, kann Ihr Konto gesperrt werden.",
+  "failed": {
+    "subject": "Ihre HatchGrab-Zahlung ist fehlgeschlagen",
+    "line1": "Wir konnten heute {amount} für {truck} nicht einziehen. Wir versuchen es erneut.",
+    "line2": "Bitte aktualisieren Sie Ihre {method, select, payment_method {Zahlungsmethode} other {Karte}} bis zum {date}, damit Online-Bestellungen aktiv bleiben."
+  },
+  "twoDays": {
+    "subject": "Noch 2 Tage, um Ihre {method, select, payment_method {Zahlungsmethode} other {Karte}} zu aktualisieren",
+    "line1": "{amount} für {truck} ist noch offen. Aktualisieren Sie Ihre {method, select, payment_method {Zahlungsmethode} other {Karte}} bis zum {date}, sonst werden Online-Bestellungen pausiert."
+  },
+  "oneDay": {
+    "subject": "Aktualisieren Sie Ihre {method, select, payment_method {Zahlungsmethode} other {Karte}} bis morgen",
+    "line1": "{amount} für {truck} ist noch offen. Aktualisieren Sie Ihre {method, select, payment_method {Zahlungsmethode} other {Karte}} bis morgen, sonst werden Online-Bestellungen pausiert."
+  },
+  "lastDay": {
+    "subject": "Letzter Tag, um Ihre {method, select, payment_method {Zahlungsmethode} other {Karte}} zu aktualisieren",
+    "line1": "Heute ist der letzte Tag, um {amount} für {truck} zu bezahlen. Ist der Betrag um Mitternacht noch offen, werden Online-Bestellungen pausiert, bis Sie bezahlen."
+  },
+  "paused": {
+    "subject": "Online-Bestellungen sind pausiert",
+    "line1": "Online-Bestellungen für {truck} sind pausiert, weil {amount} offen ist. Bezahlen Sie jetzt, und sie sind sofort wieder aktiv.",
+    "line2": "Zahlen Sie bis zum {date}, sonst kann Ihr Konto gesperrt werden."
+  },
+  "trial7": {
+    "subject": "Ihre kostenlose Testphase endet in 7 Tagen",
+    "line1": "Ihre kostenlose Testphase für {truck} endet am {date}.",
+    "line2": "Hinterlegen Sie unter Verwaltung › Abrechnung eine Karte, damit Online-Bestellungen aktiv bleiben.",
+    "plan": "Danach kostet der Tarif {plan} {price} pro Monat. Wenn Ihre Testphase endet, berechnen wir {amount} für den restlichen {month}, danach {price} am {nextFirst}.",
+    "planFree": "Danach nutzen Sie den Tarif {plan} ohne monatliche Gebühr.",
+    "fee": "Unsere Gebühr von {fee} auf Online-Bestellungen wird am 1. für den Vormonat abgerechnet."
+  },
+  "trial1": {
+    "subject": "Ihre kostenlose Testphase endet morgen",
+    "line1": "Ihre kostenlose Testphase für {truck} endet morgen.",
+    "noCard": "Hinterlegen Sie eine Karte, sonst werden Online-Bestellungen pausiert.",
+    "allSet": "Alles bereit: Der Tarif {plan} beginnt am {date}.",
+    "charge": "Wenn Ihre Testphase endet, berechnen wir {amount} für den restlichen {month}."
+  }
+}

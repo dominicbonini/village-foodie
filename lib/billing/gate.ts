@@ -37,8 +37,11 @@ export interface BillingGate {
   onlineOrderingPaused: boolean
   /** Billing allows Pay at Hatch (the plan's switch still applies on top). */
   payAtHatchAllowed: boolean
+  /** billing-2: billing allows CARD payment online. False for a post-pay truck ("At the truck, when they collect" — Manage ›
+   *  Billing), whose customers pay at the truck; the Stripe readiness check still applies on top. */
+  cardPaymentsAllowed: boolean
 }
-export const BILLING_GATE_OFF: BillingGate = { onlineOrderingPaused: false, payAtHatchAllowed: true }
+export const BILLING_GATE_OFF: BillingGate = { onlineOrderingPaused: false, payAtHatchAllowed: true, cardPaymentsAllowed: true }
 
 /** The gate for one truck. Any truck row will do — it is re-read narrowly by id when the switch is on. */
 export async function billingGateForTruck(truck: { id: string }, catalog: PlanCatalog, now: Date = new Date()): Promise<BillingGate> {
@@ -48,7 +51,8 @@ export async function billingGateForTruck(truck: { id: string }, catalog: PlanCa
     const stored = await store.truck(truck.id)
     if (!stored) return BILLING_GATE_OFF
     const ctx = await billingContextFor(store, stored, catalog, now)
-    return { onlineOrderingPaused: onlineOrderingPausedByBilling(ctx), payAtHatchAllowed: payAtHatchAllowedByBilling(ctx) }
+    const postPay = billableOf(ctx).billable && arrangementOf(ctx)?.postPay === true
+    return { onlineOrderingPaused: onlineOrderingPausedByBilling(ctx), payAtHatchAllowed: payAtHatchAllowedByBilling(ctx), cardPaymentsAllowed: !postPay }
   } catch (err) {
     console.error(`[billing/gate] 🔴 could not read billing for truck=${truck.id} — answering as if billing were off:`, err instanceof Error ? err.message : err)
     return BILLING_GATE_OFF

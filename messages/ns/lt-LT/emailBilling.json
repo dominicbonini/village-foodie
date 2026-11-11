@@ -1,0 +1,46 @@
+{
+  "greeting": "{hasName, select, yes {Sveiki, {name},} other {Sveiki,}}",
+  "questions": "Turite klausimų? Tiesiog atsakykite į šį laišką.",
+  "signoff": "HatchGrab komanda",
+  "buttonUpdate": "Atnaujinti {method, select, payment_method {mokėjimo būdą} other {kortelę}}",
+  "buttonPay": "Mokėti dabar",
+  "buttonAddCard": "Pridėti kortelę",
+  "suspended": "Jei suma liks neapmokėta, jūsų paskyra gali būti sustabdyta.",
+  "failed": {
+    "subject": "Jūsų HatchGrab mokėjimas nepavyko",
+    "line1": "Šiandien nepavyko nuskaityti {amount} už {truck}. Bandysime dar kartą.",
+    "line2": "Atnaujinkite {method, select, payment_method {mokėjimo būdą} other {kortelę}} iki {date}, kad internetiniai užsakymai liktų įjungti."
+  },
+  "twoDays": {
+    "subject": "Liko 2 dienos atnaujinti {method, select, payment_method {mokėjimo būdą} other {kortelę}}",
+    "line1": "{amount} už {truck} vis dar neapmokėta. Atnaujinkite {method, select, payment_method {mokėjimo būdą} other {kortelę}} iki {date}, kitaip internetiniai užsakymai bus sustabdyti."
+  },
+  "oneDay": {
+    "subject": "Atnaujinkite {method, select, payment_method {mokėjimo būdą} other {kortelę}} iki rytojaus",
+    "line1": "{amount} už {truck} vis dar neapmokėta. Atnaujinkite {method, select, payment_method {mokėjimo būdą} other {kortelę}} iki rytojaus, kitaip internetiniai užsakymai bus sustabdyti."
+  },
+  "lastDay": {
+    "subject": "Paskutinė diena atnaujinti {method, select, payment_method {mokėjimo būdą} other {kortelę}}",
+    "line1": "Šiandien paskutinė diena sumokėti {amount} už {truck}. Jei vidurnaktį suma vis dar bus neapmokėta, internetiniai užsakymai bus sustabdyti, kol sumokėsite."
+  },
+  "paused": {
+    "subject": "Internetiniai užsakymai sustabdyti",
+    "line1": "Internetiniai užsakymai ({truck}) sustabdyti, nes neapmokėta {amount}. Sumokėkite dabar, ir jie iš karto vėl bus įjungti.",
+    "line2": "Sumokėkite iki {date}, kitaip jūsų paskyra gali būti sustabdyta."
+  },
+  "trial7": {
+    "subject": "Jūsų nemokamas bandomasis laikotarpis baigsis po 7 dienų",
+    "line1": "Jūsų nemokamas bandomasis laikotarpis ({truck}) baigiasi {date}.",
+    "line2": "Pridėkite kortelę skiltyje Valdymas › Atsiskaitymai, kad internetiniai užsakymai liktų įjungti.",
+    "plan": "Vėliau planas {plan} kainuos {price} per mėnesį. Pasibaigus bandomajam laikotarpiui, nuskaitysime {amount} už likusią mėnesio dalį ({month}), tada {nextFirst} – {price}.",
+    "planFree": "Vėliau naudositės planu {plan} be mėnesinio mokesčio.",
+    "fee": "Mūsų {fee} mokestis už užsakymus internetu nuskaitomas mėnesio 1 d. už praėjusį mėnesį."
+  },
+  "trial1": {
+    "subject": "Jūsų nemokamas bandomasis laikotarpis baigiasi rytoj",
+    "line1": "Jūsų nemokamas bandomasis laikotarpis ({truck}) baigiasi rytoj.",
+    "noCard": "Pridėkite kortelę, kitaip internetiniai užsakymai bus sustabdyti.",
+    "allSet": "Viskas paruošta: planas {plan} prasidės {date}.",
+    "charge": "Pasibaigus bandomajam laikotarpiui, nuskaitysime {amount} už likusią mėnesio dalį ({month})."
+  }
+}

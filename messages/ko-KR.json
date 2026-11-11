@@ -7227,5 +7227,167 @@
       "body": "{truck} 푸드트럭에서 더 이상 리뷰 요청을 보내지 않습니다.",
       "invalid": "유효하지 않은 수신 거부 링크입니다."
     }
+  },
+  "billing": {
+    "tab": {
+      "plan": {
+        "title": "내 요금제",
+        "trialPill": "무료 체험",
+        "change": "요금제 변경",
+        "trialLine": "무료 체험은 {date}에 끝나요. 그 후 {plan} 요금제는 월 {price}입니다.",
+        "trialLineFree": "무료 체험은 {date}에 끝나요. 그 후에는 월 이용료 없이 {plan} 요금제를 이용하게 됩니다.",
+        "proLine": "월 {allowance}의 온라인 주문이 포함돼요. 이후 {fee}.",
+        "paygLine": "온라인 주문에 {fee}. 월 이용료 없음.",
+        "unlimitedLine": "월 {price}. 온라인 주문 수수료 없음.",
+        "pendingLine": "{plan} 요금제가 {date}에 시작돼요."
+      },
+      "payment": {
+        "title": "결제 수단",
+        "none": "아직 등록된 카드가 없어요. 체험이 끝난 후에도 온라인 주문을 계속 받으려면 카드를 추가하세요.",
+        "add": "카드 추가",
+        "pix": "Pix Automático 사용",
+        "card": "{brand}(끝자리 {last4})",
+        "pixOnFile": "Pix Automático",
+        "pending": "확인 대기 중이에요.",
+        "change": "변경",
+        "lastFailed": "최근 결제 실패",
+        "update": "카드 업데이트",
+        "error": "결제 페이지를 열지 못했어요. 다시 시도해 주세요."
+      },
+      "whatYouPay": {
+        "title": "결제 금액 안내",
+        "plan": "요금제: 매월 1일에 그달 요금을 미리 청구",
+        "fee": "월 {allowance} 초과 온라인 주문: 매월 1일에 지난달 사용분 청구",
+        "feePayg": "온라인 주문: 매월 1일에 지난달 사용분 청구",
+        "walkUps": "현장 주문",
+        "free": "무료",
+        "trialEnd": "{date}에 체험이 끝나면 {month} 남은 기간 요금으로 {amount} 청구돼요. 이후 {nextFirst}에 {price} 청구돼요."
+      },
+      "next": {
+        "title": "다음 결제 · {date}",
+        "plan": "{month} {plan} 요금제",
+        "fee": "{month} 온라인 주문 중 {allowance} 초과분 {fee}(현재까지)",
+        "feePayg": "{month} 온라인 주문 {fee}(현재까지)",
+        "vans": "{month} 추가 차량",
+        "surcharge": "{month} 현장 결제 수수료",
+        "carried": "이전 기간 이월분",
+        "total": "현재까지 합계",
+        "walkUps": "현장 주문은 언제나 무료입니다."
+      },
+      "preorders": {
+        "title": "고객의 미리 주문 결제 방식",
+        "online": "온라인, 주문할 때",
+        "onlineHint": "결제 금액은 내 Stripe 계정으로 바로 입금돼요.",
+        "atTruck": "트럭에서, 픽업할 때",
+        "atTruckHint": "대신 저희 수수료가 월 청구 금액에 추가돼요.",
+        "saved": "저장했어요.",
+        "error": "저장하지 못했어요. 다시 시도해 주세요."
+      },
+      "invoices": {
+        "title": "청구서",
+        "date": "날짜",
+        "for": "내역",
+        "amount": "금액",
+        "status": "상태",
+        "forMonthly": "{planMonth} 요금제, {usageMonth} 수수료",
+        "forMonthlyPlan": "{planMonth} 요금제",
+        "forTrialEnd": "{month} 남은 기간",
+        "forUpgrade": "{plan} 요금제로 변경",
+        "lateFee": "연체료",
+        "paid": "결제 완료",
+        "unpaid": "미결제",
+        "overdue": "연체",
+        "download": "다운로드",
+        "payNow": "지금 결제",
+        "none": "아직 청구서가 없어요."
+      },
+      "failed": {
+        "title": "{amount} 결제가 처리되지 않았어요.",
+        "body": "다시 시도할게요. 온라인 주문을 계속 받으려면 {date}까지 카드를 업데이트하세요.",
+        "button": "카드 업데이트"
+      },
+      "paused": {
+        "title": "온라인 주문이 일시 중지되었어요",
+        "body": "{amount} 결제가 연체되었어요. 지금 결제하면 온라인 주문이 바로 다시 열려요.",
+        "warning": "{date}까지 결제하지 않으면 계정이 정지될 수 있어요.",
+        "pay": "{amount} 결제",
+        "otherCard": "다른 카드 사용"
+      },
+      "loading": "이용 요금 정보를 불러오는 중…",
+      "loadError": "이용 요금 정보를 불러오지 못했어요. 다시 시도해 주세요."
+    },
+    "changePlan": {
+      "title": "요금제 변경",
+      "current": "현재 {plan} 요금제를 이용 중이에요.",
+      "free": "무료",
+      "perMonth": "월 {price}",
+      "paygLine": "온라인 주문에 {fee}.",
+      "proLine": "온라인 주문 {allowance} 포함. 이후 {fee}.",
+      "unlimitedLine": "온라인 주문 수수료 없음.",
+      "yourPlan": "내 요금제",
+      "startsNow": "바로 시작돼요.",
+      "chargeToday": "오늘 {month} 남은 기간 요금으로 {amount} 청구돼요. 이후 {nextFirst}에 {price} 청구돼요.",
+      "startsLater": "{nextFirst}에 시작돼요. 그때까지는 {plan} 요금제가 유지돼요.",
+      "cancel": "취소",
+      "switchTo": "{plan} 요금제로 변경",
+      "error": "요금제를 변경하지 못했어요. 다시 시도해 주세요."
+    },
+    "notices": {
+      "trialEndsSoon": "<b>무료 체험이 {date}에 끝나요.</b> 온라인 주문을 계속 받으려면 카드를 추가하세요.",
+      "trialEndsTomorrow": "<b>무료 체험이 내일 끝나요.</b> 카드를 추가하지 않으면 온라인 주문이 일시 중지돼요.",
+      "allSet": "<b>준비가 끝났어요.</b> {plan} 요금제가 {date}에 시작돼요.",
+      "paymentFailed": "<b>결제가 처리되지 않았어요.</b> 온라인 주문을 계속 받으려면 {date}까지 {method, select, payment_method {결제 수단} other {카드}} 정보를 업데이트하세요.",
+      "paused": "<b>온라인 주문이 일시 중지되었어요.</b> {date}까지 {amount} 결제를 완료하지 않으면 계정이 정지될 수 있어요.",
+      "addCard": "카드 추가 →",
+      "updateCard": "{method, select, payment_method {결제 수단} other {카드}} 업데이트 →",
+      "payNow": "지금 결제 →",
+      "dismiss": "닫기"
+    }
+  },
+  "emailBilling": {
+    "greeting": "{hasName, select, yes {안녕하세요, {name} 님.} other {안녕하세요,}}",
+    "questions": "궁금한 점이 있으면 이 메일에 회신해 주세요.",
+    "signoff": "HatchGrab 팀",
+    "buttonUpdate": "{method, select, payment_method {결제 수단} other {카드}} 업데이트",
+    "buttonPay": "지금 결제",
+    "buttonAddCard": "카드 추가",
+    "suspended": "계속 미납 상태이면 계정이 정지될 수 있어요.",
+    "failed": {
+      "subject": "HatchGrab 결제가 처리되지 않았어요",
+      "line1": "오늘 {truck}의 {amount} 결제를 처리하지 못했어요. 다시 시도할게요.",
+      "line2": "온라인 주문을 계속 받으려면 {date}까지 {method, select, payment_method {결제 수단} other {카드}} 정보를 업데이트해 주세요."
+    },
+    "twoDays": {
+      "subject": "{method, select, payment_method {결제 수단} other {카드}} 업데이트 기한이 2일 남았어요",
+      "line1": "{truck}의 {amount} 결제가 아직 미납 상태예요. {date}까지 {method, select, payment_method {결제 수단} other {카드}} 정보를 업데이트하지 않으면 온라인 주문이 일시 중지돼요."
+    },
+    "oneDay": {
+      "subject": "내일까지 {method, select, payment_method {결제 수단} other {카드}} 정보를 업데이트하세요",
+      "line1": "{truck}의 {amount} 결제가 아직 미납 상태예요. 내일까지 {method, select, payment_method {결제 수단} other {카드}} 정보를 업데이트하지 않으면 온라인 주문이 일시 중지돼요."
+    },
+    "lastDay": {
+      "subject": "오늘이 {method, select, payment_method {결제 수단} other {카드}} 업데이트 마지막 날이에요",
+      "line1": "오늘은 {truck}의 {amount} 결제 마감일이에요. 자정까지 결제되지 않으면 결제할 때까지 온라인 주문이 일시 중지돼요."
+    },
+    "paused": {
+      "subject": "온라인 주문이 일시 중지되었어요",
+      "line1": "{truck}의 {amount} 결제가 미납되어 온라인 주문이 일시 중지되었어요. 지금 결제하면 바로 다시 열려요.",
+      "line2": "{date}까지 결제하지 않으면 계정이 정지될 수 있어요."
+    },
+    "trial7": {
+      "subject": "무료 체험이 7일 후에 끝나요",
+      "line1": "{truck}의 무료 체험이 {date}에 끝나요.",
+      "line2": "온라인 주문을 계속 받으려면 관리 › 이용 요금에서 카드를 추가하세요.",
+      "plan": "그 후 {plan} 요금제는 월 {price}입니다. 체험이 끝나면 {month} 남은 기간 요금으로 {amount} 청구되고, 이후 {nextFirst}에 {price} 청구돼요.",
+      "planFree": "그 후에는 월 이용료 없이 {plan} 요금제를 이용하게 됩니다.",
+      "fee": "온라인 주문에 대한 {fee} 수수료는 매월 1일에 지난달 사용분으로 청구돼요."
+    },
+    "trial1": {
+      "subject": "무료 체험이 내일 끝나요",
+      "line1": "{truck}의 무료 체험이 내일 끝나요.",
+      "noCard": "카드를 추가하지 않으면 온라인 주문이 일시 중지돼요.",
+      "allSet": "준비가 끝났어요. {plan} 요금제가 {date}에 시작돼요.",
+      "charge": "체험이 끝나면 {month} 남은 기간 요금으로 {amount} 청구돼요."
+    }
   }
 }

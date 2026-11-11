@@ -1,0 +1,46 @@
+{
+  "greeting": "{hasName, select, yes {{name} 你好：} other {你好：}}",
+  "questions": "有任何問題？直接回覆這封信即可。",
+  "signoff": "HatchGrab 團隊",
+  "buttonUpdate": "更新{method, select, payment_method {付款方式} other {卡片}}",
+  "buttonPay": "立即付款",
+  "buttonAddCard": "新增卡片",
+  "suspended": "如果持續未付款，你的帳戶可能會被停權。",
+  "failed": {
+    "subject": "你的 HatchGrab 付款未成功",
+    "line1": "我們今天無法收取 {truck} 的 {amount}。我們會再試一次。",
+    "line2": "請在 {date} 前更新{method, select, payment_method {付款方式} other {卡片}}，以維持線上點餐。"
+  },
+  "twoDays": {
+    "subject": "還剩 2 天可以更新{method, select, payment_method {付款方式} other {卡片}}",
+    "line1": "{truck} 的 {amount} 仍未付款。請在 {date} 前更新{method, select, payment_method {付款方式} other {卡片}}，否則線上點餐將會暫停。"
+  },
+  "oneDay": {
+    "subject": "請在明天前更新{method, select, payment_method {付款方式} other {卡片}}",
+    "line1": "{truck} 的 {amount} 仍未付款。請在明天前更新{method, select, payment_method {付款方式} other {卡片}}，否則線上點餐將會暫停。"
+  },
+  "lastDay": {
+    "subject": "今天是更新{method, select, payment_method {付款方式} other {卡片}}的最後一天",
+    "line1": "今天是支付 {truck} 的 {amount} 的最後一天。如果午夜前仍未付款，線上點餐將會暫停，直到你完成付款。"
+  },
+  "paused": {
+    "subject": "線上點餐已暫停",
+    "line1": "由於 {amount} 尚未付款，{truck} 的線上點餐已暫停。立即付款後就會馬上恢復。",
+    "line2": "請在 {date} 前付款，否則你的帳戶可能會被停權。"
+  },
+  "trial7": {
+    "subject": "你的免費試用將在 7 天後結束",
+    "line1": "{truck} 的免費試用將於 {date} 結束。",
+    "line2": "請到「管理 › 帳務」新增卡片，以維持線上點餐。",
+    "plan": "之後 {plan} 方案每月 {price}。試用期結束時，我們會收取 {month} 剩餘天數的 {amount}，之後於 {nextFirst} 收取 {price}。",
+    "planFree": "之後你將使用 {plan}，不收月費。",
+    "fee": "我們對線上訂單收取的 {fee} 手續費，會在每月 1 日收取上個月的部分。"
+  },
+  "trial1": {
+    "subject": "你的免費試用明天結束",
+    "line1": "{truck} 的免費試用明天結束。",
+    "noCard": "請新增卡片，否則線上點餐將會暫停。",
+    "allSet": "一切就緒：{plan} 方案將於 {date} 開始。",
+    "charge": "試用期結束時，我們會收取 {month} 剩餘天數的 {amount}。"
+  }
+}

@@ -29,6 +29,8 @@ import { datePresets, presetOf, PRESET_KEYS, type PresetKey, type TaxYearStart }
 import { summarise, taxBasisOf, type AccountRow, type Channel, type PaymentMethod, type TaxBasis } from '@/lib/accounts/ledger'
 import { ordersCsv, eventsCsv, type CsvWords } from '@/lib/accounts/csv'
 import { purchaseCtaAllowed } from '@/lib/commerce-policy'
+// billing-2: Manage › Billing when billing is on (or for a billing_test truck), and its one notice — invisible to every other truck.
+import { BillingScreen, useBillingScreen, useBillingNotice, BillingNoticeStrip } from '@/components/manage/BillingScreen'
 import { DeleteAccountSection } from '@/components/manage/DeleteAccountSection'
 import { WhereYouTrade } from '@/components/manage/WhereYouTrade'
 // ── Moved here from the dashboard's Settings tab (V11.48). Both write TRUCK-WIDE columns, which is
@@ -618,6 +620,8 @@ export default function ManagePage({ params }: { params: Promise<{ token: string
   useEffect(() => { tRef.current = t }, [t])
   const appLocale = useAppLocale()
   const [activeTab, setActiveTab] = useState<Tab>('menu')
+  // billing-2: the one billing notice (null unless billing is shown to this truck's owner) — shown on every tab but Billing.
+  const billingNotice = useBillingNotice(token)
   const [scheduleSection, setScheduleSection] = useState<ScheduleSection>('events')
   /** Social media's pill. ⚠️ Opens on `create`, which is the screen a truck arrives wanting. */
   const [socialSection, setSocialSection] = useState<SocialSection>('create')
@@ -1402,6 +1406,8 @@ export default function ManagePage({ params }: { params: Promise<{ token: string
             <button onClick={() => setStripeBannerDismissed(true)} className="text-amber-400 hover:text-amber-600 text-sm font-bold leading-none shrink-0">✕</button>
           </div>
         )}
+        {/* billing-2: the billing notice — the same strip as the four above (lib/billing/view.ts noticeOf: one at a time). */}
+        {billingNotice && activeTab !== 'billing' && <BillingNoticeStrip notice={billingNotice} onOpen={() => setActiveTab('billing')} />}
         {/* Mandatory fields banner */}
         {(() => {
           const missing = [
@@ -1655,7 +1661,7 @@ export default function ManagePage({ params }: { params: Promise<{ token: string
             <ChargesCard truck={truck} api={api} showToast={showToast} onTruckUpdate={partial => setTruck(prev => prev ? { ...prev, ...partial } : prev)} />
             <TakingPaymentPanel truck={truck} api={api} showToast={showToast} onTruckUpdate={partial => setTruck(prev => prev ? { ...prev, ...partial } : prev)} />
           </> : null} />}
-        {activeTab === 'billing'   && <BillingTab   truck={truck} />}
+        {activeTab === 'billing'   && <BillingTab   truck={truck} token={token} />}
         {activeTab === 'paperwork' && <PaperworkTab token={token} showToast={showToast} />}
         </div>
       </main>
@@ -14416,7 +14422,9 @@ const formatTrialEndDate = (dateStr: string, ts: TimeSettings) =>
 // TODO: Replace upgrade modal with Stripe Checkout/Customer Portal when Stripe Connect billing is implemented
 const SUPPORT_EMAIL = process.env.NEXT_PUBLIC_SUPPORT_EMAIL ?? 'hello@villagefoodie.co.uk'
 
-function BillingTab({ truck }: { truck: Truck | null }) {
+function BillingTab({ truck, token }: { truck: Truck | null; token: string }) {
+  // billing-2: the new Billing screen's data — `hidden` (today's tab, unchanged) for every truck billing is not shown to.
+  const billingScreen = useBillingScreen(token)
   // 🔴 ABOVE the `if (!truck) return null` guard below — hooks must run in the same order on every
   // render, and these need no truck (the policy arrives by context). ⚠️ The three `useState` calls further
   // down are BELOW that guard and are a PRE-EXISTING rules-of-hooks violation; they are left exactly as
@@ -14528,6 +14536,32 @@ function BillingTab({ truck }: { truck: Truck | null }) {
       </div>
     </div>
   )
+
+  // billing-2: the plan table block, shared by today's tab and the new Billing screen (rendered byte for byte as before).
+  const compareBlock = (
+    <>
+      {/* 🔴 STAGE B (docs/pricing-pages-report.md): THE SAME PLAN TABLE AS /features (components/pricing/PlanTable.tsx),
+          the truck's EFFECTIVE plan's column highlighted (none while on a trial — a trial is not a column), its amounts
+          under the plan card's mask. Its header pins to the top of the scrolling <main>. Then the landing's footnote. */}
+      <div>
+        <PlanTable catalog={catalog} settings={countryRow} highlight={eff.plan.key} px={cardPx} />
+        {/* native-prices (22 October 2026): where the country's currency symbol is shared ("$", "kr"), the line naming it —
+            once on this tab, opening the footnotes. GB, US and IE: no line. */}
+        {billingCurrencyLine && <p className="text-xs text-slate-500 mt-3 px-1">{tPricing('currencyLine', billingCurrencyLine)}</p>}
+        <p className="text-xs text-slate-500 mt-3 px-1">{tPricing('footnote', { cardFee: cardPx(cardFeeOnlineLabel(countryRow)), country: countryRow.shortName ?? countryRow.name })}</p>
+        {/* pricing-tidy: the table rows' disclosures (¹ WhatsApp auto-replies, ² Kitchen ticket printing), same style. */}
+        {planTableNotes(countryRow.locale).map(n => <p key={n.marker} className="text-xs text-slate-500 mt-1 px-1"><sup>{n.marker}</sup> {n.text}</p>)}
+      </div>
+    </>
+  )
+  if (billingScreen.state.status === 'visible') {
+    return (
+      <div className="flex flex-col gap-6">
+        <BillingScreen token={token} view={billingScreen.state.view} setView={billingScreen.setView} />
+        {compareBlock}
+      </div>
+    )
+  }
 
   return (
     <div className="flex flex-col gap-6">
@@ -14677,18 +14711,7 @@ function BillingTab({ truck }: { truck: Truck | null }) {
         </p>
       )}
       {billingCard}
-      {/* 🔴 STAGE B (docs/pricing-pages-report.md): THE SAME PLAN TABLE AS /features (components/pricing/PlanTable.tsx),
-          the truck's EFFECTIVE plan's column highlighted (none while on a trial — a trial is not a column), its amounts
-          under the plan card's mask. Its header pins to the top of the scrolling <main>. Then the landing's footnote. */}
-      <div>
-        <PlanTable catalog={catalog} settings={countryRow} highlight={eff.plan.key} px={cardPx} />
-        {/* native-prices (22 October 2026): where the country's currency symbol is shared ("$", "kr"), the line naming it —
-            once on this tab, opening the footnotes. GB, US and IE: no line. */}
-        {billingCurrencyLine && <p className="text-xs text-slate-500 mt-3 px-1">{tPricing('currencyLine', billingCurrencyLine)}</p>}
-        <p className="text-xs text-slate-500 mt-3 px-1">{tPricing('footnote', { cardFee: cardPx(cardFeeOnlineLabel(countryRow)), country: countryRow.shortName ?? countryRow.name })}</p>
-        {/* pricing-tidy: the table rows' disclosures (¹ WhatsApp auto-replies, ² Kitchen ticket printing), same style. */}
-        {planTableNotes(countryRow.locale).map(n => <p key={n.marker} className="text-xs text-slate-500 mt-1 px-1"><sup>{n.marker}</sup> {n.text}</p>)}
-      </div>
+      {compareBlock}
 
       {/* Upgrade interest modal.
           🔴 SUPPRESSED ENTIRELY ON iOS (App Store 3.1.1/3.1.3) — this modal IS the external purchase

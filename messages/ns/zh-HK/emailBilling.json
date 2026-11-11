@@ -1,0 +1,46 @@
+{
+  "greeting": "{hasName, select, yes {{name}，你好：} other {你好：}}",
+  "questions": "有疑問？直接回覆此電郵即可。",
+  "signoff": "HatchGrab 團隊",
+  "buttonUpdate": "更新{method, select, payment_method {付款方式} other {信用卡}}",
+  "buttonPay": "立即付款",
+  "buttonAddCard": "加入信用卡",
+  "suspended": "如仍未付款，你的帳戶可能會被停用。",
+  "failed": {
+    "subject": "你的 HatchGrab 付款未能成功",
+    "line1": "我們今天未能為 {truck} 收取 {amount}。我們會再嘗試收款。",
+    "line2": "請於 {date} 前更新你的{method, select, payment_method {付款方式} other {信用卡}}，以繼續接受網上訂單。"
+  },
+  "twoDays": {
+    "subject": "還有 2 天更新你的{method, select, payment_method {付款方式} other {信用卡}}",
+    "line1": "{truck} 的 {amount} 仍未支付。請於 {date} 前更新你的{method, select, payment_method {付款方式} other {信用卡}}，否則網上落單會暫停。"
+  },
+  "oneDay": {
+    "subject": "請於明天或之前更新你的{method, select, payment_method {付款方式} other {信用卡}}",
+    "line1": "{truck} 的 {amount} 仍未支付。請於明天或之前更新你的{method, select, payment_method {付款方式} other {信用卡}}，否則網上落單會暫停。"
+  },
+  "lastDay": {
+    "subject": "今天是更新{method, select, payment_method {付款方式} other {信用卡}}的最後一天",
+    "line1": "今天是支付 {truck} {amount} 的最後一天。如到午夜仍未付款，網上落單會暫停，直至你付款為止。"
+  },
+  "paused": {
+    "subject": "網上落單已暫停",
+    "line1": "由於 {amount} 仍未支付，{truck} 的網上落單已暫停。立即付款後便會馬上恢復。",
+    "line2": "請於 {date} 前付款，否則你的帳戶可能會被停用。"
+  },
+  "trial7": {
+    "subject": "你的免費試用將於 7 天後結束",
+    "line1": "{truck} 的免費試用將於 {date} 結束。",
+    "line2": "請在「管理控制台 › 帳單」加入信用卡，以繼續接受網上訂單。",
+    "plan": "之後，{plan} 每月收費 {price}。試用期結束時，我們會收取 {amount}，作為 {month} 餘下日子的費用，之後於 {nextFirst} 收取 {price}。",
+    "planFree": "之後你會使用 {plan}，無需月費。",
+    "fee": "我們對網上訂單收取的 {fee} 費用，會於每月 1 日收取上月的部分。"
+  },
+  "trial1": {
+    "subject": "你的免費試用將於明天結束",
+    "line1": "{truck} 的免費試用將於明天結束。",
+    "noCard": "請加入信用卡，否則網上落單會暫停。",
+    "allSet": "一切就緒：{plan} 將於 {date} 開始。",
+    "charge": "試用期結束時，我們會收取 {amount}，作為 {month} 餘下日子的費用。"
+  }
+}

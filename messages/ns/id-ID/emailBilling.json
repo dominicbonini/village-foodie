@@ -1,0 +1,46 @@
+{
+  "greeting": "{hasName, select, yes {Halo {name},} other {Halo,}}",
+  "questions": "Ada pertanyaan? Cukup balas email ini.",
+  "signoff": "Tim HatchGrab",
+  "buttonUpdate": "Perbarui {method, select, payment_method {metode pembayaran} other {kartu}}",
+  "buttonPay": "Bayar sekarang",
+  "buttonAddCard": "Tambah kartu",
+  "suspended": "Jika tetap belum dibayar, akun Anda bisa ditangguhkan.",
+  "failed": {
+    "subject": "Pembayaran HatchGrab Anda tidak berhasil",
+    "line1": "Hari ini kami tidak bisa menagih {amount} untuk {truck}. Kami akan mencoba lagi.",
+    "line2": "Silakan perbarui {method, select, payment_method {metode pembayaran} other {kartu}} Anda paling lambat {date} agar pemesanan online tetap aktif."
+  },
+  "twoDays": {
+    "subject": "2 hari lagi untuk memperbarui {method, select, payment_method {metode pembayaran} other {kartu}} Anda",
+    "line1": "{amount} untuk {truck} masih belum dibayar. Perbarui {method, select, payment_method {metode pembayaran} other {kartu}} Anda paling lambat {date}, atau pemesanan online akan dijeda."
+  },
+  "oneDay": {
+    "subject": "Perbarui {method, select, payment_method {metode pembayaran} other {kartu}} Anda paling lambat besok",
+    "line1": "{amount} untuk {truck} masih belum dibayar. Perbarui {method, select, payment_method {metode pembayaran} other {kartu}} Anda paling lambat besok, atau pemesanan online akan dijeda."
+  },
+  "lastDay": {
+    "subject": "Hari terakhir untuk memperbarui {method, select, payment_method {metode pembayaran} other {kartu}} Anda",
+    "line1": "Hari ini hari terakhir untuk membayar {amount} untuk {truck}. Jika masih belum dibayar pada tengah malam, pemesanan online dijeda sampai Anda membayar."
+  },
+  "paused": {
+    "subject": "Pemesanan online dijeda",
+    "line1": "Pemesanan online untuk {truck} dijeda karena {amount} belum dibayar. Bayar sekarang dan pemesanan online langsung aktif kembali.",
+    "line2": "Bayar paling lambat {date} atau akun Anda bisa ditangguhkan."
+  },
+  "trial7": {
+    "subject": "Masa coba gratis Anda berakhir dalam 7 hari",
+    "line1": "Masa coba gratis untuk {truck} berakhir pada {date}.",
+    "line2": "Tambahkan kartu di Kelola › Tagihan agar pemesanan online tetap aktif.",
+    "plan": "Setelah itu, paket {plan} seharga {price} per bulan. Saat masa coba berakhir, kami menagih {amount} untuk sisa {month}, lalu {price} pada {nextFirst}.",
+    "planFree": "Setelah itu, Anda memakai paket {plan}, tanpa biaya bulanan.",
+    "fee": "Biaya {fee} kami untuk pesanan online ditagih setiap tanggal 1, untuk bulan sebelumnya."
+  },
+  "trial1": {
+    "subject": "Masa coba gratis Anda berakhir besok",
+    "line1": "Masa coba gratis untuk {truck} berakhir besok.",
+    "noCard": "Tambahkan kartu, atau pemesanan online akan dijeda.",
+    "allSet": "Semua sudah siap: paket {plan} dimulai pada {date}.",
+    "charge": "Kami akan menagih {amount} untuk sisa {month} saat masa coba berakhir."
+  }
+}

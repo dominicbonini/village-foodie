@@ -1,0 +1,46 @@
+{
+  "greeting": "{hasName, select, yes {Hai {name},} other {Hai,}}",
+  "questions": "Ada soalan? Balas sahaja e-mel ini.",
+  "signoff": "Pasukan HatchGrab",
+  "buttonUpdate": "Kemas kini {method, select, payment_method {kaedah pembayaran} other {kad}}",
+  "buttonPay": "Bayar sekarang",
+  "buttonAddCard": "Tambah kad",
+  "suspended": "Jika masih belum dibayar, akaun anda mungkin digantung.",
+  "failed": {
+    "subject": "Pembayaran HatchGrab anda tidak berjaya",
+    "line1": "Kami tidak dapat mengutip {amount} untuk {truck} hari ini. Kami akan cuba lagi.",
+    "line2": "Sila kemas kini {method, select, payment_method {kaedah pembayaran} other {kad}} anda selewat-lewatnya pada {date} supaya pesanan dalam talian kekal aktif."
+  },
+  "twoDays": {
+    "subject": "Tinggal 2 hari untuk mengemas kini {method, select, payment_method {kaedah pembayaran} other {kad}} anda",
+    "line1": "{amount} untuk {truck} masih belum dibayar. Kemas kini {method, select, payment_method {kaedah pembayaran} other {kad}} anda selewat-lewatnya pada {date}, atau pesanan dalam talian akan dijeda."
+  },
+  "oneDay": {
+    "subject": "Kemas kini {method, select, payment_method {kaedah pembayaran} other {kad}} anda selewat-lewatnya esok",
+    "line1": "{amount} untuk {truck} masih belum dibayar. Kemas kini {method, select, payment_method {kaedah pembayaran} other {kad}} anda selewat-lewatnya esok, atau pesanan dalam talian akan dijeda."
+  },
+  "lastDay": {
+    "subject": "Hari terakhir untuk mengemas kini {method, select, payment_method {kaedah pembayaran} other {kad}} anda",
+    "line1": "Hari ini hari terakhir untuk membayar {amount} untuk {truck}. Jika masih belum dibayar pada tengah malam, pesanan dalam talian akan dijeda sehingga anda membayar."
+  },
+  "paused": {
+    "subject": "Pesanan dalam talian dijeda",
+    "line1": "Pesanan dalam talian untuk {truck} dijeda kerana {amount} belum dibayar. Bayar sekarang dan ia akan aktif semula serta-merta.",
+    "line2": "Bayar selewat-lewatnya pada {date} atau akaun anda mungkin digantung."
+  },
+  "trial7": {
+    "subject": "Percubaan percuma anda tamat dalam 7 hari",
+    "line1": "Percubaan percuma anda untuk {truck} tamat pada {date}.",
+    "line2": "Tambah kad di Urus › Pengebilan supaya pesanan dalam talian kekal aktif.",
+    "plan": "Selepas itu, harga pelan {plan} ialah {price} sebulan. Apabila percubaan anda tamat, kami akan mengecaj {amount} untuk baki bulan {month}, kemudian {price} pada {nextFirst}.",
+    "planFree": "Selepas itu, anda akan menggunakan pelan {plan}, tanpa yuran bulanan.",
+    "fee": "Yuran {fee} kami untuk pesanan dalam talian dicaj pada 1 haribulan, untuk bulan sebelumnya."
+  },
+  "trial1": {
+    "subject": "Percubaan percuma anda tamat esok",
+    "line1": "Percubaan percuma anda untuk {truck} tamat esok.",
+    "noCard": "Tambah kad atau pesanan dalam talian akan dijeda.",
+    "allSet": "Semuanya sudah sedia: pelan {plan} bermula pada {date}.",
+    "charge": "Kami akan mengecaj {amount} untuk baki bulan {month} apabila percubaan anda tamat."
+  }
+}

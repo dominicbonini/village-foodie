@@ -7227,5 +7227,167 @@
       "body": "{truck} vám už nebude posielať žiadosti o recenziu.",
       "invalid": "Tento odkaz na odhlásenie nie je platný."
     }
+  },
+  "billing": {
+    "tab": {
+      "plan": {
+        "title": "Váš plán",
+        "trialPill": "Skúšobné obdobie zadarmo",
+        "change": "Zmeniť plán",
+        "trialLine": "Vaše bezplatné skúšobné obdobie končí {date}. Potom bude plán {plan} stáť {price} mesačne.",
+        "trialLineFree": "Vaše bezplatné skúšobné obdobie končí {date}. Potom budete mať plán {plan} bez mesačného poplatku.",
+        "proLine": "Zahŕňa online objednávky v hodnote {allowance} mesačne. Potom {fee}.",
+        "paygLine": "{fee} z online objednávok. Bez mesačného poplatku.",
+        "unlimitedLine": "{price} mesačne. Bez poplatku z online objednávok.",
+        "pendingLine": "Plán {plan} sa začína {date}."
+      },
+      "payment": {
+        "title": "Spôsob platby",
+        "none": "Zatiaľ nie je pridaná žiadna karta. Pridajte ju, aby ste mohli aj po skúšobnom období prijímať online objednávky.",
+        "add": "Pridať kartu",
+        "pix": "Použiť Pix Automático",
+        "card": "{brand} končiaca na {last4}",
+        "pixOnFile": "Pix Automático",
+        "pending": "Čaká sa na potvrdenie.",
+        "change": "Zmeniť",
+        "lastFailed": "Posledná platba zlyhala",
+        "update": "Aktualizovať kartu",
+        "error": "Platobnú stránku sa nepodarilo otvoriť. Skúste to znova."
+      },
+      "whatYouPay": {
+        "title": "Čo platíte",
+        "plan": "Váš plán, účtovaný 1. dňa v mesiaci na nasledujúci mesiac",
+        "fee": "Online objednávky nad {allowance} mesačne, účtované 1. dňa v mesiaci za predchádzajúci mesiac",
+        "feePayg": "Online objednávky, účtované 1. dňa v mesiaci za predchádzajúci mesiac",
+        "walkUps": "Objednávky na mieste",
+        "free": "Zadarmo",
+        "trialEnd": "Keď vaše skúšobné obdobie {date} skončí, zaúčtujeme {amount} za zvyšok mesiaca {month}. Potom {price} dňa {nextFirst}."
+      },
+      "next": {
+        "title": "Ďalšia platba · {date}",
+        "plan": "Plán {plan} za {month}",
+        "fee": "{fee} z online objednávok nad {allowance} za {month} (zatiaľ)",
+        "feePayg": "{fee} z online objednávok za {month} (zatiaľ)",
+        "vans": "Ďalšie food trucky za {month}",
+        "surcharge": "Poplatok za platby pri vyzdvihnutí za {month}",
+        "carried": "Prenesené z predchádzajúceho obdobia",
+        "total": "Zatiaľ spolu",
+        "walkUps": "Objednávky na mieste sú vždy zadarmo."
+      },
+      "preorders": {
+        "title": "Ako zákazníci platia za predobjednávky",
+        "online": "Online, pri objednaní",
+        "onlineHint": "Peniaze idú priamo na váš účet Stripe.",
+        "atTruck": "Pri food trucku, pri vyzdvihnutí",
+        "atTruckHint": "Náš poplatok sa namiesto toho pripočíta k vašej mesačnej platbe.",
+        "saved": "Uložené.",
+        "error": "Nepodarilo sa to uložiť. Skúste to znova."
+      },
+      "invoices": {
+        "title": "Faktúry",
+        "date": "Dátum",
+        "for": "Za",
+        "amount": "Suma",
+        "status": "Stav",
+        "forMonthly": "Plán za {planMonth}, poplatky za {usageMonth}",
+        "forMonthlyPlan": "Plán za {planMonth}",
+        "forTrialEnd": "Zvyšok mesiaca {month}",
+        "forUpgrade": "Prechod na plán {plan}",
+        "lateFee": "Poplatok za oneskorenú platbu",
+        "paid": "Zaplatená",
+        "unpaid": "Nezaplatená",
+        "overdue": "Po splatnosti",
+        "download": "Stiahnuť",
+        "payNow": "Zaplatiť teraz",
+        "none": "Zatiaľ žiadne faktúry."
+      },
+      "failed": {
+        "title": "Vaša platba {amount} neprešla.",
+        "body": "Skúsime to znova. Aktualizujte kartu do {date}, aby online objednávanie zostalo zapnuté.",
+        "button": "Aktualizovať kartu"
+      },
+      "paused": {
+        "title": "Online objednávanie je pozastavené",
+        "body": "Suma {amount} je po splatnosti. Zaplaťte teraz a online objednávanie sa hneď znova zapne.",
+        "warning": "Zaplaťte do {date}, inak môže byť váš účet zablokovaný.",
+        "pay": "Zaplatiť {amount}",
+        "otherCard": "Použiť inú kartu"
+      },
+      "loading": "Načítava sa fakturácia…",
+      "loadError": "Fakturáciu sa nepodarilo načítať. Skúste to znova."
+    },
+    "changePlan": {
+      "title": "Zmeniť plán",
+      "current": "Máte plán {plan}.",
+      "free": "Zadarmo",
+      "perMonth": "{price} mesačne",
+      "paygLine": "{fee} z online objednávok.",
+      "proLine": "Online objednávky v hodnote {allowance} sú v cene. Potom {fee}.",
+      "unlimitedLine": "Bez poplatku z online objednávok.",
+      "yourPlan": "Váš plán",
+      "startsNow": "Začína sa hneď.",
+      "chargeToday": "Dnes zaúčtujeme {amount} za zvyšok mesiaca {month}. Potom {price} dňa {nextFirst}.",
+      "startsLater": "Začína sa {nextFirst}. Dovtedy vám zostáva plán {plan}.",
+      "cancel": "Zrušiť",
+      "switchTo": "Prejsť na plán {plan}",
+      "error": "Plán sa nepodarilo zmeniť. Skúste to znova."
+    },
+    "notices": {
+      "trialEndsSoon": "<b>Vaše bezplatné skúšobné obdobie končí {date}.</b> Pridajte kartu, aby online objednávanie zostalo zapnuté.",
+      "trialEndsTomorrow": "<b>Vaše bezplatné skúšobné obdobie končí zajtra.</b> Pridajte kartu, inak sa online objednávanie pozastaví.",
+      "allSet": "<b>Všetko je pripravené.</b> Plán {plan} sa začína {date}.",
+      "paymentFailed": "<b>Vaša platba neprešla.</b> Aktualizujte {method, select, payment_method {spôsob platby} other {kartu}} do {date}, aby online objednávanie zostalo zapnuté.",
+      "paused": "<b>Online objednávanie je pozastavené.</b> Zaplaťte {amount} do {date}, inak môže byť váš účet zablokovaný.",
+      "addCard": "Pridať kartu →",
+      "updateCard": "Aktualizovať {method, select, payment_method {spôsob platby} other {kartu}} →",
+      "payNow": "Zaplatiť teraz →",
+      "dismiss": "Zavrieť"
+    }
+  },
+  "emailBilling": {
+    "greeting": "{hasName, select, yes {Dobrý deň, {name},} other {Dobrý deň,}}",
+    "questions": "Máte otázky? Stačí odpovedať na tento e-mail.",
+    "signoff": "Tím HatchGrab",
+    "buttonUpdate": "Aktualizovať {method, select, payment_method {spôsob platby} other {kartu}}",
+    "buttonPay": "Zaplatiť teraz",
+    "buttonAddCard": "Pridať kartu",
+    "suspended": "Ak suma zostane nezaplatená, váš účet môže byť zablokovaný.",
+    "failed": {
+      "subject": "Vaša platba za HatchGrab neprešla",
+      "line1": "Dnes sa nám nepodarilo strhnúť {amount} za {truck}. Skúsime to znova.",
+      "line2": "Aktualizujte, prosím, {method, select, payment_method {spôsob platby} other {kartu}} do {date}, aby online objednávanie zostalo zapnuté."
+    },
+    "twoDays": {
+      "subject": "Ešte 2 dni na aktualizáciu {method, select, payment_method {spôsobu platby} other {karty}}",
+      "line1": "Suma {amount} za {truck} je stále nezaplatená. Aktualizujte {method, select, payment_method {spôsob platby} other {kartu}} do {date}, inak sa online objednávanie pozastaví."
+    },
+    "oneDay": {
+      "subject": "Aktualizujte {method, select, payment_method {spôsob platby} other {kartu}} do zajtra",
+      "line1": "Suma {amount} za {truck} je stále nezaplatená. Aktualizujte {method, select, payment_method {spôsob platby} other {kartu}} do zajtra, inak sa online objednávanie pozastaví."
+    },
+    "lastDay": {
+      "subject": "Posledný deň na aktualizáciu {method, select, payment_method {spôsobu platby} other {karty}}",
+      "line1": "Dnes je posledný deň na zaplatenie sumy {amount} za {truck}. Ak bude o polnoci stále nezaplatená, online objednávanie sa pozastaví, kým nezaplatíte."
+    },
+    "paused": {
+      "subject": "Online objednávanie je pozastavené",
+      "line1": "Online objednávanie pre {truck} je pozastavené, pretože suma {amount} nie je zaplatená. Zaplaťte teraz a hneď sa znova zapne.",
+      "line2": "Zaplaťte do {date}, inak môže byť váš účet zablokovaný."
+    },
+    "trial7": {
+      "subject": "Vaše bezplatné skúšobné obdobie končí o 7 dní",
+      "line1": "Vaše bezplatné skúšobné obdobie pre {truck} končí {date}.",
+      "line2": "Pridajte kartu v časti Správa › Fakturácia, aby online objednávanie zostalo zapnuté.",
+      "plan": "Potom bude plán {plan} stáť {price} mesačne. Keď sa skúšobné obdobie skončí, zaúčtujeme {amount} za zvyšok mesiaca {month} a potom {price} dňa {nextFirst}.",
+      "planFree": "Potom budete mať plán {plan} bez mesačného poplatku.",
+      "fee": "Náš poplatok {fee} z online objednávok sa účtuje 1. dňa v mesiaci za predchádzajúci mesiac."
+    },
+    "trial1": {
+      "subject": "Vaše bezplatné skúšobné obdobie končí zajtra",
+      "line1": "Vaše bezplatné skúšobné obdobie pre {truck} končí zajtra.",
+      "noCard": "Pridajte kartu, inak sa online objednávanie pozastaví.",
+      "allSet": "Všetko je pripravené: plán {plan} sa začína {date}.",
+      "charge": "Keď sa skúšobné obdobie skončí, zaúčtujeme {amount} za zvyšok mesiaca {month}."
+    }
   }
 }

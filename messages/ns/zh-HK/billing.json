@@ -1,0 +1,116 @@
+{
+  "tab": {
+    "plan": {
+      "title": "你的計劃",
+      "trialPill": "免費試用",
+      "change": "更改計劃",
+      "trialLine": "你的免費試用將於 {date} 結束。之後，{plan} 每月收費 {price}。",
+      "trialLineFree": "你的免費試用將於 {date} 結束。之後你會使用 {plan}，無需月費。",
+      "proLine": "每月包括 {allowance} 網上訂單額。超出部分收取 {fee}。",
+      "paygLine": "網上訂單收取 {fee}。無需月費。",
+      "unlimitedLine": "每月 {price}。網上訂單不另收費。",
+      "pendingLine": "{plan} 將於 {date} 開始。"
+    },
+    "payment": {
+      "title": "付款方式",
+      "none": "尚未加入信用卡。請加入信用卡，以便試用期結束後繼續接受網上訂單。",
+      "add": "加入信用卡",
+      "pix": "使用 Pix Automático",
+      "card": "{brand}，尾號 {last4}",
+      "pixOnFile": "Pix Automático",
+      "pending": "正在等待確認。",
+      "change": "更改",
+      "lastFailed": "上次付款失敗",
+      "update": "更新信用卡",
+      "error": "未能開啟付款頁面，請再試一次。"
+    },
+    "whatYouPay": {
+      "title": "你需支付的費用",
+      "plan": "你的計劃，於每月 1 日收取當月費用",
+      "fee": "每月超出 {allowance} 的網上訂單，於每月 1 日收取上月費用",
+      "feePayg": "網上訂單，於每月 1 日收取上月費用",
+      "walkUps": "即場訂單",
+      "free": "免費",
+      "trialEnd": "你的試用期於 {date} 結束時，我們會收取 {amount}，作為 {month} 餘下日子的費用。之後於 {nextFirst} 收取 {price}。"
+    },
+    "next": {
+      "title": "下次付款 · {date}",
+      "plan": "{month} 的 {plan}",
+      "fee": "{month} 超出 {allowance} 的網上訂單收取 {fee}（截至目前）",
+      "feePayg": "{month} 的網上訂單收取 {fee}（截至目前）",
+      "vans": "{month} 的額外美食車",
+      "surcharge": "{month} 的後付費用",
+      "carried": "之前結轉的款項",
+      "total": "目前總額",
+      "walkUps": "即場訂單一律免費。"
+    },
+    "preorders": {
+      "title": "顧客如何支付預先落單",
+      "online": "落單時網上付款",
+      "onlineHint": "款項會直接存入你的 Stripe 帳戶。",
+      "atTruck": "取餐時在美食車付款",
+      "atTruckHint": "我們的費用會改為加入你的每月收費。",
+      "saved": "已儲存。",
+      "error": "未能儲存，請再試一次。"
+    },
+    "invoices": {
+      "title": "發票",
+      "date": "日期",
+      "for": "項目",
+      "amount": "金額",
+      "status": "狀態",
+      "forMonthly": "{planMonth} 計劃費用、{usageMonth} 手續費",
+      "forMonthlyPlan": "{planMonth} 計劃費用",
+      "forTrialEnd": "{month} 餘下日子",
+      "forUpgrade": "轉用 {plan}",
+      "lateFee": "逾期付款費用",
+      "paid": "已付款",
+      "unpaid": "未付款",
+      "overdue": "已逾期",
+      "download": "下載",
+      "payNow": "立即付款",
+      "none": "暫時未有發票。"
+    },
+    "failed": {
+      "title": "你 {amount} 的付款未能成功。",
+      "body": "我們會再嘗試收款。請於 {date} 前更新信用卡，以繼續接受網上訂單。",
+      "button": "更新信用卡"
+    },
+    "paused": {
+      "title": "網上落單已暫停",
+      "body": "{amount} 已逾期。立即付款後，網上落單會馬上恢復。",
+      "warning": "請於 {date} 前付款，否則你的帳戶可能會被停用。",
+      "pay": "支付 {amount}",
+      "otherCard": "使用另一張信用卡"
+    },
+    "loading": "正在載入帳單…",
+    "loadError": "未能載入你的帳單，請再試一次。"
+  },
+  "changePlan": {
+    "title": "更改計劃",
+    "current": "你目前使用 {plan}。",
+    "free": "免費",
+    "perMonth": "每月 {price}",
+    "paygLine": "網上訂單收取 {fee}。",
+    "proLine": "包括 {allowance} 網上訂單額。超出部分收取 {fee}。",
+    "unlimitedLine": "網上訂單不另收費。",
+    "yourPlan": "你的計劃",
+    "startsNow": "即時生效。",
+    "chargeToday": "我們今天會收取 {amount}，作為 {month} 餘下日子的費用。之後於 {nextFirst} 收取 {price}。",
+    "startsLater": "於 {nextFirst} 生效。在此之前你會繼續使用 {plan}。",
+    "cancel": "取消",
+    "switchTo": "轉用 {plan}",
+    "error": "未能更改你的計劃，請再試一次。"
+  },
+  "notices": {
+    "trialEndsSoon": "<b>你的免費試用將於 {date} 結束。</b>請加入信用卡，以繼續接受網上訂單。",
+    "trialEndsTomorrow": "<b>你的免費試用將於明天結束。</b>請加入信用卡，否則網上落單會暫停。",
+    "allSet": "<b>一切就緒。</b>{plan} 將於 {date} 開始。",
+    "paymentFailed": "<b>你的付款未能成功。</b>請於 {date} 前更新你的{method, select, payment_method {付款方式} other {信用卡}}，以繼續接受網上訂單。",
+    "paused": "<b>網上落單已暫停。</b>請於 {date} 前支付 {amount}，否則你的帳戶可能會被停用。",
+    "addCard": "加入信用卡 →",
+    "updateCard": "更新{method, select, payment_method {付款方式} other {信用卡}} →",
+    "payNow": "立即付款 →",
+    "dismiss": "關閉"
+  }
+}

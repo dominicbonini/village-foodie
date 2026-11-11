@@ -1,0 +1,46 @@
+{
+  "greeting": "{hasName, select, yes {Hej {name},} other {Hej,}}",
+  "questions": "Spørgsmål? Svar bare på denne mail.",
+  "signoff": "Holdet bag HatchGrab",
+  "buttonUpdate": "Opdater {method, select, payment_method {betalingsmetode} other {kort}}",
+  "buttonPay": "Betal nu",
+  "buttonAddCard": "Tilføj kort",
+  "suspended": "Hvis beløbet stadig ikke bliver betalt, kan din konto blive suspenderet.",
+  "failed": {
+    "subject": "Din betaling til HatchGrab gik ikke igennem",
+    "line1": "Vi kunne ikke trække {amount} for {truck} i dag. Vi prøver igen.",
+    "line2": "Opdater {method, select, payment_method {din betalingsmetode} other {dit kort}} senest {date} for at holde onlinebestilling åben."
+  },
+  "twoDays": {
+    "subject": "2 dage tilbage til at opdatere {method, select, payment_method {din betalingsmetode} other {dit kort}}",
+    "line1": "{amount} for {truck} er stadig ikke betalt. Opdater {method, select, payment_method {din betalingsmetode} other {dit kort}} senest {date}, ellers sættes onlinebestilling på pause."
+  },
+  "oneDay": {
+    "subject": "Opdater {method, select, payment_method {din betalingsmetode} other {dit kort}} senest i morgen",
+    "line1": "{amount} for {truck} er stadig ikke betalt. Opdater {method, select, payment_method {din betalingsmetode} other {dit kort}} senest i morgen, ellers sættes onlinebestilling på pause."
+  },
+  "lastDay": {
+    "subject": "Sidste dag til at opdatere {method, select, payment_method {din betalingsmetode} other {dit kort}}",
+    "line1": "I dag er sidste dag til at betale {amount} for {truck}. Hvis beløbet stadig ikke er betalt ved midnat, sættes onlinebestilling på pause, indtil du betaler."
+  },
+  "paused": {
+    "subject": "Onlinebestilling er sat på pause",
+    "line1": "Onlinebestilling for {truck} er sat på pause, fordi {amount} ikke er betalt. Betal nu, så er den straks åben igen.",
+    "line2": "Betal senest {date}, ellers kan din konto blive suspenderet."
+  },
+  "trial7": {
+    "subject": "Din gratis prøveperiode slutter om 7 dage",
+    "line1": "Din gratis prøveperiode for {truck} slutter {date}.",
+    "line2": "Tilføj et kort under Administrer › Abonnement for at holde onlinebestilling åben.",
+    "plan": "Derefter koster {plan} {price} om måneden. Når din prøveperiode slutter, opkræver vi {amount} for resten af {month} og derefter {price} den {nextFirst}.",
+    "planFree": "Derefter har du {plan} uden månedligt gebyr.",
+    "fee": "Vores gebyr på {fee} for onlinebestillinger opkræves den 1., for den foregående måned."
+  },
+  "trial1": {
+    "subject": "Din gratis prøveperiode slutter i morgen",
+    "line1": "Din gratis prøveperiode for {truck} slutter i morgen.",
+    "noCard": "Tilføj et kort, ellers sættes onlinebestilling på pause.",
+    "allSet": "Alt er klar: {plan} starter {date}.",
+    "charge": "Vi opkræver {amount} for resten af {month}, når din prøveperiode slutter."
+  }
+}

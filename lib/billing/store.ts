@@ -5,7 +5,7 @@
 import 'server-only'
 import type { SupabaseClient } from '@supabase/supabase-js'
 import { isPaymentModel, type CountryBilling, type UsageOrder, type UsageLine, type PlanHistoryRow } from '@/lib/billing/rules'
-import type { BillingStore, TruckBillingRow, UsageRow, InvoiceRow, StoredTruck, ChargeRow } from '@/lib/billing/store-types'
+import type { BillingStore, TruckBillingRow, UsageRow, InvoiceRow, StoredTruck, ChargeRow, BillingEmailRow } from '@/lib/billing/store-types'
 
 type Row = Record<string, unknown>
 const num = (v: unknown, d = 0) => (typeof v === 'number' && Number.isFinite(v) ? v : d)
@@ -64,7 +64,7 @@ const I_COLS: Record<keyof InvoiceRow, string> = {
   id: 'id', chargeId: 'charge_id', truckId: 'truck_id', period: 'period', currency: 'currency', amountMinor: 'amount_minor', livemode: 'livemode',
   stripeInvoiceId: 'stripe_invoice_id', status: 'status', dueAt: 'due_at', attemptCount: 'attempt_count', lastError: 'last_error',
   hostedInvoiceUrl: 'hosted_invoice_url', createdAt: 'created_at', finalizedAt: 'finalized_at', paidAt: 'paid_at',
-  lateFeeMinor: 'late_fee_minor', replacedStripeInvoiceId: 'replaced_stripe_invoice_id',
+  lateFeeMinor: 'late_fee_minor', replacedStripeInvoiceId: 'replaced_stripe_invoice_id', firstFailedAt: 'first_failed_at', invoicePdfUrl: 'invoice_pdf_url',
 }
 function mapInvoice(r: Row): InvoiceRow {
   const out = {} as Record<string, unknown>
@@ -96,8 +96,11 @@ export function supabaseBillingStore(db: SupabaseClient): BillingStore {
     async switches() {
       const { data, error } = await db.from('platform_switches').select('billing_enabled, billing_pause_after_days').eq('id', true).maybeSingle()
       // 🔴 A READ FAILURE IS "OFF" — billing never acts on a switch it could not read.
-      if (error || !data) return { enabled: false, pauseAfterDays: 5 }
-      return { enabled: (data as Row).billing_enabled === true, pauseAfterDays: num((data as Row).billing_pause_after_days, 5) }
+      if (error || !data) return { enabled: false, pauseAfterDays: 5, suspendWarningDays: 6 }
+      // billing-2: the suspension-warning days, read separately so a database before 20261088 still answers (default 6).
+      const { data: sw } = await db.from('platform_switches').select('billing_suspend_warning_days').eq('id', true).maybeSingle()
+      return { enabled: (data as Row).billing_enabled === true, pauseAfterDays: num((data as Row).billing_pause_after_days, 5),
+        suspendWarningDays: num((sw as Row | null)?.billing_suspend_warning_days, 6) }
     },
     async countryBilling(code) {
       const { data, error } = await db.from('country_billing').select('*').eq('country_code', code).maybeSingle()
@@ -151,7 +154,7 @@ export function supabaseBillingStore(db: SupabaseClient): BillingStore {
       if (!data) return null
       const r = data as Row
       const name = str(r.name) || [str(r.first_name), str(r.last_name)].filter(Boolean).join(' ') || null
-      return { id: String(r.id), email: str(r.email), name }
+      return { id: String(r.id), email: str(r.email), name, firstName: str(r.first_name) }
     },
     async vanCount(truckId) {
       const { count, error } = await db.from('truck_vans').select('id', { count: 'exact', head: true }).eq('truck_id', truckId)
@@ -348,6 +351,23 @@ export function supabaseBillingStore(db: SupabaseClient): BillingStore {
       const { data, error } = await db.from('billing_invoices').update(cols).eq('id', id).select('*').single()
       fail('update invoice', error)
       return mapInvoice(data as Row)
+    },
+
+    async emailsSent(truckId): Promise<BillingEmailRow[]> {
+      const { data, error } = await db.from('billing_email_log').select('truck_id, kind, ref, locale, sent_at, provider_id').eq('truck_id', truckId)
+      fail(`emails ${truckId}`, error)
+      return ((data ?? []) as Row[]).map(r => ({ truckId: String(r.truck_id), kind: String(r.kind) as BillingEmailRow['kind'], ref: String(r.ref),
+        locale: String(r.locale), sentAt: String(r.sent_at), providerId: str(r.provider_id) }))
+    },
+    async claimEmail(row) {
+      const { error } = await db.from('billing_email_log').insert({ truck_id: row.truckId, kind: row.kind, ref: row.ref, locale: row.locale })
+      if (error?.code === '23505') return { claimed: false }
+      fail('claim email', error)
+      return { claimed: true }
+    },
+    async recordEmailProvider(truckId, kind, ref, providerId) {
+      const { error } = await db.from('billing_email_log').update({ provider_id: providerId }).eq('truck_id', truckId).eq('kind', kind).eq('ref', ref)
+      fail('record email', error)
     },
   }
 }

@@ -1,0 +1,116 @@
+{
+  "tab": {
+    "plan": {
+      "title": "Planul dumneavoastră",
+      "trialPill": "Probă gratuită",
+      "change": "Schimbați planul",
+      "trialLine": "Perioada de probă gratuită se încheie pe {date}. După aceea, planul {plan} costă {price} pe lună.",
+      "trialLineFree": "Perioada de probă gratuită se încheie pe {date}. După aceea, treceți pe planul {plan}, fără taxă lunară.",
+      "proLine": "Include comenzi online în valoare de {allowance} pe lună. Apoi {fee}.",
+      "paygLine": "{fee} din comenzile online. Fără taxă lunară.",
+      "unlimitedLine": "{price} pe lună. Fără taxă pentru comenzile online.",
+      "pendingLine": "Planul {plan} începe pe {date}."
+    },
+    "payment": {
+      "title": "Metodă de plată",
+      "none": "Niciun card adăugat încă. Adăugați unul ca să primiți în continuare comenzi online după perioada de probă.",
+      "add": "Adăugați un card",
+      "pix": "Folosiți Pix Automático",
+      "card": "{brand} care se termină în {last4}",
+      "pixOnFile": "Pix Automático",
+      "pending": "Se așteaptă confirmarea.",
+      "change": "Schimbați",
+      "lastFailed": "Ultima plată nu a reușit",
+      "update": "Actualizați cardul",
+      "error": "Nu am putut deschide pagina de plată. Vă rugăm să încercați din nou."
+    },
+    "whatYouPay": {
+      "title": "Ce plătiți",
+      "plan": "Planul dumneavoastră, încasat pe 1 ale lunii pentru luna care urmează",
+      "fee": "Comenzile online de peste {allowance} pe lună, încasate pe 1 ale lunii pentru luna anterioară",
+      "feePayg": "Comenzile online, încasate pe 1 ale lunii pentru luna anterioară",
+      "walkUps": "Comenzi la fața locului",
+      "free": "Gratuit",
+      "trialEnd": "Când perioada de probă se încheie, pe {date}, încasăm {amount} pentru restul lunii {month}. Apoi {price} pe {nextFirst}."
+    },
+    "next": {
+      "title": "Următoarea plată · {date}",
+      "plan": "Planul {plan} pentru {month}",
+      "fee": "{fee} din comenzile online din {month} de peste {allowance} (până acum)",
+      "feePayg": "{fee} din comenzile online din {month} (până acum)",
+      "vans": "Food truckuri suplimentare pentru {month}",
+      "surcharge": "Taxă pentru plata la ridicare pentru {month}",
+      "carried": "Reportat din perioada anterioară",
+      "total": "Total până acum",
+      "walkUps": "Comenzile la fața locului sunt mereu gratuite."
+    },
+    "preorders": {
+      "title": "Cum plătesc clienții precomenzile",
+      "online": "Online, când comandă",
+      "onlineHint": "Banii ajung direct în contul dumneavoastră Stripe.",
+      "atTruck": "La food truck, când ridică comanda",
+      "atTruckHint": "În schimb, taxa noastră se adaugă la plata lunară.",
+      "saved": "Salvat.",
+      "error": "Nu am putut salva. Vă rugăm să încercați din nou."
+    },
+    "invoices": {
+      "title": "Facturi",
+      "date": "Data",
+      "for": "Pentru",
+      "amount": "Sumă",
+      "status": "Stare",
+      "forMonthly": "Plan {planMonth}, taxe {usageMonth}",
+      "forMonthlyPlan": "Plan {planMonth}",
+      "forTrialEnd": "Restul lunii {month}",
+      "forUpgrade": "Trecere la {plan}",
+      "lateFee": "Taxă pentru plata cu întârziere",
+      "paid": "Plătită",
+      "unpaid": "Neplătită",
+      "overdue": "Restantă",
+      "download": "Descărcați",
+      "payNow": "Plătiți acum",
+      "none": "Nicio factură încă."
+    },
+    "failed": {
+      "title": "Plata de {amount} nu a reușit.",
+      "body": "Vom încerca din nou. Actualizați cardul până pe {date} ca să rămână active comenzile online.",
+      "button": "Actualizați cardul"
+    },
+    "paused": {
+      "title": "Comenzile online sunt întrerupte",
+      "body": "Suma de {amount} este restantă. Plătiți acum și comenzile online se reactivează imediat.",
+      "warning": "Plătiți până pe {date}, altfel contul dumneavoastră poate fi suspendat.",
+      "pay": "Plătiți {amount}",
+      "otherCard": "Folosiți alt card"
+    },
+    "loading": "Se încarcă facturarea…",
+    "loadError": "Nu am putut încărca facturarea. Vă rugăm să încercați din nou."
+  },
+  "changePlan": {
+    "title": "Schimbați planul",
+    "current": "Aveți planul {plan}.",
+    "free": "Gratuit",
+    "perMonth": "{price} pe lună",
+    "paygLine": "{fee} din comenzile online.",
+    "proLine": "Comenzi online în valoare de {allowance} incluse. Apoi {fee}.",
+    "unlimitedLine": "Fără taxă pentru comenzile online.",
+    "yourPlan": "Planul dumneavoastră",
+    "startsNow": "Începe acum.",
+    "chargeToday": "Astăzi încasăm {amount} pentru restul lunii {month}. Apoi {price} pe {nextFirst}.",
+    "startsLater": "Începe pe {nextFirst}. Până atunci păstrați planul {plan}.",
+    "cancel": "Anulați",
+    "switchTo": "Treceți la {plan}",
+    "error": "Nu am putut schimba planul. Vă rugăm să încercați din nou."
+  },
+  "notices": {
+    "trialEndsSoon": "<b>Perioada de probă gratuită se încheie pe {date}.</b> Adăugați un card ca să rămână active comenzile online.",
+    "trialEndsTomorrow": "<b>Perioada de probă gratuită se încheie mâine.</b> Adăugați un card, altfel comenzile online se întrerup.",
+    "allSet": "<b>Totul este pregătit.</b> Planul {plan} începe pe {date}.",
+    "paymentFailed": "<b>Plata nu a reușit.</b> Actualizați {method, select, payment_method {metoda de plată} other {cardul}} până pe {date} ca să rămână active comenzile online.",
+    "paused": "<b>Comenzile online sunt întrerupte.</b> Plătiți {amount} până pe {date}, altfel contul dumneavoastră poate fi suspendat.",
+    "addCard": "Adăugați un card →",
+    "updateCard": "Actualizați {method, select, payment_method {metoda de plată} other {cardul}} →",
+    "payNow": "Plătiți acum →",
+    "dismiss": "Închideți"
+  }
+}

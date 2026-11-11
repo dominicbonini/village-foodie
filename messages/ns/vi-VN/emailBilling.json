@@ -1,0 +1,46 @@
+{
+  "greeting": "{hasName, select, yes {Chào {name},} other {Xin chào,}}",
+  "questions": "Có thắc mắc? Chỉ cần trả lời email này.",
+  "signoff": "Đội ngũ HatchGrab",
+  "buttonUpdate": "Cập nhật {method, select, payment_method {hình thức thanh toán} other {thẻ}}",
+  "buttonPay": "Thanh toán ngay",
+  "buttonAddCard": "Thêm thẻ",
+  "suspended": "Nếu vẫn chưa thanh toán, tài khoản của bạn có thể bị tạm khóa.",
+  "failed": {
+    "subject": "Thanh toán HatchGrab của bạn không thành công",
+    "line1": "Hôm nay chúng tôi không thu được {amount} cho {truck}. Chúng tôi sẽ thử lại.",
+    "line2": "Vui lòng cập nhật {method, select, payment_method {hình thức thanh toán} other {thẻ}} chậm nhất vào {date} để tiếp tục nhận đơn online."
+  },
+  "twoDays": {
+    "subject": "Còn 2 ngày để cập nhật {method, select, payment_method {hình thức thanh toán} other {thẻ}}",
+    "line1": "Khoản {amount} cho {truck} vẫn chưa được thanh toán. Hãy cập nhật {method, select, payment_method {hình thức thanh toán} other {thẻ}} chậm nhất vào {date}, nếu không đặt món online sẽ tạm dừng."
+  },
+  "oneDay": {
+    "subject": "Hãy cập nhật {method, select, payment_method {hình thức thanh toán} other {thẻ}} chậm nhất vào ngày mai",
+    "line1": "Khoản {amount} cho {truck} vẫn chưa được thanh toán. Hãy cập nhật {method, select, payment_method {hình thức thanh toán} other {thẻ}} chậm nhất vào ngày mai, nếu không đặt món online sẽ tạm dừng."
+  },
+  "lastDay": {
+    "subject": "Hôm nay là ngày cuối để cập nhật {method, select, payment_method {hình thức thanh toán} other {thẻ}}",
+    "line1": "Hôm nay là ngày cuối để thanh toán {amount} cho {truck}. Nếu đến nửa đêm vẫn chưa thanh toán, đặt món online sẽ tạm dừng cho đến khi bạn thanh toán."
+  },
+  "paused": {
+    "subject": "Đặt món online đang tạm dừng",
+    "line1": "Đặt món online của {truck} đang tạm dừng vì khoản {amount} chưa được thanh toán. Thanh toán ngay để mở lại.",
+    "line2": "Hãy thanh toán chậm nhất vào {date}, nếu không tài khoản của bạn có thể bị tạm khóa."
+  },
+  "trial7": {
+    "subject": "Thời gian dùng thử miễn phí của bạn kết thúc sau 7 ngày",
+    "line1": "Thời gian dùng thử miễn phí của {truck} kết thúc vào {date}.",
+    "line2": "Hãy thêm thẻ trong Quản lý › Gói & thanh toán để tiếp tục nhận đơn online.",
+    "plan": "Sau đó, gói {plan} có giá {price} mỗi tháng. Khi hết thời gian dùng thử, chúng tôi thu {amount} cho phần còn lại của {month}, sau đó thu {price} vào {nextFirst}.",
+    "planFree": "Sau đó, bạn dùng gói {plan}, không mất phí hằng tháng.",
+    "fee": "Phí {fee} của chúng tôi trên đơn online được thu vào ngày 1 hằng tháng, cho tháng trước."
+  },
+  "trial1": {
+    "subject": "Thời gian dùng thử miễn phí của bạn kết thúc vào ngày mai",
+    "line1": "Thời gian dùng thử miễn phí của {truck} kết thúc vào ngày mai.",
+    "noCard": "Hãy thêm thẻ, nếu không đặt món online sẽ tạm dừng.",
+    "allSet": "Mọi thứ đã sẵn sàng: gói {plan} bắt đầu từ {date}.",
+    "charge": "Chúng tôi sẽ thu {amount} cho phần còn lại của {month} khi hết thời gian dùng thử."
+  }
+}

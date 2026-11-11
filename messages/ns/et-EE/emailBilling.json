@@ -1,0 +1,46 @@
+{
+  "greeting": "{hasName, select, yes {Tere, {name}!} other {Tere!}}",
+  "questions": "Küsimusi? Vasta lihtsalt sellele kirjale.",
+  "signoff": "HatchGrabi meeskond",
+  "buttonUpdate": "Uuenda {method, select, payment_method {makseviisi} other {kaarti}}",
+  "buttonPay": "Maksa kohe",
+  "buttonAddCard": "Lisa kaart",
+  "suspended": "Kui summa jääb maksmata, võidakse sinu konto sulgeda.",
+  "failed": {
+    "subject": "Sinu HatchGrabi makse ei läinud läbi",
+    "line1": "Me ei saanud täna võtta {amount} toiduauto {truck} eest. Proovime uuesti.",
+    "line2": "Palun uuenda oma {method, select, payment_method {makseviisi} other {kaarti}} hiljemalt {date}, et veebitellimine jääks sisse."
+  },
+  "twoDays": {
+    "subject": "Sul on 2 päeva, et uuendada oma {method, select, payment_method {makseviisi} other {kaarti}}",
+    "line1": "{amount} toiduauto {truck} eest on endiselt maksmata. Uuenda oma {method, select, payment_method {makseviisi} other {kaarti}} hiljemalt {date}, muidu veebitellimine peatatakse."
+  },
+  "oneDay": {
+    "subject": "Uuenda oma {method, select, payment_method {makseviisi} other {kaarti}} homseks",
+    "line1": "{amount} toiduauto {truck} eest on endiselt maksmata. Uuenda oma {method, select, payment_method {makseviisi} other {kaarti}} homseks, muidu veebitellimine peatatakse."
+  },
+  "lastDay": {
+    "subject": "Viimane päev, et uuendada oma {method, select, payment_method {makseviisi} other {kaarti}}",
+    "line1": "Täna on viimane päev, et maksta {amount} toiduauto {truck} eest. Kui summa on keskööl endiselt maksmata, peatatakse veebitellimine, kuni oled maksnud."
+  },
+  "paused": {
+    "subject": "Veebitellimine on peatatud",
+    "line1": "Toiduauto {truck} veebitellimine on peatatud, sest {amount} on maksmata. Maksa kohe ja see lülitub kohe uuesti sisse.",
+    "line2": "Maksa hiljemalt {date}, muidu võidakse sinu konto sulgeda."
+  },
+  "trial7": {
+    "subject": "Sinu tasuta prooviperiood lõpeb 7 päeva pärast",
+    "line1": "Toiduauto {truck} tasuta prooviperiood lõpeb {date}.",
+    "line2": "Lisa kaart jaotises Haldus › Arveldus, et veebitellimine jääks sisse.",
+    "plan": "Seejärel on paketi {plan} hind {price} kuus. Kui prooviperiood lõpeb, võtame {amount} ülejäänud kuu eest ({month}), seejärel {price} {nextFirst}.",
+    "planFree": "Seejärel jätkad paketiga {plan}, ilma kuutasuta.",
+    "fee": "Meie tasu {fee} veebitellimustelt võetakse kuu 1. kuupäeval eelmise kuu eest."
+  },
+  "trial1": {
+    "subject": "Sinu tasuta prooviperiood lõpeb homme",
+    "line1": "Toiduauto {truck} tasuta prooviperiood lõpeb homme.",
+    "noCard": "Lisa kaart, muidu veebitellimine peatatakse.",
+    "allSet": "Kõik on valmis: pakett {plan} algab {date}.",
+    "charge": "Kui prooviperiood lõpeb, võtame {amount} ülejäänud kuu eest ({month})."
+  }
+}

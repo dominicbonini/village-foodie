@@ -1,0 +1,46 @@
+{
+  "greeting": "{hasName, select, yes {안녕하세요, {name} 님.} other {안녕하세요,}}",
+  "questions": "궁금한 점이 있으면 이 메일에 회신해 주세요.",
+  "signoff": "HatchGrab 팀",
+  "buttonUpdate": "{method, select, payment_method {결제 수단} other {카드}} 업데이트",
+  "buttonPay": "지금 결제",
+  "buttonAddCard": "카드 추가",
+  "suspended": "계속 미납 상태이면 계정이 정지될 수 있어요.",
+  "failed": {
+    "subject": "HatchGrab 결제가 처리되지 않았어요",
+    "line1": "오늘 {truck}의 {amount} 결제를 처리하지 못했어요. 다시 시도할게요.",
+    "line2": "온라인 주문을 계속 받으려면 {date}까지 {method, select, payment_method {결제 수단} other {카드}} 정보를 업데이트해 주세요."
+  },
+  "twoDays": {
+    "subject": "{method, select, payment_method {결제 수단} other {카드}} 업데이트 기한이 2일 남았어요",
+    "line1": "{truck}의 {amount} 결제가 아직 미납 상태예요. {date}까지 {method, select, payment_method {결제 수단} other {카드}} 정보를 업데이트하지 않으면 온라인 주문이 일시 중지돼요."
+  },
+  "oneDay": {
+    "subject": "내일까지 {method, select, payment_method {결제 수단} other {카드}} 정보를 업데이트하세요",
+    "line1": "{truck}의 {amount} 결제가 아직 미납 상태예요. 내일까지 {method, select, payment_method {결제 수단} other {카드}} 정보를 업데이트하지 않으면 온라인 주문이 일시 중지돼요."
+  },
+  "lastDay": {
+    "subject": "오늘이 {method, select, payment_method {결제 수단} other {카드}} 업데이트 마지막 날이에요",
+    "line1": "오늘은 {truck}의 {amount} 결제 마감일이에요. 자정까지 결제되지 않으면 결제할 때까지 온라인 주문이 일시 중지돼요."
+  },
+  "paused": {
+    "subject": "온라인 주문이 일시 중지되었어요",
+    "line1": "{truck}의 {amount} 결제가 미납되어 온라인 주문이 일시 중지되었어요. 지금 결제하면 바로 다시 열려요.",
+    "line2": "{date}까지 결제하지 않으면 계정이 정지될 수 있어요."
+  },
+  "trial7": {
+    "subject": "무료 체험이 7일 후에 끝나요",
+    "line1": "{truck}의 무료 체험이 {date}에 끝나요.",
+    "line2": "온라인 주문을 계속 받으려면 관리 › 이용 요금에서 카드를 추가하세요.",
+    "plan": "그 후 {plan} 요금제는 월 {price}입니다. 체험이 끝나면 {month} 남은 기간 요금으로 {amount} 청구되고, 이후 {nextFirst}에 {price} 청구돼요.",
+    "planFree": "그 후에는 월 이용료 없이 {plan} 요금제를 이용하게 됩니다.",
+    "fee": "온라인 주문에 대한 {fee} 수수료는 매월 1일에 지난달 사용분으로 청구돼요."
+  },
+  "trial1": {
+    "subject": "무료 체험이 내일 끝나요",
+    "line1": "{truck}의 무료 체험이 내일 끝나요.",
+    "noCard": "카드를 추가하지 않으면 온라인 주문이 일시 중지돼요.",
+    "allSet": "준비가 끝났어요. {plan} 요금제가 {date}에 시작돼요.",
+    "charge": "체험이 끝나면 {month} 남은 기간 요금으로 {amount} 청구돼요."
+  }
+}

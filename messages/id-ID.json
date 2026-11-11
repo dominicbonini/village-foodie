@@ -7227,5 +7227,167 @@
       "body": "{truck} tidak akan mengirim permintaan ulasan lagi.",
       "invalid": "Link berhenti berlangganan ini tidak valid."
     }
+  },
+  "billing": {
+    "tab": {
+      "plan": {
+        "title": "Paket Anda",
+        "trialPill": "Masa coba gratis",
+        "change": "Ganti paket",
+        "trialLine": "Masa coba gratis Anda berakhir pada {date}. Setelah itu, paket {plan} seharga {price} per bulan.",
+        "trialLineFree": "Masa coba gratis Anda berakhir pada {date}. Setelah itu, Anda memakai paket {plan}, tanpa biaya bulanan.",
+        "proLine": "Termasuk pesanan online senilai {allowance} per bulan. Selebihnya {fee}.",
+        "paygLine": "{fee} untuk pesanan online. Tanpa biaya bulanan.",
+        "unlimitedLine": "{price} per bulan. Tanpa biaya untuk pesanan online.",
+        "pendingLine": "Paket {plan} dimulai pada {date}."
+      },
+      "payment": {
+        "title": "Metode pembayaran",
+        "none": "Belum ada kartu. Tambahkan kartu agar tetap bisa menerima pesanan online setelah masa coba berakhir.",
+        "add": "Tambah kartu",
+        "pix": "Pakai Pix Automático",
+        "card": "{brand} berakhiran {last4}",
+        "pixOnFile": "Pix Automático",
+        "pending": "Menunggu konfirmasi.",
+        "change": "Ganti",
+        "lastFailed": "Pembayaran terakhir gagal",
+        "update": "Perbarui kartu",
+        "error": "Halaman pembayaran tidak bisa dibuka. Silakan coba lagi."
+      },
+      "whatYouPay": {
+        "title": "Yang Anda bayar",
+        "plan": "Paket Anda, ditagih setiap tanggal 1 untuk bulan yang baru dimulai",
+        "fee": "Pesanan online di atas {allowance} per bulan, ditagih setiap tanggal 1 untuk bulan sebelumnya",
+        "feePayg": "Pesanan online, ditagih setiap tanggal 1 untuk bulan sebelumnya",
+        "walkUps": "Pesanan langsung di tempat",
+        "free": "Gratis",
+        "trialEnd": "Saat masa coba berakhir pada {date}, kami menagih {amount} untuk sisa {month}. Lalu {price} pada {nextFirst}."
+      },
+      "next": {
+        "title": "Pembayaran berikutnya · {date}",
+        "plan": "Paket {plan} untuk {month}",
+        "fee": "{fee} untuk pesanan online {month} di atas {allowance} (sejauh ini)",
+        "feePayg": "{fee} untuk pesanan online {month} (sejauh ini)",
+        "vans": "Kendaraan tambahan untuk {month}",
+        "surcharge": "Biaya bayar belakangan untuk {month}",
+        "carried": "Sisa dari periode sebelumnya",
+        "total": "Total sejauh ini",
+        "walkUps": "Pesanan langsung di tempat selalu gratis."
+      },
+      "preorders": {
+        "title": "Cara pelanggan membayar pre-order",
+        "online": "Online, saat memesan",
+        "onlineHint": "Uangnya langsung masuk ke akun Stripe Anda.",
+        "atTruck": "Di truk, saat mengambil pesanan",
+        "atTruckHint": "Biaya kami ditambahkan ke tagihan bulanan Anda.",
+        "saved": "Tersimpan.",
+        "error": "Gagal menyimpan. Silakan coba lagi."
+      },
+      "invoices": {
+        "title": "Invoice",
+        "date": "Tanggal",
+        "for": "Untuk",
+        "amount": "Jumlah",
+        "status": "Status",
+        "forMonthly": "Paket {planMonth}, biaya {usageMonth}",
+        "forMonthlyPlan": "Paket {planMonth}",
+        "forTrialEnd": "Sisa {month}",
+        "forUpgrade": "Beralih ke paket {plan}",
+        "lateFee": "Denda keterlambatan",
+        "paid": "Lunas",
+        "unpaid": "Belum dibayar",
+        "overdue": "Lewat jatuh tempo",
+        "download": "Unduh",
+        "payNow": "Bayar sekarang",
+        "none": "Belum ada invoice."
+      },
+      "failed": {
+        "title": "Pembayaran {amount} Anda tidak berhasil.",
+        "body": "Kami akan mencoba lagi. Perbarui kartu Anda paling lambat {date} agar pemesanan online tetap aktif.",
+        "button": "Perbarui kartu"
+      },
+      "paused": {
+        "title": "Pemesanan online dijeda",
+        "body": "{amount} sudah lewat jatuh tempo. Bayar sekarang dan pemesanan online langsung aktif kembali.",
+        "warning": "Bayar paling lambat {date} atau akun Anda bisa ditangguhkan.",
+        "pay": "Bayar {amount}",
+        "otherCard": "Pakai kartu lain"
+      },
+      "loading": "Memuat tagihan…",
+      "loadError": "Tagihan Anda tidak bisa dimuat. Silakan coba lagi."
+    },
+    "changePlan": {
+      "title": "Ganti paket",
+      "current": "Anda memakai paket {plan}.",
+      "free": "Gratis",
+      "perMonth": "{price} per bulan",
+      "paygLine": "{fee} untuk pesanan online.",
+      "proLine": "Termasuk pesanan online senilai {allowance}. Selebihnya {fee}.",
+      "unlimitedLine": "Tanpa biaya untuk pesanan online.",
+      "yourPlan": "Paket Anda",
+      "startsNow": "Mulai sekarang.",
+      "chargeToday": "Kami akan menagih {amount} hari ini untuk sisa {month}. Lalu {price} pada {nextFirst}.",
+      "startsLater": "Mulai pada {nextFirst}. Sampai saat itu Anda tetap memakai paket {plan}.",
+      "cancel": "Batal",
+      "switchTo": "Beralih ke paket {plan}",
+      "error": "Paket Anda tidak bisa diganti. Silakan coba lagi."
+    },
+    "notices": {
+      "trialEndsSoon": "<b>Masa coba gratis Anda berakhir pada {date}.</b> Tambahkan kartu agar pemesanan online tetap aktif.",
+      "trialEndsTomorrow": "<b>Masa coba gratis Anda berakhir besok.</b> Tambahkan kartu, atau pemesanan online akan dijeda.",
+      "allSet": "<b>Semua sudah siap.</b> Paket {plan} dimulai pada {date}.",
+      "paymentFailed": "<b>Pembayaran Anda tidak berhasil.</b> Perbarui {method, select, payment_method {metode pembayaran} other {kartu}} Anda paling lambat {date} agar pemesanan online tetap aktif.",
+      "paused": "<b>Pemesanan online dijeda.</b> Bayar {amount} paling lambat {date} atau akun Anda bisa ditangguhkan.",
+      "addCard": "Tambah kartu →",
+      "updateCard": "Perbarui {method, select, payment_method {metode pembayaran} other {kartu}} →",
+      "payNow": "Bayar sekarang →",
+      "dismiss": "Tutup"
+    }
+  },
+  "emailBilling": {
+    "greeting": "{hasName, select, yes {Halo {name},} other {Halo,}}",
+    "questions": "Ada pertanyaan? Cukup balas email ini.",
+    "signoff": "Tim HatchGrab",
+    "buttonUpdate": "Perbarui {method, select, payment_method {metode pembayaran} other {kartu}}",
+    "buttonPay": "Bayar sekarang",
+    "buttonAddCard": "Tambah kartu",
+    "suspended": "Jika tetap belum dibayar, akun Anda bisa ditangguhkan.",
+    "failed": {
+      "subject": "Pembayaran HatchGrab Anda tidak berhasil",
+      "line1": "Hari ini kami tidak bisa menagih {amount} untuk {truck}. Kami akan mencoba lagi.",
+      "line2": "Silakan perbarui {method, select, payment_method {metode pembayaran} other {kartu}} Anda paling lambat {date} agar pemesanan online tetap aktif."
+    },
+    "twoDays": {
+      "subject": "2 hari lagi untuk memperbarui {method, select, payment_method {metode pembayaran} other {kartu}} Anda",
+      "line1": "{amount} untuk {truck} masih belum dibayar. Perbarui {method, select, payment_method {metode pembayaran} other {kartu}} Anda paling lambat {date}, atau pemesanan online akan dijeda."
+    },
+    "oneDay": {
+      "subject": "Perbarui {method, select, payment_method {metode pembayaran} other {kartu}} Anda paling lambat besok",
+      "line1": "{amount} untuk {truck} masih belum dibayar. Perbarui {method, select, payment_method {metode pembayaran} other {kartu}} Anda paling lambat besok, atau pemesanan online akan dijeda."
+    },
+    "lastDay": {
+      "subject": "Hari terakhir untuk memperbarui {method, select, payment_method {metode pembayaran} other {kartu}} Anda",
+      "line1": "Hari ini hari terakhir untuk membayar {amount} untuk {truck}. Jika masih belum dibayar pada tengah malam, pemesanan online dijeda sampai Anda membayar."
+    },
+    "paused": {
+      "subject": "Pemesanan online dijeda",
+      "line1": "Pemesanan online untuk {truck} dijeda karena {amount} belum dibayar. Bayar sekarang dan pemesanan online langsung aktif kembali.",
+      "line2": "Bayar paling lambat {date} atau akun Anda bisa ditangguhkan."
+    },
+    "trial7": {
+      "subject": "Masa coba gratis Anda berakhir dalam 7 hari",
+      "line1": "Masa coba gratis untuk {truck} berakhir pada {date}.",
+      "line2": "Tambahkan kartu di Kelola › Tagihan agar pemesanan online tetap aktif.",
+      "plan": "Setelah itu, paket {plan} seharga {price} per bulan. Saat masa coba berakhir, kami menagih {amount} untuk sisa {month}, lalu {price} pada {nextFirst}.",
+      "planFree": "Setelah itu, Anda memakai paket {plan}, tanpa biaya bulanan.",
+      "fee": "Biaya {fee} kami untuk pesanan online ditagih setiap tanggal 1, untuk bulan sebelumnya."
+    },
+    "trial1": {
+      "subject": "Masa coba gratis Anda berakhir besok",
+      "line1": "Masa coba gratis untuk {truck} berakhir besok.",
+      "noCard": "Tambahkan kartu, atau pemesanan online akan dijeda.",
+      "allSet": "Semua sudah siap: paket {plan} dimulai pada {date}.",
+      "charge": "Kami akan menagih {amount} untuk sisa {month} saat masa coba berakhir."
+    }
   }
 }

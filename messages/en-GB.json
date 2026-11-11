@@ -7200,5 +7200,167 @@
       "body": "{truck} won’t send you review requests any more.",
       "invalid": "This unsubscribe link isn’t valid."
     }
+  },
+  "billing": {
+    "tab": {
+      "plan": {
+        "title": "Your plan",
+        "trialPill": "Free trial",
+        "change": "Change plan",
+        "trialLine": "Your free trial ends on {date}. After that, {plan} is {price} a month.",
+        "trialLineFree": "Your free trial ends on {date}. After that, you’re on {plan}, with no monthly fee.",
+        "proLine": "Includes {allowance} of online orders a month. Then {fee}.",
+        "paygLine": "{fee} on online orders. No monthly fee.",
+        "unlimitedLine": "{price} a month. No fee on online orders.",
+        "pendingLine": "{plan} starts on {date}."
+      },
+      "payment": {
+        "title": "Payment method",
+        "none": "No card added yet. Add one to keep taking online orders after your trial.",
+        "add": "Add card",
+        "pix": "Use Pix Automático",
+        "card": "{brand} ending {last4}",
+        "pixOnFile": "Pix Automático",
+        "pending": "Waiting for confirmation.",
+        "change": "Change",
+        "lastFailed": "Last payment failed",
+        "update": "Update card",
+        "error": "We couldn’t open the payment page. Please try again."
+      },
+      "whatYouPay": {
+        "title": "What you pay",
+        "plan": "Your plan, charged on the 1st for the month ahead",
+        "fee": "Online orders over {allowance} a month, charged on the 1st for the month before",
+        "feePayg": "Online orders, charged on the 1st for the month before",
+        "walkUps": "Walk-up orders",
+        "free": "Free",
+        "trialEnd": "When your trial ends on {date}, we charge {amount} for the rest of {month}. Then {price} on {nextFirst}."
+      },
+      "next": {
+        "title": "Next payment · {date}",
+        "plan": "{plan} for {month}",
+        "fee": "{fee} on {month}’s online orders over {allowance} (so far)",
+        "feePayg": "{fee} on {month}’s online orders (so far)",
+        "vans": "Extra vans for {month}",
+        "surcharge": "Post-pay charge for {month}",
+        "carried": "Carried over from earlier",
+        "total": "Total so far",
+        "walkUps": "Walk-up orders are always free."
+      },
+      "preorders": {
+        "title": "How customers pay for pre-orders",
+        "online": "Online, when they order",
+        "onlineHint": "The money goes straight to your Stripe account.",
+        "atTruck": "At the truck, when they collect",
+        "atTruckHint": "Our fee is added to your monthly charge instead.",
+        "saved": "Saved.",
+        "error": "We couldn’t save that. Please try again."
+      },
+      "invoices": {
+        "title": "Invoices",
+        "date": "Date",
+        "for": "For",
+        "amount": "Amount",
+        "status": "Status",
+        "forMonthly": "{planMonth} plan, {usageMonth} fees",
+        "forMonthlyPlan": "{planMonth} plan",
+        "forTrialEnd": "Rest of {month}",
+        "forUpgrade": "Switch to {plan}",
+        "lateFee": "Late payment fee",
+        "paid": "Paid",
+        "unpaid": "Unpaid",
+        "overdue": "Overdue",
+        "download": "Download",
+        "payNow": "Pay now",
+        "none": "No invoices yet."
+      },
+      "failed": {
+        "title": "Your payment of {amount} didn’t go through.",
+        "body": "We’ll try again. Update your card by {date} to keep online ordering on.",
+        "button": "Update card"
+      },
+      "paused": {
+        "title": "Online ordering is paused",
+        "body": "{amount} is overdue. Pay now and online ordering comes straight back on.",
+        "warning": "Pay by {date} or your account may be suspended.",
+        "pay": "Pay {amount}",
+        "otherCard": "Use a different card"
+      },
+      "loading": "Loading billing…",
+      "loadError": "We couldn’t load your billing. Please try again."
+    },
+    "changePlan": {
+      "title": "Change plan",
+      "current": "You’re on {plan}.",
+      "free": "Free",
+      "perMonth": "{price} a month",
+      "paygLine": "{fee} on online orders.",
+      "proLine": "{allowance} of online orders included. Then {fee}.",
+      "unlimitedLine": "No fee on online orders.",
+      "yourPlan": "Your plan",
+      "startsNow": "Starts now.",
+      "chargeToday": "We’ll charge {amount} today for the rest of {month}. Then {price} on {nextFirst}.",
+      "startsLater": "Starts on {nextFirst}. You keep {plan} until then.",
+      "cancel": "Cancel",
+      "switchTo": "Switch to {plan}",
+      "error": "We couldn’t change your plan. Please try again."
+    },
+    "notices": {
+      "trialEndsSoon": "<b>Your free trial ends on {date}.</b> Add a card to keep online ordering on.",
+      "trialEndsTomorrow": "<b>Your free trial ends tomorrow.</b> Add a card or online ordering pauses.",
+      "allSet": "<b>You’re all set.</b> {plan} starts on {date}.",
+      "paymentFailed": "<b>Your payment didn’t go through.</b> Update your {method, select, payment_method {payment method} other {card}} by {date} to keep online ordering on.",
+      "paused": "<b>Online ordering is paused.</b> Pay {amount} by {date} or your account may be suspended.",
+      "addCard": "Add card →",
+      "updateCard": "Update {method, select, payment_method {payment method} other {card}} →",
+      "payNow": "Pay now →",
+      "dismiss": "Dismiss"
+    }
+  },
+  "emailBilling": {
+    "greeting": "{hasName, select, yes {Hi {name},} other {Hi there,}}",
+    "questions": "Questions? Just reply.",
+    "signoff": "The HatchGrab team",
+    "buttonUpdate": "Update {method, select, payment_method {payment method} other {card}}",
+    "buttonPay": "Pay now",
+    "buttonAddCard": "Add card",
+    "suspended": "If it stays unpaid, your account may be suspended.",
+    "failed": {
+      "subject": "Your HatchGrab payment didn’t go through",
+      "line1": "We couldn’t take {amount} for {truck} today. We’ll try again.",
+      "line2": "Please update your {method, select, payment_method {payment method} other {card}} by {date} to keep online ordering on."
+    },
+    "twoDays": {
+      "subject": "2 days left to update your {method, select, payment_method {payment method} other {card}}",
+      "line1": "{amount} for {truck} is still unpaid. Update your {method, select, payment_method {payment method} other {card}} by {date}, or online ordering pauses."
+    },
+    "oneDay": {
+      "subject": "Update your {method, select, payment_method {payment method} other {card}} by tomorrow",
+      "line1": "{amount} for {truck} is still unpaid. Update your {method, select, payment_method {payment method} other {card}} by tomorrow, or online ordering pauses."
+    },
+    "lastDay": {
+      "subject": "Last day to update your {method, select, payment_method {payment method} other {card}}",
+      "line1": "Today is the last day to pay {amount} for {truck}. If it’s still unpaid at midnight, online ordering pauses until you pay."
+    },
+    "paused": {
+      "subject": "Online ordering is paused",
+      "line1": "Online ordering for {truck} is paused because {amount} is unpaid. Pay now and it comes straight back on.",
+      "line2": "Pay by {date} or your account may be suspended."
+    },
+    "trial7": {
+      "subject": "Your free trial ends in 7 days",
+      "line1": "Your free trial for {truck} ends on {date}.",
+      "line2": "Add a card in Manage › Billing to keep online ordering on.",
+      "plan": "After that, {plan} is {price} a month. When your trial ends we charge {amount} for the rest of {month}, then {price} on {nextFirst}.",
+      "planFree": "After that, you’re on {plan}, with no monthly fee.",
+      "fee": "Our {fee} fee on online orders is charged on the 1st, for the month before."
+    },
+    "trial1": {
+      "subject": "Your free trial ends tomorrow",
+      "line1": "Your free trial for {truck} ends tomorrow.",
+      "noCard": "Add a card or online ordering pauses.",
+      "allSet": "You’re all set: {plan} starts on {date}.",
+      "charge": "We’ll charge {amount} for the rest of {month} when your trial ends."
+    }
   }
 }

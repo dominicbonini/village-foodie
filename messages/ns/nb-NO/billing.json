@@ -1,0 +1,116 @@
+{
+  "tab": {
+    "plan": {
+      "title": "Abonnementet ditt",
+      "trialPill": "Gratis prøveperiode",
+      "change": "Bytt abonnement",
+      "trialLine": "Den gratis prøveperioden din slutter {date}. Etter det koster {plan} {price} i måneden.",
+      "trialLineFree": "Den gratis prøveperioden din slutter {date}. Etter det har du {plan}, uten månedsavgift.",
+      "proLine": "Inkluderer nettbestillinger for {allowance} i måneden. Deretter {fee}.",
+      "paygLine": "{fee} på nettbestillinger. Ingen månedsavgift.",
+      "unlimitedLine": "{price} i måneden. Ingen gebyr på nettbestillinger.",
+      "pendingLine": "{plan} starter {date}."
+    },
+    "payment": {
+      "title": "Betalingsmetode",
+      "none": "Du har ikke lagt til et kort ennå. Legg til et for å fortsette å ta imot nettbestillinger etter prøveperioden.",
+      "add": "Legg til kort",
+      "pix": "Bruk Pix Automático",
+      "card": "{brand} som slutter på {last4}",
+      "pixOnFile": "Pix Automático",
+      "pending": "Venter på bekreftelse.",
+      "change": "Endre",
+      "lastFailed": "Siste betaling mislyktes",
+      "update": "Oppdater kort",
+      "error": "Vi fikk ikke åpnet betalingssiden. Prøv igjen."
+    },
+    "whatYouPay": {
+      "title": "Hva du betaler",
+      "plan": "Abonnementet ditt, belastes den 1. for måneden som kommer",
+      "fee": "Nettbestillinger over {allowance} i måneden, belastes den 1. for måneden før",
+      "feePayg": "Nettbestillinger, belastes den 1. for måneden før",
+      "walkUps": "Bestillinger ved bilen",
+      "free": "Gratis",
+      "trialEnd": "Når prøveperioden din slutter {date}, belaster vi {amount} for resten av {month}. Deretter {price} den {nextFirst}."
+    },
+    "next": {
+      "title": "Neste betaling · {date}",
+      "plan": "{plan} for {month}",
+      "fee": "{fee} på nettbestillinger over {allowance} i {month} (så langt)",
+      "feePayg": "{fee} på nettbestillinger i {month} (så langt)",
+      "vans": "Ekstra matbiler for {month}",
+      "surcharge": "Gebyr for betaling ved henting for {month}",
+      "carried": "Overført fra tidligere",
+      "total": "Totalt så langt",
+      "walkUps": "Bestillinger ved bilen er alltid gratis."
+    },
+    "preorders": {
+      "title": "Slik betaler kundene for forhåndsbestillinger",
+      "online": "På nett, når de bestiller",
+      "onlineHint": "Pengene går rett til Stripe-kontoen din.",
+      "atTruck": "Ved bilen, når de henter",
+      "atTruckHint": "Gebyret vårt legges i stedet til den månedlige betalingen din.",
+      "saved": "Lagret.",
+      "error": "Vi fikk ikke lagret det. Prøv igjen."
+    },
+    "invoices": {
+      "title": "Fakturaer",
+      "date": "Dato",
+      "for": "Gjelder",
+      "amount": "Beløp",
+      "status": "Status",
+      "forMonthly": "Abonnement for {planMonth}, gebyrer for {usageMonth}",
+      "forMonthlyPlan": "Abonnement for {planMonth}",
+      "forTrialEnd": "Resten av {month}",
+      "forUpgrade": "Bytte til {plan}",
+      "lateFee": "Gebyr for sen betaling",
+      "paid": "Betalt",
+      "unpaid": "Ubetalt",
+      "overdue": "Forfalt",
+      "download": "Last ned",
+      "payNow": "Betal nå",
+      "none": "Ingen fakturaer ennå."
+    },
+    "failed": {
+      "title": "Betalingen din på {amount} gikk ikke gjennom.",
+      "body": "Vi prøver igjen. Oppdater kortet ditt innen {date} for å holde nettbestillingen åpen.",
+      "button": "Oppdater kort"
+    },
+    "paused": {
+      "title": "Nettbestilling er satt på pause",
+      "body": "{amount} er forfalt. Betal nå, så er nettbestillingen åpen igjen med en gang.",
+      "warning": "Betal innen {date}, ellers kan kontoen din bli suspendert.",
+      "pay": "Betal {amount}",
+      "otherCard": "Bruk et annet kort"
+    },
+    "loading": "Laster inn fakturering …",
+    "loadError": "Vi fikk ikke lastet inn faktureringen din. Prøv igjen."
+  },
+  "changePlan": {
+    "title": "Bytt abonnement",
+    "current": "Du har {plan}.",
+    "free": "Gratis",
+    "perMonth": "{price} i måneden",
+    "paygLine": "{fee} på nettbestillinger.",
+    "proLine": "Nettbestillinger for {allowance} inkludert. Deretter {fee}.",
+    "unlimitedLine": "Ingen gebyr på nettbestillinger.",
+    "yourPlan": "Abonnementet ditt",
+    "startsNow": "Starter nå.",
+    "chargeToday": "Vi belaster {amount} i dag for resten av {month}. Deretter {price} den {nextFirst}.",
+    "startsLater": "Starter den {nextFirst}. Du beholder {plan} fram til da.",
+    "cancel": "Avbryt",
+    "switchTo": "Bytt til {plan}",
+    "error": "Vi fikk ikke byttet abonnementet ditt. Prøv igjen."
+  },
+  "notices": {
+    "trialEndsSoon": "<b>Den gratis prøveperioden din slutter {date}.</b> Legg til et kort for å holde nettbestillingen åpen.",
+    "trialEndsTomorrow": "<b>Den gratis prøveperioden din slutter i morgen.</b> Legg til et kort, ellers settes nettbestillingen på pause.",
+    "allSet": "<b>Alt er klart.</b> {plan} starter {date}.",
+    "paymentFailed": "<b>Betalingen din gikk ikke gjennom.</b> Oppdater {method, select, payment_method {betalingsmetoden din} other {kortet ditt}} innen {date} for å holde nettbestillingen åpen.",
+    "paused": "<b>Nettbestilling er satt på pause.</b> Betal {amount} innen {date}, ellers kan kontoen din bli suspendert.",
+    "addCard": "Legg til kort →",
+    "updateCard": "Oppdater {method, select, payment_method {betalingsmetode} other {kort}} →",
+    "payNow": "Betal nå →",
+    "dismiss": "Lukk"
+  }
+}

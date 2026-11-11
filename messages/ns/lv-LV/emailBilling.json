@@ -1,0 +1,46 @@
+{
+  "greeting": "{hasName, select, yes {Sveiki, {name}!} other {Sveiki!}}",
+  "questions": "Ir jautājumi? Vienkārši atbildiet uz šo e-pastu.",
+  "signoff": "HatchGrab komanda",
+  "buttonUpdate": "Atjaunināt {method, select, payment_method {maksājuma veidu} other {karti}}",
+  "buttonPay": "Maksāt tagad",
+  "buttonAddCard": "Pievienot karti",
+  "suspended": "Ja maksājums netiks veikts, jūsu konts var tikt apturēts.",
+  "failed": {
+    "subject": "Jūsu HatchGrab maksājums neizdevās",
+    "line1": "Šodien neizdevās iekasēt {amount} par {truck}. Mēs mēģināsim vēlreiz.",
+    "line2": "Lūdzu, atjauniniet {method, select, payment_method {maksājuma veidu} other {karti}} līdz {date}, lai tiešsaistes pasūtīšana paliktu ieslēgta."
+  },
+  "twoDays": {
+    "subject": "Atlikušas 2 dienas, lai atjauninātu {method, select, payment_method {maksājuma veidu} other {karti}}",
+    "line1": "Maksājums {amount} par {truck} joprojām nav veikts. Atjauniniet {method, select, payment_method {maksājuma veidu} other {karti}} līdz {date}, citādi tiešsaistes pasūtīšana tiks apturēta."
+  },
+  "oneDay": {
+    "subject": "Atjauniniet {method, select, payment_method {maksājuma veidu} other {karti}} līdz rītdienai",
+    "line1": "Maksājums {amount} par {truck} joprojām nav veikts. Atjauniniet {method, select, payment_method {maksājuma veidu} other {karti}} līdz rītdienai, citādi tiešsaistes pasūtīšana tiks apturēta."
+  },
+  "lastDay": {
+    "subject": "Pēdējā diena, lai atjauninātu {method, select, payment_method {maksājuma veidu} other {karti}}",
+    "line1": "Šodien ir pēdējā diena, lai samaksātu {amount} par {truck}. Ja līdz pusnaktij maksājums nebūs veikts, tiešsaistes pasūtīšana tiks apturēta, līdz jūs samaksāsiet."
+  },
+  "paused": {
+    "subject": "Tiešsaistes pasūtīšana ir apturēta",
+    "line1": "Tiešsaistes pasūtīšana ({truck}) ir apturēta, jo maksājums {amount} apmērā nav veikts. Samaksājiet tagad, un tā uzreiz atsāksies.",
+    "line2": "Samaksājiet līdz {date}, citādi jūsu konts var tikt apturēts."
+  },
+  "trial7": {
+    "subject": "Jūsu bezmaksas izmēģinājuma periods beigsies pēc 7 dienām",
+    "line1": "Jūsu bezmaksas izmēģinājuma periods ({truck}) beidzas {date}.",
+    "line2": "Pievienojiet karti sadaļā Pārvaldība › Norēķini, lai tiešsaistes pasūtīšana paliktu ieslēgta.",
+    "plan": "Pēc tam plāns {plan} maksās {price} mēnesī. Kad izmēģinājuma periods beigsies, mēs iekasēsim {amount} par atlikušo mēneša daļu ({month}), pēc tam {nextFirst} — {price}.",
+    "planFree": "Pēc tam jums būs plāns {plan} bez ikmēneša maksas.",
+    "fee": "Mūsu maksa {fee} par tiešsaistes pasūtījumiem tiek iekasēta mēneša 1. datumā par iepriekšējo mēnesi."
+  },
+  "trial1": {
+    "subject": "Jūsu bezmaksas izmēģinājuma periods beidzas rīt",
+    "line1": "Jūsu bezmaksas izmēģinājuma periods ({truck}) beidzas rīt.",
+    "noCard": "Pievienojiet karti, citādi tiešsaistes pasūtīšana tiks apturēta.",
+    "allSet": "Viss ir gatavs: plāns {plan} sāksies {date}.",
+    "charge": "Kad izmēģinājuma periods beigsies, mēs iekasēsim {amount} par atlikušo mēneša daļu ({month})."
+  }
+}

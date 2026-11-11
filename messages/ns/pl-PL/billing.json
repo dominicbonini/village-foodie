@@ -1,0 +1,116 @@
+{
+  "tab": {
+    "plan": {
+      "title": "Twój plan",
+      "trialPill": "Bezpłatny okres próbny",
+      "change": "Zmień plan",
+      "trialLine": "Twój bezpłatny okres próbny kończy się {date}. Potem plan {plan} kosztuje {price} miesięcznie.",
+      "trialLineFree": "Twój bezpłatny okres próbny kończy się {date}. Potem korzystasz z planu {plan} bez opłaty miesięcznej.",
+      "proLine": "Obejmuje zamówienia online o wartości {allowance} miesięcznie. Powyżej tej kwoty: {fee}.",
+      "paygLine": "{fee} prowizji od zamówień online. Bez opłaty miesięcznej.",
+      "unlimitedLine": "{price} miesięcznie. Bez prowizji od zamówień online.",
+      "pendingLine": "Plan {plan} zacznie obowiązywać {date}."
+    },
+    "payment": {
+      "title": "Metoda płatności",
+      "none": "Nie dodano jeszcze karty. Dodaj kartę, aby po okresie próbnym nadal przyjmować zamówienia online.",
+      "add": "Dodaj kartę",
+      "pix": "Użyj Pix Automático",
+      "card": "{brand} z końcówką {last4}",
+      "pixOnFile": "Pix Automático",
+      "pending": "Oczekuje na potwierdzenie.",
+      "change": "Zmień",
+      "lastFailed": "Ostatnia płatność nie powiodła się",
+      "update": "Zaktualizuj kartę",
+      "error": "Nie udało się otworzyć strony płatności. Spróbuj ponownie."
+    },
+    "whatYouPay": {
+      "title": "Ile płacisz",
+      "plan": "Twój plan, pobierany 1. dnia miesiąca z góry za bieżący miesiąc",
+      "fee": "Zamówienia online powyżej {allowance} miesięcznie, rozliczane 1. dnia miesiąca za poprzedni miesiąc",
+      "feePayg": "Zamówienia online, rozliczane 1. dnia miesiąca za poprzedni miesiąc",
+      "walkUps": "Zamówienia na miejscu",
+      "free": "Bez opłat",
+      "trialEnd": "Gdy okres próbny skończy się {date}, pobierzemy {amount} za resztę miesiąca {month}. Następnie {nextFirst} pobierzemy {price}."
+    },
+    "next": {
+      "title": "Następna płatność · {date}",
+      "plan": "Plan {plan} za {month}",
+      "fee": "{fee} prowizji od zamówień online powyżej {allowance} za {month} (do tej pory)",
+      "feePayg": "{fee} prowizji od zamówień online za {month} (do tej pory)",
+      "vans": "Dodatkowe food trucki za {month}",
+      "surcharge": "Prowizja od płatności przy odbiorze za {month}",
+      "carried": "Przeniesione z wcześniejszych okresów",
+      "total": "Razem do tej pory",
+      "walkUps": "Zamówienia na miejscu są zawsze bezpłatne."
+    },
+    "preorders": {
+      "title": "Jak klienci płacą za zamówienia z wyprzedzeniem",
+      "online": "Online, przy składaniu zamówienia",
+      "onlineHint": "Pieniądze trafiają prosto na Twoje konto Stripe.",
+      "atTruck": "Przy food trucku, przy odbiorze",
+      "atTruckHint": "Wtedy nasza prowizja jest doliczana do Twojej miesięcznej opłaty.",
+      "saved": "Zapisano.",
+      "error": "Nie udało się tego zapisać. Spróbuj ponownie."
+    },
+    "invoices": {
+      "title": "Faktury",
+      "date": "Data",
+      "for": "Dotyczy",
+      "amount": "Kwota",
+      "status": "Status",
+      "forMonthly": "Plan za {planMonth}, prowizje za {usageMonth}",
+      "forMonthlyPlan": "Plan za {planMonth}",
+      "forTrialEnd": "Reszta miesiąca {month}",
+      "forUpgrade": "Zmiana na plan {plan}",
+      "lateFee": "Opłata za opóźnienie w płatności",
+      "paid": "Opłacona",
+      "unpaid": "Nieopłacona",
+      "overdue": "Zaległa",
+      "download": "Pobierz",
+      "payNow": "Zapłać teraz",
+      "none": "Nie ma jeszcze faktur."
+    },
+    "failed": {
+      "title": "Twoja płatność na kwotę {amount} nie powiodła się.",
+      "body": "Spróbujemy ponownie. Zaktualizuj kartę do {date}, aby zamówienia online pozostały włączone.",
+      "button": "Zaktualizuj kartę"
+    },
+    "paused": {
+      "title": "Zamówienia online są wstrzymane",
+      "body": "Kwota {amount} jest zaległa. Zapłać teraz, a zamówienia online od razu zostaną wznowione.",
+      "warning": "Zapłać do {date}, w przeciwnym razie Twoje konto może zostać zawieszone.",
+      "pay": "Zapłać {amount}",
+      "otherCard": "Użyj innej karty"
+    },
+    "loading": "Wczytywanie rozliczeń…",
+    "loadError": "Nie udało się wczytać rozliczeń. Spróbuj ponownie."
+  },
+  "changePlan": {
+    "title": "Zmień plan",
+    "current": "Korzystasz z planu {plan}.",
+    "free": "Bez opłat",
+    "perMonth": "{price} miesięcznie",
+    "paygLine": "{fee} prowizji od zamówień online.",
+    "proLine": "Zamówienia online o wartości {allowance} w cenie. Powyżej tej kwoty: {fee}.",
+    "unlimitedLine": "Bez prowizji od zamówień online.",
+    "yourPlan": "Twój plan",
+    "startsNow": "Zaczyna obowiązywać od razu.",
+    "chargeToday": "Dziś pobierzemy {amount} za resztę miesiąca {month}. Następnie {nextFirst} pobierzemy {price}.",
+    "startsLater": "Zacznie obowiązywać {nextFirst}. Do tego czasu korzystasz z planu {plan}.",
+    "cancel": "Anuluj",
+    "switchTo": "Przejdź na plan {plan}",
+    "error": "Nie udało się zmienić planu. Spróbuj ponownie."
+  },
+  "notices": {
+    "trialEndsSoon": "<b>Twój bezpłatny okres próbny kończy się {date}.</b> Dodaj kartę, aby zamówienia online pozostały włączone.",
+    "trialEndsTomorrow": "<b>Twój bezpłatny okres próbny kończy się jutro.</b> Dodaj kartę, inaczej zamówienia online zostaną wstrzymane.",
+    "allSet": "<b>Wszystko gotowe.</b> Plan {plan} zacznie obowiązywać {date}.",
+    "paymentFailed": "<b>Twoja płatność nie powiodła się.</b> Zaktualizuj {method, select, payment_method {metodę płatności} other {kartę}} do {date}, aby zamówienia online pozostały włączone.",
+    "paused": "<b>Zamówienia online są wstrzymane.</b> Zapłać {amount} do {date}, w przeciwnym razie Twoje konto może zostać zawieszone.",
+    "addCard": "Dodaj kartę →",
+    "updateCard": "Zaktualizuj {method, select, payment_method {metodę płatności} other {kartę}} →",
+    "payNow": "Zapłać teraz →",
+    "dismiss": "Zamknij"
+  }
+}

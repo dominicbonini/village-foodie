@@ -20,14 +20,14 @@ const t = (label, ok, detail) => { if (ok) { pass++; console.log('  ✓ ' + labe
   const esbuild = require(path.join(REPO, 'node_modules/esbuild'))
   const out = path.join(REPO, 'node_modules/.cache', `billing-1-db-read-${process.pid}.cjs`)   // inside the repo, so its externals resolve
   await esbuild.build({
-    stdin: { contents: "export * as St from '@/lib/billing/store'; export * as E from '@/lib/billing/engine'; export * as G from '@/lib/billing/gate'; export * as R from '@/lib/billing/rules'; export * as PS from '@/lib/plans-server'", resolveDir: REPO, loader: 'ts' },
+    stdin: { contents: "export * as St from '@/lib/billing/store'; export * as E from '@/lib/billing/engine'; export * as G from '@/lib/billing/gate'; export * as R from '@/lib/billing/rules'; export * as PS from '@/lib/plans-server'; export * as SS from '@/lib/billing/screen-server'", resolveDir: REPO, loader: 'ts' },
     bundle: true, platform: 'node', format: 'cjs', outfile: out, logLevel: 'silent', alias: { '@': REPO }, external: ['@supabase/supabase-js', 'stripe'],
     plugins: [{ name: 'server-only', setup(b) { b.onResolve({ filter: /^server-only$/ }, () => ({ path: 'so', namespace: 'stub' })); b.onLoad({ filter: /.*/, namespace: 'stub' }, () => ({ contents: '' })) } }],
   })
   const M = require(out)
   const { createClient } = require(path.join(REPO, 'node_modules/@supabase/supabase-js'))
   const db = createClient(process.env.SUPABASE_URL || process.env.NEXT_PUBLIC_SUPABASE_URL, process.env.SUPABASE_SERVICE_ROLE_KEY)
-  const TABLES = ['country_billing', 'operator_billing', 'truck_billing', 'billing_usage', 'billing_usage_orders', 'billing_invoices', 'billing_charges', 'truck_plan_history']
+  const TABLES = ['country_billing', 'operator_billing', 'truck_billing', 'billing_usage', 'billing_usage_orders', 'billing_invoices', 'billing_charges', 'truck_plan_history', 'billing_email_log']
   const counts = async () => Object.fromEntries(await Promise.all(TABLES.map(async x => [x, (await db.from(x).select('*', { count: 'exact', head: true })).count])))
   const before = await counts()
 
@@ -65,6 +65,12 @@ const t = (label, ok, detail) => { if (ok) { pass++; console.log('  ✓ ' + labe
   const gusto = await M.G.billingGateForTruck({ id: 'pizzeria-gusto' }, catalog)
   t('the real gate on Pizzeria Gusto: exactly "billing off" (nothing paused, Pay at Hatch as its plan says)', JSON.stringify(gusto) === JSON.stringify(M.G.BILLING_GATE_OFF), gusto)
   t('the real capture fee on Gusto: none', (await M.G.applicationFeeAtCapture({ orderKey: '00000000-0000-0000-0000-000000000000', truckId: 'pizzeria-gusto', captureMinor: 1000, catalog })) === null)
+  // billing-2: Manage › Billing for Gusto and the US test truck (not a billing_test truck, switch off) is today's tab — no new
+  // screen, no notice, no email.
+  const gScreen = await M.SS.loadBillingScreen(store, catalog, 'pizzeria-gusto', new Date())
+  t('billing-2: Pizzeria Gusto — Manage › Billing stays today\'s tab (the new screen and its notice are not shown)', gScreen.visible === false, gScreen)
+  t('billing-2: the US test truck (not billing_test) — not shown either', (await M.SS.loadBillingScreen(store, catalog, 'test-truck-us', new Date())).visible === false)
+  t('billing-2: no billing email has ever been sent (billing_email_log empty)', ((await db.from('billing_email_log').select('*', { count: 'exact', head: true })).count ?? -1) === 0)
   const after = await counts()
   t('NOTHING WRITTEN: every billing table has the same row count after as before', JSON.stringify(before) === JSON.stringify(after), { before, after })
   fs.rmSync(out, { force: true })

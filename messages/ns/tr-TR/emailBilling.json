@@ -1,0 +1,46 @@
+{
+  "greeting": "{hasName, select, yes {Merhaba {name},} other {Merhaba,}}",
+  "questions": "Sorunuz mu var? Bu e-postayı yanıtlamanız yeterli.",
+  "signoff": "HatchGrab ekibi",
+  "buttonUpdate": "{method, select, payment_method {Ödeme yöntemini} other {Kartı}} güncelle",
+  "buttonPay": "Şimdi öde",
+  "buttonAddCard": "Kart ekle",
+  "suspended": "Ödeme yapılmazsa hesabınız askıya alınabilir.",
+  "failed": {
+    "subject": "HatchGrab ödemeniz gerçekleşmedi",
+    "line1": "Bugün {truck} için {amount} tahsil edemedik. Tekrar deneyeceğiz.",
+    "line2": "Online sipariş alımının açık kalması için lütfen {method, select, payment_method {ödeme yönteminizi} other {kartınızı}} {date} tarihine kadar güncelleyin."
+  },
+  "twoDays": {
+    "subject": "{method, select, payment_method {Ödeme yönteminizi} other {Kartınızı}} güncellemek için 2 gün kaldı",
+    "line1": "{truck} için {amount} hâlâ ödenmedi. {method, select, payment_method {Ödeme yönteminizi} other {Kartınızı}} {date} tarihine kadar güncelleyin, aksi takdirde online sipariş alımı duraklar."
+  },
+  "oneDay": {
+    "subject": "{method, select, payment_method {Ödeme yönteminizi} other {Kartınızı}} yarına kadar güncelleyin",
+    "line1": "{truck} için {amount} hâlâ ödenmedi. {method, select, payment_method {Ödeme yönteminizi} other {Kartınızı}} yarına kadar güncelleyin, aksi takdirde online sipariş alımı duraklar."
+  },
+  "lastDay": {
+    "subject": "{method, select, payment_method {Ödeme yönteminizi} other {Kartınızı}} güncellemek için son gün",
+    "line1": "{truck} için {amount} ödemenin son günü bugün. Gece yarısına kadar ödenmezse, ödeme yapana kadar online sipariş alımı duraklar."
+  },
+  "paused": {
+    "subject": "Online sipariş alımı duraklatıldı",
+    "line1": "{amount} ödenmediği için {truck} için online sipariş alımı duraklatıldı. Şimdi ödeyin, hemen yeniden açılsın.",
+    "line2": "{date} tarihine kadar ödeyin, aksi takdirde hesabınız askıya alınabilir."
+  },
+  "trial7": {
+    "subject": "Ücretsiz denemeniz 7 gün içinde bitiyor",
+    "line1": "{truck} için ücretsiz denemeniz {date} tarihinde bitiyor.",
+    "line2": "Online sipariş alımının açık kalması için Yönetim › Faturalandırma bölümünden bir kart ekleyin.",
+    "plan": "Sonrasında {plan} paketi aylık {price} olur. Denemeniz bittiğinde {month} ayının kalanı için {amount}, ardından {nextFirst} tarihinde {price} tahsil ederiz.",
+    "planFree": "Sonrasında aylık ücret olmadan {plan} paketine geçersiniz.",
+    "fee": "Online siparişlerdeki {fee} ücretimiz, önceki ay için her ayın 1’inde tahsil edilir."
+  },
+  "trial1": {
+    "subject": "Ücretsiz denemeniz yarın bitiyor",
+    "line1": "{truck} için ücretsiz denemeniz yarın bitiyor.",
+    "noCard": "Bir kart ekleyin, aksi takdirde online sipariş alımı duraklar.",
+    "allSet": "Her şey hazır: {plan} paketi {date} tarihinde başlıyor.",
+    "charge": "Denemeniz bittiğinde {month} ayının kalanı için {amount} tahsil edeceğiz."
+  }
+}

@@ -843,6 +843,8 @@ export async function GET(
    * Switch on → an unpaid account (5 days) or an ended trial with no payment method pauses ONLINE ordering — the same "not
    * taking orders" state — and after the trial Pay at Hatch needs post-pay and a payment method on file (lib/billing/rules.ts). */
   const billingGate = await billingGateForTruck(truck, planCatalog)
+  // billing-2: a post-pay truck's customers pay at the truck — no card option (switch off: always allowed, so unchanged).
+  if (!billingGate.cardPaymentsAllowed) cardPaymentsReady = false
   const payAtHatchOffered = payAtHatchOn(truck, planCatalog) && billingGate.payAtHatchAllowed
   if (!payAtHatchOffered && !cardPaymentsReady) orderingAvailable = false
   if (billingGate.onlineOrderingPaused) orderingAvailable = false

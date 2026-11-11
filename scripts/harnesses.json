@@ -218,7 +218,8 @@
     "partners-1.cjs",
     "email-sender-1.cjs",
     "demo-claim-2.cjs",
-    "billing-1.cjs"
+    "billing-1.cjs",
+    "billing-2.cjs"
   ],
   "excluded": {
     "$comment": "Every other scripts/*.cjs file, with the reason it is NOT in the list above. The runner checks this covers the directory.",
@@ -404,6 +405,7 @@
         "add-order-stale-browser.cjs",
         "countries-screenshots.cjs",
         "admin-countries-1-screens.cjs",
+        "billing-2-screens.cjs",
         "country-picker-1-screens.cjs",
         "compare-de-1-screens.cjs",
         "competitor-check-1-screens.cjs",

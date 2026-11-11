@@ -1,0 +1,46 @@
+{
+  "greeting": "{hasName, select, yes {Hei {name},} other {Hei,}}",
+  "questions": "Kysyttävää? Vastaa vain tähän viestiin.",
+  "signoff": "HatchGrab-tiimi",
+  "buttonUpdate": "Päivitä {method, select, payment_method {maksutapa} other {kortti}}",
+  "buttonPay": "Maksa nyt",
+  "buttonAddCard": "Lisää kortti",
+  "suspended": "Jos summa jää maksamatta, tilisi voidaan jäädyttää.",
+  "failed": {
+    "subject": "HatchGrab-maksusi ei mennyt läpi",
+    "line1": "Emme saaneet tänään veloitettua summaa {amount} ruokarekan {truck} osalta. Yritämme uudelleen.",
+    "line2": "Päivitä {method, select, payment_method {maksutapasi} other {korttisi}} viimeistään {date}, niin verkkotilaukset pysyvät päällä."
+  },
+  "twoDays": {
+    "subject": "2 päivää aikaa päivittää {method, select, payment_method {maksutapasi} other {korttisi}}",
+    "line1": "Ruokarekan {truck} summa {amount} on yhä maksamatta. Päivitä {method, select, payment_method {maksutapasi} other {korttisi}} viimeistään {date}, tai verkkotilaukset keskeytetään."
+  },
+  "oneDay": {
+    "subject": "Päivitä {method, select, payment_method {maksutapasi} other {korttisi}} huomiseen mennessä",
+    "line1": "Ruokarekan {truck} summa {amount} on yhä maksamatta. Päivitä {method, select, payment_method {maksutapasi} other {korttisi}} huomiseen mennessä, tai verkkotilaukset keskeytetään."
+  },
+  "lastDay": {
+    "subject": "Viimeinen päivä päivittää {method, select, payment_method {maksutapasi} other {korttisi}}",
+    "line1": "Tänään on viimeinen päivä maksaa ruokarekan {truck} summa {amount}. Jos summa on yhä maksamatta keskiyöllä, verkkotilaukset keskeytetään, kunnes maksat."
+  },
+  "paused": {
+    "subject": "Verkkotilaukset on keskeytetty",
+    "line1": "Ruokarekan {truck} verkkotilaukset on keskeytetty, koska {amount} on maksamatta. Maksa nyt, niin ne palaavat heti päälle.",
+    "line2": "Maksa viimeistään {date}, tai tilisi voidaan jäädyttää."
+  },
+  "trial7": {
+    "subject": "Ilmainen kokeilujaksosi päättyy 7 päivän kuluttua",
+    "line1": "Ruokarekan {truck} ilmainen kokeilujakso päättyy {date}.",
+    "line2": "Lisää kortti kohdassa Hallinta › Laskutus, niin verkkotilaukset pysyvät päällä.",
+    "plan": "Sen jälkeen paketin {plan} hinta on {price} kuukaudessa. Kun kokeilujaksosi päättyy, veloitamme {amount} loppukuulta ({month}) ja sen jälkeen {price} {nextFirst}.",
+    "planFree": "Sen jälkeen käytössäsi on paketti {plan} ilman kuukausimaksua.",
+    "fee": "Verkkotilausten maksumme ({fee}) veloitetaan kuun 1. päivänä edelliseltä kuukaudelta."
+  },
+  "trial1": {
+    "subject": "Ilmainen kokeilujaksosi päättyy huomenna",
+    "line1": "Ruokarekan {truck} ilmainen kokeilujakso päättyy huomenna.",
+    "noCard": "Lisää kortti, tai verkkotilaukset keskeytetään.",
+    "allSet": "Kaikki on valmista: paketti {plan} alkaa {date}.",
+    "charge": "Kun kokeilujaksosi päättyy, veloitamme {amount} loppukuulta ({month})."
+  }
+}

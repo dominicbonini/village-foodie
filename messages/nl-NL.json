@@ -7227,5 +7227,167 @@
       "body": "{truck} stuurt je geen reviewverzoeken meer.",
       "invalid": "Deze afmeldlink is niet geldig."
     }
+  },
+  "billing": {
+    "tab": {
+      "plan": {
+        "title": "Je abonnement",
+        "trialPill": "Gratis proefperiode",
+        "change": "Abonnement wijzigen",
+        "trialLine": "Je gratis proefperiode eindigt op {date}. Daarna kost {plan} {price} per maand.",
+        "trialLineFree": "Je gratis proefperiode eindigt op {date}. Daarna ga je over op {plan}, zonder maandelijkse kosten.",
+        "proLine": "Inclusief {allowance} aan online bestellingen per maand. Daarboven {fee}.",
+        "paygLine": "{fee} op online bestellingen. Geen maandelijkse kosten.",
+        "unlimitedLine": "{price} per maand. Geen kosten op online bestellingen.",
+        "pendingLine": "{plan} gaat in op {date}."
+      },
+      "payment": {
+        "title": "Betaalmethode",
+        "none": "Nog geen kaart toegevoegd. Voeg er een toe om na je proefperiode online bestellingen te blijven ontvangen.",
+        "add": "Kaart toevoegen",
+        "pix": "Pix Automático gebruiken",
+        "card": "{brand} eindigend op {last4}",
+        "pixOnFile": "Pix Automático",
+        "pending": "Wacht op bevestiging.",
+        "change": "Wijzigen",
+        "lastFailed": "Laatste betaling mislukt",
+        "update": "Kaart bijwerken",
+        "error": "We konden de betaalpagina niet openen. Probeer het opnieuw."
+      },
+      "whatYouPay": {
+        "title": "Wat je betaalt",
+        "plan": "Je abonnement, op de 1e vooraf afgeschreven voor die maand",
+        "fee": "Online bestellingen boven {allowance} per maand, op de 1e afgeschreven voor de maand ervoor",
+        "feePayg": "Online bestellingen, op de 1e afgeschreven voor de maand ervoor",
+        "walkUps": "Bestellingen aan de truck",
+        "free": "Gratis",
+        "trialEnd": "Als je proefperiode op {date} eindigt, rekenen we {amount} voor de rest van {month}. Daarna {price} op {nextFirst}."
+      },
+      "next": {
+        "title": "Volgende betaling · {date}",
+        "plan": "{plan} voor {month}",
+        "fee": "{fee} op online bestellingen boven {allowance} in {month} (tot nu toe)",
+        "feePayg": "{fee} op online bestellingen in {month} (tot nu toe)",
+        "vans": "Extra foodtrucks voor {month}",
+        "surcharge": "Achteraf berekende kosten voor {month}",
+        "carried": "Overgeboekt uit eerdere periodes",
+        "total": "Totaal tot nu toe",
+        "walkUps": "Bestellingen aan de truck zijn altijd gratis."
+      },
+      "preorders": {
+        "title": "Hoe klanten voorbestellingen betalen",
+        "online": "Online, bij het bestellen",
+        "onlineHint": "Het geld gaat direct naar je Stripe-account.",
+        "atTruck": "Bij de truck, bij het afhalen",
+        "atTruckHint": "Onze kosten worden dan bij je maandelijkse afschrijving opgeteld.",
+        "saved": "Opgeslagen.",
+        "error": "We konden dat niet opslaan. Probeer het opnieuw."
+      },
+      "invoices": {
+        "title": "Facturen",
+        "date": "Datum",
+        "for": "Voor",
+        "amount": "Bedrag",
+        "status": "Status",
+        "forMonthly": "Abonnement {planMonth}, kosten {usageMonth}",
+        "forMonthlyPlan": "Abonnement {planMonth}",
+        "forTrialEnd": "Rest van {month}",
+        "forUpgrade": "Overstap naar {plan}",
+        "lateFee": "Kosten voor te late betaling",
+        "paid": "Betaald",
+        "unpaid": "Onbetaald",
+        "overdue": "Achterstallig",
+        "download": "Downloaden",
+        "payNow": "Nu betalen",
+        "none": "Nog geen facturen."
+      },
+      "failed": {
+        "title": "Je betaling van {amount} is niet gelukt.",
+        "body": "We proberen het opnieuw. Werk je kaart uiterlijk {date} bij zodat online bestellen aan blijft.",
+        "button": "Kaart bijwerken"
+      },
+      "paused": {
+        "title": "Online bestellen is gepauzeerd",
+        "body": "{amount} is achterstallig. Betaal nu en online bestellen staat meteen weer aan.",
+        "warning": "Betaal uiterlijk {date}, anders kan je account worden opgeschort.",
+        "pay": "{amount} betalen",
+        "otherCard": "Andere kaart gebruiken"
+      },
+      "loading": "Facturatie laden…",
+      "loadError": "We konden je facturatie niet laden. Probeer het opnieuw."
+    },
+    "changePlan": {
+      "title": "Abonnement wijzigen",
+      "current": "Je hebt nu {plan}.",
+      "free": "Gratis",
+      "perMonth": "{price} per maand",
+      "paygLine": "{fee} op online bestellingen.",
+      "proLine": "Inclusief {allowance} aan online bestellingen. Daarboven {fee}.",
+      "unlimitedLine": "Geen kosten op online bestellingen.",
+      "yourPlan": "Je abonnement",
+      "startsNow": "Gaat direct in.",
+      "chargeToday": "We rekenen vandaag {amount} voor de rest van {month}. Daarna {price} op {nextFirst}.",
+      "startsLater": "Gaat in op {nextFirst}. Tot die tijd houd je {plan}.",
+      "cancel": "Annuleren",
+      "switchTo": "Overstappen naar {plan}",
+      "error": "We konden je abonnement niet wijzigen. Probeer het opnieuw."
+    },
+    "notices": {
+      "trialEndsSoon": "<b>Je gratis proefperiode eindigt op {date}.</b> Voeg een kaart toe zodat online bestellen aan blijft.",
+      "trialEndsTomorrow": "<b>Je gratis proefperiode eindigt morgen.</b> Voeg een kaart toe, anders wordt online bestellen gepauzeerd.",
+      "allSet": "<b>Alles is geregeld.</b> {plan} gaat in op {date}.",
+      "paymentFailed": "<b>Je betaling is niet gelukt.</b> Werk je {method, select, payment_method {betaalmethode} other {kaart}} uiterlijk {date} bij zodat online bestellen aan blijft.",
+      "paused": "<b>Online bestellen is gepauzeerd.</b> Betaal {amount} uiterlijk {date}, anders kan je account worden opgeschort.",
+      "addCard": "Kaart toevoegen →",
+      "updateCard": "{method, select, payment_method {Betaalmethode} other {Kaart}} bijwerken →",
+      "payNow": "Nu betalen →",
+      "dismiss": "Sluiten"
+    }
+  },
+  "emailBilling": {
+    "greeting": "{hasName, select, yes {Hoi {name},} other {Hoi,}}",
+    "questions": "Vragen? Beantwoord gewoon deze e-mail.",
+    "signoff": "Het HatchGrab-team",
+    "buttonUpdate": "{method, select, payment_method {Betaalmethode} other {Kaart}} bijwerken",
+    "buttonPay": "Nu betalen",
+    "buttonAddCard": "Kaart toevoegen",
+    "suspended": "Als het onbetaald blijft, kan je account worden opgeschort.",
+    "failed": {
+      "subject": "Je HatchGrab-betaling is niet gelukt",
+      "line1": "We konden vandaag {amount} voor {truck} niet afschrijven. We proberen het opnieuw.",
+      "line2": "Werk je {method, select, payment_method {betaalmethode} other {kaart}} uiterlijk {date} bij zodat online bestellen aan blijft."
+    },
+    "twoDays": {
+      "subject": "Nog 2 dagen om je {method, select, payment_method {betaalmethode} other {kaart}} bij te werken",
+      "line1": "{amount} voor {truck} is nog niet betaald. Werk je {method, select, payment_method {betaalmethode} other {kaart}} uiterlijk {date} bij, anders wordt online bestellen gepauzeerd."
+    },
+    "oneDay": {
+      "subject": "Werk je {method, select, payment_method {betaalmethode} other {kaart}} uiterlijk morgen bij",
+      "line1": "{amount} voor {truck} is nog niet betaald. Werk je {method, select, payment_method {betaalmethode} other {kaart}} uiterlijk morgen bij, anders wordt online bestellen gepauzeerd."
+    },
+    "lastDay": {
+      "subject": "Laatste dag om je {method, select, payment_method {betaalmethode} other {kaart}} bij te werken",
+      "line1": "Vandaag is de laatste dag om {amount} voor {truck} te betalen. Is het om middernacht nog niet betaald, dan wordt online bestellen gepauzeerd tot je betaalt."
+    },
+    "paused": {
+      "subject": "Online bestellen is gepauzeerd",
+      "line1": "Online bestellen voor {truck} is gepauzeerd omdat {amount} nog niet is betaald. Betaal nu en het staat meteen weer aan.",
+      "line2": "Betaal uiterlijk {date}, anders kan je account worden opgeschort."
+    },
+    "trial7": {
+      "subject": "Je gratis proefperiode eindigt over 7 dagen",
+      "line1": "Je gratis proefperiode voor {truck} eindigt op {date}.",
+      "line2": "Voeg een kaart toe via Beheren › Facturatie zodat online bestellen aan blijft.",
+      "plan": "Daarna kost {plan} {price} per maand. Als je proefperiode eindigt, rekenen we {amount} voor de rest van {month} en daarna {price} op {nextFirst}.",
+      "planFree": "Daarna ga je over op {plan}, zonder maandelijkse kosten.",
+      "fee": "Onze kosten van {fee} op online bestellingen worden op de 1e afgeschreven, voor de maand ervoor."
+    },
+    "trial1": {
+      "subject": "Je gratis proefperiode eindigt morgen",
+      "line1": "Je gratis proefperiode voor {truck} eindigt morgen.",
+      "noCard": "Voeg een kaart toe, anders wordt online bestellen gepauzeerd.",
+      "allSet": "Alles is geregeld: {plan} gaat in op {date}.",
+      "charge": "Als je proefperiode eindigt, rekenen we {amount} voor de rest van {month}."
+    }
   }
 }

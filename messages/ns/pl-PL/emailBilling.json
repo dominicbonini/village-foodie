@@ -1,0 +1,46 @@
+{
+  "greeting": "{hasName, select, yes {Cześć, {name}!} other {Cześć!}}",
+  "questions": "Masz pytania? Po prostu odpowiedz na tę wiadomość.",
+  "signoff": "Zespół HatchGrab",
+  "buttonUpdate": "Zaktualizuj {method, select, payment_method {metodę płatności} other {kartę}}",
+  "buttonPay": "Zapłać teraz",
+  "buttonAddCard": "Dodaj kartę",
+  "suspended": "Jeśli kwota pozostanie nieopłacona, konto może zostać zawieszone.",
+  "failed": {
+    "subject": "Twoja płatność w HatchGrab nie powiodła się",
+    "line1": "Nie udało się dziś pobrać kwoty {amount} za food truck {truck}. Spróbujemy ponownie.",
+    "line2": "Zaktualizuj {method, select, payment_method {metodę płatności} other {kartę}} do {date}, aby zamówienia online pozostały włączone."
+  },
+  "twoDays": {
+    "subject": "Zostały 2 dni na aktualizację {method, select, payment_method {metody płatności} other {karty}}",
+    "line1": "Kwota {amount} za food truck {truck} jest wciąż nieopłacona. Zaktualizuj {method, select, payment_method {metodę płatności} other {kartę}} do {date}, inaczej zamówienia online zostaną wstrzymane."
+  },
+  "oneDay": {
+    "subject": "Zaktualizuj {method, select, payment_method {metodę płatności} other {kartę}} do jutra",
+    "line1": "Kwota {amount} za food truck {truck} jest wciąż nieopłacona. Zaktualizuj {method, select, payment_method {metodę płatności} other {kartę}} do jutra, inaczej zamówienia online zostaną wstrzymane."
+  },
+  "lastDay": {
+    "subject": "Ostatni dzień na aktualizację {method, select, payment_method {metody płatności} other {karty}}",
+    "line1": "Dziś jest ostatni dzień na zapłatę kwoty {amount} za food truck {truck}. Jeśli o północy kwota wciąż będzie nieopłacona, zamówienia online zostaną wstrzymane do czasu zapłaty."
+  },
+  "paused": {
+    "subject": "Zamówienia online są wstrzymane",
+    "line1": "Zamówienia online dla food trucka {truck} są wstrzymane, bo kwota {amount} jest nieopłacona. Zapłać teraz, a od razu zostaną wznowione.",
+    "line2": "Zapłać do {date}, w przeciwnym razie konto może zostać zawieszone."
+  },
+  "trial7": {
+    "subject": "Twój bezpłatny okres próbny kończy się za 7 dni",
+    "line1": "Bezpłatny okres próbny food trucka {truck} kończy się {date}.",
+    "line2": "Dodaj kartę w sekcji Zarządzaj › Rozliczenia, aby zamówienia online pozostały włączone.",
+    "plan": "Potem plan {plan} kosztuje {price} miesięcznie. Gdy okres próbny się skończy, pobierzemy {amount} za resztę miesiąca {month}, a następnie {nextFirst} pobierzemy {price}.",
+    "planFree": "Potem korzystasz z planu {plan} bez opłaty miesięcznej.",
+    "fee": "Naszą prowizję {fee} od zamówień online pobieramy 1. dnia miesiąca za poprzedni miesiąc."
+  },
+  "trial1": {
+    "subject": "Twój bezpłatny okres próbny kończy się jutro",
+    "line1": "Bezpłatny okres próbny food trucka {truck} kończy się jutro.",
+    "noCard": "Dodaj kartę, inaczej zamówienia online zostaną wstrzymane.",
+    "allSet": "Wszystko gotowe: plan {plan} zacznie obowiązywać {date}.",
+    "charge": "Gdy okres próbny się skończy, pobierzemy {amount} za resztę miesiąca {month}."
+  }
+}

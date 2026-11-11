@@ -1,0 +1,46 @@
+{
+  "greeting": "{hasName, select, yes {Bonjour {name},} other {Bonjour,}}",
+  "questions": "Des questions ? Répondez simplement à cet e-mail.",
+  "signoff": "L’équipe HatchGrab",
+  "buttonUpdate": "Mettre à jour {method, select, payment_method {le moyen de paiement} other {la carte}}",
+  "buttonPay": "Payer maintenant",
+  "buttonAddCard": "Ajouter une carte",
+  "suspended": "Si le montant reste impayé, votre compte pourra être suspendu.",
+  "failed": {
+    "subject": "Votre paiement HatchGrab n’a pas abouti",
+    "line1": "Nous n’avons pas pu prélever {amount} pour {truck} aujourd’hui. Nous allons réessayer.",
+    "line2": "Veuillez mettre à jour votre {method, select, payment_method {moyen de paiement} other {carte}} d’ici le {date} pour garder les commandes en ligne actives."
+  },
+  "twoDays": {
+    "subject": "Plus que 2 jours pour mettre à jour votre {method, select, payment_method {moyen de paiement} other {carte}}",
+    "line1": "La somme de {amount} pour {truck} est toujours impayée. Mettez à jour votre {method, select, payment_method {moyen de paiement} other {carte}} d’ici le {date}, sinon les commandes en ligne seront mises en pause."
+  },
+  "oneDay": {
+    "subject": "Mettez à jour votre {method, select, payment_method {moyen de paiement} other {carte}} d’ici demain",
+    "line1": "La somme de {amount} pour {truck} est toujours impayée. Mettez à jour votre {method, select, payment_method {moyen de paiement} other {carte}} d’ici demain, sinon les commandes en ligne seront mises en pause."
+  },
+  "lastDay": {
+    "subject": "Dernier jour pour mettre à jour votre {method, select, payment_method {moyen de paiement} other {carte}}",
+    "line1": "Aujourd’hui est le dernier jour pour payer {amount} pour {truck}. Si la somme est toujours impayée à minuit, les commandes en ligne seront en pause jusqu’à votre paiement."
+  },
+  "paused": {
+    "subject": "Les commandes en ligne sont en pause",
+    "line1": "Les commandes en ligne de {truck} sont en pause, car la somme de {amount} est impayée. Payez maintenant et elles reprennent immédiatement.",
+    "line2": "Payez d’ici le {date}, sinon votre compte pourra être suspendu."
+  },
+  "trial7": {
+    "subject": "Votre essai gratuit se termine dans 7 jours",
+    "line1": "Votre essai gratuit pour {truck} se termine le {date}.",
+    "line2": "Ajoutez une carte dans Gestion › Facturation pour garder les commandes en ligne actives.",
+    "plan": "Ensuite, l’offre {plan} coûte {price} par mois. À la fin de votre essai, nous facturons {amount} jusqu’à fin {month}, puis {price} le {nextFirst}.",
+    "planFree": "Ensuite, vous passez à l’offre {plan}, sans frais mensuels.",
+    "fee": "Nos frais de {fee} sur les commandes en ligne sont facturés le 1er, pour le mois précédent."
+  },
+  "trial1": {
+    "subject": "Votre essai gratuit se termine demain",
+    "line1": "Votre essai gratuit pour {truck} se termine demain.",
+    "noCard": "Ajoutez une carte, sinon les commandes en ligne seront mises en pause.",
+    "allSet": "Tout est prêt : l’offre {plan} commence le {date}.",
+    "charge": "À la fin de votre essai, nous facturerons {amount} jusqu’à fin {month}."
+  }
+}

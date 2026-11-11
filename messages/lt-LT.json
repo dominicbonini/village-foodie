@@ -7227,5 +7227,167 @@
       "body": "{truck} nebesiųs jums prašymų palikti atsiliepimą.",
       "invalid": "Ši prenumeratos atsisakymo nuoroda negalioja."
     }
+  },
+  "billing": {
+    "tab": {
+      "plan": {
+        "title": "Jūsų planas",
+        "trialPill": "Nemokamas bandomasis laikotarpis",
+        "change": "Keisti planą",
+        "trialLine": "Jūsų nemokamas bandomasis laikotarpis baigiasi {date}. Vėliau planas {plan} kainuos {price} per mėnesį.",
+        "trialLineFree": "Jūsų nemokamas bandomasis laikotarpis baigiasi {date}. Vėliau naudositės planu {plan} be mėnesinio mokesčio.",
+        "proLine": "Įskaičiuota internetinių užsakymų už {allowance} per mėnesį. Toliau – {fee}.",
+        "paygLine": "{fee} už užsakymus internetu. Be mėnesinio mokesčio.",
+        "unlimitedLine": "{price} per mėnesį. Jokio mokesčio už užsakymus internetu.",
+        "pendingLine": "Planas {plan} prasidės {date}."
+      },
+      "payment": {
+        "title": "Mokėjimo būdas",
+        "none": "Kortelė dar nepridėta. Pridėkite ją, kad pasibaigus bandomajam laikotarpiui galėtumėte toliau priimti užsakymus internetu.",
+        "add": "Pridėti kortelę",
+        "pix": "Naudoti Pix Automático",
+        "card": "{brand}, baigiasi {last4}",
+        "pixOnFile": "Pix Automático",
+        "pending": "Laukiama patvirtinimo.",
+        "change": "Keisti",
+        "lastFailed": "Paskutinis mokėjimas nepavyko",
+        "update": "Atnaujinti kortelę",
+        "error": "Nepavyko atidaryti mokėjimo puslapio. Bandykite dar kartą."
+      },
+      "whatYouPay": {
+        "title": "Ką mokate",
+        "plan": "Jūsų planas, nuskaitomas mėnesio 1 d. už ateinantį mėnesį",
+        "fee": "Užsakymai internetu virš {allowance} per mėnesį, nuskaitoma mėnesio 1 d. už praėjusį mėnesį",
+        "feePayg": "Užsakymai internetu, nuskaitoma mėnesio 1 d. už praėjusį mėnesį",
+        "walkUps": "Užsakymai vietoje",
+        "free": "Nemokamai",
+        "trialEnd": "Kai {date} baigsis jūsų bandomasis laikotarpis, nuskaitysime {amount} už likusią mėnesio dalį ({month}). Tada {nextFirst} – {price}."
+      },
+      "next": {
+        "title": "Kitas mokėjimas · {date}",
+        "plan": "Planas {plan} – {month}",
+        "fee": "{fee} už užsakymus internetu virš {allowance} – {month} (iki šiol)",
+        "feePayg": "{fee} už užsakymus internetu – {month} (iki šiol)",
+        "vans": "Papildomi furgonai – {month}",
+        "surcharge": "Atidėto mokėjimo mokestis – {month}",
+        "carried": "Perkelta iš ankstesnio laikotarpio",
+        "total": "Iš viso iki šiol",
+        "walkUps": "Užsakymai vietoje visada nemokami."
+      },
+      "preorders": {
+        "title": "Kaip klientai moka už išankstinius užsakymus",
+        "online": "Internetu, kai užsako",
+        "onlineHint": "Pinigai keliauja tiesiai į jūsų Stripe paskyrą.",
+        "atTruck": "Prie furgono, kai atsiima",
+        "atTruckHint": "Tokiu atveju mūsų mokestis pridedamas prie jūsų mėnesinio mokėjimo.",
+        "saved": "Išsaugota.",
+        "error": "Nepavyko išsaugoti. Bandykite dar kartą."
+      },
+      "invoices": {
+        "title": "Sąskaitos faktūros",
+        "date": "Data",
+        "for": "Už ką",
+        "amount": "Suma",
+        "status": "Būsena",
+        "forMonthly": "Planas: {planMonth}, mokesčiai: {usageMonth}",
+        "forMonthlyPlan": "Planas: {planMonth}",
+        "forTrialEnd": "Likusi mėnesio dalis ({month})",
+        "forUpgrade": "Perėjimas prie plano {plan}",
+        "lateFee": "Mokestis už pavėluotą mokėjimą",
+        "paid": "Apmokėta",
+        "unpaid": "Neapmokėta",
+        "overdue": "Pradelsta",
+        "download": "Atsisiųsti",
+        "payNow": "Mokėti dabar",
+        "none": "Sąskaitų faktūrų dar nėra."
+      },
+      "failed": {
+        "title": "Jūsų {amount} mokėjimas nepavyko.",
+        "body": "Bandysime dar kartą. Atnaujinkite kortelę iki {date}, kad internetiniai užsakymai liktų įjungti.",
+        "button": "Atnaujinti kortelę"
+      },
+      "paused": {
+        "title": "Internetiniai užsakymai sustabdyti",
+        "body": "{amount} mokėjimas pradelstas. Sumokėkite dabar, ir internetiniai užsakymai iš karto vėl bus įjungti.",
+        "warning": "Sumokėkite iki {date}, kitaip jūsų paskyra gali būti sustabdyta.",
+        "pay": "Mokėti {amount}",
+        "otherCard": "Naudoti kitą kortelę"
+      },
+      "loading": "Įkeliami atsiskaitymai…",
+      "loadError": "Nepavyko įkelti atsiskaitymų informacijos. Bandykite dar kartą."
+    },
+    "changePlan": {
+      "title": "Keisti planą",
+      "current": "Jūsų planas: {plan}.",
+      "free": "Nemokamai",
+      "perMonth": "{price} per mėnesį",
+      "paygLine": "{fee} už užsakymus internetu.",
+      "proLine": "Įskaičiuota internetinių užsakymų už {allowance}. Toliau – {fee}.",
+      "unlimitedLine": "Jokio mokesčio už užsakymus internetu.",
+      "yourPlan": "Jūsų planas",
+      "startsNow": "Prasideda iš karto.",
+      "chargeToday": "Šiandien nuskaitysime {amount} už likusią mėnesio dalį ({month}). Tada {nextFirst} – {price}.",
+      "startsLater": "Prasidės {nextFirst}. Iki tol naudositės planu {plan}.",
+      "cancel": "Atšaukti",
+      "switchTo": "Pereiti prie plano {plan}",
+      "error": "Nepavyko pakeisti plano. Bandykite dar kartą."
+    },
+    "notices": {
+      "trialEndsSoon": "<b>Jūsų nemokamas bandomasis laikotarpis baigiasi {date}.</b> Pridėkite kortelę, kad internetiniai užsakymai liktų įjungti.",
+      "trialEndsTomorrow": "<b>Jūsų nemokamas bandomasis laikotarpis baigiasi rytoj.</b> Pridėkite kortelę, kitaip internetiniai užsakymai bus sustabdyti.",
+      "allSet": "<b>Viskas paruošta.</b> Planas {plan} prasidės {date}.",
+      "paymentFailed": "<b>Jūsų mokėjimas nepavyko.</b> Atnaujinkite {method, select, payment_method {mokėjimo būdą} other {kortelę}} iki {date}, kad internetiniai užsakymai liktų įjungti.",
+      "paused": "<b>Internetiniai užsakymai sustabdyti.</b> Sumokėkite {amount} iki {date}, kitaip jūsų paskyra gali būti sustabdyta.",
+      "addCard": "Pridėti kortelę →",
+      "updateCard": "Atnaujinti {method, select, payment_method {mokėjimo būdą} other {kortelę}} →",
+      "payNow": "Mokėti dabar →",
+      "dismiss": "Uždaryti"
+    }
+  },
+  "emailBilling": {
+    "greeting": "{hasName, select, yes {Sveiki, {name},} other {Sveiki,}}",
+    "questions": "Turite klausimų? Tiesiog atsakykite į šį laišką.",
+    "signoff": "HatchGrab komanda",
+    "buttonUpdate": "Atnaujinti {method, select, payment_method {mokėjimo būdą} other {kortelę}}",
+    "buttonPay": "Mokėti dabar",
+    "buttonAddCard": "Pridėti kortelę",
+    "suspended": "Jei suma liks neapmokėta, jūsų paskyra gali būti sustabdyta.",
+    "failed": {
+      "subject": "Jūsų HatchGrab mokėjimas nepavyko",
+      "line1": "Šiandien nepavyko nuskaityti {amount} už {truck}. Bandysime dar kartą.",
+      "line2": "Atnaujinkite {method, select, payment_method {mokėjimo būdą} other {kortelę}} iki {date}, kad internetiniai užsakymai liktų įjungti."
+    },
+    "twoDays": {
+      "subject": "Liko 2 dienos atnaujinti {method, select, payment_method {mokėjimo būdą} other {kortelę}}",
+      "line1": "{amount} už {truck} vis dar neapmokėta. Atnaujinkite {method, select, payment_method {mokėjimo būdą} other {kortelę}} iki {date}, kitaip internetiniai užsakymai bus sustabdyti."
+    },
+    "oneDay": {
+      "subject": "Atnaujinkite {method, select, payment_method {mokėjimo būdą} other {kortelę}} iki rytojaus",
+      "line1": "{amount} už {truck} vis dar neapmokėta. Atnaujinkite {method, select, payment_method {mokėjimo būdą} other {kortelę}} iki rytojaus, kitaip internetiniai užsakymai bus sustabdyti."
+    },
+    "lastDay": {
+      "subject": "Paskutinė diena atnaujinti {method, select, payment_method {mokėjimo būdą} other {kortelę}}",
+      "line1": "Šiandien paskutinė diena sumokėti {amount} už {truck}. Jei vidurnaktį suma vis dar bus neapmokėta, internetiniai užsakymai bus sustabdyti, kol sumokėsite."
+    },
+    "paused": {
+      "subject": "Internetiniai užsakymai sustabdyti",
+      "line1": "Internetiniai užsakymai ({truck}) sustabdyti, nes neapmokėta {amount}. Sumokėkite dabar, ir jie iš karto vėl bus įjungti.",
+      "line2": "Sumokėkite iki {date}, kitaip jūsų paskyra gali būti sustabdyta."
+    },
+    "trial7": {
+      "subject": "Jūsų nemokamas bandomasis laikotarpis baigsis po 7 dienų",
+      "line1": "Jūsų nemokamas bandomasis laikotarpis ({truck}) baigiasi {date}.",
+      "line2": "Pridėkite kortelę skiltyje Valdymas › Atsiskaitymai, kad internetiniai užsakymai liktų įjungti.",
+      "plan": "Vėliau planas {plan} kainuos {price} per mėnesį. Pasibaigus bandomajam laikotarpiui, nuskaitysime {amount} už likusią mėnesio dalį ({month}), tada {nextFirst} – {price}.",
+      "planFree": "Vėliau naudositės planu {plan} be mėnesinio mokesčio.",
+      "fee": "Mūsų {fee} mokestis už užsakymus internetu nuskaitomas mėnesio 1 d. už praėjusį mėnesį."
+    },
+    "trial1": {
+      "subject": "Jūsų nemokamas bandomasis laikotarpis baigiasi rytoj",
+      "line1": "Jūsų nemokamas bandomasis laikotarpis ({truck}) baigiasi rytoj.",
+      "noCard": "Pridėkite kortelę, kitaip internetiniai užsakymai bus sustabdyti.",
+      "allSet": "Viskas paruošta: planas {plan} prasidės {date}.",
+      "charge": "Pasibaigus bandomajam laikotarpiui, nuskaitysime {amount} už likusią mėnesio dalį ({month})."
+    }
   }
 }

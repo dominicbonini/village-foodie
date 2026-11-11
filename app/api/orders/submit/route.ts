@@ -757,6 +757,10 @@ export async function POST(req: NextRequest) {
     if (billingGate.onlineOrderingPaused) {
       return NextResponse.json(customerErrorBody(locale, 'truck_not_taking_orders', {}, { orderingPaused: true }), { status: 423 })
     }
+    // billing-2: a post-pay truck takes no card payment online (its customers pay at the truck) — the existing card sentence.
+    if (payByCard === true && !billingGate.cardPaymentsAllowed) {
+      return NextResponse.json(customerErrorBody(locale, 'card_unavailable', {}, { cardUnavailable: true }), { status: 409 })
+    }
     if (payByCard !== true && !(payAtHatchOn(truck, planCatalog) && billingGate.payAtHatchAllowed)) {
       return NextResponse.json(customerErrorBody(locale, 'pay_at_hatch_unavailable', {}, { payAtHatchUnavailable: true }), { status: 403 })
     }

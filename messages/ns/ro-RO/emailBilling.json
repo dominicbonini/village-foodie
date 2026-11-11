@@ -1,0 +1,46 @@
+{
+  "greeting": "{hasName, select, yes {Bună ziua, {name},} other {Bună ziua,}}",
+  "questions": "Aveți întrebări? Răspundeți pur și simplu la acest e-mail.",
+  "signoff": "Echipa HatchGrab",
+  "buttonUpdate": "Actualizați {method, select, payment_method {metoda de plată} other {cardul}}",
+  "buttonPay": "Plătiți acum",
+  "buttonAddCard": "Adăugați un card",
+  "suspended": "Dacă suma rămâne neplătită, contul dumneavoastră poate fi suspendat.",
+  "failed": {
+    "subject": "Plata dumneavoastră HatchGrab nu a reușit",
+    "line1": "Astăzi nu am putut încasa {amount} pentru {truck}. Vom încerca din nou.",
+    "line2": "Vă rugăm să actualizați {method, select, payment_method {metoda de plată} other {cardul}} până pe {date} ca să rămână active comenzile online."
+  },
+  "twoDays": {
+    "subject": "Mai aveți 2 zile să actualizați {method, select, payment_method {metoda de plată} other {cardul}}",
+    "line1": "Suma de {amount} pentru {truck} este încă neplătită. Actualizați {method, select, payment_method {metoda de plată} other {cardul}} până pe {date}, altfel comenzile online se întrerup."
+  },
+  "oneDay": {
+    "subject": "Actualizați {method, select, payment_method {metoda de plată} other {cardul}} până mâine",
+    "line1": "Suma de {amount} pentru {truck} este încă neplătită. Actualizați {method, select, payment_method {metoda de plată} other {cardul}} până mâine, altfel comenzile online se întrerup."
+  },
+  "lastDay": {
+    "subject": "Ultima zi pentru a actualiza {method, select, payment_method {metoda de plată} other {cardul}}",
+    "line1": "Astăzi este ultima zi pentru a plăti {amount} pentru {truck}. Dacă suma este încă neplătită la miezul nopții, comenzile online se întrerup până când plătiți."
+  },
+  "paused": {
+    "subject": "Comenzile online sunt întrerupte",
+    "line1": "Comenzile online pentru {truck} sunt întrerupte, deoarece suma de {amount} nu este plătită. Plătiți acum și se reactivează imediat.",
+    "line2": "Plătiți până pe {date}, altfel contul dumneavoastră poate fi suspendat."
+  },
+  "trial7": {
+    "subject": "Perioada de probă gratuită se încheie peste 7 zile",
+    "line1": "Perioada de probă gratuită pentru {truck} se încheie pe {date}.",
+    "line2": "Adăugați un card în Administrare › Facturare ca să rămână active comenzile online.",
+    "plan": "După aceea, planul {plan} costă {price} pe lună. Când se încheie perioada de probă, încasăm {amount} pentru restul lunii {month}, apoi {price} pe {nextFirst}.",
+    "planFree": "După aceea, treceți pe planul {plan}, fără taxă lunară.",
+    "fee": "Taxa noastră de {fee} pentru comenzile online se încasează pe 1 ale lunii, pentru luna anterioară."
+  },
+  "trial1": {
+    "subject": "Perioada de probă gratuită se încheie mâine",
+    "line1": "Perioada de probă gratuită pentru {truck} se încheie mâine.",
+    "noCard": "Adăugați un card, altfel comenzile online se întrerup.",
+    "allSet": "Totul este pregătit: planul {plan} începe pe {date}.",
+    "charge": "Când se încheie perioada de probă, încasăm {amount} pentru restul lunii {month}."
+  }
+}

@@ -4,7 +4,7 @@
 // so the rules the harness proves are the rules the server runs.
 import type { CountryBilling, PaymentMethodState, PaymentMethodType, BillingStatus, BillingTruck, UsageOrder, UsageLine, PlanHistoryRow } from '@/lib/billing/rules'
 
-export interface BillingSwitches { enabled: boolean; pauseAfterDays: number }
+export interface BillingSwitches { enabled: boolean; pauseAfterDays: number; suspendWarningDays?: number }
 
 export interface CountryBillingFacts {
   countryCode: string
@@ -116,7 +116,15 @@ export interface InvoiceRow {
   /** The late-payment fee added (null = not decided yet; 0 = decided at the pause: none). */
   lateFeeMinor: number | null
   replacedStripeInvoiceId: string | null
+  /** When the first collection attempt failed (billing-2: the 5-full-day rule counts from its local date). */
+  firstFailedAt: string | null
+  /** Stripe's hosted invoice PDF ("Download"). */
+  invoicePdfUrl: string | null
 }
+
+/** billing-2: one billing email sent — once per (truck, kind, ref). */
+export type BillingEmailKind = 'payment_failed' | 'two_days_left' | 'one_day_left' | 'last_day' | 'paused' | 'trial_7_days' | 'trial_1_day'
+export interface BillingEmailRow { truckId: string; kind: BillingEmailKind; ref: string; locale: string; sentAt: string; providerId: string | null }
 
 export interface BillingStore {
   switches(): Promise<BillingSwitches>
@@ -129,7 +137,7 @@ export interface BillingStore {
   truck(id: string): Promise<StoredTruck | null>
   /** Trucks that could be billed: customers, and test trucks that opted in (truck_billing.billing_test). */
   candidateTruckIds(): Promise<string[]>
-  operator(id: string): Promise<{ id: string; email: string | null; name: string | null } | null>
+  operator(id: string): Promise<{ id: string; email: string | null; name: string | null; firstName?: string | null } | null>
   vanCount(truckId: string): Promise<number>
 
   truckBilling(truckId: string): Promise<TruckBillingRow | null>
@@ -171,4 +179,10 @@ export interface BillingStore {
   /** 🔴 One invoice per charge: insert as 'creating'. `claimed: false` = it exists (returned). */
   claimInvoice(row: { chargeId: string; truckId: string; period: string; currency: string; amountMinor: number; livemode: boolean }): Promise<{ claimed: boolean; row: InvoiceRow }>
   updateInvoice(id: string, patch: Partial<Omit<InvoiceRow, 'id' | 'truckId' | 'period' | 'chargeId'>>): Promise<InvoiceRow>
+
+  /** billing-2: the emails already sent to this truck. */
+  emailsSent(truckId: string): Promise<BillingEmailRow[]>
+  /** 🔴 THE CLAIM for an email: insert (truck, kind, ref) BEFORE sending. `claimed: false` = already sent (or being sent). */
+  claimEmail(row: Omit<BillingEmailRow, 'sentAt' | 'providerId'>): Promise<{ claimed: boolean }>
+  recordEmailProvider(truckId: string, kind: BillingEmailKind, ref: string, providerId: string | null): Promise<void>
 }

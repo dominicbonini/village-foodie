@@ -1,0 +1,46 @@
+{
+  "greeting": "{hasName, select, yes {Oi, {name},} other {Oi,}}",
+  "questions": "Dúvidas? É só responder este e-mail.",
+  "signoff": "Equipe HatchGrab",
+  "buttonUpdate": "Atualizar {method, select, payment_method {forma de pagamento} other {cartão}}",
+  "buttonPay": "Pagar agora",
+  "buttonAddCard": "Adicionar cartão",
+  "suspended": "Se o valor continuar em aberto, sua conta poderá ser suspensa.",
+  "failed": {
+    "subject": "Seu pagamento ao HatchGrab não foi aprovado",
+    "line1": "Não conseguimos cobrar hoje {amount} referente a {truck}. Vamos tentar de novo.",
+    "line2": "Atualize {method, select, payment_method {sua forma de pagamento} other {seu cartão}} até {date} para manter os pedidos online ativos."
+  },
+  "twoDays": {
+    "subject": "Faltam 2 dias para atualizar {method, select, payment_method {sua forma de pagamento} other {seu cartão}}",
+    "line1": "O valor de {amount} referente a {truck} continua em aberto. Atualize {method, select, payment_method {sua forma de pagamento} other {seu cartão}} até {date} ou os pedidos online serão pausados."
+  },
+  "oneDay": {
+    "subject": "Atualize {method, select, payment_method {sua forma de pagamento} other {seu cartão}} até amanhã",
+    "line1": "O valor de {amount} referente a {truck} continua em aberto. Atualize {method, select, payment_method {sua forma de pagamento} other {seu cartão}} até amanhã ou os pedidos online serão pausados."
+  },
+  "lastDay": {
+    "subject": "Último dia para atualizar {method, select, payment_method {sua forma de pagamento} other {seu cartão}}",
+    "line1": "Hoje é o último dia para pagar {amount} referente a {truck}. Se o valor continuar em aberto à meia-noite, os pedidos online ficam pausados até você pagar."
+  },
+  "paused": {
+    "subject": "Os pedidos online estão pausados",
+    "line1": "Os pedidos online de {truck} estão pausados porque o valor de {amount} está em aberto. Pague agora e eles voltam na hora.",
+    "line2": "Pague até {date} ou sua conta poderá ser suspensa."
+  },
+  "trial7": {
+    "subject": "Seu teste grátis termina em 7 dias",
+    "line1": "Seu teste grátis de {truck} termina em {date}.",
+    "line2": "Adicione um cartão em Gerenciar › Cobrança para manter os pedidos online ativos.",
+    "plan": "Depois disso, o plano {plan} custa {price} por mês. Quando o teste terminar, vamos cobrar {amount} pelo restante de {month} e depois {price} em {nextFirst}.",
+    "planFree": "Depois disso, você fica no plano {plan}, sem mensalidade.",
+    "fee": "Nossa taxa de {fee} nos pedidos online é cobrada no dia 1º, referente ao mês anterior."
+  },
+  "trial1": {
+    "subject": "Seu teste grátis termina amanhã",
+    "line1": "Seu teste grátis de {truck} termina amanhã.",
+    "noCard": "Adicione um cartão ou os pedidos online serão pausados.",
+    "allSet": "Tudo pronto: o plano {plan} começa em {date}.",
+    "charge": "Quando o teste terminar, vamos cobrar {amount} pelo restante de {month}."
+  }
+}

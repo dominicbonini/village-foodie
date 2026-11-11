@@ -1,0 +1,46 @@
+{
+  "greeting": "{hasName, select, yes {Hæ {name},} other {Halló,}}",
+  "questions": "Spurningar? Svaraðu bara þessum pósti.",
+  "signoff": "HatchGrab-teymið",
+  "buttonUpdate": "Uppfæra {method, select, payment_method {greiðslumáta} other {kort}}",
+  "buttonPay": "Greiða núna",
+  "buttonAddCard": "Bæta við korti",
+  "suspended": "Ef þetta er ekki greitt gæti aðganginum þínum verið lokað.",
+  "failed": {
+    "subject": "Greiðslan þín til HatchGrab fór ekki í gegn",
+    "line1": "Okkur tókst ekki að innheimta {amount} fyrir {truck} í dag. Við reynum aftur.",
+    "line2": "Uppfærðu {method, select, payment_method {greiðslumátann} other {kortið}} þitt fyrir {date} til að halda netpöntunum opnum."
+  },
+  "twoDays": {
+    "subject": "2 dagar eftir til að uppfæra {method, select, payment_method {greiðslumátann} other {kortið}} þitt",
+    "line1": "{amount} fyrir {truck} er enn ógreitt. Uppfærðu {method, select, payment_method {greiðslumátann} other {kortið}} þitt fyrir {date}, annars verður hlé á netpöntunum."
+  },
+  "oneDay": {
+    "subject": "Uppfærðu {method, select, payment_method {greiðslumátann} other {kortið}} þitt fyrir morgundaginn",
+    "line1": "{amount} fyrir {truck} er enn ógreitt. Uppfærðu {method, select, payment_method {greiðslumátann} other {kortið}} þitt fyrir morgundaginn, annars verður hlé á netpöntunum."
+  },
+  "lastDay": {
+    "subject": "Síðasti dagur til að uppfæra {method, select, payment_method {greiðslumátann} other {kortið}} þitt",
+    "line1": "Í dag er síðasti dagurinn til að greiða {amount} fyrir {truck}. Ef það er enn ógreitt á miðnætti verður hlé á netpöntunum þar til þú greiðir."
+  },
+  "paused": {
+    "subject": "Hlé er á netpöntunum",
+    "line1": "Hlé er á netpöntunum hjá {truck} því {amount} er ógreitt. Greiddu núna og þær opnast strax aftur.",
+    "line2": "Greiddu fyrir {date}, annars gæti aðganginum þínum verið lokað."
+  },
+  "trial7": {
+    "subject": "Ókeypis prufunni þinni lýkur eftir 7 daga",
+    "line1": "Ókeypis prufunni fyrir {truck} lýkur {date}.",
+    "line2": "Bættu við korti undir Umsjón › Áskrift til að halda netpöntunum opnum.",
+    "plan": "Eftir það kostar {plan} {price} á mánuði. Þegar prufunni lýkur gjaldfærum við {amount} fyrir það sem eftir er af {month} og síðan {price} þann {nextFirst}.",
+    "planFree": "Eftir það ertu á áskriftarleiðinni {plan}, án mánaðargjalds.",
+    "fee": "Gjaldið okkar, {fee}, af netpöntunum er gjaldfært 1. hvers mánaðar fyrir mánuðinn á undan."
+  },
+  "trial1": {
+    "subject": "Ókeypis prufunni þinni lýkur á morgun",
+    "line1": "Ókeypis prufunni fyrir {truck} lýkur á morgun.",
+    "noCard": "Bættu við korti, annars verður hlé á netpöntunum.",
+    "allSet": "Allt klárt: áskriftarleiðin {plan} hefst {date}.",
+    "charge": "Við gjaldfærum {amount} fyrir það sem eftir er af {month} þegar prufunni lýkur."
+  }
+}

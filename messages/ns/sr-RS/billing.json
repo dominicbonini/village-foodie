@@ -1,0 +1,116 @@
+{
+  "tab": {
+    "plan": {
+      "title": "Vaš paket",
+      "trialPill": "Probni period",
+      "change": "Promeni paket",
+      "trialLine": "Vaš besplatni probni period ističe {date}. Nakon toga, paket {plan} košta {price} mesečno.",
+      "trialLineFree": "Vaš besplatni probni period ističe {date}. Nakon toga prelazite na paket {plan}, bez mesečne naknade.",
+      "proLine": "Uključuje online porudžbine u vrednosti do {allowance} mesečno. Zatim {fee}.",
+      "paygLine": "{fee} na online porudžbine. Bez mesečne naknade.",
+      "unlimitedLine": "{price} mesečno. Bez naknade na online porudžbine.",
+      "pendingLine": "Paket {plan} počinje {date}."
+    },
+    "payment": {
+      "title": "Način plaćanja",
+      "none": "Još niste dodali karticu. Dodajte je da biste i posle probnog perioda primali online porudžbine.",
+      "add": "Dodaj karticu",
+      "pix": "Koristi Pix Automático",
+      "card": "{brand}, poslednje cifre {last4}",
+      "pixOnFile": "Pix Automático",
+      "pending": "Čeka se potvrda.",
+      "change": "Promeni",
+      "lastFailed": "Poslednje plaćanje nije uspelo",
+      "update": "Ažuriraj karticu",
+      "error": "Nismo uspeli da otvorimo stranicu za plaćanje. Pokušajte ponovo."
+    },
+    "whatYouPay": {
+      "title": "Šta plaćate",
+      "plan": "Vaš paket, naplaćuje se 1. u mesecu za naredni mesec",
+      "fee": "Online porudžbine preko {allowance} mesečno, naplaćuju se 1. u mesecu za prethodni mesec",
+      "feePayg": "Online porudžbine, naplaćuju se 1. u mesecu za prethodni mesec",
+      "walkUps": "Porudžbine na licu mesta",
+      "free": "Besplatno",
+      "trialEnd": "Kada vaš probni period istekne {date}, naplatićemo {amount} za ostatak meseca {month}. Zatim {price} dana {nextFirst}."
+    },
+    "next": {
+      "title": "Sledeće plaćanje · {date}",
+      "plan": "{plan} za {month}",
+      "fee": "{fee} na online porudžbine preko {allowance} u mesecu {month} (do sada)",
+      "feePayg": "{fee} na online porudžbine u mesecu {month} (do sada)",
+      "vans": "Dodatna vozila za {month}",
+      "surcharge": "Naknada za plaćanje pri preuzimanju za {month}",
+      "carried": "Preneto iz ranijeg perioda",
+      "total": "Ukupno do sada",
+      "walkUps": "Porudžbine na licu mesta su uvek besplatne."
+    },
+    "preorders": {
+      "title": "Kako kupci plaćaju porudžbine unapred",
+      "online": "Online, prilikom poručivanja",
+      "onlineHint": "Novac ide direktno na vaš Stripe nalog.",
+      "atTruck": "Kod food trucka, prilikom preuzimanja",
+      "atTruckHint": "Naša naknada se tada dodaje vašem mesečnom računu.",
+      "saved": "Sačuvano.",
+      "error": "Nismo uspeli da sačuvamo. Pokušajte ponovo."
+    },
+    "invoices": {
+      "title": "Računi",
+      "date": "Datum",
+      "for": "Za",
+      "amount": "Iznos",
+      "status": "Status",
+      "forMonthly": "Paket za {planMonth}, naknade za {usageMonth}",
+      "forMonthlyPlan": "Paket za {planMonth}",
+      "forTrialEnd": "Ostatak meseca {month}",
+      "forUpgrade": "Prelazak na {plan}",
+      "lateFee": "Naknada za kašnjenje",
+      "paid": "Plaćeno",
+      "unpaid": "Neplaćeno",
+      "overdue": "Rok istekao",
+      "download": "Preuzmi",
+      "payNow": "Plati odmah",
+      "none": "Još nema računa."
+    },
+    "failed": {
+      "title": "Vaše plaćanje od {amount} nije prošlo.",
+      "body": "Pokušaćemo ponovo. Ažurirajte karticu do {date} da bi online poručivanje ostalo uključeno.",
+      "button": "Ažuriraj karticu"
+    },
+    "paused": {
+      "title": "Online poručivanje je pauzirano",
+      "body": "Iznos od {amount} je dospeo, a nije plaćen. Platite odmah i online poručivanje se odmah ponovo uključuje.",
+      "warning": "Platite do {date} ili vaš nalog može biti suspendovan.",
+      "pay": "Plati {amount}",
+      "otherCard": "Koristi drugu karticu"
+    },
+    "loading": "Učitavanje naplate…",
+    "loadError": "Nismo uspeli da učitamo podatke o naplati. Pokušajte ponovo."
+  },
+  "changePlan": {
+    "title": "Promena paketa",
+    "current": "Koristite paket {plan}.",
+    "free": "Besplatno",
+    "perMonth": "{price} mesečno",
+    "paygLine": "{fee} na online porudžbine.",
+    "proLine": "Uključene online porudžbine do {allowance}. Zatim {fee}.",
+    "unlimitedLine": "Bez naknade na online porudžbine.",
+    "yourPlan": "Vaš paket",
+    "startsNow": "Počinje odmah.",
+    "chargeToday": "Danas ćemo naplatiti {amount} za ostatak meseca {month}. Zatim {price} dana {nextFirst}.",
+    "startsLater": "Počinje {nextFirst}. Do tada zadržavate paket {plan}.",
+    "cancel": "Otkaži",
+    "switchTo": "Pređi na {plan}",
+    "error": "Nismo uspeli da promenimo paket. Pokušajte ponovo."
+  },
+  "notices": {
+    "trialEndsSoon": "<b>Vaš besplatni probni period ističe {date}.</b> Dodajte karticu da bi online poručivanje ostalo uključeno.",
+    "trialEndsTomorrow": "<b>Vaš besplatni probni period ističe sutra.</b> Dodajte karticu ili će online poručivanje biti pauzirano.",
+    "allSet": "<b>Sve je spremno.</b> Paket {plan} počinje {date}.",
+    "paymentFailed": "<b>Vaše plaćanje nije prošlo.</b> Ažurirajte {method, select, payment_method {način plaćanja} other {karticu}} do {date} da bi online poručivanje ostalo uključeno.",
+    "paused": "<b>Online poručivanje je pauzirano.</b> Platite {amount} do {date} ili vaš nalog može biti suspendovan.",
+    "addCard": "Dodaj karticu →",
+    "updateCard": "Ažuriraj {method, select, payment_method {način plaćanja} other {karticu}} →",
+    "payNow": "Plati odmah →",
+    "dismiss": "Odbaci"
+  }
+}

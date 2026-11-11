@@ -2,7 +2,7 @@
 // Same contract as lib/billing/store.ts on the database — including the two guards that matter: a frozen month is never
 // replaced, and (truck, period) can be claimed for an invoice only once. Not imported by any app code.
 import type { CountryBilling, UsageOrder, UsageLine, PlanHistoryRow } from '@/lib/billing/rules'
-import type { BillingStore, BillingSwitches, CountryBillingFacts, StoredTruck, TruckBillingRow, UsageRow, InvoiceRow, ChargeRow } from '@/lib/billing/store-types'
+import type { BillingStore, BillingSwitches, CountryBillingFacts, StoredTruck, TruckBillingRow, UsageRow, InvoiceRow, ChargeRow, BillingEmailRow } from '@/lib/billing/store-types'
 
 export interface MemoryOrder { order_key: string; truck_id: string; source: string; status: string; food_minor: number | null; placed_at: string }
 export interface MemoryPayment { order_key: string; kind: 'charge' | 'refund'; amount_minor: number; application_fee_minor?: number | null; application_fee_refunded_minor?: number | null }
@@ -23,13 +23,14 @@ export interface MemoryData {
   history: (PlanHistoryRow & { truckId: string })[]
   charges: ChargeRow[]
   invoices: InvoiceRow[]
+  emails: BillingEmailRow[]
   /** Every write, in order — the harness proves "switch off = nothing written" from it. */
   writes: string[]
 }
 
 export function emptyMemoryData(): MemoryData {
   return { switches: { enabled: false, pauseAfterDays: 5 }, countryBilling: [], countryFacts: [], trucks: [], operators: [], vans: {}, truckBilling: [],
-    customers: [], orders: [], payments: [], usage: [], usageLines: [], history: [], charges: [], invoices: [], writes: [] }
+    customers: [], orders: [], payments: [], usage: [], usageLines: [], history: [], charges: [], invoices: [], emails: [], writes: [] }
 }
 
 const DEFAULT_TB = (truckId: string): TruckBillingRow => ({
@@ -137,7 +138,7 @@ export function memoryBillingStore(d: MemoryData): BillingStore {
       const existing = d.invoices.find(i => i.chargeId === row.chargeId)
       if (existing) return { claimed: false, row: { ...existing } }
       const created: InvoiceRow = { ...row, id: `inv-row-${++seq}`, stripeInvoiceId: null, status: 'creating', dueAt: null, attemptCount: 0, lastError: null,
-        hostedInvoiceUrl: null, createdAt: new Date().toISOString(), finalizedAt: null, paidAt: null, lateFeeMinor: null, replacedStripeInvoiceId: null }
+        hostedInvoiceUrl: null, createdAt: new Date().toISOString(), finalizedAt: null, paidAt: null, lateFeeMinor: null, replacedStripeInvoiceId: null, firstFailedAt: null, invoicePdfUrl: null }
       d.invoices.push(created)
       d.writes.push(`billing_invoices:${row.chargeId}`)
       return { claimed: true, row: { ...created } }
@@ -148,6 +149,18 @@ export function memoryBillingStore(d: MemoryData): BillingStore {
       Object.assign(r, patch)
       d.writes.push(`billing_invoices_update:${id}`)
       return { ...r }
+    },
+    async emailsSent(truckId) { return (d.emails ?? []).filter(e => e.truckId === truckId).map(e => ({ ...e })) },
+    async claimEmail(row) {
+      d.emails ??= []
+      if (d.emails.some(e => e.truckId === row.truckId && e.kind === row.kind && e.ref === row.ref)) return { claimed: false }
+      d.emails.push({ ...row, sentAt: new Date().toISOString(), providerId: null })
+      d.writes.push(`billing_email_log:${row.truckId}:${row.kind}:${row.ref}`)
+      return { claimed: true }
+    },
+    async recordEmailProvider(truckId, kind, ref, providerId) {
+      const e = (d.emails ?? []).find(x => x.truckId === truckId && x.kind === kind && x.ref === ref)
+      if (e) e.providerId = providerId
     },
   }
 }

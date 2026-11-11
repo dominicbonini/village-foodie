@@ -1,0 +1,46 @@
+{
+  "greeting": "{hasName, select, yes {Kedves {name}!} other {Üdvözlöm!}}",
+  "questions": "Kérdése van? Csak válaszoljon erre a levélre.",
+  "signoff": "A HatchGrab csapata",
+  "buttonUpdate": "{method, select, payment_method {Fizetési mód} other {Kártya}} frissítése",
+  "buttonPay": "Fizetés most",
+  "buttonAddCard": "Kártya hozzáadása",
+  "suspended": "Ha a tartozás rendezetlen marad, felfüggeszthetjük a fiókját.",
+  "failed": {
+    "subject": "Nem sikerült a HatchGrab-fizetése",
+    "line1": "Ma nem sikerült beszednünk a díjat ({amount}) ennél a food trucknál: {truck}. Újra megpróbáljuk.",
+    "line2": "Kérjük, frissítse {method, select, payment_method {fizetési módját} other {kártyáját}} eddig: {date}, hogy az online rendelés bekapcsolva maradjon."
+  },
+  "twoDays": {
+    "subject": "Még 2 napja van {method, select, payment_method {fizetési módja} other {kártyája}} frissítésére",
+    "line1": "Még mindig rendezetlen a tartozás ({amount}) ennél a food trucknál: {truck}. Frissítse {method, select, payment_method {fizetési módját} other {kártyáját}} eddig: {date}, különben az online rendelés szünetel."
+  },
+  "oneDay": {
+    "subject": "Frissítse {method, select, payment_method {fizetési módját} other {kártyáját}} holnapig",
+    "line1": "Még mindig rendezetlen a tartozás ({amount}) ennél a food trucknál: {truck}. Frissítse {method, select, payment_method {fizetési módját} other {kártyáját}} holnapig, különben az online rendelés szünetel."
+  },
+  "lastDay": {
+    "subject": "Ma van az utolsó nap {method, select, payment_method {fizetési módja} other {kártyája}} frissítésére",
+    "line1": "Ma van az utolsó nap, hogy kifizesse a tartozást ({amount}) ennél a food trucknál: {truck}. Ha éjfélig nem rendezi, az online rendelés a befizetésig szünetel."
+  },
+  "paused": {
+    "subject": "Az online rendelés szünetel",
+    "line1": "Az online rendelés szünetel ennél a food trucknál: {truck}, mert a tartozás ({amount}) nincs kifizetve. Fizessen most, és azonnal újra bekapcsol.",
+    "line2": "Fizessen eddig: {date}, különben felfüggeszthetjük a fiókját."
+  },
+  "trial7": {
+    "subject": "Az ingyenes próbaidőszak 7 nap múlva véget ér",
+    "line1": "{truck} ingyenes próbaidőszakának vége: {date}.",
+    "line2": "Adjon meg egy kártyát a Kezelés › Számlázás részben, hogy az online rendelés bekapcsolva maradjon.",
+    "plan": "Ezután ez a csomag lesz érvényes: {plan}, havi {price} áron. A próbaidőszak végén {amount} összeget terhelünk {month} hátralévő részére, ezután pedig {price} összeget, először ekkor: {nextFirst}.",
+    "planFree": "Ezután ez a csomag lesz érvényes: {plan}, havidíj nélkül.",
+    "fee": "Az online rendelések utáni {fee} díjunkat minden hónap 1-jén terheljük, az előző hónapra."
+  },
+  "trial1": {
+    "subject": "Az ingyenes próbaidőszak holnap véget ér",
+    "line1": "{truck} ingyenes próbaidőszaka holnap véget ér.",
+    "noCard": "Adjon meg egy kártyát, különben az online rendelés szünetel.",
+    "allSet": "Minden készen áll. Csomagja ({plan}) ekkor indul: {date}.",
+    "charge": "A próbaidőszak végén {amount} összeget terhelünk {month} hátralévő részére."
+  }
+}

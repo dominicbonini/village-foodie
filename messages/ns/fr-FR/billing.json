@@ -1,0 +1,116 @@
+{
+  "tab": {
+    "plan": {
+      "title": "Votre offre",
+      "trialPill": "Essai gratuit",
+      "change": "Changer d’offre",
+      "trialLine": "Votre essai gratuit se termine le {date}. Ensuite, l’offre {plan} coûte {price} par mois.",
+      "trialLineFree": "Votre essai gratuit se termine le {date}. Ensuite, vous passez à l’offre {plan}, sans frais mensuels.",
+      "proLine": "Inclut {allowance} de commandes en ligne par mois. Au-delà, {fee}.",
+      "paygLine": "{fee} sur les commandes en ligne. Pas de frais mensuels.",
+      "unlimitedLine": "{price} par mois. Pas de frais sur les commandes en ligne.",
+      "pendingLine": "L’offre {plan} commence le {date}."
+    },
+    "payment": {
+      "title": "Moyen de paiement",
+      "none": "Aucune carte ajoutée pour l’instant. Ajoutez-en une pour continuer à recevoir des commandes en ligne après votre essai.",
+      "add": "Ajouter une carte",
+      "pix": "Utiliser Pix Automático",
+      "card": "{brand} se terminant par {last4}",
+      "pixOnFile": "Pix Automático",
+      "pending": "En attente de confirmation.",
+      "change": "Modifier",
+      "lastFailed": "Le dernier paiement a échoué",
+      "update": "Mettre à jour la carte",
+      "error": "Nous n’avons pas pu ouvrir la page de paiement. Veuillez réessayer."
+    },
+    "whatYouPay": {
+      "title": "Ce que vous payez",
+      "plan": "Votre offre, facturée le 1er pour le mois qui commence",
+      "fee": "Commandes en ligne au-delà de {allowance} par mois, facturées le 1er pour le mois précédent",
+      "feePayg": "Commandes en ligne, facturées le 1er pour le mois précédent",
+      "walkUps": "Commandes au comptoir",
+      "free": "Gratuit",
+      "trialEnd": "À la fin de votre essai, le {date}, nous facturons {amount} jusqu’à fin {month}. Puis {price} le {nextFirst}."
+    },
+    "next": {
+      "title": "Prochain paiement · {date}",
+      "plan": "Offre {plan} pour {month}",
+      "fee": "{fee} sur les commandes en ligne au-delà de {allowance} en {month} (à ce jour)",
+      "feePayg": "{fee} sur les commandes en ligne en {month} (à ce jour)",
+      "vans": "Camions supplémentaires en {month}",
+      "surcharge": "Frais sur les paiements au retrait en {month}",
+      "carried": "Report des périodes précédentes",
+      "total": "Total à ce jour",
+      "walkUps": "Les commandes au comptoir sont toujours gratuites."
+    },
+    "preorders": {
+      "title": "Comment les clients paient leurs précommandes",
+      "online": "En ligne, au moment de commander",
+      "onlineHint": "L’argent est versé directement sur votre compte Stripe.",
+      "atTruck": "Au food truck, au moment du retrait",
+      "atTruckHint": "Nos frais sont alors ajoutés à votre prélèvement mensuel.",
+      "saved": "Enregistré.",
+      "error": "Nous n’avons pas pu enregistrer ce choix. Veuillez réessayer."
+    },
+    "invoices": {
+      "title": "Factures",
+      "date": "Date",
+      "for": "Objet",
+      "amount": "Montant",
+      "status": "Statut",
+      "forMonthly": "Offre {planMonth}, frais {usageMonth}",
+      "forMonthlyPlan": "Offre {planMonth}",
+      "forTrialEnd": "Jusqu’à fin {month}",
+      "forUpgrade": "Passage à l’offre {plan}",
+      "lateFee": "Frais de retard de paiement",
+      "paid": "Payée",
+      "unpaid": "Impayée",
+      "overdue": "En retard",
+      "download": "Télécharger",
+      "payNow": "Payer maintenant",
+      "none": "Aucune facture pour l’instant."
+    },
+    "failed": {
+      "title": "Votre paiement de {amount} n’a pas abouti.",
+      "body": "Nous allons réessayer. Mettez à jour votre carte d’ici le {date} pour garder les commandes en ligne actives.",
+      "button": "Mettre à jour la carte"
+    },
+    "paused": {
+      "title": "Les commandes en ligne sont en pause",
+      "body": "Un montant de {amount} est en retard. Payez maintenant et les commandes en ligne reprennent immédiatement.",
+      "warning": "Payez d’ici le {date}, sinon votre compte pourra être suspendu.",
+      "pay": "Payer {amount}",
+      "otherCard": "Utiliser une autre carte"
+    },
+    "loading": "Chargement de la facturation…",
+    "loadError": "Nous n’avons pas pu charger votre facturation. Veuillez réessayer."
+  },
+  "changePlan": {
+    "title": "Changer d’offre",
+    "current": "Vous êtes sur l’offre {plan}.",
+    "free": "Gratuit",
+    "perMonth": "{price} par mois",
+    "paygLine": "{fee} sur les commandes en ligne.",
+    "proLine": "{allowance} de commandes en ligne inclus. Au-delà, {fee}.",
+    "unlimitedLine": "Pas de frais sur les commandes en ligne.",
+    "yourPlan": "Votre offre",
+    "startsNow": "Prend effet immédiatement.",
+    "chargeToday": "Nous facturons {amount} aujourd’hui jusqu’à fin {month}. Puis {price} le {nextFirst}.",
+    "startsLater": "Prend effet le {nextFirst}. Vous gardez l’offre {plan} d’ici là.",
+    "cancel": "Annuler",
+    "switchTo": "Passer à l’offre {plan}",
+    "error": "Nous n’avons pas pu changer votre offre. Veuillez réessayer."
+  },
+  "notices": {
+    "trialEndsSoon": "<b>Votre essai gratuit se termine le {date}.</b> Ajoutez une carte pour garder les commandes en ligne actives.",
+    "trialEndsTomorrow": "<b>Votre essai gratuit se termine demain.</b> Ajoutez une carte, sinon les commandes en ligne seront mises en pause.",
+    "allSet": "<b>Tout est prêt.</b> L’offre {plan} commence le {date}.",
+    "paymentFailed": "<b>Votre paiement n’a pas abouti.</b> Mettez à jour votre {method, select, payment_method {moyen de paiement} other {carte}} d’ici le {date} pour garder les commandes en ligne actives.",
+    "paused": "<b>Les commandes en ligne sont en pause.</b> Payez {amount} d’ici le {date}, sinon votre compte pourra être suspendu.",
+    "addCard": "Ajouter une carte →",
+    "updateCard": "Mettre à jour {method, select, payment_method {le moyen de paiement} other {la carte}} →",
+    "payNow": "Payer maintenant →",
+    "dismiss": "Ignorer"
+  }
+}
