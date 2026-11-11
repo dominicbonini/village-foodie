@@ -1,0 +1,58 @@
+{
+  "label": {
+    "street": "Địa chỉ",
+    "postcode": "Mã bưu chính",
+    "zip": "Mã ZIP",
+    "eircode": "Eircode",
+    "postalCode": "Mã bưu chính",
+    "state": "Bang",
+    "stateTerritory": "Bang hoặc vùng lãnh thổ",
+    "province": "Tỉnh",
+    "county": "Hạt",
+    "prefecture": "Tỉnh",
+    "emirate": "Tiểu vương quốc",
+    "region": "Vùng",
+    "area": "Khu vực (làng, thị trấn hoặc thành phố)",
+    "townOrArea": "Thị trấn hoặc khu vực",
+    "city": "Thành phố",
+    "suburb": "Khu dân cư",
+    "townOrCity": "Thị trấn hoặc thành phố"
+  },
+  "short": {
+    "area": "Khu vực",
+    "townOrArea": "Thị trấn hoặc khu vực",
+    "city": "Thành phố",
+    "suburb": "Khu dân cư",
+    "townOrCity": "Thị trấn hoặc thành phố"
+  },
+  "inSentence": {
+    "postcode": "mã bưu chính",
+    "zip": "mã ZIP",
+    "eircode": "mã Eircode",
+    "postalCode": "mã bưu chính"
+  },
+  "withArticle": {
+    "postcode": "mã bưu chính",
+    "zip": "mã ZIP",
+    "eircode": "mã Eircode",
+    "postalCode": "mã bưu chính"
+  },
+  "tradeLabel": {
+    "area": "Thị trấn hoặc thành phố",
+    "townOrArea": "Thị trấn hoặc khu vực",
+    "city": "Thành phố",
+    "suburb": "Khu dân cư",
+    "townOrCity": "Thị trấn hoặc thành phố"
+  },
+  "basedIn": {
+    "area": "Thị trấn hoặc thành phố nơi bạn kinh doanh",
+    "townOrArea": "Thị trấn hoặc khu vực nơi bạn kinh doanh",
+    "city": "Thành phố nơi bạn kinh doanh",
+    "suburb": "Khu dân cư nơi bạn kinh doanh",
+    "townOrCity": "Thị trấn hoặc thành phố nơi bạn kinh doanh"
+  },
+  "example": "VD: {example}",
+  "customersSee": "Khách hàng sẽ thấy:",
+  "postalWarning": "Có vẻ đây không phải {article} hợp lệ — ví dụ: {example}. Bạn vẫn có thể lưu.",
+  "regionChoose": "Chọn…"
+}

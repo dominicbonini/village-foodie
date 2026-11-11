@@ -1,0 +1,154 @@
+{
+  "filter": {
+    "dateRange": "📅 Tímabil",
+    "event": "📍 Viðburður",
+    "filterBy": "Sía eftir",
+    "show": "Sýna",
+    "range": "<from></from><sep>til</sep><until></until>",
+    "selectEvent": "Veldu viðburð…",
+    "eventOption": "{venue} · {date}",
+    "unnamedEvent": "Viðburður",
+    "viewReport": "Skoða skýrslu",
+    "loading": "Hleður…",
+    "orders": "📋 Pantanir",
+    "items": "📦 Vörur",
+    "exportCsv": "⬇ Flytja út CSV"
+  },
+  "empty": {
+    "noOrders": "Engar pantanir fundust á þessu tímabili.",
+    "selectEvent": "Veldu viðburð hér fyrir ofan til að skoða skýrslu hans."
+  },
+  "summary": {
+    "totals": "{n, plural, one {{count} pöntun} other {{count} pantanir}} · {total}"
+  },
+  "revenue": {
+    "title": "Sundurliðun tekna",
+    "deals": "Tekjur af tilboðum",
+    "modifiers": "Aukagjöld fyrir viðbætur",
+    "foodSales": "Matarsala",
+    "total": "Samtals",
+    "other": "Annað",
+    "tax": "Skattur",
+    "tips": "Þjórfé",
+    "serviceFees": "Þjónustugjöld",
+    "cardFees": "Kortagjöld"
+  },
+  "itemsSold": {
+    "title": "Seldar vörur"
+  },
+  "dealsCard": {
+    "title": "Tilboð"
+  },
+  "custom": {
+    "title": "Sérsniðið",
+    "paidModifiers": "Greiddar viðbætur",
+    "customerNotes": "Athugasemdir viðskiptavina",
+    "note": "„{note}“"
+  },
+  "table": {
+    "item": "Vara",
+    "modifier": "Viðbót",
+    "qty": "Magn",
+    "total": "Samtals",
+    "date": "Dagsetning",
+    "time": "Tími",
+    "channel": "Leið"
+  },
+  "breakdown": {
+    "orders": "Sundurliðun pantana",
+    "items": "Sundurliðun vara"
+  },
+  "channel": {
+    "online": "Á netinu",
+    "walkUp": "Á staðnum"
+  },
+  "csv": {
+    "orderId": "Pöntunarnúmer",
+    "date": "Dagsetning",
+    "event": "Viðburður",
+    "timePlaced": "Pantað kl.",
+    "collectionTime": "Afhendingartími",
+    "customerName": "Nafn viðskiptavinar",
+    "orderType": "Tegund pöntunar",
+    "items": "Vörur",
+    "deals": "Tilboð",
+    "modifiers": "Viðbætur",
+    "notes": "Athugasemdir",
+    "subtotal": "Millisamtala",
+    "tip": "Þjórfé",
+    "serviceFee": "Þjónustugjald",
+    "total": "Samtals",
+    "itemName": "Heiti vöru",
+    "qty": "Magn",
+    "unitPrice": "Einingarverð",
+    "itemTotal": "Samtals fyrir vöru",
+    "orderTotal": "Samtals fyrir pöntun",
+    "unknownEvent": "Óþekktur viðburður",
+    "asap": "Sem fyrst",
+    "unknownCustomer": "Óþekkt",
+    "customerOnline": "Viðskiptavinur á netinu",
+    "placedByTruck": "Skráð af matarvagni"
+  },
+  "presets": {
+    "label": "Tímabil",
+    "custom": "Valdar dagsetningar",
+    "thisMonth": "Þessi mánuður",
+    "lastMonth": "Síðasti mánuður",
+    "lastQuarter": "Síðasti ársfjórðungur",
+    "lastTaxYear": "Síðasta skattár"
+  },
+  "accounts": {
+    "title": "Fyrir bókarann þinn",
+    "help": "Sala telst á viðburðardegi. Brúttó er það sem viðskiptavinir greiddu. Nettó er það sem eftir stendur að frádregnum endurgreiðslum og skatti.",
+    "gross": "Brúttósala",
+    "refunds": "Endurgreiðslur",
+    "net": "Nettósala",
+    "taxEstimated": "áætlað út frá skatthlutfallinu þínu",
+    "taxNone": "Ekkert skatthlutfall er stillt fyrir matarvagninn þinn, svo enginn skattur er reiknaður hér.",
+    "byChannel": "Brúttósala eftir leiðum",
+    "byPayment": "Brúttósala eftir greiðslumáta",
+    "online": "Á netinu",
+    "walkUp": "Á staðnum",
+    "cardOnline": "Kort á netinu",
+    "payAtTruck": "Greiðsla við afhendingu",
+    "cost": "Kostnaður seldra rétta",
+    "profit": "Hagnaður",
+    "coverage": "{total, plural, one {Kostnaður skráður fyrir {withCost} af # seldum rétti} other {Kostnaður skráður fyrir {withCost} af # seldum réttum}}",
+    "partial": "Réttir án kostnaðar eru ekki taldir með í kostnaði, svo hagnaðurinn hér er hærri en hann er í raun. Skráðu kostnað við hvern rétt í Matseðli.",
+    "noCosts": "Enginn réttur er með kostnað enn. Skráðu kostnað við réttina þína í Matseðli til að sjá hagnaðinn.",
+    "byEvent": "Eftir viðburðum",
+    "event": "Viðburður",
+    "sales": "Nettósala",
+    "eventNoProfit": "Strik þýðir að ekki eru allir réttir sem seldust þar með kostnað.",
+    "downloadOrders": "⬇ Pantanir fyrir bókarann",
+    "downloadEvents": "⬇ Viðburðir fyrir bókarann",
+    "downloadHelp": "Tvær töflureiknisskrár: ein lína fyrir hverja pöntun og ein lína fyrir hvern viðburð. Þær opnast í Excel, Numbers, Xero og QuickBooks."
+  },
+  "accountsCsv": {
+    "header": {
+      "date": "Dagsetning",
+      "time": "Tími",
+      "orderNumber": "Pöntunarnúmer",
+      "event": "Viðburður",
+      "channel": "Leið",
+      "paymentMethod": "Greiðslumáti",
+      "currency": "Gjaldmiðill",
+      "gross": "Brúttó",
+      "tax": "Skattur",
+      "taxBasis": "Grunnur skatts",
+      "net": "Nettó",
+      "refunded": "Endurgreitt",
+      "cost": "Kostnaður",
+      "profit": "Hagnaður",
+      "eventDate": "Dagsetning viðburðar",
+      "orders": "Pantanir",
+      "dishesSold": "Seldir réttir",
+      "dishesWithCost": "Réttir með kostnað"
+    },
+    "taxBasis": {
+      "stored": "vistað með pöntuninni",
+      "estimated": "áætlað út frá skatthlutfallinu þínu",
+      "none": "ekkert skatthlutfall stillt"
+    }
+  }
+}

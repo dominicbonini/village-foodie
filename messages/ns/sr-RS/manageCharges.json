@@ -1,0 +1,30 @@
+{
+  "heading": "Porez, napojnice i naknade",
+  "rate": {
+    "label": "Poreska stopa",
+    "hint": "Stopa koju naplaćujete na svaku porudžbinu. Kupci vide da je dodata pri plaćanju, na računima i na bonovima.",
+    "regionDefault": "Ostavite prazno da biste naplaćivali {label} po stopi od {rate}%, koja važi za pripremljenu hranu ({region})."
+  },
+  "included": {
+    "label": "{label} u vašim cenama",
+    "hint": "Vaše cene već sadrže {label}. Ova stopa samo pokazuje koliki deo svake cene čini {label}, na računima i bonovima — ništa se ne dodaje pri plaćanju.",
+    "default": "Ostavite prazno da biste koristili {rate}%, stopu koja za {label} važi na toplu hranu za poneti ({country})."
+  },
+  "tips": {
+    "label": "Napojnice",
+    "hint": "Kupci koji plaćaju online karticom mogu da dodaju napojnicu. Ceo iznos ide vama.",
+    "choices": "Opcije koje kupci vide:",
+    "chip": "{rate}%",
+    "other": "Drugi iznos"
+  },
+  "fee": {
+    "label": "Naknada za online uslugu",
+    "hint": "Dodaje se samo na online porudžbine. Nikada na porudžbine sa plaćanjem pri preuzimanju ili na licu mesta. Zadržavate je vi.",
+    "pctAria": "Procenat naknade za uslugu",
+    "fixedAria": "Fiksni iznos naknade za uslugu",
+    "max": "Najviše što možete da naplatite: {max}",
+    "example": "Kupci je vide pre plaćanja, kao jednu stavku: „{label} {amount}“.",
+    "hatchgrab": "HatchGrab dodaje naknadu za uslugu od {fee} na online porudžbine vaših kupaca. Vi je ne plaćate i ne možete da je menjate."
+  },
+  "saveFailed": "Čuvanje nije uspelo — pokušajte ponovo."
+}

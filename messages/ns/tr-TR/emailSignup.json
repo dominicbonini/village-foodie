@@ -1,0 +1,26 @@
+{
+  "greeting": "{hasName, select, yes {Merhaba {name},} other {Merhaba,}}",
+  "signoffName": "Dominic",
+  "signoffRole": "Kurucu, HatchGrab",
+  "verify": {
+    "subject": "E-posta adresinizi onaylayın",
+    "thanks": "{hasTruck, select, yes {Food truck’ınızı ({truck}) HatchGrab’de kurduğunuz için teşekkürler.} other {Food truck’ınızı HatchGrab’de kurduğunuz için teşekkürler.}}",
+    "button": "E-posta adresimi onayla",
+    "buttonText": "E-posta adresimi onayla: {url}",
+    "why": "Giriş yaparken kullanacağınız ve sipariş bildirimlerinin gideceği adres bu — o yüzden şimdi yapmaya değer.",
+    "next": "Onaylandığında, başlamanız için gereken her şeyi size göndereceğim.",
+    "carryOn": "Bu arada kuruluma devam edebilirsiniz.",
+    "stuck": "Takıldığınız bir şey mi var? Bu e-postayı yanıtlamanız yeterli — bunları kendim yanıtlıyorum.",
+    "fallbackLink": "Düğme çalışmazsa şunu tarayıcınıza yapıştırın: {url}"
+  },
+  "welcome": {
+    "subject": "{hasName, select, yes {HatchGrab’e hoş geldiniz, {name}} other {HatchGrab’e hoş geldiniz}}",
+    "intro": "{hasTruck, select, yes {Food truck’ınızı ({truck}) HatchGrab’de ağırlamaktan gerçekten mutluyum.} other {Food truck’ınızı HatchGrab’de ağırlamaktan gerçekten mutluyum.}}",
+    "trial": "{months, plural, one {Bir aylık ücretsiz denemeniz başladı — tüm özellikler açık.} other {# aylık ücretsiz denemeniz başladı — tüm özellikler açık.}}",
+    "setup": "Henüz yapmadıysanız kurulum kolaydır ve yaklaşık on beş dakika sürer.",
+    "button": "Panelinizi açın",
+    "bookmark": "Yer imlerine eklemeye değer. Her cihazda çalışır.",
+    "stuck": "Takılırsanız bu e-postayı yanıtlamanız yeterli — bunları kendim yanıtlıyorum.",
+    "lookingForward": "{hasTruck, select, yes {Food truck’ınızı ({truck}) satış yaparken görmeyi dört gözle bekliyorum.} other {Food truck’ınızı satış yaparken görmeyi dört gözle bekliyorum.}}"
+  }
+}

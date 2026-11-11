@@ -1,0 +1,23 @@
+{
+  "explainerLead": "Servis boyunca panelinizi veya mutfak ekranınızı açık ve çevrimiçi tutmalısınız.",
+  "explainerBody": "Ekran kapanırsa, cihazın interneti giderse veya başka bir web sitesine geçerseniz çevrimdışı koruma devreye girer ve seçiminize göre ya siparişleri duraklatır ya da otomatik kabulü kapatır.",
+  "reminder": "⚠️ Servis boyunca panelinizi veya mutfak ekranınızı açık ve çevrimiçi tutun; aksi hâlde çevrimdışı koruma devreye girebilir.",
+  "enableConfirm": "Çevrimdışı koruma açıldı.\n\nSiparişlerin aksamadan gelmesi için ekranınız açık kalmalı. Bu cihazın bağlantısı koparsa çevrimdışı koruma seçtiğiniz modda devreye girer.\n\nBu cihazda Ekran Açık ayarının etkin olduğundan emin olun.",
+  "disableConfirm": "Bu etkinlik için çevrimdışı koruma kapatılsın mı?\n\nBu cihazın bağlantısı koparsa online siparişler gelmeye devam eder — müşteriler göremediğiniz siparişler verebilir. Yalnızca bağlantınız güvenilirse kapatın.",
+  "cardDescription": "Cihazınız çevrimdışı olduğunda gelen siparişlere ne olacağını belirler.",
+  "purpose": "Cihazınızın bağlantısı koparsa, siz göremezken sipariş gelmesini engeller.",
+  "switchLabel": "Çevrimdışı sipariş koruması",
+  "switchHelp": "Bu aracın bağlantısı koptuğunda ne olacağı.",
+  "modes": {
+    "pause": {
+      "label": "Online siparişleri duraklat",
+      "help": "Siz yeniden çevrimiçi olana kadar müşteriler sipariş veremez."
+    },
+    "no_auto_accept": {
+      "label": "Sipariş almaya devam et, kendim onaylayayım",
+      "help": "Otomatik kabul kapatılır; müşteriler yine sipariş verebilir ama hiçbir sipariş otomatik onaylanmaz. Yeniden çevrimiçi olduğunuzda her birini siz onaylarsınız — seçtiğiniz süreden sonra hâlâ bekleyen siparişler otomatik reddedilir ve müşteriye e-postayla bilgi verilir."
+    }
+  },
+  "autoRejectLabel": "Şu süreden uzun bekleyen siparişleri reddet:",
+  "autoRejectOption": "{n, plural, one {{count} dk} other {{count} dk}}"
+}

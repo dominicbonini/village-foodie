@@ -1,0 +1,82 @@
+{
+  "jsonLd": {
+    "subCategory": "餐車與外燴線上點餐系統",
+    "description": "專為{country}餐車與外燴打造的點餐、預約點餐及廚房顯示系統（KDS）。",
+    "audience": "餐車與外燴業者"
+  },
+  "hero": {
+    "title": "專為<lean>餐車</lean>打造的點餐系統。",
+    "subSmall": "上傳你的菜單，不用註冊。<br></br>60 秒內就能看到可實際操作的示範。",
+    "cta": "上傳我的菜單 →",
+    "ctaNote": "<lead>上傳菜單照片，60 秒內就能看到實際運作。</lead><small>不用註冊，不用信用卡。</small>"
+  },
+  "shots": {
+    "kitchenAlt": "HatchGrab 的廚房顯示系統（KDS）畫面，依製作順序顯示訂單",
+    "dashboardAlt": "在 HatchGrab 上接單：左邊是菜單，右邊是即時更新的購物車與總金額",
+    "phoneAlt": "在 HatchGrab 上向餐車點餐：附照片與價格的菜單，以及即時更新的購物車總額"
+  },
+  "trust": {
+    "freeMonth": "{months, plural, one {第一個月完全免費，所有功能全開} other {前 # 個月完全免費，所有功能全開}}",
+    "noCard": "不需信用卡",
+    "cancel": "隨時可取消，不綁約"
+  },
+  "does": {
+    "eyebrow": "功能介紹",
+    "title": "專為餐車設計，不是為餐廳。",
+    "lede": "大多數點餐系統都假設你有固定地址、穩定的 Wi-Fi，而且每週營業時間都一樣。但你每週換地方擺攤、時間不固定，手機訊號時有時無，甚至完全沒有。HatchGrab 就是為此而生。",
+    "slotsTitle": "顧客自選取餐時間",
+    "capacityTitle": "設定你的廚房出餐量",
+    "capacityBody": "設定你一次能做多少份、需要多久時間。某個取餐時間額滿後，顧客就無法再選。",
+    "devicesTitle": "任何裝置都能用",
+    "devicesBody": "圍裙口袋裡的手機、櫃台上的平板、車上的筆電都能用——還能搭配你現有的刷卡機收款。",
+    "postsTitle": "自動產生 Facebook 與 Instagram 貼文",
+    "postsBody": "上傳你平常在 Facebook 或 Instagram 發布的圖片設計，我們會自動填入日期、地點和時間，每週或每天都能直接分享。",
+    "whatsappTitle": "WhatsApp 自動回覆",
+    "whatsappBody": "「今晚在哪裡擺攤？」「有什麼甜點？」不管你正開車前往擺攤地點，還是在烤台前忙，WhatsApp 都會依照你的菜單和行程自動回覆。Messenger 與 Instagram 即將推出。",
+    "whatsappSoonTitle": "WhatsApp 自動回覆 <soon>即將推出</soon>",
+    "whatsappSoonBody": "「今晚在哪裡擺攤？」「有什麼甜點？」很快地，即使你正開車前往擺攤地點或在烤台前忙，WhatsApp 也能自動回覆。Messenger 與 Instagram 隨後推出。",
+    "offlineTitle": "沒有訊號？照樣出餐。",
+    "offlineBody": "一旦失去訊號，線上點餐會自動暫停，顧客就不會下你看不到的訂單。用 iPhone、iPad 和 Android App 繼續接單。",
+    "slotsBody": "顧客線上預約點餐並選擇取餐時間。排隊人潮變少，顧客一到餐點就準備好了。"
+  },
+  "steps": {
+    "eyebrow": "開始使用",
+    "title": "大約 15 分鐘完成設定，開始接單。",
+    "lede": "只要處理三件事——其中兩件只需要拍張照片。",
+    "menuTitle": "建立你的菜單",
+    "menuBody": "拍下你的菜單看板，或直接貼上文字。品項、價格和加料都會自動帶入，你只要確認是否正確。",
+    "scheduleTitle": "新增你的行程",
+    "scheduleBody": "行程已經放在網站上？我們會從網站讀取，並自動保持更新。沒有的話，也拍張照片就好。你只要核准系統找到的內容。",
+    "shareTitle": "分享你的連結",
+    "shareBody": "發布到 Facebook，把 QR code 貼在餐車上。訂單會依照你需要製作的順序出現在螢幕上。"
+  },
+  "testimonial": {
+    "quote": "HatchGrab 讓點餐變得輕鬆太多了。一切井然有序，我們能追蹤庫存，清楚知道還剩幾個披薩可以賣——而且取餐時段對熱鬧的小鎮來說超好用。",
+    "award": "年度最佳行動披薩車",
+    "awardScope": "地區冠軍",
+    "business": "Pizzeria Gusto",
+    "byline": "Nadia & Bogdan — 店主"
+  },
+  "pricing": {
+    "eyebrow": "價格方案",
+    "title": "免費開始，需要時再升級。",
+    "switchHead": "正從其他平台轉換過來？",
+    "switchBody": "看看同樣的訂單量在 HatchGrab 要付多少，大約只要一分鐘。",
+    "switchCta": "比較你目前的費用"
+  },
+  "faq": {
+    "title": "常見問題",
+    "metaTitle": "常見問題 | HatchGrab",
+    "metaDescription": "為餐車業者清楚解答 HatchGrab 的費用、設定、線上接單與付款等常見問題。"
+  },
+  "final": {
+    "truckLabel": "餐車",
+    "title": "想看看設定有多簡單嗎？",
+    "lede": "上傳菜單的照片或截圖，我們會在 60 秒內把它變成可實際操作的點餐頁面，讓你試玩看看。你的品項、你的價格。不用註冊、不用信用卡、不用安裝任何東西。先看看，再決定。",
+    "cta": "立即上傳我的菜單 →"
+  },
+  "meta": {
+    "title": "餐車點餐系統：線上預約點餐與自取 — HatchGrab {country}",
+    "description": "在擺攤地點接單、接受預約點餐，顧客免排隊。專為{country}餐車與外燴打造的線上點餐及廚房顯示系統（KDS），不是 POS 系統。"
+  }
+}

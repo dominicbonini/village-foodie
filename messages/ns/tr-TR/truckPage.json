@@ -1,0 +1,47 @@
+{
+  "meta": {
+    "fallbackTitle": "Food truck | Village Foodie",
+    "hgFallbackTitle": "Food truck",
+    "orderTitle": "{truck} — Sipariş ver",
+    "orderDescription": "{truck} için önceden sipariş verin, siparişinizi food truck’tan teslim alın.",
+    "title": "{truck} | Village Foodie",
+    "logoAlt": "{truck} logosu"
+  },
+  "shareTitle": "{truck} — Program",
+  "shareText": "Sıradaki durak neresi? {truck} programına göz atın! 🚚",
+  "linkCopied": "Profil bağlantısı panoya kopyalandı! 📋",
+  "facebookPage": "Facebook sayfası",
+  "loadingMap": "Harita yükleniyor…",
+  "view": {
+    "list": "Liste",
+    "map": "Harita"
+  },
+  "ownThisTruck": "Bu food truck sizin mi?",
+  "ownThisTruckTitle": "Bu food truck sizin mi? Profilinizi güncellemek için tıklayın",
+  "actions": {
+    "menu": "Menü",
+    "call": "Ara",
+    "message": "Mesaj",
+    "share": "Paylaş",
+    "order": "Sipariş ver"
+  },
+  "loadingSchedule": "Program yükleniyor…",
+  "loadError": {
+    "title": "Yüklenemedi",
+    "body": "Program şu anda yüklenemedi — bu genellikle kısa süreli bir aksaklıktır. Lütfen tekrar deneyin.",
+    "retry": "Tekrar dene"
+  },
+  "notFound": {
+    "title": "Food truck bulunamadı",
+    "body": "Bu food truck için hiçbir bilgi bulamadık. Taşınmış ya da profilini güncellemiş olabilir.",
+    "cta": "Tüm food truck’ları görün"
+  },
+  "noEvents": {
+    "title": "Yaklaşan etkinlik bulunamadı",
+    "body": "Bu food truck’ın bazı bilgileri bizde eksik olabilir. Sahibi siz misiniz ya da programını biliyor musunuz?",
+    "cta": "Güncellemek için bize mesaj atın!"
+  },
+  "whereToFind": "Bizi nerede bulabilirsiniz",
+  "missingEvent": "<strong>Eksik bir etkinlik mi var?</strong> <br></br>Bu food truck’ın sahibiyseniz ya da sadık bir hayranıysanız, bu sayfayı doğru tutmamıza yardım edin! <br></br><link>Eksik bilgileri eklemek için bize ulaşın.</link>",
+  "weeklySchedule": "Haftalık programı alın 🍕"
+}

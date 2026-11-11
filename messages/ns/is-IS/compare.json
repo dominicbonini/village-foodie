@@ -1,0 +1,127 @@
+{
+  "eyebrow": "Kostnaðarsamanburður",
+  "title": "Berðu saman kostnaðinn<br></br><accent>við netpantanir</accent>",
+  "system": {
+    "title": "Tekur þú við netpöntunum núna?",
+    "yes": "Já, með öðru kerfi",
+    "no": "Nei, ekki enn"
+  },
+  "trucks": {
+    "title": "Hvað rekur þú marga matarvagna?",
+    "aria": "Fjöldi matarvagna"
+  },
+  "plan": {
+    "yourChoice": "Þitt val",
+    "weSuggest": "Við mælum með",
+    "summary": "{price} á vagn á mánuði og netpantanir fyrir allt að {allowance} innifaldar{fleet, plural, one {} other { á hvern vagn}}.",
+    "switchTo": "Nota {plan} í staðinn",
+    "summaryFeeOnly": "{hasMonthly, select, yes {{price} á vagn á mánuði, auk {pct} af netpöntunum greiddum með korti.} other {Ekkert mánaðargjald — aðeins {pct} af netpöntunum greiddum með korti.}}",
+    "summaryNoFee": "{price} á vagn á mánuði, ótakmarkaðar netpantanir og ekkert gjald til HatchGrab."
+  },
+  "orders": {
+    "titleYes": "Netpantanir á mánuði, á hvern vagn",
+    "count": "~{count, plural, one {# pöntun} other {# pantanir}}",
+    "captionNo": "Gróf ágiskun dugar — forpantanir og fólk sem sleppir röðinni, ekki reiðufé eða kort við vagninn.",
+    "captionYes": "Aðeins pantanir sem berast í gegnum pöntunarsíðuna þína — ekki reiðufé eða kort við vagninn.",
+    "sliderAria": "Verðmæti netpantana á mánuði á hvern vagn",
+    "overAllowance": "Netpantanir fyrir allt að {allowance} eru innifaldar á hvern vagn. Af {excess} umfram það eru tekin {pct} — <b>{over}</b> á mánuði á hvern vagn.",
+    "insideAllowance": "Innan innifalinna netpantana ({allowance}) — ekkert bætist ofan á áskriftarleiðina.",
+    "acrossFleet": "Fyrir {fleet, plural, one {# vagn} other {# vagna}}: <b>{amount}</b> á mánuði.",
+    "titleNo": "Hvað heldurðu að þú myndir selja mikið á netinu á mánuði, á hvern vagn?",
+    "feeOnly": "{pct} af hverri netpöntun greiddri með korti — <b>{over}</b> á mánuði á hvern vagn.",
+    "noFee": "Ótakmarkaðar netpantanir innifaldar — ekkert bætist ofan á áskriftarleiðina."
+  },
+  "fee": {
+    "title": "Hvað greiðir þú núna fyrir hverja pöntun?",
+    "pctLabel": "Hlutfall",
+    "pctPlaceholder": "Þitt hlutfall",
+    "pctAria": "Hlutfallsgjald",
+    "fixedLabel": "Auk þess á pöntun",
+    "fixedPlaceholder": "Þitt gjald",
+    "fixedAria": "Föst upphæð á pöntun",
+    "modeLabel": "Gjaldið þeirra:",
+    "modeInclusive": "inniheldur kortafærslugjald",
+    "modeOnTop": "bætist ofan á",
+    "onTopNote": "Kortafærslugjald, {fee}, bætist ofan á það, svo þú greiðir í raun <b>{pct} + {fixed}</b> samtals.",
+    "inclusiveNote": "Kortafærslugjaldið, {fee}, er innifalið í því og þú myndir greiða það hvar sem er. Eigið gjald þeirra er <b>{pct}</b>."
+  },
+  "days": {
+    "title": "Hvað selur þú marga daga í viku?",
+    "help": "Viðburðir, markaðir, sölupláss — hver sá dagur sem vagninn er úti."
+  },
+  "jump": {
+    "cost": "Sjáðu hvað það kostar ↓",
+    "saving": "Sjáðu sparnaðinn ↓"
+  },
+  "noSystem": {
+    "hero": "<lead>Netpantanir, forpantanir og eldhússkjár fyrir</lead><figure>{amount}</figure><unit>á hvern söludag</unit>",
+    "basedOn": "Miðað við {days, plural, one {# dag} other {# daga}} í viku · {monthly} á mánuði{fleet, plural, one {} other { á hvern vagn}}"
+  },
+  "coffee": "Minna en einn kaffibolli.",
+  "freeMonths": "{n, plural, one {Og fyrsti mánuðurinn er í boði okkar.} other {Og fyrstu # mánuðirnir eru í boði okkar.}}",
+  "cta": {
+    "upload": "Hlaða upp matseðlinum →",
+    "uploadSave": "Hlaða upp matseðlinum og spara {amount} →",
+    "ask": "Spyrðu okkur",
+    "noCard": "Ekkert kort þarf við uppsetningu"
+  },
+  "breakdown": {
+    "title": "Mánuðurinn þinn, sundurliðaður",
+    "titleDearer": "Mánuðurinn þinn með HatchGrab",
+    "plan": "Áskriftarleiðin {plan}",
+    "over": "{pct} af {excess} umfram það sem er innifalið ({allowance})",
+    "inside": "Netpantanir innan þess sem er innifalið ({allowance})",
+    "total": "HatchGrab á mánuði",
+    "freeMonths": "{n, plural, one {Mánuður 1} other {Mánuðir 1–#}}",
+    "freeAmount": "{amount} — í boði okkar",
+    "acrossFleet": "Fyrir {fleet, plural, one {# vagn} other {# vagna}}",
+    "perMonth": "{amount} á mánuði",
+    "card": "Kortafærslugjald — {fee} á pöntun hjá Stripe, greitt til Stripe. Þú myndir greiða svipað með posa við vagninn.",
+    "provider": "Eigið gjald núverandi þjónustuaðila ({pct})",
+    "feeOnly": "{pct} af {excess} í netpöntunum",
+    "noFee": "Netpantanir — ótakmarkaðar, ekkert gjald til HatchGrab"
+  },
+  "enterRate": "Sláðu inn hvað þú greiðir núna til að sjá sparnaðinn.",
+  "panel": {
+    "nowYear": "<label>Núna greiðir þú</label><fig>{amount}<q> á ári</q></fig>",
+    "nowMonth": "<label>Núna greiðir þú</label><fig>{amount}<q> á mánuði</q></fig>",
+    "oursYear": "<label>Með HatchGrab</label><fig>{amount}<q> fyrsta árið</q></fig>",
+    "oursMonth": "<label>Með HatchGrab</label><fig>{amount}<q> á mánuði</q></fig>",
+    "acrossFleet": "fyrir {fleet, plural, one {# vagn} other {# vagna}}"
+  },
+  "hero": {
+    "save": "<verb>Þú sparar</verb><figure>{amount}</figure><sub><num>{pct}</num> minna fyrsta árið</sub>",
+    "same": "<verb>Nokkurn veginn það sama</verb><figure>{amount}</figure><sub><num>{pct}</num> meira fyrsta árið</sub>",
+    "dearer": "<lead>Allt sem HatchGrab gerir, fyrir</lead><figure>{amount}</figure><unit>meira á viku</unit>",
+    "dearerSub": "{fleet, plural, one {{amount} meira á mánuði en núna} other {{amount} meira á vagn á mánuði en núna}}"
+  },
+  "anchor": {
+    "liability": "Það er ábyrgðartrygging í heilt ár.",
+    "weekendPitch": "Það er sölupláss á matarhátíð yfir heila helgi.",
+    "festivalPitches": "Það eru nokkur sölupláss á hátíðum.",
+    "fryer": "Það er nýr djúpsteikingarpottur og steikarplata.",
+    "counter": "Það er ný afgreiðsluaðstaða í vagninn frá grunni.",
+    "vanDeposit": "Það er útborgun í annan vagn.",
+    "secondVan": "Það er annar vagn á götuna."
+  },
+  "year": {
+    "one": "Fyrsta árið",
+    "two": "Annað árið",
+    "save": "Sparnaður {amount}<note>({pct} minna)</note>",
+    "extra": "Aukalega {amount}<note>({pct} meira)</note>",
+    "current": "Núverandi þjónustuaðili <b>{amount}</b>",
+    "ours": "HatchGrab <b>{amount}</b>"
+  },
+  "smallPrint": {
+    "no": "Áætlanir byggðar á tölunum sem þú slærð inn, miðað við meðalpöntun upp á {aov}. Kortafærslugjöld eiga við hvaða þjónustuaðila sem þú notar. Kannaðu málið áður en þú ákveður þig.",
+    "yes": "Áætlanir byggðar á tölunum sem þú slærð inn, miðað við meðalpöntun upp á {aov}. Kortafærslugjald, {fee} á pöntun, á við hvaða þjónustuaðila sem þú notar og er því undanskilið báðum megin.",
+    "onTop": "Heildartalan í spurningu {n} inniheldur það — samanburðurinn gerir það ekki, hvorugum megin.",
+    "check": "Kannaðu gjöld núverandi þjónustuaðila áður en þú ákveður þig."
+  },
+  "intro": "Tekur um eina mínútu. Notar þú nú þegar kerfi? Við berum það saman. Ekki enn? Við sýnum þér nákvæmlega hvað það kostar.",
+  "twoYear": "Á tveimur árum sparar þú <b>{amount}</b>.",
+  "meta": {
+    "title": "Kostnaðarreiknivél — HatchGrab {country}",
+    "description": "Berðu saman hvað netpantanir kosta þig núna, með þóknun og gjöldum, og hvað eitt ár með HatchGrab myndi kosta — áætlun á einni mínútu."
+  }
+}

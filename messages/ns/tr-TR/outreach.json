@@ -1,0 +1,11 @@
+{
+  "optOut": {
+    "missing": "Bu e-postada abonelikten çıkma satırı yok, bu yüzden gönderilemez. Eklemek için “Insert opt-out” düğmesini kullanın.",
+    "notSetUp": "Abonelikten çıkma cümlesi ayarlanmamış, bu yüzden hiçbir tanıtım e-postası gönderilemez. “Templates” sekmesindeki “Signature” panelinden bir tane ekleyin.",
+    "notLoaded": "Abonelikten çıkma cümlesi henüz yüklenmedi, bu yüzden bu gönderilemez.",
+    "unreadable": "Abonelikten çıkma cümlesi okunamadı, bu yüzden hiçbir şey gönderilmedi."
+  },
+  "retry": {
+    "notRebuilt": "Bu mesaj şirket satırıyla yeniden oluşturulamadı, bu yüzden hiçbir şey gönderilmedi."
+  }
+}

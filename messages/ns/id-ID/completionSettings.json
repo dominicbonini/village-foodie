@@ -1,0 +1,9 @@
+{
+  "paidStepTitle": "Terima pesanan tanpa pembayaran",
+  "completionTitle": "Menyelesaikan pesanan yang belum dibayar",
+  "completionHelp": "Apa yang terjadi saat pesanan yang belum dibayar siap diserahkan.",
+  "pressesOne": "Satu tekan (“Tandai lunas & diambil”)",
+  "pressesOneHelp": "Cocok jika Anda menerima uang sambil menyerahkan makanan. Anda mendapat satu tombol, “Tandai lunas & diambil”, yang mencatat pembayaran sekaligus menyelesaikan pesanan.",
+  "pressesTwo": "Dua tekan (“Tandai lunas” & “Sudah diambil”)",
+  "pressesTwoHelp": "Cocok jika pembayaran dan penyerahan terjadi di waktu berbeda — pembeli membayar di truk, lalu mengambil saat pesanan siap. Anda mendapat dua tombol: “Tandai lunas” lebih dulu, lalu “Sudah diambil” saat makanan diambil."
+}

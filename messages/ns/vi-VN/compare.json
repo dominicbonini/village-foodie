@@ -1,0 +1,127 @@
+{
+  "eyebrow": "So sánh chi phí",
+  "title": "So sánh chi phí<br></br><accent>đặt món online</accent> của bạn",
+  "system": {
+    "title": "Hiện bạn có nhận đơn online không?",
+    "yes": "Có, bằng một hệ thống khác",
+    "no": "Chưa"
+  },
+  "trucks": {
+    "title": "Bạn có bao nhiêu xe?",
+    "aria": "Số xe"
+  },
+  "plan": {
+    "yourChoice": "Bạn chọn",
+    "weSuggest": "Đề xuất",
+    "summary": "{price} mỗi xe mỗi tháng, đã gồm {allowance} đơn online{fleet, plural, one {} other { cho mỗi xe}}.",
+    "switchTo": "Dùng {plan}",
+    "summaryFeeOnly": "{hasMonthly, select, yes {{price} mỗi xe mỗi tháng, cộng {pct} trên đơn online thanh toán bằng thẻ.} other {Không phí hằng tháng — chỉ {pct} trên đơn online thanh toán bằng thẻ.}}",
+    "summaryNoFee": "{price} mỗi xe mỗi tháng, không giới hạn đơn online và không mất phí HatchGrab."
+  },
+  "orders": {
+    "titleYes": "Đơn online mỗi tháng, mỗi xe",
+    "count": "~{count, plural, one {# đơn} other {# đơn}}",
+    "captionNo": "Ước lượng sơ bộ là được — đơn đặt trước và khách không muốn xếp hàng, không tính tiền mặt hay quẹt thẻ tại xe.",
+    "captionYes": "Chỉ tính đơn đặt qua trang đặt món của bạn — không tính tiền mặt hay quẹt thẻ tại xe.",
+    "sliderAria": "Giá trị đơn online mỗi tháng, mỗi xe",
+    "overAllowance": "Mỗi xe đã gồm {allowance} đơn online. Phần vượt {excess} tính phí {pct} — <b>{over}</b> mỗi tháng cho mỗi xe.",
+    "insideAllowance": "Nằm trong mức {allowance} đơn online đã gồm — không phải trả thêm ngoài gói.",
+    "acrossFleet": "Cho {fleet, plural, one {# xe} other {# xe}}: <b>{amount}</b> mỗi tháng.",
+    "titleNo": "Bạn nghĩ mỗi xe sẽ bán online được bao nhiêu mỗi tháng?",
+    "feeOnly": "{pct} trên mỗi đơn online thanh toán bằng thẻ — <b>{over}</b> mỗi tháng cho mỗi xe.",
+    "noFee": "Không giới hạn đơn online — không phải trả thêm ngoài gói."
+  },
+  "fee": {
+    "title": "Hiện bạn trả bao nhiêu cho mỗi đơn?",
+    "pctLabel": "Tỷ lệ phần trăm",
+    "pctPlaceholder": "Mức phí của bạn",
+    "pctAria": "Phí theo phần trăm",
+    "fixedLabel": "Cộng thêm mỗi đơn",
+    "fixedPlaceholder": "Phí của bạn",
+    "fixedAria": "Phí cố định mỗi đơn",
+    "modeLabel": "Mức phí của họ:",
+    "modeInclusive": "đã gồm phí xử lý thẻ",
+    "modeOnTop": "tính thêm phí xử lý thẻ",
+    "onTopNote": "Phí xử lý thẻ {fee} được tính thêm, nên thực tế bạn trả tổng cộng <b>{pct} + {fixed}</b>.",
+    "inclusiveNote": "Phí xử lý thẻ {fee} đã nằm trong đó, và dùng ở đâu bạn cũng phải trả khoản này. Phí riêng của họ là <b>{pct}</b>."
+  },
+  "days": {
+    "title": "Mỗi tuần bạn bán mấy ngày?",
+    "help": "Sự kiện, chợ, điểm bán — bất kỳ ngày nào xe ra đường."
+  },
+  "jump": {
+    "cost": "Xem chi phí ↓",
+    "saving": "Xem khoản tiết kiệm ↓"
+  },
+  "noSystem": {
+    "hero": "<lead>Đặt món online, đặt trước và màn hình bếp chỉ với</lead><figure>{amount}</figure><unit>mỗi ngày bán</unit>",
+    "basedOn": "Tính theo {days, plural, one {# ngày} other {# ngày}} mỗi tuần · {monthly} mỗi tháng{fleet, plural, one {} other { cho mỗi xe}}"
+  },
+  "coffee": "Chưa bằng một ly cà phê.",
+  "freeMonths": "{n, plural, one {Và tháng đầu tiên bạn được miễn phí.} other {Và # tháng đầu tiên bạn được miễn phí.}}",
+  "cta": {
+    "upload": "Tải thực đơn lên →",
+    "uploadSave": "Tải thực đơn lên và tiết kiệm {amount} →",
+    "ask": "Đặt câu hỏi cho chúng tôi",
+    "noCard": "Thiết lập không cần thẻ"
+  },
+  "breakdown": {
+    "title": "Chi tiết chi phí một tháng",
+    "titleDearer": "Một tháng dùng HatchGrab",
+    "plan": "Gói {plan}",
+    "over": "{pct} trên phần vượt {excess} so với mức {allowance} đã gồm",
+    "inside": "Đơn online trong mức {allowance} đã gồm",
+    "total": "HatchGrab mỗi tháng",
+    "freeMonths": "{n, plural, one {Tháng 1} other {Tháng 1–#}}",
+    "freeAmount": "{amount} — miễn phí",
+    "acrossFleet": "Cho {fleet, plural, one {# xe} other {# xe}}",
+    "perMonth": "{amount} mỗi tháng",
+    "card": "Phí xử lý thẻ — phí của Stripe {fee} mỗi đơn, trả cho Stripe. Quẹt thẻ bằng máy POS tại xe bạn cũng trả gần như vậy.",
+    "provider": "Phí riêng của nhà cung cấp hiện tại ({pct})",
+    "feeOnly": "{pct} trên {excess} giá trị đơn online",
+    "noFee": "Đơn online — không giới hạn, không mất phí HatchGrab"
+  },
+  "enterRate": "Nhập mức phí bạn đang trả để xem bạn tiết kiệm được bao nhiêu.",
+  "panel": {
+    "nowYear": "<label>Hiện bạn trả</label><fig>{amount}<q> mỗi năm</q></fig>",
+    "nowMonth": "<label>Hiện bạn trả</label><fig>{amount}<q> mỗi tháng</q></fig>",
+    "oursYear": "<label>Với HatchGrab</label><fig>{amount}<q> trong năm đầu</q></fig>",
+    "oursMonth": "<label>Với HatchGrab</label><fig>{amount}<q> mỗi tháng</q></fig>",
+    "acrossFleet": "cho {fleet, plural, one {# xe} other {# xe}}"
+  },
+  "hero": {
+    "save": "<verb>Bạn tiết kiệm</verb><figure>{amount}</figure><sub>ít hơn <num>{pct}</num> trong năm đầu</sub>",
+    "same": "<verb>Gần như ngang nhau</verb><figure>{amount}</figure><sub>nhiều hơn <num>{pct}</num> trong năm đầu</sub>",
+    "dearer": "<lead>Mọi tính năng của HatchGrab, chỉ thêm</lead><figure>{amount}</figure><unit>mỗi tuần</unit>",
+    "dearerSub": "{fleet, plural, one {nhiều hơn hiện tại {amount} mỗi tháng} other {mỗi xe nhiều hơn hiện tại {amount} mỗi tháng}}"
+  },
+  "anchor": {
+    "liability": "Bằng tiền bảo hiểm trách nhiệm công cộng cả năm.",
+    "weekendPitch": "Bằng tiền thuê một điểm bán cuối tuần ở lễ hội ẩm thực.",
+    "festivalPitches": "Bằng tiền thuê vài điểm bán ở lễ hội.",
+    "fryer": "Bằng một nồi chiên và bếp nướng mới.",
+    "counter": "Bằng tiền làm mới toàn bộ quầy phục vụ.",
+    "vanDeposit": "Bằng tiền đặt cọc chiếc xe thứ hai.",
+    "secondVan": "Bằng cả chiếc xe thứ hai lăn bánh."
+  },
+  "year": {
+    "one": "Năm thứ nhất",
+    "two": "Năm thứ hai",
+    "save": "Tiết kiệm {amount}<note>(ít hơn {pct})</note>",
+    "extra": "Thêm {amount}<note>(nhiều hơn {pct})</note>",
+    "current": "Nhà cung cấp hiện tại <b>{amount}</b>",
+    "ours": "HatchGrab <b>{amount}</b>"
+  },
+  "smallPrint": {
+    "no": "Ước tính dựa trên số liệu bạn nhập, với giá trị đơn trung bình {aov}. Dùng nhà cung cấp nào cũng mất phí xử lý thẻ. Hãy kiểm tra trước khi quyết định.",
+    "yes": "Ước tính dựa trên số liệu bạn nhập, với giá trị đơn trung bình {aov}. Dùng nhà cung cấp nào cũng mất phí xử lý thẻ {fee} mỗi đơn, nên khoản này không được tính ở cả hai bên.",
+    "onTop": "Con số tổng ở câu hỏi {n} có gồm khoản này — phần so sánh thì không, ở cả hai bên.",
+    "check": "Hãy kiểm tra mức phí của nhà cung cấp hiện tại trước khi quyết định."
+  },
+  "intro": "Chỉ mất khoảng một phút. Đang dùng một hệ thống? Chúng tôi sẽ so sánh giúp bạn. Chưa dùng? Chúng tôi sẽ cho bạn biết chính xác chi phí.",
+  "twoYear": "Sau hai năm, bạn tiết kiệm được <b>{amount}</b>.",
+  "meta": {
+    "title": "Tính chi phí đặt món online — HatchGrab {country}",
+    "description": "So sánh chi phí đơn online bạn đang trả, gồm chiết khấu của app giao đồ ăn, với một năm dùng HatchGrab — có ước tính chỉ trong một phút."
+  }
+}

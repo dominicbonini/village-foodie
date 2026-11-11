@@ -1,0 +1,102 @@
+{
+  "status": {
+    "cancelled": "İptal edildi",
+    "finished": "Bitti",
+    "unconfirmed": "Teyit edilmedi",
+    "confirmed": "Teyit edildi",
+    "open": "Şu an açık",
+    "closed": "Kapalı"
+  },
+  "sections": {
+    "label": "Program bölümleri",
+    "events": "Etkinlikler",
+    "eventTypes": "Etkinlik türleri"
+  },
+  "header": {
+    "title": "Program",
+    "upcoming": "Yaklaşan: {count}",
+    "import": "✨ Programı içe aktar",
+    "importHint": "fotoğraf, PDF veya metin",
+    "addEvent": "+ Etkinlik ekle",
+    "scraperAuto": "Etkinlikler web sitenizden otomatik olarak bulunuyor",
+    "changeInSettings": "Ayarlar’dan değiştirin",
+    "scraperManual": "Programınızı elle yönetiyorsunuz"
+  },
+  "empty": {
+    "title": "Yaklaşan etkinlik yok",
+    "body": "Sosyal medyanızdan ve rezervasyon takviminizden alınan etkinlikler, teyit etmeniz için burada görünecek"
+  },
+  "list": {
+    "openNow": "Şu an açık",
+    "needsApproval": "Onayınızı bekliyor",
+    "needsConfirmation": "Teyit bekliyor",
+    "confirmed": "Teyit edildi",
+    "past": "Geçmiş etkinlikler ({count})",
+    "found": "Sizin için {count, plural, one {# etkinlik bulduk — yayına girmeden önce inceleyip onaylayın.} other {# etkinlik bulduk — yayına girmeden önce inceleyip onaylayın.}}"
+  },
+  "card": {
+    "addName": "Ad ekleyin",
+    "timeNeeded": "⚠ Saat gerekli",
+    "setTimeFirst": "Önce saat belirleyin",
+    "confirm": "Teyit et",
+    "copy": "Kopyala",
+    "edit": "Düzenle",
+    "makePost": "Gönderi oluştur",
+    "cancel": "İptal et",
+    "approve": "Onayla",
+    "reject": "Reddet",
+    "stock": "⚠️ Stok",
+    "stockHidden": "Gizli — {reason}",
+    "noDeals": "Etkin kampanya yok",
+    "dealsActive": "{count, plural, one {# kampanya} other {# kampanya}} etkin · {names}{hidden, plural, =0 {} one { · # gizli} other { · # gizli}}",
+    "approveNeedsTimes": "Bu etkinliğin başlangıç ve bitiş saati olana kadar Onayla kapalı — Düzenle ile ekleyin."
+  },
+  "guessed": {
+    "title": "📍 Bu konumu tahmin ettik",
+    "body": "<b>{venue}</b> ile birden fazla mekân eşleşti, bu yüzden en uygun olanı seçtik{hasTown, select, yes { — şehir: <b>{town}</b>} other {}}{hasPostcode, select, yes { ({postcode})} other {}}. Onaylamadan önce doğru mekân olduğunu kontrol edin — yanlışsa bölgeyi veya {postal} bilgisini düzeltmek için <b>Düzenle</b> düğmesini kullanın, aksi hâlde müşteriler yanlış yere yönlendirilir.",
+    "thisVenue": "bu mekân"
+  },
+  "noLocation": {
+    "title": "📍 Henüz konum yok",
+    "body": "Bu mekânı haritada bulamadık; listede yer alacak ama harita işareti gösterilmeyecek. Haritaya eklemek için <b>Düzenle</b> ile {postal} bilgisini ekleyin."
+  },
+  "conflict": {
+    "title": "⚠️ {count, plural, one {Olası çakışma} other {Olası çakışmalar}} — {pending, select, yes {onaylamadan} other {teyit etmeden}} önce inceleyin",
+    "duplicate": "Bu, zaten sahip olduğunuz etkinliğin aynısı gibi görünüyor.",
+    "review": "Aynı mekân ve tarih, farklı saat — bu, saati düzenlenmiş aynı etkinlik mi, yoksa ayrı bir zaman dilimi mi? Onaylamadan önce inceleyin.",
+    "already": "Programınızda zaten var: <b>{venue}</b>{details} ({status, select, confirmed {teyit edildi} open {açık} other {{status}}})",
+    "unnamedVenue": "Adsız mekân",
+    "ack": "Evet, bunlar farklı etkinlikler — yine de {pending, select, yes {onayla} other {teyit et}}",
+    "cancel": "İptal",
+    "overlap": "Bu etkinliğin saati aynı gündeki başka bir etkinlikle çakışıyor — tek bir araç aynı anda iki yerde olamaz. Onaylamadan önce kontrol edin."
+  },
+  "toast": {
+    "loadFailed": "Etkinlikler yüklenemedi",
+    "linkFailed": "Bağlantı yüklenemedi",
+    "placeTypeFailed": "Etkinlik kaydedildi. {place} konumunun olağan türü kaydedilmedi — {reason}.",
+    "placeTypeFailedReason": "kayıt tamamlanamadı",
+    "eventUpdated": "Etkinlik güncellendi",
+    "eventAdded": "Etkinlik eklendi",
+    "eventsSaved": "{count, plural, one {# etkinlik kaydedildi} other {# etkinlik kaydedildi}}",
+    "saveEventsFailed": "Etkinlikler kaydedilemedi",
+    "needsTime": "Onaylamadan önce başlangıç ve bitiş saati ekleyin — bu etkinliğin yayına girmesi için saat gerekli.",
+    "addStartTime": "Başlangıç saati ekleyin",
+    "addEndTime": "Bitiş saati ekleyin",
+    "chooseTruckBefore": "Onaylamadan önce bu etkinlikte hangi food truck’ın çalışacağını seçin.",
+    "chooseTruck": "Bu etkinlikte hangi food truck’ın çalışacağını seçin",
+    "eventConfirmed": "Etkinlik teyit edildi",
+    "eventRejected": "Etkinlik reddedildi",
+    "undo": "↩ Geri al",
+    "eventRestored": "Etkinlik geri yüklendi",
+    "restoreFailed": "Geri yüklenemedi",
+    "eventCancelled": "Etkinlik iptal edildi",
+    "eventCancelledOrders": "Etkinlik iptal edildi · {count, plural, one {# sipariş} other {# sipariş}} iptal edildi",
+    "placeHidden": "Konum gizlendi",
+    "placeShown": "Konum yeniden gösteriliyor",
+    "saveThatFailed": "Bu kaydedilemedi."
+  },
+  "link": {
+    "label": "Özel bağlantı ve QR kod",
+    "close": "Kapat"
+  }
+}

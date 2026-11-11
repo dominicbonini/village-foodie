@@ -1,0 +1,400 @@
+{
+  "path": {
+    "section": "perbandingan",
+    "slug": "aplikasi-pemesanan-food-truck"
+  },
+  "meta": {
+    "title": "Perbandingan aplikasi pemesanan food truck 2026",
+    "description": "Perbandingan aplikasi pemesanan food truck: pre-order dengan waktu pengambilan, kapasitas dapur, jadwal mingguan, biaya, kontrak — dicek di situs vendor.",
+    "about": "Aplikasi pemesanan online untuk food truck"
+  },
+  "breadcrumb": {
+    "home": "HatchGrab",
+    "here": "Perbandingan",
+    "label": "Jejak navigasi"
+  },
+  "h1": "Perbandingan aplikasi pemesanan food truck 2026",
+  "byline": "Terakhir dicek: {date} · Dibuat oleh HatchGrab. Kami termasuk salah satu vendor yang dibandingkan (lihat <link>Cara kami membandingkan</link>).",
+  "table": {
+    "title": "Aplikasi pemesanan yang dibandingkan",
+    "caption": "Fitur dan biaya aplikasi pemesanan online untuk food truck di {country}, per {date}",
+    "note": "“Ya” hanya jika vendor menyatakannya secara publik.",
+    "feature": "Fitur",
+    "yes": "Ya",
+    "no": "Tidak",
+    "unknown": "Tidak disebutkan",
+    "fromPlan": "Mulai {plan}",
+    "appNotInCountry": "Belum ada di {country}",
+    "appFlagOff": "Ya – masih dinonaktifkan, tampil setelah tersedia di toko aplikasi",
+    "range": "{from} sampai {to}",
+    "feePlan": "{fee} ({plans})",
+    "noFee": "tidak ada",
+    "morePending": "Vendor lain akan muncul di sini setelah kami mengecek detailnya di situs mereka sendiri.",
+    "priceHidden": "Atas permintaan",
+    "feeAfter": "{fee} di atas {included} per bulan",
+    "legend": "✓ Ya · ◐ Sebagian · ✗ Tidak · Tidak tercantum: tidak ada di halaman fitur atau harga mereka · —: situs mereka tidak menjelaskan · Tidak berlaku: jenis layanan itu memang tidak punya fitur tersebut · ⓘ: catatan, kutipan, dan sumber",
+    "swipe": "Geser ke samping untuk melihat semua produk →"
+  },
+  "costs": {
+    "title": "Berapa biaya aplikasi pemesanan food truck?",
+    "ourPlan": "{plan}: {price} per bulan, {fee}",
+    "feeOnly": "{fee} per pesanan online dengan kartu",
+    "feeIncluded": "pesanan online hingga {included} per bulan sudah termasuk, selebihnya {fee}",
+    "feeNone": "tanpa biaya HatchGrab untuk pesanan online",
+    "rivalPlan": "{plan}: {price}",
+    "perMonth": "{price} per bulan",
+    "perMonthYearly": "{price} per bulan, ditagih tahunan",
+    "vatExcl": "di luar PPN",
+    "vatIncl": "termasuk PPN",
+    "setup": "biaya penyiapan sekali bayar {price}",
+    "truckFee": "{fee} per pesanan",
+    "customerFee": "{fee} per pesanan, dibayar pelanggan",
+    "source": "Sumber",
+    "checked": "dicek pada {date}",
+    "cardFee": "Pembayaran kartu online dengan HatchGrab juga dikenakan biaya Stripe: {cardFee} per pembayaran kartu di {country}.",
+    "vat": "HatchGrab Ltd adalah perusahaan Inggris dan tidak terdaftar untuk PPN di {country}, sehingga tidak ada PPN yang ditambahkan pada biaya kami. Jika Anda terdaftar sebagai pengusaha kena pajak (PKP), berikan nomor pajak Anda kepada kami; Anda kemudian menyetor sendiri PPN atas biaya kami sebagai PPN atas pemanfaatan jasa dari luar negeri.",
+    "bundledFee": "{fee} per pembayaran online, sudah termasuk biaya kartu"
+  },
+  "fit": {
+    "title": "Sistem mana yang cocok untuk siapa?",
+    "ours": "HatchGrab cocok untuk Anda jika …",
+    "oursBody": "Anda berjualan di lokasi yang berpindah-pindah, ingin pre-order dengan waktu pengambilan, tidak ingin dapur kewalahan, dan tidak ingin terikat kontrak.",
+    "oursNot": "HatchGrab tidak cocok untuk Anda jika …",
+    "oursNotBody": "pelanggan Anda harus bisa membayar dengan PayPal atau Klarna, atau Anda menginginkan mesin kasir bersertifikat dengan TSE dari satu pemasok.",
+    "appClause": "Atau jika Anda membutuhkan aplikasi dapur di iPad atau Android di {country}: aplikasinya belum tersedia di toko aplikasi di sana.",
+    "tills": "Aplikasi kasir dan mesin EDC",
+    "marketplaces": "Platform pesan antar",
+    "rival": "{name} cocok jika …",
+    "tillsBody": "Aplikasi kasir menerima pembayaran di truk dan memenuhi kewajiban TSE. Aplikasi pemesanan bekerja berdampingan dengan aplikasi kasir, bukan menggantikannya.",
+    "tillsBodyNamed": "Aplikasi kasir menerima pembayaran di truk dan memenuhi kewajiban TSE. {names} {count, plural, one {juga ada} other {juga ada}} di tabel di atas. Aplikasi pemesanan bekerja berdampingan dengan aplikasi kasir, bukan menggantikannya.",
+    "marketplacesBody": "Platform pesan antar mendatangkan pelanggan baru, tetapi memotong komisi dari setiap pesanan. Uber Eats menyebut 14% untuk ambil sendiri dan 30% untuk pengantaran oleh kurir Uber di Jerman. Wolt menyatakan di situsnya sendiri bahwa mereka mengenakan komisi, tetapi tidak menyebutkan tarifnya. Kami tidak dapat mengecek tarif Lieferando. Komisi itu juga berlaku untuk pelanggan tetap yang pre-order ke Anda."
+  },
+  "groups": {
+    "food_truck": "Aplikasi pemesanan food truck",
+    "nearest_local": "Aplikasi pemesanan",
+    "pos": "Aplikasi kasir"
+  },
+  "faq": {
+    "title": "Pertanyaan umum",
+    "whatQ": "Apa itu aplikasi pemesanan food truck?",
+    "whatA": "Aplikasi pemesanan menerima pesanan online sebelum pelanggan sampai di truk: mereka memilih hidangan dan waktu pengambilan, membayar online atau saat mengambil, lalu pesanan muncul di dapur Anda. Aplikasi kasir atau mesin EDC menerima pembayaran di truk. Keduanya saling melengkapi.",
+    "costQ": "Berapa biaya HatchGrab di {country}?",
+    "costA": "{plans}. Pembayaran kartu online juga dikenakan biaya Stripe: {cardFee} per pembayaran kartu.",
+    "termQ": "Apakah ada masa kontrak minimum?",
+    "termA": "Tidak. Tidak ada masa kontrak minimum dan tidak ada masa pemberitahuan. Anda bisa berhenti kapan saja; biaya ditagih bulanan di muka, dan akses Anda tetap aktif sampai akhir bulan yang sudah dibayar.",
+    "locationsQ": "Apakah bisa dipakai di lokasi yang berpindah-pindah?",
+    "locationsA": "Bisa. Anda mengatur jadwal mingguan berisi tempat dan jam, lalu pelanggan memesan untuk tempat dan hari saat Anda ada di sana.",
+    "capacityQ": "Bagaimana sistem ini mencegah dapur saya kewalahan?",
+    "capacityA": "Pelanggan hanya melihat waktu pengambilan yang benar-benar sanggup dikerjakan dapur Anda. Sistem menghitungnya dari waktu persiapan tiap hidangan dan berapa porsi yang Anda siapkan sekaligus.",
+    "tseQ": "Apakah saya tetap butuh mesin kasir dengan TSE?",
+    "tseA": "HatchGrab bukan aplikasi kasir dan tidak punya TSE. Cara mencatat pesanan online di aplikasi kasir Anda sebaiknya ditanyakan ke konsultan pajak Anda.",
+    "paymentsQ": "Metode pembayaran apa saja yang didukung HatchGrab?",
+    "paymentsA": "Pelanggan membayar online dengan kartu, Apple Pay, atau Google Pay, atau membayar di truk. PayPal dan Klarna saat ini belum didukung.",
+    "costTrial": "{months, plural, one {Bulan pertama} other {# bulan pertama}} gratis, dengan semua fitur."
+  },
+  "method": {
+    "title": "Cara kami membandingkan",
+    "checked": "Terakhir dicek pada {date}.",
+    "prices": "Harga ditampilkan sesuai yang dinyatakan vendor, termasuk PPN.",
+    "meaning": "“Ya” berarti vendor menyatakan fitur tersebut secara publik. “Tidak disebutkan” berarti kami tidak menemukan informasinya di situs mereka — bukan berarti fiturnya tidak ada.",
+    "vendor": "HatchGrab mengelola halaman ini dan termasuk salah satu vendor yang dibandingkan.",
+    "review": "Harga dan fitur dicek otomatis di situs masing-masing produk; setiap klaim ditautkan ke sumbernya.",
+    "corrections": "Menemukan kesalahan? Beri tahu kami lewat <link>formulir kontak</link>.",
+    "reportError": "<link>Laporkan kesalahan</link>",
+    "machine": "Untuk asisten AI dan developer: tabel ini <md>dalam format Markdown</md> · <json>dalam format JSON</json>"
+  },
+  "cta": {
+    "title": "Coba gratis {months, plural, one {# bulan} other {# bulan}}",
+    "noCard": "Tanpa kartu kredit",
+    "cancel": "Bisa berhenti tiap bulan",
+    "button": "Coba gratis"
+  },
+  "admin": {
+    "status": "Draf · noindex · tidak ada di sitemap, llms.txt, atau hreflang · link footer hanya untuk admin",
+    "statusLive": "Tayang · publik dan bisa diindeks",
+    "viewAdmin": "Tampilan admin",
+    "viewPublic": "Yang dilihat publik",
+    "pricingCheck": "Buka “Pricing check”",
+    "checklist": "Sebelum tayang",
+    "goLive": "Halaman ini ditayangkan lewat Admin › Countries.",
+    "check": {
+      "apps": "Pengaturan iPad dan Android aktif untuk {country}",
+      "placeholders": "Tidak ada placeholder “[ … ]” yang tersisa di teks",
+      "vat": "Teks tentang PPN sudah ada"
+    },
+    "unverified": "belum diverifikasi · disembunyikan dari publik",
+    "autoVerified": "terverifikasi otomatis",
+    "unchecked": "belum dicek untuk semua pesaing yang ditampilkan · disembunyikan dari publik",
+    "label": "Admin",
+    "notShown": "Tidak tampil di halaman (maksimal empat yang ditampilkan): {names}.",
+    "reasonHidden": "{name} (disembunyikan)",
+    "reasonBeyond": "{name} (di luar empat teratas)",
+    "reasonNoWebsite": "{name} (tanpa situs)",
+    "liveAuto": "Tayang lewat publikasi otomatis",
+    "adminsOnly": "Khusus admin — {reason}",
+    "whyFewer": "Pesaing yang lolos pengecekan otomatis: {n} dari {total}; dibutuhkan 2",
+    "whyAutoOff": "publikasi otomatis nonaktif untuk negara ini",
+    "shown": "{n, plural, one {# pesaing ditampilkan} other {# pesaing ditampilkan}}",
+    "details": "Detail"
+  },
+  "footer": {
+    "heading": "Perbandingan",
+    "link": "Perbandingan aplikasi pemesanan"
+  },
+  "featureGroups": {
+    "ordering": "Pemesanan",
+    "payments": "Pembayaran",
+    "kitchen": "Dapur",
+    "marketing": "Pemasaran",
+    "apps_hardware": "Aplikasi dan perangkat",
+    "price_contract": "Harga dan kontrak"
+  },
+  "cell": {
+    "yes": "Ya",
+    "no": "Tidak",
+    "partial": "Sebagian",
+    "unknown": "Tidak disebutkan",
+    "not_mentioned": "Tidak disebutkan di situs mereka",
+    "withNote": "{word}, {note}",
+    "soon": "segera hadir",
+    "fromPlan": "mulai {plan}",
+    "perCardPayment": "{fee} per pembayaran kartu",
+    "trial": "gratis {months, plural, one {# bulan} other {# bulan}}",
+    "setupFee": "{price} sekali bayar",
+    "perMonth": "{price} per bulan",
+    "notInCountry": "belum ada di {country}",
+    "flagOff": "masih dinonaktifkan; tampil setelah tersedia di toko aplikasi",
+    "notApplicable": "tidak berlaku untuk marketplace",
+    "not_listed": "Tidak tercantum",
+    "details": "Detail",
+    "doesntApply": "Tidak berlaku",
+    "doesntSay": "Tidak dijelaskan",
+    "none": "Tidak ada"
+  },
+  "explained": {
+    "title": "Arti tiap fitur"
+  },
+  "costBlock": {
+    "title": "Biaya bulanan sebuah food truck",
+    "sizes": "Penjualan online per bulan",
+    "sizeSales": "{sales} per bulan",
+    "sizeOrders": "sekitar {orders} pesanan",
+    "lead": "Untuk food truck dengan pesanan online senilai {sales} per bulan (sekitar {orders} pesanan). Setiap batang menunjukkan total biaya bulanan: biaya aplikasi pemesanan itu sendiri ditambah biaya kartu atas pesanan tersebut.",
+    "legendSoftware": "Biaya software",
+    "legendCard": "Biaya kartu",
+    "software": "Biaya software {amount} per bulan",
+    "card": "Biaya kartu {amount} per bulan",
+    "total": "{amount} per bulan termasuk biaya kartu",
+    "share": "{pct} dari penjualan",
+    "assumed": "(tarif tidak dipublikasikan, diasumsikan)",
+    "customerFee": "Ditambah {amount} per bulan yang dibayar pelanggan ({fee} per pesanan) — tidak termasuk dalam batang",
+    "summaryCheapest": "Biaya {us} sendiri {ours} per bulan, dibandingkan {theirs} per bulan untuk pesaing termurah yang ditampilkan. Biaya kartu ({card} per bulan) dikenakan pada setiap pembayaran kartu, sistem apa pun yang Anda pakai, jadi selisih yang penting adalah biaya software.",
+    "summaryNotCheapest": "Biaya {us} sendiri {ours} per bulan, lebih mahal dari {theirs} per bulan untuk {rival}, pesaing termurah yang ditampilkan. Biaya kartu ({card} per bulan) dikenakan pada setiap pembayaran kartu, sistem apa pun yang Anda pakai.",
+    "summaryAlone": "Biaya {us} sendiri {ours} per bulan. Biaya kartu ({card} per bulan) dikenakan pada setiap pembayaran kartu, sistem apa pun yang Anda pakai.",
+    "footOrder": "Rata-rata pesanan {order}: satu porsi makan biasa seharga {meal} × {multiplier} hidangan per pesanan ({source}).",
+    "footCard": "Biaya kartu memakai tarif {rate} per pembayaran kartu: {source}.",
+    "footCardSource": "Tarif Stripe untuk {country}",
+    "footAssumed": "{names} {count, plural, one {tidak} other {tidak}} memublikasikan tarif kartu, jadi tarif kami yang dipakai sebagai asumsi.",
+    "footChecked": "Harga dicek pada {date}.",
+    "footCalculator": "Hitung angka Anda sendiri di kalkulator.",
+    "noRivals": "Belum ada pesaing yang terverifikasi di {country}, jadi belum ada yang bisa dibandingkan."
+  },
+  "features": {
+    "preorder": {
+      "label": "Pre-order dengan pilihan waktu pengambilan",
+      "explain": "Pelanggan memesan lebih dulu dan memilih kapan mereka mengambil."
+    },
+    "capacity": {
+      "label": "Waktu pengambilan dibatasi kapasitas dapur",
+      "explain": "Pelanggan hanya melihat waktu pengambilan yang benar-benar sanggup dikerjakan dapur."
+    },
+    "asap": {
+      "label": "Pesanan secepatnya",
+      "explain": "Pelanggan bisa memesan tanpa memilih waktu dan mengambil begitu pesanan siap."
+    },
+    "ahead": {
+      "label": "Pesan dulu untuk hari atau acara berikutnya",
+      "explain": "Pelanggan bisa memesan hari ini untuk pasar atau acara di hari lain."
+    },
+    "schedule": {
+      "label": "Jadwal mingguan dengan lokasi berpindah-pindah",
+      "explain": "Jadwal tempat dan jam truk dalam seminggu; pelanggan memesan untuk tempat dan hari saat truk ada di sana."
+    },
+    "walkup": {
+      "label": "Pesanan langsung di tempat di layar yang sama dengan pesanan online",
+      "explain": "Pesanan yang diterima di truk masuk ke daftar yang sama dengan pesanan online."
+    },
+    "stock": {
+      "label": "Tanda habis dan batas stok per acara",
+      "explain": "Tandai hidangan yang habis dan atur berapa banyak tiap hidangan bisa dijual di sebuah acara."
+    },
+    "notify": {
+      "label": "Pelanggan diberi tahu saat pesanan siap",
+      "explain": "Cara pelanggan tahu pesanannya siap: SMS, WhatsApp, email, notifikasi push, atau halaman status pesanan langsung.",
+      "ours": "email jika langkah “pesanan siap” aktif, dan halaman status pesanan; tanpa SMS, WhatsApp, atau push"
+    },
+    "allergens": {
+      "label": "Alergen di menu",
+      "explain": "Setiap hidangan menampilkan alergennya kepada pelanggan sebelum mereka memesan."
+    },
+    "menuphoto": {
+      "label": "Menu disiapkan dari foto",
+      "explain": "Foto atau PDF menu mengisi daftar hidangan untuk Anda periksa."
+    },
+    "options": {
+      "label": "Pilihan dan tambahan pada hidangan",
+      "explain": "Ukuran, saus, dan topping tambahan, termasuk pilihan yang wajib dipilih pelanggan."
+    },
+    "deals": {
+      "label": "Promo dan bundel",
+      "explain": "Beberapa item dijual bersama dengan satu harga."
+    },
+    "private": {
+      "label": "Acara pribadi dan permintaan sewa",
+      "explain": "Pesanan untuk acara pribadi lewat link khususnya, dan permintaan sewa food truck.",
+      "ours": "acara pribadi dengan link pemesanan sendiri; tanpa permintaan sewa"
+    },
+    "qr": {
+      "label": "Pesan di meja / lewat QR",
+      "explain": "Pelanggan memindai kode di meja dan pesanan masuk dengan nomor meja.",
+      "ours": "kode QR membuka halaman pemesanan; tanpa nomor meja"
+    },
+    "cards": {
+      "label": "Pembayaran kartu online termasuk Apple Pay dan Google Pay",
+      "explain": "Pelanggan membayar online dengan kartu, Apple Pay, atau Google Pay saat memesan."
+    },
+    "payattruck": {
+      "label": "Bayar di truk",
+      "explain": "Pelanggan memesan online dan membayar saat mengambil."
+    },
+    "localpay": {
+      "label": "Metode pembayaran lokal (BLIK, iDEAL, Swish, MobilePay…)",
+      "explain": "Metode pembayaran online khas negara tersebut, selain kartu.",
+      "ours": "hanya kartu"
+    },
+    "paypal": {
+      "label": "PayPal atau Klarna",
+      "explain": "Pelanggan bisa membayar dengan PayPal atau Klarna."
+    },
+    "custfee": {
+      "label": "Opsi biaya pesanan ditanggung pelanggan",
+      "explain": "Usaha bisa membebankan biaya layanan kepada pelanggan."
+    },
+    "tips": {
+      "label": "Tip",
+      "explain": "Pelanggan bisa menambahkan tip saat membayar online."
+    },
+    "paymethods": {
+      "label": "Metode pembayaran yang tersedia",
+      "explain": "Cara pelanggan bisa membayar, sesuai yang dinyatakan vendor.",
+      "ours": "kartu, Apple Pay, Google Pay; bayar di truk"
+    },
+    "kds": {
+      "label": "Layar dapur (KDS)",
+      "explain": "Pesanan muncul di layar di dapur, sesuai urutan pembuatannya."
+    },
+    "tickets": {
+      "label": "Tiket dapur tercetak",
+      "explain": "Setiap pesanan tercetak di printer struk di truk.",
+      "ours": "di aplikasi iPad dan Android; printer tidak disediakan"
+    },
+    "buzzers": {
+      "label": "Buzzer",
+      "explain": "Pelanggan diberi buzzer yang memberi tahu saat pesanan mereka siap.",
+      "ours": "nomor buzzer dicatat di setiap pesanan; buzzer tidak disediakan"
+    },
+    "offline": {
+      "label": "Tetap jalan saat internet putus",
+      "explain": "Pesanan dan perubahan yang dibuat tanpa koneksi disimpan dan dikirim begitu koneksi kembali.",
+      "ours": "di aplikasi iPad dan Android; tidak di dasbor web"
+    },
+    "vans": {
+      "label": "Beberapa kendaraan atau truk",
+      "explain": "Satu akun untuk lebih dari satu food truck.",
+      "ours": "kendaraan tambahan dengan biaya bulanan tambahan"
+    },
+    "staff": {
+      "label": "Login staf",
+      "explain": "Staf masuk dengan akun dan peran masing-masing."
+    },
+    "reports": {
+      "label": "Laporan penjualan",
+      "explain": "Total, menu terlaris, dan penjualan per acara atau tanggal, dengan ekspor spreadsheet."
+    },
+    "domain": {
+      "label": "Alamat web sendiri",
+      "explain": "Halaman pemesanan di domain milik usaha sendiri."
+    },
+    "whatsapp": {
+      "label": "Balasan otomatis WhatsApp",
+      "explain": "Pesan WhatsApp dari pelanggan dibalas secara otomatis."
+    },
+    "social": {
+      "label": "Postingan media sosial dari jadwal Anda",
+      "explain": "Postingan siap pakai yang menunjukkan lokasi truk minggu ini."
+    },
+    "igmsg": {
+      "label": "Balasan Instagram dan Messenger",
+      "explain": "Pesan Instagram dan Facebook Messenger dibalas secara otomatis."
+    },
+    "discovery": {
+      "label": "Tampil di peta pencarian food truck",
+      "explain": "Pelanggan menemukan truk di peta publik food truck di sekitar mereka.",
+      "ours": "Village Foodie"
+    },
+    "loyalty": {
+      "label": "Program loyalitas",
+      "explain": "Pelanggan mengumpulkan hadiah setiap kali datang lagi."
+    },
+    "ipad": {
+      "label": "Aplikasi iPad",
+      "explain": "Aplikasi truk untuk menerima dan mengelola pesanan di iPad."
+    },
+    "android": {
+      "label": "Aplikasi Android",
+      "explain": "Aplikasi yang sama di tablet atau ponsel Android."
+    },
+    "hardware": {
+      "label": "Perangkat disediakan (tablet, printer)",
+      "explain": "Vendor menyediakan tablet atau printer.",
+      "ours": "pakai perangkat sendiri"
+    },
+    "terminal": {
+      "label": "Mesin EDC untuk di truk disediakan",
+      "explain": "Vendor menyediakan mesin EDC untuk pembayaran di truk."
+    },
+    "fiscal": {
+      "label": "Mesin kasir bersertifikat untuk aturan pajak (TSE, EET, kassaregister…)",
+      "explain": "Mesin kasir yang bersertifikat sesuai aturan negara tersebut tentang pencatatan penjualan."
+    },
+    "delivery": {
+      "label": "Pesan antar",
+      "explain": "Pesanan diantar ke alamat pelanggan.",
+      "ours": "hanya ambil sendiri"
+    },
+    "monthly": {
+      "label": "Harga bulanan",
+      "explain": "Yang dibayar usaha setiap bulan untuk software."
+    },
+    "perorder": {
+      "label": "Biaya per pesanan online",
+      "explain": "Biaya yang dikenakan vendor pada setiap pesanan online, di luar harga bulanan."
+    },
+    "cardfee": {
+      "label": "Biaya kartu",
+      "explain": "Biaya penyedia pembayaran pada setiap pembayaran kartu."
+    },
+    "term": {
+      "label": "Kontrak minimum",
+      "explain": "Berapa lama usaha terikat sebelum bisa berhenti."
+    },
+    "setup": {
+      "label": "Biaya penyiapan",
+      "explain": "Biaya sekali bayar untuk memulai."
+    },
+    "trial": {
+      "label": "Coba gratis",
+      "explain": "Waktu untuk memakai sistem secara gratis sebelum membayar."
+    }
+  }
+}

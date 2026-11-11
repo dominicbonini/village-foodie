@@ -1,0 +1,17 @@
+{
+  "back": "← 뒤로",
+  "title": "세트 메뉴 적용",
+  "save": "{amount} 할인",
+  "selectItems": "각 구성에 들어갈 메뉴를 선택하세요",
+  "choose": "{category} 선택…",
+  "inYourBasket": "── 장바구니에 담긴 메뉴 ──",
+  "basketUnit": "{name}{withMods, select, yes { (+ {mods})} other {}} (장바구니){state, select, used { — 이미 세트 메뉴에 포함됨} taken { — 다른 구성에서 선택됨} other {}}",
+  "addNew": "── 새로 추가 ──",
+  "itemWithPrice": "{name} {price}",
+  "ruleHint": "· {rule, select, requiredOne {필수 · 하나 선택} required {필수} other {하나 선택}}{unmet, select, yes { (필수)} other {}}",
+  "notePlaceholder": "메모 추가, 예: 양파 빼기(선택)",
+  "backButton": "뒤로",
+  "cancel": "취소",
+  "chooseRequired": "필수 옵션을 선택하세요",
+  "apply": "세트 메뉴 적용 · {amount}"
+}

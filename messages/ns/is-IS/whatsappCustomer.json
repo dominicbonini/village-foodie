@@ -1,0 +1,15 @@
+{
+  "greeting": "Hæ 👋",
+  "opener": "{greeting} ",
+  "allergenRedirect": "{opener}Þú getur séð allan matseðilinn okkar og upplýsingar um ofnæmisvalda hér: {url} — {truck} {emoji}",
+  "menuFallback": "{opener}Þú getur skoðað allan matseðilinn okkar hér: {url} — {truck} {emoji}",
+  "otherCategory": "Annað",
+  "categoryFrom": "{category} frá {price}",
+  "listTwo": "{first} og {second}",
+  "listMany": "{init} og {last}",
+  "menuSummary": "{opener}Á matseðlinum hjá okkur: {summary}. Skoðaðu allan matseðilinn og pantaðu fyrir fram hér: {url} — {truck} {emoji}",
+  "allergenCaveat": "Athugaðu allan matseðilinn til að fá upplýsingar um ofnæmisvalda — þetta er sjálfvirkt svar.",
+  "specificFallback": "{opener}Skoðaðu nýjustu dagskrána okkar hér: {url}\n\n{truck} {emoji}",
+  "capHandoff": "Takk fyrir öll skilaboðin! Ég get aðeins svarað nokkrum sinnum á dag hér.\n\nTil að panta: {link}",
+  "capContact": "Til að ná beint í okkur: {number}"
+}

@@ -1,0 +1,195 @@
+{
+  "cancel": "İptal",
+  "back": "← Geri",
+  "backPlain": "Geri",
+  "next": "İleri →",
+  "continue": "Devam →",
+  "closeImport": "İçe aktarmayı kapat",
+  "tryAgain": "Tekrar dene",
+  "catError": {
+    "empty": "Kategoriye bir ad verin.",
+    "tooLong": "Bu ad çok uzun.",
+    "clash": "“{name}” adlı bir kategori zaten var."
+  },
+  "steps": {
+    "details": "Bilgileriniz",
+    "menu": "Menü",
+    "extras": "Ekstralar",
+    "allergens": "Alerjenler",
+    "kitchen": "Mutfak ayarları",
+    "schedule": "Program",
+    "settings": "Ayarlar"
+  },
+  "toast": {
+    "demoGone": "Demo menünüz artık kullanılamıyor — devam etmek için lütfen yeniden yükleyin.",
+    "eventsSaveFailed": "Etkinlikler kaydedilemedi",
+    "cardReadFailed": "Alerjen kartı okunamadı — tekrar deneyin",
+    "imageReadFailed": "Bu görsel okunamadı — kartınızı yazın veya yapıştırın",
+    "commitFailedDetail": "Menü kaydı tamamlanamadı: {error}. Bazı ürünler zaten kaydedilmiş olabilir — tekrar denemeden önce menünüzü kontrol edin.",
+    "commitFailed": "Menü kaydı tamamlanamadı. Bazı ürünler zaten kaydedilmiş olabilir — tekrar denemeden önce menünüzü kontrol edin.",
+    "finishFailed": "Kurulum tamamlandı olarak işaretlenemedi — yine de devam edebilirsiniz.",
+    "scheduleReadFailed": "Bu program okunamadı — daha net bir fotoğraf deneyin veya tarihlerinizi yazın.",
+    "cardRead": "Kart okundu — eşleşen: {matched}, {pending, plural, one {# ürün} other {# ürün}} sizin atamanızı bekliyor"
+  },
+  "settingsReview": {
+    "anchorOrder": "Ayarlar → Sipariş ayarları",
+    "anchorDisplay": "Ayarlar → Food truck’larınız → Görüntü ayarları",
+    "mins15": "15 dakika",
+    "mins30": "30 dakika",
+    "mins60": "60 dakika",
+    "hours2": "2 saat",
+    "title": "Kontrol edilecek birkaç ayar",
+    "loading": "Mevcut ayarlarınız yükleniyor…",
+    "looksGood": "Her şey yolunda →",
+    "secondaryAria": "{label} — {secondary}",
+    "saveFailed": "Bu kaydedilemedi — Ayarlar’dan değiştirebilirsiniz.",
+    "anchorContact": "Ayarlar → İletişim bilgileri",
+    "intro": "Sizin için sık kullanılan bazı ayarları yaptık. Kısaca göz atmaya değer — bunların hepsini daha sonra Ayarlar’dan değiştirebilirsiniz.",
+    "cancelAria": "Müşteriler teslim almadan ne kadar önceye kadar iptal edebilir"
+  },
+  "allergensNotSet": {
+    "bodySetup": "Yayına geçmeden önce bunları inceleyin. İnceleyene kadar ürünler “alerjenler ayarlanmadı” olarak işaretlenir.",
+    "body": "Yayına geçmeden önce bunları Ayarlar’da inceleyin. İnceleyene kadar ürünler “alerjenler ayarlanmadı” olarak işaretlenir.",
+    "title": "⚠ Alerjenler ve beslenme tercihleri henüz ayarlanmadı"
+  },
+  "welcome": {
+    "title": "HatchGrab’e hoş geldiniz",
+    "yourTruck": "Food truck’ınız",
+    "stop": "İstediğiniz zaman ara verip geri dönebilirsiniz.",
+    "body": "{name} hazır. Şimdi menünüzü, ardından ilk etkinliğinizi ekleyeceğiz.",
+    "go": "Başlayalım"
+  },
+  "offer": {
+    "title": "Demodaki menünüz kullanılsın mı?",
+    "use": "Bu menüyü kullan",
+    "upload": "Farklı bir menü yükle",
+    "body": "Yüklediğiniz menüyü kaydettik — {count, plural, one {# ürün} other {# ürün}}. Başlangıç noktası olarak kullanın ya da farklı bir menü yükleyin."
+  },
+  "checkMenu": {
+    "title": "Menünüzü kontrol edin",
+    "body": "Demodaki menünüzü food truck’ınıza kaydettik; o zamandan beri değişiklik yaptınız, bu yüzden değişiklikleriniz korundu. Aşağıdan bir göz atın.",
+    "done": "Her şey yolunda"
+  },
+  "upload": {
+    "title": "Menünüzü içe aktarın",
+    "body": "Menü panonuzun fotoğrafını, bir ekran görüntüsünü veya PDF yükleyin ya da menünüzü metin olarak yapıştırın. Yapay zekâmız okuyup dijital menünüzü oluşturur — kaydetmeden önce her şeyi siz incelersiniz.",
+    "confirmCancel": "Bu içe aktarma iptal edilsin mi? Bu menü üzerindeki incelemeniz silinecek.",
+    "process": "Menüyü işle",
+    "later": "Bunu sonra yapacağım"
+  },
+  "processing": {
+    "title": "Menünüz analiz ediliyor",
+    "body": "Yapay zekâ ürünlerinizi okuyup kategorilere ayırıyor…"
+  },
+  "review": {
+    "title": "İçe aktarılan menüyü inceleyin",
+    "editLaterSetup": "Adlar, fiyatlar, ekstralar, alerjenler ve beslenme bilgileri daha sonra istediğiniz zaman düzenlenebilir.",
+    "editLater": "Adlar, fiyatlar, ekstralar, alerjenler ve beslenme bilgileri istediğiniz zaman Ayarlar’dan düzenlenebilir.",
+    "noPrice": "{count, plural, one {# ürünün} other {# ürünün}} fiyatı okunamadı",
+    "renameCategoryAria": "Kategoriyi yeniden adlandır: {name}",
+    "renameAria": "Yeniden adlandır: {name}",
+    "renameTitle": "Kategoriyi yeniden adlandır",
+    "deleteAria": "Sil: {name}",
+    "deleteTitle": "Kategoriyi sil",
+    "lastCategory": "Menünüzde en az bir kategori olmalıdır",
+    "countOf": "{kept} / {total}",
+    "existing": "mevcut",
+    "deleteEmptyTitle": "“{name}” silinsin mi?",
+    "deleteEmptyBody": "İçinde ürün yok, bu yüzden hiçbir şey kaybolmaz.",
+    "delete": "Sil",
+    "moveTitle": "{count, plural, one {# ürün} other {# ürün}} nereye taşınsın?",
+    "moveBody": "“{name}” kategorisini silmek için ürünlerinin taşınacağı bir yer gerekir — kategorisi olmayan ürünler içe aktarılmaz.",
+    "moveAria": "{name} kategorisindeki ürünleri şuraya taşı",
+    "chooseCategory": "Bir kategori seçin…",
+    "moveDelete": "Taşı ve sil",
+    "itemName": "Ürün adı",
+    "free": "ücretsiz mi?",
+    "freeOn": "Ücretsiz ✕",
+    "nameFirst": "Başka bir ürün eklemeden önce yeni ürüne ad verin",
+    "addItem": "+ Ürün ekle",
+    "categoryName": "Kategori adı",
+    "newCategoryAria": "Yeni kategori adı",
+    "addCategory": "+ Kategori ekle",
+    "ready": "{count, plural, one {# ürün} other {# ürün}} eklenmeye hazır. İstemediklerinizin işaretini kaldırın.",
+    "noPriceBody": "Her biri için bir fiyat girin veya ücretsiz olarak işaretleyin — aksi hâlde {zero} fiyatıyla yayına girer. Bunlar düzelene kadar devam edemezsiniz.",
+    "incomplete": "Bu ürünü eklemek için bir ad girin — boş satırlar içe aktarılmaz."
+  },
+  "extras": {
+    "introSetup": "Bazı ürünler <b>tek bir özelleştirilebilir ürün</b> olarak ayarlanabilir veya <b>ayrı ürünler</b> olarak bırakılabilir. Her birinin nasıl görüneceğini seçin. Bunu daha sonra değiştirebilirsiniz.",
+    "intro": "Bazı ürünler <b>tek bir özelleştirilebilir ürün</b> olarak ayarlanabilir veya <b>ayrı ürünler</b> olarak bırakılabilir. Her birinin nasıl görüneceğini seçin. Bunu daha sonra Ayarlar’dan değiştirebilirsiniz.",
+    "none": "Gruplanabilecek ürün yok — her ürün tek başına bir ürün.",
+    "axisChoice": "· {axis} seçimi",
+    "grouped": "Gruplu · tek ürün, müşteri seçer",
+    "separate": "Ayrı menü ürünleri"
+  },
+  "allergens": {
+    "title": "Alerjenler",
+    "detected": "Menünüzde alerjenler tespit ettik. Aşağıdan nasıl gösterileceklerini seçin.",
+    "howShow": "Alerjenleri müşterilere nasıl göstermek istersiniz?",
+    "skip": "Alerjen ayarını şimdilik atla"
+  },
+  "kitchen": {
+    "title": "Mutfak ayarları",
+    "intro": "Müşterilerin ne kadar bekleyeceğini bilmesine yardımcı olun — bunları her zaman sonradan değiştirebilirsiniz.",
+    "howWorks": "Mutfak kapasitesi nasıl çalışır?",
+    "allExist": "Tüm kategoriler zaten mevcut — ayarlanacak süre yok.",
+    "totalHelp": "Mutfağın her zaman aralığında kaç ürün alacağını sınırlamak için toplam kapasite belirleyin. Sınır olmaması için ∞ olarak bırakın.",
+    "saveAdd": "Kaydet ve menüye ekle"
+  },
+  "schedule": {
+    "title": "Programımı ekle",
+    "intro": "Programınız web sitenizdeyse onu otomatik olarak güncel tutabiliriz — ya da tarihlerinizi kendiniz ekleyin.",
+    "websiteTitle": "Programım web sitemde",
+    "urlPlaceholder": "https://foodtruckunuz.com.tr/etkinlikler",
+    "checking": "Kontrol ediliyor…",
+    "verify": "Doğrula",
+    "checkingSite": "Web siteniz kontrol ediliyor…",
+    "takesTime": "Bu işlem 2 dakikaya kadar sürebilir — lütfen bu sayfayı açık tutun.",
+    "canRead": "✓ Programınızı okuyabiliyoruz",
+    "ownSite": "Kendi web siteniz — Facebook veya Instagram sayfası değil.",
+    "photoTitle": "Programımın fotoğrafını yükle",
+    "dragChoose": "Seçmek için sürükleyip bırakın veya dokunun",
+    "imageOrPdf": "Görsel veya PDF",
+    "or": "veya",
+    "pastePlaceholder": "Tarihlerinizi buraya yapıştırın…",
+    "read": "Programı oku",
+    "found": "{count, plural, one {# tarih} other {# tarih}} bulundu — bunlar programınıza eklenecek.",
+    "dateTbc": "Tarih belli değil",
+    "save": "Kaydet: {count, plural, one {# tarih} other {# tarih}}",
+    "manualDesc": "Bunları daha sonra Program sekmesinden ekleyin — şimdi yapmanız gereken bir şey yok.",
+    "manualBody": "Sorun değil. Tarihlerinizi istediğiniz zaman hesabınızdaki Program sekmesinden ekleyip yönetebilirsiniz.",
+    "blockedDomain": "Lütfen web sitenizin adresini kullanın — Facebook ve Instagram sayfaları otomatik olarak taranamaz.",
+    "saveFailed": "Programınızı okuduk ama şu anda kaydedemedik — tekrar deneyin.",
+    "websiteDesc": "Siteyi düzenli olarak kontrol edip yeni tarihleri onayınıza sunacağız.",
+    "keepChecking": "Bu sayfayı kontrol etmeye devam edip yeni tarihleri onayınıza sunacağız.",
+    "photoDesc": "Tarihlerinizin fotoğrafını çekin veya yapıştırın — kontrol etmeniz için biz okuyalım.",
+    "noneFound": "Burada hiç tarih bulamadık — daha net bir fotoğraf deneyin veya tarihi kendiniz ekleyin.",
+    "manualTitle": "Tarihlerimi kendim ekleyeceğim",
+    "trialNotStarted": "Etkinlik eklemek ücretsiz denemenizi başlatmaz — denemeyi hangi etkinliğin başlatacağını daha sonra siz seçersiniz."
+  },
+  "done": {
+    "summary": "{categories, plural, one {# kategoride} other {# kategoride}} toplam {items, plural, one {# ürün} other {# ürün}}.",
+    "imported": "Menü içe aktarıldı!",
+    "added": "Ürünleriniz menüye eklendi.",
+    "duplicates": "{count, plural, one {# yinelenen ürün} other {# yinelenen ürün}} atlandı",
+    "showMe": "Bana etrafı göster",
+    "remind": "Daha sonra hatırlat",
+    "allSet": "Her şey hazır!",
+    "explore": "Kendim keşfedeceğim"
+  },
+  "discard": {
+    "setupTitle": "Kurulum daha sonra mı tamamlansın?",
+    "setupBody": "Hesabınız ve food truck’ınız kaydedildi — hiçbir şey kaybolmadı. Menünüzü istediğiniz zaman ekleyebilirsiniz: giriş yapın ve kaldığınız yerden devam etmek için menü ekranınızda <b>Menüyü içe aktar</b> düğmesine dokunun.",
+    "keepGoing": "Devam et",
+    "finishLater": "Sonra tamamla",
+    "title": "Bu içe aktarma silinsin mi?",
+    "keepEditing": "Düzenlemeye devam et",
+    "discard": "Sil",
+    "body": "Değişiklikleriniz kaydedilmez — içe aktarılan ürünler, hazırlama süreleri ve mutfak kapasitesi eklenmez.",
+    "carriedBody": "Demodaki menünüz food truck’ınızda olduğu gibi kayıtlı. İstediğiniz zaman menü ekranınızdan değiştirebilirsiniz."
+  },
+  "allergenCardText": {
+    "contains": "İçerir: {list}",
+    "mayContain": "İçerebilir: {list}"
+  }
+}

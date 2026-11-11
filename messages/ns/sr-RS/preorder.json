@@ -1,0 +1,6 @@
+{
+  "closedPending": "Porudžbine unapred su zatvorene. Čeka se odobrenje kuhinje.",
+  "deadline": "Poručite unapred do {time}",
+  "deadlineOnDay": "Poručite unapred do {time}, {day}",
+  "opens": "Porudžbine unapred se otvaraju: {day}"
+}

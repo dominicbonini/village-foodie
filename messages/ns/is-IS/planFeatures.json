@@ -1,0 +1,141 @@
+{
+  "row": {
+    "discovery_map_listing": {
+      "name": "Skráning á leitarkorti"
+    },
+    "web_dashboard": {
+      "name": "Vefstjórnborð fyrir öll tæki"
+    },
+    "qr_code": {
+      "name": "QR-kóði"
+    },
+    "schedule_import": {
+      "name": "Sjálfvirk innsetning dagskrár"
+    },
+    "meal_deals_upsells": {
+      "name": "Tilboð og viðbótarsala"
+    },
+    "walkup_orders": {
+      "name": "Afgreiðsla pantana á staðnum"
+    },
+    "sold_out_toggle": {
+      "name": "Uppselt með einni snertingu"
+    },
+    "kitchen_app": {
+      "name": "Eldhúsapp fyrir iPhone, iPad og Android"
+    },
+    "offline_protection": {
+      "name": "Vörn án nettengingar"
+    },
+    "online_payments": {
+      "name": "Netgreiðslur"
+    },
+    "advance_preordering": {
+      "name": "Forpöntun fram í tímann"
+    },
+    "preorder_deadline": {
+      "name": "Lokafrestur forpantana"
+    },
+    "time_slot_selection": {
+      "name": "Viðskiptavinir velja tímahólf"
+    },
+    "kitchen_capacity": {
+      "name": "Stýring á afköstum eldhúss"
+    },
+    "stock_countdown": {
+      "name": "Sjálfvirk niðurtalning birgða"
+    },
+    "auto_accept": {
+      "name": "Sjálfvirk samþykkt netpantana"
+    },
+    "branded_qr_code": {
+      "name": "QR-kóði með þínu merki"
+    },
+    "private_events": {
+      "name": "Einkaviðburðir"
+    },
+    "social_media_posts": {
+      "name": "Færslur á samfélagsmiðla"
+    },
+    "whatsapp_auto_replies": {
+      "name": "Sjálfvirk svör á WhatsApp"
+    },
+    "messenger_instagram_replies": {
+      "name": "Sjálfvirk svör á Messenger og Instagram"
+    },
+    "tap_to_pay": {
+      "name": "Taktu við greiðslu í símanum"
+    },
+    "sms_order_alerts": {
+      "name": "SMS-tilkynningar um pantanir"
+    },
+    "multi_device_kitchen": {
+      "name": "Samstilling eldhúss á mörgum tækjum"
+    },
+    "multi_user_access": {
+      "name": "Aðgangur fyrir marga notendur"
+    },
+    "embed_schedule": {
+      "name": "Dagskrársíða á þinni eigin vefsíðu"
+    },
+    "event_types": {
+      "name": "Eigin viðburðategundir og verð"
+    },
+    "buzzer_tracking": {
+      "name": "Utanumhald píptækja"
+    },
+    "documents_reminders": {
+      "name": "Skjöl og áminningar"
+    },
+    "profit_per_event": {
+      "name": "Hagnaður á viðburð"
+    },
+    "accountant_reports": {
+      "name": "Skýrslur fyrir bókarann"
+    },
+    "ticket_printing": {
+      "name": "Prentun eldhúsmiða"
+    },
+    "customer_display": {
+      "name": "Skjár fyrir viðskiptavini"
+    },
+    "loyalty_stamp_cards": {
+      "name": "Stafræn stimpilkort"
+    }
+  },
+  "cardRegionOnline": "venjuleg {region}",
+  "cardRegion": {
+    "UKcards": "bresk kort",
+    "EEAcards": "EES-kort",
+    "UScards": "bandarísk kort",
+    "Australiancards": "áströlsk kort",
+    "NewZealandcards": "nýsjálensk kort",
+    "Canadiancards": "kanadísk kort",
+    "Swisscards": "svissnesk kort",
+    "Braziliancards": "brasilísk kort",
+    "Mexicancards": "mexíkósk kort",
+    "Japanesecards": "japönsk kort",
+    "Singaporecards": "singapúrsk kort",
+    "HongKongcards": "kort frá Hong Kong",
+    "Malaysiancards": "malasísk kort",
+    "Thaicards": "taílensk kort",
+    "UAEcards": "kort frá SAF"
+  },
+  "perMonth": {
+    "mo": "{amount}/mán.",
+    "month": "{amount} á mánuði"
+  },
+  "priceWord": {
+    "free": "Ókeypis",
+    "freeTrial": "Ókeypis prufa",
+    "lifetime": "Ævilangt",
+    "zeroPercent": "0%",
+    "payAtHatch": "Greiða á staðnum",
+    "unlimited": "Ótakmarkað",
+    "none": "—",
+    "masked": "Óákveðið"
+  },
+  "cell": {
+    "included": "Innifalið"
+  }
+}

@@ -1,0 +1,69 @@
+{
+  "close": "닫기",
+  "cancel": "취소",
+  "selectReason": "사유 선택",
+  "reject": {
+    "title": "이 주문을 거절할까요? (#{orderId})",
+    "reasonLabel": "사유 — 필수 (손님에게 표시됨)",
+    "reason": "{reason, select, sold_out {일부 메뉴 품절} too_busy {주문 과다 — 시간 내 준비 불가} closing_soon {곧 영업 종료} other {기타}}",
+    "noteRequired": "사유 — 필수",
+    "noteOptional": "추가 메모 — 선택",
+    "notePlaceholder": "손님에게 전할 내용을 자세히 적어 주세요…",
+    "keep": "주문 유지",
+    "confirm": "주문 거절"
+  },
+  "eventCancel": {
+    "title": "이 영업 일정을 취소할까요?",
+    "affected": "{n, plural, one {주문 {count}건이} other {주문 {count}건이}} 취소되고 손님에게 알림이 전송됩니다.",
+    "reasonLabel": "사유 — 선택",
+    "reason": "{reason, select, vehicle_breakdown {차량 고장} weather {날씨} venue_issue {영업 장소 문제} personal_emergency {개인 긴급 사정} other {기타}}",
+    "messageLabel": "손님에게 보낼 메시지 — 선택",
+    "messagePlaceholder": "예: 죄송합니다. 영업 장소로 가는 길에 차량이 고장 났습니다…",
+    "keep": "영업 일정 유지",
+    "cancelling": "취소 중…",
+    "confirm": "영업 일정 취소"
+  },
+  "actions": {
+    "startEvent": "{restart, select, yes {영업 다시 시작} other {영업 시작}}",
+    "changeEvent": "영업 일정 변경",
+    "changeEventType": "영업 일정 유형 변경…",
+    "privateLink": "비공개 링크 및 QR 코드",
+    "noteLabel": "손님 안내 메모",
+    "notePlaceholder": "예: 메인 주차장에 주차하고 주황색 천막을 찾아 주세요",
+    "noteHint": "주문 페이지의 영업 일정 정보 아래에 손님에게 표시됩니다.",
+    "saveNote": "메모 저장",
+    "resume": "주문 재개",
+    "pause": "주문 일시 중지",
+    "changeFinishTime": "영업 종료 시간 변경",
+    "finishEvent": "영업 종료",
+    "cancelEvent": "영업 일정 취소"
+  },
+  "finish": {
+    "confirmTitle": "종료 시간을 변경할까요?",
+    "willFinish": "이 영업 일정은 <b>{selected}</b> 시각에 종료됩니다{hasCurrent, select, yes { (기존: <b>{current}</b>)} other {}}.",
+    "dueAfter": "<b>{n, plural, one {주문 {count}건의} other {주문 {count}건의}} 픽업 시간이 {selected} 이후입니다.</b> {n, plural, one {이 주문은} other {이 주문들은}} 현황판에 그대로 남아 있고 {n, plural, one {계속 준비해야 합니다} other {모두 계속 준비해야 합니다}}. 종료 시간을 변경하면 그 이후 시간에 대한 새 주문만 받지 않게 됩니다.",
+    "saving": "저장 중…",
+    "confirm": "종료 시간 변경",
+    "keepCurrent": "기존 시간 유지: {current}",
+    "keepAsIs": "그대로 유지",
+    "title": "종료 시간 변경",
+    "currentlySet": "이 영업 일정의 현재 종료 시간은 <b>{current}</b>입니다.",
+    "noFinishTime": "이 영업 일정에는 종료 시간이 설정되어 있지 않습니다.",
+    "noTimesLeft": "오늘은 더 선택할 수 있는 시간이 없습니다. 대신 영업 종료를 사용하세요.",
+    "newFinishTime": "새 종료 시간",
+    "optionCurrent": "{time} (현재)",
+    "earlier": "현재 종료 시간보다 이릅니다. 손님은 그 이후 시간으로 주문할 수 없게 됩니다.",
+    "review": "변경 내용 확인",
+    "optionNextDay": "{time} (다음 날)"
+  },
+  "extraWait": {
+    "title": "추가 대기 시간",
+    "hint": "새 주문에 안내되는 픽업 시간에 더해집니다. 영업 종료 시간은 바뀌지 않습니다.",
+    "option": "+{mins}분"
+  },
+  "picker": {
+    "reconnect": "다시 연결하여 불러오기",
+    "selected": "선택됨",
+    "status": "{tone, select, paused {⏸ 일시 중지} live {● 영업 중} finished {● 종료됨} cancelled {취소됨} other {시작 전}}"
+  }
+}

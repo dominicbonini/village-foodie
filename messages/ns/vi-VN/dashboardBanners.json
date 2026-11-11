@@ -1,0 +1,21 @@
+{
+  "breachHeadline": "{n, plural, one {{count} khung giờ} other {{count} khung giờ}} vượt công suất — hãy xem lại",
+  "batchOver": "{cat} vượt mẻ — {count} cho {slot} ({per} mỗi mẻ)",
+  "eventStartOver": "Vượt công suất lúc bắt đầu sự kiện — {n, plural, one {{count} món} other {{count} món}} cho {slot}",
+  "kitchenOver": "Bếp vượt công suất — {n, plural, one {đang nấu {count} món} other {đang nấu {count} món}} cho {slot}",
+  "orderItems": "#{id} — {n, plural, one {{count} món} other {{count} món}}",
+  "placedAnyway": "Vẫn đặt: {list}",
+  "placedItem": "#{id} cho {slot}",
+  "orphans": "{times} vượt công suất — không tìm thấy đơn nào gây ra",
+  "dismiss": "Bỏ qua",
+  "kitchenCapacity": "Công suất bếp",
+  "overCapacity": "Vượt công suất",
+  "wakeUnsupported": "Thiết bị này không thể giữ màn hình luôn sáng.",
+  "wakeInsecure": "Không thể giữ màn hình luôn sáng từ địa chỉ này.",
+  "wakeRetry": "Giữ màn hình sáng — chạm để thử lại",
+  "wakeAcquire": "Giữ màn hình sáng",
+  "degraded": {
+    "serverError": "Máy chủ không tải được đơn{hasStatus, select, yes { (lỗi {status})} other {}}. Đang hiển thị đơn từ {at}. Có thể thiếu đơn mới.",
+    "unreachable": "Không kết nối được máy chủ. Đang hiển thị đơn từ {at}. Có thể thiếu đơn mới."
+  }
+}

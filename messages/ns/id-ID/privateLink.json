@@ -1,0 +1,12 @@
+{
+  "guestLabel": "ACARA PRIBADI",
+  "truckFallback": "Food truck ini",
+  "noSlugTitle": "Truk ini belum siap untuk pemesanan online.",
+  "orderingOffTitle": "Pemesanan online belum diaktifkan",
+  "orderingOffBody": "Acara ini tidak menerima pesanan online. Silakan pesan langsung di truk.",
+  "replacedTitle": "Link ini sudah diganti",
+  "replacedBody": "Link ini sudah tidak berlaku — {truck} telah menggantinya. Minta link atau kode QR baru ke penyelenggara.",
+  "madePublicBody": "Link ini sudah tidak berlaku — {truck} telah menjadikan acara ini publik. Pesan saja dari halaman biasa mereka.",
+  "unknownTitle": "Link ini tidak berfungsi",
+  "unknownBody": "Link ini tidak berfungsi. Cek ke penyelenggara, atau pindai ulang kode QR."
+}

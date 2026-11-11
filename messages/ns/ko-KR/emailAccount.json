@@ -1,0 +1,38 @@
+{
+  "newEmail": {
+    "subject": "새 HatchGrab 이메일 주소를 인증해 주세요",
+    "heading": "이메일 주소 인증",
+    "button": "이메일 주소 인증하기"
+  },
+  "changeEmail": {
+    "requested": "HatchGrab 이메일 주소를 이 주소로 변경해 달라는 요청을 받았습니다.",
+    "click": "아래 버튼을 눌러 인증하세요. 이 링크는 24시간 후에 만료됩니다.",
+    "ignore": "변경을 요청하지 않으셨다면 이 메일은 무시하셔도 됩니다.",
+    "stillActive": "현재 이메일 주소는 계속 사용할 수 있습니다."
+  },
+  "resendVerification": {
+    "requested": "HatchGrab 이메일을 이 주소로 변경해 달라는 요청을 받았습니다.",
+    "click": "아래를 눌러 인증하세요. 이 링크는 24시간 후에 만료됩니다.",
+    "ignore": "요청하지 않으셨다면 이 메일을 무시하세요.",
+    "stillActive": "현재 이메일은 계속 사용할 수 있습니다."
+  },
+  "passwordReset": {
+    "subject": "HatchGrab 비밀번호 재설정",
+    "heading": "비밀번호 재설정",
+    "requested": "HatchGrab 계정의 비밀번호 재설정 요청을 받았습니다.",
+    "click": "아래 버튼을 눌러 새 비밀번호를 설정하세요. 이 링크는 1시간 후에 만료됩니다.",
+    "button": "비밀번호 재설정",
+    "ignore": "요청하지 않으셨다면 이 메일은 무시하셔도 됩니다.",
+    "unchanged": "위 링크를 누르기 전까지 비밀번호는 변경되지 않습니다."
+  },
+  "deletionScheduled": {
+    "subject": "HatchGrab 계정 삭제가 예약되었습니다",
+    "received": "이 HatchGrab 계정의 삭제 요청을 받았습니다.",
+    "orderingStopped": "<b>온라인 주문이 즉시 중단되었습니다</b>: {trucks}.",
+    "noTrucks": "(푸드트럭 없음)",
+    "readable": "대시보드는 앞으로\n    {days, plural, one {#일} other {#일}} 동안 열람할 수 있습니다.",
+    "scheduled": "계정 삭제 예정일: <b>{date}</b>.",
+    "cannotCancel": "<b>앱에서는 취소할 수 없습니다.</b> 본인이 요청하지 않았거나\n    마음이 바뀌셨다면 가능한 한 빨리 이 메일에 답장해 주세요.",
+    "kept": "계정이 삭제되면 사장님의 개인정보와 손님 정보를 삭제합니다. 법에 따라 보관해야 하는\n    익명 회계 기록은 보관합니다."
+  }
+}

@@ -1,0 +1,36 @@
+{
+  "h1": "Mọi thứ để vận hành ca bán, ở mọi gói.",
+  "lede": "Đặt món, đặt trước, công suất bếp và màn hình bếp có trong mọi gói.{hasUpgrades, select, yes { {plans} có thêm {features} và mức phí thấp hơn.} other {}}",
+  "perMonth": "{price} / tháng",
+  "group": {
+    "pay": "Chi phí",
+    "run": "Vận hành ca bán",
+    "online": "Đơn online",
+    "marketing": "Marketing & tự động hóa"
+  },
+  "pay": {
+    "included": "Giá trị đơn online đã gồm mỗi tháng",
+    "fee": "Phí HatchGrab trên đơn online thanh toán bằng thẻ*",
+    "walkUp": "Đơn mua tại chỗ"
+  },
+  "cell": {
+    "unlimited": "Không giới hạn",
+    "free": "Miễn phí",
+    "feeAbove": "<b>{fee}</b> khi vượt {included}",
+    "yes": "Có",
+    "none": "Không có",
+    "comingSoon": "Sắp ra mắt"
+  },
+  "short": {
+    "whatsapp_replies": "WhatsApp",
+    "schedule_graphics": "bài đăng mạng xã hội",
+    "event_types": "giá theo loại sự kiện"
+  },
+  "meta": {
+    "description": "Mọi tính năng HatchGrab ở từng gói, đặt cạnh nhau — {plans}, kèm phí và hạn mức.{months, plural, =0 {} one { Tháng đầu tiên của bạn có đủ mọi tính năng.} other { # tháng đầu tiên của bạn có đủ mọi tính năng.}}"
+  },
+  "notes": {
+    "whatsapp": "Tự động trả lời trên WhatsApp cần tài khoản WhatsApp Business. Meta có thể tính phí một số tin nhắn; câu trả lời được tạo tự động.",
+    "printing": "In phiếu bếp cần máy in Bluetooth hoặc máy in có dây tương thích (không kèm theo)."
+  }
+}

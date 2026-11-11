@@ -1,0 +1,38 @@
+{
+  "newEmail": {
+    "subject": "Xác minh địa chỉ email HatchGrab mới của bạn",
+    "heading": "Xác minh địa chỉ email",
+    "button": "Xác minh địa chỉ email"
+  },
+  "changeEmail": {
+    "requested": "Bạn đã yêu cầu đổi địa chỉ email HatchGrab sang địa chỉ này.",
+    "click": "Bấm nút bên dưới để xác minh. Link này hết hạn sau 24 giờ.",
+    "ignore": "Nếu bạn không yêu cầu thay đổi này, bạn có thể bỏ qua email này.",
+    "stillActive": "Địa chỉ email hiện tại của bạn vẫn hoạt động."
+  },
+  "resendVerification": {
+    "requested": "Bạn đã yêu cầu đổi email HatchGrab sang địa chỉ này.",
+    "click": "Bấm bên dưới để xác minh. Link này hết hạn sau 24 giờ.",
+    "ignore": "Nếu bạn không yêu cầu, hãy bỏ qua email này.",
+    "stillActive": "Email hiện tại của bạn vẫn hoạt động."
+  },
+  "passwordReset": {
+    "subject": "Đặt lại mật khẩu HatchGrab",
+    "heading": "Đặt lại mật khẩu",
+    "requested": "Chúng tôi nhận được yêu cầu đặt lại mật khẩu cho tài khoản HatchGrab của bạn.",
+    "click": "Bấm nút bên dưới để chọn mật khẩu mới. Link này hết hạn sau 1 giờ.",
+    "button": "Đặt lại mật khẩu",
+    "ignore": "Nếu bạn không yêu cầu, bạn có thể bỏ qua email này.",
+    "unchanged": "Mật khẩu của bạn sẽ không thay đổi cho đến khi bạn bấm vào link ở trên."
+  },
+  "deletionScheduled": {
+    "subject": "Tài khoản HatchGrab của bạn đã được lên lịch xóa",
+    "received": "Chúng tôi đã nhận được yêu cầu xóa tài khoản HatchGrab này.",
+    "orderingStopped": "<b>Đặt món online đã dừng ngay lập tức</b> trên: {trucks}.",
+    "noTrucks": "(không có xe nào)",
+    "readable": "Bạn vẫn xem được bảng điều khiển\n    trong {days, plural, one {# ngày} other {# ngày}} tới.",
+    "scheduled": "Tài khoản sẽ bị xóa vào ngày <b>{date}</b>.",
+    "cannotCancel": "<b>Không thể hủy yêu cầu này trong ứng dụng.</b> Nếu không phải bạn yêu cầu, hoặc bạn\n    đổi ý, hãy trả lời email này càng sớm càng tốt.",
+    "kept": "Khi xóa tài khoản, chúng tôi sẽ xóa thông tin cá nhân của bạn và của khách hàng. Chúng tôi giữ lại\n    hồ sơ kế toán ẩn danh mà pháp luật yêu cầu phải lưu trữ."
+  }
+}

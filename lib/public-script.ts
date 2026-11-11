@@ -15,5 +15,5 @@ export function scriptKeyOf(lang: string | null | undefined): ScriptKey | null {
 /** The <body> class that turns that script's font on (components/public/script-fonts/<key>.tsx defines it). */
 export const scriptClassOf = (key: ScriptKey): string => `hg-script-${key}`
 
-/** Right to left: Arabic. Same rule as lib/script-fonts.ts isRtl. */
-export const isRtlLang = (lang: string | null | undefined): boolean => /^ar(-|$)/i.test(String(lang ?? ''))
+/** Right to left: Arabic and (languages-world-1) Hebrew. Same rule as lib/script-fonts.ts isRtl. */
+export const isRtlLang = (lang: string | null | undefined): boolean => /^(ar|he)(-|$)/i.test(String(lang ?? ''))

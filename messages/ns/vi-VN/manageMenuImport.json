@@ -1,0 +1,195 @@
+{
+  "cancel": "Hủy",
+  "back": "← Quay lại",
+  "backPlain": "Quay lại",
+  "next": "Tiếp →",
+  "continue": "Tiếp tục →",
+  "closeImport": "Đóng phần nhập",
+  "tryAgain": "Thử lại",
+  "catError": {
+    "empty": "Hãy đặt tên cho danh mục.",
+    "tooLong": "Tên đó quá dài.",
+    "clash": "Đã có danh mục tên “{name}”."
+  },
+  "steps": {
+    "details": "Thông tin của bạn",
+    "menu": "Thực đơn",
+    "extras": "Tùy chọn thêm",
+    "allergens": "Chất gây dị ứng",
+    "kitchen": "Thiết lập bếp",
+    "schedule": "Lịch bán",
+    "settings": "Cài đặt"
+  },
+  "toast": {
+    "demoGone": "Thực đơn demo của bạn không còn nữa — vui lòng tải lên lại để tiếp tục.",
+    "eventsSaveFailed": "Không lưu được sự kiện",
+    "cardReadFailed": "Không đọc được bảng chất gây dị ứng — hãy thử lại",
+    "imageReadFailed": "Không đọc được ảnh đó — hãy nhập hoặc dán nội dung bảng thay thế",
+    "commitFailedDetail": "Không lưu xong thực đơn: {error}. Có thể một số món đã được lưu — hãy kiểm tra thực đơn trước khi thử lại.",
+    "commitFailed": "Không lưu xong thực đơn. Có thể một số món đã được lưu — hãy kiểm tra thực đơn trước khi thử lại.",
+    "finishFailed": "Không đánh dấu hoàn tất thiết lập được — bạn vẫn có thể tiếp tục.",
+    "scheduleReadFailed": "Không đọc được lịch đó — hãy thử ảnh rõ hơn hoặc tự nhập ngày.",
+    "cardRead": "Đã đọc bảng — {matched} món khớp, {pending, plural, one {# món cần} other {# món cần}} bạn gán"
+  },
+  "settingsReview": {
+    "anchorOrder": "Cài đặt → Cài đặt đơn hàng",
+    "anchorDisplay": "Cài đặt → Xe của bạn → Cài đặt hiển thị",
+    "mins15": "15 phút",
+    "mins30": "30 phút",
+    "mins60": "60 phút",
+    "hours2": "2 giờ",
+    "title": "Vài cài đặt cần kiểm tra",
+    "loading": "Đang tải cài đặt hiện tại…",
+    "looksGood": "Ổn rồi →",
+    "secondaryAria": "{label} — {secondary}",
+    "saveFailed": "Không lưu được — bạn có thể thay đổi trong Cài đặt.",
+    "anchorContact": "Cài đặt → Thông tin liên hệ",
+    "intro": "Chúng tôi đã thiết lập sẵn một số cài đặt phổ biến. Bạn nên xem nhanh — có thể thay đổi bất kỳ mục nào sau này trong Cài đặt.",
+    "cancelAria": "Khách có thể hủy trước giờ nhận món bao lâu"
+  },
+  "allergensNotSet": {
+    "bodySetup": "Hãy xem lại trước khi mở bán. Các món sẽ bị gắn nhãn “chưa thiết lập chất gây dị ứng” cho đến khi bạn làm xong.",
+    "body": "Hãy xem lại trong Cài đặt trước khi mở bán. Các món sẽ bị gắn nhãn “chưa thiết lập chất gây dị ứng” cho đến khi bạn làm xong.",
+    "title": "⚠ Chưa thiết lập chất gây dị ứng & chế độ ăn"
+  },
+  "welcome": {
+    "title": "Chào mừng bạn đến với HatchGrab",
+    "yourTruck": "Xe của bạn",
+    "stop": "Bạn có thể dừng lại và quay lại bất cứ lúc nào.",
+    "body": "Đã thiết lập xong {name}. Tiếp theo, chúng ta sẽ thêm thực đơn, rồi đến sự kiện đầu tiên.",
+    "go": "Bắt đầu nào"
+  },
+  "offer": {
+    "title": "Dùng thực đơn từ bản demo?",
+    "use": "Dùng thực đơn này",
+    "upload": "Tải lên thực đơn khác",
+    "body": "Chúng tôi đã lưu thực đơn bạn tải lên — {count, plural, one {# món} other {# món}}. Dùng làm điểm bắt đầu, hoặc tải lên thực đơn khác."
+  },
+  "checkMenu": {
+    "title": "Kiểm tra thực đơn",
+    "body": "Chúng tôi đã lưu thực đơn từ bản demo vào xe của bạn, và bạn đã thay đổi nó sau đó — nên các thay đổi của bạn được giữ nguyên. Hãy xem qua bên dưới.",
+    "done": "Ổn rồi"
+  },
+  "upload": {
+    "title": "Nhập thực đơn",
+    "body": "Tải lên ảnh bảng thực đơn, ảnh chụp màn hình, file PDF, hoặc dán thực đơn dạng văn bản. AI của chúng tôi sẽ đọc và tạo thực đơn số — bạn xem lại mọi thứ trước khi lưu.",
+    "confirmCancel": "Hủy lần nhập này? Phần xem lại thực đơn này sẽ bị bỏ.",
+    "process": "Xử lý thực đơn",
+    "later": "Để sau"
+  },
+  "processing": {
+    "title": "Đang phân tích thực đơn",
+    "body": "AI đang đọc và phân loại các món của bạn…"
+  },
+  "review": {
+    "title": "Xem lại thực đơn đã nhập",
+    "editLaterSetup": "Tên, giá, tùy chọn thêm, chất gây dị ứng và thông tin chế độ ăn đều có thể sửa bất cứ lúc nào sau này.",
+    "editLater": "Tên, giá, tùy chọn thêm, chất gây dị ứng và thông tin chế độ ăn đều có thể sửa bất cứ lúc nào trong Cài đặt.",
+    "noPrice": "{count, plural, one {# món} other {# món}} không đọc được giá",
+    "renameCategoryAria": "Đổi tên danh mục {name}",
+    "renameAria": "Đổi tên: {name}",
+    "renameTitle": "Đổi tên danh mục",
+    "deleteAria": "Xóa: {name}",
+    "deleteTitle": "Xóa danh mục",
+    "lastCategory": "Thực đơn cần ít nhất một danh mục",
+    "countOf": "{kept}/{total}",
+    "existing": "đã có",
+    "deleteEmptyTitle": "Xóa “{name}”?",
+    "deleteEmptyBody": "Danh mục này không có món nào, nên không mất gì cả.",
+    "delete": "Xóa",
+    "moveTitle": "Chuyển {count, plural, one {# món} other {# món}} đến đâu?",
+    "moveBody": "Để xóa “{name}”, cần có chỗ để chuyển các món sang — món không có danh mục sẽ không được nhập.",
+    "moveAria": "Chuyển món từ {name} sang",
+    "chooseCategory": "Chọn danh mục…",
+    "moveDelete": "Chuyển & xóa",
+    "itemName": "Tên món",
+    "free": "miễn phí?",
+    "freeOn": "Miễn phí ✕",
+    "nameFirst": "Đặt tên cho món mới trước khi thêm món khác",
+    "addItem": "+ Thêm món",
+    "categoryName": "Tên danh mục",
+    "newCategoryAria": "Tên danh mục mới",
+    "addCategory": "+ Thêm danh mục",
+    "ready": "{count, plural, one {# món} other {# món}} sẵn sàng để thêm. Bỏ chọn những món bạn không muốn.",
+    "noPriceBody": "Đặt giá cho từng món, hoặc đánh dấu miễn phí — nếu không, món sẽ được bán với giá {zero}. Bạn chưa thể tiếp tục cho đến khi xử lý xong.",
+    "incomplete": "Nhập tên để thêm món này — dòng trống sẽ không được nhập."
+  },
+  "extras": {
+    "introSetup": "Một số món có thể thiết lập thành <b>một món có tùy chọn</b> hoặc giữ thành <b>các món riêng</b>. Hãy chọn cách hiển thị cho từng món. Bạn có thể thay đổi sau.",
+    "intro": "Một số món có thể thiết lập thành <b>một món có tùy chọn</b> hoặc giữ thành <b>các món riêng</b>. Hãy chọn cách hiển thị cho từng món. Bạn có thể thay đổi sau trong Cài đặt.",
+    "none": "Không có món nào gộp được — mỗi món là một món riêng.",
+    "axisChoice": "· chọn: {axis}",
+    "grouped": "Gộp lại · một món, khách tự chọn",
+    "separate": "Các món riêng trên thực đơn"
+  },
+  "allergens": {
+    "title": "Chất gây dị ứng",
+    "detected": "Chúng tôi đã phát hiện chất gây dị ứng trong thực đơn. Hãy chọn cách hiển thị bên dưới.",
+    "howShow": "Bạn muốn hiển thị chất gây dị ứng cho khách như thế nào?",
+    "skip": "Tạm bỏ qua thiết lập chất gây dị ứng"
+  },
+  "kitchen": {
+    "title": "Thiết lập bếp",
+    "intro": "Giúp khách biết phải chờ bao lâu — bạn luôn có thể thay đổi sau.",
+    "howWorks": "Công suất bếp hoạt động thế nào",
+    "allExist": "Tất cả danh mục đã có sẵn — không cần đặt thời gian.",
+    "totalHelp": "Đặt tổng công suất để giới hạn số món bếp nhận trong mỗi khung giờ. Để ∞ nếu không giới hạn.",
+    "saveAdd": "Lưu & thêm vào thực đơn"
+  },
+  "schedule": {
+    "title": "Thêm lịch bán",
+    "intro": "Nếu lịch bán có trên website của bạn, chúng tôi có thể tự động cập nhật — hoặc bạn tự thêm ngày.",
+    "websiteTitle": "Lịch bán có trên website của tôi",
+    "urlPlaceholder": "https://foodtruckcuaban.vn/su-kien",
+    "checking": "Đang kiểm tra…",
+    "verify": "Kiểm tra",
+    "checkingSite": "Đang kiểm tra website của bạn…",
+    "takesTime": "Có thể mất đến 2 phút — vui lòng giữ trang này mở.",
+    "canRead": "✓ Chúng tôi đọc được lịch bán của bạn",
+    "ownSite": "Website riêng của bạn — không phải trang Facebook hay Instagram.",
+    "photoTitle": "Tải lên ảnh lịch bán",
+    "dragChoose": "Kéo thả hoặc chạm để chọn",
+    "imageOrPdf": "Ảnh hoặc PDF",
+    "or": "hoặc",
+    "pastePlaceholder": "Dán các ngày bán vào đây…",
+    "read": "Đọc lịch bán",
+    "found": "Tìm thấy {count, plural, one {# ngày} other {# ngày}} — sẽ được thêm vào lịch bán của bạn.",
+    "dateTbc": "Chưa rõ ngày",
+    "save": "Lưu {count, plural, one {# ngày} other {# ngày}}",
+    "manualDesc": "Thêm sau trong thẻ Lịch bán — bây giờ chưa cần làm gì.",
+    "manualBody": "Không sao. Bạn có thể thêm và quản lý ngày bán bất cứ lúc nào trong thẻ Lịch bán của tài khoản.",
+    "blockedDomain": "Vui lòng dùng địa chỉ website của bạn — không thể tự động lấy dữ liệu từ trang Facebook và Instagram.",
+    "saveFailed": "Chúng tôi đã đọc được lịch bán, nhưng chưa lưu được lúc này — hãy thử lại.",
+    "websiteDesc": "Chúng tôi sẽ kiểm tra thường xuyên và gửi ngày mới để bạn duyệt.",
+    "keepChecking": "Chúng tôi sẽ tiếp tục kiểm tra trang này và gửi mọi ngày mới để bạn duyệt.",
+    "photoDesc": "Chụp hoặc dán các ngày bán — chúng tôi sẽ đọc để bạn kiểm tra.",
+    "noneFound": "Chúng tôi không tìm thấy ngày nào trong đó — hãy thử ảnh rõ hơn, hoặc tự thêm ngày.",
+    "manualTitle": "Tôi sẽ tự thêm ngày bán",
+    "trialNotStarted": "Thêm sự kiện không bắt đầu thời gian dùng thử miễn phí — bạn sẽ chọn sự kiện nào bắt đầu tính, sau này."
+  },
+  "done": {
+    "summary": "{items, plural, one {# món} other {# món}} trong {categories, plural, one {# danh mục} other {# danh mục}}.",
+    "imported": "Đã nhập thực đơn!",
+    "added": "Các món đã được thêm vào thực đơn.",
+    "duplicates": "Đã bỏ qua {count, plural, one {# món trùng} other {# món trùng}}",
+    "showMe": "Xem hướng dẫn",
+    "remind": "Nhắc tôi sau",
+    "allSet": "Bạn đã sẵn sàng!",
+    "explore": "Tôi sẽ tự khám phá"
+  },
+  "discard": {
+    "setupTitle": "Hoàn tất thiết lập sau?",
+    "setupBody": "Tài khoản và xe của bạn đã được lưu — không mất gì cả. Bạn có thể thêm thực đơn bất cứ lúc nào: đăng nhập và chạm <b>Nhập thực đơn</b> trên màn hình thực đơn để tiếp tục ngay tại đây.",
+    "keepGoing": "Tiếp tục",
+    "finishLater": "Hoàn tất sau",
+    "title": "Bỏ lần nhập này?",
+    "keepEditing": "Tiếp tục sửa",
+    "discard": "Bỏ",
+    "body": "Thay đổi của bạn sẽ không được lưu — các món đã nhập, thời gian chế biến và công suất bếp sẽ không được thêm.",
+    "carriedBody": "Thực đơn từ bản demo được giữ nguyên trên xe của bạn. Bạn có thể thay đổi bất cứ lúc nào trên màn hình thực đơn."
+  },
+  "allergenCardText": {
+    "contains": "Có chứa: {list}",
+    "mayContain": "Có thể chứa: {list}"
+  }
+}

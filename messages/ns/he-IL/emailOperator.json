@@ -1,0 +1,25 @@
+{
+  "newOrder": {
+    "subject": "הזמנה חדשה #{id} — {name}{withSlot, select, yes { · {slot}} other {}}",
+    "heading": "התקבלה הזמנה חדשה",
+    "from": "<b>הזמנה #{id}</b> מאת <b>{name}</b>",
+    "collection": "איסוף: {time}",
+    "asap": "ללא שעה מוגדרת — בהקדם",
+    "total": "סה״כ",
+    "notes": "<b>הערות:</b> {notes}",
+    "autoConfirmed": "אושרה אוטומטית — אין צורך בפעולה.",
+    "confirmPrompt": "התחברו ללוח הבקרה של HatchGrab כדי לאשר או לדחות את ההזמנה.",
+    "text": "הזמנה חדשה #{id} מאת {name}{withSlot, select, yes {, לשעה {slot}} other {}}{withVenue, select, yes {, מיקום: {venue}} other {}}.{withCharges, select, yes { {charges}.} other {}} סה״כ {total}.{withNotes, select, yes { הערות: {notes}} other {}}"
+  },
+  "newEvents": {
+    "subject": "נמצאו אירועים חדשים עבור {truck} — נא לבדוק",
+    "hi": "שלום,",
+    "found": "מצאנו בלו״ז שלכם <b>{n, plural, one {{count} אירוע חדש} two {{count} אירועים חדשים} other {{count} אירועים חדשים}}</b> — נדרש האישור שלכם לפני ההצגה ללקוחות.",
+    "listHeading": "אירועים שנמצאו:",
+    "approve": "אחרי שתאשרו אותם בלשונית “לו״ז”, הם יעלו לאוויר במפה, ועמוד ההזמנות שלכם יהיה מוכן לקבל הזמנות מראש.",
+    "cta": "לבדיקת הלו״ז ←",
+    "signoff": "— צוות HatchGrab · hatchgrab.com",
+    "unknownVenue": "מקום לא ידוע",
+    "text": "שלום,\n\nמצאנו בלו״ז שלכם {n, plural, one {{count} אירוע חדש} two {{count} אירועים חדשים} other {{count} אירועים חדשים}} — נדרש האישור שלכם:\n\n{list}\n\nלבדיקה: {url}\n\nאחרי שתאשרו אותם, הם יעלו לאוויר במפה.\n\n— צוות HatchGrab"
+  }
+}

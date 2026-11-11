@@ -1,0 +1,44 @@
+{
+  "perTruckMonth": "á vagn / mánuð",
+  "transactionFees": "Færslugjöld",
+  "comingSoon": "Væntanlegt",
+  "footnote2Masked": "Netgreiðslur fara í gegnum Stripe Connect. Þjónustu- og kortagjöld verða ákveðin og staðfest við opnun.",
+  "card": {
+    "title": "Áskrift og greiðslur",
+    "managed": "HatchGrab sér um áskriftina",
+    "earlyAccess": "Á meðan á forútgáfu stendur setjum við upp og breytum áskriftarleiðum handvirkt.",
+    "planLine": "{trial, select, yes {{truck} · áskriftarleið: {plan} (prufa)} other {{truck} · áskriftarleið: {plan}}}"
+  },
+  "currentPlan": "Núverandi áskriftarleið",
+  "plan": {
+    "included": "Innifalið: netpantanir fyrir {amount} á mánuði.",
+    "includedUnlimited": "Ótakmarkaðar netpantanir innifaldar.",
+    "promo": "Sérverð.",
+    "promoUntil": "Sérverð til {date}.",
+    "ended": "Áskriftarleiðinni {plan} lauk {date}. Þú ert nú á áskriftarleiðinni {now}.",
+    "trialMonths": "Ókeypis prufa í {months} mán."
+  },
+  "trialEnds": "Prufunni lýkur {date}",
+  "yourTrialEnds": "Prufunni þinni lýkur {date}",
+  "notStarted": {
+    "heading": "Ókeypis prufan þín er ekki hafin"
+  },
+  "onTrial": "Þú hefur alla eiginleika. Veldu áskriftarleið áður en prufunni lýkur.",
+  "onTrialPaidEnd": "Þú hefur alla eiginleika. Þegar prufunni lýkur kostar {plan} {price} á mánuði. Við höfum samband fyrir þann tíma til að ganga frá greiðslu.",
+  "onTrialNoCta": "Þú hefur alla eiginleika.",
+  "noCharge": "🔒 Þú greiðir ekkert á meðan prufan stendur, en hún gildir til {date}. Gjaldtaka hefst aldrei fyrr en þú velur áskriftarleið og slærð inn greiðsluupplýsingar. Fram að því er engu að segja upp og ekkert að greiða.",
+  "noChargePaidEnd": "🔒 Þú greiðir ekkert á meðan prufan stendur, en hún gildir til {date}.",
+  "fees": "*Hefðbundin kortagjöld gilda um netpantanir",
+  "setUpPayment": "⏱ Veldu áskriftarleið áður en prufunni lýkur",
+  "changeYourPlan": "Breyta áskriftarleið",
+  "planButton": "{plan} — {price}",
+  "upgradeModal": {
+    "title": "Skipta yfir í áskriftarleiðina {plan}",
+    "tagline": "{price} — {description}",
+    "body": "Við erum að setja upp sjálfvirka gjaldtöku. Til að skipta núna skaltu senda okkur skilaboð og við göngum frá því innan 24 klst.",
+    "mailSubject": "Skipta yfir í áskriftarleiðina {plan} — {truck}",
+    "mailBody": "Hæ, ég vil skipta {truck} yfir í áskriftarleiðina {plan} ({price}).",
+    "email": "Sendu okkur tölvupóst til að skipta",
+    "cancel": "Hætta við"
+  }
+}

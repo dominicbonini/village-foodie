@@ -1,0 +1,58 @@
+{
+  "label": {
+    "street": "Alamat",
+    "postcode": "Kode pos",
+    "zip": "Kode ZIP",
+    "eircode": "Eircode",
+    "postalCode": "Kode pos",
+    "state": "Negara bagian",
+    "stateTerritory": "Negara bagian atau teritori",
+    "province": "Provinsi",
+    "county": "Kabupaten",
+    "prefecture": "Prefektur",
+    "emirate": "Emirat",
+    "region": "Wilayah",
+    "area": "Daerah (desa, kota kecil, atau kota)",
+    "townOrArea": "Kota atau daerah",
+    "city": "Kota",
+    "suburb": "Kawasan",
+    "townOrCity": "Kota kecil atau kota"
+  },
+  "short": {
+    "area": "Daerah",
+    "townOrArea": "Kota atau daerah",
+    "city": "Kota",
+    "suburb": "Kawasan",
+    "townOrCity": "Kota kecil atau kota"
+  },
+  "inSentence": {
+    "postcode": "kode pos",
+    "zip": "kode ZIP",
+    "eircode": "Eircode",
+    "postalCode": "kode pos"
+  },
+  "withArticle": {
+    "postcode": "kode pos",
+    "zip": "kode ZIP",
+    "eircode": "Eircode",
+    "postalCode": "kode pos"
+  },
+  "tradeLabel": {
+    "area": "Kota kecil atau kota",
+    "townOrArea": "Kota atau daerah",
+    "city": "Kota",
+    "suburb": "Kawasan",
+    "townOrCity": "Kota kecil atau kota"
+  },
+  "basedIn": {
+    "area": "Kota tempat usaha Anda berada",
+    "townOrArea": "Kota atau daerah tempat usaha Anda berada",
+    "city": "Kota tempat usaha Anda berada",
+    "suburb": "Kawasan tempat usaha Anda berada",
+    "townOrCity": "Kota tempat usaha Anda berada"
+  },
+  "example": "mis. {example}",
+  "customersSee": "Yang dilihat pelanggan:",
+  "postalWarning": "Sepertinya itu bukan {article} yang benar — contohnya {example}. Anda tetap bisa menyimpannya.",
+  "regionChoose": "Pilih…"
+}

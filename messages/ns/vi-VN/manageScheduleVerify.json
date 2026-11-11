@@ -1,0 +1,9 @@
+{
+  "launch_failed": "Tính năng kiểm tra tạm thời không khả dụng. Vui lòng thử lại sau ít phút.",
+  "malformed": "Đây có vẻ không phải địa chỉ web. Hãy thử dạng như foodtruckcuaban.vn/su-kien",
+  "blocked": "Chúng tôi không truy cập được trang này — có thể trang đang chặn kiểm tra tự động. Hãy thử trang có đăng lịch bán của bạn, hoặc tự thêm sự kiện.",
+  "unreachable": "Chúng tôi không kết nối được tới website này. Có thể website đang lỗi hoặc địa chỉ bị sai.",
+  "no_content": "Chúng tôi đã mở được trang này nhưng không đọc được nội dung nào. Hãy kiểm tra trang có ở chế độ công khai không.",
+  "no_events": "Chúng tôi không tìm thấy sự kiện sắp tới nào trên trang này. Hãy đảm bảo URL dẫn thẳng tới nơi đăng lịch bán của bạn.",
+  "blockedDomain": "Vui lòng dùng URL website của bạn — không thể tự động đọc trang Facebook và Instagram."
+}

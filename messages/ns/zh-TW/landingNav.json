@@ -1,0 +1,14 @@
+{
+  "homeLabel": "HatchGrab 首頁",
+  "cta": "上傳我的菜單 →",
+  "ctaShort": "上傳菜單",
+  "features": "功能",
+  "pricing": "價格",
+  "logIn": "登入",
+  "country": {
+    "button": "國家：{name}。變更國家",
+    "menu": "國家",
+    "title": "選擇你的國家",
+    "subline": "價格、語言和設定會隨之調整。"
+  }
+}

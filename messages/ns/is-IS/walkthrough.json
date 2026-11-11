@@ -1,0 +1,31 @@
+{
+  "intro": "Í Umsjón setur þú matarvagninn upp og sérð hvernig gengur. Í Pantanayfirlitinu tekur þú við pöntunum og stýrir hverjum viðburði á meðan hann stendur yfir.",
+  "ariaLabel": "Kynning á stjórnborðinu",
+  "step": "{current} af {total}",
+  "skip": "Sleppa",
+  "back": "← Til baka",
+  "next": "Áfram →",
+  "done": "Lokið",
+  "stops": {
+    "menu": {
+      "title": "Matseðill",
+      "body": "Réttirnir þínir, verð og ofnæmisvaldar. Allt sem þú breytir hér tekur gildi strax."
+    },
+    "schedule": {
+      "title": "Dagskrá",
+      "body": "Hvar og hvenær þú ert að selja. Bættu við viðburði hér og viðskiptavinir geta pantað fyrir hann."
+    },
+    "build": {
+      "title": "Tilboð og Aukaval og viðbótarsala",
+      "body": "Tilboð, viðbótarsala, aukaval og afköst eldhússins eru undir Matseðli — prófaðu þig áfram."
+    },
+    "settings": {
+      "title": "Stillingar",
+      "body": "Upplýsingar um matarvagninn þinn og hvernig viðskiptavinir greiða."
+    },
+    "billing": {
+      "title": "Áskrift",
+      "body": "Hér eru upplýsingar um áskriftarleiðina þína, reikninga og eiginleika."
+    }
+  }
+}

@@ -1,0 +1,106 @@
+{
+  "preview": {
+    "title": "Prófaðu áður en þú tengir",
+    "intro": "Skrifaðu spurningu eins og viðskiptavinur myndi spyrja og sjáðu nákvæmlega hvaða svar hann fengi. Ekkert er sent neinum.",
+    "examples": {
+      "where": "Hvar eruð þið í kvöld?",
+      "doYouDo": "Eruð þið með pepperóní?",
+      "menu": "Hvað er á matseðlinum?"
+    },
+    "placeholder": "Hvaða eftirrétti eruð þið með?",
+    "send": "Senda",
+    "empty": "Svarið birtist hér",
+    "working": "Bý til svarið…",
+    "noReply": "Ekkert svar yrði sent.",
+    "noReplyWhy": "Þetta lítur út eins og ruslpóstur, bókunarbeiðni eða eitthvað óskylt, svo sjálfvirka svarið þegir.",
+    "footnote": "Svörin eru búin til með gervigreind, eru örlítið breytileg í hvert sinn og geta stöku sinnum verið röng.",
+    "failed": "Ekki tókst að búa til forskoðun í þetta sinn.",
+    "unreachable": "Náðist ekki samband við netþjóninn. Athugaðu tenginguna og reyndu aftur."
+  },
+  "setup": {
+    "button": {
+      "preparing": "Undirbý…",
+      "unavailable": "Ekki í boði",
+      "waiting": "Bíð eftir Facebook-glugganum…",
+      "finishing": "Lýk við…",
+      "reconnect": "Tengja aftur",
+      "setUp": "Setja upp"
+    },
+    "startAgain": "Byrja upp á nýtt",
+    "popupHint": "Sérðu ekki Facebook-gluggann? Hann gæti hafa verið stöðvaður. Leyfðu sprettiglugga fyrir hatchgrab.com og ýttu svo á Byrja upp á nýtt."
+  },
+  "notice": {
+    "sdkUnavailable": "Uppsetning WhatsApp er ekki í boði í þessu umhverfi.",
+    "sdkBlocked": "Innskráningarforskrift Meta náði ekki að hlaðast. Auglýsingavörn eða rakningarvörn er yfirleitt ástæðan.",
+    "setupFailed": "Ekki tókst að ljúka uppsetningu. Engu var breytt.",
+    "setupFinished": "Uppsetningu lokið.",
+    "metaError": "Meta tilkynnti um vandamál í uppsetningunni. Engu var breytt. Reyndu aftur og hafðu samband við okkur ef þetta endurtekur sig.",
+    "closed": "Uppsetningunni var lokað áður en henni lauk. Engu var breytt — ýttu á Setja upp til að reyna aftur.",
+    "disconnectedUnreachable": "WhatsApp hefur verið aftengt. Við náðum ekki sambandi við Meta til að fjarlægja aðganginn. Fjarlægðu HatchGrab í WhatsApp Business → Settings → Account → Business Platform.",
+    "disconnected": "WhatsApp hefur verið aftengt. Sjálfvirk svör eru hætt.",
+    "close": "Loka"
+  },
+  "card": {
+    "title": "Sjálfvirk svör",
+    "description": "Svaraðu spurningum viðskiptavina sjálfvirkt á samfélagsmiðlunum þínum, út frá matseðlinum og dagskránni.",
+    "channels": "Rásir",
+    "requiresAccount": "Krefst WhatsApp Business-aðgangs.",
+    "connected": "Tengt",
+    "popupInstruction": "Facebook-gluggi opnast til að tengja WhatsApp Business-aðganginn þinn. Ef ekkert birtist skaltu leyfa sprettiglugga fyrir hatchgrab.com í vafranum og ýta svo aftur á Setja upp.",
+    "switchedOff": "Slökkt er á sjálfvirkum svörum á WhatsApp fyrir matarvagninn þinn.",
+    "expiring": "Það þarf bráðum að endurnýja WhatsApp-tenginguna. Ýttu á Tengja aftur til að sjálfvirku svörin haldi áfram.",
+    "comingSoon": "Væntanlegt",
+    "instagram": "Sjálfvirk svör við beinum skilaboðum á Instagram. Krefst fagaðgangs á Instagram.",
+    "messenger": "Sjálfvirk svör á Facebook Messenger. Krefst Facebook-síðu."
+  },
+  "blocked": {
+    "title": "Svörin þín berast ekki",
+    "body": "WhatsApp neitar að senda sjálfvirku svörin þín vegna greiðsluvanda á WhatsApp Business-aðganginum þínum. Viðskiptavinir geta enn sent þér skilaboð og þú sérð áfram allt sem þeir senda — en þeir fá ekkert svar.",
+    "fix": "Þú greiðir WhatsApp beint fyrir þessi skilaboð, svo þetta er lagað í WhatsApp Manager. <link>Athugaðu greiðslumátann</link>"
+  },
+  "limit": {
+    "heading": "Sjálfvirk svör",
+    "label": "Mánaðarhámark",
+    "option": "{n, number}",
+    "usage": "{used, number} af {limit, number} notuð · endurstillist {date}",
+    "perCustomer": "Hámark svara á hvern viðskiptavin á 24 klst.: {n}. Eftir það ein skilaboð um að þú svarir persónulega.",
+    "emailAt": "Svör stöðvast við hámarkið. Við sendum þér tölvupóst við 80% og 100%.",
+    "saved": "Mánaðarhámark svara vistað",
+    "saveFailed": "Ekki tókst að vista hámarkið"
+  },
+  "billing": {
+    "heading": "Greiðslur",
+    "paymentMethod": "Greiðslumáti",
+    "added": "Greiðslumáta bætt við",
+    "missing": "Enginn greiðslumáti skráður",
+    "addInManager": "Bæta við í WhatsApp Manager",
+    "summary": "Meta, ekki HatchGrab, skuldfærir WhatsApp-aðganginn þinn fyrir svör. Frá {from} eru fyrstu {free, number} svörin á mánuði ókeypis. Rétt þann {checked}; skoðaðu <link>verðskrá Meta</link> varðandi breytingar.",
+    "howMetaCharges": "Svona tekur Meta gjald",
+    "chargesTitle": "Meta tekur gjald fyrir svör á WhatsApp, ekki HatchGrab.",
+    "chargesBody": "Meta skuldfærir WhatsApp Business-aðganginn þinn fyrir hvert svar sem HatchGrab sendir fyrir þig. Frá {from} innifelur Meta {free, number} ókeypis svör á mánuði fyrir hvert númer; eftir það er tekið gjald fyrir hvert svar samkvæmt verðskrá Meta. Svör sem þú sendir beint úr WhatsApp Business-appinu eru gjaldfrjáls. Meta ákveður þessi verð og getur breytt þeim. <link>Sjá verðskrá Meta</link>",
+    "addPaymentInManager": "Bættu við greiðslumáta í WhatsApp Manager",
+    "aboveMissing": "Hámarkið þitt er yfir {free, number} ókeypis svörum Meta. Án greiðslumáta stöðvar Meta öll svör þegar þau eru uppurin.",
+    "aboveGeneral": "Hámarkið þitt er yfir {free, number} ókeypis svörum Meta. Svör umfram það krefjast greiðslumáta á WhatsApp-aðganginum þínum; án hans stöðvar Meta öll svör þegar ókeypis svörin eru uppurin.",
+    "addPaymentMethod": "Bæta við greiðslumáta"
+  },
+  "disconnect": {
+    "link": "Aftengja WhatsApp",
+    "title": "Aftengja WhatsApp?",
+    "body": "Sjálfvirk svör hætta strax og HatchGrab missir aðgang að WhatsApp-aðganginum þínum. Númerið þitt virkar áfram í WhatsApp Business-appinu. Til að fjarlægja HatchGrab alveg skaltu líka opna WhatsApp Business → Settings → Account → Business Platform.",
+    "cancel": "Hætta við",
+    "confirm": "Aftengja",
+    "working": "Aftengi…",
+    "failed": "Ekki tókst að aftengja"
+  },
+  "signup": {
+    "logged": "Skráð.",
+    "partial": "Við tengdum WhatsApp Business-aðganginn þinn en gátum ekki lokið tengingunni. Ekkert er að þín megin — hafðu samband og við klárum þetta.",
+    "noNumber": "WhatsApp Business-aðgangurinn þinn er tengdur en ekkert símanúmer barst. Ýttu á Tengja aftur og kláraðu skrefið með númerinu.",
+    "needsRegistering": "Aðgangurinn þinn er tengdur en við þurfum að skrá þetta númer áður en svör geta hafist. Hafðu samband við þjónustuverið — uppsetningin þín er vistuð, ekki keyra hana aftur.",
+    "registerRefused": "Aðgangurinn þinn er tengdur en Meta vildi ekki skrá númerið. Uppsetningin þín er vistuð — hafðu samband við þjónustuverið í stað þess að keyra hana aftur.",
+    "deliveryRefused": "Aðgangurinn þinn er tengdur en Meta vildi ekki kveikja á afhendingu skilaboða. Uppsetningin þín er vistuð — hafðu samband við þjónustuverið í stað þess að keyra hana aftur.",
+    "numberTaken": "Þetta WhatsApp-númer er þegar tengt öðrum HatchGrab-aðgangi. Hvert númer getur aðeins svarað fyrir einn matarvagn. Hafðu samband við þjónustuverið og við færum það yfir.",
+    "saveIncomplete": "Næstum komið — við náðum ekki að ljúka vistuninni. Uppsetningin þín er vistuð, hafðu samband við þjónustuverið í stað þess að keyra hana aftur.",
+    "connected": "WhatsApp er tengt. Sjálfvirk svör byrja nú að svara skilaboðum í þetta númer."
+  }
+}

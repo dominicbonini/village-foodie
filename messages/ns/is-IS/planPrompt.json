@@ -1,0 +1,122 @@
+{
+  "includedOn": "{many, select, yes {{feature} fylgja áskriftarleiðinni {plan}.} other {{feature} fylgir áskriftarleiðinni {plan}.}}",
+  "notOnPlan": "{many, select, yes {{feature} eru ekki í þinni áskriftarleið.} other {{feature} er ekki í þinni áskriftarleið.}}",
+  "switchedOff": "{many, select, yes {{feature}: slökkt fyrir vagninn þinn.} other {{feature}: slökkt fyrir vagninn þinn.}}",
+  "planLine": "{plan} · {price} · {description}",
+  "planLineNoPrice": "{plan} · {description}",
+  "upgrade": "Uppfæra →",
+  "features": {
+    "discovery_map": {
+      "name": "Skráning á leitarkorti",
+      "many": "no"
+    },
+    "web_dashboard": {
+      "name": "Vefstjórnborðið",
+      "many": "no"
+    },
+    "ipad_kds": {
+      "name": "Eldhúsappið",
+      "many": "no"
+    },
+    "qr_menu": {
+      "name": "QR-matseðillinn",
+      "many": "no"
+    },
+    "meal_deals": {
+      "name": "Tilboð",
+      "many": "yes"
+    },
+    "upsells": {
+      "name": "Viðbótarsala",
+      "many": "yes"
+    },
+    "walkup_orders": {
+      "name": "Pantanir á staðnum",
+      "many": "yes"
+    },
+    "online_ordering_pay_at_hatch": {
+      "name": "Greiðsla við afhendingu",
+      "many": "no"
+    },
+    "sold_out_toggle": {
+      "name": "Rofinn „Uppselt“",
+      "many": "no"
+    },
+    "stock_countdown": {
+      "name": "Niðurtalning birgða",
+      "many": "no"
+    },
+    "offline_protection": {
+      "name": "Vörn án nettengingar",
+      "many": "no"
+    },
+    "online_payments": {
+      "name": "Netgreiðslur",
+      "many": "yes"
+    },
+    "advance_preordering": {
+      "name": "Forpöntun fram í tímann",
+      "many": "no"
+    },
+    "time_slot_selection": {
+      "name": "Tímahólf fyrir viðskiptavini",
+      "many": "yes"
+    },
+    "smart_batch_pacing": {
+      "name": "Stýring á afköstum eldhúss",
+      "many": "no"
+    },
+    "auto_accept": {
+      "name": "Sjálfvirk samþykkt",
+      "many": "no"
+    },
+    "instagram_messenger_replies": {
+      "name": "Sjálfvirk svör á Messenger og Instagram",
+      "many": "yes"
+    },
+    "branded_qr_code": {
+      "name": "QR-kóðar með þínu merki",
+      "many": "yes"
+    },
+    "advanced_reporting": {
+      "name": "Ítarleg skýrslugerð",
+      "many": "no"
+    },
+    "ticket_printing": {
+      "name": "Prentun eldhúsmiða",
+      "many": "no"
+    },
+    "multi_device_kds": {
+      "name": "Samstilling eldhúss á mörgum tækjum",
+      "many": "no"
+    },
+    "cook_screen": {
+      "name": "Eldunarskjárinn",
+      "many": "no"
+    },
+    "whatsapp_replies": {
+      "name": "Sjálfvirk svör á WhatsApp",
+      "many": "yes"
+    },
+    "embed_schedule": {
+      "name": "Dagskráin á þinni eigin vefsíðu",
+      "many": "no"
+    },
+    "schedule_graphics": {
+      "name": "Færslur á samfélagsmiðla",
+      "many": "yes"
+    },
+    "event_types": {
+      "name": "Eigin viðburðategundir",
+      "many": "yes"
+    },
+    "private_events": {
+      "name": "Einkaviðburðir",
+      "many": "yes"
+    },
+    "paperwork": {
+      "name": "Skjöl",
+      "many": "yes"
+    }
+  }
+}

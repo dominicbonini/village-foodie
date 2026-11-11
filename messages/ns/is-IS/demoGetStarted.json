@@ -1,0 +1,103 @@
+{
+  "upload": {
+    "bannerButton": "Vista matseðilinn minn →",
+    "heading": "Settu upp matarvagninn þinn",
+    "sub": "Matseðillinn þinn fylgir beint með.",
+    "privacy": "Við notum þetta eingöngu til að setja upp matarvagninn þinn og senda tengilinn á kynninguna — sjá <link>persónuverndarstefnuna</link> okkar."
+  },
+  "sample": {
+    "bannerButton": "Setja upp matarvagninn →",
+    "heading": "Settu upp matarvagninn þinn",
+    "sub": "Næst hleður þú upp þínum eigin matseðli — það tekur mínútu.",
+    "privacy": "Við notum þetta eingöngu til að setja upp matarvagninn þinn og senda tengilinn á kynninguna — sjá <link>persónuverndarstefnuna</link> okkar."
+  },
+  "saveOnly": {
+    "bannerButton": "Vista matseðilinn minn →",
+    "heading": "Vistaðu kynninguna",
+    "sub": "Við geymum hana í 14 daga og sendum þér tengil strax í tölvupósti.",
+    "privacy": "Við notum þetta eingöngu til að senda tengilinn á kynninguna — sjá <link>persónuverndarstefnuna</link> okkar."
+  },
+  "confirmationHeading": "Allt klárt",
+  "postSaveButton": "Setja upp matarvagninn →",
+  "enterSetupButton": "Setja upp matarvagninn →",
+  "emailOnlyLink": "Sendið mér bara tengil í tölvupósti til að koma aftur í þessa kynningu",
+  "sendLinkButton": "Senda mér tengilinn",
+  "savingButton": "Vista…",
+  "continueButton": "Áfram →",
+  "createAccountButton": "Stofna aðganginn minn →",
+  "retryButton": "Reyna aftur",
+  "backToDemoButton": "Aftur í kynninguna",
+  "savedStatus": "{hasDate, select, yes {✓ Vistað — geymt til {date}} other {✓ Vistað}}",
+  "back": "Til baka",
+  "close": "Loka",
+  "truckStepHeading": "Um matarvagninn þinn",
+  "detailsStepHeading": "Ljúktu uppsetningunni",
+  "stepper": {
+    "details": "Upplýsingar um þig",
+    "menu": "Matseðill",
+    "allergens": "Ofnæmisvaldar",
+    "kitchen": "Uppsetning eldhúss",
+    "schedule": "Dagskrá"
+  },
+  "confirmEmailed": "Við höfum sent þér tengil beint aftur í þessa kynningu — engin innskráning nauðsynleg.",
+  "confirmKeepUntil": "Við geymum hana til <b>{date}</b>. Matseðillinn fylgir þér þegar þú setur allt upp fyrir alvöru.",
+  "loading": "Hleður…",
+  "firstName": "Fornafn",
+  "lastName": "Eftirnafn",
+  "truckName": "Heiti matarvagns",
+  "truckNamePlaceholder": "t.d. Grandaeldhúsið",
+  "cuisine": "Matargerð",
+  "logoLabel": "Merki <opt>(valfrjálst)</opt>",
+  "logoPreviewAlt": "Forskoðun merkis",
+  "changeLogo": "Breyta merki",
+  "removeLogo": "Fjarlægja",
+  "uploadLogo": "📷 Hlaða upp merki",
+  "readyTitle": "Aðgangurinn þinn er tilbúinn",
+  "readyBody": "Ljúkum nú við að setja upp matarvagninn — matseðilinn, ofnæmisvaldana og eldhúsið.",
+  "hangTight": "Augnablik — við erum að setja allt upp.",
+  "stage": {
+    "account": "Stofna aðganginn þinn",
+    "truck": "Set upp matarvagninn þinn",
+    "menu": "Hleð inn matseðlinum þínum"
+  },
+  "stageState": {
+    "done": "lokið",
+    "recognised": "þú ert þegar með aðgang",
+    "failed": "mistókst",
+    "active": "í vinnslu",
+    "pending": "í bið"
+  },
+  "signIn": "Skrá inn",
+  "phone": "Sími",
+  "onWhatsapp": "Þetta númer er á WhatsApp",
+  "email": "Netfang",
+  "emailPlaceholder": "thu@matarvagninnthinn.is",
+  "settingUpAs": "Uppsetning með netfanginu <b>{email}</b> <change>breyta</change>",
+  "password": "Lykilorð",
+  "passwordPlaceholder": "Að minnsta kosti 8 stafir",
+  "hidePassword": "Fela lykilorð",
+  "showPassword": "Sýna lykilorð",
+  "promoLabel": "Ertu með kóða? <opt>(valfrjálst)</opt>",
+  "promoPlaceholder": "Sláðu hann inn hér",
+  "agreeTerms": "Ég samþykki <terms>skilmálana</terms> og <privacy>persónuverndarstefnuna</privacy>.",
+  "freeMonth": "{months, plural, =0 {Ókeypis prufan hefst þegar þú skráir þig.} one {Fyrsti mánuðurinn er ókeypis og hefst þegar þú skráir þig.} other {Fyrstu # mánuðirnir eru ókeypis og hefjast þegar þú skráir þig.}}",
+  "fieldError": {
+    "firstName": "Segðu okkur fornafnið þitt.",
+    "lastName": "Og eftirnafnið þitt.",
+    "truck": "Gefðu matarvagninum nafn.",
+    "cuisine": "Segðu okkur hvað þú eldar.",
+    "phoneMissing": "Bættu við símanúmeri — bæði viðskiptavinir og við notum það til að ná í þig.",
+    "email": "Sláðu inn gilt netfang.",
+    "password": "Lykilorðið verður að vera að minnsta kosti 8 stafir.",
+    "terms": "Samþykktu skilmálana til að halda áfram."
+  },
+  "error": {
+    "saveFailed": "Ekki tókst að vista þetta — reyndu aftur.",
+    "savedNoEmail": "Vistað — en ekki tókst að senda tengilinn í tölvupósti í augnablikinu.",
+    "unreachable": "Ekki náðist samband við okkur í augnablikinu — reyndu aftur.",
+    "createAccountFailed": "Ekki tókst að stofna aðganginn þinn.",
+    "truckCreateFailed": "Aðgangurinn þinn er tilbúinn, en ekki tókst að stofna matarvagninn. Reyndu aftur.",
+    "truckUnreachable": "Aðgangurinn þinn er tilbúinn, en ekki tókst að stofna matarvagninn í augnablikinu. Reyndu aftur.",
+    "truckNoToken": "Matarvagninn þinn er uppsettur, en ekki tókst að opna hann í augnablikinu. Reyndu aftur."
+  }
+}

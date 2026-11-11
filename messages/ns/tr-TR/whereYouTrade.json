@@ -1,0 +1,13 @@
+{
+  "stepHeading": "Food truck’ınız nerede?",
+  "stepIntro": "Bu; para biriminizi, fiyatlarınızı, saat diliminizi ve telefon biçiminizi belirler. Ülke, kartlı ödemelerinize bağlı olduğu için sonradan değiştirilemez.",
+  "settingsHeading": "Satış yaptığınız yer",
+  "countryLabel": "Ülke",
+  "countryGuessed": "Bunu bulunduğunuz yere göre tahmin ettik. Yanlışsa değiştirin.",
+  "countryLocked": "Ülkeniz değiştirilemez",
+  "townLabel": "İl veya ilçe",
+  "townQuestion": "Bulunduğunuz il veya ilçe",
+  "timezoneLabel": "Saat dilimi",
+  "continueButton": "Devam",
+  "saveFailed": "Ayarlar kaydedilemedi — lütfen tekrar deneyin."
+}

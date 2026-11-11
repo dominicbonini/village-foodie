@@ -1,0 +1,9 @@
+{
+  "launch_failed": "Staðfesting er ekki í boði í augnablikinu. Reyndu aftur eftir smástund.",
+  "malformed": "Þetta lítur ekki út eins og vefslóð. Prófaðu t.d. matarvagninnthinn.is/vidburdir",
+  "blocked": "Við komumst ekki inn á þessa síðu — hún gæti verið að loka á sjálfvirkar athuganir. Prófaðu síðuna sem sýnir dagskrána þína eða bættu viðburðum við handvirkt.",
+  "unreachable": "Við náðum ekki sambandi við þessa vefsíðu. Hún gæti legið niðri eða vefslóðin verið röng.",
+  "no_content": "Við náðum í síðuna en gátum ekkert lesið á henni. Gakktu úr skugga um að hún sé opin öllum.",
+  "no_events": "Við fundum enga væntanlega viðburði á þessari síðu. Gakktu úr skugga um að slóðin vísi beint á síðuna þar sem dagskráin þín er.",
+  "blockedDomain": "Notaðu slóð vefsíðunnar þinnar — ekki er hægt að sækja efni sjálfkrafa af Facebook- og Instagram-síðum."
+}

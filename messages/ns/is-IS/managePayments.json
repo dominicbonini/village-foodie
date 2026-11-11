@@ -1,0 +1,94 @@
+{
+  "heading": "Greiðslur",
+  "loading": "Athuga Stripe-aðganginn þinn…",
+  "state": {
+    "not_connected": {
+      "title": "Ekki uppsett",
+      "body": "Tekur um 10 mínútur. Þú þarft bankaupplýsingar og skilríki.",
+      "chip": "Ekki uppsett"
+    },
+    "requirements": {
+      "title": "Stripe vantar upplýsingar frá þér",
+      "body": "Kortagreiðslur virka ekki fyrr en Stripe hefur fengið upplýsingar um reksturinn og bankareikninginn.",
+      "chip": "Aðgerðar þörf"
+    },
+    "pending": {
+      "title": "Tengt — Stripe er að yfirfara upplýsingarnar",
+      "body": "Þú þarft ekkert að gera. Stripe er að fara yfir það sem þú sendir og þessi síða uppfærist þegar því er lokið.",
+      "chip": "Í yfirferð"
+    },
+    "ready": {
+      "title": "Tengt",
+      "body": "Stripe-aðgangurinn þinn er tengdur og getur tekið við greiðslum.",
+      "chip": "Tilbúið"
+    },
+    "restricted": {
+      "title": "Kortagreiðslur í biðstöðu",
+      "body": "Stripe hefur sett kortagreiðslur á aðganginum þínum í bið þar til mál hefur verið leyst.",
+      "chip": "Í bið"
+    },
+    "unsupported": {
+      "title": "Kortagreiðslur eru ekki í boði á þessum aðgangi",
+      "body": "Stripe getur ekki virkjað kortagreiðslur hér. Hafðu samband og við leysum málið með þér.",
+      "chip": "Ekki í boði"
+    }
+  },
+  "keyMismatch": {
+    "title": "Stripe-lyklarnir passa ekki saman",
+    "body": "Netþjónn síðunnar notar Stripe-lykilinn fyrir <b>{server, select, live {raunumhverfi} other {prófunarumhverfi}}</b> en vafraútgáfan var smíðuð með lyklinum fyrir <b>{browser, select, live {raunumhverfi} other {prófunarumhverfi}}</b>. Kortagreiðslur myndu bregðast um leið og viðskiptavinur reynir að greiða, svo uppsetning Stripe er læst þar til lyklarnir passa saman.",
+    "fix": "Báðir lyklar verða að vera stilltir fyrir sama umhverfi og síðan þarf að smíða síðuna aftur — birtingarlykillinn (publishable key) er bakaður inn við smíði en leynilykillinn (secret key) er lesinn við hverja beiðni."
+  },
+  "permission": {
+    "title": "Aðeins eigandi matarvagnsins getur sett upp greiðslur",
+    "body": "Sá sem á bankareikninginn sem tekur við peningunum tengir Stripe, svo það þarf að gera það úr hans eigin innskráða aðgangi. Ekkert er að þessum matarvagni eða HatchGrab."
+  },
+  "config": {
+    "keyMissingTitle": "Kortagreiðslur hafa ekki enn verið stilltar",
+    "fetchTitle": "Við gátum ekki athugað Stripe-aðgang þessa matarvagns",
+    "keyMissing": "Ekki stillt: {name} — innbyggðu einingarnar geta ekki hlaðist."
+  },
+  "errors": {
+    "requestFailed": "Beiðni mistókst ({status})",
+    "unreachable": "Náðist ekki samband við Stripe"
+  },
+  "online": {
+    "heading": "Netgreiðslur",
+    "body": "Viðskiptavinir greiða með korti þegar þeir panta. Peningarnir fara beint inn á þinn eigin Stripe-aðgang — við geymum þá aldrei.",
+    "feeLine": "Stripe tekur {fee} fyrir hverja greiðslu með hefðbundnum kortum ({region}). Önnur kort geta kostað meira. Gjald HatchGrab af netpöntunum fer eftir áskriftarleiðinni þinni — sjá Áskrift.",
+    "testMode": "Prófunarhamur. Enn er ekki hægt að taka við raunverulegum greiðslum."
+  },
+  "trialNote": "Uppsetningin hefur ekki áskriftina þína og þú greiðir ekkert í dag. Svona greiða viðskiptavinir þér — áskriftarleiðin þín er óháð þessu.",
+  "admin": {
+    "title": "Skoðað sem kerfisstjóri",
+    "body": "Þessi matarvagn hefur ekki sett upp netgreiðslur. Aðeins eigandinn getur hafið það, úr sínum eigin innskráða aðgangi — hér er ekkert til að ýta á."
+  },
+  "setUp": {
+    "button": "Setja upp netgreiðslur",
+    "busy": "Set upp…"
+  },
+  "toast": {
+    "alreadySetUp": "Þegar uppsett — held áfram",
+    "addDetails": "Bættu nú við upplýsingunum fyrir Stripe",
+    "createFailed": "Ekki tókst að stofna aðganginn"
+  },
+  "onboarding": {
+    "restricted": "Stripe tekur við héðan — þú skráir þig inn hjá Stripe og uppfærir upplýsingarnar sem vantar.",
+    "firstRun": "Stripe tekur við héðan — þú skráir þig inn hjá Stripe og gefur upp upplýsingar um reksturinn og bankareikninginn."
+  },
+  "details": {
+    "title": "Stripe-upplýsingarnar þínar",
+    "body": "Breyttu bankareikningnum sem þú færð greitt inn á, eða uppfærðu upplýsingar og skjöl um reksturinn.",
+    "button": "Skoða eða breyta"
+  },
+  "walkUp": {
+    "heading": "Greiðslur á staðnum",
+    "body": "Hvernig þú tekur við greiðslum við vagninn. HatchGrab tekur ekkert þjónustugjald af greiðslum á staðnum, hvora leiðina sem þú velur.",
+    "ownTerminal": "Þinn eigin posi",
+    "current": "Núverandi",
+    "ownTerminalHelp": "Zettle, Square eða hvað sem þú notar nú þegar. Ekkert að setja upp — aðeins gjöld þíns þjónustuaðila gilda.",
+    "hatchgrab": "Í gegnum HatchGrab",
+    "comingSoon": "Væntanlegt",
+    "hatchgrabHelp": "Notar sömu Stripe-tengingu og netgreiðslurnar — posa, eða snertilausa greiðslu beint í símanum eða spjaldtölvunni.",
+    "hatchgrabFees": "{fee} á hverja greiðslu ({region}), auk {surcharge} fyrir snertilausar greiðslur í síma eða spjaldtölvu. Önnur kort geta kostað meira."
+  }
+}

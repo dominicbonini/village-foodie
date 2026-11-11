@@ -1,0 +1,10 @@
+{
+  "download": "Unduh gambar",
+  "copied": "Tersalin ✓",
+  "copyCaption": "Salin keterangan",
+  "share": "Bagikan",
+  "copiedStatus": "{kind, select, postText {Teks postingan tersalin.} other {Keterangan tersalin.}}",
+  "copyFailed": "Tidak bisa menyalin — pilih teksnya lalu salin secara manual.",
+  "sharedStatus": "{kind, select, postText {Teks postingan tersalin — tempelkan ke postingan Anda.} other {Keterangan tersalin — tempelkan ke postingan Anda.}}",
+  "shareRefused": "{kind, select, postText {Berbagi ditolak, jadi gambarnya sudah diunduh. Teks postingan tersalin.} other {Berbagi ditolak, jadi gambarnya sudah diunduh. Keterangan tersalin.}}"
+}

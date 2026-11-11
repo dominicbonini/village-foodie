@@ -1,0 +1,141 @@
+{
+  "row": {
+    "discovery_map_listing": {
+      "name": "탐색 지도 등록"
+    },
+    "web_dashboard": {
+      "name": "어디서나 쓰는 웹 대시보드"
+    },
+    "qr_code": {
+      "name": "QR 코드"
+    },
+    "schedule_import": {
+      "name": "일정 자동 가져오기"
+    },
+    "meal_deals_upsells": {
+      "name": "세트 메뉴 및 추가 판매"
+    },
+    "walkup_orders": {
+      "name": "현장 주문 처리"
+    },
+    "sold_out_toggle": {
+      "name": "즉시 품절 전환"
+    },
+    "kitchen_app": {
+      "name": "iPhone, iPad, Android 주방 앱"
+    },
+    "offline_protection": {
+      "name": "오프라인 주문 보호"
+    },
+    "online_payments": {
+      "name": "온라인 결제"
+    },
+    "advance_preordering": {
+      "name": "날짜 지정 미리 주문"
+    },
+    "preorder_deadline": {
+      "name": "미리 주문 마감 시간"
+    },
+    "time_slot_selection": {
+      "name": "손님 픽업 시간대 선택"
+    },
+    "kitchen_capacity": {
+      "name": "주방 처리 용량 관리"
+    },
+    "stock_countdown": {
+      "name": "재고 자동 차감"
+    },
+    "auto_accept": {
+      "name": "온라인 주문 자동 접수"
+    },
+    "branded_qr_code": {
+      "name": "로고 QR 코드"
+    },
+    "private_events": {
+      "name": "단독 행사"
+    },
+    "social_media_posts": {
+      "name": "SNS 게시물"
+    },
+    "whatsapp_auto_replies": {
+      "name": "WhatsApp 자동 응답"
+    },
+    "messenger_instagram_replies": {
+      "name": "Messenger·Instagram 자동 응답"
+    },
+    "tap_to_pay": {
+      "name": "휴대폰으로 결제 받기"
+    },
+    "sms_order_alerts": {
+      "name": "문자 주문 알림"
+    },
+    "multi_device_kitchen": {
+      "name": "여러 기기 주방 동기화"
+    },
+    "multi_user_access": {
+      "name": "다중 사용자 계정"
+    },
+    "embed_schedule": {
+      "name": "내 웹사이트에 일정 페이지"
+    },
+    "event_types": {
+      "name": "맞춤 영업 일정 유형 및 가격"
+    },
+    "buzzer_tracking": {
+      "name": "진동벨 관리"
+    },
+    "documents_reminders": {
+      "name": "서류 및 알림"
+    },
+    "profit_per_event": {
+      "name": "영업 일정별 수익"
+    },
+    "accountant_reports": {
+      "name": "세무사용 보고서"
+    },
+    "ticket_printing": {
+      "name": "주방 주문서 출력"
+    },
+    "customer_display": {
+      "name": "손님용 디스플레이"
+    },
+    "loyalty_stamp_cards": {
+      "name": "디지털 스탬프 카드"
+    }
+  },
+  "cardRegionOnline": "{region} 표준 요율",
+  "cardRegion": {
+    "UKcards": "영국 카드",
+    "EEAcards": "EEA 카드",
+    "UScards": "미국 카드",
+    "Australiancards": "호주 카드",
+    "NewZealandcards": "뉴질랜드 카드",
+    "Canadiancards": "캐나다 카드",
+    "Swisscards": "스위스 카드",
+    "Braziliancards": "브라질 카드",
+    "Mexicancards": "멕시코 카드",
+    "Japanesecards": "일본 카드",
+    "Singaporecards": "싱가포르 카드",
+    "HongKongcards": "홍콩 카드",
+    "Malaysiancards": "말레이시아 카드",
+    "Thaicards": "태국 카드",
+    "UAEcards": "UAE 카드"
+  },
+  "perMonth": {
+    "mo": "{amount}/월",
+    "month": "월 {amount}"
+  },
+  "priceWord": {
+    "free": "무료",
+    "freeTrial": "무료 체험",
+    "lifetime": "평생",
+    "zeroPercent": "0%",
+    "payAtHatch": "현장 결제",
+    "unlimited": "무제한",
+    "none": "—",
+    "masked": "미정"
+  },
+  "cell": {
+    "included": "포함"
+  }
+}

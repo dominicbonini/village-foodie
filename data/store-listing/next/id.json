@@ -1,0 +1,14 @@
+{
+  "$about": "languages-world-1 (10 November 2026): the store listing for this locale — App Store (appStoreLocale) and Google Play (playLocale; name → title, shortDescription → short description, description → full description). Staged in data/store-listing/next/ until the country is switched on. Must be true in every country: no prices, plan names, trial lengths, purchase instructions or other platforms (docs/ios-intl-1-report.md §5).",
+  "appStoreLocale": "id",
+  "playLocale": "id",
+  "messagesLocale": "id-ID",
+  "countrySegment": "id",
+  "name": "HatchGrab",
+  "subtitle": "Aplikasi pemesanan food truck",
+  "promotionalText": "Terima pre-order, lindungi dapur Anda dari pesanan berlebih, dan tetap melayani saat sinyal hilang. Aplikasi pemesanan untuk staf food truck.",
+  "description": "HatchGrab adalah aplikasi pemesanan dan dapur untuk food truck: alat yang dipakai tim Anda untuk menjalankan layanan.\n\nPelanggan pesan dulu dan memilih waktu pengambilan. Staf Anda melihat semua pesanan di satu layar, mengonfirmasi apa yang bisa dimasak dapur, lalu menandainya siap dan sudah diambil.\n\nJANGAN MENJANJIKAN WAKTU YANG TAK BISA DITEPATI\nAtur berapa banyak yang bisa dimasak dapur Anda sekaligus dan berapa lama waktunya. Saat sebuah waktu pengambilan sudah penuh, pelanggan tidak bisa memilihnya, sehingga antrean sesuai dengan kemampuan dapur.\n\nTERIMA PESANAN LANGSUNG DI TRUK\nTambahkan pesanan langsung di tempat ke layar yang sama dengan pre-order, sehingga dapur bekerja dari satu antrean.\n\nSATU LAYAR UNTUK DAPUR\nLayar dapur menampilkan apa yang harus dibuat sekarang, apa yang berikutnya, dan apa yang sudah siap, dengan peringatan saat sebuah pesanan perlu mulai dibuat.\n\nCETAK TIKET PESANAN\nHubungkan printer struk dapur lewat Bluetooth atau jaringan lokal Anda, dan tiket pesanan tercetak otomatis.\n\nTETAP MELAYANI SAAT SINYAL HILANG\nAktifkan perlindungan offline: jika koneksi terputus, pre-order dijeda agar tidak ada pesanan masuk yang tidak bisa Anda lihat. Pesanan yang Anda terima di perangkat tetap tersimpan dan disinkronkan saat Anda kembali online.\n\nDIBUAT UNTUK FOOD TRUCK\nGunakan di iPhone atau iPad. Biarkan layar tetap menyala selama melayani, dapatkan notifikasi saat ada pesanan yang perlu dikonfirmasi, dan kunci aplikasi dengan Face ID atau Touch ID.\n\nRENCANAKAN MINGGU ANDA\nAtur acara dan lokasi Anda sekali saja, lalu terima pesanan untuk masing-masing acara.\n\nHatchGrab ditujukan untuk pemilik usaha food truck dan staf mereka. Anda memerlukan akun HatchGrab untuk masuk.",
+  "keywords": "pesan online,pre-order,ambil sendiri,layar dapur,KDS,menu,pesanan,UMKM,kuliner,antre,waktu ambil",
+  "whatsNew": "HatchGrab kini tersedia dalam 37 bahasa.\n\nCetak tiket pesanan ke printer dapur di jaringan lokal Anda, selain lewat Bluetooth.\n\nPerbaikan dan peningkatan.",
+  "shortDescription": "Pesanan online dan pre-order untuk food truck: pilih waktu ambil, layar dapur."
+}

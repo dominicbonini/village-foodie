@@ -1,0 +1,12 @@
+{
+  "guestLabel": "SỰ KIỆN RIÊNG",
+  "truckFallback": "Xe food truck",
+  "noSlugTitle": "Xe này chưa được thiết lập để đặt món online.",
+  "orderingOffTitle": "Chưa bật đặt món online",
+  "orderingOffBody": "Sự kiện này không nhận đơn online. Vui lòng đặt món tại xe.",
+  "replacedTitle": "Link này đã được thay thế",
+  "replacedBody": "Link này không còn dùng được — {truck} đã thay link mới. Hãy hỏi ban tổ chức link hoặc mã QR mới.",
+  "madePublicBody": "Link này không còn dùng được — {truck} đã công khai sự kiện này. Bạn có thể đặt món từ trang thường của họ.",
+  "unknownTitle": "Link này không dùng được",
+  "unknownBody": "Link này không dùng được. Hãy kiểm tra lại với ban tổ chức hoặc quét lại mã QR."
+}

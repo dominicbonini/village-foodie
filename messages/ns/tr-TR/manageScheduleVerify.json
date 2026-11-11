@@ -1,0 +1,9 @@
+{
+  "launch_failed": "Doğrulama şu anda kullanılamıyor. Lütfen birazdan tekrar deneyin.",
+  "malformed": "Bu bir web adresine benzemiyor. foodtruckunuz.com.tr/etkinlikler gibi bir adres deneyin",
+  "blocked": "Bu siteye erişemedik — otomatik kontrolleri engelliyor olabilir. Programınızın listelendiği sayfayı deneyin veya etkinlikleri kendiniz ekleyin.",
+  "unreachable": "Bu web sitesine ulaşamadık. Site çalışmıyor olabilir ya da adres yanlış olabilir.",
+  "no_content": "Sayfaya ulaştık ama üzerinde hiçbir şey okuyamadık. Herkese açık olduğundan emin olun.",
+  "no_events": "Bu sayfada yaklaşan bir etkinlik bulamadık. URL’nin doğrudan programınızın listelendiği yeri gösterdiğinden emin olun.",
+  "blockedDomain": "Lütfen web sitenizin URL’sini kullanın — Facebook ve Instagram sayfaları otomatik olarak taranamaz."
+}

@@ -1,0 +1,28 @@
+{
+  "payg": {
+    "name": "Không phí hằng tháng",
+    "subtitle": "Xe bán theo mùa & bán thời gian",
+    "description": "Không mất phí hằng tháng. Bạn chỉ trả phí khi khách thanh toán online bằng thẻ."
+  },
+  "pro": {
+    "subtitle": "Xe nhận đơn đặt trước thường xuyên",
+    "description": "Đầy đủ tính năng, gồm tự động trả lời trên WhatsApp và bài đăng mạng xã hội, kèm một lượng đơn online đã gồm mỗi tháng."
+  },
+  "unlimited": {
+    "name": "Không giới hạn",
+    "subtitle": "Xe đông khách & lễ hội",
+    "description": "Đầy đủ tính năng, không mất phí trên đơn online dù bạn bán đắt hàng đến đâu."
+  },
+  "trial": {
+    "name": "Dùng thử miễn phí",
+    "description": "Mọi tính năng, miễn phí, trong suốt thời gian dùng thử."
+  },
+  "demo": {
+    "name": "Bản demo",
+    "description": "Môi trường thử cho khách hàng tiềm năng — không bao giờ công khai."
+  },
+  "tester": {
+    "name": "Người thử nghiệm",
+    "description": "Người thử nghiệm trước khi ra mắt — truy cập đầy đủ."
+  }
+}

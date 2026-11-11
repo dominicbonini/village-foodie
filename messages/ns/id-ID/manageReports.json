@@ -1,0 +1,154 @@
+{
+  "filter": {
+    "dateRange": "📅 Rentang tanggal",
+    "event": "📍 Acara",
+    "filterBy": "Saring menurut",
+    "show": "Tampilkan",
+    "range": "<from></from><sep>sampai</sep><until></until>",
+    "selectEvent": "Pilih acara…",
+    "eventOption": "{venue} · {date}",
+    "unnamedEvent": "Acara",
+    "viewReport": "Lihat laporan",
+    "loading": "Memuat…",
+    "orders": "📋 Pesanan",
+    "items": "📦 Item",
+    "exportCsv": "⬇ Ekspor CSV"
+  },
+  "empty": {
+    "noOrders": "Tidak ada pesanan untuk periode ini.",
+    "selectEvent": "Pilih acara di atas untuk melihat laporannya."
+  },
+  "summary": {
+    "totals": "{n, plural, one {{count} pesanan} other {{count} pesanan}} · {total}"
+  },
+  "revenue": {
+    "title": "Rincian pendapatan",
+    "deals": "Pendapatan promo",
+    "modifiers": "Biaya opsi tambahan",
+    "foodSales": "Penjualan makanan",
+    "total": "Total",
+    "other": "Lainnya",
+    "tax": "Pajak",
+    "tips": "Tip",
+    "serviceFees": "Biaya layanan",
+    "cardFees": "Biaya kartu"
+  },
+  "itemsSold": {
+    "title": "Item terjual"
+  },
+  "dealsCard": {
+    "title": "Promo"
+  },
+  "custom": {
+    "title": "Kustomisasi",
+    "paidModifiers": "Opsi tambahan berbayar",
+    "customerNotes": "Catatan pelanggan",
+    "note": "“{note}”"
+  },
+  "table": {
+    "item": "Item",
+    "modifier": "Opsi tambahan",
+    "qty": "Jml",
+    "total": "Total",
+    "date": "Tanggal",
+    "time": "Jam",
+    "channel": "Saluran"
+  },
+  "breakdown": {
+    "orders": "Rincian pesanan",
+    "items": "Rincian item"
+  },
+  "channel": {
+    "online": "Online",
+    "walkUp": "Langsung di tempat"
+  },
+  "csv": {
+    "orderId": "ID pesanan",
+    "date": "Tanggal",
+    "event": "Acara",
+    "timePlaced": "Waktu pemesanan",
+    "collectionTime": "Waktu pengambilan",
+    "customerName": "Nama pelanggan",
+    "orderType": "Jenis pesanan",
+    "items": "Item",
+    "deals": "Promo",
+    "modifiers": "Opsi tambahan",
+    "notes": "Catatan",
+    "subtotal": "Subtotal",
+    "tip": "Tip",
+    "serviceFee": "Biaya layanan",
+    "total": "Total",
+    "itemName": "Nama item",
+    "qty": "Jml",
+    "unitPrice": "Harga satuan",
+    "itemTotal": "Total item",
+    "orderTotal": "Total pesanan",
+    "unknownEvent": "Acara tidak diketahui",
+    "asap": "Secepatnya",
+    "unknownCustomer": "Tidak diketahui",
+    "customerOnline": "Pelanggan online",
+    "placedByTruck": "Dibuat oleh truk"
+  },
+  "presets": {
+    "label": "Periode",
+    "custom": "Tanggal khusus",
+    "thisMonth": "Bulan ini",
+    "lastMonth": "Bulan lalu",
+    "lastQuarter": "Kuartal lalu",
+    "lastTaxYear": "Tahun pajak lalu"
+  },
+  "accounts": {
+    "title": "Untuk akuntan Anda",
+    "help": "Penjualan dihitung pada hari acara. Kotor adalah yang dibayar pelanggan. Bersih adalah sisanya setelah pengembalian dana dan pajak.",
+    "gross": "Penjualan kotor",
+    "refunds": "Pengembalian dana",
+    "net": "Penjualan bersih",
+    "taxEstimated": "diperkirakan dari tarif pajak Anda",
+    "taxNone": "Tarif pajak belum diatur untuk truk Anda, jadi pajak tidak dihitung di sini.",
+    "byChannel": "Penjualan kotor per saluran",
+    "byPayment": "Penjualan kotor per pembayaran",
+    "online": "Online",
+    "walkUp": "Langsung di tempat",
+    "cardOnline": "Kartu online",
+    "payAtTruck": "Bayar di truk",
+    "cost": "Modal hidangan terjual",
+    "profit": "Laba",
+    "coverage": "{total, plural, one {Modal diisi untuk {withCost} dari # hidangan terjual} other {Modal diisi untuk {withCost} dari # hidangan terjual}}",
+    "partial": "Hidangan tanpa modal tidak ikut dihitung, jadi laba ini lebih tinggi daripada yang sebenarnya. Isi modal tiap hidangan di Menu.",
+    "noCosts": "Belum ada hidangan yang modalnya diisi. Isi modal hidangan Anda di Menu untuk melihat laba.",
+    "byEvent": "Per acara",
+    "event": "Acara",
+    "sales": "Penjualan bersih",
+    "eventNoProfit": "Tanda pisah berarti tidak semua hidangan yang terjual di sana punya modal.",
+    "downloadOrders": "⬇ Pesanan untuk akuntan Anda",
+    "downloadEvents": "⬇ Acara untuk akuntan Anda",
+    "downloadHelp": "Dua file spreadsheet: satu baris untuk tiap pesanan, dan satu baris untuk tiap acara. Bisa dibuka di Excel, Numbers, Xero, dan QuickBooks."
+  },
+  "accountsCsv": {
+    "header": {
+      "date": "Tanggal",
+      "time": "Jam",
+      "orderNumber": "Nomor pesanan",
+      "event": "Acara",
+      "channel": "Saluran",
+      "paymentMethod": "Metode pembayaran",
+      "currency": "Mata uang",
+      "gross": "Kotor",
+      "tax": "Pajak",
+      "taxBasis": "Dasar pajak",
+      "net": "Bersih",
+      "refunded": "Dikembalikan",
+      "cost": "Modal",
+      "profit": "Laba",
+      "eventDate": "Tanggal acara",
+      "orders": "Pesanan",
+      "dishesSold": "Hidangan terjual",
+      "dishesWithCost": "Hidangan dengan modal"
+    },
+    "taxBasis": {
+      "stored": "disimpan bersama pesanan",
+      "estimated": "diperkirakan dari tarif pajak Anda",
+      "none": "tarif pajak belum diatur"
+    }
+  }
+}

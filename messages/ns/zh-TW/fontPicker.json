@@ -1,0 +1,46 @@
+{
+  "tab": {
+    "all": "全部",
+    "bold": "粗體醒目",
+    "hand": "手寫",
+    "classic": "經典",
+    "clean": "簡潔",
+    "own": "你的字型",
+    "ownCount": "你的字型（{count}）"
+  },
+  "yoursTag": "· 你的",
+  "loadingFonts": "正在載入字型…",
+  "search": "搜尋 {count, number} 種字型",
+  "uploadButton": "↑ 上傳你的字型",
+  "loadingLibrary": "正在載入字型庫…",
+  "tryAgain": "再試一次",
+  "noOwn": "你還沒有上傳字型。請使用上方的「↑ 上傳你的字型」按鈕。",
+  "recent": "最近使用",
+  "popular": "熱門海報字型",
+  "adding": "新增中…",
+  "noMatch": "沒有符合「{query}」的字型。",
+  "showing": "顯示 {shown} 種，共 {total, number} 種——輸入更多文字以縮小範圍。",
+  "couldNotAdd": "無法新增此字型",
+  "tooBig": "此字型大小為 {size, number, ::.0 group-off}MB，上限為 5MB。",
+  "woff": "請上傳 TTF 或 OTF 檔案——通常可以從你購買字型的地方下載。",
+  "uploadIncomplete": "上傳未完成",
+  "added": "已將「{name}」新增為{face}版本。",
+  "face": {
+    "regular": "標準",
+    "bold": "粗體",
+    "italic": "斜體"
+  },
+  "licenceTick": "我擁有此字型，或已取得使用授權",
+  "checking": "正在檢查字型…",
+  "addFont": "新增字型",
+  "cancel": "取消",
+  "missingFaces": "新增「{name}」的{faces}版本（選填）——請再次選擇檔案。",
+  "somethingWrong": "發生錯誤",
+  "faceLower": {
+    "regular": "標準",
+    "bold": "粗體",
+    "italic": "斜體"
+  },
+  "ownLicence": "你自己的",
+  "loadFailed": "無法載入字型"
+}

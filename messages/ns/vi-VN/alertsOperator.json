@@ -1,0 +1,28 @@
+{
+  "hi": "Chào {name},",
+  "limit80": {
+    "subject": "Bạn đã dùng 80% số tin trả lời WhatsApp của tháng này",
+    "used": "Tin trả lời tự động trên WhatsApp của bạn đã dùng <b>{used}/{limit}</b> trong tháng này.",
+    "nothingStopped": "Chưa có gì bị dừng. Khi chạm mức {limit}, tin trả lời tự động sẽ tạm dừng đến khi hạn mức được làm mới vào <b>{reset}</b> — khách vẫn nhắn tin cho bạn được và bạn vẫn thấy mọi tin họ gửi.",
+    "raise": "Bạn có thể tăng hạn mức hằng tháng trong Cài đặt bất cứ lúc nào.",
+    "raiseLink": "Bạn có thể tăng hạn mức hằng tháng trong Cài đặt bất cứ lúc nào:",
+    "button": "Mở Cài đặt"
+  },
+  "limit100": {
+    "subject": "Tính năng tự động trả lời trên WhatsApp đã tạm dừng trong tháng này",
+    "usedAll": "Bạn đã dùng hết {limit} tin trả lời tự động trên WhatsApp của tháng này, nên tính năng đã tạm dừng.",
+    "stillReach": "<b>Khách vẫn nhắn tin cho bạn như bình thường và mọi tin nhắn vẫn đến với bạn.</b> Chỉ có tin trả lời tự động là tạm ngừng gửi đi.",
+    "startAgain": "Tính năng sẽ chạy lại vào <b>{reset}</b>, hoặc ngay lập tức nếu bạn tăng hạn mức hằng tháng trong Cài đặt.",
+    "startAgainLink": "Tính năng sẽ chạy lại vào {reset}, hoặc ngay lập tức nếu bạn tăng hạn mức hằng tháng trong Cài đặt:",
+    "button": "Tăng hạn mức"
+  },
+  "paymentBlocked": {
+    "subject": "WhatsApp cần phương thức thanh toán để gửi tin",
+    "stopped": "WhatsApp đã chặn gửi tin trả lời tự động vì tài khoản WhatsApp Business của bạn chưa có phương thức thanh toán dùng được.",
+    "stillMessage": "<b>Khách vẫn nhắn tin cho bạn được và bạn vẫn thấy mọi tin họ gửi</b> — nhưng tin trả lời chưa đến được với họ.",
+    "payDirect": "Bạn trả phí cho các tin nhắn này trực tiếp cho WhatsApp, nên cần xử lý trong WhatsApp Manager chứ không phải trong HatchGrab. Thêm hoặc cập nhật thẻ ở đó, tin trả lời sẽ tự gửi lại.",
+    "payDirectLink": "Bạn trả phí cho các tin nhắn này trực tiếp cho WhatsApp, nên cần xử lý trong WhatsApp Manager chứ không phải trong HatchGrab. Thêm hoặc cập nhật thẻ ở đó, tin trả lời sẽ tự gửi lại:",
+    "button": "Mở WhatsApp Manager",
+    "settings": "Cài đặt HatchGrab của bạn: <link>{url}</link>"
+  }
+}

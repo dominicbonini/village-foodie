@@ -1,0 +1,28 @@
+{
+  "hi": "Zdravo, {name},",
+  "limit80": {
+    "subject": "Iskoristili ste 80% ovomesečnih automatskih odgovora na WhatsApp-u",
+    "used": "Ovog meseca iskorišćeno je <b>{used} od {limit}</b> vaših automatskih odgovora na WhatsApp-u.",
+    "nothingStopped": "Ništa nije zaustavljeno. Kada dostignete {limit}, automatski odgovori se pauziraju dok se vaša mesečna kvota ne obnovi, <b>{reset}</b> — kupci i dalje mogu da vam pišu, a vi ćete i dalje videti sve što pošalju.",
+    "raise": "Mesečno ograničenje možete da povećate u Podešavanjima kad god želite.",
+    "raiseLink": "Mesečno ograničenje možete da povećate u Podešavanjima kad god želite:",
+    "button": "Otvori Podešavanja"
+  },
+  "limit100": {
+    "subject": "Vaši automatski odgovori na WhatsApp-u su pauzirani do kraja meseca",
+    "usedAll": "Iskoristili ste svih {limit} automatskih odgovora na WhatsApp-u za ovaj mesec, pa su pauzirani.",
+    "stillReach": "<b>Kupci i dalje mogu normalno da vam pišu i svaka poruka i dalje stiže do vas.</b> Zaustavljeno je samo slanje automatskog odgovora.",
+    "startAgain": "Ponovo će se uključiti <b>{reset}</b> ili odmah, ako povećate mesečno ograničenje u Podešavanjima.",
+    "startAgainLink": "Ponovo će se uključiti {reset} ili odmah, ako povećate mesečno ograničenje u Podešavanjima:",
+    "button": "Povećaj ograničenje"
+  },
+  "paymentBlocked": {
+    "subject": "WhatsApp-u je potreban način plaćanja da bi slao poruke",
+    "stopped": "WhatsApp je zaustavio slanje vaših automatskih odgovora jer na vašem WhatsApp Business nalogu nema ispravnog načina plaćanja.",
+    "stillMessage": "<b>Kupci i dalje mogu da vam pišu, a vi ćete i dalje videti sve što pošalju</b> — ali odgovori do njih ne stižu.",
+    "payDirect": "Ove poruke plaćate direktno WhatsApp-u, pa se ovo rešava u alatu WhatsApp Manager, a ne u HatchGrab-u. Tamo dodajte ili ažurirajte karticu i odgovori će ponovo krenuti sami od sebe.",
+    "payDirectLink": "Ove poruke plaćate direktno WhatsApp-u, pa se ovo rešava u alatu WhatsApp Manager, a ne u HatchGrab-u. Tamo dodajte ili ažurirajte karticu i odgovori će ponovo krenuti sami od sebe:",
+    "button": "Otvori WhatsApp Manager",
+    "settings": "Vaša HatchGrab podešavanja: <link>{url}</link>"
+  }
+}

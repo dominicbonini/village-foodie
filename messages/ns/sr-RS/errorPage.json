@@ -1,0 +1,8 @@
+{
+  "notFoundTitle": "Stranica nije pronađena",
+  "notFoundBody": "Nismo pronašli tu stranicu. Možda je premeštena ili je adresa pogrešno upisana.",
+  "home": "Idi na početnu stranicu",
+  "errorTitle": "Nešto nije u redu",
+  "errorBody": "Žao nam je — ova stranica se nije učitala. Pokušajte ponovo ili se vratite na početnu stranicu.",
+  "retry": "Pokušaj ponovo"
+}

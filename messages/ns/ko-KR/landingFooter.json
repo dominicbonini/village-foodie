@@ -1,0 +1,17 @@
+{
+  "features": "기능",
+  "pricing": "요금",
+  "faq": "자주 묻는 질문",
+  "privacy": "개인정보 처리방침",
+  "terms": "이용약관",
+  "contact": "문의",
+  "about": "회사 소개",
+  "copyright": "© {year} HatchGrab",
+  "credit": "<b>Village Foodie</b> 팀이 만들었습니다",
+  "badges": {
+    "appStoreLink": "App Store에서 HatchGrab 다운로드",
+    "appStoreAlt": "App Store에서 다운로드",
+    "googlePlayLink": "Google Play에서 HatchGrab 받기",
+    "googlePlayAlt": "Google Play에서 다운로드"
+  }
+}

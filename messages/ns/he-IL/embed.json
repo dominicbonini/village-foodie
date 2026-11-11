@@ -1,0 +1,8 @@
+{
+  "metaDescription": "המקומות הבאים של {truck}.",
+  "orderFrom": "להזמנה אצל {truck}",
+  "poweredBy": "מופעל על ידי <b>HatchGrab</b>",
+  "loadFailed": "לא הצלחנו לטעון את הלו״ז כרגע.",
+  "loading": "הלו״ז נטען…",
+  "empty": "{truck}: אין אירועים קרובים ברשימה."
+}

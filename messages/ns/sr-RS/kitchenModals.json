@@ -1,0 +1,69 @@
+{
+  "close": "Zatvori",
+  "cancel": "Otkaži",
+  "selectReason": "Izaberite razlog",
+  "reject": {
+    "title": "Odbiti porudžbinu #{orderId}?",
+    "reasonLabel": "Razlog — obavezno (prikazuje se kupcu)",
+    "reason": "{reason, select, sold_out {Nestalo nam je nešto od stavki} too_busy {Previše posla — ne stižemo na vreme} closing_soon {Uskoro zatvaramo} other {Drugo}}",
+    "noteRequired": "Razlog — obavezno",
+    "noteOptional": "Dodatna napomena — opciono",
+    "notePlaceholder": "Dodajte još detalja za kupca…",
+    "keep": "Zadrži porudžbinu",
+    "confirm": "Odbij porudžbinu"
+  },
+  "eventCancel": {
+    "title": "Otkazati ovaj događaj?",
+    "affected": "{n, plural, one {Biće otkazana {count} porudžbina} few {Biće otkazane {count} porudžbine} other {Biće otkazano {count} porudžbina}}, a kupci će biti obavešteni.",
+    "reasonLabel": "Razlog — opciono",
+    "reason": "{reason, select, vehicle_breakdown {Kvar vozila} weather {Vremenski uslovi} venue_issue {Problem sa lokacijom} personal_emergency {Lični hitan slučaj} other {Drugo}}",
+    "messageLabel": "Poruka kupcima — opciono",
+    "messagePlaceholder": "npr. Izvinite, prikolica nam se pokvarila na putu do lokacije…",
+    "keep": "Zadrži događaj",
+    "cancelling": "Otkazivanje…",
+    "confirm": "Otkaži događaj"
+  },
+  "actions": {
+    "startEvent": "{restart, select, yes {Ponovo pokreni događaj} other {Pokreni događaj}}",
+    "changeEvent": "Promeni događaj",
+    "changeEventType": "Promeni tip događaja…",
+    "privateLink": "Privatni link i QR kod",
+    "noteLabel": "Napomena za kupce",
+    "notePlaceholder": "npr. Parkirajte na glavnom parkingu, potražite narandžasti šator",
+    "noteHint": "Prikazuje se kupcima na stranici za poručivanje, ispod detalja o događaju.",
+    "saveNote": "Sačuvaj napomenu",
+    "resume": "Nastavi prijem",
+    "pause": "Pauziraj porudžbine",
+    "changeFinishTime": "Promeni vreme završetka događaja",
+    "finishEvent": "Završi događaj",
+    "cancelEvent": "Otkaži događaj"
+  },
+  "finish": {
+    "confirmTitle": "Promeniti vreme završetka?",
+    "willFinish": "Ovaj događaj će se završiti u <b>{selected}</b>{hasCurrent, select, yes { umesto u <b>{current}</b>} other {}}.",
+    "dueAfter": "<b>{n, plural, one {{count} porudžbina je zakazana} few {{count} porudžbine su zakazane} other {{count} porudžbina je zakazano}} posle {selected}.</b> {n, plural, one {Ostaje} few {Ostaju} other {Ostaju}} na tabli i i dalje {n, plural, one {treba da se pripremi} few {treba da se pripreme} other {treba da se pripreme}}. Promena vremena završetka samo sprečava NOVE porudžbine za kasnija vremena.",
+    "saving": "Čuvanje…",
+    "confirm": "Promeni vreme završetka",
+    "keepCurrent": "Zadrži {current}",
+    "keepAsIs": "Ostavi kako jeste",
+    "title": "Promena vremena završetka",
+    "currentlySet": "Ovaj događaj je trenutno podešen da se završi u <b>{current}</b>.",
+    "noFinishTime": "Ovaj događaj nema podešeno vreme završetka.",
+    "noTimesLeft": "Danas više nema slobodnih vremena. Umesto toga koristite „Završi događaj“.",
+    "newFinishTime": "Novo vreme završetka",
+    "optionCurrent": "{time} (trenutno)",
+    "earlier": "To je ranije od trenutnog vremena završetka. Kupci neće moći da poručuju za vremena posle njega.",
+    "review": "Pregledaj promenu",
+    "optionNextDay": "{time} (sledećeg dana)"
+  },
+  "extraWait": {
+    "title": "Dodaj dodatno čekanje",
+    "hint": "Dodaje se na vreme preuzimanja navedeno u novim porudžbinama. Ne menja vreme završetka događaja.",
+    "option": "+{mins} min"
+  },
+  "picker": {
+    "reconnect": "Ponovo se povežite",
+    "selected": "Izabrano",
+    "status": "{tone, select, paused {⏸ Pauzirano} live {● U toku} finished {● Završeno} cancelled {Otkazano} other {Nije počelo}}"
+  }
+}

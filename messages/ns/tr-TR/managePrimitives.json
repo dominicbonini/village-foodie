@@ -1,0 +1,9 @@
+{
+  "allergenMode": {
+    "perDishTitle": "Alerjenleri her ürünün yanında göster",
+    "recommended": "Önerilen",
+    "perDishBody": "Her ürünü inceleyip alerjenlerini onaylayın. Müşteriler ürün bazında etiketleri ve bunlardan oluşturulan bir alerjen özet kartını görür.",
+    "cardTitle": "Alerjen kartı göster",
+    "cardBody": "Tek bir alerjen kartı yükleyin veya yapıştırın (PDF, görsel veya metin); olduğu gibi gösterilir. Ürün bazında etiketler gizli kalır."
+  }
+}

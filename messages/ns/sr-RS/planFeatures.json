@@ -1,0 +1,141 @@
+{
+  "row": {
+    "discovery_map_listing": {
+      "name": "Prikaz na javnoj mapi"
+    },
+    "web_dashboard": {
+      "name": "Univerzalna veb kontrolna tabla"
+    },
+    "qr_code": {
+      "name": "QR kod"
+    },
+    "schedule_import": {
+      "name": "Automatski uvoz rasporeda"
+    },
+    "meal_deals_upsells": {
+      "name": "Kombo ponude i dodatna ponuda"
+    },
+    "walkup_orders": {
+      "name": "Obrada porudžbina na licu mesta"
+    },
+    "sold_out_toggle": {
+      "name": "Trenutno označavanje rasprodatog"
+    },
+    "kitchen_app": {
+      "name": "Kuhinjska aplikacija za iPhone, iPad i Android"
+    },
+    "offline_protection": {
+      "name": "Zaštita porudžbina bez interneta"
+    },
+    "online_payments": {
+      "name": "Online plaćanja"
+    },
+    "advance_preordering": {
+      "name": "Porudžbine unapred za kasnije datume"
+    },
+    "preorder_deadline": {
+      "name": "Rok za porudžbine unapred"
+    },
+    "time_slot_selection": {
+      "name": "Izbor termina preuzimanja"
+    },
+    "kitchen_capacity": {
+      "name": "Upravljanje kapacitetom kuhinje"
+    },
+    "stock_countdown": {
+      "name": "Automatsko odbrojavanje zaliha"
+    },
+    "auto_accept": {
+      "name": "Automatsko prihvatanje online porudžbina"
+    },
+    "branded_qr_code": {
+      "name": "QR kod sa vašim logom"
+    },
+    "private_events": {
+      "name": "Privatni događaji"
+    },
+    "social_media_posts": {
+      "name": "Objave za društvene mreže"
+    },
+    "whatsapp_auto_replies": {
+      "name": "Automatski odgovori na WhatsApp-u"
+    },
+    "messenger_instagram_replies": {
+      "name": "Automatski odgovori na Messengeru i Instagramu"
+    },
+    "tap_to_pay": {
+      "name": "Naplata na vašem telefonu"
+    },
+    "sms_order_alerts": {
+      "name": "SMS obaveštenja o porudžbini"
+    },
+    "multi_device_kitchen": {
+      "name": "Sinhronizacija kuhinje na više uređaja"
+    },
+    "multi_user_access": {
+      "name": "Pristup za više korisnika"
+    },
+    "embed_schedule": {
+      "name": "Raspored na vašem sajtu"
+    },
+    "event_types": {
+      "name": "Prilagođeni tipovi događaja i cene"
+    },
+    "buzzer_tracking": {
+      "name": "Praćenje pejdžera"
+    },
+    "documents_reminders": {
+      "name": "Dokumenti i podsetnici"
+    },
+    "profit_per_event": {
+      "name": "Profit po događaju"
+    },
+    "accountant_reports": {
+      "name": "Izveštaji za knjigovođu"
+    },
+    "ticket_printing": {
+      "name": "Štampanje kuhinjskih bonova"
+    },
+    "customer_display": {
+      "name": "Ekran za kupce"
+    },
+    "loyalty_stamp_cards": {
+      "name": "Digitalne kartice lojalnosti sa pečatima"
+    }
+  },
+  "cardRegionOnline": "standardne {region}",
+  "cardRegion": {
+    "UKcards": "britanske kartice",
+    "EEAcards": "kartice iz EEP-a",
+    "UScards": "američke kartice",
+    "Australiancards": "australijske kartice",
+    "NewZealandcards": "novozelandske kartice",
+    "Canadiancards": "kanadske kartice",
+    "Swisscards": "švajcarske kartice",
+    "Braziliancards": "brazilske kartice",
+    "Mexicancards": "meksičke kartice",
+    "Japanesecards": "japanske kartice",
+    "Singaporecards": "singapurske kartice",
+    "HongKongcards": "hongkonške kartice",
+    "Malaysiancards": "malezijske kartice",
+    "Thaicards": "tajlandske kartice",
+    "UAEcards": "kartice iz UAE"
+  },
+  "perMonth": {
+    "mo": "{amount}/mes.",
+    "month": "{amount}/mesečno"
+  },
+  "priceWord": {
+    "free": "Besplatno",
+    "freeTrial": "Besplatni probni period",
+    "lifetime": "Doživotno",
+    "zeroPercent": "0%",
+    "payAtHatch": "Platite pri preuzimanju",
+    "unlimited": "Neograničeno",
+    "none": "—",
+    "masked": "Naknadno"
+  },
+  "cell": {
+    "included": "Uključeno"
+  }
+}

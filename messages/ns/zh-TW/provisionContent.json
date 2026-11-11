@@ -1,0 +1,72 @@
+{
+  "standardCategories": {
+    "starters": "前菜",
+    "mains": "主餐",
+    "burgers": "漢堡",
+    "pizza": "披薩",
+    "wrapsSandwiches": "捲餅與三明治",
+    "sides": "副餐",
+    "dipsSauces": "沾醬與醬料",
+    "desserts": "甜點",
+    "drinks": "飲料",
+    "kidsMenu": "兒童餐",
+    "specials": "特餐",
+    "other": "其他"
+  },
+  "demoEventName": "示範活動",
+  "firstVanName": "1 號車",
+  "demoCategories": {
+    "pizza": "披薩",
+    "burgers": "漢堡",
+    "mains": "主餐",
+    "sides": "副餐",
+    "drinks": "飲料"
+  },
+  "demoTemplates": {
+    "pizza": {
+      "label": "🍕 披薩餐車",
+      "items": {
+        "margherita": "瑪格麗特披薩",
+        "pepperoni": "義式臘腸披薩",
+        "ndujaHoney": "辣味豬肉醬蜂蜜披薩",
+        "fourCheese": "四種起司披薩",
+        "gardenVeg": "田園蔬菜披薩",
+        "garlicBread": "香蒜麵包",
+        "rocketParmesan": "芝麻葉帕瑪森沙拉",
+        "olives": "橄欖",
+        "sanPellegrino": "聖沛黎洛氣泡水",
+        "coke": "可樂"
+      }
+    },
+    "burgers": {
+      "label": "🍔 漢堡餐車",
+      "items": {
+        "classicCheeseburger": "經典起司漢堡",
+        "doubleBacon": "雙層培根堡",
+        "buttermilkChicken": "酪奶炸雞堡",
+        "halloumiStack": "哈羅米起司堡",
+        "smashBurger": "美式煎壓漢堡",
+        "skinOnFries": "帶皮薯條",
+        "loadedCheeseFries": "起司醬滿滿薯條",
+        "onionRings": "洋蔥圈",
+        "craftLemonade": "手作檸檬飲",
+        "coke": "可樂"
+      }
+    },
+    "curries": {
+      "label": "🍛 咖哩餐車",
+      "items": {
+        "chickenTikkaMasala": "瑪薩拉烤雞咖哩",
+        "lambRoganJosh": "喀什米爾羊肉咖哩",
+        "chanaMasala": "鷹嘴豆咖哩",
+        "butterChicken": "奶油雞咖哩",
+        "saagPaneer": "菠菜起司咖哩",
+        "pilauRice": "印度香料飯",
+        "garlicNaan": "香蒜烤餅",
+        "onionBhaji": "印度炸洋蔥",
+        "mangoLassi": "芒果優格飲",
+        "coke": "可樂"
+      }
+    }
+  }
+}

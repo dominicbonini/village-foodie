@@ -1,0 +1,16 @@
+{
+  "takeConfirm": "진동벨 <b>{number}</b> 사용 중: <b>주문 #{holderId}</b>{hasName, select, yes { ({name})} other {}}. 이 진동벨을 <b>{hasTarget, select, yes {주문 #{targetId}} other {이 주문}}</b> 쪽으로 가져올까요?",
+  "cancel": "취소",
+  "take": "진동벨 {number} 가져오기",
+  "titleBlocking": "진동벨을 지정할까요? (주문 #{id})",
+  "title": "진동벨 선택",
+  "subtitle": "{hasTarget, select, yes {주문 #{id}} other {이 주문}}{hasCurrent, select, yes { · 현재 진동벨 {current}} other {}}",
+  "allTaken": "{n, plural, one {진동벨이 사용 중입니다. 탭하면 다른 주문에서 가져올 수 있습니다.} other {진동벨 {count}개가 모두 사용 중입니다. 하나를 탭하면 다른 주문에서 가져올 수 있습니다.}}",
+  "thisOrder": "이 주문",
+  "noBuzzer": "진동벨 없음",
+  "done": "완료",
+  "lostTitle": "주문 #{id}: 진동벨 없음",
+  "lostBody": "{hasName, select, yes {{name} — } other {}}오프라인 상태인 동안 다른 주문이 같은 진동벨을 가져갔습니다. 다른 진동벨을 지정해 주세요.",
+  "dismiss": "닫기",
+  "assign": "지정"
+}

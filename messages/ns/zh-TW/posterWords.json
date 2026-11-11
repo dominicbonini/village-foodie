@@ -1,0 +1,25 @@
+{
+  "heading": "{start} 至 {end} 當週",
+  "daysOff": "今日公休",
+  "cancelled": "已取消",
+  "placeSample": {
+    "nameTownBelow": "河濱公園週末市集\n新竹",
+    "nameTown": "河濱公園週末市集，新竹",
+    "nameOnly": "河濱公園週末市集"
+  },
+  "busyWeek": {
+    "venue1": "信義區週末市集",
+    "town1": "台北",
+    "venue2": "華山1914文化創意產業園區中央藝文草原與周邊廣場",
+    "town2": "台北中正區",
+    "venue3": "審計新村",
+    "town3": "台中",
+    "venue4": "美食節",
+    "town4": "台南",
+    "venue5": "駁二藝術特區",
+    "town5": "高雄",
+    "venue6": "夜市",
+    "town6": "新竹"
+  },
+  "poweredBy": "由 HatchGrab 提供技術支援"
+}

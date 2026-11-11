@@ -1,0 +1,36 @@
+{
+  "h1": "Sve što vam treba za rad, u svakom paketu.",
+  "lede": "Poručivanje, porudžbine unapred, kapacitet kuhinje i kuhinjski ekran (KDS) uključeni su u svaki paket.{hasUpgrades, select, yes { Uz {plans} dobijate još: {features}, kao i niže naknade.} other {}}",
+  "perMonth": "{price} / mesečno",
+  "group": {
+    "pay": "Šta plaćate",
+    "run": "Svakodnevni rad",
+    "online": "Online porudžbine",
+    "marketing": "Marketing i automatizacija"
+  },
+  "pay": {
+    "included": "Online porudžbine uključene svakog meseca",
+    "fee": "HatchGrab naknada na online porudžbine plaćene karticom*",
+    "walkUp": "Porudžbine na licu mesta"
+  },
+  "cell": {
+    "unlimited": "Neograničeno",
+    "free": "Besplatno",
+    "feeAbove": "<b>{fee}</b> preko {included}",
+    "yes": "Uključeno",
+    "none": "Nije uključeno",
+    "comingSoon": "Uskoro"
+  },
+  "short": {
+    "whatsapp_replies": "WhatsApp",
+    "schedule_graphics": "društvene mreže",
+    "event_types": "posebne cene za događaje"
+  },
+  "meta": {
+    "description": "Sve HatchGrab funkcije u svakom paketu, uporedo — {plans}, sa naknadama i limitima.{months, plural, =0 {} one { Prvi mesec uključuje sve.} few { Prva # meseca uključuju sve.} other { Prvih # meseci uključuje sve.}}"
+  },
+  "notes": {
+    "whatsapp": "Za automatske odgovore na WhatsApp-u potreban je WhatsApp Business nalog. Meta može naplatiti neke poruke; odgovori se generišu automatski.",
+    "printing": "Za štampanje kuhinjskih bonova potreban je kompatibilan Bluetooth ili žičani štampač (nije uključen)."
+  }
+}

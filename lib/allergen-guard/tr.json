@@ -1,0 +1,109 @@
+{
+  "$comment": "languages-world-1 (10 November 2026): the WhatsApp allergen guard’s trigger words for TURKISH (tr-TR): alerji / alerjen, intolerans, hassasiyet, çölyak, the -siz/-sız/-suz/-süz free-from forms (glutensiz, laktozsuz, sütsüz…), içermez / içermeyen / içerebilir, güvenli, için uygun, eser miktar, çapraz bulaşma — stems survive the suffixes (alerjim, glutensizdir). Dotless ı is kept by the normaliser, so words with it are listed in both spellings people type (fıstıksız / fistiksiz). OPTION B, as every other language: absence / safety words only, NOT the bare allergen names (a presence question may reach the AI, which answers only from the tags and gets the caveat). Matched with the Unicode normaliser. caveatWords: a tagged label of the codex allergen set (stored in English, lower case) → the words a reply may use for it (matched on the raw lower-cased reply, so written as the AI writes them). The country has no allergen set of its own yet, so caveatWords are for 'codex' (as MX, SG, HK, MY, TH and AE).",
+  "language": "tr",
+  "normalise": "unicode",
+  "stems": [
+    "alerj",
+    "allerj",
+    "intolerans",
+    "tahammülsüz",
+    "hassas",
+    "çölyak",
+    "anafilak",
+    "epipen",
+    "epi pen",
+    "adrenalin",
+    "gluten free",
+    "glutensiz",
+    "gluten yok",
+    "laktozsuz",
+    "sütsüz",
+    "süt olmadan",
+    "yumurtasız",
+    "yumurtasiz",
+    "yumurta olmadan",
+    "fıstıksız",
+    "fistiksiz",
+    "fıstık olmadan",
+    "fistik olmadan",
+    "fındıksız",
+    "findiksiz",
+    "cevizsiz",
+    "bademsiz",
+    "kuruyemişsiz",
+    "susamsız",
+    "susamsiz",
+    "sojasız",
+    "sojasiz",
+    "balıksız",
+    "baliksiz",
+    "karidessiz",
+    "içermez",
+    "içermiyor",
+    "içermeyen",
+    "içermediğ",
+    "içerebilir",
+    "güvenli",
+    "için uygun",
+    "eser miktar",
+    "çapraz bulaş",
+    "çapraz kontaminasyon",
+    "bulaşma",
+    "bulaşabilir",
+    "kontaminasyon"
+  ],
+  "tokens": [],
+  "caveatWords": {
+    "codex": {
+      "gluten": [
+        "gluten",
+        "buğday",
+        "arpa",
+        "çavdar",
+        "yulaf"
+      ],
+      "crustaceans": [
+        "kabuklu",
+        "karides",
+        "yengeç",
+        "ıstakoz",
+        "deniz ürün"
+      ],
+      "eggs": [
+        "yumurta",
+        "mayonez"
+      ],
+      "fish": [
+        "balık"
+      ],
+      "peanuts": [
+        "yer fıstığı",
+        "fıstık"
+      ],
+      "soy": [
+        "soya",
+        "tofu"
+      ],
+      "milk": [
+        "süt",
+        "laktoz",
+        "peynir",
+        "tereyağ",
+        "krema",
+        "yoğurt"
+      ],
+      "tree nuts": [
+        "kuruyemiş",
+        "fındık",
+        "ceviz",
+        "badem",
+        "kaju",
+        "antep fıstığı"
+      ],
+      "sulphites": [
+        "sülfit",
+        "kükürt dioksit"
+      ]
+    }
+  }
+}

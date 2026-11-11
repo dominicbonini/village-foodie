@@ -1,0 +1,86 @@
+{
+  "loading": "Učitavanje konzole za upravljanje…",
+  "loadFailed": "Učitavanje nije uspelo",
+  "requestFailed": "Nije uspelo",
+  "invalidToken": "Token je nevažeći ili je istekao",
+  "loadFailedReason": "Nije moguće učitati ovu stranicu: {reason}",
+  "noCountrySettings": "Nije moguće učitati podešavanja zemlje za ovaj food truck. Osvežite stranicu.",
+  "noPlans": "Nije moguće učitati paket ovog food trucka. Osvežite stranicu.",
+  "stale": "{hasTime, select, yes {Osvežavanje nije uspelo. Prikazujemo ono što je sačuvano u {time}. Izmene koje napravite i dalje se čuvaju.} other {Osvežavanje nije uspelo. Prikazujemo ono što je sačuvano. Izmene koje napravite i dalje se čuvaju.}}",
+  "verify": {
+    "ok": "Adresa e-pošte je potvrđena — hvala.",
+    "expired": "Taj link za potvrdu je istekao. Javite nam se i rešićemo to pre pokretanja.",
+    "invalid": "Taj link za potvrdu nije radio. Javite nam se i rešićemo to pre pokretanja."
+  },
+  "profile": {
+    "updated": "Profil je ažuriran",
+    "saveFailed": "Čuvanje nije uspelo",
+    "title": "Izmeni profil",
+    "name": "Ime",
+    "namePlaceholder": "Vaše ime",
+    "email": "E-pošta",
+    "cancel": "Otkaži",
+    "saving": "Čuvanje…",
+    "save": "Sačuvaj"
+  },
+  "header": {
+    "subtitle": "Konzola za upravljanje",
+    "ordersDashboard": "← Kontrolna tabla porudžbina"
+  },
+  "tabs": {
+    "menu": "Meni",
+    "schedule": "Raspored",
+    "paperwork": "Dokumenti",
+    "social": "Društvene mreže",
+    "reports": "Izveštaji",
+    "team": "Tim",
+    "settings": "Podešavanja",
+    "payments": "Plaćanja",
+    "billing": "Naplata",
+    "paymentsIcon": "💷",
+    "scheduleCount": "Raspored ({count})",
+    "stripeAttention": "Stripe traži vašu pažnju",
+    "allergensNotSet": "alergeni nisu podešeni"
+  },
+  "menuSections": {
+    "label": "Odeljci menija",
+    "items": "Stavke",
+    "capacity": "Kapacitet kuhinje",
+    "extras": "Dodaci i dodatna ponuda",
+    "deals": "Akcije"
+  },
+  "socialSections": {
+    "label": "Odeljci društvenih mreža",
+    "create": "Napravi objavu",
+    "designs": "Dizajni",
+    "locations": "Podešavanja lokacija"
+  },
+  "notices": {
+    "review": "Pregledaj →",
+    "tour": "Želite li kratak obilazak kontrolne table?",
+    "showMeAround": "Pokaži mi",
+    "dismiss": "Odbaci",
+    "approval": "{count, plural, one {Pronašli smo <b>{count}</b> događaj za vas — pregledajte ga i odobrite pre nego što postane vidljiv.} few {Pronašli smo <b>{count}</b> događaja za vas — pregledajte ih i odobrite pre nego što postanu vidljivi.} other {Pronašli smo <b>{count}</b> događaja za vas — pregledajte ih i odobrite pre nego što postanu vidljivi.}}",
+    "allergens": "<b>Alergeni nisu podešeni</b> — kupci ne mogu da vide informacije o alergenima dok ih ne proverite. Pregledajte alergene za svako jelo na kartici Meni.",
+    "domainLive": "Adresa <link>{domain}</link> je aktivna. Pogledajte je, a zatim nam u Podešavanjima potvrdite da je sve u redu.",
+    "stripe": "<b>Stripe nešto traži od vas</b> — plaćanje karticom može da prestane dok se to ne reši.",
+    "profileTitle": "Dopunite svoj profil",
+    "missing": "Nedostaje: {fields}.",
+    "goToSettings": "Idi na Podešavanja →",
+    "field": {
+      "truckName": "naziv food trucka",
+      "cuisineType": "vrsta kuhinje",
+      "contactEmail": "kontakt adresa e-pošte",
+      "contactPhone": "kontakt telefon"
+    }
+  },
+  "trialPopup": {
+    "title": "{months, select, none {Koristite besplatni probni period} other {Koristite besplatni probni period ({months} mes.)}}",
+    "ends": "{hasDate, select, yes {Probni period ističe <hl>{date}</hl>} other {Probni period ističe <hl>uskoro</hl>}}",
+    "offer": "{hasMonths, select, yes {{months, plural, one {Sve funkcije besplatno # mesec} few {Sve funkcije besplatno # meseca} other {Sve funkcije besplatno # meseci}}} other {Sve funkcije besplatno tokom probnog perioda}}",
+    "body": "{hasDate, select, yes {Tokom probnog perioda, koji traje do <b>{date}</b>, ništa vam se neće naplatiti. Naplata počinje tek kada izaberete paket i unesete podatke za plaćanje. Do tada nema šta da otkazujete niti da plaćate. Izaberite paket pre tog datuma — ako to ne uradite, prelazite na paket {fallback} i neke funkcije će prestati da rade.} other {Dok traje probni period, ništa vam se neće naplatiti. Naplata počinje tek kada izaberete paket i unesete podatke za plaćanje. Do tada nema šta da otkazujete niti da plaćate. Izaberite paket pre isteka probnog perioda — ako to ne uradite, prelazite na paket {fallback} i neke funkcije će prestati da rade.}}",
+    "bodyPaidEnd": "{hasDate, select, yes {Tokom probnog perioda, koji traje do <b>{date}</b>, ništa vam se neće naplatiti. Kada probni period istekne, paket {fallback} košta {price} mesečno. Javićemo vam se pre toga da podesimo plaćanje.} other {Dok traje probni period, ništa vam se neće naplatiti. Kada probni period istekne, paket {fallback} košta {price} mesečno. Javićemo vam se pre toga da podesimo plaćanje.}}",
+    "fees": "*Na online porudžbine primenjuju se standardne naknade za obradu plaćanja karticom",
+    "upgrade": "Nadogradi ovde →"
+  }
+}

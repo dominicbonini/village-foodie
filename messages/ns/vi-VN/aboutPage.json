@@ -1,0 +1,20 @@
+{
+  "meta": {
+    "title": "Giới thiệu — HatchGrab",
+    "description": "HatchGrab phát triển phần mềm cho food truck và dịch vụ ăn uống lưu động: đặt món online, giờ nhận món, ít câu hỏi lặp lại hơn. Do Dominic Bonini sáng lập."
+  },
+  "eyebrow": "Giới thiệu",
+  "title": "Được xây dựng theo đúng cách food truck vận hành",
+  "photoAlt": "{name}, nhà sáng lập HatchGrab",
+  "story": {
+    "start": "HatchGrab bắt đầu từ một nhận xét đơn giản: food truck cần những công cụ tốt hơn để điều hành việc kinh doanh.",
+    "villageFoodie": "Sau khi tạo ra Village Foodie, một danh bạ giúp mọi người tìm các xe food truck ghé khu vực của mình, tôi dành nhiều thời gian hơn để tìm hiểu những khó khăn mà các đơn vị kinh doanh ăn uống lưu động gặp phải. Khác với nhà hàng truyền thống, food truck luôn di chuyển, bán ở nhiều địa điểm khác nhau và phục vụ khách trong những điều kiện luôn thay đổi.",
+    "fixedAddress": "Thế nhưng phần lớn phần mềm dành cho họ lại được thiết kế cho những cơ sở có địa chỉ cố định.",
+    "change": "HatchGrab ra đời để thay đổi điều đó.",
+    "build": "Chúng tôi xây dựng phần mềm thiết thực dành riêng cho food truck và dịch vụ ăn uống lưu động, giúp họ nhận đơn online, quản lý giờ nhận món, giữ cho đơn hàng luôn trôi chảy và bớt thời gian trả lời những câu hỏi lặp đi lặp lại.",
+    "focus": "Mục tiêu của chúng tôi rất đơn giản: giúp việc vận hành food truck dễ dàng hơn, với những công cụ được thiết kế theo đúng cách các cơ sở này thực sự hoạt động."
+  },
+  "signature": "<b>{name}</b><br></br>Nhà sáng lập, HatchGrab",
+  "company": "{company} · đăng ký tại Anh và xứ Wales · mã số công ty {number} · trụ sở đăng ký: {address}",
+  "contact": "Liên hệ"
+}

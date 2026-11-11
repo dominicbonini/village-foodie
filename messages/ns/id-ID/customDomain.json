@@ -1,0 +1,161 @@
+{
+  "card": {
+    "title": "Tambahkan jadwal Anda ke situs web Anda",
+    "live": "<addr>{address}</addr> sedang menampilkan jadwal Anda.",
+    "create": "Kami membuat halaman di <addr>{address}</addr> yang menampilkan jadwal Anda.",
+    "exampleDomain": "foodtruckanda.co.id",
+    "liveBadge": "Aktif",
+    "setUp": "Siapkan",
+    "viewSetup": "Lihat pengaturan",
+    "continue": "Lanjutkan",
+    "justLive": "<b>{address}</b> sudah berfungsi. Silakan lihat, lalu beri tahu kami di bawah bahwa semuanya sudah benar."
+  },
+  "waiting": {
+    "title": "Kami sedang menunggu {address}",
+    "bodySince": "Anda mengatur ini pada {date}. Alamat web baru biasanya mulai berfungsi dalam beberapa menit, dan kadang butuh hingga 24 jam untuk bisa diakses semua orang — Anda tidak perlu melakukan apa pun selama itu. Jika ada orang lain yang menambahkan baris tersebut untuk Anda, sebaiknya pastikan mereka sudah melakukannya.",
+    "body": "Alamat web baru biasanya mulai berfungsi dalam beberapa menit, dan kadang butuh hingga 24 jam untuk bisa diakses semua orang — Anda tidak perlu melakukan apa pun selama itu. Jika ada orang lain yang menambahkan baris tersebut untuk Anda, sebaiknya pastikan mereka sudah melakukannya."
+  },
+  "ready": {
+    "title": "{address} sudah aktif",
+    "body": "Silakan lihat, lalu beri tahu kami di pengaturan Anda bahwa semuanya sudah benar."
+  },
+  "confirm": {
+    "heading": "Silakan lihat, lalu beri tahu kami apakah sudah benar",
+    "open": "Buka <link>{address}</link>",
+    "checkTimes": "Periksa apakah tanggal dan jamnya sudah benar.",
+    "yes": "Ya, sudah benar",
+    "no": "Tidak, ada masalah",
+    "problemLine": "Ceritakan apa yang Anda lihat dan kami akan memeriksanya.",
+    "emailUs": "Email kami",
+    "mailSubject": "Masalah dengan {address}",
+    "mailLiveSince": "Aktif sejak {date}",
+    "mailSeeing": "Yang saya lihat:"
+  },
+  "confirmed": {
+    "heading": "Terima kasih — sudah kami catat.",
+    "body": "Tidak ada lagi yang perlu dilakukan."
+  },
+  "turnOff": {
+    "link": "Nonaktifkan ini",
+    "heading": "Nonaktifkan alamat web Anda sendiri?",
+    "stops": "Ini akan berhenti berfungsi:",
+    "carriesOn": "Ini tetap berjalan seperti biasa, dan ke sinilah kode QR Anda mengarahkan orang:",
+    "reAdd": "Jika Anda akan mengaturnya lagi nanti, biarkan baris yang Anda tambahkan di penyedia alamat web Anda. Jika tidak, minta mereka menghapusnya.",
+    "cancel": "Tetap aktifkan",
+    "confirm": "Nonaktifkan",
+    "working": "Menonaktifkan…",
+    "failed": "Kami tidak dapat menonaktifkannya saat ini. Tidak ada yang berubah — alamat Anda masih berfungsi. Coba lagi sebentar lagi."
+  },
+  "wizard": {
+    "resumeFailedTitle": "Kami tidak dapat memuat pengaturan Anda.",
+    "resumeFailedBody": "Tidak ada yang berubah. Coba lagi sebentar lagi.",
+    "close": "Tutup",
+    "resuming": "Melanjutkan dari langkah terakhir Anda…",
+    "genericError": "Terjadi kesalahan",
+    "saveFailed": "Tidak dapat menyimpan"
+  },
+  "address": {
+    "intro": "Jadwal Anda mendapat alamat web sendiri.",
+    "question": "Apa alamat web Anda?",
+    "hint": "Alamat yang sudah dipakai orang untuk menemukan Anda.",
+    "aria": "Alamat web Anda sendiri",
+    "willBe": "Alamat Anda akan menjadi <addr>{address}</addr>",
+    "example": "Contoh: <addr>{address}</addr>",
+    "noChange": "Situs web Anda tidak berubah — Anda cukup menambahkan link ke alamat baru.",
+    "notSetUp": "Kami belum mengatur ini.",
+    "restricted": "Pengelola alamat web Anda harus mengizinkan kami memasang ikon gembok — gembok kecil yang dilihat pelanggan di sampingnya. Selama mereka belum menambahkan kami, gembok itu tidak akan muncul, jadi kami berhenti dulu daripada membuat Anda menunggu. Minta mereka menambahkan kami, lalu coba lagi.",
+    "blocked": "Alamat web Anda saat ini memblokir ikon gembok sepenuhnya. Pengelolanya harus mengizinkannya sebelum ini bisa berfungsi. Minta mereka mengubahnya, lalu coba lagi.",
+    "elsewhere": "Sudah ada yang merespons di alamat itu. Kirim pesan di layar berikutnya kepada pengelolanya — mereka akan tahu apa yang harus dilakukan.",
+    "provider": "Alamat web Anda dikelola oleh <b>{provider}</b>. Kami akan menunjukkan ke mana Anda harus pergi.",
+    "provisionFailed": "Kami tidak dapat mengatur alamat itu.",
+    "willNotWork": "Alamat itu tidak akan berfungsi.",
+    "couldNotBeSetUp": "Alamat itu tidak dapat diatur.",
+    "couldNotSetUp": "Tidak dapat mengaturnya",
+    "checking": "Memeriksa…",
+    "setting": "Mengatur…",
+    "tryAgain": "Coba lagi",
+    "setUpAddress": "Atur alamat ini",
+    "notNow": "Nanti saja"
+  },
+  "apex": {
+    "empty": "Ketik alamat yang ingin Anda pakai.",
+    "not_a_domain": "Itu sepertinya bukan alamat web.",
+    "unparseable": "Kami tidak dapat membacanya sebagai alamat web. Periksa ejaannya dan coba lagi.",
+    "apex": "{host} adalah alamat utama situs web Anda. Jika Anda mengarahkannya ke kami, situs web Anda akan diganti dengan halaman ini. Sebagai gantinya, tambahkan satu kata di depannya — misalnya events.{host}.",
+    "too_deep": "Alamat itu terlalu banyak bagiannya. Format seperti events.{domain} paling cocok."
+  },
+  "record": {
+    "addAt": "Tambahkan ini di {provider}",
+    "open": "Buka {provider}",
+    "guide": "Panduan resmi dari {provider} untuk ini",
+    "addAtSave": "Tambahkan ini di {provider}, lalu simpan.",
+    "addSomewhere": "Tambahkan ini di tempat alamat web Anda dikelola, lalu simpan.",
+    "hintChoose": "Pilih ini dari daftar.",
+    "hintWord": "Cukup kata ini saja, bukan seluruh alamat.",
+    "hintExact": "Salin persis seperti ini.",
+    "timing": "Biasanya mulai berfungsi dalam satu jam, meski bisa lebih lama. Anda tidak perlu membiarkan halaman ini tetap terbuka.",
+    "someoneElse": "Alamat web Anda dikelola orang lain?",
+    "sentTo": "Terkirim ke {email}",
+    "emailPlaceholder": "alamat email mereka",
+    "sending": "Mengirim…",
+    "send": "Kirim detail ini",
+    "sendFailed": "Tidak dapat mengirim"
+  },
+  "providers": {
+    "cloudflare": {
+      "open": "Buka alamat web Anda, lalu “DNS” dan “Records”.",
+      "add": "Pilih “Add record”, lalu pilih “CNAME” sebagai “Type”.",
+      "name": "Masukkan nilai pertama di bawah ke “Name”.",
+      "value": "Masukkan nilai kedua di bawah ke “Target”.",
+      "proxy": "Atur “Proxy status” ke “DNS only” — ikon awan di sampingnya harus abu-abu, bukan oranye.",
+      "save": "Biarkan “TTL” tetap “Auto” lalu pilih “Save”.",
+      "caveat": "Jika awannya tetap oranye, ikon gembok tidak akan pernah muncul, dan tidak ada yang memberi tahu alasannya."
+    },
+    "godaddy": {
+      "open": "Buka “Domain Portfolio” Anda dan pilih alamat web Anda.",
+      "dns": "Di “Domain Settings”, pilih “DNS”.",
+      "add": "Pilih “Add New Record”, lalu pilih “CNAME” dari menu “Type”.",
+      "name": "Masukkan nilai pertama di bawah ke “Name”.",
+      "value": "Masukkan nilai kedua di bawah ke “Value”.",
+      "save": "Biarkan “TTL” apa adanya lalu pilih “Save”.",
+      "caveat": "Jika Anda menambahkan lebih dari satu sekaligus, tombolnya bertuliskan “Save All Records”."
+    },
+    "123reg": {
+      "signIn": "Masuk ke “123 Reg Control Panel” Anda.",
+      "manage": "Di samping “Domains”, pilih “Manage All”, lalu pilih alamat web Anda.",
+      "dns": "Pilih “DNS”, lalu “Add New Record”.",
+      "type": "Pilih “CNAME” dari daftar “Type”.",
+      "name": "Masukkan nilai pertama di bawah ke “Name”.",
+      "value": "Masukkan nilai kedua di bawah ke “Value”, dan tambahkan titik di akhirnya.",
+      "save": "Biarkan “TTL” tetap “Default” lalu klik “Save”.",
+      "caveat": "123 Reg membutuhkan titik di akhir nilai kedua, jika tidak, cara ini tidak akan berfungsi."
+    },
+    "wix": {
+      "open": "Buka “Domains”, lalu klik ikon “Domain Actions” di samping alamat web Anda.",
+      "manage": "Pilih “Manage DNS Records”.",
+      "add": "Di bagian “CNAME (Aliases)”, klik “+ Add Record”, lalu klik “Got it”.",
+      "name": "Masukkan nilai pertama di bawah ke “Host Name”.",
+      "value": "Masukkan nilai kedua di bawah ke “Value”.",
+      "save": "Klik “Save”, lalu klik “Save Changes” di jendela pop-up.",
+      "caveat": "Jika alamat web Anda hanya diarahkan ke Wix dan tidak terdaftar di sana, Wix tidak dapat melakukan perubahan ini — pihak tempat alamat itu terdaftar yang harus melakukannya."
+    }
+  },
+  "instructionsEmail": {
+    "subject": "Satu record yang perlu ditambahkan untuk halaman jadwal: {truckName}",
+    "hello": "Halo,",
+    "introAt": "Kami akan menampilkan jadwal langsung {truckName} di {address}, dan untuk itu perlu ditambahkan satu record ke domain kami di {provider}.",
+    "introHolder": "Kami akan menampilkan jadwal langsung {truckName} di {address}, dan untuk itu perlu ditambahkan satu record ke domain kami di pihak tempat domain kami terdaftar.",
+    "stepsAt": "Di {provider}:",
+    "guide": "Panduan resmi mereka: {url}",
+    "wholeChange": "Hanya itu perubahannya — bagian lain dari situs web tidak terpengaruh, dan domain kami lainnya tetap berfungsi seperti sekarang. Biasanya mulai berfungsi dalam satu jam.",
+    "pointsAt": "Halaman yang dituju menampilkan lokasi jualan kami berikutnya dan selalu diperbarui secara otomatis.",
+    "replyTo": "Balas ke {email} jika ada pertanyaan.",
+    "thanks": "Terima kasih,"
+  },
+  "liveEmail": {
+    "subject": "{address} sudah berfungsi",
+    "goodNews": "Kabar baik — {address} sudah berfungsi.",
+    "body": "Jadwal Anda sekarang tampil di alamat Anda sendiri. Silakan lihat dan periksa apakah sudah benar: buka {address}, pastikan acaranya milik Anda dan tanggalnya sudah benar.",
+    "confirm": "Setelah itu, buka pengaturan Anda di HatchGrab dan beri tahu kami bahwa semuanya sudah benar. Tidak ada yang bergantung pada hal itu — ini hanya agar kami tahu ada orang yang sudah melihatnya."
+  }
+}

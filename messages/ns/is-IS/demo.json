@@ -1,0 +1,29 @@
+{
+  "notAvailable": "Ekki í boði í kynningunni",
+  "demoMode": "KYNNING",
+  "loopLands": "Nákvæmlega svona berst raunveruleg pöntun",
+  "showMe": "Sýndu mér",
+  "noCard": "{sub} Ekkert greiðslukort þarf.",
+  "notYet": "Ekki strax",
+  "cashAndCollected": "Reiðufé og sótt",
+  "logoPlaceholder": "Merkið þitt hér",
+  "welcomeTitle": "{sample, select, yes {Hér er sýnikynning} other {Hér er kynningin þín}}",
+  "welcomeIntro": "{sample, select, yes {Þetta er <b>sýnimatseðill</b> svo þú sjáir hvernig allt virkar — hladdu upp þínum eigin hvenær sem er til að gera þetta að þínu.} other {Þetta er þinn eigin matseðill og útlit, á raunverulegu pantanaborði.}} Pantanirnar sem eru þegar komnar inn eru dæmi, svo þú sjáir annasama afgreiðslu.",
+  "twoThings": "Tvennt til að prófa:",
+  "hitButton": "Ýttu á <b>{button}</b> á pöntun",
+  "scanQr": "Skannaðu <b>QR-kóðann</b> — eða ýttu á tengilinn — pantaðu sem viðskiptavinur og sjáðu pöntunina berast",
+  "qrAlt": "QR-kóði að pöntunarsíðunni þinni fyrir viðskiptavini",
+  "openHere": "Eða opnaðu hana á þessu tæki",
+  "copyLink": "Afrita tengil",
+  "copyDescribedAs": "pöntunartengill",
+  "noLinkTitle": "Pöntunartengill fyrir viðskiptavini",
+  "noLinkBody": "Tengillinn á pöntunarsíðuna þína er í valmyndinni efst til hægri.",
+  "asLive": "Pöntunar- og eldhúsflæðið er nákvæmlega eins og í raunverulegri notkun.",
+  "startExploring": "Byrja að skoða",
+  "signupOffer": {
+    "heading": "{months, plural, =0 {Byrjaðu ókeypis} one {Ókeypis í # mánuð} other {Ókeypis í # mánuði}}",
+    "sub": "Ókeypis prufan þín hefst þegar þú skráir þig."
+  },
+  "cashIcon": "💵",
+  "walkBanner": "Kynning · þetta er matseðillinn þinn eins og viðskiptavinir þínir sjá hann. Ekkert er skuldfært og enginn tölvupóstur er sendur."
+}

@@ -1,0 +1,46 @@
+{
+  "tab": {
+    "all": "Svi",
+    "bold": "Debeli i visoki",
+    "hand": "Rukopisni",
+    "classic": "Klasični",
+    "clean": "Jednostavni",
+    "own": "Vaši",
+    "ownCount": "Vaši ({count})"
+  },
+  "yoursTag": "· vaš",
+  "loadingFonts": "Učitavanje fontova…",
+  "search": "Pretražite fontove ({count, number})",
+  "uploadButton": "↑ Otpremi svoj font",
+  "loadingLibrary": "Učitavanje biblioteke fontova…",
+  "tryAgain": "Pokušaj ponovo",
+  "noOwn": "Još niste otpremili nijedan font. Koristite dugme „↑ Otpremite svoj font“ iznad.",
+  "recent": "Nedavno korišćeni",
+  "popular": "Popularni za postere",
+  "adding": "Dodavanje…",
+  "noMatch": "Nijedan font ne odgovara upitu „{query}“.",
+  "showing": "Prikazano {shown} od {total, number} — kucajte dalje da suzite izbor.",
+  "couldNotAdd": "Taj font nije moguće dodati",
+  "tooBig": "Taj font ima {size, number, ::.0 group-off} MB. Ograničenje je 5 MB.",
+  "woff": "Otpremite TTF ili OTF datoteku — obično je možete preuzeti tamo gde ste kupili font.",
+  "uploadIncomplete": "Otpremanje nije završeno",
+  "added": "Font „{name}“ je dodat kao {face} verzija.",
+  "face": {
+    "regular": "obična",
+    "bold": "podebljana",
+    "italic": "kurzivna"
+  },
+  "licenceTick": "Vlasnik sam ovog fonta ili imam licencu za njegovo korišćenje",
+  "checking": "Proveravamo font…",
+  "addFont": "Dodaj font",
+  "cancel": "Otkaži",
+  "missingFaces": "Dodajte i {faces} verziju fonta „{name}“ (nije obavezno) — ponovo izaberite datoteku.",
+  "somethingWrong": "Došlo je do greške",
+  "faceLower": {
+    "regular": "običnu",
+    "bold": "podebljanu",
+    "italic": "kurzivnu"
+  },
+  "ownLicence": "Vaš sopstveni",
+  "loadFailed": "Nije moguće učitati fontove"
+}

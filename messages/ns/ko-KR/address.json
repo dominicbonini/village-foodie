@@ -1,0 +1,58 @@
+{
+  "label": {
+    "street": "주소",
+    "postcode": "우편번호",
+    "zip": "ZIP 코드",
+    "eircode": "Eircode",
+    "postalCode": "우편번호",
+    "state": "주",
+    "stateTerritory": "주 또는 준주",
+    "province": "도/주",
+    "county": "카운티",
+    "prefecture": "도도부현",
+    "emirate": "에미리트",
+    "region": "지역",
+    "area": "지역 (읍·면·시)",
+    "townOrArea": "시·군 또는 지역",
+    "city": "도시",
+    "suburb": "동네",
+    "townOrCity": "시·군"
+  },
+  "short": {
+    "area": "지역",
+    "townOrArea": "시·군 또는 지역",
+    "city": "도시",
+    "suburb": "동네",
+    "townOrCity": "시·군"
+  },
+  "inSentence": {
+    "postcode": "우편번호",
+    "zip": "ZIP 코드",
+    "eircode": "Eircode",
+    "postalCode": "우편번호"
+  },
+  "withArticle": {
+    "postcode": "우편번호",
+    "zip": "ZIP 코드",
+    "eircode": "Eircode",
+    "postalCode": "우편번호"
+  },
+  "tradeLabel": {
+    "area": "시·군",
+    "townOrArea": "시·군 또는 지역",
+    "city": "도시",
+    "suburb": "동네",
+    "townOrCity": "시·군"
+  },
+  "basedIn": {
+    "area": "사업장이 있는 시·군",
+    "townOrArea": "사업장이 있는 시·군 또는 지역",
+    "city": "사업장이 있는 도시",
+    "suburb": "사업장이 있는 동네",
+    "townOrCity": "사업장이 있는 시·군"
+  },
+  "example": "예: {example}",
+  "customersSee": "손님에게 표시되는 내용:",
+  "postalWarning": "올바른 {article} 형식이 아닌 것 같습니다. 예: {example}. 그래도 저장할 수 있습니다.",
+  "regionChoose": "선택…"
+}

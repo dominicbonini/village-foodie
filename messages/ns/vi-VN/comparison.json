@@ -1,0 +1,400 @@
+{
+  "path": {
+    "section": "so-sanh",
+    "slug": "phan-mem-dat-mon-food-truck"
+  },
+  "meta": {
+    "title": "So sánh phần mềm đặt món cho food truck 2026: tính năng, giá",
+    "description": "So sánh phần mềm đặt món cho food truck: đặt trước theo giờ nhận món, công suất bếp, lịch bán tuần, phí và hợp đồng — kiểm tra trên web từng nhà cung cấp.",
+    "about": "Phần mềm đặt món online cho food truck"
+  },
+  "breadcrumb": {
+    "home": "HatchGrab",
+    "here": "So sánh",
+    "label": "Đường dẫn trang"
+  },
+  "h1": "So sánh phần mềm đặt món cho food truck 2026",
+  "byline": "Kiểm tra lần cuối: {date} · Do HatchGrab thực hiện. Chúng tôi là một trong các nhà cung cấp được so sánh (xem <link>Cách chúng tôi so sánh</link>).",
+  "table": {
+    "title": "Các phần mềm đặt món được so sánh",
+    "caption": "Tính năng và chi phí của phần mềm đặt món online cho food truck tại {country}, tính đến {date}",
+    "note": "Chỉ ghi “Có” khi nhà cung cấp công bố công khai.",
+    "feature": "Tính năng",
+    "yes": "Có",
+    "no": "Không",
+    "unknown": "Không nêu",
+    "fromPlan": "Từ gói {plan}",
+    "appNotInCountry": "Chưa có tại {country}",
+    "appFlagOff": "Có – chưa bật, sẽ hiện khi app có trên kho ứng dụng",
+    "range": "{from} đến {to}",
+    "feePlan": "{fee} ({plans})",
+    "noFee": "không có",
+    "morePending": "Các nhà cung cấp khác sẽ xuất hiện ở đây khi chúng tôi đã kiểm tra thông tin trên website của họ.",
+    "priceHidden": "Liên hệ",
+    "feeAfter": "{fee} cho phần vượt {included} mỗi tháng",
+    "legend": "✓ Có · ◐ Một phần · ✗ Không · Không liệt kê: không có trên trang tính năng hoặc bảng giá của họ · —: website của họ không nói · Không áp dụng: loại dịch vụ đó không có tính năng này · ⓘ: ghi chú, trích dẫn và nguồn",
+    "swipe": "Vuốt ngang để xem mọi sản phẩm →"
+  },
+  "costs": {
+    "title": "Phần mềm đặt món cho food truck giá bao nhiêu?",
+    "ourPlan": "{plan}: {price} mỗi tháng, {fee}",
+    "feeOnly": "{fee} mỗi đơn online thanh toán bằng thẻ",
+    "feeIncluded": "đã gồm đơn online đến {included} mỗi tháng, sau đó {fee}",
+    "feeNone": "không mất phí HatchGrab trên đơn online",
+    "rivalPlan": "{plan}: {price}",
+    "perMonth": "{price} mỗi tháng",
+    "perMonthYearly": "{price} mỗi tháng, thanh toán theo năm",
+    "vatExcl": "chưa gồm VAT",
+    "vatIncl": "đã gồm VAT",
+    "setup": "phí thiết lập một lần {price}",
+    "truckFee": "{fee} mỗi đơn",
+    "customerFee": "{fee} mỗi đơn, do khách trả",
+    "source": "Nguồn",
+    "checked": "kiểm tra ngày {date}",
+    "cardFee": "Thanh toán thẻ online với HatchGrab còn chịu phí của Stripe: {cardFee} mỗi lần thanh toán thẻ tại {country}.",
+    "vat": "HatchGrab Ltd là công ty tại Vương quốc Anh và không đăng ký VAT tại {country}, nên phí của chúng tôi không cộng VAT. Nếu bạn đã đăng ký VAT, hãy cung cấp mã số thuế; khi đó bạn tự kê khai VAT trên phí của chúng tôi theo cơ chế bên mua tự tính thuế.",
+    "bundledFee": "{fee} mỗi lần thanh toán online, đã gồm phí thẻ"
+  },
+  "fit": {
+    "title": "Phần mềm nào phù hợp với ai?",
+    "ours": "HatchGrab phù hợp với bạn nếu …",
+    "oursBody": "bạn bán ở nhiều địa điểm thay đổi, muốn nhận đơn đặt trước theo giờ nhận món, không muốn bếp bị quá tải và không muốn ràng buộc hợp đồng.",
+    "oursNot": "HatchGrab không phù hợp với bạn nếu …",
+    "oursNotBody": "khách của bạn cần thanh toán bằng PayPal hoặc Klarna, hoặc bạn muốn một phần mềm bán hàng được chứng nhận theo quy định thuế (như TSE) từ một nhà cung cấp duy nhất.",
+    "appClause": "Hoặc nếu bạn cần ứng dụng bếp trên iPad hoặc Android tại {country}: ứng dụng chưa có trên kho ứng dụng ở đó.",
+    "tills": "Phần mềm bán hàng và máy POS",
+    "marketplaces": "Nền tảng giao đồ ăn",
+    "rival": "{name} phù hợp nếu …",
+    "tillsBody": "Phần mềm bán hàng nhận thanh toán tại xe và đáp ứng yêu cầu ghi nhận doanh thu theo quy định thuế (như TSE). Phần mềm đặt món chạy song song với phần mềm bán hàng, không thay thế nó.",
+    "tillsBodyNamed": "Phần mềm bán hàng nhận thanh toán tại xe và đáp ứng yêu cầu ghi nhận doanh thu theo quy định thuế (như TSE). {names} {count, plural, one {cũng có} other {cũng có}} trong bảng trên. Phần mềm đặt món chạy song song với phần mềm bán hàng, không thay thế nó.",
+    "marketplacesBody": "Nền tảng giao đồ ăn mang lại khách mới nhưng thu hoa hồng trên mọi đơn. Uber Eats công bố mức 14% cho đơn tự đến lấy và 30% cho đơn do tài xế Uber giao tại Đức. Wolt cho biết trên website của mình là có thu hoa hồng nhưng không nêu mức cụ thể. Chúng tôi không kiểm tra được mức phí của Lieferando. Khoản hoa hồng đó áp dụng cả với khách quen đặt trước với bạn."
+  },
+  "groups": {
+    "food_truck": "Phần mềm đặt món cho food truck",
+    "nearest_local": "Phần mềm đặt món",
+    "pos": "Phần mềm bán hàng"
+  },
+  "faq": {
+    "title": "Câu hỏi thường gặp",
+    "whatQ": "Phần mềm đặt món cho food truck là gì?",
+    "whatA": "Phần mềm đặt món nhận đơn online trước khi khách đến xe: khách chọn món và giờ nhận món, thanh toán online hoặc khi nhận món, và đơn hiện lên trong bếp của bạn. Phần mềm bán hàng hoặc máy POS nhận thanh toán tại xe. Hai thứ bổ sung cho nhau.",
+    "costQ": "HatchGrab tại {country} giá bao nhiêu?",
+    "costA": "{plans}. Thanh toán thẻ online còn chịu phí của Stripe: {cardFee} mỗi lần thanh toán thẻ.",
+    "termQ": "Có thời hạn hợp đồng tối thiểu không?",
+    "termA": "Không. Không có thời hạn tối thiểu và không cần báo trước. Bạn có thể hủy bất cứ lúc nào; phí được thu trước theo tháng và bạn vẫn dùng được đến hết tháng đã trả.",
+    "locationsQ": "Phần mềm có dùng được khi địa điểm thay đổi không?",
+    "locationsA": "Có. Bạn lập lịch bán tuần với địa điểm và giờ giấc, và khách đặt món cho đúng địa điểm và ngày bạn có mặt ở đó.",
+    "capacityQ": "Phần mềm giúp bếp của tôi không bị quá tải thế nào?",
+    "capacityA": "Khách chỉ thấy những giờ nhận món mà bếp của bạn thực sự kịp làm. Phần mềm tính theo thời gian chế biến của từng món và số phần bạn làm được cùng lúc.",
+    "tseQ": "Tôi có còn cần phần mềm bán hàng đạt chuẩn thuế (như TSE) không?",
+    "tseA": "HatchGrab không phải phần mềm bán hàng và không có chứng nhận theo quy định thuế (như TSE). Cách ghi nhận đơn online vào phần mềm bán hàng của bạn, hãy hỏi người tư vấn thuế.",
+    "paymentsQ": "HatchGrab hỗ trợ những phương thức thanh toán nào?",
+    "paymentsA": "Khách thanh toán online bằng thẻ, Apple Pay hoặc Google Pay, hoặc trả tiền tại xe. Hiện chưa hỗ trợ PayPal và Klarna.",
+    "costTrial": "{months, plural, one {Tháng đầu tiên} other {# tháng đầu tiên}} miễn phí, với đầy đủ tính năng."
+  },
+  "method": {
+    "title": "Cách chúng tôi so sánh",
+    "checked": "Kiểm tra lần cuối ngày {date}.",
+    "prices": "Giá được ghi đúng như nhà cung cấp công bố, đã gồm VAT.",
+    "meaning": "“Có” nghĩa là nhà cung cấp công bố tính năng đó công khai. “Không nêu” nghĩa là chúng tôi không tìm thấy thông tin trên website của họ — không có nghĩa là thiếu tính năng.",
+    "vendor": "HatchGrab quản lý trang này và là một trong các nhà cung cấp được so sánh.",
+    "review": "Giá và tính năng được kiểm tra tự động với website của từng sản phẩm; mỗi thông tin đều có link đến nguồn.",
+    "corrections": "Phát hiện sai sót? Hãy báo cho chúng tôi qua <link>biểu mẫu liên hệ</link>.",
+    "reportError": "<link>Báo lỗi</link>",
+    "machine": "Dành cho trợ lý AI và lập trình viên: bảng này <md>dạng Markdown</md> · <json>dạng JSON</json>"
+  },
+  "cta": {
+    "title": "Dùng thử miễn phí {months, plural, one {# tháng} other {# tháng}}",
+    "noCard": "Không cần thẻ tín dụng",
+    "cancel": "Hủy theo tháng",
+    "button": "Dùng thử miễn phí"
+  },
+  "admin": {
+    "status": "Bản nháp · noindex · không có trong sitemap, llms.txt hay hreflang · link ở chân trang chỉ dành cho admin",
+    "statusLive": "Đang hiển thị · công khai và được lập chỉ mục",
+    "viewAdmin": "Chế độ admin",
+    "viewPublic": "Công chúng thấy gì",
+    "pricingCheck": "Mở phần kiểm tra giá",
+    "checklist": "Trước khi đăng",
+    "goLive": "Trang được đăng trong Admin › Countries.",
+    "check": {
+      "apps": "Đã bật cờ iPad và Android cho {country}",
+      "placeholders": "Không còn chỗ trống “[ … ]” nào trong nội dung",
+      "vat": "Đã có nội dung về VAT"
+    },
+    "unverified": "chưa xác minh · ẩn với công chúng",
+    "autoVerified": "đã xác minh tự động",
+    "unchecked": "chưa kiểm tra hết các đối thủ hiển thị · ẩn với công chúng",
+    "label": "Admin",
+    "notShown": "Không có trên trang (hiển thị tối đa bốn): {names}.",
+    "reasonHidden": "{name} (đã ẩn)",
+    "reasonBeyond": "{name} (ngoài bốn mục)",
+    "reasonNoWebsite": "{name} (không có website)",
+    "liveAuto": "Đang hiển thị nhờ tự động đăng",
+    "adminsOnly": "Chỉ admin — {reason}",
+    "whyFewer": "Đối thủ vượt qua kiểm tra tự động: {n}/{total}; cần 2",
+    "whyAutoOff": "tự động đăng đang tắt cho quốc gia này",
+    "shown": "{n, plural, one {Hiển thị # đối thủ} other {Hiển thị # đối thủ}}",
+    "details": "Chi tiết"
+  },
+  "footer": {
+    "heading": "So sánh",
+    "link": "So sánh phần mềm đặt món"
+  },
+  "featureGroups": {
+    "ordering": "Đặt món",
+    "payments": "Thanh toán",
+    "kitchen": "Bếp",
+    "marketing": "Tiếp thị",
+    "apps_hardware": "App và thiết bị",
+    "price_contract": "Giá và hợp đồng"
+  },
+  "cell": {
+    "yes": "Có",
+    "no": "Không",
+    "partial": "Một phần",
+    "unknown": "Không nêu",
+    "not_mentioned": "Website của họ không đề cập",
+    "withNote": "{word}, {note}",
+    "soon": "sắp có",
+    "fromPlan": "từ gói {plan}",
+    "perCardPayment": "{fee} mỗi lần thanh toán thẻ",
+    "trial": "Miễn phí {months, plural, one {# tháng} other {# tháng}}",
+    "setupFee": "{price} một lần",
+    "perMonth": "{price} mỗi tháng",
+    "notInCountry": "chưa có tại {country}",
+    "flagOff": "chưa bật; sẽ hiện khi app có trên kho ứng dụng",
+    "notApplicable": "không áp dụng cho sàn giao đồ ăn",
+    "not_listed": "Không liệt kê",
+    "details": "Chi tiết",
+    "doesntApply": "Không áp dụng",
+    "doesntSay": "Không nói",
+    "none": "Không có"
+  },
+  "explained": {
+    "title": "Ý nghĩa các tính năng"
+  },
+  "costBlock": {
+    "title": "Mỗi xe trả bao nhiêu mỗi tháng",
+    "sizes": "Doanh số online mỗi tháng",
+    "sizeSales": "{sales} mỗi tháng",
+    "sizeOrders": "khoảng {orders} đơn",
+    "lead": "Với một xe có doanh số đơn online {sales} mỗi tháng (khoảng {orders} đơn). Mỗi cột là tổng chi phí hằng tháng: phí riêng của phần mềm đặt món cộng phí thẻ trên các đơn đó.",
+    "legendSoftware": "Phí phần mềm",
+    "legendCard": "Phí thẻ",
+    "software": "Phí phần mềm {amount} mỗi tháng",
+    "card": "Phí thẻ {amount} mỗi tháng",
+    "total": "{amount} mỗi tháng, đã gồm phí thẻ",
+    "share": "{pct} doanh số",
+    "assumed": "(không công bố mức phí, giả định)",
+    "customerFee": "Cộng {amount} mỗi tháng do khách trả ({fee} mỗi đơn) — không tính trong cột",
+    "summaryCheapest": "Phí riêng của {us} là {ours} mỗi tháng, so với {theirs} mỗi tháng của đối thủ rẻ nhất được hiển thị. Phí thẻ ({card} mỗi tháng) bị tính trên mọi lần thanh toán thẻ dù bạn dùng phần mềm nào, nên khác biệt đáng kể là phí phần mềm.",
+    "summaryNotCheapest": "Phí riêng của {us} là {ours} mỗi tháng, cao hơn {theirs} mỗi tháng của {rival} — đối thủ rẻ nhất được hiển thị. Phí thẻ ({card} mỗi tháng) bị tính trên mọi lần thanh toán thẻ dù bạn dùng phần mềm nào.",
+    "summaryAlone": "Phí riêng của {us} là {ours} mỗi tháng. Phí thẻ ({card} mỗi tháng) bị tính trên mọi lần thanh toán thẻ dù bạn dùng phần mềm nào.",
+    "footOrder": "Đơn trung bình {order}: một suất ăn thông thường {meal} × {multiplier} món mỗi đơn ({source}).",
+    "footCard": "Phí thẻ tính theo {rate} mỗi lần thanh toán thẻ: {source}.",
+    "footCardSource": "mức phí của Stripe tại {country}",
+    "footAssumed": "{names} {count, plural, one {không công bố} other {không công bố}} mức phí thẻ, nên chúng tôi dùng mức giả định của mình.",
+    "footChecked": "Giá kiểm tra ngày {date}.",
+    "footCalculator": "Tự tính số liệu của bạn bằng công cụ tính chi phí.",
+    "noRivals": "Chưa có đối thủ nào được xác minh tại {country}, nên chưa có gì để so sánh."
+  },
+  "features": {
+    "preorder": {
+      "label": "Đặt trước với giờ nhận món tự chọn",
+      "explain": "Khách đặt món trước và chọn giờ đến nhận."
+    },
+    "capacity": {
+      "label": "Giờ nhận món giới hạn theo công suất bếp",
+      "explain": "Khách chỉ thấy những giờ nhận món mà bếp thực sự kịp làm."
+    },
+    "asap": {
+      "label": "Đặt món nhận sớm nhất có thể",
+      "explain": "Khách có thể đặt mà không cần chọn giờ và nhận ngay khi món xong."
+    },
+    "ahead": {
+      "label": "Đặt món trước cho ngày hoặc sự kiện sau",
+      "explain": "Khách có thể đặt hôm nay cho một phiên chợ hoặc sự kiện vào ngày sau."
+    },
+    "schedule": {
+      "label": "Lịch bán tuần với địa điểm thay đổi",
+      "explain": "Lịch địa điểm và giờ giấc trong tuần của xe; khách đặt món cho đúng địa điểm và ngày xe có mặt."
+    },
+    "walkup": {
+      "label": "Đơn mua tại chỗ trên cùng màn hình với đơn online",
+      "explain": "Đơn nhận tại xe vào cùng danh sách với đơn online."
+    },
+    "stock": {
+      "label": "Hết hàng và giới hạn tồn kho theo sự kiện",
+      "explain": "Đánh dấu món hết hàng và đặt số lượng tối đa mỗi món bán được tại một sự kiện."
+    },
+    "notify": {
+      "label": "Báo khách khi món đã xong",
+      "explain": "Cách khách biết món đã xong: SMS, WhatsApp, email, thông báo đẩy hoặc trang trạng thái đơn trực tiếp.",
+      "ours": "email khi bật bước báo món xong, và trang trạng thái đơn; không có SMS, WhatsApp hay thông báo đẩy"
+    },
+    "allergens": {
+      "label": "Chất gây dị ứng trên thực đơn",
+      "explain": "Mỗi món hiển thị chất gây dị ứng cho khách trước khi đặt."
+    },
+    "menuphoto": {
+      "label": "Tạo thực đơn từ ảnh",
+      "explain": "Một ảnh hoặc file PDF thực đơn tự điền sẵn các món để bạn kiểm tra."
+    },
+    "options": {
+      "label": "Tùy chọn và món thêm cho từng món",
+      "explain": "Cỡ, nước sốt và món thêm, kể cả những lựa chọn khách bắt buộc phải chọn."
+    },
+    "deals": {
+      "label": "Combo và gói món",
+      "explain": "Nhiều món bán chung với một giá."
+    },
+    "private": {
+      "label": "Sự kiện riêng và đặt thuê xe",
+      "explain": "Đơn cho sự kiện riêng qua link riêng, và yêu cầu thuê food truck.",
+      "ours": "sự kiện riêng có link đặt món riêng; không có yêu cầu đặt thuê"
+    },
+    "qr": {
+      "label": "Đặt món tại bàn / bằng mã QR",
+      "explain": "Khách quét mã tại bàn và đơn gửi đến kèm số bàn.",
+      "ours": "mã QR mở trang đặt món; không có số bàn"
+    },
+    "cards": {
+      "label": "Thanh toán thẻ online, gồm Apple Pay và Google Pay",
+      "explain": "Khách thanh toán online bằng thẻ, Apple Pay hoặc Google Pay khi đặt món."
+    },
+    "payattruck": {
+      "label": "Trả tiền tại xe",
+      "explain": "Khách đặt món online và trả tiền khi nhận món."
+    },
+    "localpay": {
+      "label": "Phương thức thanh toán nội địa (BLIK, iDEAL, Swish, MobilePay…)",
+      "explain": "Các phương thức thanh toán online riêng của từng nước, ngoài thẻ.",
+      "ours": "chỉ thẻ"
+    },
+    "paypal": {
+      "label": "PayPal hoặc Klarna",
+      "explain": "Khách có thể thanh toán bằng PayPal hoặc Klarna."
+    },
+    "custfee": {
+      "label": "Tùy chọn để khách trả phí đơn hàng",
+      "explain": "Cửa hàng có thể chuyển phí dịch vụ sang cho khách."
+    },
+    "tips": {
+      "label": "Tiền tip",
+      "explain": "Khách có thể thêm tiền tip khi thanh toán online."
+    },
+    "paymethods": {
+      "label": "Phương thức thanh toán hỗ trợ",
+      "explain": "Các cách khách có thể thanh toán, theo công bố của nhà cung cấp.",
+      "ours": "thẻ, Apple Pay, Google Pay; trả tiền tại xe"
+    },
+    "kds": {
+      "label": "Màn hình bếp (KDS)",
+      "explain": "Đơn hiện trên màn hình trong bếp, theo thứ tự cần làm."
+    },
+    "tickets": {
+      "label": "In phiếu bếp",
+      "explain": "Mỗi đơn được in ra máy in hóa đơn trên xe.",
+      "ours": "trong app iPad và Android; không kèm máy in"
+    },
+    "buzzers": {
+      "label": "Thẻ rung báo món",
+      "explain": "Khách nhận một thẻ rung báo khi món đã xong.",
+      "ours": "số thẻ rung được ghi kèm mỗi đơn; không kèm thẻ rung"
+    },
+    "offline": {
+      "label": "Vẫn hoạt động khi mất kết nối",
+      "explain": "Đơn và thay đổi thực hiện khi không có kết nối được lưu lại và gửi đi khi có mạng trở lại.",
+      "ours": "trong app iPad và Android; không có trên bảng điều khiển web"
+    },
+    "vans": {
+      "label": "Nhiều xe",
+      "explain": "Một tài khoản quản lý nhiều hơn một xe.",
+      "ours": "thêm xe với phí hằng tháng bổ sung"
+    },
+    "staff": {
+      "label": "Tài khoản nhân viên",
+      "explain": "Nhân viên đăng nhập bằng tài khoản và vai trò riêng."
+    },
+    "reports": {
+      "label": "Báo cáo doanh số",
+      "explain": "Tổng doanh số, món bán chạy và doanh số theo sự kiện hoặc ngày, có xuất file bảng tính."
+    },
+    "domain": {
+      "label": "Tên miền riêng",
+      "explain": "Trang đặt món trên tên miền riêng của cửa hàng."
+    },
+    "whatsapp": {
+      "label": "Tự động trả lời trên WhatsApp",
+      "explain": "Tin nhắn WhatsApp của khách được trả lời tự động."
+    },
+    "social": {
+      "label": "Bài đăng mạng xã hội từ lịch bán",
+      "explain": "Bài đăng làm sẵn cho biết tuần này xe ở đâu."
+    },
+    "igmsg": {
+      "label": "Trả lời trên Instagram và Messenger",
+      "explain": "Tin nhắn Instagram và Facebook Messenger được trả lời tự động."
+    },
+    "discovery": {
+      "label": "Có mặt trên bản đồ tìm food truck",
+      "explain": "Khách tìm thấy xe trên bản đồ công khai các food truck gần họ.",
+      "ours": "Village Foodie"
+    },
+    "loyalty": {
+      "label": "Tích điểm",
+      "explain": "Khách tích điểm nhận thưởng khi quay lại."
+    },
+    "ipad": {
+      "label": "App iPad",
+      "explain": "App của xe để nhận và quản lý đơn trên iPad."
+    },
+    "android": {
+      "label": "App Android",
+      "explain": "Cùng app đó trên máy tính bảng hoặc điện thoại Android."
+    },
+    "hardware": {
+      "label": "Cung cấp thiết bị (máy tính bảng, máy in)",
+      "explain": "Nhà cung cấp cấp máy tính bảng hoặc máy in.",
+      "ours": "dùng thiết bị của bạn"
+    },
+    "terminal": {
+      "label": "Cung cấp máy POS quẹt thẻ tại xe",
+      "explain": "Nhà cung cấp cấp máy POS để nhận thanh toán thẻ tại xe."
+    },
+    "fiscal": {
+      "label": "Phần mềm bán hàng đạt chuẩn thuế (TSE, EET, kassaregister…)",
+      "explain": "Phần mềm bán hàng được chứng nhận theo quy định ghi nhận doanh thu của từng nước."
+    },
+    "delivery": {
+      "label": "Giao hàng",
+      "explain": "Đơn được giao đến địa chỉ của khách.",
+      "ours": "chỉ nhận món tại xe"
+    },
+    "monthly": {
+      "label": "Giá hằng tháng",
+      "explain": "Số tiền cửa hàng trả mỗi tháng cho phần mềm."
+    },
+    "perorder": {
+      "label": "Phí mỗi đơn online",
+      "explain": "Phí nhà cung cấp thu trên mỗi đơn online, ngoài giá hằng tháng."
+    },
+    "cardfee": {
+      "label": "Phí thẻ",
+      "explain": "Phí của đơn vị thanh toán trên mỗi lần thanh toán thẻ."
+    },
+    "term": {
+      "label": "Hợp đồng tối thiểu",
+      "explain": "Thời gian cửa hàng bị ràng buộc trước khi được hủy."
+    },
+    "setup": {
+      "label": "Phí thiết lập",
+      "explain": "Khoản phí một lần để bắt đầu."
+    },
+    "trial": {
+      "label": "Dùng thử miễn phí",
+      "explain": "Thời gian dùng phần mềm miễn phí trước khi trả tiền."
+    }
+  }
+}

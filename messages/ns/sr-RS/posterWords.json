@@ -1,0 +1,25 @@
+{
+  "heading": "Nedelja od {start} do {end}",
+  "daysOff": "Danas ne radimo",
+  "cancelled": "OTKAZANO",
+  "placeSample": {
+    "nameTownBelow": "Gradska pijaca\nZemun",
+    "nameTown": "Gradska pijaca, Zemun",
+    "nameOnly": "Gradska pijaca"
+  },
+  "busyWeek": {
+    "venue1": "Dom kulture Dorćol",
+    "town1": "Beograd",
+    "venue2": "Sportsko-rekreativni centar i fudbalski teren Petrovaradin",
+    "town2": "Petrovaradin",
+    "venue3": "Glavni trg",
+    "town3": "Subotica",
+    "venue4": "Street food festival",
+    "town4": "Niš",
+    "venue5": "Kafana Stari most",
+    "town5": "Kragujevac",
+    "venue6": "Gradski park",
+    "town6": "Novi Sad"
+  },
+  "poweredBy": "Pokreće HatchGrab"
+}

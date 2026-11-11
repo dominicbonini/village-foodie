@@ -1,0 +1,30 @@
+{
+  "labels": {
+    "weekDates": "주간 날짜",
+    "dayList": "요일 목록",
+    "place": "장소",
+    "venue": "영업 장소",
+    "area": "지역",
+    "dayDate": "요일 및 날짜",
+    "times": "시간",
+    "orderLink": "주문 링크",
+    "locationTag": "위치 태그"
+  },
+  "weekHeader": "{truck} — 이번 주 영업 일정:",
+  "dayLine": "{day} — {where} — {times}",
+  "dayLineNoTimes": "{day} — {where}",
+  "dayLineCancelled": "{day} — {where} — 취소되었습니다. 죄송합니다",
+  "noDates": "이번 주에는 영업 일정이 없습니다. 곧 다시 확인해 주세요.",
+  "orderAhead": "미리 주문하세요: {url}",
+  "orderAheadTagged": "미리 주문하세요: {url} {tag}",
+  "eventLine": "{truck} 푸드트럭이 {when} 찾아갑니다. 장소: {where}, 시간: {times}.",
+  "eventLineNoTimes": "{truck} 푸드트럭이 {when} 찾아갑니다. 장소: {where}.",
+  "cancelledSorry": "죄송합니다. {when} 예정된 영업(장소: {where})을 진행할 수 없게 되었습니다.",
+  "cancelledApology": "방문을 계획하셨던 모든 분께 사과드립니다. 곧 다시 찾아뵙겠습니다.",
+  "when": {
+    "today": "오늘",
+    "tonight": "오늘 밤",
+    "tomorrow": "내일",
+    "dated": "{date}"
+  }
+}

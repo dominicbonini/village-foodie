@@ -1,0 +1,136 @@
+{
+  "binary": {
+    "cameraUsage": "HatchGrab 會使用相機，讓你拍攝菜單看板、餐點及其他文件，並直接上傳到你的帳號。照片只會用於你選擇上傳的內容。",
+    "bluetoothUsage": "HatchGrab 會使用藍牙連接你廚房的出單機，以便自動列印訂單廚房單。藍牙不會用於其他用途。",
+    "localNetworkUsage": "HatchGrab 會透過你的區域網路連接廚房印表機，以便自動列印訂單廚房單。區域網路不會用於其他用途。",
+    "faceIdUsage": "使用 Face ID 解鎖 HatchGrab。",
+    "offlineTitle": "無法連到 HatchGrab",
+    "offlineDetail": "請檢查你的網路連線。",
+    "retry": "重試"
+  },
+  "gate": {
+    "reverted": "訂單 #{id} 已還原",
+    "saved": "訂單 #{id} 已儲存",
+    "undo": "↩ 復原",
+    "paymentNotRecorded": "⚠ 訂單 #{id}：付款未記錄。{collect, select, yes {訂單已完成} other {訂單已儲存}}，但款項沒有記錄。",
+    "recordPayment": "記錄付款",
+    "paid": "訂單 #{id} 已付款",
+    "undonePayment": "已復原：付款已移除",
+    "undoneCollected": "已復原：訂單改為未取餐",
+    "collected": "訂單 #{id} {paidToo, select, yes {已付款並取餐} other {已取餐}}",
+    "ready": "訂單 #{id} 已完成",
+    "readyBuzzer": "訂單 #{id} 已完成 · <pill></pill>",
+    "status": "訂單 #{id} {action, select, confirm {已確認} reject {已拒絕} ready {已完成} collected {已取餐} undo_collected {已還原} cancel {已取消} other {已更新}}"
+  },
+  "conflicts": {
+    "more": "+{count} 筆",
+    "notOnScreenPlus": "+{count} 筆不在此螢幕上",
+    "notOnScreen": "{n, plural, one {{count} 筆訂單不在此螢幕上} other {{count} 筆訂單不在此螢幕上}}"
+  },
+  "banner": {
+    "paymentTitle": "⚠ 付款未記錄",
+    "paymentBody": "{orders}：只在此裝置上標示為已付款，實際上並未完成。",
+    "paymentCheck": "請檢查訂單，若仍有未付款項，請再次收款。",
+    "dismiss": "關閉",
+    "confirmChecked": "請確認你已檢查：{orders}",
+    "confirmHides": "這會隱藏警告。無論如何，記錄都會保留在此裝置上。",
+    "notYet": "還沒",
+    "iveChecked": "我已檢查：{orders}",
+    "statusBody": "⚠ {orders}：這項變更沒有成功送出。請檢查訂單。",
+    "offline": "📴 沒有網路連線：{n, plural, one {已在此裝置儲存 {count} 項變更，恢復連線後就會送出。} other {已在此裝置儲存 {count} 項變更，恢復連線後就會送出。}}設定已鎖定。",
+    "syncing": "已恢復連線，正在送出 {n, plural, one {{count} 項變更} other {{count} 項變更}}…",
+    "synced": "所有變更皆已送出。",
+    "stillQueued": "{n, plural, one {已在此裝置儲存 {count} 項變更，仍在嘗試送出。} other {已在此裝置儲存 {count} 項變更，仍在嘗試送出。}}"
+  },
+  "lock": {
+    "locked": "HatchGrab 已鎖定",
+    "verifying": "驗證中…",
+    "unlock": "解鎖",
+    "cantUseBiometric": "無法使用 Face / Touch ID？",
+    "enterPin": "輸入你的備用 PIN 碼",
+    "wrongPin": "PIN 碼錯誤，請再試一次。",
+    "checking": "檢查中…",
+    "tryBiometric": "改用 Face / Touch ID",
+    "forgot": "忘記 PIN 碼？你需要重新安裝 App。"
+  },
+  "notify": {
+    "title": "🔔 通知",
+    "intro": "此裝置的提醒通知。開啟後即可選擇要接收哪些通知。",
+    "refused": "需要先在裝置的「設定」中允許通知，才能開啟此功能。",
+    "newOrder": "新訂單通知",
+    "newOrderHelp": "有顧客訂單需要確認時通知我。",
+    "offline": "離線／暫停接單通知",
+    "offlineHelp": "此裝置離線（並暫停接單）時通知我。<green>離線時也能運作。</green>"
+  },
+  "van": {
+    "label": "車輛",
+    "loadRetry": "無法載入 · 重試",
+    "select": "選擇…"
+  },
+  "deviceSave": {
+    "network": "無法連到伺服器，請檢查網路連線後再試一次。",
+    "server": "目前無法儲存，請再試一次。"
+  },
+  "setup": {
+    "fetchErrorTitle": "無法載入裝置設定",
+    "fetchErrorBody": "我們無法連到伺服器來設定<b>此裝置</b>。請檢查網路連線後再試一次，你的訂單和設定都不受影響。",
+    "retry": "重試",
+    "later": "稍後",
+    "noVanTitle": "沒有啟用中的車輛",
+    "noVanBody": "這台餐車還沒有啟用中的車輛。請在<b>設定 → 你的餐車</b>中啟用一台，此裝置就會自動完成設定，這裡不需要其他步驟。",
+    "goToVans": "前往設定 → 你的餐車",
+    "title": "設定此裝置",
+    "body": "<b>此裝置</b>的一次性設定：開啟時顯示哪個畫面，以及負責哪台車輛。只適用於此裝置，其他裝置需分別設定，之後也可以從個人選單 →「此裝置」變更。",
+    "whichScreen": "此裝置開啟時要顯示哪個畫面？",
+    "dashboard": "控制台",
+    "kds": "KDS",
+    "whichVan": "此裝置屬於哪台車輛？",
+    "selectVan": "選擇車輛…",
+    "saving": "儲存中…",
+    "tryAgain": "再試一次",
+    "continue": "繼續"
+  },
+  "device": {
+    "title": "此裝置",
+    "viewing": "你正在查看：<b>{truck}</b>",
+    "viewingVan": "你正在查看：<b>{truck}</b> — <b>{van}</b>",
+    "only": "只適用於此裝置，其他裝置需分別設定。（ID：{id}…）",
+    "truck": "餐車",
+    "van": "車輛",
+    "defaultScreen": "預設畫面",
+    "orderNotifications": "訂單通知",
+    "patchFailed": "{setting, select, van {車輛} defaultScreen {預設畫面} other {訂單通知}}未儲存。{reason}",
+    "requireBiometric": "開啟時需要指紋或臉部解鎖",
+    "pinTitle": "設定備用 PIN 碼（4–6 位數）",
+    "pinHelp": "指紋或臉部解鎖無法使用時，這是你唯一的備用方式，請務必記住（忘記 PIN 碼就必須重新安裝 App）。離線時也能使用。",
+    "pinPlaceholder": "PIN 碼",
+    "confirmPinPlaceholder": "確認 PIN 碼",
+    "pinTooShort": "請至少使用 4 位數。",
+    "pinMismatch": "兩次輸入的 PIN 碼不一致。",
+    "setPin": "設定 PIN 碼並啟用",
+    "cancel": "取消",
+    "noBiometric": "此裝置尚未設定指紋或臉部解鎖，請在裝置設定中新增。你的備用 PIN 碼仍然可以使用。",
+    "footer": "這些設定只適用於此裝置，其他裝置需分別設定。"
+  },
+  "appLock": {
+    "unlockReason": "解鎖 HatchGrab",
+    "usePasscode": "使用密碼",
+    "cancel": "取消",
+    "confirmEnable": "請確認以啟用 App 鎖定"
+  },
+  "channel": {
+    "ordersName": "新訂單",
+    "ordersDescription": "有訂單需要確認時通知。"
+  },
+  "localNotify": {
+    "newOrderTitle": "新訂單",
+    "orderReceived": "已收到訂單 {number}",
+    "newOrders": "{n, plural, one {你有一筆新訂單} other {你有 {count} 筆新訂單}}"
+  },
+  "offlineAlert": {
+    "pausedTitle": "已暫停點餐",
+    "pausedBody": "你目前離線，顧客點餐已暫停。",
+    "offlineTitle": "你目前離線",
+    "offlineBody": "此裝置已失去連線。"
+  }
+}

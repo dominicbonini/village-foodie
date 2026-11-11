@@ -1,0 +1,16 @@
+{
+  "takeConfirm": "Buzzer <b>{number}</b> sedang dipakai <b>pesanan #{holderId}</b>{hasName, select, yes { ({name})} other {}}. Ambil untuk <b>{hasTarget, select, yes {pesanan #{targetId}} other {pesanan ini}}</b>?",
+  "cancel": "Batal",
+  "take": "Ambil buzzer {number}",
+  "titleBlocking": "Buzzer untuk pesanan #{id}?",
+  "title": "Pilih buzzer",
+  "subtitle": "{hasTarget, select, yes {Pesanan #{id}} other {Pesanan ini}}{hasCurrent, select, yes { · saat ini buzzer {current}} other {}}",
+  "allTaken": "{n, plural, one {Buzzer sedang dipakai. Ketuk untuk mengambilnya dari pesanan lain.} other {Semua {count} buzzer sedang dipakai. Ketuk salah satu untuk mengambilnya dari pesanan lain.}}",
+  "thisOrder": "Pesanan ini",
+  "noBuzzer": "Tanpa buzzer",
+  "done": "Selesai",
+  "lostTitle": "Pesanan #{id} tidak punya buzzer",
+  "lostBody": "{hasName, select, yes {{name} — } other {}}pesanan lain memakai buzzer yang sama saat Anda offline. Berikan buzzer lain.",
+  "dismiss": "Tutup",
+  "assign": "Berikan"
+}

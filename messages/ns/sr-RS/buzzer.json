@@ -1,0 +1,16 @@
+{
+  "takeConfirm": "Pejdžer <b>{number}</b> je kod <b>porudžbine #{holderId}</b>{hasName, select, yes { ({name})} other {}}. Preuzeti ga za <b>{hasTarget, select, yes {porudžbinu #{targetId}} other {ovu porudžbinu}}</b>?",
+  "cancel": "Otkaži",
+  "take": "Preuzmi pejdžer {number}",
+  "titleBlocking": "Pejdžer za porudžbinu #{id}?",
+  "title": "Izaberite pejdžer",
+  "subtitle": "{hasTarget, select, yes {Porudžbina #{id}} other {Ova porudžbina}}{hasCurrent, select, yes { · trenutno pejdžer {current}} other {}}",
+  "allTaken": "{n, plural, one {Svi pejdžeri su zauzeti ({count}). Dodirnite jedan da biste ga preuzeli od druge porudžbine.} few {Svi pejdžeri su zauzeti ({count}). Dodirnite jedan da biste ga preuzeli od druge porudžbine.} other {Svi pejdžeri su zauzeti ({count}). Dodirnite jedan da biste ga preuzeli od druge porudžbine.}}",
+  "thisOrder": "Ova porudžbina",
+  "noBuzzer": "Bez pejdžera",
+  "done": "Gotovo",
+  "lostTitle": "Porudžbina #{id} nema pejdžer",
+  "lostBody": "{hasName, select, yes {{name} — } other {}}druga porudžbina je preuzela isti pejdžer dok niste imali internet. Dajte ovom kupcu drugi.",
+  "dismiss": "Odbaci",
+  "assign": "Dodeli"
+}

@@ -1,0 +1,9 @@
+{
+  "title": "Verðleiðir og eiginleikar",
+  "generated": "Útbúið {date}",
+  "allowanceHeading": "Innifaldar netpantanir",
+  "smallPrint": "Smáa letrið",
+  "priceNoteMasked": "Verð sem merkt eru „Óákveðið“ hafa ekki enn verið birt.",
+  "omitNote": "Verð eru vísvitandi ekki birt í þessu skjali.",
+  "terms": "Tölurnar eru birtir skilmálar áskriftarleiðanna á ofangreindri dagsetningu og geta breyst. Færslugjöld vegna korta eru gjöld Stripe, ekki HatchGrab. Þetta skjal er samantekt, ekki samningur."
+}

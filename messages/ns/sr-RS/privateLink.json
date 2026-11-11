@@ -1,0 +1,12 @@
+{
+  "guestLabel": "PRIVATNI DOGAĐAJ",
+  "truckFallback": "Food truck",
+  "noSlugTitle": "Ovaj food truck još nije podešen za online poručivanje.",
+  "orderingOffTitle": "Online poručivanje nije uključeno",
+  "orderingOffBody": "Ovaj događaj ne prima online porudžbine. Poručite direktno kod food trucka.",
+  "replacedTitle": "Ovaj link je zamenjen",
+  "replacedBody": "Ovaj link više ne radi — food truck {truck} ga je zamenio novim. Zatražite novi link ili QR kod od organizatora.",
+  "madePublicBody": "Ovaj link više ne radi — food truck {truck} je ovaj događaj učinio javnim. Možete da poručite sa njihove obične stranice.",
+  "unknownTitle": "Ovaj link ne radi",
+  "unknownBody": "Ovaj link ne radi. Proverite ga sa organizatorom ili ponovo skenirajte QR kod."
+}

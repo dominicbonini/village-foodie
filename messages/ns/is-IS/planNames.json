@@ -1,0 +1,28 @@
+{
+  "payg": {
+    "name": "Án mánaðargjalds",
+    "subtitle": "Fyrir árstíðabundinn rekstur og hlutastarf",
+    "description": "Ekkert mánaðargjald. Þú greiðir aðeins þegar viðskiptavinur greiðir á netinu með korti."
+  },
+  "pro": {
+    "subtitle": "Fyrir vagna sem fá reglulega forpantanir",
+    "description": "Allt innifalið, þar á meðal sjálfvirk svör á WhatsApp og færslur á samfélagsmiðla, auk netpantana sem fylgja í hverjum mánuði."
+  },
+  "unlimited": {
+    "name": "Ótakmarkað",
+    "subtitle": "Fyrir annasama vagna og hátíðir",
+    "description": "Allt innifalið, án gjalda af netpöntunum, sama hve mikið er að gera."
+  },
+  "trial": {
+    "name": "Ókeypis prufa",
+    "description": "Allir eiginleikar, ókeypis, á meðan prufutíminn stendur yfir."
+  },
+  "demo": {
+    "name": "Kynning",
+    "description": "Prufusvæði fyrir væntanlega viðskiptavini — aldrei opinbert."
+  },
+  "tester": {
+    "name": "Prófari",
+    "description": "Prófari fyrir opnun — fullur aðgangur."
+  }
+}

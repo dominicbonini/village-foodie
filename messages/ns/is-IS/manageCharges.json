@@ -1,0 +1,30 @@
+{
+  "heading": "Skattur, þjórfé og gjöld",
+  "rate": {
+    "label": "Skatthlutfall",
+    "hint": "Hlutfallið sem þú leggur á hverja pöntun. Viðskiptavinir sjá því bætt við í greiðsluferlinu, á kvittunum og á pöntunarmiðum.",
+    "regionDefault": "Skildu reitinn eftir tóman til að leggja á {label} upp á {rate}%, hlutfallið fyrir tilbúinn mat (svæði: {region})."
+  },
+  "included": {
+    "label": "Verð með {label}",
+    "hint": "Verðin þín innihalda þegar {label}. Þetta hlutfall segir aðeins hve stór hluti hvers verðs er {label}, á kvittunum og pöntunarmiðum — engu er bætt við í greiðsluferlinu.",
+    "default": "Skildu reitinn eftir tóman til að nota {rate}%, hlutfallið fyrir {label} á heitan mat til að taka með ({country})."
+  },
+  "tips": {
+    "label": "Þjórfé",
+    "hint": "Viðskiptavinir sem greiða á netinu með korti geta bætt við þjórfé. Það rennur allt til þín.",
+    "choices": "Valkostir sem viðskiptavinir sjá:",
+    "chip": "{rate}%",
+    "other": "Önnur upphæð"
+  },
+  "fee": {
+    "label": "Þjónustugjald á netinu",
+    "hint": "Bætist aðeins við netpantanir. Aldrei við pantanir með greiðslu við afhendingu eða pantanir á staðnum. Þú heldur því.",
+    "pctAria": "Þjónustugjald í prósentum",
+    "fixedAria": "Föst upphæð þjónustugjalds",
+    "max": "Hámark sem þú mátt leggja á: {max}",
+    "example": "Viðskiptavinir sjá það áður en þeir greiða, sem eina línu: „{label} {amount}“.",
+    "hatchgrab": "HatchGrab bætir {fee} þjónustugjaldi við netpantanir viðskiptavina þinna. Þú greiðir það ekki og getur ekki breytt því."
+  },
+  "saveFailed": "Ekki tókst að vista — reyndu aftur."
+}

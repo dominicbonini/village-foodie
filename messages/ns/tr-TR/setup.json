@@ -1,0 +1,32 @@
+{
+  "steps": {
+    "based": "Bulunduğunuz yer",
+    "identity": "Food truck’ınız",
+    "menu": "Menünüz",
+    "event": "İlk etkinlik"
+  },
+  "stepItem": "{number}. {label}",
+  "settingUp": "Kurulum",
+  "loading": "Yükleniyor",
+  "loadingCountries": "Yükleniyor…",
+  "verify": {
+    "ok": "E-posta adresiniz onaylandı — teşekkürler.",
+    "expired": "Bu onay bağlantısının süresi dolmuş. Bize ulaşın, yayına geçmeden önce halledelim.",
+    "invalid": "Bu onay bağlantısı çalışmadı. Bize ulaşın, yayına geçmeden önce halledelim."
+  },
+  "identity": {
+    "heading": "Food truck’ınızın adı ne?",
+    "intro": "Müşterilerin göreceği ad budur. Siz yayına geçmeye karar verene kadar hiçbir şey herkese açık olmaz.",
+    "nameLabel": "Food truck adı",
+    "namePlaceholder": "Ahmet Usta Burger",
+    "phoneLabel": "Telefon",
+    "whatsappTick": "Bu numara WhatsApp’ta kayıtlı",
+    "phoneHelp": "Müşteriler bir siparişle ilgili soru sorabilsin diye bu numarayı sipariş onayında görür. Bu kutucuk, orada “Bizi arayın” mı yoksa “WhatsApp’tan yazın” mı yazacağını belirler. İkisini de Ayarlar’dan değiştirebilirsiniz."
+  },
+  "phoneRequired": "Bir telefon numarası ekleyin — hem müşteriler hem de biz size bu numaradan ulaşırız.",
+  "createFailed": "Food truck’ınız oluşturulamadı.",
+  "unreachable": "Şu anda bize ulaşılamadı — lütfen tekrar deneyin.",
+  "back": "Geri",
+  "creating": "Food truck’ınız oluşturuluyor…",
+  "continue": "Devam"
+}

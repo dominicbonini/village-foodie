@@ -1,0 +1,4 @@
+{
+  "customer": "{required, select, yes {Skylda} other {Valfrjálst}}{limit, select, one { · Veldu eitt} upTo { · Veldu allt að {max}} other {}}",
+  "operator": "{required, select, yes {Skylda} other {Valfrjálst}}{limit, select, one { · Viðskiptavinur velur eitt} upTo { · Viðskiptavinur getur valið allt að {max}} other {}}"
+}

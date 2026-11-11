@@ -1,0 +1,47 @@
+{
+  "meta": {
+    "fallbackTitle": "Food Truck | Village Foodie",
+    "hgFallbackTitle": "Food truck",
+    "orderTitle": "Pesan dari {truck}",
+    "orderDescription": "Pesan dulu dari {truck}, lalu ambil sendiri di truknya tanpa antre.",
+    "title": "{truck} | Village Foodie",
+    "logoAlt": "Logo {truck}"
+  },
+  "shareTitle": "Jadwal {truck}",
+  "shareText": "Cek lokasi berikutnya {truck}! 🚚",
+  "linkCopied": "Link profil disalin ke clipboard! 📋",
+  "facebookPage": "Halaman Facebook",
+  "loadingMap": "Memuat peta…",
+  "view": {
+    "list": "Daftar",
+    "map": "Peta"
+  },
+  "ownThisTruck": "Pemilik truk ini?",
+  "ownThisTruckTitle": "Pemilik truk ini? Klik untuk memperbarui profil",
+  "actions": {
+    "menu": "Menu",
+    "call": "Telepon",
+    "message": "Chat",
+    "share": "Bagikan",
+    "order": "Pesan"
+  },
+  "loadingSchedule": "Memuat jadwal…",
+  "loadError": {
+    "title": "Gagal memuat",
+    "body": "Jadwal belum bisa dimuat saat ini — biasanya hanya gangguan sebentar. Silakan coba lagi.",
+    "retry": "Coba lagi"
+  },
+  "notFound": {
+    "title": "Truk tidak ditemukan",
+    "body": "Kami tidak menemukan detail apa pun untuk food truck ini. Mungkin mereka sudah pindah atau memperbarui profilnya.",
+    "cta": "Lihat semua truk"
+  },
+  "noEvents": {
+    "title": "Belum ada jadwal mendatang",
+    "body": "Mungkin ada detail yang belum kami miliki untuk truk ini. Pemilik truk ini, atau tahu jadwalnya?",
+    "cta": "Chat kami agar jadwalnya diperbarui!"
+  },
+  "whereToFind": "Temukan Kami di Sini",
+  "missingEvent": "<strong>Ada jadwal yang terlewat?</strong> <br></br>Pemilik truk ini atau penggemar setianya? Bantu kami menjaga halaman ini tetap akurat! <br></br><link>Hubungi kami untuk menambahkan detail yang kurang.</link>",
+  "weeklySchedule": "Dapatkan Jadwal Mingguan 🍕"
+}

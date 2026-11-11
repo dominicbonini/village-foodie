@@ -1,0 +1,10 @@
+{
+  "download": "Görseli indir",
+  "copied": "Kopyalandı ✓",
+  "copyCaption": "Açıklamayı kopyala",
+  "share": "Paylaş",
+  "copiedStatus": "{kind, select, postText {Gönderi metni kopyalandı.} other {Açıklama kopyalandı.}}",
+  "copyFailed": "Kopyalanamadı — metni seçip elle kopyalayın.",
+  "sharedStatus": "{kind, select, postText {Gönderi metni kopyalandı — gönderinize yapıştırın.} other {Açıklama kopyalandı — gönderinize yapıştırın.}}",
+  "shareRefused": "{kind, select, postText {Paylaşım reddedildi, bu yüzden görsel indirildi. Gönderi metni kopyalandı.} other {Paylaşım reddedildi, bu yüzden görsel indirildi. Açıklama kopyalandı.}}"
+}

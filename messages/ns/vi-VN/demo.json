@@ -1,0 +1,29 @@
+{
+  "notAvailable": "Không có trong bản demo",
+  "demoMode": "CHẾ ĐỘ DEMO",
+  "loopLands": "Đơn thật cũng hiện lên đúng như vậy",
+  "showMe": "Cho tôi xem",
+  "noCard": "{sub} Không cần thẻ.",
+  "notYet": "Để sau",
+  "cashAndCollected": "Tiền mặt & đã nhận món",
+  "logoPlaceholder": "Logo của bạn ở đây",
+  "welcomeTitle": "{sample, select, yes {Đây là bản demo mẫu} other {Đây là bản demo của bạn}}",
+  "welcomeIntro": "{sample, select, yes {Đây là <b>thực đơn mẫu</b> để bạn thấy mọi thứ hoạt động ra sao — tải thực đơn của bạn lên bất cứ lúc nào để biến nó thành của riêng bạn.} other {Đây là thực đơn và thương hiệu của chính bạn, trên một bảng đơn thật.}} Các đơn đang có trên bảng là ví dụ, để bạn thấy một ca bán đông khách.",
+  "twoThings": "Hai điều nên thử:",
+  "hitButton": "Nhấn <b>{button}</b> trên một đơn",
+  "scanQr": "Quét <b>mã QR</b> — hoặc chạm vào link — rồi đặt món như một khách hàng, sau đó xem đơn hiện lên",
+  "qrAlt": "Mã QR dẫn đến trang đặt món cho khách",
+  "openHere": "Hoặc mở trên thiết bị này",
+  "copyLink": "Sao chép link",
+  "copyDescribedAs": "link đặt món",
+  "noLinkTitle": "Link đặt món cho khách của bạn",
+  "noLinkBody": "Link trang đặt món của bạn nằm trong menu ở góc trên bên phải.",
+  "asLive": "Quy trình đặt món và bếp giống hệt khi chạy thật.",
+  "startExploring": "Bắt đầu khám phá",
+  "signupOffer": {
+    "heading": "{months, plural, =0 {Bắt đầu miễn phí} one {Miễn phí # tháng đầu} other {Miễn phí # tháng đầu}}",
+    "sub": "Thời gian dùng thử miễn phí bắt đầu khi bạn đăng ký."
+  },
+  "cashIcon": "💵",
+  "walkBanner": "Demo · đây là thực đơn của bạn, đúng như khách hàng sẽ thấy. Không tính tiền và không gửi email nào."
+}

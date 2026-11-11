@@ -1,0 +1,14 @@
+{
+  "$about": "languages-world-1 (10 November 2026): the store listing for this locale — App Store (appStoreLocale) and Google Play (playLocale; name → title, shortDescription → short description, description → full description). Staged in data/store-listing/next/ until the country is switched on. Must be true in every country: no prices, plan names, trial lengths, purchase instructions or other platforms (docs/ios-intl-1-report.md §5).",
+  "appStoreLocale": "tr",
+  "playLocale": "tr-TR",
+  "messagesLocale": "tr-TR",
+  "countrySegment": "tr",
+  "name": "HatchGrab",
+  "subtitle": "Food truck sipariş sistemi",
+  "promotionalText": "Önceden sipariş alın, mutfağınızı kapasitesini aşan siparişlerden koruyun ve bağlantı kesildiğinde de servise devam edin. Food truck çalışanları için sipariş uygulaması.",
+  "description": "HatchGrab, food truck’lar için sipariş ve mutfak uygulamasıdır: ekibinizin servisi yönettiği araç.\n\nMüşteriler önceden sipariş verir ve bir teslim alma saati seçer. Çalışanlarınız tüm siparişleri tek ekranda görür, mutfağın hazırlayabileceklerini onaylar, ardından siparişi hazır ve teslim edildi olarak işaretler.\n\nTUTAMAYACAĞINIZ BİR SAATİ ASLA VAAT ETMEYİN\nMutfağınızın aynı anda ne kadar hazırlayabileceğini ve bunun ne kadar sürdüğünü ayarlayın. Bir teslim alma saati dolduğunda müşteriler o saati seçemez; böylece sıra mutfağınızın temposuna uyar.\n\nYERİNDE SİPARİŞ ALIN\nFood truck’ın önünde verilen siparişleri, önceden verilen siparişlerle aynı ekrana ekleyin; mutfak tek bir sıradan çalışsın.\n\nMUTFAK İÇİN TEK EKRAN\nMutfak ekranı şimdi neyin hazırlanacağını, sırada ne olduğunu ve neyin hazır olduğunu gösterir; bir siparişe başlanması gerektiğinde uyarı verir.\n\nSİPARİŞ FİŞİ YAZDIRIN\nMutfaktaki fiş yazıcısını Bluetooth veya yerel ağınız üzerinden bağlayın; sipariş fişleri otomatik olarak yazdırılır.\n\nBAĞLANTI KESİLDİĞİNDE DE SERVİSE DEVAM EDİN\nÇevrimdışı korumayı açın: bağlantı kesilirse önceden sipariş alma duraklar, böylece kimse göremeyeceğiniz bir sipariş veremez. Cihazda aldığınız siparişler saklanır ve yeniden çevrimiçi olduğunuzda eşitlenir.\n\nFOOD TRUCK İÇİN TASARLANDI\niPhone veya iPad’de kullanın. Servis boyunca ekranı açık tutun, onay bekleyen bir sipariş olduğunda bildirim alın ve uygulamayı Face ID veya Touch ID ile kilitleyin.\n\nHAFTANIZI PLANLAYIN\nEtkinliklerinizi ve konumlarınızı bir kez ayarlayın, her biri için sipariş alın.\n\nHatchGrab, food truck işletmecileri ve çalışanları içindir. Giriş yapmak için bir HatchGrab hesabınız olmalıdır.",
+  "keywords": "gel al,ön sipariş,mutfak ekranı,online sipariş,yemek kamyonu,menü,sokak lezzetleri,teslim alma",
+  "whatsNew": "HatchGrab artık 37 dili destekliyor.\n\nSipariş fişlerini Bluetooth’un yanı sıra yerel ağınızdaki bir mutfak yazıcısına da yazdırın.\n\nHata düzeltmeleri ve iyileştirmeler.",
+  "shortDescription": "Food truck’lar için online sipariş, teslim alma saati ve mutfak ekranı."
+}

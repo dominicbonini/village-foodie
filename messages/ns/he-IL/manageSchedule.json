@@ -1,0 +1,102 @@
+{
+  "status": {
+    "cancelled": "בוטל",
+    "finished": "הסתיים",
+    "unconfirmed": "לא מאושר",
+    "confirmed": "מאושר",
+    "open": "פתוח עכשיו",
+    "closed": "סגור"
+  },
+  "sections": {
+    "label": "חלקי הלו״ז",
+    "events": "אירועים",
+    "eventTypes": "סוגי אירועים"
+  },
+  "header": {
+    "title": "לו״ז",
+    "upcoming": "אירועים קרובים: {count}",
+    "import": "✨ ייבוא לו״ז",
+    "importHint": "תמונה, PDF או טקסט",
+    "addEvent": "+ הוספת אירוע",
+    "scraperAuto": "מאתרים אירועים באופן אוטומטי מהאתר שלכם",
+    "changeInSettings": "שינוי בהגדרות",
+    "scraperManual": "אתם מנהלים את הלו״ז באופן ידני"
+  },
+  "empty": {
+    "title": "אין אירועים קרובים",
+    "body": "אירועים שנאספו מהרשתות החברתיות וממערכת ההזמנות שלכם יופיעו כאן לאישורכם"
+  },
+  "list": {
+    "openNow": "פתוח עכשיו",
+    "needsApproval": "ממתין לאישורכם",
+    "needsConfirmation": "ממתין לאישור",
+    "confirmed": "מאושר",
+    "past": "אירועים קודמים ({count})",
+    "found": "{count, plural, one {מצאנו בשבילכם אירוע אחד — בדקו ואשרו אותו לפני שהוא עולה לאוויר.} two {מצאנו בשבילכם 2 אירועים — בדקו ואשרו אותם לפני שהם עולים לאוויר.} other {מצאנו בשבילכם # אירועים — בדקו ואשרו אותם לפני שהם עולים לאוויר.}}"
+  },
+  "card": {
+    "addName": "הוספת שם",
+    "timeNeeded": "⚠ חסרה שעה",
+    "setTimeFirst": "קודם הגדירו שעה",
+    "confirm": "אישור",
+    "copy": "העתקה",
+    "edit": "עריכה",
+    "makePost": "יצירת פוסט",
+    "cancel": "ביטול",
+    "approve": "אישור",
+    "reject": "דחייה",
+    "stock": "⚠️ מלאי",
+    "stockHidden": "מוסתר — {reason}",
+    "noDeals": "אין מבצעים פעילים",
+    "dealsActive": "{count, plural, one {מבצע פעיל אחד} two {2 מבצעים פעילים} other {# מבצעים פעילים}} · {names}{hidden, plural, =0 {} one { · מוסתר: #} two { · מוסתרים: #} other { · מוסתרים: #}}",
+    "approveNeedsTimes": "האישור לא זמין עד שלאירוע יהיו שעת התחלה ושעת סיום — הוסיפו אותן דרך “עריכה”."
+  },
+  "guessed": {
+    "title": "📍 ניחשנו את המיקום הזה",
+    "body": "יותר ממקום אחד תאם לשם <b>{venue}</b>, ולכן בחרנו את ההתאמה הקרובה ביותר{hasTown, select, yes { בעיר <b>{town}</b>} other {}}{hasPostcode, select, yes { ({postcode})} other {}}. בדקו שזה המקום הנכון לפני האישור — אם לא, השתמשו בכפתור <b>עריכה</b> כדי לתקן את האזור או את {postal}, אחרת הלקוחות יגיעו למקום הלא נכון.",
+    "thisVenue": "המקום הזה"
+  },
+  "noLocation": {
+    "title": "📍 עדיין אין מיקום",
+    "body": "לא הצלחנו למקם את המקום הזה על המפה, ולכן הוא יופיע ברשימה אבל בלי סימון על המפה. הוסיפו את {postal} באמצעות הכפתור <b>עריכה</b> כדי להציג אותו על המפה."
+  },
+  "conflict": {
+    "title": "⚠️ {count, plural, one {התנגשות אפשרית} two {התנגשויות אפשריות} other {התנגשויות אפשריות}} — בדקו לפני {pending, select, yes {האישור} other {האישור}}",
+    "duplicate": "נראה שזה אותו אירוע שכבר יש לכם.",
+    "review": "אותו מקום ואותו תאריך, שעה אחרת — זה אותו אירוע עם שעה מעודכנת, או משבצת נפרדת? בדקו לפני האישור.",
+    "already": "כבר בלו״ז שלכם: <b>{venue}</b>{details} ({status, select, confirmed {מאושר} open {פתוח} other {{status}}})",
+    "unnamedVenue": "מקום ללא שם",
+    "ack": "כן, אלה אירועים שונים — {pending, select, yes {לאשר} other {לאשר}} בכל זאת",
+    "cancel": "ביטול",
+    "overlap": "השעה של האירוע הזה חופפת לאירוע אחר באותו יום — רכב אחד לא יכול להיות בשני מקומות בו-זמנית. בדקו לפני האישור."
+  },
+  "toast": {
+    "loadFailed": "טעינת האירועים נכשלה",
+    "linkFailed": "לא הצלחנו לטעון את הקישור",
+    "placeTypeFailed": "האירוע נשמר. סוג האירוע הקבוע של המקום {place} לא נשמר — {reason}.",
+    "placeTypeFailedReason": "השמירה לא עברה",
+    "eventUpdated": "האירוע עודכן",
+    "eventAdded": "האירוע נוסף",
+    "eventsSaved": "{count, plural, one {אירוע אחד נשמר} two {2 אירועים נשמרו} other {# אירועים נשמרו}}",
+    "saveEventsFailed": "שמירת האירועים נכשלה",
+    "needsTime": "הוסיפו שעת התחלה ושעת סיום לפני האישור — האירוע צריך שעה כדי לעלות לאוויר.",
+    "addStartTime": "הוסיפו שעת התחלה",
+    "addEndTime": "הוסיפו שעת סיום",
+    "chooseTruckBefore": "בחרו איזה פודטראק עובד באירוע הזה לפני האישור.",
+    "chooseTruck": "בחרו איזה פודטראק עובד באירוע הזה",
+    "eventConfirmed": "האירוע אושר",
+    "eventRejected": "האירוע נדחה",
+    "undo": "↩ ביטול פעולה",
+    "eventRestored": "האירוע שוחזר",
+    "restoreFailed": "השחזור נכשל",
+    "eventCancelled": "האירוע בוטל",
+    "eventCancelledOrders": "האירוע בוטל · {count, plural, one {הזמנה אחת בוטלה} two {2 הזמנות בוטלו} other {# הזמנות בוטלו}}",
+    "placeHidden": "המקום הוסתר",
+    "placeShown": "המקום מוצג שוב",
+    "saveThatFailed": "לא הצלחנו לשמור את זה."
+  },
+  "link": {
+    "label": "קישור פרטי וקוד QR",
+    "close": "סגירה"
+  }
+}

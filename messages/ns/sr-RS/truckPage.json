@@ -1,0 +1,47 @@
+{
+  "meta": {
+    "fallbackTitle": "Food truck | Village Foodie",
+    "hgFallbackTitle": "Food truck",
+    "orderTitle": "{truck} — poručite online",
+    "orderDescription": "{truck}: poručite unapred i preuzmite porudžbinu kod food trucka, bez čekanja u redu.",
+    "title": "{truck} | Village Foodie",
+    "logoAlt": "Logo: {truck}"
+  },
+  "shareTitle": "Raspored: {truck}",
+  "shareText": "Pogledajte gde {truck} dolazi sledeći put! 🚚",
+  "linkCopied": "Link profila je kopiran! 📋",
+  "facebookPage": "Facebook stranica",
+  "loadingMap": "Učitavanje mape…",
+  "view": {
+    "list": "Lista",
+    "map": "Mapa"
+  },
+  "ownThisTruck": "Vi ste vlasnik ovog food trucka?",
+  "ownThisTruckTitle": "Vi ste vlasnik ovog food trucka? Kliknite da ažurirate profil",
+  "actions": {
+    "menu": "Meni",
+    "call": "Pozovi",
+    "message": "Poruka",
+    "share": "Podeli",
+    "order": "Poruči"
+  },
+  "loadingSchedule": "Učitavanje rasporeda…",
+  "loadError": {
+    "title": "Učitavanje nije uspelo",
+    "body": "Trenutno nismo mogli da učitamo raspored — to je obično kratkotrajan problem. Pokušajte ponovo.",
+    "retry": "Pokušaj ponovo"
+  },
+  "notFound": {
+    "title": "Food truck nije pronađen",
+    "body": "Nismo pronašli podatke za ovaj food truck. Možda su promenili lokaciju ili ažurirali profil.",
+    "cta": "Prikaži sve food truckove"
+  },
+  "noEvents": {
+    "title": "Nema predstojećih događaja",
+    "body": "Možda nam nedostaju neki podaci za ovaj food truck. Da li ste vi vlasnik ili znate njihov raspored?",
+    "cta": "Pošaljite nam poruku da ažuriramo!"
+  },
+  "whereToFind": "Gde nas možete naći",
+  "missingEvent": "<strong>Nedostaje neki događaj?</strong> <br></br>Ako ste vlasnik ovog food trucka ili samo veliki fan, pomozite nam da ova stranica bude tačna! <br></br><link>Kontaktirajte nas da dodamo podatke koji nedostaju.</link>",
+  "weeklySchedule": "Prijavi se za nedeljni raspored 🍕"
+}

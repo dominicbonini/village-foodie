@@ -1,0 +1,129 @@
+{
+  "docTitle": "{truck} 廚房",
+  "loading": "正在載入廚房…",
+  "pin": {
+    "title": "輸入 PIN 碼",
+    "placeholder": "PIN 碼",
+    "unlock": "解鎖",
+    "unreachable": "目前無法連到伺服器。你的 PIN 碼沒有問題，請稍後再試。",
+    "incorrect": "PIN 碼錯誤",
+    "generic": "發生錯誤，請再試一次。"
+  },
+  "error": {
+    "linkInvalid": "此連結已失效。",
+    "couldNotLoad": "無法載入訂單",
+    "truckNotFound": "找不到餐車"
+  },
+  "degraded": {
+    "at": "⚠️ 無法連到伺服器。目前顯示的是 {time} 的廚房單。可能漏掉新訂單。",
+    "earlier": "⚠️ 無法連到伺服器。目前顯示的是稍早的廚房單。可能漏掉新訂單。"
+  },
+  "header": {
+    "dashboard": "控制台",
+    "backTitle": "返回控制台",
+    "list": "清單",
+    "grid": "格狀",
+    "full": "完整",
+    "cook": "廚師",
+    "fullTitle": "完整卡片：顯示價格與付款資訊，跟櫃台看到的一樣。",
+    "cookTitle": "廚師卡片：字體較大，依分類分組，不顯示價格。",
+    "readyStep": "標示完成步驟",
+    "readyOnlyTitle": "這個螢幕只負責將訂單標示為完成，因此無法關閉，這是它唯一執行的步驟。",
+    "readyOnTitle": "這個螢幕負責將訂單標示為完成。點按即可改由另一個螢幕負責。",
+    "readyOffTitle": "由另一個螢幕將訂單標示為完成。點按即可改由這個螢幕負責。",
+    "handover": "收款與交餐",
+    "handoverOnlyTitle": "這個螢幕只負責收款，因此無法關閉，這是它唯一執行的步驟。",
+    "handoverOnTitle": "這個螢幕負責收款與交餐。點按即可改由另一個螢幕負責。",
+    "handoverOffTitle": "由另一個螢幕負責收款。點按即可改由這個螢幕負責。",
+    "soundOn": "新訂單提示音已開啟，點按即可關閉",
+    "soundOff": "新訂單提示音已關閉，點按即可開啟",
+    "screenOn": "螢幕恆亮",
+    "screenOff": "螢幕可關閉",
+    "screenSettings": "螢幕設定",
+    "manageEvent": "管理活動",
+    "manageEventTitle": "管理活動：開始、暫停、更換或結束活動",
+    "soundSettings": "音效設定",
+    "soundSettingsTitle": "此裝置會播放哪些提示音",
+    "cashIcon": "💵"
+  },
+  "panel": {
+    "viewSettings": "顯示設定",
+    "on": "開",
+    "off": "關",
+    "newOrderSound": "新訂單提示音",
+    "soundNeedsConfirming": "只限需要確認的訂單",
+    "soundAll": "所有新訂單",
+    "soundDue": "訂單該開始製作時發出提示音",
+    "soundDueHelp": "廚房單變成琥珀色時發出提示音。",
+    "deviceSettings": "裝置設定",
+    "sound": "音效",
+    "close": "關閉"
+  },
+  "banner": {
+    "mismatchTitle": "⚠️ 尚未載入這場活動的訂單",
+    "mismatchBody": "伺服器回傳了另一場活動，為避免顯示錯誤的訂單，目前不顯示任何內容。請重新選擇活動，或重新載入。",
+    "mismatchBodyAt": "伺服器回傳了另一場活動，為避免顯示 {venue} 的錯誤訂單，目前不顯示任何內容。請重新選擇活動，或重新載入。",
+    "paused": "⏸ 已暫停接單{reason, select, offline {（裝置離線）} other {}}，顧客目前無法點餐",
+    "resume": "恢復接單",
+    "offline": "沒有網路連線，目前顯示最後已知的訂單。顧客的線上點餐已暫停。",
+    "queued": "{n, plural, one {{count} 項操作等待傳送} other {{count} 項操作等待傳送}}",
+    "extraWait": "⏱ 額外等候 +{mins} 分鐘生效中",
+    "clear": "清除",
+    "toMake": "待製作",
+    "today": "今天 · {range}",
+    "onDate": "{date} · {range}",
+    "startEvent": "開始活動",
+    "recentlyClosed": "活動已結束 · {venue} 已於 {time} 結束",
+    "eventStatus": "{tone, select, paused {⏸ 已暫停} live {● 營業中} finished {● 已結束} cancelled {已取消} other {尚未開始}}"
+  },
+  "board": {
+    "queueClear": "沒有待處理訂單",
+    "doneToday": "今日已完成 · {count}",
+    "paid": "✓ 已付款",
+    "cardHeld": "信用卡已預先授權",
+    "due": "待收 {amount}"
+  },
+  "screenOff": {
+    "title": "要允許螢幕關閉嗎？",
+    "bodyVans": "{vans} {n, plural, one {已} other {皆已}}啟用離線偵測。如果螢幕關閉，裝置可能會停止傳送上線訊號，顧客點餐可能因此暫停。",
+    "body": "如果螢幕關閉，裝置可能會停止傳送上線訊號。",
+    "keepHint": "保持螢幕開啟，確保點餐不中斷。",
+    "keep": "保持螢幕開啟",
+    "allow": "允許螢幕關閉"
+  },
+  "event": {
+    "change": "更換活動",
+    "cancel": "取消",
+    "waitActive": "⏱ +{mins} 分鐘生效中 · 點按清除",
+    "addWait": "⏱ 增加額外等候時間",
+    "endTitle": "要結束活動嗎？",
+    "endEarly": "這場活動原定 {time} 才結束。結束後將不再接受任何訂單。確定要結束活動嗎？",
+    "endNow": "要結束這場活動嗎？結束後將不再接單。",
+    "yes": "是",
+    "started": "活動已開始",
+    "startFutureConfirm": "這場活動在 {date}。要現在開始嗎？",
+    "finishTimeNow": "結束時間已改為 {time}",
+    "finished": "活動已結束",
+    "cancelled": "活動已取消",
+    "noteSaved": "已儲存備註",
+    "pauseConfirm": "要暫停接單嗎？在你恢復接單之前，顧客會看到「暫停接單」。",
+    "switchConfirm": "要從 {from} 切換到 {to} 嗎？{n, plural, =0 {} one {此螢幕上的 {count} 筆訂單將被取代。} other {此螢幕上的 {count} 筆訂單將被取代。}}點按目前的活動即可切換回來。"
+  },
+  "intro": {
+    "title": "這是廚房顯示系統（KDS）",
+    "p1": "這是廚師的畫面：列出你要做的訂單，依製作順序排好。烤台旁的螢幕顯示這個畫面，櫃台則使用訂單控制台。",
+    "p2": "點按卡片，它就會往下一欄移動，負責料理的人隨時知道下一份要做什麼，沒有人需要大聲喊單。這裡的一切都是你的示範資料，盡情試試看吧。",
+    "gotIt": "知道了"
+  },
+  "toast": {
+    "failed": "失敗",
+    "rejectFailed": "無法拒絕",
+    "buzzerSaved": "已儲存取餐呼叫器 {n}",
+    "buzzerRemoved": "已移除取餐呼叫器 {n}",
+    "buzzerRemovedNone": "已移除取餐呼叫器",
+    "buzzerAssigned": "已分配取餐呼叫器 {n}",
+    "buzzerAssignedFrom": "已分配取餐呼叫器 {n}（從 #{from} 移過來）",
+    "buzzerRemoveFailed": "{had, select, no {無法移除{target, select, order {訂單 #{id}} other {這筆訂單}}的取餐呼叫器} other {無法移除取餐呼叫器 {n}，它仍在{target, select, order {訂單 #{id}} other {這筆訂單}}上}}",
+    "buzzerAssignFailed": "無法將取餐呼叫器 {n} 分配給{target, select, order {訂單 #{id}} other {這筆訂單}}：{had, select, yes {該訂單仍使用取餐呼叫器 {prior}} other {該訂單仍沒有取餐呼叫器}}"
+  }
+}

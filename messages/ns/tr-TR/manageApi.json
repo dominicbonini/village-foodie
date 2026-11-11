@@ -1,0 +1,10 @@
+{
+  "vanFallback": "Araç",
+  "eventsFeed": {
+    "today": "Bugün · {date}",
+    "tomorrow": "Yarın · {date}"
+  },
+  "privacyNotSaved": "Etkinlik yayında, ancak gizlilik ayarı kaydedilemedi.",
+  "stockWarning": "“{category}” kategorisinde satışta ürün yok",
+  "uncategorised": "Kategorisiz"
+}

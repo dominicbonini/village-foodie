@@ -1,0 +1,43 @@
+{
+  "allergensUnanswered": {
+    "title": "Izaberite kako prikazujete podatke o alergenima",
+    "detail": "Dok ne izaberete, kupci ne vide nijedno vaše jelo — meni se sam štiti tako što skriva sve čiji alergeni nisu potvrđeni, a to je trenutno sve.",
+    "where": "Meni → Alergeni"
+  },
+  "allergensCardMissing": {
+    "title": "Dodajte karticu alergena",
+    "detail": "Izabrali ste da prikazujete karticu alergena, ali nijedna nije sačuvana — kupcima bi pisalo da su podaci o alergenima dostupni, a onda ne bi našli ništa.",
+    "where": "Meni → Alergeni"
+  },
+  "allergensItemsUnverified": {
+    "title": "{n, plural, one {Potvrdite alergene za {count} jelo} few {Potvrdite alergene za {count} jela} other {Potvrdite alergene za {count} jela}}",
+    "detail": "{n, plural, one {Vaše jelo je skriveno od kupaca dok ne potvrdite njegove alergene.} few {{u, plural, one {Od ukupno {total} vaših jela, skriveno je {unverified} dok ne potvrdite njegove alergene.} few {Od ukupno {total} vaših jela, skrivena su {unverified} dok ne potvrdite njihove alergene.} other {Od ukupno {total} vaših jela, skriveno je {unverified} dok ne potvrdite njihove alergene.}}} other {{u, plural, one {Od ukupno {total} vaših jela, skriveno je {unverified} dok ne potvrdite njegove alergene.} few {Od ukupno {total} vaših jela, skrivena su {unverified} dok ne potvrdite njihove alergene.} other {Od ukupno {total} vaših jela, skriveno je {unverified} dok ne potvrdite njihove alergene.}}}} Jelo prikazano bez potvrđenih alergena izgleda kao da „ne sadrži nijedan“, pa ga meni radije skriva nego da rizikuje.",
+    "where": "Meni → Alergeni"
+  },
+  "noVan": {
+    "title": "Dodajte vozilo",
+    "detail": "Događaji se vezuju za vozilo — bez vozila nema preko čega da se primaju porudžbine.",
+    "where": "Podešavanja → Vaši food truckovi"
+  },
+  "kitchenCapacityUnset": {
+    "title": "Podesite kapacitet kuhinje",
+    "detail": "Kapacitet nije podešen za: {vans}. Bez toga ćemo kupcima i dalje obećavati vreme preuzimanja koje vaša kuhinja nikako ne može da ispoštuje.",
+    "where": "Meni → Kapacitet kuhinje",
+    "unnamedVan": "Vozilo bez naziva"
+  },
+  "noPrepBearingCategory": {
+    "title": "Recite nam koliko traje priprema",
+    "detail": "{categories, select, none {Još nemate kategorije menija, pa ne možemo da izračunamo koliko traje priprema porudžbine.} other {Nijedna vaša kategorija nema podešeno vreme pripreme, pa nam svaka porudžbina izgleda kao da je gotova odmah. Kupcima bismo i dalje davali vreme preuzimanja koje vaša kuhinja nema šanse da ispoštuje, a što više posla imate, to bi odstupanje bilo veće.}}",
+    "where": "Meni → Kategorije → Podešavanje kuhinje"
+  },
+  "emailUnverified": {
+    "title": "Potvrdite adresu e-pošte",
+    "detail": "Na ovu adresu šaljemo obaveštenja o porudžbinama i podatke za oporavak naloga. Ako je pogrešna, saznaćete to tek kada nešto već krene naopako.",
+    "where": "Potražite naš link za potvrdu u prijemnom sandučetu"
+  },
+  "emailUnknown": {
+    "title": "Status potvrde e-pošte je nepoznat",
+    "detail": "Potvrda e-pošte još nije povezana, pa ovo ne može da se proveri. Namerno blokira, umesto da tiho propusti.",
+    "where": "—"
+  }
+}

@@ -1,0 +1,141 @@
+{
+  "row": {
+    "discovery_map_listing": {
+      "name": "Tampil di peta pencarian"
+    },
+    "web_dashboard": {
+      "name": "Dasbor web untuk semua perangkat"
+    },
+    "qr_code": {
+      "name": "Kode QR"
+    },
+    "schedule_import": {
+      "name": "Impor jadwal otomatis"
+    },
+    "meal_deals_upsells": {
+      "name": "Promo & upsell"
+    },
+    "walkup_orders": {
+      "name": "Pemrosesan pesanan langsung di tempat"
+    },
+    "sold_out_toggle": {
+      "name": "Tombol habis instan"
+    },
+    "kitchen_app": {
+      "name": "Aplikasi dapur untuk iPhone, iPad, dan Android"
+    },
+    "offline_protection": {
+      "name": "Perlindungan pesanan saat offline"
+    },
+    "online_payments": {
+      "name": "Pembayaran online"
+    },
+    "advance_preordering": {
+      "name": "Pre-order jauh hari"
+    },
+    "preorder_deadline": {
+      "name": "Batas waktu pre-order"
+    },
+    "time_slot_selection": {
+      "name": "Pelanggan memilih slot waktu"
+    },
+    "kitchen_capacity": {
+      "name": "Pengaturan kapasitas dapur"
+    },
+    "stock_countdown": {
+      "name": "Hitung mundur stok otomatis"
+    },
+    "auto_accept": {
+      "name": "Terima pesanan online otomatis"
+    },
+    "branded_qr_code": {
+      "name": "Kode QR dengan logo Anda"
+    },
+    "private_events": {
+      "name": "Acara pribadi"
+    },
+    "social_media_posts": {
+      "name": "Postingan media sosial"
+    },
+    "whatsapp_auto_replies": {
+      "name": "Balasan otomatis WhatsApp"
+    },
+    "messenger_instagram_replies": {
+      "name": "Balasan otomatis Messenger & Instagram"
+    },
+    "tap_to_pay": {
+      "name": "Terima pembayaran di ponsel Anda"
+    },
+    "sms_order_alerts": {
+      "name": "Notifikasi pesanan via SMS"
+    },
+    "multi_device_kitchen": {
+      "name": "Sinkronisasi dapur multi-perangkat"
+    },
+    "multi_user_access": {
+      "name": "Akses multi-pengguna"
+    },
+    "embed_schedule": {
+      "name": "Halaman jadwal di situs web Anda sendiri"
+    },
+    "event_types": {
+      "name": "Jenis acara & harga khusus"
+    },
+    "buzzer_tracking": {
+      "name": "Pelacakan buzzer"
+    },
+    "documents_reminders": {
+      "name": "Dokumen dan pengingat"
+    },
+    "profit_per_event": {
+      "name": "Keuntungan per acara"
+    },
+    "accountant_reports": {
+      "name": "Laporan untuk akuntan Anda"
+    },
+    "ticket_printing": {
+      "name": "Pencetakan tiket dapur"
+    },
+    "customer_display": {
+      "name": "Layar untuk pelanggan"
+    },
+    "loyalty_stamp_cards": {
+      "name": "Kartu stempel loyalitas digital"
+    }
+  },
+  "cardRegionOnline": "{region} standar",
+  "cardRegion": {
+    "UKcards": "kartu Inggris",
+    "EEAcards": "kartu EEA",
+    "UScards": "kartu AS",
+    "Australiancards": "kartu Australia",
+    "NewZealandcards": "kartu Selandia Baru",
+    "Canadiancards": "kartu Kanada",
+    "Swisscards": "kartu Swiss",
+    "Braziliancards": "kartu Brasil",
+    "Mexicancards": "kartu Meksiko",
+    "Japanesecards": "kartu Jepang",
+    "Singaporecards": "kartu Singapura",
+    "HongKongcards": "kartu Hong Kong",
+    "Malaysiancards": "kartu Malaysia",
+    "Thaicards": "kartu Thailand",
+    "UAEcards": "kartu UEA"
+  },
+  "perMonth": {
+    "mo": "{amount}/bln",
+    "month": "{amount}/bulan"
+  },
+  "priceWord": {
+    "free": "Gratis",
+    "freeTrial": "Coba gratis",
+    "lifetime": "Seumur hidup",
+    "zeroPercent": "0%",
+    "payAtHatch": "Bayar saat ambil",
+    "unlimited": "Tanpa batas",
+    "none": "—",
+    "masked": "Menyusul"
+  },
+  "cell": {
+    "included": "Termasuk"
+  }
+}

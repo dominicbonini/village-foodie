@@ -1,0 +1,25 @@
+{
+  "newOrder": {
+    "subject": "Nova porudžbina #{id} — {name}{withSlot, select, yes { · {slot}} other {}}",
+    "heading": "Stigla je nova porudžbina",
+    "from": "<b>Porudžbina #{id}</b> — kupac: <b>{name}</b>",
+    "collection": "Preuzimanje: {time}",
+    "asap": "Bez tačnog vremena — što pre",
+    "total": "Ukupno",
+    "notes": "<b>Napomene:</b> {notes}",
+    "autoConfirmed": "Automatski potvrđeno — ne morate ništa da radite.",
+    "confirmPrompt": "Prijavite se na svoju HatchGrab kontrolnu tablu da biste potvrdili ili odbili ovu porudžbinu.",
+    "text": "Nova porudžbina #{id} — kupac: {name}{withSlot, select, yes {, termin: {slot}} other {}}{withVenue, select, yes {, lokacija: {venue}} other {}}.{withCharges, select, yes { {charges}.} other {}} Ukupno: {total}.{withNotes, select, yes { Napomene: {notes}} other {}}"
+  },
+  "newEvents": {
+    "subject": "Pronađeni su novi događaji za food truck {truck} — pregledajte ih",
+    "hi": "Zdravo,",
+    "found": "U vašem rasporedu smo pronašli <b>{n, plural, one {{count} novi događaj} few {{count} nova događaja} other {{count} novih događaja}}</b> — potrebno je vaše odobrenje pre nego što ih kupci vide.",
+    "listHeading": "Pronađeni događaji:",
+    "approve": "Kada ih odobrite na kartici Raspored, pojaviće se na mapi, a vaša stranica za poručivanje biće spremna za porudžbine unapred.",
+    "cta": "Pregledaj raspored →",
+    "signoff": "— Tim HatchGrab · hatchgrab.com",
+    "unknownVenue": "Nepoznata lokacija",
+    "text": "Zdravo,\n\nU vašem rasporedu smo pronašli {n, plural, one {{count} novi događaj} few {{count} nova događaja} other {{count} novih događaja}} — potrebno je vaše odobrenje:\n\n{list}\n\nPregledajte ih ovde: {url}\n\nKada ih odobrite, pojaviće se na mapi.\n\n— Tim HatchGrab"
+  }
+}

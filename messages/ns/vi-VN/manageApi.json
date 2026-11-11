@@ -1,0 +1,10 @@
+{
+  "vanFallback": "Xe",
+  "eventsFeed": {
+    "today": "Hôm nay · {date}",
+    "tomorrow": "Ngày mai · {date}"
+  },
+  "privacyNotSaved": "Sự kiện đã mở bán, nhưng không lưu được chế độ riêng tư.",
+  "stockWarning": "Không còn món nào trong “{category}”",
+  "uncategorised": "Chưa phân loại"
+}

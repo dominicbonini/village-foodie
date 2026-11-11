@@ -1,0 +1,161 @@
+{
+  "card": {
+    "title": "Đưa lịch bán lên website của bạn",
+    "live": "<addr>{address}</addr> đang hiển thị lịch bán của bạn.",
+    "create": "Chúng tôi tạo một trang tại <addr>{address}</addr> để hiển thị lịch bán của bạn.",
+    "exampleDomain": "foodtruckcuaban.vn",
+    "liveBadge": "Đang hoạt động",
+    "setUp": "Thiết lập",
+    "viewSetup": "Xem thiết lập",
+    "continue": "Tiếp tục",
+    "justLive": "<b>{address}</b> đã hoạt động. Hãy mở xem, rồi xác nhận với chúng tôi ở bên dưới rằng mọi thứ đã đúng."
+  },
+  "waiting": {
+    "title": "Chúng tôi đang chờ địa chỉ {address}",
+    "bodySince": "Bạn đã thiết lập vào {date}. Địa chỉ web mới thường hoạt động trong vài phút, đôi khi mất đến 24 giờ mới đến được với mọi người — trong lúc đó bạn không cần làm gì. Nếu người khác thêm bản ghi giúp bạn, nên kiểm tra lại xem họ đã thêm chưa.",
+    "body": "Địa chỉ web mới thường hoạt động trong vài phút, đôi khi mất đến 24 giờ mới đến được với mọi người — trong lúc đó bạn không cần làm gì. Nếu người khác thêm bản ghi giúp bạn, nên kiểm tra lại xem họ đã thêm chưa."
+  },
+  "ready": {
+    "title": "{address} đã hoạt động",
+    "body": "Hãy mở xem, rồi xác nhận với chúng tôi trong phần cài đặt rằng mọi thứ đã đúng."
+  },
+  "confirm": {
+    "heading": "Mở xem, rồi xác nhận với chúng tôi",
+    "open": "Mở <link>{address}</link>",
+    "checkTimes": "Kiểm tra xem ngày và giờ có đúng không.",
+    "yes": "Đúng rồi, trông ổn",
+    "no": "Không, có vấn đề",
+    "problemLine": "Hãy cho chúng tôi biết bạn đang thấy gì, chúng tôi sẽ kiểm tra.",
+    "emailUs": "Gửi email",
+    "mailSubject": "Sự cố với {address}",
+    "mailLiveSince": "Hoạt động từ {date}",
+    "mailSeeing": "Những gì tôi đang thấy:"
+  },
+  "confirmed": {
+    "heading": "Cảm ơn bạn — chúng tôi đã ghi nhận.",
+    "body": "Bạn không cần làm gì thêm."
+  },
+  "turnOff": {
+    "link": "Tắt tính năng này",
+    "heading": "Tắt địa chỉ web riêng của bạn?",
+    "stops": "Địa chỉ này sẽ ngừng hoạt động:",
+    "carriesOn": "Địa chỉ này vẫn hoạt động y như cũ, và là nơi mã QR của bạn dẫn khách đến:",
+    "reAdd": "Nếu sau này bạn sẽ thiết lập lại, hãy giữ nguyên bản ghi bạn đã thêm ở nhà cung cấp tên miền. Nếu không, hãy nhờ họ xóa đi.",
+    "cancel": "Vẫn bật",
+    "confirm": "Tắt",
+    "working": "Đang tắt…",
+    "failed": "Hiện chúng tôi chưa tắt được. Chưa có gì thay đổi — địa chỉ của bạn vẫn hoạt động. Hãy thử lại sau ít phút."
+  },
+  "wizard": {
+    "resumeFailedTitle": "Chúng tôi không tải được thiết lập của bạn.",
+    "resumeFailedBody": "Chưa có gì thay đổi. Hãy thử lại sau ít phút.",
+    "close": "Đóng",
+    "resuming": "Đang tiếp tục từ chỗ bạn dừng lại…",
+    "genericError": "Đã xảy ra lỗi",
+    "saveFailed": "Không lưu được"
+  },
+  "address": {
+    "intro": "Lịch bán của bạn sẽ có địa chỉ web riêng.",
+    "question": "Địa chỉ web của bạn là gì?",
+    "hint": "Địa chỉ mọi người vẫn dùng để tìm bạn.",
+    "aria": "Địa chỉ web riêng của bạn",
+    "willBe": "Địa chỉ của bạn sẽ là <addr>{address}</addr>",
+    "example": "Ví dụ: <addr>{address}</addr>",
+    "noChange": "Website của bạn không thay đổi — bạn chỉ cần thêm một link đến địa chỉ mới.",
+    "notSetUp": "Chúng tôi chưa thiết lập địa chỉ này.",
+    "restricted": "Đơn vị quản lý địa chỉ web của bạn phải cho phép chúng tôi thiết lập biểu tượng ổ khóa — ổ khóa nhỏ khách thấy bên cạnh địa chỉ. Khi họ chưa thêm chúng tôi, ổ khóa sẽ không hiện, nên chúng tôi đã dừng lại thay vì để bạn chờ. Hãy nhờ họ thêm chúng tôi, rồi thử lại.",
+    "blocked": "Địa chỉ web của bạn hiện đang chặn hoàn toàn biểu tượng ổ khóa. Đơn vị quản lý địa chỉ phải cho phép trước thì mới hoạt động được. Hãy nhờ họ thay đổi, rồi thử lại.",
+    "elsewhere": "Đã có dịch vụ khác đang dùng địa chỉ này. Hãy gửi tin nhắn ở màn hình tiếp theo cho người quản lý địa chỉ — họ sẽ biết cần làm gì.",
+    "provider": "Địa chỉ web của bạn do <b>{provider}</b> quản lý. Chúng tôi sẽ chỉ cho bạn cần vào đâu.",
+    "provisionFailed": "Chúng tôi không thiết lập được địa chỉ này.",
+    "willNotWork": "Địa chỉ này sẽ không hoạt động.",
+    "couldNotBeSetUp": "Không thể thiết lập địa chỉ này.",
+    "couldNotSetUp": "Không thiết lập được",
+    "checking": "Đang kiểm tra…",
+    "setting": "Đang thiết lập…",
+    "tryAgain": "Thử lại",
+    "setUpAddress": "Thiết lập địa chỉ này",
+    "notNow": "Để sau"
+  },
+  "apex": {
+    "empty": "Nhập địa chỉ bạn muốn dùng.",
+    "not_a_domain": "Đây có vẻ không phải là địa chỉ web.",
+    "unparseable": "Chúng tôi không đọc được địa chỉ web này. Hãy kiểm tra chính tả và thử lại.",
+    "apex": "{host} là toàn bộ địa chỉ website của bạn. Nếu bạn trỏ địa chỉ này về chúng tôi, website của bạn sẽ bị thay bằng trang này. Thay vào đó, hãy thêm một từ phía trước — ví dụ sukien.{host}.",
+    "too_deep": "Địa chỉ này có quá nhiều phần. Dạng như sukien.{domain} là tốt nhất."
+  },
+  "record": {
+    "addAt": "Thêm bản ghi này tại {provider}",
+    "open": "Mở {provider}",
+    "guide": "Hướng dẫn riêng của {provider} về việc này",
+    "addAtSave": "Thêm bản ghi này tại {provider}, rồi lưu.",
+    "addSomewhere": "Thêm bản ghi này tại nơi quản lý địa chỉ web của bạn, rồi lưu.",
+    "hintChoose": "Chọn mục này trong danh sách.",
+    "hintWord": "Chỉ từ này, không phải cả địa chỉ.",
+    "hintExact": "Sao chép chính xác.",
+    "timing": "Thường sẽ hoạt động trong vòng một giờ, nhưng có thể lâu hơn. Bạn không cần giữ trang này mở.",
+    "someoneElse": "Người khác quản lý địa chỉ web của bạn?",
+    "sentTo": "Đã gửi tới {email}",
+    "emailPlaceholder": "địa chỉ email của họ",
+    "sending": "Đang gửi…",
+    "send": "Gửi các thông tin này",
+    "sendFailed": "Không gửi được"
+  },
+  "providers": {
+    "cloudflare": {
+      "open": "Mở tên miền của bạn, rồi vào “DNS” và “Records”.",
+      "add": "Chọn “Add record”, rồi chọn “CNAME” ở mục “Type”.",
+      "name": "Điền giá trị thứ nhất bên dưới vào “Name”.",
+      "value": "Điền giá trị thứ hai bên dưới vào “Target”.",
+      "proxy": "Đặt “Proxy status” thành “DNS only” — biểu tượng đám mây bên cạnh phải có màu xám, không phải màu cam.",
+      "save": "Giữ “TTL” là “Auto” rồi chọn “Save”.",
+      "caveat": "Nếu đám mây vẫn màu cam, biểu tượng ổ khóa sẽ không bao giờ hiện, và sẽ không có thông báo nào cho biết lý do."
+    },
+    "godaddy": {
+      "open": "Mở “Domain Portfolio” và chọn tên miền của bạn.",
+      "dns": "Trong “Domain Settings”, chọn “DNS”.",
+      "add": "Chọn “Add New Record”, rồi chọn “CNAME” trong menu “Type”.",
+      "name": "Điền giá trị thứ nhất bên dưới vào “Name”.",
+      "value": "Điền giá trị thứ hai bên dưới vào “Value”.",
+      "save": "Giữ nguyên “TTL” rồi chọn “Save”.",
+      "caveat": "Nếu bạn thêm nhiều bản ghi cùng lúc, nút sẽ ghi “Save All Records”."
+    },
+    "123reg": {
+      "signIn": "Đăng nhập vào “123 Reg Control Panel”.",
+      "manage": "Bên cạnh “Domains”, chọn “Manage All”, rồi chọn tên miền của bạn.",
+      "dns": "Chọn “DNS”, rồi “Add New Record”.",
+      "type": "Chọn “CNAME” trong danh sách “Type”.",
+      "name": "Điền giá trị thứ nhất bên dưới vào “Name”.",
+      "value": "Điền giá trị thứ hai bên dưới vào “Value”, và thêm một dấu chấm vào cuối.",
+      "save": "Giữ “TTL” là “Default” rồi bấm “Save”.",
+      "caveat": "123 Reg cần có dấu chấm ở cuối giá trị thứ hai, nếu không sẽ không hoạt động."
+    },
+    "wix": {
+      "open": "Mở “Domains”, rồi bấm biểu tượng “Domain Actions” bên cạnh tên miền của bạn.",
+      "manage": "Chọn “Manage DNS Records”.",
+      "add": "Trong mục “CNAME (Aliases)”, bấm “+ Add Record”, rồi bấm “Got it”.",
+      "name": "Điền giá trị thứ nhất bên dưới vào “Host Name”.",
+      "value": "Điền giá trị thứ hai bên dưới vào “Value”.",
+      "save": "Bấm “Save”, rồi bấm “Save Changes” trong cửa sổ bật lên.",
+      "caveat": "Nếu tên miền của bạn chỉ trỏ về Wix chứ không đăng ký tại Wix, Wix không thể thực hiện thay đổi này — nơi đăng ký tên miền phải làm."
+    }
+  },
+  "instructionsEmail": {
+    "subject": "Cần thêm một bản ghi cho trang lịch bán của {truckName}",
+    "hello": "Xin chào,",
+    "introAt": "Chúng tôi đang đưa lịch bán luôn được cập nhật của {truckName} lên {address}, và cần thêm một bản ghi vào tên miền của chúng tôi tại {provider}.",
+    "introHolder": "Chúng tôi đang đưa lịch bán luôn được cập nhật của {truckName} lên {address}, và cần thêm một bản ghi vào tên miền của chúng tôi tại nơi đang quản lý tên miền.",
+    "stepsAt": "Tại {provider}:",
+    "guide": "Hướng dẫn riêng của họ: {url}",
+    "wholeChange": "Đó là toàn bộ thay đổi — không ảnh hưởng gì khác trên website, và phần còn lại của tên miền vẫn hoạt động y như hiện tại. Thường sẽ hoạt động trong vòng một giờ.",
+    "pointsAt": "Trang được trỏ tới hiển thị nơi chúng tôi bán tiếp theo và tự động cập nhật.",
+    "replyTo": "Nếu có thắc mắc, vui lòng trả lời tới {email}.",
+    "thanks": "Cảm ơn bạn,"
+  },
+  "liveEmail": {
+    "subject": "{address} đã hoạt động",
+    "goodNews": "Tin vui — {address} đã hoạt động.",
+    "body": "Lịch bán của bạn hiện đã hiển thị tại địa chỉ riêng của bạn. Hãy mở xem và kiểm tra: mở {address}, đảm bảo các sự kiện là của bạn và ngày tháng hiển thị đúng.",
+    "confirm": "Khi đã kiểm tra xong, hãy mở phần cài đặt trên HatchGrab và xác nhận với chúng tôi rằng mọi thứ đã đúng. Không có gì phụ thuộc vào bước này — chỉ để chúng tôi biết đã có người xem qua."
+  }
+}

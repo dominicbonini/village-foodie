@@ -1,0 +1,36 @@
+{
+  "h1": "모든 요금제에 영업에 필요한 모든 것을 담았습니다.",
+  "lede": "주문, 미리 주문, 주방 처리 용량, 주방 디스플레이(KDS)는 모든 요금제에 포함됩니다.{hasUpgrades, select, yes { {plans} 요금제에는 {features} 기능이 추가되고 수수료도 낮아집니다.} other {}}",
+  "perMonth": "월 {price}",
+  "group": {
+    "pay": "요금",
+    "run": "영업 운영",
+    "online": "온라인 주문",
+    "marketing": "마케팅 및 자동화"
+  },
+  "pay": {
+    "included": "매월 포함된 온라인 주문",
+    "fee": "온라인 카드 주문 HatchGrab 수수료*",
+    "walkUp": "현장 주문"
+  },
+  "cell": {
+    "unlimited": "무제한",
+    "free": "무료",
+    "feeAbove": "{included} 초과 시 <b>{fee}</b>",
+    "yes": "포함",
+    "none": "미포함",
+    "comingSoon": "출시 예정"
+  },
+  "short": {
+    "whatsapp_replies": "WhatsApp",
+    "schedule_graphics": "SNS 게시물",
+    "event_types": "영업 일정 유형별 가격"
+  },
+  "meta": {
+    "description": "{plans} 요금제의 모든 HatchGrab 기능을 수수료, 포함 내역과 함께 한눈에 비교하세요.{months, plural, =0 {} one { 첫 달에는 모든 기능이 포함됩니다.} other { 처음 #개월 동안은 모든 기능이 포함됩니다.}}"
+  },
+  "notes": {
+    "whatsapp": "WhatsApp 자동 응답을 사용하려면 WhatsApp Business 계정이 필요합니다. 일부 메시지에는 Meta가 요금을 부과할 수 있으며, 답장은 자동으로 생성됩니다.",
+    "printing": "주방 주문서 출력에는 호환되는 블루투스 또는 유선 프린터가 필요합니다(별도 구매)."
+  }
+}

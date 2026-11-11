@@ -1,0 +1,17 @@
+{
+  "back": "← Kembali",
+  "title": "Pakai promo",
+  "save": "Hemat {amount}",
+  "selectItems": "Pilih item untuk setiap slot",
+  "choose": "Pilih {category}…",
+  "inYourBasket": "── Di keranjang ──",
+  "basketUnit": "{name}{withMods, select, yes { (+ {mods})} other {}} (di keranjang){state, select, used { — sudah dipakai di promo} taken { — dipilih di slot lain} other {}}",
+  "addNew": "── Tambah baru ──",
+  "itemWithPrice": "{name} {price}",
+  "ruleHint": "· {rule, select, requiredOne {Wajib · pilih satu} required {Wajib} other {Pilih satu}}{unmet, select, yes { (wajib)} other {}}",
+  "notePlaceholder": "Tambahkan catatan, mis. tanpa bawang (opsional)",
+  "backButton": "Kembali",
+  "cancel": "Batal",
+  "chooseRequired": "Pilih opsi wajib",
+  "apply": "Pakai promo · {amount}"
+}

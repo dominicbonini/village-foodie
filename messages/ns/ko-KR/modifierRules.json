@@ -1,0 +1,4 @@
+{
+  "customer": "{required, select, yes {필수} other {선택}}{limit, select, one { · 하나 선택} upTo { · 최대 {max}개 선택} other {}}",
+  "operator": "{required, select, yes {필수} other {선택}}{limit, select, one { · 손님이 하나 선택} upTo { · 손님이 최대 {max}개까지 선택 가능} other {}}"
+}

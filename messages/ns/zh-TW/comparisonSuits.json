@@ -1,0 +1,102 @@
+{
+  "title": "哪個系統適合你的餐車？",
+  "checked": "查證日期：{date}",
+  "evidence": "依據",
+  "adminPreview": "管理員預覽——未驗證",
+  "ours": {
+    "fromPlan": "{name}（{plan} 起）"
+  },
+  "q": {
+    "preorder": "哪個點餐系統能讓顧客預約點餐並選擇取餐時間？",
+    "capacity": "尖峰時段餐車總是忙不過來——哪個系統能限制每個時段的訂單數？",
+    "whatsapp": "顧客老是問我在哪裡——哪個系統能在 WhatsApp 上回答他們？",
+    "social": "哪個系統能幫我製作每週擺攤地點的貼文，讓我不用自己設計圖片？",
+    "schedule": "我幾乎每天都在不同地方擺攤——哪個系統能讓顧客知道我在哪裡，並接受那一站的訂單？",
+    "priceLow": "我每個月只擺攤幾天——哪個系統最便宜？",
+    "priceHigh": "我常參加音樂祭和熱鬧的活動——哪個系統最便宜？",
+    "commission": "我不想每筆訂單都被抽成——各產品分別收多少？",
+    "offline": "訊號斷掉時，線上訂單會怎樣？",
+    "strength": "哪個受比較的產品提供「{feature}」？"
+  },
+  "does": {
+    "preorder": "{names} {count, plural, one {能} other {都能}}讓顧客預約點餐並選擇取餐時間。",
+    "capacity": "{names} {count, plural, one {會} other {都會}}限制每個取餐時間的訂單數，讓廚房不會忙不過來。",
+    "whatsapp": "{names} {count, plural, one {會} other {都會}}自動回覆顧客的 WhatsApp 訊息。",
+    "social": "{names} {count, plural, one {會} other {都會}}製作本週擺攤地點的現成貼文圖片。",
+    "schedule": "{names} {count, plural, one {會} other {都會}}讓顧客知道餐車每天在哪裡，並{count, plural, one {接受} other {接受}}那一站的訂單。"
+  },
+  "feat": {
+    "preorder": "取餐時間",
+    "capacity": "每個時段的訂單上限",
+    "whatsapp": "WhatsApp 自動回覆",
+    "social": "每週行程圖片",
+    "schedule": "地點變動的行程",
+    "offlinePause": "訊號中斷時暫停線上點餐"
+  },
+  "others": {
+    "noQuoted": "{names} {count, plural, one {不提供} other {都不提供}}此功能。",
+    "notListed": "{names} {count, plural, one {的官網沒有列出「{feature}」} other {的官網都沒有列出「{feature}」}}。",
+    "doesntSay": "{count, plural, one {{names} 的官網沒有說明} other {{names} 的官網都沒有說明}}。",
+    "noneLists": "其他受比較的產品都沒有列出此功能，因此在受比較的產品中，{names} {count, plural, one {是} other {都是}}最適合的選擇。"
+  },
+  "price": {
+    "lead": "以每月 {orders, number} 筆線上訂單計算，{names} {count, plural, one {是} other {都是}}受比較產品中每月軟體費用最低的：每月 {amount}{count, plural, one {} other {（各自）}}。",
+    "includes": "這包含訂閱費、每筆訂單向餐車收取的手續費、超額訂單費用，以及分攤至 12 個月的設定費；不含刷卡手續費。",
+    "flat": "{name}（{plan}，固定價格，{name} 不收每筆訂單手續費）",
+    "planName": "{name}（{plan}）"
+  },
+  "commission": {
+    "part": "{name}：{fee}",
+    "answer": "各產品對每筆訂單的收費：{parts}。"
+  },
+  "offline": {
+    "ours": "{name} 可在餐車失去訊號時自動暫停線上點餐，避免顧客下了廚房收不到的訂單。",
+    "noQuoted": "{names} {count, plural, one {不支援} other {都不支援}}離線運作。",
+    "doesntSay": "{count, plural, one {{names} 的官網沒有說明} other {{names} 的官網都沒有說明}}訊號中斷時會怎樣。"
+  },
+  "strength": {
+    "answer": "{names} {count, plural, one {表示提供} other {都表示提供}}「{feature}」；{us} 則沒有。",
+    "answerSoon": "{names} {count, plural, one {表示提供} other {都表示提供}}「{feature}」；{us} 目前還沒有。"
+  },
+  "ev": {
+    "ours": {
+      "yes": "有，依 {us} 自己的方案",
+      "no": "沒有，依 {us} 自己的方案"
+    },
+    "state": {
+      "yes": "表示提供此功能",
+      "partial": "提供部分功能",
+      "no_quoted": "表示不提供此功能",
+      "no_unquoted": "沒有（未儲存引文）",
+      "not_listed": "官網上未列出",
+      "not_mentioned": "官網沒有說明",
+      "unknown": "不明"
+    },
+    "row": "{tool} — {feature}：{answer}。",
+    "quote": "引文：「{quote}」。",
+    "pages": "已查證頁面：{pages}。",
+    "pageRead": "{page}",
+    "pageNotRead": "{page}（無法讀取）",
+    "page": {
+      "features": "功能頁面",
+      "pricing": "價格頁面",
+      "help": "說明中心",
+      "other": "其他頁面"
+    },
+    "help": {
+      "fetched": "已讀取其說明中心。",
+      "linked_not_fetched": "有說明中心，但未讀取。",
+      "none_found": "找不到說明中心。"
+    },
+    "calc": {
+      "volume": "以每月 {orders, number} 筆線上訂單、每筆 {order} 計算（線上營業額 {revenue}）。",
+      "line": "{name}（{plan}）：訂閱費 {sub} + 分攤至 12 個月的設定費 {setup} + 每筆訂單手續費 {fees} + 超額訂單 {over} = 每月 {total}。",
+      "excluded": "所有產品皆不計入刷卡手續費與顧客支付的費用。",
+      "date": "於 {date} 依各廠商官網查證的價格計算。"
+    }
+  },
+  "method": {
+    "covers": "本頁最多涵蓋四個替代方案，依其與餐車的相關性及可查證的公開資訊挑選——並非市面上所有產品。",
+    "notListed": "「未列出」表示我們查看了該產品的功能與價格頁面，而這項廠商通常會宣傳的功能並未被提及。「官網未說明」表示無法確認有或沒有。"
+  }
+}

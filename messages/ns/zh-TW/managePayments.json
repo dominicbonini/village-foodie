@@ -1,0 +1,94 @@
+{
+  "heading": "收款",
+  "loading": "正在檢查你的 Stripe 帳號…",
+  "state": {
+    "not_connected": {
+      "title": "尚未設定",
+      "body": "約需 10 分鐘。請備妥你的銀行帳戶資料和身分證件。",
+      "chip": "尚未設定"
+    },
+    "requirements": {
+      "title": "Stripe 需要你的資料",
+      "body": "在 Stripe 取得你的商家及銀行資料之前，無法使用信用卡付款。",
+      "chip": "需要處理"
+    },
+    "pending": {
+      "title": "已連結——Stripe 正在審核你的資料",
+      "body": "你不需要做任何事。Stripe 正在審核你提交的資料，完成後此頁面會自動更新。",
+      "chip": "審核中"
+    },
+    "ready": {
+      "title": "已連結",
+      "body": "你的 Stripe 帳號已連結，可以開始收款。",
+      "chip": "可使用"
+    },
+    "restricted": {
+      "title": "信用卡付款已暫停",
+      "body": "Stripe 已暫停你帳號的信用卡付款，待問題解決後才會恢復。",
+      "chip": "已暫停"
+    },
+    "unsupported": {
+      "title": "此帳號無法使用信用卡付款",
+      "body": "Stripe 無法在此開啟信用卡付款。請聯絡我們，我們會協助你處理。",
+      "chip": "無法使用"
+    }
+  },
+  "keyMismatch": {
+    "title": "Stripe 金鑰不一致",
+    "body": "此網站的伺服器使用的是<b>{server, select, live {正式} other {測試}}</b> Stripe 金鑰，但瀏覽器端建置時使用的是<b>{browser, select, live {正式} other {測試}}</b>金鑰。顧客付款時刷卡將會失敗，因此在兩者一致之前，無法設定 Stripe。",
+    "fix": "兩組金鑰必須設定為同一環境，並在之後重新建置網站——可公開金鑰（publishable key）會在建置時寫入，私密金鑰則在每次請求時讀取。"
+  },
+  "permission": {
+    "title": "只有餐車的擁有者才能設定收款",
+    "body": "Stripe 必須由收款銀行帳戶的持有人連結，因此需要從其本人登入的帳號設定。這台餐車和 HatchGrab 都沒有任何問題。"
+  },
+  "config": {
+    "keyMissingTitle": "尚未設定信用卡付款",
+    "fetchTitle": "我們無法檢查這台餐車的 Stripe 帳號",
+    "keyMissing": "尚未設定 {name}——內嵌元件無法載入。"
+  },
+  "errors": {
+    "requestFailed": "請求失敗（{status}）",
+    "unreachable": "無法連線至 Stripe"
+  },
+  "online": {
+    "heading": "線上付款",
+    "body": "顧客點餐時以信用卡付款。款項直接進入你自己的 Stripe 帳號——我們從不經手。",
+    "feeLine": "使用標準{region}付款，Stripe 每筆收取 {fee}。其他卡片的費用可能較高。HatchGrab 對線上訂單收取的費用依你的方案而定——請見「帳務」。",
+    "testMode": "測試模式。目前還無法收取真實款項。"
+  },
+  "trialNote": "設定收款不會開始你的訂閱，今天也不會向你收取任何費用。這是顧客付款給你的方式——你的方案另外計算。",
+  "admin": {
+    "title": "以平台管理員身分檢視",
+    "body": "這台餐車尚未設定線上付款。只有擁有者能從自己登入的帳號開始設定——這裡沒有需要按的按鈕。"
+  },
+  "setUp": {
+    "button": "設定線上付款",
+    "busy": "設定中…"
+  },
+  "toast": {
+    "alreadySetUp": "已設定——繼續中",
+    "addDetails": "現在請為 Stripe 填寫你的資料",
+    "createFailed": "無法建立帳號"
+  },
+  "onboarding": {
+    "restricted": "接下來由 Stripe 處理——你將登入 Stripe，並更新所需的資料。",
+    "firstRun": "接下來由 Stripe 處理——你將登入 Stripe，再提供你的商家及銀行資料。"
+  },
+  "details": {
+    "title": "你的 Stripe 資料",
+    "body": "變更收款的銀行帳戶，或更新你的商家資料與文件。",
+    "button": "檢視或編輯"
+  },
+  "walkUp": {
+    "heading": "現場收款",
+    "body": "你在餐車現場收款的方式。無論你選擇哪一種，HatchGrab 對現場點餐都不收平台費。",
+    "ownTerminal": "你自己的刷卡機",
+    "current": "目前使用",
+    "ownTerminalHelp": "Zettle、Square，或你目前使用的任何服務。不需要設定——只需支付你的服務商本身的費用。",
+    "hatchgrab": "透過 HatchGrab",
+    "comingSoon": "即將推出",
+    "hatchgrabHelp": "使用與線上付款相同的 Stripe 連結——可用刷卡機，或直接用手機或平板感應收款。",
+    "hatchgrabFees": "{region}每筆付款 {fee}，在手機或平板上感應收款另加 {surcharge}。其他卡片的費用可能較高。"
+  }
+}

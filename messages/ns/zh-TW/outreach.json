@@ -1,0 +1,11 @@
+{
+  "optOut": {
+    "missing": "這封電子郵件沒有退訂說明，因此無法寄出。請使用「Insert opt-out」加入。",
+    "notSetUp": "尚未設定退訂說明，因此無法寄出任何推廣電子郵件。請到「Templates」分頁的「Signature」面板新增。",
+    "notLoaded": "退訂說明尚未載入，因此無法寄出。",
+    "unreadable": "無法讀取退訂說明，因此沒有寄出任何郵件。"
+  },
+  "retry": {
+    "notRebuilt": "無法用公司資訊重新產生這則訊息，因此沒有寄出任何郵件。"
+  }
+}

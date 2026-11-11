@@ -1,0 +1,19 @@
+{
+  "allowCancellation": {
+    "label": "Leyfa viðskiptavinum að afpanta",
+    "sentence": "Viðskiptavinir geta afpantað þar til þetta er eftir í afhendingartímann: <select></select>"
+  },
+  "autoAccept": {
+    "label": "Samþykkja pantanir sjálfkrafa",
+    "help": "Pantanir staðfestast sjálfkrafa. Ef umbeðið tímahólf er fullt færist pöntunin í næsta lausa tímahólf. Staðfestir aðeins ef afköst leyfa. Pantanir með athugasemd frá viðskiptavini (t.d. um ofnæmi) þarf samt að staðfesta."
+  },
+  "orderReady": {
+    "label": "Skrefið „merkja tilbúið“",
+    "help": "Sýnir hnappinn „Merkja tilbúið“ á pöntunarskjánum. Eldhússkjáir eru stilltir sér, á hverju tæki. Viðskiptavinir fá tölvupóst í hvert sinn sem pöntun er merkt tilbúin. Gildir um alla viðburði — þú getur samt kveikt eða slökkt á þessu fyrir einn viðburð á stjórnborði hans."
+  },
+  "buzzers": {
+    "label": "Notarðu píptæki við afhendingu?",
+    "help": "Skráðu hvaða píptæki hver viðskiptavinur fékk, svo þú vitir að hverjum þú leitar þegar maturinn er tilbúinn.",
+    "countLabel": "Hve mörg píptæki áttu?"
+  }
+}

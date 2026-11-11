@@ -1,0 +1,21 @@
+{
+  "breachHeadline": "{n, plural, one {{count} zaman aralığında} other {{count} zaman aralığında}} kapasite aşıldı — inceleyin",
+  "batchOver": "{cat}: parti kapasitesi aşıldı — {count} adet, zaman aralığı: {slot} (parti başına {per})",
+  "eventStartOver": "Etkinlik başında kapasite aşıldı — {n, plural, one {{count} ürün} other {{count} ürün}}, zaman aralığı: {slot}",
+  "kitchenOver": "Mutfak kapasitesi aşıldı — {n, plural, one {{count} ürün} other {{count} ürün}} pişiyor, zaman aralığı: {slot}",
+  "orderItems": "#{id} — {n, plural, one {{count} ürün} other {{count} ürün}}",
+  "placedAnyway": "Yine de verilenler: {list}",
+  "placedItem": "#{id}, zaman aralığı: {slot}",
+  "orphans": "{times}: kapasite aşıldı — ilişkilendirilecek sipariş bulunamadı",
+  "dismiss": "Kapat",
+  "kitchenCapacity": "Mutfak kapasitesi",
+  "overCapacity": "Kapasite aşıldı",
+  "wakeUnsupported": "Bu cihaz ekranı açık tutamıyor.",
+  "wakeInsecure": "Bu adresten ekran açık tutulamıyor.",
+  "wakeRetry": "Ekranı açık tut — tekrar denemek için dokunun",
+  "wakeAcquire": "Ekranı açık tut",
+  "degraded": {
+    "serverError": "Sunucu siparişleri yükleyemedi{hasStatus, select, yes { (hata {status})} other {}}. Saat {at} itibarıyla siparişler gösteriliyor. Yeni siparişler eksik olabilir.",
+    "unreachable": "Sunucuya ulaşılamıyor. Saat {at} itibarıyla siparişler gösteriliyor. Yeni siparişler eksik olabilir."
+  }
+}

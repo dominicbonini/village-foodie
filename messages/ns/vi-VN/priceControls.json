@@ -1,0 +1,8 @@
+{
+  "change": "{label} — thay đổi",
+  "useRule": "{label} — dùng quy tắc",
+  "typePrice": "{label} — nhập giá",
+  "backToRule": "Quay lại quy tắc",
+  "diffUp": "(+{amount})",
+  "diffDown": "(−{amount})"
+}

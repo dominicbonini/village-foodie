@@ -1,0 +1,25 @@
+{
+  "newOrder": {
+    "subject": "新訂單 #{id} — {name}{withSlot, select, yes { · {slot}} other {}}",
+    "heading": "收到新訂單",
+    "from": "<b>訂單 #{id}</b>，顧客：<b>{name}</b>",
+    "collection": "取餐時間：{time}",
+    "asap": "未指定時間：盡快出餐",
+    "total": "總計",
+    "notes": "<b>備註：</b>{notes}",
+    "autoConfirmed": "已自動確認，你不需要做任何事。",
+    "confirmPrompt": "請登入你的 HatchGrab 控制台，確認或拒絕這筆訂單。",
+    "text": "新訂單 #{id}，顧客：{name}{withSlot, select, yes {，取餐時段：{slot}} other {}}{withVenue, select, yes {，場地：{venue}} other {}}。{withCharges, select, yes {{charges}。} other {}}總計 {total}。{withNotes, select, yes {備註：{notes}} other {}}"
+  },
+  "newEvents": {
+    "subject": "找到 {truck} 的新活動，請確認",
+    "hi": "你好：",
+    "found": "我們在你的行程中找到 <b>{n, plural, one {{count} 個新活動} other {{count} 個新活動}}</b>，需要你核准後才會顯示給顧客。",
+    "listHeading": "找到的活動：",
+    "approve": "在「行程」分頁核准後，活動就會出現在地圖上，你的點餐頁面也能開始接受預約點餐。",
+    "cta": "查看你的行程 →",
+    "signoff": "— HatchGrab 團隊 · hatchgrab.com",
+    "unknownVenue": "未知場地",
+    "text": "你好：\n\n我們在你的行程中找到 {n, plural, one {{count} 個新活動} other {{count} 個新活動}}，需要你核准：\n\n{list}\n\n請到這裡查看：{url}\n\n核准後，活動就會出現在地圖上。\n\n— HatchGrab 團隊"
+  }
+}

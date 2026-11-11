@@ -1,0 +1,161 @@
+{
+  "card": {
+    "title": "將你的行程加到你的網站",
+    "live": "<addr>{address}</addr> 正在顯示你的行程。",
+    "create": "我們會在 <addr>{address}</addr> 建立一個顯示你行程的頁面。",
+    "exampleDomain": "yourfoodtruck.com.tw",
+    "liveBadge": "已上線",
+    "setUp": "設定",
+    "viewSetup": "查看設定",
+    "continue": "繼續",
+    "justLive": "<b>{address}</b> 已可正常使用。請看看，然後在下方告訴我們是否正確。"
+  },
+  "waiting": {
+    "title": "正在等待 {address} 生效",
+    "bodySince": "你在 {date} 完成了設定。新網址通常幾分鐘內就能使用，偶爾需要長達 24 小時才能讓所有人都連得到——這段期間你不需要做任何事。如果是別人幫你新增那筆設定，建議確認一下他們是否已完成。",
+    "body": "新網址通常幾分鐘內就能使用，偶爾需要長達 24 小時才能讓所有人都連得到——這段期間你不需要做任何事。如果是別人幫你新增那筆設定，建議確認一下他們是否已完成。"
+  },
+  "ready": {
+    "title": "{address} 已上線",
+    "body": "請看看，然後在你的設定中告訴我們是否正確。"
+  },
+  "confirm": {
+    "heading": "看一下，然後告訴我們是否正確",
+    "open": "開啟 <link>{address}</link>",
+    "checkTimes": "確認日期和時間是否正確。",
+    "yes": "是，看起來沒問題",
+    "no": "不，有問題",
+    "problemLine": "告訴我們你看到的情況，我們會協助查看。",
+    "emailUs": "寄信給我們",
+    "mailSubject": "{address} 有問題",
+    "mailLiveSince": "自 {date} 起上線",
+    "mailSeeing": "我看到的情況："
+  },
+  "confirmed": {
+    "heading": "謝謝——我們都記下了。",
+    "body": "你不需要再做任何事。"
+  },
+  "turnOff": {
+    "link": "關閉此功能",
+    "heading": "要關閉你自己的網址嗎？",
+    "stops": "以下網址將停止運作：",
+    "carriesOn": "以下網址會維持原樣繼續運作，也是你的 QR code 引導顧客前往的地方：",
+    "reAdd": "如果你之後還會重新設定，請保留你在網址服務商新增的那筆設定。如果不會，請要求他們移除。",
+    "cancel": "保持開啟",
+    "confirm": "關閉",
+    "working": "正在關閉…",
+    "failed": "目前無法關閉。沒有任何變更——你的網址仍可正常使用。請稍後再試。"
+  },
+  "wizard": {
+    "resumeFailedTitle": "我們無法載入你的設定。",
+    "resumeFailedBody": "沒有任何變更。請稍後再試。",
+    "close": "關閉",
+    "resuming": "正在從你上次離開的地方繼續…",
+    "genericError": "發生錯誤",
+    "saveFailed": "無法儲存"
+  },
+  "address": {
+    "intro": "你的行程會有專屬網址。",
+    "question": "你的網址是什麼？",
+    "hint": "就是大家已經用來找到你的那個網址。",
+    "aria": "你自己的網址",
+    "willBe": "你的網址將是 <addr>{address}</addr>",
+    "example": "例如：<addr>{address}</addr>",
+    "noChange": "你的網站不會有任何改變——只需加上連到新網址的連結。",
+    "notSetUp": "我們尚未完成設定。",
+    "restricted": "管理你網址的人必須允許我們設定安全鎖頭——也就是顧客在網址旁看到的小鎖。在他們加入我們之前，鎖頭不會出現，所以我們先停下來，不讓你空等。請他們加入我們後，再試一次。",
+    "blocked": "你的網址目前完全封鎖了安全鎖頭。必須由管理網址的人允許後，才能使用此功能。請他們修改設定後，再試一次。",
+    "elsewhere": "此網址上已經有其他服務在回應。請把下一個畫面上的訊息傳給管理此網址的人——他們會知道該怎麼做。",
+    "provider": "你的網址由 <b>{provider}</b> 管理。我們會告訴你該去哪裡設定。",
+    "provisionFailed": "我們無法設定此網址。",
+    "willNotWork": "此網址無法使用。",
+    "couldNotBeSetUp": "此網址無法設定。",
+    "couldNotSetUp": "無法設定",
+    "checking": "檢查中…",
+    "setting": "設定中…",
+    "tryAgain": "再試一次",
+    "setUpAddress": "設定此網址",
+    "notNow": "稍後再說"
+  },
+  "apex": {
+    "empty": "請輸入你想使用的網址。",
+    "not_a_domain": "這看起來不像網址。",
+    "unparseable": "我們無法將此辨識為網址。請檢查拼字後，再試一次。",
+    "apex": "{host} 是你整個網站的網址。如果將它指向我們，你的網站就會被這個頁面取代。請改為在前面加一個字——例如 events.{host}。",
+    "too_deep": "此網址的層級太多。像 events.{domain} 這樣的網址最適合。"
+  },
+  "record": {
+    "addAt": "在 {provider} 新增這筆記錄",
+    "open": "開啟 {provider}",
+    "guide": "{provider} 的官方說明",
+    "addAtSave": "在 {provider} 新增這筆記錄，然後儲存。",
+    "addSomewhere": "在管理你網址的地方新增這筆記錄，然後儲存。",
+    "hintChoose": "從清單中選擇此項。",
+    "hintWord": "只要這個字，不是整個網址。",
+    "hintExact": "請完全照著複製。",
+    "timing": "通常在一小時內就會生效，但也可能需要更久。你不需要讓此頁面保持開啟。",
+    "someoneElse": "你的網址由別人管理嗎？",
+    "sentTo": "已寄至 {email}",
+    "emailPlaceholder": "對方的電子郵件地址",
+    "sending": "寄送中…",
+    "send": "寄送這些資料",
+    "sendFailed": "無法寄送"
+  },
+  "providers": {
+    "cloudflare": {
+      "open": "開啟你的網址，再選擇「DNS」和「Records」。",
+      "add": "選擇「Add record」，然後在「Type」中選「CNAME」。",
+      "name": "將下方第一個值填入「Name」。",
+      "value": "將下方第二個值填入「Target」。",
+      "proxy": "將「Proxy status」設為「DNS only」——旁邊的雲朵圖示必須是灰色，不是橘色。",
+      "save": "「TTL」保持「Auto」，然後選擇「Save」。",
+      "caveat": "如果雲朵一直是橘色，安全鎖頭就永遠不會出現，也不會顯示任何原因。"
+    },
+    "godaddy": {
+      "open": "開啟你的「Domain Portfolio」，然後選擇你的網址。",
+      "dns": "在「Domain Settings」中選擇「DNS」。",
+      "add": "選擇「Add New Record」，然後從「Type」選單中選「CNAME」。",
+      "name": "將下方第一個值填入「Name」。",
+      "value": "將下方第二個值填入「Value」。",
+      "save": "「TTL」保持不變，然後選擇「Save」。",
+      "caveat": "如果你一次新增了多筆記錄，按鈕會顯示「Save All Records」。"
+    },
+    "123reg": {
+      "signIn": "登入你的「123 Reg Control Panel」。",
+      "manage": "在「Domains」旁選擇「Manage All」，然後選擇你的網址。",
+      "dns": "選擇「DNS」，再選擇「Add New Record」。",
+      "type": "從「Type」清單中選「CNAME」。",
+      "name": "將下方第一個值填入「Name」。",
+      "value": "將下方第二個值填入「Value」，並在最後加上一個句點（.）。",
+      "save": "「TTL」保持「Default」，然後點選「Save」。",
+      "caveat": "123 Reg 需要在第二個值的最後加上句點，否則無法運作。"
+    },
+    "wix": {
+      "open": "開啟「Domains」，然後點選你網址旁的「Domain Actions」圖示。",
+      "manage": "選擇「Manage DNS Records」。",
+      "add": "在「CNAME (Aliases)」區塊中點選「+ Add Record」，再點選「Got it」。",
+      "name": "將下方第一個值填入「Host Name」。",
+      "value": "將下方第二個值填入「Value」。",
+      "save": "點選「Save」，然後在彈出視窗中點選「Save Changes」。",
+      "caveat": "如果你的網址只是指向 Wix，而不是在 Wix 註冊管理，Wix 就無法進行這項變更——必須由持有網址的服務商處理。"
+    }
+  },
+  "instructionsEmail": {
+    "subject": "{truckName} 行程頁面需新增一筆記錄",
+    "hello": "你好：",
+    "introAt": "我們要將 {truckName} 的即時行程放到 {address}，需要在我們位於 {provider} 的網域新增一筆記錄。",
+    "introHolder": "我們要將 {truckName} 的即時行程放到 {address}，需要在管理我們網域的服務商那裡新增一筆記錄。",
+    "stepsAt": "在 {provider}：",
+    "guide": "他們的官方說明：{url}",
+    "wholeChange": "只需要這項變更——網站上的其他內容都不受影響，網域的其他部分也會照常運作。通常一小時內就會生效。",
+    "pointsAt": "它指向的頁面會顯示我們接下來的出攤地點，並會自動更新。",
+    "replyTo": "如有任何問題，請回信至 {email}。",
+    "thanks": "謝謝！"
+  },
+  "liveEmail": {
+    "subject": "{address} 已可正常使用",
+    "goodNews": "好消息——{address} 已可正常使用。",
+    "body": "你的行程現在已顯示在你自己的網址上。請看看並確認內容正確：開啟 {address}，確認活動是你的，日期也正確。",
+    "confirm": "確認後，請到 HatchGrab 的設定中告訴我們內容正確。這不會影響任何功能——只是讓我們知道已經有人看過了。"
+  }
+}

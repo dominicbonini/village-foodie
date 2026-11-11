@@ -1,0 +1,127 @@
+{
+  "eyebrow": "비용 비교",
+  "title": "지금 내는<br></br><accent>온라인 주문 비용</accent>을 비교해 보세요",
+  "system": {
+    "title": "지금 온라인 주문을 받고 계신가요?",
+    "yes": "네, 다른 시스템을 쓰고 있어요",
+    "no": "아니요, 아직이에요"
+  },
+  "trucks": {
+    "title": "푸드트럭을 몇 대 운영하세요?",
+    "aria": "푸드트럭 수"
+  },
+  "plan": {
+    "yourChoice": "선택한 요금제",
+    "weSuggest": "추천 요금제",
+    "summary": "푸드트럭 1대당 월 {price} · 온라인 주문 {allowance} 포함{fleet, plural, one {} other {(대당)}}.",
+    "switchTo": "{plan} 요금제로 변경",
+    "summaryFeeOnly": "{hasMonthly, select, yes {푸드트럭 1대당 월 {price}, 온라인 카드 주문에는 {pct} 수수료가 추가됩니다.} other {월 이용료 없음 — 온라인 카드 주문에만 {pct} 수수료가 붙습니다.}}",
+    "summaryNoFee": "푸드트럭 1대당 월 {price} · 온라인 주문 무제한 · HatchGrab 수수료 없음."
+  },
+  "orders": {
+    "titleYes": "푸드트럭 1대당 월 온라인 주문",
+    "count": "~{count, plural, one {#건} other {#건}}",
+    "captionNo": "대략적인 추정치면 충분해요. 미리 주문과 줄 서지 않는 주문만 해당하며, 판매대에서 받는 현금·카드 결제는 제외합니다.",
+    "captionYes": "주문 페이지를 통해 들어온 주문만 해당하며, 판매대에서 받는 현금·카드 결제는 제외합니다.",
+    "sliderAria": "푸드트럭 1대당 월 온라인 주문 금액",
+    "overAllowance": "푸드트럭 1대당 온라인 주문 {allowance} 포함. 초과분({excess})에는 {pct} 수수료가 붙어 대당 월 <b>{over}</b> 추가됩니다.",
+    "insideAllowance": "포함된 온라인 주문 한도({allowance}) 이내예요. 요금제 외 추가 비용은 없습니다.",
+    "acrossFleet": "{fleet, plural, one {푸드트럭 #대} other {푸드트럭 #대}} 합계: 월 <b>{amount}</b>.",
+    "titleNo": "푸드트럭 1대당 한 달 온라인 매출이 얼마나 될 것 같으세요?",
+    "feeOnly": "모든 온라인 카드 주문에 {pct} — 푸드트럭 1대당 월 <b>{over}</b>.",
+    "noFee": "온라인 주문 무제한 포함 — 요금제 외 추가 비용은 없습니다."
+  },
+  "fee": {
+    "title": "지금 주문 1건당 얼마를 내고 계세요?",
+    "pctLabel": "수수료율",
+    "pctPlaceholder": "현재 수수료율",
+    "pctAria": "수수료율(%)",
+    "fixedLabel": "+ 건당 추가 금액",
+    "fixedPlaceholder": "현재 수수료",
+    "fixedAria": "주문 1건당 고정 수수료",
+    "modeLabel": "해당 업체 수수료율:",
+    "modeInclusive": "카드 결제 수수료 포함",
+    "modeOnTop": "카드 결제 수수료 별도",
+    "onTopNote": "여기에 카드 결제 수수료({fee})가 별도로 붙어서, 실제로는 총 <b>{pct} + {fixed}</b> 내고 계신 셈이에요.",
+    "inclusiveNote": "카드 결제 수수료({fee})는 이미 포함되어 있으며, 어떤 서비스를 쓰든 내야 하는 비용입니다. 해당 업체 자체 수수료는 <b>{pct}</b>입니다."
+  },
+  "days": {
+    "title": "일주일에 며칠 영업하세요?",
+    "help": "행사, 시장, 영업 장소 — 차량이 나가는 날은 모두 포함해요."
+  },
+  "jump": {
+    "cost": "비용 확인하기 ↓",
+    "saving": "절약 금액 확인하기 ↓"
+  },
+  "noSystem": {
+    "hero": "<lead>온라인 주문, 미리 주문, 주방 디스플레이(KDS)까지</lead><figure>{amount}</figure><unit>영업일 하루 기준</unit>",
+    "basedOn": "주 {days, plural, one {#일} other {#일}} 영업 기준 · 월 {monthly}{fleet, plural, one {} other {(차량 1대당)}}"
+  },
+  "coffee": "커피 한 잔 값도 안 돼요.",
+  "freeMonths": "{n, plural, one {게다가 첫 달은 무료예요.} other {게다가 처음 #개월은 무료예요.}}",
+  "cta": {
+    "upload": "내 메뉴 올리기 →",
+    "uploadSave": "내 메뉴 올리고 {amount} 절약하기 →",
+    "ask": "문의하기",
+    "noCard": "카드 등록 없이 설정 가능"
+  },
+  "breakdown": {
+    "title": "한 달 비용 상세",
+    "titleDearer": "HatchGrab 이용 시 한 달 비용",
+    "plan": "{plan} 요금제",
+    "over": "{pct} 수수료 — 포함 한도({allowance}) 초과분 {excess}",
+    "inside": "포함 한도({allowance}) 이내 온라인 주문",
+    "total": "HatchGrab 월 비용",
+    "freeMonths": "{n, plural, one {1개월 차} other {1–#개월 차}}",
+    "freeAmount": "{amount} — 무료",
+    "acrossFleet": "{fleet, plural, one {차량 #대 기준} other {차량 #대 기준}}",
+    "perMonth": "월 {amount}",
+    "card": "카드 결제 수수료 — 주문 1건당 Stripe 수수료 {fee}, Stripe에 지급됩니다. 판매대에서 카드 단말기로 받아도 거의 같은 수준이에요.",
+    "provider": "현재 사용 중인 업체 자체 수수료({pct})",
+    "feeOnly": "{pct} 수수료 — 온라인 주문 {excess} 기준",
+    "noFee": "온라인 주문 — 무제한, HatchGrab 수수료 없음"
+  },
+  "enterRate": "현재 내는 수수료를 입력하면 절약 금액을 보여 드려요.",
+  "panel": {
+    "nowYear": "<label>현재 비용</label><fig>{amount}<q> / 년</q></fig>",
+    "nowMonth": "<label>현재 비용</label><fig>{amount}<q> / 월</q></fig>",
+    "oursYear": "<label>HatchGrab 이용 시</label><fig>{amount}<q> (첫해)</q></fig>",
+    "oursMonth": "<label>HatchGrab 이용 시</label><fig>{amount}<q> / 월</q></fig>",
+    "acrossFleet": "{fleet, plural, one {차량 #대 기준} other {차량 #대 기준}}"
+  },
+  "hero": {
+    "save": "<verb>절약 금액</verb><figure>{amount}</figure><sub>첫해 <num>{pct}</num> 절감</sub>",
+    "same": "<verb>거의 비슷해요</verb><figure>{amount}</figure><sub>첫해 <num>{pct}</num> 더 들어요</sub>",
+    "dearer": "<lead>HatchGrab의 모든 기능, 추가 비용은</lead><figure>{amount}</figure><unit>주당</unit>",
+    "dearerSub": "{fleet, plural, one {지금보다 월 {amount} 더 듭니다} other {지금보다 차량 1대당 월 {amount} 더 듭니다}}"
+  },
+  "anchor": {
+    "liability": "1년 치 영업배상책임보험료 정도예요.",
+    "weekendPitch": "푸드트럭 페스티벌 주말 출점비 정도예요.",
+    "festivalPitches": "페스티벌 두어 번 출점비 정도예요.",
+    "fryer": "새 튀김기와 철판을 살 수 있는 금액이에요.",
+    "counter": "판매대를 통째로 새로 꾸밀 수 있는 금액이에요.",
+    "vanDeposit": "두 번째 차량 계약금 정도예요.",
+    "secondVan": "차량 한 대를 더 운영할 수 있는 금액이에요."
+  },
+  "year": {
+    "one": "첫해",
+    "two": "2년 차",
+    "save": "{amount} 절약<note>({pct} 절감)</note>",
+    "extra": "{amount} 추가<note>({pct} 증가)</note>",
+    "current": "현재 업체 <b>{amount}</b>",
+    "ours": "HatchGrab <b>{amount}</b>"
+  },
+  "smallPrint": {
+    "no": "입력한 수치를 바탕으로 한 추정치이며, 평균 주문 금액 {aov} 기준으로 계산했습니다. 카드 결제 수수료는 어느 업체를 쓰든 발생합니다. 결정하기 전에 꼭 확인하세요.",
+    "yes": "입력한 수치를 바탕으로 한 추정치이며, 평균 주문 금액 {aov} 기준으로 계산했습니다. 카드 결제 수수료(주문 1건당 {fee})는 어느 업체를 쓰든 발생하므로 양쪽 모두에서 제외했습니다.",
+    "onTop": "{n}번 질문의 총액에는 포함되어 있지만, 비교에서는 양쪽 모두 제외했습니다.",
+    "check": "결정하기 전에 현재 업체의 수수료를 확인하세요."
+  },
+  "intro": "1분이면 충분해요. 이미 다른 시스템을 쓰고 계신가요? 비교해 드릴게요. 아직이라면 정확히 얼마가 드는지 보여 드릴게요.",
+  "twoYear": "2년이면 <b>{amount}</b> 절약하는 셈이에요.",
+  "meta": {
+    "title": "주문 비용 계산기 — HatchGrab {country}",
+    "description": "지금 온라인 주문에 드는 비용과 HatchGrab 1년 이용 비용을 비교해 보세요. 푸드트럭 수, 주문 수, 현재 수수료만 입력하면 1분 만에 예상 금액과 절약 금액을 확인할 수 있어요."
+  }
+}

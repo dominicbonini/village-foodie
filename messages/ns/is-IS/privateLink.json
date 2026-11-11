@@ -1,0 +1,12 @@
+{
+  "guestLabel": "EINKAVIÐBURÐUR",
+  "truckFallback": "Matarvagninn",
+  "noSlugTitle": "Þessi matarvagn er ekki enn settur upp fyrir netpantanir.",
+  "orderingOffTitle": "Ekki er kveikt á netpöntunum",
+  "orderingOffBody": "Þessi viðburður tekur ekki við netpöntunum. Pantaðu við vagninn.",
+  "replacedTitle": "Þessum tengli hefur verið skipt út",
+  "replacedBody": "Þessi tengill virkar ekki lengur — {truck} hefur skipt honum út. Biddu skipuleggjandann um nýja tengilinn eða QR-kóðann.",
+  "madePublicBody": "Þessi tengill virkar ekki lengur — {truck} hefur gert þennan viðburð opinberan. Þú getur pantað á venjulegri síðu vagnsins.",
+  "unknownTitle": "Þessi tengill virkar ekki",
+  "unknownBody": "Þessi tengill virkar ekki. Athugaðu hann hjá skipuleggjandanum eða skannaðu QR-kóðann aftur."
+}

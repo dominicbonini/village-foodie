@@ -1,0 +1,122 @@
+{
+  "includedOn": "{many, select, yes {{feature} sudah termasuk dalam paket {plan}.} other {{feature} sudah termasuk dalam paket {plan}.}}",
+  "notOnPlan": "{many, select, yes {{feature} tidak termasuk dalam paket Anda.} other {{feature} tidak termasuk dalam paket Anda.}}",
+  "switchedOff": "{many, select, yes {{feature} dinonaktifkan untuk truk Anda.} other {{feature} dinonaktifkan untuk truk Anda.}}",
+  "planLine": "{plan} · {price} · {description}",
+  "planLineNoPrice": "{plan} · {description}",
+  "upgrade": "Upgrade →",
+  "features": {
+    "discovery_map": {
+      "name": "Tampil di peta pencarian",
+      "many": "no"
+    },
+    "web_dashboard": {
+      "name": "Dasbor web",
+      "many": "no"
+    },
+    "ipad_kds": {
+      "name": "Aplikasi dapur",
+      "many": "no"
+    },
+    "qr_menu": {
+      "name": "Menu kode QR",
+      "many": "no"
+    },
+    "meal_deals": {
+      "name": "Promo",
+      "many": "yes"
+    },
+    "upsells": {
+      "name": "Upsell",
+      "many": "yes"
+    },
+    "walkup_orders": {
+      "name": "Pesanan langsung di tempat",
+      "many": "yes"
+    },
+    "online_ordering_pay_at_hatch": {
+      "name": "Pemesanan dengan Bayar saat ambil",
+      "many": "no"
+    },
+    "sold_out_toggle": {
+      "name": "Tombol habis",
+      "many": "no"
+    },
+    "stock_countdown": {
+      "name": "Hitung mundur stok",
+      "many": "no"
+    },
+    "offline_protection": {
+      "name": "Perlindungan pesanan saat offline",
+      "many": "no"
+    },
+    "online_payments": {
+      "name": "Pembayaran online",
+      "many": "yes"
+    },
+    "advance_preordering": {
+      "name": "Pre-order jauh hari",
+      "many": "no"
+    },
+    "time_slot_selection": {
+      "name": "Slot waktu untuk pelanggan",
+      "many": "yes"
+    },
+    "smart_batch_pacing": {
+      "name": "Pengaturan kapasitas dapur",
+      "many": "no"
+    },
+    "auto_accept": {
+      "name": "Terima otomatis",
+      "many": "no"
+    },
+    "instagram_messenger_replies": {
+      "name": "Balasan otomatis Messenger & Instagram",
+      "many": "yes"
+    },
+    "branded_qr_code": {
+      "name": "Kode QR dengan logo Anda",
+      "many": "yes"
+    },
+    "advanced_reporting": {
+      "name": "Laporan lanjutan",
+      "many": "no"
+    },
+    "ticket_printing": {
+      "name": "Pencetakan tiket dapur",
+      "many": "no"
+    },
+    "multi_device_kds": {
+      "name": "Sinkronisasi dapur multi-perangkat",
+      "many": "no"
+    },
+    "cook_screen": {
+      "name": "Layar masak",
+      "many": "no"
+    },
+    "whatsapp_replies": {
+      "name": "Balasan otomatis WhatsApp",
+      "many": "yes"
+    },
+    "embed_schedule": {
+      "name": "Jadwal di situs web Anda sendiri",
+      "many": "no"
+    },
+    "schedule_graphics": {
+      "name": "Postingan media sosial",
+      "many": "yes"
+    },
+    "event_types": {
+      "name": "Jenis acara khusus",
+      "many": "yes"
+    },
+    "private_events": {
+      "name": "Acara pribadi",
+      "many": "yes"
+    },
+    "paperwork": {
+      "name": "Dokumen",
+      "many": "yes"
+    }
+  }
+}

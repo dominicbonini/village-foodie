@@ -1,0 +1,18 @@
+{
+  "menuLabel": "Menu pengguna",
+  "screenOn": "Layar tetap menyala",
+  "screenOff": "Layar boleh mati",
+  "newOrderSound": "Suara pesanan baru",
+  "copied": "Disalin",
+  "orderLink": "Link pemesanan",
+  "qrCode": "Kode QR",
+  "kitchenScreen": "Layar dapur",
+  "thisDevice": "Perangkat ini",
+  "manage": "Kelola",
+  "ordersDashboard": "Dasbor pesanan",
+  "admin": "Admin",
+  "privacy": "Kebijakan privasi",
+  "terms": "Ketentuan",
+  "signOut": "Keluar",
+  "close": "Tutup"
+}

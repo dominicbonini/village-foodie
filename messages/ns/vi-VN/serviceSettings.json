@@ -1,0 +1,59 @@
+{
+  "labels": {
+    "collection_interval_mins": "Giờ nhận món",
+    "takes_cash": "Bạn có nhận tiền mặt không?",
+    "offline_protection": "Bảo vệ đơn khi mất mạng",
+    "buzzer_prompt": "Nhắc tôi đưa thẻ rung báo món"
+  },
+  "typeFollowsVanTitle": "Theo cài đặt thường dùng của từng xe",
+  "sameSettingsAllVansLabel": "Cùng cài đặt cho tất cả xe",
+  "sameSettingsAllVansHeader": "Tất cả xe",
+  "sameSettingsConfirm": "Sao chép cài đặt của Xe 1 sang mọi xe? Thao tác này sao chép toàn bộ cài đặt xe của Xe 1, giống như ‘Giống Xe 1’ trong Cài đặt. Công suất bếp có công tắc riêng.",
+  "eventTypesFooterStandard": "Tiêu chuẩn là thiết lập thường dùng của bạn. Thay đổi ở đây cũng sẽ thay đổi trong Cài đặt.",
+  "eventTypesFooterOneEvent": "Để đổi cài đặt cho riêng một sự kiện, hãy dùng bảng điều khiển của sự kiện đó.",
+  "eventTypesSubtitle": "Thay đổi được lưu ngay khi bạn chỉnh.",
+  "matchStandardLabel": "Giống Tiêu chuẩn",
+  "matchStandardConfirm": "Đưa mọi cài đặt của loại này về Tiêu chuẩn? Mọi thay đổi bạn đã làm ở đây sẽ bị xóa.",
+  "priceLabels": {
+    "price_change_on": "Đổi giá",
+    "price_mode": "Cách đổi giá",
+    "price_amount": "Số tiền",
+    "price_rounding": "Làm tròn",
+    "item_prices": "Giá từng món"
+  },
+  "priceMode": {
+    "add_amount": "+ {symbol}",
+    "add_pct": "+ %",
+    "sub_amount": "− {symbol}",
+    "sub_pct": "− %",
+    "none": "Tự đặt từng giá"
+  },
+  "priceRounding": {
+    "none": "Không làm tròn",
+    "nearest_1": "Làm tròn đến {symbol}1 gần nhất",
+    "up_1": "Luôn làm tròn lên"
+  },
+  "pricesStandardCell": "Giá trong thực đơn của bạn",
+  "pricesTruckWideTitle": "Giá của bạn giống nhau cho mọi xe",
+  "pricesMenuCell": "Thực đơn",
+  "pricesTypeOffCell": "Giá thực đơn",
+  "itemPricesShow": "Hiện giá",
+  "itemPricesHide": "Ẩn giá",
+  "priceItemsHeading": "Đặt giá cho từng món",
+  "priceItemsOpen": "Xem hoặc đổi giá từng món ›",
+  "priceItemsClose": "Ẩn giá từng món ⌃",
+  "ownPriceCount": "{n, plural, one {{count} món có giá riêng} other {{count} món có giá riêng}}",
+  "priceTypeHint": "Nhấn vào một giá để tự nhập.",
+  "pricesLiveNotice": "Sự kiện này đang diễn ra. Đơn mới dùng giá mới. Đơn đã đặt giữ nguyên giá cũ.",
+  "placeTypeHelper": "Thêm sự kiện sẽ chọn loại này mỗi khi bạn chọn địa điểm này.",
+  "postPictureStandardNote": "Bài đăng sự kiện ở đây dùng mẫu thiết kế tiêu chuẩn của bạn.",
+  "eventItemsCardDescription": "Giá, giới hạn số lượng và tình trạng còn hàng chỉ cho sự kiện này. Thay đổi có hiệu lực ngay.",
+  "eventPriceColumnLabel": "Giá",
+  "eventPriceOwnNote": "{hasType, select, yes {{type} {price} · sự kiện này} other {thực đơn {price} · sự kiện này}}",
+  "eventPriceEdit": "✎ Sửa giá",
+  "eventPriceCancel": "Hủy",
+  "eventPriceSave": "Lưu giá",
+  "eventPriceEditNote": "Đang sửa giá chỉ cho sự kiện này. Giới hạn số lượng và tình trạng còn hàng bị khóa cho đến khi bạn lưu.",
+  "eventPriceLiveNote": "Đang diễn ra: đơn mới dùng giá mới.",
+  "offlineWhenOfflineLabel": "Khi mất mạng"
+}

@@ -1,0 +1,8 @@
+{
+  "notFoundTitle": "Sayfa bulunamadı",
+  "notFoundBody": "Bu sayfayı bulamadık. Taşınmış olabilir ya da adres yanlış yazılmış olabilir.",
+  "home": "Ana sayfaya git",
+  "errorTitle": "Bir sorun oluştu",
+  "errorBody": "Üzgünüz — bu sayfa yüklenmedi. Tekrar deneyin ya da ana sayfaya dönün.",
+  "retry": "Tekrar dene"
+}

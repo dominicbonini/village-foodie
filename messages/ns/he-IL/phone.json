@@ -1,0 +1,5 @@
+{
+  "invalidMobile": "{withName, select, yes {הזינו מספר נייד תקין ({name})} other {הזינו מספר נייד תקין}}{withExample, select, yes { (לדוגמה: {example})} other {}}",
+  "invalidPhone": "{withName, select, yes {הזינו מספר טלפון תקין ({name})} other {הזינו מספר טלפון תקין}}{withExample, select, yes { (לדוגמה: {example})} other {}}",
+  "invalidPhoneNumber": "{withName, select, yes {הזינו מספר טלפון תקין ({name})} other {הזינו מספר טלפון תקין}}{withExample, select, yes { (לדוגמה: {example})} other {}}."
+}

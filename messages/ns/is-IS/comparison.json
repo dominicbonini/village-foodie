@@ -1,0 +1,400 @@
+{
+  "path": {
+    "section": "samanburdur",
+    "slug": "pontunarkerfi-fyrir-matarvagna"
+  },
+  "meta": {
+    "title": "Pöntunarkerfi fyrir matarvagna 2026: samanburður og verð",
+    "description": "Pöntunarkerfi fyrir matarvagna borin saman: forpöntun með afhendingartíma, afköst eldhúss, vikuáætlun, gjöld og binditími — skoðað á vef hvers söluaðila.",
+    "about": "Netpöntunarkerfi fyrir matarvagna"
+  },
+  "breadcrumb": {
+    "home": "HatchGrab",
+    "here": "Samanburður",
+    "label": "Brauðmolar"
+  },
+  "h1": "Pöntunarkerfi fyrir matarvagna borin saman 2026",
+  "byline": "Síðast kannað: {date} · Gert af HatchGrab. Við erum einn af söluaðilunum sem bornir eru saman (sjá <link>Hvernig við bárum saman</link>).",
+  "table": {
+    "title": "Pöntunarkerfin borin saman",
+    "caption": "Eiginleikar og kostnaður netpöntunarkerfa fyrir matarvagna ({country}), miðað við {date}",
+    "note": "„Já“ aðeins þar sem söluaðilinn segir það opinberlega.",
+    "feature": "Eiginleiki",
+    "yes": "Já",
+    "no": "Nei",
+    "unknown": "Ekki tekið fram",
+    "fromPlan": "Frá {plan}",
+    "appNotInCountry": "Ekki í boði ({country})",
+    "appFlagOff": "Já – rofi enn óvirkur, birtist þegar appverslanirnar bjóða það",
+    "range": "{from} til {to}",
+    "feePlan": "{fee} ({plans})",
+    "noFee": "ekkert",
+    "morePending": "Fleiri söluaðilar birtast hér þegar við höfum kannað upplýsingar um þá á þeirra eigin vefsíðu.",
+    "priceHidden": "Gegn fyrirspurn",
+    "feeAfter": "{fee} umfram {included} á mánuði",
+    "legend": "✓ Já · ◐ Að hluta · ✗ Nei · Ekki skráð: ekki á síðum þeirra um eiginleika eða verð · —: vefsíða þeirra segir ekkert um það · Á ekki við: sú tegund þjónustu er ekki með eiginleikann · ⓘ: athugasemd, tilvitnun og heimild",
+    "swipe": "Strjúktu til hliðar til að sjá allar vörurnar →"
+  },
+  "costs": {
+    "title": "Hvað kostar pöntunarkerfi fyrir matarvagn?",
+    "ourPlan": "{plan}: {price} á mánuði, {fee}",
+    "feeOnly": "{fee} af hverri netpöntun greiddri með korti",
+    "feeIncluded": "netpantanir fyrir allt að {included} á mánuði innifaldar, síðan {fee}",
+    "feeNone": "ekkert gjald til HatchGrab af netpöntunum",
+    "rivalPlan": "{plan}: {price}",
+    "perMonth": "{price} á mánuði",
+    "perMonthYearly": "{price} á mánuði, greitt árlega",
+    "vatExcl": "án vsk.",
+    "vatIncl": "með vsk.",
+    "setup": "{price} í stofngjald (eitt skipti)",
+    "truckFee": "{fee} á pöntun",
+    "customerFee": "{fee} á pöntun, greitt af viðskiptavininum",
+    "source": "Heimild",
+    "checked": "kannað {date}",
+    "cardFee": "Netgreiðslum með korti hjá HatchGrab fylgja einnig gjöld Stripe: {cardFee} á hverja kortagreiðslu ({country}).",
+    "vat": "HatchGrab Ltd er breskt fyrirtæki og er ekki á virðisaukaskattsskrá ({country}), svo enginn virðisaukaskattur leggst á gjöldin okkar. Ef fyrirtækið þitt er á virðisaukaskattsskrá skaltu gefa okkur upp VSK-númerið; þá stendur fyrirtækið sjálft skil á virðisaukaskatti af gjöldum okkar samkvæmt reglum um öfuga skattskyldu.",
+    "bundledFee": "{fee} á hverja netgreiðslu, kortagjald innifalið"
+  },
+  "fit": {
+    "title": "Hvaða kerfi hentar hverjum?",
+    "ours": "HatchGrab hentar þér ef …",
+    "oursBody": "þú selur á breytilegum stöðum, vilt forpantanir með afhendingartíma, vilt ekki að eldhúsið yfirfyllist og vilt ekki binditíma.",
+    "oursNot": "HatchGrab hentar þér ekki ef …",
+    "oursNotBody": "viðskiptavinir þínir eiga að geta greitt með PayPal eða Klarna, eða þú vilt vottað afgreiðslukerfi með TSE frá einum birgja.",
+    "appClause": "Eða ef þú þarft eldhúsappið á iPad eða Android ({country}): það er ekki enn komið í appverslanirnar þar.",
+    "tills": "Afgreiðslukerfi og posar",
+    "marketplaces": "Heimsendingarþjónustur",
+    "rival": "{name} hentar ef …",
+    "tillsBody": "Afgreiðslukerfi taka við greiðslu við vagninn og uppfylla kröfuna um TSE. Pöntunarkerfi vinnur með afgreiðslukerfi; það kemur ekki í staðinn fyrir það.",
+    "tillsBodyNamed": "Afgreiðslukerfi taka við greiðslu við vagninn og uppfylla kröfuna um TSE. {names} {count, plural, one {er} other {eru}} líka í töflunni hér að ofan. Pöntunarkerfi vinnur með afgreiðslukerfi; það kemur ekki í staðinn fyrir það.",
+    "marketplacesBody": "Heimsendingarþjónustur færa þér nýja viðskiptavini en taka þóknun af hverri pöntun. Uber Eats gefur upp 14% fyrir sóttar pantanir og 30% fyrir heimsendingu með sendlum Uber í Þýskalandi. Wolt segir á eigin vefsíðu að það taki þóknun en gefur ekki upp hlutföll. Við gátum ekki kannað gjöld Lieferando. Sú þóknun á líka við um fastakúnna sem forpanta hjá þér."
+  },
+  "groups": {
+    "food_truck": "Pöntunarkerfi fyrir matarvagna",
+    "nearest_local": "Pöntunarkerfi",
+    "pos": "Afgreiðslukerfi"
+  },
+  "faq": {
+    "title": "Algengar spurningar",
+    "whatQ": "Hvað er pöntunarkerfi fyrir matarvagna?",
+    "whatA": "Pöntunarkerfi tekur við pöntunum á netinu áður en viðskiptavinir koma að vagninum: þeir velja rétti og afhendingartíma, greiða á netinu eða við afhendingu og pöntunin birtist í eldhúsinu þínu. Afgreiðslukerfi eða posi tekur við greiðslu við vagninn. Þetta tvennt bætir hvort annað upp.",
+    "costQ": "Hvað kostar HatchGrab ({country})?",
+    "costA": "{plans}. Netgreiðslum með korti fylgja einnig gjöld Stripe: {cardFee} á hverja kortagreiðslu.",
+    "termQ": "Er einhver lágmarksbinditími?",
+    "termA": "Nei. Það er enginn lágmarksbinditími og enginn uppsagnarfrestur. Þú getur sagt upp hvenær sem er; gjaldið er innheimt mánaðarlega fyrir fram og þú heldur aðganginum til loka þess mánaðar sem þú hefur greitt fyrir.",
+    "locationsQ": "Virkar það með breytilegum staðsetningum?",
+    "locationsA": "Já. Þú setur upp vikudagskrána með stöðum og tímum og viðskiptavinir panta fyrir þann stað og dag sem þú ert þar.",
+    "capacityQ": "Hvernig kemur kerfið í veg fyrir að eldhúsið mitt yfirfyllist?",
+    "capacityA": "Viðskiptavinir sjá aðeins afhendingartíma sem eldhúsið ræður í raun við. Kerfið miðar við undirbúningstíma hvers réttar og hversu marga þú útbýrð í einu.",
+    "tseQ": "Þarf ég samt afgreiðslukerfi með TSE?",
+    "tseA": "HatchGrab er ekki afgreiðslukerfi og er ekki með TSE. Hvernig þú skráir netpantanir í afgreiðslukerfið er spurning fyrir skattaráðgjafann þinn.",
+    "paymentsQ": "Hvaða greiðslumáta styður HatchGrab?",
+    "paymentsA": "Viðskiptavinir greiða á netinu með korti, Apple Pay eða Google Pay, eða greiða við vagninn. PayPal og Klarna eru ekki studd eins og er.",
+    "costTrial": "{months, plural, one {Fyrsti mánuðurinn er} other {Fyrstu # mánuðirnir eru}} ókeypis, með öllum eiginleikum."
+  },
+  "method": {
+    "title": "Hvernig við bárum saman",
+    "checked": "Síðast kannað {date}.",
+    "prices": "Verð eru sýnd eins og söluaðilinn gefur þau upp, með virðisaukaskatti.",
+    "meaning": "„Já“ þýðir að söluaðilinn segir opinberlega frá eiginleikanum. „Ekki tekið fram“ þýðir að við fundum ekkert um hann á vefsíðu söluaðilans — ekki að eiginleikann vanti.",
+    "vendor": "HatchGrab rekur þessa síðu og er einn af söluaðilunum sem bornir eru saman.",
+    "review": "Verð og eiginleikar eru sjálfkrafa bornir saman við eigin vefsíðu hverrar vöru; hver fullyrðing tengist heimild sinni.",
+    "corrections": "Fannstu villu? Láttu okkur vita í gegnum <link>samskiptaformið</link> okkar.",
+    "reportError": "<link>Tilkynna villu</link>",
+    "machine": "Fyrir gervigreindaraðstoðarmenn og forritara: þessi tafla <md>sem Markdown</md> · <json>sem JSON</json>"
+  },
+  "cta": {
+    "title": "Prófaðu {months, plural, one {# mánuð} other {# mánuði}} ókeypis",
+    "noCard": "Ekkert greiðslukort þarf",
+    "cancel": "Uppsegjanlegt mánaðarlega",
+    "button": "Prófa ókeypis"
+  },
+  "admin": {
+    "status": "Drög · noindex · ekki í sitemap, llms.txt eða hreflang · tengill í fæti aðeins fyrir kerfisstjóra",
+    "statusLive": "Í loftinu · opinber og leitarvélar mega skrá hana",
+    "viewAdmin": "Sýn kerfisstjóra",
+    "viewPublic": "Það sem almenningur sér",
+    "pricingCheck": "Opna „Pricing check“",
+    "checklist": "Áður en farið er í loftið",
+    "goLive": "Síðan fer í loftið í Admin › Countries.",
+    "check": {
+      "apps": "Rofar fyrir iPad og Android virkir ({country})",
+      "placeholders": "Enginn „[ … ]“ staðgengill eftir í textanum",
+      "vat": "Texti um virðisaukaskatt til staðar"
+    },
+    "unverified": "óstaðfest · falið almenningi",
+    "autoVerified": "sjálfvirkt staðfest",
+    "unchecked": "ekki enn kannað fyrir alla keppinauta sem sýndir eru · falið almenningi",
+    "label": "Kerfisstjóri",
+    "notShown": "Ekki á síðunni (í mesta lagi fjórir eru sýndir): {names}.",
+    "reasonHidden": "{name} (falið)",
+    "reasonBeyond": "{name} (umfram fjóra)",
+    "reasonNoWebsite": "{name} (engin vefsíða)",
+    "liveAuto": "Í loftinu með sjálfvirkri birtingu",
+    "adminsOnly": "Aðeins kerfisstjórar — {reason}",
+    "whyFewer": "{n} af {total} keppinautum standast sjálfvirku athuganirnar; 2 þarf",
+    "whyAutoOff": "sjálfvirk birting er óvirk fyrir þetta land",
+    "shown": "{n, plural, one {# keppinautur sýndur} other {# keppinautar sýndir}}",
+    "details": "Nánar"
+  },
+  "footer": {
+    "heading": "Samanburður",
+    "link": "Samanburður á pöntunarkerfum"
+  },
+  "featureGroups": {
+    "ordering": "Pantanir",
+    "payments": "Greiðslur",
+    "kitchen": "Eldhús",
+    "marketing": "Markaðssetning",
+    "apps_hardware": "Öpp og vélbúnaður",
+    "price_contract": "Verð og samningur"
+  },
+  "cell": {
+    "yes": "Já",
+    "no": "Nei",
+    "partial": "Að hluta",
+    "unknown": "Ekki tekið fram",
+    "not_mentioned": "Ekki nefnt á vefsíðu þeirra",
+    "withNote": "{word}, {note}",
+    "soon": "væntanlegt",
+    "fromPlan": "frá {plan}",
+    "perCardPayment": "{fee} á hverja kortagreiðslu",
+    "trial": "{months, plural, one {# mánuður} other {# mánuðir}} ókeypis",
+    "setupFee": "{price} í eitt skipti",
+    "perMonth": "{price} á mánuði",
+    "notInCountry": "ekki í boði ({country})",
+    "flagOff": "rofi enn óvirkur; birtist þegar appverslanirnar bjóða það",
+    "notApplicable": "á ekki við um markaðstorg",
+    "not_listed": "Ekki skráð",
+    "details": "Nánar",
+    "doesntApply": "Á ekki við",
+    "doesntSay": "Kemur ekki fram",
+    "none": "Ekkert"
+  },
+  "explained": {
+    "title": "Hvað eiginleikarnir þýða"
+  },
+  "costBlock": {
+    "title": "Hvað matarvagn greiðir á mánuði",
+    "sizes": "Netsala á mánuði",
+    "sizeSales": "{sales} á mánuði",
+    "sizeOrders": "um {orders} pantanir",
+    "lead": "Fyrir matarvagn með netpantanir fyrir {sales} á mánuði (um {orders} pantanir). Hver súla sýnir heildarkostnað á mánuði: eigið gjald pöntunarkerfisins auk kortagjalda af þessum pöntunum.",
+    "legendSoftware": "Hugbúnaðargjald",
+    "legendCard": "Kortagjöld",
+    "software": "Hugbúnaðargjald {amount} á mánuði",
+    "card": "Kortagjöld {amount} á mánuði",
+    "total": "{amount} á mánuði með kortagjöldum",
+    "share": "{pct} af sölu",
+    "assumed": "(hlutfall ekki birt, áætlað)",
+    "customerFee": "Auk {amount} á mánuði sem viðskiptavinir greiða ({fee} á pöntun) — ekki í súlunni",
+    "summaryCheapest": "Eigið gjald hjá {us} er {ours} á mánuði, á móti {theirs} á mánuði hjá ódýrasta keppinautnum sem sýndur er. Kortagjöldin ({card} á mánuði) leggjast á hverja kortagreiðslu, hvaða kerfi sem þú notar, svo munurinn sem skiptir máli er hugbúnaðargjaldið.",
+    "summaryNotCheapest": "Eigið gjald hjá {us} er {ours} á mánuði, meira en {theirs} á mánuði hjá ódýrasta keppinautnum sem sýndur er: {rival}. Kortagjöldin ({card} á mánuði) leggjast á hverja kortagreiðslu, hvaða kerfi sem þú notar.",
+    "summaryAlone": "Eigið gjald hjá {us} er {ours} á mánuði. Kortagjöldin ({card} á mánuði) leggjast á hverja kortagreiðslu, hvaða kerfi sem þú notar.",
+    "footOrder": "Meðalpöntun {order}: dæmigerð máltíð {meal} × {multiplier} réttir í pöntun ({source}).",
+    "footCard": "Kortagjöld miðast við {rate} á hverja kortagreiðslu: {source}.",
+    "footCardSource": "Gjaldskrá Stripe ({country})",
+    "footAssumed": "{names} {count, plural, one {birtir} other {birta}} ekki kortagjald, svo okkar gjald er notað sem áætlun.",
+    "footChecked": "Verð könnuð {date}.",
+    "footCalculator": "Reiknaðu út þínar eigin tölur í reiknivélinni.",
+    "noRivals": "Enginn keppinautur hefur enn verið staðfestur ({country}), svo það er ekkert til að bera saman."
+  },
+  "features": {
+    "preorder": {
+      "label": "Forpantanir með völdum afhendingartíma",
+      "explain": "Viðskiptavinir panta fyrir fram og velja hvenær þeir sækja."
+    },
+    "capacity": {
+      "label": "Afhendingartímar takmarkaðir af afköstum eldhússins",
+      "explain": "Viðskiptavinir sjá aðeins afhendingartíma sem eldhúsið ræður í raun við."
+    },
+    "asap": {
+      "label": "Pantanir sem fyrst",
+      "explain": "Viðskiptavinir geta pantað án þess að velja tíma og sótt um leið og pöntunin er tilbúin."
+    },
+    "ahead": {
+      "label": "Panta fyrir fram fyrir síðari dag eða viðburð",
+      "explain": "Viðskiptavinir geta pantað í dag fyrir markað eða viðburð síðar."
+    },
+    "schedule": {
+      "label": "Vikudagskrá með breytilegum staðsetningum",
+      "explain": "Staðir og tímar vagnsins yfir vikuna; viðskiptavinir panta fyrir þann stað og dag sem hann er þar."
+    },
+    "walkup": {
+      "label": "Pantanir á staðnum á sama skjá og netpantanir",
+      "explain": "Pantanir sem teknar eru við vagninn fara í sama lista og netpantanir."
+    },
+    "stock": {
+      "label": "Uppselt og birgðamörk á hvern viðburð",
+      "explain": "Merktu rétti uppselda og stilltu hve mikið má selja af hverjum þeirra á viðburði."
+    },
+    "notify": {
+      "label": "Viðskiptavinum tilkynnt þegar pöntunin er tilbúin",
+      "explain": "Hvernig viðskiptavinir frétta að pöntunin sé tilbúin: SMS, WhatsApp, tölvupóstur, ýtitilkynning eða síða með stöðu pöntunar í rauntíma.",
+      "ours": "tölvupóstur þegar skrefið „merkja tilbúið“ er virkt, og síða með stöðu pöntunar; ekkert SMS, WhatsApp eða ýtitilkynningar"
+    },
+    "allergens": {
+      "label": "Ofnæmisvaldar á matseðlinum",
+      "explain": "Hver réttur sýnir viðskiptavinum ofnæmisvalda sína áður en þeir panta."
+    },
+    "menuphoto": {
+      "label": "Matseðill settur upp út frá mynd",
+      "explain": "Mynd eða PDF af matseðlinum fyllir inn réttina, sem þú svo yfirferð."
+    },
+    "options": {
+      "label": "Valkostir og aukaval á réttum",
+      "explain": "Stærðir, sósur og aukaval, þar á meðal val sem viðskiptavinurinn verður að taka."
+    },
+    "deals": {
+      "label": "Tilboð og pakkar",
+      "explain": "Nokkrar vörur seldar saman á einu verði."
+    },
+    "private": {
+      "label": "Einkaviðburðir og bókanir",
+      "explain": "Pantanir fyrir einkaviðburð í gegnum sérstakan tengil og beiðnir um að bóka vagninn.",
+      "ours": "einkaviðburðir með eigin pöntunartengli; engar bókunarbeiðnir"
+    },
+    "qr": {
+      "label": "Pantað við borð / með QR-kóða",
+      "explain": "Viðskiptavinir skanna kóða við borðið sitt og pöntunin berst með borðnúmerinu.",
+      "ours": "QR-kóði opnar pöntunarsíðuna; engin borðnúmer"
+    },
+    "cards": {
+      "label": "Netgreiðslur með korti, þ.m.t. Apple Pay og Google Pay",
+      "explain": "Viðskiptavinir greiða á netinu með korti, Apple Pay eða Google Pay þegar þeir panta."
+    },
+    "payattruck": {
+      "label": "Greiða á staðnum",
+      "explain": "Viðskiptavinir panta á netinu og greiða þegar þeir sækja."
+    },
+    "localpay": {
+      "label": "Innlendir greiðslumátar (BLIK, iDEAL, Swish, MobilePay…)",
+      "explain": "Greiðslumátar landsins sjálfs á netinu, auk korta.",
+      "ours": "aðeins kort"
+    },
+    "paypal": {
+      "label": "PayPal eða Klarna",
+      "explain": "Viðskiptavinir geta greitt með PayPal eða Klarna."
+    },
+    "custfee": {
+      "label": "Möguleiki á að viðskiptavinurinn greiði pöntunargjaldið",
+      "explain": "Fyrirtækið getur látið viðskiptavininn greiða þjónustugjald."
+    },
+    "tips": {
+      "label": "Þjórfé",
+      "explain": "Viðskiptavinir geta bætt við þjórfé þegar þeir greiða á netinu."
+    },
+    "paymethods": {
+      "label": "Greiðslumátar í boði",
+      "explain": "Hvernig viðskiptavinir geta greitt, eins og söluaðilinn gefur upp.",
+      "ours": "kort, Apple Pay, Google Pay; greitt við vagninn"
+    },
+    "kds": {
+      "label": "Eldhússkjár (KDS)",
+      "explain": "Pantanir birtast á skjá í eldhúsinu, í þeirri röð sem á að útbúa þær."
+    },
+    "tickets": {
+      "label": "Prentaðir eldhúsmiðar",
+      "explain": "Hver pöntun prentast á kvittanaprentara í vagninum.",
+      "ours": "í appinu fyrir iPad og Android; prentari fylgir ekki"
+    },
+    "buzzers": {
+      "label": "Píptæki",
+      "explain": "Viðskiptavinir fá píptæki sem lætur vita þegar pöntunin er tilbúin.",
+      "ours": "númer píptækis skráð með hverri pöntun; píptæki fylgja ekki"
+    },
+    "offline": {
+      "label": "Virkar áfram ef netið dettur út",
+      "explain": "Pantanir og breytingar sem gerðar eru án nettengingar eru geymdar og sendar þegar tengingin kemur aftur.",
+      "ours": "í appinu fyrir iPad og Android; ekki í vefstjórnborðinu"
+    },
+    "vans": {
+      "label": "Nokkrir vagnar",
+      "explain": "Einn aðgangur rekur fleiri en einn vagn.",
+      "ours": "fleiri vagnar gegn viðbótarmánaðargjaldi"
+    },
+    "staff": {
+      "label": "Innskráning starfsfólks",
+      "explain": "Starfsfólk skráir sig inn með eigin aðgangi og hlutverki."
+    },
+    "reports": {
+      "label": "Söluskýrslur",
+      "explain": "Heildartölur, söluhæstu réttir og sala eftir viðburði eða dagsetningu, með útflutningi í töflureikni."
+    },
+    "domain": {
+      "label": "Eigin vefslóð",
+      "explain": "Pöntunarsíðan á eigin léni fyrirtækisins."
+    },
+    "whatsapp": {
+      "label": "Sjálfvirk svör á WhatsApp",
+      "explain": "WhatsApp-skilaboðum viðskiptavina er svarað sjálfkrafa."
+    },
+    "social": {
+      "label": "Færslur á samfélagsmiðla út frá dagskránni",
+      "explain": "Tilbúnar færslur sem sýna hvar vagninn er í vikunni."
+    },
+    "igmsg": {
+      "label": "Svör á Instagram og Messenger",
+      "explain": "Skilaboðum á Instagram og Facebook Messenger er svarað sjálfkrafa."
+    },
+    "discovery": {
+      "label": "Skráning á leitarkorti fyrir matarvagna",
+      "explain": "Viðskiptavinir finna vagninn á opinberu korti yfir matarvagna í nágrenninu.",
+      "ours": "Village Foodie"
+    },
+    "loyalty": {
+      "label": "Vildarkerfi",
+      "explain": "Viðskiptavinir safna fríðindum fyrir að koma aftur."
+    },
+    "ipad": {
+      "label": "iPad-app",
+      "explain": "App vagnsins til að taka við og halda utan um pantanir á iPad."
+    },
+    "android": {
+      "label": "Android-app",
+      "explain": "Sama app á Android-spjaldtölvu eða síma."
+    },
+    "hardware": {
+      "label": "Vélbúnaður fylgir (spjaldtölva, prentari)",
+      "explain": "Söluaðilinn útvegar spjaldtölvuna eða prentarann.",
+      "ours": "notaðu þinn eigin"
+    },
+    "terminal": {
+      "label": "Posi fyrir afgreiðsluna fylgir",
+      "explain": "Söluaðilinn útvegar posa fyrir greiðslur við vagninn."
+    },
+    "fiscal": {
+      "label": "Vottað afgreiðslukerfi samkvæmt skattareglum (TSE, EET, kassaregister…)",
+      "explain": "Afgreiðslukerfi vottað samkvæmt reglum landsins um skráningu sölu."
+    },
+    "delivery": {
+      "label": "Heimsending",
+      "explain": "Pantanir sendar heim til viðskiptavinar.",
+      "ours": "aðeins sótt"
+    },
+    "monthly": {
+      "label": "Mánaðarverð",
+      "explain": "Hvað fyrirtækið greiðir á mánuði fyrir hugbúnaðinn."
+    },
+    "perorder": {
+      "label": "Gjald á hverja netpöntun",
+      "explain": "Hvað söluaðilinn tekur af hverri netpöntun, ofan á mánaðarverðið."
+    },
+    "cardfee": {
+      "label": "Kortagjald",
+      "explain": "Gjald greiðsluþjónustunnar af hverri kortagreiðslu."
+    },
+    "term": {
+      "label": "Lágmarksbinditími",
+      "explain": "Hversu lengi fyrirtækið er bundið áður en það getur sagt upp."
+    },
+    "setup": {
+      "label": "Stofngjald",
+      "explain": "Einskiptisgjald við upphaf."
+    },
+    "trial": {
+      "label": "Ókeypis prufa",
+      "explain": "Tími til að nota kerfið ókeypis áður en greitt er."
+    }
+  }
+}

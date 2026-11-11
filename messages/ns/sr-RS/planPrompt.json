@@ -1,0 +1,122 @@
+{
+  "includedOn": "{many, select, yes {Paket {plan} uključuje: {feature}.} other {Paket {plan} uključuje: {feature}.}}",
+  "notOnPlan": "{many, select, yes {Vaš paket ne uključuje: {feature}.} other {Vaš paket ne uključuje: {feature}.}}",
+  "switchedOff": "{many, select, yes {Isključeno za vaš food truck: {feature}.} other {Isključeno za vaš food truck: {feature}.}}",
+  "planLine": "{plan} · {price} · {description}",
+  "planLineNoPrice": "{plan} · {description}",
+  "upgrade": "Nadogradi →",
+  "features": {
+    "discovery_map": {
+      "name": "Prikaz na javnoj mapi",
+      "many": "no"
+    },
+    "web_dashboard": {
+      "name": "Veb kontrolna tabla",
+      "many": "no"
+    },
+    "ipad_kds": {
+      "name": "Kuhinjska aplikacija",
+      "many": "no"
+    },
+    "qr_menu": {
+      "name": "Meni sa QR kodom",
+      "many": "no"
+    },
+    "meal_deals": {
+      "name": "Kombo ponude",
+      "many": "yes"
+    },
+    "upsells": {
+      "name": "Dodatna ponuda",
+      "many": "yes"
+    },
+    "walkup_orders": {
+      "name": "Porudžbine na licu mesta",
+      "many": "yes"
+    },
+    "online_ordering_pay_at_hatch": {
+      "name": "Poručivanje uz Plaćanje pri preuzimanju",
+      "many": "no"
+    },
+    "sold_out_toggle": {
+      "name": "Označavanje rasprodatog",
+      "many": "no"
+    },
+    "stock_countdown": {
+      "name": "Odbrojavanje zaliha",
+      "many": "no"
+    },
+    "offline_protection": {
+      "name": "Zaštita porudžbina bez interneta",
+      "many": "no"
+    },
+    "online_payments": {
+      "name": "Online plaćanja",
+      "many": "yes"
+    },
+    "advance_preordering": {
+      "name": "Porudžbine unapred za kasnije datume",
+      "many": "no"
+    },
+    "time_slot_selection": {
+      "name": "Termini preuzimanja",
+      "many": "yes"
+    },
+    "smart_batch_pacing": {
+      "name": "Upravljanje kapacitetom kuhinje",
+      "many": "no"
+    },
+    "auto_accept": {
+      "name": "Automatsko prihvatanje",
+      "many": "no"
+    },
+    "instagram_messenger_replies": {
+      "name": "Automatski odgovori na Messengeru i Instagramu",
+      "many": "yes"
+    },
+    "branded_qr_code": {
+      "name": "QR kodovi sa vašim logom",
+      "many": "yes"
+    },
+    "advanced_reporting": {
+      "name": "Napredni izveštaji",
+      "many": "no"
+    },
+    "ticket_printing": {
+      "name": "Štampanje kuhinjskih bonova",
+      "many": "no"
+    },
+    "multi_device_kds": {
+      "name": "Sinhronizacija kuhinje na više uređaja",
+      "many": "no"
+    },
+    "cook_screen": {
+      "name": "Ekran za kuvare",
+      "many": "no"
+    },
+    "whatsapp_replies": {
+      "name": "Automatski odgovori na WhatsApp-u",
+      "many": "yes"
+    },
+    "embed_schedule": {
+      "name": "Raspored na vašem sajtu",
+      "many": "no"
+    },
+    "schedule_graphics": {
+      "name": "Objave za društvene mreže",
+      "many": "yes"
+    },
+    "event_types": {
+      "name": "Prilagođeni tipovi događaja",
+      "many": "yes"
+    },
+    "private_events": {
+      "name": "Privatni događaji",
+      "many": "yes"
+    },
+    "paperwork": {
+      "name": "Dokumenti",
+      "many": "yes"
+    }
+  }
+}

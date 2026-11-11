@@ -1,0 +1,10 @@
+{
+  "copy": "Kopyala",
+  "copied": "Kopyalandı ✓",
+  "failed": "Kopyalanamadı",
+  "aria": "{label}: {thing}",
+  "announceCopied": "{thing} kopyalandı",
+  "announceCopiedValue": "Değer kopyalandı",
+  "announceFailed": "Kopyalanamadı: {thing}. Metni seçip kendiniz kopyalayın.",
+  "announceFailedValue": "Değer kopyalanamadı. Metni seçip kendiniz kopyalayın."
+}

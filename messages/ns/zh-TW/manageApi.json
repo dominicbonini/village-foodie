@@ -1,0 +1,10 @@
+{
+  "vanFallback": "車輛",
+  "eventsFeed": {
+    "today": "今天 · {date}",
+    "tomorrow": "明天 · {date}"
+  },
+  "privacyNotSaved": "活動已上線，但無法儲存它的隱私設定。",
+  "stockWarning": "「{category}」中沒有可供應的品項",
+  "uncategorised": "未分類"
+}

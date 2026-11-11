@@ -1,0 +1,8 @@
+{
+  "notFoundTitle": "Halaman tidak ditemukan",
+  "notFoundBody": "Kami tidak menemukan halaman tersebut. Mungkin halamannya sudah dipindahkan, atau alamatnya salah ketik.",
+  "home": "Ke beranda",
+  "errorTitle": "Terjadi kesalahan",
+  "errorBody": "Maaf — halaman ini gagal dimuat. Coba lagi, atau kembali ke beranda.",
+  "retry": "Coba lagi"
+}

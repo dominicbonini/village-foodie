@@ -1,0 +1,25 @@
+{
+  "heading": "주간 영업 일정 {start} ~ {end}",
+  "daysOff": "오늘은 휴무",
+  "cancelled": "취소",
+  "placeSample": {
+    "nameTownBelow": "골목 펍\n서울 성수동",
+    "nameTown": "골목 펍, 서울 성수동",
+    "nameOnly": "골목 펍"
+  },
+  "busyWeek": {
+    "venue1": "성수동 주민센터",
+    "town1": "서울 성수동",
+    "venue2": "송도 센트럴 시민체육공원 및 야외 다목적 운동장",
+    "town2": "인천 송도",
+    "venue3": "광장시장 근처",
+    "town3": "서울 종로",
+    "venue4": "푸드트럭 페스티벌",
+    "town4": "수원",
+    "venue5": "해운대 비치 펍",
+    "town5": "부산 해운대",
+    "venue6": "시민공원",
+    "town6": "대구"
+  },
+  "poweredBy": "HatchGrab 제공"
+}

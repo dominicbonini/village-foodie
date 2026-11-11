@@ -1,0 +1,32 @@
+{
+  "steps": {
+    "based": "Hvar þú ert",
+    "identity": "Matarvagninn þinn",
+    "menu": "Matseðillinn þinn",
+    "event": "Fyrsti viðburður"
+  },
+  "stepItem": "{number}. {label}",
+  "settingUp": "Uppsetning",
+  "loading": "Hleður",
+  "loadingCountries": "Hleður…",
+  "verify": {
+    "ok": "Netfangið er staðfest — takk fyrir.",
+    "expired": "Þessi staðfestingartengill er útrunninn. Hafðu samband og við kippum því í lag áður en þú ferð í loftið.",
+    "invalid": "Þessi staðfestingartengill virkaði ekki. Hafðu samband og við kippum því í lag áður en þú ferð í loftið."
+  },
+  "identity": {
+    "heading": "Hvað heitir matarvagninn þinn?",
+    "intro": "Þetta er nafnið sem viðskiptavinir sjá. Ekkert verður opinbert fyrr en þú ákveður að fara í loftið.",
+    "nameLabel": "Heiti matarvagns",
+    "namePlaceholder": "Nonnaborgarar",
+    "phoneLabel": "Sími",
+    "whatsappTick": "Þetta númer er á WhatsApp",
+    "phoneHelp": "Viðskiptavinir sjá þetta á pöntunarstaðfestingunni svo þeir geti spurt um pöntun. Hakið ræður hvort þar stendur „Hringdu í okkur“ eða „Sendu okkur skilaboð á WhatsApp“. Þú getur breytt hvoru tveggja í Stillingum."
+  },
+  "phoneRequired": "Bættu við símanúmeri — bæði viðskiptavinir og við notum það til að ná í þig.",
+  "createFailed": "Ekki tókst að stofna matarvagninn þinn.",
+  "unreachable": "Ekki náðist samband við okkur í augnablikinu — reyndu aftur.",
+  "back": "Til baka",
+  "creating": "Stofna matarvagninn þinn…",
+  "continue": "Áfram"
+}

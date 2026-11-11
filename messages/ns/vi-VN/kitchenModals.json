@@ -1,0 +1,69 @@
+{
+  "close": "Đóng",
+  "cancel": "Hủy",
+  "selectReason": "Chọn lý do",
+  "reject": {
+    "title": "Từ chối đơn #{orderId}?",
+    "reasonLabel": "Lý do — bắt buộc (khách sẽ thấy)",
+    "reason": "{reason, select, sold_out {Hết một món} too_busy {Quá đông — không kịp làm} closing_soon {Sắp đóng cửa} other {Khác}}",
+    "noteRequired": "Lý do — bắt buộc",
+    "noteOptional": "Ghi chú thêm — không bắt buộc",
+    "notePlaceholder": "Thêm chi tiết cho khách…",
+    "keep": "Giữ đơn",
+    "confirm": "Từ chối đơn"
+  },
+  "eventCancel": {
+    "title": "Hủy sự kiện này?",
+    "affected": "{n, plural, one {{count} đơn} other {{count} đơn}} sẽ bị hủy và khách sẽ được thông báo.",
+    "reasonLabel": "Lý do — không bắt buộc",
+    "reason": "{reason, select, vehicle_breakdown {Xe bị hỏng} weather {Thời tiết} venue_issue {Sự cố tại địa điểm} personal_emergency {Việc khẩn cấp cá nhân} other {Khác}}",
+    "messageLabel": "Lời nhắn cho khách — không bắt buộc",
+    "messagePlaceholder": "VD: Xin lỗi, xe của chúng tôi bị hỏng trên đường đến địa điểm…",
+    "keep": "Giữ sự kiện",
+    "cancelling": "Đang hủy…",
+    "confirm": "Hủy sự kiện"
+  },
+  "actions": {
+    "startEvent": "{restart, select, yes {Bắt đầu lại sự kiện} other {Bắt đầu sự kiện}}",
+    "changeEvent": "Đổi sự kiện",
+    "changeEventType": "Đổi loại sự kiện…",
+    "privateLink": "Link riêng & mã QR",
+    "noteLabel": "Ghi chú cho khách",
+    "notePlaceholder": "VD: Gửi xe ở bãi chính, tìm chiếc lều màu cam",
+    "noteHint": "Hiển thị cho khách trên trang đặt món, bên dưới thông tin sự kiện.",
+    "saveNote": "Lưu ghi chú",
+    "resume": "Tiếp tục nhận đơn",
+    "pause": "Tạm dừng nhận đơn",
+    "changeFinishTime": "Đổi giờ kết thúc sự kiện",
+    "finishEvent": "Kết thúc sự kiện",
+    "cancelEvent": "Hủy sự kiện"
+  },
+  "finish": {
+    "confirmTitle": "Đổi giờ kết thúc?",
+    "willFinish": "Sự kiện này sẽ kết thúc lúc <b>{selected}</b>{hasCurrent, select, yes { thay vì <b>{current}</b>} other {}}.",
+    "dueAfter": "<b>{n, plural, one {{count} đơn có giờ nhận món} other {{count} đơn có giờ nhận món}} sau {selected}.</b> {n, plural, one {Đơn này vẫn} other {Các đơn này vẫn}} nằm trên bảng và vẫn {n, plural, one {cần làm} other {cần làm}}. Đổi giờ kết thúc chỉ ngăn khách đặt đơn MỚI cho các giờ muộn hơn.",
+    "saving": "Đang lưu…",
+    "confirm": "Đổi giờ kết thúc",
+    "keepCurrent": "Giữ {current}",
+    "keepAsIs": "Giữ nguyên",
+    "title": "Đổi giờ kết thúc",
+    "currentlySet": "Sự kiện này hiện được đặt kết thúc lúc <b>{current}</b>.",
+    "noFinishTime": "Sự kiện này chưa đặt giờ kết thúc.",
+    "noTimesLeft": "Hôm nay không còn giờ nào. Hãy dùng Kết thúc sự kiện.",
+    "newFinishTime": "Giờ kết thúc mới",
+    "optionCurrent": "{time} (hiện tại)",
+    "earlier": "Giờ này sớm hơn giờ kết thúc hiện tại. Khách sẽ không thể đặt món cho các giờ sau đó.",
+    "review": "Xem lại thay đổi",
+    "optionNextDay": "{time} (hôm sau)"
+  },
+  "extraWait": {
+    "title": "Thêm thời gian chờ",
+    "hint": "Cộng thêm vào giờ nhận món báo cho các đơn mới. Không thay đổi giờ kết thúc sự kiện.",
+    "option": "+{mins} phút"
+  },
+  "picker": {
+    "reconnect": "Kết nối lại để tải",
+    "selected": "Đã chọn",
+    "status": "{tone, select, paused {⏸ Tạm dừng} live {● Đang diễn ra} finished {● Đã kết thúc} cancelled {Đã hủy} other {Chưa bắt đầu}}"
+  }
+}

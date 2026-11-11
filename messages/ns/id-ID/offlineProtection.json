@@ -1,0 +1,23 @@
+{
+  "explainerLead": "Dasbor atau layar dapur Anda harus tetap menyala dan online selama berjualan.",
+  "explainerBody": "Jika layar mati, perangkat kehilangan internet, atau Anda beralih ke situs web lain, perlindungan offline akan mengambil alih — menjeda pemesanan atau mematikan terima otomatis, sesuai pilihan Anda.",
+  "reminder": "⚠️ Biarkan dasbor atau layar dapur Anda tetap menyala dan online selama berjualan, atau perlindungan offline bisa mengambil alih.",
+  "enableConfirm": "Perlindungan offline diaktifkan.\n\nAgar pesanan terus masuk, layar Anda harus tetap menyala. Jika perangkat ini kehilangan koneksi, perlindungan offline mengambil alih dengan mode yang Anda pilih.\n\nPastikan “Layar tetap menyala” aktif di perangkat ini.",
+  "disableConfirm": "Matikan perlindungan offline untuk acara ini?\n\nJika perangkat ini kehilangan koneksi, pesanan online akan tetap masuk — pelanggan bisa memesan tanpa Anda bisa melihatnya. Matikan hanya jika koneksi Anda stabil.",
+  "cardDescription": "Menentukan apa yang terjadi pada pesanan masuk saat perangkat Anda offline.",
+  "purpose": "Jika perangkat Anda kehilangan koneksi, fitur ini menghentikan pesanan masuk selama Anda tidak bisa melihatnya.",
+  "switchLabel": "Perlindungan pesanan saat offline",
+  "switchHelp": "Apa yang terjadi saat kendaraan ini kehilangan koneksi.",
+  "modes": {
+    "pause": {
+      "label": "Jeda pemesanan online",
+      "help": "Pelanggan tidak bisa memesan sampai Anda online lagi."
+    },
+    "no_auto_accept": {
+      "label": "Tetap terima pesanan, konfirmasi sendiri",
+      "help": "Terima otomatis dimatikan, jadi pelanggan tetap bisa memesan tetapi tidak ada yang dikonfirmasi otomatis. Anda mengonfirmasi tiap pesanan saat online lagi — dan pesanan yang masih menunggu otomatis ditolak setelah waktu yang Anda pilih, lalu pelanggan diberi tahu lewat email."
+    }
+  },
+  "autoRejectLabel": "Tolak pesanan yang menunggu lebih dari",
+  "autoRejectOption": "{n, plural, one {{count} mnt} other {{count} mnt}}"
+}

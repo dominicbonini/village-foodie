@@ -1,0 +1,70 @@
+{
+  "error": {
+    "generic": "Đã xảy ra lỗi",
+    "previewFailed": "Không tạo được bản xem trước",
+    "loadFailed": "Không tải được",
+    "tooBig": "Ảnh này nặng {size, number, ::.0 group-off}MB. Giới hạn là 10MB.",
+    "wrongType": "Vui lòng chọn ảnh PNG hoặc JPG.",
+    "uploadIncomplete": "Tải lên chưa hoàn tất",
+    "uploadFailed": "Tải lên thất bại",
+    "saveFailed": "Không lưu được",
+    "buildFailed": "Không tạo được bài đăng",
+    "copyFailed": "Không sao chép được — hãy chọn đoạn chữ và tự sao chép."
+  },
+  "loading": "Đang tải…",
+  "missingTable": {
+    "title": "Bài đăng hằng tuần cần cập nhật cơ sở dữ liệu",
+    "body": "Bảng thiết kế chưa được tạo. Màn hình này sẽ hoạt động sau khi áp dụng bản cập nhật cơ sở dữ liệu (migration)."
+  },
+  "kind": {
+    "label": "Mẫu thiết kế nào",
+    "event": "Một sự kiện",
+    "week": "Hằng tuần"
+  },
+  "setup": {
+    "title": "Thiết lập bài đăng hằng tuần",
+    "intro": "Tải lên bản trống của ảnh lịch bán hằng tuần bạn vẫn làm — cùng mẫu thiết kế đó, nhưng đã xóa các ô chữ của bạn. HatchGrab sẽ tự điền lịch của tuần từ Lịch bán.",
+    "canvaTitle": "Cách xuất bản trống từ Canva",
+    "canvaStep1": "Mở thiết kế lịch bán hằng tuần bạn thường dùng.",
+    "canvaStep2": "Xóa các ô chữ có ngày, địa điểm và giờ — giữ lại nền và các tiêu đề bạn muốn.",
+    "canvaStep3": "Chia sẻ › Tải xuống › PNG.",
+    "uploading": "Đang tải lên…",
+    "upload": "Tải lên ảnh trống của bạn",
+    "uploadHint": "PNG hoặc JPG, tối đa 10MB, cạnh ngắn ít nhất {px}px.",
+    "phoneTip": "Nên dùng máy tính hoặc iPad — các ô khá nhỏ để kéo trên điện thoại.",
+    "designName": "Mẫu thiết kế bài đăng hằng tuần",
+    "backDesigns": "‹ Mẫu thiết kế",
+    "back": "‹ Quay lại",
+    "pictureNote": "Ảnh của bạn khi chưa có ngày hay địa điểm. Chúng tôi sẽ thêm những thông tin đó.",
+    "saved": "Đã lưu mẫu thiết kế."
+  },
+  "week": {
+    "this": "Tuần này",
+    "next": "Tuần sau"
+  },
+  "post": {
+    "title": "Bài đăng hằng tuần của bạn",
+    "editDesign": "Sửa mẫu thiết kế",
+    "weekOf": "Tuần từ {date}",
+    "imageAlt": "Bài đăng hằng tuần của bạn",
+    "building": "Đang tạo bài đăng…",
+    "updating": "Đang cập nhật…",
+    "eventsTitle": "Sự kiện tuần này",
+    "noEvents": "Tuần này không có sự kiện nào.",
+    "eventDateCancelled": "{date} · đã hủy",
+    "showCancelled": "Hiện sự kiện đã hủy",
+    "showPrivate": "Hiện sự kiện riêng",
+    "privateHint": "Hiện dưới dạng “Sự kiện riêng” kèm ngày và giờ — không bao giờ hiện địa điểm.",
+    "noteTitle": "Ghi chú",
+    "notePlaceholder": "VD: Đặt trước, nhận món tại xe",
+    "noteHint": "Hiện trong phần chú thích, và trong ô ghi chú nếu bạn đã đặt ô này.",
+    "captionTitle": "Chú thích cho trang của bạn",
+    "perEventTitle": "Bài đăng cho từng sự kiện",
+    "nothingToPost": "Tuần này không có gì để đăng.",
+    "textCopied": "Đã sao chép nội dung.",
+    "copyText": "Sao chép",
+    "image": "Ảnh",
+    "share": "Chia sẻ",
+    "noOrderLink": "Chưa có link đặt món — hãy đặt địa chỉ web cho xe của bạn trong Cài đặt."
+  }
+}

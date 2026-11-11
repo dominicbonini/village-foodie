@@ -1,0 +1,58 @@
+{
+  "label": {
+    "street": "Heimilisfang",
+    "postcode": "Póstnúmer",
+    "zip": "ZIP-póstnúmer",
+    "eircode": "Eircode",
+    "postalCode": "Póstnúmer",
+    "state": "Ríki",
+    "stateTerritory": "Ríki eða yfirráðasvæði",
+    "province": "Hérað",
+    "county": "Sýsla",
+    "prefecture": "Umdæmi",
+    "emirate": "Furstadæmi",
+    "region": "Landshluti",
+    "area": "Svæði (þorp, bær eða borg)",
+    "townOrArea": "Bær eða svæði",
+    "city": "Borg",
+    "suburb": "Hverfi",
+    "townOrCity": "Bær eða borg"
+  },
+  "short": {
+    "area": "Svæði",
+    "townOrArea": "Bær eða svæði",
+    "city": "Borg",
+    "suburb": "Hverfi",
+    "townOrCity": "Bær eða borg"
+  },
+  "inSentence": {
+    "postcode": "póstnúmer",
+    "zip": "ZIP-póstnúmer",
+    "eircode": "Eircode",
+    "postalCode": "póstnúmer"
+  },
+  "withArticle": {
+    "postcode": "póstnúmer",
+    "zip": "ZIP-póstnúmer",
+    "eircode": "Eircode",
+    "postalCode": "póstnúmer"
+  },
+  "tradeLabel": {
+    "area": "Bær eða borg",
+    "townOrArea": "Bær eða svæði",
+    "city": "Borg",
+    "suburb": "Hverfi",
+    "townOrCity": "Bær eða borg"
+  },
+  "basedIn": {
+    "area": "Bær eða borg þar sem þú ert með aðsetur",
+    "townOrArea": "Bær eða svæði þar sem þú ert með aðsetur",
+    "city": "Borg þar sem þú ert með aðsetur",
+    "suburb": "Hverfi þar sem þú ert með aðsetur",
+    "townOrCity": "Bær eða borg þar sem þú ert með aðsetur"
+  },
+  "example": "t.d. {example}",
+  "customersSee": "Viðskiptavinir sjá:",
+  "postalWarning": "Þetta lítur ekki út fyrir að vera {article} — til dæmis {example}. Þú getur samt vistað það.",
+  "regionChoose": "Veldu…"
+}

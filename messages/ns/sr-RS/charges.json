@@ -1,0 +1,13 @@
+{
+  "subtotal": "Međuzbir",
+  "taxFallback": "Porez",
+  "taxIncluded": "Uključuje: {label}",
+  "serviceFeeCustomer": "Naknada za online uslugu",
+  "serviceFee": "Naknada za uslugu",
+  "cardFee": "Naknada za plaćanje karticom",
+  "tip": "Bakšiš",
+  "rate": "{rate}%",
+  "line": "{label}: {amount}",
+  "lineWithRate": "{label} {rate}: {amount}",
+  "foldedCharges": "{parts, select, tax_fees_tip {Porez, naknade i bakšiš} tax_tip {Porez i bakšiš} fees_tip {Naknade i bakšiš} fees {Naknade} other {Porez i naknade}}"
+}

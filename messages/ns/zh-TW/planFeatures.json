@@ -1,0 +1,141 @@
+{
+  "row": {
+    "discovery_map_listing": {
+      "name": "探索地圖刊登"
+    },
+    "web_dashboard": {
+      "name": "通用網頁版控制台"
+    },
+    "qr_code": {
+      "name": "QR code"
+    },
+    "schedule_import": {
+      "name": "自動匯入行程"
+    },
+    "meal_deals_upsells": {
+      "name": "套餐優惠與加購推薦"
+    },
+    "walkup_orders": {
+      "name": "現場點餐處理"
+    },
+    "sold_out_toggle": {
+      "name": "一鍵售完開關"
+    },
+    "kitchen_app": {
+      "name": "iPhone、iPad 與 Android 廚房 App"
+    },
+    "offline_protection": {
+      "name": "離線訂單保護"
+    },
+    "online_payments": {
+      "name": "線上付款"
+    },
+    "advance_preordering": {
+      "name": "提前預約點餐"
+    },
+    "preorder_deadline": {
+      "name": "預約點餐截止時間"
+    },
+    "time_slot_selection": {
+      "name": "顧客自選取餐時段"
+    },
+    "kitchen_capacity": {
+      "name": "廚房出餐量管理"
+    },
+    "stock_countdown": {
+      "name": "自動庫存倒數"
+    },
+    "auto_accept": {
+      "name": "自動接受線上訂單"
+    },
+    "branded_qr_code": {
+      "name": "品牌 QR code"
+    },
+    "private_events": {
+      "name": "私人活動"
+    },
+    "social_media_posts": {
+      "name": "社群貼文"
+    },
+    "whatsapp_auto_replies": {
+      "name": "WhatsApp 自動回覆"
+    },
+    "messenger_instagram_replies": {
+      "name": "Messenger 與 Instagram 自動回覆"
+    },
+    "tap_to_pay": {
+      "name": "用手機收款"
+    },
+    "sms_order_alerts": {
+      "name": "簡訊訂單通知"
+    },
+    "multi_device_kitchen": {
+      "name": "多裝置廚房同步"
+    },
+    "multi_user_access": {
+      "name": "多使用者權限"
+    },
+    "embed_schedule": {
+      "name": "在你自己的網站放行程頁面"
+    },
+    "event_types": {
+      "name": "自訂活動類型與價格"
+    },
+    "buzzer_tracking": {
+      "name": "取餐呼叫器追蹤"
+    },
+    "documents_reminders": {
+      "name": "文件與到期提醒"
+    },
+    "profit_per_event": {
+      "name": "每場活動利潤"
+    },
+    "accountant_reports": {
+      "name": "給會計師的報表"
+    },
+    "ticket_printing": {
+      "name": "廚房出單列印"
+    },
+    "customer_display": {
+      "name": "顧客取餐顯示螢幕"
+    },
+    "loyalty_stamp_cards": {
+      "name": "數位集點卡"
+    }
+  },
+  "cardRegionOnline": "{region}標準費率",
+  "cardRegion": {
+    "UKcards": "英國發行的卡片",
+    "EEAcards": "歐洲經濟區（EEA）發行的卡片",
+    "UScards": "美國發行的卡片",
+    "Australiancards": "澳洲發行的卡片",
+    "NewZealandcards": "紐西蘭發行的卡片",
+    "Canadiancards": "加拿大發行的卡片",
+    "Swisscards": "瑞士發行的卡片",
+    "Braziliancards": "巴西發行的卡片",
+    "Mexicancards": "墨西哥發行的卡片",
+    "Japanesecards": "日本發行的卡片",
+    "Singaporecards": "新加坡發行的卡片",
+    "HongKongcards": "香港發行的卡片",
+    "Malaysiancards": "馬來西亞發行的卡片",
+    "Thaicards": "泰國發行的卡片",
+    "UAEcards": "阿聯發行的卡片"
+  },
+  "perMonth": {
+    "mo": "{amount}/月",
+    "month": "每月 {amount}"
+  },
+  "priceWord": {
+    "free": "免費",
+    "freeTrial": "免費試用",
+    "lifetime": "終身",
+    "zeroPercent": "0%",
+    "payAtHatch": "現場付款",
+    "unlimited": "無限制",
+    "none": "—",
+    "masked": "待定"
+  },
+  "cell": {
+    "included": "已包含"
+  }
+}

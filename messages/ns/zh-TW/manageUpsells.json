@@ -1,0 +1,19 @@
+{
+  "heading": "加購推薦",
+  "intro": "引導顧客多加點一樣東西。當顧客從某個分類點餐時，推薦另一個分類的品項，例如披薩配飲料、漢堡配沾醬。",
+  "add": "+ 新增加購推薦",
+  "toast": {
+    "updated": "加購規則已更新",
+    "added": "加購規則已新增",
+    "removed": "規則已移除"
+  },
+  "whenAdds": "當顧客加入…",
+  "suggestFrom": "推薦以下分類的品項…",
+  "chooseCategory": "選擇分類",
+  "cancel": "取消",
+  "saveChanges": "儲存變更",
+  "addRule": "新增規則",
+  "empty": "還沒有加購規則。",
+  "confirmRemove": "要移除加購規則「{trigger} → {suggest}」嗎？",
+  "upTo": "{n, plural, one {最多推薦 {count} 個品項} other {最多推薦 {count} 個品項}}"
+}

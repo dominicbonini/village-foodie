@@ -1,0 +1,6 @@
+{
+  "closedPending": "Pre-order ditutup. Menunggu persetujuan dapur.",
+  "deadline": "Pre-order sebelum {time}",
+  "deadlineOnDay": "Pre-order sebelum {time}, {day}",
+  "opens": "Pre-order dibuka {day}"
+}

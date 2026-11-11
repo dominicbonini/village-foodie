@@ -50,7 +50,31 @@ export const COUNTRY_PATH_SEGMENTS: Readonly<Record<string, string>> = { GB: 'uk
   MA: 'ma', TN: 'tn', SN: 'sn', CI: 'ci', MC: 'mc',
   // languages-world-1 (10 November 2026): AO MZ CV — prepared, each at its ISO code. A country with no enabled row 302s to /uk and is in no
   // router pick, hreflang set, sitemap or menu, so these appear only when the country is switched on.
-  AO: 'ao', MZ: 'mz', CV: 'cv' }
+  AO: 'ao', MZ: 'mz', CV: 'cv',
+  // languages-world-1 (10 November 2026): ID — prepared, each at its ISO code. A country with no enabled row 302s to /uk and is in no
+  // router pick, hreflang set, sitemap or menu, so these appear only when the country is switched on.
+  ID: 'id',
+  // languages-world-1 (10 November 2026): VN — prepared, each at its ISO code. A country with no enabled row 302s to /uk and is in no
+  // router pick, hreflang set, sitemap or menu, so these appear only when the country is switched on.
+  VN: 'vn',
+  // languages-world-1 (10 November 2026): IS — prepared, each at its ISO code. A country with no enabled row 302s to /uk and is in no
+  // router pick, hreflang set, sitemap or menu, so these appear only when the country is switched on.
+  IS: 'is',
+  // languages-world-1 (10 November 2026): RS — prepared, each at its ISO code. A country with no enabled row 302s to /uk and is in no
+  // router pick, hreflang set, sitemap or menu, so these appear only when the country is switched on.
+  RS: 'rs',
+  // languages-world-1 (10 November 2026): TR — prepared, each at its ISO code. A country with no enabled row 302s to /uk and is in no
+  // router pick, hreflang set, sitemap or menu, so these appear only when the country is switched on.
+  TR: 'tr',
+  // languages-world-1 (10 November 2026): KR — prepared, each at its ISO code. A country with no enabled row 302s to /uk and is in no
+  // router pick, hreflang set, sitemap or menu, so these appear only when the country is switched on.
+  KR: 'kr',
+  // languages-world-1 (10 November 2026): TW — prepared, each at its ISO code. A country with no enabled row 302s to /uk and is in no
+  // router pick, hreflang set, sitemap or menu, so these appear only when the country is switched on.
+  TW: 'tw',
+  // languages-world-1 (10 November 2026): IL — prepared, each at its ISO code. A country with no enabled row 302s to /uk and is in no
+  // router pick, hreflang set, sitemap or menu, so these appear only when the country is switched on.
+  IL: 'il' }
 
 /** The marketing pages that have a country address. faq-4 (2 November 2026): + 'faq' (/<country>/faq, routed from /faq like
  *  /features; a country whose FAQ has nothing to show answers 404 there — app/faq/page.tsx). */

@@ -1,0 +1,10 @@
+{
+  "vanFallback": "Kendaraan",
+  "eventsFeed": {
+    "today": "Hari ini · {date}",
+    "tomorrow": "Besok · {date}"
+  },
+  "privacyNotSaved": "Acara sudah aktif, tetapi pengaturan privasinya tidak dapat disimpan.",
+  "stockWarning": "Tidak ada item yang tersedia di “{category}”",
+  "uncategorised": "Tanpa kategori"
+}

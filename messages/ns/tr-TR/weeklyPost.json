@@ -1,0 +1,70 @@
+{
+  "error": {
+    "generic": "Bir şeyler ters gitti",
+    "previewFailed": "Önizleme oluşturulamadı",
+    "loadFailed": "Yüklenemedi",
+    "tooBig": "Bu görsel {size, number, ::.0 group-off} MB. Sınır 10 MB.",
+    "wrongType": "Lütfen bir PNG veya JPG seçin.",
+    "uploadIncomplete": "Yükleme tamamlanmadı",
+    "uploadFailed": "Yükleme başarısız oldu",
+    "saveFailed": "Kaydedilemedi",
+    "buildFailed": "Gönderi oluşturulamadı",
+    "copyFailed": "Kopyalanamadı — metni seçip elle kopyalayın."
+  },
+  "loading": "Yükleniyor…",
+  "missingTable": {
+    "title": "Haftalık gönderi için veritabanı güncellemesi gerekiyor",
+    "body": "Tasarım tablosu henüz oluşturulmadı. Veritabanı güncellemesi uygulandığında bu ekran çalışacak."
+  },
+  "kind": {
+    "label": "Hangi tasarım",
+    "event": "Tek etkinlik",
+    "week": "Haftalık"
+  },
+  "setup": {
+    "title": "Haftalık gönderinizi kurun",
+    "intro": "Zaten hazırladığınız haftalık program görselinin boş sürümünü yükleyin — aynı tasarım, yalnızca kendi metin kutularınız kaldırılmış hâlde. HatchGrab haftayı programınızdan doldurur.",
+    "canvaTitle": "Canva’dan boş sürüm nasıl dışa aktarılır",
+    "canvaStep1": "Her zamanki haftalık program tasarımınızı açın.",
+    "canvaStep2": "Tarih, konum ve saatlerin olduğu metin kutularını silin — tutmak istediğiniz arka planı ve başlıkları bırakın.",
+    "canvaStep3": "Paylaş › İndir › PNG.",
+    "uploading": "Yükleniyor…",
+    "upload": "Boş görselinizi yükleyin",
+    "uploadHint": "PNG veya JPG, en fazla 10 MB, kısa kenarı en az {px} px.",
+    "phoneTip": "En iyisi bilgisayar veya iPad — telefonda kutular sürüklemek için küçük kalır.",
+    "designName": "Haftalık gönderi tasarımı",
+    "backDesigns": "‹ Tasarımlar",
+    "back": "‹ Geri",
+    "pictureNote": "Görseliniz, üzerinde hiçbir tarih veya konum olmadan. Onları biz ekleriz.",
+    "saved": "Tasarım kaydedildi."
+  },
+  "week": {
+    "this": "Bu hafta",
+    "next": "Gelecek hafta"
+  },
+  "post": {
+    "title": "Haftalık gönderiniz",
+    "editDesign": "Tasarımı düzenle",
+    "weekOf": "Hafta başı: {date}",
+    "imageAlt": "Haftalık gönderiniz",
+    "building": "Gönderiniz hazırlanıyor…",
+    "updating": "Güncelleniyor…",
+    "eventsTitle": "Bu haftanın etkinlikleri",
+    "noEvents": "Bu hafta etkinlik yok.",
+    "eventDateCancelled": "{date} · iptal edildi",
+    "showCancelled": "İptal edilen etkinlikleri göster",
+    "showPrivate": "Özel etkinlikleri göster",
+    "privateHint": "Tarih ve saatleriyle “Özel etkinlik” olarak görünürler — konumu asla gösterilmez.",
+    "noteTitle": "Not",
+    "notePlaceholder": "ör. Gel al için ön sipariş verin",
+    "noteHint": "Açıklamada ve, eklediyseniz, not kutusunda görünür.",
+    "captionTitle": "Sayfanız için açıklama",
+    "perEventTitle": "Her etkinlik için gönderi",
+    "nothingToPost": "Bu hafta paylaşılacak bir şey yok.",
+    "textCopied": "Metin kopyalandı.",
+    "copyText": "Metni kopyala",
+    "image": "Görsel",
+    "share": "Paylaş",
+    "noOrderLink": "Henüz sipariş bağlantısı yok — food truck’ınızın web adresini Ayarlar’dan belirleyin."
+  }
+}

@@ -1,0 +1,129 @@
+{
+  "docTitle": "{truck} — eldhús",
+  "loading": "Hleð eldhússkjá…",
+  "pin": {
+    "title": "Sláðu inn PIN-númer",
+    "placeholder": "PIN",
+    "unlock": "Opna",
+    "unreachable": "Næ ekki sambandi við netþjóninn núna. PIN-númerið þitt er í lagi — reyndu aftur eftir smástund.",
+    "incorrect": "Rangt PIN-númer",
+    "generic": "Eitthvað fór úrskeiðis. Reyndu aftur."
+  },
+  "error": {
+    "linkInvalid": "Þessi tengill er ekki lengur gildur.",
+    "couldNotLoad": "Ekki tókst að hlaða pöntunum",
+    "truckNotFound": "Matarvagn fannst ekki"
+  },
+  "degraded": {
+    "at": "⚠️ Næ ekki sambandi við netþjóninn. Sýni miða frá {time}. NÝJAR PANTANIR GÆTI VANTAÐ.",
+    "earlier": "⚠️ Næ ekki sambandi við netþjóninn. Sýni eldri miða. NÝJAR PANTANIR GÆTI VANTAÐ."
+  },
+  "header": {
+    "dashboard": "Pantanayfirlit",
+    "backTitle": "Aftur í pantanayfirlitið",
+    "list": "Listi",
+    "grid": "Reitir",
+    "full": "Ítarlegt",
+    "cook": "Kokkur",
+    "fullTitle": "Ítarleg spjöld — verð og greiðsluupplýsingar, eins og afgreiðslan sér þau.",
+    "cookTitle": "Kokkaspjöld — stærra letur, raðað eftir flokkum, engin verð.",
+    "readyStep": "Skrefið „tilbúið“",
+    "readyOnlyTitle": "Þessi skjár merkir aðeins pantanir tilbúnar, svo ekki er hægt að slökkva á þessu — það er eina skrefið sem hann sér um.",
+    "readyOnTitle": "Þessi skjár merkir pantanir tilbúnar. Ýttu til að láta annan skjá gera það í staðinn.",
+    "readyOffTitle": "Annar skjár merkir pantanir tilbúnar. Ýttu til að láta þennan gera það.",
+    "handover": "Greiðsla og afhending",
+    "handoverOnlyTitle": "Þessi skjár tekur aðeins við greiðslu, svo ekki er hægt að slökkva á þessu — það er eina skrefið sem hann sér um.",
+    "handoverOnTitle": "Þessi skjár tekur við greiðslu og afhendir. Ýttu til að láta annan skjá gera það í staðinn.",
+    "handoverOffTitle": "Annar skjár tekur við greiðslu. Ýttu til að láta þennan gera það.",
+    "soundOn": "Kveikt er á hljóði við nýja pöntun — ýttu til að slökkva",
+    "soundOff": "Slökkt er á hljóði við nýja pöntun — ýttu til að kveikja",
+    "screenOn": "Skjár alltaf á",
+    "screenOff": "Skjár má slokkna",
+    "screenSettings": "Skjástillingar",
+    "manageEvent": "Stjórna viðburði",
+    "manageEventTitle": "Stjórna viðburði — hefja, gera hlé, breyta eða ljúka honum",
+    "soundSettings": "Hljóðstillingar",
+    "soundSettingsTitle": "Hvaða hljóð spilast á þessu tæki",
+    "cashIcon": "💵"
+  },
+  "panel": {
+    "viewSettings": "Birtingarstillingar",
+    "on": "Kveikt",
+    "off": "Slökkt",
+    "newOrderSound": "Hljóð fyrir nýja pöntun",
+    "soundNeedsConfirming": "Aðeins pantanir sem þarf að staðfesta",
+    "soundAll": "Allar nýjar pantanir",
+    "soundDue": "Hljóð þegar komið er að því að elda pöntun",
+    "soundDueHelp": "Hljómar þegar miði verður gulur.",
+    "deviceSettings": "Tækjastillingar",
+    "sound": "Hljóð",
+    "close": "Loka"
+  },
+  "banner": {
+    "mismatchTitle": "⚠️ Pantanir ekki hlaðnar fyrir þennan viðburð",
+    "mismatchBody": "Netþjónninn svaraði með öðrum viðburði, svo ekkert er sýnt frekar en rangar pantanir. Veldu viðburðinn aftur eða endurhlaðaðu.",
+    "mismatchBodyAt": "Netþjónninn svaraði með öðrum viðburði, svo ekkert er sýnt frekar en rangar pantanir fyrir staðinn {venue}. Veldu viðburðinn aftur eða endurhlaðaðu.",
+    "paused": "⏸ Hlé á pöntunum{reason, select, offline { (tæki án nettengingar)} other {}} — viðskiptavinir geta ekki pantað",
+    "resume": "Halda áfram",
+    "offline": "Engin tenging — sýni síðustu þekktu pantanir. Gert hefur verið hlé á netpöntunum viðskiptavina.",
+    "queued": "{n, plural, one {{count} aðgerð í biðröð} other {{count} aðgerðir í biðröð}}",
+    "extraWait": "⏱ +{mins} mín. aukabið virk",
+    "clear": "Hreinsa",
+    "toMake": "Eftir að útbúa",
+    "today": "Í dag · {range}",
+    "onDate": "{date} · {range}",
+    "startEvent": "Hefja viðburð",
+    "recentlyClosed": "Viðburði lokið · {venue} · lauk kl. {time}",
+    "eventStatus": "{tone, select, paused {⏸ Hlé} live {● Í loftinu} finished {● Lokið} cancelled {Aflýst} other {Ekki hafið}}"
+  },
+  "board": {
+    "queueClear": "Biðröðin er tóm",
+    "doneToday": "Lokið í dag · {count}",
+    "paid": "✓ greitt",
+    "cardHeld": "kort heimilað",
+    "due": "{amount} ógreitt"
+  },
+  "screenOff": {
+    "title": "Leyfa skjánum að slökkva á sér?",
+    "bodyVans": "{vans}: {n, plural, one {kveikt er á greiningu nettengingarrofs fyrir þennan vagn} other {kveikt er á greiningu nettengingarrofs fyrir þessa vagna}}. Ef slokknar á skjánum gæti tækið hætt að senda merki um að það sé tengt og hlé gæti orðið á pöntunum viðskiptavina.",
+    "body": "Ef slokknar á skjánum gæti tækið hætt að senda merki um að það sé tengt.",
+    "keepHint": "Hafðu kveikt á skjánum til að tryggja að pantanir berist án truflana.",
+    "keep": "Halda skjánum kveiktum",
+    "allow": "Leyfa að skjárinn slokkni"
+  },
+  "event": {
+    "change": "Skipta um viðburð",
+    "cancel": "Hætta við",
+    "waitActive": "⏱ +{mins} mín. virkt · Ýttu til að hreinsa",
+    "addWait": "⏱ Bæta við biðtíma",
+    "endTitle": "Ljúka viðburði?",
+    "endEarly": "Þessum viðburði á ekki að ljúka fyrr en kl. {time}. Ekki verður tekið við fleiri pöntunum. Staðfesta að ljúka viðburðinum?",
+    "endNow": "Ljúka þessum viðburði? Ekki verður tekið við fleiri pöntunum.",
+    "yes": "Já",
+    "started": "Viðburður hafinn",
+    "startFutureConfirm": "Þessi viðburður er {date}. Hefja hann núna?",
+    "finishTimeNow": "Lokatími nú {time}",
+    "finished": "Viðburði lokið",
+    "cancelled": "Viðburði aflýst",
+    "noteSaved": "Athugasemd vistuð",
+    "pauseConfirm": "Gera hlé á pöntunum? Viðskiptavinir sjá „Tekur ekki við pöntunum“ þar til þú opnar aftur.",
+    "switchConfirm": "Skipta úr {from} yfir í {to}?{n, plural, =0 {} one { {count} pöntun á þessum skjá verður skipt út.} other { {count} pöntunum á þessum skjá verður skipt út.}} Ýttu á núverandi viðburð til að skipta til baka."
+  },
+  "intro": {
+    "title": "Þetta er eldhússkjárinn",
+    "p1": "Þetta er sýn kokksins — pantanirnar sem þarf að útbúa, í þeirri röð sem á að útbúa þær. Skjárinn við grillið sýnir þetta á meðan afgreiðslan notar pantanayfirlitið.",
+    "p2": "Spjöldin færast áfram þegar þú ýtir á þau, svo sá sem eldar veit alltaf hvað kemur næst og enginn þarf að kalla. Allt hér eru kynningargögnin þín — prófaðu þig áfram.",
+    "gotIt": "Skilið"
+  },
+  "toast": {
+    "failed": "Mistókst",
+    "rejectFailed": "Ekki tókst að hafna",
+    "buzzerSaved": "Píptæki {n} vistað",
+    "buzzerRemoved": "Píptæki {n} fjarlægt",
+    "buzzerRemovedNone": "Píptæki fjarlægt",
+    "buzzerAssigned": "Píptæki {n} úthlutað",
+    "buzzerAssignedFrom": "Píptæki {n} úthlutað (tekið af #{from})",
+    "buzzerRemoveFailed": "{had, select, no {Ekki tókst að fjarlægja píptækið af {target, select, order {pöntun nr. {id}} other {þessari pöntun}}} other {Ekki tókst að fjarlægja píptæki {n} — það er enn á {target, select, order {pöntun nr. {id}} other {þessari pöntun}}}}",
+    "buzzerAssignFailed": "Ekki tókst að láta {target, select, order {pöntun nr. {id}} other {þessa pöntun}} fá píptæki {n} — {had, select, yes {hún er enn með píptæki {prior}} other {hún er enn ekki með píptæki}}"
+  }
+}

@@ -1,0 +1,29 @@
+{
+  "notAvailable": "Demoda kullanılamaz",
+  "demoMode": "DEMO MODU",
+  "loopLands": "Gerçek bir sipariş tam olarak böyle gelir",
+  "showMe": "Göster",
+  "noCard": "{sub} Kart gerekmez.",
+  "notYet": "Henüz değil",
+  "cashAndCollected": "Nakit ve teslim alındı",
+  "logoPlaceholder": "Logonuz burada",
+  "welcomeTitle": "{sample, select, yes {İşte örnek bir demo} other {İşte demonuz}}",
+  "welcomeIntro": "{sample, select, yes {Bu, her şeyin nasıl çalıştığını görebilmeniz için hazırlanmış <b>örnek bir menü</b> — dilediğiniz zaman kendi menünüzü yükleyip demoyu kendinize göre uyarlayabilirsiniz.} other {Bu, gerçek bir panoda sizin menünüz ve markanız.}} Panodaki siparişler örnektir; böylece yoğun bir servisin nasıl göründüğünü görebilirsiniz.",
+  "twoThings": "Deneyebileceğiniz iki şey:",
+  "hitButton": "Bir siparişte <b>{button}</b> düğmesine basın",
+  "scanQr": "<b>QR kodunu</b> tarayın — ya da bağlantıya dokunun — müşteri olarak sipariş verin ve siparişin gelişini izleyin",
+  "qrAlt": "Müşteri sipariş sayfanızın QR kodu",
+  "openHere": "Ya da bu cihazda açın",
+  "copyLink": "Bağlantıyı kopyala",
+  "copyDescribedAs": "sipariş bağlantısı",
+  "noLinkTitle": "Müşteri sipariş bağlantınız",
+  "noLinkBody": "Sipariş sayfanızın bağlantısı sağ üstteki menüde.",
+  "asLive": "Sipariş ve mutfak akışı, gerçek kullanımdakiyle birebir aynıdır.",
+  "startExploring": "Keşfetmeye başla",
+  "signupOffer": {
+    "heading": "{months, plural, =0 {Ücretsiz başlayın} one {# ay ücretsiz başlayın} other {# ay ücretsiz başlayın}}",
+    "sub": "Ücretsiz denemeniz kayıt olduğunuzda başlar."
+  },
+  "cashIcon": "💵",
+  "walkBanner": "Demo · bu sizin menünüz, müşterilerinizin göreceği şekliyle. Hiçbir ücret alınmaz ve e-posta gönderilmez."
+}

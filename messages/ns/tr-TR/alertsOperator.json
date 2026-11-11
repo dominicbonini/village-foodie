@@ -1,0 +1,28 @@
+{
+  "hi": "Merhaba {name},",
+  "limit80": {
+    "subject": "Bu ayki WhatsApp yanıtlarınızın %80’ini kullandınız",
+    "used": "Otomatik WhatsApp yanıtlarınız bu ay <b>{limit} yanıt hakkından {used} tanesini</b> kullandı.",
+    "nothingStopped": "Hiçbir şey durmadı. Limite ({limit}) ulaştığınızda otomatik yanıtlar, hakkınız <b>{reset}</b> tarihinde yenilenene kadar duraklar — müşteriler size yine mesaj gönderebilir ve gönderdikleri her şeyi görmeye devam edersiniz.",
+    "raise": "Aylık limitinizi dilediğiniz zaman Ayarlar’dan artırabilirsiniz.",
+    "raiseLink": "Aylık limitinizi dilediğiniz zaman Ayarlar’dan artırabilirsiniz:",
+    "button": "Ayarları aç"
+  },
+  "limit100": {
+    "subject": "WhatsApp otomatik yanıtlarınız bu ay için duraklatıldı",
+    "usedAll": "Bu ayki otomatik WhatsApp yanıtlarınızın tamamını ({limit}) kullandınız, bu yüzden yanıtlar duraklatıldı.",
+    "stillReach": "<b>Müşteriler size her zamanki gibi mesaj gönderebilir ve her mesaj yine size ulaşır.</b> Duran tek şey, geri gönderilen otomatik yanıt.",
+    "startAgain": "Yanıtlar <b>{reset}</b> tarihinde yeniden başlar; aylık limitinizi Ayarlar’dan artırırsanız hemen başlar.",
+    "startAgainLink": "Yanıtlar {reset} tarihinde yeniden başlar; aylık limitinizi Ayarlar’dan artırırsanız hemen başlar:",
+    "button": "Limitimi artır"
+  },
+  "paymentBlocked": {
+    "subject": "WhatsApp’ın mesaj gönderebilmesi için bir ödeme yöntemi gerekiyor",
+    "stopped": "WhatsApp Business hesabınızda geçerli bir ödeme yöntemi olmadığı için WhatsApp otomatik yanıtlarınızın gönderilmesini durdurdu.",
+    "stillMessage": "<b>Müşteriler size yine mesaj gönderebilir ve gönderdikleri her şeyi görmeye devam edersiniz</b> — ancak yanıtlar onlara ulaşmıyor.",
+    "payDirect": "Bu mesajların ücretini doğrudan WhatsApp’a ödüyorsunuz; bu yüzden sorun HatchGrab’de değil, WhatsApp Manager’da çözülür. Orada bir kart ekleyin ya da kartınızı güncelleyin; yanıtlar kendiliğinden yeniden başlar.",
+    "payDirectLink": "Bu mesajların ücretini doğrudan WhatsApp’a ödüyorsunuz; bu yüzden sorun HatchGrab’de değil, WhatsApp Manager’da çözülür. Orada bir kart ekleyin ya da kartınızı güncelleyin; yanıtlar kendiliğinden yeniden başlar:",
+    "button": "WhatsApp Manager’ı aç",
+    "settings": "HatchGrab ayarlarınız: <link>{url}</link>"
+  }
+}

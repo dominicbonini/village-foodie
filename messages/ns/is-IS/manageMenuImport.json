@@ -1,0 +1,195 @@
+{
+  "cancel": "Hætta við",
+  "back": "← Til baka",
+  "backPlain": "Til baka",
+  "next": "Áfram →",
+  "continue": "Halda áfram →",
+  "closeImport": "Loka innflutningi",
+  "tryAgain": "Reyna aftur",
+  "catError": {
+    "empty": "Gefðu flokknum heiti.",
+    "tooLong": "Heitið er of langt.",
+    "clash": "Það er þegar til flokkur sem heitir „{name}“."
+  },
+  "steps": {
+    "details": "Upplýsingar um þig",
+    "menu": "Matseðill",
+    "extras": "Aukaval",
+    "allergens": "Ofnæmisvaldar",
+    "kitchen": "Uppsetning eldhúss",
+    "schedule": "Dagskrá",
+    "settings": "Stillingar"
+  },
+  "toast": {
+    "demoGone": "Matseðillinn úr kynningunni er ekki lengur tiltækur — hladdu honum upp aftur til að halda áfram.",
+    "eventsSaveFailed": "Ekki tókst að vista viðburði",
+    "cardReadFailed": "Ekki tókst að lesa ofnæmisvaldaspjaldið — reyndu aftur",
+    "imageReadFailed": "Ekki tókst að lesa myndina — skrifaðu eða límdu inn spjaldið í staðinn",
+    "commitFailedDetail": "Ekki tókst að ljúka við að vista matseðilinn: {error}. Sumar vörur gætu þegar hafa vistast — skoðaðu matseðilinn áður en þú reynir aftur.",
+    "commitFailed": "Ekki tókst að ljúka við að vista matseðilinn. Sumar vörur gætu þegar hafa vistast — skoðaðu matseðilinn áður en þú reynir aftur.",
+    "finishFailed": "Ekki tókst að merkja uppsetninguna lokið — þú getur samt haldið áfram.",
+    "scheduleReadFailed": "Ekki tókst að lesa dagskrána — prófaðu skýrari mynd eða skrifaðu dagsetningarnar inn.",
+    "cardRead": "Spjaldið lesið — pöruð: {matched}, {pending, plural, one {# þarf} other {# þurfa}} úthlutun frá þér"
+  },
+  "settingsReview": {
+    "anchorOrder": "Stillingar → Pöntunarstillingar",
+    "anchorDisplay": "Stillingar → Matarvagnarnir þínir → Skjástillingar",
+    "mins15": "15 mínútur",
+    "mins30": "30 mínútur",
+    "mins60": "60 mínútur",
+    "hours2": "2 klst.",
+    "title": "Nokkrar stillingar til að skoða",
+    "loading": "Hleð núverandi stillingum…",
+    "looksGood": "Lítur vel út →",
+    "secondaryAria": "{label} — {secondary}",
+    "saveFailed": "Ekki tókst að vista þetta — þú getur breytt því í Stillingum.",
+    "anchorContact": "Stillingar → Samskiptaupplýsingar",
+    "intro": "Við höfum sett inn nokkrar algengar stillingar fyrir þig. Það borgar sig að kíkja snöggt á þær — þú getur breytt þeim öllum seinna í Stillingum.",
+    "cancelAria": "Hve löngu fyrir afhendingu viðskiptavinir geta afpantað"
+  },
+  "allergensNotSet": {
+    "bodySetup": "Farðu yfir þá áður en þú ferð í loftið. Vörur eru merktar „ofnæmisvaldar ekki stilltir“ þangað til.",
+    "body": "Farðu yfir þá í Stillingum áður en þú ferð í loftið. Vörur eru merktar „ofnæmisvaldar ekki stilltir“ þangað til.",
+    "title": "⚠ Ofnæmisvaldar og mataræði eru ekki stillt enn"
+  },
+  "welcome": {
+    "title": "Velkomin á HatchGrab",
+    "yourTruck": "Matarvagninn þinn",
+    "stop": "Þú getur hætt og komið aftur hvenær sem er.",
+    "body": "Vagninn {name} er tilbúinn. Næst bætum við matseðlinum við og svo fyrsta viðburðinum þínum.",
+    "go": "Byrjum"
+  },
+  "offer": {
+    "title": "Nota matseðilinn úr kynningunni?",
+    "use": "Nota þennan matseðil",
+    "upload": "Hlaða upp öðrum matseðli",
+    "body": "Við vistuðum matseðilinn sem þú hlóðst upp — {count, plural, one {# vara} other {# vörur}}. Notaðu hann sem grunn eða hladdu upp öðrum."
+  },
+  "checkMenu": {
+    "title": "Skoðaðu matseðilinn",
+    "body": "Við vistuðum matseðilinn úr kynningunni á vagninn þinn og þú hefur breytt honum síðan — svo breytingarnar þínar haldast. Renndu yfir hann hér fyrir neðan.",
+    "done": "Lítur vel út"
+  },
+  "upload": {
+    "title": "Flytja inn matseðilinn",
+    "body": "Hladdu upp mynd af matseðlatöflunni, skjámynd eða PDF-skjali, eða límdu matseðilinn inn sem texta. Gervigreindin okkar les hann og býr til stafræna matseðilinn þinn — þú ferð yfir allt áður en það vistast.",
+    "confirmCancel": "Hætta við þennan innflutning? Yfirferð þinni á þessum matseðli verður hent.",
+    "process": "Vinna matseðil",
+    "later": "Ég geri þetta seinna"
+  },
+  "processing": {
+    "title": "Greini matseðilinn þinn",
+    "body": "Gervigreindin les og flokkar vörurnar þínar…"
+  },
+  "review": {
+    "title": "Yfirfara innfluttan matseðil",
+    "editLaterSetup": "Heitum, verðum, aukavali, ofnæmisvöldum og upplýsingum um mataræði má alltaf breyta seinna.",
+    "editLater": "Heitum, verðum, aukavali, ofnæmisvöldum og upplýsingum um mataræði má alltaf breyta seinna í Stillingum.",
+    "noPrice": "Ekki tókst að lesa verð á {count, plural, one {# vöru} other {# vörum}}",
+    "renameCategoryAria": "Endurnefna flokkinn {name}",
+    "renameAria": "Endurnefna: {name}",
+    "renameTitle": "Endurnefna flokk",
+    "deleteAria": "Eyða: {name}",
+    "deleteTitle": "Eyða flokki",
+    "lastCategory": "Matseðillinn þarf að minnsta kosti einn flokk",
+    "countOf": "{kept} af {total}",
+    "existing": "fyrirliggjandi",
+    "deleteEmptyTitle": "Eyða „{name}“?",
+    "deleteEmptyBody": "Hann hefur engar vörur, svo ekkert tapast.",
+    "delete": "Eyða",
+    "moveTitle": "Hvert {count, plural, one {á # vara} other {eiga # vörur}} að fara?",
+    "moveBody": "Til að eyða „{name}“ þurfa réttirnir í honum að fara annað — vörur án flokks eru ekki fluttar inn.",
+    "moveAria": "Færa vörur úr flokknum {name} í",
+    "chooseCategory": "Veldu flokk…",
+    "moveDelete": "Færa og eyða",
+    "itemName": "Heiti vöru",
+    "free": "ókeypis?",
+    "freeOn": "Ókeypis ✕",
+    "nameFirst": "Gefðu nýju vörunni heiti áður en þú bætir annarri við",
+    "addItem": "+ Bæta við vöru",
+    "categoryName": "Heiti flokks",
+    "newCategoryAria": "Heiti nýs flokks",
+    "addCategory": "+ Bæta við flokki",
+    "ready": "{count, plural, one {# vara tilbúin} other {# vörur tilbúnar}} til að bæta við. Taktu hakið af þeim sem þú vilt ekki.",
+    "noPriceBody": "Settu verð á hverja þeirra eða merktu hana ókeypis — annars færi hún í loftið á verðinu {zero}. Þú getur ekki haldið áfram fyrr en þetta er komið á hreint.",
+    "incomplete": "Sláðu inn heiti til að bæta þessari vöru við — tómar línur eru ekki fluttar inn."
+  },
+  "extras": {
+    "introSetup": "Suma rétti má setja upp sem <b>eina vöru með vali</b> eða hafa sem <b>aðskilda rétti</b>. Veldu hvernig hver og einn á að birtast. Þú getur breytt þessu seinna.",
+    "intro": "Suma rétti má setja upp sem <b>eina vöru með vali</b> eða hafa sem <b>aðskilda rétti</b>. Veldu hvernig hver og einn á að birtast. Þú getur breytt þessu seinna í Stillingum.",
+    "none": "Engir réttir sem hægt er að flokka saman — hver vara er sjálfstæður réttur.",
+    "axisChoice": "· val: {axis}",
+    "grouped": "Samsett · ein vara, viðskiptavinur velur",
+    "separate": "Aðskildar vörur á matseðli"
+  },
+  "allergens": {
+    "title": "Ofnæmisvaldar",
+    "detected": "Við fundum ofnæmisvalda á matseðlinum þínum. Veldu hér fyrir neðan hvernig þeir eru sýndir.",
+    "howShow": "Hvernig viltu sýna viðskiptavinum ofnæmisvalda?",
+    "skip": "Sleppa uppsetningu ofnæmisvalda í bili"
+  },
+  "kitchen": {
+    "title": "Uppsetning eldhúss",
+    "intro": "Hjálpaðu viðskiptavinum að vita hve lengi þarf að bíða — þú getur alltaf breytt þessu seinna.",
+    "howWorks": "Hvernig afköst eldhússins virka",
+    "allExist": "Allir flokkar eru þegar til — engir tímar til að stilla.",
+    "totalHelp": "Settu heildarafköst til að takmarka hve margar vörur eldhúsið tekur að sér í hverju tímahólfi. Skildu eftir ∞ fyrir ekkert hámark.",
+    "saveAdd": "Vista og bæta á matseðil"
+  },
+  "schedule": {
+    "title": "Bæta við dagskránni minni",
+    "intro": "Ef dagskráin þín er á vefsíðunni þinni getum við haldið henni uppfærðri sjálfkrafa — eða þú bætir dagsetningunum við handvirkt.",
+    "websiteTitle": "Dagskráin mín er á vefsíðunni minni",
+    "urlPlaceholder": "https://matarvagninnthinn.is/vidburdir",
+    "checking": "Athuga…",
+    "verify": "Staðfesta",
+    "checkingSite": "Athuga vefsíðuna þína…",
+    "takesTime": "Þetta getur tekið allt að 2 mínútur — hafðu gluggann opinn á meðan.",
+    "canRead": "✓ Við getum lesið dagskrána þína",
+    "ownSite": "Þín eigin vefsíða — ekki Facebook- eða Instagram-síða.",
+    "photoTitle": "Hlaða upp mynd af dagskránni minni",
+    "dragChoose": "Dragðu og slepptu eða ýttu til að velja",
+    "imageOrPdf": "Mynd eða PDF",
+    "or": "eða",
+    "pastePlaceholder": "Límdu dagsetningarnar hér…",
+    "read": "Lesa dagskrá",
+    "found": "{count, plural, one {# dagsetning fannst — henni verður bætt við dagskrána þína.} other {# dagsetningar fundust — þeim verður bætt við dagskrána þína.}}",
+    "dateTbc": "Dags. óstaðfest",
+    "save": "Vista {count, plural, one {# dagsetningu} other {# dagsetningar}}",
+    "manualDesc": "Bættu þeim við seinna á flipanum Dagskrá — ekkert að gera núna.",
+    "manualBody": "Ekkert mál. Þú getur bætt við og stjórnað dagsetningunum hvenær sem er á flipanum Dagskrá í aðganginum þínum.",
+    "blockedDomain": "Notaðu slóð vefsíðunnar þinnar — ekki er hægt að sækja efni sjálfkrafa af Facebook- og Instagram-síðum.",
+    "saveFailed": "Við lásum dagskrána þína en gátum ekki vistað hana í augnablikinu — reyndu aftur.",
+    "websiteDesc": "Við athugum hana reglulega og sendum þér nýjar dagsetningar til samþykktar.",
+    "keepChecking": "Við höldum áfram að athuga þessa síðu og sendum þér nýjar dagsetningar til samþykktar.",
+    "photoDesc": "Taktu mynd eða límdu inn dagsetningarnar — við lesum þær inn svo þú getir yfirfarið þær.",
+    "noneFound": "Við fundum engar dagsetningar í þessu — prófaðu skýrari mynd eða bættu dagsetningu við handvirkt.",
+    "manualTitle": "Ég set dagsetningarnar inn handvirkt",
+    "trialNotStarted": "Það að bæta við viðburðum ræsir ekki ókeypis prufuna — þú velur seinna hvaða viðburður ræsir hana."
+  },
+  "done": {
+    "summary": "{items, plural, one {# vara} other {# vörur}} í {categories, plural, one {# flokki} other {# flokkum}}.",
+    "imported": "Matseðill fluttur inn!",
+    "added": "Vörunum þínum hefur verið bætt á matseðilinn.",
+    "duplicates": "{count, plural, one {# tvítekningu sleppt} other {# tvítekningum sleppt}}",
+    "showMe": "Fá leiðsögn",
+    "remind": "Minntu mig á seinna",
+    "allSet": "Allt tilbúið!",
+    "explore": "Ég skoða mig um"
+  },
+  "discard": {
+    "setupTitle": "Klára uppsetninguna seinna?",
+    "setupBody": "Aðgangurinn þinn og vagninn eru vistuð — ekkert tapast. Þú getur bætt matseðlinum við hvenær sem er: skráðu þig inn og ýttu á <b>Flytja inn matseðil</b> á matseðilsskjánum til að halda áfram hér.",
+    "keepGoing": "Halda áfram",
+    "finishLater": "Klára seinna",
+    "title": "Henda þessum innflutningi?",
+    "keepEditing": "Halda áfram að breyta",
+    "discard": "Henda",
+    "body": "Breytingarnar þínar verða ekki vistaðar — innfluttu vörunum, undirbúningstímum og afköstum eldhússins verður ekki bætt við.",
+    "carriedBody": "Matseðillinn úr kynningunni er vistaður á vagninum þínum eins og hann er. Þú getur breytt honum hvenær sem er á matseðilsskjánum."
+  },
+  "allergenCardText": {
+    "contains": "Inniheldur: {list}",
+    "mayContain": "Getur innihaldið: {list}"
+  }
+}

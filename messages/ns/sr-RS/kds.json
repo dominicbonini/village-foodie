@@ -1,0 +1,129 @@
+{
+  "docTitle": "{truck} — kuhinja",
+  "loading": "Učitavanje kuhinje…",
+  "pin": {
+    "title": "Unesite PIN",
+    "placeholder": "PIN",
+    "unlock": "Otključaj",
+    "unreachable": "Server trenutno nije dostupan. Vaš PIN je ispravan — pokušajte ponovo za trenutak.",
+    "incorrect": "Pogrešan PIN",
+    "generic": "Nešto nije u redu. Pokušajte ponovo."
+  },
+  "error": {
+    "linkInvalid": "Ovaj link više ne važi.",
+    "couldNotLoad": "Učitavanje porudžbina nije uspelo",
+    "truckNotFound": "Food truck nije pronađen"
+  },
+  "degraded": {
+    "at": "⚠️ Server nije dostupan. Prikazani su bonovi sa stanjem u {time}. NOVE PORUDŽBINE MOŽDA NEDOSTAJU.",
+    "earlier": "⚠️ Server nije dostupan. Prikazano je ranije stanje bonova. NOVE PORUDŽBINE MOŽDA NEDOSTAJU."
+  },
+  "header": {
+    "dashboard": "Kontrolna tabla",
+    "backTitle": "Nazad na kontrolnu tablu",
+    "list": "Lista",
+    "grid": "Mreža",
+    "full": "Detaljno",
+    "cook": "Za kuvara",
+    "fullTitle": "Detaljne kartice — cene i podaci o plaćanju, onako kako ih vidi pult.",
+    "cookTitle": "Kartice za kuvara — veća slova, grupisano po kategorijama, bez cena.",
+    "readyStep": "Korak „Spremno“",
+    "readyOnlyTitle": "Ovaj ekran samo označava porudžbine kao spremne, pa se ovo ne može isključiti — to je jedini korak koji obavlja.",
+    "readyOnTitle": "Ovaj ekran označava porudžbine kao spremne. Dodirnite da bi to umesto njega radio drugi ekran.",
+    "readyOffTitle": "Drugi ekran označava porudžbine kao spremne. Dodirnite da bi to radio ovaj.",
+    "handover": "Plaćanje i predaja",
+    "handoverOnlyTitle": "Ovaj ekran samo naplaćuje, pa se ovo ne može isključiti — to je jedini korak koji obavlja.",
+    "handoverOnTitle": "Ovaj ekran naplaćuje i predaje porudžbine. Dodirnite da bi to umesto njega radio drugi ekran.",
+    "handoverOffTitle": "Drugi ekran naplaćuje. Dodirnite da bi to radio ovaj.",
+    "soundOn": "Zvuk za nove porudžbine je uključen — dodirnite da ga isključite",
+    "soundOff": "Zvuk za nove porudžbine je isključen — dodirnite da ga uključite",
+    "screenOn": "Ekran uključen",
+    "screenOff": "Ekran isključen",
+    "screenSettings": "Podešavanja ekrana",
+    "manageEvent": "Upravljanje događajem",
+    "manageEventTitle": "Upravljanje događajem — pokrenite ga, pauzirajte, promenite ili završite",
+    "soundSettings": "Podešavanja zvuka",
+    "soundSettingsTitle": "Koji zvuci se puštaju na ovom uređaju",
+    "cashIcon": "💷"
+  },
+  "panel": {
+    "viewSettings": "Podešavanja prikaza",
+    "on": "Uključeno",
+    "off": "Isključeno",
+    "newOrderSound": "Zvuk za novu porudžbinu",
+    "soundNeedsConfirming": "Samo porudžbine koje treba potvrditi",
+    "soundAll": "Sve nove porudžbine",
+    "soundDue": "Zvuk kada je vreme da se porudžbina sprema",
+    "soundDueHelp": "Oglašava se kada bon postane narandžast.",
+    "deviceSettings": "Podešavanja uređaja",
+    "sound": "Zvuk",
+    "close": "Zatvori"
+  },
+  "banner": {
+    "mismatchTitle": "⚠️ Porudžbine za ovaj događaj nisu učitane",
+    "mismatchBody": "Server je odgovorio podacima za drugi događaj, pa umesto pogrešnih porudžbina ništa nije prikazano. Ponovo izaberite događaj ili osvežite stranicu.",
+    "mismatchBodyAt": "Server je odgovorio podacima za drugi događaj, pa umesto pogrešnih porudžbina za lokaciju {venue} ništa nije prikazano. Ponovo izaberite događaj ili osvežite stranicu.",
+    "paused": "⏸ Porudžbine su pauzirane{reason, select, offline { (uređaj nema internet)} other {}} — kupci ne mogu da poručuju",
+    "resume": "Nastavi",
+    "offline": "Nema veze — prikazane su poslednje poznate porudžbine. Online poručivanje je pauzirano za kupce.",
+    "queued": "{n, plural, one {{count} radnja na čekanju} few {{count} radnje na čekanju} other {{count} radnji na čekanju}}",
+    "extraWait": "⏱ Aktivno dodatno čekanje: +{mins} min",
+    "clear": "Ukloni",
+    "toMake": "Za pripremu",
+    "today": "Danas · {range}",
+    "onDate": "{date} · {range}",
+    "startEvent": "Pokreni događaj",
+    "recentlyClosed": "Događaj je završen · {venue} — kraj u {time}",
+    "eventStatus": "{tone, select, paused {⏸ Pauzirano} live {● U toku} finished {● Završeno} cancelled {Otkazano} other {Nije počelo}}"
+  },
+  "board": {
+    "queueClear": "Red je prazan",
+    "doneToday": "Završeno danas · {count}",
+    "paid": "✓ plaćeno",
+    "cardHeld": "kartica rezervisana",
+    "due": "{amount} za naplatu"
+  },
+  "screenOff": {
+    "title": "Dozvoliti da se ekran isključi?",
+    "bodyVans": "{n, plural, one {Otkrivanje prekida interneta uključeno je za vozilo} few {Otkrivanje prekida interneta uključeno je za vozila} other {Otkrivanje prekida interneta uključeno je za vozila}}: {vans}. Ako se ekran isključi, uređaj može da prestane da šalje signal da je povezan, pa poručivanje za kupce može biti pauzirano.",
+    "body": "Ako se ekran isključi, uređaj može da prestane da šalje signal da je povezan.",
+    "keepHint": "Ostavite ekran uključen da poručivanje ne bi bilo prekinuto.",
+    "keep": "Ostavi ekran uključen",
+    "allow": "Dozvoli isključivanje ekrana"
+  },
+  "event": {
+    "change": "Promeni događaj",
+    "cancel": "Otkaži",
+    "waitActive": "⏱ +{mins} min aktivno · Dodirnite da uklonite",
+    "addWait": "⏱ Dodaj dodatno čekanje",
+    "endTitle": "Završiti događaj?",
+    "endEarly": "Ovaj događaj je zakazan da se završi tek u {time}. Nove porudžbine više neće biti moguće. Želite li da završite događaj?",
+    "endNow": "Završiti ovaj događaj? Više se neće primati porudžbine.",
+    "yes": "Da",
+    "started": "Događaj je pokrenut",
+    "startFutureConfirm": "Ovaj događaj je zakazan za {date}. Pokrenuti ga sada?",
+    "finishTimeNow": "Vreme završetka je sada {time}",
+    "finished": "Događaj je završen",
+    "cancelled": "Događaj je otkazan",
+    "noteSaved": "Napomena je sačuvana",
+    "pauseConfirm": "Pauzirati porudžbine? Kupci će videti „Ne primamo porudžbine“ dok ne nastavite.",
+    "switchConfirm": "Preći sa {from} na {to}?{n, plural, =0 {} one { {count} porudžbina na ovom ekranu biće zamenjena.} few { {count} porudžbine na ovom ekranu biće zamenjene.} other { {count} porudžbina na ovom ekranu biće zamenjeno.}} Dodirnite trenutni događaj da biste se vratili."
+  },
+  "intro": {
+    "title": "Ovo je kuhinjski ekran (KDS)",
+    "p1": "To je prikaz za kuvara — porudžbine koje treba da pripremite, redom kojim ih treba pripremati. Ekran pored roštilja prikazuje ovo, dok pult koristi kontrolnu tablu porudžbina.",
+    "p2": "Kartice se pomeraju dok ih dodirujete, pa onaj ko kuva uvek zna šta sledi i niko ne mora da viče. Sve ovde su vaši demo podaci — slobodno isprobajte.",
+    "gotIt": "Razumem"
+  },
+  "toast": {
+    "failed": "Nije uspelo",
+    "rejectFailed": "Odbijanje nije uspelo",
+    "buzzerSaved": "Pejdžer {n} je sačuvan",
+    "buzzerRemoved": "Pejdžer {n} je uklonjen",
+    "buzzerRemovedNone": "Pejdžer je uklonjen",
+    "buzzerAssigned": "Pejdžer {n} je dodeljen",
+    "buzzerAssignedFrom": "Pejdžer {n} je dodeljen (uzet od porudžbine #{from})",
+    "buzzerRemoveFailed": "{had, select, no {Nije bilo moguće ukloniti pejdžer sa {target, select, order {porudžbine #{id}} other {ove porudžbine}}} other {Nije bilo moguće ukloniti pejdžer {n} — i dalje je na {target, select, order {porudžbini #{id}} other {ovoj porudžbini}}}}",
+    "buzzerAssignFailed": "Nije bilo moguće dodeliti pejdžer {n} {target, select, order {porudžbini #{id}} other {ovoj porudžbini}} — {had, select, yes {i dalje ima pejdžer {prior}} other {i dalje nema pejdžer}}"
+  }
+}

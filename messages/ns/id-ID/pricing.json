@@ -1,0 +1,49 @@
+{
+  "banner": {
+    "title": "{months, plural, one {Bulan pertama Anda gratis sepenuhnya — semua fitur terbuka.} other {# bulan pertama Anda gratis sepenuhnya — semua fitur terbuka.}}",
+    "body": "Dengan {brand}, pelanggan pesan dulu dan membayar saat mengambil, jadi Anda bisa menerima pesanan online tanpa menghubungkan pemroses kartu sama sekali. Lebih suka menerima pembayaran di muka? Tambahkan pembayaran kartu online kapan saja. Setelah masa coba gratis berakhir, Anda pindah ke paket <plan>{fallback}</plan>{fallbackFree, select, yes { — tanpa biaya tetap —} other {}} kecuali Anda memilih paket lain. Tanpa kartu untuk memulai, tanpa kontrak, bisa berhenti kapan saja.",
+    "bodyOnly": "Dengan {brand}, pelanggan pesan dulu dan membayar saat mengambil, jadi Anda bisa menerima pesanan online tanpa menghubungkan pemroses kartu sama sekali. Lebih suka menerima pembayaran di muka? Tambahkan pembayaran kartu online kapan saja. Setelah masa coba gratis berakhir, paket <plan>{fallback}</plan> seharga {price} per bulan. Kami akan menghubungi Anda sebelum itu untuk mengatur pembayaran. Tanpa kartu untuk memulai, tanpa kontrak, bisa berhenti kapan saja."
+  },
+  "card": {
+    "perTruckMonth": "per truk / bulan",
+    "mostTrucks": "Terpopuler",
+    "tryFree": "Coba gratis",
+    "seeEvery": "Lihat semua fitur →",
+    "everything": "Semua yang Anda butuhkan untuk berjualan",
+    "everythingIn": "Semua fitur paket {plan}, ditambah"
+  },
+  "fee": {
+    "feeOnly": "<b>{fee}*</b> hanya untuk pesanan online dengan kartu. Pesanan langsung di tempat selalu gratis.",
+    "included": "<b>{included}</b> pertama dari pesanan online sudah termasuk setiap bulan, setelah itu <b>{fee}*</b>. Pesanan langsung di tempat selalu gratis.",
+    "noFee": "<b>Tanpa biaya HatchGrab</b> untuk pesanan online, seramai apa pun usaha Anda. Satu biaya bulanan yang pasti."
+  },
+  "base": {
+    "walkUp": "Pesanan langsung di tempat & layar dapur (KDS)",
+    "online": "Pemesanan online",
+    "preorders": "Pre-order & waktu pengambilan",
+    "capacity": "Pengaturan kapasitas dapur",
+    "privateEvents": "Acara pribadi",
+    "printing": "Pencetakan tiket dapur",
+    "app": "Aplikasi dapur untuk iPhone, iPad, dan Android"
+  },
+  "added": {
+    "whatsapp_replies": "Balasan otomatis WhatsApp",
+    "schedule_graphics": "Postingan media sosial — jadwal Facebook dan Instagram Anda — siap diposting",
+    "event_types": "Jenis acara & harga khusus"
+  },
+  "money": {
+    "unlimitedOrders": "Pesanan online tanpa batas, biaya HatchGrab 0%",
+    "samePrice": "Harga tetap sama di bulan tersibuk Anda"
+  },
+  "comingSoon": "Segera hadir",
+  "bar": {
+    "title": "Paket mana yang paling hemat untuk saya?",
+    "subtitle": "Pesanan online Anda setiap bulan",
+    "first": "Di bawah {to} → <b>{plan}</b>",
+    "middle": "{from} – {to} → <b>{plan}</b>",
+    "last": "Di atas {from} → <b>{plan}</b>",
+    "only": "Berapa pun jumlahnya → <b>{plan}</b>"
+  },
+  "footnote": "* Ditambah biaya pemrosesan kartu Stripe untuk pesanan online dengan kartu (saat ini {cardFee} di {country}), dibayarkan ke Stripe, bukan ke HatchGrab. Pesanan langsung di tempat memakai mesin EDC Anda sendiri — HatchGrab mengenakan 0%.",
+  "currencyLine": "Harga dalam {currency} ({code})"
+}

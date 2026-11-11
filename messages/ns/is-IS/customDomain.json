@@ -1,0 +1,161 @@
+{
+  "card": {
+    "title": "Settu dagskrána á vefsíðuna þína",
+    "live": "<addr>{address}</addr> sýnir dagskrána þína.",
+    "create": "Við búum til síðu á <addr>{address}</addr> sem sýnir dagskrána þína.",
+    "exampleDomain": "matarvagninnthinn.is",
+    "liveBadge": "Í loftinu",
+    "setUp": "Setja upp",
+    "viewSetup": "Skoða uppsetningu",
+    "continue": "Halda áfram",
+    "justLive": "<b>{address}</b> virkar. Skoðaðu síðuna og láttu okkur svo vita hér fyrir neðan að allt sé rétt."
+  },
+  "waiting": {
+    "title": "Við bíðum eftir vefslóðinni {address}",
+    "bodySince": "Þú settir þetta upp {date}. Nýjar vefslóðir fara yfirleitt að virka innan fárra mínútna en stundum tekur allt að 24 klst. að ná til allra — þú þarft ekkert að gera á meðan. Ef einhver annar var að bæta línunni við fyrir þig er gott að athuga hvort hann gerði það.",
+    "body": "Nýjar vefslóðir fara yfirleitt að virka innan fárra mínútna en stundum tekur allt að 24 klst. að ná til allra — þú þarft ekkert að gera á meðan. Ef einhver annar var að bæta línunni við fyrir þig er gott að athuga hvort hann gerði það."
+  },
+  "ready": {
+    "title": "{address} er komið í loftið",
+    "body": "Skoðaðu síðuna og láttu okkur svo vita í stillingunum að allt sé rétt."
+  },
+  "confirm": {
+    "heading": "Skoðaðu síðuna og láttu okkur vita að allt sé rétt",
+    "open": "Opna <link>{address}</link>",
+    "checkTimes": "Athugaðu hvort dagsetningar og tímar séu réttir.",
+    "yes": "Já, þetta lítur rétt út",
+    "no": "Nei, það er vandamál",
+    "problemLine": "Segðu okkur hvað þú sérð og við skoðum málið.",
+    "emailUs": "Senda okkur tölvupóst",
+    "mailSubject": "Vandamál með {address}",
+    "mailLiveSince": "Í loftinu frá {date}",
+    "mailSeeing": "Það sem ég sé:"
+  },
+  "confirmed": {
+    "heading": "Takk — þetta er komið til skila.",
+    "body": "Það er ekkert fleira að gera."
+  },
+  "turnOff": {
+    "link": "Slökkva á þessu",
+    "heading": "Slökkva á eigin vefslóð?",
+    "stops": "Þetta hættir að virka:",
+    "carriesOn": "Þetta heldur áfram nákvæmlega eins og það er, og þangað vísar QR-kóðinn þinn fólki:",
+    "reAdd": "Ef þú ætlar að setja þetta upp aftur síðar skaltu láta línuna sem þú bættir við hjá lénsþjónustunni standa. Ef ekki skaltu biðja þau að fjarlægja hana.",
+    "cancel": "Hafa áfram kveikt",
+    "confirm": "Slökkva",
+    "working": "Slekk…",
+    "failed": "Við gátum ekki slökkt á þessu í bili. Engu hefur verið breytt — vefslóðin virkar enn. Reyndu aftur eftir smástund."
+  },
+  "wizard": {
+    "resumeFailedTitle": "Við gátum ekki hlaðið uppsetningunni þinni.",
+    "resumeFailedBody": "Engu hefur verið breytt. Reyndu aftur eftir smástund.",
+    "close": "Loka",
+    "resuming": "Held áfram þar sem frá var horfið…",
+    "genericError": "Eitthvað fór úrskeiðis",
+    "saveFailed": "Ekki tókst að vista"
+  },
+  "address": {
+    "intro": "Dagskráin þín fær sína eigin vefslóð.",
+    "question": "Hver er vefslóðin þín?",
+    "hint": "Sú sem fólk notar nú þegar til að finna þig.",
+    "aria": "Þín eigin vefslóð",
+    "willBe": "Vefslóðin þín verður <addr>{address}</addr>",
+    "example": "Til dæmis <addr>{address}</addr>",
+    "noChange": "Vefsíðan þín breytist ekki — þú bætir bara við tengli á nýju vefslóðina.",
+    "notSetUp": "Við höfum ekki sett þetta upp.",
+    "restricted": "Sá sem sér um vefslóðina þína þarf að leyfa okkur að setja upp hengilásinn — litla lásinn sem viðskiptavinir sjá við hliðina á henni. Þangað til við erum komin á lista birtist hann ekki, svo við stöðvuðum frekar en að láta þig bíða eftir honum. Biddu þau að bæta okkur við og reyndu svo aftur.",
+    "blocked": "Vefslóðin þín lokar alveg á hengilásinn eins og er. Sá sem sér um hana þarf að leyfa hann áður en þetta getur virkað. Biddu þau að breyta því og reyndu svo aftur.",
+    "elsewhere": "Eitthvað svarar þegar á þessari vefslóð. Sendu skilaboðin á næsta skjá til þess sem sér um hana — viðkomandi veit hvað á að gera.",
+    "provider": "Vefslóðin þín er hýst hjá <b>{provider}</b>. Við sýnum þér hvert þú átt að fara.",
+    "provisionFailed": "Við gátum ekki sett þessa vefslóð upp.",
+    "willNotWork": "Þessi vefslóð virkar ekki.",
+    "couldNotBeSetUp": "Ekki var hægt að setja þessa vefslóð upp.",
+    "couldNotSetUp": "Ekki tókst að setja þetta upp",
+    "checking": "Athuga…",
+    "setting": "Set upp…",
+    "tryAgain": "Reyna aftur",
+    "setUpAddress": "Setja upp þessa vefslóð",
+    "notNow": "Ekki núna"
+  },
+  "apex": {
+    "empty": "Skrifaðu vefslóðina sem þú vilt nota.",
+    "not_a_domain": "Þetta lítur ekki út eins og vefslóð.",
+    "unparseable": "Við gátum ekki lesið þetta sem vefslóð. Athugaðu stafsetninguna og reyndu aftur.",
+    "apex": "{host} er heildarvefslóð vefsíðunnar þinnar. Ef þú beinir henni til okkar kemur þessi síða í stað vefsíðunnar þinnar. Settu frekar orð fyrir framan — til dæmis events.{host}.",
+    "too_deep": "Þessi vefslóð er í of mörgum hlutum. Eitthvað eins og events.{domain} virkar best."
+  },
+  "record": {
+    "addAt": "Bættu þessu við hjá {provider}",
+    "open": "Opna {provider}",
+    "guide": "Leiðbeiningar frá {provider} um þetta",
+    "addAtSave": "Bættu þessu við hjá {provider} og vistaðu.",
+    "addSomewhere": "Bættu þessu við þar sem vefslóðin þín er hýst og vistaðu.",
+    "hintChoose": "Veldu þetta af listanum.",
+    "hintWord": "Bara þetta orð, ekki alla vefslóðina.",
+    "hintExact": "Afritaðu þetta nákvæmlega.",
+    "timing": "Þetta fer yfirleitt að virka innan klukkustundar, en það getur tekið lengri tíma. Þú þarft ekki að hafa þessa síðu opna.",
+    "someoneElse": "Sér einhver annar um vefslóðina þína?",
+    "sentTo": "Sent á {email}",
+    "emailPlaceholder": "netfang viðkomandi",
+    "sending": "Sendi…",
+    "send": "Senda þessar upplýsingar",
+    "sendFailed": "Ekki tókst að senda"
+  },
+  "providers": {
+    "cloudflare": {
+      "open": "Opnaðu vefslóðina þína, síðan „DNS“ og „Records“.",
+      "add": "Veldu „Add record“ og síðan „CNAME“ sem „Type“.",
+      "name": "Settu fyrra gildið hér fyrir neðan í „Name“.",
+      "value": "Settu seinna gildið hér fyrir neðan í „Target“.",
+      "proxy": "Stilltu „Proxy status“ á „DNS only“ — skýið við hliðina verður að vera grátt, ekki appelsínugult.",
+      "save": "Láttu „TTL“ vera „Auto“ og veldu „Save“.",
+      "caveat": "Ef skýið er áfram appelsínugult birtist hengilásinn aldrei og ekkert segir hvers vegna."
+    },
+    "godaddy": {
+      "open": "Opnaðu „Domain Portfolio“ og veldu vefslóðina þína.",
+      "dns": "Á „Domain Settings“ skaltu velja „DNS“.",
+      "add": "Veldu „Add New Record“ og síðan „CNAME“ í „Type“-valmyndinni.",
+      "name": "Settu fyrra gildið hér fyrir neðan í „Name“.",
+      "value": "Settu seinna gildið hér fyrir neðan í „Value“.",
+      "save": "Láttu „TTL“ vera óbreytt og veldu „Save“.",
+      "caveat": "Ef þú bættir við fleiri en einni færslu í einu stendur „Save All Records“ á hnappinum."
+    },
+    "123reg": {
+      "signIn": "Skráðu þig inn á „123 Reg Control Panel“.",
+      "manage": "Við hliðina á „Domains“ skaltu velja „Manage All“ og síðan vefslóðina þína.",
+      "dns": "Veldu „DNS“ og síðan „Add New Record“.",
+      "type": "Veldu „CNAME“ af „Type“-listanum.",
+      "name": "Settu fyrra gildið hér fyrir neðan í „Name“.",
+      "value": "Settu seinna gildið hér fyrir neðan í „Value“ og bættu punkti aftast.",
+      "save": "Láttu „TTL“ vera „Default“ og smelltu á „Save“.",
+      "caveat": "123 Reg þarf punkt aftast í seinna gildinu, annars virkar það ekki."
+    },
+    "wix": {
+      "open": "Opnaðu „Domains“ og smelltu svo á „Domain Actions“-táknið við hliðina á vefslóðinni þinni.",
+      "manage": "Veldu „Manage DNS Records“.",
+      "add": "Í hlutanum „CNAME (Aliases)“ skaltu smella á „+ Add Record“ og síðan á „Got it“.",
+      "name": "Settu fyrra gildið hér fyrir neðan í „Host Name“.",
+      "value": "Settu seinna gildið hér fyrir neðan í „Value“.",
+      "save": "Smelltu á „Save“ og síðan á „Save Changes“ í sprettiglugganum.",
+      "caveat": "Ef vefslóðin þín vísar bara á Wix en er ekki skráð þar getur Wix ekki gert þessa breytingu — sá sem hefur hana skráða þarf að gera það."
+    }
+  },
+  "instructionsEmail": {
+    "subject": "Ein færsla til að bæta við fyrir dagskrársíðu: {truckName}",
+    "hello": "Halló,",
+    "introAt": "Við erum að setja lifandi dagskrá matarvagnsins {truckName} á {address} og það þarf að bæta einni færslu við lénið okkar hjá {provider}.",
+    "introHolder": "Við erum að setja lifandi dagskrá matarvagnsins {truckName} á {address} og það þarf að bæta einni færslu við lénið okkar hjá þeim sem hýsir það.",
+    "stepsAt": "Hjá {provider}:",
+    "guide": "Leiðbeiningar þeirra: {url}",
+    "wholeChange": "Þetta er öll breytingin — ekkert annað á vefsíðunni verður fyrir áhrifum og restin af léninu virkar nákvæmlega eins og nú. Þetta fer yfirleitt að virka innan klukkustundar.",
+    "pointsAt": "Síðan sem færslan vísar á sýnir hvar við seljum næst og uppfærist sjálfkrafa.",
+    "replyTo": "Svaraðu á {email} ef þú hefur einhverjar spurningar.",
+    "thanks": "Með þökk,"
+  },
+  "liveEmail": {
+    "subject": "{address} virkar",
+    "goodNews": "Góðar fréttir — {address} virkar.",
+    "body": "Dagskráin þín birtist nú á þinni eigin vefslóð. Skoðaðu hana og athugaðu hvort allt sé rétt: opnaðu {address}, gakktu úr skugga um að viðburðirnir séu þínir og dagsetningarnar réttar.",
+    "confirm": "Þegar þú hefur gert það skaltu opna stillingarnar á HatchGrab og láta okkur vita að allt sé rétt. Ekkert veltur á því — þá vitum við bara að manneskja hefur séð síðuna."
+  }
+}

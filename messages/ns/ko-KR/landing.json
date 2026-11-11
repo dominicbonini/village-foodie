@@ -1,0 +1,82 @@
+{
+  "jsonLd": {
+    "subCategory": "푸드트럭·출장 케이터링 주문 시스템",
+    "description": "{country} 푸드트럭과 출장 케이터링을 위한 주문, 미리 주문, 주방 디스플레이(KDS).",
+    "audience": "푸드트럭 및 출장 케이터링 사업자"
+  },
+  "hero": {
+    "title": "<lean>푸드트럭</lean>을 위해 만든 주문 시스템.",
+    "subSmall": "메뉴만 올리면 끝, 가입은 필요 없어요.<br></br>60초 안에 실제로 작동하는 데모를 확인하세요.",
+    "cta": "내 메뉴 올리기 →",
+    "ctaNote": "<lead>메뉴 사진을 올리고 60초 안에 실제로 작동하는 모습을 확인하세요.</lead><small>가입 없이, 카드 없이.</small>"
+  },
+  "shots": {
+    "kitchenAlt": "조리 순서대로 주문서를 보여 주는 HatchGrab 주방 디스플레이(KDS)",
+    "dashboardAlt": "HatchGrab에서 주문 받기: 왼쪽에는 메뉴, 오른쪽에는 장바구니와 합계",
+    "phoneAlt": "HatchGrab으로 푸드트럭에 주문하기: 사진과 가격이 있는 메뉴와 실시간 장바구니 합계"
+  },
+  "trust": {
+    "freeMonth": "{months, plural, one {첫 달 완전 무료, 모든 기능 이용 가능} other {처음 #개월 완전 무료, 모든 기능 이용 가능}}",
+    "noCard": "카드 등록 필요 없음",
+    "cancel": "약정 없이 언제든 해지"
+  },
+  "does": {
+    "eyebrow": "주요 기능",
+    "title": "식당이 아니라 푸드트럭을 위해 만들었습니다.",
+    "lede": "대부분의 주문 시스템은 고정된 주소, 안정적인 와이파이, 매주 같은 영업시간을 전제로 합니다. 하지만 사장님은 매주 새로운 장소에서, 다른 시간에, 데이터가 잘 안 터지거나 아예 안 되는 곳에서 영업하시죠. HatchGrab은 바로 그런 환경을 위해 만들었습니다.",
+    "slotsTitle": "손님이 픽업 시간을 직접 선택",
+    "capacityTitle": "주방 처리 용량 설정",
+    "capacityBody": "한 번에 조리할 수 있는 양과 걸리는 시간을 설정하세요. 픽업 시간이 꽉 차면 손님은 그 시간을 선택할 수 없습니다.",
+    "devicesTitle": "어떤 기기에서도 작동",
+    "devicesBody": "앞치마 속 휴대폰, 카운터 위 태블릿, 차량 안 노트북은 물론, 이미 결제에 쓰고 계신 카드 단말기에서도 작동합니다.",
+    "postsTitle": "Facebook·Instagram 게시물 자동화",
+    "postsBody": "Facebook이나 Instagram에 이미 올리고 있는 디자인을 업로드하세요. 날짜, 장소, 시간을 채워 바로 공유할 수 있게 만들어 드립니다. 매주든 매일이든요.",
+    "whatsappTitle": "WhatsApp 자동 응답",
+    "whatsappBody": "“오늘 밤은 어디서 영업하세요?” “디저트는 뭐가 있어요?” 영업 장소로 이동하거나 그릴 앞에 있는 동안에도 사장님의 메뉴와 일정으로 WhatsApp 문의에 자동으로 답해 드립니다. Messenger와 Instagram도 곧 지원됩니다.",
+    "whatsappSoonTitle": "WhatsApp 자동 응답 <soon>출시 예정</soon>",
+    "whatsappSoonBody": "“오늘 밤은 어디서 영업하세요?” “디저트는 뭐가 있어요?” 곧 영업 장소로 이동하거나 그릴 앞에 있는 동안에도 WhatsApp 문의에 자동으로 답할 수 있게 됩니다. Messenger와 Instagram도 이어서 지원할 예정입니다.",
+    "offlineTitle": "신호가 없어도 영업은 계속.",
+    "offlineBody": "신호가 끊기면 온라인 주문이 자동으로 일시 중지되어, 사장님이 확인할 수 없는 주문을 손님이 넣지 못합니다. iPhone, iPad, Android 앱으로 계속 주문을 받으세요.",
+    "slotsBody": "손님이 미리 주문하고 픽업 시간을 고릅니다. 줄은 줄고, 도착하면 음식이 준비되어 있어요."
+  },
+  "steps": {
+    "eyebrow": "시작하기",
+    "title": "약 15분이면 설정을 마치고 주문을 받을 수 있습니다.",
+    "lede": "준비할 건 세 가지, 그중 두 가지는 사진 한 장이면 됩니다.",
+    "menuTitle": "메뉴 만들기",
+    "menuBody": "메뉴판을 사진으로 찍거나 붙여 넣으세요. 메뉴, 가격, 추가 옵션이 자동으로 들어옵니다. 맞는지 확인만 하시면 돼요.",
+    "scheduleTitle": "일정 추가",
+    "scheduleBody": "웹사이트에 일정이 있나요? 거기서 읽어 와 항상 최신으로 유지합니다. 없다면 그것도 사진으로 찍어 주세요. 찾아낸 내용을 승인만 하시면 됩니다.",
+    "shareTitle": "링크 공유",
+    "shareBody": "Facebook에 올리고, 차량에 QR 코드를 붙이세요. 주문은 조리해야 할 순서대로 화면에 들어옵니다."
+  },
+  "testimonial": {
+    "quote": "HatchGrab 덕분에 주문 받기가 훨씬 쉬워졌어요. 모든 게 정리되어 있고, 재고를 관리하면서 피자가 몇 판 남았는지 정확히 알 수 있어요. 그리고 시간대 기능은 붐비는 마을에서 정말 최고예요.",
+    "award": "올해의 이동식 피자 가게",
+    "awardScope": "지역 부문 수상",
+    "business": "Pizzeria Gusto",
+    "byline": "Nadia & Bogdan — 대표"
+  },
+  "pricing": {
+    "eyebrow": "요금",
+    "title": "무료로 시작하고, 필요할 때 업그레이드하세요.",
+    "switchHead": "다른 플랫폼에서 옮겨 오시나요?",
+    "switchBody": "같은 주문량이라면 HatchGrab에서 얼마를 내게 될지 확인해 보세요. 1분 정도면 됩니다.",
+    "switchCta": "지금 내는 비용과 비교하기"
+  },
+  "faq": {
+    "title": "자주 묻는 질문",
+    "metaTitle": "자주 묻는 질문 | HatchGrab",
+    "metaDescription": "푸드트럭 사장님을 위해 HatchGrab 요금, 설정, 주문 접수, 결제에 대해 알기 쉽게 답해 드립니다."
+  },
+  "final": {
+    "truckLabel": "푸드트럭",
+    "title": "설정이 얼마나 쉬운지 보고 싶으신가요?",
+    "lede": "메뉴 사진이나 스크린샷을 올리면 60초 안에 직접 써 볼 수 있는 주문 페이지로 만들어 드립니다. 사장님의 메뉴, 사장님의 가격 그대로요. 가입도, 카드도, 설치도 필요 없습니다. 먼저 살펴보고 결정하세요.",
+    "cta": "지금 내 메뉴 올리기 →"
+  },
+  "meta": {
+    "title": "푸드트럭 주문 시스템: 미리 주문·픽업 — HatchGrab {country}",
+    "description": "줄 서지 않고 영업 장소에서 주문과 미리 주문을 받으세요. {country} 푸드트럭과 출장 케이터링을 위한 주문·주방 디스플레이(KDS) 소프트웨어이며, 포스(POS)가 아닙니다."
+  }
+}

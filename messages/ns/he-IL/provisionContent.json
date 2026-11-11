@@ -1,0 +1,72 @@
+{
+  "standardCategories": {
+    "starters": "מנות פתיחה",
+    "mains": "עיקריות",
+    "burgers": "המבורגרים",
+    "pizza": "פיצה",
+    "wrapsSandwiches": "ראפים וכריכים",
+    "sides": "תוספות",
+    "dipsSauces": "מטבלים ורטבים",
+    "desserts": "קינוחים",
+    "drinks": "משקאות",
+    "kidsMenu": "תפריט ילדים",
+    "specials": "מנות מיוחדות",
+    "other": "אחר"
+  },
+  "demoEventName": "אירוע דמו",
+  "firstVanName": "רכב 1",
+  "demoCategories": {
+    "pizza": "פיצה",
+    "burgers": "המבורגרים",
+    "mains": "עיקריות",
+    "sides": "תוספות",
+    "drinks": "משקאות"
+  },
+  "demoTemplates": {
+    "pizza": {
+      "label": "🍕 פודטראק פיצה",
+      "items": {
+        "margherita": "מרגריטה",
+        "pepperoni": "פפרוני",
+        "ndujaHoney": "אנדוג׳ה ודבש",
+        "fourCheese": "ארבע גבינות",
+        "gardenVeg": "ירקות מהגינה",
+        "garlicBread": "לחם שום",
+        "rocketParmesan": "ארוגולה ופרמזן",
+        "olives": "זיתים",
+        "sanPellegrino": "סן פלגרינו",
+        "coke": "קולה"
+      }
+    },
+    "burgers": {
+      "label": "🍔 פודטראק המבורגרים",
+      "items": {
+        "classicCheeseburger": "צ׳יזבורגר קלאסי",
+        "doubleBacon": "דאבל בורגר",
+        "buttermilkChicken": "עוף פריך בבאטרמילק",
+        "halloumiStack": "מגדל חלומי",
+        "smashBurger": "סמאש בורגר",
+        "skinOnFries": "צ׳יפס עם קליפה",
+        "loadedCheeseFries": "צ׳יפס גבינה עמוס",
+        "onionRings": "טבעות בצל",
+        "craftLemonade": "לימונדה ביתית",
+        "coke": "קולה"
+      }
+    },
+    "curries": {
+      "label": "🍛 פודטראק קארי",
+      "items": {
+        "chickenTikkaMasala": "עוף טיקה מסאלה",
+        "lambRoganJosh": "רוגן ג׳וש טלה",
+        "chanaMasala": "צ׳אנה מסאלה",
+        "butterChicken": "באטר צ׳יקן",
+        "saagPaneer": "סאג פניר",
+        "pilauRice": "אורז פילאף",
+        "garlicNaan": "נאן שום",
+        "onionBhaji": "בהאג׳י בצל",
+        "mangoLassi": "לאסי מנגו",
+        "coke": "קולה"
+      }
+    }
+  }
+}

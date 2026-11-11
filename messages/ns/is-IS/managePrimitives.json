@@ -1,0 +1,9 @@
+{
+  "allergenMode": {
+    "perDishTitle": "Sýna ofnæmisvalda við hvern rétt",
+    "recommended": "Mælt með",
+    "perDishBody": "Farðu yfir hvern rétt og staðfestu ofnæmisvalda hans. Viðskiptavinir sjá merkingar við hvern rétt ásamt yfirlitsspjaldi um ofnæmisvalda sem byggt er á þeim.",
+    "cardTitle": "Sýna ofnæmisvaldaspjald",
+    "cardBody": "Hladdu upp eða límdu inn eitt ofnæmisvaldaspjald (PDF, mynd eða texta) sem birtist óbreytt. Merkingar við hvern rétt eru faldar."
+  }
+}

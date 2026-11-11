@@ -1,0 +1,70 @@
+{
+  "error": {
+    "generic": "문제가 발생했어요",
+    "previewFailed": "미리보기를 만들지 못했어요",
+    "loadFailed": "불러오지 못했어요",
+    "tooBig": "이미지 크기가 {size, number, ::.0 group-off}MB입니다. 최대 10MB까지 가능해요.",
+    "wrongType": "PNG 또는 JPG 파일을 선택하세요.",
+    "uploadIncomplete": "업로드가 완료되지 않았어요",
+    "uploadFailed": "업로드에 실패했어요",
+    "saveFailed": "저장하지 못했어요",
+    "buildFailed": "게시물을 만들지 못했어요",
+    "copyFailed": "복사하지 못했어요. 텍스트를 선택해 직접 복사하세요."
+  },
+  "loading": "불러오는 중…",
+  "missingTable": {
+    "title": "주간 게시물을 쓰려면 데이터베이스 업데이트가 필요해요",
+    "body": "디자인 테이블이 아직 만들어지지 않았어요. 마이그레이션이 적용되면 이 화면을 쓸 수 있습니다."
+  },
+  "kind": {
+    "label": "디자인 종류",
+    "event": "영업 일정 게시물",
+    "week": "주간 게시물"
+  },
+  "setup": {
+    "title": "주간 게시물 설정",
+    "intro": "이미 만들고 계신 주간 일정 이미지의 빈 버전을 업로드하세요. 같은 디자인에서 직접 넣던 텍스트 상자만 지우면 됩니다. HatchGrab이 영업 일정에 맞춰 한 주 내용을 채워 드려요.",
+    "canvaTitle": "Canva에서 빈 이미지를 내보내는 방법",
+    "canvaStep1": "평소 쓰는 주간 일정 디자인을 엽니다.",
+    "canvaStep2": "날짜, 장소, 시간이 들어 있는 텍스트 상자를 삭제하세요. 남겨 둘 배경과 제목은 그대로 둡니다.",
+    "canvaStep3": "공유 › 다운로드 › PNG.",
+    "uploading": "업로드하는 중…",
+    "upload": "빈 이미지 업로드",
+    "uploadHint": "PNG 또는 JPG, 최대 10MB, 짧은 쪽이 {px}px 이상.",
+    "phoneTip": "컴퓨터나 iPad에서 하는 것이 가장 좋아요. 휴대폰에서는 상자가 작아서 드래그하기 어려워요.",
+    "designName": "주간 게시물 디자인",
+    "backDesigns": "‹ 디자인",
+    "back": "‹ 뒤로",
+    "pictureNote": "날짜나 장소가 없는 이미지를 올려 주세요. 그 부분은 저희가 넣어 드려요.",
+    "saved": "디자인을 저장했어요."
+  },
+  "week": {
+    "this": "이번 주",
+    "next": "다음 주"
+  },
+  "post": {
+    "title": "주간 게시물",
+    "editDesign": "디자인 수정",
+    "weekOf": "{date} 주",
+    "imageAlt": "주간 게시물",
+    "building": "게시물을 만드는 중…",
+    "updating": "업데이트하는 중…",
+    "eventsTitle": "이번 주 영업 일정",
+    "noEvents": "이번 주에는 영업 일정이 없어요.",
+    "eventDateCancelled": "{date} · 취소됨",
+    "showCancelled": "취소된 영업 일정 표시",
+    "showPrivate": "단독 행사 표시",
+    "privateHint": "날짜와 시간과 함께 “단독 행사”로 표시되며, 장소는 절대 표시되지 않아요.",
+    "noteTitle": "메모",
+    "notePlaceholder": "예: 미리 주문 후 픽업하세요",
+    "noteHint": "캡션에 표시되고, 메모 상자를 배치했다면 그 안에도 표시돼요.",
+    "captionTitle": "페이지에 올릴 캡션",
+    "perEventTitle": "영업 일정별 게시물",
+    "nothingToPost": "이번 주에는 올릴 내용이 없어요.",
+    "textCopied": "텍스트를 복사했어요.",
+    "copyText": "텍스트 복사",
+    "image": "이미지",
+    "share": "공유",
+    "noOrderLink": "아직 주문 링크가 없어요. 설정에서 푸드트럭 웹 주소를 지정하세요."
+  }
+}

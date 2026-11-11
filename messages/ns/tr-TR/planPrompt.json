@@ -1,0 +1,122 @@
+{
+  "includedOn": "{many, select, yes {{feature}: {plan} paketine dahildir.} other {{feature}: {plan} paketine dahildir.}}",
+  "notOnPlan": "{many, select, yes {{feature}: paketinizde bulunmuyor.} other {{feature}: paketinizde bulunmuyor.}}",
+  "switchedOff": "{many, select, yes {{feature}: food truck’ınız için kapalı.} other {{feature}: food truck’ınız için kapalı.}}",
+  "planLine": "{plan} · {price} · {description}",
+  "planLineNoPrice": "{plan} · {description}",
+  "upgrade": "Yükselt →",
+  "features": {
+    "discovery_map": {
+      "name": "Keşif haritasında yer alma",
+      "many": "no"
+    },
+    "web_dashboard": {
+      "name": "Web paneli",
+      "many": "no"
+    },
+    "ipad_kds": {
+      "name": "Mutfak uygulaması",
+      "many": "no"
+    },
+    "qr_menu": {
+      "name": "QR kodlu menü",
+      "many": "no"
+    },
+    "meal_deals": {
+      "name": "Kampanyalar",
+      "many": "yes"
+    },
+    "upsells": {
+      "name": "Ek satış önerileri",
+      "many": "yes"
+    },
+    "walkup_orders": {
+      "name": "Yerinde siparişler",
+      "many": "yes"
+    },
+    "online_ordering_pay_at_hatch": {
+      "name": "Teslim alırken ödeme ile sipariş",
+      "many": "no"
+    },
+    "sold_out_toggle": {
+      "name": "Tükendi düğmesi",
+      "many": "no"
+    },
+    "stock_countdown": {
+      "name": "Stok geri sayımı",
+      "many": "no"
+    },
+    "offline_protection": {
+      "name": "Çevrimdışı sipariş koruması",
+      "many": "no"
+    },
+    "online_payments": {
+      "name": "Online ödemeler",
+      "many": "yes"
+    },
+    "advance_preordering": {
+      "name": "İleri tarihli ön sipariş",
+      "many": "no"
+    },
+    "time_slot_selection": {
+      "name": "Müşteri zaman aralıkları",
+      "many": "yes"
+    },
+    "smart_batch_pacing": {
+      "name": "Mutfak kapasitesi yönetimi",
+      "many": "no"
+    },
+    "auto_accept": {
+      "name": "Otomatik kabul",
+      "many": "no"
+    },
+    "instagram_messenger_replies": {
+      "name": "Messenger ve Instagram otomatik yanıtlar",
+      "many": "yes"
+    },
+    "branded_qr_code": {
+      "name": "Logolu QR kodlar",
+      "many": "yes"
+    },
+    "advanced_reporting": {
+      "name": "Gelişmiş raporlama",
+      "many": "no"
+    },
+    "ticket_printing": {
+      "name": "Mutfak fişi yazdırma",
+      "many": "no"
+    },
+    "multi_device_kds": {
+      "name": "Çoklu cihaz mutfak senkronizasyonu",
+      "many": "no"
+    },
+    "cook_screen": {
+      "name": "Pişirme ekranı",
+      "many": "no"
+    },
+    "whatsapp_replies": {
+      "name": "WhatsApp otomatik yanıtlar",
+      "many": "yes"
+    },
+    "embed_schedule": {
+      "name": "Kendi web sitenizde programınız",
+      "many": "no"
+    },
+    "schedule_graphics": {
+      "name": "Sosyal medya paylaşımları",
+      "many": "yes"
+    },
+    "event_types": {
+      "name": "Özelleştirilebilir etkinlik türleri",
+      "many": "yes"
+    },
+    "private_events": {
+      "name": "Özel etkinlikler",
+      "many": "yes"
+    },
+    "paperwork": {
+      "name": "Belgeler",
+      "many": "yes"
+    }
+  }
+}

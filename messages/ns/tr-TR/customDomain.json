@@ -1,0 +1,161 @@
+{
+  "card": {
+    "title": "Programınızı web sitenize ekleyin",
+    "live": "<addr>{address}</addr> programınızı gösteriyor.",
+    "create": "<addr>{address}</addr> adresinde programınızı gösteren bir sayfa oluşturuyoruz.",
+    "exampleDomain": "foodtruckunuz.com.tr",
+    "liveBadge": "Yayında",
+    "setUp": "Kur",
+    "viewSetup": "Kurulumu görüntüle",
+    "continue": "Devam et",
+    "justLive": "<b>{address}</b> çalışıyor. Bir göz atın, ardından doğru olduğunu aşağıdan bize bildirin."
+  },
+  "waiting": {
+    "title": "Bekleniyor: {address}",
+    "bodySince": "Bunu {date} tarihinde kurdunuz. Yeni web adresleri genellikle birkaç dakika içinde çalışmaya başlar, ara sıra herkese ulaşması 24 saati bulabilir — bu sırada yapmanız gereken bir şey yok. Satırı sizin yerinize başka biri ekliyorsa, eklediğini kontrol etmekte fayda var.",
+    "body": "Yeni web adresleri genellikle birkaç dakika içinde çalışmaya başlar, ara sıra herkese ulaşması 24 saati bulabilir — bu sırada yapmanız gereken bir şey yok. Satırı sizin yerinize başka biri ekliyorsa, eklediğini kontrol etmekte fayda var."
+  },
+  "ready": {
+    "title": "{address} yayında",
+    "body": "Bir göz atın, ardından doğru olduğunu ayarlarınızdan bize bildirin."
+  },
+  "confirm": {
+    "heading": "Bir göz atın, sonra doğru olduğunu bize bildirin",
+    "open": "<link>{address}</link> adresini açın",
+    "checkTimes": "Tarih ve saatlerin doğru göründüğünü kontrol edin.",
+    "yes": "Evet, doğru görünüyor",
+    "no": "Hayır, bir sorun var",
+    "problemLine": "Ne gördüğünüzü bize anlatın, inceleyelim.",
+    "emailUs": "Bize e-posta gönderin",
+    "mailSubject": "Sorun: {address}",
+    "mailLiveSince": "Yayın başlangıcı: {date}",
+    "mailSeeing": "Gördüğüm şey:"
+  },
+  "confirmed": {
+    "heading": "Teşekkürler — not aldık.",
+    "body": "Yapmanız gereken başka bir şey yok."
+  },
+  "turnOff": {
+    "link": "Bunu kapat",
+    "heading": "Kendi web adresiniz kapatılsın mı?",
+    "stops": "Şu çalışmayı durduracak:",
+    "carriesOn": "Şu olduğu gibi çalışmaya devam eder ve QR kodunuz insanları buraya yönlendirir:",
+    "reAdd": "İleride yeniden kuracaksanız, web adresi firmanıza eklediğiniz satırı bırakın. Kurmayacaksanız, kaldırmalarını isteyin.",
+    "cancel": "Açık kalsın",
+    "confirm": "Kapat",
+    "working": "Kapatılıyor…",
+    "failed": "Şu anda kapatamadık. Hiçbir şey değişmedi — adresiniz hâlâ çalışıyor. Birazdan tekrar deneyin."
+  },
+  "wizard": {
+    "resumeFailedTitle": "Kurulumunuzu yükleyemedik.",
+    "resumeFailedBody": "Hiçbir şey değişmedi. Birazdan tekrar deneyin.",
+    "close": "Kapat",
+    "resuming": "Kaldığınız yerden devam ediliyor…",
+    "genericError": "Bir şeyler ters gitti",
+    "saveFailed": "Kaydedilemedi"
+  },
+  "address": {
+    "intro": "Programınız kendi web adresine kavuşur.",
+    "question": "Web adresiniz nedir?",
+    "hint": "İnsanların sizi bulmak için zaten kullandığı adres.",
+    "aria": "Kendi web adresiniz",
+    "willBe": "Adresiniz şu olacak: <addr>{address}</addr>",
+    "example": "Örneğin <addr>{address}</addr>",
+    "noChange": "Web siteniz değişmez — yalnızca yeni adrese bir bağlantı eklersiniz.",
+    "notSetUp": "Bunu kurmadık.",
+    "restricted": "Web adresinizle ilgilenen kişi ya da firma, kilit simgesini — müşterilerin adresin yanında gördüğü küçük asma kilidi — kurmamıza izin vermeli. Bizi eklemedikleri sürece görünmez; sizi boşuna bekletmemek için işlemi durdurduk. Bizi eklemelerini isteyin, ardından tekrar deneyin.",
+    "blocked": "Web adresiniz şu anda kilit simgesini tamamen engelliyor. Bunun çalışması için adresinizle ilgilenen kişi ya da firmanın buna izin vermesi gerekir. Bunu değiştirmelerini isteyin, ardından tekrar deneyin.",
+    "elsewhere": "Bu adreste zaten başka bir şey yanıt veriyor. Sonraki ekrandaki mesajı adresinizle ilgilenen kişiye gönderin — ne yapacaklarını bilirler.",
+    "provider": "Web adresinizi yöneten firma: <b>{provider}</b>. Nereye gitmeniz gerektiğini göstereceğiz.",
+    "provisionFailed": "Bu adresi kuramadık.",
+    "willNotWork": "Bu adres çalışmaz.",
+    "couldNotBeSetUp": "Bu adres kurulamadı.",
+    "couldNotSetUp": "Kurulamadı",
+    "checking": "Kontrol ediliyor…",
+    "setting": "Kuruluyor…",
+    "tryAgain": "Tekrar dene",
+    "setUpAddress": "Bu adresi kur",
+    "notNow": "Şimdi değil"
+  },
+  "apex": {
+    "empty": "Kullanmak istediğiniz adresi yazın.",
+    "not_a_domain": "Bu bir web adresine benzemiyor.",
+    "unparseable": "Bunu bir web adresi olarak okuyamadık. Yazımı kontrol edip tekrar deneyin.",
+    "apex": "{host} web sitenizin ana adresi. Onu bize yönlendirirseniz web sitenizin yerini bu sayfa alır. Bunun yerine önüne bir kelime ekleyin — örneğin etkinlikler.{host}.",
+    "too_deep": "Bu adreste çok fazla bölüm var. etkinlikler.{domain} gibi bir adres en iyi sonucu verir."
+  },
+  "record": {
+    "addAt": "Bunu şurada ekleyin: {provider}",
+    "open": "Aç: {provider}",
+    "guide": "Bu konuda {provider} rehberi",
+    "addAtSave": "Bunu {provider} üzerinde ekleyin ve kaydedin.",
+    "addSomewhere": "Bunu web adresinizin yönetildiği yerde ekleyin ve kaydedin.",
+    "hintChoose": "Bunu listeden seçin.",
+    "hintWord": "Adresin tamamı değil, yalnızca bu kelime.",
+    "hintExact": "Bunu aynen kopyalayın.",
+    "timing": "Genellikle bir saat içinde çalışmaya başlar, ancak daha uzun sürebilir. Bu sayfayı açık tutmanız gerekmez.",
+    "someoneElse": "Web adresinizle başka biri mi ilgileniyor?",
+    "sentTo": "Gönderildi: {email}",
+    "emailPlaceholder": "onun e-posta adresi",
+    "sending": "Gönderiliyor…",
+    "send": "Bu bilgileri gönder",
+    "sendFailed": "Gönderilemedi"
+  },
+  "providers": {
+    "cloudflare": {
+      "open": "Web adresinizi açın, ardından “DNS” ve “Records” bölümüne gidin.",
+      "add": "“Add record”u seçin, ardından “Type” olarak “CNAME”i seçin.",
+      "name": "Aşağıdaki ilk değeri “Name” alanına girin.",
+      "value": "Aşağıdaki ikinci değeri “Target” alanına girin.",
+      "proxy": "“Proxy status” ayarını “DNS only” yapın — yanındaki bulut turuncu değil gri olmalı.",
+      "save": "“TTL”yi “Auto” olarak bırakın ve “Save”i seçin.",
+      "caveat": "Bulut turuncu kalırsa kilit simgesi hiçbir zaman görünmez ve nedenini söyleyen bir şey de olmaz."
+    },
+    "godaddy": {
+      "open": "“Domain Portfolio” sayfanızı açın ve web adresinizi seçin.",
+      "dns": "“Domain Settings” sayfasında “DNS”i seçin.",
+      "add": "“Add New Record”u seçin, ardından “Type” menüsünden “CNAME”i seçin.",
+      "name": "Aşağıdaki ilk değeri “Name” alanına girin.",
+      "value": "Aşağıdaki ikinci değeri “Value” alanına girin.",
+      "save": "“TTL”yi olduğu gibi bırakın ve “Save”i seçin.",
+      "caveat": "Aynı anda birden fazla kayıt eklediyseniz düğmede “Save All Records” yazar."
+    },
+    "123reg": {
+      "signIn": "“123 Reg Control Panel”e giriş yapın.",
+      "manage": "“Domains” yanında “Manage All”ı seçin, ardından web adresinizi seçin.",
+      "dns": "“DNS”i, ardından “Add New Record”u seçin.",
+      "type": "“Type” listesinden “CNAME”i seçin.",
+      "name": "Aşağıdaki ilk değeri “Name” alanına girin.",
+      "value": "Aşağıdaki ikinci değeri “Value” alanına girin ve sonuna bir nokta ekleyin.",
+      "save": "“TTL”yi “Default” olarak bırakın ve “Save”e tıklayın.",
+      "caveat": "123 Reg, ikinci değerin sonunda bir nokta ister; yoksa çalışmaz."
+    },
+    "wix": {
+      "open": "“Domains” bölümünü açın, ardından web adresinizin yanındaki “Domain Actions” simgesine tıklayın.",
+      "manage": "“Manage DNS Records”ı seçin.",
+      "add": "“CNAME (Aliases)” bölümünde “+ Add Record”a, ardından “Got it”e tıklayın.",
+      "name": "Aşağıdaki ilk değeri “Host Name” alanına girin.",
+      "value": "Aşağıdaki ikinci değeri “Value” alanına girin.",
+      "save": "“Save”e, ardından açılan pencerede “Save Changes”a tıklayın.",
+      "caveat": "Web adresiniz Wix’te kayıtlı değil de yalnızca Wix’e yönlendiriliyorsa Wix bu değişikliği yapamaz — adresin kayıtlı olduğu firma yapmalıdır."
+    }
+  },
+  "instructionsEmail": {
+    "subject": "{truckName} program sayfası için eklenecek bir kayıt",
+    "hello": "Merhaba,",
+    "introAt": "{truckName} işletmesinin canlı programını {address} adresinde yayımlıyoruz; bunun için {provider} üzerindeki alan adımıza bir kayıt eklenmesi gerekiyor.",
+    "introHolder": "{truckName} işletmesinin canlı programını {address} adresinde yayımlıyoruz; bunun için alan adımızın kayıtlı olduğu firmada bir kayıt eklenmesi gerekiyor.",
+    "stepsAt": "{provider} üzerinde:",
+    "guide": "Kendi rehberleri: {url}",
+    "wholeChange": "Yapılacak değişiklik bu kadar — web sitesindeki başka hiçbir şey etkilenmez ve alan adımızın geri kalanı şu anki gibi çalışmaya devam eder. Genellikle bir saat içinde çalışmaya başlar.",
+    "pointsAt": "Yönlendirdiği sayfa, bir sonraki satış yerimizi gösterir ve kendini güncel tutar.",
+    "replyTo": "Sorularınız için şu adrese yanıt verin: {email}",
+    "thanks": "Teşekkürler,"
+  },
+  "liveEmail": {
+    "subject": "{address} çalışıyor",
+    "goodNews": "Güzel haber — {address} çalışıyor.",
+    "body": "Programınız artık kendi adresinizde görünüyor. Bir göz atıp doğru olduğunu kontrol edin: {address} adresini açın, etkinliklerin sizin olduğundan ve tarihlerin doğru göründüğünden emin olun.",
+    "confirm": "Kontrol ettikten sonra HatchGrab’de ayarlarınızı açıp doğru olduğunu bize bildirin. Buna bağlı hiçbir şey yok — yalnızca bir kişinin gördüğünü bilmemizi sağlar."
+  }
+}

@@ -1,0 +1,129 @@
+{
+  "docTitle": "{truck} — Mutfak",
+  "loading": "Mutfak yükleniyor…",
+  "pin": {
+    "title": "PIN girin",
+    "placeholder": "PIN",
+    "unlock": "Kilidi aç",
+    "unreachable": "Şu anda sunucuya ulaşılamıyor. PIN’iniz doğru — biraz sonra tekrar deneyin.",
+    "incorrect": "Hatalı PIN",
+    "generic": "Bir sorun oluştu. Tekrar deneyin."
+  },
+  "error": {
+    "linkInvalid": "Bu bağlantı artık geçerli değil.",
+    "couldNotLoad": "Siparişler yüklenemedi",
+    "truckNotFound": "Food truck bulunamadı"
+  },
+  "degraded": {
+    "at": "⚠️ Sunucuya ulaşılamıyor. Saat {time} itibarıyla fişler gösteriliyor. YENİ SİPARİŞLER EKSİK OLABİLİR.",
+    "earlier": "⚠️ Sunucuya ulaşılamıyor. Daha önceki fişler gösteriliyor. YENİ SİPARİŞLER EKSİK OLABİLİR."
+  },
+  "header": {
+    "dashboard": "Panel",
+    "backTitle": "Panele dön",
+    "list": "Liste",
+    "grid": "Kutucuk",
+    "full": "Tam",
+    "cook": "Aşçı",
+    "fullTitle": "Tam kartlar — fiyatlar ve ödeme bilgileri, tezgâhta görüldüğü gibi.",
+    "cookTitle": "Aşçı kartları — daha büyük yazı, kategoriye göre gruplu, fiyatsız.",
+    "readyStep": "Hazır adımı",
+    "readyOnlyTitle": "Bu ekran yalnızca siparişleri hazır olarak işaretler; bu yüzden bu kapatılamaz — yaptığı tek adım budur.",
+    "readyOnTitle": "Bu ekran siparişleri hazır olarak işaretler. Bunu başka bir ekranın yapması için dokunun.",
+    "readyOffTitle": "Siparişleri başka bir ekran hazır olarak işaretliyor. Bunu bu ekranın yapması için dokunun.",
+    "handover": "Ödeme ve teslim",
+    "handoverOnlyTitle": "Bu ekran yalnızca ödeme alır; bu yüzden bu kapatılamaz — yaptığı tek adım budur.",
+    "handoverOnTitle": "Bu ekran ödeme alır ve siparişi teslim eder. Bunu başka bir ekranın yapması için dokunun.",
+    "handoverOffTitle": "Ödemeyi başka bir ekran alıyor. Bunu bu ekranın yapması için dokunun.",
+    "soundOn": "Yeni sipariş sesi açık — kapatmak için dokunun",
+    "soundOff": "Yeni sipariş sesi kapalı — açmak için dokunun",
+    "screenOn": "Ekran açık",
+    "screenOff": "Ekran kapalı",
+    "screenSettings": "Ekran ayarları",
+    "manageEvent": "Etkinliği yönet",
+    "manageEventTitle": "Etkinliği yönet — başlatın, duraklatın, değiştirin veya bitirin",
+    "soundSettings": "Ses ayarları",
+    "soundSettingsTitle": "Bu cihazda hangi seslerin çalacağı",
+    "cashIcon": "💵"
+  },
+  "panel": {
+    "viewSettings": "Görünüm ayarları",
+    "on": "Açık",
+    "off": "Kapalı",
+    "newOrderSound": "Yeni sipariş sesi",
+    "soundNeedsConfirming": "Yalnızca onay bekleyen siparişler",
+    "soundAll": "Tüm yeni siparişler",
+    "soundDue": "Bir siparişin pişirme zamanı geldiğinde ses çal",
+    "soundDueHelp": "Bir fiş turuncuya döndüğünde ses çalar.",
+    "deviceSettings": "Cihaz ayarları",
+    "sound": "Ses",
+    "close": "Kapat"
+  },
+  "banner": {
+    "mismatchTitle": "⚠️ Bu etkinliğin siparişleri yüklenmedi",
+    "mismatchBody": "Sunucu farklı bir etkinlikle yanıt verdi; bu yüzden yanlış siparişleri göstermek yerine hiçbir şey gösterilmiyor. Etkinliği yeniden seçin veya sayfayı yenileyin.",
+    "mismatchBodyAt": "Sunucu farklı bir etkinlikle yanıt verdi; bu yüzden yanlış siparişleri göstermek yerine hiçbir şey gösterilmiyor (mekân: {venue}). Etkinliği yeniden seçin veya sayfayı yenileyin.",
+    "paused": "⏸ Siparişler duraklatıldı{reason, select, offline { (cihaz çevrimdışı)} other {}} — müşteriler sipariş veremez",
+    "resume": "Sürdür",
+    "offline": "Bağlantı yok — bilinen son siparişler gösteriliyor. Müşteriler için online sipariş duraklatıldı.",
+    "queued": "{n, plural, one {{count} işlem sırada} other {{count} işlem sırada}}",
+    "extraWait": "⏱ +{mins} dk ek bekleme etkin",
+    "clear": "Temizle",
+    "toMake": "Hazırlanacak",
+    "today": "Bugün · {range}",
+    "onDate": "{date} · {range}",
+    "startEvent": "Etkinliği başlat",
+    "recentlyClosed": "Etkinlik bitti · {venue} — kapanış: {time}",
+    "eventStatus": "{tone, select, paused {⏸ Duraklatıldı} live {● Canlı} finished {● Bitti} cancelled {İptal edildi} other {Başlamadı}}"
+  },
+  "board": {
+    "queueClear": "Sıra boş",
+    "doneToday": "Bugün tamamlanan · {count}",
+    "paid": "✓ ödendi",
+    "cardHeld": "kart blokede",
+    "due": "{amount} ödenecek"
+  },
+  "screenOff": {
+    "title": "Ekranın kapanmasına izin verilsin mi?",
+    "bodyVans": "Çevrimdışı algılama etkin olan {n, plural, one {araç} other {araçlar}}: {vans}. Ekran kapanırsa cihaz çevrimiçi sinyalini göndermeyi bırakabilir ve müşteri siparişleri duraklatılabilir.",
+    "body": "Ekran kapanırsa cihaz çevrimiçi sinyalini göndermeyi bırakabilir.",
+    "keepHint": "Siparişlerin kesintisiz sürmesi için ekranı açık tutun.",
+    "keep": "Ekranı açık tut",
+    "allow": "Kapanmasına izin ver"
+  },
+  "event": {
+    "change": "Etkinliği değiştir",
+    "cancel": "İptal",
+    "waitActive": "⏱ +{mins} dk etkin · Temizlemek için dokunun",
+    "addWait": "⏱ Ek bekleme ekle",
+    "endTitle": "Etkinlik bitirilsin mi?",
+    "endEarly": "Bu etkinliğin bitişi saat {time} olarak planlanmış. Artık sipariş alınmayacak. Etkinliği bitirmeyi onaylıyor musunuz?",
+    "endNow": "Bu etkinlik bitirilsin mi? Artık sipariş alınmayacak.",
+    "yes": "Evet",
+    "started": "Etkinlik başladı",
+    "startFutureConfirm": "Bu etkinliğin tarihi: {date}. Şimdi başlatılsın mı?",
+    "finishTimeNow": "Yeni bitiş saati: {time}",
+    "finished": "Etkinlik bitti",
+    "cancelled": "Etkinlik iptal edildi",
+    "noteSaved": "Not kaydedildi",
+    "pauseConfirm": "Siparişler duraklatılsın mı? Siz devam ettirene kadar müşteriler “Sipariş alınmıyor” mesajını görecek.",
+    "switchConfirm": "Etkinlik değiştirilsin mi: {from} yerine {to}?{n, plural, =0 {} one { Bu ekrandaki {count} sipariş değiştirilecek.} other { Bu ekrandaki {count} sipariş değiştirilecek.}} Geri dönmek için mevcut etkinliğe dokunun."
+  },
+  "intro": {
+    "title": "Burası mutfak ekranı",
+    "p1": "Aşçının görünümü — hazırlamanız gereken siparişler, hazırlama sırasıyla. Izgaranın yanındaki ekran bunu gösterirken tezgâh sipariş panelini kullanır.",
+    "p2": "Kartlar siz dokundukça ilerler; böylece pişiren kişi sırada ne olduğunu her zaman bilir ve kimsenin bağırmasına gerek kalmaz. Buradaki her şey demo verileriniz — rahatça deneyin.",
+    "gotIt": "Anladım"
+  },
+  "toast": {
+    "failed": "Başarısız",
+    "rejectFailed": "Reddedilemedi",
+    "buzzerSaved": "Çağrı cihazı {n} kaydedildi",
+    "buzzerRemoved": "Çağrı cihazı {n} kaldırıldı",
+    "buzzerRemovedNone": "Çağrı cihazı kaldırıldı",
+    "buzzerAssigned": "Çağrı cihazı {n} atandı",
+    "buzzerAssignedFrom": "Çağrı cihazı {n} atandı (sipariş #{from} üzerinden alındı)",
+    "buzzerRemoveFailed": "{had, select, no {Çağrı cihazı {target, select, order {sipariş #{id}} other {bu sipariş}} üzerinden kaldırılamadı} other {Çağrı cihazı {n} kaldırılamadı — hâlâ {target, select, order {sipariş #{id}} other {bu sipariş}} üzerinde}}",
+    "buzzerAssignFailed": "Çağrı cihazı {n}, {target, select, order {sipariş #{id}} other {bu sipariş}} için atanamadı — {had, select, yes {siparişte hâlâ çağrı cihazı {prior} var} other {siparişte hâlâ çağrı cihazı yok}}"
+  }
+}

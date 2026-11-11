@@ -1,0 +1,30 @@
+{
+  "labels": {
+    "weekDates": "Ngày trong tuần",
+    "dayList": "Danh sách ngày",
+    "place": "Địa điểm",
+    "venue": "Nơi bán",
+    "area": "Khu vực",
+    "dayDate": "Thứ & ngày",
+    "times": "Giờ bán",
+    "orderLink": "Link đặt món",
+    "locationTag": "Thẻ vị trí"
+  },
+  "weekHeader": "{truck} — lịch bán tuần này:",
+  "dayLine": "{day} — {where} — {times}",
+  "dayLineNoTimes": "{day} — {where}",
+  "dayLineCancelled": "{day} — {where} — ĐÃ HỦY, rất tiếc",
+  "noDates": "Tuần này chưa có lịch bán — bạn quay lại sau nhé.",
+  "orderAhead": "Đặt món trước: {url}",
+  "orderAheadTagged": "Đặt món trước: {url} {tag}",
+  "eventLine": "{truck} có mặt tại {where} {when}, {times}.",
+  "eventLineNoTimes": "{truck} có mặt tại {where} {when}.",
+  "cancelledSorry": "Rất tiếc — chúng tôi không thể đến {where} {when}.",
+  "cancelledApology": "Xin lỗi tất cả các bạn đã định ghé qua. Chúng tôi sẽ sớm quay lại.",
+  "when": {
+    "today": "hôm nay",
+    "tonight": "tối nay",
+    "tomorrow": "ngày mai",
+    "dated": "ngày {date}"
+  }
+}

@@ -1,0 +1,10 @@
+{
+  "download": "下載圖片",
+  "copied": "已複製 ✓",
+  "copyCaption": "複製文案",
+  "share": "分享",
+  "copiedStatus": "{kind, select, postText {已複製貼文內容。} other {已複製文案。}}",
+  "copyFailed": "無法複製——請選取文字後自行複製。",
+  "sharedStatus": "{kind, select, postText {已複製貼文內容——請貼到你的貼文中。} other {已複製文案——請貼到你的貼文中。}}",
+  "shareRefused": "{kind, select, postText {分享遭到拒絕，因此已改為下載圖片。已複製貼文內容。} other {分享遭到拒絕，因此已改為下載圖片。已複製文案。}}"
+}

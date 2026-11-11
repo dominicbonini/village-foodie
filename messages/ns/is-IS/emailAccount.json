@@ -1,0 +1,38 @@
+{
+  "newEmail": {
+    "subject": "Staðfestu nýja netfangið þitt hjá HatchGrab",
+    "heading": "Staðfestu netfangið þitt",
+    "button": "Staðfesta netfang"
+  },
+  "changeEmail": {
+    "requested": "Þú baðst um að breyta netfanginu þínu hjá HatchGrab í þetta netfang.",
+    "click": "Smelltu á hnappinn hér fyrir neðan til að staðfesta. Tengillinn rennur út eftir 24 klukkustundir.",
+    "ignore": "Ef þú baðst ekki um þessa breytingu geturðu hunsað þennan póst.",
+    "stillActive": "Núverandi netfangið þitt er áfram virkt."
+  },
+  "resendVerification": {
+    "requested": "Þú baðst um að breyta netfanginu þínu hjá HatchGrab í þetta netfang.",
+    "click": "Smelltu hér fyrir neðan til að staðfesta. Tengillinn rennur út eftir 24 klukkustundir.",
+    "ignore": "Ef þú baðst ekki um þetta skaltu hunsa þennan póst.",
+    "stillActive": "Núverandi netfangið þitt er áfram virkt."
+  },
+  "passwordReset": {
+    "subject": "Endurstilltu lykilorðið þitt hjá HatchGrab",
+    "heading": "Endurstilltu lykilorðið",
+    "requested": "Okkur barst beiðni um að endurstilla lykilorðið fyrir aðganginn þinn hjá HatchGrab.",
+    "click": "Smelltu á hnappinn hér fyrir neðan til að velja nýtt lykilorð. Tengillinn rennur út eftir 1 klukkustund.",
+    "button": "Endurstilla lykilorð",
+    "ignore": "Ef þú baðst ekki um þetta geturðu hunsað þennan póst.",
+    "unchanged": "Lykilorðinu þínu verður ekki breytt fyrr en þú smellir á tengilinn hér fyrir ofan."
+  },
+  "deletionScheduled": {
+    "subject": "Aðgangi þínum hjá HatchGrab verður eytt",
+    "received": "Okkur hefur borist beiðni um að eyða þessum aðgangi hjá HatchGrab.",
+    "orderingStopped": "<b>Netpantanir hafa verið stöðvaðar strax</b> á: {trucks}.",
+    "noTrucks": "(engir matarvagnar)",
+    "readable": "Stjórnborðið þitt verður áfram\n    aðgengilegt til lestrar í {days, plural, one {# dag} other {# daga}} í viðbót.",
+    "scheduled": "Aðganginum verður eytt þann <b>{date}</b>.",
+    "cannotCancel": "<b>Ekki er hægt að hætta við þetta inni í forritinu.</b> Ef þetta varst ekki þú, eða ef þú hefur\n    skipt um skoðun, skaltu svara þessum pósti eins fljótt og hægt er.",
+    "kept": "Þegar aðganginum er eytt fjarlægjum við persónuupplýsingarnar þínar og upplýsingar um viðskiptavini þína. Við geymum\n    ópersónugreinanleg bókhaldsgögn sem okkur ber lagaleg skylda til að varðveita."
+  }
+}

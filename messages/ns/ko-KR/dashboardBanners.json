@@ -1,0 +1,21 @@
+{
+  "breachHeadline": "{n, plural, one {시간대 {count}개} other {시간대 {count}개}} 처리 용량 초과 — 확인 필요",
+  "batchOver": "{cat}: 조리 회차 초과 — {slot} 시간대 {count}개 (회차당 {per}개)",
+  "eventStartOver": "영업 시작 시 처리 용량 초과 — {slot} 시간대 {n, plural, one {메뉴 {count}개} other {메뉴 {count}개}}",
+  "kitchenOver": "주방 처리 용량 초과 — {slot} 시간대 조리 중 {n, plural, one {메뉴 {count}개} other {메뉴 {count}개}}",
+  "orderItems": "#{id} — {n, plural, one {메뉴 {count}개} other {메뉴 {count}개}}",
+  "placedAnyway": "그대로 접수됨: {list}",
+  "placedItem": "#{id} · {slot} 시간대",
+  "orphans": "{times} 시간대 처리 용량 초과 — 해당하는 주문을 찾지 못했습니다",
+  "dismiss": "닫기",
+  "kitchenCapacity": "주방 처리 용량",
+  "overCapacity": "처리 용량 초과",
+  "wakeUnsupported": "이 기기에서는 화면을 켜 둘 수 없습니다.",
+  "wakeInsecure": "이 주소에서는 화면을 켜 둘 수 없습니다.",
+  "wakeRetry": "화면 켜 두기 — 탭하여 다시 시도",
+  "wakeAcquire": "화면 켜 두기",
+  "degraded": {
+    "serverError": "서버가 주문을 불러오지 못했습니다{hasStatus, select, yes { (오류 {status})} other {}}. {at} 기준 주문을 표시합니다. 새 주문이 누락되었을 수 있습니다.",
+    "unreachable": "서버에 연결할 수 없습니다. {at} 기준 주문을 표시합니다. 새 주문이 누락되었을 수 있습니다."
+  }
+}

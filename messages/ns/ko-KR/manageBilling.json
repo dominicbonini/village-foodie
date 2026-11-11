@@ -1,0 +1,44 @@
+{
+  "perTruckMonth": "푸드트럭 1대 / 월",
+  "transactionFees": "결제 수수료",
+  "comingSoon": "출시 예정",
+  "footnote2Masked": "온라인 결제는 Stripe Connect로 처리됩니다. 플랫폼 수수료와 카드 결제 수수료는 미정이며 출시 시점에 확정됩니다.",
+  "card": {
+    "title": "이용 요금 및 결제",
+    "managed": "이용 요금은 HatchGrab에서 관리합니다",
+    "earlyAccess": "얼리 액세스 기간에는 요금제를 저희가 직접 설정하고 조정해요.",
+    "planLine": "{trial, select, yes {{truck} · {plan} 요금제(체험)} other {{truck} · {plan} 요금제}}"
+  },
+  "currentPlan": "현재 요금제",
+  "plan": {
+    "included": "월 온라인 주문 포함 한도: {amount}",
+    "includedUnlimited": "온라인 주문 무제한 포함.",
+    "promo": "특별 가격.",
+    "promoUntil": "특별 가격(종료일: {date}).",
+    "ended": "{plan} 요금제가 종료되었어요(종료일: {date}). 현재 요금제: {now}.",
+    "trialMonths": "무료 체험 {months}개월."
+  },
+  "trialEnds": "체험 종료일: {date}",
+  "yourTrialEnds": "체험 종료일: {date}",
+  "notStarted": {
+    "heading": "무료 체험이 아직 시작되지 않았어요"
+  },
+  "onTrial": "모든 기능을 쓸 수 있어요. 체험이 끝나기 전에 요금제를 선택하세요.",
+  "onTrialPaidEnd": "모든 기능을 쓸 수 있어요. 체험이 끝나면 {plan} 요금제는 월 {price}입니다. 그전에 결제 설정을 위해 연락드릴게요.",
+  "onTrialNoCta": "모든 기능을 쓸 수 있어요.",
+  "noCharge": "🔒 체험 기간(종료일: {date}) 동안에는 요금이 전혀 청구되지 않아요. 요금은 요금제를 선택하고 결제 정보를 입력해야만 청구됩니다. 그전까지는 해지할 것도, 낼 것도 없어요.",
+  "noChargePaidEnd": "🔒 체험 기간(종료일: {date}) 동안에는 요금이 전혀 청구되지 않아요.",
+  "fees": "*온라인 주문에는 표준 카드 결제 수수료가 적용됩니다",
+  "setUpPayment": "⏱ 체험이 끝나기 전에 요금제를 선택하세요",
+  "changeYourPlan": "요금제 변경",
+  "planButton": "{plan} — {price}",
+  "upgradeModal": {
+    "title": "요금제 변경: {plan}",
+    "tagline": "{price} — {description}",
+    "body": "자동 결제 시스템을 준비하고 있어요. 지금 바로 변경하려면 메시지를 보내 주세요. 24시간 안에 설정해 드릴게요.",
+    "mailSubject": "요금제 변경: {plan} — {truck}",
+    "mailBody": "안녕하세요. {truck} 푸드트럭의 요금제를 {plan}({price}) 요금제로 변경하고 싶습니다.",
+    "email": "이메일로 변경 요청",
+    "cancel": "취소"
+  }
+}

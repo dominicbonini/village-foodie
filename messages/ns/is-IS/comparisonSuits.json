@@ -1,0 +1,102 @@
+{
+  "title": "Hvað hentar matarvagninum þínum?",
+  "checked": "Kannað {date}",
+  "evidence": "Heimildir",
+  "adminPreview": "Forskoðun kerfisstjóra — óstaðfest",
+  "ours": {
+    "fromPlan": "{name} (frá {plan})"
+  },
+  "q": {
+    "preorder": "Hvaða pöntunarkerfi leyfir viðskiptavinum mínum að panta fyrir fram og velja afhendingartíma?",
+    "capacity": "Vagninn minn drukknar í pöntunum á álagstímum — hvaða kerfi takmarkar pantanir í hverju tímahólfi?",
+    "whatsapp": "Viðskiptavinir spyrja sífellt hvar ég er — hvaða kerfi svarar þeim á WhatsApp?",
+    "social": "Hvaða kerfi býr til færslurnar fyrir staðsetningar vikunnar, svo ég þurfi ekki að hanna myndir?",
+    "schedule": "Ég sel á nýjum stað flesta daga — hvaða kerfi sýnir viðskiptavinum hvar ég er og tekur við pöntunum fyrir þann stað?",
+    "priceLow": "Ég sel bara nokkra daga í mánuði — hvaða kerfi kostar minnst?",
+    "priceHigh": "Ég er á hátíðum og stórum viðburðum — hvaða kerfi kostar minnst?",
+    "commission": "Ég vil ekki greiða þóknun af hverri pöntun — hvað tekur hver vara?",
+    "offline": "Hvað verður um netpantanir ef sambandið dettur út?",
+    "strength": "Hvaða vara í samanburðinum býður upp á „{feature}“?"
+  },
+  "does": {
+    "preorder": "{names} {count, plural, one {leyfir} other {leyfa}} viðskiptavinum að panta fyrir fram og velja afhendingartíma.",
+    "capacity": "{names} {count, plural, one {takmarkar} other {takmarka}} hve margar pantanir hver afhendingartími tekur við, svo eldhúsið drukkni ekki.",
+    "whatsapp": "{names} {count, plural, one {svarar} other {svara}} WhatsApp-skilaboðum viðskiptavina sjálfkrafa.",
+    "social": "{names} {count, plural, one {býr} other {búa}} til myndir af staðsetningum vikunnar, tilbúnar til birtingar.",
+    "schedule": "{names} {count, plural, one {sýnir} other {sýna}} viðskiptavinum hvar vagninn er hvern dag og {count, plural, one {tekur} other {taka}} við pöntunum fyrir þann stað."
+  },
+  "feat": {
+    "preorder": "afhendingartímar",
+    "capacity": "hámark pantana í hverju tímahólfi",
+    "whatsapp": "sjálfvirk svör á WhatsApp",
+    "social": "myndir af vikudagskránni",
+    "schedule": "dagskrá með breytilegum staðsetningum",
+    "offlinePause": "Netpantanir settar í bið þegar sambandið dettur út"
+  },
+  "others": {
+    "noQuoted": "{names} {count, plural, one {býður} other {bjóða}} ekki upp á þetta.",
+    "notListed": "{names} {count, plural, one {tilgreinir ekki „{feature}“ á vefsíðu sinni} other {tilgreina ekki „{feature}“ á vefsíðum sínum}}.",
+    "doesntSay": "{count, plural, one {Það kemur ekki fram á vefsíðu söluaðilans ({names})} other {Það kemur ekki fram á vefsíðum söluaðilanna ({names})}}.",
+    "noneLists": "Engin hinna varanna í samanburðinum tilgreinir þetta, svo {names} {count, plural, one {hentar} other {henta}} best af þeim vörum sem bornar eru saman."
+  },
+  "price": {
+    "lead": "Við {orders, number} netpantanir á mánuði {count, plural, one {er} other {eru}} {names} með lægsta mánaðarlega hugbúnaðarkostnaðinn af þeim vörum sem bornar eru saman: {amount} á mánuði{count, plural, one {} other { hver}}.",
+    "includes": "Þetta nær yfir áskriftina, gjöldin sem vagninn greiðir af hverri pöntun, gjald fyrir aukapantanir og stofngjald dreift á 12 mánuði; kortafærslugjöld eru ekki talin með.",
+    "flat": "{name} ({plan}, fast verð án pöntunargjalds frá {name})",
+    "planName": "{name} ({plan})"
+  },
+  "commission": {
+    "part": "{name}: {fee}",
+    "answer": "Það sem hver vara tekur af pöntun: {parts}."
+  },
+  "offline": {
+    "ours": "{name} getur sjálfkrafa sett netpantanir í bið þegar vagninn missir samband, svo viðskiptavinir geti ekki sent pantanir sem eldhúsið fær ekki.",
+    "noQuoted": "{names} {count, plural, one {býður} other {bjóða}} ekki upp á að virka án nettengingar.",
+    "doesntSay": "{count, plural, one {Það kemur ekki fram á vefsíðu söluaðilans ({names})} other {Það kemur ekki fram á vefsíðum söluaðilanna ({names})}} hvað gerist þegar sambandið dettur út."
+  },
+  "strength": {
+    "answer": "{names} {count, plural, one {segist bjóða} other {segjast bjóða}} upp á „{feature}“; {us} gerir það ekki.",
+    "answerSoon": "{names} {count, plural, one {segist bjóða} other {segjast bjóða}} upp á „{feature}“; {us} gerir það ekki enn."
+  },
+  "ev": {
+    "ours": {
+      "yes": "já, samkvæmt eigin áskriftarleiðum ({us})",
+      "no": "nei, samkvæmt eigin áskriftarleiðum ({us})"
+    },
+    "state": {
+      "yes": "segist bjóða upp á þetta",
+      "partial": "býður upp á hluta af því",
+      "no_quoted": "segist ekki bjóða upp á þetta",
+      "no_unquoted": "nei (engin tilvitnun vistuð)",
+      "not_listed": "ekki skráð á vefsíðu þess",
+      "not_mentioned": "vefsíða þess segir ekkert um það",
+      "unknown": "ekki vitað"
+    },
+    "row": "{tool} — {feature}: {answer}.",
+    "quote": "Tilvitnun: „{quote}“.",
+    "pages": "Síður kannaðar: {pages}.",
+    "pageRead": "{page}",
+    "pageNotRead": "{page} (ekki hægt að lesa)",
+    "page": {
+      "features": "síða um eiginleika",
+      "pricing": "verðskrá",
+      "help": "hjálparsíður",
+      "other": "önnur síða"
+    },
+    "help": {
+      "fetched": "Hjálparsíður þess voru lesnar.",
+      "linked_not_fetched": "Það er með hjálparsíður sem voru ekki lesnar.",
+      "none_found": "Engar hjálparsíður fundust."
+    },
+    "calc": {
+      "volume": "Reiknað fyrir {orders, number} netpantanir á mánuði, miðað við {order} á pöntun ({revenue} í netsölu).",
+      "line": "{name} ({plan}): áskrift {sub} + stofngjald dreift á 12 mánuði {setup} + gjöld á pöntun {fees} + aukapantanir {over} = {total} á mánuði.",
+      "excluded": "Kortafærslugjöld og gjöld sem viðskiptavinir greiða eru ekki talin með fyrir neina vöru.",
+      "date": "Reiknað {date} út frá verðum sem könnuð voru á vefsíðu hvers söluaðila."
+    }
+  },
+  "method": {
+    "covers": "Hér eru allt að fjórir valkostir, valdir eftir því hve vel þeir eiga við matarvagna og hvort til séu sannreynanlegar opinberar upplýsingar — ekki allar vörur á markaðnum.",
+    "notListed": "„Ekki skráð“ þýðir að við könnuðum síður vörunnar um eiginleika og verð og þar er eiginleikinn ekki nefndur, fyrir eiginleika sem fyrirtæki auglýsa venjulega. „Kemur ekki fram“ þýðir að hvorki er staðfest né hrakið."
+  }
+}

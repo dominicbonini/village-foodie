@@ -1,0 +1,18 @@
+{
+  "meta": {
+    "privacyTitle": "Gizlilik Politikası — HatchGrab",
+    "privacyDescription": "HatchGrab Ltd’nin kişisel verileri nasıl topladığı ve kullandığı.",
+    "termsTitle": "Kullanım Koşulları — HatchGrab",
+    "termsDescription": "HatchGrab’in kullanım koşulları.",
+    "countryTermsTitle": "Ülkeye özgü koşullar — HatchGrab",
+    "countryTermsDescription": "Bazı ülkelerde HatchGrab için geçerli olan ek kurallar."
+  },
+  "homeLabel": "HatchGrab ana sayfa",
+  "privacy": "Gizlilik",
+  "terms": "Koşullar",
+  "countryTerms": "Ülke koşulları",
+  "contact": "İletişim",
+  "lastUpdated": "Son güncelleme: {date}",
+  "questions": "Sorularınız mı var? <link>Bize ulaşın</link> — karşınızda gerçek insanlar var.",
+  "translationNote": "Bu bir çeviridir. <link>İngilizce sürümden</link> farklı olduğu durumlarda İngilizce sürüm geçerlidir."
+}

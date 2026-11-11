@@ -1,0 +1,195 @@
+{
+  "cancel": "Otkaži",
+  "back": "← Nazad",
+  "backPlain": "Nazad",
+  "next": "Dalje →",
+  "continue": "Nastavi →",
+  "closeImport": "Zatvori uvoz",
+  "tryAgain": "Pokušaj ponovo",
+  "catError": {
+    "empty": "Dajte kategoriji naziv.",
+    "tooLong": "Taj naziv je predugačak.",
+    "clash": "Već postoji kategorija sa nazivom „{name}“."
+  },
+  "steps": {
+    "details": "Vaši podaci",
+    "menu": "Meni",
+    "extras": "Dodaci",
+    "allergens": "Alergeni",
+    "kitchen": "Podešavanje kuhinje",
+    "schedule": "Raspored",
+    "settings": "Podešavanja"
+  },
+  "toast": {
+    "demoGone": "Vaš demo meni više nije dostupan — otpremite ga ponovo da biste nastavili.",
+    "eventsSaveFailed": "Čuvanje događaja nije uspelo",
+    "cardReadFailed": "Nismo uspeli da pročitamo karticu alergena — pokušajte ponovo",
+    "imageReadFailed": "Nismo uspeli da pročitamo tu sliku — umesto toga otkucajte ili nalepite karticu",
+    "commitFailedDetail": "Čuvanje menija nije završeno: {error}. Neke stavke su možda već sačuvane — proverite meni pre nego što pokušate ponovo.",
+    "commitFailed": "Čuvanje menija nije završeno. Neke stavke su možda već sačuvane — proverite meni pre nego što pokušate ponovo.",
+    "finishFailed": "Nismo uspeli da označimo podešavanje kao završeno — i dalje možete da nastavite.",
+    "scheduleReadFailed": "Nismo uspeli da pročitamo taj raspored — probajte sa jasnijom fotografijom ili sami otkucajte datume.",
+    "cardRead": "Kartica je pročitana — upareno: {matched}, {pending, plural, one {# čeka} few {# čekaju} other {# čeka}} na vaše razvrstavanje"
+  },
+  "settingsReview": {
+    "anchorOrder": "Podešavanja → Podešavanja porudžbina",
+    "anchorDisplay": "Podešavanja → Vaši food truckovi → Podešavanja prikaza",
+    "mins15": "15 minuta",
+    "mins30": "30 minuta",
+    "mins60": "60 minuta",
+    "hours2": "2 sata",
+    "title": "Nekoliko podešavanja za proveru",
+    "loading": "Učitavamo vaša trenutna podešavanja…",
+    "looksGood": "Izgleda dobro →",
+    "secondaryAria": "{label} — {secondary}",
+    "saveFailed": "Nismo uspeli to da sačuvamo — možete da promenite u Podešavanjima.",
+    "anchorContact": "Podešavanja → Kontakt podaci",
+    "intro": "Podesili smo vam neka uobičajena podešavanja. Vredi ih na brzinu pogledati — svako od njih možete kasnije promeniti u Podešavanjima.",
+    "cancelAria": "Koliko pre preuzimanja kupci mogu da otkažu"
+  },
+  "allergensNotSet": {
+    "bodySetup": "Pregledajte ih pre nego što krenete uživo. Do tada su stavke označene sa „alergeni nisu podešeni“.",
+    "body": "Pregledajte ih u Podešavanjima pre nego što krenete uživo. Do tada su stavke označene sa „alergeni nisu podešeni“.",
+    "title": "⚠ Alergeni i ishrana još nisu podešeni"
+  },
+  "welcome": {
+    "title": "Dobro došli u HatchGrab",
+    "yourTruck": "Vaš food truck",
+    "stop": "Možete da stanete i vratite se kad god želite.",
+    "body": "Podešeno je: {name}. Sledeće dodajemo vaš meni, pa vaš prvi događaj.",
+    "go": "Krenimo"
+  },
+  "offer": {
+    "title": "Koristiti meni iz vašeg demoa?",
+    "use": "Koristi ovaj meni",
+    "upload": "Otpremi drugi meni",
+    "body": "Sačuvali smo meni koji ste otpremili — {count, plural, one {# stavka} few {# stavke} other {# stavki}}. Koristite ga kao polaznu tačku ili otpremite drugi."
+  },
+  "checkMenu": {
+    "title": "Proverite meni",
+    "body": "Meni iz vašeg demoa sačuvali smo na vaš food truck, a vi ste ga u međuvremenu menjali — zato su vaše izmene zadržane. Pogledajte ga ispod.",
+    "done": "Izgleda dobro"
+  },
+  "upload": {
+    "title": "Uvezite meni",
+    "body": "Otpremite fotografiju table sa menijem, snimak ekrana, PDF ili nalepite meni kao tekst. Naš AI ga čita i pravi vaš digitalni meni — sve pregledate pre čuvanja.",
+    "confirmCancel": "Otkazati ovaj uvoz? Vaš pregled ovog menija biće odbačen.",
+    "process": "Obradi meni",
+    "later": "Uradiću ovo kasnije"
+  },
+  "processing": {
+    "title": "Analiziramo vaš meni",
+    "body": "AI čita vaše stavke i razvrstava ih u kategorije…"
+  },
+  "review": {
+    "title": "Pregled uvezenog menija",
+    "editLaterSetup": "Nazive, cene, dodatke, alergene i podatke o ishrani možete kasnije menjati u bilo kom trenutku.",
+    "editLater": "Nazive, cene, dodatke, alergene i podatke o ishrani možete u bilo kom trenutku menjati u Podešavanjima.",
+    "noPrice": "{count, plural, one {Za # stavku} few {Za # stavke} other {Za # stavki}} nismo mogli da pročitamo cenu",
+    "renameCategoryAria": "Preimenuj kategoriju {name}",
+    "renameAria": "Preimenuj: {name}",
+    "renameTitle": "Preimenuj kategoriju",
+    "deleteAria": "Obriši: {name}",
+    "deleteTitle": "Obriši kategoriju",
+    "lastCategory": "Meni mora da ima bar jednu kategoriju",
+    "countOf": "{kept} od {total}",
+    "existing": "postojeća",
+    "deleteEmptyTitle": "Obrisati „{name}“?",
+    "deleteEmptyBody": "Nema stavki, pa se ništa ne gubi.",
+    "delete": "Obriši",
+    "moveTitle": "Gde da premestimo {count, plural, one {# stavku} few {# stavke} other {# stavki}}?",
+    "moveBody": "Za brisanje kategorije „{name}“ jelima je potrebno novo mesto — stavke bez kategorije se ne uvoze.",
+    "moveAria": "Premesti stavke iz kategorije {name} u",
+    "chooseCategory": "Izaberite kategoriju…",
+    "moveDelete": "Premesti i obriši",
+    "itemName": "Naziv stavke",
+    "free": "besplatno?",
+    "freeOn": "Besplatno ✕",
+    "nameFirst": "Dajte naziv novoj stavci pre nego što dodate sledeću",
+    "addItem": "+ Dodaj stavku",
+    "categoryName": "Naziv kategorije",
+    "newCategoryAria": "Naziv nove kategorije",
+    "addCategory": "+ Dodaj kategoriju",
+    "ready": "{count, plural, one {# stavka je spremna} few {# stavke su spremne} other {# stavki je spremno}} za dodavanje. Isključite one koje ne želite.",
+    "noPriceBody": "Podesite cenu za svaku ili je označite kao besplatnu — inače bi bila objavljena po ceni {zero}. Ne možete nastaviti dok ovo ne sredite.",
+    "incomplete": "Unesite naziv da biste dodali ovu stavku — prazni redovi se ne uvoze."
+  },
+  "extras": {
+    "introSetup": "Neka jela mogu da se podese kao <b>jedna stavka sa izborom</b> ili da ostanu <b>zasebna jela</b>. Izaberite kako svako treba da se prikazuje. Ovo možete kasnije promeniti.",
+    "intro": "Neka jela mogu da se podese kao <b>jedna stavka sa izborom</b> ili da ostanu <b>zasebna jela</b>. Izaberite kako svako treba da se prikazuje. Ovo možete kasnije promeniti u Podešavanjima.",
+    "none": "Nema jela za grupisanje — svaka stavka je samostalno jelo.",
+    "axisChoice": "· izbor: {axis}",
+    "grouped": "Grupisano · jedna stavka, kupac bira",
+    "separate": "Zasebne stavke menija"
+  },
+  "allergens": {
+    "title": "Alergeni",
+    "detected": "Pronašli smo alergene u vašem meniju. Ispod izaberite kako da ih prikažete.",
+    "howShow": "Kako želite da kupcima prikažete alergene?",
+    "skip": "Za sada preskoči podešavanje alergena"
+  },
+  "kitchen": {
+    "title": "Podešavanje kuhinje",
+    "intro": "Pomozite kupcima da znaju koliko će čekati — ovo uvek možete kasnije promeniti.",
+    "howWorks": "Kako funkcioniše kapacitet kuhinje",
+    "allExist": "Sve kategorije već postoje — nema vremena za podešavanje.",
+    "totalHelp": "Podesite ukupni kapacitet da ograničite koliko stavki kuhinja prima po terminu. Ostavite ∞ za bez ograničenja.",
+    "saveAdd": "Sačuvaj i dodaj u meni"
+  },
+  "schedule": {
+    "title": "Dodaj moj raspored",
+    "intro": "Ako je vaš raspored na vašem sajtu, možemo automatski da ga održavamo ažurnim — ili sami dodajte datume.",
+    "websiteTitle": "Moj raspored je na mom sajtu",
+    "urlPlaceholder": "https://vasfoodtruck.rs/dogadjaji",
+    "checking": "Proveravamo…",
+    "verify": "Proveri",
+    "checkingSite": "Proveravamo vaš sajt…",
+    "takesTime": "Ovo može da potraje do 2 minuta — ne zatvarajte ovu stranicu.",
+    "canRead": "✓ Možemo da pročitamo vaš raspored",
+    "ownSite": "Vaš sopstveni sajt — ne Facebook ili Instagram stranica.",
+    "photoTitle": "Otpremi fotografiju mog rasporeda",
+    "dragChoose": "Prevucite i otpustite ili dodirnite da izaberete",
+    "imageOrPdf": "Slika ili PDF",
+    "or": "ili",
+    "pastePlaceholder": "Nalepite datume ovde…",
+    "read": "Pročitaj raspored",
+    "found": "{count, plural, one {Pronađen je # datum} few {Pronađena su # datuma} other {Pronađeno je # datuma}} — biće dodati u vaš raspored.",
+    "dateTbc": "Datum naknadno",
+    "save": "Sačuvaj {count, plural, one {# datum} few {# datuma} other {# datuma}}",
+    "manualDesc": "Dodajte ih kasnije na kartici Raspored — sada ne morate ništa.",
+    "manualBody": "Nema problema. Datume možete dodavati i uređivati bilo kada na kartici Raspored u vašem nalogu.",
+    "blockedDomain": "Koristite adresu vašeg sajta — Facebook i Instagram stranice ne mogu automatski da se preuzimaju.",
+    "saveFailed": "Pročitali smo vaš raspored, ali trenutno ne možemo da ga sačuvamo — pokušajte ponovo.",
+    "websiteDesc": "Redovno ćemo ga proveravati i slati vam nove datume na odobrenje.",
+    "keepChecking": "Nastavićemo da proveravamo ovu stranicu i slaćemo vam nove datume na odobrenje.",
+    "photoDesc": "Fotografišite ili nalepite datume — pročitaćemo ih, a vi ih proverite.",
+    "noneFound": "Nismo pronašli nijedan datum — probajte sa jasnijom fotografijom ili sami dodajte datum.",
+    "manualTitle": "Sam/a ću dodati datume",
+    "trialNotStarted": "Dodavanje događaja ne pokreće vaš besplatni probni period — kasnije birate koji ga događaj pokreće."
+  },
+  "done": {
+    "summary": "{items, plural, one {# stavka} few {# stavke} other {# stavki}} u {categories, plural, one {# kategoriji} few {# kategorije} other {# kategorija}}.",
+    "imported": "Meni je uvezen!",
+    "added": "Vaše stavke su dodate u meni.",
+    "duplicates": "{count, plural, one {Preskočen je # duplikat} few {Preskočena su # duplikata} other {Preskočeno je # duplikata}}",
+    "showMe": "Provedi me kroz aplikaciju",
+    "remind": "Podseti me kasnije",
+    "allSet": "Sve je spremno!",
+    "explore": "Istražiću sam/a"
+  },
+  "discard": {
+    "setupTitle": "Završiti podešavanje kasnije?",
+    "setupBody": "Vaš nalog i food truck su sačuvani — ništa se ne gubi. Meni možete dodati bilo kada: prijavite se i dodirnite <b>Uvezi meni</b> na ekranu menija da nastavite odavde.",
+    "keepGoing": "Nastavi",
+    "finishLater": "Završi kasnije",
+    "title": "Odbaciti ovaj uvoz?",
+    "keepEditing": "Nastavi sa izmenama",
+    "discard": "Odbaci",
+    "body": "Vaše izmene neće biti sačuvane — uvezene stavke, vremena pripreme i kapacitet kuhinje neće biti dodati.",
+    "carriedBody": "Vaš meni iz demoa sačuvan je na vašem food trucku onakav kakav je. Možete ga promeniti bilo kada na ekranu menija."
+  },
+  "allergenCardText": {
+    "contains": "Sadrži: {list}",
+    "mayContain": "Može da sadrži: {list}"
+  }
+}

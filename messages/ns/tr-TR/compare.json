@@ -1,0 +1,127 @@
+{
+  "eyebrow": "Maliyet karşılaştırması",
+  "title": "Online sipariş<br></br><accent>maliyetlerinizi karşılaştırın</accent>",
+  "system": {
+    "title": "Şu anda online sipariş alıyor musunuz?",
+    "yes": "Evet, başka bir sistemle",
+    "no": "Hayır, henüz değil"
+  },
+  "trucks": {
+    "title": "Kaç food truck işletiyorsunuz?",
+    "aria": "Food truck sayısı"
+  },
+  "plan": {
+    "yourChoice": "Seçiminiz",
+    "weSuggest": "Önerimiz",
+    "summary": "Food truck başına aylık {price}; {allowance} tutarında online sipariş dahil{fleet, plural, one {} other { (her biri için)}}.",
+    "switchTo": "{plan} paketine geçin",
+    "summaryFeeOnly": "{hasMonthly, select, yes {Food truck başına aylık {price}, ayrıca online kartlı siparişlerde {pct}.} other {Aylık ücret yok — yalnızca online kartlı siparişlerde {pct}.}}",
+    "summaryNoFee": "Food truck başına aylık {price}; sınırsız online sipariş, HatchGrab ücreti yok."
+  },
+  "orders": {
+    "titleYes": "Food truck başına aylık online sipariş",
+    "count": "~{count, plural, one {# sipariş} other {# sipariş}}",
+    "captionNo": "Kabaca bir tahmin yeterli — ön siparişler ve sıra beklemek istemeyenler; tezgâhta nakit ya da kartla ödenenler değil.",
+    "captionYes": "Yalnızca sipariş sayfanız üzerinden verilen siparişler — tezgâhta nakit ya da kartla ödenenler değil.",
+    "sliderAria": "Food truck başına aylık online sipariş tutarı",
+    "overAllowance": "Food truck başına {allowance} tutarında online sipariş dahil. Bunun üzerindeki {excess} için {pct} alınır — her biri için ayda <b>{over}</b>.",
+    "insideAllowance": "Dahil olan {allowance} tutarındaki online sipariş sınırının içinde — paketin üzerine ek ücret yok.",
+    "acrossFleet": "Toplam ({fleet, plural, one {# food truck} other {# food truck}}): ayda <b>{amount}</b>.",
+    "titleNo": "Food truck başına ayda online olarak ne kadar satış yapacağınızı düşünüyorsunuz?",
+    "feeOnly": "Her online kartlı siparişte {pct} — food truck başına ayda <b>{over}</b>.",
+    "noFee": "Sınırsız online sipariş dahil — paketin üzerine ek ücret yok."
+  },
+  "fee": {
+    "title": "Şu anda sipariş başına ne ödüyorsunuz?",
+    "pctLabel": "Yüzde",
+    "pctPlaceholder": "Oranınız",
+    "pctAria": "Yüzdelik ücret",
+    "fixedLabel": "Artı sipariş başına",
+    "fixedPlaceholder": "Ücretiniz",
+    "fixedAria": "Sipariş başına kuruş",
+    "modeLabel": "Firmanın oranı:",
+    "modeInclusive": "kart işlem ücretini içerir",
+    "modeOnTop": "üzerine ayrıca eklenir",
+    "onTopNote": "Bunun üzerine {fee} kart işlem ücreti ayrıca alınır; yani toplamda aslında <b>{pct} + {fixed}</b> ödersiniz.",
+    "inclusiveNote": "{fee} kart işlem ücreti buna dahildir ve bunu her yerde ödersiniz. Firmanın kendi ücreti: <b>{pct}</b>."
+  },
+  "days": {
+    "title": "Haftada kaç gün satış yapıyorsunuz?",
+    "help": "Etkinlikler, pazarlar, satış noktaları — aracın yola çıktığı her gün."
+  },
+  "jump": {
+    "cost": "Maliyetini görün ↓",
+    "saving": "Tasarrufunuzu görün ↓"
+  },
+  "noSystem": {
+    "hero": "<lead>Online sipariş, ön sipariş ve mutfak ekranınız için</lead><figure>{amount}</figure><unit>satış günü başına</unit>",
+    "basedOn": "Haftada {days, plural, one {# gün} other {# gün}} üzerinden · ayda {monthly}{fleet, plural, one {} other { (araç başına)}}"
+  },
+  "coffee": "Bir kahve parasından az.",
+  "freeMonths": "{n, plural, one {Üstelik ilk ay bizden.} other {Üstelik ilk # ay bizden.}}",
+  "cta": {
+    "upload": "Menümü yükle →",
+    "uploadSave": "Menümü yükle, tasarruf et: {amount} →",
+    "ask": "Bize bir soru sorun",
+    "noCard": "Kurulum için kart gerekmez"
+  },
+  "breakdown": {
+    "title": "Aylık dökümünüz",
+    "titleDearer": "HatchGrab ile bir ayınız",
+    "plan": "{plan} paketi",
+    "over": "Dahil olan {allowance} üzerindeki {excess} için {pct}",
+    "inside": "Dahil olan {allowance} içindeki online siparişler",
+    "total": "HatchGrab, aylık",
+    "freeMonths": "{n, plural, one {1. ay} other {1–#. aylar}}",
+    "freeAmount": "{amount} — bizden",
+    "acrossFleet": "Toplam: {fleet, plural, one {# araç} other {# araç}}",
+    "perMonth": "Ayda {amount}",
+    "card": "Kart işlem ücreti — sipariş başına Stripe ücreti ({fee}), Stripe’a ödenir. Tezgâhta bir POS cihazıyla da aşağı yukarı aynısını ödersiniz.",
+    "provider": "Mevcut sağlayıcınızın kendi ücreti ({pct})",
+    "feeOnly": "{excess} tutarındaki online siparişlerde {pct}",
+    "noFee": "Online siparişler — sınırsız, HatchGrab ücreti yok"
+  },
+  "enterRate": "Tasarrufunuzu görmek için şu anda ne ödediğinizi girin.",
+  "panel": {
+    "nowYear": "<label>Şu anda ödediğiniz</label><fig>{amount}<q> / yıl</q></fig>",
+    "nowMonth": "<label>Şu anda ödediğiniz</label><fig>{amount}<q> / ay</q></fig>",
+    "oursYear": "<label>HatchGrab ile</label><fig>{amount}<q> (ilk yıl)</q></fig>",
+    "oursMonth": "<label>HatchGrab ile</label><fig>{amount}<q> / ay</q></fig>",
+    "acrossFleet": "toplam: {fleet, plural, one {# araç} other {# araç}}"
+  },
+  "hero": {
+    "save": "<verb>Tasarrufunuz</verb><figure>{amount}</figure><sub>ilk yılınızda <num>{pct}</num> daha az</sub>",
+    "same": "<verb>Aşağı yukarı aynı</verb><figure>{amount}</figure><sub>ilk yılınızda <num>{pct}</num> daha fazla</sub>",
+    "dearer": "<lead>HatchGrab’in sunduğu her şey için</lead><figure>{amount}</figure><unit>haftalık ek maliyet</unit>",
+    "dearerSub": "{fleet, plural, one {Şu ankinden ayda {amount} fazla} other {Şu ankinden araç başına ayda {amount} fazla}}"
+  },
+  "anchor": {
+    "liability": "Bu, bir yıllık mali sorumluluk sigortası demek.",
+    "weekendPitch": "Bu, bir yemek festivalinde hafta sonu satış noktası demek.",
+    "festivalPitches": "Bu, birkaç festivalde satış noktası demek.",
+    "fryer": "Bu, yeni bir fritöz ve ızgara demek.",
+    "counter": "Bu, servis tezgâhınızın baştan sona yenilenmesi demek.",
+    "vanDeposit": "Bu, ikinci bir araç için peşinat demek.",
+    "secondVan": "Bu, yolda ikinci bir araç demek."
+  },
+  "year": {
+    "one": "Birinci yıl",
+    "two": "İkinci yıl",
+    "save": "Tasarruf: {amount}<note>({pct} daha az)</note>",
+    "extra": "Ek maliyet: {amount}<note>({pct} daha fazla)</note>",
+    "current": "Mevcut sağlayıcı <b>{amount}</b>",
+    "ours": "HatchGrab <b>{amount}</b>"
+  },
+  "smallPrint": {
+    "no": "Tahminler, girdiğiniz rakamlara ve ortalama sipariş tutarının {aov} olduğu varsayımına dayanır. Kart işlem ücreti, hangi sağlayıcıyı kullanırsanız kullanın uygulanır. Karar vermeden önce kontrol edin.",
+    "yes": "Tahminler, girdiğiniz rakamlara ve ortalama sipariş tutarının {aov} olduğu varsayımına dayanır. Sipariş başına {fee} kart işlem ücreti, hangi sağlayıcıyı kullanırsanız kullanın uygulanır; bu yüzden iki tarafta da hesaba katılmamıştır.",
+    "onTop": "Soru {n} için girilen toplam rakam bunu içerir — karşılaştırma ise iki tarafta da içermez.",
+    "check": "Karar vermeden önce mevcut sağlayıcınızın oranlarını kontrol edin."
+  },
+  "intro": "Yaklaşık bir dakika sürer. Zaten bir sistem mi kullanıyorsunuz? Karşılaştıralım. Henüz kullanmıyor musunuz? Size tam olarak neye mal olacağını gösterelim.",
+  "twoYear": "İki yılda bu, <b>{amount}</b> tasarruf demek.",
+  "meta": {
+    "title": "Maliyet hesaplama — HatchGrab {country}",
+    "description": "Online siparişlerin size bugün neye mal olduğunu HatchGrab ile geçecek bir yılla karşılaştırın — bir dakikada tahmini hesap."
+  }
+}

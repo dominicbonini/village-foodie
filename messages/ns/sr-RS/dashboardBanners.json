@@ -1,0 +1,21 @@
+{
+  "breachHeadline": "{n, plural, one {{count} termin je} few {{count} termina su} other {{count} termina je}} preko kapaciteta — pregledajte",
+  "batchOver": "{cat}: prekoračena tura — {count} za {slot} ({per} po turi)",
+  "eventStartOver": "Preko kapaciteta na početku događaja — {n, plural, one {{count} stavka} few {{count} stavke} other {{count} stavki}} za {slot}",
+  "kitchenOver": "Kuhinja je preko kapaciteta — {n, plural, one {{count} stavka se sprema} few {{count} stavke se spremaju} other {{count} stavki se sprema}} za {slot}",
+  "orderItems": "#{id} — {n, plural, one {{count} stavka} few {{count} stavke} other {{count} stavki}}",
+  "placedAnyway": "Ipak poručeno: {list}",
+  "placedItem": "#{id} za {slot}",
+  "orphans": "{times}: preko kapaciteta — nisu pronađene porudžbine kojima bi se to pripisalo",
+  "dismiss": "Odbaci",
+  "kitchenCapacity": "Kapacitet kuhinje",
+  "overCapacity": "Preko kapaciteta",
+  "wakeUnsupported": "Ovaj uređaj ne može da drži ekran uključenim.",
+  "wakeInsecure": "Sa ove adrese ekran ne može da se drži uključenim.",
+  "wakeRetry": "Držite ekran uključenim — dodirnite da pokušate ponovo",
+  "wakeAcquire": "Drži ekran uključenim",
+  "degraded": {
+    "serverError": "Server nije mogao da učita porudžbine{hasStatus, select, yes { (greška {status})} other {}}. Prikazane su porudžbine sa stanjem u {at}. Nove porudžbine možda nedostaju.",
+    "unreachable": "Server nije dostupan. Prikazane su porudžbine sa stanjem u {at}. Nove porudžbine možda nedostaju."
+  }
+}

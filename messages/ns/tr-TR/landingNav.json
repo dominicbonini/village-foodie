@@ -1,0 +1,14 @@
+{
+  "homeLabel": "HatchGrab ana sayfa",
+  "cta": "Menümü yükle →",
+  "ctaShort": "Menü yükle",
+  "features": "Özellikler",
+  "pricing": "Fiyatlar",
+  "logIn": "Giriş yap",
+  "country": {
+    "button": "Ülke: {name}. Ülkeyi değiştir",
+    "menu": "Ülke",
+    "title": "Ülkenizi seçin",
+    "subline": "Fiyatlar, dil ve ayarlar buna göre değişir."
+  }
+}

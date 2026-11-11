@@ -1,0 +1,21 @@
+{
+  "breachHeadline": "{n, plural, one {חלון זמן אחד} two {שני חלונות זמן} other {{count} חלונות זמן}} מעבר לקיבולת — לבדיקה",
+  "batchOver": "{cat} מעבר לסבב — {count} עבור {slot} ({per} בכל סבב)",
+  "eventStartOver": "מעבר לקיבולת בתחילת האירוע — {n, plural, one {פריט אחד} two {שני פריטים} other {{count} פריטים}} עבור {slot}",
+  "kitchenOver": "המטבח מעבר לקיבולת — {n, plural, one {פריט אחד} two {שני פריטים} other {{count} פריטים}} בבישול עבור {slot}",
+  "orderItems": "#{id} — {n, plural, one {פריט אחד} two {שני פריטים} other {{count} פריטים}}",
+  "placedAnyway": "בוצעו בכל זאת: {list}",
+  "placedItem": "#{id} עבור {slot}",
+  "orphans": "{times} מעבר לקיבולת — לא נמצאו הזמנות לשייך אליהן את החריגה",
+  "dismiss": "סגירה",
+  "kitchenCapacity": "קיבולת המטבח",
+  "overCapacity": "מעבר לקיבולת",
+  "wakeUnsupported": "המכשיר הזה לא יכול להשאיר את המסך דולק.",
+  "wakeInsecure": "אי אפשר להשאיר את המסך דולק מהכתובת הזו.",
+  "wakeRetry": "השארת המסך דולק — הקישו כדי לנסות שוב",
+  "wakeAcquire": "השארת המסך דולק",
+  "degraded": {
+    "serverError": "השרת לא הצליח לטעון הזמנות{hasStatus, select, yes { (שגיאה {status})} other {}}. מוצגות הזמנות מהשעה {at}. ייתכן שחסרות הזמנות חדשות.",
+    "unreachable": "אין חיבור לשרת. מוצגות הזמנות מהשעה {at}. ייתכן שחסרות הזמנות חדשות."
+  }
+}

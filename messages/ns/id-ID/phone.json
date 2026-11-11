@@ -1,0 +1,5 @@
+{
+  "invalidMobile": "{withName, select, yes {Masukkan nomor HP {name} yang valid} other {Masukkan nomor HP yang valid}}{withExample, select, yes { (mis. {example})} other {}}",
+  "invalidPhone": "{withName, select, yes {Masukkan nomor telepon {name} yang valid} other {Masukkan nomor telepon yang valid}}{withExample, select, yes { (mis. {example})} other {}}",
+  "invalidPhoneNumber": "{withName, select, yes {Masukkan nomor telepon {name} yang valid} other {Masukkan nomor telepon yang valid}}{withExample, select, yes { (mis. {example})} other {}}."
+}

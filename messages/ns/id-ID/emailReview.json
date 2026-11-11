@@ -1,0 +1,16 @@
+{
+  "subject": "Bagaimana pesanan dari {truck}?",
+  "heading": "Terima kasih sudah memesan dari {truck}",
+  "body": "{truck} akan sangat berterima kasih atas ulasan jujur di Google. Hanya butuh semenit, dan ulasan membantu orang lain menemukan mereka.",
+  "button": "Tulis ulasan di Google",
+  "linkText": "Tulis ulasan di Google: {url}",
+  "from": "Email ini dari {truck}, dikirim melalui HatchGrab karena ada pesanan dari alamat email ini ke mereka.",
+  "unsubscribeLead": "Tidak ingin menerima permintaan ulasan dari {truck}?",
+  "unsubscribeLink": "Berhenti berlangganan",
+  "unsubscribeText": "Berhenti berlangganan: {url}",
+  "unsubscribed": {
+    "title": "Langganan sudah dihentikan",
+    "body": "{truck} tidak akan mengirim permintaan ulasan lagi.",
+    "invalid": "Link berhenti berlangganan ini tidak valid."
+  }
+}

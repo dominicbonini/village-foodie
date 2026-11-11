@@ -1,0 +1,19 @@
+{
+  "heading": "Viðbótarsala",
+  "intro": "Hvettu viðskiptavini til að bæta einhverju við. Þegar einhver pantar úr einum flokki skaltu stinga upp á vörum úr öðrum — drykk með pítsu, sósu með hamborgara.",
+  "add": "+ Bæta við tillögu",
+  "toast": {
+    "updated": "Regla um viðbótarsölu uppfærð",
+    "added": "Reglu um viðbótarsölu bætt við",
+    "removed": "Regla fjarlægð"
+  },
+  "whenAdds": "Þegar viðskiptavinur bætir við…",
+  "suggestFrom": "Stinga upp á vörum úr…",
+  "chooseCategory": "Veldu flokk",
+  "cancel": "Hætta við",
+  "saveChanges": "Vista breytingar",
+  "addRule": "Bæta við reglu",
+  "empty": "Engar reglur um viðbótarsölu enn.",
+  "confirmRemove": "Fjarlægja regluna „{trigger} → {suggest}“?",
+  "upTo": "{n, plural, one {Allt að {count} vara lögð til} other {Allt að {count} vörur lagðar til}}"
+}

@@ -1,0 +1,82 @@
+{
+  "jsonLd": {
+    "subCategory": "Phần mềm đặt món online cho food truck và dịch vụ ăn uống lưu động",
+    "description": "Đặt món online, đặt trước và màn hình bếp cho food truck và dịch vụ ăn uống lưu động ({country}).",
+    "audience": "Chủ food truck và đơn vị kinh doanh ăn uống lưu động"
+  },
+  "hero": {
+    "title": "Phần mềm đặt món được thiết kế riêng cho <lean>food truck.</lean>",
+    "subSmall": "Tải thực đơn lên, không cần đăng ký.<br></br>Xem bản demo chạy thật trong chưa đầy 60 giây.",
+    "cta": "Tải thực đơn lên →",
+    "ctaNote": "<lead>Tải ảnh thực đơn lên và xem nó hoạt động trong chưa đầy 60 giây.</lead><small>Không cần đăng ký. Không cần thẻ.</small>"
+  },
+  "shots": {
+    "kitchenAlt": "Màn hình bếp HatchGrab, hiển thị phiếu đơn theo thứ tự cần nấu",
+    "dashboardAlt": "Nhận đơn trên HatchGrab: thực đơn bên trái, giỏ hàng và tổng tiền cập nhật liên tục bên phải",
+    "phoneAlt": "Đặt món từ food truck trên HatchGrab: thực đơn có ảnh và giá, kèm tổng tiền giỏ hàng cập nhật liên tục"
+  },
+  "trust": {
+    "freeMonth": "{months, plural, one {Tháng đầu tiên miễn phí hoàn toàn, mở khóa mọi tính năng} other {# tháng đầu tiên miễn phí hoàn toàn, mở khóa mọi tính năng}}",
+    "noCard": "Không cần thẻ",
+    "cancel": "Hủy bất cứ lúc nào, không hợp đồng"
+  },
+  "does": {
+    "eyebrow": "HatchGrab làm được gì",
+    "title": "Dành cho food truck, không phải cho nhà hàng.",
+    "lede": "Hầu hết phần mềm đặt món đều mặc định bạn có địa chỉ cố định, wifi ổn định và giờ bán giống nhau mỗi tuần. Còn bạn thì mỗi tuần một nơi, mỗi lúc một giờ, sóng điện thoại chập chờn hoặc mất hẳn. HatchGrab được làm ra cho đúng hoàn cảnh đó.",
+    "slotsTitle": "Khách tự chọn giờ nhận món",
+    "capacityTitle": "Đặt công suất bếp",
+    "capacityBody": "Cài đặt bạn nấu được bao nhiêu món cùng lúc và mất bao lâu. Khi một giờ nhận món đã kín, khách sẽ không chọn được nữa.",
+    "devicesTitle": "Chạy trên mọi thiết bị",
+    "devicesBody": "Chạy trên điện thoại trong túi tạp dề, máy tính bảng trên quầy, laptop trong xe — và cả máy POS bạn đang dùng để nhận thanh toán.",
+    "postsTitle": "Tự động hóa bài đăng Facebook & Instagram",
+    "postsBody": "Tải lên mẫu thiết kế bạn vẫn đăng trên Facebook hoặc Instagram. Chúng tôi điền sẵn ngày, địa điểm và giờ bán, sẵn sàng để chia sẻ — mỗi tuần hoặc mỗi ngày.",
+    "whatsappTitle": "Tự động trả lời trên WhatsApp",
+    "whatsappBody": "“Tối nay xe ở đâu vậy?” “Có món tráng miệng gì?” WhatsApp của bạn được trả lời tự động khi bạn đang lái xe đến điểm bán hay đang đứng bếp, dựa trên chính thực đơn và lịch bán của bạn. Messenger và Instagram sắp ra mắt.",
+    "whatsappSoonTitle": "Tự động trả lời trên WhatsApp <soon>Sắp ra mắt</soon>",
+    "whatsappSoonBody": "“Tối nay xe ở đâu vậy?” “Có món tráng miệng gì?” Sắp tới, WhatsApp của bạn sẽ được trả lời tự động khi bạn đang lái xe đến điểm bán hay đang đứng bếp. Messenger và Instagram sẽ có sau.",
+    "offlineTitle": "Mất sóng? Vẫn bán tiếp.",
+    "offlineBody": "Khi mất sóng, đặt món online tự động tạm dừng để khách không đặt những đơn bạn không nhìn thấy. Bạn vẫn tiếp tục nhận đơn bằng ứng dụng trên iPhone, iPad và Android.",
+    "slotsBody": "Khách đặt món trước và chọn giờ nhận món. Bớt xếp hàng, đến nơi là có món."
+  },
+  "steps": {
+    "eyebrow": "Bắt đầu",
+    "title": "Thiết lập xong và bắt đầu nhận đơn chỉ trong khoảng 15 phút.",
+    "lede": "Ba việc cần làm — và hai trong số đó chỉ cần một tấm ảnh.",
+    "menuTitle": "Tạo thực đơn",
+    "menuBody": "Chụp ảnh bảng thực đơn hoặc dán nội dung vào. Món, giá và tùy chọn thêm đều được nhập tự động. Bạn chỉ cần kiểm tra lại cho đúng.",
+    "scheduleTitle": "Thêm lịch bán",
+    "scheduleBody": "Lịch đã có trên website? Chúng tôi sẽ đọc từ đó và luôn cập nhật. Nếu chưa có, cứ chụp ảnh lại. Bạn chỉ cần duyệt những gì hệ thống tìm thấy.",
+    "shareTitle": "Chia sẻ link",
+    "shareBody": "Đăng link lên Facebook, dán mã QR lên xe. Đơn hiện ngay trên màn hình của bạn, theo đúng thứ tự cần nấu."
+  },
+  "testimonial": {
+    "quote": "HatchGrab giúp việc nhận đơn dễ hơn rất nhiều. Mọi thứ đều gọn gàng, chúng tôi theo dõi được tồn kho và biết chính xác còn bao nhiêu chiếc pizza để bán — còn khung giờ nhận món thì tuyệt vời cho những ngôi làng đông khách.",
+    "award": "Xe pizza lưu động của năm",
+    "awardScope": "Giải khu vực",
+    "business": "Pizzeria Gusto",
+    "byline": "Nadia & Bogdan — chủ xe"
+  },
+  "pricing": {
+    "eyebrow": "Bảng giá",
+    "title": "Bắt đầu miễn phí. Nâng cấp khi cần.",
+    "switchHead": "Đang dùng nền tảng khác?",
+    "switchBody": "Xem với cùng số đơn đó, bạn sẽ trả bao nhiêu khi dùng HatchGrab. Chỉ mất khoảng một phút.",
+    "switchCta": "So sánh chi phí bạn đang trả"
+  },
+  "faq": {
+    "title": "Câu hỏi thường gặp",
+    "metaTitle": "Câu hỏi thường gặp | HatchGrab",
+    "metaDescription": "Giải đáp rõ ràng cho chủ food truck về giá của HatchGrab, cách thiết lập, cách nhận đơn đặt món và cách thanh toán hoạt động."
+  },
+  "final": {
+    "truckLabel": "Food truck",
+    "title": "Muốn xem thiết lập dễ thế nào không?",
+    "lede": "Tải lên ảnh chụp hoặc ảnh màn hình thực đơn, chúng tôi sẽ biến nó thành trang đặt món chạy thật để bạn dùng thử trong chưa đầy 60 giây. Món của bạn, giá của bạn. Không cần đăng ký, không cần thẻ, không phải cài gì. Xem thử rồi hãy quyết định.",
+    "cta": "Tải thực đơn lên ngay →"
+  },
+  "meta": {
+    "title": "Phần mềm đặt món cho food truck — HatchGrab {country}",
+    "description": "Nhận đơn và đơn đặt trước ngay tại điểm bán, khách không phải xếp hàng. Phần mềm đặt món và màn hình bếp cho food truck ({country}) — không phải máy POS."
+  }
+}

@@ -61,6 +61,14 @@ the language goes live.
 | **ZH** | 取餐時付款 | 取餐時付款 | 免月費 | 無上限 | 免費試用 |
 | **TH** | ชำระเงินตอนรับอาหาร | จ่ายตอนรับอาหาร | ไม่มีค่ารายเดือน | ไม่จำกัด | ทดลองใช้ฟรี |
 | **AR** | الدفع عند الاستلام | ادفع عند الاستلام | بدون رسوم شهرية | غير محدود | تجربة مجانية |
+| **TR** | Teslim alırken ödeme | Teslim alırken öde | Kullandıkça öde | Sınırsız | ücretsiz deneme |
+| **KO** | 현장 결제 | 현장에서 결제 | 월 이용료 없음 | 무제한 | 무료 체험 |
+| **ZH-TW** | 取餐時付款 | 現場付款 | 免月費 | 無限制 | 免費試用 |
+| **ID** | Bayar saat ambil | Bayar di truk | Tanpa biaya bulanan | Tanpa batas | coba gratis |
+| **VI** | Thanh toán khi nhận món | Trả tiền tại xe | Không phí hằng tháng | Không giới hạn | dùng thử miễn phí |
+| **HE** | תשלום באיסוף | תשלום במקום | ללא דמי מנוי | ללא הגבלה | ניסיון חינם |
+| **IS** | Greiðsla við afhendingu | Greiða á staðnum | Án mánaðargjalds | Ótakmarkað | ókeypis prufa |
+| **SR** | Plaćanje pri preuzimanju | Platite pri preuzimanju | Bez mesečne pretplate | Neograničeno | isprobajte besplatno |
 
 ---
 
@@ -842,6 +850,190 @@ guidance word these concepts; no search-volume tool. European Portuguese only (B
 | Private event | **فعالية خاصة** |  | Both | Med |  |
 | Commission-free | **بدون عمولة** |  | B2B | High |  |
 | WhatsApp auto-reply | **الرد التلقائي على واتساب** | WhatsApp | B2B | Med |  |
+
+## TR — Turkish (Türkiye)
+
+*languages-world-1, 10 November 2026. Formal “siz” (deneyin, yönetin, işletmeniz), as Adisyo and Menulux write their B2B pages. Turks search the English “food truck” (food truck kiralama, food truck fiyatları); “yemek kamyonu” is secondary and Wikipedia’s “gıda kamyonu” is not searched. Traps: “paket servis/paket sipariş” = delivery, not takeaway (use “gel al”); “POS” alone = the card terminal (“POS cihazı”), the till is “adisyon sistemi”; “menü” also means a set meal (“Whopper Menü”); “kapıda ödeme” = pay the courier at the door. Suffixes on English words take an apostrophe: food truck’lar, HatchGrab’in.*
+
+| Concept | Use | Alternatives / Avoid | B2B/B2C | Conf. | Notes |
+|---|---|---|---|---|---|
+| Food truck | **food truck** | yemek kamyonu; gıda kamyonu (avoid) | Both | High | plural food truck’lar |
+| Street food | **sokak lezzetleri** | sokak yemekleri | Both | High |  |
+| Pre-order | **ön sipariş** / önceden sipariş | ileri tarihli sipariş (Yemeksepeti/Getir: scheduled) | Both | Med | “ön sipariş” is also used for product launches |
+| Click & collect | **gel al** | teslim alma; avoid paket servis (= delivery) | Both | High | Yemeksepeti “Gel Al”; Adisyo “gel-al” |
+| Pickup time | **teslim alma saati** | teslim saati | B2C | Med |  |
+| KDS | **mutfak ekranı** | mutfak sipariş ekranı; KDS | B2B | High | SambaPOS/Akınsoft/Adisyo mutfak ekranı |
+| POS / till | **adisyon sistemi** | POS sistemi (but “POS” alone = card terminal) | B2B | High |  |
+| Card reader | **POS cihazı** | kart okuyucu (= ID/e-imza reader, avoid) | B2B | High |  |
+| Menu (list of dishes) | **menü** |  | Both | High | also means set meal |
+| Meal deal / combo | **combo menü** | menü; kombo menü | B2C | Med |  |
+| Allergens | **alerjenler** | alerjen uyarısı | Both | High |  |
+| Private hire | **food truck kiralama** | yemek kamyonu kiralama | Both | High |  |
+| Private event | **özel etkinlik** | özel davet; organizasyon | Both | Med |  |
+| Commission-free | **komisyonsuz** | %0 komisyon | B2B | High | komisyonsuz yemek siparişi |
+| WhatsApp auto-reply | **WhatsApp otomatik yanıt** | otomatik mesaj | B2B | High | WhatsApp Business otomatik yanıt |
+| Walk-up order | **yerinde sipariş** | tezgâhtan sipariş | B2B | Low |  |
+
+## KO — Korean (South Korea)
+
+*languages-world-1, 10 November 2026. Polite 해요체 with -세요 imperatives (관리해 보세요) and 합니다체 for statements, addressing the 사장님 — as Toss Place writes. 푸드트럭 is the only truck word. 미리 주문 is the everyday order-ahead word (McDonald’s, Subway, Toss Order); 픽업 for collecting, 포장 for takeaway in general (Baemin, Coupang Eats). 현장결제 is the Baemin/Naver word for paying at the shop on a pickup order; avoid 만나서 결제 (delivery rider). Korea runs on KakaoTalk, not WhatsApp.*
+
+| Concept | Use | Alternatives / Avoid | B2B/B2C | Conf. | Notes |
+|---|---|---|---|---|---|
+| Food truck | **푸드트럭** |  | Both | High |  |
+| Street food | **길거리 음식** |  | Both | High |  |
+| Pre-order | **미리 주문** | 사전 주문 (products/airline meals); 선주문; 예약 주문 (stock trading) | Both | High |  |
+| Click & collect | **픽업** | 포장 (takeaway); 픽업 주문, 포장 주문 | Both | High |  |
+| Pickup time | **픽업 시간** | 수령 시간 | B2C | High |  |
+| KDS | **주방 디스플레이(KDS)** | 주방 모니터; 주문 현황 (Toss) | B2B | Med |  |
+| POS / till | **포스(POS)** |  | B2B | High |  |
+| Card reader | **카드 단말기** |  | B2B | High | 푸드트럭 카드단말기 |
+| Menu (list of dishes) | **메뉴** | 메뉴판 (printed board) | Both | High |  |
+| Meal deal / combo | **세트 메뉴** |  | B2C | High |  |
+| Allergens | **알레르기 유발물질** |  | Both | High | 알레르기 유발물질 표시 |
+| Private hire | **푸드트럭 섭외** | 푸드트럭 대여 (renting the vehicle); 출장 | Both | Med |  |
+| Private event | **단독 행사** | 개인 행사; 기업 행사 | Both | Low |  |
+| Commission-free | **중개 수수료 0원** | 수수료 없음 | B2B | Med | Baemin: 중개이용료 |
+| WhatsApp auto-reply | **WhatsApp 자동 응답** | 카카오톡 채널 자동응답 (what Koreans use) | B2B | Med | WhatsApp is rare in Korea |
+| Walk-up order | **현장 주문** |  | B2B | Med |  |
+
+## ZH-TW — Chinese (Traditional, Taiwan)
+
+*languages-world-1, 10 November 2026. Traditional characters with Taiwan’s words (not Hong Kong’s): 餐車 (not 美食車), 點餐 (not 落單), 菜單, 過敏原, 外帶/自取, 手機, 刷卡機, 方案. “你” in marketing copy, as iCHEF POS writes; “您” is fine in forms. 預約點餐 / 預點自取 is how McDonald’s, MOS and Starbucks Taiwan say order ahead; 現場付款 is the pay-in-store wording. Taiwan runs on LINE, not WhatsApp.*
+
+| Concept | Use | Alternatives / Avoid | B2B/B2C | Conf. | Notes |
+|---|---|---|---|---|---|
+| Food truck | **餐車** | 行動餐車; 胖卡餐車; 美食車 (HK, avoid) | Both | High |  |
+| Street food | **小吃** | 街頭美食 | Both | High |  |
+| Pre-order | **預約點餐** | 預點; 提前點餐 | Both | High |  |
+| Click & collect | **自取** | 外帶自取; 線上點餐自取 | Both | High |  |
+| Pickup time | **取餐時間** | 取餐時段 | B2C | High |  |
+| KDS | **廚房顯示系統（KDS）** | 廚房顯示器 | B2B | Med |  |
+| POS / till | **POS 系統** | 收銀系統 (HK) | B2B | High |  |
+| Card reader | **刷卡機** |  | B2B | High |  |
+| Menu (list of dishes) | **菜單** | 餐牌 (HK, avoid) | Both | High |  |
+| Meal deal / combo | **套餐** |  | B2C | High |  |
+| Allergens | **過敏原** | 致敏原 (HK, avoid) | Both | High | 過敏原標示 |
+| Private hire | **餐車包車** | 餐車出租 (renting the vehicle); 外燴 | Both | High |  |
+| Private event | **私人活動** | 包場 | Both | Low |  |
+| Commission-free | **免抽成** | 零抽成; 0% 抽成 | B2B | Med |  |
+| WhatsApp auto-reply | **WhatsApp 自動回覆** | LINE 自動回覆 (what Taiwan uses) | B2B | Med |  |
+| Walk-up order | **現場點餐** |  | B2B | High |  |
+
+## ID — Indonesian (Indonesia)
+
+*languages-world-1, 10 November 2026. Formal "Anda" on operator pages, as POS vendors (majoo, Accurate, HashMicro) write; GrabFood and GoFood speak to consumers with "kamu", so customer truck pages use pronoun-free imperatives ("Pesan dulu…, lalu ambil…"). "Food truck" stays English. Traps: "Bayar di Tempat" means COD (cash on delivery) in Indonesian e-commerce, so never use it for Pay at Hatch; "aplikasi kasir" is the till word (HatchGrab is not one); customers pay mostly by QRIS/e-wallet. No search-volume tool; US-located search, so Med/Low rows need a native check.*
+
+| Concept | Use | Alternatives / Avoid | B2B/B2C | Conf. | Notes |
+|---|---|---|---|---|---|
+| Food truck | **food truck** | truk kuliner, foodtruck | Both | High | loanword, no plural marking |
+| Street food | **kuliner jalanan** | street food, jajanan kaki lima | Both | Med |  |
+| Pre-order | **pre-order** / **pesan dulu** | PO, pesanan terjadwal (GrabFood’s scheduled-delivery feature) | Both | Med | "pre-order" is everyday social-commerce Indonesian |
+| Click & collect | **ambil sendiri** | Pickup (GoFood keeps English) | Both | High | GrabFood’s feature name |
+| Pickup time | **waktu pengambilan** | jam ambil | Both | Med | GrabFood: "estimasi waktu pengambilan pesanan" |
+| KDS | **layar dapur (KDS)** | Kitchen Display System | B2B | High | majoo, Accurate, HashMicro |
+| POS / till | **aplikasi kasir** | sistem POS, mesin kasir | B2B | High | only as "bukan aplikasi kasir" |
+| Card reader | **mesin EDC** | mesin gesek kartu | B2B | High |  |
+| Menu (list of dishes) | **menu** | daftar menu | Both | High |  |
+| Meal deal / combo | **paket** | combo, paket hemat | B2C | High |  |
+| Allergens | **alergen** | | Both | Med | "informasi alergen" |
+| Private hire | **sewa food truck** | food truck untuk acara | Both | Med |  |
+| Private event | **acara pribadi** | acara privat | Both | Med | the app’s private event: a date hidden from the map, with its own ordering link |
+| Commission-free | **tanpa komisi** | 0% komisi | B2B | High | GoFood/GrabFood commission (~20%) is the pain point |
+| WhatsApp auto-reply | **balasan otomatis WhatsApp** | | B2B | High | WhatsApp is the main messenger in Indonesia |
+| Walk-up order | **pesanan langsung di tempat** | pembeli langsung | B2B | Low | native check; avoid "pesan di tempat" (= dine-in in majoo) |
+
+## VI — Vietnamese (Vietnam)
+
+*languages-world-1, 10 November 2026. "bạn", as Sapo FnB and consumer apps write ("quý khách" is too formal for SaaS). "Food truck" stays English (often "xe food truck"). ShopeeFood’s "Đặt trước, lấy tại quán" is the consumer model for pre-order and collect. Traps: the cost pain word is "chiết khấu"/"hoa hồng" of delivery apps; "máy POS" usually means the bank card terminal; Zalo, not WhatsApp, is the messenger shops use. No search-volume tool; US-located search, so Med/Low rows need a native check.*
+
+| Concept | Use | Alternatives / Avoid | B2B/B2C | Conf. | Notes |
+|---|---|---|---|---|---|
+| Food truck | **food truck** (xe food truck) | xe bán đồ ăn lưu động | Both | Med |  |
+| Street food | **ẩm thực đường phố** | đồ ăn đường phố | Both | High |  |
+| Pre-order | **đặt trước** / **đặt món trước** | | Both | High | ShopeeFood |
+| Click & collect | **nhận món tại xe** | lấy tại quán (ShopeeFood), tự đến lấy | Both | Med | adapt "lấy tại quán" to the truck |
+| Pickup time | **giờ nhận món** | thời gian nhận hàng | Both | Med |  |
+| KDS | **màn hình bếp (KDS)** | báo bếp | B2B | Med | Sapo: "tự động báo bếp, in hóa đơn" |
+| POS / till | **phần mềm bán hàng** | máy POS, phần mềm quản lý nhà hàng | B2B | High | only as "không phải máy POS" |
+| Card reader | **máy POS** (quẹt thẻ) | máy quẹt thẻ | B2B | Med |  |
+| Menu (list of dishes) | **thực đơn** | menu | Both | High | Sapo writes "menu"; both fine |
+| Meal deal / combo | **combo** | | B2C | High | GrabFood VN menus |
+| Allergens | **chất gây dị ứng** | | Both | Med |  |
+| Private hire | **thuê food truck** | | Both | Med |  |
+| Private event | **sự kiện riêng** | | Both | Med | the app’s private event: a date hidden from the map, with its own ordering link |
+| Commission-free | **không mất hoa hồng** | 0% chiết khấu | B2B | High | Sapo: "Không mất hoa hồng đơn hàng" |
+| WhatsApp auto-reply | **tự động trả lời trên WhatsApp** | | B2B | Med | low value in VN (Zalo dominates) |
+| Walk-up order | **đơn mua tại chỗ** | khách mua trực tiếp | B2B | Low | native check |
+
+## HE — Hebrew (Israel)
+
+*languages-world-1, 10 November 2026. Plural imperative and אתם/לכם (gender-neutral by convention), as Tabit IL writes (שדרגו איתנו, מלאו את הטופס ונחזור אליכם); no masculine-singular, no slash forms. The loanword פודטראק (plural פודטראקים) is what press and trucks use; משאית אוכל is the encyclopedic word. Israeli vendors say איסוף עצמי, קופה (till), מסוף אשראי (card terminal), עמלות. Pages are RTL; never attach ב/ל/מ to {country} or {truck}. Low-confidence rows need a native check.*
+
+| Concept | Use | Alternatives / Avoid | B2B/B2C | Conf. | Notes |
+|---|---|---|---|---|---|
+| Food truck | **פודטראק** | פוד טראק / פוד-טראק; משאית אוכל | Both | Med | plural פודטראקים |
+| Street food | **אוכל רחוב** | מאכלי רחוב | Both | High |  |
+| Pre-order | **הזמנה מראש** |  | Both | Med |  |
+| Click & collect | **איסוף עצמי** | טייק אווי (takeaway) | Both | High | Tabit Order |
+| Pickup time | **שעת איסוף** | זמן איסוף | B2C | Med |  |
+| KDS | **מסך מטבח (KDS)** |  | B2B | Med | Tabit KDS |
+| POS / till | **קופה** | קופה רושמת; מערכת קופה | B2B | High |  |
+| Card reader | **מסוף אשראי** | מסופון; מכשיר סליקה | B2B | High |  |
+| Menu (list of dishes) | **תפריט** |  | Both | High |  |
+| Meal deal / combo | **ארוחה** | קומבו; דיל | B2C | Low |  |
+| Allergens | **אלרגנים** |  | Both | Med |  |
+| Private hire | **פודטראק לאירועים** | השכרת פודטראק | Both | Med |  |
+| Private event | **אירוע פרטי** |  | Both | Med |  |
+| Commission-free | **ללא עמלות** | בלי עמלות | B2B | Med |  |
+| WhatsApp auto-reply | **מענה אוטומטי ב-WhatsApp** |  | B2B | Med | WhatsApp is dominant in Israel |
+| Walk-up order | **הזמנה במקום** |  | B2B | Low |  |
+
+## IS — Icelandic (Iceland)
+
+*languages-world-1, 10 November 2026. "þú" (the only form in commercial use; Aha.is, Wolt Iceland). Everyday word for a food truck is "matarvagn" (Reykjavík city news, the Götubitahátíð street-food festival); "matsöluvagn" is the health authority’s permit term. Traps: {country} = Ísland declines (Íslandi/Íslands), so keep it in parentheses or after "HatchGrab"; "posi" is the card terminal; Messenger, not WhatsApp, is the default messenger. No search-volume tool; US-located search, so Med/Low rows need a native check.*
+
+| Concept | Use | Alternatives / Avoid | B2B/B2C | Conf. | Notes |
+|---|---|---|---|---|---|
+| Food truck | **matarvagn** (ft. matarvagnar) | matsöluvagn (legal), food truck | Both | High |  |
+| Street food | **götubiti** | götumatur | Both | High | Besti Götubiti Íslands |
+| Pre-order | **forpöntun** / **panta fyrir fram** | fyrirfram | Both | Med |  |
+| Click & collect | **sækja** (pöntun) | sótt | Both | High | Aha.is: "Þú sækir" |
+| Pickup time | **afhendingartími** | tími til að sækja | Both | Low | native check |
+| KDS | **eldhússkjár** | KDS | B2B | Low | literal compound; no vendor page found |
+| POS / till | **afgreiðslukerfi** | kassakerfi | B2B | High | dk iPOS; only as "ekki afgreiðslukerfi" |
+| Card reader | **posi** | kortalesari | B2B | High |  |
+| Menu (list of dishes) | **matseðill** | | Both | High |  |
+| Meal deal / combo | **tilboð** | máltíð | B2C | Med |  |
+| Allergens | **ofnæmisvaldar** | | Both | High |  |
+| Private hire | **leigja matarvagn** | matarvagn í veisluna | Both | Med |  |
+| Private event | **einkaviðburður** | lokaður viðburður, einkasamkvæmi | Both | Med | the app’s private event: a date hidden from the map, with its own ordering link |
+| Commission-free | **án þóknunar** | engin þóknun | B2B | Med |  |
+| WhatsApp auto-reply | **sjálfvirk svör á WhatsApp** | | B2B | Med | low value in IS (Messenger dominates) |
+| Walk-up order | **pöntun á staðnum** | | B2B | Low | native check |
+
+## SR — Serbian (Serbia)
+
+*languages-world-1, 10 November 2026. LATIN script, ekavian: Glovo RS (which absorbed Donesi), Wolt RS, restaurant ordering sites and most business press are Latin; Cyrillic is the state’s official script but private commerce barely uses it online. Formal "vi" on operator pages (Glovo speaks to consumers with "ti"). Traps: "sr-RS" defaults to Cyrillic in ICU/browsers, so formatting needs "sr-Latn-RS"; do not reuse Croatian ("vreme" not "vrijeme", "ekran" not "zaslon"); "kasa"/"fiskalna kasa" is the till while "POS terminal" is the card reader; Viber, not WhatsApp, is the main messenger. No search-volume tool; US-located search, so Med/Low rows need a native check.*
+
+| Concept | Use | Alternatives / Avoid | B2B/B2C | Conf. | Notes |
+|---|---|---|---|---|---|
+| Food truck | **food truck** (m., pl. food truckovi) | | Both | Med |  |
+| Street food | **street food** | ulična hrana | Both | Med | festivals keep "Street Food Festival" |
+| Pre-order | **porudžbina unapred** / **poručite unapred** | narudžbina unapred | Both | Med |  |
+| Click & collect | **lično preuzimanje** | preuzimanje u restoranu | Both | High |  |
+| Pickup time | **vreme preuzimanja** | termin preuzimanja | Both | High |  |
+| KDS | **kuhinjski ekran (KDS)** | kuhinjski displej | B2B | Low | native check |
+| POS / till | **kasa** / **fiskalna kasa** | POS sistem | B2B | High | only as "nije kasa" |
+| Card reader | **POS terminal** | čitač kartica | B2B | High |  |
+| Menu (list of dishes) | **meni** | jelovnik | Both | High | walter.rs "Meni" |
+| Meal deal / combo | **kombo ponuda** | meni, paket | B2C | Low | "meni" is ambiguous |
+| Allergens | **alergeni** | | Both | High |  |
+| Private hire | **iznajmljivanje food trucka** | food truck za proslave | Both | Med |  |
+| Private event | **privatni događaj** | privatna proslava | Both | Med | the app’s private event: a date hidden from the map, with its own ordering link |
+| Commission-free | **bez provizije** | 0% provizije | B2B | High |  |
+| WhatsApp auto-reply | **automatski odgovori na WhatsApp-u** | | B2B | Med | low value in RS (Viber dominates) |
+| Walk-up order | **porudžbina na licu mesta** | | B2B | Low | native check |
 
 ## Build notes for the language work (for the agent)
 

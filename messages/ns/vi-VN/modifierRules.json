@@ -1,0 +1,4 @@
+{
+  "customer": "{required, select, yes {Bắt buộc} other {Không bắt buộc}}{limit, select, one { · Chọn một} upTo { · Chọn tối đa {max}} other {}}",
+  "operator": "{required, select, yes {Bắt buộc} other {Không bắt buộc}}{limit, select, one { · Khách chọn một} upTo { · Khách chọn tối đa {max}} other {}}"
+}

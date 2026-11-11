@@ -1,0 +1,134 @@
+{
+  "item": {
+    "weekHeading": "Tiêu đề tuần",
+    "weekHeadingSample": "Tuần bắt đầu từ …",
+    "daysSample": "{first} đến {last}",
+    "date": "Ngày",
+    "place": "Địa điểm",
+    "venue": "Nơi bán",
+    "area": "Khu vực",
+    "time": "Giờ",
+    "rows": "Các hàng",
+    "rowsSample": "Cách nhau {px}px · {first} đến {last}",
+    "ownText": "Chữ của riêng bạn",
+    "noteTokenSample": "Ghi chú bạn nhập khi tạo bài đăng",
+    "nothingYet": "Chưa có gì",
+    "thisBox": "ô này"
+  },
+  "sample": {
+    "venue": "Chợ đêm phố cổ",
+    "area": "Hội An"
+  },
+  "bar": {
+    "previewWith": "Xem trước với",
+    "undo": "Hoàn tác",
+    "undoTitle": "Hoàn tác (⌘Z)",
+    "redo": "Làm lại",
+    "redoTitle": "Làm lại (⇧⌘Z)",
+    "cancel": "Hủy",
+    "saving": "Đang lưu…",
+    "save": "Lưu mẫu thiết kế"
+  },
+  "grid": {
+    "eachRow": "Mỗi hàng",
+    "placeOff": "Tên địa điểm đã có trong ảnh của bạn — HatchGrab sẽ không thêm vào."
+  },
+  "background": {
+    "uploading": "Đang tải lên…",
+    "replace": "Thay ảnh",
+    "shape": {
+      "square": "Vuông (1:1)",
+      "portrait45": "Dọc (4:5)",
+      "portrait916": "Dọc (9:16)",
+      "landscape169": "Ngang (16:9)",
+      "portrait": "Dọc",
+      "landscape": "Ngang"
+    }
+  },
+  "scope": {
+    "title": "Vị trí chữ",
+    "standard": "Cùng vị trí với mẫu Tiêu chuẩn",
+    "own": "Vị trí riêng cho địa điểm: {place}",
+    "locked": "Các vị trí này lấy từ mẫu Tiêu chuẩn của bạn. Chọn “Vị trí riêng cho địa điểm: {place}” để chỉ di chuyển chúng ở đây."
+  },
+  "stage": {
+    "hint": "Kéo một ô để di chuyển · kéo góc để đổi kích thước",
+    "zoomOut": "Thu nhỏ",
+    "zoomIn": "Phóng to"
+  },
+  "rows": {
+    "spacing": "Khoảng cách",
+    "daysRun": "Các ngày chạy từ {first} đến {last}. Ba ô của hàng 1 được sao chép xuống theo khoảng cách này.",
+    "whichEvents": "Những sự kiện nào",
+    "showCancelled": "Hiện sự kiện đã hủy",
+    "showCancelledHint": "Sự kiện đã hủy hiện địa điểm bị gạch ngang kèm chữ ĐÃ HỦY. Nếu tắt, ngày đó được hiểu là ngày nghỉ."
+  },
+  "days": {
+    "reorder": "Sắp xếp lại",
+    "move": "di chuyển"
+  },
+  "picture": {
+    "picture": "Ảnh",
+    "fill": "Lấp đầy ô",
+    "fit": "Vừa trong ô",
+    "corners": "Góc",
+    "square": "Vuông",
+    "rounded": "Bo góc",
+    "ifMissing": "Nếu địa điểm chưa có ảnh",
+    "noPicture": {
+      "omit": "Bỏ qua",
+      "blank": "Để trống một khoảng",
+      "logo": "Hiện logo của bạn"
+    },
+    "border": "Viền",
+    "drawBorder": "Vẽ viền",
+    "drawBorderHint": "Một đường viền quanh ảnh, theo màu bạn chọn.",
+    "borderWidth": "Độ dày viền",
+    "cornerRadius": "Độ bo góc",
+    "locationPictures": "Ảnh địa điểm",
+    "addLocationPictures": "+ Thêm ảnh địa điểm",
+    "allHaveImage": "{total, plural, =0 {Bạn chưa có địa điểm nào.} one {Địa điểm của bạn đã có ảnh.} other {Tất cả # địa điểm của bạn đều đã có ảnh.}}",
+    "someWithout": "{without} trong số {total, plural, one {# địa điểm} other {# địa điểm}} của bạn {without, plural, one {chưa có ảnh} other {chưa có ảnh}}"
+  },
+  "settings": {
+    "font": "Phông chữ",
+    "colour": "Màu",
+    "textColour": "Màu chữ",
+    "ownStyleNote": "{count, plural, one {{names} có kiểu riêng nên không bị thay đổi.} other {{names} có kiểu riêng nên không bị thay đổi.}}",
+    "matchAgain": "Đồng bộ lại",
+    "matchName": "Đồng bộ theo: {name}",
+    "lastToggle": "{kind, select, weekly {Hãy bật ít nhất Địa điểm hoặc Giờ. Sự kiện đã hủy hiện địa điểm bị gạch ngang kèm chữ ĐÃ HỦY, nên nếu tắt cả hai thì sẽ không có gì cho biết sự kiện đã hủy.} other {Hãy bật ít nhất Nơi bán hoặc Giờ. Sự kiện đã hủy hiện địa điểm bị gạch ngang kèm chữ ĐÃ HỦY, nên nếu tắt cả hai thì sẽ không có gì cho biết sự kiện đã hủy.}}"
+  },
+  "letters": {
+    "boldGlyph": "B",
+    "italicGlyph": "I",
+    "capsGlyph": "AA",
+    "italicTitle": "{italic} — phông này có kiểu nghiêng thật"
+  },
+  "align": {
+    "left": "Trái",
+    "centre": "Giữa",
+    "right": "Phải"
+  },
+  "effects": {
+    "outlineColour": "Màu viền chữ",
+    "bandColour": "Màu dải nền",
+    "bandDaysOff": "Dải nền ngày nghỉ",
+    "bandCancelled": "Dải nền khi sự kiện bị hủy",
+    "bandDaysOffHint": "Dùng thay cho dải nền ở trên vào ngày không bán.",
+    "bandCancelledHint": "Dùng thay cho dải nền ở trên khi sự kiện bị hủy."
+  },
+  "more": {
+    "dayOwnLine": "Thứ trên một dòng riêng",
+    "dayOwnLineHint": "Thứ trong tuần nằm phía trên ngày. Chỉ áp dụng cho ô Ngày.",
+    "noEventDay": "Vào ngày không có sự kiện",
+    "wordsBeforePlaceholder": "VD: Tìm chúng tôi tại",
+    "neverHyphenate": "Một từ dài không có khoảng trắng luôn được thu nhỏ — chúng tôi không bao giờ ngắt dòng giữa tên địa điểm."
+  },
+  "bits": {
+    "less": "Ít hơn",
+    "more": "Thêm",
+    "chooseColourFor": "{label} — chọn màu bất kỳ",
+    "chooseColour": "Chọn màu bất kỳ"
+  }
+}

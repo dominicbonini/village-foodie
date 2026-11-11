@@ -1,0 +1,103 @@
+{
+  "upload": {
+    "bannerButton": "Simpan menu saya →",
+    "heading": "Siapkan truk Anda",
+    "sub": "Menu Anda langsung terbawa.",
+    "privacy": "Kami hanya memakai ini untuk menyiapkan truk Anda dan mengirim link demo — lihat <link>kebijakan privasi</link> kami."
+  },
+  "sample": {
+    "bannerButton": "Siapkan truk saya →",
+    "heading": "Siapkan truk Anda",
+    "sub": "Berikutnya Anda akan mengunggah menu sendiri — hanya semenit.",
+    "privacy": "Kami hanya memakai ini untuk menyiapkan truk Anda dan mengirim link demo — lihat <link>kebijakan privasi</link> kami."
+  },
+  "saveOnly": {
+    "bannerButton": "Simpan menu saya →",
+    "heading": "Simpan demo Anda",
+    "sub": "Kami simpan selama 14 hari dan langsung mengirimi Anda link-nya lewat email.",
+    "privacy": "Kami hanya memakai ini untuk mengirim link demo Anda — lihat <link>kebijakan privasi</link> kami."
+  },
+  "confirmationHeading": "Semua sudah siap",
+  "postSaveButton": "Siapkan truk saya →",
+  "enterSetupButton": "Siapkan truk saya →",
+  "emailOnlyLink": "Kirimi saja saya link lewat email untuk kembali ke demo ini",
+  "sendLinkButton": "Kirimkan link-nya",
+  "savingButton": "Menyimpan…",
+  "continueButton": "Lanjut →",
+  "createAccountButton": "Buat akun saya →",
+  "retryButton": "Coba lagi",
+  "backToDemoButton": "Kembali ke demo",
+  "savedStatus": "{hasDate, select, yes {✓ Tersimpan — disimpan sampai {date}} other {✓ Tersimpan}}",
+  "back": "Kembali",
+  "close": "Tutup",
+  "truckStepHeading": "Tentang truk Anda",
+  "detailsStepHeading": "Selesaikan penyiapan",
+  "stepper": {
+    "details": "Data Anda",
+    "menu": "Menu",
+    "allergens": "Alergen",
+    "kitchen": "Pengaturan dapur",
+    "schedule": "Jadwal"
+  },
+  "confirmEmailed": "Kami sudah mengirimi Anda email berisi link langsung ke demo ini — tanpa perlu masuk akun.",
+  "confirmKeepUntil": "Kami simpan sampai <b>{date}</b>. Menu Anda ikut terbawa saat Anda menyiapkan akun sungguhan.",
+  "loading": "Memuat…",
+  "firstName": "Nama depan",
+  "lastName": "Nama belakang",
+  "truckName": "Nama truk",
+  "truckNamePlaceholder": "mis. Dapur Kemang",
+  "cuisine": "Jenis masakan",
+  "logoLabel": "Logo <opt>(opsional)</opt>",
+  "logoPreviewAlt": "Pratinjau logo",
+  "changeLogo": "Ganti logo",
+  "removeLogo": "Hapus",
+  "uploadLogo": "📷 Unggah logo",
+  "readyTitle": "Akun Anda sudah siap",
+  "readyBody": "Sekarang mari selesaikan penyiapan truk Anda — menu, alergen, dan dapur.",
+  "hangTight": "Mohon tunggu — sedang menyiapkan semuanya.",
+  "stage": {
+    "account": "Membuat akun Anda",
+    "truck": "Menyiapkan truk Anda",
+    "menu": "Memuat menu Anda"
+  },
+  "stageState": {
+    "done": "selesai",
+    "recognised": "Anda sudah punya akun",
+    "failed": "gagal",
+    "active": "sedang berjalan",
+    "pending": "menunggu"
+  },
+  "signIn": "Masuk",
+  "phone": "Telepon",
+  "onWhatsapp": "Nomor ini terdaftar di WhatsApp",
+  "email": "Email",
+  "emailPlaceholder": "anda@foodtruckanda.co.id",
+  "settingUpAs": "Menyiapkan sebagai <b>{email}</b> <change>ubah</change>",
+  "password": "Kata sandi",
+  "passwordPlaceholder": "Minimal 8 karakter",
+  "hidePassword": "Sembunyikan kata sandi",
+  "showPassword": "Tampilkan kata sandi",
+  "promoLabel": "Punya kode? <opt>(opsional)</opt>",
+  "promoPlaceholder": "Masukkan di sini",
+  "agreeTerms": "Saya menyetujui <terms>Ketentuan</terms> dan <privacy>Kebijakan Privasi</privacy>.",
+  "freeMonth": "{months, plural, =0 {Masa coba gratis Anda dimulai saat Anda mendaftar.} one {Bulan pertama Anda gratis, mulai saat Anda mendaftar.} other {# bulan pertama Anda gratis, mulai saat Anda mendaftar.}}",
+  "fieldError": {
+    "firstName": "Isi nama depan Anda.",
+    "lastName": "Dan nama belakang Anda.",
+    "truck": "Beri nama truk Anda.",
+    "cuisine": "Sebutkan apa yang Anda masak.",
+    "phoneMissing": "Tambahkan nomor telepon — pelanggan dan kami sama-sama memakainya untuk menghubungi Anda.",
+    "email": "Masukkan alamat email yang valid.",
+    "password": "Kata sandi minimal 8 karakter.",
+    "terms": "Setujui ketentuan untuk melanjutkan."
+  },
+  "error": {
+    "saveFailed": "Tidak dapat menyimpan — coba lagi.",
+    "savedNoEmail": "Tersimpan — tetapi link-nya belum bisa dikirim lewat email saat ini.",
+    "unreachable": "Tidak dapat terhubung ke kami saat ini — coba lagi.",
+    "createAccountFailed": "Akun Anda tidak dapat dibuat.",
+    "truckCreateFailed": "Akun Anda sudah siap, tetapi truk Anda tidak dapat dibuat. Coba lagi.",
+    "truckUnreachable": "Akun Anda sudah siap, tetapi truk Anda belum bisa dibuat saat ini. Coba lagi.",
+    "truckNoToken": "Truk Anda sudah siap, tetapi belum bisa dibuka saat ini. Coba lagi."
+  }
+}

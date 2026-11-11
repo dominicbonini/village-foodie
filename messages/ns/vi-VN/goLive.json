@@ -1,0 +1,43 @@
+{
+  "allergensUnanswered": {
+    "title": "Chọn cách hiển thị thông tin chất gây dị ứng",
+    "detail": "Cho đến khi bạn chọn, khách sẽ không thấy món nào — thực đơn tự bảo vệ bằng cách ẩn mọi món chưa xác nhận chất gây dị ứng, và hiện tại đó là tất cả các món.",
+    "where": "Thực đơn → Chất gây dị ứng"
+  },
+  "allergensCardMissing": {
+    "title": "Thêm bảng chất gây dị ứng",
+    "detail": "Bạn đã chọn hiển thị bảng chất gây dị ứng nhưng chưa lưu bảng nào — khách sẽ được báo là có thông tin chất gây dị ứng rồi lại không thấy gì.",
+    "where": "Thực đơn → Chất gây dị ứng"
+  },
+  "allergensItemsUnverified": {
+    "title": "{n, plural, one {Xác nhận chất gây dị ứng cho {count} món} other {Xác nhận chất gây dị ứng cho {count} món}}",
+    "detail": "{n, plural, one {Món của bạn đang bị ẩn với khách cho đến khi bạn xác nhận chất gây dị ứng của món.} other {{u, plural, one {{unverified} trong số {total} món của bạn đang bị ẩn với khách cho đến khi bạn xác nhận chất gây dị ứng.} other {{unverified} trong số {total} món của bạn đang bị ẩn với khách cho đến khi bạn xác nhận chất gây dị ứng.}}}} Món hiển thị khi chưa xác nhận chất gây dị ứng sẽ bị hiểu là “không chứa chất nào”, nên thực đơn ẩn món đó để tránh rủi ro.",
+    "where": "Thực đơn → Chất gây dị ứng"
+  },
+  "noVan": {
+    "title": "Thêm xe",
+    "detail": "Sự kiện chạy theo từng xe — chưa có xe thì không có gì để nhận đơn.",
+    "where": "Cài đặt → Xe của bạn"
+  },
+  "kitchenCapacityUnset": {
+    "title": "Đặt công suất bếp",
+    "detail": "Chưa đặt công suất cho: {vans}. Nếu không có, chúng tôi sẽ tiếp tục hứa với khách những giờ nhận món mà bếp của bạn không thể kịp.",
+    "where": "Thực đơn → Công suất bếp",
+    "unnamedVan": "Xe chưa đặt tên"
+  },
+  "noPrepBearingCategory": {
+    "title": "Cho chúng tôi biết món của bạn làm mất bao lâu",
+    "detail": "{categories, select, none {Bạn chưa có danh mục nào trong thực đơn, nên chúng tôi không tính được một đơn mất bao lâu.} other {Chưa danh mục nào được đặt thời gian nấu, nên với chúng tôi đơn nào cũng như xong ngay. Chúng tôi sẽ cứ đưa cho khách những giờ nhận món mà bếp của bạn không thể kịp, và càng đông khách thì giờ đó càng lệch xa.}}",
+    "where": "Thực đơn → Danh mục → Thiết lập bếp"
+  },
+  "emailUnverified": {
+    "title": "Xác nhận địa chỉ email",
+    "detail": "Chúng tôi gửi thông báo đơn hàng và thông tin khôi phục tài khoản đến địa chỉ này. Nếu địa chỉ sai, bạn chỉ phát hiện ra khi đã có sự cố.",
+    "where": "Kiểm tra hộp thư để tìm link xác nhận của chúng tôi"
+  },
+  "emailUnknown": {
+    "title": "Chưa rõ trạng thái xác nhận email",
+    "detail": "Chức năng xác minh email chưa được kết nối, nên chưa thể kiểm tra mục này. Mục này được thiết kế để chặn chứ không tự cho qua.",
+    "where": "—"
+  }
+}

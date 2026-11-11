@@ -1,0 +1,13 @@
+{
+  "subtotal": "Millisamtala",
+  "taxFallback": "Skattur",
+  "taxIncluded": "Innifalið: {label}",
+  "serviceFeeCustomer": "Þjónustugjald á netinu",
+  "serviceFee": "Þjónustugjald",
+  "cardFee": "Kortagjald",
+  "tip": "Þjórfé",
+  "rate": "{rate}%",
+  "line": "{label}: {amount}",
+  "lineWithRate": "{label} {rate}: {amount}",
+  "foldedCharges": "{parts, select, tax_fees_tip {Skattur, gjöld og þjórfé} tax_tip {Skattur og þjórfé} fees_tip {Gjöld og þjórfé} fees {Gjöld} other {Skattur og gjöld}}"
+}

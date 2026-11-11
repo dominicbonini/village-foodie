@@ -1,0 +1,49 @@
+{
+  "banner": {
+    "title": "{months, plural, one {Tháng đầu tiên hoàn toàn miễn phí — mở khóa mọi tính năng.} other {# tháng đầu tiên hoàn toàn miễn phí — mở khóa mọi tính năng.}}",
+    "body": "Với {brand}, khách đặt món trước và trả tiền khi nhận món, nên bạn có thể nhận đơn online mà không cần kết nối cổng thanh toán thẻ nào. Muốn thu tiền trước? Bạn có thể thêm thanh toán thẻ online bất cứ lúc nào. Khi hết thời gian dùng thử, bạn sẽ chuyển sang gói <plan>{fallback}</plan>{fallbackFree, select, yes { — miễn phí hằng tháng —} other {}} trừ khi bạn chọn gói khác. Không cần thẻ để bắt đầu, không hợp đồng, hủy bất cứ lúc nào.",
+    "bodyOnly": "Với {brand}, khách đặt món trước và trả tiền khi nhận món, nên bạn có thể nhận đơn online mà không cần kết nối cổng thanh toán thẻ nào. Muốn thu tiền trước? Bạn có thể thêm thanh toán thẻ online bất cứ lúc nào. Khi hết thời gian dùng thử, gói <plan>{fallback}</plan> có giá {price} mỗi tháng. Chúng tôi sẽ liên hệ trước thời điểm đó để thiết lập thanh toán. Không cần thẻ để bắt đầu, không hợp đồng, hủy bất cứ lúc nào."
+  },
+  "card": {
+    "perTruckMonth": "mỗi xe / tháng",
+    "mostTrucks": "Nhiều xe chọn nhất",
+    "tryFree": "Dùng thử miễn phí",
+    "seeEvery": "Xem mọi tính năng →",
+    "everything": "Mọi thứ để vận hành ca bán",
+    "everythingIn": "Mọi thứ trong gói {plan}, cùng với"
+  },
+  "fee": {
+    "feeOnly": "<b>{fee}*</b> chỉ tính trên đơn online thanh toán bằng thẻ. Đơn mua tại chỗ luôn miễn phí.",
+    "included": "Mỗi tháng đã gồm <b>{included}</b> giá trị đơn online đầu tiên, sau đó tính <b>{fee}*</b>. Đơn mua tại chỗ luôn miễn phí.",
+    "noFee": "<b>Không mất phí HatchGrab</b> trên đơn online, dù bạn bán đắt hàng đến đâu. Một khoản phí cố định mỗi tháng, dễ dự tính."
+  },
+  "base": {
+    "walkUp": "Đơn mua tại chỗ & màn hình bếp (KDS)",
+    "online": "Đặt món online",
+    "preorders": "Đặt trước & giờ nhận món",
+    "capacity": "Quản lý công suất bếp",
+    "privateEvents": "Sự kiện riêng",
+    "printing": "In phiếu bếp",
+    "app": "Ứng dụng bếp trên iPhone, iPad và Android"
+  },
+  "added": {
+    "whatsapp_replies": "Tự động trả lời trên WhatsApp",
+    "schedule_graphics": "Bài đăng mạng xã hội — lịch bán trên Facebook và Instagram — sẵn sàng để đăng",
+    "event_types": "Loại sự kiện & giá tùy chỉnh"
+  },
+  "money": {
+    "unlimitedOrders": "Không giới hạn đơn online, 0% phí HatchGrab",
+    "samePrice": "Giá không đổi, kể cả tháng bận nhất"
+  },
+  "comingSoon": "Sắp ra mắt",
+  "bar": {
+    "title": "Gói nào rẻ nhất cho tôi?",
+    "subtitle": "Giá trị đơn online mỗi tháng của bạn",
+    "first": "Dưới {to} → <b>{plan}</b>",
+    "middle": "{from} – {to} → <b>{plan}</b>",
+    "last": "Trên {from} → <b>{plan}</b>",
+    "only": "Mọi mức → <b>{plan}</b>"
+  },
+  "footnote": "* Cộng phí xử lý thẻ của Stripe trên đơn online thanh toán bằng thẻ (hiện là {cardFee} tại {country}), trả cho Stripe, không phải HatchGrab. Đơn mua tại chỗ dùng máy POS của chính bạn — HatchGrab thu 0%.",
+  "currencyLine": "Giá tính bằng {currency} ({code})"
+}

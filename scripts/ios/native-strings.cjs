@@ -20,13 +20,17 @@ const REPO = path.resolve(__dirname, '../..')
 const APP = path.join(REPO, 'ios/App/App')
 const PBX = path.join(REPO, 'ios/App/App.xcodeproj/project.pbxproj')
 
-/** messages locale → the .lproj folder iOS looks for. en is the development region (CFBundleDevelopmentRegion = en). zh-HK is also
- *  written as zh-Hant, so a device set to Traditional Chinese without the Hong Kong region still finds it. */
+/** messages locale → the .lproj folder iOS looks for. en is the development region (CFBundleDevelopmentRegion = en). ~~zh-HK is also
+ *  written as zh-Hant, so a device set to Traditional Chinese without the Hong Kong region still finds it.~~ languages-world-1 (10 November
+ *  2026): zh-Hant is now Taiwan's words (zh-TW) — Apple's Traditional Chinese folder, the one a Taiwanese device reads — and zh-HK keeps its
+ *  own zh-HK folder; + Turkish, Korean, Indonesian, Vietnamese, Hebrew, Icelandic and Serbian (Latin script, sr-Latn — the script the
+ *  sr-RS messages are written in). */
 const LPROJ = {
   'en-GB': ['en'], 'fr-FR': ['fr'], 'de-DE': ['de'], 'es-ES': ['es'], 'it-IT': ['it'], 'pt-PT': ['pt-PT'], 'pt-BR': ['pt-BR'], 'nl-NL': ['nl'],
   'sv-SE': ['sv'], 'da-DK': ['da'], 'nb-NO': ['nb'], 'pl-PL': ['pl'], 'cs-CZ': ['cs'], 'hu-HU': ['hu'], 'sk-SK': ['sk'], 'ro-RO': ['ro'],
   'hr-HR': ['hr'], 'sl-SI': ['sl'], 'fi-FI': ['fi'], 'et-EE': ['et'], 'lv-LV': ['lv'], 'lt-LT': ['lt'], 'el-GR': ['el'], 'bg-BG': ['bg'],
-  'ms-MY': ['ms'], 'ja-JP': ['ja'], 'zh-HK': ['zh-HK', 'zh-Hant'], 'th-TH': ['th'], 'ar-AE': ['ar'],
+  'ms-MY': ['ms'], 'ja-JP': ['ja'], 'zh-HK': ['zh-HK'], 'zh-TW': ['zh-Hant'], 'th-TH': ['th'], 'ar-AE': ['ar'],
+  'tr-TR': ['tr'], 'ko-KR': ['ko'], 'id-ID': ['id'], 'vi-VN': ['vi'], 'he-IL': ['he'], 'is-IS': ['is'], 'sr-RS': ['sr-Latn'],
 }
 const PLIST_KEYS = { NSCameraUsageDescription: 'cameraUsage', NSBluetoothAlwaysUsageDescription: 'bluetoothUsage', NSLocalNetworkUsageDescription: 'localNetworkUsage', NSFaceIDUsageDescription: 'faceIdUsage' }
 const SWIFT_KEYS = ['offlineTitle', 'offlineDetail', 'retry']

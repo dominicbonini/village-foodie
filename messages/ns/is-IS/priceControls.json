@@ -1,0 +1,8 @@
+{
+  "change": "{label} — breyta",
+  "useRule": "{label} — nota regluna í staðinn",
+  "typePrice": "{label} — slá inn verð",
+  "backToRule": "Aftur í regluna",
+  "diffUp": "(+{amount})",
+  "diffDown": "(−{amount})"
+}

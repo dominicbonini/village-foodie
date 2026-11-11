@@ -1,0 +1,49 @@
+{
+  "banner": {
+    "title": "{months, plural, one {Fyrsti mánuðurinn er alveg ókeypis — allir eiginleikar opnir.} other {Fyrstu # mánuðirnir eru alveg ókeypis — allir eiginleikar opnir.}}",
+    "body": "Með {brand} panta viðskiptavinir fyrir fram og greiða þegar þeir sækja, svo þú getur tekið við netpöntunum án þess að tengja neina kortagreiðsluþjónustu. Viltu frekar fá greitt fyrir fram? Bættu við netgreiðslum með korti hvenær sem er. Þegar prufutímanum lýkur færist þú yfir á áskriftarleiðina <plan>{fallback}</plan>{fallbackFree, select, yes { — ekkert mánaðargjald —} other {}} nema þú veljir aðra leið. Ekkert kort til að byrja, enginn binditími, segðu upp hvenær sem er.",
+    "bodyOnly": "Með {brand} panta viðskiptavinir fyrir fram og greiða þegar þeir sækja, svo þú getur tekið við netpöntunum án þess að tengja neina kortagreiðsluþjónustu. Viltu frekar fá greitt fyrir fram? Bættu við netgreiðslum með korti hvenær sem er. Þegar prufutímanum lýkur kostar áskriftarleiðin <plan>{fallback}</plan> {price} á mánuði. Við höfum samband fyrir þann tíma til að ganga frá greiðslu. Ekkert kort til að byrja, enginn binditími, segðu upp hvenær sem er."
+  },
+  "card": {
+    "perTruckMonth": "á vagn / mánuð",
+    "mostTrucks": "Vinsælast",
+    "tryFree": "Prófa frítt",
+    "seeEvery": "Sjá alla eiginleika →",
+    "everything": "Allt sem þarf til að reka afgreiðslu",
+    "everythingIn": "Allt úr áskriftarleiðinni {plan}, auk"
+  },
+  "fee": {
+    "feeOnly": "<b>{fee}*</b> eingöngu af netpöntunum greiddum með korti. Pantanir á staðnum eru alltaf ókeypis.",
+    "included": "Netpantanir upp að <b>{included}</b> innifaldar á mánuði, síðan <b>{fee}*</b>. Pantanir á staðnum eru alltaf ókeypis.",
+    "noFee": "<b>Engin HatchGrab-gjöld</b> af netpöntunum, sama hve mikið er að gera. Einn fyrirsjáanlegur mánaðarkostnaður."
+  },
+  "base": {
+    "walkUp": "Pantanir á staðnum og eldhússkjár",
+    "online": "Netpantanir",
+    "preorders": "Forpantanir og afhendingartímar",
+    "capacity": "Stýring á afköstum eldhúss",
+    "privateEvents": "Einkaviðburðir",
+    "printing": "Prentun eldhúsmiða",
+    "app": "Eldhúsapp fyrir iPhone, iPad og Android"
+  },
+  "added": {
+    "whatsapp_replies": "Sjálfvirk svör á WhatsApp",
+    "schedule_graphics": "Færslur á samfélagsmiðla — dagskráin þín fyrir Facebook og Instagram — tilbúnar til birtingar",
+    "event_types": "Eigin viðburðategundir og verð"
+  },
+  "money": {
+    "unlimitedOrders": "Ótakmarkaðar netpantanir, 0% HatchGrab-gjald",
+    "samePrice": "Sama verð í annasamasta mánuðinum"
+  },
+  "comingSoon": "Væntanlegt",
+  "bar": {
+    "title": "Hvaða áskriftarleið er ódýrust fyrir mig?",
+    "subtitle": "Netpantanirnar þínar á mánuði",
+    "first": "Undir {to} → <b>{plan}</b>",
+    "middle": "{from} – {to} → <b>{plan}</b>",
+    "last": "Yfir {from} → <b>{plan}</b>",
+    "only": "Hvaða magn sem er → <b>{plan}</b>"
+  },
+  "footnote": "* Auk kortagjalda Stripe af netpöntunum greiddum með korti (sem stendur {cardFee} — {country}), sem greiðast til Stripe, ekki HatchGrab. Pantanir á staðnum fara í gegnum þinn eigin posa — HatchGrab tekur 0%.",
+  "currencyLine": "Gjaldmiðill: {currency} ({code})"
+}

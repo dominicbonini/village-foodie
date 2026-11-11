@@ -1,0 +1,32 @@
+{
+  "steps": {
+    "based": "Lokasi Anda",
+    "identity": "Truk Anda",
+    "menu": "Menu Anda",
+    "event": "Acara pertama"
+  },
+  "stepItem": "{number}. {label}",
+  "settingUp": "Menyiapkan",
+  "loading": "Memuat",
+  "loadingCountries": "Memuat…",
+  "verify": {
+    "ok": "Email terkonfirmasi — terima kasih.",
+    "expired": "Link konfirmasi itu sudah kedaluwarsa. Hubungi kami dan kami akan membereskannya sebelum Anda mulai tayang.",
+    "invalid": "Link konfirmasi itu tidak berfungsi. Hubungi kami dan kami akan membereskannya sebelum Anda mulai tayang."
+  },
+  "identity": {
+    "heading": "Apa nama truk Anda?",
+    "intro": "Nama inilah yang dilihat pelanggan. Tidak ada yang tampil publik sampai Anda memilih untuk mulai tayang.",
+    "nameLabel": "Nama truk",
+    "namePlaceholder": "Burger Pak Budi",
+    "phoneLabel": "Telepon",
+    "whatsappTick": "Nomor ini terdaftar di WhatsApp",
+    "phoneHelp": "Pelanggan melihat nomor ini di konfirmasi pesanan agar bisa bertanya soal pesanan. Centang ini menentukan apakah tertulis “Telepon kami” atau “Chat kami di WhatsApp”. Keduanya bisa Anda ubah di Pengaturan."
+  },
+  "phoneRequired": "Tambahkan nomor telepon — pelanggan dan kami sama-sama memakainya untuk menghubungi Anda.",
+  "createFailed": "Truk Anda tidak dapat dibuat.",
+  "unreachable": "Tidak dapat terhubung ke kami saat ini — silakan coba lagi.",
+  "back": "Kembali",
+  "creating": "Membuat truk Anda…",
+  "continue": "Lanjut"
+}

@@ -1,0 +1,18 @@
+{
+  "menuLabel": "Menu người dùng",
+  "screenOn": "Màn hình luôn sáng",
+  "screenOff": "Màn hình tự tắt",
+  "newOrderSound": "Âm báo đơn mới",
+  "copied": "Đã sao chép",
+  "orderLink": "Link đặt món",
+  "qrCode": "Mã QR",
+  "kitchenScreen": "Màn hình bếp (KDS)",
+  "thisDevice": "Thiết bị này",
+  "manage": "Quản lý",
+  "ordersDashboard": "Bảng điều khiển đơn hàng",
+  "admin": "Quản trị",
+  "privacy": "Chính sách quyền riêng tư",
+  "terms": "Điều khoản",
+  "signOut": "Đăng xuất",
+  "close": "Đóng"
+}

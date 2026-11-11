@@ -1,0 +1,134 @@
+{
+  "item": {
+    "weekHeading": "כותרת השבוע",
+    "weekHeadingSample": "שבוע מתאריך …",
+    "daysSample": "{first} עד {last}",
+    "date": "תאריך",
+    "place": "מקום",
+    "venue": "מתחם",
+    "area": "אזור",
+    "time": "שעה",
+    "rows": "שורות",
+    "rowsSample": "מרווח של {px}px · {first} עד {last}",
+    "ownText": "טקסט משלכם",
+    "noteTokenSample": "ההערה שאתם מקלידים כשאתם יוצרים את הפוסט",
+    "nothingYet": "עדיין אין כלום",
+    "thisBox": "התיבה הזו"
+  },
+  "sample": {
+    "venue": "שוק האיכרים",
+    "area": "נמל תל אביב"
+  },
+  "bar": {
+    "previewWith": "תצוגה מקדימה עם",
+    "undo": "ביטול פעולה",
+    "undoTitle": "ביטול פעולה (⌘Z)",
+    "redo": "ביצוע מחדש",
+    "redoTitle": "ביצוע מחדש (⇧⌘Z)",
+    "cancel": "יציאה",
+    "saving": "שומרים…",
+    "save": "שמירת העיצוב"
+  },
+  "grid": {
+    "eachRow": "כל שורה",
+    "placeOff": "שם המקום כבר מופיע בתמונה שלכם — HatchGrab לא תוסיף אותו."
+  },
+  "background": {
+    "uploading": "מעלים…",
+    "replace": "החלפת התמונה",
+    "shape": {
+      "square": "ריבוע (1:1)",
+      "portrait45": "לאורך (4:5)",
+      "portrait916": "לאורך (9:16)",
+      "landscape169": "לרוחב (16:9)",
+      "portrait": "לאורך",
+      "landscape": "לרוחב"
+    }
+  },
+  "scope": {
+    "title": "מיקומי הטקסט",
+    "standard": "אותם מיקומים כמו בעיצוב הרגיל",
+    "own": "מיקומים נפרדים עבור: {place}",
+    "locked": "המיקומים האלה מגיעים מהעיצוב הרגיל שלכם. בחרו “מיקומים נפרדים עבור: {place}” כדי להזיז אותם רק כאן."
+  },
+  "stage": {
+    "hint": "גררו תיבה כדי להזיז אותה · גררו פינה כדי לשנות את הגודל",
+    "zoomOut": "הקטנת התצוגה",
+    "zoomIn": "הגדלת התצוגה"
+  },
+  "rows": {
+    "spacing": "מרווח",
+    "daysRun": "הימים הם {first} עד {last}. שלוש התיבות של שורה 1 מועתקות כלפי מטה במרחק הזה.",
+    "whichEvents": "אילו אירועים",
+    "showCancelled": "הצגת אירועים שבוטלו",
+    "showCancelledHint": "באירוע שבוטל, שם המקום מופיע מחוק ולידו המילה “בוטל”. כשהאפשרות כבויה, היום מוצג כיום חופש."
+  },
+  "days": {
+    "reorder": "שינוי סדר",
+    "move": "הזזה"
+  },
+  "picture": {
+    "picture": "תמונה",
+    "fill": "מילוי התיבה",
+    "fit": "התאמה לתוך התיבה",
+    "corners": "פינות",
+    "square": "ישרות",
+    "rounded": "מעוגלות",
+    "ifMissing": "אם למקום אין תמונה",
+    "noPicture": {
+      "omit": "להשמיט",
+      "blank": "להשאיר מקום ריק",
+      "logo": "להציג את הלוגו שלכם"
+    },
+    "border": "מסגרת",
+    "drawBorder": "הוספת מסגרת",
+    "drawBorderHint": "קו מסביב לתמונה, בצבע שתבחרו.",
+    "borderWidth": "עובי המסגרת",
+    "cornerRadius": "רדיוס הפינות",
+    "locationPictures": "תמונות המקומות",
+    "addLocationPictures": "+ הוספת תמונות למקומות",
+    "allHaveImage": "{total, plural, =0 {עדיין אין לכם מקומות.} one {למקום שלכם יש תמונה.} two {לשני המקומות שלכם יש תמונה.} other {לכל # המקומות שלכם יש תמונה.}}",
+    "someWithout": "{without} מתוך {total, plural, one {# מקום} two {# המקומות} other {# המקומות}} שלכם {without, plural, one {עדיין בלי תמונה} two {עדיין בלי תמונה} other {עדיין בלי תמונה}}"
+  },
+  "settings": {
+    "font": "גופן",
+    "colour": "צבע",
+    "textColour": "צבע הטקסט",
+    "ownStyleNote": "{count, plural, one {הסגנון של {names} מוגדר בנפרד, ולכן הוא לא משתנה.} two {הסגנון של {names} מוגדר בנפרד, ולכן הם לא משתנים.} other {הסגנון של {names} מוגדר בנפרד, ולכן הם לא משתנים.}}",
+    "matchAgain": "התאמה מחדש",
+    "matchName": "התאמה לפי: {name}",
+    "lastToggle": "{kind, select, weekly {השאירו מופעלים לפחות את “מקום” או את “שעה”. באירוע שבוטל, שם המקום מופיע מחוק ולידו המילה “בוטל”, כך שאם שניהם כבויים לא יהיה שום דבר שיראה שהאירוע בוטל.} other {השאירו מופעלים לפחות את “מתחם” או את “שעה”. באירוע שבוטל, שם המקום מופיע מחוק ולידו המילה “בוטל”, כך שאם שניהם כבויים לא יהיה שום דבר שיראה שהאירוע בוטל.}}"
+  },
+  "letters": {
+    "boldGlyph": "B",
+    "italicGlyph": "I",
+    "capsGlyph": "AA",
+    "italicTitle": "{italic} — לגופן הזה יש נטוי אמיתי"
+  },
+  "align": {
+    "left": "שמאל",
+    "centre": "מרכז",
+    "right": "ימין"
+  },
+  "effects": {
+    "outlineColour": "צבע קו המתאר",
+    "bandColour": "צבע הפס",
+    "bandDaysOff": "פס בימי חופש",
+    "bandCancelled": "פס כשהאירוע בוטל",
+    "bandDaysOffHint": "מחליף את הפס שלמעלה ביום שאין בו פעילות.",
+    "bandCancelledHint": "מחליף את הפס שלמעלה כשהאירוע בוטל."
+  },
+  "more": {
+    "dayOwnLine": "היום בשורה נפרדת",
+    "dayOwnLineHint": "היום בשבוע מעל התאריך. רק עם תאריך.",
+    "noEventDay": "ביום שאין בו אירוע",
+    "wordsBeforePlaceholder": "למשל: אנחנו כאן",
+    "neverHyphenate": "מילה ארוכה אחת בלי רווח תמיד מוקטנת — אנחנו אף פעם לא מפצלים שם של מקום."
+  },
+  "bits": {
+    "less": "פחות",
+    "more": "עוד",
+    "chooseColourFor": "{label} — בחירת צבע חופשית",
+    "chooseColour": "בחירת צבע חופשית"
+  }
+}

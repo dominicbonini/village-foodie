@@ -1,0 +1,61 @@
+{
+  "steps": {
+    "reading": "메뉴를 읽는 중…",
+    "found": "메뉴 항목을 찾았습니다…",
+    "kitchen": "주방을 설정하는 중…",
+    "page": "주문 페이지를 만드는 중…",
+    "almost": "거의 다 됐습니다…"
+  },
+  "templateSteps": {
+    "truck": "샘플 푸드트럭을 만드는 중…",
+    "menu": "메뉴를 설정하는 중…",
+    "kitchen": "주방을 설정하는 중…",
+    "page": "주문 페이지를 만드는 중…",
+    "almost": "거의 다 됐습니다…"
+  },
+  "dialogLabel": "메뉴 올리기",
+  "heading": "✨ 메뉴 올리기",
+  "failedHeading": "메뉴를 읽지 못했습니다",
+  "close": "닫기",
+  "intro": "메뉴판 사진, 스크린샷, PDF를 올리거나 텍스트로 붙여 넣으세요. AI가 읽고 사장님의 메뉴와 가격으로 실제 작동하는 주문 페이지를 60초 안에 만들어 드립니다. 가입도, 카드도 필요 없습니다.",
+  "failedIntro": "사진이 너무 어둡거나 비스듬하거나 손글씨이면 가끔 이런 일이 생깁니다. 사장님 잘못이 아니라 저희가 해결할 문제입니다. 이렇게 해 보세요:",
+  "usually": "보통 60초 안에 끝납니다.",
+  "slow": "평소보다 오래 걸리고 있습니다 — 메뉴가 많으면 그럴 수 있습니다.",
+  "keepWaiting": "계속 기다리기",
+  "sampleWhileYouWait": "기다리는 동안 샘플 메뉴로 둘러보기",
+  "standIn": "이 메뉴는 <b>사장님의 메뉴가 아닙니다</b> — 작동 방식을 보여 드리기 위한 예시입니다.",
+  "seeSample": "샘플 메뉴 보기",
+  "tryAgain": "다시 시도",
+  "tryPhotoAgain": "이 사진으로 다시 시도",
+  "tryDifferent": "다른 사진으로 시도",
+  "uploadAnother": "← 다른 사진 업로드",
+  "orSample": "또는 샘플 메뉴로 둘러보기",
+  "orBuild": "또는 저희가 대신 만들어 드립니다",
+  "buildSent": "✓ 감사합니다 — 잘 받았습니다. 이메일로 연락드릴게요.",
+  "buildBody": "이메일을 남겨 주시면 담당자가 직접 메뉴를 입력하고 링크를 보내 드립니다.",
+  "emailPlaceholder": "you@yourfoodtruck.co.kr",
+  "sending": "…",
+  "send": "보내기",
+  "noPhoto": "지금 메뉴 사진이 없나요?",
+  "noPhotoBody": "대신 샘플 푸드트럭으로 둘러보세요 — 메뉴는 언제든지 업로드할 수 있습니다.",
+  "build": "내 데모 만들기 →",
+  "nothingPublished": "아무것도 공개되지 않습니다 — 사장님만 볼 수 있습니다.",
+  "error": {
+    "somethingWrong": "문제가 발생했습니다. 다시 시도해 주세요.",
+    "serverUnreachable": "서버에 연결할 수 없습니다. 인터넷 연결을 확인하고 다시 시도해 주세요.",
+    "sendFailed": "보내지 못했습니다 — 다시 시도해 주세요."
+  },
+  "fields": {
+    "uploadLabel": "메뉴 파일 올리기",
+    "dropHere": "메뉴 파일을 여기에 놓으세요",
+    "dragOrTap": "끌어다 놓거나 눌러서 선택하세요",
+    "fileTypes": "이미지 또는 PDF",
+    "or": "또는",
+    "pasteLabel": "메뉴 텍스트 붙여 넣기",
+    "pastePlaceholder": "메뉴를 여기에 붙여 넣으세요 — 메뉴 이름, 설명, 가격..."
+  },
+  "emailLabel": "이메일",
+  "emailNote": "데모 링크를 이메일로 보내 드리며, HatchGrab 설정과 관련해 연락드릴 수 있습니다. <link>개인정보처리방침</link>",
+  "marketing": "HatchGrab의 팁과 소식을 가끔 받겠습니다",
+  "emailInvalid": "올바른 이메일 주소를 입력해 주세요."
+}

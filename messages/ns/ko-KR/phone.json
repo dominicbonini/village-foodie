@@ -1,0 +1,5 @@
+{
+  "invalidMobile": "{withName, select, yes {올바른 {name} 휴대폰 번호를 입력해 주세요} other {올바른 휴대폰 번호를 입력해 주세요}}{withExample, select, yes { (예: {example})} other {}}",
+  "invalidPhone": "{withName, select, yes {올바른 {name} 전화번호를 입력해 주세요} other {올바른 전화번호를 입력해 주세요}}{withExample, select, yes { (예: {example})} other {}}",
+  "invalidPhoneNumber": "{withName, select, yes {올바른 {name} 전화번호를 입력하세요} other {올바른 전화번호를 입력하세요}}{withExample, select, yes { (예: {example})} other {}}."
+}

@@ -1,0 +1,154 @@
+{
+  "filter": {
+    "dateRange": "📅 日期範圍",
+    "event": "📍 活動",
+    "filterBy": "篩選條件",
+    "show": "顯示",
+    "range": "<from></from><sep>至</sep><until></until>",
+    "selectEvent": "選擇活動…",
+    "eventOption": "{venue} · {date}",
+    "unnamedEvent": "活動",
+    "viewReport": "查看報表",
+    "loading": "載入中…",
+    "orders": "📋 訂單",
+    "items": "📦 品項",
+    "exportCsv": "⬇ 匯出 CSV"
+  },
+  "empty": {
+    "noOrders": "這段期間沒有訂單。",
+    "selectEvent": "請在上方選擇活動以查看報表。"
+  },
+  "summary": {
+    "totals": "{n, plural, one {{count} 筆訂單} other {{count} 筆訂單}} · {total}"
+  },
+  "revenue": {
+    "title": "營收明細",
+    "deals": "優惠營收",
+    "modifiers": "客製選項加價",
+    "foodSales": "餐點銷售",
+    "total": "總計",
+    "other": "其他",
+    "tax": "稅金",
+    "tips": "小費",
+    "serviceFees": "服務費",
+    "cardFees": "刷卡手續費"
+  },
+  "itemsSold": {
+    "title": "已售出品項"
+  },
+  "dealsCard": {
+    "title": "優惠"
+  },
+  "custom": {
+    "title": "客製選項",
+    "paidModifiers": "付費客製選項",
+    "customerNotes": "顧客備註",
+    "note": "「{note}」"
+  },
+  "table": {
+    "item": "品項",
+    "modifier": "客製選項",
+    "qty": "數量",
+    "total": "總計",
+    "date": "日期",
+    "time": "時間",
+    "channel": "管道"
+  },
+  "breakdown": {
+    "orders": "訂單明細",
+    "items": "品項明細"
+  },
+  "channel": {
+    "online": "線上",
+    "walkUp": "現場點餐"
+  },
+  "csv": {
+    "orderId": "訂單 ID",
+    "date": "日期",
+    "event": "活動",
+    "timePlaced": "下單時間",
+    "collectionTime": "取餐時間",
+    "customerName": "顧客姓名",
+    "orderType": "訂單類型",
+    "items": "品項",
+    "deals": "優惠",
+    "modifiers": "客製選項",
+    "notes": "備註",
+    "subtotal": "小計",
+    "tip": "小費",
+    "serviceFee": "服務費",
+    "total": "總計",
+    "itemName": "品項名稱",
+    "qty": "數量",
+    "unitPrice": "單價",
+    "itemTotal": "品項總計",
+    "orderTotal": "訂單總計",
+    "unknownEvent": "未知活動",
+    "asap": "盡快",
+    "unknownCustomer": "未知",
+    "customerOnline": "顧客線上下單",
+    "placedByTruck": "餐車代為下單"
+  },
+  "presets": {
+    "label": "期間",
+    "custom": "自訂日期",
+    "thisMonth": "本月",
+    "lastMonth": "上個月",
+    "lastQuarter": "上一季",
+    "lastTaxYear": "上一個稅務年度"
+  },
+  "accounts": {
+    "title": "給你的會計師",
+    "help": "銷售額以活動當天計算。總銷售額是顧客實際支付的金額；淨銷售額是扣除退款和稅金後剩下的金額。",
+    "gross": "總銷售額",
+    "refunds": "退款",
+    "net": "淨銷售額",
+    "taxEstimated": "依你的稅率估算",
+    "taxNone": "你的餐車尚未設定稅率，因此這裡不會計算稅金。",
+    "byChannel": "依管道的總銷售額",
+    "byPayment": "依付款方式的總銷售額",
+    "online": "線上",
+    "walkUp": "現場點餐",
+    "cardOnline": "線上刷卡",
+    "payAtTruck": "現場付款",
+    "cost": "已售餐點成本",
+    "profit": "利潤",
+    "coverage": "{total, plural, one {已售出的 # 道餐點中，已設定成本：{withCost}} other {已售出的 # 道餐點中，已設定成本：{withCost}}}",
+    "partial": "未設定成本的餐點不會計入成本，所以這裡的利潤會比實際高。請在「菜單」中為每道餐點加上成本。",
+    "noCosts": "還沒有任何餐點設定成本。請在「菜單」中為餐點加上成本，就能看到利潤。",
+    "byEvent": "依活動",
+    "event": "活動",
+    "sales": "淨銷售額",
+    "eventNoProfit": "顯示破折號表示該活動售出的餐點並非都有設定成本。",
+    "downloadOrders": "⬇ 給會計師的訂單資料",
+    "downloadEvents": "⬇ 給會計師的活動資料",
+    "downloadHelp": "兩個試算表檔案：一個每筆訂單一列，一個每場活動一列。可用 Excel、Numbers、Xero 和 QuickBooks 開啟。"
+  },
+  "accountsCsv": {
+    "header": {
+      "date": "日期",
+      "time": "時間",
+      "orderNumber": "訂單編號",
+      "event": "活動",
+      "channel": "管道",
+      "paymentMethod": "付款方式",
+      "currency": "幣別",
+      "gross": "總額",
+      "tax": "稅金",
+      "taxBasis": "稅金計算依據",
+      "net": "淨額",
+      "refunded": "已退款",
+      "cost": "成本",
+      "profit": "利潤",
+      "eventDate": "活動日期",
+      "orders": "訂單數",
+      "dishesSold": "已售餐點數",
+      "dishesWithCost": "已設定成本的餐點數"
+    },
+    "taxBasis": {
+      "stored": "隨訂單儲存",
+      "estimated": "依你的稅率估算",
+      "none": "未設定稅率"
+    }
+  }
+}

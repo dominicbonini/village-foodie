@@ -1,0 +1,127 @@
+{
+  "eyebrow": "Perbandingan biaya",
+  "title": "Bandingkan biaya<br></br><accent>pesanan online</accent> Anda",
+  "system": {
+    "title": "Apakah Anda sudah menerima pesanan online?",
+    "yes": "Ya, dengan sistem lain",
+    "no": "Belum"
+  },
+  "trucks": {
+    "title": "Berapa food truck yang Anda jalankan?",
+    "aria": "Jumlah food truck"
+  },
+  "plan": {
+    "yourChoice": "Pilihan Anda",
+    "weSuggest": "Saran kami",
+    "summary": "{price} per truk per bulan, sudah termasuk pesanan online senilai {allowance}{fleet, plural, one {} other { untuk masing-masing truk}}.",
+    "switchTo": "Pakai paket {plan} saja",
+    "summaryFeeOnly": "{hasMonthly, select, yes {{price} per truk per bulan, ditambah {pct} untuk pesanan online dengan kartu.} other {Tanpa biaya bulanan — hanya {pct} untuk pesanan online dengan kartu.}}",
+    "summaryNoFee": "{price} per truk per bulan, pesanan online tanpa batas dan tanpa biaya HatchGrab."
+  },
+  "orders": {
+    "titleYes": "Pesanan online per bulan, per truk",
+    "count": "~{count, plural, one {# pesanan} other {# pesanan}}",
+    "captionNo": "Perkiraan kasar sudah cukup — pre-order dan pembeli yang ingin melewati antrean, bukan tunai atau kartu di truk.",
+    "captionYes": "Hanya pesanan lewat halaman pemesanan Anda — bukan tunai atau kartu di truk.",
+    "sliderAria": "Nilai pesanan online bulanan per truk",
+    "overAllowance": "Pesanan online senilai {allowance} sudah termasuk per truk. Kelebihan {excess} dikenakan {pct} — <b>{over}</b> per bulan untuk masing-masing truk.",
+    "insideAllowance": "Masih dalam batas pesanan online senilai {allowance} yang sudah termasuk — tanpa biaya tambahan di luar paket.",
+    "acrossFleet": "Untuk {fleet, plural, one {# truk} other {# truk}}: <b>{amount}</b> per bulan.",
+    "titleNo": "Kira-kira berapa penjualan online Anda per bulan, per truk?",
+    "feeOnly": "{pct} untuk setiap pesanan online dengan kartu — <b>{over}</b> per bulan per truk.",
+    "noFee": "Pesanan online tanpa batas sudah termasuk — tanpa biaya tambahan di luar paket."
+  },
+  "fee": {
+    "title": "Berapa biaya per pesanan Anda sekarang?",
+    "pctLabel": "Persentase",
+    "pctPlaceholder": "Tarif Anda",
+    "pctAria": "Biaya persentase",
+    "fixedLabel": "Ditambah per pesanan",
+    "fixedPlaceholder": "Biaya Anda",
+    "fixedAria": "Biaya tetap per pesanan",
+    "modeLabel": "Tarif mereka:",
+    "modeInclusive": "sudah termasuk biaya kartu",
+    "modeOnTop": "dikenakan terpisah",
+    "onTopNote": "Biaya pemrosesan kartu sebesar {fee} dikenakan di luar itu, jadi total yang sebenarnya Anda bayar adalah <b>{pct} + {fixed}</b>.",
+    "inclusiveNote": "Biaya pemrosesan kartu sebesar {fee} sudah termasuk di dalamnya, dan biaya itu tetap Anda bayar di mana pun. Biaya mereka sendiri <b>{pct}</b>."
+  },
+  "days": {
+    "title": "Berapa hari seminggu Anda berjualan?",
+    "help": "Acara, pasar, lokasi jualan — setiap hari kendaraan Anda keluar."
+  },
+  "jump": {
+    "cost": "Lihat biayanya ↓",
+    "saving": "Lihat penghematan Anda ↓"
+  },
+  "noSystem": {
+    "hero": "<lead>Pemesanan online, pre-order, dan layar dapur Anda hanya</lead><figure>{amount}</figure><unit>per hari jualan</unit>",
+    "basedOn": "Berdasarkan {days, plural, one {# hari} other {# hari}} seminggu · {monthly} per bulan{fleet, plural, one {} other { per kendaraan}}"
+  },
+  "coffee": "Kurang dari harga secangkir kopi.",
+  "freeMonths": "{n, plural, one {Dan bulan pertama gratis dari kami.} other {Dan # bulan pertama gratis dari kami.}}",
+  "cta": {
+    "upload": "Unggah menu saya →",
+    "uploadSave": "Unggah menu saya dan hemat {amount} →",
+    "ask": "Tanya kami",
+    "noCard": "Tidak perlu kartu untuk memulai"
+  },
+  "breakdown": {
+    "title": "Rincian bulanan Anda",
+    "titleDearer": "Biaya bulanan Anda di HatchGrab",
+    "plan": "Paket {plan}",
+    "over": "{pct} untuk kelebihan {excess} di atas {allowance} yang sudah termasuk",
+    "inside": "Pesanan online dalam batas {allowance} yang sudah termasuk",
+    "total": "HatchGrab per bulan",
+    "freeMonths": "{n, plural, one {Bulan 1} other {Bulan 1–#}}",
+    "freeAmount": "{amount} — gratis dari kami",
+    "acrossFleet": "Untuk {fleet, plural, one {# kendaraan} other {# kendaraan}}",
+    "perMonth": "{amount} per bulan",
+    "card": "Pemrosesan kartu — biaya Stripe {fee} per pesanan, dibayarkan ke Stripe. Dengan mesin EDC di truk pun biayanya kurang lebih sama.",
+    "provider": "Biaya penyedia Anda saat ini ({pct})",
+    "feeOnly": "{pct} untuk pesanan online senilai {excess}",
+    "noFee": "Pesanan online — tanpa batas, tanpa biaya HatchGrab"
+  },
+  "enterRate": "Masukkan biaya yang Anda bayar sekarang untuk melihat penghematan Anda.",
+  "panel": {
+    "nowYear": "<label>Saat ini Anda membayar</label><fig>{amount}<q> per tahun</q></fig>",
+    "nowMonth": "<label>Saat ini Anda membayar</label><fig>{amount}<q> per bulan</q></fig>",
+    "oursYear": "<label>Dengan HatchGrab</label><fig>{amount}<q> di tahun pertama</q></fig>",
+    "oursMonth": "<label>Dengan HatchGrab</label><fig>{amount}<q> per bulan</q></fig>",
+    "acrossFleet": "untuk {fleet, plural, one {# kendaraan} other {# kendaraan}}"
+  },
+  "hero": {
+    "save": "<verb>Anda hemat</verb><figure>{amount}</figure><sub><num>{pct}</num> lebih murah di tahun pertama</sub>",
+    "same": "<verb>Kurang lebih sama</verb><figure>{amount}</figure><sub><num>{pct}</num> lebih mahal di tahun pertama</sub>",
+    "dearer": "<lead>Semua yang dikerjakan HatchGrab, dengan tambahan</lead><figure>{amount}</figure><unit>per minggu</unit>",
+    "dearerSub": "{fleet, plural, one {{amount} per bulan lebih mahal dari sekarang} other {{amount} per kendaraan per bulan lebih mahal dari sekarang}}"
+  },
+  "anchor": {
+    "liability": "Setara asuransi tanggung gugat publik selama setahun.",
+    "weekendPitch": "Setara sewa lapak akhir pekan di festival kuliner.",
+    "festivalPitches": "Setara sewa beberapa lapak festival.",
+    "fryer": "Setara mesin penggoreng dan pelat pemanggang baru.",
+    "counter": "Setara renovasi total meja saji Anda.",
+    "vanDeposit": "Setara uang muka kendaraan kedua.",
+    "secondVan": "Setara kendaraan kedua yang siap jualan."
+  },
+  "year": {
+    "one": "Tahun pertama",
+    "two": "Tahun kedua",
+    "save": "Hemat {amount}<note>({pct} lebih murah)</note>",
+    "extra": "Tambahan {amount}<note>({pct} lebih mahal)</note>",
+    "current": "Penyedia saat ini <b>{amount}</b>",
+    "ours": "HatchGrab <b>{amount}</b>"
+  },
+  "smallPrint": {
+    "no": "Perkiraan berdasarkan angka yang Anda masukkan, dengan asumsi rata-rata pesanan {aov}. Biaya pemrosesan kartu berlaku di penyedia mana pun. Periksa dulu sebelum memutuskan.",
+    "yes": "Perkiraan berdasarkan angka yang Anda masukkan, dengan asumsi rata-rata pesanan {aov}. Biaya pemrosesan kartu sebesar {fee} per pesanan berlaku di penyedia mana pun, jadi tidak dihitung di kedua sisi.",
+    "onTop": "Angka total di pertanyaan {n} sudah memasukkannya — perbandingannya tidak, di kedua sisi.",
+    "check": "Periksa tarif penyedia Anda saat ini sebelum memutuskan."
+  },
+  "intro": "Hanya sekitar satu menit. Sudah memakai sistem lain? Kami bandingkan. Belum? Kami tunjukkan biayanya dengan jelas.",
+  "twoYear": "Dalam dua tahun, Anda hemat <b>{amount}</b>.",
+  "meta": {
+    "title": "Kalkulator biaya — HatchGrab {country}",
+    "description": "Bandingkan biaya pesanan online Anda saat ini, termasuk komisi aplikasi pesan antar, dengan setahun memakai HatchGrab — perkiraan dalam satu menit."
+  }
+}

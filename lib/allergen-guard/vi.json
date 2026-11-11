@@ -1,0 +1,118 @@
+{
+  "$comment": "languages-world-1 (10 November 2026): the WhatsApp allergen guard’s trigger words for VIETNAMESE (vi-VN): dị ứng, (không / bất) dung nạp, nhạy cảm, celiac, (sốc) phản vệ, không / không có / không cho / không chứa <allergen>, không ăn được, an toàn cho / với, phù hợp cho / với, có thể chứa, dấu vết, nhiễm chéo. Tone marks and diacritics fold away on both sides (\"di ung\" = \"dị ứng\"); đ is kept by the normaliser, so words with it are listed with d too (đậu phộng / dau phong). \"không cá\" is NOT a stem (it is inside \"không cay\"), nor bare \"không có\", nor bare \"an toàn\" (inside \"hoàn toàn\") or \"phản vệ\" (\"phần về\" folds to it). OPTION B, as every other language: absence / safety words only, NOT the bare allergen names (a presence question may reach the AI, which answers only from the tags and gets the caveat). Matched with the Unicode normaliser. caveatWords: a tagged label of the codex allergen set (stored in English, lower case) → the words a reply may use for it (matched on the raw lower-cased reply, so written as the AI writes them). The country has no allergen set of its own yet, so caveatWords are for 'codex' (as MX, SG, HK, MY, TH and AE).",
+  "language": "vi",
+  "normalise": "unicode",
+  "stems": [
+    "dị ứng",
+    "dung nạp",
+    "nhạy cảm",
+    "celiac",
+    "sốc phản vệ",
+    "soc phan ve",
+    "epipen",
+    "adrenalin",
+    "gluten free",
+    "không gluten",
+    "không có gluten",
+    "không chứa",
+    "không sữa",
+    "không có sữa",
+    "không lactose",
+    "không trứng",
+    "không có trứng",
+    "không đậu phộng",
+    "khong dau phong",
+    "không có đậu phộng",
+    "khong co dau phong",
+    "không lạc",
+    "không có lạc",
+    "không hải sản",
+    "không có hải sản",
+    "không tôm",
+    "không có tôm",
+    "không cua",
+    "không đậu nành",
+    "khong dau nanh",
+    "không có đậu nành",
+    "khong co dau nanh",
+    "không hạt",
+    "không có hạt",
+    "không cho đậu",
+    "khong cho dau",
+    "không cho sữa",
+    "không cho trứng",
+    "không cho tôm",
+    "đừng cho",
+    "không ăn được",
+    "khong an duoc",
+    "an toàn cho",
+    "an toàn với",
+    "có an toàn",
+    "phù hợp cho",
+    "phù hợp với",
+    "có thể chứa",
+    "dấu vết",
+    "nhiễm chéo"
+  ],
+  "tokens": [],
+  "caveatWords": {
+    "codex": {
+      "gluten": [
+        "gluten",
+        "lúa mì",
+        "bột mì",
+        "lúa mạch"
+      ],
+      "crustaceans": [
+        "giáp xác",
+        "tôm",
+        "cua",
+        "ghẹ",
+        "hải sản"
+      ],
+      "eggs": [
+        "trứng"
+      ],
+      "fish": [
+        "cá ",
+        "cá,",
+        "cá.",
+        "cá hồi",
+        "cá ngừ",
+        "nước mắm"
+      ],
+      "peanuts": [
+        "đậu phộng",
+        "lạc"
+      ],
+      "soy": [
+        "đậu nành",
+        "đậu hũ",
+        "đậu phụ",
+        "tàu hũ",
+        "nước tương",
+        "xì dầu"
+      ],
+      "milk": [
+        "sữa",
+        "lactose",
+        "phô mai",
+        "bơ",
+        "kem"
+      ],
+      "tree nuts": [
+        "hạt điều",
+        "hạnh nhân",
+        "óc chó",
+        "hạt dẻ",
+        "mắc ca",
+        "hồ đào",
+        "các loại hạt"
+      ],
+      "sulphites": [
+        "sulfit",
+        "sunfit"
+      ]
+    }
+  }
+}

@@ -1,0 +1,46 @@
+{
+  "tab": {
+    "all": "Tất cả",
+    "bold": "Đậm & cao",
+    "hand": "Viết tay",
+    "classic": "Cổ điển",
+    "clean": "Đơn giản",
+    "own": "Của bạn",
+    "ownCount": "Của bạn ({count})"
+  },
+  "yoursTag": "· của bạn",
+  "loadingFonts": "Đang tải phông chữ…",
+  "search": "Tìm trong {count, number} phông chữ",
+  "uploadButton": "↑ Tải phông chữ của bạn lên",
+  "loadingLibrary": "Đang tải thư viện phông chữ…",
+  "tryAgain": "Thử lại",
+  "noOwn": "Bạn chưa tải phông chữ nào lên. Hãy dùng nút “↑ Tải phông chữ của bạn lên” ở trên.",
+  "recent": "Dùng gần đây",
+  "popular": "Phổ biến cho áp phích",
+  "adding": "Đang thêm…",
+  "noMatch": "Không có phông chữ nào khớp với “{query}”.",
+  "showing": "Đang hiện {shown} trên {total, number} — gõ thêm để thu hẹp kết quả.",
+  "couldNotAdd": "Không thêm được phông chữ này",
+  "tooBig": "Phông chữ này nặng {size, number, ::.0 group-off}MB. Giới hạn là 5MB.",
+  "woff": "Vui lòng tải lên tệp TTF hoặc OTF — thường bạn có thể tải tệp này từ nơi đã mua phông chữ.",
+  "uploadIncomplete": "Tải lên chưa hoàn tất",
+  "added": "Đã thêm “{name}” ở dạng {face}.",
+  "face": {
+    "regular": "thường",
+    "bold": "đậm",
+    "italic": "nghiêng"
+  },
+  "licenceTick": "Tôi sở hữu phông chữ này hoặc có giấy phép sử dụng",
+  "checking": "Đang kiểm tra phông chữ…",
+  "addFont": "Thêm phông chữ",
+  "cancel": "Hủy",
+  "missingFaces": "Thêm dạng {faces} của “{name}” (không bắt buộc) — hãy chọn lại tệp.",
+  "somethingWrong": "Đã xảy ra lỗi",
+  "faceLower": {
+    "regular": "thường",
+    "bold": "đậm",
+    "italic": "nghiêng"
+  },
+  "ownLicence": "Của riêng bạn",
+  "loadFailed": "Không tải được phông chữ"
+}

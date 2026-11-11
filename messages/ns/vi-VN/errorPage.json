@@ -1,0 +1,8 @@
+{
+  "notFoundTitle": "Không tìm thấy trang",
+  "notFoundBody": "Chúng tôi không tìm thấy trang này. Có thể trang đã được chuyển, hoặc địa chỉ bị gõ sai.",
+  "home": "Về trang chủ",
+  "errorTitle": "Đã xảy ra lỗi",
+  "errorBody": "Rất tiếc — trang này không tải được. Hãy thử lại, hoặc quay về trang chủ.",
+  "retry": "Thử lại"
+}

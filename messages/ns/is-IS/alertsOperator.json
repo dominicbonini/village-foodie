@@ -1,0 +1,28 @@
+{
+  "hi": "Hæ {name},",
+  "limit80": {
+    "subject": "Þú hefur notað 80% af WhatsApp-svörum mánaðarins",
+    "used": "Sjálfvirk svör á WhatsApp hafa notað <b>{used} af {limit}</b> í þessum mánuði.",
+    "nothingStopped": "Ekkert hefur stöðvast. Þegar þú nærð {limit} gera sjálfvirk svör hlé þar til kvótinn endurnýjast þann <b>{reset}</b> — viðskiptavinir geta áfram sent þér skilaboð og þú sérð áfram allt sem þeir senda.",
+    "raise": "Þú getur hækkað mánaðarhámarkið í Stillingum hvenær sem er.",
+    "raiseLink": "Þú getur hækkað mánaðarhámarkið í Stillingum hvenær sem er:",
+    "button": "Opna Stillingar"
+  },
+  "limit100": {
+    "subject": "Sjálfvirk svör á WhatsApp eru í hléi út mánuðinn",
+    "usedAll": "Þú hefur notað öll {limit} sjálfvirku WhatsApp-svör mánaðarins, svo þau eru komin í hlé.",
+    "stillReach": "<b>Viðskiptavinir geta áfram sent þér skilaboð eins og venjulega og öll skilaboð berast þér.</b> Það eina sem hefur stöðvast er að sjálfvirka svarið fari til baka.",
+    "startAgain": "Þau fara aftur af stað þann <b>{reset}</b>, eða strax ef þú hækkar mánaðarhámarkið í Stillingum.",
+    "startAgainLink": "Þau fara aftur af stað þann {reset}, eða strax ef þú hækkar mánaðarhámarkið í Stillingum:",
+    "button": "Hækka hámarkið"
+  },
+  "paymentBlocked": {
+    "subject": "WhatsApp þarf greiðsluleið áður en hægt er að senda",
+    "stopped": "WhatsApp hefur stöðvað sjálfvirku svörin þín af því að engin virk greiðsluleið er skráð á WhatsApp Business-aðganginn þinn.",
+    "stillMessage": "<b>Viðskiptavinir geta áfram sent þér skilaboð og þú sérð áfram allt sem þeir senda</b> — en svörin berast þeim ekki.",
+    "payDirect": "Þú greiðir WhatsApp beint fyrir þessi skilaboð, svo þetta er lagað í WhatsApp Manager en ekki í HatchGrab. Bættu við korti eða uppfærðu það þar og svörin fara sjálfkrafa aftur af stað.",
+    "payDirectLink": "Þú greiðir WhatsApp beint fyrir þessi skilaboð, svo þetta er lagað í WhatsApp Manager en ekki í HatchGrab. Bættu við korti eða uppfærðu það þar og svörin fara sjálfkrafa aftur af stað:",
+    "button": "Opna WhatsApp Manager",
+    "settings": "Stillingarnar þínar í HatchGrab: <link>{url}</link>"
+  }
+}

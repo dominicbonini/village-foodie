@@ -1,0 +1,43 @@
+{
+  "allergensUnanswered": {
+    "title": "Alerjen bilgilerini nasıl göstereceğinizi seçin",
+    "detail": "Siz seçene kadar müşteriler ürünlerinizin hiçbirini görmez — menü, alerjenleri onaylanmamış her şeyi gizleyerek kendini korur ve şu anda bu, her şey demek.",
+    "where": "Menü → Alerjenler"
+  },
+  "allergensCardMissing": {
+    "title": "Alerjen kartınızı ekleyin",
+    "detail": "Alerjen kartı göstermeyi seçtiniz ancak kayıtlı bir kart yok — müşterilere alerjen bilgisi olduğu söylenir, sonra hiçbir şey bulamazlar.",
+    "where": "Menü → Alerjenler"
+  },
+  "allergensItemsUnverified": {
+    "title": "{n, plural, one {{count} üründe alerjenleri onaylayın} other {{count} üründe alerjenleri onaylayın}}",
+    "detail": "{n, plural, one {Alerjenlerini onaylayana kadar ürününüz müşterilerden gizlenir.} other {{u, plural, one {Toplam {total} ürününüzden {unverified} tanesi, alerjenlerini onaylayana kadar müşterilerden gizlenir.} other {Toplam {total} ürününüzden {unverified} tanesi, alerjenlerini onaylayana kadar müşterilerden gizlenir.}}}} Alerjenleri onaylanmadan gösterilen bir ürün “alerjen içermez” gibi okunur; menü bu riski almak yerine ürünü gizler.",
+    "where": "Menü → Alerjenler"
+  },
+  "noVan": {
+    "title": "Araç ekleyin",
+    "detail": "Etkinlikler bir araç üzerinden yürür — araç olmadan siparişlerin alınacağı bir yer yoktur.",
+    "where": "Ayarlar → Food truck’larınız"
+  },
+  "kitchenCapacityUnset": {
+    "title": "Mutfak kapasitenizi ayarlayın",
+    "detail": "Şu araçlar için kapasite ayarlanmamış: {vans}. Kapasite olmadan müşterilere, mutfağınızın asla yetişemeyeceği teslim alma saatleri vermeye devam ederiz.",
+    "where": "Menü → Mutfak kapasitesi",
+    "unnamedVan": "Adsız araç"
+  },
+  "noPrepBearingCategory": {
+    "title": "Hazırlık sürelerinizi bize bildirin",
+    "detail": "{categories, select, none {Henüz menü kategoriniz yok, bu yüzden bir siparişin ne kadar süreceğini hesaplayamıyoruz.} other {Kategorilerinizin hiçbirinde pişirme süresi ayarlı değil, bu yüzden her sipariş bize anında hazır gibi görünüyor. Müşterilere mutfağınızın yetişme şansı olmayan teslim alma saatleri vermeye devam ederdik ve işler yoğunlaştıkça bu saatler gerçeklikten daha da uzaklaşırdı.}}",
+    "where": "Menü → Kategoriler → Mutfak ayarları"
+  },
+  "emailUnverified": {
+    "title": "E-posta adresinizi onaylayın",
+    "detail": "Sipariş bildirimlerini ve hesap kurtarma e-postalarını bu adrese göndeririz. Adres yanlışsa, bunu ancak bir şeyler zaten ters gittiğinde fark edersiniz.",
+    "where": "Onay bağlantımız için gelen kutunuzu kontrol edin"
+  },
+  "emailUnknown": {
+    "title": "E-posta onay durumu bilinmiyor",
+    "detail": "E-posta doğrulaması henüz bağlanmadı, bu yüzden bu kontrol değerlendirilemiyor. Sessizce geçmek yerine bilerek engelliyor.",
+    "where": "—"
+  }
+}

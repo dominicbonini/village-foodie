@@ -1,0 +1,20 @@
+{
+  "meta": {
+    "title": "Hakkımızda — HatchGrab",
+    "description": "HatchGrab, food truck ve seyyar yemek işletmeleri için pratik yazılım geliştirir: online sipariş, teslim alma saati, daha az soru. Kurucusu Dominic Bonini."
+  },
+  "eyebrow": "Hakkımızda",
+  "title": "Food truck’ların gerçekte nasıl çalıştığına göre tasarlandı",
+  "photoAlt": "HatchGrab’in kurucusu: {name}",
+  "story": {
+    "start": "HatchGrab basit bir gözlemle başladı: food truck’ların işlerini yürütmek için daha iyi araçlara ihtiyacı var.",
+    "villageFoodie": "İnsanların bölgelerine gelen food truck’ları keşfetmesine yardımcı olan bir rehber olan Village Foodie’yi kurduktan sonra, seyyar yemek işletmelerinin karşılaştığı zorlukları daha yakından tanımaya zaman ayırdım. Geleneksel restoranların aksine food truck’lar sürekli hareket hâlindedir, farklı yerlerde çalışır ve değişen koşullarda müşterilere hizmet verir.",
+    "fixedAddress": "Yine de onlara sunulan yazılımların çoğu, sabit adresi olan işletmeler düşünülerek tasarlanmıştır.",
+    "change": "HatchGrab bunu değiştirmek için kuruldu.",
+    "build": "Özellikle food truck’lar ve seyyar yemek işletmeleri için pratik yazılımlar geliştiriyoruz: online sipariş almalarına, teslim alma saatlerini yönetmelerine, siparişlerin sorunsuz akmasına ve tekrar eden sorularla daha az uğraşmalarına yardımcı oluyoruz.",
+    "focus": "Odağımız basit: bu işletmelerin gerçekte nasıl çalıştığına göre tasarlanmış araçlarla food truck işletmeyi kolaylaştırmak."
+  },
+  "signature": "<b>{name}</b><br></br>Kurucu, HatchGrab",
+  "company": "{company} · İngiltere ve Galler’de tescilli · şirket numarası {number} · kayıtlı adres: {address}",
+  "contact": "Bize ulaşın"
+}

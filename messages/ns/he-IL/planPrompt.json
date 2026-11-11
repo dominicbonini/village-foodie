@@ -1,0 +1,122 @@
+{
+  "includedOn": "{many, select, yes {{feature}: כלולים במסלול {plan}.} other {{feature}: כלול במסלול {plan}.}}",
+  "notOnPlan": "{many, select, yes {{feature}: לא כלולים במסלול שלכם.} other {{feature}: לא כלול במסלול שלכם.}}",
+  "switchedOff": "{many, select, yes {{feature}: כבויים עבור הפודטראק שלכם.} other {{feature}: כבוי עבור הפודטראק שלכם.}}",
+  "planLine": "{plan} · {price} · {description}",
+  "planLineNoPrice": "{plan} · {description}",
+  "upgrade": "שדרוג ←",
+  "features": {
+    "discovery_map": {
+      "name": "הופעה במפת הגילוי",
+      "many": "no"
+    },
+    "web_dashboard": {
+      "name": "לוח הבקרה בדפדפן",
+      "many": "no"
+    },
+    "ipad_kds": {
+      "name": "אפליקציית המטבח",
+      "many": "no"
+    },
+    "qr_menu": {
+      "name": "תפריט ה-QR",
+      "many": "no"
+    },
+    "meal_deals": {
+      "name": "ארוחות מבצע",
+      "many": "yes"
+    },
+    "upsells": {
+      "name": "שדרוגים",
+      "many": "yes"
+    },
+    "walkup_orders": {
+      "name": "הזמנות במקום",
+      "many": "yes"
+    },
+    "online_ordering_pay_at_hatch": {
+      "name": "הזמנה עם תשלום באיסוף",
+      "many": "no"
+    },
+    "sold_out_toggle": {
+      "name": "מתג “אזל”",
+      "many": "no"
+    },
+    "stock_countdown": {
+      "name": "ספירת מלאי",
+      "many": "no"
+    },
+    "offline_protection": {
+      "name": "הגנה על הזמנות באופליין",
+      "many": "no"
+    },
+    "online_payments": {
+      "name": "תשלומים אונליין",
+      "many": "yes"
+    },
+    "advance_preordering": {
+      "name": "הזמנה מראש לתאריכים עתידיים",
+      "many": "no"
+    },
+    "time_slot_selection": {
+      "name": "חלונות זמן ללקוחות",
+      "many": "yes"
+    },
+    "smart_batch_pacing": {
+      "name": "ניהול קיבולת המטבח",
+      "many": "no"
+    },
+    "auto_accept": {
+      "name": "אישור אוטומטי",
+      "many": "no"
+    },
+    "instagram_messenger_replies": {
+      "name": "מענה אוטומטי ב-Messenger וב-Instagram",
+      "many": "no"
+    },
+    "branded_qr_code": {
+      "name": "קודי QR ממותגים",
+      "many": "yes"
+    },
+    "advanced_reporting": {
+      "name": "דוחות מתקדמים",
+      "many": "yes"
+    },
+    "ticket_printing": {
+      "name": "הדפסת בונים למטבח",
+      "many": "no"
+    },
+    "multi_device_kds": {
+      "name": "סנכרון מטבח בין כמה מכשירים",
+      "many": "no"
+    },
+    "cook_screen": {
+      "name": "מסך הבישול",
+      "many": "no"
+    },
+    "whatsapp_replies": {
+      "name": "מענה אוטומטי ב-WhatsApp",
+      "many": "no"
+    },
+    "embed_schedule": {
+      "name": "הלו״ז שלכם באתר שלכם",
+      "many": "no"
+    },
+    "schedule_graphics": {
+      "name": "פוסטים לרשתות חברתיות",
+      "many": "yes"
+    },
+    "event_types": {
+      "name": "סוגי אירועים מותאמים",
+      "many": "yes"
+    },
+    "private_events": {
+      "name": "אירועים פרטיים",
+      "many": "yes"
+    },
+    "paperwork": {
+      "name": "מסמכים",
+      "many": "yes"
+    }
+  }
+}

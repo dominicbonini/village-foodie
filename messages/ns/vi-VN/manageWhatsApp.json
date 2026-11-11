@@ -1,0 +1,106 @@
+{
+  "preview": {
+    "title": "Dùng thử trước khi kết nối",
+    "intro": "Gõ một câu hỏi như khách vẫn hỏi, và xem chính xác câu trả lời họ sẽ nhận. Không có gì được gửi cho ai cả.",
+    "examples": {
+      "where": "Tối nay xe ở đâu vậy?",
+      "doYouDo": "Có bánh mì thịt nướng không?",
+      "menu": "Thực đơn có những món gì?"
+    },
+    "placeholder": "Có món tráng miệng nào không?",
+    "send": "Gửi",
+    "empty": "Câu trả lời sẽ hiện ở đây",
+    "working": "Đang soạn câu trả lời…",
+    "noReply": "Sẽ không có câu trả lời nào được gửi.",
+    "noReplyWhy": "Tin nhắn này có vẻ là spam, yêu cầu đặt lịch hoặc không liên quan, nên tính năng tự động trả lời trên WhatsApp sẽ im lặng.",
+    "footnote": "Câu trả lời do AI tạo, mỗi lần có thể hơi khác nhau và đôi khi có thể sai.",
+    "failed": "Hiện không tạo được bản xem trước.",
+    "unreachable": "Không kết nối được máy chủ. Hãy kiểm tra kết nối mạng và thử lại."
+  },
+  "setup": {
+    "button": {
+      "preparing": "Đang chuẩn bị…",
+      "unavailable": "Không khả dụng",
+      "waiting": "Đang chờ cửa sổ Facebook…",
+      "finishing": "Đang hoàn tất…",
+      "reconnect": "Kết nối lại",
+      "setUp": "Thiết lập"
+    },
+    "startAgain": "Bắt đầu lại",
+    "popupHint": "Không thấy cửa sổ Facebook? Có thể nó đã bị chặn. Hãy cho phép cửa sổ bật lên (pop-up) cho hatchgrab.com, rồi bấm Bắt đầu lại."
+  },
+  "notice": {
+    "sdkUnavailable": "Không thể thiết lập WhatsApp trong môi trường này.",
+    "sdkBlocked": "Không tải được đoạn mã đăng nhập của Meta. Nguyên nhân thường là trình chặn quảng cáo hoặc tính năng chống theo dõi.",
+    "setupFailed": "Không hoàn tất được thiết lập. Chưa có gì bị thay đổi.",
+    "setupFinished": "Đã thiết lập xong.",
+    "metaError": "Meta báo lỗi trong quá trình thiết lập. Chưa có gì bị thay đổi. Hãy thử lại và liên hệ với chúng tôi nếu lỗi vẫn tiếp diễn.",
+    "closed": "Cửa sổ thiết lập đã bị đóng trước khi xong. Chưa có gì bị thay đổi — bấm Thiết lập để thử lại.",
+    "disconnectedUnreachable": "Đã ngắt kết nối WhatsApp. Chúng tôi không kết nối được với Meta để gỡ quyền truy cập. Vui lòng gỡ HatchGrab trong WhatsApp Business → Settings → Account → Business Platform.",
+    "disconnected": "Đã ngắt kết nối WhatsApp. Tính năng tự động trả lời trên WhatsApp đã dừng.",
+    "close": "Đóng"
+  },
+  "card": {
+    "title": "Trả lời tự động",
+    "description": "Tự động trả lời câu hỏi của khách trên mạng xã hội của bạn, dựa trên thực đơn và lịch bán.",
+    "channels": "Kênh",
+    "requiresAccount": "Cần có tài khoản WhatsApp Business.",
+    "connected": "Đã kết nối",
+    "popupInstruction": "Một cửa sổ Facebook sẽ mở ra để kết nối tài khoản WhatsApp Business của bạn. Nếu không thấy gì, hãy cho phép cửa sổ bật lên cho hatchgrab.com trong trình duyệt, rồi bấm Thiết lập lần nữa.",
+    "switchedOff": "Tính năng tự động trả lời trên WhatsApp đang tắt cho xe của bạn.",
+    "expiring": "Kết nối WhatsApp của bạn sắp cần gia hạn. Bấm Kết nối lại để duy trì tự động trả lời trên WhatsApp.",
+    "comingSoon": "Sắp ra mắt",
+    "instagram": "Trả lời tự động tin nhắn trực tiếp trên Instagram. Sẽ cần tài khoản Instagram chuyên nghiệp.",
+    "messenger": "Trả lời tự động trên Facebook Messenger. Sẽ cần một Trang Facebook."
+  },
+  "blocked": {
+    "title": "Câu trả lời của bạn không được gửi đi",
+    "body": "WhatsApp đang từ chối gửi câu trả lời tự động của bạn vì có vấn đề thanh toán trên tài khoản WhatsApp Business. Khách vẫn nhắn tin được cho bạn và bạn vẫn thấy mọi tin họ gửi — nhưng họ không nhận được câu trả lời.",
+    "fix": "Bạn trả tiền trực tiếp cho WhatsApp cho các tin nhắn này, nên cần xử lý trong WhatsApp Manager. <link>Kiểm tra phương thức thanh toán</link>"
+  },
+  "limit": {
+    "heading": "Trả lời tự động",
+    "label": "Giới hạn hằng tháng",
+    "option": "{n, number}",
+    "usage": "Đã dùng {used, number} / {limit, number} · đặt lại vào {date}",
+    "perCustomer": "Tối đa {n} câu trả lời cho mỗi khách trong 24 giờ, sau đó gửi một tin báo rằng bạn sẽ trực tiếp trả lời.",
+    "emailAt": "Trả lời tự động sẽ tạm dừng khi chạm giới hạn. Chúng tôi sẽ gửi email cho bạn ở mức 80% và 100%.",
+    "saved": "Đã lưu giới hạn trả lời hằng tháng",
+    "saveFailed": "Không lưu được giới hạn"
+  },
+  "billing": {
+    "heading": "Thanh toán",
+    "paymentMethod": "Phương thức thanh toán",
+    "added": "Đã thêm phương thức thanh toán",
+    "missing": "Chưa thêm phương thức thanh toán",
+    "addInManager": "Thêm trong WhatsApp Manager",
+    "summary": "Meta, không phải HatchGrab, tính phí tài khoản WhatsApp của bạn cho các câu trả lời. Từ {from}, {free, number} câu trả lời đầu tiên mỗi tháng được miễn phí. Thông tin đúng tại thời điểm {checked}; xem <link>bảng giá của Meta</link> để biết thay đổi.",
+    "howMetaCharges": "Cách Meta tính phí",
+    "chargesTitle": "Meta tính phí các câu trả lời trên WhatsApp, không phải HatchGrab.",
+    "chargesBody": "Mỗi câu trả lời HatchGrab gửi thay bạn đều được Meta tính phí vào tài khoản WhatsApp Business của bạn. Từ {from}, Meta miễn phí {free, number} câu trả lời mỗi tháng cho mỗi số điện thoại; sau đó, mỗi câu trả lời được tính theo giá của Meta. Tin nhắn bạn tự gửi từ ứng dụng WhatsApp Business không bị tính phí. Meta quy định mức giá này và có thể thay đổi. <link>Xem bảng giá của Meta</link>",
+    "addPaymentInManager": "Thêm phương thức thanh toán trong WhatsApp Manager",
+    "aboveMissing": "Giới hạn của bạn cao hơn {free, number} câu trả lời miễn phí của Meta. Nếu không có phương thức thanh toán, Meta sẽ dừng mọi câu trả lời khi dùng hết số miễn phí.",
+    "aboveGeneral": "Giới hạn của bạn cao hơn {free, number} câu trả lời miễn phí của Meta. Các câu trả lời vượt mức đó cần có phương thức thanh toán trên tài khoản WhatsApp của bạn; nếu không có, Meta sẽ dừng mọi câu trả lời khi dùng hết số miễn phí.",
+    "addPaymentMethod": "Thêm phương thức thanh toán"
+  },
+  "disconnect": {
+    "link": "Ngắt kết nối WhatsApp",
+    "title": "Ngắt kết nối WhatsApp?",
+    "body": "Tính năng tự động trả lời trên WhatsApp sẽ dừng ngay và HatchGrab mất quyền truy cập tài khoản WhatsApp của bạn. Số điện thoại của bạn vẫn hoạt động bình thường trong ứng dụng WhatsApp Business. Để gỡ HatchGrab hoàn toàn, hãy mở thêm WhatsApp Business → Settings → Account → Business Platform.",
+    "cancel": "Hủy",
+    "confirm": "Ngắt kết nối",
+    "working": "Đang ngắt kết nối…",
+    "failed": "Không ngắt kết nối được"
+  },
+  "signup": {
+    "logged": "Đã ghi nhận.",
+    "partial": "Chúng tôi đã liên kết tài khoản WhatsApp Business của bạn nhưng chưa hoàn tất được kết nối. Phía bạn không có lỗi gì — vui lòng liên hệ với chúng tôi để hoàn tất.",
+    "noNumber": "Tài khoản WhatsApp Business của bạn đã được liên kết, nhưng không nhận được số điện thoại nào. Bấm Kết nối lại và hoàn tất bước chọn số.",
+    "needsRegistering": "Tài khoản của bạn đã được liên kết, nhưng số này cần được chúng tôi đăng ký trước khi bắt đầu trả lời. Vui lòng liên hệ bộ phận hỗ trợ — thiết lập của bạn đã được lưu, đừng chạy lại.",
+    "registerRefused": "Tài khoản của bạn đã được liên kết nhưng Meta không chấp nhận đăng ký số này. Thiết lập của bạn đã được lưu — vui lòng liên hệ bộ phận hỗ trợ thay vì chạy lại.",
+    "deliveryRefused": "Tài khoản của bạn đã được liên kết nhưng Meta không bật tính năng gửi tin nhắn. Thiết lập của bạn đã được lưu — vui lòng liên hệ bộ phận hỗ trợ thay vì chạy lại.",
+    "numberTaken": "Số WhatsApp này đã được kết nối với một tài khoản HatchGrab khác. Mỗi số chỉ trả lời cho một xe. Hãy liên hệ bộ phận hỗ trợ để chúng tôi chuyển số sang.",
+    "saveIncomplete": "Sắp xong rồi — chúng tôi chưa lưu xong được. Thiết lập của bạn đã được lưu, vui lòng liên hệ bộ phận hỗ trợ thay vì chạy lại.",
+    "connected": "Đã kết nối WhatsApp. Tính năng tự động trả lời trên WhatsApp sẽ bắt đầu trả lời tin nhắn gửi đến số này."
+  }
+}

@@ -159,7 +159,16 @@
     "payAtHatchShort": "取餐時付款",
     "payAsYouGo": "免月費",
     "unlimited": "無上限",
-    "freeTrial": "免費試用"
+    "freeTrial": "免費試用",
+    "regions": {
+      "ZH-TW": {
+        "payAtHatchFeature": "取餐時付款",
+        "payAtHatchShort": "現場付款",
+        "payAsYouGo": "免月費",
+        "unlimited": "無限制",
+        "freeTrial": "免費試用"
+      }
+    }
   },
   "regionalNotes": [],
   "banned": [

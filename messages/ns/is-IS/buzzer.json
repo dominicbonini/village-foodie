@@ -1,0 +1,16 @@
+{
+  "takeConfirm": "Píptæki <b>{number}</b> er hjá <b>pöntun nr. {holderId}</b>{hasName, select, yes { ({name})} other {}}. Taka það fyrir <b>{hasTarget, select, yes {pöntun nr. {targetId}} other {þessa pöntun}}</b>?",
+  "cancel": "Hætta við",
+  "take": "Taka píptæki {number}",
+  "titleBlocking": "Píptæki fyrir pöntun nr. {id}?",
+  "title": "Veldu píptæki",
+  "subtitle": "{hasTarget, select, yes {Pöntun nr. {id}} other {Þessi pöntun}}{hasCurrent, select, yes { · núna píptæki {current}} other {}}",
+  "allTaken": "{n, plural, one {Öll píptækin ({count}) eru í notkun. Ýttu á eitt til að taka það af annarri pöntun.} other {Öll píptækin ({count}) eru í notkun. Ýttu á eitt til að taka það af annarri pöntun.}}",
+  "thisOrder": "Þessi pöntun",
+  "noBuzzer": "Ekkert píptæki",
+  "done": "Lokið",
+  "lostTitle": "Pöntun nr. {id} er ekki með píptæki",
+  "lostBody": "{hasName, select, yes {{name} — } other {}}önnur pöntun fékk sama píptæki á meðan tækið var án nettengingar. Láttu viðkomandi fá annað.",
+  "dismiss": "Loka",
+  "assign": "Úthluta"
+}

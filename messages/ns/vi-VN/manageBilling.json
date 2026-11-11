@@ -1,0 +1,44 @@
+{
+  "perTruckMonth": "mỗi xe / tháng",
+  "transactionFees": "Phí giao dịch",
+  "comingSoon": "Sắp ra mắt",
+  "footnote2Masked": "Thanh toán online do Stripe Connect cung cấp. Phí nền tảng và phí xử lý thẻ sẽ được xác nhận khi ra mắt.",
+  "card": {
+    "title": "Gói & thanh toán",
+    "managed": "HatchGrab quản lý việc tính phí",
+    "earlyAccess": "Trong giai đoạn dùng sớm, chúng tôi thiết lập và điều chỉnh gói thủ công.",
+    "planLine": "{trial, select, yes {{truck} · gói {plan} (dùng thử)} other {{truck} · gói {plan}}}"
+  },
+  "currentPlan": "Gói hiện tại",
+  "plan": {
+    "included": "Bao gồm {amount} đơn online mỗi tháng.",
+    "includedUnlimited": "Không giới hạn đơn online.",
+    "promo": "Giá ưu đãi.",
+    "promoUntil": "Giá ưu đãi đến {date}.",
+    "ended": "Gói {plan} của bạn đã kết thúc vào {date}. Hiện bạn đang dùng gói {now}.",
+    "trialMonths": "Dùng thử miễn phí {months} tháng."
+  },
+  "trialEnds": "Hết hạn dùng thử: {date}",
+  "yourTrialEnds": "Hạn dùng thử của bạn: {date}",
+  "notStarted": {
+    "heading": "Thời gian dùng thử miễn phí của bạn chưa bắt đầu"
+  },
+  "onTrial": "Bạn đang có đầy đủ mọi tính năng. Hãy chọn gói trước khi hết hạn dùng thử.",
+  "onTrialPaidEnd": "Bạn đang có đầy đủ mọi tính năng. Khi hết hạn dùng thử, gói {plan} có giá {price} mỗi tháng. Chúng tôi sẽ liên hệ trước thời điểm đó để thiết lập thanh toán.",
+  "onTrialNoCta": "Bạn đang có đầy đủ mọi tính năng.",
+  "noCharge": "🔒 Bạn sẽ không bị tính phí trong thời gian dùng thử, kéo dài đến {date}. Chỉ khi bạn chọn gói và nhập thông tin thanh toán thì mới bắt đầu tính phí. Trước đó không có gì để hủy và không phải trả gì.",
+  "noChargePaidEnd": "🔒 Bạn sẽ không bị tính phí trong thời gian dùng thử, kéo dài đến {date}.",
+  "fees": "*Áp dụng phí xử lý thẻ tiêu chuẩn cho đơn online",
+  "setUpPayment": "⏱ Hãy chọn gói trước khi hết hạn dùng thử",
+  "changeYourPlan": "Đổi gói",
+  "planButton": "{plan} — {price}",
+  "upgradeModal": {
+    "title": "Chuyển sang gói {plan}",
+    "tagline": "{price} — {description}",
+    "body": "Chúng tôi đang thiết lập hệ thống tính phí tự động. Để chuyển gói ngay, hãy nhắn cho chúng tôi và chúng tôi sẽ thiết lập cho bạn trong vòng 24 giờ.",
+    "mailSubject": "Chuyển sang gói {plan} — {truck}",
+    "mailBody": "Xin chào, tôi muốn chuyển {truck} sang gói {plan} ({price}).",
+    "email": "Gửi email để chuyển gói",
+    "cancel": "Hủy"
+  }
+}

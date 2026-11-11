@@ -1,0 +1,15 @@
+{
+  "greeting": "Halo 👋",
+  "opener": "{greeting} ",
+  "allergenRedirect": "{opener}Menu lengkap dan informasi alergen kami bisa dilihat di sini: {url} — {truck} {emoji}",
+  "menuFallback": "{opener}Menu lengkap kami bisa dilihat di sini: {url} — {truck} {emoji}",
+  "otherCategory": "Lainnya",
+  "categoryFrom": "{category} mulai {price}",
+  "listTwo": "{first} dan {second}",
+  "listMany": "{init} dan {last}",
+  "menuSummary": "{opener}Kami punya {summary}. Lihat menu lengkap dan pesan dulu di sini: {url} — {truck} {emoji}",
+  "allergenCaveat": "Mohon cek kembali menu lengkap untuk info alergen — ini balasan otomatis.",
+  "specificFallback": "{opener}Lihat jadwal terbaru kami di sini: {url}\n\n{truck} {emoji}",
+  "capHandoff": "Terima kasih untuk semua chat-nya! Di sini saya hanya bisa membalas beberapa kali sehari.\n\nUntuk memesan: {link}",
+  "capContact": "Untuk menghubungi kami langsung: {number}"
+}

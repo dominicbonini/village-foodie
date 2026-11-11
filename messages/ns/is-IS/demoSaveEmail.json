@@ -1,0 +1,9 @@
+{
+  "subject": "HatchGrab-kynningin þín — hér er tengillinn til baka",
+  "heading": "Kynningin þín er vistuð",
+  "intro": "Hér er tengillinn aftur í kynninguna með matseðlinum þínum. Engin innskráning — ýttu bara á hann.",
+  "button": "Opna kynninguna mína",
+  "freshDay": "Í hvert skipti sem þú kemur aftur setjum við upp nýjan söludag svo að þú hafir eitthvað til að prófa.",
+  "deletion": "Þetta er kynning, svo við geymum hana ekki að eilífu — við eyðum henni og matseðlinum þann\n                <b>{date}</b> (eftir {days, plural, one {# dag} other {# daga}}). Ef þú skráir þig fyrir\n                þann tíma fylgir matseðillinn þér.",
+  "notSent": "Vistað, en ekki tókst að senda tölvupóstinn í augnablikinu."
+}

@@ -1,0 +1,14 @@
+{
+  "homeLabel": "Beranda HatchGrab",
+  "cta": "Unggah menu saya →",
+  "ctaShort": "Unggah menu",
+  "features": "Fitur",
+  "pricing": "Harga",
+  "logIn": "Masuk",
+  "country": {
+    "button": "Negara: {name}. Ganti negara",
+    "menu": "Negara",
+    "title": "Pilih negara Anda",
+    "subline": "Harga, bahasa, dan pengaturan akan menyesuaikan."
+  }
+}

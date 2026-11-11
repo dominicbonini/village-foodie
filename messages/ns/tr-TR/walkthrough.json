@@ -1,0 +1,31 @@
+{
+  "intro": "Yönetim, food truck’ınızı kurduğunuz ve nasıl gittiğini gördüğünüz yerdir. Panel ise sipariş aldığınız ve her etkinliği anlık olarak yürüttüğünüz yerdir.",
+  "ariaLabel": "Panel tanıtımı",
+  "step": "{current} / {total}",
+  "skip": "Atla",
+  "back": "← Geri",
+  "next": "İleri →",
+  "done": "Bitti",
+  "stops": {
+    "menu": {
+      "title": "Menü",
+      "body": "Ürünleriniz, fiyatlarınız ve alerjenleriniz. Burada değiştirdiğiniz her şey anında yayına girer."
+    },
+    "schedule": {
+      "title": "Program",
+      "body": "Nerede ve ne zaman satış yaptığınız. Buraya bir etkinlik eklediğinizde müşteriler o etkinlik için sipariş verebilir."
+    },
+    "build": {
+      "title": "Kampanyalar, Ekstralar ve ek satış önerileri",
+      "body": "Kampanyalar, ek satış önerileri, özelleştirmeler ve mutfak kapasiteniz Menü altında yer alır — biraz kurcalayın."
+    },
+    "settings": {
+      "title": "Ayarlar",
+      "body": "Food truck’ınızın bilgileri ve müşterilerin nasıl ödeme yaptığı."
+    },
+    "billing": {
+      "title": "Faturalandırma",
+      "body": "Paketiniz, faturalarınız ve özellik bilgileri burada."
+    }
+  }
+}

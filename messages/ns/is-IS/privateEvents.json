@@ -1,0 +1,42 @@
+{
+  "publicName": "Einkaviðburður",
+  "chip": "Einka",
+  "grid": {
+    "orderingSection": "PANTANIR",
+    "linkRowLabel": "Taka við pöntunum með einkatengli og QR-kóða",
+    "columnTitle": "Innbyggða tegundin Einka. Ekki er hægt að endurnefna, færa eða eyða henni."
+  },
+  "form": {
+    "help": "Birtist á dagskránni þinni sem „Einkaviðburður“ með dagsetningu og tímum eingöngu — aldrei heimilisfangið, kortið eða Village Foodie.",
+    "linkPromise": "Gestir panta með einkatengli og QR-kóða — þú færð þá eftir að þú vistar.",
+    "nameLabel": "Heiti viðburðar",
+    "nameHelp": "Gestir sjá þetta efst á pöntunarsíðunni.",
+    "namePlaceholder": "Brúðkaup Sigrúnar og Jóns",
+    "previewNote": "Svona birtist þetta á dagskránni þinni — enginn staður, bær eða póstnúmer.",
+    "needsTimes": "Bættu við upphafs- og lokatíma — einkaviðburður sem tekur við pöntunum með tengli þarf á þeim að halda."
+  },
+  "link": {
+    "button": "Tengill og QR",
+    "title": "Einkatengill og QR-kóði",
+    "label": "Einkatengill",
+    "copy": "Afrita",
+    "copied": "Afritað",
+    "qrDownload": "Sækja QR-kóða",
+    "tableCards": "Prenta borðspjöld",
+    "newLink": "Búa til nýjan tengil",
+    "working": "Augnablik…",
+    "newLinkConfirm": "Búa til nýjan tengil? Núverandi tengill hættir strax að virka, og QR-kóðar sem þú hefur þegar prentað hætta líka að virka.",
+    "newLinkHelp": "Notaðu þetta ef tengillinn hefur farið þangað sem hann á ekki að fara. Núverandi tengill hættir strax að virka, og prentaðir QR-kóðar hætta líka að virka.",
+    "newLinkFailed": "Ekki tókst að búa til nýjan tengil.",
+    "offNotice": "Slökkt er á pöntunum með einkatengli fyrir þennan viðburð, svo það er enginn tengill til að deila. Viðburðurinn birtist samt á dagskránni þinni sem „Einkaviðburður“."
+  },
+  "cards": {
+    "printTitle": "{truck} — borðspjöld",
+    "scan": "Skannaðu til að panta",
+    "blurb": "Pantaðu og borgaðu í símanum. Við köllum nafnið þitt þegar maturinn er tilbúinn.",
+    "footer": "Pantanir í gegnum HatchGrab"
+  },
+  "noSinglePost": "Einkaviðburðir fá ekki sína eigin færslu — þeir birtast á vikuplakatinu þínu sem „Einkaviðburður“.",
+  "confirmToPrivate": "Þetta felur heimilisfangið og viðburðinn á kortinu. Gestir þurfa einkatengilinn til að panta.",
+  "confirmFromPrivate": "Þetta gerir viðburðinn opinberan: heimilisfang hans og kortanál birtast, og einkatengillinn hættir að virka."
+}

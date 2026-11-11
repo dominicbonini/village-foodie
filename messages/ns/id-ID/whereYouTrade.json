@@ -1,0 +1,13 @@
+{
+  "stepHeading": "Di mana lokasi food truck Anda?",
+  "stepIntro": "Ini menentukan mata uang, harga, zona waktu, dan format nomor telepon Anda. Negara tidak bisa diubah nanti, karena terkait dengan pembayaran kartu Anda.",
+  "settingsHeading": "Tempat Anda berjualan",
+  "countryLabel": "Negara",
+  "countryGuessed": "Kami menebaknya dari lokasi Anda. Ubah jika salah.",
+  "countryLocked": "Negara Anda tidak bisa diubah",
+  "townLabel": "Kota",
+  "townQuestion": "Kota tempat usaha Anda berada",
+  "timezoneLabel": "Zona waktu",
+  "continueButton": "Lanjut",
+  "saveFailed": "Gagal menyimpan pengaturan — coba lagi."
+}

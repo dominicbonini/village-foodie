@@ -1,0 +1,94 @@
+{
+  "heading": "Ödemeler",
+  "loading": "Stripe hesabınız kontrol ediliyor…",
+  "state": {
+    "not_connected": {
+      "title": "Kurulmadı",
+      "body": "Yaklaşık 10 dakika sürer. Banka bilgileriniz ve kimliğiniz gerekecek.",
+      "chip": "Kurulmadı"
+    },
+    "requirements": {
+      "title": "Stripe bilgilerinizi bekliyor",
+      "body": "Stripe işletme ve banka bilgilerinizi alana kadar kartla ödemeler çalışmaz.",
+      "chip": "İşlem gerekli"
+    },
+    "pending": {
+      "title": "Bağlandı — Stripe bilgilerinizi kontrol ediyor",
+      "body": "Yapmanız gereken bir şey yok. Stripe gönderdiklerinizi inceliyor; bitirdiğinde bu sayfa güncellenir.",
+      "chip": "Kontrolde"
+    },
+    "ready": {
+      "title": "Bağlandı",
+      "body": "Stripe hesabınız bağlı ve ödeme almaya hazır.",
+      "chip": "Hazır"
+    },
+    "restricted": {
+      "title": "Kartla ödemeler duraklatıldı",
+      "body": "Stripe, bir sorun çözülene kadar hesabınızdaki kartla ödemeleri duraklattı.",
+      "chip": "Duraklatıldı"
+    },
+    "unsupported": {
+      "title": "Bu hesapta kartla ödeme kullanılamıyor",
+      "body": "Stripe burada kartla ödemeyi etkinleştiremiyor. Bize ulaşın, birlikte çözelim.",
+      "chip": "Kullanılamıyor"
+    }
+  },
+  "keyMismatch": {
+    "title": "Stripe anahtarları uyuşmuyor",
+    "body": "Bu sitenin sunucusu <b>{server, select, live {canlı} other {test}}</b> Stripe anahtarını kullanıyor, tarayıcı ise <b>{browser, select, live {canlı} other {test}}</b> anahtarla derlenmiş. Müşteri ödemeye çalıştığı anda kartla ödeme başarısız olur; bu yüzden anahtarlar uyuşana kadar Stripe kurulumu engellendi.",
+    "fix": "İki anahtar da aynı ortam için ayarlanmalı ve site ardından yeniden derlenmelidir — yayımlanabilir anahtar derleme sırasında koda gömülür, gizli anahtar ise her istekte okunur."
+  },
+  "permission": {
+    "title": "Ödemeleri yalnızca food truck’ın sahibi kurabilir",
+    "body": "Stripe, parayı alacak banka hesabının sahibi tarafından bağlanır; bu yüzden onun kendi giriş yaptığı hesaptan kurulmalıdır. Bu food truck’ta ya da HatchGrab’de bir sorun yok."
+  },
+  "config": {
+    "keyMissingTitle": "Kartla ödemeler henüz yapılandırılmadı",
+    "fetchTitle": "Bu food truck’ın Stripe hesabını kontrol edemedik",
+    "keyMissing": "{name} ayarlanmamış — gömülü bileşenler yüklenemiyor."
+  },
+  "errors": {
+    "requestFailed": "İstek başarısız oldu ({status})",
+    "unreachable": "Stripe’a ulaşılamadı"
+  },
+  "online": {
+    "heading": "Online ödemeler",
+    "body": "Müşteriler sipariş verirken kartla öder. Para doğrudan kendi Stripe hesabınıza gider — biz hiçbir zaman tutmayız.",
+    "feeLine": "Stripe, standart kartlarda ({region}) ödeme başına {fee} alır. Diğer kartlar daha pahalı olabilir. HatchGrab’in online siparişlerdeki kendi ücreti paketinize bağlıdır — Faturalandırma’ya bakın.",
+    "testMode": "Test modu. Henüz gerçek ödeme alınamaz."
+  },
+  "trialNote": "Bunu kurmak aboneliğinizi başlatmaz ve bugün sizden hiçbir ücret almaz. Bu, müşterilerinizin size ödeme yapma yoludur — paketiniz ayrı bir konudur.",
+  "admin": {
+    "title": "Platform yöneticisi olarak görüntülüyorsunuz",
+    "body": "Bu food truck online ödemeleri kurmadı. Yalnızca sahibi, kendi giriş yaptığı hesaptan başlatabilir — burada basılacak bir şey yok."
+  },
+  "setUp": {
+    "button": "Online ödemeleri kur",
+    "busy": "Kuruluyor…"
+  },
+  "toast": {
+    "alreadySetUp": "Zaten kurulu — devam ediliyor",
+    "addDetails": "Şimdi Stripe için bilgilerinizi ekleyin",
+    "createFailed": "Hesap oluşturulamadı"
+  },
+  "onboarding": {
+    "restricted": "Bundan sonrası Stripe’ta — Stripe’a giriş yapıp istenen bilgileri güncelleyeceksiniz.",
+    "firstRun": "Bundan sonrası Stripe’ta — Stripe’a giriş yapacak, ardından işletme ve banka bilgilerinizi gireceksiniz."
+  },
+  "details": {
+    "title": "Stripe bilgileriniz",
+    "body": "Ödemelerin yatırıldığı banka hesabını değiştirin ya da işletme bilgilerinizi ve belgelerinizi güncelleyin.",
+    "button": "Görüntüle/düzenle"
+  },
+  "walkUp": {
+    "heading": "Yerinde ödemeler",
+    "body": "Food truck’ta ödemeyi nasıl aldığınız. Hangisini seçerseniz seçin, HatchGrab yerinde siparişlerden platform ücreti almaz.",
+    "ownTerminal": "Kendi POS cihazınız",
+    "current": "Mevcut",
+    "ownTerminalHelp": "Zettle, Square ya da zaten kullandığınız cihaz. Kurulacak bir şey yok — yalnızca sağlayıcınızın kendi ücretleri geçerlidir.",
+    "hatchgrab": "HatchGrab üzerinden",
+    "comingSoon": "Yakında",
+    "hatchgrabHelp": "Online ödemelerinizle aynı Stripe bağlantısını kullanır — bir POS cihazı ya da doğrudan telefonunuzdan veya tabletinizden temassız ödeme.",
+    "hatchgrabFees": "{region} için ödeme başına {fee}; telefon veya tabletle alınan temassız ödemelerde ek olarak {surcharge}. Diğer kartlar daha pahalı olabilir."
+  }
+}

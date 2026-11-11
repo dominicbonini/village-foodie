@@ -1,0 +1,30 @@
+{
+  "heading": "Vergi, bahşiş ve ücretler",
+  "rate": {
+    "label": "Satış vergisi oranı",
+    "hint": "Her siparişte uyguladığınız oran. Müşteriler bunu ödeme adımında, fişlerde ve sipariş fişlerinde eklenmiş olarak görür.",
+    "regionDefault": "Boş bırakırsanız {label} %{rate} olarak uygulanır; bu, {region} genelinde hazır yemeklere uygulanan orandır."
+  },
+  "included": {
+    "label": "Fiyatlarınıza dahil: {label}",
+    "hint": "Fiyatlarınız zaten {label} içeriyor. Bu oran yalnızca fişlerde ve sipariş fişlerinde her fiyatın ne kadarının {label} olduğunu gösterir — ödeme adımında hiçbir şey eklenmez.",
+    "default": "Boş bırakırsanız %{rate} kullanılır: {country} genelinde gel al olarak satılan sıcak yemeklerdeki {label} oranı."
+  },
+  "tips": {
+    "label": "Bahşiş",
+    "hint": "Online kartla ödeyen müşteriler bahşiş ekleyebilir. Tamamı size kalır.",
+    "choices": "Müşterilerin gördüğü seçenekler:",
+    "chip": "%{rate}",
+    "other": "Başka tutar"
+  },
+  "fee": {
+    "label": "Online hizmet bedeli",
+    "hint": "Yalnızca online siparişlere eklenir. Food truck’ta ödenen veya yerinde siparişlere asla eklenmez. Tamamı size kalır.",
+    "pctAria": "Hizmet bedeli yüzdesi",
+    "fixedAria": "Hizmet bedeli sabit tutarı",
+    "max": "En fazla alabileceğiniz: {max}",
+    "example": "Müşteriler bunu ödemeden önce tek satır olarak görür: “{label} {amount}”.",
+    "hatchgrab": "HatchGrab, müşterilerinizin online siparişlerine {fee} hizmet bedeli ekler. Bunu siz ödemezsiniz ve değiştiremezsiniz."
+  },
+  "saveFailed": "Kaydedilemedi — lütfen tekrar deneyin."
+}

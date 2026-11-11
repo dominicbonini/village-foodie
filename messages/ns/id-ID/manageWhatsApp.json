@@ -1,0 +1,106 @@
+{
+  "preview": {
+    "title": "Coba dulu sebelum menghubungkan",
+    "intro": "Ketik pertanyaan seperti yang biasa ditanyakan pelanggan, dan lihat persis balasan yang akan mereka terima. Tidak ada yang dikirim ke siapa pun.",
+    "examples": {
+      "where": "Malam ini jualan di mana?",
+      "doYouDo": "Ada pizza pepperoni?",
+      "menu": "Menunya apa saja?"
+    },
+    "placeholder": "Ada makanan penutup apa saja?",
+    "send": "Kirim",
+    "empty": "Balasan Anda akan muncul di sini",
+    "working": "Menyusun balasan…",
+    "noReply": "Tidak ada balasan yang akan dikirim.",
+    "noReplyWhy": "Pesan itu terbaca sebagai spam, permintaan pemesanan tempat, atau hal yang tidak berkaitan, jadi balasan otomatis tidak menjawab.",
+    "footnote": "Balasan dibuat oleh AI dan sedikit berbeda setiap kali, serta sesekali bisa keliru.",
+    "failed": "Pratinjau tidak dapat dibuat saat ini.",
+    "unreachable": "Tidak dapat terhubung ke server. Periksa koneksi Anda dan coba lagi."
+  },
+  "setup": {
+    "button": {
+      "preparing": "Menyiapkan…",
+      "unavailable": "Tidak tersedia",
+      "waiting": "Menunggu jendela Facebook…",
+      "finishing": "Menyelesaikan…",
+      "reconnect": "Hubungkan ulang",
+      "setUp": "Siapkan"
+    },
+    "startAgain": "Mulai lagi",
+    "popupHint": "Jendela Facebook tidak muncul? Mungkin diblokir. Izinkan pop-up untuk hatchgrab.com, lalu tekan Mulai lagi."
+  },
+  "notice": {
+    "sdkUnavailable": "Pengaturan WhatsApp tidak tersedia di lingkungan ini.",
+    "sdkBlocked": "Skrip login Meta tidak dapat dimuat. Penyebabnya biasanya pemblokir iklan atau perlindungan pelacakan.",
+    "setupFailed": "Pengaturan tidak dapat diselesaikan. Tidak ada yang diubah.",
+    "setupFinished": "Pengaturan selesai.",
+    "metaError": "Meta melaporkan masalah selama pengaturan. Tidak ada yang diubah. Coba lagi, dan hubungi kami jika terus terjadi.",
+    "closed": "Pengaturan ditutup sebelum selesai. Tidak ada yang diubah — tekan Siapkan untuk mencoba lagi.",
+    "disconnectedUnreachable": "WhatsApp sudah diputus. Kami tidak dapat menghubungi Meta untuk mencabut akses. Silakan hapus HatchGrab di WhatsApp Business → Pengaturan → Akun → Business Platform.",
+    "disconnected": "WhatsApp sudah diputus. Balasan otomatis telah berhenti.",
+    "close": "Tutup"
+  },
+  "card": {
+    "title": "Balasan otomatis",
+    "description": "Jawab pertanyaan pelanggan secara otomatis di media sosial Anda, berdasarkan menu dan jadwal Anda.",
+    "channels": "Saluran",
+    "requiresAccount": "Membutuhkan akun WhatsApp Business.",
+    "connected": "Terhubung",
+    "popupInstruction": "Jendela Facebook akan terbuka untuk menghubungkan akun WhatsApp Business Anda. Jika tidak ada yang muncul, izinkan pop-up untuk hatchgrab.com di browser Anda, lalu tekan Siapkan lagi.",
+    "switchedOff": "Balasan otomatis WhatsApp dinonaktifkan untuk truk Anda.",
+    "expiring": "Koneksi WhatsApp Anda perlu segera diperbarui. Tekan Hubungkan ulang agar balasan otomatis tetap berjalan.",
+    "comingSoon": "Segera hadir",
+    "instagram": "Balasan otomatis untuk pesan langsung Instagram. Akan membutuhkan akun profesional Instagram.",
+    "messenger": "Balasan otomatis untuk Facebook Messenger. Akan membutuhkan Halaman Facebook."
+  },
+  "blocked": {
+    "title": "Balasan Anda tidak terkirim",
+    "body": "WhatsApp menolak mengirim balasan otomatis Anda karena ada masalah tagihan di akun WhatsApp Business Anda. Pelanggan tetap bisa mengirim pesan dan Anda tetap melihat semua yang mereka kirim — tetapi mereka tidak mendapat balasan.",
+    "fix": "Anda membayar WhatsApp langsung untuk pesan-pesan ini, jadi masalah ini diperbaiki di WhatsApp Manager. <link>Periksa metode pembayaran Anda</link>"
+  },
+  "limit": {
+    "heading": "Balasan otomatis",
+    "label": "Batas bulanan",
+    "option": "{n, number}",
+    "usage": "{used, number} dari {limit, number} terpakai · direset {date}",
+    "perCustomer": "Maksimal {n} balasan per pelanggan dalam 24 jam, lalu satu pesan yang menyatakan Anda akan membalas secara pribadi.",
+    "emailAt": "Balasan berhenti sementara saat mencapai batas Anda. Kami akan mengirim email kepada Anda di 80% dan 100%.",
+    "saved": "Batas balasan bulanan disimpan",
+    "saveFailed": "Batas tidak dapat disimpan"
+  },
+  "billing": {
+    "heading": "Tagihan",
+    "paymentMethod": "Metode pembayaran",
+    "added": "Metode pembayaran ditambahkan",
+    "missing": "Belum ada metode pembayaran",
+    "addInManager": "Tambahkan di WhatsApp Manager",
+    "summary": "Meta, bukan HatchGrab, yang menagih akun WhatsApp Anda untuk balasan. Mulai {from}, {free, number} balasan pertama setiap bulan gratis. Benar per {checked}; periksa <link>harga Meta</link> untuk perubahan.",
+    "howMetaCharges": "Cara Meta menagih",
+    "chargesTitle": "Meta yang menagih balasan WhatsApp, bukan HatchGrab.",
+    "chargesBody": "Setiap balasan yang dikirim HatchGrab untuk Anda ditagih oleh Meta ke akun WhatsApp Business Anda. Mulai {from}, Meta memberikan {free, number} balasan gratis per bulan untuk setiap nomor; setelah itu, setiap balasan dikenai tarif Meta. Balasan yang Anda kirim sendiri dari aplikasi WhatsApp Business tidak dikenai biaya. Meta yang menentukan harga ini dan bisa mengubahnya. <link>Lihat harga Meta</link>",
+    "addPaymentInManager": "Tambahkan metode pembayaran di WhatsApp Manager",
+    "aboveMissing": "Batas Anda melebihi {free, number} balasan gratis dari Meta. Tanpa metode pembayaran, Meta akan menghentikan semua balasan setelah kuota gratis itu habis.",
+    "aboveGeneral": "Batas Anda melebihi {free, number} balasan gratis dari Meta. Balasan di atas jumlah itu memerlukan metode pembayaran di akun WhatsApp Anda; tanpanya, Meta menghentikan semua balasan setelah kuota gratis habis.",
+    "addPaymentMethod": "Tambahkan metode pembayaran"
+  },
+  "disconnect": {
+    "link": "Putuskan WhatsApp",
+    "title": "Putuskan WhatsApp?",
+    "body": "Balasan otomatis langsung berhenti dan HatchGrab kehilangan akses ke akun WhatsApp Anda. Nomor Anda tetap berfungsi di aplikasi WhatsApp Business. Untuk menghapus HatchGrab sepenuhnya, buka juga WhatsApp Business → Pengaturan → Akun → Business Platform.",
+    "cancel": "Batal",
+    "confirm": "Putuskan",
+    "working": "Memutuskan…",
+    "failed": "Tidak dapat memutuskan"
+  },
+  "signup": {
+    "logged": "Tercatat.",
+    "partial": "Kami sudah menautkan akun WhatsApp Business Anda tetapi tidak dapat menyelesaikan koneksinya. Tidak ada yang salah di pihak Anda — silakan hubungi kami dan kami akan menyelesaikannya.",
+    "noNumber": "Akun WhatsApp Business Anda sudah tertaut, tetapi tidak ada nomor telepon yang diterima. Tekan Hubungkan ulang dan selesaikan langkah nomor telepon.",
+    "needsRegistering": "Akun Anda sudah tertaut, tetapi nomor ini perlu kami daftarkan sebelum balasan bisa dimulai. Silakan hubungi dukungan — pengaturan Anda sudah tersimpan, jangan jalankan lagi.",
+    "registerRefused": "Akun Anda sudah tertaut, tetapi Meta tidak mau mendaftarkan nomornya. Pengaturan Anda sudah tersimpan — silakan hubungi dukungan alih-alih menjalankannya lagi.",
+    "deliveryRefused": "Akun Anda sudah tertaut, tetapi Meta tidak mau mengaktifkan pengiriman pesan. Pengaturan Anda sudah tersimpan — silakan hubungi dukungan alih-alih menjalankannya lagi.",
+    "numberTaken": "Nomor WhatsApp itu sudah terhubung ke akun HatchGrab lain. Satu nomor hanya bisa menjawab untuk satu truk. Hubungi dukungan dan kami akan memindahkannya.",
+    "saveIncomplete": "Hampir selesai — kami tidak dapat menyelesaikan penyimpanan. Pengaturan Anda sudah tersimpan, silakan hubungi dukungan alih-alih menjalankannya lagi.",
+    "connected": "WhatsApp sudah terhubung. Balasan otomatis akan mulai menjawab pesan ke nomor ini."
+  }
+}

@@ -1,0 +1,154 @@
+{
+  "filter": {
+    "dateRange": "📅 טווח תאריכים",
+    "event": "📍 אירוע",
+    "filterBy": "סינון לפי",
+    "show": "הצגה",
+    "range": "<from></from><sep>עד</sep><until></until>",
+    "selectEvent": "בחרו אירוע…",
+    "eventOption": "{venue} · {date}",
+    "unnamedEvent": "אירוע",
+    "viewReport": "הצגת הדוח",
+    "loading": "בטעינה…",
+    "orders": "📋 הזמנות",
+    "items": "📦 פריטים",
+    "exportCsv": "⬇ ייצוא CSV"
+  },
+  "empty": {
+    "noOrders": "לא נמצאו הזמנות בתקופה הזו.",
+    "selectEvent": "בחרו אירוע למעלה כדי לראות את הדוח שלו."
+  },
+  "summary": {
+    "totals": "{n, plural, one {הזמנה אחת} two {שתי הזמנות} other {{count} הזמנות}} · {total}"
+  },
+  "revenue": {
+    "title": "פירוט ההכנסות",
+    "deals": "הכנסות ממבצעים",
+    "modifiers": "תוספות בתשלום",
+    "foodSales": "מכירות אוכל",
+    "total": "סה״כ",
+    "other": "אחר",
+    "tax": "מס",
+    "tips": "טיפים",
+    "serviceFees": "דמי שירות",
+    "cardFees": "עמלות אשראי"
+  },
+  "itemsSold": {
+    "title": "פריטים שנמכרו"
+  },
+  "dealsCard": {
+    "title": "מבצעים"
+  },
+  "custom": {
+    "title": "התאמות אישיות",
+    "paidModifiers": "תוספות בתשלום",
+    "customerNotes": "הערות של לקוחות",
+    "note": "“{note}”"
+  },
+  "table": {
+    "item": "פריט",
+    "modifier": "תוספת",
+    "qty": "כמות",
+    "total": "סה״כ",
+    "date": "תאריך",
+    "time": "שעה",
+    "channel": "ערוץ"
+  },
+  "breakdown": {
+    "orders": "פירוט הזמנות",
+    "items": "פירוט פריטים"
+  },
+  "channel": {
+    "online": "אונליין",
+    "walkUp": "הזמנה במקום"
+  },
+  "csv": {
+    "orderId": "מזהה הזמנה",
+    "date": "תאריך",
+    "event": "אירוע",
+    "timePlaced": "שעת ביצוע",
+    "collectionTime": "שעת איסוף",
+    "customerName": "שם הלקוח",
+    "orderType": "סוג הזמנה",
+    "items": "פריטים",
+    "deals": "מבצעים",
+    "modifiers": "תוספות",
+    "notes": "הערות",
+    "subtotal": "סכום ביניים",
+    "tip": "טיפ",
+    "serviceFee": "דמי שירות",
+    "total": "סה״כ",
+    "itemName": "שם הפריט",
+    "qty": "כמות",
+    "unitPrice": "מחיר ליחידה",
+    "itemTotal": "סה״כ לפריט",
+    "orderTotal": "סה״כ ההזמנה",
+    "unknownEvent": "אירוע לא ידוע",
+    "asap": "בהקדם",
+    "unknownCustomer": "לא ידוע",
+    "customerOnline": "לקוח אונליין",
+    "placedByTruck": "בוצעה על ידי הפודטראק"
+  },
+  "presets": {
+    "label": "תקופה",
+    "custom": "תאריכים לבחירה",
+    "thisMonth": "החודש",
+    "lastMonth": "החודש הקודם",
+    "lastQuarter": "הרבעון הקודם",
+    "lastTaxYear": "שנת המס הקודמת"
+  },
+  "accounts": {
+    "title": "לרואה החשבון",
+    "help": "מכירות נספרות ביום האירוע. ברוטו הוא מה שהלקוחות שילמו. נטו הוא מה שנשאר אחרי החזרים ומס.",
+    "gross": "מכירות ברוטו",
+    "refunds": "החזרים",
+    "net": "מכירות נטו",
+    "taxEstimated": "הערכה לפי שיעור המס שלכם",
+    "taxNone": "לא הוגדר שיעור מס לפודטראק שלכם, ולכן לא מחושב כאן מס.",
+    "byChannel": "מכירות ברוטו לפי ערוץ",
+    "byPayment": "מכירות ברוטו לפי אמצעי תשלום",
+    "online": "אונליין",
+    "walkUp": "הזמנה במקום",
+    "cardOnline": "כרטיס אונליין",
+    "payAtTruck": "תשלום באיסוף",
+    "cost": "עלות המנות שנמכרו",
+    "profit": "רווח",
+    "coverage": "{total, plural, one {עלות מוגדרת: {withCost} מתוך מנה אחת שנמכרה} two {עלות מוגדרת: {withCost} מתוך שתי מנות שנמכרו} other {עלות מוגדרת: {withCost} מתוך # מנות שנמכרו}}",
+    "partial": "מנות בלי עלות לא נכללות בחישוב העלות, ולכן הרווח כאן גבוה מהרווח האמיתי. הוסיפו עלות לכל מנה בתפריט.",
+    "noCosts": "עדיין אין עלות לאף מנה. הוסיפו עלות למנות בתפריט כדי לראות את הרווח.",
+    "byEvent": "לפי אירוע",
+    "event": "אירוע",
+    "sales": "מכירות נטו",
+    "eventNoProfit": "מקף אומר שלא לכל המנות שנמכרו שם יש עלות.",
+    "downloadOrders": "⬇ הזמנות לרואה החשבון",
+    "downloadEvents": "⬇ אירועים לרואה החשבון",
+    "downloadHelp": "שני קובצי גיליון אלקטרוני: שורה אחת לכל הזמנה, ושורה אחת לכל אירוע. הם נפתחים ב-Excel, ב-Numbers, ב-Xero וב-QuickBooks."
+  },
+  "accountsCsv": {
+    "header": {
+      "date": "תאריך",
+      "time": "שעה",
+      "orderNumber": "מספר הזמנה",
+      "event": "אירוע",
+      "channel": "ערוץ",
+      "paymentMethod": "אמצעי תשלום",
+      "currency": "מטבע",
+      "gross": "ברוטו",
+      "tax": "מס",
+      "taxBasis": "בסיס המס",
+      "net": "נטו",
+      "refunded": "הוחזר",
+      "cost": "עלות",
+      "profit": "רווח",
+      "eventDate": "תאריך האירוע",
+      "orders": "הזמנות",
+      "dishesSold": "מנות שנמכרו",
+      "dishesWithCost": "מנות עם עלות"
+    },
+    "taxBasis": {
+      "stored": "נשמר עם ההזמנה",
+      "estimated": "הערכה לפי שיעור המס שלכם",
+      "none": "לא הוגדר שיעור מס"
+    }
+  }
+}

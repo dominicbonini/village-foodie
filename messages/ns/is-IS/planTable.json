@@ -1,0 +1,36 @@
+{
+  "h1": "Allt sem þarf til að reka afgreiðsluna, í öllum áskriftarleiðum.",
+  "lede": "Pantanir, forpantanir, afköst eldhúss og eldhússkjár fylgja öllum áskriftarleiðum.{hasUpgrades, select, yes { Með uppfærslu ({plans}) bætast við: {features} og lægri gjöld.} other {}}",
+  "perMonth": "{price} / mán.",
+  "group": {
+    "pay": "Það sem þú greiðir",
+    "run": "Rekstur afgreiðslunnar",
+    "online": "Netpantanir",
+    "marketing": "Markaðssetning og sjálfvirkni"
+  },
+  "pay": {
+    "included": "Netpantanir innifaldar á mánuði",
+    "fee": "HatchGrab-gjald af netpöntunum greiddum með korti*",
+    "walkUp": "Pantanir á staðnum"
+  },
+  "cell": {
+    "unlimited": "Ótakmarkað",
+    "free": "Ókeypis",
+    "feeAbove": "<b>{fee}</b> umfram {included}",
+    "yes": "Innifalið",
+    "none": "Ekki innifalið",
+    "comingSoon": "Væntanlegt"
+  },
+  "short": {
+    "whatsapp_replies": "WhatsApp",
+    "schedule_graphics": "samfélagsmiðlar",
+    "event_types": "sérverð fyrir viðburði"
+  },
+  "meta": {
+    "description": "Allir eiginleikar HatchGrab í öllum áskriftarleiðum, hlið við hlið — {plans}, með gjöldum og inniföldum pöntunum.{months, plural, =0 {} one { Fyrsti mánuðurinn inniheldur allt.} other { Fyrstu # mánuðirnir innihalda allt.}}"
+  },
+  "notes": {
+    "whatsapp": "Sjálfvirk svör á WhatsApp krefjast WhatsApp Business-aðgangs. Meta kann að taka gjald fyrir sum skilaboð; svörin eru búin til sjálfkrafa.",
+    "printing": "Prentun eldhúsmiða krefst samhæfs Bluetooth- eða snúrutengds prentara (fylgir ekki)."
+  }
+}

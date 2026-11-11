@@ -1,0 +1,6 @@
+{
+  "closedPending": "Đã đóng đặt trước. Chờ bếp duyệt.",
+  "deadline": "Hạn chót đặt trước: {time}",
+  "deadlineOnDay": "Hạn chót đặt trước: {time}, {day}",
+  "opens": "Mở đặt trước từ {day}"
+}

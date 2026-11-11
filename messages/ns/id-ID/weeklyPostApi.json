@@ -1,0 +1,57 @@
+{
+  "shortened": {
+    "heading": "Judul tidak muat dan sudah dipendekkan.",
+    "date": "Tanggal tidak muat dan sudah dipendekkan.",
+    "daysOff": "Teks hari libur tidak muat dan sudah dipendekkan.",
+    "place": "Nama lokasi tidak muat dan sudah dipendekkan.",
+    "time": "Jam tidak muat dan sudah dipendekkan.",
+    "note": "Teks Anda sendiri tidak muat dan sudah dipendekkan.",
+    "venue": "Nama tempat tidak muat dan sudah dipendekkan.",
+    "area": "Daerah tidak muat dan sudah dipendekkan."
+  },
+  "fontFallback": "Font yang dipakai desain ini ({id}) tidak bisa dimuat — kotak-kotak tersebut memakai Oswald.",
+  "wrongShapeBackground": "Bentuk gambar lokasi ini berbeda dari desain Anda, jadi latar belakang standar yang dipakai.",
+  "rowsFit": "Hari terakhir jatuh {px}px di bawah batas bawah gambar — kurangi jarak antarbaris atau geser baris 1 ke atas.",
+  "placeStatus": {
+    "ownBoth": "Gambar dan posisi teks sendiri",
+    "wrongShape": "Bentuk berbeda — tidak dipakai sampai diganti",
+    "ownPicture": "Gambar sendiri, posisi standar",
+    "ownPositions": "Gambar standar, posisi teks sendiri",
+    "none": "Belum ada gambar — memakai Standar"
+  },
+  "standardStatus": "Dipakai di semua lokasi lain",
+  "option": {
+    "oneOff": "Unggah satu khusus untuk postingan ini",
+    "placePoster": "Poster {name}",
+    "standard": "Desain standar"
+  },
+  "previewLabel": {
+    "lastEvent": "Pratinjau memakai acara terakhir Anda di sini",
+    "noEvents": "Belum ada acara di sini — pratinjau menampilkan acara Anda berikutnya dengan nama lokasi ini"
+  },
+  "fontUsage": {
+    "weekly": "desain postingan mingguan Anda",
+    "event": "desain postingan per acara Anda",
+    "place": "desain Anda untuk lokasi {place}",
+    "placeUnnamed": "desain Anda untuk sebuah lokasi"
+  },
+  "face": {
+    "regular": "Reguler",
+    "bold": "Tebal",
+    "italic": "Miring"
+  },
+  "picture": {
+    "legacy": "Poster acara",
+    "fallback": "Gambar",
+    "wrongShape": "Bentuk berbeda — tidak bisa dipakai sebagai latar belakang penuh"
+  },
+  "noPicture": {
+    "omit": "Jangan tampilkan",
+    "blank": "Biarkan ruang kosong",
+    "logo": "Tampilkan logo Anda"
+  },
+  "noPicturesAll": "{total, plural, one {Lokasi Anda sudah punya gambar.} other {Semua {total} lokasi Anda sudah punya gambar.}}",
+  "noPicturesSome": "{without, plural, one {{without} dari {total} lokasi Anda belum punya gambar} other {{without} dari {total} lokasi Anda belum punya gambar}}",
+  "licenceTick": "Saya pemilik font ini atau punya lisensi untuk memakainya",
+  "fontUploadButton": "↑ Unggah font Anda"
+}

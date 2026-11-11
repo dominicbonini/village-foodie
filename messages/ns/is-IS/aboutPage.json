@@ -1,0 +1,20 @@
+{
+  "meta": {
+    "title": "Um okkur — HatchGrab",
+    "description": "HatchGrab smíðar hagnýtan hugbúnað fyrir matarvagna: netpantanir, afhendingartímar og færri endurteknar spurningar. Stofnað af Dominic Bonini."
+  },
+  "eyebrow": "Um okkur",
+  "title": "Hannað utan um það hvernig matarvagnar starfa í raun",
+  "photoAlt": "{name}, stofnandi HatchGrab",
+  "story": {
+    "start": "HatchGrab byrjaði á einfaldri athugun: matarvagnar þurfa betri verkfæri til að reka fyrirtækin sín.",
+    "villageFoodie": "Eftir að ég bjó til Village Foodie, skrá sem hjálpar fólki að finna matarvagna sem koma í heimabyggð þess, kynnti ég mér betur þær áskoranir sem færanleg matsala glímir við. Ólíkt hefðbundnum veitingastöðum eru matarvagnar sífellt á ferðinni, starfa á ólíkum stöðum og afgreiða viðskiptavini við breytilegar aðstæður.",
+    "fixedAddress": "Samt er stór hluti hugbúnaðarins sem þeim stendur til boða hannaður fyrir fyrirtæki með fast heimilisfang.",
+    "change": "HatchGrab var stofnað til að breyta því.",
+    "build": "Við smíðum hagnýtan hugbúnað sérstaklega fyrir matarvagna og færanlega veitingasölu, sem hjálpar þeim að taka við netpöntunum, halda utan um afhendingartíma, halda pöntunum gangandi og eyða minni tíma í endurteknar spurningar.",
+    "focus": "Markmið okkar er einfalt: að gera rekstur matarvagns auðveldari, með verkfærum sem eru hönnuð utan um það hvernig þessi fyrirtæki starfa í raun."
+  },
+  "signature": "<b>{name}</b><br></br>Stofnandi, HatchGrab",
+  "company": "{company} · skráð í Englandi og Wales · félagsnúmer {number} · skráð skrifstofa: {address}",
+  "contact": "Hafa samband"
+}

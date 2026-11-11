@@ -1,0 +1,23 @@
+{
+  "explainerLead": "Bạn phải giữ bảng điều khiển hoặc màn hình bếp (KDS) luôn bật và có mạng trong lúc bán.",
+  "explainerBody": "Nếu màn hình tắt, thiết bị mất internet hoặc bạn chuyển sang website khác, bảo vệ khi mất mạng sẽ tự kích hoạt — tạm dừng nhận đơn hoặc tắt tự động xác nhận, tùy lựa chọn của bạn.",
+  "reminder": "⚠️ Hãy giữ bảng điều khiển hoặc màn hình bếp luôn bật và có mạng trong lúc bán, nếu không bảo vệ khi mất mạng có thể sẽ kích hoạt.",
+  "enableConfirm": "Đã bật bảo vệ khi mất mạng.\n\nĐể đơn hàng không bị gián đoạn, màn hình phải luôn bật. Nếu thiết bị này mất kết nối, bảo vệ khi mất mạng sẽ kích hoạt theo chế độ bạn đã chọn.\n\nHãy đảm bảo đã bật Giữ màn hình sáng trên thiết bị này.",
+  "disableConfirm": "Tắt bảo vệ khi mất mạng cho sự kiện này?\n\nNếu thiết bị này mất kết nối, đơn online vẫn tiếp tục — khách có thể đặt những đơn mà bạn không nhìn thấy. Chỉ tắt nếu bạn có kết nối ổn định.",
+  "cardDescription": "Quyết định điều gì xảy ra với đơn mới khi thiết bị của bạn mất mạng.",
+  "purpose": "Nếu thiết bị của bạn mất kết nối, tính năng này ngăn đơn đổ về trong lúc bạn không nhìn thấy.",
+  "switchLabel": "Bảo vệ đơn khi mất mạng",
+  "switchHelp": "Điều gì xảy ra khi xe này mất kết nối.",
+  "modes": {
+    "pause": {
+      "label": "Tạm dừng đặt món online",
+      "help": "Khách không thể đặt món cho đến khi bạn có mạng trở lại."
+    },
+    "no_auto_accept": {
+      "label": "Vẫn nhận đơn, bạn tự xác nhận",
+      "help": "Tự động xác nhận sẽ tắt, nên khách vẫn đặt được món nhưng không đơn nào được xác nhận tự động. Bạn sẽ xác nhận từng đơn khi có mạng trở lại — đơn nào vẫn còn chờ sẽ tự động bị từ chối sau thời gian bạn chọn, và khách sẽ nhận email thông báo."
+    }
+  },
+  "autoRejectLabel": "Từ chối đơn chờ lâu hơn",
+  "autoRejectOption": "{n, plural, one {{count} phút} other {{count} phút}}"
+}

@@ -1,0 +1,69 @@
+{
+  "close": "סגירה",
+  "cancel": "ביטול",
+  "selectReason": "בחרו סיבה",
+  "reject": {
+    "title": "לדחות את הזמנה #{orderId}?",
+    "reasonLabel": "סיבה — חובה (מוצגת ללקוח)",
+    "reason": "{reason, select, sold_out {פריט אזל מהמלאי} too_busy {עומס — לא נספיק בזמן} closing_soon {סוגרים בקרוב} other {אחר}}",
+    "noteRequired": "סיבה — חובה",
+    "noteOptional": "הערה נוספת — לא חובה",
+    "notePlaceholder": "הוסיפו פרטים נוספים ללקוח…",
+    "keep": "השארת ההזמנה",
+    "confirm": "דחיית ההזמנה"
+  },
+  "eventCancel": {
+    "title": "לבטל את האירוע הזה?",
+    "affected": "{n, plural, one {הזמנה אחת תבוטל} two {שתי הזמנות יבוטלו} other {{count} הזמנות יבוטלו}} והלקוחות יקבלו הודעה.",
+    "reasonLabel": "סיבה — רשות",
+    "reason": "{reason, select, vehicle_breakdown {תקלה ברכב} weather {מזג אוויר} venue_issue {בעיה במקום} personal_emergency {מקרה חירום אישי} other {אחר}}",
+    "messageLabel": "הודעה ללקוחות — רשות",
+    "messagePlaceholder": "לדוגמה: מצטערים, הנגרר שלנו התקלקל בדרך לאירוע…",
+    "keep": "השארת האירוע",
+    "cancelling": "מבטלים…",
+    "confirm": "ביטול האירוע"
+  },
+  "actions": {
+    "startEvent": "{restart, select, yes {הפעלה מחדש של האירוע} other {התחלת האירוע}}",
+    "changeEvent": "החלפת אירוע",
+    "changeEventType": "שינוי סוג האירוע…",
+    "privateLink": "קישור פרטי וקוד QR",
+    "noteLabel": "הערה ללקוחות",
+    "notePlaceholder": "לדוגמה: חנו בחניון הראשי וחפשו את האוהל הכתום",
+    "noteHint": "מוצגת ללקוחות בדף ההזמנה, מתחת לפרטי האירוע.",
+    "saveNote": "שמירת ההערה",
+    "resume": "חידוש הזמנות",
+    "pause": "השהיית הזמנות",
+    "changeFinishTime": "שינוי שעת הסיום של האירוע",
+    "finishEvent": "סיום האירוע",
+    "cancelEvent": "ביטול האירוע"
+  },
+  "finish": {
+    "confirmTitle": "לשנות את שעת הסיום?",
+    "willFinish": "האירוע יסתיים בשעה <b>{selected}</b>{hasCurrent, select, yes { במקום <b>{current}</b>} other {}}.",
+    "dueAfter": "<b>{n, plural, one {הזמנה אחת מיועדת} two {שתי הזמנות מיועדות} other {{count} הזמנות מיועדות}} לאיסוף אחרי {selected}.</b> {n, plural, one {היא נשארת} two {הן נשארות} other {הן נשארות}} על הלוח ועדיין {n, plural, one {צריך להכין אותה} two {צריך להכין אותן} other {צריך להכין אותן}}. שינוי שעת הסיום רק מונע ביצוע הזמנות חדשות לשעות מאוחרות יותר.",
+    "saving": "שומרים…",
+    "confirm": "שינוי שעת הסיום",
+    "keepCurrent": "השארת השעה {current}",
+    "keepAsIs": "ללא שינוי",
+    "title": "שינוי שעת הסיום",
+    "currentlySet": "האירוע מוגדר כרגע להסתיים בשעה <b>{current}</b>.",
+    "noFinishTime": "לא הוגדרה שעת סיום לאירוע הזה.",
+    "noTimesLeft": "לא נותרו שעות היום. השתמשו באפשרות “סיום האירוע” במקום זאת.",
+    "newFinishTime": "שעת סיום חדשה",
+    "optionCurrent": "{time} (נוכחית)",
+    "earlier": "השעה הזו מוקדמת משעת הסיום הנוכחית. הלקוחות לא יוכלו להזמין לשעות שאחריה.",
+    "review": "בדיקת השינוי",
+    "optionNextDay": "{time} (למחרת)"
+  },
+  "extraWait": {
+    "title": "הוספת המתנה נוספת",
+    "hint": "מתווסף לשעת האיסוף שמוצגת בהזמנות חדשות. לא משנה את שעת הסיום של האירוע.",
+    "option": "+{mins} דק׳"
+  },
+  "picker": {
+    "reconnect": "התחברו מחדש כדי לטעון",
+    "selected": "נבחר",
+    "status": "{tone, select, paused {⏸ מושהה} live {● פעיל} finished {● הסתיים} cancelled {בוטל} other {לא התחיל}}"
+  }
+}

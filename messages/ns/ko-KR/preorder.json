@@ -1,0 +1,6 @@
+{
+  "closedPending": "미리 주문 마감. 주방 승인 대기 중.",
+  "deadline": "미리 주문 마감: {time}",
+  "deadlineOnDay": "미리 주문 마감: {day} {time}",
+  "opens": "미리 주문 시작: {day}"
+}

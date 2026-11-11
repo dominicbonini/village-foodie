@@ -1,0 +1,8 @@
+{
+  "change": "{label} — değiştir",
+  "useRule": "{label} — bunun yerine kuralı kullan",
+  "typePrice": "{label} — fiyat girin",
+  "backToRule": "Kurala dön",
+  "diffUp": "(+{amount})",
+  "diffDown": "(−{amount})"
+}

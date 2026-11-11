@@ -1,0 +1,94 @@
+{
+  "heading": "Thanh toán",
+  "loading": "Đang kiểm tra tài khoản Stripe của bạn…",
+  "state": {
+    "not_connected": {
+      "title": "Chưa thiết lập",
+      "body": "Mất khoảng 10 phút. Bạn cần thông tin tài khoản ngân hàng và giấy tờ tùy thân.",
+      "chip": "Chưa thiết lập"
+    },
+    "requirements": {
+      "title": "Stripe cần thông tin của bạn",
+      "body": "Thanh toán bằng thẻ sẽ chưa hoạt động cho đến khi Stripe có thông tin doanh nghiệp và ngân hàng của bạn.",
+      "chip": "Cần xử lý"
+    },
+    "pending": {
+      "title": "Đã kết nối — Stripe đang kiểm tra thông tin của bạn",
+      "body": "Bạn không cần làm gì thêm. Stripe đang xem xét thông tin bạn đã gửi, và trang này sẽ tự cập nhật khi hoàn tất.",
+      "chip": "Đang kiểm tra"
+    },
+    "ready": {
+      "title": "Đã kết nối",
+      "body": "Tài khoản Stripe của bạn đã được kết nối và có thể nhận thanh toán.",
+      "chip": "Sẵn sàng"
+    },
+    "restricted": {
+      "title": "Thanh toán thẻ đang tạm dừng",
+      "body": "Stripe đã tạm dừng thanh toán thẻ trên tài khoản của bạn cho đến khi một vấn đề được giải quyết.",
+      "chip": "Tạm dừng"
+    },
+    "unsupported": {
+      "title": "Tài khoản này không dùng được thanh toán thẻ",
+      "body": "Stripe không thể bật thanh toán thẻ ở đây. Hãy liên hệ với chúng tôi để cùng bạn xử lý.",
+      "chip": "Không khả dụng"
+    }
+  },
+  "keyMismatch": {
+    "title": "Khóa Stripe không khớp",
+    "body": "Máy chủ của trang này đang dùng khóa Stripe <b>{server, select, live {chạy thật} other {thử nghiệm}}</b>, trong khi trình duyệt được dựng với khóa <b>{browser, select, live {chạy thật} other {thử nghiệm}}</b>. Thanh toán thẻ sẽ lỗi ngay khi khách bắt đầu trả tiền, nên việc thiết lập Stripe bị chặn cho đến khi hai khóa khớp nhau.",
+    "fix": "Cả hai khóa phải được đặt cho cùng một môi trường, sau đó dựng lại (build) trang — khóa công khai (publishable) được gắn cố định khi dựng trang, còn khóa bí mật (secret) được đọc ở mỗi yêu cầu."
+  },
+  "permission": {
+    "title": "Chỉ chủ xe mới có thể thiết lập thanh toán",
+    "body": "Stripe do người có tài khoản ngân hàng nhận tiền kết nối, nên phải được thiết lập từ chính tài khoản đã đăng nhập của họ. Xe này và HatchGrab không gặp sự cố gì."
+  },
+  "config": {
+    "keyMissingTitle": "Thanh toán thẻ chưa được cấu hình",
+    "fetchTitle": "Chúng tôi không kiểm tra được tài khoản Stripe của xe này",
+    "keyMissing": "Chưa đặt biến {name} — không thể tải các thành phần nhúng."
+  },
+  "errors": {
+    "requestFailed": "Yêu cầu thất bại ({status})",
+    "unreachable": "Không kết nối được với Stripe"
+  },
+  "online": {
+    "heading": "Thanh toán online",
+    "body": "Khách thanh toán bằng thẻ khi đặt món. Tiền chuyển thẳng vào tài khoản Stripe của bạn — chúng tôi không bao giờ giữ tiền.",
+    "feeLine": "Stripe thu {fee} mỗi giao dịch với {region} tiêu chuẩn. Các loại thẻ khác có thể tốn hơn. Phí riêng của HatchGrab cho đơn online tùy theo gói của bạn — xem mục Gói & thanh toán.",
+    "testMode": "Chế độ thử nghiệm. Chưa thể nhận thanh toán thật."
+  },
+  "trialNote": "Thiết lập phần này không bắt đầu gói đăng ký và không tính phí bạn hôm nay. Đây là cách khách trả tiền cho bạn — gói của bạn là chuyện riêng.",
+  "admin": {
+    "title": "Đang xem với quyền quản trị nền tảng",
+    "body": "Xe này chưa thiết lập thanh toán online. Chỉ chủ xe mới có thể bắt đầu, từ chính tài khoản đã đăng nhập của họ — ở đây không có gì để bấm."
+  },
+  "setUp": {
+    "button": "Thiết lập thanh toán online",
+    "busy": "Đang thiết lập…"
+  },
+  "toast": {
+    "alreadySetUp": "Đã thiết lập — đang tiếp tục",
+    "addDetails": "Giờ hãy thêm thông tin của bạn cho Stripe",
+    "createFailed": "Không tạo được tài khoản"
+  },
+  "onboarding": {
+    "restricted": "Stripe sẽ lo phần tiếp theo — bạn sẽ đăng nhập Stripe và cập nhật những thông tin họ cần.",
+    "firstRun": "Stripe sẽ lo phần tiếp theo — bạn sẽ đăng nhập Stripe, rồi cung cấp thông tin doanh nghiệp và ngân hàng."
+  },
+  "details": {
+    "title": "Thông tin Stripe của bạn",
+    "body": "Đổi tài khoản ngân hàng nhận tiền, hoặc cập nhật thông tin và giấy tờ doanh nghiệp.",
+    "button": "Xem hoặc sửa"
+  },
+  "walkUp": {
+    "heading": "Thanh toán đơn mua tại chỗ",
+    "body": "Cách bạn nhận tiền ngay tại xe. HatchGrab không thu phí nền tảng với đơn mua tại chỗ, dù bạn chọn cách nào.",
+    "ownTerminal": "Máy POS của riêng bạn",
+    "current": "Đang dùng",
+    "ownTerminalHelp": "Zettle, Square hoặc máy bạn đang dùng. Không cần thiết lập — chỉ áp dụng phí của nhà cung cấp bạn.",
+    "hatchgrab": "Qua HatchGrab",
+    "comingSoon": "Sắp ra mắt",
+    "hatchgrabHelp": "Dùng chung kết nối Stripe với thanh toán online — qua máy POS (quẹt thẻ), hoặc chạm thẻ không tiếp xúc ngay trên điện thoại hay máy tính bảng của bạn.",
+    "hatchgrabFees": "{fee} mỗi giao dịch với {region}, cộng thêm {surcharge} cho thanh toán không tiếp xúc trên điện thoại hoặc máy tính bảng. Các loại thẻ khác có thể tốn hơn."
+  }
+}

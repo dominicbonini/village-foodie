@@ -1,0 +1,161 @@
+{
+  "card": {
+    "title": "웹사이트에 영업 일정 추가",
+    "live": "<addr>{address}</addr> 주소에서 영업 일정이 표시되고 있어요.",
+    "create": "<addr>{address}</addr> 주소에 영업 일정을 보여 주는 페이지를 만들어 드려요.",
+    "exampleDomain": "yourtruck.co.kr",
+    "liveBadge": "공개 중",
+    "setUp": "설정",
+    "viewSetup": "설정 보기",
+    "continue": "계속",
+    "justLive": "<b>{address}</b> 주소가 작동하고 있어요. 확인해 보신 뒤 아래에서 올바른지 알려 주세요."
+  },
+  "waiting": {
+    "title": "주소가 연결되기를 기다리는 중: {address}",
+    "bodySince": "설정한 날짜: {date}. 새 웹 주소는 보통 몇 분 안에 작동하지만, 모든 사람에게 반영되기까지 최대 24시간이 걸릴 때도 있어요. 그동안 따로 하실 일은 없습니다. 다른 분이 대신 레코드를 추가하기로 했다면, 추가했는지 확인해 보시는 게 좋아요.",
+    "body": "새 웹 주소는 보통 몇 분 안에 작동하지만, 모든 사람에게 반영되기까지 최대 24시간이 걸릴 때도 있어요. 그동안 따로 하실 일은 없습니다. 다른 분이 대신 레코드를 추가하기로 했다면, 추가했는지 확인해 보시는 게 좋아요."
+  },
+  "ready": {
+    "title": "공개 중: {address}",
+    "body": "확인해 보신 뒤 설정에서 올바른지 알려 주세요."
+  },
+  "confirm": {
+    "heading": "확인해 보시고 올바른지 알려 주세요",
+    "open": "<link>{address}</link> 열기",
+    "checkTimes": "날짜와 시간이 맞는지 확인하세요.",
+    "yes": "네, 올바르게 보여요",
+    "no": "아니요, 문제가 있어요",
+    "problemLine": "어떻게 보이는지 알려 주시면 확인해 드릴게요.",
+    "emailUs": "이메일 보내기",
+    "mailSubject": "주소 문제: {address}",
+    "mailLiveSince": "공개 시작일: {date}",
+    "mailSeeing": "현재 보이는 내용:"
+  },
+  "confirmed": {
+    "heading": "감사합니다. 모두 확인했어요.",
+    "body": "더 하실 일은 없습니다."
+  },
+  "turnOff": {
+    "link": "이 기능 끄기",
+    "heading": "내 웹 주소 연결을 끌까요?",
+    "stops": "다음 주소는 작동을 멈춥니다:",
+    "carriesOn": "다음 주소는 지금처럼 그대로 작동하며, QR 코드로 연결되는 곳도 이 주소입니다:",
+    "reAdd": "나중에 다시 설정할 예정이라면 도메인 업체에 추가한 레코드를 그대로 두세요. 그렇지 않다면 업체에 삭제를 요청하세요.",
+    "cancel": "계속 사용",
+    "confirm": "끄기",
+    "working": "끄는 중…",
+    "failed": "지금은 끌 수 없었어요. 변경된 내용은 없으며 주소는 계속 작동합니다. 잠시 후 다시 시도하세요."
+  },
+  "wizard": {
+    "resumeFailedTitle": "설정을 불러오지 못했어요.",
+    "resumeFailedBody": "변경된 내용은 없습니다. 잠시 후 다시 시도하세요.",
+    "close": "닫기",
+    "resuming": "이어서 진행하는 중…",
+    "genericError": "문제가 발생했어요",
+    "saveFailed": "저장하지 못했어요"
+  },
+  "address": {
+    "intro": "영업 일정 전용 웹 주소가 생겨요.",
+    "question": "웹 주소가 무엇인가요?",
+    "hint": "손님이 이미 사장님을 찾을 때 쓰는 주소요.",
+    "aria": "내 웹 주소",
+    "willBe": "새 주소: <addr>{address}</addr>",
+    "example": "예: <addr>{address}</addr>",
+    "noChange": "웹사이트는 그대로예요. 새 주소로 가는 링크만 추가하면 됩니다.",
+    "notSetUp": "설정하지 않았어요.",
+    "restricted": "웹 주소를 관리하는 곳에서 자물쇠 표시(주소 옆에 손님에게 보이는 작은 자물쇠)를 저희가 설정할 수 있도록 허용해야 해요. 허용하기 전까지는 자물쇠가 나타나지 않으므로, 무작정 기다리시지 않도록 진행을 멈췄어요. 저희를 추가해 달라고 요청한 뒤 다시 시도하세요.",
+    "blocked": "현재 웹 주소에서 자물쇠 표시를 완전히 막고 있어요. 관리하는 곳에서 허용해야 작동합니다. 설정을 바꿔 달라고 요청한 뒤 다시 시도하세요.",
+    "elsewhere": "이 주소는 이미 다른 곳에 연결되어 있어요. 다음 화면의 메시지를 주소를 관리하는 분께 보내 주세요. 어떻게 하면 되는지 알 거예요.",
+    "provider": "웹 주소 관리 업체: <b>{provider}</b>. 어디로 가면 되는지 안내해 드릴게요.",
+    "provisionFailed": "이 주소를 설정하지 못했어요.",
+    "willNotWork": "이 주소는 사용할 수 없어요.",
+    "couldNotBeSetUp": "이 주소를 설정할 수 없었어요.",
+    "couldNotSetUp": "설정하지 못했어요",
+    "checking": "확인하는 중…",
+    "setting": "설정하는 중…",
+    "tryAgain": "다시 시도",
+    "setUpAddress": "이 주소 설정",
+    "notNow": "나중에"
+  },
+  "apex": {
+    "empty": "사용할 주소를 입력하세요.",
+    "not_a_domain": "웹 주소 형식이 아닌 것 같아요.",
+    "unparseable": "웹 주소로 인식하지 못했어요. 철자를 확인하고 다시 시도하세요.",
+    "apex": "{host} — 웹사이트 전체 주소입니다. 이 주소를 저희에게 연결하면 웹사이트가 이 페이지로 바뀌어요. 대신 앞에 단어를 하나 붙이세요. 예: events.{host}",
+    "too_deep": "주소의 단계가 너무 많아요. events.{domain} 같은 형식이 가장 좋아요."
+  },
+  "record": {
+    "addAt": "추가할 곳: {provider}",
+    "open": "{provider} 열기",
+    "guide": "{provider} 공식 안내",
+    "addAtSave": "{provider} 사이트에서 이 레코드를 추가하고 저장하세요.",
+    "addSomewhere": "웹 주소를 관리하는 곳에서 이 레코드를 추가하고 저장하세요.",
+    "hintChoose": "목록에서 선택하세요.",
+    "hintWord": "주소 전체가 아니라 이 단어만 입력하세요.",
+    "hintExact": "그대로 복사하세요.",
+    "timing": "보통 1시간 안에 작동하지만 더 오래 걸릴 수도 있어요. 이 페이지를 계속 열어 둘 필요는 없습니다.",
+    "someoneElse": "웹 주소를 다른 분이 관리하나요?",
+    "sentTo": "보낸 주소: {email}",
+    "emailPlaceholder": "담당자 이메일 주소",
+    "sending": "보내는 중…",
+    "send": "이 내용 보내기",
+    "sendFailed": "보내지 못했어요"
+  },
+  "providers": {
+    "cloudflare": {
+      "open": "웹 주소를 연 다음 “DNS”, “Records”로 이동하세요.",
+      "add": "“Add record”를 선택한 다음 “Type”에서 “CNAME”을 고르세요.",
+      "name": "아래 첫 번째 값을 “Name”에 넣으세요.",
+      "value": "아래 두 번째 값을 “Target”에 넣으세요.",
+      "proxy": "“Proxy status”를 “DNS only”로 설정하세요. 옆의 구름 아이콘이 주황색이 아닌 회색이어야 합니다.",
+      "save": "“TTL”은 “Auto”로 두고 “Save”를 선택하세요.",
+      "caveat": "구름 아이콘이 주황색으로 남아 있으면 자물쇠가 나타나지 않으며, 이유도 표시되지 않아요."
+    },
+    "godaddy": {
+      "open": "“Domain Portfolio”를 열고 웹 주소를 선택하세요.",
+      "dns": "“Domain Settings”에서 “DNS”를 선택하세요.",
+      "add": "“Add New Record”를 선택한 다음 “Type” 메뉴에서 “CNAME”을 고르세요.",
+      "name": "아래 첫 번째 값을 “Name”에 넣으세요.",
+      "value": "아래 두 번째 값을 “Value”에 넣으세요.",
+      "save": "“TTL”은 그대로 두고 “Save”를 선택하세요.",
+      "caveat": "여러 개를 한 번에 추가했다면 버튼에 “Save All Records”라고 표시돼요."
+    },
+    "123reg": {
+      "signIn": "“123 Reg Control Panel”에 로그인하세요.",
+      "manage": "“Domains” 옆의 “Manage All”을 선택한 다음 웹 주소를 고르세요.",
+      "dns": "“DNS”를 선택한 다음 “Add New Record”를 선택하세요.",
+      "type": "“Type” 목록에서 “CNAME”을 고르세요.",
+      "name": "아래 첫 번째 값을 “Name”에 넣으세요.",
+      "value": "아래 두 번째 값을 “Value”에 넣고, 끝에 마침표(.)를 붙이세요.",
+      "save": "“TTL”은 “Default”로 두고 “Save”를 클릭하세요.",
+      "caveat": "123 Reg에서는 두 번째 값 끝에 마침표를 붙여야 작동해요."
+    },
+    "wix": {
+      "open": "“Domains”를 연 다음 웹 주소 옆의 “Domain Actions” 아이콘을 클릭하세요.",
+      "manage": "“Manage DNS Records”를 선택하세요.",
+      "add": "“CNAME (Aliases)” 섹션에서 “+ Add Record”를 클릭한 다음 “Got it”을 클릭하세요.",
+      "name": "아래 첫 번째 값을 “Host Name”에 넣으세요.",
+      "value": "아래 두 번째 값을 “Value”에 넣으세요.",
+      "save": "“Save”를 클릭한 다음 팝업에서 “Save Changes”를 클릭하세요.",
+      "caveat": "웹 주소가 Wix에 등록된 것이 아니라 Wix를 가리키기만 한다면 Wix에서는 변경할 수 없어요. 주소를 등록한 곳에서 해야 합니다."
+    }
+  },
+  "instructionsEmail": {
+    "subject": "영업 일정 페이지용 레코드 1개 추가 요청: {truckName}",
+    "hello": "안녕하세요.",
+    "introAt": "저희 {truckName} 푸드트럭의 실시간 영업 일정을 {address} 주소에 올리려고 합니다. 이를 위해 {provider} 사이트에 있는 저희 도메인에 레코드 1개를 추가해야 합니다.",
+    "introHolder": "저희 {truckName} 푸드트럭의 실시간 영업 일정을 {address} 주소에 올리려고 합니다. 이를 위해 저희 도메인을 관리하는 곳에서 도메인에 레코드 1개를 추가해야 합니다.",
+    "stepsAt": "작업할 곳: {provider}",
+    "guide": "공식 안내: {url}",
+    "wholeChange": "변경 사항은 이것뿐입니다. 웹사이트의 다른 부분에는 영향이 없으며, 도메인의 나머지 부분도 지금과 똑같이 작동합니다. 보통 1시간 안에 적용됩니다.",
+    "pointsAt": "연결되는 페이지에는 저희의 다음 영업 장소가 표시되며 자동으로 최신 상태가 유지됩니다.",
+    "replyTo": "궁금한 점이 있으면 다음 주소로 회신해 주세요: {email}",
+    "thanks": "감사합니다."
+  },
+  "liveEmail": {
+    "subject": "작동 시작: {address}",
+    "goodNews": "좋은 소식이에요. {address} 주소가 작동하고 있어요.",
+    "body": "이제 사장님의 주소에서 영업 일정이 표시됩니다. 올바른지 확인해 주세요. {address} 주소를 열어 사장님의 영업 일정이 맞는지, 날짜가 정확한지 확인하세요.",
+    "confirm": "확인하셨다면 HatchGrab 설정을 열어 올바르다고 알려 주세요. 이 확인에 따라 달라지는 것은 없으며, 실제로 누군가 확인했다는 것을 저희가 알기 위한 것입니다."
+  }
+}

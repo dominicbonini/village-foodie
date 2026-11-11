@@ -1,0 +1,17 @@
+{
+  "features": "Fitur",
+  "pricing": "Harga",
+  "faq": "FAQ",
+  "privacy": "Privasi",
+  "terms": "Ketentuan",
+  "contact": "Kontak",
+  "about": "Tentang",
+  "copyright": "© {year} HatchGrab",
+  "credit": "Dari tim di balik <b>Village Foodie</b>",
+  "badges": {
+    "appStoreLink": "Unduh HatchGrab di App Store",
+    "appStoreAlt": "Download di App Store",
+    "googlePlayLink": "Dapatkan HatchGrab di Google Play",
+    "googlePlayAlt": "Temukan di Google Play"
+  }
+}

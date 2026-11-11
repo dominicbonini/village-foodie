@@ -1,0 +1,16 @@
+{
+  "takeConfirm": "Thẻ rung <b>{number}</b> đang ở <b>đơn #{holderId}</b>{hasName, select, yes { ({name})} other {}}. Lấy thẻ này cho <b>{hasTarget, select, yes {đơn #{targetId}} other {đơn này}}</b>?",
+  "cancel": "Hủy",
+  "take": "Lấy thẻ rung {number}",
+  "titleBlocking": "Thẻ rung cho đơn #{id}?",
+  "title": "Chọn thẻ rung",
+  "subtitle": "{hasTarget, select, yes {Đơn #{id}} other {Đơn này}}{hasCurrent, select, yes { · hiện là thẻ rung {current}} other {}}",
+  "allTaken": "{n, plural, one {Thẻ rung đã được dùng. Chạm vào để lấy lại từ đơn khác.} other {Cả {count} thẻ rung đều đã được dùng. Chạm vào một thẻ để lấy lại từ đơn khác.}}",
+  "thisOrder": "Đơn này",
+  "noBuzzer": "Không dùng thẻ rung",
+  "done": "Xong",
+  "lostTitle": "Đơn #{id} chưa có thẻ rung",
+  "lostBody": "{hasName, select, yes {{name} — } other {}}một đơn khác đã nhận cùng thẻ rung này khi bạn mất kết nối. Hãy đưa khách một thẻ khác.",
+  "dismiss": "Bỏ qua",
+  "assign": "Gán"
+}

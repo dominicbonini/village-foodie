@@ -1,0 +1,29 @@
+{
+  "notAvailable": "示範模式無法使用",
+  "demoMode": "示範模式",
+  "loopLands": "真實訂單就是這樣進來的",
+  "showMe": "示範給我看",
+  "noCard": "{sub} 不需要信用卡。",
+  "notYet": "還沒",
+  "cashAndCollected": "現金・已取餐",
+  "logoPlaceholder": "你的標誌放這裡",
+  "welcomeTitle": "{sample, select, yes {這是範例示範} other {這是你的示範}}",
+  "welcomeIntro": "{sample, select, yes {這是<b>暫代的菜單</b>，讓你看看整個流程如何運作，隨時都可以上傳你自己的菜單。} other {這是你自己的菜單和品牌，放在真實的看板上。}}看板上已有的訂單都是範例，讓你看看忙碌時段的樣子。",
+  "twoThings": "可以試試這兩件事：",
+  "hitButton": "在訂單上按下<b>{button}</b>",
+  "scanQr": "掃描 <b>QR code</b>（或點按連結），以顧客身分點餐，然後看訂單進來",
+  "qrAlt": "前往你的顧客點餐頁面的 QR code",
+  "openHere": "或在此裝置上開啟",
+  "copyLink": "複製連結",
+  "copyDescribedAs": "點餐連結",
+  "noLinkTitle": "你的顧客點餐連結",
+  "noLinkBody": "你的點餐頁面連結在右上角的選單裡。",
+  "asLive": "點餐與廚房流程跟正式營運時完全一樣。",
+  "startExploring": "開始探索",
+  "signupOffer": {
+    "heading": "{months, plural, =0 {免費開始} one {免費使用 # 個月} other {免費使用 # 個月}}",
+    "sub": "註冊後即開始免費試用。"
+  },
+  "cashIcon": "💵",
+  "walkBanner": "示範 · 這是你的菜單，也是顧客會看到的樣子。不會收取任何費用，也不會寄出任何電子郵件。"
+}

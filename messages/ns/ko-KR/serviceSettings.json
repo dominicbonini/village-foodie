@@ -1,0 +1,59 @@
+{
+  "labels": {
+    "collection_interval_mins": "픽업 시간",
+    "takes_cash": "현금을 받으시나요?",
+    "offline_protection": "오프라인 주문 보호",
+    "buzzer_prompt": "진동벨 추가 알림 받기"
+  },
+  "typeFollowsVanTitle": "차량별 기본 설정을 따릅니다",
+  "sameSettingsAllVansLabel": "모든 차량에 같은 설정 적용",
+  "sameSettingsAllVansHeader": "전체 차량",
+  "sameSettingsConfirm": "차량 1의 설정을 모든 차량에 복사할까요? 차량 1의 차량 설정이 모두 복사되며, 설정의 ‘차량 1 설정과 동일’과 같습니다. 주방 처리 용량은 별도 스위치로 설정합니다.",
+  "eventTypesFooterStandard": "기본은 평소 사용하는 설정입니다. 여기에서 바꾸면 설정에서도 바뀝니다.",
+  "eventTypesFooterOneEvent": "한 영업 일정의 설정만 바꾸려면 해당 영업 일정의 대시보드를 이용하세요.",
+  "eventTypesSubtitle": "변경 사항은 바로 저장됩니다.",
+  "matchStandardLabel": "기본과 동일하게",
+  "matchStandardConfirm": "이 유형의 모든 설정을 기본으로 되돌릴까요? 여기에서 바꾼 내용은 모두 지워집니다.",
+  "priceLabels": {
+    "price_change_on": "가격 변경",
+    "price_mode": "가격 변경 방식",
+    "price_amount": "금액",
+    "price_rounding": "반올림",
+    "item_prices": "메뉴별 가격"
+  },
+  "priceMode": {
+    "add_amount": "+ {symbol}",
+    "add_pct": "+ %",
+    "sub_amount": "− {symbol}",
+    "sub_pct": "− %",
+    "none": "가격 직접 설정"
+  },
+  "priceRounding": {
+    "none": "없음",
+    "nearest_1": "{symbol}1 단위로 반올림",
+    "up_1": "항상 올림"
+  },
+  "pricesStandardCell": "메뉴 가격",
+  "pricesTruckWideTitle": "모든 차량의 가격이 같습니다",
+  "pricesMenuCell": "메뉴",
+  "pricesTypeOffCell": "메뉴 가격",
+  "itemPricesShow": "가격 보기",
+  "itemPricesHide": "가격 숨기기",
+  "priceItemsHeading": "메뉴별 가격 설정",
+  "priceItemsOpen": "메뉴별 가격 보기 및 변경 ›",
+  "priceItemsClose": "메뉴 가격 숨기기 ⌃",
+  "ownPriceCount": "{n, plural, one {개별 가격이 있는 메뉴 {count}개} other {개별 가격이 있는 메뉴 {count}개}}",
+  "priceTypeHint": "가격을 눌러 직접 입력하세요.",
+  "pricesLiveNotice": "현재 영업 중입니다. 새 주문에는 새 가격이 적용되고, 이미 들어온 주문은 기존 가격이 유지됩니다.",
+  "placeTypeHelper": "이 장소를 선택하면 영업 일정 추가에서 이 유형이 자동으로 선택됩니다.",
+  "postPictureStandardNote": "여기의 영업 일정 게시물은 기본 디자인을 사용합니다.",
+  "eventItemsCardDescription": "이 영업 일정에만 적용되는 가격, 메뉴 수량 제한, 판매 여부입니다. 변경 사항은 바로 적용됩니다.",
+  "eventPriceColumnLabel": "가격",
+  "eventPriceOwnNote": "{hasType, select, yes {{type} {price} · 이 영업 일정} other {메뉴 {price} · 이 영업 일정}}",
+  "eventPriceEdit": "✎ 가격 수정",
+  "eventPriceCancel": "취소",
+  "eventPriceSave": "가격 저장",
+  "eventPriceEditNote": "이 영업 일정의 가격만 수정합니다. 저장할 때까지 메뉴 수량 제한과 판매 여부는 바꿀 수 없습니다.",
+  "eventPriceLiveNote": "영업 중: 새 주문에는 새 가격이 적용됩니다.",
+  "offlineWhenOfflineLabel": "오프라인일 때"
+}

@@ -1,0 +1,13 @@
+{
+  "subtotal": "小計",
+  "taxFallback": "稅金",
+  "taxIncluded": "含{label}",
+  "serviceFeeCustomer": "線上服務費",
+  "serviceFee": "服務費",
+  "cardFee": "刷卡手續費",
+  "tip": "小費",
+  "rate": "{rate}%",
+  "line": "{label}：{amount}",
+  "lineWithRate": "{label} {rate}：{amount}",
+  "foldedCharges": "{parts, select, tax_fees_tip {稅金、費用與小費} tax_tip {稅金與小費} fees_tip {費用與小費} fees {費用} other {稅金與費用}}"
+}

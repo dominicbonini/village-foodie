@@ -1,0 +1,32 @@
+{
+  "steps": {
+    "based": "Nơi bạn kinh doanh",
+    "identity": "Xe của bạn",
+    "menu": "Thực đơn",
+    "event": "Sự kiện đầu tiên"
+  },
+  "stepItem": "{number}. {label}",
+  "settingUp": "Đang thiết lập",
+  "loading": "Đang tải",
+  "loadingCountries": "Đang tải…",
+  "verify": {
+    "ok": "Đã xác nhận email — cảm ơn bạn.",
+    "expired": "Link xác nhận đó đã hết hạn. Hãy liên hệ, chúng tôi sẽ xử lý trước khi bạn mở bán.",
+    "invalid": "Link xác nhận đó không dùng được. Hãy liên hệ, chúng tôi sẽ xử lý trước khi bạn mở bán."
+  },
+  "identity": {
+    "heading": "Xe của bạn tên là gì?",
+    "intro": "Đây là tên khách sẽ thấy. Chưa có gì được công khai cho đến khi bạn chọn mở bán.",
+    "nameLabel": "Tên xe",
+    "namePlaceholder": "Bánh mì Cô Ba",
+    "phoneLabel": "Điện thoại",
+    "whatsappTick": "Số này có dùng WhatsApp",
+    "phoneHelp": "Khách thấy số này trong xác nhận đơn hàng để hỏi về đơn. Ô đánh dấu quyết định nút hiện là “Gọi cho chúng tôi” hay “Nhắn WhatsApp cho chúng tôi”. Bạn có thể đổi cả hai trong Cài đặt."
+  },
+  "phoneRequired": "Thêm số điện thoại — cả khách và chúng tôi đều dùng số này để liên hệ với bạn.",
+  "createFailed": "Không tạo được xe của bạn.",
+  "unreachable": "Hiện chưa kết nối được với chúng tôi — vui lòng thử lại.",
+  "back": "Quay lại",
+  "creating": "Đang tạo xe của bạn…",
+  "continue": "Tiếp tục"
+}

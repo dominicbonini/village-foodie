@@ -1,0 +1,9 @@
+{
+  "subject": "HatchGrab demonuz — geri dönüş bağlantınız burada",
+  "heading": "Demonuz kaydedildi",
+  "intro": "Menünüzün yer aldığı demoya geri dönüş bağlantınız burada. Giriş gerekmez — dokunmanız yeterli.",
+  "button": "Demomu aç",
+  "freshDay": "Her geri döndüğünüzde, deneyecek bir şeyler olsun diye yeni bir satış günü hazırlarız.",
+  "deletion": "Bu bir demo olduğu için onu sonsuza kadar saklamıyoruz — demoyu ve menüyü\n                <b>{date}</b> tarihinde ({days, plural, one {# gün} other {# gün}} sonra) sileceğiz. O tarihten önce\n                kaydolursanız menünüz sizinle gelir.",
+  "notSent": "Kaydedildi, ancak e-postayı şu anda gönderemedik."
+}

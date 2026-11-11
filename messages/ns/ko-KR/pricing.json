@@ -1,0 +1,49 @@
+{
+  "banner": {
+    "title": "{months, plural, one {첫 달은 완전 무료, 모든 기능을 이용할 수 있습니다.} other {처음 #개월은 완전 무료, 모든 기능을 이용할 수 있습니다.}}",
+    "body": "{brand} 기능을 쓰면 손님이 미리 주문하고 픽업할 때 결제하므로, 카드 결제 대행사를 전혀 연결하지 않고도 온라인 주문을 받을 수 있습니다. 결제를 미리 받고 싶으신가요? 온라인 카드 결제는 언제든 추가할 수 있습니다. 다른 요금제를 선택하지 않으면 체험 기간이 끝난 뒤 <plan>{fallback}</plan> 요금제로 전환됩니다{fallbackFree, select, yes { — 월 이용료는 없습니다} other {}}. 시작할 때 카드는 필요 없고, 약정 없이 언제든 해지할 수 있습니다.",
+    "bodyOnly": "{brand} 기능을 쓰면 손님이 미리 주문하고 픽업할 때 결제하므로, 카드 결제 대행사를 전혀 연결하지 않고도 온라인 주문을 받을 수 있습니다. 결제를 미리 받고 싶으신가요? 온라인 카드 결제는 언제든 추가할 수 있습니다. 체험 기간이 끝나면 <plan>{fallback}</plan> 요금제는 월 {price}입니다. 그 전에 결제 설정을 위해 연락드리겠습니다. 시작할 때 카드는 필요 없고, 약정 없이 언제든 해지할 수 있습니다."
+  },
+  "card": {
+    "perTruckMonth": "푸드트럭 1대 / 월",
+    "mostTrucks": "가장 많이 선택",
+    "tryFree": "무료로 체험하기",
+    "seeEvery": "모든 기능 보기 →",
+    "everything": "영업에 필요한 모든 기능",
+    "everythingIn": "{plan} 요금제의 모든 기능에 더해"
+  },
+  "fee": {
+    "feeOnly": "온라인 카드 주문에만 <b>{fee}*</b> 수수료. 현장 주문은 언제나 무료입니다.",
+    "included": "매월 온라인 주문 <b>{included}</b>까지 포함, 이후 <b>{fee}*</b>. 현장 주문은 언제나 무료입니다.",
+    "noFee": "아무리 바빠도 온라인 주문에 <b>HatchGrab 수수료 없음</b>. 매월 예측 가능한 고정 비용."
+  },
+  "base": {
+    "walkUp": "현장 주문 및 주방 디스플레이(KDS)",
+    "online": "온라인 주문",
+    "preorders": "미리 주문 및 픽업 시간",
+    "capacity": "주방 처리 용량 관리",
+    "privateEvents": "단독 행사",
+    "printing": "주방 주문서 출력",
+    "app": "iPhone, iPad, Android 주방 앱"
+  },
+  "added": {
+    "whatsapp_replies": "WhatsApp 자동 응답",
+    "schedule_graphics": "SNS 게시물 — Facebook·Instagram용 일정 이미지를 바로 게시",
+    "event_types": "맞춤 영업 일정 유형 및 가격"
+  },
+  "money": {
+    "unlimitedOrders": "온라인 주문 무제한, HatchGrab 수수료 0%",
+    "samePrice": "가장 바쁜 달에도 같은 요금"
+  },
+  "comingSoon": "출시 예정",
+  "bar": {
+    "title": "나에게 가장 저렴한 요금제는?",
+    "subtitle": "매월 온라인 주문량",
+    "first": "{to} 미만 → <b>{plan}</b>",
+    "middle": "{from} – {to} → <b>{plan}</b>",
+    "last": "{from} 초과 → <b>{plan}</b>",
+    "only": "주문량과 관계없이 → <b>{plan}</b>"
+  },
+  "footnote": "* 온라인 카드 주문에는 Stripe 카드 결제 수수료(현재 {country} 기준 {cardFee})가 별도로 부과되며, 이 수수료는 HatchGrab이 아닌 Stripe에 지급됩니다. 현장 주문은 사장님의 카드 단말기를 사용하며 HatchGrab 수수료는 0%입니다.",
+  "currencyLine": "가격 통화: {currency}({code})"
+}

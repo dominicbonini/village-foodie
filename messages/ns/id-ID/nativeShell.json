@@ -1,0 +1,136 @@
+{
+  "binary": {
+    "cameraUsage": "HatchGrab memakai kamera agar Anda bisa memotret papan menu, hidangan, dan dokumen lain lalu mengunggahnya langsung ke akun Anda. Foto hanya dipakai untuk unggahan yang Anda pilih.",
+    "bluetoothUsage": "HatchGrab memakai Bluetooth untuk terhubung ke printer struk di dapur Anda agar tiket pesanan bisa dicetak otomatis. Bluetooth tidak dipakai untuk hal lain.",
+    "localNetworkUsage": "HatchGrab terhubung ke printer dapur Anda di jaringan lokal agar tiket pesanan bisa tercetak otomatis. Jaringan lokal tidak dipakai untuk hal lain.",
+    "faceIdUsage": "Buka kunci HatchGrab dengan Face ID.",
+    "offlineTitle": "HatchGrab tidak dapat dijangkau",
+    "offlineDetail": "Periksa koneksi Anda.",
+    "retry": "Coba lagi"
+  },
+  "gate": {
+    "reverted": "Pesanan #{id} dikembalikan",
+    "saved": "Pesanan #{id} disimpan",
+    "undo": "↩ Urungkan",
+    "paymentNotRecorded": "⚠ Pesanan #{id} — PEMBAYARAN TIDAK TERCATAT. {collect, select, yes {Pesanan sudah selesai} other {Pesanan sudah disimpan}}, tetapi uangnya tidak.",
+    "recordPayment": "Catat pembayaran",
+    "paid": "Pesanan #{id} lunas",
+    "undonePayment": "Diurungkan — pembayaran dihapus",
+    "undoneCollected": "Diurungkan — pesanan belum diambil",
+    "collected": "Pesanan #{id} {paidToo, select, yes {lunas dan sudah diambil} other {sudah diambil}}",
+    "ready": "Pesanan #{id} siap",
+    "readyBuzzer": "Pesanan #{id} siap · <pill></pill>",
+    "status": "Pesanan #{id} {action, select, confirm {dikonfirmasi} reject {ditolak} ready {siap} collected {sudah diambil} undo_collected {dipulihkan} cancel {dibatalkan} other {diperbarui}}"
+  },
+  "conflicts": {
+    "more": "+{count} lainnya",
+    "notOnScreenPlus": "+{count} tidak ada di layar ini",
+    "notOnScreen": "{n, plural, one {{count} pesanan tidak ada di layar ini} other {{count} pesanan tidak ada di layar ini}}"
+  },
+  "banner": {
+    "paymentTitle": "⚠ PEMBAYARAN TIDAK TERCATAT",
+    "paymentBody": "{orders} — ditandai lunas hanya di perangkat ini. Pembayarannya belum masuk.",
+    "paymentCheck": "Periksa pesanannya dan terima pembayaran lagi jika masih belum dibayar.",
+    "dismiss": "Tutup",
+    "confirmChecked": "Konfirmasi bahwa Anda sudah memeriksa {orders}",
+    "confirmHides": "Ini menyembunyikan peringatan. Catatannya tetap tersimpan di perangkat ini.",
+    "notYet": "Belum",
+    "iveChecked": "Saya sudah memeriksa {orders}",
+    "statusBody": "⚠ {orders} — perubahan ini tidak berhasil terkirim. Periksa pesanannya.",
+    "offline": "📴 Tidak ada koneksi — {n, plural, one {{count} perubahan disimpan di perangkat ini. Perubahan akan dikirim saat Anda online lagi.} other {{count} perubahan disimpan di perangkat ini. Perubahan akan dikirim saat Anda online lagi.}} Pengaturan dikunci.",
+    "syncing": "Online lagi — mengirim {n, plural, one {{count} perubahan} other {{count} perubahan}}…",
+    "synced": "Semua perubahan terkirim.",
+    "stillQueued": "{n, plural, one {{count} perubahan disimpan di perangkat ini. Masih mencoba mengirimnya.} other {{count} perubahan disimpan di perangkat ini. Masih mencoba mengirimnya.}}"
+  },
+  "lock": {
+    "locked": "HatchGrab terkunci",
+    "verifying": "Memverifikasi…",
+    "unlock": "Buka kunci",
+    "cantUseBiometric": "Tidak bisa memakai Face / Touch ID?",
+    "enterPin": "Masukkan PIN cadangan Anda",
+    "wrongPin": "PIN salah — coba lagi.",
+    "checking": "Memeriksa…",
+    "tryBiometric": "Coba pakai Face / Touch ID",
+    "forgot": "Lupa PIN? Anda perlu menginstal ulang aplikasi."
+  },
+  "notify": {
+    "title": "🔔 Notifikasi",
+    "intro": "Notifikasi di perangkat ini. Aktifkan untuk memilih notifikasi yang Anda terima.",
+    "refused": "Notifikasi perlu diizinkan di Pengaturan perangkat Anda agar fitur ini bisa diaktifkan.",
+    "newOrder": "Pemberitahuan pesanan baru",
+    "newOrderHelp": "Dapatkan notifikasi saat pesanan pelanggan perlu dikonfirmasi.",
+    "offline": "Pemberitahuan offline / jeda",
+    "offlineHelp": "Dapatkan notifikasi saat perangkat ini offline (dan pemesanan dijeda). <green>Tetap berfungsi saat offline.</green>"
+  },
+  "van": {
+    "label": "Kendaraan",
+    "loadRetry": "Gagal memuat · Coba lagi",
+    "select": "Pilih…"
+  },
+  "deviceSave": {
+    "network": "Server tidak dapat dijangkau — periksa koneksi lalu coba lagi.",
+    "server": "Belum dapat menyimpan. Silakan coba lagi."
+  },
+  "setup": {
+    "fetchErrorTitle": "Pengaturan perangkat tidak dapat dimuat",
+    "fetchErrorBody": "Kami tidak dapat menjangkau server untuk menyiapkan <b>perangkat ini</b>. Periksa koneksi lalu coba lagi — pesanan dan pengaturan Anda tidak terpengaruh.",
+    "retry": "Coba lagi",
+    "later": "Nanti",
+    "noVanTitle": "Tidak ada kendaraan aktif",
+    "noVanBody": "Truk ini belum punya kendaraan aktif. Aktifkan satu di <b>Pengaturan → Truk Anda</b>, lalu perangkat ini akan tersiapkan otomatis — tidak perlu langkah lain di sini.",
+    "goToVans": "Buka Pengaturan → Truk Anda",
+    "title": "Siapkan perangkat ini",
+    "body": "Pengaturan sekali untuk <b>perangkat ini</b>: layar yang dibuka pertama dan kendaraan yang dipakainya. Hanya berlaku untuk perangkat ini — perangkat lain diatur terpisah, dan Anda bisa mengubahnya nanti dari menu profil → “Perangkat ini”.",
+    "whichScreen": "Layar mana yang dibuka pertama di perangkat ini?",
+    "dashboard": "Dasbor",
+    "kds": "Layar dapur (KDS)",
+    "whichVan": "Perangkat ini untuk kendaraan yang mana?",
+    "selectVan": "Pilih kendaraan…",
+    "saving": "Menyimpan…",
+    "tryAgain": "Coba lagi",
+    "continue": "Lanjut"
+  },
+  "device": {
+    "title": "Perangkat ini",
+    "viewing": "Anda sedang melihat: <b>{truck}</b>",
+    "viewingVan": "Anda sedang melihat: <b>{truck}</b> — <b>{van}</b>",
+    "only": "Hanya perangkat ini — perangkat lain diatur terpisah. (ID: {id}…)",
+    "truck": "Truk",
+    "van": "Kendaraan",
+    "defaultScreen": "Layar utama",
+    "orderNotifications": "Notifikasi pesanan",
+    "patchFailed": "{setting, select, van {Kendaraan} defaultScreen {Layar utama} other {Notifikasi pesanan}} tidak tersimpan. {reason}",
+    "requireBiometric": "Wajibkan sidik jari atau buka dengan wajah untuk membuka",
+    "pinTitle": "Atur PIN cadangan (4–6 digit)",
+    "pinHelp": "Jalan masuk Anda jika sidik jari atau buka dengan wajah tidak berfungsi — ini satu-satunya cadangan, jadi jangan sampai lupa (PIN yang terlupa berarti harus menginstal ulang aplikasi). Tetap berfungsi saat offline.",
+    "pinPlaceholder": "PIN",
+    "confirmPinPlaceholder": "Konfirmasi PIN",
+    "pinTooShort": "Gunakan minimal 4 digit.",
+    "pinMismatch": "PIN tidak cocok.",
+    "setPin": "Atur PIN & aktifkan",
+    "cancel": "Batal",
+    "noBiometric": "Belum ada sidik jari atau buka dengan wajah di perangkat ini — tambahkan di pengaturan perangkat. PIN cadangan Anda tetap bisa dipakai.",
+    "footer": "Pengaturan ini hanya berlaku untuk perangkat ini — perangkat lain diatur terpisah."
+  },
+  "appLock": {
+    "unlockReason": "Buka kunci HatchGrab",
+    "usePasscode": "Pakai kode sandi",
+    "cancel": "Batal",
+    "confirmEnable": "Konfirmasi untuk mengaktifkan kunci aplikasi"
+  },
+  "channel": {
+    "ordersName": "Pesanan baru",
+    "ordersDescription": "Pemberitahuan saat pesanan perlu dikonfirmasi."
+  },
+  "localNotify": {
+    "newOrderTitle": "Pesanan baru",
+    "orderReceived": "Pesanan {number} diterima",
+    "newOrders": "{n, plural, one {Ada pesanan baru} other {Ada {count} pesanan baru}}"
+  },
+  "offlineAlert": {
+    "pausedTitle": "Pemesanan dijeda",
+    "pausedBody": "Anda sedang offline — pemesanan pelanggan dijeda.",
+    "offlineTitle": "Anda sedang offline",
+    "offlineBody": "Perangkat ini kehilangan koneksi."
+  }
+}

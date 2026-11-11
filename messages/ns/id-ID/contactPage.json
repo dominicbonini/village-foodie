@@ -1,0 +1,52 @@
+{
+  "meta": {
+    "title": "Bantuan",
+    "description": "Dapatkan bantuan untuk HatchGrab. Kirim pesan kepada kami dan kami akan membalas lewat email."
+  },
+  "logIn": "Masuk",
+  "eyebrow": "Bantuan",
+  "title": "Ada yang bisa kami bantu?",
+  "lede": "Ada yang tidak berfungsi, atau ada pertanyaan tentang akun Anda? Ada dua cara menghubungi kami — keduanya akan kami balas lewat email.",
+  "emailUs": "Kirim email",
+  "formHeading": "Atau kirim pesan kepada kami",
+  "form": {
+    "topicLabel": "Tentang apa?",
+    "topics": {
+      "question": "Pertanyaan tentang HatchGrab",
+      "account": "Bantuan untuk akun saya",
+      "comparison": "Koreksi untuk halaman perbandingan",
+      "other": "Hal lain"
+    },
+    "nameLabel": "Nama Anda",
+    "namePlaceholder": "Nama",
+    "emailLabel": "Email",
+    "businessLabel": "Nama truk atau usaha",
+    "optional": "(opsional)",
+    "businessPlaceholder": "mis. Martabak Mas Joko",
+    "messageLabel": "Isi pesan Anda",
+    "send": "Kirim pesan",
+    "sending": "Mengirim…",
+    "privacyLine": "Data Anda hanya kami gunakan untuk membalas pesan Anda.",
+    "privacyLink": "Kebijakan privasi",
+    "thanksTitle": "Terima kasih — pesan Anda sudah kami terima.",
+    "thanksBody": "Kami akan membalas lewat email ke alamat yang Anda berikan.",
+    "errors": {
+      "nameRequired": "Masukkan nama Anda.",
+      "nameTooLong": "Nama maksimal {max, number} karakter.",
+      "emailRequired": "Masukkan alamat email Anda.",
+      "emailInvalid": "Masukkan alamat email yang valid.",
+      "emailTooLong": "Gunakan alamat email maksimal {max, number} karakter.",
+      "businessRequired": "Masukkan nama truk atau usaha Anda, agar kami bisa menemukan akun Anda.",
+      "businessTooLong": "Nama truk atau usaha maksimal {max, number} karakter.",
+      "messageTooShort": "Tulis minimal {min, number} karakter.",
+      "messageTooLong": "Isi pesan maksimal {max, number} karakter.",
+      "topicInvalid": "Pilih topik pesan Anda.",
+      "rateLimited": "Anda sudah mengirim beberapa pesan — silakan coba lagi nanti, atau kirim email ke {email}.",
+      "failed": "Terjadi kesalahan — silakan kirim email ke {email}."
+    }
+  },
+  "privacy": "Privasi",
+  "terms": "Ketentuan",
+  "about": "Tentang",
+  "copyright": "© {year} HatchGrab"
+}

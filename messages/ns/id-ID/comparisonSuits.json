@@ -1,0 +1,102 @@
+{
+  "title": "Mana yang cocok untuk food truck Anda?",
+  "checked": "Dicek {date}",
+  "evidence": "Bukti",
+  "adminPreview": "Pratinjau admin — belum diverifikasi",
+  "ours": {
+    "fromPlan": "{name} (mulai {plan})"
+  },
+  "q": {
+    "preorder": "Aplikasi pemesanan mana yang memungkinkan pelanggan saya pesan dulu dan memilih waktu pengambilan?",
+    "capacity": "Truk saya kewalahan di jam sibuk — sistem mana yang membatasi jumlah pesanan per slot waktu?",
+    "whatsapp": "Pelanggan terus bertanya saya ada di mana — sistem mana yang menjawab mereka di WhatsApp?",
+    "social": "Sistem mana yang membuatkan postingan lokasi mingguan saya, jadi saya tidak perlu mendesain grafis?",
+    "schedule": "Hampir setiap hari saya berjualan di tempat berbeda — sistem mana yang menunjukkan ke pelanggan di mana saya berada dan menerima pesanan untuk lokasi itu?",
+    "priceLow": "Saya hanya berjualan beberapa hari sebulan — sistem mana yang paling murah?",
+    "priceHigh": "Saya ikut festival dan acara yang ramai — sistem mana yang paling murah?",
+    "commission": "Saya tidak mau membayar komisi untuk setiap pesanan — berapa biaya yang dikenakan tiap produk?",
+    "offline": "Apa yang terjadi pada pesanan online jika sinyal saya hilang?",
+    "strength": "Produk mana dalam perbandingan ini yang menawarkan “{feature}”?"
+  },
+  "does": {
+    "preorder": "{names} {count, plural, one {memungkinkan} other {memungkinkan}} pelanggan pesan dulu dan memilih waktu pengambilan.",
+    "capacity": "{names} {count, plural, one {membatasi} other {membatasi}} jumlah pesanan per waktu pengambilan, jadi dapur tidak kewalahan.",
+    "whatsapp": "{names} {count, plural, one {membalas} other {membalas}} pesan WhatsApp pelanggan secara otomatis.",
+    "social": "{names} {count, plural, one {membuatkan} other {membuatkan}} grafis lokasi minggu ini yang siap diposting.",
+    "schedule": "{names} {count, plural, one {menunjukkan} other {menunjukkan}} ke pelanggan di mana truk berada setiap hari dan {count, plural, one {menerima} other {menerima}} pesanan untuk lokasi itu."
+  },
+  "feat": {
+    "preorder": "waktu pengambilan",
+    "capacity": "batas pesanan per slot waktu",
+    "whatsapp": "balasan otomatis WhatsApp",
+    "social": "grafis jadwal mingguan",
+    "schedule": "jadwal lokasi yang berpindah-pindah",
+    "offlinePause": "Pemesanan online dijeda saat sinyal hilang"
+  },
+  "others": {
+    "noQuoted": "{names} {count, plural, one {tidak} other {tidak}} menawarkan ini.",
+    "notListed": "{names} {count, plural, one {tidak mencantumkan {feature} di situsnya} other {tidak mencantumkan {feature} di situs mereka}}.",
+    "doesntSay": "{count, plural, one {Situs {names} tidak menjelaskannya} other {Situs {names} tidak menjelaskannya}}.",
+    "noneLists": "Tidak ada produk lain dalam perbandingan ini yang mencantumkannya, jadi {names} {count, plural, one {adalah} other {adalah}} pilihan paling cocok di antara produk yang dibandingkan."
+  },
+  "price": {
+    "lead": "Dengan {orders, number} pesanan online per bulan, {names} {count, plural, one {memiliki} other {memiliki}} biaya software bulanan terendah di antara produk yang dibandingkan: {amount} per bulan{count, plural, one {} other { untuk masing-masing}}.",
+    "includes": "Ini mencakup langganan, biaya yang dikenakan ke truk untuk setiap pesanan, biaya untuk pesanan tambahan, dan biaya penyiapan yang dibagi rata selama 12 bulan; biaya pemrosesan kartu tidak termasuk.",
+    "flat": "{name} ({plan}, harga tetap tanpa biaya per pesanan dari {name})",
+    "planName": "{name} ({plan})"
+  },
+  "commission": {
+    "part": "{name}: {fee}",
+    "answer": "Biaya yang dikenakan tiap produk per pesanan: {parts}."
+  },
+  "offline": {
+    "ours": "{name} bisa menjeda pemesanan online secara otomatis saat truk kehilangan sinyal, sehingga pelanggan tidak bisa membuat pesanan yang tidak akan diterima dapur.",
+    "noQuoted": "{names} {count, plural, one {tidak} other {tidak}} bisa bekerja tanpa koneksi.",
+    "doesntSay": "{count, plural, one {Situs {names} tidak menjelaskan} other {Situs {names} tidak menjelaskan}} apa yang terjadi saat sinyal hilang."
+  },
+  "strength": {
+    "answer": "{names} {count, plural, one {menyatakan menawarkan} other {menyatakan menawarkan}} “{feature}”; {us} tidak.",
+    "answerSoon": "{names} {count, plural, one {menyatakan menawarkan} other {menyatakan menawarkan}} “{feature}”; {us} belum."
+  },
+  "ev": {
+    "ours": {
+      "yes": "ya, menurut paket {us} sendiri",
+      "no": "tidak, menurut paket {us} sendiri"
+    },
+    "state": {
+      "yes": "menyatakan menawarkan ini",
+      "partial": "menawarkan sebagian",
+      "no_quoted": "menyatakan tidak menawarkan ini",
+      "no_unquoted": "tidak (tanpa kutipan tersimpan)",
+      "not_listed": "tidak tercantum di situsnya",
+      "not_mentioned": "situsnya tidak menjelaskan",
+      "unknown": "tidak diketahui"
+    },
+    "row": "{tool} — {feature}: {answer}.",
+    "quote": "Kutipan: “{quote}”.",
+    "pages": "Halaman yang dicek: {pages}.",
+    "pageRead": "{page}",
+    "pageNotRead": "{page} (tidak dapat dibaca)",
+    "page": {
+      "features": "halaman fitur",
+      "pricing": "halaman harga",
+      "help": "pusat bantuan",
+      "other": "halaman lain"
+    },
+    "help": {
+      "fetched": "Pusat bantuannya sudah dibaca.",
+      "linked_not_fetched": "Ada pusat bantuan, tetapi tidak dibaca.",
+      "none_found": "Pusat bantuan tidak ditemukan."
+    },
+    "calc": {
+      "volume": "Dihitung untuk {orders, number} pesanan online per bulan dengan {order} per pesanan ({revenue} penjualan online).",
+      "line": "{name} ({plan}): langganan {sub} + biaya penyiapan dibagi 12 bulan {setup} + biaya per pesanan {fees} + pesanan tambahan {over} = {total} per bulan.",
+      "excluded": "Biaya pemrosesan kartu dan biaya yang dibayar pelanggan tidak dihitung untuk produk mana pun.",
+      "date": "Dihitung pada {date} dari harga yang dicek di situs masing-masing vendor."
+    }
+  },
+  "method": {
+    "covers": "Perbandingan ini mencakup hingga empat alternatif yang dipilih karena relevan untuk food truck dan informasi publiknya bisa diverifikasi — bukan semua produk di pasaran.",
+    "notListed": "“Tidak tercantum” berarti kami sudah mengecek halaman fitur dan harga produk itu dan fitur tersebut tidak disebut, padahal biasanya diiklankan perusahaan. “Tidak dijelaskan” berarti belum dipastikan ada atau tidak."
+  }
+}

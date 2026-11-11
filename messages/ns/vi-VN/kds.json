@@ -1,0 +1,129 @@
+{
+  "docTitle": "Bếp – {truck}",
+  "loading": "Đang tải màn hình bếp…",
+  "pin": {
+    "title": "Nhập mã PIN",
+    "placeholder": "PIN",
+    "unlock": "Mở khóa",
+    "unreachable": "Hiện không kết nối được máy chủ. Mã PIN của bạn vẫn đúng — hãy thử lại sau giây lát.",
+    "incorrect": "Mã PIN không đúng",
+    "generic": "Đã xảy ra lỗi. Hãy thử lại."
+  },
+  "error": {
+    "linkInvalid": "Link này không còn hiệu lực.",
+    "couldNotLoad": "Không tải được đơn",
+    "truckNotFound": "Không tìm thấy xe"
+  },
+  "degraded": {
+    "at": "⚠️ Không kết nối được máy chủ. Đang hiển thị phiếu từ {time}. CÓ THỂ THIẾU ĐƠN MỚI.",
+    "earlier": "⚠️ Không kết nối được máy chủ. Đang hiển thị phiếu từ trước đó. CÓ THỂ THIẾU ĐƠN MỚI."
+  },
+  "header": {
+    "dashboard": "Bảng điều khiển",
+    "backTitle": "Quay lại bảng điều khiển",
+    "list": "Danh sách",
+    "grid": "Lưới",
+    "full": "Đầy đủ",
+    "cook": "Bếp",
+    "fullTitle": "Thẻ đầy đủ — có giá và chi tiết thanh toán, như quầy nhìn thấy.",
+    "cookTitle": "Thẻ bếp — chữ to hơn, nhóm theo danh mục, không có giá.",
+    "readyStep": "Bước báo món xong",
+    "readyOnlyTitle": "Màn hình này chỉ báo món xong nên không thể tắt — đây là bước duy nhất nó làm.",
+    "readyOnTitle": "Màn hình này báo món xong. Chạm để màn hình khác làm thay.",
+    "readyOffTitle": "Màn hình khác báo món xong. Chạm để màn hình này làm.",
+    "handover": "Thanh toán & giao món",
+    "handoverOnlyTitle": "Màn hình này chỉ thu tiền nên không thể tắt — đây là bước duy nhất nó làm.",
+    "handoverOnTitle": "Màn hình này thu tiền và giao món. Chạm để màn hình khác làm thay.",
+    "handoverOffTitle": "Màn hình khác thu tiền. Chạm để màn hình này làm.",
+    "soundOn": "Âm báo đơn mới đang bật — chạm để tắt",
+    "soundOff": "Âm báo đơn mới đang tắt — chạm để bật",
+    "screenOn": "Màn hình luôn sáng",
+    "screenOff": "Màn hình tự tắt",
+    "screenSettings": "Cài đặt màn hình",
+    "manageEvent": "Quản lý sự kiện",
+    "manageEventTitle": "Quản lý sự kiện — bắt đầu, tạm dừng, thay đổi hoặc kết thúc",
+    "soundSettings": "Cài đặt âm thanh",
+    "soundSettingsTitle": "Những âm thanh nào phát trên thiết bị này",
+    "cashIcon": "💵"
+  },
+  "panel": {
+    "viewSettings": "Cài đặt hiển thị",
+    "on": "Bật",
+    "off": "Tắt",
+    "newOrderSound": "Âm báo đơn mới",
+    "soundNeedsConfirming": "Chỉ đơn cần xác nhận",
+    "soundAll": "Tất cả đơn mới",
+    "soundDue": "Báo khi đến giờ nấu một đơn",
+    "soundDueHelp": "Phát âm thanh khi phiếu chuyển sang màu cam.",
+    "deviceSettings": "Cài đặt thiết bị",
+    "sound": "Âm thanh",
+    "close": "Đóng"
+  },
+  "banner": {
+    "mismatchTitle": "⚠️ Chưa tải được đơn của sự kiện này",
+    "mismatchBody": "Máy chủ trả về một sự kiện khác, nên không hiển thị gì thay vì hiển thị sai đơn. Hãy chọn lại sự kiện hoặc tải lại trang.",
+    "mismatchBodyAt": "Máy chủ trả về một sự kiện khác, nên không hiển thị gì thay vì hiển thị sai đơn cho {venue}. Hãy chọn lại sự kiện hoặc tải lại trang.",
+    "paused": "⏸ Đã tạm dừng nhận đơn{reason, select, offline { (thiết bị mất kết nối)} other {}} — khách không thể đặt món",
+    "resume": "Tiếp tục",
+    "offline": "Mất kết nối — đang hiển thị các đơn gần nhất. Đã tạm dừng đặt món online cho khách.",
+    "queued": "{n, plural, one {{count} thao tác đang chờ} other {{count} thao tác đang chờ}}",
+    "extraWait": "⏱ Đang cộng thêm +{mins} phút chờ",
+    "clear": "Xóa",
+    "toMake": "Cần làm",
+    "today": "Hôm nay · {range}",
+    "onDate": "{date} · {range}",
+    "startEvent": "Bắt đầu sự kiện",
+    "recentlyClosed": "Sự kiện đã kết thúc · {venue} đóng lúc {time}",
+    "eventStatus": "{tone, select, paused {⏸ Tạm dừng} live {● Đang diễn ra} finished {● Đã kết thúc} cancelled {Đã hủy} other {Chưa bắt đầu}}"
+  },
+  "board": {
+    "queueClear": "Không còn đơn chờ",
+    "doneToday": "Xong hôm nay · {count}",
+    "paid": "✓ đã trả",
+    "cardHeld": "đã giữ tiền thẻ",
+    "due": "cần thu {amount}"
+  },
+  "screenOff": {
+    "title": "Cho phép tắt màn hình?",
+    "bodyVans": "{vans} {n, plural, one {đang bật} other {đang bật}} tính năng phát hiện mất kết nối. Nếu màn hình tắt, thiết bị có thể ngừng gửi tín hiệu trực tuyến và việc đặt món của khách có thể bị tạm dừng.",
+    "body": "Nếu màn hình tắt, thiết bị có thể ngừng gửi tín hiệu trực tuyến.",
+    "keepHint": "Hãy giữ màn hình luôn sáng để việc nhận đơn không bị gián đoạn.",
+    "keep": "Giữ màn hình sáng",
+    "allow": "Cho phép tắt màn hình"
+  },
+  "event": {
+    "change": "Đổi sự kiện",
+    "cancel": "Hủy",
+    "waitActive": "⏱ Đang áp dụng +{mins} phút · Chạm để xóa",
+    "addWait": "⏱ Thêm thời gian chờ",
+    "endTitle": "Kết thúc sự kiện?",
+    "endEarly": "Sự kiện này dự kiến kéo dài đến {time}. Sẽ không nhận thêm đơn nào nữa. Xác nhận kết thúc sự kiện?",
+    "endNow": "Kết thúc sự kiện này? Sẽ không nhận thêm đơn nào nữa.",
+    "yes": "Có",
+    "started": "Đã bắt đầu sự kiện",
+    "startFutureConfirm": "Sự kiện này diễn ra vào {date}. Bắt đầu ngay bây giờ?",
+    "finishTimeNow": "Giờ kết thúc mới: {time}",
+    "finished": "Đã kết thúc sự kiện",
+    "cancelled": "Đã hủy sự kiện",
+    "noteSaved": "Đã lưu ghi chú",
+    "pauseConfirm": "Tạm dừng nhận đơn? Khách sẽ thấy “Không nhận đơn” cho đến khi bạn tiếp tục.",
+    "switchConfirm": "Chuyển từ {from} sang {to}?{n, plural, =0 {} one { {count} đơn trên màn hình này sẽ được thay thế.} other { {count} đơn trên màn hình này sẽ được thay thế.}} Chạm vào sự kiện hiện tại để chuyển lại."
+  },
+  "intro": {
+    "title": "Đây là màn hình bếp (KDS)",
+    "p1": "Đây là góc nhìn của người nấu — các đơn cần làm, theo đúng thứ tự cần làm. Màn hình cạnh bếp nướng hiển thị trang này, còn quầy dùng bảng điều khiển đơn hàng.",
+    "p2": "Thẻ đơn sẽ di chuyển khi bạn chạm, nên người đang nấu luôn biết món tiếp theo và không ai phải gọi to. Mọi thứ ở đây là dữ liệu demo của bạn — cứ thoải mái thử nhé.",
+    "gotIt": "Đã hiểu"
+  },
+  "toast": {
+    "failed": "Thất bại",
+    "rejectFailed": "Không từ chối được",
+    "buzzerSaved": "Đã lưu thẻ rung {n}",
+    "buzzerRemoved": "Đã gỡ thẻ rung {n}",
+    "buzzerRemovedNone": "Đã gỡ thẻ rung",
+    "buzzerAssigned": "Đã gán thẻ rung {n}",
+    "buzzerAssignedFrom": "Đã gán thẻ rung {n} (lấy từ đơn #{from})",
+    "buzzerRemoveFailed": "{had, select, no {Không gỡ được thẻ rung khỏi {target, select, order {đơn #{id}} other {đơn này}}} other {Không gỡ được thẻ rung {n} — thẻ vẫn đang ở {target, select, order {đơn #{id}} other {đơn này}}}}",
+    "buzzerAssignFailed": "Không gán được thẻ rung {n} cho {target, select, order {đơn #{id}} other {đơn này}} — {had, select, yes {đơn vẫn đang giữ thẻ rung {prior}} other {đơn vẫn chưa có thẻ rung}}"
+  }
+}

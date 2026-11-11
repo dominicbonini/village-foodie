@@ -1,0 +1,44 @@
+{
+  "perTruckMonth": "food truck başına / ay",
+  "transactionFees": "İşlem ücretleri",
+  "comingSoon": "Yakında",
+  "footnote2Masked": "Online ödemeler Stripe Connect altyapısıyla çalışır. Platform ve kart işlem ücretleri henüz kesinleşmedi; lansmanda açıklanacak.",
+  "card": {
+    "title": "Faturalandırma ve ödemeler",
+    "managed": "Faturalandırmayı HatchGrab yönetir",
+    "earlyAccess": "Erken erişim döneminde paketleri elle kurup düzenliyoruz.",
+    "planLine": "{trial, select, yes {{truck} · {plan} paketi (deneme)} other {{truck} · {plan} paketi}}"
+  },
+  "currentPlan": "Mevcut paket",
+  "plan": {
+    "included": "Ayda {amount} tutarında online sipariş dahildir.",
+    "includedUnlimited": "Sınırsız online sipariş dahildir.",
+    "promo": "Özel fiyat.",
+    "promoUntil": "Özel fiyat, son tarih: {date}.",
+    "ended": "{plan} paketiniz {date} tarihinde sona erdi. Artık {now} paketindesiniz.",
+    "trialMonths": "{months} aylık ücretsiz deneme."
+  },
+  "trialEnds": "Deneme bitişi: {date}",
+  "yourTrialEnds": "Denemenizin bitişi: {date}",
+  "notStarted": {
+    "heading": "Ücretsiz denemeniz henüz başlamadı"
+  },
+  "onTrial": "Tüm özellikler sizde. Denemeniz bitmeden bir paket seçin.",
+  "onTrialPaidEnd": "Tüm özellikler sizde. Denemeniz bittiğinde {plan} paketi aylık {price} olur. Ödemeyi ayarlamak için bu tarihten önce sizinle iletişime geçeceğiz.",
+  "onTrialNoCta": "Tüm özellikler sizde.",
+  "noCharge": "🔒 Deneme süreniz boyunca sizden hiçbir ücret alınmaz; deneme {date} tarihine kadar sürer. Faturalandırma yalnızca bir paket seçip ödeme bilgilerinizi girdiğinizde başlar. O zamana kadar iptal edilecek ya da ödenecek bir şey yoktur.",
+  "noChargePaidEnd": "🔒 Deneme süreniz boyunca sizden hiçbir ücret alınmaz; deneme {date} tarihine kadar sürer.",
+  "fees": "*Online siparişlerde standart kart işlem ücretleri uygulanır",
+  "setUpPayment": "⏱ Denemeniz bitmeden bir paket seçin",
+  "changeYourPlan": "Paketinizi değiştirin",
+  "planButton": "{plan} — {price}",
+  "upgradeModal": {
+    "title": "{plan} paketine geçin",
+    "tagline": "{price} — {description}",
+    "body": "Otomatik faturalandırmayı kuruyoruz. Hemen geçmek için bize mesaj gönderin, 24 saat içinde kurulumunuzu yapalım.",
+    "mailSubject": "{plan} paketine geçiş — {truck}",
+    "mailBody": "Merhaba, {truck} için {plan} ({price}) paketine geçmek istiyorum.",
+    "email": "Geçiş için bize e-posta gönderin",
+    "cancel": "İptal"
+  }
+}

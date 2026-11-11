@@ -1,0 +1,83 @@
+{
+  "title": "Jenis acara",
+  "newTypeButton": "+ Jenis acara baru",
+  "close": "Tutup",
+  "loading": "Memuat…",
+  "missingTitle": "Jenis acara belum diaktifkan.",
+  "missingBody": "Pembaruan database untuk fitur ini belum diterapkan. Tidak ada yang rusak — setiap acara memakai pengaturan normal Anda.",
+  "column": "Kolom",
+  "vanGone": "Kendaraan itu sudah tidak ada.",
+  "typeGone": "Jenis itu sudah tidak ada.",
+  "standard": "Standar",
+  "standardHeading": "STANDAR",
+  "moreFor": "Lainnya untuk {name}",
+  "rename": "Ganti nama",
+  "moveLeft": "Geser ke kiri",
+  "moveRight": "Geser ke kanan",
+  "delete": "Hapus",
+  "sections": {
+    "vans": "KENDARAAN",
+    "prices": "HARGA",
+    "itemPrices": "HARGA ITEM",
+    "service": "LAYANAN"
+  },
+  "labelFor": "{label} untuk {name}",
+  "intervalEvery": "Setiap {mins} menit",
+  "noTypes": "Anda belum punya jenis acara, jadi setiap acara memakai pengaturan normal Anda.",
+  "renameTitle": "Ganti nama jenis ini",
+  "name": "Nama",
+  "cancel": "Batal",
+  "save": "Simpan",
+  "copyVanOne": "Salin pengaturan Kendaraan 1",
+  "thisType": "jenis ini",
+  "matchTitle": "Samakan dengan Standar untuk “{name}”?",
+  "matchKeeps": "Apa pun yang Anda ubah di dasbor satu acara tetap seperti apa adanya, dan harga jenis ini tidak diubah.",
+  "matchWillUse": "Yang akan dipakai: {summary}",
+  "deleteTitle": "Hapus “{name}”?",
+  "deleteBody": "{n, plural, =0 {Tidak ada acara mendatang yang memakai “{name}”.} one {{count} acara mendatang memakai “{name}”. Acara itu akan kembali ke Standar.} other {{count} acara mendatang memakai “{name}”. Acara-acara itu akan kembali ke Standar.}} Apa pun yang Anda ubah di satu acara tetap seperti apa adanya.",
+  "keep": "Pertahankan",
+  "phone": {
+    "standardTag": "Standar",
+    "defaultTag": "bawaan",
+    "vanSetup": "Pengaturan biasa kendaraan ini — dipakai di setiap acara tanpa jenis.",
+    "standardSetup": "Pengaturan biasa Anda — dipakai di setiap acara tanpa jenis.",
+    "cardSummary": "{upcoming, plural, one {{upcomingCount} acara mendatang} other {{upcomingCount} acara mendatang}} · {changed, plural, =0 {belum ada yang diubah} other {{changedCount} dari {total} diubah}}",
+    "noMenuItems": "Belum ada item menu — tambahkan di Menu › Item."
+  },
+  "newType": {
+    "title": "Jenis acara baru",
+    "namePlaceholder": "mis. Bazar sekolah",
+    "help": "Ketuk salah satu nama atau ketik sendiri. Jenis ini dimulai sebagai salinan Standar, dan mengubah Standar nanti tidak akan mengubahnya. Ubah apa saja setelahnya.",
+    "create": "Buat",
+    "chips": {
+      "festival": "Festival",
+      "pub": "Kafe",
+      "market": "Pasar malam",
+      "privateHire": "Sewa food truck"
+    }
+  },
+  "select": {
+    "label": "Jenis acara",
+    "usual": "{name} biasa dipakai untuk lokasi ini."
+  },
+  "summary": {
+    "normalSetup": "Pengaturan normal Anda",
+    "sameAsStandard": "Sama dengan Standar",
+    "buzzersOn": "buzzer aktif",
+    "buzzersOff": "buzzer nonaktif",
+    "takeCashOn": "terima tunai aktif",
+    "takeCashOff": "terima tunai nonaktif",
+    "markReadyOn": "langkah tandai siap aktif",
+    "markReadyOff": "langkah tandai siap nonaktif",
+    "collectionEvery": "pengambilan setiap {mins} menit",
+    "offlineOff": "perlindungan offline nonaktif",
+    "offlineKeepTaking": "offline: tetap terima pesanan",
+    "offlinePause": "offline: jeda pemesanan"
+  },
+  "errors": {
+    "somethingWentWrong": "Terjadi kesalahan",
+    "couldNotLoad": "Tidak dapat memuat",
+    "couldNotSave": "Tidak dapat menyimpan",
+    "noVans": "Truk ini belum punya kendaraan untuk diubah."
+  }
+}

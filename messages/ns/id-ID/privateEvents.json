@@ -1,0 +1,42 @@
+{
+  "publicName": "Acara pribadi",
+  "chip": "Pribadi",
+  "grid": {
+    "orderingSection": "PEMESANAN",
+    "linkRowLabel": "Terima pesanan lewat link pribadi dan kode QR",
+    "columnTitle": "Jenis Pribadi bawaan. Tidak bisa diganti nama, dipindahkan, atau dihapus."
+  },
+  "form": {
+    "help": "Tampil di jadwal Anda sebagai “Acara pribadi” dengan tanggal dan jam saja — tanpa alamat, peta, atau Village Foodie.",
+    "linkPromise": "Tamu memesan lewat link pribadi dan kode QR — Anda akan mendapatkannya setelah menyimpan.",
+    "nameLabel": "Nama acara",
+    "nameHelp": "Tamu melihat nama ini di bagian atas halaman pemesanan.",
+    "namePlaceholder": "Pernikahan Rina & Dimas",
+    "previewNote": "Tampilan di jadwal Anda — tanpa tempat, kota, atau kode pos.",
+    "needsTimes": "Tambahkan jam mulai dan jam selesai — acara pribadi yang menerima pesanan lewat link memerlukannya."
+  },
+  "link": {
+    "button": "Link & QR",
+    "title": "Link pribadi & kode QR",
+    "label": "Link pribadi",
+    "copy": "Salin",
+    "copied": "Disalin",
+    "qrDownload": "Unduh QR",
+    "tableCards": "Cetak kartu meja",
+    "newLink": "Buat link baru",
+    "working": "Memproses…",
+    "newLinkConfirm": "Buat link baru? Link saat ini langsung berhenti berfungsi, begitu juga kode QR yang sudah Anda cetak.",
+    "newLinkHelp": "Gunakan ini jika link tersebar ke tempat yang tidak semestinya. Link saat ini langsung berhenti berfungsi, begitu juga kode QR yang sudah dicetak.",
+    "newLinkFailed": "Tidak dapat membuat link baru.",
+    "offNotice": "Pemesanan lewat link pribadi dinonaktifkan untuk acara ini, jadi tidak ada link untuk dibagikan. Acara ini tetap tampil di jadwal Anda sebagai “Acara pribadi”."
+  },
+  "cards": {
+    "printTitle": "{truck} — kartu meja",
+    "scan": "Pindai untuk memesan",
+    "blurb": "Pesan dan bayar lewat HP. Nama akan dipanggil saat pesanan siap.",
+    "footer": "Pemesanan lewat HatchGrab"
+  },
+  "noSinglePost": "Acara pribadi tidak mendapat postingan sendiri — acara ini muncul di poster mingguan Anda sebagai “Acara pribadi”.",
+  "confirmToPrivate": "Ini menyembunyikan alamat dan acara dari peta. Tamu memerlukan link pribadi untuk memesan.",
+  "confirmFromPrivate": "Ini membuat acara menjadi publik: alamat dan pin petanya akan tampil, dan link pribadi akan berhenti berfungsi."
+}

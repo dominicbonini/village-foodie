@@ -1,0 +1,86 @@
+{
+  "loading": "Hleð umsjónarsvæðinu…",
+  "loadFailed": "Ekki tókst að hlaða",
+  "requestFailed": "Mistókst",
+  "invalidToken": "Ógildur eða útrunninn tóki",
+  "loadFailedReason": "Ekki tókst að hlaða síðunni: {reason}",
+  "noCountrySettings": "Ekki tókst að hlaða landsstillingum þessa matarvagns. Endurhladdu síðuna.",
+  "noPlans": "Ekki tókst að hlaða áskriftarleið þessa matarvagns. Endurhladdu síðuna.",
+  "stale": "{hasTime, select, yes {Ekki tókst að uppfæra. Sýni það sem var vistað kl. {time}. Breytingar sem þú gerir vistast samt.} other {Ekki tókst að uppfæra. Sýni það sem var vistað. Breytingar sem þú gerir vistast samt.}}",
+  "verify": {
+    "ok": "Netfang staðfest — takk fyrir.",
+    "expired": "Þessi staðfestingartengill er útrunninn. Hafðu samband og við kippum því í lag áður en þú ferð í loftið.",
+    "invalid": "Þessi staðfestingartengill virkaði ekki. Hafðu samband og við kippum því í lag áður en þú ferð í loftið."
+  },
+  "profile": {
+    "updated": "Notandasnið uppfært",
+    "saveFailed": "Ekki tókst að vista",
+    "title": "Breyta notandasniði",
+    "name": "Nafn",
+    "namePlaceholder": "Nafnið þitt",
+    "email": "Netfang",
+    "cancel": "Hætta við",
+    "saving": "Vista…",
+    "save": "Vista"
+  },
+  "header": {
+    "subtitle": "Umsjón",
+    "ordersDashboard": "← Pantanayfirlit"
+  },
+  "tabs": {
+    "menu": "Matseðill",
+    "schedule": "Dagskrá",
+    "paperwork": "Skjöl",
+    "social": "Samfélagsmiðlar",
+    "reports": "Skýrslur",
+    "team": "Teymi",
+    "settings": "Stillingar",
+    "payments": "Greiðslur",
+    "billing": "Áskrift",
+    "paymentsIcon": "💷",
+    "scheduleCount": "Dagskrá ({count})",
+    "stripeAttention": "Stripe þarf athygli þína",
+    "allergensNotSet": "ofnæmisvaldar ekki skráðir"
+  },
+  "menuSections": {
+    "label": "Hlutar matseðils",
+    "items": "Vörur",
+    "capacity": "Afköst eldhússins",
+    "extras": "Aukaval og viðbótarsala",
+    "deals": "Tilboð"
+  },
+  "socialSections": {
+    "label": "Hlutar samfélagsmiðla",
+    "create": "Búa til færslu",
+    "designs": "Hannanir",
+    "locations": "Stillingar staðsetninga"
+  },
+  "notices": {
+    "review": "Yfirfara →",
+    "tour": "Viltu fá stutta kynningu á stjórnborðinu?",
+    "showMeAround": "Fá leiðsögn",
+    "dismiss": "Loka",
+    "approval": "{count, plural, one {Við fundum <b>{count}</b> viðburð fyrir þig — farðu yfir og samþykktu fyrir birtingu.} other {Við fundum <b>{count}</b> viðburði fyrir þig — farðu yfir og samþykktu fyrir birtingu.}}",
+    "allergens": "<b>Ofnæmisvaldar ekki skráðir</b> — viðskiptavinir sjá ekki upplýsingar um ofnæmisvalda fyrr en þú hefur staðfest þær. Farðu yfir ofnæmisvalda hvers réttar á flipanum Matseðill.",
+    "domainLive": "<link>{domain}</link> er komið í loftið. Skoðaðu það og láttu okkur svo vita í Stillingum að allt sé rétt.",
+    "stripe": "<b>Stripe þarf eitthvað frá þér</b> — kortagreiðslur geta stöðvast þar til það er komið í lag.",
+    "profileTitle": "Kláraðu notandasniðið",
+    "missing": "Vantar: {fields}.",
+    "goToSettings": "Fara í Stillingar →",
+    "field": {
+      "truckName": "heiti matarvagns",
+      "cuisineType": "tegund matargerðar",
+      "contactEmail": "netfang tengiliðar",
+      "contactPhone": "sími tengiliðar"
+    }
+  },
+  "trialPopup": {
+    "title": "{months, select, none {Þú ert í ókeypis prufu} other {Þú ert í ókeypis prufu í {months} mán.}}",
+    "ends": "{hasDate, select, yes {Prufunni lýkur <hl>{date}</hl>} other {Prufunni lýkur <hl>bráðum</hl>}}",
+    "offer": "{hasMonths, select, yes {{months, plural, one {Allir eiginleikar ókeypis í # mánuð} other {Allir eiginleikar ókeypis í # mánuði}}} other {Allir eiginleikar ókeypis á meðan prufan stendur}}",
+    "body": "{hasDate, select, yes {Þú greiðir ekkert á meðan prufan stendur, en hún gildir til <b>{date}</b>. Gjaldtaka hefst aldrei fyrr en þú velur áskriftarleið og slærð inn greiðsluupplýsingar. Fram að því er engu að segja upp og ekkert að greiða. Veldu áskriftarleið fyrir þann tíma — annars færist þú yfir í áskriftarleiðina {fallback} og sumir eiginleikar hætta að virka.} other {Þú greiðir ekkert á meðan þú ert í prufu. Gjaldtaka hefst aldrei fyrr en þú velur áskriftarleið og slærð inn greiðsluupplýsingar. Fram að því er engu að segja upp og ekkert að greiða. Veldu áskriftarleið fyrir þann tíma — annars færist þú yfir í áskriftarleiðina {fallback} og sumir eiginleikar hætta að virka.}}",
+    "bodyPaidEnd": "{hasDate, select, yes {Þú greiðir ekkert á meðan prufan stendur, en hún gildir til <b>{date}</b>. Þegar prufunni lýkur kostar {fallback} {price} á mánuði. Við höfum samband fyrir þann tíma til að ganga frá greiðslu.} other {Þú greiðir ekkert á meðan þú ert í prufu. Þegar prufunni lýkur kostar {fallback} {price} á mánuði. Við höfum samband fyrir þann tíma til að ganga frá greiðslu.}}",
+    "fees": "*Hefðbundin kortagjöld gilda um netpantanir",
+    "upgrade": "Uppfæra hér →"
+  }
+}

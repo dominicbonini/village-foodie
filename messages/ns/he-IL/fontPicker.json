@@ -1,0 +1,46 @@
+{
+  "tab": {
+    "all": "הכול",
+    "bold": "מודגש וגבוה",
+    "hand": "כתב יד",
+    "classic": "קלאסי",
+    "clean": "נקי",
+    "own": "שלכם",
+    "ownCount": "שלכם ({count})"
+  },
+  "yoursTag": "· שלכם",
+  "loadingFonts": "טוענים גופנים…",
+  "search": "חיפוש בין {count, number} גופנים",
+  "uploadButton": "↑ העלאת גופן משלכם",
+  "loadingLibrary": "טוענים את ספריית הגופנים…",
+  "tryAgain": "נסו שוב",
+  "noOwn": "עדיין לא העליתם גופן. השתמשו בכפתור “↑ העלאת גופן משלכם” שלמעלה.",
+  "recent": "בשימוש לאחרונה",
+  "popular": "פופולריים לפוסטרים",
+  "adding": "מוסיפים…",
+  "noMatch": "אין גופן שמתאים לחיפוש “{query}”.",
+  "showing": "מוצגים {shown} מתוך {total, number} — הקלידו עוד כדי לצמצם.",
+  "couldNotAdd": "לא ניתן היה להוסיף את הגופן",
+  "tooBig": "הגופן הזה שוקל {size, number, ::.0 group-off}MB. המגבלה היא 5MB.",
+  "woff": "העלו קובץ TTF או OTF — בדרך כלל אפשר להוריד אותו מהמקום שבו קניתם את הגופן.",
+  "uploadIncomplete": "ההעלאה לא הושלמה",
+  "added": "הגופן “{name}” נוסף בגרסה: {face}.",
+  "face": {
+    "regular": "רגיל",
+    "bold": "מודגש",
+    "italic": "נטוי"
+  },
+  "licenceTick": "הגופן הזה בבעלותי או שיש לי רישיון להשתמש בו",
+  "checking": "בודקים את הגופן…",
+  "addFont": "הוספת גופן",
+  "cancel": "ביטול",
+  "missingFaces": "הוסיפו את הגרסה {faces} של “{name}” (לא חובה) — בחרו שוב את הקובץ.",
+  "somethingWrong": "משהו השתבש",
+  "faceLower": {
+    "regular": "רגיל",
+    "bold": "מודגש",
+    "italic": "נטוי"
+  },
+  "ownLicence": "שלכם",
+  "loadFailed": "לא ניתן היה לטעון גופנים"
+}

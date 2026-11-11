@@ -1,0 +1,25 @@
+{
+  "newOrder": {
+    "subject": "Đơn hàng mới #{id} — {name}{withSlot, select, yes { · {slot}} other {}}",
+    "heading": "Bạn có đơn hàng mới",
+    "from": "<b>Đơn #{id}</b> từ <b>{name}</b>",
+    "collection": "Giờ nhận món: {time}",
+    "asap": "Không hẹn giờ — làm sớm nhất có thể",
+    "total": "Tổng cộng",
+    "notes": "<b>Ghi chú:</b> {notes}",
+    "autoConfirmed": "Đã tự động xác nhận — bạn không cần làm gì thêm.",
+    "confirmPrompt": "Đăng nhập vào bảng điều khiển HatchGrab để xác nhận hoặc từ chối đơn này.",
+    "text": "Đơn hàng mới #{id} từ {name}{withSlot, select, yes {, nhận lúc {slot}} other {}}{withVenue, select, yes {, tại {venue}} other {}}.{withCharges, select, yes { {charges}.} other {}} Tổng cộng: {total}.{withNotes, select, yes { Ghi chú: {notes}} other {}}"
+  },
+  "newEvents": {
+    "subject": "Có sự kiện mới cho xe {truck} — vui lòng xem lại",
+    "hi": "Xin chào,",
+    "found": "Chúng tôi tìm thấy <b>{n, plural, one {{count} sự kiện mới} other {{count} sự kiện mới}}</b> trong lịch bán của bạn cần bạn duyệt trước khi hiển thị với khách.",
+    "listHeading": "Các sự kiện tìm thấy:",
+    "approve": "Khi bạn duyệt trong tab Lịch bán, các sự kiện sẽ hiện trên bản đồ và trang đặt món của bạn sẵn sàng nhận đơn đặt trước.",
+    "cta": "Xem lại lịch bán →",
+    "signoff": "— Đội ngũ HatchGrab · hatchgrab.com",
+    "unknownVenue": "Chưa rõ địa điểm",
+    "text": "Xin chào,\n\nChúng tôi tìm thấy {n, plural, one {{count} sự kiện mới} other {{count} sự kiện mới}} trong lịch bán của bạn cần bạn duyệt:\n\n{list}\n\nXem lại tại: {url}\n\nKhi bạn duyệt, các sự kiện sẽ hiện trên bản đồ.\n\n— Đội ngũ HatchGrab"
+  }
+}

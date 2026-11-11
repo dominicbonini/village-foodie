@@ -1,0 +1,25 @@
+{
+  "newOrder": {
+    "subject": "Ný pöntun nr. {id} — {name}{withSlot, select, yes { · {slot}} other {}}",
+    "heading": "Ný pöntun hefur borist",
+    "from": "<b>Pöntun nr. {id}</b> — <b>{name}</b>",
+    "collection": "Afhending: {time}",
+    "asap": "Enginn ákveðinn tími — sem fyrst",
+    "total": "Samtals",
+    "notes": "<b>Athugasemdir:</b> {notes}",
+    "autoConfirmed": "Staðfest sjálfvirkt — þú þarft ekkert að gera.",
+    "confirmPrompt": "Skráðu þig inn á stjórnborðið þitt í HatchGrab til að staðfesta eða hafna þessari pöntun.",
+    "text": "Ný pöntun nr. {id} — {name}{withSlot, select, yes {, tími: {slot}} other {}}{withVenue, select, yes {, staður: {venue}} other {}}.{withCharges, select, yes { {charges}.} other {}} Samtals {total}.{withNotes, select, yes { Athugasemdir: {notes}} other {}}"
+  },
+  "newEvents": {
+    "subject": "Nýir viðburðir fundust fyrir matarvagninn {truck} — farðu yfir þá",
+    "hi": "Halló,",
+    "found": "Við fundum <b>{n, plural, one {{count} nýjan viðburð} other {{count} nýja viðburði}}</b> á dagskránni þinni sem bíða samþykkis þíns. Viðskiptavinir sjá ekkert fyrr en þú samþykkir.",
+    "listHeading": "Viðburðir sem fundust:",
+    "approve": "Þegar þú hefur samþykkt þá í flipanum Dagskrá birtast þeir á kortinu og pöntunarsíðan þín verður tilbúin að taka við forpöntunum.",
+    "cta": "Fara yfir dagskrána →",
+    "signoff": "— HatchGrab-teymið · hatchgrab.com",
+    "unknownVenue": "Óþekktur staður",
+    "text": "Halló,\n\nVið fundum {n, plural, one {{count} nýjan viðburð} other {{count} nýja viðburði}} á dagskránni þinni sem bíða samþykkis þíns:\n\n{list}\n\nFarðu yfir þá hér: {url}\n\nÞegar þú hefur samþykkt þá birtast þeir á kortinu.\n\n— HatchGrab-teymið"
+  }
+}

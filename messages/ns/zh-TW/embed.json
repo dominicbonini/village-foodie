@@ -1,0 +1,8 @@
+{
+  "metaDescription": "{truck} 下一站的擺攤地點。",
+  "orderFrom": "向 {truck} 點餐",
+  "poweredBy": "由 <b>HatchGrab</b> 提供技術支援",
+  "loadFailed": "目前無法載入行程。",
+  "loading": "行程載入中…",
+  "empty": "{truck} 目前沒有即將到來的活動。"
+}

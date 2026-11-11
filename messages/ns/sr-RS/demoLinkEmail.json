@@ -1,0 +1,8 @@
+{
+  "subject": "Vaš HatchGrab demo — evo vašeg linka",
+  "heading": "Vaš demo je spreman",
+  "intro": "Evo linka do demoa koji smo napravili od vašeg menija. Poručite preko njega kao neko od vaših kupaca, pa gledajte kako porudžbina stiže na vaš kuhinjski ekran (KDS). Prijava nije potrebna — samo ga dodirnite.",
+  "button": "Otvori moj demo",
+  "deletion": "Ovo je demo, pa ga ne čuvamo: obrisaćemo ga, zajedno sa menijem koji ste otpremili, dana {date}. Ako želite duže, pritisnite „Sačuvaj moj meni“ u demou i čuvaćemo ga 14 dana.",
+  "deletionSoon": "Ovo je demo, pa ga ne čuvamo: obrisaćemo ga, zajedno sa menijem koji ste otpremili, posle 24 sata. Ako želite duže, pritisnite „Sačuvaj moj meni“ u demou i čuvaćemo ga 14 dana."
+}

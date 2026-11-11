@@ -199,8 +199,10 @@ const XX = P.pseudoTree(EN)
   // HAS a list now, so the language with NO list is Polish (pl-PL) — the fail-safe it proves is unchanged.
   // ⚠️ RE-PINNED (europe-languages-2, 23 October 2026): Polish (and the other EU languages) HAS a list now, so the language with
   // NO list is Turkish (tr-TR) — the fail-safe it proves is unchanged.
-  t('a language with NO list: hasGuardWords is false (the classifier then never lets the AI answer a menu question)', !G.hasGuardWords('tr-TR') && G.hasGuardWords('en-US'))
-  t('…and its messages are matched against EVERY list ("intoleransım" holds the "intolerans" stem)', G.mentionsAllergen('Laktoz intoleransım var', null, 'tr-TR'))
+  // ⚠️ RE-PINNED (languages-world-1, 10 November 2026): Turkish HAS a list now (lib/allergen-guard/tr.json), so the language with NO
+  // list is Swahili (sw-KE) — the fail-safe it proves is unchanged.
+  t('a language with NO list: hasGuardWords is false (the classifier then never lets the AI answer a menu question)', !G.hasGuardWords('sw-KE') && G.hasGuardWords('en-US'))
+  t('…and its messages are matched against EVERY list ("intoleransım" holds the "intolerans" stem)', G.mentionsAllergen('Laktoz intoleransım var', null, 'sw-KE'))
   // The real reply function, for a truck whose language has no list: a plain menu question gets the allergen reply, no AI call.
   const W = await kit.bundle('l1-wa', "export { generateWhatsAppReply } from '@/lib/whatsapp-classifier'")
   globalThis.__harnessDb = kit.fakeDb({ menu_items_db: [{ truck_id: 't1', name: 'Pizza', category_id: 'c1', price: 9, is_available: true, is_active: true, allergens: ['Milk'], dietary_info: [], menu_categories: { name: 'Mains' } }] })
@@ -208,14 +210,14 @@ const XX = P.pseudoTree(EN)
   const realFetch = globalThis.fetch
   globalThis.fetch = async u => { if (String(u).includes('generativelanguage')) aiCalls++; throw new Error('no network in this harness') }
   try {
-    const base = { money: { currency: 'TRY', locale: 'tr-TR' }, allergenSet: 'uk14', truckName: 'Food Truck İstanbul', truckEmoji: '🍕', truckId: 't1', events: [], scheduleUrl: 'https://x/o', orderUrl: 'https://x/o', isFollowUp: false }
-    const fr = await kit.quietAsync(() => W.generateWhatsAppReply({ ...base, time: { timeZone: 'Europe/Istanbul', locale: 'tr-TR', timeFormat: '24h', dateOrder: 'dmy', weekStart: 'monday' }, customerMessage: 'Hangi pizzalarınız var?' }))
+    const base = { money: { currency: 'KES', locale: 'sw-KE' }, allergenSet: 'uk14', truckName: 'Food Truck Nairobi', truckEmoji: '🍕', truckId: 't1', events: [], scheduleUrl: 'https://x/o', orderUrl: 'https://x/o', isFollowUp: false }
+    const fr = await kit.quietAsync(() => W.generateWhatsAppReply({ ...base, time: { timeZone: 'Africa/Nairobi', locale: 'sw-KE', timeFormat: '24h', dateOrder: 'dmy', weekStart: 'monday' }, customerMessage: 'Mna pizza gani?' }))
     const frCalls = aiCalls
     const en = await kit.quietAsync(() => W.generateWhatsAppReply({ ...base, money: { currency: 'GBP', locale: 'en-GB' }, time: { timeZone: 'Europe/London', locale: 'en-GB', timeFormat: '24h', dateOrder: 'dmy', weekStart: 'monday' }, customerMessage: 'What pizzas do you have?' }))
     const redirect = /allergen/i.test(fr.reply ?? '')
-    t('a tr-TR truck (no list) asked a plain menu question: the ALLERGEN reply, and the menu AI is never asked', redirect && fr.classification === 'MENU_QUERY', fr)
+    t('a sw-KE truck (no list) asked a plain menu question: the ALLERGEN reply, and the menu AI is never asked', redirect && fr.classification === 'MENU_QUERY', fr)
     t('…while an English truck asked the same gets the menu answer path (its deterministic summary here — no network), not the allergen reply', !/allergen/i.test(en.reply ?? '') && en.classification === 'MENU_QUERY', en)
-    t(`the tr-TR truck's reply made ${frCalls} AI attempt(s) — the classifier only; the menu answer is never asked (the English one tried both: ${aiCalls - frCalls})`, frCalls === 1 && aiCalls - frCalls === 2, { frCalls, enCalls: aiCalls - frCalls })
+    t(`the sw-KE truck's reply made ${frCalls} AI attempt(s) — the classifier only; the menu answer is never asked (the English one tried both: ${aiCalls - frCalls})`, frCalls === 1 && aiCalls - frCalls === 2, { frCalls, enCalls: aiCalls - frCalls })
   } finally { globalThis.fetch = realFetch; delete globalThis.__harnessDb }
 
   // ══ 7 ══════════════════════════════════════════════════════════════════════════════════════════════════════════════

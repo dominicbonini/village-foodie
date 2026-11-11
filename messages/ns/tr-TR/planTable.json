@@ -1,0 +1,36 @@
+{
+  "h1": "Servisinizi yürütmek için gereken her şey, her pakette.",
+  "lede": "Sipariş, ön sipariş, kapasite yönetimi ve mutfak ekranı her pakette var.{hasUpgrades, select, yes { {plans}: ek olarak {features} ve daha düşük ücretler.} other {}}",
+  "perMonth": "{price} / ay",
+  "group": {
+    "pay": "Ne ödersiniz",
+    "run": "Servisinizi yönetin",
+    "online": "Online siparişler",
+    "marketing": "Pazarlama ve otomasyon"
+  },
+  "pay": {
+    "included": "Her ay dahil olan online siparişler",
+    "fee": "Online kartlı siparişlerde HatchGrab ücreti*",
+    "walkUp": "Yerinde siparişler"
+  },
+  "cell": {
+    "unlimited": "Sınırsız",
+    "free": "Ücretsiz",
+    "feeAbove": "{included} üzeri: <b>{fee}</b>",
+    "yes": "Dahil",
+    "none": "Dahil değil",
+    "comingSoon": "Yakında"
+  },
+  "short": {
+    "whatsapp_replies": "WhatsApp",
+    "schedule_graphics": "sosyal medya",
+    "event_types": "etkinliğe göre fiyatlandırma"
+  },
+  "meta": {
+    "description": "HatchGrab’in tüm özellikleri, tüm paketlerde yan yana — {plans}; ücretler ve dahil olan haklarla.{months, plural, =0 {} one { İlk ayınızda her şey dahil.} other { İlk # ayınızda her şey dahil.}}"
+  },
+  "notes": {
+    "whatsapp": "WhatsApp otomatik yanıtlar için bir WhatsApp Business hesabı gerekir. Meta bazı mesajlar için ücret alabilir; yanıtlar otomatik olarak oluşturulur.",
+    "printing": "Mutfak fişi yazdırma için uyumlu bir Bluetooth’lu ya da kablolu yazıcı gerekir (dahil değildir)."
+  }
+}

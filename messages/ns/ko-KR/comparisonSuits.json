@@ -1,0 +1,102 @@
+{
+  "title": "우리 푸드트럭에 맞는 시스템은?",
+  "checked": "{date} 확인",
+  "evidence": "근거",
+  "adminPreview": "관리자 미리보기 — 미검증",
+  "ours": {
+    "fromPlan": "{name}({plan} 요금제부터)"
+  },
+  "q": {
+    "preorder": "손님이 미리 주문하고 픽업 시간을 고를 수 있는 주문 시스템은?",
+    "capacity": "피크 시간에 주문이 몰려요 — 시간대별 주문 수를 제한해 주는 시스템은?",
+    "whatsapp": "손님들이 어디 있냐고 자꾸 물어봐요 — WhatsApp으로 답해 주는 시스템은?",
+    "social": "직접 이미지를 만들지 않아도 주간 영업 장소 게시물을 만들어 주는 시스템은?",
+    "schedule": "거의 매일 다른 곳에서 영업해요 — 손님에게 위치를 알려 주고 그 장소의 주문을 받아 주는 시스템은?",
+    "priceLow": "한 달에 며칠만 영업해요 — 가장 저렴한 시스템은?",
+    "priceHigh": "페스티벌과 붐비는 행사에 나가요 — 가장 저렴한 시스템은?",
+    "commission": "주문마다 중개 수수료를 내고 싶지 않아요 — 제품별로 얼마를 받나요?",
+    "offline": "신호가 끊기면 온라인 주문은 어떻게 되나요?",
+    "strength": "비교한 제품 중 “{feature}” 기능을 제공하는 곳은?"
+  },
+  "does": {
+    "preorder": "{names} {count, plural, one {제품은} other {제품은}} 손님이 미리 주문하고 픽업 시간을 고를 수 있습니다.",
+    "capacity": "{names} {count, plural, one {제품은} other {제품은}} 픽업 시간대별 주문 수를 제한해 주방에 주문이 몰리지 않게 합니다.",
+    "whatsapp": "{names} {count, plural, one {제품은} other {제품은}} 손님의 WhatsApp 메시지에 자동으로 답합니다.",
+    "social": "{names} {count, plural, one {제품은} other {제품은}} 이번 주 영업 장소를 담은, 바로 올릴 수 있는 이미지를 만들어 줍니다.",
+    "schedule": "{names} {count, plural, one {제품은} other {제품은}} 손님에게 매일 푸드트럭 위치를 보여 주고 {count, plural, one {그 장소의} other {그 장소의}} 주문을 받습니다."
+  },
+  "feat": {
+    "preorder": "픽업 시간 선택",
+    "capacity": "시간대별 주문 수 제한",
+    "whatsapp": "WhatsApp 자동 응답",
+    "social": "주간 영업 일정 이미지",
+    "schedule": "영업 장소가 바뀌는 일정",
+    "offlinePause": "신호가 끊기면 온라인 주문 일시 중지"
+  },
+  "others": {
+    "noQuoted": "{names} {count, plural, one {제품은} other {제품은}} 이 기능을 제공하지 않습니다.",
+    "notListed": "{names} {count, plural, one {제품은 웹사이트에 {feature} 기능이 기재되어 있지 않습니다} other {제품은 웹사이트에 {feature} 기능이 기재되어 있지 않습니다}}.",
+    "doesntSay": "{count, plural, one {{names} 웹사이트에는 언급이 없습니다} other {{names} 웹사이트에는 언급이 없습니다}}.",
+    "noneLists": "비교한 다른 제품 중 이 기능을 기재한 곳이 없으므로, 비교한 제품 중에서는 {names} {count, plural, one {제품이} other {제품이}} 가장 잘 맞습니다."
+  },
+  "price": {
+    "lead": "월 온라인 주문 {orders, number}건 기준, 비교한 제품 중 월 소프트웨어 비용이 가장 낮은 {count, plural, one {제품} other {제품}}: {names}, 월 {amount}{count, plural, one {} other {(각각)}}.",
+    "includes": "구독료, 주문마다 푸드트럭에 부과되는 수수료, 추가 주문 요금, 12개월로 나눈 초기 설정비가 포함되며, 카드 결제 수수료는 포함되지 않습니다.",
+    "flat": "{name}({plan} 요금제, 정액제로 {name} 측 주문 건당 수수료 없음)",
+    "planName": "{name}({plan} 요금제)"
+  },
+  "commission": {
+    "part": "{name}: {fee}",
+    "answer": "제품별 주문당 수수료: {parts}."
+  },
+  "offline": {
+    "ours": "{name} 서비스는 푸드트럭 신호가 끊기면 온라인 주문을 자동으로 일시 중지할 수 있어, 주방에 전달되지 않을 주문을 손님이 넣지 못하게 합니다.",
+    "noQuoted": "{names} {count, plural, one {제품은} other {제품은}} 인터넷 연결 없이 작동하는 기능을 제공하지 않습니다.",
+    "doesntSay": "{count, plural, one {{names} 웹사이트에는} other {{names} 웹사이트에는}} 신호가 끊겼을 때 어떻게 되는지 언급이 없습니다."
+  },
+  "strength": {
+    "answer": "{names} {count, plural, one {제품은} other {제품은}} “{feature}” 기능을 제공한다고 밝히고 있지만, {us} 서비스는 제공하지 않습니다.",
+    "answerSoon": "{names} {count, plural, one {제품은} other {제품은}} “{feature}” 기능을 제공한다고 밝히고 있지만, {us} 서비스는 아직 제공하지 않습니다."
+  },
+  "ev": {
+    "ours": {
+      "yes": "지원, {us} 요금제 기준",
+      "no": "미지원, {us} 요금제 기준"
+    },
+    "state": {
+      "yes": "이 기능을 제공한다고 밝힘",
+      "partial": "일부 제공",
+      "no_quoted": "이 기능을 제공하지 않는다고 밝힘",
+      "no_unquoted": "미지원(저장된 인용문 없음)",
+      "not_listed": "웹사이트에 기재되지 않음",
+      "not_mentioned": "웹사이트에 언급 없음",
+      "unknown": "알 수 없음"
+    },
+    "row": "{tool} — {feature}: {answer}.",
+    "quote": "인용: “{quote}”.",
+    "pages": "확인한 페이지: {pages}.",
+    "pageRead": "{page}",
+    "pageNotRead": "{page}(읽을 수 없음)",
+    "page": {
+      "features": "기능 페이지",
+      "pricing": "요금 페이지",
+      "help": "고객센터",
+      "other": "기타 페이지"
+    },
+    "help": {
+      "fetched": "고객센터 내용을 확인했습니다.",
+      "linked_not_fetched": "고객센터가 있지만 확인하지 못했습니다.",
+      "none_found": "고객센터를 찾지 못했습니다."
+    },
+    "calc": {
+      "volume": "월 온라인 주문 {orders, number}건, 주문당 {order} 기준으로 계산했습니다(온라인 매출 {revenue}).",
+      "line": "{name}({plan}): 구독료 {sub} + 12개월로 나눈 초기 설정비 {setup} + 주문 건당 수수료 {fees} + 추가 주문 {over} = 월 {total}.",
+      "excluded": "카드 결제 수수료와 손님이 내는 수수료는 모든 제품에서 제외했습니다.",
+      "date": "계산일: {date}. 각 업체 웹사이트에서 확인한 가격 기준."
+    }
+  },
+  "method": {
+    "covers": "푸드트럭과의 관련성과 검증 가능한 공개 정보가 있는지를 기준으로 고른 최대 4개의 대안을 다룹니다. 시중의 모든 제품을 다루지는 않습니다.",
+    "notListed": "“미기재”는 업체들이 보통 홍보하는 기능인데 제품의 기능·요금 페이지를 확인해도 언급이 없다는 뜻입니다. “언급 없음”은 어느 쪽으로도 확인되지 않았다는 뜻입니다."
+  }
+}

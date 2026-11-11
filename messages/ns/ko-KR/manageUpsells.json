@@ -1,0 +1,19 @@
+{
+  "heading": "추가 판매",
+  "intro": "손님이 하나 더 담도록 유도해 보세요. 한 카테고리에서 주문하면 다른 카테고리의 메뉴를 추천합니다 — 피자에는 음료, 버거에는 소스처럼요.",
+  "add": "+ 추가 판매 만들기",
+  "toast": {
+    "updated": "추가 판매 규칙이 수정되었습니다",
+    "added": "추가 판매 규칙이 추가되었습니다",
+    "removed": "규칙이 삭제되었습니다"
+  },
+  "whenAdds": "손님이 담으면…",
+  "suggestFrom": "추천할 카테고리…",
+  "chooseCategory": "카테고리 선택",
+  "cancel": "취소",
+  "saveChanges": "변경 사항 저장",
+  "addRule": "규칙 추가",
+  "empty": "아직 추가 판매 규칙이 없습니다.",
+  "confirmRemove": "추가 판매 규칙을 삭제할까요? “{trigger} → {suggest}”",
+  "upTo": "{n, plural, one {최대 {count}개 메뉴 추천} other {최대 {count}개 메뉴 추천}}"
+}

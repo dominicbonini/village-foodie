@@ -1,0 +1,129 @@
+{
+  "docTitle": "Dapur — {truck}",
+  "loading": "Memuat dapur…",
+  "pin": {
+    "title": "Masukkan PIN",
+    "placeholder": "PIN",
+    "unlock": "Buka kunci",
+    "unreachable": "Server tidak dapat dijangkau saat ini. PIN Anda tidak salah — coba lagi sebentar lagi.",
+    "incorrect": "PIN salah",
+    "generic": "Terjadi kesalahan. Coba lagi."
+  },
+  "error": {
+    "linkInvalid": "Link ini sudah tidak berlaku.",
+    "couldNotLoad": "Pesanan tidak dapat dimuat",
+    "truckNotFound": "Truk tidak ditemukan"
+  },
+  "degraded": {
+    "at": "⚠️ Server tidak dapat dijangkau. Menampilkan tiket dari pukul {time}. MUNGKIN ADA PESANAN BARU YANG TIDAK TAMPIL.",
+    "earlier": "⚠️ Server tidak dapat dijangkau. Menampilkan tiket dari sebelumnya. MUNGKIN ADA PESANAN BARU YANG TIDAK TAMPIL."
+  },
+  "header": {
+    "dashboard": "Dasbor",
+    "backTitle": "Kembali ke dasbor",
+    "list": "Daftar",
+    "grid": "Kisi",
+    "full": "Lengkap",
+    "cook": "Masak",
+    "fullTitle": "Kartu lengkap — harga dan detail pembayaran, seperti yang dilihat di konter.",
+    "cookTitle": "Kartu masak — huruf lebih besar, dikelompokkan per kategori, tanpa harga.",
+    "readyStep": "Langkah siap",
+    "readyOnlyTitle": "Layar ini hanya menandai pesanan siap, jadi ini tidak bisa dimatikan — hanya langkah ini yang dijalankannya.",
+    "readyOnTitle": "Layar ini menandai pesanan siap. Ketuk agar layar lain yang melakukannya.",
+    "readyOffTitle": "Layar lain menandai pesanan siap. Ketuk agar layar ini yang melakukannya.",
+    "handover": "Pembayaran & serah terima",
+    "handoverOnlyTitle": "Layar ini hanya menerima pembayaran, jadi ini tidak bisa dimatikan — hanya langkah ini yang dijalankannya.",
+    "handoverOnTitle": "Layar ini menerima pembayaran dan menyerahkan pesanan. Ketuk agar layar lain yang melakukannya.",
+    "handoverOffTitle": "Layar lain menerima pembayaran. Ketuk agar layar ini yang melakukannya.",
+    "soundOn": "Suara pesanan baru aktif — ketuk untuk mematikan",
+    "soundOff": "Suara pesanan baru mati — ketuk untuk mengaktifkan",
+    "screenOn": "Layar tetap menyala",
+    "screenOff": "Layar boleh mati",
+    "screenSettings": "Pengaturan layar",
+    "manageEvent": "Kelola acara",
+    "manageEventTitle": "Kelola acara — mulai, jeda, ubah, atau selesaikan",
+    "soundSettings": "Pengaturan suara",
+    "soundSettingsTitle": "Suara apa saja yang berbunyi di perangkat ini",
+    "cashIcon": "💵"
+  },
+  "panel": {
+    "viewSettings": "Pengaturan tampilan",
+    "on": "Aktif",
+    "off": "Mati",
+    "newOrderSound": "Suara pesanan baru",
+    "soundNeedsConfirming": "Hanya pesanan yang perlu dikonfirmasi",
+    "soundAll": "Semua pesanan baru",
+    "soundDue": "Bunyi saat pesanan waktunya dimasak",
+    "soundDueHelp": "Berbunyi saat tiket berubah kuning.",
+    "deviceSettings": "Pengaturan perangkat",
+    "sound": "Suara",
+    "close": "Tutup"
+  },
+  "banner": {
+    "mismatchTitle": "⚠️ Pesanan untuk acara ini tidak dimuat",
+    "mismatchBody": "Server mengirim data acara lain, jadi tidak ada yang ditampilkan daripada menampilkan pesanan yang salah. Pilih acaranya lagi, atau muat ulang.",
+    "mismatchBodyAt": "Server mengirim data acara lain, jadi tidak ada yang ditampilkan daripada menampilkan pesanan yang salah untuk tempat {venue}. Pilih acaranya lagi, atau muat ulang.",
+    "paused": "⏸ Pesanan dijeda{reason, select, offline { (perangkat offline)} other {}} — pelanggan tidak bisa memesan",
+    "resume": "Lanjutkan",
+    "offline": "Tidak ada koneksi — menampilkan pesanan terakhir yang diketahui. Pemesanan online untuk pelanggan sudah dijeda.",
+    "queued": "{n, plural, one {{count} tindakan dalam antrean} other {{count} tindakan dalam antrean}}",
+    "extraWait": "⏱ Waktu tunggu tambahan +{mins} mnt aktif",
+    "clear": "Hapus",
+    "toMake": "Perlu dibuat",
+    "today": "Hari ini · {range}",
+    "onDate": "{date} · {range}",
+    "startEvent": "Mulai acara",
+    "recentlyClosed": "Acara selesai · {venue} berakhir pukul {time}",
+    "eventStatus": "{tone, select, paused {⏸ Dijeda} live {● Berlangsung} finished {● Selesai} cancelled {Dibatalkan} other {Belum dimulai}}"
+  },
+  "board": {
+    "queueClear": "Antrean kosong",
+    "doneToday": "Selesai hari ini · {count}",
+    "paid": "✓ lunas",
+    "cardHeld": "dana ditahan",
+    "due": "kurang {amount}"
+  },
+  "screenOff": {
+    "title": "Izinkan layar mati?",
+    "bodyVans": "Deteksi offline aktif {n, plural, one {di kendaraan} other {di kendaraan}}: {vans}. Jika layar mati, perangkat mungkin berhenti mengirim sinyal online dan pemesanan pelanggan bisa dijeda.",
+    "body": "Jika layar mati, perangkat mungkin berhenti mengirim sinyal online.",
+    "keepHint": "Biarkan layar menyala agar pemesanan tidak terputus.",
+    "keep": "Biarkan layar menyala",
+    "allow": "Izinkan layar mati"
+  },
+  "event": {
+    "change": "Ganti acara",
+    "cancel": "Batal",
+    "waitActive": "⏱ +{mins} mnt aktif · Ketuk untuk menghapus",
+    "addWait": "⏱ Tambah waktu tunggu",
+    "endTitle": "Akhiri acara?",
+    "endEarly": "Acara ini dijadwalkan baru selesai pukul {time}. Tidak ada lagi pesanan yang bisa masuk. Konfirmasi untuk mengakhiri acara?",
+    "endNow": "Selesaikan acara ini? Tidak ada lagi pesanan yang akan diterima.",
+    "yes": "Ya",
+    "started": "Acara dimulai",
+    "startFutureConfirm": "Acara ini dijadwalkan tanggal {date}. Mulai sekarang?",
+    "finishTimeNow": "Jam selesai sekarang {time}",
+    "finished": "Acara selesai",
+    "cancelled": "Acara dibatalkan",
+    "noteSaved": "Catatan disimpan",
+    "pauseConfirm": "Jeda pesanan? Pelanggan akan melihat “Tidak menerima pesanan” sampai Anda melanjutkannya.",
+    "switchConfirm": "Pindah dari {from} ke {to}?{n, plural, =0 {} one { {count} pesanan di layar ini akan diganti.} other { {count} pesanan di layar ini akan diganti.}} Ketuk acara saat ini untuk kembali."
+  },
+  "intro": {
+    "title": "Ini layar dapur",
+    "p1": "Ini tampilan untuk juru masak — pesanan yang perlu dibuat, sesuai urutan pembuatannya. Layar di dekat panggangan menampilkan ini, sementara konter memakai dasbor pesanan.",
+    "p2": "Kartu berpindah setiap kali Anda mengetuknya, jadi siapa pun yang memasak selalu tahu apa berikutnya dan tidak perlu ada yang berteriak. Semua yang ada di sini adalah data demo Anda — silakan dicoba.",
+    "gotIt": "Mengerti"
+  },
+  "toast": {
+    "failed": "Gagal",
+    "rejectFailed": "Gagal menolak",
+    "buzzerSaved": "Buzzer {n} disimpan",
+    "buzzerRemoved": "Buzzer {n} dilepas",
+    "buzzerRemovedNone": "Buzzer dilepas",
+    "buzzerAssigned": "Buzzer {n} diberikan",
+    "buzzerAssignedFrom": "Buzzer {n} diberikan (diambil dari #{from})",
+    "buzzerRemoveFailed": "{had, select, no {Buzzer tidak dapat dilepas dari {target, select, order {pesanan #{id}} other {pesanan ini}}} other {Buzzer {n} tidak dapat dilepas — masih ada di {target, select, order {pesanan #{id}} other {pesanan ini}}}}",
+    "buzzerAssignFailed": "Buzzer {n} tidak dapat diberikan ke {target, select, order {pesanan #{id}} other {pesanan ini}} — {had, select, yes {pesanan itu masih memegang buzzer {prior}} other {pesanan itu masih belum punya buzzer}}"
+  }
+}

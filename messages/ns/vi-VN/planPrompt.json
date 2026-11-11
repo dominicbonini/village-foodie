@@ -1,0 +1,122 @@
+{
+  "includedOn": "{many, select, yes {{feature} có trong gói {plan}.} other {{feature} có trong gói {plan}.}}",
+  "notOnPlan": "{many, select, yes {{feature} không có trong gói của bạn.} other {{feature} không có trong gói của bạn.}}",
+  "switchedOff": "{many, select, yes {{feature} đang tắt cho xe của bạn.} other {{feature} đang tắt cho xe của bạn.}}",
+  "planLine": "{plan} · {price} · {description}",
+  "planLineNoPrice": "{plan} · {description}",
+  "upgrade": "Nâng cấp →",
+  "features": {
+    "discovery_map": {
+      "name": "Hiển thị trên bản đồ khám phá",
+      "many": "no"
+    },
+    "web_dashboard": {
+      "name": "Bảng điều khiển web",
+      "many": "no"
+    },
+    "ipad_kds": {
+      "name": "Ứng dụng bếp",
+      "many": "no"
+    },
+    "qr_menu": {
+      "name": "Thực đơn mã QR",
+      "many": "no"
+    },
+    "meal_deals": {
+      "name": "Combo",
+      "many": "yes"
+    },
+    "upsells": {
+      "name": "Gợi ý mua thêm",
+      "many": "yes"
+    },
+    "walkup_orders": {
+      "name": "Đơn mua tại chỗ",
+      "many": "yes"
+    },
+    "online_ordering_pay_at_hatch": {
+      "name": "Đặt món với Thanh toán khi nhận món",
+      "many": "no"
+    },
+    "sold_out_toggle": {
+      "name": "Nút báo hết hàng",
+      "many": "no"
+    },
+    "stock_countdown": {
+      "name": "Tự động trừ tồn kho",
+      "many": "no"
+    },
+    "offline_protection": {
+      "name": "Bảo vệ đơn khi mất mạng",
+      "many": "no"
+    },
+    "online_payments": {
+      "name": "Thanh toán online",
+      "many": "yes"
+    },
+    "advance_preordering": {
+      "name": "Đặt trước cho ngày sau",
+      "many": "no"
+    },
+    "time_slot_selection": {
+      "name": "Khung giờ cho khách",
+      "many": "yes"
+    },
+    "smart_batch_pacing": {
+      "name": "Quản lý công suất bếp",
+      "many": "no"
+    },
+    "auto_accept": {
+      "name": "Tự động xác nhận đơn",
+      "many": "no"
+    },
+    "instagram_messenger_replies": {
+      "name": "Tự động trả lời trên Messenger & Instagram",
+      "many": "yes"
+    },
+    "branded_qr_code": {
+      "name": "Mã QR có logo",
+      "many": "yes"
+    },
+    "advanced_reporting": {
+      "name": "Báo cáo nâng cao",
+      "many": "no"
+    },
+    "ticket_printing": {
+      "name": "In phiếu bếp",
+      "many": "no"
+    },
+    "multi_device_kds": {
+      "name": "Đồng bộ bếp trên nhiều thiết bị",
+      "many": "no"
+    },
+    "cook_screen": {
+      "name": "Màn hình nấu",
+      "many": "no"
+    },
+    "whatsapp_replies": {
+      "name": "Tự động trả lời trên WhatsApp",
+      "many": "yes"
+    },
+    "embed_schedule": {
+      "name": "Lịch bán trên website của bạn",
+      "many": "no"
+    },
+    "schedule_graphics": {
+      "name": "Bài đăng mạng xã hội",
+      "many": "yes"
+    },
+    "event_types": {
+      "name": "Loại sự kiện tùy chỉnh",
+      "many": "yes"
+    },
+    "private_events": {
+      "name": "Sự kiện riêng",
+      "many": "yes"
+    },
+    "paperwork": {
+      "name": "Giấy tờ",
+      "many": "yes"
+    }
+  }
+}

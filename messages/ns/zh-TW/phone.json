@@ -1,0 +1,5 @@
+{
+  "invalidMobile": "{withName, select, yes {請輸入有效的{name}手機號碼} other {請輸入有效的手機號碼}}{withExample, select, yes {（例如：{example}）} other {}}",
+  "invalidPhone": "{withName, select, yes {請輸入有效的{name}電話號碼} other {請輸入有效的電話號碼}}{withExample, select, yes {（例如：{example}）} other {}}",
+  "invalidPhoneNumber": "{withName, select, yes {請輸入有效的{name}電話號碼} other {請輸入有效的電話號碼}}{withExample, select, yes {（例如：{example}）} other {}}。"
+}

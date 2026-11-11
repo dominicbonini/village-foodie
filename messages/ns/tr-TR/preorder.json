@@ -1,0 +1,6 @@
+{
+  "closedPending": "Ön siparişler kapandı. Mutfak onayı bekleniyor.",
+  "deadline": "Son ön sipariş saati: {time}",
+  "deadlineOnDay": "Son ön sipariş: {day}, {time}",
+  "opens": "Ön siparişlerin açılışı: {day}"
+}

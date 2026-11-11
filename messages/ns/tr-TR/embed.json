@@ -1,0 +1,8 @@
+{
+  "metaDescription": "{truck} — sıradaki satış noktaları ve saatler.",
+  "orderFrom": "{truck} — Sipariş ver",
+  "poweredBy": "<b>HatchGrab</b> altyapısıyla",
+  "loadFailed": "Program şu anda yüklenemedi.",
+  "loading": "Program yükleniyor…",
+  "empty": "{truck} için listelenmiş yaklaşan etkinlik yok."
+}

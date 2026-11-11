@@ -1,0 +1,141 @@
+{
+  "row": {
+    "discovery_map_listing": {
+      "name": "Hiển thị trên bản đồ khám phá"
+    },
+    "web_dashboard": {
+      "name": "Bảng điều khiển web đa nền tảng"
+    },
+    "qr_code": {
+      "name": "Mã QR"
+    },
+    "schedule_import": {
+      "name": "Tự động nhập lịch bán"
+    },
+    "meal_deals_upsells": {
+      "name": "Combo & gợi ý mua thêm"
+    },
+    "walkup_orders": {
+      "name": "Xử lý đơn mua tại chỗ"
+    },
+    "sold_out_toggle": {
+      "name": "Báo hết hàng tức thì"
+    },
+    "kitchen_app": {
+      "name": "Ứng dụng bếp trên iPhone, iPad và Android"
+    },
+    "offline_protection": {
+      "name": "Bảo vệ đơn khi mất mạng"
+    },
+    "online_payments": {
+      "name": "Thanh toán online"
+    },
+    "advance_preordering": {
+      "name": "Đặt trước cho ngày sau"
+    },
+    "preorder_deadline": {
+      "name": "Hạn chót đặt trước"
+    },
+    "time_slot_selection": {
+      "name": "Khách chọn khung giờ"
+    },
+    "kitchen_capacity": {
+      "name": "Quản lý công suất bếp"
+    },
+    "stock_countdown": {
+      "name": "Tự động trừ tồn kho"
+    },
+    "auto_accept": {
+      "name": "Tự động xác nhận đơn online"
+    },
+    "branded_qr_code": {
+      "name": "Mã QR có logo"
+    },
+    "private_events": {
+      "name": "Sự kiện riêng"
+    },
+    "social_media_posts": {
+      "name": "Bài đăng mạng xã hội"
+    },
+    "whatsapp_auto_replies": {
+      "name": "Tự động trả lời trên WhatsApp"
+    },
+    "messenger_instagram_replies": {
+      "name": "Tự động trả lời trên Messenger & Instagram"
+    },
+    "tap_to_pay": {
+      "name": "Nhận thanh toán trên điện thoại"
+    },
+    "sms_order_alerts": {
+      "name": "Báo đơn qua SMS"
+    },
+    "multi_device_kitchen": {
+      "name": "Đồng bộ bếp trên nhiều thiết bị"
+    },
+    "multi_user_access": {
+      "name": "Nhiều người dùng"
+    },
+    "embed_schedule": {
+      "name": "Trang lịch bán trên website của bạn"
+    },
+    "event_types": {
+      "name": "Loại sự kiện & giá tùy chỉnh"
+    },
+    "buzzer_tracking": {
+      "name": "Theo dõi thẻ rung báo món"
+    },
+    "documents_reminders": {
+      "name": "Giấy tờ và lời nhắc"
+    },
+    "profit_per_event": {
+      "name": "Lợi nhuận theo sự kiện"
+    },
+    "accountant_reports": {
+      "name": "Báo cáo cho kế toán"
+    },
+    "ticket_printing": {
+      "name": "In phiếu bếp"
+    },
+    "customer_display": {
+      "name": "Màn hình cho khách"
+    },
+    "loyalty_stamp_cards": {
+      "name": "Thẻ tích điểm điện tử"
+    }
+  },
+  "cardRegionOnline": "{region} thông thường",
+  "cardRegion": {
+    "UKcards": "thẻ Vương quốc Anh",
+    "EEAcards": "thẻ EEA",
+    "UScards": "thẻ Mỹ",
+    "Australiancards": "thẻ Úc",
+    "NewZealandcards": "thẻ New Zealand",
+    "Canadiancards": "thẻ Canada",
+    "Swisscards": "thẻ Thụy Sĩ",
+    "Braziliancards": "thẻ Brazil",
+    "Mexicancards": "thẻ Mexico",
+    "Japanesecards": "thẻ Nhật Bản",
+    "Singaporecards": "thẻ Singapore",
+    "HongKongcards": "thẻ Hồng Kông",
+    "Malaysiancards": "thẻ Malaysia",
+    "Thaicards": "thẻ Thái Lan",
+    "UAEcards": "thẻ UAE"
+  },
+  "perMonth": {
+    "mo": "{amount}/tháng",
+    "month": "{amount}/tháng"
+  },
+  "priceWord": {
+    "free": "Miễn phí",
+    "freeTrial": "Dùng thử miễn phí",
+    "lifetime": "Trọn đời",
+    "zeroPercent": "0%",
+    "payAtHatch": "Trả tiền tại xe",
+    "unlimited": "Không giới hạn",
+    "none": "—",
+    "masked": "Sắp công bố"
+  },
+  "cell": {
+    "included": "Có"
+  }
+}

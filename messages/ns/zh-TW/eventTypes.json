@@ -1,0 +1,83 @@
+{
+  "title": "活動類型",
+  "newTypeButton": "+ 新增活動類型",
+  "close": "關閉",
+  "loading": "載入中…",
+  "missingTitle": "活動類型尚未開啟。",
+  "missingBody": "這項功能需要的資料庫更新尚未套用。沒有任何東西壞掉，所有活動都使用你的一般設定。",
+  "column": "欄",
+  "vanGone": "這台車輛已不存在。",
+  "typeGone": "這個類型已不存在。",
+  "standard": "標準",
+  "standardHeading": "標準",
+  "moreFor": "更多選項：{name}",
+  "rename": "重新命名",
+  "moveLeft": "向左移",
+  "moveRight": "向右移",
+  "delete": "刪除",
+  "sections": {
+    "vans": "車輛",
+    "prices": "價格",
+    "itemPrices": "品項價格",
+    "service": "服務"
+  },
+  "labelFor": "{name}：{label}",
+  "intervalEvery": "每 {mins} 分鐘",
+  "noTypes": "你還沒有任何活動類型，所以每場活動都使用你的一般設定。",
+  "renameTitle": "重新命名這個類型",
+  "name": "名稱",
+  "cancel": "取消",
+  "save": "儲存",
+  "copyVanOne": "複製 1 號車的設定",
+  "thisType": "這個類型",
+  "matchTitle": "要讓「{name}」與「標準」一致嗎？",
+  "matchKeeps": "你在個別活動控制台上修改過的內容都會維持不變，這個類型的價格也不會變更。",
+  "matchWillUse": "將會使用：{summary}",
+  "deleteTitle": "要刪除「{name}」嗎？",
+  "deleteBody": "{n, plural, =0 {沒有即將舉行的活動使用「{name}」。} one {有 {count} 場即將舉行的活動使用「{name}」，這些活動會改回「標準」。} other {有 {count} 場即將舉行的活動使用「{name}」，這些活動會改回「標準」。}}你在個別活動上修改過的內容都會維持不變。",
+  "keep": "保留",
+  "phone": {
+    "standardTag": "標準",
+    "defaultTag": "預設",
+    "vanSetup": "這台車輛的一般設定，用於所有沒有指定類型的活動。",
+    "standardSetup": "你的一般設定，用於所有沒有指定類型的活動。",
+    "cardSummary": "{upcoming, plural, one {{upcomingCount} 場即將舉行的活動} other {{upcomingCount} 場即將舉行的活動}} · {changed, plural, =0 {尚未修改任何項目} other {已修改 {changedCount}／{total} 項}}",
+    "noMenuItems": "還沒有菜單品項，請到「菜單 › 品項」新增。"
+  },
+  "newType": {
+    "title": "新增活動類型",
+    "namePlaceholder": "例如：校園園遊會",
+    "help": "點選一個名稱，或自行輸入。新類型會先複製「標準」的設定，之後修改「標準」也不會影響它。建立後可以修改任何設定。",
+    "create": "建立",
+    "chips": {
+      "festival": "節慶活動",
+      "pub": "酒吧",
+      "market": "市集",
+      "privateHire": "餐車包車"
+    }
+  },
+  "select": {
+    "label": "活動類型",
+    "usual": "這個地點通常使用：{name}。"
+  },
+  "summary": {
+    "normalSetup": "你的一般設定",
+    "sameAsStandard": "與「標準」相同",
+    "buzzersOn": "取餐呼叫器：開",
+    "buzzersOff": "取餐呼叫器：關",
+    "takeCashOn": "收現金：開",
+    "takeCashOff": "收現金：關",
+    "markReadyOn": "標示完成步驟：開",
+    "markReadyOff": "標示完成步驟：關",
+    "collectionEvery": "每 {mins} 分鐘一個取餐時段",
+    "offlineOff": "離線保護：關",
+    "offlineKeepTaking": "離線時：繼續接單",
+    "offlinePause": "離線時：暫停點餐"
+  },
+  "errors": {
+    "somethingWentWrong": "發生錯誤",
+    "couldNotLoad": "無法載入",
+    "couldNotSave": "無法儲存",
+    "noVans": "這台餐車沒有可修改的車輛。"
+  }
+}

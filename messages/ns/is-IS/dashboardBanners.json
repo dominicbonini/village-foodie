@@ -1,0 +1,21 @@
+{
+  "breachHeadline": "{n, plural, one {{count} tímahólf} other {{count} tímahólf}} umfram afköst — skoðaðu",
+  "batchOver": "{cat}: umfram lotustærð — {count} fyrir {slot} ({per} í hverri lotu)",
+  "eventStartOver": "Umfram afköst við upphaf viðburðar — {n, plural, one {{count} vara} other {{count} vörur}} fyrir {slot}",
+  "kitchenOver": "Eldhúsið er umfram afköst — {n, plural, one {{count} vara} other {{count} vörur}} í eldun fyrir {slot}",
+  "orderItems": "#{id} — {n, plural, one {{count} vara} other {{count} vörur}}",
+  "placedAnyway": "Skráð samt: {list}",
+  "placedItem": "#{id} fyrir {slot}",
+  "orphans": "{times}: umfram afköst — engar pantanir fundust sem þetta skrifast á",
+  "dismiss": "Loka",
+  "kitchenCapacity": "Afköst eldhússins",
+  "overCapacity": "Umfram afköst",
+  "wakeUnsupported": "Þetta tæki getur ekki haldið skjánum kveiktum.",
+  "wakeInsecure": "Ekki er hægt að halda skjánum kveiktum frá þessu vistfangi.",
+  "wakeRetry": "Halda skjánum kveiktum — ýttu til að reyna aftur",
+  "wakeAcquire": "Halda skjánum kveiktum",
+  "degraded": {
+    "serverError": "Netþjónninn gat ekki sótt pantanir{hasStatus, select, yes { (villa {status})} other {}}. Sýni pantanir frá {at}. Nýjar pantanir gæti vantað.",
+    "unreachable": "Næ ekki sambandi við netþjóninn. Sýni pantanir frá {at}. Nýjar pantanir gæti vantað."
+  }
+}

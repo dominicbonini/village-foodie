@@ -1,0 +1,17 @@
+{
+  "back": "← Geri",
+  "title": "Kampanya uygula",
+  "save": "{amount} kazanın",
+  "selectItems": "Her alan için ürün seçin",
+  "choose": "Seçin: {category}…",
+  "inYourBasket": "── Sepetinizde ──",
+  "basketUnit": "{name}{withMods, select, yes { (+ {mods})} other {}} (sepette){state, select, used { — zaten bir kampanyada} taken { — başka bir alanda seçili} other {}}",
+  "addNew": "── Yeni ekle ──",
+  "itemWithPrice": "{name} {price}",
+  "ruleHint": "· {rule, select, requiredOne {Zorunlu · bir tane seçin} required {Zorunlu} other {Bir tane seçin}}{unmet, select, yes { (zorunlu)} other {}}",
+  "notePlaceholder": "Not ekleyin, ör. soğansız (isteğe bağlı)",
+  "backButton": "Geri",
+  "cancel": "İptal",
+  "chooseRequired": "Zorunlu seçenekleri seçin",
+  "apply": "Kampanyayı uygula · {amount}"
+}

@@ -1,0 +1,23 @@
+{
+  "explainerLead": "Þú verður að hafa stjórnborðið eða eldhússkjáinn kveiktan og nettengdan meðan á afgreiðslu stendur.",
+  "explainerBody": "Ef slokknar á skjánum, tækið missir nettengingu eða þú skiptir yfir á aðra vefsíðu tekur vörn án nettengingar við — hún annaðhvort gerir hlé á pöntunum eða slekkur á sjálfvirkri samþykkt, eftir því hvað þú valdir.",
+  "reminder": "⚠️ Hafðu stjórnborðið eða eldhússkjáinn kveiktan og nettengdan meðan á afgreiðslu stendur, annars gæti vörn án nettengingar tekið við.",
+  "enableConfirm": "Kveikt á vörn án nettengingar.\n\nTil að pantanir haldi áfram að berast verður skjárinn að vera kveiktur. Ef þetta tæki missir samband tekur vörnin við í þeim ham sem þú valdir.\n\nGakktu úr skugga um að kveikt sé á „Skjár alltaf á“ í þessu tæki.",
+  "disableConfirm": "Slökkva á vörn án nettengingar fyrir þennan viðburð?\n\nEf þetta tæki missir samband halda netpantanir áfram — viðskiptavinir gætu pantað án þess að þú sjáir það. Slökktu aðeins á þessu ef þú ert með öruggt samband.",
+  "cardDescription": "Ræður því hvað verður um pantanir sem berast þegar tækið missir samband.",
+  "purpose": "Ef tækið missir samband kemur þetta í veg fyrir að pantanir berist meðan þú sérð þær ekki.",
+  "switchLabel": "Vörn án nettengingar",
+  "switchHelp": "Hvað gerist þegar þessi vagn missir samband.",
+  "modes": {
+    "pause": {
+      "label": "Gera hlé á netpöntunum",
+      "help": "Viðskiptavinir geta ekki pantað fyrr en þú ert aftur komin(n) í samband."
+    },
+    "no_auto_accept": {
+      "label": "Taka áfram við pöntunum, staðfesta sjálf(ur)",
+      "help": "Slökkt er á sjálfvirkri samþykkt, svo viðskiptavinir geta enn pantað en ekkert er staðfest sjálfkrafa. Þú staðfestir hverja pöntun þegar þú ert aftur komin(n) í samband — og pöntunum sem enn bíða er hafnað sjálfkrafa eftir tímann sem þú valdir og viðskiptavinurinn fær tölvupóst um það."
+    }
+  },
+  "autoRejectLabel": "Hafna pöntunum sem bíða lengur en",
+  "autoRejectOption": "{n, plural, one {{count} mín.} other {{count} mín.}}"
+}

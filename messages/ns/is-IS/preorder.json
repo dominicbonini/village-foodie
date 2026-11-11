@@ -1,0 +1,6 @@
+{
+  "closedPending": "Lokað fyrir forpöntun. Eldhúsið á eftir að samþykkja.",
+  "deadline": "Forpöntun opin til kl. {time}",
+  "deadlineOnDay": "Forpöntun opin til kl. {time}, {day}",
+  "opens": "Forpöntun opnar: {day}"
+}

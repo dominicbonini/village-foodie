@@ -1,0 +1,32 @@
+{
+  "steps": {
+    "based": "營業所在地",
+    "identity": "你的餐車",
+    "menu": "你的菜單",
+    "event": "第一場活動"
+  },
+  "stepItem": "{number}. {label}",
+  "settingUp": "設定中",
+  "loading": "載入中",
+  "loadingCountries": "載入中…",
+  "verify": {
+    "ok": "電子郵件已確認，謝謝你。",
+    "expired": "這個確認連結已過期。請和我們聯絡，我們會在你正式上線前處理好。",
+    "invalid": "這個確認連結無法使用。請和我們聯絡，我們會在你正式上線前處理好。"
+  },
+  "identity": {
+    "heading": "你的餐車叫什麼名字？",
+    "intro": "這是顧客會看到的名稱。在你決定正式上線之前，什麼都不會公開。",
+    "nameLabel": "餐車名稱",
+    "namePlaceholder": "阿明漢堡",
+    "phoneLabel": "電話",
+    "whatsappTick": "這個號碼有使用 WhatsApp",
+    "phoneHelp": "顧客會在訂單確認頁看到這個號碼，方便詢問訂單。勾選與否決定顯示「打電話給我們」還是「用 WhatsApp 聯絡我們」。兩者都可以在「設定」中修改。"
+  },
+  "phoneRequired": "請新增電話號碼，顧客和我們都會用它聯絡你。",
+  "createFailed": "無法建立你的餐車。",
+  "unreachable": "目前無法連線到我們，請再試一次。",
+  "back": "返回",
+  "creating": "正在建立你的餐車…",
+  "continue": "繼續"
+}

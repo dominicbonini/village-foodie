@@ -1,0 +1,61 @@
+{
+  "steps": {
+    "reading": "Les matseðilinn þinn…",
+    "found": "Fann vörurnar þínar…",
+    "kitchen": "Set upp eldhúsið þitt…",
+    "page": "Bý til pöntunarsíðuna þína…",
+    "almost": "Næstum tilbúið…"
+  },
+  "templateSteps": {
+    "truck": "Bý til sýnivagninn þinn…",
+    "menu": "Set upp matseðilinn…",
+    "kitchen": "Set upp eldhúsið…",
+    "page": "Bý til pöntunarsíðuna…",
+    "almost": "Næstum tilbúið…"
+  },
+  "dialogLabel": "Hlaða upp matseðlinum",
+  "heading": "✨ Hladdu upp matseðlinum þínum",
+  "failedHeading": "Við gátum ekki lesið þennan matseðil",
+  "close": "Loka",
+  "intro": "Mynd af matseðlatöflunni, skjáskot, PDF eða límdu hann inn sem texta. Gervigreindin okkar les hann og býr til virka pöntunarsíðu fyrir þig — þínar vörur, þín verð — á innan við 60 sekúndum. Engin skráning, ekkert kort.",
+  "failedIntro": "Stundum er mynd of dökk, tekin á ská eða handskrifuð. Það er okkar að leysa það, ekki eitthvað sem þú gerðir rangt. Nokkrar leiðir áfram:",
+  "usually": "Þetta tekur yfirleitt innan við 60 sekúndur.",
+  "slow": "Þetta tekur lengri tíma en venjulega — það gerist stundum með stóra matseðla.",
+  "keepWaiting": "Bíða áfram",
+  "sampleWhileYouWait": "Eða skoðaðu þig um með sýnimatseðli á meðan þú bíður",
+  "standIn": "Þetta <b>verður ekki matseðillinn þinn</b> — þetta er staðgengill svo þú sjáir hvernig þetta virkar.",
+  "seeSample": "Skoða sýnimatseðil",
+  "tryAgain": "Reyna aftur",
+  "tryPhotoAgain": "Reyna aftur með þessa mynd",
+  "tryDifferent": "Prófa aðra mynd",
+  "uploadAnother": "← Hlaða upp annarri mynd",
+  "orSample": "Eða skoðaðu þig um með sýnimatseðli",
+  "orBuild": "Eða við setjum hann upp fyrir þig",
+  "buildSent": "✓ Takk — við höfum fengið þetta. Við sendum þér tölvupóst.",
+  "buildBody": "Skildu eftir netfangið þitt og raunveruleg manneskja setur matseðilinn þinn inn og sendir þér tengilinn.",
+  "emailPlaceholder": "thu@matarvagninnthinn.is",
+  "sending": "…",
+  "send": "Senda",
+  "noPhoto": "Ertu ekki með mynd af matseðlinum við höndina?",
+  "noPhotoBody": "Skoðaðu þig frekar um með sýnivagni — þú getur hlaðið upp þínum hvenær sem er.",
+  "build": "Búa til kynninguna mína →",
+  "nothingPublished": "Ekkert er birt — aðeins þú sérð þetta.",
+  "error": {
+    "somethingWrong": "Eitthvað fór úrskeiðis. Reyndu aftur.",
+    "serverUnreachable": "Ekki náðist samband við netþjóninn. Athugaðu tenginguna og reyndu aftur.",
+    "sendFailed": "Ekki tókst að senda þetta — reyndu aftur."
+  },
+  "fields": {
+    "uploadLabel": "Hlaða upp skrá með matseðli",
+    "dropHere": "Slepptu matseðlinum hér",
+    "dragOrTap": "Dragðu og slepptu eða ýttu til að velja",
+    "fileTypes": "Mynd eða PDF",
+    "or": "eða",
+    "pasteLabel": "Líma inn texta matseðils",
+    "pastePlaceholder": "Límdu matseðilinn hér — heiti vara, lýsingar, verð..."
+  },
+  "emailLabel": "Netfangið þitt",
+  "emailNote": "Við sendum þér tengil á kynninguna í tölvupósti og gætum haft samband varðandi uppsetningu á HatchGrab. <link>Persónuverndarstefna</link>",
+  "marketing": "Sendið mér stöku sinnum góð ráð og fréttir frá HatchGrab",
+  "emailInvalid": "Sláðu inn gilt netfang."
+}

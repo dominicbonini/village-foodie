@@ -1,0 +1,11 @@
+{
+  "optOut": {
+    "missing": "Email này chưa có dòng hủy đăng ký nên không gửi được. Dùng “Insert opt-out” để thêm vào.",
+    "notSetUp": "Chưa thiết lập câu hủy đăng ký nên không gửi được email tiếp cận nào. Hãy thêm câu này trong bảng “Signature” của tab “Templates”.",
+    "notLoaded": "Câu hủy đăng ký chưa tải xong nên chưa gửi được.",
+    "unreadable": "Không đọc được câu hủy đăng ký nên chưa gửi gì cả."
+  },
+  "retry": {
+    "notRebuilt": "Không tạo lại được tin nhắn đó với dòng thông tin công ty nên chưa gửi gì cả."
+  }
+}

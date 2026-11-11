@@ -1,0 +1,47 @@
+{
+  "meta": {
+    "fallbackTitle": "Food truck | Village Foodie",
+    "hgFallbackTitle": "Food truck",
+    "orderTitle": "Đặt món tại {truck}",
+    "orderDescription": "Đặt món trước tại {truck} và nhận món ngay tại xe, không cần xếp hàng.",
+    "title": "{truck} | Village Foodie",
+    "logoAlt": "Logo {truck}"
+  },
+  "shareTitle": "Lịch bán của {truck}",
+  "shareText": "Xem ngay điểm bán tiếp theo của {truck}! 🚚",
+  "linkCopied": "Đã sao chép link trang! 📋",
+  "facebookPage": "Trang Facebook",
+  "loadingMap": "Đang tải bản đồ…",
+  "view": {
+    "list": "Danh sách",
+    "map": "Bản đồ"
+  },
+  "ownThisTruck": "Bạn là chủ xe này?",
+  "ownThisTruckTitle": "Bạn là chủ xe này? Nhấn để cập nhật trang của bạn",
+  "actions": {
+    "menu": "Thực đơn",
+    "call": "Gọi",
+    "message": "Nhắn tin",
+    "share": "Chia sẻ",
+    "order": "Đặt món"
+  },
+  "loadingSchedule": "Đang tải lịch bán…",
+  "loadError": {
+    "title": "Không tải được",
+    "body": "Hiện chưa tải được lịch bán — thường chỉ là trục trặc tạm thời. Vui lòng thử lại.",
+    "retry": "Thử lại"
+  },
+  "notFound": {
+    "title": "Không tìm thấy xe",
+    "body": "Chúng tôi không tìm thấy thông tin nào về xe food truck này. Có thể họ đã chuyển đi hoặc cập nhật trang.",
+    "cta": "Xem tất cả các xe"
+  },
+  "noEvents": {
+    "title": "Chưa có sự kiện sắp tới",
+    "body": "Có thể chúng tôi còn thiếu thông tin về xe này. Bạn là chủ xe, hay bạn biết lịch bán của họ?",
+    "cta": "Nhắn cho chúng tôi để cập nhật!"
+  },
+  "whereToFind": "Tìm chúng tôi ở đâu",
+  "missingEvent": "<strong>Chúng tôi còn thiếu sự kiện?</strong> <br></br>Nếu bạn là chủ xe này hoặc là fan ruột, hãy giúp chúng tôi giữ trang này luôn chính xác! <br></br><link>Liên hệ để bổ sung thông tin còn thiếu.</link>",
+  "weeklySchedule": "Nhận lịch bán hằng tuần 🍕"
+}

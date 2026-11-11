@@ -1,0 +1,47 @@
+{
+  "meta": {
+    "fallbackTitle": "餐車 | Village Foodie",
+    "hgFallbackTitle": "餐車",
+    "orderTitle": "{truck} 線上點餐",
+    "orderDescription": "先向 {truck} 預約點餐，再到餐車自取。",
+    "title": "{truck} | Village Foodie",
+    "logoAlt": "{truck} 標誌"
+  },
+  "shareTitle": "{truck} 出攤行程",
+  "shareText": "看看 {truck} 下一站在哪裡擺攤！🚚",
+  "linkCopied": "已複製店家頁面連結！📋",
+  "facebookPage": "Facebook 粉絲專頁",
+  "loadingMap": "地圖載入中…",
+  "view": {
+    "list": "列表",
+    "map": "地圖"
+  },
+  "ownThisTruck": "你是這台餐車的老闆嗎？",
+  "ownThisTruckTitle": "你是這台餐車的老闆嗎？點擊更新你的店家資料",
+  "actions": {
+    "menu": "菜單",
+    "call": "致電",
+    "message": "傳訊息",
+    "share": "分享",
+    "order": "點餐"
+  },
+  "loadingSchedule": "行程載入中…",
+  "loadError": {
+    "title": "無法載入",
+    "body": "目前無法載入行程，通常只是暫時的小問題，請再試一次。",
+    "retry": "重試"
+  },
+  "notFound": {
+    "title": "找不到餐車",
+    "body": "我們找不到這台餐車的任何資訊。他們可能已經搬遷，或更新了店家資料。",
+    "cta": "查看所有餐車"
+  },
+  "noEvents": {
+    "title": "找不到即將到來的活動",
+    "body": "這台餐車的部分資訊可能還沒更新。你是老闆，或知道他們的行程嗎？",
+    "cta": "傳訊息給我們來更新！"
+  },
+  "whereToFind": "在哪裡找到我們",
+  "missingEvent": "<strong>我們漏掉了哪場活動嗎？</strong> <br></br>如果你是這台餐車的老闆，或只是忠實粉絲，請幫我們讓這個頁面保持正確！<br></br><link>聯絡我們補上缺少的資訊。</link>",
+  "weeklySchedule": "取得每週行程 🍕"
+}

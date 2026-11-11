@@ -1,0 +1,70 @@
+{
+  "error": {
+    "generic": "Došlo je do greške",
+    "previewFailed": "Pregled nije mogao da se napravi",
+    "loadFailed": "Učitavanje nije uspelo",
+    "tooBig": "Ta slika ima {size, number, ::.0 group-off} MB. Ograničenje je 10 MB.",
+    "wrongType": "Izaberite PNG ili JPG.",
+    "uploadIncomplete": "Otpremanje nije završeno",
+    "uploadFailed": "Otpremanje nije uspelo",
+    "saveFailed": "Čuvanje nije uspelo",
+    "buildFailed": "Nije moguće napraviti objavu",
+    "copyFailed": "Kopiranje nije uspelo — označite tekst i kopirajte ga ručno."
+  },
+  "loading": "Učitavanje…",
+  "missingTable": {
+    "title": "Za nedeljnu objavu potrebno je ažuriranje baze podataka",
+    "body": "Tabela za dizajn još nije napravljena. Kada se migracija primeni, ovaj ekran će raditi."
+  },
+  "kind": {
+    "label": "Koji dizajn",
+    "event": "Pojedinačni događaj",
+    "week": "Nedeljni"
+  },
+  "setup": {
+    "title": "Podesite svoju nedeljnu objavu",
+    "intro": "Otpremite praznu verziju grafike sa nedeljnim rasporedom koju već pravite — isti dizajn, bez vaših tekstualnih polja. HatchGrab popunjava nedelju na osnovu vašeg rasporeda.",
+    "canvaTitle": "Kako da izvezete praznu verziju iz Canve",
+    "canvaStep1": "Otvorite svoj uobičajeni dizajn nedeljnog rasporeda.",
+    "canvaStep2": "Obrišite tekstualna polja sa datumima, mestima i vremenima — ostavite pozadinu i naslove koje želite da zadržite.",
+    "canvaStep3": "Podeli (Share) › Preuzmi (Download) › PNG.",
+    "uploading": "Otpremanje…",
+    "upload": "Otpremi praznu sliku",
+    "uploadHint": "PNG ili JPG, do 10 MB, najmanje {px} px po kraćoj strani.",
+    "phoneTip": "Najbolje na računaru ili iPadu — polja su mala za prevlačenje na telefonu.",
+    "designName": "Dizajn nedeljne objave",
+    "backDesigns": "‹ Dizajni",
+    "back": "‹ Nazad",
+    "pictureNote": "Vaša slika bez ikakvog datuma ili mesta. To dodajemo mi.",
+    "saved": "Dizajn je sačuvan."
+  },
+  "week": {
+    "this": "Ove nedelje",
+    "next": "Sledeće nedelje"
+  },
+  "post": {
+    "title": "Vaša nedeljna objava",
+    "editDesign": "Izmeni dizajn",
+    "weekOf": "nedelja od {date}",
+    "imageAlt": "Vaša nedeljna objava",
+    "building": "Pravimo vašu objavu…",
+    "updating": "Ažuriranje…",
+    "eventsTitle": "Događaji ove nedelje",
+    "noEvents": "Nema događaja ove nedelje.",
+    "eventDateCancelled": "{date} · otkazano",
+    "showCancelled": "Prikaži otkazane događaje",
+    "showPrivate": "Prikaži privatne događaje",
+    "privateHint": "Prikazuju se kao „Privatni događaj“ sa datumom i vremenom — nikada sa mestom.",
+    "noteTitle": "Napomena",
+    "notePlaceholder": "npr. Poručite unapred i preuzmite lično",
+    "noteHint": "Prikazuje se u opisu, kao i u polju za napomenu ako ste ga postavili.",
+    "captionTitle": "Opis za vašu stranicu",
+    "perEventTitle": "Objava za svaki događaj",
+    "nothingToPost": "Ove nedelje nema šta da se objavi.",
+    "textCopied": "Tekst je kopiran.",
+    "copyText": "Kopiraj tekst",
+    "image": "Slika",
+    "share": "Podeli",
+    "noOrderLink": "Još nema linka za poručivanje — podesite veb adresu food trucka u Podešavanjima."
+  }
+}

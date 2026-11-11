@@ -1,0 +1,9 @@
+{
+  "subject": "Demo HatchGrab Anda — ini link untuk kembali",
+  "heading": "Demo Anda tersimpan",
+  "intro": "Ini link untuk kembali ke demo berisi menu Anda. Tanpa perlu masuk akun — cukup ketuk.",
+  "button": "Buka demo saya",
+  "freshDay": "Setiap kali Anda kembali, kami siapkan hari jualan yang baru agar ada yang bisa dicoba.",
+  "deletion": "Ini demo, jadi tidak kami simpan selamanya — kami akan menghapusnya beserta menunya pada\n                <b>{date}</b> ({days, plural, one {# hari} other {# hari}}). Jika Anda mendaftar sebelum\n                itu, menu Anda ikut terbawa.",
+  "notSent": "Tersimpan, tetapi email tidak dapat dikirim saat ini."
+}

@@ -100,11 +100,14 @@ function badgesOf(html) {
   t('as live (only the UK has the apps): /uk shows both English badges, /us none', ukLive.list.length === 2 && ukLive.list[0].src === M.APPLE_ENGLISH.src && ukLive.list[1].src === M.GOOGLE_ENGLISH.src && usLive.list.length === 0 && !usLive.wrap)
 
   head('3 · the language lookup')
-  t('every one of the 28 bases has its own Apple and Google file', M.LANGUAGE_BASES.every(l => M.APPLE_BADGES[l] && M.GOOGLE_BADGES[l]) && Object.keys(M.APPLE_BADGES).length === 28 && Object.keys(M.GOOGLE_BADGES).length === 28)
+  // ⚠️ RE-PINNED (languages-world-1, 10 November 2026): 36 bases. Apple publishes no Icelandic or Serbian badge, so is-IS and sr-RS have a
+  // Google file only and read Apple's English one (public/badges/README.md).
+  const APPLE_NONE = ['is-IS', 'sr-RS']
+  t('every one of the 36 bases has its own Google file, and its own Apple file except is-IS / sr-RS (Apple has none)', M.LANGUAGE_BASES.length === 36 && M.LANGUAGE_BASES.every(l => (APPLE_NONE.includes(l) ? !M.APPLE_BADGES[l] : !!M.APPLE_BADGES[l]) && M.GOOGLE_BADGES[l]) && Object.keys(M.APPLE_BADGES).length === 34 && Object.keys(M.GOOGLE_BADGES).length === 36)
   for (const [variant, base] of [['de-AT', 'de-DE'], ['de-CH', 'de-DE'], ['de-LI', 'de-DE'], ['es-MX', 'es-ES'], ['fr-LU', 'fr-FR'], ['nl-BE', 'nl-NL'], ['el-CY', 'el-GR']])
     t(`${variant} reads ${base}'s badges`, M.badgeFor('apple', variant).src === M.APPLE_BADGES[base].src && M.badgeFor('google', variant).src === M.GOOGLE_BADGES[base].src)
   t('every English locale reads the English files (unchanged names)', M.LOCALES.filter(l => l.startsWith('en-')).every(l => M.badgeFor('apple', l).src === '/badges/Download_on_the_App_Store_Badge_US-UK_RGB_blk_092917.svg' && M.badgeFor('google', l).src === '/badges/GetItOnGooglePlay_Badge_Web_color_English.svg'))
-  t('no language falls back to English (both vendors had all 28) — and an unknown one would', M.LANGUAGE_BASES.every(l => M.badgeFor('apple', l) !== M.APPLE_ENGLISH && M.badgeFor('google', l) !== M.GOOGLE_ENGLISH) && M.badgeFor('apple', 'xx-XX') === M.APPLE_ENGLISH)
+  t('no language falls back to English except Apple for is-IS / sr-RS — and an unknown one would', M.LANGUAGE_BASES.every(l => (APPLE_NONE.includes(l) ? M.badgeFor('apple', l) === M.APPLE_ENGLISH : M.badgeFor('apple', l) !== M.APPLE_ENGLISH) && M.badgeFor('google', l) !== M.GOOGLE_ENGLISH) && M.badgeFor('apple', 'xx-XX') === M.APPLE_ENGLISH)
   t('the English files are where they were, byte for byte (git)', execFileSync('git', ['diff', '--stat', HEAD_COMMIT, '--', 'public/badges/Download_on_the_App_Store_Badge_US-UK_RGB_blk_092917.svg', 'public/badges/Download_on_the_App_Store_Badge_US-UK_RGB_wht_092917.svg', 'public/badges/GetItOnGooglePlay_Badge_Web_color_English.svg'], { cwd: REPO }).toString().trim() === '')
   t('GOOGLE_PLAY_URL has no hl; the App Store link logic is unchanged', M.GOOGLE_PLAY_URL === 'https://play.google.com/store/apps/details?id=com.hatchgrab.app' && M.appStoreUrlFor('GB') === 'https://apps.apple.com/gb/app/hatchgrab/id6803543106' && M.appStoreUrlFor('DE') === 'https://apps.apple.com/app/id6803543106' && M.appStoreUrlFor(null) === M.APP_STORE_URL)
 
@@ -156,7 +159,8 @@ function badgesOf(html) {
   head('6 · every badge file as downloaded')
   // ⚠️ RE-PINNED (badges-manual-1, 8 November 2026): Google's badges are now its own full-bleed SVGs (27 languages, from the Google Play
   // Partner Marketing Hub, partnermarketinghub.withgoogle.com) — zh-HK alone keeps its PNG, with its transparent margin as `inset`.
-  t(`56 files in the manifest (28 Apple SVG; Google: 27 SVG + the zh-HK PNG), downloaded ${MAN.downloaded} / 2026-11-08`, MAN.files.length === 56 && MAN.files.filter(f => f.vendor === 'apple').every(f => f.file.endsWith('.svg')) && MAN.files.filter(f => f.vendor === 'google').every(f => f.file.endsWith(f.locale === 'zh-HK' ? '.png' : '.svg')))
+  // languages-world-1 (10 November 2026): + 14 (6 Apple, 8 Google), downloaded 2026-11-10.
+  t(`70 files in the manifest (34 Apple SVG; Google: 35 SVG + the zh-HK PNG), downloaded ${MAN.downloaded} / 2026-11-08 / 2026-11-10`, MAN.files.length === 70 && MAN.files.filter(f => f.vendor === 'apple').every(f => f.file.endsWith('.svg')) && MAN.files.filter(f => f.vendor === 'google').every(f => f.file.endsWith(f.locale === 'zh-HK' ? '.png' : '.svg')))
   const bad = MAN.files.filter(f => { const b = fs.readFileSync(path.join(REPO, 'public', f.file)); return b.length !== f.bytes || sha(b) !== f.sha256 })
   t('every file\'s sha256 and size on disk match what was downloaded', bad.length === 0, bad.map(f => f.file))
   t('every source is a vendor host (apple.com, google.com, Google\'s Partner Marketing Hub withgoogle.com)', MAN.files.every(f => /^https:\/\/([a-z0-9-]+\.)*(apple\.com|google\.com|withgoogle\.com)\//.test(f.source)))
@@ -164,7 +168,7 @@ function badgesOf(html) {
   t('Google: the dimensions recorded are the files\' own (an SVG\'s viewBox; the zh-HK PNG\'s pixels, at least 3× the 40px height)', MAN.files.filter(f => f.vendor === 'google').every(f => { const b = fs.readFileSync(path.join(REPO, 'public', f.file)); if (f.file.endsWith('.svg')) { const vb = /viewBox="0 0 ([\d.]+) ([\d.]+)"/.exec(b.toString('utf8')); return vb && Number(vb[1]) === f.width && Number(vb[2]) === f.height } return b.readUInt32BE(16) === f.width && b.readUInt32BE(20) === f.height && f.height >= 120 }))
   t('lib/store-badge-files.ts carries the manifest\'s dimensions, file for file', MAN.files.every(f => { const e = (f.vendor === 'apple' ? M.APPLE_BADGES : M.GOOGLE_BADGES)[f.locale]; return e && e.src === f.file && e.width === f.width && e.height === f.height }))
   const readme = read('public/badges/README.md')
-  t('public/badges/README.md lists every file with its language, source URL and date', MAN.files.every(f => readme.includes(`\`${f.file.replace('/badges/', '')}\``) && readme.includes(f.source)) && readme.includes('| 2026-11-02 |') && readme.includes('| 2026-11-08 |'))
+  t('public/badges/README.md lists every file with its language, source URL and date', MAN.files.every(f => readme.includes(`\`${f.file.replace('/badges/', '')}\``) && readme.includes(f.source)) && readme.includes('| 2026-11-02 |') && readme.includes('| 2026-11-08 |') && readme.includes('| 2026-11-10 |'))
 
   console.log(`\nstore-badges-1: ${pass} passed, ${fail} failed`)
   process.exit(fail ? 1 : 0)

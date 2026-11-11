@@ -1,0 +1,25 @@
+{
+  "heading": "Vikan {start} – {end}",
+  "daysOff": "Engin sala í dag",
+  "cancelled": "AFLÝST",
+  "placeSample": {
+    "nameTownBelow": "Bæjarkráin\nSelfoss",
+    "nameTown": "Bæjarkráin, Selfoss",
+    "nameOnly": "Bæjarkráin"
+  },
+  "busyWeek": {
+    "venue1": "Félagsheimilið",
+    "town1": "Selfoss",
+    "venue2": "Íþróttasvæði og leikvöllur ungmennafélagsins við Fagralund",
+    "town2": "Kópavogur",
+    "venue3": "Ráðhústorg",
+    "town3": "Akureyri",
+    "venue4": "Matarhátíð",
+    "town4": "Hafnarfjörður",
+    "venue5": "Hlemmur Mathöll",
+    "town5": "Reykjavík",
+    "venue6": "Kirkjutúnið",
+    "town6": "Egilsstaðir"
+  },
+  "poweredBy": "Knúið af HatchGrab"
+}

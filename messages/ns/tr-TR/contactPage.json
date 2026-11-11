@@ -1,0 +1,52 @@
+{
+  "meta": {
+    "title": "Destek",
+    "description": "HatchGrab ile ilgili yardım alın. Bize bir mesaj gönderin, size e-postayla dönüş yapalım."
+  },
+  "logIn": "Giriş yap",
+  "eyebrow": "Destek",
+  "title": "Size nasıl yardımcı olabiliriz?",
+  "lede": "Bir şey çalışmıyor mu, ya da hesabınızla ilgili bir sorunuz mu var? Bize iki şekilde ulaşabilirsiniz — her iki durumda da size e-postayla dönüş yaparız.",
+  "emailUs": "Bize e-posta gönderin",
+  "formHeading": "Ya da bize mesaj gönderin",
+  "form": {
+    "topicLabel": "Konu nedir?",
+    "topics": {
+      "question": "HatchGrab hakkında bir soru",
+      "account": "Hesabımla ilgili yardım",
+      "comparison": "Bir karşılaştırma sayfasında düzeltme",
+      "other": "Başka bir konu"
+    },
+    "nameLabel": "Adınız",
+    "namePlaceholder": "Ad",
+    "emailLabel": "E-posta",
+    "businessLabel": "Food truck ya da işletme adı",
+    "optional": "(isteğe bağlı)",
+    "businessPlaceholder": "ör. Lezzet Durağı",
+    "messageLabel": "Mesajınız",
+    "send": "Mesajı gönder",
+    "sending": "Gönderiliyor…",
+    "privacyLine": "Bilgilerinizi yalnızca size yanıt vermek için kullanırız.",
+    "privacyLink": "Gizlilik politikası",
+    "thanksTitle": "Teşekkürler — mesajınız bize ulaştı.",
+    "thanksBody": "Verdiğiniz adrese e-postayla yanıt vereceğiz.",
+    "errors": {
+      "nameRequired": "Lütfen adınızı girin.",
+      "nameTooLong": "Lütfen adınızı en fazla {max, number} karakterle sınırlayın.",
+      "emailRequired": "Lütfen e-posta adresinizi girin.",
+      "emailInvalid": "Lütfen geçerli bir e-posta adresi girin.",
+      "emailTooLong": "Lütfen en fazla {max, number} karakterlik bir e-posta adresi kullanın.",
+      "businessRequired": "Hesabınızı bulabilmemiz için lütfen food truck ya da işletme adınızı girin.",
+      "businessTooLong": "Lütfen food truck ya da işletme adını en fazla {max, number} karakterle sınırlayın.",
+      "messageTooShort": "Lütfen en az {min, number} karakter yazın.",
+      "messageTooLong": "Lütfen mesajınızı en fazla {max, number} karakterle sınırlayın.",
+      "topicInvalid": "Lütfen mesajınızın konusunu seçin.",
+      "rateLimited": "Şimdiden birkaç mesaj gönderdiniz — lütfen daha sonra tekrar deneyin ya da bize e-posta gönderin: {email}",
+      "failed": "Bir sorun oluştu — lütfen bize e-posta gönderin: {email}"
+    }
+  },
+  "privacy": "Gizlilik",
+  "terms": "Koşullar",
+  "about": "Hakkımızda",
+  "copyright": "© {year} HatchGrab"
+}

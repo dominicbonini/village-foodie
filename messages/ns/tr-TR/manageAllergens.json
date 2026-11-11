@@ -1,0 +1,117 @@
+{
+  "cardEditor": {
+    "title": "Alerjen kartınız",
+    "intro": "Müşteriler bunu <b>tam olarak sizin yazdığınız gibi</b> görür — hiçbir şey yeniden yazılmaz. Aşağıya yazın veya yapıştırın ya da bir fotoğraf/PDF yükleyin; metni sizin kontrol etmeniz için biz okuyalım.",
+    "empty": "Henüz alerjen kartı yok.",
+    "placeholder": "ör. Tüm balık ve patates kızartmalarımız buğday ve süt içerir. Fritöz, gluten ve kuruyemiş içeren ürünlerle ortak kullanılır. Vegan seçeneklerimiz var — personelimize sorun.",
+    "reading": "Görsel okunuyor…",
+    "upload": "📷 Görsel / PDF yükle",
+    "uploadNote": "Metni görselinizden okuruz, siz de kontrol edersiniz — görsel saklanmaz."
+  },
+  "cardUpload": {
+    "dishFallback": "Ürün",
+    "question": "Yüklemek istediğiniz bir alerjen kartınız var mı?",
+    "perDish": "{detected, select, yes {Bir kart yükleyin, ürünlerinizin alerjenlerini oluşturmak için kullanalım. Algılanan alerjenler, her ürünü onaylayacağınız sonraki sayfada görünecek.} other {Bir kart yükleyin, ürünlerinizin alerjenlerini oluşturmak için kullanalım.}}",
+    "cardOnly": "Müşterilerin göreceği alerjen kartını yükleyin.",
+    "yes": "Evet",
+    "no": "Hayır",
+    "noProblem": "Sorun değil — kart şart değil. Aşağıdaki düğmeyle devam edin.",
+    "analysing": "Kart inceleniyor…",
+    "dropzone": "Sürükleyip bırakın ya da seçmek için dokunun",
+    "imageOrPdf": "Görsel veya PDF",
+    "or": "veya",
+    "pastePlaceholder": "Alerjen kartınızın metnini buraya yapıştırın…",
+    "process": "Kartı işle",
+    "cardRead": "Kart okundu ✓",
+    "unmatchedHeading": "Bunlar otomatik eşleştirilemedi — atayın veya yok sayın",
+    "quotedName": "“{name}”",
+    "ambiguous": "Belirsiz — birkaç ürünle eşleşiyor; doğru olanı seçin.",
+    "assignTo": "Ürüne ata…",
+    "dismiss": "Yok say",
+    "blanket": "Kartta <b>{list}</b> maddelerinin <b>tüm</b> ürünlerde bulunabileceği yazıyor. Her ürüne eklensin mi? (yine de her birini ayrıca onaylayacaksınız) <muted>— varsayılan olarak kapalı</muted>",
+    "kitchenNotes": "Mutfak notları (alerjen bilgilerinize kaydedilir)",
+    "matchSummary": "{n, plural, =0 {{matched} öğe bir ürünle eşleşti.} one {{matched} öğe bir ürünle eşleşti. {count} öğeyi sizin atamanız gerekiyor.} other {{matched} öğe bir ürünle eşleşti. {count} öğeyi sizin atamanız gerekiyor.}}"
+  },
+  "savedCard": {
+    "showLess": "Daha az göster",
+    "showMore": "Daha fazla göster",
+    "fileOnly": "Bu food truck için bir kart dosyası kayıtlı, ancak özet metin saklanmamış. Okumak için orijinalini açın.",
+    "viewOriginal": "Orijinal kartı görüntüle"
+  },
+  "wizard": {
+    "toast": {
+      "readFailed": "Alerjen kartı okunamadı — tekrar deneyin",
+      "confirmed": "Onaylandı: {name}",
+      "undo": "Geri al",
+      "saveFailed": "Kaydedilemedi — lütfen tekrar deneyin",
+      "imageFailed": "Bu görsel okunamadı — bunun yerine kartınızı yazın veya yapıştırın",
+      "cardRead": "{n, plural, one {Kart okundu — {matched} eşleşti, {count} öğe atama bekliyor} other {Kart okundu — {matched} eşleşti, {count} öğe atama bekliyor}}"
+    },
+    "genericWarn": {
+      "text": "“{generic}” algılandı ancak yeterince belirgin değil. Bu üründe {family} varsa şu seçenekleri işaretleyin: {picks} — yoksa işaretlemeden bırakın.",
+      "andOr": "{a} ve/veya {b}"
+    },
+    "badge": {
+      "justConfirmed": "✓ Onaylandı",
+      "confirmed": "Onaylandı",
+      "needsReview": "İnceleme gerekiyor"
+    },
+    "confirm": {
+      "confirming": "Onaylanıyor…",
+      "confirmed": "Onaylandı ✓",
+      "confirm": "Onayla",
+      "changed": "· değişti",
+      "changedTitle": "Son onayınızdan sonra düzenlendi — tekrar onaylayın"
+    },
+    "allergens": "Alerjenler",
+    "dietary": "Beslenme tercihleri",
+    "uncategorised": "Kategorisiz",
+    "review": {
+      "progress": "{confirmed} / {total} onaylandı",
+      "allConfirmed": "✓ Tümü onaylandı",
+      "list": "Liste",
+      "table": "Tablo",
+      "detected": "Menünüzden algılandı — <b>bunları kontrol edin</b>. Her ürünü onaylayana kadar alerjenler müşterilerden gizli kalır.",
+      "viewOnly": "👁 Yalnızca görüntüleme — alerjenleri yalnızca hesap sahibi onaylayabilir veya değiştirebilir.",
+      "emptyTitle": "Menü ürünü yok",
+      "emptyBody": "Önce menü ürünlerini ekleyin, ardından alerjenlerini burada ayarlayın.",
+      "dish": "Ürün",
+      "status": "Durum"
+    },
+    "cardPanel": {
+      "reading": "Alerjen bilgileri okunuyor…",
+      "saved": "🛡️ Alerjen kartı kaydedildi",
+      "viewOriginal": "Orijinal kartı görüntüle",
+      "replace": "Kartı değiştir",
+      "uploadHelp": "Alerjen kartınızı (fotoğraf/PDF) yükleyin veya alerjen bilgilerinizi yapıştırın — yapay zekâmız bunu müşteriler için düzenler.",
+      "add": "Alerjen kartı ekle",
+      "viewOnly": "👁 Yalnızca görüntüleme — alerjen kartını yalnızca hesap sahibi ekleyebilir.",
+      "intro": "Müşteriler bu kartı menünün alerjen başvuru kaynağı olarak görür. Yalnızca kart modunda ürün bazında alerjenler gizli kalır (ileride ürün bazında moda geçerseniz diye ürün verileriniz saklanır)."
+    },
+    "subtitle": {
+      "choose": "Müşterilerin alerjen bilgilerini nasıl göreceğini seçin",
+      "card": "Alerjen kartınızı ekleyin",
+      "cardOptional": "Alerjen kartı ekleyin (isteğe bağlı)",
+      "review": "Her ürünü kontrol edip onaylayın"
+    },
+    "heading": {
+      "import": "Alerjenler",
+      "standalone": "Alerjen ayarları"
+    },
+    "nav": {
+      "next": "İleri →",
+      "back": "← Geri",
+      "skip": "Şimdilik atla",
+      "saving": "Kaydediliyor…",
+      "done": "Bitti",
+      "saveLater": "Kaydet ve sonra bitir",
+      "close": "Kapat",
+      "finish": "Bitir",
+      "skipImport": "Alerjen ayarlarını şimdilik atla"
+    },
+    "hint": {
+      "skipDefers": "Atlamak işi erteler — onaylamadığınız ürünler, alerjenleri onaylanana kadar müşterilerden gizli kalır.",
+      "importIncomplete": "Devam etmek için her ürünü onaylayın — ya da “Alerjen ayarlarını şimdilik atla”."
+    }
+  }
+}

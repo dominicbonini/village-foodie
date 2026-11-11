@@ -1,0 +1,9 @@
+{
+  "title": "Paket dan fitur",
+  "generated": "Dibuat {date}",
+  "allowanceHeading": "Kuota pesanan online",
+  "smallPrint": "Ketentuan",
+  "priceNoteMasked": "Harga bertanda “Menyusul” belum diumumkan.",
+  "omitNote": "Harga sengaja tidak dicantumkan dalam dokumen ini.",
+  "terms": "Angka-angka ini adalah ketentuan paket yang berlaku pada tanggal di atas dan dapat berubah. Biaya pemrosesan kartu adalah biaya dari Stripe sendiri, bukan dari HatchGrab. Dokumen ini adalah ringkasan, bukan kontrak."
+}

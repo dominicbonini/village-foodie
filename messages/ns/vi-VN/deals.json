@@ -1,0 +1,17 @@
+{
+  "back": "← Quay lại",
+  "title": "Chọn ưu đãi",
+  "save": "Tiết kiệm {amount}",
+  "selectItems": "Chọn món cho từng phần",
+  "choose": "Chọn {category}…",
+  "inYourBasket": "── Trong giỏ hàng ──",
+  "basketUnit": "{name}{withMods, select, yes { (+ {mods})} other {}} (trong giỏ){state, select, used { — đã dùng trong ưu đãi} taken { — đã chọn ở phần khác} other {}}",
+  "addNew": "── Thêm mới ──",
+  "itemWithPrice": "{name} {price}",
+  "ruleHint": "· {rule, select, requiredOne {Bắt buộc · chọn một} required {Bắt buộc} other {Chọn một}}{unmet, select, yes { (bắt buộc)} other {}}",
+  "notePlaceholder": "Thêm ghi chú, ví dụ: không hành (không bắt buộc)",
+  "backButton": "Quay lại",
+  "cancel": "Hủy",
+  "chooseRequired": "Chọn các tùy chọn bắt buộc",
+  "apply": "Áp dụng ưu đãi · {amount}"
+}

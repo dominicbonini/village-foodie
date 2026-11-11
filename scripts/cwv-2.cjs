@@ -122,7 +122,7 @@ const SF = read('lib/script-fonts.ts'), PS = read('lib/public-script.ts')
 const chain = s => (s.match(/const l = String\(lang \?\? ''\)\.toLowerCase\(\)\n\s*if \(\/\^\(el\|bg\)\(-\|\$\)\/\.test\(l\)\) return (\S+)\n\s*return l\.startsWith\('ja'\) \? (\S+) : l\.startsWith\('zh'\) \? (\S+) : l\.startsWith\('th'\) \? (\S+) : l\.startsWith\('ar'\) \? (\S+) : null/) || []).slice(1)
 t('lib/public-script.ts answers the language test of lib/script-fonts.ts, line for line (greek-cyrillic, ja, zh-hk, th, ar)',
   J(chain(SF)) === J(['greekCyrillic.variable', 'ja.variable', 'zhHk.variable', 'th.variable', 'ar.variable']) && J(chain(PS)) === J(["'greek-cyrillic'", "'ja'", "'zh-hk'", "'th'", "'ar'"])
-  && /isRtl = \(lang: string \| null \| undefined\): boolean => \/\^ar\(-\|\$\)\/i\.test/.test(SF) && /isRtlLang = \(lang: string \| null \| undefined\): boolean => \/\^ar\(-\|\$\)\/i\.test/.test(PS))
+  && /isRtl = \(lang: string \| null \| undefined\): boolean => \/\^\(ar\|he\)\(-\|\$\)\/i\.test/.test(SF) && /isRtlLang = \(lang: string \| null \| undefined\): boolean => \/\^\(ar\|he\)\(-\|\$\)\/i\.test/.test(PS))   // ⚠️ RE-PINNED (languages-world-1): + Hebrew
 const callOf = (src, fn) => (src.match(new RegExp(`${fn}\\((\\{[^)]*\\})\\)`)) || [])[1]
 const FONTS = { 'greek-cyrillic': 'Noto_Sans', ja: 'Noto_Sans_JP', 'zh-hk': 'Noto_Sans_HK', th: 'Noto_Sans_Thai', ar: 'Noto_Sans_Arabic' }
 t('each script\'s own module makes lib/script-fonts.ts\'s font call exactly (family, subsets, variable, no preload, swap)',

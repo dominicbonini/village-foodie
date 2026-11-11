@@ -1,0 +1,38 @@
+{
+  "newEmail": {
+    "subject": "Yeni HatchGrab e-posta adresinizi doğrulayın",
+    "heading": "E-posta adresinizi doğrulayın",
+    "button": "E-posta adresini doğrula"
+  },
+  "changeEmail": {
+    "requested": "HatchGrab e-posta adresinizi bu adresle değiştirmeyi talep ettiniz.",
+    "click": "Doğrulamak için aşağıdaki düğmeye tıklayın. Bu bağlantının süresi 24 saat içinde dolar.",
+    "ignore": "Bu değişikliği siz talep etmediyseniz bu e-postayı güvenle yok sayabilirsiniz.",
+    "stillActive": "Mevcut e-posta adresiniz etkin kalır."
+  },
+  "resendVerification": {
+    "requested": "HatchGrab e-postanızı bu adresle değiştirmeyi talep ettiniz.",
+    "click": "Doğrulamak için aşağıya tıklayın. Bu bağlantının süresi 24 saat içinde dolar.",
+    "ignore": "Bunu siz talep etmediyseniz bu e-postayı yok sayın.",
+    "stillActive": "Mevcut e-postanız etkin kalır."
+  },
+  "passwordReset": {
+    "subject": "HatchGrab şifrenizi sıfırlayın",
+    "heading": "Şifrenizi sıfırlayın",
+    "requested": "HatchGrab hesabınızın şifresini sıfırlamak için bir talep aldık.",
+    "click": "Yeni bir şifre seçmek için aşağıdaki düğmeye tıklayın. Bu bağlantının süresi 1 saat içinde dolar.",
+    "button": "Şifreyi sıfırla",
+    "ignore": "Bunu siz talep etmediyseniz bu e-postayı güvenle yok sayabilirsiniz.",
+    "unchanged": "Yukarıdaki bağlantıya tıklayana kadar şifreniz değişmez."
+  },
+  "deletionScheduled": {
+    "subject": "HatchGrab hesabınız silinmek üzere planlandı",
+    "received": "Bu HatchGrab hesabını silmek için bir talep aldık.",
+    "orderingStopped": "<b>Online sipariş alımı hemen durduruldu</b>: {trucks}.",
+    "noTrucks": "(food truck yok)",
+    "readable": "Paneliniz önümüzdeki\n    {days, plural, one {# gün} other {# gün}} boyunca okunabilir durumda kalır.",
+    "scheduled": "Hesabın silinme tarihi: <b>{date}</b>.",
+    "cannotCancel": "<b>Bu işlem uygulama içinden iptal edilemez.</b> Bu talebi siz yapmadıysanız ya da\n    fikrinizi değiştirdiyseniz, bu e-postayı en kısa sürede yanıtlayın.",
+    "kept": "Hesap silindiğinde kişisel bilgilerinizi ve müşterilerinizin bilgilerini kaldırırız. Yasal olarak saklamakla\n    yükümlü olduğumuz anonim muhasebe kayıtlarını tutarız."
+  }
+}

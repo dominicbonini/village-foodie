@@ -1,0 +1,106 @@
+{
+  "preview": {
+    "title": "Isprobajte pre povezivanja",
+    "intro": "Ukucajte pitanje kao što bi ga postavio kupac i vidite tačno šta bi dobio kao odgovor. Ništa se nikome ne šalje.",
+    "examples": {
+      "where": "Gde ste večeras?",
+      "doYouDo": "Imate li pljeskavicu?",
+      "menu": "Šta ima na meniju?"
+    },
+    "placeholder": "Koje deserte imate?",
+    "send": "Pošalji",
+    "empty": "Ovde će se pojaviti vaš odgovor",
+    "working": "Pripremamo odgovor…",
+    "noReply": "Nijedan odgovor ne bi bio poslat.",
+    "noReplyWhy": "To izgleda kao spam, zahtev za rezervaciju ili nešto nepovezano, pa automatski odgovor izostaje.",
+    "footnote": "Odgovore generiše veštačka inteligencija, svaki put se pomalo razlikuju i ponekad mogu biti netačni.",
+    "failed": "Pregled trenutno nije mogao da se napravi.",
+    "unreachable": "Nije moguće povezati se sa serverom. Proverite vezu i pokušajte ponovo."
+  },
+  "setup": {
+    "button": {
+      "preparing": "Priprema…",
+      "unavailable": "Nedostupno",
+      "waiting": "Čeka se Facebook prozor…",
+      "finishing": "Završavanje…",
+      "reconnect": "Ponovo poveži",
+      "setUp": "Podesi"
+    },
+    "startAgain": "Počni ispočetka",
+    "popupHint": "Ne vidite Facebook prozor? Možda je blokiran. Dozvolite iskačuće prozore za hatchgrab.com, pa pritisnite Počni ispočetka."
+  },
+  "notice": {
+    "sdkUnavailable": "Podešavanje WhatsApp-a nije dostupno u ovom okruženju.",
+    "sdkBlocked": "Skripta za prijavu kompanije Meta nije mogla da se učita. Uzrok je obično blokator reklama ili zaštita od praćenja.",
+    "setupFailed": "Podešavanje nije moglo da se završi. Ništa nije promenjeno.",
+    "setupFinished": "Podešavanje je završeno.",
+    "metaError": "Meta je prijavila problem tokom podešavanja. Ništa nije promenjeno. Pokušajte ponovo i javite nam se ako se problem ponavlja.",
+    "closed": "Podešavanje je zatvoreno pre završetka. Ništa nije promenjeno — pritisnite Podesi da pokušate ponovo.",
+    "disconnectedUnreachable": "Veza sa WhatsApp-om je prekinuta. Nismo uspeli da se povežemo sa kompanijom Meta da bismo uklonili pristup. Uklonite HatchGrab u WhatsApp Business → Settings → Account → Business Platform.",
+    "disconnected": "Veza sa WhatsApp-om je prekinuta. Automatski odgovori su zaustavljeni.",
+    "close": "Zatvori"
+  },
+  "card": {
+    "title": "Automatski odgovori",
+    "description": "Automatski odgovarajte na pitanja kupaca na društvenim mrežama, na osnovu vašeg menija i rasporeda.",
+    "channels": "Kanali",
+    "requiresAccount": "Potreban je WhatsApp Business nalog.",
+    "connected": "Povezano",
+    "popupInstruction": "Otvoriće se Facebook prozor za povezivanje vašeg WhatsApp Business naloga. Ako se ništa ne pojavi, dozvolite iskačuće prozore za hatchgrab.com u pregledaču, pa ponovo pritisnite Podesi.",
+    "switchedOff": "Automatski odgovori na WhatsApp-u su isključeni za vaš food truck.",
+    "expiring": "Vašu WhatsApp vezu uskoro treba obnoviti. Pritisnite Ponovo poveži da bi automatski odgovori nastavili da rade.",
+    "comingSoon": "Uskoro",
+    "instagram": "Automatski odgovori na direktne poruke na Instagramu. Biće potreban profesionalni Instagram nalog.",
+    "messenger": "Automatski odgovori na Facebook Messengeru. Biće potrebna Facebook stranica."
+  },
+  "blocked": {
+    "title": "Vaši odgovori se ne isporučuju",
+    "body": "WhatsApp odbija da šalje vaše automatske odgovore zbog problema sa naplatom na vašem WhatsApp Business nalogu. Kupci i dalje mogu da vam pišu i vi ćete i dalje videti sve što pošalju — ali ne dobijaju odgovor.",
+    "fix": "Ove poruke plaćate direktno WhatsApp-u, pa se ovo rešava u WhatsApp Manageru. <link>Proverite način plaćanja</link>"
+  },
+  "limit": {
+    "heading": "Automatski odgovori",
+    "label": "Mesečno ograničenje",
+    "option": "{n, number}",
+    "usage": "Iskorišćeno {used, number} od {limit, number} · resetuje se {date}",
+    "perCustomer": "Odgovori po kupcu u roku od 24 sata: najviše {n}. Posle toga stiže jedna poruka da ćete odgovoriti lično.",
+    "emailAt": "Odgovori se pauziraju kada dostignete ograničenje. Javićemo vam e-poštom na 80% i 100%.",
+    "saved": "Mesečno ograničenje odgovora je sačuvano",
+    "saveFailed": "Nije moguće sačuvati ograničenje"
+  },
+  "billing": {
+    "heading": "Naplata",
+    "paymentMethod": "Način plaćanja",
+    "added": "Način plaćanja je dodat",
+    "missing": "Nije dodat nijedan način plaćanja",
+    "addInManager": "Dodaj u WhatsApp Manageru",
+    "summary": "Odgovore naplaćuje Meta preko vašeg WhatsApp naloga, a ne HatchGrab. Od {from} prvih {free, number} odgovora mesečno je besplatno. Tačno na dan {checked}; za izmene pogledajte <link>cene kompanije Meta</link>.",
+    "howMetaCharges": "Kako Meta naplaćuje",
+    "chargesTitle": "WhatsApp odgovore naplaćuje Meta, a ne HatchGrab.",
+    "chargesBody": "Svaki odgovor koji HatchGrab pošalje umesto vas Meta naplaćuje vašem WhatsApp Business nalogu. Od {from} Meta uključuje {free, number} besplatnih odgovora mesečno po broju; posle toga se svaki odgovor naplaćuje po tarifi kompanije Meta. Odgovori koje sami pošaljete iz aplikacije WhatsApp Business ne naplaćuju se. Meta određuje ove cene i može ih menjati. <link>Pogledajte cene kompanije Meta</link>",
+    "addPaymentInManager": "Dodajte način plaćanja u WhatsApp Manageru",
+    "aboveMissing": "Vaše ograničenje je iznad broja besplatnih odgovora kompanije Meta ({free, number}). Bez načina plaćanja, Meta će zaustaviti sve odgovore kada se oni potroše.",
+    "aboveGeneral": "Vaše ograničenje je iznad broja besplatnih odgovora kompanije Meta ({free, number}). Za odgovore preko toga potreban je način plaćanja na vašem WhatsApp nalogu; bez njega Meta zaustavlja sve odgovore kada se besplatni potroše.",
+    "addPaymentMethod": "Dodaj način plaćanja"
+  },
+  "disconnect": {
+    "link": "Prekini vezu sa WhatsApp-om",
+    "title": "Prekinuti vezu sa WhatsApp-om?",
+    "body": "Automatski odgovori odmah prestaju, a HatchGrab gubi pristup vašem WhatsApp nalogu. Vaš broj i dalje radi u aplikaciji WhatsApp Business. Da biste potpuno uklonili HatchGrab, otvorite i WhatsApp Business → Settings → Account → Business Platform.",
+    "cancel": "Otkaži",
+    "confirm": "Prekini vezu",
+    "working": "Prekidanje veze…",
+    "failed": "Nije moguće prekinuti vezu"
+  },
+  "signup": {
+    "logged": "Zabeleženo.",
+    "partial": "Povezali smo vaš WhatsApp Business nalog, ali nismo mogli da završimo povezivanje. Sa vaše strane je sve u redu — javite nam se i mi ćemo to završiti.",
+    "noNumber": "Vaš WhatsApp Business nalog je povezan, ali nije stigao nijedan broj telefona. Pritisnite Ponovo poveži i završite korak sa brojem.",
+    "needsRegistering": "Vaš nalog je povezan, ali ovaj broj moramo da registrujemo mi pre nego što odgovori počnu. Obratite se podršci — vaše podešavanje je sačuvano, nemojte ga pokretati ponovo.",
+    "registerRefused": "Vaš nalog je povezan, ali Meta nije htela da registruje broj. Vaše podešavanje je sačuvano — obratite se podršci umesto da ga ponovo pokrećete.",
+    "deliveryRefused": "Vaš nalog je povezan, ali Meta nije htela da uključi isporuku poruka. Vaše podešavanje je sačuvano — obratite se podršci umesto da ga ponovo pokrećete.",
+    "numberTaken": "Taj WhatsApp broj je već povezan sa drugim HatchGrab nalogom. Jedan broj može da odgovara samo za jedan food truck. Obratite se podršci i mi ćemo ga prebaciti.",
+    "saveIncomplete": "Skoro gotovo — nismo uspeli da završimo čuvanje. Vaše podešavanje je sačuvano, obratite se podršci umesto da ga ponovo pokrećete.",
+    "connected": "WhatsApp je povezan. Automatski odgovori će početi da odgovaraju na poruke poslate na ovaj broj."
+  }
+}

@@ -1,0 +1,44 @@
+{
+  "perTruckMonth": "每台餐車／月",
+  "transactionFees": "交易手續費",
+  "comingSoon": "即將推出",
+  "footnote2Masked": "線上付款由 Stripe Connect 提供。平台費及刷卡手續費尚待確認，將於正式推出時公布。",
+  "card": {
+    "title": "帳務與付款",
+    "managed": "帳務由 HatchGrab 管理",
+    "earlyAccess": "搶先體驗期間，我們會手動設定及調整方案。",
+    "planLine": "{trial, select, yes {{truck} · {plan} 方案（試用中）} other {{truck} · {plan} 方案}}"
+  },
+  "currentPlan": "目前方案",
+  "plan": {
+    "included": "每月包含 {amount} 的線上訂單。",
+    "includedUnlimited": "包含無限制的線上訂單。",
+    "promo": "特價。",
+    "promoUntil": "特價至 {date}。",
+    "ended": "你的 {plan} 方案已於 {date} 結束。你目前使用的是 {now}。",
+    "trialMonths": "{months} 個月免費試用。"
+  },
+  "trialEnds": "試用期於 {date} 結束",
+  "yourTrialEnds": "你的試用期於 {date} 結束",
+  "notStarted": {
+    "heading": "你的免費試用尚未開始"
+  },
+  "onTrial": "你可以使用所有功能。請在試用期結束前選擇方案。",
+  "onTrialPaidEnd": "你可以使用所有功能。試用期結束後，{plan} 方案每月 {price}。我們會在那之前與你聯絡，設定付款方式。",
+  "onTrialNoCta": "你可以使用所有功能。",
+  "noCharge": "🔒 試用期間你不會被收取任何費用，試用期至 {date} 為止。只有在你選擇方案並輸入付款資料後，才會開始計費。在那之前，沒有需要取消的項目，也不需要支付任何費用。",
+  "noChargePaidEnd": "🔒 試用期間你不會被收取任何費用，試用期至 {date} 為止。",
+  "fees": "*線上訂單須支付標準刷卡手續費",
+  "setUpPayment": "⏱ 請在試用期結束前選擇方案",
+  "changeYourPlan": "變更方案",
+  "planButton": "{plan} — {price}",
+  "upgradeModal": {
+    "title": "改用 {plan}",
+    "tagline": "{price} — {description}",
+    "body": "我們正在建置自動計費功能。如果現在就想改用，請傳訊息給我們，我們會在 24 小時內為你設定完成。",
+    "mailSubject": "改用 {plan} — {truck}",
+    "mailBody": "你好，我想將 {truck} 改為 {plan}（{price}）方案。",
+    "email": "寄信給我們以改用方案",
+    "cancel": "取消"
+  }
+}

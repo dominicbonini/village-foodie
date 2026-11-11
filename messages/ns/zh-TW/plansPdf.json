@@ -1,0 +1,9 @@
+{
+  "title": "方案與功能",
+  "generated": "產生日期：{date}",
+  "allowanceHeading": "線上訂單額度",
+  "smallPrint": "注意事項",
+  "priceNoteMasked": "標示為「待定」的價格尚未公布。",
+  "omitNote": "本文件刻意不列出價格。",
+  "terms": "以上數字為上述日期時公布的方案條款，日後可能變動。刷卡手續費由 Stripe 收取，並非 HatchGrab 的費用。本文件僅為摘要，並非合約。"
+}

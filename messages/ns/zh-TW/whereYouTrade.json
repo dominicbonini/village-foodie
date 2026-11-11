@@ -1,0 +1,13 @@
+{
+  "stepHeading": "你的餐車在哪裡營業？",
+  "stepIntro": "這會決定你的幣別、價格、時區和電話格式。國家之後無法變更，因為它與你的刷卡收款綁定。",
+  "settingsHeading": "營業地區",
+  "countryLabel": "國家",
+  "countryGuessed": "我們依你目前的位置推測。如果不對，請修改。",
+  "countryLocked": "國家無法變更",
+  "townLabel": "城市或鄉鎮",
+  "townQuestion": "你所在的城市或鄉鎮",
+  "timezoneLabel": "時區",
+  "continueButton": "繼續",
+  "saveFailed": "無法儲存設定，請再試一次。"
+}

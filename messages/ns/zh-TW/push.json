@@ -1,0 +1,6 @@
+{
+  "orderPending": {
+    "title": "有新訂單待確認",
+    "body": "訂單 {number} — {truck}"
+  }
+}

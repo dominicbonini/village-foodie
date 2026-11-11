@@ -1,0 +1,136 @@
+{
+  "binary": {
+    "cameraUsage": "HatchGrab dùng camera để bạn chụp bảng thực đơn, món ăn và các tài liệu khác rồi tải thẳng lên tài khoản của bạn. Hình ảnh chỉ được dùng cho những lần tải lên mà bạn chọn.",
+    "bluetoothUsage": "HatchGrab dùng Bluetooth để kết nối với máy in hóa đơn trong bếp, giúp tự động in phiếu đơn. Không dùng cho mục đích nào khác.",
+    "localNetworkUsage": "HatchGrab kết nối với máy in trong bếp qua mạng cục bộ để tự động in phiếu đơn. Không dùng cho mục đích nào khác.",
+    "faceIdUsage": "Mở khóa HatchGrab bằng Face ID.",
+    "offlineTitle": "Không kết nối được HatchGrab",
+    "offlineDetail": "Hãy kiểm tra kết nối mạng.",
+    "retry": "Thử lại"
+  },
+  "gate": {
+    "reverted": "Đã hoàn tác đơn #{id}",
+    "saved": "Đã lưu đơn #{id}",
+    "undo": "↩ Hoàn tác",
+    "paymentNotRecorded": "⚠ Đơn #{id} — CHƯA GHI NHẬN THANH TOÁN. {collect, select, yes {Đơn đã hoàn tất} other {Đơn đã được lưu}} nhưng khoản tiền thì chưa.",
+    "recordPayment": "Ghi nhận thanh toán",
+    "paid": "Đơn #{id} đã thanh toán",
+    "undonePayment": "Đã hoàn tác — đã xóa thanh toán",
+    "undoneCollected": "Đã hoàn tác — đơn chưa được nhận",
+    "collected": "Đơn #{id} {paidToo, select, yes {đã thanh toán và đã nhận món} other {đã nhận món}}",
+    "ready": "Đơn #{id} đã xong",
+    "readyBuzzer": "Đơn #{id} đã xong · <pill></pill>",
+    "status": "Đơn #{id} {action, select, confirm {đã xác nhận} reject {đã bị từ chối} ready {đã xong} collected {đã nhận món} undo_collected {đã khôi phục} cancel {đã hủy} other {đã cập nhật}}"
+  },
+  "conflicts": {
+    "more": "+{count} đơn nữa",
+    "notOnScreenPlus": "+{count} không có trên màn hình này",
+    "notOnScreen": "{n, plural, one {{count} đơn không có trên màn hình này} other {{count} đơn không có trên màn hình này}}"
+  },
+  "banner": {
+    "paymentTitle": "⚠ CHƯA GHI NHẬN THANH TOÁN",
+    "paymentBody": "{orders} — chỉ được đánh dấu đã trả trên thiết bị này. Thanh toán chưa được ghi nhận.",
+    "paymentCheck": "Hãy kiểm tra đơn và thu tiền lại nếu khách vẫn chưa trả.",
+    "dismiss": "Bỏ qua",
+    "confirmChecked": "Xác nhận bạn đã kiểm tra {orders}",
+    "confirmHides": "Thao tác này ẩn cảnh báo. Dù thế nào, bản ghi vẫn được giữ trên thiết bị này.",
+    "notYet": "Chưa",
+    "iveChecked": "Tôi đã kiểm tra {orders}",
+    "statusBody": "⚠ {orders} — thay đổi này chưa được ghi nhận. Hãy kiểm tra đơn.",
+    "offline": "📴 Mất kết nối — {n, plural, one {đã lưu {count} thay đổi trên thiết bị này. Thay đổi sẽ được gửi khi có mạng trở lại.} other {đã lưu {count} thay đổi trên thiết bị này. Các thay đổi sẽ được gửi khi có mạng trở lại.}} Cài đặt đang bị khóa.",
+    "syncing": "Đã có mạng trở lại — đang gửi {n, plural, one {{count} thay đổi} other {{count} thay đổi}}…",
+    "synced": "Đã gửi tất cả thay đổi.",
+    "stillQueued": "{n, plural, one {Đã lưu {count} thay đổi trên thiết bị này. Vẫn đang thử gửi.} other {Đã lưu {count} thay đổi trên thiết bị này. Vẫn đang thử gửi.}}"
+  },
+  "lock": {
+    "locked": "HatchGrab đang bị khóa",
+    "verifying": "Đang xác minh…",
+    "unlock": "Mở khóa",
+    "cantUseBiometric": "Không dùng được Face / Touch ID?",
+    "enterPin": "Nhập mã PIN dự phòng của bạn",
+    "wrongPin": "Sai mã PIN — hãy thử lại.",
+    "checking": "Đang kiểm tra…",
+    "tryBiometric": "Thử dùng Face / Touch ID",
+    "forgot": "Quên mã PIN? Bạn sẽ cần cài lại ứng dụng."
+  },
+  "notify": {
+    "title": "🔔 Thông báo",
+    "intro": "Cảnh báo trên thiết bị này. Bật lên để chọn loại cảnh báo bạn muốn nhận.",
+    "refused": "Cần bật thông báo trong Cài đặt của thiết bị để dùng tính năng này.",
+    "newOrder": "Cảnh báo đơn mới",
+    "newOrderHelp": "Nhận thông báo khi có đơn của khách cần xác nhận.",
+    "offline": "Cảnh báo mất kết nối / tạm dừng",
+    "offlineHelp": "Nhận thông báo khi thiết bị này mất kết nối (và việc đặt món bị tạm dừng). <green>Hoạt động cả khi không có mạng.</green>"
+  },
+  "van": {
+    "label": "Xe",
+    "loadRetry": "Không tải được · Thử lại",
+    "select": "Chọn…"
+  },
+  "deviceSave": {
+    "network": "Không kết nối được máy chủ — hãy kiểm tra kết nối rồi thử lại.",
+    "server": "Hiện chưa lưu được. Vui lòng thử lại."
+  },
+  "setup": {
+    "fetchErrorTitle": "Không tải được thiết lập thiết bị",
+    "fetchErrorBody": "Chúng tôi không kết nối được máy chủ để thiết lập <b>thiết bị này</b>. Hãy kiểm tra kết nối rồi thử lại — đơn hàng và cài đặt của bạn không bị ảnh hưởng.",
+    "retry": "Thử lại",
+    "later": "Để sau",
+    "noVanTitle": "Chưa có xe nào đang hoạt động",
+    "noVanBody": "Food truck này chưa có xe nào đang hoạt động. Hãy kích hoạt một xe trong <b>Cài đặt → Xe của bạn</b>, sau đó thiết bị này sẽ tự thiết lập — không cần làm gì thêm ở đây.",
+    "goToVans": "Đến Cài đặt → Xe của bạn",
+    "title": "Thiết lập thiết bị này",
+    "body": "Thiết lập một lần cho <b>thiết bị này</b>: màn hình sẽ mở ra và xe mà thiết bị phục vụ. Chỉ áp dụng cho thiết bị này — các thiết bị khác được thiết lập riêng, và bạn có thể đổi sau trong menu hồ sơ → “Thiết bị này”.",
+    "whichScreen": "Thiết bị này nên mở màn hình nào?",
+    "dashboard": "Bảng điều khiển",
+    "kds": "Màn hình bếp (KDS)",
+    "whichVan": "Thiết bị này thuộc xe nào?",
+    "selectVan": "Chọn xe…",
+    "saving": "Đang lưu…",
+    "tryAgain": "Thử lại",
+    "continue": "Tiếp tục"
+  },
+  "device": {
+    "title": "Thiết bị này",
+    "viewing": "Bạn đang xem: <b>{truck}</b>",
+    "viewingVan": "Bạn đang xem: <b>{truck}</b> — <b>{van}</b>",
+    "only": "Chỉ thiết bị này — các thiết bị khác được thiết lập riêng. (ID: {id}…)",
+    "truck": "Food truck",
+    "van": "Xe",
+    "defaultScreen": "Màn hình mặc định",
+    "orderNotifications": "Thông báo đơn hàng",
+    "patchFailed": "{setting, select, van {Xe} defaultScreen {Màn hình mặc định} other {Thông báo đơn hàng}}: chưa lưu được. {reason}",
+    "requireBiometric": "Yêu cầu mở khóa bằng vân tay hoặc khuôn mặt khi mở ứng dụng",
+    "pinTitle": "Đặt mã PIN dự phòng (4–6 chữ số)",
+    "pinHelp": "Cách để vào ứng dụng nếu mở khóa bằng vân tay hoặc khuôn mặt không hoạt động — đây là phương án dự phòng duy nhất, nên đừng quên (quên mã PIN đồng nghĩa với phải cài lại ứng dụng). Hoạt động cả khi không có mạng.",
+    "pinPlaceholder": "PIN",
+    "confirmPinPlaceholder": "Nhập lại PIN",
+    "pinTooShort": "Dùng ít nhất 4 chữ số.",
+    "pinMismatch": "Mã PIN không khớp.",
+    "setPin": "Đặt PIN & bật",
+    "cancel": "Hủy",
+    "noBiometric": "Thiết bị này chưa thiết lập mở khóa bằng vân tay hoặc khuôn mặt — hãy thêm trong cài đặt thiết bị. Mã PIN dự phòng vẫn dùng được.",
+    "footer": "Các cài đặt này chỉ áp dụng cho thiết bị này — các thiết bị khác được cấu hình riêng."
+  },
+  "appLock": {
+    "unlockReason": "Mở khóa HatchGrab",
+    "usePasscode": "Dùng mật mã",
+    "cancel": "Hủy",
+    "confirmEnable": "Xác nhận để bật khóa ứng dụng"
+  },
+  "channel": {
+    "ordersName": "Đơn mới",
+    "ordersDescription": "Cảnh báo khi có đơn cần xác nhận."
+  },
+  "localNotify": {
+    "newOrderTitle": "Đơn mới",
+    "orderReceived": "Đã nhận đơn {number}",
+    "newOrders": "{n, plural, one {Bạn có một đơn mới} other {Bạn có {count} đơn mới}}"
+  },
+  "offlineAlert": {
+    "pausedTitle": "Đã tạm dừng đặt món",
+    "pausedBody": "Bạn đang mất kết nối — khách tạm thời không thể đặt món.",
+    "offlineTitle": "Bạn đang mất kết nối",
+    "offlineBody": "Thiết bị này đã mất kết nối."
+  }
+}

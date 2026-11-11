@@ -1,0 +1,26 @@
+{
+  "greeting": "{hasName, select, yes {Chào {name},} other {Xin chào,}}",
+  "signoffName": "Dominic",
+  "signoffRole": "Nhà sáng lập, HatchGrab",
+  "verify": {
+    "subject": "Xác nhận địa chỉ email của bạn",
+    "thanks": "{hasTruck, select, yes {Cảm ơn bạn đã thiết lập xe {truck} trên HatchGrab.} other {Cảm ơn bạn đã thiết lập xe của mình trên HatchGrab.}}",
+    "button": "Xác nhận địa chỉ email",
+    "buttonText": "Xác nhận địa chỉ email: {url}",
+    "why": "Đây là địa chỉ bạn dùng để đăng nhập và nhận thông báo đơn hàng — nên hãy xác nhận ngay.",
+    "next": "Khi email được xác nhận, tôi sẽ gửi bạn mọi thứ cần thiết để bắt đầu.",
+    "carryOn": "Trong lúc đó, bạn cứ tiếp tục thiết lập.",
+    "stuck": "Gặp khó ở đâu? Cứ trả lời email này — tôi tự tay trả lời.",
+    "fallbackLink": "Nếu nút không hoạt động, hãy dán link này vào trình duyệt: {url}"
+  },
+  "welcome": {
+    "subject": "{hasName, select, yes {Chào mừng bạn đến với HatchGrab, {name}} other {Chào mừng bạn đến với HatchGrab}}",
+    "intro": "{hasTruck, select, yes {Tôi rất vui được chào đón xe {truck} đến với HatchGrab.} other {Tôi rất vui được chào đón xe của bạn đến với HatchGrab.}}",
+    "trial": "{months, plural, one {Thời gian dùng thử miễn phí một tháng của bạn đã bắt đầu — mở khóa mọi tính năng.} other {Thời gian dùng thử miễn phí # tháng của bạn đã bắt đầu — mở khóa mọi tính năng.}}",
+    "setup": "Nếu bạn chưa thiết lập, việc này rất đơn giản và mất khoảng mười lăm phút.",
+    "button": "Mở bảng điều khiển",
+    "bookmark": "Nên lưu lại dấu trang. Dùng được trên mọi thiết bị.",
+    "stuck": "Cứ trả lời email này nếu bạn gặp khó — tôi tự tay trả lời.",
+    "lookingForward": "{hasTruck, select, yes {Mong sớm thấy xe {truck} mở bán.} other {Mong sớm thấy xe của bạn mở bán.}}"
+  }
+}

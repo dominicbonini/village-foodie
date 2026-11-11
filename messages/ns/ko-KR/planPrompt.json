@@ -1,0 +1,122 @@
+{
+  "includedOn": "{many, select, yes {{feature} 기능은 {plan} 요금제에 포함되어 있습니다.} other {{feature} 기능은 {plan} 요금제에 포함되어 있습니다.}}",
+  "notOnPlan": "{many, select, yes {{feature} 기능은 현재 요금제에 포함되어 있지 않습니다.} other {{feature} 기능은 현재 요금제에 포함되어 있지 않습니다.}}",
+  "switchedOff": "{many, select, yes {{feature} 기능은 사장님 푸드트럭에서 꺼져 있습니다.} other {{feature} 기능은 사장님 푸드트럭에서 꺼져 있습니다.}}",
+  "planLine": "{plan} · {price} · {description}",
+  "planLineNoPrice": "{plan} · {description}",
+  "upgrade": "업그레이드 →",
+  "features": {
+    "discovery_map": {
+      "name": "탐색 지도 등록",
+      "many": "no"
+    },
+    "web_dashboard": {
+      "name": "웹 대시보드",
+      "many": "no"
+    },
+    "ipad_kds": {
+      "name": "주방 앱",
+      "many": "no"
+    },
+    "qr_menu": {
+      "name": "QR 코드 메뉴",
+      "many": "no"
+    },
+    "meal_deals": {
+      "name": "세트 메뉴",
+      "many": "yes"
+    },
+    "upsells": {
+      "name": "추가 판매",
+      "many": "yes"
+    },
+    "walkup_orders": {
+      "name": "현장 주문",
+      "many": "yes"
+    },
+    "online_ordering_pay_at_hatch": {
+      "name": "현장 결제 주문",
+      "many": "no"
+    },
+    "sold_out_toggle": {
+      "name": "품절 전환",
+      "many": "no"
+    },
+    "stock_countdown": {
+      "name": "재고 차감",
+      "many": "no"
+    },
+    "offline_protection": {
+      "name": "오프라인 주문 보호",
+      "many": "no"
+    },
+    "online_payments": {
+      "name": "온라인 결제",
+      "many": "yes"
+    },
+    "advance_preordering": {
+      "name": "날짜 지정 미리 주문",
+      "many": "no"
+    },
+    "time_slot_selection": {
+      "name": "손님 픽업 시간대",
+      "many": "yes"
+    },
+    "smart_batch_pacing": {
+      "name": "주방 처리 용량 관리",
+      "many": "no"
+    },
+    "auto_accept": {
+      "name": "자동 접수",
+      "many": "no"
+    },
+    "instagram_messenger_replies": {
+      "name": "Messenger·Instagram 자동 응답",
+      "many": "yes"
+    },
+    "branded_qr_code": {
+      "name": "로고 QR 코드",
+      "many": "yes"
+    },
+    "advanced_reporting": {
+      "name": "고급 보고서",
+      "many": "no"
+    },
+    "ticket_printing": {
+      "name": "주방 주문서 출력",
+      "many": "no"
+    },
+    "multi_device_kds": {
+      "name": "여러 기기 주방 동기화",
+      "many": "no"
+    },
+    "cook_screen": {
+      "name": "조리 화면",
+      "many": "no"
+    },
+    "whatsapp_replies": {
+      "name": "WhatsApp 자동 응답",
+      "many": "yes"
+    },
+    "embed_schedule": {
+      "name": "내 웹사이트 일정",
+      "many": "no"
+    },
+    "schedule_graphics": {
+      "name": "SNS 게시물",
+      "many": "yes"
+    },
+    "event_types": {
+      "name": "맞춤 영업 일정 유형",
+      "many": "yes"
+    },
+    "private_events": {
+      "name": "단독 행사",
+      "many": "yes"
+    },
+    "paperwork": {
+      "name": "서류",
+      "many": "yes"
+    }
+  }
+}

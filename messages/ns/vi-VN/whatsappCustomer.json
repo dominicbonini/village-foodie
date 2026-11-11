@@ -1,0 +1,15 @@
+{
+  "greeting": "Chào bạn 👋",
+  "opener": "{greeting} ",
+  "allergenRedirect": "{opener}Bạn có thể xem toàn bộ thực đơn và thông tin chất gây dị ứng tại đây: {url} — {truck} {emoji}",
+  "menuFallback": "{opener}Bạn có thể xem toàn bộ thực đơn tại đây: {url} — {truck} {emoji}",
+  "otherCategory": "Khác",
+  "categoryFrom": "{category} từ {price}",
+  "listTwo": "{first} và {second}",
+  "listMany": "{init} và {last}",
+  "menuSummary": "{opener}Bên mình có {summary}. Xem toàn bộ thực đơn và đặt món trước tại đây: {url} — {truck} {emoji}",
+  "allergenCaveat": "Vui lòng xem kỹ thực đơn đầy đủ để biết thông tin chất gây dị ứng — đây là tin nhắn trả lời tự động.",
+  "specificFallback": "{opener}Xem lịch bán mới nhất của bên mình tại đây: {url}\n\n{truck} {emoji}",
+  "capHandoff": "Cảm ơn bạn đã nhắn tin! Ở đây mình chỉ trả lời được vài lần mỗi ngày.\n\nĐặt món: {link}",
+  "capContact": "Liên hệ trực tiếp: {number}"
+}

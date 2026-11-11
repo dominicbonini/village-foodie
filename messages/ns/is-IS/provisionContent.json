@@ -1,0 +1,72 @@
+{
+  "standardCategories": {
+    "starters": "Forréttir",
+    "mains": "Aðalréttir",
+    "burgers": "Hamborgarar",
+    "pizza": "Pítsur",
+    "wrapsSandwiches": "Vefjur og samlokur",
+    "sides": "Meðlæti",
+    "dipsSauces": "Ídýfur og sósur",
+    "desserts": "Eftirréttir",
+    "drinks": "Drykkir",
+    "kidsMenu": "Barnamatseðill",
+    "specials": "Réttir dagsins",
+    "other": "Annað"
+  },
+  "demoEventName": "Kynningarviðburður",
+  "firstVanName": "Vagn 1",
+  "demoCategories": {
+    "pizza": "Pítsur",
+    "burgers": "Hamborgarar",
+    "mains": "Aðalréttir",
+    "sides": "Meðlæti",
+    "drinks": "Drykkir"
+  },
+  "demoTemplates": {
+    "pizza": {
+      "label": "🍕 Pítsuvagn",
+      "items": {
+        "margherita": "Margarita",
+        "pepperoni": "Pepperóní",
+        "ndujaHoney": "Nduja og hunang",
+        "fourCheese": "Fjórir ostar",
+        "gardenVeg": "Grænmetispítsa",
+        "garlicBread": "Hvítlauksbrauð",
+        "rocketParmesan": "Klettasalat og parmesan",
+        "olives": "Ólífur",
+        "sanPellegrino": "San Pellegrino",
+        "coke": "Kók"
+      }
+    },
+    "burgers": {
+      "label": "🍔 Hamborgaravagn",
+      "items": {
+        "classicCheeseburger": "Klassískur ostborgari",
+        "doubleBacon": "Tvöfaldur beikonborgari",
+        "buttermilkChicken": "Kjúklingur í súrmjólk",
+        "halloumiStack": "Halloumi-borgari",
+        "smashBurger": "Smassborgari",
+        "skinOnFries": "Franskar með hýði",
+        "loadedCheeseFries": "Franskar með bræddum osti",
+        "onionRings": "Laukhringir",
+        "craftLemonade": "Heimagert límonaði",
+        "coke": "Kók"
+      }
+    },
+    "curries": {
+      "label": "🍛 Karrívagn",
+      "items": {
+        "chickenTikkaMasala": "Kjúklinga tikka masala",
+        "lambRoganJosh": "Lamba rogan josh",
+        "chanaMasala": "Chana masala",
+        "butterChicken": "Smjörkjúklingur",
+        "saagPaneer": "Saag paneer",
+        "pilauRice": "Pilau-hrísgrjón",
+        "garlicNaan": "Hvítlauks-naan",
+        "onionBhaji": "Lauk-bhaji",
+        "mangoLassi": "Mangó-lassí",
+        "coke": "Kók"
+      }
+    }
+  }
+}

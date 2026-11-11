@@ -1,0 +1,70 @@
+{
+  "error": {
+    "generic": "Terjadi kesalahan",
+    "previewFailed": "Pratinjau tidak dapat dibuat",
+    "loadFailed": "Tidak dapat memuat",
+    "tooBig": "Ukuran gambar itu {size, number, ::.0 group-off}MB. Batasnya 10MB.",
+    "wrongType": "Silakan pilih file PNG atau JPG.",
+    "uploadIncomplete": "Unggahan tidak selesai",
+    "uploadFailed": "Unggahan gagal",
+    "saveFailed": "Tidak dapat menyimpan",
+    "buildFailed": "Postingan tidak dapat dibuat",
+    "copyFailed": "Tidak dapat menyalin — pilih teksnya dan salin secara manual."
+  },
+  "loading": "Memuat…",
+  "missingTable": {
+    "title": "Postingan mingguan butuh pembaruan database",
+    "body": "Tabel desain belum dibuat. Setelah migrasi diterapkan, layar ini akan berfungsi."
+  },
+  "kind": {
+    "label": "Desain yang mana",
+    "event": "Satu acara",
+    "week": "Mingguan"
+  },
+  "setup": {
+    "title": "Atur postingan mingguan Anda",
+    "intro": "Unggah versi kosong dari gambar jadwal mingguan yang biasa Anda buat — desain yang sama, tanpa kotak teks Anda. HatchGrab mengisi minggunya dari jadwal Anda.",
+    "canvaTitle": "Cara mengekspor versi kosong dari Canva",
+    "canvaStep1": "Buka desain jadwal mingguan yang biasa Anda pakai.",
+    "canvaStep2": "Hapus kotak teks berisi tanggal, lokasi, dan jam — biarkan latar belakang dan judul yang ingin Anda pertahankan.",
+    "canvaStep3": "Bagikan › Unduh › PNG.",
+    "uploading": "Mengunggah…",
+    "upload": "Unggah gambar kosong Anda",
+    "uploadHint": "PNG atau JPG, maksimal 10MB, minimal {px}px di sisi pendek.",
+    "phoneTip": "Paling nyaman di komputer atau iPad — kotaknya kecil untuk diseret di ponsel.",
+    "designName": "Desain postingan mingguan",
+    "backDesigns": "‹ Desain",
+    "back": "‹ Kembali",
+    "pictureNote": "Gambar Anda tanpa tanggal atau lokasi. Kami yang menambahkannya.",
+    "saved": "Desain disimpan."
+  },
+  "week": {
+    "this": "Minggu ini",
+    "next": "Minggu depan"
+  },
+  "post": {
+    "title": "Postingan mingguan Anda",
+    "editDesign": "Ubah desain",
+    "weekOf": "Minggu mulai {date}",
+    "imageAlt": "Postingan mingguan Anda",
+    "building": "Membuat postingan Anda…",
+    "updating": "Memperbarui…",
+    "eventsTitle": "Acara minggu ini",
+    "noEvents": "Tidak ada acara minggu ini.",
+    "eventDateCancelled": "{date} · dibatalkan",
+    "showCancelled": "Tampilkan acara yang dibatalkan",
+    "showPrivate": "Tampilkan acara pribadi",
+    "privateHint": "Ditampilkan sebagai “Acara pribadi” dengan tanggal dan jamnya — lokasinya tidak pernah ditampilkan.",
+    "noteTitle": "Catatan",
+    "notePlaceholder": "mis. Pre-order untuk ambil sendiri",
+    "noteHint": "Muncul di keterangan, dan di kotak catatan jika Anda menempatkannya.",
+    "captionTitle": "Keterangan untuk halaman Anda",
+    "perEventTitle": "Postingan untuk setiap acara",
+    "nothingToPost": "Tidak ada yang perlu diposting minggu ini.",
+    "textCopied": "Teks disalin.",
+    "copyText": "Salin teks",
+    "image": "Gambar",
+    "share": "Bagikan",
+    "noOrderLink": "Belum ada link pemesanan — atur alamat web truk Anda di Pengaturan."
+  }
+}

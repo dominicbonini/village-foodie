@@ -1,0 +1,59 @@
+{
+  "labels": {
+    "collection_interval_mins": "Teslim alma saatleri",
+    "takes_cash": "Nakit alıyor musunuz?",
+    "offline_protection": "Çevrimdışı sipariş koruması",
+    "buzzer_prompt": "Çağrı cihazı eklemeyi hatırlat"
+  },
+  "typeFollowsVanTitle": "Her aracın normal ayarını izler",
+  "sameSettingsAllVansLabel": "Tüm araçlar için aynı ayarlar",
+  "sameSettingsAllVansHeader": "Tüm araçlar",
+  "sameSettingsConfirm": "Araç 1’in ayarları tüm araçlara kopyalansın mı? Bu, Ayarlar’daki “Araç 1 ile aynı” seçeneği gibi Araç 1’in tüm araç ayarlarını kopyalar. Mutfak kapasitesinin ayrı bir anahtarı vardır.",
+  "eventTypesFooterStandard": "Standart, normal düzeninizdir. Burada değiştirirseniz Ayarlar’da da değişir.",
+  "eventTypesFooterOneEvent": "Bir ayarı yalnızca tek bir etkinlik için değiştirmek isterseniz o etkinliğin panelini kullanın.",
+  "eventTypesSubtitle": "Değişiklikler anında kaydedilir.",
+  "matchStandardLabel": "Standart ile eşle",
+  "matchStandardConfirm": "Bu türdeki tüm ayarlar Standart’a geri döndürülsün mü? Burada değiştirdiğiniz her şey silinecek.",
+  "priceLabels": {
+    "price_change_on": "Fiyatları değiştir",
+    "price_mode": "Fiyat değişikliği",
+    "price_amount": "Tutar",
+    "price_rounding": "Yuvarlama",
+    "item_prices": "Ürün fiyatları"
+  },
+  "priceMode": {
+    "add_amount": "+ {symbol}",
+    "add_pct": "+ %",
+    "sub_amount": "− {symbol}",
+    "sub_pct": "− %",
+    "none": "Her fiyatı kendim belirleyeyim"
+  },
+  "priceRounding": {
+    "none": "Yok",
+    "nearest_1": "En yakın {symbol}1",
+    "up_1": "Her zaman yukarı yuvarla"
+  },
+  "pricesStandardCell": "Menü fiyatlarınız",
+  "pricesTruckWideTitle": "Fiyatlarınız tüm araçlarda aynı",
+  "pricesMenuCell": "Menü",
+  "pricesTypeOffCell": "Menü fiyatları",
+  "itemPricesShow": "Fiyatları göster",
+  "itemPricesHide": "Fiyatları gizle",
+  "priceItemsHeading": "Her ürünün fiyatını belirleyin",
+  "priceItemsOpen": "Ürün fiyatlarını görün veya değiştirin ›",
+  "priceItemsClose": "Ürün fiyatlarını gizle ⌃",
+  "ownPriceCount": "{n, plural, one {{count} ürünün kendi fiyatı var} other {{count} ürünün kendi fiyatı var}}",
+  "priceTypeHint": "Kendi fiyatınızı yazmak için bir fiyata dokunun.",
+  "pricesLiveNotice": "Bu etkinlik canlı. Yeni siparişler yeni fiyatları kullanır. Önceden verilen siparişler kendi fiyatlarını korur.",
+  "placeTypeHelper": "Bu konumu seçtiğinizde Etkinlik ekle bu türü otomatik seçer.",
+  "postPictureStandardNote": "Buradaki etkinlik gönderileri standart tasarımınızı kullanır.",
+  "eventItemsCardDescription": "Yalnızca bu etkinlik için fiyatlar, ürün limitleri ve satış durumu. Değişiklikler hemen geçerli olur.",
+  "eventPriceColumnLabel": "Fiyat",
+  "eventPriceOwnNote": "{hasType, select, yes {{type} {price} · bu etkinlik} other {menü {price} · bu etkinlik}}",
+  "eventPriceEdit": "✎ Fiyatları düzenle",
+  "eventPriceCancel": "İptal",
+  "eventPriceSave": "Fiyatları kaydet",
+  "eventPriceEditNote": "Yalnızca bu etkinliğin fiyatlarını düzenliyorsunuz. Kaydedene kadar ürün limitleri ve satış durumu kilitlidir.",
+  "eventPriceLiveNote": "Canlı: yeni siparişler yeni fiyatları kullanır.",
+  "offlineWhenOfflineLabel": "Çevrimdışıyken"
+}

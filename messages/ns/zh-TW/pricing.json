@@ -1,0 +1,49 @@
+{
+  "banner": {
+    "title": "{months, plural, one {第一個月完全免費——所有功能全開。} other {前 # 個月完全免費——所有功能全開。}}",
+    "body": "使用 {brand}，顧客先預約點餐、取餐時再付款，所以你完全不必串接刷卡金流，也能接受線上訂單。想預先收款？隨時都能加上線上刷卡付款。試用期結束後，除非你另選方案，否則會轉為 <plan>{fallback}</plan>{fallbackFree, select, yes {（不收月費）} other {}}。開始使用不需信用卡、不綁約，隨時可取消。",
+    "bodyOnly": "使用 {brand}，顧客先預約點餐、取餐時再付款，所以你完全不必串接刷卡金流，也能接受線上訂單。想預先收款？隨時都能加上線上刷卡付款。試用期結束後，<plan>{fallback}</plan> 每月 {price}。在那之前我們會與你聯絡，設定付款方式。開始使用不需信用卡、不綁約，隨時可取消。"
+  },
+  "card": {
+    "perTruckMonth": "每台餐車／月",
+    "mostTrucks": "最多餐車選用",
+    "tryFree": "免費試用",
+    "seeEvery": "查看所有功能 →",
+    "everything": "經營所需的一切功能",
+    "everythingIn": "{plan} 的所有功能，再加上"
+  },
+  "fee": {
+    "feeOnly": "僅線上刷卡訂單收取 <b>{fee}*</b>。現場點餐永遠免費。",
+    "included": "每月前 <b>{included}</b> 的線上訂單已包含在內，之後收取 <b>{fee}*</b>。現場點餐永遠免費。",
+    "noFee": "線上訂單<b>不收 HatchGrab 手續費</b>，再忙都一樣。每月固定費用，預算好掌握。"
+  },
+  "base": {
+    "walkUp": "現場點餐與廚房顯示系統（KDS）",
+    "online": "線上點餐",
+    "preorders": "預約點餐與取餐時間",
+    "capacity": "廚房出餐量管理",
+    "privateEvents": "私人活動",
+    "printing": "廚房出單列印",
+    "app": "iPhone、iPad 與 Android 廚房 App"
+  },
+  "added": {
+    "whatsapp_replies": "WhatsApp 自動回覆",
+    "schedule_graphics": "社群貼文——你的 Facebook 與 Instagram 出攤行程——可直接發布",
+    "event_types": "自訂活動類型與價格"
+  },
+  "money": {
+    "unlimitedOrders": "線上訂單無上限，HatchGrab 手續費 0%",
+    "samePrice": "最忙的月份也是同樣價格"
+  },
+  "comingSoon": "即將推出",
+  "bar": {
+    "title": "哪個方案對我最划算？",
+    "subtitle": "你每月的線上訂單金額",
+    "first": "低於 {to} → <b>{plan}</b>",
+    "middle": "{from} – {to} → <b>{plan}</b>",
+    "last": "超過 {from} → <b>{plan}</b>",
+    "only": "任何訂單量 → <b>{plan}</b>"
+  },
+  "footnote": "* 線上刷卡訂單另需支付 Stripe 的刷卡手續費（目前在{country}為 {cardFee}），這筆費用付給 Stripe，而非 HatchGrab。現場點餐使用你自己的刷卡機，HatchGrab 收取 0%。",
+  "currencyLine": "價格幣別：{currency}（{code}）"
+}

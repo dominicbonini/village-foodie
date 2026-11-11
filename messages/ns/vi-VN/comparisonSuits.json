@@ -1,0 +1,102 @@
+{
+  "title": "Phần mềm nào hợp với food truck của bạn?",
+  "checked": "Kiểm tra ngày {date}",
+  "evidence": "Bằng chứng",
+  "adminPreview": "Xem trước cho admin — chưa xác minh",
+  "ours": {
+    "fromPlan": "{name} (từ gói {plan})"
+  },
+  "q": {
+    "preorder": "Phần mềm đặt món nào cho khách đặt trước và chọn giờ nhận món?",
+    "capacity": "Xe của tôi bị quá tải vào giờ cao điểm — phần mềm nào giới hạn số đơn cho mỗi khung giờ?",
+    "whatsapp": "Khách cứ hỏi tôi đang ở đâu — phần mềm nào trả lời họ trên WhatsApp?",
+    "social": "Phần mềm nào tạo bài đăng cho các địa điểm trong tuần, để tôi không phải tự thiết kế hình ảnh?",
+    "schedule": "Hầu như ngày nào tôi cũng bán ở chỗ khác — phần mềm nào cho khách biết tôi ở đâu và nhận đơn cho điểm bán đó?",
+    "priceLow": "Mỗi tháng tôi chỉ bán vài ngày — phần mềm nào rẻ nhất?",
+    "priceHigh": "Tôi bán ở lễ hội và sự kiện đông khách — phần mềm nào rẻ nhất?",
+    "commission": "Tôi không muốn trả hoa hồng trên mỗi đơn — mỗi sản phẩm thu phí bao nhiêu?",
+    "offline": "Đơn online sẽ ra sao nếu tôi bị mất sóng?",
+    "strength": "Sản phẩm nào trong số được so sánh có “{feature}”?"
+  },
+  "does": {
+    "preorder": "{names} {count, plural, one {cho} other {cho}} khách đặt trước và chọn giờ nhận món.",
+    "capacity": "{names} {count, plural, one {giới hạn} other {giới hạn}} số đơn cho mỗi giờ nhận món, để bếp không bị quá tải.",
+    "whatsapp": "{names} {count, plural, one {tự động trả lời} other {tự động trả lời}} tin nhắn WhatsApp của khách.",
+    "social": "{names} {count, plural, one {tạo} other {tạo}} hình ảnh sẵn để đăng về các địa điểm trong tuần.",
+    "schedule": "{names} {count, plural, one {cho} other {cho}} khách biết mỗi ngày xe ở đâu và {count, plural, one {nhận} other {nhận}} đơn cho điểm bán đó."
+  },
+  "feat": {
+    "preorder": "giờ nhận món",
+    "capacity": "giới hạn số đơn mỗi khung giờ",
+    "whatsapp": "tự động trả lời trên WhatsApp",
+    "social": "hình ảnh lịch bán tuần",
+    "schedule": "lịch bán với địa điểm thay đổi",
+    "offlinePause": "Tạm dừng đặt món online khi mất sóng"
+  },
+  "others": {
+    "noQuoted": "{names} {count, plural, one {không có} other {không có}} tính năng này.",
+    "notListed": "{names} {count, plural, one {không liệt kê “{feature}” trên website} other {không liệt kê “{feature}” trên website của họ}}.",
+    "doesntSay": "{count, plural, one {Website của {names} không nói} other {Website của {names} không nói}}.",
+    "noneLists": "Không sản phẩm nào khác được so sánh liệt kê tính năng này, nên {names} {count, plural, one {là} other {là}} lựa chọn phù hợp nhất trong số các sản phẩm được so sánh."
+  },
+  "price": {
+    "lead": "Với {orders, number} đơn online mỗi tháng, {names} {count, plural, one {có} other {có}} chi phí phần mềm hằng tháng thấp nhất trong số các sản phẩm được so sánh: {amount} mỗi tháng{count, plural, one {} other { cho mỗi sản phẩm}}.",
+    "includes": "Con số này gồm phí thuê bao, phí tính cho xe trên mỗi đơn, phí cho đơn vượt mức và phí thiết lập (nếu có) chia đều cho 12 tháng; không gồm phí xử lý thẻ.",
+    "flat": "{name} ({plan}, giá cố định, {name} không thu phí theo đơn)",
+    "planName": "{name} ({plan})"
+  },
+  "commission": {
+    "part": "{name}: {fee}",
+    "answer": "Phí mỗi sản phẩm thu trên một đơn: {parts}."
+  },
+  "offline": {
+    "ours": "{name} có thể tự động tạm dừng đặt món online khi xe mất sóng, để khách không đặt những đơn mà bếp không nhận được.",
+    "noQuoted": "{names} {count, plural, one {không hỗ trợ} other {không hỗ trợ}} hoạt động khi không có kết nối.",
+    "doesntSay": "{count, plural, one {Website của {names} không nói} other {Website của {names} không nói}} điều gì xảy ra khi mất sóng."
+  },
+  "strength": {
+    "answer": "{names} {count, plural, one {cho biết có} other {cho biết có}} “{feature}”; {us} thì không.",
+    "answerSoon": "{names} {count, plural, one {cho biết có} other {cho biết có}} “{feature}”; {us} thì chưa có."
+  },
+  "ev": {
+    "ours": {
+      "yes": "có, theo các gói của chính {us}",
+      "no": "không, theo các gói của chính {us}"
+    },
+    "state": {
+      "yes": "cho biết có tính năng này",
+      "partial": "có một phần",
+      "no_quoted": "cho biết không có tính năng này",
+      "no_unquoted": "không (không lưu trích dẫn)",
+      "not_listed": "không liệt kê trên website",
+      "not_mentioned": "website không nói",
+      "unknown": "không rõ"
+    },
+    "row": "{tool} — {feature}: {answer}.",
+    "quote": "Trích dẫn: “{quote}”.",
+    "pages": "Các trang đã kiểm tra: {pages}.",
+    "pageRead": "{page}",
+    "pageNotRead": "{page} (không đọc được)",
+    "page": {
+      "features": "trang tính năng",
+      "pricing": "bảng giá",
+      "help": "trung tâm trợ giúp",
+      "other": "trang khác"
+    },
+    "help": {
+      "fetched": "Đã đọc trung tâm trợ giúp của họ.",
+      "linked_not_fetched": "Họ có trung tâm trợ giúp nhưng chưa được đọc.",
+      "none_found": "Không tìm thấy trung tâm trợ giúp."
+    },
+    "calc": {
+      "volume": "Tính cho {orders, number} đơn online mỗi tháng, mỗi đơn {order} (doanh số online {revenue}).",
+      "line": "{name} ({plan}): thuê bao {sub} + phí thiết lập chia 12 tháng {setup} + phí theo đơn {fees} + đơn vượt mức {over} = {total} mỗi tháng.",
+      "excluded": "Phí xử lý thẻ và phí do khách trả không được tính cho bất kỳ sản phẩm nào.",
+      "date": "Tính ngày {date} theo giá đã kiểm tra trên website của từng nhà cung cấp."
+    }
+  },
+  "method": {
+    "covers": "Trang này so sánh tối đa bốn lựa chọn thay thế, được chọn vì phù hợp với food truck và có thông tin công khai kiểm chứng được — không phải mọi sản phẩm trên thị trường.",
+    "notListed": "“Không liệt kê” nghĩa là chúng tôi đã xem trang tính năng và bảng giá của sản phẩm mà không thấy nhắc đến, với những tính năng doanh nghiệp thường quảng cáo. “Không nói” nghĩa là chưa xác nhận có hay không."
+  }
+}

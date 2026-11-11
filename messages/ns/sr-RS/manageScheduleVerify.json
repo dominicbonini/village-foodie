@@ -1,0 +1,9 @@
+{
+  "launch_failed": "Provera trenutno nije dostupna. Pokušajte ponovo za trenutak.",
+  "malformed": "Ovo ne liči na veb adresu. Probajte nešto poput vasfoodtruck.rs/dogadjaji",
+  "blocked": "Nismo mogli da pristupimo ovom sajtu — možda blokira automatske provere. Probajte stranicu na kojoj je vaš raspored ili ručno dodajte događaje.",
+  "unreachable": "Nismo mogli da otvorimo ovaj sajt. Možda ne radi ili je adresa pogrešna.",
+  "no_content": "Otvorili smo ovu stranicu, ali na njoj nismo mogli ništa da pročitamo. Proverite da li je javno dostupna.",
+  "no_events": "Na ovoj stranici nismo pronašli nijedan predstojeći događaj. Proverite da li URL vodi direktno na stranicu sa vašim rasporedom.",
+  "blockedDomain": "Unesite URL svog sajta — Facebook i Instagram stranice ne mogu automatski da se preuzmu."
+}

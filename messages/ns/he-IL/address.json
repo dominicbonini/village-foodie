@@ -1,0 +1,58 @@
+{
+  "label": {
+    "street": "כתובת",
+    "postcode": "מיקוד",
+    "zip": "מיקוד (ZIP)",
+    "eircode": "Eircode",
+    "postalCode": "מיקוד",
+    "state": "מדינה",
+    "stateTerritory": "מדינה או טריטוריה",
+    "province": "פרובינציה",
+    "county": "מחוז",
+    "prefecture": "פרפקטורה",
+    "emirate": "אמירות",
+    "region": "אזור",
+    "area": "אזור (יישוב, עיירה או עיר)",
+    "townOrArea": "יישוב או אזור",
+    "city": "עיר",
+    "suburb": "שכונה",
+    "townOrCity": "עיר או יישוב"
+  },
+  "short": {
+    "area": "אזור",
+    "townOrArea": "יישוב או אזור",
+    "city": "עיר",
+    "suburb": "שכונה",
+    "townOrCity": "עיר או יישוב"
+  },
+  "inSentence": {
+    "postcode": "מיקוד",
+    "zip": "מיקוד ZIP",
+    "eircode": "Eircode",
+    "postalCode": "מיקוד"
+  },
+  "withArticle": {
+    "postcode": "מיקוד",
+    "zip": "מיקוד ZIP",
+    "eircode": "Eircode",
+    "postalCode": "מיקוד"
+  },
+  "tradeLabel": {
+    "area": "עיר או יישוב",
+    "townOrArea": "יישוב או אזור",
+    "city": "עיר",
+    "suburb": "שכונה",
+    "townOrCity": "עיר או יישוב"
+  },
+  "basedIn": {
+    "area": "העיר או היישוב שבהם אתם פועלים",
+    "townOrArea": "היישוב או האזור שבהם אתם פועלים",
+    "city": "העיר שבה אתם פועלים",
+    "suburb": "השכונה שבה אתם פועלים",
+    "townOrCity": "העיר או היישוב שבהם אתם פועלים"
+  },
+  "example": "לדוגמה: {example}",
+  "customersSee": "הלקוחות רואים:",
+  "postalWarning": "זה לא נראה כמו {article} תקין — לדוגמה {example}. עדיין אפשר לשמור.",
+  "regionChoose": "בחירה…"
+}

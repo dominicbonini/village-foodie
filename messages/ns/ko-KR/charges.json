@@ -1,0 +1,13 @@
+{
+  "subtotal": "소계",
+  "taxFallback": "세금",
+  "taxIncluded": "{label} 포함",
+  "serviceFeeCustomer": "온라인 서비스 수수료",
+  "serviceFee": "서비스 수수료",
+  "cardFee": "카드 수수료",
+  "tip": "팁",
+  "rate": "{rate}%",
+  "line": "{label}: {amount}",
+  "lineWithRate": "{label} {rate}: {amount}",
+  "foldedCharges": "{parts, select, tax_fees_tip {세금, 수수료 및 팁} tax_tip {세금 및 팁} fees_tip {수수료 및 팁} fees {수수료} other {세금 및 수수료}}"
+}

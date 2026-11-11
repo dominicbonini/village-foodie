@@ -1,0 +1,17 @@
+{
+  "features": "Eiginleikar",
+  "pricing": "Verð",
+  "faq": "Spurt og svarað",
+  "privacy": "Persónuvernd",
+  "terms": "Skilmálar",
+  "contact": "Hafa samband",
+  "about": "Um okkur",
+  "copyright": "© {year} HatchGrab",
+  "credit": "Frá fólkinu á bak við <b>Village Foodie</b>",
+  "badges": {
+    "appStoreLink": "Sæktu HatchGrab í App Store",
+    "appStoreAlt": "Sæktu í App Store",
+    "googlePlayLink": "Fáðu HatchGrab á Google Play",
+    "googlePlayAlt": "Fáðu það á Google Play"
+  }
+}

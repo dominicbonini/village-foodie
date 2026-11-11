@@ -1,0 +1,7 @@
+{
+  "phrases": {
+    "appsSentence": "Bir de iPad ve Android uygulaması var; sinyal kesilse bile yerinde sipariş almaya devam eder.",
+    "appsOffline": "iPad ve Android uygulaması sinyal olmadan da yerinde sipariş almaya devam eder ve bağlantı geri geldiğinde siparişleri gönderir; web paneli için bağlantı gerekir.",
+    "webOffline": "Web panelinin yeni siparişleri göstermesi için bağlantı gerekir."
+  }
+}

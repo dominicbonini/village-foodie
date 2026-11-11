@@ -1,0 +1,9 @@
+{
+  "paidStepTitle": "Taka við pöntunum án greiðslu",
+  "completionTitle": "Að ljúka ógreiddri pöntun",
+  "completionHelp": "Hvað gerist þegar ógreidd pöntun er tilbúin til afhendingar.",
+  "pressesOne": "Ein snerting („Merkja greitt og sótt“)",
+  "pressesOneHelp": "Best þegar þú tekur við greiðslunni um leið og þú afhendir matinn. Þú færð einn hnapp, „Merkja greitt og sótt“, sem skráir greiðsluna og lýkur pöntuninni í einu.",
+  "pressesTwo": "Tvær snertingar („Merkja greitt“ og „Sótt“)",
+  "pressesTwoHelp": "Best þegar greiðsla og afhending fara fram á ólíkum tímum — viðskiptavinurinn greiðir við vagninn og sækir svo þegar maturinn er tilbúinn. Þú færð tvo hnappa: fyrst „Merkja greitt“, svo „Sótt“ þegar matnum er náð."
+}

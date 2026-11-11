@@ -1,0 +1,9 @@
+{
+  "allergenMode": {
+    "perDishTitle": "Hiện chất gây dị ứng theo từng món",
+    "recommended": "Khuyên dùng",
+    "perDishBody": "Xem lại từng món và xác nhận chất gây dị ứng. Khách thấy nhãn theo từng món cùng một thẻ tóm tắt chất gây dị ứng được tạo từ các nhãn đó.",
+    "cardTitle": "Hiện bảng chất gây dị ứng",
+    "cardBody": "Tải lên hoặc dán một bảng chất gây dị ứng duy nhất (PDF, ảnh hoặc văn bản), hiển thị nguyên trạng. Nhãn theo từng món sẽ được ẩn."
+  }
+}

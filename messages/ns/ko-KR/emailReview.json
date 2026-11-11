@@ -1,0 +1,16 @@
+{
+  "subject": "{truck} 푸드트럭 주문은 어떠셨나요?",
+  "heading": "{truck} 푸드트럭에서 주문해 주셔서 감사합니다",
+  "body": "{truck} 푸드트럭에 솔직한 Google 리뷰를 남겨 주시면 큰 힘이 됩니다. 1분이면 충분하고, 다른 분들이 이 푸드트럭을 찾는 데 도움이 됩니다.",
+  "button": "Google에 리뷰 남기기",
+  "linkText": "Google에 리뷰 남기기: {url}",
+  "from": "{truck} 푸드트럭에서 주문하셔서 {truck} 푸드트럭이 HatchGrab을 통해 보낸 이메일입니다.",
+  "unsubscribeLead": "{truck} 푸드트럭의 리뷰 요청을 받고 싶지 않으신가요?",
+  "unsubscribeLink": "수신 거부",
+  "unsubscribeText": "수신 거부: {url}",
+  "unsubscribed": {
+    "title": "수신 거부되었습니다",
+    "body": "{truck} 푸드트럭에서 더 이상 리뷰 요청을 보내지 않습니다.",
+    "invalid": "유효하지 않은 수신 거부 링크입니다."
+  }
+}

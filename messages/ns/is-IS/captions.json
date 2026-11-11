@@ -1,0 +1,30 @@
+{
+  "labels": {
+    "weekDates": "Dagsetningar vikunnar",
+    "dayList": "Listi yfir daga",
+    "place": "Staður",
+    "venue": "Vettvangur",
+    "area": "Svæði",
+    "dayDate": "Dagur og dagsetning",
+    "times": "Tímar",
+    "orderLink": "Pöntunartengill",
+    "locationTag": "Staðsetningarmerki"
+  },
+  "weekHeader": "{truck} — hér erum við í þessari viku:",
+  "dayLine": "{day} — {where} — {times}",
+  "dayLineNoTimes": "{day} — {where}",
+  "dayLineCancelled": "{day} — {where} — AFLÝST, því miður",
+  "noDates": "Engar dagsetningar í þessari viku — kíktu aftur fljótlega.",
+  "orderAhead": "Pantaðu fyrir fram: {url}",
+  "orderAheadTagged": "Pantaðu fyrir fram: {url} {tag}",
+  "eventLine": "{truck} mætir {when}: {where}, {times}.",
+  "eventLineNoTimes": "{truck} mætir {when}: {where}.",
+  "cancelledSorry": "Því miður komumst við ekki {when}: {where}.",
+  "cancelledApology": "Við biðjum alla sem ætluðu að koma afsökunar. Við komum aftur fljótlega.",
+  "when": {
+    "today": "í dag",
+    "tonight": "í kvöld",
+    "tomorrow": "á morgun",
+    "dated": "{date}"
+  }
+}

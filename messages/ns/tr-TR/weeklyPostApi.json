@@ -1,0 +1,57 @@
+{
+  "shortened": {
+    "heading": "Başlık sığmadı ve kısaltıldı.",
+    "date": "Tarih sığmadı ve kısaltıldı.",
+    "daysOff": "Kapalı gün metni sığmadı ve kısaltıldı.",
+    "place": "Konum adı sığmadı ve kısaltıldı.",
+    "time": "Saat sığmadı ve kısaltıldı.",
+    "note": "Kendi metniniz sığmadı ve kısaltıldı.",
+    "venue": "Mekân adı sığmadı ve kısaltıldı.",
+    "area": "Bölge adı sığmadı ve kısaltıldı."
+  },
+  "fontFallback": "Bu tasarımın kullandığı bir yazı tipi ({id}) yüklenemedi — o kutular Oswald yazı tipiyle gösteriliyor.",
+  "wrongShapeBackground": "Bu konumun görseli tasarımınızdan farklı oranlarda, bu yüzden standart arka plan kullanılıyor.",
+  "rowsFit": "Son gün, görselin alt kenarının {px} px altında kalıyor — satır aralığını azaltın veya 1. satırı yukarı taşıyın.",
+  "placeStatus": {
+    "ownBoth": "Kendi görseli ve metin yerleşimi",
+    "wrongShape": "Farklı oran — değiştirilene kadar kullanılmaz",
+    "ownPicture": "Kendi görseli, standart yerleşim",
+    "ownPositions": "Standart görsel, kendi metin yerleşimi",
+    "none": "Henüz görsel yok — Standart kullanılıyor"
+  },
+  "standardStatus": "Diğer tüm konumlarda kullanılır",
+  "option": {
+    "oneOff": "Yalnızca bu gönderi için bir görsel yükleyin",
+    "placePoster": "Afiş: {name}",
+    "standard": "Standart tasarım"
+  },
+  "previewLabel": {
+    "lastEvent": "Önizleme, buradaki son etkinliğinizi kullanıyor",
+    "noEvents": "Burada henüz etkinlik yok — önizleme, bir sonraki etkinliğinizi bu konumun adıyla gösteriyor"
+  },
+  "fontUsage": {
+    "weekly": "haftalık gönderi tasarımınız",
+    "event": "tek etkinlik gönderisi tasarımınız",
+    "place": "{place} için tasarımınız",
+    "placeUnnamed": "bir konum için tasarımınız"
+  },
+  "face": {
+    "regular": "Normal",
+    "bold": "Kalın",
+    "italic": "İtalik"
+  },
+  "picture": {
+    "legacy": "Etkinlik afişi",
+    "fallback": "Görsel",
+    "wrongShape": "Farklı oran — tam arka plan olarak kullanılamaz"
+  },
+  "noPicture": {
+    "omit": "Eklemeyin",
+    "blank": "Boş alan bırakın",
+    "logo": "Logonuzu gösterin"
+  },
+  "noPicturesAll": "{total, plural, one {Konumunuzun bir görseli var.} other {{total} konumunuzun hepsinde görsel var.}}",
+  "noPicturesSome": "{without, plural, one {{total} konumunuzdan {without} tanesinde henüz görsel yok} other {{total} konumunuzdan {without} tanesinde henüz görsel yok}}",
+  "licenceTick": "Bu yazı tipinin sahibiyim veya kullanma lisansım var",
+  "fontUploadButton": "↑ Yazı tipinizi yükleyin"
+}

@@ -1,0 +1,10 @@
+{
+  "download": "Tải ảnh xuống",
+  "copied": "Đã sao chép ✓",
+  "copyCaption": "Sao chép chú thích",
+  "share": "Chia sẻ",
+  "copiedStatus": "{kind, select, postText {Đã sao chép nội dung bài đăng.} other {Đã sao chép chú thích.}}",
+  "copyFailed": "Không sao chép được — hãy chọn đoạn chữ và tự sao chép.",
+  "sharedStatus": "{kind, select, postText {Đã sao chép nội dung bài đăng — hãy dán vào bài đăng của bạn.} other {Đã sao chép chú thích — hãy dán vào bài đăng của bạn.}}",
+  "shareRefused": "{kind, select, postText {Không chia sẻ được nên ảnh đã được tải xuống. Đã sao chép nội dung bài đăng.} other {Không chia sẻ được nên ảnh đã được tải xuống. Đã sao chép chú thích.}}"
+}

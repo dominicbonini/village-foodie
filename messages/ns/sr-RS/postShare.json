@@ -1,0 +1,10 @@
+{
+  "download": "Preuzmi sliku",
+  "copied": "Kopirano ✓",
+  "copyCaption": "Kopiraj opis",
+  "share": "Podeli",
+  "copiedStatus": "{kind, select, postText {Tekst objave je kopiran.} other {Opis je kopiran.}}",
+  "copyFailed": "Kopiranje nije uspelo — označite tekst i kopirajte ga ručno.",
+  "sharedStatus": "{kind, select, postText {Tekst objave je kopiran — nalepite ga u objavu.} other {Opis je kopiran — nalepite ga u objavu.}}",
+  "shareRefused": "{kind, select, postText {Deljenje je odbijeno, pa je slika preuzeta. Tekst objave je kopiran.} other {Deljenje je odbijeno, pa je slika preuzeta. Opis je kopiran.}}"
+}

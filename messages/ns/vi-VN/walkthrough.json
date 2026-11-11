@@ -1,0 +1,31 @@
+{
+  "intro": "Quản lý là nơi bạn thiết lập xe và xem tình hình kinh doanh. Bảng điều khiển là nơi bạn nhận đơn và vận hành từng sự kiện khi đang diễn ra.",
+  "ariaLabel": "Hướng dẫn bảng điều khiển",
+  "step": "{current}/{total}",
+  "skip": "Bỏ qua",
+  "back": "← Quay lại",
+  "next": "Tiếp →",
+  "done": "Xong",
+  "stops": {
+    "menu": {
+      "title": "Thực đơn",
+      "body": "Món ăn, giá và chất gây dị ứng của bạn. Thay đổi gì ở đây cũng áp dụng ngay."
+    },
+    "schedule": {
+      "title": "Lịch bán",
+      "body": "Bạn bán ở đâu và khi nào. Thêm sự kiện ở đây là khách có thể đặt món cho sự kiện đó."
+    },
+    "build": {
+      "title": "Ưu đãi và Tùy chọn thêm & gợi ý mua thêm",
+      "body": "Ưu đãi, gợi ý mua thêm, tùy chỉnh món và công suất bếp đều nằm trong Thực đơn — cứ thử khám phá nhé."
+    },
+    "settings": {
+      "title": "Cài đặt",
+      "body": "Thông tin xe của bạn và cách khách thanh toán."
+    },
+    "billing": {
+      "title": "Gói & thanh toán",
+      "body": "Nơi xem gói dịch vụ, thanh toán và thông tin tính năng của bạn."
+    }
+  }
+}

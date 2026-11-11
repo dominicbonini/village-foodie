@@ -1,0 +1,36 @@
+{
+  "h1": "Semua yang Anda butuhkan untuk berjualan, di setiap paket.",
+  "lede": "Pemesanan, pre-order, kapasitas dapur, dan layar dapur (KDS) sudah termasuk di setiap paket.{hasUpgrades, select, yes { Paket {plans} menambahkan {features}, serta biaya yang lebih rendah.} other {}}",
+  "perMonth": "{price} / bulan",
+  "group": {
+    "pay": "Biaya yang Anda bayar",
+    "run": "Jalankan layanan Anda",
+    "online": "Pesanan online",
+    "marketing": "Pemasaran & otomatisasi"
+  },
+  "pay": {
+    "included": "Pesanan online yang sudah termasuk setiap bulan",
+    "fee": "Biaya HatchGrab untuk pesanan online dengan kartu*",
+    "walkUp": "Pesanan langsung di tempat"
+  },
+  "cell": {
+    "unlimited": "Tanpa batas",
+    "free": "Gratis",
+    "feeAbove": "<b>{fee}</b> di atas {included}",
+    "yes": "Termasuk",
+    "none": "Tidak termasuk",
+    "comingSoon": "Segera hadir"
+  },
+  "short": {
+    "whatsapp_replies": "WhatsApp",
+    "schedule_graphics": "media sosial",
+    "event_types": "harga khusus per acara"
+  },
+  "meta": {
+    "description": "Semua fitur HatchGrab di setiap paket, berdampingan — {plans}, lengkap dengan biaya dan kuota.{months, plural, =0 {} one { Bulan pertama Anda mencakup semua fitur.} other { # bulan pertama Anda mencakup semua fitur.}}"
+  },
+  "notes": {
+    "whatsapp": "Balasan otomatis WhatsApp membutuhkan akun WhatsApp Business. Meta mungkin mengenakan biaya untuk sebagian pesan; balasan dibuat secara otomatis.",
+    "printing": "Pencetakan tiket dapur membutuhkan printer Bluetooth atau printer berkabel yang kompatibel (tidak disediakan)."
+  }
+}

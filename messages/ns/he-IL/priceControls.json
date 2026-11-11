@@ -1,0 +1,8 @@
+{
+  "change": "{label} — שינוי",
+  "useRule": "{label} — שימוש בכלל במקום זאת",
+  "typePrice": "{label} — הקלדת מחיר",
+  "backToRule": "חזרה לכלל",
+  "diffUp": "(+{amount})",
+  "diffDown": "(−{amount})"
+}

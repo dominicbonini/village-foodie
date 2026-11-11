@@ -1,0 +1,8 @@
+{
+  "change": "{label} — 변경",
+  "useRule": "{label} — 규칙 적용",
+  "typePrice": "{label} — 가격 직접 입력",
+  "backToRule": "규칙으로 돌아가기",
+  "diffUp": "(+{amount})",
+  "diffDown": "(−{amount})"
+}

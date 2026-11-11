@@ -1,0 +1,47 @@
+{
+  "meta": {
+    "fallbackTitle": "푸드트럭 | Village Foodie",
+    "hgFallbackTitle": "푸드트럭",
+    "orderTitle": "{truck} 주문하기",
+    "orderDescription": "{truck} 푸드트럭에 미리 주문하고 현장에서 픽업하세요.",
+    "title": "{truck} | Village Foodie",
+    "logoAlt": "{truck} 로고"
+  },
+  "shareTitle": "{truck} 일정",
+  "shareText": "{truck} 푸드트럭의 다음 영업 장소를 확인해 보세요! 🚚",
+  "linkCopied": "프로필 링크가 클립보드에 복사되었습니다! 📋",
+  "facebookPage": "Facebook 페이지",
+  "loadingMap": "지도 불러오는 중…",
+  "view": {
+    "list": "목록",
+    "map": "지도"
+  },
+  "ownThisTruck": "이 푸드트럭의 사장님이신가요?",
+  "ownThisTruckTitle": "이 푸드트럭의 사장님이신가요? 클릭해서 프로필을 업데이트하세요",
+  "actions": {
+    "menu": "메뉴",
+    "call": "전화",
+    "message": "메시지",
+    "share": "공유",
+    "order": "주문하기"
+  },
+  "loadingSchedule": "일정 불러오는 중…",
+  "loadError": {
+    "title": "불러오지 못했습니다",
+    "body": "지금은 일정을 불러올 수 없습니다. 보통 잠깐의 문제이니 다시 시도해 주세요.",
+    "retry": "다시 시도"
+  },
+  "notFound": {
+    "title": "푸드트럭을 찾을 수 없습니다",
+    "body": "이 푸드트럭의 정보를 찾을 수 없습니다. 이전했거나 프로필을 변경했을 수 있습니다.",
+    "cta": "모든 푸드트럭 보기"
+  },
+  "noEvents": {
+    "title": "예정된 영업 일정이 없습니다",
+    "body": "이 푸드트럭의 정보가 일부 빠져 있을 수 있습니다. 사장님이시거나 일정을 알고 계신가요?",
+    "cta": "메시지를 보내 업데이트를 도와주세요!"
+  },
+  "whereToFind": "영업 장소 안내",
+  "missingEvent": "<strong>빠진 영업 일정이 있나요?</strong> <br></br>이 푸드트럭의 사장님이시거나 열성 팬이시라면 이 페이지를 정확하게 유지할 수 있도록 도와주세요! <br></br><link>빠진 정보를 추가하려면 문의해 주세요.</link>",
+  "weeklySchedule": "주간 일정 받기 🍕"
+}

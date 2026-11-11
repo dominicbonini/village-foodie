@@ -1,0 +1,19 @@
+{
+  "heading": "Gợi ý mua thêm",
+  "intro": "Gợi ý khách thêm món. Khi khách đặt món ở một danh mục, hãy gợi ý món từ danh mục khác — đồ uống đi kèm pizza, sốt đi kèm burger.",
+  "add": "+ Thêm gợi ý",
+  "toast": {
+    "updated": "Đã cập nhật quy tắc gợi ý",
+    "added": "Đã thêm quy tắc gợi ý",
+    "removed": "Đã xóa quy tắc"
+  },
+  "whenAdds": "Khi khách thêm món từ…",
+  "suggestFrom": "Gợi ý món từ…",
+  "chooseCategory": "Chọn danh mục",
+  "cancel": "Hủy",
+  "saveChanges": "Lưu thay đổi",
+  "addRule": "Thêm quy tắc",
+  "empty": "Chưa có quy tắc gợi ý nào.",
+  "confirmRemove": "Xóa quy tắc gợi ý “{trigger} → {suggest}”?",
+  "upTo": "{n, plural, one {Gợi ý tối đa {count} món} other {Gợi ý tối đa {count} món}}"
+}

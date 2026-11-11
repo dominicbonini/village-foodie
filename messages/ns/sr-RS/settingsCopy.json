@@ -1,0 +1,19 @@
+{
+  "allowCancellation": {
+    "label": "Dozvoli kupcima da otkažu porudžbinu",
+    "sentence": "Kupci mogu da otkažu najkasnije <select></select> pre vremena preuzimanja"
+  },
+  "autoAccept": {
+    "label": "Automatsko prihvatanje porudžbina",
+    "help": "Porudžbine se potvrđuju automatski. Ako je traženi termin pun, porudžbina prelazi u sledeći slobodan termin. Potvrđuje se samo kad ima kapaciteta. Porudžbine sa napomenom kupca (npr. alergija) i dalje morate da potvrdite."
+  },
+  "orderReady": {
+    "label": "Korak „Spremno“",
+    "help": "Prikazuje dugme „Spremno“ na ekranu porudžbina. Kuhinjski ekrani se podešavaju posebno, na svakom uređaju. Kupci dobijaju obaveštenje e-poštom kad god se porudžbina označi kao spremna. Važi za sve događaje — i dalje ga možete uključiti ili isključiti za pojedinačni događaj na njegovoj kontrolnoj tabli."
+  },
+  "buzzers": {
+    "label": "Da li delite pejdžere za preuzimanje?",
+    "help": "Zabeležite koji pejdžer ste dali kom kupcu, da znate koga da tražite kad je hrana spremna.",
+    "countLabel": "Koliko pejdžera imate?"
+  }
+}

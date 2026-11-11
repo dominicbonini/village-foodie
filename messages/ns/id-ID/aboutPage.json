@@ -1,0 +1,20 @@
+{
+  "meta": {
+    "title": "Tentang — HatchGrab",
+    "description": "HatchGrab membuat software untuk food truck: pesanan online, waktu pengambilan, dan lebih sedikit pertanyaan berulang. Didirikan oleh Dominic Bonini."
+  },
+  "eyebrow": "Tentang",
+  "title": "Dibuat sesuai cara kerja food truck yang sebenarnya",
+  "photoAlt": "{name}, pendiri HatchGrab",
+  "story": {
+    "start": "HatchGrab berawal dari satu pengamatan sederhana: food truck membutuhkan alat yang lebih baik untuk menjalankan usahanya.",
+    "villageFoodie": "Setelah membuat Village Foodie, sebuah direktori yang membantu orang menemukan food truck yang datang ke daerah mereka, saya meluangkan lebih banyak waktu untuk memahami tantangan yang dihadapi usaha kuliner keliling. Berbeda dengan restoran biasa, food truck terus berpindah, berjualan di lokasi yang berbeda-beda, dan melayani pelanggan dalam kondisi yang selalu berubah.",
+    "fixedAddress": "Namun, sebagian besar software yang tersedia bagi mereka dirancang untuk usaha dengan alamat tetap.",
+    "change": "HatchGrab dibuat untuk mengubah hal itu.",
+    "build": "Kami membuat software praktis khusus untuk food truck dan usaha kuliner keliling, membantu mereka menerima pesanan online, mengatur waktu pengambilan, menjaga pesanan tetap lancar, dan menghabiskan lebih sedikit waktu untuk menjawab pertanyaan yang itu-itu saja.",
+    "focus": "Fokus kami sederhana: membuat usaha food truck lebih mudah dijalankan, dengan alat yang dirancang sesuai cara kerja usaha ini yang sebenarnya."
+  },
+  "signature": "<b>{name}</b><br></br>Pendiri, HatchGrab",
+  "company": "{company} · terdaftar di Inggris dan Wales · nomor perusahaan {number} · kantor terdaftar: {address}",
+  "contact": "Hubungi kami"
+}

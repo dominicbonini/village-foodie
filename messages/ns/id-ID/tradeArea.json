@@ -1,0 +1,8 @@
+{
+  "country_missing": "Pilih negara tempat truk Anda berbasis.",
+  "country_off": "Truk di negara itu belum bisa mendaftar. Pilih negara lain.",
+  "zone_unknown": "Zona waktu itu tidak tersedia untuk negara tersebut. Pilih salah satu dari daftar.",
+  "town_missing": "Sebutkan kota tempat Anda berbasis.",
+  "town_too_long": "Nama kota itu terlalu panjang — maksimal 120 karakter.",
+  "region_closed": "Truk yang berbasis di {region} belum bisa mendaftar{reason, select, language {: HatchGrab belum tersedia dalam bahasa {language}} taxLines {: kami sedang menambahkan baris GST dan PST terpisah terlebih dahulu} other {}}. Jika truk Anda berbasis di tempat lain, pilih kota tersebut."
+}

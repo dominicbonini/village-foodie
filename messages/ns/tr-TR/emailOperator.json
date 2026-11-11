@@ -1,0 +1,25 @@
+{
+  "newOrder": {
+    "subject": "Yeni sipariş #{id} — {name}{withSlot, select, yes { · {slot}} other {}}",
+    "heading": "Yeni sipariş alındı",
+    "from": "<b>Sipariş #{id}</b> · Müşteri: <b>{name}</b>",
+    "collection": "Teslim alma: {time}",
+    "asap": "Belirli bir saat yok — en kısa sürede",
+    "total": "Toplam",
+    "notes": "<b>Notlar:</b> {notes}",
+    "autoConfirmed": "Otomatik onaylandı — bir şey yapmanıza gerek yok.",
+    "confirmPrompt": "Bu siparişi onaylamak veya reddetmek için HatchGrab panelinize giriş yapın.",
+    "text": "Yeni sipariş #{id} · Müşteri: {name}{withSlot, select, yes { · Saat: {slot}} other {}}{withVenue, select, yes { · Yer: {venue}} other {}}.{withCharges, select, yes { {charges}.} other {}} Toplam: {total}.{withNotes, select, yes { Notlar: {notes}} other {}}"
+  },
+  "newEvents": {
+    "subject": "Yeni etkinlikler bulundu ({truck}) — lütfen inceleyin",
+    "hi": "Merhaba,",
+    "found": "Programınızda, müşterilere görünmeden önce onayınızı bekleyen <b>{n, plural, one {{count} yeni etkinlik} other {{count} yeni etkinlik}}</b> bulduk.",
+    "listHeading": "Bulunan etkinlikler:",
+    "approve": "Program sekmesinde onayladığınızda haritada yayına girecekler ve sipariş sayfanız ön sipariş almaya hazır olacak.",
+    "cta": "Programınızı inceleyin →",
+    "signoff": "— HatchGrab ekibi · hatchgrab.com",
+    "unknownVenue": "Bilinmeyen mekân",
+    "text": "Merhaba,\n\nProgramınızda onayınızı bekleyen {n, plural, one {{count} yeni etkinlik} other {{count} yeni etkinlik}} bulduk:\n\n{list}\n\nİncelemek için: {url}\n\nOnayladığınızda haritada yayına girecekler.\n\n— HatchGrab ekibi"
+  }
+}

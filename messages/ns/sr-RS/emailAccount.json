@@ -1,0 +1,38 @@
+{
+  "newEmail": {
+    "subject": "Potvrdite svoju novu adresu e-pošte za HatchGrab",
+    "heading": "Potvrdite adresu e-pošte",
+    "button": "Potvrdi adresu e-pošte"
+  },
+  "changeEmail": {
+    "requested": "Zatražili ste da adresu e-pošte svog HatchGrab naloga promenite u ovu adresu.",
+    "click": "Kliknite na dugme ispod da biste potvrdili. Ovaj link ističe za 24 sata.",
+    "ignore": "Ako niste vi zatražili ovu promenu, slobodno zanemarite ovu poruku.",
+    "stillActive": "Vaša trenutna adresa e-pošte ostaje aktivna."
+  },
+  "resendVerification": {
+    "requested": "Zatražili ste da HatchGrab adresu e-pošte promenite u ovu adresu.",
+    "click": "Kliknite ispod da biste potvrdili. Ovaj link ističe za 24 sata.",
+    "ignore": "Ako niste vi ovo zatražili, zanemarite ovu poruku.",
+    "stillActive": "Vaša trenutna adresa e-pošte ostaje aktivna."
+  },
+  "passwordReset": {
+    "subject": "Resetujte lozinku za HatchGrab",
+    "heading": "Resetujte lozinku",
+    "requested": "Primili smo zahtev za resetovanje lozinke za vaš HatchGrab nalog.",
+    "click": "Kliknite na dugme ispod da biste izabrali novu lozinku. Ovaj link ističe za 1 sat.",
+    "button": "Resetuj lozinku",
+    "ignore": "Ako niste vi ovo zatražili, slobodno zanemarite ovu poruku.",
+    "unchanged": "Vaša lozinka se neće promeniti dok ne kliknete na link iznad."
+  },
+  "deletionScheduled": {
+    "subject": "Brisanje vašeg HatchGrab naloga je zakazano",
+    "received": "Primili smo zahtev za brisanje ovog HatchGrab naloga.",
+    "orderingStopped": "<b>Online poručivanje je odmah zaustavljeno</b> za: {trucks}.",
+    "noTrucks": "(nema food truckova)",
+    "readable": "Vaša kontrolna tabla ostaje\n    dostupna za čitanje još {days, plural, one {# dan} few {# dana} other {# dana}}.",
+    "scheduled": "Brisanje naloga je zakazano za <b>{date}</b>.",
+    "cannotCancel": "<b>Ovo ne može da se otkaže u aplikaciji.</b> Ako to niste bili vi ili ste se\n    predomislili, odgovorite na ovu poruku što pre.",
+    "kept": "Kada se nalog obriše, uklanjamo vaše lične podatke i podatke vaših kupaca. Zadržavamo\n    anonimne računovodstvene evidencije, koje smo po zakonu dužni da čuvamo."
+  }
+}

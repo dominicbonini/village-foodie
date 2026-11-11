@@ -1,0 +1,117 @@
+{
+  "cardEditor": {
+    "title": "Kartu alergen Anda",
+    "intro": "Pelanggan melihatnya <b>persis seperti yang Anda tulis</b> — tidak ada yang ditulis ulang. Ketik atau tempel di bawah, atau unggah foto/PDF dan kami akan membaca teksnya untuk Anda periksa.",
+    "empty": "Belum ada kartu alergen.",
+    "placeholder": "mis. Semua gorengan kami mengandung gandum dan susu. Penggorengan dipakai bersama untuk menu yang mengandung gluten dan kacang. Tersedia pilihan vegan — tanyakan ke staf.",
+    "reading": "Membaca gambar…",
+    "upload": "📷 Unggah gambar / PDF",
+    "uploadNote": "Kami membaca teks dari gambar Anda agar bisa Anda tinjau — gambarnya tidak disimpan."
+  },
+  "cardUpload": {
+    "dishFallback": "Hidangan",
+    "question": "Apakah Anda punya kartu alergen untuk diunggah?",
+    "perDish": "{detected, select, yes {Unggah kartunya dan kami akan memakainya untuk menyusun alergen tiap hidangan. Alergen yang terdeteksi akan terlihat di halaman berikutnya, tempat Anda mengonfirmasi tiap hidangan.} other {Unggah kartunya dan kami akan memakainya untuk menyusun alergen tiap hidangan.}}",
+    "cardOnly": "Unggah kartu alergen yang akan dilihat pelanggan.",
+    "yes": "Ya",
+    "no": "Tidak",
+    "noProblem": "Tidak masalah — kartu ini tidak wajib. Lanjutkan dengan tombol di bawah.",
+    "analysing": "Menganalisis kartu…",
+    "dropzone": "Seret dan lepas atau ketuk untuk memilih",
+    "imageOrPdf": "Gambar atau PDF",
+    "or": "atau",
+    "pastePlaceholder": "Tempel teks kartu alergen Anda di sini…",
+    "process": "Proses kartu",
+    "cardRead": "Kartu terbaca ✓",
+    "unmatchedHeading": "Tidak bisa dicocokkan otomatis — tetapkan atau abaikan",
+    "quotedName": "“{name}”",
+    "ambiguous": "Ambigu — cocok dengan beberapa hidangan; pilih yang benar.",
+    "assignTo": "Tetapkan ke hidangan…",
+    "dismiss": "Abaikan",
+    "blanket": "Kartu menyebutkan <b>{list}</b> mungkin ada di <b>semua</b> hidangan. Tambahkan ke setiap hidangan? (Anda tetap mengonfirmasi satu per satu) <muted>— awalnya nonaktif</muted>",
+    "kitchenNotes": "Catatan dapur (disimpan ke info alergen Anda)",
+    "matchSummary": "{n, plural, =0 {{matched} cocok dengan hidangan.} one {{matched} cocok dengan hidangan. {count} perlu Anda tetapkan.} other {{matched} cocok dengan hidangan. {count} perlu Anda tetapkan.}}"
+  },
+  "savedCard": {
+    "showLess": "Tampilkan lebih sedikit",
+    "showMore": "Tampilkan lebih banyak",
+    "fileOnly": "File kartu tersimpan untuk truk ini, tetapi tidak ada teks ringkasan yang tersimpan. Buka file aslinya untuk membacanya.",
+    "viewOriginal": "Lihat kartu asli"
+  },
+  "wizard": {
+    "toast": {
+      "readFailed": "Kartu alergen tidak dapat dibaca — coba lagi",
+      "confirmed": "Dikonfirmasi: {name}",
+      "undo": "Urungkan",
+      "saveFailed": "Tidak dapat menyimpan — silakan coba lagi",
+      "imageFailed": "Gambar itu tidak dapat dibaca — ketik atau tempel kartu Anda saja",
+      "cardRead": "{n, plural, one {Kartu terbaca — {matched} cocok, {count} perlu ditetapkan} other {Kartu terbaca — {matched} cocok, {count} perlu ditetapkan}}"
+    },
+    "genericWarn": {
+      "text": "“{generic}” terdeteksi tetapi tidak spesifik. Pilih {picks} jika hidangan ini mengandung {family} — atau biarkan tidak dipilih jika tidak.",
+      "andOr": "{a} dan/atau {b}"
+    },
+    "badge": {
+      "justConfirmed": "✓ Dikonfirmasi",
+      "confirmed": "Dikonfirmasi",
+      "needsReview": "Perlu ditinjau"
+    },
+    "confirm": {
+      "confirming": "Mengonfirmasi…",
+      "confirmed": "Dikonfirmasi ✓",
+      "confirm": "Konfirmasi",
+      "changed": "· diubah",
+      "changedTitle": "Diubah sejak terakhir Anda konfirmasi — konfirmasi lagi"
+    },
+    "allergens": "Alergen",
+    "dietary": "Info diet",
+    "uncategorised": "Tanpa kategori",
+    "review": {
+      "progress": "{confirmed} dari {total} dikonfirmasi",
+      "allConfirmed": "✓ Semua dikonfirmasi",
+      "list": "Daftar",
+      "table": "Tabel",
+      "detected": "Terdeteksi dari menu Anda — <b>periksa ini</b>. Alergen tetap tersembunyi dari pelanggan sampai Anda mengonfirmasi setiap hidangan.",
+      "viewOnly": "👁 Hanya lihat — hanya pemilik yang dapat mengonfirmasi atau mengubah alergen.",
+      "emptyTitle": "Belum ada item menu",
+      "emptyBody": "Tambahkan item menu dulu, lalu atur alergennya di sini.",
+      "dish": "Hidangan",
+      "status": "Status"
+    },
+    "cardPanel": {
+      "reading": "Membaca informasi alergen…",
+      "saved": "🛡️ Kartu alergen tersimpan",
+      "viewOriginal": "Lihat kartu asli",
+      "replace": "Ganti kartu",
+      "uploadHelp": "Unggah kartu alergen Anda (foto/PDF) atau tempel info alergen Anda — AI kami menyusunnya untuk pelanggan.",
+      "add": "Tambahkan kartu alergen",
+      "viewOnly": "👁 Hanya lihat — hanya pemilik yang dapat menambahkan kartu alergen.",
+      "intro": "Pelanggan akan melihat kartu ini sebagai rujukan alergen menu. Alergen per hidangan tetap tersembunyi dalam mode khusus kartu (data hidangan Anda tetap disimpan jika nanti Anda beralih ke per hidangan)."
+    },
+    "subtitle": {
+      "choose": "Pilih cara pelanggan melihat info alergen",
+      "card": "Tambahkan kartu alergen Anda",
+      "cardOptional": "Tambahkan kartu alergen (opsional)",
+      "review": "Periksa & konfirmasi setiap hidangan"
+    },
+    "heading": {
+      "import": "Alergen",
+      "standalone": "Pengaturan alergen"
+    },
+    "nav": {
+      "next": "Berikutnya →",
+      "back": "← Kembali",
+      "skip": "Lewati dulu",
+      "saving": "Menyimpan…",
+      "done": "Selesai",
+      "saveLater": "Simpan & lanjutkan nanti",
+      "close": "Tutup",
+      "finish": "Selesai",
+      "skipImport": "Lewati pengaturan alergen dulu"
+    },
+    "hint": {
+      "skipDefers": "Melewati berarti menunda — hidangan yang belum Anda konfirmasi tetap tersembunyi dari pelanggan sampai alergennya dikonfirmasi.",
+      "importIncomplete": "Konfirmasi setiap hidangan untuk melanjutkan — atau “Lewati pengaturan alergen dulu”."
+    }
+  }
+}

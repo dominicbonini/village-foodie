@@ -1,0 +1,26 @@
+{
+  "greeting": "{hasName, select, yes {Zdravo, {name},} other {Zdravo,}}",
+  "signoffName": "Dominic",
+  "signoffRole": "Osnivač, HatchGrab",
+  "verify": {
+    "subject": "Potvrdite adresu e-pošte",
+    "thanks": "{hasTruck, select, yes {Hvala što podešavate food truck {truck} na HatchGrab-u.} other {Hvala što podešavate svoj food truck na HatchGrab-u.}}",
+    "button": "Potvrdi adresu e-pošte",
+    "buttonText": "Potvrdi adresu e-pošte: {url}",
+    "why": "Ovom adresom ćete se prijavljivati i na nju stižu obaveštenja o porudžbinama — zato je dobro da to uradite odmah.",
+    "next": "Kada je potvrdite, poslaću vam sve što vam treba za početak.",
+    "carryOn": "U međuvremenu možete da nastavite sa podešavanjem.",
+    "stuck": "Zapeli ste negde? Samo odgovorite na ovu poruku — na njih odgovaram lično.",
+    "fallbackLink": "Ako dugme ne radi, nalepite ovo u pregledač: {url}"
+  },
+  "welcome": {
+    "subject": "{hasName, select, yes {Dobro došli u HatchGrab, {name}} other {Dobro došli u HatchGrab}}",
+    "intro": "{hasTruck, select, yes {Zaista mi je drago što food truck {truck} stiže u HatchGrab.} other {Zaista mi je drago što vaš food truck stiže u HatchGrab.}}",
+    "trial": "{months, plural, one {Vaš besplatni probni period od # meseca je počeo — sve funkcije su otključane.} few {Vaš besplatni probni period od # meseca je počeo — sve funkcije su otključane.} other {Vaš besplatni probni period od # meseci je počeo — sve funkcije su otključane.}}",
+    "setup": "Ako to još niste uradili, podešavanje je jednostavno i traje petnaestak minuta.",
+    "button": "Otvori kontrolnu tablu",
+    "bookmark": "Vredi je sačuvati u obeleživačima. Radi na svakom uređaju.",
+    "stuck": "Samo odgovorite na ovu poruku ako zapnete — na njih odgovaram lično.",
+    "lookingForward": "{hasTruck, select, yes {Radujem se što ću videti kako food truck {truck} posluje.} other {Radujem se što ću videti kako vaš food truck posluje.}}"
+  }
+}

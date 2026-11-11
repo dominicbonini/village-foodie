@@ -1,0 +1,19 @@
+{
+  "allowCancellation": {
+    "label": "Cho phép khách hủy đơn",
+    "sentence": "Khách có thể hủy đơn trước giờ nhận món tối đa <select></select>"
+  },
+  "autoAccept": {
+    "label": "Tự động xác nhận đơn",
+    "help": "Đơn được xác nhận tự động. Nếu khung giờ khách chọn đã kín, đơn sẽ chuyển sang khung giờ trống tiếp theo. Chỉ xác nhận khi bếp còn công suất. Đơn có ghi chú của khách (VD: dị ứng) vẫn cần bạn xác nhận."
+  },
+  "orderReady": {
+    "label": "Bước báo món xong",
+    "help": "Hiện nút “Xong” trên màn hình đơn hàng. Màn hình bếp (KDS) được cài đặt riêng trên từng thiết bị. Khách nhận email mỗi khi đơn được đánh dấu xong. Áp dụng cho mọi sự kiện — bạn vẫn có thể bật hoặc tắt cho riêng một sự kiện trên bảng điều khiển của sự kiện đó."
+  },
+  "buzzers": {
+    "label": "Bạn có phát thẻ rung báo món khi nhận món không?",
+    "help": "Ghi lại thẻ rung bạn đã đưa cho từng khách, để biết cần tìm ai khi món đã xong.",
+    "countLabel": "Bạn có bao nhiêu thẻ rung?"
+  }
+}

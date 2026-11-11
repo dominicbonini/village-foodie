@@ -1,0 +1,10 @@
+{
+  "download": "Sækja mynd",
+  "copied": "Afritað ✓",
+  "copyCaption": "Afrita myndatexta",
+  "share": "Deila",
+  "copiedStatus": "{kind, select, postText {Texti færslu afritaður.} other {Myndatexti afritaður.}}",
+  "copyFailed": "Ekki tókst að afrita — veldu textann og afritaðu hann handvirkt.",
+  "sharedStatus": "{kind, select, postText {Texti færslu afritaður — límdu hann inn í færsluna.} other {Myndatexti afritaður — límdu hann inn í færsluna.}}",
+  "shareRefused": "{kind, select, postText {Deilingu var hafnað, svo myndinni var hlaðið niður. Texti færslu afritaður.} other {Deilingu var hafnað, svo myndinni var hlaðið niður. Myndatexti afritaður.}}"
+}

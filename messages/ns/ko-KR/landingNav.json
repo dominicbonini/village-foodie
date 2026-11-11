@@ -1,0 +1,14 @@
+{
+  "homeLabel": "HatchGrab 홈",
+  "cta": "내 메뉴 올리기 →",
+  "ctaShort": "메뉴 올리기",
+  "features": "기능",
+  "pricing": "요금",
+  "logIn": "로그인",
+  "country": {
+    "button": "국가: {name}. 국가 변경",
+    "menu": "국가",
+    "title": "국가 선택",
+    "subline": "가격, 언어, 설정이 선택한 국가에 맞게 바뀝니다."
+  }
+}

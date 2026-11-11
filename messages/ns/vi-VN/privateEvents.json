@@ -1,0 +1,42 @@
+{
+  "publicName": "Sự kiện riêng",
+  "chip": "Riêng tư",
+  "grid": {
+    "orderingSection": "ĐẶT MÓN",
+    "linkRowLabel": "Nhận đơn qua link riêng và mã QR",
+    "columnTitle": "Loại Riêng tư có sẵn. Không thể đổi tên, di chuyển hay xóa."
+  },
+  "form": {
+    "help": "Hiển thị trên lịch bán là “Sự kiện riêng”, chỉ kèm ngày và giờ — không bao giờ hiện địa chỉ, bản đồ hay Village Foodie.",
+    "linkPromise": "Khách đặt món qua link riêng và mã QR — bạn sẽ nhận được sau khi lưu.",
+    "nameLabel": "Tên sự kiện",
+    "nameHelp": "Khách thấy tên này ở đầu trang đặt món.",
+    "namePlaceholder": "Đám cưới Minh & Lan",
+    "previewNote": "Cách sự kiện hiển thị trên lịch bán — không có địa điểm, thành phố hay mã bưu chính.",
+    "needsTimes": "Thêm giờ bắt đầu và giờ kết thúc — sự kiện riêng nhận đơn qua link cần có giờ."
+  },
+  "link": {
+    "button": "Link & QR",
+    "title": "Link riêng & mã QR",
+    "label": "Link riêng",
+    "copy": "Sao chép",
+    "copied": "Đã sao chép",
+    "qrDownload": "Tải mã QR",
+    "tableCards": "In thẻ QR để bàn",
+    "newLink": "Tạo link mới",
+    "working": "Đang xử lý…",
+    "newLinkConfirm": "Tạo link mới? Link hiện tại sẽ ngừng hoạt động ngay lập tức, và mọi mã QR bạn đã in cũng sẽ ngừng hoạt động.",
+    "newLinkHelp": "Dùng khi link đã bị chia sẻ đến nơi không nên đến. Link hiện tại sẽ ngừng hoạt động ngay, và các mã QR đã in cũng ngừng hoạt động.",
+    "newLinkFailed": "Không thể tạo link mới.",
+    "offNotice": "Tính năng đặt món qua link riêng đang tắt cho sự kiện này, nên không có link để chia sẻ. Sự kiện vẫn hiển thị trên lịch bán là “Sự kiện riêng”."
+  },
+  "cards": {
+    "printTitle": "{truck} — thẻ QR để bàn",
+    "scan": "Quét để đặt món",
+    "blurb": "Đặt món và thanh toán ngay trên điện thoại. Chúng tôi sẽ gọi tên bạn khi món đã xong.",
+    "footer": "Đặt món qua HatchGrab"
+  },
+  "noSinglePost": "Sự kiện riêng không có bài đăng riêng — sự kiện xuất hiện trên bài đăng hằng tuần là “Sự kiện riêng”.",
+  "confirmToPrivate": "Thao tác này sẽ ẩn địa chỉ và ẩn sự kiện khỏi bản đồ. Khách sẽ cần link riêng để đặt món.",
+  "confirmFromPrivate": "Thao tác này sẽ công khai sự kiện: địa chỉ và ghim bản đồ sẽ hiển thị, và link riêng sẽ ngừng hoạt động."
+}

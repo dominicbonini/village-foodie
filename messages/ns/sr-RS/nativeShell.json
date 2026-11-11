@@ -1,0 +1,136 @@
+{
+  "binary": {
+    "cameraUsage": "HatchGrab koristi kameru da biste mogli da fotografišete tablu sa menijem, svoja jela i druge dokumente i otpremite ih direktno na svoj nalog. Slike se koriste samo za otpremanja koja sami izaberete.",
+    "bluetoothUsage": "HatchGrab koristi Bluetooth za povezivanje sa vašim kuhinjskim štampačem za račune, kako bi se bonovi porudžbina štampali automatski. Ne koristi se ni za šta drugo.",
+    "localNetworkUsage": "HatchGrab se povezuje sa vašim kuhinjskim štampačem na lokalnoj mreži, kako bi se bonovi porudžbina štampali automatski. Ne koristi se ni za šta drugo.",
+    "faceIdUsage": "Otključajte HatchGrab pomoću funkcije Face ID.",
+    "offlineTitle": "HatchGrab nije dostupan",
+    "offlineDetail": "Proverite vezu.",
+    "retry": "Pokušaj ponovo"
+  },
+  "gate": {
+    "reverted": "Porudžbina #{id} je vraćena na prethodno stanje",
+    "saved": "Porudžbina #{id} je sačuvana",
+    "undo": "↩ Poništi",
+    "paymentNotRecorded": "⚠ Porudžbina #{id} — PLAĆANJE NIJE EVIDENTIRANO. {collect, select, yes {Porudžbina je završena} other {Porudžbina je sačuvana}}, ali novac nije.",
+    "recordPayment": "Evidentiraj plaćanje",
+    "paid": "Porudžbina #{id} je plaćena",
+    "undonePayment": "Poništeno — plaćanje je uklonjeno",
+    "undoneCollected": "Poništeno — porudžbina nije preuzeta",
+    "collected": "Porudžbina #{id} je {paidToo, select, yes {plaćena i preuzeta} other {preuzeta}}",
+    "ready": "Porudžbina #{id} je spremna",
+    "readyBuzzer": "Porudžbina #{id} je spremna · <pill></pill>",
+    "status": "Porudžbina #{id} je {action, select, confirm {potvrđena} reject {odbijena} ready {spremna} collected {preuzeta} undo_collected {vraćena} cancel {otkazana} other {ažurirana}}"
+  },
+  "conflicts": {
+    "more": "+ još {count}",
+    "notOnScreenPlus": "+{count} nije na ovom ekranu",
+    "notOnScreen": "{n, plural, one {{count} porudžbina nije na ovom ekranu} few {{count} porudžbine nisu na ovom ekranu} other {{count} porudžbina nije na ovom ekranu}}"
+  },
+  "banner": {
+    "paymentTitle": "⚠ PLAĆANJE NIJE EVIDENTIRANO",
+    "paymentBody": "{orders} — označeno kao plaćeno samo na ovom uređaju. Nije prošlo.",
+    "paymentCheck": "Proverite porudžbinu i ponovo naplatite ako još nije plaćena.",
+    "dismiss": "Odbaci",
+    "confirmChecked": "Potvrdite da ste proverili: {orders}",
+    "confirmHides": "Ovim se skriva upozorenje. Zapis u svakom slučaju ostaje na ovom uređaju.",
+    "notYet": "Još ne",
+    "iveChecked": "Provereno: {orders}",
+    "statusBody": "⚠ {orders} — ova promena nije prošla. Proverite porudžbinu.",
+    "offline": "📴 Nema veze — {n, plural, one {{count} izmena je sačuvana na ovom uređaju. Biće poslata kada se ponovo povežete.} few {{count} izmene su sačuvane na ovom uređaju. Biće poslate kada se ponovo povežete.} other {{count} izmena je sačuvano na ovom uređaju. Biće poslate kada se ponovo povežete.}} Podešavanja su zaključana.",
+    "syncing": "Ponovo ste povezani — slanje: {n, plural, one {{count} izmena} few {{count} izmene} other {{count} izmena}}…",
+    "synced": "Sve izmene su poslate.",
+    "stillQueued": "{n, plural, one {{count} izmena je sačuvana na ovom uređaju. I dalje pokušavamo da je pošaljemo.} few {{count} izmene su sačuvane na ovom uređaju. I dalje pokušavamo da ih pošaljemo.} other {{count} izmena je sačuvano na ovom uređaju. I dalje pokušavamo da ih pošaljemo.}}"
+  },
+  "lock": {
+    "locked": "HatchGrab je zaključan",
+    "verifying": "Provera…",
+    "unlock": "Otključaj",
+    "cantUseBiometric": "Ne možete da koristite Face / Touch ID?",
+    "enterPin": "Unesite rezervni PIN",
+    "wrongPin": "Pogrešan PIN — pokušajte ponovo.",
+    "checking": "Proveravanje…",
+    "tryBiometric": "Probajte Face / Touch ID",
+    "forgot": "Zaboravili ste PIN? Moraćete ponovo da instalirate aplikaciju."
+  },
+  "notify": {
+    "title": "🔔 Obaveštenja",
+    "intro": "Upozorenja na ovom uređaju. Uključite da biste izabrali koja upozorenja dobijate.",
+    "refused": "Da biste ovo uključili, obaveštenja moraju biti omogućena u Podešavanjima uređaja.",
+    "newOrder": "Upozorenja o novim porudžbinama",
+    "newOrderHelp": "Dobijte obaveštenje kada porudžbinu kupca treba potvrditi.",
+    "offline": "Upozorenja o prekidu interneta / pauzi",
+    "offlineHelp": "Dobijte obaveštenje kada ovaj uređaj izgubi internet (i poručivanje se pauzira). <green>Radi i bez interneta.</green>"
+  },
+  "van": {
+    "label": "Vozilo",
+    "loadRetry": "Učitavanje nije uspelo · Pokušaj ponovo",
+    "select": "Izaberite…"
+  },
+  "deviceSave": {
+    "network": "Server nije dostupan — proverite vezu i pokušajte ponovo.",
+    "server": "Trenutno nije bilo moguće sačuvati. Pokušajte ponovo."
+  },
+  "setup": {
+    "fetchErrorTitle": "Podešavanje uređaja nije učitano",
+    "fetchErrorBody": "Nismo mogli da dođemo do servera da bismo podesili <b>ovaj uređaj</b>. Proverite vezu i pokušajte ponovo — vaše porudžbine i podešavanja nisu pogođeni.",
+    "retry": "Pokušaj ponovo",
+    "later": "Kasnije",
+    "noVanTitle": "Nema aktivnog vozila",
+    "noVanBody": "Ovaj food truck još nema aktivno vozilo. Aktivirajte ga u <b>Podešavanja → Vaši food truckovi</b>, a zatim se ovaj uređaj podešava automatski — ovde nema daljih koraka.",
+    "goToVans": "Idi na Podešavanja → Vaši food truckovi",
+    "title": "Podesite ovaj uređaj",
+    "body": "Jednokratno podešavanje za <b>ovaj uređaj</b>: ekran na kom se otvara i vozilo za koje radi. Važi samo za ovaj uređaj — ostali uređaji se podešavaju zasebno, a ovo možete kasnije da promenite iz menija profila → „Ovaj uređaj“.",
+    "whichScreen": "Na kom ekranu ovaj uređaj treba da se otvara?",
+    "dashboard": "Kontrolna tabla",
+    "kds": "Kuhinjski ekran (KDS)",
+    "whichVan": "Za koje vozilo je ovaj uređaj?",
+    "selectVan": "Izaberite vozilo…",
+    "saving": "Čuvanje…",
+    "tryAgain": "Pokušaj ponovo",
+    "continue": "Nastavi"
+  },
+  "device": {
+    "title": "Ovaj uređaj",
+    "viewing": "Gledate: <b>{truck}</b>",
+    "viewingVan": "Gledate: <b>{truck}</b> — <b>{van}</b>",
+    "only": "Samo ovaj uređaj — ostali uređaji se podešavaju zasebno. (ID: {id}…)",
+    "truck": "Food truck",
+    "van": "Vozilo",
+    "defaultScreen": "Početni ekran",
+    "orderNotifications": "Obaveštenja o porudžbinama",
+    "patchFailed": "{setting, select, van {Vozilo} defaultScreen {Početni ekran} other {Obaveštenja o porudžbinama}} — nije sačuvano. {reason}",
+    "requireBiometric": "Otključavanje otiskom prsta ili licem pri otvaranju",
+    "pinTitle": "Podesite rezervni PIN (4–6 cifara)",
+    "pinHelp": "Vaš način pristupa ako otključavanje otiskom prsta ili licem ne radi — to je jedina rezervna opcija, zato ga ne zaboravite (zaboravljen PIN znači ponovnu instalaciju aplikacije). Radi i bez interneta.",
+    "pinPlaceholder": "PIN",
+    "confirmPinPlaceholder": "Potvrdite PIN",
+    "pinTooShort": "Koristite najmanje 4 cifre.",
+    "pinMismatch": "PIN-ovi se ne podudaraju.",
+    "setPin": "Podesi PIN i uključi",
+    "cancel": "Otkaži",
+    "noBiometric": "Na ovom uređaju nije podešeno otključavanje otiskom prsta ili licem — dodajte ga u podešavanjima uređaja. Rezervni PIN i dalje radi.",
+    "footer": "Ova podešavanja važe samo za ovaj uređaj — ostali uređaji se podešavaju zasebno."
+  },
+  "appLock": {
+    "unlockReason": "Otključajte HatchGrab",
+    "usePasscode": "Koristi šifru",
+    "cancel": "Otkaži",
+    "confirmEnable": "Potvrdite da biste uključili zaključavanje aplikacije"
+  },
+  "channel": {
+    "ordersName": "Nove porudžbine",
+    "ordersDescription": "Upozorenja kada porudžbinu treba potvrditi."
+  },
+  "localNotify": {
+    "newOrderTitle": "Nova porudžbina",
+    "orderReceived": "Primljena je porudžbina {number}",
+    "newOrders": "{n, plural, one {Imate {count} novu porudžbinu} few {Imate {count} nove porudžbine} other {Imate {count} novih porudžbina}}"
+  },
+  "offlineAlert": {
+    "pausedTitle": "Poručivanje je pauzirano",
+    "pausedBody": "Nemate internet — poručivanje za kupce je pauzirano.",
+    "offlineTitle": "Nemate internet",
+    "offlineBody": "Ovaj uređaj je izgubio vezu."
+  }
+}

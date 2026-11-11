@@ -1,0 +1,9 @@
+{
+  "title": "Paketler ve özellikler",
+  "generated": "Oluşturulma tarihi: {date}",
+  "allowanceHeading": "Online sipariş kotası",
+  "smallPrint": "Dipnotlar",
+  "priceNoteMasked": "“Belirlenecek” olarak gösterilen fiyatlar henüz yayımlanmadı.",
+  "omitNote": "Bu belgeye bilerek fiyat eklenmemiştir.",
+  "terms": "Rakamlar, yukarıdaki tarihte yayımlanmış paket koşullarıdır ve değişebilir. Kartla ödeme işlem ücretleri HatchGrab’in değil, Stripe’ın kendi ücretidir. Bu belge bir sözleşme değil, özettir."
+}

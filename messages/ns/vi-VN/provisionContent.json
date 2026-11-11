@@ -1,0 +1,72 @@
+{
+  "standardCategories": {
+    "starters": "Khai vị",
+    "mains": "Món chính",
+    "burgers": "Burger",
+    "pizza": "Pizza",
+    "wrapsSandwiches": "Bánh cuộn & bánh mì kẹp",
+    "sides": "Món ăn kèm",
+    "dipsSauces": "Sốt chấm",
+    "desserts": "Tráng miệng",
+    "drinks": "Đồ uống",
+    "kidsMenu": "Thực đơn trẻ em",
+    "specials": "Món đặc biệt",
+    "other": "Khác"
+  },
+  "demoEventName": "Sự kiện demo",
+  "firstVanName": "Xe 1",
+  "demoCategories": {
+    "pizza": "Pizza",
+    "burgers": "Burger",
+    "mains": "Món chính",
+    "sides": "Món ăn kèm",
+    "drinks": "Đồ uống"
+  },
+  "demoTemplates": {
+    "pizza": {
+      "label": "🍕 Xe pizza",
+      "items": {
+        "margherita": "Pizza Margherita",
+        "pepperoni": "Pizza pepperoni",
+        "ndujaHoney": "Pizza nduja & mật ong",
+        "fourCheese": "Pizza bốn loại phô mai",
+        "gardenVeg": "Pizza rau củ",
+        "garlicBread": "Bánh mì bơ tỏi",
+        "rocketParmesan": "Salad rau rocket & Parmesan",
+        "olives": "Ô liu",
+        "sanPellegrino": "San Pellegrino",
+        "coke": "Coca-Cola"
+      }
+    },
+    "burgers": {
+      "label": "🍔 Xe burger",
+      "items": {
+        "classicCheeseburger": "Burger phô mai truyền thống",
+        "doubleBacon": "Burger đôi thịt xông khói",
+        "buttermilkChicken": "Burger gà chiên tẩm sữa",
+        "halloumiStack": "Burger phô mai halloumi",
+        "smashBurger": "Smash burger",
+        "skinOnFries": "Khoai tây chiên cả vỏ",
+        "loadedCheeseFries": "Khoai tây chiên phủ phô mai",
+        "onionRings": "Hành tây chiên giòn",
+        "craftLemonade": "Nước chanh tươi",
+        "coke": "Coca-Cola"
+      }
+    },
+    "curries": {
+      "label": "🍛 Xe cà ri",
+      "items": {
+        "chickenTikkaMasala": "Gà tikka masala",
+        "lambRoganJosh": "Cà ri cừu rogan josh",
+        "chanaMasala": "Cà ri đậu gà chana masala",
+        "butterChicken": "Gà sốt bơ Ấn Độ",
+        "saagPaneer": "Rau bina & phô mai paneer",
+        "pilauRice": "Cơm pilau",
+        "garlicNaan": "Bánh naan bơ tỏi",
+        "onionBhaji": "Hành tây chiên bhaji",
+        "mangoLassi": "Sữa chua lassi xoài",
+        "coke": "Coca-Cola"
+      }
+    }
+  }
+}

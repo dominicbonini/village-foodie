@@ -1,0 +1,9 @@
+{
+  "paidStepTitle": "Nhận đơn chưa thanh toán",
+  "completionTitle": "Hoàn tất đơn chưa thanh toán",
+  "completionHelp": "Điều gì xảy ra khi một đơn chưa thanh toán đã sẵn sàng để giao.",
+  "pressesOne": "Nhấn một lần (“Đã trả tiền & đã nhận món”)",
+  "pressesOneHelp": "Phù hợp khi bạn nhận tiền lúc giao món. Bạn có một nút duy nhất, “Đã trả tiền & đã nhận món”, vừa ghi nhận thanh toán vừa hoàn tất đơn.",
+  "pressesTwo": "Nhấn hai lần (“Đã trả tiền” & “Đã nhận món”)",
+  "pressesTwoHelp": "Phù hợp khi việc trả tiền và giao món diễn ra vào hai lúc khác nhau — khách trả tiền tại xe, rồi nhận món khi món xong. Bạn có hai nút: bấm “Đã trả tiền” trước, rồi “Đã nhận món” khi khách lấy món."
+}

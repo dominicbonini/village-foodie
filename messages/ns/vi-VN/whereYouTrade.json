@@ -1,0 +1,13 @@
+{
+  "stepHeading": "Xe của bạn hoạt động ở đâu?",
+  "stepIntro": "Mục này quyết định đơn vị tiền tệ, giá, múi giờ và định dạng số điện thoại. Không thể đổi quốc gia sau này vì quốc gia gắn với thanh toán thẻ của bạn.",
+  "settingsHeading": "Nơi bạn bán",
+  "countryLabel": "Quốc gia",
+  "countryGuessed": "Chúng tôi đoán dựa trên vị trí của bạn. Hãy đổi nếu chưa đúng.",
+  "countryLocked": "Không thể đổi quốc gia của bạn",
+  "townLabel": "Thị trấn hoặc thành phố",
+  "townQuestion": "Thị trấn hoặc thành phố nơi bạn kinh doanh",
+  "timezoneLabel": "Múi giờ",
+  "continueButton": "Tiếp tục",
+  "saveFailed": "Không lưu được cài đặt — vui lòng thử lại."
+}

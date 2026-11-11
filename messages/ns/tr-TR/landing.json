@@ -1,0 +1,82 @@
+{
+  "jsonLd": {
+    "subCategory": "Food truck ve seyyar yemek işletmeleri için sipariş sistemi",
+    "description": "Food truck’lar ve seyyar yemek işletmeleri için online sipariş, ön sipariş ve mutfak ekranı ({country}).",
+    "audience": "Food truck ve seyyar yemek işletmecileri"
+  },
+  "hero": {
+    "title": "<lean>Food truck’lar</lean> için geliştirilmiş sipariş sistemi.",
+    "subSmall": "Menünüzü yükleyin, kayıt gerekmez.<br></br>60 saniyeden kısa sürede çalışan bir demo görün.",
+    "cta": "Menümü yükle →",
+    "ctaNote": "<lead>Menünüzün fotoğrafını yükleyin, 60 saniyeden kısa sürede çalışır hâlde görün.</lead><small>Kayıt yok. Kart yok.</small>"
+  },
+  "shots": {
+    "kitchenAlt": "HatchGrab mutfak ekranı: sipariş fişleri pişirme sırasına göre dizili",
+    "dashboardAlt": "HatchGrab ile sipariş alma: solda menü, sağda güncel sepet ve toplam",
+    "phoneAlt": "HatchGrab ile bir food truck’tan sipariş verme: fotoğraflı ve fiyatlı menü, güncel sepet toplamı"
+  },
+  "trust": {
+    "freeMonth": "{months, plural, one {İlk ay tamamen ücretsiz, tüm özellikler açık} other {İlk # ay tamamen ücretsiz, tüm özellikler açık}}",
+    "noCard": "Kart gerekmez",
+    "cancel": "İstediğiniz zaman iptal edin, sözleşme yok"
+  },
+  "does": {
+    "eyebrow": "Neler yapar",
+    "title": "Restoranlar için değil, food truck’lar için tasarlandı.",
+    "lede": "Çoğu sipariş sistemi sabit bir adres, güvenilir bir wifi ve her hafta aynı çalışma saatleri varsayar. Siz ise her hafta başka bir yerde, farklı saatlerde, mobil çekimin zayıf olduğu ya da hiç olmadığı yerlerde çalışıyorsunuz. HatchGrab tam da bunun için geliştirildi.",
+    "slotsTitle": "Müşteriler teslim alma saatini seçer",
+    "capacityTitle": "Mutfak kapasitenizi belirleyin",
+    "capacityBody": "Aynı anda ne kadar pişirebileceğinizi ve bunun ne kadar sürdüğünü belirleyin. Bir teslim alma saati dolduğunda müşteriler o saati seçemez.",
+    "devicesTitle": "Her cihazda çalışır",
+    "devicesBody": "Önlüğünüzün cebindeki telefonda, tezgâhtaki tablette, araçtaki dizüstü bilgisayarda — ve zaten ödeme aldığınız POS cihazıyla birlikte çalışır.",
+    "postsTitle": "Facebook ve Instagram paylaşımlarınızı otomatikleştirin",
+    "postsBody": "Facebook’ta ya da Instagram’da zaten paylaştığınız tasarımı yükleyin. Tarihlerinizi, yerlerinizi ve saatlerinizi biz doldururuz; paylaşmaya hazır olur — her hafta ya da her gün.",
+    "whatsappTitle": "WhatsApp otomatik yanıtlar",
+    "whatsappBody": "“Bu akşam neredesiniz?” “Hangi tatlılarınız var?” Siz satış noktasına giderken ya da ızgaranın başındayken WhatsApp mesajlarınız kendi menünüz ve programınızla yanıtlanır. Messenger ve Instagram yakında.",
+    "whatsappSoonTitle": "WhatsApp otomatik yanıtlar <soon>Yakında</soon>",
+    "whatsappSoonBody": "“Bu akşam neredesiniz?” “Hangi tatlılarınız var?” Yakında siz satış noktasına giderken ya da ızgaranın başındayken WhatsApp mesajlarınız yanıtlanacak. Ardından Messenger ve Instagram gelecek.",
+    "offlineTitle": "Sinyal yok mu? Servise devam edin.",
+    "offlineBody": "Sinyal kesilirse online sipariş otomatik olarak duraklatılır; böylece müşteriler göremeyeceğiniz siparişler veremez. iPhone, iPad ve Android uygulamasıyla sipariş almaya devam edin.",
+    "slotsBody": "Müşteriler önceden sipariş verir ve bir teslim alma saati seçer. Daha kısa kuyruklar, geldiklerinde hazır yemek."
+  },
+  "steps": {
+    "eyebrow": "Başlarken",
+    "title": "Yaklaşık 15 dakikada kurulumu yapın ve sipariş almaya başlayın.",
+    "lede": "Halletmeniz gereken üç şey var — ikisi için bir fotoğraf yeterli.",
+    "menuTitle": "Menünüzü oluşturun",
+    "menuBody": "Menü panonuzun fotoğrafını çekin ya da metni yapıştırın. Ürünler, fiyatlar ve ekstralar kendiliğinden aktarılır. Siz yalnızca doğru olup olmadığını kontrol edin.",
+    "scheduleTitle": "Programınızı ekleyin",
+    "scheduleBody": "Programınız web sitenizde mi? Oradan okuyup güncel tutarız. Değilse onun da fotoğrafını çekin. Siz yalnızca bulduklarımızı onaylayın.",
+    "shareTitle": "Bağlantınızı paylaşın",
+    "shareBody": "Facebook’ta paylaşın, QR kodu aracınıza yapıştırın. Siparişler, pişirmeniz gereken sırayla ekranınıza düşer."
+  },
+  "testimonial": {
+    "quote": "HatchGrab sipariş almayı çok kolaylaştırdı. Her şey düzenli, stoğu takip edebiliyoruz ve satacak kaç pizzamız kaldığını tam olarak biliyoruz — zaman aralıkları da kalabalık kasabalar için harika.",
+    "award": "Yılın Seyyar Pizzacısı",
+    "awardScope": "Bölge birincisi",
+    "business": "Pizzeria Gusto",
+    "byline": "Nadia ve Bogdan — işletme sahipleri"
+  },
+  "pricing": {
+    "eyebrow": "Fiyatlar",
+    "title": "Ücretsiz başlayın. İhtiyaç duyduğunuzda yükseltin.",
+    "switchHead": "Başka bir platformdan mı geçiyorsunuz?",
+    "switchBody": "Aynı siparişler için HatchGrab’de ne ödeyeceğinizi görün. Yaklaşık bir dakika sürer.",
+    "switchCta": "Ne ödediğinizi karşılaştırın"
+  },
+  "faq": {
+    "title": "Sık sorulan sorular",
+    "metaTitle": "Sık sorulan sorular | HatchGrab",
+    "metaDescription": "Food truck’lar için HatchGrab’in fiyatları, kurulumu, online ve gel al sipariş alma ve ödemeler hakkında açık, net yanıtlar."
+  },
+  "final": {
+    "truckLabel": "Food truck",
+    "title": "Kurulumun ne kadar kolay olduğunu görmek ister misiniz?",
+    "lede": "Menünüzün fotoğrafını ya da ekran görüntüsünü yükleyin; 60 saniyeden kısa sürede onu kurcalayabileceğiniz, çalışan bir sipariş sayfasına dönüştürelim. Sizin ürünleriniz, sizin fiyatlarınız. Kayıt yok, kart yok, kurulacak bir şey yok. Bir göz atın, sonra karar verin.",
+    "cta": "Menümü şimdi yükle →"
+  },
+  "meta": {
+    "title": "Food truck sipariş sistemi, gel al — HatchGrab {country}",
+    "description": "Sıra beklemeden sipariş ve ön sipariş alın. Food truck’lar ve seyyar yemek işletmeleri için sipariş ve mutfak ekranı yazılımı ({country}) — POS değildir."
+  }
+}

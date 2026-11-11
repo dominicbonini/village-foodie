@@ -1,0 +1,57 @@
+{
+  "shortened": {
+    "heading": "Tiêu đề quá dài nên đã được rút gọn.",
+    "date": "Ngày quá dài nên đã được rút gọn.",
+    "daysOff": "Dòng ngày nghỉ quá dài nên đã được rút gọn.",
+    "place": "Tên địa điểm quá dài nên đã được rút gọn.",
+    "time": "Giờ quá dài nên đã được rút gọn.",
+    "note": "Phần chữ của bạn quá dài nên đã được rút gọn.",
+    "venue": "Tên nơi bán quá dài nên đã được rút gọn.",
+    "area": "Tên khu vực quá dài nên đã được rút gọn."
+  },
+  "fontFallback": "Không tải được một phông chữ mẫu thiết kế này dùng ({id}) — các ô đó đang hiển thị bằng Oswald.",
+  "wrongShapeBackground": "Ảnh của địa điểm này có khung hình khác với mẫu thiết kế của bạn, nên ảnh nền tiêu chuẩn được dùng.",
+  "rowsFit": "Ngày cuối cùng nằm thấp hơn đáy ảnh {px}px — hãy giảm khoảng cách giữa các dòng hoặc đưa dòng 1 lên trên.",
+  "placeStatus": {
+    "ownBoth": "Ảnh và vị trí chữ riêng",
+    "wrongShape": "Khung hình khác — chưa dùng cho đến khi thay ảnh",
+    "ownPicture": "Ảnh riêng, vị trí tiêu chuẩn",
+    "ownPositions": "Ảnh tiêu chuẩn, vị trí chữ riêng",
+    "none": "Chưa có ảnh — đang dùng mẫu Tiêu chuẩn"
+  },
+  "standardStatus": "Dùng cho mọi địa điểm khác",
+  "option": {
+    "oneOff": "Tải ảnh lên chỉ cho bài đăng này",
+    "placePoster": "Áp phích của {name}",
+    "standard": "Mẫu thiết kế tiêu chuẩn"
+  },
+  "previewLabel": {
+    "lastEvent": "Bản xem trước dùng sự kiện gần nhất của bạn tại đây",
+    "noEvents": "Chưa có sự kiện nào tại đây — bản xem trước hiển thị sự kiện sắp tới của bạn với tên địa điểm này"
+  },
+  "fontUsage": {
+    "weekly": "mẫu bài đăng hằng tuần của bạn",
+    "event": "mẫu bài đăng cho từng sự kiện của bạn",
+    "place": "mẫu thiết kế của bạn cho {place}",
+    "placeUnnamed": "mẫu thiết kế của bạn cho một địa điểm"
+  },
+  "face": {
+    "regular": "Thường",
+    "bold": "Đậm",
+    "italic": "Nghiêng"
+  },
+  "picture": {
+    "legacy": "Áp phích sự kiện",
+    "fallback": "Ảnh",
+    "wrongShape": "Khung hình khác — không dùng làm ảnh nền toàn bộ được"
+  },
+  "noPicture": {
+    "omit": "Bỏ qua",
+    "blank": "Để trống một khoảng",
+    "logo": "Hiện logo của bạn"
+  },
+  "noPicturesAll": "{total, plural, one {Địa điểm của bạn đã có ảnh.} other {Cả {total} địa điểm của bạn đều đã có ảnh.}}",
+  "noPicturesSome": "{without, plural, one {{without} trong số {total} địa điểm của bạn chưa có ảnh} other {{without} trong số {total} địa điểm của bạn chưa có ảnh}}",
+  "licenceTick": "Tôi sở hữu phông chữ này hoặc có giấy phép sử dụng",
+  "fontUploadButton": "↑ Tải phông chữ của bạn lên"
+}

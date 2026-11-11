@@ -1,0 +1,15 @@
+{
+  "greeting": "היי 👋",
+  "opener": "{greeting} ",
+  "allergenRedirect": "{opener}את התפריט המלא ומידע על אלרגנים אפשר למצוא כאן: {url} — {truck} {emoji}",
+  "menuFallback": "{opener}את התפריט המלא שלנו אפשר לראות כאן: {url} — {truck} {emoji}",
+  "otherCategory": "אחר",
+  "categoryFrom": "{category} במחיר התחלתי של {price}",
+  "listTwo": "{first} וגם {second}",
+  "listMany": "{init} וגם {last}",
+  "menuSummary": "{opener}יש לנו {summary}. את התפריט המלא אפשר לראות ולהזמין מראש כאן: {url} — {truck} {emoji}",
+  "allergenCaveat": "זו תשובה אוטומטית — בדקו את מידע האלרגנים בתפריט המלא.",
+  "specificFallback": "{opener}את הלו״ז העדכני שלנו אפשר לראות כאן: {url}\n\n{truck} {emoji}",
+  "capHandoff": "תודה על כל ההודעות! כאן אנחנו יכולים לענות רק כמה פעמים ביום.\n\nלהזמנה: {link}",
+  "capContact": "ליצירת קשר ישיר: {number}"
+}

@@ -1,0 +1,117 @@
+{
+  "cardEditor": {
+    "title": "Vaša kartica alergena",
+    "intro": "Kupci ovo vide <b>tačno onako kako napišete</b> — ništa se ne prepravlja. Upišite ili nalepite tekst ispod, ili otpremite fotografiju/PDF i mi ćemo preneti tekst, a vi ga proverite.",
+    "empty": "Još nema kartice alergena.",
+    "placeholder": "npr. Sve naše pljeskavice sadrže gluten i mleko. Friteza se deli sa jelima koja sadrže gluten i orašaste plodove. Imamo veganske opcije — pitajte osoblje.",
+    "reading": "Čitamo sliku…",
+    "upload": "📷 Otpremi sliku / PDF",
+    "uploadNote": "Tekst čitamo sa vaše slike da biste ga proverili — sliku ne čuvamo."
+  },
+  "cardUpload": {
+    "dishFallback": "Jelo",
+    "question": "Imate li karticu alergena za otpremanje?",
+    "perDish": "{detected, select, yes {Otpremite je i iskoristićemo je da popunimo alergene za vaša jela. Pronađeni alergeni biće prikazani na sledećoj stranici, gde potvrđujete svako jelo.} other {Otpremite je i iskoristićemo je da popunimo alergene za vaša jela.}}",
+    "cardOnly": "Otpremite karticu alergena koju će kupci videti.",
+    "yes": "Da",
+    "no": "Ne",
+    "noProblem": "Nema problema — nije vam potrebna. Nastavite pomoću dugmeta ispod.",
+    "analysing": "Analiziramo karticu…",
+    "dropzone": "Prevucite i otpustite ili dodirnite da izaberete",
+    "imageOrPdf": "Slika ili PDF",
+    "or": "ili",
+    "pastePlaceholder": "Nalepite tekst kartice alergena ovde…",
+    "process": "Obradi karticu",
+    "cardRead": "Kartica pročitana ✓",
+    "unmatchedHeading": "Ovo nismo uspeli automatski da povežemo — dodelite ili odbacite",
+    "quotedName": "„{name}“",
+    "ambiguous": "Nejasno — odgovara za više jela; izaberite pravo.",
+    "assignTo": "Dodeli jelu…",
+    "dismiss": "Odbaci",
+    "blanket": "Na kartici piše da <b>{list}</b> može biti prisutno u <b>svim</b> jelima. Dodati u svako jelo? (i dalje ćete potvrditi svako) <muted>— podrazumevano isključeno</muted>",
+    "kitchenNotes": "Napomene kuhinje (čuvaju se u podacima o alergenima)",
+    "matchSummary": "{n, plural, =0 {Povezano sa jelom: {matched}.} one {Povezano sa jelom: {matched}. Čeka vašu dodelu: {count}.} few {Povezano sa jelom: {matched}. Čeka vašu dodelu: {count}.} other {Povezano sa jelom: {matched}. Čeka vašu dodelu: {count}.}}"
+  },
+  "savedCard": {
+    "showLess": "Prikaži manje",
+    "showMore": "Prikaži više",
+    "fileOnly": "Za ovaj food truck je sačuvan fajl kartice, ali tekst sažetka nije sačuvan. Otvorite original da biste ga pročitali.",
+    "viewOriginal": "Pogledaj originalnu karticu"
+  },
+  "wizard": {
+    "toast": {
+      "readFailed": "Nismo uspeli da pročitamo karticu alergena — pokušajte ponovo",
+      "confirmed": "Potvrđeno: {name}",
+      "undo": "Opozovi",
+      "saveFailed": "Čuvanje nije uspelo — pokušajte ponovo",
+      "imageFailed": "Nismo uspeli da pročitamo tu sliku — umesto toga upišite ili nalepite tekst kartice",
+      "cardRead": "{n, plural, one {Kartica pročitana — povezano: {matched}, čeka dodelu: {count}} few {Kartica pročitana — povezano: {matched}, čeka dodelu: {count}} other {Kartica pročitana — povezano: {matched}, čeka dodelu: {count}}}"
+    },
+    "genericWarn": {
+      "text": "Pronađeno je „{generic}“, ali to nije dovoljno precizno. Izaberite {picks} ako ovo jelo sadrži: {family} — ili ih ostavite neizabrane ako ne sadrži.",
+      "andOr": "{a} i/ili {b}"
+    },
+    "badge": {
+      "justConfirmed": "✓ Potvrđeno",
+      "confirmed": "Potvrđeno",
+      "needsReview": "Treba proveriti"
+    },
+    "confirm": {
+      "confirming": "Potvrđivanje…",
+      "confirmed": "Potvrđeno ✓",
+      "confirm": "Potvrdi",
+      "changed": "· izmenjeno",
+      "changedTitle": "Izmenjeno od poslednje potvrde — potvrdite ponovo"
+    },
+    "allergens": "Alergeni",
+    "dietary": "Ishrana",
+    "uncategorised": "Bez kategorije",
+    "review": {
+      "progress": "Potvrđeno: {confirmed} od {total}",
+      "allConfirmed": "✓ Sve potvrđeno",
+      "list": "Lista",
+      "table": "Tabela",
+      "detected": "Pronađeno u vašem meniju — <b>proverite ovo</b>. Alergeni ostaju skriveni od kupaca dok ne potvrdite svako jelo.",
+      "viewOnly": "👁 Samo pregled — alergene može da potvrdi ili menja samo vlasnik.",
+      "emptyTitle": "Nema stavki menija",
+      "emptyBody": "Prvo dodajte stavke menija, pa ovde podesite njihove alergene.",
+      "dish": "Jelo",
+      "status": "Status"
+    },
+    "cardPanel": {
+      "reading": "Čitamo podatke o alergenima…",
+      "saved": "🛡️ Kartica alergena je sačuvana",
+      "viewOriginal": "Pogledaj originalnu karticu",
+      "replace": "Zameni karticu",
+      "uploadHelp": "Otpremite karticu alergena (fotografiju/PDF) ili nalepite podatke o alergenima — naš AI ih sređuje za kupce.",
+      "add": "Dodaj karticu alergena",
+      "viewOnly": "👁 Samo pregled — karticu alergena može da doda samo vlasnik.",
+      "intro": "Kupci će ovu karticu videti kao referencu za alergene u meniju. U režimu „samo kartica“ alergeni po jelu ostaju skriveni (podaci o jelima se čuvaju, za slučaj da kasnije pređete na prikaz po jelu)."
+    },
+    "subtitle": {
+      "choose": "Izaberite kako kupci vide podatke o alergenima",
+      "card": "Dodajte karticu alergena",
+      "cardOptional": "Dodajte karticu alergena (nije obavezno)",
+      "review": "Proverite i potvrdite svako jelo"
+    },
+    "heading": {
+      "import": "Alergeni",
+      "standalone": "Podešavanje alergena"
+    },
+    "nav": {
+      "next": "Dalje →",
+      "back": "← Nazad",
+      "skip": "Preskoči za sada",
+      "saving": "Čuvanje…",
+      "done": "Gotovo",
+      "saveLater": "Sačuvaj i završi kasnije",
+      "close": "Zatvori",
+      "finish": "Završi",
+      "skipImport": "Preskoči podešavanje alergena za sada"
+    },
+    "hint": {
+      "skipDefers": "Preskakanje samo odlaže — jela koja niste potvrdili ostaju skrivena od kupaca dok se njihovi alergeni ne potvrde.",
+      "importIncomplete": "Potvrdite svako jelo da biste nastavili — ili izaberite „Preskoči podešavanje alergena za sada“."
+    }
+  }
+}

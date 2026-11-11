@@ -1,0 +1,16 @@
+{
+  "subject": "{truck}: hvernig var pöntunin þín?",
+  "heading": "{truck} þakkar þér fyrir pöntunina",
+  "body": "{truck} kynni vel að meta heiðarlega umsögn á Google. Það tekur aðeins mínútu og hjálpar öðrum að finna vagninn.",
+  "button": "Skrifa umsögn á Google",
+  "linkText": "Skrifa umsögn á Google: {url}",
+  "from": "{truck} sendi þennan tölvupóst í gegnum HatchGrab af því að þú pantaðir þaðan.",
+  "unsubscribeLead": "{truck} — viltu ekki fá fleiri beiðnir um umsögn?",
+  "unsubscribeLink": "Afskrá mig",
+  "unsubscribeText": "Afskrá mig: {url}",
+  "unsubscribed": {
+    "title": "Afskráning tókst",
+    "body": "{truck} sendir þér ekki fleiri beiðnir um umsögn.",
+    "invalid": "Þessi afskráningartengill er ekki gildur."
+  }
+}

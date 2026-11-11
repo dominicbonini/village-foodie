@@ -1,0 +1,154 @@
+{
+  "filter": {
+    "dateRange": "📅 기간",
+    "event": "📍 영업 일정",
+    "filterBy": "필터",
+    "show": "보기",
+    "range": "<from></from><sep>~</sep><until></until>",
+    "selectEvent": "영업 일정 선택…",
+    "eventOption": "{venue} · {date}",
+    "unnamedEvent": "영업 일정",
+    "viewReport": "보고서 보기",
+    "loading": "불러오는 중…",
+    "orders": "📋 주문",
+    "items": "📦 메뉴",
+    "exportCsv": "⬇ CSV 내보내기"
+  },
+  "empty": {
+    "noOrders": "이 기간에 주문이 없습니다.",
+    "selectEvent": "보고서를 보려면 위에서 영업 일정을 선택하세요."
+  },
+  "summary": {
+    "totals": "{n, plural, one {주문 {count}건} other {주문 {count}건}} · {total}"
+  },
+  "revenue": {
+    "title": "매출 내역",
+    "deals": "세트 메뉴 매출",
+    "modifiers": "옵션 추가 요금",
+    "foodSales": "음식 매출",
+    "total": "합계",
+    "other": "기타",
+    "tax": "세금",
+    "tips": "팁",
+    "serviceFees": "서비스 수수료",
+    "cardFees": "카드 수수료"
+  },
+  "itemsSold": {
+    "title": "판매 메뉴"
+  },
+  "dealsCard": {
+    "title": "세트 메뉴"
+  },
+  "custom": {
+    "title": "맞춤 요청",
+    "paidModifiers": "유료 옵션",
+    "customerNotes": "손님 메모",
+    "note": "“{note}”"
+  },
+  "table": {
+    "item": "메뉴",
+    "modifier": "옵션",
+    "qty": "수량",
+    "total": "합계",
+    "date": "날짜",
+    "time": "시간",
+    "channel": "채널"
+  },
+  "breakdown": {
+    "orders": "주문 내역",
+    "items": "메뉴 내역"
+  },
+  "channel": {
+    "online": "온라인",
+    "walkUp": "현장 주문"
+  },
+  "csv": {
+    "orderId": "주문 ID",
+    "date": "날짜",
+    "event": "영업 일정",
+    "timePlaced": "주문 시각",
+    "collectionTime": "픽업 시간",
+    "customerName": "손님 이름",
+    "orderType": "주문 유형",
+    "items": "메뉴",
+    "deals": "세트 메뉴",
+    "modifiers": "옵션",
+    "notes": "메모",
+    "subtotal": "소계",
+    "tip": "팁",
+    "serviceFee": "서비스 수수료",
+    "total": "합계",
+    "itemName": "메뉴명",
+    "qty": "수량",
+    "unitPrice": "단가",
+    "itemTotal": "메뉴 합계",
+    "orderTotal": "주문 합계",
+    "unknownEvent": "알 수 없는 영업 일정",
+    "asap": "최대한 빨리",
+    "unknownCustomer": "알 수 없음",
+    "customerOnline": "손님 온라인 주문",
+    "placedByTruck": "푸드트럭에서 입력"
+  },
+  "presets": {
+    "label": "기간",
+    "custom": "직접 설정",
+    "thisMonth": "이번 달",
+    "lastMonth": "지난달",
+    "lastQuarter": "지난 분기",
+    "lastTaxYear": "지난 과세 연도"
+  },
+  "accounts": {
+    "title": "세무사 제출용",
+    "help": "매출은 영업 일정 당일 기준으로 집계됩니다. 총매출은 손님이 결제한 금액이고, 순매출은 환불과 세금을 뺀 금액입니다.",
+    "gross": "총매출",
+    "refunds": "환불",
+    "net": "순매출",
+    "taxEstimated": "설정한 세율로 추정",
+    "taxNone": "푸드트럭에 설정된 세율이 없어 여기에서는 세금을 계산하지 않습니다.",
+    "byChannel": "채널별 총매출",
+    "byPayment": "결제 수단별 총매출",
+    "online": "온라인",
+    "walkUp": "현장 주문",
+    "cardOnline": "온라인 카드 결제",
+    "payAtTruck": "현장 결제",
+    "cost": "판매 메뉴 원가",
+    "profit": "이익",
+    "coverage": "{total, plural, one {판매된 메뉴 #개 중 원가 설정: {withCost}개} other {판매된 메뉴 #개 중 원가 설정: {withCost}개}}",
+    "partial": "원가가 없는 메뉴는 원가에서 빠지므로 이익이 실제보다 높게 표시됩니다. 메뉴에서 각 메뉴의 원가를 추가하세요.",
+    "noCosts": "아직 원가가 설정된 메뉴가 없습니다. 이익을 보려면 메뉴에서 원가를 추가하세요.",
+    "byEvent": "영업 일정별",
+    "event": "영업 일정",
+    "sales": "순매출",
+    "eventNoProfit": "대시(–)는 그 영업 일정에서 판매한 메뉴 중 원가가 없는 메뉴가 있다는 뜻입니다.",
+    "downloadOrders": "⬇ 세무사용 주문 내역",
+    "downloadEvents": "⬇ 세무사용 영업 일정 내역",
+    "downloadHelp": "스프레드시트 파일 2개: 주문별로 한 행, 영업 일정별로 한 행입니다. Excel, Numbers, Xero, QuickBooks에서 열 수 있습니다."
+  },
+  "accountsCsv": {
+    "header": {
+      "date": "날짜",
+      "time": "시간",
+      "orderNumber": "주문 번호",
+      "event": "영업 일정",
+      "channel": "채널",
+      "paymentMethod": "결제 수단",
+      "currency": "통화",
+      "gross": "총액",
+      "tax": "세금",
+      "taxBasis": "세금 기준",
+      "net": "순액",
+      "refunded": "환불액",
+      "cost": "원가",
+      "profit": "이익",
+      "eventDate": "영업 일정 날짜",
+      "orders": "주문",
+      "dishesSold": "판매 메뉴 수",
+      "dishesWithCost": "원가 설정 메뉴 수"
+    },
+    "taxBasis": {
+      "stored": "주문과 함께 저장됨",
+      "estimated": "설정한 세율로 추정",
+      "none": "세율 미설정"
+    }
+  }
+}

@@ -1,0 +1,47 @@
+{
+  "meta": {
+    "fallbackTitle": "Matarvagn | Village Foodie",
+    "hgFallbackTitle": "Matarvagn",
+    "orderTitle": "{truck} — panta á netinu",
+    "orderDescription": "{truck}: pantaðu fyrir fram og sæktu matinn við vagninn án biðraðar.",
+    "title": "{truck} | Village Foodie",
+    "logoAlt": "{truck} — merki"
+  },
+  "shareTitle": "{truck} — dagskrá",
+  "shareText": "Sjáðu hvar {truck} stoppar næst! 🚚",
+  "linkCopied": "Tengill á prófílinn afritaður! 📋",
+  "facebookPage": "Facebook-síða",
+  "loadingMap": "Hleð korti…",
+  "view": {
+    "list": "Listi",
+    "map": "Kort"
+  },
+  "ownThisTruck": "Átt þú þennan vagn?",
+  "ownThisTruckTitle": "Átt þú þennan vagn? Smelltu til að uppfæra prófílinn þinn",
+  "actions": {
+    "menu": "Matseðill",
+    "call": "Hringja",
+    "message": "Skilaboð",
+    "share": "Deila",
+    "order": "Panta"
+  },
+  "loadingSchedule": "Hleð dagskrá…",
+  "loadError": {
+    "title": "Tókst ekki að hlaða",
+    "body": "Ekki tókst að hlaða dagskránni í augnablikinu — þetta er yfirleitt stutt truflun. Reyndu aftur.",
+    "retry": "Reyna aftur"
+  },
+  "notFound": {
+    "title": "Vagn fannst ekki",
+    "body": "Við fundum engar upplýsingar um þennan matarvagn. Hann gæti hafa fært sig eða uppfært prófílinn sinn.",
+    "cta": "Sjá alla vagna"
+  },
+  "noEvents": {
+    "title": "Engir væntanlegir viðburðir fundust",
+    "body": "Kannski vantar okkur einhverjar upplýsingar um þennan vagn. Ert þú eigandinn, eða þekkir þú dagskrána?",
+    "cta": "Sendu okkur línu svo við getum uppfært!"
+  },
+  "whereToFind": "Hvar þú finnur okkur",
+  "missingEvent": "<strong>Vantar viðburð hjá okkur?</strong> <br></br>Ef þú átt þennan vagn eða ert bara dyggur aðdáandi, hjálpaðu okkur að halda síðunni réttri! <br></br><link>Hafðu samband til að bæta við upplýsingum sem vantar.</link>",
+  "weeklySchedule": "Fáðu vikulega dagskrá 🍕"
+}

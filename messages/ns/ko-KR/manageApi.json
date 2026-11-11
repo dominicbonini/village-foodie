@@ -1,0 +1,10 @@
+{
+  "vanFallback": "차량",
+  "eventsFeed": {
+    "today": "오늘 · {date}",
+    "tomorrow": "내일 · {date}"
+  },
+  "privacyNotSaved": "영업 일정은 공개되었지만 공개 설정을 저장하지 못했습니다.",
+  "stockWarning": "“{category}” 카테고리에 주문 가능한 메뉴가 없습니다",
+  "uncategorised": "카테고리 없음"
+}

@@ -1,0 +1,70 @@
+{
+  "error": {
+    "generic": "Eitthvað fór úrskeiðis",
+    "previewFailed": "Ekki tókst að búa til forskoðun",
+    "loadFailed": "Ekki tókst að hlaða",
+    "tooBig": "Þessi mynd er {size, number, ::.0 group-off} MB. Hámarkið er 10 MB.",
+    "wrongType": "Veldu PNG- eða JPG-mynd.",
+    "uploadIncomplete": "Upphleðslunni lauk ekki",
+    "uploadFailed": "Upphleðslan mistókst",
+    "saveFailed": "Ekki tókst að vista",
+    "buildFailed": "Ekki tókst að búa til færsluna",
+    "copyFailed": "Ekki tókst að afrita — veldu textann og afritaðu hann handvirkt."
+  },
+  "loading": "Hleð…",
+  "missingTable": {
+    "title": "Vikufærslan þarf uppfærslu á gagnagrunni",
+    "body": "Hönnunartaflan hefur ekki enn verið búin til. Þegar uppfærslan (migration) hefur verið keyrð virkar þessi skjár."
+  },
+  "kind": {
+    "label": "Hvaða hönnun",
+    "event": "Stakur viðburður",
+    "week": "Vikulega"
+  },
+  "setup": {
+    "title": "Settu upp vikufærsluna þína",
+    "intro": "Hladdu upp auðri útgáfu af vikudagskrármyndinni sem þú gerir nú þegar — sömu hönnun, án textareitanna. HatchGrab fyllir inn vikuna út frá dagskránni þinni.",
+    "canvaTitle": "Svona flytur þú út auða mynd úr Canva",
+    "canvaStep1": "Opnaðu vikudagskrárhönnunina sem þú notar venjulega.",
+    "canvaStep2": "Eyddu textareitunum með dagsetningum, stöðum og tímum — haltu bakgrunninum og fyrirsögnunum sem þú vilt hafa.",
+    "canvaStep3": "Deila (Share) › Sækja (Download) › PNG.",
+    "uploading": "Hleð upp…",
+    "upload": "Hladdu upp auðu myndinni",
+    "uploadHint": "PNG eða JPG, allt að 10 MB, minnst {px} px á styttri hliðinni.",
+    "phoneTip": "Best í tölvu eða iPad — reitirnir eru smáir til að draga í síma.",
+    "designName": "Vikuhönnun",
+    "backDesigns": "‹ Hannanir",
+    "back": "‹ Til baka",
+    "pictureNote": "Myndin þín án dagsetninga eða staða. Við bætum þeim við.",
+    "saved": "Hönnun vistuð."
+  },
+  "week": {
+    "this": "Þessi vika",
+    "next": "Næsta vika"
+  },
+  "post": {
+    "title": "Vikufærslan þín",
+    "editDesign": "Breyta hönnun",
+    "weekOf": "Vikan frá {date}",
+    "imageAlt": "Vikufærslan þín",
+    "building": "Bý til færsluna…",
+    "updating": "Uppfæri…",
+    "eventsTitle": "Viðburðir vikunnar",
+    "noEvents": "Engir viðburðir þessa viku.",
+    "eventDateCancelled": "{date} · aflýst",
+    "showCancelled": "Sýna aflýsta viðburði",
+    "showPrivate": "Sýna einkaviðburði",
+    "privateHint": "Þeir birtast sem „Einkaviðburður“ með dagsetningu og tímum — aldrei staðnum.",
+    "noteTitle": "Athugasemd",
+    "notePlaceholder": "t.d. Forpantaðu og sæktu",
+    "noteHint": "Birtist í myndatextanum og í athugasemdareitnum ef þú settir hann inn.",
+    "captionTitle": "Myndatexti fyrir síðuna þína",
+    "perEventTitle": "Færsla fyrir hvern viðburð",
+    "nothingToPost": "Ekkert til að birta þessa viku.",
+    "textCopied": "Texti afritaður.",
+    "copyText": "Afrita texta",
+    "image": "Mynd",
+    "share": "Deila",
+    "noOrderLink": "Enginn pöntunartengill enn — stilltu vefslóð matarvagnsins í Stillingum."
+  }
+}

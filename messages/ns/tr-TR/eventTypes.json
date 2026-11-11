@@ -1,0 +1,83 @@
+{
+  "title": "Etkinlik türleri",
+  "newTypeButton": "+ Yeni etkinlik türü",
+  "close": "Kapat",
+  "loading": "Yükleniyor…",
+  "missingTitle": "Etkinlik türleri henüz açılmadı.",
+  "missingBody": "Bu özellik için veritabanı güncellemesi henüz uygulanmadı. Hiçbir şey bozuk değil — tüm etkinlikler normal ayarlarınızı kullanıyor.",
+  "column": "Sütun",
+  "vanGone": "Bu araç artık yok.",
+  "typeGone": "Bu tür artık yok.",
+  "standard": "Standart",
+  "standardHeading": "STANDART",
+  "moreFor": "Diğer seçenekler: {name}",
+  "rename": "Yeniden adlandır",
+  "moveLeft": "Sola taşı",
+  "moveRight": "Sağa taşı",
+  "delete": "Sil",
+  "sections": {
+    "vans": "ARAÇLAR",
+    "prices": "FİYATLAR",
+    "itemPrices": "ÜRÜN FİYATLARI",
+    "service": "SERVİS"
+  },
+  "labelFor": "{label} · {name}",
+  "intervalEvery": "{mins} dakikada bir",
+  "noTypes": "Henüz etkinlik türünüz yok, bu yüzden tüm etkinlikler normal ayarlarınızı kullanıyor.",
+  "renameTitle": "Bu türü yeniden adlandırın",
+  "name": "Ad",
+  "cancel": "İptal",
+  "save": "Kaydet",
+  "copyVanOne": "Araç 1 ayarlarını kopyala",
+  "thisType": "bu tür",
+  "matchTitle": "Standart ayarlar uygulansın mı? (“{name}”)",
+  "matchKeeps": "Tek bir etkinliğin panelinde değiştirdiğiniz her şey olduğu gibi kalır ve bu türün fiyatları değişmez.",
+  "matchWillUse": "Kullanılacak ayarlar: {summary}",
+  "deleteTitle": "“{name}” silinsin mi?",
+  "deleteBody": "{n, plural, =0 {Yaklaşan hiçbir etkinlik bu türü (“{name}”) kullanmıyor.} one {Yaklaşan {count} etkinlik bu türü (“{name}”) kullanıyor. Bu etkinlik Standart’a geri dönecek.} other {Yaklaşan {count} etkinlik bu türü (“{name}”) kullanıyor. Bu etkinlikler Standart’a geri dönecek.}} Tek bir etkinlikte değiştirdiğiniz her şey olduğu gibi kalır.",
+  "keep": "Kalsın",
+  "phone": {
+    "standardTag": "Standart",
+    "defaultTag": "varsayılan",
+    "vanSetup": "Bu aracın her zamanki ayarları — türü olmayan her etkinlikte kullanılır.",
+    "standardSetup": "Her zamanki ayarlarınız — türü olmayan her etkinlikte kullanılır.",
+    "cardSummary": "{upcoming, plural, one {{upcomingCount} yaklaşan etkinlik} other {{upcomingCount} yaklaşan etkinlik}} · {changed, plural, =0 {henüz değişiklik yok} one {{total} ayardan {changedCount} tanesi değişti} other {{total} ayardan {changedCount} tanesi değişti}}",
+    "noMenuItems": "Henüz menü ürünü yok — Menü › Ürünler bölümünden ekleyin."
+  },
+  "newType": {
+    "title": "Yeni etkinlik türü",
+    "namePlaceholder": "ör. Okul şenliği",
+    "help": "Bir ada dokunun ya da kendinizinkini yazın. Standart’ın bir kopyası olarak başlar; sonradan Standart’ı değiştirmeniz bunu etkilemez. Ardından istediğiniz her şeyi değiştirin.",
+    "create": "Oluştur",
+    "chips": {
+      "festival": "Festival",
+      "pub": "Bar",
+      "market": "Pazar",
+      "privateHire": "Food truck kiralama"
+    }
+  },
+  "select": {
+    "label": "Etkinlik türü",
+    "usual": "Bu mekânda genellikle kullanılan tür: {name}."
+  },
+  "summary": {
+    "normalSetup": "Normal ayarlarınız",
+    "sameAsStandard": "Standart ile aynı",
+    "buzzersOn": "çağrı cihazları açık",
+    "buzzersOff": "çağrı cihazları kapalı",
+    "takeCashOn": "nakit alma açık",
+    "takeCashOff": "nakit alma kapalı",
+    "markReadyOn": "“hazır” işaretleme adımı açık",
+    "markReadyOff": "“hazır” işaretleme adımı kapalı",
+    "collectionEvery": "{mins} dakikada bir teslim alma",
+    "offlineOff": "çevrimdışı koruma kapalı",
+    "offlineKeepTaking": "çevrimdışı: sipariş almaya devam et",
+    "offlinePause": "çevrimdışı: siparişleri duraklat"
+  },
+  "errors": {
+    "somethingWentWrong": "Bir sorun oluştu",
+    "couldNotLoad": "Yüklenemedi",
+    "couldNotSave": "Kaydedilemedi",
+    "noVans": "Bu food truck’ta değiştirilecek araç yok."
+  }
+}

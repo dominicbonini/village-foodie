@@ -1,0 +1,42 @@
+{
+  "publicName": "私人活動",
+  "chip": "私人",
+  "grid": {
+    "orderingSection": "點餐",
+    "linkRowLabel": "透過私人連結和 QR code 接單",
+    "columnTitle": "內建的私人類型，無法重新命名、移動或刪除。"
+  },
+  "form": {
+    "help": "在你的行程上只會顯示為「私人活動」和日期、時間——絕不會顯示地址、地圖或 Village Foodie。",
+    "linkPromise": "賓客透過私人連結和 QR code 點餐——儲存後就會拿到。",
+    "nameLabel": "活動名稱",
+    "nameHelp": "賓客會在點餐頁面最上方看到這個名稱。",
+    "namePlaceholder": "家豪與雅婷的婚禮",
+    "previewNote": "在你的行程上的顯示方式——不含場地、城市或郵遞區號。",
+    "needsTimes": "請新增開始和結束時間——透過連結接單的私人活動需要這些時間。"
+  },
+  "link": {
+    "button": "連結與 QR code",
+    "title": "私人連結與 QR code",
+    "label": "私人連結",
+    "copy": "複製",
+    "copied": "已複製",
+    "qrDownload": "下載 QR code",
+    "tableCards": "列印桌卡",
+    "newLink": "產生新連結",
+    "working": "處理中…",
+    "newLinkConfirm": "要產生新連結嗎？目前的連結會立即失效，你已經列印的 QR code 也會一併失效。",
+    "newLinkHelp": "如果連結流傳到不該去的地方，請使用這個功能。目前的連結會立即失效，已列印的 QR code 也會失效。",
+    "newLinkFailed": "無法產生新連結。",
+    "offNotice": "這場活動已關閉私人連結點餐，所以沒有可分享的連結。這場活動仍會以「私人活動」顯示在你的行程上。"
+  },
+  "cards": {
+    "printTitle": "{truck} — 桌卡",
+    "scan": "掃描點餐",
+    "blurb": "用手機點餐和付款。餐點好了我們會叫你的名字。",
+    "footer": "點餐服務由 HatchGrab 提供"
+  },
+  "noSinglePost": "私人活動不會有單獨的貼文——它們會以「私人活動」出現在你的每週海報上。",
+  "confirmToPrivate": "這會隱藏地址，並把活動從地圖上移除。賓客需要私人連結才能點餐。",
+  "confirmFromPrivate": "這會把活動設為公開：地址和地圖標記都會顯示，私人連結也會失效。"
+}

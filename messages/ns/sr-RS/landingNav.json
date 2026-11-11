@@ -1,0 +1,14 @@
+{
+  "homeLabel": "Početna stranica HatchGrab",
+  "cta": "Otpremi meni →",
+  "ctaShort": "Otpremi meni",
+  "features": "Funkcije",
+  "pricing": "Cene",
+  "logIn": "Prijava",
+  "country": {
+    "button": "Zemlja: {name}. Promenite zemlju",
+    "menu": "Zemlja",
+    "title": "Izaberite zemlju",
+    "subline": "Cene, jezik i podešavanja se prilagođavaju."
+  }
+}

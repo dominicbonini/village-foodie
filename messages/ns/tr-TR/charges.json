@@ -1,0 +1,13 @@
+{
+  "subtotal": "Ara toplam",
+  "taxFallback": "Vergi",
+  "taxIncluded": "{label} dahil",
+  "serviceFeeCustomer": "Online hizmet bedeli",
+  "serviceFee": "Hizmet bedeli",
+  "cardFee": "Kart ücreti",
+  "tip": "Bahşiş",
+  "rate": "%{rate}",
+  "line": "{label}: {amount}",
+  "lineWithRate": "{label} {rate}: {amount}",
+  "foldedCharges": "{parts, select, tax_fees_tip {Vergi, ücretler ve bahşiş} tax_tip {Vergi ve bahşiş} fees_tip {Ücretler ve bahşiş} fees {Ücretler} other {Vergi ve ücretler}}"
+}

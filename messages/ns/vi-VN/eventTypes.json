@@ -1,0 +1,83 @@
+{
+  "title": "Loại sự kiện",
+  "newTypeButton": "+ Loại sự kiện mới",
+  "close": "Đóng",
+  "loading": "Đang tải…",
+  "missingTitle": "Tính năng loại sự kiện chưa được bật.",
+  "missingBody": "Bản cập nhật cơ sở dữ liệu cho tính năng này chưa được áp dụng. Không có gì bị lỗi — mọi sự kiện đang dùng thiết lập thông thường của bạn.",
+  "column": "Cột",
+  "vanGone": "Xe đó không còn nữa.",
+  "typeGone": "Loại đó không còn nữa.",
+  "standard": "Tiêu chuẩn",
+  "standardHeading": "TIÊU CHUẨN",
+  "moreFor": "Tùy chọn khác cho: {name}",
+  "rename": "Đổi tên",
+  "moveLeft": "Chuyển sang trái",
+  "moveRight": "Chuyển sang phải",
+  "delete": "Xóa",
+  "sections": {
+    "vans": "XE",
+    "prices": "GIÁ",
+    "itemPrices": "GIÁ TỪNG MÓN",
+    "service": "PHỤC VỤ"
+  },
+  "labelFor": "{label} cho: {name}",
+  "intervalEvery": "Mỗi {mins} phút",
+  "noTypes": "Bạn chưa có loại sự kiện nào, nên mọi sự kiện đều dùng thiết lập thông thường.",
+  "renameTitle": "Đổi tên loại này",
+  "name": "Tên",
+  "cancel": "Hủy",
+  "save": "Lưu",
+  "copyVanOne": "Sao chép cài đặt của Xe 1",
+  "thisType": "loại này",
+  "matchTitle": "Đặt “{name}” giống Tiêu chuẩn?",
+  "matchKeeps": "Những gì bạn đã đổi trên bảng điều khiển của từng sự kiện vẫn giữ nguyên, và giá của loại này không thay đổi.",
+  "matchWillUse": "Sẽ dùng: {summary}",
+  "deleteTitle": "Xóa “{name}”?",
+  "deleteBody": "{n, plural, =0 {Không có sự kiện sắp tới nào dùng “{name}”.} one {{count} sự kiện sắp tới đang dùng “{name}”. Sự kiện đó sẽ quay về Tiêu chuẩn.} other {{count} sự kiện sắp tới đang dùng “{name}”. Các sự kiện đó sẽ quay về Tiêu chuẩn.}} Những gì bạn đã đổi ở từng sự kiện vẫn giữ nguyên.",
+  "keep": "Giữ lại",
+  "phone": {
+    "standardTag": "Tiêu chuẩn",
+    "defaultTag": "mặc định",
+    "vanSetup": "Thiết lập thường dùng của xe này — áp dụng cho mọi sự kiện không có loại.",
+    "standardSetup": "Thiết lập thường dùng của bạn — áp dụng cho mọi sự kiện không có loại.",
+    "cardSummary": "{upcoming, plural, one {{upcomingCount} sự kiện sắp tới} other {{upcomingCount} sự kiện sắp tới}} · {changed, plural, =0 {chưa thay đổi gì} other {đã đổi {changedCount}/{total}}}",
+    "noMenuItems": "Chưa có món nào — hãy thêm trong Thực đơn › Món."
+  },
+  "newType": {
+    "title": "Loại sự kiện mới",
+    "namePlaceholder": "VD: Hội chợ trường học",
+    "help": "Chạm vào một tên hoặc tự nhập tên. Loại mới bắt đầu là bản sao của Tiêu chuẩn, và sau này đổi Tiêu chuẩn sẽ không ảnh hưởng đến nó. Bạn có thể đổi mọi thứ sau.",
+    "create": "Tạo",
+    "chips": {
+      "festival": "Lễ hội",
+      "pub": "Quán bia",
+      "market": "Chợ",
+      "privateHire": "Thuê food truck"
+    }
+  },
+  "select": {
+    "label": "Loại sự kiện",
+    "usual": "Địa điểm này thường dùng: {name}."
+  },
+  "summary": {
+    "normalSetup": "Thiết lập thông thường",
+    "sameAsStandard": "Giống Tiêu chuẩn",
+    "buzzersOn": "thẻ rung báo món: bật",
+    "buzzersOff": "thẻ rung báo món: tắt",
+    "takeCashOn": "nhận tiền mặt: bật",
+    "takeCashOff": "nhận tiền mặt: tắt",
+    "markReadyOn": "bước báo món xong: bật",
+    "markReadyOff": "bước báo món xong: tắt",
+    "collectionEvery": "nhận món mỗi {mins} phút",
+    "offlineOff": "bảo vệ khi mất mạng: tắt",
+    "offlineKeepTaking": "khi mất mạng: vẫn nhận đơn",
+    "offlinePause": "khi mất mạng: tạm dừng nhận đơn"
+  },
+  "errors": {
+    "somethingWentWrong": "Đã xảy ra lỗi",
+    "couldNotLoad": "Không tải được",
+    "couldNotSave": "Không lưu được",
+    "noVans": "Food truck này chưa có xe nào để thay đổi."
+  }
+}

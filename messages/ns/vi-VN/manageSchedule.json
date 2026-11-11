@@ -1,0 +1,102 @@
+{
+  "status": {
+    "cancelled": "Đã hủy",
+    "finished": "Đã kết thúc",
+    "unconfirmed": "Chưa xác nhận",
+    "confirmed": "Đã xác nhận",
+    "open": "Đang mở",
+    "closed": "Đã đóng"
+  },
+  "sections": {
+    "label": "Các mục lịch bán",
+    "events": "Sự kiện",
+    "eventTypes": "Loại sự kiện"
+  },
+  "header": {
+    "title": "Lịch bán",
+    "upcoming": "Sắp tới: {count}",
+    "import": "✨ Nhập lịch bán",
+    "importHint": "ảnh, PDF hoặc văn bản",
+    "addEvent": "+ Thêm sự kiện",
+    "scraperAuto": "Đang tự động tìm sự kiện từ website của bạn",
+    "changeInSettings": "Thay đổi trong Cài đặt",
+    "scraperManual": "Bạn đang tự quản lý lịch bán"
+  },
+  "empty": {
+    "title": "Không có sự kiện sắp tới",
+    "body": "Sự kiện lấy từ mạng xã hội và lịch đặt chỗ của bạn sẽ hiện ở đây để bạn xác nhận"
+  },
+  "list": {
+    "openNow": "Đang mở",
+    "needsApproval": "Cần bạn duyệt",
+    "needsConfirmation": "Cần xác nhận",
+    "confirmed": "Đã xác nhận",
+    "past": "Sự kiện đã qua ({count})",
+    "found": "Chúng tôi đã tìm thấy {count, plural, one {# sự kiện cho bạn — hãy xem lại và duyệt trước khi mở bán.} other {# sự kiện cho bạn — hãy xem lại và duyệt trước khi mở bán.}}"
+  },
+  "card": {
+    "addName": "Thêm tên",
+    "timeNeeded": "⚠ Cần có giờ",
+    "setTimeFirst": "Đặt giờ trước",
+    "confirm": "Xác nhận",
+    "copy": "Sao chép",
+    "edit": "Sửa",
+    "makePost": "Tạo bài đăng",
+    "cancel": "Hủy",
+    "approve": "Duyệt",
+    "reject": "Từ chối",
+    "stock": "⚠️ Tồn kho",
+    "stockHidden": "Đã ẩn — {reason}",
+    "noDeals": "Không có ưu đãi nào",
+    "dealsActive": "{count, plural, one {# ưu đãi} other {# ưu đãi}} đang áp dụng · {names}{hidden, plural, =0 {} other { · # đã ẩn}}",
+    "approveNeedsTimes": "Chưa thể duyệt cho đến khi sự kiện có giờ bắt đầu và giờ kết thúc — hãy thêm bằng Sửa."
+  },
+  "guessed": {
+    "title": "📍 Chúng tôi đã đoán địa điểm này",
+    "body": "Có nhiều địa điểm khớp với <b>{venue}</b>, nên chúng tôi đã chọn nơi phù hợp nhất{hasTown, select, yes { tại <b>{town}</b>} other {}}{hasPostcode, select, yes { ({postcode})} other {}}. Hãy kiểm tra cho đúng trước khi duyệt — nếu sai, dùng <b>Sửa</b> để chỉnh khu vực hoặc {postal}, nếu không khách sẽ bị chỉ đến sai chỗ.",
+    "thisVenue": "địa điểm này"
+  },
+  "noLocation": {
+    "title": "📍 Chưa có vị trí",
+    "body": "Chúng tôi chưa xác định được địa điểm này trên bản đồ, nên sự kiện vẫn được liệt kê nhưng không có ghim bản đồ. Thêm {postal} bằng <b>Sửa</b> để đưa lên bản đồ."
+  },
+  "conflict": {
+    "title": "⚠️ {count, plural, one {Có thể trùng lịch} other {Có thể trùng lịch}} — xem lại trước khi {pending, select, yes {duyệt} other {xác nhận}}",
+    "duplicate": "Sự kiện này có vẻ trùng với một sự kiện bạn đã có.",
+    "review": "Cùng địa điểm và ngày, khác giờ — đây là cùng một sự kiện đã đổi giờ, hay một khung giờ riêng? Hãy xem lại trước khi duyệt.",
+    "already": "Đã có trong lịch bán: <b>{venue}</b>{details} ({status, select, confirmed {đã xác nhận} open {đang mở} other {{status}}})",
+    "unnamedVenue": "Địa điểm chưa có tên",
+    "ack": "Đúng, đây là các sự kiện khác nhau — vẫn {pending, select, yes {duyệt} other {xác nhận}}",
+    "cancel": "Hủy",
+    "overlap": "Giờ của sự kiện này trùng với một sự kiện khác trong cùng ngày — một xe không thể ở hai nơi cùng lúc. Hãy kiểm tra trước khi duyệt."
+  },
+  "toast": {
+    "loadFailed": "Không tải được sự kiện",
+    "linkFailed": "Không tải được link",
+    "placeTypeFailed": "Đã lưu sự kiện. Loại sự kiện thường dùng của địa điểm {place} chưa được lưu — {reason}.",
+    "placeTypeFailedReason": "lưu không thành công",
+    "eventUpdated": "Đã cập nhật sự kiện",
+    "eventAdded": "Đã thêm sự kiện",
+    "eventsSaved": "{count, plural, one {Đã lưu # sự kiện} other {Đã lưu # sự kiện}}",
+    "saveEventsFailed": "Không lưu được sự kiện",
+    "needsTime": "Thêm giờ bắt đầu và giờ kết thúc trước khi duyệt — sự kiện cần có giờ để mở bán.",
+    "addStartTime": "Thêm giờ bắt đầu",
+    "addEndTime": "Thêm giờ kết thúc",
+    "chooseTruckBefore": "Chọn food truck phục vụ sự kiện này trước khi duyệt.",
+    "chooseTruck": "Chọn food truck phục vụ sự kiện này",
+    "eventConfirmed": "Đã xác nhận sự kiện",
+    "eventRejected": "Đã từ chối sự kiện",
+    "undo": "↩ Hoàn tác",
+    "eventRestored": "Đã khôi phục sự kiện",
+    "restoreFailed": "Không khôi phục được",
+    "eventCancelled": "Đã hủy sự kiện",
+    "eventCancelledOrders": "Đã hủy sự kiện · đã hủy {count, plural, one {# đơn hàng} other {# đơn hàng}}",
+    "placeHidden": "Đã ẩn địa điểm",
+    "placeShown": "Đã hiện lại địa điểm",
+    "saveThatFailed": "Không lưu được."
+  },
+  "link": {
+    "label": "Link riêng và mã QR",
+    "close": "Đóng"
+  }
+}

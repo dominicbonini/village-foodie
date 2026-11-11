@@ -1,0 +1,9 @@
+{
+  "paidStepTitle": "Ödeme almadan sipariş alın",
+  "completionTitle": "Ödenmemiş bir siparişi tamamlama",
+  "completionHelp": "Ödenmemiş bir sipariş teslime hazır olduğunda ne olacağı.",
+  "pressesOne": "Tek dokunuş (“Ödendi ve teslim alındı”)",
+  "pressesOneHelp": "Parayı yemeği verirken alıyorsanız en iyisi budur. Ödemeyi kaydedip siparişi aynı anda kapatan tek bir düğme görürsünüz: “Ödendi ve teslim alındı”.",
+  "pressesTwo": "İki dokunuş (“Ödendi” ve “Teslim alındı”)",
+  "pressesTwoHelp": "Ödeme ve teslim farklı anlarda oluyorsa en iyisi budur — müşteri tezgâhta öder, sipariş hazır olunca teslim alır. İki düğme görürsünüz: önce “Ödendi”, yemeği aldığında da “Teslim alındı”."
+}

@@ -1,0 +1,59 @@
+{
+  "labels": {
+    "collection_interval_mins": "取餐時段",
+    "takes_cash": "你收現金嗎？",
+    "offline_protection": "離線訂單保護",
+    "buzzer_prompt": "提醒我發取餐呼叫器"
+  },
+  "typeFollowsVanTitle": "依照每台車輛的平常設定",
+  "sameSettingsAllVansLabel": "所有車輛使用相同設定",
+  "sameSettingsAllVansHeader": "所有車輛",
+  "sameSettingsConfirm": "要把 1 號車的設定複製到每台車輛嗎？這會複製 1 號車的所有車輛設定，效果和「設定」中的「與 1 號車相同」一樣。廚房出餐量有自己的開關。",
+  "eventTypesFooterStandard": "「標準」是你平常的設定。在這裡變更也會同步變更「設定」中的內容。",
+  "eventTypesFooterOneEvent": "若只想變更單一活動的設定，請到該活動的控制台。",
+  "eventTypesSubtitle": "變更會自動儲存。",
+  "matchStandardLabel": "與「標準」相同",
+  "matchStandardConfirm": "要把這個類型的所有設定改回「標準」嗎？你在這裡做的變更都會被清除。",
+  "priceLabels": {
+    "price_change_on": "調整價格",
+    "price_mode": "價格調整方式",
+    "price_amount": "金額",
+    "price_rounding": "進位方式",
+    "item_prices": "品項價格"
+  },
+  "priceMode": {
+    "add_amount": "+ {symbol}",
+    "add_pct": "+ %",
+    "sub_amount": "− {symbol}",
+    "sub_pct": "− %",
+    "none": "自己設定每個價格"
+  },
+  "priceRounding": {
+    "none": "不進位",
+    "nearest_1": "取整至 {symbol}1",
+    "up_1": "一律無條件進位"
+  },
+  "pricesStandardCell": "你的菜單價格",
+  "pricesTruckWideTitle": "每台車輛的價格都相同",
+  "pricesMenuCell": "菜單",
+  "pricesTypeOffCell": "菜單價格",
+  "itemPricesShow": "顯示價格",
+  "itemPricesHide": "隱藏價格",
+  "priceItemsHeading": "設定每個品項的價格",
+  "priceItemsOpen": "查看或變更每個品項的價格 ›",
+  "priceItemsClose": "隱藏品項價格 ⌃",
+  "ownPriceCount": "{n, plural, one {{count} 個品項有自訂價格} other {{count} 個品項有自訂價格}}",
+  "priceTypeHint": "點一下價格即可輸入自訂價格。",
+  "pricesLiveNotice": "此活動正在營業中。新訂單會使用新價格，已成立的訂單維持原價。",
+  "placeTypeHelper": "每次選擇這個地點時，「新增活動」都會自動選用這個類型。",
+  "postPictureStandardNote": "這裡的活動貼文會使用你的標準設計。",
+  "eventItemsCardDescription": "僅適用於此活動的價格、品項上限與供應狀態。變更會立即生效。",
+  "eventPriceColumnLabel": "價格",
+  "eventPriceOwnNote": "{hasType, select, yes {{type} {price} · 此活動} other {菜單 {price} · 此活動}}",
+  "eventPriceEdit": "✎ 編輯價格",
+  "eventPriceCancel": "取消",
+  "eventPriceSave": "儲存價格",
+  "eventPriceEditNote": "正在編輯僅限此活動的價格。儲存前，品項上限與供應狀態會暫時鎖定。",
+  "eventPriceLiveNote": "營業中：新訂單會使用新價格。",
+  "offlineWhenOfflineLabel": "離線時"
+}

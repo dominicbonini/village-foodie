@@ -1,0 +1,52 @@
+{
+  "meta": {
+    "title": "Hỗ trợ",
+    "description": "Nhận trợ giúp về HatchGrab. Gửi tin nhắn cho chúng tôi và chúng tôi sẽ trả lời bạn qua email."
+  },
+  "logIn": "Đăng nhập",
+  "eyebrow": "Hỗ trợ",
+  "title": "Chúng tôi có thể giúp gì?",
+  "lede": "Có gì đó không hoạt động, hay bạn có câu hỏi về tài khoản? Có hai cách liên hệ — cách nào chúng tôi cũng sẽ trả lời bạn qua email.",
+  "emailUs": "Gửi email cho chúng tôi",
+  "formHeading": "Hoặc gửi tin nhắn cho chúng tôi",
+  "form": {
+    "topicLabel": "Bạn cần hỏi về việc gì?",
+    "topics": {
+      "question": "Câu hỏi về HatchGrab",
+      "account": "Trợ giúp về tài khoản",
+      "comparison": "Đính chính trang so sánh",
+      "other": "Việc khác"
+    },
+    "nameLabel": "Tên của bạn",
+    "namePlaceholder": "Tên",
+    "emailLabel": "Email",
+    "businessLabel": "Tên xe hoặc tên cơ sở kinh doanh",
+    "optional": "(không bắt buộc)",
+    "businessPlaceholder": "VD: Bếp Pizza",
+    "messageLabel": "Tin nhắn của bạn",
+    "send": "Gửi tin nhắn",
+    "sending": "Đang gửi…",
+    "privacyLine": "Chúng tôi chỉ dùng thông tin của bạn để trả lời bạn.",
+    "privacyLink": "Chính sách quyền riêng tư",
+    "thanksTitle": "Cảm ơn bạn — chúng tôi đã nhận được tin nhắn.",
+    "thanksBody": "Chúng tôi sẽ trả lời qua địa chỉ email bạn đã cung cấp.",
+    "errors": {
+      "nameRequired": "Vui lòng nhập tên của bạn.",
+      "nameTooLong": "Tên tối đa {max, number} ký tự.",
+      "emailRequired": "Vui lòng nhập địa chỉ email.",
+      "emailInvalid": "Vui lòng nhập địa chỉ email hợp lệ.",
+      "emailTooLong": "Địa chỉ email tối đa {max, number} ký tự.",
+      "businessRequired": "Vui lòng nhập tên xe hoặc tên cơ sở kinh doanh để chúng tôi tìm được tài khoản của bạn.",
+      "businessTooLong": "Tên xe hoặc tên cơ sở kinh doanh tối đa {max, number} ký tự.",
+      "messageTooShort": "Vui lòng viết ít nhất {min, number} ký tự.",
+      "messageTooLong": "Tin nhắn tối đa {max, number} ký tự.",
+      "topicInvalid": "Vui lòng chọn chủ đề cho tin nhắn của bạn.",
+      "rateLimited": "Bạn đã gửi khá nhiều tin nhắn — vui lòng thử lại sau, hoặc gửi email cho chúng tôi tại {email}.",
+      "failed": "Đã xảy ra lỗi — vui lòng gửi email cho chúng tôi tại {email}."
+    }
+  },
+  "privacy": "Quyền riêng tư",
+  "terms": "Điều khoản",
+  "about": "Giới thiệu",
+  "copyright": "© {year} HatchGrab"
+}

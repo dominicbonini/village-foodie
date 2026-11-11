@@ -1,0 +1,72 @@
+{
+  "standardCategories": {
+    "starters": "Başlangıçlar",
+    "mains": "Ana yemekler",
+    "burgers": "Burgerler",
+    "pizza": "Pizzalar",
+    "wrapsSandwiches": "Dürümler ve sandviçler",
+    "sides": "Yan ürünler",
+    "dipsSauces": "Soslar",
+    "desserts": "Tatlılar",
+    "drinks": "İçecekler",
+    "kidsMenu": "Çocuk menüsü",
+    "specials": "Özel lezzetler",
+    "other": "Diğer"
+  },
+  "demoEventName": "Demo etkinlik",
+  "firstVanName": "Araç 1",
+  "demoCategories": {
+    "pizza": "Pizzalar",
+    "burgers": "Burgerler",
+    "mains": "Ana yemekler",
+    "sides": "Yan ürünler",
+    "drinks": "İçecekler"
+  },
+  "demoTemplates": {
+    "pizza": {
+      "label": "🍕 Pizza food truck’ı",
+      "items": {
+        "margherita": "Margarita",
+        "pepperoni": "Pepperoni",
+        "ndujaHoney": "Nduja ve bal",
+        "fourCheese": "Dört peynirli",
+        "gardenVeg": "Bol sebzeli",
+        "garlicBread": "Sarımsaklı ekmek",
+        "rocketParmesan": "Roka ve parmesan",
+        "olives": "Zeytin",
+        "sanPellegrino": "San Pellegrino",
+        "coke": "Kola"
+      }
+    },
+    "burgers": {
+      "label": "🍔 Burger food truck’ı",
+      "items": {
+        "classicCheeseburger": "Klasik cheeseburger",
+        "doubleBacon": "Duble füme burger",
+        "buttermilkChicken": "Çıtır tavuk burger",
+        "halloumiStack": "Hellimli burger",
+        "smashBurger": "Smash burger",
+        "skinOnFries": "Kabuklu patates",
+        "loadedCheeseFries": "Bol peynirli patates",
+        "onionRings": "Soğan halkası",
+        "craftLemonade": "Ev yapımı limonata",
+        "coke": "Kola"
+      }
+    },
+    "curries": {
+      "label": "🍛 Köri food truck’ı",
+      "items": {
+        "chickenTikkaMasala": "Tavuk tikka masala",
+        "lambRoganJosh": "Kuzu rogan josh",
+        "chanaMasala": "Nohutlu masala",
+        "butterChicken": "Tereyağlı tavuk",
+        "saagPaneer": "Ispanaklı paneer",
+        "pilauRice": "Baharatlı pilav",
+        "garlicNaan": "Sarımsaklı naan",
+        "onionBhaji": "Soğan bhaji",
+        "mangoLassi": "Mangolu lassi",
+        "coke": "Kola"
+      }
+    }
+  }
+}

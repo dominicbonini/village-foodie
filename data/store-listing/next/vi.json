@@ -1,0 +1,14 @@
+{
+  "$about": "languages-world-1 (10 November 2026): the store listing for this locale — App Store (appStoreLocale) and Google Play (playLocale; name → title, shortDescription → short description, description → full description). Staged in data/store-listing/next/ until the country is switched on. Must be true in every country: no prices, plan names, trial lengths, purchase instructions or other platforms (docs/ios-intl-1-report.md §5).",
+  "appStoreLocale": "vi",
+  "playLocale": "vi",
+  "messagesLocale": "vi-VN",
+  "countrySegment": "vn",
+  "name": "HatchGrab",
+  "subtitle": "Đặt món & bếp cho food truck",
+  "promotionalText": "Nhận đơn đặt trước, giúp bếp không bị quá tải đơn và vẫn bán hàng khi mất sóng. Ứng dụng đặt món dành cho nhân viên food truck.",
+  "description": "HatchGrab là ứng dụng đặt món và quản lý bếp cho food truck: công cụ để đội ngũ của bạn vận hành ca bán hàng.\n\nKhách đặt món trước và chọn giờ nhận món. Nhân viên của bạn xem mọi đơn trên một màn hình, xác nhận những món bếp làm được, rồi đánh dấu đơn đã sẵn sàng và khách đã nhận.\n\nĐỪNG BAO GIỜ HỨA MỘT GIỜ MÀ BẠN KHÔNG KỊP\nCài đặt lượng món bếp có thể làm cùng lúc và thời gian cần để làm. Khi một giờ nhận món đã kín, khách không thể chọn giờ đó nữa, nên hàng đợi luôn khớp với sức bếp.\n\nNHẬN ĐƠN NGAY TẠI XE\nThêm đơn mua tại chỗ vào cùng màn hình với đơn đặt trước, để bếp làm theo một hàng đợi duy nhất.\n\nMỘT MÀN HÌNH CHO BẾP\nMàn hình bếp hiển thị món cần làm ngay, món tiếp theo và món đã xong, kèm cảnh báo khi có đơn cần bắt đầu làm.\n\nIN PHIẾU ĐƠN HÀNG\nKết nối máy in hóa đơn trong bếp qua Bluetooth hoặc mạng nội bộ, phiếu đơn hàng sẽ tự động được in.\n\nVẪN BÁN HÀNG KHI MẤT SÓNG\nBật bảo vệ khi mất mạng: nếu mất kết nối, việc đặt trước sẽ tạm dừng để không ai đặt một đơn mà bạn không nhìn thấy. Đơn bạn nhận trên thiết bị được lưu lại và đồng bộ khi có mạng trở lại.\n\nTHIẾT KẾ CHO XE FOOD TRUCK\nDùng trên iPhone hoặc iPad. Giữ màn hình luôn sáng trong ca bán, nhận thông báo khi có đơn cần xác nhận và khóa ứng dụng bằng Face ID hoặc Touch ID.\n\nLÊN KẾ HOẠCH CHO CẢ TUẦN\nThiết lập sự kiện và địa điểm một lần, rồi nhận đơn cho từng sự kiện.\n\nHatchGrab dành cho chủ xe food truck và nhân viên của họ. Bạn cần có tài khoản HatchGrab để đăng nhập.",
+  "keywords": "đặt trước,đặt món online,màn hình bếp,mang về,thực đơn,combo,quán ăn,nhận món,giờ nhận món,KDS",
+  "whatsNew": "HatchGrab nay đã hỗ trợ 37 ngôn ngữ.\n\nIn phiếu đơn hàng ra máy in bếp trong mạng nội bộ của bạn, ngoài kết nối Bluetooth.\n\nSửa lỗi và cải tiến.",
+  "shortDescription": "Đặt món trước cho food truck: khách chọn giờ nhận món, đơn lên màn hình bếp."
+}

@@ -1,0 +1,25 @@
+{
+  "heading": "Jadwal pekan {start} sampai {end}",
+  "daysOff": "Hari ini libur",
+  "cancelled": "DIBATALKAN",
+  "placeSample": {
+    "nameTownBelow": "Pasar Malam Dago\nBandung",
+    "nameTown": "Pasar Malam Dago, Bandung",
+    "nameOnly": "Pasar Malam Dago"
+  },
+  "busyWeek": {
+    "venue1": "Balai Warga Kemang",
+    "town1": "Kemang",
+    "venue2": "Lapangan Olahraga dan Taman Bermain Warga Cilandak Barat",
+    "town2": "Cilandak",
+    "venue3": "Alun-Alun Kota",
+    "town3": "Bogor",
+    "venue4": "Festival Kuliner",
+    "town4": "Surabaya",
+    "venue5": "Pasar Malam",
+    "town5": "Yogyakarta",
+    "venue6": "Taman Kota",
+    "town6": "Canggu"
+  },
+  "poweredBy": "Didukung oleh HatchGrab"
+}

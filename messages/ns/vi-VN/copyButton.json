@@ -1,0 +1,10 @@
+{
+  "copy": "Sao chép",
+  "copied": "Đã sao chép ✓",
+  "failed": "Không sao chép được",
+  "aria": "{label} {thing}",
+  "announceCopied": "Đã sao chép {thing}",
+  "announceCopiedValue": "Đã sao chép giá trị",
+  "announceFailed": "Không sao chép được {thing}. Hãy chọn đoạn chữ và tự sao chép.",
+  "announceFailedValue": "Không sao chép được giá trị. Hãy chọn đoạn chữ và tự sao chép."
+}

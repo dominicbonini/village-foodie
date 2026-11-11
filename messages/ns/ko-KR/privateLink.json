@@ -1,0 +1,12 @@
+{
+  "guestLabel": "단독 행사",
+  "truckFallback": "푸드트럭",
+  "noSlugTitle": "이 푸드트럭은 아직 온라인 주문 설정이 되지 않았어요.",
+  "orderingOffTitle": "온라인 주문이 켜져 있지 않아요",
+  "orderingOffBody": "이 영업 일정은 온라인 주문을 받지 않아요. 푸드트럭에서 직접 주문해 주세요.",
+  "replacedTitle": "새 링크로 바뀌었어요",
+  "replacedBody": "이 링크는 더 이상 사용할 수 없어요 — {truck} 푸드트럭에서 링크를 새로 바꿨어요. 주최 측에 새 링크나 QR 코드를 요청하세요.",
+  "madePublicBody": "이 링크는 더 이상 사용할 수 없어요 — {truck} 푸드트럭에서 이 영업 일정을 공개로 바꿨어요. 푸드트럭의 일반 페이지에서 주문할 수 있어요.",
+  "unknownTitle": "사용할 수 없는 링크예요",
+  "unknownBody": "이 링크는 사용할 수 없어요. 주최 측에 확인하거나 QR 코드를 다시 스캔해 주세요."
+}

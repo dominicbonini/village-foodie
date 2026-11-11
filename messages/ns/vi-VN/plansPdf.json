@@ -1,0 +1,9 @@
+{
+  "title": "Gói và tính năng",
+  "generated": "Tạo ngày {date}",
+  "allowanceHeading": "Hạn mức đơn online",
+  "smallPrint": "Điều khoản chi tiết",
+  "priceNoteMasked": "Giá ghi “Sắp công bố” là giá chưa được công bố.",
+  "omitNote": "Tài liệu này cố ý không ghi giá.",
+  "terms": "Các số liệu là điều khoản gói đã công bố tại ngày nêu trên và có thể thay đổi. Phí xử lý thẻ là phí riêng của Stripe, không phải của HatchGrab. Tài liệu này là bản tóm tắt, không phải hợp đồng."
+}

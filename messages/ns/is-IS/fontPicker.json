@@ -1,0 +1,46 @@
+{
+  "tab": {
+    "all": "Allt",
+    "bold": "Feitt og hátt",
+    "hand": "Handskrift",
+    "classic": "Klassískt",
+    "clean": "Stílhreint",
+    "own": "Þín",
+    "ownCount": "Þín ({count})"
+  },
+  "yoursTag": "· þitt",
+  "loadingFonts": "Hleð letri…",
+  "search": "Leita í {count, number} leturgerðum",
+  "uploadButton": "↑ Hlaða upp letrinu þínu",
+  "loadingLibrary": "Hleð leturgerðasafninu…",
+  "tryAgain": "Reyna aftur",
+  "noOwn": "Þú hefur ekki enn hlaðið upp letri. Notaðu hnappinn „↑ Hlaða upp letrinu þínu“ hér fyrir ofan.",
+  "recent": "Nýlega notað",
+  "popular": "Vinsælt á plaköt",
+  "adding": "Bæti við…",
+  "noMatch": "Ekkert letur passar við „{query}“.",
+  "showing": "Sýni {shown} af {total, number} — skrifaðu meira til að þrengja leitina.",
+  "couldNotAdd": "Ekki tókst að bæta þessu letri við",
+  "tooBig": "Þetta letur er {size, number, ::.0 group-off} MB. Hámarkið er 5 MB.",
+  "woff": "Hladdu upp TTF- eða OTF-skrá — yfirleitt má sækja hana þar sem þú keyptir letrið.",
+  "uploadIncomplete": "Upphleðslunni lauk ekki",
+  "added": "Bætti við „{name}“ sem útgáfunni: {face}.",
+  "face": {
+    "regular": "venjulegt",
+    "bold": "feitletrað",
+    "italic": "skáletrað"
+  },
+  "licenceTick": "Ég á þetta letur eða hef leyfi til að nota það",
+  "checking": "Athuga letrið…",
+  "addFont": "Bæta við letri",
+  "cancel": "Hætta við",
+  "missingFaces": "Bættu við útgáfunni „{faces}“ af „{name}“ (valfrjálst) — veldu skrána aftur.",
+  "somethingWrong": "Eitthvað fór úrskeiðis",
+  "faceLower": {
+    "regular": "venjulegt",
+    "bold": "feitletrað",
+    "italic": "skáletrað"
+  },
+  "ownLicence": "Þitt eigið",
+  "loadFailed": "Ekki tókst að hlaða letri"
+}

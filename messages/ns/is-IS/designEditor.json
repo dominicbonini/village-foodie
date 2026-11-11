@@ -1,0 +1,134 @@
+{
+  "item": {
+    "weekHeading": "Fyrirsögn vikunnar",
+    "weekHeadingSample": "Vikan frá …",
+    "daysSample": "{first} til {last}",
+    "date": "Dagsetning",
+    "place": "Staður",
+    "venue": "Staður",
+    "area": "Svæði",
+    "time": "Tími",
+    "rows": "Raðir",
+    "rowsSample": "{px} px á milli · {first} til {last}",
+    "ownText": "Þinn eigin texti",
+    "noteTokenSample": "Athugasemdin sem þú skrifar þegar þú býrð til færsluna",
+    "nothingYet": "Ekkert enn",
+    "thisBox": "þennan reit"
+  },
+  "sample": {
+    "venue": "Hlemmur Mathöll",
+    "area": "Reykjavík"
+  },
+  "bar": {
+    "previewWith": "Forskoða með",
+    "undo": "Afturkalla",
+    "undoTitle": "Afturkalla (⌘Z)",
+    "redo": "Endurgera",
+    "redoTitle": "Endurgera (⇧⌘Z)",
+    "cancel": "Hætta við",
+    "saving": "Vista…",
+    "save": "Vista hönnun"
+  },
+  "grid": {
+    "eachRow": "Hver röð",
+    "placeOff": "Staðarheitið er á myndinni þinni — HatchGrab bætir því ekki við."
+  },
+  "background": {
+    "uploading": "Hleð upp…",
+    "replace": "Skipta um mynd",
+    "shape": {
+      "square": "Ferningur (1:1)",
+      "portrait45": "Skammsnið (4:5)",
+      "portrait916": "Skammsnið (9:16)",
+      "landscape169": "Langsnið (16:9)",
+      "portrait": "Skammsnið",
+      "landscape": "Langsnið"
+    }
+  },
+  "scope": {
+    "title": "Textastaðsetningar",
+    "standard": "Sömu staðsetningar og í staðlaðri hönnun",
+    "own": "Eigin staðsetningar: {place}",
+    "locked": "Þessar staðsetningar koma úr staðlaðri hönnun þinni. Veldu „Eigin staðsetningar: {place}“ til að færa þær aðeins hér."
+  },
+  "stage": {
+    "hint": "Dragðu reit til að færa hann · dragðu horn til að breyta stærð",
+    "zoomOut": "Minnka",
+    "zoomIn": "Stækka"
+  },
+  "rows": {
+    "spacing": "Bil",
+    "daysRun": "Dagarnir ná frá {first} til {last}. Reitirnir þrír í röð 1 eru afritaðir niður með þessu bili.",
+    "whichEvents": "Hvaða viðburðir",
+    "showCancelled": "Sýna aflýsta viðburði",
+    "showCancelledHint": "Aflýstur viðburður sýnir staðinn yfirstrikaðan og orðið AFLÝST. Ef slökkt er á þessu birtist dagurinn sem frídagur."
+  },
+  "days": {
+    "reorder": "Endurraða",
+    "move": "færa"
+  },
+  "picture": {
+    "picture": "Mynd",
+    "fill": "Fylla reitinn",
+    "fit": "Passa inn í",
+    "corners": "Horn",
+    "square": "Hvöss",
+    "rounded": "Ávöl",
+    "ifMissing": "Ef staðsetning er ekki með mynd",
+    "noPicture": {
+      "omit": "Sleppa henni",
+      "blank": "Skilja eftir autt pláss",
+      "logo": "Sýna merkið þitt"
+    },
+    "border": "Rammi",
+    "drawBorder": "Teikna ramma",
+    "drawBorderHint": "Lína utan um myndina, í þínum eigin lit.",
+    "borderWidth": "Breidd ramma",
+    "cornerRadius": "Rúnnun horna",
+    "locationPictures": "Myndir af staðsetningum",
+    "addLocationPictures": "+ Bæta við myndum af staðsetningum",
+    "allHaveImage": "{total, plural, =0 {Þú ert ekki enn með neinar staðsetningar.} one {Mynd er komin fyrir hverja staðsetningu (#).} other {Allar # staðsetningarnar þínar eru með mynd.}}",
+    "someWithout": "{without} af {total, plural, one {# staðsetningu} other {# staðsetningum}} {without, plural, one {er} other {eru}} ekki enn með mynd"
+  },
+  "settings": {
+    "font": "Letur",
+    "colour": "Litur",
+    "textColour": "Litur texta",
+    "ownStyleNote": "{count, plural, one {Með eigin stíl, svo engu er breytt: {names}.} other {{names} eru með eigin stíl og breytast því ekki.}}",
+    "matchAgain": "Samræma aftur",
+    "matchName": "Samræma við: {name}",
+    "lastToggle": "{kind, select, weekly {Hafðu kveikt á annaðhvort Stað eða Tíma. Aflýstur viðburður sýnir staðinn yfirstrikaðan og orðið AFLÝST, svo ef slökkt er á báðum sæist hvergi að honum hafi verið aflýst.} other {Hafðu kveikt á annaðhvort Stað eða Tíma. Aflýstur viðburður sýnir staðinn yfirstrikaðan og orðið AFLÝST, svo ef slökkt er á báðum sæist hvergi að honum hafi verið aflýst.}}"
+  },
+  "letters": {
+    "boldGlyph": "F",
+    "italicGlyph": "S",
+    "capsGlyph": "AA",
+    "italicTitle": "{italic} — þetta letur er með raunverulegt skáletur"
+  },
+  "align": {
+    "left": "Vinstri",
+    "centre": "Miðja",
+    "right": "Hægri"
+  },
+  "effects": {
+    "outlineColour": "Litur útlínu",
+    "bandColour": "Litur borða",
+    "bandDaysOff": "Borði á frídögum",
+    "bandCancelled": "Borði þegar viðburði er aflýst",
+    "bandDaysOffHint": "Notaður í stað borðans hér fyrir ofan á degi án sölu.",
+    "bandCancelledHint": "Notaður í stað borðans hér fyrir ofan þegar viðburði er aflýst."
+  },
+  "more": {
+    "dayOwnLine": "Dagur í sér línu",
+    "dayOwnLineHint": "Vikudagurinn fyrir ofan dagsetninguna. Aðeins dagsetning.",
+    "noEventDay": "Á degi án viðburðar",
+    "wordsBeforePlaceholder": "t.d. Finndu okkur",
+    "neverHyphenate": "Eitt langt orð án bils er alltaf minnkað — við skiptum staðarheiti aldrei með bandstriki."
+  },
+  "bits": {
+    "less": "Minna",
+    "more": "Meira",
+    "chooseColourFor": "{label} — veldu hvaða lit sem er",
+    "chooseColour": "Veldu hvaða lit sem er"
+  }
+}

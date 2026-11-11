@@ -1,0 +1,61 @@
+{
+  "steps": {
+    "reading": "Đang đọc thực đơn…",
+    "found": "Đã tìm thấy các món…",
+    "kitchen": "Đang thiết lập bếp…",
+    "page": "Đang tạo trang đặt món…",
+    "almost": "Sắp xong…"
+  },
+  "templateSteps": {
+    "truck": "Đang tạo xe mẫu…",
+    "menu": "Đang thiết lập thực đơn…",
+    "kitchen": "Đang thiết lập bếp…",
+    "page": "Đang tạo trang đặt món…",
+    "almost": "Sắp xong…"
+  },
+  "dialogLabel": "Tải thực đơn lên",
+  "heading": "✨ Tải thực đơn lên",
+  "failedHeading": "Chúng tôi chưa đọc được thực đơn đó",
+  "close": "Đóng",
+  "intro": "Ảnh chụp bảng thực đơn, ảnh chụp màn hình, tệp PDF hoặc dán thực đơn dạng văn bản. AI của chúng tôi sẽ đọc và tạo cho bạn một trang đặt món dùng được ngay — đúng món, đúng giá của bạn — trong chưa đầy 60 giây. Không cần đăng ký, không cần thẻ.",
+  "failedIntro": "Đôi khi ảnh quá tối, bị chụp nghiêng hoặc viết tay. Đó là việc chúng tôi phải xử lý, không phải lỗi của bạn. Bạn có thể:",
+  "usually": "Thường mất chưa đến 60 giây.",
+  "slow": "Lần này lâu hơn bình thường — thực đơn dài đôi khi như vậy.",
+  "keepWaiting": "Tiếp tục chờ",
+  "sampleWhileYouWait": "Hoặc xem thử với thực đơn mẫu trong lúc chờ",
+  "standIn": "Đây <b>không phải thực đơn của bạn</b> — chỉ là bản mẫu để bạn xem cách hoạt động.",
+  "seeSample": "Xem thực đơn mẫu",
+  "tryAgain": "Thử lại",
+  "tryPhotoAgain": "Thử lại ảnh này",
+  "tryDifferent": "Thử ảnh khác",
+  "uploadAnother": "← Tải ảnh khác lên",
+  "orSample": "Hoặc xem thử với thực đơn mẫu",
+  "orBuild": "Hoặc để chúng tôi làm giúp bạn",
+  "buildSent": "✓ Cảm ơn — chúng tôi đã nhận được. Chúng tôi sẽ gửi email cho bạn.",
+  "buildBody": "Để lại email, một nhân viên thật sẽ nhập thực đơn giúp bạn và gửi link cho bạn.",
+  "emailPlaceholder": "ban@foodtruckcuaban.vn",
+  "sending": "…",
+  "send": "Gửi",
+  "noPhoto": "Chưa có sẵn ảnh thực đơn?",
+  "noPhotoBody": "Xem thử với một xe mẫu — bạn có thể tải thực đơn của mình lên bất cứ lúc nào.",
+  "build": "Tạo bản demo →",
+  "nothingPublished": "Chưa có gì được công khai — chỉ bạn xem được.",
+  "error": {
+    "somethingWrong": "Đã xảy ra lỗi. Vui lòng thử lại.",
+    "serverUnreachable": "Không kết nối được máy chủ. Hãy kiểm tra kết nối mạng và thử lại.",
+    "sendFailed": "Không gửi được — hãy thử lại."
+  },
+  "fields": {
+    "uploadLabel": "Tải tệp thực đơn lên",
+    "dropHere": "Thả thực đơn vào đây",
+    "dragOrTap": "Kéo thả hoặc chạm để chọn",
+    "fileTypes": "Ảnh hoặc PDF",
+    "or": "hoặc",
+    "pasteLabel": "Dán thực đơn dạng văn bản",
+    "pastePlaceholder": "Dán thực đơn vào đây — tên món, mô tả, giá..."
+  },
+  "emailLabel": "Email của bạn",
+  "emailNote": "Chúng tôi sẽ gửi email link đến bản demo và có thể liên hệ với bạn về việc thiết lập HatchGrab. <link>Chính sách quyền riêng tư</link>",
+  "marketing": "Thỉnh thoảng gửi cho tôi mẹo và tin tức từ HatchGrab",
+  "emailInvalid": "Vui lòng nhập địa chỉ email hợp lệ."
+}

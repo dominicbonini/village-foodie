@@ -1,0 +1,57 @@
+{
+  "shortened": {
+    "heading": "제목이 들어가지 않아 줄였습니다.",
+    "date": "날짜가 들어가지 않아 줄였습니다.",
+    "daysOff": "휴무일 문구가 들어가지 않아 줄였습니다.",
+    "place": "장소 이름이 들어가지 않아 줄였습니다.",
+    "time": "시간이 들어가지 않아 줄였습니다.",
+    "note": "직접 입력한 문구가 들어가지 않아 줄였습니다.",
+    "venue": "영업 장소가 들어가지 않아 줄였습니다.",
+    "area": "지역이 들어가지 않아 줄였습니다."
+  },
+  "fontFallback": "이 디자인에 쓰인 글꼴을 불러오지 못했습니다({id}). 해당 상자는 Oswald 글꼴로 표시됩니다.",
+  "wrongShapeBackground": "이 장소의 사진은 디자인과 모양이 달라서 기본 배경을 사용합니다.",
+  "rowsFit": "마지막 날이 이미지 하단보다 {px}px 아래에 있습니다. 줄 간격을 줄이거나 1번 줄을 위로 옮기세요.",
+  "placeStatus": {
+    "ownBoth": "전용 사진 및 텍스트 위치",
+    "wrongShape": "모양이 다름 — 교체 전까지 사용 안 함",
+    "ownPicture": "전용 사진, 기본 위치",
+    "ownPositions": "기본 사진, 전용 텍스트 위치",
+    "none": "아직 사진 없음 — 기본 디자인 사용 중"
+  },
+  "standardStatus": "다른 모든 장소에 사용",
+  "option": {
+    "oneOff": "이 게시물에만 쓸 이미지 업로드",
+    "placePoster": "{name} 장소 포스터",
+    "standard": "기본 디자인"
+  },
+  "previewLabel": {
+    "lastEvent": "미리보기에는 이 장소의 마지막 영업 일정이 사용됩니다",
+    "noEvents": "이 장소에는 아직 영업 일정이 없습니다. 미리보기는 다음 영업 일정에 이 장소 이름을 넣어 보여 줍니다"
+  },
+  "fontUsage": {
+    "weekly": "주간 게시물 디자인",
+    "event": "영업 일정 게시물 디자인",
+    "place": "장소 {place} 전용 디자인",
+    "placeUnnamed": "장소별 디자인"
+  },
+  "face": {
+    "regular": "보통",
+    "bold": "굵게",
+    "italic": "기울임"
+  },
+  "picture": {
+    "legacy": "영업 일정 포스터",
+    "fallback": "사진",
+    "wrongShape": "모양이 다름 — 전체 배경으로 사용할 수 없음"
+  },
+  "noPicture": {
+    "omit": "생략",
+    "blank": "빈칸으로 두기",
+    "logo": "로고 표시"
+  },
+  "noPicturesAll": "{total, plural, one {영업 장소에 이미지가 있습니다.} other {영업 장소 {total}곳 모두 이미지가 있습니다.}}",
+  "noPicturesSome": "{without, plural, one {영업 장소 {total}곳 중 {without}곳에 아직 이미지가 없습니다} other {영업 장소 {total}곳 중 {without}곳에 아직 이미지가 없습니다}}",
+  "licenceTick": "이 글꼴을 소유하고 있거나 사용 라이선스가 있습니다",
+  "fontUploadButton": "↑ 글꼴 업로드"
+}

@@ -1,0 +1,25 @@
+{
+  "newOrder": {
+    "subject": "Pesanan baru #{id} — {name}{withSlot, select, yes { · {slot}} other {}}",
+    "heading": "Pesanan baru masuk",
+    "from": "<b>Pesanan #{id}</b> dari <b>{name}</b>",
+    "collection": "Pengambilan: {time}",
+    "asap": "Tanpa waktu tertentu — secepatnya",
+    "total": "Total",
+    "notes": "<b>Catatan:</b> {notes}",
+    "autoConfirmed": "Dikonfirmasi otomatis — tidak perlu tindakan apa pun.",
+    "confirmPrompt": "Masuk ke dasbor HatchGrab Anda untuk mengonfirmasi atau menolak pesanan ini.",
+    "text": "Pesanan baru #{id} dari {name}{withSlot, select, yes { untuk {slot}} other {}}{withVenue, select, yes { di {venue}} other {}}.{withCharges, select, yes { {charges}.} other {}} Total {total}.{withNotes, select, yes { Catatan: {notes}} other {}}"
+  },
+  "newEvents": {
+    "subject": "Acara baru ditemukan untuk {truck} — mohon ditinjau",
+    "hi": "Halo,",
+    "found": "Kami menemukan <b>{n, plural, one {{count} acara baru} other {{count} acara baru}}</b> di jadwal Anda yang perlu Anda setujui sebelum tampil untuk pelanggan.",
+    "listHeading": "Acara yang ditemukan:",
+    "approve": "Setelah Anda menyetujuinya di tab Jadwal, acara akan tampil di peta dan halaman pemesanan Anda siap menerima pre-order.",
+    "cta": "Tinjau jadwal Anda →",
+    "signoff": "— Tim HatchGrab · hatchgrab.com",
+    "unknownVenue": "Tempat tidak diketahui",
+    "text": "Halo,\n\nKami menemukan {n, plural, one {{count} acara baru} other {{count} acara baru}} di jadwal Anda yang perlu Anda setujui:\n\n{list}\n\nTinjau di: {url}\n\nSetelah Anda setujui, acara akan tampil di peta.\n\n— Tim HatchGrab"
+  }
+}

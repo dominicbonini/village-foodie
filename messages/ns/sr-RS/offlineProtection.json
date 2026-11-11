@@ -1,0 +1,23 @@
+{
+  "explainerLead": "Tokom rada kontrolna tabla ili kuhinjski ekran moraju biti uključeni i povezani na internet.",
+  "explainerBody": "Ako se ekran ugasi, uređaj izgubi internet ili pređete na drugi sajt, uključuje se zaštita bez interneta — pauzira poručivanje ili isključuje automatsko prihvatanje, šta god ste izabrali.",
+  "reminder": "⚠️ Tokom rada držite kontrolnu tablu ili kuhinjski ekran uključenim i na internetu, inače se može uključiti zaštita bez interneta.",
+  "enableConfirm": "Zaštita bez interneta je uključena.\n\nDa bi porudžbine stizale bez prekida, ekran mora ostati uključen. Ako ovaj uređaj izgubi vezu, zaštita se uključuje u režimu koji ste izabrali.\n\nProverite da li je na ovom uređaju uključena opcija „Ekran uključen“.",
+  "disableConfirm": "Isključiti zaštitu bez interneta za ovaj događaj?\n\nAko ovaj uređaj izgubi vezu, online porudžbine će se nastaviti — kupci mogu da poruče, a da vi to ne vidite. Isključite je samo ako imate pouzdanu vezu.",
+  "cardDescription": "Određuje šta se dešava sa novim porudžbinama kada vaš uređaj izgubi internet.",
+  "purpose": "Ako vaš uređaj izgubi vezu, ovo sprečava da stižu porudžbine koje ne možete da vidite.",
+  "switchLabel": "Zaštita porudžbina bez interneta",
+  "switchHelp": "Šta se dešava kada ovo vozilo izgubi vezu.",
+  "modes": {
+    "pause": {
+      "label": "Pauziranje online poručivanja",
+      "help": "Kupci ne mogu da poruče dok se ne vratite na internet."
+    },
+    "no_auto_accept": {
+      "label": "Prijem porudžbina uz ručnu potvrdu",
+      "help": "Automatsko prihvatanje se isključuje, pa kupci i dalje mogu da poruče, ali ništa se ne potvrđuje automatski. Svaku porudžbinu potvrđujete kad se vratite na internet — a sve što i dalje čeka automatski se odbija posle izabranog vremena, i kupac o tome dobija obaveštenje e-poštom."
+    }
+  },
+  "autoRejectLabel": "Odbij porudžbine koje čekaju duže od",
+  "autoRejectOption": "{n, plural, one {{count} min} few {{count} min} other {{count} min}}"
+}

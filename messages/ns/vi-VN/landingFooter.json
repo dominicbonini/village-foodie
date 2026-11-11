@@ -1,0 +1,17 @@
+{
+  "features": "Tính năng",
+  "pricing": "Bảng giá",
+  "faq": "Hỏi đáp",
+  "privacy": "Quyền riêng tư",
+  "terms": "Điều khoản",
+  "contact": "Liên hệ",
+  "about": "Giới thiệu",
+  "copyright": "© {year} HatchGrab",
+  "credit": "Từ đội ngũ đứng sau <b>Village Foodie</b>",
+  "badges": {
+    "appStoreLink": "Tải HatchGrab trên App Store",
+    "appStoreAlt": "Tải về trên App Store",
+    "googlePlayLink": "Tải HatchGrab trên Google Play",
+    "googlePlayAlt": "Tải nội dung trên Google Play"
+  }
+}

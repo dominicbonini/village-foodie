@@ -1,0 +1,117 @@
+{
+  "cardEditor": {
+    "title": "Ofnæmisvaldaspjaldið þitt",
+    "intro": "Viðskiptavinir sjá þetta <b>nákvæmlega eins og þú skrifar það</b> — engu er umorðað. Skrifaðu eða límdu hér fyrir neðan, eða hladdu upp mynd/PDF og við lesum textann inn svo þú getir yfirfarið hann.",
+    "empty": "Ekkert ofnæmisvaldaspjald enn.",
+    "placeholder": "t.d. Allir djúpsteiktu réttirnir okkar innihalda hveiti og mjólk. Djúpsteikingarpotturinn er sameiginlegur með réttum sem innihalda glúten og hnetur. Vegan valkostir í boði — spyrðu starfsfólkið.",
+    "reading": "Les mynd…",
+    "upload": "📷 Hlaða upp mynd / PDF",
+    "uploadNote": "Við lesum textann af myndinni svo þú getir yfirfarið hann — myndin er ekki geymd."
+  },
+  "cardUpload": {
+    "dishFallback": "Réttur",
+    "question": "Ertu með ofnæmisvaldaspjald til að hlaða upp?",
+    "perDish": "{detected, select, yes {Hladdu því upp og við notum það til að skrá ofnæmisvalda í réttunum þínum. Ofnæmisvaldar sem finnast birtast á næstu síðu, þar sem þú staðfestir hvern rétt.} other {Hladdu því upp og við notum það til að skrá ofnæmisvalda í réttunum þínum.}}",
+    "cardOnly": "Hladdu upp ofnæmisvaldaspjaldinu sem viðskiptavinir sjá.",
+    "yes": "Já",
+    "no": "Nei",
+    "noProblem": "Ekkert mál — þú þarft ekki að hafa það. Haltu áfram með hnappnum hér fyrir neðan.",
+    "analysing": "Greini spjaldið…",
+    "dropzone": "Dragðu og slepptu eða ýttu til að velja",
+    "imageOrPdf": "Mynd eða PDF",
+    "or": "eða",
+    "pastePlaceholder": "Límdu texta ofnæmisvaldaspjaldsins hér…",
+    "process": "Vinna úr spjaldinu",
+    "cardRead": "Spjaldið lesið ✓",
+    "unmatchedHeading": "Ekki tókst að tengja þetta sjálfvirkt — úthlutaðu eða hafnaðu",
+    "quotedName": "„{name}“",
+    "ambiguous": "Óljóst — passar við nokkra rétti; veldu þann rétta.",
+    "assignTo": "Úthluta á rétt…",
+    "dismiss": "Hafna",
+    "blanket": "Á spjaldinu stendur að <b>{list}</b> geti verið í <b>öllum</b> réttum. Bæta við alla rétti? (þú staðfestir samt hvern og einn) <muted>— sjálfgefið slökkt</muted>",
+    "kitchenNotes": "Athugasemdir eldhúss (vistaðar með upplýsingum þínum um ofnæmisvalda)",
+    "matchSummary": "{n, plural, =0 {Tengt við rétt: {matched}.} one {Tengt við rétt: {matched}. Þú þarft að úthluta {count} atriði.} other {Tengt við rétt: {matched}. Þú þarft að úthluta {count} atriðum.}}"
+  },
+  "savedCard": {
+    "showLess": "Sýna minna",
+    "showMore": "Sýna meira",
+    "fileOnly": "Skrá með spjaldi er vistuð fyrir þennan matarvagn, en enginn samantektartexti var geymdur. Opnaðu frumritið til að lesa það.",
+    "viewOriginal": "Skoða upprunalega spjaldið"
+  },
+  "wizard": {
+    "toast": {
+      "readFailed": "Ekki tókst að lesa ofnæmisvaldaspjaldið — reyndu aftur",
+      "confirmed": "Staðfest: {name}",
+      "undo": "Afturkalla",
+      "saveFailed": "Ekki tókst að vista — reyndu aftur",
+      "imageFailed": "Ekki tókst að lesa myndina — skrifaðu eða límdu spjaldið inn í staðinn",
+      "cardRead": "{n, plural, one {Spjaldið lesið — tengt: {matched}, {count} atriði þarf úthlutun} other {Spjaldið lesið — tengt: {matched}, {count} atriði þurfa úthlutun}}"
+    },
+    "genericWarn": {
+      "text": "„{generic}“ fannst en er ekki nógu nákvæmt. Veldu {picks} ef rétturinn inniheldur eitthvað úr flokknum {family} — eða láttu ógert ef svo er ekki.",
+      "andOr": "{a} og/eða {b}"
+    },
+    "badge": {
+      "justConfirmed": "✓ Staðfest",
+      "confirmed": "Staðfest",
+      "needsReview": "Þarf yfirferð"
+    },
+    "confirm": {
+      "confirming": "Staðfesti…",
+      "confirmed": "Staðfest ✓",
+      "confirm": "Staðfesta",
+      "changed": "· breytt",
+      "changedTitle": "Breytt síðan þú staðfestir síðast — staðfestu aftur"
+    },
+    "allergens": "Ofnæmisvaldar",
+    "dietary": "Mataræði",
+    "uncategorised": "Óflokkað",
+    "review": {
+      "progress": "{confirmed} af {total} staðfest",
+      "allConfirmed": "✓ Allt staðfest",
+      "list": "Listi",
+      "table": "Tafla",
+      "detected": "Fundið í matseðlinum þínum — <b>farðu yfir þetta</b>. Ofnæmisvaldar eru faldir viðskiptavinum þar til þú staðfestir hvern rétt.",
+      "viewOnly": "👁 Aðeins skoðun — einungis eigandinn getur staðfest eða breytt upplýsingum um ofnæmisvalda.",
+      "emptyTitle": "Engar vörur á matseðli",
+      "emptyBody": "Bættu fyrst vörum við matseðilinn og skráðu svo ofnæmisvalda þeirra hér.",
+      "dish": "Réttur",
+      "status": "Staða"
+    },
+    "cardPanel": {
+      "reading": "Les upplýsingar um ofnæmisvalda…",
+      "saved": "🛡️ Ofnæmisvaldaspjald vistað",
+      "viewOriginal": "Skoða upprunalega spjaldið",
+      "replace": "Skipta um spjald",
+      "uploadHelp": "Hladdu upp ofnæmisvaldaspjaldinu þínu (mynd/PDF) eða límdu inn upplýsingar um ofnæmisvalda — gervigreindin okkar setur þær skipulega fram fyrir viðskiptavini.",
+      "add": "Bæta við ofnæmisvaldaspjaldi",
+      "viewOnly": "👁 Aðeins skoðun — einungis eigandinn getur bætt við ofnæmisvaldaspjaldinu.",
+      "intro": "Viðskiptavinir sjá þetta spjald sem ofnæmisupplýsingar matseðilsins. Ofnæmisvaldar einstakra rétta eru faldir þegar aðeins spjaldið er notað (gögnin um réttina eru geymd ef þú skiptir síðar yfir í skráningu á hvern rétt)."
+    },
+    "subtitle": {
+      "choose": "Veldu hvernig viðskiptavinir sjá upplýsingar um ofnæmisvalda",
+      "card": "Bættu við ofnæmisvaldaspjaldinu þínu",
+      "cardOptional": "Bættu við ofnæmisvaldaspjaldi (valfrjálst)",
+      "review": "Farðu yfir og staðfestu hvern rétt"
+    },
+    "heading": {
+      "import": "Ofnæmisvaldar",
+      "standalone": "Uppsetning ofnæmisvalda"
+    },
+    "nav": {
+      "next": "Áfram →",
+      "back": "← Til baka",
+      "skip": "Sleppa í bili",
+      "saving": "Vista…",
+      "done": "Lokið",
+      "saveLater": "Vista og klára síðar",
+      "close": "Loka",
+      "finish": "Ljúka",
+      "skipImport": "Sleppa uppsetningu ofnæmisvalda í bili"
+    },
+    "hint": {
+      "skipDefers": "Að sleppa frestar þessu — réttir sem þú hefur ekki staðfest eru faldir viðskiptavinum þar til ofnæmisvaldar þeirra eru staðfestir.",
+      "importIncomplete": "Staðfestu hvern rétt til að halda áfram — eða veldu „Sleppa uppsetningu ofnæmisvalda í bili“."
+    }
+  }
+}

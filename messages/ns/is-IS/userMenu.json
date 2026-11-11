@@ -1,0 +1,18 @@
+{
+  "menuLabel": "Notandavalmynd",
+  "screenOn": "Skjár alltaf á",
+  "screenOff": "Skjár má slokkna",
+  "newOrderSound": "Hljóð við nýja pöntun",
+  "copied": "Afritað",
+  "orderLink": "Pöntunartengill",
+  "qrCode": "QR-kóði",
+  "kitchenScreen": "Eldhússkjár",
+  "thisDevice": "Þetta tæki",
+  "manage": "Umsjón",
+  "ordersDashboard": "Pantanayfirlit",
+  "admin": "Kerfisstjóri",
+  "privacy": "Persónuverndarstefna",
+  "terms": "Skilmálar",
+  "signOut": "Skrá út",
+  "close": "Loka"
+}

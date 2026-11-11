@@ -1,0 +1,83 @@
+{
+  "title": "Viðburðategundir",
+  "newTypeButton": "+ Ný viðburðategund",
+  "close": "Loka",
+  "loading": "Hleður…",
+  "missingTitle": "Ekki er enn búið að kveikja á viðburðategundum.",
+  "missingBody": "Uppfærsla gagnagrunnsins fyrir þennan eiginleika hefur ekki verið keyrð. Ekkert er bilað — allir viðburðir nota venjulegu uppsetninguna þína.",
+  "column": "Dálkur",
+  "vanGone": "Þessi vagn er ekki lengur til.",
+  "typeGone": "Þessi tegund er ekki lengur til.",
+  "standard": "Staðlað",
+  "standardHeading": "STAÐLAÐ",
+  "moreFor": "Meira: {name}",
+  "rename": "Endurnefna",
+  "moveLeft": "Færa til vinstri",
+  "moveRight": "Færa til hægri",
+  "delete": "Eyða",
+  "sections": {
+    "vans": "VAGNAR",
+    "prices": "VERÐ",
+    "itemPrices": "VERÐ VARA",
+    "service": "AFGREIÐSLA"
+  },
+  "labelFor": "{label} — {name}",
+  "intervalEvery": "Á {mins} mín. fresti",
+  "noTypes": "Þú ert ekki enn með neinar viðburðategundir, svo allir viðburðir nota venjulegu uppsetninguna þína.",
+  "renameTitle": "Endurnefna þessa tegund",
+  "name": "Heiti",
+  "cancel": "Hætta við",
+  "save": "Vista",
+  "copyVanOne": "Afrita stillingar Vagns 1",
+  "thisType": "þessi tegund",
+  "matchTitle": "Nota „Staðlað“ fyrir „{name}“?",
+  "matchKeeps": "Allt sem þú breyttir á stjórnborði einstaks viðburðar helst óbreytt og verðum þessarar tegundar er ekki breytt.",
+  "matchWillUse": "Notað verður: {summary}",
+  "deleteTitle": "Eyða „{name}“?",
+  "deleteBody": "{n, plural, =0 {Engir væntanlegir viðburðir nota „{name}“.} one {{count} væntanlegur viðburður notar „{name}“. Hann fer aftur á „Staðlað“.} other {{count} væntanlegir viðburðir nota „{name}“. Þeir fara aftur á „Staðlað“.}} Allt sem þú breyttir á einstökum viðburði helst óbreytt.",
+  "keep": "Halda",
+  "phone": {
+    "standardTag": "Staðlað",
+    "defaultTag": "sjálfgefið",
+    "vanSetup": "Venjuleg uppsetning þessa vagns — notuð á öllum viðburðum án tegundar.",
+    "standardSetup": "Venjulega uppsetningin þín — notuð á öllum viðburðum án tegundar.",
+    "cardSummary": "{upcoming, plural, one {{upcomingCount} væntanlegur viðburður} other {{upcomingCount} væntanlegir viðburðir}} · {changed, plural, =0 {engu breytt enn} one {{changedCount} af {total} breytt} other {{changedCount} af {total} breytt}}",
+    "noMenuItems": "Engar vörur á matseðli enn — bættu þeim við í Matseðill › Vörur."
+  },
+  "newType": {
+    "title": "Ný viðburðategund",
+    "namePlaceholder": "t.d. Skólahátíð",
+    "help": "Ýttu á heiti eða skrifaðu þitt eigið. Tegundin byrjar sem afrit af „Staðlað“ og breytingar á „Staðlað“ síðar hafa ekki áhrif á hana. Breyttu hverju sem er á eftir.",
+    "create": "Stofna",
+    "chips": {
+      "festival": "Hátíð",
+      "pub": "Krá",
+      "market": "Markaður",
+      "privateHire": "Leigja matarvagn"
+    }
+  },
+  "select": {
+    "label": "Viðburðategund",
+    "usual": "{name} er venjulega notað á þessum stað."
+  },
+  "summary": {
+    "normalSetup": "Venjulega uppsetningin þín",
+    "sameAsStandard": "Eins og „Staðlað“",
+    "buzzersOn": "kveikt á píptækjum",
+    "buzzersOff": "slökkt á píptækjum",
+    "takeCashOn": "tekið við reiðufé",
+    "takeCashOff": "ekki tekið við reiðufé",
+    "markReadyOn": "kveikt á skrefinu „merkja tilbúið“",
+    "markReadyOff": "slökkt á skrefinu „merkja tilbúið“",
+    "collectionEvery": "afhending á {mins} mín. fresti",
+    "offlineOff": "slökkt á vörn án nettengingar",
+    "offlineKeepTaking": "án nettengingar: halda áfram að taka við pöntunum",
+    "offlinePause": "án nettengingar: gera hlé á pöntunum"
+  },
+  "errors": {
+    "somethingWentWrong": "Eitthvað fór úrskeiðis",
+    "couldNotLoad": "Ekki tókst að hlaða",
+    "couldNotSave": "Ekki tókst að vista",
+    "noVans": "Þessi matarvagn er ekki með neina vagna til að breyta."
+  }
+}

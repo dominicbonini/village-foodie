@@ -1,0 +1,14 @@
+{
+  "homeLabel": "Trang chủ HatchGrab",
+  "cta": "Tải thực đơn lên →",
+  "ctaShort": "Tải thực đơn",
+  "features": "Tính năng",
+  "pricing": "Bảng giá",
+  "logIn": "Đăng nhập",
+  "country": {
+    "button": "Quốc gia: {name}. Đổi quốc gia",
+    "menu": "Quốc gia",
+    "title": "Chọn quốc gia của bạn",
+    "subline": "Giá, ngôn ngữ và cài đặt sẽ thay đổi cho phù hợp."
+  }
+}

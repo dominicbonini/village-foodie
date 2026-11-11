@@ -1,0 +1,8 @@
+{
+  "metaDescription": "Lokasi jualan berikutnya: {truck}.",
+  "orderFrom": "Pesan dari {truck}",
+  "poweredBy": "Didukung oleh <b>HatchGrab</b>",
+  "loadFailed": "Jadwal belum bisa dimuat saat ini.",
+  "loading": "Memuat jadwal…",
+  "empty": "Belum ada jadwal mendatang untuk {truck}."
+}

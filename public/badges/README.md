@@ -141,6 +141,12 @@ names and stay the English badges (every English locale, and any language withou
 | `apple/zh-HK.svg` | Chinese (Hong Kong SAR China) (zh-HK) | https://toolbox.marketingtools.apple.com/api/v2/badges/download-on-the-app-store/black/zh-hk | 2026-11-02 |
 | `apple/th-TH.svg` | Thai (Thailand) (th-TH) | https://toolbox.marketingtools.apple.com/api/v2/badges/download-on-the-app-store/black/th-th | 2026-11-02 |
 | `apple/ar-AE.svg` | Arabic (United Arab Emirates) (ar-AE) | https://toolbox.marketingtools.apple.com/api/v2/badges/download-on-the-app-store/black/ar-ar | 2026-11-02 |
+| `apple/tr-TR.svg` | Turkish (Türkiye) (tr-TR) | https://toolbox.marketingtools.apple.com/api/v2/badges/download-on-the-app-store/black/tr-tr | 2026-11-10 |
+| `apple/ko-KR.svg` | Korean (South Korea) (ko-KR) | https://toolbox.marketingtools.apple.com/api/v2/badges/download-on-the-app-store/black/ko-kr | 2026-11-10 |
+| `apple/zh-TW.svg` | Chinese, Traditional (Taiwan) (zh-TW) | https://toolbox.marketingtools.apple.com/api/v2/badges/download-on-the-app-store/black/zh-tw | 2026-11-10 |
+| `apple/id-ID.svg` | Indonesian (Indonesia) (id-ID) | https://toolbox.marketingtools.apple.com/api/v2/badges/download-on-the-app-store/black/id-id | 2026-11-10 |
+| `apple/vi-VN.svg` | Vietnamese (Vietnam) (vi-VN) | https://toolbox.marketingtools.apple.com/api/v2/badges/download-on-the-app-store/black/vi-vn | 2026-11-10 |
+| `apple/he-IL.svg` | Hebrew (Israel) (he-IL) | https://toolbox.marketingtools.apple.com/api/v2/badges/download-on-the-app-store/black/he-il | 2026-11-10 |
 
 ### Google — `google/`
 
@@ -189,3 +195,13 @@ or larger than the other badges"* — equal visible heights satisfy it.
 | `google/zh-HK.png` | Chinese (Hong Kong SAR China) (zh-HK) | https://play.google.com/intl/en_us/badges/static/images/badges/zh-hk_badge_web_generic.png | 2026-11-02 |
 | `google/th-TH.svg` | Thai (Thailand) (th-TH) | https://partnermarketinghub.withgoogle.com/brands/google-play/google-play/lockups-icons-badges/?folder=86718 (`GetItOnGooglePlay_Badge_Web_color_Thai.svg`) | 2026-11-08 |
 | `google/ar-AE.svg` | Arabic (United Arab Emirates) (ar-AE) | https://partnermarketinghub.withgoogle.com/brands/google-play/google-play/lockups-icons-badges/?folder=86718 (`GetItOnGooglePlay_Badge_Web_color_Arabic-Saudi-Arabia.svg`) | 2026-11-08 |
+| `google/tr-TR.svg` | Turkish (Türkiye) (tr-TR) | https://partnermarketinghub.withgoogle.com/brands/google-play/google-play/lockups-icons-badges/?folder=86718 (`GetItOnGooglePlay_Badge_Web_color_Turkish.svg`) | 2026-11-10 |
+| `google/ko-KR.svg` | Korean (South Korea) (ko-KR) | https://partnermarketinghub.withgoogle.com/brands/google-play/google-play/lockups-icons-badges/?folder=86718 (`GetItOnGooglePlay_Badge_Web_color_Korean.svg`) | 2026-11-10 |
+| `google/zh-TW.svg` | Chinese, Traditional (Taiwan) (zh-TW) | https://partnermarketinghub.withgoogle.com/brands/google-play/google-play/lockups-icons-badges/?folder=86718 (`GetItOnGooglePlay_Badge_Web_color_Chinese-Taiwan.svg`) | 2026-11-10 |
+| `google/id-ID.svg` | Indonesian (Indonesia) (id-ID) | https://partnermarketinghub.withgoogle.com/brands/google-play/google-play/lockups-icons-badges/?folder=86718 (`GetItOnGooglePlay_Badge_Web_color_Indonesian.svg`) | 2026-11-10 |
+| `google/vi-VN.svg` | Vietnamese (Vietnam) (vi-VN) | https://partnermarketinghub.withgoogle.com/brands/google-play/google-play/lockups-icons-badges/?folder=86718 (`GetItOnGooglePlay_Badge_Web_color_Vietnamese.svg`) | 2026-11-10 |
+| `google/he-IL.svg` | Hebrew (Israel) (he-IL) | https://partnermarketinghub.withgoogle.com/brands/google-play/google-play/lockups-icons-badges/?folder=86718 (`GetItOnGooglePlay_Badge_Web_color_Hebrew.svg`) | 2026-11-10 |
+| `google/is-IS.svg` | Icelandic (Iceland) (is-IS) | https://partnermarketinghub.withgoogle.com/brands/google-play/google-play/lockups-icons-badges/?folder=86718 (`GetItOnGooglePlay_Badge_Web_color_Icelandic.svg`) | 2026-11-10 |
+| `google/sr-RS.svg` | Serbian (Serbia; Google’s badge is Cyrillic) (sr-RS) | https://partnermarketinghub.withgoogle.com/brands/google-play/google-play/lockups-icons-badges/?folder=86718 (`GetItOnGooglePlay_Badge_Web_color_Serbian.svg`) | 2026-11-10 |
+
+*languages-world-1 (10 November 2026): Apple publishes no Icelandic or Serbian App Store badge (its toolbox answers 404 and neither language is in Apple’s localized-badge list), so is-IS and sr-RS pages show Apple’s English badge. Apple’s zh-TW file is byte-identical to zh-HK’s (one Traditional Chinese badge). Google’s Serbian badge is drawn in Cyrillic.*

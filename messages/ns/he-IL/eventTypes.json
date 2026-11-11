@@ -1,0 +1,83 @@
+{
+  "title": "סוגי אירועים",
+  "newTypeButton": "+ סוג אירוע חדש",
+  "close": "סגירה",
+  "loading": "בטעינה…",
+  "missingTitle": "סוגי אירועים עוד לא הופעלו.",
+  "missingBody": "עדכון מסד הנתונים לתכונה הזו עוד לא הוחל. שום דבר לא שבור — כל אירוע משתמש בהגדרות הרגילות שלכם.",
+  "column": "עמודה",
+  "vanGone": "הרכב הזה כבר לא קיים.",
+  "typeGone": "הסוג הזה כבר לא קיים.",
+  "standard": "רגיל",
+  "standardHeading": "רגיל",
+  "moreFor": "עוד עבור {name}",
+  "rename": "שינוי שם",
+  "moveLeft": "הזזה שמאלה",
+  "moveRight": "הזזה ימינה",
+  "delete": "מחיקה",
+  "sections": {
+    "vans": "רכבים",
+    "prices": "מחירים",
+    "itemPrices": "מחירי פריטים",
+    "service": "שירות"
+  },
+  "labelFor": "{label} עבור {name}",
+  "intervalEvery": "כל {mins} דק׳",
+  "noTypes": "עדיין אין לכם סוגי אירועים, ולכן כל אירוע משתמש בהגדרות הרגילות שלכם.",
+  "renameTitle": "שינוי השם של הסוג הזה",
+  "name": "שם",
+  "cancel": "ביטול",
+  "save": "שמירה",
+  "copyVanOne": "העתקת ההגדרות של רכב 1",
+  "thisType": "הסוג הזה",
+  "matchTitle": "להחיל את ההגדרות של “רגיל” על “{name}”?",
+  "matchKeeps": "כל מה ששיניתם בלוח הבקרה של אירוע בודד יישאר כמו שהוא, והמחירים של הסוג הזה לא ישתנו.",
+  "matchWillUse": "ההגדרות שיחולו: {summary}",
+  "deleteTitle": "למחוק את “{name}”?",
+  "deleteBody": "{n, plural, =0 {אין אירועים קרובים שמשתמשים בסוג “{name}”.} one {{count} אירוע קרוב משתמש בסוג “{name}”. הוא יחזור לסוג “רגיל”.} two {{count} אירועים קרובים משתמשים בסוג “{name}”. הם יחזרו לסוג “רגיל”.} other {{count} אירועים קרובים משתמשים בסוג “{name}”. הם יחזרו לסוג “רגיל”.}} כל מה ששיניתם באירוע בודד יישאר כמו שהוא.",
+  "keep": "השארה",
+  "phone": {
+    "standardTag": "רגיל",
+    "defaultTag": "ברירת מחדל",
+    "vanSetup": "ההגדרות הרגילות של הרכב הזה — משמשות בכל אירוע ללא סוג.",
+    "standardSetup": "ההגדרות הרגילות שלכם — משמשות בכל אירוע ללא סוג.",
+    "cardSummary": "{upcoming, plural, one {{upcomingCount} אירוע קרוב} two {{upcomingCount} אירועים קרובים} other {{upcomingCount} אירועים קרובים}} · {changed, plural, =0 {עוד לא שונה דבר} one {{changedCount} מתוך {total} שונה} two {{changedCount} מתוך {total} שונו} other {{changedCount} מתוך {total} שונו}}",
+    "noMenuItems": "עדיין אין פריטים בתפריט — הוסיפו אותם ב“תפריט › פריטים”."
+  },
+  "newType": {
+    "title": "סוג אירוע חדש",
+    "namePlaceholder": "לדוגמה: יום כיף בבית הספר",
+    "help": "הקישו על שם או הקלידו שם משלכם. הסוג מתחיל כהעתק של “רגיל”, ושינויים ב“רגיל” בהמשך לא ישפיעו עליו. אפשר לשנות כל דבר אחר כך.",
+    "create": "יצירה",
+    "chips": {
+      "festival": "פסטיבל",
+      "pub": "פאב",
+      "market": "שוק",
+      "privateHire": "פודטראק לאירועים"
+    }
+  },
+  "select": {
+    "label": "סוג אירוע",
+    "usual": "הסוג הרגיל למקום הזה: {name}."
+  },
+  "summary": {
+    "normalSetup": "ההגדרות הרגילות שלכם",
+    "sameAsStandard": "זהה ל“רגיל”",
+    "buzzersOn": "זימוניות פעילות",
+    "buzzersOff": "זימוניות כבויות",
+    "takeCashOn": "קבלת מזומן פעילה",
+    "takeCashOff": "קבלת מזומן כבויה",
+    "markReadyOn": "שלב “סימון כמוכנה” פעיל",
+    "markReadyOff": "שלב “סימון כמוכנה” כבוי",
+    "collectionEvery": "איסוף כל {mins} דק׳",
+    "offlineOff": "הגנת אופליין כבויה",
+    "offlineKeepTaking": "אופליין: ממשיכים לקבל הזמנות",
+    "offlinePause": "אופליין: השהיית הזמנות"
+  },
+  "errors": {
+    "somethingWentWrong": "משהו השתבש",
+    "couldNotLoad": "הטעינה נכשלה",
+    "couldNotSave": "השמירה נכשלה",
+    "noVans": "לפודטראק הזה אין רכבים לשינוי."
+  }
+}

@@ -1,0 +1,30 @@
+{
+  "heading": "Thuế, tiền tip và phí",
+  "rate": {
+    "label": "Thuế suất bán hàng",
+    "hint": "Mức thuế bạn tính trên mọi đơn. Khách thấy khoản này được cộng vào khi thanh toán, trên hóa đơn và trên phiếu bếp.",
+    "regionDefault": "Để trống để tính {label} ở mức {rate}%, mức áp dụng cho đồ ăn chế biến sẵn ({region})."
+  },
+  "included": {
+    "label": "Giá đã gồm {label}",
+    "hint": "Giá của bạn đã gồm {label}. Mức thuế này chỉ cho biết bao nhiêu phần trong mỗi giá là {label}, trên hóa đơn và phiếu bếp — không cộng thêm gì khi thanh toán.",
+    "default": "Để trống để dùng mức {rate}%, mức {label} cho đồ ăn nóng bán mang về ({country})."
+  },
+  "tips": {
+    "label": "Tiền tip",
+    "hint": "Khách thanh toán online bằng thẻ có thể thêm tiền tip. Toàn bộ thuộc về bạn.",
+    "choices": "Các mức khách nhìn thấy:",
+    "chip": "{rate}%",
+    "other": "Số tiền khác"
+  },
+  "fee": {
+    "label": "Phí dịch vụ online",
+    "hint": "Chỉ cộng vào đơn online. Không bao giờ áp dụng cho đơn trả tiền tại xe hay đơn mua tại chỗ. Bạn giữ khoản này.",
+    "pctAria": "Phần trăm phí dịch vụ",
+    "fixedAria": "Số tiền phí dịch vụ cố định",
+    "max": "Mức tối đa bạn có thể thu: {max}",
+    "example": "Khách thấy khoản này trước khi trả tiền, trên một dòng: “{label} {amount}”.",
+    "hatchgrab": "HatchGrab cộng phí dịch vụ {fee} vào đơn online của khách. Bạn không phải trả và không thể thay đổi khoản phí này."
+  },
+  "saveFailed": "Không lưu được — vui lòng thử lại."
+}

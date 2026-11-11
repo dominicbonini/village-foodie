@@ -1,0 +1,134 @@
+{
+  "item": {
+    "weekHeading": "Judul minggu",
+    "weekHeadingSample": "Minggu mulai …",
+    "daysSample": "{first} sampai {last}",
+    "date": "Tanggal",
+    "place": "Lokasi",
+    "venue": "Tempat",
+    "area": "Area",
+    "time": "Waktu",
+    "rows": "Baris",
+    "rowsSample": "Jarak {px}px · {first} sampai {last}",
+    "ownText": "Teks Anda sendiri",
+    "noteTokenSample": "Catatan yang Anda ketik saat membuat postingan",
+    "nothingYet": "Belum ada",
+    "thisBox": "kotak ini"
+  },
+  "sample": {
+    "venue": "Taman Kota",
+    "area": "Kemang"
+  },
+  "bar": {
+    "previewWith": "Pratinjau dengan",
+    "undo": "Urungkan",
+    "undoTitle": "Urungkan (⌘Z)",
+    "redo": "Ulangi",
+    "redoTitle": "Ulangi (⇧⌘Z)",
+    "cancel": "Batal",
+    "saving": "Menyimpan…",
+    "save": "Simpan desain"
+  },
+  "grid": {
+    "eachRow": "Setiap baris",
+    "placeOff": "Nama lokasi sudah ada di gambar Anda — HatchGrab tidak akan menambahkannya."
+  },
+  "background": {
+    "uploading": "Mengunggah…",
+    "replace": "Ganti gambar",
+    "shape": {
+      "square": "Persegi (1:1)",
+      "portrait45": "Potret (4:5)",
+      "portrait916": "Potret (9:16)",
+      "landscape169": "Lanskap (16:9)",
+      "portrait": "Potret",
+      "landscape": "Lanskap"
+    }
+  },
+  "scope": {
+    "title": "Posisi teks",
+    "standard": "Posisi sama dengan Standar",
+    "own": "Posisi khusus untuk {place}",
+    "locked": "Posisi ini berasal dari desain Standar Anda. Pilih “Posisi khusus untuk {place}” untuk memindahkannya hanya di sini."
+  },
+  "stage": {
+    "hint": "Seret kotak untuk memindahkannya · seret sudutnya untuk mengubah ukuran",
+    "zoomOut": "Perkecil",
+    "zoomIn": "Perbesar"
+  },
+  "rows": {
+    "spacing": "Jarak",
+    "daysRun": "Hari berjalan dari {first} sampai {last}. Tiga kotak di baris 1 disalin ke bawah dengan jarak ini.",
+    "whichEvents": "Acara yang ditampilkan",
+    "showCancelled": "Tampilkan acara yang dibatalkan",
+    "showCancelledHint": "Acara yang dibatalkan menampilkan lokasinya dicoret dan kata DIBATALKAN. Jika dinonaktifkan, hari itu terbaca sebagai hari libur."
+  },
+  "days": {
+    "reorder": "Ubah urutan",
+    "move": "pindahkan"
+  },
+  "picture": {
+    "picture": "Gambar",
+    "fill": "Penuhi kotak",
+    "fit": "Muat di dalam",
+    "corners": "Sudut",
+    "square": "Siku",
+    "rounded": "Membulat",
+    "ifMissing": "Jika lokasi tidak punya gambar",
+    "noPicture": {
+      "omit": "Jangan tampilkan",
+      "blank": "Biarkan ruang kosong",
+      "logo": "Tampilkan logo Anda"
+    },
+    "border": "Bingkai",
+    "drawBorder": "Gambar bingkai",
+    "drawBorderHint": "Garis di sekeliling gambar, dengan warna pilihan Anda.",
+    "borderWidth": "Tebal bingkai",
+    "cornerRadius": "Radius sudut",
+    "locationPictures": "Gambar lokasi",
+    "addLocationPictures": "+ Tambah gambar lokasi",
+    "allHaveImage": "{total, plural, =0 {Anda belum punya lokasi.} one {Lokasi Anda sudah punya gambar.} other {Semua # lokasi Anda sudah punya gambar.}}",
+    "someWithout": "{without} dari {total, plural, one {# lokasi} other {# lokasi}} Anda {without, plural, one {belum punya} other {belum punya}} gambar"
+  },
+  "settings": {
+    "font": "Font",
+    "colour": "Warna",
+    "textColour": "Warna teks",
+    "ownStyleNote": "{count, plural, one {{names} punya gaya sendiri, jadi tidak diubah.} other {{names} punya gaya sendiri, jadi tidak diubah.}}",
+    "matchAgain": "Samakan lagi",
+    "matchName": "Samakan dengan {name}",
+    "lastToggle": "{kind, select, weekly {Biarkan Lokasi atau Waktu tetap aktif. Acara yang dibatalkan menampilkan lokasinya dicoret dan kata DIBATALKAN, jadi jika keduanya nonaktif, tidak ada yang menunjukkan bahwa acara dibatalkan.} other {Biarkan Tempat atau Waktu tetap aktif. Acara yang dibatalkan menampilkan lokasinya dicoret dan kata DIBATALKAN, jadi jika keduanya nonaktif, tidak ada yang menunjukkan bahwa acara dibatalkan.}}"
+  },
+  "letters": {
+    "boldGlyph": "B",
+    "italicGlyph": "I",
+    "capsGlyph": "AA",
+    "italicTitle": "{italic} — font ini punya huruf miring asli"
+  },
+  "align": {
+    "left": "Kiri",
+    "centre": "Tengah",
+    "right": "Kanan"
+  },
+  "effects": {
+    "outlineColour": "Warna garis tepi",
+    "bandColour": "Warna pita",
+    "bandDaysOff": "Pita di hari libur",
+    "bandCancelled": "Pita saat acara dibatalkan",
+    "bandDaysOffHint": "Dipakai menggantikan pita di atas pada hari tanpa jualan.",
+    "bandCancelledHint": "Dipakai menggantikan pita di atas saat acara dibatalkan."
+  },
+  "more": {
+    "dayOwnLine": "Hari di baris sendiri",
+    "dayOwnLineHint": "Nama hari di atas tanggal. Hanya tanggal.",
+    "noEventDay": "Pada hari tanpa acara",
+    "wordsBeforePlaceholder": "mis. Temukan kami di",
+    "neverHyphenate": "Satu kata panjang tanpa spasi selalu diperkecil — kami tidak pernah memenggal nama lokasi dengan tanda hubung."
+  },
+  "bits": {
+    "less": "Lebih sedikit",
+    "more": "Lebih banyak",
+    "chooseColourFor": "{label} — pilih warna apa saja",
+    "chooseColour": "Pilih warna apa saja"
+  }
+}

@@ -1,0 +1,52 @@
+{
+  "meta": {
+    "title": "Aðstoð",
+    "description": "Fáðu aðstoð með HatchGrab. Sendu okkur skilaboð og við svörum þér í tölvupósti."
+  },
+  "logIn": "Skrá inn",
+  "eyebrow": "Aðstoð",
+  "title": "Hvernig getum við hjálpað?",
+  "lede": "Virkar eitthvað ekki, eða ertu með spurningu um aðganginn þinn? Tvær leiðir til að ná í okkur — hvor sem verður fyrir valinu svörum við þér í tölvupósti.",
+  "emailUs": "Sendu okkur tölvupóst",
+  "formHeading": "Eða sendu okkur skilaboð",
+  "form": {
+    "topicLabel": "Um hvað snýst þetta?",
+    "topics": {
+      "question": "Spurning um HatchGrab",
+      "account": "Aðstoð með aðganginn minn",
+      "comparison": "Leiðrétting á samanburðarsíðu",
+      "other": "Eitthvað annað"
+    },
+    "nameLabel": "Nafnið þitt",
+    "namePlaceholder": "Nafn",
+    "emailLabel": "Netfang",
+    "businessLabel": "Nafn vagns eða fyrirtækis",
+    "optional": "(valfrjálst)",
+    "businessPlaceholder": "t.d. Pítsueldhúsið",
+    "messageLabel": "Skilaboðin þín",
+    "send": "Senda skilaboð",
+    "sending": "Sendi…",
+    "privacyLine": "Við notum upplýsingarnar þínar eingöngu til að svara þér.",
+    "privacyLink": "Persónuverndarstefna",
+    "thanksTitle": "Takk — skilaboðin þín hafa borist.",
+    "thanksBody": "Við svörum með tölvupósti á netfangið sem þú gafst upp.",
+    "errors": {
+      "nameRequired": "Sláðu inn nafnið þitt.",
+      "nameTooLong": "Nafnið er of langt (hámark {max, number} stafir).",
+      "emailRequired": "Sláðu inn netfangið þitt.",
+      "emailInvalid": "Sláðu inn gilt netfang.",
+      "emailTooLong": "Netfangið er of langt (hámark {max, number} stafir).",
+      "businessRequired": "Sláðu inn nafn vagnsins eða fyrirtækisins svo við finnum aðganginn þinn.",
+      "businessTooLong": "Nafn vagnsins eða fyrirtækisins er of langt (hámark {max, number} stafir).",
+      "messageTooShort": "Skrifaðu að minnsta kosti {min, number} stafi.",
+      "messageTooLong": "Skilaboðin eru of löng (hámark {max, number} stafir).",
+      "topicInvalid": "Veldu um hvað skilaboðin snúast.",
+      "rateLimited": "Þú hefur þegar sent nokkur skilaboð — reyndu aftur síðar eða sendu okkur tölvupóst á {email}.",
+      "failed": "Eitthvað fór úrskeiðis — sendu okkur tölvupóst á {email}."
+    }
+  },
+  "privacy": "Persónuvernd",
+  "terms": "Skilmálar",
+  "about": "Um okkur",
+  "copyright": "© {year} HatchGrab"
+}

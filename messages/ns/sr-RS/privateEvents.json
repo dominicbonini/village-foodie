@@ -1,0 +1,42 @@
+{
+  "publicName": "Privatni događaj",
+  "chip": "Privatno",
+  "grid": {
+    "orderingSection": "PORUČIVANJE",
+    "linkRowLabel": "Primajte porudžbine preko privatnog linka i QR koda",
+    "columnTitle": "Ugrađeni tip „Privatno“. Ne može se preimenovati, premestiti ni obrisati."
+  },
+  "form": {
+    "help": "U rasporedu se prikazuje kao „Privatni događaj“, samo sa datumom i vremenom — nikada sa adresom, mapom ni na Village Foodie.",
+    "linkPromise": "Gosti poručuju preko privatnog linka i QR koda — dobićete ih kada sačuvate.",
+    "nameLabel": "Naziv događaja",
+    "nameHelp": "Gosti ovo vide na vrhu stranice za poručivanje.",
+    "namePlaceholder": "Venčanje Milice i Stefana",
+    "previewNote": "Ovako se prikazuje u rasporedu — bez lokacije, mesta i poštanskog broja.",
+    "needsTimes": "Dodajte vreme početka i završetka — privatnom događaju koji prima porudžbine preko linka ono je potrebno."
+  },
+  "link": {
+    "button": "Link i QR",
+    "title": "Privatni link i QR kod",
+    "label": "Privatni link",
+    "copy": "Kopiraj",
+    "copied": "Kopirano",
+    "qrDownload": "Preuzmi QR",
+    "tableCards": "Odštampaj kartice za stolove",
+    "newLink": "Napravi novi link",
+    "working": "Radi se…",
+    "newLinkConfirm": "Napraviti novi link? Trenutni link odmah prestaje da radi, a prestaće da rade i QR kodovi koje ste već odštampali.",
+    "newLinkHelp": "Koristite ovo ako je link dospeo tamo gde ne treba. Trenutni link odmah prestaje da radi, a prestaju da rade i odštampani QR kodovi.",
+    "newLinkFailed": "Nije moguće napraviti novi link.",
+    "offNotice": "Poručivanje preko privatnog linka je isključeno za ovaj događaj, pa nema linka za deljenje. Događaj se i dalje prikazuje u rasporedu kao „Privatni događaj“."
+  },
+  "cards": {
+    "printTitle": "{truck} — kartice za stolove",
+    "scan": "Skenirajte i poručite",
+    "blurb": "Poručite i platite na telefonu. Prozvaćemo vas po imenu kada bude gotovo.",
+    "footer": "Poručivanje: HatchGrab"
+  },
+  "noSinglePost": "Privatni događaji nemaju posebnu objavu — pojavljuju se na nedeljnom posteru kao „Privatni događaj“.",
+  "confirmToPrivate": "Ovim se adresa i događaj sklanjaju sa mape. Gostima će za poručivanje biti potreban privatni link.",
+  "confirmFromPrivate": "Ovim događaj postaje javan: prikazaće se njegova adresa i oznaka na mapi, a privatni link će prestati da radi."
+}

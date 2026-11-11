@@ -1,0 +1,72 @@
+{
+  "standardCategories": {
+    "starters": "Hidangan pembuka",
+    "mains": "Hidangan utama",
+    "burgers": "Burger",
+    "pizza": "Pizza",
+    "wrapsSandwiches": "Wrap & Roti Lapis",
+    "sides": "Pendamping",
+    "dipsSauces": "Saus & Cocolan",
+    "desserts": "Hidangan penutup",
+    "drinks": "Minuman",
+    "kidsMenu": "Menu Anak",
+    "specials": "Menu Spesial",
+    "other": "Lainnya"
+  },
+  "demoEventName": "Acara demo",
+  "firstVanName": "Kendaraan 1",
+  "demoCategories": {
+    "pizza": "Pizza",
+    "burgers": "Burger",
+    "mains": "Hidangan utama",
+    "sides": "Pendamping",
+    "drinks": "Minuman"
+  },
+  "demoTemplates": {
+    "pizza": {
+      "label": "🍕 Truk pizza",
+      "items": {
+        "margherita": "Margherita",
+        "pepperoni": "Pepperoni",
+        "ndujaHoney": "Nduja & Madu",
+        "fourCheese": "Empat Keju",
+        "gardenVeg": "Sayuran Segar",
+        "garlicBread": "Roti Bawang Putih",
+        "rocketParmesan": "Arugula & Parmesan",
+        "olives": "Zaitun",
+        "sanPellegrino": "San Pellegrino",
+        "coke": "Coca-Cola"
+      }
+    },
+    "burgers": {
+      "label": "🍔 Truk burger",
+      "items": {
+        "classicCheeseburger": "Cheeseburger Klasik",
+        "doubleBacon": "Double Beef Bacon",
+        "buttermilkChicken": "Ayam Buttermilk",
+        "halloumiStack": "Burger Halloumi",
+        "smashBurger": "Smash Burger",
+        "skinOnFries": "Kentang Goreng Berkulit",
+        "loadedCheeseFries": "Kentang Goreng Keju",
+        "onionRings": "Onion Ring",
+        "craftLemonade": "Es Lemon Segar",
+        "coke": "Coca-Cola"
+      }
+    },
+    "curries": {
+      "label": "🍛 Truk kari",
+      "items": {
+        "chickenTikkaMasala": "Chicken Tikka Masala",
+        "lambRoganJosh": "Rogan Josh Kambing",
+        "chanaMasala": "Chana Masala",
+        "butterChicken": "Butter Chicken",
+        "saagPaneer": "Saag Paneer",
+        "pilauRice": "Nasi Pilaf",
+        "garlicNaan": "Naan Bawang Putih",
+        "onionBhaji": "Bhaji Bawang",
+        "mangoLassi": "Lassi Mangga",
+        "coke": "Coca-Cola"
+      }
+    }
+  }
+}

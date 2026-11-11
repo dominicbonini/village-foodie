@@ -1,0 +1,16 @@
+{
+  "takeConfirm": "זימונית <b>{number}</b> משויכת <b>להזמנה #{holderId}</b>{hasName, select, yes { ({name})} other {}}. לקחת אותה עבור <b>{hasTarget, select, yes {הזמנה #{targetId}} other {ההזמנה הזו}}</b>?",
+  "cancel": "ביטול",
+  "take": "לקיחת זימונית {number}",
+  "titleBlocking": "זימונית להזמנה #{id}?",
+  "title": "בחירת זימונית",
+  "subtitle": "{hasTarget, select, yes {הזמנה #{id}} other {ההזמנה הזו}}{hasCurrent, select, yes { · כרגע זימונית {current}} other {}}",
+  "allTaken": "{n, plural, one {הזימונית בשימוש. הקישו עליה כדי לקחת אותה מהזמנה אחרת.} two {שתי הזימוניות בשימוש. הקישו על אחת מהן כדי לקחת אותה מהזמנה אחרת.} other {כל {count} הזימוניות בשימוש. הקישו על אחת מהן כדי לקחת אותה מהזמנה אחרת.}}",
+  "thisOrder": "ההזמנה הזו",
+  "noBuzzer": "ללא זימונית",
+  "done": "סיום",
+  "lostTitle": "להזמנה #{id} אין זימונית",
+  "lostBody": "{hasName, select, yes {{name} — } other {}}הזמנה אחרת קיבלה את אותה זימונית בזמן שלא היה חיבור. תנו להם זימונית אחרת.",
+  "dismiss": "סגירה",
+  "assign": "שיוך"
+}

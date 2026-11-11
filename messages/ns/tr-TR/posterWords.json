@@ -1,0 +1,25 @@
+{
+  "heading": "{start} – {end} haftası",
+  "daysOff": "Bugün satış yok",
+  "cancelled": "İPTAL",
+  "placeSample": {
+    "nameTownBelow": "Moda Sahili\nKadıköy",
+    "nameTown": "Moda Sahili, Kadıköy",
+    "nameOnly": "Moda Sahili"
+  },
+  "busyWeek": {
+    "venue1": "Belediye Parkı",
+    "town1": "Çankaya",
+    "venue2": "Beşiktaş Mahalle Spor Kompleksi ve Halk Oyun Alanı",
+    "town2": "Beşiktaş",
+    "venue3": "Pazar yeri",
+    "town3": "Bursa",
+    "venue4": "Yemek Festivali",
+    "town4": "Antalya",
+    "venue5": "Kordon Boyu",
+    "town5": "Alsancak",
+    "venue6": "Kültürpark",
+    "town6": "İzmir"
+  },
+  "poweredBy": "HatchGrab altyapısıyla"
+}

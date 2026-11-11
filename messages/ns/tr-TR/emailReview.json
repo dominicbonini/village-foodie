@@ -1,0 +1,16 @@
+{
+  "subject": "{truck} siparişiniz nasıldı?",
+  "heading": "Sipariş verdiğiniz için teşekkürler — {truck}",
+  "body": "{truck}, Google’da dürüst bir değerlendirme yazarsanız çok sevinir. Yalnızca bir dakikanızı alır ve başkalarının da onları bulmasına yardımcı olur.",
+  "button": "Google’da değerlendirme yazın",
+  "linkText": "Google’da değerlendirme yazın: {url}",
+  "from": "Bu e-posta {truck} tarafından, onlardan sipariş verdiğiniz için HatchGrab aracılığıyla gönderildi.",
+  "unsubscribeLead": "{truck} tarafından değerlendirme isteği almak istemiyor musunuz?",
+  "unsubscribeLink": "Abonelikten çık",
+  "unsubscribeText": "Abonelikten çık: {url}",
+  "unsubscribed": {
+    "title": "Abonelikten çıktınız",
+    "body": "{truck} artık size değerlendirme isteği göndermeyecek.",
+    "invalid": "Bu abonelikten çıkma bağlantısı geçerli değil."
+  }
+}

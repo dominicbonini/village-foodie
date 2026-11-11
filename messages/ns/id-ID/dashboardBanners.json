@@ -1,0 +1,21 @@
+{
+  "breachHeadline": "{n, plural, one {{count} slot} other {{count} slot}} melebihi kapasitas — tinjau",
+  "batchOver": "{cat} melebihi batch — {count} untuk {slot} ({per} per batch)",
+  "eventStartOver": "Melebihi kapasitas saat acara dimulai — {n, plural, one {{count} item} other {{count} item}} untuk {slot}",
+  "kitchenOver": "Dapur melebihi kapasitas — {n, plural, one {{count} item} other {{count} item}} dimasak untuk {slot}",
+  "orderItems": "#{id} — {n, plural, one {{count} item} other {{count} item}}",
+  "placedAnyway": "Tetap dibuat: {list}",
+  "placedItem": "#{id} untuk {slot}",
+  "orphans": "{times} melebihi kapasitas — tidak ditemukan pesanan penyebabnya",
+  "dismiss": "Tutup",
+  "kitchenCapacity": "Kapasitas dapur",
+  "overCapacity": "Melebihi kapasitas",
+  "wakeUnsupported": "Perangkat ini tidak bisa menjaga layar tetap menyala.",
+  "wakeInsecure": "Layar tidak bisa dijaga tetap menyala dari alamat ini.",
+  "wakeRetry": "Biarkan layar menyala — ketuk untuk mencoba lagi",
+  "wakeAcquire": "Biarkan layar menyala",
+  "degraded": {
+    "serverError": "Server tidak dapat memuat pesanan{hasStatus, select, yes { (error {status})} other {}}. Menampilkan pesanan dari {at}. Mungkin ada pesanan baru yang tidak tampil.",
+    "unreachable": "Server tidak dapat dijangkau. Menampilkan pesanan dari {at}. Mungkin ada pesanan baru yang tidak tampil."
+  }
+}

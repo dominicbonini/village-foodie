@@ -1,0 +1,10 @@
+{
+  "download": "이미지 다운로드",
+  "copied": "복사됨 ✓",
+  "copyCaption": "캡션 복사",
+  "share": "공유",
+  "copiedStatus": "{kind, select, postText {게시글 문구가 복사되었습니다.} other {캡션이 복사되었습니다.}}",
+  "copyFailed": "복사하지 못했습니다. 텍스트를 선택해 직접 복사하세요.",
+  "sharedStatus": "{kind, select, postText {게시글 문구가 복사되었습니다. 게시물에 붙여 넣으세요.} other {캡션이 복사되었습니다. 게시물에 붙여 넣으세요.}}",
+  "shareRefused": "{kind, select, postText {공유가 거부되어 이미지를 다운로드했습니다. 게시글 문구가 복사되었습니다.} other {공유가 거부되어 이미지를 다운로드했습니다. 캡션이 복사되었습니다.}}"
+}

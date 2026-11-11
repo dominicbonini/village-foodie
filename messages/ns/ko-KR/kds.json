@@ -1,0 +1,129 @@
+{
+  "docTitle": "{truck} 주방",
+  "loading": "주방 디스플레이(KDS)를 불러오는 중…",
+  "pin": {
+    "title": "PIN 입력",
+    "placeholder": "PIN",
+    "unlock": "잠금 해제",
+    "unreachable": "지금 서버에 연결할 수 없습니다. PIN에는 문제가 없으니 잠시 후 다시 시도하세요.",
+    "incorrect": "PIN이 올바르지 않습니다",
+    "generic": "문제가 발생했습니다. 다시 시도하세요."
+  },
+  "error": {
+    "linkInvalid": "더 이상 유효하지 않은 링크입니다.",
+    "couldNotLoad": "주문을 불러오지 못했습니다",
+    "truckNotFound": "푸드트럭을 찾을 수 없습니다"
+  },
+  "degraded": {
+    "at": "⚠️ 서버에 연결할 수 없습니다. {time} 기준 주문서를 표시하고 있습니다. 새 주문이 누락되었을 수 있습니다!",
+    "earlier": "⚠️ 서버에 연결할 수 없습니다. 이전 주문서를 표시하고 있습니다. 새 주문이 누락되었을 수 있습니다!"
+  },
+  "header": {
+    "dashboard": "대시보드",
+    "backTitle": "대시보드로 돌아가기",
+    "list": "목록",
+    "grid": "그리드",
+    "full": "전체",
+    "cook": "조리용",
+    "fullTitle": "전체 카드 — 가격과 결제 정보를 계산대에서 보는 그대로 표시합니다.",
+    "cookTitle": "조리용 카드 — 큰 글씨, 카테고리별 묶음, 가격 없음.",
+    "readyStep": "준비 완료 단계",
+    "readyOnlyTitle": "이 화면은 주문을 준비 완료로 표시하는 일만 하므로 끌 수 없습니다 — 이 화면이 맡은 유일한 단계입니다.",
+    "readyOnTitle": "이 화면에서 주문을 준비 완료로 표시합니다. 다른 화면에서 하도록 하려면 탭하세요.",
+    "readyOffTitle": "다른 화면에서 주문을 준비 완료로 표시합니다. 이 화면에서 하도록 하려면 탭하세요.",
+    "handover": "결제 및 전달",
+    "handoverOnlyTitle": "이 화면은 결제만 받으므로 끌 수 없습니다 — 이 화면이 맡은 유일한 단계입니다.",
+    "handoverOnTitle": "이 화면에서 결제를 받고 주문을 전달합니다. 다른 화면에서 하도록 하려면 탭하세요.",
+    "handoverOffTitle": "다른 화면에서 결제를 받습니다. 이 화면에서 하도록 하려면 탭하세요.",
+    "soundOn": "새 주문 알림음 켜짐 — 탭하여 끄기",
+    "soundOff": "새 주문 알림음 꺼짐 — 탭하여 켜기",
+    "screenOn": "화면 켜짐",
+    "screenOff": "화면 꺼짐",
+    "screenSettings": "화면 설정",
+    "manageEvent": "영업 관리",
+    "manageEventTitle": "영업 관리 — 시작, 일시 중지, 변경, 종료",
+    "soundSettings": "알림음 설정",
+    "soundSettingsTitle": "이 기기에서 울릴 알림음",
+    "cashIcon": "💵"
+  },
+  "panel": {
+    "viewSettings": "보기 설정",
+    "on": "켜짐",
+    "off": "꺼짐",
+    "newOrderSound": "새 주문 알림음",
+    "soundNeedsConfirming": "접수가 필요한 주문만",
+    "soundAll": "모든 새 주문",
+    "soundDue": "조리할 시간이 된 주문 알림음",
+    "soundDueHelp": "주문서가 주황색으로 바뀌면 울립니다.",
+    "deviceSettings": "기기 설정",
+    "sound": "알림음",
+    "close": "닫기"
+  },
+  "banner": {
+    "mismatchTitle": "⚠️ 이 영업 일정의 주문을 불러오지 못했습니다",
+    "mismatchBody": "서버가 다른 영업 일정의 정보를 보내와서, 잘못된 주문을 보여 주는 대신 아무것도 표시하지 않았습니다. 영업 일정을 다시 선택하거나 새로고침하세요.",
+    "mismatchBodyAt": "서버가 다른 영업 일정의 정보를 보내와서, 잘못된 주문을 보여 주는 대신 아무것도 표시하지 않았습니다 (영업 장소: {venue}). 영업 일정을 다시 선택하거나 새로고침하세요.",
+    "paused": "⏸ 주문 일시 중지됨{reason, select, offline { (기기 오프라인)} other {}} — 손님이 주문할 수 없습니다",
+    "resume": "재개",
+    "offline": "연결 없음 — 마지막으로 확인된 주문을 표시합니다. 손님 온라인 주문이 일시 중지되었습니다.",
+    "queued": "{n, plural, one {대기 중인 작업 {count}건} other {대기 중인 작업 {count}건}}",
+    "extraWait": "⏱ 추가 대기 시간 +{mins}분 적용 중",
+    "clear": "해제",
+    "toMake": "준비할 주문",
+    "today": "오늘 · {range}",
+    "onDate": "{date} · {range}",
+    "startEvent": "영업 시작",
+    "recentlyClosed": "영업 종료 · {venue} · {time} 종료",
+    "eventStatus": "{tone, select, paused {⏸ 일시 중지} live {● 영업 중} finished {● 종료됨} cancelled {취소됨} other {시작 전}}"
+  },
+  "board": {
+    "queueClear": "대기 주문 없음",
+    "doneToday": "오늘 완료 · {count}",
+    "paid": "✓ 결제 완료",
+    "cardHeld": "카드 가승인",
+    "due": "미결제 {amount}"
+  },
+  "screenOff": {
+    "title": "화면이 꺼지도록 허용할까요?",
+    "bodyVans": "차량: {vans} — 오프라인 감지가 {n, plural, one {켜져 있습니다} other {켜져 있습니다}}. 화면이 꺼지면 기기가 온라인 신호를 보내지 못해 손님 주문이 일시 중지될 수 있습니다.",
+    "body": "화면이 꺼지면 기기가 온라인 신호를 보내지 못할 수 있습니다.",
+    "keepHint": "주문이 끊기지 않도록 화면을 켜 두세요.",
+    "keep": "화면 켜 두기",
+    "allow": "화면 꺼짐 허용"
+  },
+  "event": {
+    "change": "영업 일정 변경",
+    "cancel": "취소",
+    "waitActive": "⏱ +{mins}분 적용 중 · 탭하여 해제",
+    "addWait": "⏱ 추가 대기 시간",
+    "endTitle": "영업을 종료할까요?",
+    "endEarly": "이 영업 일정은 {time}까지 진행될 예정입니다. 더 이상 주문을 받을 수 없게 됩니다. 영업을 종료할까요?",
+    "endNow": "이 영업을 종료할까요? 더 이상 주문을 받지 않습니다.",
+    "yes": "예",
+    "started": "영업이 시작되었습니다",
+    "startFutureConfirm": "이 영업 일정의 날짜: {date}. 지금 시작할까요?",
+    "finishTimeNow": "종료 시간 변경됨: {time}",
+    "finished": "영업이 종료되었습니다",
+    "cancelled": "영업 일정이 취소되었습니다",
+    "noteSaved": "메모가 저장되었습니다",
+    "pauseConfirm": "주문을 일시 중지할까요? 다시 재개할 때까지 손님에게 “주문을 받지 않습니다”라고 표시됩니다.",
+    "switchConfirm": "영업 일정을 전환할까요? ({from} → {to}){n, plural, =0 {} one { 이 화면의 주문 {count}건이 교체됩니다.} other { 이 화면의 주문 {count}건이 교체됩니다.}} 현재 영업 일정을 탭하면 다시 돌아갈 수 있습니다."
+  },
+  "intro": {
+    "title": "주방 디스플레이(KDS) 화면입니다",
+    "p1": "조리 담당자를 위한 화면입니다 — 만들어야 할 주문을 만들 순서대로 보여 줍니다. 그릴 옆 화면에는 이 화면을 띄우고, 계산대에서는 주문 대시보드를 사용합니다.",
+    "p2": "카드를 탭하면 다음 단계로 넘어가므로 조리 담당자는 항상 다음에 무엇을 할지 알 수 있고 소리칠 필요도 없습니다. 여기 있는 모든 데이터는 데모용이니 마음껏 사용해 보세요.",
+    "gotIt": "확인"
+  },
+  "toast": {
+    "failed": "실패",
+    "rejectFailed": "거절하지 못했습니다",
+    "buzzerSaved": "진동벨 {n} 저장됨",
+    "buzzerRemoved": "진동벨 {n} 해제됨",
+    "buzzerRemovedNone": "진동벨 해제됨",
+    "buzzerAssigned": "진동벨 {n} 지정됨",
+    "buzzerAssignedFrom": "진동벨 {n} 지정됨 (가져온 주문: #{from})",
+    "buzzerRemoveFailed": "{had, select, no {{target, select, order {주문 #{id}} other {이 주문}} — 진동벨을 해제하지 못했습니다} other {진동벨 {n} 해제 실패 — 아직 연결된 주문: {target, select, order {#{id}} other {이 주문}}}}",
+    "buzzerAssignFailed": "{target, select, order {주문 #{id}} other {이 주문}} — 진동벨 {n} 지정 실패. {had, select, yes {아직 진동벨 {prior} 사용 중} other {아직 진동벨 없음}}"
+  }
+}

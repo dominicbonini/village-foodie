@@ -1,0 +1,102 @@
+{
+  "status": {
+    "cancelled": "Dibatalkan",
+    "finished": "Selesai",
+    "unconfirmed": "Belum dikonfirmasi",
+    "confirmed": "Dikonfirmasi",
+    "open": "Buka sekarang",
+    "closed": "Tutup"
+  },
+  "sections": {
+    "label": "Bagian jadwal",
+    "events": "Acara",
+    "eventTypes": "Jenis acara"
+  },
+  "header": {
+    "title": "Jadwal",
+    "upcoming": "Akan datang: {count}",
+    "import": "✨ Impor jadwal",
+    "importHint": "foto, PDF, atau teks",
+    "addEvent": "+ Tambah acara",
+    "scraperAuto": "Mencari acara secara otomatis dari situs web Anda",
+    "changeInSettings": "Ubah di Pengaturan",
+    "scraperManual": "Anda mengelola jadwal secara manual"
+  },
+  "empty": {
+    "title": "Tidak ada acara mendatang",
+    "body": "Acara yang diambil dari media sosial dan kalender pemesanan Anda akan muncul di sini untuk Anda konfirmasi"
+  },
+  "list": {
+    "openNow": "Buka sekarang",
+    "needsApproval": "Perlu persetujuan Anda",
+    "needsConfirmation": "Perlu dikonfirmasi",
+    "confirmed": "Dikonfirmasi",
+    "past": "Acara sebelumnya ({count})",
+    "found": "Kami menemukan {count, plural, one {# acara untuk Anda — tinjau dan setujui sebelum acara tayang.} other {# acara untuk Anda — tinjau dan setujui sebelum acara-acara itu tayang.}}"
+  },
+  "card": {
+    "addName": "Tambahkan nama",
+    "timeNeeded": "⚠ Jam diperlukan",
+    "setTimeFirst": "Atur jam terlebih dahulu",
+    "confirm": "Konfirmasi",
+    "copy": "Salin",
+    "edit": "Ubah",
+    "makePost": "Buat postingan",
+    "cancel": "Batalkan",
+    "approve": "Setujui",
+    "reject": "Tolak",
+    "stock": "⚠️ Stok",
+    "stockHidden": "Disembunyikan — {reason}",
+    "noDeals": "Tidak ada promo aktif",
+    "dealsActive": "{count, plural, one {# promo} other {# promo}} aktif · {names}{hidden, plural, =0 {} other { · # disembunyikan}}",
+    "approveNeedsTimes": "Tombol Setujui nonaktif sampai acara ini punya jam mulai dan jam selesai — tambahkan lewat Ubah."
+  },
+  "guessed": {
+    "title": "📍 Kami menebak lokasi ini",
+    "body": "Lebih dari satu tempat cocok dengan <b>{venue}</b>, jadi kami memilih yang paling sesuai{hasTown, select, yes { di <b>{town}</b>} other {}}{hasPostcode, select, yes { ({postcode})} other {}}. Pastikan tempatnya benar sebelum menyetujui — jika salah, gunakan <b>Ubah</b> untuk memperbaiki area atau {postal}; jika tidak, pelanggan akan diarahkan ke tempat yang salah.",
+    "thisVenue": "tempat ini"
+  },
+  "noLocation": {
+    "title": "📍 Belum ada lokasi",
+    "body": "Kami tidak dapat menemukan tempat ini di peta, jadi acara akan tercantum tetapi tanpa pin peta. Tambahkan {postal} lewat <b>Ubah</b> agar muncul di peta."
+  },
+  "conflict": {
+    "title": "⚠️ {count, plural, one {Kemungkinan bentrok} other {Kemungkinan bentrok}} — tinjau sebelum {pending, select, yes {menyetujui} other {mengonfirmasi}}",
+    "duplicate": "Ini tampaknya acara yang sama dengan yang sudah Anda miliki.",
+    "review": "Tempat dan tanggal sama, jam berbeda — apakah ini acara yang sama dengan jam yang diubah, atau slot terpisah? Tinjau sebelum menyetujui.",
+    "already": "Sudah ada di jadwal Anda: <b>{venue}</b>{details} ({status, select, confirmed {dikonfirmasi} open {buka} other {{status}}})",
+    "unnamedVenue": "Tempat tanpa nama",
+    "ack": "Ya, ini acara yang berbeda — tetap {pending, select, yes {setujui} other {konfirmasi}}",
+    "cancel": "Batal",
+    "overlap": "Jam acara ini bertabrakan dengan acara lain di hari yang sama — satu kendaraan tidak bisa berada di dua tempat sekaligus. Cek sebelum menyetujui."
+  },
+  "toast": {
+    "loadFailed": "Gagal memuat acara",
+    "linkFailed": "Tidak dapat memuat link",
+    "placeTypeFailed": "Acara tersimpan. Jenis biasa untuk lokasi {place} tidak tersimpan — {reason}.",
+    "placeTypeFailedReason": "penyimpanan tidak berhasil",
+    "eventUpdated": "Acara diperbarui",
+    "eventAdded": "Acara ditambahkan",
+    "eventsSaved": "{count, plural, one {# acara tersimpan} other {# acara tersimpan}}",
+    "saveEventsFailed": "Gagal menyimpan acara",
+    "needsTime": "Tambahkan jam mulai dan jam selesai sebelum menyetujui — acara ini perlu jam agar bisa tayang.",
+    "addStartTime": "Tambahkan jam mulai",
+    "addEndTime": "Tambahkan jam selesai",
+    "chooseTruckBefore": "Pilih truk yang bertugas di acara ini sebelum menyetujui.",
+    "chooseTruck": "Pilih truk yang bertugas di acara ini",
+    "eventConfirmed": "Acara dikonfirmasi",
+    "eventRejected": "Acara ditolak",
+    "undo": "↩ Urungkan",
+    "eventRestored": "Acara dipulihkan",
+    "restoreFailed": "Gagal memulihkan",
+    "eventCancelled": "Acara dibatalkan",
+    "eventCancelledOrders": "Acara dibatalkan · {count, plural, one {# pesanan} other {# pesanan}} dibatalkan",
+    "placeHidden": "Lokasi disembunyikan",
+    "placeShown": "Lokasi ditampilkan lagi",
+    "saveThatFailed": "Gagal menyimpan."
+  },
+  "link": {
+    "label": "Link pribadi dan kode QR",
+    "close": "Tutup"
+  }
+}

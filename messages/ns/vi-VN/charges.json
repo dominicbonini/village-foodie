@@ -1,0 +1,13 @@
+{
+  "subtotal": "Tạm tính",
+  "taxFallback": "Thuế",
+  "taxIncluded": "Đã gồm {label}",
+  "serviceFeeCustomer": "Phí dịch vụ online",
+  "serviceFee": "Phí dịch vụ",
+  "cardFee": "Phí thẻ",
+  "tip": "Tiền tip",
+  "rate": "{rate}%",
+  "line": "{label}: {amount}",
+  "lineWithRate": "{label} {rate}: {amount}",
+  "foldedCharges": "{parts, select, tax_fees_tip {Thuế, phí & tiền tip} tax_tip {Thuế & tiền tip} fees_tip {Phí & tiền tip} fees {Phí} other {Thuế & phí}}"
+}

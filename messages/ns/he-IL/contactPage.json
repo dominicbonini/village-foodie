@@ -1,0 +1,52 @@
+{
+  "meta": {
+    "title": "תמיכה",
+    "description": "קבלו עזרה עם HatchGrab. שלחו לנו הודעה ונחזור אליכם במייל."
+  },
+  "logIn": "התחברות",
+  "eyebrow": "תמיכה",
+  "title": "איך נוכל לעזור?",
+  "lede": "משהו לא עובד, או שיש לכם שאלה על החשבון? יש שתי דרכים לפנות אלינו — בכל מקרה נחזור אליכם במייל.",
+  "emailUs": "שלחו לנו אימייל",
+  "formHeading": "או שלחו לנו הודעה",
+  "form": {
+    "topicLabel": "במה מדובר?",
+    "topics": {
+      "question": "שאלה על HatchGrab",
+      "account": "עזרה עם החשבון שלי",
+      "comparison": "תיקון בעמוד השוואה",
+      "other": "משהו אחר"
+    },
+    "nameLabel": "השם שלכם",
+    "namePlaceholder": "שם",
+    "emailLabel": "אימייל",
+    "businessLabel": "שם הפודטראק או העסק",
+    "optional": "(לא חובה)",
+    "businessPlaceholder": "לדוגמה: פיתה על גלגלים",
+    "messageLabel": "ההודעה שלכם",
+    "send": "שליחת הודעה",
+    "sending": "שולחים…",
+    "privacyLine": "נשתמש בפרטים שלכם רק כדי לענות לכם.",
+    "privacyLink": "מדיניות פרטיות",
+    "thanksTitle": "תודה — ההודעה שלכם התקבלה.",
+    "thanksBody": "נענה במייל לכתובת שמסרתם.",
+    "errors": {
+      "nameRequired": "הזינו את השם שלכם.",
+      "nameTooLong": "השם יכול להכיל עד {max, number} תווים.",
+      "emailRequired": "הזינו את כתובת האימייל שלכם.",
+      "emailInvalid": "הזינו כתובת אימייל תקינה.",
+      "emailTooLong": "כתובת האימייל יכולה להכיל עד {max, number} תווים.",
+      "businessRequired": "הזינו את שם הפודטראק או העסק, כדי שנוכל למצוא את החשבון שלכם.",
+      "businessTooLong": "שם הפודטראק או העסק יכול להכיל עד {max, number} תווים.",
+      "messageTooShort": "כתבו לפחות {min, number} תווים.",
+      "messageTooLong": "ההודעה יכולה להכיל עד {max, number} תווים.",
+      "topicInvalid": "בחרו במה עוסקת ההודעה.",
+      "rateLimited": "כבר שלחתם כמה הודעות — נסו שוב מאוחר יותר, או כתבו לנו לכתובת {email}.",
+      "failed": "משהו השתבש — כתבו לנו לכתובת {email}."
+    }
+  },
+  "privacy": "פרטיות",
+  "terms": "תנאי שימוש",
+  "about": "אודות",
+  "copyright": "© {year} HatchGrab"
+}

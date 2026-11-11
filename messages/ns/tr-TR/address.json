@@ -1,0 +1,58 @@
+{
+  "label": {
+    "street": "Adres",
+    "postcode": "Posta kodu",
+    "zip": "ZIP kodu",
+    "eircode": "Eircode",
+    "postalCode": "Posta kodu",
+    "state": "Eyalet",
+    "stateTerritory": "Eyalet veya bölge",
+    "province": "İl",
+    "county": "Kontluk",
+    "prefecture": "Prefektörlük",
+    "emirate": "Emirlik",
+    "region": "Bölge",
+    "area": "Yer (köy, ilçe veya şehir)",
+    "townOrArea": "İlçe veya semt",
+    "city": "Şehir",
+    "suburb": "Semt",
+    "townOrCity": "İlçe veya şehir"
+  },
+  "short": {
+    "area": "Bölge",
+    "townOrArea": "İlçe veya semt",
+    "city": "Şehir",
+    "suburb": "Semt",
+    "townOrCity": "İlçe veya şehir"
+  },
+  "inSentence": {
+    "postcode": "posta kodu",
+    "zip": "ZIP kodu",
+    "eircode": "Eircode",
+    "postalCode": "posta kodu"
+  },
+  "withArticle": {
+    "postcode": "bir posta kodu",
+    "zip": "bir ZIP kodu",
+    "eircode": "bir Eircode",
+    "postalCode": "bir posta kodu"
+  },
+  "tradeLabel": {
+    "area": "İlçe veya şehir",
+    "townOrArea": "İlçe veya semt",
+    "city": "Şehir",
+    "suburb": "Semt",
+    "townOrCity": "İlçe veya şehir"
+  },
+  "basedIn": {
+    "area": "Bulunduğunuz ilçe veya şehir",
+    "townOrArea": "Bulunduğunuz ilçe veya semt",
+    "city": "Bulunduğunuz şehir",
+    "suburb": "Bulunduğunuz semt",
+    "townOrCity": "Bulunduğunuz ilçe veya şehir"
+  },
+  "example": "ör. {example}",
+  "customersSee": "Müşterilerin gördüğü:",
+  "postalWarning": "Bu {article} gibi görünmüyor — örneğin {example}. Yine de kaydedebilirsiniz.",
+  "regionChoose": "Seçin…"
+}

@@ -1,0 +1,15 @@
+{
+  "greeting": "안녕하세요 👋",
+  "opener": "{greeting} ",
+  "allergenRedirect": "{opener}전체 메뉴와 알레르기 유발물질 정보는 여기에서 확인하세요: {url} — {truck} {emoji}",
+  "menuFallback": "{opener}전체 메뉴는 여기에서 확인하실 수 있어요: {url} — {truck} {emoji}",
+  "otherCategory": "기타",
+  "categoryFrom": "{category} {price}~",
+  "listTwo": "{first} 및 {second}",
+  "listMany": "{init} 및 {last}",
+  "menuSummary": "{opener}{summary} 메뉴가 있어요. 전체 메뉴를 보고 여기에서 미리 주문하세요: {url} — {truck} {emoji}",
+  "allergenCaveat": "알레르기 유발물질 정보는 전체 메뉴에서 꼭 다시 확인해 주세요 — 자동 응답 메시지예요.",
+  "specificFallback": "{opener}최신 영업 일정은 여기에서 확인하세요: {url}\n\n{truck} {emoji}",
+  "capHandoff": "메시지 감사합니다! 여기서는 하루에 몇 번만 답장할 수 있어요.\n\n주문하기: {link}",
+  "capContact": "직접 연락하기: {number}"
+}

@@ -1,0 +1,127 @@
+{
+  "eyebrow": "費用比較",
+  "title": "比較你的線上<br></br><accent>點餐成本</accent>",
+  "system": {
+    "title": "你目前有接受線上訂單嗎？",
+    "yes": "有，使用其他系統",
+    "no": "還沒有"
+  },
+  "trucks": {
+    "title": "你經營幾台餐車？",
+    "aria": "餐車數量"
+  },
+  "plan": {
+    "yourChoice": "你的選擇",
+    "weSuggest": "我們建議",
+    "summary": "每台餐車每月 {price}，{fleet, plural, one {} other {每台各}}含 {allowance} 的線上訂單額度。",
+    "switchTo": "改用 {plan}",
+    "summaryFeeOnly": "{hasMonthly, select, yes {每台餐車每月 {price}，線上刷卡訂單另收 {pct}。} other {免月費——僅線上刷卡訂單收取 {pct}。}}",
+    "summaryNoFee": "每台餐車每月 {price}，線上訂單無限制，HatchGrab 不另收手續費。"
+  },
+  "orders": {
+    "titleYes": "每台餐車每月的線上訂單",
+    "count": "~{count, plural, one {# 筆訂單} other {# 筆訂單}}",
+    "captionNo": "大概估計就好——指預約點餐和免排隊的訂單，不含在餐車窗口付現或刷卡的。",
+    "captionYes": "只計透過你的點餐頁面下的訂單——不含在餐車窗口付現或刷卡的。",
+    "sliderAria": "每台餐車每月線上訂單金額",
+    "overAllowance": "每台餐車含 {allowance} 的線上訂單額度。超出的 {excess} 收取 {pct}——每台每月 <b>{over}</b>。",
+    "insideAllowance": "在內含的 {allowance} 線上訂單額度內——方案費用外不另收費。",
+    "acrossFleet": "{fleet, plural, one {# 台餐車} other {# 台餐車}}合計：每月 <b>{amount}</b>。",
+    "titleNo": "你估計每台餐車每月的線上營業額大約多少？",
+    "feeOnly": "每筆線上刷卡訂單收取 {pct}——每台餐車每月 <b>{over}</b>。",
+    "noFee": "線上訂單無限制——方案費用外不另收費。"
+  },
+  "fee": {
+    "title": "你目前每筆訂單付多少手續費？",
+    "pctLabel": "百分比",
+    "pctPlaceholder": "你的費率",
+    "pctAria": "百分比手續費",
+    "fixedLabel": "每筆另加",
+    "fixedPlaceholder": "你的費用",
+    "fixedAria": "每筆訂單固定金額",
+    "modeLabel": "對方的費率：",
+    "modeInclusive": "已含刷卡手續費",
+    "modeOnTop": "刷卡手續費另計",
+    "onTopNote": "另需加收 {fee} 的刷卡手續費，所以你實際總共支付 <b>{pct} + {fixed}</b>。",
+    "inclusiveNote": "{fee} 的刷卡手續費已包含在內，用哪個系統都要付。對方自己的手續費是 <b>{pct}</b>。"
+  },
+  "days": {
+    "title": "你每週出攤幾天？",
+    "help": "活動、市集、擺攤地點——只要餐車出門的日子都算。"
+  },
+  "jump": {
+    "cost": "看看要多少錢 ↓",
+    "saving": "看看你能省多少 ↓"
+  },
+  "noSystem": {
+    "hero": "<lead>線上點餐、預約點餐和廚房顯示系統（KDS），只要</lead><figure>{amount}</figure><unit>／每個出攤日</unit>",
+    "basedOn": "以每週 {days, plural, one {# 天} other {# 天}}計算 · 每月 {monthly}{fleet, plural, one {} other {（每台車）}}"
+  },
+  "coffee": "比一杯咖啡還便宜。",
+  "freeMonths": "{n, plural, one {而且第一個月免費。} other {而且前 # 個月免費。}}",
+  "cta": {
+    "upload": "上傳我的菜單 →",
+    "uploadSave": "上傳我的菜單，省下 {amount} →",
+    "ask": "問我們問題",
+    "noCard": "設定時不需信用卡"
+  },
+  "breakdown": {
+    "title": "你的每月費用明細",
+    "titleDearer": "你在 HatchGrab 的每月費用",
+    "plan": "{plan} 方案",
+    "over": "超出內含 {allowance} 的 {excess}，收取 {pct}",
+    "inside": "內含 {allowance} 額度內的線上訂單",
+    "total": "HatchGrab 每月費用",
+    "freeMonths": "{n, plural, one {第 1 個月} other {第 1–# 個月}}",
+    "freeAmount": "{amount}——免費",
+    "acrossFleet": "{fleet, plural, one {# 台車} other {# 台車}}合計",
+    "perMonth": "每月 {amount}",
+    "card": "刷卡手續費——Stripe 每筆訂單收取 {fee}，直接付給 Stripe。用窗口的刷卡機收款，費用也差不多。",
+    "provider": "你目前廠商自己的手續費（{pct}）",
+    "feeOnly": "{excess} 的線上訂單收取 {pct}",
+    "noFee": "線上訂單——無限制，HatchGrab 不收手續費"
+  },
+  "enterRate": "輸入你目前支付的費用，看看能省多少。",
+  "panel": {
+    "nowYear": "<label>你目前支付</label><fig>{amount}<q>／年</q></fig>",
+    "nowMonth": "<label>你目前支付</label><fig>{amount}<q>／月</q></fig>",
+    "oursYear": "<label>使用 HatchGrab</label><fig>{amount}<q>（第一年）</q></fig>",
+    "oursMonth": "<label>使用 HatchGrab</label><fig>{amount}<q>／月</q></fig>",
+    "acrossFleet": "{fleet, plural, one {# 台車} other {# 台車}}合計"
+  },
+  "hero": {
+    "save": "<verb>你可省下</verb><figure>{amount}</figure><sub>第一年少付 <num>{pct}</num></sub>",
+    "same": "<verb>差不多</verb><figure>{amount}</figure><sub>第一年多付 <num>{pct}</num></sub>",
+    "dearer": "<lead>HatchGrab 的全部功能，只需</lead><figure>{amount}</figure><unit>每週多付</unit>",
+    "dearerSub": "{fleet, plural, one {每月比現在多 {amount}} other {每台車每月比現在多 {amount}}}"
+  },
+  "anchor": {
+    "liability": "這相當於一年的公共意外責任險。",
+    "weekendPitch": "這相當於美食節一個週末的攤位費。",
+    "festivalPitches": "這相當於幾場音樂祭的攤位費。",
+    "fryer": "這相當於一台新的油炸機和煎台。",
+    "counter": "這相當於出餐檯整個重新裝修。",
+    "vanDeposit": "這相當於第二台餐車的頭期款。",
+    "secondVan": "這相當於多一台餐車上路。"
+  },
+  "year": {
+    "one": "第一年",
+    "two": "第二年",
+    "save": "省下 {amount}<note>（少 {pct}）</note>",
+    "extra": "多付 {amount}<note>（多 {pct}）</note>",
+    "current": "目前廠商 <b>{amount}</b>",
+    "ours": "HatchGrab <b>{amount}</b>"
+  },
+  "smallPrint": {
+    "no": "估算依據你輸入的數字，並假設平均每筆訂單 {aov}。無論使用哪個廠商，都會有刷卡手續費。決定前請先確認。",
+    "yes": "估算依據你輸入的數字，並假設平均每筆訂單 {aov}。每筆訂單 {fee} 的刷卡手續費無論使用哪個廠商都要付，因此兩邊都不計入。",
+    "onTop": "第 {n} 題的總費用已包含刷卡手續費——比較時兩邊都不計入。",
+    "check": "決定前請先確認你目前廠商的費率。"
+  },
+  "intro": "大約一分鐘就好。已經在用其他系統？我們幫你比較。還沒有？我們讓你清楚知道要花多少錢。",
+  "twoYear": "兩年下來，共省下 <b>{amount}</b>。",
+  "meta": {
+    "title": "點餐系統費用試算 — HatchGrab {country}",
+    "description": "比較你目前線上訂單的成本與使用 HatchGrab 一年的費用，一分鐘算出估計金額。"
+  }
+}

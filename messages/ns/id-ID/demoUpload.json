@@ -1,0 +1,61 @@
+{
+  "steps": {
+    "reading": "Membaca menu Anda…",
+    "found": "Menemukan item Anda…",
+    "kitchen": "Menyiapkan dapur Anda…",
+    "page": "Membuat halaman pemesanan Anda…",
+    "almost": "Hampir siap…"
+  },
+  "templateSteps": {
+    "truck": "Membuat truk contoh Anda…",
+    "menu": "Menyiapkan menu…",
+    "kitchen": "Menyiapkan dapur…",
+    "page": "Membuat halaman pemesanan…",
+    "almost": "Hampir siap…"
+  },
+  "dialogLabel": "Unggah menu Anda",
+  "heading": "✨ Unggah menu Anda",
+  "failedHeading": "Kami tidak bisa membaca menu itu",
+  "close": "Tutup",
+  "intro": "Foto papan menu, tangkapan layar, PDF, atau tempel sebagai teks. AI kami membacanya dan membuatkan halaman pemesanan yang langsung berfungsi — item Anda, harga Anda — dalam waktu kurang dari 60 detik. Tanpa daftar, tanpa kartu.",
+  "failedIntro": "Terkadang foto terlalu gelap, terlalu miring, atau ditulis tangan. Itu urusan kami, bukan kesalahan Anda. Beberapa pilihan:",
+  "usually": "Biasanya ini butuh kurang dari 60 detik.",
+  "slow": "Ini memakan waktu lebih lama dari biasanya — menu besar kadang memang begitu.",
+  "keepWaiting": "Tetap tunggu",
+  "sampleWhileYouWait": "Atau lihat-lihat dengan menu contoh sambil menunggu",
+  "standIn": "Ini <b>bukan menu Anda</b> — hanya contoh pengganti agar Anda bisa melihat cara kerjanya.",
+  "seeSample": "Lihat menu contoh",
+  "tryAgain": "Coba lagi",
+  "tryPhotoAgain": "Coba foto ini lagi",
+  "tryDifferent": "Coba foto lain",
+  "uploadAnother": "← Unggah foto lain",
+  "orSample": "Atau lihat-lihat dengan menu contoh",
+  "orBuild": "Atau biar kami yang membuatkannya",
+  "buildSent": "✓ Terima kasih — sudah kami terima. Kami akan mengirimi Anda email.",
+  "buildBody": "Tinggalkan email Anda, lalu orang sungguhan dari tim kami akan memasukkan menu Anda dan mengirimkan link-nya.",
+  "emailPlaceholder": "anda@foodtruckanda.co.id",
+  "sending": "…",
+  "send": "Kirim",
+  "noPhoto": "Tidak punya foto menu sekarang?",
+  "noPhotoBody": "Lihat-lihat dengan truk contoh saja — Anda bisa mengunggah menu sendiri kapan saja.",
+  "build": "Buat demo saya →",
+  "nothingPublished": "Tidak ada yang dipublikasikan — hanya Anda yang bisa melihatnya.",
+  "error": {
+    "somethingWrong": "Terjadi kesalahan. Silakan coba lagi.",
+    "serverUnreachable": "Kami tidak dapat terhubung ke server. Periksa koneksi Anda dan coba lagi.",
+    "sendFailed": "Tidak dapat mengirim — coba lagi."
+  },
+  "fields": {
+    "uploadLabel": "Unggah file menu",
+    "dropHere": "Letakkan menu Anda di sini",
+    "dragOrTap": "Seret dan lepas atau ketuk untuk memilih",
+    "fileTypes": "Gambar atau PDF",
+    "or": "atau",
+    "pasteLabel": "Tempel teks menu",
+    "pastePlaceholder": "Tempel menu Anda di sini — nama item, deskripsi, harga..."
+  },
+  "emailLabel": "Email Anda",
+  "emailNote": "Kami akan mengirimi Anda email berisi link ke demo Anda dan mungkin menghubungi Anda soal penyiapan HatchGrab. <link>Kebijakan privasi</link>",
+  "marketing": "Kirimi saya tips dan kabar dari HatchGrab sesekali",
+  "emailInvalid": "Masukkan alamat email yang valid."
+}

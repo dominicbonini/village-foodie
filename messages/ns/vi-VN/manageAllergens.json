@@ -1,0 +1,117 @@
+{
+  "cardEditor": {
+    "title": "Bảng chất gây dị ứng của bạn",
+    "intro": "Khách thấy nội dung này <b>đúng như bạn viết</b> — không có gì bị viết lại. Gõ hoặc dán bên dưới, hoặc tải ảnh/PDF lên để chúng tôi đọc chữ ra cho bạn kiểm tra.",
+    "empty": "Chưa có bảng chất gây dị ứng.",
+    "placeholder": "VD: Tất cả món chiên của chúng tôi có chứa lúa mì và sữa. Chảo chiên dùng chung với các món chứa gluten và các loại hạt. Có món thuần chay — hãy hỏi nhân viên.",
+    "reading": "Đang đọc ảnh…",
+    "upload": "📷 Tải ảnh / PDF lên",
+    "uploadNote": "Chúng tôi đọc chữ từ ảnh để bạn xem lại — ảnh không được lưu trữ."
+  },
+  "cardUpload": {
+    "dishFallback": "Món",
+    "question": "Bạn có bảng chất gây dị ứng để tải lên không?",
+    "perDish": "{detected, select, yes {Tải bảng lên, chúng tôi sẽ dùng nó để điền chất gây dị ứng cho từng món. Các chất phát hiện được sẽ hiện ở trang tiếp theo, nơi bạn xác nhận từng món.} other {Tải bảng lên, chúng tôi sẽ dùng nó để điền chất gây dị ứng cho từng món.}}",
+    "cardOnly": "Tải lên bảng chất gây dị ứng mà khách sẽ thấy.",
+    "yes": "Có",
+    "no": "Không",
+    "noProblem": "Không sao — bạn không cần bảng này. Hãy tiếp tục bằng nút bên dưới.",
+    "analysing": "Đang phân tích bảng…",
+    "dropzone": "Kéo thả hoặc chạm để chọn",
+    "imageOrPdf": "Ảnh hoặc PDF",
+    "or": "hoặc",
+    "pastePlaceholder": "Dán nội dung bảng chất gây dị ứng vào đây…",
+    "process": "Xử lý bảng",
+    "cardRead": "Đã đọc bảng ✓",
+    "unmatchedHeading": "Không tự khớp được các mục này — hãy gán hoặc bỏ qua",
+    "quotedName": "“{name}”",
+    "ambiguous": "Chưa rõ — khớp với nhiều món; hãy chọn đúng món.",
+    "assignTo": "Gán cho món…",
+    "dismiss": "Bỏ qua",
+    "blanket": "Bảng ghi rằng <b>{list}</b> có thể có trong <b>tất cả</b> các món. Thêm vào mọi món? (bạn vẫn sẽ xác nhận từng món) <muted>— mặc định tắt</muted>",
+    "kitchenNotes": "Ghi chú của bếp (lưu vào thông tin chất gây dị ứng)",
+    "matchSummary": "{n, plural, =0 {{matched} mục đã khớp với món.} one {{matched} mục đã khớp với món. {count} mục cần bạn gán.} other {{matched} mục đã khớp với món. {count} mục cần bạn gán.}}"
+  },
+  "savedCard": {
+    "showLess": "Thu gọn",
+    "showMore": "Xem thêm",
+    "fileOnly": "Đã lưu tệp bảng cho xe này nhưng không có nội dung tóm tắt. Mở bản gốc để đọc.",
+    "viewOriginal": "Xem bảng gốc"
+  },
+  "wizard": {
+    "toast": {
+      "readFailed": "Không đọc được bảng chất gây dị ứng — hãy thử lại",
+      "confirmed": "Đã xác nhận: {name}",
+      "undo": "Hoàn tác",
+      "saveFailed": "Không lưu được — vui lòng thử lại",
+      "imageFailed": "Không đọc được ảnh đó — hãy gõ hoặc dán nội dung bảng",
+      "cardRead": "{n, plural, one {Đã đọc bảng — {matched} mục đã khớp, {count} mục cần gán} other {Đã đọc bảng — {matched} mục đã khớp, {count} mục cần gán}}"
+    },
+    "genericWarn": {
+      "text": "Phát hiện “{generic}” nhưng chưa cụ thể. Chọn {picks} nếu món này có chứa {family} — hoặc để trống nếu không.",
+      "andOr": "{a} và/hoặc {b}"
+    },
+    "badge": {
+      "justConfirmed": "✓ Đã xác nhận",
+      "confirmed": "Đã xác nhận",
+      "needsReview": "Cần kiểm tra"
+    },
+    "confirm": {
+      "confirming": "Đang xác nhận…",
+      "confirmed": "Đã xác nhận ✓",
+      "confirm": "Xác nhận",
+      "changed": "· đã thay đổi",
+      "changedTitle": "Đã sửa từ lần xác nhận trước — hãy xác nhận lại"
+    },
+    "allergens": "Chất gây dị ứng",
+    "dietary": "Chế độ ăn",
+    "uncategorised": "Chưa phân loại",
+    "review": {
+      "progress": "Đã xác nhận {confirmed}/{total}",
+      "allConfirmed": "✓ Đã xác nhận tất cả",
+      "list": "Danh sách",
+      "table": "Bảng",
+      "detected": "Phát hiện từ thực đơn của bạn — <b>hãy kiểm tra lại</b>. Chất gây dị ứng được ẩn với khách cho đến khi bạn xác nhận từng món.",
+      "viewOnly": "👁 Chỉ xem — chỉ chủ tài khoản mới xác nhận hoặc thay đổi được chất gây dị ứng.",
+      "emptyTitle": "Chưa có món nào",
+      "emptyBody": "Thêm món vào thực đơn trước, rồi đặt chất gây dị ứng ở đây.",
+      "dish": "Món",
+      "status": "Trạng thái"
+    },
+    "cardPanel": {
+      "reading": "Đang đọc thông tin chất gây dị ứng…",
+      "saved": "🛡️ Đã lưu bảng chất gây dị ứng",
+      "viewOriginal": "Xem bảng gốc",
+      "replace": "Thay bảng",
+      "uploadHelp": "Tải bảng chất gây dị ứng lên (ảnh/PDF) hoặc dán thông tin chất gây dị ứng — AI của chúng tôi sẽ sắp xếp lại cho khách dễ xem.",
+      "add": "Thêm bảng chất gây dị ứng",
+      "viewOnly": "👁 Chỉ xem — chỉ chủ tài khoản mới thêm được bảng chất gây dị ứng.",
+      "intro": "Khách sẽ thấy bảng này là nguồn tham khảo chất gây dị ứng của thực đơn. Ở chế độ chỉ dùng bảng, chất gây dị ứng theo từng món sẽ được ẩn (dữ liệu từng món vẫn được giữ, phòng khi sau này bạn chuyển sang chế độ theo từng món)."
+    },
+    "subtitle": {
+      "choose": "Chọn cách khách xem thông tin chất gây dị ứng",
+      "card": "Thêm bảng chất gây dị ứng",
+      "cardOptional": "Thêm bảng chất gây dị ứng (không bắt buộc)",
+      "review": "Kiểm tra & xác nhận từng món"
+    },
+    "heading": {
+      "import": "Chất gây dị ứng",
+      "standalone": "Thiết lập chất gây dị ứng"
+    },
+    "nav": {
+      "next": "Tiếp →",
+      "back": "← Quay lại",
+      "skip": "Để sau",
+      "saving": "Đang lưu…",
+      "done": "Xong",
+      "saveLater": "Lưu & làm tiếp sau",
+      "close": "Đóng",
+      "finish": "Hoàn tất",
+      "skipImport": "Tạm bỏ qua thiết lập chất gây dị ứng"
+    },
+    "hint": {
+      "skipDefers": "Bỏ qua chỉ là để sau — các món bạn chưa xác nhận vẫn bị ẩn với khách cho đến khi chất gây dị ứng được xác nhận.",
+      "importIncomplete": "Hãy xác nhận mọi món để tiếp tục — hoặc chọn “Tạm bỏ qua thiết lập chất gây dị ứng”."
+    }
+  }
+}

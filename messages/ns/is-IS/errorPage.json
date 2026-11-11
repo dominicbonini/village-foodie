@@ -1,0 +1,8 @@
+{
+  "notFoundTitle": "Síða fannst ekki",
+  "notFoundBody": "Við fundum ekki þessa síðu. Hún gæti hafa verið færð eða slóðin rangt slegin inn.",
+  "home": "Fara á forsíðuna",
+  "errorTitle": "Eitthvað fór úrskeiðis",
+  "errorBody": "Því miður — þessi síða hlóðst ekki. Reyndu aftur eða farðu aftur á forsíðuna.",
+  "retry": "Reyna aftur"
+}

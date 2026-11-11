@@ -1,0 +1,43 @@
+{
+  "allergensUnanswered": {
+    "title": "Pilih cara menampilkan info alergen",
+    "detail": "Sampai Anda memilih, pelanggan tidak melihat satu pun hidangan Anda — menu melindungi dirinya dengan menyembunyikan apa pun yang alergennya belum dikonfirmasi, dan saat ini itu berarti semuanya.",
+    "where": "Menu → Alergen"
+  },
+  "allergensCardMissing": {
+    "title": "Tambahkan kartu alergen Anda",
+    "detail": "Anda memilih menampilkan kartu alergen, tetapi belum ada yang tersimpan — jadi pelanggan akan diberi tahu bahwa info alergen tersedia, lalu tidak menemukan apa-apa.",
+    "where": "Menu → Alergen"
+  },
+  "allergensItemsUnverified": {
+    "title": "{n, plural, one {Konfirmasi alergen pada {count} hidangan} other {Konfirmasi alergen pada {count} hidangan}}",
+    "detail": "{n, plural, one {Hidangan Anda disembunyikan dari pelanggan sampai Anda mengonfirmasi alergennya.} other {{u, plural, one {{unverified} dari {total} hidangan Anda disembunyikan dari pelanggan sampai Anda mengonfirmasi alergennya.} other {{unverified} dari {total} hidangan Anda disembunyikan dari pelanggan sampai Anda mengonfirmasi alergennya.}}}} Hidangan yang tampil tanpa alergen terkonfirmasi akan terbaca “tidak mengandung apa pun”, jadi menu menyembunyikannya daripada mengambil risiko itu.",
+    "where": "Menu → Alergen"
+  },
+  "noVan": {
+    "title": "Tambahkan kendaraan",
+    "detail": "Setiap acara berjalan dengan sebuah kendaraan — tanpa kendaraan, tidak ada yang bisa dipakai untuk menerima pesanan.",
+    "where": "Pengaturan → Truk Anda"
+  },
+  "kitchenCapacityUnset": {
+    "title": "Atur kapasitas dapur Anda",
+    "detail": "Belum ada kapasitas yang diatur untuk {vans}. Tanpa itu, kami akan terus menjanjikan waktu pengambilan kepada pelanggan yang tidak mungkin dikejar dapur Anda.",
+    "where": "Menu → Kapasitas dapur",
+    "unnamedVan": "Kendaraan tanpa nama"
+  },
+  "noPrepBearingCategory": {
+    "title": "Beri tahu kami berapa lama makanan Anda disiapkan",
+    "detail": "{categories, select, none {Anda belum punya kategori menu, jadi kami tidak bisa menghitung berapa lama sebuah pesanan disiapkan.} other {Tidak satu pun kategori Anda punya waktu masak, jadi setiap pesanan terlihat instan bagi kami. Kami akan terus memberi pelanggan waktu pengambilan yang tidak mungkin dikejar dapur Anda, dan makin ramai, makin jauh melesetnya.}}",
+    "where": "Menu → Kategori → Pengaturan dapur"
+  },
+  "emailUnverified": {
+    "title": "Konfirmasi alamat email Anda",
+    "detail": "Kami mengirim notifikasi pesanan dan pemulihan akun ke alamat ini. Jika salah, Anda baru tahu saat sesuatu sudah telanjur bermasalah.",
+    "where": "Cek kotak masuk Anda untuk link konfirmasi dari kami"
+  },
+  "emailUnknown": {
+    "title": "Status konfirmasi email tidak diketahui",
+    "detail": "Verifikasi email belum tersambung, jadi hal ini belum bisa dinilai. Sengaja dibuat memblokir, bukan diam-diam diloloskan.",
+    "where": "—"
+  }
+}

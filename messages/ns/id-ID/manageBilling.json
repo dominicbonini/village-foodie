@@ -1,0 +1,44 @@
+{
+  "perTruckMonth": "per truk / bulan",
+  "transactionFees": "Biaya transaksi",
+  "comingSoon": "Segera hadir",
+  "footnote2Masked": "Pembayaran online didukung oleh Stripe Connect. Biaya platform dan pemrosesan kartu belum ditentukan dan akan dikonfirmasi saat peluncuran.",
+  "card": {
+    "title": "Tagihan & pembayaran",
+    "managed": "Tagihan dikelola oleh HatchGrab",
+    "earlyAccess": "Selama akses awal, kami mengatur dan menyesuaikan paket secara manual.",
+    "planLine": "{trial, select, yes {{truck} · paket {plan} (masa coba)} other {{truck} · paket {plan}}}"
+  },
+  "currentPlan": "Paket saat ini",
+  "plan": {
+    "included": "Termasuk pesanan online senilai {amount} per bulan.",
+    "includedUnlimited": "Termasuk pesanan online tanpa batas.",
+    "promo": "Harga khusus.",
+    "promoUntil": "Harga khusus sampai {date}.",
+    "ended": "Paket {plan} Anda berakhir pada {date}. Sekarang Anda memakai paket {now}.",
+    "trialMonths": "Masa coba gratis {months} bulan."
+  },
+  "trialEnds": "Masa coba berakhir {date}",
+  "yourTrialEnds": "Masa coba Anda berakhir {date}",
+  "notStarted": {
+    "heading": "Masa coba gratis Anda belum dimulai"
+  },
+  "onTrial": "Anda punya akses ke semua fitur. Pilih paket sebelum masa coba berakhir.",
+  "onTrialPaidEnd": "Anda punya akses ke semua fitur. Setelah masa coba berakhir, paket {plan} seharga {price} per bulan. Kami akan menghubungi Anda sebelum itu untuk mengatur pembayaran.",
+  "onTrialNoCta": "Anda punya akses ke semua fitur.",
+  "noCharge": "🔒 Anda tidak dikenai biaya apa pun selama masa coba, yang berlangsung sampai {date}. Penagihan hanya dimulai saat Anda memilih paket dan memasukkan data pembayaran. Sampai saat itu, tidak ada yang perlu dibatalkan dan tidak ada yang perlu dibayar.",
+  "noChargePaidEnd": "🔒 Anda tidak dikenai biaya apa pun selama masa coba, yang berlangsung sampai {date}.",
+  "fees": "*Biaya pemrosesan kartu standar berlaku untuk pesanan online",
+  "setUpPayment": "⏱ Pilih paket sebelum masa coba berakhir",
+  "changeYourPlan": "Ganti paket Anda",
+  "planButton": "{plan} — {price}",
+  "upgradeModal": {
+    "title": "Beralih ke paket {plan}",
+    "tagline": "{price} — {description}",
+    "body": "Kami sedang menyiapkan penagihan otomatis. Untuk beralih sekarang, kirimi kami pesan dan kami akan mengaturnya untuk Anda dalam 24 jam.",
+    "mailSubject": "Beralih ke paket {plan} — {truck}",
+    "mailBody": "Halo, saya ingin memindahkan {truck} ke paket {plan} ({price}).",
+    "email": "Email kami untuk beralih",
+    "cancel": "Batal"
+  }
+}

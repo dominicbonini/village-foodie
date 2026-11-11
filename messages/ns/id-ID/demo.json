@@ -1,0 +1,29 @@
+{
+  "notAvailable": "Tidak tersedia dalam demo",
+  "demoMode": "MODE DEMO",
+  "loopLands": "Persis begitulah pesanan sungguhan masuk",
+  "showMe": "Tunjukkan",
+  "noCard": "{sub} Tanpa kartu.",
+  "notYet": "Nanti dulu",
+  "cashAndCollected": "Tunai & sudah diambil",
+  "logoPlaceholder": "Logo Anda di sini",
+  "welcomeTitle": "{sample, select, yes {Ini contoh demo} other {Ini demo Anda}}",
+  "welcomeIntro": "{sample, select, yes {Ini <b>menu contoh</b> agar Anda bisa melihat cara kerjanya — unggah menu Anda sendiri kapan saja untuk menjadikannya milik Anda.} other {Ini menu dan branding Anda sendiri, di papan sungguhan.}} Pesanan yang sudah ada di sini hanyalah contoh, agar Anda bisa melihat suasana saat ramai.",
+  "twoThings": "Dua hal untuk dicoba:",
+  "hitButton": "Tekan <b>{button}</b> pada sebuah pesanan",
+  "scanQr": "Pindai <b>kode QR</b> — atau ketuk link-nya — lalu pesan sebagai pelanggan dan lihat pesanannya masuk",
+  "qrAlt": "Kode QR ke halaman pemesanan pelanggan Anda",
+  "openHere": "Atau buka di perangkat ini",
+  "copyLink": "Salin link",
+  "copyDescribedAs": "link pemesanan",
+  "noLinkTitle": "Link pemesanan untuk pelanggan Anda",
+  "noLinkBody": "Link halaman pemesanan Anda ada di menu, kanan atas.",
+  "asLive": "Alur pemesanan dan dapur persis sama seperti saat berjalan sungguhan.",
+  "startExploring": "Mulai menjelajah",
+  "signupOffer": {
+    "heading": "{months, plural, =0 {Mulai gratis} one {Gratis selama # bulan} other {Gratis selama # bulan}}",
+    "sub": "Masa coba gratis Anda dimulai saat Anda mendaftar."
+  },
+  "cashIcon": "💵",
+  "walkBanner": "Demo · ini menu Anda, seperti yang akan dilihat pelanggan. Tidak ada tagihan dan tidak ada email yang dikirim."
+}

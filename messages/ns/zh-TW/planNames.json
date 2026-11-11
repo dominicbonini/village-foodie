@@ -1,0 +1,28 @@
+{
+  "payg": {
+    "name": "免月費",
+    "subtitle": "季節性與兼職擺攤業者",
+    "description": "不收月費，只有在顧客線上刷卡付款時才需付費。"
+  },
+  "pro": {
+    "subtitle": "經常接預約點餐的餐車",
+    "description": "所有功能，包括 WhatsApp 自動回覆與社群貼文，每月並含一定額度的線上訂單。"
+  },
+  "unlimited": {
+    "name": "無限制",
+    "subtitle": "生意繁忙的餐車與音樂祭",
+    "description": "所有功能都能用，不論生意多忙，線上訂單都不收手續費。"
+  },
+  "trial": {
+    "name": "免費試用",
+    "description": "試用期間，所有功能免費使用。"
+  },
+  "demo": {
+    "name": "示範版",
+    "description": "潛在客戶的試用環境——永不公開。"
+  },
+  "tester": {
+    "name": "測試人員",
+    "description": "上線前測試人員——完整權限。"
+  }
+}

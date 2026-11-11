@@ -1,0 +1,19 @@
+{
+  "heading": "Ek satış önerileri",
+  "intro": "Müşterileri ekstra bir şey eklemeye teşvik edin. Biri bir kategoriden sipariş verdiğinde başka bir kategoriden ürün önerin — pizzanın yanına bir içecek, burgerin yanına bir sos.",
+  "add": "+ Ek satış önerisi ekle",
+  "toast": {
+    "updated": "Ek satış kuralı güncellendi",
+    "added": "Ek satış kuralı eklendi",
+    "removed": "Kural kaldırıldı"
+  },
+  "whenAdds": "Müşteri şunu eklediğinde…",
+  "suggestFrom": "Şuradan ürün öner…",
+  "chooseCategory": "Kategori seçin",
+  "cancel": "İptal",
+  "saveChanges": "Değişiklikleri kaydet",
+  "addRule": "Kural ekle",
+  "empty": "Henüz ek satış kuralı yok.",
+  "confirmRemove": "“{trigger} → {suggest}” ek satış kuralı kaldırılsın mı?",
+  "upTo": "{n, plural, one {En fazla {count} ürün önerilir} other {En fazla {count} ürün önerilir}}"
+}

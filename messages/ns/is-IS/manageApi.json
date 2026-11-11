@@ -1,0 +1,10 @@
+{
+  "vanFallback": "Vagn",
+  "eventsFeed": {
+    "today": "Í dag · {date}",
+    "tomorrow": "Á morgun · {date}"
+  },
+  "privacyNotSaved": "Viðburðurinn er í loftinu, en ekki tókst að vista persónuverndarstillingu hans.",
+  "stockWarning": "Engar vörur í boði í „{category}“",
+  "uncategorised": "Óflokkað"
+}

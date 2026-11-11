@@ -1,0 +1,16 @@
+{
+  "takeConfirm": "Çağrı cihazı <b>{number}</b> şu anda <b>sipariş #{holderId}</b>{hasName, select, yes { ({name})} other {}} için kullanılıyor. <b>{hasTarget, select, yes {Sipariş #{targetId}} other {Bu sipariş}}</b> için alınsın mı?",
+  "cancel": "İptal",
+  "take": "Çağrı cihazını al: {number}",
+  "titleBlocking": "Sipariş #{id} için çağrı cihazı?",
+  "title": "Çağrı cihazı seçin",
+  "subtitle": "{hasTarget, select, yes {Sipariş #{id}} other {Bu sipariş}}{hasCurrent, select, yes { · şu anki çağrı cihazı: {current}} other {}}",
+  "allTaken": "{n, plural, one {Çağrı cihazı kullanımda. Başka bir siparişten almak için ona dokunun.} other {{count} çağrı cihazının tamamı kullanımda. Başka bir siparişten almak için birine dokunun.}}",
+  "thisOrder": "Bu sipariş",
+  "noBuzzer": "Çağrı cihazı yok",
+  "done": "Tamam",
+  "lostTitle": "Sipariş #{id} için çağrı cihazı yok",
+  "lostBody": "{hasName, select, yes {{name} — } other {}}siz çevrimdışıyken başka bir sipariş aynı çağrı cihazını aldı. Bu müşteriye farklı bir cihaz verin.",
+  "dismiss": "Kapat",
+  "assign": "Ata"
+}

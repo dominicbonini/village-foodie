@@ -1,0 +1,17 @@
+{
+  "back": "← Til baka",
+  "title": "Nota tilboð",
+  "save": "Sparaðu {amount}",
+  "selectItems": "Veldu vörur í hvert hólf",
+  "choose": "Veldu: {category}…",
+  "inYourBasket": "── Í körfunni ──",
+  "basketUnit": "{name}{withMods, select, yes { (+ {mods})} other {}} (í körfu){state, select, used { — þegar í tilboði} taken { — valið í öðru hólfi} other {}}",
+  "addNew": "── Bæta við nýju ──",
+  "itemWithPrice": "{name} {price}",
+  "ruleHint": "· {rule, select, requiredOne {Skylda · veldu eitt} required {Skylda} other {Veldu eitt}}{unmet, select, yes { (skylda)} other {}}",
+  "notePlaceholder": "Bættu við athugasemd, t.d. enginn laukur (valfrjálst)",
+  "backButton": "Til baka",
+  "cancel": "Hætta við",
+  "chooseRequired": "Veldu nauðsynlega valkosti",
+  "apply": "Nota tilboð · {amount}"
+}

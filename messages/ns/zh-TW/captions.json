@@ -1,0 +1,30 @@
+{
+  "labels": {
+    "weekDates": "本週日期",
+    "dayList": "每日行程",
+    "place": "地點",
+    "venue": "場地",
+    "area": "地區",
+    "dayDate": "星期與日期",
+    "times": "時間",
+    "orderLink": "點餐連結",
+    "locationTag": "地點標籤"
+  },
+  "weekHeader": "{truck} — 本週出攤地點：",
+  "dayLine": "{day} — {where} — {times}",
+  "dayLineNoTimes": "{day} — {where}",
+  "dayLineCancelled": "{day} — {where} — 取消，抱歉",
+  "noDates": "本週沒有出攤，請稍後再回來看看。",
+  "orderAhead": "線上預約點餐：{url}",
+  "orderAheadTagged": "線上預約點餐：{url} {tag}",
+  "eventLine": "{truck} {when}在{where}出攤，時間：{times}。",
+  "eventLineNoTimes": "{truck} {when}在{where}出攤。",
+  "cancelledSorry": "抱歉——我們{when}無法前往{where}。",
+  "cancelledApology": "向所有原本打算前來的朋友致歉，我們很快就會回來。",
+  "when": {
+    "today": "今天",
+    "tonight": "今晚",
+    "tomorrow": "明天",
+    "dated": "於 {date}"
+  }
+}

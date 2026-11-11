@@ -1,0 +1,38 @@
+{
+  "newEmail": {
+    "subject": "Verifikasi alamat email HatchGrab baru Anda",
+    "heading": "Verifikasi alamat email Anda",
+    "button": "Verifikasi alamat email"
+  },
+  "changeEmail": {
+    "requested": "Anda meminta untuk mengubah alamat email HatchGrab Anda ke alamat ini.",
+    "click": "Klik tombol di bawah untuk memverifikasi. Link ini kedaluwarsa dalam 24 jam.",
+    "ignore": "Jika Anda tidak meminta perubahan ini, abaikan saja email ini.",
+    "stillActive": "Alamat email Anda saat ini tetap aktif."
+  },
+  "resendVerification": {
+    "requested": "Anda meminta untuk mengubah email HatchGrab Anda ke alamat ini.",
+    "click": "Klik di bawah untuk memverifikasi. Link ini kedaluwarsa dalam 24 jam.",
+    "ignore": "Jika Anda tidak memintanya, abaikan email ini.",
+    "stillActive": "Email Anda saat ini tetap aktif."
+  },
+  "passwordReset": {
+    "subject": "Atur ulang kata sandi HatchGrab Anda",
+    "heading": "Atur ulang kata sandi",
+    "requested": "Kami menerima permintaan untuk mengatur ulang kata sandi akun HatchGrab Anda.",
+    "click": "Klik tombol di bawah untuk memilih kata sandi baru. Link ini kedaluwarsa dalam 1 jam.",
+    "button": "Atur ulang kata sandi",
+    "ignore": "Jika Anda tidak memintanya, abaikan saja email ini.",
+    "unchanged": "Kata sandi Anda tidak akan berubah sampai Anda mengklik link di atas."
+  },
+  "deletionScheduled": {
+    "subject": "Akun HatchGrab Anda dijadwalkan untuk dihapus",
+    "received": "Kami telah menerima permintaan untuk menghapus akun HatchGrab ini.",
+    "orderingStopped": "<b>Pemesanan online langsung dihentikan</b> di: {trucks}.",
+    "noTrucks": "(tidak ada truk)",
+    "readable": "Dasbor Anda tetap\n    bisa dibaca selama {days, plural, one {# hari} other {# hari}} ke depan.",
+    "scheduled": "Akun ini dijadwalkan untuk dihapus pada <b>{date}</b>.",
+    "cannotCancel": "<b>Ini tidak dapat dibatalkan dari dalam aplikasi.</b> Jika ini bukan Anda, atau Anda\n    berubah pikiran, balas email ini secepatnya.",
+    "kept": "Saat akun dihapus, kami menghapus data pribadi Anda dan data pelanggan Anda. Kami menyimpan\n    catatan akuntansi anonim, yang wajib kami simpan menurut hukum."
+  }
+}

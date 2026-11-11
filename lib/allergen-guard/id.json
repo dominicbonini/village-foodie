@@ -1,0 +1,113 @@
+{
+  "$comment": "languages-world-1 (10 November 2026): the WhatsApp allergen guard’s trigger words for INDONESIAN (id-ID): alergi / alergen, intoleran, tidak tahan laktosa, seliak, anafilaksis, bebas / tanpa <allergen>, nggak / gak / tidak pakai (pake), tidak mengandung, aman untuk / bagi / buat, cocok untuk, mungkin / bisa / dapat mengandung, kontaminasi silang, jejak, sensitif. \"ga pakai\" is NOT a stem (it is inside \"harga pakai\"). OPTION B, as every other language: absence / safety words only, NOT the bare allergen names (a presence question may reach the AI, which answers only from the tags and gets the caveat). Matched with the Unicode normaliser. caveatWords: a tagged label of the codex allergen set (stored in English, lower case) → the words a reply may use for it (matched on the raw lower-cased reply, so written as the AI writes them). The country has no allergen set of its own yet, so caveatWords are for 'codex' (as MX, SG, HK, MY, TH and AE).",
+  "language": "id",
+  "normalise": "unicode",
+  "stems": [
+    "alergi",
+    "alergen",
+    "alergik",
+    "intoleran",
+    "tidak tahan laktosa",
+    "seliak",
+    "celiac",
+    "anafilak",
+    "epipen",
+    "epi pen",
+    "adrenalin",
+    "sensitif",
+    "gluten free",
+    "bebas gluten",
+    "tanpa gluten",
+    "bebas laktosa",
+    "tanpa laktosa",
+    "bebas susu",
+    "tanpa susu",
+    "tanpa keju",
+    "tanpa telur",
+    "bebas kacang",
+    "tanpa kacang",
+    "tanpa seafood",
+    "tanpa makanan laut",
+    "tanpa udang",
+    "tanpa kepiting",
+    "tanpa kedelai",
+    "tanpa ikan",
+    "tanpa wijen",
+    "tidak pakai",
+    "nggak pakai",
+    "ngga pakai",
+    "gak pakai",
+    "enggak pakai",
+    "tidak pake",
+    "nggak pake",
+    "gak pake",
+    "tidak mengandung",
+    "tidak ada kandungan",
+    "aman untuk",
+    "aman bagi",
+    "aman buat",
+    "aman dikonsumsi",
+    "cocok untuk",
+    "cocok bagi",
+    "mungkin mengandung",
+    "bisa mengandung",
+    "dapat mengandung",
+    "kontaminasi",
+    "jejak"
+  ],
+  "tokens": [],
+  "caveatWords": {
+    "codex": {
+      "gluten": [
+        "gluten",
+        "gandum",
+        "terigu"
+      ],
+      "crustaceans": [
+        "krustasea",
+        "udang",
+        "kepiting",
+        "rajungan",
+        "lobster",
+        "seafood",
+        "makanan laut"
+      ],
+      "eggs": [
+        "telur",
+        "mayones"
+      ],
+      "fish": [
+        "ikan"
+      ],
+      "peanuts": [
+        "kacang tanah",
+        "kacang"
+      ],
+      "soy": [
+        "kedelai",
+        "tahu",
+        "tempe",
+        "kecap"
+      ],
+      "milk": [
+        "susu",
+        "laktosa",
+        "keju",
+        "mentega",
+        "krim"
+      ],
+      "tree nuts": [
+        "kacang",
+        "almond",
+        "mete",
+        "kenari",
+        "hazelnut",
+        "pistachio",
+        "makadamia"
+      ],
+      "sulphites": [
+        "sulfit"
+      ]
+    }
+  }
+}

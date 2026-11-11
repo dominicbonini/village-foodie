@@ -1,0 +1,122 @@
+{
+  "includedOn": "{many, select, yes {{feature}已包含在 {plan} 方案中。} other {{feature}已包含在 {plan} 方案中。}}",
+  "notOnPlan": "{many, select, yes {你目前的方案不包含{feature}。} other {你目前的方案不包含{feature}。}}",
+  "switchedOff": "{many, select, yes {你的餐車已關閉{feature}。} other {你的餐車已關閉{feature}。}}",
+  "planLine": "{plan} · {price} · {description}",
+  "planLineNoPrice": "{plan} · {description}",
+  "upgrade": "升級 →",
+  "features": {
+    "discovery_map": {
+      "name": "探索地圖刊登",
+      "many": "no"
+    },
+    "web_dashboard": {
+      "name": "網頁版控制台",
+      "many": "no"
+    },
+    "ipad_kds": {
+      "name": "廚房 App",
+      "many": "no"
+    },
+    "qr_menu": {
+      "name": "QR code 菜單",
+      "many": "no"
+    },
+    "meal_deals": {
+      "name": "套餐優惠",
+      "many": "yes"
+    },
+    "upsells": {
+      "name": "加購推薦",
+      "many": "yes"
+    },
+    "walkup_orders": {
+      "name": "現場點餐",
+      "many": "yes"
+    },
+    "online_ordering_pay_at_hatch": {
+      "name": "取餐時付款點餐",
+      "many": "no"
+    },
+    "sold_out_toggle": {
+      "name": "售完開關",
+      "many": "no"
+    },
+    "stock_countdown": {
+      "name": "庫存倒數",
+      "many": "no"
+    },
+    "offline_protection": {
+      "name": "離線訂單保護",
+      "many": "no"
+    },
+    "online_payments": {
+      "name": "線上付款",
+      "many": "yes"
+    },
+    "advance_preordering": {
+      "name": "提前預約點餐",
+      "many": "no"
+    },
+    "time_slot_selection": {
+      "name": "顧客取餐時段",
+      "many": "yes"
+    },
+    "smart_batch_pacing": {
+      "name": "廚房出餐量管理",
+      "many": "no"
+    },
+    "auto_accept": {
+      "name": "自動接單",
+      "many": "no"
+    },
+    "instagram_messenger_replies": {
+      "name": "Messenger 與 Instagram 自動回覆",
+      "many": "yes"
+    },
+    "branded_qr_code": {
+      "name": "品牌 QR code",
+      "many": "yes"
+    },
+    "advanced_reporting": {
+      "name": "進階報表",
+      "many": "no"
+    },
+    "ticket_printing": {
+      "name": "廚房出單列印",
+      "many": "no"
+    },
+    "multi_device_kds": {
+      "name": "多裝置廚房同步",
+      "many": "no"
+    },
+    "cook_screen": {
+      "name": "廚師畫面",
+      "many": "no"
+    },
+    "whatsapp_replies": {
+      "name": "WhatsApp 自動回覆",
+      "many": "yes"
+    },
+    "embed_schedule": {
+      "name": "在你自己的網站顯示行程",
+      "many": "no"
+    },
+    "schedule_graphics": {
+      "name": "社群貼文",
+      "many": "yes"
+    },
+    "event_types": {
+      "name": "自訂活動類型",
+      "many": "yes"
+    },
+    "private_events": {
+      "name": "私人活動",
+      "many": "yes"
+    },
+    "paperwork": {
+      "name": "文件",
+      "many": "yes"
+    }
+  }
+}

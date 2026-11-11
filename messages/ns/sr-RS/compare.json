@@ -1,0 +1,127 @@
+{
+  "eyebrow": "Poređenje troškova",
+  "title": "Uporedite troškove<br></br><accent>online porudžbina</accent>",
+  "system": {
+    "title": "Da li sada primate online porudžbine?",
+    "yes": "Da, preko drugog sistema",
+    "no": "Ne, još ne"
+  },
+  "trucks": {
+    "title": "Koliko food truckova imate?",
+    "aria": "Broj food truckova"
+  },
+  "plan": {
+    "yourChoice": "Vaš izbor",
+    "weSuggest": "Predlažemo",
+    "summary": "{price} po food trucku mesečno, sa uključenim online porudžbinama u vrednosti do {allowance}{fleet, plural, one {} few { po vozilu} other { po vozilu}}.",
+    "switchTo": "Pređi na paket {plan}",
+    "summaryFeeOnly": "{hasMonthly, select, yes {{price} po food trucku mesečno, plus {pct} na online porudžbine plaćene karticom.} other {Bez mesečne pretplate — samo {pct} na online porudžbine plaćene karticom.}}",
+    "summaryNoFee": "{price} po food trucku mesečno, sa neograničenim online porudžbinama i bez HatchGrab naknade."
+  },
+  "orders": {
+    "titleYes": "Online porudžbine mesečno, po food trucku",
+    "count": "~{count, plural, one {# porudžbina} few {# porudžbine} other {# porudžbina}}",
+    "captionNo": "Gruba procena je dovoljna — porudžbine unapred i kupci koji preskaču red, ne gotovina ni kartica kod food trucka.",
+    "captionYes": "Samo porudžbine primljene preko vaše stranice za poručivanje — ne gotovina ni kartica kod food trucka.",
+    "sliderAria": "Mesečna vrednost online porudžbina po food trucku",
+    "overAllowance": "Po food trucku uključene su online porudžbine u vrednosti do {allowance}. Na višak od {excess} naplaćuje se {pct} — <b>{over}</b> mesečno po vozilu.",
+    "insideAllowance": "U okviru uključenog iznosa od {allowance} — ništa preko cene paketa.",
+    "acrossFleet": "Za {fleet, plural, one {# food truck} few {# food trucka} other {# food truckova}}: <b>{amount}</b> mesečno.",
+    "titleNo": "Koliko mislite da biste mesečno zaradili online, po food trucku?",
+    "feeOnly": "{pct} na svaku online porudžbinu plaćenu karticom — <b>{over}</b> mesečno po food trucku.",
+    "noFee": "Neograničene online porudžbine su uključene — ništa preko cene paketa."
+  },
+  "fee": {
+    "title": "Koliko sada plaćate po porudžbini?",
+    "pctLabel": "Procenat",
+    "pctPlaceholder": "Vaša stopa",
+    "pctAria": "Procentualna naknada",
+    "fixedLabel": "Plus po porudžbini",
+    "fixedPlaceholder": "Vaša naknada",
+    "fixedAria": "Fiksni iznos po porudžbini",
+    "modeLabel": "Njihova stopa:",
+    "modeInclusive": "uključuje obradu kartičnog plaćanja",
+    "modeOnTop": "naplaćuje se dodatno",
+    "onTopNote": "Obrada kartičnog plaćanja od {fee} naplaćuje se povrh toga, pa ukupno zapravo plaćate <b>{pct} + {fixed}</b>.",
+    "inclusiveNote": "Obrada kartičnog plaćanja od {fee} je uključena u to i platili biste je bilo gde. Njihova sopstvena naknada je <b>{pct}</b>."
+  },
+  "days": {
+    "title": "Koliko dana nedeljno radite?",
+    "help": "Događaji, pijace, lokacije — svaki dan kada je vozilo na terenu."
+  },
+  "jump": {
+    "cost": "Pogledaj koliko košta ↓",
+    "saving": "Pogledaj uštedu ↓"
+  },
+  "noSystem": {
+    "hero": "<lead>Online poručivanje, porudžbine unapred i kuhinjski ekran (KDS) za</lead><figure>{amount}</figure><unit>po radnom danu</unit>",
+    "basedOn": "Na osnovu {days, plural, one {# dana} few {# dana} other {# dana}} nedeljno · {monthly} mesečno{fleet, plural, one {} few { po vozilu} other { po vozilu}}"
+  },
+  "coffee": "Manje od jedne kafe.",
+  "freeMonths": "{n, plural, one {A prvi mesec je besplatan.} few {A prva # meseca su besplatna.} other {A prvih # meseci je besplatno.}}",
+  "cta": {
+    "upload": "Otpremi meni →",
+    "uploadSave": "Otpremite meni i uštedite {amount} →",
+    "ask": "Postavi nam pitanje",
+    "noCard": "Za podešavanje nije potrebna kartica"
+  },
+  "breakdown": {
+    "title": "Vaš mesec, stavka po stavka",
+    "titleDearer": "Vaš mesec uz HatchGrab",
+    "plan": "Paket {plan}",
+    "over": "{pct} na {excess} iznad uključenih {allowance}",
+    "inside": "Online porudžbine u okviru uključenih {allowance}",
+    "total": "HatchGrab mesečno",
+    "freeMonths": "{n, plural, one {Mesec 1} few {Meseci 1–#} other {Meseci 1–#}}",
+    "freeAmount": "{amount} — besplatno",
+    "acrossFleet": "Za {fleet, plural, one {# vozilo} few {# vozila} other {# vozila}}",
+    "perMonth": "{amount} mesečno",
+    "card": "Obrada kartičnog plaćanja — Stripe naknada od {fee} po porudžbini, plaća se direktno kompaniji Stripe. Približno isto biste platili i na POS terminalu kod food trucka.",
+    "provider": "Sopstvena naknada vašeg sadašnjeg ponuđača ({pct})",
+    "feeOnly": "{pct} na online porudžbine u iznosu od {excess}",
+    "noFee": "Online porudžbine — neograničeno, bez HatchGrab naknade"
+  },
+  "enterRate": "Unesite koliko sada plaćate da biste videli uštedu.",
+  "panel": {
+    "nowYear": "<label>Sada plaćate</label><fig>{amount}<q> godišnje</q></fig>",
+    "nowMonth": "<label>Sada plaćate</label><fig>{amount}<q> mesečno</q></fig>",
+    "oursYear": "<label>Uz HatchGrab</label><fig>{amount}<q> u prvoj godini</q></fig>",
+    "oursMonth": "<label>Uz HatchGrab</label><fig>{amount}<q> mesečno</q></fig>",
+    "acrossFleet": "za {fleet, plural, one {# vozilo} few {# vozila} other {# vozila}}"
+  },
+  "hero": {
+    "save": "<verb>Uštedite</verb><figure>{amount}</figure><sub><num>{pct}</num> manje u prvoj godini</sub>",
+    "same": "<verb>Otprilike isto</verb><figure>{amount}</figure><sub><num>{pct}</num> više u prvoj godini</sub>",
+    "dearer": "<lead>Sve što HatchGrab radi, za</lead><figure>{amount}</figure><unit>više nedeljno</unit>",
+    "dearerSub": "{fleet, plural, one {{amount} mesečno više nego sada} few {{amount} više po vozilu mesečno nego sada} other {{amount} više po vozilu mesečno nego sada}}"
+  },
+  "anchor": {
+    "liability": "To je godišnje osiguranje od odgovornosti prema trećim licima.",
+    "weekendPitch": "To je mesto za vikend na festivalu hrane.",
+    "festivalPitches": "To je nekoliko mesta na festivalima.",
+    "fryer": "To je nova friteza i roštilj ploča.",
+    "counter": "To je potpuno renoviranje vašeg pulta za izdavanje.",
+    "vanDeposit": "To je učešće za drugo vozilo.",
+    "secondVan": "To je drugo vozilo na putu."
+  },
+  "year": {
+    "one": "Prva godina",
+    "two": "Druga godina",
+    "save": "Uštedite {amount}<note>({pct} manje)</note>",
+    "extra": "Dodatno {amount}<note>({pct} više)</note>",
+    "current": "Sadašnji ponuđač <b>{amount}</b>",
+    "ours": "HatchGrab <b>{amount}</b>"
+  },
+  "smallPrint": {
+    "no": "Procene na osnovu brojki koje unesete, uz pretpostavku prosečne porudžbine od {aov}. Obrada kartičnog plaćanja važi kod bilo kog ponuđača. Proverite pre nego što odlučite.",
+    "yes": "Procene na osnovu brojki koje unesete, uz pretpostavku prosečne porudžbine od {aov}. Obrada kartičnog plaćanja od {fee} po porudžbini važi kod bilo kog ponuđača, pa je izostavljena sa obe strane.",
+    "onTop": "Ukupan iznos u pitanju br. {n} je uključuje — poređenje je ne uključuje ni na jednoj strani.",
+    "check": "Proverite stope svog sadašnjeg ponuđača pre nego što odlučite."
+  },
+  "intro": "Traje oko jedan minut. Već koristite neki sistem? Uporedićemo ga. Još ne? Pokazaćemo vam tačno koliko košta.",
+  "twoYear": "Za dve godine to je <b>{amount}</b> uštede.",
+  "meta": {
+    "title": "Kalkulator troškova — HatchGrab {country}",
+    "description": "Uporedite koliko vas sada koštaju online porudžbine, sa provizijama aplikacija za dostavu, i godinu dana uz HatchGrab — procena za jedan minut."
+  }
+}

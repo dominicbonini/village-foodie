@@ -1,0 +1,11 @@
+{
+  "optOut": {
+    "missing": "Þennan tölvupóst vantar afskráningarlínu, svo ekki er hægt að senda hann. Notaðu „Insert opt-out“ til að bæta henni við.",
+    "notSetUp": "Engin afskráningarsetning hefur verið sett upp, svo ekki er hægt að senda neinn kynningarpóst. Bættu henni við á „Signature“-spjaldinu í „Templates“-flipanum.",
+    "notLoaded": "Afskráningarsetningin hefur ekki hlaðist enn, svo ekki er hægt að senda þetta.",
+    "unreadable": "Ekki tókst að lesa afskráningarsetninguna, svo ekkert var sent."
+  },
+  "retry": {
+    "notRebuilt": "Ekki tókst að endurgera skilaboðin með fyrirtækjalínunni, svo ekkert var sent."
+  }
+}

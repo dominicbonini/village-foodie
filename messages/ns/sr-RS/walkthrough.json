@@ -1,0 +1,31 @@
+{
+  "intro": "U odeljku Upravljanje podešavate svoj food truck i pratite kako posluje. Na Kontrolnoj tabli primate porudžbine i vodite svaki događaj dok traje.",
+  "ariaLabel": "Vodič kroz kontrolnu tablu",
+  "step": "{current} od {total}",
+  "skip": "Preskoči",
+  "back": "← Nazad",
+  "next": "Dalje →",
+  "done": "Gotovo",
+  "stops": {
+    "menu": {
+      "title": "Meni",
+      "body": "Vaša jela, cene i alergeni. Šta god ovde promenite, odmah je vidljivo kupcima."
+    },
+    "schedule": {
+      "title": "Raspored",
+      "body": "Gde i kada prodajete. Dodajte događaj ovde i kupci mogu da poručuju za njega."
+    },
+    "build": {
+      "title": "Akcije i Dodaci i dodatna ponuda",
+      "body": "Akcije, dodatna ponuda, prilagođavanja i kapacitet kuhinje nalaze se u Meniju — slobodno istražite."
+    },
+    "settings": {
+      "title": "Podešavanja",
+      "body": "Podaci o vašem food trucku i način na koji kupci plaćaju."
+    },
+    "billing": {
+      "title": "Naplata",
+      "body": "Ovde su vaš paket, naplata i informacije o funkcijama."
+    }
+  }
+}

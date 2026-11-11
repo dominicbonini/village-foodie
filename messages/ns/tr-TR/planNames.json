@@ -1,0 +1,28 @@
+{
+  "payg": {
+    "name": "Kullandıkça öde",
+    "subtitle": "Sezonluk ve yarı zamanlı satıcılar için",
+    "description": "Aylık ücret yok. Yalnızca bir müşteri online olarak kartla ödediğinde ödersiniz."
+  },
+  "pro": {
+    "subtitle": "Düzenli ön sipariş alan food truck’lar için",
+    "description": "WhatsApp otomatik yanıtlar ve sosyal medya paylaşımları dahil her şey; her ay belirli miktarda online sipariş de dahil."
+  },
+  "unlimited": {
+    "name": "Sınırsız",
+    "subtitle": "Yoğun food truck’lar ve festivaller için",
+    "description": "Her şey dahil; ne kadar yoğun olursanız olun online siparişlerde ücret yok."
+  },
+  "trial": {
+    "name": "Ücretsiz deneme",
+    "description": "Deneme süreniz boyunca tüm özellikler ücretsiz."
+  },
+  "demo": {
+    "name": "Demo",
+    "description": "Potansiyel müşteriler için deneme ortamı — asla herkese açık değil."
+  },
+  "tester": {
+    "name": "Test kullanıcısı",
+    "description": "Lansman öncesi test kullanıcısı — tam erişim."
+  }
+}

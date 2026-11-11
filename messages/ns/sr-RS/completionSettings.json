@@ -1,0 +1,9 @@
+{
+  "paidStepTitle": "Primajte porudžbine bez plaćanja",
+  "completionTitle": "Završavanje neplaćene porudžbine",
+  "completionHelp": "Šta se dešava kada je neplaćena porudžbina spremna za predaju.",
+  "pressesOne": "Jedan pritisak („Označi kao plaćeno i preuzeto“)",
+  "pressesOneHelp": "Najbolje kada novac naplaćujete dok predajete hranu. Dobijate jedno dugme, „Označi kao plaćeno i preuzeto“, koje istovremeno beleži plaćanje i zatvara porudžbinu.",
+  "pressesTwo": "Dva pritiska („Označi kao plaćeno“ i „Preuzeto“)",
+  "pressesTwoHelp": "Najbolje kada se plaćanje i predaja dešavaju u različitim trenucima — neko plati kod food trucka, pa preuzme kada bude gotovo. Dobijate dva dugmeta: prvo „Označi kao plaćeno“, a zatim „Preuzeto“ kada uzmu hranu."
+}

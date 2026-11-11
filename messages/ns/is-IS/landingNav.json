@@ -1,0 +1,14 @@
+{
+  "homeLabel": "Forsíða HatchGrab",
+  "cta": "Hlaða upp matseðlinum →",
+  "ctaShort": "Hlaða upp matseðli",
+  "features": "Eiginleikar",
+  "pricing": "Verð",
+  "logIn": "Skrá inn",
+  "country": {
+    "button": "Land: {name}. Skipta um land",
+    "menu": "Land",
+    "title": "Veldu land",
+    "subline": "Verð, tungumál og stillingar breytast í samræmi við það."
+  }
+}

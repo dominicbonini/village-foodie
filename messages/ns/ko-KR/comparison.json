@@ -1,0 +1,400 @@
+{
+  "path": {
+    "section": "comparison",
+    "slug": "food-truck-ordering-system"
+  },
+  "meta": {
+    "title": "푸드트럭 주문 시스템 비교 2026: 기능과 요금",
+    "description": "푸드트럭 주문 시스템 비교: 픽업 시간을 고르는 미리 주문, 주방 처리 용량, 주간 영업 일정, 수수료, 약정 기간을 각 업체 사이트에서 직접 확인했습니다.",
+    "about": "푸드트럭 온라인 주문 시스템"
+  },
+  "breadcrumb": {
+    "home": "HatchGrab",
+    "here": "비교",
+    "label": "이동 경로"
+  },
+  "h1": "푸드트럭 주문 시스템 비교 2026",
+  "byline": "최종 확인일: {date} · HatchGrab 제작. HatchGrab도 비교 대상 업체 중 하나입니다(<link>비교 방법</link> 참고).",
+  "table": {
+    "title": "주문 시스템 비교표",
+    "caption": "{country} 푸드트럭용 온라인 주문 시스템의 기능과 비용({date} 기준)",
+    "note": "“지원”은 업체가 공개적으로 밝힌 경우에만 표시합니다.",
+    "feature": "기능",
+    "yes": "지원",
+    "no": "미지원",
+    "unknown": "명시 안 됨",
+    "fromPlan": "{plan} 요금제부터",
+    "appNotInCountry": "{country} 미출시",
+    "appFlagOff": "지원 – 아직 비활성화, 스토어 등록 후 표시",
+    "range": "{from}~{to}",
+    "feePlan": "{fee}({plans})",
+    "noFee": "없음",
+    "morePending": "다른 업체는 각 업체 웹사이트에서 정보를 확인한 뒤 여기에 추가됩니다.",
+    "priceHidden": "별도 문의",
+    "feeAfter": "월 {included} 초과분에 {fee}",
+    "legend": "✓ 지원 · ◐ 일부 지원 · ✗ 미지원 · 미기재: 기능·요금 페이지에 없음 · —: 웹사이트에 언급 없음 · 해당 없음: 그런 유형의 서비스에는 없는 기능 · ⓘ: 참고 사항, 인용, 출처",
+    "swipe": "옆으로 밀어서 모든 제품 보기 →"
+  },
+  "costs": {
+    "title": "푸드트럭 주문 시스템 비용은 얼마인가요?",
+    "ourPlan": "{plan}: 월 {price}, {fee}",
+    "feeOnly": "온라인 카드 주문 1건당 {fee}",
+    "feeIncluded": "온라인 주문 월 {included} 포함, 초과 시 {fee}",
+    "feeNone": "온라인 주문에 HatchGrab 수수료 없음",
+    "rivalPlan": "{plan}: {price}",
+    "perMonth": "월 {price}",
+    "perMonthYearly": "월 {price}(연간 결제)",
+    "vatExcl": "부가세 별도",
+    "vatIncl": "부가세 포함",
+    "setup": "초기 설정비 {price}(1회)",
+    "truckFee": "주문 1건당 {fee}",
+    "customerFee": "주문 1건당 {fee}, 손님 부담",
+    "source": "출처",
+    "checked": "{date} 확인",
+    "cardFee": "HatchGrab의 온라인 카드 결제에는 Stripe 수수료도 붙습니다: {country} 기준 카드 결제 1건당 {cardFee}.",
+    "vat": "HatchGrab Ltd(영국 법인)는 {country} 내 부가가치세 사업자로 등록되어 있지 않으므로 수수료에 부가세가 붙지 않습니다. 부가세 과세사업자라면 사업자 등록번호를 알려 주세요. 이 경우 HatchGrab 수수료에 대한 부가세는 대리납부 방식으로 직접 신고하시면 됩니다.",
+    "bundledFee": "온라인 결제 1건당 {fee}, 카드 수수료 포함"
+  },
+  "fit": {
+    "title": "어떤 시스템이 누구에게 맞을까요?",
+    "ours": "HatchGrab이 맞는 경우 …",
+    "oursBody": "영업 장소가 자주 바뀌고, 픽업 시간을 고르는 미리 주문을 받고 싶고, 주방에 주문이 몰리지 않길 바라며, 약정에 묶이고 싶지 않은 경우.",
+    "oursNot": "HatchGrab이 맞지 않는 경우 …",
+    "oursNotBody": "손님이 PayPal이나 Klarna로 결제해야 하거나, 세법 요건을 충족하는 인증 포스(POS)를 한 업체에서 모두 갖추고 싶은 경우.",
+    "appClause": "또는 {country} 내에서 iPad나 Android용 주방 앱이 필요한 경우: 아직 현지 스토어에 출시되지 않았습니다.",
+    "tills": "포스(POS)와 카드 단말기",
+    "marketplaces": "배달 플랫폼",
+    "rival": "{name} 제품이 맞는 경우 …",
+    "tillsBody": "포스(POS)는 푸드트럭에서 결제를 받고 세법상 요건도 충족합니다. 주문 시스템은 포스(POS)와 함께 쓰는 것이며, 포스(POS)를 대체하지 않습니다.",
+    "tillsBodyNamed": "포스(POS)는 푸드트럭에서 결제를 받고 세법상 요건도 충족합니다. {names} {count, plural, one {제품도} other {제품도}} 위 표에 나와 있습니다. 주문 시스템은 포스(POS)와 함께 쓰는 것이며, 포스(POS)를 대체하지 않습니다.",
+    "marketplacesBody": "배달 플랫폼은 새로운 손님을 데려오지만 주문마다 중개 수수료를 가져갑니다. Uber Eats는 독일 기준 픽업 14%, Uber 배달원 배달 30%라고 밝히고 있습니다. Wolt는 자체 웹사이트에서 수수료를 부과한다고만 할 뿐 요율은 공개하지 않습니다. Lieferando의 요율은 확인하지 못했습니다. 이 수수료는 미리 주문하는 단골손님의 주문에도 똑같이 붙습니다."
+  },
+  "groups": {
+    "food_truck": "푸드트럭 주문 시스템",
+    "nearest_local": "주문 시스템",
+    "pos": "포스(POS)"
+  },
+  "faq": {
+    "title": "자주 묻는 질문",
+    "whatQ": "푸드트럭 주문 시스템이란 무엇인가요?",
+    "whatA": "주문 시스템은 손님이 푸드트럭에 오기 전에 온라인으로 주문을 받습니다. 손님은 메뉴와 픽업 시간을 고르고, 온라인으로 또는 픽업할 때 결제하며, 주문은 주방에 바로 표시됩니다. 포스(POS)나 카드 단말기는 푸드트럭 현장에서 결제를 받습니다. 둘은 서로 보완하는 관계입니다.",
+    "costQ": "{country} 기준 HatchGrab 요금은 얼마인가요?",
+    "costA": "{plans}. 온라인 카드 결제에는 Stripe 수수료도 붙습니다: 카드 결제 1건당 {cardFee}.",
+    "termQ": "최소 약정 기간이 있나요?",
+    "termA": "아니요. 최소 약정 기간도, 해지 예고 기간도 없습니다. 언제든 해지할 수 있으며, 요금은 매월 선불로 청구되고 결제한 달의 말일까지 계속 이용할 수 있습니다.",
+    "locationsQ": "영업 장소가 바뀌어도 쓸 수 있나요?",
+    "locationsA": "네. 장소와 시간이 담긴 주간 영업 일정을 설정하면, 손님은 푸드트럭이 있는 장소와 날짜에 맞춰 주문합니다.",
+    "capacityQ": "주방에 주문이 몰리지 않도록 어떻게 막아 주나요?",
+    "capacityA": "손님에게는 주방이 실제로 맞출 수 있는 픽업 시간만 보입니다. 시스템은 메뉴별 조리 시간과 한 번에 만들 수 있는 수량을 바탕으로 계산합니다.",
+    "tseQ": "세법 요건을 충족하는 포스(POS)가 여전히 필요한가요?",
+    "tseA": "HatchGrab은 포스(POS)가 아니며 세법상 인증 기능도 없습니다. 온라인 주문을 포스(POS)에 어떻게 기록할지는 세무사와 상담하세요.",
+    "paymentsQ": "HatchGrab은 어떤 결제 수단을 지원하나요?",
+    "paymentsA": "손님은 카드, Apple Pay, Google Pay로 온라인 결제하거나 푸드트럭에서 현장 결제할 수 있습니다. PayPal과 Klarna는 현재 지원하지 않습니다.",
+    "costTrial": "{months, plural, one {첫 달은} other {처음 #개월은}} 모든 기능을 무료로 이용할 수 있습니다."
+  },
+  "method": {
+    "title": "비교 방법",
+    "checked": "최종 확인일: {date}.",
+    "prices": "가격은 업체가 표시한 그대로이며, 부가세 포함입니다.",
+    "meaning": "“지원”은 업체가 해당 기능을 공개적으로 밝힌 경우입니다. “명시 안 됨”은 웹사이트에서 관련 내용을 찾지 못했다는 뜻이며, 기능이 없다는 뜻은 아닙니다.",
+    "vendor": "이 페이지는 HatchGrab이 운영하며, HatchGrab도 비교 대상 업체 중 하나입니다.",
+    "review": "가격과 기능은 각 제품의 웹사이트와 자동으로 대조해 확인하며, 모든 항목에 출처 링크가 있습니다.",
+    "corrections": "잘못된 내용을 발견하셨나요? <link>문의 양식</link>으로 알려 주세요.",
+    "reportError": "<link>오류 신고</link>",
+    "machine": "AI 어시스턴트와 개발자용: 이 표를 <md>Markdown으로</md> · <json>JSON으로</json>"
+  },
+  "cta": {
+    "title": "{months, plural, one {#개월} other {#개월}} 무료로 써 보세요",
+    "noCard": "신용카드 등록 필요 없음",
+    "cancel": "매월 해지 가능",
+    "button": "무료 체험 시작"
+  },
+  "admin": {
+    "status": "초안 · noindex · 사이트맵, llms.txt, hreflang 미포함 · 푸터 링크는 관리자에게만 표시",
+    "statusLive": "공개됨 · 누구나 볼 수 있고 색인 가능",
+    "viewAdmin": "관리자 보기",
+    "viewPublic": "일반 사용자 화면",
+    "pricingCheck": "“Pricing check” 열기",
+    "checklist": "공개 전 확인 사항",
+    "goLive": "이 페이지는 Admin › Countries에서 공개됩니다.",
+    "check": {
+      "apps": "{country} iPad·Android 플래그 켜짐",
+      "placeholders": "본문에 “[ … ]” 자리표시자 없음",
+      "vat": "부가세 문구 있음"
+    },
+    "unverified": "미검증 · 공개 화면에서 숨김",
+    "autoVerified": "자동 검증됨",
+    "unchecked": "표시된 모든 경쟁사에 대해 아직 확인되지 않음 · 공개 화면에서 숨김",
+    "label": "관리자",
+    "notShown": "페이지에 표시되지 않음(최대 4개까지 표시): {names}.",
+    "reasonHidden": "{name}(숨김)",
+    "reasonBeyond": "{name}(4개 초과)",
+    "reasonNoWebsite": "{name}(웹사이트 없음)",
+    "liveAuto": "자동 게시로 공개됨",
+    "adminsOnly": "관리자 전용 — {reason}",
+    "whyFewer": "자동 검사 통과 경쟁사: {n}/{total} (최소 2곳 필요)",
+    "whyAutoOff": "이 국가는 자동 게시가 꺼져 있음",
+    "shown": "{n, plural, one {경쟁사 #곳 표시} other {경쟁사 #곳 표시}}",
+    "details": "상세 정보"
+  },
+  "footer": {
+    "heading": "비교",
+    "link": "주문 시스템 비교"
+  },
+  "featureGroups": {
+    "ordering": "주문",
+    "payments": "결제",
+    "kitchen": "주방",
+    "marketing": "마케팅",
+    "apps_hardware": "앱 및 하드웨어",
+    "price_contract": "가격 및 약정"
+  },
+  "cell": {
+    "yes": "지원",
+    "no": "미지원",
+    "partial": "일부 지원",
+    "unknown": "명시 안 됨",
+    "not_mentioned": "웹사이트에 언급 없음",
+    "withNote": "{word}, {note}",
+    "soon": "출시 예정",
+    "fromPlan": "{plan} 요금제부터",
+    "perCardPayment": "카드 결제 1건당 {fee}",
+    "trial": "{months, plural, one {#개월} other {#개월}} 무료",
+    "setupFee": "{price}(1회)",
+    "perMonth": "월 {price}",
+    "notInCountry": "{country} 미출시",
+    "flagOff": "아직 비활성화, 스토어 등록 후 표시",
+    "notApplicable": "마켓플레이스에는 해당 없음",
+    "not_listed": "미기재",
+    "details": "상세 정보",
+    "doesntApply": "해당 없음",
+    "doesntSay": "언급 없음",
+    "none": "없음"
+  },
+  "explained": {
+    "title": "기능 설명"
+  },
+  "costBlock": {
+    "title": "푸드트럭 한 대가 매달 내는 비용",
+    "sizes": "월 온라인 매출",
+    "sizeSales": "월 {sales}",
+    "sizeOrders": "약 {orders}건",
+    "lead": "온라인 주문 매출이 월 {sales}(약 {orders}건)인 푸드트럭 기준입니다. 각 막대는 월 총비용으로, 주문 시스템 자체 요금과 해당 주문의 카드 수수료를 합한 금액입니다.",
+    "legendSoftware": "소프트웨어 요금",
+    "legendCard": "카드 수수료",
+    "software": "소프트웨어 요금 월 {amount}",
+    "card": "카드 수수료 월 {amount}",
+    "total": "카드 수수료 포함 월 {amount}",
+    "share": "매출의 {pct}",
+    "assumed": "(요율 미공개, 추정치)",
+    "customerFee": "그 외 손님 부담 월 {amount}(주문 1건당 {fee}) — 막대에는 미포함",
+    "summaryCheapest": "{us} 자체 요금은 월 {ours}, 표시된 경쟁사 중 가장 저렴한 곳은 월 {theirs} 수준입니다. 카드 수수료(월 {card})는 어떤 시스템을 쓰든 모든 카드 결제에 부과되므로, 실제로 차이가 나는 것은 소프트웨어 요금입니다.",
+    "summaryNotCheapest": "{us} 자체 요금은 월 {ours} 수준으로, 표시된 경쟁사 중 가장 저렴한 {rival} 제품(월 {theirs})보다 높습니다. 카드 수수료(월 {card})는 어떤 시스템을 쓰든 모든 카드 결제에 부과됩니다.",
+    "summaryAlone": "{us} 자체 요금은 월 {ours} 수준입니다. 카드 수수료(월 {card})는 어떤 시스템을 쓰든 모든 카드 결제에 부과됩니다.",
+    "footOrder": "평균 주문 금액 {order}: 일반적인 한 끼 {meal} × 주문당 메뉴 {multiplier}개({source}).",
+    "footCard": "카드 수수료는 카드 결제 1건당 {rate} 기준: {source}.",
+    "footCardSource": "{country} 기준 Stripe 요율",
+    "footAssumed": "{names} {count, plural, one {제품은} other {제품은}} 카드 요율을 공개하지 않아 HatchGrab 요율로 가정했습니다.",
+    "footChecked": "가격 확인일: {date}.",
+    "footCalculator": "계산기에서 직접 수치를 계산해 보세요.",
+    "noRivals": "{country} 기준으로 아직 검증된 경쟁사가 없어 비교할 대상이 없습니다."
+  },
+  "features": {
+    "preorder": {
+      "label": "픽업 시간을 고르는 미리 주문",
+      "explain": "손님이 미리 주문하고 픽업할 시간을 고릅니다."
+    },
+    "capacity": {
+      "label": "주방 처리 용량에 맞춘 픽업 시간 제한",
+      "explain": "손님에게는 주방이 실제로 맞출 수 있는 픽업 시간만 보입니다."
+    },
+    "asap": {
+      "label": "가능한 한 빨리 받는 주문",
+      "explain": "손님이 시간을 고르지 않고 주문하고, 준비되는 대로 픽업할 수 있습니다."
+    },
+    "ahead": {
+      "label": "다른 날짜·행사 미리 주문",
+      "explain": "손님이 오늘 주문하고 다른 날 열리는 시장이나 행사에서 받을 수 있습니다."
+    },
+    "schedule": {
+      "label": "영업 장소가 바뀌는 주간 영업 일정",
+      "explain": "푸드트럭의 한 주 장소와 시간. 손님은 푸드트럭이 있는 장소와 날짜에 맞춰 주문합니다."
+    },
+    "walkup": {
+      "label": "현장 주문과 온라인 주문을 한 화면에서",
+      "explain": "판매대에서 받은 주문도 온라인 주문과 같은 목록에 들어갑니다."
+    },
+    "stock": {
+      "label": "영업 일정별 품절·재고 한도",
+      "explain": "메뉴를 품절로 표시하고, 영업 일정마다 메뉴별 판매 수량을 정합니다."
+    },
+    "notify": {
+      "label": "주문 준비 완료 알림",
+      "explain": "손님이 주문 준비 완료 소식을 받는 방법: 문자(SMS), WhatsApp, 이메일, 푸시 알림 또는 실시간 주문 현황 페이지.",
+      "ours": "준비 완료 단계를 켜면 이메일, 그리고 주문 현황 페이지. SMS, WhatsApp, 푸시 알림은 없음"
+    },
+    "allergens": {
+      "label": "메뉴 알레르기 유발물질 표시",
+      "explain": "각 메뉴의 알레르기 유발물질을 주문 전에 손님에게 보여 줍니다."
+    },
+    "menuphoto": {
+      "label": "사진으로 메뉴 등록",
+      "explain": "메뉴 사진이나 PDF로 메뉴가 자동 입력되고, 사장님은 확인만 하면 됩니다."
+    },
+    "options": {
+      "label": "메뉴 옵션과 추가 선택",
+      "explain": "사이즈, 소스, 토핑 추가 등. 손님이 반드시 골라야 하는 선택 항목도 포함됩니다."
+    },
+    "deals": {
+      "label": "세트 메뉴와 묶음 상품",
+      "explain": "여러 품목을 한 가격에 함께 판매합니다."
+    },
+    "private": {
+      "label": "단독 행사와 섭외 예약",
+      "explain": "단독 행사 전용 링크로 받는 주문과 푸드트럭 섭외 요청.",
+      "ours": "전용 주문 링크가 있는 단독 행사; 섭외 요청은 없음"
+    },
+    "qr": {
+      "label": "테이블 / QR 주문",
+      "explain": "손님이 테이블의 코드를 스캔하면 테이블 번호와 함께 주문이 들어옵니다.",
+      "ours": "QR 코드로 주문 페이지 열기; 테이블 번호 없음"
+    },
+    "cards": {
+      "label": "온라인 카드 결제(Apple Pay·Google Pay 포함)",
+      "explain": "손님이 주문할 때 카드, Apple Pay, Google Pay로 온라인 결제합니다."
+    },
+    "payattruck": {
+      "label": "현장 결제",
+      "explain": "손님이 온라인으로 주문하고 픽업할 때 결제합니다."
+    },
+    "localpay": {
+      "label": "현지 결제 수단(BLIK, iDEAL, Swish, MobilePay…)",
+      "explain": "카드 외에 각 나라의 온라인 결제 수단.",
+      "ours": "카드만"
+    },
+    "paypal": {
+      "label": "PayPal 또는 Klarna",
+      "explain": "손님이 PayPal이나 Klarna로 결제할 수 있습니다."
+    },
+    "custfee": {
+      "label": "주문 수수료 손님 부담 옵션",
+      "explain": "사업자가 서비스 수수료를 손님에게 넘길 수 있습니다."
+    },
+    "tips": {
+      "label": "팁",
+      "explain": "손님이 온라인 결제 시 팁을 추가할 수 있습니다."
+    },
+    "paymethods": {
+      "label": "제공 결제 수단",
+      "explain": "업체가 밝힌 손님 결제 방법.",
+      "ours": "카드, Apple Pay, Google Pay; 현장 결제"
+    },
+    "kds": {
+      "label": "주방 디스플레이(KDS)",
+      "explain": "주문이 주방 화면에 조리 순서대로 표시됩니다."
+    },
+    "tickets": {
+      "label": "주방 주문서 출력",
+      "explain": "주문마다 푸드트럭 안의 영수증 프린터로 출력됩니다.",
+      "ours": "iPad·Android 앱에서 지원; 프린터는 미제공"
+    },
+    "buzzers": {
+      "label": "진동벨",
+      "explain": "손님이 주문 준비 완료를 알려 주는 진동벨을 받습니다.",
+      "ours": "주문마다 진동벨 번호 기록; 진동벨은 미제공"
+    },
+    "offline": {
+      "label": "인터넷이 끊겨도 계속 작동",
+      "explain": "연결 없이 처리한 주문과 변경 사항을 저장했다가 연결되면 전송합니다.",
+      "ours": "iPad·Android 앱에서 지원; 웹 대시보드는 미지원"
+    },
+    "vans": {
+      "label": "여러 대의 차량·푸드트럭",
+      "explain": "한 계정으로 푸드트럭 여러 대를 운영합니다.",
+      "ours": "차량 추가 시 월 요금 추가"
+    },
+    "staff": {
+      "label": "직원 로그인",
+      "explain": "직원이 각자의 계정과 역할로 로그인합니다."
+    },
+    "reports": {
+      "label": "매출 보고서",
+      "explain": "합계, 인기 메뉴, 영업 일정·날짜별 매출, 스프레드시트 내보내기."
+    },
+    "domain": {
+      "label": "자체 웹 주소",
+      "explain": "사업자 자체 도메인에서 여는 주문 페이지."
+    },
+    "whatsapp": {
+      "label": "WhatsApp 자동 응답",
+      "explain": "손님의 WhatsApp 메시지에 자동으로 답합니다."
+    },
+    "social": {
+      "label": "영업 일정으로 SNS 게시물 만들기",
+      "explain": "이번 주 푸드트럭 위치를 보여 주는, 바로 올릴 수 있는 게시물."
+    },
+    "igmsg": {
+      "label": "Instagram·Messenger 자동 응답",
+      "explain": "Instagram과 Facebook Messenger 메시지에 자동으로 답합니다."
+    },
+    "discovery": {
+      "label": "푸드트럭 탐색 지도 등록",
+      "explain": "손님이 주변 푸드트럭을 보여 주는 공개 지도에서 푸드트럭을 찾습니다.",
+      "ours": "Village Foodie"
+    },
+    "loyalty": {
+      "label": "적립·리워드",
+      "explain": "손님이 다시 방문하면 리워드를 적립합니다."
+    },
+    "ipad": {
+      "label": "iPad 앱",
+      "explain": "iPad에서 주문을 받고 관리하는 푸드트럭용 앱."
+    },
+    "android": {
+      "label": "Android 앱",
+      "explain": "같은 앱을 Android 태블릿이나 휴대폰에서."
+    },
+    "hardware": {
+      "label": "하드웨어 제공(태블릿, 프린터)",
+      "explain": "업체가 태블릿이나 프린터를 제공합니다.",
+      "ours": "보유 기기 사용"
+    },
+    "terminal": {
+      "label": "판매대용 카드 단말기 제공",
+      "explain": "업체가 푸드트럭 현장 결제용 카드 단말기를 제공합니다."
+    },
+    "fiscal": {
+      "label": "세법 요건 인증 포스(POS) — TSE, EET, kassaregister…",
+      "explain": "매출 기록에 관한 각 나라의 규정에 맞춰 인증된 포스(POS)."
+    },
+    "delivery": {
+      "label": "배달",
+      "explain": "손님 주소로 주문을 배달합니다.",
+      "ours": "픽업만 가능"
+    },
+    "monthly": {
+      "label": "월 요금",
+      "explain": "사업자가 소프트웨어에 매달 내는 금액."
+    },
+    "perorder": {
+      "label": "온라인 주문 건당 수수료",
+      "explain": "월 요금 외에 업체가 온라인 주문마다 부과하는 수수료."
+    },
+    "cardfee": {
+      "label": "카드 수수료",
+      "explain": "결제 대행사가 카드 결제마다 부과하는 수수료."
+    },
+    "term": {
+      "label": "최소 약정 기간",
+      "explain": "해지하기 전까지 묶여 있어야 하는 기간."
+    },
+    "setup": {
+      "label": "초기 설정비",
+      "explain": "시작할 때 한 번 내는 비용."
+    },
+    "trial": {
+      "label": "무료 체험",
+      "explain": "결제 전에 시스템을 무료로 써 볼 수 있는 기간."
+    }
+  }
+}

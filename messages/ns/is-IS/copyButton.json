@@ -1,0 +1,10 @@
+{
+  "copy": "Afrita",
+  "copied": "Afritað ✓",
+  "failed": "Afritun mistókst",
+  "aria": "{label} {thing}",
+  "announceCopied": "Afritað: {thing}",
+  "announceCopiedValue": "Gildið var afritað",
+  "announceFailed": "Ekki tókst að afrita: {thing}. Veldu textann og afritaðu hann handvirkt.",
+  "announceFailedValue": "Ekki tókst að afrita gildið. Veldu textann og afritaðu hann handvirkt."
+}

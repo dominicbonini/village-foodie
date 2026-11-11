@@ -1,0 +1,115 @@
+{
+  "$comment": "languages-world-1 (10 November 2026): the WhatsApp allergen guard’s trigger words for ICELANDIC (is-IS): ofnæm (ofnæmi, hnetuofnæmi, bráðaofnæmi), óþol (mjólkuróþol, glútenóþol), viðkvæm, selíak, the -laus and -frí free-from forms (glútenlaus/-t/-a, mjólkurlaus, laktósafrí…), án <allergen>, inniheldur ekki / engar, gæti / getur innihaldið, öruggt / örugg fyrir, hentar fyrir, snefil, krossmengun — inflected stems. Accents fold away; þ, ð and æ are kept by the normaliser, so the main words are listed in the spellings typed without them too (ofnaem, othol, innihaldid). Bare án and frí are NOT tokens (\"an\" in English, frí = day off), nor bare örugg (inside örugglega). OPTION B, as every other language: absence / safety words only, NOT the bare allergen names (a presence question may reach the AI, which answers only from the tags and gets the caveat). Matched with the Unicode normaliser. caveatWords: a tagged label of the codex allergen set (stored in English, lower case) → the words a reply may use for it (matched on the raw lower-cased reply, so written as the AI writes them). The country has no allergen set of its own yet, so caveatWords are for 'codex' (as MX, SG, HK, MY, TH and AE).",
+  "language": "is",
+  "normalise": "unicode",
+  "stems": [
+    "ofnæm",
+    "ofnaem",
+    "óþol",
+    "othol",
+    "viðkvæm",
+    "vidkvaem",
+    "selíak",
+    "anafyla",
+    "epipen",
+    "epi pen",
+    "adrenalín",
+    "gluten free",
+    "glútenlaus",
+    "glútenfrí",
+    "mjólkurlaus",
+    "mjólkurfrí",
+    "laktósalaus",
+    "laktósafrí",
+    "eggjalaus",
+    "hnetulaus",
+    "hnetufrí",
+    "sojalaus",
+    "fisklaus",
+    "sesamlaus",
+    "án glútens",
+    "án glúten",
+    "án mjólkur",
+    "án mjólkurvara",
+    "án laktósa",
+    "án eggja",
+    "án hneta",
+    "án hnetna",
+    "án jarðhneta",
+    "án jardhneta",
+    "án soja",
+    "án fisks",
+    "án skelfisks",
+    "án sesam",
+    "inniheldur ekki",
+    "inniheldur engar",
+    "inniheldur engin",
+    "inniheldur ekkert",
+    "gæti innihaldið",
+    "gaeti innihaldid",
+    "getur innihaldið",
+    "getur innihaldid",
+    "öruggt fyrir",
+    "örugg fyrir",
+    "öruggur fyrir",
+    "öruggt handa",
+    "hentar fyrir",
+    "hentugt fyrir",
+    "hentar þeim sem",
+    "snefil",
+    "krossmeng"
+  ],
+  "tokens": [],
+  "caveatWords": {
+    "codex": {
+      "gluten": [
+        "glúten",
+        "hveiti",
+        "bygg",
+        "rúg",
+        "hafra"
+      ],
+      "crustaceans": [
+        "krabbadýr",
+        "rækj",
+        "humar",
+        "krabb",
+        "skelfisk"
+      ],
+      "eggs": [
+        "egg",
+        "majónes"
+      ],
+      "fish": [
+        "fisk"
+      ],
+      "peanuts": [
+        "jarðhnet"
+      ],
+      "soy": [
+        "soja",
+        "soya",
+        "tófú"
+      ],
+      "milk": [
+        "mjólk",
+        "laktós",
+        "ostur",
+        "osti",
+        "osta",
+        "smjör",
+        "rjóm"
+      ],
+      "tree nuts": [
+        "hnet",
+        "möndl",
+        "kasjú",
+        "pistasí"
+      ],
+      "sulphites": [
+        "súlfít",
+        "brennisteinsdíoxíð"
+      ]
+    }
+  }
+}

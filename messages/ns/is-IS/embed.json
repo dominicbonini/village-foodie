@@ -1,0 +1,8 @@
+{
+  "metaDescription": "{truck}: hvar vagninn verður næst.",
+  "orderFrom": "{truck} — panta",
+  "poweredBy": "Knúið af <b>HatchGrab</b>",
+  "loadFailed": "Ekki tókst að hlaða dagskránni í augnablikinu.",
+  "loading": "Hleð dagskrá…",
+  "empty": "{truck}: engir væntanlegir viðburðir skráðir."
+}

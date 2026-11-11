@@ -1,0 +1,400 @@
+{
+  "path": {
+    "section": "karsilastirma",
+    "slug": "food-truck-siparis-sistemi"
+  },
+  "meta": {
+    "title": "Food truck sipariş sistemleri 2026: özellikler ve fiyatlar",
+    "description": "Food truck sipariş sistemleri: teslim alma saatli ön sipariş, mutfak kapasitesi, haftalık program, ücret ve sözleşme süresi — firma sitelerinden.",
+    "about": "Food truck’lar için online sipariş sistemleri"
+  },
+  "breadcrumb": {
+    "home": "HatchGrab",
+    "here": "Karşılaştırma",
+    "label": "Sayfa yolu"
+  },
+  "h1": "Food truck sipariş sistemleri karşılaştırması 2026",
+  "byline": "Son kontrol: {date} · HatchGrab tarafından hazırlandı. Karşılaştırılan firmalardan biri de biziz (bkz. <link>Nasıl karşılaştırdık</link>).",
+  "table": {
+    "title": "Karşılaştırılan sipariş sistemleri",
+    "caption": "Food truck’lar için online sipariş sistemlerinin özellikleri ve maliyetleri — {country}, {date} itibarıyla",
+    "note": "“Evet” yalnızca firma bunu herkese açık olarak belirtiyorsa yazılır.",
+    "feature": "Özellik",
+    "yes": "Evet",
+    "no": "Hayır",
+    "unknown": "Belirtilmemiş",
+    "fromPlan": "{plan} ve üzeri",
+    "appNotInCountry": "{country} pazarında yok",
+    "appFlagOff": "Evet – bayrak henüz kapalı, mağazalarda listelendiğinde gösterilecek",
+    "range": "{from} ile {to} arası",
+    "feePlan": "{fee} ({plans})",
+    "noFee": "yok",
+    "morePending": "Diğer firmalar, bilgilerini kendi web sitelerinde kontrol ettikten sonra burada yer alacak.",
+    "priceHidden": "Talep üzerine",
+    "feeAfter": "Ayda {included} tutarının üzerinde {fee}",
+    "legend": "✓ Evet · ◐ Kısmen · ✗ Hayır · Listelenmemiş: özellik veya fiyat sayfalarında yok · —: web sitelerinde belirtilmiyor · Geçerli değil: bu tür hizmette bu özellik bulunmaz · ⓘ: not, alıntı ve kaynak",
+    "swipe": "Tüm ürünleri görmek için yana kaydırın →"
+  },
+  "costs": {
+    "title": "Food truck sipariş sistemi ne kadar tutar?",
+    "ourPlan": "{plan}: ayda {price}, {fee}",
+    "feeOnly": "online kartlı sipariş başına {fee}",
+    "feeIncluded": "ayda {included} tutarına kadar online sipariş dahil, sonrasında {fee}",
+    "feeNone": "online siparişlerde HatchGrab ücreti yok",
+    "rivalPlan": "{plan}: {price}",
+    "perMonth": "Ayda {price}",
+    "perMonthYearly": "Ayda {price}, yıllık faturalandırılır",
+    "vatExcl": "KDV hariç",
+    "vatIncl": "KDV dahil",
+    "setup": "{price} tek seferlik kurulum",
+    "truckFee": "Sipariş başına {fee}",
+    "customerFee": "Sipariş başına {fee}, müşteri öder",
+    "source": "Kaynak",
+    "checked": "kontrol tarihi: {date}",
+    "cardFee": "HatchGrab ile online kartlı ödemelerde Stripe ücretleri de uygulanır: {country} için kartlı ödeme başına {cardFee}.",
+    "vat": "HatchGrab Ltd bir Birleşik Krallık şirketidir ve {country} için KDV kaydı bulunmamaktadır; bu nedenle ücretlerimize KDV eklenmez. KDV mükellefiyseniz bize vergi numaranızı verin; ücretlerimiz üzerindeki KDV’yi sorumlu sıfatıyla kendiniz beyan edersiniz.",
+    "bundledFee": "Online ödeme başına {fee}, kart ücreti dahil"
+  },
+  "fit": {
+    "title": "Hangi sistem kime uygun?",
+    "ours": "HatchGrab size uygun, eğer …",
+    "oursBody": "değişen konumlarda satış yapıyorsanız, teslim alma saatli ön sipariş istiyorsanız, mutfağınızın aşırı yüklenmesini istemiyorsanız ve sözleşmeye bağlanmak istemiyorsanız.",
+    "oursNot": "HatchGrab size uygun değil, eğer …",
+    "oursNotBody": "müşterilerinizin PayPal veya Klarna ile ödeyebilmesi gerekiyorsa ya da her şeyi tek bir tedarikçiden, mevzuata uygun onaylı bir yazarkasayla birlikte istiyorsanız.",
+    "appClause": "Ya da {country} pazarında mutfak uygulamasına iPad veya Android’de ihtiyacınız varsa: orada henüz mağazalarda yok.",
+    "tills": "Adisyon sistemleri ve POS cihazları",
+    "marketplaces": "Yemek teslimat platformları",
+    "rival": "{name} uygun, eğer …",
+    "tillsBody": "Adisyon sistemleri ödemeyi food truck’ta alır ve satış kaydına ilişkin yasal gereklilikleri karşılar. Sipariş sistemi bir adisyon sisteminin yanında çalışır; onun yerini almaz.",
+    "tillsBodyNamed": "Adisyon sistemleri ödemeyi food truck’ta alır ve satış kaydına ilişkin yasal gereklilikleri karşılar. Yukarıdaki tabloda {count, plural, one {şu sistem} other {şu sistemler}} de yer alıyor: {names}. Sipariş sistemi bir adisyon sisteminin yanında çalışır; onun yerini almaz.",
+    "marketplacesBody": "Yemek teslimat platformları yeni müşteri getirir ama her siparişten komisyon alır. Uber Eats, Almanya’da gel al siparişleri için %14, Uber kuryeleriyle teslimat için %30 komisyon belirtiyor. Wolt kendi web sitesinde komisyon aldığını söylüyor ama oran vermiyor. Lieferando’nun oranlarını kontrol edemedik. Bu komisyon, sizden ön sipariş veren düzenli müşterileriniz için de geçerlidir."
+  },
+  "groups": {
+    "food_truck": "Food truck sipariş sistemi",
+    "nearest_local": "Sipariş sistemi",
+    "pos": "Adisyon sistemi"
+  },
+  "faq": {
+    "title": "Sık sorulan sorular",
+    "whatQ": "Food truck sipariş sistemi nedir?",
+    "whatA": "Sipariş sistemi, müşteriler food truck’a gelmeden önce online sipariş alır: müşteriler ürünleri ve teslim alma saatini seçer, online ya da teslim alırken öder ve sipariş mutfağınızda görünür. Adisyon sistemi veya POS cihazı ise ödemeyi food truck’ta alır. İkisi birbirini tamamlar.",
+    "costQ": "{country} pazarında HatchGrab ne kadar tutar?",
+    "costA": "{plans}. Online kartlı ödemelerde Stripe ücretleri de uygulanır: kartlı ödeme başına {cardFee}.",
+    "termQ": "Asgari sözleşme süresi var mı?",
+    "termA": "Hayır. Asgari süre ve fesih bildirim süresi yoktur. İstediğiniz zaman iptal edebilirsiniz; ücret her ay peşin faturalandırılır ve ödediğiniz ayın sonuna kadar erişiminiz devam eder.",
+    "locationsQ": "Değişen konumlarla çalışır mı?",
+    "locationsA": "Evet. Haftalık programınızı yerler ve saatlerle oluşturursunuz; müşteriler de bulunduğunuz yer ve gün için sipariş verir.",
+    "capacityQ": "Sistem mutfağımın aşırı yüklenmesini nasıl önlüyor?",
+    "capacityA": "Müşteriler yalnızca mutfağınızın gerçekten yetiştirebileceği teslim alma saatlerini görür. Sistem, her ürünün hazırlanma süresine ve aynı anda kaç tane hazırladığınıza göre çalışır.",
+    "tseQ": "Yine de onaylı bir yazarkasaya ihtiyacım var mı?",
+    "tseA": "HatchGrab bir yazarkasa değildir ve mali mevzuat kapsamında onaylı değildir. Online siparişleri yazarkasanıza nasıl kaydedeceğinizi mali müşavirinize danışın.",
+    "paymentsQ": "HatchGrab hangi ödeme yöntemlerini destekliyor?",
+    "paymentsA": "Müşteriler online olarak kartla, Apple Pay veya Google Pay ile öder ya da teslim alırken öder. PayPal ve Klarna şu anda desteklenmiyor.",
+    "costTrial": "{months, plural, one {İlk ay} other {İlk # ay}} tüm özellikleriyle ücretsiz."
+  },
+  "method": {
+    "title": "Nasıl karşılaştırdık",
+    "checked": "Son kontrol: {date}.",
+    "prices": "Fiyatlar, firmanın belirttiği şekilde, KDV dahil gösterilir.",
+    "meaning": "“Evet”, firmanın bu özelliği herkese açık olarak belirttiği anlamına gelir. “Belirtilmemiş”, web sitesinde bununla ilgili bir şey bulamadığımız anlamına gelir — özelliğin olmadığı anlamına gelmez.",
+    "vendor": "Bu sayfayı HatchGrab yayınlar ve HatchGrab, karşılaştırılan firmalardan biridir.",
+    "review": "Fiyatlar ve özellikler, her ürünün kendi web sitesine göre otomatik olarak kontrol edilir; her bilgi kaynağına bağlantı verir.",
+    "corrections": "Bir hata mı buldunuz? <link>İletişim formumuz</link> üzerinden bize bildirin.",
+    "reportError": "<link>Hata bildirin</link>",
+    "machine": "Yapay zekâ asistanları ve geliştiriciler için: bu tablo <md>Markdown olarak</md> · <json>JSON olarak</json>"
+  },
+  "cta": {
+    "title": "{months, plural, one {# ay} other {# ay}} ücretsiz deneyin",
+    "noCard": "Kredi kartı gerekmez",
+    "cancel": "Her ay iptal edebilirsiniz",
+    "button": "Ücretsiz deneyin"
+  },
+  "admin": {
+    "status": "Taslak · noindex · site haritasında, llms.txt’de ve hreflang’de yok · altbilgi bağlantısı yalnızca yöneticilere",
+    "statusLive": "Yayında · herkese açık ve dizine eklenebilir",
+    "viewAdmin": "Yönetici görünümü",
+    "viewPublic": "Ziyaretçilerin gördüğü",
+    "pricingCheck": "Fiyat kontrolünü açın",
+    "checklist": "Yayına almadan önce",
+    "goLive": "Sayfa “Admin › Countries” bölümünden yayına alınır.",
+    "check": {
+      "apps": "iPad ve Android bayrakları açık: {country}",
+      "placeholders": "Metinde “[ … ]” yer tutucusu kalmadı",
+      "vat": "KDV ifadesi mevcut"
+    },
+    "unverified": "doğrulanmadı · ziyaretçilerden gizli",
+    "autoVerified": "otomatik doğrulandı",
+    "unchecked": "gösterilen tüm rakipler için henüz kontrol edilmedi · ziyaretçilerden gizli",
+    "label": "Yönetici",
+    "notShown": "Sayfada yok (en fazla dört tane gösterilir): {names}.",
+    "reasonHidden": "{name} (gizli)",
+    "reasonBeyond": "{name} (ilk dördün dışında)",
+    "reasonNoWebsite": "{name} (web sitesi yok)",
+    "liveAuto": "Otomatik yayınla yayında",
+    "adminsOnly": "Yalnızca yöneticiler — {reason}",
+    "whyFewer": "Otomatik kontrolleri geçen rakip: {n} / {total}; 2 gerekli",
+    "whyAutoOff": "bu ülke için otomatik yayın kapalı",
+    "shown": "{n, plural, one {# rakip gösteriliyor} other {# rakip gösteriliyor}}",
+    "details": "Ayrıntılar"
+  },
+  "footer": {
+    "heading": "Karşılaştırma",
+    "link": "Sipariş sistemi karşılaştırması"
+  },
+  "featureGroups": {
+    "ordering": "Sipariş",
+    "payments": "Ödemeler",
+    "kitchen": "Mutfak",
+    "marketing": "Pazarlama",
+    "apps_hardware": "Uygulamalar ve donanım",
+    "price_contract": "Fiyat ve sözleşme"
+  },
+  "cell": {
+    "yes": "Evet",
+    "no": "Hayır",
+    "partial": "Kısmen",
+    "unknown": "Belirtilmemiş",
+    "not_mentioned": "Web sitesinde belirtilmemiş",
+    "withNote": "{word}, {note}",
+    "soon": "yakında",
+    "fromPlan": "{plan} ve üzeri",
+    "perCardPayment": "Kartlı ödeme başına {fee}",
+    "trial": "{months, plural, one {# ay} other {# ay}} ücretsiz",
+    "setupFee": "{price} tek seferlik",
+    "perMonth": "Ayda {price}",
+    "notInCountry": "{country} pazarında yok",
+    "flagOff": "bayrak henüz kapalı; mağazalarda listelendiğinde gösterilecek",
+    "notApplicable": "pazaryeri için geçerli değil",
+    "not_listed": "Listelenmemiş",
+    "details": "Ayrıntılar",
+    "doesntApply": "Geçerli değil",
+    "doesntSay": "Belirtilmiyor",
+    "none": "Yok"
+  },
+  "explained": {
+    "title": "Özelliklerin anlamı"
+  },
+  "costBlock": {
+    "title": "Bir food truck’ın aylık ödediği tutar",
+    "sizes": "Aylık online satış",
+    "sizeSales": "Ayda {sales}",
+    "sizeOrders": "yaklaşık {orders} sipariş",
+    "lead": "Ayda {sales} tutarında online sipariş alan bir food truck için (yaklaşık {orders} sipariş). Her çubuk toplam aylık maliyeti gösterir: sipariş sisteminin kendi ücreti artı bu siparişlerdeki kart ücretleri.",
+    "legendSoftware": "Yazılım ücreti",
+    "legendCard": "Kart ücretleri",
+    "software": "Yazılım ücreti: ayda {amount}",
+    "card": "Kart ücretleri: ayda {amount}",
+    "total": "Kart ücretleri dahil ayda {amount}",
+    "share": "Satış payı: {pct}",
+    "assumed": "(oran yayımlanmamış, varsayılmıştır)",
+    "customerFee": "Artı müşterilerin ödediği ayda {amount} (sipariş başına {fee}) — çubuğa dahil değil",
+    "summaryCheapest": "{us} kendi ücreti olarak ayda {ours} alır; gösterilen en ucuz rakipte bu tutar ayda {theirs}. Kart ücretleri (ayda {card}) hangi sistemi kullanırsanız kullanın her kartlı ödemede alınır; bu yüzden asıl önemli olan fark yazılım ücretidir.",
+    "summaryNotCheapest": "{us} kendi ücreti olarak ayda {ours} alır; bu, gösterilen en ucuz rakip olan {rival} firmasının aylık {theirs} tutarından fazladır. Kart ücretleri (ayda {card}) hangi sistemi kullanırsanız kullanın her kartlı ödemede alınır.",
+    "summaryAlone": "{us} kendi ücreti olarak ayda {ours} alır. Kart ücretleri (ayda {card}) hangi sistemi kullanırsanız kullanın her kartlı ödemede alınır.",
+    "footOrder": "Ortalama sipariş {order}: tipik ürün fiyatı {meal} × sipariş başına {multiplier} ürün ({source}).",
+    "footCard": "Kart ücretlerinde kartlı ödeme başına {rate} kullanılmıştır: {source}.",
+    "footCardSource": "Stripe oranı ({country})",
+    "footAssumed": "Şu {count, plural, one {firma} other {firmalar}} kart oranı yayımlamıyor: {names}; bu yüzden bizim oranımız varsayılmıştır.",
+    "footChecked": "Fiyatların kontrol tarihi: {date}.",
+    "footCalculator": "Kendi rakamlarınızı hesaplayıcıda hesaplayın.",
+    "noRivals": "{country} pazarında henüz doğrulanmış bir rakip yok; bu yüzden karşılaştırılacak bir şey yok."
+  },
+  "features": {
+    "preorder": {
+      "label": "Seçilen teslim alma saatiyle ön sipariş",
+      "explain": "Müşteriler önceden sipariş verir ve teslim alacakları saati seçer."
+    },
+    "capacity": {
+      "label": "Mutfak kapasitesine göre sınırlı teslim alma saatleri",
+      "explain": "Müşteriler yalnızca mutfağın gerçekten yetiştirebileceği teslim alma saatlerini görür."
+    },
+    "asap": {
+      "label": "En kısa sürede hazırlanacak siparişler",
+      "explain": "Müşteriler saat seçmeden sipariş verip hazır olur olmaz teslim alabilir."
+    },
+    "ahead": {
+      "label": "Sonraki bir gün veya etkinlik için önceden sipariş",
+      "explain": "Müşteriler sonraki bir gündeki pazar veya etkinlik için bugünden sipariş verebilir."
+    },
+    "schedule": {
+      "label": "Değişen konumlarla haftalık program",
+      "explain": "Food truck’ın haftalık yer ve saatleri; müşteriler food truck’ın orada olduğu yer ve gün için sipariş verir."
+    },
+    "walkup": {
+      "label": "Online siparişlerle aynı ekranda yerinde siparişler",
+      "explain": "Tezgâhta alınan siparişler online siparişlerle aynı listeye düşer."
+    },
+    "stock": {
+      "label": "Etkinlik bazında tükendi ve stok sınırları",
+      "explain": "Ürünleri tükendi olarak işaretleyin ve bir etkinlikte her birinden kaç tane satılabileceğini belirleyin."
+    },
+    "notify": {
+      "label": "Sipariş hazır olduğunda müşteriye bildirim",
+      "explain": "Müşterilerin siparişlerinin hazır olduğunu nasıl öğrendiği: SMS, WhatsApp, e-posta, anlık bildirim veya canlı sipariş durumu sayfası.",
+      "ours": "sipariş hazır adımı açıkken e-posta ve sipariş durumu sayfası; SMS, WhatsApp veya anlık bildirim yok"
+    },
+    "allergens": {
+      "label": "Menüde alerjenler",
+      "explain": "Her ürün, müşteriler sipariş vermeden önce alerjenlerini gösterir."
+    },
+    "menuphoto": {
+      "label": "Fotoğraftan menü oluşturma",
+      "explain": "Menünün bir fotoğrafı veya PDF’i, kontrol etmeniz için ürünleri doldurur."
+    },
+    "options": {
+      "label": "Ürünlerde seçenekler ve ekstralar",
+      "explain": "Boyutlar, soslar ve ekstralar; müşterinin yapması gereken seçimler dahil."
+    },
+    "deals": {
+      "label": "Kampanyalar ve set menüler",
+      "explain": "Tek fiyata birlikte satılan birden fazla ürün."
+    },
+    "private": {
+      "label": "Özel etkinlikler ve rezervasyonlar",
+      "explain": "Kendi bağlantısı üzerinden özel etkinlik siparişleri ve food truck kiralama talepleri.",
+      "ours": "kendi sipariş bağlantısı olan özel etkinlikler; rezervasyon talebi yok"
+    },
+    "qr": {
+      "label": "Masada QR kodla sipariş",
+      "explain": "Müşteriler masalarındaki kodu okutur ve sipariş masa numarasıyla gelir.",
+      "ours": "QR kod sipariş sayfasını açar; masa numarası yok"
+    },
+    "cards": {
+      "label": "Apple Pay ve Google Pay dahil online kartlı ödeme",
+      "explain": "Müşteriler sipariş verirken online olarak kartla, Apple Pay veya Google Pay ile öder."
+    },
+    "payattruck": {
+      "label": "Teslim alırken ödeme",
+      "explain": "Müşteriler online sipariş verir ve teslim alırken öder."
+    },
+    "localpay": {
+      "label": "Yerel ödeme yöntemleri (BLIK, iDEAL, Swish, MobilePay…)",
+      "explain": "Kartların yanı sıra ülkeye özgü online ödeme yöntemleri.",
+      "ours": "yalnızca kart"
+    },
+    "paypal": {
+      "label": "PayPal veya Klarna",
+      "explain": "Müşteriler PayPal veya Klarna ile ödeyebilir."
+    },
+    "custfee": {
+      "label": "Sipariş ücretini müşterinin ödemesi seçeneği",
+      "explain": "İşletme, hizmet bedelini müşteriye yansıtabilir."
+    },
+    "tips": {
+      "label": "Bahşiş",
+      "explain": "Müşteriler online öderken bahşiş ekleyebilir."
+    },
+    "paymethods": {
+      "label": "Sunulan ödeme yöntemleri",
+      "explain": "Müşterilerin nasıl ödeyebileceği, firmanın belirttiği şekliyle.",
+      "ours": "kart, Apple Pay, Google Pay; teslim alırken ödeme"
+    },
+    "kds": {
+      "label": "Mutfak ekranı (KDS)",
+      "explain": "Siparişler mutfaktaki bir ekranda, hazırlanma sırasına göre görünür."
+    },
+    "tickets": {
+      "label": "Basılı mutfak fişleri",
+      "explain": "Her sipariş food truck’taki fiş yazıcısından çıkar.",
+      "ours": "iPad ve Android uygulamasında; yazıcı sağlanmaz"
+    },
+    "buzzers": {
+      "label": "Çağrı cihazları",
+      "explain": "Müşterilere siparişlerinin hazır olduğunu bildiren bir çağrı cihazı verilir.",
+      "ours": "çağrı cihazı numaraları her siparişle kaydedilir; çağrı cihazı sağlanmaz"
+    },
+    "offline": {
+      "label": "İnternet kesildiğinde çalışmaya devam eder",
+      "explain": "Bağlantı yokken yapılan siparişler ve değişiklikler saklanır, bağlantı gelince gönderilir.",
+      "ours": "iPad ve Android uygulamasında; web panelinde değil"
+    },
+    "vans": {
+      "label": "Birden fazla araç veya food truck",
+      "explain": "Tek hesapla birden fazla food truck yönetilir.",
+      "ours": "ek aylık ücretle ek araç"
+    },
+    "staff": {
+      "label": "Personel girişleri",
+      "explain": "Personel kendi hesabı ve rolüyle giriş yapar."
+    },
+    "reports": {
+      "label": "Satış raporları",
+      "explain": "Toplamlar, en çok satanlar ve etkinliğe veya tarihe göre satışlar; tablo olarak dışa aktarma ile."
+    },
+    "domain": {
+      "label": "Kendi web adresiniz",
+      "explain": "Sipariş sayfası işletmenin kendi alan adında."
+    },
+    "whatsapp": {
+      "label": "WhatsApp otomatik yanıtlar",
+      "explain": "Müşterilerin WhatsApp mesajları otomatik olarak yanıtlanır."
+    },
+    "social": {
+      "label": "Programınızdan sosyal medya paylaşımları",
+      "explain": "Food truck’ın bu hafta nerede olduğunu gösteren hazır paylaşımlar."
+    },
+    "igmsg": {
+      "label": "Instagram ve Messenger yanıtları",
+      "explain": "Instagram ve Facebook Messenger mesajları otomatik olarak yanıtlanır."
+    },
+    "discovery": {
+      "label": "Food truck keşif haritasında yer alma",
+      "explain": "Müşteriler food truck’ı, yakınlarındaki food truck’ları gösteren herkese açık bir haritada bulur.",
+      "ours": "Village Foodie"
+    },
+    "loyalty": {
+      "label": "Sadakat programı",
+      "explain": "Müşteriler tekrar geldikçe ödül kazanır."
+    },
+    "ipad": {
+      "label": "iPad uygulaması",
+      "explain": "iPad’de sipariş almak ve yönetmek için food truck uygulaması."
+    },
+    "android": {
+      "label": "Android uygulaması",
+      "explain": "Aynı uygulama, Android tablet veya telefonda."
+    },
+    "hardware": {
+      "label": "Donanım sağlanır (tablet, yazıcı)",
+      "explain": "Firma tableti veya yazıcıyı sağlar.",
+      "ours": "kendi cihazınızı kullanın"
+    },
+    "terminal": {
+      "label": "Tezgâh için POS cihazı sağlanır",
+      "explain": "Firma, food truck’ta ödeme almak için bir POS cihazı sağlar."
+    },
+    "fiscal": {
+      "label": "Mevzuata uygun onaylı yazarkasa (TSE, EET, kassaregister…)",
+      "explain": "Ülkenin satış kaydı kurallarına göre onaylanmış bir yazarkasa."
+    },
+    "delivery": {
+      "label": "Teslimat",
+      "explain": "Siparişler müşterinin adresine teslim edilir.",
+      "ours": "yalnızca gel al"
+    },
+    "monthly": {
+      "label": "Aylık fiyat",
+      "explain": "İşletmenin yazılım için her ay ödediği tutar."
+    },
+    "perorder": {
+      "label": "Online sipariş başına ücret",
+      "explain": "Firmanın aylık fiyata ek olarak her online siparişte aldığı ücret."
+    },
+    "cardfee": {
+      "label": "Kart ücreti",
+      "explain": "Ödeme sağlayıcısının her kartlı ödemede aldığı ücret."
+    },
+    "term": {
+      "label": "Asgari sözleşme süresi",
+      "explain": "İşletmenin iptal edebilmesi için ne kadar süre bağlı kaldığı."
+    },
+    "setup": {
+      "label": "Kurulum ücreti",
+      "explain": "Başlangıçta alınan tek seferlik ücret."
+    },
+    "trial": {
+      "label": "Ücretsiz deneme",
+      "explain": "Ödeme yapmadan önce sistemi ücretsiz kullanabileceğiniz süre."
+    }
+  }
+}

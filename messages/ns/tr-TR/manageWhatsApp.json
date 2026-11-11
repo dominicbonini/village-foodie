@@ -1,0 +1,106 @@
+{
+  "preview": {
+    "title": "Bağlamadan önce deneyin",
+    "intro": "Bir müşterinin sorabileceği gibi bir soru yazın ve tam olarak hangi yanıtı alacağını görün. Kimseye bir şey gönderilmez.",
+    "examples": {
+      "where": "Bu akşam neredesiniz?",
+      "doYouDo": "Sucuklu pizzanız var mı?",
+      "menu": "Menüde neler var?"
+    },
+    "placeholder": "Hangi tatlılarınız var?",
+    "send": "Gönder",
+    "empty": "Yanıtınız burada görünecek",
+    "working": "Yanıt hazırlanıyor…",
+    "noReply": "Hiçbir yanıt gönderilmezdi.",
+    "noReplyWhy": "Bu mesaj spam, rezervasyon talebi ya da ilgisiz bir konu gibi görünüyor; bu yüzden otomatik yanıt sessiz kalır.",
+    "footnote": "Yanıtlar yapay zekâ ile oluşturulur, her seferinde biraz farklı olur ve zaman zaman hatalı olabilir.",
+    "failed": "Şu anda önizleme oluşturulamadı.",
+    "unreachable": "Sunucuya ulaşılamadı. Bağlantınızı kontrol edip tekrar deneyin."
+  },
+  "setup": {
+    "button": {
+      "preparing": "Hazırlanıyor…",
+      "unavailable": "Kullanılamıyor",
+      "waiting": "Facebook penceresi bekleniyor…",
+      "finishing": "Tamamlanıyor…",
+      "reconnect": "Yeniden bağla",
+      "setUp": "Kur"
+    },
+    "startAgain": "Yeniden başlat",
+    "popupHint": "Facebook penceresini göremiyor musunuz? Engellenmiş olabilir. hatchgrab.com için açılır pencerelere izin verin, ardından Yeniden başlat’a basın."
+  },
+  "notice": {
+    "sdkUnavailable": "WhatsApp kurulumu bu ortamda kullanılamıyor.",
+    "sdkBlocked": "Meta’nın giriş betiği yüklenemedi. Genellikle bir reklam engelleyici veya izleme koruması buna yol açar.",
+    "setupFailed": "Kurulum tamamlanamadı. Hiçbir şey değiştirilmedi.",
+    "setupFinished": "Kurulum tamamlandı.",
+    "metaError": "Meta kurulum sırasında bir sorun bildirdi. Hiçbir şey değiştirilmedi. Tekrar deneyin; sorun sürerse bize ulaşın.",
+    "closed": "Kurulum bitmeden kapatıldı. Hiçbir şey değiştirilmedi — tekrar denemek için Kur’a basın.",
+    "disconnectedUnreachable": "WhatsApp bağlantısı kesildi. Erişimi kaldırmak için Meta’ya ulaşamadık. Lütfen HatchGrab’i WhatsApp Business → Ayarlar → Hesap → Business Platform bölümünden kaldırın.",
+    "disconnected": "WhatsApp bağlantısı kesildi. Otomatik yanıtlar durdu.",
+    "close": "Kapat"
+  },
+  "card": {
+    "title": "Otomatik yanıtlar",
+    "description": "Menünüzü ve programınızı kullanarak sosyal medyada müşteri sorularını otomatik olarak yanıtlayın.",
+    "channels": "Kanallar",
+    "requiresAccount": "WhatsApp Business hesabı gerektirir.",
+    "connected": "Bağlandı",
+    "popupInstruction": "WhatsApp Business hesabınızı bağlamak için bir Facebook penceresi açılacak. Hiçbir şey görünmezse tarayıcınızda hatchgrab.com için açılır pencerelere izin verin, ardından tekrar Kur’a basın.",
+    "switchedOff": "Food truck’ınız için WhatsApp otomatik yanıtları kapalı.",
+    "expiring": "WhatsApp bağlantınızın yakında yenilenmesi gerekiyor. Otomatik yanıtların çalışmaya devam etmesi için Yeniden bağla’ya basın.",
+    "comingSoon": "Yakında",
+    "instagram": "Instagram doğrudan mesajlarına otomatik yanıt. Instagram profesyonel hesabı gerekecek.",
+    "messenger": "Facebook Messenger’a otomatik yanıt. Bir Facebook Sayfası gerekecek."
+  },
+  "blocked": {
+    "title": "Yanıtlarınız iletilmiyor",
+    "body": "WhatsApp Business hesabınızdaki bir ödeme sorunu nedeniyle WhatsApp otomatik yanıtlarınızı göndermeyi reddediyor. Müşteriler size yine mesaj gönderebilir ve gönderdikleri her şeyi görmeye devam edersiniz — ancak yanıt almıyorlar.",
+    "fix": "Bu mesajların ücretini doğrudan WhatsApp’a ödüyorsunuz; bu yüzden sorun WhatsApp Manager’dan çözülür. <link>Ödeme yönteminizi kontrol edin</link>"
+  },
+  "limit": {
+    "heading": "Otomatik yanıtlar",
+    "label": "Aylık limit",
+    "option": "{n, number}",
+    "usage": "{used, number} / {limit, number} kullanıldı · sıfırlanma: {date}",
+    "perCustomer": "Müşteri başına 24 saatte en fazla {n} yanıt; ardından size kişisel olarak döneceğinizi bildiren tek bir mesaj.",
+    "emailAt": "Limitinize ulaşıldığında yanıtlar durur. %80 ve %100 seviyelerinde size e-posta göndeririz.",
+    "saved": "Aylık yanıt limiti kaydedildi",
+    "saveFailed": "Limit kaydedilemedi"
+  },
+  "billing": {
+    "heading": "Faturalandırma",
+    "paymentMethod": "Ödeme yöntemi",
+    "added": "Ödeme yöntemi eklendi",
+    "missing": "Ödeme yöntemi eklenmedi",
+    "addInManager": "WhatsApp Manager’dan ekleyin",
+    "summary": "Yanıtlar için WhatsApp hesabınızı HatchGrab değil, Meta faturalandırır. Başlangıç: {from} — ayda ilk {free, number} yanıt ücretsizdir. Kontrol tarihi: {checked}; değişiklikler için <link>Meta’nın fiyatlarına</link> bakın.",
+    "howMetaCharges": "Meta nasıl ücretlendirir",
+    "chargesTitle": "WhatsApp yanıtlarını HatchGrab değil, Meta ücretlendirir.",
+    "chargesBody": "HatchGrab’in sizin adınıza gönderdiği her yanıtı Meta, WhatsApp Business hesabınıza faturalandırır. Başlangıç: {from} — Meta her numara için ayda {free, number} ücretsiz yanıt sunar; sonrasında her yanıt Meta’nın tarifesinden ücretlendirilir. WhatsApp Business uygulamasından kendinizin gönderdiği yanıtlar ücretlendirilmez. Bu fiyatları Meta belirler ve değiştirebilir. <link>Meta’nın fiyatlarını görün</link>",
+    "addPaymentInManager": "WhatsApp Manager’da bir ödeme yöntemi ekleyin",
+    "aboveMissing": "Limitiniz, Meta’nın sunduğu ücretsiz yanıt sayısının ({free, number}) üzerinde. Ödeme yöntemi olmadan, bunlar bittiğinde Meta tüm yanıtları durdurur.",
+    "aboveGeneral": "Limitiniz, Meta’nın sunduğu ücretsiz yanıt sayısının ({free, number}) üzerinde. Bunu aşan yanıtlar için WhatsApp hesabınızda bir ödeme yöntemi gerekir; yoksa ücretsiz yanıtlar bittiğinde Meta tüm yanıtları durdurur.",
+    "addPaymentMethod": "Ödeme yöntemi ekleyin"
+  },
+  "disconnect": {
+    "link": "WhatsApp bağlantısını kes",
+    "title": "WhatsApp bağlantısı kesilsin mi?",
+    "body": "Otomatik yanıtlar hemen durur ve HatchGrab, WhatsApp hesabınıza erişimini kaybeder. Numaranız WhatsApp Business uygulamasında çalışmaya devam eder. HatchGrab’i tamamen kaldırmak için ayrıca WhatsApp Business → Ayarlar → Hesap → Business Platform bölümünü açın.",
+    "cancel": "İptal",
+    "confirm": "Bağlantıyı kes",
+    "working": "Bağlantı kesiliyor…",
+    "failed": "Bağlantı kesilemedi"
+  },
+  "signup": {
+    "logged": "Kaydedildi.",
+    "partial": "WhatsApp Business hesabınızı bağladık ancak bağlantıyı tamamlayamadık. Sizin tarafınızda bir sorun yok — lütfen bize ulaşın, biz tamamlayalım.",
+    "noNumber": "WhatsApp Business hesabınız bağlandı ancak bir telefon numarası gelmedi. Yeniden bağla’ya basın ve numara adımını tamamlayın.",
+    "needsRegistering": "Hesabınız bağlandı ancak yanıtlar başlamadan önce bu numaranın bizim tarafımızdan kaydedilmesi gerekiyor. Lütfen destek ekibine ulaşın — kurulumunuz kaydedildi, tekrar çalıştırmayın.",
+    "registerRefused": "Hesabınız bağlandı ancak Meta numarayı kaydetmedi. Kurulumunuz kaydedildi — tekrar çalıştırmak yerine lütfen destek ekibine ulaşın.",
+    "deliveryRefused": "Hesabınız bağlandı ancak Meta mesaj iletimini açmadı. Kurulumunuz kaydedildi — tekrar çalıştırmak yerine lütfen destek ekibine ulaşın.",
+    "numberTaken": "Bu WhatsApp numarası zaten başka bir HatchGrab hesabına bağlı. Bir numara yalnızca bir food truck için yanıt verebilir. Destek ekibine ulaşın, numarayı biz taşıyalım.",
+    "saveIncomplete": "Az kaldı — kaydetmeyi tamamlayamadık. Kurulumunuz kaydedildi; tekrar çalıştırmak yerine lütfen destek ekibine ulaşın.",
+    "connected": "WhatsApp bağlandı. Otomatik yanıtlar bu numaraya gelen mesajları yanıtlamaya başlayacak."
+  }
+}

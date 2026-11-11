@@ -1,0 +1,106 @@
+{
+  "preview": {
+    "title": "연결하기 전에 미리 사용해 보세요",
+    "intro": "손님이 물어볼 만한 질문을 입력하고, 실제로 어떤 답변을 받게 되는지 확인하세요. 아무에게도 전송되지 않아요.",
+    "examples": {
+      "where": "오늘 밤에는 어디서 영업하세요?",
+      "doYouDo": "떡볶이도 있나요?",
+      "menu": "메뉴가 뭐예요?"
+    },
+    "placeholder": "디저트는 뭐가 있나요?",
+    "send": "보내기",
+    "empty": "답변이 여기에 표시돼요",
+    "working": "답변을 만드는 중…",
+    "noReply": "답변이 전송되지 않아요.",
+    "noReplyWhy": "스팸, 예약 요청 또는 관련 없는 메시지로 판단되어 자동 응답이 답하지 않아요.",
+    "footnote": "답변은 AI가 생성하므로 매번 조금씩 다르며, 가끔 틀릴 수 있어요.",
+    "failed": "지금은 미리보기를 만들 수 없어요.",
+    "unreachable": "서버에 연결할 수 없어요. 인터넷 연결을 확인하고 다시 시도하세요."
+  },
+  "setup": {
+    "button": {
+      "preparing": "준비하는 중…",
+      "unavailable": "사용 불가",
+      "waiting": "Facebook 창을 기다리는 중…",
+      "finishing": "마무리하는 중…",
+      "reconnect": "다시 연결",
+      "setUp": "설정"
+    },
+    "startAgain": "다시 시작",
+    "popupHint": "Facebook 창이 보이지 않나요? 차단되었을 수 있어요. hatchgrab.com의 팝업을 허용한 뒤 다시 시작을 누르세요."
+  },
+  "notice": {
+    "sdkUnavailable": "이 환경에서는 WhatsApp 설정을 사용할 수 없어요.",
+    "sdkBlocked": "Meta 로그인 스크립트를 불러오지 못했어요. 대개 광고 차단기나 추적 방지 기능 때문입니다.",
+    "setupFailed": "설정을 완료하지 못했어요. 변경된 내용은 없습니다.",
+    "setupFinished": "설정이 완료되었어요.",
+    "metaError": "설정 중 Meta에서 문제를 알려 왔어요. 변경된 내용은 없습니다. 다시 시도해 보시고, 계속 문제가 생기면 문의해 주세요.",
+    "closed": "설정이 끝나기 전에 창이 닫혔어요. 변경된 내용은 없습니다. 설정을 눌러 다시 시도하세요.",
+    "disconnectedUnreachable": "WhatsApp 연결이 해제되었어요. 접근 권한을 삭제하려 했지만 Meta에 연결하지 못했어요. WhatsApp Business → 설정 → 계정 → 비즈니스 플랫폼에서 HatchGrab을 직접 삭제해 주세요.",
+    "disconnected": "WhatsApp 연결이 해제되었어요. 자동 응답이 중지되었습니다.",
+    "close": "닫기"
+  },
+  "card": {
+    "title": "자동 응답",
+    "description": "메뉴와 영업 일정을 바탕으로 소셜 미디어에서 손님 질문에 자동으로 답해요.",
+    "channels": "채널",
+    "requiresAccount": "WhatsApp Business 계정이 필요해요.",
+    "connected": "연결됨",
+    "popupInstruction": "WhatsApp Business 계정을 연결할 Facebook 창이 열려요. 아무것도 나타나지 않으면 브라우저에서 hatchgrab.com의 팝업을 허용한 뒤 설정을 다시 누르세요.",
+    "switchedOff": "이 푸드트럭의 WhatsApp 자동 응답이 꺼져 있어요.",
+    "expiring": "WhatsApp 연결을 곧 갱신해야 해요. 자동 응답이 계속 작동하도록 다시 연결을 누르세요.",
+    "comingSoon": "출시 예정",
+    "instagram": "Instagram 다이렉트 메시지에 자동으로 답해요. Instagram 프로페셔널 계정이 필요할 예정입니다.",
+    "messenger": "Facebook Messenger에 자동으로 답해요. Facebook 페이지가 필요할 예정입니다."
+  },
+  "blocked": {
+    "title": "답변이 전달되지 않고 있어요",
+    "body": "WhatsApp Business 계정의 결제 문제로 WhatsApp에서 자동 응답 전송을 거부하고 있어요. 손님은 계속 메시지를 보낼 수 있고 사장님도 모든 메시지를 볼 수 있지만, 손님에게는 답변이 가지 않습니다.",
+    "fix": "이 메시지 요금은 WhatsApp에 직접 내시므로, WhatsApp 관리자에서 해결해야 해요. <link>결제 수단 확인하기</link>"
+  },
+  "limit": {
+    "heading": "WhatsApp 자동 응답",
+    "label": "월간 한도",
+    "option": "{n, number}",
+    "usage": "{limit, number}건 중 {used, number}건 사용 · 초기화일: {date}",
+    "perCustomer": "손님 1명당 24시간 동안 최대 {n}건까지 답하고, 이후에는 직접 답변드리겠다는 메시지를 한 번 보냅니다.",
+    "emailAt": "한도에 도달하면 답변이 일시 중지돼요. 80%와 100%에 도달하면 이메일로 알려 드려요.",
+    "saved": "월간 답변 한도를 저장했어요",
+    "saveFailed": "한도를 저장하지 못했어요"
+  },
+  "billing": {
+    "heading": "요금",
+    "paymentMethod": "결제 수단",
+    "added": "결제 수단 등록됨",
+    "missing": "등록된 결제 수단 없음",
+    "addInManager": "WhatsApp 관리자에서 등록",
+    "summary": "답변 요금은 HatchGrab이 아니라 Meta가 WhatsApp 계정에 청구해요. 적용 시작일: {from}. 이날부터 매월 처음 {free, number}건은 무료입니다. 기준 시점: {checked}. 변경 사항은 <link>Meta 요금 안내</link>에서 확인하세요.",
+    "howMetaCharges": "Meta 요금 청구 방식",
+    "chargesTitle": "WhatsApp 답변 요금은 HatchGrab이 아니라 Meta가 청구합니다.",
+    "chargesBody": "HatchGrab이 대신 보내는 답변은 건마다 Meta가 WhatsApp Business 계정에 청구해요. 적용 시작일({from}) 이후 Meta는 번호당 매월 {free, number}건의 답변을 무료로 제공하며, 그 이후에는 답변마다 Meta 요율로 청구됩니다. WhatsApp Business 앱에서 직접 보내는 답변은 청구되지 않아요. 요금은 Meta가 정하며 변경될 수 있습니다. <link>Meta 요금 안내 보기</link>",
+    "addPaymentInManager": "WhatsApp 관리자에서 결제 수단 등록",
+    "aboveMissing": "설정한 한도가 Meta 무료 답변 {free, number}건보다 많아요. 결제 수단이 없으면 무료 답변을 다 쓴 뒤 Meta가 모든 답변을 중지합니다.",
+    "aboveGeneral": "설정한 한도가 Meta 무료 답변 {free, number}건보다 많아요. 그 이상 답변하려면 WhatsApp 계정에 결제 수단이 있어야 하며, 없으면 무료 답변을 다 쓴 뒤 Meta가 모든 답변을 중지합니다.",
+    "addPaymentMethod": "결제 수단 등록"
+  },
+  "disconnect": {
+    "link": "WhatsApp 연결 해제",
+    "title": "WhatsApp 연결을 해제할까요?",
+    "body": "자동 응답이 즉시 중지되고 HatchGrab은 WhatsApp 계정에 더 이상 접근할 수 없어요. 번호는 WhatsApp Business 앱에서 계속 사용할 수 있습니다. HatchGrab을 완전히 삭제하려면 WhatsApp Business → 설정 → 계정 → 비즈니스 플랫폼도 열어 주세요.",
+    "cancel": "취소",
+    "confirm": "연결 해제",
+    "working": "연결 해제하는 중…",
+    "failed": "연결을 해제하지 못했어요"
+  },
+  "signup": {
+    "logged": "기록되었습니다.",
+    "partial": "WhatsApp Business 계정은 연결했지만 연동을 완료하지 못했어요. 사장님 쪽 문제는 아니니, 문의해 주시면 저희가 마무리해 드릴게요.",
+    "noNumber": "WhatsApp Business 계정은 연결되었지만 전화번호를 받지 못했어요. 다시 연결을 누르고 번호 단계를 완료하세요.",
+    "needsRegistering": "계정은 연결되었지만, 답변을 시작하려면 저희가 이 번호를 등록해야 해요. 고객 지원팀에 문의해 주세요. 설정은 저장되어 있으니 다시 실행하지 마세요.",
+    "registerRefused": "계정은 연결되었지만 Meta에서 번호 등록을 거부했어요. 설정은 저장되어 있으니 다시 실행하지 말고 고객 지원팀에 문의해 주세요.",
+    "deliveryRefused": "계정은 연결되었지만 Meta에서 메시지 전송 기능을 켜 주지 않았어요. 설정은 저장되어 있으니 다시 실행하지 말고 고객 지원팀에 문의해 주세요.",
+    "numberTaken": "이 WhatsApp 번호는 이미 다른 HatchGrab 계정에 연결되어 있어요. 번호 하나는 푸드트럭 한 곳에만 답할 수 있습니다. 고객 지원팀에 문의하시면 옮겨 드릴게요.",
+    "saveIncomplete": "거의 다 됐어요. 저장을 끝내지 못했지만 설정은 저장되어 있으니, 다시 실행하지 말고 고객 지원팀에 문의해 주세요.",
+    "connected": "WhatsApp이 연결되었어요. 이제 이 번호로 오는 메시지에 자동 응답이 답하기 시작합니다."
+  }
+}

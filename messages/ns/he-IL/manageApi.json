@@ -1,0 +1,10 @@
+{
+  "vanFallback": "רכב",
+  "eventsFeed": {
+    "today": "היום · {date}",
+    "tomorrow": "מחר · {date}"
+  },
+  "privacyNotSaved": "האירוע פעיל, אבל לא הצלחנו לשמור את הגדרת הפרטיות שלו.",
+  "stockWarning": "אין פריטים זמינים בקטגוריה “{category}”",
+  "uncategorised": "ללא קטגוריה"
+}

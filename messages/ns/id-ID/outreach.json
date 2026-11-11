@@ -1,0 +1,11 @@
+{
+  "optOut": {
+    "missing": "Email ini tidak punya kalimat opt-out, jadi tidak bisa dikirim. Gunakan \"Insert opt-out\" untuk menambahkannya.",
+    "notSetUp": "Belum ada kalimat opt-out, jadi email outreach tidak bisa dikirim. Tambahkan di panel \"Signature\" pada tab \"Templates\".",
+    "notLoaded": "Kalimat opt-out belum dimuat, jadi email ini belum bisa dikirim.",
+    "unreadable": "Kalimat opt-out tidak bisa dibaca, jadi tidak ada yang dikirim."
+  },
+  "retry": {
+    "notRebuilt": "Pesan itu tidak bisa dibuat ulang dengan baris perusahaan, jadi tidak ada yang dikirim."
+  }
+}

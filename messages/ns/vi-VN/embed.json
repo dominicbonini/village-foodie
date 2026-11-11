@@ -1,0 +1,8 @@
+{
+  "metaDescription": "Điểm bán tiếp theo của {truck}.",
+  "orderFrom": "Đặt món tại {truck}",
+  "poweredBy": "Vận hành bởi <b>HatchGrab</b>",
+  "loadFailed": "Hiện chưa tải được lịch bán.",
+  "loading": "Đang tải lịch bán…",
+  "empty": "Chưa có sự kiện sắp tới nào của {truck}."
+}

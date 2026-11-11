@@ -1,0 +1,141 @@
+{
+  "row": {
+    "discovery_map_listing": {
+      "name": "Keşif haritasında yer alma"
+    },
+    "web_dashboard": {
+      "name": "Her cihazda web paneli"
+    },
+    "qr_code": {
+      "name": "QR kod"
+    },
+    "schedule_import": {
+      "name": "Otomatik program aktarımı"
+    },
+    "meal_deals_upsells": {
+      "name": "Kampanyalar ve ek satış önerileri"
+    },
+    "walkup_orders": {
+      "name": "Yerinde sipariş yönetimi"
+    },
+    "sold_out_toggle": {
+      "name": "Tek dokunuşla tükendi"
+    },
+    "kitchen_app": {
+      "name": "iPhone, iPad ve Android mutfak uygulaması"
+    },
+    "offline_protection": {
+      "name": "Çevrimdışı sipariş koruması"
+    },
+    "online_payments": {
+      "name": "Online ödemeler"
+    },
+    "advance_preordering": {
+      "name": "İleri tarihli ön sipariş"
+    },
+    "preorder_deadline": {
+      "name": "Ön sipariş son saati"
+    },
+    "time_slot_selection": {
+      "name": "Müşterinin zaman aralığı seçmesi"
+    },
+    "kitchen_capacity": {
+      "name": "Mutfak kapasitesi yönetimi"
+    },
+    "stock_countdown": {
+      "name": "Otomatik stok geri sayımı"
+    },
+    "auto_accept": {
+      "name": "Online siparişleri otomatik kabul"
+    },
+    "branded_qr_code": {
+      "name": "Logolu QR kod"
+    },
+    "private_events": {
+      "name": "Özel etkinlikler"
+    },
+    "social_media_posts": {
+      "name": "Sosyal medya paylaşımları"
+    },
+    "whatsapp_auto_replies": {
+      "name": "WhatsApp otomatik yanıtlar"
+    },
+    "messenger_instagram_replies": {
+      "name": "Messenger ve Instagram otomatik yanıtlar"
+    },
+    "tap_to_pay": {
+      "name": "Telefonunuzla ödeme alın"
+    },
+    "sms_order_alerts": {
+      "name": "SMS sipariş bildirimleri"
+    },
+    "multi_device_kitchen": {
+      "name": "Çoklu cihaz mutfak senkronizasyonu"
+    },
+    "multi_user_access": {
+      "name": "Çoklu kullanıcı erişimi"
+    },
+    "embed_schedule": {
+      "name": "Kendi web sitenizde program sayfası"
+    },
+    "event_types": {
+      "name": "Özelleştirilebilir etkinlik türleri ve fiyatlandırma"
+    },
+    "buzzer_tracking": {
+      "name": "Çağrı cihazı takibi"
+    },
+    "documents_reminders": {
+      "name": "Belgeler ve hatırlatmalar"
+    },
+    "profit_per_event": {
+      "name": "Etkinlik başına kâr"
+    },
+    "accountant_reports": {
+      "name": "Muhasebeciniz için raporlar"
+    },
+    "ticket_printing": {
+      "name": "Mutfak fişi yazdırma"
+    },
+    "customer_display": {
+      "name": "Müşteri ekranı"
+    },
+    "loyalty_stamp_cards": {
+      "name": "Dijital sadakat kartları"
+    }
+  },
+  "cardRegionOnline": "standart {region}",
+  "cardRegion": {
+    "UKcards": "Birleşik Krallık kartları",
+    "EEAcards": "AEA kartları",
+    "UScards": "ABD kartları",
+    "Australiancards": "Avustralya kartları",
+    "NewZealandcards": "Yeni Zelanda kartları",
+    "Canadiancards": "Kanada kartları",
+    "Swisscards": "İsviçre kartları",
+    "Braziliancards": "Brezilya kartları",
+    "Mexicancards": "Meksika kartları",
+    "Japanesecards": "Japonya kartları",
+    "Singaporecards": "Singapur kartları",
+    "HongKongcards": "Hong Kong kartları",
+    "Malaysiancards": "Malezya kartları",
+    "Thaicards": "Tayland kartları",
+    "UAEcards": "BAE kartları"
+  },
+  "perMonth": {
+    "mo": "{amount}/ay",
+    "month": "{amount}/ay"
+  },
+  "priceWord": {
+    "free": "Ücretsiz",
+    "freeTrial": "Ücretsiz deneme",
+    "lifetime": "Ömür boyu",
+    "zeroPercent": "%0",
+    "payAtHatch": "Teslim alırken öde",
+    "unlimited": "Sınırsız",
+    "none": "—",
+    "masked": "Belirlenecek"
+  },
+  "cell": {
+    "included": "Dahil"
+  }
+}

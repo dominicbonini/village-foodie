@@ -1,0 +1,42 @@
+{
+  "publicName": "Özel etkinlik",
+  "chip": "Özel",
+  "grid": {
+    "orderingSection": "SİPARİŞ",
+    "linkRowLabel": "Özel bağlantı ve QR kodla sipariş alın",
+    "columnTitle": "Yerleşik Özel türü. Yeniden adlandırılamaz, taşınamaz veya silinemez."
+  },
+  "form": {
+    "help": "Programınızda yalnızca tarih ve saatlerle “Özel etkinlik” olarak görünür — adres, harita veya Village Foodie asla gösterilmez.",
+    "linkPromise": "Konuklar özel bir bağlantı ve QR kodla sipariş verir — kaydettikten sonra ikisini de alırsınız.",
+    "nameLabel": "Etkinlik adı",
+    "nameHelp": "Konuklar bunu sipariş sayfasının en üstünde görür.",
+    "namePlaceholder": "Ayşe & Mehmet’in düğünü",
+    "previewNote": "Programınızda böyle görünür — mekân, şehir veya posta kodu yok.",
+    "needsTimes": "Başlangıç ve bitiş saati ekleyin — bağlantıyla sipariş alan özel bir etkinlik için bunlar gerekli."
+  },
+  "link": {
+    "button": "Bağlantı ve QR",
+    "title": "Özel bağlantı ve QR kod",
+    "label": "Özel bağlantı",
+    "copy": "Kopyala",
+    "copied": "Kopyalandı",
+    "qrDownload": "QR kodu indir",
+    "tableCards": "Masa kartlarını yazdır",
+    "newLink": "Yeni bağlantı oluştur",
+    "working": "İşleniyor…",
+    "newLinkConfirm": "Yeni bağlantı oluşturulsun mu? Mevcut bağlantı hemen çalışmayı bırakır; daha önce yazdırdığınız QR kodlar da çalışmaz.",
+    "newLinkHelp": "Bağlantı olmaması gereken bir yere ulaştıysa bunu kullanın. Mevcut bağlantı hemen çalışmayı bırakır; yazdırılmış QR kodlar da çalışmaz.",
+    "newLinkFailed": "Yeni bağlantı oluşturulamadı.",
+    "offNotice": "Bu etkinlikte özel bağlantıyla sipariş kapalı, bu yüzden paylaşılacak bir bağlantı yok. Etkinlik programınızda yine “Özel etkinlik” olarak görünür."
+  },
+  "cards": {
+    "printTitle": "{truck} — masa kartları",
+    "scan": "Sipariş için okutun",
+    "blurb": "Telefonunuzdan sipariş verin ve ödeyin. Hazır olduğunda adınızla sesleneceğiz.",
+    "footer": "Sipariş altyapısı: HatchGrab"
+  },
+  "noSinglePost": "Özel etkinliklerin ayrı bir gönderisi olmaz — haftalık afişinizde “Özel etkinlik” olarak yer alırlar.",
+  "confirmToPrivate": "Bu işlem adresi gizler ve etkinliği haritadan kaldırır. Konukların sipariş vermek için özel bağlantıya ihtiyacı olur.",
+  "confirmFromPrivate": "Bu işlem etkinliği herkese açık yapar: adresi ve harita işareti görünür, özel bağlantı da çalışmayı bırakır."
+}

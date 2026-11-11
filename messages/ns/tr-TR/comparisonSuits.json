@@ -1,0 +1,102 @@
+{
+  "title": "Food truck’ınıza hangisi uygun?",
+  "checked": "Kontrol tarihi: {date}",
+  "evidence": "Kanıt",
+  "adminPreview": "Yönetici önizlemesi — doğrulanmadı",
+  "ours": {
+    "fromPlan": "{name} ({plan} ve üzeri)"
+  },
+  "q": {
+    "preorder": "Hangi sipariş sistemi müşterilerimin önceden sipariş verip teslim alma saati seçmesini sağlar?",
+    "capacity": "Yoğun saatlerde food truck’ım siparişlere yetişemiyor — hangi sistem her zaman aralığı için sipariş sayısını sınırlar?",
+    "whatsapp": "Müşteriler sürekli nerede olduğumu soruyor — hangi sistem onlara WhatsApp’tan yanıt verir?",
+    "social": "Grafik tasarlamak zorunda kalmamam için haftalık konumlarımın paylaşımlarını hangi sistem hazırlar?",
+    "schedule": "Çoğu gün farklı bir yerde satış yapıyorum — hangi sistem müşterilere nerede olduğumu gösterir ve o durak için sipariş alır?",
+    "priceLow": "Ayda yalnızca birkaç gün satış yapıyorum — hangi sistem en ucuz?",
+    "priceHigh": "Festivallere ve yoğun etkinliklere katılıyorum — hangi sistem en ucuz?",
+    "commission": "Her siparişte komisyon ödemek istemiyorum — her ürün ne kadar ücret alıyor?",
+    "offline": "Sinyal kesilirse online siparişlere ne olur?",
+    "strength": "Karşılaştırılan ürünlerden hangisi “{feature}” özelliğini sunuyor?"
+  },
+  "does": {
+    "preorder": "{names}, müşterilerin önceden sipariş verip teslim alma saati seçmesini {count, plural, one {sağlar} other {sağlar}}.",
+    "capacity": "{names}, her teslim alma saatinin kaç sipariş alacağını {count, plural, one {sınırlar} other {sınırlar}}; böylece mutfak siparişlere boğulmaz.",
+    "whatsapp": "{names}, müşterilerin WhatsApp mesajlarını otomatik olarak {count, plural, one {yanıtlar} other {yanıtlar}}.",
+    "social": "{names}, haftanın konumlarını gösteren, paylaşıma hazır görseller {count, plural, one {hazırlar} other {hazırlar}}.",
+    "schedule": "{names}, müşterilere food truck’ın her gün nerede olduğunu {count, plural, one {gösterir} other {gösterir}} ve o durak için sipariş {count, plural, one {alır} other {alır}}."
+  },
+  "feat": {
+    "preorder": "teslim alma saatleri",
+    "capacity": "zaman aralığı başına sipariş sınırı",
+    "whatsapp": "WhatsApp otomatik yanıtlar",
+    "social": "haftalık program görselleri",
+    "schedule": "değişen konumlarla program",
+    "offlinePause": "Sinyal kesildiğinde online siparişleri duraklatma"
+  },
+  "others": {
+    "noQuoted": "{names} bunu {count, plural, one {sunmuyor} other {sunmuyor}}.",
+    "notListed": "{names}, {count, plural, one {web sitesinde} other {web sitelerinde}} şu özelliği listelemiyor: {feature}.",
+    "doesntSay": "{count, plural, one {{names} web sitesinde bu belirtilmiyor} other {{names} web sitelerinde bu belirtilmiyor}}.",
+    "noneLists": "Karşılaştırılan diğer ürünlerin hiçbiri bunu listelemiyor; bu yüzden karşılaştırılan ürünler arasında en uygun {count, plural, one {seçenek} other {seçenekler}}: {names}."
+  },
+  "price": {
+    "lead": "Ayda {orders, number} online siparişte, karşılaştırılan ürünler arasında en düşük aylık yazılım maliyeti {count, plural, one {şu üründe} other {şu ürünlerde}}: {names} — ayda {amount}{count, plural, one {} other { (her biri)}}.",
+    "includes": "Buna abonelik, her siparişte food truck’tan alınan ücretler, ek siparişler için alınan ücretler ve varsa 12 aya yayılan kurulum ücreti dahildir; kart işlem ücretleri dahil değildir.",
+    "flat": "{name} ({plan}; sabit fiyat, {name} sipariş başına ücret almaz)",
+    "planName": "{name} ({plan})"
+  },
+  "commission": {
+    "part": "{name}: {fee}",
+    "answer": "Her ürünün sipariş başına aldığı ücret: {parts}."
+  },
+  "offline": {
+    "ours": "{name}, food truck sinyali kaybettiğinde online siparişleri otomatik olarak duraklatabilir; böylece müşteriler mutfağa ulaşmayacak siparişler veremez.",
+    "noQuoted": "{names} bağlantı olmadan çalışmayı {count, plural, one {sunmuyor} other {sunmuyor}}.",
+    "doesntSay": "{count, plural, one {{names} web sitesinde} other {{names} web sitelerinde}} sinyal kesildiğinde ne olacağı belirtilmiyor."
+  },
+  "strength": {
+    "answer": "{names} “{feature}” özelliğini {count, plural, one {sunduğunu belirtiyor} other {sunduklarını belirtiyor}}; {us} bunu sunmuyor.",
+    "answerSoon": "{names} “{feature}” özelliğini {count, plural, one {sunduğunu belirtiyor} other {sunduklarını belirtiyor}}; {us} bunu henüz sunmuyor."
+  },
+  "ev": {
+    "ours": {
+      "yes": "evet, {us} paketlerine göre",
+      "no": "hayır, {us} paketlerine göre"
+    },
+    "state": {
+      "yes": "bunu sunduğunu belirtiyor",
+      "partial": "bir kısmını sunuyor",
+      "no_quoted": "bunu sunmadığını belirtiyor",
+      "no_unquoted": "hayır (kayıtlı alıntı yok)",
+      "not_listed": "web sitesinde listelenmemiş",
+      "not_mentioned": "web sitesinde belirtilmiyor",
+      "unknown": "bilinmiyor"
+    },
+    "row": "{tool} — {feature}: {answer}.",
+    "quote": "Alıntı: “{quote}”.",
+    "pages": "Kontrol edilen sayfalar: {pages}.",
+    "pageRead": "{page}",
+    "pageNotRead": "{page} (okunamadı)",
+    "page": {
+      "features": "özellikler sayfası",
+      "pricing": "fiyat sayfası",
+      "help": "yardım merkezi",
+      "other": "diğer sayfa"
+    },
+    "help": {
+      "fetched": "Yardım merkezi okundu.",
+      "linked_not_fetched": "Okunmamış bir yardım merkezi var.",
+      "none_found": "Yardım merkezi bulunamadı."
+    },
+    "calc": {
+      "volume": "Sipariş başına {order} üzerinden ayda {orders, number} online sipariş için hesaplanmıştır ({revenue} online satış).",
+      "line": "{name} ({plan}): abonelik {sub} + 12 aya yayılan kurulum ücreti {setup} + sipariş başına ücretler {fees} + ek siparişler {over} = ayda {total}.",
+      "excluded": "Hiçbir ürün için kart işlem ücretleri ve müşterilerin ödediği ücretler dahil edilmemiştir.",
+      "date": "{date} tarihinde, her firmanın web sitesinde kontrol edilen fiyatlara göre hesaplanmıştır."
+    }
+  },
+  "method": {
+    "covers": "Food truck’lar için uygunluklarına ve doğrulanabilir, herkese açık bilgi bulunmasına göre seçilen en fazla dört alternatifi kapsar — piyasadaki her ürünü değil.",
+    "notListed": "“Listelenmemiş”, firmaların normalde tanıttığı özelliklerde ürünün özellik ve fiyat sayfalarını kontrol ettiğimiz ve bu özelliğin geçmediği anlamına gelir. “Belirtilmiyor”, iki yönde de doğrulanmadığı anlamına gelir."
+  }
+}

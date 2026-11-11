@@ -1,0 +1,8 @@
+{
+  "country_missing": "Veldu landið þar sem vagninn þinn er staðsettur.",
+  "country_off": "Matarvagnar í því landi geta ekki skráð sig enn. Veldu annað land.",
+  "zone_unknown": "Við bjóðum ekki upp á það tímabelti fyrir þetta land. Veldu eitt af listanum.",
+  "town_missing": "Segðu okkur í hvaða bæ eða borg vagninn þinn er staðsettur.",
+  "town_too_long": "Heiti bæjarins er of langt — 120 stafir að hámarki.",
+  "region_closed": "Matarvagnar á svæðinu {region} geta ekki skráð sig enn{reason, select, language {: HatchGrab er ekki enn í boði á tungumálinu {language}} taxLines {: við erum fyrst að bæta við aðskildum línum fyrir GST og PST} other {}}. Ef vagninn þinn er staðsettur annars staðar skaltu velja þann bæ eða borg."
+}

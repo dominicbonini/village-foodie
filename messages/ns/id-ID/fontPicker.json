@@ -1,0 +1,46 @@
+{
+  "tab": {
+    "all": "Semua",
+    "bold": "Tebal & tinggi",
+    "hand": "Tulisan tangan",
+    "classic": "Klasik",
+    "clean": "Bersih",
+    "own": "Milik Anda",
+    "ownCount": "Milik Anda ({count})"
+  },
+  "yoursTag": "· milik Anda",
+  "loadingFonts": "Memuat font…",
+  "search": "Cari di antara {count, number} font",
+  "uploadButton": "↑ Unggah font Anda",
+  "loadingLibrary": "Memuat pustaka font…",
+  "tryAgain": "Coba lagi",
+  "noOwn": "Anda belum mengunggah font. Gunakan tombol “↑ Unggah font Anda” di atas.",
+  "recent": "Baru dipakai",
+  "popular": "Populer untuk poster",
+  "adding": "Menambahkan…",
+  "noMatch": "Tidak ada font yang cocok dengan “{query}”.",
+  "showing": "Menampilkan {shown} dari {total, number} — ketik lebih banyak untuk mempersempit.",
+  "couldNotAdd": "Font itu tidak dapat ditambahkan",
+  "tooBig": "Ukuran font itu {size, number, ::.0 group-off}MB. Batasnya 5MB.",
+  "woff": "Silakan unggah file TTF atau OTF — biasanya bisa diunduh dari tempat Anda membeli font tersebut.",
+  "uploadIncomplete": "Unggahan tidak selesai",
+  "added": "“{name}” ditambahkan sebagai versi {face}.",
+  "face": {
+    "regular": "reguler",
+    "bold": "tebal",
+    "italic": "miring"
+  },
+  "licenceTick": "Saya pemilik font ini atau punya lisensi untuk memakainya",
+  "checking": "Memeriksa font…",
+  "addFont": "Tambah font",
+  "cancel": "Batal",
+  "missingFaces": "Tambahkan versi {faces} dari “{name}” (opsional) — pilih file-nya lagi.",
+  "somethingWrong": "Terjadi kesalahan",
+  "faceLower": {
+    "regular": "reguler",
+    "bold": "tebal",
+    "italic": "miring"
+  },
+  "ownLicence": "Milik sendiri",
+  "loadFailed": "Tidak dapat memuat font"
+}

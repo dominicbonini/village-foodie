@@ -1,0 +1,69 @@
+{
+  "close": "Loka",
+  "cancel": "Hætta við",
+  "selectReason": "Veldu ástæðu",
+  "reject": {
+    "title": "Hafna pöntun nr. {orderId}?",
+    "reasonLabel": "Ástæða — nauðsynleg (birtist viðskiptavininum)",
+    "reason": "{reason, select, sold_out {Vara uppseld} too_busy {Of mikið að gera — næst ekki í tæka tíð} closing_soon {Lokum bráðum} other {Annað}}",
+    "noteRequired": "Ástæða — nauðsynleg",
+    "noteOptional": "Viðbótarathugasemd — valfrjálst",
+    "notePlaceholder": "Bættu við nánari skýringu fyrir viðskiptavininn…",
+    "keep": "Halda pöntun",
+    "confirm": "Hafna pöntun"
+  },
+  "eventCancel": {
+    "title": "Aflýsa þessum viðburði?",
+    "affected": "{n, plural, one {{count} pöntun verður afpöntuð} other {{count} pantanir verða afpantaðar}} og viðskiptavinum tilkynnt.",
+    "reasonLabel": "Ástæða — valfrjálst",
+    "reason": "{reason, select, vehicle_breakdown {Bilun í ökutæki} weather {Veður} venue_issue {Vandamál á staðnum} personal_emergency {Neyðartilvik} other {Annað}}",
+    "messageLabel": "Skilaboð til viðskiptavina — valfrjálst",
+    "messagePlaceholder": "t.d. Því miður bilaði vagninn á leiðinni á staðinn…",
+    "keep": "Halda viðburði",
+    "cancelling": "Aflýsi…",
+    "confirm": "Aflýsa viðburði"
+  },
+  "actions": {
+    "startEvent": "{restart, select, yes {Hefja viðburð aftur} other {Hefja viðburð}}",
+    "changeEvent": "Skipta um viðburð",
+    "changeEventType": "Breyta viðburðategund…",
+    "privateLink": "Einkatengill og QR-kóði",
+    "noteLabel": "Athugasemd til viðskiptavina",
+    "notePlaceholder": "t.d. Leggðu á aðalbílastæðinu og leitaðu að appelsínugula tjaldinu",
+    "noteHint": "Birtist viðskiptavinum á pöntunarsíðunni fyrir neðan upplýsingar um viðburðinn.",
+    "saveNote": "Vista athugasemd",
+    "resume": "Opna aftur fyrir pantanir",
+    "pause": "Gera hlé á pöntunum",
+    "changeFinishTime": "Breyta lokatíma viðburðar",
+    "finishEvent": "Ljúka viðburði",
+    "cancelEvent": "Aflýsa viðburði"
+  },
+  "finish": {
+    "confirmTitle": "Breyta lokatíma?",
+    "willFinish": "Þessum viðburði lýkur kl. <b>{selected}</b>{hasCurrent, select, yes { í stað <b>{current}</b>} other {}}.",
+    "dueAfter": "<b>{n, plural, one {{count} pöntun á að afhendast} other {{count} pantanir eiga að afhendast}} eftir {selected}.</b> {n, plural, one {Hún verður} other {Þær verða}} áfram á borðinu og það þarf enn að útbúa {n, plural, one {hana} other {þær}}. Breyting á lokatíma stöðvar aðeins NÝJAR pantanir fyrir síðari tíma.",
+    "saving": "Vista…",
+    "confirm": "Breyta lokatíma",
+    "keepCurrent": "Halda {current}",
+    "keepAsIs": "Halda óbreyttu",
+    "title": "Breyta lokatíma",
+    "currentlySet": "Þessum viðburði á nú að ljúka kl. <b>{current}</b>.",
+    "noFinishTime": "Enginn lokatími er stilltur fyrir þennan viðburð.",
+    "noTimesLeft": "Engir tímar eru eftir í dag. Notaðu Ljúka viðburði í staðinn.",
+    "newFinishTime": "Nýr lokatími",
+    "optionCurrent": "{time} (núverandi)",
+    "earlier": "Þetta er fyrr en núverandi lokatími. Viðskiptavinir geta ekki pantað fyrir tíma eftir hann.",
+    "review": "Yfirfara breytingu",
+    "optionNextDay": "{time} (næsta dag)"
+  },
+  "extraWait": {
+    "title": "Bæta við biðtíma",
+    "hint": "Bætist við afhendingartímann sem gefinn er upp fyrir nýjar pantanir. Breytir ekki lokatíma viðburðarins.",
+    "option": "+{mins} mín."
+  },
+  "picker": {
+    "reconnect": "Tengstu aftur til að hlaða",
+    "selected": "Valið",
+    "status": "{tone, select, paused {⏸ Hlé} live {● Í loftinu} finished {● Lokið} cancelled {Aflýst} other {Ekki hafið}}"
+  }
+}

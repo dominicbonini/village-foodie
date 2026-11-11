@@ -1,0 +1,28 @@
+{
+  "payg": {
+    "name": "Bez mesečne pretplate",
+    "subtitle": "Za sezonske i povremene prodavce",
+    "description": "Nema mesečne naknade. Plaćate samo kada kupac plati karticom online."
+  },
+  "pro": {
+    "subtitle": "Za food truckove sa redovnim porudžbinama unapred",
+    "description": "Sve funkcije, uključujući automatske odgovore na WhatsApp-u i objave za društvene mreže, uz online porudžbine uključene svakog meseca."
+  },
+  "unlimited": {
+    "name": "Neograničeno",
+    "subtitle": "Za prometne food truckove i festivale",
+    "description": "Sve funkcije, bez naknada na online porudžbine, koliko god posla imali."
+  },
+  "trial": {
+    "name": "Isprobajte besplatno",
+    "description": "Sve funkcije, besplatno, dok traje probni period."
+  },
+  "demo": {
+    "name": "Demo",
+    "description": "Probno okruženje za potencijalne klijente — nikad javno."
+  },
+  "tester": {
+    "name": "Tester",
+    "description": "Tester pre lansiranja — pun pristup."
+  }
+}

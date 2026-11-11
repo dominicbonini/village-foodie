@@ -1,0 +1,49 @@
+{
+  "banner": {
+    "title": "{months, plural, one {İlk ayınız tamamen ücretsiz — tüm özellikler açık.} other {İlk # ayınız tamamen ücretsiz — tüm özellikler açık.}}",
+    "body": "{brand} ile müşteriler önceden sipariş verir ve teslim alırken öder; böylece hiçbir kart ödeme altyapısı bağlamadan online sipariş alabilirsiniz. Ödemeyi önceden almayı mı tercih edersiniz? Online kartla ödemeyi istediğiniz zaman ekleyin. Deneme süreniz bitince, başka bir paket seçmezseniz <plan>{fallback}</plan> paketine geçersiniz{fallbackFree, select, yes { — aylık ücreti yoktur} other {}}. Başlamak için kart gerekmez, sözleşme yok, istediğiniz zaman iptal edin.",
+    "bodyOnly": "{brand} ile müşteriler önceden sipariş verir ve teslim alırken öder; böylece hiçbir kart ödeme altyapısı bağlamadan online sipariş alabilirsiniz. Ödemeyi önceden almayı mı tercih edersiniz? Online kartla ödemeyi istediğiniz zaman ekleyin. Deneme süreniz bitince <plan>{fallback}</plan> paketinin ücreti aylık {price}. Ödemeyi ayarlamak için o tarihten önce sizinle iletişime geçeceğiz. Başlamak için kart gerekmez, sözleşme yok, istediğiniz zaman iptal edin."
+  },
+  "card": {
+    "perTruckMonth": "food truck başına / ay",
+    "mostTrucks": "En popüler",
+    "tryFree": "Ücretsiz deneyin",
+    "seeEvery": "Tüm özellikleri görün →",
+    "everything": "Servis yürütmek için gereken her şey",
+    "everythingIn": "{plan} paketindeki her şey, artı"
+  },
+  "fee": {
+    "feeOnly": "Yalnızca online kartlı siparişlerde <b>{fee}*</b>. Yerinde siparişler her zaman ücretsiz.",
+    "included": "Her ay ilk <b>{included}</b> tutarındaki online siparişler dahil, sonrasında <b>{fee}*</b>. Yerinde siparişler her zaman ücretsiz.",
+    "noFee": "Ne kadar yoğun olursanız olun, online siparişlerde <b>HatchGrab ücreti yok</b>. Tek, öngörülebilir bir aylık maliyet."
+  },
+  "base": {
+    "walkUp": "Yerinde siparişler ve mutfak ekranı",
+    "online": "Online sipariş",
+    "preorders": "Ön siparişler ve teslim alma saatleri",
+    "capacity": "Mutfak kapasitesi yönetimi",
+    "privateEvents": "Özel etkinlikler",
+    "printing": "Mutfak fişi yazdırma",
+    "app": "iPhone, iPad ve Android mutfak uygulaması"
+  },
+  "added": {
+    "whatsapp_replies": "WhatsApp otomatik yanıtlar",
+    "schedule_graphics": "Sosyal medya paylaşımları — Facebook ve Instagram programınız — paylaşmaya hazır",
+    "event_types": "Özelleştirilebilir etkinlik türleri ve fiyatlandırma"
+  },
+  "money": {
+    "unlimitedOrders": "Sınırsız online sipariş, %0 HatchGrab ücreti",
+    "samePrice": "En yoğun ayınızda da aynı fiyat"
+  },
+  "comingSoon": "Yakında",
+  "bar": {
+    "title": "Benim için en uygun paket hangisi?",
+    "subtitle": "Aylık online siparişleriniz",
+    "first": "{to} altı → <b>{plan}</b>",
+    "middle": "{from} – {to} → <b>{plan}</b>",
+    "last": "{from} üzeri → <b>{plan}</b>",
+    "only": "Her hacimde → <b>{plan}</b>"
+  },
+  "footnote": "* Online kartlı siparişlerde buna ek olarak Stripe’ın kart işlem ücreti uygulanır ({country}: şu anda {cardFee}); bu ücret HatchGrab’e değil, Stripe’a ödenir. Yerinde siparişlerde kendi POS cihazınızı kullanırsınız — HatchGrab %0 alır.",
+  "currencyLine": "Fiyatlar: {currency} ({code})"
+}

@@ -1,0 +1,8 @@
+{
+  "subject": "Bản demo HatchGrab của bạn — link đây",
+  "heading": "Bản demo của bạn đã sẵn sàng",
+  "intro": "Đây là link tới bản demo chúng tôi tạo từ thực đơn của bạn. Hãy đặt món như một khách hàng của bạn, rồi xem đơn hiện lên màn hình bếp. Không cần đăng nhập — chỉ cần chạm vào link.",
+  "button": "Mở bản demo của tôi",
+  "deletion": "Đây là bản demo nên chúng tôi không lưu giữ: bản demo và thực đơn bạn đã tải lên sẽ bị xóa vào ngày {date}. Nếu muốn giữ lâu hơn, hãy nhấn “Lưu thực đơn của tôi” trong bản demo, chúng tôi sẽ giữ trong 14 ngày.",
+  "deletionSoon": "Đây là bản demo nên chúng tôi không lưu giữ: bản demo và thực đơn bạn đã tải lên sẽ bị xóa sau 24 giờ. Nếu muốn giữ lâu hơn, hãy nhấn “Lưu thực đơn của tôi” trong bản demo, chúng tôi sẽ giữ trong 14 ngày."
+}

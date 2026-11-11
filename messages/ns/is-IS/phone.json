@@ -1,0 +1,5 @@
+{
+  "invalidMobile": "{withName, select, yes {Sláðu inn gilt farsímanúmer — {name}} other {Sláðu inn gilt farsímanúmer}}{withExample, select, yes { (t.d. {example})} other {}}",
+  "invalidPhone": "{withName, select, yes {Sláðu inn gilt símanúmer — {name}} other {Sláðu inn gilt símanúmer}}{withExample, select, yes { (t.d. {example})} other {}}",
+  "invalidPhoneNumber": "{withName, select, yes {Sláðu inn gilt símanúmer — {name}} other {Sláðu inn gilt símanúmer}}{withExample, select, yes { (t.d. {example})} other {}}."
+}

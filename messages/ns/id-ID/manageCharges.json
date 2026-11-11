@@ -1,0 +1,30 @@
+{
+  "heading": "Pajak, tip, dan biaya",
+  "rate": {
+    "label": "Tarif pajak penjualan",
+    "hint": "Tarif yang Anda kenakan di setiap pesanan. Pelanggan melihatnya ditambahkan saat checkout, di struk, dan di tiket.",
+    "regionDefault": "Kosongkan untuk mengenakan {label} sebesar {rate}%, tarif untuk makanan siap saji ({region})."
+  },
+  "included": {
+    "label": "{label} dalam harga Anda",
+    "hint": "Harga Anda sudah termasuk {label}. Tarif ini hanya menunjukkan berapa bagian dari setiap harga yang merupakan {label}, di struk dan tiket — tidak ada yang ditambahkan saat checkout.",
+    "default": "Kosongkan untuk memakai {rate}%, tarif {label} untuk makanan panas yang dibawa pulang ({country})."
+  },
+  "tips": {
+    "label": "Tip",
+    "hint": "Pelanggan yang membayar online dengan kartu bisa menambahkan tip. Semuanya untuk Anda.",
+    "choices": "Pilihan yang dilihat pelanggan:",
+    "chip": "{rate}%",
+    "other": "Jumlah lain"
+  },
+  "fee": {
+    "label": "Biaya layanan online",
+    "hint": "Hanya ditambahkan ke pesanan online. Tidak pernah untuk pesanan Bayar di truk atau pesanan langsung di tempat. Biaya ini untuk Anda.",
+    "pctAria": "Persentase biaya layanan",
+    "fixedAria": "Jumlah tetap biaya layanan",
+    "max": "Maksimal yang bisa Anda kenakan: {max}",
+    "example": "Pelanggan melihatnya sebelum membayar, sebagai satu baris: “{label} {amount}”.",
+    "hatchgrab": "HatchGrab menambahkan biaya layanan {fee} ke pesanan online pelanggan Anda. Anda tidak membayarnya dan tidak bisa mengubahnya."
+  },
+  "saveFailed": "Tidak dapat menyimpan — silakan coba lagi."
+}

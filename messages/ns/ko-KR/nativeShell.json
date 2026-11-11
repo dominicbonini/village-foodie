@@ -1,0 +1,136 @@
+{
+  "binary": {
+    "cameraUsage": "HatchGrab은 메뉴판, 음식, 기타 문서를 촬영하여 계정에 바로 업로드할 수 있도록 카메라를 사용합니다. 이미지는 사용자가 선택한 업로드에만 사용됩니다.",
+    "bluetoothUsage": "HatchGrab은 주문서를 자동으로 출력할 수 있도록 블루투스로 주방 영수증 프린터에 연결합니다. 다른 용도로는 사용하지 않습니다.",
+    "localNetworkUsage": "HatchGrab은 주문서를 자동으로 출력할 수 있도록 로컬 네트워크의 주방 프린터에 연결합니다. 다른 용도로는 사용하지 않습니다.",
+    "faceIdUsage": "Face ID로 HatchGrab 잠금 해제",
+    "offlineTitle": "HatchGrab에 연결할 수 없습니다",
+    "offlineDetail": "연결 상태를 확인하세요.",
+    "retry": "다시 시도"
+  },
+  "gate": {
+    "reverted": "주문 #{id} 되돌림",
+    "saved": "주문 #{id} 저장됨",
+    "undo": "↩ 실행 취소",
+    "paymentNotRecorded": "⚠ 주문 #{id} — 결제가 기록되지 않았습니다. {collect, select, yes {주문은 완료되었지만} other {주문은 저장되었지만}} 결제 금액은 기록되지 않았습니다.",
+    "recordPayment": "결제 기록",
+    "paid": "주문 #{id} 결제 완료",
+    "undonePayment": "실행 취소됨 — 결제 기록 삭제",
+    "undoneCollected": "실행 취소됨 — 픽업 전 상태로 되돌림",
+    "collected": "주문 #{id} {paidToo, select, yes {결제 및 픽업 완료} other {픽업 완료}}",
+    "ready": "주문 #{id} 준비 완료",
+    "readyBuzzer": "주문 #{id} 준비 완료 · <pill></pill>",
+    "status": "주문 #{id} {action, select, confirm {접수됨} reject {거절됨} ready {준비 완료} collected {픽업 완료} undo_collected {복원됨} cancel {취소됨} other {업데이트됨}}"
+  },
+  "conflicts": {
+    "more": "+{count}건 더",
+    "notOnScreenPlus": "+{count}건은 이 화면에 없음",
+    "notOnScreen": "{n, plural, one {이 화면에 없는 주문 {count}건} other {이 화면에 없는 주문 {count}건}}"
+  },
+  "banner": {
+    "paymentTitle": "⚠ 결제가 기록되지 않았습니다",
+    "paymentBody": "{orders} — 이 기기에서만 결제 완료로 표시되었습니다. 실제로 처리되지 않았습니다.",
+    "paymentCheck": "주문을 확인하고 아직 받지 못한 금액이 있으면 다시 결제를 받으세요.",
+    "dismiss": "닫기",
+    "confirmChecked": "다음 주문을 확인하셨나요? {orders}",
+    "confirmHides": "경고가 숨겨집니다. 기록은 어느 경우든 이 기기에 보관됩니다.",
+    "notYet": "아직 아니요",
+    "iveChecked": "확인했습니다: {orders}",
+    "statusBody": "⚠ {orders} — 이 변경 사항이 처리되지 않았습니다. 주문을 확인하세요.",
+    "offline": "📴 연결 없음 — {n, plural, one {변경 사항 {count}건이 이 기기에 저장되었습니다. 다시 온라인이 되면 전송됩니다.} other {변경 사항 {count}건이 이 기기에 저장되었습니다. 다시 온라인이 되면 전송됩니다.}} 설정이 잠겨 있습니다.",
+    "syncing": "다시 온라인 — {n, plural, one {변경 사항 {count}건} other {변경 사항 {count}건}} 전송 중…",
+    "synced": "모든 변경 사항을 전송했습니다.",
+    "stillQueued": "{n, plural, one {변경 사항 {count}건이 이 기기에 저장되어 있습니다. 계속 전송을 시도하고 있습니다.} other {변경 사항 {count}건이 이 기기에 저장되어 있습니다. 계속 전송을 시도하고 있습니다.}}"
+  },
+  "lock": {
+    "locked": "HatchGrab이 잠겨 있습니다",
+    "verifying": "확인 중…",
+    "unlock": "잠금 해제",
+    "cantUseBiometric": "Face ID / Touch ID를 사용할 수 없나요?",
+    "enterPin": "백업 PIN 입력",
+    "wrongPin": "PIN이 틀렸습니다 — 다시 시도하세요.",
+    "checking": "확인 중…",
+    "tryBiometric": "대신 Face ID / Touch ID 사용",
+    "forgot": "PIN을 잊으셨나요? 앱을 다시 설치해야 합니다."
+  },
+  "notify": {
+    "title": "🔔 알림",
+    "intro": "이 기기의 알림입니다. 켜면 받을 알림을 선택할 수 있습니다.",
+    "refused": "이 기능을 켜려면 기기 설정에서 알림을 허용해야 합니다.",
+    "newOrder": "새 주문 알림",
+    "newOrderHelp": "손님 주문을 접수해야 할 때 알림을 받습니다.",
+    "offline": "오프라인 / 일시 중지 알림",
+    "offlineHelp": "이 기기가 오프라인이 되면(주문이 일시 중지됨) 알림을 받습니다. <green>오프라인에서도 작동합니다.</green>"
+  },
+  "van": {
+    "label": "차량",
+    "loadRetry": "불러오지 못함 · 다시 시도",
+    "select": "선택…"
+  },
+  "deviceSave": {
+    "network": "서버에 연결할 수 없습니다 — 연결 상태를 확인하고 다시 시도하세요.",
+    "server": "지금은 저장하지 못했습니다. 다시 시도하세요."
+  },
+  "setup": {
+    "fetchErrorTitle": "기기 설정을 불러오지 못했습니다",
+    "fetchErrorBody": "<b>이 기기</b>를 설정하기 위해 서버에 연결하지 못했습니다. 연결 상태를 확인하고 다시 시도하세요 — 주문과 설정에는 영향이 없습니다.",
+    "retry": "다시 시도",
+    "later": "나중에",
+    "noVanTitle": "활성화된 차량 없음",
+    "noVanBody": "이 푸드트럭에는 아직 활성화된 차량이 없습니다. <b>설정 → 내 푸드트럭</b>에서 차량을 활성화하면 이 기기가 자동으로 설정됩니다 — 여기서 더 할 일은 없습니다.",
+    "goToVans": "설정 → 내 푸드트럭으로 이동",
+    "title": "이 기기 설정",
+    "body": "<b>이 기기</b>의 최초 1회 설정: 처음 열리는 화면과 운영할 차량을 정합니다. 이 기기에만 적용되며 다른 기기는 따로 설정합니다. 나중에 프로필 메뉴 → “이 기기”에서 변경할 수 있습니다.",
+    "whichScreen": "이 기기에서 처음 열릴 화면은 무엇인가요?",
+    "dashboard": "대시보드",
+    "kds": "KDS",
+    "whichVan": "이 기기는 어떤 차량인가요?",
+    "selectVan": "차량 선택…",
+    "saving": "저장 중…",
+    "tryAgain": "다시 시도",
+    "continue": "계속"
+  },
+  "device": {
+    "title": "이 기기",
+    "viewing": "보고 있는 푸드트럭: <b>{truck}</b>",
+    "viewingVan": "보고 있는 푸드트럭: <b>{truck}</b> — <b>{van}</b>",
+    "only": "이 기기에만 적용 — 다른 기기는 따로 설정합니다. (ID: {id}…)",
+    "truck": "푸드트럭",
+    "van": "차량",
+    "defaultScreen": "기본 화면",
+    "orderNotifications": "주문 알림",
+    "patchFailed": "{setting, select, van {차량} defaultScreen {기본 화면} other {주문 알림}} 설정을 저장하지 못했습니다. {reason}",
+    "requireBiometric": "열 때 지문 또는 얼굴 인식 잠금 해제 필요",
+    "pinTitle": "백업 PIN 설정 (4~6자리)",
+    "pinHelp": "지문이나 얼굴 인식으로 잠금을 해제할 수 없을 때 사용하는 유일한 방법이니 잊지 마세요 (PIN을 잊으면 앱을 다시 설치해야 합니다). 오프라인에서도 작동합니다.",
+    "pinPlaceholder": "PIN",
+    "confirmPinPlaceholder": "PIN 확인",
+    "pinTooShort": "4자리 이상 입력하세요.",
+    "pinMismatch": "PIN이 일치하지 않습니다.",
+    "setPin": "PIN 설정 및 사용",
+    "cancel": "취소",
+    "noBiometric": "이 기기에 지문 또는 얼굴 인식 잠금 해제가 설정되어 있지 않습니다 — 기기 설정에서 추가하세요. 백업 PIN은 계속 사용할 수 있습니다.",
+    "footer": "이 설정은 이 기기에만 적용됩니다 — 다른 기기는 따로 설정합니다."
+  },
+  "appLock": {
+    "unlockReason": "HatchGrab 잠금 해제",
+    "usePasscode": "암호 사용",
+    "cancel": "취소",
+    "confirmEnable": "앱 잠금을 사용하려면 확인하세요"
+  },
+  "channel": {
+    "ordersName": "새 주문",
+    "ordersDescription": "주문 접수가 필요할 때 알림을 보냅니다."
+  },
+  "localNotify": {
+    "newOrderTitle": "새 주문",
+    "orderReceived": "주문이 들어왔습니다: {number}",
+    "newOrders": "{n, plural, one {새 주문이 있습니다} other {새 주문 {count}건이 있습니다}}"
+  },
+  "offlineAlert": {
+    "pausedTitle": "주문 일시 중지됨",
+    "pausedBody": "오프라인 상태입니다 — 손님 주문이 일시 중지되었습니다.",
+    "offlineTitle": "오프라인 상태입니다",
+    "offlineBody": "이 기기의 연결이 끊어졌습니다."
+  }
+}

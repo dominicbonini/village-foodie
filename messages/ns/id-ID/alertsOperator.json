@@ -1,0 +1,28 @@
+{
+  "hi": "Halo {name},",
+  "limit80": {
+    "subject": "Anda sudah memakai 80% balasan WhatsApp bulan ini",
+    "used": "Balasan otomatis WhatsApp Anda sudah terpakai <b>{used} dari {limit}</b> untuk bulan ini.",
+    "nothingStopped": "Belum ada yang berhenti. Saat mencapai {limit}, balasan otomatis dijeda sampai kuota Anda diatur ulang pada <b>{reset}</b> — pelanggan tetap bisa mengirim pesan, dan Anda tetap melihat semua yang mereka kirim.",
+    "raise": "Anda bisa menaikkan batas bulanan di Pengaturan kapan saja.",
+    "raiseLink": "Anda bisa menaikkan batas bulanan di Pengaturan kapan saja:",
+    "button": "Buka Pengaturan"
+  },
+  "limit100": {
+    "subject": "Balasan otomatis WhatsApp Anda dijeda untuk bulan ini",
+    "usedAll": "Anda sudah memakai seluruh {limit} balasan otomatis WhatsApp bulan ini, jadi balasan dijeda.",
+    "stillReach": "<b>Pelanggan tetap bisa mengirim pesan seperti biasa, dan setiap pesan tetap sampai ke Anda.</b> Yang berhenti hanya balasan otomatis yang dikirim balik.",
+    "startAgain": "Balasan akan aktif lagi pada <b>{reset}</b>, atau langsung aktif jika Anda menaikkan batas bulanan di Pengaturan.",
+    "startAgainLink": "Balasan akan aktif lagi pada {reset}, atau langsung aktif jika Anda menaikkan batas bulanan di Pengaturan:",
+    "button": "Naikkan batas saya"
+  },
+  "paymentBlocked": {
+    "subject": "WhatsApp memerlukan metode pembayaran agar bisa mengirim",
+    "stopped": "WhatsApp menghentikan pengiriman balasan otomatis Anda karena tidak ada metode pembayaran yang berfungsi di akun WhatsApp Business Anda.",
+    "stillMessage": "<b>Pelanggan tetap bisa mengirim pesan, dan Anda tetap melihat semua yang mereka kirim</b> — tetapi balasannya tidak sampai ke mereka.",
+    "payDirect": "Anda membayar langsung ke WhatsApp untuk pesan-pesan ini, jadi masalahnya diperbaiki di WhatsApp Manager, bukan di HatchGrab. Tambahkan atau perbarui kartu di sana dan balasan akan aktif lagi dengan sendirinya.",
+    "payDirectLink": "Anda membayar langsung ke WhatsApp untuk pesan-pesan ini, jadi masalahnya diperbaiki di WhatsApp Manager, bukan di HatchGrab. Tambahkan atau perbarui kartu di sana dan balasan akan aktif lagi dengan sendirinya:",
+    "button": "Buka WhatsApp Manager",
+    "settings": "Pengaturan HatchGrab Anda: <link>{url}</link>"
+  }
+}

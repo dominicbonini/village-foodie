@@ -1,0 +1,30 @@
+{
+  "labels": {
+    "weekDates": "Tanggal pekan ini",
+    "dayList": "Daftar hari",
+    "place": "Lokasi",
+    "venue": "Tempat",
+    "area": "Daerah",
+    "dayDate": "Hari & tanggal",
+    "times": "Jam",
+    "orderLink": "Link pemesanan",
+    "locationTag": "Tag lokasi"
+  },
+  "weekHeader": "{truck} — lokasi kami minggu ini:",
+  "dayLine": "{day} — {where} — {times}",
+  "dayLineNoTimes": "{day} — {where}",
+  "dayLineCancelled": "{day} — {where} — DIBATALKAN, mohon maaf",
+  "noDates": "Belum ada jadwal minggu ini — cek lagi nanti ya.",
+  "orderAhead": "Pesan dulu: {url}",
+  "orderAheadTagged": "Pesan dulu: {url} {tag}",
+  "eventLine": "{truck} di {where} {when}, {times}.",
+  "eventLineNoTimes": "{truck} di {where} {when}.",
+  "cancelledSorry": "Mohon maaf — kami tidak bisa hadir di {where} {when}.",
+  "cancelledApology": "Mohon maaf kepada semua yang sudah berencana datang. Kami akan segera kembali.",
+  "when": {
+    "today": "hari ini",
+    "tonight": "malam ini",
+    "tomorrow": "besok",
+    "dated": "pada {date}"
+  }
+}

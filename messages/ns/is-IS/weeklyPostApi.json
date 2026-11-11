@@ -1,0 +1,57 @@
+{
+  "shortened": {
+    "heading": "Fyrirsögnin komst ekki fyrir og var stytt.",
+    "date": "Dagsetningin komst ekki fyrir og var stytt.",
+    "daysOff": "Textinn um frídaga komst ekki fyrir og var styttur.",
+    "place": "Heiti staðarins komst ekki fyrir og var stytt.",
+    "time": "Tíminn komst ekki fyrir og var styttur.",
+    "note": "Textinn þinn komst ekki fyrir og var styttur.",
+    "venue": "Vettvangurinn komst ekki fyrir og var styttur.",
+    "area": "Svæðið komst ekki fyrir og var stytt."
+  },
+  "fontFallback": "Ekki tókst að hlaða leturgerð sem þessi hönnun notar ({id}) — þeir reitir eru í Oswald.",
+  "wrongShapeBackground": "Mynd þessa staðar er í annarri lögun en hönnunin þín, svo staðlaði bakgrunnurinn er notaður.",
+  "rowsFit": "Síðasti dagurinn lendir {px}px fyrir neðan neðri brún myndarinnar — minnkaðu línubilið eða færðu línu 1 ofar.",
+  "placeStatus": {
+    "ownBoth": "Eigin mynd og textastaðsetningar",
+    "wrongShape": "Önnur lögun — ekki notað fyrr en skipt er út",
+    "ownPicture": "Eigin mynd, staðlaðar staðsetningar",
+    "ownPositions": "Stöðluð mynd, eigin textastaðsetningar",
+    "none": "Engin mynd enn — Staðlað er notað"
+  },
+  "standardStatus": "Notað á öllum öðrum stöðum",
+  "option": {
+    "oneOff": "Hlaða upp mynd bara fyrir þessa færslu",
+    "placePoster": "Plakat: {name}",
+    "standard": "Stöðluð hönnun"
+  },
+  "previewLabel": {
+    "lastEvent": "Forskoðunin notar síðasta viðburðinn þinn hér",
+    "noEvents": "Engir viðburðir hér enn — forskoðunin sýnir næsta viðburð þinn með heiti þessa staðar"
+  },
+  "fontUsage": {
+    "weekly": "vikuhönnunin þín",
+    "event": "viðburðarhönnunin þín",
+    "place": "hönnunin þín fyrir staðinn {place}",
+    "placeUnnamed": "hönnunin þín fyrir stað"
+  },
+  "face": {
+    "regular": "Venjulegt",
+    "bold": "Feitletrað",
+    "italic": "Skáletrað"
+  },
+  "picture": {
+    "legacy": "Viðburðarplakat",
+    "fallback": "Mynd",
+    "wrongShape": "Önnur lögun — ekki hægt að nota sem heilan bakgrunn"
+  },
+  "noPicture": {
+    "omit": "Sleppa henni",
+    "blank": "Skilja eftir autt pláss",
+    "logo": "Sýna merkið þitt"
+  },
+  "noPicturesAll": "{total, plural, one {Allar staðsetningarnar þínar ({total}) eru með mynd.} other {Allar staðsetningarnar þínar ({total}) eru með mynd.}}",
+  "noPicturesSome": "{without, plural, one {{without} af {total} staðsetningum þínum er enn án myndar} other {{without} af {total} staðsetningum þínum eru enn án myndar}}",
+  "licenceTick": "Ég á þetta letur eða hef leyfi til að nota það",
+  "fontUploadButton": "↑ Hlaða upp letrinu þínu"
+}

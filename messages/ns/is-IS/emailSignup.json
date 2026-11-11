@@ -1,0 +1,26 @@
+{
+  "greeting": "{hasName, select, yes {Hæ {name},} other {Halló,}}",
+  "signoffName": "Dominic",
+  "signoffRole": "Stofnandi HatchGrab",
+  "verify": {
+    "subject": "Staðfestu netfangið þitt",
+    "thanks": "{hasTruck, select, yes {Takk fyrir að setja upp matarvagninn {truck} á HatchGrab.} other {Takk fyrir að setja upp matarvagninn þinn á HatchGrab.}}",
+    "button": "Staðfesta netfangið mitt",
+    "buttonText": "Staðfesta netfangið mitt: {url}",
+    "why": "Þetta er netfangið sem þú skráir þig inn með og þangað berast pöntunartilkynningar — svo það borgar sig að gera þetta strax.",
+    "next": "Þegar það er staðfest sendi ég þér allt sem þú þarft til að komast af stað.",
+    "carryOn": "Þú getur haldið áfram með uppsetninguna á meðan.",
+    "stuck": "Stendur eitthvað í þér? Svaraðu bara þessum pósti — ég svara þessu sjálfur.",
+    "fallbackLink": "Ef hnappurinn virkar ekki skaltu líma þetta inn: {url}"
+  },
+  "welcome": {
+    "subject": "{hasName, select, yes {Gaman að fá þig á HatchGrab, {name}} other {Gaman að fá þig á HatchGrab}}",
+    "intro": "{hasTruck, select, yes {Það gleður mig mjög að bjóða matarvagninn {truck} velkominn á HatchGrab.} other {Það gleður mig mjög að bjóða matarvagninn þinn velkominn á HatchGrab.}}",
+    "trial": "{months, plural, one {Mánaðarlanga ókeypis prufan þín er hafin — allir eiginleikar eru opnir.} other {# mánaða ókeypis prufan þín er hafin — allir eiginleikar eru opnir.}}",
+    "setup": "Ef þú hefur ekki þegar gert það er uppsetningin einföld og tekur um fimmtán mínútur.",
+    "button": "Opna stjórnborðið",
+    "bookmark": "Gott að vista sem bókamerki. Það virkar í hvaða tæki sem er.",
+    "stuck": "Svaraðu bara þessum pósti ef þú lendir í vandræðum — ég svara þessu sjálfur.",
+    "lookingForward": "{hasTruck, select, yes {Ég hlakka til að sjá matarvagninn {truck} í rekstri.} other {Ég hlakka til að sjá matarvagninn þinn í rekstri.}}"
+  }
+}

@@ -1,0 +1,6 @@
+{
+  "orderPending": {
+    "title": "접수할 새 주문",
+    "body": "주문 {number} — {truck}"
+  }
+}

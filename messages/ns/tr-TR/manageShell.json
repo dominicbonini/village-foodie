@@ -1,0 +1,86 @@
+{
+  "loading": "Yönetim paneli yükleniyor…",
+  "loadFailed": "Yüklenemedi",
+  "requestFailed": "Başarısız",
+  "invalidToken": "Geçersiz veya süresi dolmuş anahtar",
+  "loadFailedReason": "Bu sayfa yüklenemedi: {reason}",
+  "noCountrySettings": "Bu food truck’ın ülke ayarları yüklenemedi. Lütfen sayfayı yenileyin.",
+  "noPlans": "Bu food truck’ın paketi yüklenemedi. Lütfen sayfayı yenileyin.",
+  "stale": "{hasTime, select, yes {Yenilenemedi. Saat {time} itibarıyla kaydedilenler gösteriliyor. Yaptığınız değişiklikler yine de kaydedilir.} other {Yenilenemedi. Kaydedilenler gösteriliyor. Yaptığınız değişiklikler yine de kaydedilir.}}",
+  "verify": {
+    "ok": "E-posta onaylandı — teşekkürler.",
+    "expired": "Bu onay bağlantısının süresi doldu. Bize ulaşın, yayına geçmeden önce halledelim.",
+    "invalid": "Bu onay bağlantısı çalışmadı. Bize ulaşın, yayına geçmeden önce halledelim."
+  },
+  "profile": {
+    "updated": "Profil güncellendi",
+    "saveFailed": "Kaydedilemedi",
+    "title": "Profili düzenle",
+    "name": "Ad",
+    "namePlaceholder": "Adınız",
+    "email": "E-posta",
+    "cancel": "İptal",
+    "saving": "Kaydediliyor…",
+    "save": "Kaydet"
+  },
+  "header": {
+    "subtitle": "Yönetim paneli",
+    "ordersDashboard": "← Sipariş paneli"
+  },
+  "tabs": {
+    "menu": "Menü",
+    "schedule": "Program",
+    "paperwork": "Belgeler",
+    "social": "Sosyal medya",
+    "reports": "Raporlar",
+    "team": "Ekip",
+    "settings": "Ayarlar",
+    "payments": "Ödemeler",
+    "billing": "Faturalandırma",
+    "paymentsIcon": "💵",
+    "scheduleCount": "Program ({count})",
+    "stripeAttention": "Stripe ilginizi bekliyor",
+    "allergensNotSet": "alerjenler ayarlanmadı"
+  },
+  "menuSections": {
+    "label": "Menü bölümleri",
+    "items": "Ürünler",
+    "capacity": "Mutfak kapasitesi",
+    "extras": "Ekstralar ve ek satış önerileri",
+    "deals": "Kampanyalar"
+  },
+  "socialSections": {
+    "label": "Sosyal medya bölümleri",
+    "create": "Gönderi oluştur",
+    "designs": "Tasarımlar",
+    "locations": "Konum ayarları"
+  },
+  "notices": {
+    "review": "İncele →",
+    "tour": "Panelinizi kısaca tanımak ister misiniz?",
+    "showMeAround": "Bana gezdir",
+    "dismiss": "Kapat",
+    "approval": "{count, plural, one {Sizin için <b>{count}</b> etkinlik bulduk — yayına girmeden önce inceleyip onaylayın.} other {Sizin için <b>{count}</b> etkinlik bulduk — yayına girmeden önce inceleyip onaylayın.}}",
+    "allergens": "<b>Alerjenler ayarlanmadı</b> — siz doğrulayana kadar müşteriler alerjen bilgisini göremez. Her ürünün alerjenlerini Menü sekmesinde gözden geçirin.",
+    "domainLive": "<link>{domain}</link> yayında. Bir göz atın, ardından doğru olduğunu Ayarlar’dan bize bildirin.",
+    "stripe": "<b>Stripe sizden bir şey bekliyor</b> — bu halledilene kadar kartla ödemeler durabilir.",
+    "profileTitle": "Profilinizi tamamlayın",
+    "missing": "Eksik: {fields}.",
+    "goToSettings": "Ayarlar’a git →",
+    "field": {
+      "truckName": "food truck adı",
+      "cuisineType": "mutfak türü",
+      "contactEmail": "iletişim e-postası",
+      "contactPhone": "iletişim telefonu"
+    }
+  },
+  "trialPopup": {
+    "title": "{months, select, none {Ücretsiz deneme sürecindesiniz} other {{months} aylık ücretsiz deneme sürecindesiniz}}",
+    "ends": "{hasDate, select, yes {Deneme bitişi: <hl>{date}</hl>} other {Deneme <hl>yakında</hl> bitiyor}}",
+    "offer": "{hasMonths, select, yes {{months, plural, one {Tüm özellikler # ay ücretsiz} other {Tüm özellikler # ay ücretsiz}}} other {Deneme süreniz boyunca tüm özellikler ücretsiz}}",
+    "body": "{hasDate, select, yes {Deneme süreniz boyunca sizden hiçbir ücret alınmaz; deneme <b>{date}</b> tarihine kadar sürer. Faturalandırma yalnızca bir paket seçip ödeme bilgilerinizi girdiğinizde başlar. O zamana kadar iptal edilecek ya da ödenecek bir şey yoktur. Paketinizi bu tarihten önce seçin — seçmezseniz {fallback} paketine geçersiniz ve bazı özellikler çalışmayı durdurur.} other {Deneme sürecindeyken sizden hiçbir ücret alınmaz. Faturalandırma yalnızca bir paket seçip ödeme bilgilerinizi girdiğinizde başlar. O zamana kadar iptal edilecek ya da ödenecek bir şey yoktur. Paketinizi deneme bitmeden seçin — seçmezseniz {fallback} paketine geçersiniz ve bazı özellikler çalışmayı durdurur.}}",
+    "bodyPaidEnd": "{hasDate, select, yes {Deneme süreniz boyunca sizden hiçbir ücret alınmaz; deneme <b>{date}</b> tarihine kadar sürer. Deneme bittiğinde {fallback} paketi aylık {price} olur. Ödemeyi ayarlamak için bu tarihten önce sizinle iletişime geçeceğiz.} other {Deneme sürecindeyken sizden hiçbir ücret alınmaz. Deneme bittiğinde {fallback} paketi aylık {price} olur. Ödemeyi ayarlamak için deneme bitmeden sizinle iletişime geçeceğiz.}}",
+    "fees": "*Online siparişlerde standart kart işlem ücretleri uygulanır",
+    "upgrade": "Buradan yükseltin →"
+  }
+}

@@ -1,0 +1,86 @@
+{
+  "loading": "Memuat konsol pengelolaan…",
+  "loadFailed": "Gagal memuat",
+  "requestFailed": "Gagal",
+  "invalidToken": "Token tidak valid atau kedaluwarsa",
+  "loadFailedReason": "Tidak dapat memuat halaman ini: {reason}",
+  "noCountrySettings": "Tidak dapat memuat pengaturan negara truk ini. Silakan muat ulang.",
+  "noPlans": "Tidak dapat memuat paket truk ini. Silakan muat ulang.",
+  "stale": "{hasTime, select, yes {Tidak dapat memperbarui. Menampilkan data yang tersimpan pukul {time}. Perubahan yang Anda buat tetap tersimpan.} other {Tidak dapat memperbarui. Menampilkan data yang tersimpan. Perubahan yang Anda buat tetap tersimpan.}}",
+  "verify": {
+    "ok": "Email terkonfirmasi — terima kasih.",
+    "expired": "Link konfirmasi itu sudah kedaluwarsa. Hubungi kami dan kami akan membereskannya sebelum Anda mulai aktif.",
+    "invalid": "Link konfirmasi itu tidak berfungsi. Hubungi kami dan kami akan membereskannya sebelum Anda mulai aktif."
+  },
+  "profile": {
+    "updated": "Profil diperbarui",
+    "saveFailed": "Gagal menyimpan",
+    "title": "Ubah profil",
+    "name": "Nama",
+    "namePlaceholder": "Nama Anda",
+    "email": "Email",
+    "cancel": "Batal",
+    "saving": "Menyimpan…",
+    "save": "Simpan"
+  },
+  "header": {
+    "subtitle": "Konsol pengelolaan",
+    "ordersDashboard": "← Dasbor pesanan"
+  },
+  "tabs": {
+    "menu": "Menu",
+    "schedule": "Jadwal",
+    "paperwork": "Dokumen",
+    "social": "Media sosial",
+    "reports": "Laporan",
+    "team": "Tim",
+    "settings": "Pengaturan",
+    "payments": "Pembayaran",
+    "billing": "Tagihan",
+    "paymentsIcon": "💷",
+    "scheduleCount": "Jadwal ({count})",
+    "stripeAttention": "Stripe butuh perhatian Anda",
+    "allergensNotSet": "alergen belum diatur"
+  },
+  "menuSections": {
+    "label": "Bagian menu",
+    "items": "Item",
+    "capacity": "Kapasitas dapur",
+    "extras": "Tambahan & upsell",
+    "deals": "Promo"
+  },
+  "socialSections": {
+    "label": "Bagian media sosial",
+    "create": "Buat postingan",
+    "designs": "Desain",
+    "locations": "Pengaturan lokasi"
+  },
+  "notices": {
+    "review": "Tinjau →",
+    "tour": "Mau tur singkat dasbor Anda?",
+    "showMeAround": "Ikuti tur",
+    "dismiss": "Tutup",
+    "approval": "{count, plural, one {Kami menemukan <b>{count}</b> acara untuk Anda — tinjau dan setujui sebelum ditayangkan.} other {Kami menemukan <b>{count}</b> acara untuk Anda — tinjau dan setujui sebelum ditayangkan.}}",
+    "allergens": "<b>Alergen belum diatur</b> — pelanggan tidak bisa melihat informasi alergen sampai Anda memverifikasinya. Tinjau alergen setiap hidangan di tab Menu.",
+    "domainLive": "<link>{domain}</link> sudah aktif. Silakan lihat, lalu beri tahu kami di Pengaturan bahwa semuanya sudah benar.",
+    "stripe": "<b>Stripe butuh sesuatu dari Anda</b> — pembayaran kartu bisa berhenti sampai hal ini selesai.",
+    "profileTitle": "Lengkapi profil Anda",
+    "missing": "Belum diisi: {fields}.",
+    "goToSettings": "Buka Pengaturan →",
+    "field": {
+      "truckName": "nama truk",
+      "cuisineType": "jenis masakan",
+      "contactEmail": "email kontak",
+      "contactPhone": "nomor telepon kontak"
+    }
+  },
+  "trialPopup": {
+    "title": "{months, select, none {Anda sedang dalam masa coba gratis} other {Anda sedang dalam masa coba gratis {months} bulan}}",
+    "ends": "{hasDate, select, yes {Masa coba berakhir <hl>{date}</hl>} other {Masa coba berakhir <hl>sebentar lagi</hl>}}",
+    "offer": "{hasMonths, select, yes {{months, plural, one {Semua fitur gratis selama # bulan} other {Semua fitur gratis selama # bulan}}} other {Semua fitur gratis selama masa coba}}",
+    "body": "{hasDate, select, yes {Anda tidak dikenai biaya apa pun selama masa coba, yang berlangsung sampai <b>{date}</b>. Penagihan hanya dimulai saat Anda memilih paket dan memasukkan data pembayaran. Sampai saat itu, tidak ada yang perlu dibatalkan dan tidak ada yang perlu dibayar. Pilih paket Anda sebelum tanggal itu — jika tidak, Anda akan dipindahkan ke paket {fallback} dan beberapa fitur akan berhenti berfungsi.} other {Anda tidak dikenai biaya apa pun selama masa coba. Penagihan hanya dimulai saat Anda memilih paket dan memasukkan data pembayaran. Sampai saat itu, tidak ada yang perlu dibatalkan dan tidak ada yang perlu dibayar. Pilih paket Anda sebelum masa coba berakhir — jika tidak, Anda akan dipindahkan ke paket {fallback} dan beberapa fitur akan berhenti berfungsi.}}",
+    "bodyPaidEnd": "{hasDate, select, yes {Anda tidak dikenai biaya apa pun selama masa coba, yang berlangsung sampai <b>{date}</b>. Setelah masa coba berakhir, paket {fallback} seharga {price} per bulan. Kami akan menghubungi Anda sebelum itu untuk mengatur pembayaran.} other {Anda tidak dikenai biaya apa pun selama masa coba. Setelah masa coba berakhir, paket {fallback} seharga {price} per bulan. Kami akan menghubungi Anda sebelum itu untuk mengatur pembayaran.}}",
+    "fees": "*Biaya pemrosesan kartu standar berlaku untuk pesanan online",
+    "upgrade": "Upgrade di sini →"
+  }
+}

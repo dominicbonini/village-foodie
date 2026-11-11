@@ -1,0 +1,13 @@
+{
+  "subtotal": "Subtotal",
+  "taxFallback": "Pajak",
+  "taxIncluded": "Termasuk {label}",
+  "serviceFeeCustomer": "Biaya layanan online",
+  "serviceFee": "Biaya layanan",
+  "cardFee": "Biaya kartu",
+  "tip": "Tip",
+  "rate": "{rate}%",
+  "line": "{label}: {amount}",
+  "lineWithRate": "{label} {rate}: {amount}",
+  "foldedCharges": "{parts, select, tax_fees_tip {Pajak, biaya & tip} tax_tip {Pajak & tip} fees_tip {Biaya & tip} fees {Biaya} other {Pajak & biaya}}"
+}

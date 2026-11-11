@@ -1,0 +1,14 @@
+{
+  "$about": "languages-world-1 (10 November 2026): the store listing for this locale — App Store (appStoreLocale) and Google Play (playLocale; name → title, shortDescription → short description, description → full description). Staged in data/store-listing/next/ until the country is switched on. Must be true in every country: no prices, plan names, trial lengths, purchase instructions or other platforms (docs/ios-intl-1-report.md §5). appStoreLocale is null: App Store zh-Hant is the Hong Kong listing (zh-Hant.json), so this Taiwan listing (Taiwan wording) is for Google Play only.",
+  "appStoreLocale": null,
+  "playLocale": "zh-TW",
+  "messagesLocale": "zh-TW",
+  "countrySegment": "tw",
+  "name": "HatchGrab",
+  "subtitle": "餐車點餐系統與廚房顯示",
+  "promotionalText": "接受預約點餐、不讓訂單超出廚房負荷，網路斷線時也能照常營業。專為餐車員工打造的點餐 App。",
+  "description": "HatchGrab 是專為餐車打造的點餐與廚房 App：你的團隊靠它撐起每一場營業。\n\n顧客預約點餐並選擇取餐時間。你的員工在同一個畫面看到所有訂單，確認廚房做得出來的訂單，再標示為可取餐、已取餐。\n\n【不承諾做不到的時間】\n設定廚房一次能做多少、需要多久。某個取餐時間額滿後，顧客就無法選擇，讓排隊的訂單符合廚房的產能。\n\n【在餐車前現場點餐】\n把現場點餐加進和預約點餐同一個畫面，廚房只要照著一條隊列出餐。\n\n【廚房專用的單一畫面】\n廚房顯示系統列出現在要做的、接下來要做的和可取餐的訂單，有訂單需要開始製作時會發出提醒。\n\n【列印點餐單】\n透過藍牙或區域網路連接廚房的收據印表機，點餐單就會自動列印。\n\n【斷網也能照常營業】\n開啟離線保護後，一旦連線中斷，預約點餐會暫停，避免有人下了你看不到的訂單。你在裝置上接的訂單會保留下來，恢復連線後自動同步。\n\n【為餐車現場而設計】\n可在 iPhone 或 iPad 上使用。營業時保持螢幕常亮，有訂單需要確認時收到通知，還能用 Face ID 或 Touch ID 鎖定 App。\n\n【規劃你的一週】\n活動和地點只要設定一次，就能為每一場活動接單。\n\nHatchGrab 專為餐車業者及其員工設計。你需要 HatchGrab 帳號才能登入。",
+  "keywords": "餐車,點餐,線上點餐,預約點餐,自取,外帶,取餐時間,點餐系統,廚房顯示,KDS,菜單,行動餐車,小吃,點餐App,現場點餐",
+  "whatsNew": "HatchGrab 現已支援 37 種語言。\n\n除了藍牙，現在也能將點餐單列印到區域網路上的廚房印表機。\n\n錯誤修正與改善。",
+  "shortDescription": "餐車線上點餐：預約點餐、選擇取餐時間，訂單直送廚房顯示螢幕。"
+}

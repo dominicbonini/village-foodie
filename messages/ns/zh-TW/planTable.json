@@ -1,0 +1,36 @@
+{
+  "h1": "經營所需的一切，每個方案都有。",
+  "lede": "點餐、預約點餐、出餐量管理與廚房顯示系統（KDS），每個方案都包含。{hasUpgrades, select, yes {{plans} 另外加上{features}，手續費也更低。} other {}}",
+  "perMonth": "每月 {price}",
+  "group": {
+    "pay": "你要付的費用",
+    "run": "營運管理",
+    "online": "線上訂單",
+    "marketing": "行銷與自動化"
+  },
+  "pay": {
+    "included": "每月包含的線上訂單額度",
+    "fee": "線上刷卡訂單的 HatchGrab 手續費*",
+    "walkUp": "現場點餐"
+  },
+  "cell": {
+    "unlimited": "無限制",
+    "free": "免費",
+    "feeAbove": "超過 {included} 後 <b>{fee}</b>",
+    "yes": "已包含",
+    "none": "不包含",
+    "comingSoon": "即將推出"
+  },
+  "short": {
+    "whatsapp_replies": "WhatsApp",
+    "schedule_graphics": "社群貼文",
+    "event_types": "自訂活動價格"
+  },
+  "meta": {
+    "description": "HatchGrab 每個方案的所有功能並列比較——{plans}，含手續費與額度。{months, plural, =0 {} one {第一個月包含所有功能。} other {前 # 個月包含所有功能。}}"
+  },
+  "notes": {
+    "whatsapp": "WhatsApp 自動回覆需要 WhatsApp Business 帳號。Meta 可能對部分訊息收費；回覆內容為自動產生。",
+    "printing": "廚房出單列印需搭配相容的藍牙或有線印表機（不隨附）。"
+  }
+}

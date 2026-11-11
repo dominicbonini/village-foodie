@@ -1,0 +1,154 @@
+{
+  "filter": {
+    "dateRange": "📅 Period",
+    "event": "📍 Događaj",
+    "filterBy": "Filtriraj po",
+    "show": "Prikaži",
+    "range": "<from></from><sep>do</sep><until></until>",
+    "selectEvent": "Izaberi događaj…",
+    "eventOption": "{venue} · {date}",
+    "unnamedEvent": "Događaj",
+    "viewReport": "Prikaži izveštaj",
+    "loading": "Učitavanje…",
+    "orders": "📋 Porudžbine",
+    "items": "📦 Stavke",
+    "exportCsv": "⬇ Izvezi CSV"
+  },
+  "empty": {
+    "noOrders": "Nema porudžbina za ovaj period.",
+    "selectEvent": "Izaberite događaj iznad da biste videli njegov izveštaj."
+  },
+  "summary": {
+    "totals": "{n, plural, one {{count} porudžbina} few {{count} porudžbine} other {{count} porudžbina}} · {total}"
+  },
+  "revenue": {
+    "title": "Struktura prihoda",
+    "deals": "Prihod od akcija",
+    "modifiers": "Doplate za dodatke",
+    "foodSales": "Prodaja hrane",
+    "total": "Ukupno",
+    "other": "Ostalo",
+    "tax": "Porez",
+    "tips": "Bakšiš",
+    "serviceFees": "Naknade za uslugu",
+    "cardFees": "Naknade za kartice"
+  },
+  "itemsSold": {
+    "title": "Prodate stavke"
+  },
+  "dealsCard": {
+    "title": "Akcije"
+  },
+  "custom": {
+    "title": "Prilagođavanja",
+    "paidModifiers": "Plaćeni dodaci",
+    "customerNotes": "Napomene kupaca",
+    "note": "„{note}“"
+  },
+  "table": {
+    "item": "Stavka",
+    "modifier": "Dodatak",
+    "qty": "Kol.",
+    "total": "Ukupno",
+    "date": "Datum",
+    "time": "Vreme",
+    "channel": "Kanal"
+  },
+  "breakdown": {
+    "orders": "Pregled po porudžbinama",
+    "items": "Pregled po stavkama"
+  },
+  "channel": {
+    "online": "Online",
+    "walkUp": "Na licu mesta"
+  },
+  "csv": {
+    "orderId": "ID porudžbine",
+    "date": "Datum",
+    "event": "Događaj",
+    "timePlaced": "Vreme porudžbine",
+    "collectionTime": "Vreme preuzimanja",
+    "customerName": "Ime kupca",
+    "orderType": "Vrsta porudžbine",
+    "items": "Stavke",
+    "deals": "Akcije",
+    "modifiers": "Dodaci",
+    "notes": "Napomene",
+    "subtotal": "Međuzbir",
+    "tip": "Bakšiš",
+    "serviceFee": "Naknada za uslugu",
+    "total": "Ukupno",
+    "itemName": "Naziv stavke",
+    "qty": "Kol.",
+    "unitPrice": "Jedinična cena",
+    "itemTotal": "Ukupno za stavku",
+    "orderTotal": "Ukupno za porudžbinu",
+    "unknownEvent": "Nepoznat događaj",
+    "asap": "Što pre",
+    "unknownCustomer": "Nepoznato",
+    "customerOnline": "Kupac online",
+    "placedByTruck": "Uneo food truck"
+  },
+  "presets": {
+    "label": "Period",
+    "custom": "Prilagođeni datumi",
+    "thisMonth": "Ovaj mesec",
+    "lastMonth": "Prošli mesec",
+    "lastQuarter": "Prošli kvartal",
+    "lastTaxYear": "Prošla poreska godina"
+  },
+  "accounts": {
+    "title": "Za vašeg knjigovođu",
+    "help": "Prodaja se računa na dan događaja. Bruto je ono što su kupci platili. Neto je ono što ostaje posle povraćaja novca i poreza.",
+    "gross": "Bruto prodaja",
+    "refunds": "Povraćaji",
+    "net": "Neto prodaja",
+    "taxEstimated": "procenjeno na osnovu vaše poreske stope",
+    "taxNone": "Za vaš food truck nije podešena poreska stopa, pa se porez ovde ne obračunava.",
+    "byChannel": "Bruto prodaja po kanalu",
+    "byPayment": "Bruto prodaja po načinu plaćanja",
+    "online": "Online",
+    "walkUp": "Na licu mesta",
+    "cardOnline": "Kartica online",
+    "payAtTruck": "Plaćanje pri preuzimanju",
+    "cost": "Trošak prodatih jela",
+    "profit": "Dobit",
+    "coverage": "{total, plural, one {Trošak unet za {withCost} od # prodatog jela} few {Trošak unet za {withCost} od # prodata jela} other {Trošak unet za {withCost} od # prodatih jela}}",
+    "partial": "Jela bez unetog troška nisu uračunata u trošak, pa je ova dobit veća nego što zaista jeste. Unesite trošak za svako jelo u Meniju.",
+    "noCosts": "Nijedno jelo još nema unet trošak. Unesite trošak za jela u Meniju da biste videli dobit.",
+    "byEvent": "Po događaju",
+    "event": "Događaj",
+    "sales": "Neto prodaja",
+    "eventNoProfit": "Crtica znači da nemaju sva jela prodata tamo unet trošak.",
+    "downloadOrders": "⬇ Porudžbine za knjigovođu",
+    "downloadEvents": "⬇ Događaji za knjigovođu",
+    "downloadHelp": "Dve tabele: jedan red za svaku porudžbinu i jedan red za svaki događaj. Otvaraju se u Excelu, Numbers-u, Xero-u i QuickBooks-u."
+  },
+  "accountsCsv": {
+    "header": {
+      "date": "Datum",
+      "time": "Vreme",
+      "orderNumber": "Broj porudžbine",
+      "event": "Događaj",
+      "channel": "Kanal",
+      "paymentMethod": "Način plaćanja",
+      "currency": "Valuta",
+      "gross": "Bruto",
+      "tax": "Porez",
+      "taxBasis": "Osnov poreza",
+      "net": "Neto",
+      "refunded": "Vraćeno",
+      "cost": "Trošak",
+      "profit": "Dobit",
+      "eventDate": "Datum događaja",
+      "orders": "Porudžbine",
+      "dishesSold": "Prodata jela",
+      "dishesWithCost": "Jela sa unetim troškom"
+    },
+    "taxBasis": {
+      "stored": "sačuvano uz porudžbinu",
+      "estimated": "procenjeno na osnovu vaše poreske stope",
+      "none": "poreska stopa nije podešena"
+    }
+  }
+}

@@ -1,0 +1,94 @@
+{
+  "heading": "결제",
+  "loading": "Stripe 계정을 확인하는 중…",
+  "state": {
+    "not_connected": {
+      "title": "설정 안 됨",
+      "body": "10분 정도 걸려요. 은행 계좌 정보와 신분증이 필요합니다.",
+      "chip": "설정 안 됨"
+    },
+    "requirements": {
+      "title": "Stripe에 정보를 입력해 주세요",
+      "body": "Stripe에 사업자 정보와 은행 계좌 정보를 입력하기 전까지는 카드 결제를 받을 수 없어요.",
+      "chip": "조치 필요"
+    },
+    "pending": {
+      "title": "연결됨 — Stripe에서 정보를 확인하고 있어요",
+      "body": "따로 하실 일은 없어요. Stripe에서 보내 주신 정보를 검토하고 있으며, 검토가 끝나면 이 페이지에 반영됩니다.",
+      "chip": "확인 중"
+    },
+    "ready": {
+      "title": "연결됨",
+      "body": "Stripe 계정이 연결되어 결제를 받을 수 있어요.",
+      "chip": "사용 가능"
+    },
+    "restricted": {
+      "title": "카드 결제 일시 중지됨",
+      "body": "문제가 해결될 때까지 Stripe에서 이 계정의 카드 결제를 일시 중지했어요.",
+      "chip": "일시 중지됨"
+    },
+    "unsupported": {
+      "title": "이 계정에서는 카드 결제를 사용할 수 없어요",
+      "body": "Stripe에서 이 계정의 카드 결제를 활성화할 수 없어요. 연락 주시면 함께 해결해 드릴게요.",
+      "chip": "사용 불가"
+    }
+  },
+  "keyMismatch": {
+    "title": "Stripe 키가 일치하지 않습니다",
+    "body": "이 사이트의 서버는 <b>{server, select, live {라이브} other {테스트}}</b> Stripe 키를 쓰고 있는데, 브라우저는 <b>{browser, select, live {라이브} other {테스트}}</b> 키로 빌드되었습니다. 이대로라면 손님이 결제하려는 순간 카드 결제가 실패하므로, 두 키가 일치할 때까지 Stripe 설정을 막아 두었습니다.",
+    "fix": "두 키를 같은 환경으로 설정한 뒤 사이트를 다시 빌드해야 합니다. 공개 가능 키는 빌드할 때 포함되고, 비밀 키는 요청할 때마다 읽힙니다."
+  },
+  "permission": {
+    "title": "결제 설정은 푸드트럭 소유자만 할 수 있어요",
+    "body": "Stripe는 대금을 받을 은행 계좌의 주인이 직접 연결해야 하므로, 그분이 로그인한 계정에서 설정해야 합니다. 이 푸드트럭이나 HatchGrab에 문제가 있는 것은 아니에요."
+  },
+  "config": {
+    "keyMissingTitle": "카드 결제가 아직 구성되지 않았어요",
+    "fetchTitle": "이 푸드트럭의 Stripe 계정을 확인하지 못했어요",
+    "keyMissing": "설정되지 않은 항목: {name} — 내장 구성 요소를 불러올 수 없습니다."
+  },
+  "errors": {
+    "requestFailed": "요청 실패({status})",
+    "unreachable": "Stripe에 연결할 수 없어요"
+  },
+  "online": {
+    "heading": "온라인 결제",
+    "body": "손님이 주문할 때 카드로 결제해요. 대금은 사장님의 Stripe 계정으로 바로 입금되며, HatchGrab이 보관하지 않습니다.",
+    "feeLine": "Stripe 수수료는 표준 카드({region}) 결제 1건당 {fee}입니다. 다른 카드는 수수료가 더 높을 수 있어요. 온라인 주문에 대한 HatchGrab 자체 수수료는 요금제에 따라 다르며, 이용 요금에서 확인할 수 있어요.",
+    "testMode": "테스트 모드입니다. 아직 실제 결제는 받을 수 없어요."
+  },
+  "trialNote": "이 설정을 해도 구독이 시작되거나 오늘 요금이 청구되지 않아요. 손님이 사장님께 결제하는 수단일 뿐이며, 요금제는 별개입니다.",
+  "admin": {
+    "title": "플랫폼 관리자로 보는 중",
+    "body": "이 푸드트럭은 아직 온라인 결제를 설정하지 않았어요. 소유자만 본인이 로그인한 계정에서 시작할 수 있으므로, 여기서 누를 버튼은 없습니다."
+  },
+  "setUp": {
+    "button": "온라인 결제 설정",
+    "busy": "설정하는 중…"
+  },
+  "toast": {
+    "alreadySetUp": "이미 설정되어 있어요 — 계속 진행합니다",
+    "addDetails": "이제 Stripe에 정보를 입력하세요",
+    "createFailed": "계정을 만들지 못했어요"
+  },
+  "onboarding": {
+    "restricted": "이제부터는 Stripe에서 진행돼요. Stripe에 로그인해 필요한 정보를 업데이트하세요.",
+    "firstRun": "이제부터는 Stripe에서 진행돼요. Stripe에 로그인한 뒤 사업자 정보와 은행 계좌 정보를 입력하세요."
+  },
+  "details": {
+    "title": "Stripe 정보",
+    "body": "대금을 받을 은행 계좌를 변경하거나 사업자 정보와 서류를 업데이트하세요.",
+    "button": "보기 또는 수정"
+  },
+  "walkUp": {
+    "heading": "현장 주문 결제",
+    "body": "푸드트럭 현장에서 대금을 받는 방법입니다. 어떤 방법을 선택하든 현장 주문에는 HatchGrab 플랫폼 수수료가 없어요.",
+    "ownTerminal": "사용 중인 카드 단말기",
+    "current": "현재 사용 중",
+    "ownTerminalHelp": "Zettle, Square 등 이미 쓰고 계신 단말기 그대로요. 따로 설정할 필요 없이 해당 업체 수수료만 적용됩니다.",
+    "hatchgrab": "HatchGrab으로 결제",
+    "comingSoon": "출시 예정",
+    "hatchgrabHelp": "온라인 결제와 같은 Stripe 연결을 사용해요. 카드 단말기를 쓰거나 휴대폰·태블릿으로 바로 비접촉 결제를 받을 수 있어요.",
+    "hatchgrabFees": "{region} 결제 1건당 {fee}, 휴대폰이나 태블릿으로 받는 비접촉 결제는 {surcharge} 추가. 다른 카드는 수수료가 더 높을 수 있어요."
+  }
+}

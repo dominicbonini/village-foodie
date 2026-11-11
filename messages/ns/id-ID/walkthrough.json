@@ -1,0 +1,31 @@
+{
+  "intro": "Kelola adalah tempat Anda menyiapkan truk dan melihat perkembangannya. Dasbor adalah tempat Anda menerima pesanan dan menjalankan setiap acara saat berlangsung.",
+  "ariaLabel": "Panduan dasbor",
+  "step": "{current} dari {total}",
+  "skip": "Lewati",
+  "back": "← Kembali",
+  "next": "Berikutnya →",
+  "done": "Selesai",
+  "stops": {
+    "menu": {
+      "title": "Menu",
+      "body": "Hidangan, harga, dan alergen Anda. Ubah apa saja di sini dan perubahan langsung berlaku."
+    },
+    "schedule": {
+      "title": "Jadwal",
+      "body": "Di mana dan kapan Anda berjualan. Tambahkan acara di sini dan pelanggan bisa memesan untuk acara itu."
+    },
+    "build": {
+      "title": "Promo serta Tambahan & upsell",
+      "body": "Promo, upsell, kustomisasi, dan kapasitas dapur ada di bagian Menu — silakan dicoba-coba."
+    },
+    "settings": {
+      "title": "Pengaturan",
+      "body": "Detail truk Anda dan cara pelanggan membayar."
+    },
+    "billing": {
+      "title": "Tagihan",
+      "body": "Tempat info paket, tagihan, dan fitur Anda."
+    }
+  }
+}

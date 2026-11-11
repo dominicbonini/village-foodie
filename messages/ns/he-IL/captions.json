@@ -1,0 +1,30 @@
+{
+  "labels": {
+    "weekDates": "תאריכי השבוע",
+    "dayList": "רשימת הימים",
+    "place": "מקום",
+    "venue": "שם המקום",
+    "area": "אזור",
+    "dayDate": "יום ותאריך",
+    "times": "שעות",
+    "orderLink": "קישור להזמנה",
+    "locationTag": "תיוג מיקום"
+  },
+  "weekHeader": "{truck} — איפה אנחנו השבוע:",
+  "dayLine": "{day} — {where} — {times}",
+  "dayLineNoTimes": "{day} — {where}",
+  "dayLineCancelled": "{day} — {where} — בוטל, מצטערים",
+  "noDates": "אין תאריכים השבוע — בדקו שוב בקרוב.",
+  "orderAhead": "הזמינו מראש: {url}",
+  "orderAheadTagged": "הזמינו מראש: {url} {tag}",
+  "eventLine": "{truck} — {when} אנחנו במיקום: {where}, {times}.",
+  "eventLineNoTimes": "{truck} — {when} אנחנו במיקום: {where}.",
+  "cancelledSorry": "מצטערים — לא נוכל להגיע {when} למיקום: {where}.",
+  "cancelledApology": "סליחה מכל מי שתכנן להגיע. נחזור בקרוב.",
+  "when": {
+    "today": "היום",
+    "tonight": "הערב",
+    "tomorrow": "מחר",
+    "dated": "בתאריך {date}"
+  }
+}

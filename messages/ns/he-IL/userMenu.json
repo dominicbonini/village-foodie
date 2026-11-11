@@ -1,0 +1,18 @@
+{
+  "menuLabel": "תפריט משתמש",
+  "screenOn": "מסך דולק",
+  "screenOff": "מסך כבוי",
+  "newOrderSound": "צליל הזמנה חדשה",
+  "copied": "הועתק",
+  "orderLink": "קישור להזמנה",
+  "qrCode": "קוד QR",
+  "kitchenScreen": "מסך מטבח (KDS)",
+  "thisDevice": "המכשיר הזה",
+  "manage": "ניהול",
+  "ordersDashboard": "לוח ההזמנות",
+  "admin": "אדמין",
+  "privacy": "מדיניות פרטיות",
+  "terms": "תנאי שימוש",
+  "signOut": "התנתקות",
+  "close": "סגירה"
+}

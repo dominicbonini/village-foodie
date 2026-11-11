@@ -1,0 +1,111 @@
+{
+  "$comment": "languages-world-1 (10 November 2026): the WhatsApp allergen guard’s trigger words for HEBREW (he-IL): אלרג (אלרגיה, אלרגי, לאלרגנים), רגישות / רגיש ל, אי סבילות, צליאק, אנפילקסיס, ללא, נטול / נטולת / נטולי, לא מכיל, אין בו / בה, בלי <allergen>, בטוח ל, עלול להכיל, עקבות של / עקבות <allergen>, מגע / זיהום צולב — stems without prefix letters (ה ו ב ל ש מ ride along). Bare בלי is NOT a stem (it is inside בלילה and תבלינים), nor bare רגיש (inside מרגיש), bare עקבות (inside בעקבות) or מתאים ל (\"מתאים לבוא\"); niqqud folds away. OPTION B, as every other language: absence / safety words only, NOT the bare allergen names (a presence question may reach the AI, which answers only from the tags and gets the caveat). Matched with the Unicode normaliser. caveatWords: a tagged label of the codex allergen set (stored in English, lower case) → the words a reply may use for it (matched on the raw lower-cased reply, so written as the AI writes them). The country has no allergen set of its own yet, so caveatWords are for 'codex' (as MX, SG, HK, MY, TH and AE).",
+  "language": "he",
+  "normalise": "unicode",
+  "stems": [
+    "אלרג",
+    "רגישות",
+    "רגיש ל",
+    "רגישה ל",
+    "רגישים ל",
+    "סבילות",
+    "צליאק",
+    "אנפילקס",
+    "אפיפן",
+    "אפי פן",
+    "epipen",
+    "אדרנלין",
+    "gluten free",
+    "ללא",
+    "נטול",
+    "לא מכיל",
+    "אין בו",
+    "אין בה",
+    "בלי גלוטן",
+    "בלי חלב",
+    "בלי מוצרי חלב",
+    "בלי לקטוז",
+    "בלי ביצ",
+    "בלי בוטנ",
+    "בלי אגוז",
+    "בלי שומשום",
+    "בלי סויה",
+    "בלי דג",
+    "בלי פירות ים",
+    "בלי שרימפס",
+    "בטוח ל",
+    "בטוחה ל",
+    "בטוחים ל",
+    "בטוח עבור",
+    "עלול להכיל",
+    "עלולה להכיל",
+    "עלולים להכיל",
+    "עשוי להכיל",
+    "עקבות של",
+    "עקבות גלוטן",
+    "עקבות בוטנ",
+    "עקבות אגוז",
+    "עקבות חלב",
+    "עקבות שומשום",
+    "צולב"
+  ],
+  "tokens": [],
+  "caveatWords": {
+    "codex": {
+      "gluten": [
+        "גלוטן",
+        "חיטה",
+        "קמח",
+        "שעורה",
+        "שיפון",
+        "שיבולת שועל"
+      ],
+      "crustaceans": [
+        "סרטנ",
+        "שרימפס",
+        "חסילון",
+        "לובסטר",
+        "פירות ים"
+      ],
+      "eggs": [
+        "ביצה",
+        "ביצים",
+        "מיונז"
+      ],
+      "fish": [
+        "דג ",
+        "דגים",
+        "דגי",
+        "סלמון",
+        "טונה"
+      ],
+      "peanuts": [
+        "בוטנים",
+        "בוטן"
+      ],
+      "soy": [
+        "סויה",
+        "טופו"
+      ],
+      "milk": [
+        "חלב",
+        "לקטוז",
+        "גבינ",
+        "חמאה",
+        "שמנת"
+      ],
+      "tree nuts": [
+        "אגוז",
+        "שקד",
+        "קשיו",
+        "פיסטוק",
+        "פקאן",
+        "לוז"
+      ],
+      "sulphites": [
+        "סולפיט",
+        "גופרית"
+      ]
+    }
+  }
+}

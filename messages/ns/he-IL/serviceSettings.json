@@ -1,0 +1,59 @@
+{
+  "labels": {
+    "collection_interval_mins": "שעות איסוף",
+    "takes_cash": "אתם מקבלים מזומן?",
+    "offline_protection": "הגנה על הזמנות באופליין",
+    "buzzer_prompt": "תזכורת להוספת זימונית"
+  },
+  "typeFollowsVanTitle": "לפי ההגדרה הרגילה של כל רכב",
+  "sameSettingsAllVansLabel": "אותן הגדרות לכל הרכבים",
+  "sameSettingsAllVansHeader": "כל הרכבים",
+  "sameSettingsConfirm": "להעתיק את ההגדרות של רכב 1 לכל הרכבים? הפעולה מעתיקה את כל הגדרות הרכב של רכב 1, בדיוק כמו “זהה לרכב 1” בהגדרות. לקיבולת המטבח יש מתג נפרד.",
+  "eventTypesFooterStandard": "“רגיל” הוא ההגדרה הקבועה שלכם. שינוי שלו כאן משנה אותו גם בהגדרות.",
+  "eventTypesFooterOneEvent": "כדי לשנות הגדרה לאירוע אחד בלבד, היכנסו ללוח הבקרה של אותו אירוע.",
+  "eventTypesSubtitle": "השינויים נשמרים תוך כדי.",
+  "matchStandardLabel": "כמו “רגיל”",
+  "matchStandardConfirm": "להחזיר את כל ההגדרות של הסוג הזה ל“רגיל”? כל מה ששיניתם כאן יימחק.",
+  "priceLabels": {
+    "price_change_on": "שינוי מחירים",
+    "price_mode": "שינוי המחיר",
+    "price_amount": "סכום",
+    "price_rounding": "עיגול",
+    "item_prices": "מחירי הפריטים"
+  },
+  "priceMode": {
+    "add_amount": "+ {symbol}",
+    "add_pct": "+ %",
+    "sub_amount": "− {symbol}",
+    "sub_pct": "− %",
+    "none": "אקבע כל מחיר בעצמי"
+  },
+  "priceRounding": {
+    "none": "ללא",
+    "nearest_1": "לקרוב ביותר ({symbol}1)",
+    "up_1": "תמיד לעגל כלפי מעלה"
+  },
+  "pricesStandardCell": "מחירי התפריט שלכם",
+  "pricesTruckWideTitle": "המחירים שלכם זהים בכל הרכבים",
+  "pricesMenuCell": "תפריט",
+  "pricesTypeOffCell": "מחירי התפריט",
+  "itemPricesShow": "הצגת המחירים",
+  "itemPricesHide": "הסתרת המחירים",
+  "priceItemsHeading": "קביעת המחיר של כל פריט",
+  "priceItemsOpen": "צפייה במחיר של כל פריט או שינוי שלו ›",
+  "priceItemsClose": "הסתרת מחירי הפריטים ⌃",
+  "ownPriceCount": "{n, plural, one {לפריט אחד יש מחיר משלו} two {לשני פריטים יש מחיר משלהם} other {{count} פריטים עם מחיר משלהם}}",
+  "priceTypeHint": "לחצו על מחיר כדי להקליד מחיר משלכם.",
+  "pricesLiveNotice": "האירוע הזה פעיל עכשיו. הזמנות חדשות יקבלו את המחירים החדשים. הזמנות שכבר בוצעו שומרות על המחירים שלהן.",
+  "placeTypeHelper": "בהוספת אירוע, הסוג הזה נבחר בכל פעם שתבחרו את המקום הזה.",
+  "postPictureStandardNote": "פוסטים של אירועים כאן משתמשים בעיצוב הרגיל שלכם.",
+  "eventItemsCardDescription": "מחירים, מגבלות כמות לפריטים וזמינות לאירוע הזה בלבד. השינויים נכנסים לתוקף מיד.",
+  "eventPriceColumnLabel": "מחיר",
+  "eventPriceOwnNote": "{hasType, select, yes {{type} {price} · האירוע הזה} other {תפריט {price} · האירוע הזה}}",
+  "eventPriceEdit": "✎ עריכת מחירים",
+  "eventPriceCancel": "ביטול",
+  "eventPriceSave": "שמירת המחירים",
+  "eventPriceEditNote": "עורכים מחירים לאירוע הזה בלבד. מגבלות הכמות והזמינות נעולות עד השמירה.",
+  "eventPriceLiveNote": "פעיל: הזמנות חדשות יקבלו את המחירים החדשים.",
+  "offlineWhenOfflineLabel": "במצב אופליין"
+}

@@ -1,0 +1,134 @@
+{
+  "item": {
+    "weekHeading": "주 제목",
+    "weekHeadingSample": "이번 주 일정 …",
+    "daysSample": "{first}~{last}",
+    "date": "날짜",
+    "place": "장소",
+    "venue": "영업 장소",
+    "area": "지역",
+    "time": "시간",
+    "rows": "행",
+    "rowsSample": "간격 {px}px · {first}~{last}",
+    "ownText": "직접 입력한 텍스트",
+    "noteTokenSample": "게시물을 만들 때 입력하는 메모",
+    "nothingYet": "아직 없음",
+    "thisBox": "이 상자"
+  },
+  "sample": {
+    "venue": "한강 야시장",
+    "area": "성수동"
+  },
+  "bar": {
+    "previewWith": "미리보기 기준",
+    "undo": "실행 취소",
+    "undoTitle": "실행 취소(⌘Z)",
+    "redo": "다시 실행",
+    "redoTitle": "다시 실행(⇧⌘Z)",
+    "cancel": "취소",
+    "saving": "저장 중…",
+    "save": "디자인 저장"
+  },
+  "grid": {
+    "eachRow": "각 행",
+    "placeOff": "장소 이름이 이미 이미지에 있어요. HatchGrab에서 따로 넣지 않습니다."
+  },
+  "background": {
+    "uploading": "업로드하는 중…",
+    "replace": "이미지 바꾸기",
+    "shape": {
+      "square": "정사각형(1:1)",
+      "portrait45": "세로(4:5)",
+      "portrait916": "세로(9:16)",
+      "landscape169": "가로(16:9)",
+      "portrait": "세로",
+      "landscape": "가로"
+    }
+  },
+  "scope": {
+    "title": "텍스트 위치",
+    "standard": "기본 디자인과 같은 위치",
+    "own": "이 장소만의 위치: {place}",
+    "locked": "이 위치는 기본 디자인에서 가져온 것입니다. 여기서만 옮기려면 “이 장소만의 위치: {place}” 옵션을 선택하세요."
+  },
+  "stage": {
+    "hint": "상자를 드래그해 옮기기 · 모서리를 드래그해 크기 조절",
+    "zoomOut": "축소",
+    "zoomIn": "확대"
+  },
+  "rows": {
+    "spacing": "간격",
+    "daysRun": "표시되는 요일: {first}~{last}. 1행의 상자 3개가 이 간격만큼 아래로 복사됩니다.",
+    "whichEvents": "표시할 영업 일정",
+    "showCancelled": "취소된 영업 일정 표시",
+    "showCancelledHint": "취소된 영업 일정은 장소에 취소선이 그어지고 ‘취소’라는 문구가 표시돼요. 끄면 그날은 휴무일로 표시됩니다."
+  },
+  "days": {
+    "reorder": "순서 변경",
+    "move": "이동"
+  },
+  "picture": {
+    "picture": "이미지",
+    "fill": "상자 채우기",
+    "fit": "상자에 맞추기",
+    "corners": "모서리",
+    "square": "각지게",
+    "rounded": "둥글게",
+    "ifMissing": "장소에 이미지가 없을 때",
+    "noPicture": {
+      "omit": "표시하지 않기",
+      "blank": "빈칸으로 두기",
+      "logo": "로고 표시"
+    },
+    "border": "테두리",
+    "drawBorder": "테두리 그리기",
+    "drawBorderHint": "원하는 색으로 이미지 둘레에 선을 그립니다.",
+    "borderWidth": "테두리 두께",
+    "cornerRadius": "모서리 반경",
+    "locationPictures": "장소 이미지",
+    "addLocationPictures": "+ 장소 이미지 추가",
+    "allHaveImage": "{total, plural, =0 {아직 등록된 장소가 없어요.} one {장소에 이미지가 있어요.} other {장소 #곳 모두 이미지가 있어요.}}",
+    "someWithout": "장소 {total, plural, one {#곳} other {#곳}} 중 {without}곳{without, plural, one {은} other {은}} 아직 이미지가 없어요"
+  },
+  "settings": {
+    "font": "글꼴",
+    "colour": "색상",
+    "textColour": "글자 색상",
+    "ownStyleNote": "{count, plural, one {{names}: 자체 스타일이 있어 변경되지 않아요.} other {{names}: 자체 스타일이 있어 변경되지 않아요.}}",
+    "matchAgain": "다시 맞추기",
+    "matchName": "맞추기: {name}",
+    "lastToggle": "{kind, select, weekly {장소나 시간 중 하나는 켜 두세요. 취소된 영업 일정은 장소에 취소선이 그어지고 ‘취소’라는 문구가 표시되므로, 둘 다 끄면 취소되었다는 것을 알릴 방법이 없어요.} other {영업 장소나 시간 중 하나는 켜 두세요. 취소된 영업 일정은 장소에 취소선이 그어지고 ‘취소’라는 문구가 표시되므로, 둘 다 끄면 취소되었다는 것을 알릴 방법이 없어요.}}"
+  },
+  "letters": {
+    "boldGlyph": "B",
+    "italicGlyph": "I",
+    "capsGlyph": "AA",
+    "italicTitle": "{italic} — 이 글꼴에는 실제 기울임꼴이 있어요"
+  },
+  "align": {
+    "left": "왼쪽",
+    "centre": "가운데",
+    "right": "오른쪽"
+  },
+  "effects": {
+    "outlineColour": "외곽선 색상",
+    "bandColour": "띠 색상",
+    "bandDaysOff": "휴무일 띠",
+    "bandCancelled": "영업 일정 취소 시 띠",
+    "bandDaysOffHint": "영업하지 않는 날에는 위의 띠 대신 이 띠를 씁니다.",
+    "bandCancelledHint": "영업 일정이 취소되면 위의 띠 대신 이 띠를 씁니다."
+  },
+  "more": {
+    "dayOwnLine": "요일을 별도 줄에 표시",
+    "dayOwnLineHint": "날짜 위에 요일을 표시합니다. 날짜 항목에만 적용돼요.",
+    "noEventDay": "영업 일정이 없는 날",
+    "wordsBeforePlaceholder": "예: 여기서 만나요",
+    "neverHyphenate": "띄어쓰기 없는 긴 단어는 항상 글자 크기를 줄여 맞춰요. 장소 이름은 절대 중간에 줄을 바꾸지 않습니다."
+  },
+  "bits": {
+    "less": "간단히",
+    "more": "더 보기",
+    "chooseColourFor": "{label} — 원하는 색상 선택",
+    "chooseColour": "원하는 색상 선택"
+  }
+}

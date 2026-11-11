@@ -1,0 +1,46 @@
+{
+  "tab": {
+    "all": "Tümü",
+    "bold": "Kalın ve uzun",
+    "hand": "El yazısı",
+    "classic": "Klasik",
+    "clean": "Sade",
+    "own": "Sizinkiler",
+    "ownCount": "Sizinkiler ({count})"
+  },
+  "yoursTag": "· sizin",
+  "loadingFonts": "Yazı tipleri yükleniyor…",
+  "search": "{count, number} yazı tipinde ara",
+  "uploadButton": "↑ Yazı tipinizi yükleyin",
+  "loadingLibrary": "Yazı tipi kitaplığı yükleniyor…",
+  "tryAgain": "Tekrar dene",
+  "noOwn": "Henüz bir yazı tipi yüklemediniz. Yukarıdaki “↑ Yazı tipinizi yükleyin” düğmesini kullanın.",
+  "recent": "Son kullanılanlar",
+  "popular": "Afişlerde popüler",
+  "adding": "Ekleniyor…",
+  "noMatch": "“{query}” ile eşleşen yazı tipi yok.",
+  "showing": "Gösterilen: {shown} / {total, number} — daraltmak için yazmaya devam edin.",
+  "couldNotAdd": "Bu yazı tipi eklenemedi",
+  "tooBig": "Bu yazı tipi {size, number, ::.0 group-off} MB. Sınır 5 MB.",
+  "woff": "Lütfen bir TTF veya OTF dosyası yükleyin — genellikle yazı tipini satın aldığınız yerden indirebilirsiniz.",
+  "uploadIncomplete": "Yükleme tamamlanmadı",
+  "added": "“{name}”, {face} biçimi olarak eklendi.",
+  "face": {
+    "regular": "normal",
+    "bold": "kalın",
+    "italic": "italik"
+  },
+  "licenceTick": "Bu yazı tipinin sahibiyim veya kullanım lisansım var",
+  "checking": "Yazı tipi kontrol ediliyor…",
+  "addFont": "Yazı tipi ekle",
+  "cancel": "İptal",
+  "missingFaces": "“{name}” yazı tipinin {faces} biçimini ekleyin (isteğe bağlı) — dosyayı yeniden seçin.",
+  "somethingWrong": "Bir şeyler ters gitti",
+  "faceLower": {
+    "regular": "normal",
+    "bold": "kalın",
+    "italic": "italik"
+  },
+  "ownLicence": "Size ait",
+  "loadFailed": "Yazı tipleri yüklenemedi"
+}

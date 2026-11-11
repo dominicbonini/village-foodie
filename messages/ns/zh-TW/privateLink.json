@@ -1,0 +1,12 @@
+{
+  "guestLabel": "私人活動",
+  "truckFallback": "這台餐車",
+  "noSlugTitle": "這台餐車尚未設定線上點餐。",
+  "orderingOffTitle": "尚未開啟線上點餐",
+  "orderingOffBody": "這場活動不接受線上點餐，請到餐車現場點餐。",
+  "replacedTitle": "這個連結已被更換",
+  "replacedBody": "這個連結已失效：{truck} 已更換連結。請向主辦單位索取新的連結或 QR code。",
+  "madePublicBody": "這個連結已失效：{truck} 已將這場活動改為公開。你可以從他們的一般頁面點餐。",
+  "unknownTitle": "這個連結無法使用",
+  "unknownBody": "這個連結無法使用。請向主辦單位確認，或重新掃描 QR code。"
+}

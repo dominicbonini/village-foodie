@@ -1,0 +1,10 @@
+{
+  "copy": "העתקה",
+  "copied": "הועתק ✓",
+  "failed": "ההעתקה נכשלה",
+  "aria": "{label} {thing}",
+  "announceCopied": "הועתק: {thing}",
+  "announceCopiedValue": "הערך הועתק",
+  "announceFailed": "לא ניתן להעתיק: {thing}. סמנו את הטקסט והעתיקו אותו בעצמכם.",
+  "announceFailedValue": "לא ניתן להעתיק את הערך. סמנו את הטקסט והעתיקו אותו בעצמכם."
+}

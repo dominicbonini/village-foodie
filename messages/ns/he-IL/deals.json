@@ -1,0 +1,17 @@
+{
+  "back": "→ חזרה",
+  "title": "הפעלת מבצע",
+  "save": "חיסכון של {amount}",
+  "selectItems": "בחרו פריט לכל רכיב במבצע",
+  "choose": "בחרו {category}…",
+  "inYourBasket": "── בסל שלכם ──",
+  "basketUnit": "{name}{withMods, select, yes { (+ {mods})} other {}} (בסל){state, select, used { — כבר בתוך מבצע} taken { — נבחר ברכיב אחר} other {}}",
+  "addNew": "── הוספת פריט חדש ──",
+  "itemWithPrice": "{name} {price}",
+  "ruleHint": "· {rule, select, requiredOne {חובה · בחרו אחד} required {חובה} other {בחרו אחד}}{unmet, select, yes { (חובה)} other {}}",
+  "notePlaceholder": "הוסיפו הערה, למשל בלי בצל (לא חובה)",
+  "backButton": "חזרה",
+  "cancel": "ביטול",
+  "chooseRequired": "בחרו את אפשרויות החובה",
+  "apply": "הפעלת המבצע · {amount}"
+}

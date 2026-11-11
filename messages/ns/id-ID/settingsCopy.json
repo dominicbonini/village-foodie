@@ -1,0 +1,19 @@
+{
+  "allowCancellation": {
+    "label": "Izinkan pelanggan membatalkan pesanan",
+    "sentence": "Pelanggan bisa membatalkan paling lambat <select></select> sebelum waktu pengambilan"
+  },
+  "autoAccept": {
+    "label": "Terima pesanan otomatis",
+    "help": "Pesanan terkonfirmasi otomatis. Jika slot waktu yang diminta sudah penuh, pesanan dipindahkan ke slot berikutnya yang tersedia. Hanya dikonfirmasi jika kapasitas masih ada. Pesanan dengan catatan pelanggan (mis. alergi) tetap perlu dikonfirmasi."
+  },
+  "orderReady": {
+    "label": "Langkah tandai siap",
+    "help": "Tampilkan tombol “Tandai siap” di layar pesanan. Layar dapur diatur terpisah, di tiap perangkat. Pelanggan menerima email setiap kali pesanan ditandai siap. Berlaku untuk semua acara — Anda tetap bisa menyalakan atau mematikannya untuk satu acara di dasbornya."
+  },
+  "buzzers": {
+    "label": "Apakah Anda memberi buzzer untuk pengambilan?",
+    "help": "Catat buzzer mana yang Anda berikan ke tiap pelanggan, agar Anda tahu siapa yang dicari saat makanannya siap.",
+    "countLabel": "Berapa buzzer yang Anda punya?"
+  }
+}

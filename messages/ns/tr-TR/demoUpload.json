@@ -1,0 +1,61 @@
+{
+  "steps": {
+    "reading": "Menünüz okunuyor…",
+    "found": "Ürünleriniz bulundu…",
+    "kitchen": "Mutfağınız hazırlanıyor…",
+    "page": "Sipariş sayfanız oluşturuluyor…",
+    "almost": "Neredeyse hazır…"
+  },
+  "templateSteps": {
+    "truck": "Örnek food truck’ınız oluşturuluyor…",
+    "menu": "Menü hazırlanıyor…",
+    "kitchen": "Mutfak hazırlanıyor…",
+    "page": "Sipariş sayfası oluşturuluyor…",
+    "almost": "Neredeyse hazır…"
+  },
+  "dialogLabel": "Menünüzü yükleyin",
+  "heading": "✨ Menünüzü yükleyin",
+  "failedHeading": "Bu menüyü okuyamadık",
+  "close": "Kapat",
+  "intro": "Menü tahtanızın fotoğrafı, bir ekran görüntüsü, bir PDF ya da metin olarak yapıştırın. Yapay zekâmız onu okur ve size 60 saniyeden kısa sürede çalışan bir sipariş sayfası hazırlar — sizin ürünleriniz, sizin fiyatlarınız. Kayıt yok, kart yok.",
+  "failedIntro": "Bazen bir fotoğraf çok karanlık, çok açılı ya da el yazısıyla olur. Bunu çözmek bizim işimiz, sizin bir hatanız değil. Devam etmenin birkaç yolu:",
+  "usually": "Bu genellikle 60 saniyeden kısa sürer.",
+  "slow": "Bu her zamankinden uzun sürüyor — büyük menülerde bazen böyle olur.",
+  "keepWaiting": "Beklemeye devam et",
+  "sampleWhileYouWait": "Ya da beklerken örnek bir menüyle etrafa göz atın",
+  "standIn": "Bu <b>sizin menünüz olmayacak</b> — nasıl çalıştığını görebilmeniz için geçici bir örnek.",
+  "seeSample": "Örnek menüyü gör",
+  "tryAgain": "Tekrar dene",
+  "tryPhotoAgain": "Bu fotoğrafı tekrar dene",
+  "tryDifferent": "Başka bir fotoğraf dene",
+  "uploadAnother": "← Başka bir fotoğraf yükle",
+  "orSample": "Ya da örnek bir menüyle etrafa göz atın",
+  "orBuild": "Ya da sizin için biz hazırlayalım",
+  "buildSent": "✓ Teşekkürler — aldık. Size e-posta göndereceğiz.",
+  "buildBody": "E-posta adresinizi bırakın; gerçek bir kişi menünüzü girip size bağlantıyı göndersin.",
+  "emailPlaceholder": "siz@foodtruckunuz.com.tr",
+  "sending": "…",
+  "send": "Gönder",
+  "noPhoto": "Elinizde menü fotoğrafı yok mu?",
+  "noPhotoBody": "Bunun yerine örnek bir food truck ile etrafa göz atın — kendi menünüzü istediğiniz zaman yükleyebilirsiniz.",
+  "build": "Demomu oluştur →",
+  "nothingPublished": "Hiçbir şey yayınlanmaz — yalnızca siz görebilirsiniz.",
+  "error": {
+    "somethingWrong": "Bir sorun oluştu. Lütfen tekrar deneyin.",
+    "serverUnreachable": "Sunucuya ulaşamadık. Bağlantınızı kontrol edip tekrar deneyin.",
+    "sendFailed": "Gönderilemedi — tekrar deneyin."
+  },
+  "fields": {
+    "uploadLabel": "Menü dosyası yükle",
+    "dropHere": "Menünüzü buraya bırakın",
+    "dragOrTap": "Sürükleyip bırakın ya da seçmek için dokunun",
+    "fileTypes": "Görsel veya PDF",
+    "or": "veya",
+    "pasteLabel": "Menü metnini yapıştır",
+    "pastePlaceholder": "Menünüzü buraya yapıştırın — ürün adları, açıklamalar, fiyatlar..."
+  },
+  "emailLabel": "E-posta adresiniz",
+  "emailNote": "Size demonuzun bağlantısını e-postayla göndereceğiz ve HatchGrab kurulumu hakkında sizinle iletişime geçebiliriz. <link>Gizlilik politikası</link>",
+  "marketing": "HatchGrab’den ara sıra ipuçları ve haberler gönderin",
+  "emailInvalid": "Lütfen geçerli bir e-posta adresi girin."
+}

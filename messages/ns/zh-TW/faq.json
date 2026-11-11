@@ -1,0 +1,7 @@
+{
+  "phrases": {
+    "appsSentence": "另有 iPad 與 Android App，即使沒有訊號也能繼續接現場點餐。",
+    "appsOffline": "iPad 與 Android App 在沒有訊號時仍能接現場點餐，恢復連線後再送出；網頁版控制台則需要網路連線。",
+    "webOffline": "網頁版控制台需要網路連線才能顯示新訂單。"
+  }
+}

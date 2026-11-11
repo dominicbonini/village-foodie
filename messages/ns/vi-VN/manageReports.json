@@ -1,0 +1,154 @@
+{
+  "filter": {
+    "dateRange": "📅 Khoảng ngày",
+    "event": "📍 Sự kiện",
+    "filterBy": "Lọc theo",
+    "show": "Hiện",
+    "range": "<from></from><sep>đến</sep><until></until>",
+    "selectEvent": "Chọn một sự kiện…",
+    "eventOption": "{venue} · {date}",
+    "unnamedEvent": "Sự kiện",
+    "viewReport": "Xem báo cáo",
+    "loading": "Đang tải…",
+    "orders": "📋 Đơn hàng",
+    "items": "📦 Món",
+    "exportCsv": "⬇ Xuất CSV"
+  },
+  "empty": {
+    "noOrders": "Không có đơn hàng nào trong khoảng thời gian này.",
+    "selectEvent": "Chọn một sự kiện ở trên để xem báo cáo."
+  },
+  "summary": {
+    "totals": "{n, plural, one {{count} đơn} other {{count} đơn}} · {total}"
+  },
+  "revenue": {
+    "title": "Chi tiết doanh thu",
+    "deals": "Doanh thu ưu đãi",
+    "modifiers": "Phụ thu tùy chọn",
+    "foodSales": "Doanh thu món ăn",
+    "total": "Tổng",
+    "other": "Khác",
+    "tax": "Thuế",
+    "tips": "Tiền tip",
+    "serviceFees": "Phí dịch vụ",
+    "cardFees": "Phí thẻ"
+  },
+  "itemsSold": {
+    "title": "Món đã bán"
+  },
+  "dealsCard": {
+    "title": "Ưu đãi"
+  },
+  "custom": {
+    "title": "Tùy chỉnh",
+    "paidModifiers": "Tùy chọn có phí",
+    "customerNotes": "Ghi chú của khách",
+    "note": "“{note}”"
+  },
+  "table": {
+    "item": "Món",
+    "modifier": "Tùy chọn",
+    "qty": "SL",
+    "total": "Tổng",
+    "date": "Ngày",
+    "time": "Giờ",
+    "channel": "Kênh"
+  },
+  "breakdown": {
+    "orders": "Chi tiết đơn hàng",
+    "items": "Chi tiết món"
+  },
+  "channel": {
+    "online": "Online",
+    "walkUp": "Mua tại chỗ"
+  },
+  "csv": {
+    "orderId": "Mã đơn",
+    "date": "Ngày",
+    "event": "Sự kiện",
+    "timePlaced": "Giờ đặt",
+    "collectionTime": "Giờ nhận món",
+    "customerName": "Tên khách",
+    "orderType": "Loại đơn",
+    "items": "Món",
+    "deals": "Ưu đãi",
+    "modifiers": "Tùy chọn",
+    "notes": "Ghi chú",
+    "subtotal": "Tạm tính",
+    "tip": "Tiền tip",
+    "serviceFee": "Phí dịch vụ",
+    "total": "Tổng",
+    "itemName": "Tên món",
+    "qty": "SL",
+    "unitPrice": "Đơn giá",
+    "itemTotal": "Thành tiền",
+    "orderTotal": "Tổng đơn",
+    "unknownEvent": "Sự kiện không xác định",
+    "asap": "Sớm nhất",
+    "unknownCustomer": "Không rõ",
+    "customerOnline": "Khách đặt online",
+    "placedByTruck": "Xe tự nhập"
+  },
+  "presets": {
+    "label": "Kỳ",
+    "custom": "Tự chọn ngày",
+    "thisMonth": "Tháng này",
+    "lastMonth": "Tháng trước",
+    "lastQuarter": "Quý trước",
+    "lastTaxYear": "Năm tính thuế trước"
+  },
+  "accounts": {
+    "title": "Cho kế toán của bạn",
+    "help": "Doanh thu được tính vào ngày diễn ra sự kiện. Doanh thu gộp là số tiền khách đã trả. Doanh thu thuần là phần còn lại sau hoàn tiền và thuế.",
+    "gross": "Doanh thu gộp",
+    "refunds": "Hoàn tiền",
+    "net": "Doanh thu thuần",
+    "taxEstimated": "ước tính theo thuế suất của bạn",
+    "taxNone": "Xe của bạn chưa đặt thuế suất, nên không tính thuế ở đây.",
+    "byChannel": "Doanh thu gộp theo kênh",
+    "byPayment": "Doanh thu gộp theo hình thức thanh toán",
+    "online": "Online",
+    "walkUp": "Mua tại chỗ",
+    "cardOnline": "Thẻ online",
+    "payAtTruck": "Trả tiền tại xe",
+    "cost": "Giá vốn món đã bán",
+    "profit": "Lợi nhuận",
+    "coverage": "{total, plural, one {Đã nhập giá vốn cho {withCost} trên # món đã bán} other {Đã nhập giá vốn cho {withCost} trên # món đã bán}}",
+    "partial": "Món chưa có giá vốn không được tính vào giá vốn, nên lợi nhuận này cao hơn thực tế. Hãy nhập giá vốn cho từng món trong Thực đơn.",
+    "noCosts": "Chưa món nào có giá vốn. Hãy nhập giá vốn cho các món trong Thực đơn để xem lợi nhuận.",
+    "byEvent": "Theo sự kiện",
+    "event": "Sự kiện",
+    "sales": "Doanh thu thuần",
+    "eventNoProfit": "Dấu gạch ngang nghĩa là không phải món nào bán ở đó cũng có giá vốn.",
+    "downloadOrders": "⬇ Đơn hàng cho kế toán",
+    "downloadEvents": "⬇ Sự kiện cho kế toán",
+    "downloadHelp": "Hai file bảng tính: mỗi đơn một dòng và mỗi sự kiện một dòng. Mở được bằng Excel, Numbers, Xero và QuickBooks."
+  },
+  "accountsCsv": {
+    "header": {
+      "date": "Ngày",
+      "time": "Giờ",
+      "orderNumber": "Mã số đơn",
+      "event": "Sự kiện",
+      "channel": "Kênh",
+      "paymentMethod": "Hình thức thanh toán",
+      "currency": "Tiền tệ",
+      "gross": "Gộp",
+      "tax": "Thuế",
+      "taxBasis": "Cơ sở tính thuế",
+      "net": "Thuần",
+      "refunded": "Đã hoàn tiền",
+      "cost": "Giá vốn",
+      "profit": "Lợi nhuận",
+      "eventDate": "Ngày sự kiện",
+      "orders": "Số đơn",
+      "dishesSold": "Món đã bán",
+      "dishesWithCost": "Món có giá vốn"
+    },
+    "taxBasis": {
+      "stored": "lưu cùng đơn hàng",
+      "estimated": "ước tính theo thuế suất của bạn",
+      "none": "chưa đặt thuế suất"
+    }
+  }
+}

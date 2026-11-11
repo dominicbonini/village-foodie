@@ -1,0 +1,136 @@
+{
+  "binary": {
+    "cameraUsage": "HatchGrab, menü panonuzun, yemeklerinizin ve diğer belgelerin fotoğrafını çekip doğrudan hesabınıza yükleyebilmeniz için kamerayı kullanır. Görüntüler yalnızca sizin seçtiğiniz yüklemeler için kullanılır.",
+    "bluetoothUsage": "HatchGrab, sipariş fişlerinin otomatik olarak yazdırılabilmesi için mutfaktaki fiş yazıcınıza Bluetooth ile bağlanır. Başka hiçbir amaçla kullanılmaz.",
+    "localNetworkUsage": "HatchGrab, sipariş fişlerinin otomatik olarak yazdırılabilmesi için yerel ağınızdaki mutfak yazıcınıza bağlanır. Başka hiçbir amaçla kullanılmaz.",
+    "faceIdUsage": "HatchGrab’in kilidini Face ID ile açın.",
+    "offlineTitle": "HatchGrab’e ulaşılamıyor",
+    "offlineDetail": "Bağlantınızı kontrol edin.",
+    "retry": "Tekrar dene"
+  },
+  "gate": {
+    "reverted": "Sipariş #{id} geri alındı",
+    "saved": "Sipariş #{id} kaydedildi",
+    "undo": "↩ Geri al",
+    "paymentNotRecorded": "⚠ Sipariş #{id} — ÖDEME KAYDEDİLMEDİ. {collect, select, yes {Sipariş tamamlandı} other {Sipariş kaydedildi}}; ancak ödeme kaydedilmedi.",
+    "recordPayment": "Ödemeyi kaydet",
+    "paid": "Sipariş #{id} ödendi",
+    "undonePayment": "Geri alındı — ödeme kaldırıldı",
+    "undoneCollected": "Geri alındı — sipariş teslim alınmadı",
+    "collected": "Sipariş #{id} {paidToo, select, yes {ödendi ve teslim alındı} other {teslim alındı}}",
+    "ready": "Sipariş #{id} hazır",
+    "readyBuzzer": "Sipariş #{id} hazır · <pill></pill>",
+    "status": "Sipariş #{id} {action, select, confirm {onaylandı} reject {reddedildi} ready {hazır} collected {teslim alındı} undo_collected {geri yüklendi} cancel {iptal edildi} other {güncellendi}}"
+  },
+  "conflicts": {
+    "more": "+{count} daha",
+    "notOnScreenPlus": "+{count} bu ekranda değil",
+    "notOnScreen": "{n, plural, one {{count} sipariş bu ekranda değil} other {{count} sipariş bu ekranda değil}}"
+  },
+  "banner": {
+    "paymentTitle": "⚠ ÖDEME KAYDEDİLMEDİ",
+    "paymentBody": "{orders} — yalnızca bu cihazda ödendi olarak işaretlendi. İşlem tamamlanmadı.",
+    "paymentCheck": "Siparişi kontrol edin ve ödeme hâlâ alınmadıysa tekrar alın.",
+    "dismiss": "Kapat",
+    "confirmChecked": "Kontrol ettiğinizi onaylayın: {orders}",
+    "confirmHides": "Bu işlem uyarıyı gizler. Kayıt her durumda bu cihazda saklanır.",
+    "notYet": "Henüz değil",
+    "iveChecked": "Kontrol ettim: {orders}",
+    "statusBody": "⚠ {orders} — bu değişiklik iletilemedi. Siparişi kontrol edin.",
+    "offline": "📴 Bağlantı yok — {n, plural, one {{count} değişiklik bu cihaza kaydedildi. Tekrar çevrimiçi olduğunuzda gönderilecek.} other {{count} değişiklik bu cihaza kaydedildi. Tekrar çevrimiçi olduğunuzda gönderilecekler.}} Ayarlar kilitli.",
+    "syncing": "Tekrar çevrimiçi — {n, plural, one {{count} değişiklik} other {{count} değişiklik}} gönderiliyor…",
+    "synced": "Tüm değişiklikler gönderildi.",
+    "stillQueued": "{n, plural, one {{count} değişiklik bu cihaza kaydedildi. Hâlâ göndermeye çalışılıyor.} other {{count} değişiklik bu cihaza kaydedildi. Hâlâ göndermeye çalışılıyor.}}"
+  },
+  "lock": {
+    "locked": "HatchGrab kilitli",
+    "verifying": "Doğrulanıyor…",
+    "unlock": "Kilidi aç",
+    "cantUseBiometric": "Face / Touch ID kullanamıyor musunuz?",
+    "enterPin": "Yedek PIN’inizi girin",
+    "wrongPin": "Yanlış PIN — tekrar deneyin.",
+    "checking": "Kontrol ediliyor…",
+    "tryBiometric": "Bunun yerine Face / Touch ID deneyin",
+    "forgot": "PIN’inizi mi unuttunuz? Uygulamayı yeniden yüklemeniz gerekir."
+  },
+  "notify": {
+    "title": "🔔 Bildirimler",
+    "intro": "Bu cihazdaki uyarılar. Hangi uyarıları alacağınızı seçmek için açın.",
+    "refused": "Bunu açmak için cihazınızın Ayarlar bölümünde bildirimlere izin verilmesi gerekir.",
+    "newOrder": "Yeni sipariş uyarıları",
+    "newOrderHelp": "Bir müşteri siparişi onay beklediğinde bildirim alın.",
+    "offline": "Çevrimdışı / duraklatma uyarıları",
+    "offlineHelp": "Bu cihaz çevrimdışı olduğunda (ve sipariş alımı duraklatıldığında) bildirim alın. <green>Çevrimdışıyken de çalışır.</green>"
+  },
+  "van": {
+    "label": "Araç",
+    "loadRetry": "Yüklenemedi · Tekrar dene",
+    "select": "Seçin…"
+  },
+  "deviceSave": {
+    "network": "Sunucuya ulaşılamadı — bağlantıyı kontrol edip tekrar deneyin.",
+    "server": "Şu anda kaydedilemedi. Lütfen tekrar deneyin."
+  },
+  "setup": {
+    "fetchErrorTitle": "Cihaz kurulumu yüklenemedi",
+    "fetchErrorBody": "<b>Bu cihazı</b> kurmak için sunucuya ulaşamadık. Bağlantıyı kontrol edip tekrar deneyin — siparişleriniz ve ayarlarınız etkilenmedi.",
+    "retry": "Tekrar dene",
+    "later": "Sonra",
+    "noVanTitle": "Aktif araç yok",
+    "noVanBody": "Bu food truck’ın henüz aktif bir aracı yok. <b>Ayarlar → Food truck’larınız</b> bölümünden bir araç etkinleştirin; ardından bu cihaz otomatik olarak kurulur — burada başka adım gerekmez.",
+    "goToVans": "Ayarlar → Food truck’larınız bölümüne git",
+    "title": "Bu cihazı kurun",
+    "body": "<b>Bu cihaz</b> için tek seferlik kurulum: hangi ekranla açılacağı ve hangi aracı çalıştırdığı. Yalnızca bu cihaz için geçerlidir — diğer cihazlar ayrı ayarlanır; bunları daha sonra profil menüsü → “Bu cihaz” bölümünden değiştirebilirsiniz.",
+    "whichScreen": "Bu cihaz hangi ekranla açılsın?",
+    "dashboard": "Panel",
+    "kds": "Mutfak ekranı",
+    "whichVan": "Bu cihaz hangi araçta?",
+    "selectVan": "Bir araç seçin…",
+    "saving": "Kaydediliyor…",
+    "tryAgain": "Tekrar dene",
+    "continue": "Devam"
+  },
+  "device": {
+    "title": "Bu cihaz",
+    "viewing": "Görüntülenen: <b>{truck}</b>",
+    "viewingVan": "Görüntülenen: <b>{truck}</b> — <b>{van}</b>",
+    "only": "Yalnızca bu cihaz — diğer cihazlar ayrı ayarlanır. (Kimlik: {id}…)",
+    "truck": "Food truck",
+    "van": "Araç",
+    "defaultScreen": "Varsayılan ekran",
+    "orderNotifications": "Sipariş bildirimleri",
+    "patchFailed": "{setting, select, van {Araç} defaultScreen {Varsayılan ekran} other {Sipariş bildirimleri}} ayarı kaydedilmedi. {reason}",
+    "requireBiometric": "Açmak için parmak izi veya yüz tanıma iste",
+    "pinTitle": "Yedek PIN belirleyin (4–6 hane)",
+    "pinHelp": "Parmak izi veya yüz tanıma çalışmazsa giriş yolunuz budur — tek yedek yöntem olduğu için unutmayın (unutulan PIN, uygulamayı yeniden yüklemek demektir). Çevrimdışıyken de çalışır.",
+    "pinPlaceholder": "PIN",
+    "confirmPinPlaceholder": "PIN’i onaylayın",
+    "pinTooShort": "En az 4 hane kullanın.",
+    "pinMismatch": "PIN’ler eşleşmiyor.",
+    "setPin": "PIN belirle ve etkinleştir",
+    "cancel": "İptal",
+    "noBiometric": "Bu cihazda parmak izi veya yüz tanıma ayarlı değil — cihaz ayarlarınızdan ekleyin. Yedek PIN’iniz yine de çalışır.",
+    "footer": "Bu ayarlar yalnızca bu cihaz için geçerlidir — diğer cihazlar ayrı yapılandırılır."
+  },
+  "appLock": {
+    "unlockReason": "HatchGrab’in kilidini açın",
+    "usePasscode": "Parolayı kullan",
+    "cancel": "İptal",
+    "confirmEnable": "Uygulama kilidini etkinleştirmek için onaylayın"
+  },
+  "channel": {
+    "ordersName": "Yeni siparişler",
+    "ordersDescription": "Bir sipariş onay beklediğinde gelen uyarılar."
+  },
+  "localNotify": {
+    "newOrderTitle": "Yeni sipariş",
+    "orderReceived": "Sipariş {number} alındı",
+    "newOrders": "{n, plural, one {Yeni bir siparişiniz var} other {{count} yeni siparişiniz var}}"
+  },
+  "offlineAlert": {
+    "pausedTitle": "Sipariş alımı duraklatıldı",
+    "pausedBody": "Çevrimdışısınız — müşteri siparişleri duraklatıldı.",
+    "offlineTitle": "Çevrimdışısınız",
+    "offlineBody": "Bu cihazın bağlantısı kesildi."
+  }
+}

@@ -1,0 +1,82 @@
+{
+  "jsonLd": {
+    "subCategory": "Aplikasi pemesanan untuk food truck dan usaha kuliner keliling",
+    "description": "Pemesanan online, pre-order, dan layar dapur untuk food truck dan usaha kuliner keliling ({country}).",
+    "audience": "Pemilik food truck dan pelaku usaha kuliner keliling"
+  },
+  "hero": {
+    "title": "Aplikasi pemesanan yang dibuat khusus untuk <lean>food truck.</lean>",
+    "subSmall": "Unggah menu Anda, tanpa perlu daftar.<br></br>Lihat demo yang langsung berfungsi dalam kurang dari 60 detik.",
+    "cta": "Unggah menu saya →",
+    "ctaNote": "<lead>Unggah foto menu Anda dan lihat hasilnya berfungsi dalam kurang dari 60 detik.</lead><small>Tanpa daftar. Tanpa kartu.</small>"
+  },
+  "shots": {
+    "kitchenAlt": "Layar dapur HatchGrab, menampilkan tiket pesanan sesuai urutan masak",
+    "dashboardAlt": "Mencatat pesanan di HatchGrab: menu di sebelah kiri, keranjang berjalan dan totalnya di sebelah kanan",
+    "phoneAlt": "Memesan dari food truck di HatchGrab: menu dengan foto dan harga, serta total keranjang yang terus diperbarui"
+  },
+  "trust": {
+    "freeMonth": "{months, plural, one {Bulan pertama gratis sepenuhnya, semua fitur terbuka} other {# bulan pertama gratis sepenuhnya, semua fitur terbuka}}",
+    "noCard": "Tanpa kartu",
+    "cancel": "Bisa berhenti kapan saja, tanpa kontrak"
+  },
+  "does": {
+    "eyebrow": "Fungsinya",
+    "title": "Dibuat untuk food truck, bukan restoran.",
+    "lede": "Kebanyakan aplikasi pemesanan menganggap usaha Anda punya alamat tetap, wifi yang stabil, dan jam buka yang sama setiap minggu. Padahal Anda berjualan di tempat baru setiap minggu, di jam yang berbeda, dengan sinyal yang putus-putus atau bahkan tanpa sinyal. HatchGrab dibuat untuk kondisi itu.",
+    "slotsTitle": "Pelanggan memilih waktu pengambilan",
+    "capacityTitle": "Atur kapasitas dapur Anda",
+    "capacityBody": "Atur berapa banyak yang bisa Anda masak sekaligus dan berapa lama waktunya. Begitu satu waktu pengambilan penuh, pelanggan tidak bisa memilihnya lagi.",
+    "devicesTitle": "Berfungsi di perangkat apa pun",
+    "devicesBody": "Berjalan di ponsel di saku celemek Anda, tablet di meja kasir, laptop di dalam truk — dan mesin EDC yang sudah Anda pakai untuk menerima pembayaran.",
+    "postsTitle": "Otomatiskan postingan Facebook & Instagram Anda",
+    "postsBody": "Unggah desain yang biasa Anda posting di Facebook atau Instagram. Kami isi tanggal, lokasi, dan jamnya, siap dibagikan — setiap minggu atau setiap hari.",
+    "whatsappTitle": "Balasan otomatis WhatsApp",
+    "whatsappBody": "“Malam ini jualan di mana?” “Ada dessert apa saja?” WhatsApp Anda tetap terjawab saat Anda menyetir ke lokasi jualan atau sibuk di depan panggangan, berdasarkan menu dan jadwal Anda sendiri. Messenger dan Instagram segera hadir.",
+    "whatsappSoonTitle": "Balasan otomatis WhatsApp <soon>Segera hadir</soon>",
+    "whatsappSoonBody": "“Malam ini jualan di mana?” “Ada dessert apa saja?” Sebentar lagi WhatsApp Anda akan terjawab saat Anda menyetir ke lokasi jualan atau sibuk di depan panggangan. Messenger dan Instagram menyusul.",
+    "offlineTitle": "Tidak ada sinyal? Tetap melayani.",
+    "offlineBody": "Jika sinyal hilang, pemesanan online otomatis dijeda agar pelanggan tidak membuat pesanan yang tidak akan Anda lihat. Tetap terima pesanan dengan aplikasi iPhone, iPad, dan Android.",
+    "slotsBody": "Pelanggan pesan dulu dan memilih waktu pengambilan. Antrean lebih pendek, dan makanan sudah siap saat mereka datang."
+  },
+  "steps": {
+    "eyebrow": "Cara memulai",
+    "title": "Siap dipakai dan mulai menerima pesanan dalam sekitar 15 menit.",
+    "lede": "Ada tiga hal yang perlu disiapkan — dan dua di antaranya cukup dengan foto.",
+    "menuTitle": "Buat menu Anda",
+    "menuBody": "Foto papan menu Anda atau tempelkan teksnya. Item, harga, dan tambahan masuk dengan sendirinya. Anda tinggal memeriksa apakah sudah benar.",
+    "scheduleTitle": "Tambahkan jadwal Anda",
+    "scheduleBody": "Jadwal Anda ada di situs web? Kami membacanya dari sana dan terus memperbaruinya. Jika tidak, foto saja jadwalnya. Anda tinggal menyetujui hasilnya.",
+    "shareTitle": "Bagikan link Anda",
+    "shareBody": "Posting di Facebook, tempel kode QR di truk. Pesanan masuk ke layar Anda, sesuai urutan yang perlu Anda masak."
+  },
+  "testimonial": {
+    "quote": "HatchGrab membuat pemesanan jauh lebih mudah. Semuanya tertata, kami bisa memantau stok dan tahu persis berapa pizza yang masih bisa dijual — dan slot waktunya luar biasa untuk desa-desa yang ramai.",
+    "award": "Pizzeria Keliling Terbaik Tahun Ini",
+    "awardScope": "Pemenang tingkat regional",
+    "business": "Pizzeria Gusto",
+    "byline": "Nadia & Bogdan — pemilik"
+  },
+  "pricing": {
+    "eyebrow": "Harga",
+    "title": "Mulai gratis. Upgrade saat Anda butuh.",
+    "switchHead": "Pindah dari platform lain?",
+    "switchBody": "Lihat berapa yang akan Anda bayar di HatchGrab untuk pesanan yang sama. Hanya sekitar satu menit.",
+    "switchCta": "Bandingkan biaya Anda"
+  },
+  "faq": {
+    "title": "Pertanyaan umum",
+    "metaTitle": "Pertanyaan umum (FAQ) | HatchGrab",
+    "metaDescription": "Jawaban jelas untuk pemilik food truck tentang harga HatchGrab, cara memulai, cara menerima pesanan, dan cara kerja pembayaran."
+  },
+  "final": {
+    "truckLabel": "Food truck",
+    "title": "Ingin lihat betapa mudahnya memulai?",
+    "lede": "Unggah foto atau tangkapan layar menu Anda, dan kami ubah menjadi halaman pemesanan yang berfungsi untuk Anda coba-coba dalam kurang dari 60 detik. Item Anda, harga Anda. Tanpa daftar, tanpa kartu, tanpa perlu instal apa pun. Lihat dulu, baru putuskan.",
+    "cta": "Unggah menu saya sekarang →"
+  },
+  "meta": {
+    "title": "Aplikasi pemesanan food truck — HatchGrab {country}",
+    "description": "Terima pesanan dan pre-order di lokasi jualan tanpa antre. Aplikasi pemesanan dan layar dapur untuk food truck ({country}) — bukan aplikasi kasir."
+  }
+}

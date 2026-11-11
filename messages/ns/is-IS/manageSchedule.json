@@ -1,0 +1,102 @@
+{
+  "status": {
+    "cancelled": "Aflýst",
+    "finished": "Lokið",
+    "unconfirmed": "Óstaðfest",
+    "confirmed": "Staðfest",
+    "open": "Opið núna",
+    "closed": "Lokað"
+  },
+  "sections": {
+    "label": "Hlutar dagskrár",
+    "events": "Viðburðir",
+    "eventTypes": "Viðburðategundir"
+  },
+  "header": {
+    "title": "Dagskrá",
+    "upcoming": "Fram undan: {count}",
+    "import": "✨ Flytja inn dagskrá",
+    "importHint": "mynd, PDF eða texti",
+    "addEvent": "+ Bæta við viðburði",
+    "scraperAuto": "Finnum viðburði sjálfkrafa á vefsíðunni þinni",
+    "changeInSettings": "Breyta í Stillingum",
+    "scraperManual": "Þú heldur utan um dagskrána handvirkt"
+  },
+  "empty": {
+    "title": "Engir viðburðir fram undan",
+    "body": "Viðburðir sem sóttir eru af samfélagsmiðlum og bókunardagatali þínu birtast hér svo þú getir staðfest þá"
+  },
+  "list": {
+    "openNow": "Opið núna",
+    "needsApproval": "Bíður samþykkis þíns",
+    "needsConfirmation": "Þarf staðfestingu",
+    "confirmed": "Staðfest",
+    "past": "Liðnir viðburðir ({count})",
+    "found": "Við fundum {count, plural, one {# viðburð fyrir þig — skoðaðu hann og samþykktu áður en hann fer í loftið.} other {# viðburði fyrir þig — skoðaðu þá og samþykktu áður en þeir fara í loftið.}}"
+  },
+  "card": {
+    "addName": "Bæta við heiti",
+    "timeNeeded": "⚠ Tíma vantar",
+    "setTimeFirst": "Stilltu tíma fyrst",
+    "confirm": "Staðfesta",
+    "copy": "Afrita",
+    "edit": "Breyta",
+    "makePost": "Búa til færslu",
+    "cancel": "Aflýsa",
+    "approve": "Samþykkja",
+    "reject": "Hafna",
+    "stock": "⚠️ Birgðir",
+    "stockHidden": "Falið — {reason}",
+    "noDeals": "Engin virk tilboð",
+    "dealsActive": "{count, plural, one {# tilboð virkt} other {# tilboð virk}} · {names}{hidden, plural, =0 {} one { · # falið} other { · # falin}}",
+    "approveNeedsTimes": "Ekki er hægt að samþykkja fyrr en viðburðurinn hefur upphafs- og lokatíma — bættu þeim við með Breyta."
+  },
+  "guessed": {
+    "title": "📍 Við giskuðum á þessa staðsetningu",
+    "body": "Fleiri en einn staður passaði við <b>{venue}</b>, svo við völdum þann sem passar best{hasTown, select, yes { — bær: <b>{town}</b>} other {}}{hasPostcode, select, yes { ({postcode})} other {}}. Athugaðu hvort þetta sé réttur staður áður en þú samþykkir — ef hann er rangur skaltu nota <b>Breyta</b> til að leiðrétta svæðið eða {postal}, annars verða viðskiptavinir sendir á rangan stað.",
+    "thisVenue": "þessi staður"
+  },
+  "noLocation": {
+    "title": "📍 Engin staðsetning enn",
+    "body": "Við gátum ekki sett þennan stað á kortið, svo hann verður skráður en án kortanálar. Bættu við {postal} með <b>Breyta</b> til að setja hann á kortið."
+  },
+  "conflict": {
+    "title": "⚠️ {count, plural, one {Mögulegur árekstur} other {Mögulegir árekstrar}} — skoðaðu áður en þú {pending, select, yes {samþykkir} other {staðfestir}}",
+    "duplicate": "Þetta virðist vera sami viðburður og þú ert þegar með.",
+    "review": "Sami staður og dagsetning, annar tími — er þetta sami viðburður með breyttum tíma, eða sérstakt tímahólf? Skoðaðu áður en þú samþykkir.",
+    "already": "Þegar á dagskránni: <b>{venue}</b>{details} ({status, select, confirmed {staðfest} open {opið} other {{status}}})",
+    "unnamedVenue": "Ónefndur staður",
+    "ack": "Já, þetta eru ólíkir viðburðir — {pending, select, yes {samþykkja} other {staðfesta}} samt",
+    "cancel": "Hætta við",
+    "overlap": "Tími þessa viðburðar skarast við annan viðburð sama dag — einn vagn getur ekki verið á tveimur stöðum í einu. Athugaðu áður en þú samþykkir."
+  },
+  "toast": {
+    "loadFailed": "Ekki tókst að hlaða viðburðum",
+    "linkFailed": "Ekki tókst að hlaða tenglinum",
+    "placeTypeFailed": "Viðburðurinn var vistaður. Venjuleg tegund staðarins {place} var það ekki — {reason}.",
+    "placeTypeFailedReason": "vistunin gekk ekki í gegn",
+    "eventUpdated": "Viðburður uppfærður",
+    "eventAdded": "Viðburði bætt við",
+    "eventsSaved": "{count, plural, one {# viðburður vistaður} other {# viðburðir vistaðir}}",
+    "saveEventsFailed": "Ekki tókst að vista viðburði",
+    "needsTime": "Bættu við upphafs- og lokatíma áður en þú samþykkir — þessi viðburður þarf tíma til að fara í loftið.",
+    "addStartTime": "Bættu við upphafstíma",
+    "addEndTime": "Bættu við lokatíma",
+    "chooseTruckBefore": "Veldu hvaða vagn er á þessum viðburði áður en þú samþykkir.",
+    "chooseTruck": "Veldu hvaða vagn er á þessum viðburði",
+    "eventConfirmed": "Viðburður staðfestur",
+    "eventRejected": "Viðburði hafnað",
+    "undo": "↩ Afturkalla",
+    "eventRestored": "Viðburður endurheimtur",
+    "restoreFailed": "Ekki tókst að endurheimta",
+    "eventCancelled": "Viðburði aflýst",
+    "eventCancelledOrders": "Viðburði aflýst · {count, plural, one {# pöntun felld niður} other {# pantanir felldar niður}}",
+    "placeHidden": "Staður falinn",
+    "placeShown": "Staður sýndur aftur",
+    "saveThatFailed": "Ekki tókst að vista þetta."
+  },
+  "link": {
+    "label": "Einkatengill og QR-kóði",
+    "close": "Loka"
+  }
+}

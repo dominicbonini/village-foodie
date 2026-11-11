@@ -1,0 +1,18 @@
+{
+  "menuLabel": "Kullanıcı menüsü",
+  "screenOn": "Ekran açık",
+  "screenOff": "Ekran kapalı",
+  "newOrderSound": "Yeni sipariş sesi",
+  "copied": "Kopyalandı",
+  "orderLink": "Sipariş bağlantısı",
+  "qrCode": "QR kod",
+  "kitchenScreen": "Mutfak ekranı",
+  "thisDevice": "Bu cihaz",
+  "manage": "Yönetim",
+  "ordersDashboard": "Sipariş paneli",
+  "admin": "Yönetici",
+  "privacy": "Gizlilik politikası",
+  "terms": "Koşullar",
+  "signOut": "Çıkış yap",
+  "close": "Kapat"
+}

@@ -1,0 +1,5 @@
+{
+  "invalidMobile": "{withName, select, yes {Vui lòng nhập số di động {name} hợp lệ} other {Vui lòng nhập số di động hợp lệ}}{withExample, select, yes { (ví dụ: {example})} other {}}",
+  "invalidPhone": "{withName, select, yes {Vui lòng nhập số điện thoại {name} hợp lệ} other {Vui lòng nhập số điện thoại hợp lệ}}{withExample, select, yes { (ví dụ: {example})} other {}}",
+  "invalidPhoneNumber": "{withName, select, yes {Nhập số điện thoại {name} hợp lệ} other {Nhập số điện thoại hợp lệ}}{withExample, select, yes { (ví dụ: {example})} other {}}."
+}

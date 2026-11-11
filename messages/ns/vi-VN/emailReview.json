@@ -1,0 +1,16 @@
+{
+  "subject": "Bạn thấy đơn hàng từ {truck} thế nào?",
+  "heading": "Cảm ơn bạn đã đặt món tại {truck}",
+  "body": "{truck} rất mong nhận được đánh giá chân thực của bạn trên Google. Chỉ mất một phút, và đánh giá của bạn giúp người khác tìm thấy quán.",
+  "button": "Viết đánh giá trên Google",
+  "linkText": "Viết đánh giá trên Google: {url}",
+  "from": "Email này được gửi từ {truck} qua HatchGrab vì bạn đã đặt món tại đây.",
+  "unsubscribeLead": "Không muốn nhận lời mời đánh giá từ {truck}?",
+  "unsubscribeLink": "Hủy đăng ký",
+  "unsubscribeText": "Hủy đăng ký: {url}",
+  "unsubscribed": {
+    "title": "Bạn đã hủy đăng ký",
+    "body": "{truck} sẽ không gửi lời mời đánh giá cho bạn nữa.",
+    "invalid": "Link hủy đăng ký này không hợp lệ."
+  }
+}

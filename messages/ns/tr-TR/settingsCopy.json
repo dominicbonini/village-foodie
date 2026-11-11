@@ -1,0 +1,19 @@
+{
+  "allowCancellation": {
+    "label": "Müşterilerin sipariş iptal etmesine izin ver",
+    "sentence": "Müşteriler teslim alma saatinden <select></select> öncesine kadar iptal edebilir"
+  },
+  "autoAccept": {
+    "label": "Siparişleri otomatik kabul et",
+    "help": "Siparişler otomatik onaylanır. İstenen zaman aralığı doluysa sipariş bir sonraki boş zaman aralığına kaydırılır. Yalnızca kapasite varsa onaylanır. Müşteri notu olan siparişlerin (ör. bir alerji) yine sizin tarafınızdan onaylanması gerekir."
+  },
+  "orderReady": {
+    "label": "“Hazır” işaretleme adımı",
+    "help": "Siparişler ekranında “Hazır olarak işaretle” düğmesini gösterir. Mutfak ekranları her cihazda ayrı ayarlanır. Bir sipariş hazır olarak işaretlendiğinde müşteriye e-posta gönderilir. Tüm etkinliklere uygulanır — tek bir etkinlik için yine o etkinliğin panelinden açıp kapatabilirsiniz."
+  },
+  "buzzers": {
+    "label": "Teslim alma için çağrı cihazı veriyor musunuz?",
+    "help": "Her müşteriye hangi çağrı cihazını verdiğinizi kaydedin; yemeği hazır olduğunda kimi arayacağınızı bilirsiniz.",
+    "countLabel": "Kaç çağrı cihazınız var?"
+  }
+}

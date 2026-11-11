@@ -49,6 +49,12 @@ const BANNED = {
     { pattern: '(?<!catering )\\bmóvil(es)?\\b', why: 'Mexico: "celular" for a phone ("catering móvil" is right)' }, { pattern: 'datáfono', why: 'Mexico: "terminal"' }],
   ja: [{ pattern: 'フードトラック', why: 'Japan searches "キッチンカー" (the brief), never "フードトラック"' }],
   zh: [{ pattern: '[们这说时间单个买卖车饭后发]', why: 'Hong Kong writes TRADITIONAL characters (們 這 說 時 間 單 個 買 賣 車 飯 後 發), never Simplified' }],
+  // languages-world-1 (10 November 2026)
+  'zh-TW': [{ pattern: '[们这说时间单个买卖车饭后发]', why: 'Taiwan writes TRADITIONAL characters, never Simplified' },
+    { pattern: '餐牌|致敏原|落單|網絡|軟件|視頻|默認', why: 'Hong Kong / mainland words — Taiwan says 菜單, 過敏原, 點餐, 網路, 軟體, 影片, 預設 (登錄 stays allowed: it is Taiwan’s legal word for registration)' }],
+  id: [{ pattern: 'bayar di tempat', why: '"Bayar di tempat" means cash on delivery in Indonesian e-commerce — Pay at Hatch is "Bayar saat ambil" / "Bayar di truk"' }],
+  tr: [{ pattern: 'kapıda ödeme', why: '"kapıda ödeme" is paying the courier at the door — Pay at Hatch is "Teslim alırken ödeme"' }],
+  sr: [{ pattern: '[\\u0400-\\u04FF]', why: 'sr-RS is written in LATIN script (latinica) — no Cyrillic letters' }],
 }
 const EVERY_LANGUAGE_BANNED = [{ pattern: '\\bhatch\\b', why: '"Pay at Hatch" is translated and the word "hatch" means nothing outside English (glossary rule 2)' }]
 const INVARIANTS = [{ term: 'HatchGrab', why: 'the brand — never translated (rule 1)' }, { term: 'Pro', why: 'the plan name stays "Pro" everywhere (rule 1)', word: true }]
@@ -56,7 +62,10 @@ const INVARIANTS = [{ term: 'HatchGrab', why: 'the brand — never translated (r
 const LANG_OF_HEADING = { DE: 'de', NL: 'nl', FR: 'fr', ES: 'es', IT: 'it', PT: 'pt', SV: 'sv', DA: 'da', NB: 'nb', PL: 'pl', CS: 'cs', SK: 'sk', HU: 'hu', RO: 'ro', HR: 'hr', SL: 'sl', FI: 'fi', ET: 'et', LV: 'lv', LT: 'lt', EL: 'el', BG: 'bg',
   // world-countries-1 (31 October 2026): Brazil's and Mexico's own tables (written to <locale>.json — the European pt/es tables would
   // be wrong there), and Malay, Japanese, Chinese (Hong Kong), Thai and Arabic.
-  'PT-BR': 'pt-BR', 'ES-MX': 'es-MX', MS: 'ms', JA: 'ja', ZH: 'zh', TH: 'th', AR: 'ar' }   // europe-languages-1: + PT, SV, DA, NB; europe-languages-2: + 13
+  'PT-BR': 'pt-BR', 'ES-MX': 'es-MX', MS: 'ms', JA: 'ja', ZH: 'zh', TH: 'th', AR: 'ar',
+  // languages-world-1 (10 November 2026): Turkish, Korean, Traditional Chinese as Taiwan writes it (its own zh-TW.json — the Hong Kong
+  // table would be wrong there), Indonesian, Vietnamese, Hebrew, Icelandic and Serbian (Latin script).
+  TR: 'tr', KO: 'ko', 'ZH-TW': 'zh-TW', ID: 'id', VI: 'vi', HE: 'he', IS: 'is', SR: 'sr' }   // europe-languages-1: + PT, SV, DA, NB; europe-languages-2: + 13
 const md = fs.readFileSync(path.join(REPO, SRC), 'utf8')
 const cells = line => line.split('|').slice(1, -1).map(c => c.trim())
 const bold = c => [...c.matchAll(/\*\*([^*]+)\*\*/g)].map(m => m[1].trim())

@@ -1,0 +1,136 @@
+{
+  "binary": {
+    "cameraUsage": "HatchGrab notar myndavélina svo þú getir tekið myndir af matseðilstöflunni, réttunum þínum og öðrum skjölum og hlaðið þeim beint upp á aðganginn þinn. Myndir eru aðeins notaðar fyrir það sem þú velur að hlaða upp.",
+    "bluetoothUsage": "HatchGrab notar Bluetooth til að tengjast kvittanaprentaranum í eldhúsinu svo hægt sé að prenta pöntunarmiða sjálfkrafa. Það er ekki notað til neins annars.",
+    "localNetworkUsage": "HatchGrab tengist eldhúsprentaranum þínum á staðarnetinu svo pöntunarmiðar geti prentast sjálfkrafa. Það er ekki notað til neins annars.",
+    "faceIdUsage": "Opnaðu HatchGrab með Face ID.",
+    "offlineTitle": "Næ ekki sambandi við HatchGrab",
+    "offlineDetail": "Athugaðu tenginguna.",
+    "retry": "Reyna aftur"
+  },
+  "gate": {
+    "reverted": "Pöntun nr. {id} afturkölluð",
+    "saved": "Pöntun nr. {id} vistuð",
+    "undo": "↩ Afturkalla",
+    "paymentNotRecorded": "⚠ Pöntun nr. {id} — GREIÐSLA EKKI SKRÁÐ. {collect, select, yes {Pöntuninni var lokið} other {Pöntunin var vistuð}}; greiðslan ekki.",
+    "recordPayment": "Skrá greiðslu",
+    "paid": "Pöntun nr. {id} greidd",
+    "undonePayment": "Afturkallað — greiðsla fjarlægð",
+    "undoneCollected": "Afturkallað — pöntun ekki sótt",
+    "collected": "Pöntun nr. {id} {paidToo, select, yes {greidd og sótt} other {sótt}}",
+    "ready": "Pöntun nr. {id} tilbúin",
+    "readyBuzzer": "Pöntun nr. {id} tilbúin · <pill></pill>",
+    "status": "Pöntun nr. {id} {action, select, confirm {staðfest} reject {hafnað} ready {tilbúin} collected {sótt} undo_collected {endurheimt} cancel {afpöntuð} other {uppfærð}}"
+  },
+  "conflicts": {
+    "more": "+{count} til viðbótar",
+    "notOnScreenPlus": "+{count} ekki á þessum skjá",
+    "notOnScreen": "{n, plural, one {{count} pöntun ekki á þessum skjá} other {{count} pantanir ekki á þessum skjá}}"
+  },
+  "banner": {
+    "paymentTitle": "⚠ GREIÐSLA EKKI SKRÁÐ",
+    "paymentBody": "{orders} — merkt greitt aðeins á þessu tæki. Greiðslan hefur ekki farið í gegn.",
+    "paymentCheck": "Athugaðu pöntunina og taktu aftur við greiðslu ef hún er enn ógreidd.",
+    "dismiss": "Loka",
+    "confirmChecked": "Staðfestu að þú hafir athugað {orders}",
+    "confirmHides": "Þetta felur viðvörunina. Færslan er geymd á þessu tæki hvort sem er.",
+    "notYet": "Ekki strax",
+    "iveChecked": "Ég hef athugað {orders}",
+    "statusBody": "⚠ {orders} — þessi breyting fór ekki í gegn. Athugaðu pöntunina.",
+    "offline": "📴 Engin tenging — {n, plural, one {{count} breyting vistuð á þessu tæki. Hún verður send þegar nettengingin kemst aftur á.} other {{count} breytingar vistaðar á þessu tæki. Þær verða sendar þegar nettengingin kemst aftur á.}} Stillingar eru læstar.",
+    "syncing": "Aftur á netinu — sendi {n, plural, one {{count} breytingu} other {{count} breytingar}}…",
+    "synced": "Allar breytingar sendar.",
+    "stillQueued": "{n, plural, one {{count} breyting vistuð á þessu tæki. Reyni enn að senda hana.} other {{count} breytingar vistaðar á þessu tæki. Reyni enn að senda þær.}}"
+  },
+  "lock": {
+    "locked": "HatchGrab er læst",
+    "verifying": "Staðfesti…",
+    "unlock": "Opna",
+    "cantUseBiometric": "Geturðu ekki notað Face / Touch ID?",
+    "enterPin": "Sláðu inn vara-PIN-númerið þitt",
+    "wrongPin": "Rangt PIN-númer — reyndu aftur.",
+    "checking": "Athuga…",
+    "tryBiometric": "Prófa Face / Touch ID í staðinn",
+    "forgot": "Gleymdirðu PIN-númerinu? Þá þarftu að setja forritið upp aftur."
+  },
+  "notify": {
+    "title": "🔔 Tilkynningar",
+    "intro": "Viðvaranir á þessu tæki. Kveiktu til að velja hvaða viðvaranir þú færð.",
+    "refused": "Kveikja þarf á tilkynningum í stillingum tækisins til að virkja þetta.",
+    "newOrder": "Viðvaranir um nýjar pantanir",
+    "newOrderHelp": "Fáðu tilkynningu þegar pöntun viðskiptavinar þarf staðfestingu.",
+    "offline": "Viðvaranir um tengingarrof / hlé",
+    "offlineHelp": "Fáðu tilkynningu þegar þetta tæki missir nettengingu (og hlé verður á pöntunum). <green>Virkar án nettengingar.</green>"
+  },
+  "van": {
+    "label": "Vagn",
+    "loadRetry": "Tókst ekki að hlaða · Reyna aftur",
+    "select": "Veldu…"
+  },
+  "deviceSave": {
+    "network": "Náði ekki sambandi við netþjóninn — athugaðu tenginguna og reyndu aftur.",
+    "server": "Ekki tókst að vista þetta núna. Reyndu aftur."
+  },
+  "setup": {
+    "fetchErrorTitle": "Ekki tókst að hlaða uppsetningu tækisins",
+    "fetchErrorBody": "Við náðum ekki sambandi við netþjóninn til að setja upp <b>þetta tæki</b>. Athugaðu tenginguna og reyndu aftur — pantanir þínar og stillingar verða ekki fyrir áhrifum.",
+    "retry": "Reyna aftur",
+    "later": "Seinna",
+    "noVanTitle": "Enginn virkur vagn",
+    "noVanBody": "Þessi matarvagn er ekki enn með virkan vagn. Virkjaðu vagn í <b>Stillingar → Matarvagnarnir þínir</b>; þá setur þetta tæki sig upp sjálfkrafa — engin frekari skref hér.",
+    "goToVans": "Fara í Stillingar → Matarvagnarnir þínir",
+    "title": "Settu upp þetta tæki",
+    "body": "Uppsetning í eitt skipti fyrir <b>þetta tæki</b>: skjárinn sem það opnast á og hvaða vagn það þjónar. Gildir aðeins um þetta tæki — önnur tæki eru stillt sér og þú getur breytt þessu síðar í prófílvalmyndinni → „Þetta tæki“.",
+    "whichScreen": "Á hvaða skjá á þetta tæki að opnast?",
+    "dashboard": "Pantanayfirlit",
+    "kds": "Eldhússkjár",
+    "whichVan": "Hvaða vagni tilheyrir þetta tæki?",
+    "selectVan": "Veldu vagn…",
+    "saving": "Vista…",
+    "tryAgain": "Reyna aftur",
+    "continue": "Halda áfram"
+  },
+  "device": {
+    "title": "Þetta tæki",
+    "viewing": "Þú ert að skoða: <b>{truck}</b>",
+    "viewingVan": "Þú ert að skoða: <b>{truck}</b> — <b>{van}</b>",
+    "only": "Aðeins þetta tæki — önnur tæki eru stillt sér. (Auðkenni: {id}…)",
+    "truck": "Matarvagn",
+    "van": "Vagn",
+    "defaultScreen": "Sjálfgefinn skjár",
+    "orderNotifications": "Pantanatilkynningar",
+    "patchFailed": "Ekki tókst að vista: {setting, select, van {Vagn} defaultScreen {Sjálfgefinn skjár} other {Pantanatilkynningar}}. {reason}",
+    "requireBiometric": "Krefjast fingrafars eða andlitsgreiningar til að opna",
+    "pinTitle": "Veldu vara-PIN-númer (4–6 tölustafir)",
+    "pinHelp": "Leiðin inn ef fingrafar eða andlitsgreining virkar ekki — þetta er eina varaleiðin, svo ekki gleyma því (gleymt PIN-númer þýðir að setja þarf forritið upp aftur). Virkar án nettengingar.",
+    "pinPlaceholder": "PIN",
+    "confirmPinPlaceholder": "Staðfestu PIN-númer",
+    "pinTooShort": "Notaðu a.m.k. 4 tölustafi.",
+    "pinMismatch": "PIN-númerin stemma ekki.",
+    "setPin": "Vista PIN-númer og virkja",
+    "cancel": "Hætta við",
+    "noBiometric": "Hvorki fingrafar né andlitsgreining er uppsett á þessu tæki — bættu því við í stillingum tækisins. Vara-PIN-númerið virkar áfram.",
+    "footer": "Þessar stillingar gilda aðeins um þetta tæki — önnur tæki eru stillt sér."
+  },
+  "appLock": {
+    "unlockReason": "Opna HatchGrab",
+    "usePasscode": "Nota aðgangskóða",
+    "cancel": "Hætta við",
+    "confirmEnable": "Staðfestu til að virkja forritalás"
+  },
+  "channel": {
+    "ordersName": "Nýjar pantanir",
+    "ordersDescription": "Viðvaranir þegar pöntun þarf staðfestingu."
+  },
+  "localNotify": {
+    "newOrderTitle": "Ný pöntun",
+    "orderReceived": "Pöntun {number} móttekin",
+    "newOrders": "{n, plural, one {Þú ert með {count} nýja pöntun} other {Þú ert með {count} nýjar pantanir}}"
+  },
+  "offlineAlert": {
+    "pausedTitle": "Hlé á pöntunum",
+    "pausedBody": "Engin nettenging — hlé er á pöntunum viðskiptavina.",
+    "offlineTitle": "Engin nettenging",
+    "offlineBody": "Þetta tæki hefur misst tenginguna."
+  }
+}

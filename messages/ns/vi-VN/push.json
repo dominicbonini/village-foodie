@@ -1,0 +1,6 @@
+{
+  "orderPending": {
+    "title": "Đơn mới cần xác nhận",
+    "body": "Đơn {number} — {truck}"
+  }
+}

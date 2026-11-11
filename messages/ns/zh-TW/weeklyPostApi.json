@@ -1,0 +1,57 @@
+{
+  "shortened": {
+    "heading": "標題放不下，已自動縮短。",
+    "date": "日期放不下，已自動縮短。",
+    "daysOff": "公休文字放不下，已自動縮短。",
+    "place": "地點名稱放不下，已自動縮短。",
+    "time": "時間放不下，已自動縮短。",
+    "note": "你自訂的文字放不下，已自動縮短。",
+    "venue": "場地放不下，已自動縮短。",
+    "area": "地區放不下，已自動縮短。"
+  },
+  "fontFallback": "這個設計使用的字型（{id}）無法載入——這些文字框改用 Oswald 字型。",
+  "wrongShapeBackground": "這個地點的圖片與你的設計形狀不同，因此改用標準背景。",
+  "rowsFit": "最後一天超出圖片底部 {px}px——請縮小列距，或將第 1 列往上移。",
+  "placeStatus": {
+    "ownBoth": "專屬圖片與文字位置",
+    "wrongShape": "形狀不同——更換前不會使用",
+    "ownPicture": "專屬圖片、標準位置",
+    "ownPositions": "標準圖片、專屬文字位置",
+    "none": "尚無圖片 — 使用標準設計"
+  },
+  "standardStatus": "用於其他所有地點",
+  "option": {
+    "oneOff": "僅為此貼文上傳一張",
+    "placePoster": "海報：{name}",
+    "standard": "標準設計"
+  },
+  "previewLabel": {
+    "lastEvent": "預覽使用你在這裡的上一場活動",
+    "noEvents": "這裡尚無活動——預覽會顯示你的下一場活動，並套用這個地點的名稱"
+  },
+  "fontUsage": {
+    "weekly": "你的每週貼文設計",
+    "event": "你的單場活動貼文設計",
+    "place": "你為「{place}」做的設計",
+    "placeUnnamed": "你為某個地點做的設計"
+  },
+  "face": {
+    "regular": "一般",
+    "bold": "粗體",
+    "italic": "斜體"
+  },
+  "picture": {
+    "legacy": "活動海報",
+    "fallback": "圖片",
+    "wrongShape": "形狀不同——無法作為完整背景"
+  },
+  "noPicture": {
+    "omit": "不顯示",
+    "blank": "留白",
+    "logo": "顯示你的標誌"
+  },
+  "noPicturesAll": "{total, plural, one {你的地點已有圖片。} other {你的 {total} 個地點都已有圖片。}}",
+  "noPicturesSome": "{without, plural, one {你的 {total} 個地點中，有 {without} 個還沒有圖片} other {你的 {total} 個地點中，有 {without} 個還沒有圖片}}",
+  "licenceTick": "我擁有這個字型，或已取得使用授權",
+  "fontUploadButton": "↑ 上傳你的字型"
+}

@@ -1,0 +1,61 @@
+{
+  "steps": {
+    "reading": "正在讀取你的菜單…",
+    "found": "已找到你的品項…",
+    "kitchen": "正在設定你的廚房…",
+    "page": "正在建立你的點餐頁面…",
+    "almost": "快好了…"
+  },
+  "templateSteps": {
+    "truck": "正在建立你的範例餐車…",
+    "menu": "正在設定菜單…",
+    "kitchen": "正在設定廚房…",
+    "page": "正在建立點餐頁面…",
+    "almost": "快好了…"
+  },
+  "dialogLabel": "上傳你的菜單",
+  "heading": "✨ 上傳你的菜單",
+  "failedHeading": "我們無法讀取這份菜單",
+  "close": "關閉",
+  "intro": "菜單看板的照片、螢幕截圖、PDF，或直接貼上文字都可以。我們的 AI 會讀取內容，在 60 秒內幫你建立一個可以實際使用的點餐頁面，有你的品項、你的價格。不需要註冊，也不需要信用卡。",
+  "failedIntro": "有時照片太暗、角度太斜，或是手寫的。這是我們該解決的問題，不是你做錯了什麼。你可以試試以下方法：",
+  "usually": "通常不到 60 秒就能完成。",
+  "slow": "這次花的時間比平常久，菜單比較大時有時會這樣。",
+  "keepWaiting": "繼續等待",
+  "sampleWhileYouWait": "或者在等待時先用範例菜單看看",
+  "standIn": "這<b>不會是你的菜單</b>，只是暫代的範例，讓你看看實際運作方式。",
+  "seeSample": "查看範例菜單",
+  "tryAgain": "再試一次",
+  "tryPhotoAgain": "用這張照片再試一次",
+  "tryDifferent": "換一張照片試試",
+  "uploadAnother": "← 上傳另一張照片",
+  "orSample": "或者用範例菜單看看",
+  "orBuild": "或者讓我們幫你建立",
+  "buildSent": "✓ 謝謝，我們收到了。我們會寄電子郵件給你。",
+  "buildBody": "留下你的電子郵件，我們會由真人幫你輸入菜單，再把連結寄給你。",
+  "emailPlaceholder": "you@yourfoodtruck.com.tw",
+  "sending": "…",
+  "send": "送出",
+  "noPhoto": "手邊沒有菜單照片嗎？",
+  "noPhotoBody": "先用範例餐車看看吧，你隨時都可以上傳自己的菜單。",
+  "build": "建立我的示範版 →",
+  "nothingPublished": "不會公開任何內容，只有你看得到。",
+  "error": {
+    "somethingWrong": "發生錯誤，請再試一次。",
+    "serverUnreachable": "無法連線到伺服器，請檢查網路連線後再試一次。",
+    "sendFailed": "無法送出，請再試一次。"
+  },
+  "fields": {
+    "uploadLabel": "上傳菜單檔案",
+    "dropHere": "將菜單拖放到這裡",
+    "dragOrTap": "拖放檔案，或點一下選擇",
+    "fileTypes": "圖片或 PDF",
+    "or": "或",
+    "pasteLabel": "貼上菜單文字",
+    "pastePlaceholder": "在這裡貼上你的菜單：品項名稱、說明、價格⋯⋯"
+  },
+  "emailLabel": "你的電子郵件",
+  "emailNote": "我們會寄送示範版連結給你，也可能就設定 HatchGrab 的事宜與你聯絡。<link>隱私權政策</link>",
+  "marketing": "偶爾寄給我 HatchGrab 的實用技巧和最新消息",
+  "emailInvalid": "請輸入有效的電子郵件地址。"
+}

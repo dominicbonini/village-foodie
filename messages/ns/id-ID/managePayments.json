@@ -1,0 +1,94 @@
+{
+  "heading": "Pembayaran",
+  "loading": "Memeriksa akun Stripe Anda…",
+  "state": {
+    "not_connected": {
+      "title": "Belum diatur",
+      "body": "Butuh sekitar 10 menit. Siapkan data rekening bank dan KTP Anda.",
+      "chip": "Belum diatur"
+    },
+    "requirements": {
+      "title": "Stripe butuh data Anda",
+      "body": "Pembayaran kartu belum bisa berjalan sampai Stripe menerima data usaha dan rekening bank Anda.",
+      "chip": "Perlu tindakan"
+    },
+    "pending": {
+      "title": "Terhubung — Stripe sedang memeriksa data Anda",
+      "body": "Anda tidak perlu melakukan apa pun. Stripe sedang meninjau data yang Anda kirim, dan halaman ini akan diperbarui setelah selesai.",
+      "chip": "Diperiksa"
+    },
+    "ready": {
+      "title": "Terhubung",
+      "body": "Akun Stripe Anda sudah terhubung dan siap menerima pembayaran.",
+      "chip": "Siap"
+    },
+    "restricted": {
+      "title": "Pembayaran kartu dijeda",
+      "body": "Stripe menjeda pembayaran kartu di akun Anda sampai ada masalah yang diselesaikan.",
+      "chip": "Dijeda"
+    },
+    "unsupported": {
+      "title": "Pembayaran kartu tidak tersedia di akun ini",
+      "body": "Stripe tidak dapat mengaktifkan pembayaran kartu di sini. Hubungi kami dan kami akan membereskannya bersama Anda.",
+      "chip": "Tidak tersedia"
+    }
+  },
+  "keyMismatch": {
+    "title": "Kunci Stripe tidak cocok",
+    "body": "Server situs ini memakai kunci Stripe <b>{server, select, live {live} other {test}}</b>, sedangkan browser dibangun dengan kunci <b>{browser, select, live {live} other {test}}</b>. Pembayaran kartu akan gagal saat pelanggan mencoba membayar, jadi pengaturan Stripe diblokir sampai keduanya cocok.",
+    "fix": "Kedua kunci harus diatur untuk lingkungan yang sama, lalu situs dibangun ulang — kunci publishable ditanam saat situs dibangun, sedangkan kunci rahasia dibaca di setiap permintaan."
+  },
+  "permission": {
+    "title": "Hanya pemilik truk yang bisa mengatur pembayaran",
+    "body": "Stripe dihubungkan oleh orang yang rekening banknya menerima uang, jadi harus diatur dari akun orang tersebut saat ia masuk. Tidak ada masalah dengan truk ini ataupun dengan HatchGrab."
+  },
+  "config": {
+    "keyMissingTitle": "Pembayaran kartu belum dikonfigurasi",
+    "fetchTitle": "Kami tidak dapat memeriksa akun Stripe truk ini",
+    "keyMissing": "{name} belum diatur — komponen tersemat tidak dapat dimuat."
+  },
+  "errors": {
+    "requestFailed": "Permintaan gagal ({status})",
+    "unreachable": "Tidak dapat terhubung ke Stripe"
+  },
+  "online": {
+    "heading": "Pembayaran online",
+    "body": "Pelanggan membayar dengan kartu saat memesan. Uang langsung masuk ke akun Stripe Anda sendiri — kami tidak pernah menahannya.",
+    "feeLine": "Stripe mengenakan {fee} per pembayaran dengan {region} standar. Kartu lain bisa lebih mahal. Biaya HatchGrab sendiri untuk pesanan online tergantung paket Anda — lihat Tagihan.",
+    "testMode": "Mode uji. Belum bisa menerima pembayaran sungguhan."
+  },
+  "trialNote": "Mengatur ini tidak memulai langganan Anda dan tidak mengenakan biaya apa pun hari ini. Ini adalah cara pelanggan membayar Anda — paket Anda terpisah.",
+  "admin": {
+    "title": "Dilihat sebagai admin platform",
+    "body": "Truk ini belum mengatur pembayaran online. Hanya pemilik yang bisa memulainya, dari akunnya sendiri saat masuk — tidak ada yang perlu ditekan di sini."
+  },
+  "setUp": {
+    "button": "Atur pembayaran online",
+    "busy": "Mengatur…"
+  },
+  "toast": {
+    "alreadySetUp": "Sudah diatur — melanjutkan",
+    "addDetails": "Sekarang isi data Anda untuk Stripe",
+    "createFailed": "Akun tidak dapat dibuat"
+  },
+  "onboarding": {
+    "restricted": "Selanjutnya Stripe yang menangani — Anda akan masuk ke Stripe dan memperbarui data yang dibutuhkan.",
+    "firstRun": "Selanjutnya Stripe yang menangani — Anda akan masuk ke Stripe, lalu mengisi data usaha dan rekening bank Anda."
+  },
+  "details": {
+    "title": "Data Stripe Anda",
+    "body": "Ganti rekening bank penerima pembayaran, atau perbarui data dan dokumen usaha Anda.",
+    "button": "Lihat atau ubah"
+  },
+  "walkUp": {
+    "heading": "Pembayaran langsung di tempat",
+    "body": "Cara Anda menerima uang di truk. HatchGrab tidak mengenakan biaya platform untuk pesanan langsung di tempat, apa pun pilihan Anda.",
+    "ownTerminal": "Mesin EDC Anda sendiri",
+    "current": "Saat ini",
+    "ownTerminalHelp": "Zettle, Square, atau apa pun yang sudah Anda pakai. Tidak ada yang perlu diatur — hanya biaya dari penyedia Anda sendiri yang berlaku.",
+    "hatchgrab": "Lewat HatchGrab",
+    "comingSoon": "Segera hadir",
+    "hatchgrabHelp": "Memakai koneksi Stripe yang sama dengan pembayaran online Anda — mesin EDC, atau pembayaran nirsentuh langsung dari ponsel atau tablet Anda.",
+    "hatchgrabFees": "{fee} per pembayaran dengan {region}, ditambah {surcharge} untuk pembayaran nirsentuh yang diterima di ponsel atau tablet. Kartu lain bisa lebih mahal."
+  }
+}

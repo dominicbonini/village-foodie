@@ -1,0 +1,21 @@
+{
+  "breachHeadline": "{n, plural, one {{count} 個時段} other {{count} 個時段}}超出出餐量，請檢查",
+  "batchOver": "{cat} 超出批次量：{slot} 有 {count} 份（每批 {per} 份）",
+  "eventStartOver": "活動開始時超出出餐量：{slot} 有 {n, plural, one {{count} 份餐點} other {{count} 份餐點}}",
+  "kitchenOver": "廚房超出出餐量：{slot} 有 {n, plural, one {{count} 份餐點} other {{count} 份餐點}}製作中",
+  "orderItems": "#{id} — {n, plural, one {{count} 份餐點} other {{count} 份餐點}}",
+  "placedAnyway": "仍已下單：{list}",
+  "placedItem": "#{id}（{slot}）",
+  "orphans": "{times} 超出出餐量，但找不到相關的訂單",
+  "dismiss": "關閉",
+  "kitchenCapacity": "廚房出餐量",
+  "overCapacity": "超出出餐量",
+  "wakeUnsupported": "此裝置無法讓螢幕保持開啟。",
+  "wakeInsecure": "從這個網址無法讓螢幕保持開啟。",
+  "wakeRetry": "保持螢幕開啟：點按再試一次",
+  "wakeAcquire": "保持螢幕開啟",
+  "degraded": {
+    "serverError": "伺服器無法載入訂單{hasStatus, select, yes {（錯誤 {status}）} other {}}。目前顯示的是 {at} 的訂單，可能漏掉新訂單。",
+    "unreachable": "無法連到伺服器。目前顯示的是 {at} 的訂單，可能漏掉新訂單。"
+  }
+}

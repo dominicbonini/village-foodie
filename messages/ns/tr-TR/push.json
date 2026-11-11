@@ -1,0 +1,6 @@
+{
+  "orderPending": {
+    "title": "Onay bekleyen yeni sipariş",
+    "body": "Sipariş {number} — {truck}"
+  }
+}

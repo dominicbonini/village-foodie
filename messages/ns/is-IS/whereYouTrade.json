@@ -1,0 +1,13 @@
+{
+  "stepHeading": "Hvar er matarvagninn þinn staðsettur?",
+  "stepIntro": "Þetta ákvarðar gjaldmiðil, verð, tímabelti og símanúmerasnið. Ekki er hægt að breyta landinu síðar, því það tengist kortagreiðslunum þínum.",
+  "settingsHeading": "Hvar þú selur",
+  "countryLabel": "Land",
+  "countryGuessed": "Við giskuðum á þetta út frá staðsetningu þinni. Breyttu því ef það er rangt.",
+  "countryLocked": "Ekki er hægt að breyta landinu þínu",
+  "townLabel": "Bær eða borg",
+  "townQuestion": "Bær eða borg þar sem þú ert með aðsetur",
+  "timezoneLabel": "Tímabelti",
+  "continueButton": "Áfram",
+  "saveFailed": "Ekki tókst að vista stillingar — reyndu aftur."
+}

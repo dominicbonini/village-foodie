@@ -1,0 +1,9 @@
+{
+  "subject": "Bản demo HatchGrab của bạn — đây là link để quay lại",
+  "heading": "Bản demo của bạn đã được lưu",
+  "intro": "Đây là link quay lại bản demo có thực đơn của bạn. Không cần đăng nhập — chỉ cần bấm vào.",
+  "button": "Mở bản demo",
+  "freshDay": "Mỗi lần bạn quay lại, chúng tôi sẽ tạo một ngày bán mới để bạn có cái mà thử.",
+  "deletion": "Đây là bản demo nên chúng tôi không giữ mãi — chúng tôi sẽ xóa bản demo và thực đơn vào\n                <b>{date}</b> ({days, plural, one {# ngày} other {# ngày}}). Nếu bạn đăng ký trước\n                ngày đó, thực đơn sẽ được chuyển sang cùng bạn.",
+  "notSent": "Đã lưu, nhưng hiện chưa gửi được email."
+}

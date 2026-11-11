@@ -1,0 +1,17 @@
+{
+  "back": "← Nazad",
+  "title": "Iskoristite akciju",
+  "save": "Uštedite {amount}",
+  "selectItems": "Izaberite stavku za svako polje",
+  "choose": "Izaberite: {category}…",
+  "inYourBasket": "── U vašoj korpi ──",
+  "basketUnit": "{name}{withMods, select, yes { (+ {mods})} other {}} (u korpi){state, select, used { — već je u akciji} taken { — izabrano u drugom polju} other {}}",
+  "addNew": "── Dodaj novo ──",
+  "itemWithPrice": "{name} {price}",
+  "ruleHint": "· {rule, select, requiredOne {Obavezno · izaberite jedno} required {Obavezno} other {Izaberite jedno}}{unmet, select, yes { (obavezno)} other {}}",
+  "notePlaceholder": "Dodajte napomenu, npr. bez luka (opciono)",
+  "backButton": "Nazad",
+  "cancel": "Otkaži",
+  "chooseRequired": "Izaberite obavezne opcije",
+  "apply": "Primeni akciju · {amount}"
+}

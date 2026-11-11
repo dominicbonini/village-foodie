@@ -8,7 +8,8 @@
 // `inset`), so every Google badge's VISIBLE height is the App Store badge's (components/StoreBadges.tsx).
 // 🔴 NEVER EDITED, RECOLOURED, CROPPED OR RE-LETTERED: both vendors forbid it, and "App Store" is never translated.
 // The English badges are the files that were here before (the three SVGs directly in public/badges, names unchanged): every English locale, and any
-// language without a file of its own. A regional variant reads its base's badge (de-AT → de-DE, es-MX → es-ES, fr-LU → fr-FR,
+// language without a file of its own. languages-world-1 (10 November 2026): + tr-TR, ko-KR, zh-TW, id-ID, vi-VN, he-IL (both vendors) and is-IS,
+// sr-RS (Google only: Apple publishes no Icelandic or Serbian badge, so badgeFor gives those pages Apple's English one). A regional variant reads its base's badge (de-AT → de-DE, es-MX → es-ES, fr-LU → fr-FR,
 // nl-BE → nl-NL, el-CY → el-GR, de-CH / de-LI → de-DE).
 import { overrideChain, type AppLocale } from '@/lib/i18n/locales'
 import { APP_STORE_BADGE_SRC, GOOGLE_PLAY_BADGE_SRC } from '@/lib/app-badges'
@@ -51,6 +52,12 @@ export const APPLE_BADGES: Readonly<Record<string, BadgeFile>> = {
   'zh-HK': { src: '/badges/apple/zh-HK.svg', width: 108.85157, height: 40 },
   'th-TH': { src: '/badges/apple/th-TH.svg', width: 119.66407, height: 40 },
   'ar-AE': { src: '/badges/apple/ar-AE.svg', width: 119.66408, height: 40.00013 },
+  'tr-TR': { src: '/badges/apple/tr-TR.svg', width: 151.29018, height: 40 },  // languages-world-1
+  'ko-KR': { src: '/badges/apple/ko-KR.svg', width: 129.70071, height: 40 },  // languages-world-1
+  'zh-TW': { src: '/badges/apple/zh-TW.svg', width: 108.85157, height: 40 },  // languages-world-1
+  'id-ID': { src: '/badges/apple/id-ID.svg', width: 119.66407, height: 40 },  // languages-world-1
+  'vi-VN': { src: '/badges/apple/vi-VN.svg', width: 119.66407, height: 40 },  // languages-world-1
+  'he-IL': { src: '/badges/apple/he-IL.svg', width: 121.664, height: 42 },  // languages-world-1
 }
 
 /** Google's "Get it on Google Play" badge per language base. badges-manual-1 (8 November 2026): Google's own FULL-BLEED localized
@@ -87,6 +94,14 @@ export const GOOGLE_BADGES: Readonly<Record<string, BadgeFile>> = {
   'zh-HK': { src: '/badges/google/zh-HK.png', width: 646, height: 250, inset: { top: 29, bottom: 29 } },
   'th-TH': { src: '/badges/google/th-TH.svg', width: 238.96, height: 70.87 },
   'ar-AE': { src: '/badges/google/ar-AE.svg', width: 238.96, height: 70.87 },
+  'tr-TR': { src: '/badges/google/tr-TR.svg', width: 238.96, height: 70.87 },  // languages-world-1
+  'ko-KR': { src: '/badges/google/ko-KR.svg', width: 238.96, height: 70.87 },  // languages-world-1
+  'zh-TW': { src: '/badges/google/zh-TW.svg', width: 238.96, height: 70.87 },  // languages-world-1
+  'id-ID': { src: '/badges/google/id-ID.svg', width: 238.96, height: 70.87 },  // languages-world-1
+  'vi-VN': { src: '/badges/google/vi-VN.svg', width: 238.96, height: 70.87 },  // languages-world-1
+  'he-IL': { src: '/badges/google/he-IL.svg', width: 238.96, height: 70.87 },  // languages-world-1
+  'is-IS': { src: '/badges/google/is-IS.svg', width: 238.96, height: 70.87 },  // languages-world-1
+  'sr-RS': { src: '/badges/google/sr-RS.svg', width: 238.96, height: 70.87 },  // languages-world-1
 }
 
 

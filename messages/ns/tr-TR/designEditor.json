@@ -1,0 +1,134 @@
+{
+  "item": {
+    "weekHeading": "Hafta başlığı",
+    "weekHeadingSample": "Hafta başlangıcı …",
+    "daysSample": "{first} – {last}",
+    "date": "Tarih",
+    "place": "Konum",
+    "venue": "Mekân",
+    "area": "Bölge",
+    "time": "Saat",
+    "rows": "Satırlar",
+    "rowsSample": "{px} px aralık · {first} – {last}",
+    "ownText": "Kendi metniniz",
+    "noteTokenSample": "Gönderiyi hazırlarken yazdığınız not",
+    "nothingYet": "Henüz bir şey yok",
+    "thisBox": "bu kutu"
+  },
+  "sample": {
+    "venue": "Moda Sahili",
+    "area": "Kadıköy"
+  },
+  "bar": {
+    "previewWith": "Önizleme:",
+    "undo": "Geri al",
+    "undoTitle": "Geri al (⌘Z)",
+    "redo": "Yinele",
+    "redoTitle": "Yinele (⇧⌘Z)",
+    "cancel": "İptal",
+    "saving": "Kaydediliyor…",
+    "save": "Tasarımı kaydet"
+  },
+  "grid": {
+    "eachRow": "Her satır",
+    "placeOff": "Konum adı görselinizde var — HatchGrab eklemeyecek."
+  },
+  "background": {
+    "uploading": "Yükleniyor…",
+    "replace": "Görseli değiştir",
+    "shape": {
+      "square": "Kare (1:1)",
+      "portrait45": "Dikey (4:5)",
+      "portrait916": "Dikey (9:16)",
+      "landscape169": "Yatay (16:9)",
+      "portrait": "Dikey",
+      "landscape": "Yatay"
+    }
+  },
+  "scope": {
+    "title": "Metin yerleşimi",
+    "standard": "Standart tasarımla aynı yerleşim",
+    "own": "Özel yerleşim: {place}",
+    "locked": "Bu yerleşim Standart tasarımınızdan geliyor. Yalnızca burada taşımak için “Özel yerleşim: {place}” seçeneğini seçin."
+  },
+  "stage": {
+    "hint": "Taşımak için kutuyu sürükleyin · boyutlandırmak için köşesini sürükleyin",
+    "zoomOut": "Uzaklaştır",
+    "zoomIn": "Yakınlaştır"
+  },
+  "rows": {
+    "spacing": "Aralık",
+    "daysRun": "Günler: {first} – {last}. 1. satırdaki üç kutu bu mesafeyle aşağıya kopyalanır.",
+    "whichEvents": "Hangi etkinlikler",
+    "showCancelled": "İptal edilen etkinlikleri göster",
+    "showCancelledHint": "İptal edilen bir etkinlikte konum adının üstü çizilir ve İPTAL yazısı görünür. Kapalıysa o gün tatil günü olarak görünür."
+  },
+  "days": {
+    "reorder": "Sırala",
+    "move": "taşı"
+  },
+  "picture": {
+    "picture": "Görsel",
+    "fill": "Kutuyu doldur",
+    "fit": "Kutuya sığdır",
+    "corners": "Köşeler",
+    "square": "Keskin",
+    "rounded": "Yuvarlak",
+    "ifMissing": "Bir konumun görseli yoksa",
+    "noPicture": {
+      "omit": "Hiç gösterme",
+      "blank": "Boş alan bırak",
+      "logo": "Logonuzu göster"
+    },
+    "border": "Kenarlık",
+    "drawBorder": "Kenarlık çiz",
+    "drawBorderHint": "Görselin çevresinde, kendi renginizde bir çizgi.",
+    "borderWidth": "Kenarlık kalınlığı",
+    "cornerRadius": "Köşe yuvarlaklığı",
+    "locationPictures": "Konum görselleri",
+    "addLocationPictures": "+ Konum görseli ekle",
+    "allHaveImage": "{total, plural, =0 {Henüz hiç konumunuz yok.} one {Konumunuzun görseli var.} other {# konumunuzun tümünün görseli var.}}",
+    "someWithout": "{total, plural, one {# konumunuzdan} other {# konumunuzdan}} {without} {without, plural, one {tanesinin} other {tanesinin}} henüz görseli yok"
+  },
+  "settings": {
+    "font": "Yazı tipi",
+    "colour": "Renk",
+    "textColour": "Metin rengi",
+    "ownStyleNote": "{count, plural, one {{names} kendi stiline sahip, bu yüzden değiştirilmez.} other {{names} kendi stillerine sahip, bu yüzden değiştirilmez.}}",
+    "matchAgain": "Yeniden eşleştir",
+    "matchName": "Eşleştir: {name}",
+    "lastToggle": "{kind, select, weekly {Konum veya Saat’ten en az birini açık tutun. İptal edilen bir etkinlikte konum adının üstü çizilir ve İPTAL yazısı görünür; ikisi de kapalıysa iptal edildiğini gösteren hiçbir şey kalmaz.} other {Mekân veya Saat’ten en az birini açık tutun. İptal edilen bir etkinlikte konum adının üstü çizilir ve İPTAL yazısı görünür; ikisi de kapalıysa iptal edildiğini gösteren hiçbir şey kalmaz.}}"
+  },
+  "letters": {
+    "boldGlyph": "K",
+    "italicGlyph": "T",
+    "capsGlyph": "AA",
+    "italicTitle": "{italic} — bu yazı tipinin gerçek bir italik biçimi var"
+  },
+  "align": {
+    "left": "Sol",
+    "centre": "Orta",
+    "right": "Sağ"
+  },
+  "effects": {
+    "outlineColour": "Dış çizgi rengi",
+    "bandColour": "Şerit rengi",
+    "bandDaysOff": "Tatil günlerinde şerit",
+    "bandCancelled": "Etkinlik iptal edildiğinde şerit",
+    "bandDaysOffHint": "Satış yapılmayan bir günde yukarıdaki şeridin yerine kullanılır.",
+    "bandCancelledHint": "Etkinlik iptal edildiğinde yukarıdaki şeridin yerine kullanılır."
+  },
+  "more": {
+    "dayOwnLine": "Gün ayrı satırda",
+    "dayOwnLineHint": "Haftanın günü tarihin üstünde. Yalnızca tarih için.",
+    "noEventDay": "Etkinlik olmayan bir günde",
+    "wordsBeforePlaceholder": "ör. Bizi burada bulun",
+    "neverHyphenate": "İçinde boşluk olmayan tek bir uzun kelime her zaman küçültülür — konum adlarını asla tireyle bölmeyiz."
+  },
+  "bits": {
+    "less": "Daha az",
+    "more": "Daha fazla",
+    "chooseColourFor": "{label} — istediğiniz rengi seçin",
+    "chooseColour": "İstediğiniz rengi seçin"
+  }
+}

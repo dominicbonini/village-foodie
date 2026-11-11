@@ -1,0 +1,141 @@
+{
+  "row": {
+    "discovery_map_listing": {
+      "name": "הופעה במפת הגילוי"
+    },
+    "web_dashboard": {
+      "name": "לוח בקרה בכל דפדפן"
+    },
+    "qr_code": {
+      "name": "קוד QR"
+    },
+    "schedule_import": {
+      "name": "ייבוא לו״ז אוטומטי"
+    },
+    "meal_deals_upsells": {
+      "name": "ארוחות מבצע ושדרוגים"
+    },
+    "walkup_orders": {
+      "name": "ניהול הזמנות במקום"
+    },
+    "sold_out_toggle": {
+      "name": "סימון “אזל” מיידי"
+    },
+    "kitchen_app": {
+      "name": "אפליקציית מטבח ל-iPhone, ל-iPad ול-Android"
+    },
+    "offline_protection": {
+      "name": "הגנה על הזמנות באופליין"
+    },
+    "online_payments": {
+      "name": "תשלומים אונליין"
+    },
+    "advance_preordering": {
+      "name": "הזמנה מראש לתאריכים עתידיים"
+    },
+    "preorder_deadline": {
+      "name": "מועד אחרון להזמנה מראש"
+    },
+    "time_slot_selection": {
+      "name": "בחירת חלון זמן על ידי הלקוח"
+    },
+    "kitchen_capacity": {
+      "name": "ניהול קיבולת המטבח"
+    },
+    "stock_countdown": {
+      "name": "ספירת מלאי אוטומטית"
+    },
+    "auto_accept": {
+      "name": "אישור אוטומטי להזמנות אונליין"
+    },
+    "branded_qr_code": {
+      "name": "קוד QR ממותג"
+    },
+    "private_events": {
+      "name": "אירועים פרטיים"
+    },
+    "social_media_posts": {
+      "name": "פוסטים לרשתות חברתיות"
+    },
+    "whatsapp_auto_replies": {
+      "name": "מענה אוטומטי ב-WhatsApp"
+    },
+    "messenger_instagram_replies": {
+      "name": "מענה אוטומטי ב-Messenger וב-Instagram"
+    },
+    "tap_to_pay": {
+      "name": "קבלת תשלום בטלפון"
+    },
+    "sms_order_alerts": {
+      "name": "התראות SMS על הזמנות"
+    },
+    "multi_device_kitchen": {
+      "name": "סנכרון מטבח בין כמה מכשירים"
+    },
+    "multi_user_access": {
+      "name": "גישה לכמה משתמשים"
+    },
+    "embed_schedule": {
+      "name": "עמוד לו״ז באתר שלכם"
+    },
+    "event_types": {
+      "name": "סוגי אירועים ותמחור מותאמים"
+    },
+    "buzzer_tracking": {
+      "name": "מעקב זימוניות"
+    },
+    "documents_reminders": {
+      "name": "מסמכים ותזכורות"
+    },
+    "profit_per_event": {
+      "name": "רווח לכל אירוע"
+    },
+    "accountant_reports": {
+      "name": "דוחות לרואה החשבון"
+    },
+    "ticket_printing": {
+      "name": "הדפסת בונים למטבח"
+    },
+    "customer_display": {
+      "name": "מסך ללקוחות"
+    },
+    "loyalty_stamp_cards": {
+      "name": "כרטיסיות ניקוב דיגיטליות"
+    }
+  },
+  "cardRegionOnline": "{region} רגילים",
+  "cardRegion": {
+    "UKcards": "כרטיסים בריטיים",
+    "EEAcards": "כרטיסים מהאזור הכלכלי האירופי",
+    "UScards": "כרטיסים אמריקאיים",
+    "Australiancards": "כרטיסים אוסטרליים",
+    "NewZealandcards": "כרטיסים מניו זילנד",
+    "Canadiancards": "כרטיסים קנדיים",
+    "Swisscards": "כרטיסים שווייצריים",
+    "Braziliancards": "כרטיסים ברזילאיים",
+    "Mexicancards": "כרטיסים מקסיקניים",
+    "Japanesecards": "כרטיסים יפניים",
+    "Singaporecards": "כרטיסים מסינגפור",
+    "HongKongcards": "כרטיסים מהונג קונג",
+    "Malaysiancards": "כרטיסים מלזיים",
+    "Thaicards": "כרטיסים תאילנדיים",
+    "UAEcards": "כרטיסים מאיחוד האמירויות"
+  },
+  "perMonth": {
+    "mo": "{amount}/חודש",
+    "month": "{amount} לחודש"
+  },
+  "priceWord": {
+    "free": "חינם",
+    "freeTrial": "ניסיון חינם",
+    "lifetime": "לכל החיים",
+    "zeroPercent": "0%",
+    "payAtHatch": "תשלום באיסוף",
+    "unlimited": "ללא הגבלה",
+    "none": "—",
+    "masked": "ייקבע בהמשך"
+  },
+  "cell": {
+    "included": "כלול"
+  }
+}

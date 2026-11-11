@@ -1,0 +1,9 @@
+{
+  "title": "요금제 및 기능",
+  "generated": "생성일: {date}",
+  "allowanceHeading": "온라인 주문 제공량",
+  "smallPrint": "유의 사항",
+  "priceNoteMasked": "“미정”으로 표시된 가격은 아직 공개되지 않았어요.",
+  "omitNote": "이 문서에는 가격을 일부러 넣지 않았어요.",
+  "terms": "수치는 위 날짜 기준으로 공개된 요금제 조건이며 변경될 수 있어요. 카드 결제 수수료는 HatchGrab이 아닌 Stripe가 부과하는 요금이에요. 이 문서는 요약본이며 계약서가 아니에요."
+}

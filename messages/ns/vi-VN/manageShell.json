@@ -1,0 +1,86 @@
+{
+  "loading": "Đang tải trang quản lý…",
+  "loadFailed": "Không tải được",
+  "requestFailed": "Thất bại",
+  "invalidToken": "Mã không hợp lệ hoặc đã hết hạn",
+  "loadFailedReason": "Không tải được trang này: {reason}",
+  "noCountrySettings": "Không tải được cài đặt quốc gia của xe này. Vui lòng tải lại trang.",
+  "noPlans": "Không tải được gói của xe này. Vui lòng tải lại trang.",
+  "stale": "{hasTime, select, yes {Không làm mới được. Đang hiện dữ liệu đã lưu lúc {time}. Các thay đổi của bạn vẫn được lưu.} other {Không làm mới được. Đang hiện dữ liệu đã lưu. Các thay đổi của bạn vẫn được lưu.}}",
+  "verify": {
+    "ok": "Đã xác nhận email — cảm ơn bạn.",
+    "expired": "Link xác nhận đã hết hạn. Hãy liên hệ với chúng tôi để xử lý trước khi bạn mở bán.",
+    "invalid": "Link xác nhận không hoạt động. Hãy liên hệ với chúng tôi để xử lý trước khi bạn mở bán."
+  },
+  "profile": {
+    "updated": "Đã cập nhật hồ sơ",
+    "saveFailed": "Không lưu được",
+    "title": "Sửa hồ sơ",
+    "name": "Tên",
+    "namePlaceholder": "Tên của bạn",
+    "email": "Email",
+    "cancel": "Hủy",
+    "saving": "Đang lưu…",
+    "save": "Lưu"
+  },
+  "header": {
+    "subtitle": "Trang quản lý",
+    "ordersDashboard": "← Bảng điều khiển đơn hàng"
+  },
+  "tabs": {
+    "menu": "Thực đơn",
+    "schedule": "Lịch bán",
+    "paperwork": "Giấy tờ",
+    "social": "Mạng xã hội",
+    "reports": "Báo cáo",
+    "team": "Nhóm",
+    "settings": "Cài đặt",
+    "payments": "Thanh toán",
+    "billing": "Gói & thanh toán",
+    "paymentsIcon": "💵",
+    "scheduleCount": "Lịch bán ({count})",
+    "stripeAttention": "Stripe cần bạn xử lý",
+    "allergensNotSet": "chưa thiết lập chất gây dị ứng"
+  },
+  "menuSections": {
+    "label": "Các mục thực đơn",
+    "items": "Món",
+    "capacity": "Công suất bếp",
+    "extras": "Tùy chọn thêm & gợi ý mua thêm",
+    "deals": "Ưu đãi"
+  },
+  "socialSections": {
+    "label": "Các mục mạng xã hội",
+    "create": "Tạo bài đăng",
+    "designs": "Mẫu thiết kế",
+    "locations": "Cài đặt địa điểm"
+  },
+  "notices": {
+    "review": "Xem lại →",
+    "tour": "Bạn muốn xem nhanh một vòng bảng điều khiển?",
+    "showMeAround": "Xem hướng dẫn",
+    "dismiss": "Bỏ qua",
+    "approval": "{count, plural, one {Chúng tôi tìm thấy <b>{count}</b> sự kiện cho bạn — hãy xem lại và duyệt trước khi sự kiện hiển thị công khai.} other {Chúng tôi tìm thấy <b>{count}</b> sự kiện cho bạn — hãy xem lại và duyệt trước khi các sự kiện hiển thị công khai.}}",
+    "allergens": "<b>Chưa thiết lập chất gây dị ứng</b> — khách sẽ không thấy thông tin dị ứng cho đến khi bạn xác nhận. Hãy xem lại chất gây dị ứng của từng món trong tab Thực đơn.",
+    "domainLive": "<link>{domain}</link> đã hoạt động. Hãy mở xem, rồi xác nhận với chúng tôi trong Cài đặt rằng mọi thứ đã đúng.",
+    "stripe": "<b>Stripe cần bạn bổ sung thông tin</b> — thanh toán thẻ có thể bị dừng cho đến khi xử lý xong.",
+    "profileTitle": "Hoàn thiện hồ sơ của bạn",
+    "missing": "Còn thiếu: {fields}.",
+    "goToSettings": "Đi đến Cài đặt →",
+    "field": {
+      "truckName": "tên xe",
+      "cuisineType": "loại món ăn",
+      "contactEmail": "email liên hệ",
+      "contactPhone": "số điện thoại liên hệ"
+    }
+  },
+  "trialPopup": {
+    "title": "{months, select, none {Bạn đang dùng thử miễn phí} other {Bạn đang dùng thử miễn phí {months} tháng}}",
+    "ends": "{hasDate, select, yes {Hết hạn dùng thử: <hl>{date}</hl>} other {Thời gian dùng thử <hl>sắp kết thúc</hl>}}",
+    "offer": "{hasMonths, select, yes {{months, plural, one {Miễn phí mọi tính năng trong # tháng} other {Miễn phí mọi tính năng trong # tháng}}} other {Miễn phí mọi tính năng trong thời gian dùng thử}}",
+    "body": "{hasDate, select, yes {Bạn sẽ không bị tính phí trong thời gian dùng thử, kéo dài đến <b>{date}</b>. Chỉ khi bạn chọn gói và nhập thông tin thanh toán thì mới bắt đầu tính phí. Trước đó không có gì để hủy và không phải trả gì. Hãy chọn gói trước thời hạn này — nếu không, bạn sẽ được chuyển sang gói {fallback} và một số tính năng sẽ ngừng hoạt động.} other {Bạn sẽ không bị tính phí trong thời gian dùng thử. Chỉ khi bạn chọn gói và nhập thông tin thanh toán thì mới bắt đầu tính phí. Trước đó không có gì để hủy và không phải trả gì. Hãy chọn gói trước khi hết hạn dùng thử — nếu không, bạn sẽ được chuyển sang gói {fallback} và một số tính năng sẽ ngừng hoạt động.}}",
+    "bodyPaidEnd": "{hasDate, select, yes {Bạn sẽ không bị tính phí trong thời gian dùng thử, kéo dài đến <b>{date}</b>. Khi hết hạn dùng thử, gói {fallback} có giá {price} mỗi tháng. Chúng tôi sẽ liên hệ trước thời điểm đó để thiết lập thanh toán.} other {Bạn sẽ không bị tính phí trong thời gian dùng thử. Khi hết hạn dùng thử, gói {fallback} có giá {price} mỗi tháng. Chúng tôi sẽ liên hệ trước thời điểm đó để thiết lập thanh toán.}}",
+    "fees": "*Áp dụng phí xử lý thẻ tiêu chuẩn cho đơn online",
+    "upgrade": "Nâng cấp tại đây →"
+  }
+}

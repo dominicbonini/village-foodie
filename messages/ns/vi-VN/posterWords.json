@@ -1,0 +1,25 @@
+{
+  "heading": "Tuần từ {start} đến {end}",
+  "daysOff": "Hôm nay nghỉ bán",
+  "cancelled": "ĐÃ HỦY",
+  "placeSample": {
+    "nameTownBelow": "Công viên Lê Văn Tám\nQuận 1",
+    "nameTown": "Công viên Lê Văn Tám, Quận 1",
+    "nameOnly": "Công viên Lê Văn Tám"
+  },
+  "busyWeek": {
+    "venue1": "Nhà văn hóa Phường Bến Nghé",
+    "town1": "Quận 1",
+    "venue2": "Nhà văn hóa và Sân thể thao Phường Thảo Điền",
+    "town2": "Thủ Đức",
+    "venue3": "Phố đi bộ Nguyễn Huệ",
+    "town3": "Quận 1",
+    "venue4": "Lễ hội ẩm thực",
+    "town4": "Quận 3",
+    "venue5": "Chợ đêm",
+    "town5": "Quận 7",
+    "venue6": "Công viên Gia Định",
+    "town6": "Gò Vấp"
+  },
+  "poweredBy": "Vận hành bởi HatchGrab"
+}

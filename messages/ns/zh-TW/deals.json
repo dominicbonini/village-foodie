@@ -1,0 +1,17 @@
+{
+  "back": "← 返回",
+  "title": "套用優惠",
+  "save": "省 {amount}",
+  "selectItems": "請為每個欄位選擇品項",
+  "choose": "選擇{category}…",
+  "inYourBasket": "── 購物車內 ──",
+  "basketUnit": "{name}{withMods, select, yes {（+ {mods}）} other {}}（購物車內）{state, select, used {：已用於其他優惠} taken {：已在其他欄位選取} other {}}",
+  "addNew": "── 新增 ──",
+  "itemWithPrice": "{name} {price}",
+  "ruleHint": "· {rule, select, requiredOne {必選 · 選一項} required {必選} other {選一項}}{unmet, select, yes {（必選）} other {}}",
+  "notePlaceholder": "加上備註，例如：不要洋蔥（選填）",
+  "backButton": "返回",
+  "cancel": "取消",
+  "chooseRequired": "請選擇必選項目",
+  "apply": "套用優惠 · {amount}"
+}

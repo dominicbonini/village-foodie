@@ -1,0 +1,30 @@
+{
+  "labels": {
+    "weekDates": "Hafta tarihleri",
+    "dayList": "Gün listesi",
+    "place": "Konum",
+    "venue": "Mekân",
+    "area": "Bölge",
+    "dayDate": "Gün ve tarih",
+    "times": "Saatler",
+    "orderLink": "Sipariş bağlantısı",
+    "locationTag": "Konum etiketi"
+  },
+  "weekHeader": "{truck} — bu hafta neredeyiz:",
+  "dayLine": "{day} — {where} — {times}",
+  "dayLineNoTimes": "{day} — {where}",
+  "dayLineCancelled": "{day} — {where} — İPTAL, kusura bakmayın",
+  "noDates": "Bu hafta tarih yok — yakında tekrar bakın.",
+  "orderAhead": "Önceden sipariş verin: {url}",
+  "orderAheadTagged": "Önceden sipariş verin: {url} {tag}",
+  "eventLine": "{truck} {when} burada: {where}, {times}.",
+  "eventLineNoTimes": "{truck} {when} burada: {where}.",
+  "cancelledSorry": "Üzgünüz — {when} şurada olamayacağız: {where}.",
+  "cancelledApology": "Gelmeyi planlayan herkesten özür dileriz. Yakında yeniden buradayız.",
+  "when": {
+    "today": "bugün",
+    "tonight": "bu akşam",
+    "tomorrow": "yarın",
+    "dated": "{date} tarihinde"
+  }
+}

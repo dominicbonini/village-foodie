@@ -1,0 +1,28 @@
+{
+  "payg": {
+    "name": "Tanpa biaya bulanan",
+    "subtitle": "Pedagang musiman & paruh waktu",
+    "description": "Tidak ada biaya langganan. Anda hanya membayar saat pelanggan membayar online dengan kartu."
+  },
+  "pro": {
+    "subtitle": "Truk yang rutin menerima pre-order",
+    "description": "Semua fitur, termasuk balasan otomatis WhatsApp dan postingan media sosial, dengan kuota pesanan online setiap bulan."
+  },
+  "unlimited": {
+    "name": "Tanpa batas",
+    "subtitle": "Truk yang ramai & festival",
+    "description": "Semua fitur, tanpa biaya untuk pesanan online, seramai apa pun usaha Anda."
+  },
+  "trial": {
+    "name": "Coba gratis",
+    "description": "Semua fitur, gratis, selama masa coba Anda berlangsung."
+  },
+  "demo": {
+    "name": "Demo",
+    "description": "Sandbox untuk calon pelanggan — tidak pernah publik."
+  },
+  "tester": {
+    "name": "Tester",
+    "description": "Tester sebelum peluncuran — akses penuh."
+  }
+}

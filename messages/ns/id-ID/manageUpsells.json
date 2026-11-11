@@ -1,0 +1,19 @@
+{
+  "heading": "Upsell",
+  "intro": "Dorong pelanggan untuk menambah sesuatu. Saat seseorang memesan dari satu kategori, sarankan item dari kategori lain — minuman untuk pizza, saus untuk burger.",
+  "add": "+ Tambah upsell",
+  "toast": {
+    "updated": "Aturan upsell diperbarui",
+    "added": "Aturan upsell ditambahkan",
+    "removed": "Aturan dihapus"
+  },
+  "whenAdds": "Saat pelanggan menambahkan…",
+  "suggestFrom": "Sarankan item dari…",
+  "chooseCategory": "Pilih kategori",
+  "cancel": "Batal",
+  "saveChanges": "Simpan perubahan",
+  "addRule": "Tambah aturan",
+  "empty": "Belum ada aturan upsell.",
+  "confirmRemove": "Hapus aturan upsell “{trigger} → {suggest}”?",
+  "upTo": "{n, plural, one {Maksimal {count} item disarankan} other {Maksimal {count} item disarankan}}"
+}

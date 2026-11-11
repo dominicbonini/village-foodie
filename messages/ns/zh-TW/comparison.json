@@ -1,0 +1,400 @@
+{
+  "path": {
+    "section": "comparison",
+    "slug": "food-truck-ordering-system"
+  },
+  "meta": {
+    "title": "餐車點餐系統比較 2026：功能與價格",
+    "description": "比較餐車點餐系統：可選取餐時間的預約點餐、廚房出餐量、每週出攤行程、費用與合約期限——皆於各廠商官網查證。",
+    "about": "餐車線上點餐系統"
+  },
+  "breadcrumb": {
+    "home": "HatchGrab",
+    "here": "比較",
+    "label": "導覽路徑"
+  },
+  "h1": "餐車點餐系統比較 2026",
+  "byline": "最後查證：{date} · 由 HatchGrab 製作。我們也是受比較的廠商之一（見<link>我們如何比較</link>）。",
+  "table": {
+    "title": "點餐系統比較一覽",
+    "caption": "{country}餐車線上點餐系統的功能與費用，截至 {date}",
+    "note": "「有」僅限廠商公開說明的項目。",
+    "feature": "功能",
+    "yes": "有",
+    "no": "無",
+    "unknown": "未說明",
+    "fromPlan": "{plan} 起",
+    "appNotInCountry": "{country}尚未上架",
+    "appFlagOff": "有——功能尚未開啟，商店上架後顯示",
+    "range": "{from} 至 {to}",
+    "feePlan": "{fee}（{plans}）",
+    "noFee": "無",
+    "morePending": "我們在各廠商官網查證資料後，會在此列出更多廠商。",
+    "priceHidden": "需洽詢",
+    "feeAfter": "每月超過 {included} 後收取 {fee}",
+    "legend": "✓ 有 · ◐ 部分 · ✗ 無 · 未列出：功能或價格頁面上沒有 · —：官網沒有說明 · 不適用：該類服務沒有此功能 · ⓘ：附註、引文與來源",
+    "swipe": "左右滑動查看所有產品 →"
+  },
+  "costs": {
+    "title": "餐車點餐系統要多少錢？",
+    "ourPlan": "{plan}：每月 {price}，{fee}",
+    "feeOnly": "每筆線上刷卡訂單 {fee}",
+    "feeIncluded": "每月含 {included} 的線上訂單額度，超出後收取 {fee}",
+    "feeNone": "HatchGrab 不收線上訂單手續費",
+    "rivalPlan": "{plan}：{price}",
+    "perMonth": "每月 {price}",
+    "perMonthYearly": "每月 {price}，按年計費",
+    "vatExcl": "未稅",
+    "vatIncl": "含稅",
+    "setup": "一次性設定費 {price}",
+    "truckFee": "每筆訂單 {fee}",
+    "customerFee": "每筆訂單 {fee}，由顧客支付",
+    "source": "來源",
+    "checked": "查證日期：{date}",
+    "cardFee": "使用 HatchGrab 的線上刷卡付款另有 Stripe 手續費：在{country}每筆刷卡 {cardFee}。",
+    "vat": "HatchGrab Ltd 是英國公司，未在{country}辦理營業稅（VAT）登記，因此我們的費用不加收營業稅。若你已辦理營業稅登記，請提供你的稅籍編號；你需依反向課稅機制，自行申報我們費用的相關稅額。",
+    "bundledFee": "每筆線上付款 {fee}，含刷卡手續費"
+  },
+  "fit": {
+    "title": "哪個系統適合誰？",
+    "ours": "HatchGrab 適合你，如果你……",
+    "oursBody": "在不同地點擺攤、想要可選取餐時間的預約點餐、不想讓廚房爆單，也不想綁約。",
+    "oursNot": "HatchGrab 不適合你，如果你……",
+    "oursNotBody": "希望顧客用 PayPal 或 Klarna 付款，或想向同一家廠商購買具 TSE 認證的 POS 系統。",
+    "appClause": "或者你需要在{country}使用 iPad 或 Android 版廚房 App：目前在當地的商店尚未上架。",
+    "tills": "POS 系統與刷卡機",
+    "marketplaces": "外送平台",
+    "rival": "{name} 適合你，如果……",
+    "tillsBody": "POS 系統在餐車現場收款，並符合 TSE 規定。點餐系統與 POS 系統搭配使用，不能取代它。",
+    "tillsBodyNamed": "POS 系統在餐車現場收款，並符合 TSE 規定。{names} {count, plural, one {也列在} other {也都列在}}上方的表格中。點餐系統與 POS 系統搭配使用，不能取代它。",
+    "marketplacesBody": "外送平台能帶來新顧客，但每筆訂單都要抽成。Uber Eats 表示在德國自取抽成 14%、由 Uber 外送員外送抽成 30%。Wolt 在自己的官網表示會收取抽成，但未公布費率。我們無法查證 Lieferando 的費率。向你預約點餐的熟客，也同樣會被抽成。"
+  },
+  "groups": {
+    "food_truck": "餐車點餐系統",
+    "nearest_local": "點餐系統",
+    "pos": "POS 系統"
+  },
+  "faq": {
+    "title": "常見問題",
+    "whatQ": "什麼是餐車點餐系統？",
+    "whatA": "點餐系統讓顧客在到達餐車之前就先線上下單：他們選擇餐點和取餐時間，線上付款或取餐時付款，訂單就會出現在你的廚房。POS 系統或刷卡機則在餐車現場收款。兩者相輔相成。",
+    "costQ": "HatchGrab 在{country}的費用是多少？",
+    "costA": "{plans}。線上刷卡付款另有 Stripe 手續費：每筆刷卡 {cardFee}。",
+    "termQ": "有最低合約期限嗎？",
+    "termA": "沒有。沒有最低合約期限，也不需事先通知。你可以隨時取消；費用按月預先收取，你可以使用到已付費月份結束為止。",
+    "locationsQ": "擺攤地點經常變動也能用嗎？",
+    "locationsA": "可以。你設定好每週行程的地點和時間，顧客就能針對你所在的地點和日期下單。",
+    "capacityQ": "系統如何避免我的廚房爆單？",
+    "capacityA": "顧客只會看到你的廚房確實做得出來的取餐時間。系統會依每道餐點的備餐時間，以及你一次能準備的份數來計算。",
+    "tseQ": "我還需要配有 TSE 的 POS 系統嗎？",
+    "tseA": "HatchGrab 不是 POS 系統，也沒有 TSE。線上訂單要如何記錄到你的 POS 系統，請洽詢你的稅務顧問。",
+    "paymentsQ": "HatchGrab 支援哪些付款方式？",
+    "paymentsA": "顧客可線上使用信用卡、Apple Pay 或 Google Pay 付款，或在餐車現場付款。目前不支援 PayPal 和 Klarna。",
+    "costTrial": "{months, plural, one {第一個月} other {前 # 個月}}免費，所有功能都能使用。"
+  },
+  "method": {
+    "title": "我們如何比較",
+    "checked": "最後查證日期：{date}。",
+    "prices": "價格依廠商公布的方式顯示，含營業稅。",
+    "meaning": "「有」表示廠商公開說明提供此功能。「未說明」表示我們在其官網上找不到相關資訊——不代表沒有此功能。",
+    "vendor": "本頁由 HatchGrab 經營，HatchGrab 也是受比較的廠商之一。",
+    "review": "價格與功能會自動與各產品官網比對查證；每項說明都附有來源連結。",
+    "corrections": "發現錯誤？請透過我們的<link>聯絡表單</link>告訴我們。",
+    "reportError": "<link>回報錯誤</link>",
+    "machine": "給 AI 助理與開發者：本表格的 <md>Markdown 版</md> · <json>JSON 版</json>"
+  },
+  "cta": {
+    "title": "免費試用 {months, plural, one {# 個月} other {# 個月}}",
+    "noCard": "不需信用卡",
+    "cancel": "可按月取消",
+    "button": "免費試用"
+  },
+  "admin": {
+    "status": "草稿 · noindex · 不在 sitemap、llms.txt 或 hreflang 中 · 頁尾連結僅管理員可見",
+    "statusLive": "已上線 · 公開且可被索引",
+    "viewAdmin": "管理員檢視",
+    "viewPublic": "公開頁面樣貌",
+    "pricingCheck": "開啟「Pricing check」",
+    "checklist": "上線前確認",
+    "goLive": "此頁面在 Admin › Countries 上線。",
+    "check": {
+      "apps": "{country}的 iPad 與 Android 開關已開啟",
+      "placeholders": "文案中沒有殘留「[ … ]」預留文字",
+      "vat": "已包含營業稅說明"
+    },
+    "unverified": "未驗證 · 不對外顯示",
+    "autoVerified": "已自動驗證",
+    "unchecked": "尚未針對所有顯示的競品查證 · 不對外顯示",
+    "label": "管理員",
+    "notShown": "未顯示於頁面（最多顯示四個）：{names}。",
+    "reasonHidden": "{name}（已隱藏）",
+    "reasonBeyond": "{name}（超過四個）",
+    "reasonNoWebsite": "{name}（無網站）",
+    "liveAuto": "透過自動發布上線",
+    "adminsOnly": "僅管理員——{reason}",
+    "whyFewer": "{total} 個競品中有 {n} 個通過自動檢查；需要 2 個",
+    "whyAutoOff": "此國家的自動發布已關閉",
+    "shown": "{n, plural, one {顯示 # 個競品} other {顯示 # 個競品}}",
+    "details": "詳細資料"
+  },
+  "footer": {
+    "heading": "比較",
+    "link": "點餐系統比較"
+  },
+  "featureGroups": {
+    "ordering": "點餐",
+    "payments": "付款",
+    "kitchen": "廚房",
+    "marketing": "行銷",
+    "apps_hardware": "App 與硬體",
+    "price_contract": "價格與合約"
+  },
+  "cell": {
+    "yes": "有",
+    "no": "無",
+    "partial": "部分",
+    "unknown": "未說明",
+    "not_mentioned": "官網未提及",
+    "withNote": "{word}，{note}",
+    "soon": "即將推出",
+    "fromPlan": "{plan} 起",
+    "perCardPayment": "每筆刷卡 {fee}",
+    "trial": "{months, plural, one {# 個月} other {# 個月}}免費",
+    "setupFee": "一次性 {price}",
+    "perMonth": "每月 {price}",
+    "notInCountry": "{country}尚未上架",
+    "flagOff": "開關尚未開啟；商店上架後顯示",
+    "notApplicable": "不適用於外送平台",
+    "not_listed": "未列出",
+    "details": "詳細資料",
+    "doesntApply": "不適用",
+    "doesntSay": "官網未說明",
+    "none": "無"
+  },
+  "explained": {
+    "title": "功能說明"
+  },
+  "costBlock": {
+    "title": "一台餐車每月要付多少",
+    "sizes": "每月線上營業額",
+    "sizeSales": "每月 {sales}",
+    "sizeOrders": "約 {orders} 筆訂單",
+    "lead": "以每月線上訂單營業額 {sales}（約 {orders} 筆訂單）的餐車為例。每條長條代表每月總費用：點餐系統本身的費用，加上這些訂單的刷卡手續費。",
+    "legendSoftware": "軟體費用",
+    "legendCard": "刷卡手續費",
+    "software": "軟體費用每月 {amount}",
+    "card": "刷卡手續費每月 {amount}",
+    "total": "每月 {amount}（含刷卡手續費）",
+    "share": "占營業額 {pct}",
+    "assumed": "（未公布費率，以假設值計算）",
+    "customerFee": "另有每月 {amount} 由顧客支付（每筆訂單 {fee}）——未計入長條",
+    "summaryCheapest": "{us} 本身的費用是每月 {ours}，相較之下，所列最便宜的競品是每月 {theirs}。無論使用哪個系統，每筆刷卡都會收取刷卡手續費（每月 {card}），所以真正的差別在軟體費用。",
+    "summaryNotCheapest": "{us} 本身的費用是每月 {ours}，高於所列最便宜的競品 {rival} 的每月 {theirs}。無論使用哪個系統，每筆刷卡都會收取刷卡手續費（每月 {card}）。",
+    "summaryAlone": "{us} 本身的費用是每月 {ours}。無論使用哪個系統，每筆刷卡都會收取刷卡手續費（每月 {card}）。",
+    "footOrder": "平均每筆訂單 {order}：一般餐點 {meal} × 每筆訂單 {multiplier} 道餐點（{source}）。",
+    "footCard": "刷卡手續費以每筆刷卡 {rate} 計算：{source}。",
+    "footCardSource": "Stripe 在{country}的費率",
+    "footAssumed": "{names} {count, plural, one {未公布} other {皆未公布}}刷卡費率，因此以我們的費率作為假設。",
+    "footChecked": "價格查證日期：{date}。",
+    "footCalculator": "用試算工具算出你自己的數字。",
+    "noRivals": "{country}目前還沒有經過查證的競品，因此無從比較。"
+  },
+  "features": {
+    "preorder": {
+      "label": "可選取餐時間的預約點餐",
+      "explain": "顧客提前下單，並選擇取餐時間。"
+    },
+    "capacity": {
+      "label": "依廚房出餐量限制取餐時間",
+      "explain": "顧客只會看到廚房確實做得出來的取餐時間。"
+    },
+    "asap": {
+      "label": "盡快取餐的訂單",
+      "explain": "顧客不必選擇時間就能下單，餐點一做好就能取餐。"
+    },
+    "ahead": {
+      "label": "預約之後日期或活動的訂單",
+      "explain": "顧客今天就能預約之後某天的市集或活動。"
+    },
+    "schedule": {
+      "label": "地點變動的每週行程",
+      "explain": "餐車一週的地點與時間；顧客針對餐車所在的地點與日期下單。"
+    },
+    "walkup": {
+      "label": "現場點餐與線上訂單在同一畫面",
+      "explain": "在窗口接的訂單和線上訂單會進入同一個清單。"
+    },
+    "stock": {
+      "label": "每場活動的售完與庫存限制",
+      "explain": "將餐點標示為已售完，並設定每場活動各品項的可售數量。"
+    },
+    "notify": {
+      "label": "通知顧客餐點已完成",
+      "explain": "顧客如何得知餐點已完成：簡訊、WhatsApp、電子郵件、推播通知或即時訂單狀態頁面。",
+      "ours": "開啟標示完成步驟時寄送電子郵件，另有訂單狀態頁面；無簡訊、WhatsApp 或推播通知"
+    },
+    "allergens": {
+      "label": "菜單上的過敏原",
+      "explain": "每道餐點在顧客下單前顯示其過敏原。"
+    },
+    "menuphoto": {
+      "label": "用照片建立菜單",
+      "explain": "菜單的照片或 PDF 會自動填入餐點，讓你確認。"
+    },
+    "options": {
+      "label": "餐點的選項與加料",
+      "explain": "份量、醬料與加料，包括顧客必選的選項。"
+    },
+    "deals": {
+      "label": "套餐優惠與組合",
+      "explain": "多個品項以單一價格一起販售。"
+    },
+    "private": {
+      "label": "私人活動與預約",
+      "explain": "透過專屬連結為私人活動下單，以及餐車包車申請。",
+      "ours": "私人活動有專屬點餐連結；不提供包車申請"
+    },
+    "qr": {
+      "label": "桌邊／QR code 點餐",
+      "explain": "顧客掃描桌上的 QR code，訂單會附上桌號送出。",
+      "ours": "QR code 可開啟點餐頁面；無桌號"
+    },
+    "cards": {
+      "label": "線上刷卡付款，含 Apple Pay 與 Google Pay",
+      "explain": "顧客下單時以信用卡、Apple Pay 或 Google Pay 線上付款。"
+    },
+    "payattruck": {
+      "label": "取餐時付款",
+      "explain": "顧客線上下單，取餐時再付款。"
+    },
+    "localpay": {
+      "label": "在地付款方式（BLIK、iDEAL、Swish、MobilePay…）",
+      "explain": "除了信用卡之外，該國自有的線上付款方式。",
+      "ours": "僅限信用卡"
+    },
+    "paypal": {
+      "label": "PayPal 或 Klarna",
+      "explain": "顧客可用 PayPal 或 Klarna 付款。"
+    },
+    "custfee": {
+      "label": "可讓顧客支付訂單手續費",
+      "explain": "商家可將服務費轉嫁給顧客。"
+    },
+    "tips": {
+      "label": "小費",
+      "explain": "顧客線上付款時可加付小費。"
+    },
+    "paymethods": {
+      "label": "提供的付款方式",
+      "explain": "顧客可用的付款方式，依廠商的說明。",
+      "ours": "信用卡、Apple Pay、Google Pay；取餐時付款"
+    },
+    "kds": {
+      "label": "廚房顯示系統（KDS）",
+      "explain": "訂單依製作順序顯示在廚房的螢幕上。"
+    },
+    "tickets": {
+      "label": "列印廚房單",
+      "explain": "每筆訂單都會從餐車上的出單機列印出來。",
+      "ours": "在 iPad 與 Android App 中提供；不附出單機"
+    },
+    "buzzers": {
+      "label": "取餐呼叫器",
+      "explain": "顧客拿到取餐呼叫器，餐點完成時會通知他們。",
+      "ours": "每筆訂單記錄取餐呼叫器號碼；不附呼叫器"
+    },
+    "offline": {
+      "label": "網路斷線也能繼續運作",
+      "explain": "沒有網路時建立的訂單與變更會先保存，連線恢復後再送出。",
+      "ours": "在 iPad 與 Android App 中提供；網頁版控制台不支援"
+    },
+    "vans": {
+      "label": "多台車輛或餐車",
+      "explain": "一個帳號可管理多台餐車。",
+      "ours": "增加車輛需另付月費"
+    },
+    "staff": {
+      "label": "員工登入",
+      "explain": "員工用自己的帳號和角色登入。"
+    },
+    "reports": {
+      "label": "銷售報表",
+      "explain": "總額、熱銷品項，以及依活動或日期的銷售，可匯出試算表。"
+    },
+    "domain": {
+      "label": "自有網址",
+      "explain": "點餐頁面使用商家自己的網域。"
+    },
+    "whatsapp": {
+      "label": "WhatsApp 自動回覆",
+      "explain": "自動回覆顧客的 WhatsApp 訊息。"
+    },
+    "social": {
+      "label": "依行程產生社群貼文",
+      "explain": "現成的貼文，顯示餐車這週在哪裡。"
+    },
+    "igmsg": {
+      "label": "Instagram 與 Messenger 回覆",
+      "explain": "自動回覆 Instagram 與 Facebook Messenger 訊息。"
+    },
+    "discovery": {
+      "label": "列在餐車探索地圖上",
+      "explain": "顧客可在公開地圖上找到附近的餐車。",
+      "ours": "Village Foodie"
+    },
+    "loyalty": {
+      "label": "集點回饋",
+      "explain": "顧客回訪可累積獎勵。"
+    },
+    "ipad": {
+      "label": "iPad App",
+      "explain": "餐車在 iPad 上接單與管理訂單的 App。"
+    },
+    "android": {
+      "label": "Android App",
+      "explain": "同一款 App，適用於 Android 平板或手機。"
+    },
+    "hardware": {
+      "label": "提供硬體（平板、出單機）",
+      "explain": "廠商提供平板或出單機。",
+      "ours": "使用你自己的設備"
+    },
+    "terminal": {
+      "label": "提供窗口用刷卡機",
+      "explain": "廠商提供在餐車現場收款用的刷卡機。"
+    },
+    "fiscal": {
+      "label": "符合稅務規定的認證 POS 系統（TSE、EET、kassaregister…）",
+      "explain": "經認證、符合該國銷售紀錄規定的 POS 系統。"
+    },
+    "delivery": {
+      "label": "外送",
+      "explain": "將訂單送到顧客的地址。",
+      "ours": "僅限自取"
+    },
+    "monthly": {
+      "label": "月費",
+      "explain": "商家每月支付的軟體費用。"
+    },
+    "perorder": {
+      "label": "每筆線上訂單手續費",
+      "explain": "廠商在月費之外，對每筆線上訂單收取的費用。"
+    },
+    "cardfee": {
+      "label": "刷卡手續費",
+      "explain": "金流服務商對每筆刷卡付款收取的費用。"
+    },
+    "term": {
+      "label": "最低合約期限",
+      "explain": "商家必須綁約多久才能取消。"
+    },
+    "setup": {
+      "label": "設定費",
+      "explain": "開始使用時的一次性費用。"
+    },
+    "trial": {
+      "label": "免費試用",
+      "explain": "付費前可免費使用系統的期間。"
+    }
+  }
+}

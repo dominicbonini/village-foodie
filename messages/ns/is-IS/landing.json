@@ -1,0 +1,82 @@
+{
+  "jsonLd": {
+    "subCategory": "Pöntunarkerfi fyrir matarvagna og færanlega veitingasölu",
+    "description": "Pantanir, forpantanir og eldhússkjár fyrir matarvagna og færanlega veitingasölu ({country}).",
+    "audience": "Rekstraraðilar matarvagna og færanlegrar veitingasölu"
+  },
+  "hero": {
+    "title": "Pöntunarkerfið sem er hannað fyrir <lean>matarvagna.</lean>",
+    "subSmall": "Hladdu upp matseðlinum, engin nýskráning nauðsynleg.<br></br>Sjáðu virka kynningu á innan við 60 sekúndum.",
+    "cta": "Hlaða upp matseðlinum →",
+    "ctaNote": "<lead>Hladdu upp mynd af matseðlinum og sjáðu hann virka á innan við 60 sekúndum.</lead><small>Engin nýskráning. Ekkert kort.</small>"
+  },
+  "shots": {
+    "kitchenAlt": "Eldhússkjár HatchGrab sem sýnir pöntunarmiða í eldunarröð",
+    "dashboardAlt": "Pöntun tekin í HatchGrab: matseðillinn til vinstri, karfan og heildarupphæðin til hægri",
+    "phoneAlt": "Pantað hjá matarvagni í HatchGrab: matseðill með myndum og verði og samtala körfunnar"
+  },
+  "trust": {
+    "freeMonth": "{months, plural, one {Fyrsti mánuðurinn alveg ókeypis, með öllum eiginleikum} other {Fyrstu # mánuðirnir alveg ókeypis, með öllum eiginleikum}}",
+    "noCard": "Ekki þarf greiðslukort",
+    "cancel": "Segðu upp hvenær sem er, enginn binditími"
+  },
+  "does": {
+    "eyebrow": "Það sem kerfið gerir",
+    "title": "Hannað fyrir matarvagna, ekki veitingastaði.",
+    "lede": "Flest pöntunarkerfi gera ráð fyrir föstu heimilisfangi, traustu neti og sama opnunartíma í hverri viku. Þú ert á nýjum stað í hverri viku, á mismunandi tímum, með stopult eða ekkert farsímasamband. HatchGrab var smíðað einmitt fyrir það.",
+    "slotsTitle": "Viðskiptavinir velja afhendingartíma",
+    "capacityTitle": "Stilltu afköst eldhússins",
+    "capacityBody": "Stilltu hversu mikið þú getur eldað í einu og hversu langan tíma það tekur. Þegar afhendingartími er fullbókaður geta viðskiptavinir ekki valið hann.",
+    "devicesTitle": "Virkar í hvaða tæki sem er",
+    "devicesBody": "Keyrir í símanum í svuntuvasanum, spjaldtölvunni á afgreiðsluborðinu, fartölvunni í vagninum — og posanum sem þú tekur nú þegar við greiðslum með.",
+    "postsTitle": "Sjálfvirkar færslur á Facebook og Instagram",
+    "postsBody": "Hladdu upp hönnuninni sem þú birtir nú þegar á Facebook eða Instagram. Við fyllum inn dagsetningar, staði og tíma, tilbúið til að deila — í hverri viku eða á hverjum degi.",
+    "whatsappTitle": "Sjálfvirk svör á WhatsApp",
+    "whatsappBody": "„Hvar eruð þið í kvöld?“ „Hvaða eftirrétti eruð þið með?“ WhatsApp-skilaboðum er svarað á meðan þú keyrir á söluplássið eða stendur við grillið, út frá þínum eigin matseðli og dagskrá. Messenger og Instagram eru væntanleg.",
+    "whatsappSoonTitle": "Sjálfvirk svör á WhatsApp <soon>Væntanlegt</soon>",
+    "whatsappSoonBody": "„Hvar eruð þið í kvöld?“ „Hvaða eftirrétti eruð þið með?“ Brátt verður WhatsApp-skilaboðum svarað á meðan þú keyrir á söluplássið eða stendur við grillið. Messenger og Instagram fylgja á eftir.",
+    "offlineTitle": "Ekkert samband? Haltu áfram að afgreiða.",
+    "offlineBody": "Ef sambandið dettur út gera netpantanir sjálfkrafa hlé svo viðskiptavinir geti ekki sent pantanir sem þú sérð ekki. Haltu áfram að taka við pöntunum í appinu fyrir iPhone, iPad og Android.",
+    "slotsBody": "Viðskiptavinir panta fyrir fram og velja afhendingartíma. Styttri biðraðir og maturinn tilbúinn þegar þeir mæta."
+  },
+  "steps": {
+    "eyebrow": "Fyrstu skrefin",
+    "title": "Settu kerfið upp og byrjaðu að taka við pöntunum á um 15 mínútum.",
+    "lede": "Þrennt þarf að græja — og fyrir tvennt af því dugar mynd.",
+    "menuTitle": "Settu upp matseðilinn",
+    "menuBody": "Taktu mynd af matseðlatöflunni eða límdu matseðilinn inn. Vörur, verð og aukaval skila sér sjálfkrafa. Þú athugar bara hvort allt sé rétt.",
+    "scheduleTitle": "Bættu við dagskránni",
+    "scheduleBody": "Er hún á vefsíðunni þinni? Við lesum hana þaðan og höldum henni uppfærðri. Ef ekki, taktu þá líka mynd af henni. Þú samþykkir bara það sem finnst.",
+    "shareTitle": "Deildu tenglinum",
+    "shareBody": "Settu hann á Facebook og límdu QR-kóðann á vagninn. Pantanirnar birtast á skjánum þínum í þeirri röð sem þú þarft að elda þær."
+  },
+  "testimonial": {
+    "quote": "HatchGrab hefur gert pantanir svo miklu einfaldari. Allt er skipulagt, við getum fylgst með birgðum og vitum nákvæmlega hve margar pítsur við eigum eftir að selja — og tímahólfin eru frábær í smábæjum þar sem mikið er að gera.",
+    "award": "Pítsuvagn ársins",
+    "awardScope": "Sigurvegari í landshluta",
+    "business": "Pizzeria Gusto",
+    "byline": "Nadia og Bogdan — eigendur"
+  },
+  "pricing": {
+    "eyebrow": "Verð",
+    "title": "Byrjaðu frítt. Uppfærðu þegar þú þarft.",
+    "switchHead": "Ertu að skipta frá öðru kerfi?",
+    "switchBody": "Sjáðu hvað þú myndir borga hjá HatchGrab fyrir sömu pantanir. Tekur um eina mínútu.",
+    "switchCta": "Berðu saman hvað þú borgar"
+  },
+  "faq": {
+    "title": "Algengar spurningar",
+    "metaTitle": "Algengar spurningar | HatchGrab",
+    "metaDescription": "Skýr svör fyrir rekstraraðila matarvagna um verðið á HatchGrab, uppsetningu, hvernig tekið er við pöntunum og hvernig greiðslur virka."
+  },
+  "final": {
+    "truckLabel": "Matarvagn",
+    "title": "Viltu sjá hve einföld uppsetningin er?",
+    "lede": "Hladdu upp mynd eða skjáskoti af matseðlinum og við breytum honum í virka pöntunarsíðu sem þú getur prófað þig áfram með á innan við 60 sekúndum. Þínar vörur, þitt verð. Engin nýskráning, ekkert kort, ekkert að setja upp. Skoðaðu og ákveddu þig svo.",
+    "cta": "Hlaða upp matseðlinum núna →"
+  },
+  "meta": {
+    "title": "Pöntunarkerfi fyrir matarvagna — HatchGrab {country}",
+    "description": "Taktu við pöntunum og forpöntunum á söluplássinu án biðraðar. Pöntunarkerfi og eldhússkjár fyrir matarvagna ({country}) — ekki afgreiðslukerfi."
+  }
+}

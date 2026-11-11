@@ -1,0 +1,154 @@
+{
+  "filter": {
+    "dateRange": "📅 Tarih aralığı",
+    "event": "📍 Etkinlik",
+    "filterBy": "Filtrele",
+    "show": "Göster",
+    "range": "<from></from><sep>–</sep><until></until>",
+    "selectEvent": "Bir etkinlik seçin…",
+    "eventOption": "{venue} · {date}",
+    "unnamedEvent": "Etkinlik",
+    "viewReport": "Raporu görüntüle",
+    "loading": "Yükleniyor…",
+    "orders": "📋 Siparişler",
+    "items": "📦 Ürünler",
+    "exportCsv": "⬇ CSV indir"
+  },
+  "empty": {
+    "noOrders": "Bu dönem için sipariş bulunamadı.",
+    "selectEvent": "Raporunu görmek için yukarıdan bir etkinlik seçin."
+  },
+  "summary": {
+    "totals": "{n, plural, one {{count} sipariş} other {{count} sipariş}} · {total}"
+  },
+  "revenue": {
+    "title": "Gelir dökümü",
+    "deals": "Kampanya geliri",
+    "modifiers": "Ekstra ücretleri",
+    "foodSales": "Yemek satışları",
+    "total": "Toplam",
+    "other": "Diğer",
+    "tax": "Vergi",
+    "tips": "Bahşişler",
+    "serviceFees": "Hizmet bedelleri",
+    "cardFees": "Kart komisyonları"
+  },
+  "itemsSold": {
+    "title": "Satılan ürünler"
+  },
+  "dealsCard": {
+    "title": "Kampanyalar"
+  },
+  "custom": {
+    "title": "Özelleştirmeler",
+    "paidModifiers": "Ücretli ekstralar",
+    "customerNotes": "Müşteri notları",
+    "note": "“{note}”"
+  },
+  "table": {
+    "item": "Ürün",
+    "modifier": "Ekstra",
+    "qty": "Adet",
+    "total": "Toplam",
+    "date": "Tarih",
+    "time": "Saat",
+    "channel": "Kanal"
+  },
+  "breakdown": {
+    "orders": "Sipariş dökümü",
+    "items": "Ürün dökümü"
+  },
+  "channel": {
+    "online": "Online",
+    "walkUp": "Yerinde"
+  },
+  "csv": {
+    "orderId": "Sipariş No",
+    "date": "Tarih",
+    "event": "Etkinlik",
+    "timePlaced": "Sipariş saati",
+    "collectionTime": "Teslim alma saati",
+    "customerName": "Müşteri adı",
+    "orderType": "Sipariş türü",
+    "items": "Ürünler",
+    "deals": "Kampanyalar",
+    "modifiers": "Ekstralar",
+    "notes": "Notlar",
+    "subtotal": "Ara toplam",
+    "tip": "Bahşiş",
+    "serviceFee": "Hizmet bedeli",
+    "total": "Toplam",
+    "itemName": "Ürün adı",
+    "qty": "Adet",
+    "unitPrice": "Birim fiyat",
+    "itemTotal": "Ürün toplamı",
+    "orderTotal": "Sipariş toplamı",
+    "unknownEvent": "Bilinmeyen etkinlik",
+    "asap": "En kısa sürede",
+    "unknownCustomer": "Bilinmiyor",
+    "customerOnline": "Müşteri (online)",
+    "placedByTruck": "Food truck tarafından girildi"
+  },
+  "presets": {
+    "label": "Dönem",
+    "custom": "Özel tarihler",
+    "thisMonth": "Bu ay",
+    "lastMonth": "Geçen ay",
+    "lastQuarter": "Geçen çeyrek",
+    "lastTaxYear": "Geçen vergi yılı"
+  },
+  "accounts": {
+    "title": "Muhasebeciniz için",
+    "help": "Satışlar etkinlik gününe yazılır. Brüt, müşterilerin ödediği tutardır. Net, iadeler ve vergi düşüldükten sonra kalandır.",
+    "gross": "Brüt satış",
+    "refunds": "İadeler",
+    "net": "Net satış",
+    "taxEstimated": "vergi oranınıza göre tahmini",
+    "taxNone": "Food truck’ınız için vergi oranı ayarlanmadığından burada vergi hesaplanmıyor.",
+    "byChannel": "Kanala göre brüt satış",
+    "byPayment": "Ödeme yöntemine göre brüt satış",
+    "online": "Online",
+    "walkUp": "Yerinde",
+    "cardOnline": "Online kart",
+    "payAtTruck": "Teslim alırken ödeme",
+    "cost": "Satılan ürünlerin maliyeti",
+    "profit": "Kâr",
+    "coverage": "{total, plural, one {Satılan # ürünün {withCost} tanesi için maliyet girildi} other {Satılan # ürünün {withCost} tanesi için maliyet girildi}}",
+    "partial": "Maliyeti olmayan ürünler maliyete dahil edilmez; bu yüzden bu kâr gerçekte olduğundan yüksek görünür. Menü’de her ürüne bir maliyet ekleyin.",
+    "noCosts": "Henüz hiçbir ürünün maliyeti yok. Kârınızı görmek için Menü’de ürünlerinize maliyet ekleyin.",
+    "byEvent": "Etkinliğe göre",
+    "event": "Etkinlik",
+    "sales": "Net satış",
+    "eventNoProfit": "Tire, orada satılan her ürünün maliyeti olmadığı anlamına gelir.",
+    "downloadOrders": "⬇ Muhasebeciniz için siparişler",
+    "downloadEvents": "⬇ Muhasebeciniz için etkinlikler",
+    "downloadHelp": "İki tablo dosyası: her sipariş için bir satır ve her etkinlik için bir satır. Excel, Numbers, Xero ve QuickBooks’ta açılır."
+  },
+  "accountsCsv": {
+    "header": {
+      "date": "Tarih",
+      "time": "Saat",
+      "orderNumber": "Sipariş numarası",
+      "event": "Etkinlik",
+      "channel": "Kanal",
+      "paymentMethod": "Ödeme yöntemi",
+      "currency": "Para birimi",
+      "gross": "Brüt",
+      "tax": "Vergi",
+      "taxBasis": "Vergi dayanağı",
+      "net": "Net",
+      "refunded": "İade edilen",
+      "cost": "Maliyet",
+      "profit": "Kâr",
+      "eventDate": "Etkinlik tarihi",
+      "orders": "Siparişler",
+      "dishesSold": "Satılan ürünler",
+      "dishesWithCost": "Maliyeti girilen ürünler"
+    },
+    "taxBasis": {
+      "stored": "siparişle birlikte kaydedildi",
+      "estimated": "vergi oranınıza göre tahmini",
+      "none": "vergi oranı ayarlanmadı"
+    }
+  }
+}

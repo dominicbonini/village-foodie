@@ -1,0 +1,69 @@
+{
+  "close": "Kapat",
+  "cancel": "İptal",
+  "selectReason": "Bir neden seçin",
+  "reject": {
+    "title": "Sipariş #{orderId} reddedilsin mi?",
+    "reasonLabel": "Neden — zorunlu (müşteriye gösterilir)",
+    "reason": "{reason, select, sold_out {Bir ürün tükendi} too_busy {Çok yoğunuz — zamanında hazırlayamayız} closing_soon {Birazdan kapanıyoruz} other {Diğer}}",
+    "noteRequired": "Neden — zorunlu",
+    "noteOptional": "Ek not — isteğe bağlı",
+    "notePlaceholder": "Müşteri için daha fazla ayrıntı ekleyin…",
+    "keep": "Siparişi tut",
+    "confirm": "Siparişi reddet"
+  },
+  "eventCancel": {
+    "title": "Bu etkinlik iptal edilsin mi?",
+    "affected": "{n, plural, one {{count} sipariş} other {{count} sipariş}} iptal edilecek ve müşterilere bildirim gönderilecek.",
+    "reasonLabel": "Neden — isteğe bağlı",
+    "reason": "{reason, select, vehicle_breakdown {Araç arızası} weather {Hava durumu} venue_issue {Mekânla ilgili sorun} personal_emergency {Kişisel acil durum} other {Diğer}}",
+    "messageLabel": "Müşterilere mesaj — isteğe bağlı",
+    "messagePlaceholder": "ör. Üzgünüz, mekâna giderken aracımız arızalandı…",
+    "keep": "Etkinlik kalsın",
+    "cancelling": "İptal ediliyor…",
+    "confirm": "Etkinliği iptal et"
+  },
+  "actions": {
+    "startEvent": "{restart, select, yes {Etkinliği yeniden başlat} other {Etkinliği başlat}}",
+    "changeEvent": "Etkinliği değiştir",
+    "changeEventType": "Etkinlik türünü değiştir…",
+    "privateLink": "Özel bağlantı ve QR kod",
+    "noteLabel": "Müşteriler için not",
+    "notePlaceholder": "ör. Ana otoparka park edin, turuncu tenteyi arayın",
+    "noteHint": "Sipariş sayfasında, etkinlik bilgilerinizin altında müşterilere gösterilir.",
+    "saveNote": "Notu kaydet",
+    "resume": "Siparişleri sürdür",
+    "pause": "Siparişleri duraklat",
+    "changeFinishTime": "Etkinlik bitiş saatini değiştir",
+    "finishEvent": "Etkinliği bitir",
+    "cancelEvent": "Etkinliği iptal et"
+  },
+  "finish": {
+    "confirmTitle": "Bitiş saati değiştirilsin mi?",
+    "willFinish": "Bu etkinlik{hasCurrent, select, yes { <b>{current}</b> yerine} other {}} <b>{selected}</b> saatinde sona erecek.",
+    "dueAfter": "<b>{selected} sonrasına ayarlı {n, plural, one {{count} sipariş var} other {{count} sipariş var}}.</b> {n, plural, one {Panoda kalır} other {Panoda kalırlar}} ve yine de {n, plural, one {hazırlanması} other {hazırlanmaları}} gerekir. Bitiş saatini değiştirmek yalnızca sonraki saatler için YENİ sipariş verilmesini durdurur.",
+    "saving": "Kaydediliyor…",
+    "confirm": "Bitiş saatini değiştir",
+    "keepCurrent": "{current} olarak kalsın",
+    "keepAsIs": "Olduğu gibi kalsın",
+    "title": "Bitiş saatini değiştir",
+    "currentlySet": "Bu etkinliğin bitiş saati şu anda <b>{current}</b>.",
+    "noFinishTime": "Bu etkinlik için bitiş saati ayarlanmadı.",
+    "noTimesLeft": "Bugün için kalan saat yok. Bunun yerine “Etkinliği bitir” seçeneğini kullanın.",
+    "newFinishTime": "Yeni bitiş saati",
+    "optionCurrent": "{time} (mevcut)",
+    "earlier": "Bu saat mevcut bitiş saatinden önce. Müşteriler bu saatten sonrası için sipariş veremeyecek.",
+    "review": "Değişikliği gözden geçir",
+    "optionNextDay": "{time} (ertesi gün)"
+  },
+  "extraWait": {
+    "title": "Ek bekleme ekle",
+    "hint": "Yeni siparişlerde bildirilen teslim alma saatine eklenir. Etkinliğin bitiş saatini değiştirmez.",
+    "option": "+{mins} dk"
+  },
+  "picker": {
+    "reconnect": "Yüklemek için yeniden bağlanın",
+    "selected": "Seçili",
+    "status": "{tone, select, paused {⏸ Duraklatıldı} live {● Canlı} finished {● Bitti} cancelled {İptal edildi} other {Başlamadı}}"
+  }
+}

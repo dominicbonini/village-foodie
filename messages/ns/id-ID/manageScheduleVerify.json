@@ -1,0 +1,9 @@
+{
+  "launch_failed": "Verifikasi sedang tidak tersedia. Coba lagi sebentar lagi.",
+  "malformed": "Itu sepertinya bukan alamat web. Coba yang seperti foodtruckanda.co.id/acara",
+  "blocked": "Kami tidak bisa mengakses situs ini — mungkin situsnya memblokir pemeriksaan otomatis. Coba halaman yang memuat jadwal Anda, atau tambahkan acara secara manual.",
+  "unreachable": "Kami tidak bisa menjangkau situs web ini. Mungkin situsnya sedang tidak aktif, atau alamatnya salah.",
+  "no_content": "Halaman ini terjangkau, tetapi kami tidak bisa membaca isinya. Pastikan halaman ini bisa diakses publik.",
+  "no_events": "Kami tidak menemukan acara mendatang di halaman ini. Pastikan URL mengarah langsung ke halaman tempat jadwal Anda tercantum.",
+  "blockedDomain": "Gunakan URL situs web Anda — halaman Facebook dan Instagram tidak bisa dibaca secara otomatis."
+}

@@ -1,0 +1,43 @@
+{
+  "allergensUnanswered": {
+    "title": "Veldu hvernig þú birtir upplýsingar um ofnæmisvalda",
+    "detail": "Þar til þú velur sjá viðskiptavinir enga af réttunum þínum — matseðillinn ver sig með því að fela allt þar sem ofnæmisvaldar eru óstaðfestir, og eins og er á það við um allt.",
+    "where": "Matseðill → Ofnæmisvaldar"
+  },
+  "allergensCardMissing": {
+    "title": "Bættu við ofnæmisvaldaspjaldinu þínu",
+    "detail": "Þú valdir að birta ofnæmisvaldaspjald en ekkert er vistað — viðskiptavinum yrði því sagt að upplýsingar um ofnæmisvalda séu til staðar en finna svo ekkert.",
+    "where": "Matseðill → Ofnæmisvaldar"
+  },
+  "allergensItemsUnverified": {
+    "title": "{n, plural, one {Staðfestu ofnæmisvalda í {count} rétti} other {Staðfestu ofnæmisvalda í {count} réttum}}",
+    "detail": "{n, plural, one {Rétturinn þinn er falinn viðskiptavinum þar til þú staðfestir ofnæmisvaldana í honum.} other {{u, plural, one {{unverified} af {total} réttum þínum er falinn viðskiptavinum þar til þú staðfestir ofnæmisvaldana í honum.} other {{unverified} af {total} réttum þínum eru faldir viðskiptavinum þar til þú staðfestir ofnæmisvaldana í þeim.}}}} Réttur sem birtist án staðfestra ofnæmisvalda lítur út fyrir að „innihalda enga“, svo matseðillinn felur hann frekar en að taka þá áhættu.",
+    "where": "Matseðill → Ofnæmisvaldar"
+  },
+  "noVan": {
+    "title": "Bættu við vagni",
+    "detail": "Viðburðir eru tengdir vagni — án vagns er ekkert til að taka við pöntunum í gegnum.",
+    "where": "Stillingar → Matarvagnarnir þínir"
+  },
+  "kitchenCapacityUnset": {
+    "title": "Stilltu afköst eldhússins",
+    "detail": "Engin afköst eru skráð fyrir: {vans}. Án þeirra lofum við viðskiptavinum áfram afhendingartímum sem eldhúsið þitt getur engan veginn staðið við.",
+    "where": "Matseðill → Afköst eldhússins",
+    "unnamedVan": "Ónefndur vagn"
+  },
+  "noPrepBearingCategory": {
+    "title": "Segðu okkur hve langan tíma maturinn tekur",
+    "detail": "{categories, select, none {Þú ert ekki enn með neina flokka á matseðlinum, svo við getum ekki reiknað út hve langan tíma pöntun tekur.} other {Enginn af flokkunum þínum er með eldunartíma, svo í okkar augum er hver pöntun tilbúin samstundis. Við myndum áfram gefa viðskiptavinum afhendingartíma sem eldhúsið þitt hefur enga möguleika á að standa við, og því meira sem er að gera, því lengra frá réttum tíma yrðu þeir.}}",
+    "where": "Matseðill → Flokkar → Uppsetning eldhúss"
+  },
+  "emailUnverified": {
+    "title": "Staðfestu netfangið þitt",
+    "detail": "Við sendum pöntunartilkynningar og endurheimt aðgangs á þetta netfang. Ef það er rangt kemstu að því þegar eitthvað hefur þegar farið úrskeiðis.",
+    "where": "Leitaðu að staðfestingartenglinum frá okkur í pósthólfinu þínu"
+  },
+  "emailUnknown": {
+    "title": "Staða staðfestingar netfangs óþekkt",
+    "detail": "Staðfesting netfangs er ekki enn tengd, svo ekki er hægt að meta þetta. Þetta stöðvar af ásettu ráði frekar en að hleypa í gegn án þess að láta vita.",
+    "where": "—"
+  }
+}

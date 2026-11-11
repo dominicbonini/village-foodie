@@ -1,0 +1,195 @@
+{
+  "cancel": "Batal",
+  "back": "← Kembali",
+  "backPlain": "Kembali",
+  "next": "Berikutnya →",
+  "continue": "Lanjut →",
+  "closeImport": "Tutup impor",
+  "tryAgain": "Coba lagi",
+  "catError": {
+    "empty": "Beri nama kategori ini.",
+    "tooLong": "Nama itu terlalu panjang.",
+    "clash": "Sudah ada kategori bernama “{name}”."
+  },
+  "steps": {
+    "details": "Data Anda",
+    "menu": "Menu",
+    "extras": "Tambahan",
+    "allergens": "Alergen",
+    "kitchen": "Pengaturan dapur",
+    "schedule": "Jadwal",
+    "settings": "Pengaturan"
+  },
+  "toast": {
+    "demoGone": "Menu demo Anda sudah tidak tersedia — unggah lagi untuk melanjutkan.",
+    "eventsSaveFailed": "Gagal menyimpan acara",
+    "cardReadFailed": "Kartu alergen tidak dapat dibaca — coba lagi",
+    "imageReadFailed": "Gambar itu tidak dapat dibaca — ketik atau tempel isi kartu Anda sebagai gantinya",
+    "commitFailedDetail": "Gagal menyelesaikan penyimpanan menu: {error}. Sebagian item mungkin sudah tersimpan — cek menu Anda sebelum mencoba lagi.",
+    "commitFailed": "Gagal menyelesaikan penyimpanan menu. Sebagian item mungkin sudah tersimpan — cek menu Anda sebelum mencoba lagi.",
+    "finishFailed": "Gagal menandai pengaturan selesai — Anda tetap bisa melanjutkan.",
+    "scheduleReadFailed": "Jadwal itu tidak dapat dibaca — coba foto yang lebih jelas atau ketik tanggalnya.",
+    "cardRead": "Kartu terbaca — {matched} cocok, {pending, plural, one {# perlu} other {# perlu}} Anda tetapkan"
+  },
+  "settingsReview": {
+    "anchorOrder": "Pengaturan → Pengaturan pesanan",
+    "anchorDisplay": "Pengaturan → Truk Anda → Pengaturan tampilan",
+    "mins15": "15 menit",
+    "mins30": "30 menit",
+    "mins60": "60 menit",
+    "hours2": "2 jam",
+    "title": "Beberapa pengaturan untuk dicek",
+    "loading": "Memuat pengaturan Anda saat ini…",
+    "looksGood": "Sudah sesuai →",
+    "secondaryAria": "{label} — {secondary}",
+    "saveFailed": "Gagal menyimpan — Anda bisa mengubahnya di Pengaturan.",
+    "anchorContact": "Pengaturan → Detail kontak",
+    "intro": "Kami sudah menerapkan beberapa pengaturan umum untuk Anda. Ada baiknya dicek sebentar — Anda bisa mengubah semuanya nanti di Pengaturan.",
+    "cancelAria": "Berapa lama sebelum waktu pengambilan pelanggan bisa membatalkan"
+  },
+  "allergensNotSet": {
+    "bodySetup": "Tinjau sebelum mulai aktif. Sampai saat itu, item ditandai “alergen belum diatur”.",
+    "body": "Tinjau di Pengaturan sebelum mulai aktif. Sampai saat itu, item ditandai “alergen belum diatur”.",
+    "title": "⚠ Alergen & info diet belum diatur"
+  },
+  "welcome": {
+    "title": "Selamat datang di HatchGrab",
+    "yourTruck": "Truk Anda",
+    "stop": "Anda bisa berhenti dan kembali kapan saja.",
+    "body": "{name} sudah siap. Berikutnya kita tambahkan menu Anda, lalu acara pertama Anda.",
+    "go": "Ayo mulai"
+  },
+  "offer": {
+    "title": "Pakai menu dari demo Anda?",
+    "use": "Pakai menu ini",
+    "upload": "Unggah menu lain",
+    "body": "Kami menyimpan menu yang Anda unggah — {count, plural, one {# item} other {# item}}. Jadikan titik awal, atau unggah menu lain."
+  },
+  "checkMenu": {
+    "title": "Cek menu Anda",
+    "body": "Kami menyimpan menu dari demo Anda ke truk Anda, dan Anda sudah mengubahnya sejak itu — jadi perubahan Anda tetap dipertahankan. Silakan periksa di bawah.",
+    "done": "Sudah sesuai"
+  },
+  "upload": {
+    "title": "Impor menu Anda",
+    "body": "Unggah foto papan menu, tangkapan layar, PDF, atau tempel menu Anda sebagai teks. AI kami membacanya dan membuat menu digital Anda — Anda meninjau semuanya sebelum disimpan.",
+    "confirmCancel": "Batalkan impor ini? Tinjauan Anda atas menu ini akan dibuang.",
+    "process": "Proses menu",
+    "later": "Nanti saja"
+  },
+  "processing": {
+    "title": "Menganalisis menu Anda",
+    "body": "AI sedang membaca dan mengelompokkan item Anda…"
+  },
+  "review": {
+    "title": "Tinjau menu yang diimpor",
+    "editLaterSetup": "Nama, harga, tambahan, alergen, dan info diet semuanya bisa diubah kapan saja nanti.",
+    "editLater": "Nama, harga, tambahan, alergen, dan info diet semuanya bisa diubah kapan saja di Pengaturan.",
+    "noPrice": "{count, plural, one {# item} other {# item}} tidak memiliki harga yang bisa kami baca",
+    "renameCategoryAria": "Ganti nama kategori: {name}",
+    "renameAria": "Ganti nama: {name}",
+    "renameTitle": "Ganti nama kategori",
+    "deleteAria": "Hapus: {name}",
+    "deleteTitle": "Hapus kategori",
+    "lastCategory": "Menu Anda memerlukan minimal satu kategori",
+    "countOf": "{kept} dari {total}",
+    "existing": "sudah ada",
+    "deleteEmptyTitle": "Hapus “{name}”?",
+    "deleteEmptyBody": "Kategori ini tidak berisi item, jadi tidak ada yang hilang.",
+    "delete": "Hapus",
+    "moveTitle": "Ke mana {count, plural, one {# item} other {# item}} dipindahkan?",
+    "moveBody": "Menghapus “{name}” memerlukan tempat untuk memindahkan hidangannya — item tanpa kategori tidak diimpor.",
+    "moveAria": "Pindahkan item dari {name} ke",
+    "chooseCategory": "Pilih kategori…",
+    "moveDelete": "Pindahkan & hapus",
+    "itemName": "Nama item",
+    "free": "gratis?",
+    "freeOn": "Gratis ✕",
+    "nameFirst": "Beri nama item baru sebelum menambah yang lain",
+    "addItem": "+ Tambah item",
+    "categoryName": "Nama kategori",
+    "newCategoryAria": "Nama kategori baru",
+    "addCategory": "+ Tambah kategori",
+    "ready": "{count, plural, one {# item} other {# item}} siap ditambahkan. Hapus centang yang tidak Anda inginkan.",
+    "noPriceBody": "Tetapkan harga untuk masing-masing, atau tandai gratis — jika tidak, item akan tayang dengan harga {zero}. Anda tidak bisa melanjutkan sebelum ini beres.",
+    "incomplete": "Masukkan nama untuk menambahkan item ini — baris kosong tidak diimpor."
+  },
+  "extras": {
+    "introSetup": "Beberapa hidangan bisa diatur sebagai <b>satu item yang bisa disesuaikan</b> atau tetap sebagai <b>hidangan terpisah</b>. Pilih cara setiap hidangan ditampilkan. Anda bisa mengubahnya nanti.",
+    "intro": "Beberapa hidangan bisa diatur sebagai <b>satu item yang bisa disesuaikan</b> atau tetap sebagai <b>hidangan terpisah</b>. Pilih cara setiap hidangan ditampilkan. Anda bisa mengubahnya nanti di Pengaturan.",
+    "none": "Tidak ada hidangan yang bisa dikelompokkan — setiap item adalah hidangan tersendiri.",
+    "axisChoice": "· pilihan {axis}",
+    "grouped": "Dikelompokkan · satu item, pelanggan memilih",
+    "separate": "Item menu terpisah"
+  },
+  "allergens": {
+    "title": "Alergen",
+    "detected": "Kami mendeteksi alergen dari menu Anda. Pilih cara menampilkannya di bawah.",
+    "howShow": "Bagaimana Anda ingin menampilkan alergen kepada pelanggan?",
+    "skip": "Lewati pengaturan alergen untuk sekarang"
+  },
+  "kitchen": {
+    "title": "Pengaturan dapur",
+    "intro": "Bantu pelanggan tahu berapa lama harus menunggu — Anda selalu bisa mengubahnya nanti.",
+    "howWorks": "Cara kerja kapasitas dapur",
+    "allExist": "Semua kategori sudah ada — tidak ada waktu yang perlu diatur.",
+    "totalHelp": "Tetapkan kapasitas total untuk membatasi jumlah item yang diterima dapur per slot waktu. Biarkan ∞ jika tanpa batas.",
+    "saveAdd": "Simpan & tambahkan ke menu"
+  },
+  "schedule": {
+    "title": "Tambahkan jadwal saya",
+    "intro": "Jika jadwal Anda ada di situs web Anda, kami bisa memperbaruinya secara otomatis — atau tambahkan sendiri tanggal Anda.",
+    "websiteTitle": "Jadwal saya ada di situs web saya",
+    "urlPlaceholder": "https://foodtruckanda.co.id/jadwal",
+    "checking": "Mengecek…",
+    "verify": "Verifikasi",
+    "checkingSite": "Mengecek situs web Anda…",
+    "takesTime": "Ini bisa memakan waktu hingga 2 menit — jangan tutup halaman ini.",
+    "canRead": "✓ Kami bisa membaca jadwal Anda",
+    "ownSite": "Situs web Anda sendiri — bukan halaman Facebook atau Instagram.",
+    "photoTitle": "Unggah foto jadwal saya",
+    "dragChoose": "Seret dan lepas atau ketuk untuk memilih",
+    "imageOrPdf": "Gambar atau PDF",
+    "or": "atau",
+    "pastePlaceholder": "Tempel tanggal Anda di sini…",
+    "read": "Baca jadwal",
+    "found": "{count, plural, one {# tanggal} other {# tanggal}} ditemukan — tanggal ini akan ditambahkan ke jadwal Anda.",
+    "dateTbc": "Tanggal menyusul",
+    "save": "Simpan {count, plural, one {# tanggal} other {# tanggal}}",
+    "manualDesc": "Tambahkan nanti di tab Jadwal — tidak ada yang perlu dilakukan sekarang.",
+    "manualBody": "Tidak masalah. Anda bisa menambah dan mengelola tanggal kapan saja dari tab Jadwal di akun Anda.",
+    "blockedDomain": "Gunakan URL situs web Anda — halaman Facebook dan Instagram tidak bisa dibaca secara otomatis.",
+    "saveFailed": "Kami sudah membaca jadwal Anda, tetapi belum bisa menyimpannya saat ini — coba lagi.",
+    "websiteDesc": "Kami akan mengeceknya secara rutin dan mengirim tanggal baru untuk Anda setujui.",
+    "keepChecking": "Kami akan terus mengecek halaman ini dan mengirim tanggal baru untuk Anda setujui.",
+    "photoDesc": "Foto atau tempel tanggal Anda — kami akan membacanya untuk Anda cek.",
+    "noneFound": "Kami tidak menemukan tanggal apa pun di situ — coba foto yang lebih jelas, atau tambahkan tanggal sendiri.",
+    "manualTitle": "Saya akan menambahkan tanggal sendiri",
+    "trialNotStarted": "Menambahkan acara tidak memulai masa coba gratis Anda — nanti Anda yang memilih acara mana yang memulainya."
+  },
+  "done": {
+    "summary": "{items, plural, one {# item} other {# item}} dalam {categories, plural, one {# kategori} other {# kategori}}.",
+    "imported": "Menu berhasil diimpor!",
+    "added": "Item Anda sudah ditambahkan ke menu.",
+    "duplicates": "{count, plural, one {# duplikat} other {# duplikat}} dilewati",
+    "showMe": "Tunjukkan caranya",
+    "remind": "Ingatkan nanti",
+    "allSet": "Semua sudah siap!",
+    "explore": "Saya jelajahi sendiri"
+  },
+  "discard": {
+    "setupTitle": "Selesaikan pengaturan nanti?",
+    "setupBody": "Akun dan truk Anda sudah tersimpan — tidak ada yang hilang. Anda bisa menambahkan menu kapan saja: masuk lalu ketuk <b>Impor menu</b> di layar menu Anda untuk melanjutkan dari sini.",
+    "keepGoing": "Lanjutkan",
+    "finishLater": "Selesaikan nanti",
+    "title": "Buang impor ini?",
+    "keepEditing": "Lanjut mengedit",
+    "discard": "Buang",
+    "body": "Perubahan Anda tidak akan disimpan — item yang diimpor, waktu persiapan, dan kapasitas dapur tidak akan ditambahkan.",
+    "carriedBody": "Menu dari demo Anda tersimpan di truk Anda apa adanya. Anda bisa mengubahnya kapan saja di layar menu Anda."
+  },
+  "allergenCardText": {
+    "contains": "Mengandung: {list}",
+    "mayContain": "Mungkin mengandung: {list}"
+  }
+}

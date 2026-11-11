@@ -1,0 +1,30 @@
+{
+  "labels": {
+    "weekDates": "Datumi u nedelji",
+    "dayList": "Spisak dana",
+    "place": "Mesto",
+    "venue": "Lokacija",
+    "area": "Naselje",
+    "dayDate": "Dan i datum",
+    "times": "Vreme",
+    "orderLink": "Link za poručivanje",
+    "locationTag": "Oznaka lokacije"
+  },
+  "weekHeader": "{truck} — gde smo ove nedelje:",
+  "dayLine": "{day} — {where} — {times}",
+  "dayLineNoTimes": "{day} — {where}",
+  "dayLineCancelled": "{day} — {where} — OTKAZANO, izvinite",
+  "noDates": "Ove nedelje nema termina — proverite uskoro ponovo.",
+  "orderAhead": "Poručite unapred: {url}",
+  "orderAheadTagged": "Poručite unapred: {url} {tag}",
+  "eventLine": "{truck}: {when} smo na lokaciji {where}, {times}.",
+  "eventLineNoTimes": "{truck}: {when} smo na lokaciji {where}.",
+  "cancelledSorry": "Izvinite — {when} ne možemo da dođemo na lokaciju {where}.",
+  "cancelledApology": "Izvinjavamo se svima koji su planirali da dođu. Uskoro se vraćamo.",
+  "when": {
+    "today": "danas",
+    "tonight": "večeras",
+    "tomorrow": "sutra",
+    "dated": "{date}"
+  }
+}

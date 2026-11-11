@@ -1,0 +1,59 @@
+{
+  "labels": {
+    "collection_interval_mins": "Afhendingartímar",
+    "takes_cash": "Tekur þú við reiðufé?",
+    "offline_protection": "Vörn án nettengingar",
+    "buzzer_prompt": "Minna mig á að bæta við píptæki"
+  },
+  "typeFollowsVanTitle": "Fylgir venjulegri stillingu hvers vagns",
+  "sameSettingsAllVansLabel": "Sömu stillingar fyrir alla vagna",
+  "sameSettingsAllVansHeader": "Allir vagnar",
+  "sameSettingsConfirm": "Afrita stillingar Vagns 1 á alla vagna? Þetta afritar allar vagnastillingar Vagns 1, alveg eins og „Sama og Vagn 1“ í Stillingum. Afköst eldhússins hafa sinn eigin rofa.",
+  "eventTypesFooterStandard": "Staðlað er venjulega uppsetningin þín. Ef þú breytir henni hér breytist hún líka í Stillingum.",
+  "eventTypesFooterOneEvent": "Til að breyta stillingu fyrir einn viðburð notarðu stjórnborð þess viðburðar.",
+  "eventTypesSubtitle": "Breytingar vistast jafnóðum.",
+  "matchStandardLabel": "Eins og Staðlað",
+  "matchStandardConfirm": "Setja allar stillingar þessarar tegundar aftur á Staðlað? Allt sem þú breyttir hér verður hreinsað.",
+  "priceLabels": {
+    "price_change_on": "Breyta verði",
+    "price_mode": "Verðbreyting",
+    "price_amount": "Upphæð",
+    "price_rounding": "Námundun",
+    "item_prices": "Verð á vörum"
+  },
+  "priceMode": {
+    "add_amount": "+ {symbol}",
+    "add_pct": "+ %",
+    "sub_amount": "− {symbol}",
+    "sub_pct": "− %",
+    "none": "Ég set hvert verð sjálf(ur)"
+  },
+  "priceRounding": {
+    "none": "Engin",
+    "nearest_1": "Næsta {symbol}1",
+    "up_1": "Alltaf námunda upp"
+  },
+  "pricesStandardCell": "Verðin á matseðlinum",
+  "pricesTruckWideTitle": "Verðin þín eru þau sömu fyrir alla vagna",
+  "pricesMenuCell": "Matseðill",
+  "pricesTypeOffCell": "Verð á matseðli",
+  "itemPricesShow": "Sýna verð",
+  "itemPricesHide": "Fela verð",
+  "priceItemsHeading": "Settu verð á hverja vöru",
+  "priceItemsOpen": "Sjá eða breyta verði hverrar vöru ›",
+  "priceItemsClose": "Fela verð á vörum ⌃",
+  "ownPriceCount": "{n, plural, one {{count} vara er með eigið verð} other {{count} vörur eru með eigið verð}}",
+  "priceTypeHint": "Ýttu á verð til að slá inn þitt eigið.",
+  "pricesLiveNotice": "Þessi viðburður er í loftinu. Nýjar pantanir nota nýju verðin. Pantanir sem þegar eru komnar halda sínum.",
+  "placeTypeHelper": "„Bæta við viðburði“ velur þessa tegund í hvert sinn sem þú velur þennan stað.",
+  "postPictureStandardNote": "Viðburðarfærslur hér nota staðlaða hönnunina þína.",
+  "eventItemsCardDescription": "Verð, hámark á vörum og framboð fyrir þennan viðburð eingöngu. Breytingar taka gildi strax.",
+  "eventPriceColumnLabel": "Verð",
+  "eventPriceOwnNote": "{hasType, select, yes {{type} {price} · þessi viðburður} other {matseðill {price} · þessi viðburður}}",
+  "eventPriceEdit": "✎ Breyta verði",
+  "eventPriceCancel": "Hætta við",
+  "eventPriceSave": "Vista verð",
+  "eventPriceEditNote": "Þú ert að breyta verði fyrir þennan viðburð eingöngu. Hámark á vörum og framboð eru læst þar til þú vistar.",
+  "eventPriceLiveNote": "Í loftinu: nýjar pantanir nota nýju verðin.",
+  "offlineWhenOfflineLabel": "Þegar samband rofnar"
+}

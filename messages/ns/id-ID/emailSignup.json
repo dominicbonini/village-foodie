@@ -1,0 +1,26 @@
+{
+  "greeting": "{hasName, select, yes {Halo {name},} other {Halo,}}",
+  "signoffName": "Dominic",
+  "signoffRole": "Pendiri, HatchGrab",
+  "verify": {
+    "subject": "Konfirmasi alamat email Anda",
+    "thanks": "{hasTruck, select, yes {Terima kasih sudah menyiapkan {truck} di HatchGrab.} other {Terima kasih sudah menyiapkan truk Anda di HatchGrab.}}",
+    "button": "Konfirmasi alamat email saya",
+    "buttonText": "Konfirmasi alamat email saya: {url}",
+    "why": "Alamat ini yang Anda pakai untuk masuk, dan ke sinilah notifikasi pesanan dikirim — jadi sebaiknya dilakukan sekarang.",
+    "next": "Setelah terkonfirmasi, saya akan mengirim semua yang Anda perlukan untuk mulai.",
+    "carryOn": "Sementara itu, Anda bisa lanjut menyiapkan truk.",
+    "stuck": "Ada kendala? Balas saja email ini — saya sendiri yang menjawabnya.",
+    "fallbackLink": "Jika tombolnya tidak berfungsi, tempel link ini: {url}"
+  },
+  "welcome": {
+    "subject": "{hasName, select, yes {Selamat datang di HatchGrab, {name}} other {Selamat datang di HatchGrab}}",
+    "intro": "{hasTruck, select, yes {Saya sangat senang menyambut {truck} di HatchGrab.} other {Saya sangat senang menyambut truk Anda di HatchGrab.}}",
+    "trial": "{months, plural, one {Masa coba gratis satu bulan Anda sudah dimulai — semua fitur terbuka.} other {Masa coba gratis # bulan Anda sudah dimulai — semua fitur terbuka.}}",
+    "setup": "Jika belum, penyiapannya mudah dan butuh sekitar lima belas menit.",
+    "button": "Buka dasbor Anda",
+    "bookmark": "Sebaiknya disimpan sebagai bookmark. Bisa dibuka di perangkat apa pun.",
+    "stuck": "Balas saja email ini jika ada kendala — saya sendiri yang menjawabnya.",
+    "lookingForward": "{hasTruck, select, yes {Saya tak sabar melihat {truck} berjualan.} other {Saya tak sabar melihat truk Anda berjualan.}}"
+  }
+}

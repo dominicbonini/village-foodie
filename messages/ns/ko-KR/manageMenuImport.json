@@ -1,0 +1,195 @@
+{
+  "cancel": "취소",
+  "back": "← 이전",
+  "backPlain": "이전",
+  "next": "다음 →",
+  "continue": "계속 →",
+  "closeImport": "가져오기 닫기",
+  "tryAgain": "다시 시도",
+  "catError": {
+    "empty": "카테고리 이름을 입력하세요.",
+    "tooLong": "이름이 너무 깁니다.",
+    "clash": "같은 이름의 카테고리가 이미 있습니다: “{name}”"
+  },
+  "steps": {
+    "details": "기본 정보",
+    "menu": "메뉴",
+    "extras": "추가 옵션",
+    "allergens": "알레르기 유발물질",
+    "kitchen": "주방 설정",
+    "schedule": "일정",
+    "settings": "설정"
+  },
+  "toast": {
+    "demoGone": "데모 메뉴를 더 이상 사용할 수 없습니다. 계속하려면 메뉴를 다시 업로드해 주세요.",
+    "eventsSaveFailed": "영업 일정을 저장하지 못했습니다",
+    "cardReadFailed": "알레르기 유발물질 안내표를 읽지 못했습니다. 다시 시도하세요",
+    "imageReadFailed": "이미지를 읽지 못했습니다. 안내표 내용을 직접 입력하거나 붙여 넣으세요",
+    "commitFailedDetail": "메뉴 저장을 마치지 못했습니다: {error}. 일부 메뉴는 이미 저장되었을 수 있으니 다시 시도하기 전에 메뉴를 확인하세요.",
+    "commitFailed": "메뉴 저장을 마치지 못했습니다. 일부 메뉴는 이미 저장되었을 수 있으니 다시 시도하기 전에 메뉴를 확인하세요.",
+    "finishFailed": "설정 완료로 표시하지 못했습니다. 그래도 계속 진행할 수 있어요.",
+    "scheduleReadFailed": "일정을 읽지 못했습니다. 더 선명한 사진을 쓰거나 날짜를 직접 입력하세요.",
+    "cardRead": "안내표를 읽었습니다 — 일치: {matched}개, 직접 지정 필요: {pending, plural, one {#개} other {#개}}"
+  },
+  "settingsReview": {
+    "anchorOrder": "설정 → 주문 설정",
+    "anchorDisplay": "설정 → 내 푸드트럭 → 화면 설정",
+    "mins15": "15분",
+    "mins30": "30분",
+    "mins60": "60분",
+    "hours2": "2시간",
+    "title": "확인할 설정 몇 가지",
+    "loading": "현재 설정을 불러오는 중…",
+    "looksGood": "좋아요 →",
+    "secondaryAria": "{label} — {secondary}",
+    "saveFailed": "저장하지 못했습니다. 설정에서 변경할 수 있어요.",
+    "anchorContact": "설정 → 연락처 정보",
+    "intro": "자주 쓰는 설정으로 미리 맞춰 두었습니다. 한번 확인해 보세요. 모두 나중에 설정에서 바꿀 수 있습니다.",
+    "cancelAria": "손님이 픽업 몇 분 전까지 취소할 수 있는지"
+  },
+  "allergensNotSet": {
+    "bodySetup": "공개하기 전에 검토하세요. 검토하기 전까지 메뉴에 “알레르기 유발물질 미설정”이 표시됩니다.",
+    "body": "공개하기 전에 설정에서 검토하세요. 검토하기 전까지 메뉴에 “알레르기 유발물질 미설정”이 표시됩니다.",
+    "title": "⚠ 알레르기 유발물질과 식단 정보가 아직 설정되지 않았습니다"
+  },
+  "welcome": {
+    "title": "HatchGrab에 오신 것을 환영합니다",
+    "yourTruck": "내 푸드트럭",
+    "stop": "언제든 멈췄다가 다시 이어서 할 수 있어요.",
+    "body": "푸드트럭 설정 완료: {name}. 다음으로 메뉴를 추가하고, 이어서 첫 영업 일정을 추가합니다.",
+    "go": "시작하기"
+  },
+  "offer": {
+    "title": "데모에서 쓴 메뉴를 사용할까요?",
+    "use": "이 메뉴 사용",
+    "upload": "다른 메뉴 업로드",
+    "body": "업로드한 메뉴를 저장해 두었습니다(메뉴 {count, plural, one {#개} other {#개}}). 이 메뉴로 시작하거나 다른 메뉴를 업로드하세요."
+  },
+  "checkMenu": {
+    "title": "메뉴 확인",
+    "body": "데모에서 쓴 메뉴를 푸드트럭에 저장했는데, 그 뒤에 수정하셨기 때문에 수정한 내용이 유지됩니다. 아래에서 한번 살펴보세요.",
+    "done": "좋아요"
+  },
+  "upload": {
+    "title": "메뉴 가져오기",
+    "body": "메뉴판 사진, 캡처 화면, PDF를 업로드하거나 메뉴를 텍스트로 붙여 넣으세요. AI가 읽고 디지털 메뉴를 만들어 드리며, 저장하기 전에 모든 내용을 확인할 수 있습니다.",
+    "confirmCancel": "가져오기를 취소할까요? 이 메뉴를 검토한 내용이 사라집니다.",
+    "process": "메뉴 처리하기",
+    "later": "나중에 할게요"
+  },
+  "processing": {
+    "title": "메뉴 분석 중",
+    "body": "AI가 메뉴를 읽고 카테고리로 나누고 있습니다…"
+  },
+  "review": {
+    "title": "가져온 메뉴 검토",
+    "editLaterSetup": "이름, 가격, 추가 옵션, 알레르기 유발물질, 식단 정보는 나중에 언제든 수정할 수 있습니다.",
+    "editLater": "이름, 가격, 추가 옵션, 알레르기 유발물질, 식단 정보는 설정에서 언제든 수정할 수 있습니다.",
+    "noPrice": "가격을 읽지 못한 메뉴: {count, plural, one {#개} other {#개}}",
+    "renameCategoryAria": "카테고리 이름 변경: {name}",
+    "renameAria": "이름 변경: {name}",
+    "renameTitle": "카테고리 이름 변경",
+    "deleteAria": "삭제: {name}",
+    "deleteTitle": "카테고리 삭제",
+    "lastCategory": "메뉴에는 카테고리가 하나 이상 있어야 합니다",
+    "countOf": "{kept}/{total}",
+    "existing": "기존",
+    "deleteEmptyTitle": "“{name}” 카테고리를 삭제할까요?",
+    "deleteEmptyBody": "메뉴가 없는 카테고리라 잃는 내용은 없습니다.",
+    "delete": "삭제",
+    "moveTitle": "메뉴 {count, plural, one {#개} other {#개}}를 어디로 옮길까요?",
+    "moveBody": "“{name}” 카테고리를 삭제하려면 메뉴를 옮길 곳이 필요합니다. 카테고리가 없는 메뉴는 가져오지 않습니다.",
+    "moveAria": "메뉴를 옮길 카테고리 (현재: {name})",
+    "chooseCategory": "카테고리 선택…",
+    "moveDelete": "옮기고 삭제",
+    "itemName": "메뉴 이름",
+    "free": "무료?",
+    "freeOn": "무료 ✕",
+    "nameFirst": "다른 메뉴를 추가하기 전에 새 메뉴의 이름을 입력하세요",
+    "addItem": "+ 메뉴 추가",
+    "categoryName": "카테고리 이름",
+    "newCategoryAria": "새 카테고리 이름",
+    "addCategory": "+ 카테고리 추가",
+    "ready": "추가할 준비가 된 메뉴: {count, plural, one {#개} other {#개}}. 원하지 않는 메뉴는 체크를 해제하세요.",
+    "noPriceBody": "메뉴마다 가격을 입력하거나 무료로 표시하세요. 그렇지 않으면 {zero} 가격으로 공개됩니다. 이 문제를 해결해야 계속할 수 있습니다.",
+    "incomplete": "이 메뉴를 추가하려면 이름을 입력하세요. 빈 줄은 가져오지 않습니다."
+  },
+  "extras": {
+    "introSetup": "일부 메뉴는 <b>옵션을 고를 수 있는 하나의 메뉴</b>로 묶거나 <b>각각 다른 메뉴</b>로 둘 수 있습니다. 메뉴마다 표시 방식을 고르세요. 나중에 바꿀 수 있습니다.",
+    "intro": "일부 메뉴는 <b>옵션을 고를 수 있는 하나의 메뉴</b>로 묶거나 <b>각각 다른 메뉴</b>로 둘 수 있습니다. 메뉴마다 표시 방식을 고르세요. 나중에 설정에서 바꿀 수 있습니다.",
+    "none": "묶을 수 있는 메뉴가 없습니다. 모든 메뉴가 단독 메뉴입니다.",
+    "axisChoice": "· {axis} 선택",
+    "grouped": "묶음 · 메뉴 하나, 손님이 선택",
+    "separate": "별도 메뉴"
+  },
+  "allergens": {
+    "title": "알레르기 유발물질",
+    "detected": "메뉴에서 알레르기 유발물질을 찾았습니다. 아래에서 표시 방법을 고르세요.",
+    "howShow": "손님에게 알레르기 유발물질을 어떻게 보여 줄까요?",
+    "skip": "알레르기 유발물질 설정은 나중에 하기"
+  },
+  "kitchen": {
+    "title": "주방 설정",
+    "intro": "손님이 얼마나 기다려야 하는지 알 수 있게 도와주세요. 나중에 언제든 바꿀 수 있습니다.",
+    "howWorks": "주방 처리 용량은 이렇게 작동해요",
+    "allExist": "모든 카테고리가 이미 있어 설정할 시간이 없습니다.",
+    "totalHelp": "전체 처리 용량을 정하면 시간대마다 주방이 받는 메뉴 수가 제한됩니다. 제한이 없으려면 ∞로 두세요.",
+    "saveAdd": "저장하고 메뉴에 추가"
+  },
+  "schedule": {
+    "title": "내 일정 추가",
+    "intro": "일정이 웹사이트에 올라가 있다면 자동으로 최신 상태로 유지해 드립니다. 날짜를 직접 추가해도 됩니다.",
+    "websiteTitle": "웹사이트에 일정이 있어요",
+    "urlPlaceholder": "https://yourfoodtruck.co.kr/events",
+    "checking": "확인 중…",
+    "verify": "확인",
+    "checkingSite": "웹사이트를 확인하는 중…",
+    "takesTime": "최대 2분 정도 걸릴 수 있습니다. 이 화면을 닫지 마세요.",
+    "canRead": "✓ 일정을 읽을 수 있습니다",
+    "ownSite": "직접 운영하는 웹사이트여야 합니다. Facebook이나 Instagram 페이지는 안 됩니다.",
+    "photoTitle": "일정 사진 업로드",
+    "dragChoose": "끌어다 놓거나 탭해서 선택",
+    "imageOrPdf": "이미지 또는 PDF",
+    "or": "또는",
+    "pastePlaceholder": "날짜를 여기에 붙여 넣으세요…",
+    "read": "일정 읽기",
+    "found": "날짜 {count, plural, one {#개} other {#개}}를 찾았습니다. 일정에 추가됩니다.",
+    "dateTbc": "날짜 미정",
+    "save": "날짜 {count, plural, one {#개} other {#개}} 저장",
+    "manualDesc": "나중에 일정 탭에서 추가하세요. 지금은 할 일이 없습니다.",
+    "manualBody": "괜찮아요. 계정의 일정 탭에서 언제든 날짜를 추가하고 관리할 수 있습니다.",
+    "blockedDomain": "웹사이트 URL을 입력하세요. Facebook과 Instagram 페이지는 자동으로 가져올 수 없습니다.",
+    "saveFailed": "일정은 읽었지만 지금 저장하지 못했습니다. 다시 시도하세요.",
+    "websiteDesc": "정기적으로 확인해서 새 날짜가 생기면 승인 요청을 보내 드립니다.",
+    "keepChecking": "이 페이지를 계속 확인해서 새 날짜가 생기면 승인 요청을 보내 드립니다.",
+    "photoDesc": "날짜를 찍거나 붙여 넣으세요. 읽어 드린 내용을 확인하시면 됩니다.",
+    "noneFound": "날짜를 찾지 못했습니다. 더 선명한 사진을 쓰거나 날짜를 직접 추가하세요.",
+    "manualTitle": "날짜는 직접 추가할게요",
+    "trialNotStarted": "영업 일정을 추가해도 무료 체험은 시작되지 않습니다. 어떤 영업 일정부터 시작할지는 나중에 고르면 됩니다."
+  },
+  "done": {
+    "summary": "카테고리 {categories, plural, one {#개} other {#개}}, 메뉴 {items, plural, one {#개} other {#개}}.",
+    "imported": "메뉴를 가져왔습니다!",
+    "added": "메뉴에 항목이 추가되었습니다.",
+    "duplicates": "중복 {count, plural, one {#개} other {#개}} 건너뜀",
+    "showMe": "둘러보기 안내",
+    "remind": "나중에 알려 주세요",
+    "allSet": "준비가 끝났습니다!",
+    "explore": "직접 둘러볼게요"
+  },
+  "discard": {
+    "setupTitle": "설정을 나중에 마칠까요?",
+    "setupBody": "계정과 푸드트럭은 저장되어 있어 잃는 것은 없습니다. 메뉴는 언제든 추가할 수 있어요. 로그인한 뒤 메뉴 화면에서 <b>메뉴 가져오기</b>를 누르면 바로 여기서 이어집니다.",
+    "keepGoing": "계속하기",
+    "finishLater": "나중에 마치기",
+    "title": "가져오기를 취소할까요?",
+    "keepEditing": "계속 수정",
+    "discard": "취소하기",
+    "body": "변경 사항이 저장되지 않습니다. 가져온 메뉴, 조리 시간, 주방 처리 용량이 추가되지 않습니다.",
+    "carriedBody": "데모에서 쓴 메뉴는 그대로 푸드트럭에 저장되어 있습니다. 메뉴 화면에서 언제든 바꿀 수 있습니다."
+  },
+  "allergenCardText": {
+    "contains": "함유: {list}",
+    "mayContain": "함유 가능성 있음: {list}"
+  }
+}

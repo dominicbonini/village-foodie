@@ -1,0 +1,18 @@
+{
+  "menuLabel": "사용자 메뉴",
+  "screenOn": "화면 켜짐",
+  "screenOff": "화면 꺼짐",
+  "newOrderSound": "새 주문 알림음",
+  "copied": "복사됨",
+  "orderLink": "주문 링크",
+  "qrCode": "QR 코드",
+  "kitchenScreen": "주방 디스플레이(KDS)",
+  "thisDevice": "이 기기",
+  "manage": "관리",
+  "ordersDashboard": "주문 대시보드",
+  "admin": "관리자",
+  "privacy": "개인정보 처리방침",
+  "terms": "이용약관",
+  "signOut": "로그아웃",
+  "close": "닫기"
+}

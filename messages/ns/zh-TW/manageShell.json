@@ -1,0 +1,86 @@
+{
+  "loading": "正在載入管理後台…",
+  "loadFailed": "載入失敗",
+  "requestFailed": "失敗",
+  "invalidToken": "權杖無效或已過期",
+  "loadFailedReason": "無法載入此頁面：{reason}",
+  "noCountrySettings": "無法載入這台餐車的國家設定，請重新整理。",
+  "noPlans": "無法載入這台餐車的方案，請重新整理。",
+  "stale": "{hasTime, select, yes {無法重新整理。目前顯示的是 {time} 儲存的內容。你所做的變更仍會儲存。} other {無法重新整理。目前顯示的是已儲存的內容。你所做的變更仍會儲存。}}",
+  "verify": {
+    "ok": "電子郵件已確認，謝謝你。",
+    "expired": "此確認連結已過期。請聯絡我們，我們會在你正式上線前處理好。",
+    "invalid": "此確認連結無效。請聯絡我們，我們會在你正式上線前處理好。"
+  },
+  "profile": {
+    "updated": "個人資料已更新",
+    "saveFailed": "儲存失敗",
+    "title": "編輯個人資料",
+    "name": "姓名",
+    "namePlaceholder": "你的姓名",
+    "email": "電子郵件",
+    "cancel": "取消",
+    "saving": "儲存中…",
+    "save": "儲存"
+  },
+  "header": {
+    "subtitle": "管理後台",
+    "ordersDashboard": "← 訂單控制台"
+  },
+  "tabs": {
+    "menu": "菜單",
+    "schedule": "行程",
+    "paperwork": "文件",
+    "social": "社群媒體",
+    "reports": "報表",
+    "team": "團隊",
+    "settings": "設定",
+    "payments": "收款",
+    "billing": "帳務",
+    "paymentsIcon": "💵",
+    "scheduleCount": "行程（{count}）",
+    "stripeAttention": "Stripe 需要你處理",
+    "allergensNotSet": "尚未設定過敏原"
+  },
+  "menuSections": {
+    "label": "菜單區塊",
+    "items": "品項",
+    "capacity": "廚房出餐量",
+    "extras": "加料與加購",
+    "deals": "優惠"
+  },
+  "socialSections": {
+    "label": "社群媒體區塊",
+    "create": "建立貼文",
+    "designs": "設計",
+    "locations": "地點設定"
+  },
+  "notices": {
+    "review": "查看 →",
+    "tour": "想快速導覽你的控制台嗎？",
+    "showMeAround": "帶我看看",
+    "dismiss": "關閉",
+    "approval": "{count, plural, one {我們為你找到 <b>{count}</b> 場活動——請在上線前檢查並核准。} other {我們為你找到 <b>{count}</b> 場活動——請在上線前檢查並核准。}}",
+    "allergens": "<b>尚未設定過敏原</b>——在你確認之前，顧客看不到過敏原資訊。請在「菜單」分頁檢查每項餐點的過敏原。",
+    "domainLive": "<link>{domain}</link> 已上線。請看看，然後在「設定」中告訴我們是否正確。",
+    "stripe": "<b>Stripe 需要你提供資料</b>——處理好之前，信用卡付款可能會停止。",
+    "profileTitle": "完成你的資料",
+    "missing": "尚缺：{fields}。",
+    "goToSettings": "前往設定 →",
+    "field": {
+      "truckName": "餐車名稱",
+      "cuisineType": "料理類型",
+      "contactEmail": "聯絡電子郵件",
+      "contactPhone": "聯絡電話"
+    }
+  },
+  "trialPopup": {
+    "title": "{months, select, none {你正在使用免費試用} other {你正在使用 {months} 個月免費試用}}",
+    "ends": "{hasDate, select, yes {試用期於 <hl>{date}</hl> 結束} other {試用期<hl>即將</hl>結束}}",
+    "offer": "{hasMonths, select, yes {{months, plural, one {所有功能免費使用 # 個月} other {所有功能免費使用 # 個月}}} other {試用期間所有功能免費使用}}",
+    "body": "{hasDate, select, yes {試用期間你不會被收取任何費用，試用期至 <b>{date}</b> 為止。只有在你選擇方案並輸入付款資料後，才會開始計費。在那之前，沒有需要取消的項目，也不需要支付任何費用。請在那之前選擇方案——否則你將轉為 {fallback} 方案，部分功能將停止運作。} other {試用期間你不會被收取任何費用。只有在你選擇方案並輸入付款資料後，才會開始計費。在那之前，沒有需要取消的項目，也不需要支付任何費用。請在試用結束前選擇方案——否則你將轉為 {fallback} 方案，部分功能將停止運作。}}",
+    "bodyPaidEnd": "{hasDate, select, yes {試用期間你不會被收取任何費用，試用期至 <b>{date}</b> 為止。試用結束後，{fallback} 方案每月 {price}。我們會在那之前與你聯絡，設定付款方式。} other {試用期間你不會被收取任何費用。試用結束後，{fallback} 方案每月 {price}。我們會在那之前與你聯絡，設定付款方式。}}",
+    "fees": "*線上訂單須支付標準刷卡手續費",
+    "upgrade": "在此升級 →"
+  }
+}

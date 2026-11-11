@@ -1,0 +1,103 @@
+{
+  "upload": {
+    "bannerButton": "Lưu thực đơn →",
+    "heading": "Thiết lập xe của bạn",
+    "sub": "Thực đơn của bạn được chuyển sang ngay.",
+    "privacy": "Chúng tôi chỉ dùng thông tin này để thiết lập xe và gửi link bản demo cho bạn — xem <link>chính sách quyền riêng tư</link> của chúng tôi."
+  },
+  "sample": {
+    "bannerButton": "Thiết lập xe →",
+    "heading": "Thiết lập xe của bạn",
+    "sub": "Tiếp theo bạn sẽ tải thực đơn của mình lên — chỉ mất một phút.",
+    "privacy": "Chúng tôi chỉ dùng thông tin này để thiết lập xe và gửi link bản demo cho bạn — xem <link>chính sách quyền riêng tư</link> của chúng tôi."
+  },
+  "saveOnly": {
+    "bannerButton": "Lưu thực đơn →",
+    "heading": "Lưu bản demo",
+    "sub": "Chúng tôi sẽ giữ bản demo trong 14 ngày và gửi ngay link quay lại qua email.",
+    "privacy": "Chúng tôi chỉ dùng thông tin này để gửi link bản demo cho bạn — xem <link>chính sách quyền riêng tư</link> của chúng tôi."
+  },
+  "confirmationHeading": "Xong rồi",
+  "postSaveButton": "Thiết lập xe →",
+  "enterSetupButton": "Thiết lập xe →",
+  "emailOnlyLink": "Chỉ cần gửi email cho tôi link để quay lại bản demo này",
+  "sendLinkButton": "Gửi link cho tôi",
+  "savingButton": "Đang lưu…",
+  "continueButton": "Tiếp tục →",
+  "createAccountButton": "Tạo tài khoản →",
+  "retryButton": "Thử lại",
+  "backToDemoButton": "Quay lại bản demo",
+  "savedStatus": "{hasDate, select, yes {✓ Đã lưu — giữ đến {date}} other {✓ Đã lưu}}",
+  "back": "Quay lại",
+  "close": "Đóng",
+  "truckStepHeading": "Về xe của bạn",
+  "detailsStepHeading": "Hoàn tất thiết lập",
+  "stepper": {
+    "details": "Thông tin của bạn",
+    "menu": "Thực đơn",
+    "allergens": "Chất gây dị ứng",
+    "kitchen": "Thiết lập bếp",
+    "schedule": "Lịch bán"
+  },
+  "confirmEmailed": "Chúng tôi đã gửi email cho bạn link quay lại ngay bản demo này — không cần đăng nhập.",
+  "confirmKeepUntil": "Chúng tôi sẽ giữ bản demo đến <b>{date}</b>. Khi bạn thiết lập chính thức, thực đơn sẽ được chuyển sang cùng bạn.",
+  "loading": "Đang tải…",
+  "firstName": "Tên",
+  "lastName": "Họ",
+  "truckName": "Tên xe",
+  "truckNamePlaceholder": "VD: Bếp Phố Cổ",
+  "cuisine": "Loại món",
+  "logoLabel": "Logo <opt>(không bắt buộc)</opt>",
+  "logoPreviewAlt": "Xem trước logo",
+  "changeLogo": "Đổi logo",
+  "removeLogo": "Xóa",
+  "uploadLogo": "📷 Tải logo lên",
+  "readyTitle": "Tài khoản của bạn đã sẵn sàng",
+  "readyBody": "Giờ hãy hoàn tất thiết lập xe — thực đơn, chất gây dị ứng và bếp.",
+  "hangTight": "Chờ một chút — đang thiết lập mọi thứ.",
+  "stage": {
+    "account": "Đang tạo tài khoản",
+    "truck": "Đang thiết lập xe",
+    "menu": "Đang tải thực đơn"
+  },
+  "stageState": {
+    "done": "xong",
+    "recognised": "bạn đã có tài khoản",
+    "failed": "thất bại",
+    "active": "đang thực hiện",
+    "pending": "đang chờ"
+  },
+  "signIn": "Đăng nhập",
+  "phone": "Điện thoại",
+  "onWhatsapp": "Số này có dùng WhatsApp",
+  "email": "Email",
+  "emailPlaceholder": "ban@foodtruckcuaban.vn",
+  "settingUpAs": "Đang thiết lập với <b>{email}</b> <change>đổi</change>",
+  "password": "Mật khẩu",
+  "passwordPlaceholder": "Ít nhất 8 ký tự",
+  "hidePassword": "Ẩn mật khẩu",
+  "showPassword": "Hiện mật khẩu",
+  "promoLabel": "Bạn có mã? <opt>(không bắt buộc)</opt>",
+  "promoPlaceholder": "Nhập mã tại đây",
+  "agreeTerms": "Tôi đồng ý với <terms>Điều khoản</terms> và <privacy>Chính sách quyền riêng tư</privacy>.",
+  "freeMonth": "{months, plural, =0 {Thời gian dùng thử miễn phí bắt đầu khi bạn đăng ký.} one {Tháng đầu tiên miễn phí, tính từ khi bạn đăng ký.} other {# tháng đầu tiên miễn phí, tính từ khi bạn đăng ký.}}",
+  "fieldError": {
+    "firstName": "Cho chúng tôi biết tên của bạn.",
+    "lastName": "Và họ của bạn.",
+    "truck": "Hãy đặt tên cho xe của bạn.",
+    "cuisine": "Cho chúng tôi biết bạn nấu món gì.",
+    "phoneMissing": "Thêm số điện thoại — cả khách và chúng tôi đều dùng số này để liên hệ với bạn.",
+    "email": "Nhập địa chỉ email hợp lệ.",
+    "password": "Mật khẩu phải có ít nhất 8 ký tự.",
+    "terms": "Vui lòng đồng ý với điều khoản để tiếp tục."
+  },
+  "error": {
+    "saveFailed": "Không lưu được — hãy thử lại.",
+    "savedNoEmail": "Đã lưu — nhưng hiện chưa gửi được link qua email.",
+    "unreachable": "Hiện chưa kết nối được với chúng tôi — hãy thử lại.",
+    "createAccountFailed": "Không tạo được tài khoản của bạn.",
+    "truckCreateFailed": "Tài khoản đã sẵn sàng nhưng chúng tôi chưa tạo được xe của bạn. Hãy thử lại.",
+    "truckUnreachable": "Tài khoản đã sẵn sàng nhưng hiện chúng tôi chưa tạo được xe của bạn. Hãy thử lại.",
+    "truckNoToken": "Xe của bạn đã được thiết lập nhưng hiện chúng tôi chưa mở được. Hãy thử lại."
+  }
+}
