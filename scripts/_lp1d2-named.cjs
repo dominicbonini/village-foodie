@@ -491,6 +491,15 @@ const NAMED = [
       views: id => /^shell\/(GB|US)\|/.test(id),
       expect: b => mapStrings(b, x => require('./_lp-paperwork-1.cjs').tabBar(x)) },
   ] : []),
+  // ── ⚠️ RE-PINNED (billing-2, 11 November 2026, docs/billing-2-report.md) ────────────────────────────────────────────────────────
+  //    Manage hands BillingTab the dashboard `token` (it asks /api/manage/billing whether the new Billing screen is shown — for every
+  //    truck billing is not shown to, today's tab renders unchanged). The shell stubs the tab, so its props record the new one. PRECISE.
+  ...(require('fs').existsSync(require('path').join(__dirname, '..', 'components/manage/BillingScreen.tsx')) ? [
+    { id: 'billing-2-token-prop', country: 'both', agent: 'billing-2 (11 Nov 2026)',
+      what: '⚠️ RE-PINNED (billing-2, 11 November 2026): Manage hands BillingTab `token` (after `truck`). The shell stubs the tab, so its props record the new one. PRECISE.',
+      views: id => /^shell\/(GB|US)\|/.test(id),
+      expect: b => mapStrings(b, x => stProps(x, 'BillingTab', p => ('token' in p ? p : { ...p, token: 'harness' }))) },
+  ] : []),
   // ── ⚠️ RE-PINNED (costs-accounts-1, 4 November 2026, docs/costs-accounts-1-report.md) ──────────────────────────────────────────
   //    Reports shows the period picker beside the date range (phone and desktop toolbars), and Manage hands MenuTab `canSeeCosts`
   //    (owners and managers see the item editor's "Cost to make"). PRECISE (scripts/_lp-costs-accounts-1.cjs).

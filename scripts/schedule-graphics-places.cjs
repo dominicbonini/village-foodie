@@ -2087,6 +2087,11 @@ function runWiringSuite(lib) {
      * logo's card-title treatment, the cancellation group's stray divider and duplicate label, and the
      * lines that gained an id/import. Anything NOT on it is a loss. */
     const allowed = [
+      /* ⚠️ RE-PINNED (billing-2, 11 November 2026, docs/billing-2-report.md): BillingTab takes the dashboard `token` (it asks
+       * /api/manage/billing whether the new Billing screen is shown) — its signature and its one call site; proved by
+       * scripts/billing-2.cjs §9 and language-phase-1d2's named change billing-2-token-prop. */
+      "function BillingTab({ truck }: { truck: Truck | null }) {",
+      "{activeTab === 'billing'   && <BillingTab   truck={truck} />}",
       /* ⚠️ RE-PINNED (store-badges-1, 2 November 2026, docs/store-badges-1-report.md): the app-download card shows only where the
        * truck's country has an app (`(appsAvailable.ios || appsAvailable.android)` joined its condition), proved by
        * scripts/store-badges-1.cjs §5. */
