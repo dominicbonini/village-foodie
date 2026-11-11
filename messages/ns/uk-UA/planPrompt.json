@@ -1,0 +1,122 @@
+{
+  "includedOn": "{many, select, yes {{feature} входять у тариф {plan}.} other {{feature} входить у тариф {plan}.}}",
+  "notOnPlan": "{many, select, yes {{feature} немає у вашому тарифі.} other {{feature} немає у вашому тарифі.}}",
+  "switchedOff": "{many, select, yes {{feature} вимкнено для вашого фудтрака.} other {{feature} вимкнено для вашого фудтрака.}}",
+  "planLine": "{plan} · {price} · {description}",
+  "planLineNoPrice": "{plan} · {description}",
+  "upgrade": "Змінити тариф →",
+  "features": {
+    "discovery_map": {
+      "name": "Розміщення на карті HatchGrab",
+      "many": "no"
+    },
+    "web_dashboard": {
+      "name": "Вебпанель",
+      "many": "no"
+    },
+    "ipad_kds": {
+      "name": "Кухонний застосунок",
+      "many": "no"
+    },
+    "qr_menu": {
+      "name": "QR-меню",
+      "many": "no"
+    },
+    "meal_deals": {
+      "name": "Комбо",
+      "many": "yes"
+    },
+    "upsells": {
+      "name": "Допродажі",
+      "many": "yes"
+    },
+    "walkup_orders": {
+      "name": "Замовлення біля віконця",
+      "many": "yes"
+    },
+    "online_ordering_pay_at_hatch": {
+      "name": "Оплата у фудтраку",
+      "many": "no"
+    },
+    "sold_out_toggle": {
+      "name": "Позначка «Розпродано»",
+      "many": "no"
+    },
+    "stock_countdown": {
+      "name": "Облік залишків",
+      "many": "no"
+    },
+    "offline_protection": {
+      "name": "Захист замовлень без зв’язку",
+      "many": "no"
+    },
+    "online_payments": {
+      "name": "Онлайн-платежі",
+      "many": "yes"
+    },
+    "advance_preordering": {
+      "name": "Передзамовлення на майбутні дати",
+      "many": "no"
+    },
+    "time_slot_selection": {
+      "name": "Тайм-слоти для клієнтів",
+      "many": "yes"
+    },
+    "smart_batch_pacing": {
+      "name": "Керування потужністю кухні",
+      "many": "no"
+    },
+    "auto_accept": {
+      "name": "Автоприйняття",
+      "many": "no"
+    },
+    "instagram_messenger_replies": {
+      "name": "Автовідповіді в Messenger та Instagram",
+      "many": "yes"
+    },
+    "branded_qr_code": {
+      "name": "Брендовані QR-коди",
+      "many": "yes"
+    },
+    "advanced_reporting": {
+      "name": "Розширена звітність",
+      "many": "no"
+    },
+    "ticket_printing": {
+      "name": "Друк кухонних чеків",
+      "many": "no"
+    },
+    "multi_device_kds": {
+      "name": "Синхронізація кухні на кількох пристроях",
+      "many": "no"
+    },
+    "cook_screen": {
+      "name": "Екран кухаря",
+      "many": "no"
+    },
+    "whatsapp_replies": {
+      "name": "Автовідповіді у WhatsApp",
+      "many": "yes"
+    },
+    "embed_schedule": {
+      "name": "Ваш графік на власному сайті",
+      "many": "no"
+    },
+    "schedule_graphics": {
+      "name": "Дописи в соцмережах",
+      "many": "yes"
+    },
+    "event_types": {
+      "name": "Власні типи заходів",
+      "many": "yes"
+    },
+    "private_events": {
+      "name": "Приватні заходи",
+      "many": "yes"
+    },
+    "paperwork": {
+      "name": "Документи",
+      "many": "yes"
+    }
+  }
+}

@@ -1,0 +1,59 @@
+{
+  "labels": {
+    "collection_interval_mins": "Час отримання",
+    "takes_cash": "Ви приймаєте готівку?",
+    "offline_protection": "Захист від втрати зв’язку",
+    "buzzer_prompt": "Нагадувати видати пейджер"
+  },
+  "typeFollowsVanTitle": "Як у звичайних налаштуваннях кожного фургона",
+  "sameSettingsAllVansLabel": "Однакові налаштування для всіх фургонів",
+  "sameSettingsAllVansHeader": "Усі фургони",
+  "sameSettingsConfirm": "Скопіювати налаштування фургона «Фургон 1» на всі фургони? Буде скопійовано всі налаштування фургона «Фургон 1» — так само, як опція «Так само, як Фургон 1» у Налаштуваннях. Потужність кухні має окремий перемикач.",
+  "eventTypesFooterStandard": "«Стандарт» — це ваші звичайні налаштування. Якщо змінити їх тут, вони зміняться й у Налаштуваннях.",
+  "eventTypesFooterOneEvent": "Щоб змінити налаштування лише для одного заходу, скористайтеся панеллю замовлень цього заходу.",
+  "eventTypesSubtitle": "Зміни зберігаються автоматично.",
+  "matchStandardLabel": "Як у типі «Стандарт»",
+  "matchStandardConfirm": "Повернути всі налаштування цього типу до значень типу «Стандарт»? Усе, що ви тут змінили, буде скинуто.",
+  "priceLabels": {
+    "price_change_on": "Змінити ціни",
+    "price_mode": "Зміна ціни",
+    "price_amount": "Сума",
+    "price_rounding": "Округлення",
+    "item_prices": "Ціни позицій"
+  },
+  "priceMode": {
+    "add_amount": "+ {symbol}",
+    "add_pct": "+ %",
+    "sub_amount": "− {symbol}",
+    "sub_pct": "− %",
+    "none": "Указати кожну ціну самостійно"
+  },
+  "priceRounding": {
+    "none": "Немає",
+    "nearest_1": "До найближчого цілого ({symbol}1)",
+    "up_1": "Завжди вгору"
+  },
+  "pricesStandardCell": "Ціни з вашого меню",
+  "pricesTruckWideTitle": "Ваші ціни однакові для всіх фургонів",
+  "pricesMenuCell": "Меню",
+  "pricesTypeOffCell": "Ціни меню",
+  "itemPricesShow": "Показати ціни",
+  "itemPricesHide": "Приховати ціни",
+  "priceItemsHeading": "Укажіть ціну кожної позиції",
+  "priceItemsOpen": "Переглянути або змінити ціни позицій ›",
+  "priceItemsClose": "Приховати ціни позицій ⌃",
+  "ownPriceCount": "{n, plural, one {{count} позиція має власну ціну} few {{count} позиції мають власну ціну} many {{count} позицій мають власну ціну} other {{count} позиції мають власну ціну}}",
+  "priceTypeHint": "Натисніть на ціну, щоб ввести власну.",
+  "pricesLiveNotice": "Цей захід уже триває. Нові замовлення оформлюються за новими цінами. Уже оформлені замовлення зберігають свої.",
+  "placeTypeHelper": "«Додати захід» вибирає цей тип щоразу, коли ви обираєте це місце.",
+  "postPictureStandardNote": "Дописи про заходи тут використовують ваш стандартний дизайн.",
+  "eventItemsCardDescription": "Ціни, ліміти позицій і доступність лише для цього заходу. Зміни діють одразу.",
+  "eventPriceColumnLabel": "Ціна",
+  "eventPriceOwnNote": "{hasType, select, yes {{type} {price} · цей захід} other {меню {price} · цей захід}}",
+  "eventPriceEdit": "✎ Редагувати ціни",
+  "eventPriceCancel": "Скасувати",
+  "eventPriceSave": "Зберегти ціни",
+  "eventPriceEditNote": "Ви редагуєте ціни лише для цього заходу. Ліміти позицій і доступність заблоковано, доки ви не збережете зміни.",
+  "eventPriceLiveNote": "Захід триває: нові замовлення — за новими цінами.",
+  "offlineWhenOfflineLabel": "Коли немає зв’язку"
+}

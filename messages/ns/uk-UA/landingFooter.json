@@ -1,0 +1,17 @@
+{
+  "features": "Функції",
+  "pricing": "Ціни",
+  "faq": "Часті запитання",
+  "privacy": "Конфіденційність",
+  "terms": "Умови",
+  "contact": "Контакти",
+  "about": "Про нас",
+  "copyright": "© {year} HatchGrab",
+  "credit": "Від команди <b>Village Foodie</b>",
+  "badges": {
+    "appStoreLink": "Завантажте HatchGrab з App Store",
+    "appStoreAlt": "Завантажте в App Store",
+    "googlePlayLink": "Завантажте HatchGrab з Google Play",
+    "googlePlayAlt": "Доступно в Google Play"
+  }
+}

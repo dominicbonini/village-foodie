@@ -1,0 +1,25 @@
+{
+  "newOrder": {
+    "subject": "Нове замовлення #{id} — {name}{withSlot, select, yes { · {slot}} other {}}",
+    "heading": "Отримано нове замовлення",
+    "from": "<b>Замовлення #{id}</b> від клієнта <b>{name}</b>",
+    "collection": "Отримання: {time}",
+    "asap": "Без конкретного часу — якнайшвидше",
+    "total": "Разом",
+    "notes": "<b>Примітки:</b> {notes}",
+    "autoConfirmed": "Підтверджено автоматично — нічого робити не треба.",
+    "confirmPrompt": "Увійдіть у панель замовлень HatchGrab, щоб підтвердити або відхилити це замовлення.",
+    "text": "Нове замовлення #{id} від клієнта {name}{withSlot, select, yes { на {slot}} other {}}{withVenue, select, yes { (локація: {venue})} other {}}.{withCharges, select, yes { {charges}.} other {}} Разом {total}.{withNotes, select, yes { Примітки: {notes}} other {}}"
+  },
+  "newEvents": {
+    "subject": "Знайдено нові заходи для фудтрака {truck} — перевірте їх",
+    "hi": "Вітаємо!",
+    "found": "У вашому графіку знайдено <b>{n, plural, one {{count} новий захід} few {{count} нові заходи} many {{count} нових заходів} other {{count} нового заходу}}</b>. Перш ніж показувати їх клієнтам, потрібне ваше схвалення.",
+    "listHeading": "Знайдені заходи:",
+    "approve": "Щойно ви схвалите їх у вкладці «Графік», вони з’являться на карті, а ваша сторінка замовлення буде готова приймати передзамовлення.",
+    "cta": "Переглянути графік →",
+    "signoff": "— Команда HatchGrab · hatchgrab.com",
+    "unknownVenue": "Невідома локація",
+    "text": "Вітаємо!\n\nУ вашому графіку знайдено {n, plural, one {{count} новий захід} few {{count} нові заходи} many {{count} нових заходів} other {{count} нового заходу}}. Потрібне ваше схвалення:\n\n{list}\n\nПерегляньте їх тут: {url}\n\nЩойно ви їх схвалите, вони з’являться на карті.\n\n— Команда HatchGrab"
+  }
+}

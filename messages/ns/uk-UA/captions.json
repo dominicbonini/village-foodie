@@ -1,0 +1,30 @@
+{
+  "labels": {
+    "weekDates": "Дати тижня",
+    "dayList": "Список днів",
+    "place": "Місце",
+    "venue": "Локація",
+    "area": "Район",
+    "dayDate": "День і дата",
+    "times": "Час",
+    "orderLink": "Посилання для замовлення",
+    "locationTag": "Тег місця"
+  },
+  "weekHeader": "{truck} — де ми цього тижня:",
+  "dayLine": "{day} — {where} — {times}",
+  "dayLineNoTimes": "{day} — {where}",
+  "dayLineCancelled": "{day} — {where} — СКАСОВАНО, вибачте",
+  "noDates": "Цього тижня дат немає — загляньте згодом.",
+  "orderAhead": "Замовте заздалегідь: {url}",
+  "orderAheadTagged": "Замовте заздалегідь: {url} {tag}",
+  "eventLine": "{truck} — {where}, {when}, {times}.",
+  "eventLineNoTimes": "{truck} — {where}, {when}.",
+  "cancelledSorry": "Вибачте — ми не зможемо приїхати: {where}, {when}.",
+  "cancelledApology": "Перепрошуємо всіх, хто планував прийти. Ми скоро повернемося.",
+  "when": {
+    "today": "сьогодні",
+    "tonight": "сьогодні ввечері",
+    "tomorrow": "завтра",
+    "dated": "{date}"
+  }
+}

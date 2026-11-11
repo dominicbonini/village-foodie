@@ -1,0 +1,10 @@
+{
+  "vanFallback": "Фургон",
+  "eventsFeed": {
+    "today": "Сьогодні · {date}",
+    "tomorrow": "Завтра · {date}"
+  },
+  "privacyNotSaved": "Захід активний, але його налаштування приватності не вдалося зберегти.",
+  "stockWarning": "У категорії «{category}» немає доступних позицій",
+  "uncategorised": "Без категорії"
+}

@@ -1,0 +1,17 @@
+{
+  "back": "← Назад",
+  "title": "Застосувати комбо",
+  "save": "Економія {amount}",
+  "selectItems": "Оберіть страву для кожної позиції комбо",
+  "choose": "Оберіть: {category}…",
+  "inYourBasket": "── У вашому кошику ──",
+  "basketUnit": "{name}{withMods, select, yes { (+ {mods})} other {}} (у кошику){state, select, used { — уже в комбо} taken { — обрано для іншої позиції} other {}}",
+  "addNew": "── Додати нове ──",
+  "itemWithPrice": "{name} {price}",
+  "ruleHint": "· {rule, select, requiredOne {Обов’язково · оберіть один} required {Обов’язково} other {Оберіть один}}{unmet, select, yes { (обов’язково)} other {}}",
+  "notePlaceholder": "Додайте примітку, напр., без цибулі (необов’язково)",
+  "backButton": "Назад",
+  "cancel": "Скасувати",
+  "chooseRequired": "Оберіть обов’язкові опції",
+  "apply": "Застосувати комбо · {amount}"
+}

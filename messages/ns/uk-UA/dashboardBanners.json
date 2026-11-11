@@ -1,0 +1,21 @@
+{
+  "breachHeadline": "{n, plural, one {{count} тайм-слот} few {{count} тайм-слоти} many {{count} тайм-слотів} other {{count} тайм-слоту}} понад потужність кухні — перевірте",
+  "batchOver": "{cat}: перевищено партію — {count} на {slot} ({per} за партію)",
+  "eventStartOver": "Перевантаження на початку заходу — {n, plural, one {{count} позиція} few {{count} позиції} many {{count} позицій} other {{count} позиції}} на {slot}",
+  "kitchenOver": "Кухня перевантажена — на {slot} готується {n, plural, one {{count} позиція} few {{count} позиції} many {{count} позицій} other {{count} позиції}}",
+  "orderItems": "#{id} — {n, plural, one {{count} позиція} few {{count} позиції} many {{count} позицій} other {{count} позиції}}",
+  "placedAnyway": "Оформлено попри перевантаження: {list}",
+  "placedItem": "#{id} на {slot}",
+  "orphans": "{times}: перевантаження — не знайдено замовлень, яких воно стосується",
+  "dismiss": "Закрити",
+  "kitchenCapacity": "Потужність кухні",
+  "overCapacity": "Перевантаження",
+  "wakeUnsupported": "Цей пристрій не може тримати екран увімкненим.",
+  "wakeInsecure": "З цієї адреси неможливо тримати екран увімкненим.",
+  "wakeRetry": "Не вимикати екран — торкніться, щоб спробувати ще раз",
+  "wakeAcquire": "Не вимикати екран",
+  "degraded": {
+    "serverError": "Серверу не вдалося завантажити замовлення{hasStatus, select, yes { (помилка {status})} other {}}. Показано замовлення станом на {at}. Нові замовлення можуть бути відсутні.",
+    "unreachable": "Немає зв’язку із сервером. Показано замовлення станом на {at}. Нові замовлення можуть бути відсутні."
+  }
+}

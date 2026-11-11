@@ -1,0 +1,141 @@
+{
+  "row": {
+    "discovery_map_listing": {
+      "name": "Розміщення на карті HatchGrab"
+    },
+    "web_dashboard": {
+      "name": "Універсальна вебпанель"
+    },
+    "qr_code": {
+      "name": "QR-код"
+    },
+    "schedule_import": {
+      "name": "Автоматичний імпорт графіка"
+    },
+    "meal_deals_upsells": {
+      "name": "Комбо та допродажі"
+    },
+    "walkup_orders": {
+      "name": "Обробка замовлень біля віконця"
+    },
+    "sold_out_toggle": {
+      "name": "Миттєва позначка «Розпродано»"
+    },
+    "kitchen_app": {
+      "name": "Кухонний застосунок для iPhone, iPad та Android"
+    },
+    "offline_protection": {
+      "name": "Захист замовлень без зв’язку"
+    },
+    "online_payments": {
+      "name": "Онлайн-оплата"
+    },
+    "advance_preordering": {
+      "name": "Передзамовлення на майбутні дати"
+    },
+    "preorder_deadline": {
+      "name": "Крайній час передзамовлення"
+    },
+    "time_slot_selection": {
+      "name": "Вибір тайм-слоту клієнтом"
+    },
+    "kitchen_capacity": {
+      "name": "Керування потужністю кухні"
+    },
+    "stock_countdown": {
+      "name": "Автоматичний облік залишків"
+    },
+    "auto_accept": {
+      "name": "Автоприйняття онлайн-замовлень"
+    },
+    "branded_qr_code": {
+      "name": "Брендований QR-код"
+    },
+    "private_events": {
+      "name": "Приватні заходи"
+    },
+    "social_media_posts": {
+      "name": "Дописи в соцмережах"
+    },
+    "whatsapp_auto_replies": {
+      "name": "Автовідповіді у WhatsApp"
+    },
+    "messenger_instagram_replies": {
+      "name": "Автовідповіді в Messenger та Instagram"
+    },
+    "tap_to_pay": {
+      "name": "Прийом оплати на телефоні"
+    },
+    "sms_order_alerts": {
+      "name": "SMS-сповіщення про замовлення"
+    },
+    "multi_device_kitchen": {
+      "name": "Синхронізація кухні на кількох пристроях"
+    },
+    "multi_user_access": {
+      "name": "Доступ для кількох користувачів"
+    },
+    "embed_schedule": {
+      "name": "Сторінка графіка на вашому сайті"
+    },
+    "event_types": {
+      "name": "Власні типи заходів і ціни"
+    },
+    "buzzer_tracking": {
+      "name": "Відстеження пейджерів"
+    },
+    "documents_reminders": {
+      "name": "Документи та нагадування"
+    },
+    "profit_per_event": {
+      "name": "Прибуток за кожен захід"
+    },
+    "accountant_reports": {
+      "name": "Звіти для бухгалтера"
+    },
+    "ticket_printing": {
+      "name": "Друк кухонних чеків"
+    },
+    "customer_display": {
+      "name": "Екран для клієнтів"
+    },
+    "loyalty_stamp_cards": {
+      "name": "Цифрові картки лояльності зі штампами"
+    }
+  },
+  "cardRegionOnline": "стандартні {region}",
+  "cardRegion": {
+    "UKcards": "картки Великої Британії",
+    "EEAcards": "картки ЄЕЗ",
+    "UScards": "картки США",
+    "Australiancards": "австралійські картки",
+    "NewZealandcards": "новозеландські картки",
+    "Canadiancards": "канадські картки",
+    "Swisscards": "швейцарські картки",
+    "Braziliancards": "бразильські картки",
+    "Mexicancards": "мексиканські картки",
+    "Japanesecards": "японські картки",
+    "Singaporecards": "сінгапурські картки",
+    "HongKongcards": "гонконзькі картки",
+    "Malaysiancards": "малайзійські картки",
+    "Thaicards": "тайські картки",
+    "UAEcards": "картки ОАЕ"
+  },
+  "perMonth": {
+    "mo": "{amount}/міс.",
+    "month": "{amount}/місяць"
+  },
+  "priceWord": {
+    "free": "Безкоштовно",
+    "freeTrial": "Безкоштовний пробний період",
+    "lifetime": "Довічно",
+    "zeroPercent": "0%",
+    "payAtHatch": "Оплата на місці",
+    "unlimited": "Без обмежень",
+    "none": "—",
+    "masked": "Уточнюється"
+  },
+  "cell": {
+    "included": "Включено"
+  }
+}

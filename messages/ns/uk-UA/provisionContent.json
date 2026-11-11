@@ -1,0 +1,72 @@
+{
+  "standardCategories": {
+    "starters": "Закуски",
+    "mains": "Основні страви",
+    "burgers": "Бургери",
+    "pizza": "Піца",
+    "wrapsSandwiches": "Врапи й сендвічі",
+    "sides": "Гарніри",
+    "dipsSauces": "Соуси й діпи",
+    "desserts": "Десерти",
+    "drinks": "Напої",
+    "kidsMenu": "Дитяче меню",
+    "specials": "Спецпропозиції",
+    "other": "Інше"
+  },
+  "demoEventName": "Демозахід",
+  "firstVanName": "Фургон 1",
+  "demoCategories": {
+    "pizza": "Піца",
+    "burgers": "Бургери",
+    "mains": "Основні страви",
+    "sides": "Гарніри",
+    "drinks": "Напої"
+  },
+  "demoTemplates": {
+    "pizza": {
+      "label": "🍕 Фургон із піцою",
+      "items": {
+        "margherita": "Маргарита",
+        "pepperoni": "Пепероні",
+        "ndujaHoney": "Ндуя з медом",
+        "fourCheese": "Чотири сири",
+        "gardenVeg": "Овочева",
+        "garlicBread": "Часниковий хліб",
+        "rocketParmesan": "Рукола з пармезаном",
+        "olives": "Оливки",
+        "sanPellegrino": "San Pellegrino",
+        "coke": "Кола"
+      }
+    },
+    "burgers": {
+      "label": "🍔 Фургон із бургерами",
+      "items": {
+        "classicCheeseburger": "Класичний чизбургер",
+        "doubleBacon": "Подвійний бекон",
+        "buttermilkChicken": "Курка в пахті",
+        "halloumiStack": "Бургер із халумі",
+        "smashBurger": "Смешбургер",
+        "skinOnFries": "Картопля фрі зі шкіркою",
+        "loadedCheeseFries": "Картопля фрі із сиром",
+        "onionRings": "Цибулеві кільця",
+        "craftLemonade": "Крафтовий лимонад",
+        "coke": "Кола"
+      }
+    },
+    "curries": {
+      "label": "🍛 Фургон із каррі",
+      "items": {
+        "chickenTikkaMasala": "Курка тікка масала",
+        "lambRoganJosh": "Баранина роган-джош",
+        "chanaMasala": "Чана масала",
+        "butterChicken": "Батер чікен",
+        "saagPaneer": "Саг панір",
+        "pilauRice": "Рис пілау",
+        "garlicNaan": "Часниковий наан",
+        "onionBhaji": "Цибулеві бхаджі",
+        "mangoLassi": "Манго-ласі",
+        "coke": "Кола"
+      }
+    }
+  }
+}

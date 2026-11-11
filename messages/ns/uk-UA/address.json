@@ -1,0 +1,58 @@
+{
+  "label": {
+    "street": "Адреса",
+    "postcode": "Поштовий індекс",
+    "zip": "ZIP-код",
+    "eircode": "Eircode",
+    "postalCode": "Поштовий індекс",
+    "state": "Штат",
+    "stateTerritory": "Штат або територія",
+    "province": "Провінція",
+    "county": "Графство",
+    "prefecture": "Префектура",
+    "emirate": "Емірат",
+    "region": "Регіон",
+    "area": "Населений пункт (село чи місто)",
+    "townOrArea": "Місто або район",
+    "city": "Місто",
+    "suburb": "Район",
+    "townOrCity": "Місто"
+  },
+  "short": {
+    "area": "Місто чи село",
+    "townOrArea": "Місто або район",
+    "city": "Місто",
+    "suburb": "Район",
+    "townOrCity": "Місто"
+  },
+  "inSentence": {
+    "postcode": "поштовий індекс",
+    "zip": "ZIP-код",
+    "eircode": "Eircode",
+    "postalCode": "поштовий індекс"
+  },
+  "withArticle": {
+    "postcode": "поштовий індекс",
+    "zip": "ZIP-код",
+    "eircode": "код Eircode",
+    "postalCode": "поштовий індекс"
+  },
+  "tradeLabel": {
+    "area": "Місто",
+    "townOrArea": "Місто або район",
+    "city": "Місто",
+    "suburb": "Район",
+    "townOrCity": "Місто"
+  },
+  "basedIn": {
+    "area": "Місто, де ви працюєте",
+    "townOrArea": "Місто або район, де ви працюєте",
+    "city": "Місто, де ви працюєте",
+    "suburb": "Район, де ви працюєте",
+    "townOrCity": "Місто, де ви працюєте"
+  },
+  "example": "напр. {example}",
+  "customersSee": "Клієнти бачать:",
+  "postalWarning": "Схоже, це не {article} — приклад: {example}. Ви все одно можете це зберегти.",
+  "regionChoose": "Виберіть…"
+}

@@ -1,0 +1,15 @@
+{
+  "greeting": "Вітаємо 👋",
+  "opener": "{greeting} ",
+  "allergenRedirect": "{opener}Повне меню та інформацію про алергени дивіться тут: {url} — {truck} {emoji}",
+  "menuFallback": "{opener}Наше повне меню дивіться тут: {url} — {truck} {emoji}",
+  "otherCategory": "Інше",
+  "categoryFrom": "{category} — від {price}",
+  "listTwo": "{first} і {second}",
+  "listMany": "{init} і {last}",
+  "menuSummary": "{opener}У нас є: {summary}. Повне меню та замовлення заздалегідь — тут: {url} — {truck} {emoji}",
+  "allergenCaveat": "Будь ласка, перевірте інформацію про алергени в повному меню — це автоматична відповідь.",
+  "specificFallback": "{opener}Наш актуальний графік дивіться тут: {url}\n\n{truck} {emoji}",
+  "capHandoff": "Дякуємо за всі ваші повідомлення! Тут я можу відповідати лише кілька разів на день.\n\nЩоб замовити: {link}",
+  "capContact": "Зв’язатися з нами напряму: {number}"
+}
