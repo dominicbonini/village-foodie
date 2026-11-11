@@ -4146,7 +4146,7 @@
       "online": "Online",
       "walkUp": "Na licu mesta",
       "cardOnline": "Kartica online",
-      "payAtTruck": "Plaćanje pri preuzimanju",
+      "payAtTruck": "Platite pri preuzimanju",
       "cost": "Trošak prodatih jela",
       "profit": "Dobit",
       "coverage": "{total, plural, one {Trošak unet za {withCost} od # prodatog jela} few {Trošak unet za {withCost} od # prodata jela} other {Trošak unet za {withCost} od # prodatih jela}}",

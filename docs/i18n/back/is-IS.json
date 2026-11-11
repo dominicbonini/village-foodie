@@ -3388,7 +3388,7 @@
  "manageReports.accounts.noCosts": "No dish has a cost yet. Enter a cost for your dishes in Menu to see the profit.",
  "manageReports.accounts.online": "Online",
  "manageReports.accounts.partial": "Dishes without a cost aren’t counted in the cost, so the profit here is higher than it really is. Enter a cost for each dish in Menu.",
- "manageReports.accounts.payAtTruck": "Payment on collection",
+ "manageReports.accounts.payAtTruck": "Pay on the spot",
  "manageReports.accounts.profit": "Profit",
  "manageReports.accounts.refunds": "Refunds",
  "manageReports.accounts.sales": "Net sales",

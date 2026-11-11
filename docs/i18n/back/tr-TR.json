@@ -3388,7 +3388,7 @@
  "manageReports.accounts.noCosts": "No item has a cost yet. Add costs to your items in Menu to see your profit.",
  "manageReports.accounts.online": "Online",
  "manageReports.accounts.partial": "Items without a cost are left out of the cost, so this profit looks higher than it really is. Add a cost to each item in Menu.",
- "manageReports.accounts.payAtTruck": "Payment on collection",
+ "manageReports.accounts.payAtTruck": "Pay on collection",
  "manageReports.accounts.profit": "Profit",
  "manageReports.accounts.refunds": "Refunds",
  "manageReports.accounts.sales": "Net sales",

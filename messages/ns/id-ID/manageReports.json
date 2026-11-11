@@ -110,7 +110,7 @@
     "online": "Online",
     "walkUp": "Langsung di tempat",
     "cardOnline": "Kartu online",
-    "payAtTruck": "Bayar di truk",
+    "payAtTruck": "Bayar saat ambil",
     "cost": "Modal hidangan terjual",
     "profit": "Laba",
     "coverage": "{total, plural, one {Modal diisi untuk {withCost} dari # hidangan terjual} other {Modal diisi untuk {withCost} dari # hidangan terjual}}",

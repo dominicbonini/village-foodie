@@ -4146,7 +4146,7 @@
       "online": "Online",
       "walkUp": "Yerinde",
       "cardOnline": "Online kart",
-      "payAtTruck": "Teslim alırken ödeme",
+      "payAtTruck": "Teslim alırken öde",
       "cost": "Satılan ürünlerin maliyeti",
       "profit": "Kâr",
       "coverage": "{total, plural, one {Satılan # ürünün {withCost} tanesi için maliyet girildi} other {Satılan # ürünün {withCost} tanesi için maliyet girildi}}",

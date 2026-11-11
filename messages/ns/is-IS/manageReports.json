@@ -110,7 +110,7 @@
     "online": "Á netinu",
     "walkUp": "Á staðnum",
     "cardOnline": "Kort á netinu",
-    "payAtTruck": "Greiðsla við afhendingu",
+    "payAtTruck": "Greiða á staðnum",
     "cost": "Kostnaður seldra rétta",
     "profit": "Hagnaður",
     "coverage": "{total, plural, one {Kostnaður skráður fyrir {withCost} af # seldum rétti} other {Kostnaður skráður fyrir {withCost} af # seldum réttum}}",
