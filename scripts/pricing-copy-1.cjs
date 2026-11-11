@@ -89,7 +89,7 @@ function removedSpan(a, b) {
   t('compare.plan.summaryFeeOnly: "online orders" in both branches', EN['compare.plan.summaryFeeOnly'] === '{hasMonthly, select, yes {{price} per truck per month, plus {pct} on online orders.} other {No monthly fee — {pct} on online orders only.}}')
   t('compare.orders.feeOnly / comparison.costs.feeOnly: "online order"', EN['compare.orders.feeOnly'] === '{pct} on every online order — <b>{over}</b> a month per truck.' && EN['comparison.costs.feeOnly'] === '{fee} per online order')
   t('Pro, Unlimited, the footnote and the plan table keep their words and asterisks', EN['pricing.fee.included'] === 'First <b>{included}</b> of online orders included each month, then <b>{fee}*</b>. Walk-up orders are always free.'
-    && EN['pricing.footnote'].startsWith('* Plus Stripe’s card processing on online card orders') && EN['planTable.pay.fee'] === 'HatchGrab fee on online card orders*')
+    && EN['pricing.footnote'] === ENB['pricing.footnote'] && EN['pricing.footnote'].startsWith('* Plus ') && / on online card orders /.test(EN['pricing.footnote']) && EN['planTable.pay.fee'] === 'HatchGrab fee on online card orders*')
 
   head('2 · back-translations follow (docs/i18n/back)')
   for (const loc of touched) {
