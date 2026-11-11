@@ -42,7 +42,10 @@ const FAQ = () => JSON.parse(JSON.stringify({ faq_sections: FIX.faq_sections, fa
 /** The footer's FAQ link (faq-4), taken out — for comparing with a tree that had none (scripts/_lp-faq-4.cjs, shared). */
 const { noFaqLink } = require('./_lp-faq-4.cjs')
 /** A landing page as before faq-3 would render it, apart from the later named changes (both sides). */
-const N = h => SB1.strip(SG2.asBefore(noFaqLink(SCX(h))))
+// ⚠️ RE-PINNED (pricing-copy-1, 11 November 2026): the landing pages (seg given) have pricing-copy-1's wording put back first, in the page's
+// language (scripts/_lp-pricing-copy-1.cjs asBefore — the banner sentence and the Pay as you go fee line; scripts/pricing-copy-1.cjs proves them).
+const PC1_LOCALE = { uk: 'en-GB', us: 'en-US', de: 'de-DE', jp: 'ja-JP' }
+const N = (h, seg) => SB1.strip(SG2.asBefore(noFaqLink(SCX(seg ? require('./_lp-pricing-copy-1.cjs').asBefore(h, PC1_LOCALE[seg]) : h))))   // eslint-disable-line @typescript-eslint/no-require-imports -- CommonJS harness module
 /** FAQ4_DUMP=<dir>: write each compared page (normalised) there, for a diff. */
 const dump = (key, h) => { if (process.env.FAQ4_DUMP) { fs.mkdirSync(process.env.FAQ4_DUMP, { recursive: true }); fs.writeFileSync(path.join(process.env.FAQ4_DUMP, key.replace(':', '-') + '.html'), String(h).replace(/></g, '>\n<')) } }
 
@@ -171,8 +174,8 @@ const navOf = html => (/<nav[\s\S]*?<\/nav>/.exec(String(html)) || [''])[0]
   for (const seg of ['uk', 'us', 'de', 'jp']) {
     const r = await renderPage(ctx, M, M.Landing, seg, tablesWith(TRANS))
     t(`/${seg}: no FAQ section, no FAQ heading, no FAQPage`, !/id="faq"|class="faq-q"|faq-title/.test(r.html) && !faqLd(r.html))
-    dump(`landing:${seg}`, N(r.html))
-    if (want) t(`/${seg}: identical to a92f983a (before faq-3), the date aside — after the later named changes (operatingSystem, badges) and faq-4's footer FAQ link`, sha(N(r.html)) === want[`landing:${seg}`]?.sha256, { now: sha(N(r.html)), head: want[`landing:${seg}`] })
+    dump(`landing:${seg}`, N(r.html, seg))
+    if (want) t(`/${seg}: identical to a92f983a (before faq-3), the date aside — after the later named changes (operatingSystem, badges) and faq-4's footer FAQ link`, sha(N(r.html, seg)) === want[`landing:${seg}`]?.sha256, { now: sha(N(r.html)), head: want[`landing:${seg}`] })
   }
   t('the landing page module no longer reads the FAQ section or builds a FAQPage', !/FaqDetails|landingFaq|faq\.css/.test(read('app/(public)/(site)/landing/page.tsx')) && !/faq\?: FaqPair/.test(read('lib/structured-data.ts')))
 

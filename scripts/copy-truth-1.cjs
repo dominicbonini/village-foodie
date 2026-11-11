@@ -44,7 +44,9 @@ async function views(tag, landingText, featuresText, gbApps = true) {
     const P = await kit.quietAsync(() => R.page('landing', seg, rows))
     // ⚠️ RE-PINNED (seo-geo-2 B3, 2 November 2026): hashed as HEAD rendered it — the JSON-LD's operatingSystem set back to
     // "Web, iOS, Android" where seo-geo-2 made it "Web" (scripts/_lp-seo-geo-2.cjs asBefore; the value is proven by seo-geo-2.cjs).
-    out[`${cc}/landing`] = sha(once(SB1.strip(SG2.asBefore(JN.noBreak(P.html))), `<p>${landingText(cc)}</p>`, `${cc}/landing`)) + ':' + sha(JSON.stringify(P.meta))
+    // ⚠️ RE-PINNED (pricing-copy-1, 11 November 2026): pricing-copy-1's wording put back first, in the page's language (scripts/
+    // _lp-pricing-copy-1.cjs asBefore — the banner sentence and the Pay as you go fee line; scripts/pricing-copy-1.cjs proves them).
+    out[`${cc}/landing`] = sha(once(SB1.strip(SG2.asBefore(JN.noBreak(require('./_lp-pricing-copy-1.cjs').asBefore(P.html, { GB: 'en-GB', US: 'en-US', BR: 'pt-BR', JP: 'ja-JP' }[cc])))), `<p>${landingText(cc)}</p>`, `${cc}/landing`)) + ':' + sha(JSON.stringify(P.meta))   // eslint-disable-line @typescript-eslint/no-require-imports -- CommonJS harness module
     cut[`${cc}/landing`] = P.html
   }
   for (const cc of ['GB', 'US']) {

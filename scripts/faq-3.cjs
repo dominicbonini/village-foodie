@@ -62,12 +62,16 @@ async function identitySet() {
   // GB and US first, with NO FAQ rows: the empty FAQ renders nothing, so the page is HEAD's.
   for (const seg of ['uk', 'us']) {
     const r = await kit.quietAsync(() => wf.page('landing', seg, rows))
-    out[`landing:${seg}:no-faq`] = { html: sha(SB1.strip(SG2.asBefore(SCX(r.html)))), meta: sha(JSON.stringify(r.meta)), redirectedTo: r.redirectedTo }
+    // ⚠️ RE-PINNED (pricing-copy-1, 11 November 2026): pricing-copy-1's wording put back first, in the page's language (scripts/
+    // _lp-pricing-copy-1.cjs asBefore — the banner sentence and the Pay as you go fee line; scripts/pricing-copy-1.cjs proves them).
+    out[`landing:${seg}:no-faq`] = { html: sha(SB1.strip(SG2.asBefore(SCX(require('./_lp-pricing-copy-1.cjs').asBefore(r.html, { uk: 'en-GB', us: 'en-US', ie: 'en-IE', de: 'de-DE', fr: 'fr-FR', jp: 'ja-JP', ae: 'ar-AE', br: 'pt-BR' }[seg]))))), meta: sha(JSON.stringify(r.meta)), redirectedTo: r.redirectedTo }   // eslint-disable-line @typescript-eslint/no-require-imports -- CommonJS harness module
   }
   Object.assign(wf.tables, FAQ())   // the renderer's own tables object — every request after this holds the FAQ rows
   for (const seg of ['de', 'fr', 'br', 'jp']) {
     const r = await kit.quietAsync(() => wf.page('landing', seg, rows))
-    out[`landing:${seg}`] = { html: sha(SB1.strip(SG2.asBefore(SCX(r.html)))), meta: sha(JSON.stringify(r.meta)), redirectedTo: r.redirectedTo }
+    // ⚠️ RE-PINNED (pricing-copy-1, 11 November 2026): pricing-copy-1's wording put back first, in the page's language (scripts/
+    // _lp-pricing-copy-1.cjs asBefore — the banner sentence and the Pay as you go fee line; scripts/pricing-copy-1.cjs proves them).
+    out[`landing:${seg}`] = { html: sha(SB1.strip(SG2.asBefore(SCX(require('./_lp-pricing-copy-1.cjs').asBefore(r.html, { uk: 'en-GB', us: 'en-US', ie: 'en-IE', de: 'de-DE', fr: 'fr-FR', jp: 'ja-JP', ae: 'ar-AE', br: 'pt-BR' }[seg]))))), meta: sha(JSON.stringify(r.meta)), redirectedTo: r.redirectedTo }   // eslint-disable-line @typescript-eslint/no-require-imports -- CommonJS harness module
   }
   // Comparison pages over compare-de-1's renderer: every visibility and view, the till players, the app flags, the twins, with the
   // FAQ rows in the database too.
