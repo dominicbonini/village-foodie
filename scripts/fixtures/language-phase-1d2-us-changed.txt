@@ -10,7 +10,7 @@ shell/US|shell|tab|reports	code: paperwork-1-tab + words
 shell/US|shell|tab|team	code: paperwork-1-tab + words
 shell/US|shell|tab|settings	code: store-badges-1-settings-prop+paperwork-1-tab + words
 shell/US|shell|tab|payments	code: plans-payments-on-trial-prop+plans-a2-payments-features-prop+paperwork-1-tab + words
-shell/US|shell|tab|billing	code: paperwork-1-tab + words
+shell/US|shell|tab|billing	code: paperwork-1-tab+billing-2-token-prop + words
 shell/US|shell|tab|menu|extras	code: paperwork-1-tab + words
 shell/US|shell|tab|menu|deals	code: paperwork-1-tab + words
 shell/US|shell|tab|social|locations	code: paperwork-1-tab + words
@@ -19,7 +19,7 @@ shell/US|shell|tab|schedule|eventTypes	code: paperwork-1-tab + words
 shell/US|shell|role|manager	code: paperwork-1-tab
 shell/US|shell|plan|starter	code: plans-every-plan-every-feature-2+paperwork-1-tab + words
 shell/US|shell|plan|tester	code: plans-every-plan-every-feature-2+paperwork-1-tab + words
-shell/US|shell|plan|trial	code: paperwork-1-tab + words
+shell/US|shell|plan|trial	code: paperwork-1-tab+billing-2-token-prop + words
 shell/US|shell|plan|socialOverride	code: paperwork-1-tab + words
 shell/US|shell|admin|header	code: paperwork-1-tab + words
 shell/US|shell|notice|none	code: paperwork-1-tab + words
@@ -44,10 +44,10 @@ shell/US|shell|notices|all|social	code: us-layout-fix-1-nbsp+paperwork-1-tab + w
 shell/US|shell|notices|all|reports	code: us-layout-fix-1-nbsp+paperwork-1-tab + words
 shell/US|shell|notices|all|settings	code: us-layout-fix-1-nbsp+store-badges-1-settings-prop+paperwork-1-tab + words
 shell/US|shell|notices|all|payments	code: plans-payments-on-trial-prop+plans-a2-payments-features-prop+us-layout-fix-1-nbsp+paperwork-1-tab + words
-shell/US|shell|notices|all|billing	code: us-layout-fix-1-nbsp+paperwork-1-tab + words
-shell/US|shell|trialPopup|dated	code: paperwork-1-tab + words
-shell/US|shell|trialPopup|undated	code: paperwork-1-tab + words
-shell/US|shell|trialPopup|ios	code: paperwork-1-tab + words
+shell/US|shell|notices|all|billing	code: us-layout-fix-1-nbsp+paperwork-1-tab+billing-2-token-prop + words
+shell/US|shell|trialPopup|dated	code: paperwork-1-tab+billing-2-token-prop + words
+shell/US|shell|trialPopup|undated	code: paperwork-1-tab+billing-2-token-prop + words
+shell/US|shell|trialPopup|ios	code: paperwork-1-tab+billing-2-token-prop + words
 shell/US|shell|profileModal	code: paperwork-1-tab + words
 shell/US|shell|profileModal|saving	code: paperwork-1-tab + words
 shell/US|shell|walkthrough	code: paperwork-1-tab+costs-accounts-1-menu-prop + words
