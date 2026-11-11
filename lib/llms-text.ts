@@ -138,7 +138,7 @@ export function llmsText(countries: CountrySettings[], catalog: PlanCatalog, com
 /** One plan's fee, in the pricing cards' own terms (lib/plan-offer.ts feeShape). */
 function feeSentence(p: OfferPlan, money: MoneyFormat): string {
   const fee = pctLabel(p.feeBps / 100, { locale: 'en-GB' })   // B4: English for every country
-  if (p.shape === 'feeOnly') return `${fee} on online card orders.`
+  if (p.shape === 'feeOnly') return `${fee} on online orders.`
   if (p.shape === 'included') return `First ${formatWholeAmount(p.includedMinor as number, money)} of online orders included each month, then ${fee} on online card orders.`
   return `No ${BRANDS.HATCHGRAB.name} fee on online orders.`
 }

@@ -15,7 +15,7 @@
     "weSuggest": "Προτείνουμε",
     "summary": "{price} ανά food truck τον μήνα· περιλαμβάνονται online παραγγελίες αξίας {allowance}{fleet, plural, one {} other { για το καθένα}}.",
     "switchTo": "Επιλέξτε το πακέτο {plan}",
-    "summaryFeeOnly": "{hasMonthly, select, yes {{price} ανά food truck τον μήνα, συν {pct} στις online παραγγελίες με κάρτα.} other {Χωρίς μηνιαία συνδρομή — μόνο {pct} στις online παραγγελίες με κάρτα.}}",
+    "summaryFeeOnly": "{hasMonthly, select, yes {{price} ανά food truck τον μήνα, συν {pct} στις online παραγγελίες.} other {Χωρίς μηνιαία συνδρομή — μόνο {pct} στις online παραγγελίες.}}",
     "summaryNoFee": "{price} ανά food truck τον μήνα, με απεριόριστες online παραγγελίες και χωρίς προμήθεια HatchGrab."
   },
   "orders": {
@@ -28,7 +28,7 @@
     "insideAllowance": "Εντός του ορίου online παραγγελιών που περιλαμβάνεται ({allowance}) — καμία χρέωση πέρα από το πακέτο.",
     "acrossFleet": "Για {fleet, plural, one {# food truck} other {# food truck}}: <b>{amount}</b> τον μήνα.",
     "titleNo": "Πόσα πιστεύετε ότι θα εισπράττατε online, ανά μήνα και ανά food truck;",
-    "feeOnly": "{pct} σε κάθε online παραγγελία με κάρτα — <b>{over}</b> τον μήνα ανά food truck.",
+    "feeOnly": "{pct} σε κάθε online παραγγελία — <b>{over}</b> τον μήνα ανά food truck.",
     "noFee": "Περιλαμβάνονται απεριόριστες online παραγγελίες — καμία χρέωση πέρα από το πακέτο."
   },
   "fee": {

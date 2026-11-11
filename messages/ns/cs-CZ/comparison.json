@@ -38,7 +38,7 @@
   "costs": {
     "title": "Kolik stojí objednávkový systém pro food truck?",
     "ourPlan": "{plan}: {price} měsíčně, {fee}",
-    "feeOnly": "{fee} za každou online objednávku placenou kartou",
+    "feeOnly": "{fee} za každou online objednávku",
     "feeIncluded": "online objednávky do {included} měsíčně v ceně, poté {fee}",
     "feeNone": "žádný poplatek HatchGrab z online objednávek",
     "rivalPlan": "{plan}: {price}",

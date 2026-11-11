@@ -6148,8 +6148,8 @@
   "pricing": {
     "banner": {
       "title": "{months, plural, one {Prvi mesec je potpuno besplatan — sve funkcije su otključane.} few {Prva # meseca su potpuno besplatna — sve funkcije su otključane.} other {Prvih # meseci je potpuno besplatno — sve funkcije su otključane.}}",
-      "body": "Uz {brand}, kupci poručuju unapred i plaćaju pri preuzimanju, pa možete primati online porudžbine bez povezivanja ikakvog procesora za kartice. Više volite naplatu unapred? Dodajte online plaćanje karticom bilo kada. Kada probni period istekne, prelazite na paket <plan>{fallback}</plan>{fallbackFree, select, yes { — bez mesečne pretplate —} other {}}, osim ako ne izaberete drugi paket. Bez kartice na početku, bez ugovora, otkažite bilo kada.",
-      "bodyOnly": "Uz {brand}, kupci poručuju unapred i plaćaju pri preuzimanju, pa možete primati online porudžbine bez povezivanja ikakvog procesora za kartice. Više volite naplatu unapred? Dodajte online plaćanje karticom bilo kada. Kada probni period istekne, paket <plan>{fallback}</plan> košta {price} mesečno. Javićemo vam se pre toga da podesimo plaćanje. Bez kartice na početku, bez ugovora, otkažite bilo kada."
+      "body": "Uz {brand}, kupci poručuju unapred i plaćaju pri preuzimanju, pa možete primati online porudžbine bez povezivanja ikakvog procesora za kartice. Kada probni period istekne, prelazite na paket <plan>{fallback}</plan>{fallbackFree, select, yes { — bez mesečne pretplate —} other {}}, osim ako ne izaberete drugi paket. Bez kartice na početku, bez ugovora, otkažite bilo kada.",
+      "bodyOnly": "Uz {brand}, kupci poručuju unapred i plaćaju pri preuzimanju, pa možete primati online porudžbine bez povezivanja ikakvog procesora za kartice. Kada probni period istekne, paket <plan>{fallback}</plan> košta {price} mesečno. Javićemo vam se pre toga da podesimo plaćanje. Bez kartice na početku, bez ugovora, otkažite bilo kada."
     },
     "card": {
       "perTruckMonth": "po food trucku / mesečno",
@@ -6160,7 +6160,7 @@
       "everythingIn": "Sve iz paketa {plan}, i još"
     },
     "fee": {
-      "feeOnly": "<b>{fee}*</b> samo na online porudžbine plaćene karticom. Porudžbine na licu mesta su uvek besplatne.",
+      "feeOnly": "<b>{fee}</b> samo na online porudžbine. Porudžbine na licu mesta su uvek besplatne.",
       "included": "Prvih <b>{included}</b> online porudžbina svakog meseca je uključeno, zatim <b>{fee}*</b>. Porudžbine na licu mesta su uvek besplatne.",
       "noFee": "<b>Bez HatchGrab naknada</b> na online porudžbine, koliko god posla imali. Jedan predvidiv mesečni trošak."
     },
@@ -6287,7 +6287,7 @@
       "weSuggest": "Predlažemo",
       "summary": "{price} po food trucku mesečno, sa uključenim online porudžbinama u vrednosti do {allowance}{fleet, plural, one {} few { po vozilu} other { po vozilu}}.",
       "switchTo": "Pređi na paket {plan}",
-      "summaryFeeOnly": "{hasMonthly, select, yes {{price} po food trucku mesečno, plus {pct} na online porudžbine plaćene karticom.} other {Bez mesečne pretplate — samo {pct} na online porudžbine plaćene karticom.}}",
+      "summaryFeeOnly": "{hasMonthly, select, yes {{price} po food trucku mesečno, plus {pct} na online porudžbine.} other {Bez mesečne pretplate — samo {pct} na online porudžbine.}}",
       "summaryNoFee": "{price} po food trucku mesečno, sa neograničenim online porudžbinama i bez HatchGrab naknade."
     },
     "orders": {
@@ -6300,7 +6300,7 @@
       "insideAllowance": "U okviru uključenog iznosa od {allowance} — ništa preko cene paketa.",
       "acrossFleet": "Za {fleet, plural, one {# food truck} few {# food trucka} other {# food truckova}}: <b>{amount}</b> mesečno.",
       "titleNo": "Koliko mislite da biste mesečno zaradili online, po food trucku?",
-      "feeOnly": "{pct} na svaku online porudžbinu plaćenu karticom — <b>{over}</b> mesečno po food trucku.",
+      "feeOnly": "{pct} na svaku online porudžbinu — <b>{over}</b> mesečno po food trucku.",
       "noFee": "Neograničene online porudžbine su uključene — ništa preko cene paketa."
     },
     "fee": {
@@ -6506,7 +6506,7 @@
     "costs": {
       "title": "Koliko košta sistem za poručivanje za food truck?",
       "ourPlan": "{plan}: {price} mesečno, {fee}",
-      "feeOnly": "{fee} po online porudžbini plaćenoj karticom",
+      "feeOnly": "{fee} po online porudžbini",
       "feeIncluded": "online porudžbine do {included} mesečno su uključene, zatim {fee}",
       "feeNone": "bez HatchGrab naknade na online porudžbine",
       "rivalPlan": "{plan}: {price}",

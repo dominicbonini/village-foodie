@@ -6148,8 +6148,8 @@
   "pricing": {
     "banner": {
       "title": "{months, plural, one {Den første måneden er helt gratis — alle funksjoner er låst opp.} other {De første # månedene er helt gratis — alle funksjoner er låst opp.}}",
-      "body": "Med {brand} forhåndsbestiller kundene og betaler når de henter, så du kan ta imot nettbestillinger uten å koble til noen kortinnløser i det hele tatt. Vil du heller ta betalt på forhånd? Legg til kortbetaling på nett når som helst. Når prøveperioden er over, går du over til <plan>{fallback}</plan>{fallbackFree, select, yes { (ingen fast månedskostnad)} other {}}, med mindre du velger et abonnement. Ikke noe kort for å starte, ingen bindingstid, si opp når som helst.",
-      "bodyOnly": "Med {brand} forhåndsbestiller kundene og betaler når de henter, så du kan ta imot nettbestillinger uten å koble til noen kortinnløser i det hele tatt. Vil du heller ta betalt på forhånd? Legg til kortbetaling på nett når som helst. Når prøveperioden er over, koster abonnementet <plan>{fallback}</plan> {price} i måneden. Vi tar kontakt med deg før den tid for å ordne betalingen. Ikke noe kort for å starte, ingen bindingstid, si opp når som helst."
+      "body": "Med {brand} forhåndsbestiller kundene og betaler når de henter, så du kan ta imot nettbestillinger uten å koble til noen kortinnløser i det hele tatt. Når prøveperioden er over, går du over til <plan>{fallback}</plan>{fallbackFree, select, yes { (ingen fast månedskostnad)} other {}}, med mindre du velger et abonnement. Ikke noe kort for å starte, ingen bindingstid, si opp når som helst.",
+      "bodyOnly": "Med {brand} forhåndsbestiller kundene og betaler når de henter, så du kan ta imot nettbestillinger uten å koble til noen kortinnløser i det hele tatt. Når prøveperioden er over, koster abonnementet <plan>{fallback}</plan> {price} i måneden. Vi tar kontakt med deg før den tid for å ordne betalingen. Ikke noe kort for å starte, ingen bindingstid, si opp når som helst."
     },
     "card": {
       "perTruckMonth": "per matbil / måned",
@@ -6160,7 +6160,7 @@
       "everythingIn": "Alt i {plan}, pluss"
     },
     "fee": {
-      "feeOnly": "<b>{fee}*</b> bare på nettbestillinger betalt med kort. Bestillinger ved bilen er alltid gratis.",
+      "feeOnly": "<b>{fee}</b> bare på nettbestillinger. Bestillinger ved bilen er alltid gratis.",
       "included": "Nettbestillinger for de første <b>{included}</b> er inkludert hver måned, deretter <b>{fee}*</b>. Bestillinger ved bilen er alltid gratis.",
       "noFee": "<b>Ingen HatchGrab-gebyrer</b> på nettbestillinger, uansett hvor travelt du har det. Én forutsigbar månedskostnad."
     },
@@ -6287,7 +6287,7 @@
       "weSuggest": "Vi foreslår",
       "summary": "{price} per matbil per måned, med nettbestillinger for {allowance} inkludert{fleet, plural, one {} other { for hver}}.",
       "switchTo": "Velg {plan} i stedet",
-      "summaryFeeOnly": "{hasMonthly, select, yes {{price} per matbil per måned, pluss {pct} på nettbestillinger betalt med kort.} other {Ingen månedsavgift – bare {pct} på nettbestillinger betalt med kort.}}",
+      "summaryFeeOnly": "{hasMonthly, select, yes {{price} per matbil per måned, pluss {pct} på nettbestillinger.} other {Ingen månedsavgift – bare {pct} på nettbestillinger.}}",
       "summaryNoFee": "{price} per matbil per måned, med ubegrenset nettbestilling og uten gebyr til HatchGrab."
     },
     "orders": {
@@ -6300,7 +6300,7 @@
       "insideAllowance": "Innenfor de inkluderte nettbestillingene for {allowance} – ingenting i tillegg til abonnementet.",
       "acrossFleet": "For {fleet, plural, one {# matbil} other {# matbiler}}: <b>{amount}</b> i måneden.",
       "titleNo": "Hvor mye tror du at du ville tatt inn på nett, per måned, per matbil?",
-      "feeOnly": "{pct} på hver nettbestilling betalt med kort – <b>{over}</b> i måneden per matbil.",
+      "feeOnly": "{pct} på hver nettbestilling – <b>{over}</b> i måneden per matbil.",
       "noFee": "Ubegrenset nettbestilling inkludert – ingenting i tillegg til abonnementet."
     },
     "fee": {
@@ -6437,7 +6437,7 @@
     "costs": {
       "title": "Hva koster et bestillingssystem for matbiler?",
       "ourPlan": "{plan}: {price} i måneden, {fee}",
-      "feeOnly": "{fee} per nettbestilling betalt med kort",
+      "feeOnly": "{fee} per nettbestilling",
       "feeIncluded": "nettbestillinger opptil {included} i måneden er inkludert, deretter {fee}",
       "feeNone": "ingen gebyr til HatchGrab på nettbestillinger",
       "rivalPlan": "{plan}: {price}",

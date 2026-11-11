@@ -38,7 +38,7 @@
   "costs": {
     "title": "美食車落單系統要多少錢？",
     "ourPlan": "{plan}：每月 {price}，{fee}",
-    "feeOnly": "每張網上信用卡訂單 {fee}",
+    "feeOnly": "每張網上訂單 {fee}",
     "feeIncluded": "每月首 {included} 網上訂單已包括在內，之後收取 {fee}",
     "feeNone": "HatchGrab 不收取網上訂單費用",
     "rivalPlan": "{plan}：{price}",

@@ -38,7 +38,7 @@
   "costs": {
     "title": "Hva koster et bestillingssystem for matbiler?",
     "ourPlan": "{plan}: {price} i måneden, {fee}",
-    "feeOnly": "{fee} per nettbestilling betalt med kort",
+    "feeOnly": "{fee} per nettbestilling",
     "feeIncluded": "nettbestillinger opptil {included} i måneden er inkludert, deretter {fee}",
     "feeNone": "ingen gebyr til HatchGrab på nettbestillinger",
     "rivalPlan": "{plan}: {price}",

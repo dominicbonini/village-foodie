@@ -38,7 +38,7 @@
   "costs": {
     "title": "Πόσο κοστίζει ένα σύστημα παραγγελιών για food truck;",
     "ourPlan": "{plan}: {price} τον μήνα, {fee}",
-    "feeOnly": "{fee} ανά online παραγγελία με κάρτα",
+    "feeOnly": "{fee} ανά online παραγγελία",
     "feeIncluded": "online παραγγελίες έως {included} τον μήνα περιλαμβάνονται, μετά {fee}",
     "feeNone": "καμία χρέωση HatchGrab στις online παραγγελίες",
     "rivalPlan": "{plan}: {price}",

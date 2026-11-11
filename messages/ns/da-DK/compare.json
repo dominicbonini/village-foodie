@@ -15,7 +15,7 @@
     "weSuggest": "Vi anbefaler",
     "summary": "{price} pr. foodtruck pr. måned, med onlinebestillinger for {allowance} inkluderet{fleet, plural, one {} other { for hver}}.",
     "switchTo": "Brug {plan} i stedet",
-    "summaryFeeOnly": "{hasMonthly, select, yes {{price} pr. foodtruck pr. måned plus {pct} på onlinebestillinger betalt med kort.} other {Intet månedsgebyr — kun {pct} på onlinebestillinger betalt med kort.}}",
+    "summaryFeeOnly": "{hasMonthly, select, yes {{price} pr. foodtruck pr. måned plus {pct} på onlinebestillinger.} other {Intet månedsgebyr — kun {pct} på onlinebestillinger.}}",
     "summaryNoFee": "{price} pr. foodtruck pr. måned, med ubegrænsede onlinebestillinger og intet HatchGrab-gebyr."
   },
   "orders": {
@@ -28,7 +28,7 @@
     "insideAllowance": "Inden for de {allowance} i inkluderede onlinebestillinger — intet oven i abonnementet.",
     "acrossFleet": "For {fleet, plural, one {# foodtruck} other {# foodtrucks}}: <b>{amount}</b> om måneden.",
     "titleNo": "Hvor meget tror du, at du vil sælge for online pr. måned pr. foodtruck?",
-    "feeOnly": "{pct} på hver onlinebestilling betalt med kort — <b>{over}</b> om måneden pr. foodtruck.",
+    "feeOnly": "{pct} på hver onlinebestilling — <b>{over}</b> om måneden pr. foodtruck.",
     "noFee": "Ubegrænsede onlinebestillinger inkluderet — intet oven i abonnementet."
   },
   "fee": {

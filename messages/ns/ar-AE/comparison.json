@@ -38,7 +38,7 @@
   "costs": {
     "title": "كم يكلّف نظام الطلبات لعربة الطعام؟",
     "ourPlan": "{plan}: {price} شهريًا، {fee}",
-    "feeOnly": "{fee} لكل طلب بالبطاقة عبر الإنترنت",
+    "feeOnly": "{fee} لكل طلب عبر الإنترنت",
     "feeIncluded": "الطلبات عبر الإنترنت حتى {included} شهريًا مشمولة، ثم {fee}",
     "feeNone": "بدون رسوم HatchGrab على الطلبات عبر الإنترنت",
     "rivalPlan": "{plan}: {price}",

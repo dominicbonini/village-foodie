@@ -38,7 +38,7 @@
   "costs": {
     "title": "Koliko stane sistem za naročanje za food truck?",
     "ourPlan": "{plan}: {price} na mesec, {fee}",
-    "feeOnly": "{fee} na spletno naročilo, plačano s kartico",
+    "feeOnly": "{fee} na spletno naročilo",
     "feeIncluded": "spletna naročila do {included} na mesec vključena, nato {fee}",
     "feeNone": "brez provizije HatchGrab za spletna naročila",
     "rivalPlan": "{plan}: {price}",

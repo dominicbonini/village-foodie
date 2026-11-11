@@ -1,8 +1,8 @@
 {
   "banner": {
     "title": "{months, plural, one {Váš prvý mesiac je úplne zadarmo — so všetkými funkciami.} few {Vaše prvé # mesiace sú úplne zadarmo — so všetkými funkciami.} other {Vašich prvých # mesiacov je úplne zadarmo — so všetkými funkciami.}}",
-    "body": "S aplikáciou {brand} si zákazníci objednajú vopred a zaplatia pri vyzdvihnutí, takže môžete prijímať online objednávky bez akéhokoľvek spracovateľa platieb kartou. Chcete radšej platbu vopred? Online platby kartou si môžete pridať kedykoľvek. Keď sa skúšobné obdobie skončí, prejdete na plán <plan>{fallback}</plan>{fallbackFree, select, yes { (bez mesačného paušálu)} other {}}, ak si nevyberiete iný plán. Na začiatok netreba platobnú kartu, žiadna zmluva, zrušiť môžete kedykoľvek.",
-    "bodyOnly": "S aplikáciou {brand} si zákazníci objednajú vopred a zaplatia pri vyzdvihnutí, takže môžete prijímať online objednávky bez akéhokoľvek spracovateľa platieb kartou. Chcete radšej platbu vopred? Online platby kartou si môžete pridať kedykoľvek. Keď sa skúšobné obdobie skončí, bude plán <plan>{fallback}</plan> stáť {price} mesačne. Ešte predtým sa vám ozveme, aby sme nastavili platbu. Na začiatok netreba platobnú kartu, žiadna zmluva, zrušiť môžete kedykoľvek."
+    "body": "S aplikáciou {brand} si zákazníci objednajú vopred a zaplatia pri vyzdvihnutí, takže môžete prijímať online objednávky bez akéhokoľvek spracovateľa platieb kartou. Keď sa skúšobné obdobie skončí, prejdete na plán <plan>{fallback}</plan>{fallbackFree, select, yes { (bez mesačného paušálu)} other {}}, ak si nevyberiete iný plán. Na začiatok netreba platobnú kartu, žiadna zmluva, zrušiť môžete kedykoľvek.",
+    "bodyOnly": "S aplikáciou {brand} si zákazníci objednajú vopred a zaplatia pri vyzdvihnutí, takže môžete prijímať online objednávky bez akéhokoľvek spracovateľa platieb kartou. Keď sa skúšobné obdobie skončí, bude plán <plan>{fallback}</plan> stáť {price} mesačne. Ešte predtým sa vám ozveme, aby sme nastavili platbu. Na začiatok netreba platobnú kartu, žiadna zmluva, zrušiť môžete kedykoľvek."
   },
   "card": {
     "perTruckMonth": "za food truck / mesiac",
@@ -13,7 +13,7 @@
     "everythingIn": "Všetko z plánu {plan} a navyše"
   },
   "fee": {
-    "feeOnly": "<b>{fee}*</b> len pri online objednávkach platených kartou. Objednávky na mieste sú vždy zadarmo.",
+    "feeOnly": "<b>{fee}</b> len pri online objednávkach. Objednávky na mieste sú vždy zadarmo.",
     "included": "Online objednávky do <b>{included}</b> mesačne sú v cene, potom <b>{fee}*</b>. Objednávky na mieste sú vždy zadarmo.",
     "noFee": "<b>Žiadne poplatky HatchGrab</b> za online objednávky, nech máte akokoľvek veľa práce. Jeden predvídateľný mesačný náklad."
   },

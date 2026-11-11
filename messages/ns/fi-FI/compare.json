@@ -15,7 +15,7 @@
     "weSuggest": "Suosittelemme",
     "summary": "{price} per ruokarekka kuukaudessa, ja hintaan sisältyy {allowance} edestä verkkotilauksia{fleet, plural, one {} other { jokaiselle ruokarekalle}}.",
     "switchTo": "Valitse sen sijaan paketti {plan}",
-    "summaryFeeOnly": "{hasMonthly, select, yes {{price} per ruokarekka kuukaudessa sekä {pct} verkossa kortilla maksetuista tilauksista.} other {Ei kuukausimaksua — vain {pct} verkossa kortilla maksetuista tilauksista.}}",
+    "summaryFeeOnly": "{hasMonthly, select, yes {{price} per ruokarekka kuukaudessa sekä {pct} verkkotilauksista.} other {Ei kuukausimaksua — vain {pct} verkkotilauksista.}}",
     "summaryNoFee": "{price} per ruokarekka kuukaudessa: rajattomasti verkkotilauksia eikä HatchGrabin maksua."
   },
   "orders": {
@@ -28,7 +28,7 @@
     "insideAllowance": "Pysyt hintaan sisältyvän määrän ({allowance} verkkotilauksia) sisällä — ei lisäkuluja paketin päälle.",
     "acrossFleet": "{fleet, plural, one {# ruokarekka} other {# ruokarekkaa}} yhteensä: <b>{amount}</b> kuukaudessa.",
     "titleNo": "Paljonko arvioit myyväsi verkossa kuukaudessa, per ruokarekka?",
-    "feeOnly": "{pct} jokaisesta verkossa kortilla maksetusta tilauksesta — <b>{over}</b> kuukaudessa per ruokarekka.",
+    "feeOnly": "{pct} jokaisesta verkkotilauksesta — <b>{over}</b> kuukaudessa per ruokarekka.",
     "noFee": "Rajattomat verkkotilaukset sisältyvät hintaan — ei lisäkuluja paketin päälle."
   },
   "fee": {

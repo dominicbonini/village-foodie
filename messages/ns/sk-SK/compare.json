@@ -15,7 +15,7 @@
     "weSuggest": "Odporúčame",
     "summary": "{price} za food truck mesačne, v cene sú online objednávky v hodnote {allowance}{fleet, plural, one {} few { pre každý} other { pre každý}}.",
     "switchTo": "Použiť radšej plán {plan}",
-    "summaryFeeOnly": "{hasMonthly, select, yes {{price} za food truck mesačne plus {pct} z online objednávok platených kartou.} other {Bez mesačného poplatku — iba {pct} z online objednávok platených kartou.}}",
+    "summaryFeeOnly": "{hasMonthly, select, yes {{price} za food truck mesačne plus {pct} z online objednávok.} other {Bez mesačného poplatku — iba {pct} z online objednávok.}}",
     "summaryNoFee": "{price} za food truck mesačne, s neobmedzenými online objednávkami a bez poplatku HatchGrab."
   },
   "orders": {
@@ -28,7 +28,7 @@
     "insideAllowance": "V rámci zahrnutých online objednávok v hodnote {allowance} — nič navyše k plánu.",
     "acrossFleet": "Spolu za {fleet, plural, one {# food truck} few {# food trucky} other {# food truckov}}: <b>{amount}</b> mesačne.",
     "titleNo": "Koľko by ste podľa vás utŕžili online za mesiac na jeden food truck?",
-    "feeOnly": "{pct} z každej online objednávky platenej kartou — <b>{over}</b> mesačne na food truck.",
+    "feeOnly": "{pct} z každej online objednávky — <b>{over}</b> mesačne na food truck.",
     "noFee": "Neobmedzené online objednávky v cene — nič navyše k plánu."
   },
   "fee": {

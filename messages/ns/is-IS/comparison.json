@@ -38,7 +38,7 @@
   "costs": {
     "title": "Hvað kostar pöntunarkerfi fyrir matarvagn?",
     "ourPlan": "{plan}: {price} á mánuði, {fee}",
-    "feeOnly": "{fee} af hverri netpöntun greiddri með korti",
+    "feeOnly": "{fee} af hverri netpöntun",
     "feeIncluded": "netpantanir fyrir allt að {included} á mánuði innifaldar, síðan {fee}",
     "feeNone": "ekkert gjald til HatchGrab af netpöntunum",
     "rivalPlan": "{plan}: {price}",

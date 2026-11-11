@@ -38,7 +38,7 @@
   "costs": {
     "title": "Koliko košta sistem za poručivanje za food truck?",
     "ourPlan": "{plan}: {price} mesečno, {fee}",
-    "feeOnly": "{fee} po online porudžbini plaćenoj karticom",
+    "feeOnly": "{fee} po online porudžbini",
     "feeIncluded": "online porudžbine do {included} mesečno su uključene, zatim {fee}",
     "feeNone": "bez HatchGrab naknade na online porudžbine",
     "rivalPlan": "{plan}: {price}",

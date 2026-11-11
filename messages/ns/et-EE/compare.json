@@ -15,7 +15,7 @@
     "weSuggest": "Soovitame",
     "summary": "{price} toiduauto kohta kuus, hinnas on veebitellimused kuni {allowance}{fleet, plural, one {} other { iga toiduauto kohta}}.",
     "switchTo": "Vali hoopis {plan}",
-    "summaryFeeOnly": "{hasMonthly, select, yes {{price} toiduauto kohta kuus, lisaks {pct} veebis kaardiga makstud tellimustelt.} other {Kuutasu pole — ainult {pct} veebis kaardiga makstud tellimustelt.}}",
+    "summaryFeeOnly": "{hasMonthly, select, yes {{price} toiduauto kohta kuus, lisaks {pct} veebitellimustelt.} other {Kuutasu pole — ainult {pct} veebitellimustelt.}}",
     "summaryNoFee": "{price} toiduauto kohta kuus, piiramatult veebitellimusi ja HatchGrabi tasu pole."
   },
   "orders": {
@@ -28,7 +28,7 @@
     "insideAllowance": "Jääb hinnas sisalduvate veebitellimuste piiresse ({allowance}) — paketile midagi lisaks ei tule.",
     "acrossFleet": "Kokku {fleet, plural, one {# toiduauto} other {# toiduauto}} peale: <b>{amount}</b> kuus.",
     "titleNo": "Kui palju arvad, et teeniksid veebitellimustelt kuus toiduauto kohta?",
-    "feeOnly": "{pct} igalt veebis kaardiga makstud tellimuselt — <b>{over}</b> kuus toiduauto kohta.",
+    "feeOnly": "{pct} igalt veebitellimuselt — <b>{over}</b> kuus toiduauto kohta.",
     "noFee": "Piiramatult veebitellimusi hinnas — paketile midagi lisaks ei tule."
   },
   "fee": {

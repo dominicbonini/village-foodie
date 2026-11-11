@@ -6148,8 +6148,8 @@
   "pricing": {
     "banner": {
       "title": "{months, plural, one {첫 달은 완전 무료, 모든 기능을 이용할 수 있습니다.} other {처음 #개월은 완전 무료, 모든 기능을 이용할 수 있습니다.}}",
-      "body": "{brand} 기능을 쓰면 손님이 미리 주문하고 픽업할 때 결제하므로, 카드 결제 대행사를 전혀 연결하지 않고도 온라인 주문을 받을 수 있습니다. 결제를 미리 받고 싶으신가요? 온라인 카드 결제는 언제든 추가할 수 있습니다. 다른 요금제를 선택하지 않으면 체험 기간이 끝난 뒤 <plan>{fallback}</plan> 요금제로 전환됩니다{fallbackFree, select, yes { — 월 이용료는 없습니다} other {}}. 시작할 때 카드는 필요 없고, 약정 없이 언제든 해지할 수 있습니다.",
-      "bodyOnly": "{brand} 기능을 쓰면 손님이 미리 주문하고 픽업할 때 결제하므로, 카드 결제 대행사를 전혀 연결하지 않고도 온라인 주문을 받을 수 있습니다. 결제를 미리 받고 싶으신가요? 온라인 카드 결제는 언제든 추가할 수 있습니다. 체험 기간이 끝나면 <plan>{fallback}</plan> 요금제는 월 {price}입니다. 그 전에 결제 설정을 위해 연락드리겠습니다. 시작할 때 카드는 필요 없고, 약정 없이 언제든 해지할 수 있습니다."
+      "body": "{brand} 기능을 쓰면 손님이 미리 주문하고 픽업할 때 결제하므로, 카드 결제 대행사를 전혀 연결하지 않고도 온라인 주문을 받을 수 있습니다. 다른 요금제를 선택하지 않으면 체험 기간이 끝난 뒤 <plan>{fallback}</plan> 요금제로 전환됩니다{fallbackFree, select, yes { — 월 이용료는 없습니다} other {}}. 시작할 때 카드는 필요 없고, 약정 없이 언제든 해지할 수 있습니다.",
+      "bodyOnly": "{brand} 기능을 쓰면 손님이 미리 주문하고 픽업할 때 결제하므로, 카드 결제 대행사를 전혀 연결하지 않고도 온라인 주문을 받을 수 있습니다. 체험 기간이 끝나면 <plan>{fallback}</plan> 요금제는 월 {price}입니다. 그 전에 결제 설정을 위해 연락드리겠습니다. 시작할 때 카드는 필요 없고, 약정 없이 언제든 해지할 수 있습니다."
     },
     "card": {
       "perTruckMonth": "푸드트럭 1대 / 월",
@@ -6160,7 +6160,7 @@
       "everythingIn": "{plan} 요금제의 모든 기능에 더해"
     },
     "fee": {
-      "feeOnly": "온라인 카드 주문에만 <b>{fee}*</b> 수수료. 현장 주문은 언제나 무료입니다.",
+      "feeOnly": "온라인 주문에만 <b>{fee}</b> 수수료. 현장 주문은 언제나 무료입니다.",
       "included": "매월 온라인 주문 <b>{included}</b>까지 포함, 이후 <b>{fee}*</b>. 현장 주문은 언제나 무료입니다.",
       "noFee": "아무리 바빠도 온라인 주문에 <b>HatchGrab 수수료 없음</b>. 매월 예측 가능한 고정 비용."
     },
@@ -6287,7 +6287,7 @@
       "weSuggest": "추천 요금제",
       "summary": "푸드트럭 1대당 월 {price} · 온라인 주문 {allowance} 포함{fleet, plural, one {} other {(대당)}}.",
       "switchTo": "{plan} 요금제로 변경",
-      "summaryFeeOnly": "{hasMonthly, select, yes {푸드트럭 1대당 월 {price}, 온라인 카드 주문에는 {pct} 수수료가 추가됩니다.} other {월 이용료 없음 — 온라인 카드 주문에만 {pct} 수수료가 붙습니다.}}",
+      "summaryFeeOnly": "{hasMonthly, select, yes {푸드트럭 1대당 월 {price}, 온라인 주문에는 {pct} 수수료가 추가됩니다.} other {월 이용료 없음 — 온라인 주문에만 {pct} 수수료가 붙습니다.}}",
       "summaryNoFee": "푸드트럭 1대당 월 {price} · 온라인 주문 무제한 · HatchGrab 수수료 없음."
     },
     "orders": {
@@ -6300,7 +6300,7 @@
       "insideAllowance": "포함된 온라인 주문 한도({allowance}) 이내예요. 요금제 외 추가 비용은 없습니다.",
       "acrossFleet": "{fleet, plural, one {푸드트럭 #대} other {푸드트럭 #대}} 합계: 월 <b>{amount}</b>.",
       "titleNo": "푸드트럭 1대당 한 달 온라인 매출이 얼마나 될 것 같으세요?",
-      "feeOnly": "모든 온라인 카드 주문에 {pct} — 푸드트럭 1대당 월 <b>{over}</b>.",
+      "feeOnly": "모든 온라인 주문에 {pct} — 푸드트럭 1대당 월 <b>{over}</b>.",
       "noFee": "온라인 주문 무제한 포함 — 요금제 외 추가 비용은 없습니다."
     },
     "fee": {
@@ -6506,7 +6506,7 @@
     "costs": {
       "title": "푸드트럭 주문 시스템 비용은 얼마인가요?",
       "ourPlan": "{plan}: 월 {price}, {fee}",
-      "feeOnly": "온라인 카드 주문 1건당 {fee}",
+      "feeOnly": "온라인 주문 1건당 {fee}",
       "feeIncluded": "온라인 주문 월 {included} 포함, 초과 시 {fee}",
       "feeNone": "온라인 주문에 HatchGrab 수수료 없음",
       "rivalPlan": "{plan}: {price}",

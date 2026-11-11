@@ -38,7 +38,7 @@
   "costs": {
     "title": "Vad kostar ett beställningssystem för foodtruckar?",
     "ourPlan": "{plan}: {price} i månaden, {fee}",
-    "feeOnly": "{fee} per onlinebeställning som betalas med kort",
+    "feeOnly": "{fee} per onlinebeställning",
     "feeIncluded": "onlinebeställningar upp till {included} i månaden ingår, därefter {fee}",
     "feeNone": "ingen avgift till HatchGrab på onlinebeställningar",
     "rivalPlan": "{plan}: {price}",

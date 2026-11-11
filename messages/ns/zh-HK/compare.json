@@ -15,7 +15,7 @@
     "weSuggest": "我們建議",
     "summary": "每架美食車每月 {price}，每架包含 {allowance} 網上訂單額度{fleet, plural, other {}}。",
     "switchTo": "改用 {plan}",
-    "summaryFeeOnly": "{hasMonthly, select, yes {每架美食車每月 {price}，網上信用卡訂單另收 {pct}。} other {無月費——只限網上信用卡訂單收取 {pct}。}}",
+    "summaryFeeOnly": "{hasMonthly, select, yes {每架美食車每月 {price}，網上訂單另收 {pct}。} other {無月費——只限網上訂單收取 {pct}。}}",
     "summaryNoFee": "每架美食車每月 {price}，網上訂單無上限，不收 HatchGrab 費用。"
   },
   "orders": {
@@ -28,7 +28,7 @@
     "insideAllowance": "在已包含的 {allowance} 網上訂單額度之內——計劃以外無額外收費。",
     "acrossFleet": "{fleet, plural, other {# 架美食車}}合共：每月 <b>{amount}</b>。",
     "titleNo": "你估計每架美食車每月網上生意大約有多少？",
-    "feeOnly": "每張網上信用卡訂單收取 {pct}——每架美食車每月 <b>{over}</b>。",
+    "feeOnly": "每張網上訂單收取 {pct}——每架美食車每月 <b>{over}</b>。",
     "noFee": "已包含無上限網上訂單——計劃以外無額外收費。"
   },
   "fee": {

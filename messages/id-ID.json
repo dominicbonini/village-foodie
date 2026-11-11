@@ -6148,8 +6148,8 @@
   "pricing": {
     "banner": {
       "title": "{months, plural, one {Bulan pertama Anda gratis sepenuhnya — semua fitur terbuka.} other {# bulan pertama Anda gratis sepenuhnya — semua fitur terbuka.}}",
-      "body": "Dengan {brand}, pelanggan pesan dulu dan membayar saat mengambil, jadi Anda bisa menerima pesanan online tanpa menghubungkan pemroses kartu sama sekali. Lebih suka menerima pembayaran di muka? Tambahkan pembayaran kartu online kapan saja. Setelah masa coba gratis berakhir, Anda pindah ke paket <plan>{fallback}</plan>{fallbackFree, select, yes { — tanpa biaya tetap —} other {}} kecuali Anda memilih paket lain. Tanpa kartu untuk memulai, tanpa kontrak, bisa berhenti kapan saja.",
-      "bodyOnly": "Dengan {brand}, pelanggan pesan dulu dan membayar saat mengambil, jadi Anda bisa menerima pesanan online tanpa menghubungkan pemroses kartu sama sekali. Lebih suka menerima pembayaran di muka? Tambahkan pembayaran kartu online kapan saja. Setelah masa coba gratis berakhir, paket <plan>{fallback}</plan> seharga {price} per bulan. Kami akan menghubungi Anda sebelum itu untuk mengatur pembayaran. Tanpa kartu untuk memulai, tanpa kontrak, bisa berhenti kapan saja."
+      "body": "Dengan {brand}, pelanggan pesan dulu dan membayar saat mengambil, jadi Anda bisa menerima pesanan online tanpa menghubungkan pemroses kartu sama sekali. Setelah masa coba gratis berakhir, Anda pindah ke paket <plan>{fallback}</plan>{fallbackFree, select, yes { — tanpa biaya tetap —} other {}} kecuali Anda memilih paket lain. Tanpa kartu untuk memulai, tanpa kontrak, bisa berhenti kapan saja.",
+      "bodyOnly": "Dengan {brand}, pelanggan pesan dulu dan membayar saat mengambil, jadi Anda bisa menerima pesanan online tanpa menghubungkan pemroses kartu sama sekali. Setelah masa coba gratis berakhir, paket <plan>{fallback}</plan> seharga {price} per bulan. Kami akan menghubungi Anda sebelum itu untuk mengatur pembayaran. Tanpa kartu untuk memulai, tanpa kontrak, bisa berhenti kapan saja."
     },
     "card": {
       "perTruckMonth": "per truk / bulan",
@@ -6160,7 +6160,7 @@
       "everythingIn": "Semua fitur paket {plan}, ditambah"
     },
     "fee": {
-      "feeOnly": "<b>{fee}*</b> hanya untuk pesanan online dengan kartu. Pesanan langsung di tempat selalu gratis.",
+      "feeOnly": "<b>{fee}</b> hanya untuk pesanan online. Pesanan langsung di tempat selalu gratis.",
       "included": "<b>{included}</b> pertama dari pesanan online sudah termasuk setiap bulan, setelah itu <b>{fee}*</b>. Pesanan langsung di tempat selalu gratis.",
       "noFee": "<b>Tanpa biaya HatchGrab</b> untuk pesanan online, seramai apa pun usaha Anda. Satu biaya bulanan yang pasti."
     },
@@ -6287,7 +6287,7 @@
       "weSuggest": "Saran kami",
       "summary": "{price} per truk per bulan, sudah termasuk pesanan online senilai {allowance}{fleet, plural, one {} other { untuk masing-masing truk}}.",
       "switchTo": "Pakai paket {plan} saja",
-      "summaryFeeOnly": "{hasMonthly, select, yes {{price} per truk per bulan, ditambah {pct} untuk pesanan online dengan kartu.} other {Tanpa biaya bulanan — hanya {pct} untuk pesanan online dengan kartu.}}",
+      "summaryFeeOnly": "{hasMonthly, select, yes {{price} per truk per bulan, ditambah {pct} untuk pesanan online.} other {Tanpa biaya bulanan — hanya {pct} untuk pesanan online.}}",
       "summaryNoFee": "{price} per truk per bulan, pesanan online tanpa batas dan tanpa biaya HatchGrab."
     },
     "orders": {
@@ -6300,7 +6300,7 @@
       "insideAllowance": "Masih dalam batas pesanan online senilai {allowance} yang sudah termasuk — tanpa biaya tambahan di luar paket.",
       "acrossFleet": "Untuk {fleet, plural, one {# truk} other {# truk}}: <b>{amount}</b> per bulan.",
       "titleNo": "Kira-kira berapa penjualan online Anda per bulan, per truk?",
-      "feeOnly": "{pct} untuk setiap pesanan online dengan kartu — <b>{over}</b> per bulan per truk.",
+      "feeOnly": "{pct} untuk setiap pesanan online — <b>{over}</b> per bulan per truk.",
       "noFee": "Pesanan online tanpa batas sudah termasuk — tanpa biaya tambahan di luar paket."
     },
     "fee": {
@@ -6506,7 +6506,7 @@
     "costs": {
       "title": "Berapa biaya aplikasi pemesanan food truck?",
       "ourPlan": "{plan}: {price} per bulan, {fee}",
-      "feeOnly": "{fee} per pesanan online dengan kartu",
+      "feeOnly": "{fee} per pesanan online",
       "feeIncluded": "pesanan online hingga {included} per bulan sudah termasuk, selebihnya {fee}",
       "feeNone": "tanpa biaya HatchGrab untuk pesanan online",
       "rivalPlan": "{plan}: {price}",

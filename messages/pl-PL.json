@@ -6148,8 +6148,8 @@
   "pricing": {
     "banner": {
       "title": "{months, plural, one {Przez pierwszy miesiąc korzystasz całkowicie za darmo — ze wszystkich funkcji.} few {Przez pierwsze # miesiące korzystasz całkowicie za darmo — ze wszystkich funkcji.} many {Przez pierwsze # miesięcy korzystasz całkowicie za darmo — ze wszystkich funkcji.} other {Przez pierwsze # miesięcy korzystasz całkowicie za darmo — ze wszystkich funkcji.}}",
-      "body": "Z {brand} klienci zamawiają z wyprzedzeniem i płacą przy odbiorze, więc możesz przyjmować zamówienia online bez podłączania operatora płatności kartą. Wolisz pobierać płatność z góry? Włącz płatności kartą online w dowolnej chwili. Po zakończeniu okresu próbnego przechodzisz na plan <plan>{fallback}</plan>{fallbackFree, select, yes { (bez opłaty miesięcznej)} other {}}, chyba że wybierzesz inny plan. Bez karty na start, bez umowy, rezygnujesz w dowolnej chwili.",
-      "bodyOnly": "Z {brand} klienci zamawiają z wyprzedzeniem i płacą przy odbiorze, więc możesz przyjmować zamówienia online bez podłączania operatora płatności kartą. Wolisz pobierać płatność z góry? Włącz płatności kartą online w dowolnej chwili. Po zakończeniu okresu próbnego plan <plan>{fallback}</plan> kosztuje {price} miesięcznie. Skontaktujemy się z Tobą wcześniej, aby skonfigurować płatność. Bez karty na start, bez umowy, rezygnujesz w dowolnej chwili."
+      "body": "Z {brand} klienci zamawiają z wyprzedzeniem i płacą przy odbiorze, więc możesz przyjmować zamówienia online bez podłączania operatora płatności kartą. Po zakończeniu okresu próbnego przechodzisz na plan <plan>{fallback}</plan>{fallbackFree, select, yes { (bez opłaty miesięcznej)} other {}}, chyba że wybierzesz inny plan. Bez karty na start, bez umowy, rezygnujesz w dowolnej chwili.",
+      "bodyOnly": "Z {brand} klienci zamawiają z wyprzedzeniem i płacą przy odbiorze, więc możesz przyjmować zamówienia online bez podłączania operatora płatności kartą. Po zakończeniu okresu próbnego plan <plan>{fallback}</plan> kosztuje {price} miesięcznie. Skontaktujemy się z Tobą wcześniej, aby skonfigurować płatność. Bez karty na start, bez umowy, rezygnujesz w dowolnej chwili."
     },
     "card": {
       "perTruckMonth": "za food truck / miesiąc",
@@ -6160,7 +6160,7 @@
       "everythingIn": "Wszystko z planu {plan}, a do tego"
     },
     "fee": {
-      "feeOnly": "<b>{fee}*</b> tylko od zamówień online opłaconych kartą. Zamówienia na miejscu są zawsze bez opłat.",
+      "feeOnly": "<b>{fee}</b> tylko od zamówień online. Zamówienia na miejscu są zawsze bez opłat.",
       "included": "Zamówienia online do kwoty <b>{included}</b> miesięcznie w cenie, powyżej — <b>{fee}*</b>. Zamówienia na miejscu są zawsze bez opłat.",
       "noFee": "<b>Bez prowizji HatchGrab</b> od zamówień online, niezależnie od tego, ile masz ruchu. Jeden przewidywalny koszt miesięczny."
     },
@@ -6287,7 +6287,7 @@
       "weSuggest": "Proponujemy",
       "summary": "{price} miesięcznie za food truck, w tym zamówienia online o wartości {allowance}{fleet, plural, one {} few { na każdy z nich} many { na każdy z nich} other { na każdy z nich}}.",
       "switchTo": "Wybierz zamiast tego plan {plan}",
-      "summaryFeeOnly": "{hasMonthly, select, yes {{price} miesięcznie za food truck plus {pct} od zamówień online opłaconych kartą.} other {Bez opłaty miesięcznej — tylko {pct} od zamówień online opłaconych kartą.}}",
+      "summaryFeeOnly": "{hasMonthly, select, yes {{price} miesięcznie za food truck plus {pct} od zamówień online.} other {Bez opłaty miesięcznej — tylko {pct} od zamówień online.}}",
       "summaryNoFee": "{price} miesięcznie za food truck, zamówienia online bez limitu i bez prowizji HatchGrab."
     },
     "orders": {
@@ -6300,7 +6300,7 @@
       "insideAllowance": "W ramach zamówień online o wartości {allowance} w cenie — nic ponad cenę planu.",
       "acrossFleet": "Łącznie dla {fleet, plural, one {# food trucka} few {# food trucków} many {# food trucków} other {# food trucka}}: <b>{amount}</b> miesięcznie.",
       "titleNo": "Jaka może być miesięczna wartość twoich zamówień online na jeden food truck?",
-      "feeOnly": "{pct} od każdego zamówienia online opłaconego kartą — <b>{over}</b> miesięcznie na food truck.",
+      "feeOnly": "{pct} od każdego zamówienia online — <b>{over}</b> miesięcznie na food truck.",
       "noFee": "Zamówienia online bez limitu w cenie — nic ponad cenę planu."
     },
     "fee": {
@@ -6437,7 +6437,7 @@
     "costs": {
       "title": "Ile kosztuje system zamówień dla food trucka?",
       "ourPlan": "{plan}: {price} miesięcznie, {fee}",
-      "feeOnly": "{fee} od zamówienia online opłaconego kartą",
+      "feeOnly": "{fee} od zamówienia online",
       "feeIncluded": "zamówienia online do {included} miesięcznie w cenie, potem {fee}",
       "feeNone": "brak opłaty HatchGrab od zamówień online",
       "rivalPlan": "{plan}: {price}",

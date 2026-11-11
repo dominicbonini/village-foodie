@@ -15,7 +15,7 @@
     "weSuggest": "Proponujemy",
     "summary": "{price} miesięcznie za food truck, w tym zamówienia online o wartości {allowance}{fleet, plural, one {} few { na każdy z nich} many { na każdy z nich} other { na każdy z nich}}.",
     "switchTo": "Wybierz zamiast tego plan {plan}",
-    "summaryFeeOnly": "{hasMonthly, select, yes {{price} miesięcznie za food truck plus {pct} od zamówień online opłaconych kartą.} other {Bez opłaty miesięcznej — tylko {pct} od zamówień online opłaconych kartą.}}",
+    "summaryFeeOnly": "{hasMonthly, select, yes {{price} miesięcznie za food truck plus {pct} od zamówień online.} other {Bez opłaty miesięcznej — tylko {pct} od zamówień online.}}",
     "summaryNoFee": "{price} miesięcznie za food truck, zamówienia online bez limitu i bez prowizji HatchGrab."
   },
   "orders": {
@@ -28,7 +28,7 @@
     "insideAllowance": "W ramach zamówień online o wartości {allowance} w cenie — nic ponad cenę planu.",
     "acrossFleet": "Łącznie dla {fleet, plural, one {# food trucka} few {# food trucków} many {# food trucków} other {# food trucka}}: <b>{amount}</b> miesięcznie.",
     "titleNo": "Jaka może być miesięczna wartość twoich zamówień online na jeden food truck?",
-    "feeOnly": "{pct} od każdego zamówienia online opłaconego kartą — <b>{over}</b> miesięcznie na food truck.",
+    "feeOnly": "{pct} od każdego zamówienia online — <b>{over}</b> miesięcznie na food truck.",
     "noFee": "Zamówienia online bez limitu w cenie — nic ponad cenę planu."
   },
   "fee": {

@@ -38,7 +38,7 @@
   "costs": {
     "title": "Food truck sipariş sistemi ne kadar tutar?",
     "ourPlan": "{plan}: ayda {price}, {fee}",
-    "feeOnly": "online kartlı sipariş başına {fee}",
+    "feeOnly": "online sipariş başına {fee}",
     "feeIncluded": "ayda {included} tutarına kadar online sipariş dahil, sonrasında {fee}",
     "feeNone": "online siparişlerde HatchGrab ücreti yok",
     "rivalPlan": "{plan}: {price}",

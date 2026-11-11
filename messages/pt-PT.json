@@ -6148,8 +6148,8 @@
   "pricing": {
     "banner": {
       "title": "{months, plural, one {O seu primeiro mês é totalmente grátis — com todas as funcionalidades desbloqueadas.} other {Os seus primeiros # meses são totalmente grátis — com todas as funcionalidades desbloqueadas.}}",
-      "body": "Com {brand}, os clientes encomendam com antecedência e pagam no levantamento, por isso pode receber encomendas online sem ligar nenhum serviço de pagamentos com cartão. Prefere receber o pagamento antecipadamente? Adicione pagamentos online com cartão quando quiser. Quando o seu teste terminar, passa para o plano <plan>{fallback}</plan>{fallbackFree, select, yes { (sem mensalidade)} other {}}, a menos que escolha outro plano. Sem cartão para começar, sem contrato, cancele quando quiser.",
-      "bodyOnly": "Com {brand}, os clientes encomendam com antecedência e pagam no levantamento, por isso pode receber encomendas online sem ligar nenhum serviço de pagamentos com cartão. Prefere receber o pagamento antecipadamente? Adicione pagamentos online com cartão quando quiser. Quando o seu teste terminar, o plano <plan>{fallback}</plan> custa {price} por mês. Entraremos em contacto consigo antes disso para configurar o pagamento. Sem cartão para começar, sem contrato, cancele quando quiser."
+      "body": "Com {brand}, os clientes encomendam com antecedência e pagam no levantamento, por isso pode receber encomendas online sem ligar nenhum serviço de pagamentos com cartão. Quando o seu teste terminar, passa para o plano <plan>{fallback}</plan>{fallbackFree, select, yes { (sem mensalidade)} other {}}, a menos que escolha outro plano. Sem cartão para começar, sem contrato, cancele quando quiser.",
+      "bodyOnly": "Com {brand}, os clientes encomendam com antecedência e pagam no levantamento, por isso pode receber encomendas online sem ligar nenhum serviço de pagamentos com cartão. Quando o seu teste terminar, o plano <plan>{fallback}</plan> custa {price} por mês. Entraremos em contacto consigo antes disso para configurar o pagamento. Sem cartão para começar, sem contrato, cancele quando quiser."
     },
     "card": {
       "perTruckMonth": "por food truck / mês",
@@ -6160,7 +6160,7 @@
       "everythingIn": "Tudo o que o plano {plan} inclui, e ainda"
     },
     "fee": {
-      "feeOnly": "<b>{fee}*</b> apenas nas encomendas online pagas com cartão. As encomendas ao balcão são sempre grátis.",
+      "feeOnly": "<b>{fee}</b> apenas nas encomendas online. As encomendas ao balcão são sempre grátis.",
       "included": "Os primeiros <b>{included}</b> em encomendas online estão incluídos todos os meses; depois, <b>{fee}*</b>. As encomendas ao balcão são sempre grátis.",
       "noFee": "<b>Sem taxas HatchGrab</b> nas encomendas online, por mais movimento que tenha. Um custo mensal previsível."
     },
@@ -6287,7 +6287,7 @@
       "weSuggest": "Sugerimos",
       "summary": "{price} por food truck por mês, com encomendas online até {allowance} incluídas{fleet, plural, one {} other { em cada um}}.",
       "switchTo": "Mudar para o plano {plan}",
-      "summaryFeeOnly": "{hasMonthly, select, yes {{price} por food truck por mês, mais {pct} nas encomendas online pagas com cartão.} other {Sem mensalidade — apenas {pct} nas encomendas online pagas com cartão.}}",
+      "summaryFeeOnly": "{hasMonthly, select, yes {{price} por food truck por mês, mais {pct} nas encomendas online.} other {Sem mensalidade — apenas {pct} nas encomendas online.}}",
       "summaryNoFee": "{price} por food truck por mês, com encomendas online ilimitadas e sem taxa da HatchGrab."
     },
     "orders": {
@@ -6300,7 +6300,7 @@
       "insideAllowance": "Dentro do limite incluído de {allowance} em encomendas online — nada a pagar além do plano.",
       "acrossFleet": "Para {fleet, plural, one {# food truck} other {# food trucks}}: <b>{amount}</b> por mês.",
       "titleNo": "Quanto acha que faturaria online, por mês, por food truck?",
-      "feeOnly": "{pct} em cada encomenda online paga com cartão — <b>{over}</b> por mês por food truck.",
+      "feeOnly": "{pct} em cada encomenda online — <b>{over}</b> por mês por food truck.",
       "noFee": "Encomendas online ilimitadas incluídas — nada a pagar além do plano."
     },
     "fee": {
@@ -6437,7 +6437,7 @@
     "costs": {
       "title": "Quanto custa um sistema de encomendas para food trucks?",
       "ourPlan": "{plan}: {price} por mês, {fee}",
-      "feeOnly": "{fee} por encomenda online paga com cartão",
+      "feeOnly": "{fee} por encomenda online",
       "feeIncluded": "encomendas online até {included} por mês incluídas, depois {fee}",
       "feeNone": "sem taxa da HatchGrab nas encomendas online",
       "rivalPlan": "{plan}: {price}",

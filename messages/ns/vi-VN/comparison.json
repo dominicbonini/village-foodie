@@ -38,7 +38,7 @@
   "costs": {
     "title": "Phần mềm đặt món cho food truck giá bao nhiêu?",
     "ourPlan": "{plan}: {price} mỗi tháng, {fee}",
-    "feeOnly": "{fee} mỗi đơn online thanh toán bằng thẻ",
+    "feeOnly": "{fee} mỗi đơn online",
     "feeIncluded": "đã gồm đơn online đến {included} mỗi tháng, sau đó {fee}",
     "feeNone": "không mất phí HatchGrab trên đơn online",
     "rivalPlan": "{plan}: {price}",

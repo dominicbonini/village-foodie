@@ -117,8 +117,8 @@
   },
   "pricing": {
     "banner": {
-      "body": "Avec {brand}, vos clients commandent à l’avance et paient sur place : vous pouvez donc prendre des commandes en ligne sans aucun prestataire de paiement par carte. Vous préférez encaisser à l’avance ? Ajoutez le paiement en ligne par carte quand vous voulez. À la fin de votre essai gratuit, vous passez à l’offre <plan>{fallback}</plan>{fallbackFree, select, yes { (sans abonnement mensuel)} other {}}, sauf si vous choisissez une autre offre. Sans carte bancaire pour démarrer, sans engagement, résiliable à tout moment.",
-      "bodyOnly": "Avec {brand}, vos clients commandent à l’avance et paient sur place : vous pouvez donc prendre des commandes en ligne sans aucun prestataire de paiement par carte. Vous préférez encaisser à l’avance ? Ajoutez le paiement en ligne par carte quand vous voulez. À la fin de votre essai gratuit, l’offre <plan>{fallback}</plan> coûtera {price} par mois. Nous vous contacterons d’ici là pour mettre en place le paiement. Sans carte bancaire pour démarrer, sans engagement, résiliable à tout moment."
+      "body": "Avec {brand}, vos clients commandent à l’avance et paient sur place : vous pouvez donc prendre des commandes en ligne sans aucun prestataire de paiement par carte. À la fin de votre essai gratuit, vous passez à l’offre <plan>{fallback}</plan>{fallbackFree, select, yes { (sans abonnement mensuel)} other {}}, sauf si vous choisissez une autre offre. Sans carte bancaire pour démarrer, sans engagement, résiliable à tout moment.",
+      "bodyOnly": "Avec {brand}, vos clients commandent à l’avance et paient sur place : vous pouvez donc prendre des commandes en ligne sans aucun prestataire de paiement par carte. À la fin de votre essai gratuit, l’offre <plan>{fallback}</plan> coûtera {price} par mois. Nous vous contacterons d’ici là pour mettre en place le paiement. Sans carte bancaire pour démarrer, sans engagement, résiliable à tout moment."
     }
   },
   "featuresPage": {

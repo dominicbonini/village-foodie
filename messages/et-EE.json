@@ -6148,8 +6148,8 @@
   "pricing": {
     "banner": {
       "title": "{months, plural, one {Sinu esimene kuu on täiesti tasuta — kõik funktsioonid avatud.} other {Sinu esimesed # kuud on täiesti tasuta — kõik funktsioonid avatud.}}",
-      "body": "{brand} võimaldab klientidel ette tellida ja maksta kättesaamisel, nii et saad veebitellimusi vastu võtta ilma kaardimaksete teenusepakkujat üldse ühendamata. Eelistad makset kohe ette? Lisa veebipõhised kaardimaksed millal tahes. Kui prooviperiood lõpeb ja sa ei vali muud paketti, lähed üle paketile <plan>{fallback}</plan>{fallbackFree, select, yes { — ilma kuutasuta} other {}}. Alustamiseks pole pangakaarti vaja, lepingut pole, loobu igal ajal.",
-      "bodyOnly": "{brand} võimaldab klientidel ette tellida ja maksta kättesaamisel, nii et saad veebitellimusi vastu võtta ilma kaardimaksete teenusepakkujat üldse ühendamata. Eelistad makset kohe ette? Lisa veebipõhised kaardimaksed millal tahes. Kui prooviperiood lõpeb, on paketi <plan>{fallback}</plan> hind {price} kuus. Võtame sinuga enne seda ühendust, et maksmine korraldada. Alustamiseks pole pangakaarti vaja, lepingut pole, loobu igal ajal."
+      "body": "{brand} võimaldab klientidel ette tellida ja maksta kättesaamisel, nii et saad veebitellimusi vastu võtta ilma kaardimaksete teenusepakkujat üldse ühendamata. Kui prooviperiood lõpeb ja sa ei vali muud paketti, lähed üle paketile <plan>{fallback}</plan>{fallbackFree, select, yes { — ilma kuutasuta} other {}}. Alustamiseks pole pangakaarti vaja, lepingut pole, loobu igal ajal.",
+      "bodyOnly": "{brand} võimaldab klientidel ette tellida ja maksta kättesaamisel, nii et saad veebitellimusi vastu võtta ilma kaardimaksete teenusepakkujat üldse ühendamata. Kui prooviperiood lõpeb, on paketi <plan>{fallback}</plan> hind {price} kuus. Võtame sinuga enne seda ühendust, et maksmine korraldada. Alustamiseks pole pangakaarti vaja, lepingut pole, loobu igal ajal."
     },
     "card": {
       "perTruckMonth": "toiduauto kohta kuus",
@@ -6160,7 +6160,7 @@
       "everythingIn": "Kõik, mis paketis {plan}, ja lisaks"
     },
     "fee": {
-      "feeOnly": "<b>{fee}*</b> ainult veebis kaardiga makstud tellimustelt. Tellimused kohapeal on alati tasuta.",
+      "feeOnly": "<b>{fee}</b> ainult veebitellimustelt. Tellimused kohapeal on alati tasuta.",
       "included": "Iga kuu on esimesed <b>{included}</b> veebitellimuste käibest hinnas, seejärel <b>{fee}*</b>. Tellimused kohapeal on alati tasuta.",
       "noFee": "<b>HatchGrabi tasusid pole</b> veebitellimustelt, ükskõik kui palju sul tegemist on. Üks etteaimatav igakuine kulu."
     },
@@ -6287,7 +6287,7 @@
       "weSuggest": "Soovitame",
       "summary": "{price} toiduauto kohta kuus, hinnas on veebitellimused kuni {allowance}{fleet, plural, one {} other { iga toiduauto kohta}}.",
       "switchTo": "Vali hoopis {plan}",
-      "summaryFeeOnly": "{hasMonthly, select, yes {{price} toiduauto kohta kuus, lisaks {pct} veebis kaardiga makstud tellimustelt.} other {Kuutasu pole — ainult {pct} veebis kaardiga makstud tellimustelt.}}",
+      "summaryFeeOnly": "{hasMonthly, select, yes {{price} toiduauto kohta kuus, lisaks {pct} veebitellimustelt.} other {Kuutasu pole — ainult {pct} veebitellimustelt.}}",
       "summaryNoFee": "{price} toiduauto kohta kuus, piiramatult veebitellimusi ja HatchGrabi tasu pole."
     },
     "orders": {
@@ -6300,7 +6300,7 @@
       "insideAllowance": "Jääb hinnas sisalduvate veebitellimuste piiresse ({allowance}) — paketile midagi lisaks ei tule.",
       "acrossFleet": "Kokku {fleet, plural, one {# toiduauto} other {# toiduauto}} peale: <b>{amount}</b> kuus.",
       "titleNo": "Kui palju arvad, et teeniksid veebitellimustelt kuus toiduauto kohta?",
-      "feeOnly": "{pct} igalt veebis kaardiga makstud tellimuselt — <b>{over}</b> kuus toiduauto kohta.",
+      "feeOnly": "{pct} igalt veebitellimuselt — <b>{over}</b> kuus toiduauto kohta.",
       "noFee": "Piiramatult veebitellimusi hinnas — paketile midagi lisaks ei tule."
     },
     "fee": {
@@ -6437,7 +6437,7 @@
     "costs": {
       "title": "Mis maksab toiduauto tellimissüsteem?",
       "ourPlan": "{plan}: {price} kuus, {fee}",
-      "feeOnly": "{fee} iga veebis kaardiga makstud tellimuse kohta",
+      "feeOnly": "{fee} iga veebitellimuse kohta",
       "feeIncluded": "veebitellimused kuni {included} kuus hinnas, seejärel {fee}",
       "feeNone": "veebitellimustelt HatchGrabi tasu pole",
       "rivalPlan": "{plan}: {price}",

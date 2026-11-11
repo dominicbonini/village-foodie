@@ -15,7 +15,7 @@
     "weSuggest": "Predlažemo",
     "summary": "{price} po food trucku mesečno, sa uključenim online porudžbinama u vrednosti do {allowance}{fleet, plural, one {} few { po vozilu} other { po vozilu}}.",
     "switchTo": "Pređi na paket {plan}",
-    "summaryFeeOnly": "{hasMonthly, select, yes {{price} po food trucku mesečno, plus {pct} na online porudžbine plaćene karticom.} other {Bez mesečne pretplate — samo {pct} na online porudžbine plaćene karticom.}}",
+    "summaryFeeOnly": "{hasMonthly, select, yes {{price} po food trucku mesečno, plus {pct} na online porudžbine.} other {Bez mesečne pretplate — samo {pct} na online porudžbine.}}",
     "summaryNoFee": "{price} po food trucku mesečno, sa neograničenim online porudžbinama i bez HatchGrab naknade."
   },
   "orders": {
@@ -28,7 +28,7 @@
     "insideAllowance": "U okviru uključenog iznosa od {allowance} — ništa preko cene paketa.",
     "acrossFleet": "Za {fleet, plural, one {# food truck} few {# food trucka} other {# food truckova}}: <b>{amount}</b> mesečno.",
     "titleNo": "Koliko mislite da biste mesečno zaradili online, po food trucku?",
-    "feeOnly": "{pct} na svaku online porudžbinu plaćenu karticom — <b>{over}</b> mesečno po food trucku.",
+    "feeOnly": "{pct} na svaku online porudžbinu — <b>{over}</b> mesečno po food trucku.",
     "noFee": "Neograničene online porudžbine su uključene — ništa preko cene paketa."
   },
   "fee": {

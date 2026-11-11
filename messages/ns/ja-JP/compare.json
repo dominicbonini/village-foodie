@@ -15,7 +15,7 @@
     "weSuggest": "おすすめのプラン",
     "summary": "1台あたり月額{price}。オンライン注文{allowance}分まで込み{fleet, plural, other {（1台ごと）}}です。",
     "switchTo": "{plan}に切り替える",
-    "summaryFeeOnly": "{hasMonthly, select, yes {1台あたり月額{price}、オンラインのカード注文に{pct}。} other {月額料金なし。オンラインのカード注文にのみ{pct}。}}",
+    "summaryFeeOnly": "{hasMonthly, select, yes {1台あたり月額{price}、オンライン注文に{pct}。} other {月額料金なし。オンライン注文にのみ{pct}。}}",
     "summaryNoFee": "1台あたり月額{price}。オンライン注文は無制限で、HatchGrabの手数料はかかりません。"
   },
   "orders": {
@@ -28,7 +28,7 @@
     "insideAllowance": "込みのオンライン注文{allowance}分の範囲内です。プラン料金以外はかかりません。",
     "acrossFleet": "{fleet, plural, other {#台}}の合計：月<b>{amount}</b>",
     "titleNo": "1台あたり、毎月どれくらいオンラインで売り上げられそうですか？",
-    "feeOnly": "オンラインのカード注文すべてに{pct}。1台あたり月<b>{over}</b>です。",
+    "feeOnly": "オンライン注文すべてに{pct}。1台あたり月<b>{over}</b>です。",
     "noFee": "オンライン注文は無制限で込みです。プラン料金以外はかかりません。"
   },
   "fee": {

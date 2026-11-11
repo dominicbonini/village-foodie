@@ -1,8 +1,8 @@
 {
   "banner": {
     "title": "{months, plural, one {Seu primeiro mês é totalmente grátis — com todos os recursos liberados.} other {Seus primeiros # meses são totalmente grátis — com todos os recursos liberados.}}",
-    "body": "Com {brand}, os clientes pedem antes e pagam na retirada, então você recebe pedidos online sem precisar conectar nenhuma processadora de cartão. Prefere receber adiantado? Ative pagamentos online com cartão quando quiser. Quando o teste acabar, você passa para o plano <plan>{fallback}</plan>{fallbackFree, select, yes { — sem mensalidade —} other {}}, a menos que escolha outro plano. Sem cartão para começar, sem contrato, cancele quando quiser.",
-    "bodyOnly": "Com {brand}, os clientes pedem antes e pagam na retirada, então você recebe pedidos online sem precisar conectar nenhuma processadora de cartão. Prefere receber adiantado? Ative pagamentos online com cartão quando quiser. Quando o teste acabar, o plano <plan>{fallback}</plan> custa {price} por mês. Antes disso, vamos entrar em contato para configurar o pagamento. Sem cartão para começar, sem contrato, cancele quando quiser."
+    "body": "Com {brand}, os clientes pedem antes e pagam na retirada, então você recebe pedidos online sem precisar conectar nenhuma processadora de cartão. Quando o teste acabar, você passa para o plano <plan>{fallback}</plan>{fallbackFree, select, yes { — sem mensalidade —} other {}}, a menos que escolha outro plano. Sem cartão para começar, sem contrato, cancele quando quiser.",
+    "bodyOnly": "Com {brand}, os clientes pedem antes e pagam na retirada, então você recebe pedidos online sem precisar conectar nenhuma processadora de cartão. Quando o teste acabar, o plano <plan>{fallback}</plan> custa {price} por mês. Antes disso, vamos entrar em contato para configurar o pagamento. Sem cartão para começar, sem contrato, cancele quando quiser."
   },
   "card": {
     "perTruckMonth": "por food truck / mês",
@@ -13,7 +13,7 @@
     "everythingIn": "Tudo do plano {plan}, e mais:"
   },
   "fee": {
-    "feeOnly": "<b>{fee}*</b> só nos pedidos online pagos com cartão. Pedidos no balcão são sempre grátis.",
+    "feeOnly": "<b>{fee}</b> só nos pedidos online. Pedidos no balcão são sempre grátis.",
     "included": "Os primeiros <b>{included}</b> em pedidos online por mês estão incluídos; depois, <b>{fee}*</b>. Pedidos no balcão são sempre grátis.",
     "noFee": "<b>Sem taxas do HatchGrab</b> nos pedidos online, por mais movimentado que seja. Um custo mensal previsível."
   },

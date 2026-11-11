@@ -6148,8 +6148,8 @@
   "pricing": {
     "banner": {
       "title": "{months, plural, one {Je eerste maand is helemaal gratis — met alle functies.} other {Je eerste # maanden zijn helemaal gratis — met alle functies.}}",
-      "body": "Met {brand} bestellen klanten vooraf en betalen ze bij het afhalen, dus je kunt online bestellingen aannemen zonder een betaalprovider te koppelen. Liever vooraf laten betalen? Voeg op elk moment online kaartbetalingen toe. Na je proefperiode ga je over op <plan>{fallback}</plan>{fallbackFree, select, yes { — zonder maandkosten —} other {}}, tenzij je zelf een abonnement kiest. Geen creditcard nodig om te starten, geen contract, altijd opzegbaar.",
-      "bodyOnly": "Met {brand} bestellen klanten vooraf en betalen ze bij het afhalen, dus je kunt online bestellingen aannemen zonder een betaalprovider te koppelen. Liever vooraf laten betalen? Voeg op elk moment online kaartbetalingen toe. Na je proefperiode kost <plan>{fallback}</plan> je {price} per maand. We nemen voor die tijd contact met je op om de betaling te regelen. Geen creditcard nodig om te starten, geen contract, altijd opzegbaar."
+      "body": "Met {brand} bestellen klanten vooraf en betalen ze bij het afhalen, dus je kunt online bestellingen aannemen zonder een betaalprovider te koppelen. Na je proefperiode ga je over op <plan>{fallback}</plan>{fallbackFree, select, yes { — zonder maandkosten —} other {}}, tenzij je zelf een abonnement kiest. Geen creditcard nodig om te starten, geen contract, altijd opzegbaar.",
+      "bodyOnly": "Met {brand} bestellen klanten vooraf en betalen ze bij het afhalen, dus je kunt online bestellingen aannemen zonder een betaalprovider te koppelen. Na je proefperiode kost <plan>{fallback}</plan> je {price} per maand. We nemen voor die tijd contact met je op om de betaling te regelen. Geen creditcard nodig om te starten, geen contract, altijd opzegbaar."
     },
     "card": {
       "perTruckMonth": "per foodtruck / maand",
@@ -6160,7 +6160,7 @@
       "everythingIn": "Alles uit {plan}, plus"
     },
     "fee": {
-      "feeOnly": "<b>{fee}*</b> alleen op online kaartbestellingen. Bestellingen aan de truck zijn altijd gratis.",
+      "feeOnly": "<b>{fee}</b> alleen op online bestellingen. Bestellingen aan de truck zijn altijd gratis.",
       "included": "Eerste <b>{included}</b> aan online bestellingen per maand inbegrepen, daarna <b>{fee}*</b>. Bestellingen aan de truck zijn altijd gratis.",
       "noFee": "<b>Geen HatchGrab-kosten</b> op online bestellingen, hoe druk je het ook krijgt. Eén voorspelbaar maandbedrag."
     },
@@ -6287,7 +6287,7 @@
       "weSuggest": "Ons advies",
       "summary": "{price} per foodtruck per maand, met {allowance} aan online bestellingen inbegrepen{fleet, plural, one {} other { voor elke foodtruck}}.",
       "switchTo": "Kies liever {plan}",
-      "summaryFeeOnly": "{hasMonthly, select, yes {{price} per foodtruck per maand, plus {pct} op online kaartbestellingen.} other {Geen maandkosten — alleen {pct} op online kaartbestellingen.}}",
+      "summaryFeeOnly": "{hasMonthly, select, yes {{price} per foodtruck per maand, plus {pct} op online bestellingen.} other {Geen maandkosten — alleen {pct} op online bestellingen.}}",
       "summaryNoFee": "{price} per foodtruck per maand, met onbeperkt online bestellingen en geen kosten van HatchGrab."
     },
     "orders": {
@@ -6300,7 +6300,7 @@
       "insideAllowance": "Binnen de inbegrepen {allowance} aan online bestellingen — niets bovenop het abonnement.",
       "acrossFleet": "Voor {fleet, plural, one {# foodtruck} other {# foodtrucks}}: <b>{amount}</b> per maand.",
       "titleNo": "Hoeveel denk je online te verkopen, per maand, per foodtruck?",
-      "feeOnly": "{pct} op elke online kaartbestelling — <b>{over}</b> per maand per foodtruck.",
+      "feeOnly": "{pct} op elke online bestelling — <b>{over}</b> per maand per foodtruck.",
       "noFee": "Onbeperkt online bestellingen inbegrepen — niets bovenop het abonnement."
     },
     "fee": {
@@ -6437,7 +6437,7 @@
     "costs": {
       "title": "Wat kost een bestelsysteem voor je foodtruck?",
       "ourPlan": "{plan}: {price} per maand, {fee}",
-      "feeOnly": "{fee} per online kaartbestelling",
+      "feeOnly": "{fee} per online bestelling",
       "feeIncluded": "online bestellingen tot {included} per maand inbegrepen, daarna {fee}",
       "feeNone": "geen HatchGrab-kosten op online bestellingen",
       "rivalPlan": "{plan}: {price}",

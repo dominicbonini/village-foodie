@@ -6148,8 +6148,8 @@
   "pricing": {
     "banner": {
       "title": "{months, plural, one {Az első hónap teljesen ingyenes — minden funkció elérhető.} other {Az első # hónap teljesen ingyenes — minden funkció elérhető.}}",
-      "body": "{brand} használatával a vásárlók előre rendelnek, és átvételkor fizetnek, így online rendeléseket fogadhat anélkül, hogy bármilyen kártyás fizetési szolgáltatót bekötne. Inkább előre fizettetne? Az online kártyás fizetést bármikor bekapcsolhatja. A próbaidőszak végén erre a csomagra vált: <plan>{fallback}</plan>{fallbackFree, select, yes { (havidíj nélkül)} other {}}, hacsak nem választ másikat. Bankkártya nélkül indulhat, szerződés nélkül, és bármikor lemondhatja.",
-      "bodyOnly": "{brand} használatával a vásárlók előre rendelnek, és átvételkor fizetnek, így online rendeléseket fogadhat anélkül, hogy bármilyen kártyás fizetési szolgáltatót bekötne. Inkább előre fizettetne? Az online kártyás fizetést bármikor bekapcsolhatja. A próbaidőszak után ez a csomag lesz érvényes: <plan>{fallback}</plan>, havi {price} áron. Még a próbaidőszak vége előtt felvesszük Önnel a kapcsolatot, hogy beállítsuk a fizetést. Bankkártya nélkül indulhat, szerződés nélkül, és bármikor lemondhatja."
+      "body": "{brand} használatával a vásárlók előre rendelnek, és átvételkor fizetnek, így online rendeléseket fogadhat anélkül, hogy bármilyen kártyás fizetési szolgáltatót bekötne. A próbaidőszak végén erre a csomagra vált: <plan>{fallback}</plan>{fallbackFree, select, yes { (havidíj nélkül)} other {}}, hacsak nem választ másikat. Bankkártya nélkül indulhat, szerződés nélkül, és bármikor lemondhatja.",
+      "bodyOnly": "{brand} használatával a vásárlók előre rendelnek, és átvételkor fizetnek, így online rendeléseket fogadhat anélkül, hogy bármilyen kártyás fizetési szolgáltatót bekötne. A próbaidőszak után ez a csomag lesz érvényes: <plan>{fallback}</plan>, havi {price} áron. Még a próbaidőszak vége előtt felvesszük Önnel a kapcsolatot, hogy beállítsuk a fizetést. Bankkártya nélkül indulhat, szerződés nélkül, és bármikor lemondhatja."
     },
     "card": {
       "perTruckMonth": "food truckonként / hónap",
@@ -6160,7 +6160,7 @@
       "everythingIn": "{plan} összes funkciója, plusz"
     },
     "fee": {
-      "feeOnly": "<b>{fee}*</b> csak az online kártyás rendelésekre. A helyszíni rendelések mindig díjmentesek.",
+      "feeOnly": "<b>{fee}</b> csak az online rendelésekre. A helyszíni rendelések mindig díjmentesek.",
       "included": "Havonta az első <b>{included}</b> értékű online rendelés díjmentes, utána <b>{fee}*</b>. A helyszíni rendelések mindig díjmentesek.",
       "noFee": "<b>Nincs HatchGrab-díj</b> az online rendeléseken, bármekkora is a forgalom. Kiszámítható havi költség."
     },
@@ -6287,7 +6287,7 @@
       "weSuggest": "Javaslatunk",
       "summary": "{price} food truckonként havonta; a díj{fleet, plural, one {} other { minden food trucknál}} {allowance} értékű online rendelést tartalmaz.",
       "switchTo": "Válassza inkább ezt: {plan}",
-      "summaryFeeOnly": "{hasMonthly, select, yes {{price} food truckonként havonta, plusz {pct} jutalék az online kártyás rendelések után.} other {Nincs havidíj — csak {pct} jutalék az online kártyás rendelések után.}}",
+      "summaryFeeOnly": "{hasMonthly, select, yes {{price} food truckonként havonta, plusz {pct} jutalék az online rendelések után.} other {Nincs havidíj — csak {pct} jutalék az online rendelések után.}}",
       "summaryNoFee": "{price} food truckonként havonta, korlátlan online rendeléssel és HatchGrab-jutalék nélkül."
     },
     "orders": {
@@ -6300,7 +6300,7 @@
       "insideAllowance": "Belefér a díjban foglalt {allowance} értékű online rendelésbe — a csomagon felül nincs más költség.",
       "acrossFleet": "{fleet, plural, one {# food truck} other {# food truck}} esetén: havi <b>{amount}</b>.",
       "titleNo": "Mit gondol, mennyi online bevétele lenne havonta, food truckonként?",
-      "feeOnly": "{pct} jutalék minden online kártyás rendelés után — food truckonként havi <b>{over}</b>.",
+      "feeOnly": "{pct} jutalék minden online rendelés után — food truckonként havi <b>{over}</b>.",
       "noFee": "Korlátlan online rendelés a díjban — a csomagon felül nincs más költség."
     },
     "fee": {
@@ -6437,7 +6437,7 @@
     "costs": {
       "title": "Mennyibe kerül egy food truck rendelési rendszer?",
       "ourPlan": "{plan}: havi {price}, {fee}",
-      "feeOnly": "online kártyás rendelésenként {fee}",
+      "feeOnly": "online rendelésenként {fee}",
       "feeIncluded": "havi {included} értékig az online rendelések benne vannak, utána {fee}",
       "feeNone": "a HatchGrab nem számít fel díjat az online rendelések után",
       "rivalPlan": "{plan}: {price}",

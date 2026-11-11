@@ -38,7 +38,7 @@
   "costs": {
     "title": "Колко струва система за поръчки за фуд трък?",
     "ourPlan": "{plan}: {price} на месец, {fee}",
-    "feeOnly": "{fee} за онлайн поръчка с карта",
+    "feeOnly": "{fee} за онлайн поръчка",
     "feeIncluded": "включени онлайн поръчки до {included} на месец, след това {fee}",
     "feeNone": "без такса от HatchGrab за онлайн поръчки",
     "rivalPlan": "{plan}: {price}",

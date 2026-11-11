@@ -38,7 +38,7 @@
   "costs": {
     "title": "Mennyibe kerül egy food truck rendelési rendszer?",
     "ourPlan": "{plan}: havi {price}, {fee}",
-    "feeOnly": "online kártyás rendelésenként {fee}",
+    "feeOnly": "online rendelésenként {fee}",
     "feeIncluded": "havi {included} értékig az online rendelések benne vannak, utána {fee}",
     "feeNone": "a HatchGrab nem számít fel díjat az online rendelések után",
     "rivalPlan": "{plan}: {price}",

@@ -15,7 +15,7 @@
     "weSuggest": "Javaslatunk",
     "summary": "{price} food truckonként havonta; a díj{fleet, plural, one {} other { minden food trucknál}} {allowance} értékű online rendelést tartalmaz.",
     "switchTo": "Válassza inkább ezt: {plan}",
-    "summaryFeeOnly": "{hasMonthly, select, yes {{price} food truckonként havonta, plusz {pct} jutalék az online kártyás rendelések után.} other {Nincs havidíj — csak {pct} jutalék az online kártyás rendelések után.}}",
+    "summaryFeeOnly": "{hasMonthly, select, yes {{price} food truckonként havonta, plusz {pct} jutalék az online rendelések után.} other {Nincs havidíj — csak {pct} jutalék az online rendelések után.}}",
     "summaryNoFee": "{price} food truckonként havonta, korlátlan online rendeléssel és HatchGrab-jutalék nélkül."
   },
   "orders": {
@@ -28,7 +28,7 @@
     "insideAllowance": "Belefér a díjban foglalt {allowance} értékű online rendelésbe — a csomagon felül nincs más költség.",
     "acrossFleet": "{fleet, plural, one {# food truck} other {# food truck}} esetén: havi <b>{amount}</b>.",
     "titleNo": "Mit gondol, mennyi online bevétele lenne havonta, food truckonként?",
-    "feeOnly": "{pct} jutalék minden online kártyás rendelés után — food truckonként havi <b>{over}</b>.",
+    "feeOnly": "{pct} jutalék minden online rendelés után — food truckonként havi <b>{over}</b>.",
     "noFee": "Korlátlan online rendelés a díjban — a csomagon felül nincs más költség."
   },
   "fee": {

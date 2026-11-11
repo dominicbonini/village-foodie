@@ -1,8 +1,8 @@
 {
   "banner": {
     "title": "{months, plural, one {Ensimmäinen kuukautesi on täysin ilmainen — kaikki ominaisuudet käytössä.} other {Ensimmäiset # kuukauttasi ovat täysin ilmaisia — kaikki ominaisuudet käytössä.}}",
-    "body": "Näin {brand} toimii: asiakkaat tilaavat etukäteen ja maksavat noutaessaan, joten voit ottaa vastaan verkkotilauksia ilman korttimaksujen käsittelijää. Haluatko ottaa maksun etukäteen? Lisää korttimaksut verkossa milloin tahansa. Kun kokeilujaksosi päättyy, siirryt pakettiin <plan>{fallback}</plan>{fallbackFree, select, yes { (ei kuukausimaksua)} other {}}, ellet valitse muuta pakettia. Aloittamiseen ei tarvita korttia, ei sopimusta, voit lopettaa milloin tahansa.",
-    "bodyOnly": "Näin {brand} toimii: asiakkaat tilaavat etukäteen ja maksavat noutaessaan, joten voit ottaa vastaan verkkotilauksia ilman korttimaksujen käsittelijää. Haluatko ottaa maksun etukäteen? Lisää korttimaksut verkossa milloin tahansa. Kun kokeilujaksosi päättyy, paketin <plan>{fallback}</plan> hinta on {price} kuukaudessa. Otamme sinuun yhteyttä ennen sitä, jotta voimme järjestää maksun. Aloittamiseen ei tarvita korttia, ei sopimusta, voit lopettaa milloin tahansa."
+    "body": "Näin {brand} toimii: asiakkaat tilaavat etukäteen ja maksavat noutaessaan, joten voit ottaa vastaan verkkotilauksia ilman korttimaksujen käsittelijää. Kun kokeilujaksosi päättyy, siirryt pakettiin <plan>{fallback}</plan>{fallbackFree, select, yes { (ei kuukausimaksua)} other {}}, ellet valitse muuta pakettia. Aloittamiseen ei tarvita korttia, ei sopimusta, voit lopettaa milloin tahansa.",
+    "bodyOnly": "Näin {brand} toimii: asiakkaat tilaavat etukäteen ja maksavat noutaessaan, joten voit ottaa vastaan verkkotilauksia ilman korttimaksujen käsittelijää. Kun kokeilujaksosi päättyy, paketin <plan>{fallback}</plan> hinta on {price} kuukaudessa. Otamme sinuun yhteyttä ennen sitä, jotta voimme järjestää maksun. Aloittamiseen ei tarvita korttia, ei sopimusta, voit lopettaa milloin tahansa."
   },
   "card": {
     "perTruckMonth": "ruokarekkaa kohden / kk",
@@ -13,7 +13,7 @@
     "everythingIn": "Kaikki paketin {plan} ominaisuudet ja lisäksi"
   },
   "fee": {
-    "feeOnly": "<b>{fee}*</b> vain kortilla maksetuista verkkotilauksista. Tilaukset paikan päällä ovat aina maksuttomia.",
+    "feeOnly": "<b>{fee}</b> vain verkkotilauksista. Tilaukset paikan päällä ovat aina maksuttomia.",
     "included": "Joka kuukausi hintaan sisältyy verkkotilauksia <b>{included}</b> edestä, sen jälkeen <b>{fee}*</b>. Tilaukset paikan päällä ovat aina maksuttomia.",
     "noFee": "<b>Ei HatchGrabin maksuja</b> verkkotilauksista, olipa kiirettä kuinka paljon tahansa. Yksi ennustettava kuukausihinta."
   },

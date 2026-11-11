@@ -38,7 +38,7 @@
   "costs": {
     "title": "What does a food truck ordering system cost?",
     "ourPlan": "{plan}: {price} a month, {fee}",
-    "feeOnly": "{fee} per online card order",
+    "feeOnly": "{fee} per online order",
     "feeIncluded": "online orders up to {included} a month included, then {fee}",
     "feeNone": "no HatchGrab fee on online orders",
     "rivalPlan": "{plan}: {price}",

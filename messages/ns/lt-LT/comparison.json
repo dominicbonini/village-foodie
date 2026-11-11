@@ -38,7 +38,7 @@
   "costs": {
     "title": "Kiek kainuoja food truck užsakymų sistema?",
     "ourPlan": "{plan}: {price} per mėnesį, {fee}",
-    "feeOnly": "{fee} už kiekvieną internetu kortele apmokėtą užsakymą",
+    "feeOnly": "{fee} už kiekvieną internetinį užsakymą",
     "feeIncluded": "užsakymai internetu iki {included} per mėnesį įskaičiuoti, vėliau {fee}",
     "feeNone": "HatchGrab neima mokesčio už užsakymus internetu",
     "rivalPlan": "{plan}: {price}",

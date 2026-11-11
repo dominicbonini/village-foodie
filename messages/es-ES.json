@@ -6148,8 +6148,8 @@
   "pricing": {
     "banner": {
       "title": "{months, plural, one {Tu primer mes es totalmente gratis, con todas las funciones desbloqueadas.} other {Tus primeros # meses son totalmente gratis, con todas las funciones desbloqueadas.}}",
-      "body": "Con {brand}, tus clientes piden con antelación y pagan al recoger, así que puedes aceptar pedidos online sin conectar ningún procesador de pagos con tarjeta. ¿Prefieres cobrar por adelantado? Añade el pago online con tarjeta cuando quieras. Cuando termine tu prueba, pasarás al plan <plan>{fallback}</plan>{fallbackFree, select, yes { (sin cuota mensual)} other {}}, salvo que elijas otro plan. Sin tarjeta para empezar, sin permanencia, cancela cuando quieras.",
-      "bodyOnly": "Con {brand}, tus clientes piden con antelación y pagan al recoger, así que puedes aceptar pedidos online sin conectar ningún procesador de pagos con tarjeta. ¿Prefieres cobrar por adelantado? Añade el pago online con tarjeta cuando quieras. Cuando termine tu prueba, el plan <plan>{fallback}</plan> costará {price} al mes. Antes de esa fecha nos pondremos en contacto contigo para configurar el pago. Sin tarjeta para empezar, sin permanencia, cancela cuando quieras."
+      "body": "Con {brand}, tus clientes piden con antelación y pagan al recoger, así que puedes aceptar pedidos online sin conectar ningún procesador de pagos con tarjeta. Cuando termine tu prueba, pasarás al plan <plan>{fallback}</plan>{fallbackFree, select, yes { (sin cuota mensual)} other {}}, salvo que elijas otro plan. Sin tarjeta para empezar, sin permanencia, cancela cuando quieras.",
+      "bodyOnly": "Con {brand}, tus clientes piden con antelación y pagan al recoger, así que puedes aceptar pedidos online sin conectar ningún procesador de pagos con tarjeta. Cuando termine tu prueba, el plan <plan>{fallback}</plan> costará {price} al mes. Antes de esa fecha nos pondremos en contacto contigo para configurar el pago. Sin tarjeta para empezar, sin permanencia, cancela cuando quieras."
     },
     "card": {
       "perTruckMonth": "por food truck / mes",
@@ -6160,7 +6160,7 @@
       "everythingIn": "Todo lo del plan {plan}, y además"
     },
     "fee": {
-      "feeOnly": "<b>{fee}*</b> solo en pedidos online pagados con tarjeta. Los pedidos en ventanilla siempre son gratis.",
+      "feeOnly": "<b>{fee}</b> solo en pedidos online. Los pedidos en ventanilla siempre son gratis.",
       "included": "Los primeros <b>{included}</b> en pedidos online, incluidos cada mes; después, <b>{fee}*</b>. Los pedidos en ventanilla siempre son gratis.",
       "noFee": "<b>Sin comisiones de HatchGrab</b> en los pedidos online, por mucho trabajo que tengas. Un coste mensual fijo y previsible."
     },
@@ -6287,7 +6287,7 @@
       "weSuggest": "Te sugerimos",
       "summary": "{price} por food truck al mes, con {allowance} en pedidos online incluidos{fleet, plural, one {} other { en cada uno}}.",
       "switchTo": "Elegir el plan {plan}",
-      "summaryFeeOnly": "{hasMonthly, select, yes {{price} por food truck al mes, más {pct} en los pedidos online pagados con tarjeta.} other {Sin cuota mensual: solo {pct} en los pedidos online pagados con tarjeta.}}",
+      "summaryFeeOnly": "{hasMonthly, select, yes {{price} por food truck al mes, más {pct} en los pedidos online.} other {Sin cuota mensual: solo {pct} en los pedidos online.}}",
       "summaryNoFee": "{price} por food truck al mes, con pedidos online ilimitados y sin comisión de HatchGrab."
     },
     "orders": {
@@ -6300,7 +6300,7 @@
       "insideAllowance": "Dentro de los {allowance} en pedidos online incluidos: nada aparte del plan.",
       "acrossFleet": "Para {fleet, plural, one {# food truck} other {# food trucks}}: <b>{amount}</b> al mes.",
       "titleNo": "¿Cuánto crees que venderías online al mes, por food truck?",
-      "feeOnly": "{pct} en cada pedido online pagado con tarjeta: <b>{over}</b> al mes por food truck.",
+      "feeOnly": "{pct} en cada pedido online: <b>{over}</b> al mes por food truck.",
       "noFee": "Pedidos online ilimitados incluidos: nada aparte del plan."
     },
     "fee": {
@@ -6437,7 +6437,7 @@
     "costs": {
       "title": "¿Cuánto cuesta un sistema de pedidos para food trucks?",
       "ourPlan": "{plan}: {price} al mes, {fee}",
-      "feeOnly": "{fee} por pedido online pagado con tarjeta",
+      "feeOnly": "{fee} por pedido online",
       "feeIncluded": "pedidos online incluidos hasta {included} al mes; después, {fee}",
       "feeNone": "sin comisión de HatchGrab en los pedidos online",
       "rivalPlan": "{plan}: {price}",

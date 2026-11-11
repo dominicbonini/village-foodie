@@ -15,7 +15,7 @@
     "weSuggest": "ההמלצה שלנו",
     "summary": "{price} לפודטראק לחודש, כולל {allowance} בהזמנות אונליין{fleet, plural, one {} two { לכל אחד} other { לכל אחד}}.",
     "switchTo": "מעבר למסלול {plan}",
-    "summaryFeeOnly": "{hasMonthly, select, yes {{price} לפודטראק לחודש, ועוד {pct} על הזמנות אונליין בכרטיס.} other {ללא דמי מנוי — רק {pct} על הזמנות אונליין בכרטיס.}}",
+    "summaryFeeOnly": "{hasMonthly, select, yes {{price} לפודטראק לחודש, ועוד {pct} על הזמנות אונליין.} other {ללא דמי מנוי — רק {pct} על הזמנות אונליין.}}",
     "summaryNoFee": "{price} לפודטראק לחודש, עם הזמנות אונליין ללא הגבלה וללא עמלה של HatchGrab."
   },
   "orders": {
@@ -28,7 +28,7 @@
     "insideAllowance": "בתוך {allowance} בהזמנות אונליין שכלולים — שום תוספת מעבר למסלול.",
     "acrossFleet": "בסך הכול, {fleet, plural, one {פודטראק אחד} two {שני פודטראקים} other {# פודטראקים}}: <b>{amount}</b> לחודש.",
     "titleNo": "כמה אתם מעריכים שתמכרו אונליין בחודש, לכל פודטראק?",
-    "feeOnly": "{pct} על כל הזמנת אונליין בכרטיס — <b>{over}</b> לחודש לכל פודטראק.",
+    "feeOnly": "{pct} על כל הזמנת אונליין — <b>{over}</b> לחודש לכל פודטראק.",
     "noFee": "הזמנות אונליין ללא הגבלה כלולות — שום תוספת מעבר למסלול."
   },
   "fee": {

@@ -6120,8 +6120,8 @@
   "pricing": {
     "banner": {
       "title": "{months, plural, other {首 # 個月完全免費，所有功能全面開放。}}",
-      "body": "使用 {brand}，客人可預先落單並在取餐時付款，所以你完全無需連接任何信用卡收款服務，都可以接收網上訂單。想預先收款？隨時可加設網上信用卡付款。試用期結束後，除非你選擇其他計劃，否則會轉用 <plan>{fallback}</plan>{fallbackFree, select, yes {（無月費）} other {}}。開始時無需信用卡，無需合約，可隨時取消。",
-      "bodyOnly": "使用 {brand}，客人可預先落單並在取餐時付款，所以你完全無需連接任何信用卡收款服務，都可以接收網上訂單。想預先收款？隨時可加設網上信用卡付款。試用期結束後，<plan>{fallback}</plan> 每月收費 {price}。我們會在試用期結束前聯絡你，安排付款事宜。開始時無需信用卡，無需合約，可隨時取消。"
+      "body": "使用 {brand}，客人可預先落單並在取餐時付款，所以你完全無需連接任何信用卡收款服務，都可以接收網上訂單。試用期結束後，除非你選擇其他計劃，否則會轉用 <plan>{fallback}</plan>{fallbackFree, select, yes {（無月費）} other {}}。開始時無需信用卡，無需合約，可隨時取消。",
+      "bodyOnly": "使用 {brand}，客人可預先落單並在取餐時付款，所以你完全無需連接任何信用卡收款服務，都可以接收網上訂單。試用期結束後，<plan>{fallback}</plan> 每月收費 {price}。我們會在試用期結束前聯絡你，安排付款事宜。開始時無需信用卡，無需合約，可隨時取消。"
     },
     "card": {
       "perTruckMonth": "每架美食車／每月",
@@ -6132,7 +6132,7 @@
       "everythingIn": "包含 {plan} 的所有功能，另加"
     },
     "fee": {
-      "feeOnly": "只限網上信用卡訂單收取 <b>{fee}*</b>。現場訂單一律免費。",
+      "feeOnly": "只限網上訂單收取 <b>{fee}</b>。現場訂單一律免費。",
       "included": "每月首 <b>{included}</b> 網上訂單已包含在內，其後收取 <b>{fee}*</b>。現場訂單一律免費。",
       "noFee": "無論生意多忙，網上訂單都<b>不收 HatchGrab 費用</b>。每月固定一筆費用，清楚易計。"
     },
@@ -6259,7 +6259,7 @@
       "weSuggest": "我們建議",
       "summary": "每架美食車每月 {price}，每架包含 {allowance} 網上訂單額度{fleet, plural, other {}}。",
       "switchTo": "改用 {plan}",
-      "summaryFeeOnly": "{hasMonthly, select, yes {每架美食車每月 {price}，網上信用卡訂單另收 {pct}。} other {無月費——只限網上信用卡訂單收取 {pct}。}}",
+      "summaryFeeOnly": "{hasMonthly, select, yes {每架美食車每月 {price}，網上訂單另收 {pct}。} other {無月費——只限網上訂單收取 {pct}。}}",
       "summaryNoFee": "每架美食車每月 {price}，網上訂單無上限，不收 HatchGrab 費用。"
     },
     "orders": {
@@ -6272,7 +6272,7 @@
       "insideAllowance": "在已包含的 {allowance} 網上訂單額度之內——計劃以外無額外收費。",
       "acrossFleet": "{fleet, plural, other {# 架美食車}}合共：每月 <b>{amount}</b>。",
       "titleNo": "你估計每架美食車每月網上生意大約有多少？",
-      "feeOnly": "每張網上信用卡訂單收取 {pct}——每架美食車每月 <b>{over}</b>。",
+      "feeOnly": "每張網上訂單收取 {pct}——每架美食車每月 <b>{over}</b>。",
       "noFee": "已包含無上限網上訂單——計劃以外無額外收費。"
     },
     "fee": {
@@ -6409,7 +6409,7 @@
     "costs": {
       "title": "美食車落單系統要多少錢？",
       "ourPlan": "{plan}：每月 {price}，{fee}",
-      "feeOnly": "每張網上信用卡訂單 {fee}",
+      "feeOnly": "每張網上訂單 {fee}",
       "feeIncluded": "每月首 {included} 網上訂單已包括在內，之後收取 {fee}",
       "feeNone": "HatchGrab 不收取網上訂單費用",
       "rivalPlan": "{plan}：{price}",

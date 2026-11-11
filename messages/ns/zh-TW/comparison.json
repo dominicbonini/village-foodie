@@ -38,7 +38,7 @@
   "costs": {
     "title": "餐車點餐系統要多少錢？",
     "ourPlan": "{plan}：每月 {price}，{fee}",
-    "feeOnly": "每筆線上刷卡訂單 {fee}",
+    "feeOnly": "每筆線上訂單 {fee}",
     "feeIncluded": "每月含 {included} 的線上訂單額度，超出後收取 {fee}",
     "feeNone": "HatchGrab 不收線上訂單手續費",
     "rivalPlan": "{plan}：{price}",

@@ -6148,8 +6148,8 @@
   "pricing": {
     "banner": {
       "title": "{months, plural, one {Prima lună este complet gratuită — toate funcțiile deblocate.} few {Primele # luni sunt complet gratuite — toate funcțiile deblocate.} other {Primele # de luni sunt complet gratuite — toate funcțiile deblocate.}}",
-      "body": "Cu {brand}, clienții comandă în avans și plătesc la ridicare, așa că puteți primi comenzi online fără să conectați vreun procesator de plăți cu cardul. Preferați să încasați în avans? Adăugați oricând plățile online cu cardul. La finalul perioadei de probă treceți la planul <plan>{fallback}</plan>{fallbackFree, select, yes { (fără taxă lunară)} other {}}, dacă nu alegeți alt plan. Fără card la început, fără contract, anulați oricând.",
-      "bodyOnly": "Cu {brand}, clienții comandă în avans și plătesc la ridicare, așa că puteți primi comenzi online fără să conectați vreun procesator de plăți cu cardul. Preferați să încasați în avans? Adăugați oricând plățile online cu cardul. La finalul perioadei de probă, planul <plan>{fallback}</plan> costă {price} pe lună. Vă vom contacta înainte de atunci pentru a configura plata. Fără card la început, fără contract, anulați oricând."
+      "body": "Cu {brand}, clienții comandă în avans și plătesc la ridicare, așa că puteți primi comenzi online fără să conectați vreun procesator de plăți cu cardul. La finalul perioadei de probă treceți la planul <plan>{fallback}</plan>{fallbackFree, select, yes { (fără taxă lunară)} other {}}, dacă nu alegeți alt plan. Fără card la început, fără contract, anulați oricând.",
+      "bodyOnly": "Cu {brand}, clienții comandă în avans și plătesc la ridicare, așa că puteți primi comenzi online fără să conectați vreun procesator de plăți cu cardul. La finalul perioadei de probă, planul <plan>{fallback}</plan> costă {price} pe lună. Vă vom contacta înainte de atunci pentru a configura plata. Fără card la început, fără contract, anulați oricând."
     },
     "card": {
       "perTruckMonth": "per food truck / lună",
@@ -6160,7 +6160,7 @@
       "everythingIn": "Tot din planul {plan}, plus"
     },
     "fee": {
-      "feeOnly": "<b>{fee}*</b> doar pentru comenzile online plătite cu cardul. Comenzile la fața locului sunt mereu gratuite.",
+      "feeOnly": "<b>{fee}</b> doar pentru comenzile online. Comenzile la fața locului sunt mereu gratuite.",
       "included": "Comenzi online în valoare de <b>{included}</b> incluse în fiecare lună, apoi <b>{fee}*</b>. Comenzile la fața locului sunt mereu gratuite.",
       "noFee": "<b>Fără taxe HatchGrab</b> pentru comenzile online, oricât de aglomerat ar fi. Un cost lunar previzibil."
     },
@@ -6287,7 +6287,7 @@
       "weSuggest": "Vă recomandăm",
       "summary": "{price} pe food truck pe lună, cu comenzi online în valoare de {allowance} incluse{fleet, plural, one {} few { pentru fiecare} other { pentru fiecare}}.",
       "switchTo": "Treceți la planul {plan}",
-      "summaryFeeOnly": "{hasMonthly, select, yes {{price} pe food truck pe lună, plus {pct} la comenzile online plătite cu cardul.} other {Fără abonament lunar — doar {pct} la comenzile online plătite cu cardul.}}",
+      "summaryFeeOnly": "{hasMonthly, select, yes {{price} pe food truck pe lună, plus {pct} la comenzile online.} other {Fără abonament lunar — doar {pct} la comenzile online.}}",
       "summaryNoFee": "{price} pe food truck pe lună, cu comenzi online nelimitate și fără comision HatchGrab."
     },
     "orders": {
@@ -6300,7 +6300,7 @@
       "insideAllowance": "În limita comenzilor online de {allowance} incluse — nimic în plus față de plan.",
       "acrossFleet": "Pentru {fleet, plural, one {# food truck} few {# food truck-uri} other {# de food truck-uri}}: <b>{amount}</b> pe lună.",
       "titleNo": "Cât credeți că ați încasa online, pe lună, per food truck?",
-      "feeOnly": "{pct} la fiecare comandă online plătită cu cardul — <b>{over}</b> pe lună per food truck.",
+      "feeOnly": "{pct} la fiecare comandă online — <b>{over}</b> pe lună per food truck.",
       "noFee": "Comenzi online nelimitate incluse — nimic în plus față de plan."
     },
     "fee": {
@@ -6437,7 +6437,7 @@
     "costs": {
       "title": "Cât costă un sistem de comenzi pentru food truck?",
       "ourPlan": "{plan}: {price} pe lună, {fee}",
-      "feeOnly": "{fee} per comandă online plătită cu cardul",
+      "feeOnly": "{fee} per comandă online",
       "feeIncluded": "comenzi online de până la {included} pe lună incluse, apoi {fee}",
       "feeNone": "fără comision HatchGrab la comenzile online",
       "rivalPlan": "{plan}: {price}",

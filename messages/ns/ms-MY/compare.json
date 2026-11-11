@@ -15,7 +15,7 @@
     "weSuggest": "Cadangan kami",
     "summary": "{price} setiap trak sebulan, termasuk pesanan dalam talian bernilai {allowance}{fleet, plural, other { bagi setiap trak}}.",
     "switchTo": "Guna {plan} sebaliknya",
-    "summaryFeeOnly": "{hasMonthly, select, yes {{price} setiap trak sebulan, ditambah {pct} untuk pesanan kad dalam talian.} other {Tanpa yuran bulanan — {pct} untuk pesanan kad dalam talian sahaja.}}",
+    "summaryFeeOnly": "{hasMonthly, select, yes {{price} setiap trak sebulan, ditambah {pct} untuk pesanan dalam talian.} other {Tanpa yuran bulanan — {pct} untuk pesanan dalam talian sahaja.}}",
     "summaryNoFee": "{price} setiap trak sebulan, dengan pesanan dalam talian tanpa had dan tiada yuran HatchGrab."
   },
   "orders": {
@@ -28,7 +28,7 @@
     "insideAllowance": "Dalam had pesanan dalam talian bernilai {allowance} yang termasuk — tiada caj tambahan selain pelan.",
     "acrossFleet": "Bagi {fleet, plural, other {# trak}}: <b>{amount}</b> sebulan.",
     "titleNo": "Berapa banyak agaknya jualan dalam talian anda sebulan, bagi setiap trak?",
-    "feeOnly": "{pct} untuk setiap pesanan kad dalam talian — <b>{over}</b> sebulan bagi setiap trak.",
+    "feeOnly": "{pct} untuk setiap pesanan dalam talian — <b>{over}</b> sebulan bagi setiap trak.",
     "noFee": "Pesanan dalam talian tanpa had termasuk — tiada caj tambahan selain pelan."
   },
   "fee": {

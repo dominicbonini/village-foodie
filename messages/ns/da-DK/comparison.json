@@ -38,7 +38,7 @@
   "costs": {
     "title": "Hvad koster et bestillingssystem til foodtrucks?",
     "ourPlan": "{plan}: {price} om måneden, {fee}",
-    "feeOnly": "{fee} pr. onlinebestilling betalt med kort",
+    "feeOnly": "{fee} pr. onlinebestilling",
     "feeIncluded": "onlinebestillinger op til {included} om måneden er inkluderet, derefter {fee}",
     "feeNone": "intet HatchGrab-gebyr på onlinebestillinger",
     "rivalPlan": "{plan}: {price}",

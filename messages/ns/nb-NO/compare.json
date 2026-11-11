@@ -15,7 +15,7 @@
     "weSuggest": "Vi foreslår",
     "summary": "{price} per matbil per måned, med nettbestillinger for {allowance} inkludert{fleet, plural, one {} other { for hver}}.",
     "switchTo": "Velg {plan} i stedet",
-    "summaryFeeOnly": "{hasMonthly, select, yes {{price} per matbil per måned, pluss {pct} på nettbestillinger betalt med kort.} other {Ingen månedsavgift – bare {pct} på nettbestillinger betalt med kort.}}",
+    "summaryFeeOnly": "{hasMonthly, select, yes {{price} per matbil per måned, pluss {pct} på nettbestillinger.} other {Ingen månedsavgift – bare {pct} på nettbestillinger.}}",
     "summaryNoFee": "{price} per matbil per måned, med ubegrenset nettbestilling og uten gebyr til HatchGrab."
   },
   "orders": {
@@ -28,7 +28,7 @@
     "insideAllowance": "Innenfor de inkluderte nettbestillingene for {allowance} – ingenting i tillegg til abonnementet.",
     "acrossFleet": "For {fleet, plural, one {# matbil} other {# matbiler}}: <b>{amount}</b> i måneden.",
     "titleNo": "Hvor mye tror du at du ville tatt inn på nett, per måned, per matbil?",
-    "feeOnly": "{pct} på hver nettbestilling betalt med kort – <b>{over}</b> i måneden per matbil.",
+    "feeOnly": "{pct} på hver nettbestilling – <b>{over}</b> i måneden per matbil.",
     "noFee": "Ubegrenset nettbestilling inkludert – ingenting i tillegg til abonnementet."
   },
   "fee": {

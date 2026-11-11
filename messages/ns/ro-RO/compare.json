@@ -15,7 +15,7 @@
     "weSuggest": "Vă recomandăm",
     "summary": "{price} pe food truck pe lună, cu comenzi online în valoare de {allowance} incluse{fleet, plural, one {} few { pentru fiecare} other { pentru fiecare}}.",
     "switchTo": "Treceți la planul {plan}",
-    "summaryFeeOnly": "{hasMonthly, select, yes {{price} pe food truck pe lună, plus {pct} la comenzile online plătite cu cardul.} other {Fără abonament lunar — doar {pct} la comenzile online plătite cu cardul.}}",
+    "summaryFeeOnly": "{hasMonthly, select, yes {{price} pe food truck pe lună, plus {pct} la comenzile online.} other {Fără abonament lunar — doar {pct} la comenzile online.}}",
     "summaryNoFee": "{price} pe food truck pe lună, cu comenzi online nelimitate și fără comision HatchGrab."
   },
   "orders": {
@@ -28,7 +28,7 @@
     "insideAllowance": "În limita comenzilor online de {allowance} incluse — nimic în plus față de plan.",
     "acrossFleet": "Pentru {fleet, plural, one {# food truck} few {# food truck-uri} other {# de food truck-uri}}: <b>{amount}</b> pe lună.",
     "titleNo": "Cât credeți că ați încasa online, pe lună, per food truck?",
-    "feeOnly": "{pct} la fiecare comandă online plătită cu cardul — <b>{over}</b> pe lună per food truck.",
+    "feeOnly": "{pct} la fiecare comandă online — <b>{over}</b> pe lună per food truck.",
     "noFee": "Comenzi online nelimitate incluse — nimic în plus față de plan."
   },
   "fee": {

@@ -6120,8 +6120,8 @@
   "pricing": {
     "banner": {
       "title": "{months, plural, other {# bulan pertama anda percuma sepenuhnya — semua ciri dibuka.}}",
-      "body": "Dengan {brand}, pelanggan memesan awal dan membayar semasa ambil, jadi anda boleh menerima pesanan dalam talian tanpa menyambungkan pemproses kad langsung. Lebih suka terima bayaran di awal? Tambah pembayaran kad dalam talian bila-bila masa. Apabila percubaan anda tamat, anda beralih ke <plan>{fallback}</plan>{fallbackFree, select, yes { — tanpa yuran bulanan —} other {}} melainkan anda memilih pelan. Tiada kad untuk bermula, tiada kontrak, batal bila-bila masa.",
-      "bodyOnly": "Dengan {brand}, pelanggan memesan awal dan membayar semasa ambil, jadi anda boleh menerima pesanan dalam talian tanpa menyambungkan pemproses kad langsung. Lebih suka terima bayaran di awal? Tambah pembayaran kad dalam talian bila-bila masa. Apabila percubaan anda tamat, harga pelan <plan>{fallback}</plan> ialah {price} sebulan. Kami akan menghubungi anda sebelum itu untuk menguruskan pembayaran. Tiada kad untuk bermula, tiada kontrak, batal bila-bila masa."
+      "body": "Dengan {brand}, pelanggan memesan awal dan membayar semasa ambil, jadi anda boleh menerima pesanan dalam talian tanpa menyambungkan pemproses kad langsung. Apabila percubaan anda tamat, anda beralih ke <plan>{fallback}</plan>{fallbackFree, select, yes { — tanpa yuran bulanan —} other {}} melainkan anda memilih pelan. Tiada kad untuk bermula, tiada kontrak, batal bila-bila masa.",
+      "bodyOnly": "Dengan {brand}, pelanggan memesan awal dan membayar semasa ambil, jadi anda boleh menerima pesanan dalam talian tanpa menyambungkan pemproses kad langsung. Apabila percubaan anda tamat, harga pelan <plan>{fallback}</plan> ialah {price} sebulan. Kami akan menghubungi anda sebelum itu untuk menguruskan pembayaran. Tiada kad untuk bermula, tiada kontrak, batal bila-bila masa."
     },
     "card": {
       "perTruckMonth": "setiap trak / bulan",
@@ -6132,7 +6132,7 @@
       "everythingIn": "Semua dalam {plan}, serta"
     },
     "fee": {
-      "feeOnly": "<b>{fee}*</b> untuk pesanan kad dalam talian sahaja. Pesanan walk-in sentiasa percuma.",
+      "feeOnly": "<b>{fee}</b> untuk pesanan dalam talian sahaja. Pesanan walk-in sentiasa percuma.",
       "included": "<b>{included}</b> pertama pesanan dalam talian termasuk setiap bulan, kemudian <b>{fee}*</b>. Pesanan walk-in sentiasa percuma.",
       "noFee": "<b>Tiada yuran HatchGrab</b> untuk pesanan dalam talian, walau sesibuk mana pun anda. Satu kos bulanan yang boleh dijangka."
     },
@@ -6259,7 +6259,7 @@
       "weSuggest": "Cadangan kami",
       "summary": "{price} setiap trak sebulan, termasuk pesanan dalam talian bernilai {allowance}{fleet, plural, other { bagi setiap trak}}.",
       "switchTo": "Guna {plan} sebaliknya",
-      "summaryFeeOnly": "{hasMonthly, select, yes {{price} setiap trak sebulan, ditambah {pct} untuk pesanan kad dalam talian.} other {Tanpa yuran bulanan — {pct} untuk pesanan kad dalam talian sahaja.}}",
+      "summaryFeeOnly": "{hasMonthly, select, yes {{price} setiap trak sebulan, ditambah {pct} untuk pesanan dalam talian.} other {Tanpa yuran bulanan — {pct} untuk pesanan dalam talian sahaja.}}",
       "summaryNoFee": "{price} setiap trak sebulan, dengan pesanan dalam talian tanpa had dan tiada yuran HatchGrab."
     },
     "orders": {
@@ -6272,7 +6272,7 @@
       "insideAllowance": "Dalam had pesanan dalam talian bernilai {allowance} yang termasuk — tiada caj tambahan selain pelan.",
       "acrossFleet": "Bagi {fleet, plural, other {# trak}}: <b>{amount}</b> sebulan.",
       "titleNo": "Berapa banyak agaknya jualan dalam talian anda sebulan, bagi setiap trak?",
-      "feeOnly": "{pct} untuk setiap pesanan kad dalam talian — <b>{over}</b> sebulan bagi setiap trak.",
+      "feeOnly": "{pct} untuk setiap pesanan dalam talian — <b>{over}</b> sebulan bagi setiap trak.",
       "noFee": "Pesanan dalam talian tanpa had termasuk — tiada caj tambahan selain pelan."
     },
     "fee": {
@@ -6409,7 +6409,7 @@
     "costs": {
       "title": "Berapakah kos sistem pesanan food truck?",
       "ourPlan": "{plan}: {price} sebulan, {fee}",
-      "feeOnly": "{fee} setiap pesanan kad dalam talian",
+      "feeOnly": "{fee} setiap pesanan dalam talian",
       "feeIncluded": "pesanan dalam talian sehingga {included} sebulan termasuk, kemudian {fee}",
       "feeNone": "tiada yuran HatchGrab untuk pesanan dalam talian",
       "rivalPlan": "{plan}: {price}",

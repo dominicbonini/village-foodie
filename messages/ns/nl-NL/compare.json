@@ -15,7 +15,7 @@
     "weSuggest": "Ons advies",
     "summary": "{price} per foodtruck per maand, met {allowance} aan online bestellingen inbegrepen{fleet, plural, one {} other { voor elke foodtruck}}.",
     "switchTo": "Kies liever {plan}",
-    "summaryFeeOnly": "{hasMonthly, select, yes {{price} per foodtruck per maand, plus {pct} op online kaartbestellingen.} other {Geen maandkosten — alleen {pct} op online kaartbestellingen.}}",
+    "summaryFeeOnly": "{hasMonthly, select, yes {{price} per foodtruck per maand, plus {pct} op online bestellingen.} other {Geen maandkosten — alleen {pct} op online bestellingen.}}",
     "summaryNoFee": "{price} per foodtruck per maand, met onbeperkt online bestellingen en geen kosten van HatchGrab."
   },
   "orders": {
@@ -28,7 +28,7 @@
     "insideAllowance": "Binnen de inbegrepen {allowance} aan online bestellingen — niets bovenop het abonnement.",
     "acrossFleet": "Voor {fleet, plural, one {# foodtruck} other {# foodtrucks}}: <b>{amount}</b> per maand.",
     "titleNo": "Hoeveel denk je online te verkopen, per maand, per foodtruck?",
-    "feeOnly": "{pct} op elke online kaartbestelling — <b>{over}</b> per maand per foodtruck.",
+    "feeOnly": "{pct} op elke online bestelling — <b>{over}</b> per maand per foodtruck.",
     "noFee": "Onbeperkt online bestellingen inbegrepen — niets bovenop het abonnement."
   },
   "fee": {

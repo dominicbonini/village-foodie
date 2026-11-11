@@ -38,7 +38,7 @@
   "costs": {
     "title": "キッチンカー向け注文システムの費用は？",
     "ourPlan": "{plan}：月額{price}、{fee}",
-    "feeOnly": "オンラインのカード注文ごとに{fee}",
+    "feeOnly": "オンライン注文ごとに{fee}",
     "feeIncluded": "月{included}までのオンライン注文は料金に含まれ、それ以降は{fee}",
     "feeNone": "オンライン注文にHatchGrabの手数料はかかりません",
     "rivalPlan": "{plan}：{price}",

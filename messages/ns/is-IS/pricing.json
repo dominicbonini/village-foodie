@@ -1,8 +1,8 @@
 {
   "banner": {
     "title": "{months, plural, one {Fyrsti mánuðurinn er alveg ókeypis — allir eiginleikar opnir.} other {Fyrstu # mánuðirnir eru alveg ókeypis — allir eiginleikar opnir.}}",
-    "body": "Með {brand} panta viðskiptavinir fyrir fram og greiða þegar þeir sækja, svo þú getur tekið við netpöntunum án þess að tengja neina kortagreiðsluþjónustu. Viltu frekar fá greitt fyrir fram? Bættu við netgreiðslum með korti hvenær sem er. Þegar prufutímanum lýkur færist þú yfir á áskriftarleiðina <plan>{fallback}</plan>{fallbackFree, select, yes { — ekkert mánaðargjald —} other {}} nema þú veljir aðra leið. Ekkert kort til að byrja, enginn binditími, segðu upp hvenær sem er.",
-    "bodyOnly": "Með {brand} panta viðskiptavinir fyrir fram og greiða þegar þeir sækja, svo þú getur tekið við netpöntunum án þess að tengja neina kortagreiðsluþjónustu. Viltu frekar fá greitt fyrir fram? Bættu við netgreiðslum með korti hvenær sem er. Þegar prufutímanum lýkur kostar áskriftarleiðin <plan>{fallback}</plan> {price} á mánuði. Við höfum samband fyrir þann tíma til að ganga frá greiðslu. Ekkert kort til að byrja, enginn binditími, segðu upp hvenær sem er."
+    "body": "Með {brand} panta viðskiptavinir fyrir fram og greiða þegar þeir sækja, svo þú getur tekið við netpöntunum án þess að tengja neina kortagreiðsluþjónustu. Þegar prufutímanum lýkur færist þú yfir á áskriftarleiðina <plan>{fallback}</plan>{fallbackFree, select, yes { — ekkert mánaðargjald —} other {}} nema þú veljir aðra leið. Ekkert kort til að byrja, enginn binditími, segðu upp hvenær sem er.",
+    "bodyOnly": "Með {brand} panta viðskiptavinir fyrir fram og greiða þegar þeir sækja, svo þú getur tekið við netpöntunum án þess að tengja neina kortagreiðsluþjónustu. Þegar prufutímanum lýkur kostar áskriftarleiðin <plan>{fallback}</plan> {price} á mánuði. Við höfum samband fyrir þann tíma til að ganga frá greiðslu. Ekkert kort til að byrja, enginn binditími, segðu upp hvenær sem er."
   },
   "card": {
     "perTruckMonth": "á vagn / mánuð",
@@ -13,7 +13,7 @@
     "everythingIn": "Allt úr áskriftarleiðinni {plan}, auk"
   },
   "fee": {
-    "feeOnly": "<b>{fee}*</b> eingöngu af netpöntunum greiddum með korti. Pantanir á staðnum eru alltaf ókeypis.",
+    "feeOnly": "<b>{fee}</b> eingöngu af netpöntunum. Pantanir á staðnum eru alltaf ókeypis.",
     "included": "Netpantanir upp að <b>{included}</b> innifaldar á mánuði, síðan <b>{fee}*</b>. Pantanir á staðnum eru alltaf ókeypis.",
     "noFee": "<b>Engin HatchGrab-gjöld</b> af netpöntunum, sama hve mikið er að gera. Einn fyrirsjáanlegur mánaðarkostnaður."
   },

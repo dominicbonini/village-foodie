@@ -38,7 +38,7 @@
   "costs": {
     "title": "Berapakah kos sistem pesanan food truck?",
     "ourPlan": "{plan}: {price} sebulan, {fee}",
-    "feeOnly": "{fee} setiap pesanan kad dalam talian",
+    "feeOnly": "{fee} setiap pesanan dalam talian",
     "feeIncluded": "pesanan dalam talian sehingga {included} sebulan termasuk, kemudian {fee}",
     "feeNone": "tiada yuran HatchGrab untuk pesanan dalam talian",
     "rivalPlan": "{plan}: {price}",

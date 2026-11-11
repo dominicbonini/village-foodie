@@ -15,7 +15,7 @@
     "weSuggest": "Đề xuất",
     "summary": "{price} mỗi xe mỗi tháng, đã gồm {allowance} đơn online{fleet, plural, one {} other { cho mỗi xe}}.",
     "switchTo": "Dùng {plan}",
-    "summaryFeeOnly": "{hasMonthly, select, yes {{price} mỗi xe mỗi tháng, cộng {pct} trên đơn online thanh toán bằng thẻ.} other {Không phí hằng tháng — chỉ {pct} trên đơn online thanh toán bằng thẻ.}}",
+    "summaryFeeOnly": "{hasMonthly, select, yes {{price} mỗi xe mỗi tháng, cộng {pct} trên đơn online.} other {Không phí hằng tháng — chỉ {pct} trên đơn online.}}",
     "summaryNoFee": "{price} mỗi xe mỗi tháng, không giới hạn đơn online và không mất phí HatchGrab."
   },
   "orders": {
@@ -28,7 +28,7 @@
     "insideAllowance": "Nằm trong mức {allowance} đơn online đã gồm — không phải trả thêm ngoài gói.",
     "acrossFleet": "Cho {fleet, plural, one {# xe} other {# xe}}: <b>{amount}</b> mỗi tháng.",
     "titleNo": "Bạn nghĩ mỗi xe sẽ bán online được bao nhiêu mỗi tháng?",
-    "feeOnly": "{pct} trên mỗi đơn online thanh toán bằng thẻ — <b>{over}</b> mỗi tháng cho mỗi xe.",
+    "feeOnly": "{pct} trên mỗi đơn online — <b>{over}</b> mỗi tháng cho mỗi xe.",
     "noFee": "Không giới hạn đơn online — không phải trả thêm ngoài gói."
   },
   "fee": {

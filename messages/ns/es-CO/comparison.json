@@ -7,7 +7,7 @@
     "caption": "Funciones y costos de los sistemas de pedidos en línea para food trucks en {country}, al {date}"
   },
   "costs": {
-    "feeOnly": "{fee} por pedido en línea pagado con tarjeta",
+    "feeOnly": "{fee} por pedido en línea",
     "feeIncluded": "pedidos en línea incluidos hasta {included} al mes; después, {fee}",
     "feeNone": "sin comisión de HatchGrab en los pedidos en línea",
     "cardFee": "Con HatchGrab, los pagos en línea con tarjeta también llevan las comisiones de Stripe: {cardFee} por pago con tarjeta en {country}.",

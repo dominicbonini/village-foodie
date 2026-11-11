@@ -15,7 +15,7 @@
     "weSuggest": "Saran kami",
     "summary": "{price} per truk per bulan, sudah termasuk pesanan online senilai {allowance}{fleet, plural, one {} other { untuk masing-masing truk}}.",
     "switchTo": "Pakai paket {plan} saja",
-    "summaryFeeOnly": "{hasMonthly, select, yes {{price} per truk per bulan, ditambah {pct} untuk pesanan online dengan kartu.} other {Tanpa biaya bulanan — hanya {pct} untuk pesanan online dengan kartu.}}",
+    "summaryFeeOnly": "{hasMonthly, select, yes {{price} per truk per bulan, ditambah {pct} untuk pesanan online.} other {Tanpa biaya bulanan — hanya {pct} untuk pesanan online.}}",
     "summaryNoFee": "{price} per truk per bulan, pesanan online tanpa batas dan tanpa biaya HatchGrab."
   },
   "orders": {
@@ -28,7 +28,7 @@
     "insideAllowance": "Masih dalam batas pesanan online senilai {allowance} yang sudah termasuk — tanpa biaya tambahan di luar paket.",
     "acrossFleet": "Untuk {fleet, plural, one {# truk} other {# truk}}: <b>{amount}</b> per bulan.",
     "titleNo": "Kira-kira berapa penjualan online Anda per bulan, per truk?",
-    "feeOnly": "{pct} untuk setiap pesanan online dengan kartu — <b>{over}</b> per bulan per truk.",
+    "feeOnly": "{pct} untuk setiap pesanan online — <b>{over}</b> per bulan per truk.",
     "noFee": "Pesanan online tanpa batas sudah termasuk — tanpa biaya tambahan di luar paket."
   },
   "fee": {

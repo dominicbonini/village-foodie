@@ -38,7 +38,7 @@
   "costs": {
     "title": "Combien coûte un logiciel de commande pour food truck ?",
     "ourPlan": "{plan} : {price} par mois, {fee}",
-    "feeOnly": "{fee} par commande en ligne payée par carte",
+    "feeOnly": "{fee} par commande en ligne",
     "feeIncluded": "commandes en ligne incluses jusqu’à {included} par mois, puis {fee}",
     "feeNone": "pas de frais HatchGrab sur les commandes en ligne",
     "rivalPlan": "{plan} : {price}",

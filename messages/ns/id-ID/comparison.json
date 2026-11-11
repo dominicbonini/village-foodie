@@ -38,7 +38,7 @@
   "costs": {
     "title": "Berapa biaya aplikasi pemesanan food truck?",
     "ourPlan": "{plan}: {price} per bulan, {fee}",
-    "feeOnly": "{fee} per pesanan online dengan kartu",
+    "feeOnly": "{fee} per pesanan online",
     "feeIncluded": "pesanan online hingga {included} per bulan sudah termasuk, selebihnya {fee}",
     "feeNone": "tanpa biaya HatchGrab untuk pesanan online",
     "rivalPlan": "{plan}: {price}",

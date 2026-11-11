@@ -15,7 +15,7 @@
     "weSuggest": "Við mælum með",
     "summary": "{price} á vagn á mánuði og netpantanir fyrir allt að {allowance} innifaldar{fleet, plural, one {} other { á hvern vagn}}.",
     "switchTo": "Nota {plan} í staðinn",
-    "summaryFeeOnly": "{hasMonthly, select, yes {{price} á vagn á mánuði, auk {pct} af netpöntunum greiddum með korti.} other {Ekkert mánaðargjald — aðeins {pct} af netpöntunum greiddum með korti.}}",
+    "summaryFeeOnly": "{hasMonthly, select, yes {{price} á vagn á mánuði, auk {pct} af netpöntunum.} other {Ekkert mánaðargjald — aðeins {pct} af netpöntunum.}}",
     "summaryNoFee": "{price} á vagn á mánuði, ótakmarkaðar netpantanir og ekkert gjald til HatchGrab."
   },
   "orders": {
@@ -28,7 +28,7 @@
     "insideAllowance": "Innan innifalinna netpantana ({allowance}) — ekkert bætist ofan á áskriftarleiðina.",
     "acrossFleet": "Fyrir {fleet, plural, one {# vagn} other {# vagna}}: <b>{amount}</b> á mánuði.",
     "titleNo": "Hvað heldurðu að þú myndir selja mikið á netinu á mánuði, á hvern vagn?",
-    "feeOnly": "{pct} af hverri netpöntun greiddri með korti — <b>{over}</b> á mánuði á hvern vagn.",
+    "feeOnly": "{pct} af hverri netpöntun — <b>{over}</b> á mánuði á hvern vagn.",
     "noFee": "Ótakmarkaðar netpantanir innifaldar — ekkert bætist ofan á áskriftarleiðina."
   },
   "fee": {

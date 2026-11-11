@@ -38,7 +38,7 @@
   "costs": {
     "title": "Quanto custa um sistema de encomendas para food trucks?",
     "ourPlan": "{plan}: {price} por mês, {fee}",
-    "feeOnly": "{fee} por encomenda online paga com cartão",
+    "feeOnly": "{fee} por encomenda online",
     "feeIncluded": "encomendas online até {included} por mês incluídas, depois {fee}",
     "feeNone": "sem taxa da HatchGrab nas encomendas online",
     "rivalPlan": "{plan}: {price}",

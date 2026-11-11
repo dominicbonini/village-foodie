@@ -38,7 +38,7 @@
   "costs": {
     "title": "Was kostet ein Bestellsystem für Foodtrucks?",
     "ourPlan": "{plan}: {price} pro Monat, {fee}",
-    "feeOnly": "{fee} pro Online-Kartenbestellung",
+    "feeOnly": "{fee} pro Online-Bestellung",
     "feeIncluded": "Online-Bestellungen bis {included} pro Monat inklusive, danach {fee}",
     "feeNone": "keine HatchGrab-Gebühr auf Online-Bestellungen",
     "rivalPlan": "{plan}: {price}",

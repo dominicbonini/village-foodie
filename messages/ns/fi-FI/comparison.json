@@ -38,7 +38,7 @@
   "costs": {
     "title": "Mitä ruokarekan tilausjärjestelmä maksaa?",
     "ourPlan": "{plan}: {price} kuukaudessa, {fee}",
-    "feeOnly": "{fee} jokaisesta kortilla maksetusta verkkotilauksesta",
+    "feeOnly": "{fee} jokaisesta verkkotilauksesta",
     "feeIncluded": "verkkotilaukset {included} asti kuukaudessa sisältyvät, sen jälkeen {fee}",
     "feeNone": "HatchGrab ei veloita maksua verkkotilauksista",
     "rivalPlan": "{plan}: {price}",

@@ -1,8 +1,8 @@
 {
   "banner": {
     "title": "{months, plural, one {Den første måneden er helt gratis — alle funksjoner er låst opp.} other {De første # månedene er helt gratis — alle funksjoner er låst opp.}}",
-    "body": "Med {brand} forhåndsbestiller kundene og betaler når de henter, så du kan ta imot nettbestillinger uten å koble til noen kortinnløser i det hele tatt. Vil du heller ta betalt på forhånd? Legg til kortbetaling på nett når som helst. Når prøveperioden er over, går du over til <plan>{fallback}</plan>{fallbackFree, select, yes { (ingen fast månedskostnad)} other {}}, med mindre du velger et abonnement. Ikke noe kort for å starte, ingen bindingstid, si opp når som helst.",
-    "bodyOnly": "Med {brand} forhåndsbestiller kundene og betaler når de henter, så du kan ta imot nettbestillinger uten å koble til noen kortinnløser i det hele tatt. Vil du heller ta betalt på forhånd? Legg til kortbetaling på nett når som helst. Når prøveperioden er over, koster abonnementet <plan>{fallback}</plan> {price} i måneden. Vi tar kontakt med deg før den tid for å ordne betalingen. Ikke noe kort for å starte, ingen bindingstid, si opp når som helst."
+    "body": "Med {brand} forhåndsbestiller kundene og betaler når de henter, så du kan ta imot nettbestillinger uten å koble til noen kortinnløser i det hele tatt. Når prøveperioden er over, går du over til <plan>{fallback}</plan>{fallbackFree, select, yes { (ingen fast månedskostnad)} other {}}, med mindre du velger et abonnement. Ikke noe kort for å starte, ingen bindingstid, si opp når som helst.",
+    "bodyOnly": "Med {brand} forhåndsbestiller kundene og betaler når de henter, så du kan ta imot nettbestillinger uten å koble til noen kortinnløser i det hele tatt. Når prøveperioden er over, koster abonnementet <plan>{fallback}</plan> {price} i måneden. Vi tar kontakt med deg før den tid for å ordne betalingen. Ikke noe kort for å starte, ingen bindingstid, si opp når som helst."
   },
   "card": {
     "perTruckMonth": "per matbil / måned",
@@ -13,7 +13,7 @@
     "everythingIn": "Alt i {plan}, pluss"
   },
   "fee": {
-    "feeOnly": "<b>{fee}*</b> bare på nettbestillinger betalt med kort. Bestillinger ved bilen er alltid gratis.",
+    "feeOnly": "<b>{fee}</b> bare på nettbestillinger. Bestillinger ved bilen er alltid gratis.",
     "included": "Nettbestillinger for de første <b>{included}</b> er inkludert hver måned, deretter <b>{fee}*</b>. Bestillinger ved bilen er alltid gratis.",
     "noFee": "<b>Ingen HatchGrab-gebyrer</b> på nettbestillinger, uansett hvor travelt du har det. Én forutsigbar månedskostnad."
   },

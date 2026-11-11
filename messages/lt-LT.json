@@ -6148,8 +6148,8 @@
   "pricing": {
     "banner": {
       "title": "{months, plural, one {# mėnesį naudojatės visiškai nemokamai – visos funkcijos atrakintos.} few {# mėnesius naudojatės visiškai nemokamai – visos funkcijos atrakintos.} many {# mėnesio naudojatės visiškai nemokamai – visos funkcijos atrakintos.} other {# mėnesių naudojatės visiškai nemokamai – visos funkcijos atrakintos.}}",
-      "body": "Su {brand} klientai užsisako iš anksto ir sumoka atsiimdami, todėl užsakymus internetu galite priimti visai nejungdami kortelių mokėjimų tiekėjo. Norite, kad būtų sumokama iš anksto? Bet kada pridėkite mokėjimus kortele internetu. Pasibaigus bandomajam laikotarpiui, pereisite prie plano <plan>{fallback}</plan>{fallbackFree, select, yes { (mėnesinis mokestis netaikomas)} other {}}, nebent pasirinksite kitą planą. Pradedant kortelės nereikia, jokios sutarties, atsisakyti galite bet kada.",
-      "bodyOnly": "Su {brand} klientai užsisako iš anksto ir sumoka atsiimdami, todėl užsakymus internetu galite priimti visai nejungdami kortelių mokėjimų tiekėjo. Norite, kad būtų sumokama iš anksto? Bet kada pridėkite mokėjimus kortele internetu. Pasibaigus bandomajam laikotarpiui, planas <plan>{fallback}</plan> kainuos {price} per mėnesį. Dar prieš tai susisieksime su jumis, kad sutvarkytume mokėjimą. Pradedant kortelės nereikia, jokios sutarties, atsisakyti galite bet kada."
+      "body": "Su {brand} klientai užsisako iš anksto ir sumoka atsiimdami, todėl užsakymus internetu galite priimti visai nejungdami kortelių mokėjimų tiekėjo. Pasibaigus bandomajam laikotarpiui, pereisite prie plano <plan>{fallback}</plan>{fallbackFree, select, yes { (mėnesinis mokestis netaikomas)} other {}}, nebent pasirinksite kitą planą. Pradedant kortelės nereikia, jokios sutarties, atsisakyti galite bet kada.",
+      "bodyOnly": "Su {brand} klientai užsisako iš anksto ir sumoka atsiimdami, todėl užsakymus internetu galite priimti visai nejungdami kortelių mokėjimų tiekėjo. Pasibaigus bandomajam laikotarpiui, planas <plan>{fallback}</plan> kainuos {price} per mėnesį. Dar prieš tai susisieksime su jumis, kad sutvarkytume mokėjimą. Pradedant kortelės nereikia, jokios sutarties, atsisakyti galite bet kada."
     },
     "card": {
       "perTruckMonth": "už furgoną / mėn.",
@@ -6160,7 +6160,7 @@
       "everythingIn": "Viskas, kas yra plane {plan}, ir dar:"
     },
     "fee": {
-      "feeOnly": "<b>{fee}*</b> tik už užsakymus internetu, apmokėtus kortele. Užsakymai vietoje visada nemokami.",
+      "feeOnly": "<b>{fee}</b> tik už užsakymus internetu. Užsakymai vietoje visada nemokami.",
       "included": "Užsakymams internetu iki <b>{included}</b> per mėnesį komisiniai netaikomi, viršijus – <b>{fee}*</b>. Užsakymai vietoje visada nemokami.",
       "noFee": "<b>Jokių HatchGrab komisinių</b> už užsakymus internetu, kad ir kiek jų būtų. Viena nuspėjama mėnesio kaina."
     },
@@ -6287,7 +6287,7 @@
       "weSuggest": "Siūlome",
       "summary": "{price} už furgoną per mėnesį, įskaičiuota internetinių užsakymų už {allowance}{fleet, plural, one {} few { kiekvienam furgonui} many { kiekvienam furgonui} other { kiekvienam furgonui}}.",
       "switchTo": "Rinktis planą {plan}",
-      "summaryFeeOnly": "{hasMonthly, select, yes {{price} už furgoną per mėnesį ir {pct} nuo internetinių užsakymų, apmokėtų kortele.} other {Jokio mėnesinio mokesčio — tik {pct} nuo internetinių užsakymų, apmokėtų kortele.}}",
+      "summaryFeeOnly": "{hasMonthly, select, yes {{price} už furgoną per mėnesį ir {pct} nuo internetinių užsakymų.} other {Jokio mėnesinio mokesčio — tik {pct} nuo internetinių užsakymų.}}",
       "summaryNoFee": "{price} už furgoną per mėnesį: neriboti internetiniai užsakymai ir jokių HatchGrab komisinių."
     },
     "orders": {
@@ -6300,7 +6300,7 @@
       "insideAllowance": "Neviršijate įskaičiuotos internetinių užsakymų sumos ({allowance}) — nieko papildomai prie plano kainos.",
       "acrossFleet": "Iš viso ({fleet, plural, one {# furgonas} few {# furgonai} many {# furgonų} other {# furgonų}}): <b>{amount}</b> per mėnesį.",
       "titleNo": "Kokią sumą, jūsų manymu, gautumėte iš užsakymų internetu per mėnesį vienam furgonui?",
-      "feeOnly": "{pct} nuo kiekvieno internetinio užsakymo, apmokėto kortele — <b>{over}</b> per mėnesį vienam furgonui.",
+      "feeOnly": "{pct} nuo kiekvieno internetinio užsakymo — <b>{over}</b> per mėnesį vienam furgonui.",
       "noFee": "Neriboti internetiniai užsakymai įskaičiuoti — nieko papildomai prie plano kainos."
     },
     "fee": {
@@ -6437,7 +6437,7 @@
     "costs": {
       "title": "Kiek kainuoja food truck užsakymų sistema?",
       "ourPlan": "{plan}: {price} per mėnesį, {fee}",
-      "feeOnly": "{fee} už kiekvieną internetu kortele apmokėtą užsakymą",
+      "feeOnly": "{fee} už kiekvieną internetinį užsakymą",
       "feeIncluded": "užsakymai internetu iki {included} per mėnesį įskaičiuoti, vėliau {fee}",
       "feeNone": "HatchGrab neima mokesčio už užsakymus internetu",
       "rivalPlan": "{plan}: {price}",

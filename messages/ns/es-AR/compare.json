@@ -8,7 +8,7 @@
     "title": "¿Cuántos food trucks tenés?"
   },
   "plan": {
-    "summaryFeeOnly": "{hasMonthly, select, yes {{price} por food truck al mes, más {pct} en los pedidos online pagados con tarjeta.} other {Sin abono mensual: solo {pct} en los pedidos online pagados con tarjeta.}}"
+    "summaryFeeOnly": "{hasMonthly, select, yes {{price} por food truck al mes, más {pct} en los pedidos online.} other {Sin abono mensual: solo {pct} en los pedidos online.}}"
   },
   "orders": {
     "titleNo": "¿Cuánto creés que venderías online al mes, por food truck?"

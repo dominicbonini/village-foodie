@@ -38,7 +38,7 @@
   "costs": {
     "title": "Cât costă un sistem de comenzi pentru food truck?",
     "ourPlan": "{plan}: {price} pe lună, {fee}",
-    "feeOnly": "{fee} per comandă online plătită cu cardul",
+    "feeOnly": "{fee} per comandă online",
     "feeIncluded": "comenzi online de până la {included} pe lună incluse, apoi {fee}",
     "feeNone": "fără comision HatchGrab la comenzile online",
     "rivalPlan": "{plan}: {price}",

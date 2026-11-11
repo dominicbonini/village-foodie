@@ -38,7 +38,7 @@
   "costs": {
     "title": "Wat kost een bestelsysteem voor je foodtruck?",
     "ourPlan": "{plan}: {price} per maand, {fee}",
-    "feeOnly": "{fee} per online kaartbestelling",
+    "feeOnly": "{fee} per online bestelling",
     "feeIncluded": "online bestellingen tot {included} per maand inbegrepen, daarna {fee}",
     "feeNone": "geen HatchGrab-kosten op online bestellingen",
     "rivalPlan": "{plan}: {price}",

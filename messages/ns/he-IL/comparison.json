@@ -38,7 +38,7 @@
   "costs": {
     "title": "כמה עולה מערכת הזמנות לפודטראק?",
     "ourPlan": "{plan}: {price} לחודש, {fee}",
-    "feeOnly": "{fee} לכל הזמנת אונליין בכרטיס",
+    "feeOnly": "{fee} לכל הזמנת אונליין",
     "feeIncluded": "הזמנות אונליין עד {included} לחודש כלולות, ואחר כך {fee}",
     "feeNone": "ללא עמלה של HatchGrab על הזמנות אונליין",
     "rivalPlan": "{plan}: {price}",

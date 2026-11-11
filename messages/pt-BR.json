@@ -6120,8 +6120,8 @@
   "pricing": {
     "banner": {
       "title": "{months, plural, one {Seu primeiro mês é totalmente grátis — com todos os recursos liberados.} other {Seus primeiros # meses são totalmente grátis — com todos os recursos liberados.}}",
-      "body": "Com {brand}, os clientes pedem antes e pagam na retirada, então você recebe pedidos online sem precisar conectar nenhuma processadora de cartão. Prefere receber adiantado? Ative pagamentos online com cartão quando quiser. Quando o teste acabar, você passa para o plano <plan>{fallback}</plan>{fallbackFree, select, yes { — sem mensalidade —} other {}}, a menos que escolha outro plano. Sem cartão para começar, sem contrato, cancele quando quiser.",
-      "bodyOnly": "Com {brand}, os clientes pedem antes e pagam na retirada, então você recebe pedidos online sem precisar conectar nenhuma processadora de cartão. Prefere receber adiantado? Ative pagamentos online com cartão quando quiser. Quando o teste acabar, o plano <plan>{fallback}</plan> custa {price} por mês. Antes disso, vamos entrar em contato para configurar o pagamento. Sem cartão para começar, sem contrato, cancele quando quiser."
+      "body": "Com {brand}, os clientes pedem antes e pagam na retirada, então você recebe pedidos online sem precisar conectar nenhuma processadora de cartão. Quando o teste acabar, você passa para o plano <plan>{fallback}</plan>{fallbackFree, select, yes { — sem mensalidade —} other {}}, a menos que escolha outro plano. Sem cartão para começar, sem contrato, cancele quando quiser.",
+      "bodyOnly": "Com {brand}, os clientes pedem antes e pagam na retirada, então você recebe pedidos online sem precisar conectar nenhuma processadora de cartão. Quando o teste acabar, o plano <plan>{fallback}</plan> custa {price} por mês. Antes disso, vamos entrar em contato para configurar o pagamento. Sem cartão para começar, sem contrato, cancele quando quiser."
     },
     "card": {
       "perTruckMonth": "por food truck / mês",
@@ -6132,7 +6132,7 @@
       "everythingIn": "Tudo do plano {plan}, e mais:"
     },
     "fee": {
-      "feeOnly": "<b>{fee}*</b> só nos pedidos online pagos com cartão. Pedidos no balcão são sempre grátis.",
+      "feeOnly": "<b>{fee}</b> só nos pedidos online. Pedidos no balcão são sempre grátis.",
       "included": "Os primeiros <b>{included}</b> em pedidos online por mês estão incluídos; depois, <b>{fee}*</b>. Pedidos no balcão são sempre grátis.",
       "noFee": "<b>Sem taxas do HatchGrab</b> nos pedidos online, por mais movimentado que seja. Um custo mensal previsível."
     },
@@ -6259,7 +6259,7 @@
       "weSuggest": "Nossa sugestão",
       "summary": "{price} por food truck por mês, com {allowance} em pedidos online incluídos{fleet, plural, one {} other { em cada um}}.",
       "switchTo": "Usar o plano {plan}",
-      "summaryFeeOnly": "{hasMonthly, select, yes {{price} por food truck por mês, mais {pct} nos pedidos online com cartão.} other {Sem mensalidade — só {pct} nos pedidos online com cartão.}}",
+      "summaryFeeOnly": "{hasMonthly, select, yes {{price} por food truck por mês, mais {pct} nos pedidos online.} other {Sem mensalidade — só {pct} nos pedidos online.}}",
       "summaryNoFee": "{price} por food truck por mês, com pedidos online ilimitados e sem taxa do HatchGrab."
     },
     "orders": {
@@ -6272,7 +6272,7 @@
       "insideAllowance": "Dentro da franquia de {allowance} em pedidos online — nada além do plano.",
       "acrossFleet": "Em {fleet, plural, one {# food truck} other {# food trucks}}: <b>{amount}</b> por mês.",
       "titleNo": "Quanto você acha que venderia online, por mês, por food truck?",
-      "feeOnly": "{pct} em cada pedido online com cartão — <b>{over}</b> por mês por food truck.",
+      "feeOnly": "{pct} em cada pedido online — <b>{over}</b> por mês por food truck.",
       "noFee": "Pedidos online ilimitados incluídos — nada além do plano."
     },
     "fee": {
@@ -6409,7 +6409,7 @@
     "costs": {
       "title": "Quanto custa um sistema de pedidos para food truck?",
       "ourPlan": "{plan}: {price} por mês, {fee}",
-      "feeOnly": "{fee} por pedido online pago com cartão",
+      "feeOnly": "{fee} por pedido online",
       "feeIncluded": "pedidos online até {included} por mês inclusos, depois {fee}",
       "feeNone": "sem taxa do HatchGrab nos pedidos online",
       "rivalPlan": "{plan}: {price}",

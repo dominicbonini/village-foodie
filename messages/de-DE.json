@@ -6148,8 +6148,8 @@
   "pricing": {
     "banner": {
       "title": "{months, plural, one {Ihr erster Monat ist komplett kostenlos – alle Funktionen freigeschaltet.} other {Ihre ersten # Monate sind komplett kostenlos – alle Funktionen freigeschaltet.}}",
-      "body": "Mit {brand} bestellen Kunden vorab und bezahlen bei der Abholung – so nehmen Sie Online-Bestellungen an, ganz ohne Zahlungsanbieter für Kartenzahlungen. Lieber im Voraus kassieren? Fügen Sie jederzeit Online-Kartenzahlungen hinzu. Nach Ende der Testphase wechseln Sie in den Tarif <plan>{fallback}</plan>{fallbackFree, select, yes { – ohne Grundgebühr –} other {}}, sofern Sie keinen anderen Tarif wählen. Keine Kreditkarte zum Start, keine Vertragsbindung, jederzeit kündbar.",
-      "bodyOnly": "Mit {brand} bestellen Kunden vorab und bezahlen bei der Abholung – so nehmen Sie Online-Bestellungen an, ganz ohne Zahlungsanbieter für Kartenzahlungen. Lieber im Voraus kassieren? Fügen Sie jederzeit Online-Kartenzahlungen hinzu. Nach Ende der Testphase kostet der Tarif <plan>{fallback}</plan> im Monat {price}. Wir melden uns vorher bei Ihnen, um die Zahlung einzurichten. Keine Kreditkarte zum Start, keine Vertragsbindung, jederzeit kündbar."
+      "body": "Mit {brand} bestellen Kunden vorab und bezahlen bei der Abholung – so nehmen Sie Online-Bestellungen an, ganz ohne Zahlungsanbieter für Kartenzahlungen. Nach Ende der Testphase wechseln Sie in den Tarif <plan>{fallback}</plan>{fallbackFree, select, yes { – ohne Grundgebühr –} other {}}, sofern Sie keinen anderen Tarif wählen. Keine Kreditkarte zum Start, keine Vertragsbindung, jederzeit kündbar.",
+      "bodyOnly": "Mit {brand} bestellen Kunden vorab und bezahlen bei der Abholung – so nehmen Sie Online-Bestellungen an, ganz ohne Zahlungsanbieter für Kartenzahlungen. Nach Ende der Testphase kostet der Tarif <plan>{fallback}</plan> im Monat {price}. Wir melden uns vorher bei Ihnen, um die Zahlung einzurichten. Keine Kreditkarte zum Start, keine Vertragsbindung, jederzeit kündbar."
     },
     "card": {
       "perTruckMonth": "pro Foodtruck / Monat",
@@ -6160,7 +6160,7 @@
       "everythingIn": "Alles aus {plan}, dazu"
     },
     "fee": {
-      "feeOnly": "<b>{fee}*</b> nur auf Online-Bestellungen mit Kartenzahlung. Bestellungen vor Ort sind immer gebührenfrei.",
+      "feeOnly": "<b>{fee}</b> nur auf Online-Bestellungen. Bestellungen vor Ort sind immer gebührenfrei.",
       "included": "Online-Bestellungen im Wert von <b>{included}</b> pro Monat inklusive, danach <b>{fee}*</b>. Bestellungen vor Ort sind immer gebührenfrei.",
       "noFee": "<b>Keine HatchGrab-Gebühren</b> auf Online-Bestellungen, egal wie viel los ist. Feste, planbare Monatskosten."
     },
@@ -6287,7 +6287,7 @@
       "weSuggest": "Unsere Empfehlung",
       "summary": "{price} pro Foodtruck und Monat, inklusive Online-Bestellungen im Wert von {allowance}{fleet, plural, one {} other { – für jeden Foodtruck}}.",
       "switchTo": "Stattdessen Tarif {plan} wählen",
-      "summaryFeeOnly": "{hasMonthly, select, yes {{price} pro Foodtruck und Monat, zzgl. {pct} auf Online-Bestellungen mit Kartenzahlung.} other {Keine Monatsgebühr – nur {pct} auf Online-Bestellungen mit Kartenzahlung.}}",
+      "summaryFeeOnly": "{hasMonthly, select, yes {{price} pro Foodtruck und Monat, zzgl. {pct} auf Online-Bestellungen.} other {Keine Monatsgebühr – nur {pct} auf Online-Bestellungen.}}",
       "summaryNoFee": "{price} pro Foodtruck und Monat, mit unbegrenzten Online-Bestellungen und ohne HatchGrab-Gebühr."
     },
     "orders": {
@@ -6300,7 +6300,7 @@
       "insideAllowance": "Innerhalb der inklusiven {allowance} an Online-Bestellungen – keine Kosten zusätzlich zum Tarif.",
       "acrossFleet": "Bei {fleet, plural, one {# Foodtruck} other {# Foodtrucks}}: <b>{amount}</b> pro Monat.",
       "titleNo": "Wie viel würden Sie schätzungsweise online einnehmen – pro Monat und Foodtruck?",
-      "feeOnly": "{pct} auf jede Online-Bestellung mit Kartenzahlung – <b>{over}</b> pro Monat und Foodtruck.",
+      "feeOnly": "{pct} auf jede Online-Bestellung – <b>{over}</b> pro Monat und Foodtruck.",
       "noFee": "Unbegrenzte Online-Bestellungen inklusive – keine Kosten zusätzlich zum Tarif."
     },
     "fee": {
@@ -6608,7 +6608,7 @@
     "costs": {
       "title": "Was kostet ein Bestellsystem für Foodtrucks?",
       "ourPlan": "{plan}: {price} pro Monat, {fee}",
-      "feeOnly": "{fee} pro Online-Kartenbestellung",
+      "feeOnly": "{fee} pro Online-Bestellung",
       "feeIncluded": "Online-Bestellungen bis {included} pro Monat inklusive, danach {fee}",
       "feeNone": "keine HatchGrab-Gebühr auf Online-Bestellungen",
       "rivalPlan": "{plan}: {price}",

@@ -38,7 +38,7 @@
   "costs": {
     "title": "Mis maksab toiduauto tellimissüsteem?",
     "ourPlan": "{plan}: {price} kuus, {fee}",
-    "feeOnly": "{fee} iga veebis kaardiga makstud tellimuse kohta",
+    "feeOnly": "{fee} iga veebitellimuse kohta",
     "feeIncluded": "veebitellimused kuni {included} kuus hinnas, seejärel {fee}",
     "feeNone": "veebitellimustelt HatchGrabi tasu pole",
     "rivalPlan": "{plan}: {price}",

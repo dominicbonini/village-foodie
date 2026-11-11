@@ -6148,8 +6148,8 @@
   "pricing": {
     "banner": {
       "title": "{months, plural, one {第一個月完全免費——所有功能全開。} other {前 # 個月完全免費——所有功能全開。}}",
-      "body": "使用 {brand}，顧客先預約點餐、取餐時再付款，所以你完全不必串接刷卡金流，也能接受線上訂單。想預先收款？隨時都能加上線上刷卡付款。試用期結束後，除非你另選方案，否則會轉為 <plan>{fallback}</plan>{fallbackFree, select, yes {（不收月費）} other {}}。開始使用不需信用卡、不綁約，隨時可取消。",
-      "bodyOnly": "使用 {brand}，顧客先預約點餐、取餐時再付款，所以你完全不必串接刷卡金流，也能接受線上訂單。想預先收款？隨時都能加上線上刷卡付款。試用期結束後，<plan>{fallback}</plan> 每月 {price}。在那之前我們會與你聯絡，設定付款方式。開始使用不需信用卡、不綁約，隨時可取消。"
+      "body": "使用 {brand}，顧客先預約點餐、取餐時再付款，所以你完全不必串接刷卡金流，也能接受線上訂單。試用期結束後，除非你另選方案，否則會轉為 <plan>{fallback}</plan>{fallbackFree, select, yes {（不收月費）} other {}}。開始使用不需信用卡、不綁約，隨時可取消。",
+      "bodyOnly": "使用 {brand}，顧客先預約點餐、取餐時再付款，所以你完全不必串接刷卡金流，也能接受線上訂單。試用期結束後，<plan>{fallback}</plan> 每月 {price}。在那之前我們會與你聯絡，設定付款方式。開始使用不需信用卡、不綁約，隨時可取消。"
     },
     "card": {
       "perTruckMonth": "每台餐車／月",
@@ -6160,7 +6160,7 @@
       "everythingIn": "{plan} 的所有功能，再加上"
     },
     "fee": {
-      "feeOnly": "僅線上刷卡訂單收取 <b>{fee}*</b>。現場點餐永遠免費。",
+      "feeOnly": "僅線上訂單收取 <b>{fee}</b>。現場點餐永遠免費。",
       "included": "每月前 <b>{included}</b> 的線上訂單已包含在內，之後收取 <b>{fee}*</b>。現場點餐永遠免費。",
       "noFee": "線上訂單<b>不收 HatchGrab 手續費</b>，再忙都一樣。每月固定費用，預算好掌握。"
     },
@@ -6287,7 +6287,7 @@
       "weSuggest": "我們建議",
       "summary": "每台餐車每月 {price}，{fleet, plural, one {} other {每台各}}含 {allowance} 的線上訂單額度。",
       "switchTo": "改用 {plan}",
-      "summaryFeeOnly": "{hasMonthly, select, yes {每台餐車每月 {price}，線上刷卡訂單另收 {pct}。} other {免月費——僅線上刷卡訂單收取 {pct}。}}",
+      "summaryFeeOnly": "{hasMonthly, select, yes {每台餐車每月 {price}，線上訂單另收 {pct}。} other {免月費——僅線上訂單收取 {pct}。}}",
       "summaryNoFee": "每台餐車每月 {price}，線上訂單無限制，HatchGrab 不另收手續費。"
     },
     "orders": {
@@ -6300,7 +6300,7 @@
       "insideAllowance": "在內含的 {allowance} 線上訂單額度內——方案費用外不另收費。",
       "acrossFleet": "{fleet, plural, one {# 台餐車} other {# 台餐車}}合計：每月 <b>{amount}</b>。",
       "titleNo": "你估計每台餐車每月的線上營業額大約多少？",
-      "feeOnly": "每筆線上刷卡訂單收取 {pct}——每台餐車每月 <b>{over}</b>。",
+      "feeOnly": "每筆線上訂單收取 {pct}——每台餐車每月 <b>{over}</b>。",
       "noFee": "線上訂單無限制——方案費用外不另收費。"
     },
     "fee": {
@@ -6506,7 +6506,7 @@
     "costs": {
       "title": "餐車點餐系統要多少錢？",
       "ourPlan": "{plan}：每月 {price}，{fee}",
-      "feeOnly": "每筆線上刷卡訂單 {fee}",
+      "feeOnly": "每筆線上訂單 {fee}",
       "feeIncluded": "每月含 {included} 的線上訂單額度，超出後收取 {fee}",
       "feeNone": "HatchGrab 不收線上訂單手續費",
       "rivalPlan": "{plan}：{price}",

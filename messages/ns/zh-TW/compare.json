@@ -15,7 +15,7 @@
     "weSuggest": "我們建議",
     "summary": "每台餐車每月 {price}，{fleet, plural, one {} other {每台各}}含 {allowance} 的線上訂單額度。",
     "switchTo": "改用 {plan}",
-    "summaryFeeOnly": "{hasMonthly, select, yes {每台餐車每月 {price}，線上刷卡訂單另收 {pct}。} other {免月費——僅線上刷卡訂單收取 {pct}。}}",
+    "summaryFeeOnly": "{hasMonthly, select, yes {每台餐車每月 {price}，線上訂單另收 {pct}。} other {免月費——僅線上訂單收取 {pct}。}}",
     "summaryNoFee": "每台餐車每月 {price}，線上訂單無限制，HatchGrab 不另收手續費。"
   },
   "orders": {
@@ -28,7 +28,7 @@
     "insideAllowance": "在內含的 {allowance} 線上訂單額度內——方案費用外不另收費。",
     "acrossFleet": "{fleet, plural, one {# 台餐車} other {# 台餐車}}合計：每月 <b>{amount}</b>。",
     "titleNo": "你估計每台餐車每月的線上營業額大約多少？",
-    "feeOnly": "每筆線上刷卡訂單收取 {pct}——每台餐車每月 <b>{over}</b>。",
+    "feeOnly": "每筆線上訂單收取 {pct}——每台餐車每月 <b>{over}</b>。",
     "noFee": "線上訂單無限制——方案費用外不另收費。"
   },
   "fee": {

@@ -6148,8 +6148,8 @@
   "pricing": {
     "banner": {
       "title": "{months, plural, one {Votre premier mois est entièrement gratuit, avec toutes les fonctionnalités.} other {Vos # premiers mois sont entièrement gratuits, avec toutes les fonctionnalités.}}",
-      "body": "Avec {brand}, vos clients commandent à l’avance et paient au retrait : vous pouvez donc prendre des commandes en ligne sans aucun prestataire de paiement par carte. Vous préférez encaisser à l’avance ? Ajoutez le paiement en ligne par carte quand vous voulez. À la fin de votre essai gratuit, vous passez à l’offre <plan>{fallback}</plan>{fallbackFree, select, yes { (sans abonnement mensuel)} other {}}, sauf si vous choisissez une autre offre. Sans carte bancaire pour démarrer, sans engagement, résiliable à tout moment.",
-      "bodyOnly": "Avec {brand}, vos clients commandent à l’avance et paient au retrait : vous pouvez donc prendre des commandes en ligne sans aucun prestataire de paiement par carte. Vous préférez encaisser à l’avance ? Ajoutez le paiement en ligne par carte quand vous voulez. À la fin de votre essai gratuit, l’offre <plan>{fallback}</plan> coûtera {price} par mois. Nous vous contacterons d’ici là pour mettre en place le paiement. Sans carte bancaire pour démarrer, sans engagement, résiliable à tout moment."
+      "body": "Avec {brand}, vos clients commandent à l’avance et paient au retrait : vous pouvez donc prendre des commandes en ligne sans aucun prestataire de paiement par carte. À la fin de votre essai gratuit, vous passez à l’offre <plan>{fallback}</plan>{fallbackFree, select, yes { (sans abonnement mensuel)} other {}}, sauf si vous choisissez une autre offre. Sans carte bancaire pour démarrer, sans engagement, résiliable à tout moment.",
+      "bodyOnly": "Avec {brand}, vos clients commandent à l’avance et paient au retrait : vous pouvez donc prendre des commandes en ligne sans aucun prestataire de paiement par carte. À la fin de votre essai gratuit, l’offre <plan>{fallback}</plan> coûtera {price} par mois. Nous vous contacterons d’ici là pour mettre en place le paiement. Sans carte bancaire pour démarrer, sans engagement, résiliable à tout moment."
     },
     "card": {
       "perTruckMonth": "par food truck / mois",
@@ -6160,7 +6160,7 @@
       "everythingIn": "Tout le contenu de l’offre {plan}, plus"
     },
     "fee": {
-      "feeOnly": "<b>{fee}*</b> uniquement sur les commandes en ligne payées par carte. Les commandes au comptoir sont toujours gratuites.",
+      "feeOnly": "<b>{fee}</b> uniquement sur les commandes en ligne. Les commandes au comptoir sont toujours gratuites.",
       "included": "Les <b>{included}</b> premiers de commandes en ligne sont inclus chaque mois, puis <b>{fee}*</b>. Les commandes au comptoir sont toujours gratuites.",
       "noFee": "<b>Aucuns frais HatchGrab</b> sur les commandes en ligne, même aux périodes les plus chargées. Un coût mensuel prévisible."
     },
@@ -6287,7 +6287,7 @@
       "weSuggest": "Notre suggestion",
       "summary": "{price} par food truck et par mois, avec {allowance} de commandes en ligne inclus{fleet, plural, one {} other { pour chacun}}.",
       "switchTo": "Choisir plutôt l’offre {plan}",
-      "summaryFeeOnly": "{hasMonthly, select, yes {{price} par food truck et par mois, plus {pct} sur les commandes en ligne payées par carte.} other {Aucun abonnement mensuel : uniquement {pct} sur les commandes en ligne payées par carte.}}",
+      "summaryFeeOnly": "{hasMonthly, select, yes {{price} par food truck et par mois, plus {pct} sur les commandes en ligne.} other {Aucun abonnement mensuel : uniquement {pct} sur les commandes en ligne.}}",
       "summaryNoFee": "{price} par food truck et par mois, avec commandes en ligne illimitées et sans frais HatchGrab."
     },
     "orders": {
@@ -6300,7 +6300,7 @@
       "insideAllowance": "Dans la limite des {allowance} de commandes en ligne inclus : rien en plus de l’offre.",
       "acrossFleet": "Pour {fleet, plural, one {# food truck} other {# food trucks}} : <b>{amount}</b> par mois.",
       "titleNo": "Combien pensez-vous encaisser en ligne, par mois et par food truck ?",
-      "feeOnly": "{pct} sur chaque commande en ligne payée par carte, soit <b>{over}</b> par mois et par food truck.",
+      "feeOnly": "{pct} sur chaque commande en ligne, soit <b>{over}</b> par mois et par food truck.",
       "noFee": "Commandes en ligne illimitées incluses : rien en plus de l’offre."
     },
     "fee": {
@@ -6437,7 +6437,7 @@
     "costs": {
       "title": "Combien coûte un logiciel de commande pour food truck ?",
       "ourPlan": "{plan} : {price} par mois, {fee}",
-      "feeOnly": "{fee} par commande en ligne payée par carte",
+      "feeOnly": "{fee} par commande en ligne",
       "feeIncluded": "commandes en ligne incluses jusqu’à {included} par mois, puis {fee}",
       "feeNone": "pas de frais HatchGrab sur les commandes en ligne",
       "rivalPlan": "{plan} : {price}",

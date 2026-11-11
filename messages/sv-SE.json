@@ -6148,8 +6148,8 @@
   "pricing": {
     "banner": {
       "title": "{months, plural, one {Din första månad är helt gratis – med alla funktioner.} other {Dina första # månader är helt gratis – med alla funktioner.}}",
-      "body": "Med {brand} förbeställer kunderna och betalar vid upphämtning, så du kan ta emot onlinebeställningar utan att koppla in någon kortinlösare alls. Vill du hellre ta betalt i förväg? Lägg till kortbetalning online när du vill. När provperioden tar slut går du över till planen <plan>{fallback}</plan>{fallbackFree, select, yes { – där du bara betalar när en kund betalar online med kort –} other {}} om du inte väljer en annan plan. Inget kort för att börja, ingen bindningstid, avsluta när du vill.",
-      "bodyOnly": "Med {brand} förbeställer kunderna och betalar vid upphämtning, så du kan ta emot onlinebeställningar utan att koppla in någon kortinlösare alls. Vill du hellre ta betalt i förväg? Lägg till kortbetalning online när du vill. När provperioden tar slut kostar planen <plan>{fallback}</plan> {price} i månaden. Vi hör av oss innan dess för att ordna betalningen. Inget kort för att börja, ingen bindningstid, avsluta när du vill."
+      "body": "Med {brand} förbeställer kunderna och betalar vid upphämtning, så du kan ta emot onlinebeställningar utan att koppla in någon kortinlösare alls. När provperioden tar slut går du över till planen <plan>{fallback}</plan>{fallbackFree, select, yes { – där du bara betalar när en kund betalar online med kort –} other {}} om du inte väljer en annan plan. Inget kort för att börja, ingen bindningstid, avsluta när du vill.",
+      "bodyOnly": "Med {brand} förbeställer kunderna och betalar vid upphämtning, så du kan ta emot onlinebeställningar utan att koppla in någon kortinlösare alls. När provperioden tar slut kostar planen <plan>{fallback}</plan> {price} i månaden. Vi hör av oss innan dess för att ordna betalningen. Inget kort för att börja, ingen bindningstid, avsluta när du vill."
     },
     "card": {
       "perTruckMonth": "per foodtruck/månad",
@@ -6160,7 +6160,7 @@
       "everythingIn": "Allt i {plan}, plus"
     },
     "fee": {
-      "feeOnly": "<b>{fee}*</b> bara på onlinebeställningar med kort. Beställningar på plats är alltid gratis.",
+      "feeOnly": "<b>{fee}</b> bara på onlinebeställningar. Beställningar på plats är alltid gratis.",
       "included": "De första <b>{included}</b> i onlinebeställningar ingår varje månad, därefter <b>{fee}*</b>. Beställningar på plats är alltid gratis.",
       "noFee": "<b>Inga avgifter till HatchGrab</b> på onlinebeställningar, hur mycket du än har att göra. En förutsägbar månadskostnad."
     },
@@ -6287,7 +6287,7 @@
       "weSuggest": "Vårt förslag",
       "summary": "{price} per foodtruck och månad, och onlinebeställningar för {allowance} ingår{fleet, plural, one {} other { för varje}}.",
       "switchTo": "Välj {plan} i stället",
-      "summaryFeeOnly": "{hasMonthly, select, yes {{price} per foodtruck och månad, plus {pct} på onlinebeställningar som betalas med kort.} other {Ingen månadsavgift – bara {pct} på onlinebeställningar som betalas med kort.}}",
+      "summaryFeeOnly": "{hasMonthly, select, yes {{price} per foodtruck och månad, plus {pct} på onlinebeställningar.} other {Ingen månadsavgift – bara {pct} på onlinebeställningar.}}",
       "summaryNoFee": "{price} per foodtruck och månad, med obegränsat antal onlinebeställningar och ingen avgift till HatchGrab."
     },
     "orders": {
@@ -6300,7 +6300,7 @@
       "insideAllowance": "Inom de {allowance} i onlinebeställningar som ingår – inget utöver abonnemanget.",
       "acrossFleet": "För {fleet, plural, one {# foodtruck} other {# foodtruckar}}: <b>{amount}</b> i månaden.",
       "titleNo": "Hur mycket tror du att du skulle sälja för online per månad och foodtruck?",
-      "feeOnly": "{pct} på varje onlinebeställning som betalas med kort – <b>{over}</b> i månaden per foodtruck.",
+      "feeOnly": "{pct} på varje onlinebeställning – <b>{over}</b> i månaden per foodtruck.",
       "noFee": "Obegränsat antal onlinebeställningar ingår – inget utöver abonnemanget."
     },
     "fee": {
@@ -6437,7 +6437,7 @@
     "costs": {
       "title": "Vad kostar ett beställningssystem för foodtruckar?",
       "ourPlan": "{plan}: {price} i månaden, {fee}",
-      "feeOnly": "{fee} per onlinebeställning som betalas med kort",
+      "feeOnly": "{fee} per onlinebeställning",
       "feeIncluded": "onlinebeställningar upp till {included} i månaden ingår, därefter {fee}",
       "feeNone": "ingen avgift till HatchGrab på onlinebeställningar",
       "rivalPlan": "{plan}: {price}",

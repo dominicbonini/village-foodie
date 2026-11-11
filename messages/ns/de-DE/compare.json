@@ -15,7 +15,7 @@
     "weSuggest": "Unsere Empfehlung",
     "summary": "{price} pro Foodtruck und Monat, inklusive Online-Bestellungen im Wert von {allowance}{fleet, plural, one {} other { – für jeden Foodtruck}}.",
     "switchTo": "Stattdessen Tarif {plan} wählen",
-    "summaryFeeOnly": "{hasMonthly, select, yes {{price} pro Foodtruck und Monat, zzgl. {pct} auf Online-Bestellungen mit Kartenzahlung.} other {Keine Monatsgebühr – nur {pct} auf Online-Bestellungen mit Kartenzahlung.}}",
+    "summaryFeeOnly": "{hasMonthly, select, yes {{price} pro Foodtruck und Monat, zzgl. {pct} auf Online-Bestellungen.} other {Keine Monatsgebühr – nur {pct} auf Online-Bestellungen.}}",
     "summaryNoFee": "{price} pro Foodtruck und Monat, mit unbegrenzten Online-Bestellungen und ohne HatchGrab-Gebühr."
   },
   "orders": {
@@ -28,7 +28,7 @@
     "insideAllowance": "Innerhalb der inklusiven {allowance} an Online-Bestellungen – keine Kosten zusätzlich zum Tarif.",
     "acrossFleet": "Bei {fleet, plural, one {# Foodtruck} other {# Foodtrucks}}: <b>{amount}</b> pro Monat.",
     "titleNo": "Wie viel würden Sie schätzungsweise online einnehmen – pro Monat und Foodtruck?",
-    "feeOnly": "{pct} auf jede Online-Bestellung mit Kartenzahlung – <b>{over}</b> pro Monat und Foodtruck.",
+    "feeOnly": "{pct} auf jede Online-Bestellung – <b>{over}</b> pro Monat und Foodtruck.",
     "noFee": "Unbegrenzte Online-Bestellungen inklusive – keine Kosten zusätzlich zum Tarif."
   },
   "fee": {

@@ -15,7 +15,7 @@
     "weSuggest": "추천 요금제",
     "summary": "푸드트럭 1대당 월 {price} · 온라인 주문 {allowance} 포함{fleet, plural, one {} other {(대당)}}.",
     "switchTo": "{plan} 요금제로 변경",
-    "summaryFeeOnly": "{hasMonthly, select, yes {푸드트럭 1대당 월 {price}, 온라인 카드 주문에는 {pct} 수수료가 추가됩니다.} other {월 이용료 없음 — 온라인 카드 주문에만 {pct} 수수료가 붙습니다.}}",
+    "summaryFeeOnly": "{hasMonthly, select, yes {푸드트럭 1대당 월 {price}, 온라인 주문에는 {pct} 수수료가 추가됩니다.} other {월 이용료 없음 — 온라인 주문에만 {pct} 수수료가 붙습니다.}}",
     "summaryNoFee": "푸드트럭 1대당 월 {price} · 온라인 주문 무제한 · HatchGrab 수수료 없음."
   },
   "orders": {
@@ -28,7 +28,7 @@
     "insideAllowance": "포함된 온라인 주문 한도({allowance}) 이내예요. 요금제 외 추가 비용은 없습니다.",
     "acrossFleet": "{fleet, plural, one {푸드트럭 #대} other {푸드트럭 #대}} 합계: 월 <b>{amount}</b>.",
     "titleNo": "푸드트럭 1대당 한 달 온라인 매출이 얼마나 될 것 같으세요?",
-    "feeOnly": "모든 온라인 카드 주문에 {pct} — 푸드트럭 1대당 월 <b>{over}</b>.",
+    "feeOnly": "모든 온라인 주문에 {pct} — 푸드트럭 1대당 월 <b>{over}</b>.",
     "noFee": "온라인 주문 무제한 포함 — 요금제 외 추가 비용은 없습니다."
   },
   "fee": {

@@ -15,7 +15,7 @@
     "weSuggest": "Siūlome",
     "summary": "{price} už furgoną per mėnesį, įskaičiuota internetinių užsakymų už {allowance}{fleet, plural, one {} few { kiekvienam furgonui} many { kiekvienam furgonui} other { kiekvienam furgonui}}.",
     "switchTo": "Rinktis planą {plan}",
-    "summaryFeeOnly": "{hasMonthly, select, yes {{price} už furgoną per mėnesį ir {pct} nuo internetinių užsakymų, apmokėtų kortele.} other {Jokio mėnesinio mokesčio — tik {pct} nuo internetinių užsakymų, apmokėtų kortele.}}",
+    "summaryFeeOnly": "{hasMonthly, select, yes {{price} už furgoną per mėnesį ir {pct} nuo internetinių užsakymų.} other {Jokio mėnesinio mokesčio — tik {pct} nuo internetinių užsakymų.}}",
     "summaryNoFee": "{price} už furgoną per mėnesį: neriboti internetiniai užsakymai ir jokių HatchGrab komisinių."
   },
   "orders": {
@@ -28,7 +28,7 @@
     "insideAllowance": "Neviršijate įskaičiuotos internetinių užsakymų sumos ({allowance}) — nieko papildomai prie plano kainos.",
     "acrossFleet": "Iš viso ({fleet, plural, one {# furgonas} few {# furgonai} many {# furgonų} other {# furgonų}}): <b>{amount}</b> per mėnesį.",
     "titleNo": "Kokią sumą, jūsų manymu, gautumėte iš užsakymų internetu per mėnesį vienam furgonui?",
-    "feeOnly": "{pct} nuo kiekvieno internetinio užsakymo, apmokėto kortele — <b>{over}</b> per mėnesį vienam furgonui.",
+    "feeOnly": "{pct} nuo kiekvieno internetinio užsakymo — <b>{over}</b> per mėnesį vienam furgonui.",
     "noFee": "Neriboti internetiniai užsakymai įskaičiuoti — nieko papildomai prie plano kainos."
   },
   "fee": {

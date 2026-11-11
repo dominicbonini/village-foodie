@@ -15,7 +15,7 @@
     "weSuggest": "Mēs iesakām",
     "summary": "{price} par busiņu mēnesī, iekļauti tiešsaistes pasūtījumi {allowance} vērtībā{fleet, plural, zero { katram busiņam} one {} other { katram busiņam}}.",
     "switchTo": "Izvēlēties plānu {plan}",
-    "summaryFeeOnly": "{hasMonthly, select, yes {{price} par busiņu mēnesī, plus {pct} no tiešsaistes pasūtījumiem ar karti.} other {Bez ikmēneša maksas — tikai {pct} no tiešsaistes pasūtījumiem ar karti.}}",
+    "summaryFeeOnly": "{hasMonthly, select, yes {{price} par busiņu mēnesī, plus {pct} no tiešsaistes pasūtījumiem.} other {Bez ikmēneša maksas — tikai {pct} no tiešsaistes pasūtījumiem.}}",
     "summaryNoFee": "{price} par busiņu mēnesī, neierobežoti tiešsaistes pasūtījumi un bez HatchGrab komisijas."
   },
   "orders": {
@@ -28,7 +28,7 @@
     "insideAllowance": "Iekļautā apjoma ({allowance}) robežās — nekādu papildu maksu virs plāna.",
     "acrossFleet": "Kopā {fleet, plural, zero {# busiņiem} one {# busiņam} other {# busiņiem}}: <b>{amount}</b> mēnesī.",
     "titleNo": "Cik lielu apgrozījumu tiešsaistē, jūsuprāt, viens busiņš gūtu mēnesī?",
-    "feeOnly": "{pct} no katra tiešsaistes pasūtījuma ar karti — <b>{over}</b> mēnesī par busiņu.",
+    "feeOnly": "{pct} no katra tiešsaistes pasūtījuma — <b>{over}</b> mēnesī par busiņu.",
     "noFee": "Iekļauti neierobežoti tiešsaistes pasūtījumi — nekādu papildu maksu virs plāna."
   },
   "fee": {

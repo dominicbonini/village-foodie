@@ -6148,8 +6148,8 @@
   "pricing": {
     "banner": {
       "title": "{months, plural, one {Váš první měsíc je úplně zdarma — se všemi funkcemi.} few {Vaše první # měsíce jsou úplně zdarma — se všemi funkcemi.} other {Vašich prvních # měsíců je úplně zdarma — se všemi funkcemi.}}",
-      "body": "S {brand} si zákazníci objednají předem a zaplatí při vyzvednutí, takže můžete přijímat online objednávky, aniž byste museli připojovat platební bránu pro karty. Chcete raději inkasovat předem? Online platby kartou můžete přidat kdykoli. Po skončení zkušebního období přejdete na tarif <plan>{fallback}</plan>{fallbackFree, select, yes { — bez měsíčního poplatku —} other {}}, pokud si nevyberete jiný tarif. Na začátek žádná platební karta, žádné závazky, zrušení kdykoli.",
-      "bodyOnly": "S {brand} si zákazníci objednají předem a zaplatí při vyzvednutí, takže můžete přijímat online objednávky, aniž byste museli připojovat platební bránu pro karty. Chcete raději inkasovat předem? Online platby kartou můžete přidat kdykoli. Po skončení zkušebního období bude tarif <plan>{fallback}</plan> stát {price} měsíčně. Ještě předtím se vám ozveme, abychom nastavili platbu. Na začátek žádná platební karta, žádné závazky, zrušení kdykoli."
+      "body": "S {brand} si zákazníci objednají předem a zaplatí při vyzvednutí, takže můžete přijímat online objednávky, aniž byste museli připojovat platební bránu pro karty. Po skončení zkušebního období přejdete na tarif <plan>{fallback}</plan>{fallbackFree, select, yes { — bez měsíčního poplatku —} other {}}, pokud si nevyberete jiný tarif. Na začátek žádná platební karta, žádné závazky, zrušení kdykoli.",
+      "bodyOnly": "S {brand} si zákazníci objednají předem a zaplatí při vyzvednutí, takže můžete přijímat online objednávky, aniž byste museli připojovat platební bránu pro karty. Po skončení zkušebního období bude tarif <plan>{fallback}</plan> stát {price} měsíčně. Ještě předtím se vám ozveme, abychom nastavili platbu. Na začátek žádná platební karta, žádné závazky, zrušení kdykoli."
     },
     "card": {
       "perTruckMonth": "za food truck / měsíc",
@@ -6160,7 +6160,7 @@
       "everythingIn": "Vše z tarifu {plan}, a navíc"
     },
     "fee": {
-      "feeOnly": "<b>{fee}*</b> pouze z online objednávek placených kartou. Objednávky na místě jsou vždy zdarma.",
+      "feeOnly": "<b>{fee}</b> pouze z online objednávek. Objednávky na místě jsou vždy zdarma.",
       "included": "Prvních <b>{included}</b> online objednávek je každý měsíc v ceně, poté <b>{fee}*</b>. Objednávky na místě jsou vždy zdarma.",
       "noFee": "<b>Žádné poplatky HatchGrab</b> z online objednávek, ať máte jakkoli napilno. Jedny předvídatelné měsíční náklady."
     },
@@ -6287,7 +6287,7 @@
       "weSuggest": "Doporučujeme",
       "summary": "{price} za food truck měsíčně, včetně online objednávek v hodnotě {allowance}{fleet, plural, one {} few { u každého z nich} other { u každého z nich}}.",
       "switchTo": "Zvolit raději tarif {plan}",
-      "summaryFeeOnly": "{hasMonthly, select, yes {{price} za food truck měsíčně plus {pct} z online objednávek placených kartou.} other {Bez měsíčního poplatku — jen {pct} z online objednávek placených kartou.}}",
+      "summaryFeeOnly": "{hasMonthly, select, yes {{price} za food truck měsíčně plus {pct} z online objednávek.} other {Bez měsíčního poplatku — jen {pct} z online objednávek.}}",
       "summaryNoFee": "{price} za food truck měsíčně, s neomezenými online objednávkami a bez poplatku HatchGrab."
     },
     "orders": {
@@ -6300,7 +6300,7 @@
       "insideAllowance": "V rámci online objednávek v hodnotě {allowance}, které jsou v ceně — nic navíc k tarifu.",
       "acrossFleet": "Celkem za {fleet, plural, one {# food truck} few {# food trucky} other {# food trucků}}: <b>{amount}</b> měsíčně.",
       "titleNo": "Kolik byste podle vás utržili online za měsíc na jeden food truck?",
-      "feeOnly": "{pct} z každé online objednávky placené kartou — <b>{over}</b> měsíčně na food truck.",
+      "feeOnly": "{pct} z každé online objednávky — <b>{over}</b> měsíčně na food truck.",
       "noFee": "Neomezené online objednávky v ceně — nic navíc k tarifu."
     },
     "fee": {
@@ -6437,7 +6437,7 @@
     "costs": {
       "title": "Kolik stojí objednávkový systém pro food truck?",
       "ourPlan": "{plan}: {price} měsíčně, {fee}",
-      "feeOnly": "{fee} za každou online objednávku placenou kartou",
+      "feeOnly": "{fee} za každou online objednávku",
       "feeIncluded": "online objednávky do {included} měsíčně v ceně, poté {fee}",
       "feeNone": "žádný poplatek HatchGrab z online objednávek",
       "rivalPlan": "{plan}: {price}",

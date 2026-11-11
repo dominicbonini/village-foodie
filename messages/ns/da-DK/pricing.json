@@ -1,8 +1,8 @@
 {
   "banner": {
     "title": "{months, plural, one {Din første måned er helt gratis — med alle funktioner.} other {Dine første # måneder er helt gratis — med alle funktioner.}}",
-    "body": "Med {brand} forudbestiller kunderne og betaler ved afhentning, så du kan tage imod onlinebestillinger helt uden at tilknytte en kortindløser. Vil du hellere tage betaling på forhånd? Tilføj onlinebetaling med kort når som helst. Når din prøveperiode slutter, skifter du til abonnementet <plan>{fallback}</plan>{fallbackFree, select, yes { (ingen fast månedspris)} other {}}, medmindre du vælger et andet. Intet betalingskort for at starte, ingen binding, opsig når som helst.",
-    "bodyOnly": "Med {brand} forudbestiller kunderne og betaler ved afhentning, så du kan tage imod onlinebestillinger helt uden at tilknytte en kortindløser. Vil du hellere tage betaling på forhånd? Tilføj onlinebetaling med kort når som helst. Når din prøveperiode slutter, koster abonnementet <plan>{fallback}</plan> {price} om måneden. Vi kontakter dig inden da for at sætte betalingen op. Intet betalingskort for at starte, ingen binding, opsig når som helst."
+    "body": "Med {brand} forudbestiller kunderne og betaler ved afhentning, så du kan tage imod onlinebestillinger helt uden at tilknytte en kortindløser. Når din prøveperiode slutter, skifter du til abonnementet <plan>{fallback}</plan>{fallbackFree, select, yes { (ingen fast månedspris)} other {}}, medmindre du vælger et andet. Intet betalingskort for at starte, ingen binding, opsig når som helst.",
+    "bodyOnly": "Med {brand} forudbestiller kunderne og betaler ved afhentning, så du kan tage imod onlinebestillinger helt uden at tilknytte en kortindløser. Når din prøveperiode slutter, koster abonnementet <plan>{fallback}</plan> {price} om måneden. Vi kontakter dig inden da for at sætte betalingen op. Intet betalingskort for at starte, ingen binding, opsig når som helst."
   },
   "card": {
     "perTruckMonth": "pr. foodtruck/måned",
@@ -13,7 +13,7 @@
     "everythingIn": "Alt i {plan}, plus"
   },
   "fee": {
-    "feeOnly": "<b>{fee}*</b> kun på onlinebestillinger betalt med kort. Bestillinger ved vognen er altid gratis.",
+    "feeOnly": "<b>{fee}</b> kun på onlinebestillinger. Bestillinger ved vognen er altid gratis.",
     "included": "De første <b>{included}</b> i onlinebestillinger er inkluderet hver måned, derefter <b>{fee}*</b>. Bestillinger ved vognen er altid gratis.",
     "noFee": "<b>Ingen HatchGrab-gebyrer</b> på onlinebestillinger, uanset hvor travlt du har. Én fast månedlig udgift."
   },

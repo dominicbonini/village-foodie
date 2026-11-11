@@ -38,7 +38,7 @@
   "costs": {
     "title": "Cik maksā food truck pasūtījumu sistēma?",
     "ourPlan": "{plan}: {price} mēnesī, {fee}",
-    "feeOnly": "{fee} par katru tiešsaistes pasūtījumu, kas apmaksāts ar karti",
+    "feeOnly": "{fee} par katru tiešsaistes pasūtījumu",
     "feeIncluded": "tiešsaistes pasūtījumi līdz {included} mēnesī iekļauti, pēc tam {fee}",
     "feeNone": "HatchGrab neiekasē maksu par tiešsaistes pasūtījumiem",
     "rivalPlan": "{plan}: {price}",

@@ -38,7 +38,7 @@
   "costs": {
     "title": "푸드트럭 주문 시스템 비용은 얼마인가요?",
     "ourPlan": "{plan}: 월 {price}, {fee}",
-    "feeOnly": "온라인 카드 주문 1건당 {fee}",
+    "feeOnly": "온라인 주문 1건당 {fee}",
     "feeIncluded": "온라인 주문 월 {included} 포함, 초과 시 {fee}",
     "feeNone": "온라인 주문에 HatchGrab 수수료 없음",
     "rivalPlan": "{plan}: {price}",
