@@ -25,6 +25,20 @@
 
 // languages-1 (22 October 2026): a NON-ENGLISH locale's dates and times are Intl's own (no English ordinal, no forced "/" or
 // "pm"); every English locale keeps the hand-built forms below exactly. Kept import-free: the engine harnesses compile this file alone.
+
+// pricing-copy-3 (11 November 2026): THE ONE MAPPING from an app locale to the tag Intl formats DATES with — defined HERE so this file
+// stays import-free; lib/i18n/intl-locale.ts re-exports it for everything else. Serbian is written in Latin script in this app, but Intl's
+// default script for Serbian is Cyrillic ("4. новембар 2026."); any Serbian tag with no script subtag gets Latin ("4. novembar 2026.").
+// Every other locale is returned unchanged.
+/** The tag to hand Intl for dates in `locale`: Serbian without a script → Latin script (sr-RS → sr-Latn-RS); anything else unchanged. */
+export function intlDateLocale(locale: string): string
+export function intlDateLocale(locale: string | undefined): string | undefined
+export function intlDateLocale(locale: string | undefined): string | undefined {
+  if (!locale) return locale
+  const m = /^sr(?:-([A-Za-z]{2}|\d{3}))?$/i.exec(locale)
+  return m ? (m[1] ? `sr-Latn-${m[1].toUpperCase()}` : 'sr-Latn') : locale
+}
+
 const isEnglish = (tag: string | null | undefined): boolean => (String(tag ?? '').trim().split(/[-_]/)[0].toLowerCase() || 'en') === 'en'
 
 /** A truck's time, as the screens need it. From country_settings + trucks.timezone (lib/truck-time.ts). */
@@ -115,7 +129,7 @@ const clockFormats = new Map<string, Intl.DateTimeFormat>()
 function intlClock(h: number, mi: number, locale: string, hourCycle: 'h12' | 'h23'): string {
   const key = `${locale}|${hourCycle}`
   let f = clockFormats.get(key)
-  if (!f) { f = new Intl.DateTimeFormat(locale, { hour: 'numeric', minute: '2-digit', hourCycle, timeZone: 'UTC' }); clockFormats.set(key, f) }
+  if (!f) { f = new Intl.DateTimeFormat(intlDateLocale(locale), { hour: 'numeric', minute: '2-digit', hourCycle, timeZone: 'UTC' }); clockFormats.set(key, f) }
   return f.format(new Date(Date.UTC(2000, 0, 1, h, mi)))
 }
 
@@ -330,13 +344,13 @@ export function instantOfLocal(ymd: string, time: string, tz: string): number {
 export function formatYmd(ymd: string, ts: TimeSettings | null | undefined, opts: Intl.DateTimeFormatOptions): string {
   const s = timeSettingsOr(ts, 'formatYmd')
   const [y, m, d] = ymd.split('-').map(Number)
-  return new Date(Date.UTC(y, (m || 1) - 1, d || 1)).toLocaleDateString(s.locale, { ...opts, timeZone: 'UTC' })
+  return new Date(Date.UTC(y, (m || 1) - 1, d || 1)).toLocaleDateString(intlDateLocale(s.locale), { ...opts, timeZone: 'UTC' })
 }
 
 /** An INSTANT's date or time through Intl in the truck's locale AND zone. */
 export function formatInstant(instant: Date | string | number, ts: TimeSettings | null | undefined, opts: Intl.DateTimeFormatOptions): string {
   const s = timeSettingsOr(ts, 'formatInstant')
-  return new Date(instant).toLocaleString(s.locale, { ...opts, timeZone: s.timeZone })
+  return new Date(instant).toLocaleString(intlDateLocale(s.locale), { ...opts, timeZone: s.timeZone })
 }
 
 /** An instant's clock time in the truck's style: GB "15:20:00" (with seconds) / "15:20"; US "3:20 PM". */
@@ -396,7 +410,7 @@ const nameFormats = new Map<string, Intl.DateTimeFormat>()
 function datePart(ymd: string, locale: string, opts: Intl.DateTimeFormatOptions, type: 'weekday' | 'month'): string {
   const key = `${locale}|${JSON.stringify(opts)}`
   let f = nameFormats.get(key)
-  if (!f) { f = new Intl.DateTimeFormat(locale, { ...opts, timeZone: 'UTC' }); nameFormats.set(key, f) }
+  if (!f) { f = new Intl.DateTimeFormat(intlDateLocale(locale), { ...opts, timeZone: 'UTC' }); nameFormats.set(key, f) }
   const [y, m, d] = ymd.split('-').map(Number)
   return f.formatToParts(new Date(Date.UTC(y, (m || 1) - 1, d || 1))).find(p => p.type === type)?.value ?? ''
 }
@@ -470,7 +484,7 @@ export function formatYmdShortMonth(ymd: string, ts: TimeSettings | null | undef
   const s = timeSettingsOr(ts, 'formatYmdShortMonth')
   if (opts.month !== 'short') return formatYmd(ymd, s, opts)
   const [y, m, d] = ymd.split('-').map(Number)
-  const parts = new Intl.DateTimeFormat(s.locale, { ...opts, timeZone: 'UTC' }).formatToParts(new Date(Date.UTC(y, (m || 1) - 1, d || 1)))
+  const parts = new Intl.DateTimeFormat(intlDateLocale(s.locale), { ...opts, timeZone: 'UTC' }).formatToParts(new Date(Date.UTC(y, (m || 1) - 1, d || 1)))
   return parts.map(p => (p.type === 'month' ? monthName(ymd, s.locale, 'short') : p.value)).join('')
 }
 

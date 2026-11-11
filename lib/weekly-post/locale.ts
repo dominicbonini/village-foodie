@@ -23,6 +23,7 @@ import { weekdayName, monthName } from '@/lib/time-utils'
 import { isEnglish, isLanguageBase } from '@/lib/i18n/locales'   // languages-1
 /* ⚠️ `./words` imports THIS file as a type only, so this closes no cycle at run time. */
 import { posterWordsFor } from './words'
+import { intlDateLocale } from '@/lib/i18n/intl-locale'   // pricing-copy-3: Serbian dates in Latin script
 
 /** The countries this table knows. ⚠️ A string union, not `string` — an unknown code is a bug, and
  *  `localeFor()` falls back to GB rather than producing an empty date.
@@ -107,7 +108,7 @@ const languageSpecs = new Map<string, LocaleSpec>()
 function languageSpec(key: LanguageKey): LocaleSpec {
   let spec = languageSpecs.get(key)
   if (!spec) {
-    const order = new Intl.DateTimeFormat(key, { day: '2-digit', month: '2-digit', timeZone: 'UTC' }).formatToParts(new Date(Date.UTC(2026, 9, 14))).filter(p => p.type === 'day' || p.type === 'month').map(p => p.type)
+    const order = new Intl.DateTimeFormat(intlDateLocale(key), { day: '2-digit', month: '2-digit', timeZone: 'UTC' }).formatToParts(new Date(Date.UTC(2026, 9, 14))).filter(p => p.type === 'day' || p.type === 'month').map(p => p.type)
     const sample = (id: DateStyleId) => dateTextFor('2026-10-14', id, key, { caps: false, raisedOrdinals: true })
     spec = { country: key, numericOrder: order[0] === 'month' ? 'mdy' : 'dmy', defaultTimeStyle: '24h',
       dateStyles: (['long', 'short', 'dayMonth', 'numeric'] as DateStyleId[]).map(id => ({ id, sample: '' })) }
@@ -249,7 +250,7 @@ function languageDateParts(ymd: string, style: DateStyleId, key: LanguageKey, c:
   const opts: Intl.DateTimeFormatOptions = style === 'long' ? { weekday: 'long', day: 'numeric', month: 'long' }
     : style === 'short' ? { weekday: 'short', day: 'numeric', month: 'short' }
       : style === 'dayMonth' ? { day: 'numeric', month: 'long' } : { weekday: 'short', day: '2-digit', month: '2-digit' }
-  const ps = new Intl.DateTimeFormat(key, { ...opts, timeZone: 'UTC' }).formatToParts(new Date(Date.UTC(y, mo - 1, d)))
+  const ps = new Intl.DateTimeFormat(intlDateLocale(key), { ...opts, timeZone: 'UTC' }).formatToParts(new Date(Date.UTC(y, mo - 1, d)))
   const w = ps.findIndex(p => p.type === 'weekday')
   if (w !== 0) return { weekday: [], separator: '', rest: [{ text: caps(ps.map(p => p.value).join(''), c.caps) }] }
   const sepEnd = ps.findIndex((p, i) => i > 0 && p.type !== 'literal')
@@ -301,7 +302,7 @@ export const dateTextFor = (
 export function shortDateTextFor(ymd: string, country: CountryCode): string {
   const { y, mo, d } = parts(ymd)
   // languages-1: a non-English language's compact date is Intl's own.
-  if (isLanguageKey(country)) return new Intl.DateTimeFormat(country, { weekday: 'short', day: 'numeric', month: 'short', timeZone: 'UTC' }).format(new Date(Date.UTC(y, mo - 1, d)))
+  if (isLanguageKey(country)) return new Intl.DateTimeFormat(intlDateLocale(country), { weekday: 'short', day: 'numeric', month: 'short', timeZone: 'UTC' }).format(new Date(Date.UTC(y, mo - 1, d)))
   const loc = intlLocaleFor(country)
   const weekday = weekdayName(ymd, loc, 'short')
   const month = monthName(ymd, loc, 'short')

@@ -35,6 +35,7 @@ import { currencySymbol, minorUnitSign } from '@/lib/money-format'
 import { CURRENCIES } from '@/lib/currencies'
 import { ADDRESS_FORMATS, ADDRESS_FORMAT_KEYS } from '@/lib/address-formats'
 import { LOCALES, isEnglish } from '@/lib/i18n/locales'
+import { intlDateLocale } from '@/lib/i18n/intl-locale'   // pricing-copy-3: Serbian dates in Latin script
 
 type Field = keyof CountryForm
 interface ColumnState { saving: boolean; error: string | null; errors: FieldError[]; saved: boolean; confirmRemove: boolean; removing: boolean }
@@ -50,7 +51,7 @@ const SMALL_UNIT = 'In the currency’s smallest unit — p, c, ¢, öre … —
 // ── the examples beside the Times and Dates choices, in the row's own language style ──
 const SAMPLE = new Date(Date.UTC(2026, 11, 31, 18, 30))
 function timeExample(locale: string, h12: boolean): string {
-  try { return new Intl.DateTimeFormat(locale, { hour: 'numeric', minute: '2-digit', hour12: h12, timeZone: 'UTC' }).format(SAMPLE) }
+  try { return new Intl.DateTimeFormat(intlDateLocale(locale), { hour: 'numeric', minute: '2-digit', hour12: h12, timeZone: 'UTC' }).format(SAMPLE) }
   catch { return h12 ? '6:30 pm' : '18:30' }
 }
 const ALL_ZONES: string[] = typeof Intl.supportedValuesOf === 'function' ? Intl.supportedValuesOf('timeZone') : []

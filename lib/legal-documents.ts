@@ -16,6 +16,7 @@ import fs from 'node:fs'
 import path from 'node:path'
 import { LEGAL_DOC_FILE, LEGAL_DOCS, legalBaseOf, legalPath, legalUpdatedDate, type LegalDoc } from '@/lib/legal'
 import { overrideChain, resolveLocale, type AppLocale } from '@/lib/i18n/locales'
+import { intlDateLocale } from '@/lib/i18n/intl-locale'   // pricing-copy-3: Serbian dates in Latin script
 
 const DIR = path.join(process.cwd(), 'content/legal')
 const STAMP = /^<!-- translation-of: [\w.-]+ sha256:[0-9a-f]{64} -->\n/
@@ -34,7 +35,7 @@ function englishDate(doc: LegalDoc): string {
 
 /** A legal date ("1 November 2026") the way `locale` writes it ("1. November 2026", "2026年11月1日"). */
 export function localLegalDate(written: string, locale: string): string {
-  return new Intl.DateTimeFormat(locale, { day: 'numeric', month: 'long', year: 'numeric', timeZone: 'UTC', calendar: 'gregory', numberingSystem: 'latn' })
+  return new Intl.DateTimeFormat(intlDateLocale(locale), { day: 'numeric', month: 'long', year: 'numeric', timeZone: 'UTC', calendar: 'gregory', numberingSystem: 'latn' })
     .format(legalUpdatedDate(written))
 }
 

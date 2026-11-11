@@ -9,6 +9,7 @@
 // neither is on a money path. They decide what an operator READS, and the two surfaces that show an
 // event bar must read the same thing or the same event looks like two events.
 import { getLocalDateInTz, addDaysYmd, formatYmdShortMonth, formatOrdinalDate, timeSettingsOr, type TimeSettings } from '@/lib/time-utils'
+import { intlDateLocale } from '@/lib/i18n/intl-locale'   // pricing-copy-3: Serbian dates in Latin script
 
 /** "The Bell — Castle Hedingham", or just the venue when the town is already inside its name.
  *  ⚠️ LIFTED VERBATIM from app/dashboard/[token]/page.tsx — the em dash, the `toLowerCase().includes`
@@ -74,7 +75,7 @@ function relativeDayWords(locale: string | null | undefined): [string, string] {
   let w = relativeWords.get(tag)
   if (!w) {
     try {
-      const rtf = new Intl.RelativeTimeFormat(tag, { numeric: 'auto' })
+      const rtf = new Intl.RelativeTimeFormat(intlDateLocale(tag), { numeric: 'auto' })
       const cap = (x: string) => x.charAt(0).toLocaleUpperCase(tag) + x.slice(1)
       w = [cap(rtf.format(0, 'day')), cap(rtf.format(1, 'day'))]
     } catch { w = ['Today', 'Tomorrow'] }
