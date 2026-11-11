@@ -10,7 +10,7 @@
   },
   "pay": {
     "included": "Comenzi online incluse lunar",
-    "fee": "Taxa HatchGrab pentru comenzile online plătite cu cardul*",
+    "fee": "Taxa HatchGrab pentru comenzile online*",
     "walkUp": "Comenzi la fața locului"
   },
   "cell": {

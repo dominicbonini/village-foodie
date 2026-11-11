@@ -5999,7 +5999,7 @@
     "payg": {
       "name": "Bez ikmēneša maksas",
       "subtitle": "Sezonas un nepilna laika tirgotājiem",
-      "description": "Bez ikmēneša maksas. Jūs maksājat tikai tad, kad klients samaksā tiešsaistē ar karti."
+      "description": "Bez ikmēneša maksas. Jūs maksājat tikai 0,99% no tiešsaistes pasūtījumiem."
     },
     "pro": {
       "subtitle": "Food truck ar regulāriem iepriekšējiem pasūtījumiem",
@@ -6206,7 +6206,7 @@
     },
     "pay": {
       "included": "Katru mēnesi iekļautie tiešsaistes pasūtījumi",
-      "fee": "HatchGrab komisija par tiešsaistes pasūtījumiem ar karti*",
+      "fee": "HatchGrab komisija par tiešsaistes pasūtījumiem*",
       "walkUp": "Pasūtījumi uz vietas"
     },
     "cell": {

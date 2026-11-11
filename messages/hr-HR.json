@@ -5999,7 +5999,7 @@
     "payg": {
       "name": "Bez mjesečne pretplate",
       "subtitle": "Sezonski i povremeni food truckovi",
-      "description": "Bez mjesečne naknade. Plaćate samo kad kupac plati online karticom."
+      "description": "Bez mjesečne naknade. Plaćate samo 0,99 % na online narudžbe."
     },
     "pro": {
       "subtitle": "Food truckovi s redovitim prednarudžbama",
@@ -6206,7 +6206,7 @@
     },
     "pay": {
       "included": "Online narudžbe uključene svaki mjesec",
-      "fee": "HatchGrab naknada za online narudžbe plaćene karticom*",
+      "fee": "HatchGrab naknada za online narudžbe*",
       "walkUp": "Narudžbe na licu mjesta"
     },
     "cell": {

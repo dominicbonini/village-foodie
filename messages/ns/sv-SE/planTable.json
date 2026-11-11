@@ -10,7 +10,7 @@
   },
   "pay": {
     "included": "Onlinebeställningar som ingår per månad",
-    "fee": "HatchGrabs avgift på onlinebeställningar med kort*",
+    "fee": "HatchGrabs avgift på onlinebeställningar*",
     "walkUp": "Beställningar på plats"
   },
   "cell": {

@@ -10,7 +10,7 @@
   },
   "pay": {
     "included": "Iga kuu hinnas sisalduvad veebitellimused",
-    "fee": "HatchGrabi tasu veebis kaardiga makstud tellimustelt*",
+    "fee": "HatchGrabi tasu veebitellimustelt*",
     "walkUp": "Tellimused kohapeal"
   },
   "cell": {

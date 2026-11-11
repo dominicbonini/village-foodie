@@ -107,7 +107,7 @@ export const TOKEN_HELP: [string, string][] = [
   ['{K.name}', "The plan's name"],
   ['{K.price}', 'Its monthly price, as the pricing section shows it'],
   ['{K.included}', 'Online orders included each month'],
-  ['{K.fee}', 'Its fee on online card orders, as a percentage'],
+  ['{K.fee}', 'Its fee on online orders, as a percentage'],
   ['{K.extraVan}', "An extra van's monthly price"],
   ['{trial.months}', 'How many months the free trial lasts'],
   ['{trialEnd.name}', 'The plan a truck moves to when the trial ends, in that country'],

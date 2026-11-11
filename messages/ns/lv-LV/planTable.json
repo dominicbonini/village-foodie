@@ -10,7 +10,7 @@
   },
   "pay": {
     "included": "Katru mēnesi iekļautie tiešsaistes pasūtījumi",
-    "fee": "HatchGrab komisija par tiešsaistes pasūtījumiem ar karti*",
+    "fee": "HatchGrab komisija par tiešsaistes pasūtījumiem*",
     "walkUp": "Pasūtījumi uz vietas"
   },
   "cell": {

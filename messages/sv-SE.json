@@ -5999,7 +5999,7 @@
     "payg": {
       "name": "Utan månadsavgift",
       "subtitle": "Säsongs- och deltidsförsäljare",
-      "description": "Ingen månadsavgift. Du betalar bara när en kund betalar online med kort."
+      "description": "Ingen månadsavgift. Du betalar bara 0,99 % på onlinebeställningar."
     },
     "pro": {
       "subtitle": "Foodtruckar med regelbundna förbeställningar",
@@ -6206,7 +6206,7 @@
     },
     "pay": {
       "included": "Onlinebeställningar som ingår per månad",
-      "fee": "HatchGrabs avgift på onlinebeställningar med kort*",
+      "fee": "HatchGrabs avgift på onlinebeställningar*",
       "walkUp": "Beställningar på plats"
     },
     "cell": {

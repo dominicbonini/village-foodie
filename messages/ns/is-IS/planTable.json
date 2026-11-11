@@ -10,7 +10,7 @@
   },
   "pay": {
     "included": "Netpantanir innifaldar á mánuði",
-    "fee": "HatchGrab-gjald af netpöntunum greiddum með korti*",
+    "fee": "HatchGrab-gjald af netpöntunum*",
     "walkUp": "Pantanir á staðnum"
   },
   "cell": {

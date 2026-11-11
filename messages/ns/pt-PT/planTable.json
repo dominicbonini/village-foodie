@@ -10,7 +10,7 @@
   },
   "pay": {
     "included": "Encomendas online incluídas por mês",
-    "fee": "Taxa HatchGrab nas encomendas online com cartão*",
+    "fee": "Taxa HatchGrab nas encomendas online*",
     "walkUp": "Encomendas ao balcão"
   },
   "cell": {

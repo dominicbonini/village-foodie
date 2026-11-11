@@ -10,7 +10,7 @@
   },
   "pay": {
     "included": "Commandes en ligne incluses chaque mois",
-    "fee": "Frais HatchGrab sur les commandes en ligne par carte*",
+    "fee": "Frais HatchGrab sur les commandes en ligne*",
     "walkUp": "Commandes au comptoir"
   },
   "cell": {

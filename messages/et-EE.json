@@ -5999,7 +5999,7 @@
     "payg": {
       "name": "Kuutasuta",
       "subtitle": "Hooajalised ja osalise ajaga ettevõtjad",
-      "description": "Kuutasu pole. Maksad ainult siis, kui klient maksab veebis kaardiga."
+      "description": "Kuutasu pole. Maksad ainult 0,99% veebitellimustelt."
     },
     "pro": {
       "subtitle": "Toiduautod, mis saavad regulaarselt ettetellimusi",
@@ -6206,7 +6206,7 @@
     },
     "pay": {
       "included": "Iga kuu hinnas sisalduvad veebitellimused",
-      "fee": "HatchGrabi tasu veebis kaardiga makstud tellimustelt*",
+      "fee": "HatchGrabi tasu veebitellimustelt*",
       "walkUp": "Tellimused kohapeal"
     },
     "cell": {

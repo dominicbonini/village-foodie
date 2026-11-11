@@ -10,7 +10,7 @@
   },
   "pay": {
     "included": "Online narudžbe uključene svaki mjesec",
-    "fee": "HatchGrab naknada za online narudžbe plaćene karticom*",
+    "fee": "HatchGrab naknada za online narudžbe*",
     "walkUp": "Narudžbe na licu mjesta"
   },
   "cell": {

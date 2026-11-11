@@ -10,7 +10,7 @@
   },
   "pay": {
     "included": "Ordini online inclusi ogni mese",
-    "fee": "Commissione HatchGrab sugli ordini online con carta*",
+    "fee": "Commissione HatchGrab sugli ordini online*",
     "walkUp": "Ordini al banco"
   },
   "cell": {

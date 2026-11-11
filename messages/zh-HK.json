@@ -6178,7 +6178,7 @@
     },
     "pay": {
       "included": "每月包含的網上訂單",
-      "fee": "網上信用卡訂單的 HatchGrab 收費*",
+      "fee": "網上訂單的 HatchGrab 收費*",
       "walkUp": "現場訂單"
     },
     "cell": {
@@ -6996,7 +6996,7 @@
     "payg": {
       "name": "免月費",
       "subtitle": "適合季節性及兼職經營的美食車",
-      "description": "無需月費。只在顧客以信用卡網上付款時才收費。"
+      "description": "無需月費。只需就網上訂單支付 0.99%。"
     },
     "pro": {
       "subtitle": "適合經常接受預先落單的美食車",

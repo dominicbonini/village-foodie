@@ -1201,7 +1201,7 @@
  "phone.invalidPhoneNumber": "{withName, select, yes {Enter a valid {name} phone number} other {Enter a valid phone number}}{withExample, select, yes { (e.g. {example})} other {}}.",
  "planFeatures.priceWord.payAtHatch": "Pay on collection",
  "planFeatures.row.tap_to_pay.name": "Take payment on your phone",
- "planNames.payg.description": "No monthly fee. You only pay when a customer pays online by card.",
+ "planNames.payg.description": "No monthly fee. You only pay 0.99% on online orders.",
  "planPrompt.features.online_ordering_pay_at_hatch.name": "Online ordering with Pay on collection",
  "planPrompt.features.time_slot_selection.name": "Pickup time slots",
  "planTable.group.pay": "What you pay",

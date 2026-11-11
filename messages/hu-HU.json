@@ -5999,7 +5999,7 @@
     "payg": {
       "name": "Havidíj nélkül",
       "subtitle": "Szezonális és részidős árusoknak",
-      "description": "Nincs havidíj. Csak akkor fizet, ha egy vásárló online, kártyával fizet."
+      "description": "Nincs havidíj. Csak 0,99% díjat fizet az online rendelések után."
     },
     "pro": {
       "subtitle": "Rendszeres előrendeléseket fogadó food truckoknak",
@@ -6206,7 +6206,7 @@
     },
     "pay": {
       "included": "Havi díjmentes online rendelési keret",
-      "fee": "HatchGrab-díj online kártyás rendeléseknél*",
+      "fee": "HatchGrab-díj online rendeléseknél*",
       "walkUp": "Helyszíni rendelések"
     },
     "cell": {

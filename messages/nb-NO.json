@@ -5999,7 +5999,7 @@
     "payg": {
       "name": "Uten månedsavgift",
       "subtitle": "Sesongdrift og deltid",
-      "description": "Ingen månedsavgift. Du betaler bare når en kunde betaler med kort på nett."
+      "description": "Ingen månedsavgift. Du betaler bare 0,99 % på nettbestillinger."
     },
     "pro": {
       "subtitle": "Matbiler med faste forhåndsbestillinger",
@@ -6206,7 +6206,7 @@
     },
     "pay": {
       "included": "Nettbestillinger inkludert hver måned",
-      "fee": "HatchGrab-gebyr på nettbestillinger betalt med kort*",
+      "fee": "HatchGrab-gebyr på nettbestillinger*",
       "walkUp": "Bestillinger ved bilen"
     },
     "cell": {

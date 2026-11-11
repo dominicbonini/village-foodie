@@ -10,7 +10,7 @@
   },
   "pay": {
     "included": "Online objednávky v cene každý mesiac",
-    "fee": "Poplatok HatchGrab za online objednávky platené kartou*",
+    "fee": "Poplatok HatchGrab za online objednávky*",
     "walkUp": "Objednávky na mieste"
   },
   "cell": {

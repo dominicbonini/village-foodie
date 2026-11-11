@@ -5999,7 +5999,7 @@
     "payg": {
       "name": "A consumo",
       "subtitle": "Food truck stagionali e part-time",
-      "description": "Nessun canone mensile. Paghi solo quando un cliente paga online con carta."
+      "description": "Nessun canone mensile. Paghi solo lo 0,99% sugli ordini online."
     },
     "pro": {
       "subtitle": "Food truck con preordini regolari",
@@ -6206,7 +6206,7 @@
     },
     "pay": {
       "included": "Ordini online inclusi ogni mese",
-      "fee": "Commissione HatchGrab sugli ordini online con carta*",
+      "fee": "Commissione HatchGrab sugli ordini online*",
       "walkUp": "Ordini al banco"
     },
     "cell": {

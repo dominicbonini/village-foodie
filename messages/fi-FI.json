@@ -5999,7 +5999,7 @@
     "payg": {
       "name": "Ilman kuukausimaksua",
       "subtitle": "Kausiluonteiset ja osa-aikaiset yrittäjät",
-      "description": "Ei kuukausimaksua. Maksat vain, kun asiakas maksaa verkossa kortilla."
+      "description": "Ei kuukausimaksua. Maksat vain 0,99 % verkkotilauksista."
     },
     "pro": {
       "subtitle": "Ruokarekat, joilla on säännöllisesti ennakkotilauksia",
@@ -6206,7 +6206,7 @@
     },
     "pay": {
       "included": "Kuukausittain sisältyvät verkkotilaukset",
-      "fee": "HatchGrabin maksu kortilla maksetuista verkkotilauksista*",
+      "fee": "HatchGrabin maksu verkkotilauksista*",
       "walkUp": "Tilaukset paikan päällä"
     },
     "cell": {

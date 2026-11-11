@@ -5999,7 +5999,7 @@
     "payg": {
       "name": "Tanpa biaya bulanan",
       "subtitle": "Pedagang musiman & paruh waktu",
-      "description": "Tidak ada biaya langganan. Anda hanya membayar saat pelanggan membayar online dengan kartu."
+      "description": "Tidak ada biaya langganan. Anda hanya membayar 0,99% untuk pesanan online."
     },
     "pro": {
       "subtitle": "Truk yang rutin menerima pre-order",
@@ -6206,7 +6206,7 @@
     },
     "pay": {
       "included": "Pesanan online yang sudah termasuk setiap bulan",
-      "fee": "Biaya HatchGrab untuk pesanan online dengan kartu*",
+      "fee": "Biaya HatchGrab untuk pesanan online*",
       "walkUp": "Pesanan langsung di tempat"
     },
     "cell": {

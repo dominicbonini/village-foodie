@@ -5999,7 +5999,7 @@
     "payg": {
       "name": "Bez mesačného poplatku",
       "subtitle": "Sezónni a príležitostní predajcovia",
-      "description": "Žiadny mesačný poplatok. Platíte, len keď zákazník zaplatí online kartou."
+      "description": "Žiadny mesačný poplatok. Platíte len 0,99 % z online objednávok."
     },
     "pro": {
       "subtitle": "Food trucky s pravidelnými predobjednávkami",
@@ -6206,7 +6206,7 @@
     },
     "pay": {
       "included": "Online objednávky v cene každý mesiac",
-      "fee": "Poplatok HatchGrab za online objednávky platené kartou*",
+      "fee": "Poplatok HatchGrab za online objednávky*",
       "walkUp": "Objednávky na mieste"
     },
     "cell": {

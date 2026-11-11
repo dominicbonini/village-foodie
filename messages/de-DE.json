@@ -5999,7 +5999,7 @@
     "payg": {
       "name": "Pay-as-you-go",
       "subtitle": "Für Saison- und Teilzeitbetriebe",
-      "description": "Ohne Grundgebühr. Sie zahlen nur, wenn ein Kunde online mit Karte bezahlt."
+      "description": "Ohne Grundgebühr. Sie zahlen nur 0,99 % auf Online-Bestellungen."
     },
     "pro": {
       "subtitle": "Für Foodtrucks mit regelmäßigen Vorbestellungen",
@@ -6206,7 +6206,7 @@
     },
     "pay": {
       "included": "Inklusive Online-Bestellungen pro Monat",
-      "fee": "HatchGrab-Gebühr auf Online-Bestellungen mit Karte*",
+      "fee": "HatchGrab-Gebühr auf Online-Bestellungen*",
       "walkUp": "Bestellungen vor Ort"
     },
     "cell": {

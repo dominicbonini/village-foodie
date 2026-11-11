@@ -6178,7 +6178,7 @@
     },
     "pay": {
       "included": "Pedidos online incluídos por mês",
-      "fee": "Taxa do HatchGrab em pedidos online com cartão*",
+      "fee": "Taxa do HatchGrab em pedidos online*",
       "walkUp": "Pedidos no balcão"
     },
     "cell": {
@@ -6996,7 +6996,7 @@
     "payg": {
       "name": "Sem mensalidade",
       "subtitle": "Para quem trabalha por temporada ou meio período",
-      "description": "Sem mensalidade. Você só paga quando um cliente paga online com cartão."
+      "description": "Sem mensalidade. Você só paga 0,99% nos pedidos online."
     },
     "pro": {
       "subtitle": "Food trucks com pedidos antecipados frequentes",

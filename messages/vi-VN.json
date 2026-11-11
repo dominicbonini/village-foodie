@@ -5999,7 +5999,7 @@
     "payg": {
       "name": "Không phí hằng tháng",
       "subtitle": "Xe bán theo mùa & bán thời gian",
-      "description": "Không mất phí hằng tháng. Bạn chỉ trả phí khi khách thanh toán online bằng thẻ."
+      "description": "Không mất phí hằng tháng. Bạn chỉ trả 0,99% trên đơn online."
     },
     "pro": {
       "subtitle": "Xe nhận đơn đặt trước thường xuyên",
@@ -6206,7 +6206,7 @@
     },
     "pay": {
       "included": "Giá trị đơn online đã gồm mỗi tháng",
-      "fee": "Phí HatchGrab trên đơn online thanh toán bằng thẻ*",
+      "fee": "Phí HatchGrab trên đơn online*",
       "walkUp": "Đơn mua tại chỗ"
     },
     "cell": {

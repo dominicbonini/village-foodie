@@ -10,7 +10,7 @@
   },
   "pay": {
     "included": "Zamówienia online w cenie (miesięcznie)",
-    "fee": "Prowizja HatchGrab od zamówień online opłaconych kartą*",
+    "fee": "Prowizja HatchGrab od zamówień online*",
     "walkUp": "Zamówienia na miejscu"
   },
   "cell": {

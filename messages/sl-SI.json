@@ -5999,7 +5999,7 @@
     "payg": {
       "name": "Brez mesečne naročnine",
       "subtitle": "Sezonski in občasni food trucki",
-      "description": "Brez mesečne naročnine. Plačate le, ko kupec plača na spletu s kartico."
+      "description": "Brez mesečne naročnine. Plačate le 0,99 % od spletnih naročil."
     },
     "pro": {
       "subtitle": "Food trucki z rednimi prednaročili",
@@ -6206,7 +6206,7 @@
     },
     "pay": {
       "included": "Spletna naročila, vključena vsak mesec",
-      "fee": "Provizija HatchGrab za spletna naročila s kartico*",
+      "fee": "Provizija HatchGrab za spletna naročila*",
       "walkUp": "Naročila na mestu"
     },
     "cell": {

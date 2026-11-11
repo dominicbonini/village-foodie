@@ -84,7 +84,7 @@ export function llmsText(countries: CountrySettings[], catalog: PlanCatalog, com
   const fees = [...new Set(countries.flatMap(c => offerPlans(catalog, c.countryCode).filter(p => p.feeBps > 0).map(p => pctLabel(p.feeBps / 100, { locale: 'en-GB' }))))]
   if (fees.length) {
     L.push(`## The ${name} fee`, '')
-    L.push(`The ${name} fee is ${fees.join(' or ')} of online card orders, on the plans that charge one (see each plan above). Plans with an allowance charge it only above the online orders included each month. It never applies to walk-up orders.`, '')
+    L.push(`The ${name} fee is ${fees.join(' or ')} of online orders, on the plans that charge one (see each plan above). Plans with an allowance charge it only above the online orders included each month. It never applies to walk-up orders.`, '')
   }
 
   if (months !== null && countries.length) {
@@ -139,6 +139,6 @@ export function llmsText(countries: CountrySettings[], catalog: PlanCatalog, com
 function feeSentence(p: OfferPlan, money: MoneyFormat): string {
   const fee = pctLabel(p.feeBps / 100, { locale: 'en-GB' })   // B4: English for every country
   if (p.shape === 'feeOnly') return `${fee} on online orders.`
-  if (p.shape === 'included') return `First ${formatWholeAmount(p.includedMinor as number, money)} of online orders included each month, then ${fee} on online card orders.`
+  if (p.shape === 'included') return `First ${formatWholeAmount(p.includedMinor as number, money)} of online orders included each month, then ${fee} on online orders.`
   return `No ${BRANDS.HATCHGRAB.name} fee on online orders.`
 }

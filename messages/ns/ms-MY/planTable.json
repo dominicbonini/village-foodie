@@ -10,7 +10,7 @@
   },
   "pay": {
     "included": "Pesanan dalam talian yang termasuk setiap bulan",
-    "fee": "Yuran HatchGrab untuk pesanan kad dalam talian*",
+    "fee": "Yuran HatchGrab untuk pesanan dalam talian*",
     "walkUp": "Pesanan walk-in"
   },
   "cell": {

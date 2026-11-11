@@ -5999,7 +5999,7 @@
     "payg": {
       "name": "Fără abonament",
       "subtitle": "Food truck-uri sezoniere și cu program redus",
-      "description": "Fără taxă lunară. Plătiți doar când un client plătește online cu cardul."
+      "description": "Fără taxă lunară. Plătiți doar 0,99 % pentru comenzile online."
     },
     "pro": {
       "subtitle": "Food truck-uri care primesc regulat precomenzi",
@@ -6206,7 +6206,7 @@
     },
     "pay": {
       "included": "Comenzi online incluse lunar",
-      "fee": "Taxa HatchGrab pentru comenzile online plătite cu cardul*",
+      "fee": "Taxa HatchGrab pentru comenzile online*",
       "walkUp": "Comenzi la fața locului"
     },
     "cell": {

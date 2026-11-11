@@ -5999,7 +5999,7 @@
     "payg": {
       "name": "Sans abonnement",
       "subtitle": "Food trucks saisonniers et à temps partiel",
-      "description": "Aucun abonnement mensuel. Vous ne payez que lorsqu’un client paie en ligne par carte."
+      "description": "Aucun abonnement mensuel. Vous ne payez que 0,99 % sur les commandes en ligne."
     },
     "pro": {
       "subtitle": "Food trucks qui reçoivent régulièrement des précommandes",
@@ -6206,7 +6206,7 @@
     },
     "pay": {
       "included": "Commandes en ligne incluses chaque mois",
-      "fee": "Frais HatchGrab sur les commandes en ligne par carte*",
+      "fee": "Frais HatchGrab sur les commandes en ligne*",
       "walkUp": "Commandes au comptoir"
     },
     "cell": {

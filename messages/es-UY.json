@@ -1866,7 +1866,7 @@
   },
   "planNames": {
     "payg": {
-      "description": "Sin cuota mensual. Solo pagás cuando un cliente paga online con tarjeta."
+      "description": "Sin cuota mensual. Solo pagás 0,99% en los pedidos online."
     }
   },
   "planPrompt": {
