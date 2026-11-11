@@ -1,0 +1,134 @@
+{
+  "item": {
+    "weekHeading": "Hafta sarlavhasi",
+    "weekHeadingSample": "Hafta boshi: …",
+    "daysSample": "{first} – {last}",
+    "date": "Sana",
+    "place": "Joy",
+    "venue": "Maskan",
+    "area": "Hudud",
+    "time": "Vaqt",
+    "rows": "Qatorlar",
+    "rowsSample": "Oraliq: {px}px · {first} – {last}",
+    "ownText": "Oʻz matningiz",
+    "noteTokenSample": "Post tayyorlayotganda yozadigan izohingiz",
+    "nothingYet": "Hozircha hech narsa yoʻq",
+    "thisBox": "bu maydon"
+  },
+  "sample": {
+    "venue": "Dehqon bozori",
+    "area": "Chilonzor"
+  },
+  "bar": {
+    "previewWith": "Namunada koʻrish:",
+    "undo": "Qaytarish",
+    "undoTitle": "Qaytarish (⌘Z)",
+    "redo": "Qayta bajarish",
+    "redoTitle": "Qayta bajarish (⇧⌘Z)",
+    "cancel": "Bekor qilish",
+    "saving": "Saqlanmoqda…",
+    "save": "Dizaynni saqlash"
+  },
+  "grid": {
+    "eachRow": "Har bir qator",
+    "placeOff": "Joy nomi rasmingizda bor — HatchGrab uni qoʻshmaydi."
+  },
+  "background": {
+    "uploading": "Yuklanmoqda…",
+    "replace": "Rasmni almashtirish",
+    "shape": {
+      "square": "Kvadrat (1:1)",
+      "portrait45": "Vertikal (4:5)",
+      "portrait916": "Vertikal (9:16)",
+      "landscape169": "Gorizontal (16:9)",
+      "portrait": "Vertikal",
+      "landscape": "Gorizontal"
+    }
+  },
+  "scope": {
+    "title": "Matn joylashuvi",
+    "standard": "Standart dizayndagi joylashuv",
+    "own": "Alohida joylashuv: {place}",
+    "locked": "Bu joylashuv Standart dizayningizdan olingan. Faqat shu yerda koʻchirish uchun “Alohida joylashuv: {place}” bandini tanlang."
+  },
+  "stage": {
+    "hint": "Koʻchirish uchun maydonni torting · oʻlchamini oʻzgartirish uchun burchagidan torting",
+    "zoomOut": "Kichraytirish",
+    "zoomIn": "Kattalashtirish"
+  },
+  "rows": {
+    "spacing": "Oraliq",
+    "daysRun": "Kunlar: {first} – {last}. 1-qatordagi uchta maydon shu masofada pastga nusxalanadi.",
+    "whichEvents": "Qaysi tadbirlar",
+    "showCancelled": "Bekor qilingan tadbirlarni koʻrsatish",
+    "showCancelledHint": "Bekor qilingan tadbirda joy nomi chizib qoʻyiladi va BEKOR QILINDI soʻzi chiqadi. Oʻchirilgan boʻlsa, bu kun dam olish kuni sifatida koʻrinadi."
+  },
+  "days": {
+    "reorder": "Tartibni oʻzgartirish",
+    "move": "koʻchirish"
+  },
+  "picture": {
+    "picture": "Rasm",
+    "fill": "Maydonni toʻldirish",
+    "fit": "Ichiga sigʻdirish",
+    "corners": "Burchaklar",
+    "square": "Toʻgʻri",
+    "rounded": "Yumaloq",
+    "ifMissing": "Joyning rasmi boʻlmasa",
+    "noPicture": {
+      "omit": "Qoldirib ketish",
+      "blank": "Boʻsh joy qoldirish",
+      "logo": "Logotipingizni koʻrsatish"
+    },
+    "border": "Hoshiya",
+    "drawBorder": "Hoshiya chizish",
+    "drawBorderHint": "Rasm atrofida oʻzingiz tanlagan rangdagi chiziq.",
+    "borderWidth": "Hoshiya qalinligi",
+    "cornerRadius": "Burchak radiusi",
+    "locationPictures": "Joy rasmlari",
+    "addLocationPictures": "+ Joy rasmlarini qoʻshish",
+    "allHaveImage": "{total, plural, =0 {Sizda hali joylar yoʻq.} one {Joyingizning rasmi bor.} other {Barcha # ta joyingizning rasmi bor.}}",
+    "someWithout": "Hali rasmi yoʻq joylar: {without} {without, plural, one {ta} other {ta}} ({total, plural, one {jami # ta joydan} other {jami # ta joydan}})"
+  },
+  "settings": {
+    "font": "Shrift",
+    "colour": "Rang",
+    "textColour": "Matn rangi",
+    "ownStyleNote": "{count, plural, one {{names}: oʻz uslubi bor, shuning uchun u oʻzgartirilmaydi.} other {{names}: oʻz uslubi bor, shuning uchun ular oʻzgartirilmaydi.}}",
+    "matchAgain": "Yana moslashtirish",
+    "matchName": "Moslashtirish: {name}",
+    "lastToggle": "{kind, select, weekly {«Joy» yoki «Vaqt» bandlaridan kamida bittasini yoqilgan holda qoldiring. Bekor qilingan tadbirda joy nomi chizib qoʻyiladi va BEKOR QILINDI soʻzi chiqadi, shuning uchun ikkalasi oʻchirilsa, tadbir bekor qilinganini koʻrsatadigan hech narsa qolmaydi.} other {«Maskan» yoki «Vaqt» bandlaridan kamida bittasini yoqilgan holda qoldiring. Bekor qilingan tadbirda joy nomi chizib qoʻyiladi va BEKOR QILINDI soʻzi chiqadi, shuning uchun ikkalasi oʻchirilsa, tadbir bekor qilinganini koʻrsatadigan hech narsa qolmaydi.}}"
+  },
+  "letters": {
+    "boldGlyph": "B",
+    "italicGlyph": "I",
+    "capsGlyph": "AA",
+    "italicTitle": "{italic} — bu shriftda haqiqiy kursiv bor"
+  },
+  "align": {
+    "left": "Chapga",
+    "centre": "Markazga",
+    "right": "Oʻngga"
+  },
+  "effects": {
+    "outlineColour": "Kontur rangi",
+    "bandColour": "Lenta rangi",
+    "bandDaysOff": "Dam olish kunlaridagi lenta",
+    "bandCancelled": "Tadbir bekor qilinganda lenta",
+    "bandDaysOffHint": "Savdo boʻlmaydigan kunda yuqoridagi lenta oʻrniga ishlatiladi.",
+    "bandCancelledHint": "Tadbir bekor qilinganda yuqoridagi lenta oʻrniga ishlatiladi."
+  },
+  "more": {
+    "dayOwnLine": "Hafta kuni alohida qatorda",
+    "dayOwnLineHint": "Hafta kuni sana ustida. Faqat sana uchun.",
+    "noEventDay": "Tadbir boʻlmagan kunda",
+    "wordsBeforePlaceholder": "masalan, Bizni toping",
+    "neverHyphenate": "Boʻshliqsiz bitta uzun soʻz har doim kichraytiriladi — biz joy nomini hech qachon boʻgʻinga ajratmaymiz."
+  },
+  "bits": {
+    "less": "Kamroq",
+    "more": "Koʻproq",
+    "chooseColourFor": "{label} — istalgan rangni tanlang",
+    "chooseColour": "Istalgan rangni tanlang"
+  }
+}

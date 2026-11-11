@@ -1,0 +1,102 @@
+{
+  "title": "Fudtrakingizga qaysi biri mos?",
+  "checked": "Tekshirilgan sana: {date}",
+  "evidence": "Dalillar",
+  "adminPreview": "Admin koʻrinishi — tasdiqlanmagan",
+  "ours": {
+    "fromPlan": "{name} ({plan} tarifidan boshlab)"
+  },
+  "q": {
+    "preorder": "Qaysi buyurtma tizimi mijozlarimga oldindan buyurtma berish va olib ketish vaqtini tanlash imkonini beradi?",
+    "capacity": "Eng gavjum paytlarda fudtrakimga buyurtmalar yogʻilib ketadi — qaysi tizim har bir vaqt oraligʻi uchun buyurtmalarni cheklaydi?",
+    "whatsapp": "Mijozlar doim qayerdaligimni soʻraydi — qaysi tizim ularga WhatsApp orqali javob beradi?",
+    "social": "Qaysi tizim haftalik joylarim uchun postlarni tayyorlab beradi, shunda grafikani oʻzim yaratishim shart boʻlmaydi?",
+    "schedule": "Deyarli har kuni boshqa joyda savdo qilaman — qaysi tizim mijozlarga qayerdaligimni koʻrsatadi va shu joy uchun buyurtma qabul qiladi?",
+    "priceLow": "Oyiga bir necha kungina savdo qilaman — qaysi tizim eng arzon?",
+    "priceHigh": "Festivallar va gavjum tadbirlarda ishlayman — qaysi tizim eng arzon?",
+    "commission": "Har bir buyurtmadan komissiya toʻlashni istamayman — har bir mahsulot qancha oladi?",
+    "offline": "Aloqa uzilsa, onlayn buyurtmalar bilan nima boʻladi?",
+    "strength": "Solishtirilgan qaysi mahsulot “{feature}” imkoniyatini taklif qiladi?"
+  },
+  "does": {
+    "preorder": "{names} {count, plural, one {mijozlarga oldindan buyurtma berish va olib ketish vaqtini tanlash imkonini beradi} other {mijozlarga oldindan buyurtma berish va olib ketish vaqtini tanlash imkonini beradi}}.",
+    "capacity": "{names} {count, plural, one {har bir olib ketish vaqtiga nechta buyurtma tushishini cheklaydi} other {har bir olib ketish vaqtiga nechta buyurtma tushishini cheklaydi}}, shuning uchun oshxonaga ortiqcha yuk tushmaydi.",
+    "whatsapp": "{names} {count, plural, one {mijozlarning WhatsApp xabarlariga avtomatik javob beradi} other {mijozlarning WhatsApp xabarlariga avtomatik javob beradi}}.",
+    "social": "{names} {count, plural, one {haftalik joylar boʻyicha joylashga tayyor grafikalar tayyorlaydi} other {haftalik joylar boʻyicha joylashga tayyor grafikalar tayyorlaydi}}.",
+    "schedule": "{names} {count, plural, one {mijozlarga fudtrak har kuni qayerdaligini koʻrsatadi} other {mijozlarga fudtrak har kuni qayerdaligini koʻrsatadi}} va {count, plural, one {shu joy uchun buyurtma qabul qiladi} other {shu joy uchun buyurtma qabul qiladi}}."
+  },
+  "feat": {
+    "preorder": "olib ketish vaqtlari",
+    "capacity": "har bir vaqt oraligʻi uchun buyurtmalar chegarasi",
+    "whatsapp": "WhatsApp avtojavoblari",
+    "social": "haftalik jadval grafikalari",
+    "schedule": "oʻzgaruvchan joylar jadvali",
+    "offlinePause": "Aloqa uzilganda onlayn buyurtmalar toʻxtatiladi"
+  },
+  "others": {
+    "noQuoted": "{names} {count, plural, one {buni taklif qilmaydi} other {buni taklif qilmaydi}}.",
+    "notListed": "{names} {count, plural, one {oʻz saytida “{feature}” imkoniyatini koʻrsatmaydi} other {oʻz saytlarida “{feature}” imkoniyatini koʻrsatmaydi}}.",
+    "doesntSay": "{count, plural, one {{names} saytida bu haqda aytilmagan} other {{names} saytlarida bu haqda aytilmagan}}.",
+    "noneLists": "Solishtirilgan boshqa mahsulotlarning hech biri buni koʻrsatmaydi, shuning uchun {names} {count, plural, one {solishtirilgan mahsulotlar orasida eng mos keladi} other {solishtirilgan mahsulotlar orasida eng mos keladi}}."
+  },
+  "price": {
+    "lead": "Oyiga {orders, number} ta onlayn buyurtmada {names} {count, plural, one {solishtirilgan mahsulotlar orasida eng past oylik dastur xarajatiga ega} other {solishtirilgan mahsulotlar orasida eng past oylik dastur xarajatiga ega}}: oyiga {amount}{count, plural, one {} other { (har biri)}}.",
+    "includes": "Bunga obuna, har bir buyurtma uchun fudtrakdan olinadigan komissiyalar, qoʻshimcha buyurtmalar uchun toʻlov va 12 oyga taqsimlangan ulanish toʻlovi kiradi; karta toʻlovlari komissiyalari kiritilmagan.",
+    "flat": "{name} ({plan}, qatʼiy narx, {name} tomonidan buyurtma uchun komissiya olinmaydi)",
+    "planName": "{name} ({plan})"
+  },
+  "commission": {
+    "part": "{name}: {fee}",
+    "answer": "Har bir mahsulot buyurtmadan qancha oladi: {parts}."
+  },
+  "offline": {
+    "ours": "Fudtrakda aloqa uzilganda {name} onlayn buyurtmalarni avtomatik toʻxtatib qoʻyishi mumkin, shunda mijozlar oshxonaga yetib bormaydigan buyurtmalarni bera olmaydi.",
+    "noQuoted": "{names} {count, plural, one {aloqasiz ishlashni taklif qilmaydi} other {aloqasiz ishlashni taklif qilmaydi}}.",
+    "doesntSay": "{count, plural, one {{names} saytida aloqa uzilganda nima boʻlishi aytilmagan} other {{names} saytlarida aloqa uzilganda nima boʻlishi aytilmagan}}."
+  },
+  "strength": {
+    "answer": "{names} {count, plural, one {“{feature}” imkoniyatini taklif qilishini aytadi} other {“{feature}” imkoniyatini taklif qilishini aytadi}}; {us} esa taklif qilmaydi.",
+    "answerSoon": "{names} {count, plural, one {“{feature}” imkoniyatini taklif qilishini aytadi} other {“{feature}” imkoniyatini taklif qilishini aytadi}}; {us} esa hozircha taklif qilmaydi."
+  },
+  "ev": {
+    "ours": {
+      "yes": "ha, {us} tizimining oʻz tariflariga koʻra",
+      "no": "yoʻq, {us} tizimining oʻz tariflariga koʻra"
+    },
+    "state": {
+      "yes": "buni taklif qilishini aytadi",
+      "partial": "uning bir qismini taklif qiladi",
+      "no_quoted": "buni taklif qilmasligini aytadi",
+      "no_unquoted": "yoʻq (iqtibos saqlanmagan)",
+      "not_listed": "saytida koʻrsatilmagan",
+      "not_mentioned": "saytida aytilmagan",
+      "unknown": "nomaʼlum"
+    },
+    "row": "{tool} — {feature}: {answer}.",
+    "quote": "Iqtibos: “{quote}”.",
+    "pages": "Tekshirilgan sahifalar: {pages}.",
+    "pageRead": "{page}",
+    "pageNotRead": "{page} (oʻqib boʻlmadi)",
+    "page": {
+      "features": "imkoniyatlar sahifasi",
+      "pricing": "narxlar sahifasi",
+      "help": "yordam markazi",
+      "other": "boshqa sahifa"
+    },
+    "help": {
+      "fetched": "Uning yordam markazi oʻqildi.",
+      "linked_not_fetched": "Uning yordam markazi bor, lekin u oʻqilmadi.",
+      "none_found": "Yordam markazi topilmadi."
+    },
+    "calc": {
+      "volume": "Oyiga {orders, number} ta onlayn buyurtma, har bir buyurtma {order} (onlayn savdo: {revenue}) hisobidan chiqarilgan.",
+      "line": "{name} ({plan}): obuna {sub} + 12 oyga taqsimlangan ulanish toʻlovi {setup} + buyurtmalar uchun komissiyalar {fees} + qoʻshimcha buyurtmalar {over} = oyiga {total}.",
+      "excluded": "Hech bir mahsulot uchun karta toʻlovlari komissiyalari va mijozlar toʻlaydigan toʻlovlar kiritilmagan.",
+      "date": "{date} sanasida har bir sotuvchining saytida tekshirilgan narxlar asosida hisoblangan."
+    }
+  },
+  "method": {
+    "covers": "U fudtraklar uchun dolzarbligi va tekshirsa boʻladigan ochiq maʼlumotlar mavjudligiga qarab tanlangan toʻrttagacha muqobilni qamrab oladi — bozordagi barcha mahsulotlarni emas.",
+    "notListed": "“Roʻyxatda yoʻq” — kompaniyalar odatda reklama qiladigan imkoniyatlar uchun mahsulotning imkoniyatlar va narxlar sahifalarini tekshirdik, lekin u yerda tilga olinmagan degani. “Aytilmagan” — u yoki bu tomonga tasdiqlanmagan degani."
+  }
+}

@@ -1,0 +1,46 @@
+{
+  "tab": {
+    "all": "Hammasi",
+    "bold": "Qalin va baland",
+    "hand": "Qoʻlyozma",
+    "classic": "Klassik",
+    "clean": "Sodda",
+    "own": "Sizniki",
+    "ownCount": "Sizniki ({count})"
+  },
+  "yoursTag": "· sizniki",
+  "loadingFonts": "Shriftlar yuklanmoqda…",
+  "search": "{count, number} ta shrift ichidan qidirish",
+  "uploadButton": "↑ Shriftingizni yuklash",
+  "loadingLibrary": "Shriftlar kutubxonasi yuklanmoqda…",
+  "tryAgain": "Qayta urinish",
+  "noOwn": "Siz hali shrift yuklamagansiz. Yuqoridagi “↑ Shriftingizni yuklash” tugmasidan foydalaning.",
+  "recent": "Yaqinda ishlatilgan",
+  "popular": "Afishalar uchun mashhur",
+  "adding": "Qoʻshilmoqda…",
+  "noMatch": "“{query}” soʻroviga mos shrift topilmadi.",
+  "showing": "{total, number} tadan {shown} tasi koʻrsatilmoqda — natijani toraytirish uchun koʻproq yozing.",
+  "couldNotAdd": "Bu shriftni qoʻshib boʻlmadi",
+  "tooBig": "Bu shrift hajmi {size, number, ::.0 group-off} MB. Cheklov — 5 MB.",
+  "woff": "TTF yoki OTF faylini yuklang — odatda uni shriftni sotib olgan joyingizdan yuklab olish mumkin.",
+  "uploadIncomplete": "Yuklash yakunlanmadi",
+  "added": "“{name}” shrifti {face} variant sifatida qoʻshildi.",
+  "face": {
+    "regular": "oddiy",
+    "bold": "qalin",
+    "italic": "kursiv"
+  },
+  "licenceTick": "Bu shrift menga tegishli yoki undan foydalanish litsenziyam bor",
+  "checking": "Shrift tekshirilmoqda…",
+  "addFont": "Shrift qoʻshish",
+  "cancel": "Bekor qilish",
+  "missingFaces": "“{name}” shriftining {faces} variantini qoʻshing (ixtiyoriy) — faylni qaytadan tanlang.",
+  "somethingWrong": "Nimadir xato ketdi",
+  "faceLower": {
+    "regular": "oddiy",
+    "bold": "qalin",
+    "italic": "kursiv"
+  },
+  "ownLicence": "Oʻzingizniki",
+  "loadFailed": "Shriftlarni yuklab boʻlmadi"
+}

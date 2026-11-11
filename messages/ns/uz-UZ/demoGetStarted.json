@@ -1,0 +1,103 @@
+{
+  "upload": {
+    "bannerButton": "Menyumni saqlash →",
+    "heading": "Fudtrakingizni sozlang",
+    "sub": "Menyuingiz toʻgʻridan-toʻgʻri koʻchiriladi.",
+    "privacy": "Bundan faqat fudtrakingizni sozlash va demo havolasini yuborish uchun foydalanamiz — batafsil: <link>maxfiylik siyosati</link>."
+  },
+  "sample": {
+    "bannerButton": "Fudtrakimni sozlash →",
+    "heading": "Fudtrakingizni sozlang",
+    "sub": "Keyin oʻz menyuingizni yuklaysiz — bir daqiqa oladi.",
+    "privacy": "Bundan faqat fudtrakingizni sozlash va demo havolasini yuborish uchun foydalanamiz — batafsil: <link>maxfiylik siyosati</link>."
+  },
+  "saveOnly": {
+    "bannerButton": "Menyumni saqlash →",
+    "heading": "Demoni saqlang",
+    "sub": "Uni 14 kun saqlaymiz va qaytish havolasini darhol e-pochtangizga yuboramiz.",
+    "privacy": "Bundan faqat demo havolasini yuborish uchun foydalanamiz — batafsil: <link>maxfiylik siyosati</link>."
+  },
+  "confirmationHeading": "Hammasi tayyor",
+  "postSaveButton": "Fudtrakimni sozlash →",
+  "enterSetupButton": "Fudtrakimni sozlash →",
+  "emailOnlyLink": "Shu demoga qaytish uchun menga faqat havolani yuboring",
+  "sendLinkButton": "Havolani yuborish",
+  "savingButton": "Saqlanmoqda…",
+  "continueButton": "Davom etish →",
+  "createAccountButton": "Hisobimni yaratish →",
+  "retryButton": "Qayta urinish",
+  "backToDemoButton": "Demoga qaytish",
+  "savedStatus": "{hasDate, select, yes {✓ Saqlandi — saqlanish muddati: {date}} other {✓ Saqlandi}}",
+  "back": "Orqaga",
+  "close": "Yopish",
+  "truckStepHeading": "Fudtrakingiz haqida",
+  "detailsStepHeading": "Sozlashni yakunlang",
+  "stepper": {
+    "details": "Maʼlumotlaringiz",
+    "menu": "Menyu",
+    "allergens": "Allergenlar",
+    "kitchen": "Oshxona sozlamalari",
+    "schedule": "Jadval"
+  },
+  "confirmEmailed": "Shu demoga toʻgʻridan-toʻgʻri qaytish havolasini e-pochtangizga yubordik — tizimga kirish shart emas.",
+  "confirmKeepUntil": "Saqlanish muddati: <b>{date}</b>. Toʻliq sozlaganingizda menyuingiz siz bilan qoladi.",
+  "loading": "Yuklanmoqda…",
+  "firstName": "Ism",
+  "lastName": "Familiya",
+  "truckName": "Fudtrak nomi",
+  "truckNamePlaceholder": "masalan, Mahalla oshxonasi",
+  "cuisine": "Oshxona turi",
+  "logoLabel": "Logotip <opt>(ixtiyoriy)</opt>",
+  "logoPreviewAlt": "Logotipni oldindan koʻrish",
+  "changeLogo": "Logotipni almashtirish",
+  "removeLogo": "Olib tashlash",
+  "uploadLogo": "📷 Logotip yuklash",
+  "readyTitle": "Hisobingiz tayyor",
+  "readyBody": "Endi fudtrakingizni sozlashni yakunlaymiz — menyu, allergenlar va oshxona.",
+  "hangTight": "Biroz kuting — hammasini sozlayapmiz.",
+  "stage": {
+    "account": "Hisobingiz yaratilmoqda",
+    "truck": "Fudtrakingiz sozlanmoqda",
+    "menu": "Menyuingiz yuklanmoqda"
+  },
+  "stageState": {
+    "done": "tayyor",
+    "recognised": "sizda allaqachon hisob bor",
+    "failed": "xatolik",
+    "active": "jarayonda",
+    "pending": "kutilmoqda"
+  },
+  "signIn": "Kirish",
+  "phone": "Telefon",
+  "onWhatsapp": "Bu raqamda WhatsApp bor",
+  "email": "E-pochta",
+  "emailPlaceholder": "siz@fudtrakingiz.uz",
+  "settingUpAs": "Sozlanayotgan hisob: <b>{email}</b> <change>oʻzgartirish</change>",
+  "password": "Parol",
+  "passwordPlaceholder": "Kamida 8 ta belgi",
+  "hidePassword": "Parolni yashirish",
+  "showPassword": "Parolni koʻrsatish",
+  "promoLabel": "Kodingiz bormi? <opt>(ixtiyoriy)</opt>",
+  "promoPlaceholder": "Shu yerga kiriting",
+  "agreeTerms": "<terms>Foydalanish shartlari</terms> hamda <privacy>Maxfiylik siyosati</privacy> bilan roziman.",
+  "freeMonth": "{months, plural, =0 {Bepul sinov muddati roʻyxatdan oʻtgan paytingizdan boshlanadi.} one {Birinchi oy bepul — roʻyxatdan oʻtgan paytingizdan boshlab.} other {Birinchi # oy bepul — roʻyxatdan oʻtgan paytingizdan boshlab.}}",
+  "fieldError": {
+    "firstName": "Ismingizni yozing.",
+    "lastName": "Familiyangizni ham yozing.",
+    "truck": "Fudtrakingizga nom bering.",
+    "cuisine": "Nima pishirishingizni yozing.",
+    "phoneMissing": "Telefon raqamini qoʻshing — mijozlar ham, biz ham siz bilan shu orqali bogʻlanamiz.",
+    "email": "Toʻgʻri e-pochta manzilini kiriting.",
+    "password": "Parol kamida 8 ta belgidan iborat boʻlishi kerak.",
+    "terms": "Davom etish uchun shartlarni qabul qiling."
+  },
+  "error": {
+    "saveFailed": "Saqlab boʻlmadi — qayta urinib koʻring.",
+    "savedNoEmail": "Saqlandi — lekin hozir havolani e-pochtaga yuborib boʻlmadi.",
+    "unreachable": "Hozir biz bilan bogʻlanib boʻlmadi — qayta urinib koʻring.",
+    "createAccountFailed": "Hisobingizni yaratib boʻlmadi.",
+    "truckCreateFailed": "Hisobingiz tayyor, lekin fudtrakingizni yaratib boʻlmadi. Qayta urinib koʻring.",
+    "truckUnreachable": "Hisobingiz tayyor, lekin hozir fudtrakingizni yaratib boʻlmadi. Qayta urinib koʻring.",
+    "truckNoToken": "Fudtrakingiz sozlandi, lekin hozir uni ochib boʻlmadi. Qayta urinib koʻring."
+  }
+}

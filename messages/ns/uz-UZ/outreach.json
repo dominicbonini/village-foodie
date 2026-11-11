@@ -1,0 +1,11 @@
+{
+  "optOut": {
+    "missing": "Bu xatda obunadan voz kechish qatori yoʻq, shuning uchun uni yuborib boʻlmaydi. Uni qoʻshish uchun “Insert opt-out” tugmasidan foydalaning.",
+    "notSetUp": "Obunadan voz kechish jumlasi sozlanmagan, shuning uchun hech qanday taklif xatini yuborib boʻlmaydi. Uni “Templates” yorligʻidagi “Signature” panelida qoʻshing.",
+    "notLoaded": "Obunadan voz kechish jumlasi hali yuklanmadi, shuning uchun buni yuborib boʻlmaydi.",
+    "unreadable": "Obunadan voz kechish jumlasini oʻqib boʻlmadi, shuning uchun hech narsa yuborilmadi."
+  },
+  "retry": {
+    "notRebuilt": "Bu xabarni kompaniya qatori bilan qayta yaratib boʻlmadi, shuning uchun hech narsa yuborilmadi."
+  }
+}

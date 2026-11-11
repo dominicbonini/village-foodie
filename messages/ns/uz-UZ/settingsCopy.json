@@ -1,0 +1,19 @@
+{
+  "allowCancellation": {
+    "label": "Mijozlarga buyurtmani bekor qilishga ruxsat berish",
+    "sentence": "Mijozlar buyurtmani olib ketish vaqtidan <select></select> oldingacha bekor qila oladi"
+  },
+  "autoAccept": {
+    "label": "Buyurtmalarni avtomatik qabul qilish",
+    "help": "Buyurtmalar avtomatik tasdiqlanadi. Soʻralgan vaqt oraligʻi toʻla boʻlsa, buyurtma keyingi boʻsh oraliqqa oʻtkaziladi. Faqat quvvat yetarli boʻlganda tasdiqlanadi. Mijoz izohi bor buyurtmalarni (masalan, allergiya) baribir tasdiqlash kerak boʻladi."
+  },
+  "orderReady": {
+    "label": "“Buyurtma tayyor” bosqichi",
+    "help": "Buyurtmalar ekranida “Tayyor deb belgilash” tugmasini koʻrsatadi. Oshxona ekranlari (KDS) har bir qurilmada alohida sozlanadi. Buyurtma tayyor deb belgilanganda mijozlarga xat yuboriladi. Barcha tadbirlarga amal qiladi — bitta tadbir uchun uni oʻsha tadbirning ish panelida yoqish yoki oʻchirish mumkin."
+  },
+  "buzzers": {
+    "label": "Olib ketish uchun chaqiruv qurilmalarini berasizmi?",
+    "help": "Har bir mijozga qaysi chaqiruv qurilmasini berganingizni yozib qoʻying — taomi tayyor boʻlganda kimni qidirish kerakligini bilasiz.",
+    "countLabel": "Nechta chaqiruv qurilmangiz bor?"
+  }
+}

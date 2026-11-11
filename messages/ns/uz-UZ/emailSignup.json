@@ -1,0 +1,26 @@
+{
+  "greeting": "{hasName, select, yes {Assalomu alaykum, {name}!} other {Assalomu alaykum!}}",
+  "signoffName": "Dominic",
+  "signoffRole": "HatchGrab asoschisi",
+  "verify": {
+    "subject": "E-pochta manzilingizni tasdiqlang",
+    "thanks": "{hasTruck, select, yes {“{truck}” fudtrakini HatchGrab platformasida sozlayotganingiz uchun rahmat.} other {Fudtrakingizni HatchGrab platformasida sozlayotganingiz uchun rahmat.}}",
+    "button": "E-pochta manzilimni tasdiqlash",
+    "buttonText": "E-pochta manzilimni tasdiqlash: {url}",
+    "why": "Siz shu manzil bilan tizimga kirasiz va buyurtma xabarnomalari shu yerga keladi — shuning uchun buni hozir qilib qoʻygan maʼqul.",
+    "next": "Tasdiqlanganidan soʻng ishni boshlash uchun kerak boʻlgan hamma narsani yuboraman.",
+    "carryOn": "Bu orada sozlashni davom ettirishingiz mumkin.",
+    "stuck": "Biror joyda qiynaldingizmi? Shu xatga javob yozing — bunday xatlarga oʻzim javob beraman.",
+    "fallbackLink": "Agar tugma ishlamasa, buni brauzerga joylang: {url}"
+  },
+  "welcome": {
+    "subject": "{hasName, select, yes {HatchGrab platformasiga xush kelibsiz, {name}} other {HatchGrab platformasiga xush kelibsiz}}",
+    "intro": "{hasTruck, select, yes {“{truck}” fudtrakini HatchGrab platformasida kutib olayotganimdan juda xursandman.} other {Fudtrakingizni HatchGrab platformasida kutib olayotganimdan juda xursandman.}}",
+    "trial": "{months, plural, one {Bir oylik bepul sinov muddatingiz boshlandi — barcha imkoniyatlar ochiq.} other {# oylik bepul sinov muddatingiz boshlandi — barcha imkoniyatlar ochiq.}}",
+    "setup": "Agar hali sozlamagan boʻlsangiz, bu oson va taxminan oʻn besh daqiqa oladi.",
+    "button": "Ish panelini ochish",
+    "bookmark": "Xatchoʻplarga saqlab qoʻying. U istalgan qurilmada ishlaydi.",
+    "stuck": "Qiynalsangiz, shu xatga javob yozing — bunday xatlarga oʻzim javob beraman.",
+    "lookingForward": "{hasTruck, select, yes {“{truck}” fudtraki savdo qilishini intiqlik bilan kutaman.} other {Fudtrakingiz savdo qilishini intiqlik bilan kutaman.}}"
+  }
+}

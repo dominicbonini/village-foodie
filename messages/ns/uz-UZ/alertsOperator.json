@@ -1,0 +1,28 @@
+{
+  "hi": "Assalomu alaykum, {name}!",
+  "limit80": {
+    "subject": "Shu oydagi WhatsApp javoblarining 80% qismidan foydalandingiz",
+    "used": "Shu oy avtomatik WhatsApp javoblaringiz sarflandi: <b>{limit} tadan {used} tasi</b>.",
+    "nothingStopped": "Hech narsa toʻxtamadi. Limit ({limit}) tugagach, avtomatik javoblar limit yangilanadigan sanagacha toʻxtatiladi: <b>{reset}</b> — mijozlar sizga yozishda davom etadi va ular yuborgan hamma narsani koʻrasiz.",
+    "raise": "Oylik limitni istalgan vaqtda Sozlamalarda oshirishingiz mumkin.",
+    "raiseLink": "Oylik limitni istalgan vaqtda Sozlamalarda oshirishingiz mumkin:",
+    "button": "Sozlamalarni ochish"
+  },
+  "limit100": {
+    "subject": "WhatsApp avtojavoblari shu oyga toʻxtatildi",
+    "usedAll": "Shu oydagi barcha avtomatik WhatsApp javoblaridan ({limit}) foydalandingiz, shuning uchun ular toʻxtatildi.",
+    "stillReach": "<b>Mijozlar sizga odatdagidek yozishi mumkin va har bir xabar sizga yetib keladi.</b> Faqat avtomatik javob yuborilishi toʻxtadi.",
+    "startAgain": "Ular qayta ishga tushadigan sana: <b>{reset}</b> — yoki Sozlamalarda oylik limitni oshirsangiz, darhol.",
+    "startAgainLink": "Ular qayta ishga tushadigan sana: {reset} — yoki Sozlamalarda oylik limitni oshirsangiz, darhol:",
+    "button": "Limitni oshirish"
+  },
+  "paymentBlocked": {
+    "subject": "WhatsApp xabar yuborishi uchun toʻlov usuli kerak",
+    "stopped": "WhatsApp Business hisobingizda ishlaydigan toʻlov usuli yoʻqligi sababli WhatsApp avtomatik javoblaringiz yuborilishini toʻxtatdi.",
+    "stillMessage": "<b>Mijozlar sizga yozishi mumkin va ular yuborgan hamma narsani koʻrasiz</b> — lekin javoblar ularga yetib bormayapti.",
+    "payDirect": "Bu xabarlar uchun WhatsApp xizmatiga oʻzingiz toʻgʻridan-toʻgʻri toʻlaysiz, shuning uchun bu HatchGrab ichida emas, WhatsApp Manager ichida tuzatiladi. U yerda kartani qoʻshing yoki yangilang — javoblar oʻz-oʻzidan qayta yuborila boshlaydi.",
+    "payDirectLink": "Bu xabarlar uchun WhatsApp xizmatiga oʻzingiz toʻgʻridan-toʻgʻri toʻlaysiz, shuning uchun bu HatchGrab ichida emas, WhatsApp Manager ichida tuzatiladi. U yerda kartani qoʻshing yoki yangilang — javoblar oʻz-oʻzidan qayta yuborila boshlaydi:",
+    "button": "WhatsApp Manager sahifasini ochish",
+    "settings": "HatchGrab sozlamalaringiz: <link>{url}</link>"
+  }
+}

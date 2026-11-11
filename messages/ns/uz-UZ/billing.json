@@ -1,0 +1,120 @@
+{
+  "tab": {
+    "plan": {
+      "title": "Tarifingiz",
+      "trialPill": "Bepul sinov muddati",
+      "change": "Tarifni oʻzgartirish",
+      "trialLine": "Bepul sinov muddatingiz {date} kuni tugaydi. Undan keyin {plan} tarifi oyiga {price} turadi.",
+      "trialLineFree": "Bepul sinov muddatingiz {date} kuni tugaydi. Undan keyin {plan} tarifiga oʻtasiz — oylik toʻlov yoʻq.",
+      "proLine": "Oyiga {allowance} miqdoridagi onlayn buyurtmalar kiradi. Undan ortigʻiga — {fee}.",
+      "paygLine": "Onlayn buyurtmalar uchun {fee}. Oylik toʻlov yoʻq.",
+      "unlimitedLine": "Oyiga {price}. Onlayn buyurtmalar uchun komissiya yoʻq.",
+      "pendingLine": "{plan} tarifi {date} kuni boshlanadi."
+    },
+    "payment": {
+      "title": "Toʻlov usuli",
+      "none": "Hali karta qoʻshilmagan. Sinov muddatidan keyin ham onlayn buyurtmalar qabul qilish uchun karta qoʻshing.",
+      "add": "Karta qoʻshish",
+      "pix": "Pix Automático orqali toʻlash",
+      "card": "{brand}, oxirgi raqamlari {last4}",
+      "pixOnFile": "Pix Automático",
+      "pending": "Tasdiq kutilmoqda.",
+      "change": "Oʻzgartirish",
+      "lastFailed": "Oxirgi toʻlov amalga oshmadi",
+      "update": "Kartani yangilash",
+      "error": "Toʻlov sahifasini ochib boʻlmadi. Qaytadan urinib koʻring.",
+      "noneAfterTrial": "Karta qoʻshilmagan. Onlayn buyurtmalarni qayta yoqish uchun karta qoʻshing."
+    },
+    "whatYouPay": {
+      "title": "Nimalar uchun toʻlaysiz",
+      "plan": "Tarifingiz — har oyning 1-sanasida kelgusi oy uchun yechiladi",
+      "fee": "Oylik {allowance} limitidan ortiq onlayn buyurtmalar — har oyning 1-sanasida oʻtgan oy uchun yechiladi",
+      "feePayg": "Onlayn buyurtmalar — har oyning 1-sanasida oʻtgan oy uchun yechiladi",
+      "walkUps": "Oyna oldida berilgan buyurtmalar",
+      "free": "Bepul",
+      "trialEnd": "Sinov muddatingiz {date} kuni tugaganda, {month} oyining qolgan qismi uchun {amount} yechamiz. Soʻngra {nextFirst} kuni — {price}."
+    },
+    "next": {
+      "title": "Keyingi toʻlov · {date}",
+      "plan": "{plan} tarifi — {month}",
+      "fee": "{fee} — {month} oyida {allowance} limitidan ortiq onlayn buyurtmalar uchun (hozircha)",
+      "feePayg": "{fee} — {month} oyidagi onlayn buyurtmalar uchun (hozircha)",
+      "vans": "Qoʻshimcha furgonlar — {month}",
+      "surcharge": "Keyinroq toʻlash uchun ustama — {month}",
+      "carried": "Oldingi davrdan oʻtkazilgan",
+      "total": "Hozircha jami",
+      "walkUps": "Oyna oldida berilgan buyurtmalar har doim bepul."
+    },
+    "preorders": {
+      "title": "Mijozlar oldindan buyurtmalar uchun qanday toʻlaydi",
+      "online": "Onlayn, buyurtma berayotganda",
+      "onlineHint": "Pul toʻgʻridan-toʻgʻri Stripe hisobingizga tushadi.",
+      "atTruckHint": "Mijozlar buyurtmani olib ketayotganda toʻlaydi. Komissiyamiz oylik toʻlovingizga qoʻshiladi.",
+      "saved": "Saqlandi.",
+      "error": "Buni saqlab boʻlmadi. Qaytadan urinib koʻring."
+    },
+    "invoices": {
+      "title": "Hisob-fakturalar",
+      "date": "Sana",
+      "for": "Nima uchun",
+      "amount": "Summa",
+      "status": "Holat",
+      "forMonthly": "{planMonth} tarifi, {usageMonth} komissiyalari",
+      "forMonthlyPlan": "{planMonth} tarifi",
+      "forTrialEnd": "{month} oyining qolgan qismi",
+      "forUpgrade": "{plan} tarifiga oʻtish",
+      "lateFee": "Toʻlov kechiktirilgani uchun jarima",
+      "paid": "Toʻlangan",
+      "unpaid": "Toʻlanmagan",
+      "overdue": "Muddati oʻtgan",
+      "download": "Yuklab olish",
+      "payNow": "Hozir toʻlash",
+      "none": "Hali hisob-fakturalar yoʻq."
+    },
+    "failed": {
+      "title": "Toʻlovingiz amalga oshmadi: {amount}.",
+      "body": "Qayta urinib koʻramiz. Onlayn buyurtmalar yoniq qolishi uchun kartangizni {date} gacha yangilang.",
+      "button": "Kartani yangilash"
+    },
+    "paused": {
+      "title": "Onlayn buyurtmalar toʻxtatildi",
+      "body": "Toʻlov muddati oʻtgan: {amount}. Hozir toʻlang — onlayn buyurtmalar darhol qayta yoqiladi.",
+      "warning": "{date} gacha toʻlang, aks holda hisobingiz bloklanishi mumkin.",
+      "pay": "{amount} toʻlash",
+      "otherCard": "Boshqa kartadan foydalanish"
+    },
+    "loading": "Hisob-kitob yuklanmoqda…",
+    "loadError": "Hisob-kitob maʼlumotlarini yuklab boʻlmadi. Qaytadan urinib koʻring."
+  },
+  "changePlan": {
+    "title": "Tarifni oʻzgartirish",
+    "current": "Joriy tarifingiz: {plan}.",
+    "free": "Bepul",
+    "perMonth": "Oyiga {price}",
+    "paygLine": "Onlayn buyurtmalar uchun {fee}.",
+    "proLine": "{allowance} miqdoridagi onlayn buyurtmalar kiradi. Undan ortigʻiga — {fee}.",
+    "unlimitedLine": "Onlayn buyurtmalar uchun komissiya yoʻq.",
+    "yourPlan": "Tarifingiz",
+    "startsNow": "Hoziroq boshlanadi.",
+    "chargeToday": "Bugun {month} oyining qolgan qismi uchun {amount} yechamiz. Soʻngra {nextFirst} kuni — {price}.",
+    "startsLater": "{nextFirst} kuni boshlanadi. Shu kungacha {plan} tarifida qolasiz.",
+    "cancel": "Bekor qilish",
+    "switchTo": "{plan} tarifiga oʻtish",
+    "error": "Tarifingizni oʻzgartirib boʻlmadi. Qaytadan urinib koʻring.",
+    "trialLine": "Hozir bepul sinov muddatidasiz. U {date} kuni tugagandan keyin qaysi tarifda boʻlishingizni tanlang.",
+    "startsAtTrialEnd": "Sinov muddatingiz tugaganda boshlanadi.",
+    "choose": "{plan} tarifini tanlash"
+  },
+  "notices": {
+    "trialEndsSoon": "<b>Bepul sinov muddatingiz {date} kuni tugaydi.</b> Onlayn buyurtmalar yoniq qolishi uchun karta qoʻshing.",
+    "trialEndsTomorrow": "<b>Bepul sinov muddatingiz ertaga tugaydi.</b> Karta qoʻshing, aks holda onlayn buyurtmalar toʻxtatiladi.",
+    "allSet": "<b>Hammasi tayyor.</b> {plan} tarifi {date} kuni boshlanadi.",
+    "paymentFailed": "<b>Toʻlovingiz amalga oshmadi.</b> Onlayn buyurtmalar yoniq qolishi uchun {date} gacha {method, select, payment_method {toʻlov usulingizni} other {kartangizni}} yangilang.",
+    "paused": "<b>Onlayn buyurtmalar toʻxtatildi.</b> {date} gacha {amount} toʻlang, aks holda hisobingiz bloklanishi mumkin.",
+    "addCard": "Karta qoʻshish →",
+    "updateCard": "{method, select, payment_method {Toʻlov usulini} other {Kartani}} yangilash →",
+    "payNow": "Hozir toʻlash →",
+    "dismiss": "Yopish",
+    "trialEnded": "<b>Bepul sinov muddatingiz tugadi.</b> Onlayn buyurtmalarni qayta yoqish uchun karta qoʻshing."
+  }
+}

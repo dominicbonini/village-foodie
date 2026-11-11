@@ -1,0 +1,23 @@
+{
+  "explainerLead": "Xizmat davomida ish paneli yoki oshxona ekrani (KDS) yoniq va onlayn boʻlishi shart.",
+  "explainerBody": "Agar ekran oʻchsa, qurilma internetdan uzilsa yoki boshqa saytga oʻtsangiz, oflayn himoya ishga tushadi — tanlovingizga koʻra onlayn buyurtmalarni toʻxtatadi yoki avtomatik qabul qilishni oʻchiradi.",
+  "reminder": "⚠️ Xizmat davomida ish paneli yoki oshxona ekranini yoniq va onlayn saqlang, aks holda oflayn himoya ishga tushishi mumkin.",
+  "enableConfirm": "Oflayn himoya yoqildi.\n\nBuyurtmalar uzluksiz kelishi uchun ekraningiz yoniq turishi kerak. Agar bu qurilma aloqani yoʻqotsa, oflayn himoya siz tanlagan rejimda ishga tushadi.\n\nBu qurilmada “Ekran yoniq” yoqilganiga ishonch hosil qiling.",
+  "disableConfirm": "Bu tadbir uchun oflayn himoya oʻchirilsinmi?\n\nAgar bu qurilma aloqani yoʻqotsa, onlayn buyurtmalar kelishda davom etadi — mijozlar siz koʻra olmaydigan buyurtmalar berishi mumkin. Faqat ishonchli aloqangiz boʻlsa oʻchiring.",
+  "cardDescription": "Qurilmangiz oflayn boʻlib qolganda kelayotgan buyurtmalar bilan nima boʻlishini belgilaydi.",
+  "purpose": "Qurilmangiz aloqani yoʻqotsa, bu siz ularni koʻra olmayotgan paytda buyurtmalar kelishini toʻxtatadi.",
+  "switchLabel": "Oflayn buyurtma himoyasi",
+  "switchHelp": "Bu furgon aloqani yoʻqotganda nima boʻladi.",
+  "modes": {
+    "pause": {
+      "label": "Onlayn buyurtmalarni toʻxtatib turish",
+      "help": "Siz yana onlayn boʻlmaguningizcha mijozlar buyurtma bera olmaydi."
+    },
+    "no_auto_accept": {
+      "label": "Buyurtmalarni qabul qilish, lekin oʻzim tasdiqlayman",
+      "help": "Avtomatik qabul qilish oʻchiriladi: mijozlar baribir buyurtma bera oladi, lekin hech narsa avtomatik tasdiqlanmaydi. Onlayn boʻlganingizda har birini oʻzingiz tasdiqlaysiz — tanlangan vaqtdan keyin ham kutib turgan buyurtmalar avtomatik rad etiladi va mijozga bu haqda xat yuboriladi."
+    }
+  },
+  "autoRejectLabel": "Shundan uzoq kutayotgan buyurtmalarni rad etish",
+  "autoRejectOption": "{n, plural, one {{count} daq} other {{count} daq}}"
+}

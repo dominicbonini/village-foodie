@@ -1,0 +1,38 @@
+{
+  "newEmail": {
+    "subject": "Yangi HatchGrab e-pochta manzilingizni tasdiqlang",
+    "heading": "E-pochta manzilingizni tasdiqlang",
+    "button": "E-pochta manzilini tasdiqlash"
+  },
+  "changeEmail": {
+    "requested": "Siz HatchGrab e-pochta manzilingizni shu manzilga oʻzgartirishni soʻradingiz.",
+    "click": "Tasdiqlash uchun quyidagi tugmani bosing. Bu havola 24 soat amal qiladi.",
+    "ignore": "Agar bu oʻzgarishni soʻramagan boʻlsangiz, bu xatga eʼtibor bermasangiz ham boʻladi.",
+    "stillActive": "Joriy e-pochta manzilingiz faol boʻlib qoladi."
+  },
+  "resendVerification": {
+    "requested": "Siz HatchGrab e-pochtangizni shu manzilga oʻzgartirishni soʻradingiz.",
+    "click": "Tasdiqlash uchun quyida bosing. Bu havola 24 soat amal qiladi.",
+    "ignore": "Agar buni soʻramagan boʻlsangiz, bu xatga eʼtibor bermang.",
+    "stillActive": "Joriy e-pochtangiz faol boʻlib qoladi."
+  },
+  "passwordReset": {
+    "subject": "HatchGrab parolingizni tiklang",
+    "heading": "Parolni tiklash",
+    "requested": "HatchGrab hisobingiz parolini tiklash soʻrovini oldik.",
+    "click": "Yangi parol tanlash uchun quyidagi tugmani bosing. Bu havola 1 soat amal qiladi.",
+    "button": "Parolni tiklash",
+    "ignore": "Agar buni soʻramagan boʻlsangiz, bu xatga eʼtibor bermasangiz ham boʻladi.",
+    "unchanged": "Yuqoridagi havolani bosmaguningizcha parolingiz oʻzgarmaydi."
+  },
+  "deletionScheduled": {
+    "subject": "HatchGrab hisobingizni oʻchirish rejalashtirildi",
+    "received": "Ushbu HatchGrab hisobini oʻchirish soʻrovini oldik.",
+    "orderingStopped": "<b>Onlayn buyurtma qabul qilish darhol toʻxtatildi</b>: {trucks}.",
+    "noTrucks": "(fudtraklar yoʻq)",
+    "readable": "Boshqaruv panelingiz keyingi\n    {days, plural, one {# kun} other {# kun}} davomida oʻqish uchun ochiq qoladi.",
+    "scheduled": "Hisobni oʻchirish sanasi: <b>{date}</b>.",
+    "cannotCancel": "<b>Buni ilova ichidan bekor qilib boʻlmaydi.</b> Agar bu siz boʻlmasangiz yoki\n    fikringizni oʻzgartirgan boʻlsangiz, imkon qadar tezroq shu xatga javob yozing.",
+    "kept": "Hisob oʻchirilganda shaxsiy maʼlumotlaringiz va mijozlaringiz maʼlumotlarini oʻchiramiz. Qonun boʻyicha\n    saqlashimiz shart boʻlgan anonim buxgalteriya yozuvlarini saqlab qolamiz."
+  }
+}

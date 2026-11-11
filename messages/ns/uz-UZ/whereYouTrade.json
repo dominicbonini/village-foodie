@@ -1,0 +1,13 @@
+{
+  "stepHeading": "Fudtrakingiz qayerda joylashgan?",
+  "stepIntro": "Bu valyuta, narxlar, vaqt mintaqasi va telefon formatini belgilaydi. Mamlakatni keyin oʻzgartirib boʻlmaydi, chunki u karta toʻlovlaringizga bogʻlangan.",
+  "settingsHeading": "Qayerda savdo qilasiz",
+  "countryLabel": "Mamlakat",
+  "countryGuessed": "Buni joylashuvingizdan taxmin qildik. Notoʻgʻri boʻlsa, oʻzgartiring.",
+  "countryLocked": "Mamlakatingizni oʻzgartirib boʻlmaydi",
+  "townLabel": "Shahar yoki tuman",
+  "townQuestion": "Siz joylashgan shahar yoki tuman",
+  "timezoneLabel": "Vaqt mintaqasi",
+  "continueButton": "Davom etish",
+  "saveFailed": "Sozlamalarni saqlab boʻlmadi — qayta urinib koʻring."
+}

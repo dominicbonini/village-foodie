@@ -1,0 +1,13 @@
+{
+  "subtotal": "Oraliq jami",
+  "taxFallback": "Soliq",
+  "taxIncluded": "Shu jumladan: {label}",
+  "serviceFeeCustomer": "Onlayn xizmat yigʻimi",
+  "serviceFee": "Xizmat yigʻimi",
+  "cardFee": "Karta yigʻimi",
+  "tip": "Choychaqa",
+  "rate": "{rate}%",
+  "line": "{label}: {amount}",
+  "lineWithRate": "{label} {rate}: {amount}",
+  "foldedCharges": "{parts, select, tax_fees_tip {Soliq, yigʻimlar va choychaqa} tax_tip {Soliq va choychaqa} fees_tip {Yigʻimlar va choychaqa} fees {Yigʻimlar} other {Soliq va yigʻimlar}}"
+}

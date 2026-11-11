@@ -1,0 +1,36 @@
+{
+  "h1": "Xizmatni yuritish uchun hamma narsa — har bir tarifda.",
+  "lede": "Buyurtma, oldindan buyurtmalar, oshxona quvvati va oshxona ekrani (KDS) har bir tarifga kiradi.{hasUpgrades, select, yes { {plans} tariflariga {features} va pastroq komissiyalar qoʻshiladi.} other {}}",
+  "perMonth": "{price} / oy",
+  "group": {
+    "pay": "Nima uchun toʻlaysiz",
+    "run": "Xizmatni yuritish",
+    "online": "Onlayn buyurtmalar",
+    "marketing": "Marketing va avtomatlashtirish"
+  },
+  "pay": {
+    "included": "Har oy kiritilgan onlayn buyurtmalar",
+    "fee": "Onlayn karta buyurtmalari uchun HatchGrab komissiyasi*",
+    "walkUp": "Oyna oldida berilgan buyurtmalar"
+  },
+  "cell": {
+    "unlimited": "Cheksiz",
+    "free": "Bepul",
+    "feeAbove": "<b>{fee}</b>, {included} miqdoridan keyin",
+    "yes": "Kiritilgan",
+    "none": "Kiritilmagan",
+    "comingSoon": "Tez orada"
+  },
+  "short": {
+    "whatsapp_replies": "WhatsApp",
+    "schedule_graphics": "ijtimoiy tarmoqlar",
+    "event_types": "tadbirlar uchun maxsus narxlar"
+  },
+  "meta": {
+    "description": "Har bir tarifdagi barcha HatchGrab imkoniyatlari yonma-yon — {plans}, komissiyalar va limitlar bilan.{months, plural, =0 {} one { Birinchi oyingizda hammasi mavjud.} other { Birinchi # oyingizda hammasi mavjud.}}"
+  },
+  "notes": {
+    "whatsapp": "WhatsApp avtojavoblari uchun WhatsApp Business hisobi kerak. Meta baʼzi xabarlar uchun haq olishi mumkin; javoblar avtomatik yaratiladi.",
+    "printing": "Oshxona cheklarini chop etish uchun mos Bluetooth yoki simli printer kerak (toʻplamga kirmaydi)."
+  }
+}

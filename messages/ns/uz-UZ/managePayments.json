@@ -1,0 +1,94 @@
+{
+  "heading": "Toʻlovlar",
+  "loading": "Stripe hisobingiz tekshirilmoqda…",
+  "state": {
+    "not_connected": {
+      "title": "Sozlanmagan",
+      "body": "Taxminan 10 daqiqa vaqt oladi. Bank rekvizitlaringiz va shaxsingizni tasdiqlovchi hujjat kerak boʻladi.",
+      "chip": "Sozlanmagan"
+    },
+    "requirements": {
+      "title": "Stripe maʼlumotlaringizni soʻramoqda",
+      "body": "Stripe biznesingiz va bank rekvizitlaringizni olmaguncha karta orqali toʻlovlar ishlamaydi.",
+      "chip": "Harakat kerak"
+    },
+    "pending": {
+      "title": "Ulandi — Stripe maʼlumotlaringizni tekshirmoqda",
+      "body": "Sizdan hech narsa talab qilinmaydi. Stripe yuborganlaringizni koʻrib chiqmoqda, tekshiruv tugagach bu sahifa yangilanadi.",
+      "chip": "Tekshirilmoqda"
+    },
+    "ready": {
+      "title": "Ulangan",
+      "body": "Stripe hisobingiz ulangan va toʻlovlarni qabul qila oladi.",
+      "chip": "Tayyor"
+    },
+    "restricted": {
+      "title": "Karta orqali toʻlovlar toʻxtatildi",
+      "body": "Muammo hal qilinmaguncha Stripe hisobingizdagi karta orqali toʻlovlarni toʻxtatib qoʻydi.",
+      "chip": "Toʻxtatilgan"
+    },
+    "unsupported": {
+      "title": "Bu hisobda karta orqali toʻlovlar mavjud emas",
+      "body": "Stripe bu yerda karta orqali toʻlovlarni yoqa olmaydi. Biz bilan bogʻlaning — masalani birga hal qilamiz.",
+      "chip": "Mavjud emas"
+    }
+  },
+  "keyMismatch": {
+    "title": "Stripe kalitlari mos kelmaydi",
+    "body": "Bu sayt serveri <b>{server, select, live {jonli} other {sinov}}</b> Stripe kalitidan foydalanmoqda, brauzer versiyasi esa <b>{browser, select, live {jonli} other {sinov}}</b> kalit bilan yigʻilgan. Mijoz toʻlashga urinayotgan paytda karta orqali toʻlov amalga oshmaydi, shuning uchun kalitlar mos kelmaguncha Stripe bilan ulanish bloklangan.",
+    "fix": "Ikkala kalit ham bitta muhit uchun oʻrnatilishi, keyin esa sayt qayta yigʻilishi kerak — ochiq (publishable) kalit yigʻish vaqtida kodga kiritiladi, maxfiy kalit esa har bir soʻrovda oʻqiladi."
+  },
+  "permission": {
+    "title": "Toʻlovlarni faqat fudtrak egasi sozlay oladi",
+    "body": "Stripe pul tushadigan bank hisobi egasi tomonidan ulanadi, shuning uchun uni oʻsha shaxs oʻz hisobiga kirib sozlashi kerak. Bu fudtrak yoki HatchGrab bilan bogʻliq hech qanday muammo yoʻq."
+  },
+  "config": {
+    "keyMissingTitle": "Karta orqali toʻlovlar hali sozlanmagan",
+    "fetchTitle": "Bu fudtrakning Stripe hisobini tekshira olmadik",
+    "keyMissing": "Oʻrnatilmagan: {name} — ichki komponentlar yuklanmaydi."
+  },
+  "errors": {
+    "requestFailed": "Soʻrov bajarilmadi ({status})",
+    "unreachable": "Stripe bilan bogʻlanib boʻlmadi"
+  },
+  "online": {
+    "heading": "Onlayn toʻlovlar",
+    "body": "Mijozlar buyurtma berayotganda karta bilan toʻlaydi. Pul toʻgʻridan toʻgʻri oʻz Stripe hisobingizga tushadi — biz uni hech qachon ushlab turmaymiz.",
+    "feeLine": "Stripe standart kartalar boʻyicha ({region}) har bir toʻlov uchun {fee} oladi. Boshqa kartalar qimmatroq boʻlishi mumkin. Onlayn buyurtmalar uchun HatchGrab komissiyasi tarifingizga bogʻliq — «Hisob-kitob» boʻlimiga qarang.",
+    "testMode": "Sinov rejimi. Hozircha haqiqiy toʻlovlarni qabul qilib boʻlmaydi."
+  },
+  "trialNote": "Buni sozlash obunangizni boshlamaydi va bugun sizdan hech narsa yechmaydi. Bu — mijozlaringiz sizga toʻlaydigan usul; tarifingiz alohida.",
+  "admin": {
+    "title": "Platforma administratori sifatida koʻrilmoqda",
+    "body": "Bu fudtrak onlayn toʻlovlarni sozlamagan. Uni faqat ega oʻz hisobiga kirib boshlay oladi — bu yerda bosiladigan hech narsa yoʻq."
+  },
+  "setUp": {
+    "button": "Onlayn toʻlovlarni sozlash",
+    "busy": "Sozlanmoqda…"
+  },
+  "toast": {
+    "alreadySetUp": "Allaqachon sozlangan — davom etamiz",
+    "addDetails": "Endi Stripe uchun maʼlumotlaringizni kiriting",
+    "createFailed": "Hisobni yaratib boʻlmadi"
+  },
+  "onboarding": {
+    "restricted": "Bundan keyin ishni Stripe davom ettiradi: Stripe hisobingizga kirasiz va kerakli maʼlumotlarni yangilaysiz.",
+    "firstRun": "Bundan keyin ishni Stripe davom ettiradi: Stripe hisobingizga kirasiz, soʻng biznesingiz va bank rekvizitlaringizni kiritasiz."
+  },
+  "details": {
+    "title": "Stripe maʼlumotlaringiz",
+    "body": "Pul tushadigan bank hisobini oʻzgartiring yoki biznes maʼlumotlari va hujjatlarini yangilang.",
+    "button": "Koʻrish yoki tahrirlash"
+  },
+  "walkUp": {
+    "heading": "Oyna oldidagi toʻlovlar",
+    "body": "Sotuv oynasida pulni qanday qabul qilishingiz. Qaysi usulni tanlamang, HatchGrab oyna oldida berilgan buyurtmalar uchun platforma komissiyasini olmaydi.",
+    "ownTerminal": "Oʻz toʻlov terminalingiz",
+    "current": "Joriy",
+    "ownTerminalHelp": "Zettle, Square yoki allaqachon foydalanayotgan boshqa terminalingiz. Hech narsa sozlash shart emas — faqat provayderingizning oʻz komissiyalari amal qiladi.",
+    "hatchgrab": "HatchGrab orqali",
+    "comingSoon": "Tez orada",
+    "hatchgrabHelp": "Onlayn toʻlovlaringiz bilan bir xil Stripe ulanishidan foydalanadi — toʻlov terminali yoki toʻgʻridan toʻgʻri telefon yoki planshetdan kontaktsiz toʻlov.",
+    "hatchgrabFees": "Har bir toʻlov uchun {fee} ({region}), telefon yoki planshetda qabul qilingan kontaktsiz toʻlov uchun yana {surcharge}. Boshqa kartalar qimmatroq boʻlishi mumkin."
+  }
+}

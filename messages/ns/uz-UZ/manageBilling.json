@@ -1,0 +1,44 @@
+{
+  "perTruckMonth": "har bir fudtrak / oyiga",
+  "transactionFees": "Tranzaksiya komissiyalari",
+  "comingSoon": "Tez orada",
+  "footnote2Masked": "Onlayn toʻlovlar Stripe Connect orqali ishlaydi. Platforma va karta toʻlovlari komissiyalari hali aniqlanmagan va ishga tushirilganda maʼlum qilinadi.",
+  "card": {
+    "title": "Hisob-kitob va toʻlovlar",
+    "managed": "Hisob-kitobni HatchGrab boshqaradi",
+    "earlyAccess": "Erta kirish davrida tariflarni qoʻlda sozlaymiz va oʻzgartiramiz.",
+    "planLine": "{trial, select, yes {{truck} · {plan} tarifi (sinov)} other {{truck} · {plan} tarifi}}"
+  },
+  "currentPlan": "Joriy tarif",
+  "plan": {
+    "included": "Oyiga {amount} miqdoridagi onlayn buyurtmalar kiradi.",
+    "includedUnlimited": "Cheksiz onlayn buyurtmalar kiradi.",
+    "promo": "Maxsus narx.",
+    "promoUntil": "Maxsus narx {date} sanasigacha amal qiladi.",
+    "ended": "{plan} tarifingiz {date} sanasida tugadi. Hozirgi tarifingiz: {now}.",
+    "trialMonths": "{months} oylik bepul sinov muddati."
+  },
+  "trialEnds": "Sinov muddati tugashi: {date}",
+  "yourTrialEnds": "Sinov muddatingiz tugashi: {date}",
+  "notStarted": {
+    "heading": "Bepul sinov muddatingiz hali boshlanmagan"
+  },
+  "onTrial": "Sizda barcha imkoniyatlar bor. Sinov muddati tugashidan oldin tarif tanlang.",
+  "onTrialPaidEnd": "Sizda barcha imkoniyatlar bor. Sinov muddati tugagach, {plan} tarifi oyiga {price} turadi. Toʻlovni sozlash uchun bundan oldin siz bilan bogʻlanamiz.",
+  "onTrialNoCta": "Sizda barcha imkoniyatlar bor.",
+  "noCharge": "🔒 Sinov muddatingiz {date} sanasigacha davom etadi va bu davrda sizdan hech narsa undirilmaydi. Toʻlov faqat tarif tanlab, toʻlov maʼlumotlaringizni kiritganingizdan keyin boshlanadi. Unga qadar bekor qiladigan ham, toʻlaydigan ham hech narsa yoʻq.",
+  "noChargePaidEnd": "🔒 Sinov muddatingiz {date} sanasigacha davom etadi va bu davrda sizdan hech narsa undirilmaydi.",
+  "fees": "*Onlayn buyurtmalarga standart karta toʻlovlari komissiyalari qoʻllanadi",
+  "setUpPayment": "⏱ Sinov muddati tugashidan oldin tarif tanlang",
+  "changeYourPlan": "Tarifni oʻzgartirish",
+  "planButton": "{plan} — {price}",
+  "upgradeModal": {
+    "title": "Tarifga oʻtish: {plan}",
+    "tagline": "{price} — {description}",
+    "body": "Avtomatik hisob-kitobni sozlayapmiz. Hozir oʻtish uchun bizga xabar yozing — 24 soat ichida hammasini sozlab beramiz.",
+    "mailSubject": "Tarifga oʻtish: {plan} — {truck}",
+    "mailBody": "Assalomu alaykum! {truck} uchun {plan} ({price}) tarifiga oʻtmoqchiman.",
+    "email": "Oʻtish uchun bizga yozing",
+    "cancel": "Bekor qilish"
+  }
+}

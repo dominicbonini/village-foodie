@@ -1,0 +1,25 @@
+{
+  "newOrder": {
+    "subject": "Yangi buyurtma #{id} — {name}{withSlot, select, yes { · {slot}} other {}}",
+    "heading": "Yangi buyurtma qabul qilindi",
+    "from": "<b>Buyurtma #{id}</b> · mijoz: <b>{name}</b>",
+    "collection": "Olib ketish: {time}",
+    "asap": "Aniq vaqt yoʻq — imkon qadar tez",
+    "total": "Jami",
+    "notes": "<b>Izoh:</b> {notes}",
+    "autoConfirmed": "Avtomatik tasdiqlandi — hech narsa qilish shart emas.",
+    "confirmPrompt": "Bu buyurtmani tasdiqlash yoki rad etish uchun HatchGrab ish panelingizga kiring.",
+    "text": "Yangi buyurtma #{id} · mijoz: {name}{withSlot, select, yes { · vaqt: {slot}} other {}}{withVenue, select, yes { · joy: {venue}} other {}}.{withCharges, select, yes { {charges}.} other {}} Jami: {total}.{withNotes, select, yes { Izoh: {notes}} other {}}"
+  },
+  "newEvents": {
+    "subject": "Yangi tadbirlar topildi ({truck}) — koʻrib chiqing",
+    "hi": "Assalomu alaykum,",
+    "found": "Jadvalingizda mijozlarga koʻrsatilishidan oldin tasdiqlashingiz kerak boʻlgan <b>{n, plural, one {{count} ta yangi tadbir} other {{count} ta yangi tadbir}}</b> topildi.",
+    "listHeading": "Topilgan tadbirlar:",
+    "approve": "Ularni “Jadval” boʻlimida tasdiqlaganingizdan soʻng, ular xaritada paydo boʻladi va buyurtma sahifangiz oldindan buyurtmalarni qabul qilishga tayyor boʻladi.",
+    "cta": "Jadvalingizni koʻrib chiqing →",
+    "signoff": "— HatchGrab jamoasi · hatchgrab.com",
+    "unknownVenue": "Nomaʼlum maskan",
+    "text": "Assalomu alaykum,\n\nJadvalingizda tasdiqlashingiz kerak boʻlgan {n, plural, one {{count} ta yangi tadbir} other {{count} ta yangi tadbir}} topildi:\n\n{list}\n\nUlarni bu yerda koʻrib chiqing: {url}\n\nTasdiqlaganingizdan soʻng ular xaritada paydo boʻladi.\n\n— HatchGrab jamoasi"
+  }
+}

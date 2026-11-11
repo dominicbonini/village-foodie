@@ -1,0 +1,16 @@
+{
+  "subject": "{truck}: buyurtmangiz qanday boʻldi?",
+  "heading": "Buyurtmangiz uchun rahmat — {truck}",
+  "body": "Google orqali samimiy sharh qoldirsangiz, {truck} bundan minnatdor boʻladi. Bu bor-yoʻgʻi bir daqiqa oladi va boshqalarga ularni topishga yordam beradi.",
+  "button": "Google orqali sharh qoldirish",
+  "linkText": "Google orqali sharh qoldirish: {url}",
+  "from": "Bu xat {truck} nomidan HatchGrab orqali yuborildi, chunki siz ulardan buyurtma bergansiz.",
+  "unsubscribeLead": "{truck} sizdan boshqa sharh soʻramasinmi?",
+  "unsubscribeLink": "Obunani bekor qilish",
+  "unsubscribeText": "Obunani bekor qilish: {url}",
+  "unsubscribed": {
+    "title": "Obuna bekor qilindi",
+    "body": "{truck} endi sizdan sharh soʻramaydi.",
+    "invalid": "Obunani bekor qilish havolasi yaroqsiz."
+  }
+}

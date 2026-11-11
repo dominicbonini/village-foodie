@@ -1,0 +1,9 @@
+{
+  "subject": "HatchGrab demongiz — qaytish havolasi",
+  "heading": "Demongiz saqlandi",
+  "intro": "Menyuingiz joylangan demoga qaytish havolasi shu yerda. Tizimga kirish shart emas — shunchaki bosing.",
+  "button": "Demomni ochish",
+  "freshDay": "Har safar qaytganingizda sinab koʻrishingiz uchun yangi savdo kunini tayyorlab qoʻyamiz.",
+  "deletion": "Bu demo, shuning uchun uni abadiy saqlamaymiz — uni menyu bilan birga\n                <b>{date}</b> sanasida oʻchiramiz ({days, plural, one {# kun} other {# kun}}). Agar undan oldin\n                roʻyxatdan oʻtsangiz, menyuingiz siz bilan qoladi.",
+  "notSent": "Saqlandi, lekin hozir xatni yuborib boʻlmadi."
+}

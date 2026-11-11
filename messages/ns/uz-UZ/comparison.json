@@ -1,0 +1,400 @@
+{
+  "path": {
+    "section": "comparison",
+    "slug": "food-truck-ordering-system"
+  },
+  "meta": {
+    "title": "Fudtrak buyurtma tizimlari 2026: imkoniyatlar va narxlar",
+    "description": "Fudtrak buyurtma tizimlari: olib ketish vaqtli oldindan buyurtma, oshxona quvvati, jadval, komissiya va shartnoma muddati — sotuvchilar saytlaridan.",
+    "about": "Fudtraklar uchun onlayn buyurtma tizimlari"
+  },
+  "breadcrumb": {
+    "home": "HatchGrab",
+    "here": "Solishtirish",
+    "label": "Navigatsiya zanjiri"
+  },
+  "h1": "Fudtrak buyurtma tizimlarini solishtirish 2026",
+  "byline": "Oxirgi tekshiruv: {date} · Tayyorlovchi: HatchGrab. Biz ham solishtirilayotgan sotuvchilardan birimiz (qarang: <link>Qanday solishtirdik</link>).",
+  "table": {
+    "title": "Solishtirilgan buyurtma tizimlari",
+    "caption": "Fudtraklar uchun onlayn buyurtma tizimlarining imkoniyatlari va narxlari ({country}), sana: {date}",
+    "note": "“Ha” faqat sotuvchi buni ochiq eʼlon qilgan hollarda.",
+    "feature": "Imkoniyat",
+    "yes": "Ha",
+    "no": "Yoʻq",
+    "unknown": "Koʻrsatilmagan",
+    "fromPlan": "{plan} tarifidan boshlab",
+    "appNotInCountry": "Mavjud emas: {country}",
+    "appFlagOff": "Ha – hali yoqilmagan; ilova doʻkonlarida chiqqach koʻrsatiladi",
+    "range": "{from} – {to}",
+    "feePlan": "{fee} ({plans})",
+    "noFee": "yoʻq",
+    "morePending": "Boshqa sotuvchilar maʼlumotlarini ularning oʻz saytida tekshirganimizdan soʻng ular ham shu yerda paydo boʻladi.",
+    "priceHidden": "Soʻrov boʻyicha",
+    "feeAfter": "{fee} — oyiga {included} miqdoridan ortiq summaga",
+    "legend": "✓ Ha · ◐ Qisman · ✗ Yoʻq · Roʻyxatda yoʻq: imkoniyatlar yoki narxlar sahifasida yoʻq · —: ularning saytida aytilmagan · Taalluqli emas: bunday xizmatda bu imkoniyat boʻlmaydi · ⓘ: izoh, iqtibos va manba",
+    "swipe": "Barcha mahsulotlarni koʻrish uchun yon tomonga suring →"
+  },
+  "costs": {
+    "title": "Fudtrak buyurtma tizimi qancha turadi?",
+    "ourPlan": "{plan}: oyiga {price}, {fee}",
+    "feeOnly": "har bir onlayn buyurtmadan {fee}",
+    "feeIncluded": "oyiga {included} miqdorigacha onlayn buyurtmalar kiritilgan, keyin {fee}",
+    "feeNone": "onlayn buyurtmalarga HatchGrab komissiyasi yoʻq",
+    "rivalPlan": "{plan}: {price}",
+    "perMonth": "oyiga {price}",
+    "perMonthYearly": "oyiga {price}, yillik toʻlov bilan",
+    "vatExcl": "QQSsiz",
+    "vatIncl": "QQS bilan",
+    "setup": "bir martalik ulanish toʻlovi: {price}",
+    "truckFee": "har bir buyurtmadan {fee}",
+    "customerFee": "har bir buyurtmadan {fee}, mijoz toʻlaydi",
+    "source": "Manba",
+    "checked": "tekshirilgan sana: {date}",
+    "cardFee": "HatchGrab orqali onlayn karta toʻlovlarida Stripe komissiyalari ham olinadi: har bir karta toʻlovi uchun {cardFee} ({country}).",
+    "vat": "HatchGrab Ltd — Buyuk Britaniya kompaniyasi va QQS toʻlovchisi sifatida roʻyxatdan oʻtmagan ({country}), shuning uchun toʻlovlarimizga QQS qoʻshilmaydi. Agar siz QQS toʻlovchisi boʻlsangiz, bizga QQS toʻlovchisi raqamingizni bering; shunda toʻlovlarimiz boʻyicha QQSni teskari hisoblash tartibida oʻzingiz hisobga olasiz.",
+    "bundledFee": "har bir onlayn toʻlovdan {fee}, karta komissiyasi bilan birga"
+  },
+  "fit": {
+    "title": "Qaysi tizim kimga mos?",
+    "ours": "HatchGrab sizga mos, agar …",
+    "oursBody": "turli joylarda savdo qilsangiz, olib ketish vaqti bilan oldindan buyurtma olishni istasangiz, oshxonangiz haddan tashqari yuklanishini xohlamasangiz va shartnoma tuzishni istamasangiz.",
+    "oursNot": "HatchGrab sizga mos emas, agar …",
+    "oursNotBody": "mijozlaringiz PayPal yoki Klarna orqali toʻlashi kerak boʻlsa yoki bitta yetkazib beruvchidan TSE moduli bilan sertifikatlangan kassa istasangiz.",
+    "appClause": "Yoki sizga {country} hududida iPad yoki Android uchun oshxona ilovasi kerak boʻlsa: u yerda u hali ilova doʻkonlarida yoʻq.",
+    "tills": "Kassalar va toʻlov terminallari",
+    "marketplaces": "Yetkazib berish platformalari",
+    "rival": "{name} mos keladi, agar …",
+    "tillsBody": "Kassalar fudtrakda toʻlov qabul qiladi va TSE talabini bajaradi. Buyurtma tizimi kassa bilan birga ishlaydi, uning oʻrnini bosmaydi.",
+    "tillsBodyNamed": "Kassalar fudtrakda toʻlov qabul qiladi va TSE talabini bajaradi. {names} {count, plural, one {ham yuqoridagi jadvalda bor} other {ham yuqoridagi jadvalda bor}}. Buyurtma tizimi kassa bilan birga ishlaydi, uning oʻrnini bosmaydi.",
+    "marketplacesBody": "Yetkazib berish platformalari yangi mijozlar olib keladi, lekin har bir buyurtmadan komissiya oladi. Uber Eats Germaniyada oʻzi olib ketish uchun 14% va Uber kuryerlari orqali yetkazib berish uchun 30% komissiyani koʻrsatadi. Wolt oʻz saytida komissiya olishini aytadi, lekin stavkalarini koʻrsatmaydi. Lieferando stavkalarini tekshira olmadik. Bu komissiya sizga oldindan buyurtma beradigan doimiy mijozlarga ham tegishli."
+  },
+  "groups": {
+    "food_truck": "Fudtrak buyurtma tizimi",
+    "nearest_local": "Buyurtma tizimi",
+    "pos": "Kassa tizimi"
+  },
+  "faq": {
+    "title": "Koʻp beriladigan savollar",
+    "whatQ": "Fudtrak buyurtma tizimi nima?",
+    "whatA": "Buyurtma tizimi mijozlar fudtrakka kelishidan oldin onlayn buyurtma qabul qiladi: ular taomlar va olib ketish vaqtini tanlaydi, onlayn yoki olib ketishda toʻlaydi, buyurtma esa oshxonangizda paydo boʻladi. Kassa yoki toʻlov terminali esa fudtrakda toʻlov qabul qiladi. Ikkalasi bir-birini toʻldiradi.",
+    "costQ": "HatchGrab qancha turadi ({country})?",
+    "costA": "{plans}. Onlayn karta toʻlovlarida Stripe komissiyalari ham olinadi: har bir karta toʻlovi uchun {cardFee}.",
+    "termQ": "Minimal muddat bormi?",
+    "termA": "Yoʻq. Minimal muddat ham, ogohlantirish muddati ham yoʻq. Istalgan vaqtda bekor qilishingiz mumkin; toʻlov har oy oldindan olinadi va toʻlangan oy oxirigacha foydalanish imkoniyati saqlanib qoladi.",
+    "locationsQ": "Tizim oʻzgaruvchan joylar bilan ishlaydimi?",
+    "locationsA": "Ha. Haftalik jadvalingizni joylar va vaqtlar bilan sozlaysiz, mijozlar esa siz turgan joy va kun uchun buyurtma beradi.",
+    "capacityQ": "Tizim oshxonamni haddan tashqari yuklanishdan qanday saqlaydi?",
+    "capacityA": "Mijozlar faqat oshxonangiz haqiqatan ulgura oladigan olib ketish vaqtlarini koʻradi. Tizim har bir taomning tayyorlanish vaqti va bir vaqtda nechta tayyorlashingizga asoslanib ishlaydi.",
+    "tseQ": "TSE moduli bilan kassa baribir kerakmi?",
+    "tseA": "HatchGrab kassa emas va unda TSE yoʻq. Onlayn buyurtmalarni kassangizda qanday qayd etish — soliq maslahatchingiz bilan hal qilinadigan masala.",
+    "paymentsQ": "HatchGrab qaysi toʻlov usullarini qoʻllab-quvvatlaydi?",
+    "paymentsA": "Mijozlar onlayn karta, Apple Pay yoki Google Pay orqali toʻlaydi yoki fudtrakda toʻlaydi. PayPal va Klarna hozircha qoʻllab-quvvatlanmaydi.",
+    "costTrial": "{months, plural, one {Birinchi oy} other {Birinchi # oy}} barcha imkoniyatlar bilan bepul."
+  },
+  "method": {
+    "title": "Qanday solishtirdik",
+    "checked": "Oxirgi tekshiruv: {date}.",
+    "prices": "Narxlar sotuvchi koʻrsatganidek, QQS bilan berilgan.",
+    "meaning": "“Ha” sotuvchi bu imkoniyatni ochiq eʼlon qilganini bildiradi. “Koʻrsatilmagan” esa uning saytida bu haqda hech narsa topmaganimizni bildiradi — imkoniyat yoʻqligini emas.",
+    "vendor": "Bu sahifani HatchGrab yuritadi va u solishtirilayotgan sotuvchilardan biri.",
+    "review": "Narxlar va imkoniyatlar har bir mahsulotning oʻz saytiga qarab avtomatik tekshiriladi; har bir daʼvo oʻz manbasiga havola qiladi.",
+    "corrections": "Xato topdingizmi? <link>Aloqa shakli</link> orqali bizga xabar bering.",
+    "reportError": "<link>Xato haqida xabar berish</link>",
+    "machine": "Sunʼiy intellekt yordamchilari va dasturchilar uchun: bu jadval <md>Markdown formatida</md> · <json>JSON formatida</json>"
+  },
+  "cta": {
+    "title": "{months, plural, one {# oy} other {# oy}} bepul sinab koʻring",
+    "noCard": "Kredit karta kerak emas",
+    "cancel": "Har oy bekor qilish mumkin",
+    "button": "Bepul sinab koʻrish"
+  },
+  "admin": {
+    "status": "Qoralama · noindex · sitemap, llms.txt va hreflang tarkibida emas · futerdagi havola faqat administratorlar uchun",
+    "statusLive": "Faol · ochiq va indekslanadi",
+    "viewAdmin": "Administrator koʻrinishi",
+    "viewPublic": "Foydalanuvchilar nimani koʻradi",
+    "pricingCheck": "“Pricing check” sahifasini ochish",
+    "checklist": "Ishga tushirishdan oldin",
+    "goLive": "Sahifa Admin › Countries boʻlimida ishga tushiriladi.",
+    "check": {
+      "apps": "iPad va Android bayroqlari yoqilgan ({country})",
+      "placeholders": "Matnda “[ … ]” toʻldirgichlari qolmagan",
+      "vat": "QQS haqidagi matn mavjud"
+    },
+    "unverified": "tasdiqlanmagan · foydalanuvchilardan yashirilgan",
+    "autoVerified": "avtomatik tasdiqlangan",
+    "unchecked": "koʻrsatilgan har bir raqobatchi uchun hali tekshirilmagan · foydalanuvchilardan yashirilgan",
+    "label": "Admin",
+    "notShown": "Sahifada yoʻq (koʻpi bilan toʻrttasi koʻrsatiladi): {names}.",
+    "reasonHidden": "{name} (yashirilgan)",
+    "reasonBeyond": "{name} (toʻrttalikdan tashqarida)",
+    "reasonNoWebsite": "{name} (sayti yoʻq)",
+    "liveAuto": "Avtomatik nashr orqali faol",
+    "adminsOnly": "Faqat administratorlar uchun — {reason}",
+    "whyFewer": "Avtomatik tekshiruvdan oʻtgan raqobatchilar: {n} / {total}; 2 ta kerak",
+    "whyAutoOff": "bu mamlakat uchun avtomatik nashr oʻchirilgan",
+    "shown": "{n, plural, one {# ta raqobatchi koʻrsatilgan} other {# ta raqobatchi koʻrsatilgan}}",
+    "details": "Batafsil"
+  },
+  "footer": {
+    "heading": "Solishtirish",
+    "link": "Buyurtma tizimlarini solishtirish"
+  },
+  "featureGroups": {
+    "ordering": "Buyurtma",
+    "payments": "Toʻlovlar",
+    "kitchen": "Oshxona",
+    "marketing": "Marketing",
+    "apps_hardware": "Ilovalar va uskunalar",
+    "price_contract": "Narx va shartnoma"
+  },
+  "cell": {
+    "yes": "Ha",
+    "no": "Yoʻq",
+    "partial": "Qisman",
+    "unknown": "Koʻrsatilmagan",
+    "not_mentioned": "Saytida aytilmagan",
+    "withNote": "{word}, {note}",
+    "soon": "tez kunda",
+    "fromPlan": "{plan} tarifidan boshlab",
+    "perCardPayment": "har bir karta toʻlovidan {fee}",
+    "trial": "{months, plural, one {# oy} other {# oy}} bepul",
+    "setupFee": "bir martalik: {price}",
+    "perMonth": "oyiga {price}",
+    "notInCountry": "mavjud emas: {country}",
+    "flagOff": "hali yoqilmagan; ilova doʻkonlarida chiqqach koʻrsatiladi",
+    "notApplicable": "marketpleysga taalluqli emas",
+    "not_listed": "Roʻyxatda yoʻq",
+    "details": "Batafsil",
+    "doesntApply": "Taalluqli emas",
+    "doesntSay": "Aytilmagan",
+    "none": "Yoʻq"
+  },
+  "explained": {
+    "title": "Imkoniyatlar nimani anglatadi"
+  },
+  "costBlock": {
+    "title": "Fudtrak har oy qancha toʻlaydi",
+    "sizes": "Oylik onlayn savdo",
+    "sizeSales": "oyiga {sales}",
+    "sizeOrders": "taxminan {orders} ta buyurtma",
+    "lead": "Oyiga {sales} miqdorida onlayn buyurtma qabul qiladigan fudtrak uchun (taxminan {orders} ta buyurtma). Har bir ustun — oylik umumiy xarajat: buyurtma tizimining oʻz toʻlovi va shu buyurtmalardagi karta komissiyalari.",
+    "legendSoftware": "Dastur toʻlovi",
+    "legendCard": "Karta komissiyalari",
+    "software": "Dastur toʻlovi: oyiga {amount}",
+    "card": "Karta komissiyalari: oyiga {amount}",
+    "total": "Karta komissiyalari bilan oyiga {amount}",
+    "share": "savdodan {pct}",
+    "assumed": "(stavka eʼlon qilinmagan, taxminiy)",
+    "customerFee": "Qoʻshimcha ravishda mijozlar oyiga {amount} toʻlaydi (har bir buyurtmadan {fee}) — ustunga kiritilmagan",
+    "summaryCheapest": "{us} tizimining oʻz toʻlovi — oyiga {ours}, koʻrsatilgan eng arzon raqobatchida esa oyiga {theirs}. Karta komissiyalari (oyiga {card}) qaysi tizimdan foydalanmang, har bir karta toʻlovidan olinadi, shuning uchun asosiy farq — dastur toʻlovida.",
+    "summaryNotCheapest": "{us} tizimining oʻz toʻlovi — oyiga {ours}; bu koʻrsatilgan eng arzon raqobatchi — {rival} tizimidagi oyiga {theirs} narxdan koʻproq. Karta komissiyalari (oyiga {card}) qaysi tizimdan foydalanmang, har bir karta toʻlovidan olinadi.",
+    "summaryAlone": "{us} tizimining oʻz toʻlovi — oyiga {ours}. Karta komissiyalari (oyiga {card}) qaysi tizimdan foydalanmang, har bir karta toʻlovidan olinadi.",
+    "footOrder": "Oʻrtacha buyurtma — {order}: odatiy taom narxi {meal} × buyurtmada {multiplier} ta taom (manba: {source}).",
+    "footCard": "Karta komissiyalari har bir karta toʻlovi uchun {rate} stavkada hisoblangan: {source}.",
+    "footCardSource": "Stripe stavkasi ({country})",
+    "footAssumed": "{names} {count, plural, one {karta stavkasini eʼlon qilmaydi} other {karta stavkasini eʼlon qilmaydi}}, shuning uchun bizning stavkamiz taxminan olingan.",
+    "footChecked": "Narxlar tekshirilgan sana: {date}.",
+    "footCalculator": "Oʻz raqamlaringizni kalkulyatorda hisoblang.",
+    "noRivals": "Hali birorta raqobatchi tasdiqlanmagan ({country}), shuning uchun solishtiradigan narsa yoʻq."
+  },
+  "features": {
+    "preorder": {
+      "label": "Olib ketish vaqtini tanlab oldindan buyurtma",
+      "explain": "Mijozlar oldindan buyurtma beradi va olib ketish vaqtini tanlaydi."
+    },
+    "capacity": {
+      "label": "Oshxona quvvatiga qarab cheklangan olib ketish vaqtlari",
+      "explain": "Mijozlar faqat oshxona haqiqatan ulgura oladigan olib ketish vaqtlarini koʻradi."
+    },
+    "asap": {
+      "label": "Imkon qadar tezroq tayyorlanadigan buyurtmalar",
+      "explain": "Mijozlar vaqt tanlamasdan buyurtma berib, tayyor boʻlishi bilan olib ketishi mumkin."
+    },
+    "ahead": {
+      "label": "Keyingi kun yoki tadbir uchun oldindan buyurtma",
+      "explain": "Mijozlar bugunoq keyingi kundagi bozor yoki tadbir uchun buyurtma berishi mumkin."
+    },
+    "schedule": {
+      "label": "Oʻzgaruvchan joylar bilan haftalik jadval",
+      "explain": "Fudtrakning haftalik joylari va vaqtlari; mijozlar u turgan joy va kun uchun buyurtma beradi."
+    },
+    "walkup": {
+      "label": "Oyna oldida berilgan buyurtmalar onlayn buyurtmalar bilan bitta ekranda",
+      "explain": "Oyna oldida qabul qilingan buyurtmalar onlayn buyurtmalar bilan bitta roʻyxatga tushadi."
+    },
+    "stock": {
+      "label": "Tugagan taomlar va har bir tadbir uchun zaxira chegaralari",
+      "explain": "Taomlarni tugagan deb belgilash va tadbirda har biridan nechta sotilishini sozlash."
+    },
+    "notify": {
+      "label": "Buyurtma tayyorligi haqida mijozga xabar",
+      "explain": "Mijozlar buyurtmasi tayyorligini qanday bilib oladi: SMS, WhatsApp, e-pochta, push-bildirishnoma yoki jonli buyurtma holati sahifasi.",
+      "ours": "buyurtma tayyorligi bosqichi yoqilganda e-pochta va buyurtma holati sahifasi; SMS, WhatsApp va push yoʻq"
+    },
+    "allergens": {
+      "label": "Menyuda allergenlar",
+      "explain": "Har bir taom buyurtmadan oldin mijozlarga oʻz allergenlarini koʻrsatadi."
+    },
+    "menuphoto": {
+      "label": "Menyuni fotosuratdan sozlash",
+      "explain": "Menyuning fotosurati yoki PDF fayli taomlarni toʻldiradi, siz faqat tekshirasiz."
+    },
+    "options": {
+      "label": "Taomlar uchun variantlar va qoʻshimchalar",
+      "explain": "Oʻlchamlar, souslar va qoʻshimchalar, jumladan mijoz albatta tanlashi kerak boʻlgan variantlar."
+    },
+    "deals": {
+      "label": "Kombo va toʻplamlar",
+      "explain": "Bir nechta mahsulot bitta narxda birga sotiladi."
+    },
+    "private": {
+      "label": "Shaxsiy tadbirlar va band qilish",
+      "explain": "Shaxsiy tadbir uchun alohida havola orqali buyurtmalar va fudtrakni tadbirga chaqirish soʻrovlari.",
+      "ours": "alohida buyurtma havolasi bilan shaxsiy tadbirlar; band qilish soʻrovlari yoʻq"
+    },
+    "qr": {
+      "label": "Stol / QR-kod orqali joyida buyurtma",
+      "explain": "Mijozlar stoldagi kodni skanerlaydi va buyurtma stol raqami bilan keladi.",
+      "ours": "QR-kod buyurtma sahifasini ochadi; stol raqamlari yoʻq"
+    },
+    "cards": {
+      "label": "Onlayn karta toʻlovlari, jumladan Apple Pay va Google Pay",
+      "explain": "Mijozlar buyurtma berishda onlayn karta, Apple Pay yoki Google Pay orqali toʻlaydi."
+    },
+    "payattruck": {
+      "label": "Fudtrakda toʻlash",
+      "explain": "Mijozlar onlayn buyurtma beradi va olib ketishda toʻlaydi."
+    },
+    "localpay": {
+      "label": "Mahalliy toʻlov usullari (Click, Payme, Uzcard, Humo…)",
+      "explain": "Kartalardan tashqari mamlakatning oʻz onlayn toʻlov usullari.",
+      "ours": "faqat kartalar"
+    },
+    "paypal": {
+      "label": "PayPal yoki Klarna",
+      "explain": "Mijozlar PayPal yoki Klarna orqali toʻlashi mumkin."
+    },
+    "custfee": {
+      "label": "Buyurtma toʻlovini mijoz zimmasiga yuklash imkoniyati",
+      "explain": "Biznes xizmat haqini mijozga oʻtkazishi mumkin."
+    },
+    "tips": {
+      "label": "Choychaqa",
+      "explain": "Mijozlar onlayn toʻlashda choychaqa qoʻshishi mumkin."
+    },
+    "paymethods": {
+      "label": "Taklif etiladigan toʻlov usullari",
+      "explain": "Sotuvchi koʻrsatganidek, mijozlar qanday toʻlashi mumkin.",
+      "ours": "karta, Apple Pay, Google Pay; fudtrakda toʻlash"
+    },
+    "kds": {
+      "label": "Oshxona ekrani (KDS)",
+      "explain": "Buyurtmalar oshxonadagi ekranda tayyorlash tartibida paydo boʻladi."
+    },
+    "tickets": {
+      "label": "Chop etiladigan oshxona cheklari",
+      "explain": "Har bir buyurtma fudtrakdagi chek printerida chop etiladi.",
+      "ours": "iPad va Android ilovasida; printer berilmaydi"
+    },
+    "buzzers": {
+      "label": "Chaqiruv qurilmalari",
+      "explain": "Mijozlarga buyurtma tayyorligini bildiradigan chaqiruv qurilmasi beriladi.",
+      "ours": "har bir buyurtma bilan chaqiruv qurilmasi raqami yoziladi; qurilmalar berilmaydi"
+    },
+    "offline": {
+      "label": "Internet uzilganda ham ishlaydi",
+      "explain": "Aloqasiz kiritilgan buyurtmalar va oʻzgarishlar saqlanadi va aloqa tiklangach yuboriladi.",
+      "ours": "iPad va Android ilovasida; veb-panelda emas"
+    },
+    "vans": {
+      "label": "Bir nechta fudtrak",
+      "explain": "Bitta akkaunt bir nechta fudtrakni boshqaradi.",
+      "ours": "qoʻshimcha fudtraklar — qoʻshimcha oylik toʻlov evaziga"
+    },
+    "staff": {
+      "label": "Xodimlar akkauntlari",
+      "explain": "Xodimlar oʻz logini va roli bilan kiradi."
+    },
+    "reports": {
+      "label": "Savdo hisobotlari",
+      "explain": "Jami summalar, eng koʻp sotilganlar va tadbir yoki sana boʻyicha savdo, elektron jadvalga eksport bilan."
+    },
+    "domain": {
+      "label": "Oʻz veb-manzili",
+      "explain": "Buyurtma sahifasi biznesning oʻz domenida."
+    },
+    "whatsapp": {
+      "label": "WhatsApp avtojavoblari",
+      "explain": "Mijozlarning WhatsApp xabarlariga avtomatik javob beriladi."
+    },
+    "social": {
+      "label": "Jadvalingiz asosida ijtimoiy tarmoq postlari",
+      "explain": "Fudtrak bu hafta qayerda boʻlishini koʻrsatadigan tayyor postlar."
+    },
+    "igmsg": {
+      "label": "Instagram va Messenger javoblari",
+      "explain": "Instagram va Facebook Messenger xabarlariga avtomatik javob beriladi."
+    },
+    "discovery": {
+      "label": "Fudtraklar xaritasida koʻrsatilish",
+      "explain": "Mijozlar fudtrakni yaqin atrofdagi fudtraklarning ommaviy xaritasida topadi.",
+      "ours": "Village Foodie"
+    },
+    "loyalty": {
+      "label": "Sodiqlik dasturi",
+      "explain": "Mijozlar qaytib kelgani uchun mukofot yigʻadi."
+    },
+    "ipad": {
+      "label": "iPad ilovasi",
+      "explain": "iPad qurilmasida buyurtmalarni qabul qilish va boshqarish uchun fudtrak ilovasi."
+    },
+    "android": {
+      "label": "Android ilovasi",
+      "explain": "Xuddi shu ilova Android planshet yoki telefonda."
+    },
+    "hardware": {
+      "label": "Uskunalar beriladi (planshet, printer)",
+      "explain": "Sotuvchi planshet yoki printerni taqdim etadi.",
+      "ours": "oʻzingiznikidan foydalaning"
+    },
+    "terminal": {
+      "label": "Oyna uchun toʻlov terminali beriladi",
+      "explain": "Sotuvchi fudtrakda toʻlov qabul qilish uchun toʻlov terminalini taqdim etadi."
+    },
+    "fiscal": {
+      "label": "Soliq qoidalari uchun sertifikatlangan kassa (TSE, EET, kassaregister…)",
+      "explain": "Mamlakatning savdoni qayd etish qoidalariga muvofiq sertifikatlangan kassa."
+    },
+    "delivery": {
+      "label": "Yetkazib berish",
+      "explain": "Buyurtmalar mijoz manziliga yetkaziladi.",
+      "ours": "faqat oʻzi olib ketish"
+    },
+    "monthly": {
+      "label": "Oylik narx",
+      "explain": "Biznes dastur uchun har oy toʻlaydigan summa."
+    },
+    "perorder": {
+      "label": "Har bir onlayn buyurtma uchun komissiya",
+      "explain": "Sotuvchi oylik narxdan tashqari har bir onlayn buyurtmadan oladigan toʻlov."
+    },
+    "cardfee": {
+      "label": "Karta komissiyasi",
+      "explain": "Toʻlov provayderining har bir karta toʻlovidan oladigan komissiyasi."
+    },
+    "term": {
+      "label": "Minimal shartnoma muddati",
+      "explain": "Biznes bekor qilishdan oldin qancha muddat shartnomaga bogʻlanib qoladi."
+    },
+    "setup": {
+      "label": "Ulanish toʻlovi",
+      "explain": "Boshlash uchun bir martalik toʻlov."
+    },
+    "trial": {
+      "label": "Bepul sinov muddati",
+      "explain": "Toʻlashdan oldin tizimdan bepul foydalanish vaqti."
+    }
+  }
+}

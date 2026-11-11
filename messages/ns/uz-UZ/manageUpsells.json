@@ -1,0 +1,19 @@
+{
+  "heading": "Qoʻshimcha sotuvlar",
+  "intro": "Mijozlarni yana biror narsa qoʻshishga undang. Kimdir bir kategoriyadan buyurtma berganda, boshqa kategoriyadan mahsulotlar taklif qiling — pitsaga ichimlik, burgerga sous.",
+  "add": "+ Qoʻshimcha sotuv qoʻshish",
+  "toast": {
+    "updated": "Qoʻshimcha sotuv qoidasi yangilandi",
+    "added": "Qoʻshimcha sotuv qoidasi qoʻshildi",
+    "removed": "Qoida olib tashlandi"
+  },
+  "whenAdds": "Mijoz qoʻshganda…",
+  "suggestFrom": "Taklif qilinadigan mahsulotlar…",
+  "chooseCategory": "Kategoriyani tanlang",
+  "cancel": "Bekor qilish",
+  "saveChanges": "Oʻzgarishlarni saqlash",
+  "addRule": "Qoida qoʻshish",
+  "empty": "Hali qoʻshimcha sotuv qoidalari yoʻq.",
+  "confirmRemove": "“{trigger} → {suggest}” qoʻshimcha sotuv qoidasi olib tashlansinmi?",
+  "upTo": "{n, plural, one {{count} tagacha mahsulot taklif qilinadi} other {{count} tagacha mahsulot taklif qilinadi}}"
+}

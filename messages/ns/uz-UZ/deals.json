@@ -1,0 +1,17 @@
+{
+  "back": "← Ortga",
+  "title": "Komboni qoʻllash",
+  "save": "{amount} tejang",
+  "selectItems": "Har bir oʻrin uchun mahsulot tanlang",
+  "choose": "Tanlang: {category}…",
+  "inYourBasket": "── Savatingizda ──",
+  "basketUnit": "{name}{withMods, select, yes { (+ {mods})} other {}} (savatda){state, select, used { — allaqachon kombo tarkibida} taken { — boshqa oʻrinda tanlangan} other {}}",
+  "addNew": "── Yangisini qoʻshish ──",
+  "itemWithPrice": "{name} {price}",
+  "ruleHint": "· {rule, select, requiredOne {Majburiy · bittasini tanlang} required {Majburiy} other {Bittasini tanlang}}{unmet, select, yes { (majburiy)} other {}}",
+  "notePlaceholder": "Izoh qoʻshing, masalan, piyozsiz (ixtiyoriy)",
+  "backButton": "Ortga",
+  "cancel": "Bekor qilish",
+  "chooseRequired": "Majburiy variantlarni tanlang",
+  "apply": "Komboni qoʻllash · {amount}"
+}

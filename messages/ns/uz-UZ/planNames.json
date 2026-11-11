@@ -1,0 +1,28 @@
+{
+  "payg": {
+    "name": "Oylik toʻlovsiz",
+    "subtitle": "Mavsumiy va qisman band sotuvchilar uchun",
+    "description": "Oylik toʻlov yoʻq. Faqat mijoz onlayn karta orqali toʻlaganda toʻlaysiz."
+  },
+  "pro": {
+    "subtitle": "Muntazam oldindan buyurtma oladigan fudtraklar uchun",
+    "description": "Hamma narsa, jumladan WhatsApp avtojavoblari va ijtimoiy tarmoq postlari, har oy kiritilgan onlayn buyurtmalar bilan."
+  },
+  "unlimited": {
+    "name": "Cheksiz",
+    "subtitle": "Gavjum fudtraklar va festivallar uchun",
+    "description": "Hamma narsa, qanchalik band boʻlmang, onlayn buyurtmalar uchun komissiyasiz."
+  },
+  "trial": {
+    "name": "Bepul sinov muddati",
+    "description": "Sinov muddati davomida barcha imkoniyatlar bepul."
+  },
+  "demo": {
+    "name": "Demo",
+    "description": "Potensial mijoz uchun sinov muhiti — hech qachon ommaga ochiq emas."
+  },
+  "tester": {
+    "name": "Tester",
+    "description": "Ishga tushirishdan oldingi tester — toʻliq kirish huquqi."
+  }
+}

@@ -1,0 +1,195 @@
+{
+  "cancel": "Bekor qilish",
+  "back": "← Orqaga",
+  "backPlain": "Orqaga",
+  "next": "Keyingi →",
+  "continue": "Davom etish →",
+  "closeImport": "Importni yopish",
+  "tryAgain": "Qayta urinish",
+  "catError": {
+    "empty": "Kategoriyaga nom bering.",
+    "tooLong": "Bu nom juda uzun.",
+    "clash": "“{name}” nomli kategoriya allaqachon bor."
+  },
+  "steps": {
+    "details": "Maʼlumotlaringiz",
+    "menu": "Menyu",
+    "extras": "Qoʻshimchalar",
+    "allergens": "Allergenlar",
+    "kitchen": "Oshxona sozlamalari",
+    "schedule": "Jadval",
+    "settings": "Sozlamalar"
+  },
+  "toast": {
+    "demoGone": "Demo menyuingiz endi mavjud emas — davom etish uchun uni qayta yuklang.",
+    "eventsSaveFailed": "Tadbirlarni saqlab boʻlmadi",
+    "cardReadFailed": "Allergenlar kartasini oʻqib boʻlmadi — qayta urinib koʻring",
+    "imageReadFailed": "Bu rasmni oʻqib boʻlmadi — kartangizni yozing yoki joylashtiring",
+    "commitFailedDetail": "Menyuni saqlashni yakunlab boʻlmadi: {error}. Ayrim mahsulotlar saqlanib ulgurgan boʻlishi mumkin — qayta urinishdan oldin menyuingizni tekshiring.",
+    "commitFailed": "Menyuni saqlashni yakunlab boʻlmadi. Ayrim mahsulotlar saqlanib ulgurgan boʻlishi mumkin — qayta urinishdan oldin menyuingizni tekshiring.",
+    "finishFailed": "Sozlashni yakunlangan deb belgilab boʻlmadi — baribir davom etishingiz mumkin.",
+    "scheduleReadFailed": "Bu jadvalni oʻqib boʻlmadi — aniqroq rasm sinab koʻring yoki sanalarni oʻzingiz yozing.",
+    "cardRead": "Karta oʻqildi — mos keldi: {matched}, {pending, plural, one {# tasini} other {# tasini}} oʻzingiz belgilashingiz kerak"
+  },
+  "settingsReview": {
+    "anchorOrder": "Sozlamalar → Buyurtma sozlamalari",
+    "anchorDisplay": "Sozlamalar → Fudtraklaringiz → Ekran sozlamalari",
+    "mins15": "15 daqiqa",
+    "mins30": "30 daqiqa",
+    "mins60": "60 daqiqa",
+    "hours2": "2 soat",
+    "title": "Tekshirib qoʻyish kerak boʻlgan bir nechta sozlama",
+    "loading": "Joriy sozlamalaringiz yuklanmoqda…",
+    "looksGood": "Hammasi joyida →",
+    "secondaryAria": "{label} — {secondary}",
+    "saveFailed": "Buni saqlab boʻlmadi — uni Sozlamalarda oʻzgartirishingiz mumkin.",
+    "anchorContact": "Sozlamalar → Aloqa maʼlumotlari",
+    "intro": "Siz uchun keng tarqalgan sozlamalarni oʻrnatdik. Tezda koʻz yugurtirib chiqing — ularning istalganini keyinroq Sozlamalarda oʻzgartirishingiz mumkin.",
+    "cancelAria": "Mijozlar olib ketishdan qancha vaqt oldin bekor qila oladi"
+  },
+  "allergensNotSet": {
+    "bodySetup": "Ishga tushirishdan oldin ularni tekshiring. Shunga qadar mahsulotlar “allergenlar sozlanmagan” deb belgilanadi.",
+    "body": "Ishga tushirishdan oldin ularni Sozlamalarda tekshiring. Shunga qadar mahsulotlar “allergenlar sozlanmagan” deb belgilanadi.",
+    "title": "⚠ Allergenlar va parhez maʼlumotlari hali sozlanmagan"
+  },
+  "welcome": {
+    "title": "HatchGrabga xush kelibsiz",
+    "yourTruck": "Fudtrakingiz",
+    "stop": "Istalgan vaqtda toʻxtab, keyin qaytishingiz mumkin.",
+    "body": "Sozlandi: {name}. Endi menyuingizni, soʻng birinchi tadbiringizni qoʻshamiz.",
+    "go": "Boshladik"
+  },
+  "offer": {
+    "title": "Demodagi menyudan foydalanasizmi?",
+    "use": "Shu menyudan foydalanish",
+    "upload": "Boshqa menyu yuklash",
+    "body": "Siz yuklagan menyuni saqladik — {count, plural, one {# ta mahsulot} other {# ta mahsulot}}. Undan boshlangʻich nuqta sifatida foydalaning yoki boshqasini yuklang."
+  },
+  "checkMenu": {
+    "title": "Menyuingizni tekshiring",
+    "body": "Demodagi menyuni fudtrakingizga saqladik, siz esa undan keyin uni oʻzgartirgansiz — shuning uchun oʻzgarishlaringiz saqlab qolindi. Quyida unga koʻz yugurtiring.",
+    "done": "Hammasi joyida"
+  },
+  "upload": {
+    "title": "Menyuingizni import qiling",
+    "body": "Menyu taxtasining rasmini, skrinshot yoki PDF yuklang yoki menyuni matn sifatida joylashtiring. SI uni oʻqiydi va raqamli menyuingizni yaratadi — saqlashdan oldin hammasini koʻrib chiqasiz.",
+    "confirmCancel": "Bu import bekor qilinsinmi? Bu menyu boʻyicha qilgan tekshiruvingiz oʻchib ketadi.",
+    "process": "Menyuni qayta ishlash",
+    "later": "Buni keyinroq qilaman"
+  },
+  "processing": {
+    "title": "Menyuingiz tahlil qilinmoqda",
+    "body": "SI mahsulotlaringizni oʻqib, kategoriyalarga ajratmoqda…"
+  },
+  "review": {
+    "title": "Import qilingan menyuni tekshirish",
+    "editLaterSetup": "Nomlar, narxlar, qoʻshimchalar, allergenlar va parhez maʼlumotlarini keyinroq istalgan vaqtda tahrirlash mumkin.",
+    "editLater": "Nomlar, narxlar, qoʻshimchalar, allergenlar va parhez maʼlumotlarini istalgan vaqtda Sozlamalarda tahrirlash mumkin.",
+    "noPrice": "{count, plural, one {# ta mahsulotning} other {# ta mahsulotning}} narxini oʻqib boʻlmadi",
+    "renameCategoryAria": "Kategoriya nomini oʻzgartirish: {name}",
+    "renameAria": "Nomini oʻzgartirish: {name}",
+    "renameTitle": "Kategoriya nomini oʻzgartirish",
+    "deleteAria": "Oʻchirish: {name}",
+    "deleteTitle": "Kategoriyani oʻchirish",
+    "lastCategory": "Menyuingizda kamida bitta kategoriya boʻlishi kerak",
+    "countOf": "{kept} / {total}",
+    "existing": "mavjud",
+    "deleteEmptyTitle": "“{name}” oʻchirilsinmi?",
+    "deleteEmptyBody": "Unda mahsulot yoʻq, shuning uchun hech narsa yoʻqolmaydi.",
+    "delete": "Oʻchirish",
+    "moveTitle": "{count, plural, one {# ta mahsulot} other {# ta mahsulot}} qayerga koʻchirilsin?",
+    "moveBody": "“{name}” kategoriyasini oʻchirish uchun undagi taomlarni koʻchiradigan joy kerak — kategoriyasiz mahsulotlar import qilinmaydi.",
+    "moveAria": "Mahsulotlarni koʻchirish (qayerdan: {name}) qayerga",
+    "chooseCategory": "Kategoriyani tanlang…",
+    "moveDelete": "Koʻchirish va oʻchirish",
+    "itemName": "Mahsulot nomi",
+    "free": "bepulmi?",
+    "freeOn": "Bepul ✕",
+    "nameFirst": "Yana mahsulot qoʻshishdan oldin yangisiga nom bering",
+    "addItem": "+ Mahsulot qoʻshish",
+    "categoryName": "Kategoriya nomi",
+    "newCategoryAria": "Yangi kategoriya nomi",
+    "addCategory": "+ Kategoriya qoʻshish",
+    "ready": "{count, plural, one {# ta mahsulot} other {# ta mahsulot}} qoʻshishga tayyor. Keragi yoʻqlaridan belgini olib tashlang.",
+    "noPriceBody": "Har biriga narx belgilang yoki bepul deb belgilang — aks holda u {zero} narxda sotuvga chiqadi. Bular hal qilinmaguncha davom eta olmaysiz.",
+    "incomplete": "Bu mahsulotni qoʻshish uchun nom kiriting — boʻsh qatorlar import qilinmaydi."
+  },
+  "extras": {
+    "introSetup": "Ayrim taomlarni <b>bitta sozlanadigan mahsulot</b> sifatida yoki <b>alohida taomlar</b> sifatida qoldirish mumkin. Har biri qanday koʻrinishini tanlang. Buni keyinroq oʻzgartirishingiz mumkin.",
+    "intro": "Ayrim taomlarni <b>bitta sozlanadigan mahsulot</b> sifatida yoki <b>alohida taomlar</b> sifatida qoldirish mumkin. Har biri qanday koʻrinishini tanlang. Buni keyinroq Sozlamalarda oʻzgartirishingiz mumkin.",
+    "none": "Guruhlanadigan taomlar yoʻq — har bir mahsulot alohida taom.",
+    "axisChoice": "· tanlov: {axis}",
+    "grouped": "Guruhlangan · bitta mahsulot, mijoz tanlaydi",
+    "separate": "Alohida menyu mahsulotlari"
+  },
+  "allergens": {
+    "title": "Allergenlar",
+    "detected": "Menyuingizdan allergenlarni aniqladik. Quyida ularni qanday koʻrsatishni tanlang.",
+    "howShow": "Allergenlarni mijozlarga qanday koʻrsatmoqchisiz?",
+    "skip": "Allergenlarni sozlashni hozircha oʻtkazib yuborish"
+  },
+  "kitchen": {
+    "title": "Oshxona sozlamalari",
+    "intro": "Mijozlarga qancha kutishni bilishga yordam bering — bularni har doim keyinroq oʻzgartirishingiz mumkin.",
+    "howWorks": "Oshxona quvvati qanday ishlaydi",
+    "allExist": "Barcha kategoriyalar allaqachon mavjud — belgilanadigan vaqt yoʻq.",
+    "totalHelp": "Oshxona har bir vaqt oraligʻida qancha mahsulot qabul qilishini cheklash uchun umumiy quvvatni belgilang. Cheklovsiz boʻlishi uchun ∞ qoldiring.",
+    "saveAdd": "Saqlash va menyuga qoʻshish"
+  },
+  "schedule": {
+    "title": "Jadvalimni qoʻshish",
+    "intro": "Agar jadvalingiz saytingizda boʻlsa, uni avtomatik yangilab turishimiz mumkin — yoki sanalarni oʻzingiz qoʻshing.",
+    "websiteTitle": "Jadvalim saytimda bor",
+    "urlPlaceholder": "https://fudtrakingiz.uz/tadbirlar",
+    "checking": "Tekshirilmoqda…",
+    "verify": "Tekshirish",
+    "checkingSite": "Saytingiz tekshirilmoqda…",
+    "takesTime": "Bu 2 daqiqagacha vaqt olishi mumkin — iltimos, sahifani yopmang.",
+    "canRead": "✓ Jadvalingizni oʻqiy olamiz",
+    "ownSite": "Oʻz saytingiz — Facebook yoki Instagram sahifasi emas.",
+    "photoTitle": "Jadvalimning rasmini yuklash",
+    "dragChoose": "Tanlash uchun sudrab tashlang yoki bosing",
+    "imageOrPdf": "Rasm yoki PDF",
+    "or": "yoki",
+    "pastePlaceholder": "Sanalaringizni shu yerga joylashtiring…",
+    "read": "Jadvalni oʻqish",
+    "found": "{count, plural, one {# ta sana} other {# ta sana}} topildi — ular jadvalingizga qoʻshiladi.",
+    "dateTbc": "Sana keyinroq maʼlum qilinadi",
+    "save": "{count, plural, one {# ta sanani} other {# ta sanani}} saqlash",
+    "manualDesc": "Ularni keyinroq “Jadval” boʻlimida qoʻshasiz — hozir hech narsa qilish shart emas.",
+    "manualBody": "Muammo yoʻq. Sanalaringizni istalgan vaqtda hisobingizdagi “Jadval” boʻlimida qoʻshib, boshqarishingiz mumkin.",
+    "blockedDomain": "Iltimos, saytingiz manzilini kiriting — Facebook va Instagram sahifalaridan maʼlumotni avtomatik olib boʻlmaydi.",
+    "saveFailed": "Jadvalingizni oʻqidik, lekin hozir saqlab boʻlmadi — qayta urinib koʻring.",
+    "websiteDesc": "Uni muntazam tekshirib, yangi sanalarni tasdiqlashingiz uchun yuboramiz.",
+    "keepChecking": "Bu sahifani tekshirishda davom etamiz va har qanday yangi sanani tasdiqlashingiz uchun yuboramiz.",
+    "photoDesc": "Sanalarni suratga oling yoki joylashtiring — ularni oʻqib, tekshirishingiz uchun kiritamiz.",
+    "noneFound": "Unda birorta ham sana topilmadi — aniqroq rasm sinab koʻring yoki sanani oʻzingiz qoʻshing.",
+    "manualTitle": "Sanalarni oʻzim qoʻshaman",
+    "trialNotStarted": "Tadbir qoʻshish bepul sinov muddatingizni boshlamaydi — uni qaysi tadbir boshlashini keyinroq oʻzingiz tanlaysiz."
+  },
+  "done": {
+    "summary": "{items, plural, one {# ta mahsulot} other {# ta mahsulot}}, {categories, plural, one {# ta kategoriya} other {# ta kategoriya}}.",
+    "imported": "Menyu import qilindi!",
+    "added": "Mahsulotlaringiz menyuga qoʻshildi.",
+    "duplicates": "{count, plural, one {# ta takroriy mahsulot} other {# ta takroriy mahsulot}} oʻtkazib yuborildi",
+    "showMe": "Menga koʻrsatib bering",
+    "remind": "Keyinroq eslatish",
+    "allSet": "Hammasi tayyor!",
+    "explore": "Oʻzim koʻrib chiqaman"
+  },
+  "discard": {
+    "setupTitle": "Sozlashni keyinroq yakunlaysizmi?",
+    "setupBody": "Hisobingiz va fudtrakingiz saqlangan — hech narsa yoʻqolmaydi. Menyuni istalgan vaqtda qoʻshishingiz mumkin: tizimga kiring va aynan shu yerdan davom etish uchun menyu ekranida <b>Menyuni import qilish</b> tugmasini bosing.",
+    "keepGoing": "Davom etish",
+    "finishLater": "Keyinroq yakunlash",
+    "title": "Bu import bekor qilinsinmi?",
+    "keepEditing": "Tahrirlashni davom ettirish",
+    "discard": "Bekor qilish",
+    "body": "Oʻzgarishlaringiz saqlanmaydi — import qilingan mahsulotlar, tayyorlash vaqtlari va oshxona quvvati qoʻshilmaydi.",
+    "carriedBody": "Demodagi menyuingiz fudtrakingizda boricha saqlangan. Uni istalgan vaqtda menyu ekranida oʻzgartirishingiz mumkin."
+  },
+  "allergenCardText": {
+    "contains": "Tarkibida bor: {list}",
+    "mayContain": "Tarkibida boʻlishi mumkin: {list}"
+  }
+}

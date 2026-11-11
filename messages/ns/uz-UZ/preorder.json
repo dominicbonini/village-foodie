@@ -1,0 +1,6 @@
+{
+  "closedPending": "Oldindan buyurtmalar yopildi. Oshxona tasdiqlashi kutilmoqda.",
+  "deadline": "Oldindan buyurtma muddati: {time}",
+  "deadlineOnDay": "Oldindan buyurtma muddati: {time}, {day}",
+  "opens": "Oldindan buyurtmalar ochiladi: {day}"
+}

@@ -1,0 +1,9 @@
+{
+  "title": "Tariflar va imkoniyatlar",
+  "generated": "Yaratilgan sana: {date}",
+  "allowanceHeading": "Onlayn buyurtmalar limiti",
+  "smallPrint": "Qoʻshimcha shartlar",
+  "priceNoteMasked": "“Aniqlanmoqda” deb koʻrsatilgan narxlar hali eʼlon qilinmagan.",
+  "omitNote": "Bu hujjatga narxlar ataylab kiritilmagan.",
+  "terms": "Koʻrsatkichlar yuqoridagi sanadagi eʼlon qilingan tarif shartlari boʻlib, oʻzgarishi mumkin. Karta toʻlovlarini qayta ishlash komissiyasini HatchGrab emas, Stripe oladi. Bu hujjat shartnoma emas, qisqacha maʼlumotdir."
+}

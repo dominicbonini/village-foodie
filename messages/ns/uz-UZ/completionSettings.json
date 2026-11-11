@@ -1,0 +1,9 @@
+{
+  "paidStepTitle": "Toʻlovsiz buyurtma qabul qilish",
+  "completionTitle": "Toʻlanmagan buyurtmani yakunlash",
+  "completionHelp": "Toʻlanmagan buyurtma topshirishga tayyor boʻlganda nima boʻladi.",
+  "pressesOne": "Bitta bosish (“Toʻlandi va olib ketildi”)",
+  "pressesOneHelp": "Pulni taomni topshirayotganda olsangiz, shunisi qulay. Sizda bitta tugma boʻladi — “Toʻlandi va olib ketildi”: u toʻlovni qayd etadi va buyurtmani birdaniga yopadi.",
+  "pressesTwo": "Ikki bosish (“Toʻlandi” va “Olib ketildi”)",
+  "pressesTwoHelp": "Toʻlov va topshirish turli paytda boʻlsa, shunisi qulay — mijoz sotuv oynasida toʻlaydi, keyin buyurtma tayyor boʻlganda olib ketadi. Sizda ikki tugma boʻladi: avval “Toʻlandi”, mijoz taomni olganda esa “Olib ketildi”."
+}

@@ -1,0 +1,25 @@
+{
+  "heading": "Hafta: {start} — {end}",
+  "daysOff": "Bugun ishlamaymiz",
+  "cancelled": "BEKOR QILINDI",
+  "placeSample": {
+    "nameTownBelow": "Shahar bogʻi\nChilonzor",
+    "nameTown": "Shahar bogʻi, Chilonzor",
+    "nameOnly": "Shahar bogʻi"
+  },
+  "busyWeek": {
+    "venue1": "Yunusobod madaniyat markazi",
+    "town1": "Yunusobod",
+    "venue2": "Mirzo Ulugʻbek tumani sport majmuasi va bolalar oʻyin maydonchasi",
+    "town2": "Mirzo Ulugʻbek",
+    "venue3": "Markaziy maydon",
+    "town3": "Samarqand",
+    "venue4": "Taomlar festivali",
+    "town4": "Buxoro",
+    "venue5": "Dehqon bozori",
+    "town5": "Fargʻona",
+    "venue6": "Istirohat bogʻi",
+    "town6": "Namangan"
+  },
+  "poweredBy": "HatchGrab asosida ishlaydi"
+}

@@ -1,0 +1,70 @@
+{
+  "error": {
+    "generic": "Nimadir xato ketdi",
+    "previewFailed": "Oldindan koʻrish rasmini yaratib boʻlmadi",
+    "loadFailed": "Yuklab boʻlmadi",
+    "tooBig": "Bu rasm hajmi {size, number, ::.0 group-off} MB. Cheklov — 10 MB.",
+    "wrongType": "PNG yoki JPG faylini tanlang.",
+    "uploadIncomplete": "Yuklash yakunlanmadi",
+    "uploadFailed": "Fayl yuklanmadi",
+    "saveFailed": "Saqlab boʻlmadi",
+    "buildFailed": "Postni yaratib boʻlmadi",
+    "copyFailed": "Nusxalab boʻlmadi — matnni belgilab, qoʻlda nusxalang."
+  },
+  "loading": "Yuklanmoqda…",
+  "missingTable": {
+    "title": "Haftalik post uchun maʼlumotlar bazasini yangilash kerak",
+    "body": "Dizayn jadvali hali yaratilmagan. Migratsiya qoʻllangach, bu ekran ishlaydi."
+  },
+  "kind": {
+    "label": "Qaysi dizayn",
+    "event": "Bitta tadbir",
+    "week": "Haftalik"
+  },
+  "setup": {
+    "title": "Haftalik postingizni sozlang",
+    "intro": "Oʻzingiz tayyorlaydigan haftalik jadval grafikasining boʻsh versiyasini yuklang — xuddi shu dizayn, faqat matn maydonlari olib tashlangan. HatchGrab haftani jadvalingiz asosida toʻldiradi.",
+    "canvaTitle": "Canva orqali boʻsh shablonni qanday eksport qilish mumkin",
+    "canvaStep1": "Odatdagi haftalik jadval dizayningizni oching.",
+    "canvaStep2": "Sanalar, joylar va vaqtlar yozilgan matn maydonlarini oʻchiring — saqlamoqchi boʻlgan fon va sarlavhalarni qoldiring.",
+    "canvaStep3": "Ulashish (Share) › Yuklab olish (Download) › PNG.",
+    "uploading": "Yuklanmoqda…",
+    "upload": "Boʻsh shabloningizni yuklang",
+    "uploadHint": "PNG yoki JPG, 10 MB gacha, qisqa tomoni kamida {px}px.",
+    "phoneTip": "Kompyuter yoki iPad qulayroq — telefonda maydonlar tortish uchun juda kichik.",
+    "designName": "Haftalik post dizayni",
+    "backDesigns": "‹ Dizaynlar",
+    "back": "‹ Orqaga",
+    "pictureNote": "Rasmingiz — sana va joy nomisiz. Ularni biz qoʻshamiz.",
+    "saved": "Dizayn saqlandi."
+  },
+  "week": {
+    "this": "Shu hafta",
+    "next": "Keyingi hafta"
+  },
+  "post": {
+    "title": "Haftalik postingiz",
+    "editDesign": "Dizaynni tahrirlash",
+    "weekOf": "Hafta boshi: {date}",
+    "imageAlt": "Haftalik postingiz",
+    "building": "Postingiz tayyorlanmoqda…",
+    "updating": "Yangilanmoqda…",
+    "eventsTitle": "Shu haftadagi tadbirlar",
+    "noEvents": "Bu hafta tadbirlar yoʻq.",
+    "eventDateCancelled": "{date} · bekor qilindi",
+    "showCancelled": "Bekor qilingan tadbirlarni koʻrsatish",
+    "showPrivate": "Shaxsiy tadbirlarni koʻrsatish",
+    "privateHint": "Ular sana va vaqt bilan “Shaxsiy tadbir” sifatida koʻrsatiladi — joy hech qachon koʻrsatilmaydi.",
+    "noteTitle": "Izoh",
+    "notePlaceholder": "masalan, Oʻzi olib ketish uchun oldindan buyurtma bering",
+    "noteHint": "Tavsifda va, agar joylashtirgan boʻlsangiz, izoh maydonida chiqadi.",
+    "captionTitle": "Sahifangiz uchun tavsif",
+    "perEventTitle": "Har bir tadbir uchun post",
+    "nothingToPost": "Bu hafta joylash uchun hech narsa yoʻq.",
+    "textCopied": "Matn nusxalandi.",
+    "copyText": "Matnni nusxalash",
+    "image": "Rasm",
+    "share": "Ulashish",
+    "noOrderLink": "Buyurtma havolasi hali yoʻq — «Sozlamalar» boʻlimida fudtrakingiz veb-manzilini kiriting."
+  }
+}

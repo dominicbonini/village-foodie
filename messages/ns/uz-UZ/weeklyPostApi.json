@@ -1,0 +1,57 @@
+{
+  "shortened": {
+    "heading": "Sarlavha sigʻmadi va qisqartirildi.",
+    "date": "Sana sigʻmadi va qisqartirildi.",
+    "daysOff": "Dam olish kunlari matni sigʻmadi va qisqartirildi.",
+    "place": "Joy nomi sigʻmadi va qisqartirildi.",
+    "time": "Vaqt sigʻmadi va qisqartirildi.",
+    "note": "Oʻz matningiz sigʻmadi va qisqartirildi.",
+    "venue": "Maskan nomi sigʻmadi va qisqartirildi.",
+    "area": "Hudud nomi sigʻmadi va qisqartirildi."
+  },
+  "fontFallback": "Bu dizayndagi shrift ({id}) yuklanmadi — bu bloklar Oswald shriftida.",
+  "wrongShapeBackground": "Bu joyning rasmi dizayningizdan boshqa shaklda, shuning uchun standart fon ishlatiladi.",
+  "rowsFit": "Oxirgi kun rasmning pastki chetidan {px}px pastda — qatorlar oraligʻini kamaytiring yoki 1-qatorni yuqoriga suring.",
+  "placeStatus": {
+    "ownBoth": "Oʻz rasmi va matn joylashuvi",
+    "wrongShape": "Boshqa shakl — almashtirilmaguncha ishlatilmaydi",
+    "ownPicture": "Oʻz rasmi, standart joylashuv",
+    "ownPositions": "Standart rasm, oʻz matn joylashuvi",
+    "none": "Hali rasm yoʻq — Standart ishlatilmoqda"
+  },
+  "standardStatus": "Boshqa barcha joylarda ishlatiladi",
+  "option": {
+    "oneOff": "Faqat shu post uchun yuklash",
+    "placePoster": "Afisha: {name}",
+    "standard": "Standart dizayn"
+  },
+  "previewLabel": {
+    "lastEvent": "Oldindan koʻrishda bu yerdagi oxirgi tadbiringiz ishlatiladi",
+    "noEvents": "Bu yerda hali tadbir yoʻq — oldindan koʻrishda keyingi tadbiringiz shu joy nomi bilan koʻrsatiladi"
+  },
+  "fontUsage": {
+    "weekly": "haftalik post dizayningiz",
+    "event": "bitta tadbir posti dizayningiz",
+    "place": "{place} uchun dizayningiz",
+    "placeUnnamed": "joy uchun dizayningiz"
+  },
+  "face": {
+    "regular": "Oddiy",
+    "bold": "Qalin",
+    "italic": "Kursiv"
+  },
+  "picture": {
+    "legacy": "Tadbir afishasi",
+    "fallback": "Rasm",
+    "wrongShape": "Boshqa shakl — butun fon sifatida ishlatib boʻlmaydi"
+  },
+  "noPicture": {
+    "omit": "Qoʻshmaslik",
+    "blank": "Boʻsh joy qoldirish",
+    "logo": "Logotipingizni koʻrsatish"
+  },
+  "noPicturesAll": "{total, plural, one {Joyingizda rasm bor.} other {Barcha {total} ta joyingizda rasm bor.}}",
+  "noPicturesSome": "{without, plural, one {{total} ta joyingizdan {without} tasida hali rasm yoʻq} other {{total} ta joyingizdan {without} tasida hali rasm yoʻq}}",
+  "licenceTick": "Bu shrift menga tegishli yoki undan foydalanish litsenziyam bor",
+  "fontUploadButton": "↑ Shriftingizni yuklash"
+}

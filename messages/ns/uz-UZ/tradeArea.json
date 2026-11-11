@@ -1,0 +1,8 @@
+{
+  "country_missing": "Fudtrakingiz joylashgan mamlakatni tanlang.",
+  "country_off": "Bu mamlakatdagi fudtraklar hozircha roʻyxatdan oʻta olmaydi. Boshqa mamlakatni tanlang.",
+  "zone_unknown": "Bu vaqt mintaqasi ushbu mamlakat uchun taklif qilinmaydi. Roʻyxatdan birini tanlang.",
+  "town_missing": "Qaysi shahar yoki tumanda joylashganingizni koʻrsating.",
+  "town_too_long": "Shahar nomi juda uzun — koʻpi bilan 120 belgi.",
+  "region_closed": "Bu hududda joylashgan fudtraklar hozircha roʻyxatdan oʻta olmaydi ({region}){reason, select, language {: HatchGrab hozircha bu tilda mavjud emas ({language})} taxLines {: avval GST va PST uchun alohida qatorlar qoʻshmoqdamiz} other {}}. Agar fudtrakingiz boshqa joyda boʻlsa, oʻsha shahar yoki tumanni tanlang."
+}

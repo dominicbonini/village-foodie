@@ -1,0 +1,86 @@
+{
+  "loading": "Boshqaruv paneli yuklanmoqda…",
+  "loadFailed": "Yuklab boʻlmadi",
+  "requestFailed": "Xatolik",
+  "invalidToken": "Token notoʻgʻri yoki muddati oʻtgan",
+  "loadFailedReason": "Bu sahifani yuklab boʻlmadi: {reason}",
+  "noCountrySettings": "Bu fudtrakning mamlakat sozlamalarini yuklab boʻlmadi. Sahifani yangilang.",
+  "noPlans": "Bu fudtrakning tarifini yuklab boʻlmadi. Sahifani yangilang.",
+  "stale": "{hasTime, select, yes {Yangilab boʻlmadi. {time} holatidagi saqlangan maʼlumotlar koʻrsatilmoqda. Kiritgan oʻzgarishlaringiz baribir saqlanadi.} other {Yangilab boʻlmadi. Saqlangan maʼlumotlar koʻrsatilmoqda. Kiritgan oʻzgarishlaringiz baribir saqlanadi.}}",
+  "verify": {
+    "ok": "E-pochta tasdiqlandi — rahmat.",
+    "expired": "Bu tasdiqlash havolasining muddati tugagan. Biz bilan bogʻlaning — ishga tushirishdan oldin hal qilamiz.",
+    "invalid": "Bu tasdiqlash havolasi ishlamadi. Biz bilan bogʻlaning — ishga tushirishdan oldin hal qilamiz."
+  },
+  "profile": {
+    "updated": "Profil yangilandi",
+    "saveFailed": "Saqlab boʻlmadi",
+    "title": "Profilni tahrirlash",
+    "name": "Ism",
+    "namePlaceholder": "Ismingiz",
+    "email": "E-pochta",
+    "cancel": "Bekor qilish",
+    "saving": "Saqlanmoqda…",
+    "save": "Saqlash"
+  },
+  "header": {
+    "subtitle": "Boshqaruv paneli",
+    "ordersDashboard": "← Ish paneli"
+  },
+  "tabs": {
+    "menu": "Menyu",
+    "schedule": "Jadval",
+    "paperwork": "Hujjatlar",
+    "social": "Ijtimoiy tarmoqlar",
+    "reports": "Hisobotlar",
+    "team": "Jamoa",
+    "settings": "Sozlamalar",
+    "payments": "Toʻlovlar",
+    "billing": "Hisob-kitob",
+    "paymentsIcon": "💵",
+    "scheduleCount": "Jadval ({count})",
+    "stripeAttention": "Stripe eʼtiboringizni talab qiladi",
+    "allergensNotSet": "allergenlar belgilanmagan"
+  },
+  "menuSections": {
+    "label": "Menyu boʻlimlari",
+    "items": "Mahsulotlar",
+    "capacity": "Oshxona quvvati",
+    "extras": "Qoʻshimchalar va qoʻshimcha sotuvlar",
+    "deals": "Kombolar"
+  },
+  "socialSections": {
+    "label": "Ijtimoiy tarmoqlar boʻlimlari",
+    "create": "Post yaratish",
+    "designs": "Dizaynlar",
+    "locations": "Joy sozlamalari"
+  },
+  "notices": {
+    "review": "Koʻrib chiqish →",
+    "tour": "Boshqaruv paneli bilan qisqacha tanishib chiqasizmi?",
+    "showMeAround": "Koʻrsatib bering",
+    "dismiss": "Yopish",
+    "approval": "{count, plural, one {Siz uchun <b>{count}</b> ta tadbir topdik — eʼlon qilinishidan oldin koʻrib chiqing va maʼqullang.} other {Siz uchun <b>{count}</b> ta tadbir topdik — eʼlon qilinishidan oldin koʻrib chiqing va maʼqullang.}}",
+    "allergens": "<b>Allergenlar belgilanmagan</b> — siz tasdiqlamaguningizcha mijozlar allergenlar haqidagi maʼlumotni koʻrmaydi. «Menyu» boʻlimida har bir taomning allergenlarini tekshiring.",
+    "domainLive": "<link>{domain}</link> ishga tushdi. Uni koʻrib chiqing, soʻng «Sozlamalar» boʻlimida hammasi toʻgʻri ekanini bizga bildiring.",
+    "stripe": "<b>Stripe sizdan nimadir soʻramoqda</b> — masala hal boʻlmaguncha karta orqali toʻlovlar toʻxtab qolishi mumkin.",
+    "profileTitle": "Profilingizni toʻldiring",
+    "missing": "Yetishmayapti: {fields}.",
+    "goToSettings": "Sozlamalarga oʻtish →",
+    "field": {
+      "truckName": "fudtrak nomi",
+      "cuisineType": "oshxona turi",
+      "contactEmail": "aloqa uchun e-pochta",
+      "contactPhone": "aloqa telefoni"
+    }
+  },
+  "trialPopup": {
+    "title": "{months, select, none {Siz bepul sinov muddatidasiz} other {Siz {months} oylik bepul sinov muddatidasiz}}",
+    "ends": "{hasDate, select, yes {Sinov muddati tugashi: <hl>{date}</hl>} other {Sinov muddati <hl>tez orada</hl> tugaydi}}",
+    "offer": "{hasMonths, select, yes {{months, plural, one {Barcha imkoniyatlar # oy bepul} other {Barcha imkoniyatlar # oy bepul}}} other {Sinov muddati davomida barcha imkoniyatlar bepul}}",
+    "body": "{hasDate, select, yes {Sinov muddatingiz <b>{date}</b> sanasigacha davom etadi va bu davrda sizdan hech narsa undirilmaydi. Toʻlov faqat tarif tanlab, toʻlov maʼlumotlaringizni kiritganingizdan keyin boshlanadi. Unga qadar bekor qiladigan ham, toʻlaydigan ham hech narsa yoʻq. Tarifingizni muddat tugashidan oldin tanlang — aks holda {fallback} tarifiga oʻtasiz va baʼzi imkoniyatlar ishlamay qoladi.} other {Sinov muddatida sizdan hech narsa undirilmaydi. Toʻlov faqat tarif tanlab, toʻlov maʼlumotlaringizni kiritganingizdan keyin boshlanadi. Unga qadar bekor qiladigan ham, toʻlaydigan ham hech narsa yoʻq. Tarifingizni muddat tugashidan oldin tanlang — aks holda {fallback} tarifiga oʻtasiz va baʼzi imkoniyatlar ishlamay qoladi.}}",
+    "bodyPaidEnd": "{hasDate, select, yes {Sinov muddatingiz <b>{date}</b> sanasigacha davom etadi va bu davrda sizdan hech narsa undirilmaydi. Sinov muddati tugagach, {fallback} tarifi oyiga {price} turadi. Toʻlovni sozlash uchun bundan oldin siz bilan bogʻlanamiz.} other {Sinov muddatida sizdan hech narsa undirilmaydi. Sinov muddati tugagach, {fallback} tarifi oyiga {price} turadi. Toʻlovni sozlash uchun bundan oldin siz bilan bogʻlanamiz.}}",
+    "fees": "*Onlayn buyurtmalarga standart karta toʻlovlari komissiyalari qoʻllanadi",
+    "upgrade": "Tarifni shu yerda yangilang →"
+  }
+}

@@ -1,0 +1,31 @@
+{
+  "intro": "Boshqaruv boʻlimida fudtrakingizni sozlaysiz va ishlar qanday ketayotganini koʻrasiz. Ish panelida buyurtmalarni qabul qilasiz va har bir tadbirni jonli boshqarasiz.",
+  "ariaLabel": "Boshqaruv paneli boʻyicha qoʻllanma",
+  "step": "{current} / {total}",
+  "skip": "Oʻtkazib yuborish",
+  "back": "← Orqaga",
+  "next": "Keyingi →",
+  "done": "Tayyor",
+  "stops": {
+    "menu": {
+      "title": "Menyu",
+      "body": "Taomlaringiz, narxlar va allergenlar. Bu yerda istalgan narsani oʻzgartiring — oʻzgarish darhol kuchga kiradi."
+    },
+    "schedule": {
+      "title": "Jadval",
+      "body": "Qayerda va qachon savdo qilishingiz. Bu yerda tadbir qoʻshing — mijozlar unga buyurtma bera oladi."
+    },
+    "build": {
+      "title": "Kombolar hamda Qoʻshimchalar va qoʻshimcha sotuvlar",
+      "body": "Kombolar, qoʻshimcha sotuvlar, moslashtirishlar va oshxona quvvati Menyu boʻlimida — bemalol sinab koʻring."
+    },
+    "settings": {
+      "title": "Sozlamalar",
+      "body": "Fudtrakingiz maʼlumotlari va mijozlar qanday toʻlashi."
+    },
+    "billing": {
+      "title": "Hisob-kitob",
+      "body": "Tarifingiz, hisob-kitob va imkoniyatlar haqidagi maʼlumotlar shu yerda."
+    }
+  }
+}

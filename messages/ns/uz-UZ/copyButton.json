@@ -1,0 +1,10 @@
+{
+  "copy": "Nusxalash",
+  "copied": "Nusxalandi ✓",
+  "failed": "Nusxalab boʻlmadi",
+  "aria": "{label} {thing}",
+  "announceCopied": "Nusxalandi: {thing}",
+  "announceCopiedValue": "Qiymat nusxalandi",
+  "announceFailed": "Nusxalab boʻlmadi: {thing}. Matnni belgilab, oʻzingiz nusxalang.",
+  "announceFailedValue": "Qiymatni nusxalab boʻlmadi. Matnni belgilab, oʻzingiz nusxalang."
+}

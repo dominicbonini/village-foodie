@@ -1,0 +1,10 @@
+{
+  "download": "Rasmni yuklab olish",
+  "copied": "Nusxa olindi ✓",
+  "copyCaption": "Tavsifni nusxalash",
+  "share": "Ulashish",
+  "copiedStatus": "{kind, select, postText {Post matnidan nusxa olindi.} other {Tavsifdan nusxa olindi.}}",
+  "copyFailed": "Nusxa olib boʻlmadi — matnni belgilang va qoʻlda nusxalang.",
+  "sharedStatus": "{kind, select, postText {Post matnidan nusxa olindi — uni postingizga joylashtiring.} other {Tavsifdan nusxa olindi — uni postingizga joylashtiring.}}",
+  "shareRefused": "{kind, select, postText {Ulashish rad etildi, shuning uchun rasm yuklab olindi. Post matnidan nusxa olindi.} other {Ulashish rad etildi, shuning uchun rasm yuklab olindi. Tavsifdan nusxa olindi.}}"
+}

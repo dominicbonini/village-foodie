@@ -1,0 +1,61 @@
+{
+  "steps": {
+    "reading": "Menyuingiz oʻqilmoqda…",
+    "found": "Mahsulotlaringiz topildi…",
+    "kitchen": "Oshxonangiz sozlanmoqda…",
+    "page": "Buyurtma sahifangiz yaratilmoqda…",
+    "almost": "Deyarli tayyor…"
+  },
+  "templateSteps": {
+    "truck": "Namuna fudtrak yaratilmoqda…",
+    "menu": "Menyu sozlanmoqda…",
+    "kitchen": "Oshxona sozlanmoqda…",
+    "page": "Buyurtma sahifasi yaratilmoqda…",
+    "almost": "Deyarli tayyor…"
+  },
+  "dialogLabel": "Menyuingizni yuklang",
+  "heading": "✨ Menyuingizni yuklang",
+  "failedHeading": "Bu menyuni oʻqib boʻlmadi",
+  "close": "Yopish",
+  "intro": "Menyu taxtasining surati, skrinshot, PDF yoki matn sifatida joylang. Sunʼiy intellektimiz uni oʻqib, 60 soniyadan kamroq vaqtda sizga ishlaydigan buyurtma sahifasini yaratadi — mahsulotlaringiz, narxlaringiz bilan. Roʻyxatdan oʻtish ham, karta ham shart emas.",
+  "failedIntro": "Baʼzan surat juda qorongʻi, qiyshiq yoki qoʻlda yozilgan boʻladi. Bu bizning vazifamiz, sizning xatoingiz emas. Bir necha yoʻl bor:",
+  "usually": "Bu odatda 60 soniyadan kamroq vaqt oladi.",
+  "slow": "Bu odatdagidan uzoqroq davom etmoqda — katta menyular baʼzan shunday boʻladi.",
+  "keepWaiting": "Kutishda davom etish",
+  "sampleWhileYouWait": "Yoki kutayotib namuna menyu bilan tanishib chiqing",
+  "standIn": "Bu <b>sizning menyuingiz boʻlmaydi</b> — bu qanday ishlashini koʻrishingiz uchun vaqtinchalik namuna.",
+  "seeSample": "Namuna menyuni koʻrish",
+  "tryAgain": "Qayta urinish",
+  "tryPhotoAgain": "Shu suratni qayta sinash",
+  "tryDifferent": "Boshqa suratni sinash",
+  "uploadAnother": "← Boshqa surat yuklash",
+  "orSample": "Yoki namuna menyu bilan tanishib chiqing",
+  "orBuild": "Yoki uni siz uchun biz yaratamiz",
+  "buildSent": "✓ Rahmat — qabul qildik. E-pochtangizga yozamiz.",
+  "buildBody": "E-pochtangizni qoldiring — haqiqiy xodimimiz menyuingizni kiritib, sizga havolani yuboradi.",
+  "emailPlaceholder": "siz@fudtrakingiz.uz",
+  "sending": "…",
+  "send": "Yuborish",
+  "noPhoto": "Menyu surati qoʻl ostingizda yoʻqmi?",
+  "noPhotoBody": "Uning oʻrniga namuna fudtrak bilan tanishib chiqing — oʻz menyuingizni istalgan vaqtda yuklashingiz mumkin.",
+  "build": "Demomni yaratish →",
+  "nothingPublished": "Hech narsa eʼlon qilinmagan — buni faqat siz koʻrasiz.",
+  "error": {
+    "somethingWrong": "Nimadir xato ketdi. Qayta urinib koʻring.",
+    "serverUnreachable": "Serverga ulanib boʻlmadi. Internet aloqangizni tekshirib, qayta urinib koʻring.",
+    "sendFailed": "Yuborib boʻlmadi — qayta urinib koʻring."
+  },
+  "fields": {
+    "uploadLabel": "Menyu faylini yuklash",
+    "dropHere": "Menyuingizni shu yerga tashlang",
+    "dragOrTap": "Sudrab tashlang yoki tanlash uchun bosing",
+    "fileTypes": "Rasm yoki PDF",
+    "or": "yoki",
+    "pasteLabel": "Menyu matnini joylash",
+    "pastePlaceholder": "Menyuingizni shu yerga joylang — mahsulot nomlari, tavsiflar, narxlar..."
+  },
+  "emailLabel": "E-pochtangiz",
+  "emailNote": "Demongiz havolasini e-pochtangizga yuboramiz va HatchGrab platformasini sozlash boʻyicha siz bilan bogʻlanishimiz mumkin. <link>Maxfiylik siyosati</link>",
+  "marketing": "HatchGrab jamoasidan vaqti-vaqti bilan maslahatlar va yangiliklar yuboring",
+  "emailInvalid": "Iltimos, toʻgʻri e-pochta manzilini kiriting."
+}

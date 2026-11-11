@@ -1,0 +1,46 @@
+{
+  "greeting": "{hasName, select, yes {Assalomu alaykum, {name}!} other {Assalomu alaykum!}}",
+  "questions": "Savollaringiz bormi? Shunchaki javob yozing.",
+  "signoff": "HatchGrab jamoasi",
+  "buttonUpdate": "{method, select, payment_method {Toʻlov usulini} other {Kartani}} yangilash",
+  "buttonPay": "Hozir toʻlash",
+  "buttonAddCard": "Karta qoʻshish",
+  "suspended": "Toʻlanmasa, hisobingiz bloklanishi mumkin.",
+  "failed": {
+    "subject": "HatchGrab uchun toʻlovingiz amalga oshmadi",
+    "line1": "Bugun {amount} miqdoridagi toʻlovni yecha olmadik (fudtrak: {truck}). Qayta urinib koʻramiz.",
+    "line2": "Onlayn buyurtmalar yoniq qolishi uchun {date} gacha {method, select, payment_method {toʻlov usulingizni} other {kartangizni}} yangilang."
+  },
+  "twoDays": {
+    "subject": "{method, select, payment_method {Toʻlov usulingizni} other {Kartangizni}} yangilash uchun 2 kun qoldi",
+    "line1": "{amount} hali toʻlanmagan (fudtrak: {truck}). {date} gacha {method, select, payment_method {toʻlov usulingizni} other {kartangizni}} yangilang, aks holda onlayn buyurtmalar toʻxtatiladi."
+  },
+  "oneDay": {
+    "subject": "{method, select, payment_method {Toʻlov usulingizni} other {Kartangizni}} ertagacha yangilang",
+    "line1": "{amount} hali toʻlanmagan (fudtrak: {truck}). {method, select, payment_method {Toʻlov usulingizni} other {Kartangizni}} ertagacha yangilang, aks holda onlayn buyurtmalar toʻxtatiladi."
+  },
+  "lastDay": {
+    "subject": "{method, select, payment_method {Toʻlov usulingizni} other {Kartangizni}} yangilash uchun oxirgi kun",
+    "line1": "Bugun {amount} toʻlashning oxirgi kuni (fudtrak: {truck}). Yarim tungacha toʻlanmasa, toʻlamaguningizcha onlayn buyurtmalar toʻxtatiladi."
+  },
+  "paused": {
+    "subject": "Onlayn buyurtmalar toʻxtatildi",
+    "line1": "Onlayn buyurtmalar toʻxtatildi (fudtrak: {truck}), chunki {amount} toʻlanmagan. Hozir toʻlang — ular darhol qayta yoqiladi.",
+    "line2": "{date} gacha toʻlang, aks holda hisobingiz bloklanishi mumkin."
+  },
+  "trial7": {
+    "subject": "Bepul sinov muddatingiz 7 kundan keyin tugaydi",
+    "line1": "Bepul sinov muddatingiz {date} kuni tugaydi (fudtrak: {truck}).",
+    "line2": "Onlayn buyurtmalar yoniq qolishi uchun Boshqaruv › Hisob-kitob boʻlimida karta qoʻshing.",
+    "plan": "Undan keyin {plan} tarifi oyiga {price} turadi. Sinov muddatingiz tugaganda {month} oyining qolgan qismi uchun {amount} yechamiz, soʻngra {nextFirst} kuni — {price}.",
+    "planFree": "Undan keyin {plan} tarifiga oʻtasiz — oylik toʻlov yoʻq.",
+    "fee": "Onlayn buyurtmalar uchun komissiyamiz ({fee}) har oyning 1-sanasida oʻtgan oy uchun yechiladi."
+  },
+  "trial1": {
+    "subject": "Bepul sinov muddatingiz ertaga tugaydi",
+    "line1": "Bepul sinov muddatingiz ertaga tugaydi (fudtrak: {truck}).",
+    "noCard": "Karta qoʻshing, aks holda onlayn buyurtmalar toʻxtatiladi.",
+    "allSet": "Hammasi tayyor: {plan} tarifi {date} kuni boshlanadi.",
+    "charge": "Sinov muddatingiz tugaganda {month} oyining qolgan qismi uchun {amount} yechamiz."
+  }
+}

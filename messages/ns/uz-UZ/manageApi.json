@@ -1,0 +1,10 @@
+{
+  "vanFallback": "Furgon",
+  "eventsFeed": {
+    "today": "Bugun · {date}",
+    "tomorrow": "Ertaga · {date}"
+  },
+  "privacyNotSaved": "Tadbir faol, lekin uning maxfiylik sozlamasini saqlab boʻlmadi.",
+  "stockWarning": "“{category}” kategoriyasida mavjud mahsulot yoʻq",
+  "uncategorised": "Kategoriyasiz"
+}

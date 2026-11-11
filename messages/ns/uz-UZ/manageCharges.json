@@ -1,0 +1,30 @@
+{
+  "heading": "Soliq, choychaqa va yigʻimlar",
+  "rate": {
+    "label": "Savdo soligʻi stavkasi",
+    "hint": "Har bir buyurtmaga qoʻllanadigan stavka. Mijozlar uni toʻlov sahifasida, cheklarda va buyurtma varaqalarida qoʻshilgan holda koʻradi.",
+    "regionDefault": "Boʻsh qoldirsangiz, {label} {rate}% stavkada hisoblanadi (tayyor taomlar stavkasi, {region})."
+  },
+  "included": {
+    "label": "Narxlaringizdagi {label}",
+    "hint": "Narxlaringizga {label} allaqachon kiritilgan. Bu stavka faqat cheklar va buyurtma varaqalarida har bir narxning qancha qismi {label} ekanini koʻrsatadi — toʻlov sahifasida hech narsa qoʻshilmaydi.",
+    "default": "Boʻsh qoldirsangiz, {rate}% qoʻllanadi — olib ketish uchun sotiladigan issiq taomlarga {label} stavkasi ({country})."
+  },
+  "tips": {
+    "label": "Choychaqa",
+    "hint": "Onlayn karta bilan toʻlayotgan mijozlar choychaqa qoʻshishi mumkin. Hammasi sizga tushadi.",
+    "choices": "Mijozlar koʻradigan variantlar:",
+    "chip": "{rate}%",
+    "other": "Boshqa summa"
+  },
+  "fee": {
+    "label": "Onlayn xizmat yigʻimi",
+    "hint": "Faqat onlayn buyurtmalarga qoʻshiladi. Fudtrakda toʻlanadigan yoki oyna oldida berilgan buyurtmalarga hech qachon qoʻshilmaydi. U sizda qoladi.",
+    "pctAria": "Xizmat yigʻimi foizi",
+    "fixedAria": "Xizmat yigʻimining qatʼiy summasi",
+    "max": "Eng koʻpi bilan: {max}",
+    "example": "Mijozlar uni toʻlashdan oldin bitta qator sifatida koʻradi: “{label} {amount}”.",
+    "hatchgrab": "HatchGrab mijozlaringizning onlayn buyurtmalariga {fee} xizmat yigʻimi qoʻshadi. Uni siz toʻlamaysiz va oʻzgartira olmaysiz."
+  },
+  "saveFailed": "Saqlab boʻlmadi — qaytadan urinib koʻring."
+}

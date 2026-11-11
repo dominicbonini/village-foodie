@@ -1,0 +1,82 @@
+{
+  "jsonLd": {
+    "subCategory": "Fudtraklar va koʻchma keytering uchun buyurtma tizimi",
+    "description": "Fudtraklar va koʻchma keytering uchun buyurtmalar, oldindan buyurtmalar va oshxona ekrani ({country}).",
+    "audience": "Fudtrak va koʻchma keytering egalari"
+  },
+  "hero": {
+    "title": "<lean>Fudtraklar</lean> uchun yaratilgan buyurtma tizimi.",
+    "subSmall": "Menyuingizni yuklang, roʻyxatdan oʻtish shart emas.<br></br>Ishlaydigan demoni 60 soniyadan kamroq vaqtda koʻring.",
+    "cta": "Menyuimni yuklash →",
+    "ctaNote": "<lead>Menyuingiz suratini yuklang va u qanday ishlashini 60 soniyadan kamroq vaqtda koʻring.</lead><small>Roʻyxatdan oʻtish shart emas. Karta kerak emas.</small>"
+  },
+  "shots": {
+    "kitchenAlt": "HatchGrab oshxona ekrani (KDS): buyurtma cheklari tayyorlash tartibida",
+    "dashboardAlt": "HatchGrab orqali buyurtma qabul qilish: chapda menyu, oʻngda joriy savat va jami summa",
+    "phoneAlt": "HatchGrab orqali fudtrakdan buyurtma berish: suratlar va narxlar bilan menyu hamda savatning joriy jami summasi"
+  },
+  "trust": {
+    "freeMonth": "{months, plural, one {Birinchi oy butunlay bepul, barcha imkoniyatlar ochiq} other {Birinchi # oy butunlay bepul, barcha imkoniyatlar ochiq}}",
+    "noCard": "Karta kerak emas",
+    "cancel": "Istalgan vaqtda bekor qilish mumkin, shartnomasiz"
+  },
+  "does": {
+    "eyebrow": "Nima qiladi",
+    "title": "Restoranlar uchun emas, fudtraklar uchun yaratilgan.",
+    "lede": "Koʻpchilik buyurtma tizimlari doimiy manzil, barqaror Wi-Fi va har hafta bir xil ish vaqtini nazarda tutadi. Siz esa har hafta yangi joyda, turli vaqtlarda, mobil aloqa zaif yoki umuman yoʻq joylarda ishlaysiz. HatchGrab aynan shunday sharoit uchun yaratilgan.",
+    "slotsTitle": "Mijozlar olib ketish vaqtini tanlaydi",
+    "capacityTitle": "Oshxona quvvatini belgilang",
+    "capacityBody": "Bir vaqtda qancha tayyorlay olishingizni va bu qancha vaqt olishini belgilang. Olib ketish vaqti toʻlgach, mijozlar uni tanlay olmaydi.",
+    "devicesTitle": "Istalgan qurilmada ishlaydi",
+    "devicesBody": "Fartuk choʻntagingizdagi telefonda, peshtaxtadagi planshetda, fudtrakdagi noutbukda — va toʻlovlarni hozir qabul qilayotgan toʻlov terminalingizda ishlaydi.",
+    "postsTitle": "Facebook va Instagram postlaringizni avtomatlashtiring",
+    "postsBody": "Facebook yoki Instagram sahifangizga hozir joylayotgan dizayningizni yuklang. Sanalar, joylar va vaqtlarni biz toʻldiramiz — har hafta yoki har kuni ulashishga tayyor.",
+    "whatsappTitle": "WhatsApp avtojavoblari",
+    "whatsappBody": "“Bugun kechqurun qayerdasiz?” “Qanday shirinliklaringiz bor?” Savdo joyiga ketayotganingizda yoki mangal yonida turganingizda WhatsApp xabarlaringizga oʻz menyuingiz va jadvalingiz asosida javob beriladi. Messenger va Instagram tez orada qoʻshiladi.",
+    "whatsappSoonTitle": "WhatsApp avtojavoblari <soon>Tez orada</soon>",
+    "whatsappSoonBody": "“Bugun kechqurun qayerdasiz?” “Qanday shirinliklaringiz bor?” Tez orada savdo joyiga ketayotganingizda yoki mangal yonida turganingizda WhatsApp xabarlaringizga javob beriladi. Keyin Messenger va Instagram ham qoʻshiladi.",
+    "offlineTitle": "Aloqa yoʻqmi? Xizmatni davom ettiring.",
+    "offlineBody": "Aloqa uzilsa, onlayn buyurtma avtomatik toʻxtatiladi — mijozlar siz koʻrmaydigan buyurtmalarni bera olmaydi. iPhone, iPad va Android ilovasi orqali buyurtma qabul qilishda davom eting.",
+    "slotsBody": "Mijozlar oldindan buyurtma beradi va olib ketish vaqtini tanlaydi. Navbatlar kamayadi, ular kelganda taom tayyor boʻladi."
+  },
+  "steps": {
+    "eyebrow": "Boshlash",
+    "title": "Taxminan 15 daqiqada sozlang va buyurtma qabul qilishni boshlang.",
+    "lede": "Uchta ishni hal qilish kerak — ulardan ikkitasi uchun faqat surat kifoya.",
+    "menuTitle": "Menyuingizni tuzing",
+    "menuBody": "Menyu taxtangizni suratga oling yoki matnini joylang. Taomlar, narxlar va qoʻshimchalar avtomatik koʻchiriladi. Siz faqat toʻgʻriligini tekshirasiz.",
+    "scheduleTitle": "Jadvalingizni qoʻshing",
+    "scheduleBody": "Jadvalingiz saytingizda bormi? Biz uni oʻsha yerdan oʻqib, doim yangilab boramiz. Agar yoʻq boʻlsa, uni ham suratga oling. Siz faqat topilganini tasdiqlaysiz.",
+    "shareTitle": "Havolangizni ulashing",
+    "shareBody": "Uni Facebook sahifangizga joylang, QR-kodni fudtrakka yopishtiring. Buyurtmalar ekraningizga tayyorlash kerak boʻlgan tartibda tushadi."
+  },
+  "testimonial": {
+    "quote": "HatchGrab buyurtma qabul qilishni ancha osonlashtirdi. Hammasi tartibli, zaxirani kuzatib boramiz va yana nechta pitsa sotishimiz mumkinligini aniq bilamiz — vaqt oraliqlari esa gavjum qishloqlar uchun ajoyib.",
+    "award": "Yilning koʻchma pitseriyasi",
+    "awardScope": "Mintaqaviy gʻolib",
+    "business": "Pizzeria Gusto",
+    "byline": "Nadia & Bogdan — egalari"
+  },
+  "pricing": {
+    "eyebrow": "Narxlar",
+    "title": "Bepul boshlang. Kerak boʻlganda tarifni oshiring.",
+    "switchHead": "Boshqa platformadan oʻtyapsizmi?",
+    "switchBody": "Xuddi shu buyurtmalar uchun HatchGrab bilan qancha toʻlashingizni koʻring. Taxminan bir daqiqa vaqt oladi.",
+    "switchCta": "Toʻlovlaringizni solishtiring"
+  },
+  "faq": {
+    "title": "Koʻp beriladigan savollar",
+    "metaTitle": "Koʻp beriladigan savollar | HatchGrab",
+    "metaDescription": "Fudtrak egalari uchun aniq javoblar: HatchGrab narxlari, sozlash, onlayn va oldindan buyurtma qabul qilish, oʻzi olib ketish va toʻlov."
+  },
+  "final": {
+    "truckLabel": "Fudtrak",
+    "title": "Sozlash qanchalik osonligini koʻrmoqchimisiz?",
+    "lede": "Menyuingiz surati yoki skrinshotini yuklang — biz uni 60 soniyadan kamroq vaqtda sinab koʻrishingiz mumkin boʻlgan ishlaydigan buyurtma sahifasiga aylantiramiz. Sizning taomlaringiz, sizning narxlaringiz. Roʻyxatdan oʻtish, karta va oʻrnatish shart emas. Koʻrib chiqing, keyin qaror qiling.",
+    "cta": "Menyuimni hozir yuklash →"
+  },
+  "meta": {
+    "title": "Fudtraklar uchun buyurtma tizimi — HatchGrab {country}",
+    "description": "Buyurtma va oldindan buyurtmalarni navbatsiz qabul qiling: fudtrak va koʻchma keytering uchun buyurtma va oshxona ekrani ({country}) — POS-tizim emas."
+  }
+}

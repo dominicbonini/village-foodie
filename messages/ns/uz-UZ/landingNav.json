@@ -1,0 +1,14 @@
+{
+  "homeLabel": "HatchGrab bosh sahifasi",
+  "cta": "Menyuimni yuklash →",
+  "ctaShort": "Menyuni yuklash",
+  "features": "Imkoniyatlar",
+  "pricing": "Narxlar",
+  "logIn": "Kirish",
+  "country": {
+    "button": "Mamlakat: {name}. Mamlakatni oʻzgartirish",
+    "menu": "Mamlakat",
+    "title": "Mamlakatingizni tanlang",
+    "subline": "Narxlar, til va sozlamalar shunga mos oʻzgaradi."
+  }
+}

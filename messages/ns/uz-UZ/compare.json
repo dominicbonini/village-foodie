@@ -1,0 +1,127 @@
+{
+  "eyebrow": "Xarajatlarni solishtirish",
+  "title": "Onlayn buyurtma<br></br><accent>xarajatlaringizni solishtiring</accent>",
+  "system": {
+    "title": "Hozir onlayn buyurtma qabul qilasizmi?",
+    "yes": "Ha, boshqa tizim orqali",
+    "no": "Yoʻq, hali emas"
+  },
+  "trucks": {
+    "title": "Nechta fudtrakingiz bor?",
+    "aria": "Fudtraklar soni"
+  },
+  "plan": {
+    "yourChoice": "Sizning tanlovingiz",
+    "weSuggest": "Tavsiyamiz",
+    "summary": "Har bir fudtrak uchun oyiga {price}; narxga {allowance} miqdoridagi onlayn buyurtmalar kiritilgan{fleet, plural, one {} other { — har biriga}}.",
+    "switchTo": "Oʻrniga {plan} tarifini tanlang",
+    "summaryFeeOnly": "{hasMonthly, select, yes {Har bir fudtrak uchun oyiga {price}, onlayn buyurtmalardan esa {pct}.} other {Oylik toʻlov yoʻq — faqat onlayn buyurtmalardan {pct}.}}",
+    "summaryNoFee": "Har bir fudtrak uchun oyiga {price}; onlayn buyurtmalar cheksiz, HatchGrab komissiyasi yoʻq."
+  },
+  "orders": {
+    "titleYes": "Har bir fudtrak uchun oylik onlayn buyurtmalar",
+    "count": "~{count, plural, one {# ta buyurtma} other {# ta buyurtma}}",
+    "captionNo": "Taxminiy raqam ham yetarli — oldindan buyurtmalar va navbatsiz buyurtmalar, oyna oldidagi naqd yoki karta toʻlovlari emas.",
+    "captionYes": "Faqat buyurtma sahifangiz orqali berilgan buyurtmalar — oyna oldidagi naqd yoki karta toʻlovlari emas.",
+    "sliderAria": "Bir fudtrak uchun oylik onlayn buyurtmalar summasi",
+    "overAllowance": "Har bir fudtrak uchun narxga {allowance} miqdoridagi onlayn buyurtmalar kiritilgan. Undan ortiq summaga ({excess}) {pct} komissiya olinadi — har biriga oyiga <b>{over}</b>.",
+    "insideAllowance": "Narxga kiritilgan miqdor ({allowance}) doirasida — tarifdan tashqari hech narsa toʻlanmaydi.",
+    "acrossFleet": "Jami {fleet, plural, one {# ta fudtrak} other {# ta fudtrak}} uchun: oyiga <b>{amount}</b>.",
+    "titleNo": "Sizningcha, har bir fudtrak oyiga onlayn qancha savdo qiladi?",
+    "feeOnly": "Har bir onlayn buyurtmadan {pct} — har bir fudtrak uchun oyiga <b>{over}</b>.",
+    "noFee": "Cheksiz onlayn buyurtmalar narxga kiritilgan — tarifdan tashqari hech narsa toʻlanmaydi."
+  },
+  "fee": {
+    "title": "Hozir har bir buyurtma uchun qancha toʻlaysiz?",
+    "pctLabel": "Foiz",
+    "pctPlaceholder": "Stavkangiz",
+    "pctAria": "Foizli komissiya",
+    "fixedLabel": "Buyurtmadan qoʻshimcha",
+    "fixedPlaceholder": "Toʻlovingiz",
+    "fixedAria": "Har bir buyurtma uchun qatʼiy toʻlov",
+    "modeLabel": "Ularning stavkasi:",
+    "modeInclusive": "karta toʻlovlari komissiyasini oʻz ichiga oladi",
+    "modeOnTop": "ustiga qoʻshib olinadi",
+    "onTopNote": "Bundan tashqari, karta toʻlovlari komissiyasi ({fee}) alohida olinadi, shuning uchun aslida jami <b>{pct} + {fixed}</b> toʻlaysiz.",
+    "inclusiveNote": "Karta toʻlovlari komissiyasi ({fee}) shunga kiritilgan va uni istalgan tizimda baribir toʻlagan boʻlardingiz. Ularning oʻz komissiyasi — <b>{pct}</b>."
+  },
+  "days": {
+    "title": "Haftada necha kun savdo qilasiz?",
+    "help": "Tadbirlar, bozorlar, savdo joylari — fudtrak ishga chiqadigan har qanday kun."
+  },
+  "jump": {
+    "cost": "Narxini koʻrish ↓",
+    "saving": "Qancha tejashingizni koʻring ↓"
+  },
+  "noSystem": {
+    "hero": "<lead>Onlayn buyurtmalar, oldindan buyurtmalar va oshxona ekrani — narxi</lead><figure>{amount}</figure><unit>bir savdo kuni uchun</unit>",
+    "basedOn": "Haftasiga {days, plural, one {# kun} other {# kun}} hisobidan · oyiga {monthly}{fleet, plural, one {} other { (har bir fudtrak uchun)}}"
+  },
+  "coffee": "Bir chashka qahvadan ham arzon.",
+  "freeMonths": "{n, plural, one {Birinchi oy esa — bizdan sovgʻa.} other {Birinchi # oy esa — bizdan sovgʻa.}}",
+  "cta": {
+    "upload": "Menyumni yuklash →",
+    "uploadSave": "Menyumni yuklash va tejash: {amount} →",
+    "ask": "Bizga savol bering",
+    "noCard": "Sozlash uchun karta kerak emas"
+  },
+  "breakdown": {
+    "title": "Oylik xarajatlaringiz tafsiloti",
+    "titleDearer": "HatchGrab bilan oylik xarajatlar",
+    "plan": "Tarif: {plan}",
+    "over": "Kiritilgan miqdordan ({allowance}) ortiq summaga ({excess}) {pct}",
+    "inside": "Kiritilgan miqdor ({allowance}) doirasidagi onlayn buyurtmalar",
+    "total": "HatchGrab: har oy",
+    "freeMonths": "{n, plural, one {Birinchi oy} other {Birinchi # oy}}",
+    "freeAmount": "{amount} — bizdan sovgʻa",
+    "acrossFleet": "Jami {fleet, plural, one {# ta fudtrak} other {# ta fudtrak}} uchun",
+    "perMonth": "Oyiga {amount}",
+    "card": "Karta toʻlovlari komissiyasi — har bir buyurtmadan Stripe komissiyasi ({fee}), u Stripe kompaniyasiga toʻlanadi. Oyna oldidagi toʻlov terminalida ham deyarli shuncha toʻlagan boʻlardingiz.",
+    "provider": "Hozirgi provayderingizning oʻz komissiyasi ({pct})",
+    "feeOnly": "Onlayn buyurtmalar summasidan ({excess}) {pct}",
+    "noFee": "Onlayn buyurtmalar — cheksiz, HatchGrab komissiyasisiz"
+  },
+  "enterRate": "Qancha tejashingizni koʻrish uchun hozir qancha toʻlayotganingizni kiriting.",
+  "panel": {
+    "nowYear": "<label>Hozir toʻlayotganingiz</label><fig>{amount}<q> yiliga</q></fig>",
+    "nowMonth": "<label>Hozir toʻlayotganingiz</label><fig>{amount}<q> oyiga</q></fig>",
+    "oursYear": "<label>HatchGrab bilan</label><fig>{amount}<q> birinchi yilda</q></fig>",
+    "oursMonth": "<label>HatchGrab bilan</label><fig>{amount}<q> oyiga</q></fig>",
+    "acrossFleet": "jami {fleet, plural, one {# ta fudtrak} other {# ta fudtrak}} uchun"
+  },
+  "hero": {
+    "save": "<verb>Siz tejaysiz</verb><figure>{amount}</figure><sub>birinchi yilda <num>{pct}</num> kamroq</sub>",
+    "same": "<verb>Taxminan bir xil</verb><figure>{amount}</figure><sub>birinchi yilda <num>{pct}</num> koʻproq</sub>",
+    "dearer": "<lead>HatchGrab imkoniyatlarining barchasi — haftasiga</lead><figure>{amount}</figure><unit>qoʻshimcha</unit>",
+    "dearerSub": "{fleet, plural, one {Hozirgidan oyiga {amount} koʻproq} other {Hozirgidan har bir fudtrak uchun oyiga {amount} koʻproq}}"
+  },
+  "anchor": {
+    "liability": "Bu — fuqarolik javobgarligini bir yilga sugʻurtalash narxi.",
+    "weekendPitch": "Bu — ovqat festivalida dam olish kunlari uchun savdo joyi narxi.",
+    "festivalPitches": "Bu — festivallardagi bir-ikkita savdo joyi narxi.",
+    "fryer": "Bu — yangi frityurnitsa va qovurish paneli narxi.",
+    "counter": "Bu — tarqatish peshtaxtangizni toʻliq yangilash narxi.",
+    "vanDeposit": "Bu — ikkinchi fudtrak uchun boshlangʻich toʻlov.",
+    "secondVan": "Bu — yoʻlga chiqqan ikkinchi fudtrak."
+  },
+  "year": {
+    "one": "Birinchi yil",
+    "two": "Ikkinchi yil",
+    "save": "Tejash: {amount}<note>({pct} kamroq)</note>",
+    "extra": "Qoʻshimcha: {amount}<note>({pct} koʻproq)</note>",
+    "current": "Hozirgi provayder: <b>{amount}</b>",
+    "ours": "HatchGrab: <b>{amount}</b>"
+  },
+  "smallPrint": {
+    "no": "Taxminlar siz kiritgan raqamlarga asoslangan, oʻrtacha buyurtma {aov} deb hisoblangan. Karta toʻlovlari komissiyasi qaysi provayderdan foydalanmang, olinadi. Qaror qabul qilishdan oldin tekshiring.",
+    "yes": "Taxminlar siz kiritgan raqamlarga asoslangan, oʻrtacha buyurtma {aov} deb hisoblangan. Har bir buyurtma uchun karta toʻlovlari komissiyasi ({fee}) qaysi provayderdan foydalanmang, olinadi, shuning uchun u ikkala tomonda ham hisobga olinmagan.",
+    "onTop": "№ {n} savoldagi jami summa uni oʻz ichiga oladi — solishtirish esa uni hech bir tomonda hisobga olmaydi.",
+    "check": "Qaror qabul qilishdan oldin hozirgi provayderingiz stavkalarini tekshiring."
+  },
+  "intro": "Taxminan bir daqiqa vaqt oladi. Allaqachon biror tizimdan foydalanyapsizmi? Uni solishtiramiz. Hali yoʻqmi? Qancha turishini aniq koʻrsatamiz.",
+  "twoYear": "Ikki yilda bu <b>{amount}</b> tejash degani.",
+  "meta": {
+    "title": "Xarajatlar kalkulyatori — HatchGrab {country}",
+    "description": "Onlayn buyurtmalar va komissiyalar hozir sizga qanchaga tushayotganini HatchGrab bilan bir yil bilan solishtiring — bir daqiqada taxminiy hisob."
+  }
+}

@@ -1,0 +1,83 @@
+{
+  "title": "Tadbir turlari",
+  "newTypeButton": "+ Yangi tadbir turi",
+  "close": "Yopish",
+  "loading": "Yuklanmoqda…",
+  "missingTitle": "Tadbir turlari hali yoqilmagan.",
+  "missingBody": "Bu imkoniyat uchun maʼlumotlar bazasi yangilanishi hali qoʻllanmagan. Hech narsa buzilmagan — barcha tadbirlar odatiy sozlamalaringizdan foydalanmoqda.",
+  "column": "Ustun",
+  "vanGone": "Bu furgon endi mavjud emas.",
+  "typeGone": "Bu tur endi mavjud emas.",
+  "standard": "Standart",
+  "standardHeading": "STANDART",
+  "moreFor": "Qoʻshimcha amallar: {name}",
+  "rename": "Nomini oʻzgartirish",
+  "moveLeft": "Chapga surish",
+  "moveRight": "Oʻngga surish",
+  "delete": "Oʻchirish",
+  "sections": {
+    "vans": "FURGONLAR",
+    "prices": "NARXLAR",
+    "itemPrices": "MAHSULOT NARXLARI",
+    "service": "XIZMAT"
+  },
+  "labelFor": "{label} — {name}",
+  "intervalEvery": "Har {mins} daqiqada",
+  "noTypes": "Sizda hali tadbir turlari yoʻq, shuning uchun har bir tadbir odatiy sozlamalaringizdan foydalanadi.",
+  "renameTitle": "Bu tur nomini oʻzgartirish",
+  "name": "Nomi",
+  "cancel": "Bekor qilish",
+  "save": "Saqlash",
+  "copyVanOne": "Furgon 1 sozlamalaridan nusxa olish",
+  "thisType": "bu tur",
+  "matchTitle": "“{name}” uchun Standart sozlamalar qoʻllansinmi?",
+  "matchKeeps": "Alohida tadbirning ish panelida oʻzgartirgan narsalaringiz oʻz holicha qoladi va bu turning narxlari oʻzgartirilmaydi.",
+  "matchWillUse": "Qoʻllaniladi: {summary}",
+  "deleteTitle": "“{name}” oʻchirilsinmi?",
+  "deleteBody": "{n, plural, =0 {Hech bir kelgusi tadbir “{name}” turidan foydalanmaydi.} one {{count} ta kelgusi tadbir “{name}” turidan foydalanadi. Ular Standart sozlamalarga qaytadi.} other {{count} ta kelgusi tadbir “{name}” turidan foydalanadi. Ular Standart sozlamalarga qaytadi.}} Alohida tadbirda oʻzgartirgan narsalaringiz oʻz holicha qoladi.",
+  "keep": "Qoldirish",
+  "phone": {
+    "standardTag": "Standart",
+    "defaultTag": "sukut boʻyicha",
+    "vanSetup": "Bu furgonning odatiy sozlamalari — tur belgilanmagan har bir tadbirda qoʻllaniladi.",
+    "standardSetup": "Odatiy sozlamalaringiz — tur belgilanmagan har bir tadbirda qoʻllaniladi.",
+    "cardSummary": "{upcoming, plural, one {{upcomingCount} ta kelgusi tadbir} other {{upcomingCount} ta kelgusi tadbir}} · {changed, plural, =0 {hali hech narsa oʻzgarmagan} one {{total} tadan {changedCount} tasi oʻzgargan} other {{total} tadan {changedCount} tasi oʻzgargan}}",
+    "noMenuItems": "Menyuda hali mahsulotlar yoʻq — ularni Menyu › Mahsulotlar boʻlimida qoʻshing."
+  },
+  "newType": {
+    "title": "Yangi tadbir turi",
+    "namePlaceholder": "masalan, Maktab bayrami",
+    "help": "Nomni tanlang yoki oʻzingiz yozing. U Standart sozlamalar nusxasi sifatida boshlanadi va keyinchalik Standart sozlamalarni oʻzgartirsangiz ham u oʻzgarmaydi. Keyin istalgan narsani oʻzgartiring.",
+    "create": "Yaratish",
+    "chips": {
+      "festival": "Festival",
+      "pub": "Choyxona",
+      "market": "Bozor",
+      "privateHire": "Fudtrakni tadbirga chaqirish"
+    }
+  },
+  "select": {
+    "label": "Tadbir turi",
+    "usual": "Bu joy uchun odatiy tur: {name}."
+  },
+  "summary": {
+    "normalSetup": "Odatiy sozlamalaringiz",
+    "sameAsStandard": "Standart bilan bir xil",
+    "buzzersOn": "chaqiruv qurilmalari yoqilgan",
+    "buzzersOff": "chaqiruv qurilmalari oʻchirilgan",
+    "takeCashOn": "naqd pul qabul qilish yoqilgan",
+    "takeCashOff": "naqd pul qabul qilish oʻchirilgan",
+    "markReadyOn": "“tayyor” deb belgilash bosqichi yoqilgan",
+    "markReadyOff": "“tayyor” deb belgilash bosqichi oʻchirilgan",
+    "collectionEvery": "har {mins} daqiqada olib ketish",
+    "offlineOff": "oflayn himoya oʻchirilgan",
+    "offlineKeepTaking": "oflayn: buyurtma qabul qilishda davom etish",
+    "offlinePause": "oflayn: buyurtma qabul qilishni toʻxtatish"
+  },
+  "errors": {
+    "somethingWentWrong": "Nimadir xato ketdi",
+    "couldNotLoad": "Yuklab boʻlmadi",
+    "couldNotSave": "Saqlab boʻlmadi",
+    "noVans": "Bu fudtrakda oʻzgartiriladigan furgonlar yoʻq."
+  }
+}

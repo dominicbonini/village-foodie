@@ -1,0 +1,49 @@
+{
+  "banner": {
+    "title": "{months, plural, one {Birinchi oyingiz butunlay bepul — barcha imkoniyatlar ochiq.} other {Birinchi # oyingiz butunlay bepul — barcha imkoniyatlar ochiq.}}",
+    "body": "{brand} bilan mijozlar oldindan buyurtma beradi va olib ketishda toʻlaydi, shuning uchun onlayn buyurtmalarni karta toʻlov tizimini umuman ulamasdan qabul qilishingiz mumkin. Sinov muddati tugagach, agar tarif tanlamasangiz, <plan>{fallback}</plan> tarifiga{fallbackFree, select, yes { (oylik toʻlovsiz)} other {}} oʻtasiz. Boshlash uchun karta kerak emas, shartnoma yoʻq, istalgan vaqtda bekor qilish mumkin.",
+    "bodyOnly": "{brand} bilan mijozlar oldindan buyurtma beradi va olib ketishda toʻlaydi, shuning uchun onlayn buyurtmalarni karta toʻlov tizimini umuman ulamasdan qabul qilishingiz mumkin. Sinov muddati tugagach, <plan>{fallback}</plan> tarifi oyiga {price} turadi. Undan oldin toʻlovni sozlash uchun siz bilan bogʻlanamiz. Boshlash uchun karta kerak emas, shartnoma yoʻq, istalgan vaqtda bekor qilish mumkin."
+  },
+  "card": {
+    "perTruckMonth": "har bir fudtrak uchun / oy",
+    "mostTrucks": "Koʻpchilik tanlovi",
+    "tryFree": "Bepul sinab koʻrish",
+    "seeEvery": "Barcha imkoniyatlarni koʻrish →",
+    "everything": "Xizmatni yuritish uchun hamma narsa",
+    "everythingIn": "{plan} tarifidagi hamma narsa, shuningdek:"
+  },
+  "fee": {
+    "feeOnly": "<b>{fee}</b> faqat onlayn buyurtmalar uchun. Oyna oldida berilgan buyurtmalar har doim bepul.",
+    "included": "Har oy onlayn buyurtmalarning dastlabki <b>{included}</b> qismi kiritilgan, keyin <b>{fee}*</b>. Oyna oldida berilgan buyurtmalar har doim bepul.",
+    "noFee": "Onlayn buyurtmalar uchun <b>HatchGrab komissiyasi yoʻq</b>, qanchalik band boʻlmang. Bitta oldindan maʼlum oylik toʻlov."
+  },
+  "base": {
+    "walkUp": "Oyna oldida berilgan buyurtmalar va oshxona ekrani (KDS)",
+    "online": "Onlayn buyurtma",
+    "preorders": "Oldindan buyurtmalar va olib ketish vaqti",
+    "capacity": "Oshxona quvvatini boshqarish",
+    "privateEvents": "Shaxsiy tadbirlar",
+    "printing": "Oshxona cheklarini chop etish",
+    "app": "iPhone, iPad va Android uchun oshxona ilovasi"
+  },
+  "added": {
+    "whatsapp_replies": "WhatsApp avtojavoblari",
+    "schedule_graphics": "Ijtimoiy tarmoq postlari — Facebook va Instagram uchun jadvalingiz — joylashga tayyor",
+    "event_types": "Maxsus tadbir turlari va narxlar"
+  },
+  "money": {
+    "unlimitedOrders": "Cheksiz onlayn buyurtmalar, 0% HatchGrab komissiyasi",
+    "samePrice": "Eng band oyingizda ham narx oʻzgarmaydi"
+  },
+  "comingSoon": "Tez orada",
+  "bar": {
+    "title": "Men uchun qaysi tarif eng arzon?",
+    "subtitle": "Har oydagi onlayn buyurtmalaringiz",
+    "first": "{to} miqdorigacha → <b>{plan}</b>",
+    "middle": "{from} – {to} → <b>{plan}</b>",
+    "last": "{from} miqdoridan ortiq → <b>{plan}</b>",
+    "only": "Istalgan hajm → <b>{plan}</b>"
+  },
+  "footnote": "* Bundan tashqari, onlayn karta buyurtmalari uchun Stripe karta toʻlovlarini qayta ishlash haqi (hozirda {cardFee}, mamlakat: {country}) — u HatchGrab emas, Stripe kompaniyasiga toʻlanadi. Oyna oldida berilgan buyurtmalarda oʻz toʻlov terminalingizdan foydalanasiz — HatchGrab 0% oladi.",
+  "currencyLine": "Narxlar: {currency} ({code})"
+}

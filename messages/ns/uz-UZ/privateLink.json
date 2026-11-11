@@ -1,0 +1,12 @@
+{
+  "guestLabel": "SHAXSIY TADBIR",
+  "truckFallback": "Fudtrak",
+  "noSlugTitle": "Bu fudtrak hali onlayn buyurtma uchun sozlanmagan.",
+  "orderingOffTitle": "Onlayn buyurtma yoqilmagan",
+  "orderingOffBody": "Bu tadbir onlayn buyurtma qabul qilmaydi. Iltimos, sotuv oynasi oldida buyurtma bering.",
+  "replacedTitle": "Bu havola almashtirilgan",
+  "replacedBody": "Bu havola endi ishlamaydi — {truck} uni almashtirdi. Tashkilotchidan yangi havola yoki QR-kodni soʻrang.",
+  "madePublicBody": "Bu havola endi ishlamaydi — {truck} bu tadbirni ommaviy qildi. Ularning odatiy sahifasidan buyurtma berishingiz mumkin.",
+  "unknownTitle": "Bu havola ishlamaydi",
+  "unknownBody": "Bu havola ishlamaydi. Uni tashkilotchi bilan tekshiring yoki QR-kodni qayta skanerlang."
+}

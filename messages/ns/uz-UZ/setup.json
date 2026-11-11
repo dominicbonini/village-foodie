@@ -1,0 +1,32 @@
+{
+  "steps": {
+    "based": "Joylashuvingiz",
+    "identity": "Fudtrakingiz",
+    "menu": "Menyuingiz",
+    "event": "Birinchi tadbir"
+  },
+  "stepItem": "{number}. {label}",
+  "settingUp": "Sozlanmoqda",
+  "loading": "Yuklanmoqda",
+  "loadingCountries": "Yuklanmoqda…",
+  "verify": {
+    "ok": "E-pochta tasdiqlandi — rahmat.",
+    "expired": "Bu tasdiqlash havolasining muddati tugagan. Biz bilan bogʻlaning — ishga tushirishingizdan oldin hal qilamiz.",
+    "invalid": "Bu tasdiqlash havolasi ishlamadi. Biz bilan bogʻlaning — ishga tushirishingizdan oldin hal qilamiz."
+  },
+  "identity": {
+    "heading": "Fudtrakingiz qanday nomlanadi?",
+    "intro": "Bu nomni mijozlar koʻradi. Ishga tushirishni oʻzingiz tanlamaguningizcha hech narsa ommaga chiqmaydi.",
+    "nameLabel": "Fudtrak nomi",
+    "namePlaceholder": "Bobur Burger",
+    "phoneLabel": "Telefon",
+    "whatsappTick": "Bu raqamda WhatsApp bor",
+    "phoneHelp": "Mijozlar buyurtma haqida soʻrashlari uchun bu raqamni buyurtma tasdigʻida koʻradi. Belgi u yerda “Bizga qoʻngʻiroq qiling” yoki “Bizga WhatsApp orqali yozing” chiqishini belgilaydi. Ikkalasini ham Sozlamalarda oʻzgartirishingiz mumkin."
+  },
+  "phoneRequired": "Telefon raqamini qoʻshing — mijozlar ham, biz ham siz bilan shu orqali bogʻlanamiz.",
+  "createFailed": "Fudtrakingizni yaratib boʻlmadi.",
+  "unreachable": "Hozir biz bilan bogʻlanib boʻlmadi — qayta urinib koʻring.",
+  "back": "Orqaga",
+  "creating": "Fudtrakingiz yaratilmoqda…",
+  "continue": "Davom etish"
+}

@@ -1,0 +1,136 @@
+{
+  "binary": {
+    "cameraUsage": "HatchGrab kameradan menyu taxtasi, taomlaringiz va boshqa hujjatlarni suratga olib, ularni toʻgʻridan-toʻgʻri hisobingizga yuklash uchun foydalanadi. Rasmlar faqat siz tanlagan yuklashlar uchun ishlatiladi.",
+    "bluetoothUsage": "HatchGrab buyurtma cheklari avtomatik chop etilishi uchun Bluetooth orqali oshxona chek printeringizga ulanadi. Boshqa hech narsa uchun ishlatilmaydi.",
+    "localNetworkUsage": "HatchGrab buyurtma cheklari avtomatik chop etilishi uchun mahalliy tarmogʻingizdagi oshxona printeriga ulanadi. Boshqa hech narsa uchun ishlatilmaydi.",
+    "faceIdUsage": "Face ID bilan HatchGrab ilovasini oching.",
+    "offlineTitle": "HatchGrab bilan bogʻlanib boʻlmadi",
+    "offlineDetail": "Internet aloqasini tekshiring.",
+    "retry": "Qayta urinish"
+  },
+  "gate": {
+    "reverted": "Buyurtma #{id}: oʻzgarish bekor qilindi",
+    "saved": "Buyurtma #{id} saqlandi",
+    "undo": "↩ Bekor qilish",
+    "paymentNotRecorded": "⚠ Buyurtma #{id} — TOʻLOV QAYD ETILMADI. {collect, select, yes {Buyurtma yakunlandi} other {Buyurtma saqlandi}}, lekin pul qayd etilmadi.",
+    "recordPayment": "Toʻlovni qayd etish",
+    "paid": "Buyurtma #{id} toʻlandi",
+    "undonePayment": "Bekor qilindi — toʻlov olib tashlandi",
+    "undoneCollected": "Bekor qilindi — buyurtma olib ketilmagan",
+    "collected": "Buyurtma #{id} {paidToo, select, yes {toʻlandi va olib ketildi} other {olib ketildi}}",
+    "ready": "Buyurtma #{id} tayyor",
+    "readyBuzzer": "Buyurtma #{id} tayyor · <pill></pill>",
+    "status": "Buyurtma #{id} {action, select, confirm {tasdiqlandi} reject {rad etildi} ready {tayyor} collected {olib ketildi} undo_collected {tiklandi} cancel {bekor qilindi} other {yangilandi}}"
+  },
+  "conflicts": {
+    "more": "yana +{count}",
+    "notOnScreenPlus": "+{count} ta bu ekranda emas",
+    "notOnScreen": "{n, plural, one {{count} ta buyurtma bu ekranda emas} other {{count} ta buyurtma bu ekranda emas}}"
+  },
+  "banner": {
+    "paymentTitle": "⚠ TOʻLOV QAYD ETILMADI",
+    "paymentBody": "{orders} — faqat shu qurilmada toʻlangan deb belgilangan. Toʻlov oʻtmagan.",
+    "paymentCheck": "Buyurtmani tekshiring va agar pul hali toʻlanmagan boʻlsa, toʻlovni qayta oling.",
+    "dismiss": "Yopish",
+    "confirmChecked": "Tekshirganingizni tasdiqlang: {orders}",
+    "confirmHides": "Bu ogohlantirishni yashiradi. Yozuv har qanday holatda ham shu qurilmada saqlanadi.",
+    "notYet": "Hali emas",
+    "iveChecked": "Tekshirdim: {orders}",
+    "statusBody": "⚠ {orders} — bu oʻzgarish amalga oshmadi. Buyurtmani tekshiring.",
+    "offline": "📴 Aloqa yoʻq — {n, plural, one {{count} ta oʻzgarish shu qurilmada saqlandi. Internet qaytganda yuboriladi.} other {{count} ta oʻzgarish shu qurilmada saqlandi. Internet qaytganda yuboriladi.}} Sozlamalar qulflangan.",
+    "syncing": "Aloqa tiklandi — {n, plural, one {{count} ta oʻzgarish} other {{count} ta oʻzgarish}} yuborilmoqda…",
+    "synced": "Barcha oʻzgarishlar yuborildi.",
+    "stillQueued": "{n, plural, one {{count} ta oʻzgarish shu qurilmada saqlandi. Hali ham yuborishga urinilmoqda.} other {{count} ta oʻzgarish shu qurilmada saqlandi. Hali ham yuborishga urinilmoqda.}}"
+  },
+  "lock": {
+    "locked": "HatchGrab qulflangan",
+    "verifying": "Tekshirilmoqda…",
+    "unlock": "Ochish",
+    "cantUseBiometric": "Face / Touch ID ishlamayaptimi?",
+    "enterPin": "Zaxira PIN-kodingizni kiriting",
+    "wrongPin": "PIN-kod notoʻgʻri — qayta urinib koʻring.",
+    "checking": "Tekshirilmoqda…",
+    "tryBiometric": "Buning oʻrniga Face / Touch ID bilan urinib koʻring",
+    "forgot": "PIN-kodni unutdingizmi? Ilovani qayta oʻrnatishingiz kerak boʻladi."
+  },
+  "notify": {
+    "title": "🔔 Bildirishnomalar",
+    "intro": "Shu qurilmadagi ogohlantirishlar. Qaysi ogohlantirishlarni olishni tanlash uchun yoqing.",
+    "refused": "Buni yoqish uchun qurilma sozlamalarida bildirishnomalarga ruxsat berish kerak.",
+    "newOrder": "Yangi buyurtma haqida ogohlantirish",
+    "newOrderHelp": "Mijoz buyurtmasini tasdiqlash kerak boʻlganda xabar oling.",
+    "offline": "Oflayn / toʻxtatilganlik haqida ogohlantirish",
+    "offlineHelp": "Bu qurilma oflayn boʻlib qolganda (va buyurtmalar toʻxtatilganda) xabar oling. <green>Oflayn ham ishlaydi.</green>"
+  },
+  "van": {
+    "label": "Furgon",
+    "loadRetry": "Yuklab boʻlmadi · Qayta urinish",
+    "select": "Tanlang…"
+  },
+  "deviceSave": {
+    "network": "Serverga ulanib boʻlmadi — aloqani tekshirib, qayta urinib koʻring.",
+    "server": "Hozir saqlab boʻlmadi. Qayta urinib koʻring."
+  },
+  "setup": {
+    "fetchErrorTitle": "Qurilma sozlamalarini yuklab boʻlmadi",
+    "fetchErrorBody": "<b>Bu qurilmani</b> sozlash uchun serverga ulana olmadik. Aloqani tekshirib, qayta urinib koʻring — buyurtmalaringiz va sozlamalaringizga taʼsir qilmaydi.",
+    "retry": "Qayta urinish",
+    "later": "Keyinroq",
+    "noVanTitle": "Faol furgon yoʻq",
+    "noVanBody": "Bu fudtrakda hali faol furgon yoʻq. Uni <b>Sozlamalar → Fudtraklaringiz</b> boʻlimida faollashtiring, shundan soʻng bu qurilma avtomatik sozlanadi — bu yerda boshqa amal kerak emas.",
+    "goToVans": "Sozlamalar → Fudtraklaringiz boʻlimiga oʻtish",
+    "title": "Bu qurilmani sozlash",
+    "body": "<b>Bu qurilma</b> uchun bir martalik sozlash: qaysi ekran ochilishi va qaysi furgonda ishlashi. Faqat shu qurilmaga taalluqli — boshqa qurilmalar alohida sozlanadi, buni keyinroq profil menyusi → “Bu qurilma” orqali oʻzgartirishingiz mumkin.",
+    "whichScreen": "Bu qurilmada qaysi ekran ochilsin?",
+    "dashboard": "Ish paneli",
+    "kds": "KDS",
+    "whichVan": "Bu qurilma qaysi furgonda?",
+    "selectVan": "Furgonni tanlang…",
+    "saving": "Saqlanmoqda…",
+    "tryAgain": "Qayta urinish",
+    "continue": "Davom etish"
+  },
+  "device": {
+    "title": "Bu qurilma",
+    "viewing": "Hozirgi fudtrak: <b>{truck}</b>",
+    "viewingVan": "Hozirgi fudtrak: <b>{truck}</b> — <b>{van}</b>",
+    "only": "Faqat shu qurilma uchun — boshqa qurilmalar alohida sozlanadi. (ID: {id}…)",
+    "truck": "Fudtrak",
+    "van": "Furgon",
+    "defaultScreen": "Asosiy ekran",
+    "orderNotifications": "Buyurtma bildirishnomalari",
+    "patchFailed": "Saqlanmadi: {setting, select, van {Furgon} defaultScreen {Asosiy ekran} other {Buyurtma bildirishnomalari}}. {reason}",
+    "requireBiometric": "Ochish uchun barmoq izi yoki yuz orqali tasdiqlashni talab qilish",
+    "pinTitle": "Zaxira PIN-kod oʻrnating (4–6 raqam)",
+    "pinHelp": "Barmoq izi yoki yuz orqali ochish ishlamasa, kirishning yagona yoʻli shu — shuning uchun uni unutmang (PIN-kod unutilsa, ilovani qayta oʻrnatish kerak boʻladi). Oflayn ham ishlaydi.",
+    "pinPlaceholder": "PIN",
+    "confirmPinPlaceholder": "PIN-kodni tasdiqlang",
+    "pinTooShort": "Kamida 4 ta raqam kiriting.",
+    "pinMismatch": "PIN-kodlar mos kelmadi.",
+    "setPin": "PIN-kod oʻrnatish va yoqish",
+    "cancel": "Bekor qilish",
+    "noBiometric": "Bu qurilmada barmoq izi yoki yuz orqali ochish sozlanmagan — uni qurilma sozlamalarida qoʻshing. Zaxira PIN-kodingiz baribir ishlaydi.",
+    "footer": "Bu sozlamalar faqat shu qurilmaga taalluqli — boshqa qurilmalar alohida sozlanadi."
+  },
+  "appLock": {
+    "unlockReason": "HatchGrab ilovasini ochish",
+    "usePasscode": "Parol kodidan foydalanish",
+    "cancel": "Bekor qilish",
+    "confirmEnable": "Ilova qulfini yoqishni tasdiqlang"
+  },
+  "channel": {
+    "ordersName": "Yangi buyurtmalar",
+    "ordersDescription": "Buyurtmani tasdiqlash kerak boʻlganda ogohlantirishlar."
+  },
+  "localNotify": {
+    "newOrderTitle": "Yangi buyurtma",
+    "orderReceived": "Buyurtma {number} qabul qilindi",
+    "newOrders": "{n, plural, one {Sizda yangi buyurtma bor} other {Sizda {count} ta yangi buyurtma bor}}"
+  },
+  "offlineAlert": {
+    "pausedTitle": "Buyurtmalar toʻxtatildi",
+    "pausedBody": "Siz oflaynsiz — mijozlar buyurtmasi toʻxtatildi.",
+    "offlineTitle": "Siz oflaynsiz",
+    "offlineBody": "Bu qurilmada aloqa uzildi."
+  }
+}

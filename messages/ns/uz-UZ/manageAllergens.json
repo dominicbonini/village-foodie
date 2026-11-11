@@ -1,0 +1,117 @@
+{
+  "cardEditor": {
+    "title": "Allergenlar kartangiz",
+    "intro": "Mijozlar buni <b>siz qanday yozgan boʻlsangiz, aynan shunday</b> koʻradi — hech narsa qayta yozilmaydi. Quyida yozing yoki joylang, yoki surat/PDF yuklang — matnni oʻqib, tekshirishingiz uchun kiritib beramiz.",
+    "empty": "Hali allergenlar kartasi yoʻq.",
+    "placeholder": "masalan, Barcha somsalarimiz tarkibida bugʻdoy va sut bor. Qovurgich gluten va yongʻoq qoʻshilgan taomlar bilan umumiy. Vegan taomlar ham bor — xodimlardan soʻrang.",
+    "reading": "Rasm oʻqilmoqda…",
+    "upload": "📷 Rasm / PDF yuklash",
+    "uploadNote": "Tekshirib chiqishingiz uchun matnni rasmdan oʻqiymiz — rasmning oʻzi saqlanmaydi."
+  },
+  "cardUpload": {
+    "dishFallback": "Taom",
+    "question": "Yuklash uchun allergenlar kartangiz bormi?",
+    "perDish": "{detected, select, yes {Uni yuklang — taomlaringiz allergenlarini shu asosda tuzamiz. Aniqlangan allergenlar har bir taomni tasdiqlaydigan keyingi sahifada koʻrinadi.} other {Uni yuklang — taomlaringiz allergenlarini shu asosda tuzamiz.}}",
+    "cardOnly": "Mijozlar koʻradigan allergenlar kartasini yuklang.",
+    "yes": "Ha",
+    "no": "Yoʻq",
+    "noProblem": "Muammo yoʻq — u shart emas. Quyidagi tugma bilan davom eting.",
+    "analysing": "Karta tahlil qilinmoqda…",
+    "dropzone": "Sudrab tashlang yoki tanlash uchun bosing",
+    "imageOrPdf": "Rasm yoki PDF",
+    "or": "yoki",
+    "pastePlaceholder": "Allergenlar kartangiz matnini shu yerga joylang…",
+    "process": "Kartani qayta ishlash",
+    "cardRead": "Karta oʻqildi ✓",
+    "unmatchedHeading": "Bularni avtomatik moslab boʻlmadi — biriktiring yoki rad eting",
+    "quotedName": "“{name}”",
+    "ambiguous": "Noaniq — bir nechta taomga mos keladi; toʻgʻrisini tanlang.",
+    "assignTo": "Taomga biriktirish…",
+    "dismiss": "Rad etish",
+    "blanket": "Kartada aytilishicha, <b>{list}</b> <b>barcha</b> taomlarda boʻlishi mumkin. Har bir taomga qoʻshilsinmi? (baribir har birini tasdiqlaysiz) <muted>— sukut boʻyicha oʻchiq</muted>",
+    "kitchenNotes": "Oshxona izohlari (allergenlar maʼlumotingizga saqlanadi)",
+    "matchSummary": "{n, plural, =0 {Taomga moslandi: {matched}.} one {Taomga moslandi: {matched}. Siz biriktirishingiz kerak: {count}.} other {Taomga moslandi: {matched}. Siz biriktirishingiz kerak: {count}.}}"
+  },
+  "savedCard": {
+    "showLess": "Kamroq koʻrsatish",
+    "showMore": "Koʻproq koʻrsatish",
+    "fileOnly": "Bu fudtrak uchun karta fayli saqlangan, lekin qisqacha matn saqlanmagan. Oʻqish uchun asl nusxasini oching.",
+    "viewOriginal": "Asl kartani koʻrish"
+  },
+  "wizard": {
+    "toast": {
+      "readFailed": "Allergenlar kartasini oʻqib boʻlmadi — qayta urinib koʻring",
+      "confirmed": "Tasdiqlandi: {name}",
+      "undo": "Qaytarish",
+      "saveFailed": "Saqlab boʻlmadi — qayta urinib koʻring",
+      "imageFailed": "Bu rasmni oʻqib boʻlmadi — uning oʻrniga kartani yozing yoki joylang",
+      "cardRead": "{n, plural, one {Karta oʻqildi — moslandi: {matched}, biriktirish kerak: {count}} other {Karta oʻqildi — moslandi: {matched}, biriktirish kerak: {count}}}"
+    },
+    "genericWarn": {
+      "text": "“{generic}” aniqlandi, lekin u aniq emas. Agar bu taom tarkibida {family} boʻlsa, tanlang: {picks} — boʻlmasa, belgilamay qoldiring.",
+      "andOr": "{a} va/yoki {b}"
+    },
+    "badge": {
+      "justConfirmed": "✓ Tasdiqlandi",
+      "confirmed": "Tasdiqlangan",
+      "needsReview": "Tekshirish kerak"
+    },
+    "confirm": {
+      "confirming": "Tasdiqlanmoqda…",
+      "confirmed": "Tasdiqlandi ✓",
+      "confirm": "Tasdiqlash",
+      "changed": "· oʻzgargan",
+      "changedTitle": "Oxirgi tasdiqlashdan keyin tahrirlangan — qayta tasdiqlang"
+    },
+    "allergens": "Allergenlar",
+    "dietary": "Parhez",
+    "uncategorised": "Kategoriyasiz",
+    "review": {
+      "progress": "Tasdiqlandi: {total} tadan {confirmed} tasi",
+      "allConfirmed": "✓ Hammasi tasdiqlandi",
+      "list": "Roʻyxat",
+      "table": "Jadval",
+      "detected": "Menyuingizdan aniqlandi — <b>bularni tekshiring</b>. Har bir taomni tasdiqlamaguningizcha allergenlar mijozlardan yashirin turadi.",
+      "viewOnly": "👁 Faqat koʻrish — allergenlarni faqat egasi tasdiqlashi yoki oʻzgartirishi mumkin.",
+      "emptyTitle": "Menyuda mahsulotlar yoʻq",
+      "emptyBody": "Avval menyuga mahsulotlar qoʻshing, keyin ularning allergenlarini shu yerda belgilang.",
+      "dish": "Taom",
+      "status": "Holat"
+    },
+    "cardPanel": {
+      "reading": "Allergenlar haqidagi maʼlumot oʻqilmoqda…",
+      "saved": "🛡️ Allergenlar kartasi saqlandi",
+      "viewOriginal": "Asl kartani koʻrish",
+      "replace": "Kartani almashtirish",
+      "uploadHelp": "Allergenlar kartangizni (surat/PDF) yuklang yoki allergenlar haqidagi maʼlumotni joylang — sunʼiy intellektimiz uni mijozlar uchun tartibga soladi.",
+      "add": "Allergenlar kartasini qoʻshish",
+      "viewOnly": "👁 Faqat koʻrish — allergenlar kartasini faqat egasi qoʻsha oladi.",
+      "intro": "Mijozlar bu kartani menyuning allergenlar boʻyicha maʼlumotnomasi sifatida koʻradi. “Faqat karta” rejimida taomlar boʻyicha allergenlar yashirin turadi (keyinchalik taomlar boʻyicha rejimga oʻtsangiz, taomlar maʼlumotlari saqlanib qoladi)."
+    },
+    "subtitle": {
+      "choose": "Mijozlar allergenlar haqidagi maʼlumotni qanday koʻrishini tanlang",
+      "card": "Allergenlar kartangizni qoʻshing",
+      "cardOptional": "Allergenlar kartasini qoʻshing (ixtiyoriy)",
+      "review": "Har bir taomni tekshiring va tasdiqlang"
+    },
+    "heading": {
+      "import": "Allergenlar",
+      "standalone": "Allergenlarni sozlash"
+    },
+    "nav": {
+      "next": "Keyingi →",
+      "back": "← Orqaga",
+      "skip": "Hozircha oʻtkazib yuborish",
+      "saving": "Saqlanmoqda…",
+      "done": "Tayyor",
+      "saveLater": "Saqlash va keyinroq yakunlash",
+      "close": "Yopish",
+      "finish": "Yakunlash",
+      "skipImport": "Allergenlarni sozlashni hozircha oʻtkazib yuborish"
+    },
+    "hint": {
+      "skipDefers": "Oʻtkazib yuborish keyinga qoldiradi — siz tasdiqlamagan taomlar allergenlari tasdiqlanmaguncha mijozlardan yashirin turadi.",
+      "importIncomplete": "Davom etish uchun har bir taomni tasdiqlang — yoki “Allergenlarni sozlashni hozircha oʻtkazib yuborish” tugmasini bosing."
+    }
+  }
+}

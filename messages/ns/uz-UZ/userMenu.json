@@ -1,0 +1,18 @@
+{
+  "menuLabel": "Foydalanuvchi menyusi",
+  "screenOn": "Ekran yoniq",
+  "screenOff": "Ekran oʻchiq",
+  "newOrderSound": "Yangi buyurtma ovozi",
+  "copied": "Nusxalandi",
+  "orderLink": "Buyurtma havolasi",
+  "qrCode": "QR-kod",
+  "kitchenScreen": "Oshxona ekrani (KDS)",
+  "thisDevice": "Bu qurilma",
+  "manage": "Boshqaruv",
+  "ordersDashboard": "Ish paneli",
+  "admin": "Admin",
+  "privacy": "Maxfiylik siyosati",
+  "terms": "Shartlar",
+  "signOut": "Chiqish",
+  "close": "Yopish"
+}

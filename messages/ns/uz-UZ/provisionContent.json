@@ -1,0 +1,72 @@
+{
+  "standardCategories": {
+    "starters": "Gazaklar",
+    "mains": "Asosiy taomlar",
+    "burgers": "Burgerlar",
+    "pizza": "Pitsa",
+    "wrapsSandwiches": "Lavash va sendvichlar",
+    "sides": "Garnirlar",
+    "dipsSauces": "Souslar",
+    "desserts": "Desertlar",
+    "drinks": "Ichimliklar",
+    "kidsMenu": "Bolalar menyusi",
+    "specials": "Maxsus taomlar",
+    "other": "Boshqa"
+  },
+  "demoEventName": "Demo tadbir",
+  "firstVanName": "Furgon 1",
+  "demoCategories": {
+    "pizza": "Pitsa",
+    "burgers": "Burgerlar",
+    "mains": "Asosiy taomlar",
+    "sides": "Garnirlar",
+    "drinks": "Ichimliklar"
+  },
+  "demoTemplates": {
+    "pizza": {
+      "label": "🍕 Pitsa furgoni",
+      "items": {
+        "margherita": "Margarita",
+        "pepperoni": "Pepperoni",
+        "ndujaHoney": "Nduja va asal",
+        "fourCheese": "Toʻrt xil pishloq",
+        "gardenVeg": "Sabzavotli",
+        "garlicBread": "Sarimsoqli non",
+        "rocketParmesan": "Rukkola va parmezan",
+        "olives": "Zaytun",
+        "sanPellegrino": "San Pellegrino",
+        "coke": "Kola"
+      }
+    },
+    "burgers": {
+      "label": "🍔 Burger furgoni",
+      "items": {
+        "classicCheeseburger": "Klassik chizburger",
+        "doubleBacon": "Qoʻsh kotletli burger",
+        "buttermilkChicken": "Qarsildoq tovuqli burger",
+        "halloumiStack": "Hallumi pishloqli burger",
+        "smashBurger": "Smash-burger",
+        "skinOnFries": "Poʻstli kartoshka fri",
+        "loadedCheeseFries": "Pishloqli kartoshka fri",
+        "onionRings": "Piyoz halqalari",
+        "craftLemonade": "Uy limonadi",
+        "coke": "Kola"
+      }
+    },
+    "curries": {
+      "label": "🍛 Karri furgoni",
+      "items": {
+        "chickenTikkaMasala": "Tovuq tikka masala",
+        "lambRoganJosh": "Qoʻy goʻshtli rogan josh",
+        "chanaMasala": "Chana masala (noʻxatli)",
+        "butterChicken": "Sariyogʻli tovuq",
+        "saagPaneer": "Saag panir",
+        "pilauRice": "Ziravorli guruch (pulao)",
+        "garlicNaan": "Sarimsoqli naan",
+        "onionBhaji": "Piyozli bxaji",
+        "mangoLassi": "Mango lassi",
+        "coke": "Kola"
+      }
+    }
+  }
+}

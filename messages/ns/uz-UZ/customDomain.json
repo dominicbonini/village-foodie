@@ -1,0 +1,161 @@
+{
+  "card": {
+    "title": "Jadvalingizni saytingizga qoʻshing",
+    "live": "<addr>{address}</addr> jadvalingizni koʻrsatmoqda.",
+    "create": "Biz <addr>{address}</addr> manzilida jadvalingizni koʻrsatadigan sahifa yaratamiz.",
+    "exampleDomain": "fudtrakingiz.uz",
+    "liveBadge": "Ishlamoqda",
+    "setUp": "Sozlash",
+    "viewSetup": "Sozlamani koʻrish",
+    "continue": "Davom etish",
+    "justLive": "<b>{address}</b> ishlamoqda. Uni koʻrib chiqing, soʻng quyida hammasi toʻgʻri ekanini bizga bildiring."
+  },
+  "waiting": {
+    "title": "Kutyapmiz: {address}",
+    "bodySince": "Siz buni {date} sanasida sozlagansiz. Yangi veb-manzillar odatda bir necha daqiqada ishlay boshlaydi, baʼzan esa hammaga yetib borishi 24 soatgacha vaqt oladi — bu vaqtda sizdan hech narsa talab qilinmaydi. Agar yozuvni siz uchun boshqa birov qoʻshayotgan boʻlsa, u buni qilganini tekshirib koʻrgan maʼqul.",
+    "body": "Yangi veb-manzillar odatda bir necha daqiqada ishlay boshlaydi, baʼzan esa hammaga yetib borishi 24 soatgacha vaqt oladi — bu vaqtda sizdan hech narsa talab qilinmaydi. Agar yozuvni siz uchun boshqa birov qoʻshayotgan boʻlsa, u buni qilganini tekshirib koʻrgan maʼqul."
+  },
+  "ready": {
+    "title": "{address} ishlamoqda",
+    "body": "Uni koʻrib chiqing, soʻng sozlamalaringizda hammasi toʻgʻri ekanini bizga bildiring."
+  },
+  "confirm": {
+    "heading": "Koʻrib chiqing, soʻng hammasi toʻgʻri ekanini bildiring",
+    "open": "<link>{address}</link> manzilini oching",
+    "checkTimes": "Sana va vaqtlar toʻgʻri ekanini tekshiring.",
+    "yes": "Ha, hammasi toʻgʻri",
+    "no": "Yoʻq, muammo bor",
+    "problemLine": "Nimani koʻrayotganingizni yozing — biz tekshirib chiqamiz.",
+    "emailUs": "Bizga yozing",
+    "mailSubject": "Muammo: {address}",
+    "mailLiveSince": "Ishga tushgan sana: {date}",
+    "mailSeeing": "Men koʻrayotgan narsa:"
+  },
+  "confirmed": {
+    "heading": "Rahmat — hammasi qayd etildi.",
+    "body": "Boshqa hech narsa qilish shart emas."
+  },
+  "turnOff": {
+    "link": "Buni oʻchirish",
+    "heading": "Oʻz veb-manzilingizni oʻchirasizmi?",
+    "stops": "Quyidagisi ishlashdan toʻxtaydi:",
+    "carriesOn": "Quyidagisi avvalgidek ishlayveradi va QR-kodingiz odamlarni aynan shu yerga yoʻnaltiradi:",
+    "reAdd": "Keyinroq uni qayta sozlamoqchi boʻlsangiz, veb-manzil kompaniyangizda qoʻshgan yozuvingizni qoldiring. Aks holda, ulardan uni oʻchirishni soʻrang.",
+    "cancel": "Yoqilgan qoldirish",
+    "confirm": "Oʻchirish",
+    "working": "Oʻchirilmoqda…",
+    "failed": "Hozir buni oʻchira olmadik. Hech narsa oʻzgarmadi — manzilingiz hamon ishlamoqda. Birozdan soʻng qayta urinib koʻring."
+  },
+  "wizard": {
+    "resumeFailedTitle": "Sozlamangizni yuklay olmadik.",
+    "resumeFailedBody": "Hech narsa oʻzgarmadi. Birozdan soʻng qayta urinib koʻring.",
+    "close": "Yopish",
+    "resuming": "Toʻxtagan joyingizdan davom etmoqdamiz…",
+    "genericError": "Nimadir xato ketdi",
+    "saveFailed": "Saqlab boʻlmadi"
+  },
+  "address": {
+    "intro": "Jadvalingiz oʻz veb-manziliga ega boʻladi.",
+    "question": "Veb-manzilingiz qanday?",
+    "hint": "Odamlar sizni topish uchun allaqachon foydalanadigan manzil.",
+    "aria": "Oʻz veb-manzilingiz",
+    "willBe": "Manzilingiz: <addr>{address}</addr>",
+    "example": "Masalan, <addr>{address}</addr>",
+    "noChange": "Saytingiz oʻzgarmaydi — siz shunchaki yangi manzilga havola qoʻshasiz.",
+    "notSetUp": "Biz buni sozlamadik.",
+    "restricted": "Veb-manzilingizga xizmat koʻrsatayotgan tomon bizga qulf belgisini — mijozlar manzil yonida koʻradigan kichik qulfni — sozlashga ruxsat berishi kerak. Ular bizni qoʻshmaguncha qulf chiqmaydi, shuning uchun sizni bekorga kuttirmaslik uchun jarayonni toʻxtatdik. Ulardan bizni qoʻshishni soʻrang, soʻng qayta urinib koʻring.",
+    "blocked": "Hozir veb-manzilingiz qulf belgisini butunlay bloklaydi. Bu ishlashi uchun manzilga xizmat koʻrsatayotgan tomon unga ruxsat berishi kerak. Ulardan buni oʻzgartirishni soʻrang, soʻng qayta urinib koʻring.",
+    "elsewhere": "Bu manzilda allaqachon nimadir ishlab turibdi. Keyingi ekrandagi xabarni manzilga xizmat koʻrsatayotgan tomonga yuboring — ular nima qilishni biladi.",
+    "provider": "Veb-manzilingizga <b>{provider}</b> xizmat koʻrsatadi. Qayerga kirishni koʻrsatib beramiz.",
+    "provisionFailed": "Bu manzilni sozlay olmadik.",
+    "willNotWork": "Bu manzil ishlamaydi.",
+    "couldNotBeSetUp": "Bu manzilni sozlab boʻlmadi.",
+    "couldNotSetUp": "Sozlab boʻlmadi",
+    "checking": "Tekshirilmoqda…",
+    "setting": "Sozlanmoqda…",
+    "tryAgain": "Qayta urinish",
+    "setUpAddress": "Bu manzilni sozlash",
+    "notNow": "Hozir emas"
+  },
+  "apex": {
+    "empty": "Foydalanmoqchi boʻlgan manzilni yozing.",
+    "not_a_domain": "Bu veb-manzilga oʻxshamaydi.",
+    "unparseable": "Buni veb-manzil sifatida oʻqiy olmadik. Imloni tekshirib, qayta urinib koʻring.",
+    "apex": "{host} — saytingizning toʻliq manzili. Uni bizga yoʻnaltirsangiz, saytingiz oʻrniga shu sahifa ochiladi. Buning oʻrniga oldiga biror soʻz qoʻying — masalan, tadbirlar.{host}.",
+    "too_deep": "Bu manzil juda koʻp qismdan iborat. tadbirlar.{domain} kabi manzil eng yaxshi ishlaydi."
+  },
+  "record": {
+    "addAt": "{provider} saytida buni qoʻshing",
+    "open": "{provider} saytini oching",
+    "guide": "{provider} yoʻriqnomasi",
+    "addAtSave": "{provider} saytida buni qoʻshing va saqlang.",
+    "addSomewhere": "Buni veb-manzilingizga xizmat koʻrsatiladigan joyda qoʻshing va saqlang.",
+    "hintChoose": "Buni roʻyxatdan tanlang.",
+    "hintWord": "Faqat shu soʻz, butun manzil emas.",
+    "hintExact": "Buni aynan shunday nusxalang.",
+    "timing": "Odatda bir soat ichida ishlay boshlaydi, lekin koʻproq vaqt ketishi ham mumkin. Bu sahifani ochiq qoldirish shart emas.",
+    "someoneElse": "Veb-manzilingizga boshqa birov qaraydimi?",
+    "sentTo": "Yuborildi: {email}",
+    "emailPlaceholder": "ularning e-pochtasi",
+    "sending": "Yuborilmoqda…",
+    "send": "Bu maʼlumotlarni yuborish",
+    "sendFailed": "Yuborib boʻlmadi"
+  },
+  "providers": {
+    "cloudflare": {
+      "open": "Veb-manzilingizni oching, soʻng “DNS” va “Records” boʻlimiga oʻting.",
+      "add": "“Add record” tugmasini bosing, soʻng “Type” maydonida “CNAME” turini tanlang.",
+      "name": "Quyidagi birinchi qiymatni “Name” maydoniga kiriting.",
+      "value": "Quyidagi ikkinchi qiymatni “Target” maydoniga kiriting.",
+      "proxy": "“Proxy status” maydonini “DNS only” holatiga oʻtkazing — yonidagi bulut belgisi toʻq sariq emas, kulrang boʻlishi kerak.",
+      "save": "“TTL” maydonini “Auto” holatida qoldiring va “Save” tugmasini bosing.",
+      "caveat": "Agar bulut toʻq sariqligicha qolsa, qulf belgisi hech qachon chiqmaydi va buning sababi hech qayerda koʻrsatilmaydi."
+    },
+    "godaddy": {
+      "open": "“Domain Portfolio” boʻlimini oching va veb-manzilingizni tanlang.",
+      "dns": "“Domain Settings” sahifasida “DNS” bandini tanlang.",
+      "add": "“Add New Record” tugmasini bosing, soʻng “Type” menyusidan “CNAME” turini tanlang.",
+      "name": "Quyidagi birinchi qiymatni “Name” maydoniga kiriting.",
+      "value": "Quyidagi ikkinchi qiymatni “Value” maydoniga kiriting.",
+      "save": "“TTL” maydonini oʻzgartirmasdan “Save” tugmasini bosing.",
+      "caveat": "Agar bir vaqtda bir nechta yozuv qoʻshgan boʻlsangiz, tugmada “Save All Records” deb yozilgan boʻladi."
+    },
+    "123reg": {
+      "signIn": "“123 Reg Control Panel” hisobingizga kiring.",
+      "manage": "“Domains” yonidagi “Manage All” tugmasini bosing, soʻng veb-manzilingizni tanlang.",
+      "dns": "“DNS” bandini, soʻng “Add New Record” tugmasini tanlang.",
+      "type": "“Type” roʻyxatidan “CNAME” turini tanlang.",
+      "name": "Quyidagi birinchi qiymatni “Name” maydoniga kiriting.",
+      "value": "Quyidagi ikkinchi qiymatni “Value” maydoniga kiriting va oxiriga nuqta qoʻying.",
+      "save": "“TTL” maydonini “Default” holatida qoldiring va “Save” tugmasini bosing.",
+      "caveat": "123 Reg ikkinchi qiymat oxirida nuqta boʻlishini talab qiladi, aks holda u ishlamaydi."
+    },
+    "wix": {
+      "open": "“Domains” boʻlimini oching, soʻng veb-manzilingiz yonidagi “Domain Actions” belgisini bosing.",
+      "manage": "“Manage DNS Records” bandini tanlang.",
+      "add": "“CNAME (Aliases)” boʻlimida “+ Add Record” tugmasini, soʻng “Got it” tugmasini bosing.",
+      "name": "Quyidagi birinchi qiymatni “Host Name” maydoniga kiriting.",
+      "value": "Quyidagi ikkinchi qiymatni “Value” maydoniga kiriting.",
+      "save": "“Save” tugmasini, soʻng qalqib chiquvchi oynada “Save Changes” tugmasini bosing.",
+      "caveat": "Agar veb-manzilingiz Wix tizimida saqlanmasdan, faqat unga yoʻnaltirilgan boʻlsa, Wix bu oʻzgarishni kirita olmaydi — buni manzil saqlanayotgan tomon qilishi kerak."
+    }
+  },
+  "instructionsEmail": {
+    "subject": "Jadval sahifasi uchun bitta yozuv qoʻshish kerak: {truckName}",
+    "hello": "Assalomu alaykum,",
+    "introAt": "Biz {truckName} fudtrakining jonli jadvalini {address} manziliga joylashtirmoqdamiz va buning uchun {provider} xizmatidagi domenimizga bitta yozuv qoʻshish kerak.",
+    "introHolder": "Biz {truckName} fudtrakining jonli jadvalini {address} manziliga joylashtirmoqdamiz va buning uchun domenimiz saqlanayotgan joyda unga bitta yozuv qoʻshish kerak.",
+    "stepsAt": "{provider} xizmatida:",
+    "guide": "Ularning yoʻriqnomasi: {url}",
+    "wholeChange": "Oʻzgarish shundan iborat — saytdagi boshqa hech narsaga taʼsir qilmaydi va domenimizning qolgan qismi hozirgidek ishlashda davom etadi. Odatda bir soat ichida ishlay boshlaydi.",
+    "pointsAt": "Yozuv yoʻnaltiradigan sahifa keyingi savdo joylarimizni koʻrsatadi va oʻzini oʻzi yangilab turadi.",
+    "replyTo": "Savollaringiz boʻlsa, {email} manziliga javob yozing.",
+    "thanks": "Rahmat,"
+  },
+  "liveEmail": {
+    "subject": "{address} ishlamoqda",
+    "goodNews": "Xushxabar — {address} ishlamoqda.",
+    "body": "Jadvalingiz endi oʻz manzilingizda koʻrsatilmoqda. Uni koʻrib chiqing va toʻgʻriligini tekshiring: {address} manzilini oching, tadbirlar sizniki ekanini va sanalar toʻgʻri ekanini tekshiring.",
+    "confirm": "Shundan soʻng HatchGrab sozlamalaringizni oching va hammasi toʻgʻri ekanini bizga bildiring. Bunga hech narsa bogʻliq emas — bu shunchaki sahifani inson koʻrganini bilishimiz uchun."
+  }
+}

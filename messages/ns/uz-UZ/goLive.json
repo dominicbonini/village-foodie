@@ -1,0 +1,43 @@
+{
+  "allergensUnanswered": {
+    "title": "Allergenlar haqidagi maʼlumot qanday koʻrsatilishini tanlang",
+    "detail": "Siz tanlamaguningizcha mijozlar birorta taomingizni koʻrmaydi — menyu oʻzini himoya qilib, allergenlari tasdiqlanmagan har qanday taomni yashiradi, hozir esa bu — hamma taomlar.",
+    "where": "Menyu → Allergenlar"
+  },
+  "allergensCardMissing": {
+    "title": "Allergenlar kartasini qoʻshing",
+    "detail": "Siz allergenlar kartasini koʻrsatishni tanladingiz, lekin birorta karta saqlanmagan — mijozlarga allergenlar haqida maʼlumot bor deyiladi-yu, ular hech narsa topmaydi.",
+    "where": "Menyu → Allergenlar"
+  },
+  "allergensItemsUnverified": {
+    "title": "{n, plural, one {{count} ta taomning allergenlarini tasdiqlang} other {{count} ta taomning allergenlarini tasdiqlang}}",
+    "detail": "{n, plural, one {Allergenlarini tasdiqlamaguningizcha taomingiz mijozlardan yashirin turadi.} other {{u, plural, one {Allergenlarini tasdiqlamaguningizcha {total} ta taomingizdan {unverified} tasi mijozlardan yashirin turadi.} other {Allergenlarini tasdiqlamaguningizcha {total} ta taomingizdan {unverified} tasi mijozlardan yashirin turadi.}}}} Allergenlari tasdiqlanmagan holda koʻrsatilgan taom “allergen yoʻq” deb tushuniladi, shuning uchun menyu xavf tugʻdirmaslik uchun uni yashiradi.",
+    "where": "Menyu → Allergenlar"
+  },
+  "noVan": {
+    "title": "Furgon qoʻshing",
+    "detail": "Tadbirlar furgonga bogʻlanadi — furgonsiz buyurtma qabul qiladigan hech narsa yoʻq.",
+    "where": "Sozlamalar → Fudtraklaringiz"
+  },
+  "kitchenCapacityUnset": {
+    "title": "Oshxona quvvatini belgilang",
+    "detail": "Quyidagilar uchun quvvat belgilanmagan: {vans}. Usiz biz mijozlarga oshxonangiz ulgura olmaydigan olib ketish vaqtlarini vaʼda qilaveramiz.",
+    "where": "Menyu → Oshxona quvvati",
+    "unnamedVan": "Nomsiz furgon"
+  },
+  "noPrepBearingCategory": {
+    "title": "Taomlaringiz qancha vaqtda tayyorlanishini ayting",
+    "detail": "{categories, select, none {Sizda hali menyu kategoriyalari yoʻq, shuning uchun buyurtma qancha vaqt olishini hisoblay olmaymiz.} other {Kategoriyalaringizning birortasida tayyorlash vaqti belgilanmagan, shuning uchun har bir buyurtma bizga bir zumda tayyor boʻladigandek koʻrinadi. Biz mijozlarga oshxonangiz ulgurishi mumkin boʻlmagan olib ketish vaqtlarini beraveramiz va ish qanchalik qizisa, vaqtlar shunchalik uzoqlashadi.}}",
+    "where": "Menyu → Kategoriyalar → Oshxona sozlamalari"
+  },
+  "emailUnverified": {
+    "title": "E-pochta manzilingizni tasdiqlang",
+    "detail": "Buyurtma bildirishnomalari va hisobni tiklash xatlarini shu manzilga yuboramiz. Agar u notoʻgʻri boʻlsa, buni biror narsa allaqachon buzilganda bilasiz.",
+    "where": "Tasdiqlash havolamiz uchun pochta qutingizni tekshiring"
+  },
+  "emailUnknown": {
+    "title": "E-pochta tasdiqlanganligi nomaʼlum",
+    "detail": "E-pochtani tasdiqlash hali ulanmagan, shuning uchun buni baholab boʻlmaydi. U jimgina oʻtkazib yuborish oʻrniga ataylab bloklaydi.",
+    "where": "—"
+  }
+}

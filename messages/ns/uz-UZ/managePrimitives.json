@@ -1,0 +1,9 @@
+{
+  "allergenMode": {
+    "perDishTitle": "Allergenlarni har bir taom yonida koʻrsatish",
+    "recommended": "Tavsiya etiladi",
+    "perDishBody": "Har bir taomni koʻrib chiqing va uning allergenlarini tasdiqlang. Mijozlar har bir taomdagi belgilarni va ulardan tuzilgan allergenlar xulosasi kartasini koʻradi.",
+    "cardTitle": "Allergenlar kartasini koʻrsatish",
+    "cardBody": "Bitta allergenlar kartasini (PDF, rasm yoki matn) yuklang yoki joylashtiring — u oʻzgarishsiz koʻrsatiladi. Har bir taomdagi belgilar yashirin qoladi."
+  }
+}

@@ -1,0 +1,141 @@
+{
+  "row": {
+    "discovery_map_listing": {
+      "name": "Qidiruv xaritasida koʻrinish"
+    },
+    "web_dashboard": {
+      "name": "Universal veb-panel"
+    },
+    "qr_code": {
+      "name": "QR-kod"
+    },
+    "schedule_import": {
+      "name": "Jadvalni avtomatik import qilish"
+    },
+    "meal_deals_upsells": {
+      "name": "Kombo takliflar va qoʻshimcha sotuvlar"
+    },
+    "walkup_orders": {
+      "name": "Oyna oldida berilgan buyurtmalarni qayta ishlash"
+    },
+    "sold_out_toggle": {
+      "name": "Bir zumda “tugadi” belgisi"
+    },
+    "kitchen_app": {
+      "name": "iPhone, iPad va Android uchun oshxona ilovasi"
+    },
+    "offline_protection": {
+      "name": "Oflayn buyurtma himoyasi"
+    },
+    "online_payments": {
+      "name": "Onlayn toʻlovlar"
+    },
+    "advance_preordering": {
+      "name": "Oldindan buyurtma berish"
+    },
+    "preorder_deadline": {
+      "name": "Oldindan buyurtma muddati"
+    },
+    "time_slot_selection": {
+      "name": "Mijoz vaqt oraligʻini tanlashi"
+    },
+    "kitchen_capacity": {
+      "name": "Oshxona quvvatini boshqarish"
+    },
+    "stock_countdown": {
+      "name": "Zaxirani avtomatik hisoblash"
+    },
+    "auto_accept": {
+      "name": "Onlayn buyurtmalarni avtomatik qabul qilish"
+    },
+    "branded_qr_code": {
+      "name": "Brendli QR-kod"
+    },
+    "private_events": {
+      "name": "Shaxsiy tadbirlar"
+    },
+    "social_media_posts": {
+      "name": "Ijtimoiy tarmoq postlari"
+    },
+    "whatsapp_auto_replies": {
+      "name": "WhatsApp avtojavoblari"
+    },
+    "messenger_instagram_replies": {
+      "name": "Messenger va Instagram avtojavoblari"
+    },
+    "tap_to_pay": {
+      "name": "Telefonda toʻlov qabul qilish"
+    },
+    "sms_order_alerts": {
+      "name": "Buyurtma haqida SMS xabarnomalar"
+    },
+    "multi_device_kitchen": {
+      "name": "Oshxonada bir nechta qurilmani sinxronlash"
+    },
+    "multi_user_access": {
+      "name": "Koʻp foydalanuvchili kirish"
+    },
+    "embed_schedule": {
+      "name": "Oʻz saytingizda jadval sahifasi"
+    },
+    "event_types": {
+      "name": "Maxsus tadbir turlari va narxlar"
+    },
+    "buzzer_tracking": {
+      "name": "Chaqiruv qurilmalarini kuzatish"
+    },
+    "documents_reminders": {
+      "name": "Hujjatlar va eslatmalar"
+    },
+    "profit_per_event": {
+      "name": "Har bir tadbirdan foyda"
+    },
+    "accountant_reports": {
+      "name": "Buxgalter uchun hisobotlar"
+    },
+    "ticket_printing": {
+      "name": "Oshxona cheklarini chop etish"
+    },
+    "customer_display": {
+      "name": "Mijozlar uchun ekran"
+    },
+    "loyalty_stamp_cards": {
+      "name": "Raqamli sodiqlik shtamp kartalari"
+    }
+  },
+  "cardRegionOnline": "standart {region}",
+  "cardRegion": {
+    "UKcards": "Buyuk Britaniya kartalari",
+    "EEAcards": "YIH (EEA) kartalari",
+    "UScards": "AQSH kartalari",
+    "Australiancards": "Avstraliya kartalari",
+    "NewZealandcards": "Yangi Zelandiya kartalari",
+    "Canadiancards": "Kanada kartalari",
+    "Swisscards": "Shveytsariya kartalari",
+    "Braziliancards": "Braziliya kartalari",
+    "Mexicancards": "Meksika kartalari",
+    "Japanesecards": "Yaponiya kartalari",
+    "Singaporecards": "Singapur kartalari",
+    "HongKongcards": "Gonkong kartalari",
+    "Malaysiancards": "Malayziya kartalari",
+    "Thaicards": "Tailand kartalari",
+    "UAEcards": "BAA kartalari"
+  },
+  "perMonth": {
+    "mo": "{amount}/oy",
+    "month": "oyiga {amount}"
+  },
+  "priceWord": {
+    "free": "Bepul",
+    "freeTrial": "Bepul sinov muddati",
+    "lifetime": "Umrbod",
+    "zeroPercent": "0%",
+    "payAtHatch": "Olib ketishda toʻlash",
+    "unlimited": "Cheksiz",
+    "none": "—",
+    "masked": "Aniqlanmoqda"
+  },
+  "cell": {
+    "included": "Kiritilgan"
+  }
+}

@@ -1,0 +1,29 @@
+{
+  "notAvailable": "Demoda mavjud emas",
+  "demoMode": "DEMO REJIMI",
+  "loopLands": "Haqiqiy buyurtma aynan shunday keladi",
+  "showMe": "Koʻrsatish",
+  "noCard": "{sub} Karta talab qilinmaydi.",
+  "notYet": "Hali emas",
+  "cashAndCollected": "Naqd va olib ketildi",
+  "logoPlaceholder": "Logotipingiz shu yerda",
+  "welcomeTitle": "{sample, select, yes {Mana namunaviy demo} other {Mana sizning demongiz}}",
+  "welcomeIntro": "{sample, select, yes {Bu hammasi qanday ishlashini koʻrishingiz uchun <b>namunaviy menyu</b> — istalgan vaqtda oʻz menyungizni yuklab, uni oʻzingizniki qiling.} other {Bu haqiqiy panelda sizning menyungiz va brendingiz.}} Undagi buyurtmalar — namunalar, shunda gavjum ish vaqtini koʻrishingiz mumkin.",
+  "twoThings": "Sinab koʻrish uchun ikki narsa:",
+  "hitButton": "Buyurtmada <b>{button}</b> tugmasini bosing",
+  "scanQr": "<b>QR-kodni</b> skanerlang — yoki havolani bosing — va mijoz sifatida buyurtma bering, soʻng uning qanday kelishini kuzating",
+  "qrAlt": "Mijozlar buyurtma sahifangizga QR-kod",
+  "openHere": "Yoki shu qurilmada oching",
+  "copyLink": "Havolani nusxalash",
+  "copyDescribedAs": "buyurtma havolasi",
+  "noLinkTitle": "Mijozlar uchun buyurtma havolangiz",
+  "noLinkBody": "Buyurtma sahifangiz havolasi yuqori oʻng burchakdagi menyuda.",
+  "asLive": "Buyurtma berish va oshxona jarayoni haqiqiy ishdagidek ishlaydi.",
+  "startExploring": "Koʻrib chiqishni boshlash",
+  "signupOffer": {
+    "heading": "{months, plural, =0 {Bepul boshlang} one {# oy bepul boshlang} other {# oy bepul boshlang}}",
+    "sub": "Bepul sinov muddati roʻyxatdan oʻtganingizda boshlanadi."
+  },
+  "cashIcon": "💵",
+  "walkBanner": "Demo · bu sizning menyungiz, mijozlaringiz uni aynan shunday koʻradi. Hech qanday pul yechilmaydi va hech qanday xat yuborilmaydi."
+}

@@ -1,0 +1,8 @@
+{
+  "notFoundTitle": "Sahifa topilmadi",
+  "notFoundBody": "Bu sahifani topa olmadik. U koʻchirilgan yoki manzil xato yozilgan boʻlishi mumkin.",
+  "home": "Bosh sahifaga oʻtish",
+  "errorTitle": "Nimadir xato ketdi",
+  "errorBody": "Kechirasiz — bu sahifa yuklanmadi. Qaytadan urinib koʻring yoki bosh sahifaga qayting.",
+  "retry": "Qayta urinish"
+}

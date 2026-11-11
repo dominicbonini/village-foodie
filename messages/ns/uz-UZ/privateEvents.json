@@ -1,0 +1,42 @@
+{
+  "publicName": "Shaxsiy tadbir",
+  "chip": "Shaxsiy",
+  "grid": {
+    "orderingSection": "BUYURTMA",
+    "linkRowLabel": "Shaxsiy havola va QR-kod orqali buyurtma qabul qilish",
+    "columnTitle": "Oʻrnatilgan “Shaxsiy” turi. Uning nomini oʻzgartirib, surib yoki oʻchirib boʻlmaydi."
+  },
+  "form": {
+    "help": "Jadvalingizda faqat sana va vaqtlar bilan “Shaxsiy tadbir” sifatida koʻrinadi — manzil, xarita yoki Village Foodie hech qachon koʻrsatilmaydi.",
+    "linkPromise": "Mehmonlar shaxsiy havola va QR-kod orqali buyurtma beradi — ularni saqlaganingizdan soʻng olasiz.",
+    "nameLabel": "Tadbir nomi",
+    "nameHelp": "Mehmonlar buni buyurtma sahifasining yuqori qismida koʻradi.",
+    "namePlaceholder": "Aziz va Madinaning toʻyi",
+    "previewNote": "Jadvalingizda qanday koʻrinishi — joy, shahar yoki pochta indeksisiz.",
+    "needsTimes": "Boshlanish va tugash vaqtini qoʻshing — havola orqali buyurtma qabul qiladigan shaxsiy tadbirga ular kerak."
+  },
+  "link": {
+    "button": "Havola va QR",
+    "title": "Shaxsiy havola va QR-kod",
+    "label": "Shaxsiy havola",
+    "copy": "Nusxalash",
+    "copied": "Nusxalandi",
+    "qrDownload": "QR-kodni yuklab olish",
+    "tableCards": "Stol kartochkalarini chop etish",
+    "newLink": "Yangi havola yaratish",
+    "working": "Bajarilmoqda…",
+    "newLinkConfirm": "Yangi havola yaratilsinmi? Joriy havola darhol ishlamay qoladi, allaqachon chop etilgan QR-kodlar ham ishlamay qoladi.",
+    "newLinkHelp": "Agar havola bormasligi kerak boʻlgan joyga tarqalib ketgan boʻlsa, shundan foydalaning. Joriy havola darhol ishlamay qoladi, chop etilgan QR-kodlar ham ishlamay qoladi.",
+    "newLinkFailed": "Yangi havola yaratib boʻlmadi.",
+    "offNotice": "Bu tadbir uchun shaxsiy havola orqali buyurtma berish oʻchirilgan, shuning uchun ulashish uchun havola yoʻq. Tadbir jadvalingizda baribir “Shaxsiy tadbir” sifatida koʻrinadi."
+  },
+  "cards": {
+    "printTitle": "{truck} — stol kartochkalari",
+    "scan": "Buyurtma uchun skanerlang",
+    "blurb": "Telefoningizda buyurtma bering va toʻlang. Tayyor boʻlganda ismingizni aytib chaqiramiz.",
+    "footer": "Buyurtmalar: HatchGrab"
+  },
+  "noSinglePost": "Shaxsiy tadbirlar uchun alohida post chiqmaydi — ular haftalik afishangizda “Shaxsiy tadbir” sifatida koʻrinadi.",
+  "confirmToPrivate": "Bu manzilni va tadbirni xaritadan yashiradi. Buyurtma berish uchun mehmonlarga shaxsiy havola kerak boʻladi.",
+  "confirmFromPrivate": "Bu tadbirni ommaviy qiladi: uning manzili va xaritadagi belgisi koʻrinadi, shaxsiy havola esa ishlamay qoladi."
+}

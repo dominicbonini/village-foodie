@@ -1,0 +1,106 @@
+{
+  "preview": {
+    "title": "Ulashdan oldin sinab koʻring",
+    "intro": "Mijoz beradigan savolga oʻxshash savol yozing va unga aynan qanday javob kelishini koʻring. Hech kimga hech narsa yuborilmaydi.",
+    "examples": {
+      "where": "Bugun kechqurun qayerdasiz?",
+      "doYouDo": "Sizda somsa bormi?",
+      "menu": "Menyuda nimalar bor?"
+    },
+    "placeholder": "Qanday shirinliklaringiz bor?",
+    "send": "Yuborish",
+    "empty": "Javobingiz shu yerda chiqadi",
+    "working": "Javob tayyorlanmoqda…",
+    "noReply": "Hech qanday javob yuborilmaydi.",
+    "noReplyWhy": "Bu spam, band qilish soʻrovi yoki aloqasi yoʻq xabarga oʻxshaydi, shuning uchun avtojavob jim turadi.",
+    "footnote": "Javoblar sunʼiy intellekt tomonidan yaratiladi, har safar biroz farq qiladi va baʼzan xato boʻlishi mumkin.",
+    "failed": "Hozir oldindan koʻrishni yaratib boʻlmadi.",
+    "unreachable": "Server bilan bogʻlanib boʻlmadi. Internet aloqangizni tekshirib, qayta urinib koʻring."
+  },
+  "setup": {
+    "button": {
+      "preparing": "Tayyorlanmoqda…",
+      "unavailable": "Mavjud emas",
+      "waiting": "Facebook oynasi kutilmoqda…",
+      "finishing": "Yakunlanmoqda…",
+      "reconnect": "Qayta ulash",
+      "setUp": "Sozlash"
+    },
+    "startAgain": "Qaytadan boshlash",
+    "popupHint": "Facebook oynasi koʻrinmayaptimi? U bloklangan boʻlishi mumkin. hatchgrab.com uchun qalqib chiquvchi oynalarga ruxsat bering, soʻng «Qaytadan boshlash» tugmasini bosing."
+  },
+  "notice": {
+    "sdkUnavailable": "Bu muhitda WhatsApp sozlamasi mavjud emas.",
+    "sdkBlocked": "Meta kirish skripti yuklanmadi. Odatda bunga reklama blokeri yoki kuzatuvdan himoya sabab boʻladi.",
+    "setupFailed": "Sozlashni yakunlab boʻlmadi. Hech narsa oʻzgartirilmadi.",
+    "setupFinished": "Sozlash yakunlandi.",
+    "metaError": "Sozlash vaqtida Meta muammo haqida xabar berdi. Hech narsa oʻzgartirilmadi. Qayta urinib koʻring, muammo takrorlansa, biz bilan bogʻlaning.",
+    "closed": "Sozlash tugamasdan yopildi. Hech narsa oʻzgartirilmadi — qayta urinish uchun «Sozlash» tugmasini bosing.",
+    "disconnectedUnreachable": "WhatsApp uzildi. Kirish huquqini olib tashlash uchun Meta bilan bogʻlana olmadik. WhatsApp Business → Settings → Account → Business Platform boʻlimida HatchGrab ilovasini olib tashlang.",
+    "disconnected": "WhatsApp uzildi. Avtojavoblar toʻxtatildi.",
+    "close": "Yopish"
+  },
+  "card": {
+    "title": "Avtojavoblar",
+    "description": "Menyu va jadvalingiz asosida ijtimoiy tarmoqlarda mijozlar savollariga avtomatik javob bering.",
+    "channels": "Kanallar",
+    "requiresAccount": "WhatsApp Business hisobi talab qilinadi.",
+    "connected": "Ulangan",
+    "popupInstruction": "WhatsApp Business hisobingizni ulash uchun Facebook oynasi ochiladi. Hech narsa chiqmasa, brauzeringizda hatchgrab.com uchun qalqib chiquvchi oynalarga ruxsat bering, soʻng «Sozlash» tugmasini yana bosing.",
+    "switchedOff": "Fudtrakingiz uchun WhatsApp avtojavoblari oʻchirilgan.",
+    "expiring": "WhatsApp ulanishingizni tez orada yangilash kerak. Avtojavoblar ishlashda davom etishi uchun «Qayta ulash» tugmasini bosing.",
+    "comingSoon": "Tez orada",
+    "instagram": "Instagram shaxsiy xabarlariga avtojavoblar. Instagram professional hisobi talab qilinadi.",
+    "messenger": "Facebook Messenger uchun avtojavoblar. Facebook sahifasi talab qilinadi."
+  },
+  "blocked": {
+    "title": "Javoblaringiz yetkazilmayapti",
+    "body": "WhatsApp Business hisobingizdagi toʻlov muammosi tufayli WhatsApp avtomatik javoblaringizni yubormayapti. Mijozlar sizga baribir yoza oladi va siz ular yuborgan hamma narsani koʻrasiz — lekin ular javob olmayapti.",
+    "fix": "Bu xabarlar uchun toʻgʻridan toʻgʻri WhatsApp kompaniyasiga toʻlaysiz, shuning uchun muammo WhatsApp Manager orqali hal qilinadi. <link>Toʻlov usulingizni tekshiring</link>"
+  },
+  "limit": {
+    "heading": "Avtojavoblar",
+    "label": "Oylik cheklov",
+    "option": "{n, number}",
+    "usage": "{limit, number} tadan {used, number} tasi ishlatildi · yangilanish: {date}",
+    "perCustomer": "Har bir mijozga 24 soat ichida {n} tagacha javob, soʻng shaxsan javob berishingiz haqida bitta xabar.",
+    "emailAt": "Cheklovga yetganda javoblar toʻxtaydi. 80% va 100% boʻlganda sizga e-pochta orqali xabar beramiz.",
+    "saved": "Oylik javoblar cheklovi saqlandi",
+    "saveFailed": "Cheklovni saqlab boʻlmadi"
+  },
+  "billing": {
+    "heading": "Hisob-kitob",
+    "paymentMethod": "Toʻlov usuli",
+    "added": "Toʻlov usuli qoʻshildi",
+    "missing": "Toʻlov usuli qoʻshilmagan",
+    "addInManager": "WhatsApp Manager orqali qoʻshish",
+    "summary": "Javoblar uchun WhatsApp hisobingizdan HatchGrab emas, Meta haq oladi. {from} sanasidan boshlab oyiga birinchi {free, number} ta javob bepul. {checked} holatiga koʻra toʻgʻri; oʻzgarishlar uchun <link>Meta narxlarini</link> tekshiring.",
+    "howMetaCharges": "Meta qanday haq oladi",
+    "chargesTitle": "WhatsApp javoblari uchun HatchGrab emas, Meta haq oladi.",
+    "chargesBody": "HatchGrab siz uchun yuboradigan har bir javob uchun Meta WhatsApp Business hisobingizdan haq oladi. {from} sanasidan boshlab Meta har bir raqam uchun oyiga {free, number} ta bepul javob beradi; shundan keyin har bir javob Meta tarifi boʻyicha hisoblanadi. WhatsApp Business ilovasidan oʻzingiz yuboradigan javoblar uchun haq olinmaydi. Bu narxlarni Meta belgilaydi va ularni oʻzgartirishi mumkin. <link>Meta narxlarini koʻring</link>",
+    "addPaymentInManager": "WhatsApp Manager orqali toʻlov usulini qoʻshing",
+    "aboveMissing": "Cheklovingiz Meta beradigan {free, number} ta bepul javobdan yuqori. Toʻlov usuli boʻlmasa, bepul javoblar tugagach Meta barcha javoblarni toʻxtatadi.",
+    "aboveGeneral": "Cheklovingiz Meta beradigan {free, number} ta bepul javobdan yuqori. Undan ortiq javoblar uchun WhatsApp hisobingizda toʻlov usuli boʻlishi kerak; usiz bepul javoblar tugagach Meta barcha javoblarni toʻxtatadi.",
+    "addPaymentMethod": "Toʻlov usulini qoʻshish"
+  },
+  "disconnect": {
+    "link": "WhatsApp ulanishini uzish",
+    "title": "WhatsApp ulanishini uzasizmi?",
+    "body": "Avtojavoblar darhol toʻxtaydi va HatchGrab WhatsApp hisobingizga kirish huquqini yoʻqotadi. Raqamingiz WhatsApp Business ilovasida ishlashda davom etadi. HatchGrab ilovasini butunlay olib tashlash uchun WhatsApp Business → Settings → Account → Business Platform boʻlimini ham oching.",
+    "cancel": "Bekor qilish",
+    "confirm": "Uzish",
+    "working": "Uzilmoqda…",
+    "failed": "Uzib boʻlmadi"
+  },
+  "signup": {
+    "logged": "Qayd etildi.",
+    "partial": "WhatsApp Business hisobingizni bogʻladik, lekin ulanishni yakunlay olmadik. Sizning tomoningizda hech qanday muammo yoʻq — biz bilan bogʻlaning, biz uni yakunlaymiz.",
+    "noNumber": "WhatsApp Business hisobingiz bogʻlandi, lekin telefon raqami qaytmadi. «Qayta ulash» tugmasini bosing va raqam bosqichini yakunlang.",
+    "needsRegistering": "Hisobingiz bogʻlandi, lekin javoblar boshlanishi uchun bu raqamni biz roʻyxatdan oʻtkazishimiz kerak. Qoʻllab-quvvatlash xizmatiga murojaat qiling — sozlamalaringiz saqlangan, jarayonni qayta ishga tushirmang.",
+    "registerRefused": "Hisobingiz bogʻlandi, lekin Meta raqamni roʻyxatdan oʻtkazmadi. Sozlamalaringiz saqlangan — jarayonni qayta ishga tushirish oʻrniga qoʻllab-quvvatlash xizmatiga murojaat qiling.",
+    "deliveryRefused": "Hisobingiz bogʻlandi, lekin Meta xabarlarni yetkazishni yoqmadi. Sozlamalaringiz saqlangan — jarayonni qayta ishga tushirish oʻrniga qoʻllab-quvvatlash xizmatiga murojaat qiling.",
+    "numberTaken": "Bu WhatsApp raqami allaqachon boshqa HatchGrab hisobiga ulangan. Bitta raqam faqat bitta fudtrak uchun javob bera oladi. Qoʻllab-quvvatlash xizmatiga murojaat qiling — raqamni koʻchirib beramiz.",
+    "saveIncomplete": "Oz qoldi — saqlashni yakunlay olmadik. Sozlamalaringiz saqlangan, jarayonni qayta ishga tushirish oʻrniga qoʻllab-quvvatlash xizmatiga murojaat qiling.",
+    "connected": "WhatsApp ulandi. Avtojavoblar bu raqamga kelgan xabarlarga javob bera boshlaydi."
+  }
+}

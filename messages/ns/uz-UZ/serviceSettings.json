@@ -1,0 +1,59 @@
+{
+  "labels": {
+    "collection_interval_mins": "Olib ketish vaqtlari",
+    "takes_cash": "Naqd pul qabul qilasizmi?",
+    "offline_protection": "Oflayn buyurtma himoyasi",
+    "buzzer_prompt": "Chaqiruv qurilmasini qoʻshishni eslatish"
+  },
+  "typeFollowsVanTitle": "Har bir furgonning odatiy sozlamasiga amal qiladi",
+  "sameSettingsAllVansLabel": "Barcha furgonlar uchun bir xil sozlamalar",
+  "sameSettingsAllVansHeader": "Barcha furgonlar",
+  "sameSettingsConfirm": "Furgon 1 sozlamalari barcha furgonlarga koʻchirilsinmi? Bu Furgon 1 ning barcha furgon sozlamalarini koʻchiradi — Sozlamalardagi “Furgon 1 bilan bir xil” kabi. Oshxona quvvatining oʻz kaliti bor.",
+  "eventTypesFooterStandard": "Standart — bu odatiy sozlamangiz. Uni shu yerda oʻzgartirsangiz, Sozlamalarda ham oʻzgaradi.",
+  "eventTypesFooterOneEvent": "Sozlamani faqat bitta tadbir uchun oʻzgartirish uchun oʻsha tadbirning ish panelidan foydalaning.",
+  "eventTypesSubtitle": "Oʻzgarishlar darhol saqlanadi.",
+  "matchStandardLabel": "Standartga moslash",
+  "matchStandardConfirm": "Bu turdagi barcha sozlamalar Standartga qaytarilsinmi? Bu yerda oʻzgartirganlaringiz oʻchiriladi.",
+  "priceLabels": {
+    "price_change_on": "Narxlarni oʻzgartirish",
+    "price_mode": "Narx oʻzgarishi",
+    "price_amount": "Miqdor",
+    "price_rounding": "Yaxlitlash",
+    "item_prices": "Mahsulot narxlari"
+  },
+  "priceMode": {
+    "add_amount": "+ {symbol}",
+    "add_pct": "+ %",
+    "sub_amount": "− {symbol}",
+    "sub_pct": "− %",
+    "none": "Har bir narxni oʻzim belgilayman"
+  },
+  "priceRounding": {
+    "none": "Yoʻq",
+    "nearest_1": "Eng yaqin {symbol}1 gacha",
+    "up_1": "Doim yuqoriga yaxlitlash"
+  },
+  "pricesStandardCell": "Menyudagi narxlaringiz",
+  "pricesTruckWideTitle": "Narxlaringiz barcha furgonlar uchun bir xil",
+  "pricesMenuCell": "Menyu",
+  "pricesTypeOffCell": "Menyu narxlari",
+  "itemPricesShow": "Narxlarni koʻrsatish",
+  "itemPricesHide": "Narxlarni berkitish",
+  "priceItemsHeading": "Har bir mahsulot narxini belgilang",
+  "priceItemsOpen": "Har bir mahsulot narxini koʻrish yoki oʻzgartirish ›",
+  "priceItemsClose": "Mahsulot narxlarini berkitish ⌃",
+  "ownPriceCount": "{n, plural, one {{count} ta mahsulotning oʻz narxi bor} other {{count} ta mahsulotning oʻz narxi bor}}",
+  "priceTypeHint": "Oʻz narxingizni kiritish uchun narxni bosing.",
+  "pricesLiveNotice": "Bu tadbir hozir faol. Yangi buyurtmalar yangi narxlardan foydalanadi. Allaqachon berilgan buyurtmalar oʻz narxlarini saqlaydi.",
+  "placeTypeHelper": "Siz bu joyni tanlaganingizda “Tadbir qoʻshish” shu turni tanlaydi.",
+  "postPictureStandardNote": "Bu yerdagi tadbir postlari standart dizayningizdan foydalanadi.",
+  "eventItemsCardDescription": "Faqat shu tadbir uchun narxlar, mahsulot limitlari va mavjudlik. Oʻzgarishlar darhol kuchga kiradi.",
+  "eventPriceColumnLabel": "Narx",
+  "eventPriceOwnNote": "{hasType, select, yes {{type} {price} · shu tadbir} other {menyu {price} · shu tadbir}}",
+  "eventPriceEdit": "✎ Narxlarni tahrirlash",
+  "eventPriceCancel": "Bekor qilish",
+  "eventPriceSave": "Narxlarni saqlash",
+  "eventPriceEditNote": "Narxlar faqat shu tadbir uchun tahrirlanmoqda. Saqlamaguningizcha mahsulot limitlari va mavjudlik qulflangan.",
+  "eventPriceLiveNote": "Faol: yangi buyurtmalar yangi narxlardan foydalanadi.",
+  "offlineWhenOfflineLabel": "Oflayn boʻlganda"
+}

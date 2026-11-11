@@ -1,0 +1,4 @@
+{
+  "customer": "{required, select, yes {Majburiy} other {Ixtiyoriy}}{limit, select, one { · Bittasini tanlang} upTo { · {max} tagacha tanlang} other {}}",
+  "operator": "{required, select, yes {Majburiy} other {Ixtiyoriy}}{limit, select, one { · Mijoz bittasini tanlaydi} upTo { · Mijoz {max} tagacha tanlashi mumkin} other {}}"
+}

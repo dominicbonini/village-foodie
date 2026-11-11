@@ -1,0 +1,9 @@
+{
+  "launch_failed": "Tekshiruv vaqtincha mavjud emas. Birozdan soʻng qayta urinib koʻring.",
+  "malformed": "Bu veb-manzilga oʻxshamaydi. Masalan, shunday kiriting: fudtrakingiz.uz/events",
+  "blocked": "Bu saytga kira olmadik — u avtomatik tekshiruvlarni bloklayotgan boʻlishi mumkin. Jadvalingiz koʻrsatilgan sahifani kiriting yoki tadbirlarni qoʻlda qoʻshing.",
+  "unreachable": "Bu saytga ulanib boʻlmadi. U ishlamayotgan yoki manzil notoʻgʻri boʻlishi mumkin.",
+  "no_content": "Sahifa ochildi, lekin undagi hech narsani oʻqib boʻlmadi. U hamma uchun ochiq ekanini tekshiring.",
+  "no_events": "Bu sahifada kelgusi tadbirlar topilmadi. URL toʻgʻridan-toʻgʻri jadvalingiz joylashgan sahifaga yoʻnaltirilganiga ishonch hosil qiling.",
+  "blockedDomain": "Iltimos, saytingiz URL manzilidan foydalaning — Facebook va Instagram sahifalarini avtomatik oʻqib boʻlmaydi."
+}

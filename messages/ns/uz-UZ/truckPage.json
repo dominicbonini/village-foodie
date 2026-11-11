@@ -1,0 +1,47 @@
+{
+  "meta": {
+    "fallbackTitle": "Fudtrak | Village Foodie",
+    "hgFallbackTitle": "Fudtrak",
+    "orderTitle": "{truck} — onlayn buyurtma",
+    "orderDescription": "{truck}: oldindan buyurtma bering va uni fudtrakdan olib keting.",
+    "title": "{truck} | Village Foodie",
+    "logoAlt": "{truck} logotipi"
+  },
+  "shareTitle": "{truck} — jadval",
+  "shareText": "{truck} keyingi safar qayerda boʻlishini koʻring! 🚚",
+  "linkCopied": "Profil havolasi nusxalandi! 📋",
+  "facebookPage": "Facebook sahifasi",
+  "loadingMap": "Xarita yuklanmoqda…",
+  "view": {
+    "list": "Roʻyxat",
+    "map": "Xarita"
+  },
+  "ownThisTruck": "Bu fudtrak sizgami?",
+  "ownThisTruckTitle": "Bu fudtrak sizgami? Profilni yangilash uchun bosing",
+  "actions": {
+    "menu": "Menyu",
+    "call": "Qoʻngʻiroq",
+    "message": "Xabar",
+    "share": "Ulashish",
+    "order": "Buyurtma"
+  },
+  "loadingSchedule": "Jadval yuklanmoqda…",
+  "loadError": {
+    "title": "Yuklab boʻlmadi",
+    "body": "Hozircha jadvalni yuklab boʻlmadi — odatda bu qisqa nosozlik. Qaytadan urinib koʻring.",
+    "retry": "Qayta urinish"
+  },
+  "notFound": {
+    "title": "Fudtrak topilmadi",
+    "body": "Bu fudtrak haqida maʼlumot topilmadi. Ular koʻchgan yoki profilini yangilagan boʻlishi mumkin.",
+    "cta": "Barcha fudtraklarni koʻrish"
+  },
+  "noEvents": {
+    "title": "Yaqin tadbirlar topilmadi",
+    "body": "Bu fudtrak haqida baʼzi maʼlumotlar bizda yoʻq boʻlishi mumkin. Siz egasimisiz yoki uning jadvalini bilasizmi?",
+    "cta": "Yangilash uchun bizga yozing!"
+  },
+  "whereToFind": "Bizni qayerdan topish mumkin",
+  "missingEvent": "<strong>Biror tadbir tushib qolganmi?</strong> <br></br>Agar siz bu fudtrak egasi yoki shunchaki uning sodiq muxlisi boʻlsangiz, sahifani aniq saqlashga yordam bering! <br></br><link>Yetishmayotgan maʼlumotlarni qoʻshish uchun biz bilan bogʻlaning.</link>",
+  "weeklySchedule": "Haftalik jadvalni olish 🍕"
+}

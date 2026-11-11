@@ -1,0 +1,154 @@
+{
+  "filter": {
+    "dateRange": "📅 Sana oraligʻi",
+    "event": "📍 Tadbir",
+    "filterBy": "Filtr",
+    "show": "Koʻrsatish",
+    "range": "<from></from><sep>—</sep><until></until>",
+    "selectEvent": "Tadbirni tanlang…",
+    "eventOption": "{venue} · {date}",
+    "unnamedEvent": "Tadbir",
+    "viewReport": "Hisobotni koʻrish",
+    "loading": "Yuklanmoqda…",
+    "orders": "📋 Buyurtmalar",
+    "items": "📦 Mahsulotlar",
+    "exportCsv": "⬇ CSV eksport"
+  },
+  "empty": {
+    "noOrders": "Bu davr uchun buyurtmalar topilmadi.",
+    "selectEvent": "Hisobotni koʻrish uchun yuqorida tadbirni tanlang."
+  },
+  "summary": {
+    "totals": "{n, plural, one {{count} ta buyurtma} other {{count} ta buyurtma}} · {total}"
+  },
+  "revenue": {
+    "title": "Tushum tarkibi",
+    "deals": "Kombolardan tushum",
+    "modifiers": "Qoʻshimchalar uchun ustama",
+    "foodSales": "Taom savdosi",
+    "total": "Jami",
+    "other": "Boshqa",
+    "tax": "Soliq",
+    "tips": "Choychaqa",
+    "serviceFees": "Xizmat yigʻimlari",
+    "cardFees": "Karta komissiyalari"
+  },
+  "itemsSold": {
+    "title": "Sotilgan mahsulotlar"
+  },
+  "dealsCard": {
+    "title": "Kombolar"
+  },
+  "custom": {
+    "title": "Moslashtirishlar",
+    "paidModifiers": "Pullik qoʻshimchalar",
+    "customerNotes": "Mijoz izohlari",
+    "note": "“{note}”"
+  },
+  "table": {
+    "item": "Mahsulot",
+    "modifier": "Qoʻshimcha",
+    "qty": "Soni",
+    "total": "Jami",
+    "date": "Sana",
+    "time": "Vaqt",
+    "channel": "Kanal"
+  },
+  "breakdown": {
+    "orders": "Buyurtmalar tafsiloti",
+    "items": "Mahsulotlar tafsiloti"
+  },
+  "channel": {
+    "online": "Onlayn",
+    "walkUp": "Oyna oldida"
+  },
+  "csv": {
+    "orderId": "Buyurtma ID",
+    "date": "Sana",
+    "event": "Tadbir",
+    "timePlaced": "Berilgan vaqti",
+    "collectionTime": "Olib ketish vaqti",
+    "customerName": "Mijoz ismi",
+    "orderType": "Buyurtma turi",
+    "items": "Mahsulotlar",
+    "deals": "Kombolar",
+    "modifiers": "Qoʻshimchalar",
+    "notes": "Izohlar",
+    "subtotal": "Oraliq jami",
+    "tip": "Choychaqa",
+    "serviceFee": "Xizmat yigʻimi",
+    "total": "Jami",
+    "itemName": "Mahsulot nomi",
+    "qty": "Soni",
+    "unitPrice": "Birlik narxi",
+    "itemTotal": "Mahsulot jami",
+    "orderTotal": "Buyurtma jami",
+    "unknownEvent": "Nomaʼlum tadbir",
+    "asap": "Imkon qadar tez",
+    "unknownCustomer": "Nomaʼlum",
+    "customerOnline": "Mijoz (onlayn)",
+    "placedByTruck": "Fudtrak tomonidan berilgan"
+  },
+  "presets": {
+    "label": "Davr",
+    "custom": "Boshqa sanalar",
+    "thisMonth": "Shu oy",
+    "lastMonth": "Oʻtgan oy",
+    "lastQuarter": "Oʻtgan chorak",
+    "lastTaxYear": "Oʻtgan soliq yili"
+  },
+  "accounts": {
+    "title": "Buxgalteringiz uchun",
+    "help": "Savdo tadbir kuni boʻyicha hisoblanadi. Yalpi — mijozlar toʻlagan summa. Sof — qaytarishlar va soliqdan keyin qolgan summa.",
+    "gross": "Yalpi savdo",
+    "refunds": "Qaytarishlar",
+    "net": "Sof savdo",
+    "taxEstimated": "soliq stavkangiz asosida hisoblangan",
+    "taxNone": "Fudtrakingiz uchun soliq stavkasi belgilanmagan, shuning uchun bu yerda soliq hisoblanmaydi.",
+    "byChannel": "Kanallar boʻyicha yalpi savdo",
+    "byPayment": "Toʻlov usullari boʻyicha yalpi savdo",
+    "online": "Onlayn",
+    "walkUp": "Oyna oldida",
+    "cardOnline": "Onlayn karta",
+    "payAtTruck": "Fudtrakda toʻlash",
+    "cost": "Sotilgan taomlar tannarxi",
+    "profit": "Foyda",
+    "coverage": "{total, plural, one {# ta sotilgan taomdan {withCost} tasi uchun tannarx belgilangan} other {# ta sotilgan taomdan {withCost} tasi uchun tannarx belgilangan}}",
+    "partial": "Tannarxi yoʻq taomlar hisobga olinmagan, shuning uchun bu foyda haqiqatdagidan yuqori. Menyuda har bir taomga tannarx qoʻshing.",
+    "noCosts": "Hali hech bir taomga tannarx belgilanmagan. Foydangizni koʻrish uchun Menyuda taomlaringizga tannarx qoʻshing.",
+    "byEvent": "Tadbirlar boʻyicha",
+    "event": "Tadbir",
+    "sales": "Sof savdo",
+    "eventNoProfit": "Chiziqcha u yerda sotilgan har bir taomga tannarx belgilanmaganini bildiradi.",
+    "downloadOrders": "⬇ Buxgalter uchun buyurtmalar",
+    "downloadEvents": "⬇ Buxgalter uchun tadbirlar",
+    "downloadHelp": "Ikkita jadval fayli: har bir buyurtma uchun bitta qator va har bir tadbir uchun bitta qator. Ular Excel, Numbers, Xero va QuickBooks dasturlarida ochiladi."
+  },
+  "accountsCsv": {
+    "header": {
+      "date": "Sana",
+      "time": "Vaqt",
+      "orderNumber": "Buyurtma raqami",
+      "event": "Tadbir",
+      "channel": "Kanal",
+      "paymentMethod": "Toʻlov usuli",
+      "currency": "Valyuta",
+      "gross": "Yalpi",
+      "tax": "Soliq",
+      "taxBasis": "Soliq asosi",
+      "net": "Sof",
+      "refunded": "Qaytarilgan",
+      "cost": "Tannarx",
+      "profit": "Foyda",
+      "eventDate": "Tadbir sanasi",
+      "orders": "Buyurtmalar",
+      "dishesSold": "Sotilgan taomlar",
+      "dishesWithCost": "Tannarxi bor taomlar"
+    },
+    "taxBasis": {
+      "stored": "buyurtma bilan saqlangan",
+      "estimated": "soliq stavkangiz asosida hisoblangan",
+      "none": "soliq stavkasi belgilanmagan"
+    }
+  }
+}

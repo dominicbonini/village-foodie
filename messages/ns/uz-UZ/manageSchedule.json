@@ -1,0 +1,102 @@
+{
+  "status": {
+    "cancelled": "Bekor qilingan",
+    "finished": "Tugagan",
+    "unconfirmed": "Tasdiqlanmagan",
+    "confirmed": "Tasdiqlangan",
+    "open": "Hozir ochiq",
+    "closed": "Yopiq"
+  },
+  "sections": {
+    "label": "Jadval boʻlimlari",
+    "events": "Tadbirlar",
+    "eventTypes": "Tadbir turlari"
+  },
+  "header": {
+    "title": "Jadval",
+    "upcoming": "Yaqinlashayotgan: {count}",
+    "import": "✨ Jadvalni import qilish",
+    "importHint": "rasm, PDF yoki matn",
+    "addEvent": "+ Tadbir qoʻshish",
+    "scraperAuto": "Tadbirlar saytingizdan avtomatik topilmoqda",
+    "changeInSettings": "Sozlamalarda oʻzgartirish",
+    "scraperManual": "Jadvalingizni qoʻlda boshqaryapsiz"
+  },
+  "empty": {
+    "title": "Yaqinlashayotgan tadbirlar yoʻq",
+    "body": "Ijtimoiy tarmoqlaringiz va bron taqvimingizdan olingan tadbirlar tasdiqlashingiz uchun shu yerda paydo boʻladi"
+  },
+  "list": {
+    "openNow": "Hozir ochiq",
+    "needsApproval": "Maʼqullashingiz kerak",
+    "needsConfirmation": "Tasdiqlash kerak",
+    "confirmed": "Tasdiqlangan",
+    "past": "Oʻtgan tadbirlar ({count})",
+    "found": "Siz uchun {count, plural, one {# ta tadbir topdik — faol boʻlishidan oldin uni tekshirib, maʼqullang.} other {# ta tadbir topdik — faol boʻlishidan oldin ularni tekshirib, maʼqullang.}}"
+  },
+  "card": {
+    "addName": "Nom qoʻshing",
+    "timeNeeded": "⚠ Vaqt kerak",
+    "setTimeFirst": "Avval vaqtni belgilang",
+    "confirm": "Tasdiqlash",
+    "copy": "Nusxalash",
+    "edit": "Tahrirlash",
+    "makePost": "Post yaratish",
+    "cancel": "Bekor qilish",
+    "approve": "Maʼqullash",
+    "reject": "Rad etish",
+    "stock": "⚠️ Zaxira",
+    "stockHidden": "Yashirilgan — {reason}",
+    "noDeals": "Faol kombolar yoʻq",
+    "dealsActive": "{count, plural, one {# ta kombo} other {# ta kombo}} faol · {names}{hidden, plural, =0 {} one { · # ta yashirin} other { · # ta yashirin}}",
+    "approveNeedsTimes": "Bu tadbirda boshlanish va tugash vaqti boʻlmaguncha “Maʼqullash” oʻchiq — ularni “Tahrirlash” orqali qoʻshing."
+  },
+  "guessed": {
+    "title": "📍 Bu joyni taxmin qildik",
+    "body": "<b>{venue}</b> nomiga bir nechta maskan mos keldi, shuning uchun eng mosini tanladik{hasTown, select, yes { (shahar: <b>{town}</b>)} other {}}{hasPostcode, select, yes { ({postcode})} other {}}. Maʼqullashdan oldin toʻgʻri joy ekanini tekshiring — notoʻgʻri boʻlsa, <b>Tahrirlash</b> orqali hududni yoki pochta maʼlumotini ({postal}) tuzating, aks holda mijozlar notoʻgʻri joyga yuboriladi.",
+    "thisVenue": "bu maskan"
+  },
+  "noLocation": {
+    "title": "📍 Joy hali belgilanmagan",
+    "body": "Bu maskanni xaritaga joylay olmadik, shuning uchun u roʻyxatda koʻrinadi, lekin xaritada belgi chiqmaydi. Xaritaga qoʻyish uchun <b>Tahrirlash</b> orqali qoʻshing: {postal}."
+  },
+  "conflict": {
+    "title": "⚠️ {count, plural, one {Ehtimoliy toʻqnashuv} other {Ehtimoliy toʻqnashuvlar}} — {pending, select, yes {maʼqullashdan} other {tasdiqlashdan}} oldin tekshiring",
+    "duplicate": "Bu sizda allaqachon bor tadbirning aynan oʻzi koʻrinadi.",
+    "review": "Maskan va sana bir xil, vaqt boshqa — bu vaqti oʻzgartirilgan oʻsha tadbirmi yoki alohida vaqt oraligʻimi? Maʼqullashdan oldin tekshiring.",
+    "already": "Jadvalingizda allaqachon bor: <b>{venue}</b>{details} ({status, select, confirmed {tasdiqlangan} open {ochiq} other {{status}}})",
+    "unnamedVenue": "Nomsiz maskan",
+    "ack": "Ha, bular turli tadbirlar — baribir {pending, select, yes {maʼqullash} other {tasdiqlash}}",
+    "cancel": "Bekor qilish",
+    "overlap": "Bu tadbir vaqti oʻsha kundagi boshqa tadbir bilan ustma-ust tushadi — bitta furgon bir vaqtda ikki joyda boʻla olmaydi. Maʼqullashdan oldin tekshiring."
+  },
+  "toast": {
+    "loadFailed": "Tadbirlarni yuklab boʻlmadi",
+    "linkFailed": "Havolani yuklab boʻlmadi",
+    "placeTypeFailed": "Tadbir saqlandi. Joyning odatiy turi ({place}) saqlanmadi — {reason}.",
+    "placeTypeFailedReason": "saqlash amalga oshmadi",
+    "eventUpdated": "Tadbir yangilandi",
+    "eventAdded": "Tadbir qoʻshildi",
+    "eventsSaved": "{count, plural, one {# ta tadbir saqlandi} other {# ta tadbir saqlandi}}",
+    "saveEventsFailed": "Tadbirlarni saqlab boʻlmadi",
+    "needsTime": "Maʼqullashdan oldin boshlanish va tugash vaqtini qoʻshing — tadbir faol boʻlishi uchun vaqt kerak.",
+    "addStartTime": "Boshlanish vaqtini qoʻshing",
+    "addEndTime": "Tugash vaqtini qoʻshing",
+    "chooseTruckBefore": "Maʼqullashdan oldin bu tadbirda qaysi fudtrak ishlashini tanlang.",
+    "chooseTruck": "Bu tadbirda qaysi fudtrak ishlashini tanlang",
+    "eventConfirmed": "Tadbir tasdiqlandi",
+    "eventRejected": "Tadbir rad etildi",
+    "undo": "↩ Qaytarish",
+    "eventRestored": "Tadbir tiklandi",
+    "restoreFailed": "Tiklab boʻlmadi",
+    "eventCancelled": "Tadbir bekor qilindi",
+    "eventCancelledOrders": "Tadbir bekor qilindi · {count, plural, one {# ta buyurtma} other {# ta buyurtma}} bekor qilindi",
+    "placeHidden": "Joy yashirildi",
+    "placeShown": "Joy yana koʻrsatildi",
+    "saveThatFailed": "Buni saqlab boʻlmadi."
+  },
+  "link": {
+    "label": "Shaxsiy havola va QR-kod",
+    "close": "Yopish"
+  }
+}

@@ -1,0 +1,69 @@
+{
+  "close": "Yopish",
+  "cancel": "Bekor qilish",
+  "selectReason": "Sababni tanlang",
+  "reject": {
+    "title": "Buyurtma #{orderId} rad etilsinmi?",
+    "reasonLabel": "Sabab — majburiy (mijozga koʻrsatiladi)",
+    "reason": "{reason, select, sold_out {Taomlardan biri tugadi} too_busy {Juda band — oʻz vaqtida tayyorlay olmaymiz} closing_soon {Tez orada yopilamiz} other {Boshqa}}",
+    "noteRequired": "Sabab — majburiy",
+    "noteOptional": "Qoʻshimcha izoh — ixtiyoriy",
+    "notePlaceholder": "Mijoz uchun batafsilroq yozing…",
+    "keep": "Buyurtmani qoldirish",
+    "confirm": "Buyurtmani rad etish"
+  },
+  "eventCancel": {
+    "title": "Bu tadbir bekor qilinsinmi?",
+    "affected": "{n, plural, one {{count} ta buyurtma} other {{count} ta buyurtma}} bekor qilinadi va mijozlarga xabar beriladi.",
+    "reasonLabel": "Sabab — ixtiyoriy",
+    "reason": "{reason, select, vehicle_breakdown {Transport buzildi} weather {Ob-havo} venue_issue {Maskan bilan muammo} personal_emergency {Shaxsiy favqulodda holat} other {Boshqa}}",
+    "messageLabel": "Mijozlarga xabar — ixtiyoriy",
+    "messagePlaceholder": "Masalan: Kechirasiz, tadbir maskaniga ketayotganimizda tirkamamiz buzilib qoldi…",
+    "keep": "Tadbirni qoldirish",
+    "cancelling": "Bekor qilinmoqda…",
+    "confirm": "Tadbirni bekor qilish"
+  },
+  "actions": {
+    "startEvent": "{restart, select, yes {Tadbirni qayta boshlash} other {Tadbirni boshlash}}",
+    "changeEvent": "Tadbirni oʻzgartirish",
+    "changeEventType": "Tadbir turini oʻzgartirish…",
+    "privateLink": "Shaxsiy havola va QR-kod",
+    "noteLabel": "Mijozlar uchun izoh",
+    "notePlaceholder": "Masalan: Asosiy avtoturargohda toʻxtang, toʻq sariq chodirni qidiring",
+    "noteHint": "Buyurtma sahifasida tadbir maʼlumotlari ostida mijozlarga koʻrsatiladi.",
+    "saveNote": "Izohni saqlash",
+    "resume": "Buyurtmalarni davom ettirish",
+    "pause": "Buyurtmalarni toʻxtatib turish",
+    "changeFinishTime": "Tadbir tugash vaqtini oʻzgartirish",
+    "finishEvent": "Tadbirni yakunlash",
+    "cancelEvent": "Tadbirni bekor qilish"
+  },
+  "finish": {
+    "confirmTitle": "Tugash vaqti oʻzgartirilsinmi?",
+    "willFinish": "Yangi tugash vaqti: <b>{selected}</b>{hasCurrent, select, yes { (avvalgisi: <b>{current}</b>)} other {}}.",
+    "dueAfter": "<b>{n, plural, one {{count} ta buyurtma} other {{count} ta buyurtma}} {selected} vaqtidan keyinga belgilangan.</b> {n, plural, one {U} other {Ular}} jadvalda qoladi va baribir {n, plural, one {tayyorlanishi} other {tayyorlanishi}} kerak. Tugash vaqtini oʻzgartirish faqat keyingi vaqtlarga YANGI buyurtmalar berilishini toʻxtatadi.",
+    "saving": "Saqlanmoqda…",
+    "confirm": "Tugash vaqtini oʻzgartirish",
+    "keepCurrent": "Qoldirish: {current}",
+    "keepAsIs": "Oʻzgarishsiz qoldirish",
+    "title": "Tugash vaqtini oʻzgartirish",
+    "currentlySet": "Bu tadbirning hozirgi tugash vaqti: <b>{current}</b>.",
+    "noFinishTime": "Bu tadbir uchun tugash vaqti belgilanmagan.",
+    "noTimesLeft": "Bugun uchun boshqa vaqt qolmadi. Buning oʻrniga “Tadbirni yakunlash” tugmasidan foydalaning.",
+    "newFinishTime": "Yangi tugash vaqti",
+    "optionCurrent": "{time} (hozirgi)",
+    "earlier": "Bu hozirgi tugash vaqtidan oldinroq. Mijozlar undan keyingi vaqtlarga buyurtma bera olmaydi.",
+    "review": "Oʻzgarishni koʻrib chiqish",
+    "optionNextDay": "{time} (ertasi kuni)"
+  },
+  "extraWait": {
+    "title": "Qoʻshimcha kutish vaqti",
+    "hint": "Yangi buyurtmalarda koʻrsatiladigan olib ketish vaqtiga qoʻshiladi. Tadbir tugash vaqtini oʻzgartirmaydi.",
+    "option": "+{mins} daq"
+  },
+  "picker": {
+    "reconnect": "Yuklash uchun qayta ulaning",
+    "selected": "Tanlangan",
+    "status": "{tone, select, paused {⏸ Toʻxtatilgan} live {● Faol} finished {● Yakunlangan} cancelled {Bekor qilingan} other {Boshlanmagan}}"
+  }
+}

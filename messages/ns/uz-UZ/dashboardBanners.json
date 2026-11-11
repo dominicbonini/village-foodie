@@ -1,0 +1,21 @@
+{
+  "breachHeadline": "{n, plural, one {{count} ta vaqt oraligʻi} other {{count} ta vaqt oraligʻi}} quvvatdan oshgan — koʻrib chiqing",
+  "batchOver": "{cat}: partiyadan oshgan — {slot} uchun {count} ta (partiyada {per} ta)",
+  "eventStartOver": "Tadbir boshida quvvatdan oshgan — {slot} uchun {n, plural, one {{count} ta taom} other {{count} ta taom}}",
+  "kitchenOver": "Oshxona quvvatdan oshgan — {slot} uchun {n, plural, one {{count} ta taom} other {{count} ta taom}} tayyorlanmoqda",
+  "orderItems": "#{id} — {n, plural, one {{count} ta taom} other {{count} ta taom}}",
+  "placedAnyway": "Baribir qabul qilindi: {list}",
+  "placedItem": "#{id} — {slot} uchun",
+  "orphans": "{times}: quvvatdan oshgan — bunga tegishli buyurtma topilmadi",
+  "dismiss": "Yopish",
+  "kitchenCapacity": "Oshxona quvvati",
+  "overCapacity": "Quvvatdan oshgan",
+  "wakeUnsupported": "Bu qurilma ekranni yoniq ushlab tura olmaydi.",
+  "wakeInsecure": "Bu manzildan ekranni yoniq ushlab boʻlmaydi.",
+  "wakeRetry": "Ekranni yoniq qoldirish — qayta urinish uchun bosing",
+  "wakeAcquire": "Ekranni yoniq qoldirish",
+  "degraded": {
+    "serverError": "Server buyurtmalarni yuklay olmadi{hasStatus, select, yes { (xato {status})} other {}}. {at} holatidagi buyurtmalar koʻrsatilmoqda. Yangi buyurtmalar koʻrinmasligi mumkin.",
+    "unreachable": "Serverga ulanib boʻlmayapti. {at} holatidagi buyurtmalar koʻrsatilmoqda. Yangi buyurtmalar koʻrinmasligi mumkin."
+  }
+}

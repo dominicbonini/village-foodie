@@ -1,0 +1,129 @@
+{
+  "docTitle": "Oshxona: {truck}",
+  "loading": "Oshxona yuklanmoqda…",
+  "pin": {
+    "title": "PIN-kodni kiriting",
+    "placeholder": "PIN",
+    "unlock": "Ochish",
+    "unreachable": "Hozir serverga ulanib boʻlmayapti. PIN-kodingiz toʻgʻri — birozdan keyin qayta urinib koʻring.",
+    "incorrect": "PIN-kod notoʻgʻri",
+    "generic": "Xatolik yuz berdi. Qayta urinib koʻring."
+  },
+  "error": {
+    "linkInvalid": "Bu havola endi yaroqsiz.",
+    "couldNotLoad": "Buyurtmalarni yuklab boʻlmadi",
+    "truckNotFound": "Fudtrak topilmadi"
+  },
+  "degraded": {
+    "at": "⚠️ Serverga ulanib boʻlmayapti. {time} holatidagi cheklar koʻrsatilmoqda. YANGI BUYURTMALAR KOʻRINMASLIGI MUMKIN.",
+    "earlier": "⚠️ Serverga ulanib boʻlmayapti. Avvalroq yuklangan cheklar koʻrsatilmoqda. YANGI BUYURTMALAR KOʻRINMASLIGI MUMKIN."
+  },
+  "header": {
+    "dashboard": "Ish paneli",
+    "backTitle": "Ish paneliga qaytish",
+    "list": "Roʻyxat",
+    "grid": "Toʻr",
+    "full": "Toʻliq",
+    "cook": "Oshpaz",
+    "fullTitle": "Toʻliq kartalar — narxlar va toʻlov tafsilotlari, sotuv oynasida koʻrinadiganidek.",
+    "cookTitle": "Oshpaz kartalari — kattaroq shrift, kategoriyalar boʻyicha guruhlangan, narxlarsiz.",
+    "readyStep": "Tayyor bosqichi",
+    "readyOnlyTitle": "Bu ekran faqat buyurtmalarni tayyor deb belgilaydi, shuning uchun buni oʻchirib boʻlmaydi — u bajaradigan yagona bosqich shu.",
+    "readyOnTitle": "Bu ekran buyurtmalarni tayyor deb belgilaydi. Bu ishni boshqa ekran bajarishi uchun bosing.",
+    "readyOffTitle": "Buyurtmalarni boshqa ekran tayyor deb belgilaydi. Bu ishni shu ekran bajarishi uchun bosing.",
+    "handover": "Toʻlov va topshirish",
+    "handoverOnlyTitle": "Bu ekran faqat toʻlov qabul qiladi, shuning uchun buni oʻchirib boʻlmaydi — u bajaradigan yagona bosqich shu.",
+    "handoverOnTitle": "Bu ekran toʻlov qabul qiladi va buyurtmani topshiradi. Bu ishni boshqa ekran bajarishi uchun bosing.",
+    "handoverOffTitle": "Toʻlovni boshqa ekran qabul qiladi. Bu ishni shu ekran bajarishi uchun bosing.",
+    "soundOn": "Yangi buyurtma ovozi yoqilgan — oʻchirish uchun bosing",
+    "soundOff": "Yangi buyurtma ovozi oʻchirilgan — yoqish uchun bosing",
+    "screenOn": "Ekran yoniq",
+    "screenOff": "Ekran oʻchiq",
+    "screenSettings": "Ekran sozlamalari",
+    "manageEvent": "Tadbirni boshqarish",
+    "manageEventTitle": "Tadbirni boshqarish — boshlash, toʻxtatib turish, oʻzgartirish yoki yakunlash",
+    "soundSettings": "Ovoz sozlamalari",
+    "soundSettingsTitle": "Bu qurilmada qaysi ovozlar chalinadi",
+    "cashIcon": "💵"
+  },
+  "panel": {
+    "viewSettings": "Koʻrinish sozlamalari",
+    "on": "Yoqilgan",
+    "off": "Oʻchirilgan",
+    "newOrderSound": "Yangi buyurtma ovozi",
+    "soundNeedsConfirming": "Faqat tasdiqlash kerak boʻlgan buyurtmalar",
+    "soundAll": "Barcha yangi buyurtmalar",
+    "soundDue": "Buyurtmani tayyorlash vaqti kelganda ovoz",
+    "soundDueHelp": "Chek toʻq sariq rangga oʻtganda ovoz chiqadi.",
+    "deviceSettings": "Qurilma sozlamalari",
+    "sound": "Ovoz",
+    "close": "Yopish"
+  },
+  "banner": {
+    "mismatchTitle": "⚠️ Bu tadbir uchun buyurtmalar yuklanmadi",
+    "mismatchBody": "Server boshqa tadbir boʻyicha javob qaytardi, shuning uchun notoʻgʻri buyurtmalar oʻrniga hech narsa koʻrsatilmayapti. Tadbirni qayta tanlang yoki sahifani yangilang.",
+    "mismatchBodyAt": "Server boshqa tadbir boʻyicha javob qaytardi, shuning uchun notoʻgʻri buyurtmalar oʻrniga hech narsa koʻrsatilmayapti (maskan: {venue}). Tadbirni qayta tanlang yoki sahifani yangilang.",
+    "paused": "⏸ Buyurtmalar toʻxtatilgan{reason, select, offline { (qurilma oflayn)} other {}} — mijozlar buyurtma bera olmaydi",
+    "resume": "Davom ettirish",
+    "offline": "Aloqa yoʻq — oxirgi maʼlum buyurtmalar koʻrsatilmoqda. Mijozlar uchun onlayn buyurtma toʻxtatildi.",
+    "queued": "{n, plural, one {Navbatda {count} ta amal} other {Navbatda {count} ta amal}}",
+    "extraWait": "⏱ +{mins} daq qoʻshimcha kutish faol",
+    "clear": "Olib tashlash",
+    "toMake": "Tayyorlash kerak",
+    "today": "Bugun · {range}",
+    "onDate": "{date} · {range}",
+    "startEvent": "Tadbirni boshlash",
+    "recentlyClosed": "Tadbir yakunlandi · {venue} · tugadi: {time}",
+    "eventStatus": "{tone, select, paused {⏸ Toʻxtatilgan} live {● Faol} finished {● Yakunlangan} cancelled {Bekor qilingan} other {Boshlanmagan}}"
+  },
+  "board": {
+    "queueClear": "Navbat boʻsh",
+    "doneToday": "Bugun bajarildi · {count}",
+    "paid": "✓ toʻlangan",
+    "cardHeld": "kartada bloklangan",
+    "due": "toʻlanishi kerak: {amount}"
+  },
+  "screenOff": {
+    "title": "Ekran oʻchishiga ruxsat berilsinmi?",
+    "bodyVans": "{vans}: {n, plural, one {oflayn holatni aniqlash yoqilgan} other {oflayn holatni aniqlash yoqilgan}}. Ekran oʻchsa, qurilma onlayn signal yuborishni toʻxtatishi va mijozlar buyurtmasi toʻxtatib qoʻyilishi mumkin.",
+    "body": "Ekran oʻchsa, qurilma onlayn signal yuborishni toʻxtatishi mumkin.",
+    "keepHint": "Buyurtmalar uzluksiz qabul qilinishi uchun ekranni yoniq qoldiring.",
+    "keep": "Ekranni yoniq qoldirish",
+    "allow": "Ekran oʻchishiga ruxsat berish"
+  },
+  "event": {
+    "change": "Tadbirni oʻzgartirish",
+    "cancel": "Bekor qilish",
+    "waitActive": "⏱ +{mins} daq faol · Olib tashlash uchun bosing",
+    "addWait": "⏱ Qoʻshimcha kutish vaqtini qoʻshish",
+    "endTitle": "Tadbir yakunlansinmi?",
+    "endEarly": "Bu tadbirning rejalashtirilgan tugash vaqti: {time}. Boshqa buyurtma qabul qilinmaydi. Tadbirni yakunlashni tasdiqlaysizmi?",
+    "endNow": "Bu tadbir yakunlansinmi? Boshqa buyurtma qabul qilinmaydi.",
+    "yes": "Ha",
+    "started": "Tadbir boshlandi",
+    "startFutureConfirm": "Bu tadbir sanasi: {date}. Uni hozir boshlaysizmi?",
+    "finishTimeNow": "Endi tugash vaqti: {time}",
+    "finished": "Tadbir yakunlandi",
+    "cancelled": "Tadbir bekor qilindi",
+    "noteSaved": "Izoh saqlandi",
+    "pauseConfirm": "Buyurtmalar toʻxtatib turilsinmi? Siz davom ettirmaguningizcha mijozlar “Buyurtmalar qabul qilinmayapti” yozuvini koʻradi.",
+    "switchConfirm": "Tadbirni almashtirish: {from} → {to}?{n, plural, =0 {} one { Bu ekrandagi {count} ta buyurtma almashtiriladi.} other { Bu ekrandagi {count} ta buyurtma almashtiriladi.}} Qaytish uchun joriy tadbirni bosing."
+  },
+  "intro": {
+    "title": "Bu oshxona ekrani (KDS)",
+    "p1": "Bu oshpaz uchun koʻrinish — tayyorlashingiz kerak boʻlgan buyurtmalar, tayyorlash tartibida. Grill yonidagi ekranda shu koʻrinadi, sotuv oynasida esa ish paneli ishlatiladi.",
+    "p2": "Kartalarni bosganingizda ular keyingi ustunga oʻtadi, shuning uchun oshpaz doim navbatdagi buyurtmani biladi va hech kim baqirishi shart emas. Bu yerdagi hamma narsa — demo maʼlumotlaringiz, bemalol sinab koʻring.",
+    "gotIt": "Tushunarli"
+  },
+  "toast": {
+    "failed": "Bajarilmadi",
+    "rejectFailed": "Rad etib boʻlmadi",
+    "buzzerSaved": "Chaqiruv qurilmasi {n} saqlandi",
+    "buzzerRemoved": "Chaqiruv qurilmasi {n} olib tashlandi",
+    "buzzerRemovedNone": "Chaqiruv qurilmasi olib tashlandi",
+    "buzzerAssigned": "Chaqiruv qurilmasi {n} biriktirildi",
+    "buzzerAssignedFrom": "Chaqiruv qurilmasi {n} biriktirildi (#{from} buyurtmadan olindi)",
+    "buzzerRemoveFailed": "{had, select, no {Chaqiruv qurilmasini olib tashlab boʻlmadi: {target, select, order {buyurtma #{id}} other {bu buyurtma}}} other {Chaqiruv qurilmasi {n} olib tashlanmadi — u hali ham biriktirilgan: {target, select, order {buyurtma #{id}} other {bu buyurtma}}}}",
+    "buzzerAssignFailed": "Chaqiruv qurilmasi {n} biriktirilmadi: {target, select, order {buyurtma #{id}} other {bu buyurtma}} — {had, select, yes {unda hali ham chaqiruv qurilmasi {prior} bor} other {unda hali ham chaqiruv qurilmasi yoʻq}}"
+  }
+}

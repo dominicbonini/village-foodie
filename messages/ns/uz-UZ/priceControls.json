@@ -1,0 +1,8 @@
+{
+  "change": "{label} — oʻzgartirish",
+  "useRule": "{label} — oʻrniga qoidani qoʻllash",
+  "typePrice": "{label} — narxni kiritish",
+  "backToRule": "Qoidaga qaytish",
+  "diffUp": "(+{amount})",
+  "diffDown": "(−{amount})"
+}

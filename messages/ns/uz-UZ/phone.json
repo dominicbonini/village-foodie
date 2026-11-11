@@ -1,0 +1,5 @@
+{
+  "invalidMobile": "{withName, select, yes {Toʻgʻri mobil raqam kiriting ({name})} other {Toʻgʻri mobil raqam kiriting}}{withExample, select, yes { (masalan, {example})} other {}}",
+  "invalidPhone": "{withName, select, yes {Toʻgʻri telefon raqam kiriting ({name})} other {Toʻgʻri telefon raqam kiriting}}{withExample, select, yes { (masalan, {example})} other {}}",
+  "invalidPhoneNumber": "{withName, select, yes {Toʻgʻri telefon raqamini kiriting ({name})} other {Toʻgʻri telefon raqamini kiriting}}{withExample, select, yes { (masalan, {example})} other {}}."
+}

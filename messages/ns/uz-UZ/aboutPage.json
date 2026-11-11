@@ -1,0 +1,20 @@
+{
+  "meta": {
+    "title": "Biz haqimizda — HatchGrab",
+    "description": "HatchGrab fudtrak va koʻchma keytering uchun dastur yaratadi: onlayn buyurtma, olib ketish vaqti, kamroq takroriy savollar. Asoschisi — Dominic Bonini."
+  },
+  "eyebrow": "Biz haqimizda",
+  "title": "Fudtraklar aslida qanday ishlashiga moslab yaratilgan",
+  "photoAlt": "{name}, HatchGrab asoschisi",
+  "story": {
+    "start": "HatchGrab oddiy bir kuzatuvdan boshlangan: fudtraklarga biznesini yuritish uchun yaxshiroq vositalar kerak.",
+    "villageFoodie": "Odamlarga oʻz hududiga keladigan fudtraklarni topishda yordam beruvchi Village Foodie katalogini yaratganimdan soʻng, koʻchma oziq-ovqat bizneslari duch keladigan qiyinchiliklarni koʻproq oʻrgana boshladim. Anʼanaviy restoranlardan farqli oʻlaroq, fudtraklar doimo harakatda boʻladi, turli joylarda ishlaydi va oʻzgaruvchan sharoitlarda mijozlarga xizmat koʻrsatadi.",
+    "fixedAddress": "Biroq ular uchun mavjud dasturlarning aksariyati doimiy manzilga ega bizneslarga moslab ishlab chiqilgan.",
+    "change": "HatchGrab buni oʻzgartirish uchun yaratildi.",
+    "build": "Biz aynan fudtraklar va koʻchma keytering bizneslari uchun amaliy dasturlar yaratamiz: ular onlayn buyurtma qabul qiladi, olib ketish vaqtlarini boshqaradi, buyurtmalar oqimini muammosiz saqlaydi va takroriy savollarga kamroq vaqt sarflaydi.",
+    "focus": "Maqsadimiz oddiy: bunday bizneslar aslida qanday ishlashiga moslab yaratilgan vositalar bilan fudtrak yuritishni osonlashtirish."
+  },
+  "signature": "<b>{name}</b><br></br>HatchGrab asoschisi",
+  "company": "{company} · Angliya va Uelsda roʻyxatdan oʻtgan · kompaniya raqami: {number} · roʻyxatdan oʻtgan ofis: {address}",
+  "contact": "Biz bilan bogʻlaning"
+}

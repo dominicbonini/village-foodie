@@ -1,0 +1,52 @@
+{
+  "meta": {
+    "title": "Yordam",
+    "description": "HatchGrab boʻyicha yordam oling. Bizga xabar yuboring — elektron pochta orqali javob beramiz."
+  },
+  "logIn": "Kirish",
+  "eyebrow": "Yordam",
+  "title": "Qanday yordam bera olamiz?",
+  "lede": "Nimadir ishlamayaptimi yoki hisobingiz haqida savolingiz bormi? Biz bilan bogʻlanishning ikki yoʻli bor — har ikki holatda ham elektron pochta orqali javob beramiz.",
+  "emailUs": "Bizga elektron pochta orqali yozing",
+  "formHeading": "Yoki bizga xabar yuboring",
+  "form": {
+    "topicLabel": "Xabar nima haqida?",
+    "topics": {
+      "question": "HatchGrab haqida savol",
+      "account": "Hisobim boʻyicha yordam",
+      "comparison": "Solishtirish sahifasiga tuzatish",
+      "other": "Boshqa"
+    },
+    "nameLabel": "Ismingiz",
+    "namePlaceholder": "Ism",
+    "emailLabel": "Elektron pochta",
+    "businessLabel": "Fudtrak yoki biznes nomi",
+    "optional": "(ixtiyoriy)",
+    "businessPlaceholder": "masalan, Somsa Oshxonasi",
+    "messageLabel": "Xabaringiz",
+    "send": "Xabar yuborish",
+    "sending": "Yuborilmoqda…",
+    "privacyLine": "Maʼlumotlaringizdan faqat sizga javob berish uchun foydalanamiz.",
+    "privacyLink": "Maxfiylik siyosati",
+    "thanksTitle": "Rahmat — xabaringiz qabul qilindi.",
+    "thanksBody": "Siz koʻrsatgan manzilga elektron pochta orqali javob beramiz.",
+    "errors": {
+      "nameRequired": "Ismingizni kiriting.",
+      "nameTooLong": "Ism {max, number} ta belgidan oshmasin.",
+      "emailRequired": "Elektron pochta manzilingizni kiriting.",
+      "emailInvalid": "Toʻgʻri elektron pochta manzilini kiriting.",
+      "emailTooLong": "Koʻpi bilan {max, number} ta belgidan iborat elektron pochta manzilidan foydalaning.",
+      "businessRequired": "Hisobingizni topishimiz uchun fudtrak yoki biznes nomini kiriting.",
+      "businessTooLong": "Fudtrak yoki biznes nomi {max, number} ta belgidan oshmasin.",
+      "messageTooShort": "Kamida {min, number} ta belgi yozing.",
+      "messageTooLong": "Xabaringiz {max, number} ta belgidan oshmasin.",
+      "topicInvalid": "Xabaringiz nima haqida ekanini tanlang.",
+      "rateLimited": "Siz allaqachon bir nechta xabar yubordingiz — keyinroq qayta urinib koʻring yoki bizga yozing: {email}.",
+      "failed": "Nimadir xato ketdi — bizga yozing: {email}."
+    }
+  },
+  "privacy": "Maxfiylik",
+  "terms": "Shartlar",
+  "about": "Biz haqimizda",
+  "copyright": "© {year} HatchGrab"
+}

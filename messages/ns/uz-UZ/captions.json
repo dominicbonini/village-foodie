@@ -1,0 +1,30 @@
+{
+  "labels": {
+    "weekDates": "Hafta sanalari",
+    "dayList": "Kunlar roʻyxati",
+    "place": "Joy",
+    "venue": "Maskan",
+    "area": "Hudud",
+    "dayDate": "Kun va sana",
+    "times": "Vaqt",
+    "orderLink": "Buyurtma havolasi",
+    "locationTag": "Joylashuv tegi"
+  },
+  "weekHeader": "{truck} — bu hafta qayerdamiz:",
+  "dayLine": "{day} — {where} — {times}",
+  "dayLineNoTimes": "{day} — {where}",
+  "dayLineCancelled": "{day} — {where} — BEKOR QILINDI, uzr",
+  "noDates": "Bu hafta sanalar yoʻq — tez orada yana koʻz tashlang.",
+  "orderAhead": "Oldindan buyurtma bering: {url}",
+  "orderAheadTagged": "Oldindan buyurtma bering: {url} {tag}",
+  "eventLine": "{truck}: {when} — {where}, {times}.",
+  "eventLineNoTimes": "{truck}: {when} — {where}.",
+  "cancelledSorry": "Uzr — {when} bu joyga kela olmaymiz: {where}.",
+  "cancelledApology": "Kelishni rejalashtirgan barchadan uzr soʻraymiz. Tez orada qaytamiz.",
+  "when": {
+    "today": "bugun",
+    "tonight": "bugun kechqurun",
+    "tomorrow": "ertaga",
+    "dated": "{date} kuni"
+  }
+}

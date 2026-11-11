@@ -1,0 +1,17 @@
+{
+  "features": "Imkoniyatlar",
+  "pricing": "Narxlar",
+  "faq": "Savol-javoblar",
+  "privacy": "Maxfiylik",
+  "terms": "Shartlar",
+  "contact": "Aloqa",
+  "about": "Biz haqimizda",
+  "copyright": "© {year} HatchGrab",
+  "credit": "<b>Village Foodie</b> jamoasidan",
+  "badges": {
+    "appStoreLink": "HatchGrab ilovasini App Store orqali yuklab oling",
+    "appStoreAlt": "App Store orqali yuklab oling",
+    "googlePlayLink": "HatchGrab ilovasini Google Play orqali oling",
+    "googlePlayAlt": "Google Play orqali oling"
+  }
+}

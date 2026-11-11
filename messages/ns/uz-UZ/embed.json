@@ -1,0 +1,8 @@
+{
+  "metaDescription": "{truck}: keyingi savdo joylari.",
+  "orderFrom": "{truck} — buyurtma berish",
+  "poweredBy": "<b>HatchGrab</b> asosida ishlaydi",
+  "loadFailed": "Hozircha jadvalni yuklab boʻlmadi.",
+  "loading": "Jadval yuklanmoqda…",
+  "empty": "Yaqin tadbirlar roʻyxatda yoʻq: {truck}."
+}

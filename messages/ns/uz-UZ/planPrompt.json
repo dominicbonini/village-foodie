@@ -1,0 +1,122 @@
+{
+  "includedOn": "{many, select, yes {{feature} — {plan} tarifida mavjud.} other {{feature} — {plan} tarifida mavjud.}}",
+  "notOnPlan": "{many, select, yes {{feature} — tarifingizda mavjud emas.} other {{feature} — tarifingizda mavjud emas.}}",
+  "switchedOff": "{many, select, yes {{feature} — fudtrakingiz uchun oʻchirilgan.} other {{feature} — fudtrakingiz uchun oʻchirilgan.}}",
+  "planLine": "{plan} · {price} · {description}",
+  "planLineNoPrice": "{plan} · {description}",
+  "upgrade": "Tarifni oshirish →",
+  "features": {
+    "discovery_map": {
+      "name": "Qidiruv xaritasida koʻrinish",
+      "many": "no"
+    },
+    "web_dashboard": {
+      "name": "Veb-panel",
+      "many": "no"
+    },
+    "ipad_kds": {
+      "name": "Oshxona ilovasi",
+      "many": "no"
+    },
+    "qr_menu": {
+      "name": "QR-kodli menyu",
+      "many": "no"
+    },
+    "meal_deals": {
+      "name": "Kombo takliflar",
+      "many": "yes"
+    },
+    "upsells": {
+      "name": "Qoʻshimcha sotuvlar",
+      "many": "yes"
+    },
+    "walkup_orders": {
+      "name": "Oyna oldida berilgan buyurtmalar",
+      "many": "yes"
+    },
+    "online_ordering_pay_at_hatch": {
+      "name": "“Fudtrakda toʻlash” bilan buyurtma",
+      "many": "no"
+    },
+    "sold_out_toggle": {
+      "name": "“Tugadi” belgisi",
+      "many": "no"
+    },
+    "stock_countdown": {
+      "name": "Zaxirani hisoblash",
+      "many": "no"
+    },
+    "offline_protection": {
+      "name": "Oflayn buyurtma himoyasi",
+      "many": "no"
+    },
+    "online_payments": {
+      "name": "Onlayn toʻlovlar",
+      "many": "yes"
+    },
+    "advance_preordering": {
+      "name": "Oldindan buyurtma berish",
+      "many": "no"
+    },
+    "time_slot_selection": {
+      "name": "Mijozlar uchun vaqt oraliqlari",
+      "many": "yes"
+    },
+    "smart_batch_pacing": {
+      "name": "Oshxona quvvatini boshqarish",
+      "many": "no"
+    },
+    "auto_accept": {
+      "name": "Avtomatik qabul qilish",
+      "many": "no"
+    },
+    "instagram_messenger_replies": {
+      "name": "Messenger va Instagram avtojavoblari",
+      "many": "yes"
+    },
+    "branded_qr_code": {
+      "name": "Brendli QR-kodlar",
+      "many": "yes"
+    },
+    "advanced_reporting": {
+      "name": "Kengaytirilgan hisobotlar",
+      "many": "no"
+    },
+    "ticket_printing": {
+      "name": "Oshxona cheklarini chop etish",
+      "many": "no"
+    },
+    "multi_device_kds": {
+      "name": "Oshxonada bir nechta qurilmani sinxronlash",
+      "many": "no"
+    },
+    "cook_screen": {
+      "name": "Oshpaz ekrani",
+      "many": "no"
+    },
+    "whatsapp_replies": {
+      "name": "WhatsApp avtojavoblari",
+      "many": "yes"
+    },
+    "embed_schedule": {
+      "name": "Oʻz saytingizdagi jadval",
+      "many": "no"
+    },
+    "schedule_graphics": {
+      "name": "Ijtimoiy tarmoq postlari",
+      "many": "yes"
+    },
+    "event_types": {
+      "name": "Maxsus tadbir turlari",
+      "many": "yes"
+    },
+    "private_events": {
+      "name": "Shaxsiy tadbirlar",
+      "many": "yes"
+    },
+    "paperwork": {
+      "name": "Hujjatlar",
+      "many": "yes"
+    }
+  }
+}

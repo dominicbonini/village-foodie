@@ -1,0 +1,16 @@
+{
+  "takeConfirm": "Chaqiruv qurilmasi <b>{number}</b> band: <b>buyurtma #{holderId}</b>{hasName, select, yes { ({name})} other {}}. Uni <b>{hasTarget, select, yes {buyurtma #{targetId}} other {bu buyurtma}}</b> uchun olasizmi?",
+  "cancel": "Bekor qilish",
+  "take": "Chaqiruv qurilmasini olish: {number}",
+  "titleBlocking": "Buyurtma #{id} uchun chaqiruv qurilmasi berilsinmi?",
+  "title": "Chaqiruv qurilmasini tanlang",
+  "subtitle": "{hasTarget, select, yes {Buyurtma #{id}} other {Bu buyurtma}}{hasCurrent, select, yes { · hozirgi chaqiruv qurilmasi: {current}} other {}}",
+  "allTaken": "{n, plural, one {Chaqiruv qurilmasi band. Uni boshqa buyurtmadan olish uchun bosing.} other {Barcha {count} ta chaqiruv qurilmasi band. Birini boshqa buyurtmadan olish uchun bosing.}}",
+  "thisOrder": "Bu buyurtma",
+  "noBuzzer": "Chaqiruv qurilmasi yoʻq",
+  "done": "Tayyor",
+  "lostTitle": "Buyurtma #{id} uchun chaqiruv qurilmasi yoʻq",
+  "lostBody": "{hasName, select, yes {{name} — } other {}}siz oflayn boʻlganingizda boshqa buyurtma xuddi shu chaqiruv qurilmasini oldi. Mijozga boshqa chaqiruv qurilmasi bering.",
+  "dismiss": "Yopish",
+  "assign": "Biriktirish"
+}

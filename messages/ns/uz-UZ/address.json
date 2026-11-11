@@ -1,0 +1,58 @@
+{
+  "label": {
+    "street": "Manzil",
+    "postcode": "Pochta indeksi",
+    "zip": "ZIP kod",
+    "eircode": "Eircode",
+    "postalCode": "Pochta kodi",
+    "state": "Shtat",
+    "stateTerritory": "Shtat yoki hudud",
+    "province": "Provinsiya",
+    "county": "Graflik",
+    "prefecture": "Prefektura",
+    "emirate": "Amirlik",
+    "region": "Viloyat",
+    "area": "Hudud (qishloq, shaharcha yoki shahar)",
+    "townOrArea": "Shaharcha yoki hudud",
+    "city": "Shahar",
+    "suburb": "Tuman",
+    "townOrCity": "Shaharcha yoki shahar"
+  },
+  "short": {
+    "area": "Hudud",
+    "townOrArea": "Shaharcha yoki hudud",
+    "city": "Shahar",
+    "suburb": "Tuman",
+    "townOrCity": "Shaharcha yoki shahar"
+  },
+  "inSentence": {
+    "postcode": "pochta indeksi",
+    "zip": "ZIP kod",
+    "eircode": "Eircode",
+    "postalCode": "pochta kodi"
+  },
+  "withArticle": {
+    "postcode": "pochta indeksi",
+    "zip": "ZIP kod",
+    "eircode": "Eircode",
+    "postalCode": "pochta kodi"
+  },
+  "tradeLabel": {
+    "area": "Shaharcha yoki shahar",
+    "townOrArea": "Shaharcha yoki hudud",
+    "city": "Shahar",
+    "suburb": "Tuman",
+    "townOrCity": "Shaharcha yoki shahar"
+  },
+  "basedIn": {
+    "area": "Faoliyat yuritadigan shaharcha yoki shahringiz",
+    "townOrArea": "Faoliyat yuritadigan shaharcha yoki hududingiz",
+    "city": "Faoliyat yuritadigan shahringiz",
+    "suburb": "Faoliyat yuritadigan tumaningiz",
+    "townOrCity": "Faoliyat yuritadigan shaharcha yoki shahringiz"
+  },
+  "example": "masalan, {example}",
+  "customersSee": "Mijozlar koʻradi:",
+  "postalWarning": "Bu {article} formatiga oʻxshamaydi — masalan: {example}. Baribir saqlashingiz mumkin.",
+  "regionChoose": "Tanlang…"
+}
