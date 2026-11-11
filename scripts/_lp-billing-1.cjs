@@ -3,7 +3,7 @@
 // (switch off = every answer today's); this file lets every older "byte-identical since …" comparison take exactly billing-1's
 // committed edits back out of a file and still compare EVERY OTHER BYTE.
 //
-// HOW: billing-1's commits are the ones whose message starts "billing-1:". For a file they touched, their combined diff is
+// HOW: billing's commits are the ones whose message starts "billing-1:", "billing-2:" … (billing-2 widened it, 11 November 2026). For a file they touched, their combined diff is
 // reverse-applied (patch -R, no fuzz) to the file as it stands. If any OTHER commit touched the file between billing-1's first and
 // last commit, or the reverse patch does not apply exactly, asBefore THROWS — a stale anchor fails the comparison, never hides it.
 /* eslint-disable @typescript-eslint/no-require-imports -- a CommonJS harness module, like every scripts/*.cjs */
@@ -18,7 +18,7 @@ const git = args => execFileSync('git', args, { cwd: REPO, maxBuffer: 256e6, std
 /** True on a tree with billing-1 (its rules module exists). */
 const LANDED = fs.existsSync(path.join(REPO, 'lib/billing/rules.ts'))
 
-const COMMITS = LANDED ? git(['log', '--format=%H', '--grep=^billing-1:', '--reverse']).trim().split('\n').filter(Boolean) : []
+const COMMITS = LANDED ? git(['log', '--format=%H', '--grep=^billing-[0-9][0-9]*:', '--reverse']).trim().split('\n').filter(Boolean) : []
 /** Every file billing-1's commits touched. */
 const FILES = [...new Set(COMMITS.flatMap(c => git(['show', '--name-only', '--format=', c]).trim().split('\n').filter(Boolean)))]
 
