@@ -48,7 +48,13 @@ const json = f => JSON.parse(read(f))
     const bases = LOC.LANGUAGE_BASES
     const anyLoaded = () => bases.filter(l => R.loadedNamespaces(l).loaded.length)
     t(`after every catalog module has loaded (${NAMESPACES.length} namespaces): no non-English language's words are loaded`, anyLoaded().length === 0 && R.loadedLocaleFiles().length === 0, anyLoaded())
-    t('…each of the 28 languages is registered as a loader for every namespace it has', bases.length === 28 && bases.every(l => R.loadedNamespaces(l).waiting.length > 50))
+    // ⚠️ RE-PINNED (pricing-copy-2, 11 November 2026): languages-world-1 took LANGUAGE_BASES from 28 to 36 (more may follow), so the count is
+    // the live list's; and "every namespace it has" is now checked exactly — the waiting loaders ARE the catalog namespaces that have a
+    // messages/ns/<base>/<ns>.json — instead of the old "more than 50".
+    const hasNs = l => NAMESPACES.filter(ns => fs.existsSync(path.join(REPO, 'messages/ns', l, `${ns}.json`)))
+    const loaderGaps = bases.filter(l => hasNs(l).length === 0 || JSON.stringify(R.loadedNamespaces(l).waiting) !== JSON.stringify(hasNs(l)))
+    t(`…each of the ${bases.length} languages is registered as a loader for every namespace it has`, bases.length > 0 && loaderGaps.length === 0,   // ⚠️ RE-PINNED (pricing-copy-2, 11 November 2026): see above
+      loaderGaps.map(l => ({ l, missing: hasNs(l).filter(ns => !R.loadedNamespaces(l).waiting.includes(ns)), extra: R.loadedNamespaces(l).waiting.filter(ns => !hasNs(l).includes(ns)) })))
     R.namespaceMessages('de-DE', 'faq')
     t('asking for de-DE faq loads exactly that: de-DE has [faq], every other language nothing', JSON.stringify(R.loadedNamespaces('de-DE').loaded) === '["faq"]' && anyLoaded().join() === 'de-DE', { de: R.loadedNamespaces('de-DE').loaded, others: anyLoaded() })
     R.namespaceMessages('de-CH', 'landing')

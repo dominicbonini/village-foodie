@@ -10,7 +10,7 @@
 //   4 · the answers: each situation with known and unknown inputs; the wording per state; "none of the other products compared lists
 //       it" only when every other is a no; ties; strengths (never a never_competitor_strength feature); commission only with a
 //       marketplace; HatchGrab never named when its data says no; the price answers' volume, inclusions and the Unlimited wording
-//   5 · every language: the section's messages exist in all 28 language bases with en-GB's tokens, and name no card reader, till,
+//   5 · every language: the section's messages exist in every language base with en-GB's tokens, and name no card reader, till,
 //       card machine or payment terminal; the source never says "best overall", "the only", "doesn't have", "unlimited capacity"
 //   6 · the real page route (fixture data): the section above the table (compare-ux-1; it was below), "Nicht aufgeführt" in the table, no FAQPage/QAPage for it,
 //       the Markdown and JSON twins carry the same answers, at most four columns
@@ -214,7 +214,10 @@ const CARD_WORDS = require('./_compare-suits-1-words.cjs')
   const args = (els, out = new Set()) => { for (const e of els) { if (e.value && typeof e.value === 'string' && [1, 2, 3, 4, 5, 6].includes(e.type)) out.add(e.value)
     if (e.options) for (const o of Object.values(e.options)) args(o.value, out); if (e.children) args(e.children, out) } return out }
   const tokens = s => { try { return [...args(icu(s, { ignoreTag: true }))].sort().join() } catch (e) { return `PARSE ERROR ${e.message}` } }
-  t(`28 language bases (${LANGUAGE_BASES.length})`, LANGUAGE_BASES.length === 28)
+  // ⚠️ RE-PINNED (languages-world-1, 10 November 2026): the bases are lib/i18n/locales.ts's live LANGUAGE_BASES (36 then, more may
+  // follow), never a typed count — at least the 28 this was written for. "29 word lists" was en-GB + those 28: every base now needs
+  // its OWN list in scripts/_compare-suits-1-words.cjs (a base with none was silently checked against nothing).
+  t(`the language bases from lib/i18n/locales.ts (${LANGUAGE_BASES.length}), at least the 28 this was written for`, LANGUAGE_BASES.length >= 28)
   const missing = [], tokenDiff = [], cardHits = [], ascii = []
   for (const loc of ['en-GB', ...LANGUAGE_BASES]) {
     const m = JSON.parse(read(`messages/${loc}.json`)).comparisonSuits
@@ -232,9 +235,10 @@ const CARD_WORDS = require('./_compare-suits-1-words.cjs')
       if (/'/.test(v)) ascii.push(`${loc} ${k}`)
     }
   }
-  t('every key in en-GB and all 28 language bases', !missing.length, missing.slice(0, 12))
+  t(`every key in en-GB and all ${LANGUAGE_BASES.length} language bases`, !missing.length, missing.slice(0, 12))
   t('every translation keeps en-GB\'s tokens', !tokenDiff.length, tokenDiff.slice(0, 12))
-  t(`no card reader, card machine, till, payment terminal or POS in the section, in any language (${Object.keys(CARD_WORDS).filter(k => k !== 'NO_SPACES').length} word lists)`, !cardHits.length && Object.keys(CARD_WORDS).filter(k => k !== 'NO_SPACES').length === 29, cardHits.slice(0, 12))
+  const noWordList = ['en-GB', ...LANGUAGE_BASES].filter(l => !(CARD_WORDS[l] ?? CARD_WORDS[l.split('-')[0]] ?? []).length)
+  t(`no card reader, card machine, till, payment terminal or POS in the section, in any language (${Object.keys(CARD_WORDS).filter(k => k !== 'NO_SPACES').length} word lists; one for en-GB and each of the ${LANGUAGE_BASES.length} bases)`, !cardHits.length && !noWordList.length, noWordList.length ? { noWordList } : cardHits.slice(0, 12))
   t('no plain apostrophe (an ICU escape) in any language', !ascii.length, ascii.slice(0, 12))
   const enAll = Object.values(en).join(' \n ')
   t('the English never says "best overall", "the only", "doesn\'t have", "unlimited capacity" or "unlimited orders"; "best" only as "best fit among the products compared"',

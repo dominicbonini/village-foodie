@@ -13,7 +13,7 @@
 //       nothing changed; never an outreach template)
 //   6 · the real page route on fixtures: an auto-published competitor is public; an unchecked row is hidden publicly (an admin sees it,
 //       marked); a competitor without a website is never shown; "Report an error" opens the comparison-correction topic; the methodology
-//   7 · the source: the checker's post-run hook, the Admin route records an explicit Off, the contact topic in 29 languages, the cron
+//   7 · the source: the checker's post-run hook, the Admin route records an explicit Off, the contact topic in every language base, the cron
 /* eslint-disable @typescript-eslint/no-require-imports -- a CommonJS harness, like every scripts/*.cjs */
 'use strict'
 const fs = require('fs')
@@ -233,8 +233,12 @@ const read = f => fs.readFileSync(path.join(REPO, f), 'utf8')
   const route = read('app/api/admin/countries/comparison/route.ts')
   t('Admin › Countries: an explicit Off is recorded (admin_off) and other statuses lift it; AE can never be switched to auto-publish', /admin_off: off/.test(route) && /never published automatically/.test(route))
   t('the contact form has the "comparison" topic, chosen by ?topic=comparison', L.CONTACT_TOPICS.includes('comparison') && L.topicFromParam('comparison') === 'comparison' && L.topicFromParam('Cost Comparison') === 'question')
-  const langs = fs.readdirSync(path.join(REPO, 'messages')).filter(x => x.endsWith('.json')).map(x => JSON.parse(read(`messages/${x}`))).filter(m => m.contactPage?.form?.topics?.other)
-  t('…its words in every language base that has the contact form (29)', langs.length === 29 && langs.every(m => typeof m.contactPage.form.topics.comparison === 'string' && m.contactPage.form.topics.comparison.length > 3), langs.length)
+  // ⚠️ RE-PINNED (languages-world-1, 10 November 2026): "29" was en-GB + the 28 bases of the day. The files with the contact form must
+  // be exactly en-GB + lib/i18n/locales.ts's live LANGUAGE_BASES (36 then, more may follow), never a typed count.
+  const BASES = read('lib/i18n/locales.ts').match(/export const LANGUAGE_BASES[^=]*= \[([^\]]*)\]/)[1].match(/'([a-z]{2}-[A-Z]{2})'/g).map(x => x.slice(1, -1))
+  const langFiles = fs.readdirSync(path.join(REPO, 'messages')).filter(x => x.endsWith('.json')).map(x => [x.slice(0, -5), JSON.parse(read(`messages/${x}`))]).filter(([, m]) => m.contactPage?.form?.topics?.other)
+  const langs = langFiles.map(([, m]) => m), langNames = langFiles.map(([l]) => l).sort().join()
+  t(`…its words in every language base that has the contact form (${1 + BASES.length}: en-GB and the ${BASES.length} bases)`, BASES.length >= 28 && langNames === ['en-GB', ...BASES].sort().join() && langs.every(m => typeof m.contactPage.form.topics.comparison === 'string' && m.contactPage.form.topics.comparison.length > 3), { files: langFiles.map(([l]) => l), noComparisonTopic: langFiles.filter(([, m]) => !(typeof m.contactPage.form.topics.comparison === 'string' && m.contactPage.form.topics.comparison.length > 3)).map(([l]) => l) })
   t('the weekly summary is a cron, through the admin email path, never an outreach template', /"path": "\/api\/cron\/comparison-summary",\s*"schedule": "0 8 \* \* 1"/.test(read('vercel.json'))
     && /sendConfirmationEmail/.test(read('app/api/cron/comparison-summary/route.ts')) && !/outreach_templates/.test(read('app/api/cron/comparison-summary/route.ts') + read('lib/comparison-publish.ts') + read('lib/comparison-publish-run.ts')))
   t('newer check wins is proven in compare-suits-1 (re-pinned there, both directions)', /newer check wins/.test(read('scripts/compare-suits-1.cjs')))

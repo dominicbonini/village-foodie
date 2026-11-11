@@ -18,7 +18,7 @@
 //    9 · the organiser page: noindex, no-store, the CURRENT version shown, the expired/turned-off message, the view count;
 //   10 · one file and Download all (a valid ZIP);
 //   11 · deletion removes files and takes the document off live links; account deletion and the hard delete remove everything;
-//   12 · the plan gate (ON by default), the tab, the words in all 28 bases, the privacy paragraph and its drift check.
+//   12 · the plan gate (ON by default), the tab, the words in every language base, the privacy paragraph and its drift check.
 /* eslint-disable @typescript-eslint/no-require-imports -- a CommonJS harness, like every scripts/*.cjs */
 'use strict'
 const fs = require('fs')
@@ -411,7 +411,7 @@ const { fakeSupabase, MIGRATION, TYPE_ROWS, BYTES, STUBS } = require('./_paperwo
   }
 
   // ── 12 · gate, access, tab, words, privacy ────────────────────────────────────────────────────────────────────────
-  head('12 · the plan gate (ON by default), access, the tab, every word in 28 bases, the privacy paragraph')
+  head('12 · the plan gate (ON by default), access, the tab, every word in every language base, the privacy paragraph')
   {
     const plan = { key: 'payg', name: 'p', description: '', sortOrder: 1, isPublic: true, isInternal: false, isTrial: false, isSignupDefault: false, isExpiryFallback: true, isDemo: false, payAtHatchAllowed: true, active: true, includedVans: 1, trialMonths: null, isHighlighted: false, subtitle: null }
     const cat = sw => ({ plans: [plan, { ...plan, key: 'pro', isExpiryFallback: false }, { ...plan, key: 'trial', isTrial: true, isExpiryFallback: false, trialMonths: 1 }], prices: [], features: sw })
@@ -441,14 +441,16 @@ const { fakeSupabase, MIGRATION, TYPE_ROWS, BYTES, STUBS } = require('./_paperwo
     const BASES = read('lib/i18n/locales.ts').match(/export const LANGUAGE_BASES[^=]*= \[([^\]]*)\]/)[1].match(/'([a-z]{2}-[A-Z]{2})'/g).map(s => s.slice(1, -1))
     const get = (o, k) => k.split('.').reduce((x, p) => (x == null ? undefined : x[p]), o)
     const missing = BASES.map(l => [l, KEYS.filter(k => get(JSON.parse(read(`messages/${l}.json`)), k) == null)]).filter(([, m]) => m.length)
-    t(`every new string (${KEYS.length}) in en-GB and all ${BASES.length} bases`, BASES.length === 28 && KEYS.length >= 160 && !missing.length, missing.map(([l, m]) => `${l}: ${m.length} missing`))
+    // ⚠️ RE-PINNED (languages-world-1, 10 November 2026): the bases are lib/i18n/locales.ts's live LANGUAGE_BASES (36 then, more may
+    // follow), never a typed count — at least the 28 this was written for, every one of them checked.
+    t(`every new string (${KEYS.length}) in en-GB and all ${BASES.length} bases`, BASES.length >= 28 && KEYS.length >= 160 && !missing.length, missing.map(([l, m]) => `${l}: ${m.length} missing`))
     const structural = []
     for (const l of BASES) {
       let out = ''
       try { out = execFileSync('node', ['scripts/translation-check.cjs', '--locale', l], { cwd: REPO, encoding: 'utf8', stdio: ['ignore', 'pipe', 'pipe'] }) } catch (e) { out = String(e.stdout || '') }
       const m = /Structural: (\d+)/.exec(out); if (!m || m[1] !== '0') structural.push(`${l}: ${m ? m[1] : '?'}`)
     }
-    t('translation-check: structural 0 in all 28 (no missing key, valid ICU, the same placeholders and plural cases)', !structural.length, structural)
+    t(`translation-check: structural 0 in all ${BASES.length} (no missing key, valid ICU, the same placeholders and plural cases)`, !structural.length, structural)
     t('every back-translation written (docs/i18n/back)', BASES.every(l => { const b = JSON.parse(read(`docs/i18n/back/${l}.json`)); return KEYS.every(k => b[k] != null) }))
     const pp = read('content/legal/privacy-policy.md')
     t('the English privacy paragraph is there, in section 3, naming Google’s Gemini and expiring links', /\*\*Compliance documents\.\*\* If you keep your certificates[^\n]*Google's Gemini service, the same one that reads menus[^\n]*through links that expire, and we keep them until you delete them or close your account\./.test(pp)
@@ -456,7 +458,7 @@ const { fakeSupabase, MIGRATION, TYPE_ROWS, BYTES, STUBS } = require('./_paperwo
     t('PRIVACY_UPDATED moved with it (4 November 2026, the document\'s own line) and TERMS_VERSION with it', /PRIVACY_UPDATED = '4 November 2026'/.test(read('lib/legal.ts')) && /\*\*Last updated:\*\* 4 November 2026/.test(pp) && /TERMS_VERSION = '2026-11-04'/.test(read('lib/legal.ts')))
     const LT = require('./_legal-translations.cjs')
     const drift = BASES.map(l => [l, LT.compare('privacy-policy.md', read(`content/legal/${l}/privacy-policy.md`))]).filter(([, p]) => p.length)
-    t('the drift check: all 28 translations re-stamped against the new English and structurally equal', !drift.length, drift.map(([l, p]) => `${l}: ${p[0]}`))
+    t(`the drift check: all ${BASES.length} translations re-stamped against the new English and structurally equal`, !drift.length, drift.map(([l, p]) => `${l}: ${p[0]}`))
     t('…and each one has a new paragraph in section 3 (one more paragraph than before the change)', BASES.every(l => /Gemini/.test(read(`content/legal/${l}/privacy-policy.md`).split(/\n## 4\./)[0])))
     // ⚠️ RE-PINNED (features-list-1, 4 November 2026, docs/features-list-1-report.md): /features' table gained a "Documents and
     // reminders" row on purpose (its one `paperwork` mention in lib/feature-table.ts); still no landing page and no card bullet.

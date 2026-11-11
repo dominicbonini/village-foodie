@@ -27,7 +27,9 @@ const t = (name, ok, detail) => { if (ok) pass++; else { fail++; console.log(`  
 const head = s => console.log(`\n── ${s}`)
 const sha = s => crypto.createHash('sha256').update(String(s)).digest('hex')
 const read = f => fs.readFileSync(path.join(REPO, f), 'utf8')
-const atBase = f => { try { return execFileSync('git', ['show', `${BASE}:${require('./_moved-paths.cjs').pathAt(BASE, f)}`], { cwd: REPO, maxBuffer: 1 << 26 }).toString() } catch { return null } }
+// ⚠️ RE-PINNED (pricing-copy-2, 11 November 2026): git's stderr is not printed — a file absent at BASE is already null here (a NEW file,
+// which every caller handles), so its "fatal: path … exists on disk, but not in <commit>" line was only noise.
+const atBase = f => { try { return execFileSync('git', ['show', `${BASE}:${require('./_moved-paths.cjs').pathAt(BASE, f)}`], { cwd: REPO, maxBuffer: 1 << 26, stdio: ['ignore', 'pipe', 'ignore'] }).toString() } catch { return null } }
 
 // ── §1's views: the public truck page, as Next serves it, on each host ──
 const TRUCKS = {
@@ -101,7 +103,17 @@ if (process.argv[2] === 'capture') {
     && /export const TERMS_VERSION = '2026-11-03'/.test(legal) && /export const TERMS_UPDATED = '1 November 2026'/.test(legal) && T1.asBefore('lib/legal.ts', read('lib/legal.ts')) === atBase('lib/legal.ts'))
   const L = require('./_legal-translations.cjs')
   const BASES = /export const LANGUAGE_BASES[^=]*=\s*\[([^\]]*)\]/.exec(read('lib/i18n/locales.ts'))[1].match(/'[^']+'/g).map(x => x.slice(1, -1))
-  for (const l of BASES) {
+  // ⚠️ RE-PINNED (pricing-copy-2, 11 November 2026): languages-world-1 (and later language work) added language bases after tidy-1. tidy-1's
+  // set is the bases in lib/i18n/locales.ts at BASE (read from git, not a fixed list); a base added since had no translation at BASE, so
+  // its Privacy Policy is a NEW document: it must be absent at BASE and pass the drift check against today's English (which carries
+  // tidy-1's wording), the 30 days included — there is no "exactly two paragraphs changed" to measure for it.
+  const BASES_AT_BASE = /export const LANGUAGE_BASES[^=]*=\s*\[([^\]]*)\]/.exec(atBase('lib/i18n/locales.ts'))[1].match(/'[^']+'/g).map(x => x.slice(1, -1))
+  t(`28 language bases at ${BASE} (tidy-1's), all still bases (${BASES.length} today; each checked below)`, BASES_AT_BASE.length === 28 && BASES_AT_BASE.every(l => BASES.includes(l)), BASES_AT_BASE.filter(l => !BASES.includes(l)))   // ⚠️ RE-PINNED (pricing-copy-2, 11 November 2026)
+  for (const l of BASES.filter(x => !BASES_AT_BASE.includes(x))) {   // ⚠️ RE-PINNED (pricing-copy-2, 11 November 2026): the bases added since
+    const tr = read(`content/legal/${l}/privacy-policy.md`)
+    t(`${l} (added after tidy-1, no translation at ${BASE}): re-stamped, the drift check clean (the 30 days kept)`, atBase(`content/legal/${l}/privacy-policy.md`) === null && L.compare('privacy-policy.md', tr).length === 0 && /\b30\b/.test(tr), L.compare('privacy-policy.md', tr))
+  }
+  for (const l of BASES_AT_BASE) {   // ⚠️ RE-PINNED (pricing-copy-2, 11 November 2026): tidy-1's own 28
     const tr = read(`content/legal/${l}/privacy-policy.md`), old = atBase(`content/legal/${l}/privacy-policy.md`).split('\n')
     // ⚠️ RE-PINNED (paperwork-1, 4 November 2026): paperwork-1's own paragraph (section 3, compliance documents) is set aside by name.
     const changed = tr.split('\n').slice(1).filter(x => !old.includes(x) && !P1.isTranslationParagraph(tr, x))

@@ -193,18 +193,43 @@ if (mode === 'capture' || mode === 'compare') {
   const get = (o, p) => p.split('.').reduce((a, k) => (a && typeof a === 'object' ? a[k] : undefined), o)
   const files = fs.readdirSync(path.join(REPO, 'messages')).filter(f => /^[a-z]{2}-[A-Z]{2}\.json$/.test(f))
   const rows = []
-  for (const f of files) {
+  // ⚠️ RE-PINNED (pricing-copy-2, 11 November 2026): languages-world-1 (and later language work) added message files that did not exist at
+  // 7e1effa7^ (git ls-tree, read live — no fixed list). They have no "before" to equal, so they are not rows here; they are checked below.
+  const OFFLINE_KEYS = ['landing.does.offlineBody', 'featuresPage.detail.offline_protection']
+  const existedAt7e = new Set(git('ls-tree', '--name-only', '7e1effa7^', 'messages/').split('\n').map(p => p.replace(/^messages\//, '')).filter(Boolean))
+  const newFiles = files.filter(f => !existedAt7e.has(f))   // ⚠️ RE-PINNED (pricing-copy-2, 11 November 2026): absent at 7e1effa7^
+  for (const f of files.filter(f => existedAt7e.has(f))) {   // ⚠️ RE-PINNED (pricing-copy-2, 11 November 2026): only files that existed then
     const now = JSON.parse(read(`messages/${f}`)), old = JSON.parse(git('show', `7e1effa7^:messages/${f}`))
-    for (const k of ['landing.does.offlineBody', 'featuresPage.detail.offline_protection']) {
+    for (const k of OFFLINE_KEYS) {
       const o = get(old, k), n = get(now, k)
       if (o !== undefined || n !== undefined) rows.push({ f, k, ok: o === n })
     }
   }
   t(`every value is 7e1effa7^'s exactly (${rows.length} values: en-GB, the 28 bases, the en-US override)`, rows.length === 59 && rows.every(r => r.ok), rows.filter(r => !r.ok))
+  // ⚠️ RE-PINNED (pricing-copy-2, 11 November 2026): the files new since 7e1effa7^ — every language base among them (lib/i18n/locales.ts
+  // LANGUAGE_BASES) carries both offline values, and every offline value any new file sets is the put-back wording's shape: one sentence
+  // naming the iPhone, iPad and Android app (not the split-off offlineApps sentence, which no file may have — checked next).
+  const BASES_NOW = /export const LANGUAGE_BASES[^=]*=\s*\[([^\]]*)\]/.exec(read('lib/i18n/locales.ts'))[1].match(/'[^']+'/g).map(s => s.slice(1, -1))
+  const newBad = []
+  for (const f of newFiles) {
+    const d = JSON.parse(read(`messages/${f}`)), loc = f.replace(/\.json$/, '')
+    for (const k of OFFLINE_KEYS) {
+      const v = get(d, k)
+      if (v === undefined ? BASES_NOW.includes(loc) : !(typeof v === 'string' && ['iPhone', 'iPad', 'Android'].every(w => v.includes(w)))) newBad.push({ f, k, v: v === undefined ? 'missing in a language base' : v })
+    }
+  }
+  t(`the ${newFiles.length} message files new since 7e1effa7^: each language base among them has both offline values, and every offline value they set names the iPhone, iPad and Android app`, newFiles.length > 0 && !newBad.length, newBad)
   t('the en-GB words as briefed', get(JSON.parse(read('messages/en-GB.json')), 'landing.does.offlineBody') === 'If you lose signal, online ordering pauses automatically so customers can’t place orders you won’t see. Carry on taking orders with the iPhone, iPad and Android app.')
   t('no language has landing.does.offlineApps or featuresPage.offlineApps; no code appends them', files.every(f => { const d = JSON.parse(read(`messages/${f}`)); return get(d, 'landing.does.offlineApps') === undefined && get(d, 'featuresPage.offlineApps') === undefined })
     && (() => { try { return execFileSync('git', ['grep', '--untracked', '-l', 'offlineApps', '--', 'app', 'components', 'lib'], { cwd: REPO, encoding: 'utf8', stdio: ['ignore', 'pipe', 'ignore'] }).trim() === '' } catch (e) { return e.status === 1 } })())
-  t('copy-truth-1\'s trial line and add-van words are untouched', ['auth.signup.subtitle', 'demoGetStarted.freeMonth', 'manageSettings.vans.addConfirm'].every(k => files.every(f => JSON.stringify(get(JSON.parse(read(`messages/${f}`)), k)) === JSON.stringify(get(JSON.parse(git('show', `${BEFORE}:messages/${f}`)), k)))))
+  // ⚠️ RE-PINNED (pricing-copy-2, 11 November 2026): only the files that existed at BEFORE can be compared with it (git ls-tree, read live).
+  // The files added since (languages-world-1 and later) were not there for site-chrome-1 to touch; their wording is copy-truth-1's
+  // question (scripts/copy-truth-1.cjs reads every messages file) — here each language base among them must simply carry all three keys.
+  const CT1_KEYS = ['auth.signup.subtitle', 'demoGetStarted.freeMonth', 'manageSettings.vans.addConfirm']
+  const existedAtBefore = new Set(git('ls-tree', '--name-only', BEFORE, 'messages/').split('\n').map(p => p.replace(/^messages\//, '')).filter(Boolean))
+  t('copy-truth-1\'s trial line and add-van words are untouched', CT1_KEYS.every(k => files.filter(f => existedAtBefore.has(f)).every(f => JSON.stringify(get(JSON.parse(read(`messages/${f}`)), k)) === JSON.stringify(get(JSON.parse(git('show', `${BEFORE}:messages/${f}`)), k)))))
+  const newBaseMissing = files.filter(f => !existedAtBefore.has(f) && BASES_NOW.includes(f.replace(/\.json$/, ''))).flatMap(f => CT1_KEYS.filter(k => { const v = get(JSON.parse(read(`messages/${f}`)), k); return !(typeof v === 'string' && v.trim()) }).map(k => `${f} ${k}`))   // ⚠️ RE-PINNED (pricing-copy-2, 11 November 2026)
+  t('the language bases added since site-chrome-1 each carry the trial line and the add-van words', !newBaseMissing.length, newBaseMissing)   // ⚠️ RE-PINNED (pricing-copy-2, 11 November 2026)
   t('the rendered landing and /features say it (en-GB)', (await R.PAGES.landing('uk')).includes('<p>If you lose signal, online ordering pauses automatically so customers can’t place orders you won’t see. Carry on taking orders with the iPhone, iPad and Android app.</p>')
     && (await R.PAGES.features('uk')).includes('If you lose signal, online ordering pauses so customers can’t place orders you won’t see. The iPhone, iPad and Android app keeps you taking orders offline; the web dashboard needs a connection.'))
   t('MARKETING_COPY_UPDATED moved to 2026-11-05 (35.aj-8)', /export const MARKETING_COPY_UPDATED = '2026-11-05'/.test(read('lib/marketing-meta.ts')))

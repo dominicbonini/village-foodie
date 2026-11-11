@@ -3,7 +3,7 @@
 //   1 · the checks a translation must pass (fixtures): every {token} as often as in the English and none added, no typed digit,
 //       currency symbol or plan name, no paying-at-the-truck wording (English or the locale's own), a sane length; a refused text is
 //       stored 'failed' with its reason, never shown, and retried
-//   2 · which locales a run asks for: the 28 bases; the model-decided variants (a row only where the wording differs — left out → no
+//   2 · which locales a run asks for: every base (LANGUAGE_BASES — 28 then, read live since languages-world-1); the model-decided variants (a row only where the wording differs — left out → no
 //       row, an old one removed); de-CH derived from de-DE (ß → ss)
 //   3 · a translator run with a fake model: nothing stale → no call; the spend cap; the cost from the model's own prices
 //   4 · the freshness rule: an English edit hides that question in every other language until it is re-translated; English pages
@@ -13,9 +13,9 @@
 //   6 · English landing pages (GB, US, IE) and DE/FR/JP/AE with no translation byte-identical to HEAD (78e16437)
 //   7 · a dry run of the workflow's own script against fixtures: no model call, no network, nothing written; nothing stale → seconds
 //   8 · the workflow: hourly + manual, the competitor check's keyless login, no API key, the spend cap
-//   9 · Admin › FAQ: "✓ Translations 28/28 up to date" / "● Translating — within the hour (n/28)" / "✕ n failed" (reasons on hover) /
+//   9 · Admin › FAQ: "✓ Translations N/N up to date" / "● Translating — within the hour (n/N)" / "✕ n failed" (reasons on hover) /
 //       "○ Translates when published", the summary's languages and translations, Preview as in the country's own language
-//  10 · translation-check: 0 structural in all 28 bases (faq.phrases.* translated)
+//  10 · translation-check: 0 structural in every base (faq.phrases.* translated)
 //
 // §6's HEAD side is scripts/fixtures/faq-2-identity.json, written by THIS script in a worktree of 78e16437:
 //   (in <dir>) HG_KIT_CACHE_SUFFIX=faq2head node scripts/faq-2.cjs capture <this repo>/scripts/fixtures/faq-2-identity.json
@@ -112,6 +112,9 @@ const faqLd = html => { const m = /<script type="application\/ld\+json">([\s\S]*
     "export { translatorFor } from '@/lib/i18n/translator'",
     "export { LANGUAGE_BASES, LOCALES } from '@/lib/i18n/locales'",
   ].join('\n'))
+  // ⚠️ RE-PINNED (languages-world-1, 11 November 2026): "28" was the count of lib/i18n/locales.ts LANGUAGE_BASES when faq-2 was
+  // written; languages-world-1 added bases (and more may follow), so every count below is read from that live list — NB bases.
+  const NB = M.LANGUAGE_BASES.length
   const wf = WF.renderer(kit, 'faq2-wf-tables')
   const catalog = wf.catalog
   const ROWS = WF.rowsWith(WF.WORLD).map(r => ({ ...r, iosAppAvailable: r.countryCode === 'GB', androidAppAvailable: r.countryCode === 'GB' }))
@@ -175,19 +178,19 @@ const faqLd = html => { const m = /<script type="application\/ld\+json">([\s\S]*
   t('a title with a token is refused', /no live values in a title/.test(M.titleProblem('Pricing', 'Preise {pro.price}', de) || ''))
 
   head('2 · which locales a run asks for, and what it stores')
-  t(`28 language bases; model-decided variants: ${M.MODEL_VARIANTS.join(', ')}`, M.TRANSLATED_BASES.length === 28 && M.MODEL_VARIANTS.includes('en-US') && M.MODEL_VARIANTS.includes('es-MX') && !M.MODEL_VARIANTS.includes('de-CH') && !M.MODEL_VARIANTS.includes('de-LI') && !M.MODEL_VARIANTS.includes('en-GB'))
+  t(`${NB} language bases (every one in LANGUAGE_BASES); model-decided variants: ${M.MODEL_VARIANTS.join(', ')}`, NB > 0 && JSON.stringify(M.TRANSLATED_BASES) === JSON.stringify(M.LANGUAGE_BASES) && M.MODEL_VARIANTS.includes('en-US') && M.MODEL_VARIANTS.includes('es-MX') && !M.MODEL_VARIANTS.includes('de-CH') && !M.MODEL_VARIANTS.includes('de-LI') && !M.MODEL_VARIANTS.includes('en-GB'))
   t('de-CH is derived from de-DE (ß → ss); de-LI reads de-CH', JSON.stringify(M.DERIVED) === '{"de-CH":{"from":"de-DE","rule":"eszett"}}' && M.eszett('schließen') === 'schliessen')
   const ID4 = 'fa000002-0000-4000-8000-000000000004', ID1 = 'fa000002-0000-4000-8000-000000000001'
   const src4 = { kind: 'item', id: ID4, hash: hashOf(ID4) }
   const job0 = M.jobFor(src4, [])
-  t('never translated → a full job: every base and every model variant', job0.full && job0.locales.length === 28 + M.MODEL_VARIANTS.length)
+  t('never translated → a full job: every base and every model variant', job0.full && job0.locales.length === NB + M.MODEL_VARIANTS.length)
   const freshAll = M.TRANSLATED_BASES.map(l => ({ itemId: ID4, sectionId: null, locale: l, question: 'q', answer: 'a', answerSinglePlan: null, title: null, sourceHash: src4.hash, model: 'x', translatedAt: '', status: 'ok', reason: null }))
   t('every base fresh → nothing to do', M.jobFor(src4, freshAll) === null)
   const oneFailed = freshAll.map(r => (r.locale === 'ja-JP' ? { ...r, status: 'failed', reason: 'x' } : r))
   const j1 = M.jobFor(src4, oneFailed)
   t('one failed base → retried alone (not a full job)', j1 && !j1.full && JSON.stringify(j1.locales) === '["ja-JP"]', j1)
   const j2 = M.jobFor({ ...src4, hash: 'f'.repeat(64) }, freshAll)
-  t('the English changed (hash) → a full job again', j2 && j2.full && j2.locales.length === 28 + M.MODEL_VARIANTS.length)
+  t('the English changed (hash) → a full job again', j2 && j2.full && j2.locales.length === NB + M.MODEL_VARIANTS.length)
   const ctxOf = l => ({ locale: l, language: l, glossary: [], samples: [], rules: rules(l) })
   const job = { ...src4, locales: ['de-DE', 'fr-FR', 'ja-JP', 'es-MX', 'en-US'], full: true }
   const deRow = TR.rows.find(r => r.locale === 'de-DE' && r.id === ID4), frRow = TR.rows.find(r => r.locale === 'fr-FR' && r.id === ID4)
@@ -227,7 +230,7 @@ const faqLd = html => { const m = /<script type="application\/ld\+json">([\s\S]*
   }, { dryRun: false, maxUsd: 0.05 })
   const cost = (10000 * 2 + 5000 * 10 + 20000 * 0.1) / 1e6
   t(`one stale question → one call, its cost from the prices ($${cost.toFixed(4)}), logged`, calls === 1 && Math.abs(rep.usd - cost) < 1e-9 && lines.some(l => l.includes(`$${cost.toFixed(4)}`)), lines)
-  t('…its texts checked (the fake one-word answers are refused) and all 28 stored failed, each with its reason', written.length === 28 && written.every(r => r.status === 'failed' && /length|must appear/.test(r.reason)), written.slice(0, 2))
+  t(`…its texts checked (the fake one-word answers are refused) and all ${NB} stored failed, each with its reason`, written.length === NB && written.every(r => r.status === 'failed' && /length|must appear/.test(r.reason)), written.slice(0, 2))
   calls = 0
   const many = allFresh.filter(r => !r.itemId)   // every question unstarted
   const capLines = []
@@ -316,7 +319,9 @@ const faqLd = html => { const m = /<script type="application\/ld\+json">([\s\S]*
     const d1 = runDry(TRANSLATIONS())
     t('exit 0, with no login and no database variables in the environment', d1.status === 0, d1.stderr)
     t('it plans the work: 29 jobs (5 titles, 24 questions), DRY RUN, nothing called', /29 to translate \(5 section titles, 24 questions\)/.test(d1.stdout) && /DRY RUN: no model call, nothing written/.test(d1.stdout) && (d1.stdout.match(/would ask/g) || []).length === 29, d1.stdout.slice(0, 600))
-    t('the fixture\'s fresh German, French, Japanese and Arabic rows are not asked again (…0004: the 24 missing bases only — the English did not change)', /…0004 "Is there a contract\? Can I cancel anytime\?": would ask 24 locales \(retrying failed or missing\)/.test(d1.stdout), d1.stdout.split('\n').find(l => l.includes('…0004')))
+    // The fixture holds fresh …0004 rows for de-DE, fr-FR, ja-JP and ar-AE (scripts/fixtures/faq-2-translations.json): the rest are missing.
+    const fresh4 = new Set(TR.rows.filter(r => r.id === ID4 && M.LANGUAGE_BASES.includes(r.locale)).map(r => r.locale)).size
+    t(`the fixture's fresh German, French, Japanese and Arabic rows are not asked again (…0004: the ${NB - fresh4} missing bases only — the English did not change)`, fresh4 === 4 && new RegExp(`…0004 "Is there a contract\\? Can I cancel anytime\\?": would ask ${NB - fresh4} locales \\(retrying failed or missing\\)`).test(d1.stdout), d1.stdout.split('\n').find(l => l.includes('…0004')))
     const fresh = [...FIX.faq_items.filter(i => i.status === 'published'), ...FIX.faq_sections].flatMap(s => M.TRANSLATED_BASES.map(l => ({ item_id: s.title_en ? null : s.id, section_id: s.title_en ? s.id : null, locale: l, question: 'q', answer: 'a', answer_single_plan: null, title: 't', source_hash: hashOf(s.id), model: 'x', translated_at: 'now', status: 'ok', reason: null })))
     const d2 = runDry(fresh)
     t(`nothing stale → it ends in seconds (${d2.ms} ms) with "Nothing to translate … No model call."`, d2.status === 0 && d2.ms < 10000 && /Nothing to translate: 24 published questions and 5 sections, every translation up to date\. No model call\./.test(d2.stdout), d2.stdout)
@@ -347,23 +352,23 @@ const faqLd = html => { const m = /<script type="application\/ld\+json">([\s\S]*
   const list = await M.listFaq({ sections: async () => sectionRows, items: async () => itemsRows, world: async () => fw,
     translations: async () => trRows.map(r => ({ itemId: r.item_id, sectionId: r.section_id, locale: r.locale, question: r.question, answer: r.answer, answerSinglePlan: r.answer_single_plan, title: r.title, sourceHash: r.source_hash, model: r.model, translatedAt: r.translated_at, status: r.status, reason: r.reason })) })
   const summaries = list.data.translations
-  t('listFaq: each question\'s summary against its current English (…0008: 28/28; …0001: 4/28; …0012: 1 failed)', summaries['fa000002-0000-4000-8000-000000000008'].fresh === 28 && summaries[ID1].fresh === 4 && summaries['fa000002-0000-4000-8000-000000000012'].failed.length === 1)
+  t(`listFaq: each question's summary against its current English (…0008: ${NB}/${NB}; …0001: 4/${NB}; …0012: 1 failed)`, summaries['fa000002-0000-4000-8000-000000000008'].fresh === NB && summaries['fa000002-0000-4000-8000-000000000008'].total === NB && summaries[ID1].fresh === 4 && summaries[ID1].total === NB && summaries['fa000002-0000-4000-8000-000000000012'].failed.length === 1)
   const tabItems = itemsRows.map(i => (i.id.endsWith('0010') ? i : { ...i, status: 'published' }))
   globalThis.__ms = { sections: sectionRows, items: tabItems, world: fw, translations: summaries, previewCode: 'DE' }
   let page = ''
   try { page = kit.renderStatic(kit.h(T.FaqTab)) } finally { delete globalThis.__ms }
   const plain = ents(page.replace(/<[^>]+>/g, ' ')).replace(/\s+/g, ' ')
-  t('"✓ Translations 28/28 up to date" (…0008)', plain.includes('✓ Translations 28/28 up to date'))
-  t('"● Translating — within the hour (4/28)" (…0001, …0004)', plain.includes('● Translating — within the hour (4/28)'))
+  t(`"✓ Translations ${NB}/${NB} up to date" (…0008)`, plain.includes(`✓ Translations ${NB}/${NB} up to date`))
+  t(`"● Translating — within the hour (4/${NB})" (…0001, …0004)`, plain.includes(`● Translating — within the hour (4/${NB})`))
   t('"✕ 1 failed", the reason on hover', plain.includes('✕ 1 failed') && /title="ja-JP: answer: a typed number &quot;3&quot;"/.test(page))
   t('"○ Translates when published" (the draft …0010)', plain.includes('○ Translates when published'))
-  t('the summary: "44 countries · 28 languages", and the translations\' state', /🌍 44 countries · 28 languages/.test(plain) && /✓ 24 published · ● \d+ translating · ✕ 1 with failed translations/.test(plain), plain.slice(0, 400))
+  t(`the summary: "44 countries · ${NB} languages", and the translations' state`, plain.includes(`🌍 44 countries · ${NB} languages`) && /✓ 24 published · ● \d+ translating · ✕ 1 with failed translations/.test(plain), plain.slice(0, 400))
   t('Preview as names each country\'s language in its own words ("Germany · Deutsch", "Brazil · Português", "Japan · 日本語")', plain.includes('Germany · Deutsch') && plain.includes('Brazil · Português') && plain.includes('Japan · 日本語'))
   t('the German preview shows the German translation …', plain.includes('Germany preview: Gibt es einen Vertrag?') || plain.includes('Germany preview: Es gibt keinen Vertrag'))
   t('… and a question with no up-to-date German says it is hidden there', plain.includes('no up-to-date Deutsch translation yet, so it is hidden on Germany’s page'))
   t('Admin text stays English (35.an-20): the indicators and labels', !/Übersetz|Vorschau/.test(plain.replace(/Germany preview:.*?(?=Germany preview:|$)/g, '')))
 
-  head('10 · translation-check: 0 structural in all 28 bases')
+  head(`10 · translation-check: 0 structural in all ${NB} bases`)
   for (const l of M.LANGUAGE_BASES) {
     let o
     try { o = execFileSync('node', ['scripts/translation-check.cjs', '--locale', l, '--back', `docs/i18n/back/${l}.json`], { cwd: REPO }).toString() } catch (e) { o = String(e.stdout) }

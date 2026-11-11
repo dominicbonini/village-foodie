@@ -9,7 +9,7 @@
 //   4 · an Admin publish / unpublish (the real route) refreshes the English landing page; nothing else does inside the cache's minute
 //   5 · DE, FR, BR and JP landing pages and every comparison page (and its twins) byte-identical to HEAD, with the FAQ rows present;
 //       GB and US landing pages byte-identical to HEAD when nothing is published
-//   6 · translation-check: landing.faq.title in en-GB and all 28 bases, structural unchanged (the three faq.phrases keys)
+//   6 · translation-check: landing.faq.title in en-GB and every language base (28 then; LANGUAGE_BASES, read live), structural unchanged (the three faq.phrases keys)
 //
 // The FAQ rows are scripts/fixtures/faq-3-rows.json (read live, read-only, after 20261059 ran). §5's HEAD side is
 // scripts/fixtures/faq-3-identity.json, written by THIS script in a worktree of the commit before faq-3's code:
@@ -151,7 +151,7 @@ const sectionOrder = html => [...html.matchAll(/<section(?: id="([a-z-]+)")?(?: 
     "export { checkItem, bannedWordingIn, BANNED_WORDING } from '@/lib/faq/check'",
     "export { serviceFaqStore } from '@/lib/admin/faq-store'",
     "export { faqAction } from '@/lib/admin/faq-actions'",
-    "export { isEnglish } from '@/lib/i18n/locales'",
+    "export { isEnglish, LANGUAGE_BASES } from '@/lib/i18n/locales'",   // ⚠️ RE-PINNED (languages-world-1): LANGUAGE_BASES for §6
     "export { getCountrySettings } from '@/lib/country-settings'",
     "export { COUNTRY_PATH_SEGMENTS } from '@/lib/marketing-country'",
   ].join('\n'), { stubs: { '@/lib/auth/admin': ADMIN_STUB } })
@@ -345,13 +345,15 @@ const sectionOrder = html => [...html.matchAll(/<section(?: id="([a-z-]+)")?(?: 
   // ⚠️ RE-PINNED (seo-geo-2 B4): /llms.txt was rebuilt later, on purpose — faq-3's own commits (a92f983a..78e16437) did not touch it.
   t('/llms.txt\'s builder is untouched by faq-3', execFileSync('git', ['diff', '--stat', 'a92f983a', '78e16437', '--', 'lib/llms-text.ts', 'app/llms.txt'], { cwd: REPO }).toString().trim() === '')
 
-  head('6 · translation-check: landing.faq.title in en-GB and all 28 bases')
+  head('6 · translation-check: landing.faq.title in en-GB and every language base')
   const en = JSON.parse(fs.readFileSync(path.join(REPO, 'messages/en-GB.json'), 'utf8'))
   // ⚠️ RE-PINNED (faq-4): beside the title, the FAQ page's <title> and description (faq-4 §8 checks them in every base).
   t('en-GB landing.faq = { title: "Frequently asked questions", metaTitle, metaDescription } (no sub-line, Dominic)', en.landing.faq.title === 'Frequently asked questions' && JSON.stringify(Object.keys(en.landing.faq)) === '["title","metaTitle","metaDescription"]', en.landing.faq)
   const src2 = fs.readFileSync(path.join(REPO, 'lib/i18n/locales.ts'), 'utf8')
   const BASES = /export const LANGUAGE_BASES[^=]*=\s*\[([^\]]*)\]/.exec(src2)[1].match(/'[^']+'/g).map(s => s.slice(1, -1))
-  t('28 language bases', BASES.length === 28, BASES.length)
+  // ⚠️ RE-PINNED (languages-world-1, 11 November 2026): "28" was LANGUAGE_BASES's length then; languages-world-1 added bases (more may
+  // follow). The check now is that the list read from the source is the whole live list (so the loop below covers every base).
+  t(`${BASES.length} language bases — the list read from lib/i18n/locales.ts is the whole of LANGUAGE_BASES`, BASES.length > 0 && new Set(BASES).size === BASES.length && JSON.stringify(BASES) === JSON.stringify(M.LANGUAGE_BASES), { read: BASES.length, live: M.LANGUAGE_BASES.length })
   for (const l of BASES) {
     const m = JSON.parse(fs.readFileSync(path.join(REPO, `messages/${l}.json`), 'utf8'))
     // It exits 1 while any structural line remains (the three English-only faq.phrases keys, by Dominic's decision) — read its report.

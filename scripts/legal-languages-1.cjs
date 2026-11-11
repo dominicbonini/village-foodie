@@ -51,6 +51,10 @@ const text = s => String(s ?? '').replace(/<style[\s\S]*?<\/style>/g, ' ').repla
 const COUNTRY_OF = { 'fr-FR': 'FR', 'de-DE': 'DE', 'es-ES': 'ES', 'it-IT': 'IT', 'pt-PT': 'PT', 'nl-NL': 'NL', 'sv-SE': 'SE', 'da-DK': 'DK', 'nb-NO': 'NO',
   'pl-PL': 'PL', 'cs-CZ': 'CZ', 'hu-HU': 'HU', 'sk-SK': 'SK', 'ro-RO': 'RO', 'hr-HR': 'HR', 'sl-SI': 'SI', 'fi-FI': 'FI', 'et-EE': 'EE', 'lv-LV': 'LV',
   'lt-LT': 'LT', 'el-GR': 'GR', 'bg-BG': 'BG', 'pt-BR': 'BR', 'ms-MY': 'MY', 'ja-JP': 'JP', 'zh-HK': 'HK', 'th-TH': 'TH', 'ar-AE': 'AE' }
+// ⚠️ RE-PINNED (pricing-copy-2, 11 November 2026): the map above stops at the 28 bases it was written for; languages-world-1 added 8
+// more (LANGUAGE_BASES is read live), so COUNTRY_OF[id-ID] was undefined, the page got no segment and legalPlace 404'd. A base's country
+// is its locale's region — true of every entry above, and checked here so a base whose region is not its country fails loudly.
+for (const l of BASES) if (!COUNTRY_OF[l]) COUNTRY_OF[l] = l.slice(3)   // ⚠️ RE-PINNED (pricing-copy-2, 11 November 2026): see above
 const REGIONAL = [['de-AT', 'AT', 'de-DE'], ['de-CH', 'CH', 'de-DE'], ['nl-BE', 'BE', 'nl-NL'], ['el-CY', 'CY', 'el-GR'], ['fr-LU', 'LU', 'fr-FR'], ['es-MX', 'MX', 'es-ES']]
 
 ;(async () => {
@@ -139,9 +143,9 @@ const REGIONAL = [['de-AT', 'AT', 'de-DE'], ['de-CH', 'CH', 'de-DE'], ['nl-BE', 
   const english = Object.fromEntries(L.DOCS.map(f => [f, L.englishDate(f)]))
   const FILE = { privacy: 'privacy-policy.md', terms: 'terms-and-conditions.md', 'country-terms': 'country-specific-terms.md' }
   const T = await kit.bundle('ll1-msg', "export { translatorFor } from '@/lib/i18n/translator'\nimport '@/lib/i18n/catalog/legalChrome'")
-  const checkPage = async (locale, cc, base) => {
+  const checkPage = async (locale, cc, base, rows = allOn) => {   // ⚠️ RE-PINNED (pricing-copy-2, 11 November 2026): rows for a not-yet-launched country (below)
     for (const doc of ['privacy', 'terms', 'country-terms']) {
-      const r = await renderLegal(doc, cc)
+      const r = await renderLegal(doc, cc, rows)   // ⚠️ RE-PINNED (pricing-copy-2, 11 November 2026): see checkPage
       const seg = SEG[cc], tr = T.translatorFor(locale, 'legalChrome')
       const note = text(String(tr.raw('translationNote')).replace(/<\/?link>/g, ''))
       const date = PAGE[doc].localLegalDate(english[FILE[doc]], locale)
@@ -164,7 +168,22 @@ const REGIONAL = [['de-AT', 'AT', 'de-DE'], ['de-CH', 'CH', 'de-DE'], ['nl-BE', 
         ok && metaOk, r.redirectedTo ?? { note: squash(text(html)).includes(squash(note)), date: text(html).includes(date), heading: text(html).includes(text(firstHeading)), meta: r.meta?.title, canonical: r.meta?.alternates?.canonical })
     }
   }
-  for (const locale of BASES) await checkPage(locale, COUNTRY_OF[locale], locale)
+  // ⚠️ RE-PINNED (pricing-copy-2, 11 November 2026): languages-world-1's 8 bases (tr-TR, ko-KR, zh-TW, id-ID, vi-VN, he-IL, is-IS, sr-RS)
+  // have no country_settings row yet (docs/languages-world-1-report.md: "No country was added or switched on"). Every base's country must
+  // have a URL segment. A base whose country has no row: (1) today its translated address redirects to the English page — the gate,
+  // proved; (2) its translation is then rendered with that country's row switched on (a clone of Japan's with the country, name and
+  // locale changed), so the files themselves are checked exactly like every launched language's, ready for the day the row is added.
+  const noSeg = BASES.filter(l => !SEG[COUNTRY_OF[l]])
+  t(`every language base's country has a URL segment (${BASES.length} bases)`, noSeg.length === 0, noSeg.map(l => `${l} → ${COUNTRY_OF[l]}`))   // ⚠️ RE-PINNED (pricing-copy-2, 11 November 2026)
+  const unlaunched = BASES.filter(l => SEG[COUNTRY_OF[l]] && !allOn.some(r => r.countryCode === COUNTRY_OF[l]))
+  if (unlaunched.length) {
+    const gated = []
+    for (const l of unlaunched) for (const doc of ['privacy', 'terms', 'country-terms']) { const r = await renderLegal(doc, COUNTRY_OF[l]); if (r.redirectedTo !== `/${doc}`) gated.push(`${l} ${doc} → ${r.redirectedTo}`) }
+    t(`the ${unlaunched.length} bases with no country row yet (${unlaunched.join(', ')}): /<segment>/<doc> redirects to the English page, every document`, gated.length === 0, gated)   // ⚠️ RE-PINNED (pricing-copy-2, 11 November 2026)
+  }
+  const JP = allOn.find(r => r.countryCode === 'JP')
+  const withRow = l => [...allOn, { ...JP, countryCode: COUNTRY_OF[l], name: new Intl.DisplayNames('en', { type: 'region' }).of(COUNTRY_OF[l]), shortName: null, locale: l, enabled: true, updatedBy: 'legal-languages-1 harness (not a real row)' }]
+  for (const locale of BASES) await checkPage(locale, COUNTRY_OF[locale], locale, unlaunched.includes(locale) ? withRow(locale) : allOn)   // ⚠️ RE-PINNED (pricing-copy-2, 11 November 2026): see above
   for (const [locale, cc, base] of REGIONAL) await checkPage(locale, cc, base)
   for (const cc of ['GB', 'US', 'IE', 'SG']) {
     const r = await renderLegal('privacy', cc)

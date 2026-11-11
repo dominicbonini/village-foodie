@@ -414,7 +414,9 @@ const STUBS = {
   const enFlat = flat(en)
   const toks = s => (String(s).match(/\{[a-z]+\}/g) || []).sort().join()
   const bad12 = BASES.filter(l => { const d = JSON.parse(read(`messages/${l}.json`)).emailReview; if (!d) return true; const f = Object.fromEntries(flat(d)); return enFlat.some(([k, v]) => !f[k] || toks(f[k]) !== toks(v) || f[k] === v && !/^(Google|HatchGrab)/.test(v)) })
-  t(`en-GB and all ${BASES.length} bases: the 12 strings, the same {truck} / {url} tokens, translated`, BASES.length === 28 && enFlat.length === 12 && !bad12.length, bad12)
+  // ⚠️ RE-PINNED (languages-world-1, 10 November 2026): the bases are lib/i18n/locales.ts's live LANGUAGE_BASES (36 then, more may
+  // follow), never a typed count — at least the 28 this was written for, every one of them checked.
+  t(`en-GB and all ${BASES.length} bases: the 12 strings, the same {truck} / {url} tokens, translated`, BASES.length >= 28 && enFlat.length === 12 && !bad12.length, bad12)
   const back = BASES.filter(l => { const b = JSON.parse(read(`docs/i18n/back/${l}.json`)); return enFlat.some(([k]) => !b[`emailReview.${k}`]) })
   t('every base has its back-translations', !back.length, back)
   t('en-US differs only where US English does ("anymore")', JSON.stringify(JSON.parse(read('messages/en-US.json')).emailReview) === JSON.stringify({ unsubscribed: { body: '{truck} won’t send you review requests anymore.' } }))

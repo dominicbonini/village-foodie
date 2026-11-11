@@ -9,7 +9,7 @@
 //     Documents follows its plan switch (`paperwork`), the other two have none; no Advanced reporting row; the
 //     `advanced_reporting` plan feature itself untouched.
 // 2 · /uk/features and /de/features render the three rows (ticked on every plan) with their descriptions, and no Advanced
-//     reporting row; the words exist in en-GB and all 28 bases, en-US / es-MX only where the wording differs.
+//     reporting row; the words exist in en-GB and every language base, en-US / es-MX only where the wording differs.
 // 3 · MARKETING_COPY_UPDATED moved to 2026-11-04 (35.aj-8); it is read by the sitemap only.
 /* eslint-disable @typescript-eslint/no-require-imports -- a CommonJS harness, like every scripts/*.cjs */
 'use strict'
@@ -98,7 +98,9 @@ if (mode === 'capture' || mode === 'compare') {
   const BASES = read('lib/i18n/locales.ts').match(/export const LANGUAGE_BASES[^=]*= \[([^\]]*)\]/)[1].match(/'([a-z]{2}-[A-Z]{2})'/g).map(s => s.slice(1, -1))
   const has = (d, id) => d.planFeatures?.row?.[id]?.name && d.featuresPage?.detail?.[id]
   const missing = ['en-GB', ...BASES].filter(l => { const d = JSON.parse(read(`messages/${l}.json`)); return !NEW.every(id => has(d, id)) || d.planFeatures.row.advanced_reporting || d.featuresPage.detail.advanced_reporting })
-  t(`the three names and descriptions in en-GB and all ${BASES.length} bases; Advanced reporting's words gone from every one`, BASES.length === 28 && !missing.length, missing)
+  // ⚠️ RE-PINNED (languages-world-1, 10 November 2026): the bases are lib/i18n/locales.ts's live LANGUAGE_BASES (36 then, more may
+  // follow), never a typed count — at least the 28 this was written for, every one of them checked.
+  t(`the three names and descriptions in en-GB and all ${BASES.length} bases; Advanced reporting's words gone from every one`, BASES.length >= 28 && !missing.length, missing)
   t('the English as briefed', en.planFeatures.row.documents_reminders.name === 'Documents and reminders' && en.planFeatures.row.profit_per_event.name === 'Profit per event' && en.planFeatures.row.accountant_reports.name === 'Reports for your accountant'
     && en.featuresPage.detail.documents_reminders.startsWith('Save your certificates in one place, such as food hygiene, insurance and gas safety.') && en.featuresPage.detail.profit_per_event === 'Add what each dish costs you and see what you actually made at every event, not just your takings.'
     && en.featuresPage.detail.accountant_reports === 'Sales, tax and refunds for any month, quarter or tax year, ready to download for your accountant.')

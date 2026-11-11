@@ -19,7 +19,7 @@
 //    9 · the cost never reaches a customer surface: only lib/accounts/costs-server.ts names the table, only the Manage route
 //        imports it, and the public menu API's answer has no cost in it with a cost row in the database;
 //   10 · Pizzeria Gusto's order paths byte-identical to the tree before this work, and upsert_item untouched;
-//   11 · the words: every new string in en-GB and all 28 bases, translation-check structural 0, the English variants'
+//   11 · the words: every new string in en-GB and every language base, translation-check structural 0, the English variants'
 //        "Pay at the truck", and the Manage screens read them.
 /* eslint-disable @typescript-eslint/no-require-imports -- a CommonJS harness, like every scripts/*.cjs */
 'use strict'
@@ -354,7 +354,7 @@ const stripComments = s => s.replace(/--.*$/gm, '')
   }
 
   // ── 11 · the words ────────────────────────────────────────────────────────────────────────────────────────────────────
-  head('11 · the words — en-GB, the English variants, all 28 bases, translation-check')
+  head('11 · the words — en-GB, the English variants, every language base, translation-check')
   {
     const en = JSON.parse(read('messages/en-GB.json'))
     const KEYS = []
@@ -365,14 +365,16 @@ const stripComments = s => s.replace(/--.*$/gm, '')
     const BASES = read('lib/i18n/locales.ts').match(/export const LANGUAGE_BASES[^=]*= \[([^\]]*)\]/)[1].match(/'([a-z]{2}-[A-Z]{2})'/g).map(s => s.slice(1, -1))
     const get = (o, k) => k.split('.').reduce((x, p) => (x == null ? undefined : x[p]), o)
     const missing = BASES.map(l => [l, KEYS.filter(k => get(JSON.parse(read(`messages/${l}.json`)), k) == null)]).filter(([, m]) => m.length)
-    t(`every new string (${KEYS.length}) in en-GB and all ${BASES.length} bases`, BASES.length === 28 && KEYS.length === 55 && !missing.length, missing.map(([l, m]) => `${l}: ${m.length} missing`))
+    // ⚠️ RE-PINNED (languages-world-1, 10 November 2026): the bases are lib/i18n/locales.ts's live LANGUAGE_BASES (36 then, more may
+    // follow), never a typed count — at least the 28 this was written for, every one of them checked.
+    t(`every new string (${KEYS.length}) in en-GB and all ${BASES.length} bases`, BASES.length >= 28 && KEYS.length === 55 && !missing.length, missing.map(([l, m]) => `${l}: ${m.length} missing`))
     const structural = []
     for (const l of BASES) {
       let out = ''
       try { out = execFileSync('node', ['scripts/translation-check.cjs', '--locale', l], { cwd: REPO, encoding: 'utf8', stdio: ['ignore', 'pipe', 'pipe'] }) } catch (e) { out = String(e.stdout || '') }
       const m = /Structural: (\d+)/.exec(out); if (!m || m[1] !== '0') structural.push(`${l}: ${m ? m[1] : '?'}`)
     }
-    t('translation-check: structural 0 in all 28', !structural.length, structural)
+    t(`translation-check: structural 0 in all ${BASES.length}`, !structural.length, structural)
     t('every back-translation written (docs/i18n/back)', BASES.every(l => { const b = JSON.parse(read(`docs/i18n/back/${l}.json`)); return KEYS.every(k => b[k] != null) }), BASES.filter(l => { const b = JSON.parse(read(`docs/i18n/back/${l}.json`)); return !KEYS.every(k => b[k] != null) }))
     const pay = l => get(JSON.parse(read(`messages/${l}.json`)), 'manageReports.accounts.payAtTruck')
     t('en-GB "Pay at Hatch"; en-US, en-IE, en-AU, en-NZ and en-SG "Pay at the truck" (35.ak-5)', pay('en-GB') === 'Pay at Hatch' && ['en-US', 'en-IE', 'en-AU', 'en-NZ', 'en-SG'].every(l => pay(l) === 'Pay at the truck'))

@@ -39,7 +39,9 @@ const t = (name, ok, detail) => { if (ok) pass++; else { fail++; console.log(`  
 const head = s => console.log(`\n── ${s}`)
 const sha = s => crypto.createHash('sha256').update(String(s)).digest('hex')
 const read = f => fs.readFileSync(path.join(REPO, f), 'utf8')
-const atBase = f => { try { return execFileSync('git', ['show', `${BASE}:${require('./_moved-paths.cjs').pathAt(BASE, f)}`], { cwd: REPO, maxBuffer: 1 << 26 }).toString() } catch { return null } }
+// ⚠️ RE-PINNED (pricing-copy-2, 11 November 2026): git's stderr is not printed — a file absent at BASE is already null here (a NEW file,
+// which every caller handles), so its "fatal: path … exists on disk, but not in <commit>" line was only noise.
+const atBase = f => { try { return execFileSync('git', ['show', `${BASE}:${require('./_moved-paths.cjs').pathAt(BASE, f)}`], { cwd: REPO, maxBuffer: 1 << 26, stdio: ['ignore', 'pipe', 'ignore'] }).toString() } catch { return null } }
 
 // ── §6's set: Village Foodie's /contact, every search its links send (rendered identically at HEAD by `capture`) ──
 const VF_SEARCHES = ['', 'topic=General%20Enquiry', 'topic=Add%20Business&truck=Pizza%20Gusto', 'topic=ClaimVenue&venue=The%20Plough%20Inn', 'topic=Report%20Issue', 'topic=Cost%20Comparison']
@@ -70,6 +72,21 @@ if (process.argv[2] === 'capture') {
 const ents = s => s.replace(/&#x27;|&#39;/g, "'").replace(/&quot;/g, '"').replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&amp;/g, '&')
 const LOCALES_FILE = read('lib/i18n/locales.ts')
 const BASES = /export const LANGUAGE_BASES[^=]*=\s*\[([^\]]*)\]/.exec(LOCALES_FILE)[1].match(/'[^']+'/g).map(s => s.slice(1, -1))
+// ⚠️ RE-PINNED (pricing-copy-2, 11 November 2026): languages-world-1 (and later language work) added language bases after contact-1. The
+// "28" is contact-1's set — the bases in lib/i18n/locales.ts at BASE (read from git, not a fixed list); every base today is still checked.
+const BASES_AT_BASE = /export const LANGUAGE_BASES[^=]*=\s*\[([^\]]*)\]/.exec(atBase('lib/i18n/locales.ts'))[1].match(/'[^']+'/g).map(s => s.slice(1, -1))
+// ⚠️ RE-PINNED (pricing-copy-2, 11 November 2026): §6's anchors for the later work. LOCALES_AT_BASE: every locale at BASE (git, not a list).
+const LOCALES_AT_BASE = /export const LOCALES[^=]*=\s*\[([^\]]*)\]/.exec(atBase('lib/i18n/locales.ts'))[1].match(/'[^']+'/g).map(s => s.slice(1, -1))
+// LATER_KEY_CHANGES: a split file's named keys changed on purpose by a named workstream — its commits found by their message prefix, as
+// scripts/_lp-pricing-copy-1.cjs finds its own; touched() is the set of files those commits changed (git show --name-only).
+const commitsOf = prefix => execFileSync('git', ['log', '--format=%H', `--grep=^${prefix}:`, '--', 'messages/ns'], { cwd: REPO, encoding: 'utf8' }).split('\n').filter(Boolean)
+const touchedBy = commits => { let s = null; return () => s || (s = new Set(commits.flatMap(c => execFileSync('git', ['show', '--name-only', '--format=', c], { cwd: REPO, encoding: 'utf8', maxBuffer: 1 << 26 }).split('\n').filter(Boolean)))) }
+const PC1_MOD = require('./_lp-pricing-copy-1.cjs')
+const LATER_KEY_CHANGES = [
+  ...[...new Set(PC1_MOD.KEYS.map(k => k.split('.')[0]))].map(ns => ({ by: 'pricing-copy-1', ns, keys: PC1_MOD.KEYS.filter(k => k.startsWith(ns + '.')).map(k => k.slice(ns.length + 1)), touched: touchedBy(PC1_MOD.COMMITS) })),
+  { by: 'pricing-copy-2', ns: 'planTable', keys: ['pay.fee'], touched: touchedBy(commitsOf('pricing-copy-2')) },
+  { by: 'languages-world-1', ns: 'provisionContent', keys: ['standardCategories', 'demoEventName'], touched: touchedBy(commitsOf('languages-world-1')) },
+]
 const flat = (o, p = '', out = {}) => { for (const [k, v] of Object.entries(o ?? {})) { const kk = p ? `${p}.${k}` : k; if (typeof v === 'string') out[kk] = v; else flat(v, kk, out) } return out }
 
 ;(async () => {
@@ -394,7 +411,19 @@ const flat = (o, p = '', out = {}) => { for (const [k, v] of Object.entries(o ??
     // the Japanese landingNav split file passes when taking exactly that out gives back BASE's bytes (scripts/_lp-jp-nav-1.cjs).
     const JN = require('./_lp-jp-nav-1.cjs')
     const jpNavOnly = f => f === 'messages/ns/ja-JP/landingNav.json' && JN.noBreak(nowOf(f)) === atBase(f)
-    const moved = files.filter(f => !(PF1.LANDED && PF1.NEW_FILES.includes(f)) && atBase(f) !== nowOf(f) && !T1_FILES.includes(f) && !(FL1.LANDED && FL1.nsSameApartFromRows(f, atBase(f), nowOf(f))) && !jpNavOnly(f))
+    // ⚠️ RE-PINNED (pricing-copy-2, 11 November 2026): these pages bundle every locale's split message files. (1) A locale added since BASE
+    // (languages-world-1 and later — not in BASE's lib/i18n/locales.ts LOCALES, read from git) brings split files that did not exist at
+    // BASE: NEW files, never one of contact-1's, so they are set aside when absent at BASE (the rendered Village Foodie views above stay
+    // byte-identical). (2) Three later wording changes to split files, each set aside by its exact keys and only in files its own commit
+    // touched (git show --name-only), the rest of the file still byte-for-byte BASE's: pricing-copy-1 (compare.json's two fee lines,
+    // scripts/_lp-pricing-copy-1.cjs KEYS), pricing-copy-2 29c11653 (planTable.json's pay.fee) and languages-world-1 6baad30f
+    // (provisionContent.json's standardCategories and demoEventName).
+    const newLocaleFile = f => { const m = /^messages\/ns\/([A-Za-z-]+)\//.exec(f); return !!m && !LOCALES_AT_BASE.includes(m[1]) && atBase(f) === null }
+    const keyRepinned = f => { const m = /^messages\/ns\/[A-Za-z-]+\/([A-Za-z]+)\.json$/.exec(f), b = atBase(f); if (!m || b === null) return false
+      const rp = LATER_KEY_CHANGES.filter(x => x.ns === m[1] && x.touched().has(f)); if (!rp.length) return false
+      const strip = s => { const o = JSON.parse(s); for (const x of rp) for (const k of x.keys) { const p = k.split('.'), last = p.pop(), at = p.reduce((a, q) => (a && typeof a === 'object' ? a[q] : undefined), o); if (at && typeof at === 'object') delete at[last] } return JSON.stringify(o) }
+      return strip(b) === strip(nowOf(f)) }
+    const moved = files.filter(f => !(PF1.LANDED && PF1.NEW_FILES.includes(f)) && atBase(f) !== nowOf(f) && !T1_FILES.includes(f) && !(FL1.LANDED && FL1.nsSameApartFromRows(f, atBase(f), nowOf(f))) && !jpNavOnly(f) && !newLocaleFile(f) && !keyRepinned(f))
     t(`${entry}: all ${files.length} source files it bundles are byte-identical to ${BASE} — so is every byte it serves`, files.length > 20 && moved.length === 0, moved)
   }
   // ⚠️ RE-PINNED (tidy-1): Footer and TruckClient changed later (tidy-1's `newsletter` / `tally`); their links did not.
@@ -416,7 +445,8 @@ const flat = (o, p = '', out = {}) => { for (const [k, v] of Object.entries(o ??
   t(`${FORM_KEYS.length} form keys`, FORM_KEYS.length === 31)   // ⚠️ RE-PINNED (compare-autopublish-1): + form.topics.comparison
   t('English variants only where the wording truly differs: en-US none (its old "fill out the form" heading gone); es-MX three Mexican sentences', !('form' in (JSON.parse(read('messages/en-US.json')).contactPage || {})) && !('formHeading' in JSON.parse(read('messages/en-US.json')).contactPage)
     && JSON.stringify(Object.keys(flat(JSON.parse(read('messages/es-MX.json')).contactPage)).sort()) === JSON.stringify(['form.errors.failed', 'form.errors.rateLimited', 'form.thanksTitle']))
-  t('28 language bases', BASES.length === 28)
+  // ⚠️ RE-PINNED (pricing-copy-2, 11 November 2026): 28 bases at BASE (contact-1's), and every one of them still a base today.
+  t(`28 language bases at ${BASE} (contact-1's), all still bases (${BASES.length} today; each checked below)`, BASES_AT_BASE.length === 28 && BASES_AT_BASE.every(l => BASES.includes(l)), BASES_AT_BASE.filter(l => !BASES.includes(l)))
   for (const l of BASES) {
     const W = flat(JSON.parse(read(`messages/${l}.json`)).contactPage)
     let out
@@ -444,6 +474,13 @@ const flat = (o, p = '', out = {}) => { for (const [k, v] of Object.entries(o ??
     const sec5 = tr.slice(tr.indexOf('\n## 5.'), tr.indexOf('\n## 6.'))
     const probs = L.compare('privacy-policy.md', tr)
     const old = atBase(`content/legal/${l}/privacy-policy.md`)
+    // ⚠️ RE-PINNED (pricing-copy-2, 11 November 2026): a base added after contact-1 (not in BASES_AT_BASE) had no translation at BASE or at
+    // 6c29c2e2, so there is no "only change" to measure: it is a NEW document, and must pass the drift check against today's English with
+    // the paragraph (Brevo, 24) as the last paragraph of section 5 — the same shape the 28 were re-stamped to.
+    if (!BASES_AT_BASE.includes(l)) {
+      t(`${l} (added after contact-1, no translation at ${BASE}): the drift check clean, the paragraph (Brevo, 24) at the end of section 5`, old === null && !probs.length && sec5.includes('Brevo') && /\b24\b/.test(sec5) && /\*\*[^*\n]+\*\*\n\n[^\n]+\n\n---$/.test(sec5.trimEnd()), { existedAtBase: old !== null, probs })
+      continue
+    }
     // ⚠️ RE-PINNED (tidy-1, 3 November 2026): the lines tidy-1 changed later (the demo section's two paragraphs, in every language) are
     // not contact-1's — they are the lines that differ from the same translation at 6c29c2e2, the commit before tidy-1.
     const beforeT1 = execFileSync('git', ['show', `6c29c2e2:content/legal/${l}/privacy-policy.md`], { cwd: REPO }).toString().split('\n')

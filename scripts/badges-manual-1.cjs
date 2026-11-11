@@ -37,12 +37,27 @@ const sha = b => crypto.createHash('sha256').update(b).digest('hex')
   const LOCALES = ['en-GB', ...M.LANGUAGE_BASES]
   const markup = (locale, apps = { ios: true, android: true }) => kit.renderStatic(kit.h(M.StoreBadges, { className: 'foot-apps', linkClassName: 'foot-badge', locale, countryCode: locale === 'en-GB' ? 'GB' : locale.slice(3), apps }))
 
-  head('1 · the files: Google\'s own full-bleed SVG in 27 languages, zh-HK\'s PNG with its margin recorded')
+  // ⚠️ RE-PINNED (pricing-copy-2, 11 November 2026): the language count is the live LANGUAGE_BASES (languages-world-1 added 8 bases
+  // and their badges after this harness was written), not a hard-coded 27 — every base has exactly one Google entry, zh-HK the only PNG.
+  head(`1 · the files: Google's own full-bleed SVG in ${M.LANGUAGE_BASES.length - 1} languages, zh-HK's PNG with its margin recorded`)
   const g = MAN.files.filter(f => f.vendor === 'google')
   const svg = g.filter(f => f.file.endsWith('.svg')), png = g.filter(f => f.file.endsWith('.png'))
-  t('27 SVGs and one PNG (zh-HK) — every one byte-for-byte as recorded', svg.length === 27 && png.length === 1 && png[0].locale === 'zh-HK'
-    && g.every(f => { const b = fs.readFileSync(path.join(REPO, 'public', f.file)); return b.length === f.bytes && sha(b) === f.sha256 }))
-  t('…each SVG from Google\'s Partner Marketing Hub, its original filename kept in the manifest, downloaded 2026-11-08', svg.every(f => f.source.startsWith('https://partnermarketinghub.withgoogle.com/brands/google-play/') && /^GetItOnGooglePlay_Badge_(Web|Print)_color_/.test(f.title) && f.downloaded === '2026-11-08'))
+  const gLocales = g.map(f => f.locale).sort()   // ⚠️ RE-PINNED (pricing-copy-2, 11 November 2026): one entry per live language base, no more, no fewer
+  t(`${M.LANGUAGE_BASES.length - 1} SVGs and one PNG (zh-HK) — one per language base, every one byte-for-byte as recorded`, svg.length === M.LANGUAGE_BASES.length - 1 && png.length === 1 && png[0].locale === 'zh-HK'   // ⚠️ RE-PINNED (pricing-copy-2, 11 November 2026): count from LANGUAGE_BASES
+    && JSON.stringify(gLocales) === JSON.stringify([...M.LANGUAGE_BASES].sort())   // ⚠️ RE-PINNED (pricing-copy-2, 11 November 2026): the manifest's locales ARE the bases
+    && g.every(f => { const b = fs.readFileSync(path.join(REPO, 'public', f.file)); return b.length === f.bytes && sha(b) === f.sha256 }), { svg: svg.length, bases: M.LANGUAGE_BASES.length, missing: M.LANGUAGE_BASES.filter(l => !gLocales.includes(l)), extra: gLocales.filter(l => !M.LANGUAGE_BASES.includes(l)) })
+  // ⚠️ RE-PINNED (pricing-copy-2, 11 November 2026): the 27 badges-manual-1 downloaded stay pinned to 2026-11-08 (a frozen historical
+  // list, not a live one). A badge added later (languages-world-1's 8 on 2026-11-10) must carry a later date, not after today, and be
+  // named — locale and that date, "10 November 2026" — in a workstream note ("$…") in the manifest itself: its provenance recorded, not assumed.
+  const BM1 = ['fr-FR', 'de-DE', 'es-ES', 'it-IT', 'pt-PT', 'nl-NL', 'sv-SE', 'da-DK', 'nb-NO', 'pl-PL', 'cs-CZ', 'hu-HU', 'sk-SK', 'ro-RO', 'hr-HR', 'sl-SI', 'fi-FI', 'et-EE', 'lv-LV', 'lt-LT', 'el-GR', 'bg-BG', 'pt-BR', 'ms-MY', 'ja-JP', 'th-TH', 'ar-AE']
+  const NOTES = Object.entries(MAN).filter(([k, v]) => k.startsWith('$') && k !== '$why' && typeof v === 'string').map(([, v]) => v)
+  const longDate = d => new Date(d + 'T00:00:00Z').toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric', timeZone: 'UTC' })
+  const today = new Date().toISOString().slice(0, 10)
+  const datedOk = f => BM1.includes(f.locale) ? f.downloaded === '2026-11-08'
+    : /^\d{4}-\d{2}-\d{2}$/.test(f.downloaded ?? '') && f.downloaded > '2026-11-08' && f.downloaded <= today && NOTES.some(n => n.includes(f.locale) && n.includes(longDate(f.downloaded)))
+  t('…each SVG from Google\'s Partner Marketing Hub, its original filename kept in the manifest, downloaded 2026-11-08 (badges-manual-1\'s 27) or on a later date its workstream\'s manifest note records',   // ⚠️ RE-PINNED (pricing-copy-2, 11 November 2026): see above
+    BM1.every(l => svg.some(f => f.locale === l)) && svg.every(f => f.source.startsWith('https://partnermarketinghub.withgoogle.com/brands/google-play/') && /^GetItOnGooglePlay_Badge_(Web|Print)_color_/.test(f.title) && datedOk(f)),
+    svg.filter(f => !datedOk(f)).map(f => `${f.locale} ${f.downloaded}`))
   t('…no script, no foreignObject, no external reference in any SVG (they are served as <img> in any case)', svg.every(f => !/<script|foreignObject|href="http|url\(http|@import/.test(read(`public${f.file}`))))
   t('no old PNG left beside its SVG', fs.readdirSync(path.join(REPO, 'public/badges/google')).filter(x => x.endsWith('.png')).join() === 'zh-HK.png')
   t('lib/store-badge-files.ts: the SVGs at their own viewBox, zh-HK with inset 29/29 (of 250)', svg.every(f => { const e = M.GOOGLE_BADGES[f.locale]; return e.src === f.file && e.width === f.width && e.height === f.height && !e.inset })

@@ -34,7 +34,12 @@ const SEC = 'Secretaría Anticorrupción y Buen Gobierno'
 const text = s => String(s ?? '').replace(/<[^>]+>/g, ' ').replace(/&#x27;|&#39;/g, "'").replace(/&amp;/g, '&').replace(/\s+/g, ' ')
 
 // A paragraph at the same place in a translation as in the English: its section's index and its offset in that section.
-const locate = s => { const ps = s.split(/\n{2,}/); let sec = -1; return { ps, idx: ps.map(p => (/^## /.test(p) ? ++sec : sec)) } }
+// ⚠️ RE-PINNED (pricing-copy-2, 11 November 2026): a heading line starts a new block even with no blank line before it — the renderer's own
+// rule (lib/legal-markdown.tsx: a paragraph ends at a line starting "#"). languages-world-1's 8 country-specific-terms translations put
+// "## <EEA and Switzerland>" straight under France's Contact line, so splitting on blank lines alone merged that heading into the paragraph
+// above, every later section read one heading short, and "Mexico's paragraph" was looked up in Japan's. The paragraph is still found at the
+// same section and offset as the English one; nothing else is accepted.
+const locate = s => { const ps = s.split(/\n{2,}|\n(?=#{1,6} )/); let sec = -1; return { ps, idx: ps.map(p => (/^## /.test(p) ? ++sec : sec)) } }   // ⚠️ RE-PINNED (pricing-copy-2, 11 November 2026): see above
 const placeOf = (file, start) => {
   const E = locate(read(`content/legal/${file}`)); const i = E.ps.findIndex(p => p.startsWith(start))
   if (i < 0) throw new Error(`no English paragraph starting ${start}`)

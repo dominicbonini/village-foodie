@@ -78,6 +78,7 @@ async function identityViews(tag) {
     "export * from '@/lib/faq/feedback'",
     "export { faqAction, listFaq, asPatch } from '@/lib/admin/faq-actions'",
     "export { mapCountryRow } from '@/lib/country-settings'",
+    "export { LANGUAGE_BASES } from '@/lib/i18n/locales'",   // ⚠️ RE-PINNED (languages-world-1): §5's language count, read live
   ].join('\n'))
   const catalog = WF.CATALOG()
   const rows = WF.rowsWith(WF.WORLD)
@@ -265,7 +266,10 @@ async function identityViews(tag) {
   t('the page renders: heading, Preview as, + Section, + Question, Copy feedback for Claude (n)', /FAQ/.test(plain) && plain.includes('Preview as:') && plain.includes('+ Section') && plain.includes('+ Question') && plain.includes(`Copy feedback for Claude (${L.openNotes(tabItems)})`) && L.openNotes(tabItems) === 10, plain.slice(0, 300))
   // ⚠️ RE-PINNED (faq-3): the seed's …0007 and …0010 now fail the check too (the paying-at-the-truck wording) — 3, not 1.
   // ⚠️ RE-PINNED (faq-2): the first chip names the languages, and the published chip the translations' state (none here).
-  t('the summary: 44 countries · 28 languages · 1 published (translating) · 3 questions need an answer for some countries (faq-3: …0007 and …0010 by their wording)', plain.includes('44 countries · 28 languages') && plain.includes('✓ 1 published · ● 1 translating') && plain.includes('3 questions need an answer for some countries'))
+  // ⚠️ RE-PINNED (languages-world-1, 11 November 2026): "28 languages" was lib/i18n/locales.ts LANGUAGE_BASES's length then; it is read
+  // from that live list now (languages-world-1 added bases, and more may follow) — here and in the indicator's "(0/N)" below.
+  const NB = L.LANGUAGE_BASES.length
+  t(`the summary: 44 countries · ${NB} languages · 1 published (translating) · 3 questions need an answer for some countries (faq-3: …0007 and …0010 by their wording)`, NB > 0 && plain.includes(`44 countries · ${NB} languages`) && plain.includes('✓ 1 published · ● 1 translating') && plain.includes('3 questions need an answer for some countries'))
   t('five sections with Rename · ↑ ↓ · Delete', (page.match(/>Rename</g) || []).length === 5)
   t('the single-plan answer under its computed label', plain.includes('Where only Unlimited is offered (5 countries)'))
   t('green "✓ Reads correctly in all 44 countries", and "… where it shows" for Show in', plain.includes('✓ Reads correctly in all 44 countries') && plain.includes('✓ Reads correctly in all 39 countries where it shows'))
@@ -275,7 +279,7 @@ async function identityViews(tag) {
   t('tokens drawn highlighted in the answers at rest', /<code class="[^"]*font-mono[^"]*text-orange-700[^"]*">\{payg\.name\}<\/code>/.test(page))
   t('Draft / Published labels, "New" and "Edited <date>"', plain.includes('Published') && plain.includes('Draft') && plain.includes('New') && plain.includes('Edited 1 Nov'))
   // ⚠️ RE-PINNED (faq-2): the indicators are here now — scripts/faq-2.cjs §9 proves each one.
-  t('the translation indicators (faq-2): the published question translating, the drafts "Translates when published"', /● Translating — within the hour \(0\/28\)/.test(plain) && /○ Translates when published/.test(plain))
+  t('the translation indicators (faq-2): the published question translating, the drafts "Translates when published"', plain.includes(`● Translating — within the hour (0/${NB})`) && /○ Translates when published/.test(plain))
 
   // ══ 6 ══════════════════════════════════════════════════════════════════════════════════════════════════════════════
   head('6 · the migration: security, columns and no new app column')
