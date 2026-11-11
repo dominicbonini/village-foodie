@@ -8,7 +8,7 @@
 //   3 · item 5: choosing a plan during the trial — stored, nothing charged, the trial line and notice C name it, the trial-end charge
 //       is on it, trucks.plan moves to it after the end; no choice = the country's trial-end plan, as today
 //   4 · the plan-end fix: an upgrade after an ended trial takes effect (trial_expires_at cleared), as does a held downgrade on the 1st
-//   5 · the hourly retry's timing (a fake processor): only when Stripe has no retry scheduled, from the day after, 08:00, once a day
+//   5 · the hourly retry's timing (a fake processor): only when the payment processor has no retry scheduled, from the day after, 08:00, once a day
 //   6 · every language base carries the new words; Gusto-shaped trucks (not billing_test, switch off) see nothing new
 /* eslint-disable @typescript-eslint/no-require-imports -- a CommonJS harness, like every scripts/*.cjs */
 'use strict'
@@ -188,7 +188,7 @@ const CATALOG = { plans: PLANS, prices: PRICES, features: [] }
   }
 
   // ══ 5 ═════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
-  head('5 · the hourly retry (Stripe does retry — this only acts when Stripe has nothing scheduled)')
+  head('5 · the hourly retry (the processor does retry — this only acts when the processor has nothing scheduled)')
   {
     const d = world({ trialEnd: null, tbx: VISA }); d.trucks[0].plan = 'pro'
     const store = S.memoryBillingStore(d)
@@ -197,7 +197,7 @@ const CATALOG = { plans: PLANS, prices: PRICES, features: [] }
     d.invoices.push({ id: 'r1', chargeId: 'c-r1', truckId: 'trial', period: '2027-03-01', currency: 'GBP', amountMinor: 2900, livemode: false, stripeInvoiceId: inv.id, status: 'failed', dueAt: '2027-03-01T08:00:00Z', attemptCount: 1, lastError: 'x', hostedInvoiceUrl: null, createdAt: '2027-03-01T08:00:00Z', finalizedAt: '2027-03-01T08:00:00Z', paidAt: null, lateFeeMinor: null, replacedStripeInvoiceId: null, firstFailedAt: '2027-03-01T10:00:00Z', invoicePdfUrl: null })
     const at = async iso => (await E.retryUnpaidInvoices(store, proc, CATALOG, { truckId: 'trial', now: new Date(iso), by: 'h' }))[0]?.outcome
     proc.invoices[inv.id].nextPaymentAttempt = '2027-03-03T10:00:00Z'
-    t('Stripe has a retry scheduled → left to Stripe', (await at('2027-03-02T09:00:00Z')) === 'waiting_for_stripe')
+    t('the processor has a retry scheduled → left to the processor', (await at('2027-03-02T09:00:00Z')) === 'waiting_for_stripe')
     proc.invoices[inv.id].nextPaymentAttempt = null
     t('nothing scheduled: not on the failure day', (await at('2027-03-01T20:00:00Z')) === 'not_due')
     t('…not before 08:00 truck time the next day', (await at('2027-03-02T07:59:00Z')) === 'not_due')
