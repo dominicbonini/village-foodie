@@ -1,0 +1,18 @@
+{
+  "meta": {
+    "privacyTitle": "Құпиялылық саясаты — HatchGrab",
+    "privacyDescription": "HatchGrab Ltd жеке деректерді қалай жинайды және пайдаланады.",
+    "termsTitle": "Қызмет көрсету шарттары — HatchGrab",
+    "termsDescription": "HatchGrab пайдалану шарттары.",
+    "countryTermsTitle": "Елге қатысты шарттар — HatchGrab",
+    "countryTermsDescription": "Кейбір елдерде HatchGrab үшін қолданылатын қосымша ережелер."
+  },
+  "homeLabel": "HatchGrab басты беті",
+  "privacy": "Құпиялылық",
+  "terms": "Шарттар",
+  "countryTerms": "Ел шарттары",
+  "contact": "Байланыс",
+  "lastUpdated": "Соңғы жаңарту: {date}",
+  "questions": "Сұрақтарыңыз бар ма? <link>Бізге жазыңыз</link> — бізде шын адамдар жұмыс істейді.",
+  "translationNote": "Бұл — аударма. Егер ол <link>ағылшынша нұсқадан</link> өзгеше болса, ағылшынша нұсқа қолданылады."
+}

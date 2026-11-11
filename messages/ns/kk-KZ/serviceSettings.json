@@ -1,0 +1,59 @@
+{
+  "labels": {
+    "collection_interval_mins": "Алып кету уақыттары",
+    "takes_cash": "Қолма-қол ақша қабылдайсыз ба?",
+    "offline_protection": "Тапсырыстарды желісіз қорғау",
+    "buzzer_prompt": "Пейджер беруді еске салу"
+  },
+  "typeFollowsVanTitle": "Әр фургонның әдеттегі баптауы бойынша",
+  "sameSettingsAllVansLabel": "Барлық фургонға бірдей баптаулар",
+  "sameSettingsAllVansHeader": "Барлық фургон",
+  "sameSettingsConfirm": "1-фургонның баптауларын барлық фургонға көшіру керек пе? Бұл 1-фургонның барлық фургон баптауын көшіреді — Баптаулардағы «1-фургонмен бірдей» сияқты. Ас үй өткізу қабілетінің өз қосқышы бар.",
+  "eventTypesFooterStandard": "«Стандартты» — әдеттегі баптауыңыз. Оны осында өзгертсеңіз, Баптауларда да өзгереді.",
+  "eventTypesFooterOneEvent": "Баптауды тек бір іс-шара үшін өзгерту үшін сол іс-шараның басқару тақтасын пайдаланыңыз.",
+  "eventTypesSubtitle": "Өзгерістер бірден сақталады.",
+  "matchStandardLabel": "«Стандартты» бойынша",
+  "matchStandardConfirm": "Бұл түрдің барлық баптауын «Стандартты» күйіне қайтару керек пе? Осында өзгерткеніңіздің бәрі өшіріледі.",
+  "priceLabels": {
+    "price_change_on": "Бағаларды өзгерту",
+    "price_mode": "Бағаны өзгерту тәсілі",
+    "price_amount": "Сома",
+    "price_rounding": "Дөңгелектеу",
+    "item_prices": "Позиция бағалары"
+  },
+  "priceMode": {
+    "add_amount": "+ {symbol}",
+    "add_pct": "+ %",
+    "sub_amount": "− {symbol}",
+    "sub_pct": "− %",
+    "none": "Әр бағаны өзім белгілеймін"
+  },
+  "priceRounding": {
+    "none": "Жоқ",
+    "nearest_1": "{symbol}1 дәлдікпен",
+    "up_1": "Әрқашан жоғары қарай дөңгелектеу"
+  },
+  "pricesStandardCell": "Мәзірдегі бағаларыңыз",
+  "pricesTruckWideTitle": "Бағаларыңыз барлық фургонда бірдей",
+  "pricesMenuCell": "Мәзір",
+  "pricesTypeOffCell": "Мәзір бағалары",
+  "itemPricesShow": "Бағаларды көрсету",
+  "itemPricesHide": "Бағаларды жасыру",
+  "priceItemsHeading": "Әр позицияның бағасын белгілеңіз",
+  "priceItemsOpen": "Әр позицияның бағасын көру не өзгерту ›",
+  "priceItemsClose": "Позиция бағаларын жасыру ⌃",
+  "ownPriceCount": "{n, plural, one {{count} позицияның өз бағасы бар} other {{count} позицияның өз бағасы бар}}",
+  "priceTypeHint": "Өз бағаңызды енгізу үшін бағаны басыңыз.",
+  "pricesLiveNotice": "Бұл іс-шара қазір жүріп жатыр. Жаңа тапсырыстар жаңа бағалармен беріледі. Бұрын берілген тапсырыстардың бағасы өзгермейді.",
+  "placeTypeHelper": "Осы орынды таңдаған сайын «Іс-шара қосу» осы түрді таңдайды.",
+  "postPictureStandardNote": "Мұндағы іс-шара посттары стандартты дизайныңызды пайдаланады.",
+  "eventItemsCardDescription": "Тек осы іс-шараға арналған бағалар, позиция лимиттері және қолжетімділік. Өзгерістер бірден күшіне енеді.",
+  "eventPriceColumnLabel": "Баға",
+  "eventPriceOwnNote": "{hasType, select, yes {{type} {price} · осы іс-шара} other {мәзір {price} · осы іс-шара}}",
+  "eventPriceEdit": "✎ Бағаларды өзгерту",
+  "eventPriceCancel": "Бас тарту",
+  "eventPriceSave": "Бағаларды сақтау",
+  "eventPriceEditNote": "Бағалар тек осы іс-шара үшін өзгертілуде. Сақтағанша позиция лимиттері мен қолжетімділік құлыпталған.",
+  "eventPriceLiveNote": "Жүріп жатыр: жаңа тапсырыстар жаңа бағалармен беріледі.",
+  "offlineWhenOfflineLabel": "Желіден тыс кезде"
+}

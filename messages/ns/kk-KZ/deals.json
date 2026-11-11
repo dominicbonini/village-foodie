@@ -1,0 +1,17 @@
+{
+  "back": "← Артқа",
+  "title": "Комбоны қолдану",
+  "save": "Үнем: {amount}",
+  "selectItems": "Әр орынға тағам таңдаңыз",
+  "choose": "Таңдаңыз: {category}…",
+  "inYourBasket": "── Себетіңізде ──",
+  "basketUnit": "{name}{withMods, select, yes { (+ {mods})} other {}} (себетте){state, select, used { — комбоға қосылған} taken { — басқа орынға таңдалған} other {}}",
+  "addNew": "── Жаңасын қосу ──",
+  "itemWithPrice": "{name} {price}",
+  "ruleHint": "· {rule, select, requiredOne {Міндетті · біреуін таңдаңыз} required {Міндетті} other {Біреуін таңдаңыз}}{unmet, select, yes { (міндетті)} other {}}",
+  "notePlaceholder": "Ескертпе қосыңыз, мысалы, пиязсыз (міндетті емес)",
+  "backButton": "Артқа",
+  "cancel": "Бас тарту",
+  "chooseRequired": "Міндетті нұсқаларды таңдаңыз",
+  "apply": "Комбоны қолдану · {amount}"
+}

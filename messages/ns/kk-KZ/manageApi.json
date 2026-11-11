@@ -1,0 +1,10 @@
+{
+  "vanFallback": "Фургон",
+  "eventsFeed": {
+    "today": "Бүгін · {date}",
+    "tomorrow": "Ертең · {date}"
+  },
+  "privacyNotSaved": "Іс-шара белсенді, бірақ оның құпиялылық баптауы сақталмады.",
+  "stockWarning": "«{category}» санатында қолжетімді позиция жоқ",
+  "uncategorised": "Санатсыз"
+}

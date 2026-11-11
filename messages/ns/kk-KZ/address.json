@@ -1,0 +1,58 @@
+{
+  "label": {
+    "street": "Мекенжай",
+    "postcode": "Пошта индексі",
+    "zip": "ZIP коды",
+    "eircode": "Eircode",
+    "postalCode": "Пошта индексі",
+    "state": "Штат",
+    "stateTerritory": "Штат немесе аумақ",
+    "province": "Провинция",
+    "county": "Графтық",
+    "prefecture": "Префектура",
+    "emirate": "Әмірлік",
+    "region": "Облыс",
+    "area": "Елді мекен (ауыл, кент немесе қала)",
+    "townOrArea": "Қала немесе аудан",
+    "city": "Қала",
+    "suburb": "Аудан",
+    "townOrCity": "Қала немесе кент"
+  },
+  "short": {
+    "area": "Елді мекен",
+    "townOrArea": "Қала немесе аудан",
+    "city": "Қала",
+    "suburb": "Аудан",
+    "townOrCity": "Қала немесе кент"
+  },
+  "inSentence": {
+    "postcode": "пошта индексі",
+    "zip": "ZIP коды",
+    "eircode": "Eircode",
+    "postalCode": "пошта индексі"
+  },
+  "withArticle": {
+    "postcode": "пошта индексі",
+    "zip": "ZIP коды",
+    "eircode": "Eircode",
+    "postalCode": "пошта индексі"
+  },
+  "tradeLabel": {
+    "area": "Қала немесе кент",
+    "townOrArea": "Қала немесе аудан",
+    "city": "Қала",
+    "suburb": "Аудан",
+    "townOrCity": "Қала немесе кент"
+  },
+  "basedIn": {
+    "area": "Сіз орналасқан қала немесе кент",
+    "townOrArea": "Сіз орналасқан қала немесе аудан",
+    "city": "Сіз орналасқан қала",
+    "suburb": "Сіз орналасқан аудан",
+    "townOrCity": "Сіз орналасқан қала немесе кент"
+  },
+  "example": "мысалы: {example}",
+  "customersSee": "Клиенттер көретіні:",
+  "postalWarning": "Бұл {article} сияқты емес — мысалы: {example}. Бәрібір сақтай аласыз.",
+  "regionChoose": "Таңдаңыз…"
+}

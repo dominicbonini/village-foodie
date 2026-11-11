@@ -1,0 +1,72 @@
+{
+  "standardCategories": {
+    "starters": "Тіскебасарлар",
+    "mains": "Негізгі тағамдар",
+    "burgers": "Бургерлер",
+    "pizza": "Пицца",
+    "wrapsSandwiches": "Враптар мен сэндвичтер",
+    "sides": "Гарнирлер",
+    "dipsSauces": "Дип-соустар мен тұздықтар",
+    "desserts": "Десерттер",
+    "drinks": "Сусындар",
+    "kidsMenu": "Балалар мәзірі",
+    "specials": "Арнайы ұсыныстар",
+    "other": "Басқа"
+  },
+  "demoEventName": "Демо іс-шара",
+  "firstVanName": "Фургон 1",
+  "demoCategories": {
+    "pizza": "Пицца",
+    "burgers": "Бургерлер",
+    "mains": "Негізгі тағамдар",
+    "sides": "Гарнирлер",
+    "drinks": "Сусындар"
+  },
+  "demoTemplates": {
+    "pizza": {
+      "label": "🍕 Пицца фургоны",
+      "items": {
+        "margherita": "Маргарита",
+        "pepperoni": "Пепперони",
+        "ndujaHoney": "Ндуя және бал",
+        "fourCheese": "Төрт ірімшік",
+        "gardenVeg": "Бақша көкөністері",
+        "garlicBread": "Сарымсақ наны",
+        "rocketParmesan": "Рукола және пармезан",
+        "olives": "Зәйтүн",
+        "sanPellegrino": "San Pellegrino",
+        "coke": "Кола"
+      }
+    },
+    "burgers": {
+      "label": "🍔 Бургер фургоны",
+      "items": {
+        "classicCheeseburger": "Классикалық чизбургер",
+        "doubleBacon": "Қос бекон",
+        "buttermilkChicken": "Айранға маринадталған тауық",
+        "halloumiStack": "Халлуми бургері",
+        "smashBurger": "Смэш-бургер",
+        "skinOnFries": "Қабығымен картоп фри",
+        "loadedCheeseFries": "Ірімшік соусты картоп фри",
+        "onionRings": "Пияз сақиналары",
+        "craftLemonade": "Үйде жасалған лимонад",
+        "coke": "Кола"
+      }
+    },
+    "curries": {
+      "label": "🍛 Карри фургоны",
+      "items": {
+        "chickenTikkaMasala": "Тауық тикка масала",
+        "lambRoganJosh": "Қой етінен роган джош",
+        "chanaMasala": "Чана масала",
+        "butterChicken": "Сары майлы тауық",
+        "saagPaneer": "Саг панир",
+        "pilauRice": "Палау күріші",
+        "garlicNaan": "Сарымсақты наан",
+        "onionBhaji": "Пиязды бхаджи",
+        "mangoLassi": "Манго ласси",
+        "coke": "Кола"
+      }
+    }
+  }
+}

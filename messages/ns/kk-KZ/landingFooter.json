@@ -1,0 +1,17 @@
+{
+  "features": "Мүмкіндіктер",
+  "pricing": "Бағалар",
+  "faq": "Сұрақ-жауап",
+  "privacy": "Құпиялылық",
+  "terms": "Шарттар",
+  "contact": "Байланыс",
+  "about": "Біз туралы",
+  "copyright": "© {year} HatchGrab",
+  "credit": "<b>Village Foodie</b> жобасының авторларынан",
+  "badges": {
+    "appStoreLink": "HatchGrab қосымшасын App Store дүкенінен жүктеп алыңыз",
+    "appStoreAlt": "App Store дүкенінен жүктеп алыңыз",
+    "googlePlayLink": "HatchGrab қосымшасын Google Play дүкенінен алыңыз",
+    "googlePlayAlt": "Google Play дүкенінен алыңыз"
+  }
+}

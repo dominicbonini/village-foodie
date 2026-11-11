@@ -1,0 +1,122 @@
+{
+  "includedOn": "{many, select, yes {{feature}: {plan} тарифіне кіреді.} other {{feature}: {plan} тарифіне кіреді.}}",
+  "notOnPlan": "{many, select, yes {{feature}: сіздің тарифіңізге кірмейді.} other {{feature}: сіздің тарифіңізге кірмейді.}}",
+  "switchedOff": "{many, select, yes {{feature}: фудтрагыңыз үшін өшірілген.} other {{feature}: фудтрагыңыз үшін өшірілген.}}",
+  "planLine": "{plan} · {price} · {description}",
+  "planLineNoPrice": "{plan} · {description}",
+  "upgrade": "Тарифті жаңарту →",
+  "features": {
+    "discovery_map": {
+      "name": "Іздеу картасында көріну",
+      "many": "no"
+    },
+    "web_dashboard": {
+      "name": "Веб басқару тақтасы",
+      "many": "no"
+    },
+    "ipad_kds": {
+      "name": "Ас үй қосымшасы",
+      "many": "no"
+    },
+    "qr_menu": {
+      "name": "QR-код мәзірі",
+      "many": "no"
+    },
+    "meal_deals": {
+      "name": "Комбо",
+      "many": "yes"
+    },
+    "upsells": {
+      "name": "Қосымша сатылымдар",
+      "many": "yes"
+    },
+    "walkup_orders": {
+      "name": "Терезе алдындағы тапсырыстар",
+      "many": "yes"
+    },
+    "online_ordering_pay_at_hatch": {
+      "name": "«Фудтракта төлеу» арқылы тапсырыс",
+      "many": "no"
+    },
+    "sold_out_toggle": {
+      "name": "«Таусылды» белгісі",
+      "many": "no"
+    },
+    "stock_countdown": {
+      "name": "Қорды есептеу",
+      "many": "no"
+    },
+    "offline_protection": {
+      "name": "Желіден тыс тапсырыстарды қорғау",
+      "many": "no"
+    },
+    "online_payments": {
+      "name": "Онлайн төлемдер",
+      "many": "yes"
+    },
+    "advance_preordering": {
+      "name": "Алдын ала тапсырыс",
+      "many": "no"
+    },
+    "time_slot_selection": {
+      "name": "Клиенттің уақыт аралықтары",
+      "many": "yes"
+    },
+    "smart_batch_pacing": {
+      "name": "Ас үй өткізу қабілетін басқару",
+      "many": "no"
+    },
+    "auto_accept": {
+      "name": "Автоқабылдау",
+      "many": "no"
+    },
+    "instagram_messenger_replies": {
+      "name": "Messenger және Instagram автожауаптары",
+      "many": "yes"
+    },
+    "branded_qr_code": {
+      "name": "Брендтелген QR-кодтар",
+      "many": "yes"
+    },
+    "advanced_reporting": {
+      "name": "Кеңейтілген есептер",
+      "many": "no"
+    },
+    "ticket_printing": {
+      "name": "Ас үй чектерін басып шығару",
+      "many": "no"
+    },
+    "multi_device_kds": {
+      "name": "Ас үйдің бірнеше құрылғыда синхрондалуы",
+      "many": "no"
+    },
+    "cook_screen": {
+      "name": "Аспазшы экраны",
+      "many": "no"
+    },
+    "whatsapp_replies": {
+      "name": "WhatsApp автожауаптары",
+      "many": "yes"
+    },
+    "embed_schedule": {
+      "name": "Өз сайтыңыздағы кесте",
+      "many": "no"
+    },
+    "schedule_graphics": {
+      "name": "Әлеуметтік желі посттары",
+      "many": "yes"
+    },
+    "event_types": {
+      "name": "Іс-шараның жеке түрлері",
+      "many": "yes"
+    },
+    "private_events": {
+      "name": "Жеке іс-шаралар",
+      "many": "yes"
+    },
+    "paperwork": {
+      "name": "Құжаттар",
+      "many": "yes"
+    }
+  }
+}

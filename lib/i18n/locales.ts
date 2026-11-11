@@ -46,7 +46,7 @@
 // each added here as its translation is merged: uk-UA, ru-KZ (Kazakhstan's Russian, for KZ/KG — not Russia), kk-KZ, uz-UZ (Latin), az-AZ, ka-GE,
 // hy-AM, sq-AL, mk-MK, bs-BA (Latin), ca-AD, hi-IN, bn-BD, ur-PK (right to left), ne-NP, si-LK, ta-LK, km-KH, lo-LA, mn-MN (Cyrillic),
 // fil-PH, sw-TZ and am-ET.
-export const LOCALES = ['en-GB', 'en-US', 'en-IE', 'en-AU', 'en-NZ', 'en-CA', 'fr-FR', 'en-MT', 'en-GI', 'de-DE', 'de-AT', 'de-CH', 'de-LI', 'es-ES', 'it-IT', 'pt-PT', 'nl-NL', 'nl-BE', 'sv-SE', 'da-DK', 'nb-NO', 'pl-PL', 'cs-CZ', 'hu-HU', 'sk-SK', 'ro-RO', 'hr-HR', 'sl-SI', 'fi-FI', 'et-EE', 'lv-LV', 'lt-LT', 'el-GR', 'el-CY', 'bg-BG', 'fr-LU', 'es-MX', 'pt-BR', 'ms-MY', 'en-SG', 'ja-JP', 'zh-HK', 'th-TH', 'ar-AE', 'es-CL', 'es-CO', 'es-PE', 'es-BO', 'es-EC', 'es-CR', 'es-PA', 'es-DO', 'es-GT', 'es-SV', 'es-HN', 'es-NI', 'es-AR', 'es-UY', 'es-PY', 'en-ZA', 'en-KE', 'en-NG', 'en-GH', 'en-JM', 'en-TT', 'en-BS', 'en-BB', 'en-PH', 'ar-SA', 'ar-QA', 'ar-KW', 'ar-BH', 'ar-OM', 'ar-JO', 'ar-EG', 'fr-MA', 'fr-TN', 'fr-SN', 'fr-CI', 'fr-MC', 'pt-AO', 'pt-MZ', 'pt-CV', 'id-ID', 'vi-VN', 'is-IS', 'sr-RS', 'tr-TR', 'ko-KR', 'zh-TW', 'he-IL', 'ru-KZ', 'uk-UA'] as const
+export const LOCALES = ['en-GB', 'en-US', 'en-IE', 'en-AU', 'en-NZ', 'en-CA', 'fr-FR', 'en-MT', 'en-GI', 'de-DE', 'de-AT', 'de-CH', 'de-LI', 'es-ES', 'it-IT', 'pt-PT', 'nl-NL', 'nl-BE', 'sv-SE', 'da-DK', 'nb-NO', 'pl-PL', 'cs-CZ', 'hu-HU', 'sk-SK', 'ro-RO', 'hr-HR', 'sl-SI', 'fi-FI', 'et-EE', 'lv-LV', 'lt-LT', 'el-GR', 'el-CY', 'bg-BG', 'fr-LU', 'es-MX', 'pt-BR', 'ms-MY', 'en-SG', 'ja-JP', 'zh-HK', 'th-TH', 'ar-AE', 'es-CL', 'es-CO', 'es-PE', 'es-BO', 'es-EC', 'es-CR', 'es-PA', 'es-DO', 'es-GT', 'es-SV', 'es-HN', 'es-NI', 'es-AR', 'es-UY', 'es-PY', 'en-ZA', 'en-KE', 'en-NG', 'en-GH', 'en-JM', 'en-TT', 'en-BS', 'en-BB', 'en-PH', 'ar-SA', 'ar-QA', 'ar-KW', 'ar-BH', 'ar-OM', 'ar-JO', 'ar-EG', 'fr-MA', 'fr-TN', 'fr-SN', 'fr-CI', 'fr-MC', 'pt-AO', 'pt-MZ', 'pt-CV', 'id-ID', 'vi-VN', 'is-IS', 'sr-RS', 'tr-TR', 'ko-KR', 'zh-TW', 'he-IL', 'ru-KZ', 'uk-UA', 'kk-KZ'] as const
 export type AppLocale = (typeof LOCALES)[number]
 export const DEFAULT_LOCALE: AppLocale = 'en-GB'
 
@@ -59,7 +59,7 @@ export const LOCALE_PARENT: Partial<Record<AppLocale, AppLocale>> = { 'en-CA': '
 
 /** languages-1: the NON-ENGLISH locales — each a full base file (see the header). france-1: fr-FR (France's country row decides when anyone sees it); a country
  *  prompt adds its locale here (docs/i18n/add-a-country.md). */
-export const LANGUAGE_BASES: readonly AppLocale[] = ['fr-FR', 'de-DE', 'es-ES', 'it-IT', 'pt-PT', 'nl-NL', 'sv-SE', 'da-DK', 'nb-NO', 'pl-PL', 'cs-CZ', 'hu-HU', 'sk-SK', 'ro-RO', 'hr-HR', 'sl-SI', 'fi-FI', 'et-EE', 'lv-LV', 'lt-LT', 'el-GR', 'bg-BG', 'pt-BR', 'ms-MY', 'ja-JP', 'zh-HK', 'th-TH', 'ar-AE', 'id-ID', 'vi-VN', 'is-IS', 'sr-RS', 'tr-TR', 'ko-KR', 'zh-TW', 'he-IL', 'ru-KZ', 'uk-UA']
+export const LANGUAGE_BASES: readonly AppLocale[] = ['fr-FR', 'de-DE', 'es-ES', 'it-IT', 'pt-PT', 'nl-NL', 'sv-SE', 'da-DK', 'nb-NO', 'pl-PL', 'cs-CZ', 'hu-HU', 'sk-SK', 'ro-RO', 'hr-HR', 'sl-SI', 'fi-FI', 'et-EE', 'lv-LV', 'lt-LT', 'el-GR', 'bg-BG', 'pt-BR', 'ms-MY', 'ja-JP', 'zh-HK', 'th-TH', 'ar-AE', 'id-ID', 'vi-VN', 'is-IS', 'sr-RS', 'tr-TR', 'ko-KR', 'zh-TW', 'he-IL', 'ru-KZ', 'uk-UA', 'kk-KZ']
 
 /** The override files a locale reads, outermost last: [] for en-GB, ['en-US'] for en-US, ['en-US', 'en-CA'] for en-CA,
  *  ['fr-FR'] for a language base (merged over en-GB, which is then only its fallback). */

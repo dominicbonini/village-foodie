@@ -1,0 +1,10 @@
+{
+  "copy": "Көшіру",
+  "copied": "Көшірілді ✓",
+  "failed": "Көшірілмеді",
+  "aria": "{label} {thing}",
+  "announceCopied": "Көшірілді: {thing}",
+  "announceCopiedValue": "Мән көшірілді",
+  "announceFailed": "Көшіру мүмкін болмады: {thing}. Мәтінді белгілеп, өзіңіз көшіріңіз.",
+  "announceFailedValue": "Мәнді көшіру мүмкін болмады. Мәтінді белгілеп, өзіңіз көшіріңіз."
+}

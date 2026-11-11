@@ -1,0 +1,4 @@
+{
+  "customer": "{required, select, yes {Міндетті} other {Міндетті емес}}{limit, select, one { · Біреуін таңдаңыз} upTo { · Ең көбі {max} таңдаңыз} other {}}",
+  "operator": "{required, select, yes {Міндетті} other {Міндетті емес}}{limit, select, one { · Клиент біреуін таңдайды} upTo { · Клиент ең көбі {max} таңдай алады} other {}}"
+}

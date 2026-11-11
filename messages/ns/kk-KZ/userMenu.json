@@ -1,0 +1,18 @@
+{
+  "menuLabel": "Пайдаланушы мәзірі",
+  "screenOn": "Экран қосулы",
+  "screenOff": "Экран өшеді",
+  "newOrderSound": "Жаңа тапсырыс дыбысы",
+  "copied": "Көшірілді",
+  "orderLink": "Тапсырыс сілтемесі",
+  "qrCode": "QR-код",
+  "kitchenScreen": "Ас үй экраны (KDS)",
+  "thisDevice": "Бұл құрылғы",
+  "manage": "Басқару",
+  "ordersDashboard": "Тапсырыстар тақтасы",
+  "admin": "Әкімші",
+  "privacy": "Құпиялылық саясаты",
+  "terms": "Шарттар",
+  "signOut": "Шығу",
+  "close": "Жабу"
+}

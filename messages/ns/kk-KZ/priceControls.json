@@ -1,0 +1,8 @@
+{
+  "change": "{label} — өзгерту",
+  "useRule": "{label} — орнына ережені қолдану",
+  "typePrice": "{label} — бағаны енгізу",
+  "backToRule": "Ережеге қайту",
+  "diffUp": "(+{amount})",
+  "diffDown": "(−{amount})"
+}

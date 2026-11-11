@@ -1,0 +1,30 @@
+{
+  "labels": {
+    "weekDates": "Апта даталары",
+    "dayList": "Күндер тізімі",
+    "place": "Орын",
+    "venue": "Алаң",
+    "area": "Елді мекен",
+    "dayDate": "Күн және дата",
+    "times": "Уақыты",
+    "orderLink": "Тапсырыс сілтемесі",
+    "locationTag": "Геотег"
+  },
+  "weekHeader": "{truck} — осы аптада біз мына жерлердеміз:",
+  "dayLine": "{day} — {where} — {times}",
+  "dayLineNoTimes": "{day} — {where}",
+  "dayLineCancelled": "{day} — {where} — БОЛДЫРЫЛМАДЫ, кешіріңіз",
+  "noDates": "Бұл аптада күндер жоқ — жақын арада қайта қараңыз.",
+  "orderAhead": "Алдын ала тапсырыс беріңіз: {url}",
+  "orderAheadTagged": "Алдын ала тапсырыс беріңіз: {url} {tag}",
+  "eventLine": "{truck}: {when} — {where}, {times}.",
+  "eventLineNoTimes": "{truck}: {when} — {where}.",
+  "cancelledSorry": "Кешіріңіз — {when} келе алмаймыз ({where}).",
+  "cancelledApology": "Келуді жоспарлаған барлық адамнан кешірім сұраймыз. Жақын арада қайта ораламыз.",
+  "when": {
+    "today": "бүгін",
+    "tonight": "бүгін кешке",
+    "tomorrow": "ертең",
+    "dated": "{date} күні"
+  }
+}

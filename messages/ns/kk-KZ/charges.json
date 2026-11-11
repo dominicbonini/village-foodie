@@ -1,0 +1,13 @@
+{
+  "subtotal": "Аралық сома",
+  "taxFallback": "Салық",
+  "taxIncluded": "Құрамында: {label}",
+  "serviceFeeCustomer": "Онлайн қызмет ақысы",
+  "serviceFee": "Қызмет ақысы",
+  "cardFee": "Карта ақысы",
+  "tip": "Шайпұл",
+  "rate": "{rate}%",
+  "line": "{label}: {amount}",
+  "lineWithRate": "{label} {rate}: {amount}",
+  "foldedCharges": "{parts, select, tax_fees_tip {Салық, алымдар және шайпұл} tax_tip {Салық және шайпұл} fees_tip {Алымдар және шайпұл} fees {Алымдар} other {Салық және алымдар}}"
+}

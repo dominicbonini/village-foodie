@@ -1,0 +1,16 @@
+{
+  "takeConfirm": "Пейджер <b>{number}</b> қазір <b>#{holderId} тапсырысында</b>{hasName, select, yes { ({name})} other {}}. Оны <b>{hasTarget, select, yes {#{targetId} тапсырысына} other {бұл тапсырысқа}}</b> алу керек пе?",
+  "cancel": "Бас тарту",
+  "take": "Пейджерді алу: {number}",
+  "titleBlocking": "#{id} тапсырысына пейджер беру керек пе?",
+  "title": "Пейджерді таңдаңыз",
+  "subtitle": "{hasTarget, select, yes {#{id} тапсырысы} other {Бұл тапсырыс}}{hasCurrent, select, yes { · қазіргі пейджер: {current}} other {}}",
+  "allTaken": "{n, plural, one {Пейджер бос емес. Оны басқа тапсырыстан алу үшін түртіңіз.} other {Барлық {count} пейджер бос емес. Біреуін басқа тапсырыстан алу үшін түртіңіз.}}",
+  "thisOrder": "Бұл тапсырыс",
+  "noBuzzer": "Пейджерсіз",
+  "done": "Аяқтау",
+  "lostTitle": "#{id} тапсырысында пейджер жоқ",
+  "lostBody": "{hasName, select, yes {{name} — } other {}}сіз желіден тыс болған кезде басқа тапсырыс сол пейджерді алып қойды. Басқа пейджер беріңіз.",
+  "dismiss": "Жабу",
+  "assign": "Беру"
+}

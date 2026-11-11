@@ -1,0 +1,141 @@
+{
+  "row": {
+    "discovery_map_listing": {
+      "name": "Іздеу картасында көріну"
+    },
+    "web_dashboard": {
+      "name": "Әмбебап веб басқару тақтасы"
+    },
+    "qr_code": {
+      "name": "QR-код"
+    },
+    "schedule_import": {
+      "name": "Кестені автоматты импорттау"
+    },
+    "meal_deals_upsells": {
+      "name": "Комбо және қосымша сатылымдар"
+    },
+    "walkup_orders": {
+      "name": "Терезе алдындағы тапсырыстарды өңдеу"
+    },
+    "sold_out_toggle": {
+      "name": "«Таусылды» белгісін бірден қою"
+    },
+    "kitchen_app": {
+      "name": "iPhone, iPad және Android үшін ас үй қосымшасы"
+    },
+    "offline_protection": {
+      "name": "Желіден тыс тапсырыстарды қорғау"
+    },
+    "online_payments": {
+      "name": "Онлайн төлемдер"
+    },
+    "advance_preordering": {
+      "name": "Алдын ала тапсырыс"
+    },
+    "preorder_deadline": {
+      "name": "Алдын ала тапсырыстың соңғы мерзімі"
+    },
+    "time_slot_selection": {
+      "name": "Клиенттің уақыт аралығын таңдауы"
+    },
+    "kitchen_capacity": {
+      "name": "Ас үй өткізу қабілетін басқару"
+    },
+    "stock_countdown": {
+      "name": "Қорды автоматты есептеу"
+    },
+    "auto_accept": {
+      "name": "Онлайн тапсырыстарды автоқабылдау"
+    },
+    "branded_qr_code": {
+      "name": "Брендтелген QR-код"
+    },
+    "private_events": {
+      "name": "Жеке іс-шаралар"
+    },
+    "social_media_posts": {
+      "name": "Әлеуметтік желі посттары"
+    },
+    "whatsapp_auto_replies": {
+      "name": "WhatsApp автожауаптары"
+    },
+    "messenger_instagram_replies": {
+      "name": "Messenger және Instagram автожауаптары"
+    },
+    "tap_to_pay": {
+      "name": "Телефонмен төлем қабылдау"
+    },
+    "sms_order_alerts": {
+      "name": "Тапсырыс туралы SMS хабарламалар"
+    },
+    "multi_device_kitchen": {
+      "name": "Ас үйдің бірнеше құрылғыда синхрондалуы"
+    },
+    "multi_user_access": {
+      "name": "Көп пайдаланушылы қолжетімділік"
+    },
+    "embed_schedule": {
+      "name": "Өз сайтыңыздағы кесте беті"
+    },
+    "event_types": {
+      "name": "Іс-шараның жеке түрлері мен бағалары"
+    },
+    "buzzer_tracking": {
+      "name": "Пейджерлерді бақылау"
+    },
+    "documents_reminders": {
+      "name": "Құжаттар және еске салғыштар"
+    },
+    "profit_per_event": {
+      "name": "Әр іс-шарадағы пайда"
+    },
+    "accountant_reports": {
+      "name": "Бухгалтерге арналған есептер"
+    },
+    "ticket_printing": {
+      "name": "Ас үй чектерін басып шығару"
+    },
+    "customer_display": {
+      "name": "Клиенттерге арналған экран"
+    },
+    "loyalty_stamp_cards": {
+      "name": "Цифрлық жинақтау карталары"
+    }
+  },
+  "cardRegionOnline": "{region} (стандартты)",
+  "cardRegion": {
+    "UKcards": "Ұлыбритания карталары",
+    "EEAcards": "ЕЭА карталары",
+    "UScards": "АҚШ карталары",
+    "Australiancards": "Аустралия карталары",
+    "NewZealandcards": "Жаңа Зеландия карталары",
+    "Canadiancards": "Канада карталары",
+    "Swisscards": "Швейцария карталары",
+    "Braziliancards": "Бразилия карталары",
+    "Mexicancards": "Мексика карталары",
+    "Japanesecards": "Жапония карталары",
+    "Singaporecards": "Сингапур карталары",
+    "HongKongcards": "Гонконг карталары",
+    "Malaysiancards": "Малайзия карталары",
+    "Thaicards": "Тайланд карталары",
+    "UAEcards": "БАӘ карталары"
+  },
+  "perMonth": {
+    "mo": "{amount}/ай",
+    "month": "{amount}/ай"
+  },
+  "priceWord": {
+    "free": "Тегін",
+    "freeTrial": "Тегін сынақ мерзімі",
+    "lifetime": "Өмір бойы",
+    "zeroPercent": "0%",
+    "payAtHatch": "Фудтракта төлеу",
+    "unlimited": "Шексіз",
+    "none": "—",
+    "masked": "Нақтыланады"
+  },
+  "cell": {
+    "included": "Кіреді"
+  }
+}

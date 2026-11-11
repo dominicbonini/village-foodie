@@ -1,0 +1,15 @@
+{
+  "greeting": "Сәлеметсіз бе 👋",
+  "opener": "{greeting} ",
+  "allergenRedirect": "{opener}Толық мәзір мен аллергендер туралы ақпаратты мына жерден көре аласыз: {url} — {truck} {emoji}",
+  "menuFallback": "{opener}Толық мәзірімізді мына жерден қарай аласыз: {url} — {truck} {emoji}",
+  "otherCategory": "Басқа",
+  "categoryFrom": "{category} — ең арзаны {price}",
+  "listTwo": "{first} және {second}",
+  "listMany": "{init} және {last}",
+  "menuSummary": "{opener}Бізде бар: {summary}. Толық мәзірді қарап, алдын ала тапсырыс беріңіз: {url} — {truck} {emoji}",
+  "allergenCaveat": "Аллергендер туралы ақпаратты толық мәзірден міндетті түрде тексеріңіз — бұл автоматты жауап.",
+  "specificFallback": "{opener}Соңғы кестемізді мына жерден қараңыз: {url}\n\n{truck} {emoji}",
+  "capHandoff": "Хабарламаларыңызға рақмет! Мұнда күніне бірнеше рет қана жауап бере аламын.\n\nТапсырыс беру: {link}",
+  "capContact": "Бізбен тікелей байланысу: {number}"
+}

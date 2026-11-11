@@ -1,0 +1,133 @@
+{
+  "$comment": "languages-world-2 (11 November 2026): the WhatsApp allergen guard’s trigger words for KAZAKH, Cyrillic as Kazakh users type it (kk-KZ): аллергия (аллергиям бар), көтере алмаймын, сезімтал, целиакия, анафилаксия, the -сыз/-сіз free-from forms (глютенсіз, сүтсіз, жұмыртқасыз, жаңғақсыз, лактозасыз…), глютен / сүт / жаңғақ жоқ, қоспаңыз, қауіпсіз, жеуге болмайды / жей алмаймын, іздері, ластану — stems survive the suffixes (жаңғақсыздары). Common Latin-keyboard spellings (allergiya, glutensiz, sutsiz, zhangaqsyz, qauipsiz) and the Russian words customers mix in are added. Kazakh letters ә ғ қ ң ө ұ ү і are kept by the normaliser. Bare сыз / сіз is NOT a stem (сіз = you; пиязсыз is a preference). OPTION B, as every other language: absence / safety words only, NOT the bare allergen names (a presence question may reach the AI, which answers only from the tags and gets the caveat). Matched with the Unicode normaliser. caveatWords: a tagged label of the codex allergen set (stored in English, lower case) → the words a reply may use for it (matched on the raw lower-cased reply, so written as the AI writes them). The country has no allergen set of its own yet, so caveatWords are for 'codex' (as MX, SG, HK, MY, TH and AE).",
+  "language": "kk",
+  "normalise": "unicode",
+  "stems": [
+    "аллерг",
+    "алерг",
+    "көтере алма",
+    "көтермей",
+    "сезімтал",
+    "целиак",
+    "анафила",
+    "эпипен",
+    "адреналин",
+    "глютенсіз",
+    "глютенсыз",
+    "лактозасыз",
+    "сүтсіз",
+    "сутсиз",
+    "жұмыртқасыз",
+    "жаңғақсыз",
+    "жержаңғақсыз",
+    "балықсыз",
+    "соясыз",
+    "күнжітсіз",
+    "асшаянсыз",
+    "глютен жоқ",
+    "сүт жоқ",
+    "жаңғақ жоқ",
+    "жұмыртқа жоқ",
+    "қоспаңыз",
+    "қоспай",
+    "қауіпсіз",
+    "жеуге болмайды",
+    "жей алма",
+    "іздері",
+    "ластан",
+    "контаминац",
+    "allergiya",
+    "allergiyam",
+    "glutensiz",
+    "sutsiz",
+    "laktozasyz",
+    "zhumyrtqasyz",
+    "zhumyrtkasyz",
+    "jumyrtqasyz",
+    "jumyrtkasyz",
+    "zhangaqsyz",
+    "zhangaksyz",
+    "jangaqsyz",
+    "jangaksyz",
+    "qauipsiz",
+    "kauipsiz",
+    "zhei alma",
+    "jei alma",
+    "tseliak",
+    "непереносим",
+    "без глют",
+    "безглютен",
+    "без лактоз",
+    "безлактоз",
+    "без молок",
+    "без молоч",
+    "без яиц",
+    "без орех",
+    "без арахис",
+    "не содерж",
+    "может содерж",
+    "безопасн",
+    "мне нельзя",
+    "allerg",
+    "alerg",
+    "gluten free",
+    "glutenfree",
+    "lactose",
+    "intoleran",
+    "celiac",
+    "coeliac",
+    "nut free",
+    "epipen",
+    "epi pen"
+  ],
+  "tokens": [],
+  "caveatWords": {
+    "codex": {
+      "gluten": [
+        "глютен",
+        "бидай",
+        "арпа",
+        "қара бидай"
+      ],
+      "crustaceans": [
+        "шаян",
+        "асшаян",
+        "теңіз өнім"
+      ],
+      "eggs": [
+        "жұмыртқа",
+        "майонез"
+      ],
+      "fish": [
+        "балық"
+      ],
+      "peanuts": [
+        "жержаңғақ",
+        "жер жаңғағы"
+      ],
+      "soy": [
+        "соя",
+        "тофу"
+      ],
+      "milk": [
+        "сүт",
+        "лактоза",
+        "ірімшік",
+        "сары май",
+        "қаймақ",
+        "кілегей"
+      ],
+      "tree nuts": [
+        "жаңғақ",
+        "бадам",
+        "фундук",
+        "кешью",
+        "пісте"
+      ],
+      "sulphites": [
+        "сульфит",
+        "күкірт диоксиді"
+      ]
+    }
+  }
+}
