@@ -28,6 +28,10 @@ const t = (label, ok, detail) => { if (ok) { pass++; console.log('  ✓ ' + labe
     "export * as R from '@/lib/billing/rules'", "export * as E from '@/lib/billing/engine'", "export * as S from '@/lib/billing/memory-store'", "export * as K from '@/lib/billing/processor'",
   ].join('\n'))
   const proc = K.stripeBillingProcessor()
+  // billing-1 Stripe run (11 November 2026): every invoice the ENGINE asks for is recorded, so the idempotency check below replays the
+  // engine's own request byte for byte — Stripe (rightly) refuses a reused key with different parameters.
+  const created = {}
+  { const orig = proc.createInvoice.bind(proc); proc.createInvoice = async a => { created[a.truckId] = created[a.truckId] ?? a; return orig(a) } }
   t('the processor is test mode', proc.livemode === false)
   const run = `b1-${Date.now().toString(36)}`   // a fresh owner per run, so Stripe's idempotency window never replays an old run
   const plan = (key, sortOrder, o = {}) => ({ key, name: key === 'payg' ? 'Pay as you go' : key[0].toUpperCase() + key.slice(1), description: '', sortOrder, isPublic: true, isInternal: false, isTrial: false,
@@ -93,8 +97,9 @@ const t = (label, ok, detail) => { if (ok) { pass++; console.log('  ✓ ' + labe
   // Idempotency at Stripe: creating the same month's invoice again returns the first one.
   const fr = (await store.listInvoices(T('FR')))[0]
   const frCharge = (await store.listCharges(T('FR')))[0]
-  const again = await proc.createInvoice({ customerId: d.customers[0].stripeCustomerId, truckId: T('FR'), period: '2026-11-01', currency: 'EUR', idempotencyBase: E.chargeKeyOf(frCharge),
-    lines: [{ key: 'plan', amountMinor: 2900, description: 'x' }], paymentMethodId: (await store.truckBilling(T('FR'))).stripePaymentMethodId, paymentMethodType: 'card', description: 'x' })
+  const first = created[T('FR')]
+  t('FR: the engine’s request was keyed on the charge (chargeKeyOf)', first && first.idempotencyBase === E.chargeKeyOf(frCharge), first && first.idempotencyBase)
+  const again = await proc.createInvoice({ ...first })   // the same request again, as the engine sends it when a run is retried
   t('FR: the same month again → Stripe replays the SAME invoice (idempotency key)', again.id === fr.stripeInvoiceId, { first: fr.stripeInvoiceId, again: again.id })
 
   // Pix Automático: a SetupIntent with a monthly mandate in BRL (confirming it needs the payer's bank app).
