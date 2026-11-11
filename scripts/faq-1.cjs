@@ -311,7 +311,19 @@ async function identityViews(tag) {
     const after = fs.readdirSync(MIG).filter(f => f > '20261056_faq_1.sql' && /^\d{8}/.test(f))
     const KNOWN = ['20261058_faq_1c_undo.sql', '20261059_faq_3.sql', '20261060_faq_2_translations.sql', '20261061_contact_1.sql', '20261062_competitor_features_2.sql', '20261063_tidy_2_apps_everywhere.sql', '20261064_tidy_2_real_thai_food.sql']
     const later = after.slice(KNOWN.length)
-    const touchingFaq = later.filter(f => /\bfaq_(items|sections|translations)\b/.test(fs.readFileSync(path.join(MIG, f), 'utf8').replace(/--.*$/gm, '')))
+    // ⚠️ RE-PINNED (pricing-copy-2, 11 November 2026): Dominic approved one later FAQ write — 20261091 changes the English of three published
+    // answers (…0001, …0002, …0005: "online card orders" → "online orders"), each UPDATE guarded by the old text, through the text faqAction's
+    // check accepts (scripts/pricing-copy-2.cjs proves it). It is named here precisely: only answer_en / updated_at / updated_by of those
+    // three ids, no other FAQ table; any other FAQ write in a later migration still fails this check.
+    const PC2 = f => {
+      if (f !== '20261091_pricing_copy_2_wording.sql') return false
+      const sql = fs.readFileSync(path.join(MIG, f), 'utf8').replace(/--.*$/gm, '')
+      const faq = [...sql.matchAll(/update public\.faq_items\s+set ([\s\S]*?)\s+where id = '([0-9a-f-]+)'/g)]
+      return !/faq_(sections|translations)/.test(sql) && (sql.match(/faq_items/g) || []).length === 3 && faq.length === 3
+        && JSON.stringify(faq.map(m => m[2])) === JSON.stringify(['fa000002-0000-4000-8000-000000000001', 'fa000002-0000-4000-8000-000000000002', 'fa000002-0000-4000-8000-000000000005'])
+        && faq.every(m => /^answer_en\s+= '(?:[^']|'')*',\s*updated_at = now\(\),\s*updated_by = 'pricing-copy-2'$/.test(m[1].trim()))
+    }
+    const touchingFaq = later.filter(f => /\bfaq_(items|sections|translations)\b/.test(fs.readFileSync(path.join(MIG, f), 'utf8').replace(/--.*$/gm, '')) && !PC2(f))
     t('the faq-1 migration number is unique; 20261058 … 20261064 follow it in order, and no later migration touches the FAQ tables', fs.readdirSync(MIG).filter(f => f.startsWith('20261056')).length === 1
       && JSON.stringify(after.slice(0, KNOWN.length)) === JSON.stringify(KNOWN) && !touchingFaq.length, { after, touchingFaq })
   }

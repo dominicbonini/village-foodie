@@ -58,11 +58,12 @@ const ROWS = { ieOff: () => [LP1E.GB(), LP1E.US_ON(), IE(false)], ieOn: () => [L
   t('HatchGrab host: 200, text/markdown', off.status === 200 && /text\/markdown/.test(off.type || ''), off)
   t('it opens with the H1 and a one-sentence summary (llmstxt.org shape)', /^# HatchGrab\n\n> HatchGrab is online ordering, pre-orders and a kitchen screen for food trucks and mobile catering: /.test(off.body), off.body.slice(0, 200))
   // ⚠️ RE-PINNED (pricing-copy-1, 11 November 2026): Pay as you go's line says "on online orders." (lib/llms-text.ts feeSentence).
-  t('switched on: United Kingdom and United States, each with its own plans and prices from the data', /### United Kingdom \(GBP\)[\s\S]*- Pay as you go: £0 per truck per month\. 0\.99% on online orders\.[\s\S]*- Pro: £29 per truck per month\. First £4,000 of online orders included each month, then 0\.99% on online card orders\.[\s\S]*- Unlimited: £69 per truck per month\. No HatchGrab fee on online orders\./.test(off.body)
+  // ⚠️ RE-PINNED (pricing-copy-2, 11 November 2026): Pro's line and the general fee paragraph say "online orders" too.
+  t('switched on: United Kingdom and United States, each with its own plans and prices from the data', /### United Kingdom \(GBP\)[\s\S]*- Pay as you go: £0 per truck per month\. 0\.99% on online orders\.[\s\S]*- Pro: £29 per truck per month\. First £4,000 of online orders included each month, then 0\.99% on online orders\.[\s\S]*- Unlimited: £69 per truck per month\. No HatchGrab fee on online orders\./.test(off.body)
     && off.body.includes(`- Pro: $${CATALOG.prices.find(p => p.countryCode === 'US' && p.planKey === 'pro').monthlyMinor / 100} per truck per month`), off.body.match(/###[\s\S]{0,600}/g))
   t('each country\'s card-processing line is the pricing footnote in its own words ("in the UK")', /currently 1\.5% \+ 20p in the UK/.test(off.body))
   t('the fee rule and the trial (3 months, falls back to Pay as you go with no monthly fee) come from the catalogue',
-    /## The HatchGrab fee\n\nThe HatchGrab fee is 0\.99% of online card orders/.test(off.body) && /The first 3 months are completely free, with every feature unlocked\. When the trial ends, a truck moves to Pay as you go \(no monthly fee\)/.test(off.body))
+    /## The HatchGrab fee\n\nThe HatchGrab fee is 0\.99% of online orders/.test(off.body) && /The first 3 months are completely free, with every feature unlocked\. When the trial ends, a truck moves to Pay as you go \(no monthly fee\)/.test(off.body))
   t('links: /uk, /us, their features and compare pages, terms and privacy', ['/uk', '/us', '/uk/features', '/us/features', '/uk/compare', '/us/compare', '/terms', '/privacy'].every(p => off.body.includes(`https://www.hatchgrab.com${p}`)))
   t('Ireland switched OFF: not named, no €, no /ie link', !/Ireland|€|\/ie\b/.test(off.body))
   const on = await getLlms(ROWS.ieOn(), 'www.hatchgrab.com')

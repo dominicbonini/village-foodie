@@ -181,8 +181,9 @@ const withFourth = () => {
   t('ONE table, columns = the public plans with "{price} / month"', count(featGB, 'class="pt pt-features"') === 1 && !featGB.includes('pt-card') && inOrder(tt, ['Pay as you go £0 / month', 'Pro £29 / month', 'Unlimited £69 / month']))
   t('the highlighted column is Pro (the data flag)', /<div class="pt-col pt-hl" role="columnheader"><span class="pt-col-name">Pro</.test(tbl) && count(tbl, 'pt-col pt-hl') === 1)
   // Dominic, 20 October 2026: no "Pay at Hatch orders" money row and no "Online ordering — Pay at Hatch" feature row.
+  // ⚠️ RE-PINNED (pricing-copy-2, 11 November 2026): the fee row reads "HatchGrab fee on online orders*" (the word "card" dropped; asterisk kept).
   t('WHAT YOU PAY: included — / £4,000 / Unlimited; fee 0.99% / 0.99% above £4,000 / 0%; Walk-up Free ×3 (no Pay at Hatch row)',
-    tblNames.includes('What you pay Online orders included each month — £4,000 Unlimited HatchGrab fee on online card orders* 0.99% 0.99% above £4,000 0% Walk-up orders Free Free Free Run your service') && !/Pay at Hatch/.test(tblNames), tblNames.slice(0, 400))
+    tblNames.includes('What you pay Online orders included each month — £4,000 Unlimited HatchGrab fee on online orders* 0.99% 0.99% above £4,000 0% Walk-up orders Free Free Free Run your service') && !/Pay at Hatch/.test(tblNames), tblNames.slice(0, 400))
   t('three groups in order: Run your service, Online orders, Marketing & automation', inOrder(tt, ['Run your service', 'Online orders', 'Marketing & automation']))
   const rowsIn = count(tbl, 'role="rowheader"')
   // ⚠️ RE-PINNED (features-list-1, 4 November 2026): 34 feature rows (Advanced reporting off; three rows added).

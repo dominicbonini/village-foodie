@@ -126,7 +126,10 @@ function removedSpan(a, b) {
   }
 
   head('4 · /llms.txt')
-  const llms = await R.llms(rows)
+  // ⚠️ RE-PINNED (pricing-copy-2, 11 November 2026): pricing-copy-2 then changed Pro's line and the general paragraph on purpose
+  // ("online card orders" → "online orders"); they are put back first (scripts/_lp-pricing-copy-2.cjs llmsBefore), so this section still
+  // proves exactly what pricing-copy-1 did and did not change.
+  const llms = require('./_lp-pricing-copy-2.cjs').llmsBefore(await R.llms(rows))
   t('Pay as you go: "0.99% on online orders."', /- Pay as you go: £0 per truck per month\. 0\.99% on online orders\./.test(llms))
   t('Pro keeps "then 0.99% on online card orders." and the general fee paragraph is unchanged', /First £4,000 of online orders included each month, then 0\.99% on online card orders\./.test(llms) && /fee is [^\n]* of online card orders, on the plans that charge one/.test(llms))
 

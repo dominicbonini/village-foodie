@@ -423,7 +423,12 @@ const flat = (o, p = '', out = {}) => { for (const [k, v] of Object.entries(o ??
       const rp = LATER_KEY_CHANGES.filter(x => x.ns === m[1] && x.touched().has(f)); if (!rp.length) return false
       const strip = s => { const o = JSON.parse(s); for (const x of rp) for (const k of x.keys) { const p = k.split('.'), last = p.pop(), at = p.reduce((a, q) => (a && typeof a === 'object' ? a[q] : undefined), o); if (at && typeof at === 'object') delete at[last] } return JSON.stringify(o) }
       return strip(b) === strip(nowOf(f)) }
-    const moved = files.filter(f => !(PF1.LANDED && PF1.NEW_FILES.includes(f)) && atBase(f) !== nowOf(f) && !T1_FILES.includes(f) && !(FL1.LANDED && FL1.nsSameApartFromRows(f, atBase(f), nowOf(f))) && !jpNavOnly(f) && !newLocaleFile(f) && !keyRepinned(f))
+    // ⚠️ RE-PINNED (pricing-copy-2, 11 November 2026): one NEW override file in a locale that existed at BASE — de-CH's provisionContent.json,
+    // created by pricing-copy-2 (60dd2c42) so Swiss German writes "Dips & Saucen" (de-CH had inherited de-DE's "Soßen"). Set aside only while
+    // it is exactly that one key, added by a pricing-copy-2 commit.
+    const pc2DeChSauces = f => f === 'messages/ns/de-CH/provisionContent.json' && atBase(f) === null && touchedBy(commitsOf('pricing-copy-2'))().has(f)
+      && JSON.stringify(flat(JSON.parse(nowOf(f)))) === JSON.stringify({ 'standardCategories.dipsSauces': 'Dips & Saucen' })
+    const moved = files.filter(f => !pc2DeChSauces(f) && !(PF1.LANDED && PF1.NEW_FILES.includes(f)) && atBase(f) !== nowOf(f) && !T1_FILES.includes(f) && !(FL1.LANDED && FL1.nsSameApartFromRows(f, atBase(f), nowOf(f))) && !jpNavOnly(f) && !newLocaleFile(f) && !keyRepinned(f))
     t(`${entry}: all ${files.length} source files it bundles are byte-identical to ${BASE} — so is every byte it serves`, files.length > 20 && moved.length === 0, moved)
   }
   // ⚠️ RE-PINNED (tidy-1): Footer and TruckClient changed later (tidy-1's `newsletter` / `tally`); their links did not.
