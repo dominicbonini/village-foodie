@@ -76,6 +76,9 @@ const LIB = [
   'lib/i18n/translator.ts', 'lib/i18n/registry.ts', 'lib/i18n/locales.ts', 'lib/i18n/merge.ts',
   'lib/i18n/catalog/posterWords.ts', 'lib/i18n/catalog/captions.ts',
   'lib/i18n/catalog/weeklyPostApi.ts', 'lib/i18n/catalog/errorsManage.ts',
+  // ⚠️ RE-PINNED (pricing-copy-3, 11 November 2026): lib/weekly-post/locale.ts formats a language's dates through the one Serbian-Latin
+  // mapping (lib/i18n/intl-locale.ts → lib/time-utils.ts intlDateLocale), so the copy carries it.
+  'lib/i18n/intl-locale.ts',
 ]
 // ⚠️ RE-PINNED (Language Phase 1d Part 2): the JSON those catalogue modules import (and words.ts's `typeof enGB`
 // type import). COPIED into a variant tree, never handed to tsc as an entry — tsc copies a JSON it resolves.
